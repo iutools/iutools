@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.Trie;
+import ca.nrc.json.PrettyPrinter;
 
 
 /**
@@ -45,7 +46,7 @@ public class CorpusTrieCompiler
     
     private static void printTrie(Trie trie) {
     	System.out.println("\nThe trie looks like this:\n");
-    	System.out.println(ca.nrc.json.PrettyPrinter.print(trie));
+    	System.out.println(PrettyPrinter.print(trie));
 	}
 
 	private static void printIndex() {

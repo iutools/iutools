@@ -26,8 +26,7 @@ import ca.inuktitutcomputing.morph.MorphInuk;
  * @author Marta
  *
  */
-public class DecomposeHansardTest  {
-
+public class DecomposeHansardTest {
 	
 	String fileGoldStandard = "ressources/goldstandardHansard.txt";
 	String fileTargetSuccessfulAnalysis = "ressources/target_successful_analysis_";
@@ -420,22 +419,9 @@ public class DecomposeHansardTest  {
 	     destinationChannel.close();
 	}
 
-//	public static Test suite() { 
-//
-//		/* Junit uses reflexion to add automatically all the methods of TestFoo 
-//
-//		whose name begins by "test" 
-//
-//		*/ 
-//
-//		return new TestSuite(DecomposeHansardTest.class); 
-//
-//    } 
-//
-	public static void main(String... args) throws ClassNotFoundException {
+	public static void main(String[] args) throws ClassNotFoundException {
         Request request = Request.method(DecomposeHansardTest.class, "testDecomposer");
         Result result = new JUnitCore().run(request);
         System.exit(result.wasSuccessful() ? 0 : 1);
-    }
-	
+    }	
 }
