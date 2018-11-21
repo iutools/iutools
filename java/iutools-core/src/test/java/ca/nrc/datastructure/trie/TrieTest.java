@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.util.HashMap;
 import java.util.Set;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 public class TrieTest {
@@ -146,4 +147,24 @@ public class TrieTest {
 		assertEquals("The text of the the most frequent found is wrong.","helicopter",mostFrequent.getText());
 	}
 
+	@Test
+	public void test_getAllTerminals() throws Exception {
+		StringSegmenter charSegmenter = new StringSegmenter_Char();
+		Trie charTrie = new Trie(charSegmenter);
+		charTrie.add("hello");
+		charTrie.add("hit");
+		charTrie.add("abba");
+		charTrie.add("helios");
+		charTrie.add("helm");
+		charTrie.add("ok");
+		TrieNode[] h_terminals = charTrie.getAllTerminals("h".split(""));
+		Assert.assertEquals("The number of words starting with 'h' should be 4.",
+				4,h_terminals.length);
+		TrieNode[] hel_terminals = charTrie.getAllTerminals("hel".split(""));
+		Assert.assertEquals("The number of words starting with 'hel' should be 3.",
+				3,hel_terminals.length);
+		TrieNode[] o_terminals = charTrie.getAllTerminals("o".split(""));
+		Assert.assertEquals("The number of words starting with 'o' should be 1.",
+				1,o_terminals.length);
+	}
 }

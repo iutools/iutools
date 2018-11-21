@@ -88,6 +88,11 @@ public class Trie {
 		return mostFrequentTerminalNode;
 	}
 	
+	public TrieNode[] getAllTerminals(String[] segments) {
+		TrieNode node = this.getNode(segments);
+		return node.getAllTerminals();
+	}
+	
 	
 	// --------------------- PRIVATE------------------------------
 

@@ -52,7 +52,7 @@ public class TrieNode {
     	return mostFrequentTerminal;
     }
 
-    /*
+    
     // Returns the first of possibly more than 1 possibilities
 	public TrieNode[] getAllTerminals() {
 		Vector<TrieNode> list = new Vector<TrieNode>();
@@ -60,20 +60,20 @@ public class TrieNode {
 	}
 	
 	private Vector<TrieNode> _getAllTerminals(Vector<TrieNode> initialList) {
-		Vector<TrieNode> list = initialList;
+		Vector<TrieNode> list = new Vector<TrieNode>();
 		if (!this.isWord) {
 			HashMap<String,TrieNode> children = this.getChildren();
 			String[] keys = children.keySet().toArray(new String[]{});
 			for (int i=0; i<keys.length; i++) {
 				TrieNode childNode = children.get(keys[i]);
-				Vector<TrieNode> terminals = childNode._getAllTerminals(list);
+				Vector<TrieNode> terminals = childNode._getAllTerminals(initialList);
 				list.addAll(terminals);
 			}
 		} else {
 			list.add(this);
 		}
 		return list;
-	}*/
+	}
 	
     // Returns the first of possibly more than 1 possibilities
 	private TrieNode _getMostFrequentTerminal(long max) {

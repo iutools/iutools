@@ -161,20 +161,28 @@ public class TrieNodeTest {
 				"helios",helNode.mostFrequentTerminal.getText());
 		}
 
-	/*
+	
 	@Test
-	public void test__getAllTerminals() throws Exception {
+	public void test_getAllTerminals() throws Exception {
 		StringSegmenter charSegmenter = new StringSegmenter_Char();
 		Trie charTrie = new Trie(charSegmenter);
 		charTrie.add("hello");
-		charTrie.add("hint");
+		charTrie.add("hit");
 		charTrie.add("abba");
 		charTrie.add("helios");
+		charTrie.add("helm");
 		charTrie.add("ok");
-		TrieNode helNode = charTrie.getNode("h".split(""));
-		TrieNode[] h_terminals = helNode.getAllTerminals();
-		Assert.assertEquals("The number of words starting with 'h' should be 3.",
-				3,h_terminals.length);
-		}*/
-
+		TrieNode hNode = charTrie.getNode("h".split(""));
+		TrieNode[] h_terminals = hNode.getAllTerminals();
+		Assert.assertEquals("The number of words starting with 'h' should be 4.",
+				4,h_terminals.length);
+		TrieNode helNode = charTrie.getNode("hel".split(""));
+		TrieNode[] hel_terminals = helNode.getAllTerminals();
+		Assert.assertEquals("The number of words starting with 'hel' should be 3.",
+				3,hel_terminals.length);
+		TrieNode oNode = charTrie.getNode("o".split(""));
+		TrieNode[] o_terminals = oNode.getAllTerminals();
+		Assert.assertEquals("The number of words starting with 'o' should be 1.",
+				1,o_terminals.length);
+	}
 }
