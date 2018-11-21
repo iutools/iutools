@@ -77,7 +77,7 @@ public class Exp {
 				TrieNode slashNode = root_trie.getNode(searchKeys
 						.toArray(new String[] {}));
 				if (slashNode != null) {
-					rootsForCompleteSurfaceForm = slashNode.getAllTerminals();
+//					rootsForCompleteSurfaceForm = slashNode.getAllTerminals();
 					eatenKeys = (Vector<String>) currentKeys.clone();
 					break;
 				}
@@ -105,8 +105,7 @@ public class Exp {
 							String[] keys = slashKeys
 									.toArray(new String[] {});
 							TrieNode slashNode = root_trie.getNode(keys);
-							TrieNode[] possibleRoots = slashNode
-									.getAllTerminals();
+							TrieNode[] possibleRoots = new TrieNode[]{}; //slashNode.getAllTerminals();
 							if (childrenKeys[i].equals("q")) {
 								if (currentKey.equals("r")) {
 									eatenKeys.add(currentKey);

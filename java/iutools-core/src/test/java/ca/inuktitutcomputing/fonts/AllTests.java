@@ -1,16 +1,16 @@
 package ca.inuktitutcomputing.fonts;
 
-import ca.inuktitutcomputing.unitTests.fonts.FontAinunavikTest;
-import ca.inuktitutcomputing.unitTests.fonts.FontAipainunaTest;
-import ca.inuktitutcomputing.unitTests.fonts.FontAipainunavikTest;
-import ca.inuktitutcomputing.unitTests.fonts.FontAujaq2Test;
-import ca.inuktitutcomputing.unitTests.fonts.FontAujaqsylTest;
-import ca.inuktitutcomputing.unitTests.fonts.FontNaamajutTest;
-import ca.inuktitutcomputing.unitTests.fonts.FontNunacomTest;
-import ca.inuktitutcomputing.unitTests.fonts.FontOldsylTest;
-import ca.inuktitutcomputing.unitTests.fonts.FontProsylTest;
-import ca.inuktitutcomputing.unitTests.fonts.FontTest;
-import ca.inuktitutcomputing.unitTests.fonts.FontTunngavikTest;
+import ca.inuktitutcomputing.fonts.FontAinunavikTest;
+import ca.inuktitutcomputing.fonts.FontAipainunaTest;
+import ca.inuktitutcomputing.fonts.FontAipainunavikTest;
+import ca.inuktitutcomputing.fonts.FontAujaq2Test;
+import ca.inuktitutcomputing.fonts.FontAujaqsylTest;
+import ca.inuktitutcomputing.fonts.FontNaamajutTest;
+import ca.inuktitutcomputing.fonts.FontNunacomTest;
+import ca.inuktitutcomputing.fonts.FontOldsylTest;
+import ca.inuktitutcomputing.fonts.FontProsylTest;
+import ca.inuktitutcomputing.fonts.FontTest;
+import ca.inuktitutcomputing.fonts.FontTunngavikTest;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
