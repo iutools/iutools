@@ -43,14 +43,12 @@
 			<groupId>ca.nrc</groupId>
 		    <artifactId>java-utils-core</artifactId>
 		    <version>1.0.5-SNAPSHOT</version>
-		    <scope>test</scope>
 		</dependency>
 	 
 		<dependency>
 			<groupId>ca.nrc</groupId>
 		    <artifactId>java-utils-data</artifactId>
 		    <version>1.0.5-SNAPSHOT</version>
-		    <scope>test</scope>
 		</dependency>
 	 
 		<dependency>

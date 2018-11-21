@@ -1,19 +1,17 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
         <artifactId>iutools</artifactId>
         <groupId>ca.pirurvik.iutools</groupId>
         <version>0.0.1-SNAPSHOT</version>
-    </parent>
+  </parent>
 
   <groupId>ca.pirurvik.iutools</groupId>
   <artifactId>iutools-core</artifactId>
   <name>iutools-core</name>
-  <!-- FIXME change it to the project's website -->
-  <url>http://www.example.com</url>
 
-	<build>
+  	<build>
 		<plugins>		
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -57,6 +55,7 @@
 		</plugins>
 	</build>		
 
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -69,7 +68,20 @@
 		</repository>
 	</repositories>
 
-	<dependencies>						
+	<dependencies>		
+	
+		<dependency>
+			<groupId>ca.nrc</groupId>
+		    <artifactId>java-utils-core</artifactId>
+		    <version>1.0.5-SNAPSHOT</version>
+		</dependency>
+	 
+		<dependency>
+			<groupId>ca.nrc</groupId>
+		    <artifactId>java-utils-data</artifactId>
+		    <version>1.0.5-SNAPSHOT</version>
+		</dependency>
+						
 		<dependency>
 			<groupId>net.sf.jtidy</groupId>
 			<artifactId>jtidy</artifactId>
