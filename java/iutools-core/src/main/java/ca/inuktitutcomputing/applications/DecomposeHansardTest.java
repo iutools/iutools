@@ -5,9 +5,12 @@
  */
 package ca.inuktitutcomputing.applications;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.JUnitCore;
+import org.junit.runner.Request;
+import org.junit.runner.Result;
 
 import java.io.*;
 import java.util.*;
@@ -18,11 +21,12 @@ import ca.inuktitutcomputing.data.LinguisticDataAbstract;
 import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.morph.MorphInuk;
 
+
 /**
  * @author Marta
  *
  */
-public class DecomposeHansardTest extends TestCase {
+public class DecomposeHansardTest  {
 
 	
 	String fileGoldStandard = "ressources/goldstandardHansard.txt";
@@ -61,8 +65,8 @@ public class DecomposeHansardTest extends TestCase {
 	/*
 	 * @see TestCase#setUp()
 	 */
-	protected void setUp() throws Exception {
-		super.setUp();
+	@Before
+	public void setUp() throws Exception {
 		String className = this.getClass().getSimpleName();
 		fileGoldStandard = locateFile(fileGoldStandard);
 		fileTargetSuccessfulAnalysis = locateFile(fileTargetSuccessfulAnalysis + className + ".txt");
@@ -86,6 +90,7 @@ public class DecomposeHansardTest extends TestCase {
 	 * 
 	 */
 
+	@Test
 	public void testDecomposer() throws Exception {
 //		Debogage.init();
 		LinguisticDataAbstract.init("csv");
@@ -259,7 +264,7 @@ public class DecomposeHansardTest extends TestCase {
 
 		String errorMessagesForPrint =  printErrorMessages(errorMessages);
 		//The test is red if at least one error message is produced
-		assertTrue("\nThe following error messages were produced by this analysis: \n" + errorMessagesForPrint, errorMessages.isEmpty());
+		Assert.assertTrue("\nThe following error messages were produced by this analysis: \n" + errorMessagesForPrint, errorMessages.isEmpty());
 	}
 	
 		
@@ -415,19 +420,22 @@ public class DecomposeHansardTest extends TestCase {
 	     destinationChannel.close();
 	}
 
-	public static Test suite() { 
-
-		/* Junit uses reflexion to add automatically all the methods of TestFoo 
-
-		whose name begins by "test" 
-
-		*/ 
-
-		return new TestSuite(DecomposeHansardTest.class); 
-
-    } 
-
-	public static void main(String [] args) {
-		junit.textui.TestRunner.run(suite());	}
+//	public static Test suite() { 
+//
+//		/* Junit uses reflexion to add automatically all the methods of TestFoo 
+//
+//		whose name begins by "test" 
+//
+//		*/ 
+//
+//		return new TestSuite(DecomposeHansardTest.class); 
+//
+//    } 
+//
+	public static void main(String... args) throws ClassNotFoundException {
+        Request request = Request.method(DecomposeHansardTest.class, "testDecomposer");
+        Result result = new JUnitCore().run(request);
+        System.exit(result.wasSuccessful() ? 0 : 1);
+    }
 	
 }
