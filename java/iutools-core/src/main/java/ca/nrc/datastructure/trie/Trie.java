@@ -1,5 +1,7 @@
 package ca.nrc.datastructure.trie;
 
+/* blah */
+
 import java.util.HashMap;
 import java.util.Set;
 
