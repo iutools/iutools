@@ -26,7 +26,8 @@ public class DecomposeInuktutWord
 	        	System.out.println(decs[i].toStr2());
 	        }
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.err.println("Error "+e.getClass().getName());
+			System.err.println(e.getMessage());
 		}
     }
 }
