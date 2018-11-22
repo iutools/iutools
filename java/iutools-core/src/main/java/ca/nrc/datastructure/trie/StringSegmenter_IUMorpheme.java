@@ -12,13 +12,16 @@ import ca.inuktitutcomputing.morph.Decomposition;
 
 public class StringSegmenter_IUMorpheme extends StringSegmenter {
 	
-	public String[] segment(String string) {
+	private static String name = "IUMorpheme";
+	
+	public String[] segment(String string) throws Exception {
 		LinguisticDataSingleton.getInstance("csv");
 		Decomposition [] decs = null;
 		try {
 			decs = MorphInuk.decomposeWord(string);
 		} catch (Exception e) {
 			decs = null;
+			throw e;
 		}
         if (decs != null && decs.length>0) {
         	Decomposition dec = decs[0];
@@ -26,7 +29,7 @@ public class StringSegmenter_IUMorpheme extends StringSegmenter {
         	Matcher m = p.matcher(dec.toStr2()) ;
         	Vector v = new Vector();
         	while (m.find()) {
-        		v.add(m.group(1));
+        		v.add("{"+m.group(1)+"}");
         	}
         	return (String[]) v.toArray(new String[v.size()]);
         }
