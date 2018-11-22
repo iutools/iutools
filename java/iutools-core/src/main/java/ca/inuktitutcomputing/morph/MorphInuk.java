@@ -26,6 +26,7 @@ package ca.inuktitutcomputing.morph;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.*;
 
 import ca.inuktitutcomputing.data.constraints.Condition;
@@ -35,10 +36,14 @@ import ca.inuktitutcomputing.data.constraints.ParseException;
 import ca.inuktitutcomputing.script.Orthography;
 import ca.inuktitutcomputing.script.Roman;
 import ca.inuktitutcomputing.data.*;
+import ca.inuktitutcomputing.morph.Graph.State;
 import ca.inuktitutcomputing.phonology.Dialect;
 import ca.inuktitutcomputing.utilities1.Util;
 
 public class MorphInuk {
+
+    static private long millisStart;
+    static private long millisTimeout = 10000;
 
 
     //-------------------------------------------------
@@ -164,6 +169,8 @@ public class MorphInuk {
         String simplifiedTerm = null;
         Conditions preCond = null;
 
+        startTiming();
+
         arcsByMorpheme.clear();
         
         if (!isSyllabic)
@@ -226,200 +233,225 @@ public class MorphInuk {
     // Note: le traitement des conditions spécifiques est très embryonnaire, et
     // à toutes fins pratiques, il faut le repenser totalement.
 
-    private static Vector decompose_simplified_term(String term, String termOrig,
-            String word, Vector morphParts, 
+    private static Vector<Decomposition> decompose_simplified_term(String term, String termOrig,
+            String word, Vector<AffixPartOfComposition> morphParts, 
             Graph.State states[],
             Conditions preCond,
             String transitivity, boolean isSyllabic
             ) throws Exception {
 
-        Vector completeAnalysis = new Vector();
-        Vector onesFound;
-        Vector othersFound;
+        Vector<Decomposition> completeAnalysis = new Vector<Decomposition>();
         String termICI = Orthography.orthographyICI(term, isSyllabic);
         String termOrigICI = Orthography.orthographyICI(termOrig, isSyllabic);
-
-        //-------------- RACINE -----------------
+        
         /*
+         * -------------- RACINE -----------------
 		 * Le terme à analyser peut être une racine, simple ou complexe, connue
 		 * dans la base de données comme une racine nom, verbe, adverbe, etc. On
 		 * vérifie cette possibilité, et le cas échéant, on ajoute les
 		 * décompositions résultantes à l'analyse complète.
 		 */
-        Vector rootAnalyses = analyzeRoot(termICI,termOrigICI,term,
+        Vector<Decomposition> analysesAsRoot = analyzeAsRoot(termICI,termOrigICI,term,
                 isSyllabic,word,morphParts,states, preCond, transitivity
                 );
-        completeAnalysis.addAll(rootAnalyses);
+        completeAnalysis.addAll(analysesAsRoot);
+        
+        /*
+         * -------------- MORPHÈMES -----------------
+         *  Le terme à analyser peut aussi se décomposer en morphèmes.
+         */
+        Vector<Decomposition> analysesAsSequenceOfMorphemes = analyzeAsSequenceOfMorphemes(termICI,termOrigICI,term,
+                isSyllabic,word,morphParts,states, preCond, transitivity
+                );
+        completeAnalysis.addAll(analysesAsSequenceOfMorphemes);
 
-        // Le terme à analyser peut aussi se décomposer en morphèmes.
-        //try {
-            /*
-             * =================================================================
-             * À partir du dernier caractère du terme, reculer 1 caractère à la
-             * fois jusqu'à ce qu'un affixe soit trouvé.
-             * 
-             * Lorsqu'un affixe est trouvé, on crée un point de branchement: sur
-             * cette nouvelle branche, on poursuit la décomposition avec le
-             * radical qui précède cet affixe.
-             * 
-             * Lorsque ce processus est terminé, on poursuit sur la branche
-             * courante la décomposition courante comme si un affixe n'avait pas
-             * été trouvé. Cela permet de trouver toutes les possibilités de
-             * combinaisons des lettres en morphèmes de longueurs diverses. Ex.:
-             * lauq sima vs lauqsima.
-             * 
-             * On arrête le compteur 'positionAffix' à 2 puisqu'il n'y a pas de
-             * racine qui, amputée de sa consonne finale, n'aurait plus qu'un
-             * seul caractère. (Il n'y a pas de racine de 2 caractères dont le
-             * dernier caractère est une consonne [susceptible d'être supprimée
-             * par un suffixe].)
-             */
-
-            int positionAffix = 0; // position dans le mot
-            int positionAffixStart = term.length() - 1;
-            //            if (term.charAt(term.length() - 1) == '*')
-            //                positionAffixStart--;
-
-            for (positionAffix = positionAffixStart; positionAffix > 1; positionAffix--) {
-                /*
-                 * À la position d'analyse courante dans le terme, on vérifie si
-                 * la séquence de caractères de cette position à la fin du terme
-                 * est un affixe.
-                 */
-                String affixCandidate;
-                affixCandidate = term.substring(positionAffix);
-                /*
-                 * 'affixCandidate' est donc un candidat correspondant à la
-                 * seconde partie de 'term', de la position d'analyse courante
-                 * 'positionAffix' à la fin; le radical est la première partie
-                 * de 'term', de 0 à positionAffix-1 incl.
-                 */
-                String stem = term.substring(0, positionAffix);
-                
-                /*
-                 * RECHERCHE D'AFFIXES---------------------------------------
-                 * Chercher un affixe correspondant au(x) caractère(s)
-                 * final(aux) du terme à partir de la position d'analyse
-                 * courante (note: il peut y avoir plus d'un affixesExp). On
-                 * cherche en fait les affixesExp qui ont 'affixCandidate' comme
-                 * forme. Cette recherche est effectuée dans la table de hachage
-                 * 'surfaceFormsOfAffixes'. (L'orthographe du mot à décomposer a été
-                 * simplifié; il faut donc la renormaliser pour faire la
-                 * recherche lexicale, puisque les données linguistiques sont
-                 * stockées avec l'orthographe standard.)
-                 */
-                onesFound = null;
-                othersFound = null;                
-                /*
-                 * Certaines combinaisons de caractères à la frontière de deux
-                 * morphèmes ne sont pas possibles (par exemple, un suffixe
-                 * commençant par une voyelle ne peut suivre un radical se
-                 * terminant par un 'm'). Dans ces cas-là, il n'est même pas
-                 * nécessaire de chercher des suffixes. On évitera ainsi du
-                 * temps de traitement inutile, puisque dans ces cas-là, ces
-                 * candidats suffixes seront éventuellement rejetés.
-                 */
-                /*
-                 * Après avoir été essayé, il s'est avéré que cela ne change pas
-                 * grand-chose. On enlève donc ce test.
-                 */
-                //                String finalRadInitAff = new String(new char[]{
-                //                        stem.charAt(stem.length()-1),
-                //                        affixCandidate.charAt(0)});
-                //                boolean test =
-                // Donnees.finalRadInitAffHashSet.contains(finalRadInitAff);
-                if (true) { //if (test) {
-                    onesFound = Lexicon.lookForForms(affixCandidate, isSyllabic);
-                    /*
-                     * Il est possible qu'une différence de prononciation
-                     * dialectale se produise dans un groupe de consonnes à la
-                     * frontière de deux suffixes. Cela peut se produire à la
-                     * fin du candidat et aussi du début du candidat. Pour la
-                     * fin du candidat, sa consonne finale peut être le résultat
-                     * d'une action de 'validateContextActions' pour retourner
-                     * la consonne contextuelle lors de l'analyse du morphème
-                     * précédent, action qui tient compte des dialectes; on ne
-                     * fait donc pas cette vérification. Pour le début du
-                     * candidat, on fait la même chose avec la fin du radical
-                     * qui précéde le candidat et le début du candidat. Il est
-                     * aussi possible qu'une différence dialectale se soit
-                     * produite à l'intérieur du candidat. On y cherche aussi
-                     * des équivalences. Toutes les possibilités sont retenues.
-                     * La loi de Schneider est aussi prise en considération.
-                     */
-                    Vector newCandidates = null;
-                    newCandidates = Dialect.newCandidates(stem, affixCandidate,
-                            null);
-                    if (newCandidates != null)
-                        for (int k = 0; k < newCandidates.size(); k++) {
-                            Vector tr = Lexicon
-                            .lookForForms((String) newCandidates
-                                    .elementAt(k), isSyllabic);
-                            if (othersFound == null)
-                                othersFound = new Vector();
-                            if (tr != null)
-                                othersFound.addAll(tr);
-                        }
-                }
-                /*
-                 * POINT DE BRANCHEMENT
-                 * 
-                 * On est au point de branchement. On commence une branche en
-                 * poursuivant la décomposition de 'radical' avec les
-                 * candidats-suffixes possibles.
-                 */
-                
-                /*
-                 * 1. Les candidats-suffixes à partir de la chaîne originale.
-                 */
-                // Enlever les formes qui ne sont pas acceptables à ce moment-ci
-                // (cf. arcsSuivis)
-                Vector onesFoundDim = eliminateByArcsFollowedEtc(onesFound,states,morphParts,
-                		positionAffix,preCond,transitivity);
-                if (onesFoundDim != null) {
-                    Vector anas = decomposeByAffixes(onesFoundDim, stem,
-                            affixCandidate, states, preCond, transitivity,
-                            positionAffix, morphParts, word, true);
-                    completeAnalysis.addAll(anas);
-                }
-                /*
-                 * 2. Les candidats-suffixes à partir des chaînes transformées
-                 * contenant des groupes de consonnes équivalents dans d'autres
-                 * dialectes.
-                 */
-                Vector othersFoundDim = eliminateByArcsFollowedEtc(othersFound,states,morphParts,
-                		positionAffix,preCond,transitivity);
-                if (othersFoundDim != null) {
-                    Vector anas = decomposeByAffixes(othersFoundDim,
-                            stem, affixCandidate, states, preCond,
-                            transitivity, positionAffix, morphParts, word, false);
-                    completeAnalysis.addAll(anas);
-                }
-                
-                /*
-                 * Retour de la boucle. On poursuit la décomposition de 'terme',
-                 * qu'on ait trouvé ou pas un affixe à la position actuelle.
-                 */
-            } // for
-            //=================================================================================
-            
-            
-       //     return completeAnalysis;
-            
-        //} catch (Exception e) {
-            //e.printStackTrace();
-            //System.exit(1);
-        //}
         return completeAnalysis;
     }
     
-    private static Vector eliminateByArcsFollowedEtc(Vector onesFound, Graph.State [] states,
-    		Vector morphParts, int positionAffix, Conditions preCond,
-    		String transitivity) {
+    private static Vector<Decomposition> analyzeAsSequenceOfMorphemes(
+			String termICI, String termOrigICI, String term,
+			boolean isSyllabic, String word,
+			Vector<AffixPartOfComposition> morphParts, State[] states,
+			Conditions preCond, String transitivity) throws Exception {
+
+        Vector<Decomposition> completeAnalysis = new Vector<Decomposition>();
+        Vector<?> onesFound;
+        Vector<?> othersFound;
+        /*
+         * =================================================================
+         * À partir du dernier caractère du terme, reculer 1 caractère à la
+         * fois jusqu'à ce qu'un affixe soit trouvé.
+         * 
+         * Lorsqu'un affixe est trouvé, on crée un point de branchement: sur
+         * cette nouvelle branche, on poursuit la décomposition avec le
+         * radical qui précède cet affixe.
+         * 
+         * Lorsque ce processus est terminé, on poursuit sur la branche
+         * courante la décomposition courante comme si un affixe n'avait pas
+         * été trouvé. Cela permet de trouver toutes les possibilités de
+         * combinaisons des lettres en morphèmes de longueurs diverses. Ex.:
+         * lauq sima vs lauqsima.
+         * 
+         * On arrête le compteur 'positionAffix' à 2 puisqu'il n'y a pas de
+         * racine qui, amputée de sa consonne finale, n'aurait plus qu'un
+         * seul caractère. (Il n'y a pas de racine de 2 caractères dont le
+         * dernier caractère est une consonne [susceptible d'être supprimée
+         * par un suffixe].)
+         */
+
+        int positionAffix = 0; // position dans le mot
+        int positionAffixStart = term.length() - 1;
+        //            if (term.charAt(term.length() - 1) == '*')
+        //                positionAffixStart--;
+
+        for (positionAffix = positionAffixStart; positionAffix > 1; positionAffix--) {
+            /*
+             * À la position d'analyse courante dans le terme, on vérifie si
+             * la séquence de caractères de cette position à la fin du terme
+             * est un affixe.
+             */
+            String affixCandidate;
+            affixCandidate = term.substring(positionAffix);
+            /*
+             * 'affixCandidate' est donc un candidat correspondant à la
+             * seconde partie de 'term', de la position d'analyse courante
+             * 'positionAffix' à la fin; le radical est la première partie
+             * de 'term', de 0 à positionAffix-1 incl.
+             */
+            String stem = term.substring(0, positionAffix);
+        	checkTiming("analyzeAsSequenceOfMorphemes -- position: "+positionAffix+
+        			"; affixCandidate: "+affixCandidate+"; stem: "+stem);
+            
+            /*
+             * RECHERCHE D'AFFIXES---------------------------------------
+             * Chercher un affixe correspondant au(x) caractère(s)
+             * final(aux) du terme à partir de la position d'analyse
+             * courante (note: il peut y avoir plus d'un affixesExp). On
+             * cherche en fait les affixesExp qui ont 'affixCandidate' comme
+             * forme. Cette recherche est effectuée dans la table de hachage
+             * 'surfaceFormsOfAffixes'. (L'orthographe du mot à décomposer a été
+             * simplifié; il faut donc la renormaliser pour faire la
+             * recherche lexicale, puisque les données linguistiques sont
+             * stockées avec l'orthographe standard.)
+             */
+            onesFound = null;
+            othersFound = null;                
+            /*
+             * Certaines combinaisons de caractères à la frontière de deux
+             * morphèmes ne sont pas possibles (par exemple, un suffixe
+             * commençant par une voyelle ne peut suivre un radical se
+             * terminant par un 'm'). Dans ces cas-là, il n'est même pas
+             * nécessaire de chercher des suffixes. On évitera ainsi du
+             * temps de traitement inutile, puisque dans ces cas-là, ces
+             * candidats suffixes seront éventuellement rejetés.
+             */
+            /*
+             * Après avoir été essayé, il s'est avéré que cela ne change pas
+             * grand-chose. On enlève donc ce test.
+             */
+            //                String finalRadInitAff = new String(new char[]{
+            //                        stem.charAt(stem.length()-1),
+            //                        affixCandidate.charAt(0)});
+            //                boolean test =
+            // Donnees.finalRadInitAffHashSet.contains(finalRadInitAff);
+            if (true) { //if (test) {
+                onesFound = Lexicon.lookForForms(affixCandidate, isSyllabic);
+                /*
+                 * Il est possible qu'une différence de prononciation
+                 * dialectale se produise dans un groupe de consonnes à la
+                 * frontière de deux suffixes. Cela peut se produire à la
+                 * fin du candidat et aussi du début du candidat. Pour la
+                 * fin du candidat, sa consonne finale peut être le résultat
+                 * d'une action de 'validateContextActions' pour retourner
+                 * la consonne contextuelle lors de l'analyse du morphème
+                 * précédent, action qui tient compte des dialectes; on ne
+                 * fait donc pas cette vérification. Pour le début du
+                 * candidat, on fait la même chose avec la fin du radical
+                 * qui précéde le candidat et le début du candidat. Il est
+                 * aussi possible qu'une différence dialectale se soit
+                 * produite à l'intérieur du candidat. On y cherche aussi
+                 * des équivalences. Toutes les possibilités sont retenues.
+                 * La loi de Schneider est aussi prise en considération.
+                 */
+                Vector<?> newCandidates = null;
+                newCandidates = Dialect.newCandidates(stem, affixCandidate,
+                        null);
+                if (newCandidates != null)
+                    for (int k = 0; k < newCandidates.size(); k++) {
+                        Vector tr = Lexicon
+                        .lookForForms((String) newCandidates
+                                .elementAt(k), isSyllabic);
+                        if (othersFound == null)
+                            othersFound = new Vector();
+                        if (tr != null)
+                            othersFound.addAll(tr);
+                    }
+            }
+            /*
+             * POINT DE BRANCHEMENT
+             * 
+             * On est au point de branchement. On commence une branche en
+             * poursuivant la décomposition de 'radical' avec les
+             * candidats-suffixes possibles.
+             */
+            
+            /*
+             * 1. Les candidats-suffixes à partir de la chaîne originale.
+             */
+            // Enlever les formes qui ne sont pas acceptables à ce moment-ci
+            // (cf. arcsSuivis)
+            Vector<?> onesFoundDim = eliminateByArcsFollowedEtc(onesFound,states,morphParts,
+            		positionAffix,preCond,transitivity);
+            if (onesFoundDim != null) {
+                Vector<Decomposition> anas = decomposeByAffixes(onesFoundDim, stem,
+                        affixCandidate, states, preCond, transitivity,
+                        positionAffix, morphParts, word, true);
+                completeAnalysis.addAll(anas);
+            }
+            /*
+             * 2. Les candidats-suffixes à partir des chaînes transformées
+             * contenant des groupes de consonnes équivalents dans d'autres
+             * dialectes.
+             */
+            Vector<?> othersFoundDim = eliminateByArcsFollowedEtc(othersFound,states,morphParts,
+            		positionAffix,preCond,transitivity);
+            if (othersFoundDim != null) {
+                Vector<Decomposition> anas = decomposeByAffixes(othersFoundDim,
+                        stem, affixCandidate, states, preCond,
+                        transitivity, positionAffix, morphParts, word, false);
+                completeAnalysis.addAll(anas);
+            }
+            
+            /*
+             * Retour de la boucle. On poursuit la décomposition de 'terme',
+             * qu'on ait trouvé ou pas un affixe à la position actuelle.
+             */
+        } // for
+        //=================================================================================
+        
+        return completeAnalysis;
+	}
+
+	private static void startTiming() {
+        millisStart = Calendar.getInstance().getTimeInMillis();
+        //System.out.println("millisStart: "+millisStart);
+	}
+
+    private static void checkTiming(String message) throws TimeoutException {
+        long millis = Calendar.getInstance().getTimeInMillis();
+        //System.out.println("millis: "+millis+" ("+millisStart+")");
+        if (millis > millisStart+millisTimeout) {
+        	throw new TimeoutException(message);
+        }
+	}
+
+	private static Vector<SurfaceFormOfAffix> eliminateByArcsFollowedEtc(Vector<?> onesFound, Graph.State [] states,
+    		Vector<AffixPartOfComposition> morphParts, int positionAffix, Conditions preCond,
+    		String transitivity) throws TimeoutException {
     	if (onesFound==null)
     		return null;
-    	Vector toBeRemoved = new Vector();
-    	Vector  onesFoundDimin= new Vector();
+    	Vector<Morpheme> toBeRemoved = new Vector<Morpheme>();
+    	Vector<SurfaceFormOfAffix>  onesFoundDimin= new Vector<SurfaceFormOfAffix>();
         String keyStateIDs = "0";
         for (int i=0; i<states.length; i++)
         	keyStateIDs += "+"+states[i].id;
@@ -452,15 +484,15 @@ public class MorphInuk {
      * Pour chaque affixe trouvé valide, une nouvelle branche de décomposition
      * est créée, par un appel récursif à décomposer/8.
      */
-    private static Vector decomposeByAffixes(Vector onesFound,
+    private static Vector<Decomposition> decomposeByAffixes(Vector<?> onesFound,
             String stem, String affixCandidateOrig, 
             Graph.State states[],
             Conditions preCond,
-            String transitivity, int positionAffix, Vector morphParts,
+            String transitivity, int positionAffix, Vector<AffixPartOfComposition> morphParts,
             String word,
             boolean notResultingFromDialectalPhonologicalTransformation) throws Exception {
 
-        Vector completeAnalysis = new Vector();
+        Vector<Decomposition> completeAnalysis = new Vector<Decomposition>();
 
         String keyStateIDs = "0";
         for (int i=0; i<states.length; i++)
@@ -469,9 +501,12 @@ public class MorphInuk {
         //---------------------------------------
         // Pour chaque (forme de) suffixe trouvé:
         //---------------------------------------
-        for (Enumeration e = onesFound.elements(); e.hasMoreElements();) {
-
+        for (Enumeration<?> e = onesFound.elements(); e.hasMoreElements();) {
+        	
             SurfaceFormOfAffix form = (SurfaceFormOfAffix) e.nextElement();
+
+            checkTiming("decomposeByAffixes -- form: "+form.form);
+
             // La forme renvoie à l'affixe dont elle est une forme.
             Affix affix1 = (Affix) form.getAffix();
             // Faire une copie de cet affixe.
@@ -539,12 +574,13 @@ public class MorphInuk {
                 // MorceauAffixe au vecteur des morphParts déjà trouvés.
                 //---------------------
                 for (int iro = 0; iro < stemAffs.length; iro++) {
-                    Vector newMorphparts = (Vector) morphParts.clone();
+                    checkTiming("decomposeByAffixes -- affixes respecting context and actions: "+stemAffs[iro][0]);
+					Vector<AffixPartOfComposition> newMorphparts = (Vector<AffixPartOfComposition>) morphParts.clone();
                     AffixPartOfComposition partIro = (AffixPartOfComposition) stemAffs[iro][2];
                     partIro.arcs = arcsFollowed;
                     newMorphparts.add(0, partIro); // morceau ajouté
 //                    System.out.println(">NOUVEAU MORCEAU:"+affixe.id+"@"+positionAffix+" > "+(String) stemAffs[iro][0]);
-                    Vector analyses = decompose_simplified_term((String) stemAffs[iro][0],
+                    Vector<Decomposition> analyses = decompose_simplified_term((String) stemAffs[iro][0],
                             (String) stemAffs[iro][1], word,
                             newMorphparts,
                             nextStates, 
@@ -568,13 +604,13 @@ public class MorphInuk {
             Action action1, Action action2, String stem, int posAffix,
             Affix affix, SurfaceFormOfAffix form, boolean isSyllabic,
             boolean checkPossibleDialectalChanges,
-            String affixCandidate) {
+            String affixCandidate) throws TimeoutException {
 
         int action1Type = action1.getType();
         int action2Type = action2.getType();
         
         // Initialiser le résultat de la function.
-        Vector res = new Vector();
+        Vector<Object[]> res = new Vector<Object[]>();
 
         // Caractère final du radical.
         char stemEndChar = stem.charAt(stem.length() - 1);
@@ -676,7 +712,8 @@ public class MorphInuk {
                      * new stem='inuk' because of ks <> ss.
                      */
                     if (grs != null)
-                        for (int i = 0; i < grs.size(); i++)
+                        for (int i = 0; i < grs.size(); i++) {
+                        	checkTiming("validateContextActions -- NEUTRAL, checking equivalent groups");
                             if (((String) grs.elementAt(i)).charAt(0) == context
                                     .charAt(0) &&
                                     ((String)grs.elementAt(i)).charAt(1) == formFirstChar) {
@@ -685,6 +722,7 @@ public class MorphInuk {
                                                 + context, stemOrig, partOfComp });
                                 break;
                             }
+                        }
                 }
 
                 /*
@@ -949,13 +987,15 @@ public class MorphInuk {
                             Vector grs = Dialect.equivalentGroups(stemEndChar,
                                     formFirstChar);
                             if (grs != null)
-                                for (int i = 0; i < grs.size(); i++)
+                                for (int i = 0; i < grs.size(); i++) {
+                                	checkTiming("validateContextActions -- CONDITIONALDELETION+NULLACTION, checking equivalent groups");
                                     if (((String)grs.elementAt(i)).charAt(1) == formFirstChar) {
                                         res.add(new Object[] {
                                                 stem.substring(0, stem.length() - 1)+
                                                 ((String)grs.elementAt(i)).charAt(0)+
                                                 formInCond.substring(formInCond.length()-1), stem, partOfComp }); // or 'form' ?
                                     }
+                                }
                         }
                     }
                 } else {
@@ -1017,7 +1057,8 @@ public class MorphInuk {
                     Vector grs = Dialect.equivalentGroups(stemEndChar,
                             formFirstChar);
                     if (grs != null)
-                        for (int i = 0; i < grs.size(); i++)
+                        for (int i = 0; i < grs.size(); i++) {
+                        	checkTiming("validateContextActions -- VOICING+NULLACTION, checking equivalent groups");
                             if (((String) grs.elementAt(i)).charAt(0) == voicedCorrespondingChar &&
                                     ((String)grs.elementAt(i)).charAt(1) == formFirstChar) {
                                 res.add(new Object[] {
@@ -1025,6 +1066,7 @@ public class MorphInuk {
                                                 + context, stem, partOfComp });
                                 break;
                             }
+                        }
                 }
             }
         }
@@ -1081,7 +1123,8 @@ public class MorphInuk {
                     Vector grs = Dialect.equivalentGroups(stemEndChar,
                             formFirstChar);
                     if (grs != null)
-                        for (int i = 0; i < grs.size(); i++)
+                        for (int i = 0; i < grs.size(); i++) {
+                        	checkTiming("validateContextActions -- NASALISATION, checking equivalent groups");
                             if (((String) grs.elementAt(i)).charAt(0) == nasalCorrespondingChar &&
                                     ((String)grs.elementAt(i)).charAt(1) == formFirstChar) {
                                 res.add(new Object[] {
@@ -1089,6 +1132,7 @@ public class MorphInuk {
                                                 + context, stem, partOfComp });
                                 break;
                             }
+                        }
                 }
             }
         }
@@ -1146,7 +1190,8 @@ public class MorphInuk {
                     Vector grs = Dialect.equivalentGroups(stemEndChar,
                             formFirstChar);
                     if (grs != null)
-                        for (int i = 0; i < grs.size(); i++)
+                        for (int i = 0; i < grs.size(); i++) {
+                        	checkTiming("validateContextActions -- CONDITIONAL NASALIZATION, checking equivalent groups");
                             if (((String) grs.elementAt(i)).charAt(0) == nasalCorrespondingChar &&
                                     ((String)grs.elementAt(i)).charAt(1) == formFirstChar) {
                                 try {
@@ -1161,6 +1206,7 @@ public class MorphInuk {
                                                 + context, stem, partOfComp });
                                 break;
                             }
+                        }
                 }
         }
         /*
@@ -1552,6 +1598,7 @@ public class MorphInuk {
 
         if (!affix.type.equals("tad"))
             for (int i = 0; i < res.size(); i++) {
+            	checkTiming("validateContextActions -- checking stem with 2 consonants");
                 String stemres = (String) ((Object[]) res.get(i))[0];
                 if (stemres.length() > 2
                         && Roman.typeOfLetterLat(stemres
@@ -1572,12 +1619,11 @@ public class MorphInuk {
      * 
      * Analyse d'un terme comme racine.
      */
-    private static Vector analyzeRoot(String termICI, String termOrigICI, 
+    private static Vector<Decomposition> analyzeAsRoot(String termICI, String termOrigICI, 
             String term, boolean isSyllabic,
-            String word, Vector morphParts, Graph.State states[],
+            String word, Vector<AffixPartOfComposition> morphParts, Graph.State states[],
             Conditions preCond,
-            String transitivity) {
-        
+            String transitivity) throws TimeoutException {
         /*
          * Enlever le '*' à la fin du terme, s'il s'y trouve à la suite d'une
          * tentative pour trouver des analyses au cas où la consonne finale du
@@ -1597,7 +1643,7 @@ public class MorphInuk {
          * Chercher le TERME dans les racines.
          */
         Vector lexs = null;
-        Vector newCandidates = null;
+        Vector newRootCandidates = null;
         lexs = Lexicon.lookForBase(termICI, isSyllabic);                
         /*
          * Il est possible qu'une différence de prononciation dialectale se
@@ -1605,13 +1651,14 @@ public class MorphInuk {
          * Il faut vérifier si le suffixe trouvé précédemment commence par une
          * consonne et si le candidat racine finit par une consonne et si ce
          * groupe de deux consonnes correspond à un autre groupe de consonnes.
+         * 
          * On cherche aussi des groupes de consonnes équivalents à l'intérieur
          * de la racine candidate. Toutes les possibilités sont retenues.
          */
-        newCandidates = Dialect.newRootCandidates(termICI);
-        if (newCandidates != null)
-            for (int k = 0; k < newCandidates.size(); k++) {
-                Vector tr = Lexicon.lookForBase((String) newCandidates
+        // --- temporairement annulé : newRootCandidates = Dialect.newRootCandidates(termICI); 
+        if (newRootCandidates != null)
+            for (int k = 0; k < newRootCandidates.size(); k++) {
+                Vector tr = Lexicon.lookForBase((String) newRootCandidates
                         .elementAt(k), isSyllabic);
                 if (tr != null)
                     if (lexs == null)
@@ -1666,7 +1713,7 @@ public class MorphInuk {
     
     private static Vector checkRoots(Vector lexs, String word, String termOrigICI,
             Vector morphParts, Graph.State states[], Conditions preCond,
-            String transitivity) {
+            String transitivity) throws TimeoutException {
         
         String keyStateIDs = "0";
         for (int i=0; i<states.length; i++)
@@ -1689,8 +1736,10 @@ public class MorphInuk {
         for (int ib = 0; ib < lexs.size(); ib++) {
             // Chaque élément de lexs est un ensemble Object []
             // {Integer,Base}.
-            
             Base root = (Base) lexs.elementAt(ib);
+
+            checkTiming("checkRoots -- morpheme: "+root.morpheme);
+
             typeBase = root.type.charAt(0);
             
             if (typeBase == '?') {
@@ -1778,13 +1827,15 @@ public class MorphInuk {
         
         return rootAnalyses;
     }
-    //-----------------------------------------------
+	//-----------------------------------------------
 
-    private static Graph.Arc arcToZero(Graph.Arc[] arcsFollowed) {
-        for (int i=0; i<arcsFollowed.length; i++)
+    private static Graph.Arc arcToZero(Graph.Arc[] arcsFollowed) throws TimeoutException {
+        for (int i=0; i<arcsFollowed.length; i++) {
+        	checkTiming("arcToZero -- arc: "+arcsFollowed[i].toString());
             if (arcsFollowed[i].getDestinationState() == Graph.finalState) {
                 return arcsFollowed[i];
             }
+        }
         return null;
     }
     
@@ -1835,7 +1886,7 @@ public class MorphInuk {
     private static Hashtable arcsByMorpheme = new Hashtable();
     
     private static Graph.Arc[] arcsSuivis(Morpheme morpheme, Graph.State states[],
-			String keyStateIDs) {
+			String keyStateIDs) throws TimeoutException {
 		Graph.Arc arcsFollowed[] = null;
 		String keyMorphemeStateIDs = morpheme.id + ":" + keyStateIDs;
 		Graph.Arc[] arcsFollowedByHash = (Graph.Arc[]) arcsByMorpheme
@@ -1844,6 +1895,7 @@ public class MorphInuk {
 			Vector arcs = null;
 			Vector arcsFollowedV = new Vector();
 			for (int j = 0; j < states.length; j++) {
+				checkTiming("arcsSuivis --- morpheme: "+morpheme.morpheme);
 				arcs = states[j].verify(morpheme);
 				arcsFollowedV.addAll(arcs);
 			}
@@ -1875,7 +1927,7 @@ public class MorphInuk {
     private static Object[][] agreeWithContextAndActions(String affixCandidateOrig,
             Affix affix, String stem, 
             int positionAffixInWord, SurfaceFormOfAffix form,
-            boolean notResultingFromDialectalPhonologicalTransformation) {
+            boolean notResultingFromDialectalPhonologicalTransformation) throws TimeoutException {
         Object[][] stemAffs = null;
         boolean checkStartOfConsonantsGroup = true;
         /*
