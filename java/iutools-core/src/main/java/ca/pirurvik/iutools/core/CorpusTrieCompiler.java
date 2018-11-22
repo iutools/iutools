@@ -3,7 +3,9 @@ package ca.pirurvik.iutools.core;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -12,34 +14,48 @@ import java.util.regex.Pattern;
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.Trie;
+import ca.nrc.datastructure.trie.TrieException;
+import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.json.PrettyPrinter;
 
 
 /**
  * This creates a Trie of the (Inuktitut) words in the Nunavut Hansard
  *
- */
+ */ 
 public class CorpusTrieCompiler 
 {
 	private static Trie corpusTrie;
 	private static HashMap<String,Long> index = new HashMap<String, Long>();
 	private static long maxFreq = 0;
 	private static String entryWithMaxFreq;
+	private static PrintWriter outputFile;
+	private static FileWriter trieFile;
 	
 	/*
 	 * @param args[0] name of directory with documents (assumed in ca.pirurvik.data)
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		String dirName = args[0];
+		System.out.println("\n--- Compiling trie for documents in "+dirName);
+		File dir = new File(dirName);
+		String outputFileName = dir.getName()+"-"+"trie_compilation.log";
+		outputFile = new PrintWriter(new FileWriter(outputFileName));
+		String trieDumpFileName = dir.getName()+"-"+"trie_dump.txt";
+		trieFile = new FileWriter(trieDumpFileName);
 		StringSegmenter morphemeSegmenter = new StringSegmenter_IUMorpheme();
 		corpusTrie = new Trie(morphemeSegmenter);
 		try {
 			File corpusDirectory = new File(dirName);
 			process(corpusDirectory);
-			printIndex();
-			printTrie(corpusTrie);
+			String json = corpusTrie.toJSON();
+			trieFile.write(json);
+			trieFile.flush();
+			outputFile.close();
+			trieFile.close();
 		} catch (Exception e1) {
 			e1.printStackTrace();
+			outputFile.close();
 			System.exit(1);
 		}
 	}
@@ -61,8 +77,8 @@ public class CorpusTrieCompiler
 	    System.out.println("Nb. of words in the trie: "+corpusTrie.getSize());
 	}
 
-	private static void process(File hansardDirectory) {
-    	File [] files = hansardDirectory.listFiles();
+	private static void process(File corpusDirectory) {
+    	File [] files = corpusDirectory.listFiles();
     	for (int i=0; i<files.length; i++) {
     		try {
 				FileReader fr = new FileReader(files[i].getAbsolutePath());
@@ -77,36 +93,34 @@ public class CorpusTrieCompiler
 	}
 
 
-	/*private static BufferedReader openFile(String pirurvikDataDir,String fileName) throws Exception {
-        ClassLoader classLoader = HansardTrie.class.getClassLoader();
-        String packagePath = "ca/pirurvik";
-        String dataPath = packagePath+"/"+pirurvikDataDir;
-        String fullPath = dataPath+"/"+fileName;
-        String filePathFull = null;
-    	URL res = classLoader.getResource(fullPath);
-    	if (res==null)
-    		throw new Exception("File "+fileName+" cannot be found in "+dataPath+".");
-    	filePathFull = res.getPath();
-        FileReader fr;
-        BufferedReader br = null;
-		fr = new FileReader(filePathFull);
-		br = new BufferedReader(fr);
-    	return br;
-    }*/
-    
 	private static void processFile(BufferedReader br) {
 		try {
 			String line;
-			int limit = 20;
+			int wordCounter = 0;
+			int limit = 100; //-1; //20;
 			while ((line = br.readLine()) != null && limit--!=0) {
 				//System.out.println(line);
 				String[] words = extractWordsFromLine(line);
 				for (int n = 0; n < words.length; n++) {
 					if (isInuktitutWord(words[n])) {
-						System.out.print(words[n]+"...");
-						addToIndex(words[n]);
-						corpusTrie.add(words[n]);
-						System.out.print("\n");
+						System.out.print(++wordCounter+". "+words[n]+"...");
+						outputFile.print(wordCounter+". "+words[n]+"...");
+						//addToIndex(words[n]);
+						try {
+							TrieNode result = corpusTrie.add(words[n]);
+							if (result!=null) {
+								System.out.println(result.getText()); 
+								outputFile.println(result.getText());
+							} else {
+								System.out.println(" XXX");
+								outputFile.println(" X");
+							}
+							
+						} catch (TrieException e) {
+							System.out.println("Problem adding word: "+words[n]+" ("+e.getMessage()+").");
+							outputFile.println("Problem adding word: "+words[n]+" ("+e.getMessage()+").");
+						}
+						outputFile.flush();
 					}
 				}
 			}
