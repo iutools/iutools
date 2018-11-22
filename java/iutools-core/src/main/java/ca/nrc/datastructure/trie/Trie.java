@@ -5,20 +5,39 @@ package ca.nrc.datastructure.trie;
 import java.util.HashMap;
 import java.util.Set;
 
+import com.google.gson.Gson;
+
 
 public class Trie {
 
+    private long size;
     private StringSegmenter segmenter;
     private TrieNode root;
-    private long size;
     
     
     public Trie(StringSegmenter _segmenter) {
     	this.segmenter = _segmenter;
-        root = new TrieNode();
+    	root = new TrieNode();
+	}
+    
+    public Trie(StringSegmenter _segmenter, TrieNode _root, long _size) {
+    	this.segmenter = _segmenter;
+    	this.root = _root;
+    	this.size = _size;
+	}
+    
+    public String toJSON() {
+		Gson gson = new Gson();
+		String json = gson.toJson(trieWithoutSegmenter());
+		return json;
     }
     
-    public TrieNode getRoot() {
+    private TrieWithSegmenterClassname trieWithoutSegmenter() {
+    	TrieWithSegmenterClassname trieWithoutSegmenter = new TrieWithSegmenterClassname(segmenter.getClass().getName(),root,size);
+		return trieWithoutSegmenter;
+	}
+
+	public TrieNode getRoot() {
     	return this.root;
     }
     
@@ -26,12 +45,18 @@ public class Trie {
     	return size;
     }
 
-	public boolean add(String string) {
+	public TrieNode add(String string) throws TrieException {
         TrieNode trieNode = root;
         if (trieNode == null || string == null)
-            return false;
+            return null;
 
-        String[] segments = this.segmenter.segment(string);
+        
+        String[] segments = null;
+        try {
+        	segments = this.segmenter.segment(string);
+        } catch (Exception exc){
+        	throw new TrieException("("+exc.getClass().getName()+") "+"Could not decompose word into its parts: "+string, exc);
+        }
         int counter = 0;
         while (counter < segments.length) {
             Set<String> childs = trieNode.getChildren().keySet();
@@ -40,10 +65,11 @@ public class Trie {
                 insertNode(trieNode, segments[counter]);
                 // if this is the last char, indicate this is a word
                 if (counter == segments.length - 1) {
-                    getChild(trieNode, segments[counter]).setIsWord(true);
-                    getChild(trieNode, segments[counter]).incrementFrequency();
+                	TrieNode terminalNode = getChild(trieNode, segments[counter]);
+                    terminalNode.setIsWord(true);
+                    terminalNode.incrementFrequency();
                     size++; // for each new word
-                    return true;
+                    return terminalNode;
                 }
             }
             // current char is in the keys, or has been added and is not the last char
@@ -52,11 +78,11 @@ public class Trie {
             if (trieNode.getText().equals(string) && !trieNode.isWord()) {
                 trieNode.setIsWord(true);
                 size++; // for each new word
-                return true;
+                return trieNode;
             }
             counter++;
         }
-        return false;
+        return null;
 		
 	}
 
