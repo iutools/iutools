@@ -118,7 +118,24 @@ public class TrieTest {
 	}
 
 	@Test
-	public void test__add_get__IUMorpheme() {
+	public void test__add_get__IUMorpheme_same_word_twice() {
+		StringSegmenter iuSegmenter = new StringSegmenter_IUMorpheme();
+		Trie iumorphemeTrie = new Trie(iuSegmenter);
+		try {
+			iumorphemeTrie.add("takujuq");
+		} catch (TrieException e) {
+			assertFalse("An error occurred while adding an element to the trie.",true);
+		}
+		try {
+			TrieNode secondTakujuqNode = iumorphemeTrie.add("takujuq");
+			assertTrue("The node added for the second 'takujuq' should not be null.",secondTakujuqNode!=null);
+		} catch (TrieException e) {
+			assertFalse("An error occurred while adding an element to the trie.",true);
+		}
+	}
+	
+	@Test
+	public void test__add_get__IUMorpheme_one_word() {
 		StringSegmenter iuSegmenter = new StringSegmenter_IUMorpheme();
 		Trie iumorphemeTrie = new Trie(iuSegmenter);
 		try {
@@ -128,10 +145,6 @@ public class TrieTest {
 		}
 		HashMap children = iumorphemeTrie.getRoot().getChildren();
 		String[] childrenKeys = (String[]) children.keySet().toArray(new String[]{});
-		for (int i=0; i<childrenKeys.length; i++) {
-			TrieNode node = (TrieNode) children.get(childrenKeys[i]);
-			System.err.println(node.toString());
-		}
 		TrieNode node = iumorphemeTrie.getNode(new String[]{"{taku/1v}"});
 		assertTrue("The node for 'taku/1n' should not be null.",node!=null);
 		assertEquals("The key for this node is not correct.","{taku/1v}",node.getText());

@@ -20,7 +20,6 @@ public class StringSegmenter_IUMorpheme extends StringSegmenter {
 		try {
 			decs = MorphInuk.decomposeWord(string);
 		} catch (Exception e) {
-			decs = null;
 			throw e;
 		}
         if (decs != null && decs.length>0) {

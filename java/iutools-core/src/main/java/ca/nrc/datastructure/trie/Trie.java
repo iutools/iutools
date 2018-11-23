@@ -57,30 +57,32 @@ public class Trie {
         } catch (Exception exc){
         	throw new TrieException("("+exc.getClass().getName()+") "+"Could not decompose word into its parts: "+string, exc);
         }
-        int counter = 0;
-        while (counter < segments.length) {
+        int iseg = 0;
+        while (iseg < segments.length) {
             Set<String> childs = trieNode.getChildren().keySet();
             // if the current char is not in the keys, add it
-            if (!childs.contains(segments[counter])) {
-                insertNode(trieNode, segments[counter]);
+            if (!childs.contains(segments[iseg])) {
+                insertNode(trieNode, segments[iseg]);
                 // if this is the last char, indicate this is a word
-                if (counter == segments.length - 1) {
-                	TrieNode terminalNode = getChild(trieNode, segments[counter]);
+                if (iseg == segments.length - 1) {
+                	TrieNode terminalNode = getChild(trieNode, segments[iseg]);
                     terminalNode.setIsWord(true);
                     terminalNode.incrementFrequency();
                     size++; // for each new word
                     return terminalNode;
                 }
             }
-            // current char is in the keys, or has been added and is not the last char
-            trieNode = getChild(trieNode, segments[counter]);
+            // current char is in the keys, or it was not and has just been added and is not the last char
+            trieNode = getChild(trieNode, segments[iseg]);
             trieNode.incrementFrequency();
-            if (trieNode.getText().equals(string) && !trieNode.isWord()) {
-                trieNode.setIsWord(true);
+            
+            if (iseg==segments.length-1) {
+            	if (!trieNode.isWord())
+            		trieNode.setIsWord(true);
                 size++; // for each new word
                 return trieNode;
             }
-            counter++;
+            iseg++;
         }
         return null;
 		
