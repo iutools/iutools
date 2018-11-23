@@ -38,12 +38,13 @@ import ca.inuktitutcomputing.script.Roman;
 import ca.inuktitutcomputing.data.*;
 import ca.inuktitutcomputing.morph.Graph.State;
 import ca.inuktitutcomputing.phonology.Dialect;
+import ca.inuktitutcomputing.utilities.StopWatch;
 import ca.inuktitutcomputing.utilities1.Util;
 
 public class MorphInuk {
 
-    static private long millisStart;
-    static private long millisTimeout = 10000;
+    static public long millisTimeout = 10000;
+    static private StopWatch stpw;
 
 
     //-------------------------------------------------
@@ -169,7 +170,8 @@ public class MorphInuk {
         String simplifiedTerm = null;
         Conditions preCond = null;
 
-        startTiming();
+        stpw = new StopWatch(millisTimeout);
+        stpw.start();
 
         arcsByMorpheme.clear();
         
@@ -319,7 +321,7 @@ public class MorphInuk {
              * de 'term', de 0 à positionAffix-1 incl.
              */
             String stem = term.substring(0, positionAffix);
-        	checkTiming("analyzeAsSequenceOfMorphemes -- position: "+positionAffix+
+            stpw.check("analyzeAsSequenceOfMorphemes -- position: "+positionAffix+
         			"; affixCandidate: "+affixCandidate+"; stem: "+stem);
             
             /*
@@ -432,19 +434,6 @@ public class MorphInuk {
         return completeAnalysis;
 	}
 
-	private static void startTiming() {
-        millisStart = Calendar.getInstance().getTimeInMillis();
-        //System.out.println("millisStart: "+millisStart);
-	}
-
-    private static void checkTiming(String message) throws TimeoutException {
-        long millis = Calendar.getInstance().getTimeInMillis();
-        //System.out.println("millis: "+millis+" ("+millisStart+")");
-        if (millis > millisStart+millisTimeout) {
-        	throw new TimeoutException(message);
-        }
-	}
-
 	private static Vector<SurfaceFormOfAffix> eliminateByArcsFollowedEtc(Vector<?> onesFound, Graph.State [] states,
     		Vector<AffixPartOfComposition> morphParts, int positionAffix, Conditions preCond,
     		String transitivity) throws TimeoutException {
@@ -505,7 +494,7 @@ public class MorphInuk {
         	
             SurfaceFormOfAffix form = (SurfaceFormOfAffix) e.nextElement();
 
-            checkTiming("decomposeByAffixes -- form: "+form.form);
+            stpw.check("decomposeByAffixes -- form: "+form.form);
 
             // La forme renvoie à l'affixe dont elle est une forme.
             Affix affix1 = (Affix) form.getAffix();
@@ -574,7 +563,7 @@ public class MorphInuk {
                 // MorceauAffixe au vecteur des morphParts déjà trouvés.
                 //---------------------
                 for (int iro = 0; iro < stemAffs.length; iro++) {
-                    checkTiming("decomposeByAffixes -- affixes respecting context and actions: "+stemAffs[iro][0]);
+                    stpw.check("decomposeByAffixes -- affixes respecting context and actions: "+stemAffs[iro][0]);
 					Vector<AffixPartOfComposition> newMorphparts = (Vector<AffixPartOfComposition>) morphParts.clone();
                     AffixPartOfComposition partIro = (AffixPartOfComposition) stemAffs[iro][2];
                     partIro.arcs = arcsFollowed;
@@ -713,7 +702,7 @@ public class MorphInuk {
                      */
                     if (grs != null)
                         for (int i = 0; i < grs.size(); i++) {
-                        	checkTiming("validateContextActions -- NEUTRAL, checking equivalent groups");
+                        	stpw.check("validateContextActions -- NEUTRAL, checking equivalent groups");
                             if (((String) grs.elementAt(i)).charAt(0) == context
                                     .charAt(0) &&
                                     ((String)grs.elementAt(i)).charAt(1) == formFirstChar) {
@@ -988,7 +977,7 @@ public class MorphInuk {
                                     formFirstChar);
                             if (grs != null)
                                 for (int i = 0; i < grs.size(); i++) {
-                                	checkTiming("validateContextActions -- CONDITIONALDELETION+NULLACTION, checking equivalent groups");
+                                	stpw.check("validateContextActions -- CONDITIONALDELETION+NULLACTION, checking equivalent groups");
                                     if (((String)grs.elementAt(i)).charAt(1) == formFirstChar) {
                                         res.add(new Object[] {
                                                 stem.substring(0, stem.length() - 1)+
@@ -1058,7 +1047,7 @@ public class MorphInuk {
                             formFirstChar);
                     if (grs != null)
                         for (int i = 0; i < grs.size(); i++) {
-                        	checkTiming("validateContextActions -- VOICING+NULLACTION, checking equivalent groups");
+                        	stpw.check("validateContextActions -- VOICING+NULLACTION, checking equivalent groups");
                             if (((String) grs.elementAt(i)).charAt(0) == voicedCorrespondingChar &&
                                     ((String)grs.elementAt(i)).charAt(1) == formFirstChar) {
                                 res.add(new Object[] {
@@ -1124,7 +1113,7 @@ public class MorphInuk {
                             formFirstChar);
                     if (grs != null)
                         for (int i = 0; i < grs.size(); i++) {
-                        	checkTiming("validateContextActions -- NASALISATION, checking equivalent groups");
+                        	stpw.check("validateContextActions -- NASALISATION, checking equivalent groups");
                             if (((String) grs.elementAt(i)).charAt(0) == nasalCorrespondingChar &&
                                     ((String)grs.elementAt(i)).charAt(1) == formFirstChar) {
                                 res.add(new Object[] {
@@ -1191,7 +1180,7 @@ public class MorphInuk {
                             formFirstChar);
                     if (grs != null)
                         for (int i = 0; i < grs.size(); i++) {
-                        	checkTiming("validateContextActions -- CONDITIONAL NASALIZATION, checking equivalent groups");
+                        	stpw.check("validateContextActions -- CONDITIONAL NASALIZATION, checking equivalent groups");
                             if (((String) grs.elementAt(i)).charAt(0) == nasalCorrespondingChar &&
                                     ((String)grs.elementAt(i)).charAt(1) == formFirstChar) {
                                 try {
@@ -1598,7 +1587,7 @@ public class MorphInuk {
 
         if (!affix.type.equals("tad"))
             for (int i = 0; i < res.size(); i++) {
-            	checkTiming("validateContextActions -- checking stem with 2 consonants");
+            	stpw.check("validateContextActions -- checking stem with 2 consonants");
                 String stemres = (String) ((Object[]) res.get(i))[0];
                 if (stemres.length() > 2
                         && Roman.typeOfLetterLat(stemres
@@ -1655,7 +1644,8 @@ public class MorphInuk {
          * On cherche aussi des groupes de consonnes équivalents à l'intérieur
          * de la racine candidate. Toutes les possibilités sont retenues.
          */
-        // --- temporairement annulé : newRootCandidates = Dialect.newRootCandidates(termICI); 
+        Dialect.setStopWatch(stpw);
+        newRootCandidates = Dialect.newRootCandidates(termICI); 
         if (newRootCandidates != null)
             for (int k = 0; k < newRootCandidates.size(); k++) {
                 Vector tr = Lexicon.lookForBase((String) newRootCandidates
@@ -1738,7 +1728,7 @@ public class MorphInuk {
             // {Integer,Base}.
             Base root = (Base) lexs.elementAt(ib);
 
-            checkTiming("checkRoots -- morpheme: "+root.morpheme);
+            stpw.check("checkRoots -- morpheme: "+root.morpheme);
 
             typeBase = root.type.charAt(0);
             
@@ -1831,7 +1821,7 @@ public class MorphInuk {
 
     private static Graph.Arc arcToZero(Graph.Arc[] arcsFollowed) throws TimeoutException {
         for (int i=0; i<arcsFollowed.length; i++) {
-        	checkTiming("arcToZero -- arc: "+arcsFollowed[i].toString());
+        	stpw.check("arcToZero -- arc: "+arcsFollowed[i].toString());
             if (arcsFollowed[i].getDestinationState() == Graph.finalState) {
                 return arcsFollowed[i];
             }
@@ -1895,7 +1885,7 @@ public class MorphInuk {
 			Vector arcs = null;
 			Vector arcsFollowedV = new Vector();
 			for (int j = 0; j < states.length; j++) {
-				checkTiming("arcsSuivis --- morpheme: "+morpheme.morpheme);
+				stpw.check("arcsSuivis --- morpheme: "+morpheme.morpheme);
 				arcs = states[j].verify(morpheme);
 				arcsFollowedV.addAll(arcs);
 			}

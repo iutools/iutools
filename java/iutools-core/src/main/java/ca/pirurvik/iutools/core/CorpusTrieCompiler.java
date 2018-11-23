@@ -97,7 +97,7 @@ public class CorpusTrieCompiler
 		try {
 			String line;
 			int wordCounter = 0;
-			int limit = 100; //-1; //20;
+			int limit = -1; //20;
 			while ((line = br.readLine()) != null && limit--!=0) {
 				//System.out.println(line);
 				String[] words = extractWordsFromLine(line);

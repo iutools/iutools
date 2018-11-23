@@ -9,14 +9,18 @@ package ca.inuktitutcomputing.phonology;
 
 import java.util.ArrayList;
 import java.util.Vector;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ca.inuktitutcomputing.data.LinguisticDataAbstract;
 import ca.inuktitutcomputing.script.Orthography;
 import ca.inuktitutcomputing.script.Roman;
+import ca.inuktitutcomputing.utilities.StopWatch;
 
 public class Dialect {
+	
+	private static StopWatch stpw;
 
     /*
      * Il est � noter que les seuls cas o� la seconde consonne du groupe change
@@ -79,11 +83,13 @@ public class Dialect {
      * @param l1 char
      * @param l2 char 
      * @return 
+     * @throws TimeoutException 
      */
-    public static Vector<String> equivalentGroups(char l1, char l2) {
+    public static Vector<String> equivalentGroups(char l1, char l2) throws TimeoutException {
         String group = new String(new char[] { l1, l2 });
         Vector<String> terms = new Vector<String>();
         for (int i = 0; i < groups.length; i++) {
+        	stpw.check("Dialect.equivalentGroups -- i: "+i);
             if (groups[i][0].equals(group)) {
                 terms.add(groups[i][1]);
             }
@@ -107,7 +113,7 @@ public class Dialect {
      * 
      * The results of each check are joined.
      */
-    public static Vector<String> newCandidates(String stem, String candidateMorpheme, String followingMorpheme) {
+    public static Vector<String> newCandidates(String stem, String candidateMorpheme, String followingMorpheme) throws TimeoutException {
         Vector<String> cands = new Vector<String>(); // to hold the new candidates
         ArrayList<Object[]> candsAndChanges = new ArrayList<Object[]>();
         
@@ -158,7 +164,7 @@ public class Dialect {
         candsAndChanges2.addAll(candsAndChanges);
         for (int m = 0; m < cands2.size(); m++) {
             String candStr = cands2.elementAt(m);
-            Vector correspondingTerms = correspondingTerms(candStr);
+            Vector correspondingTerms = correspondingTermsEquivalentGroups(candStr);
             ArrayList<Object[]> correspTermsAndChanges =
                 correspondingTermsEquivalentGroups(candStr,0);
             if (correspondingTerms != null) {
@@ -199,59 +205,62 @@ public class Dialect {
         Vector<String> schCands = schneiderCandidates(stem, candidateMorpheme);
         for (int i=0; i<cands.size(); i++) {
             schCands.addAll(schneiderCandidates(stem,cands.elementAt(i)));
-            while(schCands.removeElement(cands.elementAt(i)));
+            //while(schCands.removeElement(cands.elementAt(i)));
+            schCands.removeElement(cands.elementAt(i));
         }
         cands.addAll(schCands);
         if (cands.size() == 0)
             return null;
         else
-            while (cands.removeElement(candidateMorpheme))
-                ;
+            //while (cands.removeElement(candidateMorpheme));
+        	cands.removeElement(candidateMorpheme);
         
         return cands;
     }
     
-	public static Vector<String> newRootCandidates(String rootICI) {
+	public static Vector<String> newRootCandidates(String rootICI) throws TimeoutException {
 		Vector<String> cands = new Vector<String>(); // to hold the new candidates
 
 		/*
 		 * Check for internal equivalent clusters in the root and add the
 		 * corresponding terms to the candidates.
 		 */
-		Vector correspondingTerms = correspondingTerms(rootICI);
+		Vector correspondingTerms = correspondingTermsEquivalentGroups(rootICI);
 		if (correspondingTerms != null)
 			for (int n = 0; n < correspondingTerms.size(); n++) {
 				String candN = Orthography
 						.orthographyICILat((String) correspondingTerms
 								.elementAt(n));
+				stpw.check("Dialect.newRootCandidates -- corresponding term "+n+" ("+candN+")");
 				if (!cands.contains(candN))
 					cands.add(candN);
 			}
 		if (cands.size() == 0)
 			return null;
 		else
-			while (cands.removeElement(rootICI))
-				;
+			//while (cands.removeElement(rootICI));
+			cands.removeElement(rootICI);
 
 		// Schneider's Law
 		Vector<String> schCands = schneiderCandidates(null, rootICI);
 		for (int i = 0; i < cands.size(); i++) {
+			stpw.check("Dialect.newRootCandidates -- cands "+i);
 			schCands.addAll(schneiderCandidates(null,
 					cands.elementAt(i)));
-			while (schCands.removeElement(cands.elementAt(i)))
-				;
+			//while (schCands.removeElement(cands.elementAt(i)));
+			schCands.removeElement(cands.elementAt(i));
 		}
 		cands.addAll(schCands);
 		if (cands.size() == 0)
 			return null;
 		else
-			while (cands.removeElement(rootICI))
-				;
+			//while (cands.removeElement(rootICI));
+			cands.removeElement(rootICI);
 
 		return cands;
 	}
     
-    static public Object[] schneiderStateAtEnd(String stem) {
+    static public Object[] schneiderStateAtEnd(String stem) throws TimeoutException {
         Vector cands = null;
         boolean doubleConsonants = false;
         int vcState;
@@ -265,7 +274,8 @@ public class Dialect {
         }
         
         // Check whether the stem's last group of consonants is single or double
-        for (int i=stem.length()-1; i > 0; i--)
+        for (int i=stem.length()-1; i > 0; i--) {
+			stpw.check("Dialect.schneiderStateAtEnd -- i: "+i+" in stem '"+stem+"'");
             if (Roman.isConsonant(stem.charAt(i))) {
                 if (Roman.isConsonant(stem.charAt(i-1))) 
                     doubleConsonants = true;
@@ -273,6 +283,7 @@ public class Dialect {
                     doubleConsonants = false;
                 break;
             }
+        }
         // Set the vowel/consonant state at the end of the stem
         if (Roman.isConsonant(stem.charAt(stem.length()-1)))
             vcState = Roman.C;
@@ -295,15 +306,11 @@ public class Dialect {
      * 'terme' est un morph�me inuktitut en caract�res latins
      * dans l'orthographe simplifi�e.
      */
-    private static Vector<String> correspondingTerms(String term) {
-        Vector<String> termsGC = correspondingTermsEquivalentGroups(term);
-        return termsGC;
-    }
-
-    public static Vector<String> correspondingTermsEquivalentGroups(String term) {
+    public static Vector<String> correspondingTermsEquivalentGroups(String term) throws TimeoutException {
         Vector<String> terms = new Vector<String>();
         int i;
         for (i = 0; i < term.length() - 1; i++) {
+        	stpw.check("Dialect.correspondingTermsEquivalentGroups -- term: "+term+"; i: "+i);
             Vector<String> greqs = equivalentGroups(term.charAt(i), term
                     .charAt(i + 1));
             char l3;
@@ -343,7 +350,7 @@ public class Dialect {
     }
 
 
-    public static ArrayList<Object[]> correspondingTermsEquivalentGroups(String term, int pos) {
+    public static ArrayList<Object[]> correspondingTermsEquivalentGroups(String term, int pos) throws TimeoutException {
         ArrayList<Object[]> termsAndAlterations = new ArrayList<Object[]>();
         int i;
         for (i = pos; i < term.length() - 1; i++) {
@@ -435,11 +442,11 @@ public class Dialect {
      * is deleted. This method returns a number of possible words corresponding
      * to the 'candidate' word assuming that Schneide's law has been applied to it.
      */
-    public static Vector<String> schneiderCandidates(String stem, String candidate) {
+    public static Vector<String> schneiderCandidates(String stem, String candidate) throws TimeoutException {
     	return schneiderCandidates(stem,candidate,'@');
     }
     
-    private static Vector<String> schneiderCandidates(String stem, String candidate, char mark) {
+    private static Vector<String> schneiderCandidates(String stem, String candidate, char mark) throws TimeoutException {
     	String markedCandidate = schneiderCandidatesToString(stem,candidate,mark);
         Vector<String> cands = explode(markedCandidate);
 //        for (int i=0; i<cands.size(); i++)
@@ -448,7 +455,7 @@ public class Dialect {
         return cands;
     }
     
-    public static String schneiderCandidatesToString(String stem, String candidate, char mark) {
+    public static String schneiderCandidatesToString(String stem, String candidate, char mark) throws TimeoutException {
 //      String candSimp = Orthography.simplifiedOrthographyLat(candidate);
         String candSimp = candidate;
         boolean doubleConsonants = false;
@@ -521,4 +528,8 @@ public class Dialect {
             a.setElementAt(deb+a.elementAt(i),i);
         return a;
     }
+
+	public static void setStopWatch(StopWatch _stpw) {
+		stpw = _stpw;
+	}
 }
