@@ -15,6 +15,10 @@ public class StringSegmenter_IUMorpheme extends StringSegmenter {
 	private static String name = "IUMorpheme";
 	
 	public String[] segment(String string) throws Exception {
+		return segment(string,false);
+	}
+
+	public String[] segment(String string, boolean fullAnalysis) throws Exception {
 		LinguisticDataSingleton.getInstance("csv");
 		Decomposition [] decs = null;
 		try {
@@ -24,11 +28,15 @@ public class StringSegmenter_IUMorpheme extends StringSegmenter {
 		}
         if (decs != null && decs.length>0) {
         	Decomposition dec = decs[0];
-        	Pattern p = Pattern.compile("\\{[^:]+\\:(.+?)\\}") ;      
+        	Pattern p = Pattern.compile("(\\{[^:]+\\:(.+?)\\})") ;      
         	Matcher m = p.matcher(dec.toStr2()) ;
         	Vector v = new Vector();
         	while (m.find()) {
-        		v.add("{"+m.group(1)+"}");
+        		if (fullAnalysis) {
+        			v.add(m.group(1));
+        		} else {
+        			v.add("{"+m.group(2)+"}");
+        		}
         	}
         	return (String[]) v.toArray(new String[v.size()]);
         }
