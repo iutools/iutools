@@ -6,16 +6,25 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.commons.io.IOUtils;
+
+import com.google.gson.Gson;
 
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
+import ca.nrc.datastructure.trie.TrieWithSegmenterClassname;
+import ca.nrc.datastructure.trie.Trie_IUMorpheme;
+import ca.nrc.datastructure.trie.Trie_IUMorphemeWithSegmenterClassname;
 import ca.nrc.json.PrettyPrinter;
 
 
@@ -29,8 +38,15 @@ public class CorpusTrieCompiler
 	private static HashMap<String,Long> index = new HashMap<String, Long>();
 	private static long maxFreq = 0;
 	private static String entryWithMaxFreq;
-	private static PrintWriter outputFile;
-	private static FileWriter trieFile;
+	public static String outputFilePath;
+	public static File outputFile;
+	private static PrintWriter outputPrinter;
+	public static String trieFilePath;
+	public static File trieFile;
+	
+	private static String fileBeingProcessed;
+	public static int saveFrequency = 1000;
+	private static long savedWordCounter;
 	
 	/*
 	 * @param args[0] name of directory with documents (assumed in ca.pirurvik.data)
@@ -39,27 +55,52 @@ public class CorpusTrieCompiler
 		String dirName = args[0];
 		System.out.println("\n--- Compiling trie for documents in "+dirName);
 		File dir = new File(dirName);
-		String outputFileName = dir.getName()+"-"+"trie_compilation.log";
-		outputFile = new PrintWriter(new FileWriter(outputFileName));
-		String trieDumpFileName = dir.getName()+"-"+"trie_dump.txt";
-		trieFile = new FileWriter(trieDumpFileName);
-		StringSegmenter morphemeSegmenter = new StringSegmenter_IUMorpheme();
-		corpusTrie = new Trie(morphemeSegmenter);
+		outputFilePath = dir.getName()+"-"+"trie_compilation.log";
+		outputFile = new File(outputFilePath);
+		outputPrinter = new PrintWriter(new FileWriter(outputFilePath));
+		trieFilePath = dir.getName()+"-"+"trie_dump.txt";
+		trieFile = new File(trieFilePath);
+		//StringSegmenter morphemeSegmenter = new StringSegmenter_IUMorpheme();
+		//corpusTrie = new Trie(morphemeSegmenter);
+		corpusTrie = new Trie_IUMorpheme();
 		try {
 			File corpusDirectory = new File(dirName);
 			process(corpusDirectory);
-			String json = corpusTrie.toJSON();
-			trieFile.write(json);
-			trieFile.flush();
-			outputFile.close();
-			trieFile.close();
+			outputPrinter.flush();
+			outputPrinter.close();
+			writeJSON();
 		} catch (Exception e1) {
 			e1.printStackTrace();
-			outputFile.close();
+			outputPrinter.close();
 			System.exit(1);
 		}
 	}
-    
+	
+	private static void writeJSON() {
+		try {
+			FileWriter trieFile = new FileWriter(trieFilePath);
+			String json = corpusTrie.toJSON();
+			trieFile.write(json);
+			trieFile.flush();
+			trieFile.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public static Trie readTrieFromJSON() throws Exception {
+		Gson gson = new Gson();
+		String content = new String(Files.readAllBytes(Paths.get(trieFile.getAbsolutePath())));
+		BufferedReader br = new BufferedReader(new FileReader(trieFile.getAbsolutePath()));
+		Trie_IUMorphemeWithSegmenterClassname trieWithoutSegmenter = gson.fromJson(br, Trie_IUMorphemeWithSegmenterClassname.class);
+		// Alternate way to call Gson.fromJson(), with String instead of BufferedReader
+		//Trie_IUMorphemeWithSegmenterClassname trieWithoutSegmenter = gson.fromJson(content, Trie_IUMorphemeWithSegmenterClassname.class);
+		Trie trie = trieWithoutSegmenter.toTrie();
+		return trie;
+	}
+ 
+
     private static void printTrie(Trie trie) {
     	System.out.println("\nThe trie looks like this:\n");
     	System.out.println(PrettyPrinter.print(trie));
@@ -80,50 +121,65 @@ public class CorpusTrieCompiler
 	private static void process(File corpusDirectory) {
     	File [] files = corpusDirectory.listFiles();
     	for (int i=0; i<files.length; i++) {
-    		try {
-				FileReader fr = new FileReader(files[i].getAbsolutePath());
-				BufferedReader br = new BufferedReader(fr);
-				processFile(br);
-				br.close();
-				fr.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}   		
+			processFile(files[i]);
     	}
 	}
 
 
-	private static void processFile(BufferedReader br) {
+	private static void processFile(File file) {
 		try {
+			System.out.println("\n--- compiling document "+file.getName());
+			String fileAbsolutePath = file.getAbsolutePath();
+			fileBeingProcessed = fileAbsolutePath;
+			FileReader fr = new FileReader(fileAbsolutePath);
+			BufferedReader br = new BufferedReader(fr);
 			String line;
-			int wordCounter = 0;
-			int limit = -1; //20;
-			while ((line = br.readLine()) != null && limit--!=0) {
-				//System.out.println(line);
+			long wordCounter = 0;
+			int limit = -1; // 20;
+			while ((line = br.readLine()) != null && limit-- != 0) {
 				String[] words = extractWordsFromLine(line);
 				for (int n = 0; n < words.length; n++) {
 					if (isInuktitutWord(words[n])) {
-						System.out.print(++wordCounter+". "+words[n]+"...");
-						outputFile.print(wordCounter+". "+words[n]+"...");
-						//addToIndex(words[n]);
-						try {
-							TrieNode result = corpusTrie.add(words[n]);
-							if (result!=null) {
-								System.out.println(result.getText()); 
-								outputFile.println(result.getText());
-							} else {
-								System.out.println(" XXX");
-								outputFile.println(" X");
+						if (!index.containsKey(words[n])) {
+							addToIndex(words[n]);
+							System.out.print(++wordCounter + ". " + words[n]
+									+ "...");
+							outputPrinter.print(wordCounter + ". " + words[n]
+									+ "...");
+							try {
+								TrieNode result = corpusTrie.add(words[n]);
+								if (result != null) {
+									System.out.println(result.getText());
+									outputPrinter.println(result.getText());
+								} else {
+									System.out.println(" XXX");
+									outputPrinter.println(" X");
+								}
+
+							} catch (TrieException e) {
+								System.out.println("Problem adding word: "
+										+ words[n] + " (" + e.getMessage()
+										+ ").");
+								outputPrinter.println("Problem adding word: "
+										+ words[n] + " (" + e.getMessage()
+										+ ").");
 							}
-							
-						} catch (TrieException e) {
-							System.out.println("Problem adding word: "+words[n]+" ("+e.getMessage()+").");
-							outputFile.println("Problem adding word: "+words[n]+" ("+e.getMessage()+").");
+							if (wordCounter % saveFrequency == 0) {
+								System.out.println("   --- saving verbose and jsoned trie ---");
+								outputPrinter.println("   --- saving verbose and jsoned trie ---");
+								outputPrinter.flush();
+								savedWordCounter = wordCounter;
+								writeJSON();
+							}
+						} else {
+							addToIndex(words[n]);
 						}
-						outputFile.flush();
 					}
 				}
 			}
+			
+			br.close();
+			fr.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
