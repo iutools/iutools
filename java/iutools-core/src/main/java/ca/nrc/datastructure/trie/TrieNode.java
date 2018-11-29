@@ -6,12 +6,12 @@ import java.util.Map;
 import java.util.Vector;
 
 public class TrieNode {
-    private String text;
-    private boolean isWord = false;
-    private long frequency = 0;
-    private HashMap<String,TrieNode> children;
+    protected String text;
+    protected boolean isWord = false;
+    protected long frequency = 0;
+    protected HashMap<String,TrieNode> children;
     protected TrieNode mostFrequentTerminal;
-	Map<String,Object> stats = new HashMap<String,Object>();
+    protected Map<String,Object> stats = new HashMap<String,Object>();
 
     public TrieNode() {
         this.text = "";

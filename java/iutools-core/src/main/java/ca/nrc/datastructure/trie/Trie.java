@@ -10,9 +10,9 @@ import com.google.gson.Gson;
 
 public class Trie {
 
-    private long size;
-    private StringSegmenter segmenter;
-    private TrieNode root;
+    protected long size;
+    protected StringSegmenter segmenter;
+    protected TrieNode root;
     
     
     public Trie(StringSegmenter _segmenter) {
@@ -32,7 +32,7 @@ public class Trie {
 		return json;
     }
     
-    private TrieWithSegmenterClassname trieWithoutSegmenter() {
+    public TrieWithSegmenterClassname trieWithoutSegmenter() {
     	TrieWithSegmenterClassname trieWithoutSegmenter = new TrieWithSegmenterClassname(segmenter.getClass().getName(),root,size);
 		return trieWithoutSegmenter;
 	}

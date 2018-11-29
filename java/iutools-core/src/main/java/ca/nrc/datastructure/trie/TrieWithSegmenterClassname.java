@@ -27,5 +27,9 @@ public class TrieWithSegmenterClassname {
     	StringSegmenter segmenter = (StringSegmenter) ctor.newInstance(new Object[] { });
     	return new Trie(segmenter,root,size);
     }
+    
+    public long getSize() {
+    	return size;
+    }
 
 }
