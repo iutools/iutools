@@ -8,6 +8,8 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.google.gson.Gson;
+
 public class TrieTest {
 	
 	/******************************************
@@ -217,7 +219,7 @@ public class TrieTest {
 	}
 	
 	@Test
-	public void test_toJSON() throws TrieException {
+	public void test_toJSON__Char() throws TrieException {
 		StringSegmenter charSegmenter = new StringSegmenter_Char();
 		Trie charTrie = new Trie(charSegmenter);
 		charTrie.add("he");
@@ -228,4 +230,26 @@ public class TrieTest {
 			"{\"size\":3,\"segmenterclassname\":\"ca.nrc.datastructure.trie.StringSegmenter_Char\",\"root\":{\"text\":\"\",\"isWord\":false,\"frequency\":0,\"children\":{\"h\":{\"text\":\"h\",\"isWord\":false,\"frequency\":2,\"children\":{\"e\":{\"text\":\"he\",\"isWord\":true,\"frequency\":1,\"children\":{},\"stats\":{}},\"i\":{\"text\":\"hi\",\"isWord\":false,\"frequency\":1,\"children\":{\"t\":{\"text\":\"hit\",\"isWord\":true,\"frequency\":1,\"children\":{},\"stats\":{}}},\"stats\":{}}},\"stats\":{}},\"o\":{\"text\":\"o\",\"isWord\":false,\"frequency\":1,\"children\":{\"k\":{\"text\":\"ok\",\"isWord\":true,\"frequency\":1,\"children\":{},\"stats\":{}}},\"stats\":{}}},\"stats\":{}}}");
 		Assert.assertEquals("The generated JSON representation of the trie is not correct.",expected,json);
 	}
+
+	/**
+	 * This test shows that one can't simply read a jsoned trie back into a trie.
+	 * The 'segmenter' attribute, of the class StringSegmenter' cannot recreate
+	 * a segmenter object because StringSegmenter is an abstract class.
+	 * 
+	 * @throws TrieException
+	 */
+	@Test(expected=RuntimeException.class)
+	public void test_toJSON__IUMorpheme() throws TrieException {
+		StringSegmenter segmenter = new StringSegmenter_IUMorpheme();
+		Trie trie = new Trie(segmenter);
+		trie.add("inuit");
+		trie.add("takujuq");
+		Gson gson = new Gson();
+		String json = gson.toJson(trie);
+		String expected = new String(
+			"{\"size\":2,\"segmenter\":{},\"root\":{\"text\":\"\",\"isWord\":false,\"frequency\":0,\"children\":{\"{taku/1v}\":{\"text\":\"{taku/1v}\",\"isWord\":false,\"frequency\":1,\"children\":{\"{juq/1vn}\":{\"text\":\"{taku/1v}{juq/1vn}\",\"isWord\":true,\"frequency\":1,\"children\":{},\"stats\":{}}},\"stats\":{}},\"{inuk/1n}\":{\"text\":\"{inuk/1n}\",\"isWord\":false,\"frequency\":1,\"children\":{\"{it/tn-nom-p}\":{\"text\":\"{inuk/1n}{it/tn-nom-p}\",\"isWord\":true,\"frequency\":1,\"children\":{},\"stats\":{}}},\"stats\":{}}},\"stats\":{}}}");
+		Assert.assertEquals("The generated JSON representation of the trie is not correct.",expected,json);
+		Trie reconstitutedTrie = gson.fromJson(json,Trie.class);
+	}
+
 }
