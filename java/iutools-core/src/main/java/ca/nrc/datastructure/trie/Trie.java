@@ -44,6 +44,10 @@ public class Trie {
     public long getSize() {
     	return size;
     }
+    
+    public StringSegmenter getSegmenter() {
+    	return segmenter;
+    }
 
 	public TrieNode add(String string) throws TrieException {
         TrieNode trieNode = root;
