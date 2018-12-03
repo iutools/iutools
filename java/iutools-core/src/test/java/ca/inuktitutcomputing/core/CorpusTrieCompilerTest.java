@@ -1,4 +1,4 @@
-package ca.pirurvik.iutools.core;
+package ca.inuktitutcomputing.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -16,6 +16,7 @@ import org.junit.Test;
 
 import com.google.gson.Gson;
 
+import ca.inuktitutcomputing.core.CorpusTrieCompiler;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieNode;

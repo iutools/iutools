@@ -1,4 +1,4 @@
-package ca.pirurvik.iutools.core;
+package ca.inuktitutcomputing.core;
 
 import java.io.BufferedReader;
 import java.io.File;

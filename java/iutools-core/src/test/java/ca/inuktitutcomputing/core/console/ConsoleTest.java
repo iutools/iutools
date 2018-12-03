@@ -1,4 +1,4 @@
-package ca.pirurvik.iutools.console;
+package ca.inuktitutcomputing.core.console;
 
 import static org.junit.Assert.*;
 
@@ -8,6 +8,12 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
+
+import ca.pirurvik.iutools.console.Console;
+import ca.pirurvik.iutools.console.ConsoleException;
+import ca.pirurvik.iutools.console.InvalidArgumentConsoleException;
+import ca.pirurvik.iutools.console.MiscellaneousConsoleException;
+import ca.pirurvik.iutools.console.UnknownFileConsoleException;
 
 public class ConsoleTest {
 	
