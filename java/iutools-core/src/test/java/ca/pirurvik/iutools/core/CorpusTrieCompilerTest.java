@@ -19,6 +19,7 @@ import com.google.gson.Gson;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieNode;
+import ca.nrc.testing.AssertHelpers;
 
 /**
  * Unit test for simple App.
@@ -80,22 +81,34 @@ public class CorpusTrieCompilerTest
 		trieCompiler.processDocumentContents(br);
 		
 		String[] inuit_segments = new String[]{"{inuk/1n}","{it/tn-nom-p}"};
-		assertContains(trieCompiler, inuit_segments, 1);
-		
 		String[] taku_segments = new String[]{"{taku/1v}"};
-		assertContains(trieCompiler, taku_segments, 3);
-		
 		String[] takujuq_segments = new String[]{"{taku/1v}", "{juq/1vn}"};
-		assertContains(trieCompiler, takujuq_segments, 2);
+		
+		assertContains(trieCompiler, inuit_segments, 1, inuit_segments);
+		assertContains(trieCompiler, taku_segments, 3, takujuq_segments);
+		assertContains(trieCompiler, takujuq_segments, 2, takujuq_segments);
 	}
 
 	private void assertContains(CorpusTrieCompiler trieCompiler,
 			String[] segs, long expFreq) {
+		assertContains(trieCompiler, segs, expFreq, null);
+	}
+
+	private void assertContains(CorpusTrieCompiler trieCompiler,
+			String[] segs, long expFreq, String[] expLongestTerminal) {
 		TrieNode gotNode = trieCompiler.corpusTrie.getNode(segs);
 		String seqs_asString = String.join(", ", segs);
 		Assert.assertTrue("Trie should have contained sequence: "+seqs_asString+"\nTrie contained:\n"+trieCompiler.corpusTrie.toJSON(), gotNode != null);
 		long gotFreq = gotNode.getFrequency();
 		Assert.assertEquals("Frequency was not as expected for segmenets: "+seqs_asString, expFreq, gotFreq);
+		
+		if (expLongestTerminal != null) {
+			String gotMostFreqTerminalTxt = gotNode.getMostFrequentTerminal().getText();
+			String expMostFreqTerminalTxt = String.join("", expLongestTerminal);
+			AssertHelpers.assertStringEquals("Most frequent terminal was not as expected for segs "+seqs_asString, 
+					expMostFreqTerminalTxt, gotMostFreqTerminalTxt);
+			
+		}
 	}
 	
 

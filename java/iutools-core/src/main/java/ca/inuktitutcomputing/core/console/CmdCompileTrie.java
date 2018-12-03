@@ -20,7 +20,6 @@ public class CmdCompileTrie extends ConsoleCommand {
 		//   le répertoire corpusDir, et sauve le dans le fichier trieFile.
 		//
 		echo("Command not implemented.");
-		
 	}
 
 

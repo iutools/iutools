@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -15,6 +16,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.gson.Gson;
 
 import ca.nrc.datastructure.trie.StringSegmenter;
@@ -23,6 +25,7 @@ import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
+import ca.nrc.introspection.Introspection;
 import ca.nrc.json.PrettyPrinter;
 
 
@@ -41,7 +44,20 @@ public class CorpusTrieCompiler
 //	private PrintWriter outputPrinter;
 	public String trieFilePath = null;
 	public File trieFile = null;
+	
+	private String segmenterClassName = StringSegmenter_Char.class.getName();
+	
+	@JsonIgnore
 	private StringSegmenter segmenter = new StringSegmenter_Char();
+	
+		@JsonIgnore
+		private StringSegmenter getSegmenter() throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+			if (segmenter == null) {
+				Class cls = Class.forName(segmenterClassName);
+				segmenter = (StringSegmenter) cls.getConstructor().newInstance();
+			}
+			return segmenter;
+		}
 	
 	private String fileBeingProcessed;
 	public int saveFrequency = 1000;
