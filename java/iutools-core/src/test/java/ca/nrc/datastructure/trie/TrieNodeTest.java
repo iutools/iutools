@@ -136,26 +136,25 @@ public class TrieNodeTest {
 	
 	@Test
 	public void test__add() throws Exception {
-		StringSegmenter charSegmenter = new StringSegmenter_Char();
-		Trie charTrie = new Trie(charSegmenter);
-		charTrie.add("hello");
-		charTrie.add("hint");
-		charTrie.add("helicopter");
-		charTrie.add("helios");
-		charTrie.add("helicopter");
+		Trie charTrie = new Trie();
+		charTrie.add("hello".split(""));
+		charTrie.add("hint".split(""));
+		charTrie.add("helicopter".split(""));
+		charTrie.add("helios".split(""));
+		charTrie.add("helicopter".split(""));
 		TrieNode helNode = charTrie.getNode("hel".split(""));
 		Assert.assertTrue("The most frequent terminal node from here should not be set yet.",
 				helNode.mostFrequentTerminal==null);
 		TrieNode mostFrequent = helNode.getMostFrequentTerminal();
 		Assert.assertEquals("The most frequent terminal node from here should be 'helicopter'.",
 				"helicopter",helNode.mostFrequentTerminal.getText());
-		charTrie.add("helios");
+		charTrie.add("helios".split(""));
 		Assert.assertTrue("The most frequent terminal node from here, after adding a new child, should not be set yet.",
 				helNode.mostFrequentTerminal==null);
 		mostFrequent = helNode.getMostFrequentTerminal();
 		Assert.assertEquals("The most frequent terminal node from here should be 'helicopter'.",
 				"helicopter",helNode.mostFrequentTerminal.getText());
-		charTrie.add("helios");
+		charTrie.add("helios".split(""));
 		mostFrequent = helNode.getMostFrequentTerminal();
 		Assert.assertEquals("The most frequent terminal node from here should be 'helios'.",
 				"helios",helNode.mostFrequentTerminal.getText());
@@ -164,14 +163,13 @@ public class TrieNodeTest {
 	
 	@Test
 	public void test_getAllTerminals() throws Exception {
-		StringSegmenter charSegmenter = new StringSegmenter_Char();
-		Trie charTrie = new Trie(charSegmenter);
-		charTrie.add("hello");
-		charTrie.add("hit");
-		charTrie.add("abba");
-		charTrie.add("helios");
-		charTrie.add("helm");
-		charTrie.add("ok");
+		Trie charTrie = new Trie();
+		charTrie.add("hello".split(""));
+		charTrie.add("hit".split(""));
+		charTrie.add("abba".split(""));
+		charTrie.add("helios".split(""));
+		charTrie.add("helm".split(""));
+		charTrie.add("ok".split(""));
 		TrieNode hNode = charTrie.getNode("h".split(""));
 		TrieNode[] h_terminals = hNode.getAllTerminals();
 		Assert.assertEquals("The number of words starting with 'h' should be 4.",

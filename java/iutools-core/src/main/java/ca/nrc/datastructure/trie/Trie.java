@@ -11,31 +11,32 @@ import com.google.gson.Gson;
 public class Trie {
 
     protected long size;
-    protected StringSegmenter segmenter;
+//    protected StringSegmenter segmenter;
     protected TrieNode root;
     
     
-    public Trie(StringSegmenter _segmenter) {
-    	this.segmenter = _segmenter;
+//    public Trie(StringSegmenter _segmenter) {
+    public Trie() {
+//    	this.segmenter = _segmenter;
     	root = new TrieNode();
 	}
     
-    public Trie(StringSegmenter _segmenter, TrieNode _root, long _size) {
-    	this.segmenter = _segmenter;
-    	this.root = _root;
-    	this.size = _size;
-	}
+//    public Trie(StringSegmenter _segmenter, TrieNode _root, long _size) {
+//    	this.segmenter = _segmenter;
+//    	this.root = _root;
+//    	this.size = _size;
+//	}
     
     public String toJSON() {
 		Gson gson = new Gson();
-		String json = gson.toJson(trieWithoutSegmenter());
+		String json = gson.toJson(this);
 		return json;
     }
     
-    public TrieWithSegmenterClassname trieWithoutSegmenter() {
-    	TrieWithSegmenterClassname trieWithoutSegmenter = new TrieWithSegmenterClassname(segmenter.getClass().getName(),root,size);
-		return trieWithoutSegmenter;
-	}
+//    public TrieWithSegmenterClassname trieWithoutSegmenter() {
+//    	TrieWithSegmenterClassname trieWithoutSegmenter = new TrieWithSegmenterClassname(segmenter.getClass().getName(),root,size);
+//		return trieWithoutSegmenter;
+//	}
 
 	public TrieNode getRoot() {
     	return this.root;
@@ -45,22 +46,19 @@ public class Trie {
     	return size;
     }
     
-    public StringSegmenter getSegmenter() {
-    	return segmenter;
-    }
+//    public StringSegmenter getSegmenter() {
+//    	return segmenter;
+//    }
 
-	public TrieNode add(String string) throws TrieException {
+	public TrieNode add(String[] segments) throws TrieException {
         TrieNode trieNode = root;
-        if (trieNode == null || string == null)
-            return null;
+        if (trieNode == null)
+            throw new TrieException("Can't add to a null root.");
+        if (segments == null)
+            return null; // null means the segmenter was not able to segment a word
+        
 
         
-        String[] segments = null;
-        try {
-        	segments = this.segmenter.segment(string);
-        } catch (Exception exc){
-        	throw new TrieException("("+exc.getClass().getName()+") "+"Could not decompose word into its parts: "+string, exc);
-        }
         int iseg = 0;
         while (iseg < segments.length) {
             Set<String> childs = trieNode.getChildren().keySet();

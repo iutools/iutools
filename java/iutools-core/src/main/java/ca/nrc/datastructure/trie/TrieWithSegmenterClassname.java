@@ -21,12 +21,12 @@ public class TrieWithSegmenterClassname {
     	this.segmenterclassname = _segmenterclassname;
 	}
     
-    public Trie toTrie() throws Exception {
+    /*public Trie toTrie() throws Exception {
     	Class<?> clazz = Class.forName(segmenterclassname);
     	Constructor<?> ctor = clazz.getConstructor();
     	StringSegmenter segmenter = (StringSegmenter) ctor.newInstance(new Object[] { });
     	return new Trie(segmenter,root,size);
-    }
+    }*/
     
     public long getSize() {
     	return size;

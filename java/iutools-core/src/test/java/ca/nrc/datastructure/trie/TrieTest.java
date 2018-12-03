@@ -8,6 +8,8 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
 
+import ca.nrc.testing.AssertHelpers;
+
 import com.google.gson.Gson;
 
 public class TrieTest {
@@ -31,50 +33,21 @@ public class TrieTest {
 		// Let's say you want to use individual characters as the 
 		// parts. You would then create a Trie as follows:
 		//
-		StringSegmenter charSegmenter = new StringSegmenter_Char();
-		Trie charTrie = new Trie(charSegmenter);
-		
-		// If instead you wanted to index string by words,
-		// you would create you Trie as follows:
-		//
-		StringSegmenter wordSegmenter = new StringSegmenter_Word();
-		Trie wordTrie = new Trie(wordSegmenter);
-
-		// If instead you wanted to index string by inuktitut morphemes,
-		// you would create you WordTrie as follows:
-		//
-		StringSegmenter morphemeSegmenter = new StringSegmenter_IUMorpheme();
-		Trie morphemeTrie = new Trie(morphemeSegmenter);
+		Trie trie = new Trie();
 		
 		// For the rest of the test we will use a character-based trie.
 		//
 		// The first thing you need to do is add words to the trie:
 		//
 		try {
-			charTrie.add("hello");
-		} catch (TrieException e) {
-		}
-		try {
-			charTrie.add("world");
-		} catch (TrieException e) {
-		}
-		try {
-			charTrie.add("hell boy");
-		} catch (TrieException e) {
-		}
-		try {
-			charTrie.add("heaven");
-		} catch (TrieException e) {
-		}
-		try {
-			charTrie.add("worship");
+			trie.add(new String[]{"h","e","l","l","o"});
 		} catch (TrieException e) {
 		}
 		
 		// Then, you can retrieve the node that corresponds to a particular string.
 		// The argument to getNode is an array of keys:
 		//
-		TrieNode node = charTrie.getNode("hell".split(""));
+		TrieNode node = trie.getNode("hell".split(""));
 		if (node == null) {
 			// This means the string was not found in the Trie
 		}
@@ -84,11 +57,10 @@ public class TrieTest {
 	
 	@Test
 	public void test__add_get__Char() {
-		StringSegmenter charSegmenter = new StringSegmenter_Char();
-		Trie charTrie = new Trie(charSegmenter);
+		Trie charTrie = new Trie();
 		try {
-			charTrie.add("hello");
-			charTrie.add("hell boy");
+			charTrie.add(new String[]{"h","e","l","l","o"});
+			charTrie.add(new String[]{"h","e","l","l"," ","b","o","y"});
 		} catch (TrieException e) {
 			assertFalse("An error occurred while adding an element to the trie.",true);
 		}
@@ -106,10 +78,9 @@ public class TrieTest {
 
 	@Test
 	public void test__add_get__Word() {
-		StringSegmenter wordSegmenter = new StringSegmenter_Word();
-		Trie wordTrie = new Trie(wordSegmenter);
+		Trie wordTrie = new Trie();
 		try {
-			wordTrie.add("hello there");
+			wordTrie.add(new String[]{"hello","there"});
 		} catch (TrieException e) {
 			assertFalse("An error occurred while adding an element to the trie.",true);
 		}
@@ -122,14 +93,16 @@ public class TrieTest {
 	@Test
 	public void test__add_get__IUMorpheme_same_word_twice() {
 		StringSegmenter iuSegmenter = new StringSegmenter_IUMorpheme();
-		Trie iumorphemeTrie = new Trie(iuSegmenter);
+		Trie iumorphemeTrie = new Trie();
+		String[] takujuq_segments = null;
 		try {
-			iumorphemeTrie.add("takujuq");
-		} catch (TrieException e) {
+			takujuq_segments = iuSegmenter.segment("takujuq");
+			iumorphemeTrie.add(takujuq_segments);
+		} catch (Exception e) {
 			assertFalse("An error occurred while adding an element to the trie.",true);
 		}
 		try {
-			TrieNode secondTakujuqNode = iumorphemeTrie.add("takujuq");
+			TrieNode secondTakujuqNode = iumorphemeTrie.add(takujuq_segments);
 			assertTrue("The node added for the second 'takujuq' should not be null.",secondTakujuqNode!=null);
 		} catch (TrieException e) {
 			assertFalse("An error occurred while adding an element to the trie.",true);
@@ -139,10 +112,12 @@ public class TrieTest {
 	@Test
 	public void test__add_get__IUMorpheme_one_word() {
 		StringSegmenter iuSegmenter = new StringSegmenter_IUMorpheme();
-		Trie iumorphemeTrie = new Trie(iuSegmenter);
+		Trie iumorphemeTrie = new Trie();
+		String[] takujuq_segments = null;
 		try {
-			iumorphemeTrie.add("takujuq");
-		} catch (TrieException e) {
+			takujuq_segments = iuSegmenter.segment("takujuq");
+			iumorphemeTrie.add(takujuq_segments);
+		} catch (Exception e) {
 			assertFalse("An error occurred while adding an element to the trie.",true);
 		}
 		HashMap children = iumorphemeTrie.getRoot().getChildren();
@@ -155,17 +130,16 @@ public class TrieTest {
 	
 	@Test
 	public void test__frequenciesOfWords() {
-		StringSegmenter charSegmenter = new StringSegmenter_Char();
-		Trie charTrie = new Trie(charSegmenter);
+		Trie charTrie = new Trie();
 		try {
-		charTrie.add("hello");
-		charTrie.add("world");
-		charTrie.add("hell boy");
-		charTrie.add("heaven");
-		charTrie.add("worship");
-		charTrie.add("world");
-		charTrie.add("heaven");
-		charTrie.add("world");
+		charTrie.add("hello".split(""));
+		charTrie.add("world".split(""));
+		charTrie.add("hell boy".split(""));
+		charTrie.add("heaven".split(""));
+		charTrie.add("worship".split(""));
+		charTrie.add("world".split(""));
+		charTrie.add("heaven".split(""));
+		charTrie.add("world".split(""));
 		} catch (Exception e) {
 			assertFalse("An error occurred while adding an element to the trie.",true);
 		}
@@ -181,14 +155,13 @@ public class TrieTest {
 	
 	@Test
 	public void test__mostFrequentWordWithRadical() {
-		StringSegmenter charSegmenter = new StringSegmenter_Char();
-		Trie charTrie = new Trie(charSegmenter);
+		Trie charTrie = new Trie();
 		try {
-		charTrie.add("hello");
-		charTrie.add("hint");
-		charTrie.add("helicopter");
-		charTrie.add("helios");
-		charTrie.add("helicopter");
+		charTrie.add("hello".split(""));
+		charTrie.add("hint".split(""));
+		charTrie.add("helicopter".split(""));
+		charTrie.add("helios".split(""));
+		charTrie.add("helicopter".split(""));
 		} catch (Exception e) {
 			assertFalse("An error occurred while adding an element to the trie.",true);
 		}
@@ -199,14 +172,13 @@ public class TrieTest {
 
 	@Test
 	public void test_getAllTerminals() throws Exception {
-		StringSegmenter charSegmenter = new StringSegmenter_Char();
-		Trie charTrie = new Trie(charSegmenter);
-		charTrie.add("hello");
-		charTrie.add("hit");
-		charTrie.add("abba");
-		charTrie.add("helios");
-		charTrie.add("helm");
-		charTrie.add("ok");
+		Trie charTrie = new Trie();
+		charTrie.add("hello".split(""));
+		charTrie.add("hit".split(""));
+		charTrie.add("abba".split(""));
+		charTrie.add("helios".split(""));
+		charTrie.add("helm".split(""));
+		charTrie.add("ok".split(""));
 		TrieNode[] h_terminals = charTrie.getAllTerminals("h".split(""));
 		Assert.assertEquals("The number of words starting with 'h' should be 4.",
 				4,h_terminals.length);
@@ -220,36 +192,16 @@ public class TrieTest {
 	
 	@Test
 	public void test_toJSON__Char() throws TrieException {
-		StringSegmenter charSegmenter = new StringSegmenter_Char();
-		Trie charTrie = new Trie(charSegmenter);
-		charTrie.add("he");
-		charTrie.add("hit");
-		charTrie.add("ok");
+		Trie charTrie = new Trie();
+		charTrie.add("he".split(""));
+		charTrie.add("hit".split(""));
+		charTrie.add("ok".split(""));
 		String json = charTrie.toJSON();
 		String expected = new String(
-			"{\"size\":3,\"segmenterclassname\":\"ca.nrc.datastructure.trie.StringSegmenter_Char\",\"root\":{\"text\":\"\",\"isWord\":false,\"frequency\":0,\"children\":{\"h\":{\"text\":\"h\",\"isWord\":false,\"frequency\":2,\"children\":{\"e\":{\"text\":\"he\",\"isWord\":true,\"frequency\":1,\"children\":{},\"stats\":{}},\"i\":{\"text\":\"hi\",\"isWord\":false,\"frequency\":1,\"children\":{\"t\":{\"text\":\"hit\",\"isWord\":true,\"frequency\":1,\"children\":{},\"stats\":{}}},\"stats\":{}}},\"stats\":{}},\"o\":{\"text\":\"o\",\"isWord\":false,\"frequency\":1,\"children\":{\"k\":{\"text\":\"ok\",\"isWord\":true,\"frequency\":1,\"children\":{},\"stats\":{}}},\"stats\":{}}},\"stats\":{}}}");
-		Assert.assertEquals("The generated JSON representation of the trie is not correct.",expected,json);
-	}
-
-	/**
-	 * This test shows that one can't simply read a jsoned trie back into a trie.
-	 * The 'segmenter' attribute, of the class StringSegmenter' cannot recreate
-	 * a segmenter object because StringSegmenter is an abstract class.
-	 * 
-	 * @throws TrieException
-	 */
-	@Test(expected=RuntimeException.class)
-	public void test_toJSON__IUMorpheme() throws TrieException {
-		StringSegmenter segmenter = new StringSegmenter_IUMorpheme();
-		Trie trie = new Trie(segmenter);
-		trie.add("inuit");
-		trie.add("takujuq");
-		Gson gson = new Gson();
-		String json = gson.toJson(trie);
-		String expected = new String(
-			"{\"size\":2,\"segmenter\":{},\"root\":{\"text\":\"\",\"isWord\":false,\"frequency\":0,\"children\":{\"{taku/1v}\":{\"text\":\"{taku/1v}\",\"isWord\":false,\"frequency\":1,\"children\":{\"{juq/1vn}\":{\"text\":\"{taku/1v}{juq/1vn}\",\"isWord\":true,\"frequency\":1,\"children\":{},\"stats\":{}}},\"stats\":{}},\"{inuk/1n}\":{\"text\":\"{inuk/1n}\",\"isWord\":false,\"frequency\":1,\"children\":{\"{it/tn-nom-p}\":{\"text\":\"{inuk/1n}{it/tn-nom-p}\",\"isWord\":true,\"frequency\":1,\"children\":{},\"stats\":{}}},\"stats\":{}}},\"stats\":{}}}");
-		Assert.assertEquals("The generated JSON representation of the trie is not correct.",expected,json);
-		Trie reconstitutedTrie = gson.fromJson(json,Trie.class);
+			"{\"size\":3,\"root\":{\"text\":\"\",\"isWord\":false,\"frequency\":0,\"children\":{\"h\":{\"text\":\"h\",\"isWord\":false,\"frequency\":2,\"children\":{\"e\":{\"text\":\"he\",\"isWord\":true,\"frequency\":1,\"children\":{},\"stats\":{}},\"i\":{\"text\":\"hi\",\"isWord\":false,\"frequency\":1,\"children\":{\"t\":{\"text\":\"hit\",\"isWord\":true,\"frequency\":1,\"children\":{},\"stats\":{}}},\"stats\":{}}},\"stats\":{}},\"o\":{\"text\":\"o\",\"isWord\":false,\"frequency\":1,\"children\":{\"k\":{\"text\":\"ok\",\"isWord\":true,\"frequency\":1,\"children\":{},\"stats\":{}}},\"stats\":{}}},\"stats\":{}}}");
+		
+		AssertHelpers.assertStringEquals("The generated JSON representation of the trie is not correct.",expected,json);
+//		Assert.assertEquals("The generated JSON representation of the trie is not correct.",expected,json);
 	}
 
 }

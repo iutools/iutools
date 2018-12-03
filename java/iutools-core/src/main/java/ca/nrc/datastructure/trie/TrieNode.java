@@ -12,6 +12,14 @@ public class TrieNode {
     protected HashMap<String,TrieNode> children;
     protected TrieNode mostFrequentTerminal;
     protected Map<String,Object> stats = new HashMap<String,Object>();
+    
+    public void setChildren(HashMap<String,TrieNode> _children) {
+    	this.children = _children;
+    }
+
+    public void setMostFrequentTerminal(TrieNode _mostFrequentTerminal) {
+    	this.mostFrequentTerminal = _mostFrequentTerminal;
+    }
 
     public TrieNode() {
         this.text = "";

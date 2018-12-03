@@ -10,6 +10,8 @@ import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
@@ -121,18 +123,31 @@ public class Console {
 		try {
 			is = System.in;
 			br = new BufferedReader(new InputStreamReader(is));
-			String line = null;
-			while ((line = br.readLine()) != null) {
-				if (line.equalsIgnoreCase("quit")) {
+			String line = "";
+			while ( line != null) {
+				System.out.print("Enter a word ['q' to quit]: ");
+				System.out.flush();
+				line = br.readLine();
+				if (line.equalsIgnoreCase("q")) {
 					break;
 				}
-				System.out.println("Search for : " + line);
-				String[] segments = trie.getSegmenter().segment(line);
+				System.out.println("Searching for : " + line);
+				System.out.flush();
+			
+				String[] segments = null;
+				segments = new ObjectMapper().readValue(line, segments.getClass());
 				TrieNode trieNode = trie.getNode(segments);
-				//System.out.println("frequency of whole word: "+trieNode.getFrequency());
-				TrieNode rootNode = trie.getNode(new String[]{segments[0]});
-				//System.out.println("frequency of root: "+rootNode.getFrequency());
+				System.out.println("frequency of the whole word: "+trieNode.getFrequency());
 				System.out.println(PrettyPrinter.print(trieNode));
+				TrieNode rootNode = trie.getNode(new String[]{segments[0]});
+				System.out.println("root morpheme: "+rootNode.getText());
+				System.out.println("frequency of the root: "+rootNode.getFrequency());
+				TrieNode mostFrequentTerminal = rootNode.getMostFrequentTerminal();
+				System.out.println("most frequent word with this root: "+mostFrequentTerminal.getText()+
+						" ["+mostFrequentTerminal.getFrequency()+" occurrence(s)]");
+				System.out.println("node of most frequent word: "+PrettyPrinter.print(mostFrequentTerminal));
+				//System.out.println("surface form of most frequent word: "+((TrieNode_IUMorpheme)mostFrequentTerminal).getSurfaceForm());
+				System.out.println("\n");
 			}
 		} catch (IOException ioe) {
 			System.out.println("Exception while reading input " + ioe);

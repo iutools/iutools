@@ -21,24 +21,25 @@ public class Exp {
 
 	public static void main(String[] args) {
 		String[] roots = new String[]{
-				"umiaq/1n"
+				"umiaq/1n", "inuk/1n"
 		};
 		String[] suffixes = new String[]{
 				"liuq/1nv", "ti/1vn", "u/1nv",
-				"juq/tv-ger-3s", "juq/1vn", "mik/tn-acc-s"
+				"juq/tv-ger-3s", "juq/1vn", "mik/tn-acc-s",
+				"lu/1q"
 		};
-		root_trie = new Trie(new StringSegmenter_Char());
+		root_trie = new Trie();
 		for (int i=0; i<roots.length; i++) {
 			try {
-				root_trie.add(roots[i]);
+				root_trie.add(new String[]{roots[i]});
 			} catch (TrieException e) {
 				// TODO Auto-generated catch block
 			}
 		}
-		suff_trie = new Trie(new StringSegmenter_Char());
+		suff_trie = new Trie();
 		for (int i=0; i<suffixes.length; i++) {
 			try {
-				suff_trie.add(suffixes[i]);
+				suff_trie.add(new String[]{suffixes[i]});
 			} catch (TrieException e) {
 				// TODO Auto-generated catch block
 			}
@@ -126,14 +127,6 @@ public class Exp {
 					for (int j = 0; j < nextChildrenKeys.length; j++) {
 						if (nextChildrenKeys[j].equals("/")) {
 							System.out.println("/");
-							
-//							Vector<String> slashKeys = new Vector<String>();
-//							slashKeys.addAll(previousKeys);
-//							slashKeys.add(childrenKeys[i]);
-//							slashKeys.add("/");
-//							String[] keys = slashKeys
-//									.toArray(new String[] {});
-//							TrieNode slashNode = root_trie.getNode(keys);
 							TrieNode slashNode = nextChildren.get(nextChildrenKeys[j]);
 							TrieNode[] possibleRoots = slashNode.getAllTerminals();
 							for (int k=0; k<possibleRoots.length; k++) {
@@ -146,6 +139,12 @@ public class Exp {
 								}
 								rootsForIncompleteSurfaceForm = possibleRoots
 											.clone();
+							} else if (childrenKeys[i].equals("k")) {
+								if (currentKey.equals("g")||currentKey.equals("N")) {
+									eatenKeys.add(currentKey);
+								} else if (currentKey.equals("l")||currentKey.equals("v")) {
+									eatenKeys.add(currentKey);
+								}
 							}
 						}
 					}
@@ -165,7 +164,7 @@ public class Exp {
 			}
 			
 			
-			System.out.println("\nAnalyser le reste du mot à partir du caractère "+charCounter+" : "+string.substring(charCounter));
+			System.out.println("\nAnalyser le reste du mot à partir du caractère "+(eatenKeys.size())+" : "+string.substring(eatenKeys.size()));
 		}
 	}
 }

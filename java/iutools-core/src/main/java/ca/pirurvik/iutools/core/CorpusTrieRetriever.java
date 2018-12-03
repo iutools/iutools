@@ -18,8 +18,7 @@ public class CorpusTrieRetriever {
 		String trieDumpFileName = dir.getName()+"-"+"trie_dump.txt";
 		String fileString = new String(Files.readAllBytes(Paths.get(trieDumpFileName)));
 		Gson gson = new Gson();
-		TrieWithSegmenterClassname trieWithoutSegmenter = gson.fromJson(fileString, TrieWithSegmenterClassname.class);
-		Trie trie = trieWithoutSegmenter.toTrie();
+		Trie trie = gson.fromJson(fileString, Trie.class);
 		System.out.println("size: "+trie.getSize());
 		
 	}

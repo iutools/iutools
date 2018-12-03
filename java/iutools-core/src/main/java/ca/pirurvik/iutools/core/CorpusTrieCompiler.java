@@ -18,13 +18,11 @@ import org.apache.commons.io.IOUtils;
 import com.google.gson.Gson;
 
 import ca.nrc.datastructure.trie.StringSegmenter;
+import ca.nrc.datastructure.trie.StringSegmenter_Char;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
-import ca.nrc.datastructure.trie.TrieWithSegmenterClassname;
-import ca.nrc.datastructure.trie.Trie_IUMorpheme;
-import ca.nrc.datastructure.trie.Trie_IUMorphemeWithSegmenterClassname;
 import ca.nrc.json.PrettyPrinter;
 
 
@@ -34,49 +32,86 @@ import ca.nrc.json.PrettyPrinter;
  */ 
 public class CorpusTrieCompiler 
 {
-	private static Trie corpusTrie;
-	private static HashMap<String,Long> index = new HashMap<String, Long>();
-	private static long maxFreq = 0;
-	private static String entryWithMaxFreq;
-	public static String outputFilePath;
-	public static File outputFile;
-	private static PrintWriter outputPrinter;
-	public static String trieFilePath;
-	public static File trieFile;
+	protected Trie corpusTrie = new Trie();
+	private HashMap<String,String[]> segmentsCache = new HashMap<String, String[]>();
+	private long maxFreq = 0;
+	private String entryWithMaxFreq = null;
+	public String outputFilePath = null;
+	public File outputFile = null;
+//	private PrintWriter outputPrinter;
+	public String trieFilePath = null;
+	public File trieFile = null;
+	private StringSegmenter segmenter = new StringSegmenter_Char();
 	
-	private static String fileBeingProcessed;
-	public static int saveFrequency = 1000;
-	private static long savedWordCounter;
+	private String fileBeingProcessed;
+	public int saveFrequency = 1000;
+	private long savedWordCounter;
+
+	protected String dirName = null;
+	
+	public static class CorpusTrieCompilerException extends Exception {
+		public CorpusTrieCompilerException(String mess) {
+			super(mess);
+		}
+	}
+	
+	public CorpusTrieCompiler() {
+		initialize(null);
+	}
+	
+	public CorpusTrieCompiler(StringSegmenter _segmenter) {
+		initialize(_segmenter);
+	}
+	
+	public void initialize(StringSegmenter _segmenter) {
+		if (_segmenter != null) {
+			this.segmenter = _segmenter;
+		}
+		
+	}
 	
 	/*
 	 * @param args[0] name of directory with documents (assumed in ca.pirurvik.data)
 	 */
 	public static void main(String[] args) throws IOException {
+		CorpusTrieCompiler trieCompiler = new CorpusTrieCompiler();
+		if (args.length < 1) usage("Need to pass a directory name as first argument");
 		String dirName = args[0];
-		System.out.println("\n--- Compiling trie for documents in "+dirName);
+		trieCompiler.dirName = dirName;
+		
+		trieCompiler.run();
+	}
+	
+	private static void usage(String errMess) {
+		if (errMess != null) errMess = "ERROR: "+errMess;
+		System.out.println("ERROR: "+errMess);
+		System.exit(1);
+	}
+
+	public  void run() throws IOException {
+		System.out.println("\n--- Compiling trie for documents in "+this.dirName);
 		File dir = new File(dirName);
 		outputFilePath = dir.getName()+"-"+"trie_compilation.log";
 		outputFile = new File(outputFilePath);
-		outputPrinter = new PrintWriter(new FileWriter(outputFilePath));
+//		outputPrinter = new PrintWriter(new FileWriter(outputFilePath));
 		trieFilePath = dir.getName()+"-"+"trie_dump.txt";
 		trieFile = new File(trieFilePath);
-		//StringSegmenter morphemeSegmenter = new StringSegmenter_IUMorpheme();
-		//corpusTrie = new Trie(morphemeSegmenter);
-		corpusTrie = new Trie_IUMorpheme();
+		segmenter = new StringSegmenter_IUMorpheme();
+		corpusTrie = new Trie();
 		try {
 			File corpusDirectory = new File(dirName);
 			process(corpusDirectory);
-			outputPrinter.flush();
-			outputPrinter.close();
+//			outputPrinter.flush();
+//			outputPrinter.close();
 			writeJSON();
 		} catch (Exception e1) {
 			e1.printStackTrace();
-			outputPrinter.close();
+//			outputPrinter.close();
 			System.exit(1);
 		}
 	}
 	
-	private static void writeJSON() {
+	private void writeJSON() {
 		try {
 			FileWriter trieFile = new FileWriter(trieFilePath);
 			String json = corpusTrie.toJSON();
@@ -89,117 +124,102 @@ public class CorpusTrieCompiler
 		}
 	}
 	
-	public static Trie readTrieFromJSON() throws Exception {
+	public Trie readTrieFromJSON() throws Exception {
 		Gson gson = new Gson();
 		String content = new String(Files.readAllBytes(Paths.get(trieFile.getAbsolutePath())));
 		BufferedReader br = new BufferedReader(new FileReader(trieFile.getAbsolutePath()));
-		Trie_IUMorphemeWithSegmenterClassname trieWithoutSegmenter = gson.fromJson(br, Trie_IUMorphemeWithSegmenterClassname.class);
-		// Alternate way to call Gson.fromJson(), with String instead of BufferedReader
-		//Trie_IUMorphemeWithSegmenterClassname trieWithoutSegmenter = gson.fromJson(content, Trie_IUMorphemeWithSegmenterClassname.class);
-		Trie trie = trieWithoutSegmenter.toTrie();
+		Trie trie = gson.fromJson(br, Trie.class);
 		return trie;
 	}
  
 
-    private static void printTrie(Trie trie) {
+    private void printTrie(Trie trie) {
     	System.out.println("\nThe trie looks like this:\n");
     	System.out.println(PrettyPrinter.print(trie));
 	}
 
-	private static void printIndex() {
-		System.out.println("\nIndexed words:\n");
-		for (Map.Entry<String, Long> entry : index.entrySet()) {
-		    String key = entry.getKey();
-		    long value = entry.getValue().longValue();
-		    System.out.println(key+" : "+value);
-		}
-		System.out.println("Nb of individual words: "+index.entrySet().size());
-	    System.out.println("Entry with maximum frequency: "+entryWithMaxFreq+" ("+maxFreq+")");
-	    System.out.println("Nb. of words in the trie: "+corpusTrie.getSize());
-	}
-
-	private static void process(File corpusDirectory) {
+	private void process(File corpusDirectory) throws Exception {
     	File [] files = corpusDirectory.listFiles();
     	for (int i=0; i<files.length; i++) {
 			processFile(files[i]);
     	}
 	}
 
-
-	private static void processFile(File file) {
+	private void processFile(File file) throws Exception {
 		try {
 			System.out.println("\n--- compiling document "+file.getName());
 			String fileAbsolutePath = file.getAbsolutePath();
 			fileBeingProcessed = fileAbsolutePath;
 			FileReader fr = new FileReader(fileAbsolutePath);
 			BufferedReader br = new BufferedReader(fr);
-			String line;
-			long wordCounter = 0;
-			int limit = -1; // 20;
-			while ((line = br.readLine()) != null && limit-- != 0) {
-				String[] words = extractWordsFromLine(line);
-				for (int n = 0; n < words.length; n++) {
-					if (isInuktitutWord(words[n])) {
-						if (!index.containsKey(words[n])) {
-							addToIndex(words[n]);
-							System.out.print(++wordCounter + ". " + words[n]
-									+ "...");
-							outputPrinter.print(wordCounter + ". " + words[n]
-									+ "...");
-							try {
-								TrieNode result = corpusTrie.add(words[n]);
-								if (result != null) {
-									System.out.println(result.getText());
-									outputPrinter.println(result.getText());
-								} else {
-									System.out.println(" XXX");
-									outputPrinter.println(" X");
-								}
-
-							} catch (TrieException e) {
-								System.out.println("Problem adding word: "
-										+ words[n] + " (" + e.getMessage()
-										+ ").");
-								outputPrinter.println("Problem adding word: "
-										+ words[n] + " (" + e.getMessage()
-										+ ").");
-							}
-							if (wordCounter % saveFrequency == 0) {
-								System.out.println("   --- saving verbose and jsoned trie ---");
-								outputPrinter.println("   --- saving verbose and jsoned trie ---");
-								outputPrinter.flush();
-								savedWordCounter = wordCounter;
-								writeJSON();
-							}
-						} else {
-							addToIndex(words[n]);
-						}
-					}
-				}
-			}
-			
-			br.close();
+			processDocumentContents(br);
 			fr.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private static void addToIndex(String string) {
-		Long frequency = index.get(string);
-		long freq;
-		if (frequency == null) {
-			freq = 1;
-		} else {
-			freq = frequency.longValue() + 1;
+	protected void processDocumentContents(BufferedReader bufferedReader) throws Exception {
+		String line;
+		long wordCounter = 0;
+		int limit = -1; // 20;
+		while ((line = bufferedReader.readLine()) != null && limit-- != 0) {
+			String[] words = extractWordsFromLine(line);
+			for (int n = 0; n < words.length; n++) {
+				String word = words[n];
+				if (!isInuktitutWord(word))
+					continue;
+				String[] segments = null;
+				try {
+					segments = fetchSegmentsFromCache(word);
+				}
+				catch (CorpusTrieCompilerException e) {
+					segments = segmenter.segment(word);
+					addToCache(word,segments);
+				}
+						System.out.print(++wordCounter + ". " + words[n]
+								+ "...");
+//						outputPrinter.print(wordCounter + ". " + words[n]
+//								+ "...");
+						try {
+							TrieNode result = corpusTrie.add(segments);
+							if (result != null) {
+								System.out.println(result.getText());
+//								outputPrinter.println(result.getText());
+							} else {
+								System.out.println(" XXX");
+//								outputPrinter.println(" X");
+							}
+
+						} catch (TrieException e) {
+							System.out.println("Problem adding word: "
+									+ words[n] + " (" + e.getMessage()
+									+ ").");
+//							outputPrinter.println("Problem adding word: "
+//									+ words[n] + " (" + e.getMessage()
+//									+ ").");
+						}
+						if (wordCounter % saveFrequency == 0) {
+							System.out.println("   --- saving verbose and jsoned trie ---");
+//							outputPrinter.println("   --- saving verbose and jsoned trie ---");
+//							outputPrinter.flush();
+							savedWordCounter = wordCounter;
+							writeJSON();
+						}
+			}
 		}
-		index.put(string, new Long(freq));
-		//System.out.println("--- " + words[n] + ": "
-		//		+ index.get(words[n]).longValue());
-		if (freq > maxFreq) {
-			maxFreq = freq;
-			entryWithMaxFreq = string;
-		}
+		
+		bufferedReader.close();
+	}
+
+	private void addToCache(String word, String[] segments) {
+		segmentsCache.put(word, segments);
+	}
+
+	private String[] fetchSegmentsFromCache(String word) throws CorpusTrieCompilerException {
+		if (!segmentsCache.containsKey(word))
+			throw new CorpusTrieCompilerException("Word '"+word+"' not in cache.");
+		return segmentsCache.get(word);
 	}
 
 	private static boolean isInuktitutWord(String string) {
