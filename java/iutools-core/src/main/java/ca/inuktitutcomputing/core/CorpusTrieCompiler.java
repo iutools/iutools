@@ -4,19 +4,14 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.commons.io.IOUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.gson.Gson;
@@ -27,7 +22,6 @@ import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
-import ca.nrc.introspection.Introspection;
 import ca.nrc.json.PrettyPrinter;
 
 
@@ -42,7 +36,7 @@ public class CorpusTrieCompiler
 	protected Trie trie = new Trie();
 	protected HashMap<String,String[]> segmentsCache = new HashMap<String, String[]>();
 	
-	protected String trieFilePath = null;
+	protected String saveFilePath = null;
 	@JsonIgnore
 	protected transient File trieFile = null;
 	
@@ -108,18 +102,23 @@ public class CorpusTrieCompiler
 		System.exit(1);
 	}
 	
-	public void setCorpusDirectory(String _dirName) {
-		this.dirName = _dirName;
-		File corpusDirectory = new File(this.dirName);
-		trieFilePath = corpusDirectory.getName()+"-"+JSON_FILE_BASE_NAME;
-		trieFile = new File(trieFilePath);
+	public void setCorpusDirectory(String _dirFullPathname) {
+		this.dirName = _dirFullPathname;
+		saveFilePath = this.dirName+"/"+JSON_FILE_BASE_NAME;
+		trieFile = new File(saveFilePath);
+	}
+	
+	/**
+	 * Cette méthode retourne vrai si et seulement si il y a un fichier de sauvegarde pour le répertoire corpusDir.
+	 * @param corpusDirPathname
+	 * @return
+	 */
+	
+	public boolean canBeResumed(String corpusDirPathname) {
+		return false;
 	}
 
 	public  void run() throws IOException {
-		run(false);
-	}
-	
-	public  void run(boolean unitTesting) throws IOException {
 		System.out.println("\n--- Compiling trie for documents in "+this.dirName);
 		segmenter = new StringSegmenter_IUMorpheme();
 		if (currentFileWordCounter != -1) {
@@ -133,26 +132,18 @@ public class CorpusTrieCompiler
 			process();
 			saveAsJSON();
 		} catch (Exception e1) {
-			if (!unitTesting) {
-				e1.printStackTrace();
-				System.exit(1);
-			}
+			System.err.println(e1.getMessage());
 		}
 	}
 	
-	private void initializeProcess() {
-		// TODO Auto-generated method stub
-		
-	}
-
 	private void saveAsJSON() {
 		try {
-			FileWriter trieFile = new FileWriter(trieFilePath);
+			FileWriter saveFile = new FileWriter(saveFilePath);
 			Gson gson = new Gson();
 			String json = gson.toJson(this);
-			trieFile.write(json);
-			trieFile.flush();
-			trieFile.close();
+			saveFile.write(json);
+			saveFile.flush();
+			saveFile.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -169,8 +160,7 @@ public class CorpusTrieCompiler
 	 */
 	public static CorpusTrieCompiler readFromJSON(String corpusDirectoryPath) throws Exception {
 		Gson gson = new Gson();
-		File corpusDirectory = new File(corpusDirectoryPath);
-		String jsonFilePath = corpusDirectory.getName()+"-"+JSON_FILE_BASE_NAME;
+		String jsonFilePath = corpusDirectoryPath+"/"+JSON_FILE_BASE_NAME;
 		File jsonFile = new File(jsonFilePath);
 		BufferedReader br = new BufferedReader(new FileReader(jsonFile));
 		CorpusTrieCompiler compiler = gson.fromJson(br, CorpusTrieCompiler.class);
@@ -178,14 +168,14 @@ public class CorpusTrieCompiler
 	}
  
 
-    private void printTrie(Trie trie) {
-    	System.out.println("\nThe trie looks like this:\n");
-    	System.out.println(PrettyPrinter.print(trie));
-	}
-
 	private void process() throws Exception {
 		File corpusDirectory = new File(this.dirName);
-    	File [] files = corpusDirectory.listFiles();
+    	File [] files = corpusDirectory.listFiles(
+    			new FilenameFilter() {
+    				public boolean accept(File dir, String name) {
+    					return name.toLowerCase().endsWith(".txt");
+    				}
+    			});
     	Arrays.sort(files);
     	for (int i=0; i<files.length; i++) {
 			processFile(files[i]);

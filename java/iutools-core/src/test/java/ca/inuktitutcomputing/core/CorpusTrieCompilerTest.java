@@ -29,10 +29,10 @@ public class CorpusTrieCompilerTest
 {
     /**
      * Rigorous Test :-)
+     * @throws Exception 
      */
     @Test
-    public void test__resume_compilation_of_corpus_after_crash_or_abortion__1_file_in_corpus_directory()
-    	throws Exception
+    public void test__resume_compilation_of_corpus_after_crash_or_abortion__1_file_in_corpus_directory() throws Exception
     {
     	// contains 1 file of 6 lines with 8 words :
     	// nunavut inuit
@@ -47,69 +47,64 @@ public class CorpusTrieCompilerTest
         compiler.saveFrequency = 3;
         compiler.stopAfter = 7; // should stop after takulaaqtuq
         compiler.setCorpusDirectory(corpusDir);
-            try {
-        	compiler.run(true);
+        try {
+        	compiler.run();
         } catch(Exception e) {
         	System.err.println("Exiting from compiler");
         }
 			
-		try {				
-				CorpusTrieCompiler retrievedCompiler = CorpusTrieCompiler.readFromJSON(corpusDir);
-				Trie trie = retrievedCompiler.trie;
-				long expectedCurrentFileWordCounter = 6;
-				assertEquals("The value of the 'current file word counter' is wrong.",
-						expectedCurrentFileWordCounter,retrievedCompiler.currentFileWordCounter);
-				HashMap<String,String[]> segmentsCache = retrievedCompiler.segmentsCache;
-				String[] expected_takulaaqtuq_segments = null;
-				assertArrayEquals("The cache should not contain the segments of 'takulaaqtuq'",
-						expected_takulaaqtuq_segments,segmentsCache.get("takulaaqtuq"));
-				String[] expected_nunait_segments = null;
-				assertArrayEquals("The cache should not contain the segments of 'nunait'",
-						expected_nunait_segments,segmentsCache.get("nunait"));
-				String[] expected_iglumik_segments = new String[]{"{iglu/1n}","{mik/tn-acc-s}"};
-				assertArrayEquals("The cache should contain the segments of 'iglumik'",expected_iglumik_segments,segmentsCache.get("iglumik"));
-				TrieNode taku_juq_node = trie.getNode(new String[]{"{taku/1v}","{juq/1vn}"});
-				String expectedText = "{taku/1v}{juq/1vn}";
-				assertEquals("The text of the node should be '"+expectedText+"'.",expectedText,taku_juq_node.getText());
-				TrieNode nuna_it_node = trie.getNode(new String[]{"{nuna/1n}","{it/tn-nom-p}"});
-				assertTrue("The trie should not contain the node for 'nunait'.",nuna_it_node==null);
-				
-				// resume compilation
-				retrievedCompiler.stopAfter = -1; // do not stop anymore; let compilation continue til the end
-				retrievedCompiler.run(true);
+		CorpusTrieCompiler retrievedCompiler = CorpusTrieCompiler.readFromJSON(corpusDir);
+		Trie trie = retrievedCompiler.trie;
+		long expectedCurrentFileWordCounter = 6;
+		assertEquals("The value of the 'current file word counter' is wrong.", expectedCurrentFileWordCounter,
+				retrievedCompiler.currentFileWordCounter);
+		HashMap<String, String[]> segmentsCache = retrievedCompiler.segmentsCache;
+		String[] expected_takulaaqtuq_segments = null;
+		assertArrayEquals("The cache should not contain the segments of 'takulaaqtuq'", expected_takulaaqtuq_segments,
+				segmentsCache.get("takulaaqtuq"));
+		String[] expected_nunait_segments = null;
+		assertArrayEquals("The cache should not contain the segments of 'nunait'", expected_nunait_segments,
+				segmentsCache.get("nunait"));
+		String[] expected_iglumik_segments = new String[] { "{iglu/1n}", "{mik/tn-acc-s}" };
+		assertArrayEquals("The cache should contain the segments of 'iglumik'", expected_iglumik_segments,
+				segmentsCache.get("iglumik"));
+		TrieNode taku_juq_node = trie.getNode(new String[] { "{taku/1v}", "{juq/1vn}" });
+		String expectedText = "{taku/1v}{juq/1vn}";
+		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, taku_juq_node.getText());
+		TrieNode nuna_it_node = trie.getNode(new String[] { "{nuna/1n}", "{it/tn-nom-p}" });
+		assertTrue("The trie should not contain the node for 'nunait'.", nuna_it_node == null);
 
-				CorpusTrieCompiler completedCompiler = CorpusTrieCompiler.readFromJSON(corpusDir);
-				Trie completeTrie = completedCompiler.trie;
-				expectedCurrentFileWordCounter = 8;
-				assertEquals("The value of the 'current file word counter' is wrong.",
-						expectedCurrentFileWordCounter,completedCompiler.currentFileWordCounter);
-				segmentsCache = completedCompiler.segmentsCache;
-				expected_takulaaqtuq_segments = new String[] {"{taku/1v}","{laaq/2vv}","{juq/1vn}"};
-				assertArrayEquals("The cache should contain the segments of 'takulaaqtuq'",
-						expected_takulaaqtuq_segments,segmentsCache.get("takulaaqtuq"));
-				expected_nunait_segments = new String[]{"{nuna/1n}","{it/tn-nom-p}"};
-				assertArrayEquals("The cache should contain the segments of 'nunait'",
-						expected_nunait_segments,segmentsCache.get("nunait"));
-				expected_iglumik_segments = new String[]{"{iglu/1n}","{mik/tn-acc-s}"};
-				assertArrayEquals("The cache should contain the segments of 'iglumik'",expected_iglumik_segments,segmentsCache.get("iglumik"));
-				taku_juq_node = completeTrie.getNode(new String[]{"{taku/1v}","{juq/1vn}"});
-				expectedText = "{taku/1v}{juq/1vn}";
-				assertEquals("The text of the node should be '"+expectedText+"'.",expectedText,taku_juq_node.getText());
-				nuna_it_node = completeTrie.getNode(new String[]{"{nuna/1n}","{it/tn-nom-p}"});
-				assertTrue("The trie should contain the node for 'nunait'.",nuna_it_node!=null);
-				expectedText = "{nuna/1n}{it/tn-nom-p}";
-				assertEquals("The text of the node should be '"+expectedText+"'.",expectedText,nuna_it_node.getText());
+		// resume compilation
+		retrievedCompiler.stopAfter = -1; // do not stop anymore; let compilation continue til the end
+		retrievedCompiler.run();
 
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		CorpusTrieCompiler completedCompiler = CorpusTrieCompiler.readFromJSON(corpusDir);
+		Trie completeTrie = completedCompiler.trie;
+		expectedCurrentFileWordCounter = 8;
+		assertEquals("The value of the 'current file word counter' is wrong.", expectedCurrentFileWordCounter,
+				completedCompiler.currentFileWordCounter);
+		segmentsCache = completedCompiler.segmentsCache;
+		expected_takulaaqtuq_segments = new String[] { "{taku/1v}", "{laaq/2vv}", "{juq/1vn}" };
+		assertArrayEquals("The cache should contain the segments of 'takulaaqtuq'", expected_takulaaqtuq_segments,
+				segmentsCache.get("takulaaqtuq"));
+		expected_nunait_segments = new String[] { "{nuna/1n}", "{it/tn-nom-p}" };
+		assertArrayEquals("The cache should contain the segments of 'nunait'", expected_nunait_segments,
+				segmentsCache.get("nunait"));
+		expected_iglumik_segments = new String[] { "{iglu/1n}", "{mik/tn-acc-s}" };
+		assertArrayEquals("The cache should contain the segments of 'iglumik'", expected_iglumik_segments,
+				segmentsCache.get("iglumik"));
+		taku_juq_node = completeTrie.getNode(new String[] { "{taku/1v}", "{juq/1vn}" });
+		expectedText = "{taku/1v}{juq/1vn}";
+		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, taku_juq_node.getText());
+		nuna_it_node = completeTrie.getNode(new String[] { "{nuna/1n}", "{it/tn-nom-p}" });
+		assertTrue("The trie should contain the node for 'nunait'.", nuna_it_node != null);
+		expectedText = "{nuna/1n}{it/tn-nom-p}";
+		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, nuna_it_node.getText());
     }
         
     
     @Test
-    public void test__resume_compilation_of_corpus_after_crash_or_abortion__2_files_in_corpus_directory()
-    	throws Exception
+    public void test__resume_compilation_of_corpus_after_crash_or_abortion__2_files_in_corpus_directory() throws Exception
     {
     	// contains 2 files: 
     	// 1 of 6 lines with 8 words:      1 of 3 lines with 3 words:
@@ -125,79 +120,76 @@ public class CorpusTrieCompilerTest
         compiler.saveFrequency = 3;
         compiler.stopAfter = 10; // should stop after iglumut
         compiler.setCorpusDirectory(corpusDir);
-            try {
-        	compiler.run(true);
+        try {
+        	compiler.run();
         } catch(Exception e) {
         	System.err.println("Exiting from compiler");
         }
 			
-		try {				
-				CorpusTrieCompiler retrievedCompiler = CorpusTrieCompiler.readFromJSON(corpusDir);
-				Trie trie = retrievedCompiler.trie;
-				long expectedCurrentFileWordCounter = 1;
-				assertEquals("The value of the 'current file word counter' is wrong.",
-						expectedCurrentFileWordCounter,retrievedCompiler.currentFileWordCounter);
-				HashMap<String,String[]> segmentsCache = retrievedCompiler.segmentsCache;
-				
-				String[] expected_iglumut_segments = null;
-				assertArrayEquals("The cache should not contain the segments of 'iglumut'",
-						expected_iglumut_segments,segmentsCache.get("iglumut"));
-				String[] expected_nunait_segments = new String[]{"{nuna/1n}","{it/tn-nom-p}"};
-				assertArrayEquals("The cache should contain the segments of 'nunait'",
-						expected_nunait_segments,segmentsCache.get("nunait"));
-				String[] expected_iglumik_segments = new String[]{"{iglu/1n}","{mik/tn-acc-s}"};
-				assertArrayEquals("The cache should contain the segments of 'iglumik'",expected_iglumik_segments,segmentsCache.get("iglumik"));
-				TrieNode taku_juq_node = trie.getNode(new String[]{"{taku/1v}","{juq/1vn}"});
-				String expectedText = "{taku/1v}{juq/1vn}";
-				assertEquals("The text of the node should be '"+expectedText+"'.",expectedText,taku_juq_node.getText());
-				TrieNode nuna_it_node = trie.getNode(new String[]{"{nuna/1n}","{it/tn-nom-p}"});
-				assertTrue("The trie should not contain the node for 'nunait'.",nuna_it_node!=null);
-				
-				// resume compilation
-				retrievedCompiler.stopAfter = -1; // do not stop anymore; let compilation continue til the end
-				retrievedCompiler.run(true);
+		CorpusTrieCompiler retrievedCompiler = CorpusTrieCompiler.readFromJSON(corpusDir);
+		Trie trie = retrievedCompiler.trie;
+		long expectedCurrentFileWordCounter = 1;
+		assertEquals("The value of the 'current file word counter' is wrong.", expectedCurrentFileWordCounter,
+				retrievedCompiler.currentFileWordCounter);
+		HashMap<String, String[]> segmentsCache = retrievedCompiler.segmentsCache;
 
-				CorpusTrieCompiler completedCompiler = CorpusTrieCompiler.readFromJSON(corpusDir);
-				Trie completeTrie = completedCompiler.trie;
-				expectedCurrentFileWordCounter = 3;
-				assertEquals("The value of the 'current file word counter' is wrong.",
-						expectedCurrentFileWordCounter,completedCompiler.currentFileWordCounter);
-				segmentsCache = completedCompiler.segmentsCache;
-				String[] expected_takulaaqtuq_segments = new String[] {"{taku/1v}","{laaq/2vv}","{juq/1vn}"};
-				assertArrayEquals("The cache should contain the segments of 'takulaaqtuq'",
-						expected_takulaaqtuq_segments,segmentsCache.get("takulaaqtuq"));
-				expected_nunait_segments = new String[]{"{nuna/1n}","{it/tn-nom-p}"};
-				assertArrayEquals("The cache should contain the segments of 'nunait'",
-						expected_nunait_segments,segmentsCache.get("nunait"));
-				expected_iglumik_segments = new String[]{"{iglu/1n}","{mik/tn-acc-s}"};
-				assertArrayEquals("The cache should contain the segments of 'iglumik'",expected_iglumik_segments,segmentsCache.get("iglumik"));
-				taku_juq_node = completeTrie.getNode(new String[]{"{taku/1v}","{juq/1vn}"});
-				expectedText = "{taku/1v}{juq/1vn}";
-				assertEquals("The text of the node should be '"+expectedText+"'.",expectedText,taku_juq_node.getText());
-				nuna_it_node = completeTrie.getNode(new String[]{"{nuna/1n}","{it/tn-nom-p}"});
-				assertTrue("The trie should contain the node for 'nunait'.",nuna_it_node!=null);
-				expectedText = "{nuna/1n}{it/tn-nom-p}";
-				assertEquals("The text of the node should be '"+expectedText+"'.",expectedText,nuna_it_node.getText());
-				
-				TrieNode iglu_mut_node = completeTrie.getNode(new String[]{"{iglu/1n}","{mut/tn-dat-s}"});
-				assertTrue("The trie should contain the node for 'iglumut'.",iglu_mut_node!=null);
-				expectedText = "{iglu/1n}{mut/tn-dat-s}";
-				assertEquals("The text of the node should be '"+expectedText+"'.",expectedText,iglu_mut_node.getText());
-				
-				TrieNode sana_lauqsima_juq_node = completeTrie.getNode(new String[]{"{sana/1v}","{lauqsima/1vv}","{juq/1vn}"});
-				assertTrue("The trie should contain the node for 'sanalauqsimajuq'.",sana_lauqsima_juq_node!=null);
-				expectedText = "{sana/1v}{lauqsima/1vv}{juq/1vn}";
-				assertEquals("The text of the node should be '"+expectedText+"'.",expectedText,sana_lauqsima_juq_node.getText());
-				
+		String[] expected_iglumut_segments = null;
+		assertArrayEquals("The cache should not contain the segments of 'iglumut'", expected_iglumut_segments,
+				segmentsCache.get("iglumut"));
+		String[] expected_nunait_segments = new String[] { "{nuna/1n}", "{it/tn-nom-p}" };
+		assertArrayEquals("The cache should contain the segments of 'nunait'", expected_nunait_segments,
+				segmentsCache.get("nunait"));
+		String[] expected_iglumik_segments = new String[] { "{iglu/1n}", "{mik/tn-acc-s}" };
+		assertArrayEquals("The cache should contain the segments of 'iglumik'", expected_iglumik_segments,
+				segmentsCache.get("iglumik"));
+		TrieNode taku_juq_node = trie.getNode(new String[] { "{taku/1v}", "{juq/1vn}" });
+		String expectedText = "{taku/1v}{juq/1vn}";
+		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, taku_juq_node.getText());
+		TrieNode nuna_it_node = trie.getNode(new String[] { "{nuna/1n}", "{it/tn-nom-p}" });
+		assertTrue("The trie should not contain the node for 'nunait'.", nuna_it_node != null);
 
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		// resume compilation
+		retrievedCompiler.stopAfter = -1; // do not stop anymore; let compilation continue til the end
+		retrievedCompiler.run();
+
+		CorpusTrieCompiler completedCompiler = CorpusTrieCompiler.readFromJSON(corpusDir);
+		Trie completeTrie = completedCompiler.trie;
+		expectedCurrentFileWordCounter = 3;
+		assertEquals("The value of the 'current file word counter' is wrong.", expectedCurrentFileWordCounter,
+				completedCompiler.currentFileWordCounter);
+		segmentsCache = completedCompiler.segmentsCache;
+		String[] expected_takulaaqtuq_segments = new String[] { "{taku/1v}", "{laaq/2vv}", "{juq/1vn}" };
+		assertArrayEquals("The cache should contain the segments of 'takulaaqtuq'", expected_takulaaqtuq_segments,
+				segmentsCache.get("takulaaqtuq"));
+		expected_nunait_segments = new String[] { "{nuna/1n}", "{it/tn-nom-p}" };
+		assertArrayEquals("The cache should contain the segments of 'nunait'", expected_nunait_segments,
+				segmentsCache.get("nunait"));
+		expected_iglumik_segments = new String[] { "{iglu/1n}", "{mik/tn-acc-s}" };
+		assertArrayEquals("The cache should contain the segments of 'iglumik'", expected_iglumik_segments,
+				segmentsCache.get("iglumik"));
+		taku_juq_node = completeTrie.getNode(new String[] { "{taku/1v}", "{juq/1vn}" });
+		expectedText = "{taku/1v}{juq/1vn}";
+		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, taku_juq_node.getText());
+		nuna_it_node = completeTrie.getNode(new String[] { "{nuna/1n}", "{it/tn-nom-p}" });
+		assertTrue("The trie should contain the node for 'nunait'.", nuna_it_node != null);
+		expectedText = "{nuna/1n}{it/tn-nom-p}";
+		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, nuna_it_node.getText());
+
+		TrieNode iglu_mut_node = completeTrie.getNode(new String[] { "{iglu/1n}", "{mut/tn-dat-s}" });
+		assertTrue("The trie should contain the node for 'iglumut'.", iglu_mut_node != null);
+		expectedText = "{iglu/1n}{mut/tn-dat-s}";
+		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, iglu_mut_node.getText());
+
+		TrieNode sana_lauqsima_juq_node = completeTrie
+				.getNode(new String[] { "{sana/1v}", "{lauqsima/1vv}", "{juq/1vn}" });
+		assertTrue("The trie should contain the node for 'sanalauqsimajuq'.", sana_lauqsima_juq_node != null);
+		expectedText = "{sana/1v}{lauqsima/1vv}{juq/1vn}";
+		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText,
+				sana_lauqsima_juq_node.getText());
     }
     
     @Test
-    public void test__compile__3_files_in_corpus_directory()
+    public void test__compile__3_files_in_corpus_directory() throws Exception
     {
     	// contains 3 files: 
     	// 1 of 6 lines with 8 words:      1 of 3 lines with 3 words:
@@ -213,30 +205,29 @@ public class CorpusTrieCompilerTest
         compiler.saveFrequency = 3;
         compiler.setCorpusDirectory(corpusDir);
         try {
-        	compiler.run(true);
+        	compiler.run();
         } catch(Exception e) {
         	System.err.println("Exiting from compiler");
         }
 			
-		try {				
-				CorpusTrieCompiler retrievedCompiler = CorpusTrieCompiler.readFromJSON(corpusDir);
-				Trie trie = retrievedCompiler.trie;
-				
-				TrieNode iglu_mut_node = trie.getNode(new String[]{"{iglu/1n}","{mut/tn-dat-s}"});
-				assertTrue("The trie should contain the node for 'iglumut'.",iglu_mut_node!=null);
-				String expectedText = "{iglu/1n}{mut/tn-dat-s}";
-				assertEquals("The text of the node should be '"+expectedText+"'.",expectedText,iglu_mut_node.getText());
-				
-				TrieNode sana_lauqsima_juq_node = trie.getNode(new String[]{"{sana/1v}","{lauqsima/1vv}","{juq/1vn}"});
-				assertTrue("The trie should contain the node for 'sanalauqsimajuq'.",sana_lauqsima_juq_node!=null);
-				expectedText = "{sana/1v}{lauqsima/1vv}{juq/1vn}";
-				assertEquals("The text of the node should be '"+expectedText+"'.",expectedText,sana_lauqsima_juq_node.getText());
-				
+		CorpusTrieCompiler retrievedCompiler = CorpusTrieCompiler.readFromJSON(corpusDir);
+		Trie trie = retrievedCompiler.trie;
 
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		TrieNode iglu_mut_node = trie.getNode(new String[] { "{iglu/1n}", "{mut/tn-dat-s}" });
+		assertTrue("The trie should contain the node for 'iglumut'.", iglu_mut_node != null);
+		String expectedText = "{iglu/1n}{mut/tn-dat-s}";
+		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, iglu_mut_node.getText());
+
+		TrieNode sana_lauqsima_juq_node = trie.getNode(new String[] { "{sana/1v}", "{lauqsima/1vv}", "{juq/1vn}" });
+		assertTrue("The trie should contain the node for 'sanalauqsimajuq'.", sana_lauqsima_juq_node != null);
+		expectedText = "{sana/1v}{lauqsima/1vv}{juq/1vn}";
+		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText,
+				sana_lauqsima_juq_node.getText());
+    }
+    
+    @Test
+    public void test__canBeResumed() {
+    	
     }
     
 	@Test
