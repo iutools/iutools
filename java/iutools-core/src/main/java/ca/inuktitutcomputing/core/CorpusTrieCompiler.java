@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
@@ -121,12 +122,12 @@ public class CorpusTrieCompiler
 	public  void run(boolean unitTesting) throws IOException {
 		System.out.println("\n--- Compiling trie for documents in "+this.dirName);
 		segmenter = new StringSegmenter_IUMorpheme();
-		wordCounter = 0;
 		if (currentFileWordCounter != -1) {
 			retrievedFileWordCounter = currentFileWordCounter;
+			wordCounter--;
 		} else {
-			currentFileWordCounter = 0;
 			trie = new Trie();
+			wordCounter = 0;
 		}
 		try {
 			process();
@@ -158,6 +159,14 @@ public class CorpusTrieCompiler
 		}
 	}
 	
+	/**
+	 * Reads a CorpusTrieCompiler in the state it was when it was
+	 * interrupted while running.
+	 * 
+	 * @param String corpusDirectoryPath
+	 * @return CorpusTrieCompiler compiler
+	 * @throws Exception
+	 */
 	public static CorpusTrieCompiler readFromJSON(String corpusDirectoryPath) throws Exception {
 		Gson gson = new Gson();
 		File corpusDirectory = new File(corpusDirectoryPath);
@@ -177,6 +186,7 @@ public class CorpusTrieCompiler
 	private void process() throws Exception {
 		File corpusDirectory = new File(this.dirName);
     	File [] files = corpusDirectory.listFiles();
+    	Arrays.sort(files);
     	for (int i=0; i<files.length; i++) {
 			processFile(files[i]);
     	}
@@ -204,6 +214,7 @@ public class CorpusTrieCompiler
 		String line;
 		boolean stopBecauseOfStopAfter = false;
 		long fileWordCounter = 0;
+		currentFileWordCounter = 0;
 		while ((line = bufferedReader.readLine()) != null && !stopBecauseOfStopAfter) {
 			String[] words = extractWordsFromLine(line);
 			for (int n = 0; n < words.length; n++) {
@@ -214,6 +225,7 @@ public class CorpusTrieCompiler
 				if (retrievedFileWordCounter!=-1) {
 					if (fileWordCounter<retrievedFileWordCounter) {
 						fileWordCounter++;
+						++currentFileWordCounter;
 						continue;
 					} else {
 						retrievedFileWordCounter = -1;
