@@ -1,15 +1,14 @@
 package ca.inuktitutcomputing.core;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.HashMap;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -31,54 +30,85 @@ public class CorpusTrieCompilerTest
      * Rigorous Test :-)
      */
     @Test
-    public void test__compilation_with_save_at_10_words()
+    public void test__restart_compilation_with_save_at_every_n_words()
     {
+    	// contains 1 file of 6 lines with 8 words :
+    	// nunavut inuit
+    	// takujuq
+    	// amma
+    	// kinaujaq
+    	// iglumik takulaaqtuq
+    	// nunait
+
         String corpusDir = System.getenv("IUTOOLS")+"/java/iutools-data/src/test/HansardCorpus";
-        try {
-        	CorpusTrieCompiler compiler = new CorpusTrieCompiler();
-        	compiler.saveFrequency = 3;
-        	compiler.dirName = corpusDir;
-        	compiler.run();
-			BufferedReader br = new BufferedReader(new FileReader(compiler.outputFile.getAbsolutePath()));
-			int expectedNbSavingLines = 2;
-			int nbSavingLines = 0;
-			String line;
-			while ( (line=br.readLine()) != null) {
-				if (line.contains("saving verbose and jsoned trie"))
-					++nbSavingLines;
-			}
-			assertEquals("The number of verbose lines containing 'saving verbose and jsoned trie' should be "+expectedNbSavingLines,expectedNbSavingLines,nbSavingLines);
-			br.close();
+        CorpusTrieCompiler compiler = new CorpusTrieCompiler(StringSegmenter_IUMorpheme.class.getName());
+        compiler.saveFrequency = 3;
+        compiler.stopAfter = 7; // should stop after takulaaqtuq
+        compiler.setCorpusDirectory(corpusDir);
+            try {
+        	compiler.run(true);
+        } catch(Exception e) {
+        	System.err.println("Exiting from compiler");
+        }
 			
-			try {
-				Trie trie = compiler.readTrieFromJSON();
-				TrieNode node = trie.getNode(new String[]{"{taku/1v}","{juq/1vn}"});
+		try {				
+				CorpusTrieCompiler retrievedCompiler = CorpusTrieCompiler.readFromJSON(corpusDir);
+				Trie trie = retrievedCompiler.trie;
+				long expectedCurrentFileWordCounter = 6;
+				assertEquals("The value of the 'current file word counter' is wrong.",
+						expectedCurrentFileWordCounter,retrievedCompiler.currentFileWordCounter);
+				HashMap<String,String[]> segmentsCache = retrievedCompiler.segmentsCache;
+				String[] expected_takulaaqtuq_segments = null;
+				assertArrayEquals("The cache should not contain the segments of 'takulaaqtuq'",
+						expected_takulaaqtuq_segments,segmentsCache.get("takulaaqtuq"));
+				String[] expected_nunait_segments = null;
+				assertArrayEquals("The cache should not contain the segments of 'nunait'",
+						expected_nunait_segments,segmentsCache.get("nunait"));
+				String[] expected_iglumik_segments = new String[]{"{iglu/1n}","{mik/tn-acc-s}"};
+				assertArrayEquals("The cache should contain the segments of 'iglumik'",expected_iglumik_segments,segmentsCache.get("iglumik"));
+				TrieNode taku_juq_node = trie.getNode(new String[]{"{taku/1v}","{juq/1vn}"});
 				String expectedText = "{taku/1v}{juq/1vn}";
-				assertEquals("The text of the node should be '"+expectedText+"'.",expectedText,node.getText());
+				assertEquals("The text of the node should be '"+expectedText+"'.",expectedText,taku_juq_node.getText());
+				TrieNode nuna_it_node = trie.getNode(new String[]{"{nuna/1n}","{it/tn-nom-p}"});
+				assertTrue("The trie should not contain the node for 'nunait'.",nuna_it_node==null);
+				
+				// resume compilation
+				retrievedCompiler.stopAfter = -1; // do not stop anymore; let compilation continue til the end
+				retrievedCompiler.run(true);
+
+				CorpusTrieCompiler completedCompiler = CorpusTrieCompiler.readFromJSON(corpusDir);
+				Trie completeTrie = completedCompiler.trie;
+				expectedCurrentFileWordCounter = 8;
+				assertEquals("The value of the 'current file word counter' is wrong.",
+						expectedCurrentFileWordCounter,completedCompiler.currentFileWordCounter);
+				segmentsCache = completedCompiler.segmentsCache;
+				expected_takulaaqtuq_segments = new String[] {"{taku/1v}","{laaq/2vv}","{juq/1vn}"};
+				assertArrayEquals("The cache should contain the segments of 'takulaaqtuq'",
+						expected_takulaaqtuq_segments,segmentsCache.get("takulaaqtuq"));
+				expected_nunait_segments = new String[]{"{nuna/1n}","{it/tn-nom-p}"};
+				assertArrayEquals("The cache should contain the segments of 'nunait'",
+						expected_nunait_segments,segmentsCache.get("nunait"));
+				expected_iglumik_segments = new String[]{"{iglu/1n}","{mik/tn-acc-s}"};
+				assertArrayEquals("The cache should contain the segments of 'iglumik'",expected_iglumik_segments,segmentsCache.get("iglumik"));
+				taku_juq_node = completeTrie.getNode(new String[]{"{taku/1v}","{juq/1vn}"});
+				expectedText = "{taku/1v}{juq/1vn}";
+				assertEquals("The text of the node should be '"+expectedText+"'.",expectedText,taku_juq_node.getText());
+				nuna_it_node = completeTrie.getNode(new String[]{"{nuna/1n}","{it/tn-nom-p}"});
+				assertTrue("The trie should contain the node for 'nunait'.",nuna_it_node!=null);
+				expectedText = "{nuna/1n}{it/tn-nom-p}";
+				assertEquals("The text of the node should be '"+expectedText+"'.",expectedText,nuna_it_node.getText());
+
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
     }
     
-	@Test
-    public void test__form_a_trie_from_json_string() {
-    	String json = "{\"size\":5,\"segmenterclassname\":\"ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme\",\"root\":{\"surfaceForm\":\"\",\"childrenInSurface\":{\"inu\":{\"surfaceForm\":\"inu\",\"childrenInSurface\":{\"it\":{\"surfaceForm\":\"inuit\",\"childrenInSurface\":{},\"text\":\"{inuk/1n}{it/tn-nom-p}\",\"isWord\":true,\"frequency\":1,\"children\":{},\"stats\":{}}},\"text\":\"{inuk/1n}\",\"isWord\":false,\"frequency\":1,\"children\":{\"{it/tn-nom-p}\":{\"text\":\"{inuk/1n}{it/tn-nom-p}\",\"isWord\":true,\"frequency\":1,\"children\":{},\"stats\":{}}},\"stats\":{}},\"taku\":{\"surfaceForm\":\"taku\",\"childrenInSurface\":{\"juq\":{\"surfaceForm\":\"takujuq\",\"childrenInSurface\":{},\"text\":\"{taku/1v}{juq/1vn}\",\"isWord\":true,\"frequency\":1,\"children\":{},\"stats\":{}}},\"text\":\"{taku/1v}\",\"isWord\":false,\"frequency\":1,\"children\":{\"{juq/1vn}\":{\"text\":\"{taku/1v}{juq/1vn}\",\"isWord\":true,\"frequency\":1,\"children\":{},\"stats\":{}}},\"stats\":{}},\"iglu\":{\"surfaceForm\":\"iglu\",\"childrenInSurface\":{\"mik\":{\"surfaceForm\":\"iglumik\",\"childrenInSurface\":{},\"text\":\"{iglu/1n}{mik/tn-acc-s}\",\"isWord\":true,\"frequency\":1,\"children\":{},\"stats\":{}}},\"text\":\"{iglu/1n}\",\"isWord\":false,\"frequency\":1,\"children\":{\"{mik/tn-acc-s}\":{\"text\":\"{iglu/1n}{mik/tn-acc-s}\",\"isWord\":true,\"frequency\":1,\"children\":{},\"stats\":{}}},\"stats\":{}},\"nunavut\":{\"surfaceForm\":\"nunavut\",\"childrenInSurface\":{},\"text\":\"{nunavut/1n}\",\"isWord\":true,\"frequency\":1,\"children\":{},\"stats\":{}},\"amma\":{\"surfaceForm\":\"amma\",\"childrenInSurface\":{},\"text\":\"{amma/1c}\",\"isWord\":true,\"frequency\":1,\"children\":{},\"stats\":{}}},\"text\":\"\",\"isWord\":false,\"frequency\":0,\"children\":{\"{amma/1c}\":{\"text\":\"{amma/1c}\",\"isWord\":true,\"frequency\":1,\"children\":{},\"stats\":{}},\"{iglu/1n}\":{\"text\":\"{iglu/1n}\",\"isWord\":false,\"frequency\":1,\"children\":{\"{mik/tn-acc-s}\":{\"text\":\"{iglu/1n}{mik/tn-acc-s}\",\"isWord\":true,\"frequency\":1,\"children\":{},\"stats\":{}}},\"stats\":{}},\"{taku/1v}\":{\"text\":\"{taku/1v}\",\"isWord\":false,\"frequency\":1,\"children\":{\"{juq/1vn}\":{\"text\":\"{taku/1v}{juq/1vn}\",\"isWord\":true,\"frequency\":1,\"children\":{},\"stats\":{}}},\"stats\":{}},\"{nunavut/1n}\":{\"text\":\"{nunavut/1n}\",\"isWord\":true,\"frequency\":1,\"children\":{},\"stats\":{}},\"{inuk/1n}\":{\"text\":\"{inuk/1n}\",\"isWord\":false,\"frequency\":1,\"children\":{\"{it/tn-nom-p}\":{\"text\":\"{inuk/1n}{it/tn-nom-p}\",\"isWord\":true,\"frequency\":1,\"children\":{},\"stats\":{}}},\"stats\":{}}},\"stats\":{}}}";
-    	Gson gson = new Gson();
-    	Trie trie = gson.fromJson(json, Trie.class);
-    	long trieSize = trie.getSize();
-    	assertEquals("The size of the trie is wrong.",5,trieSize);
-    }
-	
 	@Test
 	public void test__processDocumentContents__happy_path() throws Exception {
 		String documentContents = "inuit takujuq nunavut takujuq takulaaqtuq";
 		BufferedReader br = new BufferedReader(new StringReader(documentContents));
-		CorpusTrieCompiler trieCompiler = new CorpusTrieCompiler(new StringSegmenter_IUMorpheme());
+		CorpusTrieCompiler trieCompiler = new CorpusTrieCompiler(StringSegmenter_IUMorpheme.class.getName());
 		trieCompiler.processDocumentContents(br);
 		
 		String[] inuit_segments = new String[]{"{inuk/1n}","{it/tn-nom-p}"};
@@ -89,6 +119,10 @@ public class CorpusTrieCompilerTest
 		assertContains(trieCompiler, taku_segments, 3, takujuq_segments);
 		assertContains(trieCompiler, takujuq_segments, 2, takujuq_segments);
 	}
+	
+	
+	
+	
 
 	private void assertContains(CorpusTrieCompiler trieCompiler,
 			String[] segs, long expFreq) {
@@ -97,9 +131,9 @@ public class CorpusTrieCompilerTest
 
 	private void assertContains(CorpusTrieCompiler trieCompiler,
 			String[] segs, long expFreq, String[] expLongestTerminal) {
-		TrieNode gotNode = trieCompiler.corpusTrie.getNode(segs);
+		TrieNode gotNode = trieCompiler.trie.getNode(segs);
 		String seqs_asString = String.join(", ", segs);
-		Assert.assertTrue("Trie should have contained sequence: "+seqs_asString+"\nTrie contained:\n"+trieCompiler.corpusTrie.toJSON(), gotNode != null);
+		Assert.assertTrue("Trie should have contained sequence: "+seqs_asString+"\nTrie contained:\n"+trieCompiler.trie.toJSON(), gotNode != null);
 		long gotFreq = gotNode.getFrequency();
 		Assert.assertEquals("Frequency was not as expected for segmenets: "+seqs_asString, expFreq, gotFreq);
 		
