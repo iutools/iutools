@@ -1,6 +1,16 @@
 package ca.inuktitutcomputing.core.console;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import ca.nrc.datastructure.trie.Trie;
+import ca.nrc.datastructure.trie.TrieNode;
+import ca.nrc.json.PrettyPrinter;
 
 public class CmdSearchTrie extends ConsoleCommand {
 	
@@ -11,25 +21,140 @@ public class CmdSearchTrie extends ConsoleCommand {
 
 	@Override
 	public String getUsageOverview() {
-		return "Read a saved Trie.";
+		return "Search in a compiled Trie.";
 	}
 	
 
 	@Override
 	public void execute() throws Exception {
 		String trieFile = getTrieFile();
+		String[] morphemes = getMorphemes(false); 
 		
-		// TODO: Benoit, charge le Trie qui est dans trieFile
+		boolean interactive = false;
+		if (morphemes == null) {
+			interactive = true;
+		}
 		
 		while (true) {
-			String morphemes = prompt("Enter a list of morphemes");	
-			if (morphemes == null) {break;}
-			echo("Searching for morphemes: "+morphemes);
+			if (interactive) {
+				String morphemesStr = prompt("Enter a list of morphemes");
+				if (morphemesStr == null) break;
+				morphemes = morphemesStr.split("\\s+");
+			}
+			
+			echo("\nSearching for morphemes: "+String.join(" ", morphemes)+"\n");
 			// TODO: Benoit, c'est parse la liste de morpheme, cherche les dans 
 			//   le Trie, et imprime le résultat.
-			echo("Search not implemented", 1);
+			echo("\n!!! TODO-Benoit: Call the trie search from CmdSearchTrie.execute");
+			
+			if (!interactive) break;
 		}
 		
 	}
+	
+//	public static void search_trie_one(String arg1Name, String arg1Value, String arg2Name, String arg2Value) throws ConsoleException {
+//		String trieFilePath = null;
+//		String searchType = null;
+//		String searchText = null;
+//		
+//		if ( arg1Name.equals("-trie-file") ) {
+//			if ( arg2Name.equals("-text") || arg2Name.equals("-surfaceform") ) {
+//				trieFilePath = arg1Value;
+//				if (arg2Name.equals("-text"))
+//					searchType = "text";
+//				else
+//					searchType = "surfaceform";
+//			} else {
+//				throw new InvalidArgumentConsoleException("'"+arg2Name+"' is not a valid argument to search_trie_one.");
+//			}
+//		} else if ( arg1Name.equals("-text") || arg1Name.equals("-surfaceform") ) {
+//			if ( arg2Name.equals("-trie-file") ) {
+//				trieFilePath = arg1Value;
+//				if (arg1Name.equals("-text"))
+//					searchType = "text";
+//				else
+//					searchType = "surfaceform";
+//			} else {
+//				throw new InvalidArgumentConsoleException("'"+arg2Name+"' is not a valid argument to search_trie_one.");
+//			}
+//		} else {
+//			throw new InvalidArgumentConsoleException("'"+arg1Name+"' is not a valid argument to search_trie_one.");
+//		}
+//		Trie trie = null;
+//		trie = readTrie(trieFilePath);
+//		System.out.println("trie: "+trie.getClass().getName());
+//		System.out.println(__search_trie(trie,searchType,searchText));
+//	}
+//
+//	private static Object __search_trie(Trie trie, String searchType, String searchText) {
+//		if (searchType.equals("surfaceform")) {
+//
+//		} else {
+//			
+//		}
+//		return null;
+//	}
+//
+//	public static void search_trie(String argName, String argValue) throws ConsoleException {
+//		if (!argName.equals("-trie-file"))
+//			throw new InvalidArgumentConsoleException("First argument '"+argName+"' is unknown to the method search_trie.");
+//		String trieFilePath = argValue;
+//		File f = new File(trieFilePath);
+//		if(!f.exists() || !f.isFile()) { 
+//		    throw new UnknownFileConsoleException("Second argument '"+argName+"' does not refer to an existing file.");
+//		}
+//		Trie trie = readTrie(trieFilePath);
+//		
+//		InputStream is = null;
+//		BufferedReader br = null;
+//		try {
+//			is = System.in;
+//			br = new BufferedReader(new InputStreamReader(is));
+//			String line = "";
+//			while ( line != null) {
+//				System.out.print("Enter a word ['q' to quit]: ");
+//				System.out.flush();
+//				line = br.readLine();
+//				if (line.equalsIgnoreCase("q")) {
+//					break;
+//				}
+//				System.out.println("Searching for : " + line);
+//				System.out.flush();
+//			
+//				String[] segments = null;
+//				segments = new ObjectMapper().readValue(line, segments.getClass());
+//				TrieNode trieNode = trie.getNode(segments);
+//				System.out.println("frequency of the whole word: "+trieNode.getFrequency());
+//				System.out.println(PrettyPrinter.print(trieNode));
+//				TrieNode rootNode = trie.getNode(new String[]{segments[0]});
+//				System.out.println("root morpheme: "+rootNode.getText());
+//				System.out.println("frequency of the root: "+rootNode.getFrequency());
+//				TrieNode mostFrequentTerminal = rootNode.getMostFrequentTerminal();
+//				System.out.println("most frequent word with this root: "+mostFrequentTerminal.getText()+
+//						" ["+mostFrequentTerminal.getFrequency()+" occurrence(s)]");
+//				System.out.println("node of most frequent word: "+PrettyPrinter.print(mostFrequentTerminal));
+//				//System.out.println("surface form of most frequent word: "+((TrieNode_IUMorpheme)mostFrequentTerminal).getSurfaceForm());
+//				System.out.println("\n");
+//			}
+//		} catch (IOException ioe) {
+//			System.out.println("Exception while reading input " + ioe);
+//		} catch (Exception e) {
+//			System.out.println("Exception while getting the node.");
+//		}
+//		finally {
+//			// close the streams using close method
+//			try {
+//				if (br != null) {
+//					br.close();
+//				}
+//			}
+//			catch (IOException ioe) {
+//				System.out.println("Error while closing stream: " + ioe);
+//			}
+//		}
+//		
+//	}
+
+		
 
 }

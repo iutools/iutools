@@ -15,6 +15,7 @@ import org.junit.Test;
 
 import com.google.gson.Gson;
 
+import ca.inuktitutcomputing.config.IUConfig;
 import ca.inuktitutcomputing.core.CorpusTrieCompiler;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.Trie;
@@ -31,6 +32,7 @@ public class CorpusTrieCompilerTest
      */
     @Test
     public void test__resume_compilation_of_corpus_after_crash_or_abortion__1_file_in_corpus_directory()
+    	throws Exception
     {
     	// contains 1 file of 6 lines with 8 words :
     	// nunavut inuit
@@ -40,7 +42,7 @@ public class CorpusTrieCompilerTest
     	// iglumik takulaaqtuq
     	// nunait
 
-        String corpusDir = System.getenv("IUTOOLS")+"/java/iutools-data/src/test/HansardCorpus1";
+        String corpusDir = IUConfig.getIUDataPath()+"src/test/HansardCorpus1";
         CorpusTrieCompiler compiler = new CorpusTrieCompiler(StringSegmenter_IUMorpheme.class.getName());
         compiler.saveFrequency = 3;
         compiler.stopAfter = 7; // should stop after takulaaqtuq
@@ -107,6 +109,7 @@ public class CorpusTrieCompilerTest
     
     @Test
     public void test__resume_compilation_of_corpus_after_crash_or_abortion__2_files_in_corpus_directory()
+    	throws Exception
     {
     	// contains 2 files: 
     	// 1 of 6 lines with 8 words:      1 of 3 lines with 3 words:
@@ -117,7 +120,7 @@ public class CorpusTrieCompilerTest
     	// iglumik takulaaqtuq
     	// nunait
 
-        String corpusDir = System.getenv("IUTOOLS")+"/java/iutools-data/src/test/HansardCorpus2";
+        String corpusDir = IUConfig.getIUDataPath()+"src/test/HansardCorpus2";
         CorpusTrieCompiler compiler = new CorpusTrieCompiler(StringSegmenter_IUMorpheme.class.getName());
         compiler.saveFrequency = 3;
         compiler.stopAfter = 10; // should stop after iglumut

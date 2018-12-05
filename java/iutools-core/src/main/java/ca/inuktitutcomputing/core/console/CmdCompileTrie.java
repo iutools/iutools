@@ -14,13 +14,17 @@ public class CmdCompileTrie extends ConsoleCommand {
 	@Override
 	public void execute() throws Exception {
 		String corpusDir = getCorpusDir();
-		String trieFile = getTrieFile();
 		
-		// TODO: Benoit, compile le Trie pour l'ensemble de fichiers contenus dans
-		//   le répertoire corpusDir, et sauve le dans le fichier trieFile.
-		//
-		echo("Command not implemented.");
+		String trieFile = getTrieFile();
+
+		echo("\nCompiling Trie:\n");
+		echo(1);
+		{
+			echo("corpus    : "+corpusDir+"\ntrie file : "+trieFile);
+		}
+		
+		echo(-1);
+		echo("\n\nCommand not implemented.\nTODO-Benoit: Appeler le CorpusTrieCompiler dans CmdCompileTrie.execute() ");			
+		echo(-1);
 	}
-
-
 }

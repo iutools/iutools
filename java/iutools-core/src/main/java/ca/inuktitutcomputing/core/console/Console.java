@@ -33,6 +33,13 @@ public class Console {
 			    .argName("CORPUS_NAME")
 			    .build();
 
+		Option optMorphemes = Option.builder(null)
+				.longOpt(ConsoleCommand.OPT_MORPHEMES)
+			    .desc("A sequence of iu morphemes (space separated).")
+			    .hasArg()
+			    .argName("MORPH_SEQUENCE")
+			    .build();
+
 		// Compile a trie and save it to file
 		SubCommand compileTrie = 
 				new CmdCompileTrie("compile_trie")
@@ -45,7 +52,8 @@ public class Console {
 		// Create and add the read_trie command
 		SubCommand searchTrie = 
 				new CmdSearchTrie("search_trie")
-				.addOption(optTrieFile)				
+				.addOption(optTrieFile)	
+				.addOption(optMorphemes)
 				;
 		mainCmd.addSubCommand(searchTrie);
 		

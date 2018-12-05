@@ -9,6 +9,7 @@ public abstract class ConsoleCommand extends SubCommand {
 	public static final String OPT_CORPUS_DIR = "corpus-dir";
 	public static final String OPT_CORPUS_NAME = "corpus-name";
 	public static final String OPT_TRIE_FILE = "trie-file";
+	public static final String OPT_MORPHEMES = "morphemes";
 	
 	
 	public ConsoleCommand(String name) {
@@ -26,6 +27,20 @@ public abstract class ConsoleCommand extends SubCommand {
 	protected String getCorpusDir() {
 		String dir = getOptionValue(ConsoleCommand.OPT_CORPUS_DIR, true);
 		return dir;
+	}
+
+	protected String[] getMorphemes() {
+		return getMorphemes(true);
+	}
+	
+	protected String[] getMorphemes(boolean failIfAbsent) {
+		String morphStr = getOptionValue(ConsoleCommand.OPT_MORPHEMES, failIfAbsent);
+		String[] morphSeq = null;
+		if (morphStr != null) {
+			morphSeq = morphStr.split("\\s+");
+		}
+		
+		return morphSeq;		
 	}
 	
 	protected static String prompt(String mess) {
