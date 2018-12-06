@@ -1201,6 +1201,7 @@ public class FontAipainunavik {
             case '\u00D8': d = '\u1576'; break; // hii
             case '\u004f': d = '\u1577'; break; // O -> ho
             case '\u201D': d = '\u1578'; break; // hoo
+            case '\u0094': d = '\u1578'; break; // hoo
             case '\u0050': d = '\u1579'; break; // P -> ha
             case '\u00BB': d = '\u157a'; break; // haa
             case '\u00a8': d = '\u1574'; break; // hai
