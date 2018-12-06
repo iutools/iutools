@@ -2,6 +2,7 @@ package ca.inuktitutcomputing.core;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
@@ -10,6 +11,8 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashMap;
 
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.PropertyConfigurator;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -17,6 +20,7 @@ import com.google.gson.Gson;
 
 import ca.inuktitutcomputing.config.IUConfig;
 import ca.inuktitutcomputing.core.CorpusTrieCompiler;
+import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieNode;
@@ -44,16 +48,19 @@ public class CorpusTrieCompilerTest
 
         String corpusDir = IUConfig.getIUDataPath()+"src/test/HansardCorpus1";
         CorpusTrieCompiler compiler = new CorpusTrieCompiler(StringSegmenter_IUMorpheme.class.getName());
+        compiler.setCorpusDirectory(corpusDir);
         compiler.saveFrequency = 3;
         compiler.stopAfter = 7; // should stop after takulaaqtuq
-        compiler.setCorpusDirectory(corpusDir);
         try {
-        	compiler.run();
+        	compiler.run(true);
         } catch(Exception e) {
         	System.err.println("Exiting from compiler");
         }
 			
-		CorpusTrieCompiler retrievedCompiler = CorpusTrieCompiler.readFromJSON(corpusDir);
+        CorpusTrieCompiler retrievedCompiler = new CorpusTrieCompiler();
+        retrievedCompiler.setCorpusDirectory(corpusDir);
+        retrievedCompiler.retrieveFromJSON();
+        
 		Trie trie = retrievedCompiler.trie;
 		long expectedCurrentFileWordCounter = 6;
 		assertEquals("The value of the 'current file word counter' is wrong.", expectedCurrentFileWordCounter,
@@ -78,8 +85,11 @@ public class CorpusTrieCompilerTest
 		retrievedCompiler.stopAfter = -1; // do not stop anymore; let compilation continue til the end
 		retrievedCompiler.run();
 
-		CorpusTrieCompiler completedCompiler = CorpusTrieCompiler.readFromJSON(corpusDir);
-		Trie completeTrie = completedCompiler.trie;
+        CorpusTrieCompiler completedCompiler = new CorpusTrieCompiler();
+        completedCompiler.setCorpusDirectory(corpusDir);
+        completedCompiler.retrieveFromJSON();
+
+        Trie completeTrie = completedCompiler.trie;
 		expectedCurrentFileWordCounter = 8;
 		assertEquals("The value of the 'current file word counter' is wrong.", expectedCurrentFileWordCounter,
 				completedCompiler.currentFileWordCounter);
@@ -121,13 +131,16 @@ public class CorpusTrieCompilerTest
         compiler.stopAfter = 10; // should stop after iglumut
         compiler.setCorpusDirectory(corpusDir);
         try {
-        	compiler.run();
+        	compiler.run(true);
         } catch(Exception e) {
         	System.err.println("Exiting from compiler");
         }
 			
-		CorpusTrieCompiler retrievedCompiler = CorpusTrieCompiler.readFromJSON(corpusDir);
-		Trie trie = retrievedCompiler.trie;
+        CorpusTrieCompiler retrievedCompiler = new CorpusTrieCompiler();
+        retrievedCompiler.setCorpusDirectory(corpusDir);
+        retrievedCompiler.retrieveFromJSON();
+
+        Trie trie = retrievedCompiler.trie;
 		long expectedCurrentFileWordCounter = 1;
 		assertEquals("The value of the 'current file word counter' is wrong.", expectedCurrentFileWordCounter,
 				retrievedCompiler.currentFileWordCounter);
@@ -152,8 +165,11 @@ public class CorpusTrieCompilerTest
 		retrievedCompiler.stopAfter = -1; // do not stop anymore; let compilation continue til the end
 		retrievedCompiler.run();
 
-		CorpusTrieCompiler completedCompiler = CorpusTrieCompiler.readFromJSON(corpusDir);
-		Trie completeTrie = completedCompiler.trie;
+        CorpusTrieCompiler completedCompiler = new CorpusTrieCompiler();
+        completedCompiler.setCorpusDirectory(corpusDir);
+        completedCompiler.retrieveFromJSON();
+
+        Trie completeTrie = completedCompiler.trie;
 		expectedCurrentFileWordCounter = 3;
 		assertEquals("The value of the 'current file word counter' is wrong.", expectedCurrentFileWordCounter,
 				completedCompiler.currentFileWordCounter);
@@ -205,12 +221,14 @@ public class CorpusTrieCompilerTest
         compiler.saveFrequency = 3;
         compiler.setCorpusDirectory(corpusDir);
         try {
-        	compiler.run();
+        	compiler.run(true);
         } catch(Exception e) {
         	System.err.println("Exiting from compiler");
         }
 			
-		CorpusTrieCompiler retrievedCompiler = CorpusTrieCompiler.readFromJSON(corpusDir);
+        CorpusTrieCompiler retrievedCompiler = new CorpusTrieCompiler();
+        retrievedCompiler.setCorpusDirectory(corpusDir);
+        retrievedCompiler.retrieveFromJSON();
 		Trie trie = retrievedCompiler.trie;
 
 		TrieNode iglu_mut_node = trie.getNode(new String[] { "{iglu/1n}", "{mut/tn-dat-s}" });
@@ -226,9 +244,17 @@ public class CorpusTrieCompilerTest
     }
     
     @Test
-    public void test__canBeResumed() {
-    	
-    }
+    public void test__canBeResumed() throws ConfigException {
+        String corpusDirPathname = IUConfig.getIUDataPath()+"src/test/HansardCorpusNoJSON";
+        CorpusTrieCompiler compiler = new CorpusTrieCompiler(StringSegmenter_IUMorpheme.class.getName());
+        boolean canBeResumed = compiler.canBeResumed(corpusDirPathname);
+        assertFalse("The compiler should not be able to resume; there is no JSON compilation backup.",canBeResumed);
+
+        corpusDirPathname = IUConfig.getIUDataPath()+"src/test/HansardCorpusWithJSON";
+        compiler = new CorpusTrieCompiler(StringSegmenter_IUMorpheme.class.getName());
+        canBeResumed = compiler.canBeResumed(corpusDirPathname);
+        assertTrue("The compiler should bebe able to resume; there is a JSON compilation backup.",canBeResumed);
+}
     
 	@Test
 	public void test__processDocumentContents__happy_path() throws Exception {
@@ -245,6 +271,44 @@ public class CorpusTrieCompilerTest
 		assertContains(trieCompiler, taku_segments, 3, takujuq_segments);
 		assertContains(trieCompiler, takujuq_segments, 2, takujuq_segments);
 	}
+	
+	@Test
+	public void test__retrieveFromJSON() throws Exception {
+        String corpusDir = IUConfig.getIUDataPath()+"src/test/HansardCorpus1";
+        CorpusTrieCompiler compiler = new CorpusTrieCompiler(StringSegmenter_IUMorpheme.class.getName());
+        compiler.saveFrequency = 3;
+        compiler.stopAfter = 7; // should stop after takulaaqtuq
+        compiler.setCorpusDirectory(corpusDir);
+        try {
+        	compiler.run(true);
+        } catch(Exception e) {
+        	System.err.println("Exiting from compiler");
+        }
+        
+        CorpusTrieCompiler retrievedCompiler = new CorpusTrieCompiler();
+        retrievedCompiler.setCorpusDirectory(corpusDir);
+        retrievedCompiler.retrieveFromJSON();
+
+		Trie trie = retrievedCompiler.trie;
+		long expectedCurrentFileWordCounter = 6;
+		assertEquals("The value of the 'current file word counter' is wrong.", expectedCurrentFileWordCounter,
+				retrievedCompiler.currentFileWordCounter);
+		HashMap<String, String[]> segmentsCache = retrievedCompiler.segmentsCache;
+		String[] expected_takulaaqtuq_segments = null;
+		assertArrayEquals("The cache should not contain the segments of 'takulaaqtuq'", expected_takulaaqtuq_segments,
+				segmentsCache.get("takulaaqtuq"));
+		String[] expected_nunait_segments = null;
+		assertArrayEquals("The cache should not contain the segments of 'nunait'", expected_nunait_segments,
+				segmentsCache.get("nunait"));
+		String[] expected_iglumik_segments = new String[] { "{iglu/1n}", "{mik/tn-acc-s}" };
+		assertArrayEquals("The cache should contain the segments of 'iglumik'", expected_iglumik_segments,
+				segmentsCache.get("iglumik"));
+		TrieNode taku_juq_node = trie.getNode(new String[] { "{taku/1v}", "{juq/1vn}" });
+		String expectedText = "{taku/1v}{juq/1vn}";
+		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, taku_juq_node.getText());
+		TrieNode nuna_it_node = trie.getNode(new String[] { "{nuna/1n}", "{it/tn-nom-p}" });
+		assertTrue("The trie should not contain the node for 'nunait'.", nuna_it_node == null);
+}
 	
 	
 	
