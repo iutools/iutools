@@ -9,15 +9,11 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Appender;
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Layout;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.gson.Gson;
@@ -37,14 +33,16 @@ import ca.nrc.datastructure.trie.TrieNode;
 public class CorpusTrieCompiler 
 {
 	
-	private static String JSON_FILE_BASE_NAME = "trie_compilation.json";
+	private static String JSON_COMPILATION_FILE_NAME = "trie_compilation.json";
+	private static String JSON_TRIE_FILE_NAME = "trie.json";
 	
 	protected Trie trie = new Trie();
 	protected HashMap<String,String[]> segmentsCache = new HashMap<String, String[]>();
+	protected Vector<String> filesCompiled = new Vector<String>();
+	protected Vector<String> wordsFailedSegmentation = new Vector<String>();
 	
 	protected String saveFilePath = null;
-	@JsonIgnore
-	protected transient File trieFile = null;
+	protected String trieFilePath = null;
 	
 	private String segmenterClassName = StringSegmenter_Char.class.getName();
 	
@@ -109,8 +107,12 @@ public class CorpusTrieCompiler
 	
 	public void setCorpusDirectory(String _dirFullPathname) {
 		this.dirName = _dirFullPathname;
-		saveFilePath = this.dirName+"/"+JSON_FILE_BASE_NAME;
-		trieFile = new File(saveFilePath);
+		saveFilePath = this.dirName+"/"+JSON_COMPILATION_FILE_NAME;
+		trieFilePath = this.dirName+"/"+JSON_TRIE_FILE_NAME;
+	}
+	
+	public void setTrieFilePath(String _trieFilePath) {
+		trieFilePath = _trieFilePath;
 	}
 	
 	/**
@@ -120,19 +122,19 @@ public class CorpusTrieCompiler
 	 */
 	
 	public boolean canBeResumed(String corpusDirPathname) {
-		File jsonFile = new File(corpusDirPathname+"/"+JSON_FILE_BASE_NAME);
+		File jsonFile = new File(corpusDirPathname+"/"+JSON_COMPILATION_FILE_NAME);
 		return jsonFile.exists();
 	}
 	
 	public void toConsole(String message) {
-		System.out.println("[INFO] "+message);
+		System.out.print(message);
 	}
 
 	public  void run() throws Exception {
 		run(false);
 	}
 	public  void run(boolean fromScratch) throws Exception {
-		toConsole("*** Compiling trie for documents in "+this.dirName);
+		toConsole("[INFO] *** Compiling trie for documents in "+this.dirName+"\n");
 		segmenter = new StringSegmenter_IUMorpheme();
 		
 		if ( !fromScratch ) {
@@ -147,28 +149,36 @@ public class CorpusTrieCompiler
 		wordCounter = 0;
 			
 		process();
-		toConsole("*** End of compilation --- compiler saved in trie_compilation.json in corpus directory");
-		saveAsJSON();
+		toConsole("[INFO] *** Compilation completed."+"\n");
+		saveCompilerAsJSON();
+		saveTrieAsJSON();
 	}
 	
+	private void saveTrieAsJSON() throws IOException {
+		FileWriter saveFile = new FileWriter(trieFilePath);
+		Gson gson = new Gson();
+		String json = gson.toJson(this.trie);
+		saveFile.write(json);
+		saveFile.flush();
+		saveFile.close();
+	}
+
 	private void deleteJSON() throws IOException {
 		File saveFile = new File(saveFilePath);
 		if (saveFile.exists())
 			saveFile.delete();
 	}
 
-	private void saveAsJSON() {
-		try {
+	private void saveCompilerAsJSON() throws IOException {
 			FileWriter saveFile = new FileWriter(saveFilePath);
 			Gson gson = new Gson();
+			long savedRetrievedFileWordCounter = this.retrievedFileWordCounter;
+			this.retrievedFileWordCounter = this.currentFileWordCounter;
 			String json = gson.toJson(this);
+			this.retrievedFileWordCounter = savedRetrievedFileWordCounter;
 			saveFile.write(json);
 			saveFile.flush();
 			saveFile.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 	
 	/**
@@ -181,7 +191,7 @@ public class CorpusTrieCompiler
 	 */
 	public void retrieveFromJSON() throws Exception {
 		Gson gson = new Gson();
-		String jsonFilePath = this.dirName+"/"+JSON_FILE_BASE_NAME;
+		String jsonFilePath = this.dirName+"/"+JSON_COMPILATION_FILE_NAME;
 		File jsonFile = new File(jsonFilePath);
 		BufferedReader br = new BufferedReader(new FileReader(jsonFile));
 		CorpusTrieCompiler compiler = gson.fromJson(br, CorpusTrieCompiler.class);
@@ -192,6 +202,7 @@ public class CorpusTrieCompiler
 		this.currentFileWordCounter = compiler.currentFileWordCounter;
 		this.retrievedFileWordCounter = compiler.retrievedFileWordCounter;
 		this.saveFrequency = compiler.saveFrequency;
+		this.filesCompiled = compiler.filesCompiled;
 		compiler = null;
 	}
  
@@ -204,6 +215,8 @@ public class CorpusTrieCompiler
     					return name.toLowerCase().endsWith(".txt");
     				}
     			});
+    	if ( files==null )
+    		throw new Exception("The corpus directory '"+this.dirName+"' doest not exist.");
     	Arrays.sort(files);
     	for (int i=0; i<files.length; i++) {
 			processFile(files[i]);
@@ -213,8 +226,10 @@ public class CorpusTrieCompiler
 	private void processFile(File file) throws Exception {
 		try {
 			String fileAbsolutePath = file.getAbsolutePath();
-			toConsole("--- compiling document "+file.getName());
+			toConsole("[INFO] --- compiling document "+file.getName()+"\n");
 			processDocumentContents(fileAbsolutePath);
+			if ( !this.filesCompiled.contains(fileAbsolutePath) )
+				filesCompiled.add(fileAbsolutePath);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -222,9 +237,10 @@ public class CorpusTrieCompiler
 
 	protected void processDocumentContents(String fileAbsolutePath) throws Exception {
 		BufferedReader bufferedReader = new BufferedReader(new FileReader(fileAbsolutePath));
-		processDocumentContents(bufferedReader);
+		processDocumentContents(bufferedReader,fileAbsolutePath);
 	}
-    protected void processDocumentContents(BufferedReader bufferedReader) throws Exception {	
+    protected void processDocumentContents(BufferedReader bufferedReader, String fileAbsolutePath) throws Exception {	
+    	Logger logger = Logger.getLogger("CorpusTrieCompiler.processDocumentContents");
 		String line;
 		boolean stopBecauseOfStopAfter = false;
 		long fileWordCounter = 0;
@@ -236,39 +252,59 @@ public class CorpusTrieCompiler
 				if (!isInuktitutWord(word))
 					continue;
 				++wordCounter;
-				if (retrievedFileWordCounter!=-1) {
-					if (fileWordCounter<retrievedFileWordCounter) {
-						fileWordCounter++;
-						++currentFileWordCounter;
-						continue;
-					} else {
-						retrievedFileWordCounter = -1;
+				logger.debug("word: "+word);
+				logger.debug("retrievedFileWordCounter: "+retrievedFileWordCounter);
+				logger.debug("fileWordCounter: "+fileWordCounter);
+				logger.debug("fileCompiled: "+filesCompiled.contains(fileAbsolutePath));
+				
+				if ( !filesCompiled.contains(fileAbsolutePath) ) {
+					if (retrievedFileWordCounter != -1) {
+						if (fileWordCounter < retrievedFileWordCounter) {
+							fileWordCounter++;
+							++currentFileWordCounter;
+							continue;
+						} else {
+							retrievedFileWordCounter = -1;
+						}
 					}
 				}
 				++fileWordCounter;
 				++currentFileWordCounter;
-				String[] segments = null;
-				try {
-					segments = fetchSegmentsFromCache(word);
+				
+				if ( filesCompiled.contains(fileAbsolutePath) ) {
+					continue;
 				}
-				catch (CorpusTrieCompilerException e) {
-					segments = getSegmenter().segment(word);
-					addToCache(word,segments);
+				toConsole("[INFO]     "+wordCounter + "(" + currentFileWordCounter + "). " + word + "... ");
+				String[] segments = fetchSegmentsFromCache(word);
+				if (segments == null) {
+					if (!wordsFailedSegmentation.contains(word)) {
+						toConsole("[segmenting] ");
+						try {
+							segments = getSegmenter().segment(word);
+							addToCache(word, segments);
+						} catch (Exception e) {
+							toConsole(" ??? " + e.getClass().getName() + " --- " + e.getMessage() + " ");
+						}
+					}
 				}
 				try {
-					TrieNode result = trie.add(segments);
+					TrieNode result = null;
+					if (segments!=null)
+						result = trie.add(segments);
 					if (result != null) {
-						toConsole("    "+wordCounter + "(" + currentFileWordCounter + "). " + word + "... " + result.getText());
+						toConsole(result.getText()+"\n");
 					} else {
-						toConsole("    "+wordCounter + "(" + currentFileWordCounter + "). " + word + "... " + "XXX");
+						toConsole("XXX\n");
+						wordsFailedSegmentation.add(word);
 					}
 
 				} catch (TrieException e) {
 					System.out.println("Problem adding word: " + words[n] + " (" + e.getMessage() + ").");
 				}
 				if (wordCounter % saveFrequency == 0) {
-					toConsole("    --- saving jsoned compiler ---");
-					saveAsJSON();
+					toConsole("[INFO]     --- saving jsoned compiler ---"+"\n");
+					logger.debug("size of trie: "+trie.getSize());
+					saveCompilerAsJSON();
 				}
 				// this line allows to make the compiler stop at a given point (for tests purposes only)
 				if (stopAfter != -1 && wordCounter == stopAfter) {
@@ -284,9 +320,9 @@ public class CorpusTrieCompiler
 		segmentsCache.put(word, segments);
 	}
 
-	private String[] fetchSegmentsFromCache(String word) throws CorpusTrieCompilerException {
+	private String[] fetchSegmentsFromCache(String word) {
 		if (!segmentsCache.containsKey(word))
-			throw new CorpusTrieCompilerException("Word '"+word+"' not in cache.");
+			return null;
 		return segmentsCache.get(word);
 	}
 

@@ -1,31 +1,26 @@
 package ca.nrc.datastructure.trie;
 
+import java.util.Arrays;
+
 /* blah */
 
 import java.util.HashMap;
 import java.util.Set;
+
+import org.apache.log4j.Logger;
 
 import com.google.gson.Gson;
 
 
 public class Trie {
 
-    protected long size;
-//    protected StringSegmenter segmenter;
+    protected long size = 0;
     protected TrieNode root;
     
     
-//    public Trie(StringSegmenter _segmenter) {
     public Trie() {
-//    	this.segmenter = _segmenter;
     	root = new TrieNode();
 	}
-    
-//    public Trie(StringSegmenter _segmenter, TrieNode _root, long _size) {
-//    	this.segmenter = _segmenter;
-//    	this.root = _root;
-//    	this.size = _size;
-//	}
     
     public String toJSON() {
 		Gson gson = new Gson();
@@ -33,11 +28,6 @@ public class Trie {
 		return json;
     }
     
-//    public TrieWithSegmenterClassname trieWithoutSegmenter() {
-//    	TrieWithSegmenterClassname trieWithoutSegmenter = new TrieWithSegmenterClassname(segmenter.getClass().getName(),root,size);
-//		return trieWithoutSegmenter;
-//	}
-
 	public TrieNode getRoot() {
     	return this.root;
     }
@@ -46,10 +36,6 @@ public class Trie {
     	return size;
     }
     
-//    public StringSegmenter getSegmenter() {
-//    	return segmenter;
-//    }
-
 	public TrieNode add(String[] segments) throws TrieException {
         TrieNode trieNode = root;
         if (trieNode == null)
@@ -58,32 +44,28 @@ public class Trie {
             return null; // null means the segmenter was not able to segment a word
         
 
-        
+        Logger logger = Logger.getLogger("Trie.add");
+        logger.debug("segments: "+Arrays.toString(segments));
         int iseg = 0;
         while (iseg < segments.length) {
+        	String segment = segments[iseg];
             Set<String> childs = trieNode.getChildren().keySet();
             // if the current char is not in the keys, add it
-            if (!childs.contains(segments[iseg])) {
-                insertNode(trieNode, segments[iseg]);
-                // if this is the last char, indicate this is a word
-                if (iseg == segments.length - 1) {
-                	TrieNode terminalNode = getChild(trieNode, segments[iseg]);
-                    terminalNode.setIsWord(true);
-                    terminalNode.incrementFrequency();
-                    size++; // for each new word
-                    return terminalNode;
-                }
+            if (!childs.contains(segment)) {
+                insertNode(trieNode, segment);
             }
+			// if this is the last char, indicate this is a word
+			if (iseg == segments.length - 1) {
+				TrieNode terminalNode = getChild(trieNode, segment);
+				terminalNode.setIsWord(true);
+				terminalNode.incrementFrequency();
+				size++; // for each new word
+				logger.debug("size: "+size);
+				return terminalNode;
+			}
             // current char is in the keys, or it was not and has just been added and is not the last char
-            trieNode = getChild(trieNode, segments[iseg]);
+            trieNode = getChild(trieNode, segment);
             trieNode.incrementFrequency();
-            
-            if (iseg==segments.length-1) {
-            	if (!trieNode.isWord())
-            		trieNode.setIsWord(true);
-                size++; // for each new word
-                return trieNode;
-            }
             iseg++;
         }
         return null;
@@ -116,6 +98,10 @@ public class Trie {
 		TrieNode node = this.getNode(segments);
 		TrieNode mostFrequentTerminalNode = node.getMostFrequentTerminal();
 		return mostFrequentTerminalNode;
+	}
+	
+	public TrieNode[] getAllTerminals() {
+		return root.getAllTerminals();
 	}
 	
 	public TrieNode[] getAllTerminals(String[] segments) {

@@ -15,15 +15,16 @@ public class TrieReader {
 
 	public Trie read(String trieFilePath) throws TrieException {
 		
-		FileReader fr;
 		try {
+			FileReader fr;
 			fr = new FileReader(trieFilePath);
+			Gson gson = new Gson();
+			Trie trie = gson.fromJson(fr, Trie.class);
+			fr.close();
+			return trie;
 		} catch (IOException e) {
 			throw new TrieException("Exception while reading all bytes of file '"+trieFilePath+"'.",e);
 		}
-		Gson gson = new Gson();
-		Trie trie = gson.fromJson(fr, Trie.class);
-		return trie;
 	}
 
 }

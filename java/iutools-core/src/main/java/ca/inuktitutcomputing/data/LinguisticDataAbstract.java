@@ -25,7 +25,7 @@ public abstract class LinguisticDataAbstract {
     static Hashtable surfaceFormsOfAffixesExp = new Hashtable();  // (expérimental)
 
     static Hashtable textualRenderings;
-    static Hashtable examples;
+    static Hashtable examples = new Hashtable();
     static LinguisticDataAbstract database;
 
     protected static Hashtable surfaceFormsOfAffixes;
@@ -560,9 +560,9 @@ public abstract class LinguisticDataAbstract {
             // Le "UTF-8" assume que le fichier lexiqueSyl.dat contient des
             // caract�res cod�s de cette fa�on, et assure que les caract�res
             // lus seront en unicode.
-            InputStream is = new Examples().getExampleStream();
+            InputStream is = null; //new Examples().getExampleStream();
+            InputStreamReader isr = null;
             if (is != null) {
-                InputStreamReader isr;
                 try {
                     isr = new InputStreamReader(is, "utf-8");
                 } catch (UnsupportedEncodingException e) {
@@ -639,8 +639,10 @@ public abstract class LinguisticDataAbstract {
                     }
                 } // else
             } // while (!eof)
-            if (r!=null)
+            if (r!=null) {
+            	isr.close();
                 r.close();
+            }
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);

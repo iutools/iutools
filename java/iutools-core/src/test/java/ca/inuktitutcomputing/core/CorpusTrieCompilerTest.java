@@ -24,6 +24,8 @@ import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieNode;
+import ca.nrc.datastructure.trie.TrieReader;
+import ca.nrc.json.PrettyPrinter;
 import ca.nrc.testing.AssertHelpers;
 
 /**
@@ -139,6 +141,8 @@ public class CorpusTrieCompilerTest
         CorpusTrieCompiler retrievedCompiler = new CorpusTrieCompiler();
         retrievedCompiler.setCorpusDirectory(corpusDir);
         retrievedCompiler.retrieveFromJSON();
+        System.out.println("retrievedFileWordCounter: "+retrievedCompiler.retrievedFileWordCounter);
+        System.out.println("retrieved trie size: "+retrievedCompiler.trie.getSize());
 
         Trie trie = retrievedCompiler.trie;
 		long expectedCurrentFileWordCounter = 1;
@@ -202,6 +206,15 @@ public class CorpusTrieCompilerTest
 		expectedText = "{sana/1v}{lauqsima/1vv}{juq/1vn}";
 		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText,
 				sana_lauqsima_juq_node.getText());
+		
+		TrieNode[] allTerminals = completeTrie.getAllTerminals();
+		for (int i=0; i<allTerminals.length; i++) System.out.println(allTerminals[i].getText());
+
+		// 11 words, but one did not analyze.
+		assertEquals("The frequency of the word sanalauqsimajuq should be 1.",1,sana_lauqsima_juq_node.getFrequency());
+		assertEquals("The size of the trie should be 10.",10,completeTrie.getSize());
+		
+		
     }
     
     @Test
@@ -241,6 +254,14 @@ public class CorpusTrieCompilerTest
 		expectedText = "{sana/1v}{lauqsima/1vv}{juq/1vn}";
 		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText,
 				sana_lauqsima_juq_node.getText());
+		
+		Trie savedTrie = new TrieReader().read(retrievedCompiler.trieFilePath);
+		TrieNode sana_lauqsima_juq_node_from_saved_trie = trie.getNode(new String[] { "{sana/1v}", "{lauqsima/1vv}", "{juq/1vn}" });
+		assertTrue("The trie should contain the node for 'sanalauqsimajuq'.", sana_lauqsima_juq_node_from_saved_trie != null);
+		expectedText = "{sana/1v}{lauqsima/1vv}{juq/1vn}";
+		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText,
+				sana_lauqsima_juq_node.getText());
+		
     }
     
     @Test
@@ -261,7 +282,7 @@ public class CorpusTrieCompilerTest
 		String documentContents = "inuit takujuq nunavut takujuq takulaaqtuq";
 		BufferedReader br = new BufferedReader(new StringReader(documentContents));
 		CorpusTrieCompiler trieCompiler = new CorpusTrieCompiler(StringSegmenter_IUMorpheme.class.getName());
-		trieCompiler.processDocumentContents(br);
+		trieCompiler.processDocumentContents(br,null);
 		
 		String[] inuit_segments = new String[]{"{inuk/1n}","{it/tn-nom-p}"};
 		String[] taku_segments = new String[]{"{taku/1v}"};
