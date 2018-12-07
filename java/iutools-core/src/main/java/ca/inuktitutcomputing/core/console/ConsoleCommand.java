@@ -10,6 +10,7 @@ public abstract class ConsoleCommand extends SubCommand {
 	public static final String OPT_CORPUS_NAME = "corpus-name";
 	public static final String OPT_TRIE_FILE = "trie-file";
 	public static final String OPT_MORPHEMES = "morphemes";
+	public static final String OPT_FROM_SCRATCH = "from-scratch";
 	
 	
 	public ConsoleCommand(String name) {

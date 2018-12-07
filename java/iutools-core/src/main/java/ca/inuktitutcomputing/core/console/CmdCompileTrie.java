@@ -1,5 +1,8 @@
 package ca.inuktitutcomputing.core.console;
 
+import ca.inuktitutcomputing.core.CorpusTrieCompiler;
+import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
+
 public class CmdCompileTrie extends ConsoleCommand {
 
 	@Override
@@ -16,15 +19,19 @@ public class CmdCompileTrie extends ConsoleCommand {
 		String corpusDir = getCorpusDir();
 		
 		String trieFile = getTrieFile();
+		
+		boolean fromScratch = this.cmdLine.hasOption("from-scratch");
 
 		echo("\nCompiling Trie:\n");
 		echo(1);
 		{
-			echo("corpus    : "+corpusDir+"\ntrie file : "+trieFile);
+			echo("corpus       : "+corpusDir+"\ntrie file    : "+trieFile+"\nfrom scratch : "+fromScratch+"\n");
 		}
+		echo(-1);
 		
-		echo(-1);
-		echo("\n\nCommand not implemented.\nTODO-Benoit: Appeler le CorpusTrieCompiler dans CmdCompileTrie.execute() ");			
-		echo(-1);
+		CorpusTrieCompiler compiler = new CorpusTrieCompiler(StringSegmenter_IUMorpheme.class.getName());
+		compiler.setCorpusDirectory(corpusDir);
+		compiler.setTrieFilePath(trieFile);
+		compiler.run(fromScratch);
 	}
 }

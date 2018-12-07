@@ -40,11 +40,19 @@ public class Console {
 			    .argName("MORPH_SEQUENCE")
 			    .build();
 
+		Option optFromScratch = Option.builder(null)
+				.longOpt(ConsoleCommand.OPT_FROM_SCRATCH)
+			    .desc("Tells the compiler to start from scratch.")
+			    .argName("FROM_SCRATCH")
+			    .required(false)
+			    .build();
+
 		// Compile a trie and save it to file
 		SubCommand compileTrie = 
 				new CmdCompileTrie("compile_trie")
 				.addOption(optCorpusDir)				
 				.addOption(optTrieFile)
+				.addOption(optFromScratch)
 				;
 		mainCmd.addSubCommand(compileTrie);
 		
