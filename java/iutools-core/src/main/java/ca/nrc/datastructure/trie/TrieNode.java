@@ -106,7 +106,19 @@ public class TrieNode {
 	
     @Override
     public String toString() {
-        return text;
+    	TrieNode mostFrequentTerminal = null;
+    	if (!this.isWord)
+    		mostFrequentTerminal = this.getMostFrequentTerminal();
+        return "[TrieNode:\n" +
+        		"    segments = "+this.text+"\n"+
+        		"    frequency = "+this.frequency+"\n"+
+        		"    isWord = "+this.isWord+"\n"+
+        		(mostFrequentTerminal!=null ?
+        				"    mostFrequentTerminal = [TrieNode:\n" +
+        				"                                 segments = "+mostFrequentTerminal.getText()+"\n"+
+        				"                                 frequency = "+mostFrequentTerminal.getFrequency()+"\n"+
+        				"                                 ]\n" : "")+
+        		"    ]";
     }
 
 	public HashMap<String,TrieNode> getChildren() {
