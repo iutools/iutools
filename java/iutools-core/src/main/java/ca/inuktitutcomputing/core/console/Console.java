@@ -40,6 +40,13 @@ public class Console {
 			    .argName("MORPH_SEQUENCE")
 			    .build();
 
+		Option optWord = Option.builder(null)
+				.longOpt(ConsoleCommand.OPT_WORD)
+			    .desc("An inuktitut word.")
+			    .hasArg()
+			    .argName("WORD")
+			    .build();
+
 		Option optFromScratch = Option.builder(null)
 				.longOpt(ConsoleCommand.OPT_FROM_SCRATCH)
 			    .desc("Tells the compiler to start from scratch.")
@@ -62,6 +69,7 @@ public class Console {
 				new CmdSearchTrie("search_trie")
 				.addOption(optTrieFile)	
 				.addOption(optMorphemes)
+				.addOption(optWord)
 				;
 		mainCmd.addSubCommand(searchTrie);
 		

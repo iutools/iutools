@@ -8,8 +8,11 @@ import java.io.InputStreamReader;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ca.nrc.datastructure.trie.StringSegmenter;
+import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieNode;
+import ca.nrc.datastructure.trie.TrieReader;
 import ca.nrc.json.PrettyPrinter;
 
 public class CmdSearchTrie extends ConsoleCommand {
@@ -27,25 +30,52 @@ public class CmdSearchTrie extends ConsoleCommand {
 
 	@Override
 	public void execute() throws Exception {
-		String trieFile = getTrieFile();
+		String trieFilePath = getTrieFile();
 		String[] morphemes = getMorphemes(false); 
+		String word = getWord(false); 
+		StringSegmenter segmenter = new StringSegmenter_IUMorpheme();
 		
 		boolean interactive = false;
-		if (morphemes == null) {
+		if (morphemes == null && word == null) {
 			interactive = true;
+		} else if (morphemes == null) {
+			morphemes = segmenter.segment(word);
 		}
+
+		boolean searchWord = false;
+		
+		TrieReader trieReader = new TrieReader();
+		Trie trie = trieReader.read(trieFilePath);
 		
 		while (true) {
 			if (interactive) {
-				String morphemesStr = prompt("Enter a list of morphemes");
-				if (morphemesStr == null) break;
-				morphemes = morphemesStr.split("\\s+");
+				String searchType;
+				if (searchWord)
+					searchType = "a word ('m' to switch to morphemes)";
+				else
+					searchType = "a list of morphemes ('w' to switch to word)";
+				String searchStr = prompt("Enter "+searchType);
+				if (searchStr == null) break;
+				if (searchStr.equals("m")) {
+					searchWord = false; continue;
+				}
+				else if (searchStr.equals("w")) {
+					searchWord = true; continue; }
+				if (searchWord)
+					morphemes = segmenter.segment(searchStr);
+				else
+					morphemes = searchStr.split("\\s+");
 			}
 			
 			echo("\nSearching for morphemes: "+String.join(" ", morphemes)+"\n");
-			// TODO: Benoit, c'est parse la liste de morpheme, cherche les dans 
-			//   le Trie, et imprime le résultat.
-			echo("\n!!! TODO-Benoit: Call the trie search from CmdSearchTrie.execute");
+			
+			TrieNode node = trie.getNode(morphemes);
+			if (node != null) {
+				String nodeString = node.toString();
+				echo(nodeString);
+			} else {
+				echo("No node has been found for that sequence of morphemes.");
+			}
 			
 			if (!interactive) break;
 		}

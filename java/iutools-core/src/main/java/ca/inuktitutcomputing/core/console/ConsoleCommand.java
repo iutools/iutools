@@ -10,6 +10,7 @@ public abstract class ConsoleCommand extends SubCommand {
 	public static final String OPT_CORPUS_NAME = "corpus-name";
 	public static final String OPT_TRIE_FILE = "trie-file";
 	public static final String OPT_MORPHEMES = "morphemes";
+	public static final String OPT_WORD = "word";
 	public static final String OPT_FROM_SCRATCH = "from-scratch";
 	
 	
@@ -42,6 +43,15 @@ public abstract class ConsoleCommand extends SubCommand {
 		}
 		
 		return morphSeq;		
+	}
+	
+	protected String getWord() {
+		return getWord(true);
+	}
+	
+	protected String getWord(boolean failIfAbsent) {
+		String wordStr = getOptionValue(ConsoleCommand.OPT_WORD, failIfAbsent);
+		return wordStr;		
 	}
 	
 	protected static String prompt(String mess) {
