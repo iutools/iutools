@@ -56,7 +56,7 @@ public class TranslitTextFile {
         	        new FileOutputStream(fileName+".out.txt"), "UTF-8");
         	
         	processFile(bf,pw);
-			//            doc.writeUTF8("/home/farleyb/public-html/output.htm");
+        	pw.close();
 
             System.exit(0);
 
@@ -74,16 +74,16 @@ public class TranslitTextFile {
 
     private static void processFile(BufferedReader bf, Writer pw) {
 		String text;
-		int nLines = 10;
+		int nLines = 30;
 		try {
 			while (nLines-- != 0 && (text = bf.readLine()) != null) {
 				System.out.println("> "+text);
 				String textUni = TransCoder.legacyToUnicode(text,"Naamajut");
 				System.out.println("> "+textUni);
-				pw.write(textUni);
-				pw.write("\n");
+				//pw.write(textUni);
+				//pw.write("\n");
 			}
-			pw.flush();
+			//pw.flush();
 		} catch (Exception e) {
 
 		}

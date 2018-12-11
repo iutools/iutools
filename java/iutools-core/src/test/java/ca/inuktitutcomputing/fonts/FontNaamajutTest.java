@@ -8,14 +8,19 @@
  */
 package ca.inuktitutcomputing.fonts;
 
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
 import ca.inuktitutcomputing.fonts.FontNaamajut;
 import junit.framework.TestCase;
 
-public class FontNaamajutTest extends TestCase {
+public class FontNaamajutTest {
 
     /*
      * Test method for 'fonts.PoliceAinunavik.transcodeToUnicode(String, String)'
      */
+    @Test
     public void testTranscodeToUnicodeStringString() {
         String res = null;
         /*
@@ -42,11 +47,11 @@ public class FontNaamajutTest extends TestCase {
                 // n+ngi: pinasualaursimanngituq
                 {"WNhxMs3ym8qg6","\u1431\u14c7\u14f1\u140a\u14da\u1405\u1550\u14ef\u14aa\u1671\u1450\u1585"},
                 // n+ngii: atanngiijjutauniaqpuq
-                {"xb8�0Jbsix6S6","\u140a\u1455\u1672\u153e\u152a\u1455\u1405\u14c2\u140a\u1585\u1433\u1585"},
+                {"xb8\u01530Jbsix6S6","\u140a\u1455\u1672\u153e\u152a\u1455\u1405\u14c2\u140a\u1585\u1433\u1585"},
                 // n+ngu: nunannguatigut
                 {"kN8axtA5","\u14c4\u14c7\u1673\u140a\u144e\u148d\u1466"},
                 // n+nguu: kinnguumajanginnik
-                {"r8�m/q8i4","\u146d\u1674\u14aa\u152d\u158f\u14d0\u14c2\u1483"},
+                {"r8\u00e5m/q8i4","\u146d\u1674\u14aa\u152d\u158f\u14d0\u14c2\u1483"},
                 // n+nga: tunngasugitsi
                 {"g8zhQ5y","\u1450\u1675\u14f1\u148b\u1466\u14ef"},
                 // n+ngaa: uqautivinngaa
@@ -54,28 +59,28 @@ public class FontNaamajutTest extends TestCase {
                 // ngi: kangiq&iniup
                 {"vq6Ois2","\u1472\u158f\u1585\u15a0\u14c2\u1405\u1449"},
                 // ngii: ajjingiinngittuniinniaqtutik
-                {"x0p�8q5g�8ix6gt4","\u140a\u153e\u1528\u1590\u1671\u1466\u1450\u14c3\u14d0\u14c2\u140a\u1585\u1450\u144e\u1483"},
+                {"x0p\u01538q5g\u20228ix6gt4","\u140a\u153e\u1528\u1590\u1671\u1466\u1450\u14c3\u14d0\u14c2\u140a\u1585\u1450\u144e\u1483"},
                 // ngu: angutiillu
-                {"xa�9l","\u140a\u1591\u144f\u14ea\u14d7"},
+                {"xa\u20209l","\u140a\u1591\u144f\u14ea\u14d7"},
                 // nguu: arraanguulaaqtumi
-                {"x3��6gu","\u140a\u1550\u154c\u1592\u14db\u1585\u1450\u14a5"},
+                {"x3\u00c7\u00ca\u02dc6gu","\u140a\u1550\u154c\u1592\u14db\u1585\u1450\u14a5"},
                 // nga: gavamangannik
                 {"Z?mz8i4","\u1490\u1559\u14aa\u1593\u14d0\u14c2\u1483"},
                 // ngaa: maligaliurvingmiingaarnikuuvugut
-                {"moZos3F1�\u03a93i�KA5","\u14aa\u14d5\u1490\u14d5\u1405\u1550\u1555\u1595\u14a6\u1594\u1550\u14c2\u1470\u1557\u148d\u1466"},
+                {"moZos3F1\u00a8\u03a93i\u0192KA5","\u14aa\u14d5\u1490\u14d5\u1405\u1550\u1555\u1595\u14a6\u1594\u1550\u14c2\u1470\u1557\u148d\u1466"},
                 
                 // rqi: utarqiniq
                 {"sb3ei6","\u1405\u1455\u1585\u146d\u14c2\u1585"},
                 // rqii: utarqiinnaqtuq
-                {"sb3�8N6g6","\u1405\u1455\u1585\u146e\u14d0\u14c7\u1585\u1450\u1585"},
+                {"sb3\u00b48N6g6","\u1405\u1455\u1585\u146e\u14d0\u14c7\u1585\u1450\u1585"},
                 // qri: niqriku
                 {"i6Ef","\u14c2\u1550\u1546\u146f"},
                 // qrii: taqriijaamit
-                {"b6��u5","\u1455\u1550\u1547\u152e\u14a5\u1466"},
+                {"b6\u2030\u00f7u5","\u1455\u1550\u1547\u152e\u14a5\u1466"},
                 // qqi: utaqqiniq
                 {"sb6ei6","\u1405\u1455\u1585\u146d\u14c2\u1585"},
                 // qqii: utaqqiinnaqtuq
-                {"sb6�8N6g6","\u1405\u1455\u1585\u146e\u14d0\u14c7\u1585\u1450\u1585"},
+                {"sb6\u00b48N6g6","\u1405\u1455\u1585\u146e\u14d0\u14c7\u1585\u1450\u1585"},
                 // rqu: qimirqujiujut
                 {"eu3dpsJ5","\u157f\u14a5\u1585\u146f\u1528\u1405\u152a\u1466"},
                 // rquu: ilitarirquupuq
@@ -83,7 +88,7 @@ public class FontNaamajutTest extends TestCase {
                 // qru: qimiqruagait
                 {"eu6DxZw5","\u157f\u14a5\u1550\u1548\u140a\u1490\u1403\u1466"},
                 // qruu: maqruuk
-                {"m6�4","\u14aa\u1550\u1549\u1483"},
+                {"m6\u00ce4","\u14aa\u1550\u1549\u1483"},
                 // qqu: qimiqqujiujut
                 {"eu6dpsJ5","\u157f\u14a5\u1585\u146f\u1528\u1405\u152a\u1466"},
                 // qquu: ilitariqquupuq
@@ -91,15 +96,15 @@ public class FontNaamajutTest extends TestCase {
                 // rqa: iniurqavik
                 {"wis3cF4","\u1403\u14c2\u1405\u1585\u1472\u1555\u1483"},
                 // rqaa: itirqaaqpunga
-                {"wt3�6Sz","\u1403\u144e\u1585\u1473\u1585\u1433\u1593"},
+                {"wt3\u00e76Sz","\u1403\u144e\u1585\u1473\u1585\u1433\u1593"},
                 // qra: angiqrapaa
-                {"xq6C�","\u140a\u158f\u1550\u154b\u1439"},
+                {"xq6C\u00d9","\u140a\u158f\u1550\u154b\u1439"},
                 // qraa: aqraagu
-                {"x6�A","\u140a\u1550\u154c\u148d"},
+                {"x6\u00c7A","\u140a\u1550\u154c\u148d"},
                 // qqa: iniuqqavik
                 {"wis6cF4","\u1403\u14c2\u1405\u1585\u1472\u1555\u1483"},
                 // qqaa: itiqqaaqpunga
-                {"wt6�6Sz","\u1403\u144e\u1585\u1473\u1585\u1433\u1593"},
+                {"wt6\u00e76Sz","\u1403\u144e\u1585\u1473\u1585\u1433\u1593"},
 
                 // ru: ippigitsiaruk
                 {"w2WQ5yxD4","\u1403\u1449\u1431\u148b\u1466\u14ef\u140a\u1548\u1483"},
@@ -108,44 +113,46 @@ public class FontNaamajutTest extends TestCase {
                 // &a: ikak&ak
                 {"wv4I4","\u1403\u1472\u1483\u15a4\u1483"},
                 // luu, nii, v: uvvaluunniit
-                {"s=?�8�5","\u1405\u155d\u1559\u14d8\u14d0\u14c3\u1466"},
+                {"s=?\u00ac8\u20225","\u1405\u155d\u1559\u14d8\u14d0\u14c3\u1466"},
                 // ii, laa: iilaak
-                {"\u2211�4","\u1404\u14db\u1483"},
+                {"\u2211\u02dc4","\u1404\u14db\u1483"},
                 // H, aa, m: Haamlaujunit
                 {"B\u22487MsJi5","\u157c\u140b\u14bb\u14da\u1405\u152a\u14c2\u1466"},
                 // vaa, s, juu: angillivaalliarjussimajuumuppuq
-                {"xq9o�9ox3J{ym�j2S6",
+                {"xq9o\u00bf9ox3J{ym\u00d4j2S6",
                     "\u140a\u158f\u14ea\u14d5\u155a\u14ea\u14d5\u140a\u1550\u152a\u1505\u14ef\u14aa\u152b\u14a7\u1449\u1433\u1585"},
                 // taa, &: taakkuangu&&aqpuq
                 {"\u222b4fxaPI6S6","\u1456\u1483\u146f\u140a\u1591\u15a6\u15a4\u1585\u1433\u1585"},
                 // uu, &aa, suu: uumajur&aasuut
-                {"�mJ3�\u02d95","\u1406\u14aa\u152a\u1550\u15a5\u14f2\u1466"},
+                {"\u00dfmJ3\u00c8\u02d95","\u1406\u14aa\u152a\u1550\u15a5\u14f2\u1466"},
                 // &uu, raa, ng: i&uuraarjungnik
-                {"w��3J1i4","\u1403\u15a3\u154c\u1550\u152a\u1595\u14c2\u1483"},
+                {"w\u00d2\u00c73J1i4","\u1403\u15a3\u154c\u1550\u152a\u1595\u14c2\u1483"},
                 // &ii: sivu&iinnaq
-                {"yK�8N6","\u14ef\u1557\u15a1\u14d0\u14c7\u1585"},
+                {"yK\u00d88N6","\u14ef\u1557\u15a1\u14d0\u14c7\u1585"},
                 // ruu, tuu: marruuliqtuunni
-                {"m3�o6�8i","\u14aa\u1550\u1549\u14d5\u1585\u1451\u14d0\u14c2"},
+                {"m3\u00ceo6\u00a98i","\u14aa\u1550\u1549\u14d5\u1585\u1451\u14d0\u14c2"},
                 // luu, naa, guu: iluunnaaguut
-                {"w�8��5","\u1403\u14d8\u14d0\u14c8\u148e\u1466"},
+                {"w\u00ac8\u02c6\u00c55","\u1403\u14d8\u14d0\u14c8\u148e\u1466"},
                 // vuu, maa: nunavuulimaaq
                 {"kN\ufffdo\u03bc6","\u14c4\u14c7\u1558\u14d5\u14ab\u1585"},
                 // puu: sapuulutait
-                {"n�lbw5","\u14f4\u1434\u14d7\u1455\u1403\u1466"},
+                {"n\u00cdlbw5","\u14f4\u1434\u14d7\u1455\u1403\u1466"},
                 // muu: tamatumuuna
                 {"bmg\u2206N","\u1455\u14aa\u1450\u14a8\u14c7"},
                 // aa, gaa: aaggaa
-                {"\u2248[�","\u140b\u14a1\u1491"},
+                {"\u2248[\u00db","\u140b\u14a1\u1491"},
                 // aa, jii, gii: aajiiqatigiinniq
-                {"\u2248\u03c0ct�8i6","\u140b\u1529\u1583\u144e\u148c\u14d0\u14c2\u1585"},
+                {"\u2248\u03c0ct\u01528i6","\u140b\u1529\u1583\u144e\u148c\u14d0\u14c2\u1585"},
                 // jaa, vii: siarrijaarviit
-                {"yx3E�3�5","\u14ef\u140a\u1550\u1546\u152e\u1550\u1556\u1466"},
+                {"yx3E\u00f73\u00cf5","\u14ef\u140a\u1550\u1546\u152e\u1550\u1556\u1466"},
                 // kaa, pii: unikkaaliulauqpiit
-                {"si4\u221aosMs6�5","\u1405\u14c2\u1483\u1473\u14d5\u1405\u14da\u1405\u1585\u1432\u1466"},
+                {"si4\u221aosMs6\u201e5","\u1405\u14c2\u1483\u1473\u14d5\u1405\u14da\u1405\u1585\u1432\u1466"},
                 // lii, sii: iliilauqpisii
-                {"w�Ms6W�","\u1403\u14d6\u14da\u1405\u1585\u1431\u14f0"},
+                {"w\u00f8Ms6W\u00a5","\u1403\u14d6\u14da\u1405\u1585\u1431\u14f0"},
                 // kii, rii: kiinaujallariit
-                {"�Ns/9M�5","\u146e\u14c7\u1405\u152d\u14ea\u14da\u1547\u1466"},
+                {"\u00aeNs/9M\u20305","\u146e\u14c7\u1405\u152d\u14ea\u14da\u1547\u1466"},
+                // ilinniarunnaqtitaullutik
+                {"wo8ixD8N6tbs9lt4","\u1403\u14D5\u14D0\u14C2\u140A\u1548\u14D0\u14C7\u1585\u144E\u1455\u1405\u14EA\u14D7\u144E\u1483"}
         };
 
         String wordsAI[][] = {
@@ -155,7 +162,7 @@ public class FontNaamajutTest extends TestCase {
                     "\u1401\u1449\u1431\u1585\u1455\u1405\u14ea\u14d7\u14c2"
                 },
                 // pai: paippaamullu
-                {"Xw2�j9l","",
+                {"Xw2\u00d9j9l","",
                     "\u1438\u1403\u1449\u1439\u14a7\u14ea\u14d7",
                     "\u142f\u1449\u1439\u14a7\u14ea\u14d7"
                 },
@@ -170,7 +177,7 @@ public class FontNaamajutTest extends TestCase {
                     "\u146b\u1559\u14ea\u14da\u14ea\u14d7\u140a\u1585\u14f1\u1593"
                  },
                 // gai: turaagait
-                {"g�Zw5","",
+                {"g\u00c7Zw5","",
                      "\u1450\u154c\u1490\u1403\u1466",
                      "\u1450\u154c\u1489\u1466"
                 },
@@ -264,8 +271,8 @@ public class FontNaamajutTest extends TestCase {
     /*
      * Test method for 'fonts.PoliceAinunavik.transcodeFromUnicode(String)'
      */
-    public void testTranscodeFromUnicode() {
-
-    }
+//    public void testTranscodeFromUnicode() {
+//
+//    }
 
 }

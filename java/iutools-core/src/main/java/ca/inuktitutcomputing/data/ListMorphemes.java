@@ -12,12 +12,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Vector;
+import java.util.concurrent.TimeoutException;
 
 import ca.inuktitutcomputing.script.Orthography;
 
 public class ListMorphemes {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws TimeoutException {
         BufferedWriter bw = null;
         try {
             bw = new BufferedWriter(new FileWriter("ressources/morphemes.txt"));

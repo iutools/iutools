@@ -26,6 +26,7 @@
 package ca.inuktitutcomputing.applications;
 
 import java.io.*;
+import java.util.concurrent.TimeoutException;
 
 import ca.inuktitutcomputing.data.LinguisticDataAbstract;
 import ca.inuktitutcomputing.data.Suffixes;
@@ -39,7 +40,8 @@ public class DescriptionOfSuffix {
     		usage("Argument missing");
     	}
     	String source = Util.getArgument(args, "s");
-    	boolean res = LinguisticDataAbstract.init(source);
+    	boolean res;
+			res = LinguisticDataAbstract.init(source);
     	if ( ! res ) {
     		usage("'csv' is the only one accepted value for the \"source\" option '-s'");
     	}

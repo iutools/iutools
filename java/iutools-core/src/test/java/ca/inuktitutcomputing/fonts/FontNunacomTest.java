@@ -8,15 +8,19 @@
  */
 package ca.inuktitutcomputing.fonts;
 
-import ca.inuktitutcomputing.fonts.FontNunacom;
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
 
-public class FontNunacomTest extends TestCase {
+import org.junit.Test;
+
+import ca.inuktitutcomputing.fonts.FontNunacom;
+
+public class FontNunacomTest {
 
     /*
      * Test method for 'fonts.PoliceAinunavik.transcodeToUnicode(String, String)'
      */
-    public void testTranscodeToUnicodeStringString() {
+    @Test
+	public void testTranscodeToUnicodeStringString() {
         String res = null;
         /*
          * pinasualaursimanngituq, atanngiijjutauniaqpuq, nunannguatigut, 
@@ -278,8 +282,8 @@ public class FontNunacomTest extends TestCase {
     /*
      * Test method for 'fonts.PoliceAinunavik.transcodeFromUnicode(String)'
      */
-    public void testTranscodeFromUnicode() {
-
-    }
+//    public void testTranscodeFromUnicode() {
+//
+//    }
 
 }

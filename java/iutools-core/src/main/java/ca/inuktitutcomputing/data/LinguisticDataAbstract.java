@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
+import java.util.concurrent.TimeoutException;
 
 import ca.inuktitutcomputing.phonology.Dialect;
 import ca.inuktitutcomputing.dataCSV.LinguisticDataCSV;

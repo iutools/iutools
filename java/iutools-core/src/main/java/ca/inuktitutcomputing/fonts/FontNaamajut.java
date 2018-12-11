@@ -90,6 +90,8 @@ package ca.inuktitutcomputing.fonts;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import ca.inuktitutcomputing.utilities1.Util;
 import ca.inuktitutcomputing.script.TransCoder;
@@ -1114,12 +1116,14 @@ public class FontNaamajut {
             case '\u25ca': d = '{'; break;
             case '\ufb01': d = '\u00be'; break; // 3/4
             case '\ufb02': d = '\u2153'; break;// 1/3
-            default: d = c; break;
+            default: d = c; //int n=c; System.out.println("\n\n*** c at "+i+": "+n+"\n\n"+"[[["+s+"]]]\n\n");
+            	break;
             }
             i++;
             sb.append(d);
         }
-        return sb.toString();
+        String returnString = sb.toString();
+        return returnString;
     }
 
     

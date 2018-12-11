@@ -1,10 +1,13 @@
 package ca.inuktitutcomputing.data;
 
+import java.util.concurrent.TimeoutException;
+
 public class LinguisticDataSingleton {
 	
 		private static String dataSource;
 
-	    /** Constructeur privé */  
+	    /** Constructeur privé 
+	     * @throws TimeoutException */  
 	    private LinguisticDataSingleton() {
 			LinguisticDataAbstract.init(dataSource);
 	    }

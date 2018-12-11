@@ -8,6 +8,8 @@
 package ca.inuktitutcomputing.fonts;
 
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,6 +21,8 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import org.junit.Test;
+
 import ca.inuktitutcomputing.fonts.ngrams.Ngram;
 import ca.inuktitutcomputing.fonts.ngrams.Ngram.FontNgram;
 import ca.inuktitutcomputing.fonts.Font;
@@ -27,7 +31,7 @@ import ca.inuktitutcomputing.script.Syllabics;
 import ca.inuktitutcomputing.script.TransCoder;
 import junit.framework.TestCase;
 
-public class FontTest extends TestCase {
+public class FontTest {
 
 //   public void testTranscoder2toUnicodeICI() {
 //        TransCoder transcoder = Police.getTranscoder2("nunacom","ToUnicode","ici");
@@ -42,6 +46,7 @@ public class FontTest extends TestCase {
 //        assertEquals("",targ,res);
 //    }
     
+    @Test
     public void testTranscoder3toUnicodeICI() {
         String res = null;
         Method meth = Font.getTranscoder3("nunacom","ToUnicode");
@@ -100,6 +105,7 @@ public class FontTest extends TestCase {
 //        assertEquals("",targ,res);
 //    }
     
+    @Test
     public void testTranscoder3toUnicodeAIPAITAI() {
         String res = null;
         Method meth = Font.getTranscoder3("nunacom","ToUnicode");
@@ -126,6 +132,7 @@ public class FontTest extends TestCase {
         }
     }
     
+//    @Test
 //    public void testTranscoder2toFontICI() {
 //        TransCoder transcoder = Police.getTranscoder2("nunacom","ToFont","ici");
 //        String targ = "|wte"; // iitiqi
@@ -138,6 +145,7 @@ public class FontTest extends TestCase {
 //        assertEquals("",targ,res);
 //    }
     
+//    @Test
 //    public void testTranscoder2toFontAIPAITAI() {
 //        TransCoder transcoder = Police.getTranscoder2("nunacom","ToFont","aipaitai");
 //        String targ = "|wte"; // iitiqi

@@ -229,7 +229,7 @@ public class CorpusTrieCompilerTest
     	// iglumik takulaaqtuq
     	// nunait
 
-        String corpusDir = System.getenv("IUTOOLS")+"/java/iutools-data/src/test/HansardCorpus3";
+        String corpusDir = IUConfig.getIUDataPath()+"src/test/HansardCorpus3";
         CorpusTrieCompiler compiler = new CorpusTrieCompiler(StringSegmenter_IUMorpheme.class.getName());
         compiler.saveFrequency = 3;
         compiler.setCorpusDirectory(corpusDir);

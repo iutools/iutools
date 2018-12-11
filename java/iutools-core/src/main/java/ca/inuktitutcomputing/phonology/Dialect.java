@@ -89,7 +89,7 @@ public class Dialect {
         String group = new String(new char[] { l1, l2 });
         Vector<String> terms = new Vector<String>();
         for (int i = 0; i < groups.length; i++) {
-        	stpw.check("Dialect.equivalentGroups -- i: "+i);
+        	stpw.check("Dialect.equivalentGroups::93 -- i: "+i);
             if (groups[i][0].equals(group)) {
                 terms.add(groups[i][1]);
             }
@@ -132,6 +132,7 @@ public class Dialect {
                         groupOrig.charAt(0), groupOrig.charAt(1));
                 if (grps != null) {
                     for (int j = 0; j < grps.size(); j++) {
+                    	stpw.check("Dialect.newCandidates::136 -- j: "+j);
                         String groupj = grps.elementAt(j);
                         char c = groupj.charAt(1);
                         /*
@@ -163,6 +164,7 @@ public class Dialect {
         candsAndChanges2.add(new Object[]{candidateMorpheme,null});
         candsAndChanges2.addAll(candsAndChanges);
         for (int m = 0; m < cands2.size(); m++) {
+        	stpw.check("Dialect.newCandidates::168 -- m: "+m);
             String candStr = cands2.elementAt(m);
             Vector correspondingTerms = correspondingTermsEquivalentGroups(candStr);
             ArrayList<Object[]> correspTermsAndChanges =
@@ -176,11 +178,13 @@ public class Dialect {
                     PhonologicalTransformation tf =
                         (PhonologicalTransformation) ltf.get(0);
                     for (int i=0; i<correspTermsAndChanges.size(); i++) {
+                    	stpw.check("Dialect.newCandidates::182 -- i: "+i);
                         ArrayList<PhonologicalTransformation> l = (ArrayList<PhonologicalTransformation>)correspTermsAndChanges.get(i)[1];
                         l.add(tf);
                     }
                 }
                 for (int n = 0; n < correspondingTerms.size(); n++) {
+                	stpw.check("Dialect.newCandidates::188 -- n: "+n);
                     String candN = (String) correspondingTerms.elementAt(n);
                     if (!cands.contains(candN)) {
                         cands.add(candN);
@@ -192,11 +196,13 @@ public class Dialect {
         if (cands.size() == 0)
             return null;
         else {
-            for (int i=0; i<cands.size(); i++)
+            for (int i=0; i<cands.size(); i++) {
+            	stpw.check("Dialect.newCandidates::201 -- i: "+i);
                 if (cands.elementAt(i).equals(candidateMorpheme)) {
                     cands.remove(i);
                     candsAndChanges.remove(i--);
                 }
+            }
 //            while (cands.removeElement(candidateMorpheme))
 //                ;
         }
@@ -204,6 +210,7 @@ public class Dialect {
         // Schneider's Law
         Vector<String> schCands = schneiderCandidates(stem, candidateMorpheme);
         for (int i=0; i<cands.size(); i++) {
+        	stpw.check("Dialect.newCandidates::214 -- i: "+i);
             schCands.addAll(schneiderCandidates(stem,cands.elementAt(i)));
             //while(schCands.removeElement(cands.elementAt(i)));
             schCands.removeElement(cands.elementAt(i));
@@ -231,7 +238,7 @@ public class Dialect {
 				String candN = Orthography
 						.orthographyICILat((String) correspondingTerms
 								.elementAt(n));
-				stpw.check("Dialect.newRootCandidates -- corresponding term "+n+" ("+candN+")");
+				stpw.check("Dialect.newRootCandidates::242 -- corresponding term "+n+" ("+candN+")");
 				if (!cands.contains(candN))
 					cands.add(candN);
 			}
@@ -244,7 +251,7 @@ public class Dialect {
 		// Schneider's Law
 		Vector<String> schCands = schneiderCandidates(null, rootICI);
 		for (int i = 0; i < cands.size(); i++) {
-			stpw.check("Dialect.newRootCandidates -- cands "+i);
+			stpw.check("Dialect.newRootCandidates::255 -- cands "+i);
 			schCands.addAll(schneiderCandidates(null,
 					cands.elementAt(i)));
 			//while (schCands.removeElement(cands.elementAt(i)));
@@ -275,7 +282,7 @@ public class Dialect {
         
         // Check whether the stem's last group of consonants is single or double
         for (int i=stem.length()-1; i > 0; i--) {
-			stpw.check("Dialect.schneiderStateAtEnd -- i: "+i+" in stem '"+stem+"'");
+			stpw.check("Dialect.schneiderStateAtEnd::286 -- i: "+i+" in stem '"+stem+"'");
             if (Roman.isConsonant(stem.charAt(i))) {
                 if (Roman.isConsonant(stem.charAt(i-1))) 
                     doubleConsonants = true;
@@ -310,7 +317,7 @@ public class Dialect {
         Vector<String> terms = new Vector<String>();
         int i;
         for (i = 0; i < term.length() - 1; i++) {
-        	stpw.check("Dialect.correspondingTermsEquivalentGroups -- term: "+term+"; i: "+i);
+        	stpw.check("Dialect.correspondingTermsEquivalentGroups::321 -- term: "+term+"; i: "+i);
             Vector<String> greqs = equivalentGroups(term.charAt(i), term
                     .charAt(i + 1));
             char l3;
@@ -332,11 +339,14 @@ public class Dialect {
                 Vector<?> remains = correspondingTermsEquivalentGroups(term
                         .substring(i + 2));
                 for (int j = 0; j < greqs.size(); j++) {
+                	stpw.check("Dialect.correspondingTermsEquivalentGroups::343 -- j: "+j);
                     String termTemp = term.substring(0, i) + greqs.elementAt(j);
                     if (remains.size() > 0)
-                        for (int k = 0; k < remains.size(); k++)
+                        for (int k = 0; k < remains.size(); k++) {
+                        	stpw.check("Dialect.correspondingTermsEquivalentGroups::347 -- j: "+j);
                             terms.add(termTemp
                                     + (String) remains.elementAt(k));
+                        }
                     else
                         terms.add(termTemp);
                 }
@@ -354,6 +364,7 @@ public class Dialect {
         ArrayList<Object[]> termsAndAlterations = new ArrayList<Object[]>();
         int i;
         for (i = pos; i < term.length() - 1; i++) {
+        	stpw.check("Dialect.correspondingTermsEquivalentGroups::368 -- i: "+i);
             String groupOfConsonants =
                 new String(new char[]{term.charAt(i), term.charAt(i + 1)});
             Vector<String> greqs = equivalentGroups(term.charAt(i), term
@@ -384,12 +395,14 @@ public class Dialect {
                  * avec chaque possibilit� retourn�e pour le reste du mot.
                  */
                 for (int j = 0; j < greqs.size(); j++) {
+                	stpw.check("Dialect.correspondingTermsEquivalentGroups::399 -- j: "+j);
                     String grp = greqs.elementAt(j);
                     String termTemp = term.substring(pos, i) + grp;
                     PhonologicalTransformation tp =
                         new PhonologicalTransformation(groupOfConsonants,grp,i);
                     if (remainsAndAlterations.size() > 0)
                         for (int k = 0; k < remainsAndAlterations.size(); k++) {
+                        	stpw.check("Dialect.correspondingTermsEquivalentGroups::406 -- k: "+k);
                             String newTerm = termTemp + (String) remainsAndAlterations.get(k)[0];
                             ArrayList<PhonologicalTransformation> alterations = (ArrayList<PhonologicalTransformation>)((ArrayList<PhonologicalTransformation>) remainsAndAlterations.get(k)[1]).clone();
                             alterations.add(0,tp);
@@ -415,11 +428,12 @@ public class Dialect {
     // additional constraint that the group is followed by a vowel.
     // For example : isa returns ita
     // NOTE: this is a hack and it will have to be revised.
-    private static Vector<String> equivalentGroups2(char l1, char l2, char l3) {
+    private static Vector<String> equivalentGroups2(char l1, char l2, char l3) throws TimeoutException {
         String group = new String(new char[] { l1, l2 });
         Vector<String> terms = new Vector<String>();
         if (l3 != (char) -1 && Roman.typeOfLetterLat(l3) == Roman.V) {
             for (int i = 0; i < groups2.length; i++) {
+            	stpw.check("Dialect.equivalentGroups2::437 -- i: "+i);
                 if (groups2[i][0].equals(group)) {
                     terms.add(groups2[i][1]);
                 }
@@ -495,7 +509,7 @@ public class Dialect {
 //    static char cons[] = {'p', 't', 'k', 'g', 'm', 'n', 's', 'l', 'j', 'v',
 //            'r', 'q', 'N', '&'};
     
-    private static Vector<String> explode(String s) {
+    private static Vector<String> explode(String s) throws TimeoutException {
         if (s.length()==0)
             return new Vector<String>();
         else
@@ -506,15 +520,18 @@ public class Dialect {
      * Wherever there might be a deleted consonant, add a word with one of the
      * possible consonant at that place.
      */
-    private static Vector<String> explode2(String s) {
+    private static Vector<String> explode2(String s) throws TimeoutException {
         Vector<String> a = new Vector<String>();
         StringBuffer sb = new StringBuffer();
         for (int i=0; i<s.length(); i++) {
+        	stpw.check("Dialect.explode2::528 -- i: "+i);
             if (s.charAt(i)=='@') {
                 Vector grCons = (Vector)LinguisticDataAbstract.groupsOfConsonants.get(new Character(s.charAt(i+1)));
                 if (grCons!=null) {
-                	for (int j=0; j<grCons.size(); j++)
+                	for (int j=0; j<grCons.size(); j++) {
+                    	stpw.check("Dialect.explode::533 -- j: "+j);
                 		a.addAll(explode(new String()+(String)grCons.elementAt(j)+s.substring(i+2)));
+                	}
                 	break;
                 }
             }
@@ -524,8 +541,10 @@ public class Dialect {
         if (a.size()==0)
             a.add("");
         String deb = sb.toString();
-        for (int i=0; i<a.size(); i++)
+        for (int i=0; i<a.size(); i++) {
+        	stpw.check("Dialect.equivalentGroups2::546 -- i: "+i);
             a.setElementAt(deb+a.elementAt(i),i);
+        }
         return a;
     }
 

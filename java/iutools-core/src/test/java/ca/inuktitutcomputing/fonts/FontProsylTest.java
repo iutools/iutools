@@ -8,14 +8,19 @@
  */
 package ca.inuktitutcomputing.fonts;
 
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
 import ca.inuktitutcomputing.fonts.FontProsyl;
 import junit.framework.TestCase;
 
-public class FontProsylTest extends TestCase {
+public class FontProsylTest {
 
     /*
      * Test method for 'fonts.PoliceAinunavik.transcodeToUnicode(String, String)'
      */
+    @Test
     public void testTranscodeToUnicodeStringString() {
         String res = null;
         /*
@@ -266,8 +271,8 @@ public class FontProsylTest extends TestCase {
     /*
      * Test method for 'fonts.PoliceAinunavik.transcodeFromUnicode(String)'
      */
-    public void testTranscodeFromUnicode() {
-
-    }
+//    public void testTranscodeFromUnicode() {
+//
+//    }
 
 }
