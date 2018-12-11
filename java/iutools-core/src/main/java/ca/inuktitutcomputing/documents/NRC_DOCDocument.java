@@ -26,7 +26,10 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.poi.hwpf.HWPFDocument;
+//import org.apache.poi.hwpf.HWPFDocument;
+//import org.apache.poi.hwpf.usermodel.CharacterRun;
+//import org.apache.poi.hwpf.usermodel.Range;
+import org.apache.poi.hwpf.*;
 import org.apache.poi.hwpf.usermodel.CharacterRun;
 import org.apache.poi.hwpf.usermodel.Range;
 
@@ -260,6 +263,7 @@ public class NRC_DOCDocument implements NRC_Document {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
 
 
 }
