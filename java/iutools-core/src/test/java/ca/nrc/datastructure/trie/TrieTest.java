@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Set;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ca.nrc.testing.AssertHelpers;
@@ -66,12 +67,12 @@ public class TrieTest {
 		}
 		TrieNode node = charTrie.getNode("hello".split(""));
 		assertTrue("The node for 'hello' is not null.",node!=null);
-		assertEquals("The key for this node is correct.","hello",node.getText());
+		assertEquals("The key for this node is correct.","hello",node.getKeys());
 		assertTrue("This node represents a full word.",node.isWord());
 		
 		node = charTrie.getNode("hell".split(""));
 		assertTrue("The node for 'hell' is not null.",node!=null);
-		assertEquals("The key for this node is correct.","hell",node.getText());
+		assertEquals("The key for this node is correct.","hell",node.getKeys());
 		assertEquals("The frequency for this node is correct.",2,node.getFrequency());
 		assertFalse("This node does not represent a full word.",node.isWord());
 	}
@@ -86,7 +87,7 @@ public class TrieTest {
 		}
 		TrieNode node = wordTrie.getNode(new String[]{"hello"});
 		assertTrue("The node for 'hello' is not null.",node!=null);
-		assertEquals("The key for this node is correct.","hello",node.getText());
+		assertEquals("The key for this node is correct.","hello",node.getKeys());
 		assertFalse("This node should not a full word.",node.isWord());
 	}
 
@@ -124,7 +125,7 @@ public class TrieTest {
 		String[] childrenKeys = (String[]) children.keySet().toArray(new String[]{});
 		TrieNode node = iumorphemeTrie.getNode(new String[]{"{taku/1v}"});
 		assertTrue("The node for 'taku/1n' should not be null.",node!=null);
-		assertEquals("The key for this node is not correct.","{taku/1v}",node.getText());
+		assertEquals("The key for this node is not correct.","{taku/1v}",node.getKeys());
 		assertFalse("This node should not a full word.",node.isWord());
 	}
 	
@@ -154,23 +155,6 @@ public class TrieTest {
 	}
 	
 	@Test
-	public void test__mostFrequentWordWithRadical() {
-		Trie charTrie = new Trie();
-		try {
-		charTrie.add("hello".split(""));
-		charTrie.add("hint".split(""));
-		charTrie.add("helicopter".split(""));
-		charTrie.add("helios".split(""));
-		charTrie.add("helicopter".split(""));
-		} catch (Exception e) {
-			assertFalse("An error occurred while adding an element to the trie.",true);
-		}
-		TrieNode mostFrequent = charTrie.getMostFrequentTerminal("hel".split(""));
-		assertEquals("The frequency of the most frequent found is wrong.",2,mostFrequent.getFrequency());
-		assertEquals("The text of the the most frequent found is wrong.","helicopter",mostFrequent.getText());
-	}
-
-	@Test
 	public void test_getAllTerminals() throws Exception {
 		Trie charTrie = new Trie();
 		charTrie.add("hello".split(""));
@@ -198,10 +182,16 @@ public class TrieTest {
 		charTrie.add("ok".split(""));
 		String json = charTrie.toJSON();
 		String expected = new String(
-			"{\"size\":3,\"root\":{\"text\":\"\",\"isWord\":false,\"frequency\":0,\"children\":{\"h\":{\"text\":\"h\",\"isWord\":false,\"frequency\":2,\"children\":{\"e\":{\"text\":\"he\",\"isWord\":true,\"frequency\":1,\"children\":{},\"stats\":{}},\"i\":{\"text\":\"hi\",\"isWord\":false,\"frequency\":1,\"children\":{\"t\":{\"text\":\"hit\",\"isWord\":true,\"frequency\":1,\"children\":{},\"stats\":{}}},\"stats\":{}}},\"stats\":{}},\"o\":{\"text\":\"o\",\"isWord\":false,\"frequency\":1,\"children\":{\"k\":{\"text\":\"ok\",\"isWord\":true,\"frequency\":1,\"children\":{},\"stats\":{}}},\"stats\":{}}},\"stats\":{}}}");
-		
+				"{\"root\":{\"keys\":[],\"isWord\":false,\"frequency\":0," +
+				"\"children\":{\"h\":{\"keys\":[\"h\"],\"isWord\":false,\"frequency\":2," + 
+				"\"children\":{\"e\":{\"keys\":[\"h\",\"e\"],\"isWord\":true,\"frequency\":1," + 
+				"\"children\":{},\"stats\":{}},\"i\":{\"keys\":[\"h\",\"i\"],\"isWord\":false,\"frequency\":1," + 
+				"\"children\":{\"t\":{\"keys\":[\"h\",\"i\",\"t\"],\"isWord\":true,\"frequency\":1," + 
+				"\"children\":{},\"stats\":{}}},\"stats\":{}}},\"stats\":{}},\"o\":{\"keys\":[\"o\"],\"isWord\":false,\"frequency\":1," + 
+				"\"children\":{\"k\":{\"keys\":[\"o\",\"k\"],\"isWord\":true,\"frequency\":1," + 
+				"\"children\":{},\"stats\":{}}},\"stats\":{}}},\"stats\":{}}}");			
 		AssertHelpers.assertStringEquals("The generated JSON representation of the trie is not correct.",expected,json);
-//		Assert.assertEquals("The generated JSON representation of the trie is not correct.",expected,json);
 	}
+	
 
 }

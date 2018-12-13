@@ -24,8 +24,8 @@ public class TrieNodeTest {
 		// When creating a node, you need to tell it the element of the sequence
 		// it corresponds to.
 		//
-		String sequenceElement = "x";
-		TrieNode node = new TrieNode(sequenceElement);
+		String[] sequenceElements = new String[] { "e", "x", "a", "c", "t" };
+		TrieNode node = new TrieNode(sequenceElements);
 		
 		//
 		// You can use a node to store and manipulate the frequency at which you saw a sequence
@@ -78,7 +78,7 @@ public class TrieNodeTest {
 	
 	@Test
 	public void test__TrieNode__frequency__HappyPath() {
-		TrieNode node = new TrieNode("hello");
+		TrieNode node = new TrieNode("hello".split(""));
 		long gotFreq = node.getFrequency(); 	
 		Assert.assertEquals("Frequency should have been 0 initialy", 0, gotFreq);
 		node.incrementFrequency();       
@@ -88,7 +88,7 @@ public class TrieNodeTest {
 	
 	@Test
 	public void test__TrieNode__setgetStat__HappyPath() throws Exception {
-		TrieNode node = new TrieNode("hello");
+		TrieNode node = new TrieNode("hello".split(""));
 		String statName = "lengthSum";
 		node.defineStat(statName);
 		
@@ -101,7 +101,7 @@ public class TrieNodeTest {
 
 	@Test(expected = TrieNodeException.class)
 	public void test__TrieNode__setStat__RaisesExceptionIfStatNameIsUnknown() throws Exception {
-		TrieNode node = new TrieNode("hello");
+		TrieNode node = new TrieNode("hello".split(""));
 		String statName = "lengthSum";
 		node.defineStat(statName);
 		
@@ -110,7 +110,7 @@ public class TrieNodeTest {
 
 	@Test(expected = TrieNodeException.class)
 	public void test__TrieNode__getStat__RaisesExceptionIfStatNameIsUnknown() throws Exception {
-		TrieNode node = new TrieNode("hello");
+		TrieNode node = new TrieNode("hello".split(""));
 		String statName = "lengthSum";
 		node.defineStat(statName);
 		
@@ -119,7 +119,7 @@ public class TrieNodeTest {
 
 	@Test
 	public void test__TrieNode__incrementStat__HappyPath() throws Exception {
-		TrieNode node = new TrieNode("hello");
+		TrieNode node = new TrieNode("hello".split(""));
 		String statName = "lengthSum";
 		node.defineStat(statName);
 		
@@ -147,17 +147,17 @@ public class TrieNodeTest {
 				helNode.mostFrequentTerminal==null);
 		TrieNode mostFrequent = helNode.getMostFrequentTerminal();
 		Assert.assertEquals("The most frequent terminal node from here should be 'helicopter'.",
-				"helicopter",helNode.mostFrequentTerminal.getText());
+				"helicopter",helNode.mostFrequentTerminal.getKeys());
 		charTrie.add("helios".split(""));
 		Assert.assertTrue("The most frequent terminal node from here, after adding a new child, should not be set yet.",
 				helNode.mostFrequentTerminal==null);
 		mostFrequent = helNode.getMostFrequentTerminal();
 		Assert.assertEquals("The most frequent terminal node from here should be 'helicopter'.",
-				"helicopter",helNode.mostFrequentTerminal.getText());
+				"helicopter",helNode.mostFrequentTerminal.getKeys());
 		charTrie.add("helios".split(""));
 		mostFrequent = helNode.getMostFrequentTerminal();
 		Assert.assertEquals("The most frequent terminal node from here should be 'helios'.",
-				"helios",helNode.mostFrequentTerminal.getText());
+				"helios",helNode.mostFrequentTerminal.getKeys());
 		}
 
 	

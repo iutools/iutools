@@ -1,12 +1,13 @@
 package ca.nrc.datastructure.trie;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
 public class TrieNode {
-    protected String text;
+    public String[] keys = new String[] {};
     protected boolean isWord = false;
     protected long frequency = 0;
     protected HashMap<String,TrieNode> children;
@@ -22,17 +23,16 @@ public class TrieNode {
     }
 
     public TrieNode() {
-        this.text = "";
         this.children = new HashMap<String,TrieNode>();
     }
 
-    public TrieNode(String text) {
+    public TrieNode(String[] _keys) {
         this();
-        this.text = text;
+        this.keys = _keys;
     }
     
-    public String getText() {
-        return text;
+    public String getKeys() {
+        return String.join("",this.keys);
     }
 
     public boolean isWord() {
@@ -49,9 +49,7 @@ public class TrieNode {
     
     public void incrementFrequency() {
     	frequency++;
-    	if (mostFrequentTerminal != null)
-    		//mostFrequentTerminal = _getMostFrequentTerminal(0);
-			mostFrequentTerminal = null;
+    	mostFrequentTerminal = null;
     }
     
     public TrieNode getMostFrequentTerminal() {
@@ -110,13 +108,14 @@ public class TrieNode {
     	if (!this.isWord)
     		mostFrequentTerminal = this.getMostFrequentTerminal();
         return "[TrieNode:\n" +
-        		"    segments = "+this.text+"\n"+
+        		"    segments = "+this.getKeys()+"\n"+
         		"    frequency = "+this.frequency+"\n"+
         		"    isWord = "+this.isWord+"\n"+
         		(mostFrequentTerminal!=null ?
         				"    mostFrequentTerminal = [TrieNode:\n" +
-        				"                                 segments = "+mostFrequentTerminal.getText()+"\n"+
+        				"                                 segments = "+mostFrequentTerminal.getKeys()+"\n"+
         				"                                 frequency = "+mostFrequentTerminal.getFrequency()+"\n"+
+                		"                                 isWord = "+mostFrequentTerminal.isWord+"\n"+
         				"                                 ]\n" : "")+
         		"    ]";
     }
