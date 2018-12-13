@@ -1,6 +1,8 @@
 package ca.inuktitutcomputing.core.console;
 
-import ca.inuktitutcomputing.core.CorpusTrieCompiler;
+import java.io.IOException;
+
+import ca.inuktitutcomputing.core.CompiledCorpus;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 
 public class CmdCompileTrie extends ConsoleCommand {
@@ -29,9 +31,18 @@ public class CmdCompileTrie extends ConsoleCommand {
 		}
 		echo(-1);
 		
-		CorpusTrieCompiler compiler = new CorpusTrieCompiler(StringSegmenter_IUMorpheme.class.getName());
-		compiler.setCorpusDirectory(corpusDir);
-		compiler.setTrieFilePath(trieFile);
-		compiler.run(fromScratch);
+		CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
+		boolean ok = compiledCorpus.setTrieFilePath(trieFile);
+		if ( !ok ) {
+			System.err.println("ERROR: The -trie-file argument points to a non-existent directory. Abort.");
+			System.exit(1);
+		}
+		
+		if (fromScratch)
+			compiledCorpus.compileCorpusFromScratch(corpusDir);
+		else
+			compiledCorpus.compileCorpus(corpusDir);
+		
+		echo("\nThe result of the compilation has been saved in the file "+trieFile+".\n");
 	}
 }

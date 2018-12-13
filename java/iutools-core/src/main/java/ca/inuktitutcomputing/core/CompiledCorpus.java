@@ -6,7 +6,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Vector;
@@ -24,13 +26,14 @@ import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
+import ca.nrc.json.PrettyPrinter;
 
 
 /**
  * This creates a Trie of the (Inuktitut) words in the Nunavut Hansard
  *
  */ 
-public class CorpusTrieCompiler 
+public class CompiledCorpus 
 {
 	
 	private static String JSON_COMPILATION_FILE_NAME = "trie_compilation.json";
@@ -42,10 +45,15 @@ public class CorpusTrieCompiler
 	protected Vector<String> wordsFailedSegmentation = new Vector<String>();
 	
 	protected String saveFilePath = null;
-	protected String trieFilePath = null;
+	
+	protected transient String trieFilePath = null;
 	
 	private String segmenterClassName = StringSegmenter_Char.class.getName();
 	
+	@JsonIgnore
+	private transient long wordCounter = 0;
+	@JsonIgnore
+	private transient String corpusDirNeededForSavingPurposes;
 	@JsonIgnore
 	private transient StringSegmenter segmenter = null;
 	
@@ -60,12 +68,12 @@ public class CorpusTrieCompiler
 			
 	protected long currentFileWordCounter = -1;
 	protected long retrievedFileWordCounter = -1;
-	private transient long wordCounter = 0;
 	
 	public int saveFrequency = 1000;
 	public transient int stopAfter = -1;
 
-	protected String dirName = null;
+	
+	protected Long terminalsSumFreq = null;
 	
 	
 	public static class CorpusTrieCompilerException extends Exception {
@@ -74,11 +82,11 @@ public class CorpusTrieCompiler
 		}
 	}
 	
-	public CorpusTrieCompiler() {
+	public CompiledCorpus() {
 		initialize(null);
 	}
 	
-	public CorpusTrieCompiler(String segmenterClassName) {
+	public CompiledCorpus(String segmenterClassName) {
 		initialize(segmenterClassName);
 	}
 	
@@ -87,32 +95,43 @@ public class CorpusTrieCompiler
 		this.segmenterClassName = _segmenterClassName;
 	}
 	
-	/*
-	 * @param args[0] name of directory with documents (assumed in ca.pirurvik.data)
-	 */
-	public static void main(String[] args) throws Exception {
-		CorpusTrieCompiler trieCompiler = new CorpusTrieCompiler();
-		if (args.length < 1) usage("Need to pass a directory name as first argument");
-		String dirName = args[0];
-		trieCompiler.setCorpusDirectory(dirName);
+	public  void compileCorpus(String corpusDirectoryPathname) throws Exception {
+		_compileCorpus(corpusDirectoryPathname,false);
+	}
+	public  void compileCorpusFromScratch(String corpusDirectoryPathname) throws Exception {
+		_compileCorpus(corpusDirectoryPathname,true);
+	}
+	public  void _compileCorpus(String corpusDirectoryPathname, boolean fromScratch) throws Exception {
+		toConsole("[INFO] *** Compiling trie for documents in "+corpusDirectoryPathname+"\n");
+		segmenter = new StringSegmenter_IUMorpheme();
 		
-		trieCompiler.run();
+		if ( !fromScratch ) {
+			if (this.canBeResumed(corpusDirectoryPathname)) {
+				this.readFromJson(corpusDirectoryPathname);
+			}
+		} else {
+			this.deleteJSON(corpusDirectoryPathname);
+			trie = new Trie();
+		}
+		
+		wordCounter = 0;
+			
+		process(corpusDirectoryPathname);
+		toConsole("[INFO] *** Compilation completed."+"\n");
+		saveCompilerAsJSON_toDir(corpusDirectoryPathname);
+		if (trieFilePath != null)
+			saveCompilerAsJSON_toFile(trieFilePath);
 	}
 	
-	private static void usage(String errMess) {
-		if (errMess != null) errMess = "ERROR: "+errMess;
-		System.out.println("ERROR: "+errMess);
-		System.exit(1);
-	}
-	
-	public void setCorpusDirectory(String _dirFullPathname) {
-		this.dirName = _dirFullPathname;
-		saveFilePath = this.dirName+"/"+JSON_COMPILATION_FILE_NAME;
-		trieFilePath = this.dirName+"/"+JSON_TRIE_FILE_NAME;
-	}
-	
-	public void setTrieFilePath(String _trieFilePath) {
+	public boolean setTrieFilePath(String _trieFilePath) {
+		File f = new File(_trieFilePath);
+		File dirF = f.getParentFile();
+		if ( dirF != null && !dirF.isDirectory() ) {
+			trieFilePath = null;
+			return false;
+		}
 		trieFilePath = _trieFilePath;
+		return true;
 	}
 	
 	/**
@@ -126,51 +145,19 @@ public class CorpusTrieCompiler
 		return jsonFile.exists();
 	}
 	
-	public void toConsole(String message) {
-		System.out.print(message);
-	}
-
-	public  void run() throws Exception {
-		run(false);
-	}
-	public  void run(boolean fromScratch) throws Exception {
-		toConsole("[INFO] *** Compiling trie for documents in "+this.dirName+"\n");
-		segmenter = new StringSegmenter_IUMorpheme();
-		
-		if ( !fromScratch ) {
-			if (this.canBeResumed(this.dirName)) {
-				this.retrieveFromJSON();
-			}
-		} else {
-			this.deleteJSON();
-			trie = new Trie();
-		}
-		
-		wordCounter = 0;
-			
-		process();
-		toConsole("[INFO] *** Compilation completed."+"\n");
-		saveCompilerAsJSON();
-		saveTrieAsJSON();
-	}
-	
-	private void saveTrieAsJSON() throws IOException {
-		FileWriter saveFile = new FileWriter(trieFilePath);
-		Gson gson = new Gson();
-		String json = gson.toJson(this.trie);
-		saveFile.write(json);
-		saveFile.flush();
-		saveFile.close();
-	}
-
-	private void deleteJSON() throws IOException {
-		File saveFile = new File(saveFilePath);
+	private void deleteJSON(String corpusDirectoryPathname) throws IOException {
+		File saveFile = new File(corpusDirectoryPathname+"/"+JSON_COMPILATION_FILE_NAME);
 		if (saveFile.exists())
 			saveFile.delete();
 	}
 
-	private void saveCompilerAsJSON() throws IOException {
-			FileWriter saveFile = new FileWriter(saveFilePath);
+	private void saveCompilerAsJSON_toDir(String corpusDirectoryPathname) throws IOException {
+		String saveFilePathname = corpusDirectoryPathname+"/"+JSON_COMPILATION_FILE_NAME;
+		saveCompilerAsJSON_toFile(saveFilePathname);
+	}
+	
+	private void saveCompilerAsJSON_toFile(String filePathname) throws IOException {
+			FileWriter saveFile = new FileWriter(filePathname);
 			Gson gson = new Gson();
 			long savedRetrievedFileWordCounter = this.retrievedFileWordCounter;
 			this.retrievedFileWordCounter = this.currentFileWordCounter;
@@ -189,26 +176,26 @@ public class CorpusTrieCompiler
 	 * @return void
 	 * @throws Exception
 	 */
-	public void retrieveFromJSON() throws Exception {
+	public void readFromJson(String corpusDirectoryPathname) throws Exception {
 		Gson gson = new Gson();
-		String jsonFilePath = this.dirName+"/"+JSON_COMPILATION_FILE_NAME;
+		String jsonFilePath = corpusDirectoryPathname+"/"+JSON_COMPILATION_FILE_NAME;
 		File jsonFile = new File(jsonFilePath);
 		BufferedReader br = new BufferedReader(new FileReader(jsonFile));
-		CorpusTrieCompiler compiler = gson.fromJson(br, CorpusTrieCompiler.class);
-		this.trie = compiler.trie;
-		this.segmentsCache = compiler.segmentsCache;
-		this.saveFilePath = compiler.saveFilePath;
-		this.segmenterClassName = compiler.segmenterClassName;
-		this.currentFileWordCounter = compiler.currentFileWordCounter;
-		this.retrievedFileWordCounter = compiler.retrievedFileWordCounter;
-		this.saveFrequency = compiler.saveFrequency;
-		this.filesCompiled = compiler.filesCompiled;
-		compiler = null;
+		CompiledCorpus compiledCorpus = gson.fromJson(br, CompiledCorpus.class);
+		this.trie = compiledCorpus.trie;
+		this.segmentsCache = compiledCorpus.segmentsCache;
+		this.saveFilePath = compiledCorpus.saveFilePath;
+		this.segmenterClassName = compiledCorpus.segmenterClassName;
+		this.currentFileWordCounter = compiledCorpus.currentFileWordCounter;
+		this.retrievedFileWordCounter = compiledCorpus.retrievedFileWordCounter;
+		this.saveFrequency = compiledCorpus.saveFrequency;
+		this.filesCompiled = compiledCorpus.filesCompiled;
 	}
  
 
-	private void process() throws Exception {
-		File corpusDirectory = new File(this.dirName);
+	private void process(String corpusDirectoryPathname) throws Exception {
+		this.corpusDirNeededForSavingPurposes = corpusDirectoryPathname;
+		File corpusDirectory = new File(corpusDirectoryPathname);
     	File [] files = corpusDirectory.listFiles(
     			new FilenameFilter() {
     				public boolean accept(File dir, String name) {
@@ -216,7 +203,7 @@ public class CorpusTrieCompiler
     				}
     			});
     	if ( files==null )
-    		throw new Exception("The corpus directory '"+this.dirName+"' doest not exist.");
+    		throw new Exception("The corpus directory '"+corpusDirectoryPathname+"' doest not exist.");
     	Arrays.sort(files);
     	for (int i=0; i<files.length; i++) {
 			processFile(files[i]);
@@ -292,7 +279,7 @@ public class CorpusTrieCompiler
 					if (segments!=null)
 						result = trie.add(segments);
 					if (result != null) {
-						toConsole(result.getText()+"\n");
+						toConsole(result.getKeys()+"\n");
 					} else {
 						toConsole("XXX\n");
 						wordsFailedSegmentation.add(word);
@@ -304,7 +291,7 @@ public class CorpusTrieCompiler
 				if (wordCounter % saveFrequency == 0) {
 					toConsole("[INFO]     --- saving jsoned compiler ---"+"\n");
 					logger.debug("size of trie: "+trie.getSize());
-					saveCompilerAsJSON();
+					saveCompilerAsJSON_toDir(this.corpusDirNeededForSavingPurposes);
 				}
 				// this line allows to make the compiler stop at a given point (for tests purposes only)
 				if (stopAfter != -1 && wordCounter == stopAfter) {
@@ -315,6 +302,107 @@ public class CorpusTrieCompiler
 		}		
 		bufferedReader.close();
 	}
+    
+    // ----------------------------- STATS -------------------------------
+    
+	public TrieNode getMostFrequentTerminal(String[] segments) {
+		TrieNode node = this.trie.getNode(segments);
+		TrieNode mostFrequentTerminalNode = node.getMostFrequentTerminal();
+		return mostFrequentTerminalNode;
+	}
+	
+	public long getNumberOfCompiledOccurrences() {
+		if (this.terminalsSumFreq == null) {
+			long sumFreqs = 0;
+			TrieNode[] terminals = this.trie.getAllTerminals();
+			for (TrieNode terminal : terminals)
+				sumFreqs += terminal.getFrequency();
+			this.terminalsSumFreq = new Long(sumFreqs);
+		}
+		return this.terminalsSumFreq;
+	}
+	
+	public TrieNode getMostFrequentTerminalFromMostFrequentSequenceForRoot(String rootSegment) {
+		String[] mostFrequentSequence = getMostFrequentSequenceForRoot(rootSegment);
+		TrieNode node = this.trie.getNode(mostFrequentSequence);
+		TrieNode[] terminals = node.getAllTerminals();
+		long max = 0;
+		TrieNode mostFrequentTerminal = null;
+		for (TrieNode terminal : terminals)
+			if (terminal.getFrequency() > max) {
+				max = terminal.getFrequency();
+				mostFrequentTerminal = terminal;
+			}
+		return mostFrequentTerminal;
+	}
+
+	public String[] getMostFrequentSequenceForRoot(String rootSegment) {
+		Logger logger = Logger.getLogger("CompiledCorpus.getMostFrequentSequenceToTerminals");
+		HashMap<String, Long> freqs = new HashMap<String, Long>();
+		TrieNode rootSegmentNode = this.trie.getNode(new String[] {rootSegment});
+		TrieNode[] terminals = rootSegmentNode.getAllTerminals();
+		logger.debug("all terminals: "+terminals.length);
+		for (TrieNode terminalNode : terminals) {
+			//logger.debug("terminalNode: "+PrettyPrinter.print(terminalNode));
+			String[] terminalNodeKeys = Arrays.copyOfRange(terminalNode.keys, 1, terminalNode.keys.length);
+			freqs = computeFreqs(terminalNodeKeys,freqs,rootSegment);
+		}
+		logger.debug("freqs: "+PrettyPrinter.print(freqs));
+		long maxFreq = 0;
+		int minLength = 1000;
+		String seq = null;
+		String[] freqsKeys = freqs.keySet().toArray(new String[] {});
+		for (int i=0; i<freqsKeys.length; i++) {
+			String freqKey = freqsKeys[i];
+			int nbKeys = freqKey.split(" ").length;
+			if (freqs.get(freqKey)==maxFreq) {
+				if (nbKeys<minLength) {
+					maxFreq = freqs.get(freqKey);
+					minLength = nbKeys;
+					seq = freqKey;
+				} 
+			} else if (freqs.get(freqKey) > maxFreq) {
+				maxFreq = freqs.get(freqKey);
+				minLength = nbKeys;
+				seq = freqKey;
+			}
+		}
+		return (rootSegment+" "+seq).split(" ");
+	}
+
+	
+	private HashMap<String, Long> computeFreqs(String[] terminalNodeKeys, HashMap<String, Long> freqs, String rootSegment) {
+		return _computeFreqs("",terminalNodeKeys,freqs,rootSegment);
+	}
+
+	private HashMap<String, Long> _computeFreqs(String cumulativeKeys, String[] terminalNodeKeys, HashMap<String, Long> freqs, String rootSegment) {
+		Logger logger = Logger.getLogger("CompiledCorpus._computeFreqs");
+		if (terminalNodeKeys.length==0)
+			return freqs;
+		logger.debug("cumulativeKeys: '"+cumulativeKeys+"'");
+		logger.debug("terminalNodeKeys: '"+String.join("", terminalNodeKeys)+"'\n");
+		String key = terminalNodeKeys[0];
+		String newCumulativeKeys = (cumulativeKeys + " " + key).trim();
+		String[] remKeys = Arrays.copyOfRange(terminalNodeKeys, 1, terminalNodeKeys.length);
+		// node of rootSegment + newCumulativeKeys
+		TrieNode node = this.trie.getNode((rootSegment+" "+newCumulativeKeys).split(" "));
+		long incr = node.getFrequency();
+		if (!freqs.containsKey(newCumulativeKeys))
+			freqs.put(newCumulativeKeys, new Long(incr));
+		//else {
+		//	freqs.put(newCumulativeKeys, new Long(freqs.get(newCumulativeKeys).longValue() + incr));
+		//}
+		freqs = _computeFreqs(newCumulativeKeys, remKeys, freqs, rootSegment);
+		return freqs;
+	}
+
+
+	public void toConsole(String message) {
+		System.out.print(message);
+	}
+
+
+    // ----------------------------- private -------------------------------
 
 	private void addToCache(String word, String[] segments) {
 		segmentsCache.put(word, segments);
