@@ -1,10 +1,12 @@
 package ca.nrc.datastructure.trie;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /* blah */
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -14,8 +16,8 @@ import com.google.gson.Gson;
 
 public class Trie {
 
-    protected long size = 0;
     protected TrieNode root;
+    // REMOVED: protected long size;
     
     
     public Trie() {
@@ -33,7 +35,7 @@ public class Trie {
     }
     
     public long getSize() {
-    	return size;
+    	return getAllTerminals().length;
     }
     
 	public TrieNode add(String[] segments) throws TrieException {
@@ -59,8 +61,7 @@ public class Trie {
 				TrieNode terminalNode = getChild(trieNode, segment);
 				terminalNode.setIsWord(true);
 				terminalNode.incrementFrequency();
-				size++; // for each new word
-				logger.debug("size: "+size);
+				// REMOVED: size++; // for each new word
 				return terminalNode;
 			}
             // current char is in the keys, or it was not and has just been added and is not the last char
@@ -94,12 +95,6 @@ public class Trie {
 			return 0;
 	}
 	
-	public TrieNode getMostFrequentTerminal(String[] segments) {
-		TrieNode node = this.getNode(segments);
-		TrieNode mostFrequentTerminalNode = node.getMostFrequentTerminal();
-		return mostFrequentTerminalNode;
-	}
-	
 	public TrieNode[] getAllTerminals() {
 		return root.getAllTerminals();
 	}
@@ -108,7 +103,6 @@ public class Trie {
 		TrieNode node = this.getNode(segments);
 		return node.getAllTerminals();
 	}
-	
 	
 	// --------------------- PRIVATE------------------------------
 
@@ -120,10 +114,14 @@ public class Trie {
         if (trieNode.getChildren().containsKey(string)) {
             return null;
         }
-        TrieNode nextNode = new TrieNode(trieNode.getText() + string);
+        ArrayList<String> keys = new ArrayList<String>(Arrays.asList(trieNode.keys));
+        keys.add(string);
+        TrieNode nextNode = new TrieNode(keys.toArray(new String[] {}));
         trieNode.getChildren().put(string, nextNode);
         return nextNode;
     }
+
+
 
 
 }
