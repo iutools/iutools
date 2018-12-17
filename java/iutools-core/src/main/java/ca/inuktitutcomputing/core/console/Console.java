@@ -19,9 +19,9 @@ public class Console {
 			    .argName("CORPUS_DIR")
 			    .build();
 
-		Option optTrieFile = Option.builder(null)
-				.longOpt(ConsoleCommand.OPT_TRIE_FILE)
-			    .desc("Path of json file where Trie is saved.")
+		Option optCompFile = Option.builder(null)
+				.longOpt(ConsoleCommand.OPT_COMP_FILE)
+			    .desc("Path of json file where the result of the compilation is saved (trie, etc).")
 			    .hasArg()
 			    .argName("TRIE_FILE")
 			    .build();
@@ -58,7 +58,7 @@ public class Console {
 		SubCommand compileTrie = 
 				new CmdCompileTrie("compile_trie")
 				.addOption(optCorpusDir)				
-				.addOption(optTrieFile)
+				.addOption(optCompFile)
 				.addOption(optFromScratch)
 				;
 		mainCmd.addSubCommand(compileTrie);
@@ -67,7 +67,7 @@ public class Console {
 		// Create and add the read_trie command
 		SubCommand searchTrie = 
 				new CmdSearchTrie("search_trie")
-				.addOption(optTrieFile)	
+				.addOption(optCompFile)	
 				.addOption(optMorphemes)
 				.addOption(optWord)
 				;

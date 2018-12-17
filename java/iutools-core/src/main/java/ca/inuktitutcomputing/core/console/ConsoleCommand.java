@@ -8,7 +8,7 @@ public abstract class ConsoleCommand extends SubCommand {
 	
 	public static final String OPT_CORPUS_DIR = "corpus-dir";
 	public static final String OPT_CORPUS_NAME = "corpus-name";
-	public static final String OPT_TRIE_FILE = "trie-file";
+	public static final String OPT_COMP_FILE = "comp-file";
 	public static final String OPT_MORPHEMES = "morphemes";
 	public static final String OPT_WORD = "word";
 	public static final String OPT_FROM_SCRATCH = "from-scratch";
@@ -18,8 +18,8 @@ public abstract class ConsoleCommand extends SubCommand {
 		super(name);
 	}
 	
-	protected String getTrieFile() {
-		String tFile = getOptionValue(ConsoleCommand.OPT_TRIE_FILE, true);
+	protected String getCompilationFile() {
+		String tFile = getOptionValue(ConsoleCommand.OPT_COMP_FILE, true);
 		if (!tFile.endsWith("json")) {
 			tFile = tFile + ".json";
 		}

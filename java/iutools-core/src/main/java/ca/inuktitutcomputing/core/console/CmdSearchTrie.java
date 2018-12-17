@@ -1,19 +1,13 @@
 package ca.inuktitutcomputing.core.console;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.FileReader;
+import com.google.gson.Gson;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import ca.inuktitutcomputing.core.CompiledCorpus;
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieNode;
-import ca.nrc.datastructure.trie.TrieReader;
-import ca.nrc.json.PrettyPrinter;
 
 public class CmdSearchTrie extends ConsoleCommand {
 	
@@ -30,7 +24,7 @@ public class CmdSearchTrie extends ConsoleCommand {
 
 	@Override
 	public void execute() throws Exception {
-		String trieFilePath = getTrieFile();
+		String compilationFilePath = getCompilationFile();
 		String[] morphemes = getMorphemes(false); 
 		String word = getWord(false); 
 		StringSegmenter segmenter = new StringSegmenter_IUMorpheme();
@@ -44,8 +38,15 @@ public class CmdSearchTrie extends ConsoleCommand {
 
 		boolean searchWord = false;
 		
-		TrieReader trieReader = new TrieReader();
-		Trie trie = trieReader.read(trieFilePath);
+		FileReader fr = new FileReader(compilationFilePath);
+		CompiledCorpus compiledCorpus = new Gson().fromJson(fr, CompiledCorpus.class);
+		fr.close();
+		Trie trie = compiledCorpus.getTrie();
+		
+		echo("\nNumber of words in the trie: "+trie.getSize());
+		echo("Number of occurrences in the trie: "+trie.getNbOccurrences());
+		echo("\nNumber of words that failed segmentation: "+compiledCorpus.getNbWordsThatFailedSegmentations());
+		echo("Number of occurrences that failed segmentation: "+compiledCorpus.getNbOccurrencesThatFailedSegmentations());
 		
 		while (true) {
 			if (interactive) {
@@ -72,7 +73,10 @@ public class CmdSearchTrie extends ConsoleCommand {
 			TrieNode node = trie.getNode(morphemes);
 			if (node != null) {
 				String nodeString = node.toString();
+				TrieNode mostFrequentTerminal = node.getMostFrequentTerminal();
 				echo(nodeString);
+				if (!node.isWord())
+					echo("Most frequent terminal: "+mostFrequentTerminal.toString());
 			} else {
 				echo("No node has been found for that sequence of morphemes.");
 			}

@@ -20,7 +20,7 @@ public class CmdCompileTrie extends ConsoleCommand {
 	public void execute() throws Exception {
 		String corpusDir = getCorpusDir();
 		
-		String trieFile = getTrieFile();
+		String trieFile = getCompilationFile();
 		
 		boolean fromScratch = this.cmdLine.hasOption("from-scratch");
 
