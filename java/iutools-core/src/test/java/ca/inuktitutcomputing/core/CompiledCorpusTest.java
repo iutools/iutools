@@ -6,27 +6,22 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashMap;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.PropertyConfigurator;
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
+import javax.swing.text.Document;
 
-import com.google.gson.Gson;
+import org.junit.Assert;
+import org.junit.Test;
 
 import ca.inuktitutcomputing.config.IUConfig;
 import ca.nrc.config.ConfigException;
+import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
-import ca.nrc.datastructure.trie.TrieReader;
-import ca.nrc.json.PrettyPrinter;
 import ca.nrc.testing.AssertHelpers;
 
 /**
@@ -107,8 +102,8 @@ public class CompiledCorpusTest
 		assertArrayEquals("The cache should contain the segments of 'iglumik'", expected_iglumik_segments,
 				segmentsCache.get("iglumik"));
 		TrieNode taku_juq_node = trie.getNode(new String[] { "{taku/1v}", "{juq/1vn}" });
-		String expectedText = "{taku/1v}{juq/1vn}";
-		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, taku_juq_node.getKeys());
+		String expectedText = "{taku/1v} {juq/1vn}";
+		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, taku_juq_node.getKeysAsString());
 		TrieNode nuna_it_node = trie.getNode(new String[] { "{nuna/1n}", "{it/tn-nom-p}" });
 		assertTrue("The trie should not contain the node for 'nunait'.", nuna_it_node == null);
 
@@ -130,12 +125,12 @@ public class CompiledCorpusTest
 		assertArrayEquals("The cache should contain the segments of 'iglumik'", expected_iglumik_segments,
 				segmentsCache.get("iglumik"));
 		taku_juq_node = retrievedCompiledCorpus.trie.getNode(new String[] { "{taku/1v}", "{juq/1vn}" });
-		expectedText = "{taku/1v}{juq/1vn}";
-		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, taku_juq_node.getKeys());
+		expectedText = "{taku/1v} {juq/1vn}";
+		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, taku_juq_node.getKeysAsString());
 		nuna_it_node = retrievedCompiledCorpus.trie.getNode(new String[] { "{nuna/1n}", "{it/tn-nom-p}" });
 		assertTrue("The trie should contain the node for 'nunait'.", nuna_it_node != null);
-		expectedText = "{nuna/1n}{it/tn-nom-p}";
-		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, nuna_it_node.getKeys());
+		expectedText = "{nuna/1n} {it/tn-nom-p}";
+		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, nuna_it_node.getKeysAsString());
     }
         
     
@@ -180,8 +175,8 @@ public class CompiledCorpusTest
 		assertArrayEquals("The cache should contain the segments of 'iglumik'", expected_iglumik_segments,
 				segmentsCache.get("iglumik"));
 		TrieNode taku_juq_node = trie.getNode(new String[] { "{taku/1v}", "{juq/1vn}" });
-		String expectedText = "{taku/1v}{juq/1vn}";
-		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, taku_juq_node.getKeys());
+		String expectedText = "{taku/1v} {juq/1vn}";
+		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, taku_juq_node.getKeysAsString());
 		TrieNode nuna_it_node = trie.getNode(new String[] { "{nuna/1n}", "{it/tn-nom-p}" });
 		assertTrue("The trie should not contain the node for 'nunait'.", nuna_it_node != null);
 
@@ -204,27 +199,27 @@ public class CompiledCorpusTest
 		assertArrayEquals("The cache should contain the segments of 'iglumik'", expected_iglumik_segments,
 				segmentsCache.get("iglumik"));
 		taku_juq_node = completeTrie.getNode(new String[] { "{taku/1v}", "{juq/1vn}" });
-		expectedText = "{taku/1v}{juq/1vn}";
-		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, taku_juq_node.getKeys());
+		expectedText = "{taku/1v} {juq/1vn}";
+		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, taku_juq_node.getKeysAsString());
 		nuna_it_node = completeTrie.getNode(new String[] { "{nuna/1n}", "{it/tn-nom-p}" });
 		assertTrue("The trie should contain the node for 'nunait'.", nuna_it_node != null);
-		expectedText = "{nuna/1n}{it/tn-nom-p}";
-		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, nuna_it_node.getKeys());
+		expectedText = "{nuna/1n} {it/tn-nom-p}";
+		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, nuna_it_node.getKeysAsString());
 
 		TrieNode iglu_mut_node = completeTrie.getNode(new String[] { "{iglu/1n}", "{mut/tn-dat-s}" });
 		assertTrue("The trie should contain the node for 'iglumut'.", iglu_mut_node != null);
-		expectedText = "{iglu/1n}{mut/tn-dat-s}";
-		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, iglu_mut_node.getKeys());
+		expectedText = "{iglu/1n} {mut/tn-dat-s}";
+		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, iglu_mut_node.getKeysAsString());
 
 		TrieNode sana_lauqsima_juq_node = completeTrie
 				.getNode(new String[] { "{sana/1v}", "{lauqsima/1vv}", "{juq/1vn}" });
 		assertTrue("The trie should contain the node for 'sanalauqsimajuq'.", sana_lauqsima_juq_node != null);
-		expectedText = "{sana/1v}{lauqsima/1vv}{juq/1vn}";
+		expectedText = "{sana/1v} {lauqsima/1vv} {juq/1vn}";
 		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText,
-				sana_lauqsima_juq_node.getKeys());
+				sana_lauqsima_juq_node.getKeysAsString());
 		
 		TrieNode[] allTerminals = completeTrie.getAllTerminals();
-		for (int i=0; i<allTerminals.length; i++) System.out.println(allTerminals[i].getKeys());
+		for (int i=0; i<allTerminals.length; i++) System.out.println(allTerminals[i].getKeysAsString());
 
 		// 11 words, but one did not analyze.
 		assertEquals("The frequency of the word sanalauqsimajuq should be 1.",1,sana_lauqsima_juq_node.getFrequency());
@@ -261,14 +256,14 @@ public class CompiledCorpusTest
 
 		TrieNode iglu_mut_node = trie.getNode(new String[] { "{iglu/1n}", "{mut/tn-dat-s}" });
 		assertTrue("The trie should contain the node for 'iglumut'.", iglu_mut_node != null);
-		String expectedText = "{iglu/1n}{mut/tn-dat-s}";
-		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, iglu_mut_node.getKeys());
+		String expectedText = "{iglu/1n} {mut/tn-dat-s}";
+		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, iglu_mut_node.getKeysAsString());
 
 		TrieNode sana_lauqsima_juq_node = trie.getNode(new String[] { "{sana/1v}", "{lauqsima/1vv}", "{juq/1vn}" });
 		assertTrue("The trie should contain the node for 'sanalauqsimajuq'.", sana_lauqsima_juq_node != null);
-		expectedText = "{sana/1v}{lauqsima/1vv}{juq/1vn}";
+		expectedText = "{sana/1v} {lauqsima/1vv} {juq/1vn}";
 		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText,
-				sana_lauqsima_juq_node.getKeys());
+				sana_lauqsima_juq_node.getKeysAsString());
 				
     }
     
@@ -330,8 +325,8 @@ public class CompiledCorpusTest
 		assertArrayEquals("The cache should contain the segments of 'iglumik'", expected_iglumik_segments,
 				segmentsCache.get("iglumik"));
 		TrieNode taku_juq_node = trie.getNode(new String[] { "{taku/1v}", "{juq/1vn}" });
-		String expectedText = "{taku/1v}{juq/1vn}";
-		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, taku_juq_node.getKeys());
+		String expectedText = "{taku/1v} {juq/1vn}";
+		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, taku_juq_node.getKeysAsString());
 		TrieNode nuna_it_node = trie.getNode(new String[] { "{nuna/1n}", "{it/tn-nom-p}" });
 		assertTrue("The trie should not contain the node for 'nunait'.", nuna_it_node == null);
 }
@@ -353,7 +348,7 @@ public class CompiledCorpusTest
 		}
 		TrieNode mostFrequent = compiledCorpus.getMostFrequentTerminal("hel".split(""));
 		assertEquals("The frequency of the most frequent found is wrong.",2,mostFrequent.getFrequency());
-		assertEquals("The text of the the most frequent found is wrong.","helicopter",mostFrequent.getKeys());
+		assertEquals("The text of the the most frequent found is wrong.","h e l i c o p t e r",mostFrequent.getKeysAsString());
 	}
 
 	@Test
@@ -414,8 +409,8 @@ public class CompiledCorpusTest
 		morphTrie.add(new String[] {"{taku/1v}","{sima/1vv}","{juq/1vn}"});
 		compiledCorpus.trie = morphTrie;
 		TrieNode mostFrequentTerminal = compiledCorpus.getMostFrequentTerminalFromMostFrequentSequenceForRoot("{taku/1v}");
-		String expected = "{taku/1v}{juq/1vn}";
-		assertEquals("The most frequent term for 'taku' in the trie is not correct.",expected,mostFrequentTerminal.getKeys());
+		String expected = "{taku/1v} {juq/1vn}";
+		assertEquals("The most frequent term for 'taku' in the trie is not correct.",expected,mostFrequentTerminal.getKeysAsString());
 	}
 	
 	@Test
@@ -431,8 +426,8 @@ public class CompiledCorpusTest
 		morphTrie.add(new String[] {"{taku/1v}","{sima/1vv}","{juq/1vn}"});
 		compiledCorpus.trie = morphTrie;
 		TrieNode mostFrequentTerminal = compiledCorpus.getMostFrequentTerminalFromMostFrequentSequenceForRoot("{taku/1v}");
-		String expected = "{taku/1v}{juq/1vn}";
-		assertEquals("The most frequent term for 'taku' in the trie is not correct.",expected,mostFrequentTerminal.getKeys());
+		String expected = "{taku/1v} {juq/1vn}";
+		assertEquals("The most frequent term for 'taku' in the trie is not correct.",expected,mostFrequentTerminal.getKeysAsString());
 	}
 	
 	@Test
@@ -448,9 +443,22 @@ public class CompiledCorpusTest
 		morphTrie.add(new String[] {"{taku/1v}","{sima/1vv}","{juq/1vn}"});
 		compiledCorpus.trie = morphTrie;
 		TrieNode mostFrequentTerminal = compiledCorpus.getMostFrequentTerminalFromMostFrequentSequenceForRoot("{taku/1v}");
-		String expected = "{taku/1v}{laaq/2vv}{juq/1vn}";
-		assertEquals("The most frequent term for 'taku' in the trie is not correct.",expected,mostFrequentTerminal.getKeys());
+		String expected = "{taku/1v} {laaq/2vv} {juq/1vn}";
+		assertEquals("The most frequent term for 'taku' in the trie is not correct.",expected,mostFrequentTerminal.getKeysAsString());
 	}
+	
+	@Test
+	public void test__getNbFailedSegmentations() throws Exception {
+        String corpusDir = IUConfig.getIUDataPath()+"src/test/HansardCorpus1";
+        CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
+        compiledCorpus.compileCorpusFromScratch(corpusDir);
+        assertEquals("The number of words that failed segmentation is wrong.",1,
+        		compiledCorpus.getNbWordsThatFailedSegmentations());
+        assertEquals("The number of occurrences that failed segmentation is wrong.",1,
+        		compiledCorpus.getNbOccurrencesThatFailedSegmentations());
+	}
+	
+
 	
 	
 
@@ -468,8 +476,8 @@ public class CompiledCorpusTest
 		Assert.assertEquals("Frequency was not as expected for segmenets: "+seqs_asString, expFreq, gotFreq);
 		
 		if (expLongestTerminal != null) {
-			String gotMostFreqTerminalTxt = gotNode.getMostFrequentTerminal().getKeys();
-			String expMostFreqTerminalTxt = String.join("", expLongestTerminal);
+			String gotMostFreqTerminalTxt = gotNode.getMostFrequentTerminal().getKeysAsString();
+			String expMostFreqTerminalTxt = String.join(" ", expLongestTerminal);
 			AssertHelpers.assertStringEquals("Most frequent terminal was not as expected for segs "+seqs_asString, 
 					expMostFreqTerminalTxt, gotMostFreqTerminalTxt);
 			

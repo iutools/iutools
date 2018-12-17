@@ -10,6 +10,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Vector;
 import java.util.regex.Matcher;
@@ -43,6 +44,7 @@ public class CompiledCorpus
 	protected HashMap<String,String[]> segmentsCache = new HashMap<String, String[]>();
 	protected Vector<String> filesCompiled = new Vector<String>();
 	protected Vector<String> wordsFailedSegmentation = new Vector<String>();
+	protected HashMap<String,Long> wordsFailedSegmentationWithFreqs = new HashMap<String,Long>();
 	
 	protected String saveFilePath = null;
 	
@@ -132,6 +134,10 @@ public class CompiledCorpus
 		}
 		trieFilePath = _trieFilePath;
 		return true;
+	}
+	
+	public Trie getTrie() {
+		return this.trie;
 	}
 	
 	/**
@@ -279,10 +285,16 @@ public class CompiledCorpus
 					if (segments!=null)
 						result = trie.add(segments);
 					if (result != null) {
-						toConsole(result.getKeys()+"\n");
+						toConsole(result.getKeysAsString()+"\n");
 					} else {
 						toConsole("XXX\n");
 						wordsFailedSegmentation.add(word);
+						long nb;
+						if (wordsFailedSegmentationWithFreqs.containsKey(word))
+							nb = wordsFailedSegmentationWithFreqs.get(word).longValue()+1;
+						else
+							nb = 1;
+						wordsFailedSegmentationWithFreqs.put(word, nb);
 					}
 
 				} catch (TrieException e) {
@@ -304,6 +316,18 @@ public class CompiledCorpus
 	}
     
     // ----------------------------- STATS -------------------------------
+    
+    public long getNbWordsThatFailedSegmentations() {
+    	return wordsFailedSegmentationWithFreqs.size();
+    }
+    
+    public long getNbOccurrencesThatFailedSegmentations() {
+    	Long[] nbOccurrences = wordsFailedSegmentationWithFreqs.values().toArray(new Long[] {});
+    	long nb = 0;
+    	for (Long nbOcc: nbOccurrences)
+    		nb += nbOcc.longValue();
+    	return nb;
+    }
     
 	public TrieNode getMostFrequentTerminal(String[] segments) {
 		TrieNode node = this.trie.getNode(segments);
@@ -444,6 +468,7 @@ public class CompiledCorpus
 		//System.out.println(Arrays.toString(words));
 		return words;
 	}
+
 
 
 }
