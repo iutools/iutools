@@ -147,17 +147,17 @@ public class TrieNodeTest {
 				helNode.mostFrequentTerminal==null);
 		TrieNode mostFrequent = helNode.getMostFrequentTerminal();
 		Assert.assertEquals("The most frequent terminal node from here should be 'helicopter'.",
-				"helicopter",helNode.mostFrequentTerminal.getKeys());
+				"h e l i c o p t e r",helNode.mostFrequentTerminal.getKeysAsString());
 		charTrie.add("helios".split(""));
 		Assert.assertTrue("The most frequent terminal node from here, after adding a new child, should not be set yet.",
 				helNode.mostFrequentTerminal==null);
 		mostFrequent = helNode.getMostFrequentTerminal();
 		Assert.assertEquals("The most frequent terminal node from here should be 'helicopter'.",
-				"helicopter",helNode.mostFrequentTerminal.getKeys());
+				"h e l i c o p t e r",helNode.mostFrequentTerminal.getKeysAsString());
 		charTrie.add("helios".split(""));
 		mostFrequent = helNode.getMostFrequentTerminal();
 		Assert.assertEquals("The most frequent terminal node from here should be 'helios'.",
-				"helios",helNode.mostFrequentTerminal.getKeys());
+				"h e l i o s",helNode.mostFrequentTerminal.getKeysAsString());
 		}
 
 	

@@ -67,12 +67,12 @@ public class TrieTest {
 		}
 		TrieNode node = charTrie.getNode("hello".split(""));
 		assertTrue("The node for 'hello' is not null.",node!=null);
-		assertEquals("The key for this node is correct.","hello",node.getKeys());
+		assertEquals("The key for this node is correct.","h e l l o",node.getKeysAsString());
 		assertTrue("This node represents a full word.",node.isWord());
 		
 		node = charTrie.getNode("hell".split(""));
 		assertTrue("The node for 'hell' is not null.",node!=null);
-		assertEquals("The key for this node is correct.","hell",node.getKeys());
+		assertEquals("The key for this node is correct.","h e l l",node.getKeysAsString());
 		assertEquals("The frequency for this node is correct.",2,node.getFrequency());
 		assertFalse("This node does not represent a full word.",node.isWord());
 	}
@@ -87,7 +87,7 @@ public class TrieTest {
 		}
 		TrieNode node = wordTrie.getNode(new String[]{"hello"});
 		assertTrue("The node for 'hello' is not null.",node!=null);
-		assertEquals("The key for this node is correct.","hello",node.getKeys());
+		assertEquals("The key for this node is correct.","hello",node.getKeysAsString());
 		assertFalse("This node should not a full word.",node.isWord());
 	}
 
@@ -125,7 +125,7 @@ public class TrieTest {
 		String[] childrenKeys = (String[]) children.keySet().toArray(new String[]{});
 		TrieNode node = iumorphemeTrie.getNode(new String[]{"{taku/1v}"});
 		assertTrue("The node for 'taku/1n' should not be null.",node!=null);
-		assertEquals("The key for this node is not correct.","{taku/1v}",node.getKeys());
+		assertEquals("The key for this node is not correct.","{taku/1v}",node.getKeysAsString());
 		assertFalse("This node should not a full word.",node.isWord());
 	}
 	
@@ -173,6 +173,24 @@ public class TrieTest {
 		Assert.assertEquals("The number of words starting with 'o' should be 1.",
 				1,o_terminals.length);
 	}
+	
+	@Test
+	public void test_getNbOccurrences() throws Exception {
+		Trie charTrie = new Trie();
+		charTrie.add("hello".split(""));
+		charTrie.add("hello".split(""));
+		charTrie.add("hit".split(""));
+		charTrie.add("abba".split(""));
+		charTrie.add("helios".split(""));
+		charTrie.add("helm".split(""));
+		charTrie.add("ok".split(""));
+		charTrie.add("ok".split(""));
+		Assert.assertEquals("The number of terminals should be 6.",6,charTrie.getAllTerminals().length);
+		long nb = charTrie.getNbOccurrences();
+		Assert.assertEquals("The number of occurrences is wrong.",8,nb);
+	}
+	
+	
 	
 	@Test
 	public void test_toJSON__Char() throws TrieException {

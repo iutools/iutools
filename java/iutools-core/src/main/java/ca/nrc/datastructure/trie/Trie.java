@@ -38,6 +38,15 @@ public class Trie {
     	return getAllTerminals().length;
     }
     
+    public long getNbOccurrences() {
+    	TrieNode[] terminals = getAllTerminals();
+    	long nbOccurrences = 0;
+    	for (TrieNode terminal : terminals) {
+    		nbOccurrences += terminal.getFrequency();
+    	}
+    	return nbOccurrences;
+    }
+    
 	public TrieNode add(String[] segments) throws TrieException {
         TrieNode trieNode = root;
         if (trieNode == null)

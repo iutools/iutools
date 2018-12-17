@@ -31,8 +31,8 @@ public class TrieNode {
         this.keys = _keys;
     }
     
-    public String getKeys() {
-        return String.join("",this.keys);
+    public String getKeysAsString() {
+        return String.join(" ",this.keys);
     }
 
     public boolean isWord() {
@@ -104,19 +104,10 @@ public class TrieNode {
 	
     @Override
     public String toString() {
-    	TrieNode mostFrequentTerminal = null;
-    	if (!this.isWord)
-    		mostFrequentTerminal = this.getMostFrequentTerminal();
         return "[TrieNode:\n" +
-        		"    segments = "+this.getKeys()+"\n"+
+        		"    segments = "+this.getKeysAsString()+"\n"+
         		"    frequency = "+this.frequency+"\n"+
         		"    isWord = "+this.isWord+"\n"+
-        		(mostFrequentTerminal!=null ?
-        				"    mostFrequentTerminal = [TrieNode:\n" +
-        				"                                 segments = "+mostFrequentTerminal.getKeys()+"\n"+
-        				"                                 frequency = "+mostFrequentTerminal.getFrequency()+"\n"+
-                		"                                 isWord = "+mostFrequentTerminal.isWord+"\n"+
-        				"                                 ]\n" : "")+
         		"    ]";
     }
 
