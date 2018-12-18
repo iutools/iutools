@@ -6,18 +6,14 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashMap;
-
-import javax.swing.text.Document;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import ca.inuktitutcomputing.config.IUConfig;
 import ca.nrc.config.ConfigException;
-import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieException;
@@ -367,87 +363,6 @@ public class CompiledCorpusTest
 	}
 
 	@Test
-	public void test__mostFrequentSequenceToTerminals__Char() throws TrieException, IOException {
-		CompiledCorpus compiledCorpus = new CompiledCorpus();
-		Trie charTrie = new Trie();
-		charTrie.add("hello".split(""));
-		charTrie.add("hint".split(""));
-		charTrie.add("helicopter".split(""));
-		charTrie.add("helios".split(""));
-		charTrie.add("helicopter".split(""));
-		compiledCorpus.trie = charTrie;
-		String[] mostFrequentSegments = compiledCorpus.getMostFrequentSequenceForRoot("h");
-		//System.out.println(PrettyPrinter.print(mostFrequentSegments));
-		String[] expected = new String[] {"h","e"};
-		AssertHelpers.assertDeepEquals("The most frequent sequence should be heli.",expected,mostFrequentSegments);
-	}
-	
-	@Test
-	public void test__mostFrequentSequenceToTerminals__IUMorpheme() throws TrieException, IOException {
-		CompiledCorpus compiledCorpus = new CompiledCorpus();
-		Trie morphTrie = new Trie();
-		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{sima/1vv}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{sima/1vv}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"});
-		compiledCorpus.trie = morphTrie;
-		String[] mostFrequentSegments = compiledCorpus.getMostFrequentSequenceForRoot("{taku/1v}");
-		//System.out.println(PrettyPrinter.print(mostFrequentSegments));
-		String[] expected = new String[] {"{taku/1v}","{juq/1vn}"};
-		AssertHelpers.assertDeepEquals("The most frequent sequence should be heli.",expected,mostFrequentSegments);
-	}
-	
-	@Test
-	public void test__getMostFrequentTerminalFromMostFrequenceSequenceFromRoot__1() throws TrieException {
-		CompiledCorpus compiledCorpus = new CompiledCorpus();
-		Trie morphTrie = new Trie();
-		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{sima/1vv}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{sima/1vv}","{juq/1vn}"});
-		compiledCorpus.trie = morphTrie;
-		TrieNode mostFrequentTerminal = compiledCorpus.getMostFrequentTerminalFromMostFrequentSequenceForRoot("{taku/1v}");
-		String expected = "{taku/1v} {juq/1vn}";
-		assertEquals("The most frequent term for 'taku' in the trie is not correct.",expected,mostFrequentTerminal.getKeysAsString());
-	}
-	
-	@Test
-	public void test__getMostFrequentTerminalFromMostFrequenceSequenceFromRoot__2() throws TrieException {
-		CompiledCorpus compiledCorpus = new CompiledCorpus();
-		Trie morphTrie = new Trie();
-		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{sima/1vv}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{sima/1vv}","{juq/1vn}"});
-		compiledCorpus.trie = morphTrie;
-		TrieNode mostFrequentTerminal = compiledCorpus.getMostFrequentTerminalFromMostFrequentSequenceForRoot("{taku/1v}");
-		String expected = "{taku/1v} {juq/1vn}";
-		assertEquals("The most frequent term for 'taku' in the trie is not correct.",expected,mostFrequentTerminal.getKeysAsString());
-	}
-	
-	@Test
-	public void test__getMostFrequentTerminalFromMostFrequenceSequenceFromRoot__3() throws TrieException {
-		CompiledCorpus compiledCorpus = new CompiledCorpus();
-		Trie morphTrie = new Trie();
-		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{sima/1vv}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{sima/1vv}","{juq/1vn}"});
-		compiledCorpus.trie = morphTrie;
-		TrieNode mostFrequentTerminal = compiledCorpus.getMostFrequentTerminalFromMostFrequentSequenceForRoot("{taku/1v}");
-		String expected = "{taku/1v} {laaq/2vv} {juq/1vn}";
-		assertEquals("The most frequent term for 'taku' in the trie is not correct.",expected,mostFrequentTerminal.getKeysAsString());
-	}
-	
-	@Test
 	public void test__getNbFailedSegmentations() throws Exception {
         String corpusDir = IUConfig.getIUDataPath()+"src/test/HansardCorpus1";
         CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
@@ -461,11 +376,6 @@ public class CompiledCorpusTest
 
 	
 	
-
-	private void assertContains(CompiledCorpus compiledCorpus,
-			String[] segs, long expFreq) {
-		assertContains(compiledCorpus, segs, expFreq, null);
-	}
 
 	private void assertContains(CompiledCorpus compiledCorpus,
 			String[] segs, long expFreq, String[] expLongestTerminal) {

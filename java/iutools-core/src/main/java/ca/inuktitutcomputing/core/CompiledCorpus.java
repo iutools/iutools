@@ -4,13 +4,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.FilenameFilter;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
@@ -28,7 +23,6 @@ import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
-import ca.nrc.json.PrettyPrinter;
 
 
 /**
@@ -39,7 +33,6 @@ public class CompiledCorpus
 {
 	
 	private static String JSON_COMPILATION_FILE_NAME = "trie_compilation.json";
-	private static String JSON_TRIE_FILE_NAME = "trie.json";
 	
 	protected Trie trie = new Trie();
 	protected HashMap<String,String[]> segmentsCache = new HashMap<String, String[]>();
@@ -60,6 +53,7 @@ public class CompiledCorpus
 	@JsonIgnore
 	private transient StringSegmenter segmenter = null;
 	
+		@SuppressWarnings("unchecked")
 		@JsonIgnore
 		private StringSegmenter getSegmenter() throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 			if (segmenter == null) {
@@ -79,6 +73,7 @@ public class CompiledCorpus
 	protected Long terminalsSumFreq = null;
 	
 	
+	@SuppressWarnings("serial")
 	public static class CorpusTrieCompilerException extends Exception {
 		public CorpusTrieCompilerException(String mess) {
 			super(mess);
@@ -202,20 +197,6 @@ public class CompiledCorpus
 
 	private void process(String corpusDirectoryPathname) throws Exception {
 		this.corpusDirNeededForSavingPurposes = corpusDirectoryPathname;
-		File corpusDirectory = new File(corpusDirectoryPathname);
-//    	File [] files = corpusDirectory.listFiles(
-//    			new FilenameFilter() {
-//    				public boolean accept(File dir, String name) {
-//    					return name.toLowerCase().endsWith(".txt");
-//    				}
-//    			});
-//    	if ( files==null )
-//    		throw new Exception("The corpus directory '"+corpusDirectoryPathname+"' doest not exist.");
-//    	Arrays.sort(files);
-//    	for (int i=0; i<files.length; i++) {
-//			processFile(files[i]);
-//    	}
-    	
     	CorpusReader_Directory corpusReader = new CorpusReader_Directory();
     	Iterator<CorpusDocument_File> files = (Iterator<CorpusDocument_File>) corpusReader.getFiles(corpusDirectoryPathname);
     	while (files.hasNext())
@@ -336,12 +317,6 @@ public class CompiledCorpus
     	return nb;
     }
     
-	public TrieNode getMostFrequentTerminal(String[] segments) {
-		TrieNode node = this.trie.getNode(segments);
-		TrieNode mostFrequentTerminalNode = node.getMostFrequentTerminal();
-		return mostFrequentTerminalNode;
-	}
-	
 	public long getNumberOfCompiledOccurrences() {
 		if (this.terminalsSumFreq == null) {
 			long sumFreqs = 0;
@@ -353,80 +328,6 @@ public class CompiledCorpus
 		return this.terminalsSumFreq;
 	}
 	
-	public TrieNode getMostFrequentTerminalFromMostFrequentSequenceForRoot(String rootSegment) {
-		String[] mostFrequentSequence = getMostFrequentSequenceForRoot(rootSegment);
-		TrieNode node = this.trie.getNode(mostFrequentSequence);
-		TrieNode[] terminals = node.getAllTerminals();
-		long max = 0;
-		TrieNode mostFrequentTerminal = null;
-		for (TrieNode terminal : terminals)
-			if (terminal.getFrequency() > max) {
-				max = terminal.getFrequency();
-				mostFrequentTerminal = terminal;
-			}
-		return mostFrequentTerminal;
-	}
-
-	public String[] getMostFrequentSequenceForRoot(String rootSegment) {
-		Logger logger = Logger.getLogger("CompiledCorpus.getMostFrequentSequenceToTerminals");
-		HashMap<String, Long> freqs = new HashMap<String, Long>();
-		TrieNode rootSegmentNode = this.trie.getNode(new String[] {rootSegment});
-		TrieNode[] terminals = rootSegmentNode.getAllTerminals();
-		logger.debug("all terminals: "+terminals.length);
-		for (TrieNode terminalNode : terminals) {
-			//logger.debug("terminalNode: "+PrettyPrinter.print(terminalNode));
-			String[] terminalNodeKeys = Arrays.copyOfRange(terminalNode.keys, 1, terminalNode.keys.length);
-			freqs = computeFreqs(terminalNodeKeys,freqs,rootSegment);
-		}
-		logger.debug("freqs: "+PrettyPrinter.print(freqs));
-		long maxFreq = 0;
-		int minLength = 1000;
-		String seq = null;
-		String[] freqsKeys = freqs.keySet().toArray(new String[] {});
-		for (int i=0; i<freqsKeys.length; i++) {
-			String freqKey = freqsKeys[i];
-			int nbKeys = freqKey.split(" ").length;
-			if (freqs.get(freqKey)==maxFreq) {
-				if (nbKeys<minLength) {
-					maxFreq = freqs.get(freqKey);
-					minLength = nbKeys;
-					seq = freqKey;
-				} 
-			} else if (freqs.get(freqKey) > maxFreq) {
-				maxFreq = freqs.get(freqKey);
-				minLength = nbKeys;
-				seq = freqKey;
-			}
-		}
-		return (rootSegment+" "+seq).split(" ");
-	}
-
-	
-	private HashMap<String, Long> computeFreqs(String[] terminalNodeKeys, HashMap<String, Long> freqs, String rootSegment) {
-		return _computeFreqs("",terminalNodeKeys,freqs,rootSegment);
-	}
-
-	private HashMap<String, Long> _computeFreqs(String cumulativeKeys, String[] terminalNodeKeys, HashMap<String, Long> freqs, String rootSegment) {
-		Logger logger = Logger.getLogger("CompiledCorpus._computeFreqs");
-		if (terminalNodeKeys.length==0)
-			return freqs;
-		logger.debug("cumulativeKeys: '"+cumulativeKeys+"'");
-		logger.debug("terminalNodeKeys: '"+String.join("", terminalNodeKeys)+"'\n");
-		String key = terminalNodeKeys[0];
-		String newCumulativeKeys = (cumulativeKeys + " " + key).trim();
-		String[] remKeys = Arrays.copyOfRange(terminalNodeKeys, 1, terminalNodeKeys.length);
-		// node of rootSegment + newCumulativeKeys
-		TrieNode node = this.trie.getNode((rootSegment+" "+newCumulativeKeys).split(" "));
-		long incr = node.getFrequency();
-		if (!freqs.containsKey(newCumulativeKeys))
-			freqs.put(newCumulativeKeys, new Long(incr));
-		//else {
-		//	freqs.put(newCumulativeKeys, new Long(freqs.get(newCumulativeKeys).longValue() + incr));
-		//}
-		freqs = _computeFreqs(newCumulativeKeys, remKeys, freqs, rootSegment);
-		return freqs;
-	}
-
 
 	public void toConsole(String message) {
 		System.out.print(message);
@@ -476,6 +377,15 @@ public class CompiledCorpus
 		return words;
 	}
 
+	public TrieNode getMostFrequentTerminal(String[] segments) {
+		return this.trie.getMostFrequentTerminal(segments);
+	}
+
+	public String[] getMostFrequentSequenceForRoot(String string) {
+		return this.trie.getMostFrequentSequenceForRoot(string);
+	}
+
 
 
 }
+
