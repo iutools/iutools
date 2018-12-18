@@ -9,8 +9,11 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
+
 import ca.inuktitutcomputing.data.Data;
 import ca.inuktitutcomputing.data.LinguisticDataAbstract;
+import ca.nrc.json.PrettyPrinter;
 
 public final class LinguisticDataCSV extends LinguisticDataAbstract {
 	
@@ -83,6 +86,7 @@ public final class LinguisticDataCSV extends LinguisticDataAbstract {
 
 
     public static int readLinguisticDataCSV(String [] data) {
+    	Logger logger = Logger.getLogger("LinguisticDataCSV.readLinguisticDataCSV");
     	String type = data[0];
     	String dbName = data[1];
     	String tableName = data[2];    	
@@ -100,6 +104,7 @@ public final class LinguisticDataCSV extends LinguisticDataAbstract {
                     nextRow.put("dbName", dbName);
                     nextRow.put("tableName", tableName);
                     if (type.equals("Base")) {
+                    	logger.debug("nextRow: "+PrettyPrinter.print(nextRow));
                         Data.makeBase(nextRow);
                     } else if (type.equals("Suffix")) {
                         Data.makeSuffix(nextRow);
