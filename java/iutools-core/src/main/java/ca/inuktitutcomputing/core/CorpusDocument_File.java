@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
+import org.apache.commons.io.FilenameUtils;
+
 import ca.inuktitutcomputing.documents.*;
 
 public class CorpusDocument_File extends CorpusDocument {
@@ -52,24 +54,21 @@ public class CorpusDocument_File extends CorpusDocument {
 
 	private String getDOCContent() throws IOException {
 		NRC_DOCDocument doc = new NRC_DOCDocument("file://"+id);
-		return doc.getPageContent();
+		String contents = doc.getPageContent();
+		doc.close();
+		return contents;
 	}
 
 	private String getPDFContent() throws Exception {
 		NRC_PDFDocument doc = new NRC_PDFDocument("file://"+id);
-		return doc.getContents();
+		String contents = doc.getContents();
+		doc.close();
+		return contents;
 	}
 
 	private String getType() {
-		String lcid = this.id.toLowerCase();
-		if (lcid.endsWith(".pdf"))
-			return "pdf";
-		else if (lcid.endsWith(".doc"))
-			return "doc";
-		else if (lcid.endsWith(".txt"))
-			return "txt";
-		else
-			return null;
+		String ext = FilenameUtils.getExtension(this.id).toLowerCase();
+		return ext;
 	}
 
 

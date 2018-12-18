@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -202,24 +203,30 @@ public class CompiledCorpus
 	private void process(String corpusDirectoryPathname) throws Exception {
 		this.corpusDirNeededForSavingPurposes = corpusDirectoryPathname;
 		File corpusDirectory = new File(corpusDirectoryPathname);
-    	File [] files = corpusDirectory.listFiles(
-    			new FilenameFilter() {
-    				public boolean accept(File dir, String name) {
-    					return name.toLowerCase().endsWith(".txt");
-    				}
-    			});
-    	if ( files==null )
-    		throw new Exception("The corpus directory '"+corpusDirectoryPathname+"' doest not exist.");
-    	Arrays.sort(files);
-    	for (int i=0; i<files.length; i++) {
-			processFile(files[i]);
-    	}
+//    	File [] files = corpusDirectory.listFiles(
+//    			new FilenameFilter() {
+//    				public boolean accept(File dir, String name) {
+//    					return name.toLowerCase().endsWith(".txt");
+//    				}
+//    			});
+//    	if ( files==null )
+//    		throw new Exception("The corpus directory '"+corpusDirectoryPathname+"' doest not exist.");
+//    	Arrays.sort(files);
+//    	for (int i=0; i<files.length; i++) {
+//			processFile(files[i]);
+//    	}
+    	
+    	CorpusReader_Directory corpusReader = new CorpusReader_Directory();
+    	Iterator<CorpusDocument_File> files = (Iterator<CorpusDocument_File>) corpusReader.getFiles(corpusDirectoryPathname);
+    	while (files.hasNext())
+    		processFile(files.next());
+    	
 	}
 
-	private void processFile(File file) throws Exception {
+	private void processFile(CorpusDocument_File file) throws Exception {
 		try {
-			String fileAbsolutePath = file.getAbsolutePath();
-			toConsole("[INFO] --- compiling document "+file.getName()+"\n");
+			String fileAbsolutePath = file.id;
+			toConsole("[INFO] --- compiling document "+new File(fileAbsolutePath).getName()+"\n");
 			processDocumentContents(fileAbsolutePath);
 			if ( !this.filesCompiled.contains(fileAbsolutePath) )
 				filesCompiled.add(fileAbsolutePath);
