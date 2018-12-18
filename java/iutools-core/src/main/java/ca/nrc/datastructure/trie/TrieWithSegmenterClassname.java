@@ -1,12 +1,5 @@
 package ca.nrc.datastructure.trie;
 
-/* blah */
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Set;
-
 
 public class TrieWithSegmenterClassname {
 

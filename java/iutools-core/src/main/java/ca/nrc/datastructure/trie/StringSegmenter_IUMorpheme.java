@@ -1,6 +1,5 @@
 package ca.nrc.datastructure.trie;
 
-import java.util.ArrayList;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,8 +10,6 @@ import ca.inuktitutcomputing.morph.Decomposition;
 
 
 public class StringSegmenter_IUMorpheme extends StringSegmenter {
-	
-	private static String name = "IUMorpheme";
 	
 	public String[] segment(String string) throws Exception {
 		return segment(string,false);
@@ -30,7 +27,7 @@ public class StringSegmenter_IUMorpheme extends StringSegmenter {
         	Decomposition dec = decs[0];
         	Pattern p = Pattern.compile("(\\{[^:]+\\:(.+?)\\})") ;      
         	Matcher m = p.matcher(dec.toStr2()) ;
-        	Vector v = new Vector();
+        	Vector<String> v = new Vector<String>();
         	while (m.find()) {
         		if (fullAnalysis) {
         			v.add(m.group(1));

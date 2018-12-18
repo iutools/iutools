@@ -10,7 +10,7 @@ import java.util.Vector;
 
 public class CorpusReader_Directory extends CorpusReader {
 	
-	public Iterator<?> getFiles(String corpusDirectoryPathname) {
+	public Iterator<CorpusDocument_File> getFiles(String corpusDirectoryPathname) {
 		File corpusDirectory = new File(corpusDirectoryPathname);
     	File [] files = corpusDirectory.listFiles(
     			new FilenameFilter() {
