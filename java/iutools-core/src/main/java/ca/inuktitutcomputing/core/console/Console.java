@@ -73,6 +73,15 @@ public class Console {
 				;
 		mainCmd.addSubCommand(searchTrie);
 		
+		
+		
+		// Decompose an Inuktut word
+		SubCommand segmentIU = 
+				new CmdSegmentIU("segment_iu")
+				.addOption(optWord)
+				;
+		mainCmd.addSubCommand(segmentIU);
+		
 
 				
 		return mainCmd;
