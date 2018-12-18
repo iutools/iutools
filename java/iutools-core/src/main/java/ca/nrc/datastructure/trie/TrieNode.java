@@ -1,7 +1,5 @@
 package ca.nrc.datastructure.trie;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
@@ -53,6 +51,7 @@ public class TrieNode {
     }
     
     public TrieNode getMostFrequentTerminal() {
+    	// TODO: sauvegarder également la plage (N most frequent); actuellement, c'est 1 (THE most frequent0
     	if ( mostFrequentTerminal==null )
     		mostFrequentTerminal = _getMostFrequentTerminal(0);
     	return mostFrequentTerminal;
@@ -83,23 +82,18 @@ public class TrieNode {
 	
     // Returns the first of possibly more than 1 possibilities
 	private TrieNode _getMostFrequentTerminal(long max) {
-		HashMap<String,TrieNode> children = this.getChildren();
-		if (children.size()==0)
-			if (!this.isWord())
-				return null;
-			else
-				return this;
-		String[] keys = children.keySet().toArray(new String[]{});
-		TrieNode childNodeWithMaxFrequency = null;
-		for (int i=0; i<keys.length; i++) {
-			TrieNode childNode = children.get(keys[i]);
-			TrieNode childNodeMax = childNode._getMostFrequentTerminal(max);
-			if (childNodeMax!=null && childNodeMax.getFrequency()>max) {
-				max = childNodeMax.getFrequency();
-				childNodeWithMaxFrequency = childNodeMax;
+		if (this.isWord())
+			return this;
+			
+		TrieNode[] terminals = this.getAllTerminals();
+		long maxFreq = 0;
+		TrieNode mostFreqTerm = null;
+		for (TrieNode terminal : terminals)
+			if (terminal.getFrequency() > maxFreq) {
+				maxFreq = terminal.getFrequency();
+				mostFreqTerm = terminal;
 			}
-		}
-		return childNodeWithMaxFrequency;
+		return mostFreqTerm;
 	}
 	
     @Override
