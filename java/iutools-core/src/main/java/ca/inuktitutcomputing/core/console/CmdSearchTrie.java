@@ -1,6 +1,12 @@
 package ca.inuktitutcomputing.core.console;
 
 import java.io.FileReader;
+import java.nio.CharBuffer;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.util.Locale;
+
 import com.google.gson.Gson;
 
 import ca.inuktitutcomputing.core.CompiledCorpus;
@@ -42,11 +48,22 @@ public class CmdSearchTrie extends ConsoleCommand {
 		CompiledCorpus compiledCorpus = new Gson().fromJson(fr, CompiledCorpus.class);
 		fr.close();
 		Trie trie = compiledCorpus.getTrie();
-		
-		echo("\nNumber of words in the trie: "+trie.getSize());
-		echo("Number of occurrences in the trie: "+trie.getNbOccurrences());
-		echo("\nNumber of words that failed segmentation: "+compiledCorpus.getNbWordsThatFailedSegmentations());
-		echo("Number of occurrences that failed segmentation: "+compiledCorpus.getNbOccurrencesThatFailedSegmentations());
+
+		DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
+		DecimalFormatSymbols symbols = formatter.getDecimalFormatSymbols();
+		symbols.setGroupingSeparator(' ');
+		formatter.setDecimalFormatSymbols(symbols);
+
+		echo("              ____________________________");
+		echo("              |             |             |");
+		echo("              |   in trie   |    failed   |");
+		echo("______________|_____________|_____________|");
+		echo("|             |             |             |");
+		echo("| Occurrences | "+prepend(' ',11,formatter.format(trie.getNbOccurrences()))+" | "+prepend(' ',11,formatter.format(compiledCorpus.getNbOccurrencesThatFailedSegmentations()))+" |");
+		echo("|_____________|_____________|_____________|");
+		echo("|             |             |             |");
+		echo("| Words       | "+prepend(' ',11,formatter.format(trie.getSize()))+" | "+prepend(' ',11,formatter.format(compiledCorpus.getNbWordsThatFailedSegmentations()))+" |");
+		echo("|_____________|_____________|_____________|");
 		
 		while (true) {
 			if (interactive) {
@@ -84,6 +101,11 @@ public class CmdSearchTrie extends ConsoleCommand {
 			if (!interactive) break;
 		}
 		
+	}
+
+
+	private String prepend(char prependChar, int maxPlaces, String numberStr) {
+		return CharBuffer.allocate(maxPlaces-numberStr.length()).toString().replace( '\0', prependChar)+numberStr; 
 	}
 	
 //	public static void search_trie_one(String arg1Name, String arg1Value, String arg2Name, String arg2Value) throws ConsoleException {
