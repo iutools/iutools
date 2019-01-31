@@ -156,8 +156,8 @@ public class FontNunacom {
             { "\u1672", "\u02c7" }, // Xii
             { "\u15A1", "`O" }, // &ii
             { "\u15A1", "\u00d8" }, // &ii
-            // On rencontre dans la r�alit� les codes pour "nguu"
-            // et "nnguu" cod�s par un code de point et la syllabe
+            // On rencontre dans la r�alit� les codes pour "ngii"
+            // et "nngii" cod�s par un code de point et la syllabe
             // courte.
             {"\u1590", "+q" }, // ngii
             {"\u1672", "+T" }, // nngii

@@ -121,7 +121,7 @@ public class FontNaamajut {
         { "\u1546", "E"  }, // ri
         { "\u157F", "e"  }, // qi
         { "\u158F", "q"  }, // ngi
-        { "\u158F", "R"  }, // ngi
+        { "\u158F", "R"  }, // nngi
         { "\u15A0", "O"  }, // &i
 
         // ii
