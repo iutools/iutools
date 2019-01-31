@@ -47,6 +47,13 @@ public class Console {
 			    .argName("WORD")
 			    .build();
 
+		Option optIMAAnalysis = Option.builder(null)
+				.longOpt(ConsoleCommand.OPT_IMAANALYSIS)
+			    .desc("An Inuktitut Morphological Analyzer analysis.")
+			    .hasArg()
+			    .argName("ANALYSIS")
+			    .build();
+
 		Option optFromScratch = Option.builder(null)
 				.longOpt(ConsoleCommand.OPT_FROM_SCRATCH)
 			    .desc("Tells the compiler to start from scratch.")
@@ -81,6 +88,15 @@ public class Console {
 				.addOption(optWord)
 				;
 		mainCmd.addSubCommand(segmentIU);
+		
+
+				
+		// Convert a Inuktitut segmentation into Trie-compatible segments
+		SubCommand convertIU = 
+				new CmdConvertIUSegments("convert_iu_segments")
+				.addOption(optWord)
+				;
+		mainCmd.addSubCommand(convertIU);
 		
 
 				

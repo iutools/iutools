@@ -11,6 +11,7 @@ public abstract class ConsoleCommand extends SubCommand {
 	public static final String OPT_COMP_FILE = "comp-file";
 	public static final String OPT_MORPHEMES = "morphemes";
 	public static final String OPT_WORD = "word";
+	public static final String OPT_IMAANALYSIS = "analysis";
 	public static final String OPT_FROM_SCRATCH = "from-scratch";
 	
 	
