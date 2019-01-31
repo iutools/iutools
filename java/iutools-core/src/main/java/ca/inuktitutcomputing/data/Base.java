@@ -26,6 +26,7 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.regex.Matcher;
@@ -404,6 +405,22 @@ public class Base extends Morpheme {
      * Modèle général d'une chaîne de texte pour le sens d'un verbe transitif:
      * ('[' '-'? ('R' | 'T' | 'P' | 'A') ']' texte )+
      * texte
+     * 
+     * où R : indique l'usage réflexif
+     *    T : indique l'usage transitif
+     *    P : indique l'usage passif
+     *    A : indique l'usage 'ALL' (RTP)
+     * 
+     * Le texte contient les mécanismes spéciaux suivants :
+     * 
+     *   - verbes acceptant les terminaisons transitives :
+     *        - le mot verbal est précédé de '/'
+     *        - l'objet est représenté par 's.t.' ou 's.o.' (something ; someone)
+     *        - ex. : to /touch s.t.
+     *        
+     *   - verbes acceptant seulement les terminaisons intransitives :
+     *        - pour les verbes pouvant avoir un complément d'objet, 
+     *          celui-ci est représenté par '(trans.: s.t.)' ou '(trans.: s.o.)'
      */
     private void makeVerbMeanings() {
 		String[] englishMeanings = makeVerbMeanings(englishMeaning, "en");
@@ -455,56 +472,25 @@ public class Base extends Morpheme {
 		// T : transitive
 		// P : passive
 		while (mpt.find(pos)) {
-			String texte = null;
-			String mode;
-			boolean modeBool = true;
-			boolean trans = true;
-			boolean pass = true;
-			boolean refl = true;
-			texte = mpt.group(3);
-			mode = mpt.group(2);
-			if (mpt.group(1) != null)
-				modeBool = false;
-			if (mode.equals("R")) {
-				if (modeBool) {
-					trans = false;
-					pass = false;
-				} else {
-					refl = false;
-				}
-			} else if (mode.equals("T")) {
-				if (modeBool) {
-					refl = false;
-					pass = false;
-				} else {
-					trans = false;
-				}
-			} else if (mode.equals("P")) {
-				if (modeBool) {
-					trans = false;
-					refl = false;
-				} else {
-					pass = false;
-				}
-			}
+			String texte = mpt.group(3);
+			String mode = mpt.group(2);
+			String signe = mpt.group(1);
+			Map<Character,Boolean> tpr = setTPR(signe,mode);
+			boolean trans = tpr.get('t');
+			boolean pass = tpr.get('p');
+			boolean refl = tpr.get('r');
 
-			Pattern pm = Pattern.compile("(to )?/(([a-zA-Zàâéèêëîïôùûü]|-)+)");
-			// texte = (to) /verbe
+			Pattern pm = Pattern.compile("(to )?/(([a-zA-Zàâéèêëîïôùûüç]|-)+)"); // texte = (to) /verbe
 			Matcher mpm = pm.matcher(texte);
 			int pos2 = 0;
-			boolean toBool = lang.equals("en") ? false : true;
+			//boolean toBool = lang.equals("en") ? false : true;
 
 			while (mpm.find(pos2)) {
-				String key;
-				String to = "";
-				if (mpm.group(1) != null) {
-					to = mpm.group(1);
-					toBool = true;
-				} else if (lang.equals("en"))
-					toBool = false;
-				key = mpm.group(2);
-				String verbWord = key;
-				verbWord = verbWord.replaceFirst("-[^-]+$","");
+				String key = mpm.group(2);
+				String to = mpm.group(1) != null ? mpm.group(1) : "";
+				boolean toBool = to.equals("") ? false : true;
+
+				String verbWord = key.replaceFirst("-[^-]+$","");
 				String verbPart = key.replace(verbWord, "");
 				VerbWord verb = (VerbWord) LinguisticDataAbstract.words.get(verbWord);
 				String partPassive = texte.substring(pos2, mpm.start());
@@ -550,24 +536,19 @@ public class Base extends Morpheme {
 					partReflexive = partReflexive.replaceAll(" qqch[.]",
 							"");
 				}
-				if (refl)
+				if (refl) {
 					reflexiveMeaning += partReflexive + to;
-				if (refl)
 					resultMeaning += partPassive + to;
-				if (lang.equals("fr")) {
-					if (refl)
+					if (lang.equals("fr"))
 						reflexiveMeaning += Util.isVowel(key.charAt(0)) ? "s'" : "se ";
-					if (pass)
-						passiveMeaning += toBool ? "être " : "";
-					toBool = false;
-				} else {
-					if (pass)
-						passiveMeaning += partPassive
-								+ (toBool ? (to + "be ") : "");
+					reflexiveMeaning += key.replaceFirst("-[^-]+$","");
+					resultMeaning += "/" + key;
 				}
 				if (pass) {
 					String vpass = null;
 					if (lang.equals("en")) {
+						passiveMeaning += partPassive
+								+ (toBool ? (to + "be ") : "");
 						if (verb != null)
 							vpass = verb.passive;
 						else if (key.endsWith("e"))
@@ -578,6 +559,7 @@ public class Base extends Morpheme {
 							vpass = key + "ed";
 					}
 					else if (lang.equals("fr")) {
+						passiveMeaning += toBool ? "être " : "";
 						if (verb != null)
 							vpass = verb.passive+verbPart;
 						else if (verbWord.endsWith("er"))
@@ -601,10 +583,6 @@ public class Base extends Morpheme {
 					passiveMeaning += "/" + vpass;
 					passiveMeaning = passiveMeaning.replace("être /se faire", "/se faire");
 				}
-				if (refl)
-					reflexiveMeaning += key.replaceFirst("-[^-]+$","");
-				if (refl)
-					resultMeaning += "/" + key;
 				if (trans)
 					transitiveMeaning += texte.substring(pos2, mpm.start())
 							+ to + key;
@@ -614,80 +592,55 @@ public class Base extends Morpheme {
 			// Partie finale
 			String partPassive = texte.substring(pos2);
 			String partReflexive = texte.substring(pos2);
-			if (trans)
+			if (trans) {
 				transitiveMeaning += texte.substring(pos2);
-			if (trans)
-			if (pos2 != 0) {
-				if (lang.equals("en")) {
-					partPassive = partPassive.replaceAll("on top of s.t.",
-							"atop");
-					partPassive = partPassive.replaceAll("s.t.'s", "its");
-					partPassive = partPassive
-							.replaceAll("s.o.'s", "his or her");
-					partPassive = partPassive.replaceAll(
-							" s[.]o[.] or s[.]t[.]", "");
-					partPassive = partPassive.replaceAll(
-							" s[.]t[.] or s[.]o[.]", "");
-					partPassive = partPassive.replaceAll(" s[.]o[.]", "");
-					partPassive = partPassive.replaceAll(" s[.]t[.]", "");
-					partReflexive = partReflexive.replaceAll("s.t.'s",
-							"its own");
-					partReflexive = partReflexive.replaceAll("s.o.'s",
-							"his or her own");
-					partReflexive = partReflexive.replaceAll(
-							"s[.]o[.] or s[.]t[.]", "oneself or itself");
-					partReflexive = partReflexive.replaceAll(
-							"s[.]t[.] or s[.]o[.]", "itself or oneself");
-					partReflexive = partReflexive.replaceAll("s[.]o[.]",
-							"oneself");
-					partReflexive = partReflexive.replaceAll("s[.]t[.]",
-							"itself");
-				} else if (lang.equals("fr")) {
-					partPassive = partPassive.replaceAll(
-							" qqn ou qqch[.]", "");
-					partPassive = partPassive.replaceAll(
-							" qqch[.] ou qqn", "");
-					partPassive = partPassive.replaceAll(" qqn", "");
-					partPassive = partPassive.replaceAll(" qqch[.]", "");
-					partReflexive = partReflexive.replaceAll(
-							" qqn ou qqch[.]", "");
-					partReflexive = partReflexive.replaceAll(
-							" qqch[.] ou qqn", "");
-					partReflexive = partReflexive.replaceAll(" qqn", "");
-					partReflexive = partReflexive.replaceAll(" qqch[.]", "");
+				if (pos2 != 0) {
+					if (lang.equals("en")) {
+						partPassive = partPassive.replaceAll("on top of s.t.", "atop");
+						partPassive = partPassive.replaceAll("s.t.'s", "its");
+						partPassive = partPassive.replaceAll("s.o.'s", "his or her");
+						partPassive = partPassive.replaceAll(" s[.]o[.] or s[.]t[.]", "");
+						partPassive = partPassive.replaceAll(" s[.]t[.] or s[.]o[.]", "");
+						partPassive = partPassive.replaceAll(" s[.]o[.]", "");
+						partPassive = partPassive.replaceAll(" s[.]t[.]", "");
+						partReflexive = partReflexive.replaceAll("s.t.'s", "its own");
+						partReflexive = partReflexive.replaceAll("s.o.'s", "his or her own");
+						partReflexive = partReflexive.replaceAll("s[.]o[.] or s[.]t[.]", "oneself or itself");
+						partReflexive = partReflexive.replaceAll("s[.]t[.] or s[.]o[.]", "itself or oneself");
+						partReflexive = partReflexive.replaceAll("s[.]o[.]", "oneself");
+						partReflexive = partReflexive.replaceAll("s[.]t[.]", "itself");
+					} else if (lang.equals("fr")) {
+						partPassive = partPassive.replaceAll(" qqn ou qqch[.]", "");
+						partPassive = partPassive.replaceAll(" qqch[.] ou qqn", "");
+						partPassive = partPassive.replaceAll(" qqn", "");
+						partPassive = partPassive.replaceAll(" qqch[.]", "");
+						partReflexive = partReflexive.replaceAll(" qqn ou qqch[.]", "");
+						partReflexive = partReflexive.replaceAll(" qqch[.] ou qqn", "");
+						partReflexive = partReflexive.replaceAll(" qqn", "");
+						partReflexive = partReflexive.replaceAll(" qqch[.]", "");
+					}
 				}
-			}
-			if (trans)
 				transitiveMeaning = transitiveMeaning.replace("se-", "se ");
-			if (trans)
 				transitiveMeaning = transitiveMeaning.replace("-à", " à");
-			if (trans)
 				transitiveMeaning = transitiveMeaning.replace("-contre", " contre");
-			if (trans)
 				transitiveMeaning = transitiveMeaning.replace("-de ", " de ");
-			if (trans)
 				transitiveMeaning = transitiveMeaning.replace("-dans ", " dans ");
-			if (trans)
 				transitiveMeaning = transitiveMeaning.replace("-sur ", " sur ");
-			if (refl)
-				reflexiveMeaning = reflexiveMeaning.replace("-à", "");
-			if (pass)
+			}
+			if (pass) {
 				passiveMeaning += partPassive;
-			if (pass)
 				passiveMeaning = passiveMeaning.replaceAll("be /made ",
 						"be made to ");
-			if (pass)
 				passiveMeaning = passiveMeaning.replaceAll("/", "");
-			if (refl)
+			}
+			if (refl) {
+				reflexiveMeaning = reflexiveMeaning.replace("-à", "");
 				reflexiveMeaning += partReflexive;
-			if (refl)
 				resultMeaning += partPassive;
-			if (refl)
 				resultMeaning = resultMeaning.replaceAll("to /make", "to");
-			if (refl)
 				resultMeaning = resultMeaning.replaceAll("/make", "to");
-			if (refl)
 				resultMeaning = resultMeaning.replaceAll("/", "");
+			}
 			pos = mpt.end();
 		}
 
@@ -698,6 +651,42 @@ public class Base extends Morpheme {
 				reflexiveMeaning, resultMeaning };
 	}
     
+	private static Map<Character, Boolean> setTPR(String signe, String mode) {
+		boolean trans = true;
+		boolean pass = true;
+		boolean refl = true;
+		boolean modeBool = true;
+		if (signe != null)
+			modeBool = false;
+		if (mode.equals("R")) {
+			if (modeBool) {
+				trans = false;
+				pass = false;
+			} else {
+				refl = false;
+			}
+		} else if (mode.equals("T")) {
+			if (modeBool) {
+				refl = false;
+				pass = false;
+			} else {
+				trans = false;
+			}
+		} else if (mode.equals("P")) {
+			if (modeBool) {
+				trans = false;
+				refl = false;
+			} else {
+				pass = false;
+			}
+		}
+		Map<Character, Boolean> tpr = new HashMap<Character, Boolean>();
+		tpr.put(new Character('t'), new Boolean(trans));
+		tpr.put(new Character('p'), new Boolean(pass));
+		tpr.put(new Character('r'), new Boolean(refl));
+		return tpr;
+	}
+
 	//---------------------------------------------------------------------------------------------------------
 	public String showData() {
 		StringBuffer sb = new StringBuffer();
