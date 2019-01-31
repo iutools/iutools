@@ -11,14 +11,24 @@ import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
 
-public class Exp {
+/*
+ * Idée générale : à l'aide de structures Trie pour les formes de surface
+ * des morphèmes
+ */
+
+public class Dec {
 
 	private static Trie root_trie;
-	private static Trie suff_trie;
-
+	private static Trie suffix_trie;
+	
+	
+	/**
+	 * MAIN
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		String[] roots = new String[]{
-				"umiaq/1n", "inuk/1n"
+				"umiaq/1n", "inuk/1n", "taku/1v"
 		};
 		String[] suffixes = new String[]{
 				"liuq/1nv", "ti/1vn", "u/1nv",
@@ -28,19 +38,19 @@ public class Exp {
 		root_trie = new Trie();
 		for (int i=0; i<roots.length; i++) {
 			try {
-				root_trie.add(new String[]{roots[i]});
+				root_trie.add(roots[i].split(""));
 			} catch (TrieException e) {
 				// TODO Auto-generated catch block
 			}
 		}
-		suff_trie = new Trie();
+		suffix_trie = new Trie();
 		for (int i=0; i<suffixes.length; i++) {
 			try {
-				suff_trie.add(new String[]{suffixes[i]});
+				suffix_trie.add(suffixes[i].split(""));
 			} catch (TrieException e) {
 				// TODO Auto-generated catch block
 			}
-		}
+		} 
 
 		System.out.print("Enter a word: ");
 		BufferedReader reader = new BufferedReader(new InputStreamReader(
@@ -56,6 +66,7 @@ public class Exp {
 
 	private static void process(String string) {
 		String[] chars = string.split("");
+		String nextPartOfWord = null;
 		Vector<String> previousKeys = null;
 		Vector<String> currentKeys = new Vector<String>();
 		Vector<String> eatenKeys = new Vector<String>();
@@ -64,22 +75,83 @@ public class Exp {
 		TrieNode root = null;
 		TrieNode[] rootsForCompleteSurfaceForm = new TrieNode[]{};
 		TrieNode[] rootsForIncompleteSurfaceForm = new TrieNode[]{};
+		TrieNode[] suffixesForCompleteSurfaceForm = new TrieNode[]{};
+		TrieNode[] suffixesForIncompleteSurfaceForm = new TrieNode[]{};
 		String currentKey = null;
+		
+		// root
+		Object[] possibleRoot = findMorpheme(chars, root_trie);
+		if (possibleRoot==null) {
+			System.out.println("No root was found for this word.");
+			return;
+		}
+		eatenKeys = (Vector<String>) possibleRoot[0];
+		rootsForCompleteSurfaceForm = (TrieNode[]) possibleRoot[1];
+		rootsForIncompleteSurfaceForm = (TrieNode[]) possibleRoot[2];
+		
+		System.out.println("Surface root: "
+					+ Arrays.toString(eatenKeys.toArray(new String[] {})));
+		for (int i = 0; i < rootsForCompleteSurfaceForm.length; i++) {
+				System.out.println("Possible root (complete surface form): "
+						+ rootsForCompleteSurfaceForm[i].getKeysAsString());
+		}
+		for (int i = 0; i < rootsForIncompleteSurfaceForm.length; i++) {
+				System.out.println("Possible root (incomplete surface form): "
+						+ rootsForIncompleteSurfaceForm[i].getKeysAsString());
+		}
+		System.out.println("\nAnalyser le reste du mot à partir du caractère "+(eatenKeys.size())+" : "+string.substring(eatenKeys.size()));
+		
+		// suffixes and endings
+		nextPartOfWord = string.substring(eatenKeys.size());
+		Object[] possibleSuffix = findMorpheme(nextPartOfWord.split(""),suffix_trie);
+		if (possibleSuffix==null) {
+			System.out.println("No suffix was found for this part of word: "+nextPartOfWord+".");
+			return;
+		}
+		eatenKeys = (Vector<String>) possibleSuffix[0];
+		suffixesForCompleteSurfaceForm = (TrieNode[]) possibleSuffix[1];
+		suffixesForIncompleteSurfaceForm = (TrieNode[]) possibleSuffix[2];
+		
+		System.out.println("Surface suffix: "
+					+ Arrays.toString(eatenKeys.toArray(new String[] {})));
+		for (int i = 0; i < suffixesForCompleteSurfaceForm.length; i++) {
+				System.out.println("Possible suffix (complete surface form): "
+						+ suffixesForCompleteSurfaceForm[i].getKeysAsString());
+		}
+		for (int i = 0; i < suffixesForIncompleteSurfaceForm.length; i++) {
+				System.out.println("Possible suffix (incomplete surface form): "
+						+ suffixesForIncompleteSurfaceForm[i].getKeysAsString());
+		}
+		
+		nextPartOfWord = nextPartOfWord.substring(eatenKeys.size());
+		if (nextPartOfWord != "")
+			System.out.println("\nAnalyser le reste du mot à partir du caractère "+(eatenKeys.size())+" : "+nextPartOfWord.substring(eatenKeys.size()));
+	}
 
+	private static Object[] findMorpheme(String[] chars, Trie trie) {
+		Vector<String> previousKeys = null;
+		Vector<String> currentKeys = new Vector<String>();
+		Vector<String> eatenKeys = new Vector<String>();
+		TrieNode previousNode = null;
+		TrieNode currentNode = null;
+		TrieNode morpheme = null;
+		TrieNode[] morphemesForCompleteSurfaceForm = new TrieNode[]{};
+		TrieNode[] morphemesForIncompleteSurfaceForm = new TrieNode[]{};
+		String currentKey = null;
 		int charCounter;
-		// Parse the root
+		// Parse the morpheme
 		for (charCounter = 0; charCounter < chars.length; charCounter++) {
 			previousKeys = (Vector<String>) currentKeys.clone();
 			currentKey = chars[charCounter];
 			currentKeys.add(chars[charCounter]);
-			currentRootNode = root_trie.getNode(currentKeys
+			currentNode = trie.getNode(currentKeys
 					.toArray(new String[] {}));
-			if (currentRootNode == null) {
+			if (currentNode == null) {
 				if (previousNode != null) {
-					root = previousNode;
+					morpheme = previousNode;
 					break;
 				} else {
-					System.out.println("No root starts with '"
+					System.out.println("No morpheme starts with '"
 							+ Arrays.toString(currentKeys
 									.toArray(new String[] {})) + "'.");
 					break;
@@ -89,29 +161,33 @@ public class Exp {
 						.clone();
 				searchKeys.add("/");
 				System.out.println("Search for "+Arrays.toString(searchKeys.toArray(new String[] {})));
-				TrieNode slashNode = root_trie.getNode(searchKeys
+				TrieNode slashNode = trie.getNode(searchKeys
 						.toArray(new String[] {}));
 				if (slashNode != null) {
-					rootsForCompleteSurfaceForm = slashNode.getAllTerminals();
+					morpheme = currentNode;
+					morphemesForCompleteSurfaceForm = slashNode.getAllTerminals();
 					eatenKeys = (Vector<String>) currentKeys.clone();
 					break;
 				}
 			}
-			previousNode = currentRootNode;
+			previousNode = currentNode;
 			eatenKeys = (Vector<String>) currentKeys.clone();
 		}
 		
 		/*
-		 *  Arrivés ici, on a trouvé un chemin dans le trie des racines avec un maximum de lettres du mot
-		 *  initial, mais ce n'est pas une racine complète.
-		 *  Comme il est possible qu'une consonne finale ait été supprimée, on va avancer d'un nœud et vérifier
-		 *  si cela nous amène à une racine complète.
+		 *  Arrivés ici, on a trouvé un chemin dans le trie des racines avec un 
+		 *  maximum de lettres du mot initial, mais ce n'est pas une racine complète.
+		 *  Comme il est possible qu'une consonne finale ait été supprimée, on va 
+		 *  avancer d'un nœud et vérifier si cela nous amène à une racine complète.
 		 */
-		System.out.println("root: "+root.getKeysAsString());
+		System.out.println("morpheme: "+morpheme.getKeysAsString());
 		
-		if (rootsForCompleteSurfaceForm.length==0) {
-			if (root != null) {
-				HashMap<String, TrieNode> children = root.getChildren();
+		if (morpheme==null) {
+			return null;
+		}
+		
+		if (morphemesForCompleteSurfaceForm.length==0) {
+				HashMap<String, TrieNode> children = morpheme.getChildren();
 				String[] childrenKeys = children.keySet().toArray(
 						new String[] {});
 				for (int i = 0; i < childrenKeys.length; i++) {
@@ -134,7 +210,7 @@ public class Exp {
 								if (currentKey.equals("r")) {
 									eatenKeys.add(currentKey);
 								}
-								rootsForIncompleteSurfaceForm = possibleRoots
+								morphemesForIncompleteSurfaceForm = possibleRoots
 											.clone();
 							} else if (childrenKeys[i].equals("k")) {
 								if (currentKey.equals("g")||currentKey.equals("N")) {
@@ -146,22 +222,7 @@ public class Exp {
 						}
 					}
 				}
-			} else {
-				System.out.println("No root was found for this word.");
-			}
-			System.out.println("Surface root: "
-					+ Arrays.toString(eatenKeys.toArray(new String[] {})));
-			for (int i = 0; i < rootsForCompleteSurfaceForm.length; i++) {
-				System.out.println("Possible root (complete surface form): "
-						+ rootsForCompleteSurfaceForm[i].getKeysAsString());
-			}
-			for (int i = 0; i < rootsForIncompleteSurfaceForm.length; i++) {
-				System.out.println("Possible root (incomplete surface form): "
-						+ rootsForIncompleteSurfaceForm[i].getKeysAsString());
-			}
-			
-			
-			System.out.println("\nAnalyser le reste du mot à partir du caractère "+(eatenKeys.size())+" : "+string.substring(eatenKeys.size()));
 		}
+		return new Object[] {eatenKeys,morphemesForCompleteSurfaceForm,morphemesForIncompleteSurfaceForm};
 	}
 }
