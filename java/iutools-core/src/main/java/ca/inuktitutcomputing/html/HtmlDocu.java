@@ -6,7 +6,7 @@
  * par / by Benoit Farley
  * 
  */
-package html;
+package ca.inuktitutcomputing.html;
 
 
 import java.io.File;
@@ -22,7 +22,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import documents.WebPageReader;
+import ca.inuktitutcomputing.documents.WebPageReader;
 
 
 public class HtmlDocu {
