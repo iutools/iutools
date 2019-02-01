@@ -63,7 +63,7 @@ public class Trie {
             Set<String> childs = trieNode.getChildren().keySet();
             // if the current char is not in the keys, add it
             if (!childs.contains(segment)) {
-                insertNode(trieNode, segment);
+                insertNode(trieNode, segment); // where new child is added to the node
             }
 			// if this is the last char, indicate this is a word
 			if (iseg == segments.length - 1) {
@@ -227,13 +227,13 @@ public class Trie {
     }
 
     private TrieNode insertNode(TrieNode trieNode, String string) {
-        if (trieNode.getChildren().containsKey(string)) {
+        if (trieNode.hasChild(string)) {
             return null;
         }
         ArrayList<String> keys = new ArrayList<String>(Arrays.asList(trieNode.keys));
         keys.add(string);
         TrieNode nextNode = new TrieNode(keys.toArray(new String[] {}));
-        trieNode.getChildren().put(string, nextNode);
+        trieNode.addChild(string, nextNode);
         return nextNode;
     }
 
