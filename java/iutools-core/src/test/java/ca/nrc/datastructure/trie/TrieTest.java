@@ -7,6 +7,8 @@ import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.google.gson.Gson;
+
 import ca.nrc.testing.AssertHelpers;
 
 public class TrieTest {
@@ -37,7 +39,7 @@ public class TrieTest {
 		// The first thing you need to do is add words to the trie:
 		//
 		try {
-			trie.add(new String[]{"h","e","l","l","o"});
+			trie.add(new String[]{"h","e","l","l","o"},"hello");
 		} catch (TrieException e) {
 		}
 		
@@ -56,28 +58,28 @@ public class TrieTest {
 	public void test__add_get__Char() {
 		Trie charTrie = new Trie();
 		try {
-			charTrie.add(new String[]{"h","e","l","l","o"});
-			charTrie.add(new String[]{"h","e","l","l"," ","b","o","y"});
+			charTrie.add(new String[]{"h","e","l","l","o"},"hello");
+			charTrie.add(new String[]{"h","e","l","l"," ","b","o","y"},"hello boy");
 		} catch (TrieException e) {
 			assertFalse("An error occurred while adding an element to the trie.",true);
 		}
 		TrieNode node = charTrie.getNode("hello".split(""));
 		assertTrue("The node for 'hello' is not null.",node!=null);
 		assertEquals("The key for this node is correct.","h e l l o",node.getKeysAsString());
-		assertTrue("This node represents a full word.",node.isWord());
+		assertTrue("This node represents a full word.",node.hasTerminalNode());
 		
 		node = charTrie.getNode("hell".split(""));
 		assertTrue("The node for 'hell' is not null.",node!=null);
 		assertEquals("The key for this node is correct.","h e l l",node.getKeysAsString());
 		assertEquals("The frequency for this node is correct.",2,node.getFrequency());
-		assertFalse("This node does not represent a full word.",node.isWord());
+		assertFalse("This node does not represent a full word.",node.hasTerminalNode());
 	}
 
 	@Test
 	public void test__add_get__Word() {
 		Trie wordTrie = new Trie();
 		try {
-			wordTrie.add(new String[]{"hello","there"});
+			wordTrie.add(new String[]{"hello","there"},"hello there");
 		} catch (TrieException e) {
 			assertFalse("An error occurred while adding an element to the trie.",true);
 		}
@@ -94,12 +96,12 @@ public class TrieTest {
 		String[] takujuq_segments = null;
 		try {
 			takujuq_segments = iuSegmenter.segment("takujuq");
-			iumorphemeTrie.add(takujuq_segments);
+			iumorphemeTrie.add(takujuq_segments,"takujuq");
 		} catch (Exception e) {
 			assertFalse("An error occurred while adding an element to the trie.",true);
 		}
 		try {
-			TrieNode secondTakujuqNode = iumorphemeTrie.add(takujuq_segments);
+			TrieNode secondTakujuqNode = iumorphemeTrie.add(takujuq_segments,"takujuq");
 			assertTrue("The node added for the second 'takujuq' should not be null.",secondTakujuqNode!=null);
 		} catch (TrieException e) {
 			assertFalse("An error occurred while adding an element to the trie.",true);
@@ -113,7 +115,7 @@ public class TrieTest {
 		String[] takujuq_segments = null;
 		try {
 			takujuq_segments = iuSegmenter.segment("takujuq");
-			iumorphemeTrie.add(takujuq_segments);
+			iumorphemeTrie.add(takujuq_segments,"takujuq");
 		} catch (Exception e) {
 			assertFalse("An error occurred while adding an element to the trie.",true);
 		}
@@ -127,14 +129,14 @@ public class TrieTest {
 	public void test__frequenciesOfWords() {
 		Trie charTrie = new Trie();
 		try {
-		charTrie.add("hello".split(""));
-		charTrie.add("world".split(""));
-		charTrie.add("hell boy".split(""));
-		charTrie.add("heaven".split(""));
-		charTrie.add("worship".split(""));
-		charTrie.add("world".split(""));
-		charTrie.add("heaven".split(""));
-		charTrie.add("world".split(""));
+		charTrie.add("hello".split(""),"hello");
+		charTrie.add("world".split(""),"world");
+		charTrie.add("hell boy".split(""),"hell boy");
+		charTrie.add("heaven".split(""),"heaven");
+		charTrie.add("worship".split(""),"worship");
+		charTrie.add("world".split(""),"world");
+		charTrie.add("heaven".split(""),"heaven");
+		charTrie.add("world".split(""),"world");
 		} catch (Exception e) {
 			assertFalse("An error occurred while adding an element to the trie.",true);
 		}
@@ -151,12 +153,12 @@ public class TrieTest {
 	@Test
 	public void test_getAllTerminals() throws Exception {
 		Trie charTrie = new Trie();
-		charTrie.add("hello".split(""));
-		charTrie.add("hit".split(""));
-		charTrie.add("abba".split(""));
-		charTrie.add("helios".split(""));
-		charTrie.add("helm".split(""));
-		charTrie.add("ok".split(""));
+		charTrie.add("hello".split(""),"hello");
+		charTrie.add("hit".split(""),"hit");
+		charTrie.add("abba".split(""),"abba");
+		charTrie.add("helios".split(""),"helios");
+		charTrie.add("helm".split(""),"helm");
+		charTrie.add("ok".split(""),"ok");
 		TrieNode[] h_terminals = charTrie.getAllTerminals("h".split(""));
 		Assert.assertEquals("The number of words starting with 'h' should be 4.",
 				4,h_terminals.length);
@@ -171,14 +173,14 @@ public class TrieTest {
 	@Test
 	public void test_getNbOccurrences() throws Exception {
 		Trie charTrie = new Trie();
-		charTrie.add("hello".split(""));
-		charTrie.add("hello".split(""));
-		charTrie.add("hit".split(""));
-		charTrie.add("abba".split(""));
-		charTrie.add("helios".split(""));
-		charTrie.add("helm".split(""));
-		charTrie.add("ok".split(""));
-		charTrie.add("ok".split(""));
+		charTrie.add("hello".split(""),"hello");
+		charTrie.add("hello".split(""),"hello");
+		charTrie.add("hit".split(""),"hit");
+		charTrie.add("abba".split(""),"abba");
+		charTrie.add("helios".split(""),"helios");
+		charTrie.add("helm".split(""),"helm");
+		charTrie.add("ok".split(""),"ok");
+		charTrie.add("ok".split(""),"ok");
 		Assert.assertEquals("The number of terminals should be 6.",6,charTrie.getAllTerminals().length);
 		long nb = charTrie.getNbOccurrences();
 		Assert.assertEquals("The number of occurrences is wrong.",8,nb);
@@ -189,57 +191,54 @@ public class TrieTest {
 	@Test
 	public void test_toJSON__Char() throws TrieException {
 		Trie charTrie = new Trie();
-		charTrie.add("he".split(""));
-		charTrie.add("hit".split(""));
-		charTrie.add("ok".split(""));
+		charTrie.add("he".split(""),"he");
+		charTrie.add("hit".split(""),"hit");
+		charTrie.add("ok".split(""),"ok");
 		String json = charTrie.toJSON();
-		String expected = new String(
-				"{\"root\":{\"keys\":[],\"isWord\":false,\"frequency\":0," +
-				"\"children\":{\"h\":{\"keys\":[\"h\"],\"isWord\":false,\"frequency\":2," + 
-				"\"children\":{\"e\":{\"keys\":[\"h\",\"e\"],\"isWord\":true,\"frequency\":1," + 
-				"\"children\":{},\"stats\":{}},\"i\":{\"keys\":[\"h\",\"i\"],\"isWord\":false,\"frequency\":1," + 
-				"\"children\":{\"t\":{\"keys\":[\"h\",\"i\",\"t\"],\"isWord\":true,\"frequency\":1," + 
-				"\"children\":{},\"stats\":{}}},\"stats\":{}}},\"stats\":{}},\"o\":{\"keys\":[\"o\"],\"isWord\":false,\"frequency\":1," + 
-				"\"children\":{\"k\":{\"keys\":[\"o\",\"k\"],\"isWord\":true,\"frequency\":1," + 
-				"\"children\":{},\"stats\":{}}},\"stats\":{}}},\"stats\":{}}}");			
-		AssertHelpers.assertStringEquals("The generated JSON representation of the trie is not correct.",expected,json);
+		Gson gson = new Gson();
+		Trie retrievedCharTrie = gson.fromJson(json,Trie.class);
+		TrieNode node = retrievedCharTrie.getNode(new String[] {"h","i","t","\\"});
+		Assert.assertTrue("The node should be terminal.",node.isWord);
+		Assert.assertEquals("The surface form is not correct.", "hit", node.surfaceForm);
 	}
 	
 	@Test
 	public void test_getMostFrequentTerminal() throws TrieException {
 		Trie charTrie = new Trie();
-		charTrie.add("hello".split(""));
-		charTrie.add("hello".split(""));
-		charTrie.add("hells".split(""));
-		charTrie.add("hellam".split(""));
-		charTrie.add("hellam".split(""));
-		charTrie.add("hellam".split(""));
-		charTrie.add("hit".split(""));
-		charTrie.add("abba".split(""));
-		charTrie.add("helios".split(""));
-		charTrie.add("helm".split(""));
-		charTrie.add("ok".split(""));
-		charTrie.add("ok".split(""));
-		TrieNode mostFrequentTerminalRelated = charTrie.getMostFrequentTerminal("hell".split(""));
-		String expected = "h e l l a m";
-		assertEquals("The terminal returned as the most frequent terminal related to 'hell' is wrong.",expected,mostFrequentTerminalRelated.getKeysAsString());
+		charTrie.add("hello".split(""),"hello");
+		charTrie.add("hello".split(""),"hello");
+		charTrie.add("hells".split(""),"hells");
+		charTrie.add("hellam".split(""),"hellam");
+		charTrie.add("hellam".split(""),"hellam");
+		charTrie.add("hellam".split(""),"hellam");
+		charTrie.add("hit".split(""),"hit");
+		charTrie.add("abba".split(""),"abba");
+		charTrie.add("helios".split(""),"helios");
+		charTrie.add("helm".split(""),"helm");
+		charTrie.add("ok".split(""),"ok");
+		charTrie.add("ok".split(""),"ok");
+		TrieNode mostFrequentTerminal = charTrie.getMostFrequentTerminal("hell".split(""));
+		String expectedKeys = "h e l l a m \\";
+		assertEquals("The terminal returned as the most frequent terminal related to 'hell' is wrong.",expectedKeys,mostFrequentTerminal.getKeysAsString());
+		String expectedSurfaceForm = "hellam";
+		assertEquals("The terminal returned as the most frequent terminal related to 'hell' is wrong.",expectedSurfaceForm,mostFrequentTerminal.surfaceForm);
 	}
 	
 	@Test
 	public void test_getNMostFrequentTerminals() throws TrieException {
 		Trie charTrie = new Trie();
-		charTrie.add("hello".split(""));
-		charTrie.add("hello".split(""));
-		charTrie.add("hells".split(""));
-		charTrie.add("hellam".split(""));
-		charTrie.add("hellam".split(""));
-		charTrie.add("hellam".split(""));
-		charTrie.add("hit".split(""));
-		charTrie.add("abba".split(""));
-		charTrie.add("helios".split(""));
-		charTrie.add("helm".split(""));
-		charTrie.add("ok".split(""));
-		charTrie.add("ok".split(""));
+		charTrie.add("hello".split(""),"hello");
+		charTrie.add("hello".split(""),"hello");
+		charTrie.add("hells".split(""),"hells");
+		charTrie.add("hellam".split(""),"hellam");
+		charTrie.add("hellam".split(""),"hellam");
+		charTrie.add("hellam".split(""),"hellam");
+		charTrie.add("hit".split(""),"hit");
+		charTrie.add("abba".split(""),"abba");
+		charTrie.add("helios".split(""),"helios");
+		charTrie.add("helm".split(""),"helm");
+		charTrie.add("ok".split(""),"ok");
+		charTrie.add("ok".split(""),"ok");
 		
 		TrieNode[] mostFrequentTerminals;
 		String[] expected;
@@ -248,25 +247,28 @@ public class TrieTest {
 		// next case: there are more than enough candidates with regard to the number requested
 		mostFrequentTerminals = charTrie.getNMostFrequentTerminals("hell".split(""),2);
 		assertEquals("The number of terminals returned is wrong.",2,mostFrequentTerminals.length);
-		expected = new String[] {"h e l l a m", "h e l l o"};
+		expected = new String[] {"h e l l a m \\", "h e l l o \\"};
 		got = new String[] {mostFrequentTerminals[0].getKeysAsString(),mostFrequentTerminals[1].getKeysAsString()};
 		assertArrayEquals("The terminals returned as the 2 most frequent terminals related to 'hell' are wrong.",expected,got);
 		// next case: there are less candidates than the number requested
 		mostFrequentTerminals = charTrie.getNMostFrequentTerminals("hell".split(""),4);
 		assertEquals("The number of terminals returned is wrong.",3,mostFrequentTerminals.length);
-		expected = new String[] {"h e l l a m", "h e l l o", "h e l l s"};
+		expected = new String[] {"h e l l a m \\", "h e l l o \\", "h e l l s \\"};
 		got = new String[] {mostFrequentTerminals[0].getKeysAsString(),mostFrequentTerminals[1].getKeysAsString(),mostFrequentTerminals[2].getKeysAsString()};
 		assertArrayEquals("The terminals returned as the 4 most frequent terminals related to 'hell' are wrong.",expected,got);
+		expected = new String[] {"hellam", "hello", "hells"};
+		got = new String[] {mostFrequentTerminals[0].surfaceForm,mostFrequentTerminals[1].surfaceForm,mostFrequentTerminals[2].surfaceForm};
+		assertArrayEquals("The surface formes for the terminals returned as the 4 most frequent terminals related to 'hell' are wrong.",expected,got);
 	}
 	
 	@Test
 	public void test__mostFrequentSequenceToTerminals__Char() throws TrieException, IOException {
 		Trie charTrie = new Trie();
-		charTrie.add("hello".split(""));
-		charTrie.add("hint".split(""));
-		charTrie.add("helicopter".split(""));
-		charTrie.add("helios".split(""));
-		charTrie.add("helicopter".split(""));
+		charTrie.add("hello".split(""),"hello");
+		charTrie.add("hint".split(""),"hint");
+		charTrie.add("helicopter".split(""),"helicopter");
+		charTrie.add("helios".split(""),"helios");
+		charTrie.add("helicopter".split(""),"helipcopter");
 		String[] mostFrequentSegments = charTrie.getMostFrequentSequenceForRoot("h");
 		String[] expected = new String[] {"h","e"};
 		AssertHelpers.assertDeepEquals("The most frequent sequence should be heli.",expected,mostFrequentSegments);
@@ -275,11 +277,11 @@ public class TrieTest {
 	@Test
 	public void test__mostFrequentSequenceToTerminals__IUMorpheme() throws TrieException, IOException {
 		Trie morphTrie = new Trie();
-		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{sima/1vv}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{sima/1vv}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"});
+		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"},"takujuq");
+		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{juq/1vn}"},"takulaaqtuq");
+		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{sima/1vv}","{juq/1vn}"},"takulaaqsimajuq");
+		morphTrie.add(new String[] {"{taku/1v}","{sima/1vv}","{juq/1vn}"},"takusimajuq");
+		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"},"takujuq");
 		String[] mostFrequentSegments = morphTrie.getMostFrequentSequenceForRoot("{taku/1v}");
 		String[] expected = new String[] {"{taku/1v}","{juq/1vn}"};
 		AssertHelpers.assertDeepEquals("The most frequent sequence should be heli.",expected,mostFrequentSegments);
@@ -288,43 +290,43 @@ public class TrieTest {
 	@Test
 	public void test__getMostFrequentTerminalFromMostFrequenceSequenceFromRoot__1() throws TrieException {
 		Trie morphTrie = new Trie();
-		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{sima/1vv}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{sima/1vv}","{juq/1vn}"});
+		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"},"takujuq");
+		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"},"takujuq");
+		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{juq/1vn}"},"takulaaqtuq");
+		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{sima/1vv}","{juq/1vn}"},"takulaaqsimajuq");
+		morphTrie.add(new String[] {"{taku/1v}","{sima/1vv}","{juq/1vn}"},"takusimajuq");
 		TrieNode mostFrequentTerminal = morphTrie.getMostFrequentTerminalFromMostFrequentSequenceForRoot("{taku/1v}");
-		String expected = "{taku/1v} {juq/1vn}";
+		String expected = "{taku/1v} {juq/1vn} \\";
 		assertEquals("The most frequent term for 'taku' in the trie is not correct.",expected,mostFrequentTerminal.getKeysAsString());
 	}
 	
 	@Test
 	public void test__getMostFrequentTerminalFromMostFrequenceSequenceFromRoot__2() throws TrieException {
 		Trie morphTrie = new Trie();
-		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{sima/1vv}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{sima/1vv}","{juq/1vn}"});
+		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"},"takujuq");
+		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"},"takujuq");
+		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"},"takujuq");
+		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{juq/1vn}"},"takulaaqtuq");
+		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{juq/1vn}"},"takulaaqtuq");
+		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{sima/1vv}","{juq/1vn}"},"takulaaqsimajuq");
+		morphTrie.add(new String[] {"{taku/1v}","{sima/1vv}","{juq/1vn}"},"takusimajuq");
 		TrieNode mostFrequentTerminal = morphTrie.getMostFrequentTerminalFromMostFrequentSequenceForRoot("{taku/1v}");
-		String expected = "{taku/1v} {juq/1vn}";
+		String expected = "{taku/1v} {juq/1vn} \\";
 		assertEquals("The most frequent term for 'taku' in the trie is not correct.",expected,mostFrequentTerminal.getKeysAsString());
 	}
 	
 	@Test
 	public void test__getMostFrequentTerminalFromMostFrequenceSequenceFromRoot__3() throws TrieException {
 		Trie morphTrie = new Trie();
-		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{sima/1vv}","{juq/1vn}"});
-		morphTrie.add(new String[] {"{taku/1v}","{sima/1vv}","{juq/1vn}"});
+		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"},"takujuq");
+		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"},"takujuq");
+		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{juq/1vn}"},"takulaaqtuq");
+		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{juq/1vn}"},"takulaaqtuq");
+		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{juq/1vn}"},"takulaaqtuq");
+		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{sima/1vv}","{juq/1vn}"},"takulaaqsimajuq");
+		morphTrie.add(new String[] {"{taku/1v}","{sima/1vv}","{juq/1vn}"},"takusimajuq");
 		TrieNode mostFrequentTerminal = morphTrie.getMostFrequentTerminalFromMostFrequentSequenceForRoot("{taku/1v}");
-		String expected = "{taku/1v} {laaq/2vv} {juq/1vn}";
+		String expected = "{taku/1v} {laaq/2vv} {juq/1vn} \\";
 		assertEquals("The most frequent term for 'taku' in the trie is not correct.",expected,mostFrequentTerminal.getKeysAsString());
 	}
 	

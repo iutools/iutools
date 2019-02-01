@@ -22,13 +22,13 @@ public class CompiledCorpus_IUMorphemeTest
 		CompiledCorpus_IUMorpheme compiledCorpus = new CompiledCorpus_IUMorpheme();
 		StringSegmenter segmenter = new StringSegmenter_IUMorpheme();
 		Trie trie = new Trie();
-		trie.add(segmenter.segment("inuit"));
-		trie.add(segmenter.segment("takujuq"));
-		trie.add(segmenter.segment("igluit"));
-		trie.add(segmenter.segment("takulaaqtuq"));
-		trie.add(segmenter.segment("isumajuq"));
-		trie.add(segmenter.segment("nanuit"));
-		trie.add(segmenter.segment("iglumut"));
+		trie.add(segmenter.segment("inuit"),"inuit");
+		trie.add(segmenter.segment("takujuq"),"takujuq");
+		trie.add(segmenter.segment("igluit"),"igluit");
+		trie.add(segmenter.segment("takulaaqtuq"),"takulaaqtuq");
+		trie.add(segmenter.segment("isumajuq"),"isumajuq");
+		trie.add(segmenter.segment("nanuit"),"nanuit");
+		trie.add(segmenter.segment("iglumut"),"iglumut");
 		compiledCorpus.trie = trie;
 		
 		String rootType;
@@ -37,12 +37,12 @@ public class CompiledCorpus_IUMorphemeTest
 		
 		rootType = "n";
 		mostFrequentCompletionSequence = compiledCorpus.getMostFrequentCompletionForRootType(rootType);
-		expected = new String[] {"{it/tn-nom-p}"};
+		expected = new String[] {"{it/tn-nom-p}","\\"};
 		assertArrayEquals("The returned most frequent completion is wrong.",expected,mostFrequentCompletionSequence);
 
 		rootType = "v";
 		mostFrequentCompletionSequence = compiledCorpus.getMostFrequentCompletionForRootType(rootType);
-		expected = new String[] {"{juq/1vn}"};
+		expected = new String[] {"{juq/1vn}","\\"};
 		assertArrayEquals("The returned most frequent completion is wrong.",expected,mostFrequentCompletionSequence);
 }
 	

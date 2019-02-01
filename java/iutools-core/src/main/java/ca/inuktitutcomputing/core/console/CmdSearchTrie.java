@@ -92,7 +92,7 @@ public class CmdSearchTrie extends ConsoleCommand {
 				String nodeString = node.toString();
 				TrieNode mostFrequentTerminal = node.getMostFrequentTerminal();
 				echo(nodeString);
-				if (!node.isWord())
+				//if (!node.isWord())
 					echo("Most frequent terminal: "+mostFrequentTerminal.toString());
 			} else {
 				echo("No node has been found for that sequence of morphemes.");

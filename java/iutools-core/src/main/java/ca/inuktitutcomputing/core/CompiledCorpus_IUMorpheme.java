@@ -29,7 +29,7 @@ public class CompiledCorpus_IUMorpheme extends CompiledCorpus {
 			
 			if (terminalRootType.equals(rootType)) {
 				String[] suffixKeys = Arrays.copyOfRange(terminal.keys, 1, terminal.keys.length);
-				if (suffixKeys.length==0)
+				if (suffixKeys.length==1)
 					continue;
 				String completionKeys = String.join(" ", suffixKeys);
 				long freqCompletionKeys;

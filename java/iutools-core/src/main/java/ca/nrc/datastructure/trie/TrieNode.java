@@ -12,6 +12,7 @@ public class TrieNode {
     protected HashMap<String,TrieNode> children;
     protected TrieNode mostFrequentTerminal;
     protected Map<String,Object> stats = new HashMap<String,Object>();
+    protected String surfaceForm = null;
     
 	public HashMap<String,TrieNode> getChildren() {
 		return children;
@@ -27,6 +28,10 @@ public class TrieNode {
 	
     public void setChildren(HashMap<String,TrieNode> _children) {
     	this.children = _children;
+    }
+    
+    public boolean hasTerminalNode() {
+    	return this.hasChild("\\");
     }
 
     public void setMostFrequentTerminal(TrieNode _mostFrequentTerminal) {

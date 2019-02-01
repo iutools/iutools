@@ -282,9 +282,9 @@ public class CompiledCorpusTest
         CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
         compiledCorpus.processDocumentContents(br,null);
 		
-		String[] inuit_segments = new String[]{"{inuk/1n}","{it/tn-nom-p}"};
+		String[] inuit_segments = new String[]{"{inuk/1n}","{it/tn-nom-p}", "\\"};
 		String[] taku_segments = new String[]{"{taku/1v}"};
-		String[] takujuq_segments = new String[]{"{taku/1v}", "{juq/1vn}"};
+		String[] takujuq_segments = new String[]{"{taku/1v}", "{juq/1vn}", "\\"};
 		
 		assertContains(compiledCorpus, inuit_segments, 1, inuit_segments);
 		assertContains(compiledCorpus, taku_segments, 3, takujuq_segments);
@@ -333,29 +333,29 @@ public class CompiledCorpusTest
 		CompiledCorpus compiledCorpus = new CompiledCorpus();
 		Trie charTrie = new Trie();
 		try {
-		charTrie.add("hello".split(""));
-		charTrie.add("hint".split(""));
-		charTrie.add("helicopter".split(""));
-		charTrie.add("helios".split(""));
-		charTrie.add("helicopter".split(""));
+		charTrie.add("hello".split(""),"hello");
+		charTrie.add("hint".split(""),"hint");
+		charTrie.add("helicopter".split(""),"helicopter");
+		charTrie.add("helios".split(""),"helios");
+		charTrie.add("helicopter".split(""),"helicopter");
 		compiledCorpus.trie = charTrie;
 		} catch (Exception e) {
 			assertFalse("An error occurred while adding an element to the trie.",true);
 		}
 		TrieNode mostFrequent = compiledCorpus.getMostFrequentTerminal("hel".split(""));
 		assertEquals("The frequency of the most frequent found is wrong.",2,mostFrequent.getFrequency());
-		assertEquals("The text of the the most frequent found is wrong.","h e l i c o p t e r",mostFrequent.getKeysAsString());
+		assertEquals("The text of the the most frequent found is wrong.","h e l i c o p t e r \\",mostFrequent.getKeysAsString());
 	}
 
 	@Test
 	public void test__getTerminalsSumFreq() throws TrieException {
 		CompiledCorpus compiledCorpus = new CompiledCorpus();
 		Trie charTrie = new Trie();
-		charTrie.add("hello".split(""));
-		charTrie.add("hint".split(""));
-		charTrie.add("helicopter".split(""));
-		charTrie.add("helios".split(""));
-		charTrie.add("helicopter".split(""));
+		charTrie.add("hello".split(""),"hello");
+		charTrie.add("hint".split(""),"hint");
+		charTrie.add("helicopter".split(""),"helicopter");
+		charTrie.add("helios".split(""),"helios");
+		charTrie.add("helicopter".split(""),"helicopter");
 		compiledCorpus.trie = charTrie;
 		long nbCompiledOccurrences = compiledCorpus.getNumberOfCompiledOccurrences();
 		assertEquals("The sum of the frequencies of all terminals is incorrect.",5,nbCompiledOccurrences);

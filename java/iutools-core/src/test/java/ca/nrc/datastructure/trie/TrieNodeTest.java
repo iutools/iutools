@@ -137,50 +137,64 @@ public class TrieNodeTest {
 	@Test
 	public void test__add() throws Exception {
 		Trie charTrie = new Trie();
-		charTrie.add("hello".split(""));
-		charTrie.add("hint".split(""));
-		charTrie.add("helicopter".split(""));
-		charTrie.add("helios".split(""));
-		charTrie.add("helicopter".split(""));
+		charTrie.add("hello".split(""),"hello");
+		charTrie.add("hint".split(""),"hint");
+		charTrie.add("helicopter".split(""),"helicopter");
+		charTrie.add("helios".split(""),"helios");
+		charTrie.add("helicopter".split(""),"helipcopter");
+		
 		TrieNode helNode = charTrie.getNode("hel".split(""));
 		Assert.assertTrue("The most frequent terminal node from here should not be set yet.",
 				helNode.mostFrequentTerminal==null);
+		
 		TrieNode mostFrequent = helNode.getMostFrequentTerminal();
 		Assert.assertEquals("The most frequent terminal node from here should be 'helicopter'.",
-				"h e l i c o p t e r",helNode.mostFrequentTerminal.getKeysAsString());
-		charTrie.add("helios".split(""));
+				"h e l i c o p t e r \\",helNode.mostFrequentTerminal.getKeysAsString());
+		
+		charTrie.add("helios".split(""),"helios");
 		Assert.assertTrue("The most frequent terminal node from here, after adding a new child, should not be set yet.",
 				helNode.mostFrequentTerminal==null);
+		
 		mostFrequent = helNode.getMostFrequentTerminal();
 		Assert.assertEquals("The most frequent terminal node from here should be 'helicopter'.",
-				"h e l i c o p t e r",helNode.mostFrequentTerminal.getKeysAsString());
-		charTrie.add("helios".split(""));
+				"h e l i c o p t e r \\",helNode.mostFrequentTerminal.getKeysAsString());
+		
+		charTrie.add("helios".split(""),"helios");
 		mostFrequent = helNode.getMostFrequentTerminal();
 		Assert.assertEquals("The most frequent terminal node from here should be 'helios'.",
-				"h e l i o s",helNode.mostFrequentTerminal.getKeysAsString());
+				"h e l i o s \\",helNode.mostFrequentTerminal.getKeysAsString());
 		}
 
 	
 	@Test
 	public void test_getAllTerminals() throws Exception {
 		Trie charTrie = new Trie();
-		charTrie.add("hello".split(""));
-		charTrie.add("hit".split(""));
-		charTrie.add("abba".split(""));
-		charTrie.add("helios".split(""));
-		charTrie.add("helm".split(""));
-		charTrie.add("ok".split(""));
+		charTrie.add("hello".split(""),"hello");
+		charTrie.add("hit".split(""),"hit");
+		charTrie.add("abba".split(""),"abba");
+		charTrie.add("helios".split(""),"helios");
+		charTrie.add("helm".split(""),"helm");
+		charTrie.add("ok".split(""),"ok");
+		charTrie.add("okdoo".split(""),"okdoo");
+		
 		TrieNode hNode = charTrie.getNode("h".split(""));
 		TrieNode[] h_terminals = hNode.getAllTerminals();
 		Assert.assertEquals("The number of words starting with 'h' should be 4.",
 				4,h_terminals.length);
+		
 		TrieNode helNode = charTrie.getNode("hel".split(""));
 		TrieNode[] hel_terminals = helNode.getAllTerminals();
 		Assert.assertEquals("The number of words starting with 'hel' should be 3.",
 				3,hel_terminals.length);
+		
 		TrieNode oNode = charTrie.getNode("o".split(""));
 		TrieNode[] o_terminals = oNode.getAllTerminals();
-		Assert.assertEquals("The number of words starting with 'o' should be 1.",
-				1,o_terminals.length);
+		Assert.assertEquals("The number of words starting with 'o' should be 2.",
+				2,o_terminals.length);
+		
+		TrieNode okNode = charTrie.getNode("ok".split(""));
+		TrieNode[] ok_terminals = okNode.getAllTerminals();
+		Assert.assertEquals("The number of words starting with 'ok' should be 2.",
+				2,o_terminals.length);
 	}
 }

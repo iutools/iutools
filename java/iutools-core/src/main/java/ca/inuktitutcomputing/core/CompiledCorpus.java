@@ -271,7 +271,7 @@ public class CompiledCorpus
 				try {
 					TrieNode result = null;
 					if (segments!=null)
-						result = trie.add(segments);
+						result = trie.add(segments,word);
 					if (result != null) {
 						toConsole(result.getKeysAsString()+"\n");
 					} else {
