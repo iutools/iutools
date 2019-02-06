@@ -26,7 +26,6 @@
 package ca.inuktitutcomputing.applications;
 
 import java.io.*;
-import java.util.concurrent.TimeoutException;
 
 import ca.inuktitutcomputing.data.LinguisticDataAbstract;
 import ca.inuktitutcomputing.data.Suffixes;
