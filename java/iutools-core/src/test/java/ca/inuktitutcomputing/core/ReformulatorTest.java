@@ -40,8 +40,10 @@ class ReformulatorTest {
         String[] reformulations = reformulator.getReformulations("iglu");
         String[] expected = new String[] {"iglumut","iglu","iglumik"};
         
-        
-        assertArrayEquals("The reformulations are not correct.",expected,reformulations);
+        assertEquals("The number of reformulations returned is wrong.",3,reformulations.length);
+        List<String> reformulationsList = Arrays.asList(reformulations);
+        for (String expectedRef : expected)
+        	assertTrue("The word '"+expectedRef+"' should have been returned.",reformulationsList.contains(expectedRef));
 	}
 
 	@Test
