@@ -7,7 +7,7 @@ import ca.nrc.ui.commandline.CommandLineException;
 import ca.nrc.ui.commandline.MainCommand;
 import ca.nrc.ui.commandline.SubCommand;;
 
-public class Console {
+public class Console { 
 	
 	protected static MainCommand defineMainCommand() throws CommandLineException {
 		MainCommand mainCmd = new MainCommand("Command line console for iutools.");

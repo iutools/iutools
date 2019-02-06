@@ -12,7 +12,7 @@ public class CmdConvertIUSegments extends ConsoleCommand {
 
 	public CmdConvertIUSegments(String name) {
 		super(name);
-	}
+	} 
 
 	@Override
 	public String getUsageOverview() {
