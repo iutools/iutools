@@ -9,6 +9,8 @@ import ca.inuktitutcomputing.core.Reformulator;
 import ca.inuktitutcomputing.data.LinguisticDataSingleton;
 import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.morph.MorphInuk;
+import ca.inuktitutcomputing.script.Roman;
+import ca.inuktitutcomputing.script.Syllabics;
 
 public class CmdReformulateQuery extends ConsoleCommand {
 
@@ -24,6 +26,7 @@ public class CmdReformulateQuery extends ConsoleCommand {
 	@Override
 	public void execute() throws Exception {
 		String word = getWord(false);
+		String latin;
 		String[] reformulations = null;
 		
 		String compilationFilePath = getCompilationFile();
@@ -38,6 +41,10 @@ public class CmdReformulateQuery extends ConsoleCommand {
 		if (word == null) {
 			interactive = true;
 		} else {
+			if (Syllabics.allInuktitut(word))
+				latin = Syllabics.transcodeToRoman(word);
+			else
+				latin = word;
 			reformulations = reformulator.getReformulations(word);
 		}
 
@@ -45,15 +52,25 @@ public class CmdReformulateQuery extends ConsoleCommand {
 			if (interactive) {
 				word = prompt("Enter Inuktut word");
 				if (word == null) break;
+				if (Syllabics.allInuktitut(word))
+					latin = Syllabics.transcodeToRoman(word);
+				else
+					latin = word;
 				reformulations = null;
 				try {
-					reformulations = reformulator.getReformulations(word);
+					reformulations = reformulator.getReformulations(latin);
 				} catch (Exception e) {
 					throw e;
 				}
 			}
 			
 			if (reformulations != null && reformulations.length > 0) {
+				if (Syllabics.allInuktitut(word)) {
+					String[] syllRefs = new String[reformulations.length];
+					for (int i=0; i<reformulations.length; i++)
+						syllRefs[i] = Roman.transcodeToUnicode(reformulations[i], null);
+					echo(String.join("; ", syllRefs)+"\n");
+				}
 				echo(String.join("; ", reformulations));
 			}
 			
