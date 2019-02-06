@@ -65,12 +65,10 @@ public class CmdReformulateQuery extends ConsoleCommand {
 			}
 			
 			if (reformulations != null && reformulations.length > 0) {
-				if (Syllabics.allInuktitut(word)) {
-					String[] syllRefs = new String[reformulations.length];
-					for (int i=0; i<reformulations.length; i++)
-						syllRefs[i] = Roman.transcodeToUnicode(reformulations[i], null);
-					echo(String.join("; ", syllRefs)+"\n");
-				}
+				String[] syllRefs = new String[reformulations.length];
+				for (int i=0; i<reformulations.length; i++)
+					syllRefs[i] = Roman.transcodeToUnicode(reformulations[i], null);
+				echo("\n"+String.join("; ", syllRefs)+"\n");
 				echo(String.join("; ", reformulations));
 			}
 			
