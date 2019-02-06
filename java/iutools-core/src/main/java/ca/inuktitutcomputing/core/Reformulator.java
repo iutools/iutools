@@ -16,6 +16,12 @@ public class Reformulator {
 		this.compiledCorpus = _compiledCorpus;
 	}
 	
+	/**
+	 * 
+	 * @param word String - an inuktitut word
+	 * @return String[] An array of the most frequent inuktitut words related to the input word
+	 * @throws Exception
+	 */
 	public String[] getReformulations(String word) throws Exception {
 		String[] segments;
 		try {
