@@ -69,7 +69,6 @@ public class Trie {
         Logger logger = Logger.getLogger("Trie.add");
         logger.debug("segments: "+Arrays.toString(segments));
         String terminalSegment = "\\";
-        ArrayList<String> keys = new ArrayList<String>(Arrays.asList(trieNode.keys));
         ArrayList<String> segmentList = new ArrayList<String>(Arrays.asList(segments));
         segmentList.add(terminalSegment);
         segments = segmentList.toArray(new String[] {});
