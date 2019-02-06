@@ -45,7 +45,7 @@ public class CmdConvertIUSegments extends ConsoleCommand {
 
 	}
 
-	private String convert(String imaAnalysis) {
+	protected String convert(String imaAnalysis) {
 		Pattern p = Pattern.compile("\\{.+?\\:(.+?)\\}");
 		Matcher m = p.matcher(imaAnalysis);
 		Vector<String> parts = new Vector<String>();

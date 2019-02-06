@@ -60,6 +60,8 @@ public class Console {
 			    .argName("FROM_SCRATCH")
 			    .required(false)
 			    .build();
+		
+		// --- COMMANDS
 
 		// Compile a trie and save it to file
 		SubCommand compileTrie = 
@@ -71,7 +73,7 @@ public class Console {
 		mainCmd.addSubCommand(compileTrie);
 		
 		
-		// Create and add the read_trie command
+		// Search a trie for a sequence of morphemes
 		SubCommand searchTrie = 
 				new CmdSearchTrie("search_trie")
 				.addOption(optCompFile)	
@@ -81,7 +83,6 @@ public class Console {
 		mainCmd.addSubCommand(searchTrie);
 		
 		
-		
 		// Decompose an Inuktut word
 		SubCommand segmentIU = 
 				new CmdSegmentIU("segment_iu")
@@ -89,7 +90,15 @@ public class Console {
 				;
 		mainCmd.addSubCommand(segmentIU);
 		
-
+				
+		// Decompose an Inuktut word
+		SubCommand reformulateIUQuery = 
+				new CmdReformulateQuery("reformulate_query")
+				.addOption(optCompFile)	
+				.addOption(optWord)
+				;
+		mainCmd.addSubCommand(reformulateIUQuery);
+		
 				
 		// Convert a Inuktitut segmentation into Trie-compatible segments
 		SubCommand convertIU = 
