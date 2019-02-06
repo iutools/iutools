@@ -55,15 +55,25 @@ public class Trie {
      * @return an object of class TrieNode
      * @throws TrieException
      */
+    
+    // If we assume that this method will not be called with an empty list of segments
+    // (the test is done before calling this method),
+    // then we can replace the commented lines with the lines with //***
 	public TrieNode add(String[] segments, String word) throws TrieException {
         TrieNode trieNode = root;
-        if (trieNode == null)
-            throw new TrieException("Can't add to a null root.");
-        if (segments == null)
-            return null; // null means the segmenter was not able to segment a word
+//        if (trieNode == null)
+//            throw new TrieException("Can't add to a null root.");
+//        if (segments == null)
+//            return null; // null means the segmenter was not able to segment a word
         
         Logger logger = Logger.getLogger("Trie.add");
         logger.debug("segments: "+Arrays.toString(segments));
+        String terminalSegment = "\\";
+        ArrayList<String> keys = new ArrayList<String>(Arrays.asList(trieNode.keys));
+        ArrayList<String> segmentList = new ArrayList<String>(Arrays.asList(segments));
+        segmentList.add(terminalSegment);
+        segments = segmentList.toArray(new String[] {});
+        logger.debug("segments after adding \\: "+Arrays.toString(segments));
         int iseg = 0;
         while (iseg < segments.length) {
         	String segment = segments[iseg];
@@ -76,20 +86,23 @@ public class Trie {
             	segmentNode = getChild(trieNode, segment);
             }
 			// if this is the last segment, indicate this is a word
-			if (iseg == segments.length - 1) {
-//				TrieNode terminalNode = segmentNode; //getChild(trieNode, segment);
-//				segmentNode.setIsWord(true);
-				segmentNode.incrementFrequency();
-				TrieTerminalNode terminalNode = insertTerminalNode(segmentNode,word);
-				return segmentNode;
-			}
+//			if (iseg == segments.length - 1) {
+//				segmentNode.incrementFrequency();
+//				segmentNode.surfaceForm = word;
+//				segmentNode.isWord = true;
+//				return segmentNode;
+//			}
             // current segment is in the keys, or it was not and has just been added 
 			// and is not the last segment: 
-            trieNode = segmentNode; //getChild(trieNode, segment);
+            trieNode = segmentNode;
             trieNode.incrementFrequency();
             iseg++;
         }
-        return null;
+        // last segment (\)  = terminal node
+        trieNode.surfaceForm = word; //***
+        trieNode.isWord = true; //***
+        return trieNode; //***
+//        return null;
 		
 	}
 
@@ -107,6 +120,17 @@ public class Trie {
         return trieNode;
 	}
 	
+	public TrieNode getParentNode(TrieNode node) {
+		return this.getParentNode(node.keys);
+	}
+	
+	public TrieNode getParentNode(String[] keys) {
+		if (keys.length==0)
+			return null;
+		else
+			return this.getNode(Arrays.copyOfRange(keys, 0, keys.length-1));
+	}
+	
 	public long getFrequency(String[] segments) {
 		TrieNode node = this.getNode(segments);
 		if (node != null)
@@ -115,6 +139,7 @@ public class Trie {
 			return 0;
 	}
 	
+	// --- ALL TERMINALS
 	public TrieNode[] getAllTerminals() {
 		return root.getAllTerminals();
 	}
@@ -124,7 +149,29 @@ public class Trie {
 		return node.getAllTerminals();
 	}
 	
-	public TrieNode getNMostFrequentTerminalsRelatedTo(String[] segments) {
+	// --- MOST FREQUENT TERMINALS
+	public TrieNode getMostFrequentTerminal() {
+		return root.getMostFrequentTerminal();
+	}
+	
+	public TrieNode getMostFrequentTerminal(String[] segments) {
+		return getNMostFrequentTerminals(segments,1)[0];
+	}
+	
+	public TrieNode[] getNMostFrequentTerminals(int n) {
+		return root.getMostFrequentTerminals(n);
+	}
+	
+	public TrieNode[] getNMostFrequentTerminals(String[] segments, int n) {
+		TrieNode node = this.getNode(segments);
+		return node.getMostFrequentTerminals(n);
+	}
+	
+
+	/*
+	 * 
+	 */
+	public TrieNode getNReformulations(String[] segments) {
 		TrieNode node = this.getNode(segments);
 		if (node != null)
 			return node;
@@ -137,20 +184,7 @@ public class Trie {
 		return null;
 	}
 
-	public TrieNode getMostFrequentTerminal(String[] segments) {
-		return getNMostFrequentTerminals(segments,1)[0];
-	}
-	
-	public TrieNode[] getNMostFrequentTerminals(String[] segments, int n) {
-		TrieNode node = this.getNode(segments);
-		TrieNode[] terminals = node.getAllTerminals();
-		Arrays.sort(terminals,new NodeFrequencyComparator());
-		if (terminals.length < n) 
-			n = terminals.length;
-		return Arrays.copyOfRange(terminals, 0, n);
-	}
-	
-	
+
 	/**
 	 * 
 	 * @param String rootKey
@@ -238,27 +272,12 @@ public class Trie {
     }
 
     private TrieNode insertNode(TrieNode trieNode, String segment) {
-//      if (trieNode.hasChild(string)) { this is already taken care of upon call
-//          return null;
-//      }
       ArrayList<String> keys = new ArrayList<String>(Arrays.asList(trieNode.keys));
       keys.add(segment);
       TrieNode newNode = new TrieNode(keys.toArray(new String[] {}));
       trieNode.addChild(segment, newNode);
       return newNode;
-  }
-
-    private TrieTerminalNode insertTerminalNode(TrieNode trieNode, String word) {
-      String segment = "\\";
-      ArrayList<String> keys = new ArrayList<String>(Arrays.asList(trieNode.keys));
-      keys.add(segment);
-      TrieTerminalNode newNode = new TrieTerminalNode(word);
-      newNode.keys = keys.toArray(new String[] {});
-      newNode.frequency = trieNode.frequency;
-      trieNode.addChild(segment, newNode);
-      return newNode;
-  }
-
+    }
 
 }
 

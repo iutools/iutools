@@ -1,9 +1,12 @@
 package ca.nrc.datastructure.trie;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
+
+import org.apache.commons.lang.ArrayUtils;
 
 public class TrieNode {
     public String[] keys = new String[] {};
@@ -33,10 +36,14 @@ public class TrieNode {
     public boolean hasTerminalNode() {
     	return this.hasChild("\\");
     }
-
-    public void setMostFrequentTerminal(TrieNode _mostFrequentTerminal) {
-    	this.mostFrequentTerminal = _mostFrequentTerminal;
+    
+    public String getSurfaceForm() {
+    	return surfaceForm;
     }
+
+    /*public void setMostFrequentTerminal(TrieNode _mostFrequentTerminal) {
+    	this.mostFrequentTerminal = _mostFrequentTerminal;
+    }*/
 
     public TrieNode() {
         this.children = new HashMap<String,TrieNode>();
@@ -65,17 +72,62 @@ public class TrieNode {
     
     public void incrementFrequency() {
     	frequency++;
-    	mostFrequentTerminal = null;
+// Commented out temporarily because with the coming changes, the compilation will have to be done again.
+//    	mostFrequentTerminal = null;
     }
     
+    /**
+     * 
+     * @return TrieNode The most frequent terminal from this node. If more than 1 with the same frequency, returns the first one.
+     */
     public TrieNode getMostFrequentTerminal() {
-    	// TODO: sauvegarder également la plage (N most frequent); actuellement, c'est 1 (THE most frequent0
-    	if ( mostFrequentTerminal==null )
-    		mostFrequentTerminal = _getMostFrequentTerminal(0);
-    	return mostFrequentTerminal;
+    	// TODO: sauvegarder également la plage (N most frequent); actuellement, c'est 1 (THE most frequent)
+// Commented out temporarily because with the coming changes, the compilation will have to be done again.
+//    	if ( mostFrequentTerminal==null ) { 
+    	TrieNode[] mostFrequentTerminals = getMostFrequentTerminals(1);
+//    	}
+    	return mostFrequentTerminals[0];
+    }
+    
+    public TrieNode[] getMostFrequentTerminals(int n) {
+    	TrieNode[] mostFrequentTerminals = getMostFrequentTerminals(n, new TrieNode[] {});
+    	return mostFrequentTerminals;
+    }
+    
+    public TrieNode[] getMostFrequentTerminals(int n, TrieNode[] exclusions) {
+    	return _getMostFrequentTerminals(n, exclusions);
     }
 
+    /*
+     * Returns the n most frequent terminals of this node. 
+     * If this node has less than n terminals
+     */
+	private TrieNode[] _getMostFrequentTerminals(int n, TrieNode[] exclusions) {
+		TrieNode[] terminals = this.getAllTerminals();
+		for (TrieNode nodeToExclude : exclusions)
+			terminals = (TrieNode[]) ArrayUtils.removeElement(terminals, nodeToExclude);
+	    Arrays.sort(terminals, new Comparator<TrieNode>() {
+	        @Override
+	        public int compare(TrieNode o1, TrieNode o2) {
+	        	if (o1.getFrequency() == o2.getFrequency())
+	        		return 0;
+	            return o1.getFrequency() < o2.getFrequency()? 1 : -1;
+	        }
+	    });
+	    TrieNode[] mostFrequentTerminals;
+	    if (n > terminals.length) {
+	    	mostFrequentTerminals = Arrays.copyOfRange(terminals, 0, terminals.length);
+	    } else {
+	    	mostFrequentTerminals = Arrays.copyOfRange(terminals, 0, n);
+	    }
+		return mostFrequentTerminals;
+	}
+	
     
+    /**
+     * 
+     * @return TrieNode[] Array of the terminal nodes from this node.
+     */
 	public TrieNode[] getAllTerminals() {
 		Vector<TrieNode> list = new Vector<TrieNode>();
 		_getAllTerminals(list);
@@ -83,36 +135,21 @@ public class TrieNode {
 	}
 	
 	private void _getAllTerminals(Vector<TrieNode> entryList) {
-		if (this.isWord()) {
+		// Add this node if it is a terminal node
+		if (this.isWord())
 			entryList.add(this);
-		}
-		
-		Vector<TrieNode> list = new Vector<TrieNode>();
-		HashMap<String,TrieNode> children = this.getChildren();
-		String[] keys = children.keySet().toArray(new String[]{});
-		for (int i=0; i<keys.length; i++) {
-			TrieNode childNode = children.get(keys[i]);
-			TrieNode[] terminals = childNode.getAllTerminals();
-			list.addAll(Arrays.asList(terminals));
-		}
-		
-		entryList.addAll(list);
-	}
-	
-    // Returns the first of possibly more than 1 possibilities
-	private TrieNode _getMostFrequentTerminal(long max) {
-		//if (this.isWord())
-		//	return this;
-			
-		TrieNode[] terminals = this.getAllTerminals();
-		long maxFreq = 0;
-		TrieNode mostFreqTerm = null;
-		for (TrieNode terminal : terminals)
-			if (terminal.getFrequency() > maxFreq) {
-				maxFreq = terminal.getFrequency();
-				mostFreqTerm = terminal;
+		// Add terminals of children of this node, if any
+		else {
+			Vector<TrieNode> list = new Vector<TrieNode>();
+			HashMap<String, TrieNode> children = this.getChildren();
+			String[] keys = children.keySet().toArray(new String[] {});
+			for (int i = 0; i < keys.length; i++) {
+				TrieNode childNode = children.get(keys[i]);
+				TrieNode[] terminals = childNode.getAllTerminals();
+				list.addAll(Arrays.asList(terminals));
 			}
-		return mostFreqTerm;
+			entryList.addAll(list);
+		}
 	}
 	
     @Override
@@ -121,6 +158,7 @@ public class TrieNode {
         		"    segments = "+this.getKeysAsString()+"\n"+
         		"    frequency = "+this.frequency+"\n"+
         		"    isWord = "+this.isWord+"\n"+
+        		(this.isWord()?"    surfaceForm = "+this.surfaceForm : "")+
         		"    ]";
     }
 

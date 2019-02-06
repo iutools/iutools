@@ -6,9 +6,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.StringReader;
 import java.util.HashMap;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -293,20 +297,40 @@ public class CompiledCorpusTest
 	
 	@Test
 	public void test__readFromJson() throws Exception {
-        String corpusDir = IUConfig.getIUDataPath()+"src/test/HansardCorpus1";
+		String[] words = new String[] {
+				"nunavut", "inuit", "takujuq", "amma", "kinaujaq", "iglumik",
+				"takulaaqtuq", "nunait"
+		};
+		File dir = new File(IUConfig.getIUDataPath()+"src/test/temp");
+		dir.mkdir();
+		String corpusDir = dir.getAbsolutePath();
+		BufferedWriter bw = new BufferedWriter(new FileWriter(
+				new File(corpusDir+"/corpusText.txt")));
+		bw.write(String.join(" ", words));
+		bw.close();
+
         CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
         compiledCorpus.saveFrequency = 3;
-        compiledCorpus.stopAfter = 7; // should stop after takulaaqtuq
+        compiledCorpus.stopAfter = 7; 
+        // Compilation should stop after takulaaqtuq. This is to simulate
+        // an exception raised during the segmentation of takulaaqtuq, which
+        // should result in takulaaqtuq not being compiled.
         try {
         	compiledCorpus.compileCorpusFromScratch(corpusDir);
         } catch(Exception e) {
         	System.err.println("Exiting from compiler");
+        	System.err.println(e.getMessage());
         }
         
         CompiledCorpus retrievedCompiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
         retrievedCompiledCorpus.readFromJson(corpusDir);
+        FileUtils.deleteDirectory(dir);
 
 		Trie trie = retrievedCompiledCorpus.trie;
+		long trieSize = trie.getSize();
+		long expectedSize = 5;
+		assertEquals("The number of terminals in the retrieved trie is faulty.",expectedSize,trieSize);
+
 		long expectedCurrentFileWordCounter = 6;
 		assertEquals("The value of the 'current file word counter' is wrong.", expectedCurrentFileWordCounter,
 				retrievedCompiledCorpus.currentFileWordCounter);
@@ -325,6 +349,7 @@ public class CompiledCorpusTest
 		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, taku_juq_node.getKeysAsString());
 		TrieNode nuna_it_node = trie.getNode(new String[] { "{nuna/1n}", "{it/tn-nom-p}" });
 		assertTrue("The trie should not contain the node for 'nunait'.", nuna_it_node == null);
+		
 }
 	
 	

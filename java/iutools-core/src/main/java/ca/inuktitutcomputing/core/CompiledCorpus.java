@@ -27,6 +27,11 @@ import ca.nrc.datastructure.trie.TrieNode;
 
 /**
  * This creates a Trie of the (Inuktitut) words in the Nunavut Hansard
+ * 
+ * segmentsCache: for each compiled word, contains the segments 
+ *                (may be empty list if word did not get segmented)
+ *                
+ * 
  *
  */ 
 public class CompiledCorpus 
@@ -55,7 +60,7 @@ public class CompiledCorpus
 	
 		@SuppressWarnings("unchecked")
 		@JsonIgnore
-		private StringSegmenter getSegmenter() throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		public StringSegmenter getSegmenter() throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 			if (segmenter == null) {
 				Class<StringSegmenter> cls = (Class<StringSegmenter>) Class.forName(segmenterClassName);
 				segmenter = (StringSegmenter) cls.getConstructor().newInstance();
@@ -257,22 +262,23 @@ public class CompiledCorpus
 				}
 				toConsole("[INFO]     "+wordCounter + "(" + currentFileWordCounter + "). " + word + "... ");
 				String[] segments = fetchSegmentsFromCache(word);
-				if (segments == null) {
-					if (!wordsFailedSegmentation.contains(word)) {
+				if (segments==null) {
 						toConsole("[segmenting] ");
 						try {
 							segments = getSegmenter().segment(word);
-							addToCache(word, segments);
 						} catch (Exception e) {
 							toConsole(" ??? " + e.getClass().getName() + " --- " + e.getMessage() + " ");
+							segments = new String[] {};
 						}
-					}
+						addToCache(word, segments);
 				}
 				try {
 					TrieNode result = null;
-					if (segments!=null)
+					if (segments.length != 0) {
 						result = trie.add(segments,word);
-					if (result != null) {
+// trie.add cannot return null when called with non-empty list of segments (see comment in Trie.add method)
+//					}
+//					if (result != null) {
 						toConsole(result.getKeysAsString()+"\n");
 					} else {
 						toConsole("XXX\n");
@@ -288,6 +294,7 @@ public class CompiledCorpus
 				} catch (TrieException e) {
 					System.out.println("Problem adding word: " + words[n] + " (" + e.getMessage() + ").");
 				}
+				
 				if (wordCounter % saveFrequency == 0) {
 					toConsole("[INFO]     --- saving jsoned compiler ---"+"\n");
 					logger.debug("size of trie: "+trie.getSize());

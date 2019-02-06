@@ -38,7 +38,7 @@ public class Dec {
 		root_trie = new Trie();
 		for (int i=0; i<roots.length; i++) {
 			try {
-				root_trie.add(roots[i].split(""));
+				root_trie.add(roots[i].split(""),roots[i]);
 			} catch (TrieException e) {
 				// TODO Auto-generated catch block
 			}
@@ -46,7 +46,7 @@ public class Dec {
 		suffix_trie = new Trie();
 		for (int i=0; i<suffixes.length; i++) {
 			try {
-				suffix_trie.add(suffixes[i].split(""));
+				suffix_trie.add(suffixes[i].split(""),suffixes[i]);
 			} catch (TrieException e) {
 				// TODO Auto-generated catch block
 			}
@@ -64,20 +64,15 @@ public class Dec {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private static void process(String string) {
 		String[] chars = string.split("");
 		String nextPartOfWord = null;
-		Vector<String> previousKeys = null;
-		Vector<String> currentKeys = new Vector<String>();
 		Vector<String> eatenKeys = new Vector<String>();
-		TrieNode previousNode = null;
-		TrieNode currentRootNode = null;
-		TrieNode root = null;
 		TrieNode[] rootsForCompleteSurfaceForm = new TrieNode[]{};
 		TrieNode[] rootsForIncompleteSurfaceForm = new TrieNode[]{};
 		TrieNode[] suffixesForCompleteSurfaceForm = new TrieNode[]{};
 		TrieNode[] suffixesForIncompleteSurfaceForm = new TrieNode[]{};
-		String currentKey = null;
 		
 		// root
 		Object[] possibleRoot = findMorpheme(chars, root_trie);
@@ -128,8 +123,8 @@ public class Dec {
 			System.out.println("\nAnalyser le reste du mot à partir du caractère "+(eatenKeys.size())+" : "+nextPartOfWord.substring(eatenKeys.size()));
 	}
 
+	@SuppressWarnings("unchecked")
 	private static Object[] findMorpheme(String[] chars, Trie trie) {
-		Vector<String> previousKeys = null;
 		Vector<String> currentKeys = new Vector<String>();
 		Vector<String> eatenKeys = new Vector<String>();
 		TrieNode previousNode = null;
@@ -141,7 +136,6 @@ public class Dec {
 		int charCounter;
 		// Parse the morpheme
 		for (charCounter = 0; charCounter < chars.length; charCounter++) {
-			previousKeys = (Vector<String>) currentKeys.clone();
 			currentKey = chars[charCounter];
 			currentKeys.add(chars[charCounter]);
 			currentNode = trie.getNode(currentKeys
@@ -174,6 +168,11 @@ public class Dec {
 			eatenKeys = (Vector<String>) currentKeys.clone();
 		}
 		
+		if (morpheme==null) {
+			System.out.println("No morpheme found.");
+			return null;
+		}
+		
 		/*
 		 *  Arrivés ici, on a trouvé un chemin dans le trie des racines avec un 
 		 *  maximum de lettres du mot initial, mais ce n'est pas une racine complète.
@@ -181,10 +180,6 @@ public class Dec {
 		 *  avancer d'un nœud et vérifier si cela nous amène à une racine complète.
 		 */
 		System.out.println("morpheme: "+morpheme.getKeysAsString());
-		
-		if (morpheme==null) {
-			return null;
-		}
 		
 		if (morphemesForCompleteSurfaceForm.length==0) {
 				HashMap<String, TrieNode> children = morpheme.getChildren();

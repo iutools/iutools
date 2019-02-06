@@ -141,28 +141,36 @@ public class TrieNodeTest {
 		charTrie.add("hint".split(""),"hint");
 		charTrie.add("helicopter".split(""),"helicopter");
 		charTrie.add("helios".split(""),"helios");
-		charTrie.add("helicopter".split(""),"helipcopter");
+		charTrie.add("helicopter".split(""),"helicopter");
+				
+//		TrieNode helNode = charTrie.getNode("hel".split(""));
+//		Assert.assertTrue("The most frequent terminal node from here should not be set yet.",
+//				helNode.mostFrequentTerminal==null);
+//		
+//		TrieNode mostFrequent = helNode.getMostFrequentTerminal();
+//		Assert.assertEquals("The most frequent terminal node from here should be 'helicopter'.",
+//				"h e l i c o p t e r \\",helNode.mostFrequentTerminal.getKeysAsString());
+//		
+//		charTrie.add("helios".split(""),"helios");
+//		Assert.assertTrue("The most frequent terminal node from here, after adding a new child, should not be set yet.",
+//				helNode.mostFrequentTerminal==null);
+//		
+//		mostFrequent = helNode.getMostFrequentTerminal();
+//		Assert.assertEquals("The most frequent terminal node from here should be 'helicopter'.",
+//				"h e l i c o p t e r \\",helNode.mostFrequentTerminal.getKeysAsString());
+//		
+//		charTrie.add("helios".split(""),"helios");
+//		mostFrequent = helNode.getMostFrequentTerminal();
+//		Assert.assertEquals("The most frequent terminal node from here should be 'helios'.",
+//				"h e l i o s \\",helNode.mostFrequentTerminal.getKeysAsString());
 		
-		TrieNode helNode = charTrie.getNode("hel".split(""));
-		Assert.assertTrue("The most frequent terminal node from here should not be set yet.",
-				helNode.mostFrequentTerminal==null);
+		charTrie.add("hellon".split(""), "hellon");
+		charTrie.add("hello".split(""), "hello");
+		TrieNode hello = charTrie.getNode("hello".split(""));
+		Assert.assertEquals("The frequency of the node is not correct.", 3, hello.frequency);
+		TrieNode helloTerminal = charTrie.getNode("hello\\".split(""));
+		Assert.assertEquals("The frequency of the terminal is not correct.", 2, helloTerminal.frequency);
 		
-		TrieNode mostFrequent = helNode.getMostFrequentTerminal();
-		Assert.assertEquals("The most frequent terminal node from here should be 'helicopter'.",
-				"h e l i c o p t e r \\",helNode.mostFrequentTerminal.getKeysAsString());
-		
-		charTrie.add("helios".split(""),"helios");
-		Assert.assertTrue("The most frequent terminal node from here, after adding a new child, should not be set yet.",
-				helNode.mostFrequentTerminal==null);
-		
-		mostFrequent = helNode.getMostFrequentTerminal();
-		Assert.assertEquals("The most frequent terminal node from here should be 'helicopter'.",
-				"h e l i c o p t e r \\",helNode.mostFrequentTerminal.getKeysAsString());
-		
-		charTrie.add("helios".split(""),"helios");
-		mostFrequent = helNode.getMostFrequentTerminal();
-		Assert.assertEquals("The most frequent terminal node from here should be 'helios'.",
-				"h e l i o s \\",helNode.mostFrequentTerminal.getKeysAsString());
 		}
 
 	
@@ -196,5 +204,66 @@ public class TrieNodeTest {
 		TrieNode[] ok_terminals = okNode.getAllTerminals();
 		Assert.assertEquals("The number of words starting with 'ok' should be 2.",
 				2,o_terminals.length);
+	}
+	
+	
+	@Test
+	public void test_getMostFrequentTerminal() throws TrieException {
+		Trie charTrie = new Trie();
+		charTrie.add("hello".split(""),"hello");
+		charTrie.add("hint".split(""),"hint");
+		charTrie.add("helicopter".split(""),"helicopter");
+		charTrie.add("helios".split(""),"helios");
+		charTrie.add("helicopter".split(""),"helicopter");
+		charTrie.add("helios".split(""),"helios");
+		charTrie.add("helios".split(""),"helios");
+		TrieNode helNode = charTrie.getNode("hel".split(""));
+		Assert.assertEquals("The most frequent terminal returned is faulty.","helios",helNode.getMostFrequentTerminal().surfaceForm);
+	}
+	
+	
+	@Test
+	public void test_getMostFrequentTerminals() throws TrieException {
+		Trie charTrie = new Trie();
+		charTrie.add("hello".split(""),"hello");
+		charTrie.add("hint".split(""),"hint");
+		charTrie.add("helicopter".split(""),"helicopter");
+		charTrie.add("helios".split(""),"helios");
+		charTrie.add("helicopter".split(""),"helicopter");
+		charTrie.add("helios".split(""),"helios");
+		charTrie.add("helios".split(""),"helios");
+		TrieNode helNode = charTrie.getNode("hel".split(""));
+		// test n < number of terminals
+		TrieNode[] mostFrequentTerminals = helNode.getMostFrequentTerminals(2);
+		Assert.assertEquals("The number of nodes returned is wrong.",2,mostFrequentTerminals.length);
+		Assert.assertEquals("The first most frequent terminal returned is faulty.","helios",mostFrequentTerminals[0].surfaceForm);
+		Assert.assertEquals("The second most frequent terminal returned is faulty.","helicopter",mostFrequentTerminals[1].surfaceForm);
+		// test n > number of terminals
+		TrieNode[] mostFrequentTerminals4 = helNode.getMostFrequentTerminals(4);
+		Assert.assertEquals("The number of nodes returned is wrong.",3,mostFrequentTerminals4.length);
+		// test with exclusion of nodes
+		TrieNode nodeToExclude = charTrie.getNode("hello\\".split(""));
+		TrieNode[] mostFrequentTerminalsExcl = helNode.getMostFrequentTerminals(4,new TrieNode[] {nodeToExclude});
+		Assert.assertEquals("The number of nodes returned without excluded nodes is wrong.",2,mostFrequentTerminalsExcl.length);
+		Assert.assertEquals("", "helios", mostFrequentTerminalsExcl[0].getSurfaceForm());
+		Assert.assertEquals("", "helicopter", mostFrequentTerminalsExcl[1].getSurfaceForm());
+	}
+	
+	
+	@Test
+	public void test_toString() throws TrieException {
+		Trie charTrie = new Trie();
+		charTrie.add("hello".split(""),"hello");
+		charTrie.add("hint".split(""),"hint");
+		charTrie.add("helicopter".split(""),"helicopter");
+		charTrie.add("helios".split(""),"helios");
+		charTrie.add("helicopter".split(""),"helicopter");
+		charTrie.add("helios".split(""),"helios");
+		charTrie.add("helios".split(""),"helios");
+		TrieNode helNode = charTrie.getNode("hel".split(""));
+		Assert.assertFalse("The string returned for the first most frequent terminal is faulty.",helNode.toString().contains("surfaceForm"));
+		TrieNode[] mostFrequentTerminals = helNode.getMostFrequentTerminals(2);
+		Assert.assertTrue("The string returned for the first most frequent terminal is faulty.",mostFrequentTerminals[0].toString().contains("helios"));
+		Assert.assertTrue("The string returned for the second most frequent terminal is faulty.",mostFrequentTerminals[1].toString().contains("helicopter"));
 	}
 }
