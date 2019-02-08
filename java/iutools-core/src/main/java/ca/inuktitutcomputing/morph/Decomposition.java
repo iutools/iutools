@@ -418,10 +418,14 @@ public class Decomposition extends Object implements Comparable {
 
 	static public class DecompositionExpression {
 		//
-		String decstr;
-		String partsStr[];
-		DecPart parts[];
+		protected String decstr;
+		protected String partsStr[];
+		public DecPart parts[];
 		//
+		
+		public DecompositionExpression() {
+			
+		}
 		
 		public DecompositionExpression (String decstr) {
 			this.decstr = decstr;
@@ -445,7 +449,7 @@ public class Decomposition extends Object implements Comparable {
 			return meanings;
 		}
 		
-		private String[] expr2parts() {
+		protected String[] expr2parts() {
 			Pattern p = Pattern.compile("\\{[^}]+?\\}");
 			Matcher mp = p.matcher(decstr);
 			Vector v = new Vector();
@@ -470,8 +474,15 @@ public class Decomposition extends Object implements Comparable {
 				Matcher m = p.matcher(str);
 				m.matches();
 				String[] partParts = Pattern.compile(":").split(m.group(1));
-				surface = partParts[0];
-				morphid = partParts[1];
+				// We assume that if there is only 1 part, it is because the
+				// parts contain only the morpheme's id, with no surface form
+				if (partParts.length==1) {
+					surface = "";
+					morphid = partParts[0];
+				} else {
+					surface = partParts[0];
+					morphid = partParts[1];
+				}
 			}
 			
 			public DecPart (String terme, String id) {
