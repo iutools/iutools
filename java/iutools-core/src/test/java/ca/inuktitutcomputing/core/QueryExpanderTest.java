@@ -17,52 +17,58 @@ import ca.inuktitutcomputing.config.IUConfig;
 import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 
-class ReformulatorTest {
+public class QueryExpanderTest {
 
 	@Test
-	public void test__Reformulator__Synopsis() throws Exception {
+	public void test__QueryExpander__Synopsis() throws Exception {
 		//
 		// Use a Reformulator to return a number of candidates chosen in a
 		// trie-compiled corpus related to a given word.
 		//
         CompiledCorpus compiledCorpus = getACompiledCorpus(); 
-        Reformulator reformulator = new Reformulator(compiledCorpus);
-		String[] reformulations = reformulator.getReformulations("some_inuktitut_word");
+        QueryExpander expander = new QueryExpander(compiledCorpus);
+		QueryExpansion[] expansions = expander.getExpansions("some_inuktitut_word");
 	}
 
 	@Test
-	void test_getReformulations() throws Exception {
+	public void test_getReformulations() throws Exception {
 		String[] words = new String[] {
 				"nuna", "nunait", 
 				"iglu", "iglumut", "iglumut", "iglumut", "iglumik", "iglu",
 				"takujuq", "takujumajunga"
 		};
         CompiledCorpus compiledCorpus = getACompiledCorpus(words);        
-        Reformulator reformulator = new Reformulator(compiledCorpus);
-        String[] reformulations = reformulator.getReformulations("iglu");
+        QueryExpander reformulator = new QueryExpander(compiledCorpus);
+        QueryExpansion[] expansions = reformulator.getExpansions("iglu");
+        String[] gotExpansions = new String[expansions.length];
+        for (int i=0; i<expansions.length; i++)
+        	gotExpansions[i] = expansions[i].word;
         String[] expected = new String[] {"iglumut","iglu","iglumik"};
         
-        assertEquals("The number of reformulations returned is wrong.",3,reformulations.length);
-        List<String> reformulationsList = Arrays.asList(reformulations);
+        assertEquals("The number of reformulations returned is wrong.",3,gotExpansions.length);
+        List<String> reformulationsList = Arrays.asList(gotExpansions);
         for (String expectedRef : expected)
         	assertTrue("The word '"+expectedRef+"' should have been returned.",reformulationsList.contains(expectedRef));
 	}
 
 	@Test
-	void test_getReformulations__Case_with_stepping_back_one_node() throws Exception {
+	public void test_getReformulations__Case_with_stepping_back_one_node() throws Exception {
 		String[] words = new String[] {
 				"nuna", "nunait", 
 				"iglu", "iglumut", "iglumut", "iglumut", "iglumik", "iglu", "iglumiutaq",
 				"takujuq", "takujumajunga"
 		};
         CompiledCorpus compiledCorpus = getACompiledCorpus(words);
-        Reformulator reformulator = new Reformulator(compiledCorpus);
-        String[] reformulations = reformulator.getReformulations("iglumiutaq");
+        QueryExpander reformulator = new QueryExpander(compiledCorpus);
+        QueryExpansion[] expansions = reformulator.getExpansions("iglumiutaq");
+        String[] gotExpansions = new String[expansions.length];
+        for (int i=0; i<expansions.length; i++)
+        	gotExpansions[i] = expansions[i].word;
         String[] expected = new String[] {"iglumut","iglu","iglumik","iglumiutaq"};
         
         
-        assertEquals("The number of reformulations returned is wrong.",4,reformulations.length);
-        List<String> reformulationsList = Arrays.asList(reformulations);
+        assertEquals("The number of reformulations returned is wrong.",4,gotExpansions.length);
+        List<String> reformulationsList = Arrays.asList(gotExpansions);
         for (String expectedRef : expected)
         	assertTrue("The word '"+expectedRef+"' should have been returned.",reformulationsList.contains(expectedRef));
 	}

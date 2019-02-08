@@ -13,6 +13,8 @@ public abstract class ConsoleCommand extends SubCommand {
 	public static final String OPT_WORD = "word";
 	public static final String OPT_IMAANALYSIS = "analysis";
 	public static final String OPT_FROM_SCRATCH = "from-scratch";
+	public static final String OPT_CONTENT = "content";
+	public static final String OPT_INPUT_FILE = "input-file";
 	
 	
 	public ConsoleCommand(String name) {
@@ -53,6 +55,20 @@ public abstract class ConsoleCommand extends SubCommand {
 	protected String getWord(boolean failIfAbsent) {
 		String wordStr = getOptionValue(ConsoleCommand.OPT_WORD, failIfAbsent);
 		return wordStr;		
+	}
+	
+	protected String getContent() {
+		return getContent(true);
+	}
+	protected String getContent(boolean failIfAbsent) {
+		return getOptionValue(ConsoleCommand.OPT_CONTENT, failIfAbsent);
+	}
+	
+	protected String getInputFile() {
+		return getInputFile(true);
+	}
+	protected String getInputFile(boolean failIfAbsent) {
+		return getOptionValue(ConsoleCommand.OPT_INPUT_FILE, failIfAbsent);
 	}
 	
 	protected static String prompt(String mess) {

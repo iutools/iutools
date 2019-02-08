@@ -61,6 +61,20 @@ public class Console {
 			    .required(false)
 			    .build();
 		
+		Option optContent = Option.builder(null)
+				.longOpt(ConsoleCommand.OPT_CONTENT)
+			    .desc("A string of inuktitut words.")
+			    .hasArg()
+			    .argName("CONTENT")
+			    .build();
+
+		Option optInputFile = Option.builder(null)
+				.longOpt(ConsoleCommand.OPT_INPUT_FILE)
+			    .desc("The full path of a file containing inuktitut words.")
+			    .hasArg()
+			    .argName("INPUT_FILE")
+			    .build();
+
 		// --- COMMANDS
 
 		// Compile a trie and save it to file
@@ -91,7 +105,16 @@ public class Console {
 		mainCmd.addSubCommand(segmentIU);
 		
 				
-		// Decompose an Inuktut word
+		// Return the gist of inuktitut words
+		SubCommand gist = 
+				new CmdGist("gist")
+				.addOption(optContent)
+				.addOption(optInputFile)
+				;
+		mainCmd.addSubCommand(gist);
+		
+				
+		// Find words related to an inuktitut query word
 		SubCommand reformulateIUQuery = 
 				new CmdReformulateQuery("reformulate_query")
 				.addOption(optCompFile)	

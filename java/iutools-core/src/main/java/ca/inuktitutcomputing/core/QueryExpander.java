@@ -7,12 +7,12 @@ import java.util.Vector;
 
 import ca.nrc.datastructure.trie.TrieNode;
 
-public class Reformulator {
+public class QueryExpander {
 	
 	public CompiledCorpus compiledCorpus;
 	public int numberOfReformulations = 5;
 	
-	public Reformulator(CompiledCorpus _compiledCorpus) {
+	public QueryExpander(CompiledCorpus _compiledCorpus) {
 		this.compiledCorpus = _compiledCorpus;
 	}
 	
@@ -22,7 +22,7 @@ public class Reformulator {
 	 * @return String[] An array of the most frequent inuktitut words related to the input word
 	 * @throws Exception
 	 */
-	public String[] getReformulations(String word) throws Exception {
+	public QueryExpansion[] getExpansions(String word) throws Exception {
 		String[] segments;
 		try {
 			TrieNode[] mostFrequentTerminalsForWord;
@@ -36,19 +36,24 @@ public class Reformulator {
 			else
 				mostFrequentTerminalsForWord = node.getMostFrequentTerminals(this.numberOfReformulations);
 			
-			return __getReformulations(mostFrequentTerminalsForWord, segments);
+			return __getExpansions(mostFrequentTerminalsForWord, segments);
 			
 		} catch (Exception e) {
 			return null;
 		}
 	}
 	
-	public String[] __getReformulations(TrieNode[] mostFrequentTerminalsForReformulations, String[] segments) {
+	public QueryExpansion[] __getExpansions(TrieNode[] mostFrequentTerminalsForReformulations, String[] segments) {
 		if (segments.length == 0 || mostFrequentTerminalsForReformulations.length == this.numberOfReformulations) {
-			String[] mostFrequentReformulations = new String[mostFrequentTerminalsForReformulations.length];
-			for (int i=0; i<mostFrequentTerminalsForReformulations.length; i++)
-				mostFrequentReformulations[i] = mostFrequentTerminalsForReformulations[i].getSurfaceForm();
-			return mostFrequentReformulations;
+			QueryExpansion[] expansions = new QueryExpansion[mostFrequentTerminalsForReformulations.length];
+			for (int i=0; i<mostFrequentTerminalsForReformulations.length; i++) {
+				QueryExpansion qexp = new QueryExpansion(
+						mostFrequentTerminalsForReformulations[i].getSurfaceForm(),
+						mostFrequentTerminalsForReformulations[i].keys,
+						mostFrequentTerminalsForReformulations[i].getFrequency());
+				expansions[i] = qexp;
+			}
+			return expansions;
 		}
 		else {
 			// back one node
@@ -62,9 +67,9 @@ public class Reformulator {
 				newMostFrequentTerminalsForReformulationsAL.addAll(Arrays.asList(mostFrequentTerminalsForReformulations));
 				newMostFrequentTerminalsForReformulationsAL.addAll(Arrays.asList(mostFrequentTerminalsForNode));
 				TrieNode[] newMostFrequentTerminalsForReformulations = (TrieNode[])newMostFrequentTerminalsForReformulationsAL.toArray(new TrieNode[] {});
-				return __getReformulations(newMostFrequentTerminalsForReformulations, segments);
+				return __getExpansions(newMostFrequentTerminalsForReformulations, segments);
 			} else
-				return __getReformulations(mostFrequentTerminalsForReformulations, segments);
+				return __getExpansions(mostFrequentTerminalsForReformulations, segments);
 		}
 	}
 
