@@ -32,9 +32,9 @@ public abstract class LinguisticDataAbstract {
     protected static Hashtable surfaceFormsOfAffixes;
     protected static Hashtable bases;
     
-    protected static Hashtable basesId;
+    protected static Hashtable<String,Base> basesId;
 //    protected Hashtable demonstrativesId;
-    protected static Hashtable affixesId;
+    protected static Hashtable<String,Affix> affixesId;
 
     protected static Hashtable words;
     protected static Hashtable sources;
