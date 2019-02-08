@@ -1258,4 +1258,32 @@ public abstract class Roman {
         }
         return sb.toString();
     }
+    
+	public static String[] determineRootForms(String morpheme) {
+		String[] forms = null;
+		char[] chars = morpheme.toCharArray();
+		char lastChar = chars[chars.length-1];
+		if (lastChar=='q') {
+			String shortenedMorpheme = morpheme.substring(0,morpheme.length()-1);
+			forms = new String[] {
+					morpheme, shortenedMorpheme, 
+					shortenedMorpheme+"r" };
+		} else if (lastChar=='k') {
+			String shortenedMorpheme = morpheme.substring(0,morpheme.length()-1);
+			forms = new String[] {
+					morpheme, shortenedMorpheme, 
+					shortenedMorpheme+"g", shortenedMorpheme+"N"};
+		} else if (lastChar=='t') {
+			String shortenedMorpheme = morpheme.substring(0,morpheme.length()-1);
+			forms = new String[] {
+					morpheme, shortenedMorpheme,
+					morpheme+"i",
+					shortenedMorpheme+"l", shortenedMorpheme+"n"};
+		} else {
+			forms = new String[] {morpheme};
+		}
+		return forms;
+	}
+
+    
 }
