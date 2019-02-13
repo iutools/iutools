@@ -75,6 +75,13 @@ public class Console {
 			    .argName("INPUT_FILE")
 			    .build();
 
+		Option optVerbosity = Option.builder(null)
+				.longOpt(ConsoleCommand.OPT_VERBOSITY)
+			    .desc("Level of verbosity of the output.")
+			    .hasArg()
+			    .argName("VERBOSITY")
+			    .build();
+
 		// --- COMMANDS
 
 		// Compile a trie and save it to file
@@ -110,6 +117,7 @@ public class Console {
 				new CmdGist("gist")
 				.addOption(optContent)
 				.addOption(optInputFile)
+				.addOption(optVerbosity)
 				;
 		mainCmd.addSubCommand(gist);
 		

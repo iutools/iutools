@@ -28,7 +28,11 @@ public class CmdGist extends ConsoleCommand {
 	public void execute() throws Exception {
 		String content = getContent(false);
 		String inputFile = getInputFile(false);
+		Verbosity verbose = getVerbosity(); // 0: dense layout  1: pretty-print
+		if (verbose==Verbosity.Level0)
+			verbose = Verbosity.Level2;
 		String[] words = null;
+		String[] lines = null;
 		String latin = null;
 		Decomposition[] decs = null;
 		
@@ -38,22 +42,29 @@ public class CmdGist extends ConsoleCommand {
 		if (content == null && inputFile == null) {
 			interactive = true; // assume 'content' will be typed at prompt
 		} else if (content != null) {
-			words = content.split("\\s+");
+//			words = content.split("\\s+");
+			lines = content.split("\n");
 		} else {
 			File file = new File(inputFile);
 			if ( !file.exists() ) {
 				echo("The file '"+inputFile+"' does not exist.");
 				return;
 			} else {
+				ArrayList<String> arrayLines = new ArrayList<String>();
 				BufferedReader br = new BufferedReader(new FileReader(file));
 				content = "";
 				String line;
-				while ( (line = br.readLine()) != null )
+				while ( (line = br.readLine()) != null ) {
 					content += " "+line;
+					arrayLines.add(line);
+				}
 				br.close();
-				words =content.split("\\s+");
+				lines = arrayLines.toArray(new String[] {});
+//				lines = content.split("\n");
+//				words = content.split("\\s+");
 			}
 		}
+//		System.out.println("Nb. lines = "+lines.length);
 		
 		Pattern pattern = Pattern.compile("^(.+?)---(.+)$");
 		
@@ -61,11 +72,16 @@ public class CmdGist extends ConsoleCommand {
 			if (interactive) {
 				content = prompt("Enter Inuktut words");
 				if (content == null) break;
-				words = content.split("\\s+");
+				lines = content.split("\n");
+//				words = content.split("\\s+");
 			} else {
-				echo("Processing: "+String.join(" ", words));
+				//echo("Processing: "+String.join(" ", words));
 			}
 			
+			for (int iLine=0; iLine<lines.length; iLine++) {	
+			
+			String line = lines[iLine];
+			words = line.split("\\s+");
 			for (String word : words) {
 				if (word.equals("")) continue;
 				boolean syllabic = false;
@@ -86,14 +102,19 @@ public class CmdGist extends ConsoleCommand {
 							matcher.matches();
 							wordGistParts.add(matcher.group(1)+": "+matcher.group(2));
 						}
+						String[] wordParts = wordGistParts.toArray(new String[] {});
 						String wordToDisplay = syllabic? word+" ("+latin.toUpperCase()+")" : latin.toUpperCase();
-						String wordGist = "<<<< " +wordToDisplay.toUpperCase()+"= "+
-								String.join(" || ", wordGistParts.toArray(new String[] {}))+">>>>";
-						echo(wordGist+"  ",false);
+						String wordGist = generateGist(wordToDisplay,wordGistParts,verbose);
+						if (verbose==Verbosity.Level1)
+							echo(wordGist+"  ",false);
+						else
+							echo(wordGist+"\n\n",false);
 					}
 				} catch (Exception e) {
 					throw e;
 				}
+			}
+			if (iLine != lines.length-1 || interactive) echo("");
 			}
 			
 			if (!interactive) break;				
@@ -101,6 +122,25 @@ public class CmdGist extends ConsoleCommand {
 		
 		echo("");
 
+	}
+
+	private String generateGist(String wordToDisplay, ArrayList<String> wordParts, Verbosity verbose) {
+		if (verbose==Verbosity.Level1)
+			return "<<<< " +wordToDisplay.toUpperCase()+"= "+String.join(" || ", wordParts)+">>>>";
+		else {
+			/*
+			 * ᐋᓐᓂᐊᖃᕐᓇᙱᑦᑐᓕᕆᔨᒃᑯᑦ (AANNIAQARNANNGITTULIRIJIKKUT)
+					sickness
+					to have, to possess
+					to prevent
+					one who/something that does the action
+					manipulation: 'to work with, on'
+					one whose job is; agent
+					group, family, people related to
+			 */
+			return wordToDisplay+"\n    "+String.join("\n    ", wordParts);
+				
+		}
 	}
 
 }
