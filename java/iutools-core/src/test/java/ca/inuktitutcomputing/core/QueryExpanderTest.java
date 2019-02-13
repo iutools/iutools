@@ -72,6 +72,30 @@ public class QueryExpanderTest {
         for (String expectedRef : expected)
         	assertTrue("The word '"+expectedRef+"' should have been returned.",reformulationsList.contains(expectedRef));
 	}
+	
+	@Test
+	public void test_getReformulations__Case_takujumaguvit() throws Exception {
+		String[] words = new String[] {
+				"nuna", "nunait", 
+				"takujuq", "takujumajunga", "takujumavalliajanginnik",
+				"iglumut"
+		};
+        CompiledCorpus compiledCorpus = getACompiledCorpus(words);
+        QueryExpander reformulator = new QueryExpander(compiledCorpus);
+        QueryExpansion[] expansions = reformulator.getExpansions("takujumaguvit");
+        String[] gotExpansions = new String[expansions.length];
+        for (int i=0; i<expansions.length; i++)
+        	gotExpansions[i] = expansions[i].word;
+        String[] expected = new String[] {"takujuq","takujumavalliajanginnik","takujumajunga"};
+        
+        
+        assertEquals("The number of reformulations returned is wrong.",3,gotExpansions.length);
+        List<String> reformulationsList = Arrays.asList(gotExpansions);
+        for (String expectedRef : expected)
+        	assertTrue("The word '"+expectedRef+"' should have been returned.",reformulationsList.contains(expectedRef));
+	}
+	
+	
 
 	// ---------------
 	
