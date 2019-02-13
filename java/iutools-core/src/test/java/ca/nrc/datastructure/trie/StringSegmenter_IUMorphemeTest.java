@@ -25,6 +25,20 @@ public class StringSegmenter_IUMorphemeTest {
 	}
 
 	@Test
+	public void test__segment__short_analysis_syllabique() {
+		StringSegmenter segmenter = new StringSegmenter_IUMorpheme();
+		String[] segments;
+		try {
+			segments = segmenter.segment("ᐃᓄᐃᑦ");
+			assertEquals("The number of segments should be 2",2,segments.length);
+			String[] expected = new String[]{"{inuk/1n}","{it/tn-nom-p}"};
+			assertArrayEquals("The segments are not correct.",expected,segments);
+		} catch (Exception e) {
+			assertFalse("The number of segments should be 2 but the segmenter returned with an error",true);
+		}
+	}
+
+	@Test
 	public void test__segment__full_analysis() {
 		StringSegmenter segmenter = new StringSegmenter_IUMorpheme();
 		String[] segments;
