@@ -19,6 +19,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+//import org.apache.log4j.Logger;
 
 import ca.inuktitutcomputing.html.HtmlEntities;
 import ca.inuktitutcomputing.fonts.Font;
@@ -427,6 +428,7 @@ public class TransCoder {
     }
 
     public static String legacyToUnicode(String s, String fontName, boolean aipaitai) {
+//    	Logger logger = Logger.getLogger("TransCoder.legacyToUnicode");
 //        if (LOG.isDebugEnabled())
 //        	LOG.debug("avant appel à windows1252Toiso88591 --- s = '"+s+"'");
     	String sNormalized = windows1252Toiso88591(s);
@@ -436,7 +438,9 @@ public class TransCoder {
     	String dotCodes = null;
     	try {
     		Class fontClass = Font.getFontClass(fontName);
+//    		logger.debug("fontName: "+fontName);
     		if (fontClass != null) {
+//        		logger.debug("fontClass: "+fontClass.getName());
     			Field field = fontClass.getDeclaredField("dotCodes");
     			if (field != null)
     				dotCodes = (String) field.get(null);
@@ -449,6 +453,7 @@ public class TransCoder {
 //        if (LOG.isDebugEnabled())
 //        	LOG.debug("dotCodes = '"+dotCodes+"'");
 		
+//    	logger.debug("dotCodes: "+dotCodes);
 		if (dotCodes != null) {
 			String dotCodesForPattern = prepareForPattern(dotCodes);
 //	        if (LOG.isDebugEnabled())
