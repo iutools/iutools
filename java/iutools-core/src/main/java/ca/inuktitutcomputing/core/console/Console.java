@@ -68,6 +68,13 @@ public class Console {
 			    .argName("CONTENT")
 			    .build();
 
+		Option optFont = Option.builder(null)
+				.longOpt(ConsoleCommand.OPT_FONT)
+			    .desc("Name of legacy font.")
+			    .hasArg()
+			    .argName("FONT")
+			    .build();
+
 		Option optInputFile = Option.builder(null)
 				.longOpt(ConsoleCommand.OPT_INPUT_FILE)
 			    .desc("The full path of a file containing inuktitut words.")
@@ -120,6 +127,16 @@ public class Console {
 				.addOption(optVerbosity)
 				;
 		mainCmd.addSubCommand(gist);
+		
+				
+		// Output transliterated inuktitut from Legacy to Unicode
+		SubCommand translit = 
+				new CmdTranslit("transliterate")
+				.addOption(optContent)
+				.addOption(optInputFile)
+				.addOption(optFont)
+				;
+		mainCmd.addSubCommand(translit);
 		
 				
 		// Find words related to an inuktitut query word

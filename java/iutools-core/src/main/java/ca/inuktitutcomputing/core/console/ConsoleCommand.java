@@ -15,6 +15,7 @@ public abstract class ConsoleCommand extends SubCommand {
 	public static final String OPT_FROM_SCRATCH = "from-scratch";
 	public static final String OPT_CONTENT = "content";
 	public static final String OPT_INPUT_FILE = "input-file";
+	public static final String OPT_FONT = "font";
 	
 	
 	public ConsoleCommand(String name) {
@@ -62,6 +63,13 @@ public abstract class ConsoleCommand extends SubCommand {
 	}
 	protected String getContent(boolean failIfAbsent) {
 		return getOptionValue(ConsoleCommand.OPT_CONTENT, failIfAbsent);
+	}
+	
+	protected String getFont() {
+		return getContent(true);
+	}
+	protected String getFont(boolean failIfAbsent) {
+		return getOptionValue(ConsoleCommand.OPT_FONT, failIfAbsent);
 	}
 	
 	protected String getInputFile() {
