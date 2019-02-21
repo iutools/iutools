@@ -1,7 +1,11 @@
 package ca.inuktitutcomputing.core;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.StringReader;
 import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -15,15 +19,23 @@ import java.util.regex.Pattern;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.log4j.Logger;
 
 import com.google.gson.Gson;
 
+import ca.inuktitutcomputing.morph.Decomposition;
+
 public class QueryExpanderEvaluator {
 	
-	static String csvGoldStandardFilePath = "/Users/benoitfarley/Inuktitut/Pirurvik/IU100Words.csv";
-	static String compiledCorpusTrieFilePath = "/Users/benoitfarley/temp/trie_compilation.json";
-	static CompiledCorpus compiledCorpus = null;
-	static HashMap<String,String> results = null;
+//	static String csvGoldStandardFilePath = "/Users/benoitfarley/Inuktitut/Pirurvik/IU100Words.csv";
+//	static String compiledCorpusTrieFilePath = "/Users/benoitfarley/temp/trie_compilation-bak-2019-02-19.json";
+	public CompiledCorpus compiledCorpus = null;
+	public CSVParser csvParser = null;
+	public boolean computeStatsOverSurfaceForms = true;
+	public float precision = -1;
+	public float recall = -1;
+	public float fmeasure = -1;
+	
 	
 	/*
 	 * 0. Mot original (fréquence Google du mot en syllabique),
@@ -36,14 +48,45 @@ public class QueryExpanderEvaluator {
 	 * 7. Notes
 	 */
 	
-	public static void main(String[] args) {
+	public QueryExpanderEvaluator() {
+	}
+	
+	public QueryExpanderEvaluator(String compiledCorpusTrieFilePath, String csvGoldStandardFilePath) throws IOException {
+		File compiledCorpusTrieFile = new File(compiledCorpusTrieFilePath);
+		setCompiledCorpus(compiledCorpusTrieFile);
+		File goldStandardFile = new File(csvGoldStandardFilePath);
+		setGoldStandard(goldStandardFile);
+	}
+	
+	public void setCompiledCorpus(File compiledCorpusTrieFilePath) throws IOException {
+		FileReader fr = new FileReader(compiledCorpusTrieFilePath);
+		compiledCorpus = new Gson().fromJson(fr, CompiledCorpus.class);    		
+		fr.close();
+	}
+	
+	public void setCompiledCorpus(CompiledCorpus _compiledCorpus) {
+		compiledCorpus = _compiledCorpus;
+	}
+	
+	public void setGoldStandard(File csvGoldStandardFile) throws IOException {
+        BufferedReader reader = Files.newBufferedReader(Paths.get(csvGoldStandardFile.getAbsolutePath()));
+        csvParser = new CSVParser(reader, CSVFormat.DEFAULT);
+	}
+	
+	public void setGoldStandard(String[] csvGoldStandardLines) throws IOException {
+		BufferedReader reader = new BufferedReader(new StringReader(String.join("\n", csvGoldStandardLines)));
+        csvParser = new CSVParser(reader, CSVFormat.DEFAULT);
+	}
+	
+	public void setOptionComputeStatsOverSurfaceForms(boolean value) {
+		computeStatsOverSurfaceForms = value;
+	}
+	
+	public void run() {
+		
+		Logger logger = Logger.getLogger("QueryExpanderEvaluator");
 		
         try {
-            BufferedReader reader = Files.newBufferedReader(Paths.get(csvGoldStandardFilePath));
-            CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT);
-    		FileReader fr = new FileReader(compiledCorpusTrieFilePath);
-    		compiledCorpus = new Gson().fromJson(fr, CompiledCorpus.class);    		
-    		fr.close();
     		QueryExpander queryExpander = new QueryExpander(compiledCorpus);
     		
     		System.out.println("Size of segments cache: "+compiledCorpus.segmentsCache.size());
@@ -79,20 +122,28 @@ public class QueryExpanderEvaluator {
                     
 //                  if (mot.equals("akigiliutinajaqtuq"))
 //                    	stop = true;
+                    
+                    String decMot = String.join(" ",compiledCorpus.getSegmenter().segment(mot))+" \\";
                     nbTotalCases++;
                     System.out.println("    Gold Standard reformulations (frequencies in compiled corpus):");
-                    String[] gsalternatives = (mot+"; "+csvRecord.get(4)).split(";\\s+");
+                    String[] gsalternatives = (mot+"; "+csvRecord.get(4)).split(";\\s*");
+                    String[] gsalternativesMorphemes = new String[gsalternatives.length];
                     List<String> listgsalternatives = Arrays.asList(gsalternatives);
                     nbTotalGoldStandardAlternatives += gsalternatives.length;
-                    for (String gsalternative : gsalternatives) {	
+                    for (int igs=0; igs<gsalternatives.length; igs++) {	
+                    	String gsalternative = gsalternatives[igs];
                     	long freqGSAlternativeInCorpus = freqDansCorpus(gsalternative);
                     	System.out.println("        "+gsalternative+" : "+freqGSAlternativeInCorpus);
+                    	String altDecomp = String.join(" ",compiledCorpus.getSegmenter().segment(gsalternative))+" \\";
+                    	gsalternativesMorphemes[igs] = altDecomp;
                     }
+                    List<String> listgsalternativesmorphemes = Arrays.asList(gsalternativesMorphemes);
                     
                     System.out.println("    Query Expander expansions (frequencies in compiled corpus):");
                     try {
                     	QueryExpansion[] expansions = queryExpander.getExpansions(mot);
                     	if (expansions != null) {
+                    		ArrayList<String> listexpansionsmorphemes = new ArrayList<String>();
                     		ArrayList<String> listexpansions = new ArrayList<String>();
                     		nbTotalExpansionsFromCorpus += expansions.length;
                     		if (expansions.length==0) {
@@ -101,14 +152,32 @@ public class QueryExpanderEvaluator {
                     		}
                     		for (QueryExpansion expansion : expansions) {
                     			long freqExpansion =expansion.frequency;
-                    			System.out.println("        "+expansion.word+" : "+freqExpansion);
-                    			if ( !listgsalternatives.contains(expansion.word) )
-                    				nbTotalExpansionsNotInGSAlternatives++;
+                    			boolean expansionInGSalternatives = true;
+                    			String expansionMorphemes = String.join(" ", expansion.morphemes);
+                    			if (computeStatsOverSurfaceForms) {
+                    				if ( !listgsalternatives.contains(expansion.word) ) {
+                    					nbTotalExpansionsNotInGSAlternatives++;
+                    					expansionInGSalternatives = false;
+                    				}
+                    			} else {
+                    				if ( !listgsalternativesmorphemes.contains(expansionMorphemes) ) {
+                    					nbTotalExpansionsNotInGSAlternatives++;
+                    					expansionInGSalternatives = false;
+                    				}
+                    			}
+                    			System.out.println("        "+expansion.word+" : "+freqExpansion+(expansionInGSalternatives? " ***":""));
+                    			listexpansionsmorphemes.add(expansionMorphemes);
                     			listexpansions.add(expansion.word);
                     		}
-                    		for (String gsalternative : gsalternatives)
-                    			if ( !listexpansions.contains(gsalternative) )
-                    				nbTotalGSAlternativesNotInExpansions++;
+                    		if (computeStatsOverSurfaceForms) {
+                    			for (String gsalternative : gsalternatives)
+                    				if ( !listexpansions.contains(gsalternative) )
+                    					nbTotalGSAlternativesNotInExpansions++;
+                    		} else {
+                    			for (String gsalternativeMorphemes : gsalternativesMorphemes)
+                    				if ( !listexpansionsmorphemes.contains(gsalternativeMorphemes) )
+                    					nbTotalGSAlternativesNotInExpansions++;
+                    		}
                     	} else {
                     		nbTotalGSAlternativesNotInExpansions += gsalternatives.length;
                     		nbTotalCasesWithNoExpansion++;
@@ -121,6 +190,7 @@ public class QueryExpanderEvaluator {
                     }
                     
             }
+            csvParser.close();
             
             System.out.println("\nTotal number of evaluated words: "+nbTotalCases);
             System.out.println("Total number of alternatives in Gold Standard: "+nbTotalGoldStandardAlternatives);
@@ -138,25 +208,40 @@ public class QueryExpanderEvaluator {
             int nbTotalGoodExpansions = nbTotalExpansionsFromCorpus - nbTotalExpansionsNotInGSAlternatives;
             System.out.println("\tTotal number of GOOD corpus expansion: "+nbTotalGoodExpansions);
             
-            float precision = (float)nbTotalGoodExpansions / (float)nbTotalExpansionsFromCorpus;
-            float recall = (float)nbTotalGoodExpansions / (float)nbTotalGoldStandardAlternatives;
-            float fmeasure = 2 * precision * recall / (precision + recall);
+            precision = (float)nbTotalGoodExpansions / (float)nbTotalExpansionsFromCorpus;
+            recall = (float)nbTotalGoodExpansions / (float)nbTotalGoldStandardAlternatives;
+            fmeasure = 2 * precision * recall / (precision + recall);
             
             System.out.println("Precision = "+precision);
             System.out.println("Recall = "+recall);
             System.out.println("F-measure = "+fmeasure);
-
+            
         } catch(Exception e) {
         	System.err.println(e.getMessage());
+        	if (csvParser != null)
+				try {
+					csvParser.close();
+				} catch (IOException e1) {
+					System.err.println(e1.getMessage());
+				}
         }
 	}
 
-	private static long freqDansCorpus(String reformulation) {
+	private long freqDansCorpus(String reformulation) {
 		String[] keys = compiledCorpus.segmentsCache.get(reformulation);
 		if (keys==null)
 			return 0;
 		long freqDansCorpus = compiledCorpus.trie.getFrequency(keys);
 		return freqDansCorpus;
 	}
+	
+
+
+
+	public static void main(String[] args) throws IOException {
+		QueryExpanderEvaluator evaluator = new QueryExpanderEvaluator(args[0],args[1]);
+		evaluator.run();
+	}
+
 
 }
