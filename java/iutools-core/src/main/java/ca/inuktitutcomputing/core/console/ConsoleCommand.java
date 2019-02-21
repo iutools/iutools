@@ -9,6 +9,7 @@ public abstract class ConsoleCommand extends SubCommand {
 	public static final String OPT_CORPUS_DIR = "corpus-dir";
 	public static final String OPT_CORPUS_NAME = "corpus-name";
 	public static final String OPT_COMP_FILE = "comp-file";
+	public static final String OPT_GS_FILE = "gs-file";
 	public static final String OPT_MORPHEMES = "morphemes";
 	public static final String OPT_WORD = "word";
 	public static final String OPT_IMAANALYSIS = "analysis";
@@ -16,6 +17,7 @@ public abstract class ConsoleCommand extends SubCommand {
 	public static final String OPT_CONTENT = "content";
 	public static final String OPT_INPUT_FILE = "input-file";
 	public static final String OPT_FONT = "font";
+	public static final String OPT_SOM = "stats-over-morphemes";
 	
 	
 	public ConsoleCommand(String name) {
@@ -77,6 +79,20 @@ public abstract class ConsoleCommand extends SubCommand {
 	}
 	protected String getInputFile(boolean failIfAbsent) {
 		return getOptionValue(ConsoleCommand.OPT_INPUT_FILE, failIfAbsent);
+	}
+	
+	protected String getGoldStandardFile() {
+		return getGoldStandardFile(true);
+	}
+	protected String getGoldStandardFile(boolean failIfAbsent) {
+		return getOptionValue(ConsoleCommand.OPT_GS_FILE, failIfAbsent);
+	}
+	
+	protected String getStatsOverMorphemes() {
+		return getStatsOverMorphemes(false);
+	}
+	protected String getStatsOverMorphemes(boolean failIfAbsent) {
+		return getOptionValue(ConsoleCommand.OPT_SOM, failIfAbsent);
 	}
 	
 	protected static String prompt(String mess) {

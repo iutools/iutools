@@ -82,10 +82,23 @@ public class Console {
 			    .argName("INPUT_FILE")
 			    .build();
 
+		Option optGoldStandardFile = Option.builder(null)
+				.longOpt(ConsoleCommand.OPT_GS_FILE)
+			    .desc("The full path of the Gold Standard file for evaluating the query expander.")
+			    .hasArg()
+			    .argName("GS_FILE")
+			    .build();
+
 		Option optVerbosity = Option.builder(null)
 				.longOpt(ConsoleCommand.OPT_VERBOSITY)
 			    .desc("Level of verbosity of the output.")
 			    .hasArg()
+			    .argName("VERBOSITY")
+			    .build();
+
+		Option optStatsOverMorphemes = Option.builder(null)
+				.longOpt(ConsoleCommand.OPT_SOM)
+			    .desc("Compute stats over morphemes instead of words.")
 			    .argName("VERBOSITY")
 			    .build();
 
@@ -146,6 +159,16 @@ public class Console {
 				.addOption(optWord)
 				;
 		mainCmd.addSubCommand(expandIUQuery);
+		
+				
+		// Find words related to an inuktitut query word
+		SubCommand evaluateQueryExpansion = 
+				new CmdEvaluateQueryExpansion("evaluate_query_expansion")
+				.addOption(optCompFile)	
+				.addOption(optGoldStandardFile)
+				.addOption(optStatsOverMorphemes)
+				;
+		mainCmd.addSubCommand(evaluateQueryExpansion);
 		
 				
 		// Convert a Inuktitut segmentation into Trie-compatible segments
