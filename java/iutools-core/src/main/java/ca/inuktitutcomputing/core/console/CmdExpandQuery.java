@@ -15,9 +15,9 @@ import ca.inuktitutcomputing.morph.Decomposition.DecompositionExpression;
 import ca.inuktitutcomputing.script.Roman;
 import ca.inuktitutcomputing.script.Syllabics;
 
-public class CmdReformulateQuery extends ConsoleCommand {
+public class CmdExpandQuery extends ConsoleCommand {
 
-	public CmdReformulateQuery(String name) {
+	public CmdExpandQuery(String name) {
 		super(name);
 	}
 
@@ -30,6 +30,7 @@ public class CmdReformulateQuery extends ConsoleCommand {
 	public void execute() throws Exception {
 		String word = getWord(false);
 		String latin = null;
+		String syll = null;
 		QueryExpansion[] reformulations = null;
 		
 		String compilationFilePath = getCompilationFile();
@@ -45,21 +46,29 @@ public class CmdReformulateQuery extends ConsoleCommand {
 		if (word == null) {
 			interactive = true;
 		} else {
-			if (Syllabics.allInuktitut(word))
-				latin = Syllabics.transcodeToRoman(word);
-			else
+			if (Syllabics.allInuktitut(word)) {
+				syll  = word;
+				latin = Syllabics.transcodeToRoman(syll);
+			}
+			else {
 				latin = word;
-			reformulations = reformulator.getExpansions(word);
+				syll = Roman.transcodeToUnicode(latin, null);
+			}
+			reformulations = reformulator.getExpansions(latin);
 		}
 
 		while (true) {
 			if (interactive) {
 				word = prompt("Enter Inuktut word");
 				if (word == null) break;
-				if (Syllabics.allInuktitut(word))
-					latin = Syllabics.transcodeToRoman(word);
-				else
+				if (Syllabics.allInuktitut(word)) {
+					syll  = word;
+					latin = Syllabics.transcodeToRoman(syll);
+				}
+				else {
 					latin = word;
+					syll = Roman.transcodeToUnicode(latin, null);
+				}
 				reformulations = null;
 				try {
 					reformulations = reformulator.getExpansions(latin);
@@ -93,7 +102,7 @@ public class CmdReformulateQuery extends ConsoleCommand {
 			Decomposition dec = null;
 			if (decs.length != 0)
 				dec = decs[0];
-			echo("\nWord:\n\n  "+latin+" ("+word+") : "+freqWord);
+			echo("\nWord:\n\n  "+latin+" ("+syll+") : "+freqWord);
 			if (dec==null)
 				echo("\n    The word could not be decomposed by the inuktitut morphological analyzer.\n");
 			else {

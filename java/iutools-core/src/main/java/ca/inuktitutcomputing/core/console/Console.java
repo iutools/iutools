@@ -140,12 +140,12 @@ public class Console {
 		
 				
 		// Find words related to an inuktitut query word
-		SubCommand reformulateIUQuery = 
-				new CmdReformulateQuery("reformulate_query")
+		SubCommand expandIUQuery = 
+				new CmdExpandQuery("expand_query")
 				.addOption(optCompFile)	
 				.addOption(optWord)
 				;
-		mainCmd.addSubCommand(reformulateIUQuery);
+		mainCmd.addSubCommand(expandIUQuery);
 		
 				
 		// Convert a Inuktitut segmentation into Trie-compatible segments
