@@ -471,14 +471,12 @@ public class TransCoder {
 				sNormalized = sNormalized.replaceFirst(replacementPattern,
 						replacementValue);
 				} catch (PatternSyntaxException e) {
-//			        if (LOG.isDebugEnabled())
-//			        	LOG.debug("PatternSyntaxException -- sNormalized = '"+sNormalized+"'"
-//			        			+" ; replacementPattern = '"+replacementPattern+"' ; replacementValue = '"
-//			        			+ replacementValue+"'");
 			        e.printStackTrace(System.err);
 				}
 				pos = mpatDotCodes.end();
 				mpatDotCodes = patDotCodes.matcher(sNormalized);
+				if (pos >= sNormalized.length()) 
+					break;
 			}
 		}
         String res = "";
