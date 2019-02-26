@@ -101,6 +101,8 @@ public class QueryExpanderEvaluator {
             int nbTotalCasesWithNoExpansion = 0;
             int nbTotalCasesCouldNotBeDecomposed = 0;
             
+            ArrayList<String> listAllGsAlternatives = new ArrayList<String>();
+            
             boolean stop = false;
            
             int i = 0;
@@ -130,6 +132,8 @@ public class QueryExpanderEvaluator {
                     String[] gsalternativesMorphemes = new String[gsalternatives.length];
                     List<String> listgsalternatives = Arrays.asList(gsalternatives);
                     nbTotalGoldStandardAlternatives += gsalternatives.length;
+                    listAllGsAlternatives.addAll(listgsalternatives);
+                    
                     for (int igs=0; igs<gsalternatives.length; igs++) {	
                     	String gsalternative = gsalternatives[igs];
                     	long freqGSAlternativeInCorpus = freqDansCorpus(gsalternative);
@@ -150,6 +154,13 @@ public class QueryExpanderEvaluator {
                         		nbTotalCasesWithNoExpansion++;
                         		System.out.println("        0 expansion");
                     		}
+                    		Arrays.sort(expansions, (QueryExpansion a, QueryExpansion b) ->
+                    			{
+                    				if (a.frequency == b.frequency)
+                    					return 0;
+                    				else
+                    					return a.frequency < b.frequency? 1 : -1;
+                    			});
                     		for (QueryExpansion expansion : expansions) {
                     			long freqExpansion =expansion.frequency;
                     			boolean expansionInGSalternatives = true;
@@ -191,6 +202,10 @@ public class QueryExpanderEvaluator {
                     
             }
             csvParser.close();
+            
+            for (int igsa=0; igsa<listAllGsAlternatives.size(); igsa++) {
+            	System.out.println((igsa+1)+". "+listAllGsAlternatives.get(igsa));
+            }
             
             System.out.println("\nTotal number of evaluated words: "+nbTotalCases);
             System.out.println("Total number of alternatives in Gold Standard: "+nbTotalGoldStandardAlternatives);
