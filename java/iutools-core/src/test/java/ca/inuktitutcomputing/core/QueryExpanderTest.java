@@ -11,11 +11,15 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
 import ca.inuktitutcomputing.config.IUConfig;
 import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
+import ca.nrc.datastructure.trie.Trie;
+import ca.nrc.datastructure.trie.TrieException;
+import ca.nrc.datastructure.trie.TrieNode;
 
 public class QueryExpanderTest {
 
@@ -93,6 +97,30 @@ public class QueryExpanderTest {
         List<String> reformulationsList = Arrays.asList(gotExpansions);
         for (String expectedRef : expected)
         	assertTrue("The word '"+expectedRef+"' should have been returned.",reformulationsList.contains(expectedRef));
+	}
+	
+	@Test
+	public void test_getNMostFrequentTerminals() throws Exception {
+		String[] words = new String[] {
+				"nuna", "nunait", "nunavummi", "nunavummut",
+				"nunavummiutait", "nunavummit",
+				"takujuq", "takujumajunga", "takujumavalliajanginnik",
+				"takujumalauqtuq", "takujumanngittuq", "takujaujuq",
+				"takujaujumajuq","takujumajuq", "takujumajuq", "takujumajuq",
+				"takujaujut",
+				"takujumajunga", "takujumajunga",
+				"iglumut"
+		};
+        CompiledCorpus compiledCorpus = getACompiledCorpus(words);
+        QueryExpander expander = new QueryExpander(compiledCorpus);
+		
+		// test n < number of terminals
+        TrieNode taku = compiledCorpus.trie.getNode(new String[]{"{taku/1v}"});
+		TrieNode[] mostFrequentTerminals = expander.getNMostFrequentTerminals(taku,5,"takujumajuq",new TrieNode[] {});
+		
+		for (TrieNode terminal : mostFrequentTerminals) {
+			System.out.println(terminal.getSurfaceForm()+" ("+terminal.getFrequency());
+		}
 	}
 	
 	
