@@ -53,7 +53,10 @@ public class TranslitDOCFileParagraphs {
 
 		for (int i = 0; i < r1.numSections(); ++i) {
 			Section s = r1.getSection(i);
+			int np = s.numParagraphs();
+			logger.debug("section "+i+": "+np+" paragraphs");
 			for (int x = 0; x < s.numParagraphs(); x++) {
+				logger.debug("s"+i+"  p"+x+" de "+s.numParagraphs());
 				Paragraph p = s.getParagraph(x);
 				int nbRuns = p.numCharacterRuns();
 				String textOfRunsInSameFont = null;
