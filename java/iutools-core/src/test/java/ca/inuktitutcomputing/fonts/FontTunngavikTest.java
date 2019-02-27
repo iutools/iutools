@@ -152,6 +152,10 @@ public class FontTunngavikTest {
                 {"w~oMs6W`y","\u1403\u14d6\u14da\u1405\u1585\u1431\u14f0"},
                 // kii, rii: kiinaujallariit
                 {"`rNs/9M~E5","\u146e\u14c7\u1405\u152d\u14ea\u14da\u1547\u1466"},
+                
+                // multiple consecutive dot codes: piqaasi
+                {"W``cy", "\u1431\u1584\u14ef"},
+
 
 };
 
