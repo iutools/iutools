@@ -125,7 +125,7 @@ public class QueryExpanderEvaluator {
 //                  if (mot.equals("akigiliutinajaqtuq"))
 //                    	stop = true;
                     
-                    String decMot = String.join(" ",compiledCorpus.getSegmenter().segment(mot))+" \\";
+                    //String decMot = String.join(" ",compiledCorpus.getSegmenter().segment(mot))+" \\";
                     nbTotalCases++;
                     System.out.println("    Gold Standard reformulations (frequencies in compiled corpus):");
                     String[] gsalternatives = (mot+"; "+csvRecord.get(4)).split(";\\s*");
