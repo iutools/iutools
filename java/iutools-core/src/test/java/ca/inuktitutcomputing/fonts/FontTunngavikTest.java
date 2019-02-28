@@ -68,7 +68,7 @@ public class FontTunngavikTest {
                 // nga: gavamangannik
                 {"Z?mz8i4","\u1490\u1559\u14aa\u1593\u14d0\u14c2\u1483"},
                 // ngaa: maligaliurvingmiingaarnikuuvugut
-                {"moZos3=1`u1`Z3i`fKA5","\u14aa\u14d5\u1490\u14d5\u1405\u1550\u1555\u1595\u14a6\u1594\u1550\u14c2\u1470\u1557\u148d\u1466"},
+                {"m1`Z5","\u14aa\u1594\u1466"},
                 
                 // rqi: utarqiniq
                 {"sb3ei6","\u1405\u1455\u1585\u146d\u14c2\u1585"},
@@ -94,6 +94,7 @@ public class FontTunngavikTest {
                 {"eu6dpsJ5","\u157f\u14a5\u1585\u146f\u1528\u1405\u152a\u1466"},
                 // qquu: ilitariqquupuq
                 {"wobE63`fS6","\u1403\u14d5\u1455\u1546\u1585\u1470\u1433\u1585"},
+                
                 // rqa: iniurqavik
                 {"wis3c=4","\u1403\u14c2\u1405\u1585\u1472\u1555\u1483"},
                 // rqaa: itirqaaqpunga
@@ -153,8 +154,11 @@ public class FontTunngavikTest {
                 // kii, rii: kiinaujallariit
                 {"`rNs/9M~E5","\u146e\u14c7\u1405\u152d\u14ea\u14da\u1547\u1466"},
                 
-                // multiple consecutive dot codes: piqaasi
+                // multiple consecutive dot codes: pi `` qa si> pi qaa si
                 {"W``cy", "\u1431\u1584\u14ef"},
+                
+                // dot code followed by a non-syllabic character: pi ` = qa si > pi = qa si
+                {"W`+cy", "\u1431=\u1583\u14ef"},
 
 
 };
@@ -225,16 +229,6 @@ public class FontTunngavikTest {
                      "\u1583\u1403\u14ef\u14aa\u14da\u1405\u1550\u1450\u1450\u1403\u1466",
                      "\u166f\u14ef\u14aa\u14da\u1405\u1550\u1450\u1450\u1403\u1466"
                 },
-                // ngai: tamakkuningaiglunit
-                {"bm4fizw[li5","",
-                    "\u1455\u14aa\u1483\u146f\u14c2\u1593\u1403\u14a1\u14d7\u14c2\u1466",
-                    "\u1455\u14aa\u1483\u146f\u14c2\u1670\u14a1\u14d7\u14c2\u1466"
-                },
-                // n+ngai: saanngainnaraktigu
-                {"`n8zw8NC4tA","",
-                    "\u14f5\u1675\u1403\u14d0\u14c7\u154b\u1483\u144e\u148d",
-                    "\u14f5\u1596\u1489\u14d0\u14c7\u154b\u1483\u144e\u148d"
-                },
                 // rqai: tuqsunuurqaivuq
                 {"g6h~k3cwK6","",
                     "\u1450\u1585\u14f1\u14c5\u1585\u1472\u1403\u1557\u1585",
@@ -250,6 +244,27 @@ public class FontTunngavikTest {
                     "\u1450\u1585\u14f1\u14c5\u1585\u1472\u1403\u1557\u1585",
                     "\u1450\u1585\u14f1\u14c5\u1585\u146b\u1557\u1585"
                 },
+                // ngai: tamakkuningaiglunit
+                {"bm4fizw[li5","",
+                    "\u1455\u14aa\u1483\u146f\u14c2\u1593\u1403\u14a1\u14d7\u14c2\u1466",
+                    "\u1455\u14aa\u1483\u146f\u14c2\u1670\u14a1\u14d7\u14c2\u1466"
+                },
+                // n+ngai: saanngainnaraktigu
+                {"`n8zw8NC4tA","",
+                    "\u14f5\u1675\u1403\u14d0\u14c7\u154b\u1483\u144e\u148d",
+                    "\u14f5\u1596\u1489\u14d0\u14c7\u154b\u1483\u144e\u148d"
+                },
+                
+                // multiple consecutive dot codes: pi `` ta i si> pi taa i si
+                {"W``bwy", "", 
+                	"\u1431\u1456\u1403\u14ef", 
+                	"\u1431\u1456\u1403\u14ef"},
+                
+                // dot code followed by a non-syllabic character: pi ` + ta i si > pi = tai si
+                {"W`+bwy", "", 
+                	"\u1431=\u1455\u1403\u14ef", 
+                	"\u1431=\u144c\u14ef"},
+
     };
         for (int i=0; i<words.length; i++) {
             String str = words[i][0];

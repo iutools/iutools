@@ -366,9 +366,9 @@ public class FontTunngavik {
             	i++;
             	continue;
             	
-            case 'w': d = '\u1403'; break; // i
-            case 'W': d = '\u1431'; break;  // pi
-            case 't': d = '\u144E'; break;  // ti
+            case 'w': d = '\u1403'; if (dot) {dot=false;d++;} break; // i
+            case 'W': d = '\u1431'; if (dot) {dot=false;d++;} break;  // pi
+            case 't': d = '\u144E'; if (dot) {dot=false;d++;} break;  // ti
             case 'r': // ki
                 d = '\u146D'; 
                 if (sbl > 1 && sb.charAt(sbl-1)=='\u1550' && sb.charAt(sbl-2)=='\u1550') {
@@ -381,6 +381,7 @@ public class FontTunngavik {
                     sb.deleteCharAt(sbl-1);
                     d = '\u157f';
                 }
+                if (dot) {dot=false;d++;}
                 break;
             case 'Q': // gi
                 d = '\u148B'; 
@@ -397,18 +398,20 @@ public class FontTunngavik {
                         break;
                     }
                 }
+                if (dot) {dot=false;d++;} 
                 break;
-            case 'u': d = '\u14A5'; break; // mi
-            case 'i': d = '\u14C2'; break; // ni
-            case 'y': d = '\u14EF'; break; // si
-            case 'o': d = '\u14D5'; break;  // li
-            case 'p': d = '\u1528'; break;  // ji
-            case '=': d = '\u1555'; break;  // vi
+            case 'u': d = '\u14A5'; if (dot) {dot=false;d++;} break; // mi
+            case 'i': d = '\u14C2'; if (dot) {dot=false;d++;} break; // ni
+            case 'y': d = '\u14EF'; if (dot) {dot=false;d++;} break; // si
+            case 'o': d = '\u14D5'; if (dot) {dot=false;d++;} break;  // li
+            case 'p': d = '\u1528'; if (dot) {dot=false;d++;} break;  // ji
+            case '=': d = '\u1555'; if (dot) {dot=false;d++;} break;  // vi
             case 'E': // ri
                 d = '\u1546'; 
                 if (sbl != 0 && sb.charAt(sbl-1)=='\u1585') { // q+ri = r+ri (rri)
                     sb.setCharAt(sbl-1,'\u1550');
                 }
+                if (dot) {dot=false;d++;} 
                 break;
             case 'e': // qi
                 d = '\u157F';
@@ -417,6 +420,7 @@ public class FontTunngavik {
                     sb.append('\u1585');
                     d = '\u146d';
                     }
+                if (dot) {dot=false;d++;} 
                 break; 
             case 'q': // ngi
                 d = '\u158F';
@@ -430,8 +434,9 @@ public class FontTunngavik {
                         break;
                     }
                 }
+                if (dot) {dot=false;d++;} 
                 break;
-            case 'O': d = '\u15A0'; break; // &i
+            case 'O': d = '\u15A0'; if (dot) {dot=false;d++;} break; // &i
             case '\u0192': d = '\u1404'; break; // ii
             case '\u2020': d = '\u1432'; break; // pii
             case '\u2030': d = '\u144F'; break; // tii
@@ -498,9 +503,11 @@ public class FontTunngavik {
                 }
             break;
             case '\u00c5': d = '\u15A1'; break; // &ii
-            case 's': d = '\u1405'; break; // u
-            case 'S': d = '\u1433'; break;  // pu
-            case 'g': d = '\u1450'; break;  // tu
+            
+            
+            case 's': d = '\u1405'; if (dot) {dot=false;d++;} break; // u
+            case 'S': d = '\u1433'; if (dot) {dot=false;d++;} break;  // pu
+            case 'g': d = '\u1450'; if (dot) {dot=false;d++;} break;  // tu
             case 'f': // ku
                 d = '\u146F'; 
                 if (sbl > 1 && sb.charAt(sbl-1)=='\u1550' && sb.charAt(sbl-2)=='\u1550') {
@@ -513,6 +520,7 @@ public class FontTunngavik {
                     sb.deleteCharAt(sbl-1);
                     d = '\u1581';
                 }
+                if (dot) {dot=false;d++;} 
                 break;
             case 'A': // gu
                 d = '\u148D'; 
@@ -529,18 +537,20 @@ public class FontTunngavik {
                         break;
                     }
                 }
+                if (dot) {dot=false;d++;} 
                 break;
-             case 'j': d = '\u14A7'; break; // mu
-             case 'k': d = '\u14C4'; break;  // nu
-             case 'h': d = '\u14F1'; break; // su
-             case 'l': d = '\u14D7'; break; // lu
-             case 'J': d = '\u152A'; break; // ju
-             case 'K': d = '\u1557'; break; // vu
+             case 'j': d = '\u14A7'; if (dot) {dot=false;d++;} break; // mu
+             case 'k': d = '\u14C4'; if (dot) {dot=false;d++;} break;  // nu
+             case 'h': d = '\u14F1'; if (dot) {dot=false;d++;} break; // su
+             case 'l': d = '\u14D7'; if (dot) {dot=false;d++;} break; // lu
+             case 'J': d = '\u152A'; if (dot) {dot=false;d++;} break; // ju
+             case 'K': d = '\u1557'; if (dot) {dot=false;d++;} break; // vu
              case 'D': // ru
                  d = '\u1548'; 
                  if (sbl!= 0 && sb.charAt(sbl-1)=='\u1585') { // q+ru = r+ru (rru)
                      sb.setCharAt(sbl-1,'\u1550');
                  }
+                 if (dot) {dot=false;d++;} 
                  break; 
              case 'd': // qu
                  d = '\u1581';
@@ -549,6 +559,7 @@ public class FontTunngavik {
                      sb.append('\u1585');
                      d = '\u146f';
                      }
+                 if (dot) {dot=false;d++;} 
                  break; 
              case 'a': // ngu
                  d = '\u1591';
@@ -556,8 +567,9 @@ public class FontTunngavik {
                          sb.deleteCharAt(sbl-1);
                          d = '\u1673'; // nngu
                  }
+                 if (dot) {dot=false;d++;} 
                  break;
-            case 'L': d = '\u15A2'; break; // &u
+            case 'L': d = '\u15A2'; if (dot) {dot=false;d++;} break; // &u
             case '\u201e': d = '\u1406'; break; // uu
             case '\u2021': d = '\u1434'; break; // puu
             case '\u0160': d = '\u1451'; break; // tuu
@@ -623,223 +635,236 @@ public class FontTunngavik {
                 }
                 break;
             case '\u00c6': d = '\u15A3'; break; // &uu
+            
+            
             case 'x':  // a
                 d = '\u140a';
-                j=i+1;
-                if (j < l) {
-                    e = s.charAt(j);
-                    switch (e) {
-                    case 'w': 
-                        switch (aipaitai) {
-                        case 1 : d = '\u1401'; break;
-                        default: sb.append(d); d = '\u1403'; break; // ai
-                        }
-                        i=j;
-                        break;
-                    }
+                if (dot) {dot=false;d++;}
+                else if (aipaitai==1) {
+                	if (i+1 < l) {
+                		e = s.charAt(i+1);
+                		if (e=='w') {
+                			d = '\u1401';
+                			i++;
+                		}
+                		else {
+                			if (dot) {dot=false;d++;}
+                		}
+                	}
+                } else {
+                	if (dot) {dot=false;d++;} 
                 }
                 break;
             case 'X': // pa
                 d = '\u1438';
-                j=i+1;
-                if (j < l) {
-                    e = s.charAt(j);
-                    switch (e) {
-                    case 'w': 
-                        switch (aipaitai) {
-                        case 1 : d = '\u142F'; break;
-                        default: sb.append(d); d = '\u1403'; break; // pai
-                        }
-                        i=j;
-                        break;
-                    }
-                } 
+                if (dot) {dot=false;d++;}
+                else if (aipaitai==1) {
+                	if (i+1 < l) {
+                		e = s.charAt(i+1);
+                		if (e=='w') {
+                			d = '\u142F';
+                			i++;
+                		}
+                		else {
+                			if (dot) {dot=false;d++;}
+                		}
+                	}
+                } else {
+                	if (dot) {dot=false;d++;} 
+                }
                 break;
             case 'b': // ta
                 d = '\u1455';
-                j=i+1;
-                if (j < l) {
-                    e = s.charAt(j);
-                    switch (e) {
-                    case 'w': 
-                        switch (aipaitai) {
-                        case 1 : d = '\u144C'; break;
-                        default: sb.append(d); d = '\u1403'; break; // tai
-                        }
-                        i=j;
-                        break;
-                    }
-                } 
+                if (dot) {dot=false;d++;}
+                else if (aipaitai==1) {
+                	if (i+1 < l) {
+                		e = s.charAt(i+1);
+                		if (e=='w') {
+                			d = '\u144C';
+                			i++;
+                		}
+                		else {
+                			if (dot) {dot=false;d++;}
+                		}
+                	}
+                } else {
+                	if (dot) {dot=false;d++;} 
+                }
                 break;
             case 'v': // ka
                 d = '\u1472';
                 boolean k2q = false;
-                if (sbl > 1 && sb.charAt(sbl-1)=='\u1550' && sb.charAt(sbl-2)=='\u1550') {
+                if (sbl > 1 && sb.charAt(sbl-1)=='\u1550' && sb.charAt(sbl-2)=='\u1550') { // rr..ka > q..ka
                     sb.deleteCharAt(sbl-1);
                     sb.deleteCharAt(sbl-2);
                     sb.append('\u1585');
-                } else if (sbl > 1 && sb.charAt(sbl-1)=='\u1550' && sb.charAt(sbl-2)=='\u1585') {
+                } else if (sbl > 1 && sb.charAt(sbl-1)=='\u1550' && sb.charAt(sbl-2)=='\u1585') { // qr..ka > q..ka
                     sb.deleteCharAt(sbl-1);
-                } else if (sbl > 0 && sb.charAt(sbl-1)=='\u1550') {
+                } else if (sbl > 0 && sb.charAt(sbl-1)=='\u1550') { // r..ka > qa
                     sb.deleteCharAt(sbl-1);
                     d = '\u1583';
                     k2q = true;
                 }
-               j=i+1;
-                if (j < l) {
-                    e = s.charAt(j);
-                    switch (e) {
-                    case 'w': 
-                        switch (aipaitai) {
-                        case 1 : 
-                           d = k2q? '\u166f' : '\u146B'; break; // kai
-                        default: sb.append(d); d = '\u1403'; break; // ka+i
-                        }
-                        i=j;
-                        break;
-                    }
-                } 
+                
+                if (dot) {dot=false;d++;}
+                else if (aipaitai==1) {
+                	if (i+1 < l) {
+                		e = s.charAt(i+1);
+                		if (e=='w') {
+                			d = k2q? '\u166f' : '\u146B'; // qai : kai
+                			i++;
+                			if (dot) {dot=false;}
+                		} else {
+                			if (dot) {dot=false;d++;}
+                		}
+                	}
+                } else {
+                	if (dot) {dot=false;d++;} 
+                }
                 break;
             case 'Z': // ga
                 d = '\u1490';
-                j=i+1;
-                if (j < l) {
-                    e = s.charAt(j);
-                    switch (e) {
-                    case 'w': 
-                        switch (aipaitai) {
-                        case 1 :
-                            if (sbl != 0 && sb.charAt(sbl-1)=='\u1595') {
-                                sb.deleteCharAt(sbl-1);
-                                d = '\u1670'; // ngai
-                            }  else 
-                                d = '\u1489'; // gai
-                            break;
-                        default:
-                            if (sbl != 0 && sb.charAt(sbl-1)=='\u1595') {
-                                sb.deleteCharAt(sbl-1);
-                                sb.append('\u1593'); // nga
-                            } else  if (sbl != 0 && sb.charAt(sbl-1)=='\u1596') {
-                                sb.deleteCharAt(sbl-1);
-                                sb.append('\u1675'); // nnga
-                            } else
-                                sb.append(d); // ga
-                        d = '\u1403'; break; // +i
-                        }
-                        i=j;
-                        break;
-                    default: 
-                        if (sbl != 0 && sb.charAt(sbl-1)=='\u1595') {
-                            sb.deleteCharAt(sbl-1);
-                            d = '\u1593'; // nga
-                        } else  if (sbl != 0 && sb.charAt(sbl-1)=='\u1596') {
-                            sb.deleteCharAt(sbl-1);
-                            d = '\u1675'; // nnga
-                        }
-                    break;
-                    }
-                } else if (sbl != 0 && sb.charAt(sbl-1)=='\u1595') {
-                    sb.deleteCharAt(sbl-1);
-                    d = '\u1593'; // nga
-                } else  if (sbl != 0 && sb.charAt(sbl-1)=='\u1596') {
-                    sb.deleteCharAt(sbl-1);
-                    d = '\u1675'; // nnga
+                // remplacer : ng..ga > nga
+                //             nng..ga > nnga
+                if (sbl != 0) {
+                	if (sb.charAt(sbl-1)=='\u1595') {
+                		sb.deleteCharAt(sbl-1);
+                		d = '\u1593';
+                	} else if (sb.charAt(sbl-1)=='\u1596') {
+                		sb.deleteCharAt(sbl-1);
+                		d = '\u1675';
+                	} 
                 }
-                break;
+                if (dot) {dot=false;d++;}
+                else if (aipaitai==1) {
+                	if (i+1 < l) {
+                		e = s.charAt(i+1);
+                		if (e=='w') {
+                			if (d=='\u1490')
+                				d = '\u1489'; // ga..i > gai
+                			else if (d=='\u1593')
+                				d = '\u1670';
+                			else if (d=='\u1675') {
+                				sb.append('\u1596');
+                				d = '\u1489';
+                			}
+                			i++;
+                			if (dot) {dot=false;}
+                		}
+                		else {
+                			if (dot) {dot=false;d++;}
+                		}
+                	}
+                } else {
+                	if (dot) {dot=false;d++;} 
+                }
+               break;
             case 'm': // ma
                 d = '\u14AA';
-                j=i+1;
-                if (j < l) {
-                    e = s.charAt(j);
-                    switch (e) {
-                    case 'w': 
-                        switch (aipaitai) {
-                        case 1 : d = '\u14A3'; break;
-                        default: sb.append(d); d = '\u1403'; break; // mai
-                        }
-                        i=j;
-                        break;
-                    }
-                } 
+                if (dot) {dot=false;d++;}
+                else if (aipaitai==1) {
+                	if (i+1 < l) {
+                		e = s.charAt(i+1);
+                		if (e=='w') {
+                			d = '\u14A3';
+                			i++;
+                		}
+                		else {
+                			if (dot) {dot=false;d++;}
+                		}
+                	}
+                } else {
+                	if (dot) {dot=false;d++;} 
+                }
                 break;
             case 'N': // na
                 d = '\u14C7';
-                j=i+1;
-                if (j < l) {
-                    e = s.charAt(j);
-                    switch (e) {
-                    case 'w': 
-                        switch (aipaitai) {
-                        case 1 : d = '\u14C0'; break;
-                        default: sb.append(d); d = '\u1403'; break; // nai
-                        }
-                        i=j;
-                        break;
-                    }
-                } 
+                if (dot) {dot=false;d++;}
+                else if (aipaitai==1) {
+                	if (i+1 < l) {
+                		e = s.charAt(i+1);
+                		if (e=='w') {
+                			d = '\u14C0';
+                			i++;
+                		}
+                		else {
+                			if (dot) {dot=false;d++;}
+                		}
+                	}
+                } else {
+                	if (dot) {dot=false;d++;} 
+                }
                 break;
             case 'n': // sa
                 d = '\u14F4';
-                j=i+1;
-                if (j < l) {
-                    e = s.charAt(j);
-                    switch (e) {
-                    case 'w': 
-                        switch (aipaitai) {
-                        case 1 : d = '\u14ED'; break;
-                        default: sb.append(d); d = '\u1403'; break; // sai
-                        }
-                        i=j;
-                        break;
-                    }
+                if (dot) {dot=false;d++;}
+                else if (aipaitai==1) {
+                	if (i+1 < l) {
+                		e = s.charAt(i+1);
+                		if (e=='w') {
+                			d = '\u14ED';
+                			i++;
+                		}
+                		else {
+                			if (dot) {dot=false;d++;}
+                		}
+                	}
+                } else {
+                	if (dot) {dot=false;d++;} 
                 }
                 break;
             case 'M': // la
                 d = '\u14DA';
-                j=i+1;
-                if (j < l) {
-                    e = s.charAt(j);
-                    switch (e) {
-                    case 'w': 
-                        switch (aipaitai) {
-                        case 1 : d = '\u14D3'; break;
-                        default: sb.append(d); d = '\u1403'; break; // lai
-                        }
-                        i=j;
-                        break;
-                    }
+                if (dot) {dot=false;d++;}
+                else if (aipaitai==1) {
+                	if (i+1 < l) {
+                		e = s.charAt(i+1);
+                		if (e=='w') {
+                			d = '\u14D3';
+                			i++;
+                		}
+                		else {
+                			if (dot) {dot=false;d++;}
+                		}
+                	}
+                } else {
+                	if (dot) {dot=false;d++;} 
                 }
                 break;
             case '/': // ja
                 d = '\u152d';
-                j=i+1;
-                if (j < l) {
-                    e = s.charAt(j);
-                    switch (e) {
-                    case 'w': 
-                        switch (aipaitai) {
-                        case 1 : d = '\u1526'; break;
-                        default: sb.append(d); d = '\u1403'; break; // jai
-                        }
-                        i=j;
-                        break;
-                    }
+                if (dot) {dot=false;d++;}
+                else if (aipaitai==1) {
+                	if (i+1 < l) {
+                		e = s.charAt(i+1);
+                		if (e=='w') {
+                			d = '\u1526';
+                			i++;
+                		}
+                		else {
+                			if (dot) {dot=false;d++;}
+                		}
+                	}
+                } else {
+                	if (dot) {dot=false;d++;} 
                 }
                 break;
             case '?': // va
                 d = '\u1559';
-                j=i+1;
-                if (j < l) {
-                    e = s.charAt(j);
-                    switch (e) {
-                    case 'w': 
-                        switch (aipaitai) {
-                        case 1 : d = '\u1553'; break;
-                        default: sb.append(d); d = '\u1403'; break; // vai
-                        }
-                        i=j;
-                        break;
-                    }
+                if (dot) {dot=false;d++;}
+                else if (aipaitai==1) {
+                	if (i+1 < l) {
+                		e = s.charAt(i+1);
+                		if (e=='w') {
+                			d = '\u1553';
+                			i++;
+                		}
+                		else {
+                			if (dot) {dot=false;d++;}
+                		}
+                	}
+                } else {
+                	if (dot) {dot=false;d++;} 
                 }
                 break;
             case 'C': // ra
@@ -847,18 +872,20 @@ public class FontTunngavik {
                 if (sbl!= 0 && sb.charAt(sbl-1)=='\u1585') { // q+r_ = r+r_ (rr_)
                     sb.setCharAt(sbl-1,'\u1550');
                 }
-                j=i+1;
-                if (j < l) {
-                    e = s.charAt(j);
-                    switch (e) {
-                    case 'w': 
-                        switch (aipaitai) {
-                        case 1 : d = '\u1542'; break;
-                        default: sb.append(d); d = '\u1403'; break; // rai
-                        }
-                        i=j;
-                        break;
-                    }
+                if (dot) {dot=false;d++;}
+                else if (aipaitai==1) {
+                	if (i+1 < l) {
+                		e = s.charAt(i+1);
+                		if (e=='w') {
+                			d = '\u1542';
+                			i++;
+                		}
+                		else {
+                			if (dot) {dot=false;d++;}
+                		}
+                	}
+                } else {
+                	if (dot) {dot=false;d++;} 
                 }
                 break;
            case 'c': // qa
@@ -870,26 +897,20 @@ public class FontTunngavik {
                    d = '\u1472';
                    precr = true;
                    }
-               j=i+1;
-               if (j < l) {
-                   e = s.charAt(j);
-                   switch (e) {
-                   case 'w': 
-                       switch (aipaitai) {
-                       case 1 :
-                           if (precr)
-                               d = '\u146b'; // kai
-                           else
-                               d = '\u166f'; // qai
-                           break;
-                       default: 
-                           sb.append(d); 
-                           d = '\u1403'; 
-                       break; 
-                       }
-                       i=j;
-                       break;
-                   }
+               if (dot) {dot=false;d++;}
+               else if (aipaitai==1) {
+               	if (i+1 < l) {
+               		e = s.charAt(i+1);
+               		if (e=='w') {
+               			d = precr? '\u146b' : '\u166f'; // kai : qai
+               			i++;
+               		}
+               		else {
+               			if (dot) {dot=false;d++;}
+               		}
+               	}
+               } else {
+               	if (dot) {dot=false;d++;} 
                }
                break;
             case 'z': // nga
@@ -906,27 +927,28 @@ public class FontTunngavik {
                         break;
                     }
                 }
-                j=i+1;
-                if (j < l) {
-                    e = s.charAt(j);
-                    switch (e) {
-                    case 'w': 
-                        switch (aipaitai) {
-                        case 1 :
+                if (dot) {dot=false;d++;}
+                else if (aipaitai==1) {
+                	if (i+1 < l) {
+                		e = s.charAt(i+1);
+                		if (e=='w') {
                             if (precnng) {
                                 sb.append('\u1596');
                                 d = '\u1489';
                             } else
                                 d = '\u1670'; // ngai
-                            break;
-                        default: sb.append(d); d = '\u1403'; break; // ngai
-                        }
-                        i=j;
-                        break;
-                    }
+                			i++;
+                		}
+                		else {
+                			if (dot) {dot=false;d++;}
+                		}
+                	}
+                } else {
+                	if (dot) {dot=false;d++;} 
                 }
                 break;
-            case 'I': d = '\u15A4'; break; // &a
+            case 'I': d = '\u15A4'; if (dot) {dot=false;d++;} break; // &a
+            
             case '\u2026': d = '\u140B'; break; // aa
             case '\u02c6': d = '\u1439'; break; // paa
             case '\u2039': d = '\u1456'; break; // taa
@@ -993,70 +1015,66 @@ public class FontTunngavik {
                 }
                 break; 
             case '\u00c7': d = '\u15A5'; break; // &aa
-            case '2': d = '\u1449'; break; // p
-            case '5': d = '\u1466'; break; // t
-            case '4': d = '\u1483'; break; // k
-            case '[': d = '\u14A1'; break; // g
-            case '7': d = '\u14BB'; break; // m
-            case '8': d = '\u14D0'; break; // n
-            case '{': d = '\u1505'; break; // s
-            case '9': d = '\u14EA'; break; // l
-            case '0': d = '\u153E'; break; // j
-            case '}': d = '\u155D'; break; // v
-            case '3': d = '\u1550'; break; // r
-            case '6': d = '\u1585'; break; // q
+            
+            
+            case '2': d = '\u1449'; dot=false; break; // p
+            case '5': d = '\u1466'; dot=false; break; // t
+            case '4': d = '\u1483'; dot=false; break; // k
+            case '[': d = '\u14A1'; dot=false; break; // g
+            case '7': d = '\u14BB'; dot=false; break; // m
+            case '8': d = '\u14D0'; dot=false; break; // n
+            case '{': d = '\u1505'; dot=false; break; // s
+            case '9': d = '\u14EA'; dot=false; break; // l
+            case '0': d = '\u153E'; dot=false; break; // j
+            case '}': d = '\u155D'; dot=false; break; // v
+            case '3': d = '\u1550'; dot=false; break; // r
+            case '6': d = '\u1585'; dot=false; break; // q
             case '1': // ng
                 d = '\u1595';
                 if (sbl != 0 && (sb.charAt(sbl-1)=='\u14d0' || sb.charAt(sbl-1)=='\u1595')) {
                     sb.deleteCharAt(sbl-1);
                     d='\u1596';
                 }
+                dot=false; 
                 break;
-            case 'P': d = '\u15A6'; break; // &
-            case 'B': d = '\u157C'; break;// H
-            case '!': d = '1'; break; // 1
-            case '@': d = '2'; break; // 2
-            case '#': d = '3'; break; // 3
-            case '$': d = '4'; break; // 4
-            case '%': d = '5'; break; // 5
-            case '^': d = '6'; break; // 6
-            case '&': d = '7'; break; // 7
-            case '*': d = '8'; break; // 8
-            case '(': d = '9'; break; // 9
-            case ')': d = '0'; break;// 0
-            case '+': d = '='; break; // =
-            case '-': d = '%'; break; // %
-            case 'F': d = '/'; break; // /
-            case 'G': d = '('; break; // (
-            case 'H': d = ')'; break; // )
-            case 'R': d = '$'; break; // $
-            case 'T': d = '+'; break; // +
-            case 'U': d = '!'; break; // !
-            case 'V': d = '?'; break; // ?
-            case 'Y': d = '_'; break; // _
-            case '\\': d = '}'; break; // }
-            case '_': d = '-'; break; // -
-            case '|': d = '{'; break;// {
-//            case '`':
-//            case '~':
-//            case '<':
-//            case '>':
-//            case ']':
-//                d=c; dot = true; break;
+            case 'P': d = '\u15A6'; dot=false; break; // &
+            case 'B': d = '\u157C'; dot=false; break;// H
+            case '!': d = '1'; dot=false; break; // 1
+            case '@': d = '2'; dot=false; break; // 2
+            case '#': d = '3'; dot=false; break; // 3
+            case '$': d = '4'; dot=false; break; // 4
+            case '%': d = '5'; dot=false; break; // 5
+            case '^': d = '6'; dot=false; break; // 6
+            case '&': d = '7'; dot=false; break; // 7
+            case '*': d = '8'; dot=false; break; // 8
+            case '(': d = '9'; dot=false; break; // 9
+            case ')': d = '0'; dot=false; break;// 0
+            case '+': d = '='; dot=false; break; // =
+            case '-': d = '%'; dot=false; break; // %
+            case 'F': d = '/'; dot=false; break; // /
+            case 'G': d = '('; dot=false; break; // (
+            case 'H': d = ')'; dot=false; break; // )
+            case 'R': d = '$'; dot=false; break; // $
+            case 'T': d = '+'; dot=false; break; // +
+            case 'U': d = '!'; dot=false; break; // !
+            case 'V': d = '?'; dot=false; break; // ?
+            case 'Y': d = '_'; dot=false; break; // _
+            case '\\': d = '}'; dot=false; break; // }
+            case '_': d = '-'; dot=false; break; // -
+            case '|': d = '{'; dot=false; break;// {
             default: 
             	if (dot) {
             		dot=false;
             	}
             	d=c;
             	break;
-            }
-            if (dot) {dot=false;d++;}            
+            }            
             sb.append(d);
             i++;
         }
         return sb.toString();
     }
-
+    
     
     static public String transcodeFromUnicode(String s) {
         int i=0;
