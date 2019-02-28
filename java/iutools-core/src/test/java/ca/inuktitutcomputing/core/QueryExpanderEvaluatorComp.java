@@ -17,23 +17,54 @@ public class QueryExpanderEvaluatorComp {
 		
 		boolean computeStatsOverSurfaceForms = true;
 		
-		double targetPrecision = 0.7272;
-		double targetRecall = 0.5656;
+		double targetPrecision = 0.7324;
+		double targetRecall = 0.5474;
 		
-		String compiledCorpusTrieFilePath = IUConfig.getIUDataPath()+"src/main/resources/trie_compilation-HANSARD-1999-2002.json";
-		String goldStandardCSVFilePath = IUConfig.getIUDataPath()+"src/main/resources/IU100Words-expansions-added-to-alternatives.csv";
+		boolean precisionFine = false;
+		boolean recallFine = false;
+		
+		String diagnostic = null;
+		
+		double gotPrecision;
+		double gotRecall;
+		
+		String compiledCorpusTrieFilePath = "/Users/benoitfarley/Inuktitut/Pirurvik/resources/trie_compilation-HANSARD-1999-2002---single-form-in-terminals.json";
+		String goldStandardCSVFilePath = "/Users/benoitfarley/Inuktitut/Pirurvik/resources/IU100Words-expansions-added-to-alternatives.csv";
 		QueryExpanderEvaluator evaluator = 
 			new QueryExpanderEvaluator(compiledCorpusTrieFilePath,goldStandardCSVFilePath);
 		// whether statistics are to be computed over words (default [true]) or morphemes [false]:
 		evaluator.setOptionComputeStatsOverSurfaceForms(computeStatsOverSurfaceForms);
+
 		evaluator.run();
+		gotPrecision = (double)evaluator.precision;
+		gotRecall = (double)evaluator.recall;
 		
-		if ((double)evaluator.precision > targetPrecision-0.001 && (double)evaluator.precision < targetPrecision+0.001) {
+		if (gotPrecision > targetPrecision-0.001 && gotPrecision < targetPrecision+0.001) {
+			precisionFine = true;
+		}
+		
+		if (gotRecall > targetRecall-0.001 && gotRecall < targetRecall+0.001) {
+			recallFine = true;
+		}
+		
+		if (precisionFine && recallFine)
 			assertTrue("",true);
-		} else if ((double)evaluator.precision < targetPrecision-0.001) {
-			assertFalse("<<< The precision has gone down. Was "+targetPrecision+"; now "+evaluator.precision,true);
-		} else {
-			assertFalse(">>> THE PRECISION HAS GONE ***UP***. Was "+targetPrecision+"; now "+evaluator.precision,true);
+		else {
+			if ( !precisionFine ) {
+				if (gotPrecision < targetPrecision-0.001) {
+					diagnostic = "\nPRECISION: "+"<<< The precision has gone ***DOWN***. Was "+targetPrecision+"; now "+gotPrecision;
+				} else {
+					diagnostic = "\nPRECISION: "+">>> The precision has gone ***UP***. Was "+targetPrecision+"; now "+gotPrecision;
+				}
+			}
+			if ( !recallFine ) {
+				if (gotRecall < targetRecall-0.001) {
+					diagnostic += "\nRECALL: "+"<<< The recall has gone ***DOWN***. Was "+targetRecall+"; now "+gotRecall;
+				} else {
+					diagnostic += "\nRECALL: "+">>> The recall has gone ***UP***. Was "+targetRecall+"; now "+gotRecall;
+				}
+			}
+			assertFalse(diagnostic,true);
 		}
 	}
 	

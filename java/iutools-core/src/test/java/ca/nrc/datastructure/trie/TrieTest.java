@@ -3,6 +3,9 @@ package ca.nrc.datastructure.trie;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -81,6 +84,32 @@ public class TrieTest {
 		charTrie.add("hi".split(""), "hi");
 		TrieNode terminalNode = charTrie.getNode("hi\\".split(""));
 		assertEquals("The terminal node is not correct.","hi",terminalNode.getSurfaceForm());
+		HashMap<String,Long> surfaceForms = terminalNode.getSurfaceForms();
+		assertArrayEquals("",new String[] {"hi"},surfaceForms.keySet().toArray(new String[] {}));
+		assertArrayEquals("",new Long[] {new Long(1)},surfaceForms.values().toArray(new Long[] {}));
+	}
+	
+	@Test
+	public void test_add__check_terminal_inuktitut() throws TrieException {
+		StringSegmenter iuSegmenter = new StringSegmenter_IUMorpheme();
+		Trie iumorphemeTrie = new Trie();
+		try {
+			iumorphemeTrie.add(iuSegmenter.segment("takujuq"),"takujuq");
+			iumorphemeTrie.add(iuSegmenter.segment("nalunaiqsivut"),"nalunaiqsivut");
+			iumorphemeTrie.add(iuSegmenter.segment("nalunairsivut"),"nalunairsivut");
+			iumorphemeTrie.add(iuSegmenter.segment("nalunaiqsivut"),"nalunaiqsivut");
+		} catch (Exception e) {
+			assertFalse("An error occurred while adding an element to the trie.",true);
+		}
+		TrieNode terminalNode = iumorphemeTrie.getNode("{nalunaq/1n} {iq/1nv} {si/2vv} {vut/tv-dec-3p} \\".split(" "));
+		assertEquals("The terminal node is not correct.","nalunaiqsivut",terminalNode.getSurfaceForm());
+		HashMap<String,Long> surfaceForms = terminalNode.getSurfaceForms();
+		assertEquals("The number of surface forms for {nalunaq/1n} {iq/1nv} {si/2vv} {vut/tv-dec-3p} is wrong.",2,surfaceForms.size());
+		ArrayList<String> keys = new ArrayList<String>(Arrays.asList(surfaceForms.keySet().toArray(new String[] {})));
+		assertTrue("The surface forms should contain 'nalunaiqsivut'",keys.contains("nalunaiqsivut"));
+		assertTrue("The surface forms should contain 'nalunairsivut'",keys.contains("nalunairsivut"));
+		assertEquals("The frequency of 'nalunaiqsivut' is wrong",new Long(2),surfaceForms.get("nalunaiqsivut"));
+		assertEquals("The frequency of 'nalunairsivut' is wrong",new Long(1),surfaceForms.get("nalunairsivut"));
 	}
 	
 	@Test

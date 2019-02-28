@@ -16,6 +16,7 @@ public class TrieNode {
     protected TrieNode mostFrequentTerminal;
     protected Map<String,Object> stats = new HashMap<String,Object>();
     protected String surfaceForm = null;
+    protected HashMap<String,Long> surfaceForms = new HashMap<String,Long>();
     
 	public HashMap<String,TrieNode> getChildren() {
 		return children;
@@ -39,6 +40,19 @@ public class TrieNode {
     
     public String getSurfaceForm() {
     	return surfaceForm;
+    }
+    
+    public HashMap<String,Long> getSurfaceForms() {
+    	return surfaceForms;
+    }
+    
+    public void addSurfaceForm(String form) {
+    	this.surfaceForm = form;
+    	if (this.surfaceForms.containsKey(form)) {
+    		this.surfaceForms.put(form, new Long(this.surfaceForms.get(form).longValue()+1));
+    	} else {
+    		this.surfaceForms.put(form, new Long(1));
+    	}
     }
 
     /*public void setMostFrequentTerminal(TrieNode _mostFrequentTerminal) {

@@ -98,7 +98,7 @@ public class Trie {
             iseg++;
         }
         // last segment (\)  = terminal node
-        trieNode.surfaceForm = word; //***
+        trieNode.addSurfaceForm(word); //***
         trieNode.isWord = true; //***
         return trieNode; //***
 //        return null;
