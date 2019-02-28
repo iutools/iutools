@@ -208,10 +208,10 @@ public class Dialect {
         }
 
         // Schneider's Law
-        Vector<String> schCands = schneiderCandidates(stem, candidateMorpheme);
+        Vector<String> schCands = _schneiderCandidates(stem, candidateMorpheme);
         for (int i=0; i<cands.size(); i++) {
         	stpw.check("Dialect.newCandidates::214 -- i: "+i);
-            schCands.addAll(schneiderCandidates(stem,cands.elementAt(i)));
+            schCands.addAll(_schneiderCandidates(stem,cands.elementAt(i)));
             //while(schCands.removeElement(cands.elementAt(i)));
             schCands.removeElement(cands.elementAt(i));
         }
@@ -249,10 +249,10 @@ public class Dialect {
 			cands.removeElement(rootICI);
 
 		// Schneider's Law
-		Vector<String> schCands = schneiderCandidates(null, rootICI);
+		Vector<String> schCands = _schneiderCandidates(null, rootICI);
 		for (int i = 0; i < cands.size(); i++) {
 			stpw.check("Dialect.newRootCandidates::255 -- cands "+i);
-			schCands.addAll(schneiderCandidates(null,
+			schCands.addAll(_schneiderCandidates(null,
 					cands.elementAt(i)));
 			//while (schCands.removeElement(cands.elementAt(i)));
 			schCands.removeElement(cands.elementAt(i));
@@ -456,13 +456,13 @@ public class Dialect {
      * is deleted. This method returns a number of possible words corresponding
      * to the 'candidate' word assuming that Schneide's law has been applied to it.
      */
-    public static Vector<String> schneiderCandidates(String stem, String candidate) throws TimeoutException {
-    	return schneiderCandidates(stem,candidate,'@');
+    public static Vector<String> _schneiderCandidates(String stem, String candidate) throws TimeoutException {
+    	return __schneiderCandidates(stem,candidate,'@');
     }
     
-    private static Vector<String> schneiderCandidates(String stem, String candidate, char mark) throws TimeoutException {
+    private static Vector<String> __schneiderCandidates(String stem, String candidate, char mark) throws TimeoutException {
     	String markedCandidate = schneiderCandidatesToString(stem,candidate,mark);
-        Vector<String> cands = explode(markedCandidate);
+        Vector<String> cands = __explode(markedCandidate);
 //        for (int i=0; i<cands.size(); i++)
 //            cands.setElementAt(
 //                    Orthography.orthographyICILat((String)cands.elementAt(i)),i);
@@ -509,18 +509,18 @@ public class Dialect {
 //    static char cons[] = {'p', 't', 'k', 'g', 'm', 'n', 's', 'l', 'j', 'v',
 //            'r', 'q', 'N', '&'};
     
-    private static Vector<String> explode(String s) throws TimeoutException {
+    private static Vector<String> __explode(String s) throws TimeoutException {
         if (s.length()==0)
             return new Vector<String>();
         else
-            return explode2(s);
+            return __explode2(s);
     }
     
     /*
      * Wherever there might be a deleted consonant, add a word with one of the
      * possible consonant at that place.
      */
-    private static Vector<String> explode2(String s) throws TimeoutException {
+    private static Vector<String> __explode2(String s) throws TimeoutException {
         Vector<String> a = new Vector<String>();
         StringBuffer sb = new StringBuffer();
         for (int i=0; i<s.length(); i++) {
@@ -530,7 +530,7 @@ public class Dialect {
                 if (grCons!=null) {
                 	for (int j=0; j<grCons.size(); j++) {
                     	stpw.check("Dialect.explode::533 -- j: "+j);
-                		a.addAll(explode(new String()+(String)grCons.elementAt(j)+s.substring(i+2)));
+                		a.addAll(__explode(new String()+(String)grCons.elementAt(j)+s.substring(i+2)));
                 	}
                 	break;
                 }
