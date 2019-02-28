@@ -10,7 +10,9 @@
   <groupId>ca.pirurvik.iutools</groupId>
   <artifactId>iutools-core</artifactId>
   <name>iutools-core</name>
+  
 
+<!--  
   	<build>
 		<plugins>		
 			<plugin>
@@ -55,12 +57,10 @@
 		</plugins>
 	</build>		
 
-
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
-	<!-- Official Apache Maven repo -->
 	<repositories>
 		<repository>
 			<id>snapshots</id>
@@ -68,20 +68,28 @@
 		</repository>
 	</repositories>
 
+-->
+
 	<dependencies>		
-	
+
 		<dependency>
-			<groupId>ca.nrc</groupId>
-		    <artifactId>java-utils-core</artifactId>
-		    <version>1.0.5-SNAPSHOT</version>
+			<groupId>ca.nrc.java-utils</groupId>
+			<artifactId>java-utils-core</artifactId>
+			<version>1.0.5-SNAPSHOT</version>
 		</dependency>
-	 
+			
 		<dependency>
-			<groupId>ca.nrc</groupId>
-		    <artifactId>java-utils-data</artifactId>
-		    <version>1.0.5-SNAPSHOT</version>
+			<groupId>ca.nrc.java-utils</groupId>
+			<artifactId>java-utils-data</artifactId>
+			<version>1.0.5-SNAPSHOT</version>
+		</dependency>	
+		
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
 		</dependency>
-						
+	 						
 		<dependency>
 			<groupId>net.sf.jtidy</groupId>
 			<artifactId>jtidy</artifactId>

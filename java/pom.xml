@@ -10,49 +10,105 @@
 	   <!-- Note: Order of modules is important.
 		Make sure any module A that is required by module B
 		appears before B in the list -->
+	 	<module>iutools-data</module>
 	 	<module>iutools-core</module>
 	 	<module>iutools-apps</module>
-	 	<module>iutools-data</module>
 	 </modules>
+	   
+	<properties>
+		<nexus.snapshot.url>https://nexus.dt.nrc.ca/repository/maven-snapshots/</nexus.snapshot.url>
+		<nexus.releases.url>https://nexus.dt.nrc.ca/repository/maven-releases/</nexus.releases.url>
+		
+    	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    	<maven.compiler.source>1.8</maven.compiler.source>
+    	<maven.compiler.target>1.8</maven.compiler.target>    	
+	</properties>
+
+	<!-- Pointers to DT Nexus Repositories for Distribution -->
+	<distributionManagement>
+		<repository>
+			<id>dt-nexus-releases</id>
+			<url>${nexus.releases.url}</url>
+		</repository>
+		<snapshotRepository>
+			<id>dt-nexus-snapshots</id>
+			<url>${nexus.snapshot.url}</url>
+		</snapshotRepository>
+	</distributionManagement>	
 	 
-	 
-	<build>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>license-maven-plugin</artifactId>
-					<version>1.16</version>
-				</plugin>
-			</plugins>
-		</pluginManagement>		
-	
-	 	<plugins>	
+		<build>
+ 		<plugins> 	
+			<!-- Generate a standalone jar that contains all dependancies -->
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>license-maven-plugin</artifactId>
-				<version>1.16</version>
-			</plugin>
-	 	</plugins>
-	 </build>
-	 
+			     <groupId>org.apache.maven.plugins</groupId>
+			     <artifactId>maven-shade-plugin</artifactId>
+			     <version>2.2</version>
+			     <executions>
+			       <execution>
+			         <phase>package</phase>
+			         <goals><goal>shade</goal></goals>
+			         <configuration>
+			           <transformers>
+			             <!-- Set the main class of the executable JAR -->
+			             <transformer
+			               implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+		                   <mainClass>ca.inuktitutcomputing.core.console.Console</mainClass>
+			             </transformer>
+			             <!-- Merge the uimaFIT configuration files -->
+			             <transformer
+			               implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+			               <resource>META-INF/org.apache.uima.fit/fsindexes.txt</resource>
+			             </transformer>
+			             <transformer
+			               implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+			               <resource>META-INF/org.apache.uima.fit/types.txt</resource>
+			             </transformer>
+			             <transformer
+			               implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+			               <resource>META-INF/org.apache.uima.fit/typepriorities.txt</resource>
+			             </transformer>
+			           </transformers>
+			           <!-- 
+			             Prevent huge shaded artifacts from being deployed
+			             to a Maven repository (remove if not desired) 
+			           -->
+			           <!--  
+			           <outputFile>
+			             ${project.build.directory}/${project.artifactId}-${project.version}-standalone.jar
+			           </outputFile>
+			           -->
+			
+			              <shadedClassifierName>STANDALONE</shadedClassifierName>
+			              <shadedArtifactAttached>true</shadedArtifactAttached>
+			          	            
+			           <descriptorRefs>
+			               <descriptorRef>standalone</descriptorRef>
+			           </descriptorRefs>
+			           
+			         </configuration>
+			       </execution>
+			     </executions>
+			   </plugin>	 		
+		</plugins>
+  	</build>
+ 
 	<!--  Dependancies that are needed by all modules  -->
 	<dependencies>
 	 
 		<dependency>
-			<groupId>ca.nrc</groupId>
+			<groupId>ca.nrc.java-utils</groupId>
 		    <artifactId>java-utils-core</artifactId>
 		    <version>1.0.5-SNAPSHOT</version>
 		</dependency>
 	 
 		<dependency>
-			<groupId>ca.nrc</groupId>
+			<groupId>ca.nrc.java-utils</groupId>
 		    <artifactId>java-utils-data</artifactId>
 		    <version>1.0.5-SNAPSHOT</version>
 		</dependency>
 	 
 		<dependency>
-			<groupId>ca.nrc</groupId>
+			<groupId>ca.nrc.java-utils</groupId>
 		    <artifactId>java-utils-ui</artifactId>
 		    <version>1.0.5-SNAPSHOT</version>
 		</dependency>
