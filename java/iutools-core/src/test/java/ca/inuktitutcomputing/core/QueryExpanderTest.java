@@ -7,12 +7,13 @@ import static org.junit.Assert.assertTrue;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import ca.inuktitutcomputing.config.IUConfig;
 import ca.nrc.config.ConfigException;
@@ -100,7 +101,7 @@ public class QueryExpanderTest {
 	}
 	
 	@Test
-	public void test_getNMostFrequentTerminals() throws Exception {
+	public void test_getNMostFrequentForms() throws Exception {
 		String[] words = new String[] {
 				"nuna", "nunait", "nunavummi", "nunavummut",
 				"nunavummiutait", "nunavummit",
@@ -109,19 +110,46 @@ public class QueryExpanderTest {
 				"takujaujumajuq","takujumajuq", "takujumajuq", "takujumajuq",
 				"takujaujut",
 				"takujumajunga", "takujumajunga",
-				"iglumut"
+				"iglumut",
+				"tutsirautiit", "tussirautiit",
+				"tutsiraut",
+				"tuksiraut","tuksiraut",
+				"tussiraut",  
+				"tussiraummut", 
+				"tutsiraummut", "tutsiraummut", "tutsiraummut", 
+				"tuksiraummut", "tuksiraummut"
 		};
+		
+		// tussiraummut : 1
+		// tutsiraummut : 3
+		// tuksiraummut : 2
+		// tussiraut : 1
+		// tutsiraut : 1
+		// tuksiraut : 2
+		// tussirautiit : 1
+		// tutsirautiit : 1
+		// 
+		// attendu : tutsiraummut, tuksiraummut, tuksiraut, tussiraut, tutsiraut
         CompiledCorpus compiledCorpus = getACompiledCorpus(words);
         QueryExpander expander = new QueryExpander(compiledCorpus);
 		
 		// test n < number of terminals
-        TrieNode taku = compiledCorpus.trie.getNode(new String[]{"{taku/1v}"});
-		TrieNode[] mostFrequentTerminals = expander.getNMostFrequentTerminals(taku,5,"takujumajuq",new TrieNode[] {});
-		
-		for (TrieNode terminal : mostFrequentTerminals) {
-			System.out.println(terminal.getSurfaceForm()+" ("+terminal.getFrequency());
-		}
-	}
+        TrieNode tutsi = compiledCorpus.trie.getNode(new String[]{"{tuksiq/1v}"});
+        ArrayList<QueryExpansion> mostFrequentTerminalsAL = expander.getNMostFrequentForms(tutsi,5,"tuksiraut",new ArrayList<QueryExpansion>());
+        QueryExpansion[] mostFrequentTerminals = mostFrequentTerminalsAL.toArray(new QueryExpansion[] {});
+        QueryExpansion[] expected = new QueryExpansion[] {
+        		new QueryExpansion("tutsiraummut", null, 3),
+        		new QueryExpansion("tuksiraut", null, 2),
+        		new QueryExpansion("tuksiraummut", null, 2),
+        		new QueryExpansion("tussiraut", null, 1),
+        		new QueryExpansion("tutsiraut", null, 1)
+        		};
+        assertEquals("The number of terminals returned is not right.",5,mostFrequentTerminals.length);
+        for (int i=0; i<expected.length; i++) {
+        	assertEquals("The terminal at index "+i+" is not right.",expected[i].word,mostFrequentTerminals[i].word);
+        	assertEquals("The frequency of the terminal at index "+i+" is not right.",expected[i].frequency,mostFrequentTerminals[i].frequency);
+        }
+}
 	
 	
 

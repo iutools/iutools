@@ -138,15 +138,21 @@ public class QueryExpanderEvaluator {
                     	String gsalternative = gsalternatives[igs];
                     	long freqGSAlternativeInCorpus = freqDansCorpus(gsalternative);
                     	System.out.println("        "+gsalternative+" : "+freqGSAlternativeInCorpus);
-                    	String altDecomp = String.join(" ",compiledCorpus.getSegmenter().segment(gsalternative))+" \\";
-                    	gsalternativesMorphemes[igs] = altDecomp;
+                    	String altDecomp = null;
+                    	try {
+                    		altDecomp = String.join(" ",compiledCorpus.getSegmenter().segment(gsalternative))+" \\";
+                        	gsalternativesMorphemes[igs] = altDecomp;
+                    	} catch (Exception e) {
+                    		altDecomp = "";
+                    	}
                     }
                     List<String> listgsalternativesmorphemes = Arrays.asList(gsalternativesMorphemes);
                     
                     System.out.println("    Query Expander expansions (frequencies in compiled corpus):");
                     try {
                     	QueryExpansion[] expansions = queryExpander.getExpansions(mot);
-                    	if (expansions != null) {
+                    	if ( expansions != null ) {
+                        	logger.debug(mot+" - expansions: "+expansions.length);
                     		ArrayList<String> listexpansionsmorphemes = new ArrayList<String>();
                     		ArrayList<String> listexpansions = new ArrayList<String>();
                     		nbTotalExpansionsFromCorpus += expansions.length;
@@ -190,11 +196,11 @@ public class QueryExpanderEvaluator {
                     					nbTotalGSAlternativesNotInExpansions++;
                     		}
                     	} else {
+                    		logger.debug(mot+" - expansions null");
                     		nbTotalGSAlternativesNotInExpansions += gsalternatives.length;
                     		nbTotalCasesWithNoExpansion++;
                     		nbTotalCasesCouldNotBeDecomposed++;
                     		System.out.println("        the word could not be decomposed.");
-
                     	}
                     } catch(Exception e) {
                     	System.err.println("Error during getting the expansions: "+e.getMessage());

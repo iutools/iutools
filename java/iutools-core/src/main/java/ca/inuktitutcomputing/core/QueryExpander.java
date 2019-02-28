@@ -2,6 +2,7 @@ package ca.inuktitutcomputing.core;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import ca.nrc.datastructure.Pair;
 import ca.nrc.datastructure.trie.TrieNode;
@@ -29,7 +30,7 @@ public class QueryExpander {
 		logger.debug("word: "+word);
 		String[] segments;
 //		try {
-			TrieNode[] mostFrequentTerminalsForWord;
+			ArrayList<QueryExpansion> mostFrequentTerminalsForWord;;
 			try {
 				segments = this.compiledCorpus.getSegmenter().segment(word);
 			} catch (Exception e) {
@@ -42,13 +43,13 @@ public class QueryExpander {
 			logger.debug("segments: "+segments.length);
 			TrieNode node = this.compiledCorpus.trie.getNode(segments);	
 			if (node==null)
-				mostFrequentTerminalsForWord = new TrieNode[] {};
+				mostFrequentTerminalsForWord = new ArrayList<QueryExpansion>();
 			else
-				mostFrequentTerminalsForWord = getNMostFrequentTerminals(node,this.numberOfReformulations,word,new TrieNode[] {});
-			logger.debug("mostFrequentTerminalsForWord: "+mostFrequentTerminalsForWord.length);
-			QueryExpansion[] expansions = __getExpansions(mostFrequentTerminalsForWord, segments, word);
-			logger.debug("expansions: "+expansions.length);
-			return expansions;
+				mostFrequentTerminalsForWord = getNMostFrequentForms(node,this.numberOfReformulations,word,new ArrayList<QueryExpansion>());
+			logger.debug("mostFrequentTerminalsForWord: "+mostFrequentTerminalsForWord.size());
+			ArrayList<QueryExpansion> expansions = __getExpansions(mostFrequentTerminalsForWord, segments, word);
+			logger.debug("expansions: "+expansions.size());
+			return expansions.toArray(new QueryExpansion[] {});
 			
 //		} catch (Exception e) {
 //			System.err.println(e.getMessage());
@@ -56,21 +57,13 @@ public class QueryExpander {
 //		}
 	}
 	
-	public QueryExpansion[] __getExpansions(TrieNode[] mostFrequentTerminalsForReformulations, String[] segments, String word) {
+	public ArrayList<QueryExpansion> __getExpansions(ArrayList<QueryExpansion> mostFrequentTerminalsForReformulations, String[] segments, String word) {
 		Logger logger = Logger.getLogger("QueryExpander.__getExpansions");
 		logger.debug("nb. segments : "+segments.length);
-		logger.debug("nb. most frequent : "+mostFrequentTerminalsForReformulations.length);
+		logger.debug("nb. most frequent : "+mostFrequentTerminalsForReformulations.size());
 		
-		if (segments.length == 0 || mostFrequentTerminalsForReformulations.length == this.numberOfReformulations) {
-			QueryExpansion[] expansions = new QueryExpansion[mostFrequentTerminalsForReformulations.length];
-			for (int i=0; i<mostFrequentTerminalsForReformulations.length; i++) {
-				QueryExpansion qexp = new QueryExpansion(
-						mostFrequentTerminalsForReformulations[i].getSurfaceForm(),
-						mostFrequentTerminalsForReformulations[i].keys,
-						mostFrequentTerminalsForReformulations[i].getFrequency());
-				expansions[i] = qexp;
-			}
-			return expansions;
+		if (segments.length == 0 || mostFrequentTerminalsForReformulations.size() == this.numberOfReformulations) {
+			return mostFrequentTerminalsForReformulations;
 		}
 		else {
 			// back one node
@@ -81,29 +74,45 @@ public class QueryExpander {
 				if (node==null)
 					return __getExpansions(mostFrequentTerminalsForReformulations, segmentsBack1, word);
 				logger.debug("node: "+node.getKeysAsString());
-				TrieNode[] mostFrequentTerminalsForNode = getNMostFrequentTerminals(node,
-					this.numberOfReformulations - mostFrequentTerminalsForReformulations.length,
-					word,mostFrequentTerminalsForReformulations);
-				ArrayList<TrieNode> newMostFrequentTerminalsForReformulationsAL = new ArrayList<TrieNode>();
-				newMostFrequentTerminalsForReformulationsAL.addAll(Arrays.asList(mostFrequentTerminalsForReformulations));
-				newMostFrequentTerminalsForReformulationsAL.addAll(Arrays.asList(mostFrequentTerminalsForNode));
-				TrieNode[] newMostFrequentTerminalsForReformulations = (TrieNode[])newMostFrequentTerminalsForReformulationsAL.toArray(new TrieNode[] {});
+				ArrayList<QueryExpansion> mostFrequentTerminalsForNode = getNMostFrequentForms(node,
+					this.numberOfReformulations - mostFrequentTerminalsForReformulations.size(),
+					word, mostFrequentTerminalsForReformulations);
+				
+				ArrayList<QueryExpansion> newMostFrequentTerminalsForReformulations = new ArrayList<QueryExpansion>();
+				newMostFrequentTerminalsForReformulations.addAll(mostFrequentTerminalsForReformulations);
+				newMostFrequentTerminalsForReformulations.addAll(mostFrequentTerminalsForNode);
 				return __getExpansions(newMostFrequentTerminalsForReformulations, segmentsBack1, word);
 			} else
 				return __getExpansions(mostFrequentTerminalsForReformulations, segmentsBack1, word);
 		}
 	}
 	
-	public TrieNode[] getNMostFrequentTerminals(TrieNode node, int n, String word, TrieNode[] exclusions) {
+	public ArrayList<QueryExpansion> getNMostFrequentForms(TrieNode node, int n, String word, ArrayList<QueryExpansion> exclusions) {
+		Logger logger = Logger.getLogger("QueryExpander.getNMostFrequentForms");
+		ArrayList<String> listOfExclusions = new ArrayList<String>();
+		for (int i=0; i<exclusions.size(); i++)
+			listOfExclusions.add(exclusions.get(i).word);
 		TrieNode[] terminals = node.getAllTerminals();
-		for (TrieNode nodeToExclude : exclusions)
-			terminals = (TrieNode[]) ArrayUtils.removeElement(terminals, nodeToExclude);
-	    Arrays.sort(terminals, (TrieNode n1, TrieNode n2) -> {
-	        	Long o1Freq = n1.getFrequency();
-	        	Long o2Freq = n2.getFrequency();
-	        	if (o1Freq == o2Freq) {
-	        		String word1 = n1.getSurfaceForm();
-	        		String word2 = n2.getSurfaceForm();
+		ArrayList<Object[]> forms= new ArrayList<Object[]>();
+		for (TrieNode terminal : terminals) {
+			HashMap<String,Long> surfaceForms = terminal.getSurfaceForms();
+			if (surfaceForms.size()==0) {
+				surfaceForms = new HashMap<String,Long>();
+				surfaceForms.put(terminal.getSurfaceForm(), new Long(terminal.getFrequency()));
+			}
+			for (String surfaceForm : surfaceForms.keySet().toArray(new String[] {}))
+				if ( !listOfExclusions.contains(surfaceForm))
+					forms.add(new Object[] {surfaceForm,surfaceForms.get(surfaceForm),terminal.keys});
+		}
+		Object[][] listForms = forms.toArray(new Object[][] {});
+		for (int i=0; i<listForms.length; i++)
+			logger.debug(listForms[i][0]+" ("+listForms[i][1]+")");
+	    Arrays.sort(listForms, (Object[] o1, Object[] o2) -> {
+    			String word1 = (String)o1[0];
+    			String word2 = (String)o2[0];
+	        	Long o1Freq = (Long)o1[1];
+	        	Long o2Freq = (Long)o2[1];
+	        	if (o1Freq.compareTo(o2Freq)==0) {
 	        		int word1Length = word1.length();
 	        		int word2Length = word2.length();
 	        		int diff1WithWord = Math.abs(word1Length-word.length());
@@ -115,16 +124,19 @@ public class QueryExpander {
 	        			return diff1WithWord > diff2WithWord? 1 : -1;
 	        		}
 	        	} else
-	        		return o1Freq < o2Freq? 1 : -1;
+	        		return o2Freq.compareTo(o1Freq);
 	        }
 	    );
-	    TrieNode[] mostFrequentTerminals;
-	    if (n > terminals.length) {
-	    	mostFrequentTerminals = Arrays.copyOfRange(terminals, 0, terminals.length);
-	    } else {
-	    	mostFrequentTerminals = Arrays.copyOfRange(terminals, 0, n);
+	    ArrayList<QueryExpansion> mostFrequentForms = new ArrayList<QueryExpansion>();
+	    int max = listForms.length>n? n : listForms.length;
+	    for (int i=0; i<max; i++) {
+	    	// TODO: morphemes
+	    	String surfaceForm = (String)listForms[i][0];
+	    	String[] morphemes = (String[])listForms[i][2];
+	    	long frequency = ((Long)listForms[i][1]).longValue();
+	    	mostFrequentForms.add(new QueryExpansion(surfaceForm,morphemes,frequency));
 	    }
-		return mostFrequentTerminals;
+		return mostFrequentForms;
 	}
 
 
