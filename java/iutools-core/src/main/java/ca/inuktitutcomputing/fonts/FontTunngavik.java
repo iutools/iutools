@@ -79,12 +79,14 @@
 
 package ca.inuktitutcomputing.fonts;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 
 import ca.inuktitutcomputing.script.TransCoder;
+import ca.inuktitutcomputing.utilities.Counter;
 
 // Remplacement de codes d'une police donn�e 
 // en codes unicode �quivalents repr�sentant
@@ -298,6 +300,8 @@ public class FontTunngavik {
     };
     // <  >  ]  `  ~
     public static String dotCodes = "<>]`~";
+    
+    public static HashMap<String,String> legacy2unicode = new HashMap<String,String>();
 
     public static TransCoder transcoderToUnicodeICI;
     public static TransCoder transcoderToUnicodeAIPAITAI;
@@ -319,7 +323,8 @@ public class FontTunngavik {
                 wordChars += unicodesICI2Codes[i][1];
                 for (int j=0; j<unicodesICI2Codes[i][1].length(); j++)
                     fontChars.add(new Character(unicodesICI2Codes[i][1].charAt(j)));
-}
+                legacy2unicode.put(unicodesICI2Codes[i][1], unicodesICI2Codes[i][0]);
+            }
         }
         for (int i=0; i<unicodesICI2CodesDigits.length; i++) {
             wordChars += unicodesICI2CodesDigits[i][1];
@@ -347,30 +352,50 @@ public class FontTunngavik {
         int aipaitai = aipaitaiMode==null? 0 : aipaitaiMode.equals("aipaitai")? 1 : 0;
         boolean dot = false;
         int i=0,j;
+        Counter ic = new Counter(i);
         int l=s.length();
         char c,d,e;
         int sbl;
         StringBuffer sb = new StringBuffer();
-        while (i < l) {
+        while (ic.n < l) {
             sbl = sb.length();
-            c = s.charAt(i);
+            c = s.charAt(ic.n);
             switch (c) {
             case '`':
             case '~':
             case '<':
             case '>':
             case ']':
-            	if ( !dot ) {
-            		dot = true;
-            	}
-            	i++;
+            	dot = true;
+            	ic.n++;
             	continue;
-            	
-            case 'w': d = '\u1403'; if (dot) {dot=false;d++;} break; // i
-            case 'W': d = '\u1431'; if (dot) {dot=false;d++;} break;  // pi
-            case 't': d = '\u144E'; if (dot) {dot=false;d++;} break;  // ti
+            
+            /*case 'w': d = '\u1403'; if (dot) {d++;} break; // i
+            case 'W': d = '\u1431'; if (dot) {d++;} break;  // pi
+            case 't': d = '\u144E'; if (dot) {d++;} break;  // ti
+            case 'u': d = '\u14A5'; if (dot) {d++;} break; // mi
+            case 'i': d = '\u14C2'; if (dot) {d++;} break; // ni
+            case 'y': d = '\u14EF'; if (dot) {d++;} break; // si
+            case 'o': d = '\u14D5'; if (dot) {d++;} break;  // li
+            case 'p': d = '\u1528'; if (dot) {d++;} break;  // ji
+            case '=': d = '\u1555'; if (dot) {d++;} break;  // vi
+            case 'O': d = '\u15A0'; if (dot) {d++;} break; // &i
+            */
+            case 'w': // i
+            case 'W': // pi
+            case 't': // ti
+            case 'u': // mi
+            case 'i': // ni
+            case 'y': // si
+            case 'o': // li
+            case 'p': // ji
+            case '=': // vi
+            case 'O': // &i
+            	d=legacy2unicode.get(Character.toString(c)).charAt(0); if (dot) {d++;} break;
+
             case 'r': // ki
-                d = '\u146D'; 
+                //d = '\u146D'; 
+                d=legacy2unicode.get(Character.toString(c)).charAt(0);
                 if (sbl > 1 && sb.charAt(sbl-1)=='\u1550' && sb.charAt(sbl-2)=='\u1550') {
                     sb.deleteCharAt(sbl-1);
                     sb.deleteCharAt(sbl-2);
@@ -381,7 +406,7 @@ public class FontTunngavik {
                     sb.deleteCharAt(sbl-1);
                     d = '\u157f';
                 }
-                if (dot) {dot=false;d++;}
+                if (dot) {d++;}
                 break;
             case 'Q': // gi
                 d = '\u148B'; 
@@ -398,20 +423,14 @@ public class FontTunngavik {
                         break;
                     }
                 }
-                if (dot) {dot=false;d++;} 
+                if (dot) {d++;} 
                 break;
-            case 'u': d = '\u14A5'; if (dot) {dot=false;d++;} break; // mi
-            case 'i': d = '\u14C2'; if (dot) {dot=false;d++;} break; // ni
-            case 'y': d = '\u14EF'; if (dot) {dot=false;d++;} break; // si
-            case 'o': d = '\u14D5'; if (dot) {dot=false;d++;} break;  // li
-            case 'p': d = '\u1528'; if (dot) {dot=false;d++;} break;  // ji
-            case '=': d = '\u1555'; if (dot) {dot=false;d++;} break;  // vi
             case 'E': // ri
                 d = '\u1546'; 
                 if (sbl != 0 && sb.charAt(sbl-1)=='\u1585') { // q+ri = r+ri (rri)
                     sb.setCharAt(sbl-1,'\u1550');
                 }
-                if (dot) {dot=false;d++;} 
+                if (dot) {d++;} 
                 break;
             case 'e': // qi
                 d = '\u157F';
@@ -420,7 +439,7 @@ public class FontTunngavik {
                     sb.append('\u1585');
                     d = '\u146d';
                     }
-                if (dot) {dot=false;d++;} 
+                if (dot) {d++;} 
                 break; 
             case 'q': // ngi
                 d = '\u158F';
@@ -434,12 +453,32 @@ public class FontTunngavik {
                         break;
                     }
                 }
-                if (dot) {dot=false;d++;} 
+                if (dot) {d++;} 
                 break;
-            case 'O': d = '\u15A0'; if (dot) {dot=false;d++;} break; // &i
-            case '\u0192': d = '\u1404'; break; // ii
+                
+            /*case '\u0192': d = '\u1404'; break; // ii
             case '\u2020': d = '\u1432'; break; // pii
             case '\u2030': d = '\u144F'; break; // tii
+            case '\u0178': d = '\u14A6'; break; // mii
+            case '\u00a3': d = '\u14C3'; break; // nii
+            case '\u00a6': d = '\u14F0'; break; // sii
+            case '\u00a9': d = '\u14D6'; break; // lii
+            case '\u00ac': d = '\u1529'; break; // jii
+            case '\u00b0': d = '\u1556'; break; // vii
+            case '\u00c5': d = '\u15A1'; break; // &ii
+            */
+            case '\u0192': // ii
+            case '\u2020': // pii
+            case '\u2030': // tii
+            case '\u0178': // mii
+            case '\u00a3': // nii
+            case '\u00a6': // sii
+            case '\u00a9': // lii
+            case '\u00ac': // jii
+            case '\u00b0': // vii
+            case '\u00c5': // &ii
+            	d=legacy2unicode.get(Character.toString(c)).charAt(0); break;
+
             case '\u0152': // kii
                 d = '\u146E'; 
                 if (sbl > 1 && sb.charAt(sbl-1)=='\u1550' && sb.charAt(sbl-2)=='\u1550') {
@@ -453,7 +492,7 @@ public class FontTunngavik {
                     d = '\u1580';
                 }
                 break;
-            case '\u0161': // gii
+            case '\u0161': // gi
                 d = '\u148C'; 
                 if (sbl != 0) {
                     e = sb.charAt(sbl-1);
@@ -469,21 +508,15 @@ public class FontTunngavik {
                     }
                 }
                 break;
-            case '\u0178': d = '\u14A6'; break; // mii
-            case '\u00a3': d = '\u14C3'; break; // nii
-            case '\u00a6': d = '\u14F0'; break; // sii
-            case '\u00a9': d = '\u14D6'; break; // lii
-            case '\u00ac': d = '\u1529'; break; // jii
-            case '\u00b0': d = '\u1556'; break; // vii
             case '\u00b3': // rii
-                if (i != 0 && s.charAt(i-1)=='6') { // q+rii = r+rii (rrii)
+                if (ic.n != 0 && s.charAt(ic.n-1)=='6') { // q+rii = r+rii (rrii)
                     sb.setCharAt(sb.length()-1,'\u1550');
                 }
                 d = '\u1547'; 
                 break; // rii
             case '\u00b6': // qii
                 d = '\u1580'; // qii
-                if (i != 0 && (s.charAt(i-1)=='3' || s.charAt(i-1)=='6')) { // r+qii= q+kii (qqii)
+                if (ic.n != 0 && (s.charAt(ic.n-1)=='3' || s.charAt(ic.n-1)=='6')) { // r+qii= q+kii (qqii)
                     sb.deleteCharAt(sb.length()-1);
                     sb.append('\u1585');
                     d = '\u146e';
@@ -491,8 +524,8 @@ public class FontTunngavik {
                 break; 
             case '\u00c2': // ngii
                 d = '\u1590'; // ngii
-                if (i != 0) {
-                    e = s.charAt(i-1);
+                if (ic.n != 0) {
+                    e = s.charAt(ic.n-1);
                     switch (e) {
                     case '8': //n
                     case '1': //ng
@@ -502,12 +535,32 @@ public class FontTunngavik {
                     }
                 }
             break;
-            case '\u00c5': d = '\u15A1'; break; // &ii
             
             
-            case 's': d = '\u1405'; if (dot) {dot=false;d++;} break; // u
-            case 'S': d = '\u1433'; if (dot) {dot=false;d++;} break;  // pu
-            case 'g': d = '\u1450'; if (dot) {dot=false;d++;} break;  // tu
+            /*
+            case 's': d = '\u1405'; if (dot) {d++;} break; // u
+            case 'S': d = '\u1433'; if (dot) {d++;} break;  // pu
+            case 'g': d = '\u1450'; if (dot) {d++;} break;  // tu
+            case 'j': d = '\u14A7'; if (dot) {d++;} break; // mu
+            case 'k': d = '\u14C4'; if (dot) {d++;} break;  // nu
+            case 'h': d = '\u14F1'; if (dot) {d++;} break; // su
+            case 'l': d = '\u14D7'; if (dot) {d++;} break; // lu
+            case 'J': d = '\u152A'; if (dot) {d++;} break; // ju
+            case 'K': d = '\u1557'; if (dot) {d++;} break; // vu
+            case 'L': d = '\u15A2'; if (dot) {d++;} break; // &u
+            */
+            case 's': // u
+            case 'S': // pu
+            case 'g': // tu
+            case 'j': // mu
+            case 'k': // nu
+            case 'h': // su
+            case 'l': // lu
+            case 'J': // ju
+            case 'K': // vu
+            case 'L': // &u
+            	d=legacy2unicode.get(Character.toString(c)).charAt(0); if (dot) {d++;} break;
+
             case 'f': // ku
                 d = '\u146F'; 
                 if (sbl > 1 && sb.charAt(sbl-1)=='\u1550' && sb.charAt(sbl-2)=='\u1550') {
@@ -520,7 +573,7 @@ public class FontTunngavik {
                     sb.deleteCharAt(sbl-1);
                     d = '\u1581';
                 }
-                if (dot) {dot=false;d++;} 
+                if (dot) {d++;} 
                 break;
             case 'A': // gu
                 d = '\u148D'; 
@@ -537,20 +590,14 @@ public class FontTunngavik {
                         break;
                     }
                 }
-                if (dot) {dot=false;d++;} 
+                if (dot) {d++;} 
                 break;
-             case 'j': d = '\u14A7'; if (dot) {dot=false;d++;} break; // mu
-             case 'k': d = '\u14C4'; if (dot) {dot=false;d++;} break;  // nu
-             case 'h': d = '\u14F1'; if (dot) {dot=false;d++;} break; // su
-             case 'l': d = '\u14D7'; if (dot) {dot=false;d++;} break; // lu
-             case 'J': d = '\u152A'; if (dot) {dot=false;d++;} break; // ju
-             case 'K': d = '\u1557'; if (dot) {dot=false;d++;} break; // vu
              case 'D': // ru
                  d = '\u1548'; 
                  if (sbl!= 0 && sb.charAt(sbl-1)=='\u1585') { // q+ru = r+ru (rru)
                      sb.setCharAt(sbl-1,'\u1550');
                  }
-                 if (dot) {dot=false;d++;} 
+                 if (dot) {d++;} 
                  break; 
              case 'd': // qu
                  d = '\u1581';
@@ -559,7 +606,7 @@ public class FontTunngavik {
                      sb.append('\u1585');
                      d = '\u146f';
                      }
-                 if (dot) {dot=false;d++;} 
+                 if (dot) {d++;} 
                  break; 
              case 'a': // ngu
                  d = '\u1591';
@@ -567,12 +614,33 @@ public class FontTunngavik {
                          sb.deleteCharAt(sbl-1);
                          d = '\u1673'; // nngu
                  }
-                 if (dot) {dot=false;d++;} 
+                 if (dot) {d++;} 
                  break;
-            case 'L': d = '\u15A2'; if (dot) {dot=false;d++;} break; // &u
+
+            /*
             case '\u201e': d = '\u1406'; break; // uu
             case '\u2021': d = '\u1434'; break; // puu
             case '\u0160': d = '\u1451'; break; // tuu
+            case '\u00a1': d = '\u14A8'; break; // muu
+            case '\u00a4': d = '\u14C5'; break; // nuu
+            case '\u00a7': d = '\u14F2'; break; // suu
+            case '\u00aa': d = '\u14D8'; break; // luu
+            case '\u00ad': d = '\u152B'; break; // juu
+            case '\u00b1': d = '\u1558'; break; // vuu
+            case '\u00c6': d = '\u15A3'; break; // &uu
+            */
+             case '\u201e': // uu
+             case '\u2021': // puu
+             case '\u0160': // tuu
+             case '\u00a1': // muu
+             case '\u00a4': // nuu
+             case '\u00a7': // suu
+             case '\u00aa': // luu
+             case '\u00ad': // juu
+             case '\u00b1': // vuu
+             case '\u00c6': // &uu
+            	 d=legacy2unicode.get(Character.toString(c)).charAt(0); break;
+
             case '\u02dc': // kuu
                 d = '\u1470'; 
                 if (sbl > 1 && sb.charAt(sbl-1)=='\u1550' && sb.charAt(sbl-2)=='\u1550') {
@@ -602,20 +670,14 @@ public class FontTunngavik {
                     }
                 }
                 break;
-            case '\u00a1': d = '\u14A8'; break; // muu
-            case '\u00a4': d = '\u14C5'; break; // nuu
-            case '\u00a7': d = '\u14F2'; break; // suu
-            case '\u00aa': d = '\u14D8'; break; // luu
-            case '\u00ad': d = '\u152B'; break; // juu
-            case '\u00b1': d = '\u1558'; break; // vuu
             case '\u00b4': // ruu
-                if (i != 0 && s.charAt(i-1)=='6') { // q+ruu= r+ruu (rruu)
+                if (ic.n != 0 && s.charAt(ic.n-1)=='6') { // q+ruu= r+ruu (rruu)
                     sb.setCharAt(sb.length()-1,'\u1550');
                 }
                 d = '\u1549'; break;
             case '\u00c0': // quu
                 d = '\u1582'; // quu
-                if (i != 0 && (s.charAt(i-1)=='3' || s.charAt(i-1)=='6')) { // r+quu = q+kuu (qquu)
+                if (ic.n != 0 && (s.charAt(ic.n-1)=='3' || s.charAt(ic.n-1)=='6')) { // r+quu = q+kuu (qquu)
                     sb.deleteCharAt(sb.length()-1);
                     sb.append('\u1585');
                     d = '\u1470';
@@ -623,8 +685,8 @@ public class FontTunngavik {
                 break; 
             case '\u00c3': // nguu
                 d = '\u1592'; // nguu
-                if (i != 0) {
-                    e = s.charAt(i-1);
+                if (ic.n != 0) {
+                    e = s.charAt(ic.n-1);
                     switch (e) {
                     case '8': //n
                     case '1': //ng
@@ -634,66 +696,38 @@ public class FontTunngavik {
                     }
                 }
                 break;
-            case '\u00c6': d = '\u15A3'; break; // &uu
             
             
             case 'x':  // a
-                d = '\u140a';
-                if (dot) {dot=false;d++;}
-                else if (aipaitai==1) {
-                	if (i+1 < l) {
-                		e = s.charAt(i+1);
-                		if (e=='w') {
-                			d = '\u1401';
-                			i++;
-                		}
-                		else {
-                			if (dot) {dot=false;d++;}
-                		}
-                	}
-                } else {
-                	if (dot) {dot=false;d++;} 
-                }
+            	d = __transliterateA('\u140a', dot, aipaitai, '\u1401', ic, s);
                 break;
             case 'X': // pa
-                d = '\u1438';
-                if (dot) {dot=false;d++;}
-                else if (aipaitai==1) {
-                	if (i+1 < l) {
-                		e = s.charAt(i+1);
-                		if (e=='w') {
-                			d = '\u142F';
-                			i++;
-                		}
-                		else {
-                			if (dot) {dot=false;d++;}
-                		}
-                	}
-                } else {
-                	if (dot) {dot=false;d++;} 
-                }
+            	d = __transliterateA('\u1438', dot, aipaitai, '\u142F', ic, s);
                 break;
             case 'b': // ta
-                d = '\u1455';
-                if (dot) {dot=false;d++;}
-                else if (aipaitai==1) {
-                	if (i+1 < l) {
-                		e = s.charAt(i+1);
-                		if (e=='w') {
-                			d = '\u144C';
-                			i++;
-                		}
-                		else {
-                			if (dot) {dot=false;d++;}
-                		}
-                	}
-                } else {
-                	if (dot) {dot=false;d++;} 
-                }
+            	d = __transliterateA('\u1455', dot, aipaitai, '\u144C', ic, s);
                 break;
+            case 'm': // ma
+            	d = __transliterateA('\u14AA', dot, aipaitai, '\u14A3', ic, s);
+                break;
+            case 'N': // na
+            	d = __transliterateA('\u14C7', dot, aipaitai, '\u14C0', ic, s);
+                break;
+            case 'n': // sa
+            	d = __transliterateA('\u14F4', dot, aipaitai, '\u14ED', ic, s);
+                break;
+            case 'M': // la
+            	d = __transliterateA('\u14DA', dot, aipaitai, '\u14D3', ic, s);
+                break;
+            case '/': // ja
+            	d = __transliterateA('\u152d', dot, aipaitai, '\u1526', ic, s);
+                break;
+            case '?': // va
+            	d = __transliterateA('\u1559', dot, aipaitai, '\u1553', ic, s);
+                break;
+            case 'I': d = '\u15A4'; if (dot) {d++;} break; // &a (pas de &ai en Unicode)
             case 'v': // ka
                 d = '\u1472';
-                boolean k2q = false;
                 if (sbl > 1 && sb.charAt(sbl-1)=='\u1550' && sb.charAt(sbl-2)=='\u1550') { // rr..ka > q..ka
                     sb.deleteCharAt(sbl-1);
                     sb.deleteCharAt(sbl-2);
@@ -703,24 +737,11 @@ public class FontTunngavik {
                 } else if (sbl > 0 && sb.charAt(sbl-1)=='\u1550') { // r..ka > qa
                     sb.deleteCharAt(sbl-1);
                     d = '\u1583';
-                    k2q = true;
                 }
-                
-                if (dot) {dot=false;d++;}
-                else if (aipaitai==1) {
-                	if (i+1 < l) {
-                		e = s.charAt(i+1);
-                		if (e=='w') {
-                			d = k2q? '\u166f' : '\u146B'; // qai : kai
-                			i++;
-                			if (dot) {dot=false;}
-                		} else {
-                			if (dot) {dot=false;d++;}
-                		}
-                	}
-                } else {
-                	if (dot) {dot=false;d++;} 
-                }
+                if (d=='\u1472')
+                	d = __transliterateA('\u1472', dot, aipaitai, '\u146B', ic, s);
+                else
+                	d = __transliterateA('\u1583', dot, aipaitai, '\u166f', ic, s);
                 break;
             case 'Z': // ga
                 d = '\u1490';
@@ -735,187 +756,35 @@ public class FontTunngavik {
                 		d = '\u1675';
                 	} 
                 }
-                if (dot) {dot=false;d++;}
-                else if (aipaitai==1) {
-                	if (i+1 < l) {
-                		e = s.charAt(i+1);
-                		if (e=='w') {
-                			if (d=='\u1490')
-                				d = '\u1489'; // ga..i > gai
-                			else if (d=='\u1593')
-                				d = '\u1670';
-                			else if (d=='\u1675') {
-                				sb.append('\u1596');
-                				d = '\u1489';
-                			}
-                			i++;
-                			if (dot) {dot=false;}
-                		}
-                		else {
-                			if (dot) {dot=false;d++;}
-                		}
-                	}
-                } else {
-                	if (dot) {dot=false;d++;} 
+                if (d=='\u1490')
+                	d = __transliterateA('\u1490', dot, aipaitai, '\u1489', ic, s);
+                else if (d=='\u1593')
+                	d = __transliterateA('\u1593', dot, aipaitai, '\u1670', ic, s);
+                else {
+                	d = __transliterateA('\u1675', dot, aipaitai, '\u166f', ic, s, '\u1596', sb);
                 }
                break;
-            case 'm': // ma
-                d = '\u14AA';
-                if (dot) {dot=false;d++;}
-                else if (aipaitai==1) {
-                	if (i+1 < l) {
-                		e = s.charAt(i+1);
-                		if (e=='w') {
-                			d = '\u14A3';
-                			i++;
-                		}
-                		else {
-                			if (dot) {dot=false;d++;}
-                		}
-                	}
-                } else {
-                	if (dot) {dot=false;d++;} 
-                }
-                break;
-            case 'N': // na
-                d = '\u14C7';
-                if (dot) {dot=false;d++;}
-                else if (aipaitai==1) {
-                	if (i+1 < l) {
-                		e = s.charAt(i+1);
-                		if (e=='w') {
-                			d = '\u14C0';
-                			i++;
-                		}
-                		else {
-                			if (dot) {dot=false;d++;}
-                		}
-                	}
-                } else {
-                	if (dot) {dot=false;d++;} 
-                }
-                break;
-            case 'n': // sa
-                d = '\u14F4';
-                if (dot) {dot=false;d++;}
-                else if (aipaitai==1) {
-                	if (i+1 < l) {
-                		e = s.charAt(i+1);
-                		if (e=='w') {
-                			d = '\u14ED';
-                			i++;
-                		}
-                		else {
-                			if (dot) {dot=false;d++;}
-                		}
-                	}
-                } else {
-                	if (dot) {dot=false;d++;} 
-                }
-                break;
-            case 'M': // la
-                d = '\u14DA';
-                if (dot) {dot=false;d++;}
-                else if (aipaitai==1) {
-                	if (i+1 < l) {
-                		e = s.charAt(i+1);
-                		if (e=='w') {
-                			d = '\u14D3';
-                			i++;
-                		}
-                		else {
-                			if (dot) {dot=false;d++;}
-                		}
-                	}
-                } else {
-                	if (dot) {dot=false;d++;} 
-                }
-                break;
-            case '/': // ja
-                d = '\u152d';
-                if (dot) {dot=false;d++;}
-                else if (aipaitai==1) {
-                	if (i+1 < l) {
-                		e = s.charAt(i+1);
-                		if (e=='w') {
-                			d = '\u1526';
-                			i++;
-                		}
-                		else {
-                			if (dot) {dot=false;d++;}
-                		}
-                	}
-                } else {
-                	if (dot) {dot=false;d++;} 
-                }
-                break;
-            case '?': // va
-                d = '\u1559';
-                if (dot) {dot=false;d++;}
-                else if (aipaitai==1) {
-                	if (i+1 < l) {
-                		e = s.charAt(i+1);
-                		if (e=='w') {
-                			d = '\u1553';
-                			i++;
-                		}
-                		else {
-                			if (dot) {dot=false;d++;}
-                		}
-                	}
-                } else {
-                	if (dot) {dot=false;d++;} 
-                }
-                break;
             case 'C': // ra
                 d = '\u154b';
                 if (sbl!= 0 && sb.charAt(sbl-1)=='\u1585') { // q+r_ = r+r_ (rr_)
                     sb.setCharAt(sbl-1,'\u1550');
                 }
-                if (dot) {dot=false;d++;}
-                else if (aipaitai==1) {
-                	if (i+1 < l) {
-                		e = s.charAt(i+1);
-                		if (e=='w') {
-                			d = '\u1542';
-                			i++;
-                		}
-                		else {
-                			if (dot) {dot=false;d++;}
-                		}
-                	}
-                } else {
-                	if (dot) {dot=false;d++;} 
-                }
+            	d = __transliterateA('\u154b', dot, aipaitai, '\u1542', ic, s);
                 break;
            case 'c': // qa
-               boolean precr = false;
                d = '\u1583';
                if (sbl != 0 && (sb.charAt(sbl-1)=='\u1550' || sb.charAt(sbl-1)=='\u1585')) { // r+qa = q+ka (qqa)
                    sb.deleteCharAt(sbl-1);
                    sb.append('\u1585');
                    d = '\u1472';
-                   precr = true;
                    }
-               if (dot) {dot=false;d++;}
-               else if (aipaitai==1) {
-               	if (i+1 < l) {
-               		e = s.charAt(i+1);
-               		if (e=='w') {
-               			d = precr? '\u146b' : '\u166f'; // kai : qai
-               			i++;
-               		}
-               		else {
-               			if (dot) {dot=false;d++;}
-               		}
-               	}
-               } else {
-               	if (dot) {dot=false;d++;} 
-               }
+               if (d=='\u1583')
+               	d = __transliterateA('\u1583', dot, aipaitai, '\u166f', ic, s);
+               else
+               	d = __transliterateA('\u1472', dot, aipaitai, '\u146b', ic, s);
                break;
             case 'z': // nga
                 d = '\u1593';
-                boolean precnng = false;
                 if (sbl != 0) {
                     e = sb.charAt(sbl-1);
                     switch (e) {
@@ -923,35 +792,39 @@ public class FontTunngavik {
                     case '\u1595': //ng
                         sb.deleteCharAt(sbl-1);
                         d = '\u1675'; // nnga
-                        precnng = true;
                         break;
                     }
                 }
-                if (dot) {dot=false;d++;}
-                else if (aipaitai==1) {
-                	if (i+1 < l) {
-                		e = s.charAt(i+1);
-                		if (e=='w') {
-                            if (precnng) {
-                                sb.append('\u1596');
-                                d = '\u1489';
-                            } else
-                                d = '\u1670'; // ngai
-                			i++;
-                		}
-                		else {
-                			if (dot) {dot=false;d++;}
-                		}
-                	}
-                } else {
-                	if (dot) {dot=false;d++;} 
-                }
+                if (d=='\u1593')
+                   	d = __transliterateA('\u1593', dot, aipaitai, '\u1670', ic, s);
+                else
+                	d = __transliterateA('\u1675', dot, aipaitai, '\u1489', ic, s, '\u1596', sb);
                 break;
-            case 'I': d = '\u15A4'; if (dot) {dot=false;d++;} break; // &a
             
+            /*
             case '\u2026': d = '\u140B'; break; // aa
             case '\u02c6': d = '\u1439'; break; // paa
             case '\u2039': d = '\u1456'; break; // taa
+            case '\u00a2': d = '\u14AB'; break; // maa
+            case '\u00a5': d = '\u14C8'; break; // naa
+            case '\u00a8': d = '\u14F5'; break; // saa
+            case '\u00ab': d = '\u14DB'; break; // laa
+            case '\u00ae': d = '\u152E'; break; // jaa
+            case '\u00b2': d = '\u155A'; break; // vaa
+            case '\u00c7': d = '\u15A5'; break; // &aa
+            */
+            case '\u2026': // aa
+            case '\u02c6': // paa
+            case '\u2039': // taa
+            case '\u00a2': // maa
+            case '\u00a5': // naa
+            case '\u00a8': // saa
+            case '\u00ab': // laa
+            case '\u00ae': // jaa
+            case '\u00b2': // vaa
+            case '\u00c7': // &aa
+            	d=legacy2unicode.get(Character.toString(c)).charAt(0); break;
+
             case '\u2122': // kaa
                 d = '\u1473'; 
                 if (sbl > 1 && sb.charAt(sbl-1)=='\u1550' && sb.charAt(sbl-2)=='\u1550') {
@@ -981,21 +854,15 @@ public class FontTunngavik {
                     }
                 }
                 break;
-            case '\u00a2': d = '\u14AB'; break; // maa
-            case '\u00a5': d = '\u14C8'; break; // naa
-            case '\u00a8': d = '\u14F5'; break; // saa
-            case '\u00ab': d = '\u14DB'; break; // laa
-            case '\u00ae': d = '\u152E'; break; // jaa
-            case '\u00b2': d = '\u155A'; break; // vaa
             case '\u00b5': // raa
-                if (i != 0 && s.charAt(i-1)=='6') { // q+raa = r+raa (rraa)
+                if (ic.n != 0 && s.charAt(ic.n-1)=='6') { // q+raa = r+raa (rraa)
                     sb.setCharAt(sb.length()-1,'\u1550');
                 }
                 d = '\u154C'; 
                 break;
             case '\u00c1': // qaa
                 d = '\u1584'; // qaa
-                if (i != 0 && (s.charAt(i-1)=='3' || s.charAt(i-1)=='6')) { // r+qaa = q+kaa (qqaa)
+                if (ic.n != 0 && (s.charAt(ic.n-1)=='3' || s.charAt(ic.n-1)=='6')) { // r+qaa = q+kaa (qqaa)
                     sb.deleteCharAt(sb.length()-1);
                     sb.append('\u1585');
                     d = '\u1473';
@@ -1003,8 +870,8 @@ public class FontTunngavik {
                 break; 
             case '\u00c4': // ngaa
                 d = '\u1594';
-                if (i != 0) {
-                    e = s.charAt(i-1);
+                if (ic.n != 0) {
+                    e = s.charAt(ic.n-1);
                     switch (e) {
                     case '8': //n
                     case '1': //ng
@@ -1014,65 +881,97 @@ public class FontTunngavik {
                     }
                 }
                 break; 
-            case '\u00c7': d = '\u15A5'; break; // &aa
             
             
-            case '2': d = '\u1449'; dot=false; break; // p
-            case '5': d = '\u1466'; dot=false; break; // t
-            case '4': d = '\u1483'; dot=false; break; // k
-            case '[': d = '\u14A1'; dot=false; break; // g
-            case '7': d = '\u14BB'; dot=false; break; // m
-            case '8': d = '\u14D0'; dot=false; break; // n
-            case '{': d = '\u1505'; dot=false; break; // s
-            case '9': d = '\u14EA'; dot=false; break; // l
-            case '0': d = '\u153E'; dot=false; break; // j
-            case '}': d = '\u155D'; dot=false; break; // v
-            case '3': d = '\u1550'; dot=false; break; // r
-            case '6': d = '\u1585'; dot=false; break; // q
+            case '2': d = '\u1449';  break; // p
+            case '5': d = '\u1466';  break; // t
+            case '4': d = '\u1483';  break; // k
+            case '[': d = '\u14A1';  break; // g
+            case '7': d = '\u14BB';  break; // m
+            case '8': d = '\u14D0';  break; // n
+            case '{': d = '\u1505';  break; // s
+            case '9': d = '\u14EA';  break; // l
+            case '0': d = '\u153E';  break; // j
+            case '}': d = '\u155D';  break; // v
+            case '3': d = '\u1550';  break; // r
+            case '6': d = '\u1585';  break; // q
             case '1': // ng
                 d = '\u1595';
                 if (sbl != 0 && (sb.charAt(sbl-1)=='\u14d0' || sb.charAt(sbl-1)=='\u1595')) {
                     sb.deleteCharAt(sbl-1);
                     d='\u1596';
                 }
-                dot=false; 
                 break;
-            case 'P': d = '\u15A6'; dot=false; break; // &
-            case 'B': d = '\u157C'; dot=false; break;// H
-            case '!': d = '1'; dot=false; break; // 1
-            case '@': d = '2'; dot=false; break; // 2
-            case '#': d = '3'; dot=false; break; // 3
-            case '$': d = '4'; dot=false; break; // 4
-            case '%': d = '5'; dot=false; break; // 5
-            case '^': d = '6'; dot=false; break; // 6
-            case '&': d = '7'; dot=false; break; // 7
-            case '*': d = '8'; dot=false; break; // 8
-            case '(': d = '9'; dot=false; break; // 9
-            case ')': d = '0'; dot=false; break;// 0
-            case '+': d = '='; dot=false; break; // =
-            case '-': d = '%'; dot=false; break; // %
-            case 'F': d = '/'; dot=false; break; // /
-            case 'G': d = '('; dot=false; break; // (
-            case 'H': d = ')'; dot=false; break; // )
-            case 'R': d = '$'; dot=false; break; // $
-            case 'T': d = '+'; dot=false; break; // +
-            case 'U': d = '!'; dot=false; break; // !
-            case 'V': d = '?'; dot=false; break; // ?
-            case 'Y': d = '_'; dot=false; break; // _
-            case '\\': d = '}'; dot=false; break; // }
-            case '_': d = '-'; dot=false; break; // -
-            case '|': d = '{'; dot=false; break;// {
+            case 'P': d = '\u15A6';  break; // &
+            case 'B': d = '\u157C';  break;// H
+            
+            
+            case '!': d = '1';  break; // 1
+            case '@': d = '2';  break; // 2
+            case '#': d = '3';  break; // 3
+            case '$': d = '4';  break; // 4
+            case '%': d = '5';  break; // 5
+            case '^': d = '6';  break; // 6
+            case '&': d = '7';  break; // 7
+            case '*': d = '8';  break; // 8
+            case '(': d = '9';  break; // 9
+            case ')': d = '0';  break;// 0
+            case '+': d = '=';  break; // =
+            case '-': d = '%';  break; // %
+            case 'F': d = '/';  break; // /
+            case 'G': d = '(';  break; // (
+            case 'H': d = ')';  break; // )
+            case 'R': d = '$';  break; // $
+            case 'T': d = '+';  break; // +
+            case 'U': d = '!';  break; // !
+            case 'V': d = '?';  break; // ?
+            case 'Y': d = '_';  break; // _
+            case '\\': d = '}';  break; // }
+            case '_': d = '-';  break; // -
+            case '|': d = '{';  break;// {
+            
+            
             default: 
-            	if (dot) {
-            		dot=false;
-            	}
             	d=c;
             	break;
-            }            
+            } // switch   
+            
             sb.append(d);
-            i++;
+            dot = false;
+            ic.n++;
         }
         return sb.toString();
+    }
+    
+    static private char __transliterateA(char c, boolean dot, int aipaitai, char aipaichar, Counter ic, String s) {
+        char d = c;  // a
+        if (dot) {d++;}  // aa
+        else if (aipaitai==1) {
+        	if (ic.n+1 < s.length()) {
+        		char e = s.charAt(ic.n+1);
+        		if (e=='w') { // a..i
+        			d = aipaichar; // ai
+        			ic.n++;
+        		}
+        	}
+        }
+        return d;
+    }
+
+    static private char __transliterateA(char c, boolean dot, int aipaitai, char aipaichar, Counter ic, String s, char appendCharToSB, StringBuffer sb) {
+        char d = c;  // a
+        if (dot) {d++;}  // aa
+        else if (aipaitai==1) {
+        	if (ic.n+1 < s.length()) {
+        		char e = s.charAt(ic.n+1);
+        		if (e=='w') { // a..i
+        			d = aipaichar; // ai
+        			sb.append(appendCharToSB);
+        			ic.n++;
+        		}
+        	}
+        }
+        return d;
     }
     
     
