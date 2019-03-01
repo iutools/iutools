@@ -9,7 +9,10 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.StringReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 
 import org.apache.commons.io.FileUtils;
@@ -23,16 +26,31 @@ import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.testing.AssertHelpers;
+import junit.framework.TestCase;
 
 /**
  * Unit test for simple App.
  */
-public class CompiledCorpusTest 
+public class CompiledCorpusTest extends TestCase
 {
     /**
      * Rigorous Test :-)
      * @throws Exception 
      */
+	
+	private File corpusDirectory = null;
+	
+	@Override
+    protected void tearDown() throws Exception {
+        System.out.println("Running: tearDown");
+        if (corpusDirectory != null) {
+        	File[] listOfFiles = corpusDirectory.listFiles();
+        	for (File file : listOfFiles)
+        		file.delete();
+        }
+        corpusDirectory = null;
+    }
+
 	@Test
 	public void test__CompiledCorpus__Synopsis() throws Exception {
 		//
@@ -45,7 +63,8 @@ public class CompiledCorpusTest
 		compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
 
 		// Identify the full path of the corpus directory to be compiled
-		String corpusDirectoryPathname = IUConfig.getIUDataPath()+"src/test/HansardCorpus1";
+//		String corpusDirectoryPathname = IUConfig.getIUDataPath()+"src/test/HansardCorpus1";
+		String corpusDirectoryPathname = "path/to/corpus/directory";
 		
 		// If wanted, identify the full path of a copy of the trie-compilation json file
 		// that will be created after the compilation has terminated successfully.
@@ -57,16 +76,24 @@ public class CompiledCorpusTest
 		}
 
 		// Compile the corpus given in argument as directory pathname from scratch
-		compiledCorpus.compileCorpusFromScratch(corpusDirectoryPathname);
+		try {
+			compiledCorpus.compileCorpusFromScratch(corpusDirectoryPathname);
+		} catch(Exception e) {
+			// do something
+		}
 		
 		// Compile the corpus given in argument as directory pathname (will resume where it was left after the last run)
-		compiledCorpus.compileCorpus(corpusDirectoryPathname);
+		try {
+			compiledCorpus.compileCorpus(corpusDirectoryPathname);
+		} catch(Exception e) {
+			// do something
+		}
 	}
 
 	@Test
     public void test__resume_compilation_of_corpus_after_crash_or_abortion__1_file_in_corpus_directory() throws Exception
     {
-    	// contains 1 file of 6 lines with 8 words :
+    	// The corpus directory contains 1 file with 8 words :
     	// nunavut inuit
     	// takujuq
     	// amma
@@ -74,18 +101,21 @@ public class CompiledCorpusTest
     	// iglumik takulaaqtuq
     	// nunait
 
-        String corpusDir = IUConfig.getIUDataPath()+"src/test/HansardCorpus1";
+		String[] stringsOfWords = new String[] {
+				"nunavut inuit takujuq amma kinaujaq iglumik takulaaqtuq nunait"
+				};
+		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
         CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
         compiledCorpus.saveFrequency = 3;
         compiledCorpus.stopAfter = 7; // should stop after takulaaqtuq
         try {
-        	compiledCorpus.compileCorpusFromScratch(corpusDir);
+        	compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
         } catch(Exception e) {
         	System.err.println("Exiting from compiler");
         }
 			
         CompiledCorpus retrievedCompiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
-        retrievedCompiledCorpus.readFromJson(corpusDir);
+        retrievedCompiledCorpus.readFromJson(corpusDirPathname);
         
 		Trie trie = retrievedCompiledCorpus.trie;
 		long expectedCurrentFileWordCounter = 6;
@@ -109,7 +139,7 @@ public class CompiledCorpusTest
 
 		// resume compilation
 		retrievedCompiledCorpus.stopAfter = -1; // do not stop anymore; let compilation continue til the end
-		retrievedCompiledCorpus.compileCorpus(corpusDir);
+		retrievedCompiledCorpus.compileCorpus(corpusDirPathname);
 
 		expectedCurrentFileWordCounter = 8;
 		assertEquals("The value of the 'current file word counter' is wrong.", expectedCurrentFileWordCounter,
@@ -134,11 +164,24 @@ public class CompiledCorpusTest
     }
         
     
-    @Test
+    private String createTemporaryCorpusDirectory(String[] stringOfWords) throws IOException {
+        corpusDirectory = Files.createTempDirectory("").toFile();
+        corpusDirectory.deleteOnExit();
+        String corpusDirPath = corpusDirectory.getAbsolutePath();
+        for (int i=0; i<stringOfWords.length; i++) {
+        	File wordFile = new File(corpusDirPath+"/contents"+(i+1)+".txt");
+        	BufferedWriter bw = new BufferedWriter(new FileWriter(wordFile));
+        	bw.write(stringOfWords[i]);
+        	bw.close();
+        }
+        return corpusDirPath;
+	}
+
+	@Test
     public void test__resume_compilation_of_corpus_after_crash_or_abortion__2_files_in_corpus_directory() throws Exception
     {
     	// contains 2 files: 
-    	// 1 of 6 lines with 8 words:      1 of 3 lines with 3 words:
+    	// 1 with 8 words:      		   1 with 3 words:
     	// nunavut inuit                   umialiuqti
     	// takujuq                         iglumut
     	// amma                            sanalauqsimajuq
@@ -146,18 +189,22 @@ public class CompiledCorpusTest
     	// iglumik takulaaqtuq
     	// nunait
 
-        String corpusDir = IUConfig.getIUDataPath()+"src/test/HansardCorpus2";
+		String[] stringsOfWords = new String[] {
+				"nunavut inuit takujuq amma kinaujaq iglumik takulaaqtuq nunait",
+				"umialiuqti iglumut sanalauqsimajuq"
+				};
+		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
         CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
         compiledCorpus.saveFrequency = 3;
         compiledCorpus.stopAfter = 10; // should stop after iglumut
         try {
-        	compiledCorpus.compileCorpusFromScratch(corpusDir);
+        	compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
         } catch(Exception e) {
         	System.err.println("Exiting from compiler");
         }
 			
         CompiledCorpus retrievedCompiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
-        retrievedCompiledCorpus.readFromJson(corpusDir);
+        retrievedCompiledCorpus.readFromJson(corpusDirPathname);
 
         Trie trie = retrievedCompiledCorpus.trie;
 		long expectedCurrentFileWordCounter = 1;
@@ -182,7 +229,7 @@ public class CompiledCorpusTest
 
 		// resume compilation
 		retrievedCompiledCorpus.stopAfter = -1; // do not stop anymore; let compilation continue til the end
-		retrievedCompiledCorpus.compileCorpus(corpusDir);
+		retrievedCompiledCorpus.compileCorpus(corpusDirPathname);
 
         Trie completeTrie = retrievedCompiledCorpus.trie;
 		expectedCurrentFileWordCounter = 3;
@@ -232,25 +279,30 @@ public class CompiledCorpusTest
     public void test__compile__3_files_in_corpus_directory() throws Exception
     {
     	// contains 3 files: 
-    	// 1 of 6 lines with 8 words:      1 of 3 lines with 3 words:
-    	// nunavut inuit                   umialiuqti
-    	// takujuq                         iglumut
-    	// amma                            sanalauqsimajuq
+    	// 1 with 8 words:         1 with 3 words:      1 with 3 words:
+    	// nunavut inuit           umialiuqti           uqaqti
+    	// takujuq                 iglumut              isumajunga
+    	// amma                    sanalauqsimajuq      qikiqtait
     	// kinaujaq
     	// iglumik takulaaqtuq
     	// nunait
 
-        String corpusDir = IUConfig.getIUDataPath()+"src/test/HansardCorpus3";
+		String[] stringsOfWords = new String[] {
+				"nunavut inuit takujuq amma kinaujaq iglumik takulaaqtuq nunait",
+				"umialiuqti iglumut sanalauqsimajuq",
+				"uqaqti isumajunga qikiqtait"
+				};
+		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
         CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
         compiledCorpus.saveFrequency = 3;
         try {
-        	compiledCorpus.compileCorpusFromScratch(corpusDir);
+        	compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
         } catch(Exception e) {
         	System.err.println("Exiting from compiler");
         }
 			
         CompiledCorpus retrievedCompiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
-        retrievedCompiledCorpus.readFromJson(corpusDir);
+        retrievedCompiledCorpus.readFromJson(corpusDirPathname);
 
 		Trie trie = retrievedCompiledCorpus.trie;
 
@@ -268,15 +320,19 @@ public class CompiledCorpusTest
     }
     
     @Test
-    public void test__canBeResumed() throws ConfigException {
-        String corpusDirPathname = IUConfig.getIUDataPath()+"src/test/HansardCorpusNoJSON";
+    public void test__canBeResumed() throws ConfigException, IOException {
+		String[] stringsOfWords = new String[] {
+				"nunavut inuit takujuq amma kinaujaq iglumik takulaaqtuq nunait"
+				};
+		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
         CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
         boolean canBeResumed = compiledCorpus.canBeResumed(corpusDirPathname);
         assertFalse("The compiler should not be able to resume; there is no JSON compilation backup.",canBeResumed);
 
-        corpusDirPathname = IUConfig.getIUDataPath()+"src/test/HansardCorpusWithJSON";
+        File jsonFile = new File(corpusDirPathname+"/"+CompiledCorpus.JSON_COMPILATION_FILE_NAME);
+        jsonFile.createNewFile();
         canBeResumed = compiledCorpus.canBeResumed(corpusDirPathname);
-        assertTrue("The compiler should bebe able to resume; there is a JSON compilation backup.",canBeResumed);
+        assertTrue("The compiler should be able to resume; there is a JSON compilation backup.",canBeResumed);
 }
     
 	@Test
@@ -297,18 +353,10 @@ public class CompiledCorpusTest
 	
 	@Test
 	public void test__readFromJson() throws Exception {
-		String[] words = new String[] {
-				"nunavut", "inuit", "takujuq", "amma", "kinaujaq", "iglumik",
-				"takulaaqtuq", "nunait"
-		};
-		File dir = new File(IUConfig.getIUDataPath()+"src/test/temp");
-		dir.mkdir();
-		String corpusDir = dir.getAbsolutePath();
-		BufferedWriter bw = new BufferedWriter(new FileWriter(
-				new File(corpusDir+"/corpusText.txt")));
-		bw.write(String.join(" ", words));
-		bw.close();
-
+		String[] stringsOfWords = new String[] {
+				"nunavut inuit takujuq amma kinaujaq iglumik takulaaqtuq nunait"
+				};
+		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
         CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
         compiledCorpus.saveFrequency = 3;
         compiledCorpus.stopAfter = 7; 
@@ -316,15 +364,15 @@ public class CompiledCorpusTest
         // an exception raised during the segmentation of takulaaqtuq, which
         // should result in takulaaqtuq not being compiled.
         try {
-        	compiledCorpus.compileCorpusFromScratch(corpusDir);
+        	compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
         } catch(Exception e) {
         	System.err.println("Exiting from compiler");
         	System.err.println(e.getMessage());
         }
         
         CompiledCorpus retrievedCompiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
-        retrievedCompiledCorpus.readFromJson(corpusDir);
-        FileUtils.deleteDirectory(dir);
+        retrievedCompiledCorpus.readFromJson(corpusDirPathname);
+        //FileUtils.deleteDirectory(dir);
 
 		Trie trie = retrievedCompiledCorpus.trie;
 		long trieSize = trie.getSize();
@@ -389,9 +437,12 @@ public class CompiledCorpusTest
 
 	@Test
 	public void test__getNbFailedSegmentations() throws Exception {
-        String corpusDir = IUConfig.getIUDataPath()+"src/test/HansardCorpus1";
+		String[] stringsOfWords = new String[] {
+				"nunavut inuit takujuq amma kinaujaq iglumik takulaaqtuq nunait"
+				};
+		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
         CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
-        compiledCorpus.compileCorpusFromScratch(corpusDir);
+        compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
         assertEquals("The number of words that failed segmentation is wrong.",1,
         		compiledCorpus.getNbWordsThatFailedSegmentations());
         assertEquals("The number of occurrences that failed segmentation is wrong.",1,
@@ -418,6 +469,9 @@ public class CompiledCorpusTest
 			
 		}
 	}
+	
+	
+	
 	
 
 }

@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -159,8 +160,10 @@ public class QueryExpanderTest {
 		return getACompiledCorpus(new String[] {"nunavut"});
 	}
 	private CompiledCorpus getACompiledCorpus(String[] words) throws Exception {
-		File dir = new File(IUConfig.getIUDataPath()+"src/test/temp");
-		dir.mkdir();
+		//File dir = new File(IUConfig.getIUDataPath()+"src/test/temp");
+		//dir.mkdir();
+		File dir = Files.createTempDirectory("").toFile();
+		dir.deleteOnExit();
 		String corpusDir = dir.getAbsolutePath();
 		BufferedWriter bw = new BufferedWriter(new FileWriter(
 				new File(corpusDir+"/corpusText.txt")));
@@ -168,7 +171,7 @@ public class QueryExpanderTest {
 		bw.close();
         CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
         compiledCorpus.compileCorpusFromScratch(corpusDir);
-        FileUtils.deleteDirectory(dir);
+        //FileUtils.deleteDirectory(dir);
         return compiledCorpus;
 	}
 
