@@ -37,7 +37,7 @@ import ca.nrc.datastructure.trie.TrieNode;
 public class CompiledCorpus 
 {
 	
-	private static String JSON_COMPILATION_FILE_NAME = "trie_compilation.json";
+	public static String JSON_COMPILATION_FILE_NAME = "trie_compilation.json";
 	
 	protected Trie trie = new Trie();
 	protected HashMap<String,String[]> segmentsCache = new HashMap<String, String[]>();

@@ -28,8 +28,8 @@ public class QueryExpanderEvaluatorComp {
 		double gotPrecision;
 		double gotRecall;
 		
-		String compiledCorpusTrieFilePath = "/Users/benoitfarley/Inuktitut/Pirurvik/resources/trie_compilation-HANSARD-1999-2002---single-form-in-terminals.json";
-		String goldStandardCSVFilePath = "/Users/benoitfarley/Inuktitut/Pirurvik/resources/IU100Words-expansions-added-to-alternatives.csv";
+		String compiledCorpusTrieFilePath = System.getenv("IUTOOLS_EXTERNAL_REPOSITORY")+"/trie_compilation-HANSARD-1999-2002---single-form-in-terminals.json";
+		String goldStandardCSVFilePath = System.getenv("IUTOOLS_EXTERNAL_REPOSITORY")+"/IU100Words-expansions-added-to-alternatives.csv";
 		QueryExpanderEvaluator evaluator = 
 			new QueryExpanderEvaluator(compiledCorpusTrieFilePath,goldStandardCSVFilePath);
 		// whether statistics are to be computed over words (default [true]) or morphemes [false]:
