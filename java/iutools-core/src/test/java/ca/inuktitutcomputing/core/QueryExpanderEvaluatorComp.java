@@ -27,7 +27,7 @@ public class QueryExpanderEvaluatorComp {
 		double gotRecall;
 		
 		String compiledCorpusTrieFilePath = System.getenv("IUTOOLS_EXTERNAL_REPOSITORY")+"/trie_compilation-HANSARD-1999-2002---single-form-in-terminals.json";
-		String goldStandardCSVFilePath = System.getenv("IUTOOLS_EXTERNAL_REPOSITORY")+"/IU100Words-expansions-added-to-alternatives.csv";
+		String goldStandardCSVFilePath = IUConfig.getIUDataPath()+"/src/test/resources/ca/pirurvik/iutools/IU100Words-expansions-added-to-alternatives.csv";
 		QueryExpanderEvaluator evaluator = 
 			new QueryExpanderEvaluator(compiledCorpusTrieFilePath,goldStandardCSVFilePath);
 		// whether statistics are to be computed over words (default [true]) or morphemes [false]:
