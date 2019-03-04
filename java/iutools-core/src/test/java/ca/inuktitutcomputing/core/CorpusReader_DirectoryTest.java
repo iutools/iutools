@@ -29,7 +29,7 @@ public class CorpusReader_DirectoryTest
     public void test__getFiles() throws Exception
     {
 		CorpusReader corpusReader = new CorpusReader_Directory();
-        String corpusDir = IUConfig.getIUDataPath()+"src/test/CorpusReaderDirectory";
+        String corpusDir = IUConfig.getIUDataPath()+"/src/test/CorpusReaderDirectory";
 		Iterator<CorpusDocument_File> files = (Iterator<CorpusDocument_File>) ((CorpusReader_Directory) corpusReader).getFiles(corpusDir);
 		Vector<String> fileNamesV = new Vector<String>();
 		while (files.hasNext())
@@ -44,7 +44,7 @@ public class CorpusReader_DirectoryTest
 	@Test
 	public void test__getContents() throws Exception {
 		CorpusReader corpusReader = new CorpusReader_Directory();
-        String corpusDir = IUConfig.getIUDataPath()+"src/test/CorpusReaderDirectory";
+        String corpusDir = IUConfig.getIUDataPath()+"/src/test/CorpusReaderDirectory";
 		Iterator<CorpusDocument_File> files = (Iterator<CorpusDocument_File>) ((CorpusReader_Directory) corpusReader).getFiles(corpusDir);
 		String expected = "inuit tuktumik takulaaqtut sanallugu";
 		while (files.hasNext()) {

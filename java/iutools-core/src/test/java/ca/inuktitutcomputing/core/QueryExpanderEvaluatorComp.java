@@ -3,13 +3,11 @@ package ca.inuktitutcomputing.core;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.junit.jupiter.api.Tag;
 
 import static org.junit.Assert.assertFalse;
 
 import ca.inuktitutcomputing.config.IUConfig;
 
-@Tag("comparator")
 public class QueryExpanderEvaluatorComp {
 
 	@Test
@@ -67,6 +65,4 @@ public class QueryExpanderEvaluatorComp {
 			assertFalse(diagnostic,true);
 		}
 	}
-	
-
 }

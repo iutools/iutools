@@ -2,12 +2,14 @@ package ca.inuktitutcomputing.script;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.*;
+//import static org.junit.jupiter.api.Assertions.*;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+
+//import org.junit.jupiter.api.Test;
 
 class RomanTest {
 
@@ -45,5 +47,4 @@ class RomanTest {
 		for (String expectedForm : expected)
 			assertTrue("The expected form '"+expectedForm+"' is not in the forms returned.",Arrays.asList(forms).contains(expectedForm));
 	}
-
 }

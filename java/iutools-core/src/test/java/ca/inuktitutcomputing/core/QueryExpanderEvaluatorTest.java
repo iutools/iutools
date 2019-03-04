@@ -1,7 +1,7 @@
 package ca.inuktitutcomputing.core;
 
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.Assert;
 import org.junit.Test;
 
 import ca.inuktitutcomputing.config.IUConfig;
@@ -111,9 +112,10 @@ public class QueryExpanderEvaluatorTest {
         float recall_expected = (float)nbTotalGoodExpansions / (float)nbTotalGoldStandardAlternatives;
         float fmeasure_expected = 2 * precision_expected * recall_expected / (precision_expected + recall_expected);
         
-        assertEquals(precision_expected,evaluator.precision,"The precision is not correct.");
-        assertEquals(recall_expected,evaluator.recall,"The recall is not correct.");
-        assertEquals(fmeasure_expected,evaluator.fmeasure,"The f-measure is not correct.");
+        double epsilon = 0.01;
+        Assert.assertEquals(precision_expected,evaluator.precision,epsilon);
+        Assert.assertEquals(recall_expected,evaluator.recall,epsilon);
+        Assert.assertEquals(fmeasure_expected,evaluator.fmeasure,epsilon);
 	}
 
 	
@@ -197,9 +199,10 @@ public class QueryExpanderEvaluatorTest {
         float recall_expected = (float)nbTotalGoodExpansions / (float)nbTotalGoldStandardAlternatives;
         float fmeasure_expected = 2 * precision_expected * recall_expected / (precision_expected + recall_expected);
         
-        assertEquals(precision_expected,evaluator.precision,"The precision is not correct.");
-        assertEquals(recall_expected,evaluator.recall,"The recall is not correct.");
-        assertEquals(fmeasure_expected,evaluator.fmeasure,"The f-measure is not correct.");
+        float epsilon = (float) 0.01;
+        assertEquals(precision_expected,evaluator.precision,epsilon);
+        assertEquals(recall_expected,evaluator.recall,epsilon);
+        assertEquals(fmeasure_expected,evaluator.fmeasure,epsilon);
  	}
 
 	

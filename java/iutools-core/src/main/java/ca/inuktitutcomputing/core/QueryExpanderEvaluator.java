@@ -75,7 +75,9 @@ public class QueryExpanderEvaluator {
 	
 	public void setGoldStandard(String[] csvGoldStandardLines) throws IOException {
 		BufferedReader reader = new BufferedReader(new StringReader(String.join("\n", csvGoldStandardLines)));
-        csvParser = new CSVParser(reader, CSVFormat.DEFAULT);
+		CSVParser blah;
+		CSVFormat blobl;
+		csvParser = new CSVParser(reader, CSVFormat.DEFAULT);
 	}
 	
 	public void setOptionComputeStatsOverSurfaceForms(boolean value) {
