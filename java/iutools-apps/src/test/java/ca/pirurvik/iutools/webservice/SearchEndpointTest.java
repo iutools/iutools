@@ -4,12 +4,16 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class SearchEndpointTest {
 
@@ -51,6 +55,18 @@ public class SearchEndpointTest {
 
 	@Test
 	public void test__executeEndPoint__DumpsCollectionToWorkspace() throws Exception {
+		
+		IUTSSearchEndpointResults result = new IUTSSearchEndpointResults();
+		List<IUTSSearchHit> hits = new ArrayList<IUTSSearchHit>();
+		hits.add(
+			new IUTSSearchHit("http://somewhere.com/hello.html", "Welcome to Hello!",
+					"Blah blahb etc...",
+					"This site is about <em>hello</em> ... contains information about <em>hello</em> ..."
+					)
+		);
+		result.hits = hits;
+		System.out.println(new ObjectMapper().writeValueAsString(result));
+		
 //		DedupsterServiceInputs inputs = new DedupsterServiceInputs();
 //		inputs.collection = "test-bugs";
 //		inputs.index = "dedupster-test";
