@@ -171,6 +171,7 @@ public class MorphInuk {
         Conditions preCond = null;
 
         stpw = new StopWatch(millisTimeout);
+        // TODO: éventuellement, déplacer ici Dialect.setStopWatch() qui se trouve dans analyzeAsRoot
         stpw.start();
 
         arcsByMorpheme.clear();
@@ -447,6 +448,8 @@ public class MorphInuk {
     	for (int i=0; i<onesFound.size(); i++) {
     		SurfaceFormOfAffix formOfAffix = (SurfaceFormOfAffix)onesFound.elementAt(i); 
     		Morpheme aff = formOfAffix.getAffix();
+//            stpw.check("eliminateByArcsFollowedEtc -- position: "+positionAffix+
+//        			"; aff: "+aff.morpheme);
     		if (	toBeRemoved.contains(aff)
     				|| arcsSuivis(aff,states,keyStateIDs)==null
     				|| !sameAsNext(aff, morphParts)
@@ -1648,6 +1651,7 @@ public class MorphInuk {
         newRootCandidates = Dialect.newRootCandidates(termICI); 
         if (newRootCandidates != null)
             for (int k = 0; k < newRootCandidates.size(); k++) {
+//                stpw.check("analyzeAsRoot -- newRootCandidate: "+((Base)newRootCandidates.elementAt(k)).morpheme);
                 Vector tr = Lexicon.lookForBase((String) newRootCandidates
                         .elementAt(k), isSyllabic);
                 if (tr != null)
@@ -1951,6 +1955,7 @@ public class MorphInuk {
         Vector newLexs = new Vector();
         Vector newRootCandidates = new Vector();
         for (int i=0; i<rootCandidates.size(); i++) {
+//          stpw.check("checkForDoubleConsonantInVerbalRoots -- rootCandidate: "+((Base)rootCandidates.elementAt(i)).morpheme);
             String rootCandidate = (String)rootCandidates.elementAt(i);
             for (int j=rootCandidate.length()-2; j>0; j--) {
                 if (Roman.isConsonant(rootCandidate.charAt(j))) {
@@ -1968,6 +1973,7 @@ public class MorphInuk {
             }
         }
         for (int i=0; i<newRootCandidates.size(); i++) {
+//          stpw.check("checkForDoubleConsonantInVerbalRoots -- newRootCandidate: "+((Base)newRootCandidates.elementAt(i)).morpheme);
             Vector tr = Lexicon.lookForBase((String) newRootCandidates
                     .elementAt(i), false);
             if (tr != null)

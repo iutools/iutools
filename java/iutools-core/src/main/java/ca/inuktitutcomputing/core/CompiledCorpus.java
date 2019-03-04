@@ -85,6 +85,8 @@ public class CompiledCorpus
 		}
 	}
 	
+	// Constructors ------------------------------------------------------------
+	
 	public CompiledCorpus() {
 		initialize(null);
 	}
@@ -92,6 +94,7 @@ public class CompiledCorpus
 	public CompiledCorpus(String segmenterClassName) {
 		initialize(segmenterClassName);
 	}
+	//--------------------------------------------------------------------------
 	
 
 	public void initialize(String _segmenterClassName) {
@@ -309,6 +312,10 @@ public class CompiledCorpus
 		}		
 		bufferedReader.close();
 	}
+    
+    public HashMap<String,Long> getWordsThatFailedSegmentationWithFreqs() {
+    	return wordsFailedSegmentationWithFreqs;
+    }
     
     // ----------------------------- STATS -------------------------------
     

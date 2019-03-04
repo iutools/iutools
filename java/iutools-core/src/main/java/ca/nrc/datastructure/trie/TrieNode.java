@@ -1,5 +1,6 @@
 package ca.nrc.datastructure.trie;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -44,6 +45,18 @@ public class TrieNode {
     
     public HashMap<String,Long> getSurfaceForms() {
     	return surfaceForms;
+    }
+    
+    public Object[][] getOrderedSurfaceForms() {
+    	ArrayList<Object> listObjects = new ArrayList<Object>();
+    	for (String key : this.surfaceForms.keySet()) {
+    		listObjects.add(new Object[] {key,this.surfaceForms.get(key)});
+    	}
+    	Object[][] objects = listObjects.toArray(new Object[][] {});
+    	Arrays.sort(objects, (Object[] o1, Object[] o2) ->  {
+    		return ((Long)o2[1]).compareTo(((Long)o1[1]));
+    	});
+    	return objects;
     }
     
     public void addSurfaceForm(String form) {
@@ -168,12 +181,23 @@ public class TrieNode {
 	
     @Override
     public String toString() {
-        return "[TrieNode:\n" +
+    	String str = "[TrieNode:\n" +
         		"    segments = "+this.getKeysAsString()+"\n"+
         		"    frequency = "+this.frequency+"\n"+
-        		"    isWord = "+this.isWord+"\n"+
-        		(this.isWord()?"    surfaceForm = "+this.surfaceForm : "")+
-        		"    ]";
+        		"    isWord = "+this.isWord+"\n";
+    	if (this.isWord()) {
+    		if (this.surfaceForms.size()==0)
+    			str += "    surfaceForm = "+this.surfaceForm;
+    		else {
+    			Object[][] formsFreqs = this.getOrderedSurfaceForms();
+				str += "    surfaceForms = "+formsFreqs[0][0]+" ("+formsFreqs[0][1]+")\n";
+				
+    			for (int i=1; i<formsFreqs.length; i++)
+    				str += "                   "+formsFreqs[i][0]+" ("+formsFreqs[i][1]+")\n";
+    		}
+    	}
+        str += "    ]";
+        return str;
     }
 
 	// Stats
