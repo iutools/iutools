@@ -12,8 +12,6 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ca.nrc.dtrc.dedupster.webservice.DedupsterServiceResults;
-
 public class EndPointHelper {
 
 	public static void setContenTypeAndEncoding(HttpServletResponse response) {
