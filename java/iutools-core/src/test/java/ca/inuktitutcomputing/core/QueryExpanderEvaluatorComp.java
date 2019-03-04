@@ -2,11 +2,14 @@ package ca.inuktitutcomputing.core;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
 
 import ca.inuktitutcomputing.config.IUConfig;
+import ca.nrc.config.ConfigException;
 
 public class QueryExpanderEvaluatorComp {
 
@@ -26,7 +29,7 @@ public class QueryExpanderEvaluatorComp {
 		double gotPrecision;
 		double gotRecall;
 		
-		String compiledCorpusTrieFilePath = System.getenv("IUTOOLS_EXTERNAL_REPOSITORY")+"/trie_compilation-HANSARD-1999-2002---single-form-in-terminals.json";
+		String compiledCorpusTrieFilePath = getLargeCompilationTrieFilePath();
 		String goldStandardCSVFilePath = IUConfig.getIUDataPath()+"/src/test/resources/ca/pirurvik/iutools/IU100Words-expansions-added-to-alternatives.csv";
 		QueryExpanderEvaluator evaluator = 
 			new QueryExpanderEvaluator(compiledCorpusTrieFilePath,goldStandardCSVFilePath);
@@ -64,5 +67,16 @@ public class QueryExpanderEvaluatorComp {
 			}
 			assertFalse(diagnostic,true);
 		}
+	}
+	
+	public String getLargeCompilationTrieFilePath() throws Exception {
+		String compiledCorpusFilePath = IUConfig.getIUDataPath()+"/src/test/resources/ca/pirurvik/iutools/trie_compilation-HANSARD-1999-2002---single-form-in-terminals.json";
+		File compiledCorpusFile = new File(compiledCorpusFilePath);
+		if ( !compiledCorpusFile.exists()) {
+			throw new Exception("Did not find the large corpus compilation file. Please download it and place it in "+
+					compiledCorpusFilePath+". You can download the file from "+
+					"https://www.dropbox.com/s/ka3cn778wgs1mk4/trie_compilation-HANSARD-1999-2002---single-form-in-terminals.json?dl=0");
+		}
+		return compiledCorpusFilePath;
 	}
 }
