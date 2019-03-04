@@ -63,7 +63,6 @@ public class CompiledCorpusTest extends TestCase
 		compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
 
 		// Identify the full path of the corpus directory to be compiled
-//		String corpusDirectoryPathname = IUConfig.getIUDataPath()+"src/test/HansardCorpus1";
 		String corpusDirectoryPathname = "path/to/corpus/directory";
 		
 		// If wanted, identify the full path of a copy of the trie-compilation json file
