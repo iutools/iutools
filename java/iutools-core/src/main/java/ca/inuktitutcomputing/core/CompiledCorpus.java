@@ -6,6 +6,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
@@ -263,38 +266,53 @@ public class CompiledCorpus
 				if ( filesCompiled.contains(fileAbsolutePath) ) {
 					continue;
 				}
-				toConsole("[INFO]     "+wordCounter + "(" + currentFileWordCounter + "). " + word + "... ");
+				
+
+		        
+				toConsole("[INFO]     "+wordCounter + "(" + currentFileWordCounter + "+). " + word + "... ");
 				String[] segments = fetchSegmentsFromCache(word);
 				if (segments==null) {
-						toConsole("[segmenting] ");
+					String now = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss").format(new Date());
+						toConsole("[segmenting] ("+now+")");
 						try {
 							segments = getSegmenter().segment(word);
+							toConsole("** AFTER segment()");
 						} catch (Exception e) {
+							toConsole("** EXCEPTION RAISED");
 							toConsole(" ??? " + e.getClass().getName() + " --- " + e.getMessage() + " ");
 							segments = new String[] {};
 						}
+						toConsole("** addToCache");
 						addToCache(word, segments);
+						toConsole("** AFTER addToCache");
 				}
 				try {
 					TrieNode result = null;
 					if (segments.length != 0) {
+						toConsole("** we have some segments...trie.add");
 						result = trie.add(segments,word);
+						toConsole("** AFTER trie.add");
 // trie.add cannot return null when called with non-empty list of segments (see comment in Trie.add method)
 //					}
 //					if (result != null) {
 						toConsole(result.getKeysAsString()+"\n");
 					} else {
+						toConsole("** no segments...");
 						toConsole("XXX\n");
 						wordsFailedSegmentation.add(word);
+						toConsole("** AFTER wordsFailedSegmentation...");
+
 						long nb;
 						if (wordsFailedSegmentationWithFreqs.containsKey(word))
 							nb = wordsFailedSegmentationWithFreqs.get(word).longValue()+1;
 						else
 							nb = 1;
 						wordsFailedSegmentationWithFreqs.put(word, nb);
+						toConsole("** DONE updating list of words with no analysis");
 					}
 
 				} catch (TrieException e) {
+					toConsole("--** Problem adding word: " + words[n] + " (" + e.getMessage() + ").");
 					System.out.println("Problem adding word: " + words[n] + " (" + e.getMessage() + ").");
 				}
 				
