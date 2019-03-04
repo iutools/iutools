@@ -17,10 +17,7 @@ public class SearchEndpointTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		endPoint = new SearchEndPoint();
-		if (!repoBuilt) {
-			DedupsterTestHelpers.buildRealisticBugRepo("test-bugs");
-		}
+		endPoint = new SearchEndpoint();
 	}
 
 	@Test
@@ -28,10 +25,12 @@ public class SearchEndpointTest {
 		fail("Not yet implemented");
 	}
 	
+	/***********************
+	 * DOCUMENTATAION TESTS
+	 ***********************/	
 	
 	/***********************
 	 * VERIFICATION TESTS
-	 * @throws Exception 
 	 ***********************/	
 	
 	
