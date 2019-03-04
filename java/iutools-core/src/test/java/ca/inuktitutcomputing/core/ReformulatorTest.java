@@ -21,6 +21,9 @@ public class ReformulatorTest {
 
 	@Test
 	public void test__Reformulator__Synopsis() throws Exception {
+		File tmp = File.createTempFile("", "");
+		tmp.deleteOnExit();
+		tmp.mkdir();
 		//
 		// Use a Reformulator to return a number of candidates chosen in a
 		// trie-compiled corpus related to a given word.
