@@ -3,6 +3,8 @@ package ca.pirurvik.iutools.webservice;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -14,6 +16,15 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import ca.inuktitutcomputing.config.IUConfig;
+import ca.inuktitutcomputing.core.CompiledCorpus;
+import ca.inuktitutcomputing.core.CompiledCorpusRegistry;
+import ca.inuktitutcomputing.core.CompiledCorpusRegistryException;
+import ca.inuktitutcomputing.core.QueryExpander;
+import ca.inuktitutcomputing.core.QueryExpanderException;
+import ca.inuktitutcomputing.core.QueryExpansion;
+import ca.nrc.config.ConfigException;
 
 
 public class SearchEndpoint extends HttpServlet {
@@ -39,11 +50,11 @@ public class SearchEndpoint extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		String jsonResponse = null;
 		
-		IUTServiceInputs inputs = null;
+		SearchInputs inputs = null;
 		try {
 			EndPointHelper.setContenTypeAndEncoding(response);
-			inputs = EndPointHelper.jsonInputs(request);
-			IUTServiceResults results = executeEndPoint(inputs);
+			inputs = EndPointHelper.jsonInputs(request, SearchInputs.class);
+			ServiceResponse results = executeEndPoint(inputs);
 			jsonResponse = new ObjectMapper().writeValueAsString(results);
 		} catch (MalformedURLException exc) {
 			jsonResponse = EndPointHelper.emitServiceExceptionResponse("The training URL was malformed", exc);
@@ -55,11 +66,21 @@ public class SearchEndpoint extends HttpServlet {
 		out.println(jsonResponse);
 	}
 	
-	public IUTServiceResults executeEndPoint(IUTServiceInputs inputs) throws IUTServiceException {
+	public SearchResponse executeEndPoint(SearchInputs inputs) throws SearchEndpointException  {
+		SearchResponse results = new SearchResponse();
 		
-	
-		IUTServiceResults results = new IUTServiceResults();
+		if (inputs.query == null || inputs.query.isEmpty()) {
+			throw new SearchEndpointException("Query was empty or null");
+		}
+		
 
+		
+		try {
+			results.expandedQuery = expandQuery(inputs.query);
+		} catch (CompiledCorpusRegistryException | QueryExpanderException e) {
+			throw new SearchEndpointException("Unable to expand the query", e);
+		}
+		
 		//		String collection = inputs.collection;
 //		if (collection == null) {
 //			throw new DedupsterServiceException("Missing 'collection' argument");
@@ -83,4 +104,30 @@ public class SearchEndpoint extends HttpServlet {
 //		}
 		
 		return results;
-	}}
+	}
+
+	protected String expandQuery(String query) throws SearchEndpointException, CompiledCorpusRegistryException, QueryExpanderException {
+        CompiledCorpus compiledCorpus;
+        QueryExpansion[] expansions = null;
+		try {
+			compiledCorpus = CompiledCorpusRegistry.getCorpus();
+	        QueryExpander expander = new QueryExpander(compiledCorpus);
+			expansions = expander.getExpansions(query);			
+		} catch (ConfigException e) {
+			throw new SearchEndpointException(e);
+		}
+		
+		String expandedQuery = "(";
+		boolean isFirst = true;
+		for (QueryExpansion exp: expansions) {
+			if (!isFirst) {
+				expandedQuery += " OR ";
+			}
+			expandedQuery += exp;
+			isFirst = false;
+		}
+		expandedQuery += ")";	
+	
+		return expandedQuery;		
+	}
+}
