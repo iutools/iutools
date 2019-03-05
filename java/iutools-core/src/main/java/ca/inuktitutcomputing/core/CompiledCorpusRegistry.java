@@ -2,10 +2,12 @@ package ca.inuktitutcomputing.core;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.gson.Gson;
 
 import ca.inuktitutcomputing.config.IUConfig;
 import ca.nrc.config.ConfigException;
@@ -55,9 +57,11 @@ public class CompiledCorpusRegistry {
 					"https://www.dropbox.com/s/ka3cn778wgs1mk4/trie_compilation-HANSARD-1999-2002---single-form-in-terminals.json?dl=0");
 		}
 		
-		corpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
+//		corpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
 		try {
-			corpus.readFromJson(trieFPath);
+//			corpus.readFromJson(trieFPath);
+			FileReader fr = new FileReader(trieFPath);
+			CompiledCorpus compiledCorpus = new Gson().fromJson(fr, CompiledCorpus.class);
 		} catch (FileNotFoundException e) {
 			throw new CompiledCorpusRegistryException("Could not read compiled corpus from file: "+trieFPath, e);
 		}
