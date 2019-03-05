@@ -2,6 +2,7 @@ package ca.inuktitutcomputing.core;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -184,12 +185,8 @@ public class CompiledCorpus
 	/**
 	 * Reads the corpus compiler in the state it was when it was
 	 * interrupted while running.
-	 * 
-	 * @param
-	 * @return void
-	 * @throws Exception
 	 */
-	public void readFromJson(String corpusDirectoryPathname) throws Exception {
+	public void readFromJson(String corpusDirectoryPathname) throws FileNotFoundException  {
 		Gson gson = new Gson();
 		String jsonFilePath = corpusDirectoryPathname+"/"+JSON_COMPILATION_FILE_NAME;
 		File jsonFile = new File(jsonFilePath);

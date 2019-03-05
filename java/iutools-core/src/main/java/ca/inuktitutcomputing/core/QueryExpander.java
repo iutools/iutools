@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.datastructure.trie.TrieNode;
 
@@ -14,8 +15,25 @@ public class QueryExpander {
 	
 	public CompiledCorpus compiledCorpus;
 	public int numberOfReformulations = 5;
+
 	
-	public QueryExpander(CompiledCorpus _compiledCorpus) {
+	public QueryExpander() throws QueryExpanderException {
+		initialize(null);
+	}
+
+	public QueryExpander(CompiledCorpus _compiledCorpus) throws QueryExpanderException {
+		this.compiledCorpus = _compiledCorpus;
+		initialize(_compiledCorpus);
+	}
+	
+	private void initialize(CompiledCorpus _compiledCorpus) throws QueryExpanderException {
+		if (_compiledCorpus == null) {
+			try {
+				_compiledCorpus = CompiledCorpusRegistry.getCorpus();
+			} catch (ConfigException | CompiledCorpusRegistryException e) {
+				throw new QueryExpanderException("Problem creating a QueryExpander with default pre-compiled corpus", e);
+			}
+		}
 		this.compiledCorpus = _compiledCorpus;
 	}
 	
@@ -25,7 +43,7 @@ public class QueryExpander {
 	 * @return String[] An array of the most frequent inuktitut words related to the input word
 	 * @throws Exception
 	 */
-	public QueryExpansion[] getExpansions(String word) throws Exception {
+	public QueryExpansion[] getExpansions(String word)  {
     	Logger logger = Logger.getLogger("QueryExpander.getExpansions");
 		logger.debug("word: "+word);
 		String[] segments;

@@ -19,12 +19,12 @@ public class EndPointHelper {
 		response.setCharacterEncoding("utf-8");
 	}
 
-	public static IUTServiceInputs jsonInputs(HttpServletRequest request) throws IOException {
+	public static <T  extends ServiceInputs> T jsonInputs(HttpServletRequest request, Class<T> inputClass) throws IOException {
 		String jsonRequestBody = IOUtils.toString(request.getReader());		
-		IUTServiceInputs inputs = new IUTServiceInputs();
+		T inputs = null;
 		if (jsonRequestBody != null) {
 			ObjectMapper mapper = new ObjectMapper();
-			inputs = mapper.readValue(jsonRequestBody, IUTServiceInputs.class);
+			inputs = mapper.readValue(jsonRequestBody, inputClass);
 		}
 				
 		return inputs;
@@ -37,7 +37,7 @@ public class EndPointHelper {
 	
 	
 	public static String emitServiceExceptionResponse(String message, Exception exc) {
-		IUTServiceResults results = new IUTServiceResults();
+		ServiceResponse results = new ServiceResponse();
 		message += "\n"+exc.getMessage()+"\n"+ExceptionUtils.getFullStackTrace(exc);
 		results.errorMessage = message;
 		String jsonResponse = "null";
