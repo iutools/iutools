@@ -70,6 +70,12 @@
 	</repositories>
 
 	<dependencies>		
+	
+	<dependency>
+    	<groupId>ca.pirurvik.iutools</groupId>
+    	<artifactId>iutools-core</artifactId>
+    	<version>0.0.1-SNAPSHOT</version>
+  	</dependency>
 					
 		<dependency>
 			<groupId>javax.servlet</groupId>
