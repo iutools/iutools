@@ -117,7 +117,7 @@ public class CompiledCorpus
 		
 		if ( !fromScratch ) {
 			if (this.canBeResumed(corpusDirectoryPathname)) {
-				this.readFromJson(corpusDirectoryPathname);
+				this.__resumeFromJson(corpusDirectoryPathname);
 			}
 		} else {
 			this.deleteJSON(corpusDirectoryPathname);
@@ -186,12 +186,13 @@ public class CompiledCorpus
 	 * Reads the corpus compiler in the state it was when it was
 	 * interrupted while running.
 	 */
-	public void readFromJson(String corpusDirectoryPathname) throws FileNotFoundException  {
+	protected void __resumeFromJson(String corpusDirectoryPathname) throws Exception  {
 		Gson gson = new Gson();
 		String jsonFilePath = corpusDirectoryPathname+"/"+JSON_COMPILATION_FILE_NAME;
-		File jsonFile = new File(jsonFilePath);
-		BufferedReader br = new BufferedReader(new FileReader(jsonFile));
-		CompiledCorpus compiledCorpus = gson.fromJson(br, CompiledCorpus.class);
+		CompiledCorpus compiledCorpus = createFromJson(jsonFilePath);
+//		File jsonFile = new File(jsonFilePath);
+//		BufferedReader br = new BufferedReader(new FileReader(jsonFile));
+//		CompiledCorpus compiledCorpus = gson.fromJson(br, CompiledCorpus.class);
 		this.trie = compiledCorpus.trie;
 		this.segmentsCache = compiledCorpus.segmentsCache;
 		this.saveFilePath = compiledCorpus.saveFilePath;
@@ -332,7 +333,22 @@ public class CompiledCorpus
     	return wordsFailedSegmentationWithFreqs;
     }
     
-    // ----------------------------- STATS -------------------------------
+    // ----------------------------- static -------------------------------
+    
+    public static CompiledCorpus createFromJson(String jsonFilePathname) throws Exception {
+    	try {
+    		FileReader jsonFileReader = new FileReader(jsonFilePathname);
+    		Gson gson = new Gson();
+    		BufferedReader br;
+    		CompiledCorpus compiledCorpus = gson.fromJson(jsonFileReader, CompiledCorpus.class);
+    		return compiledCorpus;
+    	} catch (FileNotFoundException e) {
+    		throw new Exception("File "+jsonFilePathname+"does not exist. Could not create a compiled corpus.");
+    	}
+    }
+
+    
+    // ----------------------------- STATISTICS -------------------------------
     
     public long getNbWordsThatFailedSegmentations() {
     	return wordsFailedSegmentationWithFreqs.size();

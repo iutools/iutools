@@ -114,7 +114,7 @@ public class CompiledCorpusTest extends TestCase
         }
 			
         CompiledCorpus retrievedCompiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
-        retrievedCompiledCorpus.readFromJson(corpusDirPathname);
+        retrievedCompiledCorpus.__resumeFromJson(corpusDirPathname);
         
 		Trie trie = retrievedCompiledCorpus.trie;
 		long expectedCurrentFileWordCounter = 6;
@@ -190,7 +190,7 @@ public class CompiledCorpusTest extends TestCase
         }
 			
         CompiledCorpus retrievedCompiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
-        retrievedCompiledCorpus.readFromJson(corpusDirPathname);
+        retrievedCompiledCorpus.__resumeFromJson(corpusDirPathname);
 
         Trie trie = retrievedCompiledCorpus.trie;
 		long expectedCurrentFileWordCounter = 1;
@@ -288,7 +288,7 @@ public class CompiledCorpusTest extends TestCase
         }
 			
         CompiledCorpus retrievedCompiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
-        retrievedCompiledCorpus.readFromJson(corpusDirPathname);
+        retrievedCompiledCorpus.__resumeFromJson(corpusDirPathname);
 
 		Trie trie = retrievedCompiledCorpus.trie;
 
@@ -357,7 +357,7 @@ public class CompiledCorpusTest extends TestCase
         }
         
         CompiledCorpus retrievedCompiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
-        retrievedCompiledCorpus.readFromJson(corpusDirPathname);
+        retrievedCompiledCorpus.__resumeFromJson(corpusDirPathname);
         //FileUtils.deleteDirectory(dir);
 
 		Trie trie = retrievedCompiledCorpus.trie;

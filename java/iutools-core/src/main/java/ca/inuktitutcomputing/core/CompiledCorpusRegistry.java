@@ -60,9 +60,10 @@ public class CompiledCorpusRegistry {
 //		corpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
 		try {
 //			corpus.readFromJson(trieFPath);
-			FileReader fr = new FileReader(trieFPath);
-			CompiledCorpus compiledCorpus = new Gson().fromJson(fr, CompiledCorpus.class);
-		} catch (FileNotFoundException e) {
+//			FileReader fr = new FileReader(trieFPath);
+//			CompiledCorpus compiledCorpus = new Gson().fromJson(fr, CompiledCorpus.class);
+			CompiledCorpus compiledCorpus = CompiledCorpus.createFromJson(trieFPath);
+		} catch (Exception e) {
 			throw new CompiledCorpusRegistryException("Could not read compiled corpus from file: "+trieFPath, e);
 		}
 			
