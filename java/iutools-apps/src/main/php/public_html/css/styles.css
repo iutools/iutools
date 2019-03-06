@@ -1,0 +1,54 @@
+h1 {
+    text-align:center;
+}
+input#request {
+    width:350px;
+}
+
+a.hit-title {
+    color:#3377ff;
+    font-size:1.2em;
+    text-decoration:none;
+    cursor:pointer;
+}
+a.hit-url {
+    color:#00b300;
+    font-size:1.1em;
+    text-decoration:none;
+    cursor:pointer;
+}
+a.hit-snippet {
+    font-size:0.9em;
+}
+div.hit {
+    margin-bottom:16px;
+}
+div.hit-disp {
+    margin-bottom:3px;
+}
+div.hit-disp.title {
+    margin-bottom:0px;
+}
+div#links-to-pages {
+    margin-top:8px;
+    margin-bottom:8px;
+    text-align:center;
+    font-size:1.2em;
+}
+div#links-to-pages div#links {
+    display:inline;
+}
+input.page-number {
+    display:inline-block;
+    text-align:center;
+    width:35px;
+}
+input.page-number.current-page {
+    color:#ff0000;
+    font-weight:bold;
+    border:1px solid red;
+}
+div#nb-hits {
+    font-size:1.1em;
+    margin-bottom:12px;
+}
