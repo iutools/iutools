@@ -11,6 +11,8 @@ import com.google.gson.Gson;
 import ca.inuktitutcomputing.core.CompiledCorpus;
 
 public class WordsNotDecomposed {
+	
+	static private int limite = 200;
 
 	public static void main(String[] args) throws FileNotFoundException {
 		String compilationFilePath = args[0];
@@ -30,7 +32,7 @@ public class WordsNotDecomposed {
 	    int j=0;
 	    for (Object[] o : objs) {
 	    	System.out.println(o[0]+","+o[1]);
-	    	if (j++ == 100) break;
+	    	if (j++ == limite) break;
 	    }
 	}
 

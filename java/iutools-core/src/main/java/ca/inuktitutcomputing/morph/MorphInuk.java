@@ -35,6 +35,7 @@ import ca.inuktitutcomputing.data.constraints.Imacond;
 import ca.inuktitutcomputing.data.constraints.ParseException;
 import ca.inuktitutcomputing.script.Orthography;
 import ca.inuktitutcomputing.script.Roman;
+import ca.inuktitutcomputing.script.Syllabics;
 import ca.inuktitutcomputing.data.*;
 import ca.inuktitutcomputing.morph.Graph.State;
 import ca.inuktitutcomputing.phonology.Dialect;
@@ -59,6 +60,7 @@ public class MorphInuk {
     // Les décompositions résultantes sont ordonnées selon certaines règles.
 
     public static Decomposition[] decomposeWord(String word) throws Exception {
+    	boolean wordInSyllabics = false;
         ArrayList decsList = new ArrayList();
         Vector words = null;
         
@@ -66,19 +68,17 @@ public class MorphInuk {
         //        Vector words = Dialect.termesCorrespondants(word);
         words = new Vector();
         words.add(word);
-
+        
         for (int i = 0; i < words.size(); i++) {
             // Décomposition du mot.
             // 2ème arg. : 'false': mot en caractères latins, non en syllabique;
             // 3ème arg. : 'false': on ne demande pas la décomposition d'une racine
             // complexe, mais celle d'un mot entier.
-            Vector decomps = null;
-            //try {
-                decomps = decompose((String) words.elementAt(i), false, false);
-            //} catch (Exception e) {
-            //    decomps = new Vector();
-            //    System.out.println("Out of memory in decomposeWord for word '"+words.elementAt(i)+"'");
-            //}
+        	String aWord = (String) words.elementAt(i);
+        	if (Syllabics.containsInuktitut(aWord))
+        		aWord = Syllabics.transcodeToRoman(aWord);
+        	aWord = aWord.replaceAll("([iua])qk([iua])","$1qq$2");
+            Vector decomps = decompose(aWord, wordInSyllabics, false);
 
             // Si aucune décomposition n'a été trouvée,
             // on essaye les choses suivantes.
@@ -89,16 +89,15 @@ public class MorphInuk {
                 if (decomps==null)
                     decomps = new Vector();
                 Vector newDecomps;
-                if (Roman.typeOfLetterLat(word.charAt(word.length() - 1)) == Roman.V) {
+                if (Roman.typeOfLetterLat(aWord.charAt(aWord.length() - 1)) == Roman.V) {
                     // Si le mot se termine par une voyelle, il est possible
                     // qu'il manque la consonne finale. On ajoute '*' à la fin
                     // du mot, qui tient lieu de n'importe quelle consonne.
-                    newDecomps = decompose(word + "*", false, false);
-                } else if (word.charAt(word.length() - 1) == 'n') {
+                    newDecomps = decompose(aWord + "*", wordInSyllabics, false);
+                } else if (aWord.charAt(aWord.length() - 1) == 'n') {
                     // Si le mot se termine par la consonne 'n', il est possible
                     // qu'il s'agisse d'un 't'.
-                    newDecomps = decompose(word.substring(0, word.length() - 1)
-                            + "t", false, false);
+                    newDecomps = decompose(aWord.substring(0, aWord.length() - 1)+ "t", wordInSyllabics, false);
                     if (newDecomps!=null)
                         for (int j=0; j<newDecomps.size(); j++) {
                             Decomposition dec = (Decomposition)newDecomps.elementAt(j);
