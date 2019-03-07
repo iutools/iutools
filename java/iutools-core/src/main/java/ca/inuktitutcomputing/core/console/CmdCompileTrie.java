@@ -1,5 +1,6 @@
 package ca.inuktitutcomputing.core.console;
 
+import java.io.File;
 import java.io.IOException;
 
 import ca.inuktitutcomputing.core.CompiledCorpus;
@@ -18,11 +19,13 @@ public class CmdCompileTrie extends ConsoleCommand {
 
 	@Override
 	public void execute() throws Exception {
+		
 		String corpusDir = getCorpusDir();
 		
-		String trieFile = getCompilationFile();
+		String trieFile = getCompilationFile(false);
 		
 		boolean fromScratch = this.cmdLine.hasOption("from-scratch");
+		boolean redoFailed = this.cmdLine.hasOption("redo-failed");
 
 		echo("\nCompiling Trie:\n");
 		echo(1);
@@ -32,7 +35,9 @@ public class CmdCompileTrie extends ConsoleCommand {
 		echo(-1);
 		
 		CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
-		boolean ok = compiledCorpus.setTrieFilePath(trieFile);
+		boolean ok = true;
+		if ( trieFile != null )
+			ok = compiledCorpus.setTrieFilePath(trieFile);
 		if ( !ok ) {
 			System.err.println("ERROR: The -trie-file argument points to a non-existent directory. Abort.");
 			System.exit(1);
@@ -40,8 +45,18 @@ public class CmdCompileTrie extends ConsoleCommand {
 		
 		if (fromScratch)
 			compiledCorpus.compileCorpusFromScratch(corpusDir);
-		else
+		else if ( !redoFailed )
 			compiledCorpus.compileCorpus(corpusDir);
+		else {
+				File compilationFile = new File(corpusDir+"/"+CompiledCorpus.JSON_COMPILATION_FILE_NAME);
+				if (compilationFile.exists()) {
+					compiledCorpus = CompiledCorpus.createFromJson(compilationFile.getAbsolutePath());
+					compiledCorpus.recompileWordsWhoFailedAnalysis(corpusDir);
+				} else {
+					System.err.println("ERROR: "+"No json compilation file in corpus directory. Abort.");
+					System.exit(1);
+				}
+		}
 		
 		echo("\nThe result of the compilation has been saved in the file "+trieFile+".\n");
 	}

@@ -14,6 +14,7 @@ public abstract class ConsoleCommand extends SubCommand {
 	public static final String OPT_WORD = "word";
 	public static final String OPT_IMAANALYSIS = "analysis";
 	public static final String OPT_FROM_SCRATCH = "from-scratch";
+	public static final String OPT_REDO_FAILED = "redo-failed";
 	public static final String OPT_CONTENT = "content";
 	public static final String OPT_INPUT_FILE = "input-file";
 	public static final String OPT_FONT = "font";
@@ -25,8 +26,11 @@ public abstract class ConsoleCommand extends SubCommand {
 	}
 	
 	protected String getCompilationFile() {
-		String tFile = getOptionValue(ConsoleCommand.OPT_COMP_FILE, true);
-		if (!tFile.endsWith("json")) {
+		return getCompilationFile(true);
+	}
+	protected String getCompilationFile(boolean failIfAbsent) {
+		String tFile = getOptionValue(ConsoleCommand.OPT_COMP_FILE, failIfAbsent);
+		if (tFile != null && !tFile.endsWith("json")) {
 			tFile = tFile + ".json";
 		}
 		return tFile;

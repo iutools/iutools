@@ -45,15 +45,17 @@ public class CompiledCorpus
 	
 	protected Trie trie = new Trie();
 	protected HashMap<String,String[]> segmentsCache = new HashMap<String, String[]>();
-	protected Vector<String> filesCompiled = new Vector<String>();
 	protected Vector<String> wordsFailedSegmentation = new Vector<String>();
 	protected HashMap<String,Long> wordsFailedSegmentationWithFreqs = new HashMap<String,Long>();
-	
-	protected String saveFilePath = null;
-	
-	protected transient String trieFilePath = null;
-	
-	private String segmenterClassName = StringSegmenter_Char.class.getName();
+
+	protected Vector<String> filesCompiled = new Vector<String>();	
+	protected String saveFilePath = null;	
+	private String segmenterClassName = StringSegmenter_Char.class.getName();	
+	protected long currentFileWordCounter = -1;
+	protected long retrievedFileWordCounter = -1;	
+	public int saveFrequency = 1000;	
+	protected Long terminalsSumFreq = null;
+
 	
 	@JsonIgnore
 	private transient long wordCounter = 0;
@@ -61,6 +63,11 @@ public class CompiledCorpus
 	private transient String corpusDirNeededForSavingPurposes;
 	@JsonIgnore
 	private transient StringSegmenter segmenter = null;
+	@JsonIgnore
+	public transient int stopAfter = -1;
+	@JsonIgnore
+	protected transient String trieFilePath = null;
+	
 	
 		@SuppressWarnings("unchecked")
 		@JsonIgnore
@@ -72,14 +79,6 @@ public class CompiledCorpus
 			return segmenter;
 		}
 			
-	protected long currentFileWordCounter = -1;
-	protected long retrievedFileWordCounter = -1;
-	
-	public int saveFrequency = 1000;
-	public transient int stopAfter = -1;
-
-	
-	protected Long terminalsSumFreq = null;
 	
 	
 	@SuppressWarnings("serial")
@@ -118,6 +117,8 @@ public class CompiledCorpus
 		if ( !fromScratch ) {
 			if (this.canBeResumed(corpusDirectoryPathname)) {
 				this.__resumeFromJson(corpusDirectoryPathname);
+			} else {
+				// no json compilation in the corpus directory: will do as if from scratch
 			}
 		} else {
 			this.deleteJSON(corpusDirectoryPathname);
@@ -127,10 +128,29 @@ public class CompiledCorpus
 		wordCounter = 0;
 			
 		process(corpusDirectoryPathname);
+		
 		toConsole("[INFO] *** Compilation completed."+"\n");
 		saveCompilerAsJSON_toDir(corpusDirectoryPathname);
 		if (trieFilePath != null)
 			saveCompilerAsJSON_toFile(trieFilePath);
+	}
+	
+	/**
+	 * Recompile only the words who failed morphological analysis
+	 * @param corpusDirectoryPathname
+	 * @throws IOException 
+	 */
+	public void recompileWordsWhoFailedAnalysis(String corpusDirectoryPathname) throws IOException {
+		toConsole("[INFO] *** Recompiling into trie the words that failed analysis previously"+"\n");
+		segmenter = new StringSegmenter_IUMorpheme();
+		wordCounter = 0;
+		Vector<String> wordsToRecompile = (Vector<String>)wordsFailedSegmentation.clone();
+		for (String word : wordsToRecompile) {
+			++wordCounter;
+			processWord(word,true); // true: overrun lookup of segments in cache
+		}
+		// TODO: update local compilation file, and remote compilation file if set and if existing
+		saveCompilerAsJSON_toDir(corpusDirectoryPathname);
 	}
 	
 	public boolean setTrieFilePath(String _trieFilePath) {
@@ -233,7 +253,6 @@ public class CompiledCorpus
     	Logger logger = Logger.getLogger("CorpusTrieCompiler.processDocumentContents");
 		String line;
 		boolean stopBecauseOfStopAfter = false;
-		long fileWordCounter = 0;
 		currentFileWordCounter = 0;
 		while ((line = bufferedReader.readLine()) != null && !stopBecauseOfStopAfter) {
 			String[] words = extractWordsFromLine(line);
@@ -244,92 +263,107 @@ public class CompiledCorpus
 				++wordCounter;
 				logger.debug("word: "+word);
 				logger.debug("retrievedFileWordCounter: "+retrievedFileWordCounter);
-				logger.debug("fileWordCounter: "+fileWordCounter);
+				logger.debug("currentFileWordCounter: "+currentFileWordCounter);
 				logger.debug("fileCompiled: "+filesCompiled.contains(fileAbsolutePath));
 				
 				if ( !filesCompiled.contains(fileAbsolutePath) ) {
+					++currentFileWordCounter;
 					if (retrievedFileWordCounter != -1) {
-						if (fileWordCounter < retrievedFileWordCounter) {
-							fileWordCounter++;
-							++currentFileWordCounter;
+						if (currentFileWordCounter < retrievedFileWordCounter) {
 							continue;
 						} else {
 							retrievedFileWordCounter = -1;
 						}
 					}
-				}
-				++fileWordCounter;
-				++currentFileWordCounter;
-				
-				if ( filesCompiled.contains(fileAbsolutePath) ) {
-					continue;
-				}
-				
-
-		        
-				toConsole("[INFO]     "+wordCounter + "(" + currentFileWordCounter + "+). " + word + "... ");
-				String[] segments = fetchSegmentsFromCache(word);
-				if (segments==null) {
-					String now = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss").format(new Date());
-						toConsole("[segmenting] ("+now+")");
-						try {
-							segments = getSegmenter().segment(word);
-							toConsole("** AFTER segment()");
-						} catch (Exception e) {
-							toConsole("** EXCEPTION RAISED");
-							toConsole(" ??? " + e.getClass().getName() + " --- " + e.getMessage() + " ");
-							segments = new String[] {};
-						}
-						toConsole("** addToCache");
-						addToCache(word, segments);
-						toConsole("** AFTER addToCache");
-				}
-				try {
-					TrieNode result = null;
-					if (segments.length != 0) {
-						toConsole("** we have some segments...trie.add");
-						result = trie.add(segments,word);
-						toConsole("** AFTER trie.add");
-// trie.add cannot return null when called with non-empty list of segments (see comment in Trie.add method)
-//					}
-//					if (result != null) {
-						toConsole(result.getKeysAsString()+"\n");
-					} else {
-						toConsole("** no segments...");
-						toConsole("XXX\n");
-						wordsFailedSegmentation.add(word);
-						toConsole("** AFTER wordsFailedSegmentation...");
-
-						long nb;
-						if (wordsFailedSegmentationWithFreqs.containsKey(word))
-							nb = wordsFailedSegmentationWithFreqs.get(word).longValue()+1;
-						else
-							nb = 1;
-						wordsFailedSegmentationWithFreqs.put(word, nb);
-						toConsole("** DONE updating list of words with no analysis");
+					
+					processWord(word);
+					
+					// this line allows to make the compiler stop at a given point (for tests purposes only)
+					if (stopAfter != -1 && wordCounter == stopAfter) {
+						bufferedReader.close();
+						throw new Exception("Simulating an error during trie compilation of corpus.");
 					}
-
-				} catch (TrieException e) {
-					toConsole("--** Problem adding word: " + words[n] + " (" + e.getMessage() + ").");
-					System.out.println("Problem adding word: " + words[n] + " (" + e.getMessage() + ").");
-				}
-				
-				if (wordCounter % saveFrequency == 0) {
-					toConsole("[INFO]     --- saving jsoned compiler ---"+"\n");
-					logger.debug("size of trie: "+trie.getSize());
-					saveCompilerAsJSON_toDir(this.corpusDirNeededForSavingPurposes);
-				}
-				// this line allows to make the compiler stop at a given point (for tests purposes only)
-				if (stopAfter != -1 && wordCounter == stopAfter) {
-					bufferedReader.close();
-					throw new Exception("Simulating an error during trie compilation of corpus.");
+					if (wordCounter % saveFrequency == 0) {
+						toConsole("[INFO]     --- saving jsoned compiler ---"+"\n");
+						logger.debug("size of trie: "+trie.getSize());
+						saveCompilerAsJSON_toDir(this.corpusDirNeededForSavingPurposes);
+					}
 				}
 			}
 		}		
 		bufferedReader.close();
 	}
     
-    public HashMap<String,Long> getWordsThatFailedSegmentationWithFreqs() {
+    private void processWord(String word) {
+    	processWord(word,false);
+    }
+    private void processWord(String word, boolean recompilingFailedWord) {
+    	Logger logger = Logger.getLogger("CompiledCorpus.processWord");
+		toConsole("[INFO]     "+wordCounter + "(" + currentFileWordCounter + "+). " + word + "... ");
+		String[] segments = fetchSegmentsFromCache(word);
+		if (recompilingFailedWord || segments==null) {
+			String now = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss").format(new Date());
+				toConsole("[segmenting] ("+now+") ");
+				try {
+					segments = getSegmenter().segment(word);
+//should be logger.debug					toConsole("** AFTER segment()");  
+				} catch (Exception e) {
+//					toConsole("** EXCEPTION RAISED");
+//					toConsole(" ??? " + e.getClass().getName() + " --- " + e.getMessage() + " ");
+					segments = new String[] {};
+				}
+//				toConsole("** addToCache");
+				addToCache(word, segments);
+//				toConsole("** AFTER addToCache");
+		}
+		try {
+			TrieNode result = null;
+			if (segments.length != 0) {
+//				toConsole("** we have some segments...trie.add");
+				result = trie.add(segments,word);
+				if (recompilingFailedWord) {
+					int freq = wordsFailedSegmentationWithFreqs.get(word).intValue()-1;
+					for (int ifr=0; ifr<freq; ifr++)
+						trie.add(segments, word);
+				}
+//				toConsole("** AFTER trie.add");
+				toConsole(result.getKeysAsString()+"\n");
+				removeFromListOfFailedSegmentation(word);
+			} else {
+//				toConsole("** no segments...");
+				toConsole("XXX\n");
+				if ( !recompilingFailedWord )
+					addToListOfFailedSegmentation(word);
+			}
+
+		} catch (TrieException e) {
+			toConsole("--** Problem adding word: " + word + " (" + e.getMessage() + ").");
+		}
+		
+	}
+
+	private void removeFromListOfFailedSegmentation(String word) {
+		if (wordsFailedSegmentation.contains(word))
+			wordsFailedSegmentation.removeElement(word);
+		if (wordsFailedSegmentationWithFreqs.containsKey(word))
+				wordsFailedSegmentationWithFreqs.remove(word);
+	}
+
+	private void addToListOfFailedSegmentation(String word) {
+		if ( !wordsFailedSegmentation.contains(word) )
+			wordsFailedSegmentation.add(word);
+//		toConsole("** AFTER wordsFailedSegmentation...");
+
+		long nb;
+		if (wordsFailedSegmentationWithFreqs.containsKey(word))
+			nb = wordsFailedSegmentationWithFreqs.get(word).longValue()+1;
+		else
+			nb = 1;
+		wordsFailedSegmentationWithFreqs.put(word, new Long(nb));
+//		toConsole("** DONE updating list of words with no analysis");
+	}
+
+	public HashMap<String,Long> getWordsThatFailedSegmentationWithFreqs() {
     	return wordsFailedSegmentationWithFreqs;
     }
     

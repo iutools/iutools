@@ -451,6 +451,55 @@ public class CompiledCorpusTest extends TestCase
 	}
 	
 
+	@Test
+	public void test_recompileWordsWhoFailedAnalysis() throws Exception {
+		String[] stringsOfWords = new String[] {
+				"nunavut inuit takujuq amma kinaujaq iglumik takulaaqtuq nunait"
+				};
+		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
+        CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
+        compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
+        assertEquals("The number of words that failed segmentation is wrong.",1,
+        		compiledCorpus.getNbWordsThatFailedSegmentations());
+        assertEquals("The number of occurrences that failed segmentation is wrong.",1,
+        		compiledCorpus.getNbOccurrencesThatFailedSegmentations());
+
+        String wordThatFailed = "saqkilauqtuq";
+        String[] keysOfFailedWord = new String[] {"{saqqik/1v}","{lauq/1vv}","{juq/1vn}"};
+        TrieNode trieNode1 = compiledCorpus.getTrie().getNode(keysOfFailedWord);
+        assertFalse("The node should not exist in the trie.",trieNode1 != null);
+        compiledCorpus.wordsFailedSegmentation.add(wordThatFailed);
+        compiledCorpus.wordsFailedSegmentationWithFreqs.put(wordThatFailed, new Long(4));
+        compiledCorpus.segmentsCache.put(wordThatFailed, new String[] {});
+        assertEquals("The number of words that failed segmentation is wrong.",2,
+        		compiledCorpus.getNbWordsThatFailedSegmentations());
+        assertEquals("The number of occurrences that failed segmentation is wrong.",5,
+        		compiledCorpus.getNbOccurrencesThatFailedSegmentations());
+        compiledCorpus.recompileWordsWhoFailedAnalysis(corpusDirPathname);
+        assertEquals("The number of words that failed segmentation is wrong.",1,
+        		compiledCorpus.getNbWordsThatFailedSegmentations());
+        assertEquals("The number of occurrences that failed segmentation is wrong.",1,
+        		compiledCorpus.getNbOccurrencesThatFailedSegmentations());
+        assertEquals("","{saqqik/1v} {lauq/1vv} {juq/1vn}",
+        		String.join(" ", compiledCorpus.segmentsCache.get(wordThatFailed)));
+        TrieNode trieNode2 = compiledCorpus.getTrie().getNode(compiledCorpus.segmentsCache.get(wordThatFailed));
+        assertTrue("The node should exist in the trie.",trieNode2 != null);
+        assertEquals("The frequency of that node is not right.",4,trieNode2.getFrequency());
+        // compilation file should be updated
+        String compiledCorpusFilename = corpusDirPathname+"/"+CompiledCorpus.JSON_COMPILATION_FILE_NAME;
+        CompiledCorpus newCompiledCorpus = CompiledCorpus.createFromJson(compiledCorpusFilename);
+        assertEquals("(3) The number of words that failed segmentation is wrong.",1,
+        		newCompiledCorpus.getNbWordsThatFailedSegmentations());
+        assertEquals("(3) The number of occurrences that failed segmentation is wrong.",1,
+        		newCompiledCorpus.getNbOccurrencesThatFailedSegmentations());
+        assertEquals("(3)","{saqqik/1v} {lauq/1vv} {juq/1vn}",
+        		String.join(" ", newCompiledCorpus.segmentsCache.get(wordThatFailed)));
+        TrieNode trieNode3 = newCompiledCorpus.getTrie().getNode(compiledCorpus.segmentsCache.get(wordThatFailed));
+        assertTrue("The node should exist in the trie.",trieNode3 != null);
+        assertEquals("The frequency of that node is not right.",4,trieNode3.getFrequency());
+	}
+	
+
 	
 	
 

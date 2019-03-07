@@ -61,6 +61,13 @@ public class Console {
 			    .required(false)
 			    .build();
 		
+		Option optRedoFailed = Option.builder(null)
+				.longOpt(ConsoleCommand.OPT_REDO_FAILED)
+			    .desc("Reprocess words that previously failed morphological analysis.")
+			    .argName("REDO_FAILED")
+			    .required(false)
+			    .build();
+		
 		Option optContent = Option.builder(null)
 				.longOpt(ConsoleCommand.OPT_CONTENT)
 			    .desc("A string of inuktitut words.")
@@ -110,6 +117,7 @@ public class Console {
 				.addOption(optCorpusDir)				
 				.addOption(optCompFile)
 				.addOption(optFromScratch)
+				.addOption(optRedoFailed)
 				;
 		mainCmd.addSubCommand(compileTrie);
 		
