@@ -149,8 +149,9 @@ public class CompiledCorpus
 			++wordCounter;
 			processWord(word,true); // true: overrun lookup of segments in cache
 		}
-		// TODO: update local compilation file, and remote compilation file if set and if existing
 		saveCompilerAsJSON_toDir(corpusDirectoryPathname);
+		if (trieFilePath != null)
+			saveCompilerAsJSON_toFile(trieFilePath);
 	}
 	
 	public boolean setTrieFilePath(String _trieFilePath) {
