@@ -44,6 +44,8 @@ public class CompiledCorpus
 	public static String JSON_COMPILATION_FILE_NAME = "trie_compilation.json";
 	
 	protected Trie trie = new Trie();
+	
+	// things related to the compiler's state and operation that need to be saved periodically and at termination
 	protected HashMap<String,String[]> segmentsCache = new HashMap<String, String[]>();
 	protected Vector<String> wordsFailedSegmentation = new Vector<String>();
 	protected HashMap<String,Long> wordsFailedSegmentationWithFreqs = new HashMap<String,Long>();
@@ -55,29 +57,28 @@ public class CompiledCorpus
 	protected long retrievedFileWordCounter = -1;	
 	public int saveFrequency = 1000;	
 	protected Long terminalsSumFreq = null;
+	protected String completeCompilationResultsFilePathname = null; // file for completed compilation of corpus
 
-	
+	// things that do not need to be saved 
 	@JsonIgnore
 	private transient long wordCounter = 0;
 	@JsonIgnore
-	private transient String corpusDirNeededForSavingPurposes;
+	private transient String corpusDirectory;
 	@JsonIgnore
 	private transient StringSegmenter segmenter = null;
 	@JsonIgnore
 	public transient int stopAfter = -1;
+	
+	
+	@SuppressWarnings("unchecked")
 	@JsonIgnore
-	protected transient String trieFilePath = null;
-	
-	
-		@SuppressWarnings("unchecked")
-		@JsonIgnore
-		public StringSegmenter getSegmenter() throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-			if (segmenter == null) {
-				Class<StringSegmenter> cls = (Class<StringSegmenter>) Class.forName(segmenterClassName);
-				segmenter = (StringSegmenter) cls.getConstructor().newInstance();
-			}
-			return segmenter;
+	public StringSegmenter getSegmenter() throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		if (segmenter == null) {
+			Class<StringSegmenter> cls = (Class<StringSegmenter>) Class.forName(segmenterClassName);
+			segmenter = (StringSegmenter) cls.getConstructor().newInstance();
 		}
+		return segmenter;
+	}
 			
 	
 	
@@ -88,7 +89,7 @@ public class CompiledCorpus
 		}
 	}
 	
-	// Constructors ------------------------------------------------------------
+	// ------- Constructors ----------------------------------------------------
 	
 	public CompiledCorpus() {
 		initialize(null);
@@ -116,7 +117,7 @@ public class CompiledCorpus
 		
 		if ( !fromScratch ) {
 			if (this.canBeResumed(corpusDirectoryPathname)) {
-				this.__resumeFromJson(corpusDirectoryPathname);
+				this.__resumeCompilation(corpusDirectoryPathname);
 			} else {
 				// no json compilation in the corpus directory: will do as if from scratch
 			}
@@ -130,13 +131,13 @@ public class CompiledCorpus
 		process(corpusDirectoryPathname);
 		
 		toConsole("[INFO] *** Compilation completed."+"\n");
-		saveCompilerAsJSON_toDir(corpusDirectoryPathname);
-		if (trieFilePath != null)
-			saveCompilerAsJSON_toFile(trieFilePath);
+		saveCompilerInDirectory(corpusDirectoryPathname);
+		if (completeCompilationResultsFilePathname != null)
+			saveCompilerInJSONFile(completeCompilationResultsFilePathname);
 	}
 	
 	/**
-	 * Recompile only the words who failed morphological analysis
+	 * Recompile only the words that failed morphological analysis in a previous run
 	 * @param corpusDirectoryPathname
 	 * @throws IOException 
 	 */
@@ -149,19 +150,19 @@ public class CompiledCorpus
 			++wordCounter;
 			processWord(word,true); // true: overrun lookup of segments in cache
 		}
-		saveCompilerAsJSON_toDir(corpusDirectoryPathname);
-		if (trieFilePath != null)
-			saveCompilerAsJSON_toFile(trieFilePath);
+		saveCompilerInDirectory(corpusDirectoryPathname);
+		if (completeCompilationResultsFilePathname != null)
+			saveCompilerInJSONFile(completeCompilationResultsFilePathname);
 	}
 	
-	public boolean setTrieFilePath(String _trieFilePath) {
+	public boolean setCompleteCompilationFilePath(String _trieFilePath) {
 		File f = new File(_trieFilePath);
 		File dirF = f.getParentFile();
 		if ( dirF != null && !dirF.isDirectory() ) {
-			trieFilePath = null;
+			completeCompilationResultsFilePathname = null;
 			return false;
 		}
-		trieFilePath = _trieFilePath;
+		completeCompilationResultsFilePathname = _trieFilePath;
 		return true;
 	}
 	
@@ -186,28 +187,28 @@ public class CompiledCorpus
 			saveFile.delete();
 	}
 
-	private void saveCompilerAsJSON_toDir(String corpusDirectoryPathname) throws IOException {
-		String saveFilePathname = corpusDirectoryPathname+"/"+JSON_COMPILATION_FILE_NAME;
-		saveCompilerAsJSON_toFile(saveFilePathname);
+	private void saveCompilerInDirectory(String corpusDirectoryPathname) throws IOException {
+		String saveFilePathname = corpusDirectoryPathname + "/" + JSON_COMPILATION_FILE_NAME;
+		saveCompilerInJSONFile(saveFilePathname);
 	}
 	
-	private void saveCompilerAsJSON_toFile(String filePathname) throws IOException {
-			FileWriter saveFile = new FileWriter(filePathname);
-			Gson gson = new Gson();
-			long savedRetrievedFileWordCounter = this.retrievedFileWordCounter;
-			this.retrievedFileWordCounter = this.currentFileWordCounter;
-			String json = gson.toJson(this);
-			this.retrievedFileWordCounter = savedRetrievedFileWordCounter;
-			saveFile.write(json);
-			saveFile.flush();
-			saveFile.close();
+	private void saveCompilerInJSONFile (String saveFilePathname) throws IOException {
+		FileWriter saveFile = new FileWriter(saveFilePathname);
+		Gson gson = new Gson();
+		long savedRetrievedFileWordCounter = this.retrievedFileWordCounter;
+		this.retrievedFileWordCounter = this.currentFileWordCounter;
+		String json = gson.toJson(this);
+		this.retrievedFileWordCounter = savedRetrievedFileWordCounter;
+		saveFile.write(json);
+		saveFile.flush();
+		saveFile.close();
 	}
 	
 	/**
 	 * Reads the corpus compiler in the state it was when it was
 	 * interrupted while running.
 	 */
-	protected void __resumeFromJson(String corpusDirectoryPathname) throws Exception  {
+	protected void __resumeCompilation(String corpusDirectoryPathname) throws Exception  {
 		Gson gson = new Gson();
 		String jsonFilePath = corpusDirectoryPathname+"/"+JSON_COMPILATION_FILE_NAME;
 		CompiledCorpus compiledCorpus = createFromJson(jsonFilePath);
@@ -226,7 +227,7 @@ public class CompiledCorpus
  
 
 	private void process(String corpusDirectoryPathname) throws Exception {
-		this.corpusDirNeededForSavingPurposes = corpusDirectoryPathname;
+		this.corpusDirectory = corpusDirectoryPathname;
     	CorpusReader_Directory corpusReader = new CorpusReader_Directory();
     	Iterator<CorpusDocument_File> files = (Iterator<CorpusDocument_File>) corpusReader.getFiles(corpusDirectoryPathname);
     	while (files.hasNext())
@@ -287,7 +288,7 @@ public class CompiledCorpus
 					if (wordCounter % saveFrequency == 0) {
 						toConsole("[INFO]     --- saving jsoned compiler ---"+"\n");
 						logger.debug("size of trie: "+trie.getSize());
-						saveCompilerAsJSON_toDir(this.corpusDirNeededForSavingPurposes);
+						saveCompilerInDirectory(this.corpusDirectory);
 					}
 				}
 			}
@@ -370,15 +371,15 @@ public class CompiledCorpus
     
     // ----------------------------- static -------------------------------
     
-    public static CompiledCorpus createFromJson(String jsonFilePathname) throws Exception {
+    public static CompiledCorpus createFromJson(String jsonCompilationFilePathname) throws Exception {
     	try {
-    		FileReader jsonFileReader = new FileReader(jsonFilePathname);
+    		FileReader jsonFileReader = new FileReader(jsonCompilationFilePathname);
     		Gson gson = new Gson();
     		BufferedReader br;
     		CompiledCorpus compiledCorpus = gson.fromJson(jsonFileReader, CompiledCorpus.class);
     		return compiledCorpus;
     	} catch (FileNotFoundException e) {
-    		throw new Exception("File "+jsonFilePathname+"does not exist. Could not create a compiled corpus.");
+    		throw new Exception("File "+jsonCompilationFilePathname+"does not exist. Could not create a compiled corpus.");
     	}
     }
 

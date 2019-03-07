@@ -1,5 +1,8 @@
 package ca.nrc.datastructure.trie;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -11,6 +14,7 @@ import org.apache.log4j.Logger;
 
 import com.google.gson.Gson;
 
+import ca.inuktitutcomputing.core.CompiledCorpus;
 import ca.nrc.json.PrettyPrinter;
 
 
@@ -277,6 +281,7 @@ public class Trie {
       trieNode.addChild(segment, newNode);
       return newNode;
     }
+    
 
 }
 

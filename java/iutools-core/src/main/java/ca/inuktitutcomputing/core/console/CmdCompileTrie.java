@@ -37,7 +37,7 @@ public class CmdCompileTrie extends ConsoleCommand {
 		CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
 		boolean ok = true;
 		if ( trieFile != null )
-			ok = compiledCorpus.setTrieFilePath(trieFile);
+			ok = compiledCorpus.setCompleteCompilationFilePath(trieFile);
 		if ( !ok ) {
 			System.err.println("ERROR: The -trie-file argument points to a non-existent directory. Abort.");
 			System.exit(1);

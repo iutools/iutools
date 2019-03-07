@@ -69,7 +69,7 @@ public class CompiledCorpusTest extends TestCase
 		// that will be created after the compilation has terminated successfully.
 		// If the path points to a non-existent directory, the copy will not be made.
 		String trieCompilationFilePathname = "path/to/file";
-		boolean result = compiledCorpus.setTrieFilePath(trieCompilationFilePathname);
+		boolean result = compiledCorpus.setCompleteCompilationFilePath(trieCompilationFilePathname);
 		if ( !result ) {
 			// do something (raise an exception, or abort, or ...)
 		}
@@ -114,7 +114,7 @@ public class CompiledCorpusTest extends TestCase
         }
 			
         CompiledCorpus retrievedCompiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
-        retrievedCompiledCorpus.__resumeFromJson(corpusDirPathname);
+        retrievedCompiledCorpus.__resumeCompilation(corpusDirPathname);
         
 		Trie trie = retrievedCompiledCorpus.trie;
 		long expectedCurrentFileWordCounter = 6;
@@ -190,7 +190,7 @@ public class CompiledCorpusTest extends TestCase
         }
 			
         CompiledCorpus retrievedCompiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
-        retrievedCompiledCorpus.__resumeFromJson(corpusDirPathname);
+        retrievedCompiledCorpus.__resumeCompilation(corpusDirPathname);
 
         Trie trie = retrievedCompiledCorpus.trie;
 		long expectedCurrentFileWordCounter = 1;
@@ -288,7 +288,7 @@ public class CompiledCorpusTest extends TestCase
         }
 			
         CompiledCorpus retrievedCompiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
-        retrievedCompiledCorpus.__resumeFromJson(corpusDirPathname);
+        retrievedCompiledCorpus.__resumeCompilation(corpusDirPathname);
 
 		Trie trie = retrievedCompiledCorpus.trie;
 
@@ -357,7 +357,7 @@ public class CompiledCorpusTest extends TestCase
         }
         
         CompiledCorpus retrievedCompiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
-        retrievedCompiledCorpus.__resumeFromJson(corpusDirPathname);
+        retrievedCompiledCorpus.__resumeCompilation(corpusDirPathname);
         //FileUtils.deleteDirectory(dir);
 
 		Trie trie = retrievedCompiledCorpus.trie;
@@ -458,6 +458,8 @@ public class CompiledCorpusTest extends TestCase
 				};
 		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
         CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
+        String completeCompilationFilePathname = corpusDirPathname+"/compiled_corpus.json";
+        compiledCorpus.setCompleteCompilationFilePath(completeCompilationFilePathname);
         compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
         assertEquals("The number of words that failed segmentation is wrong.",1,
         		compiledCorpus.getNbWordsThatFailedSegmentations());
@@ -494,7 +496,7 @@ public class CompiledCorpusTest extends TestCase
         		newCompiledCorpus.getNbOccurrencesThatFailedSegmentations());
         assertEquals("(3)","{saqqik/1v} {lauq/1vv} {juq/1vn}",
         		String.join(" ", newCompiledCorpus.segmentsCache.get(wordThatFailed)));
-        TrieNode trieNode3 = newCompiledCorpus.getTrie().getNode(compiledCorpus.segmentsCache.get(wordThatFailed));
+        TrieNode trieNode3 = CompiledCorpus.createFromJson(completeCompilationFilePathname).getTrie().getNode(compiledCorpus.segmentsCache.get(wordThatFailed));
         assertTrue("The node should exist in the trie.",trieNode3 != null);
         assertEquals("The frequency of that node is not right.",4,trieNode3.getFrequency());
 	}
