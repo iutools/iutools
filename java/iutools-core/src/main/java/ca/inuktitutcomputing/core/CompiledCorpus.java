@@ -142,7 +142,7 @@ public class CompiledCorpus
 	 * @param corpusDirectoryPathname
 	 * @throws IOException 
 	 */
-	public void recompileWordsWhoFailedAnalysis(String corpusDirectoryPathname) throws IOException {
+	public void recompileWordsThatFailedAnalysis(String corpusDirectoryPathname) throws IOException {
 		toConsole("[INFO] *** Recompiling into trie the words that failed analysis previously"+"\n");
 		segmenter = new StringSegmenter_IUMorpheme();
 		wordCounter = 0;

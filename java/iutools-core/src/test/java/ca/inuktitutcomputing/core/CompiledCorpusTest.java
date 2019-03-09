@@ -478,7 +478,7 @@ public class CompiledCorpusTest extends TestCase
         assertEquals("The number of occurrences that failed segmentation is wrong.",5,
         		compiledCorpus.getNbOccurrencesThatFailedSegmentations());
         
-        compiledCorpus.recompileWordsWhoFailedAnalysis(corpusDirPathname);
+        compiledCorpus.recompileWordsThatFailedAnalysis(corpusDirPathname);
         
         assertEquals("The number of words that failed segmentation is wrong.",1,
         		compiledCorpus.getNbWordsThatFailedSegmentations());

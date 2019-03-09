@@ -51,7 +51,7 @@ public class CmdCompileTrie extends ConsoleCommand {
 				File compilationFile = new File(corpusDir+"/"+CompiledCorpus.JSON_COMPILATION_FILE_NAME);
 				if (compilationFile.exists()) {
 					compiledCorpus = CompiledCorpus.createFromJson(compilationFile.getAbsolutePath());
-					compiledCorpus.recompileWordsWhoFailedAnalysis(corpusDir);
+					compiledCorpus.recompileWordsThatFailedAnalysis(corpusDir);
 				} else {
 					System.err.println("ERROR: "+"No json compilation file in corpus directory. Abort.");
 					System.exit(1);
