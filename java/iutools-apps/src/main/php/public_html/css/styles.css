@@ -29,11 +29,18 @@ div.hit-disp {
 div.hit-disp.title {
     margin-bottom:0px;
 }
+
+/* LINKS TO PAGES OF HITS */
 div#links-to-pages {
+	display:none;
+	margin:auto;
     margin-top:8px;
     margin-bottom:8px;
     text-align:center;
     font-size:1.2em;
+}
+div#page-numbers {
+	display:inline;
 }
 div#links-to-pages div#links {
     display:inline;
@@ -42,13 +49,29 @@ input.page-number {
     display:inline-block;
     text-align:center;
     width:35px;
+    border:1px solid #cccccc;
 }
 input.page-number.current-page {
     color:#ff0000;
     font-weight:bold;
     border:1px solid red;
 }
+button, input[type=button] {
+	cursor:pointer;
+}
+button:disabled, input[type=button]:disabled {
+	cursor:default;
+	color:#cccccc;
+}
+
+/* HITS */
+div#hits {
+	display:none;
+}
 div#nb-hits {
-    font-size:1.1em;
+	font-size:1.1em;
     margin-bottom:12px;
+}
+span#plural {
+	display:none;
 }

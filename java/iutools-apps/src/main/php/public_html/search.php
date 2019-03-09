@@ -104,9 +104,6 @@ function getHits($expandedQuery) {
 
   <link rel="stylesheet" href="css/styles.css?<?php echo time();?>">
 
-  <script src="js/jquery-3.3.1.min.js"></script>
-  <script src="js/scripts.js?<?php echo time();?>"></script>
-
 </head>
 
 <body>
@@ -119,9 +116,9 @@ function getHits($expandedQuery) {
     
     <p></p>
     
-    <div id="links-to-pages">
-      <div id="links">
         <?php if (isset($hitsDisplayed)) { ?>
+    <div id="links-to-pages" style="display:block;">
+      <div id="links">
         <button id="previous-page" 
             type="submit" <?php if ($page==1) { ?>disabled<?php } ?>
             name="page-number" value="<?php echo $page==1? '1' : $page-1; ?>">Previous</button>
@@ -133,13 +130,13 @@ function getHits($expandedQuery) {
         <button id="next-page" 
             type="submit" <?php if ($page==$nbPages) { ?>disabled<?php } ?>
             name="page-number" value="<?php echo $page==$nbPages? $page : $page+1;?>">Next</button>
-        <?php } ?>
        </div>
       </div>
+        <?php } ?>
     </form>
 
-    <div id="hits">
     <?php if (isset($hitsDisplayed)) { ?>
+    <div id="hits" style="display:block;">
       <div id="nb-hits"><?php echo $nbHits;?> result<?php if ($nbHits>1) echo 's';?></div><hr>
       <?php foreach ($hitsDisplayed as $aHit) { ?>
       <div class="hit">
@@ -153,8 +150,9 @@ function getHits($expandedQuery) {
             <span class="hit-snippet"><?php echo $aHit['snippet'];?></span>
             </div>
         </div>
-    <?php }} ?>
+      <?php } ?>
     </div>
+    <?php } ?>
     
 </body>
 
