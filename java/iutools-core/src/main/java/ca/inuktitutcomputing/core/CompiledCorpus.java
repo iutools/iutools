@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -145,10 +146,24 @@ public class CompiledCorpus
 		toConsole("[INFO] *** Recompiling into trie the words that failed analysis previously"+"\n");
 		segmenter = new StringSegmenter_IUMorpheme();
 		wordCounter = 0;
-		Vector<String> wordsToRecompile = (Vector<String>)wordsFailedSegmentation.clone();
-		for (String word : wordsToRecompile) {
+		Object[][] objs = new Object[wordsFailedSegmentationWithFreqs.size()][2];
+		Iterator<String> iterator = wordsFailedSegmentationWithFreqs.keySet().iterator();
+		int i = 0;
+	    while(iterator.hasNext()) {
+	    	String word = iterator.next();
+	        objs[i++] = new Object[] {word,wordsFailedSegmentationWithFreqs.get(word)};
+	    }
+	    Arrays.sort(objs, (Object[] a, Object[] b) -> {
+	    	return ((Long)b[1]).compareTo((Long)a[1]);
+	    });
+		for (Object[] wordFreq : objs) {
+			String word = (String)wordFreq[0];
 			++wordCounter;
 			processWord(word,true); // true: overrun lookup of segments in cache
+			if (wordCounter % saveFrequency == 0) {
+				toConsole("[INFO]     --- saving jsoned compiler ---"+"\n");
+				saveCompilerInDirectory(corpusDirectoryPathname);
+			}
 		}
 		saveCompilerInDirectory(corpusDirectoryPathname);
 		if (completeCompilationResultsFilePathname != null)
@@ -202,6 +217,7 @@ public class CompiledCorpus
 		saveFile.write(json);
 		saveFile.flush();
 		saveFile.close();
+		System.out.println("saved in "+saveFilePathname);
 	}
 	
 	/**
@@ -303,19 +319,21 @@ public class CompiledCorpus
     	Logger logger = Logger.getLogger("CompiledCorpus.processWord");
 		toConsole("[INFO]     "+wordCounter + "(" + currentFileWordCounter + "+). " + word + "... ");
 		String[] segments = fetchSegmentsFromCache(word);
-		if (recompilingFailedWord || segments==null) {
+		// either null if word has not yet been met
+		//     or String[0] if word could not be decomposed by analyzer
+		if (segments==null || segments.length==0 ) {
 			String now = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss").format(new Date());
-				toConsole("[segmenting] ("+now+") ");
-				try {
+			toConsole("[segmenting] ("+now+") ");
+			try {
 					segments = getSegmenter().segment(word);
 //should be logger.debug					toConsole("** AFTER segment()");  
-				} catch (Exception e) {
+			} catch (Exception e) {
 //					toConsole("** EXCEPTION RAISED");
 //					toConsole(" ??? " + e.getClass().getName() + " --- " + e.getMessage() + " ");
 					segments = new String[] {};
-				}
+			}
 //				toConsole("** addToCache");
-				addToCache(word, segments);
+			addToCache(word, segments);
 //				toConsole("** AFTER addToCache");
 		}
 		try {
