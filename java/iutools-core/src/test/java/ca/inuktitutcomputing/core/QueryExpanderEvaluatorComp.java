@@ -19,7 +19,7 @@ public class QueryExpanderEvaluatorComp {
 		boolean computeStatsOverSurfaceForms = true;
 		
 		double targetPrecision = 0.7360;
-		double targetRecall = 0.5575;
+		double targetRecall = 0.5475;
 		
 		boolean precisionFine = false;
 		boolean recallFine = false;
