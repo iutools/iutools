@@ -6,4 +6,8 @@ public class QueryExpanderException extends Exception {
 		super(mess, e);
 	}
 
+	public QueryExpanderException(Exception e) {
+		super(e);
+	}
+
 }

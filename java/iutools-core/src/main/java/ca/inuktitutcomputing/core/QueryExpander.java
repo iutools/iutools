@@ -46,18 +46,18 @@ public class QueryExpander {
 	public QueryExpansion[] getExpansions(String word)  {
     	Logger logger = Logger.getLogger("QueryExpander.getExpansions");
 		logger.debug("word: "+word);
+		QueryExpansion[] expansionsArr = new QueryExpansion[] {};
+				
 		String[] segments;
-//		try {
-			ArrayList<QueryExpansion> mostFrequentTerminalsForWord;;
-			try {
-				segments = this.compiledCorpus.getSegmenter().segment(word);
-			} catch (Exception e) {
-				segments = null;
-			}
-			if (segments==null || segments.length==0) {
-				logger.debug("NULL");
-				return null;
-			}
+		ArrayList<QueryExpansion> mostFrequentTerminalsForWord;
+		
+		try {
+			segments = this.compiledCorpus.getSegmenter().segment(word);
+		} catch (Exception e) {
+			segments = null;
+		}
+		
+		if (segments !=null && segments.length >0) {
 			logger.debug("segments: "+segments.length);
 			TrieNode node = this.compiledCorpus.trie.getNode(segments);	
 			if (node==null)
@@ -67,12 +67,10 @@ public class QueryExpander {
 			logger.debug("mostFrequentTerminalsForWord: "+mostFrequentTerminalsForWord.size());
 			ArrayList<QueryExpansion> expansions = __getExpansions(mostFrequentTerminalsForWord, segments, word);
 			logger.debug("expansions: "+expansions.size());
-			return expansions.toArray(new QueryExpansion[] {});
-			
-//		} catch (Exception e) {
-//			System.err.println(e.getMessage());
-//			throw e;
-//		}
+			expansionsArr =  expansions.toArray(new QueryExpansion[] {});
+		}
+		
+		return expansionsArr;
 	}
 	
 	public ArrayList<QueryExpansion> __getExpansions(ArrayList<QueryExpansion> mostFrequentTerminalsForReformulations, String[] segments, String word) {
