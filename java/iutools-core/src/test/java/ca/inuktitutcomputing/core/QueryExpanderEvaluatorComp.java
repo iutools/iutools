@@ -30,7 +30,7 @@ public class QueryExpanderEvaluatorComp {
 		double gotRecall;
 		
 		String compiledCorpusTrieFilePath = getLargeCompilationTrieFilePath();
-		String goldStandardCSVFilePath = IUConfig.getIUDataPath()+"/src/test/resources/ca/pirurvik/iutools/IU100Words-expansions-added-to-alternatives.csv";
+		String goldStandardCSVFilePath = IUConfig.getIUDataPath("/src/test/resources/ca/pirurvik/iutools/IU100Words-expansions-added-to-alternatives.csv");
 		QueryExpanderEvaluator evaluator = 
 			new QueryExpanderEvaluator(compiledCorpusTrieFilePath,goldStandardCSVFilePath);
 		// whether statistics are to be computed over words (default [true]) or morphemes [false]:
@@ -70,7 +70,7 @@ public class QueryExpanderEvaluatorComp {
 	}
 	
 	public String getLargeCompilationTrieFilePath() throws Exception {
-		String compiledCorpusFilePath = IUConfig.getIUDataPath()+"/src/test/resources/ca/pirurvik/iutools/trie_compilation-HANSARD-1999-2002---single-form-in-terminals.json";
+		String compiledCorpusFilePath = IUConfig.getIUDataPath("/data/tries/trie_compilation-HANSARD-1999-2002---single-form-in-terminals.json");
 		File compiledCorpusFile = new File(compiledCorpusFilePath);
 		if ( !compiledCorpusFile.exists()) {
 			throw new Exception("Did not find the large corpus compilation file. Please download it and place it in "+
