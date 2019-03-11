@@ -89,6 +89,13 @@ public class Console {
 			    .argName("INPUT_FILE")
 			    .build();
 
+		Option optDictFile = Option.builder(null)
+				.longOpt(ConsoleCommand.OPT_DICT_FILE)
+			    .desc("The full path of a file containing the compiled dictionary for the spell checker.")
+			    .hasArg()
+			    .argName("DICT_FILE")
+			    .build();
+
 		Option optGoldStandardFile = Option.builder(null)
 				.longOpt(ConsoleCommand.OPT_GS_FILE)
 			    .desc("The full path of the Gold Standard file for evaluating the query expander.")
@@ -138,6 +145,14 @@ public class Console {
 				.addOption(optWord)
 				;
 		mainCmd.addSubCommand(segmentIU);
+		
+				
+		// Decompose an Inuktut word
+		SubCommand checkSpelling = 
+				new CmdCheckSpelling("check_spelling")
+				.addOption(optDictFile)
+				;
+		mainCmd.addSubCommand(checkSpelling);
 		
 				
 		// Return the gist of inuktitut words

@@ -19,6 +19,7 @@ public abstract class ConsoleCommand extends SubCommand {
 	public static final String OPT_INPUT_FILE = "input-file";
 	public static final String OPT_FONT = "font";
 	public static final String OPT_SOM = "stats-over-morphemes";
+	public static final String OPT_DICT_FILE = "dict-file";
 	
 	
 	public ConsoleCommand(String name) {
@@ -34,6 +35,14 @@ public abstract class ConsoleCommand extends SubCommand {
 			tFile = tFile + ".json";
 		}
 		return tFile;
+	}
+	
+	protected String getDictFile() {
+		return getDictFile(true);
+	}
+	protected String getDictFile(boolean failIfAbsent) {
+		String dFile = getOptionValue(ConsoleCommand.OPT_DICT_FILE, true);
+		return dFile;
 	}
 
 	protected String getCorpusDir() {
