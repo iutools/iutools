@@ -12,7 +12,8 @@ import org.junit.runners.Suite;
    CompiledCorpusTest.class,
    CorpusReader_DirectoryTest.class,
    QueryExpanderEvaluatorTest.class,
-   QueryExpanderTest.class
+   QueryExpanderTest.class,
+   SpellCheckerTest.class
 }
 )
 
