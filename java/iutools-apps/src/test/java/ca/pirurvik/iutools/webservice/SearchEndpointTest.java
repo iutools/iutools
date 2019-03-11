@@ -41,18 +41,22 @@ public class SearchEndpointTest {
 	@Test
 	public void test__expandQuery__HappyPath() throws Exception {
 	
-		String query = "qarasaujakkut";
+		String query = "inuk";
         QueryExpander expander = new QueryExpander();
 		QueryExpansion[] gotExpansions = expander.getExpansions(query);	
-		String[] expExpansions = new String[] {"BLAH"};
+		String[] expExpansions = new String[] {"inunnut", "inuttitut", "inungnik", "inu"};
 		assertExpansionWordsAre(expExpansions, gotExpansions);
 	}
 
 
 	private void assertExpansionWordsAre(String[] expExpansionWords, QueryExpansion[] gotExpansions) throws IOException {
 		List<String> gotExpansionWords = new ArrayList<String>();
-		for (QueryExpansion exp: gotExpansions) {
-			gotExpansionWords.add(exp.word);
+		if (gotExpansions == null) {
+			gotExpansionWords = null;
+		} else {
+			for (QueryExpansion exp: gotExpansions) {
+				gotExpansionWords.add(exp.word);
+			}
 		}
 		AssertHelpers.assertDeepEquals("", expExpansionWords, gotExpansionWords);
 	}

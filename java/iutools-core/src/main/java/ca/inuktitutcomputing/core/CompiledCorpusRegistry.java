@@ -46,7 +46,7 @@ public class CompiledCorpusRegistry {
 		CompiledCorpus corpus = null;
 		String trieFPath;
 		try {
-			trieFPath = IUConfig.getIUDataPath("src/test/resources/ca/pirurvik/iutools/trie_compilation-HANSARD-1999-2002---single-form-in-terminals.json");
+			trieFPath = IUConfig.getIUDataPath("data/tries/trie_compilation-HANSARD-1999-2002---single-form-in-terminals.json");
 		} catch (ConfigException e) {
 			throw new CompiledCorpusRegistryException(e);
 		}
@@ -62,7 +62,7 @@ public class CompiledCorpusRegistry {
 //			corpus.readFromJson(trieFPath);
 //			FileReader fr = new FileReader(trieFPath);
 //			CompiledCorpus compiledCorpus = new Gson().fromJson(fr, CompiledCorpus.class);
-			CompiledCorpus compiledCorpus = CompiledCorpus.createFromJson(trieFPath);
+			corpus = CompiledCorpus.createFromJson(trieFPath);
 		} catch (Exception e) {
 			throw new CompiledCorpusRegistryException("Could not read compiled corpus from file: "+trieFPath, e);
 		}
