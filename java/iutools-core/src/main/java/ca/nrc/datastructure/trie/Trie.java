@@ -171,22 +171,6 @@ public class Trie {
 	}
 	
 
-	/*
-	 * 
-	 */
-	public TrieNode getNReformulations(String[] segments) {
-		TrieNode node = this.getNode(segments);
-		if (node != null)
-			return node;
-		for (int subLength=segments.length-1; subLength>0; subLength--) {
-			String[] segmentsButLast = Arrays.copyOfRange(segments, 0, subLength);
-			node = this.getNode(segmentsButLast);
-			if (node != null)
-				return node.getMostFrequentTerminal();
-		}
-		return null;
-	}
-
 
 	/**
 	 * 
