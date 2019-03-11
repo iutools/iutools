@@ -3,7 +3,9 @@ package ca.pirurvik.iutools.webservice;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -25,12 +27,21 @@ import ca.inuktitutcomputing.core.QueryExpander;
 import ca.inuktitutcomputing.core.QueryExpanderException;
 import ca.inuktitutcomputing.core.QueryExpansion;
 import ca.nrc.config.ConfigException;
+import ca.nrc.data.harvesting.BingSearchEngine;
+import ca.nrc.data.harvesting.SearchEngine;
+import ca.nrc.data.harvesting.SearchEngine.Hit;
+import ca.nrc.data.harvesting.SearchEngine.SearchEngineException;
 
 
 public class SearchEndpoint extends HttpServlet {
 	private String endPointName = null;
 	private String esDefaultIndex = "dedupster";
 	EndPointHelper helper = null;
+	
+    QueryExpander expander = null;    
+    
+    static int MAX_HITS = 10;
+
 
 	protected void initialize(String _esIndexName, String _endPointName) {
 		if (_esIndexName != null) this.esDefaultIndex = _esIndexName;
@@ -73,45 +84,57 @@ public class SearchEndpoint extends HttpServlet {
 			throw new SearchEndpointException("Query was empty or null");
 		}
 		
-
-		
 		try {
 			results.expandedQuery = expandQuery(inputs.query);
 		} catch (CompiledCorpusRegistryException | QueryExpanderException e) {
 			throw new SearchEndpointException("Unable to expand the query", e);
 		}
 		
-		//		String collection = inputs.collection;
-//		if (collection == null) {
-//			throw new DedupsterServiceException("Missing 'collection' argument");
-//		}
-//		
-//		List<DocWithDups> bugs = inputs.inputBugs();
-//				
-//		
-//		try {
-//			
-//			if (bugs == null) {
-//				throw new DedupsterServiceException("No bugs provided for 'put' endpoint");
-//			} else {
-//				StreamlinedClient esClient = EndPointHelper.getESClient(inputs);
-//				for (DocWithDups aBug: bugs) {
-//					String jsonResp = esClient.putDocument(collection, aBug);
-//				}
-//			}
-//		} catch (Exception exc) {
-//			results.setException(exc);
-//		}
+		results.hits = search(results.expandedQuery);
 		
+
 		return results;
 	}
 
+	private List<SearchHit> search(String query) throws SearchEndpointException {
+		
+		List<SearchHit> hits = new ArrayList<SearchHit>();
+		BingSearchEngine engine;
+		try {
+			engine = new BingSearchEngine();
+		} catch (IOException | SearchEngineException e) {
+			throw new SearchEndpointException(e);
+		}
+		SearchEngine.Query webQuery = new SearchEngine.Query(query);
+		List<SearchEngine.Hit> results;
+		try {
+			results = engine.search(webQuery);
+		} catch (SearchEngineException e) {
+			throw new SearchEndpointException(e);
+		}
+		
+		Iterator<Hit> iter = results.iterator();
+		int hitsCount = 0;
+		while (iter.hasNext()) {
+			hitsCount++;
+			if (hitsCount > MAX_HITS) {
+				break;
+			}
+			Hit bingHit = iter.next();
+			SearchHit aHit = new SearchHit(bingHit.url.toString(), bingHit.title, bingHit.summary);
+			hits.add(aHit);
+		}
+		
+		return hits;
+	}
+
 	protected String expandQuery(String query) throws SearchEndpointException, CompiledCorpusRegistryException, QueryExpanderException {
-        CompiledCorpus compiledCorpus;
         QueryExpansion[] expansions = null;
 		try {
-			compiledCorpus = CompiledCorpusRegistry.getCorpus();
-	        QueryExpander expander = new QueryExpander(compiledCorpus);
+			if (expander == null) {
+				CompiledCorpus compiledCorpus = CompiledCorpusRegistry.getCorpus();
+				expander = new QueryExpander(compiledCorpus);
+			}
 			expansions = expander.getExpansions(query);			
 		} catch (ConfigException e) {
 			throw new SearchEndpointException(e);
@@ -123,7 +146,7 @@ public class SearchEndpoint extends HttpServlet {
 			if (!isFirst) {
 				expandedQuery += " OR ";
 			}
-			expandedQuery += exp;
+			expandedQuery += exp.word;
 			isFirst = false;
 		}
 		expandedQuery += ")";	

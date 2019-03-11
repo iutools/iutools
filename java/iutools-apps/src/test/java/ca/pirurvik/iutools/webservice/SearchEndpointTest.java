@@ -29,12 +29,12 @@ public class SearchEndpointTest {
 
 	@Test
 	public void test__SearchEndpoint__HappyPath() throws Exception {
-		String query = "qarasaujakkut";
+		String query = "inuk";
 		SearchInputs inputs = new SearchInputs(query);		
 		SearchResponse results = endPoint.executeEndPoint(inputs);
 		
 		String gotExpandedQuery = results.expandedQuery;
-		AssertHelpers.assertStringEquals("BLAH", gotExpandedQuery);
+		AssertHelpers.assertStringEquals("(inuit OR inunnut OR inuttitut OR inungnik OR inu)", gotExpandedQuery);
 		
 	}
 
