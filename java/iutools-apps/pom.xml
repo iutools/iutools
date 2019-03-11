@@ -9,7 +9,9 @@
 
   <groupId>ca.pirurvik.iutools</groupId>
   <artifactId>iutools-apps</artifactId>
+  
   <name>iutools-apps</name>
+  
   <!-- FIXME change it to the project's website -->
   <url>http://www.example.com</url>
 
