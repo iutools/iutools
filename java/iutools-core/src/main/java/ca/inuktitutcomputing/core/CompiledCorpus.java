@@ -440,9 +440,12 @@ public class CompiledCorpus
 	}
 
 	private String[] fetchSegmentsFromCache(String word) {
+		String[] segmentsFromCache = null;
 		if (!segmentsCache.containsKey(word))
-			return null;
-		return segmentsCache.get(word);
+			segmentsFromCache = new String[] {};
+		else
+			segmentsFromCache = segmentsCache.get(word);
+		return segmentsFromCache;
 	}
 
 	private static boolean isInuktitutWord(String string) {
