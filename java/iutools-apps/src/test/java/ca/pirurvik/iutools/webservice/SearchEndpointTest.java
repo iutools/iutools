@@ -44,7 +44,7 @@ public class SearchEndpointTest {
 		String query = "inuk";
         QueryExpander expander = new QueryExpander();
 		QueryExpansion[] gotExpansions = expander.getExpansions(query);	
-		String[] expExpansions = new String[] {"inunnut", "inuttitut", "inungnik", "inu"};
+		String[] expExpansions = new String[] {"inuit", "inunnut", "inuttitut", "inungnik", "inu"};
 		assertExpansionWordsAre(expExpansions, gotExpansions);
 	}
 
