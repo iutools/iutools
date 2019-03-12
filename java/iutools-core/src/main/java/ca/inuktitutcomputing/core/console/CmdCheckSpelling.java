@@ -52,9 +52,9 @@ public class CmdCheckSpelling extends ConsoleCommand {
 			
 			if (suggestions != null && suggestions.size() > 0) {
 				Iterator<String> itSugg = suggestions.iterator();
-				int nIt = 0;
+				int nIt = 1;
 				while (itSugg.hasNext()) {
-					echo(nIt+". "+itSugg.next());
+					echo((nIt++)+". "+itSugg.next());
 				}
 			}
 			
