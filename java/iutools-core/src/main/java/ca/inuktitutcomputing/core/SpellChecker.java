@@ -1,9 +1,10 @@
 package ca.inuktitutcomputing.core;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,6 +14,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.google.gson.Gson;
 
 import ca.nrc.datastructure.Pair;
 import ca.inuktitutcomputing.utilities.Levenshtein;
@@ -26,16 +29,18 @@ public class SpellChecker {
 	
 
 	public void addCorrectWord(String word) {
-		System.out.println("-- addCorrectWord: word="+word);;
+		//System.out.println("-- addCorrectWord: word="+word);;
 		allWords += word+",,";
 		Set<String> seqSeen = new HashSet<String>();
 		try {
 		for (int seqLen = 1; seqLen <= MAX_SEQ_LEN; seqLen++) {
 			for (int  start=0; start <= word.length() - seqLen; start++) {
 				String charSeq = word.substring(start, start+seqLen);
-				System.out.println("-- addCorrectWord:    charSeq="+charSeq);;
+				//System.out.println("-- addCorrectWord:    charSeq="+charSeq);;
 				if (!seqSeen.contains(charSeq)) {
+					//System.out.println("-- addCorrectWord:    updateSequenceIDF");;
 					updateSequenceIDF(charSeq);
+					//System.out.println("-- addCorrectWord:    sequenceIDF updated");;
 				}
 				seqSeen.add(charSeq);
 			}
@@ -50,16 +55,45 @@ public class SpellChecker {
 			idfStats.put(charSeq, new Long(0));
 		}
 		idfStats.put(charSeq, idfStats.get(charSeq)+1);
-		System.out.println("-- udpateSequenceIDF:    upon exit, idfStats.get(charSeq)="+idfStats.get(charSeq));
+		//System.out.println("-- udpateSequenceIDF:    upon exit, idfStats.get(charSeq)="+idfStats.get(charSeq));
 	}
 
-	public void saveToFile(File checkerFile) {
-		// TODO Auto-generated method stub
-		
+	public void saveToFile(File checkerFile) throws IOException {
+		FileWriter saveFile = new FileWriter(checkerFile);
+		Gson gson = new Gson();
+		String json = gson.toJson(this);
+		saveFile.write(json);
+		saveFile.flush();
+		saveFile.close();
+		//System.out.println("saved in "+checkerFile.getAbsolutePath());
 	}
 
-	public SpellChecker readFromFile(File checkerFile) {
+	public SpellChecker readFromFile(File checkerFile) throws IOException {
+		FileReader jsonFileReader = new FileReader(checkerFile);
+		Gson gson = new Gson();
+		SpellChecker checker = gson.fromJson(jsonFileReader, SpellChecker.class);
+		jsonFileReader.close();
+		this.MAX_SEQ_LEN = checker.getMaxSeqLen();
+		this.MAX_CANDIDATES = checker.getMaxCandidates();
+		this.allWords = checker.getAllWords();
+		this.idfStats = checker.getIdfStats();
 		return this;
+	}
+
+	private Map<String, Long> getIdfStats() {
+		return this.idfStats;
+	}
+
+	private String getAllWords() {
+		return this.allWords;
+	}
+
+	private int getMaxCandidates() {
+		return this.MAX_CANDIDATES;
+	}
+
+	private int getMaxSeqLen() {
+		return this.MAX_SEQ_LEN;
 	}
 
 	public List<String> correct(String badWord) {
@@ -87,10 +121,10 @@ public class SpellChecker {
 
 	private List<String> sortCandidatesBySimilarity(List<Pair<String, Double>> candidatesWithSim) {
 		Iterator<Pair<String, Double>> iteratorCand = candidatesWithSim.iterator();
-		while (iteratorCand.hasNext()) {
-			Pair<String,Double> pair = iteratorCand.next();
-			System.out.println("-- sortCandidatesBySimiliraty (1): "+"candidate: "+pair.getFirst()+" ; similarity="+pair.getSecond());
-		}
+//		while (iteratorCand.hasNext()) {
+//			Pair<String,Double> pair = iteratorCand.next();
+//			System.out.println("-- sortCandidatesBySimiliraty (1): "+"candidate: "+pair.getFirst()+" ; similarity="+pair.getSecond());
+//		}
 	
 		Collections.sort(candidatesWithSim, (Pair<String,Double> p1, Pair<String,Double> p2) -> {
 			return p1.getSecond().compareTo(p2.getSecond());
@@ -100,7 +134,7 @@ public class SpellChecker {
 		while (iteratorCand.hasNext()) {
 			Pair<String,Double> pair = iteratorCand.next();
 			candidates.add(pair.getFirst());
-			System.out.println("-- sortCandidatesBySimiliraty (2): "+"candidate: "+pair.getFirst()+" ; similarity="+pair.getSecond());
+			//System.out.println("-- sortCandidatesBySimiliraty (2): "+"candidate: "+pair.getFirst()+" ; similarity="+pair.getSecond());
 		}
 		return candidates;
 	}
@@ -112,7 +146,7 @@ public class SpellChecker {
 			String candidate = iterator.next();
 			double similarity = computeCandidateSimilarity(badWord,candidate);
 			candidateSimilarities.add(new Pair<String,Double>(candidate,new Double(similarity)));
-			System.out.println("-- computeCandidateSimilarities:    "+"candidate: "+candidate+" ; similarity="+similarity);
+			//System.out.println("-- computeCandidateSimilarities:    "+"candidate: "+candidate+" ; similarity="+similarity);
 		}
 		return candidateSimilarities;
 	}
@@ -150,7 +184,7 @@ public class SpellChecker {
 	protected Set<String> wordsContainingSequ(String seq) {
 		Pattern p = Pattern.compile(",([^,]*"+seq+"[^,]*),");
 		Matcher m = p.matcher(allWords);
-		Set wordsWithSeq = new HashSet();
+		Set<String> wordsWithSeq = new HashSet<String>();
 		while (m.find())
 			wordsWithSeq.add(m.group(1));
 		return wordsWithSeq;
@@ -163,25 +197,21 @@ public class SpellChecker {
 			for (int  start=0; start <= string.length() - seqLen; start++) {
 				String charSeq = string.substring(start, start+seqLen);
 				Long idf = idf(charSeq);
-				System.out.println("-- rarestSequencesOf:    charSeq="+charSeq+" ("+idf+")");;
+				//System.out.println("-- rarestSequencesOf:    charSeq="+charSeq+" ("+idf+")");;
 				if (idf != 0) {
-					Pair<String,Long> pair = new Pair(charSeq,idf);
+					Pair<String,Long> pair = new Pair<String,Long>(charSeq,idf);
 					if ( !listOfRarest.contains(pair) )
 						listOfRarest.add(pair);
 				}
 			}
 		}
-		//Object[] rarest = listOfRarest.toArray(new Object[] {});
-		//Arrays.sort(rarest,(Object p1, Object p2) -> {
-		//	return ((Pair<String,Long>)p1).getSecond().compareTo(((Pair<String,Long>)p2).getSecond());
-		//});
 		Collections.sort(listOfRarest,(Object p1, Object p2) -> {
 			return ((Pair<String,Long>)p1).getSecond().compareTo(((Pair<String,Long>)p2).getSecond());
 		});
-		for (int il=0; il < listOfRarest.size(); il++)
-			System.out.println("-- rarestSequencesOf:    rarest["+il+"]= "+
-					((Pair<String,Long>)listOfRarest.get(il)).getFirst()+" ("+
-					((Pair<String,Long>)listOfRarest.get(il)).getSecond()+")");
+//		for (int il=0; il < listOfRarest.size(); il++)
+//			System.out.println("-- rarestSequencesOf:    rarest["+il+"]= "+
+//					((Pair<String,Long>)listOfRarest.get(il)).getFirst()+" ("+
+//					((Pair<String,Long>)listOfRarest.get(il)).getSecond()+")");
 		
 		return listOfRarest;
 		
