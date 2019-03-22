@@ -25,10 +25,17 @@ public class CmdCheckSpelling extends ConsoleCommand {
 		String word = getWord(false);
 		String checkerFilePathname = getDictFile(true);
 		File checkerFile = new File(checkerFilePathname);
-		int maxCorrections = 5;
+		String maxCorrectionsOpt = getMaxCorr(false);
+		int maxCorrections = maxCorrectionsOpt==null ? 5 : Integer.parseInt(maxCorrectionsOpt);
+		String editDistanceAlgorithm = getEditDistanceAlgorithm(false);
+		
 		
 		List<String> suggestions = null;
 		SpellChecker checker = new SpellChecker();
+		if (editDistanceAlgorithm!=null)
+			checker.setEditDistanceAlgorithm(editDistanceAlgorithm);
+		System.out.println(checker.editDistanceCalculator.getClass().getName());
+		
 		checker.readFromFile(checkerFile);
 
 		boolean interactive = false;

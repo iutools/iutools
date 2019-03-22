@@ -113,7 +113,21 @@ public class Console {
 		Option optStatsOverMorphemes = Option.builder(null)
 				.longOpt(ConsoleCommand.OPT_SOM)
 			    .desc("Compute stats over morphemes instead of words.")
-			    .argName("VERBOSITY")
+			    .argName("STATS_OVER_MORPHEMES")
+			    .build();
+
+		Option optMaxCorr = Option.builder(null)
+				.longOpt(ConsoleCommand.OPT_MAX_CORR)
+			    .desc("Maximum number of corrections")
+			    .hasArg()
+			    .argName("MAX_CORR")
+			    .build();
+
+		Option optEditDistAlgo = Option.builder(null)
+				.longOpt(ConsoleCommand.OPT_ED_ALGO)
+			    .desc("Edit distance algorithm")
+			    .hasArg()
+			    .argName("EDIT_DIST")
 			    .build();
 
 		// --- COMMANDS
@@ -151,6 +165,8 @@ public class Console {
 		SubCommand checkSpelling = 
 				new CmdCheckSpelling("check_spelling")
 				.addOption(optDictFile)
+				.addOption(optMaxCorr)
+				.addOption(optEditDistAlgo)
 				;
 		mainCmd.addSubCommand(checkSpelling);
 		

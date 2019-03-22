@@ -20,6 +20,8 @@ public abstract class ConsoleCommand extends SubCommand {
 	public static final String OPT_FONT = "font";
 	public static final String OPT_SOM = "stats-over-morphemes";
 	public static final String OPT_DICT_FILE = "dict-file";
+	public static final String OPT_MAX_CORR = "max-corr";
+	public static final String OPT_ED_ALGO = "edit-dist";
 	
 	
 	public ConsoleCommand(String name) {
@@ -67,7 +69,6 @@ public abstract class ConsoleCommand extends SubCommand {
 	protected String getWord() {
 		return getWord(true);
 	}
-	
 	protected String getWord(boolean failIfAbsent) {
 		String wordStr = getOptionValue(ConsoleCommand.OPT_WORD, failIfAbsent);
 		return wordStr;		
@@ -106,6 +107,20 @@ public abstract class ConsoleCommand extends SubCommand {
 	}
 	protected String getStatsOverMorphemes(boolean failIfAbsent) {
 		return getOptionValue(ConsoleCommand.OPT_SOM, failIfAbsent);
+	}
+	
+	protected String getMaxCorr() {
+		return getMaxCorr(false);
+	}
+	protected String getMaxCorr(boolean failIfAbsent) {
+		return getOptionValue(ConsoleCommand.OPT_MAX_CORR, failIfAbsent);
+	}
+	
+	protected String getEditDistanceAlgorithm() {
+		return getEditDistanceAlgorithm(false);
+	}
+	protected String getEditDistanceAlgorithm(boolean failIfAbsent) {
+		return getOptionValue(ConsoleCommand.OPT_ED_ALGO, failIfAbsent);
 	}
 	
 	protected static String prompt(String mess) {
