@@ -101,7 +101,7 @@ public abstract class Affix extends Morpheme {
 		super.setAttributes(affAttrs);
 	}
 	
-    String[] getForm(char context) {
+    public String[] getForm(char context) {
         if (context=='V' || context=='a' || context=='i' || context=='u')
             return vform;
         else if (context=='t')
@@ -114,7 +114,7 @@ public abstract class Affix extends Morpheme {
             return null;
     }
     
-    Action[] getAction1(char context) {
+    public Action[] getAction1(char context) {
         if (context=='V' || context=='a' || context=='i' || context=='u')
             return vaction1;
         else if (context=='t')
@@ -127,7 +127,7 @@ public abstract class Affix extends Morpheme {
 			return null;
     }
     
-    Action[] getAction2(char context) {
+    public Action[] getAction2(char context) {
         if (context=='V' || context=='a' || context=='i' || context=='u')
             return vaction2;
         else if (context=='t')
