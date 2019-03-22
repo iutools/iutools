@@ -23,6 +23,7 @@
 
 package ca.inuktitutcomputing.script;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public abstract class Roman {
@@ -1284,6 +1285,71 @@ public abstract class Roman {
 		}
 		return forms;
 	}
+
+	public static boolean isVoicing(String keyNextToCurrent) {
+		char ch = keyNextToCurrent.charAt(0);
+		if (ch=='g' || ch=='l' || ch=='v')
+			return true;
+		else
+			return false;
+	}
+	
+	public static String[] separateSyllables(String word) {
+		String wordPlus = word+"/";
+		char[] chars = wordPlus.toCharArray();
+		ArrayList<String> syllables = _separateSyllables(chars);
+		return syllables.toArray(new String[] {});
+	}
+	
+	private static ArrayList<String> _separateSyllables(char[] chars) {
+		ArrayList<String> syllables = new ArrayList<String>();
+		String consonant = "";
+		String syllable = "";
+		boolean previousIsConsonant = true;
+		boolean oneVowel = false;
+		boolean twoVowels = false;
+		for (char c : chars) {
+			if (isVowel(c)) {
+				if ( !consonant.equals("") ) {
+					syllable += consonant;
+					consonant = "";
+				}
+				if ( !oneVowel ) {
+					syllable += String.valueOf(c);
+					oneVowel = true;
+				} else {
+					if (c==syllable.charAt(syllable.length()-1)) {
+						syllable += String.valueOf(c);
+						oneVowel = false;
+						twoVowels = true;
+					} else {
+						syllables.add(syllable);
+						syllable = String.valueOf(c);
+						oneVowel = false;
+						twoVowels = false;
+					}
+				}
+			}
+			else {
+				if ( !consonant.equals("") ) {
+					if ( !syllable.equals("") )
+						syllables.add(syllable);
+					syllables.add(consonant);
+					consonant = "";
+					syllable = String.valueOf(c);
+				} else {
+					if ( !syllable.equals("") )
+						syllables.add(syllable);
+					consonant = String.valueOf(c);
+					syllable = "";
+				}
+				oneVowel = false;
+			}
+		}
+		return syllables;
+	}
+
+	
 
     
 }
