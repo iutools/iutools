@@ -674,6 +674,16 @@ public abstract class Action {
             }
         }
 
+        public static char changementPhonologique1(char context) {
+            switch (context) {
+            case 't': return 'd';
+            case 'k': return 'g';
+            case 'q': return 'r';
+            case 'p': return 'b';
+            default: return (char)-1;
+            }
+        }
+
         public String combine(String form1, String form2, Action act2) {
             // Ex.: _k + miaq > _gmiaq
             return form1.substring(0,form1.length()-1)+
@@ -726,6 +736,16 @@ public abstract class Action {
             case 'q': return "r";
             case 'p': return "m";
             default: return "";
+            }
+        }
+
+        public static char changementPhonologique1(char context) {
+            switch (context) {
+            case 't': return 'n';
+            case 'k': return 'N';
+            case 'q': return 'r';
+            case 'p': return 'm';
+            default: return (char) -1;
             }
         }
 
