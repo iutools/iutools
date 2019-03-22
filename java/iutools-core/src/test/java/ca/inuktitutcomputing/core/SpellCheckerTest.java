@@ -37,7 +37,7 @@ public class SpellCheckerTest {
 		SpellChecker checker = new SpellChecker();
 		checker.addCorrectWord("inuktut");
 		checker.addCorrectWord("inuk");
-		checker.addCorrectWord("inukshuk");
+		checker.addCorrectWord("inuksuk");
 		checker.addCorrectWord("nunavut");
 		// etc...
 		
@@ -62,8 +62,9 @@ public class SpellCheckerTest {
 		// You can then use the check to get plausible corrections for
 		// a badly spelled word.
 		//
-		int nCorrection = 5;
-		List<String> corrections = checker.correct("inushuk", 5);
+		String wordWithError = "inusuk";
+		int nCorrections = 5;
+		List<String> corrections = checker.correct(wordWithError, nCorrections);
 
 	}
 	
