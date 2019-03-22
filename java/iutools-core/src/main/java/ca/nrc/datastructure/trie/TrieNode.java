@@ -2,9 +2,11 @@ package ca.nrc.datastructure.trie;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -19,8 +21,18 @@ public class TrieNode {
     protected String surfaceForm = null;
     protected HashMap<String,Long> surfaceForms = new HashMap<String,Long>();
     
+    
+    public String key() {
+    	return keys[keys.length-1];
+    }
+    
 	public HashMap<String,TrieNode> getChildren() {
 		return children;
+	}
+	
+	public TrieNode[] getChildrenNodes() {
+		Collection<TrieNode> childrenNodes = (Collection<TrieNode>) children.values();
+		return childrenNodes.toArray(new TrieNode[] {});
 	}
 	
 	public void addChild(String key, TrieNode node) {
@@ -37,6 +49,9 @@ public class TrieNode {
     
     public boolean hasTerminalNode() {
     	return this.hasChild("\\");
+    }
+    public TrieNode getChildTerminalNode() {
+    	return this.getChildren().get("\\");
     }
     
     public String getSurfaceForm() {
