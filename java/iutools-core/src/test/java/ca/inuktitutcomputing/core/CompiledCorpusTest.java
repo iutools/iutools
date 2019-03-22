@@ -96,12 +96,12 @@ public class CompiledCorpusTest extends TestCase
     	// nunavut inuit
     	// takujuq
     	// amma
-    	// kinaujaq
+    	// kanaujaq
     	// iglumik takulaaqtuq
     	// nunait
 
 		String[] stringsOfWords = new String[] {
-				"nunavut inuit takujuq amma kinaujaq iglumik takulaaqtuq nunait"
+				"nunavut inuit takujuq amma kanaujaq iglumik takulaaqtuq nunait"
 				};
 		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
         CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
@@ -171,12 +171,12 @@ public class CompiledCorpusTest extends TestCase
     	// nunavut inuit                   umialiuqti
     	// takujuq                         iglumut
     	// amma                            sanalauqsimajuq
-    	// kinaujaq
+    	// kanaujaq
     	// iglumik takulaaqtuq
     	// nunait
 
 		String[] stringsOfWords = new String[] {
-				"nunavut inuit takujuq amma kinaujaq iglumik takulaaqtuq nunait",
+				"nunavut inuit takujuq amma kanaujaq iglumik takulaaqtuq nunait",
 				"umialiuqti iglumut sanalauqsimajuq"
 				};
 		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
@@ -269,12 +269,12 @@ public class CompiledCorpusTest extends TestCase
     	// nunavut inuit           umialiuqti           uqaqti
     	// takujuq                 iglumut              isumajunga
     	// amma                    sanalauqsimajuq      qikiqtait
-    	// kinaujaq
+    	// kanaujaq
     	// iglumik takulaaqtuq
     	// nunait
 
 		String[] stringsOfWords = new String[] {
-				"nunavut inuit takujuq amma kinaujaq iglumik takulaaqtuq nunait",
+				"nunavut inuit takujuq amma kanaujaq iglumik takulaaqtuq nunait",
 				"umialiuqti iglumut sanalauqsimajuq",
 				"uqaqti isumajunga qikiqtait"
 				};
@@ -308,7 +308,7 @@ public class CompiledCorpusTest extends TestCase
     @Test
     public void test__canBeResumed() throws ConfigException, IOException {
 		String[] stringsOfWords = new String[] {
-				"nunavut inuit takujuq amma kinaujaq iglumik takulaaqtuq nunait"
+				"nunavut inuit takujuq amma kanaujaq iglumik takulaaqtuq nunait"
 				};
 		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
         CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
@@ -340,7 +340,7 @@ public class CompiledCorpusTest extends TestCase
 	@Test
 	public void test__readFromJson() throws Exception {
 		String[] stringsOfWords = new String[] {
-				"nunavut inuit takujuq amma kinaujaq iglumik takulaaqtuq nunait"
+				"nunavut inuit takujuq amma kanaujaq iglumik takulaaqtuq nunait"
 				};
 		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
         CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
@@ -439,7 +439,7 @@ public class CompiledCorpusTest extends TestCase
 	@Test
 	public void test__getNbFailedSegmentations() throws Exception {
 		String[] stringsOfWords = new String[] {
-				"nunavut inuit takujuq amma kinaujaq iglumik takulaaqtuq nunait"
+				"nunavut inuit takujuq amma kanaujaq iglumik takulaaqtuq nunait"
 				};
 		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
         CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
@@ -454,7 +454,7 @@ public class CompiledCorpusTest extends TestCase
 	@Test
 	public void test_recompileWordsWhoFailedAnalysis() throws Exception {
 		String[] stringsOfWords = new String[] {
-				"nunavut inuit takujuq amma kinaujaq iglumik takulaaqtuq nunait"
+				"nunavut inuit takujuq amma kanaujaq iglumik takulaaqtuq nunait"
 				};
 		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
         CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
