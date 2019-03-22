@@ -5,7 +5,6 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -27,7 +26,7 @@ public class SpellCheckerTest {
 		checker.addCorrectWord("nunavut");
 	}
 
-	@Test
+	@Test(expected=RuntimeException.class) // because file checker.json does not exist
 	public void test__SpellChecker__Synopsis() throws IOException {
 		//
 		// Before you can use a spell checker, you must first build its
