@@ -32,6 +32,7 @@ import ca.inuktitutcomputing.utilities.Debugging;
 public class NounEnding extends Affix {
 	//
 	String grammCase;
+	String cas;
 	String number;
 	String possPers = null;
 	String possNumber = null;
@@ -54,6 +55,7 @@ public class NounEnding extends Affix {
 		Debugging.mess("NounEnding/1", 1, "morpheme= " + morpheme);
 		type = (String) v.get("type");
 		grammCase = (String) v.get("case");
+		cas = (String) v.get("case");
 		number = (String) v.get("number");
 		possPers = (String) v.get("perPoss");
 		possNumber = (String) v.get("numbPoss");
@@ -355,6 +357,7 @@ public class NounEnding extends Affix {
 	void setAttributes() {
 		HashMap tnAttrs = new HashMap();
 		tnAttrs.put("grammCase", grammCase);
+		tnAttrs.put("cas", grammCase);
 		tnAttrs.put("number", number);
 		tnAttrs.put("possPers", possPers);
 		tnAttrs.put("possNumber", possNumber);
