@@ -48,16 +48,20 @@ public class Graph {
 		        arcs[i].setStartState(this);
 		}
 
-		public Vector verify(Morpheme affixe) {
-			Vector possibles = new Vector();
+		public Vector<Graph.Arc> verify(Morpheme affixe) {
+			Vector<Graph.Arc> possibleArcs = new Vector<Graph.Arc>();
 			for (int i = 0; i < arcs.length; i++) {
-			    if (arcs[i].getCondition()==null) {
-			        Vector possibles1 = arcs[i].destState.verify(affixe);
-			        possibles.addAll(possibles1);
-			    } else if (arcs[i].getCondition().isMetByFullMorphem(affixe))
-					 possibles.add(arcs[i]);
+				Graph.Arc arc = arcs[i];
+				Conditions conds = arc.getCondition();
+			    if (conds!=null) {
+			    	if (conds.isMetByFullMorphem(affixe))
+			    		possibleArcs.add(arc);
+			    } else {
+			        Vector<Graph.Arc> possibles1 = arc.destState.verify(affixe);
+			        possibleArcs.addAll(possibles1);
+			    }
 			}
-			return possibles;
+			return possibleArcs;
 		}
 
 	
@@ -388,7 +392,7 @@ public class Graph {
 //		});
 		
 		radpp2.setArcs(new Arc[]{
-		        new Arc(makeCond("type:pr"), zero),
+		        new Arc(makeCond("type:p"), zero),   // pr to p
 		        new Arc(makeCond("function:nn"), radpp2)
 		});
 
