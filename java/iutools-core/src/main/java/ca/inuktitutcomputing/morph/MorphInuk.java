@@ -61,12 +61,12 @@ public class MorphInuk {
 
     public static Decomposition[] decomposeWord(String word) throws Exception {
     	boolean wordInSyllabics = false;
-        ArrayList decsList = new ArrayList();
-        Vector words = null;
+        ArrayList<Decomposition> decsList = new ArrayList<Decomposition>();
+        Vector<String> words = null;
         
         // Trouver les mots correspondants selon les règles phonologiques
-        //        Vector words = Dialect.termesCorrespondants(word);
-        words = new Vector();
+        //        Vector<String> words = Dialect.termesCorrespondants(word);
+        words = new Vector<String>();
         words.add(word);
         
         for (int i = 0; i < words.size(); i++) {
@@ -78,7 +78,7 @@ public class MorphInuk {
         	if (Syllabics.containsInuktitut(aWord))
         		aWord = Syllabics.transcodeToRoman(aWord);
         	aWord = aWord.replaceAll("([iua])qk([iua])","$1qq$2");
-            Vector decomps = decompose(aWord, wordInSyllabics, false);
+            Vector<Decomposition> decomps = decompose(aWord, wordInSyllabics, false);
 
             // Si aucune décomposition n'a été trouvée,
             // on essaye les choses suivantes.
@@ -86,9 +86,8 @@ public class MorphInuk {
             if (true
 //                    (decomps == null || decomps.size() == 0) && !outOfMemory
                     ) {
-                if (decomps==null)
-                    decomps = new Vector();
-                Vector newDecomps;
+                //if (decomps==null) decomps = new Vector(); ////decompose cannot return null
+                Vector<Decomposition> newDecomps;
                 if (Roman.typeOfLetterLat(aWord.charAt(aWord.length() - 1)) == Roman.V) {
                     // Si le mot se termine par une voyelle, il est possible
                     // qu'il manque la consonne finale. On ajoute '*' à la fin
@@ -109,8 +108,8 @@ public class MorphInuk {
                             }
                         }
                 } else
-                    newDecomps = new Vector();
-                if (newDecomps!=null)
+                    newDecomps = new Vector<Decomposition>();
+                //if (newDecomps!=null)  ////decompose cannot return null
                     decomps.addAll(newDecomps);
             }
 
@@ -161,16 +160,17 @@ public class MorphInuk {
     // méthodes devraient plutôt appeler decomposeWord, et alors decompose sera
     // faite privée.
 
-    private static Vector decompose(String term, boolean isSyllabic, boolean decomposeBase) throws Exception
+    private static Vector<Decomposition> decompose(String term, boolean isSyllabic, boolean decomposeBase) throws Exception
     {
-        Vector morphPartsInit = new Vector();
+        Vector<AffixPartOfComposition> morphPartsInit = new Vector<AffixPartOfComposition>();
         Graph.State state;
-        Vector decomposition = null;
+        Vector<Decomposition> decomposition = null;
         String simplifiedTerm = null;
         Conditions preCond = null;
 
         stpw = new StopWatch(millisTimeout);
-        // TODO: éventuellement, déplacer ici Dialect.setStopWatch() qui se trouve dans analyzeAsRoot
+        Dialect.setStopWatch(stpw);
+        //stpw.disactivate(); // uncomment for debugging
         stpw.start();
 
         arcsByMorpheme.clear();
@@ -475,7 +475,8 @@ public class MorphInuk {
      * Pour chaque affixe trouvé valide, une nouvelle branche de décomposition
      * est créée, par un appel récursif à décomposer/8.
      */
-    private static Vector<Decomposition> decomposeByAffixes(Vector<?> onesFound,
+    @SuppressWarnings("unchecked")
+	private static Vector<Decomposition> decomposeByAffixes(Vector<?> onesFound,
             String stem, String affixCandidateOrig, 
             Graph.State states[],
             Conditions preCond,
@@ -690,7 +691,7 @@ public class MorphInuk {
                         && typeOfFormFirstChar == Roman.C) {
                     // Both are consonants
                     // Find equivalent clusters
-                    Vector grs = Dialect.equivalentGroups(stemEndChar,
+                    Vector<String> grs = Dialect.equivalentGroups(stemEndChar,
                             formFirstChar);
                     /*
                      * For each equivalent cluster the first consonant of which
@@ -975,7 +976,7 @@ public class MorphInuk {
                          */
                         if (typeOfStemEndChar==Roman.C && typeOfFormFirstChar==Roman.C &&
                                 checkPossibleDialectalChanges){
-                            Vector grs = Dialect.equivalentGroups(stemEndChar,
+                            Vector<String> grs = Dialect.equivalentGroups(stemEndChar,
                                     formFirstChar);
                             if (grs != null)
                                 for (int i = 0; i < grs.size(); i++) {
@@ -1045,7 +1046,7 @@ public class MorphInuk {
                         }
                     }
                 } else if (checkPossibleDialectalChanges){
-                    Vector grs = Dialect.equivalentGroups(stemEndChar,
+                    Vector<String> grs = Dialect.equivalentGroups(stemEndChar,
                             formFirstChar);
                     if (grs != null)
                         for (int i = 0; i < grs.size(); i++) {
@@ -1111,7 +1112,7 @@ public class MorphInuk {
                         }
                     }
                 } else if (checkPossibleDialectalChanges) {
-                    Vector grs = Dialect.equivalentGroups(stemEndChar,
+                    Vector<String> grs = Dialect.equivalentGroups(stemEndChar,
                             formFirstChar);
                     if (grs != null)
                         for (int i = 0; i < grs.size(); i++) {
@@ -1178,7 +1179,7 @@ public class MorphInuk {
                         }
                     }
                 } else if (checkPossibleDialectalChanges) {
-                    Vector grs = Dialect.equivalentGroups(stemEndChar,
+                    Vector<String> grs = Dialect.equivalentGroups(stemEndChar,
                             formFirstChar);
                     if (grs != null)
                         for (int i = 0; i < grs.size(); i++) {
@@ -1646,7 +1647,6 @@ public class MorphInuk {
          * On cherche aussi des groupes de consonnes équivalents à l'intérieur
          * de la racine candidate. Toutes les possibilités sont retenues.
          */
-        Dialect.setStopWatch(stpw);
         newRootCandidates = Dialect.newRootCandidates(termICI); 
         if (newRootCandidates != null)
             for (int k = 0; k < newRootCandidates.size(); k++) {
@@ -1659,8 +1659,11 @@ public class MorphInuk {
                     else
                         lexs.addAll(tr);
             }
-        Vector analyses = checkRoots(lexs,word,termOrigICI,morphParts,states,
+        Vector<Decomposition> analyses = checkRoots(lexs,word,termOrigICI,morphParts,states,
                 preCond,transitivity);
+
+        Vector<Decomposition> allAnalyses = new Vector<Decomposition>();
+        allAnalyses.addAll(analyses);
 
         /*
          * Vérifier la possibilité que la règle suivante s'applique: pour les
@@ -1672,12 +1675,15 @@ public class MorphInuk {
          * à cette règle.  Sa position sera la même que le dernier morceau trouvé, puisqu'il
          * ne correspond pas à un suite de caractères à la suite de la racine.
          */
-        Vector analyses2 = new Vector();;
         
-        // 13 mars 2006: on a décidé de ne pas appliquer ce processus aux 
-        // racines et de plutôt ajouter à la table des racines toute racine
-        // résultant de ce processus trouvée dans les dictionnaires, comme
-        // ikummaq- < ikuma-
+        /* !!!!
+         * 13 mars 2006: on a décidé de ne pas appliquer ce processus aux 
+         * racines et de plutôt ajouter à la table des racines toute racine
+         * résultant de ce processus trouvée dans les dictionnaires, comme
+         * ikummaq- < ikuma-
+        */
+        
+//        Vector analyses2 = new Vector();;
 //        Vector v = new Vector();
 //        v.add(termICI);
 //        v.addAll(newCandidates);
@@ -1693,26 +1699,23 @@ public class MorphInuk {
 //                mcx.add(new MorceauAffixe.Inchoative(termICI.length()));
 //            }
 //        }
-//
 //        analyses2 = checkRoots(lexs2,word,termOrigICI,mcx,states,
-//                condsSpecs,preCond,transitivity);
+//                condsSpecs,preCond,transitivity);       
+//        allAnalyses.addAll(analyses2);
         
-        Vector allAnalyses = new Vector();
-        allAnalyses.addAll(analyses);
-        allAnalyses.addAll(analyses2);
         return allAnalyses;
     }
     
     
-    private static Vector checkRoots(Vector lexs, String word, String termOrigICI,
-            Vector morphParts, Graph.State states[], Conditions preCond,
+    private static Vector<Decomposition> checkRoots(Vector lexs, String word, String termOrigICI,
+            Vector<AffixPartOfComposition> morphParts, Graph.State states[], Conditions preCond,
             String transitivity) throws TimeoutException {
         
         String keyStateIDs = "0";
         for (int i=0; i<states.length; i++)
         	keyStateIDs += "+"+states[i].id;
 
-        Vector rootAnalyses = new Vector();
+        Vector<Decomposition> rootAnalyses = new Vector<Decomposition>();
         char typeBase = 0;
 
         if (lexs == null) {
@@ -1785,22 +1788,25 @@ public class MorphInuk {
                  * indiquée dans le champ 'condTrans'.  Elle ne s'applique qu'aux
                  * racines.
                  */
-                boolean accepted = true;
-                Graph.Arc arcFollowed = null;
-                Graph.Arc[] arcsFollowed = null;
-                if ( (arcsFollowed=arcsSuivis(root,states,keyStateIDs)) !=null 
-                		&& (arcFollowed=arcToZero(arcsFollowed)) != null
-                		&& root.meetsConditions(preCond, morphParts)
-                		&& (!root.type.equals("v") 
-                				|| root.meetsTransitivityCondition(transitivity)
-                			)
-                	) 
-                {
-                    accepted = true;
-                }
-                else
-                    accepted = false;
+                boolean accepted = false;
                 
+                Graph.Arc arcFollowed = null;
+                Graph.Arc[] arcsFollowed = arcsSuivis(root,states,keyStateIDs);
+                if (arcsFollowed !=null ) {
+                	arcFollowed = arcToZero(arcsFollowed);
+                	if (arcFollowed != null) {
+                		boolean conditionsMet = root.meetsConditions(preCond, morphParts);
+                		if (conditionsMet) {
+                			if (root.type.equals("v")) {
+                				boolean transitivityMet = root.meetsTransitivityCondition(transitivity);
+                				if (transitivityMet)
+                					accepted = true;
+                			} else {
+                				accepted = true;
+                			}
+                		}
+                	}
+                }
                 
                 if (accepted) {
                     /*
@@ -1839,7 +1845,7 @@ public class MorphInuk {
      * celles qui retournent le suffixe "a" d'action de groupe deux fois
      * lorsqu'on a un double "a" dans le mot.
      */
-    private static boolean sameAsNext(Morpheme morpheme, Vector partsAlreadyAnalyzed) {
+    private static boolean sameAsNext(Morpheme morpheme, Vector<AffixPartOfComposition> partsAlreadyAnalyzed) {
         boolean res = true;
         if (partsAlreadyAnalyzed.size() != 0) {
             Affix affPrec = ((AffixPartOfComposition) partsAlreadyAnalyzed.elementAt(0)).getAffix();
@@ -1859,7 +1865,7 @@ public class MorphInuk {
      * autre suffixe.
      */
     private static boolean samePosition(int positionAffixInWord, 
-            Vector partsAlreadyAnalyzed) {
+            Vector<AffixPartOfComposition> partsAlreadyAnalyzed) {
         boolean res = true;
         if (partsAlreadyAnalyzed.size() != 0) {
             AffixPartOfComposition nextMorphpart = (AffixPartOfComposition) partsAlreadyAnalyzed
@@ -1950,9 +1956,9 @@ public class MorphInuk {
      * correspondent à des racines verbales où cette consonne est simple et le
      * 'q' est absent ou présent.
      */
-    private static Vector checkForDoubleConsonantInVerbalRoots(Vector rootCandidates) {
+    private static Vector checkForDoubleConsonantInVerbalRoots(Vector<String> rootCandidates) {
         Vector newLexs = new Vector();
-        Vector newRootCandidates = new Vector();
+        Vector<String> newRootCandidates = new Vector<String>();
         for (int i=0; i<rootCandidates.size(); i++) {
 //          stpw.check("checkForDoubleConsonantInVerbalRoots -- rootCandidate: "+((Base)rootCandidates.elementAt(i)).morpheme);
             String rootCandidate = (String)rootCandidates.elementAt(i);
