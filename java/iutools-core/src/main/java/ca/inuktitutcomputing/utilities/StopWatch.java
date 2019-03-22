@@ -7,6 +7,7 @@ public class StopWatch {
 	
 	private long timeout; // milliseconds
 	private long startTime;
+	private boolean disactivated = false;
 	
 	public StopWatch(long _timeout) {
 		this.timeout = _timeout;
@@ -17,9 +18,13 @@ public class StopWatch {
 	}
 	
 	public void check(String message) throws TimeoutException {
-		if (Calendar.getInstance().getTimeInMillis() > this.startTime+timeout) {
+		if (!disactivated && Calendar.getInstance().getTimeInMillis() > this.startTime+timeout) {
 			throw new TimeoutException(message);
 		}
+	}
+	
+	public void disactivate() {
+		disactivated = true;
 	}
 
 }
