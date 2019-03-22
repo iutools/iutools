@@ -1,6 +1,7 @@
 package ca.inuktitutcomputing.core;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -18,6 +19,9 @@ import java.util.regex.Pattern;
 import com.google.gson.Gson;
 
 import ca.nrc.datastructure.Pair;
+import ca.inuktitutcomputing.utilities.EditDistanceCalculator;
+import ca.inuktitutcomputing.utilities.EditDistanceCalculatorFactory;
+import ca.inuktitutcomputing.utilities.EditDistanceCalculatorFactoryException;
 import ca.inuktitutcomputing.utilities.Levenshtein;
 
 public class SpellChecker {
@@ -26,6 +30,20 @@ public class SpellChecker {
 	protected int MAX_CANDIDATES = 100;
 	protected String allWords = ",,";
 	protected Map<String,Long> idfStats = new HashMap<String,Long>();
+	private String defaultEditDistanceAlgorithmName = "Levenshtein";
+	public EditDistanceCalculator editDistanceCalculator;
+	
+	
+	public SpellChecker() {
+		try {
+			editDistanceCalculator = EditDistanceCalculatorFactory.getEditDistanceCalculator(defaultEditDistanceAlgorithmName);
+		} catch (EditDistanceCalculatorFactoryException e) {
+		}
+	}
+	
+	public void setEditDistanceAlgorithm(String name) throws ClassNotFoundException, EditDistanceCalculatorFactoryException {
+		editDistanceCalculator = EditDistanceCalculatorFactory.getEditDistanceCalculator(name);
+	}
 	
 
 	public void addCorrectWord(String word) {
@@ -68,7 +86,7 @@ public class SpellChecker {
 		//System.out.println("saved in "+checkerFile.getAbsolutePath());
 	}
 
-	public SpellChecker readFromFile(File checkerFile) throws IOException {
+	public SpellChecker readFromFile(File checkerFile) throws FileNotFoundException, IOException {
 		FileReader jsonFileReader = new FileReader(checkerFile);
 		Gson gson = new Gson();
 		SpellChecker checker = gson.fromJson(jsonFileReader, SpellChecker.class);
@@ -153,7 +171,7 @@ public class SpellChecker {
 
 	private double computeCandidateSimilarity(String badWord, String candidate) {
 		// TODO Auto-generated method stub
-		int distance = Levenshtein.distance(candidate,badWord);
+		int distance = editDistanceCalculator.distance(candidate,badWord);
 		return (double)distance;
 	}
 
