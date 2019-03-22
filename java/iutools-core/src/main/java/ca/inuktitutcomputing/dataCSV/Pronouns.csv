@@ -1,19 +1,20 @@
 morpheme,variant,nb,type,nature,per,number,engMean,freMean,combination,condOnNext,END
-igvit,ipvit,1,pr,per,2,s,you; yours,tu; toi; à toi,,,.
+igvit,ipvit,1,p,per,2,s,you; yours,tu; toi; Ã  toi,,,.
 ili,,1,rp,per,2,,you,toi; vous,,,.
-ilipsi,,1,pr,per,2,p,you many; yours (to many),vous plusieurs; à vous plusieurs,,,.
-iluunna,,1,pr,sem,,p,all of,tous,,"type:tn,poss:true,number:p,possNumber:p",.
-iluunnatik,,1,pr,sem,,p,all of,tous,,,.
-kikkut,,1,pr,int,,p,who,qui,,,.
-kina,,1,pr,int,,s,who,qui,,,.
-kinakkut,,1,pr,int,,p,who,qui,kina/1p+kkut/1nn,,.
-kisu,,1,pr,int,,s,what,quoi,,,.
-kisut,,1,pr,int,,p,what,quoi,,,.
-kitut,,1,pr,int,,p,who,qui,,,.
-su,,1,pr,int,,s,what,quoi,,,.
-suna,,1,pr,int,,s,what,quoi,,,.
-tama,,1,pr,sem,,p,all of,tous,,"type:tn,poss:true,number:p,possNumber:p",.
+ilipsi,,1,p,per,2,p,you many; yours (to many),vous plusieurs; Ã  vous plusieurs,,,.
+iluunna,,1,p,sem,,p,all of,tous,,"type:tn,poss:true,number:p,possNumber:p",.
+iluunnatik,,1,p,sem,,p,all of,tous,,,.
+kikkut,,1,p,int,,p,who,qui,,,.
+kina,,1,p,int,,s,who,qui,,,.
+kinakkut,,1,p,int,,p,who,qui,kina/1p+kkut/1nn,,.
+kisu,,1,p,int,,s,what,quoi,,,.
+kisut,,1,p,int,,p,what,quoi,,,.
+kitut,,1,p,int,,p,who,qui,,,.
+su,,1,p,int,,s,what,quoi,,,.
+suna,,1,p,int,,s,what,quoi,,,.
+tama,,1,p,sem,,p,all of,tous,,"type:tn,poss:true,number:p,possNumber:p",.
+tamarmik,,1,p,per,,p,all of,tous,,,
 uva,,1,rpr,per,1,,me; us,moi; nous,,,.
-uvaguk,,1,pr,per,1,d,we two; us two; ours (to us two),nous deux; à nous deux,,,.
-uvagut,,1,pr,per,1,p,we many; us manu; ours (to many of us),nous plusieurs; à nous plusieurs,,,.
-uvanga,,1,pr,per,1,s,I; me; mine,je; moi; à moi,,,.
+uvaguk,,1,p,per,1,d,we two; us two; ours (to us two),nous deux; Ã  nous deux,,,.
+uvagut,,1,p,per,1,p,we many; us manu; ours (to many of us),nous plusieurs; Ã  nous plusieurs,,,.
+uvanga,,1,p,per,1,s,I; me; mine,je; moi; Ã  moi,,,.

@@ -298,7 +298,7 @@ nginnik,tn,acc,d,4,p,ngingnik,allV,x,* ngingnik,iallV(i),,* ngingnik,sallV,x,* n
 nginnik,tn,acc,p,4,p,innik,n,,,i(i) s,,,s,,,s,,,H2
 ngannut,tn,dat,s,4,p,,n,,,i(i) s,,,s,,,s,,,H2
 nginnut,tn,dat,d,4,p,ngingnut,allV,x,* ngingnut,iallV(i),,* ngingnut,sallV,x,* ngingnut,sallV,x,,H2
-nginnut,tn,dat,p,4,p,,n,,,i(i) s,,,s,,,s,,,H2
+nginnut,tn,dat,p,4,p,innut,n,,,i(i) s,,,s,,,s,,,H2
 ngannit,tn,abl,s,4,p,,n,,,i(i) s,,,s,,,s,,,H2
 nginnit,tn,abl,d,4,p,ngingnit,allV,x,* ngingnit,iallV(i),,* ngingnit,sallV,x,* ngingnit,sallV,x,,H2
 nginnit,tn,abl,p,4,p,,n,,,i(i) s,,,s,,,s,,,H2
