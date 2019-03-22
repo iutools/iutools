@@ -60,8 +60,8 @@ public class AttrValCond extends Condition implements Conditions,Cloneable {
     }
     
     public boolean isMetByFullMorphem(Morpheme morph) {
-        boolean res = true;
-        res = morph.attrEqualsValue(aspect.attribute, aspect.value, aspect.eq);
+        boolean res = morph.attrEqualsValue(aspect.attribute, aspect.value, aspect.eq);
+        
         return (truth == res); // XNOR
     }
     
