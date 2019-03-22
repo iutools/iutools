@@ -1,8 +1,8 @@
 package ca.inuktitutcomputing.utilities;
 
-public class Levenshtein {
+public class Levenshtein implements EditDistanceCalculator {
 	 
-    public static int distance(String a, String b) {
+    public int distance(String a, String b) {
         a = a.toLowerCase();
         b = b.toLowerCase();
         // i == 0
@@ -22,9 +22,10 @@ public class Levenshtein {
         return costs[b.length()];
     }
  
-    public static void main(String [] args) {
+    public static void main(String [] args) throws EditDistanceCalculatorFactoryException {
+    	EditDistanceCalculator calculator = EditDistanceCalculatorFactory.getEditDistanceCalculator("Levenshtein");
         String [] data = { "kitten", "sitting", "saturday", "sunday", "rosettacode", "raisethysword" };
         for (int i = 0; i < data.length; i += 2)
-            System.out.println("distance(" + data[i] + ", " + data[i+1] + ") = " + distance(data[i], data[i+1]));
+            System.out.println("distance(" + data[i] + ", " + data[i+1] + ") = " + calculator.distance(data[i], data[i+1]));
     }
 }
