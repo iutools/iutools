@@ -1,6 +1,5 @@
 package ca.pirurvik.iutools.core;
 
-import ca.inuktitutcomputing.data.LinguisticDataAbstract;
 import ca.inuktitutcomputing.data.LinguisticDataSingleton;
 import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.morph.MorphInuk;
@@ -17,7 +16,6 @@ public class DecomposeInuktutWord
 		LinguisticDataSingleton.getInstance("csv");
     	String word = args[0];
         System.out.println( "Decomposing '"+word+"' ..." );
-		LinguisticDataAbstract.init("csv");
 		Decomposition [] decs = null;
         try {
 			decs = MorphInuk.decomposeWord(word);
