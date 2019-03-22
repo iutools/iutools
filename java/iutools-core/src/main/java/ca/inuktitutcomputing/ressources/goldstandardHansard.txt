@@ -47,7 +47,7 @@ amisut amisut {amisut:amisut/1n}
 amisuummata amisuummata {amisu:amisu/1n}{u:u/1nv}{mmata:mata/tv-caus-4p}
 amisuuningit amisuuningit {amisu:amisu/1n}{u:u/1nv}{ni:niq/2vn}{ngit:ngit/tn-nom-p-4s}
 amittuq amittuq {amit:amit/1v}{tuq:juq/1vn}
-*amittuq amittuq [decomposition:/amittuq(amittuq)/] "nom de famille; communauté"
+*amittuq amittuq [decomposition:/amittuq(amittuq)/] "nom de famille; communautï¿½"
 amma amma {amma:amma/1c}
 ammalu ammalu {amma:amma/1c}{lu:lu/1q}
 ammaluttauq ammaluttauq {amma:amma/1c}{lu:lu/1q}{ttauq:ttauq/1q}
@@ -263,7 +263,7 @@ iluagut iluagut {ilu:ilu/1n}{agut:ngagut/tn-via-s-4s}
 iluani iluani {ilu:ilu/1n}{ani:ngani/tn-loc-s-4s}
 ilulingit ilulingit {ilu:ilu/1n}{li:lik/1nn}{ngit:ngit/tn-nom-p-4s}
 ilulingita ilulingita {ilu:ilu/1n}{li:lik/1nn}{ngita:ngita/tn-gen-p-4s}
-iluunnatik iluunnatik {iluunnatik:iluunnatik/1pr}
+iluunnatik iluunnatik {iluunnatik:iluunnatik/1p}
 imaak imaak {imaak:imaak/1a}
 @imaimmat imaimmat [decomposition:/imaimmat(imaimmat)/]
 imanna imanna {imanna:imannak/1a}
@@ -336,7 +336,7 @@ itsivauta itsivauta {itsiva:iksiva/1v}{uta:ut/1vn}
 itsivautaa itsivautaa {itsiva:iksiva/1v}{uta:ut/1vn}{a:k/tn-nom-d}
 @itsivautaaq itsivautaaq [decomposition:/itsiva(iksiva)/utaaq(ut)/]
 itsivautaq itsivautaq {itsiva:iksiva/1v}{utaq:ut/1vn}
-ivvit ivvit {ivvit:igvit/1pr}
+ivvit ivvit {ivvit:igvit/1p}
 *jaak jaak [decomposition:/jaak(jaak)/]
 *jaan jaan [decomposition:/jaan(jaan)/]
 *jaimisi jaimisi [decomposition:/jaimisi(jaimisi)/]
@@ -410,14 +410,14 @@ kiinaujanik kiinaujanik {kiinauja:kiinaujaq/1n}{nik:nik/tn-acc-p}
 kiinaujanit kiinaujanit {kiinauja:kiinaujaq/1n}{nit:nit/tn-abl-p}
 kiinaujanut kiinaujanut {kiinauja:kiinaujaq/1n}{nut:nut/tn-dat-p}
 @kiinaujatigut kiinaujatigut {kiinauja:kiinaujaq/1n}{tigut:tigut/tn-via-p}
-kikkulimaanut kikkulimaanut {kikku:kikkut/1pr}{limaa:limaaq/1nn}{nut:nut/tn-dat-p}
-kikkulimaat kikkulimaat {kikku:kikkut/1pr}{limaa:limaaq/1nn}{t:it/tn-nom-p}
-kikkut kikkut {kikkut:kikkut/1pr}
-kikkutuinnait kikkutuinnait {kikku:kikkut/1pr}{tuinna:tuinnaq/2nn}{it:it/tn-nom-p}
-kikkutuinnarnik kikkutuinnarnik {kikku:kikkut/1pr}{tuinnar:tuinnaq/2nn}{nik:nik/tn-acc-p}
-kikkutuinnarnut kikkutuinnarnut {kikku:kikkut/1pr}{tuinnar:tuinnaq/2nn}{nut:nut/tn-dat-p}
-kina kina {kina:kina/1pr}
-kinatuinnaq kinatuinnaq {kina:kina/1pr}{tuinnaq:tuinnaq/2nn}
+kikkulimaanut kikkulimaanut {kikku:kikkut/1p}{limaa:limaaq/1nn}{nut:nut/tn-dat-p}
+kikkulimaat kikkulimaat {kikku:kikkut/1p}{limaa:limaaq/1nn}{t:it/tn-nom-p}
+kikkut kikkut {kikkut:kikkut/1p}
+kikkutuinnait kikkutuinnait {kikku:kikkut/1p}{tuinna:tuinnaq/2nn}{it:it/tn-nom-p}
+kikkutuinnarnik kikkutuinnarnik {kikku:kikkut/1p}{tuinnar:tuinnaq/2nn}{nik:nik/tn-acc-p}
+kikkutuinnarnut kikkutuinnarnut {kikku:kikkut/1p}{tuinnar:tuinnaq/2nn}{nut:nut/tn-dat-p}
+kina kina {kina:kina/1p}
+kinatuinnaq kinatuinnaq {kina:kina/1p}{tuinnaq:tuinnaq/2nn}
 kingulliqpaami kingulliqpaami {kingu:kingu/1n}{lliq:&iq/1nn}{paa:paaq/1nn}{mi:mi/tn-loc-s}
 kingulliqpaamik kingulliqpaamik {kingu:kingu/1n}{lliq:&iq/1nn}{paa:paaq/1nn}{mik:mik/tn-acc-s}
 kingulliqpaamit kingulliqpaamit {kingu:kingu/1n}{lliq:&iq/1nn}{paa:paaq/1nn}{mit:mit/tn-abl-s}
@@ -431,10 +431,10 @@ kisianili kisianili {kisiani:kisiani/1c}{li:li/1q}
 kisianittauq kisianittauq {kisiani:kisiani/1c}{ttauq:ttauq/1q}
 kisimi kisimi {kisimi:kisimi/1c}
 kisimili kisimili {kisimi:kisimi/1c}{li:li/1q}
-kisumut kisumut {kisu:kisu/1pr}{mut:mut/tn-dat-s}
-kisunik kisunik {kisu:kisu/1pr}{nik:nik/tn-acc-p}
-kisut kisut {kisut:kisut/1pr}
-kisutuinnait kisutuinnait {kisutuinna:kisutuinnaq/1pr}{it:it/tn-nom-p}
+kisumut kisumut {kisu:kisu/1p}{mut:mut/tn-dat-s}
+kisunik kisunik {kisu:kisu/1p}{nik:nik/tn-acc-p}
+kisut kisut {kisut:kisut/1p}
+kisutuinnait kisutuinnait {kisutuinna:kisutuinnaq/1p}{it:it/tn-nom-p}
 kiujjutiit kiujjutiit {kiu:kiu/1v}{jjuti:ut/1vn}{it:it/tn-nom-p}
 kiujjutinga kiujjutinga {kiu:kiu/1v}{jjuti:ut/1vn}{nga:nga/tn-nom-s-4s}
 kiujjutit kiujjutit {kiu:kiu/1v}{jjut:ut/1vn}{it:it/tn-nom-p}
@@ -581,9 +581,9 @@ nakit nakit {nakit:nakit/1a}
 @nakuqmii nakuqmii  {nakuq:nakuq/1v}{mii:miik/1vn}
 nakurmii nakurmii {nakur:nakuq/1v}{mii:miik/1vn}
 nakurmiik nakurmiik {nakur:nakuq/1v}{miik:miik/1vn}
-naliak naliak {naliak:naliak/1pr}
+naliak naliak {naliak:naliak/1p}
 @naliqqangit naliqqangit {naliqqa:naliqqaq/1n}{ngit:ngit/tn-nom-p-4s}
-@nalliani nalliani {nalli:nalliq/1pr}{ani:ngani/tn-loc-s-4s}
+@nalliani nalliani {nalli:nalliq/1p}{ani:ngani/tn-loc-s-4s}
 nalunanngittuq nalunanngittuq {naluna:nalunak/1v}{nngit:nngit/1vv}{tuq:juq/1vn}
 namminiq namminiq {namminiq:nangminiq/1n}
 namminiqaqtunut namminiqaqtunut {nammini:nangminiq/1n}{qaq:qaq/1nv}{tu:juq/1vn}{nut:nut/tn-dat-p}
@@ -910,7 +910,7 @@ tamaksumunga tamaksumunga {tamaksu:tamaksu/rpd-ml-s}{munga:munga/tpd-dat-s}
 tamanna tamanna {tamanna:tamanna/pd-ml-s}
 tamannali tamannali {tamanna:tamanna/pd-ml-s}{li:li/1q}
 tamannalu tamannalu {tamanna:tamanna/pd-ml-s}{lu:lu/1q}
-tamarmik tamarmik {tamarmik:tamarmik/1pr}
+tamarmik tamarmik {tamarmik:tamarmik/1p}
 tamassuminga tamassuminga {tamassu:tamaksu/rpd-ml-s}{minga:minga/tpd-acc-s}
 tamassumunga tamassumunga {tamassu:tamaksu/rpd-ml-s}{munga:munga/tpd-dat-s}
 tamatuma tamatuma {tamatu:tamatu/rpd-ml-s}{ma:ma/tpd-gen-s}
@@ -1075,9 +1075,9 @@ uuttuutigilugu uuttuutigilugu {uut:uuk/1v}{tu:tuq/1vv}{uti:ut/1vn}{gi:gi/1nv}{lu
 *uuviti uuviti [decomposition:/uuviti(uuviti)/] "Ovide"
 *uuvuraian uuvuraian [decomposition:/uuvuraian(uuvuraian)/] "O'Brien"
 *uuvuraijan uuvuraijan [decomposition:/uuvuraijan(uuvuraijan)/] "O'Brien"
-uvagut uvagut {uvagut:uvagut/1pr}
+uvagut uvagut {uvagut:uvagut/1p}
 #uvalu uvalu {uvalu:uvvalu/1c}
-uvanga uvanga {uvanga:uvanga/1pr}
+uvanga uvanga {uvanga:uvanga/1p}
 uvani uvani {uv:uv/rad-sc}{ani:ani/tad-loc}
 uvannik uvannik {uva:uva/1rpr}{nnik:nnik/tn-acc-s-1s}
 uvannut uvannut {uva:uva/1rpr}{nnut:nnut/tn-dat-s-1s}
