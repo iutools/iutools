@@ -90,10 +90,7 @@ public class Graph {
             this.destState = destState;
         }
         
-        private Arc() {
-        }
-
-		public State getDestinationState() {
+ 		public State getDestinationState() {
 			return destState;
 		}
 
@@ -225,7 +222,8 @@ public class Graph {
 //	}
 
 	static {
-		State mq, mqi, m, n, v, a, e, c, rn, rnc, rv, ad, pds, pdp, d, pr, pp = null;
+		State mq, mqi, m, n, v, a, e, c, rn, rnc, rv, ad, pds, pdp, d, pp = null;
+//		State pr = null;
 		State pp1, pp2, radpp1, radpp2, racpp1, racpp2, zero = null;
 		
 		mq = new State("mq");	// mot avec queue

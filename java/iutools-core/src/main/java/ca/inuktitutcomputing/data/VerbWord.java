@@ -15,17 +15,15 @@ public class VerbWord {
 
     public String verb;
     public String passive;
-    public HashMap record;
-    static public Hashtable hash = new Hashtable();
+    static public Hashtable<String,VerbWord> hash = new Hashtable<String,VerbWord>();
 
-    public VerbWord(HashMap v) {
-        record = v;
-        verb = (String) v.get("verb");
-        passive = (String) v.get("passive");
+    public VerbWord(HashMap<String,String> v) {
+        verb = v.get("verb");
+        passive = v.get("passive");
     }
 
     static public void addToHash(String key, Object obj) {
-        hash.put(key,obj);
+        hash.put(key,(VerbWord)obj);
     }
 
 }

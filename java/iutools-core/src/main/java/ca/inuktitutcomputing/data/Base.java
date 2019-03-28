@@ -22,8 +22,6 @@
 package ca.inuktitutcomputing.data;
 
 import java.io.ByteArrayInputStream;
-import java.io.PrintStream;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
@@ -32,17 +30,12 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
-
-import ca.inuktitutcomputing.utilities.MonURLDecoder;
 import ca.inuktitutcomputing.utilities1.Util;
-import ca.inuktitutcomputing.lib.html;
 import ca.inuktitutcomputing.data.constraints.Conditions;
 import ca.inuktitutcomputing.data.constraints.Imacond;
 import ca.inuktitutcomputing.data.constraints.ParseException;
 import ca.inuktitutcomputing.data.LinguisticDataAbstract;
 import ca.inuktitutcomputing.data.VerbWord;
-import ca.inuktitutcomputing.script.TransCoder;
 
 public class Base extends Morpheme {
 	//
@@ -71,12 +64,12 @@ public class Base extends Morpheme {
 	private String reflexiveMeaning_f = null;
 	private String resultMeaning_f = null;
     
-    private Vector idsOfCompositesWithThisRoot = null;
+    private Vector<String> idsOfCompositesWithThisRoot = null;
     
-	static public Hashtable hash = new Hashtable();
+	static public Hashtable<String,Morpheme> hash = new Hashtable<String,Morpheme>();
 	//
 	
-	public Base(HashMap v) {
+	public Base(HashMap<String,String> v) {
 		makeRoot(v);
 	}
 		
@@ -84,30 +77,30 @@ public class Base extends Morpheme {
 	}
 
 	//-----------------------------------------------------------------------------------------------
-	private void makeRoot(HashMap v) {
+	private void makeRoot(HashMap<String,String> v) {
 		getAndSetBaseAttributes(v);
-		variant = (String) v.get("variant");
-		originalMorpheme = (String)v.get("originalMorpheme");
-		nb = (String)v.get("nb");
+		variant = v.get("variant");
+		originalMorpheme = v.get("originalMorpheme");
+		nb = v.get("nb");
 		if (nb==null || nb.equals(""))
 			nb = "1";
 		num = new Integer(nb);
-		type = (String) v.get("type");
-		number = (String) v.get("number");
+		type = v.get("type");
+		number = v.get("number");
 		if (number==null || number.equals(""))
 		    number = "s";
-		antipassive = (String) v.get("antipassive");
-		transinfix = (String) v.get("transSuffix");
-		intransinfix = (String) v.get("intransSuffix");
-		transitivity = (String) v.get("transitivity");
-        cf = (String)v.get("cf");
+		antipassive = v.get("antipassive");
+		transinfix = v.get("transSuffix");
+		intransinfix = v.get("intransSuffix");
+		transitivity = v.get("transitivity");
+        cf = v.get("cf");
         if (cf != null && !cf.equals("")) cfs = cf.split(" ");
-        dialect = (String)v.get("dialect");
-		nature = (String)v.get("nature");
-        source = (String) v.get("source");
+        dialect = v.get("dialect");
+		nature = v.get("nature");
+        source = v.get("source");
 		if (source != null && !source.equals(""))
 			sources = source.split(" ");
-		String cs = (String) v.get("condOnNext");
+		String cs = v.get("condOnNext");
 //		StringTokenizer st =
 //			(cs == null) ? new StringTokenizer("") : new StringTokenizer(cs);
 //		if (cs != null)
@@ -127,10 +120,10 @@ public class Base extends Morpheme {
             }
 
 		// Racine de composition pour les racines duelles et plurielles
-		compositionRoot = (String)v.get("compositionRoot");
-		subtype = (String)v.get("subtype");
+		compositionRoot = v.get("compositionRoot");
+		subtype = v.get("subtype");
 
-        String comb = (String) v.get("combination");
+        String comb = v.get("combination");
 		if (comb != null && !comb.equals("")) {
 			combinedMorphemes = comb.split("[+]");
 			if (combinedMorphemes.length < 2) {
@@ -143,9 +136,9 @@ public class Base extends Morpheme {
 				// list of idsOfCompositeWithThisRoot.
 				Base b = LinguisticDataAbstract.getBase(rootId);
 				if (b != null) {
-					Vector vids = b.idsOfCompositesWithThisRoot;
+					Vector<String> vids = b.idsOfCompositesWithThisRoot;
 					if (vids == null)
-						vids = new Vector();
+						vids = new Vector<String>();
 					vids.add(comb);
 					b.setIdsOfCompositesWithThisRoot(vids);
 				}
@@ -156,7 +149,7 @@ public class Base extends Morpheme {
 
 	//-------------------------------------------------------------------------------------------------------
 	public void addToHash(String key, Object obj) {
-	    hash.put(key,obj);
+	    hash.put(key,(Base)obj);
 	}
     
 	public String getSignature() {
@@ -267,12 +260,12 @@ public class Base extends Morpheme {
 	    return compositionRoot;
 	}
 	
-	void getAndSetBaseAttributes(HashMap v) {
-		morpheme = (String) v.get("morpheme");
-		englishMeaning = (String) v.get("engMean");
-		frenchMeaning = (String) v.get("freMean");
-		dbName = (String) v.get("dbName");
-		tableName = (String) v.get("tableName");		
+	void getAndSetBaseAttributes(HashMap<String,String> v) {
+		morpheme = v.get("morpheme");
+		englishMeaning = v.get("engMean");
+		frenchMeaning = v.get("freMean");
+		dbName = v.get("dbName");
+		tableName = v.get("tableName");		
 	}
 
 	void setCombiningParts( String comb ) {
@@ -371,11 +364,11 @@ public class Base extends Morpheme {
 	}
 	
     void setAttributes() {
-    	setAttributes(new HashMap());
+    	setAttributes(new HashMap<String,Object>());
     }
     
-    void setAttributes(HashMap attrs) {
-    	HashMap baseAttrs = new HashMap();
+    void setAttributes(HashMap<String,Object> attrs) {
+    	HashMap<String,Object> baseAttrs = new HashMap<String,Object>();
     	baseAttrs.put("variant", variant);
     	baseAttrs.put("originalMorpheme", originalMorpheme);
     	baseAttrs.put("nature", nature);
@@ -397,7 +390,7 @@ public class Base extends Morpheme {
 	}
 	
 	//---------------------------------------------------------------------------------------------------------
-    private void setIdsOfCompositesWithThisRoot(Vector v) {
+    private void setIdsOfCompositesWithThisRoot(Vector<String> v) {
         idsOfCompositesWithThisRoot = v;
     }
     

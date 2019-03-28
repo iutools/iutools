@@ -52,18 +52,18 @@ public class Lexicon {
     // avoir: "PISU*" apr�s d�termination du m�me affixe dans le term
     // "PISUNNGITTUQ"; dans ce cas, la racine est "PISUK".
 
-    static public Vector lookForForms(String term, boolean syllabic) {
+    static public Vector<Object> lookForForms(String term, boolean syllabic) {
         String cons[], vows[];
-        Vector termsFound = null;
+        Vector<Object> termsFound = null;
         cons = syllabic ? consonantsSyl : consonants;
         vows = syllabic ? vowelsSyl : vowels;
 
         // V�rifier si le term se termine par '%*'
         if (term.endsWith("%*")) {
-            Vector termFound;
+            Vector<Object> termFound;
             String termWithoutPniE, termWithVowel;
-            Vector termWithoutStarFound;
-            termsFound = new Vector();
+            Vector<Object> termWithoutStarFound;
+            termsFound = new Vector<Object>();
             termWithoutPniE = term.substring(0, term.length() - 2);
             termWithoutStarFound = lookForForms(termWithoutPniE + "*",
                     syllabic);
@@ -80,10 +80,9 @@ public class Lexicon {
         }
         // V�rifier si le term se termine par '*'
         else if (term.endsWith("*")) {
-            Vector termFound;
-            Vector termWithoutStarFound;
+            Vector<Object> termFound;
             String termWithoutStar, termWithConsonant;
-            termsFound = new Vector();
+            termsFound = new Vector<Object>();
             termWithoutStar = term.substring(0, term.length() - 1);
             //	    termWithoutStarFound = chercherAffixe(termWithoutStar,syllabic);
             //	    if (termWithoutStarFound != null)
@@ -99,26 +98,26 @@ public class Lexicon {
         } else {
             // On cherche un affixe, de n'importe quel type:
             // terminaison verbale ou nominale, ou suffixe.
-            termsFound = (Vector)LinguisticDataAbstract.getSurfaceForms(term);
+            termsFound = LinguisticDataAbstract.getSurfaceForms(term);
         }
 
         return termsFound;
     }
 
-    static public Vector lookForBase(String term, boolean syllabic) {
-        Vector termsFound;
+    static public Vector<Object> lookForBase(String term, boolean syllabic) {
+        Vector<Object> termsFound;
         String cons[], vows[];
         Debugging.mess("lookForBase/2", 1, "> term= " + term + "  syllabic="
                 + syllabic);
         cons = syllabic ? consonantsSyl : consonants;
         vows = syllabic ? vowelsSyl : vowels;
         //System.out.println("lookForBase: term= "+term);
-        // V�rifier si le term se termine par '%*'
+        // Vérifier si le term se termine par '%*'
         if (term.endsWith("%*")) {
-            Vector termFound;
+            Vector<Object> termFound;
             String termWithoutPniE, termWithVowel;
-            Vector termWithoutStarFound;
-            termsFound = new Vector();
+            Vector<Object> termWithoutStarFound;
+            termsFound = new Vector<Object>();
             termWithoutPniE = term.substring(0, term.length() - 2);
             termWithoutStarFound = lookForBase(termWithoutPniE + "*", syllabic);
             if (termWithoutStarFound != null)
@@ -134,10 +133,10 @@ public class Lexicon {
         }
         // V�rifier si le term se termine par '*'
         else if (term.endsWith("*")) {
-            Vector termFound;
+            Vector<Object> termFound;
             String termWithoutStar, termWithConsonant;
-            Vector termWithoutStarFound;
-            termsFound = new Vector();
+            Vector<Object> termWithoutStarFound;
+            termsFound = new Vector<Object>();
             termWithoutStar = term.substring(0, term.length() - 1);
             termWithoutStarFound = lookForBase(termWithoutStar, syllabic);
             if (termWithoutStarFound != null)

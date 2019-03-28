@@ -68,58 +68,49 @@
 //
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-
 package ca.inuktitutcomputing.data;
 
 import ca.inuktitutcomputing.data.LinguisticDataAbstract;
 
-
 public class SurfaceFormOfAffix {
-    public String form;
-    public String key;
+	public String form;
+	public String key;
 //    public Integer index;
-    public String uniqueId;
-    public String type;
-    public String context;
-    public Action action1;
-    public Action action2;
+	public String uniqueId;
+	public String type;
+	public String context;
+	public Action action1;
+	public Action action2;
 
-    public SurfaceFormOfAffix (String formeAffixe, String keyOfAffix, 
+	public SurfaceFormOfAffix(String formeAffixe, String keyOfAffix,
 //			  Integer indexOfAffix,
-			  String id,
-			  String typeOfAffixe, String context,
-			  Action a1, Action a2) {
-	form = formeAffixe;
-	key = keyOfAffix;
+			String id, String typeOfAffixe, String context, Action a1, Action a2) {
+		form = formeAffixe;
+		key = keyOfAffix;
 //	index = indexAffixe;
-	uniqueId = id;
-	type = typeOfAffixe;
-	this.context = context;
-	action1 = a1;
-	action2 = a2;
-    }
+		uniqueId = id;
+		type = typeOfAffixe;
+		this.context = context;
+		action1 = a1;
+		action2 = a2;
+	}
 
-private SurfaceFormOfAffix() {
-}
+	public Affix getAffix() {
+		return LinguisticDataAbstract.getAffix(uniqueId);
+	}
 
-    public Affix getAffix() {
-        return LinguisticDataAbstract.getAffix(uniqueId);
-        }
-
-
-    public String toString() {
-	StringBuffer sb = new StringBuffer();
-	sb.append("[SurfaceFormOfAffix:");
-	sb.append("\nform: "+form);
-	sb.append("\ntype: "+type);
-	sb.append("\nkey: "+key);
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append("[SurfaceFormOfAffix:");
+		sb.append("\nform: " + form);
+		sb.append("\ntype: " + type);
+		sb.append("\nkey: " + key);
 //	sb.append("\nindex: "+index.toString());
-	sb.append("\ncontext: "+context);
-	sb.append("\naction1: "+action1.toString());
-	sb.append("\naction2: "+action2);
-	sb.append("]");
-	return sb.toString();
-    }
-    
+		sb.append("\ncontext: " + context);
+		sb.append("\naction1: " + action1.toString());
+		sb.append("\naction2: " + action2);
+		sb.append("]");
+		return sb.toString();
+	}
 
 }

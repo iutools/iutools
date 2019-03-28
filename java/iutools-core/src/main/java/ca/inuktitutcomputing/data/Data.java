@@ -9,7 +9,6 @@
 package ca.inuktitutcomputing.data;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -30,11 +29,10 @@ import ca.inuktitutcomputing.data.VerbWord;
 
 public abstract class Data {
     
-    static public HashSet finalRadInitAffHashSet = new HashSet();
-    
 	//-----Faire les objets des morph�mes------------------------------
 	
-	public static void makeBase(HashMap v) {
+	@SuppressWarnings("unchecked")
+	public static void makeBase(HashMap<String,String> v) {
         Base x = new Base(v);
         addToHash(x);
         LinguisticDataAbstract.basesId.put(x.id, x);
@@ -43,7 +41,7 @@ public abstract class Data {
         if (x.getVariant() != null) {
             StringTokenizer st = new StringTokenizer(x.getVariant());
             while (st.hasMoreTokens()) {
-                HashMap v2 = (HashMap) v.clone();
+				HashMap<String,String> v2 = (HashMap<String,String>) v.clone();
                 v2.put("morpheme", st.nextToken());
                 v2.put("variant", null);
                 v2.put("nb", "-" + x.getNb());
@@ -58,7 +56,7 @@ public abstract class Data {
         if (x.getCompositionRoot() != null) {
             StringTokenizer st = new StringTokenizer(x.getCompositionRoot());
             while (st.hasMoreTokens()) {
-                HashMap v2 = (HashMap) v.clone();
+                HashMap<String,String> v2 = (HashMap<String,String>) v.clone();
                 v2.put("morpheme", st.nextToken());
                 v2.put("variant", null);
                 v2.put("nb", "-" + x.getNb());
@@ -82,7 +80,8 @@ public abstract class Data {
      * 2ème forme: champ "racine"
      * Le champ 'racine' peut en fait contenir plus d'une valeur.
      */
-	public static void makeDemonstrative(HashMap v) {
+	@SuppressWarnings("unchecked")
+	public static void makeDemonstrative(HashMap<String,String> v) {
 	    // 1ère forme
         Demonstrative x = new Demonstrative(v);
         addToHash(x);
@@ -90,7 +89,7 @@ public abstract class Data {
         // 2ème forme: créer un nouvel objet pour chaque form de racine
         String roots[] = x.getRoot().split(" ");
         for (int i=0; i<roots.length; i++) {
-            HashMap v2 = (HashMap)v.clone();
+            HashMap<String,String> v2 = (HashMap<String,String>)v.clone();
             v2.put("morpheme", roots[i]);
             v2.put("root", roots[i]);
             Demonstrative x2 = new Demonstrative(v2, "r");
@@ -99,14 +98,15 @@ public abstract class Data {
         }
 }
 	
-	public static void makePronoun(HashMap v) {
+	@SuppressWarnings("unchecked")
+	public static void makePronoun(HashMap<String,String> v) {
 	    Pronoun x = new Pronoun(v);
 	    addToHash(x);
 	    LinguisticDataAbstract.basesId.put(x.id, x);
         if (x.getVariant() != null) {
             StringTokenizer st = new StringTokenizer(x.getVariant());
             while (st.hasMoreTokens()) {
-                HashMap v2 = (HashMap) v.clone();
+                HashMap<String,String> v2 = (HashMap<String,String>) v.clone();
                 v2.put("morpheme", st.nextToken());
                 v2.put("variant", null);
                 v2.put("nb", "-" + x.getNb());
@@ -118,37 +118,37 @@ public abstract class Data {
         }
 	}
 	
-	public static void makeSuffix(HashMap v) {
+	public static void makeSuffix(HashMap<String,String> v) {
         Suffix x = new Suffix(v);
         LinguisticDataAbstract.affixesId.put(x.id,x);
         addToForms(x, x.morpheme);	    
 	}
 	
-	public static void makeNounEnding(HashMap v) {
+	public static void makeNounEnding(HashMap<String,String> v) {
         NounEnding x = new NounEnding(v);
         LinguisticDataAbstract.affixesId.put(x.id,x);
         addToForms(x, x.morpheme);	    
  	}
 	
-	public static void makeVerbEnding(HashMap v) {
+	public static void makeVerbEnding(HashMap<String,String> v) {
         VerbEnding x = new VerbEnding(v);
         LinguisticDataAbstract.affixesId.put(x.id,x);
         addToForms(x, x.morpheme);	    
 	}
 	
-	public static void makeDemonstrativeEnding(HashMap v) {
+	public static void makeDemonstrativeEnding(HashMap<String,String> v) {
         DemonstrativeEnding x = new DemonstrativeEnding(
                 v);
         LinguisticDataAbstract.affixesId.put(x.id,x);
         addToForms(x, x.morpheme);	    
 	}
     
-    public static void makeVerbWord(HashMap v) {
+    public static void makeVerbWord(HashMap<String,String> v) {
         VerbWord x = new VerbWord(v);
         LinguisticDataAbstract.words.put(x.verb,x);
     }
 	
-    public static void makeSource(HashMap v) {
+    public static void makeSource(HashMap<String,String> v) {
         Source s = new Source(v);
         LinguisticDataAbstract.sources.put(s.id,s);
     }
@@ -285,17 +285,17 @@ public abstract class Data {
 
 	
 	public static void addToHash(Base x) {
-        Hashtable hash = LinguisticDataAbstract.bases;
-        Vector current = null;
+        Hashtable<String,Vector<Object>> hash = LinguisticDataAbstract.bases;
+        Vector<Object> current = null;
         try {
-        	current = (Vector) hash.get(x.morpheme);
+        	current = hash.get(x.morpheme);
         } catch (NullPointerException e) {
 //        	System.err.println("hash: "+hash);
 //        	System.err.println("x: "+x);
 //        	e.printStackTrace();
         }
         if (current == null) {
-        	current = new Vector();
+        	current = new Vector<Object>();
         }
         current.add(x);
         hash.put(x.morpheme, current);

@@ -57,7 +57,7 @@ public abstract class Morpheme extends Object implements Cloneable {
     Conditions preCondition = null;
     Conditions nextCondition = null;
 
-    private HashMap attributes = null;
+    private HashMap<String,Object> attributes = null;
     //
     
     //------------------------------------------------------------------------------------------------------------
@@ -102,7 +102,7 @@ public abstract class Morpheme extends Object implements Cloneable {
         return res;
     }
   
-    public boolean meetsConditions (Conditions conds, Vector followingMorphemes) {
+    public boolean meetsConditions (Conditions conds, Vector<AffixPartOfComposition> followingMorphemes) {
         boolean res = true;
         /*
          * Il faut que les conditions spécifiques soient rencontrées. Par
@@ -121,8 +121,7 @@ public abstract class Morpheme extends Object implements Cloneable {
             if (getNextCond() != null) {
                 // Morphème suivant, i.e. le dernier morphème trouvé.
                 if (followingMorphemes.size() != 0) {
-                    Affix affPrec = ((AffixPartOfComposition) followingMorphemes
-                            .elementAt(0)).getAffix();
+                    Affix affPrec = followingMorphemes.elementAt(0).getAffix();
                     res = getNextCond().isMetBy(affPrec);
                 }
             }
@@ -206,8 +205,8 @@ public abstract class Morpheme extends Object implements Cloneable {
         return (String)this.attributes.get(attr);
     }
     
-	void setAttributes(HashMap attrs) {
-		attributes = new HashMap();
+	void setAttributes(HashMap<String,Object> attrs) {
+		attributes = new HashMap<String,Object>();
 		attributes.putAll(attrs);
 		attributes.put("type",type);
 		attributes.put("nb", nb);

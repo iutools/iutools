@@ -41,8 +41,7 @@ public class VerbEnding extends Affix {
 	String posneg = null;
 	String tense = null;
 	
-	static Class conditionClass = null;
-	static public Hashtable hash = new Hashtable();
+	static public Hashtable<String,Morpheme> hash = new Hashtable<String,Morpheme>();
 
 	static String[] modes = {"caus", "cond", "dec", "dub", "freq", "ger", "imp", "int", "part"};
 	static String[] numbers = {"d", "p", "s"};
@@ -53,60 +52,60 @@ public class VerbEnding extends Affix {
 	public VerbEnding() {
 	}
 	
-	public VerbEnding(HashMap v) {
-		morpheme = (String) v.get("morpheme");
+	public VerbEnding(HashMap<String,String> v) {
+		morpheme = v.get("morpheme");
 		Debugging.mess("VerbEnding/1", 1, "morpheme= " + morpheme);
-		type = (String) v.get("type");
-		mode = (String) v.get("mode");
-//		spec = (String) v.get("spec");
-		subjPers = (String) v.get("perSubject");
-		subjNumber = (String) v.get("numbSubject");
+		type = v.get("type");
+		mode = v.get("mode");
+//		spec = v.get("spec");
+		subjPers = v.get("perSubject");
+		subjNumber = v.get("numbSubject");
 //		if (spec.equals("sp")) {
-			objPers = (String) v.get("perObject");
-			objNumber = (String) v.get("numbObject");
+			objPers = v.get("perObject");
+			objNumber = v.get("numbObject");
 //		}
         if (objPers != null)
             spec = "sp";
         else
             spec = "nsp";
 		if (mode.equals("part")) {
-			sameSubject = (String) v.get("sameSubject");
-			posneg = (String) v.get("posneg");
-			tense = (String) v.get("tense");
+			sameSubject = v.get("sameSubject");
+			posneg = v.get("posneg");
+			tense = v.get("tense");
 		}
-		dbName = (String) v.get("dbName");
-		tableName = (String) v.get("tableName");
+		dbName = v.get("dbName");
+		tableName = v.get("tableName");
 
 		makeMeanings();
 
-		// D�veloppement des diverses surfaceFormsOfAffixes associ�es aux 4 contextes
-		// voyelle, t, k et q et � leurs actions.
+		// Développement des diverses surfaceFormsOfAffixes associées aux 4 contextes
+		// voyelle, t, k et q et à leurs actions.
 
-		// Apr�s Voyelle
-		String form = (String) v.get("V-form");
-		String act1 = (String) v.get("V-action1");
-		String act2 = (String) v.get("V-action2");
+		// Après Voyelle
+		String form = v.get("V-form");
+		String act1 = v.get("V-action1");
+		String act2 = v.get("V-action2");
 		makeFormsAndActions("V", morpheme, form, act1, act2);
 
-		// Apr�s 't'
-		form = (String) v.get("t-form");
-		act1 = (String) v.get("t-action1");
-		act2 = (String) v.get("t-action2");
+		// Après 't'
+		form = v.get("t-form");
+		act1 = v.get("t-action1");
+		act2 = v.get("t-action2");
 		makeFormsAndActions("t", morpheme, form, act1, act2);
 
-		// Apr�s 'k'
-		form = (String) v.get("k-form");
-		act1 = (String) v.get("k-action1");
-		act2 = (String) v.get("k-action2");
+		// Après 'k'
+		form = v.get("k-form");
+		act1 = v.get("k-action1");
+		act2 = v.get("k-action2");
 		makeFormsAndActions("k", morpheme, form, act1, act2);
 
-		// Apr�s 'q'
-		form = (String) v.get("q-form");
-		act1 = (String) v.get("q-action1");
-		act2 = (String) v.get("q-action2");
+		// Après 'q'
+		form = v.get("q-form");
+		act1 = v.get("q-action1");
+		act2 = v.get("q-action2");
 		makeFormsAndActions("q", morpheme, form, act1, act2);
 
-		String cs = (String) v.get("condPrecSpecific");
+		String cs = v.get("condPrecSpecific");
 		if (cs != null) {
             try {
                 preCondition = (Conditions) new Imacond(
@@ -115,7 +114,7 @@ public class VerbEnding extends Affix {
             }
         }
 
-		String srcs = (String) v.get("sources");
+		String srcs = v.get("sources");
 		if (srcs != null) {
 			StringTokenizer st2 = new StringTokenizer(srcs);
 			sources = new String[st2.countTokens()];
@@ -129,7 +128,7 @@ public class VerbEnding extends Affix {
 
 	//---------------------------------------------------------------------------------------------------------
 	public void addToHash(String key, Object obj) {
-	    hash.put(key,obj);
+	    hash.put(key,(VerbEnding)obj);
 	}
 
 	// Signature des terminaisons verbales:
@@ -212,7 +211,7 @@ public class VerbEnding extends Affix {
 	}
 	
 	void setAttributes() {
-		HashMap tvAttrs = new HashMap();
+		HashMap<String,Object> tvAttrs = new HashMap<String,Object>();
 		tvAttrs.put("mode", mode);
 		tvAttrs.put("spec", spec);
 		tvAttrs.put("subjPers", subjPers);

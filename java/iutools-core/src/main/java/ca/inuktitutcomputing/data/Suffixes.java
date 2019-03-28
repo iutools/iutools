@@ -27,8 +27,6 @@ package ca.inuktitutcomputing.data;
 import java.io.PrintStream;
 import java.util.Hashtable;
 import java.util.Vector;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
@@ -410,7 +408,7 @@ public class Suffixes {
                 : "Variantes et actions");
         if (!plain) output.append("</span>"); else output.append(":");
         output.append(newLine());
-		Vector vars = new Vector();
+		Vector<Object[]> vars = new Vector<Object[]>();
 		vars.add(new Object[] { "V", aff.vform, aff.vaction1, aff.vaction2 });
 		vars.add(new Object[] { "t", aff.tform, aff.taction1, aff.taction2 });
 		vars.add(new Object[] { "k", aff.kform, aff.kaction1, aff.kaction2 });
@@ -673,7 +671,7 @@ public class Suffixes {
 		for (int ie=0; ie<exKeys.length; ie++) {
 			String key = exKeys[ie];
 			if (key.equals(signatureKey)) {
-				Vector exs = (Vector) LinguisticDataAbstract.getExample(signatureKey);
+				Vector<Example> exs = LinguisticDataAbstract.getExample(signatureKey);
 				for (int i = 0; i < exs.size(); i++) {
 					Example ex1 = (Example) exs.elementAt(i);
 					if (!plain)
@@ -785,7 +783,7 @@ public class Suffixes {
 
 	}
 	
-	private static String process_marked_up(String marked_up) {
+	/* NOT USED --- private static String process_marked_up(String marked_up) {
 		Pattern pat = Pattern.compile("\\[\\[(.+?)\\]\\]");
 		Matcher mpat = pat.matcher(marked_up);
 		String res = "";
@@ -806,7 +804,7 @@ public class Suffixes {
 		}
 		res += marked_up.substring(pos);
 		return res;
-	}
+	}*/
 
     private static String composeAction1(
             Action action1,
@@ -1057,7 +1055,7 @@ public class Suffixes {
 
     public static void displayListOfSuffixes(String args[], PrintStream out) {
         lang = Util.getArgument(args,"l");
-        Hashtable infs = LinguisticDataAbstract.getAllSuffixes();
+        Hashtable<String,Morpheme> infs = LinguisticDataAbstract.getAllSuffixes();
         Roots.displayListOfMorphemes("suf",out,infs,lang);
  }
  

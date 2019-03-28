@@ -38,8 +38,7 @@ public class NounEnding extends Affix {
 	String possNumber = null;
 	String poss = null;
 	
-	static Class conditionClass = null;
-	static public Hashtable hash = new Hashtable();
+	static public Hashtable<String,NounEnding> hash = new Hashtable<String,NounEnding>();
 
 	static String[] cases = {"abl", "acc", "dat", "gen", "loc", "nom", "sim", "via"};
 	static String[] numbers = {"d", "p", "s"};
@@ -50,52 +49,52 @@ public class NounEnding extends Affix {
 	public NounEnding() {
 	}
 	
-	public NounEnding(HashMap v) {
-		morpheme = (String) v.get("morpheme");
+	public NounEnding(HashMap<String,String> v) {
+		morpheme = v.get("morpheme");
 		Debugging.mess("NounEnding/1", 1, "morpheme= " + morpheme);
-		type = (String) v.get("type");
-		grammCase = (String) v.get("case");
-		cas = (String) v.get("case");
-		number = (String) v.get("number");
-		possPers = (String) v.get("perPoss");
-		possNumber = (String) v.get("numbPoss");
+		type = v.get("type");
+		grammCase = v.get("case");
+		cas = v.get("case");
+		number = v.get("number");
+		possPers = v.get("perPoss");
+		possNumber = v.get("numbPoss");
 		if (possPers != null)
 		    poss = "true";
 		else
 		    poss = "false";
-		dbName = (String) v.get("dbName");
-		tableName = (String) v.get("tableName");
+		dbName = v.get("dbName");
+		tableName = v.get("tableName");
 
 		makeMeanings();
 
-		// D�veloppement des diverses surfaceFormsOfAffixes associ�es aux 4 contextes
-		// voyelle, t, k et q et � leurs actions.
+		// Développement des diverses surfaceFormsOfAffixes associées aux 4 contextes
+		// voyelle, t, k et q et à leurs actions.
 
-		// Apr�s Voyelle
-		String form = (String) v.get("V-form");
-		String act1 = (String) v.get("V-action1");
-		String act2 = (String) v.get("V-action2");
+		// Après Voyelle
+		String form = v.get("V-form");
+		String act1 = v.get("V-action1");
+		String act2 = v.get("V-action2");
 		makeFormsAndActions("V", morpheme, form, act1, act2);
 
-		// Apr�s 't'
-		form = (String) v.get("t-form");
-		act1 = (String) v.get("t-action1");
-		act2 = (String) v.get("t-action2");
+		// Après 't'
+		form = v.get("t-form");
+		act1 = v.get("t-action1");
+		act2 = v.get("t-action2");
 		makeFormsAndActions("t", morpheme, form, act1, act2);
 
-		// Apr�s 'k'
-		form = (String) v.get("k-form");
-		act1 = (String) v.get("k-action1");
-		act2 = (String) v.get("k-action2");
+		// Après 'k'
+		form = v.get("k-form");
+		act1 = v.get("k-action1");
+		act2 = v.get("k-action2");
 		makeFormsAndActions("k", morpheme, form, act1, act2);
 
-		// Apr�s 'q'
-		form = (String) v.get("q-form");
-		act1 = (String) v.get("q-action1");
-		act2 = (String) v.get("q-action2");
+		// Après 'q'
+		form = v.get("q-form");
+		act1 = v.get("q-action1");
+		act2 = v.get("q-action2");
 		makeFormsAndActions("q", morpheme, form, act1, act2);
 
-		String cs = (String) v.get("condPrec");
+		String cs = v.get("condPrec");
 		if (cs != null) {
             try {
                 preCondition = (Conditions) new Imacond(
@@ -103,7 +102,7 @@ public class NounEnding extends Affix {
             } catch (ParseException e) {
             }
 		}
-		String srcs = (String) v.get("sources");
+		String srcs = v.get("sources");
 		if (srcs != null) {
 			StringTokenizer st2 = new StringTokenizer(srcs);
 			sources = new String[st2.countTokens()];
@@ -117,7 +116,7 @@ public class NounEnding extends Affix {
 
     //------------------------------------------------------------------------------------------------------------
 	public void addToHash(String key, Object obj) {
-	    hash.put(key,obj);
+	    hash.put(key,(NounEnding)obj);
 	}
 
 	public String getSignature() {
@@ -355,7 +354,7 @@ public class NounEnding extends Affix {
 	}
 
 	void setAttributes() {
-		HashMap tnAttrs = new HashMap();
+		HashMap<String,Object> tnAttrs = new HashMap<String,Object>();
 		tnAttrs.put("grammCase", grammCase);
 		tnAttrs.put("cas", grammCase);
 		tnAttrs.put("number", number);

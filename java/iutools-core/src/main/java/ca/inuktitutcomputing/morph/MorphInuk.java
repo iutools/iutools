@@ -170,7 +170,7 @@ public class MorphInuk {
 
         stpw = new StopWatch(millisTimeout);
         Dialect.setStopWatch(stpw);
-        //stpw.disactivate(); // uncomment for debugging
+        stpw.disactivate(); // uncomment for debugging
         stpw.start();
 
         arcsByMorpheme.clear();
@@ -277,8 +277,8 @@ public class MorphInuk {
 			Conditions preCond, String transitivity) throws Exception {
 
         Vector<Decomposition> completeAnalysis = new Vector<Decomposition>();
-        Vector<?> onesFound;
-        Vector<?> othersFound;
+        Vector<Object> onesFound;
+        Vector<Object> othersFound;
         /*
          * =================================================================
          * À partir du dernier caractère du terme, reculer 1 caractère à la
@@ -375,16 +375,14 @@ public class MorphInuk {
                  * des équivalences. Toutes les possibilités sont retenues.
                  * La loi de Schneider est aussi prise en considération.
                  */
-                Vector<?> newCandidates = null;
+                Vector<String> newCandidates = null;
                 newCandidates = Dialect.newCandidates(stem, affixCandidate,
                         null);
                 if (newCandidates != null)
                     for (int k = 0; k < newCandidates.size(); k++) {
-                        Vector tr = Lexicon
-                        .lookForForms((String) newCandidates
-                                .elementAt(k), isSyllabic);
+                        Vector<Object> tr = Lexicon.lookForForms(newCandidates.elementAt(k), isSyllabic);
                         if (othersFound == null)
-                            othersFound = new Vector();
+                            othersFound = new Vector<Object>();
                         if (tr != null)
                             othersFound.addAll(tr);
                     }
@@ -402,7 +400,7 @@ public class MorphInuk {
              */
             // Enlever les formes qui ne sont pas acceptables à ce moment-ci
             // (cf. arcsSuivis)
-            Vector<?> onesFoundDim = eliminateByArcsFollowedEtc(onesFound,states,morphParts,
+            Vector<SurfaceFormOfAffix> onesFoundDim = eliminateByArcsFollowedEtc(onesFound,states,morphParts,
             		positionAffix,preCond,transitivity);
             if (onesFoundDim != null) {
                 Vector<Decomposition> anas = decomposeByAffixes(onesFoundDim, stem,
@@ -434,7 +432,7 @@ public class MorphInuk {
         return completeAnalysis;
 	}
 
-	private static Vector<SurfaceFormOfAffix> eliminateByArcsFollowedEtc(Vector<?> onesFound, Graph.State [] states,
+	private static Vector<SurfaceFormOfAffix> eliminateByArcsFollowedEtc(Vector<Object> onesFound, Graph.State [] states,
     		Vector<AffixPartOfComposition> morphParts, int positionAffix, Conditions preCond,
     		String transitivity) throws TimeoutException {
     	if (onesFound==null)
@@ -449,13 +447,30 @@ public class MorphInuk {
     		Morpheme aff = formOfAffix.getAffix();
 //            stpw.check("eliminateByArcsFollowedEtc -- position: "+positionAffix+
 //        			"; aff: "+aff.morpheme);
-    		if (	toBeRemoved.contains(aff)
-    				|| arcsSuivis(aff,states,keyStateIDs)==null
-    				|| !sameAsNext(aff, morphParts)
-    				|| !samePosition(positionAffix, morphParts)
-    				|| !aff.meetsConditions(preCond, morphParts)
-					|| !aff.meetsTransitivityCondition(transitivity)) 
-    		{
+    		if (toBeRemoved.contains(aff))
+    			continue;
+    		boolean arcsSuivisNull = arcsSuivis(aff,states,keyStateIDs)==null;
+    		if (arcsSuivisNull) {
+    			toBeRemoved.add(aff);
+    			continue;
+    		}
+    		boolean sameAsNext = sameAsNext(aff, morphParts);
+    		if (!sameAsNext) {
+    			toBeRemoved.add(aff);
+    			continue;
+    		}
+    		boolean samePosition = samePosition(positionAffix, morphParts);
+    		if (!samePosition) {
+    			toBeRemoved.add(aff);
+    			continue;
+    		}
+    		boolean conditionsMet = aff.meetsConditions(preCond, morphParts);
+    		if (!conditionsMet) {
+    			toBeRemoved.add(aff);
+    			continue;
+    		}
+    		boolean transitivityMet = aff.meetsTransitivityCondition(transitivity);
+    		if (!transitivityMet) {
     			toBeRemoved.add(aff);
     			continue;
     		}
@@ -1611,7 +1626,8 @@ public class MorphInuk {
      * 
      * Analyse d'un terme comme racine.
      */
-    private static Vector<Decomposition> analyzeAsRoot(String termICI, String termOrigICI, 
+    @SuppressWarnings("unchecked")
+	private static Vector<Decomposition> analyzeAsRoot(String termICI, String termOrigICI, 
             String term, boolean isSyllabic,
             String word, Vector<AffixPartOfComposition> morphParts, Graph.State states[],
             Conditions preCond,
@@ -1634,8 +1650,8 @@ public class MorphInuk {
          * 
          * Chercher le TERME dans les racines.
          */
-        Vector lexs = null;
-        Vector newRootCandidates = null;
+        Vector<Object> lexs = null;
+        Vector<String> newRootCandidates = null;
         lexs = Lexicon.lookForBase(termICI, isSyllabic);                
         /*
          * Il est possible qu'une différence de prononciation dialectale se
@@ -1651,11 +1667,11 @@ public class MorphInuk {
         if (newRootCandidates != null)
             for (int k = 0; k < newRootCandidates.size(); k++) {
 //                stpw.check("analyzeAsRoot -- newRootCandidate: "+((Base)newRootCandidates.elementAt(k)).morpheme);
-                Vector tr = Lexicon.lookForBase((String) newRootCandidates
+                Vector<Object> tr = Lexicon.lookForBase((String) newRootCandidates
                         .elementAt(k), isSyllabic);
                 if (tr != null)
                     if (lexs == null)
-                        lexs = (Vector) tr.clone();
+                        lexs = (Vector<Object>) tr.clone();
                     else
                         lexs.addAll(tr);
             }
@@ -1707,7 +1723,7 @@ public class MorphInuk {
     }
     
     
-    private static Vector<Decomposition> checkRoots(Vector lexs, String word, String termOrigICI,
+    private static Vector<Decomposition> checkRoots(Vector<Object> lexs, String word, String termOrigICI,
             Vector<AffixPartOfComposition> morphParts, Graph.State states[], Conditions preCond,
             String transitivity) throws TimeoutException {
         
@@ -1722,7 +1738,7 @@ public class MorphInuk {
             // RACINE UNKNOWN !!!
             // Pour le moment, on ne fait rien. On ne fait que
             // créer un vecteur vide.
-            lexs = new Vector();
+            lexs = new Vector<Object>();
         } 
 
         //-------------------------------------------
@@ -1882,7 +1898,7 @@ public class MorphInuk {
      * correspondre à un des arcs partant de l'état actuel.
      */
     
-    private static Hashtable arcsByMorpheme = new Hashtable();
+    private static Hashtable<String,Graph.Arc[]> arcsByMorpheme = new Hashtable<String,Graph.Arc[]>();
     
     private static Graph.Arc[] arcsSuivis(Morpheme morpheme, Graph.State states[],
 			String keyStateIDs) throws TimeoutException {
@@ -1891,8 +1907,8 @@ public class MorphInuk {
 		Graph.Arc[] arcsFollowedByHash = (Graph.Arc[]) arcsByMorpheme
 				.get(keyMorphemeStateIDs);
 		if (arcsFollowedByHash == null) {
-			Vector arcs = null;
-			Vector arcsFollowedV = new Vector();
+			Vector<Graph.Arc> arcs = null;
+			Vector<Graph.Arc> arcsFollowedV = new Vector<Graph.Arc>();
 			for (int j = 0; j < states.length; j++) {
 				stpw.check("arcsSuivis --- morpheme: "+morpheme.morpheme);
 				arcs = states[j].verify(morpheme);
@@ -1950,14 +1966,16 @@ public class MorphInuk {
         return stemAffs;
     }
     
+    
+    
     /*
      * Vérifier si les candidats racines qui ont une dernière consonne
      * intervocalique double et soit une voyelle, soit un 'q' à la fin,
      * correspondent à des racines verbales où cette consonne est simple et le
      * 'q' est absent ou présent.
      */
-    private static Vector checkForDoubleConsonantInVerbalRoots(Vector<String> rootCandidates) {
-        Vector newLexs = new Vector();
+    /* NOT USED --- private static Vector<Base> checkForDoubleConsonantInVerbalRoots(Vector<String> rootCandidates) {
+        Vector<Base> newLexs = new Vector<Base>();
         Vector<String> newRootCandidates = new Vector<String>();
         for (int i=0; i<rootCandidates.size(); i++) {
 //          stpw.check("checkForDoubleConsonantInVerbalRoots -- rootCandidate: "+((Base)rootCandidates.elementAt(i)).morpheme);
@@ -1979,13 +1997,14 @@ public class MorphInuk {
         }
         for (int i=0; i<newRootCandidates.size(); i++) {
 //          stpw.check("checkForDoubleConsonantInVerbalRoots -- newRootCandidate: "+((Base)newRootCandidates.elementAt(i)).morpheme);
-            Vector tr = Lexicon.lookForBase((String) newRootCandidates
+            Vector<Object> tr = Lexicon.lookForBase((String) newRootCandidates
                     .elementAt(i), false);
             if (tr != null)
                 for (int j=0; j<tr.size(); j++)
                     if (((Base)tr.elementAt(j)).type.equals("v"))
-                        newLexs.add(tr.elementAt(j));
+                        newLexs.add((Base)tr.elementAt(j));
         }
         return newLexs;
     }
+    */
 }

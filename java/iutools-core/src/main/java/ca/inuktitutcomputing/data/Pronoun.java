@@ -14,24 +14,24 @@ import java.util.Hashtable;
 public class Pronoun extends Base {
 	//
 	String person;
-	static public Hashtable hash = new Hashtable();
+	static public Hashtable<String,Pronoun> hash = new Hashtable<String,Pronoun>();
 	//
 	
     //------------------------------------------------------------------------   
     public Pronoun() {
     }
     
-    public Pronoun(HashMap v) {
+    public Pronoun(HashMap<String,String> v) {
 		getAndSetBaseAttributes(v);
-		type = (String) v.get("type");
-		number = (String) v.get("number");
-		variant = (String) v.get("variant");
-		nb = (String)v.get("nb");
+		type = v.get("type");
+		number = v.get("number");
+		variant = v.get("variant");
+		nb = v.get("nb");
 		if (nb==null || nb.equals(""))
 			nb = "1";
-		nature = (String)v.get("nature");
-		person = (String)v.get("per");
-		String comb = (String)v.get("combination");
+		nature = v.get("nature");
+		person = v.get("per");
+		String comb = v.get("combination");
 		if (comb != null) {
 			setCombiningParts(comb);
 		}
@@ -40,7 +40,7 @@ public class Pronoun extends Base {
     
     //------------------------------------------------------------------------   
 	public void addToHash(String key, Object obj) {
-	    hash.put(key,obj);
+	    hash.put(key,(Pronoun)obj);
 	}
 
     //------------------------------------------------------------------------   
@@ -50,7 +50,7 @@ public class Pronoun extends Base {
 	}
 
     void setAttributes() {
-    	HashMap prAttrs = new HashMap();
+    	HashMap<String,Object> prAttrs = new HashMap<String,Object>();
     	prAttrs.put("person", person);
     	super.setAttributes(prAttrs);
     }

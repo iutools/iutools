@@ -40,8 +40,8 @@ public class Suffix extends Affix {
 	String pl;
     String mobility;
     
-	static Class conditionClass = null;
-	static public Hashtable hash = new Hashtable();
+	//static Class conditionClass = null;
+	static public Hashtable<String,Morpheme> hash = new Hashtable<String,Morpheme>();
 	
 	static String[] functions = {"nn", "nv", "vn", "vv"};
 	//
@@ -50,55 +50,55 @@ public class Suffix extends Affix {
 	public Suffix() { 
 	}
 	
-	public Suffix(HashMap v) {
-		morpheme = (String) v.get("morpheme");
-		nb = (String) v.get("nb");
+	public Suffix(HashMap<String,String> v) {
+		morpheme = v.get("morpheme");
+		nb = v.get("nb");
 		num = new Integer(nb);
-		transitivity = (String) v.get("transitivity");
-		nature = (String) v.get("nature");
-		antipassive = (String) v.get("antipassive");
-		type = (String) v.get("type");
-		function = (String) v.get("function");
-		position = (String) v.get("position");
-		constraintOnTransitivity = (String) v.get("condPrecTrans");
-		pl = (String) v.get("plural");
-        mobility = (String)v.get("mobility");
+		transitivity = v.get("transitivity");
+		nature = v.get("nature");
+		antipassive = v.get("antipassive");
+		type = v.get("type");
+		function = v.get("function");
+		position = v.get("position");
+		constraintOnTransitivity = v.get("condPrecTrans");
+		pl = v.get("plural");
+        mobility = v.get("mobility");
 
 		// D�veloppement des diverses surfaceFormsOfAffixes associ�es aux 4 contextes
 		// voyelle, t, k et q et � leurs actions.
 
 		// Apr�s Voyelle
-		String form = (String) v.get("V-form");
-		String act1 = (String) v.get("V-action1");
-		String act2 = (String) v.get("V-action2");
+		String form = v.get("V-form");
+		String act1 = v.get("V-action1");
+		String act2 = v.get("V-action2");
 		// La forme utilis�e pour le morph�me est la forme apr�s voyelle
 		// par d�faut.  Toute forme pr�sente dans le champ 'V-form' est
 		// une forme optionnelle � ajouter � la forme par d�faut.
 		makeFormsAndActions("V", morpheme, form, act1, act2);
 
 		// Apr�s 't'
-		form = (String) v.get("t-form");
-		act1 = (String) v.get("t-action1");
-		act2 = (String) v.get("t-action2");
+		form = v.get("t-form");
+		act1 = v.get("t-action1");
+		act2 = v.get("t-action2");
 		makeFormsAndActions("t", morpheme, form, act1, act2);
 
 		// Apr�s 'k'
-		form = (String) v.get("k-form");
-		act1 = (String) v.get("k-action1");
-		act2 = (String) v.get("k-action2");
+		form = v.get("k-form");
+		act1 = v.get("k-action1");
+		act2 = v.get("k-action2");
 		makeFormsAndActions("k", morpheme, form, act1, act2);
 
 		// Apr�s 'q'
-		form = (String) v.get("q-form");
-		act1 = (String) v.get("q-action1");
-		act2 = (String) v.get("q-action2");
+		form = v.get("q-form");
+		act1 = v.get("q-action1");
+		act2 = v.get("q-action2");
 		makeFormsAndActions("q", morpheme, form, act1, act2);
 
-		englishMeaning = (String) v.get("engMean");
-		frenchMeaning = (String) v.get("freMean");
-		dbName = (String) v.get("dbName");
-		tableName = (String) v.get("tableName");
-		String cs = (String) v.get("condPrec");
+		englishMeaning = v.get("engMean");
+		frenchMeaning = v.get("freMean");
+		dbName = v.get("dbName");
+		tableName = v.get("tableName");
+		String cs = v.get("condPrec");
 		if (cs == null || cs.equals("")) {
             /*
              * Pour les NV, si on n'a pas sp�cifi� une condition pr�c�dente, on
@@ -126,7 +126,7 @@ public class Suffix extends Affix {
             }
             
 		}
-		cs = (String) v.get("condOnNext");
+		cs = v.get("condOnNext");
         if (cs != null && !cs.equals(""))
             try {
                 nextCondition = (Conditions) new Imacond(
@@ -134,7 +134,7 @@ public class Suffix extends Affix {
             } catch (ParseException e) {
             }
             
-		String srcs = (String) v.get("sources");
+		String srcs = v.get("sources");
 		if (srcs != null) {
 			StringTokenizer st2 = new StringTokenizer(srcs);
 			sources = new String[st2.countTokens()];
@@ -155,7 +155,7 @@ public class Suffix extends Affix {
 
 	//----------------------------------------------------------------------------------------------------------
 	public void addToHash(String key, Object obj) {
-	    hash.put(key,obj);
+	    hash.put(key,(Suffix)obj);
 	}
 
 	public String getSignature() {
@@ -230,7 +230,7 @@ public class Suffix extends Affix {
 	}
 	
 	void setAttributes() {
-		HashMap suffAttrs = new HashMap();
+		HashMap<String,Object> suffAttrs = new HashMap<String,Object>();
 		suffAttrs.put("nb",nb);
 		suffAttrs.put("transitivity",transitivity);
 		suffAttrs.put("antipassive",antipassive);

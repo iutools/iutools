@@ -526,7 +526,7 @@ public class Dialect {
         for (int i=0; i<s.length(); i++) {
         	stpw.check("Dialect.explode2::528 -- i: "+i);
             if (s.charAt(i)=='@') {
-                Vector grCons = (Vector)LinguisticDataAbstract.groupsOfConsonants.get(new Character(s.charAt(i+1)));
+                Vector<String> grCons = LinguisticDataAbstract.groupsOfConsonants.get(new Character(s.charAt(i+1)));
                 if (grCons!=null) {
                 	for (int j=0; j<grCons.size(); j++) {
                     	stpw.check("Dialect.explode::533 -- j: "+j);

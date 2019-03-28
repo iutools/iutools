@@ -1,9 +1,9 @@
 package ca.inuktitutcomputing.data;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
-import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
@@ -970,21 +970,21 @@ public class Roots {
 
 	public static void displayListOfRoots(String args[], PrintStream out) {
 		lang = Util.getArgument(args, "l");
-		Hashtable roots = LinguisticDataAbstract.getAllRoots();
+		Hashtable<String,Morpheme> roots = LinguisticDataAbstract.getAllRoots();
 		displayListOfMorphemes("rac", out, roots, lang);
 	}
 
 	protected static void displayListOfMorphemes(String morphemeType,
-			PrintStream out, Hashtable morphemes, String lang) {
+			PrintStream out, Hashtable<String,Morpheme> morphemes, String lang) {
 		try {
 			//	            if (morphemeType.equals("rac"))
 			//	                out.append(html.scriptDescRootJSP(lang,null));
 			//	            else if (morphemeType.equals("suf"))
 			//	                out.append(html.scriptDescSufJSP(lang,null));
 
-			Object[] keys = morphemes.keySet().toArray();
+			String[] keys = morphemes.keySet().toArray(new String[0]);
 			Arrays.sort(keys);
-			Vector alpha = new Vector();
+			ArrayList<Character> alpha = new ArrayList<Character>();
 			char oldChar = (char) -1;
 			for (int i = 0; i < keys.length; i++) {
 				char c = ((String) keys[i]).charAt(0);
@@ -997,7 +997,7 @@ public class Roots {
 
 			// Chaque caractère initial
 			for (int i = 0; i < alpha.size(); i++) {
-				alphas[i] = ((Character) alpha.elementAt(i)).charValue();
+				alphas[i] = ((Character) alpha.get(i)).charValue();
 			}
 
 			out.append("<a name='top'></a>");
@@ -1023,7 +1023,7 @@ public class Roots {
 			out.append("<table border=0 style=\"font-size:8pt;\"><tr>");
 			// Pour chaque base:
 			for (int i = 0; i < keys.length; i++) {
-				Morpheme morpheme = (Morpheme) morphemes.get(keys[i]);
+				Morpheme morpheme = morphemes.get(keys[i]);
 				if (((String) keys[i]).charAt(0) != alphaChar) {
 					ncol = 0;
 					alphaChar = ((String) keys[i]).charAt(0);

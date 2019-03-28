@@ -61,6 +61,10 @@ public abstract class PartOfComposition implements Cloneable {
     	return arcs;
     }
     
+    public void setArcs(Graph.Arc _arcs[]) {
+    	arcs = _arcs;
+    }
+    
     public Graph.Arc getArc() {
     	return arc;
     }

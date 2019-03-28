@@ -24,26 +24,23 @@ public class Source {
     public String location;
     public String year;
 
-    static public Hashtable hash = new Hashtable();
+    static public Hashtable<String,Source> hash = new Hashtable<String,Source>();
 
-    HashMap record;
-
-    public Source(HashMap v) {
-        record = v;
-        id = (String) v.get("id");
-        authorSurName = (String) v.get("authorSurName");
-        authorMidName = (String) v.get("authorMidName");
-        authorFirstName = (String) v.get("authorFirstName");
-        title = (String) v.get("title");
-        subtitle = (String) v.get("subtitle");
-        publisher = (String) v.get("publisher");
-        publisherMisc = (String) v.get("publisherMisc");
-        location = (String) v.get("city/country");
-        year = (String) v.get("year");
+    public Source(HashMap<String,String> v) {
+        id = v.get("id");
+        authorSurName = v.get("authorSurName");
+        authorMidName = v.get("authorMidName");
+        authorFirstName = v.get("authorFirstName");
+        title = v.get("title");
+        subtitle = v.get("subtitle");
+        publisher = v.get("publisher");
+        publisherMisc = v.get("publisherMisc");
+        location = v.get("city/country");
+        year = v.get("year");
     }
     
     static public void addToHash(String key, Object obj) {
-        hash.put(key,obj);
+        hash.put(key,(Source)obj);
     }
         
 }

@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
-import java.util.concurrent.TimeoutException;
 
 import ca.inuktitutcomputing.phonology.Dialect;
 import ca.inuktitutcomputing.dataCSV.LinguisticDataCSV;
@@ -22,24 +21,21 @@ import ca.inuktitutcomputing.utilities.MyStringTokenizer;
 
 public abstract class LinguisticDataAbstract {
 
-    static Hashtable affixesExp = new Hashtable(); // suffixes, terminaisons (expérimental)
-    static Hashtable surfaceFormsOfAffixesExp = new Hashtable();  // (expérimental)
-
-    static Hashtable textualRenderings;
-    static Hashtable examples = new Hashtable();
+    static Hashtable<String,String[]> textualRenderings;
+    static Hashtable<String,Vector<Example>> examples = new Hashtable<String,Vector<Example>>();
     static LinguisticDataAbstract database;
 
-    protected static Hashtable surfaceFormsOfAffixes;
-    protected static Hashtable bases;
+    protected static Hashtable<String,Vector<Object>> surfaceFormsOfAffixes;
+    protected static Hashtable<String,Vector<Object>> bases;
     
     protected static Hashtable<String,Base> basesId;
 //    protected Hashtable demonstrativesId;
     protected static Hashtable<String,Affix> affixesId;
 
-    protected static Hashtable words;
-    protected static Hashtable sources;
+    protected static Hashtable<String,VerbWord> words;
+    protected static Hashtable<String,Source> sources;
     
-    static public Hashtable groupsOfConsonants = new Hashtable();
+    static public Hashtable<Character,Vector<String>> groupsOfConsonants = new Hashtable<Character,Vector<String>>();
 
     /*
      * source: "csv" - from the .csv files
@@ -103,11 +99,11 @@ public abstract class LinguisticDataAbstract {
             if (Roman.isConsonant(chars[i]) &&
                     Roman.isConsonant(chars[i+1])) {
                 Character charac = new Character(chars[i+1]);
-                Vector grCons;
+                Vector<String> grCons;
                 if (groupsOfConsonants.containsKey(charac))
-                    grCons = (Vector)groupsOfConsonants.get(charac);
+                    grCons = groupsOfConsonants.get(charac);
                 else
-                    grCons = new Vector();
+                    grCons = new Vector<String>();
                 String newGr = new String(new char[]{chars[i],chars[i+1]});
                 if (!grCons.contains(newGr))
                     grCons.add(newGr);
@@ -148,27 +144,27 @@ public abstract class LinguisticDataAbstract {
     }
     
     protected static VerbWord getVerbWord(String term) {
-        VerbWord mv = (VerbWord)words.get(term);
+        VerbWord mv = words.get(term);
         return mv;
     }
 
     protected static Source getSource(String sourceId) {
-        Source s = (Source)sources.get(sourceId);
+        Source s = sources.get(sourceId);
         return s;
     }
 
     // Returns a Vector of Base and Demonstrative objects, or null.
-    public static Vector getBases(String term) {
-        Vector bs = null;
-        Vector gets = (Vector) bases.get(term);
+    @SuppressWarnings("unchecked")
+	public static Vector<Object> getBases(String term) {
+        Vector<Object> bs = null;
+        Vector<Object> gets = bases.get(term);
         if (gets != null)
-            bs = (Vector)gets.clone();
+            bs = (Vector<Object>) gets.clone();
         return bs;
     }
     
-    protected static Vector getExample(String key) {
-        Vector ex = (Vector)examples.get(key);
-        return ex;
+    protected static Vector<Example> getExample(String key) {
+        return examples.get(key);
     }
     
 
@@ -190,21 +186,21 @@ public abstract class LinguisticDataAbstract {
     // The keys of the hashtable 'surfaceFormsOfAffixes' are in the
     // simplified spelling (ng > N).  To search for a form
     // in the ICI spelling, one calls this method.
-    public static Vector getSurfaceForms(String form) {
+    public static Vector<Object> getSurfaceForms(String form) {
         // Simplify the spelling
         String simplifiedForm = Orthography.simplifiedOrthographyLat(form);
-        return (Vector)surfaceFormsOfAffixes.get(simplifiedForm);
+        return surfaceFormsOfAffixes.get(simplifiedForm);
     }
     
     public static SurfaceFormOfAffix getForm(String morph) {
-    	return (SurfaceFormOfAffix)((Vector)LinguisticDataAbstract.getSurfaceForms(morph)).elementAt(0);
+    	return (SurfaceFormOfAffix)(LinguisticDataAbstract.getSurfaceForms(morph)).elementAt(0);
     }
     
     protected static void addForm(String str, Object form) {
         String simplifiedForm = Orthography.simplifiedOrthographyLat(str);
-		Vector v = (Vector)surfaceFormsOfAffixes.get(simplifiedForm);
+		Vector<Object> v = surfaceFormsOfAffixes.get(simplifiedForm);
 		if (v == null)
-			v = new Vector();
+			v = new Vector<Object>();
 		v.add(form);
 		surfaceFormsOfAffixes.put(simplifiedForm, v);
     }
@@ -217,10 +213,10 @@ public abstract class LinguisticDataAbstract {
     	return (String[]) surfaceFormsOfAffixes.keySet().toArray(new String[] {});
     }
     
-    protected static Hashtable getAllSuffixes() {
-        Hashtable hash = Suffix.hash;
+    protected static Hashtable<String,Morpheme> getAllSuffixes() {
+        Hashtable<String,Morpheme> hash = Suffix.hash;
         if (hash.size()==0) {
-            for (Enumeration keys = affixesId.keys(); keys.hasMoreElements();) {
+            for (Enumeration<String> keys = affixesId.keys(); keys.hasMoreElements();) {
                 Object key = keys.nextElement();
                 Affix aff = (Affix)affixesId.get(key);
                 aff.addToHash((String)key,aff);
@@ -238,10 +234,10 @@ public abstract class LinguisticDataAbstract {
     }
 
     public static String[] getAllSuffixesIds() {
-    	Hashtable suffixes = getAllSuffixes();
+    	Hashtable<String,Morpheme> suffixes = getAllSuffixes();
     	String [] suffixesIds = new String[suffixes.size()];
     	int i=0;
-    	for (Enumeration keys = suffixes.keys(); keys.hasMoreElements();) {
+    	for (Enumeration<String> keys = suffixes.keys(); keys.hasMoreElements();) {
     		Suffix suf = (Suffix)suffixes.get(keys.nextElement());
     		suffixesIds[i++] = suf.id;
     	}
@@ -257,15 +253,14 @@ public abstract class LinguisticDataAbstract {
     }
 
 
-    protected static Hashtable getAllRoots() {
-        Base sample = new Base();
-        Class clazz = sample.getClass();
-        Hashtable hash = Base.hash;
+    protected static Hashtable<String,Morpheme> getAllRoots() {
+        Hashtable<String,Morpheme> hash = Base.hash;
         if (hash.size()==0) {
-            for (Enumeration keys = basesId.keys(); keys.hasMoreElements();) {
+            String clazz = Base.class.getName();
+            for (Enumeration<String> keys = basesId.keys(); keys.hasMoreElements();) {
                 Object key = keys.nextElement();
                 Object obj = basesId.get(key);
-                if (obj.getClass()==clazz) {
+                if (obj.getClass().getName()==clazz) {
                     Base root = (Base)basesId.get(key);
                     root.addToHash((String)key,root);
                 }
@@ -275,15 +270,15 @@ public abstract class LinguisticDataAbstract {
     }
     
     protected static String [] getAllBasesKeys() {
-    	return (String[])bases.keySet().toArray(new String[0]); 	
+    	return (String[]) bases.keySet().toArray(new String[0]); 	
     }
     
     
     protected static Base [] getGiVerbs() {
-    	Hashtable giverbsHash = new Hashtable();
-    	Hashtable bases = getAllRoots();
-    	for (Enumeration keys = bases.keys(); keys.hasMoreElements();) {
-    		Object key = keys.nextElement();
+    	Hashtable<String,Base> giverbsHash = new Hashtable<String,Base>();
+    	Hashtable<String,Morpheme> bases = getAllRoots();
+    	for (Enumeration<String> keys = bases.keys(); keys.hasMoreElements();) {
+    		String key = keys.nextElement();
     		Base base = (Base)bases.get(key);
     		if (base.isGiVerb())
     			giverbsHash.put(key, base);
@@ -297,15 +292,14 @@ public abstract class LinguisticDataAbstract {
     }
 
     
-    protected static Hashtable getAllDemonstratives() {
-        Demonstrative sample = new Demonstrative();
-        Class clazz = sample.getClass();
-        Hashtable hash = Demonstrative.hash;
+    protected static Hashtable<String,Demonstrative> getAllDemonstratives() {
+        Hashtable<String,Demonstrative> hash = Demonstrative.hash;
         if (hash.size()==0) {
-            for (Enumeration keys = basesId.keys(); keys.hasMoreElements();) {
+            String clazz = Demonstrative.class.getName();
+            for (Enumeration<String> keys = basesId.keys(); keys.hasMoreElements();) {
                 Object key = keys.nextElement();
                 Object obj = basesId.get(key);
-                if (obj.getClass()==clazz) {
+                if (obj.getClass().getName()==clazz) {
                     Demonstrative dem = (Demonstrative)basesId.get(key);
                     dem.addToHash((String)key,dem);
                 }
@@ -352,7 +346,7 @@ public abstract class LinguisticDataAbstract {
     }
     
     private static boolean makeHashOfTextualRenderings() {
-        textualRenderings = new Hashtable();
+        textualRenderings = new Hashtable<String,String[]>();
         textualRenderings.put("dec", new String[] { "declarative", "déclaratif" });
         textualRenderings.put("int", new String[] { "interrogative", "interrogatif" });
         textualRenderings.put("imp", new String[] { "imperative", "impératif" });
@@ -554,28 +548,15 @@ public abstract class LinguisticDataAbstract {
     // EXAMPLES
     private static boolean makeHashOfExamples() {
         try {
-            BufferedReader r = null;
             String line;
             boolean eof;
+            
+            BufferedReader examplesReader = getExamplesFile();
 
-            // Le "UTF-8" assume que le fichier lexiqueSyl.dat contient des
-            // caract�res cod�s de cette fa�on, et assure que les caract�res
-            // lus seront en unicode.
-            InputStream is = null; //new Examples().getExampleStream();
-            InputStreamReader isr = null;
-            if (is != null) {
-                try {
-                    isr = new InputStreamReader(is, "utf-8");
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                    isr = new InputStreamReader(is);
-                }
-                r = new BufferedReader(isr);
-            }
-            examples = new Hashtable();
+            examples = new Hashtable<String,Vector<Example>>();
             eof = false;
 
-            while (r != null && !eof) {
+            while (examplesReader != null && !eof) {
                 // Lire une ligne du fichier.
                 // Chaque ligne contient, s�par�s par un espace ou par un tab:
                 // <term> <id> <ex. lat.> <ex. syll.> <trad. angl.> <trad.
@@ -585,14 +566,14 @@ public abstract class LinguisticDataAbstract {
                 // Un * * est un exemple pour le m�me terme.
                 // <id> est la signature unique d'un suffixe = numero + function
                 // ou numero + 'q' si le suffixe est un suffixe de queue.
-                line = r.readLine();
+                line = examplesReader.readLine();
                 if (line == null)
                     eof = true;
                 else {
                     MyStringTokenizer mst = new MyStringTokenizer(line, ' ',
                             '"');
-                    Vector v = new Vector();
-                    Vector current;
+                    Vector<String> v = new Vector<String>();
+                    Vector<Example> current;
                     Example ex;
                     String term = null;
                     String id = null;
@@ -616,7 +597,7 @@ public abstract class LinguisticDataAbstract {
                     //							v.add(st.sval);
                     //					}
                     while (mst.hasMoreTokens()) {
-                        v.add(mst.nextToken());
+                        v.add((String)mst.nextToken());
                     }
                     if (v.size() != 0) {
                         if (((String) v.elementAt(0)).equals("*")) {
@@ -632,18 +613,16 @@ public abstract class LinguisticDataAbstract {
                         // mot peut avoir plus d'un exemple.
                         // On ajoute � ce vecteur.
                         key = term + id;
-                        current = (Vector) examples.get(key);
+                        current = (Vector<Example>) examples.get(key);
                         if (current == null)
-                            current = new Vector();
+                            current = new Vector<Example>();
                         current.add(ex);
                         examples.put(key, current);
                     }
                 } // else
             } // while (!eof)
-            if (r!=null) {
-            	isr.close();
-                r.close();
-            }
+            if (examplesReader!=null)
+                examplesReader.close();
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
@@ -651,5 +630,23 @@ public abstract class LinguisticDataAbstract {
 
         return true;
     } // makeHashOfExamples
+
+	private static BufferedReader getExamplesFile() {
+        // Le "UTF-8" assume que le fichier lexiqueSyl.dat contient des
+        // caract�res cod�s de cette fa�on, et assure que les caract�res
+        // lus seront en unicode.
+		BufferedReader reader = null;
+        InputStream is = new Examples().getExampleStream();
+        if (is != null) {
+            InputStreamReader isr = null;
+            try {
+                isr = new InputStreamReader(is, "utf-8");
+            } catch (UnsupportedEncodingException e) {
+                isr = new InputStreamReader(is);
+            }
+            reader = new BufferedReader(isr);
+        }
+        return reader;
+	}
 
 }

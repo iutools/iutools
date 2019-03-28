@@ -14,23 +14,23 @@ public class Demonstrative extends Base {
 	//
 	String root;
 	String objectType;
-	static public Hashtable hash = new Hashtable();
+	static public Hashtable<String,Demonstrative> hash = new Hashtable<String,Demonstrative>();
 	//
 	
 	//----------------------------------------------------------------------------------------------------------
 	public Demonstrative() {	    
 	}
-	public Demonstrative(HashMap v) {
+	public Demonstrative(HashMap<String,String> v) {
 		type = (String) v.get("type");
 	    demonstrative(v);
 	}
 
-	public Demonstrative(HashMap v, String prefixType) {
+	public Demonstrative(HashMap<String,String> v, String prefixType) {
 		type = prefixType + (String) v.get("type");
 	    demonstrative(v);
 	}
 
-	void demonstrative(HashMap v) {
+	void demonstrative(HashMap<String,String> v) {
 		getAndSetBaseAttributes(v);
 		number = (String) v.get("number");
 		objectType = (String) v.get("objectType");
@@ -40,7 +40,7 @@ public class Demonstrative extends Base {
 	
 	//----------------------------------------------------------------------------------------------------------
 	public void addToHash(String key, Object obj) {
-	    hash.put(key,obj);
+	    hash.put(key,(Demonstrative)obj);
 	}
 
 	// Signature: <type>-<objectType> pour les adverbes démonstratifs
@@ -79,7 +79,7 @@ public class Demonstrative extends Base {
 	}
 	
 	void setAttributes() {
-		HashMap demAttrs = new HashMap();
+		HashMap<String,Object> demAttrs = new HashMap<String,Object>();
 		demAttrs.put("root", root);
 		demAttrs.put("objectType", objectType);
 		super.setAttributes(demAttrs);

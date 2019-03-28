@@ -24,16 +24,15 @@
 
 package ca.inuktitutcomputing.morph;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import ca.inuktitutcomputing.data.Affix;
 import ca.inuktitutcomputing.data.Base;
 import ca.inuktitutcomputing.data.Morpheme;
 import ca.inuktitutcomputing.script.Orthography;
-import ca.inuktitutcomputing.utilities.Debugging;
 
 // Decomposition:
 //    String word
@@ -48,11 +47,11 @@ import ca.inuktitutcomputing.utilities.Debugging;
 //            SurfaceFormOfAffix form
 //            
 
-public class Decomposition extends Object implements Comparable {
+public class Decomposition extends Object implements Comparable<Decomposition> {
 
 	String word;
 	RootPartOfComposition stem;
-	Object[] morphParts;
+	public Object[] morphParts;
 
 	// Au moment de la cr�ation d'un objet Decomposition, on d�termine
 	// la cha�ne de caract�res � l'int�rieur du mot pour chaque morceau,
@@ -143,7 +142,7 @@ public class Decomposition extends Object implements Comparable {
 //	 - Les racines connues en premier
 	// - Les racines les plus longues
 	// - Le nombre mininum de morphParts en premier
-	public int compareTo(Object obj) {
+	public int compareTo(Decomposition obj) {
 		int returnValue = 0;
 		Decomposition otherDec = (Decomposition) obj;
 //		boolean known = ((Base) stem.getRoot()).known;
@@ -178,11 +177,11 @@ public class Decomposition extends Object implements Comparable {
 	}
 
 	// Note: � faire avec des HashSet: plus rapide probablement.
-	static Decomposition[] removeMultiples(Decomposition[] decs) {
+	static public Decomposition[] removeMultiples(Decomposition[] decs) {
 		if (decs == null || decs.length == 0)
 			return decs;
-		Vector v = new Vector();
-		Vector vc = new Vector();
+		Vector<Decomposition> v = new Vector<Decomposition>();
+		Vector<String> vc = new Vector<String>();
 		v.add(decs[0]);
 		vc.add(decs[0].toStr2());
 		for (int i = 1; i < decs.length; i++) {
@@ -200,7 +199,7 @@ public class Decomposition extends Object implements Comparable {
     // �liminer les d�compositions qui contiennent une suite de suffixes
     // pour laquelle il existe un suffixe compos�, pour ne garder que
     // la d�compositions dans laquelle se trouve le suffixe compos�.
-	static Decomposition[] removeCombinedSuffixes(Decomposition decs[]) {
+	static public Decomposition[] removeCombinedSuffixes(Decomposition decs[]) {
         Object[][] objs = new Object[decs.length][2];
         for (int i = 0; i < decs.length; i++) {
             objs[i][0] = decs[i];
@@ -213,7 +212,7 @@ public class Decomposition extends Object implements Comparable {
                 // �t� rejet�es.
                 Decomposition dec = (Decomposition) objs[i][0];
                 // Morph�mes de cette d�composition
-                Vector vParts = new Vector(Arrays.asList(dec.morphParts));
+                Vector<Object> vParts = new Vector<Object>(Arrays.asList(dec.morphParts));
                 vParts.add(0,dec.stem);
                 // Pour chaque morph�me combin�, trouver celui qui le pr�c�de,
                 // celui qui le suit, et v�rifier dans les autres
@@ -250,8 +249,7 @@ public class Decomposition extends Object implements Comparable {
                             // D�compositions retenues seulement.
                             if (((Boolean) objs[k][1]).booleanValue()) {
                                 Decomposition deck = (Decomposition) objs[k][0];
-                                Object morphPartsk[] = (Object[]) deck.morphParts;
-                                Vector vPartsk = new Vector(Arrays.asList(deck.morphParts));
+                                Vector<Object> vPartsk = new Vector<Object>(Arrays.asList(deck.morphParts));
                                 vPartsk.add(0,deck.stem);
                                 int l = 0;
                                 boolean cont = true;
@@ -344,7 +342,7 @@ public class Decomposition extends Object implements Comparable {
                 }
             }
         }
-        Vector v = new Vector();
+        Vector<Object> v = new Vector<Object>();
         for (int i = 0; i < objs.length; i++)
             if (((Boolean) objs[i][1]).booleanValue())
                 v.add(objs[i][0]);
@@ -452,7 +450,7 @@ public class Decomposition extends Object implements Comparable {
 		protected String[] expr2parts() {
 			Pattern p = Pattern.compile("\\{[^}]+?\\}");
 			Matcher mp = p.matcher(decstr);
-			Vector v = new Vector();
+			ArrayList<String> v = new ArrayList<String>();
 			int pos=0;
 			while (mp.find(pos)) {
 				v.add(mp.group());

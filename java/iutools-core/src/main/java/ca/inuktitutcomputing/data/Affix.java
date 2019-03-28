@@ -25,8 +25,6 @@
 package ca.inuktitutcomputing.data;
 
 import java.lang.String;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -81,8 +79,8 @@ public abstract class Affix extends Morpheme {
     }
     
 	//---------------------------------------------------------------------------------------------------------
-	void setAttributes(HashMap attrs) {
-		HashMap affAttrs = new HashMap();
+	void setAttributes(HashMap<String,Object> attrs) {
+		HashMap<String,Object> affAttrs = new HashMap<String,Object>();
 		affAttrs.put("function",function);
 		affAttrs.put("position",position);
 		affAttrs.put("vform",vform);
@@ -252,9 +250,9 @@ public abstract class Affix extends Morpheme {
 		// En principe, ici, allForms, action1 et action2 devraient
 		// �tre en phase et contenir un nombre �gal d'�l�ments.
 
-		Vector VForms = new Vector();
-		Vector a1V = new Vector();
-		Vector a2V = new Vector();
+		Vector<String> VForms = new Vector<String>();
+		Vector<Action> a1V = new Vector<Action>();
+		Vector<Action> a2V = new Vector<Action>();
 
 		while (stf.hasMoreTokens()) {
 		    String f = stf.nextToken();

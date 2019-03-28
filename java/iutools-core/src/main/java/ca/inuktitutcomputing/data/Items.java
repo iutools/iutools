@@ -38,7 +38,7 @@ public class Items {
 	private static String composeDisplay(String item) {
 		String className = item.replaceAll(" ", "_");
 		className = className.substring(0,1).toUpperCase()+className.substring(1);
-		Class itemClass = null;
+		Class<?> itemClass = null;
 		try {
 			itemClass = Class.forName("data."+className);
 			String aff = (String) itemClass.getMethod("affichage", new Class[]{String.class}).invoke(null, new Object[]{lang});

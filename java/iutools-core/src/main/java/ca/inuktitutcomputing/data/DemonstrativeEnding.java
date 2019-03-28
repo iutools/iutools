@@ -9,7 +9,6 @@ package ca.inuktitutcomputing.data;
 
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Vector;
 
 import ca.inuktitutcomputing.utilities.Debugging;
 
@@ -18,8 +17,7 @@ public class DemonstrativeEnding extends Affix {
 	String grammCase;
 	String number;
 	
-	static Class conditionClass = null;
-	static public Hashtable hash = new Hashtable();
+	static public Hashtable<String,DemonstrativeEnding> hash = new Hashtable<String,DemonstrativeEnding>();
 
 	static String[] cases = {"abl", "acc", "dat", "gen", "loc", "nom", "sim", "via"};
 	static String[] types = {"tad", "tpd"};
@@ -29,7 +27,7 @@ public class DemonstrativeEnding extends Affix {
 	public DemonstrativeEnding() { 
 	}
 	
-	public DemonstrativeEnding(HashMap v) {
+	public DemonstrativeEnding(HashMap<String,String> v) {
 		morpheme = (String) v.get("morpheme");
 		Debugging.mess("DemonstrativeEnding/1", 1, "morpheme= " + morpheme);
 		type = (String) v.get("type");
@@ -44,7 +42,7 @@ public class DemonstrativeEnding extends Affix {
 	
 	//--------------------------------------------------------------------------------------------------------
 	public void addToHash(String key, Object obj) {
-	    hash.put(key,obj);
+	    hash.put(key,(DemonstrativeEnding)obj);
 	}
 
 	public String getTransitivityConstraint() {
@@ -82,7 +80,7 @@ public class DemonstrativeEnding extends Affix {
 	}
 
     void setAttributes() {
-    	HashMap endingAttrs = new HashMap();
+    	HashMap<String,Object> endingAttrs = new HashMap<String,Object>();
     	endingAttrs.put("case",grammCase);
     	endingAttrs.put("number",number);
     	super.setAttributes(endingAttrs);

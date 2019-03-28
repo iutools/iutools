@@ -121,7 +121,7 @@ public class AffixPartOfComposition extends PartOfComposition {
      * On utilise 'multipleMorphparts' pour r�duire le nombre de tableaux
      * d'affichage des r�sultats lors de la d�finition (d�composition) d'un mot.
      */
-    public void setMultipleMorphparts(Vector morphParts) {
+    public void setMultipleMorphparts(Vector<AffixPartOfComposition> morphParts) {
         multipleMorphparts = (AffixPartOfComposition[])morphParts.toArray(new AffixPartOfComposition[]{});
     }
     

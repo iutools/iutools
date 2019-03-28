@@ -36,14 +36,14 @@ public class ListMorphemes {
             bw.newLine();
             bw.flush();
 
-            Vector suffixesV = new Vector();
-            Vector endingsV = new Vector();
+            Vector<String> suffixesV = new Vector<String>();
+            Vector<String> endingsV = new Vector<String>();
             
             String affixes[] = LinguisticDataAbstract.getAllAffixesSurfaceFormsKeys();
             Arrays.sort(affixes);
             
             for (int i=0; i<affixes.length; i++) {
-                Vector vecForms = (Vector)LinguisticDataAbstract.getSurfaceForms(affixes[i]);
+                Vector<Object> vecForms = (Vector<Object>)LinguisticDataAbstract.getSurfaceForms(affixes[i]);
                 for (int j=0; j<vecForms.size(); j++) {
                     SurfaceFormOfAffix fa = (SurfaceFormOfAffix)vecForms.elementAt(j);
                     if (fa.type.equals("sn") || fa.type.equals("sv") || fa.type.equals("q"))

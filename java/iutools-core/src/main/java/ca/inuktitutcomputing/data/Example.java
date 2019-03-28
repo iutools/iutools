@@ -63,15 +63,15 @@ public class Example {
     public String fre;
 
 
-    public Example(Vector v) {
-	term = (String)v.elementAt(0);
-	nb = (String)v.elementAt(1);
-	termExLat = (String)v.elementAt(2);
-	termExSyl = (String)v.elementAt(3);
-	exampleLat = (String)v.elementAt(4);
-	exampleSyl = (String)v.elementAt(5);
-	eng = (String)v.elementAt(6);
-	fre = (String)v.elementAt(7);
+    public Example(Vector<String> v) {
+	term = v.elementAt(0);
+	nb = v.elementAt(1);
+	termExLat = v.elementAt(2);
+	termExSyl = v.elementAt(3);
+	exampleLat = v.elementAt(4);
+	exampleSyl = v.elementAt(5);
+	eng = v.elementAt(6);
+	fre = v.elementAt(7);
     }
 
 }
