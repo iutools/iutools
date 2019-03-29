@@ -16,9 +16,12 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
+
 import com.google.gson.Gson;
 
 import ca.nrc.datastructure.Pair;
+import ca.nrc.json.PrettyPrinter;
 import ca.inuktitutcomputing.utilities.EditDistanceCalculator;
 import ca.inuktitutcomputing.utilities.EditDistanceCalculatorFactory;
 import ca.inuktitutcomputing.utilities.EditDistanceCalculatorFactoryException;
@@ -31,7 +34,7 @@ public class SpellChecker {
 	protected String allWords = ",,";
 	protected Map<String,Long> idfStats = new HashMap<String,Long>();
 	private String defaultEditDistanceAlgorithmName = "Levenshtein";
-	public EditDistanceCalculator editDistanceCalculator;
+	public transient EditDistanceCalculator editDistanceCalculator;
 	
 	
 	public SpellChecker() {
@@ -131,6 +134,8 @@ public class SpellChecker {
 		Set<String> candidates = firstPassCandidates(badWord);
 		List<Pair<String,Double>> candidatesWithSim = computeCandidateSimilarities(badWord, candidates);
 		List<String> corrections = sortCandidatesBySimilarity(candidatesWithSim);
+		Logger logger = Logger.getLogger("SpellChecker.correct");
+		logger.debug("corrections for "+badWord+": "+corrections.size());
  		if (maxCorrections== -1)
  			return corrections;
  		else
@@ -176,16 +181,20 @@ public class SpellChecker {
 	}
 
 	public Set<String> firstPassCandidates(String badWord) {
+		Logger logger = Logger.getLogger("SpellChecker.firstPassCandidates");
 		Set<String> candidates = new HashSet<String>();
 		List<Pair<String,Long>> rarest = rarestSequencesOf(badWord);
 		while (!rarest.isEmpty()) {
 			Pair<String,Long> currSeqInfo = rarest.remove(0);
+			logger.debug("sequence: "+currSeqInfo.getFirst()+" ("+currSeqInfo.getSecond()+")");
 			Set<String> wordsWithSequence = wordsContainingSequ(currSeqInfo.getFirst());
+			logger.debug("  wordsWithSequence: "+wordsWithSequence.size());
 			candidates.addAll(wordsWithSequence);
+			logger.debug("  candidates: "+candidates.size());
 			if (candidates.size() >= MAX_CANDIDATES) {
 				if (!rarest.isEmpty()) {
 					Pair<String,Long> nextSeqInfo = rarest.get(0);
-					if (currSeqInfo.getSecond() != nextSeqInfo.getSecond()) {
+					if (currSeqInfo.getSecond() == nextSeqInfo.getSecond()) {
 						// The next sequence is just as rare as the current one, so 
 						// keep going.
 						continue;
@@ -195,7 +204,10 @@ public class SpellChecker {
 				}
 			}
 		}
-		
+		logger.debug("Nb. candidates: "+candidates.size());
+		Iterator<String> itcand = candidates.iterator();
+		//while (itcand.hasNext())
+		//	logger.debug("candidate: "+itcand.next());
 		return candidates;
 	}
 

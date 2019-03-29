@@ -11,12 +11,14 @@ import java.util.Set;
 import org.junit.Test;
 
 import ca.nrc.datastructure.Pair;
+import ca.nrc.json.PrettyPrinter;
 
 import org.junit.*;
 
 public class SpellCheckerTest {
 	
 	private SpellChecker checker = new SpellChecker();
+	private SpellChecker checkerSyll = new SpellChecker();
 	
 	@Before
 	public void setUp() {
@@ -24,9 +26,16 @@ public class SpellCheckerTest {
 		checker.addCorrectWord("inuk");
 		checker.addCorrectWord("inukshuk");
 		checker.addCorrectWord("nunavut");
+		
+		checkerSyll.addCorrectWord("ᓄᓇᕘᒥ");
+		checkerSyll.addCorrectWord("ᓄᓇᕗᒻᒥ");
+		checkerSyll.addCorrectWord("ᓄᓇᒥ");
+		checkerSyll.addCorrectWord("ᓄᓇᕗᑦ");
+		checkerSyll.addCorrectWord("ᓄᓇᕗᒻᒥᑦ");
+		checkerSyll.addCorrectWord("ᐃᒡᓗ");
 	}
 
-	@Test(expected=RuntimeException.class) // because file checker.json does not exist
+	@Test
 	public void test__SpellChecker__Synopsis() throws IOException {
 		//
 		// Before you can use a spell checker, you must first build its
@@ -83,6 +92,11 @@ public class SpellCheckerTest {
 		Assert.assertFalse(containsWord("nunavut", checker));
 		checker.addCorrectWord("nunavut");
 		Assert.assertTrue(containsWord("nunavut", checker));
+		
+		Assert.assertFalse(containsWord("ᐃᒡᓗ", checker));
+		checker.addCorrectWord("ᐃᒡᓗ");
+		Assert.assertTrue(containsWord("ᐃᒡᓗ", checker));
+		
 	}
 	
 	@Test
@@ -90,9 +104,18 @@ public class SpellCheckerTest {
 		Assert.assertEquals("IDF was wrong for sequence that starts words ('inu')", new Long(3), checker.idf("inu"));
 		Assert.assertEquals("IDF was wrong for sequence at the middle of words ('ks')", new Long(1), checker.idf("ks"));
 		Assert.assertEquals("IDF was wrong for sequence at the end of words ('ktut')", new Long(1), checker.idf("ktut"));
+		Assert.assertEquals("IDF was wrong for sequence ('uk')", new Long(3), checker.idf("uk"));
 		Assert.assertEquals("IDF was wrong for sequence with > 5 chars", new Long(0), checker.idf("nunavu"));
 		Assert.assertEquals("IDF was wrong for sequence with =5 chars", new Long(1), checker.idf("unavu"));
 		Assert.assertEquals("IDF was wrong for non-existant sequence",new Long(0), checker.idf("blah"));
+	}
+
+	@Test
+	public void test__idf__HappyPath_syllabic() {
+		System.out.println(PrettyPrinter.print(checkerSyll.idfStats));
+		Assert.assertEquals("IDF was wrong for sequence that starts words ('ᓄᓇ')", new Long(5), checkerSyll.idf("ᓄᓇ"));
+		Assert.assertEquals("IDF was wrong for sequence at the middle of words ('ᓇᕗ')", new Long(3), checkerSyll.idf("ᓇᕗ"));
+		Assert.assertEquals("IDF was wrong for sequence ('ᒻᒥ')", new Long(2), checkerSyll.idf("ᒻᒥ"));
 	}
 
 	@Test
@@ -160,10 +183,20 @@ public class SpellCheckerTest {
 	}
 	
 	@Test
-	public void test__correct() {
+	public void test__correct_roman() {
 		List<String> corrections = checker.correct("inukkshuk");
 		String[] expected = new String[] {"inukshuk","inuktut","inuk","nunavut"};
 		Assert.assertEquals("The number of candidates is wrong.", 4, corrections.size());
+		for (int i=0; i<expected.length; i++) {
+			Assert.assertEquals("The element "+i+" of the list of corrections is not right.",expected[i],corrections.get(i));
+		}
+	}
+
+	@Test
+	public void test__correct_syllabic() {
+		List<String> corrections = checkerSyll.correct("ᓄᓇᕗᖕᒥ");
+		String[] expected = new String[] {"ᓄᓇᕗᒻᒥ","ᓄᓇᕘᒥ","ᓄᓇᒥ","ᓄᓇᕗᑦ","ᓄᓇᕗᒻᒥᑦ"};
+		Assert.assertEquals("The number of candidates is wrong.", expected.length, corrections.size());
 		for (int i=0; i<expected.length; i++) {
 			Assert.assertEquals("The element "+i+" of the list of corrections is not right.",expected[i],corrections.get(i));
 		}
