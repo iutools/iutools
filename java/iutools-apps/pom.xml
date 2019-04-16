@@ -9,6 +9,7 @@
 
   <groupId>ca.pirurvik.iutools</groupId>
   <artifactId>iutools-apps</artifactId>
+  <packaging>war</packaging>
   
   <name>iutools-apps</name>
   
@@ -16,7 +17,16 @@
   <url>http://www.example.com</url>
 
 	<build>
-		<plugins>		
+		<plugins>
+		
+			<plugin>
+			  <artifactId>maven-war-plugin</artifactId>
+			  <version>2.6</version>
+			  <configuration>
+			    <warSourceDirectory>src/main/webapp</warSourceDirectory>
+			  </configuration>
+			</plugin>
+		
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
