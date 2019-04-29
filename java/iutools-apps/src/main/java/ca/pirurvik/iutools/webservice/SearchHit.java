@@ -5,6 +5,10 @@ public class SearchHit {
 	public String title;
 	public String snippet;
 	
+	public SearchHit() {
+		
+	}
+	
 	public SearchHit(String _url, String _title, String _snippet) {
 		this.url = _url;
 		this.title = _title;

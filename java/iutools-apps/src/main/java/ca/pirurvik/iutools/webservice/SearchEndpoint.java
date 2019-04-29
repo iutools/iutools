@@ -31,6 +31,7 @@ import ca.nrc.data.harvesting.BingSearchEngine;
 import ca.nrc.data.harvesting.SearchEngine;
 import ca.nrc.data.harvesting.SearchEngine.Hit;
 import ca.nrc.data.harvesting.SearchEngine.SearchEngineException;
+import ca.nrc.data.harvesting.SearchEngine.Type;
 
 
 public class SearchEndpoint extends HttpServlet {
@@ -85,7 +86,7 @@ public class SearchEndpoint extends HttpServlet {
 		}
 		
 		try {
-			results.expandedQuery = expandQuery(inputs.query);
+			results.expandedQuery = expandQuery(inputs.getQuerySyllabic());
 		} catch (CompiledCorpusRegistryException | QueryExpanderException e) {
 			throw new SearchEndpointException("Unable to expand the query", e);
 		}
@@ -105,7 +106,7 @@ public class SearchEndpoint extends HttpServlet {
 		} catch (IOException | SearchEngineException e) {
 			throw new SearchEndpointException(e);
 		}
-		SearchEngine.Query webQuery = new SearchEngine.Query(query);
+		SearchEngine.Query webQuery = new SearchEngine.Query(query).setType(Type.ANY).setLang("iu");
 		List<SearchEngine.Hit> results;
 		try {
 			results = engine.search(webQuery);
