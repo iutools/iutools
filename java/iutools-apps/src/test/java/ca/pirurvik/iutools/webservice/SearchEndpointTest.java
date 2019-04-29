@@ -6,12 +6,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import ca.inuktitutcomputing.core.QueryExpander;
 import ca.inuktitutcomputing.core.QueryExpansion;
 import ca.nrc.testing.AssertHelpers;
+import ca.nrc.ui.web.testing.MockHttpServletRequest;
+import ca.nrc.ui.web.testing.MockHttpServletResponse;
+
 
 public class SearchEndpointTest {
 
@@ -26,16 +30,30 @@ public class SearchEndpointTest {
 	/***********************
 	 * VERIFICATION TESTS
 	 ***********************/	
-
+	
 	@Test
 	public void test__SearchEndpoint__HappyPath() throws Exception {
-		String query = "inuk";
-		SearchInputs inputs = new SearchInputs(query);		
-		SearchResponse results = endPoint.executeEndPoint(inputs);
 		
-		String gotExpandedQuery = results.expandedQuery;
-		AssertHelpers.assertStringEquals("(inuit OR inunnut OR inuttitut OR inungnik OR inu)", gotExpandedQuery);
+		SearchInputs searchInputs = new SearchInputs();
+		searchInputs.query = "nunavut";
+
+				
+		MockHttpServletResponse response = 
+				IUTServiceTestHelpers.postEndpointDirectly(
+					IUTServiceTestHelpers.EndpointNames.SEARCH,
+					searchInputs
+				);
 		
+		IUTServiceTestHelpers.assertExpandedQueryEquals(
+				"(nunavu OR nunavummi OR nunavuumi OR nunavuup OR nunavummiut)", 
+				response);
+		
+		String[] queryWords = new String[] {"nunavu", "inunnut", "inuttitut", "inungnik", "inu"};
+//		String[] queryWords = new String[] {"BLAH"};
+		double tolerance = 0.5;
+		IUTServiceTestHelpers.assertMostHitsMatchWords(queryWords, response, tolerance);
+		
+
 	}
 
 	@Test
