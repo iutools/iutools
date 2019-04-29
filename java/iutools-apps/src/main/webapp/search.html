@@ -4,18 +4,21 @@
 <head>
   <meta charset="utf-8">
 
-  <title>Pirurvik</title>
-  <meta name="description" content="Pirurvik">
-  <meta name="author" content="Benoît Farley">
+  <title>InuktutiTools Search Engine</title>
   <link rel="stylesheet" href="css/styles.css?v1">
 
   <script src="js/jquery-3.3.1.min.js"></script>
   <script src="js/scripts.js?v1"></script>
-
 </head>
 
 <body>
-    <h1>NRC's Inuttut Search Engine</h1>
+
+<header>
+     <div data-includeHTML="pages/_HeaderPartial.html"></div>
+</header>
+
+<main>
+    <h1>InuktiTools Search Engine</h1>
     
     <form id="form-query" method="post" action="">
     
@@ -43,6 +46,20 @@
         <div id="nb-hits"><span id="nb-hits"></span> result<span id="plural">s</span><hr></div>
         <div id="page-hits"></div>
     </div>
+</main>
+
+<footer>
+    <div data-includeHTML="pages/_FooterPartial.html"></div>
+</footer>
+
+<!-- Load the header, footer etc... -->
+<script>
+    $(document).ready(function () {
+        $("div[data-includeHTML]").each(function () {                
+            $(this).load($(this).attr("data-includeHTML"));
+        });
+    });
+</script>
     
 </body>
 

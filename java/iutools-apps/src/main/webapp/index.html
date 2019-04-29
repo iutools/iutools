@@ -1,0 +1,44 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>NRC's InuktutiTools</title>
+  <link rel="stylesheet" href="css/styles.css?v1">
+
+  <script src="js/jquery-3.3.1.min.js"></script>
+  <script src="js/scripts.js?v1"></script>
+</head>
+
+<body>
+
+<header>
+     <div data-includeHTML="pages/_HeaderPartial.html"></div>
+</header>
+
+<main>
+
+	<h1>NRC InuktiTools</h1>
+	
+	InuktutiTools provides a series of web services and applications for processing Inuktut text.
+	<ul>
+		<li><a href="search.html">Search engine</a>: A web search-engine.</li>
+	</ul>    
+</main>
+
+<footer>
+    <div data-includeHTML="pages/_FooterPartial.html"></div>
+</footer>
+
+<!-- Load the header, footer etc... -->
+<script>
+    $(document).ready(function () {
+        $("div[data-includeHTML]").each(function () {                
+            $(this).load($(this).attr("data-includeHTML"));
+        });
+    });
+</script>
+</body>
+
+</html>

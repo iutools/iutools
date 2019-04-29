@@ -9,7 +9,8 @@ $(document).ready(function() {
 		var request = $('input#request').val();
 		console.log('request: '+request);
 		$.ajax({
-			url: 'service-get-expansions.php',
+//			url: 'service-get-expansions.php',
+			url: 'search',
 			dataType: 'json',
 			method: 'post',
 			data: { request: request },
