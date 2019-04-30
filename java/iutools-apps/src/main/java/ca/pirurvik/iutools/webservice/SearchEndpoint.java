@@ -132,27 +132,33 @@ public class SearchEndpoint extends HttpServlet {
 	}
 
 	protected String expandQuery(String query) throws SearchEndpointException, CompiledCorpusRegistryException, QueryExpanderException {
-        QueryExpansion[] expansions = null;
-		try {
-			if (expander == null) {
-				CompiledCorpus compiledCorpus = CompiledCorpusRegistry.getCorpus();
-				expander = new QueryExpander(compiledCorpus);
-			}
-			expansions = expander.getExpansions(query);			
-		} catch (ConfigException e) {
-			throw new SearchEndpointException(e);
-		}
+		String expandedQuery = query;
 		
-		String expandedQuery = "(";
-		boolean isFirst = true;
-		for (QueryExpansion exp: expansions) {
-			if (!isFirst) {
-				expandedQuery += " OR ";
-			}
-			expandedQuery += exp.word;
-			isFirst = false;
-		}
-		expandedQuery += ")";	
+		// TODO: Re-activate this once Microsoft has figured out the bug in Bing that causes
+		//   expanded queries to return pages in Asian languages
+
+//		QueryExpansion[] expansions = null;
+//		try {
+//			if (expander == null) {
+//				CompiledCorpus compiledCorpus = CompiledCorpusRegistry.getCorpus();
+//				expander = new QueryExpander(compiledCorpus);
+//			}
+//			expansions = expander.getExpansions(query);			
+//		} catch (ConfigException e) {
+//			throw new SearchEndpointException(e);
+//		}
+//		
+//		
+//		String expandedQuery = "(";
+//		boolean isFirst = true;
+//		for (QueryExpansion exp: expansions) {
+//			if (!isFirst) {
+//				expandedQuery += " OR ";
+//			}
+//			expandedQuery += exp.word;
+//			isFirst = false;
+//		}
+//		expandedQuery += ")";	
 	
 		return expandedQuery;		
 	}
