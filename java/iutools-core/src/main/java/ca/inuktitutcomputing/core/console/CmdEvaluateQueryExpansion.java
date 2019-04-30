@@ -1,6 +1,6 @@
 package ca.inuktitutcomputing.core.console;
 
-import ca.inuktitutcomputing.core.QueryExpanderEvaluator;
+import ca.inuktitutcomputing.iutools.QueryExpanderEvaluator;
 
 public class CmdEvaluateQueryExpansion extends ConsoleCommand {
 

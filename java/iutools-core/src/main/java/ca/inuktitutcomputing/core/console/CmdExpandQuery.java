@@ -5,10 +5,10 @@ import java.io.FileReader;
 import com.google.gson.Gson;
 
 import ca.inuktitutcomputing.applications.Decompose;
-import ca.inuktitutcomputing.core.CompiledCorpus;
-import ca.inuktitutcomputing.core.QueryExpander;
-import ca.inuktitutcomputing.core.QueryExpansion;
 import ca.inuktitutcomputing.data.LinguisticDataSingleton;
+import ca.inuktitutcomputing.iutools.CompiledCorpus;
+import ca.inuktitutcomputing.iutools.QueryExpander;
+import ca.inuktitutcomputing.iutools.QueryExpansion;
 import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.morph.MorphInuk;
 import ca.inuktitutcomputing.morph.Decomposition.DecompositionExpression;

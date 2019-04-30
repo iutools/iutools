@@ -3,7 +3,7 @@ package ca.inuktitutcomputing.core.console;
 import java.io.File;
 import java.io.IOException;
 
-import ca.inuktitutcomputing.core.CompiledCorpus;
+import ca.inuktitutcomputing.iutools.CompiledCorpus;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 
 public class CmdCompileTrie extends ConsoleCommand {

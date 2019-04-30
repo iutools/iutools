@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 
 import com.google.gson.Gson;
 
-import ca.inuktitutcomputing.core.CompiledCorpus;
+import ca.inuktitutcomputing.iutools.CompiledCorpus;
 import ca.nrc.json.PrettyPrinter;
 
 

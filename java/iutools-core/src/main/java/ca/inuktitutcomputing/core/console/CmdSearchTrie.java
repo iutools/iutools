@@ -9,7 +9,7 @@ import java.util.Locale;
 
 import com.google.gson.Gson;
 
-import ca.inuktitutcomputing.core.CompiledCorpus;
+import ca.inuktitutcomputing.iutools.CompiledCorpus;
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.Trie;
