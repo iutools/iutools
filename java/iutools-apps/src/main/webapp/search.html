@@ -23,7 +23,7 @@
     <form id="form-query" method="post" action="">
     
     Enter your request:
-    <input id="request" name="request" type="text" value="" />
+    <input id="query-words" name="query-words" type="text" value="" />
     <button id="btn-search" type="button" name="btn-search" value="Search"
             onclick = "onSearch()">Submit</button>
     
@@ -66,7 +66,9 @@
     
 	// Setup and configure the controller for this page
     var config = {
-    		btnSearch = "btn-search"
+    		btnSearch = "btn-search",
+    		txtQuery = "txt-query-words",
+    		divResults =  "div-search-results"
         };
     var controller = new SearchController(config);
     
