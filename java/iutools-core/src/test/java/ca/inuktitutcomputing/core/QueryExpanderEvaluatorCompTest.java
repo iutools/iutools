@@ -11,15 +11,15 @@ import static org.junit.Assert.assertFalse;
 import ca.inuktitutcomputing.config.IUConfig;
 import ca.nrc.config.ConfigException;
 
-public class QueryExpanderEvaluatorComp {
+public class QueryExpanderEvaluatorCompTest {
 
 	@Test
 	public void test__QueryExpanderEvaluatorComp() throws Exception {
 		
 		boolean computeStatsOverSurfaceForms = true;
 		
-		double targetPrecision = 0.7360;
-		double targetRecall = 0.5475;
+		double targetPrecision = 0.7205;
+		double targetRecall = 0.5677;
 		
 		boolean precisionFine = false;
 		boolean recallFine = false;
