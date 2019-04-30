@@ -264,6 +264,8 @@ public class DecomposeHansardTest {
 		String errorMessagesForPrint =  printErrorMessages(errorMessages);
 		//The test is red if at least one error message is produced
 		Assert.assertTrue("\nThe following error messages were produced by this analysis: \n" + errorMessagesForPrint, errorMessages.isEmpty());
+		
+		Assert.fail("\n== MESSAGE FOR BENOIT: We removed the following words from the target_successful_analysis_DecomposeHansardTest.txt file, because they started failing:\n\n  - ammalu\n  - ammaluttauq\n  - kisutuinnait\n  - naliak\n\nWe need to fix those words and re-add them to the file.");
 	}
 	
 		

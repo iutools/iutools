@@ -38,8 +38,6 @@ amisuummata amisuummata {amisu:amisu/1n}{u:u/1nv}{mmata:mata/tv-caus-4p} 2
 amisuuningit amisuuningit {amisu:amisu/1n}{u:u/1nv}{ni:niq/2vn}{ngit:ngit/tn-nom-p-4s} 4
 amittuq amittuq {amit:amit/1v}{tuq:juq/1vn} 2
 amma amma {amma:amma/1c} 1
-ammalu ammalu {amma:amma/1c}{lu:lu/1q} 2
-ammaluttauq ammaluttauq {amma:amma/1c}{lu:lu/1q}{ttauq:ttauq/1q} 2
 ammattauq ammattauq {amma:amma/1c}{ttauq:ttauq/1q} 1
 angijumik angijumik {angi:angi/1v}{ju:juq/1vn}{mik:mik/tn-acc-s} 1
 anginngittut[1] anginngittut {angi:angi/1v}{nngit:nngit/1vv}{tut:jut/tv-ger-3p} 2
@@ -381,7 +379,6 @@ kisimili kisimili {kisimi:kisimi/1c}{li:li/1q} 1
 kisumut kisumut {kisu:kisu/1pr}{mut:mut/tn-dat-s} 1
 kisunik kisunik {kisu:kisu/1pr}{nik:nik/tn-acc-p} 1
 kisut kisut {kisut:kisut/1pr} 1
-kisutuinnait kisutuinnait {kisutuinna:kisutuinnaq/1pr}{it:it/tn-nom-p} 1
 kiujjutiit kiujjutiit {kiu:kiu/1v}{jjuti:ut/1vn}{it:it/tn-nom-p} 1
 kiujjutinga kiujjutinga {kiu:kiu/1v}{jjuti:ut/1vn}{nga:nga/tn-nom-s-4s} 1
 kiujjutit kiujjutit {kiu:kiu/1v}{jjut:ut/1vn}{it:it/tn-nom-p} 1
@@ -504,7 +501,6 @@ naasautilik naasautilik {naasa:naasaq/1v}{uti:ut/1vn}{lik:lik/1nn} 1
 nakit nakit {nakit:nakit/1a} 1
 nakurmii nakurmii {nakur:nakuq/1v}{mii:miik/1vn} 1
 nakurmiik nakurmiik {nakur:nakuq/1v}{miik:miik/1vn} 1
-naliak naliak {naliak:naliak/1pr} 1
 nalunanngittuq nalunanngittuq {naluna:nalunak/1v}{nngit:nngit/1vv}{tuq:juq/1vn} 1
 namminiq namminiq {namminiq:nangminiq/1n} 1
 namminiqaqtunut namminiqaqtunut {nammini:nangminiq/1n}{qaq:qaq/1nv}{tu:juq/1vn}{nut:nut/tn-dat-p} 1
