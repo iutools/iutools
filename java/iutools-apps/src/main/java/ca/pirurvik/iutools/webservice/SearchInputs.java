@@ -12,6 +12,7 @@ import ca.inuktitutcomputing.script.TransCoder;
 public class SearchInputs extends ServiceInputs {
 	public String query = "";
 	private String _querySyllabic = null;
+	public int hitsPerPage = 10;
 
 	public SearchInputs() {
 	}
@@ -31,6 +32,11 @@ public class SearchInputs extends ServiceInputs {
 			
 		}
 		return _querySyllabic;
+	}
+
+	public SearchInputs setHitsPerPage(int _hitsPerPage) {
+		this.hitsPerPage = _hitsPerPage;
+		return this;
 	}
 	
 }

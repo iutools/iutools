@@ -50,7 +50,6 @@ public class SearchEndpoint extends HttpServlet {
 	}
 	
 	public SearchEndpoint() {
-//		initialize(null, "put");
 	};
 	
 	
@@ -91,13 +90,13 @@ public class SearchEndpoint extends HttpServlet {
 			throw new SearchEndpointException("Unable to expand the query", e);
 		}
 		
-		results.hits = search(results.expandedQuery);
+		results.hits = search(results.expandedQuery, inputs);
 		
 
 		return results;
 	}
 
-	private List<SearchHit> search(String query) throws SearchEndpointException {
+	private List<SearchHit> search(String query, SearchInputs inputs) throws SearchEndpointException {
 		
 		List<SearchHit> hits = new ArrayList<SearchHit>();
 		BingSearchEngine engine;
@@ -106,7 +105,10 @@ public class SearchEndpoint extends HttpServlet {
 		} catch (IOException | SearchEngineException e) {
 			throw new SearchEndpointException(e);
 		}
-		SearchEngine.Query webQuery = new SearchEngine.Query(query).setType(Type.ANY).setLang("iu");
+		SearchEngine.Query webQuery = 
+				new SearchEngine.Query(query).setType(Type.ANY)
+						.setLang("iu").setMaxHits(inputs.hitsPerPage)
+				;
 		List<SearchEngine.Hit> results;
 		try {
 			results = engine.search(webQuery);

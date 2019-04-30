@@ -34,7 +34,7 @@ public class SearchEndpointTest {
 	@Test
 	public void test__SearchEndpoint__HappyPath() throws Exception {
 		
-		SearchInputs searchInputs = new SearchInputs();
+		SearchInputs searchInputs = new SearchInputs().setHitsPerPage(20);
 		searchInputs.query = "nunavut";
 
 				
@@ -45,11 +45,10 @@ public class SearchEndpointTest {
 				);
 		
 		IUTServiceTestHelpers.assertExpandedQueryEquals(
-				"(nunavu OR nunavummi OR nunavuumi OR nunavuup OR nunavummiut)", 
+				"(ᓄᓇᕗ OR ᓄᓇᕗᒻᒥ OR ᓄᓇᕘᒥ OR ᓄᓇᕘᑉ OR ᓄᓇᕗᒻᒥᐅᑦ)", 
 				response);
 		
-		String[] queryWords = new String[] {"nunavu", "inunnut", "inuttitut", "inungnik", "inu"};
-//		String[] queryWords = new String[] {"BLAH"};
+		String[] queryWords = new String[] {"ᓄᓇᕗ", "ᓄᓇᕗᒻᒥ", "ᓄᓇᕘᒥ", "ᓄᓇᕘᑉ", "ᓄᓇᕗᒻᒥᐅᑦ"};
 		double tolerance = 0.5;
 		IUTServiceTestHelpers.assertMostHitsMatchWords(queryWords, response, tolerance);
 		
