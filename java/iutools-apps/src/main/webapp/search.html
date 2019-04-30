@@ -24,7 +24,8 @@
     
     Enter your request:
     <input id="request" name="request" type="text" value="" />
-    <button id="submit-request" type="button" name="submit" value="submit">Submit</button>
+    <button id="btn-search" type="button" name="btn-search" value="Search"
+            onclick = "onSearch()">Submit</button>
     
     <p></p>
     
@@ -52,13 +53,27 @@
     <div data-includeHTML="pages/_FooterPartial.html"></div>
 </footer>
 
-<!-- Load the header, footer etc... -->
+<script src="js/SearchController.js"></script>
+
 <script>
-    $(document).ready(function () {
+
+	// Load the header, footer etc...
+	$(document).ready(function () {
         $("div[data-includeHTML]").each(function () {                
             $(this).load($(this).attr("data-includeHTML"));
         });
     });
+    
+	// Setup and configure the controller for this page
+    var config = {
+    		btnSearch = "btn-search"
+        };
+    var controller = new SearchController(config);
+    
+    function onSearch() {
+        controller.();
+    }
+
 </script>
     
 </body>
