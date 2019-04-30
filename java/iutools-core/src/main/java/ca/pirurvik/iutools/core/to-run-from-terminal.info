@@ -1,1 +1,0 @@
-java -classpath /Users/benoitfarley/.m2/repository/ca/pirurvik/iutools/iutools-core/0.0.1-SNAPSHOT/iutools-core-0.0.1-SNAPSHOT-jar-with-dependencies.jar ca.pirurvik.iutools.core.App
