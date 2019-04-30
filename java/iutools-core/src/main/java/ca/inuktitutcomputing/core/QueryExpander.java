@@ -3,7 +3,10 @@ package ca.inuktitutcomputing.core;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
+import java.util.regex.Pattern;
 
+import ca.inuktitutcomputing.script.TransCoder;
 import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.datastructure.trie.TrieNode;
@@ -67,11 +70,26 @@ public class QueryExpander {
 			logger.debug("mostFrequentTerminalsForWord: "+mostFrequentTerminalsForWord.size());
 			ArrayList<QueryExpansion> expansions = __getExpansions(mostFrequentTerminalsForWord, segments, word);
 			logger.debug("expansions: "+expansions.size());
+			
+			expansions = possiblyConvertToSyllabic(word, expansions);
+			
 			expansionsArr =  expansions.toArray(new QueryExpansion[] {});
 		}
 		
 		return expansionsArr;
 	}
+	
+	private ArrayList<QueryExpansion> possiblyConvertToSyllabic(String word, ArrayList<QueryExpansion> expansions) {
+		boolean inputIsLatin = Pattern.compile("[a-zA-Z]").matcher(word).find();
+		if (!inputIsLatin) {
+			for (int ii=0; ii < expansions.size(); ii++) {
+				expansions.get(ii).word = TransCoder.romanToUnicode(expansions.get(ii).word);
+			}
+			
+		}
+		return expansions;
+	}
+	
 	
 	public ArrayList<QueryExpansion> __getExpansions(ArrayList<QueryExpansion> mostFrequentTerminalsForReformulations, String[] segments, String word) {
 		Logger logger = Logger.getLogger("QueryExpander.__getExpansions");
