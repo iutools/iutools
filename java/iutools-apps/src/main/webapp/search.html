@@ -25,8 +25,7 @@
     Enter your request:
     <input id="query-words" name="query-words" type="text" value="" />
     <button id="btn-search" type="button" name="btn-search" value="Search"
-            onclick = "onSearch()">Submit</button>
-    
+            onclick = "srchController.onSearch()">Submit</button>
     <p></p>
     
     <div id="links-to-pages">
@@ -66,16 +65,16 @@
     
 	// Setup and configure the controller for this page
     var config = {
-    		btnSearch = "btn-search",
-    		txtQuery = "txt-query-words",
-    		divResults =  "div-search-results"
+    		btnSearch: "btn-search",
+    		txtQuery: "txt-query-words",
+    		divResults:  "div-search-results"
         };
-    var controller = new SearchController(config);
+    var srchController = new SearchController(config);
     
-    function onSearch() {
+/*     function onSearch() {
         controller.();
     }
-
+ */
 </script>
     
 </body>

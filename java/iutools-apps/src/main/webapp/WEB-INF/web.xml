@@ -9,7 +9,7 @@
 	<servlet>
 	   <servlet-name>SearchEndpoint</servlet-name>
 	   <servlet-class>  
-	     ca.pirurvik.iutools.webservice.SearchEndpoint
+	     ca.inuktitutcomputing.iutools.webservice.SearchEndpoint
 	   </servlet-class>
 	</servlet> 
 	<servlet-mapping>

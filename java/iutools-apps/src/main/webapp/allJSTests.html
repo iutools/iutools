@@ -1,0 +1,40 @@
+<html>
+    
+    <head>
+        <meta http-equiv="Content-type" content="text/html; charset=UTF-8" />
+        
+ 		<link rel="stylesheet" href="css/styles.css?version=0.00001"/> <!-- update the version number each time the css file is modified - ensures browsers use the new css file instead of a cached version -->
+        
+		<script src = "https://code.jquery.com/jquery-2.1.4.min.js"></script>        
+        
+        <link rel="stylesheet" type="text/css" href="css/qunit-2.1.1.css" />
+        <script src="js/test/qunit-2.1.1.js"></script>
+        
+        <script src="js/DebugUtils.js"></script>
+                
+    </head>
+    
+    <body>
+        <!-- BEGIN: JS Unit Tests -->
+        <div id="qunit"></div>
+        <div id="qunit-fixture"></div>
+        <!-- END: JS Unit Tests -->
+        
+        <p>
+        <h1>Test Display</h1>
+        
+        <!--  This div will be populated by tests with HTML needed for the test -->
+        <div id="testMainDiv"></div>
+    </body>
+
+  <!-- BEGIN: UNIT TESTS -->
+    
+  <script          src="js/SearchController.js?version=0.00001"></script>              
+  <script src="js/test/SearchControllerTest.js?version=0.00001"></script>          
+  <script src="js/test/SearchControllerMock.js?version=0.00001"></script>          
+
+  <script src="js/test/TestHelpers.js?version=0.00001"></script>          
+  
+  <!-- END: UNIT TESTS -->
+  
+</html>

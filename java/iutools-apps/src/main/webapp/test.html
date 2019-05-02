@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Testing jQuery include</title>
+	<script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+</head>
+
+
+<body>
+
+<header>
+     <div data-includeHTML="pages/_HeaderPartial.html"></div>
+</header>
+
+<main>
+    <div>
+        This is the main content, from the index file
+    </div>
+</main>
+
+<footer>
+    <div data-includeHTML="pages/_FooterPartial.html"></div>
+</footer>
+<script>
+    $(document).ready(function () {
+        $("div[data-includeHTML]").each(function () {                
+            $(this).load($(this).attr("data-includeHTML"));
+        });
+    });
+</script>
+</body>
+
+</html>
