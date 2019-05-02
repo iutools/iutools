@@ -3,8 +3,8 @@ package ca.inuktitutcomputing.core.console;
 import java.io.File;
 import java.io.IOException;
 
-import ca.inuktitutcomputing.iutools.CompiledCorpus;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
+import ca.pirurviq.iutools.CompiledCorpus;
 
 public class CmdCompileTrie extends ConsoleCommand {
 

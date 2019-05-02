@@ -5,9 +5,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import ca.inuktitutcomputing.data.LinguisticDataSingleton;
-import ca.inuktitutcomputing.iutools.SpellChecker;
 import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.morph.MorphInuk;
+import ca.pirurviq.iutools.SpellChecker;
 
 public class CmdCheckSpelling extends ConsoleCommand {
 

@@ -1,4 +1,4 @@
-package ca.inuktitutcomputing.iutools;
+package ca.pirurviq.iutools;
 
 import java.util.Arrays;
 import java.util.HashMap;

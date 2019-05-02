@@ -1,4 +1,4 @@
-package ca.inuktitutcomputing.iutools;
+package ca.pirurviq.iutools;
 
 public class CompiledCorpusException extends Exception {
 

@@ -20,18 +20,18 @@ import org.apache.log4j.Logger;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ca.inuktitutcomputing.config.IUConfig;
-import ca.inuktitutcomputing.iutools.CompiledCorpus;
-import ca.inuktitutcomputing.iutools.CompiledCorpusRegistry;
-import ca.inuktitutcomputing.iutools.CompiledCorpusRegistryException;
-import ca.inuktitutcomputing.iutools.QueryExpander;
-import ca.inuktitutcomputing.iutools.QueryExpanderException;
-import ca.inuktitutcomputing.iutools.QueryExpansion;
 import ca.nrc.config.ConfigException;
 import ca.nrc.data.harvesting.BingSearchEngine;
 import ca.nrc.data.harvesting.SearchEngine;
 import ca.nrc.data.harvesting.SearchEngine.Hit;
 import ca.nrc.data.harvesting.SearchEngine.SearchEngineException;
 import ca.nrc.data.harvesting.SearchEngine.Type;
+import ca.pirurviq.iutools.CompiledCorpus;
+import ca.pirurviq.iutools.CompiledCorpusRegistry;
+import ca.pirurviq.iutools.CompiledCorpusRegistryException;
+import ca.pirurviq.iutools.QueryExpander;
+import ca.pirurviq.iutools.QueryExpanderException;
+import ca.pirurviq.iutools.QueryExpansion;
 
 
 public class SearchEndpoint extends HttpServlet {

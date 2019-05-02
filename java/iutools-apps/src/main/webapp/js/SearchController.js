@@ -100,9 +100,15 @@ SearchController.prototype.setResults = function(results) {
 	
 	for (var ii = 0; ii < results.length; ii++) {
 		var aHit = results[ii];
-		var hitHtml = "<div id=\"hitTitle\">"+aHit.title+"</div><p/>";
+		var hitHtml = 
+				"<div id=\"hit"+ii+"\" class=\"hitDiv\">\n" +
+				"  <div id=\"hitTitle\">"+aHit.title+"</div><br/>\n" +
+				"  <div id=\"hitSnippet\">"+aHit.snippet+"</div><br/>\n" +
+				"  <div id=\"hitURL\">"+aHit.url+"</div><br/>\n" +
+				"<div>"
+			;
 		var aHitDiv = $.parseHTML(hitHtml);
-        $("body").append(divResults, aHitDiv);
+		divResults.append(aHitDiv);
     }
 	divResults.show();
 }

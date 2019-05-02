@@ -1,13 +1,13 @@
-package ca.inuktitutcomputing.iutools;
+package ca.pirurviq.iutools;
 
 import static org.junit.Assert.assertArrayEquals;
 
 import org.junit.Test;
 
-import ca.inuktitutcomputing.iutools.CompiledCorpus_IUMorpheme;
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.Trie;
+import ca.pirurviq.iutools.CompiledCorpus_IUMorpheme;
 
 /**
  * Unit test for simple App.

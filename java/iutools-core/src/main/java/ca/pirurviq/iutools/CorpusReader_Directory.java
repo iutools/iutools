@@ -1,4 +1,4 @@
-package ca.inuktitutcomputing.iutools;
+package ca.pirurviq.iutools;
 
 import java.io.File;
 import java.io.FilenameFilter;

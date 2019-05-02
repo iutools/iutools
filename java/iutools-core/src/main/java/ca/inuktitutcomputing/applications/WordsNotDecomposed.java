@@ -8,7 +8,7 @@ import java.util.Iterator;
 
 import com.google.gson.Gson;
 
-import ca.inuktitutcomputing.iutools.CompiledCorpus;
+import ca.pirurviq.iutools.CompiledCorpus;
 
 public class WordsNotDecomposed {
 	

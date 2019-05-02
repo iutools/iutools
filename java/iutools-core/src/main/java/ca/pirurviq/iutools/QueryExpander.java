@@ -1,4 +1,4 @@
-package ca.inuktitutcomputing.iutools;
+package ca.pirurviq.iutools;
 
 import java.util.ArrayList;
 import java.util.Arrays;

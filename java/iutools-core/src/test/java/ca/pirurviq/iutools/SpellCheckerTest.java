@@ -1,4 +1,4 @@
-package ca.inuktitutcomputing.iutools;
+package ca.pirurviq.iutools;
 
 import static org.junit.Assert.*;
 
@@ -10,9 +10,9 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import ca.inuktitutcomputing.iutools.SpellChecker;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.json.PrettyPrinter;
+import ca.pirurviq.iutools.SpellChecker;
 
 import org.junit.*;
 

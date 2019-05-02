@@ -1,4 +1,4 @@
-package ca.inuktitutcomputing.iutools;
+package ca.pirurviq.iutools;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -18,9 +18,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ca.inuktitutcomputing.config.IUConfig;
-import ca.inuktitutcomputing.iutools.CompiledCorpus;
-import ca.inuktitutcomputing.iutools.QueryExpander;
-import ca.inuktitutcomputing.iutools.QueryExpansion;
 import ca.inuktitutcomputing.script.TransCoder;
 import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
@@ -28,6 +25,9 @@ import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.testing.AssertHelpers;
+import ca.pirurviq.iutools.CompiledCorpus;
+import ca.pirurviq.iutools.QueryExpander;
+import ca.pirurviq.iutools.QueryExpansion;
 
 public class QueryExpanderTest {
 

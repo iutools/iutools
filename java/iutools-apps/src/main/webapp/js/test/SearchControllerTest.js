@@ -7,21 +7,40 @@ var srchControllerConfig = {
 	};
 
 var srchController = null;
+var mockResp = {
+		"errorMessage": null,
+		"expandedQuery": "ᓄᓇᕗᑦ",
+		"totalHits": 18,
+		"hits": [
+			{title: "Title of hit #1", url: "http://www.domainHit1.com/hit1.html",
+				snippet: "... snippet of hit #1 ..."},
+			{title: "Title of hit #2", url: "http://www.domainHit2.com/hit2.html",
+				snippet: "... snippet of hit #2 ..."},
+			{title: "Title of hit #3", url: "http://www.domainHit2.com/hit3.html",
+				snippet: "... snippet of hit #3 ..."},
+			{title: "Title of hit #4", url: "http://www.domainHit2.com/hit4.html",
+				snippet: "... snippet of hit #4 ..."},
+			{title: "Title of hit #5", url: "http://www.domainHit1.com/hit5.html",
+				snippet: "... snippet of hit #5 ..."},
+			{title: "Title of hit #6", url: "http://www.domainHit2.com/hit6.html",
+				snippet: "... snippet of hit #6 ..."},
+			{title: "Title of hit #7", url: "http://www.domainHit2.com/hit7.html",
+				snippet: "... snippet of hit #7 ..."},
+			{title: "Title of hit #8", url: "http://www.domainHit2.com/hit8.html",
+				snippet: "... snippet of hit #8 ..."},
+			{title: "Title of hit #9", url: "http://www.domainHit2.com/hit9.html",
+				snippet: "... snippet of hit #9 ..."},
+			{title: "Title of hit #10", url: "http://www.domainHit2.com/hit10.html",
+				snippet: "... snippet of hit #10 ..."}
+				
+		]
+	};
 
 
 QUnit.module("SearchController Tests", {
 	beforeEach: function(assert) {
 		
-		var resp = {
-				"errorMessage": null,
-				"expandedQuery": "ᓄᓇᕗᑦ",
-				"totalHits": 18,
-				"hits": [
-					{title: "Title of hit #1", url: "http://www.domainHit1.com/hit1.html"},
-					{title: "Title of hit #2", url: "http://www.domainHit2.com/hit2.html"}
-				]
-		}
-	    window.srchController = new SearchControllerMock(srchControllerConfig, resp);
+	    window.srchController = new SearchControllerMock(srchControllerConfig, mockResp);
 		
 		
 		// Add HTML elements that are used by this srchController
@@ -55,91 +74,42 @@ QUnit.module("SearchController Tests", {
  * VERIFICATION TESTS
  **********************************/
 
-QUnit.test("SearchController.onSearchFailure", function( assert ) 
-{
-	var caseDescr = "SearchController.onSearchFailure -- HappyPath";
-	
-	var expErrMessage = "There was some kind of error, etc..."
-	var resp = {
-			"errorMessage": expErrMessage		
-	}
-	srchController.onSearchFailure(resp);
-	
-	assertErrorMessageWasDisplayed(assert, expErrMessage, caseDescr);
-	assertTrainButtonIsEnabled(assert, caseDescr);
-});
-
 QUnit.test("SearchController.Acceptance -- HappyPath", function( assert ) 
 {
 	var caseDescr = "SearchController.Acceptance -- HappyPath";
 	
     var helpers = new TestHelpers();
+//    helper.typeText();???
     helpers.clickOn("btn-search");
     
     assertNoErrorDisplayed(assert, caseDescr);
 	assertQueryEquals(assert, "ᓄᓇᕗᑦ");
 	assertSearchButtonEnabled(assert, caseDescr);
 	assertDisplayedTotalHitsIs(assert, "18", caseDescr);
-	var expHits = [
-		{url: "BLAH"}
-	];
+	var expHits = mockResp.hits;
 	assertHitsEqual(assert, expHits, caseDescr)
 });
 
-//QUnit.test("SearchController.Acceptance -- HappyPath", function( assert ) 		
+//Tests to do:
+//	- Press enter when in the text field submits the form
+//	- 
+//
+//QUnit.test("SearchController.Acceptance -- Query field is empty -- Displays error", function( assert ) 
 //		{
-//			var caseDescr = "SearchController.Acceptance -- HappyPath";
-//
-//			var helpers = new TestHelpers();
+//			var caseDescr = "SearchController.Acceptance -- Query field is empty -- Displays error";
 //			
-//			// Attach the mock service response to the controller
-//			var resp = {
-//					'expandedQuery': 'ᓄᓇᕗᑦ',
-//					'totalHist': 114,
-//					'hits': []
-//				};
-////			helpers.attachMockResponse(srchController, resp, "Search");
-//			
-//			// Fill the query field and hit Search button
-//			helpers.typeText(srchController.txtQuery, 'ᓄᓇᕗᑦ');
-////			helpers.clickOn(srchController.btnSearch)
-//			srchController.onSearchSuccess(resp);
-//
-//			
-//			
-//			
-//			srchController.onSearchSuccess(resp);
-//			
-//			
-//			assertDisplayedResultsAre(assert, resp.results.scrapedRelations, caseDescr);
+//		    var helpers = new TestHelpers();
+//		    helper.typeText("");???
+//		    helpers.clickOn("btn-search");
+//		    
+//		    assertErrorDisplayed(assert, "BLAH You need to enter something in the query field", caseDescr);
+//			assertQueryEquals(assert, "ᓄᓇᕗᑦ");
+//			assertSearchButtonEnabled(assert, caseDescr);
+//			assertDisplayedTotalHitsIs(assert, "18", caseDescr);
+//			var expHits = mockResp.hits;
+//			assertHitsEqual(assert, expHits, caseDescr)
 //		});
 
-
-//
-//QUnit.test("SearchController.getTrainingRequestData -- HappyPath", function( assert ) 
-//		{
-//			var caseDescr = "SearchController.getTrainingRequestData -- HappyPath";
-//			
-//			enterTrainingURL("http://weknowmovies.com/sci-fi/");
-//			enterFieldNames("title; director; year");
-//			enterSampleRelationValues(1, "Blade Runner 2049; Denis Villeneuve; 2017")
-//			enterSampleRelationValues(2, "Blade Runner; Ridley Scott; 1982")
-//			
-//
-//			var gotRequestData = JSON.parse(srchController.getTrainingRequestData());
-//			var expRequestData = 
-//					{
-//						action: "train", trainingURL: "http://weknowmovies.com/sci-fi/",
-//						trainingFields:
-//							[
-//							 {name:"title",value:"Blade Runner 2049"},{name:"director",value:"Denis Villeneuve"},{name: "year", value:  "2017"},
-//							 {name:"title",value:"Blade Runner"}, {name:"director",value:"Ridley Scott"},{name:"year",value:"1982"}
-//							]
-//					};
-//			
-//			assert.deepEqual(gotRequestData, expRequestData, caseDescr);
-//		});
-//
 //QUnit.test("SearchController.getTrainingRequestData -- One of Two Sample Relations is Empty", function( assert ) 
 //		{
 //			var caseDescr = "SearchController.getTrainingRequestData -- One of Two Sample Relations is Empty";
@@ -239,10 +209,17 @@ function getTotalHits() {
 
 function assertHitsEqual(assert, expHits, caseDescr) {
 	
-	$("#"+srchControllerConfig.divResults+" #hit").each(function( index ) {
-		  console.log( "-- assertHitsEqual: Looking at hit with text: " + $( this ).text() );
+	var gotHits = [];
+	$("#"+srchControllerConfig.divResults+" .hitDiv").each(function( index ) {
+			var hit = 
+					{
+						title: $( this ).find("#hitTitle").text().trim(),
+						url: $( this ).find("#hitURL").text().trim(),
+						snippet: $( this ).find("#hitSnippet").text().trim()
+					};
+			gotHits.push(hit);
 		});
-	assert.ok(false);
+	assert.deepEqual(gotHits, expHits, "Displayed hits were not as expected");
 }
 
 
