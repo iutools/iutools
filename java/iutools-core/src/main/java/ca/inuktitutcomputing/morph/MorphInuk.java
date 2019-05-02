@@ -170,7 +170,7 @@ public class MorphInuk {
 
         stpw = new StopWatch(millisTimeout);
         Dialect.setStopWatch(stpw);
-        //stpw.disactivate(); // uncomment for debugging
+//        stpw.disactivate(); // uncomment for debugging
         stpw.start();
 
         arcsByMorpheme.clear();
