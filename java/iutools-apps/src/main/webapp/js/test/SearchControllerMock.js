@@ -1,16 +1,15 @@
-var SearchControllerMock = function(_config, _mockResp) {  
-  SearchController.call(this, _config);
-  this.mockResp = _mockResp;
-};
+class SearchControllerMock extends SearchController {
+	
+	constructor(config, _mockResp) {
+		super(config);
+		this.mockResp = _mockResp;
+	} 
 
-SearchControllerMock.prototype = Object.create(SearchController.prototype);  
-
-SearchControllerMock.prototype.constructor = SearchControllerMock;  
-
-SearchControllerMock.prototype.onSearch = function(resp) {  
-	if (this.mockResp != null && this.mockResp.errorMessage == null) {
-		this.onSearchSuccess(this.mockResp);
-	} else {
-		this.onSearchFailure(this.mockResp);
+	invokeSearchService(jsonRequestData) { 
+		if (this.mockResp != null && this.mockResp.errorMessage == null) {
+			this.successCallback(this.mockResp);
+		} else {
+			this.failureCallback(this.mockResp);
+		}
 	}
-};
+}

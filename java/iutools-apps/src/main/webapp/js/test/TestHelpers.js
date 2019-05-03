@@ -7,9 +7,6 @@ TestHelpers.prototype.typeText = function(fieldID, text) {
 }
 
 TestHelpers.prototype.clickOn = function(buttonID) {
-	console.log("-- TestHelpers.clickOn: buttonID="+buttonID);
-	console.log("-- TestHelpers.clickOn: button object="+$("#"+buttonID));
-	console.log("-- TestHelpers.clickOn: button object attrs="+JSON.stringify($("#"+buttonID)));
 	$("#"+buttonID).click();
 }
 

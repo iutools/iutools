@@ -40,7 +40,7 @@ var mockResp = {
 QUnit.module("SearchController Tests", {
 	beforeEach: function(assert) {
 		
-	    window.srchController = new SearchControllerMock(srchControllerConfig, mockResp);
+	    srchController = new SearchControllerMock(srchControllerConfig, mockResp);
 		
 		
 		// Add HTML elements that are used by this srchController
@@ -52,7 +52,6 @@ QUnit.module("SearchController Tests", {
                 + "Total Hits: <div id=\""+srchControllerConfig.divTotalHits+"\"></div><br/>\n"
                 + "Results:<p/><div id=\""+srchControllerConfig.divResults+"\"></div><br/>\n"
                 ;
-        console.log("-- SearchControllerTest.setup: formHTML=\n"+formHTML);
 		$("#testMainDiv").html(formHTML);
 		
 		$("#"+srchControllerConfig.btnSearch).off('click').on("click", function() {srchController.onSearch();});
@@ -79,8 +78,8 @@ QUnit.test("SearchController.Acceptance -- HappyPath", function( assert )
 	var caseDescr = "SearchController.Acceptance -- HappyPath";
 	
     var helpers = new TestHelpers();
-//    helper.typeText();???
-    helpers.clickOn("btn-search");
+    helpers.typeText(srchControllerConfig.txtQuery, "ᓄᓇᕗᑦ");
+    helpers.clickOn(srchControllerConfig.btnSearch);
     
     assertNoErrorDisplayed(assert, caseDescr);
 	assertQueryEquals(assert, "ᓄᓇᕗᑦ");
@@ -94,21 +93,23 @@ QUnit.test("SearchController.Acceptance -- HappyPath", function( assert )
 //	- Press enter when in the text field submits the form
 //	- 
 //
-//QUnit.test("SearchController.Acceptance -- Query field is empty -- Displays error", function( assert ) 
-//		{
-//			var caseDescr = "SearchController.Acceptance -- Query field is empty -- Displays error";
-//			
-//		    var helpers = new TestHelpers();
-//		    helper.typeText("");???
-//		    helpers.clickOn("btn-search");
-//		    
-//		    assertErrorDisplayed(assert, "BLAH You need to enter something in the query field", caseDescr);
-//			assertQueryEquals(assert, "ᓄᓇᕗᑦ");
-//			assertSearchButtonEnabled(assert, caseDescr);
-//			assertDisplayedTotalHitsIs(assert, "18", caseDescr);
-//			var expHits = mockResp.hits;
-//			assertHitsEqual(assert, expHits, caseDescr)
-//		});
+
+QUnit.test("SearchController.Acceptance -- Query field is empty -- Displays error", function( assert ) 
+{
+	var caseDescr = "SearchController.Acceptance -- Query field is empty -- Displays error";
+	
+//	srchController = new SearchControllerMock(srchControllerConfig, null);
+    var helpers = new TestHelpers();
+    helpers.typeText(srchControllerConfig.txtQuery, "");
+    helpers.clickOn(srchControllerConfig.btnSearch);
+    
+    assertErrorDisplayed(assert, "You need to enter something in the query field", caseDescr);
+	assertSearchButtonEnabled(assert, caseDescr);
+	assertDisplayedTotalHitsIs(assert, "0", caseDescr);
+	var expHits = [];
+	assertHitsEqual(assert, expHits, caseDescr)
+	assert.ok(true);
+});
 
 //QUnit.test("SearchController.getTrainingRequestData -- One of Two Sample Relations is Empty", function( assert ) 
 //		{
@@ -180,6 +181,15 @@ function assertNoErrorDisplayed(assert, caseDescr) {
 
 	assert.deepEqual(getErrorMessage(), "", message);	
 }
+
+function assertErrorDisplayed(assert, expErr, caseDescr) {
+	var message = "Checking the displayed error message";
+	if (caseDescr != null) message = caseDescr+"\n"+message;
+
+	assert.deepEqual(getErrorMessage(), expErr, message);	
+	
+}
+
 
 function getErrorMessage() {
 	var errMessage = $("#"+srchControllerConfig.divError).html();
