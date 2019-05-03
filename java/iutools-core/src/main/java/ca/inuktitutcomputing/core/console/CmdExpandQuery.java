@@ -11,9 +11,9 @@ import ca.inuktitutcomputing.morph.MorphInuk;
 import ca.inuktitutcomputing.morph.Decomposition.DecompositionExpression;
 import ca.inuktitutcomputing.script.Roman;
 import ca.inuktitutcomputing.script.Syllabics;
-import ca.pirurviq.iutools.CompiledCorpus;
-import ca.pirurviq.iutools.QueryExpander;
-import ca.pirurviq.iutools.QueryExpansion;
+import ca.pirurvik.iutools.CompiledCorpus;
+import ca.pirurvik.iutools.QueryExpander;
+import ca.pirurvik.iutools.QueryExpansion;
 
 public class CmdExpandQuery extends ConsoleCommand {
 

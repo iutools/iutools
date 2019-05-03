@@ -1,4 +1,4 @@
-package ca.pirurviq.iutools;
+package ca.pirurvik.iutools;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -26,7 +26,7 @@ import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.testing.AssertHelpers;
-import ca.pirurviq.iutools.CompiledCorpus;
+import ca.pirurvik.iutools.CompiledCorpus;
 import junit.framework.TestCase;
 
 /**

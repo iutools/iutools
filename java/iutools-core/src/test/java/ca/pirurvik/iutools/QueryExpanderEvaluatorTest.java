@@ -1,4 +1,4 @@
-package ca.pirurviq.iutools;
+package ca.pirurvik.iutools;
 
 
 import static org.junit.Assert.assertEquals;
@@ -18,8 +18,8 @@ import org.junit.Test;
 import ca.inuktitutcomputing.config.IUConfig;
 import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
-import ca.pirurviq.iutools.CompiledCorpus;
-import ca.pirurviq.iutools.QueryExpanderEvaluator;
+import ca.pirurvik.iutools.CompiledCorpus;
+import ca.pirurvik.iutools.QueryExpanderEvaluator;
 
 public class QueryExpanderEvaluatorTest {
 

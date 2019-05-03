@@ -1,4 +1,4 @@
-package ca.pirurviq.iutools;
+package ca.pirurvik.iutools;
 
 
 import static org.junit.Assert.assertArrayEquals;
@@ -11,9 +11,9 @@ import java.util.Vector;
 import org.junit.Test;
 
 import ca.inuktitutcomputing.config.IUConfig;
-import ca.pirurviq.iutools.CorpusDocument_File;
-import ca.pirurviq.iutools.CorpusReader;
-import ca.pirurviq.iutools.CorpusReader_Directory;
+import ca.pirurvik.iutools.CorpusDocument_File;
+import ca.pirurvik.iutools.CorpusReader;
+import ca.pirurvik.iutools.CorpusReader_Directory;
 
 /**
  * Unit test for simple App.

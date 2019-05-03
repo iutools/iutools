@@ -1,4 +1,4 @@
-package ca.pirurviq.iutools;
+package ca.pirurvik.iutools;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -25,9 +25,9 @@ import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.testing.AssertHelpers;
-import ca.pirurviq.iutools.CompiledCorpus;
-import ca.pirurviq.iutools.QueryExpander;
-import ca.pirurviq.iutools.QueryExpansion;
+import ca.pirurvik.iutools.CompiledCorpus;
+import ca.pirurvik.iutools.QueryExpander;
+import ca.pirurvik.iutools.QueryExpansion;
 
 public class QueryExpanderTest {
 

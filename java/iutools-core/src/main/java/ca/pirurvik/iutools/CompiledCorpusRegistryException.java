@@ -1,4 +1,4 @@
-package ca.pirurviq.iutools;
+package ca.pirurvik.iutools;
 
 import java.io.FileNotFoundException;
 

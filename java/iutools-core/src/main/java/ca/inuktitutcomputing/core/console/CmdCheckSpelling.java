@@ -7,7 +7,7 @@ import java.util.List;
 import ca.inuktitutcomputing.data.LinguisticDataSingleton;
 import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.morph.MorphInuk;
-import ca.pirurviq.iutools.SpellChecker;
+import ca.pirurvik.iutools.SpellChecker;
 
 public class CmdCheckSpelling extends ConsoleCommand {
 

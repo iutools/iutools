@@ -15,7 +15,7 @@ import org.apache.log4j.Logger;
 import com.google.gson.Gson;
 
 import ca.nrc.json.PrettyPrinter;
-import ca.pirurviq.iutools.CompiledCorpus;
+import ca.pirurvik.iutools.CompiledCorpus;
 
 
 public class Trie {

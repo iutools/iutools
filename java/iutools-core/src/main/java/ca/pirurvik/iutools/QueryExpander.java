@@ -1,4 +1,4 @@
-package ca.pirurviq.iutools;
+package ca.pirurvik.iutools;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,6 +10,9 @@ import ca.inuktitutcomputing.script.TransCoder;
 import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.datastructure.trie.TrieNode;
+import ca.pirurvik.iutools.CompiledCorpus;
+import ca.pirurvik.iutools.CompiledCorpusRegistry;
+import ca.pirurvik.iutools.CompiledCorpusRegistryException;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;

@@ -1,4 +1,4 @@
-package ca.pirurviq.iutools;
+package ca.pirurvik.iutools;
 
 import static org.junit.Assert.assertTrue;
 
@@ -10,7 +10,7 @@ import static org.junit.Assert.assertFalse;
 
 import ca.inuktitutcomputing.config.IUConfig;
 import ca.nrc.config.ConfigException;
-import ca.pirurviq.iutools.QueryExpanderEvaluator;
+import ca.pirurvik.iutools.QueryExpanderEvaluator;
 
 public class QueryExpanderEvaluatorCompTest {
 
@@ -19,8 +19,8 @@ public class QueryExpanderEvaluatorCompTest {
 		
 		boolean computeStatsOverSurfaceForms = true;
 		
-		double targetPrecision = 0.7289;
-		double targetRecall = 0.5596;
+		double targetPrecision = 0.7253;
+		double targetRecall = 0.5494;
 		
 		boolean precisionFine = false;
 		boolean recallFine = false;

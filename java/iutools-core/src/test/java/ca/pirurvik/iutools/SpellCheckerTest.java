@@ -1,4 +1,4 @@
-package ca.pirurviq.iutools;
+package ca.pirurvik.iutools;
 
 import static org.junit.Assert.*;
 
@@ -12,7 +12,7 @@ import org.junit.Test;
 
 import ca.nrc.datastructure.Pair;
 import ca.nrc.json.PrettyPrinter;
-import ca.pirurviq.iutools.SpellChecker;
+import ca.pirurvik.iutools.SpellChecker;
 
 import org.junit.*;
 

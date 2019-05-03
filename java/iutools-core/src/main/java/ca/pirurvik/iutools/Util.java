@@ -1,4 +1,4 @@
-package ca.pirurvik.iutools.core.util;
+package ca.pirurvik.iutools;
 
 import java.net.URL;
 

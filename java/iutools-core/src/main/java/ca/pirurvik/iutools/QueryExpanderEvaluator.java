@@ -1,4 +1,4 @@
-package ca.pirurviq.iutools;
+package ca.pirurvik.iutools;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -24,6 +24,7 @@ import org.apache.log4j.Logger;
 import com.google.gson.Gson;
 
 import ca.inuktitutcomputing.morph.Decomposition;
+import ca.pirurvik.iutools.QueryExpansion;
 
 public class QueryExpanderEvaluator {
 	
