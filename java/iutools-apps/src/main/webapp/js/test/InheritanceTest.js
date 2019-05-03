@@ -68,4 +68,5 @@ QUnit.test("Attach new version of run", function( assert )
 
 class MyController {
 	
+	
 }
