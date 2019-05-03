@@ -1,11 +1,11 @@
-package ca.inuktitutcomputing.iutools.webservice;
+package ca.pirurvik.iutools.webservice;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import ca.inuktitutcomputing.iutools.webservice.SearchInputs;
 import ca.nrc.testing.AssertHelpers;
+import ca.pirurvik.iutools.webservice.SearchInputs;
 
 public class SearchInputsTest {
 

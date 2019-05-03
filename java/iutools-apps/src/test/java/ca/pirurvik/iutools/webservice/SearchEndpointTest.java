@@ -1,4 +1,4 @@
-package ca.inuktitutcomputing.iutools.webservice;
+package ca.pirurvik.iutools.webservice;
 
 import static org.junit.Assert.*;
 
@@ -10,13 +10,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import ca.inuktitutcomputing.iutools.webservice.SearchEndpoint;
-import ca.inuktitutcomputing.iutools.webservice.SearchInputs;
+import ca.pirurvik.iutools.QueryExpander;
+import ca.pirurvik.iutools.QueryExpansion;
+import ca.pirurvik.iutools.webservice.SearchEndpoint;
+import ca.pirurvik.iutools.webservice.SearchInputs;
 import ca.nrc.testing.AssertHelpers;
-import ca.nrc.ui.web.testing.MockHttpServletRequest;
 import ca.nrc.ui.web.testing.MockHttpServletResponse;
-import ca.pirurviq.iutools.QueryExpander;
-import ca.pirurviq.iutools.QueryExpansion;
 
 
 public class SearchEndpointTest {

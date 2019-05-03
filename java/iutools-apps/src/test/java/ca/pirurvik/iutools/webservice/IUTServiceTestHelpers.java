@@ -1,4 +1,4 @@
-package ca.inuktitutcomputing.iutools.webservice;
+package ca.pirurvik.iutools.webservice;
 
 import java.io.IOException;
 import java.net.URL;
@@ -14,12 +14,12 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ca.inuktitutcomputing.iutools.webservice.SearchEndpoint;
-import ca.inuktitutcomputing.iutools.webservice.SearchHit;
-import ca.inuktitutcomputing.iutools.webservice.SearchResponse;
 import ca.nrc.testing.AssertHelpers;
 import ca.nrc.ui.web.testing.MockHttpServletRequest;
 import ca.nrc.ui.web.testing.MockHttpServletResponse;
+import ca.pirurvik.iutools.webservice.SearchEndpoint;
+import ca.pirurvik.iutools.webservice.SearchHit;
+import ca.pirurvik.iutools.webservice.SearchResponse;
 
 import org.junit.*;
 

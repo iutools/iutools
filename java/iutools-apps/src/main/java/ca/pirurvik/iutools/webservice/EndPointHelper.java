@@ -1,4 +1,4 @@
-package ca.inuktitutcomputing.iutools.webservice;
+package ca.pirurvik.iutools.webservice;
 
 import java.io.IOException;
 import java.net.MalformedURLException;

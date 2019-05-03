@@ -1,4 +1,4 @@
-package ca.inuktitutcomputing.iutools.webservice;
+package ca.pirurvik.iutools.webservice;
 
 import ca.nrc.config.ConfigException;
 

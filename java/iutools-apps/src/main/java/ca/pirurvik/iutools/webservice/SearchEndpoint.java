@@ -1,4 +1,4 @@
-package ca.inuktitutcomputing.iutools.webservice;
+package ca.pirurvik.iutools.webservice;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -26,12 +26,12 @@ import ca.nrc.data.harvesting.SearchEngine;
 import ca.nrc.data.harvesting.SearchEngine.Hit;
 import ca.nrc.data.harvesting.SearchEngine.SearchEngineException;
 import ca.nrc.data.harvesting.SearchEngine.Type;
-import ca.pirurviq.iutools.CompiledCorpus;
-import ca.pirurviq.iutools.CompiledCorpusRegistry;
-import ca.pirurviq.iutools.CompiledCorpusRegistryException;
-import ca.pirurviq.iutools.QueryExpander;
-import ca.pirurviq.iutools.QueryExpanderException;
-import ca.pirurviq.iutools.QueryExpansion;
+import ca.pirurvik.iutools.CompiledCorpus;
+import ca.pirurvik.iutools.CompiledCorpusRegistry;
+import ca.pirurvik.iutools.CompiledCorpusRegistryException;
+import ca.pirurvik.iutools.QueryExpanderException;
+import ca.pirurvik.iutools.QueryExpander;
+import ca.pirurvik.iutools.QueryExpansion;
 
 
 public class SearchEndpoint extends HttpServlet {
