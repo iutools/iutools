@@ -40,7 +40,9 @@ var mockResp = {
 QUnit.module("SearchController Tests", {
 	beforeEach: function(assert) {
 		
-	    srchController = new SearchControllerMock(srchControllerConfig, mockResp);
+//	    srchController = new SearchControllerMock(srchControllerConfig, mockResp);
+	    srchController = new SearchController(srchControllerConfig);
+	    new TestHelpers().attachMockAjaxResponse(srchController, mockResp, "invokeSearchService", "successCallback", "failureCallback");
 		
 		
 		// Add HTML elements that are used by this srchController

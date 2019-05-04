@@ -1,42 +1,75 @@
-function TestHelpers() {
-	
-}
-
-TestHelpers.prototype.typeText = function(fieldID, text) {
-	$("#"+fieldID).val(text);
-}
-
-TestHelpers.prototype.clickOn = function(buttonID) {
-	$("#"+buttonID).click();
-}
-
+//function TestHelpers() {
+//	
+//}
 //
-// TODO: Why does this not work?
+//TestHelpers.prototype.typeText = function(fieldID, text) {
+//	$("#"+fieldID).val(text);
+//}
 //
-//TestHelpers.prototype.attachMockResponse = function(controller, mockResp, handlerName) {
-//    console.log("-- TestHelpers.attachMockResponse: invoked");
-//    var handlerMain = "on"+handlerName;
-//    var className = controller.constructor.name;
-//    var handlerSuccess = className+"."+handlerMain+"Success";
-//    var handlerFailure = className+"."+handlerMain+"Failure";
-//    console.log("-- TestHelpers.attachMockResponse: className="+className+", handlerSuccess="+handlerSuccess+", handlerFailure="+handlerFailure);
+//TestHelpers.prototype.clickOn = function(buttonID) {
+//	$("#"+buttonID).click();
+//}
 //
-//    if (mockResp != null) {
-//        controller[handlerMain] =
-//            function() {
-//                console.log("-- TestHelpers.attachMockResponse."+handlerMain+": invoked");
-//                console.log("-- TestHelpers.attachMockResponse."+handlerMain+": Properties of object are: "+Object.keys(this));
+//TestHelpers.prototype.attachMockAjaxResponse = function
+//(controller, mockResp, serviceInvocationName, successCbkName, failureCbkName) {
+//	
+//	
+//	var mockInvokeService = 
+//		function() {
+//			console.log("-- TestHelpers.mockInvokeService: invoke successCallback with mock response");
+//			if (mockResp != null && mockResp.errorMessage == null) {
+//				controller[successCbkName](mockResp);
+//			} else {
+//				controller[failureCbkName](mockResp);
+//			}
+//			
+//			
+//		}
+//	controller[serviceInvocationName] = mockInvokeService;
+//	return;
+//}
 //
-//                if (mockResp.errorMessage == null) {
-//                    console.log("-- TestHelpers.attachMockResponse."+handlerMain+":  invoking success handler: "+handlerSuccess);
-////                    controller[handlerSuccess](mockResp);
-////                    window[handlerSuccess](controller, mockResp);
-//                    controller["onSearchSuccess"](mockResp);
-//                } else {
-////                    controller[handlerFailure](mockResp);
-////                    window[handlerFailure](controller, mockResp);
-//                }
-//            };
-//    }
+//
+//TestHelpers.prototype.attachMockAjaxResponse_DUMMY = function
+//	(controller, mockResp, serviceInvocationName, successCbkName, failureCbkName) {
+//	var mockInvokeService = 
+//		function() {
+////			console.log("-- mockInvokeService (attached through helper method): invoke successCallback with mockResp="+JSON.stringify(mockResp)+"\n   txtQuery="+this.txtQuery);
+//			controller[successCbkName](mockResp);
+//			
+//		}
+//	controller[serviceInvocationName] = mockInvokeService;
+//	return;
 //}
 
+
+class TestHelpers {
+	
+
+	typeText(fieldID, text) {
+		$("#"+fieldID).val(text);
+	}
+	
+	clickOn(buttonID) {
+		$("#"+buttonID).click();
+	}
+	
+	attachMockAjaxResponse(controller, mockResp, 
+			serviceInvocationName, successCbkName, failureCbkName) {
+		
+		
+		var mockInvokeService = 
+			function() {
+				console.log("-- TestHelpers.mockInvokeService: invoke successCallback with mock response");
+				if (mockResp != null && mockResp.errorMessage == null) {
+					controller[successCbkName](mockResp);
+				} else {
+					controller[failureCbkName](mockResp);
+				}
+				
+				
+			}
+		controller[serviceInvocationName] = mockInvokeService;
+		return;
+	}
+}
