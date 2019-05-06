@@ -40,12 +40,9 @@ var mockResp = {
 QUnit.module("SearchController Tests", {
 	beforeEach: function(assert) {
 		
-		
-		
 		// Add HTML elements that are used by this srchController
         var formHTML =
                   "Query: <input id=\""+srchControllerConfig.txtQuery+"\" type=\"text\"><br/>\n"
-//                + "<button id=\"btn-search\" \"onClick\"=\"srchController.onSearch()\">Search</button><br/>\n"
                 + "<button id=\"btn-search\">Search</button><br/>\n"
                 + "<p/>\n<br/>\n<p/>\n"
                 + "Error message: <div id=\""+srchControllerConfig.divError+"\"></div><br/>\n"
@@ -79,13 +76,6 @@ QUnit.test("SearchController.Acceptance -- HappyPath", function( assert )
 {
 	var caseDescr = "SearchController.Acceptance -- HappyPath";
 	
-	console.log("-- SearchController.Acceptance -- HappyPath: $('#'+srchControllerConfig.txtQuery).length="+$('#'+srchControllerConfig.txtQuery).length+", $('#'+srchControllerConfig.txtQuery).val()="+$('#'+srchControllerConfig.txtQuery).val());
-    srchController = new SearchController(srchControllerConfig);
-    new TestHelpers().attachMockAjaxResponse(srchController, mockResp, "invokeSearchService", "successCallback", "failureCallback");		
-//    srchController.attachHtmlElements();
-	$("#"+srchControllerConfig.btnSearch).off('click').on("click", function() {srchController.onSearch();});
-
-	
     var helpers = new TestHelpers();
     helpers.typeText(srchControllerConfig.txtQuery, "ᓄᓇᕗᑦ");
 	console.log("-- SearchController.Acceptance -- HappyPath: AFTER typeText, $('#'+srchControllerConfig.txtQuery).length="+$('#'+srchControllerConfig.txtQuery).length+", $('#'+srchControllerConfig.txtQuery).val()="+$('#'+srchControllerConfig.txtQuery).val());
@@ -108,7 +98,6 @@ QUnit.test("SearchController.Acceptance -- Query field is empty -- Displays erro
 {
 	var caseDescr = "SearchController.Acceptance -- Query field is empty -- Displays error";
 	
-//	srchController = new SearchControllerMock(srchControllerConfig, null);
     var helpers = new TestHelpers();
     helpers.typeText(srchControllerConfig.txtQuery, "");
     helpers.clickOn(srchControllerConfig.btnSearch);
