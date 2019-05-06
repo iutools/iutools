@@ -16,8 +16,14 @@ class SearchController {
 	
 	attachHtmlElements() {
 		console.log("-- attachHtmlElements: $('#'+this.txtQuery).length="+$('#'+this.txtQuery).length+", $('#'+this.txtQuery).val()="+$('#'+this.txtQuery).val());
-		this.elementWithID(this.btnSearch).off('click').on("click", function() {this.onSearch();});							
-		this.elementWithID(this.txtQuery).keypress(this.onQueryKeyPress);
+		this.elementWithID(this.btnSearch).off('click').on("click", function() {this.onSearch();});
+		
+		var txtQuery = this.elementWithID(this.txtQuery)
+		var controller = this;
+		txtQuery.keypress(function(event) {controller.onQueryKeyPress(event);});
+//		txtQuery.controller = this;
+		
+		return
 	}
 	
 	
@@ -30,13 +36,17 @@ class SearchController {
 			throw new Error("Element with ID "+eltID+" was not defined. Maybe you need to execute this method after the DOM was loaded?");
 		}
 		return elt;
-		
+	}
+	
+	activeElement() {
+		var elt = $(':focus').context.activeElement();
+		return elt;
 	}
 	
 	onQueryKeyPress(event) {
 		var keycode = (event.keyCode ? event.keyCode : event.which);
 		if(keycode == '13'){
-			alert('You pressed a "enter" key in textbox');	
+			this.onSearch();
 		}
 	}
 

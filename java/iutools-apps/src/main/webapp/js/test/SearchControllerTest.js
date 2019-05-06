@@ -110,6 +110,22 @@ QUnit.test("SearchController.Acceptance -- Query field is empty -- Displays erro
 	assert.ok(true);
 });
 
+QUnit.test("SearchController.Acceptance -- Press Return in Query field -- Runs the search", function( assert ) 
+		{
+			var caseDescr = "SearchController.Acceptance -- Press Return in Query field -- Runs the search";
+			
+		    var helpers = new TestHelpers();
+		    helpers.typeText(srchControllerConfig.txtQuery, "ᓄᓇᕗᑦ");
+		    helpers.pressEnter(srchControllerConfig.txtQuery);
+		    
+		    assertNoErrorDisplayed(assert, caseDescr);
+			assertQueryEquals(assert, "ᓄᓇᕗᑦ");
+			assertSearchButtonEnabled(assert, caseDescr);
+			assertDisplayedTotalHitsIs(assert, "18", caseDescr);
+			var expHits = mockResp.hits;
+			assertHitsEqual(assert, expHits, caseDescr)
+		});
+
 //QUnit.test("SearchController.getTrainingRequestData -- One of Two Sample Relations is Empty", function( assert ) 
 //		{
 //			var caseDescr = "SearchController.getTrainingRequestData -- One of Two Sample Relations is Empty";
