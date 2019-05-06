@@ -2,10 +2,10 @@
  * Controller for the search.html page.
  */
 
-//class SearchController extends WidgetController {
-class SearchController  {
+class SearchController extends WidgetController {
 
 	constructor(config) {
+		super(config);
 		this.btnSearch = config.btnSearch;    
 		 
 		this.txtQuery = config.txtQuery;
@@ -16,52 +16,8 @@ class SearchController  {
 	} 
 	
 	attachHtmlElements() {
-		console.log("-- attachHtmlElements: $('#'+this.txtQuery).length="+$('#'+this.txtQuery).length+", $('#'+this.txtQuery).val()="+$('#'+this.txtQuery).val());
-		this.elementWithID(this.btnSearch).off('click').on("click", function() {this.onSearch();});
-		
-		var txtQuery = this.elementWithID(this.txtQuery)
-		this.onReturnKey(this.txtQuery, this.onSearch);
-		
-		return
-	}
-	
-	onReturnKey(id, method) {
-		var element = this.elementWithID(id);
-		var controller = this;
-		
-		var keypressHandler = 
-				function(event) {
-					var keycode = (event.keyCode ? event.keyCode : event.which);
-					if(keycode == '13'){
-						method.call(controller);
-					}
-				};		
-		element.keypress(keypressHandler);
-
-		return;
-	}
-	
-	elementWithID(eltID, raiseException) {
-		var elt = $('#'+eltID);
-		if (elt == null || elt.length == 0 || elt.val() == null) {
-			elt = null;
-		}
-		if (elt == null && raiseException != null && raiseException ) {
-			throw new Error("Element with ID "+eltID+" was not defined. Maybe you need to execute this method after the DOM was loaded?");
-		}
-		return elt;
-	}
-	
-	activeElement() {
-		var elt = $(':focus').context.activeElement();
-		return elt;
-	}
-	
-	onQueryKeyPress(event) {
-		var keycode = (event.keyCode ? event.keyCode : event.which);
-		if(keycode == '13'){
-			this.onSearch();
-		}
+		this.elementID("btnSearch").off('click').on("click", function() {this.onSearch();});
+		this.onReturnKey("txtQuery", this.onSearch);
 	}
 
 	onSearch() {
@@ -87,7 +43,7 @@ class SearchController  {
 
 	validateQueryInput() {
 		var isValid = true;
-		var query = $("#"+this.txtQuery).val();
+		var query = this.elementID("txtQuery").val();
 		if (query == null || query === "") {
 			isValid = false;
 			this.error("You need to enter something in the query field");
@@ -125,7 +81,7 @@ class SearchController  {
 	getSearchRequestData() {
 		
 		var request = {
-				txtQuery: $("#"+this.txtQuery).val()
+				txtQuery: this.elementID("txtQuery").val()
 		};
 		
 		var jsonInputs = JSON.stringify(request);
@@ -147,7 +103,7 @@ class SearchController  {
 	}
 	
 	setQuery(query) {
-		$("#"+this.txtQuery).val(query);
+		this.elementID("txtQuery").val(query);
 	}
 	
 	setTotalHits(totalHits) {

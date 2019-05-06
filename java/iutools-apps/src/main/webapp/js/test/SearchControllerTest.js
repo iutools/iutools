@@ -1,8 +1,8 @@
 var srchControllerConfig = {
 		btnSearch: "btn-search",
-		txtQuery: "txt-query-words",
+		txtQuery: "txt-query",
 		divError: "div-error-msg",
-		divResults:  "div-search-results",
+		divReseults:  "div-search-results",
 		divTotalHits: "div-total-hits"
 	};
 
@@ -43,7 +43,7 @@ QUnit.module("SearchController Tests", {
 		// Add HTML elements that are used by this srchController
         var formHTML =
                   "Query: <input id=\""+srchControllerConfig.txtQuery+"\" type=\"text\"><br/>\n"
-                + "<button id=\"btn-search\">Search</button><br/>\n"
+                + "<button id=\""+srchControllerConfig.btnSearch+"\">Search</button><br/>\n"
                 + "<p/>\n<br/>\n<p/>\n"
                 + "Error message: <div id=\""+srchControllerConfig.divError+"\"></div><br/>\n"
                 + "Total Hits: <div id=\""+srchControllerConfig.divTotalHits+"\"></div><br/>\n"
