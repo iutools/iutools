@@ -40,15 +40,13 @@ var mockResp = {
 QUnit.module("SearchController Tests", {
 	beforeEach: function(assert) {
 		
-//	    srchController = new SearchControllerMock(srchControllerConfig, mockResp);
-	    srchController = new SearchController(srchControllerConfig);
-	    new TestHelpers().attachMockAjaxResponse(srchController, mockResp, "invokeSearchService", "successCallback", "failureCallback");
 		
 		
 		// Add HTML elements that are used by this srchController
         var formHTML =
-                  "Query: <input id=\""+srchControllerConfig.txtQuery+"\"><br/>\n"
-                + "<button id=\"btn-search\" \"onClick\"=\"srchController.onSearch()\">Search</button><br/>\n"
+                  "Query: <input id=\""+srchControllerConfig.txtQuery+"\" type=\"text\"><br/>\n"
+//                + "<button id=\"btn-search\" \"onClick\"=\"srchController.onSearch()\">Search</button><br/>\n"
+                + "<button id=\"btn-search\">Search</button><br/>\n"
                 + "<p/>\n<br/>\n<p/>\n"
                 + "Error message: <div id=\""+srchControllerConfig.divError+"\"></div><br/>\n"
                 + "Total Hits: <div id=\""+srchControllerConfig.divTotalHits+"\"></div><br/>\n"
@@ -56,6 +54,8 @@ QUnit.module("SearchController Tests", {
                 ;
 		$("#testMainDiv").html(formHTML);
 		
+	    srchController = new SearchController(srchControllerConfig);
+	    new TestHelpers().attachMockAjaxResponse(srchController, mockResp, "invokeSearchService", "successCallback", "failureCallback");		
 		$("#"+srchControllerConfig.btnSearch).off('click').on("click", function() {srchController.onSearch();});
 	},
 	
@@ -79,8 +79,16 @@ QUnit.test("SearchController.Acceptance -- HappyPath", function( assert )
 {
 	var caseDescr = "SearchController.Acceptance -- HappyPath";
 	
+	console.log("-- SearchController.Acceptance -- HappyPath: $('#'+srchControllerConfig.txtQuery).length="+$('#'+srchControllerConfig.txtQuery).length+", $('#'+srchControllerConfig.txtQuery).val()="+$('#'+srchControllerConfig.txtQuery).val());
+    srchController = new SearchController(srchControllerConfig);
+    new TestHelpers().attachMockAjaxResponse(srchController, mockResp, "invokeSearchService", "successCallback", "failureCallback");		
+//    srchController.attachHtmlElements();
+	$("#"+srchControllerConfig.btnSearch).off('click').on("click", function() {srchController.onSearch();});
+
+	
     var helpers = new TestHelpers();
     helpers.typeText(srchControllerConfig.txtQuery, "ᓄᓇᕗᑦ");
+	console.log("-- SearchController.Acceptance -- HappyPath: AFTER typeText, $('#'+srchControllerConfig.txtQuery).length="+$('#'+srchControllerConfig.txtQuery).length+", $('#'+srchControllerConfig.txtQuery).val()="+$('#'+srchControllerConfig.txtQuery).val());
     helpers.clickOn(srchControllerConfig.btnSearch);
     
     assertNoErrorDisplayed(assert, caseDescr);

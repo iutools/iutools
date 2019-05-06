@@ -11,7 +11,41 @@ class SearchController {
 		this.divError = config.divError;
 		this.divResults = config.divResults;
 		this.divTotalHits = config.divTotalHits;
+		this.attachHtmlElements();
 	} 
+	
+	attachHtmlElements() {
+		console.log("-- attachHtmlElements: $('#'+this.txtQuery).length="+$('#'+this.txtQuery).length+", $('#'+this.txtQuery).val()="+$('#'+this.txtQuery).val());
+//		$(document).ready(function() {
+//			console.log("-- attachHtmlElements.ready: $('#'+this.txtQuery).length="+$('#'+this.txtQuery).length+", $('#'+this.txtQuery).val()="+$('#'+this.txtQuery).val());
+			if (this.elementIsDefined(this.btnSearch)) {
+				$("#"+this.btnSearch).off('click').on("click", function() {this.onSearch();});							
+			}
+			if (this.elementIsDefined(this.txtQuery)) {
+				$('#'+this.txtQuery).keypress(this.onQueryKeyPress);
+			}
+//	});
+	}
+	
+	elementIsDefined(eltID, raiseException) {
+		var defined = false;
+		var elt = $('#'+eltID);
+		if (elt.length > 0 && elt.val() != null) {
+			defined = true;
+		}
+		if (!defined && raiseException != null && raiseException ) {
+			throw new Error("Element with ID "+eltID+" was not defined. Maybe you need to execute this method after the DOM was loaded?");
+		}
+		return defined;
+		
+	}
+	
+	onQueryKeyPress(event) {
+		var keycode = (event.keyCode ? event.keyCode : event.which);
+		if(keycode == '13'){
+			alert('You pressed a "enter" key in textbox');	
+		}
+	}
 
 	onSearch() {
 			var isValid = this.validateQueryInput();
