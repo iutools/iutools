@@ -2,7 +2,8 @@
  * Controller for the search.html page.
  */
 
-class SearchController {
+//class SearchController extends WidgetController {
+class SearchController  {
 
 	constructor(config) {
 		this.btnSearch = config.btnSearch;    
@@ -34,9 +35,7 @@ class SearchController {
 					if(keycode == '13'){
 						method.call(controller);
 					}
-				};
-		
-//		element.keypress(function(event) {method.call(controller);});
+				};		
 		element.keypress(keypressHandler);
 
 		return;
