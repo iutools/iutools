@@ -53,7 +53,7 @@ QUnit.module("SearchController Tests", {
 		
 	    srchController = new SearchController(srchControllerConfig);
 	    new TestHelpers().attachMockAjaxResponse(srchController, mockResp, "invokeSearchService", "successCallback", "failureCallback");		
-		$("#"+srchControllerConfig.btnSearch).off('click').on("click", function() {srchController.onSearch();});
+//		$("#"+srchControllerConfig.btnSearch).off('click').on("click", function() {srchController.onSearch();});
 	},
 	
 	afterEach: function(assert) {

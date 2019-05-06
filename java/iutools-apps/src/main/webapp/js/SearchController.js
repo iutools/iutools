@@ -16,7 +16,7 @@ class SearchController extends WidgetController {
 	} 
 	
 	attachHtmlElements() {
-		this.elementID("btnSearch").off('click').on("click", function() {this.onSearch();});
+		this.setEventHandler("btnSearch", "click", this.onSearch);
 		this.onReturnKey("txtQuery", this.onSearch);
 	}
 
@@ -43,7 +43,7 @@ class SearchController extends WidgetController {
 
 	validateQueryInput() {
 		var isValid = true;
-		var query = this.elementID("txtQuery").val();
+		var query = this.elementForProp("txtQuery").val();
 		if (query == null || query === "") {
 			isValid = false;
 			this.error("You need to enter something in the query field");
@@ -81,7 +81,7 @@ class SearchController extends WidgetController {
 	getSearchRequestData() {
 		
 		var request = {
-				txtQuery: this.elementID("txtQuery").val()
+				txtQuery: this.elementForProp("txtQuery").val()
 		};
 		
 		var jsonInputs = JSON.stringify(request);
@@ -103,7 +103,7 @@ class SearchController extends WidgetController {
 	}
 	
 	setQuery(query) {
-		this.elementID("txtQuery").val(query);
+		this.elementForProp("txtQuery").val(query);
 	}
 	
 	setTotalHits(totalHits) {

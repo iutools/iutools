@@ -10,7 +10,7 @@ class WidgetController {
 		// you want to actually attach elements to the controller.
 	}
 	
-	elementID(property) {
+	elementForProp(property) {
 		if (property == null) {
 			throw new Error("Config property name cannot be null");
 		}
@@ -29,13 +29,26 @@ class WidgetController {
 		return elt;
 	}
 	
+	
 	activeElement() {
 		var elt = $(':focus').context.activeElement();
 		return elt;
 	}
 	
+	setEventHandler(propName, evtName, handler) {
+		var elt = this.elementForProp(propName);
+		var controller = this;
+		var fct_handler =
+				function() {
+					handler.call(controller);
+				};
+		if (evtName == "click") {
+			elt.off('click').on("click", fct_handler);
+		}
+	}	
+	
 	onReturnKey(id, method) {
-		var element = this.elementID(id);
+		var element = this.elementForProp(id);
 		var controller = this;
 		
 		var keypressHandler = 
