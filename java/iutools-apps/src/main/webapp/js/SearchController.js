@@ -19,13 +19,28 @@ class SearchController {
 		this.elementWithID(this.btnSearch).off('click').on("click", function() {this.onSearch();});
 		
 		var txtQuery = this.elementWithID(this.txtQuery)
-		var controller = this;
-		txtQuery.keypress(function(event) {controller.onQueryKeyPress(event);});
-//		txtQuery.controller = this;
+		this.onReturnKey(this.txtQuery, this.onSearch);
 		
 		return
 	}
 	
+	onReturnKey(id, method) {
+		var element = this.elementWithID(id);
+		var controller = this;
+		
+		var keypressHandler = 
+				function(event) {
+					var keycode = (event.keyCode ? event.keyCode : event.which);
+					if(keycode == '13'){
+						method.call(controller);
+					}
+				};
+		
+//		element.keypress(function(event) {method.call(controller);});
+		element.keypress(keypressHandler);
+
+		return;
+	}
 	
 	elementWithID(eltID, raiseException) {
 		var elt = $('#'+eltID);

@@ -89,11 +89,6 @@ QUnit.test("SearchController.Acceptance -- HappyPath", function( assert )
 	assertHitsEqual(assert, expHits, caseDescr)
 });
 
-//Tests to do:
-//	- Press enter when in the text field submits the form
-//	- 
-//
-
 QUnit.test("SearchController.Acceptance -- Query field is empty -- Displays error", function( assert ) 
 {
 	var caseDescr = "SearchController.Acceptance -- Query field is empty -- Displays error";
