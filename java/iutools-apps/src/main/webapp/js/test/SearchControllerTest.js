@@ -223,7 +223,7 @@ function assertDisplayedTotalHitsIs(assert, expTotalHits, caseDescr) {
 }
 
 function getTotalHits() {
-	var totalHits = $("#"+srchControllerConfig.divTotalHits).text();
+	var totalHits = srchController.elementForProp("divTotalHits").text();
 	return totalHits;
 }
 

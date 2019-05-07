@@ -6,12 +6,12 @@ class SearchController extends WidgetController {
 
 	constructor(config) {
 		super(config);
-		this.btnSearch = config.btnSearch;    
-		 
-		this.txtQuery = config.txtQuery;
-		this.divError = config.divError;
-		this.divResults = config.divResults;
-		this.divTotalHits = config.divTotalHits;
+//		this.btnSearch = config.btnSearch;    
+//		 
+//		this.txtQuery = config.txtQuery;
+//		this.divError = config.divError;
+//		this.divResults = config.divResults;
+//		this.divTotalHits = config.divTotalHits;
 		this.attachHtmlElements();
 	} 
 	
