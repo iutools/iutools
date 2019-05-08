@@ -19,19 +19,29 @@ class SearchController extends WidgetController {
 			if (isValid) {
 				this.setBusy(true);
 				this.invokeSearchService(this.getSearchRequestData(), 
-						SearchController.prototype.successCallback, SearchController.prototype.failureCallback)
+						this.successCallback, this.failureCallback)
 			}
 	}
 	
 	invokeSearchService(jsonRequestData, _successCbk, _failureCbk) {
+			var controller = this;
+			var fctSuccess = 
+					function(resp) {
+						_successCbk.call(controller, resp);
+					};
+			var fctFailure = 
+					function(resp) {
+						_failureCbk.call(controller, resp);
+					};
+		
 			$.ajax({
 				type: 'POST',
 				url: 'srv/search',
 				data: {'jsonRequest': jsonRequestData},
 				dataType: 'json',
 				async: true,
-		        success: _successCbk,
-		        error: _failureCbk
+		        success: fctSuccess,
+		        error: fctFailure
 			});
 	}
 
@@ -41,14 +51,13 @@ class SearchController extends WidgetController {
 		if (query == null || query === "") {
 			isValid = false;
 			this.error("You need to enter something in the query field");
-//			this.setTotalHits(0);
 		}
 		return isValid;
 	}
 
 	successCallback(resp) {
 		if (resp.errorMessage != null) {
-			this.onSearchFailure(resp);
+			this.failureCallback(resp);
 		} else {
 			this.setQuery(resp.expandedQuery);
 			this.setTotalHits(resp.totalHits);
