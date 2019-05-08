@@ -55,7 +55,6 @@ QUnit.module("SearchController Tests", {
 			};		
 		
 	    srchController = new SearchController(srchControllerConfig);
-//	    new TestHelpers().attachMockAjaxResponse(srchController, mockResp, "invokeSearchService", "successCallback", "failureCallback");		
 	    attachMockAjaxResponse(srchController, mockResp);		
 	},
 	
@@ -122,6 +121,25 @@ QUnit.test("SearchController.Acceptance -- Press Return in Query field -- Runs t
 			assertDisplayedTotalHitsIs(assert, "18", caseDescr);
 			var expHits = mockResp.hits;
 			assertHitsEqual(assert, expHits, caseDescr)
+		});
+
+QUnit.test("SearchController.Acceptance -- Web service returns errMessage -- Displays message", function( assert ) 
+		{
+			var caseDescr = "SearchController.Acceptance -- Web service returns errorMessage -- Displays message";
+			
+			mockResp = {"errorMessage": "There was an error in the web service"};
+			attachMockAjaxResponse(srchController, mockResp);
+			
+		    var helpers = new TestHelpers();
+		    helpers.typeText(srchControllerConfig.txtQuery, "ᓄᓇᕗᑦ");
+		    helpers.pressEnter(srchControllerConfig.txtQuery);
+		    
+		    assertErrorDisplayed(assert, "There was an error in the web service", caseDescr);
+			assertSearchButtonEnabled(assert, caseDescr);
+			assertDisplayedTotalHitsIs(assert, "0", caseDescr);
+			var expHits = [];
+			assertHitsEqual(assert, expHits, caseDescr)
+			assert.ok(true);
 		});
 
 //QUnit.test("SearchController.getTrainingRequestData -- One of Two Sample Relations is Empty", function( assert ) 

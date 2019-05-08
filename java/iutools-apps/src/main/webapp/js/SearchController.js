@@ -41,7 +41,7 @@ class SearchController extends WidgetController {
 		if (query == null || query === "") {
 			isValid = false;
 			this.error("You need to enter something in the query field");
-			this.setTotalHits(0);
+//			this.setTotalHits(0);
 		}
 		return isValid;
 	}
@@ -87,21 +87,18 @@ class SearchController extends WidgetController {
 	}
 	
 	disableSearchButton() {
-//		$("#"+this.btnSearch).attr("disabled", true);
 		this.elementForProp('btnSearch').attr("disabled", true);
 	}
 	
 	enableSearchButton() {
-//		$("#"+this.btnSearc).attr("disabled", false);
 		this.elementForProp('btnSearch').attr("disabled", false);
 
 	}
 	
 	error(err) {
-//		$("#"+this.divError).html(err);
 		this.elementForProp('divError').html(err);
-//		$("#"+this.divError).show();	 
 		this.elementForProp('divError').show();	 
+		this.setTotalHits(0);
 	}
 	
 	setQuery(query) {
