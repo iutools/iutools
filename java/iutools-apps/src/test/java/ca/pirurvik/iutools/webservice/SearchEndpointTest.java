@@ -69,9 +69,6 @@ public class SearchEndpointTest {
 					searchInputs
 				);
 		
-//		IUTServiceTestHelpers.assertExpandedQueryEquals(
-//				"(ᓄᓇᕗ OR ᓄᓇᕗᒻᒥ OR ᓄᓇᕘᒥ OR ᓄᓇᕘᑉ OR ᓄᓇᕗᒻᒥᐅᑦ)", 
-//				response);
 		IUTServiceTestHelpers.assertExpandedQueryEquals(
 		"ᓄᓇᕗᑦ", 
 		response);
@@ -80,17 +77,6 @@ public class SearchEndpointTest {
 		double tolerance = 0.3;
 		IUTServiceTestHelpers.assertMostHitsMatchWords(queryWords, response, tolerance);
 	}	
-
-	@Test
-	public void test__expandQuery__HappyPath() throws Exception {
-	
-		String query = "inuk";
-        QueryExpander expander = new QueryExpander();
-		QueryExpansion[] gotExpansions = expander.getExpansions(query);	
-		String[] expExpansions = new String[] {"inuit", "inunnut", "inuttitut", "inungnik", "inu"};
-		assertExpansionWordsAre(expExpansions, gotExpansions);
-	}
-
 
 	private void assertExpansionWordsAre(String[] expExpansionWords, QueryExpansion[] gotExpansions) throws IOException {
 		List<String> gotExpansionWords = new ArrayList<String>();

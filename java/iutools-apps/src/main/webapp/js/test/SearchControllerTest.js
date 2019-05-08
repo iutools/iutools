@@ -2,7 +2,7 @@ var srchControllerConfig = {
 		btnSearch: "btn-search",
 		txtQuery: "txt-query",
 		divError: "div-error-msg",
-		divReseults:  "div-search-results",
+		divResults:  "div-search-results",
 		divTotalHits: "div-total-hits"
 	};
 
@@ -86,7 +86,7 @@ QUnit.test("SearchController.Acceptance -- HappyPath", function( assert )
     assertNoErrorDisplayed(assert, caseDescr);
 	assertQueryEquals(assert, "ᓄᓇᕗᑦ");
 	assertSearchButtonEnabled(assert, caseDescr);
-	assertDisplayedTotalHitsIs(assert, "18", caseDescr);
+	assertDisplayedTotalHitsIs(assert, "Found 18 hits", caseDescr);
 	var expHits = mockResp.hits;
 	assertHitsEqual(assert, expHits, caseDescr)
 });
@@ -101,7 +101,7 @@ QUnit.test("SearchController.Acceptance -- Query field is empty -- Displays erro
     
     assertErrorDisplayed(assert, "You need to enter something in the query field", caseDescr);
 	assertSearchButtonEnabled(assert, caseDescr);
-	assertDisplayedTotalHitsIs(assert, "0", caseDescr);
+	assertDisplayedTotalHitsIs(assert, "No hits found", caseDescr);
 	var expHits = [];
 	assertHitsEqual(assert, expHits, caseDescr)
 	assert.ok(true);
@@ -118,7 +118,7 @@ QUnit.test("SearchController.Acceptance -- Press Return in Query field -- Runs t
 		    assertNoErrorDisplayed(assert, caseDescr);
 			assertQueryEquals(assert, "ᓄᓇᕗᑦ");
 			assertSearchButtonEnabled(assert, caseDescr);
-			assertDisplayedTotalHitsIs(assert, "18", caseDescr);
+			assertDisplayedTotalHitsIs(assert, "Found 18 hits", caseDescr);
 			var expHits = mockResp.hits;
 			assertHitsEqual(assert, expHits, caseDescr)
 		});
@@ -136,7 +136,7 @@ QUnit.test("SearchController.Acceptance -- Web service returns errMessage -- Dis
 		    
 		    assertErrorDisplayed(assert, "There was an error in the web service", caseDescr);
 			assertSearchButtonEnabled(assert, caseDescr);
-			assertDisplayedTotalHitsIs(assert, "0", caseDescr);
+			assertDisplayedTotalHitsIs(assert, "No hits found", caseDescr);
 			var expHits = [];
 			assertHitsEqual(assert, expHits, caseDescr)
 			assert.ok(true);

@@ -37,7 +37,8 @@ class SearchController extends WidgetController {
 			$.ajax({
 				type: 'POST',
 				url: 'srv/search',
-				data: {'jsonRequest': jsonRequestData},
+//				data: {'jsonRequest': jsonRequestData},
+				data: jsonRequestData,
 				dataType: 'json',
 				async: true,
 		        success: fctSuccess,
@@ -87,7 +88,7 @@ class SearchController extends WidgetController {
 	getSearchRequestData() {
 		
 		var request = {
-				txtQuery: this.elementForProp("txtQuery").val()
+				query: this.elementForProp("txtQuery").val()
 		};
 		
 		var jsonInputs = JSON.stringify(request);
@@ -115,13 +116,17 @@ class SearchController extends WidgetController {
 	}
 	
 	setTotalHits(totalHits) {
-		this.elementForProp('divTotalHits').text(totalHits);
+		var totalHitsText = "No hits found";
+		if (totalHits > 0) {
+			totalHitsText = "Found "+totalHits+" hits";
+		}
+		this.elementForProp('divTotalHits').text(totalHitsText);
 	}
 	
 	
 	setResults(results) {
 		var jsonResults = JSON.stringify(results);
-		var divResults = $("#"+this.divResults);
+		var divResults = this.elementForProp("divResults");
 		
 		divResults.empty();
 		
