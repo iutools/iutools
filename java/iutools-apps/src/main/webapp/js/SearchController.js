@@ -6,6 +6,8 @@ class SearchController extends WidgetController {
 
 	constructor(config) {
 		super(config);
+		this.hitsPerPage = 10;
+		this.currentPage = 1;
 		this.attachHtmlElements();
 	} 
 	
@@ -88,7 +90,9 @@ class SearchController extends WidgetController {
 	getSearchRequestData() {
 		
 		var request = {
-				query: this.elementForProp("txtQuery").val()
+				query: this.elementForProp("txtQuery").val(),
+				hitsPageNum: this.currentPage,
+				hitsPerPage: this.hitsPerPage
 		};
 		
 		var jsonInputs = JSON.stringify(request);

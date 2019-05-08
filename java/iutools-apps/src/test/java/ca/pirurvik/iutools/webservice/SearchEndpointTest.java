@@ -74,7 +74,7 @@ public class SearchEndpointTest {
 		response);
 		
 		String[] queryWords = new String[] {"ᓄᓇᕗᑦ"};
-		double tolerance = 0.3;
+		double tolerance = 0.6;
 		IUTServiceTestHelpers.assertMostHitsMatchWords(queryWords, response, tolerance);
 	}	
 
