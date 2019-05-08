@@ -6,12 +6,6 @@ class SearchController extends WidgetController {
 
 	constructor(config) {
 		super(config);
-//		this.btnSearch = config.btnSearch;    
-//		 
-//		this.txtQuery = config.txtQuery;
-//		this.divError = config.divError;
-//		this.divResults = config.divResults;
-//		this.divTotalHits = config.divTotalHits;
 		this.attachHtmlElements();
 	} 
 	
@@ -23,7 +17,7 @@ class SearchController extends WidgetController {
 	onSearch() {
 			var isValid = this.validateQueryInput();
 			if (isValid) {
-				this.isBusy(true);
+				this.setBusy(true);
 				this.invokeSearchService(this.getSearchRequestData(), 
 						SearchController.prototype.successCallback, SearchController.prototype.failureCallback)
 			}
@@ -60,15 +54,18 @@ class SearchController extends WidgetController {
 			this.setTotalHits(resp.totalHits);
 			this.setResults(resp.hits);		
 		}
+		this.setBusy(false);
 	}
 
 	failureCallback(resp) {
 		this.enableSearchButton();
 		this.error(resp.errorMessage);
+		this.enableSearchButton();
+		this.setBusy(false);
 	}
 	
 	
-	isBusy(flag) {
+	setBusy(flag) {
 		if (flag) {
 			this.disableSearchButton();		
 			this.error("");
@@ -90,16 +87,21 @@ class SearchController extends WidgetController {
 	}
 	
 	disableSearchButton() {
-		$("#"+this.btnTrain).attr("disabled", true);
+//		$("#"+this.btnSearch).attr("disabled", true);
+		this.elementForProp('btnSearch').attr("disabled", true);
 	}
 	
 	enableSearchButton() {
-		$("#"+this.btnTrain).attr("disabled", false);
+//		$("#"+this.btnSearc).attr("disabled", false);
+		this.elementForProp('btnSearch').attr("disabled", false);
+
 	}
 	
 	error(err) {
-		$("#"+this.divError).html(err);
-		$("#"+this.divError).show();	 
+//		$("#"+this.divError).html(err);
+		this.elementForProp('divError').html(err);
+//		$("#"+this.divError).show();	 
+		this.elementForProp('divError').show();	 
 	}
 	
 	setQuery(query) {
@@ -107,7 +109,7 @@ class SearchController extends WidgetController {
 	}
 	
 	setTotalHits(totalHits) {
-		$("#"+this.divTotalHits).text(totalHits);
+		this.elementForProp('divTotalHits').text(totalHits);
 	}
 	
 	

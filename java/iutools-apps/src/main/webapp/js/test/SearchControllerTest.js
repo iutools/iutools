@@ -7,34 +7,8 @@ var srchControllerConfig = {
 	};
 
 var srchController = null;
-var mockResp = {
-		"errorMessage": null,
-		"expandedQuery": "ᓄᓇᕗᑦ",
-		"totalHits": 18,
-		"hits": [
-			{title: "Title of hit #1", url: "http://www.domainHit1.com/hit1.html",
-				snippet: "... snippet of hit #1 ..."},
-			{title: "Title of hit #2", url: "http://www.domainHit2.com/hit2.html",
-				snippet: "... snippet of hit #2 ..."},
-			{title: "Title of hit #3", url: "http://www.domainHit2.com/hit3.html",
-				snippet: "... snippet of hit #3 ..."},
-			{title: "Title of hit #4", url: "http://www.domainHit2.com/hit4.html",
-				snippet: "... snippet of hit #4 ..."},
-			{title: "Title of hit #5", url: "http://www.domainHit1.com/hit5.html",
-				snippet: "... snippet of hit #5 ..."},
-			{title: "Title of hit #6", url: "http://www.domainHit2.com/hit6.html",
-				snippet: "... snippet of hit #6 ..."},
-			{title: "Title of hit #7", url: "http://www.domainHit2.com/hit7.html",
-				snippet: "... snippet of hit #7 ..."},
-			{title: "Title of hit #8", url: "http://www.domainHit2.com/hit8.html",
-				snippet: "... snippet of hit #8 ..."},
-			{title: "Title of hit #9", url: "http://www.domainHit2.com/hit9.html",
-				snippet: "... snippet of hit #9 ..."},
-			{title: "Title of hit #10", url: "http://www.domainHit2.com/hit10.html",
-				snippet: "... snippet of hit #10 ..."}
-				
-		]
-	};
+var mockResp = null;
+
 
 
 QUnit.module("SearchController Tests", {
@@ -51,9 +25,38 @@ QUnit.module("SearchController Tests", {
                 ;
 		$("#testMainDiv").html(formHTML);
 		
+		mockResp = {
+				"errorMessage": null,
+				"expandedQuery": "ᓄᓇᕗᑦ",
+				"totalHits": 18,
+				"hits": [
+					{title: "Title of hit #1", url: "http://www.domainHit1.com/hit1.html",
+						snippet: "... snippet of hit #1 ..."},
+					{title: "Title of hit #2", url: "http://www.domainHit2.com/hit2.html",
+						snippet: "... snippet of hit #2 ..."},
+					{title: "Title of hit #3", url: "http://www.domainHit2.com/hit3.html",
+						snippet: "... snippet of hit #3 ..."},
+					{title: "Title of hit #4", url: "http://www.domainHit2.com/hit4.html",
+						snippet: "... snippet of hit #4 ..."},
+					{title: "Title of hit #5", url: "http://www.domainHit1.com/hit5.html",
+						snippet: "... snippet of hit #5 ..."},
+					{title: "Title of hit #6", url: "http://www.domainHit2.com/hit6.html",
+						snippet: "... snippet of hit #6 ..."},
+					{title: "Title of hit #7", url: "http://www.domainHit2.com/hit7.html",
+						snippet: "... snippet of hit #7 ..."},
+					{title: "Title of hit #8", url: "http://www.domainHit2.com/hit8.html",
+						snippet: "... snippet of hit #8 ..."},
+					{title: "Title of hit #9", url: "http://www.domainHit2.com/hit9.html",
+						snippet: "... snippet of hit #9 ..."},
+					{title: "Title of hit #10", url: "http://www.domainHit2.com/hit10.html",
+						snippet: "... snippet of hit #10 ..."}
+						
+				]
+			};		
+		
 	    srchController = new SearchController(srchControllerConfig);
-	    new TestHelpers().attachMockAjaxResponse(srchController, mockResp, "invokeSearchService", "successCallback", "failureCallback");		
-//		$("#"+srchControllerConfig.btnSearch).off('click').on("click", function() {srchController.onSearch();});
+//	    new TestHelpers().attachMockAjaxResponse(srchController, mockResp, "invokeSearchService", "successCallback", "failureCallback");		
+	    attachMockAjaxResponse(srchController, mockResp);		
 	},
 	
 	afterEach: function(assert) {
@@ -146,6 +149,10 @@ QUnit.test("SearchController.Acceptance -- Press Return in Query field -- Runs t
 /**********************************
  * HELPER METHODS
  **********************************/
+
+function attachMockAjaxResponse(controller, _mockResp) {
+	new TestHelpers().attachMockAjaxResponse(controller, _mockResp, "invokeSearchService", "successCallback", "failureCallback");		
+}
 
 function assertQueryEquals(assert, expQuery) {
 	var gotQuery = $("#"+srchControllerConfig.txtQuery).val();
