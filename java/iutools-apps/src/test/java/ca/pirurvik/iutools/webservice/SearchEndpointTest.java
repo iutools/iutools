@@ -55,7 +55,7 @@ public class SearchEndpointTest {
 		double tolerance = 0.5;
 		SearchResponse srchResponse = IUTServiceTestHelpers.toSearchResponse(response);
 		IUTServiceTestHelpers.assertMostHitsMatchWords(queryWords, response, tolerance);
-		Assert.assertTrue(srchResponse.totaHits > 10);
+		Assert.assertTrue(srchResponse.totalHits > 10);
 	}
 	
 	@Test
@@ -78,7 +78,7 @@ public class SearchEndpointTest {
 		IUTServiceTestHelpers.assertMostHitsMatchWords(queryWords, response, tolerance);
 		
 		SearchResponse srchResponse = IUTServiceTestHelpers.toSearchResponse(response);
-		Assert.assertTrue(srchResponse.totaHits > 10);
+		Assert.assertTrue(srchResponse.totalHits > 10);
 		
 	}	
 

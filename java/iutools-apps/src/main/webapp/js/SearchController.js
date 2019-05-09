@@ -70,9 +70,13 @@ class SearchController extends WidgetController {
 	}
 
 	failureCallback(resp) {
-		this.enableSearchButton();
+		if (! resp.hasOwnProperty("errorMessage")) {
+			// Error condition comes from tomcat itself, not from our servlet
+			resp.errorMessage = 
+				"Server generated a "+resp.status+" error:\n\n" +
+				resp.responseText;
+		}				
 		this.error(resp.errorMessage);
-		this.enableSearchButton();
 		this.setBusy(false);
 	}
 	
@@ -127,7 +131,6 @@ class SearchController extends WidgetController {
 		this.elementForProp('divTotalHits').text(totalHitsText);
 	}
 	
-	
 	setResults(results) {
 		var jsonResults = JSON.stringify(results);
 		var divResults = this.elementForProp("divResults");
@@ -154,6 +157,11 @@ class SearchController extends WidgetController {
 		var divPageNumbers = this.elementForProp('divPageNumbers');
 		divPageNumbers.empty();
 		var nbPages = Math.ceil(nbHits / this.hitsPerPage);
+		var more = false;
+		if (nbPages > 10) {
+			nbPages = 10;
+			more = true;
+		}
 		for (var ip=0; ip<nbPages; ip++) {
 			var pageLink = '<input class="page-number"' +
 				'type="button" '+
@@ -163,7 +171,11 @@ class SearchController extends WidgetController {
 			if (ip != nbPages-1)
 				divPageNumbers.append('&nbsp;&nbsp;');
 		}
+		if (more) divPageNumbers.append(" and more...");
+		
 //		$('div#hits').css('display','block');
+		divPageNumbers.css('display','block');
+		divPageNumbers.show();
 	}
 	
 	trimStr(str) {

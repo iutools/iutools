@@ -4,6 +4,6 @@ import java.util.List;
 
 public class SearchResponse extends ServiceResponse {
 	public String expandedQuery;
-	public Long totaHits;
+	public Long totalHits;
 	public List<SearchHit> hits;
 }

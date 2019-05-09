@@ -164,34 +164,13 @@ QUnit.test("SearchController.Acceptance -- Web service returns errMessage -- Dis
 		});
 
 QUnit.test("SearchController.generatePagesButtons -- HappyPath", function( assert ) 
-		{
-			var caseDescr = "SearchController.generatePagesButtons -- HappyPath";
-			
-			srchController.generatePagesButtons(143);
-			assertPageButtonsAreOK(assert, 15, caseDescr)
-		});
+{
+	var caseDescr = "SearchController.generatePagesButtons -- HappyPath";
+	
+	srchController.generatePagesButtons(143);
+	assertPageButtonsAreOK(assert, 10, caseDescr)
+});
 
-//QUnit.test("SearchController.getTrainingRequestData -- One of Two Sample Relations is Empty", function( assert ) 
-//		{
-//			var caseDescr = "SearchController.getTrainingRequestData -- One of Two Sample Relations is Empty";
-//			
-//			enterTrainingURL("http://weknowmovies.com/sci-fi/");
-//			enterFieldNames("title; director; year");
-//			enterSampleRelationValues(1, "Blade Runner 2049; Denis Villeneuve; 2017")
-//			
-//
-//			var gotRequestData = JSON.parse(srchController.getTrainingRequestData());
-//			var expRequestData = 
-//					{
-//						action: "train", trainingURL: "http://weknowmovies.com/sci-fi/",
-//						trainingFields:
-//							[
-//							 {name:"title",value:"Blade Runner 2049"},{name:"director",value:"Denis Villeneuve"},{name: "year", value:  "2017"},
-//							]
-//					};
-//			
-//			assert.deepEqual(gotRequestData, expRequestData, caseDescr);
-//		});
 
 /**********************************
  * HELPER METHODS

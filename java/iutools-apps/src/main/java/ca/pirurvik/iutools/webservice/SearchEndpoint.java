@@ -92,7 +92,7 @@ public class SearchEndpoint extends HttpServlet {
 		}
 		
 		Pair<Long,List<SearchHit>> hitsInfo = search(results.expandedQuery, inputs);;
-		results.totaHits = hitsInfo.getFirst();
+		results.totalHits = hitsInfo.getFirst();
 		results.hits = hitsInfo.getSecond();
 		
 
