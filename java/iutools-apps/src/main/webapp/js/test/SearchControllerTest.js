@@ -3,7 +3,8 @@ var srchControllerConfig = {
 		txtQuery: "txt-query",
 		divError: "div-error-msg",
 		divResults:  "div-search-results",
-		divTotalHits: "div-total-hits"
+		divTotalHits: "div-total-hits",
+		divPageNumbers: "page-numbers"
 	};
 
 var srchController = null;
@@ -22,6 +23,7 @@ QUnit.module("SearchController Tests", {
                 + "Error message: <div id=\""+srchControllerConfig.divError+"\"></div><br/>\n"
                 + "Total Hits: <div id=\""+srchControllerConfig.divTotalHits+"\"></div><br/>\n"
                 + "Results:<p/><div id=\""+srchControllerConfig.divResults+"\"></div><br/>\n"
+                + "<div id=\""+srchControllerConfig.divPageNumbers+"\"></div><br/>\n"
                 ;
 		$("#testMainDiv").html(formHTML);
 		
@@ -30,26 +32,34 @@ QUnit.module("SearchController Tests", {
 				"expandedQuery": "ᓄᓇᕗᑦ",
 				"totalHits": 18,
 				"hits": [
+					
+					// First page of hits
 					{title: "Title of hit #1", url: "http://www.domainHit1.com/hit1.html",
 						snippet: "... snippet of hit #1 ..."},
 					{title: "Title of hit #2", url: "http://www.domainHit2.com/hit2.html",
 						snippet: "... snippet of hit #2 ..."},
-					{title: "Title of hit #3", url: "http://www.domainHit2.com/hit3.html",
+					{title: "Title of hit #3", url: "http://www.domainHit3.com/hit3.html",
 						snippet: "... snippet of hit #3 ..."},
-					{title: "Title of hit #4", url: "http://www.domainHit2.com/hit4.html",
+					{title: "Title of hit #4", url: "http://www.domainHit4.com/hit4.html",
 						snippet: "... snippet of hit #4 ..."},
-					{title: "Title of hit #5", url: "http://www.domainHit1.com/hit5.html",
+					{title: "Title of hit #5", url: "http://www.domainHit5.com/hit5.html",
 						snippet: "... snippet of hit #5 ..."},
-					{title: "Title of hit #6", url: "http://www.domainHit2.com/hit6.html",
+					{title: "Title of hit #6", url: "http://www.domainHit6.com/hit6.html",
 						snippet: "... snippet of hit #6 ..."},
-					{title: "Title of hit #7", url: "http://www.domainHit2.com/hit7.html",
+					{title: "Title of hit #7", url: "http://www.domainHit7.com/hit7.html",
 						snippet: "... snippet of hit #7 ..."},
-					{title: "Title of hit #8", url: "http://www.domainHit2.com/hit8.html",
+					{title: "Title of hit #8", url: "http://www.domainHit8.com/hit8.html",
 						snippet: "... snippet of hit #8 ..."},
-					{title: "Title of hit #9", url: "http://www.domainHit2.com/hit9.html",
+					{title: "Title of hit #9", url: "http://www.domainHit9.com/hit9.html",
 						snippet: "... snippet of hit #9 ..."},
-					{title: "Title of hit #10", url: "http://www.domainHit2.com/hit10.html",
-						snippet: "... snippet of hit #10 ..."}
+					{title: "Title of hit #10", url: "http://www.domainHit10.com/hit10.html",
+						snippet: "... snippet of hit #10 ..."},
+						
+					// Second page of hits
+					{title: "Title of hit #11", url: "http://www.domainHit11.com/hit11.html",
+						snippet: "... snippet of hit #11 ..."},
+					{title: "Title of hit #12", url: "http://www.domainHit12.com/hit12.html",
+						snippet: "... snippet of hit #12 ..."}
 						
 				]
 			};		
@@ -62,6 +72,8 @@ QUnit.module("SearchController Tests", {
 		
 	}
 });
+
+
 
 
 /**********************************
@@ -89,6 +101,7 @@ QUnit.test("SearchController.Acceptance -- HappyPath", function( assert )
 	assertDisplayedTotalHitsIs(assert, "Found 18 hits", caseDescr);
 	var expHits = mockResp.hits;
 	assertHitsEqual(assert, expHits, caseDescr)
+	assertPageButtonsAreOK(assert, 2, caseDescr)				
 });
 
 QUnit.test("SearchController.Acceptance -- Query field is empty -- Displays error", function( assert ) 
@@ -104,7 +117,7 @@ QUnit.test("SearchController.Acceptance -- Query field is empty -- Displays erro
 	assertDisplayedTotalHitsIs(assert, "No hits found", caseDescr);
 	var expHits = [];
 	assertHitsEqual(assert, expHits, caseDescr)
-	assert.ok(true);
+	assertPageButtonsAreOK(assert, 0, caseDescr)			
 });
 
 QUnit.test("SearchController.Acceptance -- Press Return in Query field -- Runs the search", function( assert ) 
@@ -121,6 +134,7 @@ QUnit.test("SearchController.Acceptance -- Press Return in Query field -- Runs t
 			assertDisplayedTotalHitsIs(assert, "Found 18 hits", caseDescr);
 			var expHits = mockResp.hits;
 			assertHitsEqual(assert, expHits, caseDescr)
+			assertPageButtonsAreOK(assert, 2, caseDescr)			
 		});
 
 QUnit.test("SearchController.Acceptance -- Web service returns errMessage -- Displays message", function( assert ) 
@@ -140,6 +154,14 @@ QUnit.test("SearchController.Acceptance -- Web service returns errMessage -- Dis
 			var expHits = [];
 			assertHitsEqual(assert, expHits, caseDescr)
 			assert.ok(true);
+		});
+
+QUnit.test("SearchController.generatePagesButtons -- HappyPath", function( assert ) 
+		{
+			var caseDescr = "SearchController.generatePagesButtons -- HappyPath";
+			
+			srchController.generatePagesButtons(143);
+			assertPageButtonsAreOK(assert, 15, caseDescr)
 		});
 
 //QUnit.test("SearchController.getTrainingRequestData -- One of Two Sample Relations is Empty", function( assert ) 
@@ -266,6 +288,23 @@ function assertHitsEqual(assert, expHits, caseDescr) {
 		});
 	assert.deepEqual(gotHits, expHits, "Displayed hits were not as expected");
 }
+
+function assertPageButtonsAreOK(assert, expNum, caseDescr) {
+	var divPageButtons = srchController.elementForProp('divPageNumbers');
+	
+	var gotPageNumbers = [];
+	$('#'+srchController.config['divPageNumbers']+" input").each(
+			function (index, value) {
+				console.log('-- assertPageButtonsAreOK: button text=' + $(this).text() + ', value=' + $(this).attr('value'));
+				gotPageNumbers.push($(this).attr('value'));
+			}
+		);
+	
+	var expPageNumbers = [];
+	for (var ii=0; ii < expNum; ii++) expPageNumbers.push((ii+1).toString());
+	assert.deepEqual(gotPageNumbers, expPageNumbers, "Page number buttons were not as expected");
+}
+
 
 
 

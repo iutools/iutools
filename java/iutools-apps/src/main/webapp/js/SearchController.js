@@ -39,7 +39,6 @@ class SearchController extends WidgetController {
 			$.ajax({
 				type: 'POST',
 				url: 'srv/search',
-//				data: {'jsonRequest': jsonRequestData},
 				data: jsonRequestData,
 				dataType: 'json',
 				async: true,
@@ -146,7 +145,27 @@ class SearchController extends WidgetController {
 			var aHitDiv = $.parseHTML(hitHtml);
 			divResults.append(aHitDiv);
 	    }
+		
+		this.generatePagesButtons(results.length);
+
+		
 		divResults.show();
+	}
+	
+	generatePagesButtons(nbHits) {
+		var divPageNumbers = this.elementForProp('divPageNumbers');
+		divPageNumbers.empty();
+		var nbPages = Math.ceil(nbHits / this.hitsPerPage);
+		for (var ip=0; ip<nbPages; ip++) {
+			var pageLink = '<input class="page-number"' +
+				'type="button" '+
+				'name="'+'page-number'+(ip+1)+'" '+
+				'value="'+(ip+1)+'"/>';
+			divPageNumbers.append(pageLink);
+			if (ip != nbPages-1)
+				divPageNumbers.append('&nbsp;&nbsp;');
+		}
+//		$('div#hits').css('display','block');
 	}
 	
 	trimStr(str) {
