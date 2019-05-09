@@ -26,6 +26,7 @@ import ca.nrc.data.harvesting.SearchEngine;
 import ca.nrc.data.harvesting.SearchEngine.Hit;
 import ca.nrc.data.harvesting.SearchEngine.SearchEngineException;
 import ca.nrc.data.harvesting.SearchEngine.Type;
+import ca.nrc.datastructure.Pair;
 import ca.pirurvik.iutools.CompiledCorpus;
 import ca.pirurvik.iutools.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.CompiledCorpusRegistryException;
@@ -90,15 +91,18 @@ public class SearchEndpoint extends HttpServlet {
 			throw new SearchEndpointException("Unable to expand the query", e);
 		}
 		
-		results.hits = search(results.expandedQuery, inputs);
+		Pair<Long,List<SearchHit>> hitsInfo = search(results.expandedQuery, inputs);;
+		results.totaHits = hitsInfo.getFirst();
+		results.hits = hitsInfo.getSecond();
 		
 
 		return results;
 	}
 
-	private List<SearchHit> search(String query, SearchInputs inputs) throws SearchEndpointException {
+	private Pair<Long, List<SearchHit>> search(String query, SearchInputs inputs) throws SearchEndpointException {
 		
 		List<SearchHit> hits = new ArrayList<SearchHit>();
+		Long totalHits = new Long(0);
 		BingSearchEngine engine;
 		try {
 			engine = new BingSearchEngine();
@@ -124,11 +128,13 @@ public class SearchEndpoint extends HttpServlet {
 				break;
 			}
 			Hit bingHit = iter.next();
+			totalHits = bingHit.outOfTotal;
 			SearchHit aHit = new SearchHit(bingHit.url.toString(), bingHit.title, bingHit.summary);
 			hits.add(aHit);
+			
 		}
 		
-		return hits;
+		return Pair.of(totalHits, hits);
 	}
 
 	protected String expandQuery(String query) throws SearchEndpointException, CompiledCorpusRegistryException, QueryExpanderException {

@@ -53,7 +53,9 @@ public class SearchEndpointTest {
 		
 		String[] queryWords = new String[] {"ᓄᓇᕗ", "ᓄᓇᕗᒻᒥ", "ᓄᓇᕘᒥ", "ᓄᓇᕘᑉ", "ᓄᓇᕗᒻᒥᐅᑦ"};
 		double tolerance = 0.5;
+		SearchResponse srchResponse = IUTServiceTestHelpers.toSearchResponse(response);
 		IUTServiceTestHelpers.assertMostHitsMatchWords(queryWords, response, tolerance);
+		Assert.assertTrue(srchResponse.totaHits > 10);
 	}
 	
 	@Test
@@ -69,13 +71,15 @@ public class SearchEndpointTest {
 					searchInputs
 				);
 		
-		IUTServiceTestHelpers.assertExpandedQueryEquals(
-		"ᓄᓇᕗᑦ", 
-		response);
+				IUTServiceTestHelpers.assertExpandedQueryEquals("ᓄᓇᕗᑦ", response);
 		
 		String[] queryWords = new String[] {"ᓄᓇᕗᑦ"};
 		double tolerance = 0.6;
 		IUTServiceTestHelpers.assertMostHitsMatchWords(queryWords, response, tolerance);
+		
+		SearchResponse srchResponse = IUTServiceTestHelpers.toSearchResponse(response);
+		Assert.assertTrue(srchResponse.totaHits > 10);
+		
 	}	
 
 	private void assertExpansionWordsAre(String[] expExpansionWords, QueryExpansion[] gotExpansions) throws IOException {
