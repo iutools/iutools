@@ -53,5 +53,10 @@ If you have made some changes to the JS files and want to redploy them, you can 
 Where `[webapps_sources]` is the root of the `webapps` directory in your dev project.
 
 Note that you may need to reload the HTML pages for changes to take effect.  
+
+## Testing the app
+
+- Open your browser at http://localhost:8080/iutools/search.html
+- Enter a query term in syllabic or latin Inuktut, then hit _Search_
      
 
