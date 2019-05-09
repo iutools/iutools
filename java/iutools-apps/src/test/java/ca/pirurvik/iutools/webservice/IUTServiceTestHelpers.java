@@ -7,8 +7,10 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.naming.directory.SearchResult;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -30,8 +32,12 @@ public class IUTServiceTestHelpers {
 	
 	enum EndpointNames {SEARCH};
 	
-	
-	public static MockHttpServletResponse postEndpointDirectly(EndpointNames eptName, Object inputs) throws IOException {
+
+	public static MockHttpServletResponse postEndpointDirectly(EndpointNames eptName, Object inputs) throws Exception {
+		return postEndpointDirectly(eptName, inputs, false);
+	}
+
+	public static MockHttpServletResponse postEndpointDirectly(EndpointNames eptName, Object inputs, boolean expectServiceError) throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		String jsonBody = new ObjectMapper().writeValueAsString(inputs);
 		request.setReaderContent(jsonBody);
@@ -42,14 +48,26 @@ public class IUTServiceTestHelpers {
 			new SearchEndpoint().doPost(request, response);
 		}
 		
+		String srvErr = ServiceResponse.jsonErrorMessage(response.getOutput());
+		if (srvErr != null && ! expectServiceError) {
+			throw new Exception("Did not expect the service to return an error message but it did.\nerrorMessage: "+srvErr);
+		} else if (srvErr == null && expectServiceError) {
+			throw new Exception("Expected the service to return an error message but it did not.");
+		}
 		
+		return response;
+	}
+	
+	public static SearchResponse toSearchResponse(HttpServletResponse servletResp) throws IOException {
+		String responseStr = servletResp.getOutputStream().toString();
+		SearchResponse response = new ObjectMapper().readValue(responseStr, SearchResponse.class);
 		return response;
 	}
 
 
 	public static void assertExpandedQueryEquals(String expQuery, MockHttpServletResponse gotResponse) throws JsonParseException, JsonMappingException, IOException {
 		SearchResponse gotResult = new ObjectMapper().readValue(gotResponse.getOutput(), SearchResponse.class);
-		AssertHelpers.assertStringEquals(expQuery, gotResult.expandedQuery);
+		AssertHelpers.assertStringEquals("Expanded query was not as expected.", expQuery, gotResult.expandedQuery);
 	}
 
 
