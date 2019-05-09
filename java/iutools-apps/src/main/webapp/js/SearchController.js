@@ -11,6 +11,7 @@ class SearchController extends WidgetController {
 		this.attachHtmlElements();
 	} 
 	
+	// Setup handler methods for different HTML elements specified in the config.
 	attachHtmlElements() {
 		this.setEventHandler("btnSearch", "click", this.onSearch);
 		this.onReturnKey("txtQuery", this.onSearch);
