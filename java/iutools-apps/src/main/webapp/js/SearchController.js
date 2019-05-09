@@ -64,6 +64,7 @@ class SearchController extends WidgetController {
 			this.setQuery(resp.expandedQuery);
 			this.setTotalHits(resp.totalHits);
 			this.setResults(resp.hits);		
+			this.generatePagesButtons(resp.totalHits);
 		}
 		this.setBusy(false);
 	}
@@ -145,10 +146,7 @@ class SearchController extends WidgetController {
 			var aHitDiv = $.parseHTML(hitHtml);
 			divResults.append(aHitDiv);
 	    }
-		
-		this.generatePagesButtons(results.length);
-
-		
+				
 		divResults.show();
 	}
 	

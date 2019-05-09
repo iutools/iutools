@@ -8,8 +8,8 @@ var srchControllerConfig = {
 	};
 
 var srchController = null;
-var mockResp = null;
-
+var mockRespPage1 = null;
+var mockRespPage2 = null;
 
 
 QUnit.module("SearchController Tests", {
@@ -27,13 +27,14 @@ QUnit.module("SearchController Tests", {
                 ;
 		$("#testMainDiv").html(formHTML);
 		
-		mockResp = {
+		
+		// First page of hits
+		mockRespPage1 = {
 				"errorMessage": null,
 				"expandedQuery": "ᓄᓇᕗᑦ",
-				"totalHits": 18,
+				"totalHits": 12,
 				"hits": [
 					
-					// First page of hits
 					{title: "Title of hit #1", url: "http://www.domainHit1.com/hit1.html",
 						snippet: "... snippet of hit #1 ..."},
 					{title: "Title of hit #2", url: "http://www.domainHit2.com/hit2.html",
@@ -53,19 +54,25 @@ QUnit.module("SearchController Tests", {
 					{title: "Title of hit #9", url: "http://www.domainHit9.com/hit9.html",
 						snippet: "... snippet of hit #9 ..."},
 					{title: "Title of hit #10", url: "http://www.domainHit10.com/hit10.html",
-						snippet: "... snippet of hit #10 ..."},
-						
-					// Second page of hits
+						snippet: "... snippet of hit #10 ..."}
+				]
+			};	
+		
+		// Second page of hits
+		mockRespPage2 = {
+				"errorMessage": null,
+				"expandedQuery": "ᓄᓇᕗᑦ",
+				"totalHits": 12,
+				"hits": [
 					{title: "Title of hit #11", url: "http://www.domainHit11.com/hit11.html",
 						snippet: "... snippet of hit #11 ..."},
 					{title: "Title of hit #12", url: "http://www.domainHit12.com/hit12.html",
-						snippet: "... snippet of hit #12 ..."}
-						
+						snippet: "... snippet of hit #12 ..."}	
 				]
-			};		
+			};
 		
 	    srchController = new SearchController(srchControllerConfig);
-	    attachMockAjaxResponse(srchController, mockResp);		
+	    attachMockAjaxResponse(srchController, mockRespPage1);		
 	},
 	
 	afterEach: function(assert) {
@@ -98,8 +105,8 @@ QUnit.test("SearchController.Acceptance -- HappyPath", function( assert )
     assertNoErrorDisplayed(assert, caseDescr);
 	assertQueryEquals(assert, "ᓄᓇᕗᑦ");
 	assertSearchButtonEnabled(assert, caseDescr);
-	assertDisplayedTotalHitsIs(assert, "Found 18 hits", caseDescr);
-	var expHits = mockResp.hits;
+	assertDisplayedTotalHitsIs(assert, "Found 12 hits", caseDescr);
+	var expHits = mockRespPage1.hits;
 	assertHitsEqual(assert, expHits, caseDescr)
 	assertPageButtonsAreOK(assert, 2, caseDescr)				
 });
@@ -131,8 +138,8 @@ QUnit.test("SearchController.Acceptance -- Press Return in Query field -- Runs t
 		    assertNoErrorDisplayed(assert, caseDescr);
 			assertQueryEquals(assert, "ᓄᓇᕗᑦ");
 			assertSearchButtonEnabled(assert, caseDescr);
-			assertDisplayedTotalHitsIs(assert, "Found 18 hits", caseDescr);
-			var expHits = mockResp.hits;
+			assertDisplayedTotalHitsIs(assert, "Found 12 hits", caseDescr);
+			var expHits = mockRespPage1.hits;
 			assertHitsEqual(assert, expHits, caseDescr)
 			assertPageButtonsAreOK(assert, 2, caseDescr)			
 		});
