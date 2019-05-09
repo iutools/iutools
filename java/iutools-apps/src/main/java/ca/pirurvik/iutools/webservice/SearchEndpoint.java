@@ -68,16 +68,20 @@ public class SearchEndpoint extends HttpServlet {
 			inputs = EndPointHelper.jsonInputs(request, SearchInputs.class);
 			ServiceResponse results = executeEndPoint(inputs);
 			jsonResponse = new ObjectMapper().writeValueAsString(results);
-		} catch (MalformedURLException exc) {
-			jsonResponse = EndPointHelper.emitServiceExceptionResponse("The training URL was malformed", exc);
 		} catch (Exception exc) {
 			jsonResponse = EndPointHelper.emitServiceExceptionResponse("General exception was raised\n", exc);
 		}
-		
-		
-		out.println(jsonResponse);
+		writeJsonResponse(response, jsonResponse);
 	}
 	
+	private void writeJsonResponse(HttpServletResponse response, String json) throws IOException {
+		response.setContentType("text/html");
+		response.setCharacterEncoding("utf-8");
+		PrintWriter writer = response.getWriter();
+		writer.write(json);
+		writer.close();
+	}
+
 	public SearchResponse executeEndPoint(SearchInputs inputs) throws SearchEndpointException  {
 		SearchResponse results = new SearchResponse();
 		
