@@ -1,0 +1,64 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>InuktutiTools Search Engine</title>
+  <link rel="stylesheet" href="css/styles.css?v1">
+
+  <script src="js/jquery-3.3.1.min.js"></script>
+  <script src="js/scripts.js?v1"></script>
+</head>
+
+<body>
+
+<header>
+     <div data-includeHTML="pages/_HeaderPartial.html"></div>
+</header>
+
+<main>
+    <h1>Inuktut Spell Checker</h1>
+    
+    <form id="form-query" method="post" action="">
+    
+    Enter some Inuktut text<p/>
+    <textarea id="txt-to-check" name="txt-to-check" rows=20 cols=80></textarea><p/>
+    <button id="btn-spell" type="button" name="btn-spell" value="Spell">Spell Check</button>
+    <p></p>
+    <div id="div-error" class="div-error"></div>
+    <div id="div-checked" class="div-checked"></div>
+    
+      
+    </form>
+
+</main>
+
+<footer>
+    <div data-includeHTML="pages/_FooterPartial.html"></div>
+</footer>
+
+<script src="js/WidgetController.js"></script>
+<script src="js/SpellController.js"></script>
+
+<script>
+	// Load the header, footer etc...
+	$(document).ready(function () {
+        $("div[data-includeHTML]").each(function () {                
+            $(this).load($(this).attr("data-includeHTML"));
+        });
+    });
+    
+	// Setup and configure the controller for this page
+    var config = {
+    		btnSpell: "btn-spell",
+    		txtToCheck: "txt-to-check",
+    		divChecked:  "div-checked",
+    		divError: "div-error",
+        };
+    var spellController = new SpellController(config);
+</script>
+    
+</body>
+
+</html>
