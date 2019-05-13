@@ -20,9 +20,7 @@ for now, just create those two files in locations for which Tomcat has read-acce
 
 Next, create (or edit) file `[catalina_home]/bin/setenv.sh` and put the following lines in it:
 
-
-Create a file called `ca_nrc.properties` at a location that Tomcat is allowed to read from. 
-Add the following line:
+In `setenv.sh`, aßdd the following line:
 
     CATALINA_OPTS="-Dlog4j.configuration=file:/path/to/your/log4j.properties -Dca_nrc=/path/to/your/ca_nrc.properties  -Xss515m"
 
@@ -30,6 +28,7 @@ Add the following line:
 
 The `ca_nrc.properties` file supports the following configuration properties:
 
+- `ca.nrc.iutools.datapath`: Path to the root of your `iutools-data` project.
 - `ca.nrc.javautils.bingKey` (OPTIONAL): For the Inuktut Search Engine to work, you need to set this
      to a valid Microsoft Azure Cognitive Service Bing key.
      
@@ -38,7 +37,8 @@ The `ca_nrc.properties` file supports the following configuration properties:
 To deploy (or redeploy) the apps, open a Terminal window and type the following commands
 
      rm -r [catalina_home]/webapps/iutools
-     cp iutools-apps.war [catalina_home]/webapps/.
+     cp iutools-apps-N.N.N-SNAPSHOT.war [catalina_home]/webapps/iutools.war
+          # Where N.N.N is the version number
      sh [catalina_home]/shutdown.sh # May cause an error if Tomcat not alredy running
      sh [catalina_home]/startup.sh
 
