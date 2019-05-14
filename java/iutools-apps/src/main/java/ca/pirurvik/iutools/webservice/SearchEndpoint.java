@@ -3,6 +3,7 @@ package ca.pirurvik.iutools.webservice;
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
+
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -93,22 +94,20 @@ public class SearchEndpoint extends HttpServlet {
 	
 	
 	private void writeJsonResponse(HttpServletResponse response, String json) throws IOException {
-		Logger tLogger = LogManager.getLogger("ca.pirurvik.iutools.webservice.writeJsonResponse");
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.webservice.writeJsonResponse");
+		tLogger.debug("json="+json);
 		
 		
-		tLogger.trace("hello");
 //		response.setContentType("text/html");
 //		response.setCharacterEncoding("UTF-8");
 		PrintWriter writer = response.getWriter();
 		
 		
-		traceToFile("-- writeJsonResponse: json="+json);
-//		traceToFile("-- writeJsonResponse: response="+PrettyPrinter.print(response));
 		
 //		writer.write(json);
 		writer.println(json);
 		writer.close();
-	}
+		}
 
 	private void traceToFile(String mess) throws IOException {
 	    Writer writer = new BufferedWriter(new OutputStreamWriter(

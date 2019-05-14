@@ -28,6 +28,7 @@ class SearchController extends WidgetController {
 	}
 	
 	invokeSearchService(jsonRequestData, _successCbk, _failureCbk) {
+			console.log("jsonRequestData= "+jsonRequestData);
 			var controller = this;
 			var fctSuccess = 
 					function(resp) {
@@ -63,6 +64,7 @@ class SearchController extends WidgetController {
 		if (resp.errorMessage != null) {
 			this.failureCallback(resp);
 		} else {
+			console.log('resp="'+JSON.stringify(resp)+'"');
 			this.setQuery(resp.expandedQuery);
 			this.setTotalHits(resp.totalHits);
 			this.setResults(resp.hits);		
@@ -122,6 +124,9 @@ class SearchController extends WidgetController {
 	}
 	
 	setQuery(query) {
+		//for (var i=0; i<query.length; i++) {
+		//	console.log(query.charAt(i)+": "+query.charCodeAt(i));
+		//}
 		this.elementForProp("txtQuery").val(query);
 	}
 	
