@@ -170,17 +170,18 @@ class SearchController extends WidgetController {
 		}
 		for (var ip=0; ip<nbPages; ip++) {
 			var pageLink = '<input class="page-number"' +
-				'type="button" '+
-				'name="'+'page-number'+(ip+1)+'" '+
-				'value="'+(ip+1)+'"/>';
+				' type="button" '+
+				' name="'+'page-number'+(ip+1)+'" '+
+				' value="'+(ip+1)+'"/>';
 			divPageNumbers.append(pageLink);
 			if (ip != nbPages-1)
 				divPageNumbers.append('&nbsp;&nbsp;');
 		}
 		if (more) divPageNumbers.append(" and more...");
 		
-//		$('div#hits').css('display','block');
 		divPageNumbers.css('display','block');
+		$("#links-to-pages").css("display", "block");
+
 		divPageNumbers.show();
 	}
 	
