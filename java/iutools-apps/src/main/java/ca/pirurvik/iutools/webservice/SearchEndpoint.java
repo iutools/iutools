@@ -108,13 +108,15 @@ public class SearchEndpoint extends HttpServlet {
 			throw new SearchEndpointException("Query was empty or null");
 		}
 		
+		List<String> queryWords = null;
 		try {
-			results.expandedQuery = expandQuery(inputs.getQuerySyllabic());
+			expandQuery(inputs.getQuerySyllabic(), results);
+			queryWords = results.expandedQueryWords;
 		} catch (CompiledCorpusRegistryException | QueryExpanderException e) {
 			throw new SearchEndpointException("Unable to expand the query", e);
 		}
 		
-		Pair<Long,List<SearchHit>> hitsInfo = search(results.expandedQuery, inputs);;
+		Pair<Long,List<SearchHit>> hitsInfo = search(queryWords, inputs);;
 		results.totalHits = hitsInfo.getFirst();
 		results.hits = hitsInfo.getSecond();
 		
@@ -126,7 +128,7 @@ public class SearchEndpoint extends HttpServlet {
 		return results;
 	}
 
-	private Pair<Long, List<SearchHit>> search(String query, SearchInputs inputs) throws SearchEndpointException {
+	private Pair<Long, List<SearchHit>> search(List<String> queryWords, SearchInputs inputs) throws SearchEndpointException {
 		
 		List<SearchHit> hits = new ArrayList<SearchHit>();
 		Long totalHits = new Long(0);
@@ -136,8 +138,10 @@ public class SearchEndpoint extends HttpServlet {
 		} catch (IOException | SearchEngineException e) {
 			throw new SearchEndpointException(e);
 		}
+		
+		String word = queryWords.get(0);
 		SearchEngine.Query webQuery = 
-				new SearchEngine.Query(query).setType(Type.ANY)
+				new SearchEngine.Query(word).setType(Type.ANY)
 						.setLang("iu").setMaxHits(inputs.hitsPerPage)
 				;
 		List<SearchEngine.Hit> results;
@@ -164,35 +168,38 @@ public class SearchEndpoint extends HttpServlet {
 		return Pair.of(totalHits, hits);
 	}
 
-	protected String expandQuery(String query) throws SearchEndpointException, CompiledCorpusRegistryException, QueryExpanderException {
+	protected void expandQuery(String query, SearchResponse results) throws SearchEndpointException, CompiledCorpusRegistryException, QueryExpanderException {
 		String expandedQuery = query;
 		
-		// TODO: Re-activate this once Microsoft has figured out the bug in Bing that causes
-		//   expanded queries to return pages in Asian languages
-
-//		QueryExpansion[] expansions = null;
-//		try {
-//			if (expander == null) {
-//				CompiledCorpus compiledCorpus = CompiledCorpusRegistry.getCorpus();
-//				expander = new QueryExpander(compiledCorpus);
-//			}
-//			expansions = expander.getExpansions(query);			
-//		} catch (ConfigException e) {
-//			throw new SearchEndpointException(e);
-//		}
-//		
-//		
-//		String expandedQuery = "(";
-//		boolean isFirst = true;
-//		for (QueryExpansion exp: expansions) {
-//			if (!isFirst) {
-//				expandedQuery += " OR ";
-//			}
-//			expandedQuery += exp.word;
-//			isFirst = false;
-//		}
-//		expandedQuery += ")";	
+		QueryExpansion[] expansions = null;
+		try {
+			if (expander == null) {
+				CompiledCorpus compiledCorpus = CompiledCorpusRegistry.getCorpus();
+				expander = new QueryExpander(compiledCorpus);
+			}
+			expansions = expander.getExpansions(query);			
+		} catch (ConfigException e) {
+			throw new SearchEndpointException(e);
+		}
+		
+		
+		expandedQuery = "(";
+		boolean isFirst = true;
+		for (QueryExpansion exp: expansions) {
+			if (!isFirst) {
+				expandedQuery += " OR ";
+			}
+			expandedQuery += exp.word;
+			isFirst = false;
+		}
+		expandedQuery += ")";	
+		
+		List<String> expansionWords = new ArrayList<String>();
+		for (QueryExpansion anExpansion: expansions) {
+			expansionWords.add(anExpansion.word);
+		}
 	
-		return expandedQuery;		
+		results.expandedQuery = expandedQuery;
+		results.expandedQueryWords = expansionWords;
 	}
 }

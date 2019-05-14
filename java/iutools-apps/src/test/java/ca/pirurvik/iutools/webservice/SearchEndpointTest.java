@@ -35,7 +35,7 @@ public class SearchEndpointTest {
 	@Test
 	public void test__SearchEndpoint__HappyPath() throws Exception {
 		
-		Assert.fail("This test currently fails because of the bug in Bing search engine. Reactivate it once we have answer from MS.");
+//		Assert.fail("This test currently fails because of the bug in Bing search engine. Reactivate it once we have answer from MS.");
 		
 		SearchInputs searchInputs = new SearchInputs().setHitsPerPage(20);
 		searchInputs.query = "nunavut";
@@ -52,35 +52,11 @@ public class SearchEndpointTest {
 				response);
 		
 		String[] queryWords = new String[] {"ᓄᓇᕗ", "ᓄᓇᕗᒻᒥ", "ᓄᓇᕘᒥ", "ᓄᓇᕘᑉ", "ᓄᓇᕗᒻᒥᐅᑦ"};
-		double tolerance = 0.5;
+		double tolerance = 0.7;
 		SearchResponse srchResponse = IUTServiceTestHelpers.toSearchResponse(response);
 		IUTServiceTestHelpers.assertMostHitsMatchWords(queryWords, response, tolerance);
 		Assert.assertTrue(srchResponse.totalHits > 10);
 	}
-	
-	@Test
-	public void test__SearchEndpoint__HappyPath__PATCHED_UP() throws Exception {
-		
-		SearchInputs searchInputs = new SearchInputs().setHitsPerPage(20);
-		searchInputs.query = "nunavut";
-
-				
-		MockHttpServletResponse response = 
-				IUTServiceTestHelpers.postEndpointDirectly(
-					IUTServiceTestHelpers.EndpointNames.SEARCH,
-					searchInputs
-				);
-		
-				IUTServiceTestHelpers.assertExpandedQueryEquals("ᓄᓇᕗᑦ", response);
-		
-		String[] queryWords = new String[] {"ᓄᓇᕗᑦ"};
-		double tolerance = 0.6;
-		IUTServiceTestHelpers.assertMostHitsMatchWords(queryWords, response, tolerance);
-		
-		SearchResponse srchResponse = IUTServiceTestHelpers.toSearchResponse(response);
-		Assert.assertTrue(srchResponse.totalHits > 10);
-		
-	}	
 
 	private void assertExpansionWordsAre(String[] expExpansionWords, QueryExpansion[] gotExpansions) throws IOException {
 		List<String> gotExpansionWords = new ArrayList<String>();
