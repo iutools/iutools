@@ -63,7 +63,6 @@ public class SearchEndpoint extends HttpServlet {
 	
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {		
-//		PrintWriter out = response.getWriter();
 		String jsonResponse = null;
 
 		EndPointHelper.setContenTypeAndEncoding(response);
@@ -78,34 +77,17 @@ public class SearchEndpoint extends HttpServlet {
 			jsonResponse = EndPointHelper.emitServiceExceptionResponse("General exception was raised\n", exc);
 		}
 		
-//		jsonResponse = "{\"expandedQuery\":\"ᓄᓇᕗ\"}";
 		writeJsonResponse(response, jsonResponse);
 	}
-	
-//	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-//		EndPointHelper.setContenTypeAndEncoding(response);
-//		PrintWriter writer = response.getWriter();
-//				
-//		String json = "{\"expandedQuery\":\"ᓄᓇᕗ\"}";
-//		
-//		writer.println(json);
-//		writer.close();
-//	}
 	
 	
 	private void writeJsonResponse(HttpServletResponse response, String json) throws IOException {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.webservice.writeJsonResponse");
 		tLogger.debug("json="+json);
-		
-		
-//		response.setContentType("text/html");
-//		response.setCharacterEncoding("UTF-8");
 		PrintWriter writer = response.getWriter();
 		
-		
-		
-//		writer.write(json);
-		writer.println(json);
+		writer.write(json);
+//		writer.println(json);
 		writer.close();
 		}
 
@@ -119,23 +101,27 @@ public class SearchEndpoint extends HttpServlet {
 	}
 
 	public SearchResponse executeEndPoint(SearchInputs inputs) throws SearchEndpointException  {
+		Logger logger = Logger.getLogger("SearchEndpoint.executeEndPoint");
 		SearchResponse results = new SearchResponse();
 		
-//		if (inputs.query == null || inputs.query.isEmpty()) {
-//			throw new SearchEndpointException("Query was empty or null");
-//		}
-//		
+		if (inputs.query == null || inputs.query.isEmpty()) {
+			throw new SearchEndpointException("Query was empty or null");
+		}
+		
 		try {
 			results.expandedQuery = expandQuery(inputs.getQuerySyllabic());
 		} catch (CompiledCorpusRegistryException | QueryExpanderException e) {
 			throw new SearchEndpointException("Unable to expand the query", e);
 		}
-//		
-//		Pair<Long,List<SearchHit>> hitsInfo = search(results.expandedQuery, inputs);;
-//		results.totalHits = hitsInfo.getFirst();
-//		results.hits = hitsInfo.getSecond();
 		
-		results.expandedQuery = "ᓄᓇᕗ";
+		Pair<Long,List<SearchHit>> hitsInfo = search(results.expandedQuery, inputs);;
+		results.totalHits = hitsInfo.getFirst();
+		results.hits = hitsInfo.getSecond();
+		
+		String fromExpandedQuery = results.expandedQuery;
+		String hardCoded = "ᓄᓇᕗ";
+		logger.debug("fromExpandedQuery= "+fromExpandedQuery);
+		logger.debug("hardCoded= "+hardCoded);
 
 		return results;
 	}
