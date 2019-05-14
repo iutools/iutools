@@ -17,4 +17,15 @@
 		<url-pattern>/srv/search/*</url-pattern>
 	</servlet-mapping>	
 
+	<!--  Test UTF8 chars -->
+	<servlet>
+	   <servlet-name>HelloWorld</servlet-name>
+	   <servlet-class>  
+	     ca.pirurvik.iutools.webservice.HelloWorld
+	   </servlet-class>
+	</servlet> 
+	<servlet-mapping>
+		<servlet-name>HelloWorld</servlet-name>
+		<url-pattern>/srv/hello/*</url-pattern>
+	</servlet-mapping>	
 </web-app>

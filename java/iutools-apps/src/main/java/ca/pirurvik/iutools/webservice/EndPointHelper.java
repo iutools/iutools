@@ -15,16 +15,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class EndPointHelper {
 
 	public static void setContenTypeAndEncoding(HttpServletResponse response) {
-		response.setContentType("application/json;charset=utf-8");
+//		response.setContentType("application/json;charset=utf-8");
 		response.setCharacterEncoding("utf-8");
 	}
 
-	public static <T  extends ServiceInputs> T jsonInputs(HttpServletRequest request, Class<T> inputClass) throws IOException {
+	public static <T  extends ServiceInputs> T jsonInputs(HttpServletRequest request, Class<T> class1) throws IOException {
 		String jsonRequestBody = IOUtils.toString(request.getReader());		
 		T inputs = null;
 		if (jsonRequestBody != null) {
 			ObjectMapper mapper = new ObjectMapper();
-			inputs = mapper.readValue(jsonRequestBody, inputClass);
+			inputs = mapper.readValue(jsonRequestBody, class1);
 		}
 				
 		return inputs;

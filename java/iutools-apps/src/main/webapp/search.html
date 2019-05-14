@@ -22,6 +22,13 @@
     
     <form id="form-query" method="post" action="">
     
+    <button id="btn-test" type="button" name="btn-test" value="Test"">Click me for a test</button>
+    <p></p>
+    Got response.message: <div id="div-resp"></div>
+    
+    
+    <form id="form-query" method="post" action="">
+    
     Enter your request:
     <input id="txt-query-words" name="query-words" type="text" value="" />
     <button id="btn-search" type="button" name="btn-search" value="Search">Search</button>
@@ -65,6 +72,31 @@
         });
     });
     
+	
+	
+	function onTest() {
+		$.ajax({
+			type: 'POST',
+			url: 'srv/hello',
+			data: {},
+			dataType: 'json',
+			async: true,
+	        success: testSuccessCallback,
+	        error: testFailureCallback
+		});
+	}
+
+	function testSuccessCallback(resp) {
+		$("#div-resp").empty();
+		$("#div-resp").html(resp.message);
+	}
+	    
+	function testFailureCallback(resp) {
+		$("#div-resp").empty();
+		$("#div-resp").html("Server returned error, resp="+JSON.stringify(resp));
+	}	
+	
+	
 	// Setup and configure the controller for this page
     var config = {
     		btnSearch: "btn-search",
@@ -72,8 +104,10 @@
     		divTotalHits: "div-total-hits",
     		divResults:  "div-search-results",
     		divError: "div-error",
-    		divPageNumbers: "page-numbers"
+    		divPageNumbers: "page-numbers",
 
+    		divTestResponse: "div-resp",
+    		btnTest: "btn-test"
         };
     var srchController = new SearchController(config);
 </script>

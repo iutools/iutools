@@ -14,6 +14,7 @@ class SearchController extends WidgetController {
 	// Setup handler methods for different HTML elements specified in the config.
 	attachHtmlElements() {
 		this.setEventHandler("btnSearch", "click", this.onSearch);
+		this.setEventHandler("btnTest", "click", this.onTest);
 		this.onReturnKey("txtQuery", this.onSearch);
 	}
 
@@ -179,11 +180,44 @@ class SearchController extends WidgetController {
 		divPageNumbers.show();
 	}
 	
-	trimStr(str) {
-		if (null != str) {
-			str = str.replace(/(^\s+|\s+$)/g,"");
-			if (str.length == 0) str = null;
-		}
-		return str;
+	onTest() {
+		this.invokeTestService({}, 
+				this.testSuccessCallback, this.testFailureCallback);
 	}
+
+	invokeTestService(jsonRequestData, _successCbk, _failureCbk) {
+			var controller = this;
+			var fctSuccess = 
+					function(resp) {
+						_successCbk.call(controller, resp);
+					};
+			var fctFailure = 
+					function(resp) {
+						_failureCbk.call(controller, resp);
+					};
+		
+			$.ajax({
+				type: 'POST',
+				url: 'srv/hello',
+				data: jsonRequestData,
+				dataType: 'json',
+				async: true,
+		        success: fctSuccess,
+		        error: fctFailure
+			});
+	}
+	
+	testSuccessCallback(resp) {
+		var element = this.elementForProp("divTestResponse");
+		element.empty();
+		element.html(resp.message);
+	}
+	    
+	testFailureCallback(resp) {
+		var element = this.elementForProp("divTestResponse");
+		element.empty();
+		element.html("Server returned error, resp="+JSON.stringify(resp));
+	}
+	
+
 }

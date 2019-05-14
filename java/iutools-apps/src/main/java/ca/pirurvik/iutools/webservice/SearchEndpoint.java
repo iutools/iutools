@@ -1,7 +1,12 @@
 package ca.pirurvik.iutools.webservice;
 
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -27,6 +33,7 @@ import ca.nrc.data.harvesting.SearchEngine.Hit;
 import ca.nrc.data.harvesting.SearchEngine.SearchEngineException;
 import ca.nrc.data.harvesting.SearchEngine.Type;
 import ca.nrc.datastructure.Pair;
+import ca.nrc.json.PrettyPrinter;
 import ca.pirurvik.iutools.CompiledCorpus;
 import ca.pirurvik.iutools.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.CompiledCorpusRegistryException;
@@ -54,14 +61,12 @@ public class SearchEndpoint extends HttpServlet {
 	};
 	
 	
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		Logger tLogger = LogManager.getLogger("ca.nrc.dtrc.dedupster.webservice.PutEndPoint.doPost");
-		tLogger.trace("invoked");
-		
-		
-		PrintWriter out = response.getWriter();
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {		
+//		PrintWriter out = response.getWriter();
 		String jsonResponse = null;
-		
+
+		EndPointHelper.setContenTypeAndEncoding(response);
+
 		SearchInputs inputs = null;
 		try {
 			EndPointHelper.setContenTypeAndEncoding(response);
@@ -71,34 +76,67 @@ public class SearchEndpoint extends HttpServlet {
 		} catch (Exception exc) {
 			jsonResponse = EndPointHelper.emitServiceExceptionResponse("General exception was raised\n", exc);
 		}
+		
+//		jsonResponse = "{\"expandedQuery\":\"ᓄᓇᕗ\"}";
 		writeJsonResponse(response, jsonResponse);
 	}
 	
+//	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+//		EndPointHelper.setContenTypeAndEncoding(response);
+//		PrintWriter writer = response.getWriter();
+//				
+//		String json = "{\"expandedQuery\":\"ᓄᓇᕗ\"}";
+//		
+//		writer.println(json);
+//		writer.close();
+//	}
+	
+	
 	private void writeJsonResponse(HttpServletResponse response, String json) throws IOException {
-		response.setContentType("text/html");
-		response.setCharacterEncoding("utf-8");
+		Logger tLogger = LogManager.getLogger("ca.pirurvik.iutools.webservice.writeJsonResponse");
+		
+		
+		tLogger.trace("hello");
+//		response.setContentType("text/html");
+//		response.setCharacterEncoding("UTF-8");
 		PrintWriter writer = response.getWriter();
-		writer.write(json);
+		
+		
+		traceToFile("-- writeJsonResponse: json="+json);
+//		traceToFile("-- writeJsonResponse: response="+PrettyPrinter.print(response));
+		
+//		writer.write(json);
+		writer.println(json);
 		writer.close();
+	}
+
+	private void traceToFile(String mess) throws IOException {
+	    Writer writer = new BufferedWriter(new OutputStreamWriter(
+	    	    new FileOutputStream("outfilename"), "UTF-8"));	    
+	    writer.write(mess);
+	     
+	    writer.close();
+		
 	}
 
 	public SearchResponse executeEndPoint(SearchInputs inputs) throws SearchEndpointException  {
 		SearchResponse results = new SearchResponse();
 		
-		if (inputs.query == null || inputs.query.isEmpty()) {
-			throw new SearchEndpointException("Query was empty or null");
-		}
-		
+//		if (inputs.query == null || inputs.query.isEmpty()) {
+//			throw new SearchEndpointException("Query was empty or null");
+//		}
+//		
 		try {
 			results.expandedQuery = expandQuery(inputs.getQuerySyllabic());
 		} catch (CompiledCorpusRegistryException | QueryExpanderException e) {
 			throw new SearchEndpointException("Unable to expand the query", e);
 		}
+//		
+//		Pair<Long,List<SearchHit>> hitsInfo = search(results.expandedQuery, inputs);;
+//		results.totalHits = hitsInfo.getFirst();
+//		results.hits = hitsInfo.getSecond();
 		
-		Pair<Long,List<SearchHit>> hitsInfo = search(results.expandedQuery, inputs);;
-		results.totalHits = hitsInfo.getFirst();
-		results.hits = hitsInfo.getSecond();
-		
+		results.expandedQuery = "ᓄᓇᕗ";
 
 		return results;
 	}
