@@ -8,13 +8,29 @@ class SearchController extends WidgetController {
 		super(config);
 		this.hitsPerPage = 10;
 		this.currentPage = 1;
+		this.totalHits = 0;
 		this.attachHtmlElements();
 	} 
 	
 	// Setup handler methods for different HTML elements specified in the config.
 	attachHtmlElements() {
 		this.setEventHandler("btnSearch", "click", this.onSearch);
+		this.setEventHandler("prevPage", "click", this.onSearchPrev);
+		this.setEventHandler("nextPage", "click", this.onSearchNext);
 		this.onReturnKey("txtQuery", this.onSearch);
+	}
+	
+	onSearchPrev() {
+		if (this.currentPage > 1)
+			this.currentPage--;
+		this.onSearch();
+	}
+
+	onSearchNext() {
+		var nbPages = Math.ceil(this.totalHits / this.hitsPerPage);
+		if (this.currentPage < nbPages)
+			this.currentPage++;
+		this.onSearch();
 	}
 
 	onSearch() {
@@ -27,7 +43,6 @@ class SearchController extends WidgetController {
 	}
 	
 	invokeSearchService(jsonRequestData, _successCbk, _failureCbk) {
-			console.log("jsonRequestData= "+jsonRequestData);
 			var controller = this;
 			var fctSuccess = 
 					function(resp) {
@@ -37,7 +52,11 @@ class SearchController extends WidgetController {
 					function(resp) {
 						_failureCbk.call(controller, resp);
 					};
+					
+			// this line is for development only, allowing to present results without calling Bing.
+			//var jsonResp = this.mockSrvSearch();fctSuccess(jsonResp);
 		
+			console.log("jsonRequestData= "+JSON.stringify(jsonRequestData));
 			$.ajax({
 				type: 'POST',
 				url: 'srv/search',
@@ -47,6 +66,35 @@ class SearchController extends WidgetController {
 		        success: fctSuccess,
 		        error: fctFailure
 			});
+	}
+	
+	mockSrvSearch() {
+		var jsonResp;
+		this.totalHits = 3;
+		if (this.currentPage==1)
+		    jsonResp = {
+				expandedQuery : 'summit',
+				totalHits : 3,
+				hits : [
+					{title: 'Highest summits in the world',
+						url: 'http://domain.net/highest-summits.htm',
+						snippet: 'The highest summit of all is mount Everest.'},
+					{title: 'The mountains in Asia',
+						url: 'http://domain.net/mountains-asia.htm',
+						snippet: 'The highest mountain of all is mount Everest, with its summit at X feet.'},
+				]
+			};
+		else
+		    jsonResp = {
+				expandedQuery : 'summit',
+				totalHits : 3,
+				hits : [
+					{title: 'Earth glories',
+						url: 'http://domain.net/earth-glories.htm',
+						snippet: 'Among the glories of the world, the highest summit is located in Asia.'},
+				]
+			};
+		return jsonResp;
 	}
 
 	validateQueryInput() {
@@ -63,11 +111,14 @@ class SearchController extends WidgetController {
 		if (resp.errorMessage != null) {
 			this.failureCallback(resp);
 		} else {
-			console.log('resp="'+JSON.stringify(resp)+'"');
 			this.setQuery(resp.expandedQuery);
 			this.setTotalHits(resp.totalHits);
-			this.setResults(resp.hits);		
-			this.generatePagesButtons(resp.totalHits);
+			this.totalHits = resp.totalHits;
+			this.setResults(resp.hits);	
+			if ($(document).find('.page-number').length==0)
+				this.generatePagesButtons(resp.totalHits);
+			$(".page-number").removeClass('current-page');
+			$(".page-number[value='"+this.currentPage+"']").addClass('current-page');
 		}
 		this.setBusy(false);
 	}
@@ -147,9 +198,11 @@ class SearchController extends WidgetController {
 			var aHit = results[ii];
 			var hitHtml = 
 					"<div id=\"hit"+ii+"\" class=\"hitDiv\">\n" +
-					"  <div id=\"hitTitle\">"+aHit.title+"</div><br/>\n" +
-					"  <div id=\"hitSnippet\">"+aHit.snippet+"</div><br/>\n" +
-					"  <div id=\"hitURL\">"+aHit.url+"</div><br/>\n" +
+					"  <div id=\"hitTitle\" class=\"hitTitle\">"+
+					"    <a href=\""+aHit.url+"\">"+aHit.title+"</a>"+"</div>\n" +
+					"  <div id=\"hitURL\" class=\"hitURL\">"+
+					"    <a href=\""+aHit.url+"\">"+aHit.url+"</a>"+"</div>\n" +
+					"  <div id=\"hitSnippet\" class=\"hitSnippet\">"+aHit.snippet+"</div>\n" +
 					"<div>"
 				;
 			var aHitDiv = $.parseHTML(hitHtml);
@@ -179,10 +232,22 @@ class SearchController extends WidgetController {
 		}
 		if (more) divPageNumbers.append(" and more...");
 		
-		divPageNumbers.css('display','block');
+		divPageNumbers.css('display','inline');
 		$("#links-to-pages").css("display", "block");
 
 		divPageNumbers.show();
+
+		var thisSearchController = this;
+		var inputsPageNumber = document.querySelectorAll('.page-number');
+	    for (var ipn=0; ipn<inputsPageNumber.length; ipn++) {
+	    	inputsPageNumber[ipn].addEventListener(
+		    		  'click', function(ev) {
+		    				var el = ev.target;
+		    				var pageNumberOfButton = el.value;
+		    				thisSearchController.currentPage = pageNumberOfButton;
+		    				thisSearchController.onSearch();
+		    		  });
+	    }
 	}
 	
 	onTest() {

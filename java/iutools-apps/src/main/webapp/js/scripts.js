@@ -58,14 +58,14 @@ $(document).ready(function() {
 		});
 	});
 	
-	$('button#next-page, button#previous-page').on('click',function(){
+	/*$('button#next-page, button#previous-page').on('click',function(){
 		var page = $(this).val();
 		showPageResults(page);
 	});
 	$(document).on('click','input.page-number',function(){
 		var page = $(this).val();
 		showPageResults(page);
-	});
+	});*/
 	
 	
 	function showPageResults(page) {

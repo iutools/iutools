@@ -17,21 +17,30 @@ input#request {
     width:350px;
 }
 
-a.hit-title {
+div.hitDiv {
+    margin-bottom:16px;
+}
+div.hitSnippet {
+    font-size:0.9em;
+}
+div#div-total-hits {
+	margin-bottom:12px;
+}
+
+.hitTitle a {
     color:#3377ff;
     font-size:1.2em;
     text-decoration:none;
     cursor:pointer;
 }
-a.hit-url {
+.hitURL a {
     color:#00b300;
     font-size:1.1em;
     text-decoration:none;
     cursor:pointer;
 }
-a.hit-snippet {
-    font-size:0.9em;
-}
+
+
 div.hit {
     margin-bottom:16px;
 }

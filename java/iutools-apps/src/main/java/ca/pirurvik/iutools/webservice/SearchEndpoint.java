@@ -110,7 +110,6 @@ public class SearchEndpoint extends HttpServlet {
 		Pair<Long,List<SearchHit>> hitsInfo = search(queryWords, inputs);;
 		results.totalHits = hitsInfo.getFirst();
 		results.hits = hitsInfo.getSecond();
-
 		return results;
 	}
 
@@ -131,6 +130,7 @@ public class SearchEndpoint extends HttpServlet {
 		SearchEngine.Query webQuery = 
 				new SearchEngine.Query(word).setType(Type.ANY)
 						.setLang("iu").setMaxHits(inputs.hitsPerPage)
+						.setHitsPageNum(inputs.hitsPageNum)
 				;
 		List<SearchEngine.Hit> results;
 		try {
