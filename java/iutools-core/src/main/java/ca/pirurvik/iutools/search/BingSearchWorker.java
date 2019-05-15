@@ -17,35 +17,32 @@ public class BingSearchWorker implements Runnable {
 	public int hitsPageNum = 0;
 	
 	
-	private Integer maxHits;
 	public String thrName;
 	
 	private Thread thr;
 	public Exception error;
 	
-	public Long totalHits;
-	public List<SearchHit> hits;
+	public Long  totalHits = new Long(0);
+	public List<SearchHit> hits = new ArrayList<SearchHit>();
 		   
 	BingSearchWorker(String _query) {
-		this.initialize(_query,  null, null, 0, null);
+		this.initialize(_query,  null, 0, null);
 	}
 
 	BingSearchWorker(String _query, String _thrName) {
-		this.initialize(_query,  null, null, 0, _thrName);
+		this.initialize(_query,  null, 0, _thrName);
 	}
 
-	BingSearchWorker(String _query, Integer _hitsPerPage, Integer _maxHits, Integer _hitsPageNum, String _thrName) {
-		this.initialize(_query, _hitsPerPage, _maxHits, _hitsPageNum, _thrName);
+	BingSearchWorker(String _query, Integer _hitsPerPage, Integer _hitsPageNum, String _thrName) {
+		this.initialize(_query, _hitsPerPage, _hitsPageNum, _thrName);
 	}
 	
-	private void initialize(String _query, Integer _hitsPerPage, Integer _maxHits, int _hitsPageNum, String _thrName) {
+	private void initialize(String _query, Integer _hitsPerPage, int _hitsPageNum, String _thrName) {
 		if (_hitsPerPage == null) _hitsPerPage = 10;
-		if (_maxHits == null) _maxHits = 10;
 		
 		this.query = _query;
 		this.hitsPerPage = _hitsPerPage;
 		this.hitsPageNum = _hitsPageNum;
-		this.maxHits = _maxHits;
 		this.thrName = _thrName;
 		
 	}
@@ -81,17 +78,11 @@ public class BingSearchWorker implements Runnable {
 		}
 		
 		Iterator<Hit> iter = results.iterator();
-		int hitsCount = 0;
 		while (iter.hasNext()) {
-			hitsCount++;
-			if (hitsCount > this.maxHits) {
-				break;
-			}
 			Hit bingHit = iter.next();
 			total = bingHit.outOfTotal;
 			SearchHit aHit = new SearchHit(bingHit.url.toString(), bingHit.title, bingHit.summary);
-			hitsList.add(aHit);
-			
+			hitsList.add(aHit);			
 		}
 		
 		this.totalHits = total;

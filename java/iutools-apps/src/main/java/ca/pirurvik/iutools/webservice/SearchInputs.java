@@ -13,7 +13,7 @@ public class SearchInputs extends ServiceInputs {
 	public String query = "";
 	private String _querySyllabic = null;
 	public int hitsPerPage = 10;
-	public int hitsPageNum = 0;
+	public Integer hitsPageNum = 0;
 
 	public SearchInputs() {
 	}

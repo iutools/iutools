@@ -12,9 +12,15 @@ public class BingSearchMultithrd {
 	public BingSearchMultithrd() {
 	}
 	
-
 	public Pair<Long,List<SearchHit>> search(String[] terms)  {
-//		Long totalHits = new Long(0);
+		return search(terms, 0);
+	}
+	
+	public Pair<Long,List<SearchHit>> search(String[] terms, int hitsPageNum)  {
+		return search(terms, hitsPageNum, 10);
+	}
+
+	public Pair<Long,List<SearchHit>> search(String[] terms, int hitsPageNum, int hitsPerPage)  {
 		long totalEstHits = 0;		
 		List<SearchHit> hits = new ArrayList<SearchHit>();
 		

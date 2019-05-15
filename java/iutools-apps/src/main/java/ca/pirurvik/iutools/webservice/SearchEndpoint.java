@@ -41,6 +41,7 @@ import ca.pirurvik.iutools.CompiledCorpusRegistryException;
 import ca.pirurvik.iutools.QueryExpanderException;
 import ca.pirurvik.iutools.QueryExpander;
 import ca.pirurvik.iutools.QueryExpansion;
+import ca.pirurvik.iutools.search.BingSearchMultithrd;
 import ca.pirurvik.iutools.search.SearchHit;
 
 
@@ -51,9 +52,6 @@ public class SearchEndpoint extends HttpServlet {
 	
     QueryExpander expander = null;    
     
-    static int MAX_HITS = 10;
-
-
 	protected void initialize(String _esIndexName, String _endPointName) {
 		if (_esIndexName != null) this.esDefaultIndex = _esIndexName;
 		if (_endPointName != null) this.endPointName = _endPointName;
@@ -115,16 +113,18 @@ public class SearchEndpoint extends HttpServlet {
 
 	private Pair<Long, List<SearchHit>> search(List<String> queryWords, SearchInputs inputs) throws SearchEndpointException {
 		
-		List<SearchHit> hits = new ArrayList<SearchHit>();
 		Long totalHits = new Long(0);
-		BingSearchEngine engine;
-		try {
-			engine = new BingSearchEngine();
-		} catch (IOException | SearchEngineException e) {
-			throw new SearchEndpointException(e);
-		}
+		BingSearchMultithrd engine;
+		engine = new BingSearchMultithrd();
+				
+		Pair<Long, List<SearchHit>> results;
+		String[] queryWordsArr = queryWords.toArray(new String[queryWords.size()]);
+		results = engine.search(queryWordsArr, inputs.hitsPerPage, inputs.hitsPageNum);
 		
+		Long estTotalHits = results.getFirst();
+		List<SearchHit> hits = results.getSecond();
 		
+<<<<<<< Upstream, based on origin/master
 		
 		String word = queryWords.get(0);
 		SearchEngine.Query webQuery = 
@@ -154,6 +154,9 @@ public class SearchEndpoint extends HttpServlet {
 		}
 		
 		return Pair.of(totalHits, hits);
+=======
+		return Pair.of(estTotalHits, hits);
+>>>>>>> 88f76c4 More work on multi-term inuktut search
 	}
 
 	protected void expandQuery(String query, SearchResponse results) throws SearchEndpointException, CompiledCorpusRegistryException, QueryExpanderException {

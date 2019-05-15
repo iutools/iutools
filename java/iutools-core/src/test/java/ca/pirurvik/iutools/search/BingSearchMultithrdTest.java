@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ca.nrc.datastructure.Pair;
+import ca.nrc.testing.AssertHelpers;
 import ca.pirurvik.iutools.testing.IUTTestHelpers;
 
 import org.junit.Assert;
@@ -43,6 +44,7 @@ public class BingSearchMultithrdTest {
 		// 
 		// Then you run the search
 		//
+		int maxHits = 10;
 		Pair<Long,List<SearchHit>> results = searcher.search(terms);
 		Long totalEstHits = results.getFirst();
 		List<SearchHit> hits = results.getSecond();
@@ -64,4 +66,17 @@ public class BingSearchMultithrdTest {
 		IUTTestHelpers.assertMostHitsMatchWords(terms, hits, 0.75);
 	}	
 
+	@Test
+	public void test__BingSearchMultithrd__FirstAndSecondPagesOfHitsAreDifferent() {
+		String [] terms = new String[] {"ᖃᕋᓴᐅᔭᒃᑯᑦ", "ᖃᐅᔨᓴᖅᑎᒃᑯ", "ᐃᓕᓐᓂᐊᖅᑐᒧᑦ"};
+		BingSearchMultithrd searcher = new BingSearchMultithrd();
+		
+		Pair<Long,List<SearchHit>> results = searcher.search(terms, 0);
+		List<SearchHit> hitsPage1 = results.getSecond();
+		
+		results = searcher.search(terms, 1);
+		List<SearchHit> hitsPage2 = results.getSecond();
+		
+		AssertHelpers.assertDeepNotEqual("Hits from first and second page should have been different", hitsPage1, hitsPage2);
+	}	
 }
