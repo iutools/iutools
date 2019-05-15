@@ -3,6 +3,7 @@ package ca.pirurvik.iutools.webservice;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,8 +20,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ca.nrc.testing.AssertHelpers;
 import ca.nrc.ui.web.testing.MockHttpServletRequest;
 import ca.nrc.ui.web.testing.MockHttpServletResponse;
+import ca.pirurvik.iutools.search.SearchHit;
+import ca.pirurvik.iutools.testing.IUTTestHelpers;
 import ca.pirurvik.iutools.webservice.SearchEndpoint;
-import ca.pirurvik.iutools.webservice.SearchHit;
 import ca.pirurvik.iutools.webservice.SearchResponse;
 
 import org.junit.*;
@@ -74,37 +76,40 @@ public class IUTServiceTestHelpers {
 	public static void assertMostHitsMatchWords(String[] queryWords, MockHttpServletResponse gotResponse,
 								double tolerance) throws JsonParseException, JsonMappingException, IOException {
 		SearchResponse gotResult = new ObjectMapper().readValue(gotResponse.getOutput(), SearchResponse.class);
+		List<SearchHit> gotHits = gotResult.hits;
+		
+		IUTTestHelpers.assertMostHitsMatchWords(queryWords, gotHits, tolerance);
 		
 		
-		String regex = "(We would like to show you a description here but the site won’t allow us";
-		for (String aWord: queryWords) {
-			if (regex == null) {
-				regex = "(";
-			} else {
-				regex += "|";
-			}
-			regex += aWord.toLowerCase();
-		}
-		regex += ")";
-		
-		Pattern patt = Pattern.compile(regex);
-		int  hitNum = 1;
-		Set<String> unmatchedURLs = new HashSet<String>();
-		for (SearchHit aHit: gotResult.hits) {
-			Matcher matcher = patt.matcher(aHit.snippet);
-			if (!matcher.find()) {
-				unmatchedURLs.add(aHit.url);
-			}
-			hitNum++;
-		}
-		
-		double unmatchedRatio = 1.0 * unmatchedURLs.size() / hitNum;
-		Assert.assertTrue(
-				"There were too many urls that did not match the  query words '"+regex+".\n"
-			  + "Unmatched URLs were:\n  "
-			  + String.join("\n  ", unmatchedURLs),
-			  unmatchedRatio <= tolerance
-			);
+//		String regex = "(We would like to show you a description here but the site won’t allow us";
+//		for (String aWord: queryWords) {
+//			if (regex == null) {
+//				regex = "(";
+//			} else {
+//				regex += "|";
+//			}
+//			regex += aWord.toLowerCase();
+//		}
+//		regex += ")";
+//		
+//		Pattern patt = Pattern.compile(regex);
+//		int  hitNum = 1;
+//		Set<String> unmatchedURLs = new HashSet<String>();
+//		for (SearchHit aHit: gotHits) {
+//			Matcher matcher = patt.matcher(aHit.snippet);
+//			if (!matcher.find()) {
+//				unmatchedURLs.add(aHit.url);
+//			}
+//			hitNum++;
+//		}
+//		
+//		double unmatchedRatio = 1.0 * unmatchedURLs.size() / hitNum;
+//		Assert.assertTrue(
+//				"There were too many urls that did not match the  query words '"+regex+".\n"
+//			  + "Unmatched URLs were:\n  "
+//			  + String.join("\n  ", unmatchedURLs),
+//			  unmatchedRatio <= tolerance
+//			);
 	}
 	
 	

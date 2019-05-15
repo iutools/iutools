@@ -65,8 +65,6 @@ public class OccurenceSearchEndpoint extends HttpServlet {
 	}
 	
 	private void writeJsonResponse(HttpServletResponse response, String json) throws IOException {
-		response.setContentType("text/html");
-		response.setCharacterEncoding("utf-8");
 		PrintWriter writer = response.getWriter();
 		writer.write(json);
 		writer.close();

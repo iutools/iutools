@@ -41,6 +41,7 @@ import ca.pirurvik.iutools.CompiledCorpusRegistryException;
 import ca.pirurvik.iutools.QueryExpanderException;
 import ca.pirurvik.iutools.QueryExpander;
 import ca.pirurvik.iutools.QueryExpansion;
+import ca.pirurvik.iutools.search.SearchHit;
 
 
 public class SearchEndpoint extends HttpServlet {
@@ -87,18 +88,8 @@ public class SearchEndpoint extends HttpServlet {
 		PrintWriter writer = response.getWriter();
 		
 		writer.write(json);
-//		writer.println(json);
 		writer.close();
 		}
-
-	private void traceToFile(String mess) throws IOException {
-	    Writer writer = new BufferedWriter(new OutputStreamWriter(
-	    	    new FileOutputStream("outfilename"), "UTF-8"));	    
-	    writer.write(mess);
-	     
-	    writer.close();
-		
-	}
 
 	public SearchResponse executeEndPoint(SearchInputs inputs) throws SearchEndpointException  {
 		Logger logger = Logger.getLogger("SearchEndpoint.executeEndPoint");
@@ -119,11 +110,6 @@ public class SearchEndpoint extends HttpServlet {
 		Pair<Long,List<SearchHit>> hitsInfo = search(queryWords, inputs);;
 		results.totalHits = hitsInfo.getFirst();
 		results.hits = hitsInfo.getSecond();
-		
-		String fromExpandedQuery = results.expandedQuery;
-		String hardCoded = "ᓄᓇᕗ";
-		logger.debug("fromExpandedQuery= "+fromExpandedQuery);
-		logger.debug("hardCoded= "+hardCoded);
 
 		return results;
 	}
@@ -138,6 +124,8 @@ public class SearchEndpoint extends HttpServlet {
 		} catch (IOException | SearchEngineException e) {
 			throw new SearchEndpointException(e);
 		}
+		
+		
 		
 		String word = queryWords.get(0);
 		SearchEngine.Query webQuery = 

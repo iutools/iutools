@@ -1,4 +1,4 @@
-package ca.pirurvik.iutools.webservice;
+package ca.pirurvik.iutools.search;
 
 public class SearchHit {
 	public String url;
