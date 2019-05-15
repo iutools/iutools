@@ -11,9 +11,12 @@ import ca.nrc.data.harvesting.SearchEngine.Hit;
 import ca.nrc.data.harvesting.SearchEngine.SearchEngineException;
 import ca.nrc.data.harvesting.SearchEngine.Type;
 
-public class BingSearcWorker implements Runnable {
-	private String query;
+public class BingSearchWorker implements Runnable {
+	public String query;
 	private Integer hitsPerPage;
+	public int hitsPageNum = 0;
+	
+	
 	private Integer maxHits;
 	public String thrName;
 	
@@ -23,24 +26,25 @@ public class BingSearcWorker implements Runnable {
 	public Long totalHits;
 	public List<SearchHit> hits;
 		   
-	BingSearcWorker(String _query) {
-		this.initialize(_query,  null, null, null);
+	BingSearchWorker(String _query) {
+		this.initialize(_query,  null, null, 0, null);
 	}
 
-	BingSearcWorker(String _query, String _thrName) {
-		this.initialize(_query,  null, null, _thrName);
+	BingSearchWorker(String _query, String _thrName) {
+		this.initialize(_query,  null, null, 0, _thrName);
 	}
 
-	BingSearcWorker(String _query, Integer _hitsPerPage, Integer _maxHits, String _thrName) {
-		this.initialize(_query, _hitsPerPage, _maxHits, _thrName);
+	BingSearchWorker(String _query, Integer _hitsPerPage, Integer _maxHits, Integer _hitsPageNum, String _thrName) {
+		this.initialize(_query, _hitsPerPage, _maxHits, _hitsPageNum, _thrName);
 	}
 	
-	private void initialize(String _query, Integer _hitsPerPage, Integer _maxHits, String _thrName) {
+	private void initialize(String _query, Integer _hitsPerPage, Integer _maxHits, int _hitsPageNum, String _thrName) {
 		if (_hitsPerPage == null) _hitsPerPage = 10;
 		if (_maxHits == null) _maxHits = 10;
 		
 		this.query = _query;
 		this.hitsPerPage = _hitsPerPage;
+		this.hitsPageNum = _hitsPageNum;
 		this.maxHits = _maxHits;
 		this.thrName = _thrName;
 		
@@ -51,7 +55,7 @@ public class BingSearcWorker implements Runnable {
 	}
 	   
    public void run()  {
-	   System.out.println("-- BingSearcher.run: thrName="+this.thrName+" started, query="+this.query);
+//	   System.out.println("-- BingSearcher.run: thrName="+this.thrName+" started, query="+this.query);
 	   
 		List<SearchHit> hitsList = new ArrayList<SearchHit>();
 		Long total = new Long(0);
@@ -66,6 +70,7 @@ public class BingSearcWorker implements Runnable {
 		SearchEngine.Query webQuery = 
 				new SearchEngine.Query(this.query).setType(Type.ANY)
 						.setLang("iu").setMaxHits(this.hitsPerPage)
+						.setHitsPageNum(this.hitsPageNum)
 				;
 		List<SearchEngine.Hit> results;
 		try {
@@ -92,12 +97,12 @@ public class BingSearcWorker implements Runnable {
 		this.totalHits = total;
 		this.hits = hitsList;
 	   
-	   System.out.println("-- BingSearcher.run: thrName="+this.thrName+" ENDED");
+//	   System.out.println("-- BingSearcher.run: thrName="+this.thrName+" ENDED");
 
    }
    
    public void start () {
-	   System.out.println("-- BingSearcher.start: thrName="+this.thrName);
+//	   System.out.println("-- BingSearcher.start: thrName="+this.thrName);
 	   if (thr == null) {
 		   thr = new Thread (this, this.thrName);
 		   thr.start ();

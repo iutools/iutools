@@ -7,39 +7,32 @@ import ca.nrc.datastructure.Pair;
 
 public class BingSearchMultithrd {
 	
-//	String[] workerTerm;
-//	Long[] workerTotalHits;
-//	List<List<SearchHit>> workerHits;
-
+	private BingSearchWorker[] workers = null;
+	
 	public BingSearchMultithrd() {
 	}
 	
 
-	public Pair<Long,List<SearchHit>> search(String[] terms) {
-		Long totalHits = new Long(0);
+	public Pair<Long,List<SearchHit>> search(String[] terms)  {
+//		Long totalHits = new Long(0);
+		long totalEstHits = 0;		
 		List<SearchHit> hits = new ArrayList<SearchHit>();
 		
 		// Create one worker per term
 		int numWorkers = terms.length;
-		BingSearcWorker[] workers = new BingSearcWorker[numWorkers];
-//		workerTerm = new String[numWorkers];
-//		workerHits = new ArrayList<List<SearchHit>>();
-//		workerTotalHits = new Long[numWorkers];
+		workers = new BingSearchWorker[numWorkers];
 		for (int ii=0; ii < numWorkers; ii++) {
 			String aTerm = terms[ii];
-			BingSearcWorker aWorker = new BingSearcWorker(aTerm, "thr-"+ii+"-"+aTerm);
+			BingSearchWorker aWorker = new BingSearchWorker(aTerm, "thr-"+ii+"-"+aTerm);
 			workers[ii] = aWorker;
 			aWorker.start();
 		}
 		
 		// Monitor the workers until they are all done
-		long totalEstHits = 0;
-		List<SearchHit> allHits = new ArrayList<SearchHit>();
-		
 		while (true) {
 			int stillRunning = 0;
 			for (int ii=0; ii < numWorkers; ii++) {
-				BingSearcWorker currWorker = workers[ii];
+				BingSearchWorker currWorker = workers[ii];
 				if (currWorker != null) {
 					if (currWorker.stillWorking()) {
 						stillRunning++;
@@ -47,17 +40,49 @@ public class BingSearchMultithrd {
 						// This worker just finished running. Integrate its
 						// results in the total
 						totalEstHits += currWorker.totalHits;
-						allHits.addAll(currWorker.hits);
 					}
 				}				
 			}
 			// All workers have finished
 			if (stillRunning == 0) break;
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				// Nothing to do if the sleep is interrupted
+			}
 		}
 		
+		List<SearchHit> sortedHits = aggregateWorkerHits();
 		
-		
-		return Pair.of(totalEstHits, allHits);
+		return Pair.of(totalEstHits, sortedHits);
 	}
+
+
+	private List<SearchHit> aggregateWorkerHits() {
+
+		//
+		// Mix hits of the different workers. That way, the top
+		// 10 hits will contain a mix of hits for different terms.
+		//
+		
+		List<SearchHit> aggregated = new ArrayList<SearchHit>();
+		boolean someHitsLeft = true;
+		while (someHitsLeft) {
+			int emptyWorkers = 0;
+			for (int ii=0; ii < workers.length; ii++) {
+				List<SearchHit> remainingHits = workers[ii].hits;
+				if (remainingHits.size() == 0) {
+					emptyWorkers++;
+				} else {
+					aggregated.add(remainingHits.remove(0));
+				}
+			}
+			if (emptyWorkers == workers.length) someHitsLeft = false;
+		}
+		
+		return aggregated;
+	}
+
+
 
 }

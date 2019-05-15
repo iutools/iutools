@@ -7,8 +7,8 @@ import java.util.List;
 
 import ca.nrc.datastructure.Pair;
 import ca.pirurvik.iutools.testing.IUTTestHelpers;
-import junit.framework.Assert;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 public class BingSearchMultithrdTest {
@@ -59,6 +59,9 @@ public class BingSearchMultithrdTest {
 		Pair<Long,List<SearchHit>> results = searcher.search(terms);
 		Long totalEstHits = results.getFirst();
 		List<SearchHit> hits = results.getSecond();
+		
+		Assert.assertTrue("Total number of hits was lower than expected: "+totalEstHits, totalEstHits > 100);
+		IUTTestHelpers.assertMostHitsMatchWords(terms, hits, 0.75);
 	}	
 
 }

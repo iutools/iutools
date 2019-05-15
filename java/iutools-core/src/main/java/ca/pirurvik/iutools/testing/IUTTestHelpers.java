@@ -36,8 +36,9 @@ public class IUTTestHelpers {
 		}
 		
 		double unmatchedRatio = 1.0 * unmatchedURLs.size() / hitNum;
+		int unmatchedPercent = (int)(Math.round(unmatchedRatio * 100));
 		Assert.assertTrue(
-				"There were too many urls that did not match the  query words '"+regex+".\n"
+				"There were too many urls "+unmatchedPercent+"%) that did not match the  query words '"+regex+".\n"
 			  + "Unmatched URLs were:\n  "
 			  + String.join("\n  ", unmatchedURLs),
 			  unmatchedRatio <= tolerance

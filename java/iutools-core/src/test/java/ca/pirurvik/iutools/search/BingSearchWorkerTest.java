@@ -4,19 +4,19 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import ca.pirurvik.iutools.search.BingSearcWorker;
+import ca.pirurvik.iutools.search.BingSearchWorker;
 
 public class BingSearchWorkerTest {
 
 	@Test
 	public void test__BingSearcher__HappyPath() {
-		BingSearcWorker[] workers = new BingSearcWorker[] {
-				new BingSearcWorker("inuktitut", "thr-1-inuktitut"),
-				new BingSearcWorker("inuk", "thr-2-inuk"),
-				new BingSearcWorker("inukshuk", "thr-3-inukshuk"),
+		BingSearchWorker[] workers = new BingSearchWorker[] {
+				new BingSearchWorker("inuktitut", "thr-1-inuktitut"),
+				new BingSearchWorker("inuk", "thr-2-inuk"),
+				new BingSearchWorker("inukshuk", "thr-3-inukshuk"),
 		};
 		
-		for (BingSearcWorker aWorker: workers) {
+		for (BingSearchWorker aWorker: workers) {
 			aWorker.run();
 		}
 	}
