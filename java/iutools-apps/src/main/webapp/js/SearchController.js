@@ -115,7 +115,7 @@ class SearchController extends WidgetController {
 			this.setTotalHits(resp.totalHits);
 			this.totalHits = resp.totalHits;
 			this.setResults(resp.hits);	
-			if ($(document).find('.page-number').length==0)
+			//if ($(document).find('.page-number').length==0)
 				this.generatePagesButtons(resp.totalHits);
 			$(".page-number").removeClass('current-page');
 			$(".page-number[value='"+this.currentPage+"']").addClass('current-page');
