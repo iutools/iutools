@@ -1,7 +1,9 @@
 package ca.pirurvik.iutools.search;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import ca.nrc.datastructure.Pair;
 
@@ -20,7 +22,11 @@ public class BingSearchMultithrd {
 		return search(terms, hitsPageNum, 10);
 	}
 
-	public Pair<Long,List<SearchHit>> search(String[] terms, int hitsPageNum, int hitsPerPage)  {
+	public Pair<Long,List<SearchHit>> search(String[] terms, int hitsPageNum, Integer hitsPerPage)  {
+		return search(terms, hitsPageNum, hitsPerPage, new HashSet<String>());
+	};
+
+	public Pair<Long,List<SearchHit>> search(String[] terms, int hitsPageNum, int hitsPerPage, Set<String> excludeURLs)  {
 		long totalEstHits = 0;		
 		List<SearchHit> hits = new ArrayList<SearchHit>();
 		
@@ -29,7 +35,8 @@ public class BingSearchMultithrd {
 		workers = new BingSearchWorker[numWorkers];
 		for (int ii=0; ii < numWorkers; ii++) {
 			String aTerm = terms[ii];
-			BingSearchWorker aWorker = new BingSearchWorker(aTerm, "thr-"+ii+"-"+aTerm);
+			BingSearchWorker aWorker = new BingSearchWorker(aTerm, hitsPageNum, hitsPerPage, "thr-"+ii+"-"+aTerm);
+			aWorker.excludeUrls(excludeURLs);
 			workers[ii] = aWorker;
 			aWorker.start();
 		}
@@ -62,7 +69,6 @@ public class BingSearchMultithrd {
 		
 		return Pair.of(totalEstHits, sortedHits);
 	}
-
 
 	private List<SearchHit> aggregateWorkerHits() {
 

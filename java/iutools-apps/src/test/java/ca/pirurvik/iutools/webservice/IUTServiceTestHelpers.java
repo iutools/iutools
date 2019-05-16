@@ -69,7 +69,7 @@ public class IUTServiceTestHelpers {
 
 	public static void assertExpandedQueryEquals(String expQuery, MockHttpServletResponse gotResponse) throws JsonParseException, JsonMappingException, IOException {
 		SearchResponse gotResult = new ObjectMapper().readValue(gotResponse.getOutput(), SearchResponse.class);
-		AssertHelpers.assertStringEquals("Expanded query was not as expected.", expQuery, gotResult.expandedQuery);
+		AssertHelpers.assertStringEquals("Expanded query was not as expected.", expQuery.trim(), gotResult.expandedQuery.trim());
 	}
 
 

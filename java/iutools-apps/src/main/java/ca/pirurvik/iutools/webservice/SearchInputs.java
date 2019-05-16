@@ -1,25 +1,31 @@
 package ca.pirurvik.iutools.webservice;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import ca.inuktitutcomputing.script.Roman;
-import ca.inuktitutcomputing.script.Syllabics;
 import ca.inuktitutcomputing.script.TransCoder;
 
 public class SearchInputs extends ServiceInputs {
 	public String query = "";
-	private String _querySyllabic = null;
 	public int hitsPerPage = 10;
 	public Integer hitsPageNum = 0;
+	public Set<String> excludedHits = new HashSet<String>();
 
 	public SearchInputs() {
 	}
 	
 	public SearchInputs(String _query) {
 		this.query = _query;
+	}
+	
+	public SearchInputs excludeURLs(List<String> urls) {
+		this.excludedHits.addAll(urls);
+		return this;
 	}
 	
 	@JsonIgnore

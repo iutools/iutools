@@ -26,6 +26,7 @@
     <input id="txt-query-words" name="query-words" type="text" value="" />
     <button id="btn-search" type="button" name="btn-search" value="Search">Search</button>
     <p></p>
+    <div id="div-message" class="div-message"></div>
     <div id="div-error" class="div-error"></div>
     <div id="div-total-hits" class="div-total-hits"></div>
 	<div id="div-search-results"></div>   
@@ -54,8 +55,8 @@
     <div data-includeHTML="pages/_FooterPartial.html"></div>
 </footer>
 
-<script src="js/WidgetController.js"></script>
-<script src="js/SearchController.js"></script>
+<script src="js/WidgetController.js?version=0.00001"></script>
+<script src="js/SearchController.js?version=0.00008"></script>
 
 <script>
 	// Load the header, footer etc...
@@ -94,6 +95,7 @@
     var config = {
     		btnSearch: "btn-search",
     		txtQuery: "txt-query-words",
+    		divMessage: "div-message",
     		divTotalHits: "div-total-hits",
     		divResults:  "div-search-results",
     		divError: "div-error",

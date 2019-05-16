@@ -3,7 +3,9 @@ package ca.pirurvik.iutools.search;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import ca.nrc.datastructure.Pair;
 import ca.nrc.testing.AssertHelpers;
@@ -71,12 +73,17 @@ public class BingSearchMultithrdTest {
 		String [] terms = new String[] {"ᖃᕋᓴᐅᔭᒃᑯᑦ", "ᖃᐅᔨᓴᖅᑎᒃᑯ", "ᐃᓕᓐᓂᐊᖅᑐᒧᑦ"};
 		BingSearchMultithrd searcher = new BingSearchMultithrd();
 		
-		Pair<Long,List<SearchHit>> results = searcher.search(terms, 0);
+		Pair<Long,List<SearchHit>> results = searcher.search(terms, 0, 10);
 		List<SearchHit> hitsPage1 = results.getSecond();
 		
-		results = searcher.search(terms, 1);
+		Set<String> urlsPage1 = new HashSet<String>();
+		for (SearchHit hit: hitsPage1) urlsPage1.add(hit.url);
+		
+		results = searcher.search(terms, 1, 10, urlsPage1);
 		List<SearchHit> hitsPage2 = results.getSecond();
 		
-		AssertHelpers.assertDeepNotEqual("Hits from first and second page should have been different", hitsPage1, hitsPage2);
+		double minDiffRatio = 0.8;
+		IUTTestHelpers.assertHitsPagesDifferByAtLeast("Hits from pages 1 and 2 should have been different", 
+				hitsPage1, hitsPage2, minDiffRatio);
 	}	
 }

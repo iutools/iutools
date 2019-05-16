@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import ca.nrc.data.harvesting.BingSearchEngine;
 import ca.nrc.data.harvesting.SearchEngine;
@@ -24,20 +25,21 @@ public class BingSearchWorker implements Runnable {
 	
 	public Long  totalHits = new Long(0);
 	public List<SearchHit> hits = new ArrayList<SearchHit>();
+	private Set<String> excludedURLs;
 		   
 	BingSearchWorker(String _query) {
-		this.initialize(_query,  null, 0, null);
+		this.initialize(_query,  0, null, null);
 	}
 
 	BingSearchWorker(String _query, String _thrName) {
-		this.initialize(_query,  null, 0, _thrName);
+		this.initialize(_query,  0, null, _thrName);
 	}
 
-	BingSearchWorker(String _query, Integer _hitsPerPage, Integer _hitsPageNum, String _thrName) {
-		this.initialize(_query, _hitsPerPage, _hitsPageNum, _thrName);
+	BingSearchWorker(String _query, int _hitsPageNum, Integer _hitsPerPage, String _thrName) {
+		this.initialize(_query, _hitsPageNum, _hitsPerPage, _thrName);
 	}
 	
-	private void initialize(String _query, Integer _hitsPerPage, int _hitsPageNum, String _thrName) {
+	private void initialize(String _query, int _hitsPageNum, Integer _hitsPerPage, String _thrName) {
 		if (_hitsPerPage == null) _hitsPerPage = 10;
 		
 		this.query = _query;
@@ -82,7 +84,9 @@ public class BingSearchWorker implements Runnable {
 			Hit bingHit = iter.next();
 			total = bingHit.outOfTotal;
 			SearchHit aHit = new SearchHit(bingHit.url.toString(), bingHit.title, bingHit.summary);
-			hitsList.add(aHit);			
+			if (!this.excludedURLs.contains(aHit.url)) {
+				hitsList.add(aHit);	
+			}
 		}
 		
 		this.totalHits = total;
@@ -98,6 +102,11 @@ public class BingSearchWorker implements Runnable {
 		   thr = new Thread (this, this.thrName);
 		   thr.start ();
 	   }
-	}	
+	}
+
+public void excludeUrls(Set<String> urls) {
+	this.excludedURLs = urls;
+	
+}	
 
 }

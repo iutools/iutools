@@ -7,7 +7,7 @@ class SearchController extends WidgetController {
 	constructor(config) {
 		super(config);
 		this.hitsPerPage = 10;
-		this.currentPage = 1;
+		this.currentPage = 0;
 		this.totalHits = 0;
 		this.attachHtmlElements();
 	} 
@@ -36,10 +36,18 @@ class SearchController extends WidgetController {
 	onSearch() {
 			var isValid = this.validateQueryInput();
 			if (isValid) {
+				this.clearResults();
 				this.setBusy(true);
 				this.invokeSearchService(this.getSearchRequestData(), 
 						this.successCallback, this.failureCallback)
 			}
+	}
+	
+	clearResults() {
+		this.elementForProp('divError').empty();
+		this.elementForProp('divTotalHits').empty();
+		this.elementForProp('divResults').empty();
+		this.elementForProp('divPageNumbers').empty();
 	}
 	
 	invokeSearchService(jsonRequestData, _successCbk, _failureCbk) {
@@ -137,15 +145,23 @@ class SearchController extends WidgetController {
 	
 	setBusy(flag) {
 		if (flag) {
-			this.disableSearchButton();		
+			this.setTotalHits(null);
+			this.disableSearchButton();	
+			this.showSpinningWheel();
 			this.error("");
 		} else {
 			this.enableSearchButton();		
+			this.hideSpinningWheel();
 		}
 	}
 	
 	
 	getSearchRequestData() {
+		
+		var currPage = this.currentPage;
+		if (typeof currPage === 'string' || currPage instanceof String) {
+			currPage = parseInt(currPage, 10);
+		}
 		
 		var request = {
 				query: this.elementForProp("txtQuery").val(),
@@ -167,6 +183,19 @@ class SearchController extends WidgetController {
 
 	}
 	
+	showSpinningWheel() {
+		var divMessage = this.elementForProp('divMessage');
+		divMessage.empty();
+		divMessage.append("<img src=\"ajax-loader.gif\"> Searching ...")
+		divMessage.css('display');
+	}
+	
+	hideSpinningWheel() {
+		var divMessage = this.elementForProp('divMessage');
+		divMessage.empty();
+		divMessage.css('display');
+	}
+
 	error(err) {
 		this.elementForProp('divError').html(err);
 		this.elementForProp('divError').show();	 
@@ -174,16 +203,15 @@ class SearchController extends WidgetController {
 	}
 	
 	setQuery(query) {
-		//for (var i=0; i<query.length; i++) {
-		//	console.log(query.charAt(i)+": "+query.charCodeAt(i));
-		//}
 		this.elementForProp("txtQuery").val(query);
 	}
 	
 	setTotalHits(totalHits) {
-		var totalHitsText = "No hits found";
+		var totalHitsText = "";
 		if (totalHits > 0) {
 			totalHitsText = "Found "+totalHits+" hits";
+		} else if (totalHits == 0) {
+			totalHitsText = "No hits found";
 		}
 		this.elementForProp('divTotalHits').text(totalHitsText);
 	}
@@ -199,9 +227,9 @@ class SearchController extends WidgetController {
 			var hitHtml = 
 					"<div id=\"hit"+ii+"\" class=\"hitDiv\">\n" +
 					"  <div id=\"hitTitle\" class=\"hitTitle\">"+
-					"    <a href=\""+aHit.url+"\">"+aHit.title+"</a>"+"</div>\n" +
+					"    <a href=\""+aHit.url+"\" target=\"_blank\">"+aHit.title+"</a>"+"</div>\n" +
 					"  <div id=\"hitURL\" class=\"hitURL\">"+
-					"    <a href=\""+aHit.url+"\">"+aHit.url+"</a>"+"</div>\n" +
+					"    <a href=\""+aHit.url+"\" target=\"_blank\">"+aHit.url+"</a>"+"</div>\n" +
 					"  <div id=\"hitSnippet\" class=\"hitSnippet\">"+aHit.snippet+"</div>\n" +
 					"<div>"
 				;
@@ -249,45 +277,4 @@ class SearchController extends WidgetController {
 		    		  });
 	    }
 	}
-	
-	onTest() {
-		this.invokeTestService({}, 
-				this.testSuccessCallback, this.testFailureCallback);
-	}
-
-	invokeTestService(jsonRequestData, _successCbk, _failureCbk) {
-			var controller = this;
-			var fctSuccess = 
-					function(resp) {
-						_successCbk.call(controller, resp);
-					};
-			var fctFailure = 
-					function(resp) {
-						_failureCbk.call(controller, resp);
-					};
-		
-			$.ajax({
-				type: 'POST',
-				url: 'srv/hello',
-				data: jsonRequestData,
-				dataType: 'json',
-				async: true,
-		        success: fctSuccess,
-		        error: fctFailure
-			});
-	}
-	
-	testSuccessCallback(resp) {
-		var element = this.elementForProp("divTestResponse");
-		element.empty();
-		element.html(resp.message);
-	}
-	    
-	testFailureCallback(resp) {
-		var element = this.elementForProp("divTestResponse");
-		element.empty();
-		element.html("Server returned error, resp="+JSON.stringify(resp));
-	}
-	
-
 }

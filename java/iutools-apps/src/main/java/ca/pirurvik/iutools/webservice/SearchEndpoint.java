@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -119,78 +121,64 @@ public class SearchEndpoint extends HttpServlet {
 				
 		Pair<Long, List<SearchHit>> results;
 		String[] queryWordsArr = queryWords.toArray(new String[queryWords.size()]);
-		results = engine.search(queryWordsArr, inputs.hitsPerPage, inputs.hitsPageNum);
+		results = engine.search(queryWordsArr, inputs.hitsPageNum, inputs.hitsPerPage, inputs.excludedHits);
 		
 		Long estTotalHits = results.getFirst();
 		List<SearchHit> hits = results.getSecond();
-		
-<<<<<<< Upstream, based on origin/master
-		
-		String word = queryWords.get(0);
-		SearchEngine.Query webQuery = 
-				new SearchEngine.Query(word).setType(Type.ANY)
-						.setLang("iu").setMaxHits(inputs.hitsPerPage)
-						.setHitsPageNum(inputs.hitsPageNum)
-				;
-		List<SearchEngine.Hit> results;
-		try {
-			results = engine.search(webQuery);
-		} catch (SearchEngineException e) {
-			throw new SearchEndpointException(e);
-		}
-		
-		Iterator<Hit> iter = results.iterator();
-		int hitsCount = 0;
-		while (iter.hasNext()) {
-			hitsCount++;
-			if (hitsCount > MAX_HITS) {
-				break;
-			}
-			Hit bingHit = iter.next();
-			totalHits = bingHit.outOfTotal;
-			SearchHit aHit = new SearchHit(bingHit.url.toString(), bingHit.title, bingHit.summary);
-			hits.add(aHit);
-			
-		}
-		
-		return Pair.of(totalHits, hits);
-=======
+	
 		return Pair.of(estTotalHits, hits);
->>>>>>> 88f76c4 More work on multi-term inuktut search
 	}
 
 	protected void expandQuery(String query, SearchResponse results) throws SearchEndpointException, CompiledCorpusRegistryException, QueryExpanderException {
+		
+		List<String> expansionWords = this.isExpandedQuery(query);
 		String expandedQuery = query;
+		if (expansionWords == null) {
 		
-		QueryExpansion[] expansions = null;
-		try {
-			if (expander == null) {
-				CompiledCorpus compiledCorpus = CompiledCorpusRegistry.getCorpus();
-				expander = new QueryExpander(compiledCorpus);
+			QueryExpansion[] expansions = null;
+			try {
+				if (expander == null) {
+					CompiledCorpus compiledCorpus = CompiledCorpusRegistry.getCorpus();
+					expander = new QueryExpander(compiledCorpus);
+				}
+				expansions = expander.getExpansions(query);			
+			} catch (ConfigException e) {
+				throw new SearchEndpointException(e);
 			}
-			expansions = expander.getExpansions(query);			
-		} catch (ConfigException e) {
-			throw new SearchEndpointException(e);
-		}
-		
-		
-		expandedQuery = "(";
-		boolean isFirst = true;
-		for (QueryExpansion exp: expansions) {
-			if (!isFirst) {
-				expandedQuery += " OR ";
+			
+			
+			expandedQuery = "(";
+			boolean isFirst = true;
+			for (QueryExpansion exp: expansions) {
+				if (!isFirst) {
+					expandedQuery += " OR ";
+				}
+				expandedQuery += exp.word;
+				isFirst = false;
 			}
-			expandedQuery += exp.word;
-			isFirst = false;
-		}
-		expandedQuery += ")";	
-		
-		List<String> expansionWords = new ArrayList<String>();
-		for (QueryExpansion anExpansion: expansions) {
-			expansionWords.add(anExpansion.word);
+			expandedQuery += ")";	
+			
+			expansionWords = new ArrayList<String>();
+			for (QueryExpansion anExpansion: expansions) {
+				expansionWords.add(anExpansion.word);
+			}
 		}
 	
 		results.expandedQuery = expandedQuery;
 		results.expandedQueryWords = expansionWords;
+	}
+
+	private List<String> isExpandedQuery(String query) {
+		List<String> expansionWords = null;
+		
+		Matcher matcher = Pattern.compile("^\\s*\\(\\s*(\\s*[\\s\\S]*?)\\s*\\)\\s*$").matcher(query);
+		if (matcher.matches()) {
+			String termsORed = matcher.group(1);
+			String[] terms = termsORed.split("\\s+OR\\s+");
+			expansionWords = Arrays.asList(terms);
+		}
+				
+		
+		return expansionWords;
 	}
 }

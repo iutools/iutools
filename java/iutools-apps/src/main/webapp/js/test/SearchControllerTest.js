@@ -1,10 +1,13 @@
 var srchControllerConfig = {
 		btnSearch: "btn-search",
 		txtQuery: "txt-query",
+		divMessage: "div-message",
 		divError: "div-error-msg",
 		divResults:  "div-search-results",
 		divTotalHits: "div-total-hits",
-		divPageNumbers: "page-numbers"
+		divPageNumbers: "page-numbers",
+		prevPage: "previous-page",
+		nextPage: "next-page"
 	};
 
 var srchController = null;
@@ -20,13 +23,15 @@ QUnit.module("SearchController Tests", {
                   "Query: <input id=\""+srchControllerConfig.txtQuery+"\" type=\"text\"><br/>\n"
                 + "<button id=\""+srchControllerConfig.btnSearch+"\">Search</button><br/>\n"
                 + "<p/>\n<br/>\n<p/>\n"
+                + "Progress message: <div id=\""+srchControllerConfig.divMessage+"\"></div><br/>\n"
                 + "Error message: <div id=\""+srchControllerConfig.divError+"\"></div><br/>\n"
                 + "Total Hits: <div id=\""+srchControllerConfig.divTotalHits+"\"></div><br/>\n"
                 + "Results:<p/><div id=\""+srchControllerConfig.divResults+"\"></div><br/>\n"
+                + "<button id=\""+srchControllerConfig.prevPage+"\">\n"
                 + "<div id=\""+srchControllerConfig.divPageNumbers+"\"></div><br/>\n"
+                + "<button id=\""+srchControllerConfig.nextPage+"\">\n"
                 ;
 		$("#testMainDiv").html(formHTML);
-		
 		
 		// First page of hits
 		mockRespPage1 = {
@@ -290,6 +295,7 @@ function assertPageButtonsAreOK(assert, expNum, caseDescr) {
 	for (var ii=0; ii < expNum; ii++) expPageNumbers.push((ii+1).toString());
 	assert.deepEqual(gotPageNumbers, expPageNumbers, "Page number buttons were not as expected");
 }
+
 
 
 
