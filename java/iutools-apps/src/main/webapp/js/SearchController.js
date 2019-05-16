@@ -10,6 +10,8 @@ class SearchController extends WidgetController {
 		this.currentPage = 0;
 		this.totalHits = 0;
 		this.attachHtmlElements();
+		
+		this.alreadyShownHits = [];
 	} 
 	
 	// Setup handler methods for different HTML elements specified in the config.
@@ -20,27 +22,32 @@ class SearchController extends WidgetController {
 		this.onReturnKey("txtQuery", this.onSearch);
 	}
 	
+	onSearch() {
+		this.currentPage = 0;
+		this.searchFromCurrentPage();
+	}
+	
 	onSearchPrev() {
-		if (this.currentPage > 1)
+		if (this.currentPage > 0)
 			this.currentPage--;
-		this.onSearch();
+		this.searchFromCurrentPage();
 	}
 
 	onSearchNext() {
 		var nbPages = Math.ceil(this.totalHits / this.hitsPerPage);
 		if (this.currentPage < nbPages)
 			this.currentPage++;
-		this.onSearch();
+		this.searchFromCurrentPage();
 	}
 
-	onSearch() {
-			var isValid = this.validateQueryInput();
-			if (isValid) {
-				this.clearResults();
-				this.setBusy(true);
-				this.invokeSearchService(this.getSearchRequestData(), 
-						this.successCallback, this.failureCallback)
-			}
+	searchFromCurrentPage() {
+		var isValid = this.validateQueryInput();
+		if (isValid) {
+			this.clearResults();
+			this.setBusy(true);
+			this.invokeSearchService(this.getSearchRequestData(), 
+					this.successCallback, this.failureCallback)
+		}
 	}
 	
 	clearResults() {
@@ -166,7 +173,8 @@ class SearchController extends WidgetController {
 		var request = {
 				query: this.elementForProp("txtQuery").val(),
 				hitsPageNum: this.currentPage,
-				hitsPerPage: this.hitsPerPage
+				hitsPerPage: this.hitsPerPage,
+				excludedHits: this.alreadyShownHits
 		};
 		
 		var jsonInputs = JSON.stringify(request);
@@ -224,6 +232,7 @@ class SearchController extends WidgetController {
 		
 		for (var ii = 0; ii < results.length; ii++) {
 			var aHit = results[ii];
+			this.alreadyShownHits.push(aHit.url);
 			var hitHtml = 
 					"<div id=\"hit"+ii+"\" class=\"hitDiv\">\n" +
 					"  <div id=\"hitTitle\" class=\"hitTitle\">"+
@@ -273,7 +282,7 @@ class SearchController extends WidgetController {
 		    				var el = ev.target;
 		    				var pageNumberOfButton = el.value;
 		    				thisSearchController.currentPage = pageNumberOfButton;
-		    				thisSearchController.onSearch();
+		    				thisSearchController.searchFromCurrentPage();
 		    		  });
 	    }
 	}
