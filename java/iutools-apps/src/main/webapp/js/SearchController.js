@@ -23,12 +23,12 @@ class SearchController extends WidgetController {
 	}
 	
 	onSearch() {
-		this.currentPage = 0;
+		this.currentPage = 1;
 		this.searchFromCurrentPage();
 	}
 	
 	onSearchPrev() {
-		if (this.currentPage > 0)
+		if (this.currentPage > 1)
 			this.currentPage--;
 		this.searchFromCurrentPage();
 	}
@@ -172,7 +172,7 @@ class SearchController extends WidgetController {
 		
 		var request = {
 				query: this.elementForProp("txtQuery").val(),
-				hitsPageNum: this.currentPage,
+				hitsPageNum: this.currentPage-1,
 				hitsPerPage: this.hitsPerPage,
 				excludedHits: this.alreadyShownHits
 		};
