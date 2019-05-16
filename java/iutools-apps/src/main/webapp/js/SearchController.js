@@ -83,35 +83,6 @@ class SearchController extends WidgetController {
 			});
 	}
 	
-	mockSrvSearch() {
-		var jsonResp;
-		this.totalHits = 3;
-		if (this.currentPage==1)
-		    jsonResp = {
-				expandedQuery : 'summit',
-				totalHits : 3,
-				hits : [
-					{title: 'Highest summits in the world',
-						url: 'http://domain.net/highest-summits.htm',
-						snippet: 'The highest summit of all is mount Everest.'},
-					{title: 'The mountains in Asia',
-						url: 'http://domain.net/mountains-asia.htm',
-						snippet: 'The highest mountain of all is mount Everest, with its summit at X feet.'},
-				]
-			};
-		else
-		    jsonResp = {
-				expandedQuery : 'summit',
-				totalHits : 3,
-				hits : [
-					{title: 'Earth glories',
-						url: 'http://domain.net/earth-glories.htm',
-						snippet: 'Among the glories of the world, the highest summit is located in Asia.'},
-				]
-			};
-		return jsonResp;
-	}
-
 	validateQueryInput() {
 		var isValid = true;
 		var query = this.elementForProp("txtQuery").val();
