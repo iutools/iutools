@@ -55,8 +55,8 @@
     <div data-includeHTML="pages/_FooterPartial.html"></div>
 </footer>
 
-<script src="js/WidgetController.js?version=0.00001"></script>
-<script src="js/SearchController.js?version=0.00013"></script>
+<script src="js/WidgetController.js?version=0.00002"></script>
+<script src="js/SearchController.js?version=0.00014"></script>
 
 <script>
 	// Load the header, footer etc...
@@ -103,7 +103,8 @@
     		prevPage: "previous-page",
     		nextPage: "next-page"
         };
-    var srchController = new SearchController(config);
+    var srchController;
+    $(document).ready(function() {srchController = new SearchController(config);});
 </script>
     
 </body>

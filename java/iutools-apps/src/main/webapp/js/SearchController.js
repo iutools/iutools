@@ -19,7 +19,11 @@ class SearchController extends WidgetController {
 		this.setEventHandler("btnSearch", "click", this.onSearch);
 		this.setEventHandler("prevPage", "click", this.onSearchPrev);
 		this.setEventHandler("nextPage", "click", this.onSearchNext);
-		this.onReturnKey("txtQuery", this.onSearch);
+		//
+		// Disable this for now cause it only seems to work in the context
+		// of tests
+		//
+//		 this.onReturnKey("txtQuery", this.onSearch);
 	}
 	
 	onSearch() {

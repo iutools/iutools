@@ -53,8 +53,10 @@ class WidgetController {
 		
 		var keypressHandler = 
 				function(event) {
+					console.log("-- WidgetController.onReturnKey.function: intercepted a key event");
 					var keycode = (event.keyCode ? event.keyCode : event.which);
 					if(keycode == '13'){
+						console.log("-- WidgetController.onReturnKey.function: ENTER key intercepted. Invoking method="+method+" on controller="+JSON.stringify(controller));
 						method.call(controller);
 					}
 				};		
