@@ -20,7 +20,7 @@
 <main>
     <h1>Inuktut Search Engine</h1>
         
-    <form id="form-query" method="post" action="">
+    <!--<form id="form-query" method="post" action="">-->
     
     Enter your request:
     <input id="txt-query-words" name="query-words" type="text" value="" />
@@ -43,7 +43,7 @@
        </div>
       </div>
       
-    </form>
+    <!--</form>-->
 
     <div id="hits">
         <div id="nb-hits"><span id="nb-hits"></span> result<span id="plural">s</span><hr></div>
@@ -70,7 +70,7 @@
 	
 	function onTest() {
 		$.ajax({
-			type: 'POST',
+			method: 'POST',
 			url: 'srv/hello',
 			data: {},
 			dataType: 'json',

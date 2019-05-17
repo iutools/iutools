@@ -19,11 +19,7 @@ class SearchController extends WidgetController {
 		this.setEventHandler("btnSearch", "click", this.onSearch);
 		this.setEventHandler("prevPage", "click", this.onSearchPrev);
 		this.setEventHandler("nextPage", "click", this.onSearchNext);
-		//
-		// Disable this for now cause it only seems to work in the context
-		// of tests
-		//
-//		 this.onReturnKey("txtQuery", this.onSearch);
+		this.onReturnKey("txtQuery", this.onSearch);
 	}
 	
 	onSearch() {
@@ -75,9 +71,9 @@ class SearchController extends WidgetController {
 			// this line is for development only, allowing to present results without calling Bing.
 			//var jsonResp = this.mockSrvSearch();fctSuccess(jsonResp);
 		
-			console.log("jsonRequestData= "+JSON.stringify(jsonRequestData));
+//			console.log("jsonRequestData= "+JSON.stringify(jsonRequestData));
 			$.ajax({
-				type: 'POST',
+				method: 'POST',
 				url: 'srv/search',
 				data: jsonRequestData,
 				dataType: 'json',
@@ -101,12 +97,12 @@ class SearchController extends WidgetController {
 		if (resp.errorMessage != null) {
 			this.failureCallback(resp);
 		} else {
+//			console.log('successCallback --- resp.totalHits='+resp.totalHits);
 			this.setQuery(resp.expandedQuery);
 			this.setTotalHits(resp.totalHits);
 			this.totalHits = resp.totalHits;
 			this.setResults(resp.hits);	
-			//if ($(document).find('.page-number').length==0)
-				this.generatePagesButtons(resp.totalHits);
+			this.generatePagesButtons(resp.totalHits);
 			$(".page-number").removeClass('current-page');
 			$(".page-number[value='"+this.currentPage+"']").addClass('current-page');
 		}
@@ -261,4 +257,45 @@ class SearchController extends WidgetController {
 		    		  });
 	    }
 	}
+	
+	onTest() {
+		this.invokeTestService({}, 
+				this.testSuccessCallback, this.testFailureCallback);
+	}
+
+	invokeTestService(jsonRequestData, _successCbk, _failureCbk) {
+			var controller = this;
+			var fctSuccess = 
+					function(resp) {
+						_successCbk.call(controller, resp);
+					};
+			var fctFailure = 
+					function(resp) {
+						_failureCbk.call(controller, resp);
+					};
+		
+			$.ajax({
+				method: 'POST',
+				url: 'srv/hello',
+				data: jsonRequestData,
+				dataType: 'json',
+				async: true,
+		        success: fctSuccess,
+		        error: fctFailure
+			});
+	}
+	
+	testSuccessCallback(resp) {
+		var element = this.elementForProp("divTestResponse");
+		element.empty();
+		element.html(resp.message);
+	}
+	    
+	testFailureCallback(resp) {
+		var element = this.elementForProp("divTestResponse");
+		element.empty();
+		element.html("Server returned error, resp="+JSON.stringify(resp));
+	}
+	
+
 }

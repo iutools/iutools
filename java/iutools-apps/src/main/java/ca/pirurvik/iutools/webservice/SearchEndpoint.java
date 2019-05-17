@@ -62,6 +62,10 @@ public class SearchEndpoint extends HttpServlet {
 	public SearchEndpoint() {
 	};
 	
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		Logger logger = Logger.getLogger("SearchEndpoint.doGet");
+		logger.debug("doGet()");
+	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {		
 		String jsonResponse = null;
@@ -101,6 +105,7 @@ public class SearchEndpoint extends HttpServlet {
 		
 		List<String> queryWords = null;
 		try {
+			logger.debug("syllabic query= "+inputs.getQuerySyllabic());
 			expandQuery(inputs.getQuerySyllabic(), results);
 			queryWords = results.expandedQueryWords;
 		} catch (CompiledCorpusRegistryException | QueryExpanderException e) {
