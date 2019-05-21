@@ -132,26 +132,22 @@ QUnit.test("SearchController.Acceptance -- Query field is empty -- Displays erro
 	assertPageButtonsAreOK(assert, 0, caseDescr)			
 });
 
-//
-// Disable this for now cause it only seems to work in the context
-// of tests
-//
-//QUnit.test("SearchController.Acceptance -- Press Return in Query field -- Runs the search", function( assert ) 
-//		{
-//			var caseDescr = "SearchController.Acceptance -- Press Return in Query field -- Runs the search";
-//			
-//		    var helpers = new TestHelpers();
-//		    helpers.typeText(srchControllerConfig.txtQuery, "ᓄᓇᕗᑦ");
-//		    helpers.pressEnter(srchControllerConfig.txtQuery);
-//		    
-//		    assertNoErrorDisplayed(assert, caseDescr);
-//			assertQueryEquals(assert, "ᓄᓇᕗᑦ");
-//			assertSearchButtonEnabled(assert, caseDescr);
-//			assertDisplayedTotalHitsIs(assert, "Found 12 hits", caseDescr);
-//			var expHits = mockRespPage1.hits;
-//			assertHitsEqual(assert, expHits, caseDescr)
-//			assertPageButtonsAreOK(assert, 2, caseDescr)			
-//		});
+QUnit.test("SearchController.Acceptance -- Press Return in Query field -- Runs the search", function( assert ) 
+		{
+			var caseDescr = "SearchController.Acceptance -- Press Return in Query field -- Runs the search";
+			
+		    var helpers = new TestHelpers();
+		    helpers.typeText(srchControllerConfig.txtQuery, "ᓄᓇᕗᑦ");
+		    helpers.pressEnter(srchControllerConfig.txtQuery);
+		    
+		    assertNoErrorDisplayed(assert, caseDescr);
+			assertQueryEquals(assert, "ᓄᓇᕗᑦ");
+			assertSearchButtonEnabled(assert, caseDescr);
+			assertDisplayedTotalHitsIs(assert, "Found 12 hits", caseDescr);
+			var expHits = mockRespPage1.hits;
+			assertHitsEqual(assert, expHits, caseDescr)
+			assertPageButtonsAreOK(assert, 2, caseDescr)			
+		});
 
 QUnit.test("SearchController.Acceptance -- Web service returns errMessage -- Displays message", function( assert ) 
 		{
