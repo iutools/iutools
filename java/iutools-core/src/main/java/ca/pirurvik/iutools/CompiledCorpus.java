@@ -185,6 +185,10 @@ public class CompiledCorpus
 		return this.trie;
 	}
 	
+	public HashMap<String,String[]> getSegments() {
+		return this.segmentsCache;
+	}
+	
 	/**
 	 * Cette méthode retourne vrai si et seulement si il y a un fichier de sauvegarde pour le répertoire corpusDir.
 	 * @param corpusDirPathname

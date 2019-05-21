@@ -22,6 +22,7 @@ public abstract class ConsoleCommand extends SubCommand {
 	public static final String OPT_DICT_FILE = "dict-file";
 	public static final String OPT_MAX_CORR = "max-corr";
 	public static final String OPT_ED_ALGO = "edit-dist";
+	public static final String OPT_MORPHEME = "morpheme";
 	
 	
 	public ConsoleCommand(String name) {
@@ -72,6 +73,14 @@ public abstract class ConsoleCommand extends SubCommand {
 	protected String getWord(boolean failIfAbsent) {
 		String wordStr = getOptionValue(ConsoleCommand.OPT_WORD, failIfAbsent);
 		return wordStr;		
+	}
+	
+	protected String getMorpheme() {
+		return getMorpheme(true);
+	}
+	protected String getMorpheme(boolean failIfAbsent) {
+		String morpheme = getOptionValue(ConsoleCommand.OPT_MORPHEME, failIfAbsent);
+		return morpheme;		
 	}
 	
 	protected String getContent() {

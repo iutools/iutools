@@ -130,6 +130,13 @@ public class Console {
 			    .argName("EDIT_DIST")
 			    .build();
 
+		Option optMorpheme = Option.builder(null)
+				.longOpt(ConsoleCommand.OPT_MORPHEME)
+			    .desc("An inuktitut morpheme.")
+			    .hasArg()
+			    .argName("MORPHEME")
+			    .build();
+
 		// --- COMMANDS
 
 		// Compile a trie and save it to file
@@ -218,6 +225,14 @@ public class Console {
 		mainCmd.addSubCommand(convertIU);
 		
 
+		SubCommand lookForMorpheme = 
+				new CmdLookForMorpheme("look_for_morpheme")
+				.addOption(optDictFile)
+				.addOption(optMorpheme)
+				;
+		mainCmd.addSubCommand(lookForMorpheme);
+		
+				
 				
 		return mainCmd;
 	}
