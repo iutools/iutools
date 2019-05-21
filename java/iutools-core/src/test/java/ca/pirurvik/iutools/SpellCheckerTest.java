@@ -185,7 +185,7 @@ public class SpellCheckerTest {
 	
 	@Test
 	public void test__correct_roman() {
-		List<String> corrections = checker.correct("inukkshuk");
+		List<String> corrections = checker.correctWord("inukkshuk");
 		String[] expected = new String[] {"inukshuk","inuktut","inuk","nunavut"};
 		Assert.assertEquals("The number of candidates is wrong.", 4, corrections.size());
 		for (int i=0; i<expected.length; i++) {
@@ -195,7 +195,7 @@ public class SpellCheckerTest {
 
 	@Test
 	public void test__correct_syllabic() {
-		List<String> corrections = checkerSyll.correct("ᓄᓇᕗᖕᒥ");
+		List<String> corrections = checkerSyll.correctWord("ᓄᓇᕗᖕᒥ");
 		String[] expected = new String[] {"ᓄᓇᕗᒻᒥ","ᓄᓇᕘᒥ","ᓄᓇᒥ","ᓄᓇᕗᑦ","ᓄᓇᕗᒻᒥᑦ"};
 		Assert.assertEquals("The number of candidates is wrong.", expected.length, corrections.size());
 		for (int i=0; i<expected.length; i++) {

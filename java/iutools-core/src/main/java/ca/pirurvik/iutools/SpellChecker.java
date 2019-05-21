@@ -117,7 +117,7 @@ public class SpellChecker {
 		return this.MAX_SEQ_LEN;
 	}
 
-	public List<String> correct(String badWord) {
+	public List<String> correctWord(String badWord) {
 		return correct(badWord,-1);
 	}
 
@@ -245,6 +245,12 @@ public class SpellChecker {
 		
 		return listOfRarest;
 		
+	}
+
+	public List<SpellingCorrection> correctText(String text) {
+		
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

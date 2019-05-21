@@ -2,7 +2,7 @@ package ca.pirurvik.iutools.webservice;
 
 import ca.nrc.config.ConfigException;
 
-public class SearchEndpointException extends Exception {
+public class SearchEndpointException extends ServiceException {
 	
 	public SearchEndpointException(String mess) {
 		super(mess);
