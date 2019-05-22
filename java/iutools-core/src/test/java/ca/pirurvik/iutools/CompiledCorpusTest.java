@@ -307,6 +307,25 @@ public class CompiledCorpusTest extends TestCase
     }
     
     @Test
+    public void test__verify_wordSegmentations_after_compilation() throws Exception
+    {
+		String[] stringsOfWords = new String[] {
+				"nunavut takujuq iglumik"
+				};
+		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
+        CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
+        try {
+        	compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
+        } catch(Exception e) {
+        	System.err.println("Exiting from compiler");
+        }
+			
+        String expected = ",,nunavut:{nunavut/1n},,takujuq:{taku/1v}{juq/1vn},,iglumik:{iglu/1n}{mik/tn-acc-s},,";
+        String wordSegmentations = compiledCorpus.getWordSegmentations();
+		assertEquals("The word segmentations string is not correct.", expected, wordSegmentations);
+    }
+    
+    @Test
     public void test__canBeResumed() throws ConfigException, IOException {
 		String[] stringsOfWords = new String[] {
 				"nunavut inuit takujuq amma kanaujaq iglumik takulaaqtuq nunait"

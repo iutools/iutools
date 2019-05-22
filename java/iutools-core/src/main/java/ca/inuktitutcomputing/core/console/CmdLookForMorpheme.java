@@ -1,14 +1,18 @@
 package ca.inuktitutcomputing.core.console;
 
 import java.io.File;
+import java.io.FileReader;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+
+import com.google.gson.Gson;
 
 import ca.inuktitutcomputing.data.LinguisticDataSingleton;
 import ca.inuktitutcomputing.data.Morpheme;
 import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.morph.MorphInuk;
+import ca.pirurvik.iutools.CompiledCorpus;
 import ca.pirurvik.iutools.MorphemeExtractor;
 import ca.pirurvik.iutools.MorphemeExtractor.Words;
 import ca.pirurvik.iutools.SpellChecker;
@@ -27,12 +31,17 @@ public class CmdLookForMorpheme extends ConsoleCommand {
 	@Override
 	public void execute() throws Exception {
 		String morpheme = getMorpheme(false);
-		String dictionaryFilePathname = getDictFile(true);
-		File dictionaryFile = new File(dictionaryFilePathname);
+		//String dictionaryFilePathname = getDictFile(true);
+		//File dictionaryFile = new File(dictionaryFilePathname);
+		String compiledCorpusFilePath = getCompilationFile();
+		FileReader fr = new FileReader(compiledCorpusFilePath);
+		CompiledCorpus compiledCorpus = new Gson().fromJson(fr, CompiledCorpus.class);
+		fr.close();
 		
 		MorphemeExtractor morphExtr = new MorphemeExtractor();
+		morphExtr.useDictionary(compiledCorpus);
 		
-		morphExtr.useDictionary(dictionaryFile);
+		//morphExtr.useDictionary(dictionaryFile);
 		
 		LinguisticDataSingleton.getInstance("csv");
 

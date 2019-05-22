@@ -23,7 +23,7 @@ public class Console {
 				.longOpt(ConsoleCommand.OPT_COMP_FILE)
 			    .desc("Path of json file where the result of the compilation is saved (trie, etc).")
 			    .hasArg()
-			    .argName("TRIE_FILE")
+			    .argName("CORPUS_COMPILATION_FILE")
 			    .build();
 
 		Option optCorpusName = Option.builder(null)
@@ -227,7 +227,7 @@ public class Console {
 
 		SubCommand lookForMorpheme = 
 				new CmdLookForMorpheme("look_for_morpheme")
-				.addOption(optDictFile)
+				.addOption(optCompFile)
 				.addOption(optMorpheme)
 				;
 		mainCmd.addSubCommand(lookForMorpheme);

@@ -30,8 +30,16 @@ public class MorphemeExtractor {
 		fileReader.close();
 	}
 	
+	public void useDictionary(CompiledCorpus corpus) throws IOException {
+		dictionary = corpus.getWordSegmentations();
+	}
+	
 	public void setDictionary(String _dictionary) {
 		this.dictionary = _dictionary;
+	}
+	
+	public String getDictionary() {
+		return this.dictionary;
 	}
 	
 	public List<Words> wordsContainingMorpheme(String morpheme) {

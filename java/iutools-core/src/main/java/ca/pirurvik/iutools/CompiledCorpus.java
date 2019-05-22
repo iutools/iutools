@@ -7,7 +7,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -50,6 +49,8 @@ public class CompiledCorpus
 	protected HashMap<String,String[]> segmentsCache = new HashMap<String, String[]>();
 	protected Vector<String> wordsFailedSegmentation = new Vector<String>();
 	protected HashMap<String,Long> wordsFailedSegmentationWithFreqs = new HashMap<String,Long>();
+	
+	public String wordSegmentations = ",,";
 
 	protected Vector<String> filesCompiled = new Vector<String>();	
 	protected String saveFilePath = null;	
@@ -137,6 +138,33 @@ public class CompiledCorpus
 			saveCompilerInJSONFile(completeCompilationResultsFilePathname);
 	}
 	
+	public String getWordSegmentations() {
+		//if (wordSegmentations==null) {
+		//	__compileWordSegmentations();
+		//	saveCompilerInDirectory(corpusDirectoryPathname);
+		//	if (completeCompilationResultsFilePathname != null)
+		//		saveCompilerInJSONFile(completeCompilationResultsFilePathname);
+		//}
+		return wordSegmentations;
+	}
+	
+	/*private void __compileWordSegmentations() {
+		Collection<String> segmentationsKeys = segmentsCache.keySet();
+		int nbDecompositions = segmentationsKeys.size();
+		int i = 1;
+		Iterator<String> it = segmentationsKeys.iterator();
+		while (it.hasNext()) {
+			String word = it.next();
+			String[] segments = segmentsCache.get(word);
+			System.out.println("<<>> "+(i++)+"/"+nbDecompositions+" : "+word+" ("+segments.length+")");
+			System.out.flush();
+			if ( segments.length != 0 ) 
+				addToWordSegmentations(word,segments);
+			//if (i>10) break;
+		}
+	}*/
+	
+	
 	/**
 	 * Recompile only the words that failed morphological analysis in a previous run
 	 * @param corpusDirectoryPathname
@@ -211,7 +239,7 @@ public class CompiledCorpus
 		saveCompilerInJSONFile(saveFilePathname);
 	}
 	
-	private void saveCompilerInJSONFile (String saveFilePathname) throws IOException {
+	public void saveCompilerInJSONFile (String saveFilePathname) throws IOException {
 		FileWriter saveFile = new FileWriter(saveFilePathname);
 		Gson gson = new Gson();
 		long savedRetrievedFileWordCounter = this.retrievedFileWordCounter;
@@ -330,6 +358,9 @@ public class CompiledCorpus
 			toConsole("[segmenting] ("+now+") ");
 			try {
 					segments = getSegmenter().segment(word);
+					// new word decomposed or word that now decomposed: add to word segmentations string
+					if (segments.length != 0)
+						addToWordSegmentations(word,segments);
 //should be logger.debug					toConsole("** AFTER segment()");  
 			} catch (Exception e) {
 //					toConsole("** EXCEPTION RAISED");
@@ -363,7 +394,6 @@ public class CompiledCorpus
 		} catch (TrieException e) {
 			toConsole("--** Problem adding word: " + word + " (" + e.getMessage() + ").");
 		}
-		
 	}
 
 	private void removeFromListOfFailedSegmentation(String word) {
@@ -371,6 +401,10 @@ public class CompiledCorpus
 			wordsFailedSegmentation.removeElement(word);
 		if (wordsFailedSegmentationWithFreqs.containsKey(word))
 				wordsFailedSegmentationWithFreqs.remove(word);
+	}
+	
+	private void addToWordSegmentations(String word,String[] segments) {
+		wordSegmentations += word+":"+String.join("", segments)+",,";
 	}
 
 	private void addToListOfFailedSegmentation(String word) {
