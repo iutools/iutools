@@ -101,7 +101,7 @@ public class SearchEndpoint extends HttpServlet {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.webservice.SearchEndpoint.executeEndPoint");
 		
 		SearchResponse results = new SearchResponse();
-		
+
 		if (inputs.query == null || inputs.query.isEmpty()) {
 			throw new SearchEndpointException("Query was empty or null");
 		}

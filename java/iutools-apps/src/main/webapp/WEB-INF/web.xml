@@ -16,5 +16,26 @@
 		<servlet-name>SearchEndpoint</servlet-name>
 		<url-pattern>/srv/search/*</url-pattern>
 	</servlet-mapping>	
+	<servlet>
+	   <servlet-name>OccurrenceEndpoint</servlet-name>
+	   <servlet-class>  
+	     ca.pirurvik.iutools.webservice.OccurrenceEndpoint
+	   </servlet-class>
+	</servlet> 
+	<servlet-mapping>
+		<servlet-name>OccurrenceEndpoint</servlet-name>
+		<url-pattern>/srv/occurrences/*</url-pattern>
+	</servlet-mapping>	
 
+	<!--  Test UTF8 chars -->
+	<servlet>
+	   <servlet-name>HelloWorld</servlet-name>
+	   <servlet-class>  
+	     ca.pirurvik.iutools.webservice.HelloWorld
+	   </servlet-class>
+	</servlet> 
+	<servlet-mapping>
+		<servlet-name>HelloWorld</servlet-name>
+		<url-pattern>/srv/hello/*</url-pattern>
+	</servlet-mapping>	
 </web-app>
