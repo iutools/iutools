@@ -48,17 +48,14 @@ import ca.pirurvik.iutools.search.SearchHit;
 
 
 public class SearchEndpoint extends HttpServlet {
-	private String endPointName = null;
-	private String esDefaultIndex = "dedupster";
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4670287970764735344L;
 	EndPointHelper helper = null;
 	
     QueryExpander expander = null;    
-    
-	protected void initialize(String _esIndexName, String _endPointName) {
-		if (_esIndexName != null) this.esDefaultIndex = _esIndexName;
-		if (_endPointName != null) this.endPointName = _endPointName;
-	}
-	
+    	
 	public SearchEndpoint() {
 	};
 	
@@ -67,7 +64,10 @@ public class SearchEndpoint extends HttpServlet {
 		logger.debug("doGet()");
 	}
 	
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {		
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.webservice.SearchEndpoint.doPost");
+		tLogger.trace("HELLO");
+				
 		String jsonResponse = null;
 
 		EndPointHelper.setContenTypeAndEncoding(response);
@@ -76,6 +76,7 @@ public class SearchEndpoint extends HttpServlet {
 		try {
 			EndPointHelper.setContenTypeAndEncoding(response);
 			inputs = EndPointHelper.jsonInputs(request, SearchInputs.class);
+			tLogger.trace("inputs="+PrettyPrinter.print(inputs));
 			ServiceResponse results = executeEndPoint(inputs);
 			jsonResponse = new ObjectMapper().writeValueAsString(results);
 		} catch (Exception exc) {
@@ -88,6 +89,7 @@ public class SearchEndpoint extends HttpServlet {
 	
 	private void writeJsonResponse(HttpServletResponse response, String json) throws IOException {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.webservice.writeJsonResponse");
+		
 		tLogger.debug("json="+json);
 		PrintWriter writer = response.getWriter();
 		
@@ -96,7 +98,8 @@ public class SearchEndpoint extends HttpServlet {
 		}
 
 	public SearchResponse executeEndPoint(SearchInputs inputs) throws SearchEndpointException  {
-		Logger logger = Logger.getLogger("SearchEndpoint.executeEndPoint");
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.webservice.SearchEndpoint.executeEndPoint");
+		
 		SearchResponse results = new SearchResponse();
 		
 		if (inputs.query == null || inputs.query.isEmpty()) {
@@ -105,7 +108,7 @@ public class SearchEndpoint extends HttpServlet {
 		
 		List<String> queryWords = null;
 		try {
-			logger.debug("syllabic query= "+inputs.getQuerySyllabic());
+			tLogger.trace("syllabic query= "+inputs.getQuerySyllabic());
 			expandQuery(inputs.getQuerySyllabic(), results);
 			queryWords = results.expandedQueryWords;
 		} catch (CompiledCorpusRegistryException | QueryExpanderException e) {

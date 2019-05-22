@@ -2,9 +2,12 @@ package ca.pirurvik.iutools.search;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
+import org.apache.log4j.Logger;
 
 import ca.nrc.data.harvesting.BingSearchEngine;
 import ca.nrc.data.harvesting.SearchEngine;
@@ -46,7 +49,7 @@ public class BingSearchWorker implements Runnable {
 		this.hitsPerPage = _hitsPerPage;
 		this.hitsPageNum = _hitsPageNum;
 		this.thrName = _thrName;
-		
+		this.excludedURLs = new HashSet<String>();
 	}
 	
 	public boolean stillWorking() {
@@ -54,7 +57,7 @@ public class BingSearchWorker implements Runnable {
 	}
 	   
    public void run()  {
-//	   System.out.println("-- BingSearcher.run: thrName="+this.thrName+" started, query="+this.query);
+	   Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.search.BingSearchWorker.run");
 	   
 		List<SearchHit> hitsList = new ArrayList<SearchHit>();
 		Long total = new Long(0);
@@ -79,6 +82,9 @@ public class BingSearchWorker implements Runnable {
 			return;
 		}
 		
+		tLogger.trace("[thrName="+thrName+"] after invoking Bing search engine, results.size()="+results.size());
+
+		
 		Iterator<Hit> iter = results.iterator();
 		while (iter.hasNext()) {
 			Hit bingHit = iter.next();
@@ -86,14 +92,15 @@ public class BingSearchWorker implements Runnable {
 			SearchHit aHit = new SearchHit(bingHit.url.toString(), bingHit.title, bingHit.summary);
 			if (!this.excludedURLs.contains(aHit.url)) {
 				hitsList.add(aHit);	
+			} else {
+				tLogger.trace("[thrName="+thrName+"] URL "+aHit.url+" was already seen in the search results");				
 			}
 		}
 		
 		this.totalHits = total;
 		this.hits = hitsList;
-	   
-//	   System.out.println("-- BingSearcher.run: thrName="+this.thrName+" ENDED");
-
+		
+		tLogger.trace("[thrName="+thrName+"] upon exit, totalHits="+totalHits+", hits.size()="+hits.size());
    }
    
    public void start () {
