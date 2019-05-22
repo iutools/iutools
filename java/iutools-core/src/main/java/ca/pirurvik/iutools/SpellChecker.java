@@ -248,7 +248,10 @@ public class SpellChecker {
 	}
 
 	public List<SpellingCorrection> correctText(String text) {
-		
+		return correctText(text, null);
+	}
+
+	public List<SpellingCorrection> correctText(String text, Integer nCorrections) {
 		// TODO Auto-generated method stub
 		return null;
 	}

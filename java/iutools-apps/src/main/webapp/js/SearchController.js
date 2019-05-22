@@ -24,6 +24,7 @@ class SearchController extends WidgetController {
 	
 	onSearch() {
 		this.currentPage = 1;
+		this.alreadyShownHits = [];
 		this.searchFromCurrentPage();
 	}
 	
@@ -97,7 +98,6 @@ class SearchController extends WidgetController {
 		if (resp.errorMessage != null) {
 			this.failureCallback(resp);
 		} else {
-//			console.log('successCallback --- resp.totalHits='+resp.totalHits);
 			this.setQuery(resp.expandedQuery);
 			this.setTotalHits(resp.totalHits);
 			this.totalHits = resp.totalHits;

@@ -75,6 +75,12 @@ public class SpellCheckerTest {
 		String wordWithError = "inusuk";
 		int nCorrections = 5;
 		List<String> corrections = checker.correct(wordWithError, nCorrections);
+		
+		//
+		// You can also get corrections for all words in a text
+		//
+		String text = "inuit inusuk nunnavut";
+		List<SpellingCorrection> corrections2 = checker.correctText(text, nCorrections);
 
 	}
 	
