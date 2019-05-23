@@ -9,40 +9,43 @@ import java.util.regex.Pattern;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import ca.inuktitutcomputing.script.TransCoder;
+import ca.pirurvik.iutools.search.PageOfHits;
 
 public class SearchInputs extends ServiceInputs {
-	public String query = "";
-	public int hitsPerPage = 10;
-	public Integer hitsPageNum = 0;
-	public Set<String> excludedHits = new HashSet<String>();
-
+	
+	public PageOfHits prevPage = null;
+	
 	public SearchInputs() {
+		this.initialize("");
 	}
-	
+
 	public SearchInputs(String _query) {
-		this.query = _query;
+		initialize(_query);
 	}
 	
-	public SearchInputs excludeURLs(List<String> urls) {
-		this.excludedHits.addAll(urls);
-		return this;
+	public void initialize(String _query) {
+		this.prevPage = new PageOfHits(_query);
 	}
-	
-	@JsonIgnore
-	public String getQuerySyllabic() {
-		String _querySyllabic = this.query;
-		if (_querySyllabic != null) {
-			Matcher matcher = Pattern.compile("[a-zA-z]").matcher(_querySyllabic);
+
+		
+	public String convertQueryToSyllabic() {
+		if (this.prevPage.query != null) {
+			Matcher matcher = Pattern.compile("[a-zA-z]").matcher(this.prevPage.query);
 			if (matcher.find()) {
-				_querySyllabic = TransCoder.romanToUnicode(_querySyllabic);
+				this.prevPage.query = TransCoder.romanToUnicode(this.prevPage.query);
 			}
-			
 		}
-		return _querySyllabic;
+		
+		return this.prevPage.query;
 	}
 
 	public SearchInputs setHitsPerPage(int _hitsPerPage) {
-		this.hitsPerPage = _hitsPerPage;
+		this.prevPage.hitsPerPage = _hitsPerPage;
+		return this;
+	}
+	
+	public SearchInputs setPageNum(int pageNum) {
+		this.prevPage.setHitsPageNum(pageNum);
 		return this;
 	}
 	

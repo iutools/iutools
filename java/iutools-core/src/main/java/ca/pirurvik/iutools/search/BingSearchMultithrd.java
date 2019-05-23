@@ -5,38 +5,62 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
+import ca.nrc.datastructure.Cloner;
+import ca.nrc.datastructure.Cloner.ClonerException;
+import ca.nrc.json.PrettyPrinter;
 import ca.nrc.datastructure.Pair;
 
 public class BingSearchMultithrd {
+	
+	public static class BingSearchMultithrdException extends Exception {
+		public BingSearchMultithrdException(Exception e) {super(e);}
+	}
 	
 	private BingSearchWorker[] workers = null;
 	
 	public BingSearchMultithrd() {
 	}
-	
-	public Pair<Long,List<SearchHit>> search(String[] terms)  {
-		return search(terms, 0);
+
+	public PageOfHits search(String query) throws BingSearchMultithrdException  {
+		return search(query, null);
 	}
 	
-	public Pair<Long,List<SearchHit>> search(String[] terms, int hitsPageNum)  {
-		return search(terms, hitsPageNum, 10);
+	public PageOfHits search(String query, Integer _hitsPerPage) throws BingSearchMultithrdException  {
+		PageOfHits nullPage = new PageOfHits(query);
+		if (_hitsPerPage != null) {
+			nullPage.setHitsPerPage(_hitsPerPage);
+		}
+		PageOfHits page = retrieveNextPage(nullPage);
+		return page;
 	}
-
-	public Pair<Long,List<SearchHit>> search(String[] terms, int hitsPageNum, Integer hitsPerPage)  {
-		return search(terms, hitsPageNum, hitsPerPage, new HashSet<String>());
-	};
-
-	public Pair<Long,List<SearchHit>> search(String[] terms, int hitsPageNum, int hitsPerPage, Set<String> excludeURLs)  {
+	
+	public PageOfHits retrieveNextPage(PageOfHits prevPage) throws BingSearchMultithrdException  {
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.search.BingSearchMultithrd.retrieveNextPage");
+		
+		tLogger.trace("prevPage="+PrettyPrinter.print(prevPage));
+		
+		PageOfHits page;
+		try {
+			page = Cloner.clone(prevPage);
+		} catch (ClonerException e) {
+			throw new BingSearchMultithrdException(e);
+		}
+		page.hasNext = false;
 		long totalEstHits = 0;		
 		List<SearchHit> hits = new ArrayList<SearchHit>();
 		
+		page.pageNum++;
+		
 		// Create one worker per term
-		int numWorkers = terms.length;
+		int numWorkers = page.getQueryTerms().length;
 		workers = new BingSearchWorker[numWorkers];
 		for (int ii=0; ii < numWorkers; ii++) {
-			String aTerm = terms[ii];
-			BingSearchWorker aWorker = new BingSearchWorker(aTerm, hitsPageNum, hitsPerPage, "thr-"+ii+"-"+aTerm);
-			aWorker.excludeUrls(excludeURLs);
+			String aTerm = page.getQueryTerms()[ii];
+			BingSearchWorker aWorker = 
+					new BingSearchWorker(aTerm, page.pageNum, page.hitsPerPage, "thr-"+ii+"-"+aTerm);
+			aWorker.excludeUrls(page.urlsAllPreviousHits);
 			workers[ii] = aWorker;
 			aWorker.start();
 		}
@@ -52,6 +76,9 @@ public class BingSearchMultithrd {
 					} else {
 						// This worker just finished running. Integrate its
 						// results in the total
+						if (currWorker.hits.size() >= page.hitsPerPage) {
+							page.hasNext = true;
+						}
 						totalEstHits += currWorker.totalHits;
 					}
 				}				
@@ -65,12 +92,17 @@ public class BingSearchMultithrd {
 			}
 		}
 		
-		List<SearchHit> sortedHits = aggregateWorkerHits();
+		aggregateWorkerHits(page);
 		
-		return Pair.of(totalEstHits, sortedHits);
+		page.estTotalHits = totalEstHits;
+		if (!page.hasNext) {
+			page.estTotalHits = new Long(page.urlsAllPreviousHits.size() + page.hitsCurrPage.size());
+		}
+		
+		return page;
 	}
 
-	private List<SearchHit> aggregateWorkerHits() {
+	private void aggregateWorkerHits(PageOfHits page) {
 
 		//
 		// Mix hits of the different workers. That way, the top
@@ -86,13 +118,18 @@ public class BingSearchMultithrd {
 				if (remainingHits.size() == 0) {
 					emptyWorkers++;
 				} else {
-					aggregated.add(remainingHits.remove(0));
+					SearchHit hit = remainingHits.remove(0);
+					String url = hit.url;
+					if (!page.urlsAllPreviousHits.contains(url)) {
+						aggregated.add(hit);
+						page.addPreviousHitURLs(new String[] {url});
+					}
 				}
 			}
 			if (emptyWorkers == workers.length) someHitsLeft = false;
 		}
 		
-		return aggregated;
+		page.hitsCurrPage = aggregated;
 	}
 
 

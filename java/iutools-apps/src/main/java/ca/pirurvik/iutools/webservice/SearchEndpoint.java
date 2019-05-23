@@ -44,6 +44,8 @@ import ca.pirurvik.iutools.QueryExpanderException;
 import ca.pirurvik.iutools.QueryExpander;
 import ca.pirurvik.iutools.QueryExpansion;
 import ca.pirurvik.iutools.search.BingSearchMultithrd;
+import ca.pirurvik.iutools.search.BingSearchMultithrd.BingSearchMultithrdException;
+import ca.pirurvik.iutools.search.PageOfHits;
 import ca.pirurvik.iutools.search.SearchHit;
 
 
@@ -66,7 +68,7 @@ public class SearchEndpoint extends HttpServlet {
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.webservice.SearchEndpoint.doPost");
-		tLogger.trace("HELLO");
+		
 				
 		String jsonResponse = null;
 
@@ -102,39 +104,46 @@ public class SearchEndpoint extends HttpServlet {
 		
 		SearchResponse results = new SearchResponse();
 
-		if (inputs.query == null || inputs.query.isEmpty()) {
+		String query = inputs.prevPage.query;
+		if (query == null || query.isEmpty()) {
 			throw new SearchEndpointException("Query was empty or null");
 		}
 		
 		List<String> queryWords = null;
 		try {
-			tLogger.trace("syllabic query= "+inputs.getQuerySyllabic());
-			expandQuery(inputs.getQuerySyllabic(), results);
+			expandQuery(inputs.convertQueryToSyllabic(), results);
 			queryWords = results.expandedQueryWords;
 		} catch (CompiledCorpusRegistryException | QueryExpanderException e) {
 			throw new SearchEndpointException("Unable to expand the query", e);
 		}
 		
-		Pair<Long,List<SearchHit>> hitsInfo = search(queryWords, inputs);;
-		results.totalHits = hitsInfo.getFirst();
-		results.hits = hitsInfo.getSecond();
+		
+		PageOfHits hitsPage = search(queryWords, inputs);;
+		results.totalHits = hitsPage.estTotalHits;
+		results.hits = hitsPage.hitsCurrPage;
+		
 		return results;
 	}
 
-	private Pair<Long, List<SearchHit>> search(List<String> queryWords, SearchInputs inputs) throws SearchEndpointException {
+	private PageOfHits search(List<String> queryWords, SearchInputs inputs) throws SearchEndpointException {
 		
 		Long totalHits = new Long(0);
 		BingSearchMultithrd engine;
 		engine = new BingSearchMultithrd();
 				
-		Pair<Long, List<SearchHit>> results;
+		PageOfHits results;
 		String[] queryWordsArr = queryWords.toArray(new String[queryWords.size()]);
-		results = engine.search(queryWordsArr, inputs.hitsPageNum, inputs.hitsPerPage, inputs.excludedHits);
+		try {
+			results = engine.retrieveNextPage(inputs.prevPage);
+			
+		} catch (BingSearchMultithrdException e) {
+			throw new SearchEndpointException(e);
+		}
 		
-		Long estTotalHits = results.getFirst();
-		List<SearchHit> hits = results.getSecond();
+		Long estTotalHits = results.estTotalHits;
+		List<SearchHit> hits = results.hitsCurrPage;
 	
-		return Pair.of(estTotalHits, hits);
+		return results;
 	}
 
 	protected void expandQuery(String query, SearchResponse results) throws SearchEndpointException, CompiledCorpusRegistryException, QueryExpanderException {

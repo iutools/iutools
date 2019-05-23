@@ -8,9 +8,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import ca.nrc.json.PrettyPrinter;
 
 public class EndPointHelper {
 
@@ -20,13 +23,18 @@ public class EndPointHelper {
 	}
 
 	public static <T  extends ServiceInputs> T jsonInputs(HttpServletRequest request, Class<T> class1) throws IOException {
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.webservice.EndPointHelper.jsonInputs");
+		
 		String jsonRequestBody = IOUtils.toString(request.getReader());		
+		tLogger.trace("jsonRequestBody="+jsonRequestBody);
 		T inputs = null;
 		if (jsonRequestBody != null) {
 			ObjectMapper mapper = new ObjectMapper();
 			inputs = mapper.readValue(jsonRequestBody, class1);
 		}
 				
+		tLogger.trace("returning inputs="+PrettyPrinter.print(inputs));
+		
 		return inputs;
 	}
 	

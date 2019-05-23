@@ -292,7 +292,7 @@ function assertPageButtonsAreOK(assert, expNum, caseDescr) {
 		);
 	
 	var expPageNumbers = [];
-	for (var ii=0; ii < expNum; ii++) expPageNumbers.push((ii+1).toString());
+	for (var ii=0; ii < expNum; ii++) expPageNumbers.push((ii).toString());
 	assert.deepEqual(gotPageNumbers, expPageNumbers, "Page number buttons were not as expected");
 }
 

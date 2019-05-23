@@ -2,17 +2,29 @@
  * Controller for the search.html page.
  */
 
+
+
 class SearchController extends WidgetController {
+	
 
 	constructor(config) {
 		super(config);
 		this.hitsPerPage = 10;
-		this.currentPage = 0;
 		this.totalHits = 0;
 		this.attachHtmlElements();
 		
-		this.alreadyShownHits = [];
+		
+		this.prevPage = this.initialPage();
 	} 
+	
+	initialPage(query) {
+		var initialPage = {
+			'query': query,
+			'pageNum': 0,
+			'hasNext': true
+		};	
+		return initialPage;
+	}
 	
 	// Setup handler methods for different HTML elements specified in the config.
 	attachHtmlElements() {
@@ -23,21 +35,21 @@ class SearchController extends WidgetController {
 	}
 	
 	onSearch() {
-		this.currentPage = 1;
+		this.prevPage = this.initialPage(this.elementForProp("txtQuery").val());
 		this.alreadyShownHits = [];
 		this.searchFromCurrentPage();
 	}
 	
 	onSearchPrev() {
-		if (this.currentPage > 1)
-			this.currentPage--;
+		if (this.prevPage.pageNum > 0)
+			this.prevPage.pageNum--;
 		this.searchFromCurrentPage();
 	}
 
 	onSearchNext() {
 		var nbPages = Math.ceil(this.totalHits / this.hitsPerPage);
-		if (this.currentPage < nbPages)
-			this.currentPage++;
+		if (this.prevPage.pageNum < nbPages - 1)
+			this.prevPage.pageNum++;
 		this.searchFromCurrentPage();
 	}
 
@@ -72,7 +84,6 @@ class SearchController extends WidgetController {
 			// this line is for development only, allowing to present results without calling Bing.
 			//var jsonResp = this.mockSrvSearch();fctSuccess(jsonResp);
 		
-//			console.log("jsonRequestData= "+JSON.stringify(jsonRequestData));
 			$.ajax({
 				method: 'POST',
 				url: 'srv/search',
@@ -104,7 +115,7 @@ class SearchController extends WidgetController {
 			this.setResults(resp.hits);	
 			this.generatePagesButtons(resp.totalHits);
 			$(".page-number").removeClass('current-page');
-			$(".page-number[value='"+this.currentPage+"']").addClass('current-page');
+			$(".page-number[value='"+this.prevPage.pageNum+"']").addClass('current-page');
 		}
 		this.setBusy(false);
 	}
@@ -136,16 +147,16 @@ class SearchController extends WidgetController {
 	
 	getSearchRequestData() {
 		
-		var currPage = this.currentPage;
+		var currPage = this.prevPage.pageNum;
 		if (typeof currPage === 'string' || currPage instanceof String) {
 			currPage = parseInt(currPage, 10);
+			this.prevPage.pageNum = currPage;
 		}
 		
+//		this.prevPage.query = this.elementForProp("txtQuery").val();
+		
 		var request = {
-				query: this.elementForProp("txtQuery").val(),
-				hitsPageNum: this.currentPage-1,
-				hitsPerPage: this.hitsPerPage,
-				excludedHits: this.alreadyShownHits
+				prevPage: this.prevPage
 		};
 		
 		var jsonInputs = JSON.stringify(request);
@@ -233,7 +244,7 @@ class SearchController extends WidgetController {
 			var pageLink = '<input class="page-number"' +
 				' type="button" '+
 				' name="'+'page-number'+(ip+1)+'" '+
-				' value="'+(ip+1)+'"/>';
+				' value="'+(ip)+'"/>';
 			divPageNumbers.append(pageLink);
 			if (ip != nbPages-1)
 				divPageNumbers.append('&nbsp;&nbsp;');
@@ -252,7 +263,7 @@ class SearchController extends WidgetController {
 		    		  'click', function(ev) {
 		    				var el = ev.target;
 		    				var pageNumberOfButton = el.value;
-		    				thisSearchController.currentPage = pageNumberOfButton;
+		    				thisSearchController.prevPage.pageNum = pageNumberOfButton;
 		    				thisSearchController.searchFromCurrentPage();
 		    		  });
 	    }
