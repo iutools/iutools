@@ -22,6 +22,7 @@ import com.google.gson.Gson;
 
 import ca.nrc.datastructure.Pair;
 import ca.nrc.json.PrettyPrinter;
+import ca.nrc.string.StringUtils;
 import ca.inuktitutcomputing.utilities.EditDistanceCalculator;
 import ca.inuktitutcomputing.utilities.EditDistanceCalculatorFactory;
 import ca.inuktitutcomputing.utilities.EditDistanceCalculatorFactoryException;
@@ -252,8 +253,24 @@ public class SpellChecker {
 	}
 
 	public List<SpellingCorrection> correctText(String text, Integer nCorrections) {
-		// TODO Auto-generated method stub
-		return null;
+		List<SpellingCorrection> corrections = new ArrayList<SpellingCorrection>();
+		
+		List<Pair<String, Boolean>> tokens = StringUtils.tokenizeNaively(text);
+		
+		for (Pair<String,Boolean> aToken: tokens) {
+			String tokString = aToken.getFirst();
+			Boolean isDelimiter = aToken.getSecond();
+			SpellingCorrection correction;
+			if (isDelimiter) {
+				correction = new SpellingCorrection(tokString);
+			} else {
+				
+			}
+			
+		}
+		
+		return corrections;
 	}
+
 
 }

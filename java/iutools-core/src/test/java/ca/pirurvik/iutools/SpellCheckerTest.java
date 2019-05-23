@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import ca.nrc.datastructure.Pair;
 import ca.nrc.json.PrettyPrinter;
+import ca.nrc.testing.AssertHelpers;
 import ca.pirurvik.iutools.SpellChecker;
 
 import org.junit.*;
@@ -208,6 +209,23 @@ public class SpellCheckerTest {
 			Assert.assertEquals("The element "+i+" of the list of corrections is not right.",expected[i],corrections.get(i));
 		}
 	}
+	
+	@Test @Ignore
+	public void test__correctText_roman() {
+		fail("This new test is currently failing");
+		String text = "inukshuk nunnavut inuit inuktut";
+		List<SpellingCorrection> gotCorrections = checker.correctText(text);
+		
+		Assert.assertFalse("'inukshuk' should have deemd correctly spelled", gotCorrections.get(0).wasMispelled());
+		
+		Assert.assertTrue("'nunnavut' should have deemd mis-spelled", gotCorrections.get(1).wasMispelled());
+		
+		Assert.assertTrue("'inuit' should have deemd mis-spelled", gotCorrections.get(2).wasMispelled());
+
+		Assert.assertTrue("'inuktut' should have deemd correctly spelled", gotCorrections.get(3).wasMispelled());
+		
+		fail("Now, need to check that the list of corrections is correct for the mis-spelled words");
+	}	
 
 	/**********************************
 	 * TEST HELPERS
