@@ -20,6 +20,7 @@ import org.apache.log4j.Logger;
 
 import com.google.gson.Gson;
 
+import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.StringUtils;
@@ -34,22 +35,34 @@ public class SpellChecker {
 	protected int MAX_CANDIDATES = 100;
 	protected String allWords = ",,";
 	protected Map<String,Long> idfStats = new HashMap<String,Long>();
-	private String defaultEditDistanceAlgorithmName = "Levenshtein";
 	public transient EditDistanceCalculator editDistanceCalculator;
 	
+	private CompiledCorpus corpus = null;
 	
-	public SpellChecker() {
-		try {
-			editDistanceCalculator = EditDistanceCalculatorFactory.getEditDistanceCalculator(defaultEditDistanceAlgorithmName);
-		} catch (EditDistanceCalculatorFactoryException e) {
-		}
+	public SpellChecker() throws SpellCheckerException {
+			editDistanceCalculator = EditDistanceCalculatorFactory.getEditDistanceCalculator();
+			
+			try {
+				corpus = CompiledCorpusRegistry.getCorpus();
+			} catch (CompiledCorpusRegistryException e) {
+				throw new SpellCheckerException(e);
+			}
 	}
 	
-	public void setEditDistanceAlgorithm(String name) throws ClassNotFoundException, EditDistanceCalculatorFactoryException {
+	public SpellChecker(File compiledCorpusFile) throws SpellCheckerException {
+		editDistanceCalculator = EditDistanceCalculatorFactory.getEditDistanceCalculator();
+		
+		try {
+			corpus = CompiledCorpus.createFromJson(compiledCorpusFile.toString());
+		} catch (Exception e) {
+			throw new SpellCheckerException(e);
+		}
+	}
+
+	public void setEditDistanceAlgorithm(EditDistanceCalculatorFactory.DistanceMethod name) throws ClassNotFoundException, EditDistanceCalculatorFactoryException {
 		editDistanceCalculator = EditDistanceCalculatorFactory.getEditDistanceCalculator(name);
 	}
 	
-
 	public void addCorrectWord(String word) {
 		//System.out.println("-- addCorrectWord: word="+word);;
 		allWords += word+",,";
@@ -118,10 +131,27 @@ public class SpellChecker {
 		return this.MAX_SEQ_LEN;
 	}
 
-	public List<String> correctWord(String badWord) {
-		return correct(badWord,-1);
+	public SpellingCorrection correctWord(String badWord) {
+		return correctWord(badWord,-1);
 	}
 
+	public SpellingCorrection correctWord(String badWord, int maxCorrections) {
+		
+		Set<String> candidates = firstPassCandidates(badWord);
+		List<Pair<String,Double>> candidatesWithSim = computeCandidateSimilarities(badWord, candidates);
+		List<String> corrections = sortCandidatesBySimilarity(candidatesWithSim);
+		Logger logger = Logger.getLogger("SpellChecker.correct");
+		logger.debug("corrections for "+badWord+": "+corrections.size());
+		
+		SpellingCorrection corr = new SpellingCorrection(badWord);
+ 		if (maxCorrections== -1)
+ 			corr.setPossibleSpellings(corrections);
+ 		else
+ 			corr.setPossibleSpellings(corrections.subList(0, maxCorrections>corrections.size()? corrections.size() : maxCorrections));
+ 		
+ 		return corr;
+	}
+	
 	public Long idf(String charSeq) {
 		Long val = new Long(0);
 		if (idfStats.containsKey(charSeq)) {
@@ -129,19 +159,7 @@ public class SpellChecker {
 		}
 		return val;
 	}
-
-	public List<String> correct(String badWord, int maxCorrections) {
-		
-		Set<String> candidates = firstPassCandidates(badWord);
-		List<Pair<String,Double>> candidatesWithSim = computeCandidateSimilarities(badWord, candidates);
-		List<String> corrections = sortCandidatesBySimilarity(candidatesWithSim);
-		Logger logger = Logger.getLogger("SpellChecker.correct");
-		logger.debug("corrections for "+badWord+": "+corrections.size());
- 		if (maxCorrections== -1)
- 			return corrections;
- 		else
- 			return corrections.subList(0, maxCorrections>corrections.size()? corrections.size() : maxCorrections);
-	}
+	
 
 	private List<String> sortCandidatesBySimilarity(List<Pair<String, Double>> candidatesWithSim) {
 		Iterator<Pair<String, Double>> iteratorCand = candidatesWithSim.iterator();
@@ -239,10 +257,6 @@ public class SpellChecker {
 		Collections.sort(listOfRarest,(Object p1, Object p2) -> {
 			return ((Pair<String,Long>)p1).getSecond().compareTo(((Pair<String,Long>)p2).getSecond());
 		});
-//		for (int il=0; il < listOfRarest.size(); il++)
-//			System.out.println("-- rarestSequencesOf:    rarest["+il+"]= "+
-//					((Pair<String,Long>)listOfRarest.get(il)).getFirst()+" ("+
-//					((Pair<String,Long>)listOfRarest.get(il)).getSecond()+")");
 		
 		return listOfRarest;
 		
@@ -265,8 +279,8 @@ public class SpellChecker {
 			if (isDelimiter) {
 				correction = new SpellingCorrection(tokString);
 			} else {
-				List<String> alternatives = this.correct(tokString, nCorrections);
-				correction = new SpellingCorrection(tokString, alternatives);
+				correction = this.correctWord(tokString, nCorrections);
+//				correction = new SpellingCorrection(tokString, alternatives);
 			}
 			corrections.add(correction);
 			

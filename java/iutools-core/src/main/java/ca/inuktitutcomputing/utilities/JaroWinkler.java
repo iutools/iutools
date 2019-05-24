@@ -101,7 +101,7 @@ package ca.inuktitutcomputing.utilities;
     		}
 
     public static void main(String [] args) throws EditDistanceCalculatorFactoryException {
-    	EditDistanceCalculator calculator = EditDistanceCalculatorFactory.getEditDistanceCalculator("Jaro-Winkler");
+    	EditDistanceCalculator calculator = EditDistanceCalculatorFactory.getEditDistanceCalculator(EditDistanceCalculatorFactory.DistanceMethod.JARO_WINKLER);
         String [] data = { "kitten", "sitting", "saturday", "sunday", "rosettacode", "raisethysword" };
         for (int i = 0; i < data.length; i += 2)
             System.out.println("distance(" + data[i] + ", " + data[i+1] + ") = " + calculator.distance(data[i], data[i+1]));

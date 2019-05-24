@@ -153,17 +153,12 @@ public class SearchEndpoint extends HttpServlet {
 		if (expansionWords == null) {
 		
 			QueryExpansion[] expansions = null;
-			try {
-				if (expander == null) {
-					CompiledCorpus compiledCorpus = CompiledCorpusRegistry.getCorpus();
-					expander = new QueryExpander(compiledCorpus);
-				}
-				expansions = expander.getExpansions(query);			
-			} catch (ConfigException e) {
-				throw new SearchEndpointException(e);
+			if (expander == null) {
+				CompiledCorpus compiledCorpus = CompiledCorpusRegistry.getCorpus();
+				expander = new QueryExpander(compiledCorpus);
 			}
-			
-			
+			expansions = expander.getExpansions(query);			
+						
 			expandedQuery = "(";
 			boolean isFirst = true;
 			for (QueryExpansion exp: expansions) {

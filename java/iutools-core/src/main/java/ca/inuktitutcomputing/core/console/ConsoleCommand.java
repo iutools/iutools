@@ -2,6 +2,7 @@ package ca.inuktitutcomputing.core.console;
 
 import java.util.Scanner;
 
+import ca.inuktitutcomputing.utilities.EditDistanceCalculatorFactory;
 import ca.nrc.ui.commandline.SubCommand;
 
 public abstract class ConsoleCommand extends SubCommand {
@@ -125,11 +126,16 @@ public abstract class ConsoleCommand extends SubCommand {
 		return getOptionValue(ConsoleCommand.OPT_MAX_CORR, failIfAbsent);
 	}
 	
-	protected String getEditDistanceAlgorithm() {
+	protected EditDistanceCalculatorFactory.DistanceMethod getEditDistanceAlgorithm() {
 		return getEditDistanceAlgorithm(false);
 	}
-	protected String getEditDistanceAlgorithm(boolean failIfAbsent) {
-		return getOptionValue(ConsoleCommand.OPT_ED_ALGO, failIfAbsent);
+	
+	protected EditDistanceCalculatorFactory.DistanceMethod getEditDistanceAlgorithm(boolean failIfAbsent) {
+		String algName = getOptionValue(ConsoleCommand.OPT_ED_ALGO, failIfAbsent);
+		EditDistanceCalculatorFactory.DistanceMethod alg 
+			= EditDistanceCalculatorFactory.DistanceMethod.valueOf(algName.toUpperCase());
+		
+		return alg;
 	}
 	
 	protected static String prompt(String mess) {

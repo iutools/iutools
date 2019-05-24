@@ -7,7 +7,9 @@ import java.util.List;
 import ca.inuktitutcomputing.data.LinguisticDataSingleton;
 import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.morph.MorphInuk;
+import ca.inuktitutcomputing.utilities.EditDistanceCalculatorFactory;
 import ca.pirurvik.iutools.SpellChecker;
+import ca.pirurvik.iutools.SpellingCorrection;
 
 public class CmdCheckSpelling extends ConsoleCommand {
 
@@ -27,10 +29,11 @@ public class CmdCheckSpelling extends ConsoleCommand {
 		File checkerFile = new File(checkerFilePathname);
 		String maxCorrectionsOpt = getMaxCorr(false);
 		int maxCorrections = maxCorrectionsOpt==null ? 5 : Integer.parseInt(maxCorrectionsOpt);
-		String editDistanceAlgorithm = getEditDistanceAlgorithm(false);
+		EditDistanceCalculatorFactory.DistanceMethod editDistanceAlgorithm = getEditDistanceAlgorithm(false);
 		
 		
-		List<String> suggestions = null;
+//		List<String> suggestions = null;
+		SpellingCorrection corr = null;
 		SpellChecker checker = new SpellChecker();
 		if (editDistanceAlgorithm!=null)
 			checker.setEditDistanceAlgorithm(editDistanceAlgorithm);
@@ -42,21 +45,22 @@ public class CmdCheckSpelling extends ConsoleCommand {
 		if (word == null) {
 			interactive = true;
 		} else {
-			suggestions = checker.correct(word, maxCorrections);
+			corr = checker.correctWord(word, maxCorrections);
 		}
 
 		while (true) {
 			if (interactive) {
 				word = prompt("Enter Inuktut word");
 				if (word == null) break;
-				suggestions = null;
+				corr = null;
 				try {
-					suggestions = checker.correct(word, maxCorrections);
+					corr = checker.correctWord(word, maxCorrections);
 				} catch (Exception e) {
 					throw e;
 				}
 			}
 			
+			List<String> suggestions = corr.getPossibleSpellings();
 			if (suggestions != null && suggestions.size() > 0) {
 				Iterator<String> itSugg = suggestions.iterator();
 				int nIt = 1;

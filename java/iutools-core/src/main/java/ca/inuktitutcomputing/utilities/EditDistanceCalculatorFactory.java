@@ -2,19 +2,25 @@ package ca.inuktitutcomputing.utilities;
 
 public class EditDistanceCalculatorFactory {
 	
-	public static EditDistanceCalculator getEditDistanceCalculator(String name) throws EditDistanceCalculatorFactoryException {
-		String nameLC = name.toLowerCase();
+	public enum DistanceMethod {LEVENSTHEIN, DP5, LCS, JARO_WINKLER};
+	
+	private static final DistanceMethod defaultDistanceMethod = DistanceMethod.LEVENSTHEIN;
+	
+	public static EditDistanceCalculator getEditDistanceCalculator() {
+		return getEditDistanceCalculator(defaultDistanceMethod);
+	}
+	
+	public static EditDistanceCalculator getEditDistanceCalculator(DistanceMethod method) {
 		EditDistanceCalculator edcalculator = null;
-		if (nameLC.equals("levenshtein"))
+		if (method == DistanceMethod.LEVENSTHEIN)
 			edcalculator = new Levenshtein();
-		else if (nameLC.equals("dp5"))
+		else if (method == DistanceMethod.DP5)
 			edcalculator =  new DP5();
-		else if (nameLC.equals("lcs"))
+		else if (method == DistanceMethod.LCS)
 			edcalculator =  new LCS();
-		else if (nameLC.equals("jaro-winkler"))
+		else if (method == DistanceMethod.JARO_WINKLER)
 			edcalculator =  new JaroWinkler();
-		else
-			throw new EditDistanceCalculatorFactoryException("Unknown edit distance method.");
+		
 		return edcalculator;
 	}
 

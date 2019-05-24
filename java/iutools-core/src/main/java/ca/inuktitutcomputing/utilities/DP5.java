@@ -55,7 +55,8 @@ public class DP5 implements EditDistanceCalculator
 
 	public static void main(String args[]) throws EditDistanceCalculatorFactoryException 
 	{ 
-		EditDistanceCalculator calculator = EditDistanceCalculatorFactory.getEditDistanceCalculator("DP5");
+//		EditDistanceCalculator calculator = EditDistanceCalculatorFactory.getEditDistanceCalculator("DP5");
+		EditDistanceCalculator calculator = EditDistanceCalculatorFactory.getEditDistanceCalculator(EditDistanceCalculatorFactory.DistanceMethod.DP5);
 		String str1 = "sunday"; 
 		String str2 = "saturday"; 
 		System.out.println( calculator.distance( str1 , str2 ) ); 

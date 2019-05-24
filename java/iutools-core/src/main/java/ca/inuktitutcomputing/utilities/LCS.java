@@ -26,7 +26,7 @@ public class LCS implements EditDistanceCalculator {
   
     /* Driver program to test above function */
     public static void main(String[] args) throws EditDistanceCalculatorFactoryException { 
-    	EditDistanceCalculator calculator = EditDistanceCalculatorFactory.getEditDistanceCalculator("lcs");
+    	EditDistanceCalculator calculator = EditDistanceCalculatorFactory.getEditDistanceCalculator(EditDistanceCalculatorFactory.DistanceMethod.LCS);
         String X = "abc", Y = "acd"; 
         System.out.println(calculator.distance(X, Y)); 
   

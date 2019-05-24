@@ -36,7 +36,7 @@ public class QueryExpander {
 		if (_compiledCorpus == null) {
 			try {
 				_compiledCorpus = CompiledCorpusRegistry.getCorpus();
-			} catch (ConfigException | CompiledCorpusRegistryException e) {
+			} catch (CompiledCorpusRegistryException e) {
 				throw new QueryExpanderException("Problem creating a QueryExpander with default pre-compiled corpus", e);
 			}
 		}

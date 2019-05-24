@@ -299,7 +299,8 @@ public class CompiledCorpus
 		BufferedReader bufferedReader = new BufferedReader(new FileReader(fileAbsolutePath));
 		processDocumentContents(bufferedReader,fileAbsolutePath);
 	}
-    protected void processDocumentContents(BufferedReader bufferedReader, String fileAbsolutePath) throws Exception {	
+	
+    public void processDocumentContents(BufferedReader bufferedReader, String fileAbsolutePath) throws Exception {	
     	Logger logger = Logger.getLogger("CorpusTrieCompiler.processDocumentContents");
 		String line;
 		boolean stopBecauseOfStopAfter = false;

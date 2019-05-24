@@ -18,12 +18,12 @@ public class CompiledCorpusRegistry {
 	private static Map<String,CompiledCorpus> registry = new HashMap<String,CompiledCorpus>();
 	
 	@JsonIgnore
-	public static CompiledCorpus getCorpus() throws ConfigException, CompiledCorpusRegistryException {
+	public static CompiledCorpus getCorpus() throws CompiledCorpusRegistryException {
 		return getCorpus(null);
 	}
 
 	@JsonIgnore
-	public static CompiledCorpus getCorpus(String corpusName) throws ConfigException, CompiledCorpusRegistryException {
+	public static CompiledCorpus getCorpus(String corpusName) throws CompiledCorpusRegistryException {
 		if (corpusName == null) {
 			corpusName = "default";
 		}

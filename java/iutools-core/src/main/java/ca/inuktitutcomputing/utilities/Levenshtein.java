@@ -23,7 +23,7 @@ public class Levenshtein implements EditDistanceCalculator {
     }
  
     public static void main(String [] args) throws EditDistanceCalculatorFactoryException {
-    	EditDistanceCalculator calculator = EditDistanceCalculatorFactory.getEditDistanceCalculator("Levenshtein");
+    	EditDistanceCalculator calculator = EditDistanceCalculatorFactory.getEditDistanceCalculator(EditDistanceCalculatorFactory.DistanceMethod.LEVENSTHEIN);
         String [] data = { "kitten", "sitting", "saturday", "sunday", "rosettacode", "raisethysword" };
         for (int i = 0; i < data.length; i += 2)
             System.out.println("distance(" + data[i] + ", " + data[i+1] + ") = " + calculator.distance(data[i], data[i+1]));

@@ -10,12 +10,15 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -57,18 +60,26 @@ public class CompiledCorpusTest extends TestCase
 		//
 		// Use a CompiledCorpus to trie-compile a corpus and compute statistics.
 		//
-		// By default, the compiler will use the char segmenter
+		//
 		CompiledCorpus compiledCorpus;
 		compiledCorpus = new CompiledCorpus();
-		// or it will use the segmenter passed in argument as its class name
+		
+		// 
+		// By default, the compiler segments words on a character by character basis.
+		// 
+		// But you can also pass it a different segmenter. For example, the following
+		// compiler will segment words by morphemes.
+		//
 		compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
 
 		// Identify the full path of the corpus directory to be compiled
+		//
 		String corpusDirectoryPathname = "path/to/corpus/directory";
 		
 		// If wanted, identify the full path of a copy of the trie-compilation json file
 		// that will be created after the compilation has terminated successfully.
 		// If the path points to a non-existent directory, the copy will not be made.
+		//
 		String trieCompilationFilePathname = "path/to/file";
 		boolean result = compiledCorpus.setCompleteCompilationFilePath(trieCompilationFilePathname);
 		if ( !result ) {
@@ -524,9 +535,6 @@ public class CompiledCorpusTest extends TestCase
 	}
 	
 
-	
-	
-
 	private void assertContains(CompiledCorpus compiledCorpus,
 			String[] segs, long expFreq, String[] expLongestTerminal) {
 		TrieNode gotNode = compiledCorpus.trie.getNode(segs);
@@ -542,6 +550,18 @@ public class CompiledCorpusTest extends TestCase
 					expMostFreqTerminalTxt, gotMostFreqTerminalTxt);
 			
 		}
+	}
+
+	public static File compileToFile(String content) throws Exception {
+		CompiledCorpus tempCorp = new CompiledCorpus();
+		InputStream iStream = IOUtils.toInputStream("inukttut ");
+		InputStreamReader iSReader = new InputStreamReader(iStream);
+		BufferedReader br = new BufferedReader(iSReader);
+		tempCorp.processDocumentContents(br, "BLAH");
+		
+		File tempFile = File.createTempFile("compiled_corpus", ".json");
+		tempCorp.saveCompilerInJSONFile(tempFile.toString());
+		return tempFile;
 	}
 	
 	

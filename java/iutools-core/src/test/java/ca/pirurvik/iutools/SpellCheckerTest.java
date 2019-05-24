@@ -2,8 +2,11 @@ package ca.pirurvik.iutools;
 
 import static org.junit.Assert.*;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -15,15 +18,23 @@ import ca.nrc.json.PrettyPrinter;
 import ca.nrc.testing.AssertHelpers;
 import ca.pirurvik.iutools.SpellChecker;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.*;
 
 public class SpellCheckerTest {
 	
-	private SpellChecker checker = new SpellChecker();
-	private SpellChecker checkerSyll = new SpellChecker();
+	private SpellChecker checker;
+	private SpellChecker checkerSyll;;
 	
 	@Before
-	public void setUp() {
+	public void setUp() throws Exception {
+		
+		File tempCorpFileLatin = CompiledCorpusTest.compileToFile("inuktut inukshuk nunavut");		
+		File tempCorpFileSyll = CompiledCorpusTest.compileToFile("ᓄᓇᕘᒥ ᓄᓇᕗᒻᒥ ᓄᓇᒥ ᓄᓇᕗᑦ ᓄᓇᕗᒻᒥᑦ ᐃᒡᓗ");		
+		
+		checker = new SpellChecker(tempCorpFileLatin);
+		checkerSyll = new SpellChecker(tempCorpFileSyll);
+		
 		checker.addCorrectWord("inuktut");
 		checker.addCorrectWord("inuk");
 		checker.addCorrectWord("inukshuk");
@@ -38,7 +49,7 @@ public class SpellCheckerTest {
 	}
 
 	@Test
-	public void test__SpellChecker__Synopsis() throws IOException {
+	public void test__SpellChecker__Synopsis() throws Exception {
 		//
 		// Before you can use a spell checker, you must first build its
 		// dictioanary of correct words.
@@ -70,12 +81,15 @@ public class SpellCheckerTest {
 		checker = new SpellChecker().readFromFile(checkerFile);
 		
 		//
-		// You can then use the check to get plausible corrections for
-		// a badly spelled word.
+		// You can then use the checker to see if a word is mis-spelled, and if so, 
+		// get a list of plausible corrections for that word
 		//
 		String wordWithError = "inusuk";
 		int nCorrections = 5;
-		List<String> corrections = checker.correct(wordWithError, nCorrections);
+		SpellingCorrection correction = checker.correctWord(wordWithError, nCorrections);
+		if (correction.wasMispelled) {
+			List<String> possibleCorrectSpellings = correction.getPossibleSpellings();
+		}
 		
 		//
 		// You can also get corrections for all words in a text
@@ -90,7 +104,7 @@ public class SpellCheckerTest {
 	 **********************************/
 	
 	@Test
-	public void test__addCorrectWord__HappyPath() {
+	public void test__addCorrectWord__HappyPath() throws Exception {
 		SpellChecker checker = new SpellChecker();
 		
 		Assert.assertFalse(containsWord("inuktut", checker));
@@ -173,13 +187,6 @@ public class SpellCheckerTest {
 			Assert.assertTrue("The element "+expected[i]+" is not in the returned list.",wordsWithSeq.contains(expected[i]));
 	}
 	
-	/*
-	 *  checker.addCorrectWord("inuktut");
-		checker.addCorrectWord("inuk");
-		checker.addCorrectWord("inukshuk");
-		checker.addCorrectWord("nunavut");
-
-	 */
 	@Test
 	public void test__firstPassCandidates() {
 		String badWord = "inukkshuk";
@@ -191,8 +198,8 @@ public class SpellCheckerTest {
 	}
 	
 	@Test
-	public void test__correct_roman() {
-		List<String> corrections = checker.correctWord("inukkshuk");
+	public void test__correct__roman__Mispelled_input() {
+		List<String> corrections = checker.correctWord("inukkshuk").getPossibleSpellings();
 		String[] expected = new String[] {"inukshuk","inuktut","inuk","nunavut"};
 		Assert.assertEquals("The number of candidates is wrong.", 4, corrections.size());
 		for (int i=0; i<expected.length; i++) {
@@ -201,8 +208,18 @@ public class SpellCheckerTest {
 	}
 
 	@Test
-	public void test__correct_syllabic() {
-		List<String> corrections = checkerSyll.correctWord("ᓄᓇᕗᖕᒥ");
+	public void test__correct__roman__CorrectlySpellendInput() throws Exception {
+		SpellingCorrection gotCorrection = checker.correctWord("inukshuk");
+		
+		SpellingCorrection expCorrection = 
+				new SpellingCorrection("inukshuk", new String[] {"inuktut","inuk","nunavut"}, false);
+		AssertHelpers.assertDeepEquals("Correction was not as expected", expCorrection, gotCorrection);
+	}
+	
+	
+	@Test
+	public void test__correct__syllabic__Mispelled_input() {
+		List<String> corrections = checkerSyll.correctWord("ᓄᓇᕗᖕᒥ").getPossibleSpellings();
 		String[] expected = new String[] {"ᓄᓇᕗᒻᒥ","ᓄᓇᕘᒥ","ᓄᓇᒥ","ᓄᓇᕗᑦ","ᓄᓇᕗᒻᒥᑦ"};
 		Assert.assertEquals("The number of candidates is wrong.", expected.length, corrections.size());
 		for (int i=0; i<expected.length; i++) {
@@ -215,13 +232,13 @@ public class SpellCheckerTest {
 		String text = "inuktut nunnavut inuit inuktut";
 		List<SpellingCorrection> gotCorrections = checker.correctText(text);
 		
-		Assert.assertFalse("'inukshuk' should have deemd correctly spelled", gotCorrections.get(0).wasMispelled());
+		Assert.assertFalse("'inukshuk' should have deemd correctly spelled", gotCorrections.get(0).wasMispelled);
 		
-		Assert.assertTrue("'nunnavut' should have deemd mis-spelled", gotCorrections.get(1).wasMispelled());
+		Assert.assertTrue("'nunnavut' should have deemd mis-spelled", gotCorrections.get(1).wasMispelled);
 		
-		Assert.assertTrue("'inuit' should have deemd mis-spelled", gotCorrections.get(2).wasMispelled());
+		Assert.assertTrue("'inuit' should have deemd mis-spelled", gotCorrections.get(2).wasMispelled);
 
-		Assert.assertTrue("'inuktut' should have deemd correctly spelled", gotCorrections.get(3).wasMispelled());
+		Assert.assertTrue("'inuktut' should have deemd correctly spelled", gotCorrections.get(3).wasMispelled);
 		
 		fail("Now, need to check that the list of corrections is correct for the mis-spelled words");
 	}	
