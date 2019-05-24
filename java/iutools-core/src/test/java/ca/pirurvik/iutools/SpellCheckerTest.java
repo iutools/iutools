@@ -210,10 +210,9 @@ public class SpellCheckerTest {
 		}
 	}
 	
-	@Test @Ignore
+	@Test 
 	public void test__correctText_roman() {
-		fail("This new test is currently failing");
-		String text = "inukshuk nunnavut inuit inuktut";
+		String text = "inuktut nunnavut inuit inuktut";
 		List<SpellingCorrection> gotCorrections = checker.correctText(text);
 		
 		Assert.assertFalse("'inukshuk' should have deemd correctly spelled", gotCorrections.get(0).wasMispelled());

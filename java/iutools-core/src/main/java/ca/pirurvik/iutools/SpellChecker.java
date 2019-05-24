@@ -253,6 +253,7 @@ public class SpellChecker {
 	}
 
 	public List<SpellingCorrection> correctText(String text, Integer nCorrections) {
+		if (nCorrections == null) nCorrections = 5;
 		List<SpellingCorrection> corrections = new ArrayList<SpellingCorrection>();
 		
 		List<Pair<String, Boolean>> tokens = StringUtils.tokenizeNaively(text);
@@ -260,12 +261,14 @@ public class SpellChecker {
 		for (Pair<String,Boolean> aToken: tokens) {
 			String tokString = aToken.getFirst();
 			Boolean isDelimiter = aToken.getSecond();
-			SpellingCorrection correction;
+			SpellingCorrection correction = null;
 			if (isDelimiter) {
 				correction = new SpellingCorrection(tokString);
 			} else {
-				
+				List<String> alternatives = this.correct(tokString, nCorrections);
+				correction = new SpellingCorrection(tokString, alternatives);
 			}
+			corrections.add(correction);
 			
 		}
 		
