@@ -104,15 +104,17 @@ public class CompiledCorpus
 	
 
 	public void initialize(String _segmenterClassName) {
-		this.segmenterClassName = _segmenterClassName;
+		if (_segmenterClassName != null) this.segmenterClassName = _segmenterClassName;
 	}
 	
 	public  void compileCorpus(String corpusDirectoryPathname) throws Exception {
 		_compileCorpus(corpusDirectoryPathname,false);
 	}
+	
 	public  void compileCorpusFromScratch(String corpusDirectoryPathname) throws Exception {
 		_compileCorpus(corpusDirectoryPathname,true);
 	}
+	
 	public  void _compileCorpus(String corpusDirectoryPathname, boolean fromScratch) throws Exception {
 		toConsole("[INFO] *** Compiling trie for documents in "+corpusDirectoryPathname+"\n");
 		segmenter = new StringSegmenter_IUMorpheme();
@@ -364,8 +366,8 @@ public class CompiledCorpus
 						addToWordSegmentations(word,segments);
 //should be logger.debug					toConsole("** AFTER segment()");  
 			} catch (Exception e) {
-//					toConsole("** EXCEPTION RAISED");
-//					toConsole(" ??? " + e.getClass().getName() + " --- " + e.getMessage() + " ");
+					toConsole("** EXCEPTION RAISED");
+					toConsole(" ??? " + e.getClass().getName() + " --- " + e.getMessage() + " ");
 					segments = new String[] {};
 			}
 //				toConsole("** addToCache");

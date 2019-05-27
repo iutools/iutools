@@ -552,12 +552,12 @@ public class CompiledCorpusTest extends TestCase
 		}
 	}
 
-	public static File compileToFile(String content) throws Exception {
-		CompiledCorpus tempCorp = new CompiledCorpus();
-		InputStream iStream = IOUtils.toInputStream("inukttut ");
+	public static File compileToFile(String[] words) throws Exception {
+		CompiledCorpus tempCorp = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
+		InputStream iStream = IOUtils.toInputStream(String.join(" ", words), "utf-8");
 		InputStreamReader iSReader = new InputStreamReader(iStream);
 		BufferedReader br = new BufferedReader(iSReader);
-		tempCorp.processDocumentContents(br, "BLAH");
+		tempCorp.processDocumentContents(br, "dummyFilePath");
 		
 		File tempFile = File.createTempFile("compiled_corpus", ".json");
 		tempCorp.saveCompilerInJSONFile(tempFile.toString());
