@@ -23,6 +23,11 @@ public class SpellingCorrection {
 		initialize(_orig, null, null);
 	}
 
+	public SpellingCorrection(String word, boolean _wasMispelled) {
+		initialize(word, null, _wasMispelled);
+	}
+
+
 	private void initialize(String _orig, List<String> _corrections, Boolean _wasMispelled) {
 		this.orig = _orig;
 		if (_corrections != null) this.possibleSpellings = _corrections;

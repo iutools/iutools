@@ -44,6 +44,7 @@ import ca.pirurvik.iutools.QueryExpanderException;
 import ca.pirurvik.iutools.QueryExpander;
 import ca.pirurvik.iutools.QueryExpansion;
 import ca.pirurvik.iutools.SpellChecker;
+import ca.pirurvik.iutools.SpellCheckerException;
 import ca.pirurvik.iutools.SpellingCorrection;
 import ca.pirurvik.iutools.search.BingSearchMultithrd;
 import ca.pirurvik.iutools.search.SearchHit;
@@ -91,7 +92,7 @@ public class SpellEndpoint extends HttpServlet {
 		writer.close();
 	}
 
-	public SpellResponse executeEndPoint(SpellInputs inputs) throws ServiceException  {
+	public SpellResponse executeEndPoint(SpellInputs inputs) throws ServiceException, SpellCheckerException  {
 		Logger logger = Logger.getLogger("SearchEndpoint.executeEndPoint");
 		SpellResponse response = new SpellResponse();
 		

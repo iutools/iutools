@@ -22,8 +22,10 @@ import com.google.gson.Gson;
 
 import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.Pair;
+import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.StringUtils;
+import ca.inuktitutcomputing.morph.MorphInuk;
 import ca.inuktitutcomputing.utilities.EditDistanceCalculator;
 import ca.inuktitutcomputing.utilities.EditDistanceCalculatorFactory;
 import ca.inuktitutcomputing.utilities.EditDistanceCalculatorFactoryException;
@@ -38,6 +40,7 @@ public class SpellChecker {
 	public transient EditDistanceCalculator editDistanceCalculator;
 	
 	private CompiledCorpus corpus = null;
+	private static StringSegmenter_IUMorpheme segmenter = new StringSegmenter_IUMorpheme();
 	
 	public SpellChecker() throws SpellCheckerException {
 			editDistanceCalculator = EditDistanceCalculatorFactory.getEditDistanceCalculator();
@@ -131,27 +134,52 @@ public class SpellChecker {
 		return this.MAX_SEQ_LEN;
 	}
 
-	public SpellingCorrection correctWord(String badWord) {
-		return correctWord(badWord,-1);
+	public SpellingCorrection correctWord(String word) throws SpellCheckerException {
+		return correctWord(word,-1);
 	}
 
-	public SpellingCorrection correctWord(String badWord, int maxCorrections) {
+	public SpellingCorrection correctWord(String word, int maxCorrections) throws SpellCheckerException {
+
+		SpellingCorrection corr = new SpellingCorrection(word);
+		corr.wasMispelled = isMispelled(word);
+		if (corr.wasMispelled) {
 		
-		Set<String> candidates = firstPassCandidates(badWord);
-		List<Pair<String,Double>> candidatesWithSim = computeCandidateSimilarities(badWord, candidates);
-		List<String> corrections = sortCandidatesBySimilarity(candidatesWithSim);
-		Logger logger = Logger.getLogger("SpellChecker.correct");
-		logger.debug("corrections for "+badWord+": "+corrections.size());
-		
-		SpellingCorrection corr = new SpellingCorrection(badWord);
- 		if (maxCorrections== -1)
- 			corr.setPossibleSpellings(corrections);
- 		else
- 			corr.setPossibleSpellings(corrections.subList(0, maxCorrections>corrections.size()? corrections.size() : maxCorrections));
+			Set<String> candidates = firstPassCandidates(word);
+			List<Pair<String,Double>> candidatesWithSim = computeCandidateSimilarities(word, candidates);
+			List<String> corrections = sortCandidatesBySimilarity(candidatesWithSim);
+			Logger logger = Logger.getLogger("SpellChecker.correct");
+			logger.debug("corrections for "+word+": "+corrections.size());
+			
+	 		if (maxCorrections== -1)
+	 			corr.setPossibleSpellings(corrections);
+	 		else
+	 			corr.setPossibleSpellings(corrections.subList(0, maxCorrections>corrections.size()? corrections.size() : maxCorrections));
+		}
  		
  		return corr;
 	}
 	
+	protected boolean isMispelled(String word) throws SpellCheckerException {
+		Boolean answer = null;
+		if (corpus.wordsFailedSegmentation.contains(word)) {
+			answer = true;
+		} else if (corpus.segmentsCache.containsKey(word)) {
+			answer = false;
+		} else {
+			answer = true;
+			try {
+				String[] segments = segmenter.segment(word);
+				if (segments != null && segments.length > 0) {
+					answer = false;
+				}
+			} catch (Exception e) {
+				throw new SpellCheckerException(e);
+			}
+		}
+		
+		return answer;
+	}
+
 	public Long idf(String charSeq) {
 		Long val = new Long(0);
 		if (idfStats.containsKey(charSeq)) {
@@ -163,10 +191,6 @@ public class SpellChecker {
 
 	private List<String> sortCandidatesBySimilarity(List<Pair<String, Double>> candidatesWithSim) {
 		Iterator<Pair<String, Double>> iteratorCand = candidatesWithSim.iterator();
-//		while (iteratorCand.hasNext()) {
-//			Pair<String,Double> pair = iteratorCand.next();
-//			System.out.println("-- sortCandidatesBySimiliraty (1): "+"candidate: "+pair.getFirst()+" ; similarity="+pair.getSecond());
-//		}
 	
 		Collections.sort(candidatesWithSim, (Pair<String,Double> p1, Pair<String,Double> p2) -> {
 			return p1.getSecond().compareTo(p2.getSecond());
@@ -208,6 +232,7 @@ public class SpellChecker {
 			logger.debug("sequence: "+currSeqInfo.getFirst()+" ("+currSeqInfo.getSecond()+")");
 			Set<String> wordsWithSequence = wordsContainingSequ(currSeqInfo.getFirst());
 			logger.debug("  wordsWithSequence: "+wordsWithSequence.size());
+			
 			candidates.addAll(wordsWithSequence);
 			logger.debug("  candidates: "+candidates.size());
 			if (candidates.size() >= MAX_CANDIDATES) {
@@ -262,11 +287,11 @@ public class SpellChecker {
 		
 	}
 
-	public List<SpellingCorrection> correctText(String text) {
+	public List<SpellingCorrection> correctText(String text) throws SpellCheckerException {
 		return correctText(text, null);
 	}
 
-	public List<SpellingCorrection> correctText(String text, Integer nCorrections) {
+	public List<SpellingCorrection> correctText(String text, Integer nCorrections) throws SpellCheckerException {
 		if (nCorrections == null) nCorrections = 5;
 		List<SpellingCorrection> corrections = new ArrayList<SpellingCorrection>();
 		
@@ -280,7 +305,6 @@ public class SpellChecker {
 				correction = new SpellingCorrection(tokString);
 			} else {
 				correction = this.correctWord(tokString, nCorrections);
-//				correction = new SpellingCorrection(tokString, alternatives);
 			}
 			corrections.add(correction);
 			
