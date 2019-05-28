@@ -16,6 +16,21 @@
 		<servlet-name>SearchEndpoint</servlet-name>
 		<url-pattern>/srv/search/*</url-pattern>
 	</servlet-mapping>	
+
+
+	<!--  Spell Endpoint -->
+	<servlet>
+	   <servlet-name>SpellEndpoint</servlet-name>
+	   <servlet-class>  
+	     ca.pirurvik.iutools.webservice.SpellEndpoint
+	   </servlet-class>
+	</servlet> 
+	<servlet-mapping>
+		<servlet-name>SpellEndpoint</servlet-name>
+		<url-pattern>/srv/spell/*</url-pattern>
+	</servlet-mapping>	
+
+
 	<servlet>
 	   <servlet-name>OccurrenceEndpoint</servlet-name>
 	   <servlet-class>  
