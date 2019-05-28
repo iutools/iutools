@@ -43,11 +43,15 @@ public class SpellCheckerTest {
 			checkerSyll = new SpellChecker(tempFile);
 			for (String aWord: correctWordsSyll) checkerSyll.addCorrectWord(aWord);
 		}		
-		
-		
-		
 	}
 
+//	@Test
+//	public void test__DELETE_ME_LATER() throws Exception {
+//		checker = new SpellChecker();
+//		SpellingCorrection correction = checker.correctWord("nunavuttt");
+//		AssertHelpers.assertDeepEquals("", null, correction);
+//	}
+	
 	@Test
 	public void test__SpellChecker__Synopsis() throws Exception {
 		//

@@ -26,6 +26,7 @@ import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.StringUtils;
 import ca.inuktitutcomputing.morph.MorphInuk;
+import ca.inuktitutcomputing.script.TransCoder;
 import ca.inuktitutcomputing.utilities.EditDistanceCalculator;
 import ca.inuktitutcomputing.utilities.EditDistanceCalculatorFactory;
 import ca.inuktitutcomputing.utilities.EditDistanceCalculatorFactoryException;
@@ -140,6 +141,12 @@ public class SpellChecker {
 
 	public SpellingCorrection correctWord(String word, int maxCorrections) throws SpellCheckerException {
 
+//		boolean wordIsLatin = Pattern.compile("[a-zA-Z]").matcher(word).find();
+//		
+//		if (!wordIsLatin) {
+//			word = TransCoder.unicodeToRoman(word);
+//		}
+		
 		SpellingCorrection corr = new SpellingCorrection(word);
 		corr.wasMispelled = isMispelled(word);
 		if (corr.wasMispelled) {
@@ -155,6 +162,16 @@ public class SpellChecker {
 	 		else
 	 			corr.setPossibleSpellings(corrections.subList(0, maxCorrections>corrections.size()? corrections.size() : maxCorrections));
 		}
+		
+//		if (!wordIsLatin) {
+//			// Transcode the spellings back to Syllabic
+//			List<String> possSpellingsSyll = new ArrayList<String>();
+//			for (String aSpelling: corr.getPossibleSpellings()) {
+//				aSpelling = TransCoder.romanToUnicode(aSpelling);
+//				possSpellingsSyll.add(aSpelling);
+//			}
+//			corr.setPossibleSpellings(possSpellingsSyll);
+//		}
  		
  		return corr;
 	}

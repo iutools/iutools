@@ -13,6 +13,10 @@ import ca.inuktitutcomputing.script.TransCoder;
 public class SpellInputs extends ServiceInputs {
 	public String text = null;
 	
+	public SpellInputs() {
+		
+	}
+	
 	public SpellInputs(String _text) {
 		this.text = _text;
 	}

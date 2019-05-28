@@ -55,14 +55,24 @@ public class SpellEndpoint extends HttpServlet {
 //	private String esDefaultIndex = "dedupster";
 	EndPointHelper helper = null;
 	
-    SpellChecker checker = null;    
+    static SpellChecker checker = null;    
     
-	protected void initialize() {
-	}
-	
-	public SpellEndpoint() {
+
+	public SpellEndpoint() throws SpellCheckerException {
+		initialize();
 	};
 	
+	
+	protected void initialize() throws SpellCheckerException {
+		ensureCheckerIsInstantiated();
+	}
+	
+	private synchronized void ensureCheckerIsInstantiated() throws SpellCheckerException {
+		if (checker == null) {
+			checker = new SpellChecker();
+		}
+		
+	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {		
 		String jsonResponse = null;
@@ -93,14 +103,17 @@ public class SpellEndpoint extends HttpServlet {
 	}
 
 	public SpellResponse executeEndPoint(SpellInputs inputs) throws ServiceException, SpellCheckerException  {
-		Logger logger = Logger.getLogger("SearchEndpoint.executeEndPoint");
+		Logger tLogger = Logger.getLogger("SearchEndpoint.executeEndPoint");
 		SpellResponse response = new SpellResponse();
 		
 		if (inputs.text == null || inputs.text.isEmpty()) {
 			throw new ServiceException("Query was empty or null");
 		}
 		
+		
 		List<SpellingCorrection> corrections = checker.correctText(inputs.text);
+		
+		response.correction = corrections;
 
 		return response;
 	}

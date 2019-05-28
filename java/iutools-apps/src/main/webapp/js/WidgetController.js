@@ -2,9 +2,10 @@ class WidgetController {
 
 	constructor(_config) {
 		this.config = _config;
-		this.attachHtmlElements();
+		new RunWhen().domReady(this.attachHtmlElements);
+//		this.attachHtmlElements();
 	}
-	
+		
 	attachHtmlElements() {
 		// This method should be overridden by subclasses if 
 		// you want to actually attach elements to the controller.
@@ -63,6 +64,5 @@ class WidgetController {
 		element.keypress(keypressHandler);
 
 		return;
-	}	
-	
+	}		
 }

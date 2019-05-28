@@ -11,7 +11,6 @@ class SpellController extends WidgetController {
 	// Setup handler methods for different HTML elements specified in the config.
 	attachHtmlElements() {
 		this.setEventHandler("btnSpell", "click", this.spellCheck);
-		this.onReturnKey("txtToCheck", this.spellCheck);
 	}
 
 	spellCheck() {
@@ -24,32 +23,25 @@ class SpellController extends WidgetController {
 	}
 	
 	invokeSpellService(jsonRequestData, _successCbk, _failureCbk) {
-//			var controller = this;
-//			var fctSuccess = 
-//					function(resp) {
-//						_successCbk.call(controller, resp);
-//					};
-//			var fctFailure = 
-//					function(resp) {
-//						_failureCbk.call(controller, resp);
-//					};
-//		
-//			$.ajax({
-//				type: 'POST',
-//				url: 'srv/spell',
-//				data: jsonRequestData,
-//				dataType: 'json',
-//				async: true,
-//		        success: fctSuccess,
-//		        error: fctFailure
-//			});
+			var controller = this;
+			var fctSuccess = 
+					function(resp) {
+						_successCbk.call(controller, resp);
+					};
+			var fctFailure = 
+					function(resp) {
+						_failureCbk.call(controller, resp);
+					};
 		
-		var request = {
-				errorMessage: null,
-				checkedText: [["Hello"], [" "], ["warld", "world"]]
-		};
-		this.successCallback(request);
-		
+			$.ajax({
+				type: 'POST',
+				url: 'srv/spell',
+				data: jsonRequestData,
+				dataType: 'json',
+				async: true,
+		        success: fctSuccess,
+		        error: fctFailure
+			});
 	}
 
 	validateInputs() {
@@ -66,16 +58,17 @@ class SpellController extends WidgetController {
 		if (resp.errorMessage != null) {
 			this.failureCallback(resp);
 		} else {
-			console.log("-- SpellController.successCallback: INVOKED with resp="+JSON.stringify(resp));
+			console.log("-- SpellController.successCallback: resp="+JSON.stringify(resp));
 			var divChecked = this.elementForProp('divChecked');
 			divChecked.empty();
-			for (var ii=0; ii < resp.checkedText.length; ii++) {
-				var wordAlternatives = resp.checkedText[ii];
-				var origWord = wordAlternatives.shift()
-				var wordOutput = origWord+"\n"
-				
-				if (wordAlternatives.length != 0) {
-					wordOutput = this.picklistFor(origWord, wordAlternatives)
+			divChecked.append("<h2>Spell checked content</h2>")
+			for (var ii=0; ii < resp.correction.length; ii++) {
+				var corrResult = resp.correction[ii];
+				var wordOutput = "";
+				if (! corrResult.wasMispelled) {
+					wordOutput = this.htmlify(corrResult.orig);
+				} else {
+					wordOutput = this.picklistFor(corrResult);
 				}
 				divChecked.append(wordOutput);
 			}
@@ -94,7 +87,14 @@ class SpellController extends WidgetController {
 		this.setBusy(false);
 	}
 	
-	picklistFor(origWord, alternatives) {
+	htmlify(text) {
+		text = text.replace(/\n/g, "<br/>\n");
+		return text;
+	}
+	
+	picklistFor(corrResult) {
+		var origWord = corrResult.orig;
+		var alternatives = corrResult.possibleSpellings;
 		var picklistHtml = "<select>\n  <option value=\""+origWord+"\">"+origWord+"</option>\n";
 		for (var ii=0; ii < alternatives.length; ii++) {
 			var anAlternative = alternatives[ii];
@@ -120,7 +120,7 @@ class SpellController extends WidgetController {
 	getSpellRequestData() {
 		
 		var request = {
-				toCheck: this.elementForProp("txtToCheck").val(),
+				text: this.elementForProp("txtToCheck").val(),
 		};
 		
 		var jsonInputs = JSON.stringify(request);
@@ -141,6 +141,4 @@ class SpellController extends WidgetController {
 		this.elementForProp('divError').html(err);
 		this.elementForProp('divError').show();	 
 	}
-	
-	
 }
