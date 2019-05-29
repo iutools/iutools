@@ -96,10 +96,11 @@ QUnit.module("SpellController Tests", {
 	    
 		console.log("-- beforeEach: launching the method that will wait for the DOM to be ready before setting the controller")
 		
-		new RunWhen().domReady2(function () {
+		new RunWhen().domReady(function () {
 			console.log("-- beforeEach: document is ready... setting up the controller")
-		    spellController = new SpellController(spellControllerConfig);
-		    attachMockAjaxResponse(spellController, mockSpellSrvResp);				
+			var controller = new SpellController(spellControllerConfig);
+		    attachMockAjaxResponse(controller, mockSpellSrvResp);	
+		    spellController = controller;
 			console.log("-- beforeEach: DONE setting up the controller")	
 		});
 	},
@@ -131,12 +132,17 @@ function controllerNotBusy() {
 	return ! busy;
 }
 
+function controllerIsDefined() {
+	var defined = (spellController != null);
+	return defined;
+}
+
 QUnit.test("SpellController.Acceptance -- HappyPath", function( assert )
 {
 	var done = assert.async();
 
-//	var doTest = function() {
-	new RunWhen().timeElapsed(2000, function() {
+//	new RunWhen().timeElapsed(2000, function() {
+	new RunWhen().conditionMet(controllerIsDefined, function() {
 		console.log("SpellController.Acceptance.doTest: invoked... so controller must be ready!\nspellController="+JSON.stringify(spellController));
 		var caseDescr = "SpellController.Acceptance -- HappyPath";
 		console.log("-- "+caseDescr+": STARTED, spellController="+spellController);
@@ -153,8 +159,6 @@ QUnit.test("SpellController.Acceptance -- HappyPath", function( assert )
 			done();
 	    });
 	});	
-	
-//	new RunWhen().timeElapsed(2000, doTest);
 });
 
 //QUnit.test("SpellController.Acceptance -- Query field is empty -- Displays error", function( assert ) 

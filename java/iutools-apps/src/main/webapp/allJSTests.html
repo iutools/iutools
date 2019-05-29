@@ -28,18 +28,18 @@
     </body>
     
   <script src="js/test/TestHelpers.js?version=0.00001"></script>          
-  <script src="js/WidgetController.js?version=0.00002"></script>              
+  <script src="js/WidgetController.js?version=0.00003"></script>              
+  <script          src="js/RunWhen.js?version=0.00007"></script>          
 
   <!-- BEGIN: UNIT TESTS -->
+      
+  <!-- For some strange reason, if we put that tests AFTER SearchControllerTest, it crashes -->
+  <script          src="js/SpellController.js?version=0.00013"></script>              
+  <script src="js/test/SpellControllerTest.js?version=0.00013"></script>                       
+
+  <script          src="js/SearchController.js?version=0.00025"></script>              
+  <script src="js/test/SearchControllerTest.js?version=0.00025"></script>          
   
-  <script          src="js/SpellController.js?version=0.00012"></script>              
-  <script src="js/test/SpellControllerTest.js?version=0.00012"></script>            
-    
-  <script          src="js/SearchController.js?version=0.00023"></script>              
-  <script src="js/test/SearchControllerTest.js?version=0.00023"></script>          
-           
-  <script          src="js/RunWhen.js?version=0.00004"></script>          
-  <script src="js/test/RunWhenTest.js?version=0.00004"></script>          
 
 <!--   <script src="js/test/InheritanceTest.js?version=0.00001"></script>          
   <script src="js/test/Animal.js?version=0.00001"></script> 

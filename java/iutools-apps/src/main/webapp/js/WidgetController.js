@@ -11,7 +11,7 @@ class WidgetController {
 				console.log("-- WidgetController.constructor.attachFct: controller="+controller);
 				controller.attachHtmlElements()
 			}
-			new RunWhen().domReady2(attachFct, 10 * 1000, 1000);
+			new RunWhen().domReady(attachFct, 10 * 1000, 1000);
 		}
 	}
 		
