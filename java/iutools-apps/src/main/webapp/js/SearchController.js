@@ -89,7 +89,7 @@ class SearchController extends WidgetController {
 				url: 'srv/search',
 				data: jsonRequestData,
 				dataType: 'json',
-				async: true,
+				async: false,
 		        success: fctSuccess,
 		        error: fctFailure
 			});

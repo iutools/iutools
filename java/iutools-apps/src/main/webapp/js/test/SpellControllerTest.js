@@ -19,7 +19,7 @@ QUnit.module("SpellController Tests", {
 	     ***************************************/
 	    
 	    attachMockAjaxResponse = function(controller, _mockResp) {
-	    	new TestHelpers().attachMockAjaxResponse(controller, _mockResp, "invokeSearchService", "successCallback", "failureCallback");		
+	    	new TestHelpers().attachMockAjaxResponse(controller, _mockResp, "invokeSpellService", "successCallback", "failureCallback");		
 	    }
 
 	    assertErrorMessageWasDisplayed = function(assert, expErrMessage, caseDescr) {
@@ -50,12 +50,20 @@ QUnit.module("SpellController Tests", {
 	    }
 
 	    assertSpellButtonEnabled = function(assert, caseDescr) {
-	    	var message = "Checking that 'Search' button is enabled.";
+	    	var message = "Checking that 'Spell' button is enabled.";
 	    	if (caseDescr != null) message = caseDescr+"\n"+message;
 	    	
-	    	var isDisabled = $("#"+spellControllerConfig.btnSearch).prop('disabled')
+	    	var isDisabled = spellController.elementForProp('btnSpell').prop('disabled')
 	    	
 	    	assert.ok(!isDisabled);
+	    }
+	    
+	    assertCorrectedTextIs = function(assert, expText, caseDescr) {
+	    	var message = "Checking the corrected text";
+	    	if (caseDescr != null) message = caseDescr+"\n"+message;
+
+	    	var gotText = spellController.getCheckedText();
+	    	helpers.assertStringEquals(assert, message, gotText, expText, true);
 	    }
 	    
 	    /***************************************
@@ -86,10 +94,14 @@ QUnit.module("SpellController Tests", {
 			]
 		};	 
 	    
-		console.log("-- beforeEach: document is ready... setting up the controller")
-	    spellController = new SpellController(spellControllerConfig);
-	    attachMockAjaxResponse(spellController, mockSpellSrvResp);				
-		console.log("-- beforeEach: DONE setting up the controller")		
+		console.log("-- beforeEach: launching the method that will wait for the DOM to be ready before setting the controller")
+		
+		new RunWhen().domReady2(function () {
+			console.log("-- beforeEach: document is ready... setting up the controller")
+		    spellController = new SpellController(spellControllerConfig);
+		    attachMockAjaxResponse(spellController, mockSpellSrvResp);				
+			console.log("-- beforeEach: DONE setting up the controller")	
+		});
 	},
 	
 	afterEach: function(assert) {
@@ -98,6 +110,11 @@ QUnit.module("SpellController Tests", {
 	
 });
 
+function controllerReady() {
+	var ready = (spellController != null);
+	console.log("-- controllerReady: ready="+ready+", spellController="+JSON.stringify(spellController));
+	return ready;
+}
 
 /**********************************
  * DOCUMENTATION TESTS
@@ -109,18 +126,35 @@ QUnit.module("SpellController Tests", {
  * VERIFICATION TESTS
  **********************************/
 
+function controllerNotBusy() {
+	var busy = spellController.busy;
+	return ! busy;
+}
+
 QUnit.test("SpellController.Acceptance -- HappyPath", function( assert )
 {
+	var done = assert.async();
+
+//	var doTest = function() {
+	new RunWhen().timeElapsed(2000, function() {
+		console.log("SpellController.Acceptance.doTest: invoked... so controller must be ready!\nspellController="+JSON.stringify(spellController));
+		var caseDescr = "SpellController.Acceptance -- HappyPath";
+		console.log("-- "+caseDescr+": STARTED, spellController="+spellController);
+		assert.ok(spellController != null, "Checking that controller is defined");
+	    helpers.typeText(spellControllerConfig.txtToCheck, "Inuktut, nunavutt inuksuk.");
+	    helpers.clickOn(spellControllerConfig.btnSpell);
+	    
+	    new RunWhen().conditionMet(controllerNotBusy, function() {
+		    assertNoErrorDisplayed(assert, caseDescr);
+			assertSpellButtonEnabled(assert, caseDescr);
+			var expText = "Spell checked contentInuktut, nunavuttt nunavut inuksuk."
+			assertCorrectedTextIs(assert, expText, caseDescr);
+		
+			done();
+	    });
+	});	
 	
-	var caseDescr = "SpellController.Acceptance -- HappyPath";
-	console.log("-- "+caseDescr+": STARTED, spellController="+spellController);
-    helpers.typeText(spellControllerConfig.txtToCheck, "Inuktut, nunavutt inuksuk.");
-    helpers.clickOn(spellControllerConfig.btnSpell);
-    	
-    assertNoErrorDisplayed(assert, caseDescr);
-	assertSpellButtonEnabled(assert, caseDescr);
-	assert.ok(true);
-	
+//	new RunWhen().timeElapsed(2000, doTest);
 });
 
 //QUnit.test("SpellController.Acceptance -- Query field is empty -- Displays error", function( assert ) 

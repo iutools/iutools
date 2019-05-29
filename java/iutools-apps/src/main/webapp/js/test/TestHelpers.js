@@ -6,7 +6,11 @@ class TestHelpers {
 	}
 	
 	clickOn(buttonID) {
-		$("#"+buttonID).click();
+		var promise = $("#"+buttonID).click();
+		console.log("-- TestHelpers.clickOn: buttonID="+buttonID+", promise="+promise)
+		new RunWhen().sleep(2*1000);
+		
+		return;
 	}
 	
 	pressEnter(eltID) {
@@ -33,5 +37,14 @@ class TestHelpers {
 			}
 		controller[serviceInvocationName] = mockInvokeService;
 		return;
+	}
+	
+	assertStringEquals(assert, message, gotText, expText, ignoreSpaces) {
+		if (ignoreSpaces != null && ignoreSpaces) {
+			gotText = gotText.replace(/[\t\n\s]+/g, " "); 
+			expText = expText.replace(/[\t\n\s]+/g, " "); 
+		}
+		if (message != null) message += "\nThe two strings differened";
+		assert.equal(gotText, expText, message);
 	}
 }

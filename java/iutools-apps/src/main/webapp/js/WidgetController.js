@@ -2,8 +2,17 @@ class WidgetController {
 
 	constructor(_config) {
 		this.config = _config;
-		new RunWhen().domReady(this.attachHtmlElements);
-//		this.attachHtmlElements();
+		this.isReady = false;
+		
+		this.attachHtmlElements();
+		{
+			var controller = this;
+			var attachFct = function() {
+				console.log("-- WidgetController.constructor.attachFct: controller="+controller);
+				controller.attachHtmlElements()
+			}
+			new RunWhen().domReady2(attachFct, 10 * 1000, 1000);
+		}
 	}
 		
 	attachHtmlElements() {

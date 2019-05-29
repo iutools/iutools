@@ -6,10 +6,12 @@ class SpellController extends WidgetController {
 
 	constructor(config) {
 		super(config);
+		this.busy = false;
 	} 
 	
 	// Setup handler methods for different HTML elements specified in the config.
 	attachHtmlElements() {
+		console.log("-- SpellController.attachHtmlElements: this="+this)
 		this.setEventHandler("btnSpell", "click", this.spellCheck);
 	}
 
@@ -38,7 +40,7 @@ class SpellController extends WidgetController {
 				url: 'srv/spell',
 				data: jsonRequestData,
 				dataType: 'json',
-				async: true,
+				async: false,
 		        success: fctSuccess,
 		        error: fctFailure
 			});
@@ -64,9 +66,12 @@ class SpellController extends WidgetController {
 			divChecked.append("<h2>Spell checked content</h2>")
 			for (var ii=0; ii < resp.correction.length; ii++) {
 				var corrResult = resp.correction[ii];
-				var wordOutput = "";
+				var wordOutput = ""
 				if (! corrResult.wasMispelled) {
-					wordOutput = this.htmlify(corrResult.orig);
+					wordOutput = 
+//						  "<div class=\"okWord\">" 
+						this.htmlify(corrResult.orig)
+//						+ "</div>";
 				} else {
 					wordOutput = this.picklistFor(corrResult);
 				}
@@ -101,13 +106,15 @@ class SpellController extends WidgetController {
 			picklistHtml += "  <option value=\""+anAlternative+"\">"+anAlternative+"</option>\n"
 		}
 		picklistHtml += "</select>\n";
+		return picklistHtml;
 		
-		var picklistElt = $.parseHTML(picklistHtml);
-		
-		return picklistElt;
+//		var picklistElt = $.parseHTML(picklistHtml);
+//		
+//		return picklistElt;
 	}
 	
 	setBusy(flag) {
+		this.busy = flag;
 		if (flag) {
 			this.disableSpellButton();		
 			this.error("");
@@ -140,5 +147,15 @@ class SpellController extends WidgetController {
 	error(err) {
 		this.elementForProp('divError').html(err);
 		this.elementForProp('divError').show();	 
+	}
+	
+	getCheckedText() {
+		var divChecked = this.elementForProp('divChecked');
+		var text = divChecked.text();
+		var html = divChecked.html();
+		
+		console.log("-- SpellController.getCheckedText: text="+text+", html="+html+", divChecked="+JSON.stringify(divChecked));
+		
+		return text;
 	}
 }
