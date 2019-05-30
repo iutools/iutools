@@ -39,7 +39,7 @@ public class CmdLookForMorpheme extends ConsoleCommand {
 		fr.close();
 		
 		MorphemeExtractor morphExtr = new MorphemeExtractor();
-		morphExtr.useDictionary(compiledCorpus);
+		morphExtr.useCorpus(compiledCorpus);
 		
 		//morphExtr.useDictionary(dictionaryFile);
 		
