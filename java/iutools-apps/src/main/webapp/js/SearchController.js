@@ -9,6 +9,7 @@ class SearchController extends WidgetController {
 
 	constructor(config) {
 		super(config);
+		this.busy = false;
 		this.hitsPerPage = 10;
 		this.totalHits = 0;
 		this.attachHtmlElements();
@@ -133,10 +134,11 @@ class SearchController extends WidgetController {
 	
 	
 	setBusy(flag) {
+		this.busy = flag;
 		if (flag) {
 			this.setTotalHits(null);
 			this.disableSearchButton();	
-			this.showSpinningWheel();
+			this.showInProgress();
 			this.error("");
 		} else {
 			this.enableSearchButton();		
@@ -152,8 +154,6 @@ class SearchController extends WidgetController {
 			currPage = parseInt(currPage, 10);
 			this.prevPage.pageNum = currPage;
 		}
-		
-//		this.prevPage.query = this.elementForProp("txtQuery").val();
 		
 		var request = {
 				prevPage: this.prevPage
@@ -173,11 +173,12 @@ class SearchController extends WidgetController {
 
 	}
 	
-	showSpinningWheel() {
-		var divMessage = this.elementForProp('divMessage');
-		divMessage.empty();
-		divMessage.append("<img src=\"ajax-loader.gif\"> Searching ...")
-		divMessage.css('display');
+	showInProgress() {
+//		var divMessage = this.elementForProp('divMessage');
+//		divMessage.empty();
+//		divMessage.append("<img src=\"ajax-loader.gif\"> Searching ...")
+//		divMessage.css('display');
+		this.showSpinningWheel('divMessage', "BLAH Searching");
 	}
 	
 	hideSpinningWheel() {

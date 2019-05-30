@@ -7,6 +7,7 @@ class SpellController extends WidgetController {
 	constructor(config) {
 		super(config);
 		this.busy = false;
+		this.blah();
 	} 
 	
 	// Setup handler methods for different HTML elements specified in the config.
@@ -107,11 +108,14 @@ class SpellController extends WidgetController {
 	setBusy(flag) {
 		this.busy = flag;
 		if (flag) {
-			this.disableSpellButton();		
+			this.elementForProp('divChecked').empty();
+			this.disableSpellButton();	
+			super.showSpinningWheel('divMessage', "Checking spelling");
 			this.error("");
 		} else {
-			this.enableSpellButton();		
-		}
+			this.enableSpellButton();
+			super.hideSpinningWheel('divMessage');
+		}		
 	}
 	
 	
@@ -143,7 +147,6 @@ class SpellController extends WidgetController {
 	getCheckedText() {
 		var divChecked = this.elementForProp('divChecked');
 		var text = divChecked.text();
-		var html = divChecked.html();
 		return text;
 	}
 }

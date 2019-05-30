@@ -3,6 +3,7 @@ var spellControllerConfig = {
 		txtToCheck: "txt-to-check",
 		divChecked:  "div-checked",
 		divError: "div-error",
+		divMessage: "div-message"
     };
 
 var helpers = new TestHelpers();
@@ -74,6 +75,7 @@ QUnit.module("SpellController Tests", {
         var formHTML =
             "<button id=\""+spellControllerConfig.btnSpell+"\"><br/>\n"
           + "<textarea id=\""+spellControllerConfig.txtToCheck+"\" name=\""+spellControllerConfig.txtToCheck+"\" rows=5 cols=40></textarea><p/>" 
+          + "<div id=\""+spellControllerConfig.divMessage+"\" class=\""+spellControllerConfig.divMessage+"\"></div><br/>\n"
           + "<div id=\""+spellControllerConfig.divError+"\" class=\""+spellControllerConfig.divError+"\"></div><br/>\n"
           + "<div id=\""+spellControllerConfig.divChecked+"\" class=\""+spellControllerConfig.divChecked+"\"></div>"
           

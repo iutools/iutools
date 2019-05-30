@@ -24,6 +24,7 @@
     <textarea id="txt-to-check" name="txt-to-check" rows=20 cols=80></textarea><p/>
     <button id="btn-spell" type="button" name="btn-spell" value="Spell">Spell Check</button>
     <p></p>
+    <div id="div-message" class="div-message"></div>
     <div id="div-error" class="div-error"></div>
     <div id="div-checked" class="div-checked"></div>
 
@@ -33,9 +34,12 @@
     <div data-includeHTML="pages/_FooterPartial.html"></div>
 </footer>
 
+
 <script src="js/WidgetController.js"></script>
-<script src="js/SpellController.js"></script>
 <script src="js/RunWhen.js"></script>          
+<script src="js/Tracer.js"></script>          
+
+<script src="js/SpellController.js"></script>
 
 
 <script>
@@ -52,6 +56,7 @@
     		txtToCheck: "txt-to-check",
     		divChecked:  "div-checked",
     		divError: "div-error",
+    		divMessage: "div-message"
         };
     var spellController = new SpellController(config);
 </script>

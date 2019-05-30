@@ -8,11 +8,14 @@ class WidgetController {
 		{
 			var controller = this;
 			var attachFct = function() {
-//				console.log("-- WidgetController.constructor.attachFct: controller="+controller);
 				controller.attachHtmlElements()
 			}
 			new RunWhen().domReady(attachFct, 10 * 1000, 1000);
 		}
+	}
+	
+	blah() {
+		console.log("-- WidgetController.blah: invoked");
 	}
 		
 	attachHtmlElements() {
@@ -63,15 +66,27 @@ class WidgetController {
 		
 		var keypressHandler = 
 				function(event) {
-//					console.log("-- WidgetController.onReturnKey.function: intercepted a key event");
 					var keycode = (event.keyCode ? event.keyCode : event.which);
 					if(keycode == '13'){
-//						console.log("-- WidgetController.onReturnKey.function: ENTER key intercepted. Invoking method="+method+" on controller="+JSON.stringify(controller));
 						method.call(controller);
 					}
 				};		
 		element.keypress(keypressHandler);
 
 		return;
-	}		
+	}	
+	
+	showSpinningWheel(divMessProp, message) {
+		if (message == null) message = "Processing request";
+		var divMessage = this.elementForProp(divMessProp);
+		divMessage.empty();
+		divMessage.append("<img src=\"ajax-loader.gif\">"+message+" ...");
+		divMessage.css('display');
+	}
+
+	hideSpinningWheel(divMessProp) {
+		var divMessage = this.elementForProp(divMessProp);
+		divMessage.empty();
+		divMessage.css('display');
+	}
 }
