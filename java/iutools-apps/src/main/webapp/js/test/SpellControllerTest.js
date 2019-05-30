@@ -141,54 +141,52 @@ function controllerIsDefined() {
 
 QUnit.test("SpellController.Acceptance -- HappyPath", function( assert )
 {
-//	var done = assert.async();
+	var done = assert.async();
 	
-	var tracer = new Tracer("SpellController.Acceptance", true);
-	tracer.trace("test started");
-
 	new RunWhen().conditionMet(controllerIsDefined, function() {
-		tracer.trace("controller must be ready!\nspellController="+JSON.stringify(spellController));
 		var caseDescr = "SpellController.Acceptance -- HappyPath";
-		assert.ok(spellController != null, "Checking that controller is defined");
 	    helpers.typeText(spellControllerConfig.txtToCheck, "Inuktut, nunavutt inuksuk.");
 	    helpers.clickOn(spellControllerConfig.btnSpell);
 	    
 	    new RunWhen().conditionMet(controllerNotBusy, function() {
-	    	tracer.trace("Controller not be busy")
 		    assertNoErrorDisplayed(assert, caseDescr);
 			assertSpellButtonEnabled(assert, caseDescr);
 			var expText = "Spell checked contentInuktut, nunavuttt nunavut inuksuk."
 			assertCorrectedTextIs(assert, expText, caseDescr);
 		
-//			done();
+			done();
 	    });
 	});	
-	assert.expect(0);
 });
 
-//QUnit.test("SpellController.Acceptance -- Query field is empty -- Displays error", function( assert ) 
-//{
-//	var caseDescr = "SpellController.Acceptance -- Query field is empty -- Displays error";
-//	
-//    var helpers = new TestHelpers();
-//    helpers.typeText(spellControllerConfig.txtQuery, "");
-//    helpers.clickOn(spellControllerConfig.btnSearch);
-//    
-//    assertErrorDisplayed(assert, "You need to enter something in the query field", caseDescr);
-//	assertSpellButtonEnabled(assert, caseDescr);
-//	assertDisplayedTotalHitsIs(assert, "No hits found", caseDescr);
-//	var expHits = [];
-//	assertHitsEqual(assert, expHits, caseDescr)
-//	assertPageButtonsAreOK(assert, 0, caseDescr)			
-//});
+QUnit.test("SpellController.Acceptance -- Text field is empty -- Displays error", function( assert ) 
+{
+	var caseDescr = "SpellController.Acceptance -- Text field is empty -- Displays error";
+	var done = assert.async();
+
+	new RunWhen().conditionMet(controllerIsDefined, function() {
+	    helpers.typeText(spellControllerConfig.txtToCheck, "");
+	    helpers.clickOn(spellControllerConfig.btnSpell);
+	    
+	    new RunWhen().conditionMet(controllerNotBusy, function() {
+	    	assertErrorDisplayed(assert, "You need to enter some text to spell check", caseDescr);
+			assertSpellButtonEnabled(assert, caseDescr);
+			var expText = ""
+			assertCorrectedTextIs(assert, expText, caseDescr);
+			
+			done();
+	    });
+	});	
+});
+
 //
 //QUnit.test("SpellController.Acceptance -- Press Return in Query field -- Runs the search", function( assert ) 
 //		{
 //			var caseDescr = "SpellController.Acceptance -- Press Return in Query field -- Runs the search";
 //			
 //		    var helpers = new TestHelpers();
-//		    helpers.typeText(spellControllerConfig.txtQuery, "ᓄᓇᕗᑦ");
-//		    helpers.pressEnter(spellControllerConfig.txtQuery);
+//		    helpers.typeText(spellControllerConfig.txtToCheck, "ᓄᓇᕗᑦ");
+//		    helpers.pressEnter(spellControllerConfig.txtToCheck);
 //		    
 //		    assertNoErrorDisplayed(assert, caseDescr);
 //			assertQueryEquals(assert, "ᓄᓇᕗᑦ");
@@ -207,8 +205,8 @@ QUnit.test("SpellController.Acceptance -- HappyPath", function( assert )
 //			attachMockAjaxResponse(spellController, mockResp);
 //			
 //		    var helpers = new TestHelpers();
-//		    helpers.typeText(spellControllerConfig.txtQuery, "ᓄᓇᕗᑦ");
-//		    helpers.clickOn(spellControllerConfig.btnSearch);
+//		    helpers.typeText(spellControllerConfig.txtToCheck, "ᓄᓇᕗᑦ");
+//		    helpers.clickOn(spellControllerConfig.btnSpell);
 //		    
 //		    assertErrorDisplayed(assert, "There was an error in the web service", caseDescr);
 //			assertSpellButtonEnabled(assert, caseDescr);

@@ -59,7 +59,6 @@ class SpellController extends WidgetController {
 		if (resp.errorMessage != null) {
 			this.failureCallback(resp);
 		} else {
-//			console.log("-- SpellController.successCallback: resp="+JSON.stringify(resp));
 			var divChecked = this.elementForProp('divChecked');
 			divChecked.empty();
 			divChecked.append("<h2>Spell checked content</h2>")
@@ -67,10 +66,7 @@ class SpellController extends WidgetController {
 				var corrResult = resp.correction[ii];
 				var wordOutput = ""
 				if (! corrResult.wasMispelled) {
-					wordOutput = 
-//						  "<div class=\"okWord\">" 
-						this.htmlify(corrResult.orig)
-//						+ "</div>";
+					wordOutput = this.htmlify(corrResult.orig)
 				} else {
 					wordOutput = this.picklistFor(corrResult);
 				}
@@ -106,10 +102,6 @@ class SpellController extends WidgetController {
 		}
 		picklistHtml += "</select>\n";
 		return picklistHtml;
-		
-//		var picklistElt = $.parseHTML(picklistHtml);
-//		
-//		return picklistElt;
 	}
 	
 	setBusy(flag) {
@@ -152,9 +144,6 @@ class SpellController extends WidgetController {
 		var divChecked = this.elementForProp('divChecked');
 		var text = divChecked.text();
 		var html = divChecked.html();
-		
-//		console.log("-- SpellController.getCheckedText: text="+text+", html="+html+", divChecked="+JSON.stringify(divChecked));
-		
 		return text;
 	}
 }
