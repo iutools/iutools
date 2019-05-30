@@ -179,50 +179,29 @@ QUnit.test("SpellController.Acceptance -- Text field is empty -- Displays error"
 	});	
 });
 
-//
-//QUnit.test("SpellController.Acceptance -- Press Return in Query field -- Runs the search", function( assert ) 
-//		{
-//			var caseDescr = "SpellController.Acceptance -- Press Return in Query field -- Runs the search";
-//			
-//		    var helpers = new TestHelpers();
-//		    helpers.typeText(spellControllerConfig.txtToCheck, "ᓄᓇᕗᑦ");
-//		    helpers.pressEnter(spellControllerConfig.txtToCheck);
-//		    
-//		    assertNoErrorDisplayed(assert, caseDescr);
-//			assertQueryEquals(assert, "ᓄᓇᕗᑦ");
-//			assertSpellButtonEnabled(assert, caseDescr);
-//			assertDisplayedTotalHitsIs(assert, "Found 12 hits", caseDescr);
-//			var expHits = mockRespPage1.hits;
-//			assertHitsEqual(assert, expHits, caseDescr)
-//			assertPageButtonsAreOK(assert, 2, caseDescr)			
-//		});
-//
-//QUnit.test("SpellController.Acceptance -- Web service returns errMessage -- Displays message", function( assert ) 
-//		{
-//			var caseDescr = "SpellController.Acceptance -- Web service returns errorMessage -- Displays message";
-//			
-//			mockResp = {"errorMessage": "There was an error in the web service"};
-//			attachMockAjaxResponse(spellController, mockResp);
-//			
-//		    var helpers = new TestHelpers();
-//		    helpers.typeText(spellControllerConfig.txtToCheck, "ᓄᓇᕗᑦ");
-//		    helpers.clickOn(spellControllerConfig.btnSpell);
-//		    
-//		    assertErrorDisplayed(assert, "There was an error in the web service", caseDescr);
-//			assertSpellButtonEnabled(assert, caseDescr);
-//			assertDisplayedTotalHitsIs(assert, "No hits found", caseDescr);
-//			var expHits = [];
-//			assertHitsEqual(assert, expHits, caseDescr)
-//			assert.ok(true);
-//		});
-//
-//QUnit.test("SpellController.generatePagesButtons -- HappyPath", function( assert ) 
-//{
-//	var caseDescr = "SpellController.generatePagesButtons -- HappyPath";
-//	
-//	spellController.generatePagesButtons(143);
-//	assertPageButtonsAreOK(assert, 10, caseDescr)
-//});
+
+QUnit.test("SpellController.Acceptance -- Web service returns errMessage -- Displays message", function( assert ) 
+{
+	var caseDescr = "SpellController.Acceptance -- Web service returns errorMessage -- Displays message";
+	var done = assert.async();
+	
+	new RunWhen().conditionMet(controllerIsDefined, function() {
+	
+		mockResp = {"errorMessage": "There was an error in the web service"};
+		attachMockAjaxResponse(spellController, mockResp);
+		
+	    var helpers = new TestHelpers();
+	    helpers.typeText(spellControllerConfig.txtToCheck, "ᓄᓇᕗᑦ");
+	    helpers.clickOn(spellControllerConfig.btnSpell);
+	    
+	    new RunWhen().conditionMet(controllerNotBusy, function() {
+		    assertErrorDisplayed(assert, "There was an error in the web service", caseDescr);
+			assertSpellButtonEnabled(assert, caseDescr);			
+			done();
+	    });
+	});
+});
+
 
 
 
