@@ -96,3 +96,76 @@ div#nb-hits {
 span#plural {
 	display:none;
 }
+
+/* OCCURRENCES */
+.word-example {
+	cursor:pointer;
+	font-family:serif;
+	font-size:20px;
+}
+.word-example:hover {
+	color:red;
+	text-decoration:underline;
+}
+#div-example-word {
+	position:fixed;
+	top:40px;
+	width:600px;
+	height:600px;
+	right:100px;
+	display:none;
+	border:1px solid black;
+	border-radius:3px;
+	background-color:#ccccff;
+	padding:5px;
+}
+#div-example-word #iconizer {
+	background-color:white;
+	position:absolute;
+	top:0;
+	right:0;
+	cursor:pointer;
+	vertical-align:middle;
+}
+#div-example-word #iconizer img {
+	vertical-align:middle;
+}
+#div-example-word #contents {
+	overflow-y: scroll;
+	height:577px;
+	margin-top:5px;
+}
+#div-example-word #word {
+}
+div#div-example-word-iconized {
+	position:fixed;
+	text-align:center;
+	right:0;
+	bottom:0;
+	width:30px;
+	height:30px;
+	line-height:30px;
+	background-color:#ccccff;
+	border:1px solid black;
+	display:none;
+	cursor:pointer;
+}
+div#div-example-word-iconized img {
+	vertical-align:middle;
+}
+table.gist, table.alignments {
+	margin-top:5px;
+}
+table.gist td {
+	background-color:#e6e6ff;
+}
+table.gist th, table.gist td,
+table.alignments th, table.alignments td {
+	border:1px solid black;
+	padding:3px;
+	vertical-align:top;
+}
+table.alignments th {
+	width:49%;
+}
+
