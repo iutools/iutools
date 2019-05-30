@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -54,7 +55,7 @@ public class CompiledCorpus
 
 	protected Vector<String> filesCompiled = new Vector<String>();	
 	protected String saveFilePath = null;	
-	private String segmenterClassName = StringSegmenter_Char.class.getName();	
+	protected String segmenterClassName = StringSegmenter_Char.class.getName();	
 	protected long currentFileWordCounter = -1;
 	protected long retrievedFileWordCounter = -1;	
 	public int saveFrequency = 1000;	
@@ -76,8 +77,10 @@ public class CompiledCorpus
 	@JsonIgnore
 	public StringSegmenter getSegmenter() throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		if (segmenter == null) {
-			Class<StringSegmenter> cls = (Class<StringSegmenter>) Class.forName(segmenterClassName);
-			segmenter = (StringSegmenter) cls.getConstructor().newInstance();
+			//Class<StringSegmenter> cls = (Class<StringSegmenter>) Class.forName(segmenterClassName);
+			Class<?> cls = (Class<?>) Class.forName(segmenterClassName);
+			Constructor<?> constr = cls.getConstructor();
+			segmenter = (StringSegmenter) constr.newInstance();
 		}
 		return segmenter;
 	}
@@ -94,7 +97,7 @@ public class CompiledCorpus
 	// ------- Constructors ----------------------------------------------------
 	
 	public CompiledCorpus() {
-		initialize(null);
+		initialize(StringSegmenter_Char.class.getName()); 
 	}
 	
 	public CompiledCorpus(String segmenterClassName) {
@@ -117,7 +120,7 @@ public class CompiledCorpus
 	
 	public  void _compileCorpus(String corpusDirectoryPathname, boolean fromScratch) throws Exception {
 		toConsole("[INFO] *** Compiling trie for documents in "+corpusDirectoryPathname+"\n");
-		segmenter = new StringSegmenter_IUMorpheme();
+		segmenter = getSegmenter(); //new StringSegmenter_IUMorpheme();
 		
 		if ( !fromScratch ) {
 			if (this.canBeResumed(corpusDirectoryPathname)) {
