@@ -31,14 +31,16 @@
 	</servlet-mapping>	
 
 
+	
+	<!-- Occurrence Search Endpoint -->
 	<servlet>
-	   <servlet-name>OccurrenceEndpoint</servlet-name>
+	   <servlet-name>OccurenceSearchEndpoint</servlet-name>
 	   <servlet-class>  
-	     ca.pirurvik.iutools.webservice.OccurrenceEndpoint
+	     ca.pirurvik.iutools.webservice.OccurenceSearchEndpoint
 	   </servlet-class>
 	</servlet> 
 	<servlet-mapping>
-		<servlet-name>OccurrenceEndpoint</servlet-name>
+		<servlet-name>OccurenceSearchEndpoint</servlet-name>
 		<url-pattern>/srv/occurrences/*</url-pattern>
 	</servlet-mapping>	
 
