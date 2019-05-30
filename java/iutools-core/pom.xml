@@ -130,6 +130,12 @@
     		<artifactId>commons-csv</artifactId>
     		<version>1.1</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.unix4j</groupId>
+			<artifactId>unix4j-command</artifactId>
+			<version>0.5</version>
+		</dependency>
 
   </dependencies>
 </project>
