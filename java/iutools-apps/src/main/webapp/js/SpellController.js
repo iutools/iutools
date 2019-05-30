@@ -11,7 +11,6 @@ class SpellController extends WidgetController {
 	
 	// Setup handler methods for different HTML elements specified in the config.
 	attachHtmlElements() {
-		console.log("-- SpellController.attachHtmlElements: this="+this)
 		this.setEventHandler("btnSpell", "click", this.spellCheck);
 	}
 
@@ -60,7 +59,7 @@ class SpellController extends WidgetController {
 		if (resp.errorMessage != null) {
 			this.failureCallback(resp);
 		} else {
-			console.log("-- SpellController.successCallback: resp="+JSON.stringify(resp));
+//			console.log("-- SpellController.successCallback: resp="+JSON.stringify(resp));
 			var divChecked = this.elementForProp('divChecked');
 			divChecked.empty();
 			divChecked.append("<h2>Spell checked content</h2>")
@@ -154,7 +153,7 @@ class SpellController extends WidgetController {
 		var text = divChecked.text();
 		var html = divChecked.html();
 		
-		console.log("-- SpellController.getCheckedText: text="+text+", html="+html+", divChecked="+JSON.stringify(divChecked));
+//		console.log("-- SpellController.getCheckedText: text="+text+", html="+html+", divChecked="+JSON.stringify(divChecked));
 		
 		return text;
 	}

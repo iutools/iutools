@@ -7,8 +7,8 @@ class TestHelpers {
 	
 	clickOn(buttonID) {
 		var promise = $("#"+buttonID).click();
-		console.log("-- TestHelpers.clickOn: buttonID="+buttonID+", promise="+promise)
-		new RunWhen().sleep(2*1000);
+//		console.log("-- TestHelpers.clickOn: buttonID="+buttonID+", promise="+promise)
+//		new RunWhen().sleep(2*1000);
 		
 		return;
 	}
@@ -26,7 +26,7 @@ class TestHelpers {
 		
 		var mockInvokeService = 
 			function() {
-				console.log("-- TestHelpers.mockInvokeService: invoke successCallback with mock response");
+//				console.log("-- TestHelpers.mockInvokeService: invoke successCallback with mock response");
 				if (mockResp != null && mockResp.errorMessage == null) {
 					controller[successCbkName](mockResp);
 				} else {
@@ -46,5 +46,14 @@ class TestHelpers {
 		}
 		if (message != null) message += "\nThe two strings differened";
 		assert.equal(gotText, expText, message);
+	}
+	
+	consoleLogTime(who, message) {
+		var currentdate = new Date();
+		var datetime = currentdate.getDay() + "/"+currentdate.getMonth() 
+		+ "/" + currentdate.getFullYear() + " @ " 
+		+ currentdate.getHours() + ":" 
+		+ currentdate.getMinutes() + ":" + currentdate.getSeconds();
+//		console.log("-- "+who+": "+message+"(@"+dateTime+")");
 	}
 }

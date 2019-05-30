@@ -127,7 +127,7 @@ QUnit.module("SearchController Tests", {
 	    	var gotPageNumbers = [];
 	    	$('#'+srchController.config['divPageNumbers']+" input").each(
 	    			function (index, value) {
-	    				console.log('-- assertPageButtonsAreOK: button text=' + $(this).text() + ', value=' + $(this).attr('value'));
+//	    				console.log('-- assertPageButtonsAreOK: button text=' + $(this).text() + ', value=' + $(this).attr('value'));
 	    				gotPageNumbers.push($(this).attr('value'));
 	    			}
 	    		);
@@ -225,13 +225,13 @@ QUnit.module("SearchController Tests", {
 
 QUnit.test("SearchController.Acceptance -- HappyPath", function( assert ) 
 {
-	var done = assert.async();
+//	var done = assert.async();
 	
 	var caseDescr = "SearchController.Acceptance -- HappyPath";
 	
     var helpers = new TestHelpers();
     helpers.typeText(srchControllerConfig.txtQuery, "ᓄᓇᕗᑦ");
-	console.log("-- SearchController.Acceptance -- HappyPath: AFTER typeText, $('#'+srchControllerConfig.txtQuery).length="+$('#'+srchControllerConfig.txtQuery).length+", $('#'+srchControllerConfig.txtQuery).val()="+$('#'+srchControllerConfig.txtQuery).val());
+//	console.log("-- SearchController.Acceptance -- HappyPath: AFTER typeText, $('#'+srchControllerConfig.txtQuery).length="+$('#'+srchControllerConfig.txtQuery).length+", $('#'+srchControllerConfig.txtQuery).val()="+$('#'+srchControllerConfig.txtQuery).val());
     helpers.clickOn(srchControllerConfig.btnSearch);
     
     assertNoErrorDisplayed(assert, caseDescr);
@@ -241,13 +241,12 @@ QUnit.test("SearchController.Acceptance -- HappyPath", function( assert )
 	var expHits = mockRespPage1.hits;
 	assertHitsEqual(assert, expHits, caseDescr)
 	assertPageButtonsAreOK(assert, 2, caseDescr)
-	
-	done();
+
 });
 
 QUnit.test("SearchController.Acceptance -- Query field is empty -- Displays error", function( assert ) 
 {
-	var done = assert.async();
+//	var done = assert.async();
 	
 	var caseDescr = "SearchController.Acceptance -- Query field is empty -- Displays error";
 	
@@ -261,13 +260,13 @@ QUnit.test("SearchController.Acceptance -- Query field is empty -- Displays erro
 	var expHits = [];
 	assertHitsEqual(assert, expHits, caseDescr);
 	assertPageButtonsAreOK(assert, 0, caseDescr);
-	
-	done();
+		
+//	done();
 });
 
 QUnit.test("SearchController.Acceptance -- Press Return in Query field -- Runs the search", function( assert ) 
 		{
-			var done = assert.async();
+//			var done = assert.async();
 
 			var caseDescr = "SearchController.Acceptance -- Press Return in Query field -- Runs the search";
 			
@@ -283,12 +282,12 @@ QUnit.test("SearchController.Acceptance -- Press Return in Query field -- Runs t
 			assertHitsEqual(assert, expHits, caseDescr);
 			assertPageButtonsAreOK(assert, 2, caseDescr);
 			
-			done();
+//			done();
 		});
 
 QUnit.test("SearchController.Acceptance -- Web service returns errMessage -- Displays message", function( assert ) 
 		{
-			var done = assert.async();
+//			var done = assert.async();
 		
 			var caseDescr = "SearchController.Acceptance -- Web service returns errorMessage -- Displays message";
 			
@@ -306,18 +305,18 @@ QUnit.test("SearchController.Acceptance -- Web service returns errMessage -- Dis
 			assertHitsEqual(assert, expHits, caseDescr)
 			assert.ok(true);
 			
-			done();
+//			done();
 		});
 
 QUnit.test("SearchController.generatePagesButtons -- HappyPath", function( assert ) 
 {
-	var done = assert.async();	
+//	var done = assert.async();	
 	var caseDescr = "SearchController.generatePagesButtons -- HappyPath";
 	
 	srchController.generatePagesButtons(143);
 	assertPageButtonsAreOK(assert, 10, caseDescr)
 	
-	done();
+//	done();
 });
 
 

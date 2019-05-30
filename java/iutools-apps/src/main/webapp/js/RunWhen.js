@@ -8,11 +8,7 @@ class RunWhen {
 	constructor() {
 		this.timerID = null;
 	}
-	
-	sleep(msecs) {
-		this.timeElapsed(msecs, function() {});
-	}
-	
+		
 	timeElapsed(milliseconds, fct) {
 		const sleep = (msecs) => {
 			  return new Promise(resolve => setTimeout(resolve, msecs))
@@ -51,6 +47,8 @@ class RunWhen {
 //	}
 	
 	conditionMet(condition, toRun, maxMSecs, interval) {
+		var tracer = new Tracer("RunWhen.conditionMet", true);
+		tracer.trace("Invoked");
 		if (maxMSecs == null) maxMSecs = 9999 * 1000;
 		if (interval == null) interval = 1000;
 		var timeSoFar = 0;
@@ -65,7 +63,7 @@ class RunWhen {
 //			console.log("-- RunWhen.conditionMet.runner: condition function="+condition);			
 			timeSoFar += interval;
 			if (timeSoFar > maxMSecs) {
-				console.log("-- RunWhen.conditionMet.runner: max time of "+maxMSecs+" exceeded. Stopping timer and throwing error.");
+//				console.log("-- RunWhen.conditionMet.runner: max time of "+maxMSecs+" exceeded. Stopping timer and throwing error.");
 				that.stopTimer();
 				throw "Condition was not met even after more than "+maxMSecs+" seconds";
 			}
@@ -75,15 +73,20 @@ class RunWhen {
 //				console.log("-- RunWhen.conditionMet.runner: Condition not met. Return and wait for the next interval to fire");
 				window.setTimeout(this.conditionMet, interval, condition, toRun, maxMSecs, interval, timeSoFar);
 			} else {
-				console.log("-- RunWhen.conditionMet.runner: Condition IS MET. Stop the timer with timerID="+this.timerID);
+//				console.log("-- RunWhen.conditionMet.runner: Condition IS MET. Stop the timer with timerID="+this.timerID);
 				that.stopTimer();
-				toRun();
+				// Wait a bit more just to be safe
+				tracer.trace("Sleeping for a bit more");
+				that.timeElapsed(100, function() {
+					tracer.trace("DONE Sleeping");
+					toRun();
+				});
 			}
 		};
 		
 		if (this.timerID == null) {
 			this.timerID = window.setInterval(runner, interval);
-			console.log("-- RunWhen.conditionMet2: Inteval set with timerID="+this.timerID);
+//			console.log("-- RunWhen.conditionMet: Inteval set with timerID="+this.timerID);
 		}
 	}
 	
@@ -145,7 +148,7 @@ class RunWhen {
 			var ready = false;
 			var state = document.readyState;
 			ready = (state != null && state === 'complete');
-			console.log("domReady.isReady: state="+state+", ready="+ready);
+//			console.log("domReady.isReady: state="+state+", ready="+ready);
 			return ready
 		};
 		this.conditionMet(isReady, toRun, maxMSecs, interval, timeSoFar);

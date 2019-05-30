@@ -94,15 +94,18 @@ QUnit.module("SpellController Tests", {
 			]
 		};	 
 	    
-		console.log("-- beforeEach: launching the method that will wait for the DOM to be ready before setting the controller")
+		var tracer = new Tracer("SpellControllerTest.beforeEach", true);
+		tracer.trace("Launching the method that will wait for the DOM to be ready before setting the controller")
 		
 		new RunWhen().domReady(function () {
-			console.log("-- beforeEach: document is ready... setting up the controller")
+			tracer.trace("document is ready... setting up the controller")
 			var controller = new SpellController(spellControllerConfig);
 		    attachMockAjaxResponse(controller, mockSpellSrvResp);	
 		    spellController = controller;
-			console.log("-- beforeEach: DONE setting up the controller")	
+			tracer.trace("DONE setting up the controller")	
 		});
+		
+		tracer.trace("exiting beforeEach");
 	},
 	
 	afterEach: function(assert) {
@@ -113,7 +116,6 @@ QUnit.module("SpellController Tests", {
 
 function controllerReady() {
 	var ready = (spellController != null);
-	console.log("-- controllerReady: ready="+ready+", spellController="+JSON.stringify(spellController));
 	return ready;
 }
 
@@ -139,26 +141,29 @@ function controllerIsDefined() {
 
 QUnit.test("SpellController.Acceptance -- HappyPath", function( assert )
 {
-	var done = assert.async();
+//	var done = assert.async();
+	
+	var tracer = new Tracer("SpellController.Acceptance", true);
+	tracer.trace("test started");
 
-//	new RunWhen().timeElapsed(2000, function() {
 	new RunWhen().conditionMet(controllerIsDefined, function() {
-		console.log("SpellController.Acceptance.doTest: invoked... so controller must be ready!\nspellController="+JSON.stringify(spellController));
+		tracer.trace("controller must be ready!\nspellController="+JSON.stringify(spellController));
 		var caseDescr = "SpellController.Acceptance -- HappyPath";
-		console.log("-- "+caseDescr+": STARTED, spellController="+spellController);
 		assert.ok(spellController != null, "Checking that controller is defined");
 	    helpers.typeText(spellControllerConfig.txtToCheck, "Inuktut, nunavutt inuksuk.");
 	    helpers.clickOn(spellControllerConfig.btnSpell);
 	    
 	    new RunWhen().conditionMet(controllerNotBusy, function() {
+	    	tracer.trace("Controller not be busy")
 		    assertNoErrorDisplayed(assert, caseDescr);
 			assertSpellButtonEnabled(assert, caseDescr);
 			var expText = "Spell checked contentInuktut, nunavuttt nunavut inuksuk."
 			assertCorrectedTextIs(assert, expText, caseDescr);
 		
-			done();
+//			done();
 	    });
 	});	
+	assert.expect(0);
 });
 
 //QUnit.test("SpellController.Acceptance -- Query field is empty -- Displays error", function( assert ) 
