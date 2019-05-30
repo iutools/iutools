@@ -72,6 +72,7 @@ public class QueryExpanderTest {
         	assertTrue("The word '"+expectedRef+"' should have been returned.",reformulationsList.contains(expectedRef));
 	}
 
+
 	@Test
 	public void test__getExpansions__Case_with_stepping_back_one_node() throws Exception {
 		String[] words = new String[] {
@@ -217,7 +218,8 @@ public class QueryExpanderTest {
 	private CompiledCorpus getACompiledCorpus() throws Exception {
 		return compileCorpusFromWords(new String[] {"nunavut"});
 	}
-	private CompiledCorpus compileCorpusFromWords(String[] words) throws Exception {
+	
+	public CompiledCorpus compileCorpusFromWords(String[] words) throws Exception {
 		File dir = Files.createTempDirectory("").toFile();
 		dir.deleteOnExit();
 		String corpusDir = dir.getAbsolutePath();

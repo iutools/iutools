@@ -102,6 +102,7 @@ public class SearchEndpoint extends HttpServlet {
 	public SearchResponse executeEndPoint(SearchInputs inputs) throws SearchEndpointException  {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.webservice.SearchEndpoint.executeEndPoint");
 		
+		tLogger.trace("invoked");
 		SearchResponse results = new SearchResponse();
 
 		String query = inputs.prevPage.query;
@@ -112,6 +113,7 @@ public class SearchEndpoint extends HttpServlet {
 		List<String> queryWords = null;
 		try {
 			expandQuery(inputs.convertQueryToSyllabic(), results);
+			tLogger.trace("Expanded query is "+PrettyPrinter.print(results.expandedQueryWords));
 			queryWords = results.expandedQueryWords;
 		} catch (CompiledCorpusRegistryException | QueryExpanderException e) {
 			throw new SearchEndpointException("Unable to expand the query", e);
@@ -151,8 +153,9 @@ public class SearchEndpoint extends HttpServlet {
 		List<String> expansionWords = this.isExpandedQuery(query);
 		String expandedQuery = query;
 		if (expansionWords == null) {
-		
+			// The query was not already an expanded query
 			QueryExpansion[] expansions = null;
+			expansionWords = new ArrayList<String>();			
 			if (expander == null) {
 				CompiledCorpus compiledCorpus = CompiledCorpusRegistry.getCorpus();
 				expander = new QueryExpander(compiledCorpus);
@@ -160,17 +163,28 @@ public class SearchEndpoint extends HttpServlet {
 			expansions = expander.getExpansions(query);			
 						
 			expandedQuery = "(";
+			boolean inputWordInExpansions = false;
 			boolean isFirst = true;
 			for (QueryExpansion exp: expansions) {
 				if (!isFirst) {
 					expandedQuery += " OR ";
 				}
 				expandedQuery += exp.word;
+				if (exp.word.equals(query)) {
+					inputWordInExpansions = true;
+				}
 				isFirst = false;
+			}
+			if (!inputWordInExpansions) {
+
+				if (!isFirst) {
+					expandedQuery += " OR ";
+				}
+				expandedQuery += query;
+				expansionWords.add(query);				
 			}
 			expandedQuery += ")";	
 			
-			expansionWords = new ArrayList<String>();
 			for (QueryExpansion anExpansion: expansions) {
 				expansionWords.add(anExpansion.word);
 			}

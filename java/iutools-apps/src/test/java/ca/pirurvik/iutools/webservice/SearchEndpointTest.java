@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -48,10 +49,10 @@ public class SearchEndpointTest {
 				);
 		
 		IUTServiceTestHelpers.assertExpandedQueryEquals(
-				"(ᓄᓇᕗ OR ᓄᓇᕗᒻᒥ OR ᓄᓇᕘᒥ OR ᓄᓇᕘᑉ OR ᓄᓇᕗᒻᒥᐅᑦ)", 
+				"(ᓄᓇᕗ OR ᓄᓇᕗᒻᒥ OR ᓄᓇᕘᒥ OR ᓄᓇᕘᑉ OR ᓄᓇᕗᒻᒥᐅᑦ OR ᓄᓇᕗᑦ)", 
 				response);
 		
-		String[] queryWords = new String[] {"ᓄᓇᕗ", "ᓄᓇᕗᒻᒥ", "ᓄᓇᕘᒥ", "ᓄᓇᕘᑉ", "ᓄᓇᕗᒻᒥᐅᑦ"};
+		String[] queryWords = new String[] {"ᓄᓇᕗ", "ᓄᓇᕗᒻᒥ", "ᓄᓇᕘᒥ", "ᓄᓇᕘᑉ", "ᓄᓇᕗᒻᒥᐅᑦ", "ᓄᓇᕗᑦ"};
 		double tolerance = 0.75;
 		SearchResponse srchResponse = IUTServiceTestHelpers.toSearchResponse(response);
 		IUTServiceTestHelpers.assertMostHitsMatchWords(queryWords, response, tolerance);
@@ -106,6 +107,18 @@ public class SearchEndpointTest {
 		IUTServiceTestHelpers.assertMostHitsMatchWords(queryWords, response, tolerance);
 		Assert.assertTrue(srchResponse.totalHits > 10);
 	}	
+
+	@Test
+	public void test__expandQuery__QueryIsNotAnalyzable() throws Exception {
+		String nonAnalyzableWord = "oewrmweriorfgqer";
+		SearchResponse results = new SearchResponse();
+		endPoint.expandQuery(nonAnalyzableWord, results);
+		
+		List<String> gotQueryWords = results.expandedQueryWords;
+		String[] expQueryWords = new String[] {nonAnalyzableWord};
+		AssertHelpers.assertDeepEquals("", expQueryWords, gotQueryWords);
+		AssertHelpers.assertStringEquals("("+nonAnalyzableWord+")", results.expandedQuery);
+	}
 	
 
 	private void assertExpansionWordsAre(String[] expExpansionWords, QueryExpansion[] gotExpansions) throws IOException {

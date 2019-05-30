@@ -74,6 +74,7 @@ public class QueryExpander {
 			ArrayList<QueryExpansion> expansions = __getExpansions(mostFrequentTerminalsForWord, segments, word);
 			logger.debug("expansions: "+expansions.size());
 			
+						
 			expansions = possiblyConvertToSyllabic(word, expansions);
 			
 			expansionsArr =  expansions.toArray(new QueryExpansion[] {});
@@ -145,10 +146,37 @@ public class QueryExpander {
 		for (int i=0; i<listForms.length; i++)
 			logger.debug(listForms[i][0]+" ("+listForms[i][1]+")");
 	    Arrays.sort(listForms, (Object[] o1, Object[] o2) -> {
+	    	
+/*	    	
     			String word1 = (String)o1[0];
     			String word2 = (String)o2[0];
 	        	Long o1Freq = (Long)o1[1];
 	        	Long o2Freq = (Long)o2[1];
+	        	
+	        	// First compare frequency 
+	        	int comp = o1Freq.compareTo(o2Freq);
+	        	
+	        	if (comp == 0) {
+	        		// In case of tie, look at the difference in length between
+	        		// the expansion and the input word
+	        		int word1Length = word1.length();
+	        		int word2Length = word2.length();
+	        		int diff1WithWord = Math.abs(word1Length-word.length());
+	        		int diff2WithWord = Math.abs(word2Length-word.length());
+	        		comp = diff1WithWord > diff2WithWord? 1 : -1;
+	        	}
+	        	if (comp == 0) {
+	        		// If still tied, sort alphabetically
+	        		comp = word1.compareTo(word2);
+	        	}
+	        	
+	        	return comp;
+*/	        	
+				String word1 = (String)o1[0];
+				String word2 = (String)o2[0];
+	        	Long o1Freq = (Long)o1[1];
+	        	Long o2Freq = (Long)o2[1];
+	        	
 	        	if (o1Freq.compareTo(o2Freq)==0) {
 	        		int word1Length = word1.length();
 	        		int word2Length = word2.length();

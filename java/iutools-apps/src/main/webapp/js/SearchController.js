@@ -138,14 +138,13 @@ class SearchController extends WidgetController {
 		if (flag) {
 			this.setTotalHits(null);
 			this.disableSearchButton();	
-			this.showInProgress();
+			this.showSpinningWheel('divMessage', "Searching");
 			this.error("");
 		} else {
 			this.enableSearchButton();		
 			this.hideSpinningWheel();
 		}
-	}
-	
+	}	
 	
 	getSearchRequestData() {
 		
@@ -173,13 +172,6 @@ class SearchController extends WidgetController {
 
 	}
 	
-	showInProgress() {
-//		var divMessage = this.elementForProp('divMessage');
-//		divMessage.empty();
-//		divMessage.append("<img src=\"ajax-loader.gif\"> Searching ...")
-//		divMessage.css('display');
-		this.showSpinningWheel('divMessage', "BLAH Searching");
-	}
 	
 	hideSpinningWheel() {
 		var divMessage = this.elementForProp('divMessage');
