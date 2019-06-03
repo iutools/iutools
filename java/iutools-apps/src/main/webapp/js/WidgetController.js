@@ -81,7 +81,8 @@ class WidgetController {
 		var divMessage = this.elementForProp(divMessProp);
 		divMessage.empty();
 		divMessage.append("<img src=\"ajax-loader.gif\">"+message+" ...");
-		divMessage.css('display');
+//		divMessage.css('display', 'block');
+		divMessage.show();
 	}
 
 	hideSpinningWheel(divMessProp) {
