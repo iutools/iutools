@@ -3,6 +3,7 @@ package ca.pirurvik.iutools.webservice;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -84,7 +85,7 @@ public class OccurenceSearchEndpoint extends HttpServlet {
 			// Retrieve all words that match the wordPattern
 			// and put the results in results.matchingWords
 //			List<Pair<String,List<String>>> wordsForMorphemes = getOccurrences(inputs);
-			HashMap<String,Pair<String,Pair<String,Long>[]>> wordsForMorphemes = getOccurrences(inputs,corpusName);
+			HashMap<String,MorphemeSearchResult> wordsForMorphemes = getOccurrences(inputs,corpusName);
 //			Gson gson = new Gson();
 //			String str = gson.toJson(wordsForMorphemes, HashMap.class);
 //			logger.trace("results in json: "+str);
@@ -117,7 +118,7 @@ public class OccurenceSearchEndpoint extends HttpServlet {
 		return corpus;
 	}*/
 
-	private HashMap<String,Pair<String,Pair<String,Long>[]>> getOccurrences(OccurenceSearchInputs inputs, String corpusName) 
+	private HashMap<String,MorphemeSearchResult> getOccurrences(OccurenceSearchInputs inputs, String corpusName) 
 			throws SearchEndpointException, ConfigException, CompiledCorpusRegistryException, 
 					IOException, Exception {
 		
@@ -128,7 +129,7 @@ public class OccurenceSearchEndpoint extends HttpServlet {
 		LinguisticDataSingleton.getInstance("csv");
 		
 		List<MorphemeExtractor.Words> wordsForMorphemes = morphExtr.wordsContainingMorpheme(inputs.wordPattern);
-		HashMap<String,Pair<String,Pair<String,Long>[]>> results = new HashMap<String,Pair<String,Pair<String,Long>[]>>();
+		HashMap<String,MorphemeSearchResult> results = new HashMap<String,MorphemeSearchResult>();
 		Iterator<MorphemeExtractor.Words> itWFM = wordsForMorphemes.iterator();
 		while (itWFM.hasNext()) {
 			MorphemeExtractor.Words w = itWFM.next();
@@ -136,7 +137,14 @@ public class OccurenceSearchEndpoint extends HttpServlet {
 			List<Pair<String,Long>> wordsFreqs = w.words;
 			Pair<String,Long>[] wordsFreqsArray = wordsFreqs.toArray(new Pair[] {});
 			Arrays.sort(wordsFreqsArray, new WordFreqComparator());
-			results.put(w.morphemeWithId, new Pair<String,Pair<String,Long>[]>(meaning,wordsFreqsArray));
+			List<String> words = new ArrayList<String>();
+			List<Long> wordFreqs = new ArrayList<Long>();
+			for (Pair<String,Long>pair : wordsFreqs) {
+				words.add(pair.getFirst());
+				wordFreqs.add(pair.getSecond());
+			}
+			MorphemeSearchResult morpheSearchResult = new MorphemeSearchResult(meaning,words,wordFreqs);
+			results.put(w.morphemeWithId, morpheSearchResult);
 		}
 	
 		return results;
