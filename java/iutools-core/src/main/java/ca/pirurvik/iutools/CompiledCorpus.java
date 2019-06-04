@@ -437,8 +437,8 @@ public class CompiledCorpus
     	try {
     		FileReader jsonFileReader = new FileReader(jsonCompilationFilePathname);
     		Gson gson = new Gson();
-    		BufferedReader br;
     		CompiledCorpus compiledCorpus = gson.fromJson(jsonFileReader, CompiledCorpus.class);
+    		jsonFileReader.close();
     		return compiledCorpus;
     	} catch (FileNotFoundException e) {
     		throw new Exception("File "+jsonCompilationFilePathname+"does not exist. Could not create a compiled corpus.");
