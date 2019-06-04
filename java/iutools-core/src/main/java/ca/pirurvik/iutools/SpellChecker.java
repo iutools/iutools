@@ -20,27 +20,22 @@ import org.apache.log4j.Logger;
 
 import com.google.gson.Gson;
 
-import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
-import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.StringUtils;
-import ca.inuktitutcomputing.morph.MorphInuk;
-import ca.inuktitutcomputing.script.TransCoder;
 import ca.inuktitutcomputing.utilities.EditDistanceCalculator;
 import ca.inuktitutcomputing.utilities.EditDistanceCalculatorFactory;
 import ca.inuktitutcomputing.utilities.EditDistanceCalculatorFactoryException;
-import ca.inuktitutcomputing.utilities.Levenshtein;
 
 public class SpellChecker {
 	
-	protected int MAX_SEQ_LEN = 5;
-	protected int MAX_CANDIDATES = 100;
-	protected String allWords = ",,";
-	protected Map<String,Long> idfStats = new HashMap<String,Long>();
+	public int MAX_SEQ_LEN = 5;
+	public int MAX_CANDIDATES = 100;
+	public String allWords = ",,";
+	public Map<String,Long> idfStats = new HashMap<String,Long>();
 	public transient EditDistanceCalculator editDistanceCalculator;
 	
-	private CompiledCorpus corpus = null;
+	public CompiledCorpus corpus = null;
 	private static StringSegmenter_IUMorpheme segmenter = new StringSegmenter_IUMorpheme();
 	
 	public SpellChecker() throws SpellCheckerException {
@@ -119,8 +114,7 @@ public class SpellChecker {
 	public void saveToFile(File checkerFile) throws IOException {
 		FileWriter saveFile = new FileWriter(checkerFile);
 		Gson gson = new Gson();
-		String json = gson.toJson(this);
-		saveFile.write(json);
+		gson.toJson(this, saveFile);
 		saveFile.flush();
 		saveFile.close();
 		//System.out.println("saved in "+checkerFile.getAbsolutePath());
