@@ -52,14 +52,33 @@ public class SpellChecker {
 				throw new SpellCheckerException(e);
 			}
 	}
-	
+
+	public SpellChecker(String _corpusName) throws SpellCheckerException {
+		initialize(_corpusName, null);
+	}
+
 	public SpellChecker(File compiledCorpusFile) throws SpellCheckerException {
+		initialize(null, compiledCorpusFile);
+	}
+	
+	private void initialize(String _corpusName, File _compiledCorpusJsonPath) throws SpellCheckerException { 
 		editDistanceCalculator = EditDistanceCalculatorFactory.getEditDistanceCalculator();
-		
-		try {
-			corpus = CompiledCorpus.createFromJson(compiledCorpusFile.toString());
-		} catch (Exception e) {
-			throw new SpellCheckerException(e);
+		if (_corpusName != null) {
+			try {
+				corpus = CompiledCorpusRegistry.getCorpus();
+			} catch (CompiledCorpusRegistryException e) {
+				throw new SpellCheckerException(e);
+			}
+		} else {
+			if (_compiledCorpusJsonPath != null)  {
+				try {
+					corpus = CompiledCorpus.createFromJson(_compiledCorpusJsonPath.toString());
+				} catch (Exception e) {
+					throw new SpellCheckerException("Could not create the compiled corpus from file: "+_compiledCorpusJsonPath.toString(), e);
+				}				
+			} else {
+				throw new SpellCheckerException("Corpus name AND compiled corpus file path were both null");
+			}
 		}
 	}
 

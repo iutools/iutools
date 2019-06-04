@@ -22,6 +22,12 @@ public class CompiledCorpusRegistry {
 		return getCorpus(null);
 	}
 
+//	@JsonIgnore
+//	public static CompiledCorpus getCorpus(File corpusJsonFPath) throws CompiledCorpusRegistryException {
+//		String corpName = "FILE="+corpusJsonFPath.toString();
+//      return getCorpus(corpName);
+//	}
+	
 	@JsonIgnore
 	public static CompiledCorpus getCorpus(String corpusName) throws CompiledCorpusRegistryException {
 		if (corpusName == null) {
@@ -56,12 +62,7 @@ public class CompiledCorpusRegistry {
 					trieFPath+". You can download the file from "+
 					"https://www.dropbox.com/s/ka3cn778wgs1mk4/trie_compilation-HANSARD-1999-2002---single-form-in-terminals.json?dl=0");
 		}
-		
-//		corpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
 		try {
-//			corpus.readFromJson(trieFPath);
-//			FileReader fr = new FileReader(trieFPath);
-//			CompiledCorpus compiledCorpus = new Gson().fromJson(fr, CompiledCorpus.class);
 			corpus = CompiledCorpus.createFromJson(trieFPath);
 		} catch (Exception e) {
 			throw new CompiledCorpusRegistryException("Could not read compiled corpus from file: "+trieFPath, e);
