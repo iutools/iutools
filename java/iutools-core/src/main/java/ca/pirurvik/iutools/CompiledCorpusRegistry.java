@@ -19,18 +19,18 @@ public class CompiledCorpusRegistry {
 	
 	@JsonIgnore
 	public static CompiledCorpus getCorpus() throws CompiledCorpusRegistryException {
-		return getCorpus(null);
+		return getCorpus("");
 	}
 
-//	@JsonIgnore
-//	public static CompiledCorpus getCorpus(File corpusJsonFPath) throws CompiledCorpusRegistryException {
-//		String corpName = "FILE="+corpusJsonFPath.toString();
-//      return getCorpus(corpName);
-//	}
+	@JsonIgnore
+	public static CompiledCorpus getCorpus(File corpusJsonFPath) throws CompiledCorpusRegistryException {
+		String corpName = "FILE="+corpusJsonFPath.toString();
+		return getCorpus(corpName);
+	}
 	
 	@JsonIgnore
 	public static CompiledCorpus getCorpus(String corpusName) throws CompiledCorpusRegistryException {
-		if (corpusName == null) {
+		if (corpusName.equals("")) {
 			corpusName = "default";
 		}
 		CompiledCorpus corpus = null;
