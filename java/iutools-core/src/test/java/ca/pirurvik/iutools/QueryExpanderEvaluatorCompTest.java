@@ -9,7 +9,6 @@ import org.junit.Test;
 import static org.junit.Assert.assertFalse;
 
 import ca.inuktitutcomputing.config.IUConfig;
-import ca.nrc.config.ConfigException;
 import ca.pirurvik.iutools.QueryExpanderEvaluator;
 
 public class QueryExpanderEvaluatorCompTest {
@@ -33,18 +32,20 @@ public class QueryExpanderEvaluatorCompTest {
 		double gotPrecision;
 		double gotRecall;
 		
-		String compiledCorpusTrieFilePath = getLargeCompilationTrieFilePath();
 		String goldStandardCSVFilePath = IUConfig.getIUDataPath("/src/test/resources/ca/pirurvik/iutools/IU100Words-expansions-added-to-alternatives.csv");
-		QueryExpanderEvaluator evaluator = 
-			new QueryExpanderEvaluator(compiledCorpusTrieFilePath,goldStandardCSVFilePath);
 		
-		// Set this to true if you want to see print statements.
-		evaluator.verbose = false;
+		QueryExpanderEvaluator evaluator = new QueryExpanderEvaluator();
+		evaluator.setCompiledCorpus(CompiledCorpusRegistry.getCorpus());
+		evaluator.setGoldStandard(new File(goldStandardCSVFilePath));
 		// whether statistics are to be computed over words (default [true]) or morphemes [false]:
 		evaluator.setOptionComputeStatsOverSurfaceForms(computeStatsOverSurfaceForms);
-		
+
+		// Set this to true if you want to see print statements.
+		evaluator.verbose = false;
+
 
 		evaluator.run();
+		
 		gotPrecision = (double)evaluator.precision;
 		gotRecall = (double)evaluator.recall;
 		
