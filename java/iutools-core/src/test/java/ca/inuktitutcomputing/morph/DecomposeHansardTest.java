@@ -94,6 +94,8 @@ public class DecomposeHansardTest {
 	@Test
 	public void testDecomposer() throws Exception {
 		
+		System.out.println("Running testDecomposer. This test can take a few minutes to complete.");
+		
 //		Debogage.init();
 		LinguisticDataAbstract.init("csv");
 		openFilesForReadingAndWriting ();

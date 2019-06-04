@@ -17,6 +17,9 @@ public class QueryExpanderEvaluatorCompTest {
 	@Test
 	public void test__QueryExpanderEvaluatorComp() throws Exception {
 		
+		System.out.println("\n\n*** Running test__QueryExpanderEvaluatorComp. This test can take a few minutes to complete\n\n");;
+
+		
 		boolean computeStatsOverSurfaceForms = true;
 		
 		double targetPrecision = 0.7289;
@@ -34,8 +37,12 @@ public class QueryExpanderEvaluatorCompTest {
 		String goldStandardCSVFilePath = IUConfig.getIUDataPath("/src/test/resources/ca/pirurvik/iutools/IU100Words-expansions-added-to-alternatives.csv");
 		QueryExpanderEvaluator evaluator = 
 			new QueryExpanderEvaluator(compiledCorpusTrieFilePath,goldStandardCSVFilePath);
+		
+		// Set this to true if you want to see print statements.
+		evaluator.verbose = false;
 		// whether statistics are to be computed over words (default [true]) or morphemes [false]:
 		evaluator.setOptionComputeStatsOverSurfaceForms(computeStatsOverSurfaceForms);
+		
 
 		evaluator.run();
 		gotPrecision = (double)evaluator.precision;
