@@ -28,6 +28,8 @@ import ca.inuktitutcomputing.morph.MorphInuk;
  */
 public class DecomposeHansardTest {
 	
+	boolean verbose = false;
+	
 	String fileGoldStandard = "ressources/goldstandardHansard.txt";
 	String fileTargetSuccessfulAnalysis = "ressources/target_successful_analysis_";
 	String fileSuccessfulAnalysis = "outputFiles/successful_analysis_";
@@ -91,12 +93,13 @@ public class DecomposeHansardTest {
 
 	@Test
 	public void testDecomposer() throws Exception {
+		
 //		Debogage.init();
 		LinguisticDataAbstract.init("csv");
 		openFilesForReadingAndWriting ();
 		StringTokenizer st;
 		
-		System.out.println("Analyzing the words. Please wait ...");
+		if (verbose) System.out.println("Analyzing the words. Please wait ...");
 
 		Calendar startCalendar = Calendar.getInstance();
 		
@@ -105,7 +108,7 @@ public class DecomposeHansardTest {
 		    String wordId = st.nextToken();
 			String wordToBeAnalyzed = st.nextToken();
 			String goldStandardDecomposition = st.nextToken();
-			System.out.print("> :"+wordToBeAnalyzed+":");
+			if (verbose) System.out.print("> :"+wordToBeAnalyzed+":");
 			Decomposition [] decs = null;
 			/*
 			 * *x: x is a proper name of some sort
@@ -124,10 +127,10 @@ public class DecomposeHansardTest {
                     System.out.print(" Out of memory error");
                 }
                 nbWordsToBeAnalyzed++;
-                System.out.println(" []");
+                if (verbose) System.out.println(" []");
             } else {
 			    noProcessing = true;
-				System.out.println(" [not analyzed]");
+			    if (verbose) System.out.println(" [not analyzed]");
 			}
 
 			if (noProcessing) {
@@ -149,7 +152,7 @@ public class DecomposeHansardTest {
         			writerFailedAnalysis.newLine();
         			writeErrorMessage(hasFailedButPreviouslySucceded);
         			nbPrevSuccessNowFailedAnalyses++;
-        			System.out.println("    previous success, now failure with 0 decomposition");
+        			if (verbose) System.out.println("    previous success, now failure with 0 decomposition");
         		} else {
         		//if it failed as before write it in the appropriate file	
         			writerFailedAnalysis.write(wordId + " "+ wordToBeAnalyzed + "------------------------");
@@ -158,7 +161,7 @@ public class DecomposeHansardTest {
         			writerFailedAnalysis.newLine();
         			writerFailedAnalysis.newLine();
 //        			writeErrorMessage(hasFailed);
-        			System.out.println("    same failure with 0 decomposition");
+        			if (verbose) System.out.println("    same failure with 0 decomposition");
         		}   
     			nbFailedAnalyses++;
         	} else {
@@ -207,7 +210,7 @@ public class DecomposeHansardTest {
             			writerFailedAnalysis.newLine();
             			writeErrorMessage(hasFailedButPreviouslySucceded);
             			nbPrevSuccessNowFailedAnalyses++;
-            			System.out.println("    previous success, now failure with wrong decomposition");
+            			if (verbose) System.out.println("    previous success, now failure with wrong decomposition");
             		} else {
             		//write it in the appropriate file	
             			writerFailedAnalysis.write(wordId + " " + wordToBeAnalyzed + "------------------------");
@@ -220,7 +223,7 @@ public class DecomposeHansardTest {
             			}
             			writerFailedAnalysis.newLine();
 //            			writeErrorMessage(hasFailed);
-            			System.out.println("    failure");
+            			if (verbose) System.out.println("    failure");
             		}   
         			nbFailedAnalyses++;
     			}
@@ -240,14 +243,16 @@ public class DecomposeHansardTest {
 		writerSuccessfulAnalysis.write(Float.toString(percentageSuccessfulAnalyses));
 		writerSuccessfulAnalysis.newLine();
 		closeFiles();
-		System.out.println("Done.\n");
-		System.out.println("Nb. of successful analyses: "+nbSuccessfulAnalyses+" /"+nbWordsToBeAnalyzed+" ("+ nbTargetSuccessfulAnalyses + ")");
-		System.out.println("Success rate: " + Float.toString(percentageSuccessfulAnalyses));
-		System.out.println();
-		System.out.println("Nb. of successful analyses: "+nbSuccessfulAnalyses);
-		System.out.println("Nb. of new successful analyses: "+nbNewSuccessfulAnalyses);
-		System.out.println("Nb. of failed analyses: "+nbFailedAnalyses);
-		System.out.println("Nb. of previous successful now failed analyses: "+nbPrevSuccessNowFailedAnalyses);
+		if (verbose) {
+			System.out.println("Done.\n");
+			System.out.println("Nb. of successful analyses: "+nbSuccessfulAnalyses+" /"+nbWordsToBeAnalyzed+" ("+ nbTargetSuccessfulAnalyses + ")");
+			System.out.println("Success rate: " + Float.toString(percentageSuccessfulAnalyses));
+			System.out.println();
+			System.out.println("Nb. of successful analyses: "+nbSuccessfulAnalyses);
+			System.out.println("Nb. of new successful analyses: "+nbNewSuccessfulAnalyses);
+			System.out.println("Nb. of failed analyses: "+nbFailedAnalyses);
+			System.out.println("Nb. of previous successful now failed analyses: "+nbPrevSuccessNowFailedAnalyses);
+		}
         if (newSuccessfullyAnalyzedWords.size() != 0) {
             StringBuffer words = new StringBuffer();
             words.append("\nNew successfully analyzed words: ");
@@ -255,11 +260,11 @@ public class DecomposeHansardTest {
                 words.append((String) newSuccessfullyAnalyzedWords.elementAt(m)
                         + " ");
             words.append("\n");
-            System.out.println(words);
+            if (verbose) System.out.println(words);
         }
 
-		System.out.println("");
-		System.out.println("Time in milliseconds: "+time);
+        if (verbose) System.out.println("");
+        if (verbose) System.out.println("Time in milliseconds: "+time);
 
 		String errorMessagesForPrint =  printErrorMessages(errorMessages);
 		//The test is red if at least one error message is produced
