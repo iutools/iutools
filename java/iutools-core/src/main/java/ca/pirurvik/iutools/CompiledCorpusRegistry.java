@@ -1,17 +1,13 @@
 package ca.pirurvik.iutools;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.gson.Gson;
 
 import ca.inuktitutcomputing.config.IUConfig;
 import ca.nrc.config.ConfigException;
-import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 
 public class CompiledCorpusRegistry {
 	
@@ -39,10 +35,10 @@ public class CompiledCorpusRegistry {
 		} else {
 			if (corpusName.equals("default")) {
 				corpus = makeDefaultCorpus();
+				registry.put(corpusName, corpus);
 			} else {
 				throw new CompiledCorpusRegistryException("Unknown corpus name: "+corpusName);
 			}
-			registry.put(corpusName, corpus);
 		}
 		
 		return corpus;
@@ -64,6 +60,7 @@ public class CompiledCorpusRegistry {
 		}
 		try {
 			corpus = CompiledCorpus.createFromJson(trieFPath);
+			
 		} catch (Exception e) {
 			throw new CompiledCorpusRegistryException("Could not read compiled corpus from file: "+trieFPath, e);
 		}
