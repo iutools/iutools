@@ -73,10 +73,17 @@ public class CompiledCorpus
 	public transient int stopAfter = -1;
 	@JsonIgnore
 	public transient boolean verbose = true;
+	@JsonIgnore
+	public transient String name;
+	
 	
 	
 	public void setVerbose(boolean value) {
 		verbose = value;
+	}
+	
+	public void setName(String _name) {
+		name = _name;
 	}
 	
 	@SuppressWarnings("unchecked")
