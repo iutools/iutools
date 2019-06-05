@@ -1,6 +1,5 @@
 package ca.pirurvik.iutools;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -13,16 +12,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-import org.junit.Assert;
 import org.junit.Test;
 
-import ca.inuktitutcomputing.config.IUConfig;
-import ca.inuktitutcomputing.script.TransCoder;
-import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
-import ca.nrc.datastructure.trie.Trie;
-import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.testing.AssertHelpers;
 import ca.pirurvik.iutools.CompiledCorpus;
@@ -43,6 +35,7 @@ public class QueryExpanderTest {
 		//
         CompiledCorpus compiledCorpus = getACompiledCorpus(); 
         QueryExpander expander = new QueryExpander(compiledCorpus);
+        expander.setVerbose(false);
 		QueryExpansion[] expansions = expander.getExpansions("nunavut");
 	}
 
@@ -60,6 +53,7 @@ public class QueryExpanderTest {
 		};
         CompiledCorpus compiledCorpus = compileCorpusFromWords(words);        
         QueryExpander reformulator = new QueryExpander(compiledCorpus);
+        reformulator.setVerbose(false);
         QueryExpansion[] expansions = reformulator.getExpansions("iglu");
         String[] gotExpansions = new String[expansions.length];
         for (int i=0; i<expansions.length; i++)
@@ -82,6 +76,7 @@ public class QueryExpanderTest {
 		};
         CompiledCorpus compiledCorpus = compileCorpusFromWords(words);
         QueryExpander reformulator = new QueryExpander(compiledCorpus);
+        reformulator.setVerbose(false);
         QueryExpansion[] expansions = reformulator.getExpansions("iglumiutaq");
         String[] gotExpansions = new String[expansions.length];
         for (int i=0; i<expansions.length; i++)
@@ -104,6 +99,7 @@ public class QueryExpanderTest {
 		};
         CompiledCorpus compiledCorpus = compileCorpusFromWords(corpusWords);
         QueryExpander reformulator = new QueryExpander(compiledCorpus);
+        reformulator.setVerbose(false);
         QueryExpansion[] expansions = reformulator.getExpansions("takujumaguvit");
         String[] gotExpansions = new String[expansions.length];
         for (int i=0; i<expansions.length; i++)
@@ -126,6 +122,7 @@ public class QueryExpanderTest {
 		};
         CompiledCorpus compiledCorpus = compileCorpusFromWords(corpusWords);
         QueryExpander expander = new QueryExpander(compiledCorpus);
+        expander.setVerbose(false);
         QueryExpansion[] gotExpansions = expander.getExpansions("takujuq");
 		String[] expExpansions = new String[] {"takujuq", "takujumajunga", "takujumavalliajanginnik"};
 		assertExpansionsAre(expExpansions, gotExpansions);		
@@ -141,6 +138,7 @@ public class QueryExpanderTest {
 		};
         CompiledCorpus compiledCorpus = compileCorpusFromWords(corpusWords);
         QueryExpander expander = new QueryExpander(compiledCorpus);
+        expander.setVerbose(false);
         
         String taqujuq = "ᑕᑯᔪᖅ";
         QueryExpansion[] gotExpansions = expander.getExpansions(taqujuq);
@@ -179,7 +177,9 @@ public class QueryExpanderTest {
 		// 
 		// attendu : tutsiraummut, tuksiraummut, tuksiraut, tussiraut, tutsiraut
         CompiledCorpus compiledCorpus = compileCorpusFromWords(words);
-        QueryExpander expander = new QueryExpander(compiledCorpus);
+        QueryExpander expander = new QueryExpander(compiledCorpus);        
+        expander.setVerbose(false);
+
 		
 		// test n < number of terminals
         TrieNode tutsi = compiledCorpus.trie.getNode(new String[]{"{tuksiq/1v}"});
@@ -228,6 +228,7 @@ public class QueryExpanderTest {
 		bw.write(String.join(" ", words));
 		bw.close();
         CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
+        compiledCorpus.setVerbose(false);
         compiledCorpus.compileCorpusFromScratch(corpusDir);
         return compiledCorpus;
 	}

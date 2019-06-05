@@ -34,6 +34,7 @@ public class SpellChecker {
 	public String allWords = ",,";
 	public Map<String,Long> idfStats = new HashMap<String,Long>();
 	public transient EditDistanceCalculator editDistanceCalculator;
+	public transient boolean verbose = true;
 	
 	public CompiledCorpus corpus = null;
 	private static StringSegmenter_IUMorpheme segmenter = new StringSegmenter_IUMorpheme();
@@ -43,6 +44,7 @@ public class SpellChecker {
 			
 			try {
 				corpus = CompiledCorpusRegistry.getCorpus();
+				corpus.setVerbose(verbose);
 			} catch (CompiledCorpusRegistryException e) {
 				throw new SpellCheckerException(e);
 			}
@@ -61,6 +63,7 @@ public class SpellChecker {
 		if (_corpusName != null) {
 			try {
 				corpus = CompiledCorpusRegistry.getCorpus();
+				corpus.setVerbose(verbose);
 			} catch (CompiledCorpusRegistryException e) {
 				throw new SpellCheckerException(e);
 			}
@@ -68,6 +71,7 @@ public class SpellChecker {
 			if (_compiledCorpusJsonPath != null)  {
 				try {
 					corpus = CompiledCorpus.createFromJson(_compiledCorpusJsonPath.toString());
+					corpus.setVerbose(verbose);
 				} catch (Exception e) {
 					throw new SpellCheckerException("Could not create the compiled corpus from file: "+_compiledCorpusJsonPath.toString(), e);
 				}				
@@ -79,6 +83,11 @@ public class SpellChecker {
 
 	public void setEditDistanceAlgorithm(EditDistanceCalculatorFactory.DistanceMethod name) throws ClassNotFoundException, EditDistanceCalculatorFactoryException {
 		editDistanceCalculator = EditDistanceCalculatorFactory.getEditDistanceCalculator(name);
+	}
+	
+	public void setVerbose(boolean value) {
+		verbose = value;
+		if (corpus != null) corpus.setVerbose(value);
 	}
 	
 	public void addCorrectWord(String word) {

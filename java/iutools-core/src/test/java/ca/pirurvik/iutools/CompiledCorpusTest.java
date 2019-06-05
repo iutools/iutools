@@ -1,9 +1,6 @@
 package ca.pirurvik.iutools;
 
 import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -14,15 +11,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.HashMap;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-import ca.inuktitutcomputing.config.IUConfig;
 import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.Trie;
@@ -46,7 +40,6 @@ public class CompiledCorpusTest extends TestCase
 	
 	@Override
     protected void tearDown() throws Exception {
-        System.out.println("Running: tearDown");
         if (corpusDirectory != null) {
         	File[] listOfFiles = corpusDirectory.listFiles();
         	for (File file : listOfFiles)
@@ -61,8 +54,7 @@ public class CompiledCorpusTest extends TestCase
 		// Use a CompiledCorpus to trie-compile a corpus and compute statistics.
 		//
 		//
-		CompiledCorpus compiledCorpus;
-		compiledCorpus = new CompiledCorpus();
+		CompiledCorpus compiledCorpus = new CompiledCorpus();
 		
 		// 
 		// By default, the compiler segments words on a character by character basis.
@@ -87,6 +79,7 @@ public class CompiledCorpusTest extends TestCase
 		}
 
 		// Compile the corpus given in argument as directory pathname from scratch
+		compiledCorpus.setVerbose(false); // set verbose to false for tests only
 		try {
 			compiledCorpus.compileCorpusFromScratch(corpusDirectoryPathname);
 		} catch(Exception e) {
@@ -117,15 +110,17 @@ public class CompiledCorpusTest extends TestCase
 				};
 		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
         CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
+        compiledCorpus.setVerbose(false);
         compiledCorpus.saveFrequency = 3;
         compiledCorpus.stopAfter = 7; // should stop after takulaaqtuq
         try {
         	compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
         } catch(Exception e) {
-        	System.err.println("Exiting from compiler");
+        	//System.err.println("Exiting from compiler");
         }
 			
         CompiledCorpus retrievedCompiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
+        retrievedCompiledCorpus.setVerbose(false);
         retrievedCompiledCorpus.__resumeCompilation(corpusDirPathname);
         
 		Trie trie = retrievedCompiledCorpus.trie;
@@ -193,15 +188,17 @@ public class CompiledCorpusTest extends TestCase
 				};
 		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
         CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
+        compiledCorpus.setVerbose(false);
         compiledCorpus.saveFrequency = 3;
         compiledCorpus.stopAfter = 10; // should stop after iglumut
         try {
         	compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
         } catch(Exception e) {
-        	System.err.println("Exiting from compiler");
+        	//System.err.println("Exiting from compiler");
         }
 			
         CompiledCorpus retrievedCompiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
+        retrievedCompiledCorpus.setVerbose(false);
         retrievedCompiledCorpus.__resumeCompilation(corpusDirPathname);
 
         Trie trie = retrievedCompiledCorpus.trie;
@@ -263,9 +260,6 @@ public class CompiledCorpusTest extends TestCase
 		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText,
 				sana_lauqsima_juq_node.getKeysAsString());
 		
-		TrieNode[] allTerminals = completeTrie.getAllTerminals();
-		for (int i=0; i<allTerminals.length; i++) System.out.println(allTerminals[i].getKeysAsString());
-
 		// 11 words, but one did not analyze.
 		assertEquals("The frequency of the word sanalauqsimajuq should be 1.",1,sana_lauqsima_juq_node.getFrequency());
 		assertEquals("The size of the trie should be 10.",10,completeTrie.getSize());
@@ -292,14 +286,16 @@ public class CompiledCorpusTest extends TestCase
 				};
 		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
         CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
+        compiledCorpus.setVerbose(false);
         compiledCorpus.saveFrequency = 3;
         try {
         	compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
         } catch(Exception e) {
-        	System.err.println("Exiting from compiler");
+        	//System.err.println("Exiting from compiler");
         }
 			
         CompiledCorpus retrievedCompiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
+        retrievedCompiledCorpus.setVerbose(false);
         retrievedCompiledCorpus.__resumeCompilation(corpusDirPathname);
 
 		Trie trie = retrievedCompiledCorpus.trie;
@@ -325,10 +321,11 @@ public class CompiledCorpusTest extends TestCase
 				};
 		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
         CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
-        try {
+        compiledCorpus.setVerbose(false);
+       try {
         	compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
         } catch(Exception e) {
-        	System.err.println("Exiting from compiler");
+        	//System.err.println("Exiting from compiler");
         }
 			
         String expected = ",,nunavut:{nunavut/1n},,takujuq:{taku/1v}{juq/1vn},,iglumik:{iglu/1n}{mik/tn-acc-s},,";
@@ -343,6 +340,7 @@ public class CompiledCorpusTest extends TestCase
 				};
 		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
         CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
+        compiledCorpus.setVerbose(false);
         boolean canBeResumed = compiledCorpus.canBeResumed(corpusDirPathname);
         assertFalse("The compiler should not be able to resume; there is no JSON compilation backup.",canBeResumed);
 
@@ -357,6 +355,7 @@ public class CompiledCorpusTest extends TestCase
 		String documentContents = "inuit takujuq nunavut takujuq takulaaqtuq";
 		BufferedReader br = new BufferedReader(new StringReader(documentContents));
         CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
+        compiledCorpus.setVerbose(false);
         compiledCorpus.processDocumentContents(br,null);
 		
 		String[] inuit_segments = new String[]{"{inuk/1n}","{it/tn-nom-p}", "\\"};
@@ -375,6 +374,7 @@ public class CompiledCorpusTest extends TestCase
 				};
 		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
         CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
+        compiledCorpus.setVerbose(false);
         compiledCorpus.saveFrequency = 3;
         compiledCorpus.stopAfter = 7; 
         // Compilation should stop after takulaaqtuq. This is to simulate
@@ -383,12 +383,13 @@ public class CompiledCorpusTest extends TestCase
         try {
         	compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
         } catch(Exception e) {
-        	System.err.println("Exiting from compiler");
-        	System.err.println(e.getMessage());
+        	//System.err.println("Exiting from compiler");
+        	//System.err.println(e.getMessage());
         }
         
         CompiledCorpus retrievedCompiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
         retrievedCompiledCorpus.__resumeCompilation(corpusDirPathname);
+        retrievedCompiledCorpus.setVerbose(false);
         //FileUtils.deleteDirectory(dir);
 
 		Trie trie = retrievedCompiledCorpus.trie;
@@ -421,6 +422,7 @@ public class CompiledCorpusTest extends TestCase
 	@Test
 	public void test__mostFrequentWordWithRadical() {
 		CompiledCorpus compiledCorpus = new CompiledCorpus();
+        compiledCorpus.setVerbose(false);
 		Trie charTrie = new Trie();
 		try {
 		charTrie.add("hello".split(""),"hello");
@@ -440,6 +442,7 @@ public class CompiledCorpusTest extends TestCase
 	@Test
 	public void test__getTerminalsSumFreq() throws TrieException {
 		CompiledCorpus compiledCorpus = new CompiledCorpus();
+        compiledCorpus.setVerbose(false);
 		Trie charTrie = new Trie();
 		charTrie.add("hello".split(""),"hello");
 		charTrie.add("hint".split(""),"hint");
@@ -474,6 +477,7 @@ public class CompiledCorpusTest extends TestCase
 				};
 		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
         CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
+        compiledCorpus.setVerbose(false);
         compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
         assertEquals("The number of words that failed segmentation is wrong.",1,
         		compiledCorpus.getNbWordsThatFailedSegmentations());
@@ -489,6 +493,7 @@ public class CompiledCorpusTest extends TestCase
 				};
 		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
         CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
+        compiledCorpus.setVerbose(false);
         String completeCompilationFilePathname = corpusDirPathname+"/compiled_corpus.json";
         compiledCorpus.setCompleteCompilationFilePath(completeCompilationFilePathname);
         compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
@@ -554,6 +559,7 @@ public class CompiledCorpusTest extends TestCase
 
 	public static File compileToFile(String[] words) throws Exception {
 		CompiledCorpus tempCorp = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
+		tempCorp.setVerbose(false);
 		InputStream iStream = IOUtils.toInputStream(String.join(" ", words), "utf-8");
 		InputStreamReader iSReader = new InputStreamReader(iStream);
 		BufferedReader br = new BufferedReader(iSReader);

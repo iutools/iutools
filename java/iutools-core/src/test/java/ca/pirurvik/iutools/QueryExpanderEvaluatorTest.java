@@ -100,6 +100,7 @@ public class QueryExpanderEvaluatorTest {
 
 		};
 		QueryExpanderEvaluator evaluator = new QueryExpanderEvaluator();
+		evaluator.setVerbose(false);
 		evaluator.setCompiledCorpus(compiledCorpus);
 		evaluator.setGoldStandard(csvGoldStandardLines);
 		evaluator.run();
@@ -186,6 +187,7 @@ public class QueryExpanderEvaluatorTest {
 
 		};
 		QueryExpanderEvaluator evaluator = new QueryExpanderEvaluator();
+		evaluator.setVerbose(false);
 		evaluator.setCompiledCorpus(compiledCorpus);
 		evaluator.setGoldStandard(csvGoldStandardLines);
         evaluator.setOptionComputeStatsOverSurfaceForms(false);
@@ -224,6 +226,7 @@ public class QueryExpanderEvaluatorTest {
 		}
 		bw.close();
         CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
+        compiledCorpus.setVerbose(false);
         compiledCorpus.compileCorpusFromScratch(corpusDir);
         return compiledCorpus;
 	}

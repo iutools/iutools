@@ -2,16 +2,13 @@ package ca.pirurvik.iutools;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
-import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,7 +20,6 @@ import org.apache.log4j.Logger;
 
 import com.google.gson.Gson;
 
-import ca.inuktitutcomputing.morph.Decomposition;
 import ca.pirurvik.iutools.QueryExpansion;
 
 public class QueryExpanderEvaluator {
@@ -66,10 +62,17 @@ public class QueryExpanderEvaluator {
 		FileReader fr = new FileReader(compiledCorpusTrieFilePath);
 		compiledCorpus = new Gson().fromJson(fr, CompiledCorpus.class);    		
 		fr.close();
+		compiledCorpus.setVerbose(verbose);
 	}
 	
 	public void setCompiledCorpus(CompiledCorpus _compiledCorpus) {
 		compiledCorpus = _compiledCorpus;
+		compiledCorpus.setVerbose(verbose);
+	}
+	
+	public void setVerbose(boolean value) {
+		verbose = value;
+		if (compiledCorpus != null) compiledCorpus.setVerbose(value);
 	}
 	
 	public void setGoldStandard(File csvGoldStandardFile) throws IOException {

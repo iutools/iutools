@@ -71,7 +71,13 @@ public class CompiledCorpus
 	private transient StringSegmenter segmenter = null;
 	@JsonIgnore
 	public transient int stopAfter = -1;
+	@JsonIgnore
+	public transient boolean verbose = true;
 	
+	
+	public void setVerbose(boolean value) {
+		verbose = value;
+	}
 	
 	@SuppressWarnings("unchecked")
 	@JsonIgnore
@@ -254,7 +260,7 @@ public class CompiledCorpus
 		saveFile.write(json);
 		saveFile.flush();
 		saveFile.close();
-		System.out.println("saved in "+saveFilePathname);
+		toConsole("saved in "+saveFilePathname);
 	}
 	
 	/**
@@ -367,31 +373,25 @@ public class CompiledCorpus
 					// new word decomposed or word that now decomposed: add to word segmentations string
 					if (segments.length != 0)
 						addToWordSegmentations(word,segments);
-//should be logger.debug					toConsole("** AFTER segment()");  
 			} catch (Exception e) {
 					toConsole("** EXCEPTION RAISED");
 					toConsole(" ??? " + e.getClass().getName() + " --- " + e.getMessage() + " ");
 					segments = new String[] {};
 			}
-//				toConsole("** addToCache");
 			addToCache(word, segments);
-//				toConsole("** AFTER addToCache");
 		}
 		try {
 			TrieNode result = null;
 			if (segments.length != 0) {
-//				toConsole("** we have some segments...trie.add");
 				result = trie.add(segments,word);
 				if (recompilingFailedWord) {
 					int freq = wordsFailedSegmentationWithFreqs.get(word).intValue()-1;
 					for (int ifr=0; ifr<freq; ifr++)
 						trie.add(segments, word);
 				}
-//				toConsole("** AFTER trie.add");
 				toConsole(result.getKeysAsString()+"\n");
 				removeFromListOfFailedSegmentation(word);
 			} else {
-//				toConsole("** no segments...");
 				toConsole("XXX\n");
 				if ( !recompilingFailedWord )
 					addToListOfFailedSegmentation(word);
@@ -416,7 +416,6 @@ public class CompiledCorpus
 	private void addToListOfFailedSegmentation(String word) {
 		if ( !wordsFailedSegmentation.contains(word) )
 			wordsFailedSegmentation.add(word);
-//		toConsole("** AFTER wordsFailedSegmentation...");
 
 		long nb;
 		if (wordsFailedSegmentationWithFreqs.containsKey(word))
@@ -424,7 +423,6 @@ public class CompiledCorpus
 		else
 			nb = 1;
 		wordsFailedSegmentationWithFreqs.put(word, new Long(nb));
-//		toConsole("** DONE updating list of words with no analysis");
 	}
 
 	public HashMap<String,Long> getWordsThatFailedSegmentationWithFreqs() {
@@ -473,7 +471,7 @@ public class CompiledCorpus
 	
 
 	public void toConsole(String message) {
-		System.out.print(message);
+		if (verbose) System.out.print(message);
 	}
 
 
@@ -519,7 +517,6 @@ public class CompiledCorpus
 				words = newWords;
 			}
 		}
-		//System.out.println(Arrays.toString(words));
 		return words;
 	}
 

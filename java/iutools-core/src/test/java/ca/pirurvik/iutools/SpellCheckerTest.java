@@ -1,25 +1,18 @@
 package ca.pirurvik.iutools;
 
-import static org.junit.Assert.*;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
 
 import ca.nrc.datastructure.Pair;
-import ca.nrc.json.PrettyPrinter;
 import ca.nrc.testing.AssertHelpers;
 import ca.pirurvik.iutools.SpellChecker;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.*;
 
 public class SpellCheckerTest {
@@ -32,15 +25,15 @@ public class SpellCheckerTest {
 		
 		String[] correctWordsLatin = new String[] {"inuktut", "inukttut", "inuk", "inukutt", "inukshuk", "nunavut"};
 		if (checker == null) {
-			File tempFile = CompiledCorpusTest.compileToFile(correctWordsLatin);
-			checker = new SpellChecker(tempFile);
+			checker = new SpellChecker();
+			checker.setVerbose(false);
 			for (String aWord: correctWordsLatin) checker.addCorrectWord(aWord);
 		}
 		
 		String[] correctWordsSyll = new String[] {"ᓄᓇᕘᒥ", "ᓄᓇᕗᒻᒥ", "ᓄᓇᒥ", "ᓄᓇᕗᑦ", "ᓄᓇᕗᒻᒥᑦ", "ᐃᒡᓗ"};
 		if (checkerSyll == null) {
-			File tempFile = CompiledCorpusTest.compileToFile(correctWordsSyll);
-			checkerSyll = new SpellChecker(tempFile);
+			checkerSyll = new SpellChecker();
+			checkerSyll.setVerbose(false);
 			for (String aWord: correctWordsSyll) checkerSyll.addCorrectWord(aWord);
 		}		
 	}
@@ -61,6 +54,7 @@ public class SpellCheckerTest {
 		// For example
 		//
 		SpellChecker checker = new SpellChecker();
+		checker.setVerbose(false);
 		checker.addCorrectWord("inuktut");
 		checker.addCorrectWord("inuk");
 		checker.addCorrectWord("inuksuk");
@@ -110,6 +104,7 @@ public class SpellCheckerTest {
 	@Test
 	public void test__addCorrectWord__HappyPath() throws Exception {
 		SpellChecker checker = new SpellChecker();
+		checker.setVerbose(false);
 		
 		Assert.assertFalse(containsWord("inuktut", checker));
 		checker.addCorrectWord("inuktut");

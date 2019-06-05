@@ -21,6 +21,7 @@ public class QueryExpander {
 	
 	public CompiledCorpus compiledCorpus;
 	public int numberOfReformulations = 5;
+	protected boolean verbose = true;
 
 	
 	public QueryExpander() throws QueryExpanderException {
@@ -40,7 +41,13 @@ public class QueryExpander {
 				throw new QueryExpanderException("Problem creating a QueryExpander with default pre-compiled corpus", e);
 			}
 		}
-		this.compiledCorpus = _compiledCorpus;
+		compiledCorpus = _compiledCorpus;
+		compiledCorpus.setVerbose(verbose);
+	}
+	
+	public void setVerbose(boolean value) {
+		verbose = value;
+		if (compiledCorpus != null) compiledCorpus.setVerbose(value);
 	}
 	
 	/**

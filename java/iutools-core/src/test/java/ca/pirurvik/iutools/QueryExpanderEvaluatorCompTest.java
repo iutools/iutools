@@ -35,13 +35,16 @@ public class QueryExpanderEvaluatorCompTest {
 		String goldStandardCSVFilePath = IUConfig.getIUDataPath("/src/test/resources/ca/pirurvik/iutools/IU100Words-expansions-added-to-alternatives.csv");
 		
 		QueryExpanderEvaluator evaluator = new QueryExpanderEvaluator();
-		evaluator.setCompiledCorpus(CompiledCorpusRegistry.getCorpus());
+		// Set this to true if you want to see print statements.
+		evaluator.verbose = false;
+
+		CompiledCorpus compiledCorpus = CompiledCorpusRegistry.getCorpus();
+		compiledCorpus.setVerbose(false);
+		evaluator.setCompiledCorpus(compiledCorpus);
 		evaluator.setGoldStandard(new File(goldStandardCSVFilePath));
 		// whether statistics are to be computed over words (default [true]) or morphemes [false]:
 		evaluator.setOptionComputeStatsOverSurfaceForms(computeStatsOverSurfaceForms);
 
-		// Set this to true if you want to see print statements.
-		evaluator.verbose = false;
 
 
 		evaluator.run();

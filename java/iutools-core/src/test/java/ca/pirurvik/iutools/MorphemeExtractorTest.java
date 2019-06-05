@@ -30,6 +30,7 @@ public class MorphemeExtractorTest {
 		dictionary.put("iglumik", "{root3/idr3} {affix21/idaff21} {affix32/idaff31}");
 		dictionary.put("inuksuk", "{root1/idr1} {affix4/idaff4}");
 		mockCompiledCorpus = new MockCompiledCorpus();
+		mockCompiledCorpus.setVerbose(false);
 		// The MockCompiledCorpus's segmenter will use this dictionary instead of calling 
 		// the morphological analyzer.
 		mockCompiledCorpus.setDictionary(dictionary);
@@ -107,6 +108,7 @@ public class MorphemeExtractorTest {
 		dictionary.put("iglumut", "{root3/idr3} {affix41/idaff411}");
 		dictionary.put("nunatsiaq", "{root2/idr2} {affix41/idaff412} {affix42/idaff42}");
 		MockCompiledCorpus mockCompiledCorpus = new MockCompiledCorpus();
+		mockCompiledCorpus.setVerbose(false);
 		mockCompiledCorpus.setDictionary(dictionary);
 		String[] stringsOfWords = new String[] {
 				"inuit nunami iglumik inuksuk iglumut nunatsiaq"
