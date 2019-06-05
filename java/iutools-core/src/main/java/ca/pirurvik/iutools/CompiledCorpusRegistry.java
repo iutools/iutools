@@ -11,14 +11,14 @@ import ca.nrc.config.ConfigException;
 
 public class CompiledCorpusRegistry {
 	
-	private static Map<String,CompiledCorpus> registry = new HashMap<String,CompiledCorpus>();
-	private static Map<String,String> corpusCompilationFPaths = new HashMap<String,String>();
+	private static Map<String,CompiledCorpus> corpusCache = new HashMap<String,CompiledCorpus>();
+	private static Map<String,String> registry = new HashMap<String,String>();
 	
 	static {
 		try {
-			// Add newly compiled corpi here: define a name and specify the path
-			// where the compilation file is located (should be in iutools-data)
-			corpusCompilationFPaths.put("Hansard1999-2002", IUConfig.getIUDataPath("data/tries/trie_compilation-HANSARD-1999-2002---single-form-in-terminals.json"));
+			String Hansard19992002_compilationFilePath = IUConfig.getIUDataPath("data/tries/trie_compilation-HANSARD-1999-2002---single-form-in-terminals.json");
+			registry.put("Hansard1999-2002", Hansard19992002_compilationFilePath);
+			registry.put("default", Hansard19992002_compilationFilePath);
 		} catch (ConfigException e) {
 		}
 	}
@@ -30,27 +30,21 @@ public class CompiledCorpusRegistry {
 
 	@JsonIgnore
 	public static CompiledCorpus getCorpus(String corpusName) throws CompiledCorpusRegistryException {
+		if (corpusName==null)
+			corpusName = "default";
 		CompiledCorpus corpus = null;
-		if (registry.containsKey(corpusName)) {
-			corpus = registry.get(corpusName);
+		if (corpusCache.containsKey(corpusName)) {
+			corpus = corpusCache.get(corpusName);
 		} else {
-			if (corpusName.equals("default")) {
-				corpus = makeCorpus();
-				registry.put(corpusName, corpus);
-			} else if (corpusName.startsWith("FILE=") || corpusCompilationFPaths.containsKey(corpusName)) {
+			if (corpusName.startsWith("FILE=") || registry.containsKey(corpusName)) {
 				String filePath;
-				String corpName;
 				if (corpusName.startsWith("FILE=")) {
-					String corpusJsonFPathAndName = corpusName.replace("FILE=", "");
-					String[] pathAndName = corpusJsonFPathAndName.split(";NAME=");
-					filePath = pathAndName[0];
-					corpName = pathAndName[1];
+					filePath = corpusName.replace("FILE=", "");
 				} else {
-					corpName = corpusName;
-					filePath = corpusCompilationFPaths.get(corpName);
+					filePath = registry.get(corpusName);
 				}
-				corpus = makeCorpus(filePath,corpName);
-				registry.put(corpName, corpus);
+				corpus = makeCorpus(filePath);
+				corpusCache.put(corpusName, corpus);
 			} else {
 				throw new CompiledCorpusRegistryException("Unknown corpus name: "+corpusName);
 			}
@@ -60,34 +54,32 @@ public class CompiledCorpusRegistry {
 	}
 	
 	@JsonIgnore
-	public static CompiledCorpus getCorpus(File corpusJsonFPath, String corpusName) throws CompiledCorpusRegistryException {
-		if (corpusName.equals("")) {
-			throw new CompiledCorpusRegistryException("The name of the corpus is empty string.");
-		}
-		String corpName = "FILE="+corpusJsonFPath.toString()+";NAME="+corpusName;
-		return getCorpus(corpName);
+	public static CompiledCorpus getCorpus(File corpusJsonFPath) throws CompiledCorpusRegistryException {
+		String corpusName = "FILE="+corpusJsonFPath.toString();
+		return getCorpus(corpusName);
 	}
 	
 
-	
-	
-	private static CompiledCorpus makeCorpus() throws CompiledCorpusRegistryException {
-		String corpusJsonFPath;
-		try {
-			corpusJsonFPath = IUConfig.getIUDataPath("data/tries/trie_compilation-HANSARD-1999-2002---single-form-in-terminals.json");
-			if (! new File(corpusJsonFPath).exists()) {
-				throw new CompiledCorpusRegistryException("Did not find the Hansard corpus compilation file. Please download it and place it in "+
-						corpusJsonFPath+". You can download the file from "+
-						"https://www.dropbox.com/s/ka3cn778wgs1mk4/trie_compilation-HANSARD-1999-2002---single-form-in-terminals.json?dl=0");
+	public static void addCorpus(String corpusName, String compilationFilePath) throws CompiledCorpusRegistryException {
+		addCorpus(corpusName,compilationFilePath,false);
+	}
+	public static void addCorpus(String corpusName, String compilationFilePath, boolean makeItDefault) throws CompiledCorpusRegistryException {
+		if (registry.containsKey(corpusName)) {
+			if ( !registry.get(corpusName).equals(compilationFilePath) ) {
+				throw new CompiledCorpusRegistryException("The name '"+corpusName+"' is already associated with a different compilation file.");
 			}
-		} catch (ConfigException e) {
-			throw new CompiledCorpusRegistryException(e);
+		} else {
+			registry.put(corpusName, compilationFilePath);
 		}
-		
-		return makeCorpus(corpusJsonFPath,"default");
+		if (makeItDefault) {
+			registry.put("default", compilationFilePath);
+		}
 	}
+	
 
-	private static CompiledCorpus makeCorpus(String corpusJsonFPath,String corpName) throws CompiledCorpusRegistryException  {
+	
+	
+	private static CompiledCorpus makeCorpus(String corpusJsonFPath) throws CompiledCorpusRegistryException  {
 		CompiledCorpus corpus = null;
 		if (! new File(corpusJsonFPath).exists()) {
 			throw new CompiledCorpusRegistryException("Did not find the corpus compilation file. Please retrieve it and place it in "+
@@ -95,13 +87,19 @@ public class CompiledCorpusRegistry {
 		}
 		try {
 			corpus = CompiledCorpus.createFromJson(corpusJsonFPath);
-			corpus.setName(corpName);
 			
 		} catch (Exception e) {
 			throw new CompiledCorpusRegistryException("Could not read compiled corpus from file: "+corpusJsonFPath, e);
 		}
 		
 		return corpus;
+	}
+	
+	public static Map<String,String> getRegistry() {
+		return registry;
+	}
+	public static Map<String,CompiledCorpus> getCorpusCache() {
+		return corpusCache;
 	}
 
 }
