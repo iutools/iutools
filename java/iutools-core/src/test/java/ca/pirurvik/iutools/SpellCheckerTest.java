@@ -29,13 +29,6 @@ public class SpellCheckerTest {
 			checker.setVerbose(false);
 			for (String aWord: correctWordsLatin) checker.addCorrectWord(aWord);
 		}
-		
-		String[] correctWordsSyll = new String[] {"ᓄᓇᕘᒥ", "ᓄᓇᕗᒻᒥ", "ᓄᓇᒥ", "ᓄᓇᕗᑦ", "ᓄᓇᕗᒻᒥᑦ", "ᐃᒡᓗ"};
-		if (checkerSyll == null) {
-			checkerSyll = new SpellChecker();
-			checkerSyll.setVerbose(false);
-			for (String aWord: correctWordsSyll) checkerSyll.addCorrectWord(aWord);
-		}		
 	}
 
 //	@Test
@@ -113,10 +106,6 @@ public class SpellCheckerTest {
 		Assert.assertFalse(containsWord("nunavut", checker));
 		checker.addCorrectWord("nunavut");
 		Assert.assertTrue(containsWord("nunavut", checker));
-		
-		Assert.assertFalse(containsWord("ᐃᒡᓗ", checker));
-		checker.addCorrectWord("ᐃᒡᓗ");
-		Assert.assertTrue(containsWord("ᐃᒡᓗ", checker));
 	}
 	
 	@Test
@@ -128,14 +117,6 @@ public class SpellCheckerTest {
 		Assert.assertEquals("IDF was wrong for sequence with > 5 chars", new Long(0), checker.idf("nunavu"));
 		Assert.assertEquals("IDF was wrong for sequence with =5 chars", new Long(1), checker.idf("unavu"));
 		Assert.assertEquals("IDF was wrong for non-existant sequence",new Long(0), checker.idf("blah"));
-	}
-
-	@Test
-	public void test__idf__HappyPath_syllabic() {
-//		System.out.println(PrettyPrinter.print(checkerSyll.idfStats));
-		Assert.assertEquals("IDF was wrong for sequence that starts words ('ᓄᓇ')", new Long(5), checkerSyll.idf("ᓄᓇ"));
-		Assert.assertEquals("IDF was wrong for sequence at the middle of words ('ᓇᕗ')", new Long(3), checkerSyll.idf("ᓇᕗ"));
-		Assert.assertEquals("IDF was wrong for sequence ('ᒻᒥ')", new Long(2), checkerSyll.idf("ᒻᒥ"));
 	}
 
 	@Test
@@ -209,9 +190,13 @@ public class SpellCheckerTest {
 	
 	@Test
 	public void test__correctWord__syllabic__MispelledInput() throws Exception {
+		String[] correctWordsLatin = new String[] {"inuktut", "nunavummi", "inuk", "inuksut", "nunavuumi", "nunavut"};
+		SpellChecker checker = new SpellChecker();
+		checker.setVerbose(false);
+		for (String aWord: correctWordsLatin) checker.addCorrectWord(aWord);
 		String word = "ᓄᓇᕗᖕᒥ";
-		SpellingCorrection gotCorrection = checkerSyll.correctWord(word, 5);
-		assertCorrectionIsOK(gotCorrection, true, new String[] {"ᓄᓇᕗᒻᒥ", "ᓄᓇᕗᑦ", "ᓄᓇᕗᒻᒥ", "ᓄᓇᕘᒥ"});
+		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
+		assertCorrectionIsOK(gotCorrection, true, new String[] {"ᓄᓇᕘᒥ", "ᓄᓇᕗᒻᒥ", "ᓄᓇᕗᑦ" });
 	}
 	
 	@Test 

@@ -191,15 +191,15 @@ public class SpellChecker {
 	 			corr.setPossibleSpellings(corrections.subList(0, maxCorrections>corrections.size()? corrections.size() : maxCorrections));
 		}
 		
-//		if (!wordIsLatin) {
-//			// Transcode the spellings back to Syllabic
-//			List<String> possSpellingsSyll = new ArrayList<String>();
-//			for (String aSpelling: corr.getPossibleSpellings()) {
-//				aSpelling = TransCoder.romanToUnicode(aSpelling);
-//				possSpellingsSyll.add(aSpelling);
-//			}
-//			corr.setPossibleSpellings(possSpellingsSyll);
-//		}
+		if (wordIsSyllabic) {
+			// Transcode the spellings back to Syllabic
+			List<String> possSpellingsSyll = new ArrayList<String>();
+			for (String aSpelling: corr.getPossibleSpellings()) {
+				aSpelling = TransCoder.romanToUnicode(aSpelling);
+				possSpellingsSyll.add(aSpelling);
+			}
+			corr.setPossibleSpellings(possSpellingsSyll);
+		}
  		
  		return corr;
 	}
