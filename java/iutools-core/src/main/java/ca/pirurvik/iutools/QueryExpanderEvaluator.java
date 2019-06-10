@@ -57,6 +57,10 @@ public class QueryExpanderEvaluator {
 		setGoldStandard(goldStandardFile);
 	}
 		
+	public void setCompiledCorpus(String corpusName) throws CompiledCorpusRegistryException {
+		compiledCorpus = CompiledCorpusRegistry.getCorpus(corpusName);
+		compiledCorpus.setVerbose(verbose);
+	}
 	
 	public void setCompiledCorpus(File compiledCorpusTrieFilePath) throws IOException {
 		FileReader fr = new FileReader(compiledCorpusTrieFilePath);
@@ -69,6 +73,7 @@ public class QueryExpanderEvaluator {
 		compiledCorpus = _compiledCorpus;
 		compiledCorpus.setVerbose(verbose);
 	}
+	
 	
 	public void setVerbose(boolean value) {
 		verbose = value;

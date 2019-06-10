@@ -25,7 +25,11 @@ public class QueryExpander {
 
 	
 	public QueryExpander() throws QueryExpanderException {
-		initialize(null);
+		initializeWithCorpusName(null);
+	}
+	
+	public QueryExpander(String corpusName) throws QueryExpanderException {
+		initializeWithCorpusName(corpusName);
 	}
 
 	public QueryExpander(CompiledCorpus _compiledCorpus) throws QueryExpanderException {
@@ -43,6 +47,15 @@ public class QueryExpander {
 		}
 		compiledCorpus = _compiledCorpus;
 		compiledCorpus.setVerbose(verbose);
+	}
+	
+	private void initializeWithCorpusName(String corpusName) throws QueryExpanderException {
+		try {
+			compiledCorpus = CompiledCorpusRegistry.getCorpus(corpusName);
+			compiledCorpus.setVerbose(verbose);
+		} catch (CompiledCorpusRegistryException e) {
+			throw new QueryExpanderException("Problem creating a QueryExpander with default pre-compiled corpus", e);
+		}
 	}
 	
 	public void setVerbose(boolean value) {
