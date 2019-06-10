@@ -25,6 +25,8 @@ import ca.nrc.datastructure.Pair;
 import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.string.StringUtils;
+import ca.inuktitutcomputing.script.Syllabics;
+import ca.inuktitutcomputing.script.TransCoder;
 import ca.inuktitutcomputing.utilities.EditDistanceCalculator;
 import ca.inuktitutcomputing.utilities.EditDistanceCalculatorFactory;
 import ca.inuktitutcomputing.utilities.EditDistanceCalculatorFactoryException;
@@ -33,6 +35,7 @@ public class SpellChecker {
 	
 	public int MAX_SEQ_LEN = 5;
 	public int MAX_CANDIDATES = 100;
+	public int DEFAULT_CORRECTIONS = 5;
 	public String allWords = ",,";
 	public Map<String,Long> idfStats = new HashMap<String,Long>();
 	public transient EditDistanceCalculator editDistanceCalculator;
@@ -166,10 +169,11 @@ public class SpellChecker {
 	public SpellingCorrection correctWord(String word, int maxCorrections) throws SpellCheckerException {
 
 //		boolean wordIsLatin = Pattern.compile("[a-zA-Z]").matcher(word).find();
-//		
-//		if (!wordIsLatin) {
-//			word = TransCoder.unicodeToRoman(word);
-//		}
+		boolean wordIsSyllabic = Syllabics.allInuktitut(word);
+		
+		if (wordIsSyllabic) {
+			word = TransCoder.unicodeToRoman(word);
+		}
 		
 		SpellingCorrection corr = new SpellingCorrection(word);
 		corr.wasMispelled = isMispelled(word);
@@ -329,13 +333,16 @@ public class SpellChecker {
 		return listOfRarest;
 		
 	}
+	
+	
+	
 
 	public List<SpellingCorrection> correctText(String text) throws SpellCheckerException {
 		return correctText(text, null);
 	}
 
 	public List<SpellingCorrection> correctText(String text, Integer nCorrections) throws SpellCheckerException {
-		if (nCorrections == null) nCorrections = 5;
+		if (nCorrections == null) nCorrections = DEFAULT_CORRECTIONS;
 		List<SpellingCorrection> corrections = new ArrayList<SpellingCorrection>();
 		
 		List<Pair<String, Boolean>> tokens = StringUtils.tokenizeNaively(text);
