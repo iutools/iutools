@@ -12,7 +12,7 @@ class SearchController extends WidgetController {
 		this.busy = false;
 		this.hitsPerPage = 10;
 		this.totalHits = 0;
-		this.attachHtmlElements();
+//		this.attachHtmlElements();
 		
 		
 		this.prevPage = this.initialPage();
@@ -29,6 +29,7 @@ class SearchController extends WidgetController {
 	
 	// Setup handler methods for different HTML elements specified in the config.
 	attachHtmlElements() {
+		console.log('-- SearchController.attachHtmlElements: called');
 		this.setEventHandler("btnSearch", "click", this.onSearch);
 		this.setEventHandler("prevPage", "click", this.onSearchPrev);
 		this.setEventHandler("nextPage", "click", this.onSearchNext);
