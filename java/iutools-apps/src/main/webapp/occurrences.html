@@ -1,0 +1,78 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>InuktutiTools Word Occurrences</title>
+  <link rel="stylesheet" href="css/styles.css?v1">
+
+  <script src="js/jquery-3.3.1.min.js"></script>
+  <script src="js/scripts.js?v1"></script>
+</head>
+
+<body>
+
+<header>
+     <div data-includeHTML="pages/_HeaderPartial.html"></div>
+</header>
+
+<main>
+    <h1 style="text-align:left;">Words with morpheme from corpus
+    	<select id="corpus">
+    		<option value="Hansard_1999-2002" selected>Nunavut Hansard 1999-2002</option>
+    		<option value="CBC_transcripts">CBC transcripts</option>
+    	</select>
+    </h1>
+    
+    <form id="form-query" method="post" action="">
+    
+    Enter some Inuktut morpheme in its nominal form (e.g. gaq)<p/>
+    <input id="morpheme" name="morpheme" style="width:20em;"><p/>
+    <button id="btn-occ" type="button" name="btn-occ" value="Occurrences">Get words</button>
+    <input type="hidden" id="example-word" name="example-word" value="">
+    <p></p>
+    <div id="div-message" class="div-message"></div>
+    <div id="div-error" class="div-error"></div>
+    <div id="div-results" class="div-results"></div>
+    <div id="div-example-word" class="div-example-word"><div id="word"></div><div id="iconizer" title="Minimize"><img src="imgs/minimize.png" ></div><div id="contents"></div></div>
+    <div id="div-example-word-iconized" title="Maximize"><img src="imgs/maximize.png" height=24 ></div>
+    
+      
+    </form>
+
+</main>
+
+<footer>
+    <div data-includeHTML="pages/_FooterPartial.html"></div>
+</footer>
+
+<script src="js/WidgetController.js"></script>
+<script src="js/OccurrenceController.js"></script>
+
+<script>
+	// Load the header, footer etc...
+	$(document).ready(function () {
+        $("div[data-includeHTML]").each(function () {                
+            $(this).load($(this).attr("data-includeHTML"));
+        });
+    });
+    
+	// Setup and configure the controller for this page
+    var config = {
+    		btnGet: "btn-occ",
+    		morpheme: "morpheme",
+    		exampleWord: "example-word",
+    		divResults:  "div-results",
+    		divMessage: "div-message",
+    		divExampleWord: "div-example-word",
+    		divError: "div-error",
+    		iconizer: "iconizer",
+    		divIconizedExampleWord: "div-example-word-iconized"
+        };
+    var occurrenceController = new OccurrenceController(config);
+</script>
+    
+</body>
+
+</html>
