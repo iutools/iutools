@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,6 +22,7 @@ import org.apache.log4j.Logger;
 import com.google.gson.Gson;
 
 import ca.nrc.datastructure.Pair;
+import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.string.StringUtils;
 import ca.inuktitutcomputing.utilities.EditDistanceCalculator;
@@ -211,7 +213,9 @@ public class SpellChecker {
 				if (segments != null && segments.length > 0) {
 					answer = false;
 				}
-			} catch (Exception e) {
+			} catch (TimeoutException e) {
+				answer = false;
+			} catch (StringSegmenterException e) {
 				throw new SpellCheckerException(e);
 			}
 		}
