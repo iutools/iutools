@@ -66,6 +66,7 @@ class WidgetController {
 		
 		var keypressHandler = 
 				function(event) {
+					console.log("-- onReturnKey.keypressHandler: event="+JSON.stringify(event));
 					var keycode = (event.keyCode ? event.keyCode : event.which);
 					if(keycode == '13'){
 						method.call(controller);
