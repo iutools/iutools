@@ -124,9 +124,9 @@ public class DecomposeHansardTest {
 			if (!wordId.startsWith("*") && !wordId.startsWith("?") && !wordId.startsWith("#")) {
                 try {
                     decs = MorphInuk.decomposeWord(wordToBeAnalyzed);
-                } catch (OutOfMemoryError e) {
+                } catch (Exception e) {
                     decs = new Decomposition[]{};
-                    System.out.print(" Out of memory error");
+                    System.out.print("Exception in testDecomposer: "+e.getMessage());
                 }
                 nbWordsToBeAnalyzed++;
                 if (verbose) System.out.println(" []");

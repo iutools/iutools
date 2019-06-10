@@ -2,19 +2,21 @@ package ca.pirurvik.iutools;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.concurrent.TimeoutException;
 
 import ca.nrc.datastructure.trie.StringSegmenter;
+import ca.nrc.datastructure.trie.StringSegmenterException;
 
 
 public class MockCompiledCorpus extends CompiledCorpus {
 	
 	
-	public MockCompiledCorpus() throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {	
+	public MockCompiledCorpus() throws CompiledCorpusException {	
 		segmenterClassName = MockStringSegmenter_IUMorpheme.class.getName();
 		getSegmenter();
 	}
 	
-	public void setDictionary(HashMap<String,String> _dictionary) throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public void setDictionary(HashMap<String,String> _dictionary) throws CompiledCorpusException {
 		((MockStringSegmenter_IUMorpheme)getSegmenter()).setDictionary(_dictionary);
 	}
 	
@@ -29,12 +31,12 @@ class MockStringSegmenter_IUMorpheme extends StringSegmenter {
 	public MockStringSegmenter_IUMorpheme() {
 	}
 	
-	public String[] segment(String word) throws Exception {
+	public String[] segment(String word) throws TimeoutException, StringSegmenterException{
 		return segment(word,true);
 	}
 
 	@Override
-	public String[] segment(String word, boolean fullAnalysis) throws Exception {
+	public String[] segment(String word, boolean fullAnalysis) throws TimeoutException, StringSegmenterException {
 		return dictionary.get(word).split(" ");
 	}
 	

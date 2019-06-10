@@ -18,6 +18,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ca.nrc.config.ConfigException;
+import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieException;
@@ -82,20 +83,20 @@ public class CompiledCorpusTest extends TestCase
 		compiledCorpus.setVerbose(false); // set verbose to false for tests only
 		try {
 			compiledCorpus.compileCorpusFromScratch(corpusDirectoryPathname);
-		} catch(Exception e) {
+		} catch(CompiledCorpusException | StringSegmenterException e) {
 			// do something
 		}
 		
 		// Compile the corpus given in argument as directory pathname (will resume where it was left after the last run)
 		try {
 			compiledCorpus.compileCorpus(corpusDirectoryPathname);
-		} catch(Exception e) {
+		} catch(CompiledCorpusException | StringSegmenterException e) {
 			// do something
 		}
 	}
 
 	@Test
-    public void test__resume_compilation_of_corpus_after_crash_or_abortion__1_file_in_corpus_directory() throws Exception
+    public void test__resume_compilation_of_corpus_after_crash_or_abortion__1_file_in_corpus_directory() throws CompiledCorpusException, StringSegmenterException, IOException 
     {
     	// The corpus directory contains 1 file with 8 words :
     	// nunavut inuit
@@ -115,8 +116,7 @@ public class CompiledCorpusTest extends TestCase
         compiledCorpus.stopAfter = 7; // should stop after takulaaqtuq
         try {
         	compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
-        } catch(Exception e) {
-        	//System.err.println("Exiting from compiler");
+        } catch(CompiledCorpusException | StringSegmenterException e) {
         }
 			
         CompiledCorpus retrievedCompiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
@@ -171,7 +171,7 @@ public class CompiledCorpusTest extends TestCase
         
     
 	@Test
-    public void test__resume_compilation_of_corpus_after_crash_or_abortion__2_files_in_corpus_directory() throws Exception
+    public void test__resume_compilation_of_corpus_after_crash_or_abortion__2_files_in_corpus_directory() throws CompiledCorpusException, StringSegmenterException, IOException 
     {
     	// contains 2 files: 
     	// 1 with 8 words:      		   1 with 3 words:
@@ -193,8 +193,7 @@ public class CompiledCorpusTest extends TestCase
         compiledCorpus.stopAfter = 10; // should stop after iglumut
         try {
         	compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
-        } catch(Exception e) {
-        	//System.err.println("Exiting from compiler");
+        } catch(CompiledCorpusException | StringSegmenterException e) {
         }
 			
         CompiledCorpus retrievedCompiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
@@ -290,8 +289,7 @@ public class CompiledCorpusTest extends TestCase
         compiledCorpus.saveFrequency = 3;
         try {
         	compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
-        } catch(Exception e) {
-        	//System.err.println("Exiting from compiler");
+        } catch(CompiledCorpusException | StringSegmenterException e) {
         }
 			
         CompiledCorpus retrievedCompiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
@@ -324,8 +322,7 @@ public class CompiledCorpusTest extends TestCase
         compiledCorpus.setVerbose(false);
        try {
         	compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
-        } catch(Exception e) {
-        	//System.err.println("Exiting from compiler");
+        } catch(CompiledCorpusException | StringSegmenterException e) {
         }
 			
         String expected = ",,nunavut:{nunavut/1n},,takujuq:{taku/1v}{juq/1vn},,iglumik:{iglu/1n}{mik/tn-acc-s},,";
@@ -382,9 +379,7 @@ public class CompiledCorpusTest extends TestCase
         // should result in takulaaqtuq not being compiled.
         try {
         	compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
-        } catch(Exception e) {
-        	//System.err.println("Exiting from compiler");
-        	//System.err.println(e.getMessage());
+        } catch(CompiledCorpusException | StringSegmenterException e) {
         }
         
         CompiledCorpus retrievedCompiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());

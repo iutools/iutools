@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,6 +24,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.gson.Gson;
 
 import ca.nrc.datastructure.trie.StringSegmenter;
+import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_Char;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.Trie;
@@ -88,12 +90,27 @@ public class CompiledCorpus
 	
 	@SuppressWarnings("unchecked")
 	@JsonIgnore
-	public StringSegmenter getSegmenter() throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public StringSegmenter getSegmenter() throws CompiledCorpusException {
 		if (segmenter == null) {
 			//Class<StringSegmenter> cls = (Class<StringSegmenter>) Class.forName(segmenterClassName);
-			Class<?> cls = (Class<?>) Class.forName(segmenterClassName);
-			Constructor<?> constr = cls.getConstructor();
-			segmenter = (StringSegmenter) constr.newInstance();
+			Class<?> cls;
+			try {
+				cls = (Class<?>) Class.forName(segmenterClassName);
+			} catch (ClassNotFoundException e) {
+				throw new CompiledCorpusException(e);
+			}
+			Constructor<?> constr;
+			try {
+				constr = cls.getConstructor();
+			} catch (NoSuchMethodException | SecurityException e) {
+				throw new CompiledCorpusException(e);
+			}
+			try {
+				segmenter = (StringSegmenter) constr.newInstance();
+			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+					| InvocationTargetException e) {
+				throw new CompiledCorpusException(e);
+			}
 		}
 		return segmenter;
 	}
@@ -123,15 +140,15 @@ public class CompiledCorpus
 		if (_segmenterClassName != null) this.segmenterClassName = _segmenterClassName;
 	}
 	
-	public  void compileCorpus(String corpusDirectoryPathname) throws Exception {
+	public  void compileCorpus(String corpusDirectoryPathname) throws CompiledCorpusException, StringSegmenterException {
 		_compileCorpus(corpusDirectoryPathname,false);
 	}
 	
-	public  void compileCorpusFromScratch(String corpusDirectoryPathname) throws Exception {
+	public  void compileCorpusFromScratch(String corpusDirectoryPathname) throws CompiledCorpusException, StringSegmenterException {
 		_compileCorpus(corpusDirectoryPathname,true);
 	}
 	
-	public  void _compileCorpus(String corpusDirectoryPathname, boolean fromScratch) throws Exception {
+	public  void _compileCorpus(String corpusDirectoryPathname, boolean fromScratch) throws CompiledCorpusException, StringSegmenterException {
 		toConsole("[INFO] *** Compiling trie for documents in "+corpusDirectoryPathname+"\n");
 		segmenter = getSegmenter(); //new StringSegmenter_IUMorpheme();
 		
@@ -186,9 +203,11 @@ public class CompiledCorpus
 	/**
 	 * Recompile only the words that failed morphological analysis in a previous run
 	 * @param corpusDirectoryPathname
+	 * @throws StringSegmenterException 
+	 * @throws CompiledCorpusException 
 	 * @throws IOException 
 	 */
-	public void recompileWordsThatFailedAnalysis(String corpusDirectoryPathname) throws IOException {
+	public void recompileWordsThatFailedAnalysis(String corpusDirectoryPathname) throws CompiledCorpusException, StringSegmenterException {
 		toConsole("[INFO] *** Recompiling into trie the words that failed analysis previously"+"\n");
 		segmenter = new StringSegmenter_IUMorpheme();
 		wordCounter = 0;
@@ -213,7 +232,7 @@ public class CompiledCorpus
 		}
 		saveCompilerInDirectory(corpusDirectoryPathname);
 		if (completeCompilationResultsFilePathname != null)
-			saveCompilerInJSONFile(completeCompilationResultsFilePathname);
+				saveCompilerInJSONFile(completeCompilationResultsFilePathname);
 	}
 	
 	public boolean setCompleteCompilationFilePath(String _trieFilePath) {
@@ -246,35 +265,45 @@ public class CompiledCorpus
 		return jsonFile.exists();
 	}
 	
-	private void deleteJSON(String corpusDirectoryPathname) throws IOException {
+	private void deleteJSON(String corpusDirectoryPathname) {
 		File saveFile = new File(corpusDirectoryPathname+"/"+JSON_COMPILATION_FILE_NAME);
 		if (saveFile.exists())
 			saveFile.delete();
 	}
 
-	private void saveCompilerInDirectory(String corpusDirectoryPathname) throws IOException {
+	private void saveCompilerInDirectory(String corpusDirectoryPathname) throws CompiledCorpusException  {
 		String saveFilePathname = corpusDirectoryPathname + "/" + JSON_COMPILATION_FILE_NAME;
 		saveCompilerInJSONFile(saveFilePathname);
 	}
 	
-	public void saveCompilerInJSONFile (String saveFilePathname) throws IOException {
-		FileWriter saveFile = new FileWriter(saveFilePathname);
+	public void saveCompilerInJSONFile (String saveFilePathname) throws CompiledCorpusException {
+		FileWriter saveFile = null;
+		try {
+			saveFile = new FileWriter(saveFilePathname);
+		} catch (IOException e1) {
+			throw new CompiledCorpusException(e1);
+		}
 		Gson gson = new Gson();
 		long savedRetrievedFileWordCounter = this.retrievedFileWordCounter;
 		this.retrievedFileWordCounter = this.currentFileWordCounter;
 		String json = gson.toJson(this);
 		this.retrievedFileWordCounter = savedRetrievedFileWordCounter;
-		saveFile.write(json);
-		saveFile.flush();
-		saveFile.close();
+		try {
+			saveFile.write(json);
+			saveFile.flush();
+			saveFile.close();
+		} catch (IOException e) {
+			throw new CompiledCorpusException(e);
+		}
 		toConsole("saved in "+saveFilePathname);
 	}
 	
 	/**
 	 * Reads the corpus compiler in the state it was when it was
 	 * interrupted while running.
+	 * @throws CompiledCorpusException 
 	 */
-	protected void __resumeCompilation(String corpusDirectoryPathname) throws Exception  {
+	protected void __resumeCompilation(String corpusDirectoryPathname) throws CompiledCorpusException {
 		Gson gson = new Gson();
 		String jsonFilePath = corpusDirectoryPathname+"/"+JSON_COMPILATION_FILE_NAME;
 		CompiledCorpus compiledCorpus = createFromJson(jsonFilePath);
@@ -292,7 +321,7 @@ public class CompiledCorpus
 	}
  
 
-	private void process(String corpusDirectoryPathname) throws Exception {
+	private void process(String corpusDirectoryPathname) throws CompiledCorpusException, StringSegmenterException {
 		this.corpusDirectory = corpusDirectoryPathname;
     	CorpusReader_Directory corpusReader = new CorpusReader_Directory();
     	Iterator<CorpusDocument_File> files = (Iterator<CorpusDocument_File>) corpusReader.getFiles(corpusDirectoryPathname);
@@ -301,72 +330,84 @@ public class CompiledCorpus
     	
 	}
 
-	private void processFile(CorpusDocument_File file) throws Exception {
-		try {
+	private void processFile(CorpusDocument_File file) throws CompiledCorpusException, StringSegmenterException {
 			String fileAbsolutePath = file.id;
 			toConsole("[INFO] --- compiling document "+new File(fileAbsolutePath).getName()+"\n");
 			processDocumentContents(fileAbsolutePath);
 			if ( !this.filesCompiled.contains(fileAbsolutePath) )
 				filesCompiled.add(fileAbsolutePath);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
-	protected void processDocumentContents(String fileAbsolutePath) throws Exception {
-		BufferedReader bufferedReader = new BufferedReader(new FileReader(fileAbsolutePath));
+	protected void processDocumentContents(String fileAbsolutePath) throws CompiledCorpusException, StringSegmenterException {
+		BufferedReader bufferedReader = null;
+		try {
+			bufferedReader = new BufferedReader(new FileReader(fileAbsolutePath));
+		} catch (FileNotFoundException e) {
+			throw new CompiledCorpusException(e);
+		}
 		processDocumentContents(bufferedReader,fileAbsolutePath);
 	}
 	
-    public void processDocumentContents(BufferedReader bufferedReader, String fileAbsolutePath) throws Exception {	
-    	Logger logger = Logger.getLogger("CorpusTrieCompiler.processDocumentContents");
+	public void processDocumentContents(BufferedReader bufferedReader, String fileAbsolutePath)
+			throws CompiledCorpusException, StringSegmenterException {
+		Logger logger = Logger.getLogger("CorpusTrieCompiler.processDocumentContents");
 		String line;
 		boolean stopBecauseOfStopAfter = false;
 		currentFileWordCounter = 0;
-		while ((line = bufferedReader.readLine()) != null && !stopBecauseOfStopAfter) {
-			String[] words = extractWordsFromLine(line);
-			for (int n = 0; n < words.length; n++) {
-				String word = words[n];
-				if (!isInuktitutWord(word))
-					continue;
-				++wordCounter;
-				logger.debug("word: "+word);
-				logger.debug("retrievedFileWordCounter: "+retrievedFileWordCounter);
-				logger.debug("currentFileWordCounter: "+currentFileWordCounter);
-				logger.debug("fileCompiled: "+filesCompiled.contains(fileAbsolutePath));
-				
-				if ( !filesCompiled.contains(fileAbsolutePath) ) {
-					++currentFileWordCounter;
-					if (retrievedFileWordCounter != -1) {
-						if (currentFileWordCounter < retrievedFileWordCounter) {
-							continue;
-						} else {
-							retrievedFileWordCounter = -1;
+		try {
+			while ((line = bufferedReader.readLine()) != null && !stopBecauseOfStopAfter) {
+				String[] words = extractWordsFromLine(line);
+				for (int n = 0; n < words.length; n++) {
+					String word = words[n];
+					if (!isInuktitutWord(word))
+						continue;
+					++wordCounter;
+					logger.debug("word: " + word);
+					logger.debug("retrievedFileWordCounter: " + retrievedFileWordCounter);
+					logger.debug("currentFileWordCounter: " + currentFileWordCounter);
+					logger.debug("fileCompiled: " + filesCompiled.contains(fileAbsolutePath));
+
+					if (!filesCompiled.contains(fileAbsolutePath)) {
+						++currentFileWordCounter;
+						if (retrievedFileWordCounter != -1) {
+							if (currentFileWordCounter < retrievedFileWordCounter) {
+								continue;
+							} else {
+								retrievedFileWordCounter = -1;
+							}
 						}
-					}
-					
-					processWord(word);
-					
-					// this line allows to make the compiler stop at a given point (for tests purposes only)
-					if (stopAfter != -1 && wordCounter == stopAfter) {
-						bufferedReader.close();
-						throw new Exception("Simulating an error during trie compilation of corpus.");
-					}
-					if (wordCounter % saveFrequency == 0) {
-						toConsole("[INFO]     --- saving jsoned compiler ---"+"\n");
-						logger.debug("size of trie: "+trie.getSize());
-						saveCompilerInDirectory(this.corpusDirectory);
+
+						processWord(word);
+
+						// this line allows to make the compiler stop at a given point (for tests
+						// purposes only)
+						if (stopAfter != -1 && wordCounter == stopAfter) {
+							try {
+								bufferedReader.close();
+							} catch (IOException e) {
+								throw new CompiledCorpusException(e);
+							}
+							throw new CompiledCorpusException(
+									"processDocumentContents:: Simulating an error during trie compilation of corpus.");
+						}
+						if (wordCounter % saveFrequency == 0) {
+							toConsole("[INFO]     --- saving jsoned compiler ---" + "\n");
+							logger.debug("size of trie: " + trie.getSize());
+							saveCompilerInDirectory(this.corpusDirectory);
+						}
 					}
 				}
 			}
-		}		
-		bufferedReader.close();
+			bufferedReader.close();
+		} catch (IOException e) {
+			throw new CompiledCorpusException(e);
+		}
 	}
     
-    private void processWord(String word) {
+    private void processWord(String word) throws CompiledCorpusException, StringSegmenterException {
     	processWord(word,false);
     }
-    private void processWord(String word, boolean recompilingFailedWord) {
+    private void processWord(String word, boolean recompilingFailedWord) throws CompiledCorpusException, StringSegmenterException {
     	Logger logger = Logger.getLogger("CompiledCorpus.processWord");
 		toConsole("[INFO]     "+wordCounter + "(" + currentFileWordCounter + "+). " + word + "... ");
 		String[] segments = fetchSegmentsFromCache(word);
@@ -376,14 +417,15 @@ public class CompiledCorpus
 			String now = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss").format(new Date());
 			toConsole("[segmenting] ("+now+") ");
 			try {
-					segments = getSegmenter().segment(word);
-					// new word decomposed or word that now decomposed: add to word segmentations string
-					if (segments.length != 0)
-						addToWordSegmentations(word,segments);
-			} catch (Exception e) {
-					toConsole("** EXCEPTION RAISED");
-					toConsole(" ??? " + e.getClass().getName() + " --- " + e.getMessage() + " ");
-					segments = new String[] {};
+				StringSegmenter segmenter = getSegmenter();
+				segments = segmenter.segment(word);
+				// new word decomposed or word that now decomposed: add to word segmentations string
+				if (segments.length != 0)
+					addToWordSegmentations(word,segments);
+			} catch (TimeoutException e) {
+				toConsole("** EXCEPTION RAISED");
+				toConsole(" ??? " + e.getClass().getName() + " --- " + e.getMessage() + " ");
+				segments = new String[] {};
 			}
 			addToCache(word, segments);
 		}
@@ -406,6 +448,7 @@ public class CompiledCorpus
 
 		} catch (TrieException e) {
 			toConsole("--** Problem adding word: " + word + " (" + e.getMessage() + ").");
+			throw new CompiledCorpusException(e);
 		}
 	}
 
@@ -438,7 +481,7 @@ public class CompiledCorpus
     
     // ----------------------------- static -------------------------------
     
-    public static CompiledCorpus createFromJson(String jsonCompilationFilePathname) throws Exception {
+    public static CompiledCorpus createFromJson(String jsonCompilationFilePathname) throws CompiledCorpusException {
     	try {
     		FileReader jsonFileReader = new FileReader(jsonCompilationFilePathname);
     		Gson gson = new Gson();
@@ -446,7 +489,9 @@ public class CompiledCorpus
     		jsonFileReader.close();
     		return compiledCorpus;
     	} catch (FileNotFoundException e) {
-    		throw new Exception("File "+jsonCompilationFilePathname+"does not exist. Could not create a compiled corpus.");
+    		throw new CompiledCorpusException("File "+jsonCompilationFilePathname+"does not exist. Could not create a compiled corpus.");
+    	} catch (IOException e) {
+    		throw new CompiledCorpusException(e);
     	}
     }
 

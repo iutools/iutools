@@ -18,6 +18,7 @@ public class CorpusReader_Directory extends CorpusReader {
     					return !name.equals(".") && !name.equals("..");
     				}
     			});
+    	if ( files == null ) files = new File[0];
     	Arrays.sort(files, new FileNameComparator());
     	Collection<CorpusDocument_File> collection = new Vector<CorpusDocument_File>();
     	for (int i = 0; i<files.length; i++) {

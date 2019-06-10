@@ -23,7 +23,7 @@ public class MorphemeExtractorTest {
 	private MockCompiledCorpus mockCompiledCorpus;
 	
 	@Before
-	public void setUp() throws IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public void setUp() throws CompiledCorpusException {
 		HashMap<String,String> dictionary = new HashMap<String,String>();
 		dictionary.put("inuit", "{root1/idr1} {affix1/idaff1}");
 		dictionary.put("nunami", "{root2/idr2} {affix21/idaff21}");
@@ -37,15 +37,15 @@ public class MorphemeExtractorTest {
 		String[] stringsOfWords = new String[] {
 				"inuit nunami iglumik inuksuk"
 				};
-		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
         try {
+    		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
         	mockCompiledCorpus.compileCorpusFromScratch(corpusDirPathname);
+            morphemeExtractor.useCorpus(mockCompiledCorpus);
         } catch(Exception e) {
         	System.err.println("Exiting from compiler");
         	System.err.println("because: "+e.getMessage());
         	System.exit(1);
         }
-        morphemeExtractor.useCorpus(mockCompiledCorpus);
 	}
 
 	@Test

@@ -17,7 +17,7 @@ public class MorphInukTest {
 		try {
 		MorphInuk.decomposeWord(word);
 		} catch(Exception e) {
-			System.err.println(e.getClass().getName()+" --- "+e.getMessage());
+			//System.err.println(e.getClass().getName()+" --- "+e.getMessage());
 			throw e;
 		}
 	}
@@ -30,7 +30,7 @@ public class MorphInukTest {
 		try {
 		MorphInuk.decomposeWord(word);
 		} catch(Exception e) {
-			System.err.println(e.getClass().getName()+" --- "+e.getMessage());
+			//System.err.println(e.getClass().getName()+" --- "+e.getMessage());
 			throw e;
 		}
 	}

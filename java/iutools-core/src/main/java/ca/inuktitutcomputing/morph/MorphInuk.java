@@ -59,7 +59,7 @@ public class MorphInuk {
 	// - remplacer un 'n' final par 't' (à cause d'une nasalisation de la finale - phénomène courant)
     // Les décompositions résultantes sont ordonnées selon certaines règles.
 
-    public static Decomposition[] decomposeWord(String word) throws Exception {
+    public static Decomposition[] decomposeWord(String word) throws TimeoutException, MorphInukException {
     	boolean wordInSyllabics = false;
         ArrayList<Decomposition> decsList = new ArrayList<Decomposition>();
         Vector<String> words = null;
@@ -160,7 +160,7 @@ public class MorphInuk {
     // méthodes devraient plutôt appeler decomposeWord, et alors decompose sera
     // faite privée.
 
-    private static Vector<Decomposition> decompose(String term, boolean isSyllabic, boolean decomposeBase) throws Exception
+    private static Vector<Decomposition> decompose(String term, boolean isSyllabic, boolean decomposeBase) throws TimeoutException, MorphInukException
     {
         Vector<AffixPartOfComposition> morphPartsInit = new Vector<AffixPartOfComposition>();
         Graph.State state;
@@ -184,13 +184,6 @@ public class MorphInuk {
         else
             state = Graph.initialState;
 
-//        try {
-			/*
-			 * Cet OutputStreamWriter (System.out, en UTF-8 parce qu'à
-			 * l'origine, on traitait directement les mots en syllabiques), ne
-			 * sert à toutes fins pratiques que pour les messages de débogage.
-			 * Tout le système de débogage est à repenser.
-			 */
 			if (term != null) {
                 // Simplification de l'orthographe du mot, pour faciliter
                 // l'analyse. En caractères latins, ceci signifie que
@@ -205,9 +198,6 @@ public class MorphInuk {
                         transitivity, isSyllabic
                         );
             }
-//        } catch (Exception e) {
-//        	throw e;   	
-//        }
         return decomposition;
     }
 
@@ -240,7 +230,7 @@ public class MorphInuk {
             Graph.State states[],
             Conditions preCond,
             String transitivity, boolean isSyllabic
-            ) throws Exception {
+            ) throws TimeoutException, MorphInukException {
 
         Vector<Decomposition> completeAnalysis = new Vector<Decomposition>();
         String termICI = Orthography.orthographyICI(term, isSyllabic);
@@ -274,7 +264,7 @@ public class MorphInuk {
 			String termICI, String termOrigICI, String term,
 			boolean isSyllabic, String word,
 			Vector<AffixPartOfComposition> morphParts, State[] states,
-			Conditions preCond, String transitivity) throws Exception {
+			Conditions preCond, String transitivity) throws TimeoutException, MorphInukException {
 
         Vector<Decomposition> completeAnalysis = new Vector<Decomposition>();
         Vector<Object> onesFound;
@@ -497,7 +487,7 @@ public class MorphInuk {
             Conditions preCond,
             String transitivity, int positionAffix, Vector<AffixPartOfComposition> morphParts,
             String word,
-            boolean notResultingFromDialectalPhonologicalTransformation) throws Exception {
+            boolean notResultingFromDialectalPhonologicalTransformation) throws TimeoutException, MorphInukException {
 
         Vector<Decomposition> completeAnalysis = new Vector<Decomposition>();
 
@@ -521,6 +511,7 @@ public class MorphInuk {
             try {
                 affix = (Affix) affix1.copyOf();
             } catch (CloneNotSupportedException e1) {
+            	throw new MorphInukException(e1);
             }
             boolean accepted = true;
 
@@ -611,7 +602,7 @@ public class MorphInuk {
             Action action1, Action action2, String stem, int posAffix,
             Affix affix, SurfaceFormOfAffix form, boolean isSyllabic,
             boolean checkPossibleDialectalChanges,
-            String affixCandidate) throws TimeoutException {
+            String affixCandidate) throws TimeoutException, MorphInukException {
 
         int action1Type = action1.getType();
         int action2Type = action2.getType();
@@ -767,7 +758,7 @@ public class MorphInuk {
                             new ByteArrayInputStream(cond.getBytes())).ParseCondition();
                     affix.addPrecConstraint(avc);
                 } catch (ParseException e) {
-                    // Ne devrait pas arriver.
+                	throw new MorphInukException(e);
                 }
             } else {
                 // Aucun suffixe ne mêne ici.
@@ -972,7 +963,7 @@ public class MorphInuk {
                                 new ByteArrayInputStream(cond.getBytes())).ParseCondition();
                         affix.addPrecConstraint(avc);
                     } catch (ParseException e) {
-                        e.printStackTrace();
+                    	throw new MorphInukException(e);
                     }
                     if (!context.equals("V"))
                         // Suppression de consonne
@@ -1159,7 +1150,7 @@ public class MorphInuk {
                                 new ByteArrayInputStream(cond.getBytes())).ParseCondition();
                         affix.addPrecConstraint(avc);
                     } catch (ParseException e) {
-                        e.printStackTrace();
+                    	throw new MorphInukException(e);
                     }
                     res.add(new Object[] {
                             stem.substring(0, stem.length() - 1) + context, stem,
@@ -1180,7 +1171,7 @@ public class MorphInuk {
                                         new ByteArrayInputStream(cond.getBytes())).ParseCondition();
                                 affix.addPrecConstraint(avc);
                             } catch (ParseException e) {
-                                e.printStackTrace();
+                            	throw new MorphInukException(e);
                             }
                             /*
                              * The stem ends with a vowel and there are 2
@@ -1206,7 +1197,7 @@ public class MorphInuk {
                                             new ByteArrayInputStream(cond.getBytes())).ParseCondition();
                                     affix.addPrecConstraint(avc);
                                 } catch (ParseException e) {
-                                    e.printStackTrace();
+                                	throw new MorphInukException(e);
                                 }
                                 res.add(new Object[] {
                                         stem.substring(0, stem.length() - 1)
@@ -1942,7 +1933,7 @@ public class MorphInuk {
     private static Object[][] agreeWithContextAndActions(String affixCandidateOrig,
             Affix affix, String stem, 
             int positionAffixInWord, SurfaceFormOfAffix form,
-            boolean notResultingFromDialectalPhonologicalTransformation) throws TimeoutException {
+            boolean notResultingFromDialectalPhonologicalTransformation) throws TimeoutException, MorphInukException {
         Object[][] stemAffs = null;
         boolean checkStartOfConsonantsGroup = true;
         /*

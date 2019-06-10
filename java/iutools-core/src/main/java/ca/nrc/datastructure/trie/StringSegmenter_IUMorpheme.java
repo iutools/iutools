@@ -1,31 +1,34 @@
 package ca.nrc.datastructure.trie;
 
 import java.util.Vector;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ca.inuktitutcomputing.data.LinguisticDataSingleton;
 import ca.inuktitutcomputing.morph.MorphInuk;
+import ca.inuktitutcomputing.morph.MorphInukException;
 import ca.inuktitutcomputing.script.Syllabics;
 import ca.inuktitutcomputing.morph.Decomposition;
 
 
 public class StringSegmenter_IUMorpheme extends StringSegmenter {
 	
-	public String[] segment(String string) throws Exception {
+	public String[] segment(String string) throws TimeoutException, StringSegmenterException {
 		return segment(string,false);
 	}
 
-	public String[] segment(String string, boolean fullAnalysis) throws Exception {
+	public String[] segment(String string, boolean fullAnalysis) throws TimeoutException, StringSegmenterException {
 		LinguisticDataSingleton.getInstance("csv");
 		Decomposition [] decs = null;
 		String word = string;
 		if (Syllabics.allInuktitut(string))
 			word = Syllabics.transcodeToRoman(string); 
+
 		try {
 			decs = MorphInuk.decomposeWord(word);
-		} catch (Exception e) {
-			throw e;
+		} catch (MorphInukException e) {
+			throw new StringSegmenterException(e);
 		}
         if (decs != null && decs.length>0) {
         	Decomposition dec = decs[0];
