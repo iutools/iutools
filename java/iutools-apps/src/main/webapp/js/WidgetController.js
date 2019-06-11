@@ -80,15 +80,19 @@ class WidgetController {
 	showSpinningWheel(divMessProp, message) {
 		if (message == null) message = "Processing request";
 		var divMessage = this.elementForProp(divMessProp);
+		console.log('divMessProp= '+divMessProp);
+		console.log('divMessage= '+divMessage.attr('id'));
+		console.log('message= '+message);
 		divMessage.empty();
 		divMessage.append("<img src=\"ajax-loader.gif\">"+message+" ...");
-//		divMessage.css('display', 'block');
-		divMessage.show();
+		console.log('divMessage contents= '+divMessage.html());
+		divMessage.css('display', 'block');
+//		divMessage.show();
 	}
 
 	hideSpinningWheel(divMessProp) {
 		var divMessage = this.elementForProp(divMessProp);
 		divMessage.empty();
-		divMessage.css('display');
+		divMessage.css('display','none');
 	}
 }

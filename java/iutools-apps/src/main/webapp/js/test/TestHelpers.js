@@ -10,7 +10,9 @@ class TestHelpers {
 	}
 	
 	clickOn(buttonID) {
-		var promise = $("#"+buttonID).click();
+//		var promise = $("#"+buttonID).click();
+		var button = $(document).find("#"+buttonID);
+		var promise = button.click();
 //		console.log("-- TestHelpers.clickOn: buttonID="+buttonID+", promise="+promise)
 //		new RunWhen().sleep(2*1000);
 		

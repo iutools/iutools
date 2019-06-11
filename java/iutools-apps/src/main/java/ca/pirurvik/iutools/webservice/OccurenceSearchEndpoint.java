@@ -122,28 +122,28 @@ public class OccurenceSearchEndpoint extends HttpServlet {
 			throws SearchEndpointException, ConfigException, CompiledCorpusRegistryException, 
 					IOException, Exception {
 		
-		MorphemeExtractor morphExtr = new MorphemeExtractor();
+		MorphemeExtractor morphExtractor = new MorphemeExtractor();
 		CompiledCorpus compiledCorpus = CompiledCorpusRegistry.getCorpus(corpusName);
-		morphExtr.useCorpus(compiledCorpus);
+		morphExtractor.useCorpus(compiledCorpus);
 		
 		LinguisticDataSingleton.getInstance("csv");
 		
-		List<MorphemeExtractor.Words> wordsForMorphemes = morphExtr.wordsContainingMorpheme(inputs.wordPattern);
+		List<MorphemeExtractor.Words> wordsForMorphemes = morphExtractor.wordsContainingMorpheme(inputs.wordPattern);
 		HashMap<String,MorphemeSearchResult> results = new HashMap<String,MorphemeSearchResult>();
 		Iterator<MorphemeExtractor.Words> itWFM = wordsForMorphemes.iterator();
 		while (itWFM.hasNext()) {
 			MorphemeExtractor.Words w = itWFM.next();
-			String meaning = Morpheme.getMorpheme(w.morphemeWithId).englishMeaning;
-			List<Pair<String,Long>> wordsFreqs = w.words;
-			Pair<String,Long>[] wordsFreqsArray = wordsFreqs.toArray(new Pair[] {});
+			String meaningOfMorpheme = Morpheme.getMorpheme(w.morphemeWithId).englishMeaning;
+			List<Pair<String,Long>> wordsAndFreqs = w.words;
+			Pair<String,Long>[] wordsFreqsArray = wordsAndFreqs.toArray(new Pair[] {});
 			Arrays.sort(wordsFreqsArray, new WordFreqComparator());
 			List<String> words = new ArrayList<String>();
 			List<Long> wordFreqs = new ArrayList<Long>();
-			for (Pair<String,Long>pair : wordsFreqs) {
+			for (Pair<String,Long>pair : wordsFreqsArray) {
 				words.add(pair.getFirst());
 				wordFreqs.add(pair.getSecond());
 			}
-			MorphemeSearchResult morpheSearchResult = new MorphemeSearchResult(meaning,words,wordFreqs);
+			MorphemeSearchResult morpheSearchResult = new MorphemeSearchResult(meaningOfMorpheme,words,wordFreqs);
 			results.put(w.morphemeWithId, morpheSearchResult);
 		}
 	

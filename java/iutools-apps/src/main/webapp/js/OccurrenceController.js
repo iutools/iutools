@@ -8,7 +8,6 @@ class OccurrenceController extends WidgetController {
 		super(config);
 		this.totalHits = 0;
 		this.attachHtmlElements();
-		
 		this.alreadyShownHits = [];
 	} 
 	
@@ -17,42 +16,44 @@ class OccurrenceController extends WidgetController {
 		this.setEventHandler("btnGet", "click", this.onGet);
 		this.setEventHandler("iconizer", "click", this.iconizeDivExampleWord);
 		this.setEventHandler("divIconizedExampleWord", "click", this.deiconizeDivExampleWord);
-		this.onReturnKey("morpheme", this.onGet);
-	}
-	
-	attachHtmlElementsOthers() {
-		$(".word-example",document).on("click",this.onWordSelect);
+		this.onReturnKey("inpMorpheme", this.onGet);
 	}
 	
 	onGet() {
 		var divExampleWord = this.elementForProp("divExampleWord");
 		$('#contents',divExampleWord).html('').parent().hide();
-		this.elementForProp('exampleWord').val('');
+		this.elementForProp('inpExampleWord').val('');
 		var isValid = this.validateQueryInput();
 		if (isValid) {
 			this.clearResults();
-			this.setBusy(true);
-			this.invokeSearchService(this.getSearchRequestData(), 
-					this.successCallback, this.failureCallback)
+			this.setGetBusy(true);
+//			this.invokeSearchService(this.getSearchRequestData(), 
+//					this.successGetCallback, this.failureGetCallback);
+			this.invokeGetService(this.getSearchRequestData(), 
+					this.successGetCallback, this.failureGetCallback);
 		}
 	}
 	
 	onWordSelect(event) {
 		var element = event.target;
 		console.log("word: "+$(element).text());
-		// TODO: decide where the results will be displayed (in hidden div?)
-//		this.setBusy(true);
-		this.elementForProp('exampleWord').val($(element).text());
-		var divExampleWord = this.elementForProp("divExampleWord");
+		occurrenceController.elementForProp("inpExampleWord").val($(element).text());
+		occurrenceController.setWordExampleBusy(true);
+		var divExampleWord = occurrenceController.elementForProp("divExampleWord");
 		$('#contents',divExampleWord).html('');
-		var divIconizedWordExample = this.elementForProp("divIconizedExampleWord");
+		var divWordInExample = occurrenceController.elementForProp("divWordInExample");
+		divWordInExample.html('');
+		var divIconizedWordExample = occurrenceController.elementForProp("divIconizedExampleWord");
 		divIconizedWordExample.hide();
 		divExampleWord.show();
-		this.showSpinningWheelInWordExample();
-		this.invokeSearchService(this.getSearchRequestData(),
-				this.successExampleWordCallback, this.failureExampleWordCallback)
+		occurrenceController.showSpinningWheel("divMessageInExample","Searching");
+//		occurrenceController.invokeSearchService(occurrenceController.getSearchRequestData(),
+//				occurrenceController.successExampleWordCallback, occurrenceController.failureExampleWordCallback);
+		occurrenceController.invokeExampleWordService(occurrenceController.getSearchRequestData(),
+				occurrenceController.successExampleWordCallback, occurrenceController.failureExampleWordCallback);
 	}
 	
+		
 	iconizeDivExampleWord() {
 		var divExampleWord = this.elementForProp("divExampleWord");
 		divExampleWord.hide();
@@ -73,6 +74,14 @@ class OccurrenceController extends WidgetController {
 		this.elementForProp('divResults').empty();
 	}
 	
+	invokeGetService(jsonRequestData, _successCbk, _failureCbk) {
+		this.invokeSearchService(jsonRequestData, _successCbk, _failureCbk);
+	}
+	
+	invokeExampleWordService(jsonRequestData, _successCbk, _failureCbk) {
+		this.invokeSearchService(jsonRequestData, _successCbk, _failureCbk);
+	}
+	
 	invokeSearchService(jsonRequestData, _successCbk, _failureCbk) {
 			var controller = this;
 			var fctSuccess = 
@@ -87,7 +96,6 @@ class OccurrenceController extends WidgetController {
 			// this line is for development only, allowing to present results without calling Bing.
 			//var jsonResp = this.mockSrvSearch();fctSuccess(jsonResp);
 		
-//			console.log("jsonRequestData= "+JSON.stringify(jsonRequestData));
 			$.ajax({
 				method: 'POST',
 				url: 'srv/occurrences',
@@ -101,7 +109,7 @@ class OccurrenceController extends WidgetController {
 	
 	validateQueryInput() {
 		var isValid = true;
-		var query = this.elementForProp("morpheme").val();
+		var query = this.elementForProp("inpMorpheme").val();
 		if (query == null || query === "") {
 			isValid = false;
 			this.error("You need to enter something in the morpheme field");
@@ -109,30 +117,26 @@ class OccurrenceController extends WidgetController {
 		return isValid;
 	}
 
-	successCallback(resp) {
+	successGetCallback(resp) {
 		if (resp.errorMessage != null) {
-			this.failureCallback(resp);
+			this.failureGetCallback(resp);
 		} else {
-//			console.log('successCallback --- resp.totalHits='+resp.totalHits);
-			//this.setTotalHits(resp.totalHits);
-			//this.totalHits = resp.totalHits;
-			this.setResults(resp);	
-			//this.generatePagesButtons(resp.totalHits);
+			this.setGetResults(resp);	
 		}
-		this.setBusy(false);
+		this.setGetBusy(false);
 	}
 	
 	successExampleWordCallback(resp) {
 		if (resp.errorMessage != null) {
-			this.failureCallback(resp);
+			this.failureExampleWordCallback(resp);
 		} else {
-//			console.log('successCallback --- resp.totalHits='+resp.totalHits);
+//			console.log('successGetCallback --- resp.totalHits='+resp.totalHits);
 			this.setExampleWordResults(resp);	
 		}
-//		this.setBusy(false);
+		this.setWordExampleBusy(false);
 	}
 
-	failureCallback(resp) {
+	failureGetCallback(resp) {
 		if (! resp.hasOwnProperty("errorMessage")) {
 			// Error condition comes from tomcat itself, not from our servlet
 			resp.errorMessage = 
@@ -140,7 +144,7 @@ class OccurrenceController extends WidgetController {
 				resp.responseText;
 		}				
 		this.error(resp.errorMessage);
-		this.setBusy(false);
+		this.setGetBusy(false);
 	}
 	
 	failureExampleWordCallback(resp) {
@@ -151,28 +155,37 @@ class OccurrenceController extends WidgetController {
 				resp.responseText;
 		}				
 		this.error(resp.errorMessage);
-		this.hideSpinningWheelInWordExample();
+		this.hideSpinningWheel("divMessageInExample");
 	}
 	
 	
-	setBusy(flag) {
+	setGetBusy(flag) {
 		if (flag) {
-			//this.setTotalHits(null);
 			this.disableSearchButton();	
-			this.showSpinningWheel();
+			this.showSpinningWheel('divMessage','Searching');
 			this.error("");
 		} else {
 			this.enableSearchButton();		
-			this.hideSpinningWheel();
+			this.hideSpinningWheel('divMessage');
+		}
+	}
+	
+	setWordExampleBusy(flag) {
+		if (flag) {
+			this.disableGetWordExample();	
+			this.showSpinningWheel('divMessageInExample','Searching');
+		} else {
+			this.enableGetWordExample();	
+			this.hideSpinningWheel('divMessageInExample');
 		}
 	}
 	
 	
 	getSearchRequestData() {
-		var wordPattern = this.elementForProp("morpheme").val().trim();
+		var wordPattern = this.elementForProp("inpMorpheme").val().trim();
 		if (wordPattern=='')
 			wordPattern = null;
-		var exampleWord = this.elementForProp("exampleWord").val();
+		var exampleWord = this.elementForProp("inpExampleWord").val();
 		if (exampleWord=='')
 			exampleWord = null;
 
@@ -186,55 +199,50 @@ class OccurrenceController extends WidgetController {
 		return jsonInputs;
 	}
 	
+	enableSearchButton() {
+		this.elementForProp('btnGet').attr("disabled", false);
+	}
+	
 	disableSearchButton() {
 		this.elementForProp('btnGet').attr("disabled", true);
 	}
 	
-	enableSearchButton() {
-		this.elementForProp('btnGet').attr("disabled", false);
+	enableGetWordExample() {
+		var thisController = this;
+		var anchorsWords = document.querySelectorAll('.word-example');
+	    for (var ipn=0; ipn<anchorsWords.length; ipn++) {
+	    	anchorsWords[ipn].addEventListener(
+		    		  'click', thisController.onWordSelect);
+	    }
+	}
 
+	disableGetWordExample() {
+		var thisController = this;
+		var anchorsWords = document.querySelectorAll('.word-example');
+	    for (var ipn=0; ipn<anchorsWords.length; ipn++) {
+	    	anchorsWords[ipn].removeEventListener(
+		    		  'click', thisController.onWordSelect);
+	    }
 	}
 	
-	showSpinningWheel() {
-		var divMessage = this.elementForProp('divMessage');
-		divMessage.empty();
-		divMessage.append("<img src=\"ajax-loader.gif\"> Searching ...")
-		divMessage.css('display');
-	}
-	
-	hideSpinningWheel() {
-		var divMessage = this.elementForProp('divMessage');
-		divMessage.empty();
-		divMessage.css('display');
-	}
 
 	error(err) {
 		this.elementForProp('divError').html(err);
 		this.elementForProp('divError').show();	 
-		//this.setTotalHits(0);
 	}
 	
-	setQuery(query) {
-		this.elementForProp("morpheme").val(query);
-	}
+//	setQuery(query) {
+//		this.elementForProp("inpMorpheme").val(query);
+//	}
 	
-	setTotalHits(totalHits) {
-		var totalHitsText = "";
-		if (totalHits > 0) {
-			totalHitsText = "Found "+totalHits+" hits";
-		} else if (totalHits == 0) {
-			totalHitsText = "No hits found";
-		}
-		this.elementForProp('divTotalHits').text(totalHitsText);
-	}
-	
-	setResults(results) {
+	setGetResults(results) {
 		var jsonResults = JSON.stringify(results);
 		var divResults = this.elementForProp("divResults");
 		
 		divResults.empty();
 		
 		var res = results.matchingWords;
+		console.log("res= "+JSON.stringify(res));
 		var keys = Object.keys(res);
 		var html = 'The input is the nominal form of '+keys.length+' morpheme'+
 			(keys.length==1?'':'s')+': ';
@@ -270,21 +278,20 @@ class OccurrenceController extends WidgetController {
 		var anchorsWords = document.querySelectorAll('.word-example');
 	    for (var ipn=0; ipn<anchorsWords.length; ipn++) {
 	    	anchorsWords[ipn].addEventListener(
-		    		  'click', function(ev) {
-		    				thisController.onWordSelect(ev);
-		    		  });
+		    		  'click', 
+		    		  thisController.onWordSelect
+		    		  );
 	    }
 				
 		divResults.show();
 	}
 	
 	setExampleWordResults(results) {
-		console.log("results: "+JSON.stringify(results));
 		var divExampleWord = this.elementForProp("divExampleWord");
-		this.hideSpinningWheelInWordExample();
+		this.hideSpinningWheel("divMessageInExample");
 		var gist = results.exampleWord.gist;
 		console.log('gist= '+JSON.stringify(gist));
-		$('#word',divExampleWord).html('Example word: '+'<strong>'+gist.word+'</strong>');
+		this.elementForProp("divWordInExample").html('Example word: '+'<strong>'+gist.word+'</strong>');
 		var wordComponents = gist.wordComponents;
 		console.log("wordComponents= "+JSON.stringify(wordComponents));
 		var html = '<table class="gist"><tr><th>Morpheme</th><th>Meaning</th></tr>';
@@ -306,55 +313,9 @@ class OccurrenceController extends WidgetController {
 		$('#contents',divExampleWord).html(html);
 	}
 
-	showSpinningWheelInWordExample() {
-		var divExampleWord = this.elementForProp("divExampleWord");
-		$('#word',divExampleWord).html("<img src=\"ajax-loader.gif\"> Searching ...");
-	}
 	
-	hideSpinningWheelInWordExample() {
-		var divExampleWord = this.elementForProp("divExampleWord");
-		$('#word',divExampleWord).empty();
-	}
+	// ---------------------- Test Section ------------------------------ //
 
-
-	/*generatePagesButtons(nbHits) {
-		var divPageNumbers = this.elementForProp('divPageNumbers');
-		divPageNumbers.empty();
-		var nbPages = Math.ceil(nbHits / this.hitsPerPage);
-		var more = false;
-		if (nbPages > 10) {
-			nbPages = 10;
-			more = true;
-		}
-		for (var ip=0; ip<nbPages; ip++) {
-			var pageLink = '<input class="page-number"' +
-				' type="button" '+
-				' name="'+'page-number'+(ip+1)+'" '+
-				' value="'+(ip+1)+'"/>';
-			divPageNumbers.append(pageLink);
-			if (ip != nbPages-1)
-				divPageNumbers.append('&nbsp;&nbsp;');
-		}
-		if (more) divPageNumbers.append(" and more...");
-		
-		divPageNumbers.css('display','inline');
-		$("#links-to-pages").css("display", "block");
-
-		divPageNumbers.show();
-
-		var thisSearchController = this;
-		var inputsPageNumber = document.querySelectorAll('.page-number');
-	    for (var ipn=0; ipn<inputsPageNumber.length; ipn++) {
-	    	inputsPageNumber[ipn].addEventListener(
-		    		  'click', function(ev) {
-		    				var el = ev.target;
-		    				var pageNumberOfButton = el.value;
-		    				thisSearchController.currentPage = pageNumberOfButton;
-		    				thisSearchController.searchFromCurrentPage();
-		    		  });
-	    }
-	}*/
-	
 	onTest() {
 		this.invokeTestService({}, 
 				this.testSuccessCallback, this.testFailureCallback);

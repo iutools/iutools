@@ -1,13 +1,15 @@
 var occControllerConfig = {
 		btnGet: "btn-occ",
-		morpheme: "morpheme",
-		exampleWord: "example-word",
+		inpMorpheme: "morpheme",
+		inpExampleWord: "example-word",
 		divResults:  "div-results",
 		divMessage: "div-message",
 		divExampleWord: "div-example-word",
 		divError: "div-error",
 		iconizer: "iconizer",
-		divIconizedExampleWord: "div-example-word-iconized"
+		divIconizedExampleWord: "div-example-word-iconized",
+		divMessageInExample: "message-in-example",
+		divWordInExample: "word-in-example",
 	};
 
 var occController = null;
@@ -76,11 +78,13 @@ QUnit.module("OccurenceController Tests", {
 	    }
 
 	    attachMockMorphemeResponse = function(controller, _mockResp) {
-	    	new TestHelpers().attachMockAjaxResponse(controller, _mockResp, "invokeSearchService", "successCallback", "failureCallback");		
+	    	new TestHelpers().attachMockAjaxResponse(controller, _mockResp, "invokeSearchService", "successGetCallback", "failureGetCallback");		
+//	    	new TestHelpers().attachMockAjaxResponse(controller, _mockResp, "invokeGetService", "successGetCallback", "failureGetCallback");		
 	    }
 
 	    attachMockWordResponse = function(controller, _mockResp) {
 	    	new TestHelpers().attachMockAjaxResponse(controller, _mockResp, "invokeSearchService", "successExampleWordCallback", "failureExampleWordCallback");		
+//	    	new TestHelpers().attachMockAjaxResponse(controller, _mockResp, "invokeExampleWordService", "successExampleWordCallback", "failureExampleWordCallback");		
 	    }
 
 
@@ -95,15 +99,17 @@ QUnit.module("OccurenceController Tests", {
 		 *********************************************/ 
 
 		// Add HTML elements that are used by this occController
-        var formHTML = "Morpheme: <input id=\""+occControllerConfig.morpheme+"\"><br>\n"+
+        var formHTML = "Morpheme: <input id=\""+occControllerConfig.inpMorpheme+"\"><br>\n"+
         	"<button id=\""+occControllerConfig.btnGet+"\" type=\"button\" value=\"Occurrences\">Get words</button><br>\n"+
-        	"<input type=\"hidden\" id=\""+occControllerConfig.exampleWord+"\" value=\"\"><br>\n"+
+        	"<input type=\"hidden\" id=\""+occControllerConfig.inpExampleWord+"\" value=\"\"><br>\n"+
         	"<div id=\""+occControllerConfig.divMessage+"\" class=\"div-message\"></div>\n"+
         	"<div id=\""+occControllerConfig.divError+"\" class=\"div-error\"></div>\n"+
         	"<div id=\""+occControllerConfig.divResults+"\" class=\"div-results\"></div>\n"+
-        	"<div id=\""+occControllerConfig.divExampleWord+"\" class=\"div-example-word\"><div id=\"word\"></div><div id=\""+occControllerConfig.iconizer+"\" title=\"Minimize\"><img src=\"imgs/minimize.png\" ></div><div id=\"contents\"></div></div>\n"+
+        	"<div id=\""+occControllerConfig.divExampleWord+"\" class=\"div-example-word\">"+
+        		"<div id=\""+occControllerConfig.divMessageInExample+"\"></div><div id=\""+occControllerConfig.divWordInExample+"\"></div><div id=\""+occControllerConfig.iconizer+"\" title=\"Minimize\"><img src=\"imgs/minimize.png\" ></div><div id=\"contents\"></div></div>\n"+
+
         	"<div id=\""+occControllerConfig.divIconizedExampleWord+"\" title=\"Maximize\"><img src=\"imgs/maximize.png\" height=24 ></div>"
-                ;
+            ;
 		$("#testMainDiv").html(formHTML);
 		
 		
@@ -139,7 +145,8 @@ QUnit.test("OccurenceController.Acceptance -- HappyPath", function( assert )
 	var caseDescr = "OccurenceController.Acceptance -- HappyPath";
 	
     var helpers = new TestHelpers();
-    helpers.typeText(occControllerConfig.morpheme, "siuq");
+    helpers.typeText(occControllerConfig.inpMorpheme, "siuq");
+//    attachMockMorphemeResponse(occController, mockMorphemeResp);	
     helpers.clickOn(occControllerConfig.btnGet);
     
     assertNoErrorDisplayed(assert, caseDescr);
@@ -151,6 +158,7 @@ QUnit.test("OccurenceController.Acceptance -- HappyPath", function( assert )
 	var expectedMorphemeDetails = "siuq/1nv   –   to go after; to searchnanusiuqti(132);    tuktusiulauqtut(45)";
 	assertMorphemeDetailsEquals(assert, 0, expectedMorphemeDetails, caseDescr);
 	
+//	attachMockWordResponse(occController, mockWordResp);
 	helpers.clickOn("word-example-nanusiuqti");
 	done();
 });

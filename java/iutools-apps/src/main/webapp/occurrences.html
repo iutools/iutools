@@ -35,7 +35,7 @@
     <div id="div-message" class="div-message"></div>
     <div id="div-error" class="div-error"></div>
     <div id="div-results" class="div-results"></div>
-    <div id="div-example-word" class="div-example-word"><div id="word"></div><div id="iconizer" title="Minimize"><img src="imgs/minimize.png" ></div><div id="contents"></div></div>
+    <div id="div-example-word" class="div-example-word"><div id=message-in-example></div><div id="word-in-example"></div><div id="iconizer" title="Minimize"><img src="imgs/minimize.png" ></div><div id="contents"></div></div>
     <div id="div-example-word-iconized" title="Maximize"><img src="imgs/maximize.png" height=24 ></div>
     
       
@@ -47,6 +47,8 @@
     <div data-includeHTML="pages/_FooterPartial.html"></div>
 </footer>
 
+<script src="js/Tracer.js"></script>
+<script src="js/RunWhen.js"></script>
 <script src="js/WidgetController.js"></script>
 <script src="js/OccurrenceController.js"></script>
 
@@ -61,14 +63,16 @@
 	// Setup and configure the controller for this page
     var config = {
     		btnGet: "btn-occ",
-    		morpheme: "morpheme",
-    		exampleWord: "example-word",
+    		inpMorpheme: "morpheme",
+    		inpExampleWord: "example-word",
     		divResults:  "div-results",
     		divMessage: "div-message",
     		divExampleWord: "div-example-word",
     		divError: "div-error",
     		iconizer: "iconizer",
-    		divIconizedExampleWord: "div-example-word-iconized"
+    		divIconizedExampleWord: "div-example-word-iconized",
+    		divMessageInExample: "message-in-example",
+    		divWordInExample: "word-in-example",
         };
     var occurrenceController = new OccurrenceController(config);
 </script>

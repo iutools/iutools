@@ -57,8 +57,8 @@ public class MorphemeExtractor {
 		}
 		Iterator<String> it = wordsForMorphemes.keySet().iterator();
 		while (it.hasNext()) {
-			String key = it.next();
-			words.add(new Words(key,wordsForMorphemes.get(key)));
+			String morphemeID = it.next();
+			words.add(new Words(morphemeID,wordsForMorphemes.get(morphemeID)));
 		}
 		return words;
 	}

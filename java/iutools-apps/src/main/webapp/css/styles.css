@@ -135,7 +135,10 @@ span#plural {
 	height:577px;
 	margin-top:5px;
 }
-#div-example-word #word {
+#div-example-word #word-in-example {
+}
+#div-example-word #message-in-example {
+	display:none;
 }
 div#div-example-word-iconized {
 	position:fixed;
