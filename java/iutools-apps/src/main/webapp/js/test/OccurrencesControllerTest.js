@@ -68,13 +68,21 @@ QUnit.module("OccurenceController Tests", {
 	    	});
 	    	assert.deepEqual(gotList,expectedList,message)
 	    }
-	    
+	    	    
 	    assertMorphemeDetailsEquals = function(assert, morphemeIndex, expectedDetails, caseDescr) {
 	    	var message = "Checking the displayed morpheme details for morpheme "+morphemeIndex+".";
 	    	if (caseDescr != null) message = caseDescr+"\n"+message;
 	    	var gotDetailsDiv = $('div.morpheme-details').eq(morphemeIndex);
 	    	var gotDetails = gotDetailsDiv.text();
 	    	new TestHelpers().assertStringEquals(assert, message, gotDetails, expectedDetails, true);
+	    }
+	    
+	    assertWordInExampleEquals = function(assert, expectedText, caseDescr) {
+	    	var message = "Checking the top line of the example window.";
+	    	if (caseDescr != null) message = caseDescr+"\n"+message;
+	    	var gotText = $("#"+occControllerConfig.divWordInExample).text();
+	    	console.log('gotText= '+gotText);
+	    	new TestHelpers().assertStringEquals(assert, message, gotText, expectedText, true);
 	    }
 
 	    attachMockMorphemeResponse = function(controller, _mockResp) {
@@ -90,7 +98,7 @@ QUnit.module("OccurenceController Tests", {
 
 	    // HashMap<String,Pair<String,Pair<String,Long>[]>>
 	    mockMorphemeResp = {matchingWords: {"siuq/1nv":{meaning:"to go after; to search", words:["nanusiuqti","tuktusiulauqtut"], wordFrequencies:[132,45]}}};
-	    mockWordResp = {exampleWord:{gist:{word:"blah",wordComponents:["blah","blah"]},alignments:["19990101:: abc@----@ aaa","19990202:: xyz@----@ xxx"]}};
+	    mockWordResp = {exampleWord:{gist:{word:"nanusiuqti",wordComponents:["blah","blah"]},alignments:["19990101:: abc@----@ aaa","19990202:: xyz@----@ xxx"]}};
 
 
 		
@@ -114,6 +122,7 @@ QUnit.module("OccurenceController Tests", {
 		
 		
 		occController = new OccurrenceController(occControllerConfig);
+		occurrenceController = occController;
 	    attachMockMorphemeResponse(occController, mockMorphemeResp);	
 	    attachMockWordResponse(occController, mockWordResp);	
 	    
@@ -160,6 +169,7 @@ QUnit.test("OccurenceController.Acceptance -- HappyPath", function( assert )
 	
 //	attachMockWordResponse(occController, mockWordResp);
 	helpers.clickOn("word-example-nanusiuqti");
+	assertWordInExampleEquals(assert,"Example word: nanusiuqtiblah", caseDescr);
 	done();
 });
 
@@ -238,6 +248,13 @@ QUnit.test("OccurenceController.Acceptance -- HappyPath", function( assert )
 //	
 //	done();
 //});
+
+function checkWordExampleWindowIsDisplayed(word) {
+	var divWordInExample = occurrenceController.elementForProp('divWordInExample');
+	var expected = "";
+	var got = divWordInExample.text();
+	assert.equals("",expected,got);
+}
 
 
 

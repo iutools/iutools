@@ -34,6 +34,25 @@ class OccurrenceController extends WidgetController {
 		}
 	}
 	
+//	onWordSelect(elementID) {
+//		var element = $('#'+elementID);
+//		console.log("word: "+$(element).text());
+//		occurrenceController.elementForProp("inpExampleWord").val($(element).text());
+//		occurrenceController.setWordExampleBusy(true);
+//		var divExampleWord = occurrenceController.elementForProp("divExampleWord");
+//		$('#contents',divExampleWord).html('');
+//		var divWordInExample = occurrenceController.elementForProp("divWordInExample");
+//		divWordInExample.html('');
+//		var divIconizedWordExample = occurrenceController.elementForProp("divIconizedExampleWord");
+//		divIconizedWordExample.hide();
+//		divExampleWord.show();
+//		occurrenceController.showSpinningWheel("divMessageInExample","Searching");
+////		occurrenceController.invokeSearchService(occurrenceController.getSearchRequestData(),
+////				occurrenceController.successExampleWordCallback, occurrenceController.failureExampleWordCallback);
+//		occurrenceController.invokeExampleWordService(occurrenceController.getSearchRequestData(),
+//				occurrenceController.successExampleWordCallback, occurrenceController.failureExampleWordCallback);
+//	}
+	
 	onWordSelect(event) {
 		var element = event.target;
 		console.log("word: "+$(element).text());
@@ -172,10 +191,10 @@ class OccurrenceController extends WidgetController {
 	
 	setWordExampleBusy(flag) {
 		if (flag) {
-			this.disableGetWordExample();	
+//			this.disableGetWordExample();	
 			this.showSpinningWheel('divMessageInExample','Searching');
 		} else {
-			this.enableGetWordExample();	
+//			this.enableGetWordExample();	
 			this.hideSpinningWheel('divMessageInExample');
 		}
 	}
@@ -264,8 +283,10 @@ class OccurrenceController extends WidgetController {
 			var wordFreqs = res[key].wordFrequencies;
 			var wordsFreqsArray = new Array(wordFreqs.length);
 			for (var iwf=0; iwf<wordFreqs.length; iwf++) {
-				wordsFreqsArray[iwf] = '<a class="word-example" id="word-example-'+words[iwf]+'">'+words[iwf]+'</a>'+
-										'('+wordFreqs[iwf]+')';
+				wordsFreqsArray[iwf] = 
+					'<a class="word-example" id="word-example-'+words[iwf]+'"' +
+//					' onclick="occurrenceController.onWordSelect(\''+'word-example-'+words[iwf]+'\')"'+
+					'>'+words[iwf]+'</a>'+'('+wordFreqs[iwf]+')';
 			}
 			html += '<div class="morpheme-details">';
 			html += '<a name="'+key+'"></a>'+'<strong>'+key+'</strong>&nbsp;&nbsp;&nbsp;&ndash;&nbsp;&nbsp;&nbsp;'+meaning+
@@ -275,15 +296,19 @@ class OccurrenceController extends WidgetController {
 		divResults.append(html);
 		
 		var thisController = this;
+		thisController.attachListenersToExampleWords(thisController);		
+		
+		divResults.show();
+	}
+	
+	attachListenersToExampleWords(controller) {
 		var anchorsWords = document.querySelectorAll('.word-example');
 	    for (var ipn=0; ipn<anchorsWords.length; ipn++) {
 	    	anchorsWords[ipn].addEventListener(
 		    		  'click', 
-		    		  thisController.onWordSelect
+		    		  controller.onWordSelect
 		    		  );
 	    }
-				
-		divResults.show();
 	}
 	
 	setExampleWordResults(results) {
