@@ -23,6 +23,10 @@ QUnit.module("SpellController Tests", {
 	    	new TestHelpers().attachMockAjaxResponse(controller, _mockResp, "invokeSpellService", "successCallback", "failureCallback");		
 	    }
 
+	    clearMockAjaxResponses = function(controller, _mockResp) {
+	    	new TestHelpers().clearMockAjaxResponsesFor(controller, "invokeSpellService");		
+	    }
+
 	    assertErrorMessageWasDisplayed = function(assert, expErrMessage, caseDescr) {
 	    	var message = "Checking that errror message was displayed.";
 	    	if (caseDescr != null) message = caseDescr+"\n"+message;
@@ -190,6 +194,7 @@ QUnit.test("SpellController.Acceptance -- Web service returns errMessage -- Disp
 	new RunWhen().conditionMet(controllerIsDefined, function() {
 	
 		mockResp = {"errorMessage": "There was an error in the web service"};
+		clearMockAjaxResponses(spellController);
 		attachMockAjaxResponse(spellController, mockResp);
 		
 	    var helpers = new TestHelpers();

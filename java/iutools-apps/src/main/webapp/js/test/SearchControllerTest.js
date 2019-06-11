@@ -32,6 +32,10 @@ QUnit.module("SearchController Tests", {
 	    	new TestHelpers().attachMockAjaxResponse(controller, _mockResp, "invokeSearchService", "successCallback", "failureCallback");		
 	    }
 
+	    clearMockAjaxResponses = function(controller) {
+	    	new TestHelpers().clearMockAjaxResponsesFor(controller, "invokeSearchService");		
+	    }
+
 	    assertQueryEquals = function(assert, expQuery) {
 	    	var gotQuery = $("#"+srchControllerConfig.txtQuery).val();
 	    	assert.deepEqual(gotQuery, expQuery, "Query field did not contain the expected string.");
@@ -292,6 +296,7 @@ QUnit.test("SearchController.Acceptance -- Web service returns errMessage -- Dis
 			var caseDescr = "SearchController.Acceptance -- Web service returns errorMessage -- Displays message";
 			
 			mockResp = {"errorMessage": "There was an error in the web service"};
+			clearMockAjaxResponses(srchController);
 			attachMockAjaxResponse(srchController, mockResp);
 			
 		    var helpers = new TestHelpers();
