@@ -1,17 +1,14 @@
 class Tracer {
 	
+
 	constructor(name, withTime) {
-		this.activeTraces = [
-				'SpellController.Acceptance',
-				'SpellControllerTest.beforeEach',
-				'RunWhen.conditionMet'
-			];
 		this.name = name;
+		if (withTime == null) withTime = true;
 		this.withTime = withTime
 	}
 	
 	trace(message) {
-		if (this.activeTraces.includes(this.name)) {
+		if (activeTraces.includes(this.name)) {
 			if (this.withTime != null && this.withTime) message += " (@"+this.now()+")";
 			console.log("-- "+this.name+": "+message);
 		}
@@ -20,7 +17,9 @@ class Tracer {
 	now() {
 		var currentdate = new Date();
 		var datetime = currentdate.getHours() + ":" 
-				+ currentdate.getMinutes() + ":" + currentdate.getSeconds();
+				+ currentdate.getMinutes() + ":" 
+				+ currentdate.getSeconds() + ":"
+				+ currentdate.getMilliseconds();
 		return datetime
 	}
 }
