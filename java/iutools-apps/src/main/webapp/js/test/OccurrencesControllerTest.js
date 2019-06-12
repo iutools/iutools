@@ -77,6 +77,13 @@ QUnit.module("OccurenceController Tests", {
 	    	new TestHelpers().assertStringEquals(assert, message, gotDetails, expectedDetails, true);
 	    }
 	    
+	    assertTableContentsEquals = function(assert, tableID, expectedTableTxt, caseDescr) {
+	    	var message = "Checking the contents of table#"+tableID+".";
+	    	if (caseDescr != null) message = caseDescr+"\n"+message;
+	    	var gotTableTxt = $(document).find('table#'+tableID).text();
+	    	new TestHelpers().assertStringEquals(assert, message, gotTableTxt, expectedTableTxt, true);
+	    }
+	    
 	    assertWordInExampleEquals = function(assert, expectedText, caseDescr) {
 	    	var message = "Checking the top line of the example window.";
 	    	if (caseDescr != null) message = caseDescr+"\n"+message;
@@ -87,18 +94,21 @@ QUnit.module("OccurenceController Tests", {
 
 	    attachMockMorphemeResponse = function(controller, _mockResp) {
 	    	new TestHelpers().attachMockAjaxResponse(controller, _mockResp, "invokeSearchService", "successGetCallback", "failureGetCallback");		
-//	    	new TestHelpers().attachMockAjaxResponse(controller, _mockResp, "invokeGetService", "successGetCallback", "failureGetCallback");		
 	    }
 
 	    attachMockWordResponse = function(controller, _mockResp) {
 	    	new TestHelpers().attachMockAjaxResponse(controller, _mockResp, "invokeSearchService", "successExampleWordCallback", "failureExampleWordCallback");		
-//	    	new TestHelpers().attachMockAjaxResponse(controller, _mockResp, "invokeExampleWordService", "successExampleWordCallback", "failureExampleWordCallback");		
 	    }
 
 
 	    // HashMap<String,Pair<String,Pair<String,Long>[]>>
 	    mockMorphemeResp = {matchingWords: {"siuq/1nv":{meaning:"to go after; to search", words:["nanusiuqti","tuktusiulauqtut"], wordFrequencies:[132,45]}}};
-	    mockWordResp = {exampleWord:{gist:{word:"nanusiuqti",wordComponents:["blah","blah"]},alignments:["19990101:: abc@----@ aaa","19990202:: xyz@----@ xxx"]}};
+	    mockWordResp = {exampleWord:{gist:{word:"nanusiuqti",
+	    	wordComponents:[{"fst":"nanu","snd":"seal"},{"fst":"siuq","snd":"to hunt"},{"fst":"ti","snd":"one who..."}]},
+	    	alignments:["19990101:: blah blah nanusiuqti blah blah@----@ english1","19990202:: blah blah nanusiuqti takujara blah blah@----@ english2"]}};
+	    mockWordResp2 = {exampleWord:{gist:{word:" tuktusiulauqtut",
+	    	wordComponents:[{"fst":"tuktu","snd":"cariboo"},{"fst":"siu","snd":"to hunt"},{"fst":"lauq","snd":"in the past"},{"fst":"tut","snd":"they (many)"}]},
+	    	alignments:["19990101:: blah blah tuktusiulauqtut blah blah@----@ english1","19990202:: blah blah nunavut tuktusiulauqtut blah blah@----@ english2"]}};
 
 
 		
@@ -125,6 +135,7 @@ QUnit.module("OccurenceController Tests", {
 		occurrenceController = occController;
 	    attachMockMorphemeResponse(occController, mockMorphemeResp);	
 	    attachMockWordResponse(occController, mockWordResp);	
+	    attachMockWordResponse(occController, mockWordResp2);	
 	    
 	    	    
 	},
@@ -155,7 +166,6 @@ QUnit.test("OccurenceController.Acceptance -- HappyPath", function( assert )
 	
     var helpers = new TestHelpers();
     helpers.typeText(occControllerConfig.inpMorpheme, "siuq");
-//    attachMockMorphemeResponse(occController, mockMorphemeResp);	
     helpers.clickOn(occControllerConfig.btnGet);
     
     assertNoErrorDisplayed(assert, caseDescr);
@@ -167,9 +177,20 @@ QUnit.test("OccurenceController.Acceptance -- HappyPath", function( assert )
 	var expectedMorphemeDetails = "siuq/1nv   –   to go after; to searchnanusiuqti(132);    tuktusiulauqtut(45)";
 	assertMorphemeDetailsEquals(assert, 0, expectedMorphemeDetails, caseDescr);
 	
-//	attachMockWordResponse(occController, mockWordResp);
 	helpers.clickOn("word-example-nanusiuqti");
-	assertWordInExampleEquals(assert,"Example word: nanusiuqtiblah", caseDescr);
+	assertWordInExampleEquals(assert,"Example word: nanusiuqti", caseDescr);
+	assertTableContentsEquals(assert,"tbl-gist","MorphemeMeaningnanusealsiuqto hunttione who...", caseDescr);
+	var expectedAlignmentsText = "InuktitutEnglish"+
+		"blah blah nanusiuqti blah blahenglish1blah blah nanusiuqti takujara blah blahenglish2";
+	assertTableContentsEquals(assert,"tbl-alignments",expectedAlignmentsText, caseDescr);
+	
+	helpers.clickOn("word-example-tuktusiulauqtut");
+	assertWordInExampleEquals(assert,"Example word: tuktusiulauqtut", caseDescr);
+	assertTableContentsEquals(assert,"tbl-gist","MorphemeMeaningtuktucariboosiuto huntlauqin the pasttutthey (many)", caseDescr);
+	expectedAlignmentsText = "InuktitutEnglish"+
+		"blah blah tuktusiulauqtut blah blahenglish1blah blah nunavut tuktusiulauqtut blah blahenglish2";
+	assertTableContentsEquals(assert,"tbl-alignments",expectedAlignmentsText, caseDescr);
+	
 	done();
 });
 
