@@ -7,7 +7,6 @@ class OccurrenceController extends WidgetController {
 	constructor(config) {
 		super(config);
 		this.totalHits = 0;
-		this.attachHtmlElements();
 		this.alreadyShownHits = [];
 	} 
 	
