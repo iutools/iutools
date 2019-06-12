@@ -34,27 +34,8 @@ class OccurrenceController extends WidgetController {
 		}
 	}
 	
-//	onWordSelect(elementID) {
-//		var element = $('#'+elementID);
-//		console.log("word: "+$(element).text());
-//		occurrenceController.elementForProp("inpExampleWord").val($(element).text());
-//		occurrenceController.setWordExampleBusy(true);
-//		var divExampleWord = occurrenceController.elementForProp("divExampleWord");
-//		$('#contents',divExampleWord).html('');
-//		var divWordInExample = occurrenceController.elementForProp("divWordInExample");
-//		divWordInExample.html('');
-//		var divIconizedWordExample = occurrenceController.elementForProp("divIconizedExampleWord");
-//		divIconizedWordExample.hide();
-//		divExampleWord.show();
-//		occurrenceController.showSpinningWheel("divMessageInExample","Searching");
-////		occurrenceController.invokeSearchService(occurrenceController.getSearchRequestData(),
-////				occurrenceController.successExampleWordCallback, occurrenceController.failureExampleWordCallback);
-//		occurrenceController.invokeExampleWordService(occurrenceController.getSearchRequestData(),
-//				occurrenceController.successExampleWordCallback, occurrenceController.failureExampleWordCallback);
-//	}
-	
-	onWordSelect(event) {
-		var element = event.target;
+	onWordSelect(elementID) {
+		var element = $('#'+elementID);
 		console.log("word: "+$(element).text());
 		occurrenceController.elementForProp("inpExampleWord").val($(element).text());
 		occurrenceController.setWordExampleBusy(true);
@@ -66,11 +47,26 @@ class OccurrenceController extends WidgetController {
 		divIconizedWordExample.hide();
 		divExampleWord.show();
 		occurrenceController.showSpinningWheel("divMessageInExample","Searching");
-//		occurrenceController.invokeSearchService(occurrenceController.getSearchRequestData(),
-//				occurrenceController.successExampleWordCallback, occurrenceController.failureExampleWordCallback);
 		occurrenceController.invokeExampleWordService(occurrenceController.getSearchRequestData(),
 				occurrenceController.successExampleWordCallback, occurrenceController.failureExampleWordCallback);
 	}
+	
+//obsolete	onWordSelect(event) {
+//		var element = event.target;
+//		console.log("word: "+$(element).text());
+//		occurrenceController.elementForProp("inpExampleWord").val($(element).text());
+//		occurrenceController.setWordExampleBusy(true);
+//		var divExampleWord = occurrenceController.elementForProp("divExampleWord");
+//		$('#contents',divExampleWord).html('');
+//		var divWordInExample = occurrenceController.elementForProp("divWordInExample");
+//		divWordInExample.html('');
+//		var divIconizedWordExample = occurrenceController.elementForProp("divIconizedExampleWord");
+//		divIconizedWordExample.hide();
+//		divExampleWord.show();
+//		occurrenceController.showSpinningWheel("divMessageInExample","Searching");
+//		occurrenceController.invokeExampleWordService(occurrenceController.getSearchRequestData(),
+//				occurrenceController.successExampleWordCallback, occurrenceController.failureExampleWordCallback);
+//	}
 	
 		
 	iconizeDivExampleWord() {
@@ -285,7 +281,7 @@ class OccurrenceController extends WidgetController {
 			for (var iwf=0; iwf<wordFreqs.length; iwf++) {
 				wordsFreqsArray[iwf] = 
 					'<a class="word-example" id="word-example-'+words[iwf]+'"' +
-//					' onclick="occurrenceController.onWordSelect(\''+'word-example-'+words[iwf]+'\')"'+
+					' onclick="occurrenceController.onWordSelect(\''+'word-example-'+words[iwf]+'\')"'+
 					'>'+words[iwf]+'</a>'+'('+wordFreqs[iwf]+')';
 			}
 			html += '<div class="morpheme-details">';
@@ -296,20 +292,20 @@ class OccurrenceController extends WidgetController {
 		divResults.append(html);
 		
 		var thisController = this;
-		thisController.attachListenersToExampleWords(thisController);		
+//obsolete		thisController.attachListenersToExampleWords(thisController);		
 		
 		divResults.show();
 	}
 	
-	attachListenersToExampleWords(controller) {
-		var anchorsWords = document.querySelectorAll('.word-example');
-	    for (var ipn=0; ipn<anchorsWords.length; ipn++) {
-	    	anchorsWords[ipn].addEventListener(
-		    		  'click', 
-		    		  controller.onWordSelect
-		    		  );
-	    }
-	}
+//obsolete	attachListenersToExampleWords(controller) {
+//		var anchorsWords = document.querySelectorAll('.word-example');
+//	    for (var ipn=0; ipn<anchorsWords.length; ipn++) {
+//	    	anchorsWords[ipn].addEventListener(
+//		    		  'click', 
+//		    		  controller.onWordSelect
+//		    		  );
+//	    }
+//	}
 	
 	setExampleWordResults(results) {
 		var divExampleWord = this.elementForProp("divExampleWord");
@@ -319,14 +315,14 @@ class OccurrenceController extends WidgetController {
 		this.elementForProp("divWordInExample").html('Example word: '+'<strong>'+gist.word+'</strong>');
 		var wordComponents = gist.wordComponents;
 		console.log("wordComponents= "+JSON.stringify(wordComponents));
-		var html = '<table class="gist"><tr><th>Morpheme</th><th>Meaning</th></tr>';
+		var html = '<table id="tbl-gist" class="gist"><tr><th>Morpheme</th><th>Meaning</th></tr>';
 		for (var iwc=0; iwc<wordComponents.length; iwc++) {
 			var component = wordComponents[iwc];
 			html += '<tr><td>'+component.fst+'</td><td>'+component.snd+'</td></tr>'
 		}
 		html += '</table>';
 		var alignments = results.exampleWord.alignments;
-		html += '<table class="alignments"><th>Inuktitut</th><th>English</th></tr>';
+		html += '<table id="tbl-alignments" class="alignments"><th>Inuktitut</th><th>English</th></tr>';
 		for (var ial=0; ial<Math.min(30,alignments.length); ial++) {
 			var alignmentParts = alignments[ial].split(":: ");
 			var sentences = alignmentParts[1].split("@----@");
