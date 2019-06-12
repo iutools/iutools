@@ -6,8 +6,6 @@ class SpellController extends WidgetController {
 
 	constructor(config) {
 		super(config);
-		this.busy = false;
-		this.blah();
 	} 
 	
 	// Setup handler methods for different HTML elements specified in the config.

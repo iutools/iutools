@@ -27,10 +27,20 @@
         <div id="testMainDiv"></div>
     </body>
     
-  <script src="js/test/TestHelpers.js?version=0.00006"></script>          
-  <script src="js/WidgetController.js?version=0.00005"></script>              
-  <script          src="js/RunWhen.js?version=0.00010"></script>          
-  <script           src="js/Tracer.js?version=0.00003"></script>          
+  <script           src="js/vendors/jquery.mockjax.js"></script>
+
+  <script  src="js/jquery.safeselector.js?version=00000"></script>          
+  <script  src="js/test/TestHelpers.js?version=0.00007"></script>          
+  <script  src="js/WidgetController.js?version=0.00005"></script>              
+  <script           src="js/RunWhen.js?version=0.00010"></script>   
+  
+  <script src="js/TracerConfig.js"></script>
+  <script>if (typeof activeTraces !== 'undefined' && !Array.isArray(activeTraces)) {
+	  throw "Wrong type for variable 'activeTraces' in file js/TracerConfig.js."+
+	  		"\nShould have been 'array' but was '"+type+"'.'";
+  }
+  </script>
+  <script src="js/Tracer.js?version=0.00003"></script>          
 
   <!-- BEGIN: UNIT TESTS -->
       
@@ -47,6 +57,7 @@
   <script src="js/test/InheritanceTest.js?version=0.00001"></script>          
   <script src="js/test/Animal.js?version=0.00001"></script> 
   <script src="js/test/Rabbit.js?version=0.00001"></script> 
+  
 
  
   

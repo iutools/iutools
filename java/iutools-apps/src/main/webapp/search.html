@@ -55,11 +55,17 @@
     <div data-includeHTML="pages/_FooterPartial.html"></div>
 </footer>
 
+<script src="js/TracerConfig.js"></script>
+<script>
+if (typeof activeTraces !== 'undefined' && !Array.isArray(activeTraces)) {
+	throw "Wrong type for variable 'activeTraces' in file js/TracerConfig.js."+
+ 		"\nShould have been 'array' but was '"+type+"'.'";}
+</script>
+<script src="js/Tracer.js?version=0.00003"></script>
+
+
 <script src="js/WidgetController.js?version=0.00004"></script>
 <script src="js/RunWhen.js"></script>
-<script src="js/Tracer.js"></script>
-          
-
 <script src="js/SearchController.js?version=0.00015"></script>
 
 <script>

@@ -2,11 +2,8 @@
  * Controller for the search.html page.
  */
 
-
-
 class SearchController extends WidgetController {
 	
-
 	constructor(config) {
 		super(config);
 		this.busy = false;
@@ -253,45 +250,4 @@ class SearchController extends WidgetController {
 		    		  });
 	    }
 	}
-	
-	onTest() {
-		this.invokeTestService({}, 
-				this.testSuccessCallback, this.testFailureCallback);
-	}
-
-	invokeTestService(jsonRequestData, _successCbk, _failureCbk) {
-			var controller = this;
-			var fctSuccess = 
-					function(resp) {
-						_successCbk.call(controller, resp);
-					};
-			var fctFailure = 
-					function(resp) {
-						_failureCbk.call(controller, resp);
-					};
-		
-			$.ajax({
-				method: 'POST',
-				url: 'srv/hello',
-				data: jsonRequestData,
-				dataType: 'json',
-				async: true,
-		        success: fctSuccess,
-		        error: fctFailure
-			});
-	}
-	
-	testSuccessCallback(resp) {
-		var element = this.elementForProp("divTestResponse");
-		element.empty();
-		element.html(resp.message);
-	}
-	    
-	testFailureCallback(resp) {
-		var element = this.elementForProp("divTestResponse");
-		element.empty();
-		element.html("Server returned error, resp="+JSON.stringify(resp));
-	}
-	
-
 }

@@ -26,8 +26,6 @@ class OccurrenceController extends WidgetController {
 		if (isValid) {
 			this.clearResults();
 			this.setGetBusy(true);
-//			this.invokeSearchService(this.getSearchRequestData(), 
-//					this.successGetCallback, this.failureGetCallback);
 			this.invokeGetService(this.getSearchRequestData(), 
 					this.successGetCallback, this.failureGetCallback);
 		}
@@ -97,6 +95,8 @@ class OccurrenceController extends WidgetController {
 	}
 	
 	invokeSearchService(jsonRequestData, _successCbk, _failureCbk) {
+			var tracer = new Tracer('OccurenceController.invokeSearchService', true);
+			this.busy = true;
 			var controller = this;
 			var fctSuccess = 
 					function(resp) {
@@ -119,6 +119,8 @@ class OccurrenceController extends WidgetController {
 		        success: fctSuccess,
 		        error: fctFailure
 			});
+			
+			tracer.trace('OccurenceController.invokeSearchService', "exited");
 	}
 	
 	validateQueryInput() {
@@ -132,19 +134,22 @@ class OccurrenceController extends WidgetController {
 	}
 
 	successGetCallback(resp) {
+		var tracer = new Tracer('OccurenceController.successGetCallback', true);
+		tracer.trace("invoked");
+		
 		if (resp.errorMessage != null) {
 			this.failureGetCallback(resp);
 		} else {
 			this.setGetResults(resp);	
 		}
 		this.setGetBusy(false);
+		tracer.trace("exited");
 	}
 	
 	successExampleWordCallback(resp) {
 		if (resp.errorMessage != null) {
 			this.failureExampleWordCallback(resp);
 		} else {
-//			console.log('successGetCallback --- resp.totalHits='+resp.totalHits);
 			this.setExampleWordResults(resp);	
 		}
 		this.setWordExampleBusy(false);
@@ -174,6 +179,7 @@ class OccurrenceController extends WidgetController {
 	
 	
 	setGetBusy(flag) {
+		this.busy = flag;
 		if (flag) {
 			this.disableSearchButton();	
 			this.showSpinningWheel('divMessage','Searching');
@@ -185,11 +191,10 @@ class OccurrenceController extends WidgetController {
 	}
 	
 	setWordExampleBusy(flag) {
+		this.busy = flag;		
 		if (flag) {
-//			this.disableGetWordExample();	
 			this.showSpinningWheel('divMessageInExample','Searching');
 		} else {
-//			this.enableGetWordExample();	
 			this.hideSpinningWheel('divMessageInExample');
 		}
 	}
@@ -245,10 +250,7 @@ class OccurrenceController extends WidgetController {
 		this.elementForProp('divError').show();	 
 	}
 	
-//	setQuery(query) {
-//		this.elementForProp("inpMorpheme").val(query);
-//	}
-	
+
 	setGetResults(results) {
 		var jsonResults = JSON.stringify(results);
 		var divResults = this.elementForProp("divResults");
@@ -256,7 +258,6 @@ class OccurrenceController extends WidgetController {
 		divResults.empty();
 		
 		var res = results.matchingWords;
-		console.log("res= "+JSON.stringify(res));
 		var keys = Object.keys(res);
 		var html = 'The input is the nominal form of '+keys.length+' morpheme'+
 			(keys.length==1?'':'s')+': ';
@@ -294,6 +295,10 @@ class OccurrenceController extends WidgetController {
 //obsolete		thisController.attachListenersToExampleWords(thisController);		
 		
 		divResults.show();
+		new RunWhen().domReady(function() {
+				thisController.attachListenersToExampleWords(thisController);	
+				divResults.show();
+		});
 	}
 	
 //obsolete	attachListenersToExampleWords(controller) {

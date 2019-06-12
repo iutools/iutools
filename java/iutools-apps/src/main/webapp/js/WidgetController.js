@@ -13,11 +13,7 @@ class WidgetController {
 			new RunWhen().domReady(attachFct, 10 * 1000, 1000);
 		}
 	}
-	
-	blah() {
-		console.log("-- WidgetController.blah: invoked");
-	}
-		
+			
 	attachHtmlElements() {
 		// This method should be overridden by subclasses if 
 		// you want to actually attach elements to the controller.

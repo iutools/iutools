@@ -106,7 +106,11 @@ QUnit.module("SpellController Tests", {
 		new RunWhen().domReady(function () {
 			tracer.trace("document is ready... setting up the controller")
 			var controller = new SpellController(spellControllerConfig);
-		    attachMockAjaxResponse(controller, mockSpellSrvResp);	
+			$.mockjax.clear();
+			$.mockjax([
+				{url: 'srv/spell', responseText: mockSpellSrvResp},
+			]);
+			
 		    spellController = controller;
 			tracer.trace("DONE setting up the controller")	
 		});
@@ -115,12 +119,12 @@ QUnit.module("SpellController Tests", {
 	},
 	
 	afterEach: function(assert) {
-		
+		$.mockjax.clear();
 	}
 	
 });
 
-function controllerReady() {
+function spellControllerReady() {
 	var ready = (spellController != null);
 	return ready;
 }
@@ -135,12 +139,12 @@ function controllerReady() {
  * VERIFICATION TESTS
  **********************************/
 
-function controllerNotBusy() {
+function spellControllerNotBusy() {
 	var busy = spellController.busy;
 	return ! busy;
 }
 
-function controllerIsDefined() {
+function spellControllerIsDefined() {
 	var defined = (spellController != null);
 	return defined;
 }
@@ -149,12 +153,12 @@ QUnit.test("SpellController.Acceptance -- HappyPath", function( assert )
 {
 	var done = assert.async();
 	
-	new RunWhen().conditionMet(controllerIsDefined, function() {
+	new RunWhen().conditionMet(spellControllerIsDefined, function() {
 		var caseDescr = "SpellController.Acceptance -- HappyPath";
 	    helpers.typeText(spellControllerConfig.txtToCheck, "Inuktut, nunavutt inuksuk.");
 	    helpers.clickOn(spellControllerConfig.btnSpell);
 	    
-	    new RunWhen().conditionMet(controllerNotBusy, function() {
+	    new RunWhen().conditionMet(spellControllerNotBusy, function() {
 		    assertNoErrorDisplayed(assert, caseDescr);
 			assertSpellButtonEnabled(assert, caseDescr);
 			var expText = "Spell checked contentInuktut, nunavuttt nunavut inuksuk."
@@ -170,11 +174,11 @@ QUnit.test("SpellController.Acceptance -- Text field is empty -- Displays error"
 	var caseDescr = "SpellController.Acceptance -- Text field is empty -- Displays error";
 	var done = assert.async();
 
-	new RunWhen().conditionMet(controllerIsDefined, function() {
+	new RunWhen().conditionMet(spellControllerIsDefined, function() {
 	    helpers.typeText(spellControllerConfig.txtToCheck, "");
 	    helpers.clickOn(spellControllerConfig.btnSpell);
 	    
-	    new RunWhen().conditionMet(controllerNotBusy, function() {
+	    new RunWhen().conditionMet(spellControllerNotBusy, function() {
 	    	assertErrorDisplayed(assert, "You need to enter some text to spell check", caseDescr);
 			assertSpellButtonEnabled(assert, caseDescr);
 			var expText = ""
@@ -191,17 +195,19 @@ QUnit.test("SpellController.Acceptance -- Web service returns errMessage -- Disp
 	var caseDescr = "SpellController.Acceptance -- Web service returns errorMessage -- Displays message";
 	var done = assert.async();
 	
-	new RunWhen().conditionMet(controllerIsDefined, function() {
+	new RunWhen().conditionMet(spellControllerIsDefined, function() {
 	
 		mockResp = {"errorMessage": "There was an error in the web service"};
-		clearMockAjaxResponses(spellController);
-		attachMockAjaxResponse(spellController, mockResp);
+		$.mockjax.clear();
+		$.mockjax([
+			{url: 'srv/spell', responseText: mockResp},
+		]);
 		
 	    var helpers = new TestHelpers();
 	    helpers.typeText(spellControllerConfig.txtToCheck, "ᓄᓇᕗᑦ");
 	    helpers.clickOn(spellControllerConfig.btnSpell);
 	    
-	    new RunWhen().conditionMet(controllerNotBusy, function() {
+	    new RunWhen().conditionMet(spellControllerNotBusy, function() {
 		    assertErrorDisplayed(assert, "There was an error in the web service", caseDescr);
 			assertSpellButtonEnabled(assert, caseDescr);			
 			done();
