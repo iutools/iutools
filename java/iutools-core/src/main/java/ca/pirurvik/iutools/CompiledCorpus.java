@@ -54,6 +54,7 @@ public class CompiledCorpus
 	protected HashMap<String,Long> wordsFailedSegmentationWithFreqs = new HashMap<String,Long>();
 	
 	public String wordSegmentations = ",,";
+	public String decomposedWordsSuite = ",,";
 
 	protected Vector<String> filesCompiled = new Vector<String>();	
 	protected String saveFilePath = null;	
@@ -304,7 +305,7 @@ public class CompiledCorpus
 	 * @throws CompiledCorpusException 
 	 */
 	protected void __resumeCompilation(String corpusDirectoryPathname) throws CompiledCorpusException {
-		Gson gson = new Gson();
+//		Gson gson = new Gson();
 		String jsonFilePath = corpusDirectoryPathname+"/"+JSON_COMPILATION_FILE_NAME;
 		CompiledCorpus compiledCorpus = createFromJson(jsonFilePath);
 //		File jsonFile = new File(jsonFilePath);
@@ -420,8 +421,10 @@ public class CompiledCorpus
 				StringSegmenter segmenter = getSegmenter();
 				segments = segmenter.segment(word);
 				// new word decomposed or word that now decomposed: add to word segmentations string
-				if (segments.length != 0)
+				if (segments.length != 0) {
 					addToWordSegmentations(word,segments);
+					addToDecomposedWordsSuite(word);
+				}
 			} catch (TimeoutException e) {
 				toConsole("** EXCEPTION RAISED");
 				toConsole(" ??? " + e.getClass().getName() + " --- " + e.getMessage() + " ");
@@ -459,6 +462,10 @@ public class CompiledCorpus
 				wordsFailedSegmentationWithFreqs.remove(word);
 	}
 	
+	private void addToDecomposedWordsSuite(String word) {
+		wordSegmentations += word+",,";
+	}
+
 	private void addToWordSegmentations(String word,String[] segments) {
 		wordSegmentations += word+":"+String.join("", segments)+",,";
 	}
