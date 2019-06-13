@@ -312,10 +312,10 @@ public class CompiledCorpusTest extends TestCase
     }
     
     @Test
-    public void test__verify_wordSegmentations_after_compilation() throws Exception
+    public void test__verify_wordSegmentations_and_decomposedWordsSuite_after_compilation() throws Exception
     {
 		String[] stringsOfWords = new String[] {
-				"nunavut takujuq iglumik"
+				"nunavut takujuq iglumik plugak"
 				};
 		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
         CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
@@ -324,10 +324,14 @@ public class CompiledCorpusTest extends TestCase
         	compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
         } catch(CompiledCorpusException | StringSegmenterException e) {
         }
-			
-        String expected = ",,nunavut:{nunavut/1n},,takujuq:{taku/1v}{juq/1vn},,iglumik:{iglu/1n}{mik/tn-acc-s},,";
-        String wordSegmentations = compiledCorpus.getWordSegmentations();
-		assertEquals("The word segmentations string is not correct.", expected, wordSegmentations);
+		
+       String expected = ",,nunavut:{nunavut/1n},,takujuq:{taku/1v}{juq/1vn},,iglumik:{iglu/1n}{mik/tn-acc-s},,";
+       String wordSegmentations = compiledCorpus.getWordSegmentations();
+	   assertEquals("The word segmentations string is not correct.", expected, wordSegmentations);
+		
+       String expectedSuite = ",,nunavut,,takujuq,,iglumik,,";
+       String decomposedWordsSuite = compiledCorpus.getDecomposedWordsSuite();
+	   assertEquals("The decomposed words suite string is not correct.", expectedSuite, decomposedWordsSuite);
     }
     
     @Test
