@@ -8,6 +8,7 @@ class Tracer {
 	}
 	
 	trace(message) {
+		if (typeof activeTraces === 'undefined') activeTraces = [];
 		if (activeTraces.includes(this.name)) {
 			if (this.withTime != null && this.withTime) message += " (@"+this.now()+")";
 			console.log("-- "+this.name+": "+message);
