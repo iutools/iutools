@@ -96,6 +96,7 @@ class OccurrenceController extends WidgetController {
 	
 	invokeSearchService(jsonRequestData, _successCbk, _failureCbk) {
 			var tracer = new Tracer('OccurenceController.invokeSearchService', true);
+			tracer.trace("_successCbk="+_successCbk+", jsonRequestData="+JSON.stringify(jsonRequestData));
 			this.busy = true;
 			var controller = this;
 			var fctSuccess = 
@@ -135,7 +136,7 @@ class OccurrenceController extends WidgetController {
 
 	successGetCallback(resp) {
 		var tracer = new Tracer('OccurenceController.successGetCallback', true);
-		tracer.trace("invoked");
+		tracer.trace("resp="+JSON.stringify(resp));
 		
 		if (resp.errorMessage != null) {
 			this.failureGetCallback(resp);
@@ -147,6 +148,8 @@ class OccurrenceController extends WidgetController {
 	}
 	
 	successExampleWordCallback(resp) {
+		var tracer = new Tracer('OccurenceController.successExampleWordCallback', true);
+		tracer.trace("resp="+JSON.stringify(resp));		
 		if (resp.errorMessage != null) {
 			this.failureExampleWordCallback(resp);
 		} else {
@@ -201,6 +204,7 @@ class OccurrenceController extends WidgetController {
 	
 	
 	getSearchRequestData() {
+		var tracer = new Tracer('OccurenceController.getSearchRequestData');
 		var wordPattern = this.elementForProp("inpMorpheme").val().trim();
 		if (wordPattern=='')
 			wordPattern = null;
@@ -213,8 +217,9 @@ class OccurrenceController extends WidgetController {
 				exampleWord: exampleWord
 		};
 		
-		var jsonInputs = JSON.stringify(request);
+		var jsonInputs = request;
 		
+		tracer.trace("returning jsonInputs="+JSON.stringify(jsonInputs));
 		return jsonInputs;
 	}
 	
@@ -226,23 +231,23 @@ class OccurrenceController extends WidgetController {
 		this.elementForProp('btnGet').attr("disabled", true);
 	}
 	
-	enableGetWordExample() {
-		var thisController = this;
-		var anchorsWords = document.querySelectorAll('.word-example');
-	    for (var ipn=0; ipn<anchorsWords.length; ipn++) {
-	    	anchorsWords[ipn].addEventListener(
-		    		  'click', thisController.onWordSelect);
-	    }
-	}
-
-	disableGetWordExample() {
-		var thisController = this;
-		var anchorsWords = document.querySelectorAll('.word-example');
-	    for (var ipn=0; ipn<anchorsWords.length; ipn++) {
-	    	anchorsWords[ipn].removeEventListener(
-		    		  'click', thisController.onWordSelect);
-	    }
-	}
+//	enableGetWordExample() {
+//		var thisController = this;
+//		var anchorsWords = document.querySelectorAll('.word-example');
+//	    for (var ipn=0; ipn<anchorsWords.length; ipn++) {
+//	    	anchorsWords[ipn].addEventListener(
+//		    		  'click', thisController.onWordSelect);
+//	    }
+//	}
+//
+//	disableGetWordExample() {
+//		var thisController = this;
+//		var anchorsWords = document.querySelectorAll('.word-example');
+//	    for (var ipn=0; ipn<anchorsWords.length; ipn++) {
+//	    	anchorsWords[ipn].removeEventListener(
+//		    		  'click', thisController.onWordSelect);
+//	    }
+//	}
 	
 
 	error(err) {
@@ -308,9 +313,9 @@ class OccurrenceController extends WidgetController {
 	    }
 	}
 	
+		
 	setExampleWordResults(results) {
 		var divExampleWord = this.elementForProp("divExampleWord");
-		console.log("results= "+JSON.stringify(results));
 		this.hideSpinningWheel("divMessageInExample");
 		var gist = results.exampleWord.gist;
 		console.log('gist= '+JSON.stringify(gist));

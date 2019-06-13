@@ -95,11 +95,8 @@ QUnit.module("OccurenceController Tests", {
 	    assertWordInExampleEquals = function(assert, expectedText, caseDescr) {
 	    	var message = "Checking the top line of the example window.";
 	    	if (caseDescr != null) message = caseDescr+"\n"+message;
-	    	var wordElt = $.safeSelect("#"+occControllerConfig.divWordInExample+"-"+word);
-	    	tracer.trace("wordElt="+wordElt);
+	    	var wordElt = $.safeSelect("#"+occControllerConfig.divWordInExample);
 	    	var gotText = wordElt.text();
-	    	tracer.trace("gotText="+gotText);
-	    	tracer.trace("wordElt.html()="+wordElt.html());
 	    	new TestHelpers().assertStringEquals(assert, message, gotText, expectedText, true);
 	    }
 	    
@@ -143,13 +140,22 @@ QUnit.module("OccurenceController Tests", {
 		occurrenceController = occController;
 
 		$.mockjax([
-			{url: 'srv/occurrences', responseText: mockMorphemeResp},
-			{url: 'srv/occurrences', responseText: mockWordResp}
+			// Response for a morpheme search
+			{
+				url: 'srv/occurrences', 
+				data: function(data) {return (data.exampleWord == null);},
+				responseText: mockMorphemeResp
+			},
+			// Response for an example word search
+			{
+				url: 'srv/occurrences', 
+				data: function(data) {return (data.exampleWord != null);},
+				responseText: mockWordResp
+			}
 		]);
 	},
 	
 	afterEach: function(assert) {
-		console.log("afterEach");
 		occController.elementForProp("divExampleWord").hide();
 	}
 });

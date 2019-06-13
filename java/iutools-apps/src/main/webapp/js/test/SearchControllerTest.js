@@ -207,8 +207,10 @@ QUnit.module("SearchController Tests", {
 	}
 });
 
-
-
+function srchControllerNotBusy() {
+	var busy = srchController.busy;
+	return !busy;
+}
 
 /**********************************
  * DOCUMENTATION TESTS
@@ -229,16 +231,17 @@ QUnit.test("SearchController.Acceptance -- HappyPath", function( assert )
     var helpers = new TestHelpers();
     helpers.typeText(srchControllerConfig.txtQuery, "ᓄᓇᕗᑦ");
     helpers.clickOn(srchControllerConfig.btnSearch);
-    
-    assertNoErrorDisplayed(assert, caseDescr);
-	assertQueryEquals(assert, "ᓄᓇᕗᑦ");
-	assertSearchButtonEnabled(assert, caseDescr);
-	assertDisplayedTotalHitsIs(assert, "Found 12 hits", caseDescr);
-	var expHits = mockRespPage1.hits;
-	assertHitsEqual(assert, expHits, caseDescr)
-	assertPageButtonsAreOK(assert, 2, caseDescr)
-	
-	done();
+    new RunWhen().conditionMet(srchControllerNotBusy, function() {
+	    assertNoErrorDisplayed(assert, caseDescr);
+		assertQueryEquals(assert, "ᓄᓇᕗᑦ");
+		assertSearchButtonEnabled(assert, caseDescr);
+		assertDisplayedTotalHitsIs(assert, "Found 12 hits", caseDescr);
+		var expHits = mockRespPage1.hits;
+		assertHitsEqual(assert, expHits, caseDescr)
+		assertPageButtonsAreOK(assert, 2, caseDescr)
+		
+		done();
+    });
 });
 
 QUnit.test("SearchController.Acceptance -- Query field is empty -- Displays error", function( assert ) 
@@ -270,16 +273,18 @@ QUnit.test("SearchController.Acceptance -- Press Return in Query field -- Runs t
 		    var helpers = new TestHelpers();
 		    helpers.typeText(srchControllerConfig.txtQuery, "ᓄᓇᕗᑦ");
 		    helpers.pressEnter(srchControllerConfig.txtQuery);
+		    new RunWhen().conditionMet(srchControllerNotBusy, function() {
 		    
-		    assertNoErrorDisplayed(assert, caseDescr);
-			assertQueryEquals(assert, "ᓄᓇᕗᑦ");
-			assertSearchButtonEnabled(assert, caseDescr);
-			assertDisplayedTotalHitsIs(assert, "Found 12 hits", caseDescr);
-			var expHits = mockRespPage1.hits;
-			assertHitsEqual(assert, expHits, caseDescr);
-			assertPageButtonsAreOK(assert, 2, caseDescr);
-			
-			done();
+			    assertNoErrorDisplayed(assert, caseDescr);
+				assertQueryEquals(assert, "ᓄᓇᕗᑦ");
+				assertSearchButtonEnabled(assert, caseDescr);
+				assertDisplayedTotalHitsIs(assert, "Found 12 hits", caseDescr);
+				var expHits = mockRespPage1.hits;
+				assertHitsEqual(assert, expHits, caseDescr);
+				assertPageButtonsAreOK(assert, 2, caseDescr);
+				
+				done();
+		    });
 		});
 
 QUnit.test("SearchController.Acceptance -- Web service returns errMessage -- Displays message", function( assert ) 
@@ -297,15 +302,17 @@ QUnit.test("SearchController.Acceptance -- Web service returns errMessage -- Dis
 		    var helpers = new TestHelpers();
 		    helpers.typeText(srchControllerConfig.txtQuery, "ᓄᓇᕗᑦ");
 		    helpers.clickOn(srchControllerConfig.btnSearch);
+		    new RunWhen().conditionMet(srchControllerNotBusy, function() {
 		    
-		    assertErrorDisplayed(assert, "There was an error in the web service", caseDescr);
-			assertSearchButtonEnabled(assert, caseDescr);
-			assertDisplayedTotalHitsIs(assert, "No hits found", caseDescr);
-			var expHits = [];
-			assertHitsEqual(assert, expHits, caseDescr)
-			assert.ok(true);
-			
-			done();
+			    assertErrorDisplayed(assert, "There was an error in the web service", caseDescr);
+				assertSearchButtonEnabled(assert, caseDescr);
+				assertDisplayedTotalHitsIs(assert, "No hits found", caseDescr);
+				var expHits = [];
+				assertHitsEqual(assert, expHits, caseDescr)
+				assert.ok(true);
+				
+				done();
+		    });
 		});
 
 QUnit.test("SearchController.generatePagesButtons -- HappyPath", function( assert ) 

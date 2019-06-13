@@ -1,6 +1,8 @@
+var activeTraces = [];
+
+
 class Tracer {
 	
-
 	constructor(name, withTime) {
 		this.name = name;
 		if (withTime == null) withTime = true;

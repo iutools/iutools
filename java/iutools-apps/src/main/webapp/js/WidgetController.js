@@ -2,6 +2,7 @@ class WidgetController {
 
 	constructor(_config) {
 		this.config = _config;
+		this.busy = false;
 		this.isReady = false;
 		
 		this.attachHtmlElements();

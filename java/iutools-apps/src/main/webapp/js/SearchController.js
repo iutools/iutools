@@ -6,7 +6,6 @@ class SearchController extends WidgetController {
 	
 	constructor(config) {
 		super(config);
-		this.busy = false;
 		this.hitsPerPage = 10;
 		this.totalHits = 0;
 		this.prevPage = this.initialPage();
