@@ -2,6 +2,7 @@ package ca.pirurvik.iutools;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -63,6 +64,7 @@ public class MorphemeExtractor {
 		return words;
 	}
 	
+	
 	public class Words {
 		
 		public String morphemeWithId;
@@ -74,5 +76,16 @@ public class MorphemeExtractor {
 		}
 	}
 
+	public class WordFreqComparator implements Comparator<Pair<String,Long>> {
+	    @Override
+	    public int compare(Pair<String,Long> a, Pair<String,Long> b) {
+	    	if (a.getSecond().longValue() > b.getSecond().longValue())
+	    		return -1;
+	    	else if (a.getSecond().longValue() < b.getSecond().longValue())
+				return 1;
+	    	else 
+	    		return a.getFirst().compareToIgnoreCase(b.getFirst());
+	    }
+	}
 }
 
