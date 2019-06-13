@@ -149,7 +149,8 @@ QUnit.module("OccurenceController Tests", {
 	},
 	
 	afterEach: function(assert) {
-		
+		console.log("afterEach");
+		occController.elementForProp("divExampleWord").hide();
 	}
 });
 
