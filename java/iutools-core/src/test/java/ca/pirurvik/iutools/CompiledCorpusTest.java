@@ -315,7 +315,7 @@ public class CompiledCorpusTest extends TestCase
     public void test__verify_wordSegmentations_and_decomposedWordsSuite_after_compilation() throws Exception
     {
 		String[] stringsOfWords = new String[] {
-				"nunavut takujuq iglumik plugak"
+				"nunavut takujuq iglumik plugak takujuq"
 				};
 		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
         CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
@@ -325,6 +325,7 @@ public class CompiledCorpusTest extends TestCase
         } catch(CompiledCorpusException | StringSegmenterException e) {
         }
 		
+       // takujuq should add something only once into wordSegmentations and decomposedWordsSuite
        String expected = ",,nunavut:{nunavut/1n},,takujuq:{taku/1v}{juq/1vn},,iglumik:{iglu/1n}{mik/tn-acc-s},,";
        String wordSegmentations = compiledCorpus.getWordSegmentations();
 	   assertEquals("The word segmentations string is not correct.", expected, wordSegmentations);
