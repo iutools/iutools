@@ -22,6 +22,7 @@ import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.gson.Gson;
+import com.google.gson.JsonIOException;
 
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenterException;
@@ -291,15 +292,24 @@ public class CompiledCorpus
 		Gson gson = new Gson();
 		long savedRetrievedFileWordCounter = this.retrievedFileWordCounter;
 		this.retrievedFileWordCounter = this.currentFileWordCounter;
-		String json = gson.toJson(this);
-		this.retrievedFileWordCounter = savedRetrievedFileWordCounter;
 		try {
-			saveFile.write(json);
+			gson.toJson(this, saveFile);
 			saveFile.flush();
 			saveFile.close();
-		} catch (IOException e) {
+			this.retrievedFileWordCounter = savedRetrievedFileWordCounter;
+		} catch (JsonIOException | IOException e) {
 			throw new CompiledCorpusException(e);
 		}
+// This is what was done before to save the compiled corpus in a file. TO BE DELETED eventually.
+//		String json = gson.toJson(this);
+//		this.retrievedFileWordCounter = savedRetrievedFileWordCounter;
+//		try {
+//			saveFile.write(json);
+//			saveFile.flush();
+//			saveFile.close();
+//		} catch (IOException e) {
+//			throw new CompiledCorpusException(e);
+//		}
 		toConsole("saved in "+saveFilePathname);
 	}
 	
