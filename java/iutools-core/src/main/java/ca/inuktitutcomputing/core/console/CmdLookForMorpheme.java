@@ -10,12 +10,9 @@ import com.google.gson.Gson;
 
 import ca.inuktitutcomputing.data.LinguisticDataSingleton;
 import ca.inuktitutcomputing.data.Morpheme;
-import ca.inuktitutcomputing.morph.Decomposition;
-import ca.inuktitutcomputing.morph.MorphInuk;
+import ca.nrc.datastructure.Pair;
 import ca.pirurvik.iutools.CompiledCorpus;
 import ca.pirurvik.iutools.MorphemeExtractor;
-import ca.pirurvik.iutools.MorphemeExtractor.Words;
-import ca.pirurvik.iutools.SpellChecker;
 
 public class CmdLookForMorpheme extends ConsoleCommand {
 
@@ -66,19 +63,26 @@ public class CmdLookForMorpheme extends ConsoleCommand {
 			}
 			
 			if (words != null && words.size() > 0) {
+				MorphemeExtractor.WordFreqComparator comparator = morphExtr.new WordFreqComparator();
 				Iterator<MorphemeExtractor.Words> itWords = words.iterator();
 				int nIt = 1;
 				while (itWords.hasNext()) {
 					MorphemeExtractor.Words wordsForMorpheme = itWords.next();
 					String morphemeWithId = wordsForMorpheme.morphemeWithId;
-					String[] wordsList = wordsForMorpheme.words.toArray(new String[] {});
-					Arrays.sort(wordsList);
+					Pair<String,Long>[] wordsAndFreqs = wordsForMorpheme.words.toArray(new Pair[] {});
+					Arrays.sort(wordsAndFreqs, comparator);
+
+					String[] wordList = new String[wordsAndFreqs.length];
+					for (int iWF=0; iWF<wordsAndFreqs.length; iWF++) {
+						wordList[iWF] = wordsAndFreqs[iWF].getFirst() + "(" + wordsAndFreqs[iWF].getSecond() + ")";
+					}
+					
 					echo("\nMORPHEME ID: "+morphemeWithId+
-							"               "+
+							"        "+
 							"\""+Morpheme.getMorpheme(morphemeWithId).englishMeaning+"\""+
 							"               "+
-							"["+wordsList.length+" words]"+"\n");
-					echo(String.join("; ", wordsList));
+							"["+wordList.length+" words]"+"\n");
+					echo(String.join("; ", wordList));
 				}
 			}
 			
@@ -88,3 +92,4 @@ public class CmdLookForMorpheme extends ConsoleCommand {
 	}
 
 }
+
