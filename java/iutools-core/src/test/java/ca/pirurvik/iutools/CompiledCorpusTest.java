@@ -538,6 +538,23 @@ public class CompiledCorpusTest extends TestCase
         assertEquals("The frequency of that node is not right.",4,trieNode3.getFrequency());
 	}
 	
+	@Test
+	public void test__saveCompilerInJSONFile() throws IOException, CompiledCorpusException, StringSegmenterException, CompiledCorpusRegistryException {
+		String[] stringsOfWords = new String[] {
+				"nunavut inuit"
+				};
+		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
+        CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
+        compiledCorpus.setVerbose(false);
+        compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
+		File tempFile = File.createTempFile("compiled_corpus", ".json");
+		compiledCorpus.saveCompilerInJSONFile(tempFile.getAbsolutePath());
+		CompiledCorpusRegistry.registerCorpus("compiled_corpus", tempFile);
+		
+		CompiledCorpus savedCompiledCorpus = CompiledCorpusRegistry.getCorpus("compiled_corpus");
+		assertEquals("",",,nunavut,,inuit,,",savedCompiledCorpus.decomposedWordsSuite);
+	}
+	
 
 	private void assertContains(CompiledCorpus compiledCorpus,
 			String[] segs, long expFreq, String[] expLongestTerminal) {
