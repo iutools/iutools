@@ -85,7 +85,6 @@ QUnit.module("OccurenceController Tests", {
 	    	new TestHelpers().assertStringEquals(assert, message, gotDetails, expectedDetails, true);
 	    }
 	    
-<<<<<<< Upstream, based on origin/master
 	    assertTableContentsEquals = function(assert, tableID, expectedTableTxt, caseDescr) {
 	    	var message = "Checking the contents of table#"+tableID+".";
 	    	if (caseDescr != null) message = caseDescr+"\n"+message;
@@ -94,11 +93,6 @@ QUnit.module("OccurenceController Tests", {
 	    }
 	    
 	    assertWordInExampleEquals = function(assert, expectedText, caseDescr) {
-=======
-	    
-	    assertWordInExampleEquals = function(assert, word, expectedText, caseDescr) {
-	    	var tracer = new Tracer('OccurencesControllerTest.assertWordInExampleEquals');
->>>>>>> 403744e Misc changes having to do with use of Tracer and mockjax
 	    	var message = "Checking the top line of the example window.";
 	    	if (caseDescr != null) message = caseDescr+"\n"+message;
 	    	var wordElt = $.safeSelect("#"+occControllerConfig.divWordInExample+"-"+word);
@@ -117,32 +111,14 @@ QUnit.module("OccurenceController Tests", {
 	    	assert.ok(isVisible,message);
 	    }
 
-<<<<<<< Upstream, based on origin/master
-	    attachMockMorphemeResponse = function(controller, _mockResp) {
-	    	new TestHelpers().attachMockAjaxResponse(controller, _mockResp, "invokeSearchService", "successGetCallback", "failureGetCallback");		
-	    }
-
-	    attachMockWordResponse = function(controller, _mockResp) {
-	    	new TestHelpers().attachMockAjaxResponse(controller, _mockResp, "invokeSearchService", "successExampleWordCallback", "failureExampleWordCallback");		
-	    }
-
-=======
->>>>>>> 403744e Misc changes having to do with use of Tracer and mockjax
-
 	    // HashMap<String,Pair<String,Pair<String,Long>[]>>
 	    mockMorphemeResp = {matchingWords: {"siuq/1nv":{meaning:"to go after; to search", words:["nanusiuqti","tuktusiulauqtut"], wordFrequencies:[132,45]}}};
-<<<<<<< Upstream, based on origin/master
 	    mockWordResp = {exampleWord:{gist:{word:"nanusiuqti",
 	    	wordComponents:[{"fst":"nanu","snd":"seal"},{"fst":"siuq","snd":"to hunt"},{"fst":"ti","snd":"one who..."}]},
 	    	alignments:["19990101:: blah blah nanusiuqti blah blah@----@ english1","19990202:: blah blah nanusiuqti takujara blah blah@----@ english2"]}};
 	    mockWordResp2 = {exampleWord:{gist:{word:" tuktusiulauqtut",
 	    	wordComponents:[{"fst":"tuktu","snd":"cariboo"},{"fst":"siu","snd":"to hunt"},{"fst":"lauq","snd":"in the past"},{"fst":"tut","snd":"they (many)"}]},
 	    	alignments:["19990101:: blah blah tuktusiulauqtut blah blah@----@ english1","19990202:: blah blah nunavut tuktusiulauqtut blah blah@----@ english2"]}};
-
-
-=======
-	    mockWordResp = {exampleWord:{gist:{word:"nanusiuqti",wordComponents:["blah","blah"]},alignments:["19990101:: abc@----@ aaa","19990202:: xyz@----@ xxx"]}};
->>>>>>> 403744e Misc changes having to do with use of Tracer and mockjax
 		
 		/*********************************************
 		 * Setup HTML page and controller for testing
@@ -165,19 +141,11 @@ QUnit.module("OccurenceController Tests", {
 		
 		occController = new OccurrenceController(occControllerConfig);
 		occurrenceController = occController;
-<<<<<<< Upstream, based on origin/master
-	    attachMockMorphemeResponse(occController, mockMorphemeResp);	
-	    attachMockWordResponse(occController, mockWordResp);	
-	    attachMockWordResponse(occController, mockWordResp2);	
-	    
-	    	    
-=======
-		
+
 		$.mockjax([
 			{url: 'srv/occurrences', responseText: mockMorphemeResp},
 			{url: 'srv/occurrences', responseText: mockWordResp}
 		]);
->>>>>>> 403744e Misc changes having to do with use of Tracer and mockjax
 	},
 	
 	afterEach: function(assert) {
@@ -204,58 +172,44 @@ QUnit.test("OccurenceController.Acceptance -- HappyPath", function( assert )
 	var caseDescr = "OccurenceController.Acceptance -- HappyPath";
 	
     var helpers = new TestHelpers();
+    
+    // Type morpheme in input text field
     helpers.typeText(occControllerConfig.inpMorpheme, "siuq");
-<<<<<<< Upstream, based on origin/master
-=======
     tracer.trace("clicking on Morpheme search button");
->>>>>>> 403744e Misc changes having to do with use of Tracer and mockjax
+    
+    // Click on the Get button
     helpers.clickOn(occControllerConfig.btnGet);
     	
 	new RunWhen().conditionMet(occControllerNotBusy, function() {
-	    assertNoErrorDisplayed(assert, caseDescr);
-	    
-	    tracer.trace("Checking that the Morpheme Search button is now re-enabled", true);
-		assertGetButtonEnabled(assert, caseDescr);
-	
-<<<<<<< Upstream, based on origin/master
-	var expectedList = ["siuq/1nv"];
-	assertMorphemeListEquals(assert, expectedList, caseDescr);
-	
-	var expectedMorphemeDetails = "siuq/1nv   –   to go after; to searchnanusiuqti(132);    tuktusiulauqtut(45)";
-	assertMorphemeDetailsEquals(assert, 0, expectedMorphemeDetails, caseDescr);
-	
-	helpers.clickOn("word-example-nanusiuqti");
-	assertElementIsVisible(assert,"div-example-word",caseDescr+" (word-example-nanusiuqti)");
-	assertWordInExampleEquals(assert,"Example word: nanusiuqti", caseDescr);
-	assertTableContentsEquals(assert,"tbl-gist","MorphemeMeaningnanusealsiuqto hunttione who...", caseDescr);
-	var expectedAlignmentsText = "InuktitutEnglish"+
-		"blah blah nanusiuqti blah blahenglish1blah blah nanusiuqti takujara blah blahenglish2";
-	assertTableContentsEquals(assert,"tbl-alignments",expectedAlignmentsText, caseDescr);
-	
-//	helpers.clickOn("word-example-tuktusiulauqtut");
-//	assertElementIsVisible(assert,"div-example-word",caseDescr+" (word-example-tuktusiulauqtut)");
-//	assertWordInExampleEquals(assert,"Example word: tuktusiulauqtut", caseDescr);
-//	assertTableContentsEquals(assert,"tbl-gist","MorphemeMeaningtuktucariboosiuto huntlauqin the pasttutthey (many)", caseDescr);
-//	expectedAlignmentsText = "InuktitutEnglish"+
-//		"blah blah tuktusiulauqtut blah blahenglish1blah blah nunavut tuktusiulauqtut blah blahenglish2";
-//	assertTableContentsEquals(assert,"tbl-alignments",expectedAlignmentsText, caseDescr);
-	
-	done();
-=======
-		var expectedList = ["siuq/1nv"];
-		assertMorphemeListEquals(assert, expectedList, caseDescr);
+		// Check results of the morpheme search
+		{
+		    assertNoErrorDisplayed(assert, caseDescr);
+		    
+		    tracer.trace("Checking that the Morpheme Search button is now re-enabled", true);
+			assertGetButtonEnabled(assert, caseDescr);
 		
-		var expectedMorphemeDetails = "siuq/1nv   –   to go after; to searchnanusiuqti(132);    tuktusiulauqtut(45)";
-		assertMorphemeDetailsEquals(assert, 0, expectedMorphemeDetails, caseDescr);
+			var expectedList = ["siuq/1nv"];
+			assertMorphemeListEquals(assert, expectedList, caseDescr);
+			
+			var expectedMorphemeDetails = "siuq/1nv   –   to go after; to searchnanusiuqti(132);    tuktusiulauqtut(45)";
+			assertMorphemeDetailsEquals(assert, 0, expectedMorphemeDetails, caseDescr);			
+		}
 		
+		// Click on one of the words found by the morpheme search
 		helpers.clickOn("word-example-nanusiuqti");
-		new RunWhen().conditionMet(occControllerNotBusy, function() {
-//			assertWordInExampleEquals(assert, 'nanusiuqti', "Example word: nanusiuqti", caseDescr);
-			helpers.assertElementIsVisible(assert,'div-word-example',caseDescr);
+		
+		// Check that the details about that word are correctly displayed
+		new RunWhen().conditionMet(occControllerNotBusy, function () {
+			assertElementIsVisible(assert,"div-example-word",caseDescr+" (word-example-nanusiuqti)");
+			assertWordInExampleEquals(assert,"Example word: nanusiuqti", caseDescr);
+			assertTableContentsEquals(assert,"tbl-gist","MorphemeMeaningnanusealsiuqto hunttione who...", caseDescr);
+			var expectedAlignmentsText = "InuktitutEnglish"+
+				"blah blah nanusiuqti blah blahenglish1blah blah nanusiuqti takujara blah blahenglish2";
+			assertTableContentsEquals(assert,"tbl-alignments",expectedAlignmentsText, caseDescr);			
+			
 			done();
 		});
 	});
->>>>>>> 403744e Misc changes having to do with use of Tracer and mockjax
 });
 
 //QUnit.test("OccurenceController.Acceptance -- Query field is empty -- Displays error", function( assert ) 
