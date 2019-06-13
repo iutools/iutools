@@ -67,7 +67,7 @@ public class BingSearchMultithrdTest {
 		List<SearchHit> hits = results.hitsCurrPage;
 		
 		Assert.assertTrue("Total number of hits was lower than expected: "+totalEstHits, totalEstHits > 100);
-		IUTTestHelpers.assertMostHitsMatchWords(terms, hits, 0.75);
+		IUTTestHelpers.assertMostHitsMatchWords(terms, hits, 0.79);
 	}	
 
 	@Test
