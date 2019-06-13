@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -17,7 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 
 import ca.inuktitutcomputing.data.LinguisticDataSingleton;
 import ca.inuktitutcomputing.data.Morpheme;
@@ -130,13 +128,14 @@ public class OccurenceSearchEndpoint extends HttpServlet {
 		
 		List<MorphemeExtractor.Words> wordsForMorphemes = morphExtractor.wordsContainingMorpheme(inputs.wordPattern);
 		HashMap<String,MorphemeSearchResult> results = new HashMap<String,MorphemeSearchResult>();
+		MorphemeExtractor.WordFreqComparator comparator = morphExtractor.new WordFreqComparator();
 		Iterator<MorphemeExtractor.Words> itWFM = wordsForMorphemes.iterator();
 		while (itWFM.hasNext()) {
 			MorphemeExtractor.Words w = itWFM.next();
 			String meaningOfMorpheme = Morpheme.getMorpheme(w.morphemeWithId).englishMeaning;
 			List<Pair<String,Long>> wordsAndFreqs = w.words;
 			Pair<String,Long>[] wordsFreqsArray = wordsAndFreqs.toArray(new Pair[] {});
-			Arrays.sort(wordsFreqsArray, new WordFreqComparator());
+			Arrays.sort(wordsFreqsArray, comparator);
 			List<String> words = new ArrayList<String>();
 			List<Long> wordFreqs = new ArrayList<Long>();
 			for (Pair<String,Long>pair : wordsFreqsArray) {
@@ -151,16 +150,4 @@ public class OccurenceSearchEndpoint extends HttpServlet {
 	}
 
 
-}
-
-class WordFreqComparator implements Comparator<Pair<String,Long>> {
-    @Override
-    public int compare(Pair<String,Long> a, Pair<String,Long> b) {
-    	if (a.getSecond().longValue() > b.getSecond().longValue())
-    		return -1;
-    	else if (a.getSecond().longValue() < b.getSecond().longValue())
-			return 1;
-    	else 
-    		return a.getFirst().compareToIgnoreCase(b.getFirst());
-    }
 }
