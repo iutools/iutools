@@ -292,27 +292,25 @@ class OccurrenceController extends WidgetController {
 		divResults.append(html);
 		
 		var thisController = this;
-//obsolete		thisController.attachListenersToExampleWords(thisController);		
 		
-		divResults.show();
 		new RunWhen().domReady(function() {
-				thisController.attachListenersToExampleWords(thisController);	
 				divResults.show();
 		});
 	}
 	
-//obsolete	attachListenersToExampleWords(controller) {
-//		var anchorsWords = document.querySelectorAll('.word-example');
-//	    for (var ipn=0; ipn<anchorsWords.length; ipn++) {
-//	    	anchorsWords[ipn].addEventListener(
-//		    		  'click', 
-//		    		  controller.onWordSelect
-//		    		  );
-//	    }
-//	}
+	attachListenersToExampleWords(controller) {
+		var anchorsWords = document.querySelectorAll('.word-example');
+	    for (var ipn=0; ipn<anchorsWords.length; ipn++) {
+	    	anchorsWords[ipn].addEventListener(
+		    		  'click', 
+		    		  controller.onWordSelect
+		    		  );
+	    }
+	}
 	
 	setExampleWordResults(results) {
 		var divExampleWord = this.elementForProp("divExampleWord");
+		console.log("results= "+JSON.stringify(results));
 		this.hideSpinningWheel("divMessageInExample");
 		var gist = results.exampleWord.gist;
 		console.log('gist= '+JSON.stringify(gist));
