@@ -184,6 +184,10 @@ public class CompiledCorpus
 		return wordSegmentations;
 	}
 	
+	public String getDecomposedWordsSuite() {
+		return decomposedWordsSuite;
+	}
+	
 	/*private void __compileWordSegmentations() {
 		Collection<String> segmentationsKeys = segmentsCache.keySet();
 		int nbDecompositions = segmentationsKeys.size();
@@ -463,7 +467,7 @@ public class CompiledCorpus
 	}
 	
 	private void addToDecomposedWordsSuite(String word) {
-		wordSegmentations += word+",,";
+		decomposedWordsSuite += word+",,";
 	}
 
 	private void addToWordSegmentations(String word,String[] segments) {
