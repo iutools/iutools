@@ -26,6 +26,7 @@ import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.StringUtils;
+import ca.inuktitutcomputing.script.Roman;
 import ca.inuktitutcomputing.script.Syllabics;
 import ca.inuktitutcomputing.script.TransCoder;
 import ca.inuktitutcomputing.utilities.EditDistanceCalculator;
@@ -45,41 +46,46 @@ public class SpellChecker {
 	public CompiledCorpus corpus = null;
 	private static StringSegmenter_IUMorpheme segmenter = new StringSegmenter_IUMorpheme();
 	
-	public SpellChecker() throws SpellCheckerException {
+	
+	public SpellChecker() {
+		editDistanceCalculator = EditDistanceCalculatorFactory.getEditDistanceCalculator();
+	}
+	
+	
+	public void setDictionaryFromCorpus() throws SpellCheckerException {
 		try {
-			corpus = CompiledCorpusRegistry.getCorpus();
+			corpus = CompiledCorpusRegistry.getCorpus(null);
+			__processCorpus();
 		} catch (CompiledCorpusRegistryException e) {
 			throw new SpellCheckerException(e);
 		}
-		__initialize();
 	}
 
-	public SpellChecker(String _corpusName) throws SpellCheckerException {
+	public void setDictionaryFromCorpus(String _corpusName) throws SpellCheckerException {
 		try {
 			corpus = CompiledCorpusRegistry.getCorpus(_corpusName);
+			__processCorpus();
 		} catch (CompiledCorpusRegistryException e) {
 			throw new SpellCheckerException(e);
 		}
-		__initialize();
 	}
 
-	public SpellChecker(File compiledCorpusFile) throws SpellCheckerException {
+	public void setDictionaryFromCorpus(File compiledCorpusFile) throws SpellCheckerException {
 		try {
 			corpus = CompiledCorpus.createFromJson(compiledCorpusFile.toString());
+			__processCorpus();
 		} catch (Exception e) {
 			throw new SpellCheckerException(
 					"Could not create the compiled corpus from file: " + compiledCorpusFile.toString(), e);
 		}
-		__initialize();
 	}
 	
-
-	private void __initialize() {
-		editDistanceCalculator = EditDistanceCalculatorFactory.getEditDistanceCalculator();
-		corpus.setVerbose(verbose);
+	private void __processCorpus() {
 		this.allWords = corpus.decomposedWordsSuite;
 		setIDFs(this.allWords);
+		corpus.setVerbose(verbose);
 	}
+	
 
 
 	private void setIDFs(String allWords2) {
@@ -211,10 +217,10 @@ public class SpellChecker {
 	}
 	
 	protected boolean isMispelled(String word) throws SpellCheckerException {
-		Boolean answer = null;
-		if (corpus.wordsFailedSegmentation.contains(word)) {
+		boolean answer = false;
+		if (corpus!=null && corpus.wordsFailedSegmentation.contains(word)) {
 			answer = true;
-		} else if (corpus.segmentsCache.containsKey(word)) {
+		} else if (corpus!=null && corpus.segmentsCache.containsKey(word)) {
 			answer = false;
 		} else {
 			answer = true;

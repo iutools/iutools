@@ -38,24 +38,32 @@ public class SpellCheckerTest {
 //		AssertHelpers.assertDeepEquals("", null, correction);
 //	}
 	
-	@Test
+	@Test(expected=SpellCheckerException.class)
 	public void test__SpellChecker__Synopsis() throws Exception {
 		//
 		// Before you can use a spell checker, you must first build its
-		// dictioanary of correct words.
+		// dictionary of correct words. This can be done in 2 ways:
+		// - directly by adding correct words to the dictionary;
+		// - by specifying a corpus, the words of which will be added to the dictionary
+		
+		SpellChecker checker = new SpellChecker();
+		checker.setVerbose(false);
+		
 		// 
 		// For example
 		//
-		SpellChecker checker = new SpellChecker();
-		checker.setVerbose(false);
 		checker.addCorrectWord("inuktut");
 		checker.addCorrectWord("inuk");
 		checker.addCorrectWord("inuksuk");
 		checker.addCorrectWord("nunavut");
 		// etc...
 		
+		// or
+		
+		checker.setDictionaryFromCorpus("a_corpus_name");
+		
 		//
-		// Once you have built its dictionary, you can save the 
+		// Once the dictionary has been built, you can save the 
 		// SpellChecker to file.
 		//
 		// Note: For the needs of this test, we use a temporary file that
