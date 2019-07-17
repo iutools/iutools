@@ -89,21 +89,24 @@ class SpellController extends WidgetController {
 		return isValid;
 	}
 	
-	setCorrectionsHandlers() {
-		$(document).find('div.corrections')
-		.on('mouseover',function(ev){
+	onClickOnCorrections(ev) {
 			var target = $(ev.target);
-			var divParent = target.parent();
+			var divParent = target.closest('div');
+			console.log('divParent: '+divParent.length+"; word= "+divParent.attr('word'));
 			$('span',divParent).css('display','block');
-			})
-		.on('mouseleave',function(ev){
+	}
+	
+	setCorrectionsHandlers() {
+		$(document).find('div.corrections').on('mouseleave',function(ev){
 			var target = $(ev.target);
-			var divParent = target.parent();
+			var divParent = target.closest('div');
 			$('span',divParent).css('display','none');
 			$('.selected',divParent).css('display','block');
 			$('.additional input',divParent).val('');
-			})
-		.find('span.suggestion:not(.selected)')
+			});
+		$(document).find('span.suggestion.selected')
+			.on('click',this.onClickOnCorrections);
+		$(document).find('span.suggestion:not(.selected)')
 			.on('mouseover',function(ev){
 				$(ev.target).css('color','green');
 				})
@@ -111,14 +114,44 @@ class SpellController extends WidgetController {
 				$(ev.target).css('color','black')
 				})
 			.on('click',function(ev){
+				console.log('click');
 				var target = $(ev.target);
 				var divParent = target.closest('div');
+				$('span',divParent).css('display','none');
 				$('span.selected',divParent).removeClass('selected');
 				target.addClass('selected');
-				$('.suggestion',divParent).css('display','none');
+				$('.additional input',divParent).val('');
+				$('.selected',divParent).css('display','block');
+				console.log('out of click');
+				spellController.setCorrectionsHandlers();
+				});
+		$(document).find('span.additional input')
+			.on('mouseleave',function(ev){
+				var target = $(ev.target);
+				var divParent = target.closest('div');
+				$('span',divParent).css('display','none');
 				$('.selected',divParent).css('display','block');
 				$('.additional input',divParent).val('');
-				});
+				})
+			.on('keyup',function(ev){
+				if(ev.keyCode == 13) {
+					var target = $(ev.target);
+					var divParent = target.closest('div');
+					var newSuggestionValue = target.val().trim();
+					if (newSuggestionValue != '') {
+						$('span',divParent).css('display','none');
+						$('span.selected',divParent).removeClass('selected');
+						var newSuggestionElement = $('<span class="suggestion selected">'+newSuggestionValue+'</span>');
+						newSuggestionElement.insertBefore($('.original',divParent));
+						spellController.setCorrectionsHandlers();
+						$('.additional input',divParent).val('');
+						$('.selected',divParent).css('display','block');
+					}
+					else {
+						
+					}
+				}
+			});
 	}
 
 	successCallback(resp) {
@@ -141,36 +174,8 @@ class SpellController extends WidgetController {
 					wordOutput = this.picklistFor(corrResult);
 				}
 				divCheckedResults.append(wordOutput);
-				spellController.setCorrectionsHandlers();
-				$(document).find('div.corrections')
-					.find('span.additional input')
-						.on('mouseleave',function(ev){
-							var target = $(ev.target);
-							var divParent = target.closest('div');
-							$('span',divParent).css('display','none');
-							$('.selected',divParent).css('display','block');
-							$('.additional input',divParent).val('');
-							})
-						.on('keyup',function(ev){
-							if(ev.keyCode == 13) {
-								var target = $(ev.target);
-								var divParent = target.closest('div');
-								var newSuggestionValue = target.val().trim();
-								if (newSuggestionValue != '') {
-									$('span',divParent).css('display','none');
-									$('span.selected',divParent).removeClass('selected');
-									var newSuggestionElement = $('<span class="suggestion selected">'+newSuggestionValue+'</span>');
-									newSuggestionElement.insertBefore($('.original',divParent));
-									spellController.setCorrectionsHandlers();
-									$('.additional input',divParent).val('');
-									$('.selected',divParent).css('display','block');
-								}
-								else {
-									
-								}
-							}
-						});
 			}
+			spellController.setCorrectionsHandlers();
 		}
 		this.setBusy(false);
 	}
@@ -203,7 +208,10 @@ class SpellController extends WidgetController {
 				picklistHtml += " selected";
 			picklistHtml += "\">"+anAlternative+"</span>\n"
 		}
-		picklistHtml += "<span class=\"suggestion original\">"+origWord+"</span>\n";
+		picklistHtml += "<span class=\"suggestion original";
+		if (alternatives.length==0)
+			picklistHtml += " selected";
+		picklistHtml += "\">"+origWord+"</span>\n";
 		picklistHtml += "<span class=\"additional\">"+"<input type=\"text\" size=\"20\">"+"</span>\n";
 		picklistHtml += "</div>\n";
 		return picklistHtml;
