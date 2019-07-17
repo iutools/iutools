@@ -11,6 +11,41 @@ class SpellController extends WidgetController {
 	// Setup handler methods for different HTML elements specified in the config.
 	attachHtmlElements() {
 		this.setEventHandler("btnSpell", "click", this.spellCheck);
+		this.setEventHandler("btnCopy", "click", this.copyToClipboard);
+	}
+	
+	copyToClipboard() {
+		   // Create new element
+		   var el = document.createElement('textarea');
+		   // Set value (string to be copied)
+		   el.value = this.getSpellCheckedText();
+		   // Set non-editable to avoid focus and move outside of view
+		   el.setAttribute('readonly', '');
+		   el.style = {position: 'absolute', left: '-9999px'};
+		   document.body.appendChild(el);
+		   // Select text inside element
+		   el.select();
+		   // Copy text to clipboard
+		   document.execCommand('copy');
+		   // Remove temporary element
+		   document.body.removeChild(el);
+		   window.getSelection().removeAllRanges();
+	}
+	
+	getSpellCheckedText() {
+		var wholeTextElements = $('div#div-results').contents();
+		var text;
+		var allText = '';
+		wholeTextElements.each(function(index,item) {
+			if ($(item).is('.corrections')) {
+				text = $(item).find('.selected').text();
+			}
+			else {
+				text = $(item).text();
+			}
+			allText += text;
+		});
+		return allText;
 	}
 
 	spellCheck() {
@@ -53,14 +88,50 @@ class SpellController extends WidgetController {
 		}
 		return isValid;
 	}
+	
+	setCorrectionsHandlers() {
+		$(document).find('div.corrections')
+		.on('mouseover',function(ev){
+			var target = $(ev.target);
+			var divParent = target.parent();
+			$('span',divParent).css('display','block');
+			})
+		.on('mouseleave',function(ev){
+			var target = $(ev.target);
+			var divParent = target.parent();
+			$('span',divParent).css('display','none');
+			$('.selected',divParent).css('display','block');
+			$('.additional input',divParent).val('');
+			})
+		.find('span.suggestion:not(.selected)')
+			.on('mouseover',function(ev){
+				$(ev.target).css('color','green');
+				})
+			.on('mouseleave',function(ev){
+				$(ev.target).css('color','black')
+				})
+			.on('click',function(ev){
+				var target = $(ev.target);
+				var divParent = target.closest('div');
+				$('span.selected',divParent).removeClass('selected');
+				target.addClass('selected');
+				$('.suggestion',divParent).css('display','none');
+				$('.selected',divParent).css('display','block');
+				$('.additional input',divParent).val('');
+				});
+	}
 
 	successCallback(resp) {
 		if (resp.errorMessage != null) {
 			this.failureCallback(resp);
 		} else {
 			var divChecked = this.elementForProp('divChecked');
-			divChecked.empty();
-			divChecked.append("<h2>Spell checked content</h2>")
+			var divCheckedResults = divChecked.find('div#div-results');
+			var divCheckedTitle = divChecked.find('div#title-and-copy');
+			divCheckedResults.empty();
+			divCheckedTitle.css('display','block');
+			divCheckedResults.css('display','block');
+//			divChecked.append("<h2>Spell-checked content</h2>")
 			for (var ii=0; ii < resp.correction.length; ii++) {
 				var corrResult = resp.correction[ii];
 				var wordOutput = ""
@@ -69,7 +140,36 @@ class SpellController extends WidgetController {
 				} else {
 					wordOutput = this.picklistFor(corrResult);
 				}
-				divChecked.append(wordOutput);
+				divCheckedResults.append(wordOutput);
+				spellController.setCorrectionsHandlers();
+				$(document).find('div.corrections')
+					.find('span.additional input')
+						.on('mouseleave',function(ev){
+							var target = $(ev.target);
+							var divParent = target.closest('div');
+							$('span',divParent).css('display','none');
+							$('.selected',divParent).css('display','block');
+							$('.additional input',divParent).val('');
+							})
+						.on('keyup',function(ev){
+							if(ev.keyCode == 13) {
+								var target = $(ev.target);
+								var divParent = target.closest('div');
+								var newSuggestionValue = target.val().trim();
+								if (newSuggestionValue != '') {
+									$('span',divParent).css('display','none');
+									$('span.selected',divParent).removeClass('selected');
+									var newSuggestionElement = $('<span class="suggestion selected">'+newSuggestionValue+'</span>');
+									newSuggestionElement.insertBefore($('.original',divParent));
+									spellController.setCorrectionsHandlers();
+									$('.additional input',divParent).val('');
+									$('.selected',divParent).css('display','block');
+								}
+								else {
+									
+								}
+							}
+						});
 			}
 		}
 		this.setBusy(false);
@@ -92,21 +192,27 @@ class SpellController extends WidgetController {
 	}
 	
 	picklistFor(corrResult) {
+		console.log("corrResult= "+JSON.stringify(corrResult));
 		var origWord = corrResult.orig;
 		var alternatives = corrResult.possibleSpellings;
-		var picklistHtml = "<select>\n  <option value=\""+origWord+"\">"+origWord+"</option>\n";
+		var picklistHtml = "<div class='corrections' word='"+corrResult.orig+"'>\n";
 		for (var ii=0; ii < alternatives.length; ii++) {
 			var anAlternative = alternatives[ii];
-			picklistHtml += "  <option value=\""+anAlternative+"\">"+anAlternative+"</option>\n"
+			picklistHtml += "<span class=\"suggestion";
+			if (ii==0)
+				picklistHtml += " selected";
+			picklistHtml += "\">"+anAlternative+"</span>\n"
 		}
-		picklistHtml += "</select>\n";
+		picklistHtml += "<span class=\"suggestion original\">"+origWord+"</span>\n";
+		picklistHtml += "<span class=\"additional\">"+"<input type=\"text\" size=\"20\">"+"</span>\n";
+		picklistHtml += "</div>\n";
 		return picklistHtml;
 	}
 	
 	setBusy(flag) {
 		this.busy = flag;
 		if (flag) {
-			this.elementForProp('divChecked').empty();
+			this.elementForProp('divResults').empty();
 			this.disableSpellButton();	
 			super.showSpinningWheel('divMessage', "Checking spelling");
 			this.error("");
@@ -148,3 +254,4 @@ class SpellController extends WidgetController {
 		return text;
 	}
 }
+

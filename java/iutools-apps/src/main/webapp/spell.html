@@ -26,7 +26,13 @@
     <p></p>
     <div id="div-message" class="div-message"></div>
     <div id="div-error" class="div-error"></div>
-    <div id="div-checked" class="div-checked"></div>
+    <div id="div-checked" class="div-checked">
+    	<div id="title-and-copy">
+    		<h2>Spell-checked content</h2>
+    		<button id="btn-copy" type="button" name="btn-copy">Copy to clipboard</button>
+    		</div>
+    	<div id="div-results" class="div-results"></div>
+    	</div>
 
 </main>
 
@@ -61,7 +67,9 @@
     		txtToCheck: "txt-to-check",
     		divChecked:  "div-checked",
     		divError: "div-error",
-    		divMessage: "div-message"
+    		divMessage: "div-message",
+    		btnCopy: "btn-copy",
+    		divResults: "div-results"
         };
     var spellController = new SpellController(config);
 </script>

@@ -103,7 +103,7 @@ public class SpellEndpoint extends HttpServlet {
 	}
 
 	public SpellResponse executeEndPoint(SpellInputs inputs) throws ServiceException, SpellCheckerException  {
-		Logger tLogger = Logger.getLogger("SearchEndpoint.executeEndPoint");
+		Logger tLogger = Logger.getLogger("SpellEndpoint.executeEndPoint");
 		SpellResponse response = new SpellResponse();
 		
 		if (inputs.text == null || inputs.text.isEmpty()) {
@@ -112,6 +112,9 @@ public class SpellEndpoint extends HttpServlet {
 		
 		
 		List<SpellingCorrection> corrections = checker.correctText(inputs.text);
+		
+		tLogger.trace("inputs.text= "+inputs.text);
+		tLogger.trace("corrections= "+PrettyPrinter.print(corrections));
 		
 		response.correction = corrections;
 

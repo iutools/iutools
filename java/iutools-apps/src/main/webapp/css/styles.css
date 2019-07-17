@@ -172,3 +172,27 @@ table.alignments th {
 	width:49%;
 }
 
+/* SPELL CHECKER */
+
+div#div-checked div#title-and-copy,
+div#div-checked div#results {
+	display: none;
+}
+div#div-checked div#title-and-copy h2 {
+	display:inline-block;
+}
+div.corrections {
+	display:inline-block;
+	padding-left:7px;
+	color:black;
+	vertical-align:top;
+}
+div.corrections span {
+	display:none;
+	
+}
+div.corrections span.selected {
+	display:block;
+	text-decoration:underline;
+}
+
