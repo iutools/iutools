@@ -24,6 +24,7 @@ import com.google.gson.Gson;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
+import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.StringUtils;
 import ca.inuktitutcomputing.script.Syllabics;
 import ca.inuktitutcomputing.script.TransCoder;
@@ -45,44 +46,46 @@ public class SpellChecker {
 	private static StringSegmenter_IUMorpheme segmenter = new StringSegmenter_IUMorpheme();
 	
 	public SpellChecker() throws SpellCheckerException {
-			editDistanceCalculator = EditDistanceCalculatorFactory.getEditDistanceCalculator();
-			
-			try {
-				corpus = CompiledCorpusRegistry.getCorpus();
-				corpus.setVerbose(verbose);
-			} catch (CompiledCorpusRegistryException e) {
-				throw new SpellCheckerException(e);
-			}
+		try {
+			corpus = CompiledCorpusRegistry.getCorpus();
+		} catch (CompiledCorpusRegistryException e) {
+			throw new SpellCheckerException(e);
+		}
+		__initialize();
 	}
 
 	public SpellChecker(String _corpusName) throws SpellCheckerException {
-		initialize(_corpusName, null);
+		try {
+			corpus = CompiledCorpusRegistry.getCorpus(_corpusName);
+		} catch (CompiledCorpusRegistryException e) {
+			throw new SpellCheckerException(e);
+		}
+		__initialize();
 	}
 
 	public SpellChecker(File compiledCorpusFile) throws SpellCheckerException {
-		initialize(null, compiledCorpusFile);
+		try {
+			corpus = CompiledCorpus.createFromJson(compiledCorpusFile.toString());
+		} catch (Exception e) {
+			throw new SpellCheckerException(
+					"Could not create the compiled corpus from file: " + compiledCorpusFile.toString(), e);
+		}
+		__initialize();
 	}
 	
-	private void initialize(String _corpusName, File _compiledCorpusJsonPath) throws SpellCheckerException { 
+
+	private void __initialize() {
 		editDistanceCalculator = EditDistanceCalculatorFactory.getEditDistanceCalculator();
-		if (_corpusName != null) {
-			try {
-				corpus = CompiledCorpusRegistry.getCorpus();
-				corpus.setVerbose(verbose);
-			} catch (CompiledCorpusRegistryException e) {
-				throw new SpellCheckerException(e);
-			}
-		} else {
-			if (_compiledCorpusJsonPath != null)  {
-				try {
-					corpus = CompiledCorpus.createFromJson(_compiledCorpusJsonPath.toString());
-					corpus.setVerbose(verbose);
-				} catch (Exception e) {
-					throw new SpellCheckerException("Could not create the compiled corpus from file: "+_compiledCorpusJsonPath.toString(), e);
-				}				
-			} else {
-				throw new SpellCheckerException("Corpus name AND compiled corpus file path were both null");
-			}
+		corpus.setVerbose(verbose);
+		this.allWords = corpus.decomposedWordsSuite;
+		setIDFs(this.allWords);
+	}
+
+
+	private void setIDFs(String allWords2) {
+		String[] words = allWords2.split(",,");
+		for (int iw=1; iw<words.length-1; iw++) {
+			updateSequenceIDFForWord(words[iw]);
 		}
 	}
 
@@ -98,22 +101,23 @@ public class SpellChecker {
 	public void addCorrectWord(String word) {
 		//System.out.println("-- addCorrectWord: word="+word);;
 		allWords += word+",,";
+		updateSequenceIDFForWord(word);
+	}
+	
+	private void updateSequenceIDFForWord(String word) {
 		Set<String> seqSeen = new HashSet<String>();
 		try {
 		for (int seqLen = 1; seqLen <= MAX_SEQ_LEN; seqLen++) {
 			for (int  start=0; start <= word.length() - seqLen; start++) {
 				String charSeq = word.substring(start, start+seqLen);
-				//System.out.println("-- addCorrectWord:    charSeq="+charSeq);;
 				if (!seqSeen.contains(charSeq)) {
-					//System.out.println("-- addCorrectWord:    updateSequenceIDF");;
 					updateSequenceIDF(charSeq);
-					//System.out.println("-- addCorrectWord:    sequenceIDF updated");;
 				}
 				seqSeen.add(charSeq);
 			}
 		}
 		} catch (Exception e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 	}
 
@@ -167,6 +171,7 @@ public class SpellChecker {
 	}
 
 	public SpellingCorrection correctWord(String word, int maxCorrections) throws SpellCheckerException {
+		Logger logger = Logger.getLogger("SpellChecker.correctWord");
 
 //		boolean wordIsLatin = Pattern.compile("[a-zA-Z]").matcher(word).find();
 		boolean wordIsSyllabic = Syllabics.allInuktitut(word);
@@ -177,12 +182,13 @@ public class SpellChecker {
 		
 		SpellingCorrection corr = new SpellingCorrection(word);
 		corr.wasMispelled = isMispelled(word);
+		logger.debug("wasMispelled= "+corr.wasMispelled);
 		if (corr.wasMispelled) {
 		
 			Set<String> candidates = firstPassCandidates(word);
+			logger.debug("candidates= "+PrettyPrinter.print(candidates));
 			List<Pair<String,Double>> candidatesWithSim = computeCandidateSimilarities(word, candidates);
 			List<String> corrections = sortCandidatesBySimilarity(candidatesWithSim);
-			Logger logger = Logger.getLogger("SpellChecker.correct");
 			logger.debug("corrections for "+word+": "+corrections.size());
 			
 	 		if (maxCorrections== -1)
@@ -342,10 +348,13 @@ public class SpellChecker {
 	}
 
 	public List<SpellingCorrection> correctText(String text, Integer nCorrections) throws SpellCheckerException {
+		Logger logger = Logger.getLogger("SpellChecker.correctText");
 		if (nCorrections == null) nCorrections = DEFAULT_CORRECTIONS;
 		List<SpellingCorrection> corrections = new ArrayList<SpellingCorrection>();
 		
 		List<Pair<String, Boolean>> tokens = StringUtils.tokenizeNaively(text);
+		
+		logger.debug("tokens= "+PrettyPrinter.print(tokens));
 		
 		for (Pair<String,Boolean> aToken: tokens) {
 			String tokString = aToken.getFirst();
