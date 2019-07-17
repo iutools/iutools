@@ -2,9 +2,9 @@ package ca.inuktitutcomputing.utilities;
 
 public class EditDistanceCalculatorFactory {
 	
-	public enum DistanceMethod {LEVENSTHEIN, DP5, LCS, JARO_WINKLER};
+	public enum DistanceMethod {LEVENSHTEIN, DP5, LCS, JARO_WINKLER};
 	
-	private static final DistanceMethod defaultDistanceMethod = DistanceMethod.LEVENSTHEIN;
+	private static final DistanceMethod defaultDistanceMethod = DistanceMethod.LEVENSHTEIN;
 	
 	public static EditDistanceCalculator getEditDistanceCalculator() {
 		return getEditDistanceCalculator(defaultDistanceMethod);
@@ -12,7 +12,7 @@ public class EditDistanceCalculatorFactory {
 	
 	public static EditDistanceCalculator getEditDistanceCalculator(DistanceMethod method) {
 		EditDistanceCalculator edcalculator = null;
-		if (method == DistanceMethod.LEVENSTHEIN)
+		if (method == DistanceMethod.LEVENSHTEIN)
 			edcalculator = new Levenshtein();
 		else if (method == DistanceMethod.DP5)
 			edcalculator =  new DP5();
