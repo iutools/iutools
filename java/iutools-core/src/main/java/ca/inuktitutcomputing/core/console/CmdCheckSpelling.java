@@ -8,6 +8,8 @@ import ca.inuktitutcomputing.data.LinguisticDataSingleton;
 import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.morph.MorphInuk;
 import ca.inuktitutcomputing.utilities.EditDistanceCalculatorFactory;
+import ca.pirurvik.iutools.CompiledCorpus;
+import ca.pirurvik.iutools.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.SpellChecker;
 import ca.pirurvik.iutools.SpellingCorrection;
 
@@ -25,8 +27,11 @@ public class CmdCheckSpelling extends ConsoleCommand {
 	@Override
 	public void execute() throws Exception {
 		String word = getWord(false);
-		String checkerFilePathname = getDictFile(true);
-		File checkerFile = new File(checkerFilePathname);
+//		String checkerFilePathname = getDictFile(true);
+//		File checkerFile = new File(checkerFilePathname);
+		
+		String corpusName = getCorpusName(false);
+		
 		String maxCorrectionsOpt = getMaxCorr(false);
 		int maxCorrections = maxCorrectionsOpt==null ? 5 : Integer.parseInt(maxCorrectionsOpt);
 		EditDistanceCalculatorFactory.DistanceMethod editDistanceAlgorithm = getEditDistanceAlgorithm(false);
@@ -34,12 +39,12 @@ public class CmdCheckSpelling extends ConsoleCommand {
 		
 //		List<String> suggestions = null;
 		SpellingCorrection corr = null;
-		SpellChecker checker = new SpellChecker();
+		SpellChecker checker = new SpellChecker(corpusName);
 		if (editDistanceAlgorithm!=null)
 			checker.setEditDistanceAlgorithm(editDistanceAlgorithm);
 		System.out.println(checker.editDistanceCalculator.getClass().getName());
 		
-		checker.readFromFile(checkerFile);
+//		checker.readFromFile(checkerFile);
 
 		boolean interactive = false;
 		if (word == null) {

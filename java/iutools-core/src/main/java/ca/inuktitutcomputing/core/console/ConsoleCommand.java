@@ -54,6 +54,14 @@ public abstract class ConsoleCommand extends SubCommand {
 		return dir;
 	}
 
+	protected String getCorpusName() {
+		return getCorpusName(false);
+	}
+	protected String getCorpusName(boolean failIfAbsent) {
+		String corpusName = getOptionValue(ConsoleCommand.OPT_CORPUS_NAME, failIfAbsent);
+		return corpusName;		
+	}
+	
 	protected String[] getMorphemes() {
 		return getMorphemes(true);
 	}
@@ -132,8 +140,9 @@ public abstract class ConsoleCommand extends SubCommand {
 	
 	protected EditDistanceCalculatorFactory.DistanceMethod getEditDistanceAlgorithm(boolean failIfAbsent) {
 		String algName = getOptionValue(ConsoleCommand.OPT_ED_ALGO, failIfAbsent);
-		EditDistanceCalculatorFactory.DistanceMethod alg 
-			= EditDistanceCalculatorFactory.DistanceMethod.valueOf(algName.toUpperCase());
+		EditDistanceCalculatorFactory.DistanceMethod alg = null;
+		if (algName != null)
+			alg = EditDistanceCalculatorFactory.DistanceMethod.valueOf(algName.toUpperCase());
 		
 		return alg;
 	}

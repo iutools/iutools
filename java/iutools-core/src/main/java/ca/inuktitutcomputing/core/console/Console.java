@@ -28,7 +28,7 @@ public class Console {
 
 		Option optCorpusName = Option.builder(null)
 				.longOpt(ConsoleCommand.OPT_CORPUS_NAME)
-			    .desc("Name of the corpus to be processed.")
+			    .desc("Name of the corpus to be processed or used.")
 			    .hasArg()
 			    .argName("CORPUS_NAME")
 			    .build();
@@ -171,7 +171,8 @@ public class Console {
 		// Decompose an Inuktut word
 		SubCommand checkSpelling = 
 				new CmdCheckSpelling("check_spelling")
-				.addOption(optDictFile)
+//				.addOption(optDictFile)
+				.addOption(optCorpusName)
 				.addOption(optMaxCorr)
 				.addOption(optEditDistAlgo)
 				;
