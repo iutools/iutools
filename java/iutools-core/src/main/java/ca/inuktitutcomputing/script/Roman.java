@@ -37,6 +37,9 @@ public abstract class Roman {
     public static int NONUNICODE = 0;
 
     public static int UNICODE = 1;
+    
+    public static String inuktitutCharacters = "gHjklmnpqrstv&aiu";
+    public static String digits = "0123456789";
 
     public static char[] apicals = { 't', 'l', 'j', '&', 's', 'n', 'd' };
 
@@ -173,6 +176,15 @@ public abstract class Roman {
             return va;
         }
     }
+    
+    public static boolean allInuktitut(String word) {
+        for (int i=0; i<word.length(); i++) {
+        	if ( inuktitutCharacters.indexOf(word.charAt(i)) == -1 )
+        		return false;
+        }
+        return true;
+    }
+
 
     
     // TYPE DE LETTRE
