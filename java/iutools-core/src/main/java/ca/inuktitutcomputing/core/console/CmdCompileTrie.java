@@ -22,7 +22,7 @@ public class CmdCompileTrie extends ConsoleCommand {
 		
 		String corpusDir = getCorpusDir();
 		
-		String trieFile = getCompilationFile(false);
+		String trieFile = getCompilationFile();
 		
 		boolean fromScratch = this.cmdLine.hasOption("from-scratch");
 		boolean redoFailed = this.cmdLine.hasOption("redo-failed");
@@ -37,27 +37,42 @@ public class CmdCompileTrie extends ConsoleCommand {
 		CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
 		boolean ok = true;
 		if ( trieFile != null )
-			ok = compiledCorpus.setCompleteCompilationFilePath(trieFile);
+			ok = checkFilePath(trieFile);
 		if ( !ok ) {
 			System.err.println("ERROR: The -trie-file argument points to a non-existent directory. Abort.");
 			System.exit(1);
 		}
 		
-		if (fromScratch)
-			compiledCorpus.compileCorpusFromScratch(corpusDir);
-		else if ( !redoFailed )
-			compiledCorpus.compileCorpus(corpusDir);
-		else {
-				File compilationFile = new File(corpusDir+"/"+CompiledCorpus.JSON_COMPILATION_FILE_NAME);
+		try {
+			if (fromScratch)
+				compiledCorpus.compileCorpusFromScratch(corpusDir);
+			else if (!redoFailed)
+				compiledCorpus.compileCorpus(corpusDir);
+			else {
+				File compilationFile = new File(corpusDir + "/" + CompiledCorpus.JSON_COMPILATION_FILE_NAME);
 				if (compilationFile.exists()) {
 					compiledCorpus = CompiledCorpus.createFromJson(compilationFile.getAbsolutePath());
 					compiledCorpus.recompileWordsThatFailedAnalysis(corpusDir);
 				} else {
-					System.err.println("ERROR: "+"No json compilation file in corpus directory. Abort.");
+					System.err.println("ERROR: " + "No json compilation file in corpus directory. Abort.");
 					System.exit(1);
 				}
+			}
+			compiledCorpus.saveCompilerInJSONFile(trieFile);
+			echo("\nThe result of the compilation has been saved in the file " + trieFile + ".\n");
+		} catch (Exception e) {
+			System.err.println("ERROR: " + e.getMessage());
 		}
-		
-		echo("\nThe result of the compilation has been saved in the file "+trieFile+".\n");
 	}
+	
+	private boolean checkFilePath(String _trieFilePath) {
+		File f = new File(_trieFilePath);
+		File dirF = f.getParentFile();
+		if ( dirF != null && !dirF.isDirectory() ) {
+			return false;
+		}
+		return true;
+	}
+	
+
 }
