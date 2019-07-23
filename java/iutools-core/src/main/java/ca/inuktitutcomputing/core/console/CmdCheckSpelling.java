@@ -39,7 +39,8 @@ public class CmdCheckSpelling extends ConsoleCommand {
 		
 //		List<String> suggestions = null;
 		SpellingCorrection corr = null;
-		SpellChecker checker = new SpellChecker(corpusName);
+		SpellChecker checker = new SpellChecker();
+		checker.setDictionaryFromCorpus(corpusName);
 		if (editDistanceAlgorithm!=null)
 			checker.setEditDistanceAlgorithm(editDistanceAlgorithm);
 		System.out.println(checker.editDistanceCalculator.getClass().getName());
