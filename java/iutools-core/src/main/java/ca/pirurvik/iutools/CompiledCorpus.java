@@ -12,7 +12,10 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
@@ -45,6 +48,7 @@ import ca.nrc.datastructure.trie.TrieNode;
 public class CompiledCorpus 
 {
 	
+	public int MAX_NGRAM_LEN = 5;
 	public static String JSON_COMPILATION_FILE_NAME = "trie_compilation.json";
 	
 	protected Trie trie = new Trie();
@@ -65,6 +69,9 @@ public class CompiledCorpus
 	public int saveFrequency = 1000;	
 	protected Long terminalsSumFreq = null;
 	protected String completeCompilationResultsFilePathname = null; // file for completed compilation of corpus
+	
+	public Map<String,Long> ngramStats = null;
+
 
 	// things that do not need to be saved 
 	@JsonIgnore
@@ -81,6 +88,43 @@ public class CompiledCorpus
 	public transient String name;
 	
 	
+	
+	// ngrams from 1 to MAX_NGRAM_LEN of all decomposed words in the corpus
+	public Map<String,Long> getNgramStats() {
+		if (ngramStats==null) {
+			setNgramStats();
+		}
+		return ngramStats;
+	}
+	public void setNgramStats() {
+		ngramStats = new HashMap<String,Long>();
+		String[] words = decomposedWordsSuite.split(",,");
+		for (int iw=1; iw<words.length-1; iw++) {
+			updateSequenceNgramsForWord(words[iw]);
+		}
+	}
+	private void updateSequenceNgramsForWord(String word) {
+		Set<String> seqSeen = new HashSet<String>();
+		try {
+		for (int seqLen = 1; seqLen <= MAX_NGRAM_LEN; seqLen++) {
+			for (int  start=0; start <= word.length() - seqLen; start++) {
+				String charSeq = word.substring(start, start+seqLen);
+				if (!seqSeen.contains(charSeq)) {
+					updateSequenceNgram(charSeq);
+				}
+				seqSeen.add(charSeq);
+			}
+		}
+		} catch (Exception e) {
+		}
+	}
+	private void updateSequenceNgram(String charSeq) {
+		if (!ngramStats.containsKey(charSeq)) {
+			ngramStats.put(charSeq, new Long(0));
+		}
+		ngramStats.put(charSeq, ngramStats.get(charSeq)+1);
+	}
+
 	
 	public void setVerbose(boolean value) {
 		verbose = value;
@@ -171,8 +215,8 @@ public class CompiledCorpus
 		
 		toConsole("[INFO] *** Compilation completed."+"\n");
 		saveCompilerInDirectory(corpusDirectoryPathname);
-		if (completeCompilationResultsFilePathname != null)
-			saveCompilerInJSONFile(completeCompilationResultsFilePathname);
+//		if (completeCompilationResultsFilePathname != null)
+//			saveCompilerInJSONFile(completeCompilationResultsFilePathname);
 	}
 	
 	public String getWordSegmentations() {
@@ -237,21 +281,21 @@ public class CompiledCorpus
 			}
 		}
 		saveCompilerInDirectory(corpusDirectoryPathname);
-		if (completeCompilationResultsFilePathname != null)
-				saveCompilerInJSONFile(completeCompilationResultsFilePathname);
+//		if (completeCompilationResultsFilePathname != null)
+//				saveCompilerInJSONFile(completeCompilationResultsFilePathname);
 	}
 	
-	public boolean setCompleteCompilationFilePath(String _trieFilePath) {
-		File f = new File(_trieFilePath);
-		File dirF = f.getParentFile();
-		if ( dirF != null && !dirF.isDirectory() ) {
-			completeCompilationResultsFilePathname = null;
-			return false;
-		}
-		completeCompilationResultsFilePathname = _trieFilePath;
-		return true;
-	}
-	
+//	public boolean setCompleteCompilationFilePath(String _trieFilePath) {
+//		File f = new File(_trieFilePath);
+//		File dirF = f.getParentFile();
+//		if ( dirF != null && !dirF.isDirectory() ) {
+//			completeCompilationResultsFilePathname = null;
+//			return false;
+//		}
+//		completeCompilationResultsFilePathname = _trieFilePath;
+//		return true;
+//	}
+//	
 	public Trie getTrie() {
 		return this.trie;
 	}
@@ -319,12 +363,9 @@ public class CompiledCorpus
 	 * @throws CompiledCorpusException 
 	 */
 	protected void __resumeCompilation(String corpusDirectoryPathname) throws CompiledCorpusException {
-//		Gson gson = new Gson();
 		String jsonFilePath = corpusDirectoryPathname+"/"+JSON_COMPILATION_FILE_NAME;
 		CompiledCorpus compiledCorpus = createFromJson(jsonFilePath);
-//		File jsonFile = new File(jsonFilePath);
-//		BufferedReader br = new BufferedReader(new FileReader(jsonFile));
-//		CompiledCorpus compiledCorpus = gson.fromJson(br, CompiledCorpus.class);
+		
 		this.trie = compiledCorpus.trie;
 		this.segmentsCache = compiledCorpus.segmentsCache;
 		this.saveFilePath = compiledCorpus.saveFilePath;
@@ -333,7 +374,14 @@ public class CompiledCorpus
 		this.retrievedFileWordCounter = compiledCorpus.retrievedFileWordCounter;
 		this.saveFrequency = compiledCorpus.saveFrequency;
 		this.filesCompiled = compiledCorpus.filesCompiled;
-	}
+		
+		this.wordsFailedSegmentation = compiledCorpus.wordsFailedSegmentation;
+		this.wordsFailedSegmentationWithFreqs = compiledCorpus.wordsFailedSegmentationWithFreqs;
+		this.wordSegmentations = compiledCorpus.wordSegmentations;
+		this.decomposedWordsSuite = compiledCorpus.decomposedWordsSuite;
+		this.terminalsSumFreq = compiledCorpus.terminalsSumFreq;
+		this.ngramStats = compiledCorpus.ngramStats;
+}
  
 
 	private void process(String corpusDirectoryPathname) throws CompiledCorpusException, StringSegmenterException {
