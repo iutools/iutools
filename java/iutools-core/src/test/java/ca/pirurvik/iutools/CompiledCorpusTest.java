@@ -69,16 +69,6 @@ public class CompiledCorpusTest extends TestCase
 		//
 		String corpusDirectoryPathname = "path/to/corpus/directory";
 		
-		// If wanted, identify the full path of a copy of the trie-compilation json file
-		// that will be created after the compilation has terminated successfully.
-		// If the path points to a non-existent directory, the copy will not be made.
-		//
-		String trieCompilationFilePathname = "path/to/file";
-		boolean result = compiledCorpus.setCompleteCompilationFilePath(trieCompilationFilePathname);
-		if ( !result ) {
-			// do something (raise an exception, or abort, or ...)
-		}
-
 		// Compile the corpus given in argument as directory pathname from scratch
 		compiledCorpus.setVerbose(false); // set verbose to false for tests only
 		try {
@@ -91,6 +81,15 @@ public class CompiledCorpusTest extends TestCase
 		try {
 			compiledCorpus.compileCorpus(corpusDirectoryPathname);
 		} catch(CompiledCorpusException | StringSegmenterException e) {
+			// do something
+		}
+		
+		// Eventually, when a corpus has been compiled, one will want to save it
+		// for later use:
+		String trieCompilationFilePathname = "path/to/file";
+		try {
+			compiledCorpus.saveCompilerInJSONFile(trieCompilationFilePathname);
+		} catch (CompiledCorpusException e) {
 			// do something
 		}
 	}
@@ -495,7 +494,7 @@ public class CompiledCorpusTest extends TestCase
         CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
         compiledCorpus.setVerbose(false);
         String completeCompilationFilePathname = corpusDirPathname+"/compiled_corpus.json";
-        compiledCorpus.setCompleteCompilationFilePath(completeCompilationFilePathname);
+//        compiledCorpus.setCompleteCompilationFilePath(completeCompilationFilePathname);
         compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
         assertEquals("The number of words that failed segmentation is wrong.",1,
         		compiledCorpus.getNbWordsThatFailedSegmentations());
@@ -534,6 +533,8 @@ public class CompiledCorpusTest extends TestCase
         		newCompiledCorpus.getNbOccurrencesThatFailedSegmentations());
         assertEquals("(3)","{saqqik/1v} {lauq/1vv} {juq/1vn}",
         		String.join(" ", newCompiledCorpus.segmentsCache.get(wordThatFailed)));
+        
+        compiledCorpus.saveCompilerInJSONFile(completeCompilationFilePathname);
         TrieNode trieNode3 = CompiledCorpus.createFromJson(completeCompilationFilePathname).getTrie().getNode(compiledCorpus.segmentsCache.get(wordThatFailed));
         assertTrue("The node should exist in the trie.",trieNode3 != null);
         assertEquals("The frequency of that node is not right.",4,trieNode3.getFrequency());
