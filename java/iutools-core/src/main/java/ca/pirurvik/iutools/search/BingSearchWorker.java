@@ -88,6 +88,7 @@ public class BingSearchWorker implements Runnable {
 		Iterator<Hit> iter = results.iterator();
 		while (iter.hasNext()) {
 			Hit bingHit = iter.next();
+			tLogger.trace("bingHit title= "+bingHit.title);
 			total = bingHit.outOfTotal;
 			SearchHit aHit = new SearchHit(bingHit.url.toString(), bingHit.title, bingHit.summary);
 			if (!this.excludedURLs.contains(aHit.url)) {
