@@ -70,6 +70,7 @@ public class SpellEndpoint extends HttpServlet {
 	private synchronized void ensureCheckerIsInstantiated() throws SpellCheckerException {
 		if (checker == null) {
 			checker = new SpellChecker();
+			checker.setDictionaryFromCorpus(); // Spell Checker service uses Hansard corpus
 		}
 		
 	}
