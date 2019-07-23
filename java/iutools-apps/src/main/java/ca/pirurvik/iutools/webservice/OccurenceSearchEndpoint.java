@@ -43,13 +43,13 @@ public class OccurenceSearchEndpoint extends HttpServlet {
 		tLogger.trace("invoked");
 		tLogger.trace("request URI= "+request.getRequestURI());
 		
-		PrintWriter out = response.getWriter();
 		String jsonResponse = null;
 		
 		OccurenceSearchInputs inputs = null;
 		try {
 			EndPointHelper.setContenTypeAndEncoding(response);
 			inputs = EndPointHelper.jsonInputs(request, OccurenceSearchInputs.class);
+			tLogger.trace("inputs= "+PrettyPrinter.print(inputs));
 			ServiceResponse results = executeEndPoint(inputs);
 			jsonResponse = new ObjectMapper().writeValueAsString(results);
 		} catch (Exception exc) {
