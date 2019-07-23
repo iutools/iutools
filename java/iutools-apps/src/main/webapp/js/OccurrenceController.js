@@ -26,7 +26,9 @@ class OccurrenceController extends WidgetController {
 		if (isValid) {
 			this.clearResults();
 			this.setGetBusy(true);
-			this.invokeGetService(this.getSearchRequestData(), 
+			var requestData = this.getSearchRequestData();
+			console.log('requestData= '+JSON.stringify(requestData));
+			this.invokeGetService(requestData, 
 					this.successGetCallback, this.failureGetCallback);
 		}
 	}
@@ -48,24 +50,6 @@ class OccurrenceController extends WidgetController {
 				occurrenceController.successExampleWordCallback, occurrenceController.failureExampleWordCallback);
 	}
 	
-//obsolete	onWordSelect(event) {
-//		var element = event.target;
-//		console.log("word: "+$(element).text());
-//		occurrenceController.elementForProp("inpExampleWord").val($(element).text());
-//		occurrenceController.setWordExampleBusy(true);
-//		var divExampleWord = occurrenceController.elementForProp("divExampleWord");
-//		$('#contents',divExampleWord).html('');
-//		var divWordInExample = occurrenceController.elementForProp("divWordInExample");
-//		divWordInExample.html('');
-//		var divIconizedWordExample = occurrenceController.elementForProp("divIconizedExampleWord");
-//		divIconizedWordExample.hide();
-//		divExampleWord.show();
-//		occurrenceController.showSpinningWheel("divMessageInExample","Searching");
-//		occurrenceController.invokeExampleWordService(occurrenceController.getSearchRequestData(),
-//				occurrenceController.successExampleWordCallback, occurrenceController.failureExampleWordCallback);
-//	}
-	
-		
 	iconizeDivExampleWord() {
 		var divExampleWord = this.elementForProp("divExampleWord");
 		divExampleWord.hide();
@@ -211,15 +195,19 @@ class OccurrenceController extends WidgetController {
 		var exampleWord = this.elementForProp("inpExampleWord").val();
 		if (exampleWord=='')
 			exampleWord = null;
+		var corpusName = this.elementForProp("inpCorpusName").val().trim();
+		if (corpusName=='')
+			corpusName = null;
 
 		var request = {
 				wordPattern: wordPattern,
-				exampleWord: exampleWord
+				exampleWord: exampleWord,
+				corpusName: corpusName
 		};
 		
-		var jsonInputs = request;
+		var jsonInputs = JSON.stringify(request);;
 		
-		tracer.trace("returning jsonInputs="+JSON.stringify(jsonInputs));
+		tracer.trace("returning jsonInputs="+jsonInputs);
 		return jsonInputs;
 	}
 	

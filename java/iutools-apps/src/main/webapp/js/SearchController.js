@@ -101,6 +101,7 @@ class SearchController extends WidgetController {
 	}
 
 	successCallback(resp) {
+		console.log('resp= '+JSON.stringify(resp));
 		if (resp.errorMessage != null) {
 			this.failureCallback(resp);
 		} else {
@@ -195,6 +196,7 @@ class SearchController extends WidgetController {
 		
 		for (var ii = 0; ii < results.length; ii++) {
 			var aHit = results[ii];
+			console.log('aHit.title= '+aHit.title);
 			this.alreadyShownHits.push(aHit.url);
 			var hitHtml = 
 					"<div id=\"hit"+ii+"\" class=\"hitDiv\">\n" +
