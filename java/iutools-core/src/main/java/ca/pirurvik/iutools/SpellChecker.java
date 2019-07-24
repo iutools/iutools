@@ -82,18 +82,11 @@ public class SpellChecker {
 	
 	private void __processCorpus() {
 		this.allWords = corpus.decomposedWordsSuite;
-		setIDFs(this.allWords);
+		this.idfStats = corpus.ngramStats;
 		corpus.setVerbose(verbose);
 	}
 	
 
-
-	private void setIDFs(String allWords2) {
-		String[] words = allWords2.split(",,");
-		for (int iw=1; iw<words.length-1; iw++) {
-			updateSequenceIDFForWord(words[iw]);
-		}
-	}
 
 	public void setEditDistanceAlgorithm(EditDistanceCalculatorFactory.DistanceMethod name) throws ClassNotFoundException, EditDistanceCalculatorFactoryException {
 		editDistanceCalculator = EditDistanceCalculatorFactory.getEditDistanceCalculator(name);
@@ -111,19 +104,18 @@ public class SpellChecker {
 	}
 	
 	private void updateSequenceIDFForWord(String word) {
-		Set<String> seqSeen = new HashSet<String>();
+		Set<String> seqSeenInWord = new HashSet<String>();
 		try {
 		for (int seqLen = 1; seqLen <= MAX_SEQ_LEN; seqLen++) {
 			for (int  start=0; start <= word.length() - seqLen; start++) {
 				String charSeq = word.substring(start, start+seqLen);
-				if (!seqSeen.contains(charSeq)) {
+				if (!seqSeenInWord.contains(charSeq)) {
 					updateSequenceIDF(charSeq);
 				}
-				seqSeen.add(charSeq);
+				seqSeenInWord.add(charSeq);
 			}
 		}
 		} catch (Exception e) {
-//			e.printStackTrace();
 		}
 	}
 
