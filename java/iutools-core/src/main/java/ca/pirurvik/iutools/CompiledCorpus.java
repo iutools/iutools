@@ -99,20 +99,20 @@ public class CompiledCorpus
 	public void setNgramStats() {
 		ngramStats = new HashMap<String,Long>();
 		String[] words = decomposedWordsSuite.split(",,");
-		for (int iw=1; iw<words.length-1; iw++) {
+		for (int iw=1; iw<words.length; iw++) {
 			updateSequenceNgramsForWord(words[iw]);
 		}
 	}
 	private void updateSequenceNgramsForWord(String word) {
-		Set<String> seqSeen = new HashSet<String>();
+		Set<String> seqSeenInWord = new HashSet<String>();
 		try {
 		for (int seqLen = 1; seqLen <= MAX_NGRAM_LEN; seqLen++) {
 			for (int  start=0; start <= word.length() - seqLen; start++) {
 				String charSeq = word.substring(start, start+seqLen);
-				if (!seqSeen.contains(charSeq)) {
+				if (!seqSeenInWord.contains(charSeq)) {
 					updateSequenceNgram(charSeq);
 				}
-				seqSeen.add(charSeq);
+				seqSeenInWord.add(charSeq);
 			}
 		}
 		} catch (Exception e) {
@@ -213,10 +213,10 @@ public class CompiledCorpus
 			
 		process(corpusDirectoryPathname);
 		
+		compileExtras();
+		
 		toConsole("[INFO] *** Compilation completed."+"\n");
 		saveCompilerInDirectory(corpusDirectoryPathname);
-//		if (completeCompilationResultsFilePathname != null)
-//			saveCompilerInJSONFile(completeCompilationResultsFilePathname);
 	}
 	
 	public String getWordSegmentations() {
@@ -380,7 +380,7 @@ public class CompiledCorpus
 		this.wordSegmentations = compiledCorpus.wordSegmentations;
 		this.decomposedWordsSuite = compiledCorpus.decomposedWordsSuite;
 		this.terminalsSumFreq = compiledCorpus.terminalsSumFreq;
-		this.ngramStats = compiledCorpus.ngramStats;
+		this.ngramStats = null;
 }
  
 
@@ -547,6 +547,11 @@ public class CompiledCorpus
 	public HashMap<String,Long> getWordsThatFailedSegmentationWithFreqs() {
     	return wordsFailedSegmentationWithFreqs;
     }
+	
+	
+	protected void compileExtras() {
+		setNgramStats();
+	}
     
     // ----------------------------- static -------------------------------
     
