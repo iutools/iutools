@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.nio.file.Files;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
@@ -311,10 +312,10 @@ public class CompiledCorpusTest extends TestCase
     }
     
     @Test
-    public void test__verify_wordSegmentations_and_decomposedWordsSuite_after_compilation() throws Exception
+    public void test__verify_wordSegmentations_and_other_data_after_compilation() throws Exception
     {
 		String[] stringsOfWords = new String[] {
-				"nunavut takujuq iglumik plugak takujuq"
+				"nunavut takujuq iglumik plugak takujuq iijuq"
 				};
 		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
         CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
@@ -325,13 +326,91 @@ public class CompiledCorpusTest extends TestCase
         }
 		
        // takujuq should add something only once into wordSegmentations and decomposedWordsSuite
-       String expected = ",,nunavut:{nunavut/1n},,takujuq:{taku/1v}{juq/1vn},,iglumik:{iglu/1n}{mik/tn-acc-s},,";
+       String expected = ",,nunavut:{nunavut/1n},,takujuq:{taku/1v}{juq/1vn},,iglumik:{iglu/1n}{mik/tn-acc-s},,iijuq:{ii/1v}{juq/1vn},,";
        String wordSegmentations = compiledCorpus.getWordSegmentations();
 	   assertEquals("The word segmentations string is not correct.", expected, wordSegmentations);
 		
-       String expectedSuite = ",,nunavut,,takujuq,,iglumik,,";
+       String expectedSuite = ",,nunavut,,takujuq,,iglumik,,iijuq,,";
        String decomposedWordsSuite = compiledCorpus.getDecomposedWordsSuite();
 	   assertEquals("The decomposed words suite string is not correct.", expectedSuite, decomposedWordsSuite);
+	   
+	   Map<String,Long> expectedNgramStats = new HashMap<String,Long>();
+	   expectedNgramStats.put("n", new Long(1));
+	   expectedNgramStats.put("u", new Long(4));
+	   expectedNgramStats.put("a", new Long(2));
+	   expectedNgramStats.put("v", new Long(1));
+	   expectedNgramStats.put("t", new Long(2));
+	   expectedNgramStats.put("k", new Long(2));
+	   expectedNgramStats.put("j", new Long(2));
+	   expectedNgramStats.put("q", new Long(2));
+	   expectedNgramStats.put("i", new Long(2));
+	   expectedNgramStats.put("g", new Long(1));
+	   expectedNgramStats.put("l", new Long(1));
+	   expectedNgramStats.put("m", new Long(1));
+	   expectedNgramStats.put("nu", new Long(1));
+	   expectedNgramStats.put("un", new Long(1));
+	   expectedNgramStats.put("na", new Long(1));
+	   expectedNgramStats.put("av", new Long(1));
+	   expectedNgramStats.put("vu", new Long(1));
+	   expectedNgramStats.put("ut", new Long(1));
+	   expectedNgramStats.put("ta", new Long(1));
+	   expectedNgramStats.put("ak", new Long(1));
+	   expectedNgramStats.put("ku", new Long(1));
+	   expectedNgramStats.put("uj", new Long(1));
+	   expectedNgramStats.put("ju", new Long(2));
+	   expectedNgramStats.put("uq", new Long(2));
+	   expectedNgramStats.put("ig", new Long(1));
+	   expectedNgramStats.put("gl", new Long(1));
+	   expectedNgramStats.put("lu", new Long(1));
+	   expectedNgramStats.put("um", new Long(1));
+	   expectedNgramStats.put("mi", new Long(1));
+	   expectedNgramStats.put("ik", new Long(1));
+	   expectedNgramStats.put("ii", new Long(1));
+	   expectedNgramStats.put("ij", new Long(1));
+	   expectedNgramStats.put("nun", new Long(1));
+	   expectedNgramStats.put("una", new Long(1));
+	   expectedNgramStats.put("nav", new Long(1));
+	   expectedNgramStats.put("avu", new Long(1));
+	   expectedNgramStats.put("vut", new Long(1));
+	   expectedNgramStats.put("tak", new Long(1));
+	   expectedNgramStats.put("aku", new Long(1));
+	   expectedNgramStats.put("kuj", new Long(1));
+	   expectedNgramStats.put("uju", new Long(1));
+	   expectedNgramStats.put("juq", new Long(2));
+	   expectedNgramStats.put("igl", new Long(1));
+	   expectedNgramStats.put("glu", new Long(1));
+	   expectedNgramStats.put("lum", new Long(1));
+	   expectedNgramStats.put("umi", new Long(1));
+	   expectedNgramStats.put("mik", new Long(1));
+	   expectedNgramStats.put("iij", new Long(1));
+	   expectedNgramStats.put("iju", new Long(1));
+	   expectedNgramStats.put("nuna", new Long(1));
+	   expectedNgramStats.put("unav", new Long(1));
+	   expectedNgramStats.put("navu", new Long(1));
+	   expectedNgramStats.put("avut", new Long(1));
+	   expectedNgramStats.put("taku", new Long(1));
+	   expectedNgramStats.put("akuj", new Long(1));
+	   expectedNgramStats.put("kuju", new Long(1));
+	   expectedNgramStats.put("ujuq", new Long(1));
+	   expectedNgramStats.put("iglu", new Long(1));
+	   expectedNgramStats.put("glum", new Long(1));
+	   expectedNgramStats.put("lumi", new Long(1));
+	   expectedNgramStats.put("umik", new Long(1));
+	   expectedNgramStats.put("iiju", new Long(1));
+	   expectedNgramStats.put("ijuq", new Long(1));
+	   expectedNgramStats.put("nunav", new Long(1));
+	   expectedNgramStats.put("unavu", new Long(1));
+	   expectedNgramStats.put("navut", new Long(1));
+	   expectedNgramStats.put("takuj", new Long(1));
+	   expectedNgramStats.put("akuju", new Long(1));
+	   expectedNgramStats.put("kujuq", new Long(1));
+	   expectedNgramStats.put("iglum", new Long(1));
+	   expectedNgramStats.put("glumi", new Long(1));
+	   expectedNgramStats.put("lumik", new Long(1));
+	   expectedNgramStats.put("iijuq", new Long(1));
+	   Map<String,Long> ngramStats = compiledCorpus.getNgramStats();
+	   System.out.println("ngramStats['i']= "+ngramStats.get("i"));
+	   AssertHelpers.assertDeepEquals("", expectedNgramStats, ngramStats);
     }
     
     @Test
