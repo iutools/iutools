@@ -12,6 +12,7 @@ public class MorphInukTest {
 	public void test__decomposeWord__timeout() throws Exception  {
 //		Assert.fail("Fix this test which seems to freeze forever");
 		LinguisticDataSingleton.getInstance("csv");
+		MorphInuk.stpwActive = true;
 		MorphInuk.millisTimeout = 3000;
 		String word = "ilisaqsitittijunnaqsisimannginnama";
 		try {
@@ -26,9 +27,45 @@ public class MorphInukTest {
 	public void test__decomposeWord__timeout_10s() throws Exception  {
 //		Assert.fail("Fix this test which seems to freeze forever");
 		LinguisticDataSingleton.getInstance("csv");
+		MorphInuk.stpwActive = true;
+		MorphInuk.millisTimeout = 10000;
 		String word = "ilisaqsitittijunnaqsisimannginnama";
 		try {
 		MorphInuk.decomposeWord(word);
+		} catch(Exception e) {
+			//System.err.println(e.getClass().getName()+" --- "+e.getMessage());
+			throw e;
+		}
+	}
+
+	@Test
+	public void test__decomposeWord__maligatigut() throws Exception  {
+		LinguisticDataSingleton.getInstance("csv");
+		String word = "maligatigut";
+		try {
+			MorphInuk.stpwActive = false;
+			Decomposition[] decs = MorphInuk.decomposeWord(word);
+			Assert.assertTrue(decs.length==0);
+//			for (int i=0; i<decs.length; i++) {
+//				System.out.println(decs[i].toStr2());
+//			}
+		} catch(Exception e) {
+			//System.err.println(e.getClass().getName()+" --- "+e.getMessage());
+			throw e;
+		}
+	}
+
+	@Test
+	public void test__decomposeWord__uqaqtiup() throws Exception  {
+		LinguisticDataSingleton.getInstance("csv");
+		String word = "uqaqtiup";
+		try {
+			MorphInuk.stpwActive = false;
+			Decomposition[] decs = MorphInuk.decomposeWord(word);
+			Assert.assertTrue(decs.length!=0);
+			for (int i=0; i<decs.length; i++) {
+				System.out.println(decs[i].toStr2());
+			}
 		} catch(Exception e) {
 			//System.err.println(e.getClass().getName()+" --- "+e.getMessage());
 			throw e;
