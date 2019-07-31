@@ -17,7 +17,7 @@ public class CompiledCorpusRegistry {
 	
 	static {
 		try {
-			String Hansard19992002_compilationFilePath = IUConfig.getIUDataPath("data/tries/trie_compilation-HANSARD-1999-2002---single-form-in-terminals.json");
+			String Hansard19992002_compilationFilePath = IUConfig.getIUDataPath("data/compiled-corpuses/compiled-corpus-HANSARD-1999-2002---single-form-in-terminals.json");
 			registry.put("Hansard1999-2002", new File(Hansard19992002_compilationFilePath));
 		} catch (ConfigException e) {
 			throw new ExceptionInInitializerError(e);
