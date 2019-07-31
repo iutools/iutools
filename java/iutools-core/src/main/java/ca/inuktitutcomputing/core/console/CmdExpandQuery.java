@@ -5,15 +5,14 @@ import java.io.FileReader;
 import com.google.gson.Gson;
 
 import ca.inuktitutcomputing.applications.Decompose;
-import ca.inuktitutcomputing.data.LinguisticDataSingleton;
 import ca.inuktitutcomputing.morph.Decomposition;
-import ca.inuktitutcomputing.morph.MorphInuk;
 import ca.inuktitutcomputing.morph.Decomposition.DecompositionExpression;
 import ca.inuktitutcomputing.script.Roman;
 import ca.inuktitutcomputing.script.Syllabics;
 import ca.pirurvik.iutools.CompiledCorpus;
 import ca.pirurvik.iutools.QueryExpander;
 import ca.pirurvik.iutools.QueryExpansion;
+import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
 
 public class CmdExpandQuery extends ConsoleCommand {
 
@@ -40,7 +39,7 @@ public class CmdExpandQuery extends ConsoleCommand {
 		QueryExpander reformulator = new QueryExpander(compiledCorpus);
 		CmdConvertIUSegments convertCommand = new CmdConvertIUSegments("");
 		
-		LinguisticDataSingleton.getInstance("csv");
+		MorphologicalAnalyzer morphAnalyzer = new MorphologicalAnalyzer();
 
 		boolean interactive = false;
 		if (word == null) {
@@ -98,7 +97,7 @@ public class CmdExpandQuery extends ConsoleCommand {
 				expansions = "\n    No expansion could be found in the corpus.\n";
 			}
 
-			Decomposition[] decs = MorphInuk.decomposeWord(latin);
+			Decomposition[] decs = morphAnalyzer.decomposeWord(latin);
 			Decomposition dec = null;
 			if (decs.length != 0)
 				dec = decs[0];

@@ -8,9 +8,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ca.inuktitutcomputing.applications.Decompose;
-import ca.inuktitutcomputing.data.LinguisticDataSingleton;
 import ca.inuktitutcomputing.morph.Decomposition;
-import ca.inuktitutcomputing.morph.MorphInuk;
+import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
 import ca.inuktitutcomputing.script.Syllabics;
 
 public class CmdGist extends ConsoleCommand {
@@ -36,7 +35,7 @@ public class CmdGist extends ConsoleCommand {
 		String latin = null;
 		Decomposition[] decs = null;
 		
-		LinguisticDataSingleton.getInstance("csv");
+		MorphologicalAnalyzer morphAnalyzer = new MorphologicalAnalyzer();
 
 		boolean interactive = false;
 		if (content == null && inputFile == null) {
@@ -92,7 +91,7 @@ public class CmdGist extends ConsoleCommand {
 					}
 					else
 						latin = word;
-					decs = MorphInuk.decomposeWord(latin);
+					decs = morphAnalyzer.decomposeWord(latin);
 					if (decs != null && decs.length > 0) {
 						Decomposition dec = decs[0];
 						String[] meaningsOfParts = Decompose.getMeaningsInArrayOfStrings(dec.toStr2(),"en",true,false);

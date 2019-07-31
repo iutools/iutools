@@ -20,6 +20,7 @@ import java.net.URL;
 import ca.inuktitutcomputing.data.LinguisticDataAbstract;
 import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.morph.MorphInuk;
+import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
 
 
 /**
@@ -97,7 +98,7 @@ public class DecomposeHansardTest {
 		System.out.println("Running testDecomposer. This test can take a few minutes to complete.");
 		
 //		Debogage.init();
-		LinguisticDataAbstract.init("csv");
+		MorphologicalAnalyzer morphAnalyzer = new MorphologicalAnalyzer();
 		openFilesForReadingAndWriting ();
 		StringTokenizer st;
 		
@@ -123,7 +124,7 @@ public class DecomposeHansardTest {
 			 */
 			if (!wordId.startsWith("*") && !wordId.startsWith("?") && !wordId.startsWith("#")) {
                 try {
-                    decs = MorphInuk.decomposeWord(wordToBeAnalyzed);
+                    decs = morphAnalyzer.decomposeWord(wordToBeAnalyzed);
                 } catch (Exception e) {
                     decs = new Decomposition[]{};
                     System.out.print("Exception in testDecomposer: "+e.getMessage());

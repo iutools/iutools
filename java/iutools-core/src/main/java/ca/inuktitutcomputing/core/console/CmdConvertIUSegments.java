@@ -4,10 +4,6 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import ca.inuktitutcomputing.data.LinguisticDataSingleton;
-import ca.inuktitutcomputing.morph.Decomposition;
-import ca.inuktitutcomputing.morph.MorphInuk;
-
 public class CmdConvertIUSegments extends ConsoleCommand {
 
 	public CmdConvertIUSegments(String name) {

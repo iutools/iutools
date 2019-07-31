@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 import ca.inuktitutcomputing.data.LinguisticDataAbstract;
 import ca.inuktitutcomputing.script.TransCoder;
 import ca.inuktitutcomputing.morph.Decomposition;
-import ca.inuktitutcomputing.morph.MorphInuk;
+import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
 import ca.inuktitutcomputing.utilities.MonURLDecoder;
 import ca.inuktitutcomputing.utilities.Text;
 
@@ -140,7 +140,8 @@ public class Decompose {
         // Décomposition du mot.
         Decomposition[] decs;
         try {
-			decs = MorphInuk.decomposeWord(word);
+        	MorphologicalAnalyzer morphAnalyzer = new MorphologicalAnalyzer();
+			decs = morphAnalyzer.decomposeWord(word);
 	        String[] decExprs = new String[decs.length];
 	        // Préparation de l'affichage des résultats.
 			for (int i = 0; i < decs.length; i++) {

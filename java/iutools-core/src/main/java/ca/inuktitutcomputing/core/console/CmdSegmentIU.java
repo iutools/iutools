@@ -2,7 +2,7 @@ package ca.inuktitutcomputing.core.console;
 
 import ca.inuktitutcomputing.data.LinguisticDataSingleton;
 import ca.inuktitutcomputing.morph.Decomposition;
-import ca.inuktitutcomputing.morph.MorphInuk;
+import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
 
 public class CmdSegmentIU extends ConsoleCommand {
 
@@ -20,13 +20,13 @@ public class CmdSegmentIU extends ConsoleCommand {
 		String word = getWord(false);
 		Decomposition[] decs = null;
 		
-		LinguisticDataSingleton.getInstance("csv");
+		MorphologicalAnalyzer morphAnalyzer = new MorphologicalAnalyzer();
 
 		boolean interactive = false;
 		if (word == null) {
 			interactive = true;
 		} else {
-			decs = MorphInuk.decomposeWord(word);
+			decs = morphAnalyzer.decomposeWord(word);
 		}
 
 		while (true) {
@@ -35,7 +35,7 @@ public class CmdSegmentIU extends ConsoleCommand {
 				if (word == null) break;
 				decs = null;
 				try {
-					decs = MorphInuk.decomposeWord(word);
+					decs = morphAnalyzer.decomposeWord(word);
 				} catch (Exception e) {
 					throw e;
 				}

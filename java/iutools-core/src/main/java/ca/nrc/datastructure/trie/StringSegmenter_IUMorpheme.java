@@ -6,13 +6,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ca.inuktitutcomputing.data.LinguisticDataSingleton;
-import ca.inuktitutcomputing.morph.MorphInuk;
 import ca.inuktitutcomputing.morph.MorphInukException;
+import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
 import ca.inuktitutcomputing.script.Syllabics;
 import ca.inuktitutcomputing.morph.Decomposition;
 
 
 public class StringSegmenter_IUMorpheme extends StringSegmenter {
+	
+	private MorphologicalAnalyzer morphAnalyzer;
+	
+	public StringSegmenter_IUMorpheme() {
+		morphAnalyzer = new MorphologicalAnalyzer();
+	}
 	
 	public String[] segment(String string) throws TimeoutException, StringSegmenterException {
 		return segment(string,false);
@@ -26,7 +32,7 @@ public class StringSegmenter_IUMorpheme extends StringSegmenter {
 			word = Syllabics.transcodeToRoman(string); 
 
 		try {
-			decs = MorphInuk.decomposeWord(word);
+			decs = morphAnalyzer.decomposeWord(word);
 		} catch (MorphInukException e) {
 			throw new StringSegmenterException(e);
 		}

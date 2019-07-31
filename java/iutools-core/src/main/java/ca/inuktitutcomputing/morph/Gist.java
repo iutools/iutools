@@ -19,7 +19,7 @@ public class Gist {
 		String latin;
 		Decomposition[] decs;
 		
-		LinguisticDataSingleton.getInstance("csv");
+		MorphologicalAnalyzer morphAnalyzer = new MorphologicalAnalyzer();
 		
 		Pattern pattern = Pattern.compile("^(.+?)---(.+)$");
 
@@ -30,7 +30,7 @@ public class Gist {
 			}
 			else
 				latin = word;
-			decs = MorphInuk.decomposeWord(latin);
+			decs = morphAnalyzer.decomposeWord(latin);
 			if (decs != null && decs.length > 0) {
 				Decomposition dec = decs[0];
 				String[] meaningsOfParts = Decompose.getMeaningsInArrayOfStrings(dec.toStr2(),"en",true,false);
