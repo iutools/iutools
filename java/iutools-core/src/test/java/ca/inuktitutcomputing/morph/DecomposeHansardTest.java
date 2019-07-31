@@ -28,7 +28,7 @@ import ca.inuktitutcomputing.morph.MorphInuk;
  */
 public class DecomposeHansardTest {
 	
-	boolean verbose = false;
+	boolean verbose = true;
 	
 	String fileGoldStandard = "ressources/goldstandardHansard.txt";
 	String fileTargetSuccessfulAnalysis = "ressources/target_successful_analysis_";
