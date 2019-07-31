@@ -42,25 +42,30 @@ import ca.inuktitutcomputing.phonology.Dialect;
 import ca.inuktitutcomputing.utilities.StopWatch;
 import ca.inuktitutcomputing.utilities1.Util;
 
+//-------------------------------------------------
+// Cette version fonctionne avec le graphe d'états.
+//-------------------------------------------------
+
+
 public class MorphInuk {
 
-    static public long millisTimeout = 10000;
-    static private StopWatch stpw;
+    public static long millisTimeout = 10000;
+    private static StopWatch stpw;
+    public static boolean stpwActive = true;
+    private static Hashtable<String,Graph.Arc[]> arcsByMorpheme = new Hashtable<String,Graph.Arc[]>();
 
 
-    //-------------------------------------------------
-    // Cette version fonctionne avec le graphe d'états.
-    //-------------------------------------------------
 
-    // DÉCOMPOSITION DU MOT.
-    // Si la première tentative de décomposition échoue, on essaie un
-    // certain nombre de choses :
-	// - ajouter '*' à la fin si le mot termine par une voyelle (pour une consonne manquante)
-	// - remplacer un 'n' final par 't' (à cause d'une nasalisation de la finale - phénomène courant)
-    // Les décompositions résultantes sont ordonnées selon certaines règles.
+    /** 
+     * DÉCOMPOSITION DU MOT.
+     * Les décompositions résultantes sont ordonnées selon certaines règles.
+     * @param word String word to be decomposed
+     * @return Decomposition[] array of decompositions
+     */
+    
 
     public static Decomposition[] decomposeWord(String word) throws TimeoutException, MorphInukException {
-    	boolean wordInSyllabics = false;
+    	boolean decomposeCompositeRoot = false;
         ArrayList<Decomposition> decsList = new ArrayList<Decomposition>();
         Vector<String> words = null;
         
@@ -70,48 +75,22 @@ public class MorphInuk {
         words.add(word);
         
         for (int i = 0; i < words.size(); i++) {
-            // Décomposition du mot.
+        	String aWord = (String) words.elementAt(i);
+            // Décomposition initiale du mot.
             // 2ème arg. : 'false': mot en caractères latins, non en syllabique;
             // 3ème arg. : 'false': on ne demande pas la décomposition d'une racine
-            // complexe, mais celle d'un mot entier.
-        	String aWord = (String) words.elementAt(i);
+            //              complexe, mais celle d'un mot entier.
         	if (Syllabics.containsInuktitut(aWord))
         		aWord = Syllabics.transcodeToRoman(aWord);
+            aWord = Util.enMinuscule(aWord);
         	aWord = aWord.replaceAll("([iua])qk([iua])","$1qq$2");
-            Vector<Decomposition> decomps = decompose(aWord, wordInSyllabics, false);
+            Vector<Decomposition> decomps = _decompose(aWord, decomposeCompositeRoot);
 
-            // Si aucune décomposition n'a été trouvée,
-            // on essaye les choses suivantes.
+        	// - ajouter '*' à la fin si le mot termine par une voyelle (pour une consonne manquante)
+        	// - remplacer un 'n' final par 't' (à cause d'une nasalisation de la finale - phénomène courant)
+            Vector<Decomposition> otherDecomps = decomposeForSpecialCases(aWord,decomposeCompositeRoot);
+            decomps.addAll(otherDecomps);
 
-            if (true
-//                    (decomps == null || decomps.size() == 0) && !outOfMemory
-                    ) {
-                //if (decomps==null) decomps = new Vector(); ////decompose cannot return null
-                Vector<Decomposition> newDecomps;
-                if (Roman.typeOfLetterLat(aWord.charAt(aWord.length() - 1)) == Roman.V) {
-                    // Si le mot se termine par une voyelle, il est possible
-                    // qu'il manque la consonne finale. On ajoute '*' à la fin
-                    // du mot, qui tient lieu de n'importe quelle consonne.
-                    newDecomps = decompose(aWord + "*", wordInSyllabics, false);
-                } else if (aWord.charAt(aWord.length() - 1) == 'n') {
-                    // Si le mot se termine par la consonne 'n', il est possible
-                    // qu'il s'agisse d'un 't'.
-                    newDecomps = decompose(aWord.substring(0, aWord.length() - 1)+ "t", wordInSyllabics, false);
-                    if (newDecomps!=null)
-                        for (int j=0; j<newDecomps.size(); j++) {
-                            Decomposition dec = (Decomposition)newDecomps.elementAt(j);
-                            Object max[] = dec.morphParts;
-                            AffixPartOfComposition affixPart = null;
-                            if (max.length != 0) {
-                                affixPart = (AffixPartOfComposition)max[max.length-1];
-                                affixPart.setTerme(affixPart.getTerm().substring(0,affixPart.getTerm().length()-1)+"n");
-                            }
-                        }
-                } else
-                    newDecomps = new Vector<Decomposition>();
-                //if (newDecomps!=null)  ////decompose cannot return null
-                    decomps.addAll(newDecomps);
-            }
 
             // A.
             // Éliminer les décompositions qui contiennent une suite de suffixes
@@ -121,17 +100,16 @@ public class MorphInuk {
             decsM = (Decomposition[]) decomps.toArray(decsM);
             Decomposition decsC[];
             decsC = Decomposition.removeCombinedSuffixes(decsM);
-//            decsC = decsM;
             
             // B.
-            // Mettre dans l'ordre selon les règles suivantes:
+            // Ordonner les décompositions selon les règles suivantes:
             //   1. racines les plus longues
             //   2. nombre minimum de suffixes/terminaisons
-            // (Ces règles sont incluses dans la classe Decomposition)
+            //   (Ces règles sont incluses dans la classe Decomposition)
             Decomposition[] decs;
             decs = Decomposition.removeMultiples(decsC);
-//            decs = decsC;
             Arrays.sort(decs);
+            
             decsList.addAll(Arrays.asList(decs));
         }
         Decomposition[] decs = (Decomposition[]) decsList
@@ -139,7 +117,34 @@ public class MorphInuk {
         return decs;
     }
 
-    // decompose/3 retourne un vecteur de Decomposition, ou null.
+    private static Vector<Decomposition> decomposeForSpecialCases(String aWord, boolean decomposeCompositeRoot) throws TimeoutException, MorphInukException {
+        Vector<Decomposition> newDecomps;
+        if (Roman.typeOfLetterLat(aWord.charAt(aWord.length() - 1)) == Roman.V) {
+            // Si le mot se termine par une voyelle, il est possible
+            // qu'il manque la consonne finale. On ajoute '*' à la fin
+            // du mot, qui tient lieu de n'importe quelle consonne.
+            newDecomps = _decompose(aWord + "*", false);
+        } else if (aWord.charAt(aWord.length() - 1) == 'n') {
+            // Si le mot se termine par la consonne 'n', il est possible
+            // qu'il s'agisse d'un 't'.
+            newDecomps = _decompose(aWord.substring(0, aWord.length() - 1)+ "t", decomposeCompositeRoot);
+            if (newDecomps!=null)
+                for (int j=0; j<newDecomps.size(); j++) {
+                    Decomposition dec = (Decomposition)newDecomps.elementAt(j);
+                    Object max[] = dec.morphParts;
+                    AffixPartOfComposition affixPart = null;
+                    if (max.length != 0) {
+                        affixPart = (AffixPartOfComposition)max[max.length-1];
+                        affixPart.setTerme(affixPart.getTerm().substring(0,affixPart.getTerm().length()-1)+"n");
+                    }
+                }
+        } else {
+            newDecomps = new Vector<Decomposition>();
+        }
+        return newDecomps;
+	}
+
+	// __decompose/3 retourne un vecteur de Decomposition, ou null.
     //  
     // Les décompositions sont retournées dans l'ordre où elles ont été
     // trouvées. Elles ne sont pas organisées à ce stade-ci.
@@ -160,46 +165,43 @@ public class MorphInuk {
     // méthodes devraient plutôt appeler decomposeWord, et alors decompose sera
     // faite privée.
 
-    private static Vector<Decomposition> decompose(String term, boolean isSyllabic, boolean decomposeBase) throws TimeoutException, MorphInukException
-    {
-        Vector<AffixPartOfComposition> morphPartsInit = new Vector<AffixPartOfComposition>();
-        Graph.State state;
-        Vector<Decomposition> decomposition = null;
-        String simplifiedTerm = null;
-        Conditions preCond = null;
+	private static Vector<Decomposition> _decompose(String term, boolean decomposeCompositeRoot)
+			throws TimeoutException, MorphInukException {
 
-        stpw = new StopWatch(millisTimeout);
-        Dialect.setStopWatch(stpw);
-//        stpw.disactivate(); // uncomment for debugging
-        stpw.start();
+		Vector<AffixPartOfComposition> morphPartsInit = new Vector<AffixPartOfComposition>();
+		Graph.State state;
+		Vector<Decomposition> decomposition = null;
+		String simplifiedTerm = null;
+		Conditions preCond = null;
 
-        arcsByMorpheme.clear();
-        
-        if (!isSyllabic)
-            term = Util.enMinuscule(term);
+		stpw = new StopWatch(millisTimeout);
+		Dialect.setStopWatch(stpw);
+        if (!stpwActive) stpw.disactivate(); // for debugging
+		stpw.start();
 
-        // Etat de départ dans le graphe d'états.
-        if (decomposeBase)
-            state = null;
-        else
-            state = Graph.initialState;
+		arcsByMorpheme.clear();
 
-			if (term != null) {
-                // Simplification de l'orthographe du mot, pour faciliter
-                // l'analyse. En caractères latins, ceci signifie que
-                // nng devient NN et ng devient N.
-                simplifiedTerm = Orthography.simplifiedOrthography(term, isSyllabic);
-                String transitivity = null;
-                // DÉCOMPOSITION du terme simplifié.
-                decomposition = decompose_simplified_term(simplifiedTerm, simplifiedTerm,
-                        simplifiedTerm, morphPartsInit, 
-                        new Graph.State[]{state},
-                        preCond,
-                        transitivity, isSyllabic
-                        );
-            }
-        return decomposition;
-    }
+//        term = Util.enMinuscule(term);
+
+		// Etat de départ dans le graphe d'états.
+		if (decomposeCompositeRoot)
+			state = null;
+		else
+			state = Graph.initialState;
+
+		if (term != null) {
+			// Simplification de l'orthographe du mot, pour faciliter
+			// l'analyse. En caractères latins, ceci signifie que
+			// nng devient NN et ng devient N.
+			boolean isSyllabic = false;
+			simplifiedTerm = Orthography.simplifiedOrthography(term, isSyllabic);
+			String transitivity = null;
+			// DÉCOMPOSITION du terme simplifié.
+			decomposition = __decompose_simplified_term__(simplifiedTerm, simplifiedTerm, simplifiedTerm,
+					morphPartsInit, new Graph.State[] { state }, preCond, transitivity);
+		}
+		return decomposition;
+	}
 
     //==========================DECOMPOSER====================================
     // Lieu véritable de la décomposition des mots.
@@ -207,32 +209,34 @@ public class MorphInuk {
 
     // Décomposition d'un terme inuktitut.
     // Retourne un Vector avec 0 ou + éléments.
-    // TERME peut être le terme original à décomposer ou un radical normalisé
-    //       provenant de la décomposition en cours de TERME.
+    // TERM  peut être le terme original à décomposer ou un radical normalisé
+    //       provenant de la décomposition en cours de TERM.
     //       'normalisé' signifie que lorsqu'un affixe a été trouvé et validé,
     //       la décomposition se poursuit sur le radical restant dont la finale
     //       a été ramenée à sa forme normale (par exemple, juar > juaq).
     //       NOTE: l'orthographe du terme est simplifiée: ng > N ; nng > NN
-    // TERMEORIG est le terme à décomposer ou le radical tel quel, non normalisé.
-    //       Orthographe simplifiée.
-    // MOT est le mot original à décomposer, dans sa forme simplifiée.
-    // MORCEAUX est un vecteur contenant les morphèmes trouvés jusqu'à présent.
+    // TERMORIG est le terme à décomposer ou le radical tel quel, non normalisé.
+    //          Orthographe simplifiée.
+    // WORD est le mot original à décomposer, dans sa forme simplifiée.
+    // MORPHPARTS est un vecteur contenant les morphèmes trouvés jusqu'à présent.
     // ETAT indique l'état du graphe d'état où l'analyse est rendue.
-    // CONDSSPECS conditions sur le morphème précédent.
-    // TRANSITIVITE indique la valeur de transitivité du prochain morphème à trouver.
-    // ISSYLLABIC n'est plus utilisé (il est placé par défaut à FALSE).
+    // PRECOND conditions sur le morphème précédent.
+    // TRANSITIVITY indique la valeur de transitivité du prochain morphème à trouver.
 
     // Note: le traitement des conditions spécifiques est très embryonnaire, et
     // à toutes fins pratiques, il faut le repenser totalement.
 
-    private static Vector<Decomposition> decompose_simplified_term(String term, String termOrig,
-            String word, Vector<AffixPartOfComposition> morphParts, 
+    private static Vector<Decomposition> __decompose_simplified_term__(
+    		String term, String termOrig, String word, 
+            Vector<AffixPartOfComposition> morphParts, 
             Graph.State states[],
-            Conditions preCond,
-            String transitivity, boolean isSyllabic
+            Conditions preConds,
+            String transitivity
             ) throws TimeoutException, MorphInukException {
 
         Vector<Decomposition> completeAnalysis = new Vector<Decomposition>();
+        
+    	boolean isSyllabic = false;
         String termICI = Orthography.orthographyICI(term, isSyllabic);
         String termOrigICI = Orthography.orthographyICI(termOrig, isSyllabic);
         
@@ -243,8 +247,8 @@ public class MorphInuk {
 		 * vérifie cette possibilité, et le cas échéant, on ajoute les
 		 * décompositions résultantes à l'analyse complète.
 		 */
-        Vector<Decomposition> analysesAsRoot = analyzeAsRoot(termICI,termOrigICI,term,
-                isSyllabic,word,morphParts,states, preCond, transitivity
+        Vector<Decomposition> analysesAsRoot = analyzeAsRoot(term,termOrig,
+                word,morphParts,states, preConds, transitivity
                 );
         completeAnalysis.addAll(analysesAsRoot);
         
@@ -252,23 +256,25 @@ public class MorphInuk {
          * -------------- MORPHÈMES -----------------
          *  Le terme à analyser peut aussi se décomposer en morphèmes.
          */
-        Vector<Decomposition> analysesAsSequenceOfMorphemes = analyzeAsSequenceOfMorphemes(termICI,termOrigICI,term,
-                isSyllabic,word,morphParts,states, preCond, transitivity
+        Vector<Decomposition> analysesAsSequenceOfMorphemes = analyzeAsSequenceOfMorphemes(term,
+                word,morphParts,states, preConds, transitivity
                 );
         completeAnalysis.addAll(analysesAsSequenceOfMorphemes);
 
         return completeAnalysis;
     }
     
+    
+    
     private static Vector<Decomposition> analyzeAsSequenceOfMorphemes(
-			String termICI, String termOrigICI, String term,
-			boolean isSyllabic, String word,
+			String simplifiedTerm,
+			String word,
 			Vector<AffixPartOfComposition> morphParts, State[] states,
 			Conditions preCond, String transitivity) throws TimeoutException, MorphInukException {
 
         Vector<Decomposition> completeAnalysis = new Vector<Decomposition>();
-        Vector<Object> onesFound;
-        Vector<Object> othersFound;
+        Vector<SurfaceFormOfAffix> formsOfAffixFound;
+        Vector<SurfaceFormOfAffix> otherFormsOfAffixFound;
         /*
          * =================================================================
          * À partir du dernier caractère du terme, reculer 1 caractère à la
@@ -281,8 +287,10 @@ public class MorphInuk {
          * Lorsque ce processus est terminé, on poursuit sur la branche
          * courante la décomposition courante comme si un affixe n'avait pas
          * été trouvé. Cela permet de trouver toutes les possibilités de
-         * combinaisons des lettres en morphèmes de longueurs diverses. Ex.:
-         * lauq sima vs lauqsima.
+         * combinaisons des lettres en morphèmes de longueurs diverses. 
+         * Par exemple, dans un mot qui contient 'lauqsima', 'sima' sera trouvé
+         * d'abord ; si on veut que 'lauqsima' soit analysé, il faut poursuivre
+         * la branche courante comme si 'sima' n'avait pas été trouvé.
          * 
          * On arrête le compteur 'positionAffix' à 2 puisqu'il n'y a pas de
          * racine qui, amputée de sa consonne finale, n'aurait plus qu'un
@@ -292,7 +300,7 @@ public class MorphInuk {
          */
 
         int positionAffix = 0; // position dans le mot
-        int positionAffixStart = term.length() - 1;
+        int positionAffixStart = simplifiedTerm.length() - 1;
         //            if (term.charAt(term.length() - 1) == '*')
         //                positionAffixStart--;
 
@@ -302,17 +310,16 @@ public class MorphInuk {
              * la séquence de caractères de cette position à la fin du terme
              * est un affixe.
              */
-            String affixCandidate;
-            affixCandidate = term.substring(positionAffix);
+            String possibleAffix = simplifiedTerm.substring(positionAffix);
             /*
              * 'affixCandidate' est donc un candidat correspondant à la
              * seconde partie de 'term', de la position d'analyse courante
              * 'positionAffix' à la fin; le radical est la première partie
              * de 'term', de 0 à positionAffix-1 incl.
              */
-            String stem = term.substring(0, positionAffix);
+            String remainingStem = simplifiedTerm.substring(0, positionAffix);
             stpw.check("analyzeAsSequenceOfMorphemes -- position: "+positionAffix+
-        			"; affixCandidate: "+affixCandidate+"; stem: "+stem);
+        			"; possibleAffix: "+possibleAffix+"; remainingStem: "+remainingStem);
             
             /*
              * RECHERCHE D'AFFIXES---------------------------------------
@@ -326,8 +333,8 @@ public class MorphInuk {
              * recherche lexicale, puisque les données linguistiques sont
              * stockées avec l'orthographe standard.)
              */
-            onesFound = null;
-            othersFound = null;                
+            formsOfAffixFound = null;
+            otherFormsOfAffixFound = null;                
             /*
              * Certaines combinaisons de caractères à la frontière de deux
              * morphèmes ne sont pas possibles (par exemple, un suffixe
@@ -341,13 +348,14 @@ public class MorphInuk {
              * Après avoir été essayé, il s'est avéré que cela ne change pas
              * grand-chose. On enlève donc ce test.
              */
-            //                String finalRadInitAff = new String(new char[]{
+            // String finalRadInitAff = new String(new char[]{
             //                        stem.charAt(stem.length()-1),
             //                        affixCandidate.charAt(0)});
-            //                boolean test =
-            // Donnees.finalRadInitAffHashSet.contains(finalRadInitAff);
-            if (true) { //if (test) {
-                onesFound = Lexicon.lookForForms(affixCandidate, isSyllabic);
+            // boolean test =
+            // 		Donnees.finalRadInitAffHashSet.contains(finalRadInitAff);
+            // if (test) {
+            	boolean isSyllabic = false;
+                formsOfAffixFound = Lexicon.lookForForms(possibleAffix, isSyllabic);
                 /*
                  * Il est possible qu'une différence de prononciation
                  * dialectale se produise dans un groupe de consonnes à la
@@ -365,18 +373,17 @@ public class MorphInuk {
                  * des équivalences. Toutes les possibilités sont retenues.
                  * La loi de Schneider est aussi prise en considération.
                  */
-                Vector<String> newCandidates = null;
-                newCandidates = Dialect.newCandidates(stem, affixCandidate,
-                        null);
+                Vector<String> newCandidates = Dialect.newCandidates(remainingStem, possibleAffix, null);
                 if (newCandidates != null)
                     for (int k = 0; k < newCandidates.size(); k++) {
-                        Vector<Object> tr = Lexicon.lookForForms(newCandidates.elementAt(k), isSyllabic);
-                        if (othersFound == null)
-                            othersFound = new Vector<Object>();
+                        Vector<SurfaceFormOfAffix> tr = Lexicon.lookForForms(newCandidates.elementAt(k), isSyllabic);
+                        if (otherFormsOfAffixFound == null)
+                            otherFormsOfAffixFound = new Vector<SurfaceFormOfAffix>();
                         if (tr != null)
-                            othersFound.addAll(tr);
+                            otherFormsOfAffixFound.addAll(tr);
                     }
-            }
+            // }
+            
             /*
              * POINT DE BRANCHEMENT
              * 
@@ -390,30 +397,27 @@ public class MorphInuk {
              */
             // Enlever les formes qui ne sont pas acceptables à ce moment-ci
             // (cf. arcsSuivis)
-            Vector<SurfaceFormOfAffix> onesFoundDim = eliminateByArcsFollowedEtc(onesFound,states,morphParts,
-            		positionAffix,preCond,transitivity);
-            if (onesFoundDim != null) {
-                Vector<Decomposition> anas = decomposeByAffixes(onesFoundDim, stem,
-                        affixCandidate, states, preCond, transitivity,
+            Vector<Decomposition> anas = null;
+            anas = decomposeByAffixes(
+                		formsOfAffixFound, 
+                		remainingStem,
+                        possibleAffix, states, preCond, transitivity,
                         positionAffix, morphParts, word, true);
                 completeAnalysis.addAll(anas);
-            }
+                
             /*
              * 2. Les candidats-suffixes à partir des chaînes transformées
              * contenant des groupes de consonnes équivalents dans d'autres
              * dialectes.
              */
-            Vector<?> othersFoundDim = eliminateByArcsFollowedEtc(othersFound,states,morphParts,
-            		positionAffix,preCond,transitivity);
-            if (othersFoundDim != null) {
-                Vector<Decomposition> anas = decomposeByAffixes(othersFoundDim,
-                        stem, affixCandidate, states, preCond,
+            anas = decomposeByAffixes(
+                		otherFormsOfAffixFound,
+                        remainingStem, possibleAffix, states, preCond,
                         transitivity, positionAffix, morphParts, word, false);
                 completeAnalysis.addAll(anas);
-            }
             
             /*
-             * Retour de la boucle. On poursuit la décomposition de 'terme',
+             * Retour de la boucle. On poursuit la décomposition de 'simplifiedTerm',
              * qu'on ait trouvé ou pas un affixe à la position actuelle.
              */
         } // for
@@ -421,56 +425,13 @@ public class MorphInuk {
         
         return completeAnalysis;
 	}
+    
+    
 
-	private static Vector<SurfaceFormOfAffix> eliminateByArcsFollowedEtc(Vector<Object> onesFound, Graph.State [] states,
-    		Vector<AffixPartOfComposition> morphParts, int positionAffix, Conditions preCond,
-    		String transitivity) throws TimeoutException {
-    	if (onesFound==null)
-    		return null;
-    	Vector<Morpheme> toBeRemoved = new Vector<Morpheme>();
-    	Vector<SurfaceFormOfAffix>  onesFoundDimin= new Vector<SurfaceFormOfAffix>();
-        String keyStateIDs = "0";
-        for (int i=0; i<states.length; i++)
-        	keyStateIDs += "+"+states[i].id;
-    	for (int i=0; i<onesFound.size(); i++) {
-    		SurfaceFormOfAffix formOfAffix = (SurfaceFormOfAffix)onesFound.elementAt(i); 
-    		Morpheme aff = formOfAffix.getAffix();
-//            stpw.check("eliminateByArcsFollowedEtc -- position: "+positionAffix+
-//        			"; aff: "+aff.morpheme);
-    		if (toBeRemoved.contains(aff))
-    			continue;
-    		boolean arcsSuivisNull = arcsSuivis(aff,states,keyStateIDs)==null;
-    		if (arcsSuivisNull) {
-    			toBeRemoved.add(aff);
-    			continue;
-    		}
-    		boolean sameAsNext = sameAsNext(aff, morphParts);
-    		if (!sameAsNext) {
-    			toBeRemoved.add(aff);
-    			continue;
-    		}
-    		boolean samePosition = samePosition(positionAffix, morphParts);
-    		if (!samePosition) {
-    			toBeRemoved.add(aff);
-    			continue;
-    		}
-    		boolean conditionsMet = aff.meetsConditions(preCond, morphParts);
-    		if (!conditionsMet) {
-    			toBeRemoved.add(aff);
-    			continue;
-    		}
-    		boolean transitivityMet = aff.meetsTransitivityCondition(transitivity);
-    		if (!transitivityMet) {
-    			toBeRemoved.add(aff);
-    			continue;
-    		}
-    		onesFoundDimin.add(formOfAffix);
-    	}
-//    	System.out.println(onesFound.size()+" > "+onesFoundDiminue.size());
-    	return onesFoundDimin;
-    }
+	
 
-    //=========================================================================
+ 
+	//=========================================================================
     // DES SUFFIXES ONT ÉTÉ TROUVÉS.
     //=========================================================================
 
@@ -481,35 +442,41 @@ public class MorphInuk {
      * est créée, par un appel récursif à décomposer/8.
      */
     @SuppressWarnings("unchecked")
-	private static Vector<Decomposition> decomposeByAffixes(Vector<?> onesFound,
-            String stem, String affixCandidateOrig, 
+	private static Vector<Decomposition> decomposeByAffixes(
+			Vector<SurfaceFormOfAffix> formsOfAffixFound,
+            String stem, 
+            String affixCandidateOrig, 
             Graph.State states[],
-            Conditions preCond,
-            String transitivity, int positionAffix, Vector<AffixPartOfComposition> morphParts,
+            Conditions preConds,
+            String transitivity, 
+            int positionAffix, 
+            Vector<AffixPartOfComposition> morphParts,
             String word,
-            boolean notResultingFromDialectalPhonologicalTransformation) throws TimeoutException, MorphInukException {
+            boolean notResultingFromDialectalPhonologicalTransformation
+            ) throws TimeoutException, MorphInukException {
 
         Vector<Decomposition> completeAnalysis = new Vector<Decomposition>();
-
-        String keyStateIDs = "0";
-        for (int i=0; i<states.length; i++)
-        	keyStateIDs += "+"+states[i].id;
+        
+        String keyStateIDs = computeStateIDs(states);
+        
+        Enumeration<SurfaceFormOfAffix> enumForms = null;
+        if (formsOfAffixFound != null)
+        	enumForms = formsOfAffixFound.elements();
+        	
         
         //---------------------------------------
         // Pour chaque (forme de) suffixe trouvé:
         //---------------------------------------
-        for (Enumeration<?> e = onesFound.elements(); e.hasMoreElements();) {
+        if (enumForms != null)
+        while (enumForms.hasMoreElements()) {
         	
-            SurfaceFormOfAffix form = (SurfaceFormOfAffix) e.nextElement();
+            SurfaceFormOfAffix form = (SurfaceFormOfAffix) enumForms.nextElement();
 
             stpw.check("decomposeByAffixes -- form: "+form.form);
 
-            // La forme renvoie à l'affixe dont elle est une forme.
-            Affix affix1 = (Affix) form.getAffix();
-            // Faire une copie de cet affixe.
             Affix affix = null;
             try {
-                affix = (Affix) affix1.copyOf();
+                affix = (Affix) form.getAffix().copyOf();
             } catch (CloneNotSupportedException e1) {
             	throw new MorphInukException(e1);
             }
@@ -522,7 +489,7 @@ public class MorphInuk {
             //   2. l'affixe ne peut démarrer au mème endroit que l'affixe
             //      suivant (ceci arrive à cause de la suppression par
             //      l'affixe suivant)
-            //   3. l'affixe doit être d'un type permis à ce moment-ci;
+            //   3. l'affixe doit être d'un type permis à ce moment-ci (état);
             //   4. les conditions spécifiques imposées par le morphème
             //      trouvé précédemment sur le morphème qui le précède
             //      dans le mot (le candidat actuel) doivent être respectées;
@@ -532,8 +499,13 @@ public class MorphInuk {
             Graph.Arc[] arcsFollowed = null;
             Graph.State nextStates[] = null;
             Object stemAffs[][] = null;
+            boolean conditionsMet, transitivityMet, sameAffixAsNext, samePosition;
             if (
                     (arcsFollowed=arcsSuivis(affix, states, keyStateIDs)) != null &&
+                    (conditionsMet = affix.meetsConditions(preConds, morphParts)) &&
+                    (transitivityMet = affix.meetsTransitivityCondition(transitivity)) &&
+                    (sameAffixAsNext = !sameAsNext(affix, morphParts)) &&
+                    (samePosition = !samePosition(positionAffix, morphParts)) &&
                     (stemAffs=agreeWithContextAndActions(affixCandidateOrig, affix, stem, 
                             positionAffix, form,
                             notResultingFromDialectalPhonologicalTransformation)) != null
@@ -577,13 +549,12 @@ public class MorphInuk {
                     AffixPartOfComposition partIro = (AffixPartOfComposition) stemAffs[iro][2];
                     partIro.arcs = arcsFollowed;
                     newMorphparts.add(0, partIro); // morceau ajouté
-//                    System.out.println(">NOUVEAU MORCEAU:"+affixe.id+"@"+positionAffix+" > "+(String) stemAffs[iro][0]);
-                    Vector<Decomposition> analyses = decompose_simplified_term((String) stemAffs[iro][0],
+                    Vector<Decomposition> analyses = __decompose_simplified_term__((String) stemAffs[iro][0],
                             (String) stemAffs[iro][1], word,
                             newMorphparts,
                             nextStates, 
                             newCond,
-                            newTransitivity, false
+                            newTransitivity
                             );
                     if (analyses != null && analyses.size() != 0)
                         completeAnalysis.addAll(analyses);
@@ -595,8 +566,16 @@ public class MorphInuk {
         return completeAnalysis;
     }
 
+    
+    private static String computeStateIDs(State[] states) {
+        String keyStateIDs = "0";
+        for (int i=0; i<states.length; i++)
+        	keyStateIDs += "+"+states[i].id;
+        
+        return keyStateIDs;
+	}
 
-    //----------------------------------------------------------------------
+	//----------------------------------------------------------------------
 
     private static Object[][] validateContextActions(String context,
             Action action1, Action action2, String stem, int posAffix,
@@ -1618,11 +1597,17 @@ public class MorphInuk {
      * Analyse d'un terme comme racine.
      */
     @SuppressWarnings("unchecked")
-	private static Vector<Decomposition> analyzeAsRoot(String termICI, String termOrigICI, 
-            String term, boolean isSyllabic,
+	private static Vector<Decomposition> analyzeAsRoot(String term, String termOrig, 
             String word, Vector<AffixPartOfComposition> morphParts, Graph.State states[],
-            Conditions preCond,
+            Conditions preConds,
             String transitivity) throws TimeoutException {
+
+        Vector<Decomposition> allAnalyses = new Vector<Decomposition>();
+
+        boolean isSyllabic = false;
+        String termICI = Orthography.orthographyICI(term, isSyllabic);
+        String termOrigICI = Orthography.orthographyICI(termOrig, isSyllabic);
+
         /*
          * Enlever le '*' à la fin du terme, s'il s'y trouve à la suite d'une
          * tentative pour trouver des analyses au cas où la consonne finale du
@@ -1641,7 +1626,7 @@ public class MorphInuk {
          * 
          * Chercher le TERME dans les racines.
          */
-        Vector<Object> lexs = null;
+        Vector<Morpheme> lexs = null;
         Vector<String> newRootCandidates = null;
         lexs = Lexicon.lookForBase(termICI, isSyllabic);                
         /*
@@ -1658,78 +1643,52 @@ public class MorphInuk {
         if (newRootCandidates != null)
             for (int k = 0; k < newRootCandidates.size(); k++) {
 //                stpw.check("analyzeAsRoot -- newRootCandidate: "+((Base)newRootCandidates.elementAt(k)).morpheme);
-                Vector<Object> tr = Lexicon.lookForBase((String) newRootCandidates
+                Vector<Morpheme> tr = Lexicon.lookForBase((String) newRootCandidates
                         .elementAt(k), isSyllabic);
                 if (tr != null)
                     if (lexs == null)
-                        lexs = (Vector<Object>) tr.clone();
+                        lexs = (Vector<Morpheme>) tr.clone();
                     else
                         lexs.addAll(tr);
             }
-        Vector<Decomposition> analyses = checkRoots(lexs,word,termOrigICI,morphParts,states,
-                preCond,transitivity);
+        Vector<Decomposition> rootAnalyses = checkRoots(lexs,word,termOrigICI,morphParts,states,
+                preConds,transitivity);
 
-        Vector<Decomposition> allAnalyses = new Vector<Decomposition>();
-        allAnalyses.addAll(analyses);
-
-        /*
-         * Vérifier la possibilité que la règle suivante s'applique: pour les
-         * racines verbales, le redoublement de la dernière consonne
-         * intervocalique et l'addition possible de 'q' à la fin du radical
-         * exprime généralement le fait qu'une action débute.
-         * 
-         * Dans ce cas, on ajoute aux morphParts un morceau spécial correspondant
-         * à cette règle.  Sa position sera la même que le dernier morceau trouvé, puisqu'il
-         * ne correspond pas à un suite de caractères à la suite de la racine.
-         */
+        allAnalyses.addAll(rootAnalyses);
         
-        /* !!!!
-         * 13 mars 2006: on a décidé de ne pas appliquer ce processus aux 
-         * racines et de plutôt ajouter à la table des racines toute racine
-         * résultant de ce processus trouvée dans les dictionnaires, comme
-         * ikummaq- < ikuma-
-        */
-        
-//        Vector analyses2 = new Vector();;
-//        Vector v = new Vector();
-//        v.add(termICI);
-//        v.addAll(newCandidates);
-//        Vector lexs2 = checkForDoubleConsonantInVerbalRoots(v);
-//        Vector mcx = (Vector)morphParts.clone();
-//        if (lexs2.size() != 0) {
-//            if (morphParts.size() != 0) {
-//                MorceauAffixe dernierMorceau = (MorceauAffixe)morphParts.elementAt(0);
-//                MorceauAffixe mspecial = new MorceauAffixe.Inchoative(dernierMorceau.position);
-//                
-//                mcx.add(0,mspecial);
-//            } else {
-//                mcx.add(new MorceauAffixe.Inchoative(termICI.length()));
-//            }
-//        }
-//        analyses2 = checkRoots(lexs2,word,termOrigICI,mcx,states,
-//                condsSpecs,preCond,transitivity);       
-//        allAnalyses.addAll(analyses2);
+//        Vector<Decomposition> inchoativeAnalyses = 
+//        		checkForInchoative(termICI, termOrigICI, word, newRootCandidates, 
+//        				morphParts, states, preConds, transitivity);
+//        allAnalyses.addAll(inchoativeAnalyses);
         
         return allAnalyses;
     }
     
-    
-    private static Vector<Decomposition> checkRoots(Vector<Object> lexs, String word, String termOrigICI,
-            Vector<AffixPartOfComposition> morphParts, Graph.State states[], Conditions preCond,
+    /**
+     * Compute the root morphemes corresponding to the given lexemes.
+     * @param lexs Vector<Object>
+     * @param word
+     * @param termOrigICI
+     * @param morphParts
+     * @param states
+     * @param preCond
+     * @param transitivity
+     * @return
+     * @throws TimeoutException
+     */
+	private static Vector<Decomposition> checkRoots(Vector<Morpheme> lexs, String word, String termOrigICI,
+            Vector<AffixPartOfComposition> morphParts, Graph.State states[], Conditions preConds,
             String transitivity) throws TimeoutException {
-        
-        String keyStateIDs = "0";
-        for (int i=0; i<states.length; i++)
-        	keyStateIDs += "+"+states[i].id;
 
         Vector<Decomposition> rootAnalyses = new Vector<Decomposition>();
+        
         char typeBase = 0;
 
         if (lexs == null) {
             // RACINE UNKNOWN !!!
             // Pour le moment, on ne fait rien. On ne fait que
             // créer un vecteur vide.
-            lexs = new Vector<Object>();
+            lexs = new Vector<Morpheme>();
         } 
 
         //-------------------------------------------
@@ -1758,64 +1717,11 @@ public class MorphInuk {
                 rootAnalyses.add(res);
             } else {
                 /*
-                 * Si la racine est connue: il faut vérifier si le type de la
-                 * racine correspond à un arc à partir de l'état actuel, et cet
-                 * arc doit conduire à l'état final (aucun arc partant de cet
-                 * état final). En principe, il ne devrait y avoir qu'un seul
-                 * arc accepté puisqu'on est rendu à la racine et qu'une racine
-                 * ne peut prendre qu'un seul arc.
+                 * Si la racine est connue : vérifier la validité du candidat.
                  */
+            	Graph.Arc arcFollowed = checkValidityOfRoot(root,states,morphParts,preConds,transitivity);
                 
-                /*
-                 * Il faut aussi vérifier que la finale de la base est une
-                 * lettre valide: une voyelle, un k, un q, un t.
-                 */
-                //                          // *** Mis en quarantaine pour le moment ***
-                //                                String motbase = racine.morpheme;
-                //                                char dernierChar = motbase.charAt(motbase
-                //                                        .length() - 1);
-                //                                						if (dernierChar == 'a'
-                //                                							|| dernierChar == 'i'
-                //                                							|| dernierChar == 'u'
-                //                                							|| dernierChar == 't'
-                //                                							|| dernierChar == 'k'
-                //                               							|| dernierChar == 'q') {
-                
-                /*
-                 * Il faut aussi que les conditions spécifiques soient
-                 * rencontrées. Par exemple, si le suffixe trouvé précédemment
-                 * exige de suivre immédiatement un nom au cas datif, le suffixe
-                 * ou la terminaison actuelle doit rencontrer cette contrainte.
-                 */
-                /*
-                 * Vérifier si la transitivité imposée par le morphème trouvé
-                 * précédemment sur le radical, i.e. sur le morphème qui le
-                 * précède dans le mot (le candidat actuel) est respectée. Cette
-                 * valeur de transitivité imposée par le morphème trouvé est
-                 * indiquée dans le champ 'condTrans'.  Elle ne s'applique qu'aux
-                 * racines.
-                 */
-                boolean accepted = false;
-                
-                Graph.Arc arcFollowed = null;
-                Graph.Arc[] arcsFollowed = arcsSuivis(root,states,keyStateIDs);
-                if (arcsFollowed !=null ) {
-                	arcFollowed = arcToZero(arcsFollowed);
-                	if (arcFollowed != null) {
-                		boolean conditionsMet = root.meetsConditions(preCond, morphParts);
-                		if (conditionsMet) {
-                			if (root.type.equals("v")) {
-                				boolean transitivityMet = root.meetsTransitivityCondition(transitivity);
-                				if (transitivityMet)
-                					accepted = true;
-                			} else {
-                				accepted = true;
-                			}
-                		}
-                	}
-                }
-                
-                if (accepted) {
+                 if (arcFollowed != null) {
                     /*
                      * Toutes les conditions ont été respectées. Créer une
                      * nouvelle décomposition avec cette racine et les morphParts
@@ -1833,9 +1739,126 @@ public class MorphInuk {
         
         return rootAnalyses;
     }
+	
+	private static Graph.Arc checkValidityOfRoot(Morpheme root, Graph.State states[],
+			Vector<AffixPartOfComposition> morphParts, Conditions preConds,
+            String transitivity) throws TimeoutException {
+       	/* il faut vérifier si le type de la
+         * racine correspond à un arc à partir de l'état actuel, et cet
+         * arc doit conduire à l'état final (aucun arc partant de cet
+         * état final). En principe, il ne devrait y avoir qu'un seul
+         * arc accepté puisqu'on est rendu à la racine et qu'une racine
+         * ne peut prendre qu'un seul arc.
+         */
+        
+        /*
+         * Il faut aussi vérifier que la finale de la base est une
+         * lettre valide: une voyelle, un k, un q, un t.
+         */
+        //                          // *** Mis en quarantaine pour le moment ***
+        //                                String motbase = racine.morpheme;
+        //                                char dernierChar = motbase.charAt(motbase
+        //                                        .length() - 1);
+        //                                						if (dernierChar == 'a'
+        //                                							|| dernierChar == 'i'
+        //                                							|| dernierChar == 'u'
+        //                                							|| dernierChar == 't'
+        //                                							|| dernierChar == 'k'
+        //                               							|| dernierChar == 'q') {
+        
+        /*
+         * Il faut aussi que les conditions spécifiques soient
+         * rencontrées. Par exemple, si le suffixe trouvé précédemment
+         * exige de suivre immédiatement un nom au cas datif, le suffixe
+         * ou la terminaison actuelle doit rencontrer cette contrainte.
+         */
+        /*
+         * Vérifier si la transitivité imposée par le morphème trouvé
+         * précédemment sur le radical, i.e. sur le morphème qui le
+         * précède dans le mot (le candidat actuel) est respectée. Cette
+         * valeur de transitivité imposée par le morphème trouvé est
+         * indiquée dans le champ 'condTrans'.  Elle ne s'applique qu'aux
+         * racines.
+         */
+        boolean accepted = false;
+
+		String keyStateIDs = computeStateIDs(states);
+
+        Graph.Arc arcFollowed = null;
+        Graph.Arc[] arcsFollowed = arcsSuivis(root,states,keyStateIDs);
+        if (arcsFollowed !=null ) {
+        	arcFollowed = arcToZero(arcsFollowed);
+        	if (arcFollowed != null) {
+        		boolean conditionsMet = root.meetsConditions(preConds, morphParts);
+        		if (conditionsMet) {
+        			if (root.type.equals("v")) {
+        				boolean transitivityMet = root.meetsTransitivityCondition(transitivity);
+        				if (transitivityMet)
+        					accepted = true;
+        			} else {
+        				accepted = true;
+        			}
+        		} else {
+        			accepted = false;
+        		}
+        	}
+        }
+        
+        return accepted?arcFollowed:null;
+	}
+
 	//-----------------------------------------------
 
-    private static Graph.Arc arcToZero(Graph.Arc[] arcsFollowed) throws TimeoutException {
+
+    /*
+     * Vérifier la possibilité que la règle suivante s'applique: pour les
+     * racines verbales, le redoublement de la dernière consonne
+     * intervocalique et l'addition possible de 'q' à la fin du radical
+     * exprime généralement le fait qu'une action débute.
+     * 
+     * Dans ce cas, on ajoute aux morphParts un morceau spécial correspondant
+     * à cette règle.  Sa position sera la même que le dernier morceau trouvé, puisqu'il
+     * ne correspond pas à un suite de caractères à la suite de la racine.
+     */
+    
+    /* !!!!
+     * 13 mars 2006: on a décidé de ne pas appliquer ce processus aux 
+     * racines et de plutôt ajouter à la table des racines toute racine
+     * résultant de ce processus trouvée dans les dictionnaires, comme
+     * ikummaq- < ikuma-
+    */
+//    private static Vector<Decomposition> checkForInchoative(String termICI, 
+//    		String termOrigICI, String word, Vector<String> newRootCandidates, 
+//    		Vector<AffixPartOfComposition> morphParts,
+//    		Graph.State states[],
+//            Conditions preConds,
+//            String transitivity) {
+//        
+//        Vector<Decomposition> analysesIncho = new Vector<Decomposition>();
+//        Vector<String> v = new Vector<String>();
+//        v.add(termICI);
+//        v.addAll(newRootCandidates);
+//        Vector<Object> lexs2 = checkForDoubleConsonantInVerbalRoots(v);
+//        Vector<AffixPartOfComposition> mcx = (Vector<AffixPartOfComposition>)morphParts.clone();
+//        if (lexs2.size() != 0) {
+//            if (morphParts.size() != 0) {
+//            	AffixPartOfComposition dernierMorceau = (AffixPartOfComposition)morphParts.elementAt(0);
+//            	AffixPartOfComposition mspecial = new AffixPartOfComposition.Inchoative(dernierMorceau.position);
+//                
+//                mcx.add(0,mspecial);
+//            } else {
+//                mcx.add(new AffixPartOfComposition.Inchoative(termICI.length()));
+//            }
+//        }
+//        analysesIncho = checkRoots(lexs2,word,termOrigICI,mcx,states,
+//                preConds,transitivity);  
+//
+//        return analysesIncho;
+//	}
+
+
+	
+	private static Graph.Arc arcToZero(Graph.Arc[] arcsFollowed) throws TimeoutException {
         for (int i=0; i<arcsFollowed.length; i++) {
         	stpw.check("arcToZero -- arc: "+arcsFollowed[i].toString());
             if (arcsFollowed[i].getDestinationState() == Graph.finalState) {
@@ -1853,13 +1876,13 @@ public class MorphInuk {
      * lorsqu'on a un double "a" dans le mot.
      */
     private static boolean sameAsNext(Morpheme morpheme, Vector<AffixPartOfComposition> partsAlreadyAnalyzed) {
-        boolean res = true;
+        boolean isSameAsNext = false;
         if (partsAlreadyAnalyzed.size() != 0) {
             Affix affPrec = ((AffixPartOfComposition) partsAlreadyAnalyzed.elementAt(0)).getAffix();
             if (morpheme.id.equals(affPrec.id))
-                res = false;
+                isSameAsNext = true;
         }
-        return res;
+        return isSameAsNext;
     }
     
     /*
@@ -1873,14 +1896,14 @@ public class MorphInuk {
      */
     private static boolean samePosition(int positionAffixInWord, 
             Vector<AffixPartOfComposition> partsAlreadyAnalyzed) {
-        boolean res = true;
+        boolean isAtSamePosition = false;
         if (partsAlreadyAnalyzed.size() != 0) {
             AffixPartOfComposition nextMorphpart = (AffixPartOfComposition) partsAlreadyAnalyzed
                 .elementAt(0);
             if (nextMorphpart.getPosition() == positionAffixInWord) 
-                res = false;       
+                isAtSamePosition = true;       
         }
-        return res;
+        return isAtSamePosition;
     }
 
     
@@ -1888,9 +1911,7 @@ public class MorphInuk {
      * 3. Vérifier si ce suffixe est permis en ce moment. Il doit
      * correspondre à un des arcs partant de l'état actuel.
      */
-    
-    private static Hashtable<String,Graph.Arc[]> arcsByMorpheme = new Hashtable<String,Graph.Arc[]>();
-    
+        
     private static Graph.Arc[] arcsSuivis(Morpheme morpheme, Graph.State states[],
 			String keyStateIDs) throws TimeoutException {
 		Graph.Arc arcsFollowed[] = null;
@@ -1930,9 +1951,12 @@ public class MorphInuk {
      * position de l'affixe dans le mot (la valeur de i); 2. un objet de
      * classe SurfaceFormOfAffix décrivant totalement l'affixe.
      */
-    private static Object[][] agreeWithContextAndActions(String affixCandidateOrig,
-            Affix affix, String stem, 
-            int positionAffixInWord, SurfaceFormOfAffix form,
+    private static Object[][] agreeWithContextAndActions(
+    		String affixCandidateOrig,
+            Affix affix, 
+            String stem, 
+            int positionAffixInWord, 
+            SurfaceFormOfAffix form,
             boolean notResultingFromDialectalPhonologicalTransformation) throws TimeoutException, MorphInukException {
         Object[][] stemAffs = null;
         boolean checkStartOfConsonantsGroup = true;
