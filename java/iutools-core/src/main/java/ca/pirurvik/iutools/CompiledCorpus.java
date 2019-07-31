@@ -27,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 
+import ca.inuktitutcomputing.utilities.NgramCompiler;
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_Char;
@@ -86,6 +87,8 @@ public class CompiledCorpus
 	public transient boolean verbose = true;
 	@JsonIgnore
 	public transient String name;
+	@JsonIgnore
+	public transient NgramCompiler ngramCompiler;
 	
 	
 	
@@ -99,30 +102,22 @@ public class CompiledCorpus
 	public void setNgramStats() {
 		ngramStats = new HashMap<String,Long>();
 		String[] words = decomposedWordsSuite.split(",,");
+		ngramCompiler = new NgramCompiler(3,0,false);
 		for (int iw=1; iw<words.length; iw++) {
 			updateSequenceNgramsForWord(words[iw]);
 		}
 	}
 	private void updateSequenceNgramsForWord(String word) {
-		Set<String> seqSeenInWord = new HashSet<String>();
-		try {
-		for (int seqLen = 1; seqLen <= MAX_NGRAM_LEN; seqLen++) {
-			for (int  start=0; start <= word.length() - seqLen; start++) {
-				String charSeq = word.substring(start, start+seqLen);
-				if (!seqSeenInWord.contains(charSeq)) {
-					updateSequenceNgram(charSeq);
-				}
-				seqSeenInWord.add(charSeq);
-			}
+		Set<String> seqsSeenInWord = new HashSet<String>();
+		seqsSeenInWord = ngramCompiler.compile(word);
+		Iterator<String> itngram = seqsSeenInWord.iterator();
+		while (itngram.hasNext()) {
+			String ngram = itngram.next();
+			Long freq = ngramStats.get(ngram);
+			if (freq==null)
+				freq = (long)0;
+			ngramStats.put(ngram, ++freq);
 		}
-		} catch (Exception e) {
-		}
-	}
-	private void updateSequenceNgram(String charSeq) {
-		if (!ngramStats.containsKey(charSeq)) {
-			ngramStats.put(charSeq, new Long(0));
-		}
-		ngramStats.put(charSeq, ngramStats.get(charSeq)+1);
 	}
 
 	
