@@ -28,8 +28,6 @@ import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.StringUtils;
-import ca.pirurvik.iutools.MorphemeExtractor.WordFreqComparator;
-import ca.inuktitutcomputing.script.Roman;
 import ca.inuktitutcomputing.script.Syllabics;
 import ca.inuktitutcomputing.script.TransCoder;
 import ca.inuktitutcomputing.utilities.EditDistanceCalculator;
@@ -187,7 +185,6 @@ public class SpellChecker {
 		logger.debug("wasMispelled= "+corr.wasMispelled);
 		if (corr.wasMispelled) {
 		
-//			Set<String> candidates = firstPassCandidates(word);
 			Set<String> candidates = firstPassCandidates_TFIDF(word);
 			logger.debug("candidates= "+PrettyPrinter.print(candidates));
 			List<Pair<String,Double>> candidatesWithSim = computeCandidateSimilarities(word, candidates);
