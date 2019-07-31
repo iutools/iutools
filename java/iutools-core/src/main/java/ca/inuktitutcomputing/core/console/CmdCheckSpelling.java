@@ -26,26 +26,27 @@ public class CmdCheckSpelling extends ConsoleCommand {
 
 	@Override
 	public void execute() throws Exception {
+		SpellChecker checker = new SpellChecker();
+
 		String word = getWord(false);
-//		String checkerFilePathname = getDictFile(true);
-//		File checkerFile = new File(checkerFilePathname);
-		
-		String corpusName = getCorpusName(false);
+		String compiledCorpusFilePathname = getCompilationFile(false);
+		if (compiledCorpusFilePathname!=null) {
+			File compiledCorpusFile = new File(compiledCorpusFilePathname);
+			checker.setDictionaryFromCorpus(compiledCorpusFile);
+		} else {
+			String corpusName = getCorpusName(false);
+			checker.setDictionaryFromCorpus(corpusName);
+		}
 		
 		String maxCorrectionsOpt = getMaxCorr(false);
 		int maxCorrections = maxCorrectionsOpt==null ? 5 : Integer.parseInt(maxCorrectionsOpt);
 		EditDistanceCalculatorFactory.DistanceMethod editDistanceAlgorithm = getEditDistanceAlgorithm(false);
 		
-		
-//		List<String> suggestions = null;
-		SpellingCorrection corr = null;
-		SpellChecker checker = new SpellChecker();
-		checker.setDictionaryFromCorpus(corpusName);
 		if (editDistanceAlgorithm!=null)
 			checker.setEditDistanceAlgorithm(editDistanceAlgorithm);
-		System.out.println(checker.editDistanceCalculator.getClass().getName());
+		System.out.println("Using edit distance algorithm "+checker.editDistanceCalculator.getClass().getName());
 		
-//		checker.readFromFile(checkerFile);
+		SpellingCorrection corr = null;
 
 		boolean interactive = false;
 		if (word == null) {

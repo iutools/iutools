@@ -171,7 +171,7 @@ public class Console {
 		// Decompose an Inuktut word
 		SubCommand checkSpelling = 
 				new CmdCheckSpelling("check_spelling")
-//				.addOption(optDictFile)
+				.addOption(optCompFile)	
 				.addOption(optCorpusName)
 				.addOption(optMaxCorr)
 				.addOption(optEditDistAlgo)
