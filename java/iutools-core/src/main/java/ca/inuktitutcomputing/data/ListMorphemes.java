@@ -43,7 +43,7 @@ public class ListMorphemes {
             Arrays.sort(affixes);
             
             for (int i=0; i<affixes.length; i++) {
-                Vector<Object> vecForms = (Vector<Object>)LinguisticDataAbstract.getSurfaceForms(affixes[i]);
+                Vector<SurfaceFormOfAffix> vecForms = (Vector<SurfaceFormOfAffix>)LinguisticDataAbstract.getSurfaceForms(affixes[i]);
                 for (int j=0; j<vecForms.size(); j++) {
                     SurfaceFormOfAffix fa = (SurfaceFormOfAffix)vecForms.elementAt(j);
                     if (fa.type.equals("sn") || fa.type.equals("sv") || fa.type.equals("q"))

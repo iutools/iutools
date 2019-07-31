@@ -285,8 +285,8 @@ public abstract class Data {
 
 	
 	public static void addToHash(Base x) {
-        Hashtable<String,Vector<Object>> hash = LinguisticDataAbstract.bases;
-        Vector<Object> current = null;
+        Hashtable<String,Vector<Morpheme>> hash = LinguisticDataAbstract.bases;
+        Vector<Morpheme> current = null;
         try {
         	current = hash.get(x.morpheme);
         } catch (NullPointerException e) {
@@ -295,7 +295,7 @@ public abstract class Data {
 //        	e.printStackTrace();
         }
         if (current == null) {
-        	current = new Vector<Object>();
+        	current = new Vector<Morpheme>();
         }
         current.add(x);
         hash.put(x.morpheme, current);

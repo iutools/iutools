@@ -52,18 +52,18 @@ public class Lexicon {
     // avoir: "PISU*" apr�s d�termination du m�me affixe dans le term
     // "PISUNNGITTUQ"; dans ce cas, la racine est "PISUK".
 
-    static public Vector<Object> lookForForms(String term, boolean syllabic) {
+    static public Vector<SurfaceFormOfAffix> lookForForms(String term, boolean syllabic) {
         String cons[], vows[];
-        Vector<Object> termsFound = null;
+        Vector<SurfaceFormOfAffix> termsFound = null;
         cons = syllabic ? consonantsSyl : consonants;
         vows = syllabic ? vowelsSyl : vowels;
 
         // V�rifier si le term se termine par '%*'
         if (term.endsWith("%*")) {
-            Vector<Object> termFound;
+            Vector<SurfaceFormOfAffix> termFound;
             String termWithoutPniE, termWithVowel;
-            Vector<Object> termWithoutStarFound;
-            termsFound = new Vector<Object>();
+            Vector<SurfaceFormOfAffix> termWithoutStarFound;
+            termsFound = new Vector<SurfaceFormOfAffix>();
             termWithoutPniE = term.substring(0, term.length() - 2);
             termWithoutStarFound = lookForForms(termWithoutPniE + "*",
                     syllabic);
@@ -80,9 +80,9 @@ public class Lexicon {
         }
         // V�rifier si le term se termine par '*'
         else if (term.endsWith("*")) {
-            Vector<Object> termFound;
+            Vector<SurfaceFormOfAffix> termFound;
             String termWithoutStar, termWithConsonant;
-            termsFound = new Vector<Object>();
+            termsFound = new Vector<SurfaceFormOfAffix>();
             termWithoutStar = term.substring(0, term.length() - 1);
             //	    termWithoutStarFound = chercherAffixe(termWithoutStar,syllabic);
             //	    if (termWithoutStarFound != null)
@@ -104,8 +104,8 @@ public class Lexicon {
         return termsFound;
     }
 
-    static public Vector<Object> lookForBase(String term, boolean syllabic) {
-        Vector<Object> termsFound;
+    static public Vector<Morpheme> lookForBase(String term, boolean syllabic) {
+        Vector<Morpheme> termsFound;
         String cons[], vows[];
         Debugging.mess("lookForBase/2", 1, "> term= " + term + "  syllabic="
                 + syllabic);
@@ -114,38 +114,32 @@ public class Lexicon {
         //System.out.println("lookForBase: term= "+term);
         // Vérifier si le term se termine par '%*'
         if (term.endsWith("%*")) {
-            Vector<Object> termFound;
-            String termWithoutPniE, termWithVowel;
-            Vector<Object> termWithoutStarFound;
-            termsFound = new Vector<Object>();
-            termWithoutPniE = term.substring(0, term.length() - 2);
-            termWithoutStarFound = lookForBase(termWithoutPniE + "*", syllabic);
+            termsFound = new Vector<Morpheme>();
+            String termWithoutPniE = term.substring(0, term.length() - 2);
+            Vector<Morpheme> termWithoutStarFound = lookForBase(termWithoutPniE + "*", syllabic);
             if (termWithoutStarFound != null)
                 termsFound.addAll(termWithoutStarFound);
             for (int i = 0; i < vows.length; i++) {
-                termWithVowel = termWithoutPniE + vows[i] + "*";
-                termFound = lookForBase(termWithVowel, syllabic);
-                if (termFound != null)
-                    termsFound.addAll(termFound);
+                String termWithVowel = termWithoutPniE + vows[i] + "*";
+                Vector<Morpheme> termsFoundForVowel = lookForBase(termWithVowel, syllabic);
+                if (termsFoundForVowel != null)
+                    termsFound.addAll(termsFoundForVowel);
             }
             if (termsFound.size() == 0)
                 termsFound = null;
         }
-        // V�rifier si le term se termine par '*'
+        // Vérifier si le term se termine par '*'
         else if (term.endsWith("*")) {
-            Vector<Object> termFound;
-            String termWithoutStar, termWithConsonant;
-            Vector<Object> termWithoutStarFound;
-            termsFound = new Vector<Object>();
-            termWithoutStar = term.substring(0, term.length() - 1);
-            termWithoutStarFound = lookForBase(termWithoutStar, syllabic);
+            termsFound = new Vector<Morpheme>();
+            String termWithoutStar = term.substring(0, term.length() - 1);
+            Vector<Morpheme> termWithoutStarFound = lookForBase(termWithoutStar, syllabic);
             if (termWithoutStarFound != null)
                 termsFound.addAll(termWithoutStarFound);
             for (int i = 0; i < cons.length; i++) {
-                termWithConsonant = termWithoutStar + cons[i];
-                termFound = lookForBase(termWithConsonant, syllabic);
-                if (termFound != null)
-                    termsFound.addAll(termFound);
+                String termWithConsonant = termWithoutStar + cons[i];
+                Vector<Morpheme> termFoundForConsonant = lookForBase(termWithConsonant, syllabic);
+                if (termFoundForConsonant != null)
+                    termsFound.addAll(termFoundForConsonant);
             }
             if (termsFound.size() == 0)
                 termsFound = null;

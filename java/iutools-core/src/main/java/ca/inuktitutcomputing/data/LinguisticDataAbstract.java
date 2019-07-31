@@ -25,8 +25,8 @@ public abstract class LinguisticDataAbstract {
     static Hashtable<String,Vector<Example>> examples = new Hashtable<String,Vector<Example>>();
     static LinguisticDataAbstract database;
 
-    protected static Hashtable<String,Vector<Object>> surfaceFormsOfAffixes;
-    protected static Hashtable<String,Vector<Object>> bases;
+    protected static Hashtable<String,Vector<SurfaceFormOfAffix>> surfaceFormsOfAffixes;
+    protected static Hashtable<String,Vector<Morpheme>> bases;
     
     protected static Hashtable<String,Base> basesId;
 //    protected Hashtable demonstrativesId;
@@ -155,11 +155,11 @@ public abstract class LinguisticDataAbstract {
 
     // Returns a Vector of Base and Demonstrative objects, or null.
     @SuppressWarnings("unchecked")
-	public static Vector<Object> getBases(String term) {
-        Vector<Object> bs = null;
-        Vector<Object> gets = bases.get(term);
+	public static Vector<Morpheme> getBases(String term) {
+        Vector<Morpheme> bs = null;
+        Vector<Morpheme> gets = bases.get(term);
         if (gets != null)
-            bs = (Vector<Object>) gets.clone();
+            bs = (Vector<Morpheme>) gets.clone();
         return bs;
     }
     
@@ -186,7 +186,7 @@ public abstract class LinguisticDataAbstract {
     // The keys of the hashtable 'surfaceFormsOfAffixes' are in the
     // simplified spelling (ng > N).  To search for a form
     // in the ICI spelling, one calls this method.
-    public static Vector<Object> getSurfaceForms(String form) {
+    public static Vector<SurfaceFormOfAffix> getSurfaceForms(String form) {
         // Simplify the spelling
         String simplifiedForm = Orthography.simplifiedOrthographyLat(form);
         return surfaceFormsOfAffixes.get(simplifiedForm);
@@ -196,11 +196,11 @@ public abstract class LinguisticDataAbstract {
     	return (SurfaceFormOfAffix)(LinguisticDataAbstract.getSurfaceForms(morph)).elementAt(0);
     }
     
-    protected static void addForm(String str, Object form) {
+    protected static void addForm(String str, SurfaceFormOfAffix form) {
         String simplifiedForm = Orthography.simplifiedOrthographyLat(str);
-		Vector<Object> v = surfaceFormsOfAffixes.get(simplifiedForm);
+		Vector<SurfaceFormOfAffix> v = surfaceFormsOfAffixes.get(simplifiedForm);
 		if (v == null)
-			v = new Vector<Object>();
+			v = new Vector<SurfaceFormOfAffix>();
 		v.add(form);
 		surfaceFormsOfAffixes.put(simplifiedForm, v);
     }
