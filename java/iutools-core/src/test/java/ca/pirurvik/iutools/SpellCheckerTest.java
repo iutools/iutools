@@ -118,13 +118,13 @@ public class SpellCheckerTest {
 	
 	@Test
 	public void test__idf__HappyPath() {
-		Assert.assertEquals("IDF was wrong for sequence that starts words ('inu')", new Long(5), checker.idf("inu"));
-		Assert.assertEquals("IDF was wrong for sequence at the middle of words ('ks')", new Long(1), checker.idf("ks"));
-		Assert.assertEquals("IDF was wrong for sequence at the end of words ('ktut')", new Long(1), checker.idf("ktut"));
-		Assert.assertEquals("IDF was wrong for sequence ('uk')", new Long(5), checker.idf("uk"));
-		Assert.assertEquals("IDF was wrong for sequence with > 5 chars", new Long(0), checker.idf("nunavu"));
-		Assert.assertEquals("IDF was wrong for sequence with =5 chars", new Long(1), checker.idf("unavu"));
-		Assert.assertEquals("IDF was wrong for non-existant sequence",new Long(0), checker.idf("blah"));
+		Assert.assertEquals("IDF was wrong for sequence that starts words ('inu')", new Long(5), checker.ngramStat("inu"));
+		Assert.assertEquals("IDF was wrong for sequence at the middle of words ('ks')", new Long(1), checker.ngramStat("ks"));
+		Assert.assertEquals("IDF was wrong for sequence at the end of words ('ktut')", new Long(1), checker.ngramStat("ktut"));
+		Assert.assertEquals("IDF was wrong for sequence ('uk')", new Long(5), checker.ngramStat("uk"));
+		Assert.assertEquals("IDF was wrong for sequence with > 5 chars", new Long(0), checker.ngramStat("nunavu"));
+		Assert.assertEquals("IDF was wrong for sequence with =5 chars", new Long(1), checker.ngramStat("unavu"));
+		Assert.assertEquals("IDF was wrong for non-existant sequence",new Long(0), checker.ngramStat("blah"));
 	}
 
 	@Test
@@ -166,6 +166,47 @@ public class SpellCheckerTest {
 	}
 	
 	@Test
+	public void test__wordsContainingSequ__Case_considering_extremities() {
+		SpellChecker checker = new SpellChecker();
+		checker.setVerbose(false);
+		checker.addCorrectWord("inuktitut");
+		checker.addCorrectWord("inuksuk");
+		checker.addCorrectWord("inuttitut");
+		checker.addCorrectWord("inakkut");
+		checker.addCorrectWord("takuinuit");
+		checker.addCorrectWord("taku");
+		checker.addCorrectWord("intakuinuit");
+		
+		String seq;
+		String[] expected;
+		Set<String> wordsWithSeq;
+		
+		seq = "inu";
+		wordsWithSeq = checker.wordsContainingSequ(seq);
+		expected = new String[] {"inuktitut","inuksuk","inuttitut","takuinuit"};
+			AssertHelpers.assertContainsAll("The list of words containing sequence "+seq+" was not as expected", 
+					wordsWithSeq, expected);
+			
+		seq = "^inu";
+		wordsWithSeq = checker.wordsContainingSequ(seq);
+		expected = new String[] {"inuktitut","inuksuk","inuttitut"};
+		AssertHelpers.assertContainsAll("The list of words containing sequence "+seq+" was not as expected", 
+					wordsWithSeq, expected);
+		
+	seq = "itut$";
+	wordsWithSeq = checker.wordsContainingSequ(seq);
+	expected = new String[] {"inuktitut","inuttitut"};
+	AssertHelpers.assertContainsAll("The list of words containing sequence "+seq+" was not as expected", 
+				wordsWithSeq, expected);
+	
+	seq = "^taku$";
+	wordsWithSeq = checker.wordsContainingSequ(seq);
+	expected = new String[] {"taku"};
+	AssertHelpers.assertContainsAll("The list of words containing sequence "+seq+" was not as expected", 
+				wordsWithSeq, expected);
+	}
+	
+	@Test
 	public void test__firstPassCandidates() throws Exception {
 		String badWord = "inukkshuk";
 		Set<String> candidates = checker.firstPassCandidates(badWord);
@@ -177,6 +218,22 @@ public class SpellCheckerTest {
 		//   they were analyzed by the morphological segmenter.
 		//     - 
 		String[] expected = new String[] {"inuk","inukshuk","inukttut","inuktut","inukutt","nunavut"};		
+		AssertHelpers.assertDeepEquals("The list of candidate corrections for word "+badWord+" was not as expected", 
+				expected, candidates);
+	}
+	
+	@Test
+	public void test__firstPassCandidates_TFIDF() throws Exception {
+		String badWord = "inukkshuk";
+		Set<String> candidates = checker.firstPassCandidates_TFIDF(badWord);
+	
+		
+		// ALAIN: The expected list below contains some misspelled words that come before some 
+		//   correctly spelled ones. But that does not matter as it is only a first pass.
+		//   The second pass should re-sort the candidates, taking into account whether or not
+		//   they were analyzed by the morphological segmenter.
+		//     - 
+		String[] expected = new String[] {"inuk","inukshuk","inukttut","inuktut","inukutt"};		
 		AssertHelpers.assertDeepEquals("The list of candidate corrections for word "+badWord+" was not as expected", 
 				expected, candidates);
 	}
