@@ -6,7 +6,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -26,20 +28,22 @@ import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.StringUtils;
+import ca.pirurvik.iutools.MorphemeExtractor.WordFreqComparator;
 import ca.inuktitutcomputing.script.Roman;
 import ca.inuktitutcomputing.script.Syllabics;
 import ca.inuktitutcomputing.script.TransCoder;
 import ca.inuktitutcomputing.utilities.EditDistanceCalculator;
 import ca.inuktitutcomputing.utilities.EditDistanceCalculatorFactory;
 import ca.inuktitutcomputing.utilities.EditDistanceCalculatorFactoryException;
+import ca.inuktitutcomputing.utilities.NgramCompiler;
 
 public class SpellChecker {
 	
 	public int MAX_SEQ_LEN = 5;
-	public int MAX_CANDIDATES = 100;
+	public int MAX_CANDIDATES = 300; //200; //100;
 	public int DEFAULT_CORRECTIONS = 5;
 	public String allWords = ",,";
-	public Map<String,Long> idfStats = new HashMap<String,Long>();
+	public Map<String,Long> ngramStats = new HashMap<String,Long>();
 	public transient EditDistanceCalculator editDistanceCalculator;
 	public transient boolean verbose = true;
 	
@@ -82,7 +86,7 @@ public class SpellChecker {
 	
 	private void __processCorpus() {
 		this.allWords = corpus.decomposedWordsSuite;
-		this.idfStats = corpus.ngramStats;
+		this.ngramStats = corpus.ngramStats;
 		corpus.setVerbose(verbose);
 	}
 	
@@ -120,10 +124,10 @@ public class SpellChecker {
 	}
 
 	private void updateSequenceIDF(String charSeq) {
-		if (!idfStats.containsKey(charSeq)) {
-			idfStats.put(charSeq, new Long(0));
+		if (!ngramStats.containsKey(charSeq)) {
+			ngramStats.put(charSeq, new Long(0));
 		}
-		idfStats.put(charSeq, idfStats.get(charSeq)+1);
+		ngramStats.put(charSeq, ngramStats.get(charSeq)+1);
 		//System.out.println("-- udpateSequenceIDF:    upon exit, idfStats.get(charSeq)="+idfStats.get(charSeq));
 	}
 
@@ -144,12 +148,12 @@ public class SpellChecker {
 		this.MAX_SEQ_LEN = checker.getMaxSeqLen();
 		this.MAX_CANDIDATES = checker.getMaxCandidates();
 		this.allWords = checker.getAllWords();
-		this.idfStats = checker.getIdfStats();
+		this.ngramStats = checker.getIdfStats();
 		return this;
 	}
 
 	private Map<String, Long> getIdfStats() {
-		return this.idfStats;
+		return this.ngramStats;
 	}
 
 	private String getAllWords() {
@@ -183,7 +187,8 @@ public class SpellChecker {
 		logger.debug("wasMispelled= "+corr.wasMispelled);
 		if (corr.wasMispelled) {
 		
-			Set<String> candidates = firstPassCandidates(word);
+//			Set<String> candidates = firstPassCandidates(word);
+			Set<String> candidates = firstPassCandidates_TFIDF(word);
 			logger.debug("candidates= "+PrettyPrinter.print(candidates));
 			List<Pair<String,Double>> candidatesWithSim = computeCandidateSimilarities(word, candidates);
 			List<String> corrections = sortCandidatesBySimilarity(candidatesWithSim);
@@ -231,10 +236,10 @@ public class SpellChecker {
 		return answer;
 	}
 
-	public Long idf(String charSeq) {
+	public Long ngramStat(String charSeq) {
 		Long val = new Long(0);
-		if (idfStats.containsKey(charSeq)) {
-			val = idfStats.get(charSeq);
+		if (ngramStats.containsKey(charSeq)) {
+			val = ngramStats.get(charSeq);
 		}
 		return val;
 	}
@@ -306,8 +311,121 @@ public class SpellChecker {
 		return candidates;
 	}
 
+
+	public Set<String> firstPassCandidates_TFIDF(String badWord) {
+		Logger logger = Logger.getLogger("SpellChecker.firstPassCandidates_TFIDF");
+		// 1. compile ngrams of badWord
+		// 2. compile IDF of each ngram = 1 / #words with this ngram + 1 and order highest first
+		// 3. add words for top IDFs to the set of candidates until the number of candidates exceeds the maximum
+		// 4. compute scores for each word and order words highest score first
+		// compute edit distance, etc.
+		
+		// 1. compile ngrams of badWord
+		NgramCompiler ngramCompiler = new NgramCompiler();
+		ngramCompiler.setMin(3);
+		ngramCompiler.includeExtremities(true);
+		Set<String>ngramsOfBadWord = ngramCompiler.compile(badWord);
+		String[] ngrams = ngramsOfBadWord.toArray(new String[] {});
+		logger.debug("ngramsOfBadWord= "+String.join("; ", ngrams));
+		
+		// 2. compile IDF of each ngram = 1 / #words with this ngram + 1 and order highest first
+		Pair<String,Double> idf[] = new Pair[ngrams.length];
+		HashMap<String,Double> idfHash = new HashMap<String,Double>();
+		for (int i=0; i<ngrams.length; i++) {
+			Long ngramStat = ngramStats.get(ngrams[i]);
+			if (ngramStat==null) ngramStat = (long)0;
+			double val = 1.0 / (ngramStat + 1);
+			idf[i] = new Pair<String,Double>(ngrams[i],val);
+			idfHash.put(ngrams[i], val);
+		}
+		IDFComparator dcomparator = new IDFComparator();
+		Arrays.sort(idf,dcomparator);
+		
+		// 3. add words for top IDFs to the set of candidates until the number of candidates exceeds the maximum
+		Set<String> candidates = new HashSet<String>();
+		for (int i=0; i<idf.length; i++) {
+			Set<String> candidatesWithNgram = wordsContainingSequ(idf[i].getFirst());
+			candidates.addAll(candidatesWithNgram);	
+			if (candidates.size() > MAX_CANDIDATES)
+				break;
+		}
+		
+		// 4. compute scores for each word and order words highest score first
+		List<Pair<String,Double>> scoreValues = new ArrayList<Pair<String,Double>>();
+		Iterator<String> it = candidates.iterator();
+		while (it.hasNext()) {
+			String candidate = it.next();
+			Set<String> ngramsOfCandidate = ngramCompiler.compile(candidate);
+			Set<String> all = new HashSet<String>();
+			all.addAll(ngramsOfBadWord);
+			all.addAll(ngramsOfCandidate);
+			double totalScore = 0;
+			Iterator<String> itall = all.iterator();
+			while (itall.hasNext()) {
+				String el = itall.next();
+				if (ngramsOfBadWord.contains(el) && ngramsOfCandidate.contains(el)) {
+					double score = idfHash.get(el);
+					totalScore += score;
+				}
+			}
+			scoreValues.add(new Pair<String,Double>(candidate,totalScore));
+		}
+		WordScoreComparator comparator = new WordScoreComparator();
+		Pair<String,Double>[] arrScoreValues = scoreValues.toArray(new Pair[] {});
+		Arrays.sort(arrScoreValues, comparator);
+
+		Set<String> allCandidates = new HashSet<String>();
+		for (int i=0; i<arrScoreValues.length; i++) {
+			allCandidates.add(arrScoreValues[i].getFirst());
+		}
+		return allCandidates;
+	}
+
+	public class IDFComparator implements Comparator<Pair<String,Double>> {
+	    @Override
+	    public int compare(Pair<String,Double> a, Pair<String,Double> b) {
+	    	if (a.getSecond().longValue() > b.getSecond().longValue())
+	    		return -1;
+	    	else if (a.getSecond().longValue() < b.getSecond().longValue())
+				return 1;
+	    	else 
+	    		return 0;
+	    }
+	}
+
+	public class WordScoreComparator implements Comparator<Pair<String,Double>> {
+	    @Override
+	    public int compare(Pair<String,Double> a, Pair<String,Double> b) {
+	    	if (a.getSecond().longValue() > b.getSecond().longValue())
+	    		return -1;
+	    	else if (a.getSecond().longValue() < b.getSecond().longValue())
+				return 1;
+	    	else 
+	    		return a.getFirst().compareToIgnoreCase(b.getFirst());
+	    }
+	}
+
+
+
 	protected Set<String> wordsContainingSequ(String seq) {
-		Pattern p = Pattern.compile(",([^,]*"+seq+"[^,]*),");
+		Logger logger = Logger.getLogger("SpellChecker.wordsContainingSequ");
+		Pattern p;
+		if (seq.charAt(0)=='^' && seq.charAt(seq.length()-1)=='$') {
+			seq = seq.substring(1,seq.length()-1);
+			p = Pattern.compile(",("+seq+"),");
+		}
+		else if (seq.charAt(0)=='^') {
+			seq = seq.substring(1);
+			p = Pattern.compile(",("+seq+"[^,]*),");
+		}
+		else if (seq.charAt(seq.length()-1)=='$') {
+			logger.debug("seq= "+seq);
+			seq = seq.substring(0,seq.length()-1);
+			logger.debug(">>> seq= "+seq);
+			p = Pattern.compile(",([^,]*"+seq+"),");
+		}
+		else
+			p = Pattern.compile(",([^,]*"+seq+"[^,]*),");
 		Matcher m = p.matcher(allWords);
 		Set<String> wordsWithSeq = new HashSet<String>();
 		while (m.find())
@@ -321,7 +439,7 @@ public class SpellChecker {
 		for (int seqLen = 1; seqLen <= MAX_SEQ_LEN; seqLen++) {
 			for (int  start=0; start <= string.length() - seqLen; start++) {
 				String charSeq = string.substring(start, start+seqLen);
-				Long idf = idf(charSeq);
+				Long idf = ngramStat(charSeq);
 				//System.out.println("-- rarestSequencesOf:    charSeq="+charSeq+" ("+idf+")");;
 				if (idf != 0) {
 					Pair<String,Long> pair = new Pair<String,Long>(charSeq,idf);
@@ -337,6 +455,7 @@ public class SpellChecker {
 		return listOfRarest;
 		
 	}
+	
 	
 	
 	
