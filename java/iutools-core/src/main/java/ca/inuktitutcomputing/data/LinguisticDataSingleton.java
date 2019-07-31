@@ -9,10 +9,16 @@ public class LinguisticDataSingleton {
 	    /** Constructeur privé 
 	     * @throws TimeoutException */  
 	    private LinguisticDataSingleton() {
+	    	System.out.println("LinguisticDataSingleton--- dataSource= "+dataSource);
 			LinguisticDataAbstract.init(dataSource);
 	    }
 	     
 	    /** Holder */
+	    /* Cette technique du Holder joue sur le fait que la classe interne ne sera chargée 
+	     * en mémoire que lorsque l'on y fera référence pour la première fois, c'est-à-dire
+	     * lors du premier appel de "getInstance()" sur la classe Singleton. Lors de son 
+	     * chargement, le Holder initialisera ses champs statiques et créera donc l'instance 
+	     * unique du Singleton. */
 	    private static class SingletonHolder
 	    {       
 	        /** Instance unique non préinitialisée */
