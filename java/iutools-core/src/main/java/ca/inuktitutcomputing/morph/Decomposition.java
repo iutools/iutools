@@ -30,6 +30,8 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
+
 import ca.inuktitutcomputing.data.Base;
 import ca.inuktitutcomputing.data.Morpheme;
 import ca.inuktitutcomputing.script.Orthography;
@@ -51,20 +53,20 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 
 	String word;
 	RootPartOfComposition stem;
-	public Object[] morphParts;
+	public AffixPartOfComposition[] morphParts;
 
 	// Au moment de la cr�ation d'un objet Decomposition, on d�termine
 	// la cha�ne de caract�res � l'int�rieur du mot pour chaque morceau,
 	// � partir de la position sauvegard�e dans l'objet MorceauAffixe
 	// lors de la d�composition.
 
-	public Decomposition(String word, RootPartOfComposition r, Object[] parts) {
+	public Decomposition(String word, RootPartOfComposition r, AffixPartOfComposition[] parts) {
 		this.word = word;
 		stem = r;
 		String origState = stem.arc.startState.id;
 		int nextPos = word.length();
 		for (int i = parts.length - 1; i >= 0; i--) {
-			AffixPartOfComposition m = (AffixPartOfComposition) parts[i];
+			AffixPartOfComposition m = parts[i];
 			int pos = m.getPosition();
 			m.setTerme(
 				Orthography.orthographyICI(word.substring(pos, nextPos), false) );
@@ -72,7 +74,7 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 		}
 		for (int i=0; i<parts.length; i++) {
 			// 'arc' de chaque morceau
-			AffixPartOfComposition m = (AffixPartOfComposition) parts[i];
+			AffixPartOfComposition m = parts[i];
 			for (int j=0; j<m.arcs.length; j++) {
 			    if (m.arcs[j].destState.id.equals(origState)) {
 			        m.arc = m.arcs[j];
@@ -93,7 +95,7 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 		return morphParts;
 	}
     
-    public void setMorphParts(Object [] parts) {
+    public void setMorphParts(AffixPartOfComposition [] parts) {
         morphParts = parts;
     }
     
@@ -101,7 +103,7 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
     	if (morphParts.length==0)
     		return null;
     	else
-    		return (AffixPartOfComposition)morphParts[morphParts.length-1];
+    		return morphParts[morphParts.length-1];
     }
 
 	public int getNbMorphparts() {
@@ -196,160 +198,176 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 	}
 	
 	
-    // �liminer les d�compositions qui contiennent une suite de suffixes
-    // pour laquelle il existe un suffixe compos�, pour ne garder que
-    // la d�compositions dans laquelle se trouve le suffixe compos�.
+    // Éliminer les décompositions qui contiennent une suite de suffixes
+    // pour laquelle il existe un suffixe composé, pour ne garder que
+    // la décompositions dans laquelle se trouve le suffixe composé.
+	// For example, apiqsuqtaujuksaq : there is a suffix -juksaq/vn which
+	// is the combination of -juq/vn and -ksaq/nn. The analyzer will find
+	// a decomposition with -juksaq but will also find a decomposition with
+	// juq+ksaq ; this is to remove the latter.
 	static public Decomposition[] removeCombinedSuffixes(Decomposition decs[]) {
-        Object[][] objs = new Object[decs.length][2];
+		Logger logger = Logger.getLogger("Decomposition.removeCombinedSuffixes");
+        Object[][] decsAndKeepstatus = new Object[decs.length][2];
         for (int i = 0; i < decs.length; i++) {
-            objs[i][0] = decs[i];
-            objs[i][1] = new Boolean(true);
+        	logger.debug("decs["+i+"] = "+decs[i].toStr2());
+            decsAndKeepstatus[i][0] = decs[i];
+            decsAndKeepstatus[i][1] = new Boolean(true); // initialiser à true (keep)
         }
-        // Pour chaque d�composition qui contient un suffixe combin�:
-        for (int i = 0; i < objs.length; i++) {
-            if (((Boolean) objs[i][1]).booleanValue()) {
-                // On ne consid�re que les d�compositions qui n'ont pas
-                // �t� rejet�es.
-                Decomposition dec = (Decomposition) objs[i][0];
-                // Morph�mes de cette d�composition
-                Vector<Object> vParts = new Vector<Object>(Arrays.asList(dec.morphParts));
-                vParts.add(0,dec.stem);
-                // Pour chaque morph�me combin�, trouver celui qui le pr�c�de,
-                // celui qui le suit, et v�rifier dans les autres
-                // d�compositions retenues si ces deux morph�mes limites
-                // contiennent les �l�ments du morph�me combin�.  Si c'est
-                // le cas, on rej�te ces d�compositions.
-                for (int j = 0; j < vParts.size(); j++) {
-                    PartOfComposition morphPart = (PartOfComposition) vParts.elementAt(j);
-                    Morpheme morph = morphPart.getMorpheme();
-                    String cs[] = null;
-                    if (morph != null)
-                        cs = morph.getCombiningParts();
-                    // Seulement pour les morph�mes combin�s.
+
+        for (int i = 0; i < decsAndKeepstatus.length; i++) {
+        	// Pendant l'exécution de cette boucle, certaines décompositions 
+        	// plus loin dans la liste et pas encore traitées peuvent avoir été rejetées ;
+            // on ne considère que les décompositions qui n'ont pas encore été rejetées.
+            if (((Boolean) decsAndKeepstatus[i][1]).booleanValue()) { 
+                Decomposition dec = (Decomposition) decsAndKeepstatus[i][0];
+                Vector<AffixPartOfComposition> affixesOfDecompisition = new Vector<AffixPartOfComposition>(Arrays.asList(dec.morphParts));
+//                vParts.add(0,dec.stem); // je ne comprends pas pouquoi j'ai ajouté la racine aux parties
+                
+                // Pour chaque affixe combiné, trouver celui qui le précède et
+                // celui qui le suit, et vérifier dans les autres
+                // décompositions retenues si ces deux affixes limites
+                // contiennent les éléments de l'affixe combiné.  Si c'est
+                // le cas, on rejète ces décompositions.
+                for (int indexOfProcessedVPart = 0; indexOfProcessedVPart < affixesOfDecompisition.size(); indexOfProcessedVPart++) {
+                    Morpheme morph = affixesOfDecompisition.elementAt(indexOfProcessedVPart).getMorpheme();
+                    String[] cs = morph.getCombiningParts();
+                    // Seulement pour les affixes combinés.
                     if (cs != null) {
-                        // Trouver les d�compositions qui ont les �l�ments du
-                        // suffixe combin� flanqu�s de part et d'autre par les
-                        // m�mes morph�mes, et les enlever de la liste.
-                        String prec, follow;
-                        // Morph�me pr�c�dant le morph�me combin�.
-                        if (j == 0)
-                            prec = null;
-                        else if (j == 1)
-                            prec = dec.stem.root.id;
-                        else
-                            prec = ((PartOfComposition) vParts.elementAt(j - 1)).getMorpheme().id;
-                        // Morph�me suivant le morph�me combin�.
-                        if (j == vParts.size() - 1)
-                            follow = null;
-                        else
-                            follow = ((PartOfComposition) vParts.elementAt(j + 1)).getMorpheme().id;
-                        // V�rifier dans les d�compositions retenues.
-                        int k = 0;
-                        while (k < objs.length) {
-                            // D�compositions retenues seulement.
-                            if (((Boolean) objs[k][1]).booleanValue()) {
-                                Decomposition deck = (Decomposition) objs[k][0];
-                                Vector<Object> vPartsk = new Vector<Object>(Arrays.asList(deck.morphParts));
-                                vPartsk.add(0,deck.stem);
-                                int l = 0;
-                                boolean cont = true;
-                                boolean inCombined = false;
-                                int iCombined = 0;
-                                // Analyser chaque morph�me de cette
-                                // d�composition pour v�rifier s'il
-                                // correspond � un �l�ment du morph�me
-                                // combin�.
-                                while (l < vPartsk.size() && cont) {
-//                                    MorceauAffixe mck = (MorceauAffixe) morphPartsk[l];
-//                                    Affix affk = mck.getAffix();
-                                    Morpheme morphk = ((PartOfComposition)vPartsk.elementAt(l)).getMorpheme();
-                                    if (inCombined) {
-                                        // On a d�j� d�termin� qu'un ou
-                                        // plusieurs morph�mes corres-
-                                        // pondent aux �l�ments du morph�me
-                                        // combin�.  V�rifier celui-ci.
-//                                        if (affk.id.equals(cs[iCombined])) {
-                                        if (morphk.id.equals(cs[iCombined])) {
-                                            // C'est aussi un �l�ment du
-                                            // morph�me combin�.
-                                            iCombined++;
-                                            if (iCombined == cs.length) {
-                                                // C'est le dernier �l�ment du
-                                                // morph�me combin�.  V�rifer
-                                                // si le morph�me qui le suit
-                                                // est le m�me que le morph�me
-                                                // suivant le morph�me combin�.
-                                                // Si c'est le cas, on rej�te
-                                                // cette d�composition.  De
-                                                // toute fa�on, on arr�te cette
-                                                // v�rification.
-                                                String followk;
-                                                if (l == vPartsk.size() - 1)
-                                                    followk = null;
-                                                else
-                                                    followk = ((PartOfComposition) vPartsk.elementAt(l + 1))
-                                                            .getMorpheme().id;
-                                                if ( (follow==null && followk==null) ||
-                                                        (follow!=null && followk!=null && followk.equals(follow)) )
-                                                    // rejeter cette d�composition
-                                                    objs[k][1] = new Boolean(
-                                                            false);
-                                                cont = false;
-                                            }
-                                        } else {
-                                            // Ce n'est pas un �l�ment du
-                                            // morph�me combin�.  On remet � 0.
-                                            inCombined = false;
-                                            iCombined = 0;
-                                        }
-                                    } else {
-                                        // On n'a pas encore reconnu un
-                                        // morph�me comme premier �l�ment du
-                                        // morph�me combin�.  Est-ce que celui-
-                                        // ci l'est?
-                                        if (morphk.id.equals(cs[iCombined])) {
-                                            // Premier �l�ment du morph�me
-                                            // combin�.
-                                            inCombined = true;
-                                            iCombined++;
-                                            String preck;
-                                            // V�rifier si le morph�me qui le
-                                            // pr�c�de est le m�me que le
-                                            // morph�me qui pr�c�de le morph�me
-                                            // combin�.  Si c'est le cas, on
-                                            // continue la v�rification.  Sinon
-                                            // on arr�te la v�rification de
-                                            // cette d�composition.
-                                            if (l == 0)
-                                                preck = null;
-                                            else if (l == 1)
-                                                preck = deck.stem.root.id;
-                                            else
-                                                preck = ((PartOfComposition) vPartsk.elementAt(l - 1))
-                                                        .getMorpheme().id;
-                                            if ( (preck == null && prec != null) || 
-                                                    (preck != null && prec == null) ||
-                                                    (preck != null && prec != null && !preck.equals(prec)))
-                                                cont = false;
-                                        }
-                                    }
-                                    l++;
-                                }
-                            }
-                            k++;
-                        }
+                        // Trouver les décompositions qui ont les éléments du
+                        // suffixe combiné flanqués de part et d'autre par les
+                        // mêmes morphèmes, et les enlever de la liste.
+                    	removeDecsWithCombinationAsSeparateElements(dec,affixesOfDecompisition,indexOfProcessedVPart,cs,decsAndKeepstatus);
                     }
                 }
             }
         }
         Vector<Object> v = new Vector<Object>();
-        for (int i = 0; i < objs.length; i++)
-            if (((Boolean) objs[i][1]).booleanValue())
-                v.add(objs[i][0]);
+        for (int i = 0; i < decsAndKeepstatus.length; i++)
+            if (((Boolean) decsAndKeepstatus[i][1]).booleanValue())
+                v.add(decsAndKeepstatus[i][0]);
         Decomposition ndecs[] = (Decomposition[]) v
                 .toArray(new Decomposition[] {});
         return ndecs;
     }
+	
+	
+	protected static void removeDecsWithCombinationAsSeparateElements(
+			Decomposition dec, Vector<AffixPartOfComposition> vParts, int indexOfProcessedVPart,
+			String[] cs,
+			Object[][] decsAndKeepstatus) {
+        // Trouver les décompositions qui ont les éléments du
+        // suffixe combiné flanqués de part et d'autre par les
+        // mêmes morphèmes, et les enlever de la liste.
+        String prec, follow;
+        // Morphème précédant le morphème combiné.
+        if (indexOfProcessedVPart == 0)
+            prec = null;
+        else if (indexOfProcessedVPart == 1)
+            prec = dec.stem.root.id;
+        else
+            prec = ((PartOfComposition) vParts.elementAt(indexOfProcessedVPart - 1)).getMorpheme().id;
+        // Morphème suivant le morphème combiné.
+        if (indexOfProcessedVPart == vParts.size() - 1)
+            follow = null;
+        else
+            follow = ((PartOfComposition) vParts.elementAt(indexOfProcessedVPart + 1)).getMorpheme().id;
+        // Vérifier dans les décompositions retenues.
+        int k = 0;
+        while (k < decsAndKeepstatus.length) {
+            // Décompositions retenues seulement.
+            if (((Boolean) decsAndKeepstatus[k][1]).booleanValue()) {
+                Decomposition deck = (Decomposition) decsAndKeepstatus[k][0];
+                Vector<Object> vPartsk = new Vector<Object>(Arrays.asList(deck.morphParts));
+                vPartsk.add(0,deck.stem);
+                int l = 0;
+                boolean cont = true;
+                boolean inCombined = false;
+                int iCombined = 0;
+                // Analyser chaque morphème de cette
+                // décomposition pour vérifier s'il
+                // correspond à un élément du morphème
+                // combiné.
+                while (l < vPartsk.size() && cont) {
+//                    MorceauAffixe mck = (MorceauAffixe) morphPartsk[l];
+//                    Affix affk = mck.getAffix();
+                    Morpheme morphk = ((PartOfComposition)vPartsk.elementAt(l)).getMorpheme();
+                    if (inCombined) {
+                        // On a d�j� d�termin� qu'un ou
+                        // plusieurs morph�mes corres-
+                        // pondent aux �l�ments du morph�me
+                        // combin�.  V�rifier celui-ci.
+//                        if (affk.id.equals(cs[iCombined])) {
+                        if (morphk.id.equals(cs[iCombined])) {
+                            // C'est aussi un �l�ment du
+                            // morph�me combin�.
+                            iCombined++;
+                            if (iCombined == cs.length) {
+                                // C'est le dernier �l�ment du
+                                // morph�me combin�.  V�rifer
+                                // si le morph�me qui le suit
+                                // est le m�me que le morph�me
+                                // suivant le morph�me combin�.
+                                // Si c'est le cas, on rej�te
+                                // cette d�composition.  De
+                                // toute fa�on, on arr�te cette
+                                // v�rification.
+                                String followk;
+                                if (l == vPartsk.size() - 1)
+                                    followk = null;
+                                else
+                                    followk = ((PartOfComposition) vPartsk.elementAt(l + 1))
+                                            .getMorpheme().id;
+                                if ( (follow==null && followk==null) ||
+                                        (follow!=null && followk!=null && followk.equals(follow)) )
+                                	
+                                    // *** REJETER CETTE DÉCOMPOSITION ***
+                                    decsAndKeepstatus[k][1] = new Boolean(false);
+                                
+                                cont = false;
+                            }
+                        } else {
+                            // Ce n'est pas un �l�ment du
+                            // morph�me combin�.  On remet � 0.
+                            inCombined = false;
+                            iCombined = 0;
+                        }
+                    } else {
+                        // On n'a pas encore reconnu un
+                        // morph�me comme premier �l�ment du
+                        // morph�me combin�.  Est-ce que celui-
+                        // ci l'est?
+                        if (morphk.id.equals(cs[iCombined])) {
+                            // Premier �l�ment du morph�me
+                            // combin�.
+                            inCombined = true;
+                            iCombined++;
+                            String preck;
+                            // V�rifier si le morph�me qui le
+                            // pr�c�de est le m�me que le
+                            // morph�me qui pr�c�de le morph�me
+                            // combin�.  Si c'est le cas, on
+                            // continue la v�rification.  Sinon
+                            // on arr�te la v�rification de
+                            // cette d�composition.
+                            if (l == 0)
+                                preck = null;
+                            else if (l == 1)
+                                preck = deck.stem.root.id;
+                            else
+                                preck = ((PartOfComposition) vPartsk.elementAt(l - 1))
+                                        .getMorpheme().id;
+                            if ( (preck == null && prec != null) || 
+                                    (preck != null && prec == null) ||
+                                    (preck != null && prec != null && !preck.equals(prec)))
+                                cont = false;
+                        }
+                    }
+                    l++;
+                }
+            }
+            k++;
+        }
+	}
 	
 	
 	/*
