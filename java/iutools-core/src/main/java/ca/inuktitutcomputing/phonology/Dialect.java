@@ -232,7 +232,7 @@ public class Dialect {
 		 * Check for internal equivalent clusters in the root and add the
 		 * corresponding terms to the candidates.
 		 */
-		Vector correspondingTerms = correspondingTermsEquivalentGroups(rootICI);
+		Vector<String> correspondingTerms = correspondingTermsEquivalentGroups(rootICI);
 		if (correspondingTerms != null)
 			for (int n = 0; n < correspondingTerms.size(); n++) {
 				String candN = Orthography
