@@ -153,7 +153,11 @@ public abstract class LinguisticDataAbstract {
         return s;
     }
 
-    // Returns a Vector of Base and Demonstrative objects, or null.
+    /**
+     * Returns a Vector of Base and Demonstrative objects, or null.
+     * @param term String string in the ICI (Inuit Cultural Institute) standard
+     * @return Vector<Morpheme> a vector of Morpheme objects or null
+     */
     @SuppressWarnings("unchecked")
 	public static Vector<Morpheme> getBases(String term) {
         Vector<Morpheme> bs = null;
@@ -183,6 +187,11 @@ public abstract class LinguisticDataAbstract {
         return b;
     }
     
+    /**
+     * 
+     * @param form String string to be searched as a possible surface form of an affix
+     * @return Vector<SurfaceFormOfAffix> vector of objects that describe surface forms in the context (stem ending and actions) or null
+     */
     // The keys of the hashtable 'surfaceFormsOfAffixes' are in the
     // simplified spelling (ng > N).  To search for a form
     // in the ICI spelling, one calls this method.
