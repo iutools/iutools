@@ -30,7 +30,10 @@ import java.util.HashMap;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
+
 import ca.inuktitutcomputing.morph.AffixPartOfComposition;
+import ca.nrc.json.PrettyPrinter;
 import ca.inuktitutcomputing.data.constraints.Conditions;
 import ca.inuktitutcomputing.data.LinguisticDataAbstract;
 import ca.inuktitutcomputing.data.Affix;
@@ -103,6 +106,11 @@ public abstract class Morpheme extends Object implements Cloneable {
     }
   
     public boolean meetsConditions (Conditions conds, Vector<AffixPartOfComposition> followingMorphemes) {
+    	Logger logger = Logger.getLogger("Morpheme.meetsConditions");
+    	String[] idsOfFollowingMorphemes = new String[followingMorphemes.size()];
+    	for (int iv=0; iv<followingMorphemes.size(); iv++)
+    		idsOfFollowingMorphemes[iv] = followingMorphemes.get(iv).getAffix().id;
+    	logger.debug(String.join("; ", idsOfFollowingMorphemes));
         boolean res = true;
         /*
          * Il faut que les conditions spécifiques soient rencontrées. Par
@@ -154,6 +162,9 @@ public abstract class Morpheme extends Object implements Cloneable {
         }
     
     public boolean attrEqualsValue (String attr, String val, boolean eq) {
+    	Logger logger = Logger.getLogger("Morpheme.attrEqualsValue");
+    	logger.debug("morpheme's id: "+this.id);
+    	logger.debug("attr= "+attr+"; val= "+val);
         boolean res = false;
         String valAttr = getAttr(attr);
         // It is possible that the value of the attribute for the morpheme
@@ -162,13 +173,17 @@ public abstract class Morpheme extends Object implements Cloneable {
         // "gusuk/1vv suk/1vv", that is, a dual value.  When the values
         // are compared, one has to take this into account.
         String valAspect = val;
+        logger.debug("valAspect= "+valAspect);
         // This is the value that the morpheme's attribute should have
         // to meet the condition.  If that value is the name of an attribute
-        // of the morpheme, find the value of that attribute.
-        if (attributes.containsKey(valAspect))
-            valAspect = getAttr(valAspect);
+        // of the morpheme (marked by an initial X), find the value of that attribute.
+        if (valAspect.startsWith("X") && attributes.containsKey(valAspect.substring(1))) {
+            logger.debug("valAspect "+valAspect+" contained in attributes");
+            valAspect = getAttr(valAspect.substring(1));
+        }
+        logger.debug("valAspect= "+valAspect);
         // Check for the morpheme
-        if (valAspect.equals("null"))
+        if (valAspect==null || valAspect.equals("null"))
             if (eq)
                 res = (valAttr==null);
             else
