@@ -380,8 +380,8 @@ public class Graph {
 //		});
 		
 		radpp1.setArcs(new Arc[]{
-		        new Arc(makeCond("type:tn,possPers:1,possNumber:number"), racpp1),
-		        new Arc(makeCond("type:tn,possPers:2,possNumber:number"), racpp2)
+		        new Arc(makeCond("type:tn,possPers:1,possNumber:Xnumber"), racpp1),
+		        new Arc(makeCond("type:tn,possPers:2,possNumber:Xnumber"), racpp2)
 		});
 		
 //		radpp2.setArcs(new Arc[]{
