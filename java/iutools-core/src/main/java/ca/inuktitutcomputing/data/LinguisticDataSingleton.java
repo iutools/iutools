@@ -9,7 +9,6 @@ public class LinguisticDataSingleton {
 	    /** Constructeur privé 
 	     * @throws TimeoutException */  
 	    private LinguisticDataSingleton() {
-	    	System.out.println("LinguisticDataSingleton--- dataSource= "+dataSource);
 			LinguisticDataAbstract.init(dataSource);
 	    }
 	     
