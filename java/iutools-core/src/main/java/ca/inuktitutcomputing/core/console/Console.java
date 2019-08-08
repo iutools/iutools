@@ -141,7 +141,7 @@ public class Console {
 
 		// Compile a corpus and save it to file
 		SubCommand compileCorpus = 
-				new CmdCompileTrie("compile_corpus")
+				new CmdCompileCorpus("compile_corpus")
 				.addOption(optCorpusDir)				
 				.addOption(optCompFile)
 				.addOption(optFromScratch)

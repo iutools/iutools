@@ -6,14 +6,14 @@ import java.io.IOException;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.pirurvik.iutools.CompiledCorpus;
 
-public class CmdCompileTrie extends ConsoleCommand {
+public class CmdCompileCorpus extends ConsoleCommand {
 
 	@Override
 	public String getUsageOverview() {
-		return "Compile a Trie from a series of corpus files and save it to a JSON file.";
+		return "Compile a corpus from a series of corpus files.";
 	}
 
-	public CmdCompileTrie(String name) {
+	public CmdCompileCorpus(String name) {
 		super(name);
 	}
 
@@ -22,24 +22,24 @@ public class CmdCompileTrie extends ConsoleCommand {
 		
 		String corpusDir = getCorpusDir();
 		
-		String trieFile = getCompilationFile();
+		String compilationFile = getCompilationFile();
 		
 		boolean fromScratch = this.cmdLine.hasOption("from-scratch");
 		boolean redoFailed = this.cmdLine.hasOption("redo-failed");
 
-		echo("\nCompiling Trie:\n");
+		echo("\nCompiling corpus:\n");
 		echo(1);
 		{
-			echo("corpus       : "+corpusDir+"\ntrie file    : "+trieFile+"\nfrom scratch : "+fromScratch+"\n");
+			echo("corpus directory: "+corpusDir+"\noutput json file: "+compilationFile+"\nfrom scratch: "+fromScratch+"\n");
 		}
 		echo(-1);
 		
 		CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
 		boolean ok = true;
-		if ( trieFile != null )
-			ok = checkFilePath(trieFile);
+		if ( compilationFile != null )
+			ok = checkFilePath(compilationFile);
 		if ( !ok ) {
-			System.err.println("ERROR: The -trie-file argument points to a non-existent directory. Abort.");
+			System.err.println("ERROR: The --corpus-dir argument points to a non-existent directory. Abort.");
 			System.exit(1);
 		}
 		
@@ -49,17 +49,17 @@ public class CmdCompileTrie extends ConsoleCommand {
 			else if (!redoFailed)
 				compiledCorpus.compileCorpus(corpusDir);
 			else {
-				File compilationFile = new File(corpusDir + "/" + CompiledCorpus.JSON_COMPILATION_FILE_NAME);
-				if (compilationFile.exists()) {
-					compiledCorpus = CompiledCorpus.createFromJson(compilationFile.getAbsolutePath());
+				File compilationBackupFile = new File(corpusDir + "/" + CompiledCorpus.JSON_COMPILATION_FILE_NAME);
+				if (compilationBackupFile.exists()) {
+					compiledCorpus = CompiledCorpus.createFromJson(compilationBackupFile.getAbsolutePath());
 					compiledCorpus.recompileWordsThatFailedAnalysis(corpusDir);
 				} else {
-					System.err.println("ERROR: " + "No json compilation file in corpus directory. Abort.");
+					System.err.println("ERROR: " + "No json compilation backup file in corpus directory. The compilation cannot resume. Abort.");
 					System.exit(1);
 				}
 			}
-			compiledCorpus.saveCompilerInJSONFile(trieFile);
-			echo("\nThe result of the compilation has been saved in the file " + trieFile + ".\n");
+			compiledCorpus.saveCompilerInJSONFile(compilationFile);
+			echo("\nThe result of the compilation has been saved in the file " + compilationFile + ".\n");
 		} catch (Exception e) {
 			System.err.println("ERROR: " + e.getMessage());
 		}
