@@ -15,15 +15,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
 import ca.nrc.config.ConfigException;
+import ca.nrc.datastructure.Pair;
 import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
+import ca.nrc.json.PrettyPrinter;
 import ca.nrc.testing.AssertHelpers;
 import ca.pirurvik.iutools.CompiledCorpus;
 import junit.framework.TestCase;
@@ -515,6 +518,7 @@ public class CompiledCorpusTest extends TestCase
 
 	
     private String createTemporaryCorpusDirectory(String[] stringOfWords) throws IOException {
+    	Logger logger = Logger.getLogger("CompiledCorpusTest.createTemporaryCorpusDirectory");
         corpusDirectory = Files.createTempDirectory("").toFile();
         corpusDirectory.deleteOnExit();
         String corpusDirPath = corpusDirectory.getAbsolutePath();
@@ -523,6 +527,8 @@ public class CompiledCorpusTest extends TestCase
         	BufferedWriter bw = new BufferedWriter(new FileWriter(wordFile));
         	bw.write(stringOfWords[i]);
         	bw.close();
+        	logger.debug("wordFile= "+wordFile.getAbsolutePath());
+        	logger.debug("contents= "+wordFile.length());
         }
         return corpusDirPath;
 	}
@@ -614,6 +620,32 @@ public class CompiledCorpusTest extends TestCase
 		
 		CompiledCorpus savedCompiledCorpus = CompiledCorpusRegistry.getCorpus("compiled_corpus");
 		assertEquals("",",,nunavut,,inuit,,",savedCompiledCorpus.decomposedWordsSuite);
+	}
+	
+	
+	@Test
+	public void test__isWordInCorpus() throws IOException, CompiledCorpusException, StringSegmenterException {
+		String[] stringsOfWords = new String[] {
+				"nunavut inuit takujuq uvlimik"
+				};
+		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
+        CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
+        compiledCorpus.setVerbose(false);
+        compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
+		String word;
+		Boolean result;
+		
+		word = "iben";
+		result = compiledCorpus.isWordInCorpus(word);
+		assertTrue("The word "+word+" is not in the corpus; result should be null",result==null);
+		
+		word = "takujuq";
+		result = compiledCorpus.isWordInCorpus(word);
+		assertTrue("The word "+word+" is in the corpus with successful analysis; result should be true",result.booleanValue()==true);
+		
+		word = "uvlimik";
+		result = compiledCorpus.isWordInCorpus(word);
+		assertTrue("The word "+word+" is in the corpus with unsuccessful analysis; result should be false",result.booleanValue()==false);
 	}
 	
 

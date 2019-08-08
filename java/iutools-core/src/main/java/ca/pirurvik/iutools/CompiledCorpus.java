@@ -28,6 +28,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 
 import ca.inuktitutcomputing.utilities.NgramCompiler;
+import ca.nrc.datastructure.Pair;
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_Char;
@@ -35,6 +36,7 @@ import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
+import ca.nrc.json.PrettyPrinter;
 
 
 /**
@@ -89,6 +91,11 @@ public class CompiledCorpus
 	public transient String name;
 	@JsonIgnore
 	public transient NgramCompiler ngramCompiler;
+	
+	@JsonIgnore
+	public transient String wordsWithSuccessfulDecomposition = null;
+	@JsonIgnore
+	public transient String wordsWithUnsuccessfulDecomposition = null;
 	
 	
 	
@@ -408,7 +415,7 @@ public class CompiledCorpus
 	
 	public void processDocumentContents(BufferedReader bufferedReader, String fileAbsolutePath)
 			throws CompiledCorpusException, StringSegmenterException {
-		Logger logger = Logger.getLogger("CorpusTrieCompiler.processDocumentContents");
+		Logger logger = Logger.getLogger("CorpusCompiler.processDocumentContents");
 		String line;
 		boolean stopBecauseOfStopAfter = false;
 		currentFileWordCounter = 0;
@@ -627,9 +634,12 @@ public class CompiledCorpus
 	}
 
 	private static String[] extractWordsFromLine(String line) {
+		Logger logger = Logger.getLogger("CompiledCorpus.extractWordsFromLine");
 		line = line.replace('.', ' ');
 		line = line.replace(',', ' ');
+		logger.debug("line= '"+line+"'");
 		String[] words = line.split("\\s+");
+		logger.debug("words= "+PrettyPrinter.print(words));
 		if (words.length!=0) {
 			if (words[0].equals("")) {
 				int n=words.length-1;
@@ -638,6 +648,7 @@ public class CompiledCorpus
 				words = newWords;
 			}
 		}
+		logger.debug("words= "+PrettyPrinter.print(words));
 		return words;
 	}
 
@@ -647,6 +658,32 @@ public class CompiledCorpus
 
 	public String[] getMostFrequentSequenceForRoot(String string) {
 		return this.trie.getMostFrequentSequenceForRoot(string);
+	}
+	
+	
+	public Boolean isWordInCorpus(String word) {
+		Boolean result;
+		if (getWordsWithSuccessfulDecomposition().contains(",,"+word+",,"))
+			result = new Boolean(true);
+		else if (getWordsWithUnsuccessfulDecomposition().contains(",,"+word+",,"))
+			result = new Boolean(false);
+		else
+			result = null;
+		return result;
+	}
+	
+	public String getWordsWithSuccessfulDecomposition() {
+		return decomposedWordsSuite;
+	}
+
+	public String getWordsWithUnsuccessfulDecomposition() {
+		if (wordsWithUnsuccessfulDecomposition==null) {
+			wordsWithUnsuccessfulDecomposition = ",,";
+			for (int i=0; i<wordsFailedSegmentation.size(); i++) {
+				wordsWithUnsuccessfulDecomposition += wordsFailedSegmentation.get(i)+",,";
+			}
+		}
+		return wordsWithUnsuccessfulDecomposition;
 	}
 
 
