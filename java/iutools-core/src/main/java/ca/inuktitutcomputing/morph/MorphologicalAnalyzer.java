@@ -29,6 +29,8 @@ import java.util.*;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.*;
 
+import org.apache.log4j.Logger;
+
 import ca.inuktitutcomputing.data.constraints.Condition;
 import ca.inuktitutcomputing.data.constraints.Conditions;
 import ca.inuktitutcomputing.data.constraints.Imacond;
@@ -272,6 +274,8 @@ public class MorphologicalAnalyzer {
 			Vector<AffixPartOfComposition> morphParts, State[] states,
 			Conditions preCond, String transitivity) throws TimeoutException, MorphInukException {
 
+    	Logger logger = Logger.getLogger("MorphologicalAnalyzer.analyzeAsSequenceOfMorphemes");
+    	logger.debug("++++++simplifiedTerm= "+simplifiedTerm);
         Vector<Decomposition> completeAnalysis = new Vector<Decomposition>();
         Vector<SurfaceFormOfAffix> formsOfAffixFound;
         Vector<SurfaceFormOfAffix> otherFormsOfAffixFound;
@@ -478,6 +482,8 @@ public class MorphologicalAnalyzer {
             boolean notResultingFromDialectalPhonologicalTransformation
             ) throws TimeoutException, MorphInukException {
 
+    	Logger logger = Logger.getLogger("MorphologicalAnalyzer.analyzeWithCandidateAffixes");
+    	logger.debug("***stem= "+stem);
         Vector<Decomposition> completeAnalysis = new Vector<Decomposition>();
         
         String keyStateIDs = computeStateIDs(states);
