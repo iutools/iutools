@@ -1713,7 +1713,7 @@ public class MorphInuk {
                  */
                 Decomposition res = new Decomposition(word, new RootPartOfComposition(
                         termOrigICI, root, transitivity, null), morphParts
-                        .toArray());
+                        .toArray(new AffixPartOfComposition[] {}));
                 rootAnalyses.add(res);
             } else {
                 /*
@@ -1731,7 +1731,7 @@ public class MorphInuk {
                     RootPartOfComposition mr = new RootPartOfComposition(
                             termOrigICI, root, transitivity, arc);
                     Decomposition res = new Decomposition(word, mr, morphParts
-                            .toArray());
+                            .toArray(new AffixPartOfComposition[] {}));
                     rootAnalyses.add(res);
                 }
             }
