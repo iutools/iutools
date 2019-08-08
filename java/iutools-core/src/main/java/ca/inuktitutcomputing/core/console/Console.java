@@ -139,15 +139,15 @@ public class Console {
 
 		// --- COMMANDS
 
-		// Compile a trie and save it to file
-		SubCommand compileTrie = 
-				new CmdCompileTrie("compile_trie")
+		// Compile a corpus and save it to file
+		SubCommand compileCorpus = 
+				new CmdCompileTrie("compile_corpus")
 				.addOption(optCorpusDir)				
 				.addOption(optCompFile)
 				.addOption(optFromScratch)
 				.addOption(optRedoFailed)
 				;
-		mainCmd.addSubCommand(compileTrie);
+		mainCmd.addSubCommand(compileCorpus);
 		
 		
 		// Search a trie for a sequence of morphemes
