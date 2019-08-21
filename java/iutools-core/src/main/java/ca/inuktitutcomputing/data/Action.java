@@ -68,12 +68,15 @@ public abstract class Action {
             if (m.matches())
                 inside = m.group(1);
         }
+        
 		if (strng == null || strng.equals("-") || strng.equals("0")) //***
 			action = new NullAction();
 		else if (strng.equals("?")) //***
 			action = new Unknow();
 		else if (strng.startsWith("i(") || strng.startsWith("ins(")) //***
 		    action = new Insertion(strng);
+        else if (strng.equals("s") || strng.equals("suppr")) //***
+            action = new Suppression();
 		else if (strng.startsWith("s(") || strng.startsWith("suppr(")) //***
 		    action = new SpecificSuppression(inside);
 		else if (strng.startsWith("ssi(") || strng.startsWith("supprsi(")) {//***
@@ -82,14 +85,11 @@ public abstract class Action {
                 action = new ConditionalSuppression(strng);
             else
                 action = new SpecificSuppression(condSupp[0],condSupp[1]);
-        } else if (
-			strng.startsWith("si(")
-				|| strng.startsWith("sins(")
-				|| strng.startsWith("suppri(")
-				|| strng.startsWith("supprins(")) //***
-		    action = new SuppressionAndInsertion(strng);
-		 else if (strng.equals("s") || strng.equals("suppr")) {//***
-             action = new Suppression();
+        } else if (strng.startsWith("si(")
+					|| strng.startsWith("sins(")
+					|| strng.startsWith("suppri(")
+					|| strng.startsWith("supprins(")) {//***
+		     action = new SuppressionAndInsertion(strng);
         }
 		else if (strng.equals("son") || strng.equals("sonor")) //***
 			action = new Voicing();
@@ -101,8 +101,8 @@ public abstract class Action {
             action = new Fusion();
 		else if (strng.equals("n") || strng.equals("neutre")) //***
 			action = new Neutral();
-        else if (strng.startsWith("nsi(")) //***
-            action = new Neutral(inside);
+//        else if (strng.startsWith("nsi(")) //***
+//            action = new Neutral(inside);
 		else if (strng.equals("a") || strng.equals("assim")) //***
 			action = new Assimilation();
 		else if (strng.startsWith("a(") || strng.startsWith("assim(")) //***
@@ -131,6 +131,7 @@ public abstract class Action {
 	abstract public String surfaceForm(String form);
     abstract public String expressionResult(String context, String form, Action act2);
     abstract public String combine(String form1, String form2, Action act2);
+    abstract public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction);
     
 	public String getInsert() {
 		return null;
@@ -281,6 +282,14 @@ public abstract class Action {
             }
         }
 
+		@Override
+		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
+			if (context=='V')
+				return "V";
+			else
+				return "C";
+		}
+
         
 //        public String[] finalRadInitAff(String context, String form) {
 //            String initAff = form.substring(0,1);
@@ -390,6 +399,21 @@ public abstract class Action {
              }
         }
 
+		@Override
+		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
+			String constraintOnEndOfStemAfterAction;
+			if (rankOfAction==1) {
+				if (context=='V')
+					constraintOnEndOfStemAfterAction = "C";
+				else
+					constraintOnEndOfStemAfterAction = "V";
+			} else {
+				constraintOnEndOfStemAfterAction = "V";
+			}
+			
+			return constraintOnEndOfStemAfterAction;
+		}
+
 //        public String[] finalRadInitAff(String context, String form) {
 //            String initAff = form.substring(0,1);
 //            return new String[]{"a"+initAff,"i"+initAff,"u"+initAff};
@@ -428,6 +452,11 @@ public abstract class Action {
         public String combine(String form1, String form2, Action act2) {
             return null;
         }
+
+		@Override
+		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
+			return "";
+		}
         
 
 //        public String[] finalRadInitAff(String context, String form) {
@@ -463,6 +492,11 @@ public abstract class Action {
         public String combine(String form1, String form2, Action act2) {
             return null;
         }
+
+		@Override
+		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
+			return "";
+		}
         
 
 //        public String[] finalRadInitAff(String context, String form) {
@@ -516,6 +550,11 @@ public abstract class Action {
             // Ex.: _t + pagiq > _ppagiq
             return form1.substring(0,form1.length()-1)+form2.charAt(0)+form2;
         }
+
+		@Override
+		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
+			return "C";
+		}
 
 //        public String[] finalRadInitAff(String context, String form) {
 //            String initAff = form.substring(0,1);
@@ -584,6 +623,11 @@ public abstract class Action {
         public String combine(String form1, String form2, Action act2) {
             return form1.substring(0,form1.length()-1)+assimileA+form2;
         }
+
+		@Override
+		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
+			return "C";
+		}
         
 
 	}
@@ -623,6 +667,11 @@ public abstract class Action {
             // Ex.: _q + gajuk > _rajuk
             return form1.substring(0,form1.length()-1)+form2;
         }
+
+		@Override
+		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
+			return "C";
+		}
 
 //        public String[] finalRadInitAff(String context, String form) {
 //            String initAff = form.substring(0,1);
@@ -689,6 +738,11 @@ public abstract class Action {
             return form1.substring(0,form1.length()-1)+
             Roman.voicedOfOcclusiveUnvoicedLat(form1.charAt(form1.length()-1))+form2;
         }
+
+		@Override
+		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
+			return "C";
+		}
         
 
 //        public String[] finalRadInitAff(String context, String form) {
@@ -754,6 +808,11 @@ public abstract class Action {
             return form1.substring(0,form1.length()-1)+
             Orthography.orthographyICILat(Roman.nasalOfOcclusiveUnvoicedLat(form1.charAt(form1.length()-1)))+form2;
         }
+
+		@Override
+		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
+			return "C";
+		}
         
 
 //        public String[] finalRadInitAff(String context, String form) {
@@ -764,6 +823,9 @@ public abstract class Action {
 
 	/*
 	 * CONDITIONAL NASALIZATION
+	 * 
+	 * (see conditions if(cond,actYes,actNo) in .csv data files; "if" conditions
+	 * generate action objects for actYes and actNo)
 	 */
 	static class ConditionalNasalization extends Action implements Cloneable {
 
@@ -815,12 +877,20 @@ public abstract class Action {
             return form1.substring(0,form1.length()-1)+
             Orthography.orthographyICILat(Roman.nasalOfOcclusiveUnvoicedLat(form1.charAt(form1.length()-1)))+form2;
         }
-        
 
+		@Override
+		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
+			return "C";
+		} 
 	}
+	
 
 	/*
 	 * SPECIFIC DELETION
+	 * 
+	 * Happens only in the Q context for a couple of infixes as a second action
+	 * when the first action deleted the 'q' final: the last of the two remaining
+	 * vowels is deleted if it is the specified vowel.
 	 */
 	static class SpecificSuppression extends Action implements Cloneable {
 
@@ -873,6 +943,12 @@ public abstract class Action {
         public String combine(String form1, String form2, Action act2) {
             return null;
         }
+
+		@Override
+		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
+			// happens only in rank 2
+			return "V";
+		}
         
 
 	}
@@ -936,6 +1012,11 @@ public abstract class Action {
         public String combine(String form1, String form2, Action act2) {
             return form1.substring(0,form1.length()-1)+form2;
         }
+
+		@Override
+		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
+			return "C"; // should be the penultiate char of the id (e.g. ssi(ssi(id:uti/1vv) = 't')
+		}
        
 
 	}
@@ -994,6 +1075,19 @@ public abstract class Action {
             // Ex.: _a + uti > _ajjuti
             return form1+inserted+form2;
         }
+
+		@Override
+		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
+			if (rankOfAction==1) {
+				if (context=='V')
+					return "V";
+				else
+					return "C";
+			} else {
+				return "VV";	
+			}
+				
+		}
         
 
 	}
@@ -1057,12 +1151,23 @@ public abstract class Action {
             // Ex.: _t + usiq > _jjusiq
             return form1.substring(0,form1.length()-1)+inserted+form2;
         }
+
+		@Override
+		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
+			// happens only as action 1
+			if (context=='V')
+				return "V";
+			else
+				return "C";
+		}
         
 
 	}
 
 	/*
 	 * VOWEL LENGHTENING
+	 * 
+	 * can happen only as a first action in V context
 	 */
 	static class VowelLengthening extends Action implements Cloneable {
 
@@ -1097,6 +1202,11 @@ public abstract class Action {
             // Ex.: _i + k > _iik
             return form1+form1.charAt(form1.length()-1)+form2;
         }
+
+		@Override
+		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
+			return "V";
+		}
 
 //        public String[] finalRadInitAff(String context, String form) {
 //            String initAff = form.substring(0,1);
@@ -1133,6 +1243,11 @@ public abstract class Action {
             return null;
         }
 
+		@Override
+		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
+			return "";
+		}
+
 //        public String[] finalRadInitAff(String context, String form) {
 //            String initAff = form.substring(0,1);
 //            return new String[]{};
@@ -1142,6 +1257,9 @@ public abstract class Action {
 
 	/*
 	 * SELF-DECAPITATION
+	 * 
+	 * happens only as second action after suppression a consonant when the 
+	 * resultant stem ends in 2 vowels
 	 */
 	static class Selfdecapitation extends Action implements Cloneable {
 
@@ -1170,6 +1288,11 @@ public abstract class Action {
             return form1+form2.substring(1);
         }
 
+		@Override
+		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
+			return "VV";
+		}
+
 //        public String[] finalRadInitAff(String context, String form) {
 //            String secondAff = form.substring(1,2);
 //            return new String[]{"a"+secondAff, "i"+secondAff, "u"+secondAff};
@@ -1179,6 +1302,8 @@ public abstract class Action {
 
 	/*
 	 * INSERTION AND VOWEL LENGTHNENING
+	 * 
+	 * happens only in T context as first action
 	 */
 	static class InsertionAndVowelLengthening extends Action implements Cloneable {
 
@@ -1231,6 +1356,11 @@ public abstract class Action {
         public String combine(String form1, String form2, Action act2) {
             return form1+inserted+inserted+form2;
         }
+
+		@Override
+		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
+			return "C";  // should probablement be the context of the action
+		}
         
 
 	}
@@ -1273,6 +1403,12 @@ public abstract class Action {
             String sform = form1.substring(0,form1.length()-1); 
             return sform+sform.charAt(sform.length()-1)+form2;
         }
+
+		@Override
+		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
+			// happens only as first action after deleting a consonant
+			return "V";
+		}
 
 
 //        public String[] finalRadInitAff(String context, String form) {
