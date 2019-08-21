@@ -29,6 +29,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
+
 import ca.inuktitutcomputing.data.constraints.Condition;
 import ca.inuktitutcomputing.data.constraints.Conditions;
 
@@ -138,6 +140,41 @@ public abstract class Affix extends Morpheme {
 			return null;
     }
     
+    
+    public HashSet<SurfaceFormInContext> getSurfaceFormsInContext(char context, String morphemeId) {
+    	HashSet<SurfaceFormInContext> allSurfaceFormsInContext = new HashSet<SurfaceFormInContext>();
+    	String[] forms = getForm(context);
+    	Action[] actions1 = getAction1(context);
+    	Action[] actions2 = getAction2(context);
+    	for (int i=0; i<forms.length; i++) {
+    		String form = forms[i];
+    		Action action1 = actions1[i];
+    		Action action2 = actions2[i];
+    		HashSet<SurfaceFormInContext> surfaceFormsInContext = getFormsInContext(context,form,action1,action2,morphemeId);
+    		allSurfaceFormsInContext.addAll(surfaceFormsInContext);
+    	}
+    	
+    	return allSurfaceFormsInContext;
+    }
+    
+	public HashSet<SurfaceFormInContext> getFormsInContext(char context,String form, Action action1, Action action2, String morphemeId) {
+		HashSet<SurfaceFormInContext> formsInContext = new HashSet<SurfaceFormInContext>();
+		String formAfterAction1, formAfterAction2;
+		formAfterAction1 = action1.surfaceForm(form);
+		String constraintOnStemAfterAction1 = action1.getConstraintOnEndOfStemAfterAction(context,1);
+		if (action2.type==Action.NULLACTION) {
+			formsInContext.add(new SurfaceFormInContext(formAfterAction1,constraintOnStemAfterAction1,morphemeId));
+		} else {
+			formAfterAction2 = action2.surfaceForm(formAfterAction1);
+			String constraintOnStemAfterAction2 = action2.getConstraintOnEndOfStemAfterAction(context,2);
+			formsInContext.add(new SurfaceFormInContext(formAfterAction1,constraintOnStemAfterAction1,morphemeId));
+			formsInContext.add(new SurfaceFormInContext(formAfterAction2,constraintOnStemAfterAction2,morphemeId));
+		}
+		
+		return formsInContext;
+	}
+
+    
 	// Les cha�nes 'alternateForms', 'actions1' et 'action2'
 	// contiennent le contenu des champs X-form, X-action1 et X-action2
 	// des enregistrements dans la base de donn�es.  Ces champs/cha�nes
@@ -170,6 +207,8 @@ public abstract class Affix extends Morpheme {
 		String action1,
 		String action2) {
 	    
+		Logger logger = Logger.getLogger("Affix.makeFormsAndActions");
+		logger.debug("morpheme= "+morpheme+"; context= "+context+"; alternateForms= "+alternateForms+"");
         String[] forms;
         Action[] a1;
         Action[] a2;

@@ -101,17 +101,6 @@ public class Base extends Morpheme {
 		if (source != null && !source.equals(""))
 			sources = source.split(" ");
 		String cs = v.get("condOnNext");
-//		StringTokenizer st =
-//			(cs == null) ? new StringTokenizer("") : new StringTokenizer(cs);
-//		if (cs != null)
-//		    nextConds = new Vector();
-//		int k = 0;
-//		while (st.hasMoreTokens()) {
-//		    String nextToken = st.nextToken();
-//		    MorphemeCondition condition = null;
-//		        condition = new MorphemeCondition(nextToken);
-//		    nextConds.add(condition);
-//		}
         if (cs != null && !cs.equals(""))
             try {
                 nextCondition = (Conditions) new Imacond(
