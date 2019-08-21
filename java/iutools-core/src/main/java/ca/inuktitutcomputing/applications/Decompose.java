@@ -30,6 +30,7 @@ import ca.inuktitutcomputing.utilities.Text;
  */
 public class Decompose {
     static String lang = "en";
+    static boolean noTimeout = false;
     
     static void usage() {
     	usage(null);
@@ -60,7 +61,7 @@ public class Decompose {
     }
 
     public static void main(String[] args) {
-        String dataSource = null;
+        String dataSource = "csv";
         String word = null;
         boolean displayTimes = false;
         boolean printHelp = false;
@@ -85,6 +86,8 @@ public class Decompose {
         			lang = args[++i];
         		else
         			printUsage = true;
+        	else if (args[i].equals("-notimeout"))
+        		noTimeout = true;
         	else if (args[i].startsWith("-"))
         		printUsage = true;
         	else
@@ -141,6 +144,7 @@ public class Decompose {
         Decomposition[] decs;
         try {
         	MorphologicalAnalyzer morphAnalyzer = new MorphologicalAnalyzer();
+        	morphAnalyzer.disactivateTimeout();
 			decs = morphAnalyzer.decomposeWord(word);
 	        String[] decExprs = new String[decs.length];
 	        // Préparation de l'affichage des résultats.
