@@ -226,14 +226,12 @@ public abstract class Data {
 		String context,
 		Action[] actions1,
 		Action[] actions2) {
-//	    System.out.println("key: "+key+"/"+context);
 //	    if (altForms != null)
 //	        for (int i=0; i<altForms.length; i++)
 //	            System.out.println("altForms["+i+"]= "+altForms[i]);
 	    if (altForms != null)
 		for (int i = 0; i < altForms.length; i++) {
 			String form;
-//            System.out.println("addToForms1 - altForms["+i+"]="+altForms[i]+", context="+context);
 			if (!altForms[i].equals("?")
 				&& actions1[i].getType() != Action.UNKNOWN
 				&& actions2[i].getType() != Action.UNKNOWN) {
