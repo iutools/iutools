@@ -104,13 +104,29 @@ public abstract class Morpheme extends Object implements Cloneable {
             res = false;
         return res;
     }
+    
+    
+    public boolean meetsConditions (Conditions conds) {
+        boolean res = true;
+        /*
+         * Il faut que les conditions spécifiques soient rencontrées. Par
+         * exemple, si le morphème trouvé précédemment exige de suivre
+         * immédiatement un nom au cas datif, le suffixe ou la terminaison
+         * actuelle doit rencontrer cette contrainte.
+         */
+        if (conds != null) {
+            res = conds.isMetBy(this);
+        }
+        
+        return res;
+    }
   
     public boolean meetsConditions (Conditions conds, Vector<AffixPartOfComposition> followingMorphemes) {
     	Logger logger = Logger.getLogger("Morpheme.meetsConditions");
-    	String[] idsOfFollowingMorphemes = new String[followingMorphemes.size()];
-    	for (int iv=0; iv<followingMorphemes.size(); iv++)
-    		idsOfFollowingMorphemes[iv] = followingMorphemes.get(iv).getAffix().id;
-    	logger.debug(String.join("; ", idsOfFollowingMorphemes));
+//    	String[] idsOfFollowingMorphemes = new String[followingMorphemes.size()];
+//    	for (int iv=0; iv<followingMorphemes.size(); iv++)
+//    		idsOfFollowingMorphemes[iv] = followingMorphemes.get(iv).getAffix().id;
+//    	logger.debug(String.join("; ", idsOfFollowingMorphemes));
         boolean res = true;
         /*
          * Il faut que les conditions spécifiques soient rencontrées. Par
