@@ -939,7 +939,9 @@ public class MorphologicalAnalyzer {
         
         /*
          * Il faut aussi que les conditions spécifiques soient
-         * rencontrées. Par exemple, si le suffixe trouvé précédemment
+         * rencontrées. Il y a les conditions sur ce qui précède,
+         * et les conditions sur ce qui peut suivre. Par exemple, si le suffixe 
+         * trouvé précédemment
          * exige de suivre immédiatement un nom au cas datif, le suffixe
          * ou la terminaison actuelle doit rencontrer cette contrainte.
          */
@@ -957,24 +959,31 @@ public class MorphologicalAnalyzer {
 
         Graph.Arc arcFollowed = null;
         Graph.Arc[] arcsFollowed = arcsSuivis(root,states,keyStateIDs);
-        if (arcsFollowed !=null ) {
-        	arcFollowed = arcToZero(arcsFollowed);
-        	if (arcFollowed != null) {
-        		boolean conditionsMet = root.meetsConditions(preConds, morphParts);
-        		if (conditionsMet) {
-        			if (root.type.equals("v")) {
-        				boolean transitivityMet = root.meetsTransitivityCondition(transitivity);
-        				if (transitivityMet)
-        					accepted = true;
-        			} else {
-        				accepted = true;
-        			}
-        		} else {
-        			accepted = false;
-        		}
-        	}
+		if (arcsFollowed != null) {
+			arcFollowed = arcToZero(arcsFollowed);
+			if (arcFollowed != null) {
+				boolean preConditionsMet = root.meetsConditions(preConds, morphParts);
+				if (preConditionsMet) {
+					Conditions postConds = root.getNextCond();
+					boolean postConditionsMet = true;
+					if (morphParts.size()!=0) {
+						postConditionsMet = morphParts.firstElement().getAffix().meetsConditions(postConds);
+					}
+					if (postConditionsMet) {
+						if (root.type.equals("v")) {
+							boolean transitivityMet = root.meetsTransitivityCondition(transitivity);
+							if (transitivityMet)
+								accepted = true;
+						} else {
+							accepted = true;
+						}
+					} else {
+						accepted = false;
+					}
+				}
+			}
         }
-        
+         
         return accepted?arcFollowed:null;
 	}
 
