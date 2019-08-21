@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import ca.nrc.datastructure.Pair;
 import ca.nrc.testing.AssertHelpers;
 
 public class IUTokenizerTest {
@@ -44,11 +46,11 @@ public class IUTokenizerTest {
 		IUTokenizer tokenizer = new IUTokenizer();
 		String text;
 		List<String> words, expectedWords;
+		List<Pair<String,Boolean>> expectedTokens;
 		text = "009 - 4(3): ᐃᖏᕐᕋᖃᑦᑕᕐᓂᕐᒧᑦ ᐳᓚᕋᖅᑐᓕᕆᓂᕐᒧᓪᓗ ᒪᓕᒐᐅᑉ ᓄᑖᖑᕆᐊᖅᑕᐅᓂᖓ (ᐃᐊᓪ-ᑲᓇᔪᖅ) 159";
 		words = tokenizer.run(text);
 		expectedWords = new ArrayList<String>();
 		expectedWords.add("009");
-		expectedWords.add("-");
 		expectedWords.add("4");
 		expectedWords.add("3");
 		expectedWords.add("ᐃᖏᕐᕋᖃᑦᑕᕐᓂᕐᒧᑦ");
@@ -58,6 +60,32 @@ public class IUTokenizerTest {
 		expectedWords.add("ᐃᐊᓪ-ᑲᓇᔪᖅ");
 		expectedWords.add("159");
 		AssertHelpers.assertDeepEquals("", expectedWords, words);
+		
+		expectedTokens = new ArrayList<Pair<String,Boolean>>();
+		expectedTokens.add(new Pair<>("009",true));
+		expectedTokens.add(new Pair<>(" ",false));
+		expectedTokens.add(new Pair<>("-",false));
+		expectedTokens.add(new Pair<>(" ",false));
+		expectedTokens.add(new Pair<>("4",true));
+		expectedTokens.add(new Pair<>("(",false));
+		expectedTokens.add(new Pair<>("3",true));
+		expectedTokens.add(new Pair<>("):",false));
+		expectedTokens.add(new Pair<>(" ",false));
+		expectedTokens.add(new Pair<>("ᐃᖏᕐᕋᖃᑦᑕᕐᓂᕐᒧᑦ",true));
+		expectedTokens.add(new Pair<>(" ",false));
+		expectedTokens.add(new Pair<>("ᐳᓚᕋᖅᑐᓕᕆᓂᕐᒧᓪᓗ",true));
+		expectedTokens.add(new Pair<>(" ",false));
+		expectedTokens.add(new Pair<>("ᒪᓕᒐᐅᑉ",true));
+		expectedTokens.add(new Pair<>(" ",false));
+		expectedTokens.add(new Pair<>("ᓄᑖᖑᕆᐊᖅᑕᐅᓂᖓ",true));
+		expectedTokens.add(new Pair<>(" ",false));
+		expectedTokens.add(new Pair<>("(",false));
+		expectedTokens.add(new Pair<>("ᐃᐊᓪ-ᑲᓇᔪᖅ",true));
+		expectedTokens.add(new Pair<>(")",false));
+		expectedTokens.add(new Pair<>(" ",false));
+		expectedTokens.add(new Pair<>("159",true));
+		AssertHelpers.assertDeepEquals("", expectedTokens, tokenizer.getTokens());
+		
 	}
 
 	
@@ -70,7 +98,6 @@ public class IUTokenizerTest {
 		words = tokenizer.run(text);
 		expectedWords = new ArrayList<String>();
 		expectedWords.add("044");
-		expectedWords.add("-");
 		expectedWords.add("4");
 		expectedWords.add("3");
 		expectedWords.add("ᕿᑭᖅᑖᓗᒻᒥ");
@@ -107,6 +134,14 @@ public class IUTokenizerTest {
 		AssertHelpers.assertDeepEquals("", expectedWords, words);
 	}
 
-	
+	@Test
+	public void test_reconstruct() {
+		IUTokenizer tokenizer = new IUTokenizer();
+		String text;
+		text = "044 - 4(3): ᕿᑭᖅᑖᓗᒻᒥ ᑐᑦᑐᓕᕆᓂᖅ (Hᐃᒃᔅ) 179";
+		tokenizer.run(text);
+		String reconstructedText = tokenizer.reconstruct();
+		Assert.assertEquals("",text,reconstructedText);
+	}
 	
 }
