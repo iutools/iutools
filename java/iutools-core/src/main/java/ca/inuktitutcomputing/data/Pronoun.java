@@ -8,8 +8,13 @@
  */
 package ca.inuktitutcomputing.data;
 
+import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.Hashtable;
+
+import ca.inuktitutcomputing.data.constraints.Conditions;
+import ca.inuktitutcomputing.data.constraints.Imacond;
+import ca.inuktitutcomputing.data.constraints.ParseException;
 
 public class Pronoun extends Base {
 	//
@@ -35,6 +40,13 @@ public class Pronoun extends Base {
 		if (comb != null) {
 			setCombiningParts(comb);
 		}
+		String cs = v.get("condOnNext");
+        if (cs != null && !cs.equals(""))
+            try {
+                nextCondition = (Conditions) new Imacond(
+                        new ByteArrayInputStream(cs.getBytes())).ParseCondition();
+            } catch (ParseException e) {
+            }
 		setAttrs();
     }
     
