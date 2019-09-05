@@ -28,6 +28,8 @@ public class CompiledCorpusRegistry {
 		if (registry.containsKey(corpusName) 
 				&&  !registry.get(corpusName).equals(jsonFile) ) {
 				throw new CompiledCorpusRegistryException("The name '"+corpusName+"' is already associated with a different compilation file.");
+		} else if ( !jsonFile.exists() ) {
+			throw new CompiledCorpusRegistryException("The file "+jsonFile.getAbsolutePath()+" does not exist.");
 		} else {
 			registry.put(corpusName, jsonFile);
 		}
