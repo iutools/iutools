@@ -102,6 +102,7 @@ public abstract class Affix extends Morpheme {
 	}
 	
     public String[] getForm(char context) {
+//    	System.out.println("   context= '"+context+"'");
         if (context=='V' || context=='a' || context=='i' || context=='u')
             return vform;
         else if (context=='t')
@@ -146,13 +147,14 @@ public abstract class Affix extends Morpheme {
     	String[] forms = getForm(context);
     	Action[] actions1 = getAction1(context);
     	Action[] actions2 = getAction2(context);
-    	for (int i=0; i<forms.length; i++) {
-    		String form = forms[i];
-    		Action action1 = actions1[i];
-    		Action action2 = actions2[i];
-    		HashSet<SurfaceFormInContext> surfaceFormsInContext = getFormsInContext(context,form,action1,action2,morphemeId);
-    		allSurfaceFormsInContext.addAll(surfaceFormsInContext);
-    	}
+    	if (forms != null)
+    		for (int i=0; i<forms.length; i++) {
+    			String form = forms[i];
+    			Action action1 = actions1[i];
+    			Action action2 = actions2[i];
+    			HashSet<SurfaceFormInContext> surfaceFormsInContext = getFormsInContext(context,form,action1,action2,morphemeId);
+    			allSurfaceFormsInContext.addAll(surfaceFormsInContext);
+    		}
     	
     	return allSurfaceFormsInContext;
     }
@@ -163,12 +165,15 @@ public abstract class Affix extends Morpheme {
 		formAfterAction1 = action1.surfaceForm(form);
 		String constraintOnStemAfterAction1 = action1.getConstraintOnEndOfStemAfterAction(context,1);
 		if (action2.type==Action.NULLACTION) {
-			formsInContext.add(new SurfaceFormInContext(formAfterAction1,constraintOnStemAfterAction1,morphemeId));
+//			System.out.println("   1- "+formAfterAction1+" action2=NULLACTION");
+			formsInContext.add(new SurfaceFormInContext(formAfterAction1,constraintOnStemAfterAction1,Character.toString(context),morphemeId));
 		} else {
 			formAfterAction2 = action2.surfaceForm(formAfterAction1);
+//			System.out.println("   1- "+formAfterAction1+" action2=AUTRE QUE NULLACTION ("+action2.type+")");
+//			System.out.println("   2- "+formAfterAction2+" action2=AUTRE QUE NULLACTION ("+action2.type+")");
 			String constraintOnStemAfterAction2 = action2.getConstraintOnEndOfStemAfterAction(context,2);
-			formsInContext.add(new SurfaceFormInContext(formAfterAction1,constraintOnStemAfterAction1,morphemeId));
-			formsInContext.add(new SurfaceFormInContext(formAfterAction2,constraintOnStemAfterAction2,morphemeId));
+			formsInContext.add(new SurfaceFormInContext(formAfterAction1,constraintOnStemAfterAction1,Character.toString(context),morphemeId));
+			formsInContext.add(new SurfaceFormInContext(formAfterAction2,constraintOnStemAfterAction2,Character.toString(context),morphemeId));
 		}
 		
 		return formsInContext;

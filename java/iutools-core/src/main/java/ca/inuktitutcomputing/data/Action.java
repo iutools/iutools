@@ -433,7 +433,7 @@ public abstract class Action {
         }
 
         public String surfaceForm(String form) {
-            return null;
+            return form;
         }
 
         public Object clone() {
@@ -476,7 +476,7 @@ public abstract class Action {
         }
 
         public String surfaceForm(String form) {
-            return null;
+            return form;
         }
 
         public Object clone() {
@@ -1205,7 +1205,7 @@ public abstract class Action {
 
 		@Override
 		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
-			return "V";
+			return "VV";
 		}
 
 //        public String[] finalRadInitAff(String context, String form) {
@@ -1226,7 +1226,7 @@ public abstract class Action {
         }
 
         public String surfaceForm(String form) {
-            return null;
+            return form;
         }
         
         public Object clone() {
@@ -1407,7 +1407,7 @@ public abstract class Action {
 		@Override
 		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
 			// happens only as first action after deleting a consonant
-			return "V";
+			return "VV";
 		}
 
 
