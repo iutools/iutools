@@ -61,10 +61,10 @@ public class Dialect {
         { "gl", "ll" }, { "gv", "vv" }, 
         { "Nm", "mm" }, { "Nn", "nn" },
         // uvuC > CC : q, r
-            { "qt", "tt" }, { "q&", "r&" }, {"qt", "rt"}, {"ql", "rl"}, {"qp", "rp"}, {"qs", "rs"},
-                    { "q&","qs"}, {"q&", "qt"},
-            { "rq", "qq" },
-             };
+        { "qt", "tt" }, { "q&", "r&" }, {"qt", "rt"}, {"ql", "rl"}, {"qp", "rp"}, {"qs", "rs"},
+                { "q&","qs"}, {"q&", "qt"},
+        { "rq", "qq" },
+        };
     private static String[][] groups2 = new String[][] { { "it", "is" } };
 
     public static String [] getKeys() {
