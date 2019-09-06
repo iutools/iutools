@@ -54,5 +54,9 @@ public class StringSegmenter_IUMorpheme extends StringSegmenter {
         	return new String[]{};
         }
 	}
+	
+	public MorphologicalAnalyzer getAnalyzer() {
+		return morphAnalyzer;
+	}
 
 }
