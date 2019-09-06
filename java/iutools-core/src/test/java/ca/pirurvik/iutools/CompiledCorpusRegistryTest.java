@@ -1,10 +1,9 @@
 package ca.pirurvik.iutools;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.util.Map;
+import java.io.IOException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -128,12 +127,14 @@ public class CompiledCorpusRegistryTest {
 	}
 	
 	@Test
-	public void test__registerCorpus__already_defined() throws CompiledCorpusRegistryException {
-		CompiledCorpusRegistry.registerCorpus("XYZ", new File("file_A"));
-		
+	public void test__registerCorpus__already_defined() throws CompiledCorpusRegistryException, IOException {
+		File tempFileA = File.createTempFile("file_A", ".json");
+		CompiledCorpusRegistry.registerCorpus("XYZ", tempFileA);
+			
 		boolean allreadydefined = false;
 		try {
-			CompiledCorpusRegistry.registerCorpus("XYZ", new File("file_B"));
+			File tempFileB = File.createTempFile("file_B", ".json");
+			CompiledCorpusRegistry.registerCorpus("XYZ", tempFileB);
 		} catch (CompiledCorpusRegistryException e) {
 			allreadydefined = e.getMessage().contains("is already associated");
 		}
