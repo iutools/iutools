@@ -150,6 +150,14 @@ public class Console {
 		mainCmd.addSubCommand(compileCorpus);
 		
 		
+		// Describe a corpus
+		SubCommand describeCorpus = 
+				new CmdDescribeCorpus("describe_corpus")
+				.addOption(optCompFile)	
+				;
+		mainCmd.addSubCommand(describeCorpus);
+		
+		
 		// Search a trie for a sequence of morphemes
 		SubCommand searchTrie = 
 				new CmdSearchTrie("search_trie")
