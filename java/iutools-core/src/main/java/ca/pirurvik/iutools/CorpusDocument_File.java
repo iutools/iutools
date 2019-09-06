@@ -23,6 +23,8 @@ public class CorpusDocument_File extends CorpusDocument {
 			return getPDFContent();
 		else if (fileType.equals("doc"))
 			return getDOCContent();
+		else if (fileType.equals("docx"))
+			return getDOCXContent();
 		else if (fileType.equals("txt"))
 			return getTxtContent();
 		else
@@ -36,7 +38,7 @@ public class CorpusDocument_File extends CorpusDocument {
 	
 	public boolean hasContents() {
 		String fileType = getType();
-		if (fileType.equals("pdf") || fileType.equals("doc") || fileType.equals("txt"))
+		if (fileType.equals("pdf") || fileType.equals("doc") || fileType.equals("docx") || fileType.equals("txt"))
 			return true;
 		return false;
 	}
@@ -55,6 +57,13 @@ public class CorpusDocument_File extends CorpusDocument {
 	private String getDOCContent() throws IOException {
 		NRC_DOCDocument doc = new NRC_DOCDocument("file://"+id);
 		String contents = doc.getPageContent();
+		doc.close();
+		return contents;
+	}
+
+	private String getDOCXContent() throws NRC_DOCXDocumentException  {
+		NRC_DOCXDocument doc = new NRC_DOCXDocument("file://"+id);
+		String contents = doc.getContents();
 		doc.close();
 		return contents;
 	}
