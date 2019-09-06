@@ -6,8 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -28,7 +26,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 
 import ca.inuktitutcomputing.utilities.NgramCompiler;
-import ca.nrc.datastructure.Pair;
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_Char;
@@ -141,22 +138,22 @@ public class CompiledCorpus
 	public StringSegmenter getSegmenter() throws CompiledCorpusException {
 		if (segmenter == null) {
 			//Class<StringSegmenter> cls = (Class<StringSegmenter>) Class.forName(segmenterClassName);
-			Class<?> cls;
+			Class cls;
 			try {
-				cls = (Class<?>) Class.forName(segmenterClassName);
+				cls = Class.forName(segmenterClassName);
 			} catch (ClassNotFoundException e) {
 				throw new CompiledCorpusException(e);
 			}
-			Constructor<?> constr;
+//			Constructor<?> constr;
+//			try {
+//				constr = cls.getConstructor();
+//			} catch (NoSuchMethodException | SecurityException e) {
+//				throw new CompiledCorpusException(e);
+//			}
 			try {
-				constr = cls.getConstructor();
-			} catch (NoSuchMethodException | SecurityException e) {
-				throw new CompiledCorpusException(e);
-			}
-			try {
-				segmenter = (StringSegmenter) constr.newInstance();
-			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-					| InvocationTargetException e) {
+//				segmenter = (StringSegmenter) constr.newInstance();
+				segmenter = (StringSegmenter) cls.newInstance();
+			} catch (Exception e) {
 				throw new CompiledCorpusException(e);
 			}
 		}
@@ -686,7 +683,9 @@ public class CompiledCorpus
 		return wordsWithUnsuccessfulDecomposition;
 	}
 
-
+	public String[] getWordsThatFailedDecomposition() {
+		return wordsFailedSegmentation.toArray(new String[] {});
+	}
 
 }
 
