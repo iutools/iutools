@@ -8,15 +8,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.nio.file.Files;
-import java.util.Arrays;
-import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-import ca.inuktitutcomputing.config.IUConfig;
-import ca.nrc.config.ConfigException;
+import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.pirurvik.iutools.CompiledCorpus;
 import ca.pirurvik.iutools.QueryExpanderEvaluator;
@@ -226,6 +222,9 @@ public class QueryExpanderEvaluatorTest {
 		}
 		bw.close();
         CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
+        StringSegmenter_IUMorpheme segmenter = (StringSegmenter_IUMorpheme)compiledCorpus.getSegmenter();
+        MorphologicalAnalyzer analyzer = segmenter.getAnalyzer();
+        analyzer.disactivateTimeout();
         compiledCorpus.setVerbose(false);
         compiledCorpus.compileCorpusFromScratch(corpusDir);
         return compiledCorpus;
