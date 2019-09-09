@@ -108,7 +108,6 @@
     		<groupId>org.apache.poi</groupId>
     		<artifactId>poi</artifactId>
     		<version>3.0-FINAL</version>
-    		<!--  <version>3.6</version> -->
 		</dependency>
 		
 		<!-- https://mvnrepository.com/artifact/org.apache.poi/poi-scratchpad -->
@@ -118,24 +117,26 @@
     		<version>3.2-FINAL</version>
 		</dependency>
 		
+		<!-- https://mvnrepository.com/artifact/org.apache.poi/poi -->
 		
 <!-- https://mvnrepository.com/artifact/org.apache.poi/poi -->
-    <!--  
     <dependency>
         <groupId>org.apache.poi</groupId>
         <artifactId>poi</artifactId>
         <version>3.16</version>
     </dependency>
-    -->
+ <!-- https://mvnrepository.com/artifact/org.apache.poi/poi-scratchpad -->
+<dependency>
+    <groupId>org.apache.poi</groupId>
+    <artifactId>poi-scratchpad</artifactId>
+    <version>3.16</version>
+</dependency>   
     <!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->
-    <!-- 
     <dependency>
         <groupId>org.apache.poi</groupId>
         <artifactId>poi-ooxml</artifactId>
         <version>3.16</version>
     </dependency>
-    -->
-    
         	
     	<!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
 		<dependency>
