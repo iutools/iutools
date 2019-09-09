@@ -23,8 +23,8 @@ public class AffixTest {
 		Action action2 = affix.vaction2[0];
 		HashSet<SurfaceFormInContext> surfaceFormsInContext = affix.getFormsInContext(context, form, action1, action2, affixId);
 		assertEquals("",2,surfaceFormsInContext.size());
-		assertTrue("",surfaceFormsInContext.contains(new SurfaceFormInContext("ijaq","V",affixId)));
-		assertTrue("",surfaceFormsInContext.contains(new SurfaceFormInContext("ngijaq","VV",affixId)));
+		assertTrue("",surfaceFormsInContext.contains(new SurfaceFormInContext("ijaq","V","V",affixId)));
+		assertTrue("",surfaceFormsInContext.contains(new SurfaceFormInContext("ngijaq","VV","V",affixId)));
 		
 		context = 't';
 		form = affix.tform[0];
@@ -32,7 +32,7 @@ public class AffixTest {
 		action2 = affix.taction2[0];
 		surfaceFormsInContext = affix.getFormsInContext(context, form, action1, action2, affixId);
 		assertEquals("",1,surfaceFormsInContext.size());
-		assertTrue("",surfaceFormsInContext.contains(new SurfaceFormInContext("aijaq","C",affixId)));
+		assertTrue("",surfaceFormsInContext.contains(new SurfaceFormInContext("aijaq","C","t",affixId)));
 		
 		context = 'k';
 		form = affix.kform[0];
@@ -40,8 +40,8 @@ public class AffixTest {
 		action2 = affix.kaction2[0];
 		surfaceFormsInContext = affix.getFormsInContext(context, form, action1, action2, affixId);
 		assertEquals("",2,surfaceFormsInContext.size());
-		assertTrue("",surfaceFormsInContext.contains(new SurfaceFormInContext("ijaq","V",affixId)));
-		assertTrue("",surfaceFormsInContext.contains(new SurfaceFormInContext("ngijaq","VV",affixId)));
+		assertTrue("",surfaceFormsInContext.contains(new SurfaceFormInContext("ijaq","V","k",affixId)));
+		assertTrue("",surfaceFormsInContext.contains(new SurfaceFormInContext("ngijaq","VV","k",affixId)));
 		
 		context = 'q';
 		form = affix.qform[0];
@@ -49,8 +49,8 @@ public class AffixTest {
 		action2 = affix.qaction2[0];
 		surfaceFormsInContext = affix.getFormsInContext(context, form, action1, action2, affixId);
 		assertEquals("",2,surfaceFormsInContext.size());
-		assertTrue("",surfaceFormsInContext.contains(new SurfaceFormInContext("ijaq","V",affixId)));
-		assertTrue("",surfaceFormsInContext.contains(new SurfaceFormInContext("ngijaq","VV",affixId)));
+		assertTrue("",surfaceFormsInContext.contains(new SurfaceFormInContext("ijaq","V","q",affixId)));
+		assertTrue("",surfaceFormsInContext.contains(new SurfaceFormInContext("ngijaq","VV","q",affixId)));
 	}
 	
 	@Test
@@ -62,25 +62,25 @@ public class AffixTest {
 		char context = 'V';
 		HashSet<SurfaceFormInContext> surfaceFormsInContext = affix.getSurfaceFormsInContext(context, affixId);
 		assertEquals("",2,surfaceFormsInContext.size());
-		assertTrue("",surfaceFormsInContext.contains(new SurfaceFormInContext("ijaq","V",affixId)));
-		assertTrue("",surfaceFormsInContext.contains(new SurfaceFormInContext("ngijaq","VV",affixId)));
+		assertTrue("",surfaceFormsInContext.contains(new SurfaceFormInContext("ijaq","V","V",affixId)));
+		assertTrue("",surfaceFormsInContext.contains(new SurfaceFormInContext("ngijaq","VV","V",affixId)));
 		
 		context = 't';
 		surfaceFormsInContext = affix.getSurfaceFormsInContext(context, affixId);
 		assertEquals("",1,surfaceFormsInContext.size());
-		assertTrue("",surfaceFormsInContext.contains(new SurfaceFormInContext("aijaq","C",affixId)));
+		assertTrue("",surfaceFormsInContext.contains(new SurfaceFormInContext("aijaq","C","t",affixId)));
 		
 		context = 'k';
 		surfaceFormsInContext = affix.getSurfaceFormsInContext(context, affixId);
 		assertEquals("",2,surfaceFormsInContext.size());
-		assertTrue("",surfaceFormsInContext.contains(new SurfaceFormInContext("ijaq","V",affixId)));
-		assertTrue("",surfaceFormsInContext.contains(new SurfaceFormInContext("ngijaq","VV",affixId)));
+		assertTrue("",surfaceFormsInContext.contains(new SurfaceFormInContext("ijaq","V","k",affixId)));
+		assertTrue("",surfaceFormsInContext.contains(new SurfaceFormInContext("ngijaq","VV","k",affixId)));
 		
 		context = 'q';
 		surfaceFormsInContext = affix.getSurfaceFormsInContext(context, affixId);
 		assertEquals("",2,surfaceFormsInContext.size());
-		assertTrue("",surfaceFormsInContext.contains(new SurfaceFormInContext("ijaq","V",affixId)));
-		assertTrue("",surfaceFormsInContext.contains(new SurfaceFormInContext("ngijaq","VV",affixId)));
+		assertTrue("",surfaceFormsInContext.contains(new SurfaceFormInContext("ijaq","V","q",affixId)));
+		assertTrue("",surfaceFormsInContext.contains(new SurfaceFormInContext("ngijaq","VV","q",affixId)));
 	}
 
 }
