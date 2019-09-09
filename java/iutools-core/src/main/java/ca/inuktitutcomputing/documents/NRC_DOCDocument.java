@@ -26,10 +26,8 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-//import org.apache.poi.hwpf.HWPFDocument;
-//import org.apache.poi.hwpf.usermodel.CharacterRun;
-//import org.apache.poi.hwpf.usermodel.Range;
 import org.apache.poi.hwpf.*;
+import org.apache.poi.hwpf.extractor.WordExtractor;
 import org.apache.poi.hwpf.usermodel.CharacterRun;
 import org.apache.poi.hwpf.usermodel.Range;
 
@@ -70,6 +68,13 @@ public class NRC_DOCDocument implements NRC_Document {
      * Retourne le contenu d'un fichier DOC. Le texte inuktitut est converti �
      * Unicode. Si une exception survient, la cha�ne vide est retourn�e.
      */
+    public String getContents() {
+			WordExtractor extractor;
+			extractor = new WordExtractor(document);
+			return extractor.getText();
+	}
+
+    
     public String getPageContent() {
         if (pageContent != null)
             return pageContent;
