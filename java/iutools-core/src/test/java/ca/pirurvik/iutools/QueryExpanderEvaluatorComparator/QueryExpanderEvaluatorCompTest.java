@@ -1,4 +1,4 @@
-package ca.pirurvik.iutools;
+package ca.pirurvik.iutools.QueryExpanderEvaluatorComparator;
 
 import static org.junit.Assert.assertTrue;
 
@@ -9,6 +9,8 @@ import org.junit.Test;
 import static org.junit.Assert.assertFalse;
 
 import ca.inuktitutcomputing.config.IUConfig;
+import ca.pirurvik.iutools.CompiledCorpus;
+import ca.pirurvik.iutools.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.QueryExpanderEvaluator;
 
 public class QueryExpanderEvaluatorCompTest {
