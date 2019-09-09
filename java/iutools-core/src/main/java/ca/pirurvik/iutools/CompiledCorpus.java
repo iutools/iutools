@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
@@ -25,6 +26,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 
+import ca.inuktitutcomputing.script.TransCoder;
+import ca.inuktitutcomputing.utilities.IUTokenizer;
 import ca.inuktitutcomputing.utilities.NgramCompiler;
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenterException;
@@ -88,6 +91,8 @@ public class CompiledCorpus
 	public transient String name;
 	@JsonIgnore
 	public transient NgramCompiler ngramCompiler;
+	@JsonIgnore
+	public transient CorpusDocument_File fileBeingProcessed = new CorpusDocument_File("");
 	
 	@JsonIgnore
 	public transient String wordsWithSuccessfulDecomposition = null;
@@ -394,11 +399,34 @@ public class CompiledCorpus
 
 	private void processFile(CorpusDocument_File file) throws CompiledCorpusException, StringSegmenterException {
 			String fileAbsolutePath = file.id;
+			fileBeingProcessed = file;
 			toConsole("[INFO] --- compiling document "+new File(fileAbsolutePath).getName()+"\n");
-			processDocumentContents(fileAbsolutePath);
+//			processDocumentContents(fileAbsolutePath);
+			processDocumentContents();
 			if ( !this.filesCompiled.contains(fileAbsolutePath) )
 				filesCompiled.add(fileAbsolutePath);
 	}
+	
+	
+	public void processDocumentContents()
+			throws CompiledCorpusException, StringSegmenterException {
+		Logger logger = Logger.getLogger("CorpusCompiler.processDocumentContents");
+		currentFileWordCounter = 0;
+		String contents;
+		try {
+			contents = fileBeingProcessed.getContents();
+			IUTokenizer iuTokenizer = new IUTokenizer();
+			List<String> words = iuTokenizer.run(contents);
+			processWords(words.toArray(new String[] {}));
+		} catch (CompiledCorpusException e) {
+			throw e;
+		} catch (StringSegmenterException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new CompiledCorpusException(e);
+		}
+	}
+
 
 	protected void processDocumentContents(String fileAbsolutePath) throws CompiledCorpusException, StringSegmenterException {
 		BufferedReader bufferedReader = null;
@@ -410,63 +438,74 @@ public class CompiledCorpus
 		processDocumentContents(bufferedReader,fileAbsolutePath);
 	}
 	
+	
+	
 	public void processDocumentContents(BufferedReader bufferedReader, String fileAbsolutePath)
 			throws CompiledCorpusException, StringSegmenterException {
-		Logger logger = Logger.getLogger("CorpusCompiler.processDocumentContents");
+		Logger logger = Logger.getLogger("CompiledCorpus.processDocumentContents");
 		String line;
-		boolean stopBecauseOfStopAfter = false;
 		currentFileWordCounter = 0;
 		try {
-			while ((line = bufferedReader.readLine()) != null && !stopBecauseOfStopAfter) {
+			while ((line = bufferedReader.readLine()) != null) {
+				logger.debug("line: '"+line+"'");
 				String[] words = extractWordsFromLine(line);
-				for (int n = 0; n < words.length; n++) {
-					String word = words[n];
-					if (!isInuktitutWord(word))
-						continue;
-					++wordCounter;
-					logger.debug("word: " + word);
-					logger.debug("retrievedFileWordCounter: " + retrievedFileWordCounter);
-					logger.debug("currentFileWordCounter: " + currentFileWordCounter);
-					logger.debug("fileCompiled: " + filesCompiled.contains(fileAbsolutePath));
-
-					if (!filesCompiled.contains(fileAbsolutePath)) {
-						++currentFileWordCounter;
-						if (retrievedFileWordCounter != -1) {
-							if (currentFileWordCounter < retrievedFileWordCounter) {
-								continue;
-							} else {
-								retrievedFileWordCounter = -1;
-							}
-						}
-
-						processWord(word);
-
-						// this line allows to make the compiler stop at a given point (for tests
-						// purposes only)
-						if (stopAfter != -1 && wordCounter == stopAfter) {
-							try {
-								bufferedReader.close();
-							} catch (IOException e) {
-								throw new CompiledCorpusException(e);
-							}
-							throw new CompiledCorpusException(
-									"processDocumentContents:: Simulating an error during trie compilation of corpus.");
-						}
-						if (wordCounter % saveFrequency == 0) {
-							toConsole("[INFO]     --- saving jsoned compiler ---" + "\n");
-							logger.debug("size of trie: " + trie.getSize());
-							saveCompilerInDirectory(this.corpusDirectory);
-						}
-					}
-				}
+				processWords(words);
 			}
 			bufferedReader.close();
 		} catch (IOException e) {
+			try {
+				bufferedReader.close();
+			} catch (IOException e1) {
+				throw new CompiledCorpusException(e);
+			}
 			throw new CompiledCorpusException(e);
 		}
 	}
     
-    private void processWord(String word) throws CompiledCorpusException, StringSegmenterException {
+
+	
+	
+	private void processWords(String[] words) throws CompiledCorpusException, StringSegmenterException {
+    	Logger logger = Logger.getLogger("CompiledCorpus.processWords");
+		logger.debug("words: "+words.length);
+		for (int n = 0; n < words.length; n++) {
+			String word = words[n];
+			String wordInRomanAlphabet = TransCoder.unicodeToRoman(word);
+			logger.debug("wordInRomanAlphabet: " + wordInRomanAlphabet);
+			if (!isInuktitutWord(wordInRomanAlphabet))
+				continue;
+			++wordCounter;
+
+			if (!filesCompiled.contains(fileBeingProcessed.id)) {
+				++currentFileWordCounter;
+				if (retrievedFileWordCounter != -1) {
+					if (currentFileWordCounter < retrievedFileWordCounter) {
+						continue;
+					} else {
+						retrievedFileWordCounter = -1;
+					}
+				}
+
+				processWord(wordInRomanAlphabet);
+
+				// this line allows to make the compiler stop at a given point (for tests
+				// purposes only)
+				if (stopAfter != -1 && wordCounter == stopAfter) {
+					throw new CompiledCorpusException(
+							"processDocumentContents:: Simulating an error during trie compilation of corpus.");
+				}
+				if (wordCounter % saveFrequency == 0) {
+					toConsole("[INFO]     --- saving jsoned compiler ---" + "\n");
+					logger.debug("size of trie: " + trie.getSize());
+					saveCompilerInDirectory(this.corpusDirectory);
+				}
+			}
+		}
+	}
+
+	
+	
+	private void processWord(String word) throws CompiledCorpusException, StringSegmenterException {
     	processWord(word,false);
     }
     private void processWord(String word, boolean recompilingFailedWord) throws CompiledCorpusException, StringSegmenterException {
@@ -616,7 +655,7 @@ public class CompiledCorpus
 	}
 
 	private static boolean isInuktitutWord(String string) {
-		Pattern p = Pattern.compile("[agHijklmnpqrstuv]+");
+		Pattern p = Pattern.compile("[agHijklmnpqrstuv&]+");
 		Matcher m = p.matcher(string);
 		if (m.matches()) {
 			p = Pattern.compile("[aiu]+");
