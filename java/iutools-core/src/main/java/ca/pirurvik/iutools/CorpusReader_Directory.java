@@ -22,9 +22,11 @@ public class CorpusReader_Directory extends CorpusReader {
     	Arrays.sort(files, new FileNameComparator());
     	Collection<CorpusDocument_File> collection = new Vector<CorpusDocument_File>();
     	for (int i = 0; i<files.length; i++) {
-    		CorpusDocument_File cdf = new CorpusDocument_File(files[i].getAbsolutePath());
-    		if (cdf.hasContents())
+			CorpusDocument_File cdf = new CorpusDocument_File(files[i].getAbsolutePath());
+    		if (files[i].isDirectory()) 
     			collection.add(cdf);
+    		else if (cdf.hasContents())
+    				collection.add(cdf);
     	}
 		return collection.iterator();
 	}
