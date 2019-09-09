@@ -389,11 +389,21 @@ public class CompiledCorpus
  
 
 	private void process(String corpusDirectoryPathname) throws CompiledCorpusException, StringSegmenterException {
+		Logger logger = Logger.getLogger("CompiledCorpus.process");
+		toConsole("[INFO] --- compiling directory "+corpusDirectoryPathname+"\n");
 		this.corpusDirectory = corpusDirectoryPathname;
     	CorpusReader_Directory corpusReader = new CorpusReader_Directory();
     	Iterator<CorpusDocument_File> files = (Iterator<CorpusDocument_File>) corpusReader.getFiles(corpusDirectoryPathname);
-    	while (files.hasNext())
-    		processFile(files.next());
+    	while (files.hasNext()) {
+    		CorpusDocument_File corpusDocumentFile = files.next();
+    		File file = new File(corpusDocumentFile.id);
+    		logger.debug("file: "+file.getAbsolutePath());
+    		if (file.isDirectory()) {
+    			process(corpusDocumentFile.id);
+    		} else {
+    			processFile(corpusDocumentFile);
+    		}
+    	}
     	
 	}
 

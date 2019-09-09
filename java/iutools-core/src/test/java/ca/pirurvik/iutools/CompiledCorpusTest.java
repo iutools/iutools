@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -314,6 +315,39 @@ public class CompiledCorpusTest extends TestCase
 				
     }
     
+    
+    @Test
+    public void test__compile_2_subdirectories() throws IOException {
+		String[] stringsOfWords11 = new String[] {
+				"nunavut", "takujuq", "iglumik", "plugak", "takujuq", "iijuq"
+				};
+		String[] stringsOfWords12 = new String[] {
+				"iglumi", "takulauqtuq", "nanurmik"
+				};
+		String[] stringsOfWords21 = new String[] {
+				"umiaq", "siniktuq", "kuummi"
+				};
+    	String[][][] subdirs = new String[][][] {
+    		{ stringsOfWords11, stringsOfWords12 },
+    		{ stringsOfWords21 }
+    	};
+
+		String corpusDirPathname = createTemporaryCorpusDirectoryWithSubdirectories(subdirs);
+		
+        CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
+        compiledCorpus.setVerbose(false);
+        try {
+        	compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
+        	Trie trie = compiledCorpus.getTrie();
+        	TrieNode terminals[] = trie.getAllTerminals();
+        	assertEquals("The number of terminals in the trie is incorrect.",10,terminals.length);
+        } catch(CompiledCorpusException | StringSegmenterException e) {
+        }
+
+    }
+    
+    
+    
     @Test
     public void test__verify_wordSegmentations_and_other_data_after_compilation() throws Exception
     {
@@ -515,10 +549,14 @@ public class CompiledCorpusTest extends TestCase
 		assertEquals("The sum of the frequencies of all terminals is incorrect.",5,nbCompiledOccurrences);
 		
 	}
+	
+	/*
+	 * 
+	 */
 
 	
     private String createTemporaryCorpusDirectory(String[] stringOfWords) throws IOException {
-    	Logger logger = Logger.getLogger("CompiledCorpusTest.createTemporaryCorpusDirectory");
+       	Logger logger = Logger.getLogger("CompiledCorpusTest.createTemporaryCorpusDirectory");
         corpusDirectory = Files.createTempDirectory("").toFile();
         corpusDirectory.deleteOnExit();
         String corpusDirPath = corpusDirectory.getAbsolutePath();
@@ -532,6 +570,27 @@ public class CompiledCorpusTest extends TestCase
         }
         return corpusDirPath;
 	}
+    
+    private String createTemporaryCorpusDirectoryWithSubdirectories(String[][][] subdirs) throws IOException {
+        Path corpusDirectory = Files.createTempDirectory("corpus_");
+        corpusDirectory.toFile().deleteOnExit();
+        for (int isubdir=0; isubdir<subdirs.length; isubdir++) {
+        	Path subDirectory = Files.createTempDirectory(corpusDirectory,"sub_");
+        	subDirectory.toFile().deleteOnExit();
+        	String [][] subdirFiles = subdirs[isubdir];
+        	for (int ifile=0; ifile<subdirFiles.length; ifile++) {
+        		String[] words = subdirFiles[ifile];
+        		Path filepath = Files.createTempFile(subDirectory, "file_", ".txt");
+        		filepath.toFile().deleteOnExit();
+        		File file = filepath.toFile();
+            	BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+            	String lineOfWords = String.join(" ", words);
+            	bw.write(lineOfWords);
+            	bw.close();
+        	}
+        }
+        return corpusDirectory.toFile().getAbsolutePath();
+    }
 
 
 	@Test
