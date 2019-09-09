@@ -47,7 +47,7 @@ public class IUTokenizer {
 	public void __processToken(String token) {
 		Logger logger = Logger.getLogger("IUTokenizer.__processToken");
 		logger.debug("token= " + token);
-
+		token = token.replaceAll("\\s","");
 		Pattern pacr = Pattern.compile("^([^\\.]\\.)+$");
 		Matcher macr = pacr.matcher(token);
 		if (macr.matches()) {
