@@ -389,29 +389,31 @@ public class CompiledCorpus
  
 
 	private void process(String corpusDirectoryPathname) throws CompiledCorpusException, StringSegmenterException {
-		Logger logger = Logger.getLogger("CompiledCorpus.process");
 		toConsole("[INFO] --- compiling directory "+corpusDirectoryPathname+"\n");
 		this.corpusDirectory = corpusDirectoryPathname;
+		processDirectory(corpusDirectoryPathname);
+	}
+	
+	private void processDirectory(String directoryPathname) throws CompiledCorpusException, StringSegmenterException {
+		Logger logger = Logger.getLogger("CompiledCorpus.processDirectory");
     	CorpusReader_Directory corpusReader = new CorpusReader_Directory();
-    	Iterator<CorpusDocument_File> files = (Iterator<CorpusDocument_File>) corpusReader.getFiles(corpusDirectoryPathname);
+    	Iterator<CorpusDocument_File> files = (Iterator<CorpusDocument_File>) corpusReader.getFiles(directoryPathname);
     	while (files.hasNext()) {
     		CorpusDocument_File corpusDocumentFile = files.next();
     		File file = new File(corpusDocumentFile.id);
     		logger.debug("file: "+file.getAbsolutePath());
     		if (file.isDirectory()) {
-    			process(corpusDocumentFile.id);
+    			processDirectory(corpusDocumentFile.id);
     		} else {
     			processFile(corpusDocumentFile);
     		}
     	}
-    	
 	}
 
 	private void processFile(CorpusDocument_File file) throws CompiledCorpusException, StringSegmenterException {
 			String fileAbsolutePath = file.id;
 			fileBeingProcessed = file;
 			toConsole("[INFO] --- compiling document "+new File(fileAbsolutePath).getName()+"\n");
-//			processDocumentContents(fileAbsolutePath);
 			processDocumentContents();
 			if ( !this.filesCompiled.contains(fileAbsolutePath) )
 				filesCompiled.add(fileAbsolutePath);

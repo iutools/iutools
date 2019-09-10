@@ -333,6 +333,8 @@ public class CompiledCorpusTest extends TestCase
     	};
 
 		String corpusDirPathname = createTemporaryCorpusDirectoryWithSubdirectories(subdirs);
+        File corpusSaveFile = new File(corpusDirPathname+"/trie_compilation.json");
+        corpusSaveFile.delete();
 		
         CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
         compiledCorpus.setVerbose(false);
@@ -343,6 +345,8 @@ public class CompiledCorpusTest extends TestCase
         	assertEquals("The number of terminals in the trie is incorrect.",10,terminals.length);
         } catch(CompiledCorpusException | StringSegmenterException e) {
         }
+        
+        assertTrue("The compilation file is not in the corpus directory.",corpusSaveFile.exists());
 
     }
     
