@@ -466,6 +466,7 @@ public class SpellChecker {
 		if (nCorrections == null) nCorrections = DEFAULT_CORRECTIONS;
 		List<SpellingCorrection> corrections = new ArrayList<SpellingCorrection>();
 		
+//		List<Pair<String, Boolean>> tokens = StringUtils.tokenizeNaively(text);
 		List<Pair<String, Boolean>> tokens = StringUtils.tokenizeNaively(text);
 		
 		logger.debug("tokens= "+PrettyPrinter.print(tokens));

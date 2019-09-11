@@ -10,6 +10,7 @@ import java.util.Set;
 import org.junit.Test;
 
 import ca.nrc.datastructure.Pair;
+import ca.nrc.json.PrettyPrinter;
 import ca.nrc.testing.AssertHelpers;
 import ca.pirurvik.iutools.SpellChecker;
 
@@ -284,9 +285,15 @@ public class SpellCheckerTest {
 		ii = 6;
 		wordCorr = gotCorrections.get(ii);
 		Assert.assertFalse("Word #"+ii+"="+wordCorr.orig+" should have deemd correctly spelled", wordCorr.wasMispelled);
-		
-		
 	}	
+	
+	@Test
+	public void test__correctText_ampersand() throws SpellCheckerException {
+		String text = "inuktut sinik&uni";
+		List<SpellingCorrection> gotCorrections = checker.correctText(text);
+		System.out.println(PrettyPrinter.print(gotCorrections));
+		Assert.assertEquals("The number of corrections is not as expected.",3,gotCorrections.size());
+	}
 	
 	@Test
 	public void test__isMispelled__CorreclySpelledWordFromCompiledCorpus() throws Exception  {
