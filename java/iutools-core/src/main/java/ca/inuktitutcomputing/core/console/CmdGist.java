@@ -11,6 +11,7 @@ import ca.inuktitutcomputing.applications.Decompose;
 import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
 import ca.inuktitutcomputing.script.Syllabics;
+import ca.nrc.ui.commandline.UserIO.Verbosity;
 
 public class CmdGist extends ConsoleCommand {
 
