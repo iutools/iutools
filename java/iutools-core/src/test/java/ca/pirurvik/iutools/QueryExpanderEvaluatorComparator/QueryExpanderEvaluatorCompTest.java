@@ -73,7 +73,7 @@ public class QueryExpanderEvaluatorCompTest {
 				}
 			}
 			if ( !recallFine ) {
-				if (gotRecall < targetRecall-0.001) {
+				if (gotRecall < targetRecall-0.005) {
 					diagnostic += "\nRECALL: "+"<<< The recall has gone ***DOWN***. Was "+targetRecall+"; now "+gotRecall;
 				} else {
 					diagnostic += "\nRECALL: "+">>> The recall has gone ***UP***. Was "+targetRecall+"; now "+gotRecall;
