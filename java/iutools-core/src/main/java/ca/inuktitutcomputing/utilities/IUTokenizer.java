@@ -43,6 +43,10 @@ public class IUTokenizer {
 		return onlyWords();
 	}
 	
+	public List<Pair<String,Boolean>> getAllTokens() {
+		return allTokens;
+	}
+	
 	
 	public void __processToken(String token) {
 		Logger logger = Logger.getLogger("IUTokenizer.__processToken");
@@ -58,7 +62,7 @@ public class IUTokenizer {
 			int pos = 0;
 			while (mpunct.find()) {
 				logger.debug("found punctuation pattern in " + token + " at position " + mpunct.start(1));
-				if (mpunct.group(1).equals("-") && mpunct.start(1) != 0)
+				if ((mpunct.group(1).equals("-") || mpunct.group(1).equals("&")) && mpunct.start(1) != 0)
 					continue;
 				if ( pos != mpunct.start(1))
 					allTokens.add(new Pair<>(token.substring(pos,mpunct.start(1)), true));

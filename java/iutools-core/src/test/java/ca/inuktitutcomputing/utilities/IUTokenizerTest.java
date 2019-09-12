@@ -144,4 +144,14 @@ public class IUTokenizerTest {
 		Assert.assertEquals("",text,reconstructedText);
 	}
 	
+	@Test
+	public void test_run__Case_ampersand() {
+		IUTokenizer tokenizer = new IUTokenizer();
+		String text;
+		text = "sinik&uni";
+		tokenizer.run(text);
+		List<Pair<String,Boolean>> allTokens = tokenizer.getAllTokens();
+		Assert.assertEquals("",1,allTokens.size());
+	}
+	
 }
