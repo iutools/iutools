@@ -291,7 +291,6 @@ public class SpellCheckerTest {
 	public void test__correctText_ampersand() throws SpellCheckerException {
 		String text = "inuktut sinik&uni";
 		List<SpellingCorrection> gotCorrections = checker.correctText(text);
-		System.out.println(PrettyPrinter.print(gotCorrections));
 		Assert.assertEquals("The number of corrections is not as expected.",3,gotCorrections.size());
 	}
 	
