@@ -20,6 +20,7 @@ import org.apache.log4j.Logger;
 
 import com.google.gson.Gson;
 
+import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.pirurvik.iutools.QueryExpansion;
 
 public class QueryExpanderEvaluator {
@@ -102,6 +103,7 @@ public class QueryExpanderEvaluator {
 		
         try {
     		QueryExpander queryExpander = new QueryExpander(compiledCorpus);
+    		StringSegmenter segmenter = compiledCorpus.getSegmenter();
     		
     		if (verbose) System.out.println("Size of segments cache: "+compiledCorpus.segmentsCache.size());
             
@@ -154,7 +156,7 @@ public class QueryExpanderEvaluator {
                     	if (verbose) System.out.println("        "+gsalternative+" : "+freqGSAlternativeInCorpus);
                     	String altDecomp = null;
                     	try {
-                    		altDecomp = String.join(" ",compiledCorpus.getSegmenter().segment(gsalternative))+" \\";
+                    		altDecomp = String.join(" ",segmenter.segment(gsalternative))+" \\";
                         	gsalternativesMorphemes[igs] = altDecomp;
                     	} catch (Exception e) {
                     		altDecomp = "";
