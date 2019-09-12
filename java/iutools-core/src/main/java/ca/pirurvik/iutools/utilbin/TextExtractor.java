@@ -41,8 +41,12 @@ public class TextExtractor {
 			this.script = this.defaultScript;
 	}
 
-	private void extractIUWords(String corpusDirectoryPathname) throws Exception {
-		extractIUWordsFromDirectory(corpusDirectoryPathname);
+	private void extractIUWords(String pathname) throws Exception {
+		File file = new File(pathname);
+		if (file.isDirectory())
+			extractIUWordsFromDirectory(pathname);
+		else
+			extractIUWordsFromFile(new CorpusDocument_File(pathname),null);
 	}
 	
 	private void extractIUWordsFromDirectory(String directoryPathname) throws Exception {
@@ -144,8 +148,8 @@ public class TextExtractor {
 	}
 	
 	private static void printHelp() {
-		System.out.println("Print the number of words in each file and the list of words in each file in a directory.");
-		System.out.println(MethodHandles.lookup().lookupClass().getCanonicalName()+" options* directory_pathname");
+		System.out.println("Print the number of words and the list of words in a file or in each file of a directory.");
+		System.out.println(MethodHandles.lookup().lookupClass().getCanonicalName()+" options* pathname");
 		System.out.println("Options:");
 		System.out.println("-h : print this message");
 		System.out.println("-d : (digest) print only the number of words in each file");
