@@ -33,6 +33,7 @@ import ca.inuktitutcomputing.script.TransCoder;
 import ca.inuktitutcomputing.utilities.EditDistanceCalculator;
 import ca.inuktitutcomputing.utilities.EditDistanceCalculatorFactory;
 import ca.inuktitutcomputing.utilities.EditDistanceCalculatorFactoryException;
+import ca.inuktitutcomputing.utilities.IUTokenizer;
 import ca.inuktitutcomputing.utilities.NgramCompiler;
 
 public class SpellChecker {
@@ -467,13 +468,18 @@ public class SpellChecker {
 		List<SpellingCorrection> corrections = new ArrayList<SpellingCorrection>();
 		
 //		List<Pair<String, Boolean>> tokens = StringUtils.tokenizeNaively(text);
-		List<Pair<String, Boolean>> tokens = StringUtils.tokenizeNaively(text);
+//		String regexp = "[a-zA-Z\\u1400-\\u167f0-9&\\s\\p{Punct}]+";
+//		List<Pair<String,Boolean>> tokens = StringUtils.splitWithDelimiters(regexp, text);
+		IUTokenizer iutokenizer = new IUTokenizer();
+		iutokenizer.run(text);
+		List<Pair<String,Boolean>> tokens = iutokenizer.getAllTokens();
 		
 		logger.debug("tokens= "+PrettyPrinter.print(tokens));
 		
 		for (Pair<String,Boolean> aToken: tokens) {
 			String tokString = aToken.getFirst();
-			Boolean isDelimiter = aToken.getSecond();
+//			Boolean isDelimiter = aToken.getSecond();
+			Boolean isDelimiter = !aToken.getSecond(); // IUTokenizer returns TRUE for words and FALSE for non-words.
 			SpellingCorrection correction = null;
 			if (isDelimiter) {
 				correction = new SpellingCorrection(tokString);
