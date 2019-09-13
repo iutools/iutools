@@ -7,6 +7,7 @@ package ca.inuktitutcomputing.morph;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Request;
@@ -94,6 +95,7 @@ public class DecomposeHansardTest {
 
 	@Test
 	public void testDecomposer() throws Exception {
+				
 		
 		System.out.println("Running testDecomposer. This test can take a few minutes to complete.");
 		
@@ -372,12 +374,15 @@ public class DecomposeHansardTest {
 	}
 	
 	
-	public String locateFile(String fileName) {
+	public String locateFile(String fileName) throws IOException {
     	ClassLoader classLoader = getClass().getClassLoader();
     	Package pk = getClass().getPackage();
     	String packagePath = pk.getName().replace('.', '/');
     	String fullFilename = packagePath + "/../" + fileName;
 		URL res = classLoader.getResource(fullFilename);
+		if (res == null) {
+			throw new IOException("Could not find file "+fileName);
+		}
 		String filePath = res.getPath();
 		String filePathRep = filePath.replaceAll("%20", " ");
 		return filePathRep;
