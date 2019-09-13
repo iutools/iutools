@@ -12,26 +12,25 @@ annuk,1,sn,nn,t,,,,,,n,i(r),,s,,,s,,,s,,"diminutiveness; 'small'; 'sweet, beauti
 apik,1,sn,nn,t,,,,,,n,i(ra),,s,i(ra),,s,i(ra),,s,i(ra),diminutiveness; 'small'; 'sweet'; 'nice',diminutif; 'petit'; 'cher'; 'gentil',,,,H1,,,m
 aq,1,sn,nv,m,i,,,,-,-,,* uq,s,,-,-,,-,-,,arrival at a place: 'go to',arriv�e � un endroit: 'aller �',cas:dat,,,H1,,,m
 aq,2,sn,nv,m,t,,,si/1vv ri/1vv,,n,,,s,,,s,,,s,,1) to spread s.t. (a substance) on s.t. 2) to hurt s.o. on a body part; 3) to break s.o.'s thing,,,,,H1,,,m
-arjuk,2,sv,vv,m,n,,,,,n,i(ra),,s,i(ra),,s,i(ra) i(ga),,s,i(ra),a little,un peu,,,,A1,,,m
 arjuk,1,sn,nn,t,,,,,,n,i(ra),,s,i(ra),,s,i(ra) i(ga),,s,i(ra),smallness; 'small',petitesse; 'petit(e)',,,,H1 A1,,,m
+arjuk,2,sv,vv,m,n,,,,,n,i(ra),,s,i(ra),,s,i(ra) i(ga),,s,i(ra),a little,un peu,,,,A1,,,m
 gai,1,sv,vv,m,n,,,,gaik,n,,* gaik,n,,* gaik kaik,fus fus n,,rai raik,fus,,whenever,"chaque fois que, lorsque",,,,,,,m
 gajuk,1,sv,vv,m,n,,,,,n,,,s,,,fus,,rajuk,fus,,"expresses more than regular action: 'frequently', 'always'","exprime une action plus que r�guli�re: 'fr�quemment', 'toujours'",,,,A1,,,m
 galaq,1,sn,nn,m,,,,,,n,,,s,,,s,,,s,,collectiveness; characteristic,"ensemble de gens, de choses; caract�ristique",,,number:p,,,Cumberland,m
 galuaq,1,sv,vv,m,n,,,,,n,,kaluaq,a,,kaluaq,fus,,raluaq,fus,,really; actually,vraiment; en fait,,,,H1,,,m
 galuaq,2,sv,vn,t,,,,,,n,,kaluaq,a,,kaluaq,fus,,raluaq,fus,,really; actually,vraiment; en fait,,,,H1,,,m
-gaq,2,sv,vv,m,t,,,i/1vv si/1vv,,n,,,s,,,s,,,s,,frequentative: several times,nil,,,,S1,,,m
 gaq,1,sv,vn,t,,,,,,n,,,s,,,s,,,s,,forms a noun with an inherently passive meaning: someone/something that one ...,forme un nom avec un sens inh�rent passif: quelqu'un/quelque chose que l'on ...,type:v function:nv function:vv,,,H1,,,m
+gaq,2,sv,vv,m,t,,,i/1vv si/1vv,,n,,,s,,,s,,,s,,frequentative: several times,nil,,,,S1,,,m
 ggiq,1,sn,nv,m,i,,,,,n,,,s,,,s,,,s,,bring along with,emmener avec soi,type:n function:vn function:nn,,,H1,,,m
-gi,2,sv,vv,m,n,,,,,n,,ni ki,a n,,ki gi,n s,,ri,fus,,again,encore; de nouveau,type:v function:nv function:vv,,mode:int mode:dec,H1,,,m
 gi,1,sn,nv,m,t,,,,,n,,,i(i),,,fus,,ri,fus,,have as; possess; have as relation; use as; consider or treat as,avoir comme; poss�der; avoir pour (relation); utiliser comme; consid�rer ou traiter comme,type:n function:nn function:vn,,,H1,,,m
+gi,2,sv,vv,m,n,,,,,n,,ni ki,a n,,ki gi,n s,,ri,fus,,again,encore; de nouveau,type:v function:nv function:vv,,mode:int mode:dec,H1,,,m
 gi,3,sv,vv,m,t,,,,,n,,,s,,,fus,,ri,fus,,"to find, consider s.t. or s.o. ...","trouver, consid�rer qqn ou qqch. ...","type:v,nature:a",,,H1,,,m
 gi,4,sv,vv,m,t,,,,,n,,,s,,,fus,,ri,fus,,added to [[gi verb(s)]] to use them transitively,ajout� aux verbes 'gi' pour les utiliser transitivement,"type:v,transinfix:gi/4vv",i,,H1,,,m
 giaq,1,sv,vv,m,n,,,ri/1vv,,n,,,s,,,fus,,riaq,fus,,commencement of action: 'begin to',commencement de l'action: 'commencer �',,,,H1,,,m
 giaq,2,sv,vn,t,,,,,,n,,,s,,,fus,,riaq,fus,,which has a natural tendency to,qui a une tendance naturelle �,,,,A1,,,m
 giaq,3,sv,vn,t,,,,,,n,,,s,,,s,,riaq,fus,,the fact of,le fait de,,,,S1,,,m
-giik,2,sn,nv,m,i,a,,,,n,,,i(i),,,fus,,riik,fus,,"to be mutually the same; if of unequal importance or strength, the stem denotes the lesser of the two","�tre mutuellement la m�me chose; si d'importances ou de forces in�gales, le radical d�signe celui de moindre importance ou force",type:n function:vn function:nn,,,,,,m
 giik,1,sn,nn,t,,,,,,n,,,i(i),,,fus,,riik,fus,,"a pair of two (or a group of three or more, in the plural) people or things; if of unequal importance or strength, the stem denotes the lesser of the two","une paire (ou un groupe de trois ou plus, au pluriel) de personnes ou de choses; si d'importances ou de forces in�gales, le radical d�signe celui de moindre importance ou force",type:n function:vn function:nn,,,H1,,,m
-giiq,1,sv,vv,m,n,,,,jariiq,n,,tariiq sariiq,n n,,,fus,,riiq,fus,,action already completed: 'already',action d�j� accomplie: 'd�j�',,,,H1 A1,,,m
+giik,2,sn,nv,m,i,a,,,,n,,,i(i),,,fus,,riik,fus,,"to be mutually the same; if of unequal importance or strength, the stem denotes the lesser of the two","�tre mutuellement la m�me chose; si d'importances ou de forces in�gales, le radical d�signe celui de moindre importance ou force",type:n function:vn function:nn,,,,,,m
 gik,1,sn,nv,m,i,a,,,,n,,,s,,,fus,,rik,fus,,to have good ...,avoir de bons ...,type:n function:vn function:nn,,,A1,,,m
 guk,1,sn,nv,m,i,a,,,guq,n,,* guq,s,,* guq,fus,,ruk ruq,fus,,to be desirous of the fulfillment of a physical or sensual need,avoir envie ou besoin d'assouvir un besoin physique ou sensuel,type:n function:vn function:nn,,,H1 A1,,,m
 gulu,1,sn,nn,t,,,,,,n,,,s,,,s,,,s,,terrible; wretched,affreux; d�glingu�; mis�rable,,,,H1,,,m
@@ -47,8 +46,8 @@ illi,1,sn,nv,m,t,,,i/1vv,,n,i(ng),,i(a),,,s,i(ng),,s,i(ng),to break or to seriou
 innaq,2,sv,vv,m,n,,,,,n,i(ng),,s,i(ng),,s,i(ng),,s,i(ng),to do nothing but; to do always; exclusively,ne rien faire d'autre que; toujours; exclusivement,,,,H1,,,m
 innaq,1,sn,nn,t,,,,,,n,i(ng),,s,i(ng),,s,i(ng),,s,i(ng),"exclusiveness: 'just', 'only'","exclusivit�: 'juste', 'seulement'",,,,H1,,,m
 innaujaq,1,sv,vv,m,n,,,,,n,i(ng),,s,i(ng),,s,i(ng),,s,i(ng),"to seem to do nothing but, to always do","avoir l'air de ne faire que, de toujours faire",,,,H1,,,m
-iq,2,sv,vv,m,n,,,,,n,i(ng),,i(a),,,s,i(ng),,s,i(ng),no longer,ne plus,,,,H1,,,m
 iq,1,sn,nv,m,t,,,si/1vv i/1vv nnik/1vv,,n,i(ng),,i(a),,,s,i(ng),,s,i(ng),"to remove; to lack; to be out of; refl.: to give away, to sell, to loose s.t.; with body parts: intrans.: to have cold ...","enlever; manquer de; �tre � court de; r�fl.: donner, vendre, perdre qqch.; avec membres du corps: avoir froid � ...",type:n function:vn function:nn,,,H1,,,m
+iq,2,sv,vv,m,n,,,,,n,i(ng),,i(a),,,s,i(ng),,s,i(ng),no longer,ne plus,,,,H1,,,m
 iqsuq,1,sn,nv,m,i,,,,,n,i(ng),,i(a),,,s,i(ng),,s,i(ng),to do a number of times,faire un nombre de fois,nature:nb,,,H1,,,m
 irujjaq,1,sn,nn,t,,,,,,n,i(ng),,i(a),,,s,i(ng),,s,i(ng),"one who is bereft of s.t., who is left without s.t.","qqn qui est priv� de qqch., qui est laiss� sans qqch.",,,,A1,iq/1nv+uti/1vv+jaq/1vn,,m
 irujji,1,sn,nv,m,i,,,,,n,i(ng),,i(a),,,s,i(ng),,s,i(ng),to remove all of s.t.,tout enlever de qqch.,,,,H1,iq/1nv+uti/1vv+ji/1vv,,m
@@ -58,25 +57,26 @@ it,3,sn,nv,m,i,,,,,n,i(ng),,i(a) i(i),,,s,i(ng),,s s,i(ng) s(a),to be such,�tr
 it,1,sn,nv,m,i,,,,,n,,-,-,,-,-,,-,-,,after -mi: to be in; to exist in; after -tut: to be like,apr�s -mi: �tre dans; exister dans; apr�s -tut: �tre comme,cas:loc cas:sim,,,H1,,,m
 it,2,sn,nv,m,i,,,,,n,i(ng),,i(a) i(i),,,s,i(ng),,s s,"i(ng) ssi(i$,a)",to have no s.t.; to be without s.t.,ne pas avoir de; manquer de,!cp(id:it/3nv),,,H1,,,m
 it,1,sv,vv,m,i,,,,,n,,,s,,,s,,,s,s(a),to be the contrary of,�tre le contraire de,"type:v,nature:a",,,,,,m
+jaq,1,sv,vn,t,,,,,,n,,taq,n,,taq,n,,taq,n,,he/that on whom/which the action is done (passive),personne ou chose sur laquelle l'action est accomplie (passif),!id:u/1nv,t,,H1,,,m
 jaq,1,sv,vv,m,i,,,,jaaq,n,,-,-,,-,-,,-,-,,"to seem, to be, to look, to act like being s.t. or s.o.","sembler, �tre, avoir l'air, agir comme qqch. ou qqn",id:u/1nv,,,H1 A1,,,m
 jaq,2,sv,vv,m,n,freq,,,,n,,,s,,,s,,,s,,"multiple action, or action on multiple objects","action multiple, ou action sur objets multiples",,,,S1,,,m
-jaq,1,sv,vn,t,,,,,,n,,taq,n,,taq,n,,taq,n,,he/that on whom/which the action is done (passive),personne ou chose sur laquelle l'action est accomplie (passif),!id:u/1nv,t,,H1,,,m
 jaq,3,sv,vn,t,,,,,,n,,-,-,,-,-,,-,-,,"like, similar to","qui ressemble �, qui est similaire �",id:u/1nv,,,H1,,,m
 jaqtuq,1,sv,vv,m,t,,,i/1vv,jaaqtuq,n,,saqtuq,s,,giaqtuq,fus,,riaqtuq,fus,,"go to, go off to, go on to, etc. for a long time",aller faire quelque chose longtemps,,,,H1,,,m
 jariaksaq,2,sv,vn,t,,,,,,n,,tariaksaq,n,,giaksaq,fus,,riaksaq,fus,,"gives the verbal root a gerundive (nominal) meaning; when followed by a possessive ending, it has the sens ""whether or not""","tourne le verbe en le nom de l'action; lorsque suivi d'une terminaison possessive, il a le sens de ""si...ou pas""",,,,H1,,,m
 jariaq,1,sv,vn,m,,,,,giaq,n,,tariaq,n,,giaq,fus,,riaq,fus,,the obligation to perform an action,l'obligation d'accomplir une action,,,id:qaq/1nv id:lik/1nn,H1,,,m
+jariiq,1,sv,vv,m,n,,,,,n,,tariiq,n,,giiq,fus,,riiq,fus,,action already completed: 'already',action d�j� accomplie: 'd�j�',,,,H1 A1,,,m
 jariuq,1,sv,vv,m,n,,,,,n,,tariuq,n,,giuq,fus,,riuq,fus,,'for the first time','pour la premi�re fois',,,,H1 A1,,,m
 jarniq,1,sv,vv,m,t,,,,,n,,garniq,s,,garniq,fus,,niq,fus,,to be pleasant to...,�tre plaisant � ...,,t,,A1,,,m
-ji,1,sv,vv,m,i,,,,,n,,-,-,,-,-,,-,-,,"added to transitive verb stems such that they retain their transitive sense when followed by intransitive infixes or endings, to avoid their otherwise reflexive or passive senses","ajout� � des radicaux verbaux transitifs afin qu'ils conservent leur sens transitif lorsqu'ils sont suivis d'infixes ou de terminaisons intransitives, pour emp�cher qu'ils prennent autrement leurs sens r�fl�chis ou passifs",antipassive:ji/1vv,t,,H1,,,m
 ji,1,sv,vn,t,,,,,,n,,ti,n,,ti,n,,ti,n,,one whose job is; agent,personne dont le travail est de; agent,type:v function:nv function:vv,,,H1,,,m
+ji,1,sv,vv,m,i,,,,,n,,-,-,,-,-,,-,-,,"added to transitive verb stems such that they retain their transitive sense when followed by intransitive infixes or endings, to avoid their otherwise reflexive or passive senses","ajout� � des radicaux verbaux transitifs afin qu'ils conservent leur sens transitif lorsqu'ils sont suivis d'infixes ou de terminaisons intransitives, pour emp�cher qu'ils prennent autrement leurs sens r�fl�chis ou passifs",antipassive:ji/1vv,t,,H1,,,m
 jjaa,1,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,"emphatic future: 'definitely' (always combined with a negative suffix: -nngit-, -junniiq-)","futur emphatique: 'd�finitivement' (toujours combin� � un suffixe n�gatif: -nngit-, -junniiq-)",,,id:junniiq/1vv id:nngit/1vv,H1 A1,,,m
 jjaikkut,1,sv,vn,t,,,,,,n,,,s,,,s,,,s,,instrument of prevention,"instrument de pr�vention, pour emp�cher",,,,H1,,,m
 jjaq,1,sn,nv,m,i,,,,,n,,,s,,,s,,,s,,to break; to snap off,le bris de quelque chose,,,,A1,,,m
 jjiq,2,sn,nv,m,i,,,,,n,,,s,,,s,,,s,,to receive s.t.,recevoir qqch.,,,,S1,,,m
 jjiq,1,sn,nv,m,t,,,i/1vv,,n,,,s,,,s,,,s,,to put s.t. on s.t. or s.o.,mettre qqch. sur qqch. ou qqn,,,,S1,,,m
 jjut,1,sv,vn,t,,,,,jjuti,n,,* jjuti,s,,* jjuti,s,,rut ruti,fus,,"reason, cause, motive for doing s.t.","raison, cause, motif pour faire qqchose",,,,,,,m
-juaq,2,sv,vv,m,n,,,,,i(r),,,i(ir),,,son,,,son,,"over-sized, exaggerated action",action exag�r�e,,,,A1,,,m
 juaq,1,sn,nn,t,,,,,,i(r),,,i(ir),,,son,,,son,,large; big,large; grand; gros,,,,H1 A1,,,m
+juaq,2,sv,vv,m,n,,,,,i(r),,,i(ir),,,son,,,son,,"over-sized, exaggerated action",action exag�r�e,,,,A1,,,m
 juit,1,sv,vv,m,n,,,,suit,n,,* tuit,s n,,,s,,,s,,"rarity of the action: 'rarely', 'seldom'","raret� de l'action: 'rarement', 'peu souvent'",,,,H1,,,m
 juksaq,1,sv,vn,t,,,,,,n,,tuksaq,n,,tuksaq,n,,tuksaq,n,,someone or something who should (is supposed to) perform an action,quelqu'un ou quelque chose qui est suppos� accomplir l'action,,,,H1,juq/1vn+ksaq/1nn,,m
 juma,1,sv,vv,m,n,,,,guma,n,,tuma guma,n s,,guma,fus,,ruma,fus,,desire,d�sir,,,,H1,,,m
@@ -105,46 +105,46 @@ kkaq,2,sv,vv,m,t,,,i/1vv,,n,,,s,,,s,,,s,,to make s.o. do s.t. intentionally,fair
 kkaq,1,sv,vn,t,,,,,,n,,,s,,,s,,,s,,a person who performs well the action of the verb,une personne qui accomplit bien l'action du verbe,,,,H1,,,m
 kkiq,1,sn,nn,t,,,,,,n,,,s,,,s,,,s,,a person with large body parts,une personne avec de grosses/grandes parties corporelles,,,,H1,,,m
 kkut,1,sn,nn,t,,,,,,n,,,s,,,s,,,s,,"group, family, people related to","groupe, famille, personnes reli�es �",,,,H1 A1,,,m
+ksaq,1,sn,nn,t,,,t,,,n,,,s,,,s,,,s,,"material, something which will become or be made into something else; potential for","mat�riau, quelque chose qui deviendra ou sera utilis� pour quelque chose; potentiel pour",,,,H1 A1,,,m
 ksaq,1,sn,nv,m,i,,,,,n,,,s,,,s,,,s,,to gather s.t. to make an object,rassembler ce qu'il faut pour fabriquer un objet,,,,H1 A1,,,m
 ksaq,1,sv,vv,m,i,,,,,n,,,s,,,s,,,s,,added to gi-verbs to make them intransitive,ajout� aux verbes 'gi' pour les rendre intransitifs,"type:v,intransinfix:ksaq/1vv",i,,H1,,,m
 ksaq,2,sv,vv,m,i,,,,,n,,,s,,,s,,,s,,"to find, consider s.t. or s.o. ...","trouver, consid�rer qqn ou qqch. ...","type:v,nature:a",,,H1,,,m
-ksaq,1,sn,nn,t,,,t,,,n,,,s,,,s,,,s,,"material, something which will become or be made into something else; potential for","mat�riau, quelque chose qui deviendra ou sera utilis� pour quelque chose; potentiel pour",,,,H1 A1,,,m
 ksi,1,sv,vv,m,i,,,,,n,,-,-,,-,-,,-,-,,"added to transitive verb stems such that they retain their transitive sense when followed by intransitive infixes or endings, to avoid their otherwise reflexive or passive senses","ajout� � des radicaux verbaux transitifs afin qu'ils conservent leur sens transitif lorsqu'ils sont suivis d'infixes ou de terminaisons intransitives, pour emp�cher qu'ils prennent autrement leurs sens r�fl�chis ou passifs",antipassive:ksi/1vv,t,,,,,m
 kulu,1,sn,nn,t,,,,,kuluk,n,,* kuluk,s,,* kuluk,s,,* kuluk,s,,reinforcement of the smallness; endearment: 'sweet little',renforcement de l'id�e de petitesse; 'cher petit',,,,H1 A1,,,m
-kutaaq,1,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,"to be, to do for a long time","�tre, faire pendant longtemps",,,,S1,,,m
 kutaaq,1,sn,nn,t,,,,,,n,,,s,,,s,,,s,,"tall, long","grand, long",,,,H1,,,m
+kutaaq,1,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,"to be, to do for a long time","�tre, faire pendant longtemps",,,,S1,,,m
 kuvik,1,sn,nn,t,,,,,,n,,,s,,,s,,,s,,a place to keep; a container for,un endroit pour garder; un contenant pour,,,,H1,,,m
-laaq,2,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,far futur,futur �loign�,,,,H1,,,m
 laaq,3,sv,vn,t,,,,,,n,,,s,,,s,,,s,,superlativeness: 'the one that ... the most',superlativit�: 'celui qui ... le plus',,,,H1,,,m
 laaq,1,sn,nn,t,,,,,,n,,,s,,,s,,,s,,diminutiveness: 'small',diminutif: 'petit',,,,H1,,,m
-lak,1,sv,vv,m,n,,,,,i(r),,,son,,,son,,,son,,a little,un peu,,,,A1,,,m
+laaq,2,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,far futur,futur �loign�,,,,H1,,,m
+lak,1,sv,vv,m,n,,,,,i(r),,,n,,,n,,,n,,a little,un peu,,,,A1,,,m
 langa,1,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,"immediately, right now (today)","imm�diatement, tout de suite (aujourd'hui)",,,,S1,,,m
-lataaq,2,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,"certainty of the action: 'really', 'certainly'","certitude de l'action: 'r�ellement', 'certainement'",,,,H1,,,m
 lataaq,1,sn,nn,t,,,,,,n,,,s,,,s,,,s,,genuineness: 'real',"v�ritable, vrai",,,,H1,,,m
+lataaq,2,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,"certainty of the action: 'really', 'certainly'","certitude de l'action: 'r�ellement', 'certainement'",,,,H1,,,m
 laukak,1,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,"brief action: 'for a brief time', 'for a short time'",action br�ve: 'pour un court laps de temps',,,,H1,,North Baffin,m
 lauq,1,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,general perceived past; 'before' or 'after' when completed by partitipial endings,pass� per�u g�n�ral; 'avant' ou 'apr�s' lorsque compl�t� avec des terminaisons au mode participe,,,,H1,,,m
 lauq,2,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,priority of the command,priorit� de l'ordre,,,mode:imp,H1 A1,,,m
 lauqsima,1,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,past indefinite tense,pass� ind�fini,,,,H1,lauq/1vv+sima/1vv,,m
 lauqsimajunniiq,1,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,"the action ceased ages ago, a long time ago = to not  have done for a long time",l'action a cess� il y a tr�s longtemps = ne pas avoir fait depuis longtemps,,,,A1,lauq/1vv+sima/1vv+junniiq/1vv,,m
 li,4,sv,vv,m,i,,,,-,-,,,s son,,-,-,,-,-,,to do s.t. in this way,faire qqch. de cette mani�re,id:it/3nv,,,S1,,,m
-li,3,sn,nv,m,i,t,,,,n,,,s,,,s,,,s,,"to build, make something (trans.: for s.o.); with certain words: find s.t.",construire qqch. (trans.: pour qqn); avec certains mots: trouver qqch.,,,,H1,,,m
 li,2,sv,vv,m,t,,,ksi/1vv i/1vv,,n,,,s,,,s,,,s,,to make that s.t. or s.o. ... (refl.: to become); to make s.t. (trans.: to s.o.),faire que qqch. ou qqn ... (r�fl.: devenir); fabriquer qqch. (trans.: pour qqn),!cp(id:li/4vv),,,H1,,,m
 li,1,q,q,,,,,,,n,,,son,,,son,,,son,,but,mais,,,,H1,,,m
-liaq,2,sn,nv,m,i,,,,,n,,siaq *,s i(i),,,s,,,s,,"motion towards: 'to go to'; 'to go hunting' with game-animal nouns, when the hunter knows where to head","mouvement vers; 'aller �, vers'; 'aller chasser' avec des noms d'animaux, lorsque le chasseur sait o� aller",,,,H1,,,m
+li,3,sn,nv,m,i,t,,,,n,,,s,,,s,,,s,,"to build, make something (trans.: for s.o.); with certain words: find s.t.",construire qqch. (trans.: pour qqn); avec certains mots: trouver qqch.,,,,H1,,,m
 liaq,1,sn,nn,t,,,,,,n,,,s,,,s,,,s,,something constructed,quelque chose qui a �t� construit,,,,H1,,,m
+liaq,2,sn,nv,m,i,,,,,n,,siaq *,s i(i),,,s,,,s,,"motion towards: 'to go to'; 'to go hunting' with game-animal nouns, when the hunter knows where to head","mouvement vers; 'aller �, vers'; 'aller chasser' avec des noms d'animaux, lorsque le chasseur sait o� aller",,,,H1,,,m
 ligaa,1,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,imminent action: 'to be about to',action imminente: '�tre sur le point de',,,,H1,,,m
 lijaq,1,sn,nv,m,i,,,,,n,,sijaq *,s i(i),,,s,,,s,,to bring along,apporter avec soi,,,,A1,liq/2nv+jaq/2vv,,m
-lik,2,sn,nv,m,i,,,,,n,,,s,,,s,,,s,,to go to; to have gone to; to come to; to find by chance,"aller �; rencontrer, trouver par hasard",,,,,,,m
-lik,3,sn,nv,m,t,,,si/1vv,,n,,,s,,,s,,,s,,"to give, to provide, to offer, to fetch s.t. (trans.: to s.o.)","donner, fournir, offrir, aller chercher qqch. (trans.: � qqn)",,,,,,,m
 lik,1,sn,nn,t,,,,,,n,,,s,,,s,,,s,,"possession: 'one with' (at the end of the word, it may have a verbal meaning in the 3rd person)","possession: 'quelqu'un avec' (en position finale, il peut prendre un sens verbal � la 3�me personne)",,,,H1,,,m
-limaaq,2,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,ceaselessly,sans cesse,,,,S1,,,m
+lik,3,sn,nv,m,t,,,si/1vv,,n,,,s,,,s,,,s,,"to give, to provide, to offer, to fetch s.t. (trans.: to s.o.)","donner, fournir, offrir, aller chercher qqch. (trans.: � qqn)",,,,,,,m
+lik,2,sn,nv,m,i,,,,,n,,,s,,,s,,,s,,to go to; to have gone to; to come to; to find by chance,"aller �; rencontrer, trouver par hasard",,,,,,,m
 limaaq,1,sn,nn,t,,,,,,n,,,s,,,s,,,s,,"inclusiveness: 'all of', 'the whole of'; (plur.) every","inclusion: 'tout le', 'l'ensemble de'; (pluriel) chacun de, chaque",,,,H1,,,m
+limaaq,2,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,ceaselessly,sans cesse,,,,S1,,,m
 liq,3,sn,nv,m,i,,,,,n,,,s,,,s,,,s,,"to go to, toward","aller �, vers",,,,,,,m
 liq,1,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,on-going action; present progressive tense,action en cours,,,,H1,,,m
 liq,2,sn,nv,m,t,,,i/1vv,,n,,siq,s,,,s,,,s,,"to provide, supply; to put s.t. (trans.: to, on s.o.)","fournir; mettre qqch. (trans.: �, sur qqn)",,,,A1,,,m
 liqi,1,sn,nv,m,i,,,,,n,,,?,,,s,,,s,,"to chase, hunt","poursuivre, chasser",,,,A1,,,m
 lirai,1,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,no meaning,aucune signification,,,,H1,liq/1vv+gai/1vv,,m
-liri,1,sn,nv,m,n,,,,,n,,* siri,i(i) s,,,s,,,s,,"manipulation: 'to work with, on'","manipulation: 'travailler avec, sur'",,,,H1 A1,,,m
+liri,1,sn,nv,m,i,,,,,n,,* siri,i(i) s,,,s,,,s,,"manipulation: 'to work with, on'","manipulation: 'travailler avec, sur'",,,,H1 A1,,,m
 lisaaq,1,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,"just beginning, in the first stage of, for the fist time; to have just happened","venir juste de commencer �, venir juste d'arriver, pour la premi�re fois, venir seulement de",,,,H1 A1,,,m
 lisaq,1,sn,nn,t,,,,,,n,,,s,,,s,,,s,,container or holder for body parts,contenant ou soutien pour des parties du corps,,,,H1,,,m
 litainnaq,1,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,at last; finally,enfin; finalement,,,,A1,,,m
@@ -154,8 +154,8 @@ llaq,1,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,heavily; clumsily,pesamment; maladroitement,
 llarik,1,sv,vv,m,n,,,,larik,n,,* larik,s,,* larik,s,,* larik,s,,"certainty of the action: 'really', 'certainly'","certitude de l'action: 'r�ellement', 'certainement'",,,,H1,,,m
 llarik,2,sn,nn,t,,,,,larik,n,,* larik,s,,* larik,s,,* larik,s,,genuineness: 'real',"v�ritable, vrai",,,,H1,,,m
 lu,1,q,q,,,,,,,n,,,son,,,son,,,son,,and,et,,,,H1,,,m
-luaq,1,sv,vv,m,n,,,,lluaq,n,,* lluaq,s,,* lluaq,s,,* lluaq,s,,excessive action: 'too much'; 'quite',action excessive: 'trop'; 'tout � fait',,,,H1,,,m
 luaq,2,sn,nn,t,,,,,,n,,,s,,,s,,,s,,exact,exact,,,,H1,,,m
+luaq,1,sv,vv,m,n,,,,lluaq,n,,* lluaq,s,,* lluaq,s,,* lluaq,s,,excessive action: 'too much'; 'quite',action excessive: 'trop'; 'tout � fait',,,,H1,,,m
 luk,1,sn,nv,m,i,,,,,n,,,s,,,s,,,s,,to have something bad or poor,avoir quelque chose qui est mauvais ou de pauvre qualit�,,,,H1,,,m
 luk,3,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,to perform an action in a poor or bad manner,accomplir une action d'une mauvaise ou d'une pi�tre fa�on,,,,H1,,,m
 luk,2,sn,nn,t,,,,,,n,,,s,,,s,,,s,,something bad or poor,quelque chose de mauvais ou de pauvre qualit�,,,,H1,,,m
@@ -168,30 +168,30 @@ miik,1,sv,vn,t,,,,,mii mi,n,,* mii mi,nas,,* mii mi,nas,,* mii mi * mii mi,nas n
 miniq,1,sn,nn,t,,,,,,n,,,s,,,s,,,s,,denotes a former state; unperceived past following gerundive ending,d�note un �tat ant�rieur; pass� non per�u lorsqu'il suit une terminaison g�rondive,,,,H1,,,m
 miuq,1,sn,nn,t,,,,,,n,,,nas,,,nas,,,nas,,resident of a place name,r�sidant d'un nom d'endroit,,,,H1,,,m
 miutaq,1,sn,nn,t,,,,,miut,n,,* miut,a i(i),,* miut,nas,,* miut,nas,,resident of; apendage to; contents of,"qui a r�sidence, qui habite �; qui se porte �",,,,H1,,,m
-mmarik,2,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,"certainty: 'really', 'certainly'","certitude: 'r�ellement', 'certainement'",,,,H1,,,m
 mmarik,1,sn,nn,t,,,,,,n,,,s,,,s,,,s,,genuineness,v�ritable,,,,H1,,,m
+mmarik,2,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,"certainty: 'really', 'certainly'","certitude: 'r�ellement', 'certainement'",,,,H1,,,m
 mmiaq,1,sv,vv,m,n,,,,miaq,n,,* miaq,s,,* miaq,s,,* miaq,s,,contituity in the action; repetition of the action,continuit� dans l'action; r�p�tition de l'action,,,,S1,,,nm
 najaq,1,sv,vv,m,n,,,,gajaq,n,,,a,,gajaq,fus,,rajaq,fus,,action dependent on a condition: 'would',action d�pendante d'une condition,,,,H1 A1,,,m
 nanngit,1,sv,vv,m,n,,,,,n,,,nas,,,nas,,,nas,,to prevent,emp�cher,,,,H1,naq/1vv+nngit/1vv,,m
-naq,1,sv,vv,m,n,,,,naq nak nak,n i(n) n i(n),,* nak,nas,,* nak,nas,,* nak,nas,,causation: 'to cause'; 'to make ...',"cause: 'causer, produire, rendre'",,,,H1,,,m
 naq,2,sv,vn,t,,,,,naq nak nak,n i(n) n i(n),,* nak,nas,,* nak,nas,,* nak,nas,,1) exclamation: how...it is! 2) that which causes...,1) exclamation: comme c'est...! 2) qqch. qui cause...,,,,H1,,,nm
+naq,1,sv,vv,m,n,,,,naq nak nak,n i(n) n i(n),,* nak,nas,,* nak,nas,,* nak,nas,,causation: 'to cause'; 'to make ...',"cause: 'causer, produire, rendre'",,,,H1,,,m
 nasaaq,1,sv,vv,m,n,,,,,n,,,son,,,son,,,son,,late,tard,,,,H1,,,m
 nasugi,1,sv,vv,m,t,,,ksi/1vv,,n,,,a,,* gasugi,a fus,,rasugi,fus,,"to think, to be of the the opinion that s.o. (refl.: oneself) ...","penser, avoir l'opnion que qqn (r�fl.: soi-m�me) ...",,,,H1,,,m
 nasuk,1,sv,vv,m,n,,,,gasuk gasuaq,n,,* nasuaq,a,,gasuk gasuaq,fus,,rasuk rasuaq,fus,,"endeavouring, striving: 'to be trying'",essayer,,,,H1 A1,,,m
 nga,1,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,to be in a state of,�tre dans un �tat de,,,,,,,m
-ngaaq,1,sn,nv,m,i,,,,-,-,,,nas,,-,-,,-,-,,to come from,venir de,cas:abl,,,H1,,,m
-ngaaq,2,sv,vv,m,n,,,,,n,,,nas,,,nas,,,nas,,"to do one action as opposed to an alternative: 'instead'; to do s.t. very much, abundantly","faire une action au lieu d'une autre: 'plut�t', 'au lieu'; faire qqch. beaucoup, abondamment",,,,H1,,,m
 ngaaq,3,sn,nn,t,,,,,,n,,,nas,,,nas,,,nas,,"rather, instead","plut�t, au lieu",,,,H1,,,m
+ngaaq,2,sv,vv,m,n,,,,,n,,,nas,,,nas,,,nas,,"to do one action as opposed to an alternative: 'instead'; to do s.t. very much, abundantly","faire une action au lieu d'une autre: 'plut�t', 'au lieu'; faire qqch. beaucoup, abondamment",,,,H1,,,m
+ngaaq,1,sn,nv,m,i,,,,-,-,,,nas,,-,-,,-,-,,to come from,venir de,cas:abl,,,H1,,,m
 ngau,1,sn,nv,m,i,,,,-,-,,,nas,,-,-,,-,-,,"motion towards; 'towards', 'to'","mouvement vers; 'vers', '�'",cas:dat,,,H1,,,m
 ngu,1,sn,nv,m,i,,,,,n,,,s,,,s,,,s,,"with body parts: illness, soreness: 'to have sore ...'; to be tired in this part; with name of foods: to have a slight envy to vomit that","avec noms de parties du corps: maladie, douleur: 'avoir mal � ...'; avec ce membre fatigu�; avec noms de nourriture: avoir une l�g�re envie de le vomir",,,,H1,,,m
 nguq,1,sn,nv,m,t,,,i/1vv,nnguq,n,,* nnguq,i(i),,* nnguq,nas,,ruq * nnguq,fus s s,,change of state: 'to become' (trans.: to make s.o. become); with numbers: to tell the time,"changement d'�tat: 'devenir' (trans.: faire devenir qqn); avec nombres: exprimer l'heure, la date",,,,H1,,,m
 nialauq,1,sv,vv,m,n,,,,,n,,,nas,,,nas,,,nas,,'was/were going to'; 'would have ...',"'�tait/�taient pour, allait/allaient faire qqchose'; 'aurait/auraient ...'",,,,A1,niaq/2vv+lauq/1vv,,m
-niaq,1,sn,nv,m,i,t,,,,n i(n),,,nas,,,nas,,,nas,,to study; to take a great interest in; with animals: to hunt,�tudier; avoir un grand int�r�t pour; avec animaux: chasser,,,,H1,,,m
 niaq,2,sv,vv,m,n,,,,,n,,,nas,,,nas,,,nas,,"future, today","futur, aujourd'hui",,,,H1,,,m
+niaq,1,sn,nv,m,i,t,,,,n i(n),,,nas,,,nas,,,nas,,to study; to take a great interest in; with animals: to hunt,�tudier; avoir un grand int�r�t pour; avec animaux: chasser,,,,H1,,,m
 niaqqau,1,sv,vv,m,t,,,,,n,,,nas,,,nas,,,nas,,'was/were just going to'; 'would have just now...',"'�tait/�taient tout juste pour, allait/allaient tout juste faire qqchose'; 'aurait/auraient juste � ce moment...'",,,,A1,niaq/2vv+qqau/1vv,,m
 niaqtaksari,1,sv,vv,m,t,,,,,n,,,nas,,,nas,,,nas,,future likelihood or probability: 'will more than likely... ; will probably ...',vraisemblance ou probabilit� dans le futur: 'vraisemblablement'; 'probablement',,t,,A1,niaq/2vv+jaq/1vn+ksaq/1nn+gi/1nv,,m
-niq,1,sv,vv,m,n,,,,,i(n),,,nas,,,nas,,,nas,,unperceived past with pure verbal forms,pass� non per�u avec formes verbales pures,,,,H1,,,m
 niq,2,sv,vn,t,,,,,,n,,,nas s,,,nas,,,nas,,noun abstraction of the verb's action,nom abstrait de l'action du verbe,,,,H1 A1,,,m
+niq,1,sv,vv,m,n,,,,,i(n),,,nas,,,nas,,,nas,,unperceived past with pure verbal forms,pass� non per�u avec formes verbales pures,,,,H1,,,m
 niqpaq,1,sv,vn,t,,,,,niqpaaq,n,,* niqpaaq,nas,,* niqpaaq,nas,,* niqpaaq,nas,,superlative,superlatif,,,,H1,,,m
 niqsaq,1,sv,vn,t,,,,,,n,,,nas,,,nas,,,nas,,comparaison,comparaison,,,,H1,,,m
 niraq,1,sv,vv,m,t,,,i/1vv,,n,,,nas,,,nas,,,nas,,reporting action; 'to say that s.o. (refl.: oneself) ...',rapporter une action; 'dire que qqn (r�fl.: soi-m�me) ...',,,,H1,,,m
@@ -205,8 +205,8 @@ nngai,1,q,q,,,,,,,n,,,s,,,s,,,s,,"coaxing, inoffensive questioning; greeting","e
 nngaq,1,sn,nv,m,t,,,,-,-,,,nas,,-,-,,-,-,,movement from: 'to come from',mouvement originant de: 'venir de',cas:abl,,,A1,,,m
 nngiq,1,sn,nn,t,,,,,,n,,,s,,,s,,,s,,promiscuous,tr�s libre; peu farouche,,,,H1,,,m
 nngit,1,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,general negation; 'not',n�gation g�n�rale; 'ne...pas',,,,H1,,,m
-nnguaq,2,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,to simulate; to pretend,simuler; faire semblant; pr�tendre,,,,H1,,,m
 nnguaq,1,sn,nn,t,,,,,,n,,,s,,,s,,,s,,"resemblance, likeness: 'which looks like'",ressemblance: 'qui ressemble �',,,,H1,,,m
+nnguaq,2,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,to simulate; to pretend,simuler; faire semblant; pr�tendre,,,,H1,,,m
 nnguk,1,sv,vv,m,n,,,,nnguq,n,,* nnguq,s,,* nnguq,s,,* nnguq,s,,"to be tired of, bored with","�tre fatigu� de, lass� de",,,,H1,,,m
 nngusuk,1,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,"to be inclined to, to feel like doing ...","�tre enclin �, se sentir port� � faire quelque chose",,,,H1,,,m
 nnik,1,sv,vv,m,i,,,,,n,,,s,,,s,,,s,,"added to transitive verb stems such that they retain their transitive sense when followed by intransitive infixes or endings, to avoid their otherwise reflexive or passive senses","ajout� � des radicaux verbaux transitifs afin qu'ils conservent leur sens transitif lorsqu'ils sont suivis d'infixes ou de terminaisons intransitives, pour emp�cher qu'ils prennent autrement leurs sens r�fl�chis ou passifs",antipassive:nnik/1vv,t,,,,,m
@@ -224,8 +224,8 @@ qajaanngit,1,sn,nv,m,i,,,,qajaangit,n,,* qajaangit,s,,* qajaangit,s,,* qajaangit
 qalauq,1,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,"brief action: 'for a few minutes', 'for a little while'",action br�ve: 'quelques minutes',,,mode:imp,H1,,,m
 qallaq,1,sn,nn,t,,,,,,n,,,s,,,s,,,s,,"squatness: 'short, fat'",courtaud,,,,H1,,Cumberland,m
 qaminngit,1,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,"has not just done the action, but did it some time ago","ne vient pas de faire qqchose, mais l'a fait il y a quelque temps",,,,A1,,,m
-qammaq,2,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,"poorly, in a bad way","pauvrement, mal (qualit�)",,,,H1,,,m
 qammaq,1,sn,nn,t,,,,,,n,,,s,,,s,,,s,,"poor, bad, worthless","pauvre, de mauvaise qualit�, sans valeur",,,,H1,,,m
+qammaq,2,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,"poorly, in a bad way","pauvrement, mal (qualit�)",,,,H1,,,m
 qaq,1,sn,nv,m,i,,,,,n,,,s,,,s,,,s,,"to have, to possess","avoir, poss�der",,,,H1,,,m
 qarvik,1,sn,nn,t,,,,,,n,,,s,,,s,,,s,,"a place for, a place to keep","un endroit pour, ou pour garder",,,,H1,qaq/1nv+vik/3vn,,m
 qatau,1,sv,vv,m,i,,,,,n,,,s,,,s,,,s,,to be accompanying in action: 'to go along',accompagner dans l'action,,,,H1,,,m
@@ -241,8 +241,8 @@ qqau,1,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,recent perceived past,pass� r�cent per�
 qqautau,1,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,to be the first one(s) to do s.t.,�tre le(s) premier(s) � faire qqchose,,,,A1,,,m
 qquqtu,1,sn,nv,m,i,,,,quqtu,n,,* quqtu,s i(i),,* quqtu,s,,* quqtu,s,,to have large (specified) body parts,avoir de grands ... (parties du corps),,,,A1,,,m
 qquuq,1,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,probably,probablement,,,,H1,,,m
-qu,1,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,'so that' when used with participal verb endings,'de sorte que' lorsqu'utilis� avec des terminaisons verbales au participe,,,mode:part,H1 A1,,,m
 qu,2,sv,vv,m,t,,,ji/1vv,,n,,,s,,,s,,,s,,"to desire, to wish something to be done","d�sirer, souhaiter que quelque chose soit fait",,,,H1 A1,,,m
+qu,1,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,'so that' when used with participal verb endings,'de sorte que' lorsqu'utilis� avec des terminaisons verbales au participe,,,mode:part,H1 A1,,,m
 quti,1,sn,nn,t,,,,,,n,,,s,,,s,,,s,,own; s.t. that belongs to s.o.,"propri�t� propre, qui appartient � qqn",,,,H1,,,m
 quuji,1,sv,vv,m,i,,,,,n,,,s,,,s,,,s,,ressemblance; 'look like'; 'appear',ressemblance; 'sembler'; 'ressembler',,,,H1,,,m
 rajaaq,1,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,"to be slow, to take a long time to","�tre lent, prendre longtemps � faire qqchose",,,,A1,,,m
@@ -254,8 +254,8 @@ rngaq,1,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,for the first time,pour la premi�re fois,
 rujuk,1,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,"to a small degree, slight amount",un peu,,,,H1,,,m
 rujuq,1,sn,nn,m,,,,,,n,,,s,,,s,,,s,,collectiveness; characteristic,"ensemble de gens, de choses; caract�ristique",,,number:p,H1,,North Baffin,m
 rujuq,2,sn,nn,t,,,,,,n,,,s,,,s,,,s,,"used on place names to indicate the place and the surrounding area, or following numerals to indicate approximate time","utilis� avec des noms d'endroit pour indiquer l'endroit et ses environs, ou apr�s des nombres pour indiquer le temps approximatif",,,,H1,,,m
-rulu,2,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,"severe derogation; disparagement, disgust","d�sapprobation s�v�re; d�go�t, moquerie",,,,H1,,,m
 rulu,1,sn,nn,t,,,,,ruluk,n,,* ruluk,s,,* ruluk,s,,* ruluk,s,,"severe derogation (when this suffix is in final position, the word may be interpreted as a verb in the 3rp person); disparagement, disgust","d�sapprobation s�v�re (lorsque ce suffixe est en position finale, le mot peut �tre interpr�t� comme un verbe � la 3�me personne); d�go�t, moquerie",,,,H1,,,m
+rulu,2,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,"severe derogation; disparagement, disgust","d�sapprobation s�v�re; d�go�t, moquerie",,,,H1,,,m
 rusiq,2,sn,nn,t,,,,,,n,,,s,,,s,,,s,,"a unit of, a section or part of","une unit� de, une section ou partie de",,,,H1,,,m
 rusiq,1,sv,vn,t,,,,,,n,,,s,,,s,,,s,,"a unit of, a section or part of","une unit� de, une section ou partie de",,,,H1,,,m
 saali,1,sv,vv,m,n,,,,,n,,,n,,,n,,,n,,early,t�t,,,,H1,,,m
@@ -264,13 +264,13 @@ saaq,1,sv,vn,m,,,,,,n,,,s,,,s,,,s,,one who has just done the action,qui vient ju
 saq,1,sv,vv,m,t,,,i/1vv,,n,,,s,,,n,,,n,,"working at something to achieve a desired state, usually through prolonged action","en train de travailler � quelque chose pour obtenir un r�sultat d�sir�, d'habitude par une action prolong�e",,,,H1,,,m
 sarait,1,sv,vv,m,n,,,,,n,,,s,,,n,,,n,,easiness or speed of action: 'quickly'; 'easily',facilit� ou rapiditi� de l'action: 'facilement'; 'rapidement',,,,H1,,,m
 saritu,1,sv,vv,m,n,,,,,n,,,s,,,n,,,n,,to be slow,�tre lent,,,,A1,,,m
-si,1,sv,vv,m,i,,,,,n,,,n,,,n,,,n,,"added to transitive verb stems such that they retain their transitive sense when followed by intransitive infixes or endings, to avoid their otherwise reflexive or passive senses","ajout� � des radicaux verbaux transitifs afin qu'ils conservent leur sens transitif lorsqu'ils sont suivis d'infixes ou de terminaisons intransitives, pour emp�cher qu'ils prennent autrement leurs sens r�fl�chis ou passifs",antipassive:si/1vv,t,,H1,,,m
-si,3,sv,vv,m,i,,,,,n,,,n,,,n,,,n,,added to gi-verbs to make them intransitive,ajout� aux verbes 'gi' pour les rendre intransitifs,"type:v,intransinfix:si/3vv",i,,H1,,,m
 si,2,sv,vv,m,n,,,,,n,,,s,,,s,,,s n,,"the action is being done now, where it was not the case before; readiness, commencement of action or motion","l'action est faite maintenant, alors que ce n'�tait pas le cas auparavant; �tre pr�t �; commencer �",,,,A1,,,m
 si,4,sn,nv,m,t,,,i/1vv,,n,,,n,,,n,,,n,,to sight an animal; to discover s.t. (trans.: that belongs to s.o. else); to receive (after searching),voir un animal; d�couvrir qqch (trans.: qui appartient � qqn d'autre); recevoir (apr�s avoir cherch�),,,,H1,,,m
-siaq,1,sn,nv,m,i,,,,,n,,,n,,,n,,,n,,to come across; to find,rencontrer; trouver,,,,A1,si/4nv+a/1vv,,m
+si,1,sv,vv,m,i,,,,,n,,,n,,,n,,,n,,"added to transitive verb stems such that they retain their transitive sense when followed by intransitive infixes or endings, to avoid their otherwise reflexive or passive senses","ajout� � des radicaux verbaux transitifs afin qu'ils conservent leur sens transitif lorsqu'ils sont suivis d'infixes ou de terminaisons intransitives, pour emp�cher qu'ils prennent autrement leurs sens r�fl�chis ou passifs",antipassive:si/1vv,t,,H1,,,m
+si,3,sv,vv,m,i,,,,,n,,,n,,,n,,,n,,added to gi-verbs to make them intransitive,ajout� aux verbes 'gi' pour les rendre intransitifs,"type:v,intransinfix:si/3vv",i,,H1,,,m
 siaq,1,sn,nn,t,,,,,,n,,,n,,,n,,,n,,something found,qqch qui a �t� trouv�,,,,A1,,,m
 siaq,1,sv,vn,t,,,,,,n,,,n,,,n,,,n,,an action that is waited for completion,une action dont on attend la compl�tion,,,,H1,,,m
+siaq,1,sn,nv,m,i,,,,,n,,,n,,,n,,,n,,to come across; to find,rencontrer; trouver,,,,A1,si/4nv+a/1vv,,m
 sima,1,sv,vv,m,n,,,,,n,,,s n,,,n,,,n,,"to be in a state acquired through a completed action (the word can be active, or passive)","�tre dans un �tat atteint � la suite d'une action compl�t�e (le mot peut �tre actif, ou passif)",,,,H1 A1,,,m
 siq,1,sv,vv,m,t,,,i/1vv,,n,,,n,,,n,,,n,,"to put or bring out, to be put or brought up for some natural process; to be waiting for an action to be performed or completed","pendre, placer qqchose, ou qqchose �tre pendue ou plac�e, pour un processus naturel; attendre qu'une action se fasse ou s'ach�ve",,,,A1,,,m
 siq,2,sv,vn,t,,,,,,n,,,s,,,s,,,s,,custom; way; habit; manner of doing s.t.,coutume; fa�on; habitude; mani�re de faire qqchose,,,,S1,,,m
@@ -301,8 +301,8 @@ tigi,1,sv,vv,m,i,,,,,n,,,n,,,n,,,n,,to be as ... as,�tre aussi ... que,,,,H1,,
 tiq,1,sv,vn,t,,,,,,n,,,n,,,n,,,n,,young precocious person who performs an action well,jeune personne pr�coce qui accomplit une action bien,,,,H1,,,m
 tit,1,sv,vv,m,t,,,si/1vv,,n,,,n s,,,n,,,n,,to cause s.o. (refl.: oneself) to do s.t.,causer; faire que qqn (r�fl.: soi-m�me) fait qqch.,,,,H1 A1,,,m
 tsaliq,1,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,really,r�ellement,,,,,,,m
-tsiaq,1,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,"to do something well, in a good manner","faire quelque chose bien, correctement",,,,H1,,,m
 tsiaq,2,sn,nn,t,,,,,,n,,,s,,,s,,,s,,fine; good; nice,gentil; bon,,,,H1,,,m
+tsiaq,1,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,"to do something well, in a good manner","faire quelque chose bien, correctement",,,,H1,,,m
 tsiavak,1,sn,nn,t,,,,,,n,,,s,,,s,,,s,,"very fine, very good, excellent","tr�s bon, excellent",,,,H1,,,m
 tsiriaq,1,sv,vv,m,i,,,,,n,,,s,,,s,,,s,,to be easily ...,�tre facilement ...,,,,A1,,,m
 ttaili,1,sv,vv,m,n,,,,,n,,taili,n,,taili,n,,taili,n,,"refusal, refraining from: 'to refuse to'",refuser de,,,,H1,,,m
@@ -310,21 +310,20 @@ ttauq,1,q,q,,,,,,,n,,tauq,n,,tauq,n,,tauq,n,,"and, also","et, aussi",,,,H1,,,m
 ttuq,1,sn,nv,m,i,,,,,n,,,s,,,s,,,s,,to start to have a large ...; to start to have a lot of ...,"commencer � avoir un grand, de grands ...; commencer � avoir beaucoup de ...",,,,,tu/1nv+#incho#/1vv,,m
 tu,1,sn,nv,m,i,t,,,tuu,n,,* tuu,s,,* tuu,s,,* tuu,s,,"largeness, to have a large ...; to have a lot of ...","avoir un grand, de grands...; avoir beaucoup de ...",,,,H1 A1,,,m
 tu,1,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,profoundly; very much; very often,profond�ment; beaucoup; tr�s souvent,,,,S1,,,m
-tuaq,1,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,immediacy of action: 'as soon as...'; exclusiveness of action: 'if only ...',action imm�diate: 'aussit�t que ...'; exclusivit� de l'action: 'si seulement...',,,mode:caus mode:cond,H1 A1,,,m
 tuaq,2,sn,nn,t,,,,,,n,,,s,,,s,,,s,,exclusiveness: 'only one'; 'only',exclusivit�: 'seulement un'; 'seul',,,,H1 A1,,,m
-tuinnaq,1,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,merely; does nothing more than; simply; solely; only; sometimes 'always',simplement; seulement; ne fait rien d'autre que; quelquefois 'toujours',,,,H1,,,m
+tuaq,1,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,immediacy of action: 'as soon as...'; exclusiveness of action: 'if only ...',action imm�diate: 'aussit�t que ...'; exclusivit� de l'action: 'si seulement...',,,mode:caus mode:cond,H1 A1,,,m
 tuinnaq,2,sn,nn,t,,,,,,n,,,s,,,s,,,s,,"ordinaryness, lack of special qualities; 'only', 'just', 'merely'","ordinaire, sans qualit� sp�ciale; 'seulement', 'simplement'",,,,H1,,,m
+tuinnaq,1,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,merely; does nothing more than; simply; solely; only; sometimes 'always',simplement; seulement; ne fait rien d'autre que; quelquefois 'toujours',,,,H1,,,m
 tuinnariaqaq,1,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,only action remaining to be done: 'to have nothing more to do but...',seule action qui reste: 'n'avoir rien d'autre � faire que...',,,,H1,tuinnaq/1vv+jariaq/1vn+qaq/1nv,,m
 tuinnau,1,sv,vv,m,n,,,,,n,,,n,,,n,,,n,,action done by all,l'action est accomplie par tous,,,,S1,,,m
 tukaq,1,sn,nn,t,,,,,,n,,,i(i),,,s,,,s,,old,vieux,,,,H1,,,m
-tuq,1,sn,nv,m,i,t,,,,n,,,n,,,n,,,n,,to use an object in the manner in which it was intended to be used; food: 'to consume',utiliser un objet de la fa�on dont il a �t� pr�vu ou de la fa�on le plus normale; aliments: 'consommer',,,,H1,,,m
 tuq,1,sv,vv,m,t,,,i/1vv,,n,,,s,,,n,,,n,,prolonged action: 'for a long time',action prolong�e: 'pendant longtemps',,,,A1,,,m
+tuq,1,sn,nv,m,i,t,,,,n,,,n,,,n,,,n,,to use an object in the manner in which it was intended to be used; food: 'to consume',utiliser un objet de la fa�on dont il a �t� pr�vu ou de la fa�on le plus normale; aliments: 'consommer',,,,H1,,,m
 tuqaq,1,sn,nn,t,,,,,,n,,,i(i),,,n s,,,n s,,"old, acquired long time ago","vieux, acquis il y a longtemps",,,,A1,,,m
 tuuq,2,sn,nv,f,,,,,,n,,,s,,,s,,,s,,longing: 'I wish I ...','Que j'aimerais donc...',,,,H1,,,m
 tuuq,1,sn,nn,t,,,,,,n,,,n,,,n,,,n,,attached to animal names to mean 'a place abounding in...',attach� � des noms d'animaux pour signifier 'un endroit abondant en...',,,,H1,,,m
 u,1,sn,nv,m,n,,,,,n,i(ng),,s i(i),i(ng) -,,s,i(ng),,s,i(ng),existence; is,existence; est,,,,H1,,,m
 ujjaq,1,sv,vn,t,,,,,,i(jj),,,si(jj),,,son,,,son s,,"s.o. for, to, with whom the action is done; s.t. transported, fetched, brought; s.t. caught, trapped","qqch. pour, �, avec laquelle une action est faite; qqch. qui est apport�, transport�, qu'on est all� chercher; qqch. qui est attrap�, pris",,,,A1,,,m
-ujji,1,sv,vv,m,i,,,,,i(jj),,,si(jj),,,son,,,son s,,"to do the action for, to, with him/her/it; with words of movement: to bring, fetch, transport s.t.","faire l'action pour, à, avec qqn; avec mots de movement: apporter, aller chercher, transporter qqch.",,,,A1,uti/1vv+ji/1vv,,m
 ujjuaq,1,sv,vv,m,i,,,,,n,?,,s,?,,s,?,,s,?,competition in the action of the verb,comp�tition dans l'action du verbe,,,number:d number:p,A1,,,m
 uq,2,sn,nv,m,i,,,,-,-,,,s,,-,-,,-,-,,"to imitate, to do like","imiter, faire comme",cas:sim,,,,,,m
 uq,1,sn,nv,m,i,,,,-,-,,,s,,-,-,,-,-,,to go through,"aller, passer � travers",cas:via,,,S1,,,m
@@ -333,8 +332,9 @@ uqqaq,1,sv,vv,m,t,,,i/1vv,,n,decap,,i(i),,,s,decap,,s,decap,"to do an action upo
 usiq,1,sv,vn,t,,,,,,n i(jj),i(jj) -,,s si(jj),i(jj) -,,s si(jj),i(jj) -,* * qusiq,s son n,i(jj) - -,custom; way; habit; usual way of doing s.t.,coutume; fa�on; habitude; mani�re usuelle de faire qqchose,,,,H1 A1,,,m
 ut,2,sn,nn,t,,,,,uti,n,,* uti,s,,* uti,s,,* uti,s,,"bag, container for; s.t. which has...","sac, contenant pour; qqch. qui contient...",,,,H1,,,m
 ut,1,sv,vn,t,,,,,uti utik utaq gut guti gutik gutaq ut uti utik utaq,n n n n n n n n i(jj) i(jj) i(jj) i(jj),i(jj) i(jj) i(jj) i(jj) - - - - - - - -,* uti utik utaq guti,s s s s s,i(jj) i(jj) i(jj) i(jj) -,* uti utik utaq guti,s s s s s,i(jj) i(jj) i(jj) i(jj) -,rut ruti rutik rutaq * uti utik utaq qut quti qutik qutaq,s s s s s s s s n n n n,- - - - s(a) s(a) s(a) s(a) - - - -,"object, instrument, tool for doing s.t.; time of an action","objet, instrument, outil pour faire qqch.; temps d'une action",type:v function:nv function:vv,,,,,,m
-uti,1,sv,vv,m,t,,,ji/1vv,,i(jj),,,si(jj),,,son,,,son s,,"[T]to do the action for, to, with him/her/it; with words of movement: to bring, fetch, transport s.t.[R]to do the action for, to, with himself/herself/itself","[T]faire l'action pour, à, avec qqn; avec mots de movement: apporter, aller chercher, transporter qqch.[R]faire l'action pour, à, avec soi-même",,,,A1,,,m
 uti,3,sn,nn,t,,,,,-,-,,-,-,,-,-,,,s,,indefinite pronoun 'one',pronom ind�fini 'quelqu'un',id:juq/1vn,,,H1,,,m
+uti,1,sv,vv,m,t,,,ji/1vv,,i(jj),,,si(jj),,,son,,,son s,,"[T]to do the action for, to, with him/her/it; with words of movement: to bring, fetch, transport s.t.[R]to do the action for, to, with himself/herself/itself","[T]faire l'action pour, à, avec qqn; avec mots de movement: apporter, aller chercher, transporter qqch.[R]faire l'action pour, à, avec soi-même",,,,A1,,,m
+ujji,1,sv,vv,m,i,,,,,i(jj),,,si(jj),,,son,,,son s,,"to do the action for, to, with him/her/it; with words of movement: to bring, fetch, transport s.t.","faire l'action pour, à, avec qqn; avec mots de movement: apporter, aller chercher, transporter qqch.",,,,A1,uti/1vv+ji/1vv,,m
 vaalliq,1,sv,vv,m,n,,,,,n,,paalliq,n,,paalliq,n,,paalliq,n,,to do something that one didn't do before,faire quelque chose qu'on ne faisait pas auparavant,,,,H1,,,m
 vagiq,1,sv,vv,m,n,,,,vagiiq,n,,pagiq pagiiq,n,,pagiq pagiiq,n,,pagiq pagiiq,n,,to have already done something,avoir d�j� accompli une action,,,,H1,,,m
 vai,1,sn,nv,m,i,,,,,n,,pai,n,,pai,n,,pai,n,,"to go towards a location (used with traditional locations: side, back, front, ...)","aller vers un endroit (utilis� avec les endroits traditionnels: c�t�, devant, derri�re, ...)",,,,A1,,,m
@@ -346,8 +346,8 @@ vaq,1,sn,nv,m,i,,,,,n,,paq,n,,paq,n,,paq,n,,"to go towards a location (used with
 vasaaq,1,sv,vv,m,n,,,,,n,,pasaaq,n,,pasaaq,n,,pasaaq,n,,to do what one never did before,faire ce qu'on n'a jamais fait auparavant,,,,A1,,,m
 vasik,1,sn,nv,m,i,,,,,n,,pasik,n,,pasik,n,,pasik,n,,"to be too close of a location (used with traditional locations: side, back, front, ...)","�tre trop pr�s d'un endroit (utilis� avec les endroits traditionnels: c�t�, devant, derri�re, ...)",,,,A1,,,m
 vigjuaraaluk,1,sv,vn,t,,,,,,n,,,s,,,s,,,s,,"extreme: 'very, very' (when the suffix is in final position, the word can be interpreted as a verb in the 3rd person)","extr�me: 'tr�s, tr�s' (lorsque le suffixe est en position finale, le mot peut �tre interpr�t� comme un verbe � la 3�me personne)",,,,H1,,,m
-vik,2,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,finality: 'for good'; 'forever',finalit�: 'pour de bon'; 'pour toujours',,,,H1,,,m
 vik,3,sv,vn,t,,,,,,i(p) n,,,a,,,son,,,son,,place where the action of the verb takes place,endroit o� se passe l'action du verbe,,,,H1,,,m
 vik,1,sn,nn,t,,,,,,n,,,s,,,s,,,s,,enormous; most impressive,�norme; tr�s impressionnant,,,,H1,,,m
+vik,2,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,finality: 'for good'; 'forever',finalit�: 'pour de bon'; 'pour toujours',,,,H1,,,m
 viniq,1,sn,nn,t,,,,,,n,,,s,,,s,,,s,,denotes a former state; unperceived past following gerundive ending,d�note un �tat ant�rieur; pass� non per�u lorsqu'il suit une terminaison g�rondive,,,,H1,,,m
 vvaluk,1,sn,nv,m,i,,,,,n,,,s,,,s,,,s,,to sound like,ressembler par le son �; avoir le m�me son que,,,,H1,,,m
