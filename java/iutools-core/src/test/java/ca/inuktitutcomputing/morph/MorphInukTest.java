@@ -71,5 +71,23 @@ public class MorphInukTest {
 			throw e;
 		}
 	}
+	
+	
+	@Test
+	public void test__decomposeWord__maligaliuqtinik() throws Exception  {
+		LinguisticDataSingleton.getInstance("csv");
+		String word = "maligaliuqtinik";
+		try {
+//			MorphInuk.stpwActive = false;
+			Decomposition[] decs = MorphInuk.decomposeWord(word);
+			Assert.assertTrue(decs.length!=0);
+			for (int i=0; i<decs.length; i++) {
+				System.out.println(decs[i].toStr2());
+			}
+		} catch(Exception e) {
+			//System.err.println(e.getClass().getName()+" --- "+e.getMessage());
+			throw e;
+		}
+	}
 
 }
