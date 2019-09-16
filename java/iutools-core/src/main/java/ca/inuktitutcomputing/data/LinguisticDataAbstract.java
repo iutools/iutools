@@ -69,7 +69,9 @@ public abstract class LinguisticDataAbstract {
             // de plutôt placer dans la table des racines celles qui résultent de
             // ce processus, comme ikummaq- < ikuma-
             Suffix spec = new Inchoative();
-            if (LinguisticDataAbstract.affixesId.containsKey(spec.id)) throw new RuntimeException("Key already exists in linguistic data hash");            
+            if (LinguisticDataAbstract.affixesId.containsKey(spec.id)) {
+            	throw new RuntimeException("Key '"+spec.id+"' already exists in linguistic data hash");  
+            }
             affixesId.put(spec.id, spec);
             Data.addToForms(spec, spec.morpheme);
         }
@@ -214,7 +216,8 @@ public abstract class LinguisticDataAbstract {
 			v = new Vector<SurfaceFormOfAffix>();
 		v.add(form);
 		// OK... 
-		if (surfaceFormsOfAffixes.containsKey(simplifiedForm)) throw new RuntimeException("Key already exists in linguistic data hash");
+//		if (surfaceFormsOfAffixes.containsKey(simplifiedForm)) 
+//			throw new RuntimeException("Key already exists in linguistic data hash");
 		surfaceFormsOfAffixes.put(simplifiedForm, v);
     }
     
@@ -630,7 +633,8 @@ public abstract class LinguisticDataAbstract {
                         if (current == null)
                             current = new Vector<Example>();
                         current.add(ex);
-                		if (examples.containsKey(key)) throw new RuntimeException("Key already exists in linguistic data hash");
+                		if (examples.containsKey(key)) 
+                			throw new RuntimeException("Key already exists in linguistic data hash");
                         examples.put(key, current);
                     }
                 } // else

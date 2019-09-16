@@ -20,8 +20,8 @@ aggautisiut,,,n,,,,,,,,wrist-band; bracelet,bande de poignet; bracelet,aggaut/1n
 aggiarjuk,,1,n,,zoo,,,,,,long-tailed squaw duck,canard � longue queue de Terre-Neuve,aggiq/2n+arjuk/1nn,,,,,.
 agluaq,,,n,,,,,,,,fishing hole in ice,trou de p�che dans la glace,aglu/1n+aq,,,,1,.
 agluuq,,1,v,i,,,,,,,"to dive or plunge head-first under water - said of an animal (bird, seal)","plonger t�te premi�re sous l'eau - en parlant d'un animal (oiseau, phoque)",aglu/1n+uq,,,,1,.
-agluuq,,2,v,i,a,,,,,,to have one's jaws pulled apart,avoir ses m�choires �cart�es,?,,,,,.
-ainnaak,,1,e,,,,,,,,exclamation of fear: 'You scared me!',"exclamation: ""Tu m'as fait peur !""",ainna+ak,,,,,.
+agluuq,,2,v,i,a,,,,,,to have one's jaws pulled apart,avoir ses m�choires �cart�es,aglu/1n+uq,,,,,.
+ainnaak,ainnaa,1,e,,,,,,,,exclamation of fear: 'You scared me!',"exclamation: ""Tu m'as fait peur !""",?,,,,,.
 airaumijaq,,1,v,i,,,,,,,"to have a wide range, speaking of a voice","avoir une grande �tendue, parlant de la voix",?,,,,,.
 aittukuluk,,1,a,,,,,,,,a little bit; a small quantity,un petit peu; une petite quantit�,aittu+kulu/1nn,wchb northbaffin,,,,.
 ajarausiq,,,n,,,,,,,,string figure,figure form�e avec une corde,ajaraaq/1v+usiq/1vn,,,,,.
@@ -158,7 +158,7 @@ aujanitaq,,,n,,,,,,,,something of summer,quelque chose de l'�t�,,,aujaq,,,.
 aujaqsiuq,,,v,i,,,,,,,to spend the summer at,passer l'�t� �,,,aujaq,,,.
 aujii,,,v,i,,,,,,,to spend the summer at,passer l'�t� �,,,aujaq,,,.
 aujiivik,,,n,,,,,,,,summer camp; summer sojourn,camp d'�t�; s�jour d'�t�,,,aujaq,,,.
-aujuittuq,,,n,,,,,,,,glacier,glacier,,wchb,auk,,,.
+aujuittuq,,2,n,,,,,,,,glacier,glacier,,wchb,auk,,,.
 aukkarnit,,,n,,,,,,,,fast-moving waters which do not freeze in the winter,eaux rapides qui ne g�lent pas en hiver,,,auk,,,.
 auksiriaqtuq,,,n,,,,,,,,sugar,sucre,,padl,auk,,,.
 auktuqti,,,n,,,,,,,,carnivore,carnivore,,,auk,,,.
@@ -194,7 +194,7 @@ igluli,,,v,i,,,,,,,build a snowhouse,construire un igloo,,,,,,.
 igluliriji,,,n,,,,,,,,housing officer,responsable du logement,iglu/1n+liri/1nv+ji/1vn,,,,,.
 iglutaq,,,n,,,,,,,,bedroom,chambre � coucher,,,iglu,,,.
 iigaq,,,n,,,,,,,,pill,pilule,,,,,,.
-ijaruvak,,,n,,,,,,,,eye-ball,globe oculaire,,,iji,,,.
+ijaruvak,,3,n,,,,,,,,eye-ball,globe oculaire,,,iji,,,.
 ijiikkiumi,,,v,i,,,,,,,to look at someone with hate or malice,regarder quelqu'un avec haine ou malice,,,iji,,,.
 ijilirvik,,,n,,,,,,,,eye socket,orbite de l'oeil,,,iji,,,.
 ijingmik,,,v,i,,,,,,,to signal someone with one's eyes,faire un signal � quelqu'un avec ses yeux,,,iji,,,.
@@ -217,7 +217,7 @@ ikkaqquq,,,n,,,,,,,,reef; shoal; shallow,"r�cif, �cueil; bas-fond; haut-fond
 ikkarit,,,v,i,,,,,,,to be stuck or grounded on a reef or shallow,�tre coinc� ou immobilis� sur un r�cif ou les hauts-fonds,,,ikkat,,,.
 ikkarsaut,,,n,,,,,,,,methyl hydrate; priming fluid,alcool m�thylique; liquide inflammable pour amorcer un feu,,,,,,.
 ikpiarjuk,,1,v,t,,,,,,si/1vv,to /put s.t. in a bag,/mettre qqch. dans un sac,,,,,,.
-ikpiarjuk,,1,n,,,,,,,,bag; pouch; pocket; block or push-in magazine for rifle,sac; poche; pochette; �tui � munitions; magasin d'une carabine,,,,,,.
+ikpiarjuk,,2,n,,,,,,,,bag; pouch; pocket; block or push-in magazine for rifle,sac; poche; pochette; �tui � munitions; magasin d'une carabine,,,,,,.
 ikpiugaq,,,n,,,,,,,,sharp drop in land or terrain,baisse abrupte de terrain,,,ikpik,,,.
 iksarvik,,,n,,,,,,,,loading dock; wharf,quai de chargement; embarcad�re,,wchb,,,,.
 iksiarjuaq,,,n,,,,,,,,Roman Catholic priest,pr�tre catholique romain,,wchb,iksiq,,,.
@@ -230,11 +230,11 @@ ikumajaq,,,n,,,,,,,,candle,chandelle,,,ikuma,n,1,.
 ikumak,,,v,i,,,,,,,to tend the flame or the wick on the lamp,entretenir la flamme ou la m�che d'une lampe,,,ikuma,n,1,.
 ikumalik,,,n,,,,,,,,motor-boat,bateau � moteur,,,ikuma,n,1,.
 ikumirvik,,,n,,,,,,,,place to set engine,endroit o� placer le moteur,,,,,,.
-ikusik,,,n,,,,,,,,elbow,coude,,,ikut,,,.
+ikusik,,2,n,,,,,,,,elbow,coude,,,ikut,,,.
 ikuutaq,,,n,,,,,,,,drill,perceuse,,,,,,.
 ikuutaq,,,v,t,,,,,,si/1vv,[-R]to /drill or /bore holes in s.t.,[-R]/percer qqch. d'un trou,,,,,,.
 ikuvit,,,v,i,,,,,,,to lean on something with elbow or arm,s'appuyer sur qqch. avec le coude ou le bras,,,ikut,,,.
-ilaanni,,,a,,,,,,,,sometimes,quelquefois,,,,,,.
+ilaanni,,2,a,,,,,,,,sometimes,quelquefois,,,,,,.
 ilaannikkut,,,a,,,,,,,,from time to time,de temps en temps,,,ilaanni,,,.
 ilakku,,,n,,,,,,,,"part, portion","partie, portion",,,ila,,,.
 ilaksaut,,,n,,,,,,,,(1) baking powder (2) lubricating oil,(1) poudre � p�te (2) huile lubrifiante,,,,,,.
@@ -263,7 +263,7 @@ iluma,,1,v,i,a,,,,,,to be frosted up from condensation,�tre givr� par la con
 ilupaq,,,n,,,,,,,,inner or under garment,v�tement int�rieur ou sous-v�tement,,,ilu,,1,.
 ilupiruk,,,n,,,,,,,,under garment,sous-v�tement,,,ilu,,1,.
 ilusima,,1,v,i,a,,,,,,to be frosted up from condensation,�tre givr� par la condensation,,,ilu,n,2,.
-ilusiq,,,n,,,,,,,,"custom, manner, habit","coutume, mani�re, habitude",,,,,,.
+ilusiq,,2,n,,,,,,,,"custom, manner, habit","coutume, mani�re, habitude",,,,,,.
 ilut,,,n,,,,,,,,inside layer of fat in caribou intestines,couche interne de gras dans l'intestin du caribou,,,ilu,,1,.
 ilutak,,,n,,,,,,,,groin; inside of the leg,aine; int�rieur de la jambe,,,ilu,,1,.
 ilutakkut,,,a,,,,,,,,to the left side of an object,� gauche d'un objet,,,ilu,,1,.
@@ -271,8 +271,8 @@ ilutakkut,,,v,i,,,,,,,to be missed by being shot to the left,�tre rat� � c
 iluviq,,,n,,,,,,,,grave,tombe,,,ilu,,1,.
 iluviq,,,v,i,,,,,,,to be buried,se faire enterrer,,,ilu,,1,.
 iluvirvik,,,n,,,,,,,,graveyard,cimeti�re,,,iluviq,n,,.
-imaaq,,,v,i,,,,,,,to be pushed or knocked into the water,�tre pouss� dans l'eau,,,imaq,n,1,.
-imaaq,,,v,i,,,,,,,to fall in the water or get wet,tomber � l'eau; se faire mouiller,,,imaq,n,1,.
+imaaq,,1,v,i,,,,,,,to be pushed or knocked into the water,�tre pouss� dans l'eau,,,imaq,n,1,.
+imaaq,,2,v,i,,,,,,,to fall in the water or get wet,tomber � l'eau; se faire mouiller,,,imaq,n,1,.
 imaaqsuuq,,,n,,,,,,,,swamp; marsh,mar�cage; marais,,,imaq,n,1,.
 imaijaut,,,n,,,,,,,,pump,pompe,,,imaq,n,1,.
 imaqarvik,,,n,,,,,,,,place to keep water,endroit o� garder de l'eau,,,imaq,n,1,.
@@ -282,8 +282,8 @@ imaut,,,n,,,,,,,,water glass; goblet,verre � boire; gobelet,,,imaq,n,1,.
 imavissiuq,,,v,i,,,,,,,"to travel through, on the sea",traverser la mer,,,imaq,n,1,.
 imialuk,,,n,,,,,,,,whisky; hard liquor,whisky; liqueur alcoolis�e,,,imiq,,,.
 imingnailaq,,,n,,,,,,,,cloudy dull weather,temps gris nuageux,,,imingnak,,,.
-imiqqutailaq,,,n,,zoo,,,,,,tern,hirondelle de mer,,,imiq,,,.
-imiqutak,,,n,,,,,,,,groin; inside of leg,aine; int�rieur de la jambe,,natt,,,,.
+imiqqutailaq,,2,n,,zoo,,,,,,tern,hirondelle de mer,,,imiq,,,.
+imiqutak,,2,n,,,,,,,,groin; inside of leg,aine; int�rieur de la jambe,,natt,,,,.
 immakallak,,,a,,,,,,,,in ancient times,dans les temps anciens,,,imma,,,.
 immualuk,,,n,,,,,,,,cheese,fromage,,,immuk,,,.
 immuksaut,,,n,,,,,,,,powdered milk,lait en poudre,,,immuk,,,.
@@ -299,11 +299,11 @@ ingirrajaq,,,v,i,,,,,,,to travel,voyager,,,ingirra,,,.
 ingirrajaq,,,n,,,,,,,,checker or chessman,pion du jeu d'�checs,,northbaffin,ingirra,,,.
 ingirrajarvik,,,n,,,,,,,,"chess, checker board",�chiquier,,northbaffin,ingirrajaq,n,,.
 ingirraniq,,,n,,,,,,,,"water, ocean current","courant d'eau, de l'oc�an",,,ingirra,,,.
-ingiulliq,,,v,i,,,,,,,for the sea to swell or rise and fall in swells,"�tre houleuse, en parlant de la mer",,,,,,.
-ingiullirngu,,,v,i,a,,,,,,to be sea-sick,avoir le mal de mer,,,ingiulliq,,,.
+ingiulliq,,2,v,i,,,,,,,"to swell or to rise and fall in swells, speaking of the sea","être houleuse, en parlant de la mer",,,,,,
+ingiullirngu,,1,v,i,a,,,,,,to be sea-sick,avoir le mal de mer,,,,,,.
 iniksaq,,,n,,,,,,,,place for something; room,salle; pi�ce; chambre,,,ini,,1,.
 iniqunak,,1,v,i,a,,,,,,"to be beautiful, good-looking, handsome","�tre beau, de belle apparence, en parlant d'une personne",,,,,,.
-inirniq,,,n,,,,,,,,adult,adulte,,natt,iniq,,,.
+inirniq,,2,n,,,,,,,,adult,adulte,,natt,iniq,,,.
 initaq,,,n,,,,,,,,drying rack above lamp,"cadre � s�cher, au dessus d'une lampe",,,ini,v,,.
 innaarulaaq,,,n,,,,,,,,hillside,flan de coteau,,,innaaq,,,.
 innaaruq,,,n,,,,,,,,small cliff wall or hillside,"petit mur de falaise ou d'escarpement, ou petit flan de coteau",,,innaaq,,,.
@@ -327,7 +327,7 @@ inuuq,,,v,i,,,,,,,to be not reacheable or attainable,�tre inaccessible,,,inuk,
 inuuvvik,,,n,,,,,,,,birth place or date,date ou lieu de naissance,,,inuk,,,.
 iqigagiarjuk,,1,n,,zoo,,,,,,small Franklin-type sea gull,petite mouette ressemblant � la mouette de Flanklin,,,,,,.
 iqqanaijaq,iqanaijaq,,v,i,,,,,,nil,to work (trans.: at making s.t.),travailler (trans.: sur qqch. qu'on fabrique)),iqqaq/1v+naq/1vv+iq/2vv+jaq/2vv,,,,,.
-iqqanaiq,iqanaiq,,v,t,,,,,,si/1vv,to have finished making or doing s.t.; to work; to have a job[P]to be finished being made or done,avoir fini de faire quelque chose; travailler; avoir un emploi[P]�tre fini d'�tre fait,,,?,,,.
+iqqanaiq,iqanaiq,2,v,t,,,,,,si/1vv,to have finished making or doing s.t.; to work; to have a job[P]to be finished being made or done,avoir fini de faire quelque chose; travailler; avoir un emploi[P]�tre fini d'�tre fait,,,?,,,.
 iqqavik,,1,n,,,,,,,,entrails; innards; guts,entrailles; tripes,,,,,,.
 irngilaaq,,,v,i,,,,,,,for a bolar bear to growl,"grogner, en parlant de l'ours polaire",,northbaffin,,,,.
 irnisuk,,1,v,t,,,,,,si/1vv,[-R]to /help s.o. deliver the baby [R]to be in labour; to be about to give birth,"[-R]/aider qqn � accoucher[R]�tre sur le point, ou en train d'accoucher",,,,,,.
@@ -355,7 +355,7 @@ maligaliurvik,,1,n,,,,,,,,legislative assembly,assembl�e l�gislative,malik/1
 maligaq,,1,n,,,,,,,,bill,loi; r�glement,malik/1v+gaq/1vn,,malik,v,1,.
 naalagaq,,,n,,,,,,,,boss; authority,patron; authorit�,,,,,,.
 naassingujaaq,,1,n,,,,,,,,Sunday,dimanche,,N. Baffin,,,,.
-nagajjauq,,1,n,,,,,,,,Monday,lundi,,N. Baffin,,,,.
+nagajjauq,,2,n,,,,,,,,Monday,lundi,,N. Baffin,,,,.
 nakit,,,a,,abl,,,,,,whence; from what place,d'o�,,,,,,.
 nalunak,,,v,i,a,,,,,,"to be unclear, confusing","ne pas �tre clair, porter � confusion",,,nalu,,,.
 nalunaq,,,n,,,,,,,,confusion,confusion,,,nalu,,,.
@@ -365,18 +365,18 @@ naukkut,,,a,,via,,,,,,through what place,� travers o�,,,,,,.
 nauktaima,,,a,,,,,,,,where is,o� est,,,,,,.
 nimiriaq,,,n,,,,,,,,snake,serpent,,,,,,.
 niruaqtaujumajuq,,,n,,,,,,,,candidate,candidat,,,,,,.
-nuliaq,,,n,,,,,,,,wife,�pouse,,,,,,.
+nuliaq,,2,n,,,,,,,,wife,�pouse,,,,,,.
 nunaqaq,,,v,i,,,,,,,live in,demeurer �,,,,,,.
 pinasuarusiq,,,n,,,,,,,,week,semaine,,,,,,.
 pingasut,,1,n,,nb,,,,,,three; number three,trois,pingasu/1n+t/?,,,,,.
 piqati,,,n,,,,,,,,partner,partenaire,,,,,,.
 piqusiq,,1,n,,,,,,,,"custom, manner, habit","coutume, mani�re, habitude",,wchb northbaffin,,,,.
 qangatasuuq,,,n,,,,,,,,plane,avion,,,,,,.
-qaplunaaq,,,n,,,,,,,,"stranger, not inuk","�tranger, pas inuk",,,qablu,n,1,.
+qaplunaaq,,2,n,,,,,,,,"stranger, not inuk","�tranger, pas inuk",,,qablu,n,1,.
 qaujima,,,v,i,,,,,nil,,know,savoir,qauji/1v+ma/1vv,,,,,.
 qaukpat,,,a,,,,,,,,tomorrow,demain,,,qauk,v,1,.
-qautamaat,,,a,,,,,,,,every day; daily,chaque jour; quotidiennement,,,qau,n,1,.
-qimirruaq,,1,n,,,,,,,,magazine; book; newspaper,magazine; livre; journal,,,qimirru,v,1,.
+qautamaat,,2,a,,,,,,,,every day; daily,chaque jour; quotidiennement,,,qau,n,1,.
+qimirruaq,,2,n,,,,,,,,magazine; book; newspaper,magazine; livre; journal,,,qimirru,v,1,.
 qujannamiik,,1,a,,,,,,,,thank you!,merci!,quja/1v+naq/1vv+miik/1vn,,quja,v,1,.
 qukiuti,,,n,,,,,,,,gun,fusil,,,,,,.
 singnaktuuma,,,v,i,,,,,,,dream,r�ver,,,,,,.
@@ -400,9 +400,9 @@ ullumi,,,a,,,,,,,,today,aujourd'hui,,,ubluq,n,1,.
 unnuksaq,,1,n,,,,,,,,afternoon,apr�s-midi,unnuk/1n+ksaq/1nn,,,,,.
 uqaalaut,,,n,,,,,,,,telephone,t�l�phone,,,,,,.
 uqalimaaq,,,v,i,,,,,,,to read,lire,,,,,,.
-uqallak,,,v,i,,,,,,,to talk,parler (� quelqu'un),,,,,,.
+uqallak,,2,v,i,,,,,,,to talk,parler (� quelqu'un),,,,,,.
 uqalugvigi,,,v,t,,,,,,,to speak on the phone with,parler au t�l�phone avec,,,,,,.
-uqaluk,,,v,i,,,,,,,to phone,t�l�phoner,,,,,,.
+uqaluk,,2,v,i,,,,,,,to phone,t�l�phoner,,,,,,.
 uqauti,,,v,i,,,,,,,to tell (someone),dire (� quelqu'un),,,,,,.
 uumajuliriji,,,n,,,,,,,,wildlife officer,officier de la faune,,,,,,.
 uumajuq,,,n,,,,,,,,animal,animal,uuma/1v+juq/1vn,,,,,.
