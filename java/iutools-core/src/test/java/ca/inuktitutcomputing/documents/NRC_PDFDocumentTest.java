@@ -14,7 +14,7 @@ import junit.framework.TestCase;
 public class NRC_PDFDocumentTest extends TestCase {
 
 	public void testGetContents() throws ConfigException {
-		String pdfURLName = "file:///"+IUConfig.getIUDataPath()+"src/test/A-03763i_90.pdf";
+		String pdfURLName = "file:///"+IUConfig.getIUDataPath()+"/src/test/A-03763i_90.pdf";
 		try {
 			NRC_PDFDocument doc = new NRC_PDFDocument(pdfURLName);
 			String contents = doc.getContents();
