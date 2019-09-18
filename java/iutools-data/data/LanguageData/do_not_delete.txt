@@ -1,0 +1,1 @@
+Do not delete this file. It is here to ensure that the repository will be added to Git (which does not track empty directories).

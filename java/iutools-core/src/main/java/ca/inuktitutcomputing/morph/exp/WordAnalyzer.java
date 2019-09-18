@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -19,14 +21,17 @@ import org.apache.log4j.Logger;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 
+import ca.inuktitutcomputing.config.IUConfig;
 import ca.inuktitutcomputing.data.LinguisticDataAbstract;
 import ca.inuktitutcomputing.data.LinguisticDataSingleton;
 import ca.inuktitutcomputing.data.Morpheme;
 import ca.inuktitutcomputing.data.SurfaceFormInContext;
+import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
+import ca.nrc.file.ResourceGetter;
 import ca.nrc.json.PrettyPrinter;
 
 /*
@@ -39,13 +44,13 @@ public class WordAnalyzer {
 	private Trie root_trie = null;
 	private Trie affix_trie = null;	
 	
-	public WordAnalyzer() throws FileNotFoundException {
+	public WordAnalyzer() throws IOException, ConfigException {
 		prepareTries();
 	}
 	
-	private void prepareTries() throws FileNotFoundException {
-		String affixFullPathname = "/Users/benoitfarley/Documents/git_repositories/iutools/java/iutools-core/inuktitutFormTrie-affix.json";
-		String rootFullPathname = "/Users/benoitfarley/Documents/git_repositories/iutools/java/iutools-core/inuktitutFormTrie-root.json";
+	private void prepareTries() throws ConfigException, FileNotFoundException {
+		String affixFullPathname = getMorphemeTrieFilePath("iuAffixTrie.json");
+		String rootFullPathname = getMorphemeTrieFilePath("iuRootTrie.json");
 		JsonReader affixReader;
 		affixReader = new JsonReader(new FileReader(affixFullPathname));
 		JsonReader rootReader;
@@ -401,11 +406,9 @@ public class WordAnalyzer {
 	/**
 	 * MAIN
 	 * @param args
-	 * @throws TrieException 
-	 * @throws FormGeneratorException 
-	 * @throws FileNotFoundException 
+	 * @throws Exception 
 	 */
-	public static void main(String[] args) throws TrieException, FormGeneratorException, FileNotFoundException {
+	public static void main(String[] args) throws Exception {
 		
 		WordAnalyzer analyzer = new WordAnalyzer();
 
@@ -427,5 +430,14 @@ public class WordAnalyzer {
 			e.printStackTrace();
 		}
 	}
+	
+	private String getMorphemeTrieFilePath(String fName) throws ConfigException  {
+		String dirPath = IUConfig.getIUDataPath("data/LanguageData");
+		Path trieFPath = Paths.get(dirPath, fName);
+		
+		return trieFPath.toString();
+	}
+	
+	
 
 }

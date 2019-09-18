@@ -14,7 +14,7 @@ import ca.nrc.json.PrettyPrinter;
 public class WordAnalyzerTest {
 
 	@Test
-	public void test_findRoot__Case_1() throws FormGeneratorException, FileNotFoundException {
+	public void test_findRoot__Case_1() throws Exception {
 		LinguisticDataSingleton.getInstance("csv");
 		WordAnalyzer wordAnalyzer = new WordAnalyzer();
 		String string = "inullu";
@@ -24,7 +24,7 @@ public class WordAnalyzerTest {
 	}
 	
 	@Test
-	public void test_findRoot__Case_2() throws FormGeneratorException, FileNotFoundException {
+	public void test_findRoot__Case_2() throws Exception {
 		WordAnalyzer wordAnalyzer = new WordAnalyzer();
 		String string = "tikinniaqtuq";
 		List<String> rootElements = wordAnalyzer.findRoot(string);
@@ -38,7 +38,7 @@ public class WordAnalyzerTest {
 	}
 	
 	@Test
-	public void test_findAffix__Case_1() throws FormGeneratorException, FileNotFoundException {
+	public void test_findAffix__Case_1() throws Exception {
 		WordAnalyzer wordAnalyzer = new WordAnalyzer();
 		String string = "lu";
 		List<String> affixElements = wordAnalyzer.findAffix(string);
@@ -47,7 +47,7 @@ public class WordAnalyzerTest {
 	}
 	
 	@Test
-	public void test_analyze__Case_inullu() throws FormGeneratorException, FileNotFoundException {
+	public void test_analyze__Case_inullu() throws Exception {
 		LinguisticDataSingleton.getInstance("csv");
 		WordAnalyzer wordAnalyzer = new WordAnalyzer();
 		String string = "inullu";
@@ -57,7 +57,7 @@ public class WordAnalyzerTest {
 	}
 
 	@Test
-	public void test_analyse__Case_tikittuq() throws FormGeneratorException, FileNotFoundException {
+	public void test_analyse__Case_tikittuq() throws Exception {
 		LinguisticDataSingleton.getInstance("csv");
 		WordAnalyzer wordAnalyzer = new WordAnalyzer();
 		String string = "tikittuq";
@@ -67,7 +67,7 @@ public class WordAnalyzerTest {
 	}
 
 	@Test
-	public void test_analyze__Case_tikinniaqtuq() throws FormGeneratorException, TrieException, FileNotFoundException {
+	public void test_analyze__Case_tikinniaqtuq() throws Exception {
 		WordAnalyzer wordAnalyzer = new WordAnalyzer();
 		String string = "tikinniaqtuq";
 		List<Decomposition> analyses = wordAnalyzer.analyze(string);
@@ -75,7 +75,7 @@ public class WordAnalyzerTest {
 	}
 
 	@Test
-	public void test_analyze__Case_umiarjualiuqti() throws FormGeneratorException, TrieException, FileNotFoundException {
+	public void test_analyze__Case_umiarjualiuqti() throws Exception {
 		LinguisticDataSingleton.getInstance("csv");
 		WordAnalyzer wordAnalyzer = new WordAnalyzer();
 		String string = "umiarjualiuqti";
@@ -85,7 +85,7 @@ public class WordAnalyzerTest {
 	}
 
 	@Test
-	public void test_analyze__Case_maligaliuqti() throws FormGeneratorException, TrieException, FileNotFoundException {
+	public void test_analyze__Case_maligaliuqti() throws Exception {
 		LinguisticDataSingleton.getInstance("csv");
 		WordAnalyzer wordAnalyzer = new WordAnalyzer();
 		String string = "maligaliuqti";
@@ -95,7 +95,7 @@ public class WordAnalyzerTest {
 	}
 
 	@Test
-	public void test_analyze__Case_niruarut() throws FormGeneratorException, TrieException, FileNotFoundException {
+	public void test_analyze__Case_niruarut() throws Exception {
 		LinguisticDataSingleton.getInstance("csv");
 		WordAnalyzer wordAnalyzer = new WordAnalyzer();
 		String string = "niruarut";
@@ -105,7 +105,7 @@ public class WordAnalyzerTest {
 	}
 
 	@Test
-	public void test_analyze__Case_umiarut() throws FormGeneratorException, TrieException, FileNotFoundException {
+	public void test_analyze__Case_umiarut() throws Exception {
 		WordAnalyzer wordAnalyzer = new WordAnalyzer();
 		String string = "umiarut";
 		List<Decomposition> analyses = wordAnalyzer.analyze(string);
