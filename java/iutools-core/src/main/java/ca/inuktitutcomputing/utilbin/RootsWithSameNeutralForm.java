@@ -25,7 +25,7 @@ public class rootsWithSameNeutralForm {
 	static HashMap<String,List<String>> rootMorphemes;
 	static HashMap<String,List<String>> duplicateRootMorphemes;
 		
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception {
 		rootMorphemes = new HashMap<String,List<String>>();
 		duplicateRootMorphemes = new HashMap<String,List<String>>();
 		LinguisticDataSingleton.getInstance("csv");
