@@ -1,0 +1,3 @@
+This file exists to ensure that the 'compiled-corpuses' directory is not empty.
+
+This is to ensure that the directory will be committed to Git (which does not track empty directories).
