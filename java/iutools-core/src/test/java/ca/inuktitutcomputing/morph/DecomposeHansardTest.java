@@ -7,21 +7,16 @@ package ca.inuktitutcomputing.morph;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.JUnitCore;
-import org.junit.runner.Request;
-import org.junit.runner.Result;
 
 import java.io.*;
 import java.util.*;
 import java.nio.channels.*;
-import java.net.URL;
+import java.nio.file.Paths;
 
-import ca.inuktitutcomputing.data.LinguisticDataAbstract;
 import ca.inuktitutcomputing.morph.Decomposition;
-import ca.inuktitutcomputing.morph.MorphInuk;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
+import ca.nrc.file.ResourceGetter;
 
 
 /**
@@ -32,9 +27,10 @@ public class DecomposeHansardTest {
 	
 	boolean verbose = true;
 	
-	String fileGoldStandard = "ressources/goldstandardHansard.txt";
-	String fileTargetSuccessfulAnalysis = "ressources/target_successful_analysis_";
-	String fileSuccessfulAnalysis = "outputFiles/successful_analysis_";
+	String dirOutputFiles = "outputFiles";
+	String fileGoldStandard = "goldstandardHansard.txt";
+	String fileTargetSuccessfulAnalysis = "target_successful_analysis_";
+	String fileSuccessfulAnalysis = "successful_analysis_";
 	String fileFailedAnalysis = "outputFiles/failed_analysis_";
 	String filePrevSuccessNowFailedAnalysis = "outputFiles/previous_success_now_failed_analysis_";
 	String fileFullSuccessfulAnalysis = "outputFiles/full_successful_analysis_";
@@ -71,12 +67,13 @@ public class DecomposeHansardTest {
 	@Before
 	public void setUp() throws Exception {
 		String className = this.getClass().getSimpleName();
-		fileGoldStandard = locateFile(fileGoldStandard);
-		fileTargetSuccessfulAnalysis = locateFile(fileTargetSuccessfulAnalysis + className + ".txt");
-		fileSuccessfulAnalysis = locateFile(fileSuccessfulAnalysis + className + ".txt");
-		fileFailedAnalysis = locateFile(fileFailedAnalysis + className + ".txt");
-		filePrevSuccessNowFailedAnalysis = locateFile(filePrevSuccessNowFailedAnalysis + className + ".txt");
-		fileFullSuccessfulAnalysis = locateFile(fileFullSuccessfulAnalysis + className + ".txt");
+		dirOutputFiles = locateInputFile(dirOutputFiles);
+		fileGoldStandard = locateInputFile(fileGoldStandard);
+		fileTargetSuccessfulAnalysis = locateInputFile(fileTargetSuccessfulAnalysis + className + ".txt");
+		fileSuccessfulAnalysis = locateOutputFile(fileSuccessfulAnalysis + className + ".txt");
+		fileFailedAnalysis = locateOutputFile(fileFailedAnalysis + className + ".txt");
+		filePrevSuccessNowFailedAnalysis = locateOutputFile(filePrevSuccessNowFailedAnalysis + className + ".txt");
+		fileFullSuccessfulAnalysis = locateOutputFile(fileFullSuccessfulAnalysis + className + ".txt");
 	}
 	
 	/*
@@ -281,6 +278,8 @@ public class DecomposeHansardTest {
 		
 	
 	protected void writeErrorMessage(int key) {
+		String targetSuccessfulAnalysisFile_src = "src/test/resources/target_" + new File(fileSuccessfulAnalysis).getName();
+		
         if (!errorMessages.containsKey(new Integer(key))) {
             switch (key) {
             case decompositionNotFoundInGoldStandard:
@@ -313,8 +312,7 @@ public class DecomposeHansardTest {
             case hasMoreSuccessfulAnalyses:
                 errorMessages.put(new Integer(key),
                         "--- More successful analyses.  Copy the file "
-                                + fileSuccessfulAnalysis + " to the file "
-                                + fileTargetSuccessfulAnalysis + ".\n");
+                                + fileSuccessfulAnalysis + "\nto "+ targetSuccessfulAnalysisFile_src + ".\nIMPORTANT: Make sure to run 'mvn install -DskipTests' (from a Terminal) before you run the test again.");
                 break;
             }
         }
@@ -336,30 +334,32 @@ public class DecomposeHansardTest {
 	protected void openFilesForReadingAndWriting () throws Exception {
 		try {
 			readerGoldStandard = new BufferedReader(new FileReader(fileGoldStandard));
+			echo("\nGold standard read from file:\n  "+fileGoldStandard);
 		} catch (FileNotFoundException e) {
-			System.out.println("The file "+fileGoldStandard+" is not found in the *ressources* folder. Move it there and try again.");
-			System.exit(1);
+			throw new FileNotFoundException("The file "+fileGoldStandard+" is not found in the *ressources* folder. Move it there and try again.");
 		}
 		try {
 			readerTargetSuccessfulAnalysis = new BufferedReader(new FileReader(fileTargetSuccessfulAnalysis));
+			echo("\nBenchmark successful analyses read from file:\n  "+fileTargetSuccessfulAnalysis);			
 			createHashTargetSuccessfulAnalysis ();
 			readerTargetSuccessfulAnalysis.close();
 		} catch (Exception e) {
 			readerTargetSuccessfulAnalysis = null;
-			System.out.println("Only for the first run the file " + fileTargetSuccessfulAnalysis + " cannot be found. If this is not the first run, something is wrong.");
+			echo("Only for the first run the file " + fileTargetSuccessfulAnalysis + " cannot be found. If this is not the first run, something is wrong.");
 		}
 		
-		try {
-			writerSuccessfulAnalysis = new BufferedWriter(new FileWriter(fileSuccessfulAnalysis));
-			writerFullSuccessfulAnalysis = new BufferedWriter(new FileWriter(fileFullSuccessfulAnalysis));
-			writerFailedAnalysis = new BufferedWriter(new FileWriter(fileFailedAnalysis));
-			writerPrevSuccessNowFailedAnalysis = new BufferedWriter(new FileWriter(filePrevSuccessNowFailedAnalysis));
-		} catch (Exception e) {
-			System.out.println("Problem with writers: "+e.getMessage());
-			System.exit(1);
-		}
+		writerSuccessfulAnalysis = new BufferedWriter(new FileWriter(fileSuccessfulAnalysis));
+		echo("\nCurrent successful analyses written to file:\n  "+fileSuccessfulAnalysis);			
+		writerFullSuccessfulAnalysis = new BufferedWriter(new FileWriter(fileFullSuccessfulAnalysis));
+		writerFailedAnalysis = new BufferedWriter(new FileWriter(fileFailedAnalysis));
+		writerPrevSuccessNowFailedAnalysis = new BufferedWriter(new FileWriter(filePrevSuccessNowFailedAnalysis));
 	}
 	
+	private void echo(String mess) {
+		System.out.println(mess);
+		
+	}
+
 	protected void closeFiles () throws IOException {
 		readerGoldStandard.close(); 
 		
@@ -373,19 +373,29 @@ public class DecomposeHansardTest {
 		//(new File(fileSuccessfulAnalysis)).delete();
 	}
 	
+	private String locateOutputFile(String outputFileName) throws IOException {
+		String filePath = Paths.get(dirOutputFiles, outputFileName).toString();
+		ResourceGetter.createFileIfNotExist(filePath);;
+		return filePath;
+	}
 	
-	public String locateFile(String fileName) throws IOException {
-    	ClassLoader classLoader = getClass().getClassLoader();
-    	Package pk = getClass().getPackage();
-    	String packagePath = pk.getName().replace('.', '/');
-    	String fullFilename = packagePath + "/../" + fileName;
-		URL res = classLoader.getResource(fullFilename);
-		if (res == null) {
-			throw new IOException("Could not find file "+fileName);
-		}
-		String filePath = res.getPath();
-		String filePathRep = filePath.replaceAll("%20", " ");
-		return filePathRep;
+	
+	
+	public String locateInputFile(String fileName) throws IOException {
+		String fPath = ResourceGetter.getResourcePath(fileName);
+		return fPath;
+		
+//    	ClassLoader classLoader = getClass().getClassLoader();
+//    	Package pk = getClass().getPackage();
+//    	String packagePath = pk.getName().replace('.', '/');
+//    	String fullFilename = packagePath + "/../" + fileName;
+//		URL res = classLoader.getResource(fullFilename);
+//		if (res == null) {
+//			throw new IOException("Could not find file "+fileName);
+//		}
+//		String filePath = res.getPath();
+//		String filePathRep = filePath.replaceAll("%20", " ");
+//		return filePathRep;
 	}
 	protected StringTokenizer readLine(BufferedReader bufReader) throws IOException {
 		String line = bufReader.readLine();
