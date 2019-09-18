@@ -11,7 +11,7 @@ public class StringSegmenter_IUMorphemeTest {
 	 ******************************************/
 	
 	@Test
-	public void test__segment__short_analysis() {
+	public void test__segment__short_analysis() throws Exception {
 		StringSegmenter segmenter = new StringSegmenter_IUMorpheme();
 		String[] segments;
 		try {
@@ -25,7 +25,7 @@ public class StringSegmenter_IUMorphemeTest {
 	}
 
 	@Test
-	public void test__segment__short_analysis_syllabique() {
+	public void test__segment__short_analysis_syllabique()  throws Exception {
 		StringSegmenter segmenter = new StringSegmenter_IUMorpheme();
 		String[] segments;
 		try {
@@ -39,7 +39,7 @@ public class StringSegmenter_IUMorphemeTest {
 	}
 
 	@Test
-	public void test__segment__full_analysis() {
+	public void test__segment__full_analysis()  throws Exception  {
 		StringSegmenter segmenter = new StringSegmenter_IUMorpheme();
 		String[] segments;
 		try {

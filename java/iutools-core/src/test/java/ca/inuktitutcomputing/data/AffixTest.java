@@ -12,7 +12,7 @@ import ca.nrc.json.PrettyPrinter;
 public class AffixTest {
 
 	@Test
-	public void test_getFormsInContext__Case_ijaq() {
+	public void test_getFormsInContext__Case_ijaq() throws Exception {
 		LinguisticDataSingleton.getInstance("csv");
 		String affixId = "ijaq/1nv";
 		Affix affix = LinguisticDataAbstract.getAffix(affixId);
@@ -54,7 +54,7 @@ public class AffixTest {
 	}
 	
 	@Test
-	public void test_getSurfaceFormsInContext__Case_ijaq() {
+	public void test_getSurfaceFormsInContext__Case_ijaq() throws Exception {
 		LinguisticDataSingleton.getInstance("csv");
 		String affixId = "ijaq/1nv";
 		Affix affix = LinguisticDataAbstract.getAffix(affixId);

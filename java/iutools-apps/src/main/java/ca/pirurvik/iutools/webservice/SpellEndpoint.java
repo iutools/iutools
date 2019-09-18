@@ -36,6 +36,7 @@ import ca.nrc.data.harvesting.SearchEngine.Hit;
 import ca.nrc.data.harvesting.SearchEngine.SearchEngineException;
 import ca.nrc.data.harvesting.SearchEngine.Type;
 import ca.nrc.datastructure.Pair;
+import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.json.PrettyPrinter;
 import ca.pirurvik.iutools.CompiledCorpus;
 import ca.pirurvik.iutools.CompiledCorpusRegistry;
@@ -69,7 +70,11 @@ public class SpellEndpoint extends HttpServlet {
 	
 	private synchronized void ensureCheckerIsInstantiated() throws SpellCheckerException {
 		if (checker == null) {
-			checker = new SpellChecker();
+			try {
+				checker = new SpellChecker();
+			} catch (StringSegmenterException e) {
+				throw new SpellCheckerException(e);
+			}
 			checker.setDictionaryFromCorpus(); // Spell Checker service uses Hansard corpus
 		}
 		

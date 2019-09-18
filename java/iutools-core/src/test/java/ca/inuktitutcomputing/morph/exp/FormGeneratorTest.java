@@ -11,13 +11,14 @@ import java.util.List;
 import org.junit.Test;
 
 import ca.inuktitutcomputing.data.LinguisticDataAbstract;
+import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.data.SurfaceFormInContext;
 import ca.nrc.json.PrettyPrinter;
 
 public class FormGeneratorTest {
 
 	@Test
-	public void test_run__Case_root() throws FormGeneratorException, IOException {
+	public void test_run__Case_root() throws FormGeneratorException, IOException, LinguisticDataException {
 		FormGenerator formGenerator = new FormGenerator();
 		String morpheme = "malik/1v";
 		List<SurfaceFormInContext> forms = formGenerator.run(morpheme);
@@ -40,7 +41,7 @@ public class FormGeneratorTest {
 	}
 
 	@Test
-	public void test_run__Case_infix_gaq() throws FormGeneratorException, IOException {
+	public void test_run__Case_infix_gaq() throws FormGeneratorException, IOException, LinguisticDataException {
 		FormGenerator formGenerator = new FormGenerator();
 		String morpheme = "gaq/1vn";
 		List<SurfaceFormInContext> forms = formGenerator.run(morpheme);
@@ -84,7 +85,7 @@ public class FormGeneratorTest {
 	}
 
 	@Test
-	public void test_run__Case_infix_juq() throws FormGeneratorException, IOException {
+	public void test_run__Case_infix_juq() throws FormGeneratorException, IOException, LinguisticDataException {
 		FormGenerator formGenerator = new FormGenerator();
 		String morpheme = "juq/1vn";
 		List<SurfaceFormInContext> forms = formGenerator.run(morpheme);
@@ -128,7 +129,7 @@ public class FormGeneratorTest {
 	}
 
 	@Test
-	public void test_run__Case_infix_liuq() throws FormGeneratorException, IOException {
+	public void test_run__Case_infix_liuq() throws FormGeneratorException, IOException, LinguisticDataException {
 		FormGenerator formGenerator = new FormGenerator();
 		String morpheme = "liuq/1nv";
 		List<SurfaceFormInContext> forms = formGenerator.run(morpheme);
@@ -194,7 +195,7 @@ public class FormGeneratorTest {
 	}
 
 	@Test
-	public void test_run__Case_infix_ijaq() throws FormGeneratorException, IOException {
+	public void test_run__Case_infix_ijaq() throws FormGeneratorException, IOException, LinguisticDataException {
 		FormGenerator formGenerator = new FormGenerator();
 		String morpheme = "ijaq/1nv";
 		List<SurfaceFormInContext> forms = formGenerator.run(morpheme);
@@ -263,7 +264,7 @@ public class FormGeneratorTest {
 	
 	
 	@Test
-	public void test_formsWithBeginnings__Case_infix_ijaq() throws FormGeneratorException, IOException {
+	public void test_formsWithBeginnings__Case_infix_ijaq() throws FormGeneratorException, IOException, LinguisticDataException {
 		LinguisticDataAbstract.init("csv");
 		FormGenerator formGenerator = new FormGenerator();
 		String morphemeId = "ijaq/1nv";

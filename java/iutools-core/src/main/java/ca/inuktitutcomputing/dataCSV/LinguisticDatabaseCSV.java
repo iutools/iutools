@@ -11,12 +11,18 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
+import ca.inuktitutcomputing.data.Affix;
+import ca.inuktitutcomputing.data.Base;
 import ca.inuktitutcomputing.data.Data;
 import ca.inuktitutcomputing.data.LinguisticDataAbstract;
 import ca.inuktitutcomputing.data.LinguisticDataException;
+import ca.inuktitutcomputing.data.Morpheme;
+import ca.inuktitutcomputing.data.Source;
+import ca.inuktitutcomputing.data.SurfaceFormOfAffix;
+import ca.inuktitutcomputing.data.VerbWord;
 import ca.nrc.json.PrettyPrinter;
 
-public final class LinguisticDataCSV extends LinguisticDataAbstract {
+public final class LinguisticDatabaseCSV {
 	
 	static public int OK = 0;
 	static public int FILE_NOT_FOUND = 1;
@@ -42,67 +48,54 @@ public final class LinguisticDataCSV extends LinguisticDataAbstract {
 		{"Source","Inuktitut","Sources"}
 	};
 	static Class thisClass;
-
-	public LinguisticDataCSV() throws LinguisticDataException {
-		createLinguisticDataCSV(null);
-	}
-	/*
-	 * 'type' peut �tre 'r' ou 's' ou null
-	 */
-	public LinguisticDataCSV(String type) throws LinguisticDataException {
-		createLinguisticDataCSV(type);
-	}
 	
-	void createLinguisticDataCSV(String type) throws LinguisticDataException {
-		if (type==null) {
-			bases = new Hashtable();
-			basesId = new Hashtable();
-			words = new Hashtable();
-			surfaceFormsOfAffixes = new Hashtable();
-			affixesId = new Hashtable();		
-		}
-		else if (type.equals("r")) {
-        	type = "Base";
-			bases = new Hashtable();
-			basesId = new Hashtable();
-			words = new Hashtable();
-        }
-        else if (type.equals("s")) {
-        	type = "Suffix";
-			surfaceFormsOfAffixes = new Hashtable();
-			affixesId = new Hashtable();
-        }
-		sources = new Hashtable();
-		for (int i=0; i < dataTables.length; i++) {
-			if (type==null || dataTables[i][0].equals(type) ||
-					dataTables[i][0].equals("Source"))
-				readLinguisticDataCSV(dataTables[i]);
+    protected Hashtable<String,Vector<Morpheme>> bases;
+    protected Hashtable<String,Base> basesId;
+    public Hashtable<String,Vector<SurfaceFormOfAffix>> surfaceFormsOfAffixes;
+    protected Hashtable<String,Affix> affixesId;
+    protected Hashtable<String,VerbWord> words;
+    protected Hashtable<String,Source> sources;
+
+
+	public LinguisticDatabaseCSV() throws LinguisticDataException {
+		bases = new Hashtable<String,Vector<Morpheme>>();
+		basesId = new Hashtable<String,Base>();
+		words = new Hashtable<String,VerbWord>();
+		surfaceFormsOfAffixes = new Hashtable<String,Vector<SurfaceFormOfAffix>>();
+		affixesId = new Hashtable<String,Affix>();
+		sources = new Hashtable<String,Source>();
+		for (int i = 0; i < dataTables.length; i++) {
+			readLinguisticDataCSV(dataTables[i]);
 		}
 	}
 	
-	public static void initAffixes() {
-		affixesId = new Hashtable();
-		surfaceFormsOfAffixes = new Hashtable();
+	public Hashtable<String,Vector<Morpheme>> getBases() {
+		return bases;
 	}
+	
+    public String[] getAllAffixesSurfaceStrings() {
+    	return (String[]) surfaceFormsOfAffixes.keySet().toArray(new String[] {});
+    }
+    
 
-
+	
     public static int readLinguisticDataCSV(String [] data) throws LinguisticDataException {
 //    	System.out.println("--- Start reading linguistic data for data= "+String.join("; ", data));
-    	Logger logger = Logger.getLogger("LinguisticDataCSV.readLinguisticDataCSV");
+    	Logger logger = Logger.getLogger("LinguisticDatabaseCSV.readLinguisticDataCSV");
     	String type = data[0];
     	String dbName = data[1];
     	String tableName = data[2];    	
     	BufferedReader f;
         try {
         	String fileName = tableName+".csv";
-            InputStream is = LinguisticDataCSV.class.getResourceAsStream(fileName);
+            InputStream is = LinguisticDatabaseCSV.class.getResourceAsStream(fileName);
             f =  new BufferedReader(new InputStreamReader(is));
         	String line;
             
             String firstLine = f.readLine();
             String [] fieldNames = firstLine.split(",");
         	while ( (line=f.readLine()) != null) {
-                    HashMap nextRow = getNextRow(line,fieldNames);
+                    HashMap<String,String> nextRow = getNextRow(line,fieldNames);
                     // ajouter le nom de la base de donn�es et le nom de la table
                     nextRow.put("dbName", dbName);
                     nextRow.put("tableName", tableName);
@@ -140,9 +133,9 @@ public final class LinguisticDataCSV extends LinguisticDataAbstract {
 		return OK;
     }
 
-    public static HashMap getNextRow(String line, String [] fieldNames) {
-        HashMap currentRow = new HashMap();
-        Vector values = new Vector();
+    public static HashMap<String,String> getNextRow(String line, String [] fieldNames) {
+        HashMap<String,String> currentRow = new HashMap<String,String>();
+        Vector<String> values = new Vector<String>();
         boolean inString = false;
         int pos = 0;
         char c = 0;
@@ -180,16 +173,16 @@ public final class LinguisticDataCSV extends LinguisticDataAbstract {
         return currentRow;
     }
 
-static String removeQuotesAndNull(String str) {
-	if (str.equals(""))
-		return null;
-	else if (str.charAt(0)=='"') {
-		String s = str.replaceFirst("^\"", "");
-		String newStr = s.replaceFirst("\"$", "");
-		newStr = newStr.replaceAll("\"\"", "\"");
-		return newStr;		
-	} else
-		return str;
-}
+	static String removeQuotesAndNull(String str) {
+		if (str.equals(""))
+			return null;
+		else if (str.charAt(0) == '"') {
+			String s = str.replaceFirst("^\"", "");
+			String newStr = s.replaceFirst("\"$", "");
+			newStr = newStr.replaceAll("\"\"", "\"");
+			return newStr;
+		} else
+			return str;
+	}
 
 }

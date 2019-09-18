@@ -9,7 +9,7 @@ import java.util.concurrent.TimeoutException;
 public class MorphologicalAnalyzerTest {
 	
 	@Test
-	public void test__MorphologicalAnalyzer_Synopsis() throws IOException {
+	public void test__MorphologicalAnalyzer_Synopsis() throws Exception {
 		// By default, the analyzer uses the linguistic database in the CSV format
 		MorphologicalAnalyzer analyzer = new MorphologicalAnalyzer();
 		// By default, the analysis times out after 10 seconds; time ou can be set different

@@ -5,6 +5,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.data.LinguisticDataSingleton;
 import ca.inuktitutcomputing.morph.MorphInukException;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
@@ -16,8 +17,12 @@ public class StringSegmenter_IUMorpheme extends StringSegmenter {
 	
 	private MorphologicalAnalyzer morphAnalyzer;
 	
-	public StringSegmenter_IUMorpheme() {
-		morphAnalyzer = new MorphologicalAnalyzer();
+	public StringSegmenter_IUMorpheme() throws StringSegmenterException {
+		try {
+			morphAnalyzer = new MorphologicalAnalyzer();
+		} catch (LinguisticDataException e) {
+			throw new StringSegmenterException(e);
+		}
 	}
 	
 	public String[] segment(String string) throws TimeoutException, StringSegmenterException {
@@ -25,7 +30,11 @@ public class StringSegmenter_IUMorpheme extends StringSegmenter {
 	}
 
 	public String[] segment(String string, boolean fullAnalysis) throws TimeoutException, StringSegmenterException {
-		LinguisticDataSingleton.getInstance("csv");
+		try {
+			LinguisticDataSingleton.getInstance("csv");
+		} catch (LinguisticDataException e1) {
+			throw new StringSegmenterException(e1);
+		}
 		Decomposition [] decs = null;
 		String word = string;
 		if (Syllabics.allInuktitut(string))

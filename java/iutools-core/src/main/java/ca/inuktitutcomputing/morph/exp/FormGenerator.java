@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 
 import ca.inuktitutcomputing.data.Affix;
 import ca.inuktitutcomputing.data.LinguisticDataAbstract;
+import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.data.SurfaceFormInContext;
 import ca.inuktitutcomputing.phonology.research.PhonologicalChange;
 import ca.nrc.json.PrettyPrinter;
@@ -19,7 +20,7 @@ public class FormGenerator {
 	
 	private String baseForm, morphId;
 	
-	public List<SurfaceFormInContext> run(String morpheme) throws FormGeneratorException {
+	public List<SurfaceFormInContext> run(String morpheme) throws FormGeneratorException, LinguisticDataException {
 		Logger logger = Logger.getLogger("FormGenerator.run");
 		LinguisticDataAbstract.init("csv");
 		HashSet<SurfaceFormInContext> surfaceForms = new HashSet<SurfaceFormInContext>();

@@ -11,6 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ca.inuktitutcomputing.data.LinguisticDataAbstract;
+import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.script.TransCoder;
 import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
@@ -60,7 +61,7 @@ public class Decompose {
     	System.exit(1);
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws LinguisticDataException {
         String dataSource = "csv";
         String word = null;
         boolean displayTimes = false;

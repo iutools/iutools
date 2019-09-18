@@ -7,4 +7,8 @@ public class FormGeneratorException extends Exception {
 		super(message);
 	}
 
+	public FormGeneratorException(Exception e) {
+		super(e);
+	}
+
 }

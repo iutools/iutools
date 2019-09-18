@@ -160,7 +160,7 @@ public class SpellCheckerTest {
 	}
 	
 	@Test
-	public void test__wordsContainingSequ__Case_considering_extremities() {
+	public void test__wordsContainingSequ__Case_considering_extremities() throws Exception {
 		SpellChecker checker = new SpellChecker();
 		checker.setVerbose(false);
 		checker.addCorrectWord("inuktitut");

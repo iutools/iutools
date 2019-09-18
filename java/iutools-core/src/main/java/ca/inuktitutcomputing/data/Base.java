@@ -474,7 +474,7 @@ public class Base extends Morpheme {
 
 				String verbWord = key.replaceFirst("-[^-]+$","");
 				String verbPart = key.replace(verbWord, "");
-				VerbWord verb = (VerbWord) LinguisticDataAbstract.words.get(verbWord);
+				VerbWord verb = (VerbWord) LinguisticDataAbstract.getWords().get(verbWord);
 				String partPassive = texte.substring(pos2, mpm.start());
 				String partReflexive = texte.substring(pos2, mpm.start());
 				if (lang.equals("en")) {

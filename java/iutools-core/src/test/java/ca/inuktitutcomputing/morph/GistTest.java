@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 
+import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.testing.AssertHelpers;
@@ -11,7 +12,7 @@ import ca.nrc.testing.AssertHelpers;
 public class GistTest {
 
 	@Test
-	public void test__Gist_Synopsis() throws IOException {
+	public void test__Gist_Synopsis() throws Exception, LinguisticDataException {
 		String word = "iglumik";
 		Gist gist = new Gist(word);
 		Pair<String,String>[] components = gist.wordComponents;
@@ -22,7 +23,7 @@ public class GistTest {
 	}
 
 	@Test
-	public void test__Gist_immagaq() throws IOException {
+	public void test__Gist_immagaq() throws Exception {
 		String word = "immagaq";
 		Gist gist = new Gist(word);
 		Pair<String,String>[] components = gist.wordComponents;

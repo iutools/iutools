@@ -22,13 +22,14 @@ package ca.inuktitutcomputing.applications;
 import java.io.*;
 
 import ca.inuktitutcomputing.data.LinguisticDataAbstract;
+import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.data.Roots;
 import ca.inuktitutcomputing.utilities1.Util;
 
 
 public class DescriptionOfRoot {
 
-    static public void main(String args[]) {
+    static public void main(String args[]) throws LinguisticDataException {
     	if (args.length==0) {
     		usage("Argument missing");
     	}

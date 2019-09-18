@@ -18,7 +18,7 @@ import ca.inuktitutcomputing.script.Orthography;
 
 public class ListMorphemes {
 
-    public static void main(String[] args) throws TimeoutException {
+    public static void main(String[] args) throws TimeoutException, LinguisticDataException {
         BufferedWriter bw = null;
         try {
             bw = new BufferedWriter(new FileWriter("ressources/morphemes.txt"));

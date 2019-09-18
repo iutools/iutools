@@ -56,7 +56,7 @@ public class MorphologicalAnalyzer {
     private StopWatch stpw;
     private Hashtable<String,Graph.Arc[]> arcsByMorpheme = new Hashtable<String,Graph.Arc[]>();
 
-    public MorphologicalAnalyzer() {
+    public MorphologicalAnalyzer() throws LinguisticDataException {
 		LinguisticDataSingleton.getInstance("csv");
     }
 

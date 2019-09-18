@@ -4,6 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ca.inuktitutcomputing.applications.Decompose;
+import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.data.LinguisticDataSingleton;
 import ca.inuktitutcomputing.script.Syllabics;
 import ca.nrc.datastructure.Pair;
@@ -13,7 +14,7 @@ public class Gist {
 	public String word = null;
 	public Pair<String,String>[] wordComponents = null;
 
-	public Gist(String word) {
+	public Gist(String word) throws LinguisticDataException {
 		this.word = word;
 		boolean syllabic = false;
 		String latin;

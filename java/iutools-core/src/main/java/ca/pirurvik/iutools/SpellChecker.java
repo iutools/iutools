@@ -47,11 +47,12 @@ public class SpellChecker {
 	public transient boolean verbose = true;
 	
 	public CompiledCorpus corpus = null;
-	private static StringSegmenter_IUMorpheme segmenter = new StringSegmenter_IUMorpheme();
+	private static StringSegmenter_IUMorpheme segmenter = null;
 	
 	
-	public SpellChecker() {
+	public SpellChecker() throws StringSegmenterException {
 		editDistanceCalculator = EditDistanceCalculatorFactory.getEditDistanceCalculator();
+		segmenter = new StringSegmenter_IUMorpheme();
 	}
 	
 	

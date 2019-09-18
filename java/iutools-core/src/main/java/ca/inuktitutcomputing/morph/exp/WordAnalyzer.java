@@ -23,6 +23,7 @@ import com.google.gson.stream.JsonReader;
 
 import ca.inuktitutcomputing.config.IUConfig;
 import ca.inuktitutcomputing.data.LinguisticDataAbstract;
+import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.data.LinguisticDataSingleton;
 import ca.inuktitutcomputing.data.Morpheme;
 import ca.inuktitutcomputing.data.SurfaceFormInContext;
@@ -412,7 +413,11 @@ public class WordAnalyzer {
 		
 		WordAnalyzer analyzer = new WordAnalyzer();
 
-		LinguisticDataSingleton.getInstance("csv");
+		try {
+			LinguisticDataSingleton.getInstance("csv");
+		} catch (LinguisticDataException e1) {
+			throw new WordAnalyzerException(e1);
+		}
 
 		System.out.print("Enter a word: ");
 		BufferedReader reader = new BufferedReader(new InputStreamReader(

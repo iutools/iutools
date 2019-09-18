@@ -73,6 +73,10 @@ public abstract class Morpheme extends Object implements Cloneable {
 	public abstract String getOriginalMorpheme(); //
 	
     //------------------------------------------------------------------------------------------------------------
+	public String getTableName() {
+	    return tableName;
+	}
+
 	public String[] getCombiningParts() {
 	    return combinedMorphemes;
 	}

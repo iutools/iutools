@@ -14,7 +14,7 @@ import java.util.Vector;
 
 import ca.inuktitutcomputing.phonology.Dialect;
 import ca.inuktitutcomputing.dataCSV.LinguisticDataCSV;
-import ca.inuktitutcomputing.dataCompiled.LinguisticDataCompiled;
+//import ca.inuktitutcomputing.dataCompiled.LinguisticDataCompiled;
 import ca.inuktitutcomputing.script.Orthography;
 import ca.inuktitutcomputing.script.Roman;
 import ca.inuktitutcomputing.utilities.MyStringTokenizer;
@@ -44,32 +44,32 @@ public abstract class LinguisticDataAbstract {
      * type:   "r" - roots
      *         "s" - suffixes
      */
-    public static boolean init() {
+    public static boolean init() throws LinguisticDataException {
     	return init(null, null);
     }
     
-    public static boolean init(String source) {
+    public static boolean init(String source) throws LinguisticDataException {
     	return init(source, null);
     }
     
-    public static boolean init(String source, String type) {
+    public static boolean init(String source, String type) throws LinguisticDataException {
     	if (source != null && !source.equals("csv") && !source.equals("compiled"))
     		return false;
     	if (type != null && !type.equals("r") && !type.equals("s"))
     		return false;
         makeHashOfTextualRenderings();
         makeHashOfExamples();
-        if (source==null || source.equals("compiled"))
-            database = new LinguisticDataCompiled(type);
-        else if (source.equals("csv"))
-        	database = new LinguisticDataCSV(type);
+//        if (source==null || source.equals("compiled"))
+//            database = new LinguisticDataCompiled(type);
+//        else if (source.equals("csv"))
+        database = new LinguisticDataCSV(type);
         if (type==null || type.equals("s")) {
             // Ajouter le suffixe d'inchoativité.
             // 13 mars 2006: pour le moment, on décide de ne pas l'utiliser, mais
             // de plutôt placer dans la table des racines celles qui résultent de
             // ce processus, comme ikummaq- < ikuma-
             Suffix spec = new Inchoative();
-            if (LinguisticDataAbstract.affixesId.containsKey(spec.id)) {
+            if (LinguisticDataAbstract.getAffixesIds().containsKey(spec.id)) {
             	throw new RuntimeException("Key '"+spec.id+"' already exists in linguistic data hash");  
             }
             affixesId.put(spec.id, spec);
@@ -80,7 +80,7 @@ public abstract class LinguisticDataAbstract {
     }
     
     private static void makeGroupsOfConsonants() {
-    	if (LinguisticDataAbstract.bases != null) {
+    	if (LinguisticDataAbstract.getBases() != null) {
     		String [] keys = LinguisticDataAbstract.getAllBasesKeys();
     		for (int i=0; i<keys.length; i++) {
     			String key = Orthography.simplifiedOrthographyLat(keys[i]);
@@ -116,6 +116,9 @@ public abstract class LinguisticDataAbstract {
         }
     }
 
+    public static Hashtable<Character,Vector<String>> getGroupsOfConsonants() {
+    	return groupsOfConsonants;
+    }
     
     
     // The suffix table has a field where the components of
@@ -241,10 +244,16 @@ public abstract class LinguisticDataAbstract {
         return Suffix.hash;
     }
     
+    public static Hashtable<String, Base> getBasesIds() {
+    	return basesId;
+    }
     public static String[] getAllBasesIds() {
     	return (String[])basesId.keySet().toArray(new String[0]);
     }
 
+    public static Hashtable<String, Affix>getAffixesIds() {
+    	return affixesId;
+    }
     public static String[] getAllAffixesIds() {
     	return (String[])affixesId.keySet().toArray(new String[0]);
     }
@@ -259,11 +268,18 @@ public abstract class LinguisticDataAbstract {
     	}
     	return suffixesIds;
     }
+    
+    protected static Hashtable<String,VerbWord> getWords() {
+    	return words;
+    }
 
     protected static String[] getAllVerbWords() {
     	return (String[])words.keySet().toArray(new String[0]);
     }
 
+    protected static Hashtable<String,Source> getSources() {
+    	return sources;
+    }
     protected static String[] getAllSources() {
     	return (String[])sources.keySet().toArray(new String[0]);
     }
@@ -285,6 +301,10 @@ public abstract class LinguisticDataAbstract {
         return Base.hash;
     }
     
+    protected static Hashtable<String,Vector<Morpheme>> getBases() {
+    	return bases;
+//    	return LinguisticData.getInstance();
+    }
     protected static String [] getAllBasesKeys() {
     	return (String[]) bases.keySet().toArray(new String[0]); 	
     }

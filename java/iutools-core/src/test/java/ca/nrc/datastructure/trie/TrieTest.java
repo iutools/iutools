@@ -90,7 +90,7 @@ public class TrieTest {
 	}
 	
 	@Test
-	public void test_add__check_terminal_inuktitut() throws TrieException {
+	public void test_add__check_terminal_inuktitut() throws Exception {
 		StringSegmenter iuSegmenter = new StringSegmenter_IUMorpheme();
 		Trie iumorphemeTrie = new Trie();
 		try {
@@ -148,7 +148,7 @@ public class TrieTest {
 	}
 
 	@Test
-	public void test__add_get__IUMorpheme_same_word_twice() {
+	public void test__add_get__IUMorpheme_same_word_twice() throws Exception {
 		StringSegmenter iuSegmenter = new StringSegmenter_IUMorpheme();
 		Trie iumorphemeTrie = new Trie();
 		String[] takujuq_segments = null;
@@ -167,7 +167,7 @@ public class TrieTest {
 	}
 	
 	@Test
-	public void test__add_get__IUMorpheme_one_word() {
+	public void test__add_get__IUMorpheme_one_word() throws Exception {
 		StringSegmenter iuSegmenter = new StringSegmenter_IUMorpheme();
 		Trie iumorphemeTrie = new Trie();
 		String[] takujuq_segments = null;
