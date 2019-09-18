@@ -1,10 +1,7 @@
 package ca.pirurvik.iutools.QueryExpanderEvaluatorComparator;
 
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
@@ -20,17 +17,22 @@ public class QueryExpanderEvaluatorCompTest {
 	public void test__QueryExpanderEvaluatorComp() throws Exception {
 		
 		System.out.println("\n\n*** Running test__QueryExpanderEvaluatorComp. This test can take a few minutes to complete\n\n");;
-
 		
 		boolean computeStatsOverSurfaceForms = true;
 		
+		
 		double targetPrecision = 0.7253;
-		double targetRecall = 0.5494;
+		double targetRecall = 0.5555;
+		double precRecTolerance = 0.005;
+
+		long targetRuntimeSecs = 5 * 60; // 5 minutes
+		long secsTolerance = 2*60; // 2 minutes
 		
 		boolean precisionFine = false;
 		boolean recallFine = false;
+		boolean runtimeFine = false;
 		
-		String diagnostic = null;
+		String diagnostic = "";
 		
 		double gotPrecision;
 		double gotRecall;
@@ -48,37 +50,52 @@ public class QueryExpanderEvaluatorCompTest {
 		// whether statistics are to be computed over words (default [true]) or morphemes [false]:
 		evaluator.setOptionComputeStatsOverSurfaceForms(computeStatsOverSurfaceForms);
 
-
-
+		
+		long startMSecs = System.currentTimeMillis();
 		evaluator.run();
+		long gotElapsedSecs = (System.currentTimeMillis() - startMSecs) / 1000;
 		
+		long runtimeDelta = gotElapsedSecs - targetRuntimeSecs;
+		long runtimeDeltaAbs = Math.abs(runtimeDelta);
+		if (runtimeDeltaAbs < secsTolerance) {
+			runtimeFine = true;
+		}
+				
 		gotPrecision = (double)evaluator.precision;
-		gotRecall = (double)evaluator.recall;
-		
-		if (gotPrecision > targetPrecision-0.001 && gotPrecision < targetPrecision+0.001) {
+		double precDelta = gotPrecision - targetPrecision;
+		double precDeltaAbs = Math.abs(precDelta);
+		if (precDeltaAbs < precRecTolerance) {
 			precisionFine = true;
 		}
 		
-		if (gotRecall > targetRecall-0.001 && gotRecall < targetRecall+0.001) {
+		gotRecall = (double)evaluator.recall;
+		double recDelta = gotRecall - targetRecall;
+		double recDeltaAbs = Math.abs(recDelta);
+		if (recDeltaAbs < precRecTolerance) {
 			recallFine = true;
 		}
 		
-		if (precisionFine && recallFine)
-			assertTrue("",true);
-		else {
+		if (!precisionFine || !recallFine || !runtimeFine) { 
 			if ( !precisionFine ) {
-				if (gotPrecision < targetPrecision-0.001) {
-					diagnostic = "\nPRECISION: "+"<<< The precision has gone ***DOWN***. Was "+targetPrecision+"; now "+gotPrecision;
+				if (precDelta < 0) {
+					diagnostic += "\nPRECISION: "+"<<< The precision has gone ***DOWN*** by "+precDeltaAbs+". Was "+targetPrecision+"; now "+gotPrecision;
 				} else {
-					diagnostic = "\nPRECISION: "+">>> The precision has gone ***UP***. Was "+targetPrecision+"; now "+gotPrecision;
+					diagnostic += "\nPRECISION: "+">>> The precision has gone ***UP*** by "+precDeltaAbs+". Was "+targetPrecision+"; now "+gotPrecision;
 				}
 			}
 			if ( !recallFine ) {
-				if (gotRecall < targetRecall-0.005) {
-					diagnostic += "\nRECALL: "+"<<< The recall has gone ***DOWN***. Was "+targetRecall+"; now "+gotRecall;
+				if (recDelta < 0) {
+					diagnostic += "\nRECALL: "+"<<< The recall has gone ***DOWN*** by "+recDeltaAbs+". Was "+targetRecall+"; now "+gotRecall;
 				} else {
-					diagnostic += "\nRECALL: "+">>> The recall has gone ***UP***. Was "+targetRecall+"; now "+gotRecall;
+					diagnostic += "\nRECALL: "+">>> The recall has gone ***UP*** by "+recDeltaAbs+". Was "+targetRecall+"; now "+gotRecall;
 				}
+			}
+			if (!runtimeFine) {
+				if (runtimeDelta < 0) {
+					diagnostic += "\nRUNTIME: "+"<<< The runtime has gone ***DOWN*** by "+runtimeDeltaAbs+" secs. Was "+targetRuntimeSecs+"; now "+gotElapsedSecs;
+				} else {
+					diagnostic += "\nRUNTIME: "+">>> The runtime has gone ***UP*** by "+runtimeDeltaAbs+" secs. Was "+targetRuntimeSecs+"; now "+gotElapsedSecs;
+				}	
 			}
 			assertFalse(diagnostic,true);
 		}
