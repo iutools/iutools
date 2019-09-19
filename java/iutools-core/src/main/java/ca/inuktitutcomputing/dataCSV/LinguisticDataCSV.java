@@ -87,14 +87,16 @@ public final class LinguisticDataCSV extends LinguisticDataAbstract {
 
 
     public static int readLinguisticDataCSV(String [] data) throws LinguisticDataException {
-//    	System.out.println("--- Start reading linguistic data for data= "+String.join("; ", data));
+//    	System.out.println("--- Start reading linguistic data for data= "+String.join("; ", data));    	
     	Logger logger = Logger.getLogger("LinguisticDataCSV.readLinguisticDataCSV");
     	String type = data[0];
     	String dbName = data[1];
-    	String tableName = data[2];    	
+    	String tableName = data[2]; 
+    	logger.trace("Reading CSV data with type="+type+", dbName="+dbName+", tableName="+tableName);
     	BufferedReader f;
         try {
         	String fileName = tableName+".csv";
+        	logger.trace("fileName="+fileName);
             InputStream is = LinguisticDataCSV.class.getResourceAsStream(fileName);
             f =  new BufferedReader(new InputStreamReader(is));
         	String line;
@@ -137,7 +139,11 @@ public final class LinguisticDataCSV extends LinguisticDataAbstract {
 			return IOEXCEPTION;
 		}
 //    	System.out.println("--- End reading linguistic data for data= "+String.join("; ", data));
-		return OK;
+
+    	logger.trace("Done reading the CSV file");
+        
+        
+        return OK;
     }
 
     public static HashMap getNextRow(String line, String [] fieldNames) {
