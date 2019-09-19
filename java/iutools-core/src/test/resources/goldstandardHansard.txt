@@ -789,7 +789,7 @@ qikiqtaaluup qikiqtaaluup {qikiqtaalu:qikiqtaaluk/1n}{up:up/tn-gen-s}
 *qilavvaq qilavvaq [decomposition:/qilavvaq(qilavvaq)/]
 qimirrujiit qimirrujiit {qimirru:qimirru/1v}{ji:ji/1vn}{it:it/tn-nom-p}
 qimirruniq qimirruniq {qimirru:qimirru/1v}{niq:niq/2vn}
-qingaummi qingaummi {qingaum:qingaq/1n}{mi:mi/tn-loc-s}
+qingaummi qingaummi {qingaum:qingaq/2n}{mi:mi/tn-loc-s}
 qitingani qitingani {qiti:qitiq/1n}{ngani:ngani/tn-loc-s-4s}
 qitirmiuni qitirmiuni {qitirmiu:qitirmiut/1n}{ni:ni/tn-loc-p}
 qitirmiunit qitirmiunit {qitirmiu:qitirmiut/1n}{nit:nit/tn-abl-p}
