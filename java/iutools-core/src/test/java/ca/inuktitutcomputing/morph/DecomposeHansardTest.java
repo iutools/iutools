@@ -311,8 +311,11 @@ public class DecomposeHansardTest {
                 break;
             case hasMoreSuccessfulAnalyses:
                 errorMessages.put(new Integer(key),
-                        "--- More successful analyses.  Copy the file "
-                                + fileSuccessfulAnalysis + "\nto "+ targetSuccessfulAnalysisFile_src + ".\nIMPORTANT: Make sure to run 'mvn install -DskipTests' (from a Terminal) before you run the test again.");
+                        "--- More successful analyses.\nDo the following commands in a terminal window:\n\n" +
+                        "  cd [iutools_home]\n" +
+                        "  cp " + fileSuccessfulAnalysis + " java/iutools-core/src/test/resources/"
+                        	    + targetSuccessfulAnalysisFile_src + "\n" +
+                        "  mvn install -DskipTests\n\n");
                 break;
             }
         }
