@@ -32,7 +32,7 @@ public class IUTServiceTestHelpers {
 	public static final long MEDIUM_WAIT = 2*SHORT_WAIT;
 	public static final long LONG_WAIT = 2*MEDIUM_WAIT;
 	
-	enum EndpointNames {SEARCH};
+	enum EndpointNames {SEARCH, SPELL};
 	
 
 	public static MockHttpServletResponse postEndpointDirectly(EndpointNames eptName, Object inputs) throws Exception {
@@ -48,6 +48,8 @@ public class IUTServiceTestHelpers {
 		
 		if (eptName == EndpointNames.SEARCH) {
 			new SearchEndpoint().doPost(request, response);
+		} else if (eptName == EndpointNames.SPELL) {
+			new SpellEndpoint().doPost(request, response);	
 		}
 		
 		String srvErr = ServiceResponse.jsonErrorMessage(response.getOutput());

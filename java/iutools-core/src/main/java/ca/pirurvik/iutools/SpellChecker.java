@@ -177,18 +177,19 @@ public class SpellChecker {
 //		boolean wordIsLatin = Pattern.compile("[a-zA-Z]").matcher(word).find();
 		boolean wordIsSyllabic = Syllabics.allInuktitut(word);
 		
+		String wordInLatin = word;
 		if (wordIsSyllabic) {
-			word = TransCoder.unicodeToRoman(word);
+			wordInLatin = TransCoder.unicodeToRoman(word);
 		}
 		
 		SpellingCorrection corr = new SpellingCorrection(word);
-		corr.wasMispelled = isMispelled(word);
+		corr.wasMispelled = isMispelled(wordInLatin);
 		logger.debug("wasMispelled= "+corr.wasMispelled);
 		if (corr.wasMispelled) {
 		
-			Set<String> candidates = firstPassCandidates_TFIDF(word);
+			Set<String> candidates = firstPassCandidates_TFIDF(wordInLatin);
 			logger.debug("candidates= "+PrettyPrinter.print(candidates));
-			List<Pair<String,Double>> candidatesWithSim = computeCandidateSimilarities(word, candidates);
+			List<Pair<String,Double>> candidatesWithSim = computeCandidateSimilarities(wordInLatin, candidates);
 			List<String> corrections = sortCandidatesBySimilarity(candidatesWithSim);
 			logger.debug("corrections for "+word+": "+corrections.size());
 			
@@ -463,22 +464,18 @@ public class SpellChecker {
 	}
 
 	public List<SpellingCorrection> correctText(String text, Integer nCorrections) throws SpellCheckerException {
-		Logger logger = Logger.getLogger("SpellChecker.correctText");
+		Logger tLogger = Logger.getLogger("SpellChecker.correctText");
 		if (nCorrections == null) nCorrections = DEFAULT_CORRECTIONS;
 		List<SpellingCorrection> corrections = new ArrayList<SpellingCorrection>();
 		
-//		List<Pair<String, Boolean>> tokens = StringUtils.tokenizeNaively(text);
-//		String regexp = "[a-zA-Z\\u1400-\\u167f0-9&\\s\\p{Punct}]+";
-//		List<Pair<String,Boolean>> tokens = StringUtils.splitWithDelimiters(regexp, text);
 		IUTokenizer iutokenizer = new IUTokenizer();
 		iutokenizer.run(text);
 		List<Pair<String,Boolean>> tokens = iutokenizer.getAllTokens();
 		
-		logger.debug("tokens= "+PrettyPrinter.print(tokens));
+		tLogger.trace("tokens= "+PrettyPrinter.print(tokens));
 		
 		for (Pair<String,Boolean> aToken: tokens) {
 			String tokString = aToken.getFirst();
-//			Boolean isDelimiter = aToken.getSecond();
 			Boolean isDelimiter = !aToken.getSecond(); // IUTokenizer returns TRUE for words and FALSE for non-words.
 			SpellingCorrection correction = null;
 			if (isDelimiter) {

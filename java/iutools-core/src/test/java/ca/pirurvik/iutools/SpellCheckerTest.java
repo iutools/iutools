@@ -32,13 +32,6 @@ public class SpellCheckerTest {
 		}
 	}
 
-//	@Test
-//	public void test__DELETE_ME_LATER() throws Exception {
-//		checker = new SpellChecker();
-//		SpellingCorrection correction = checker.correctWord("nunavuttt");
-//		AssertHelpers.assertDeepEquals("", null, correction);
-//	}
-	
 	@Test(expected=SpellCheckerException.class)
 	public void test__SpellChecker__Synopsis() throws Exception {
 		//
@@ -243,16 +236,16 @@ public class SpellCheckerTest {
 	public void test__correctWord__roman__MispelledInput() throws Exception {
 		String word = "inukkshuk";
 		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
-		assertCorrectionIsOK(gotCorrection, true, new String[] {"inukshuk", "inukttut", "inuktut", "inuk", "inukutt"});
+		assertCorrectionOK(gotCorrection, word, false, new String[] {"inukshuk", "inukttut", "inuktut", "inuk", "inukutt"});
 	}
+
 
 	@Test
 	public void test__correctWord__roman__CorrectlySpellendInput() throws Exception {
 		String word = "inuksuk";
 		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
-		assertCorrectionIsOK(gotCorrection, false);
+		assertCorrectionOK(gotCorrection, word, true);
 	}
-	
 	
 	@Test
 	public void test__correctWord__syllabic__MispelledInput() throws Exception {
@@ -262,7 +255,7 @@ public class SpellCheckerTest {
 		for (String aWord: correctWordsLatin) checker.addCorrectWord(aWord);
 		String word = "ᓄᓇᕗᖕᒥ";
 		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
-		assertCorrectionIsOK(gotCorrection, true, new String[] {"ᓄᓇᕘᒥ", "ᓄᓇᕗᒻᒥ", "ᓄᓇᕗᑦ" });
+		assertCorrectionOK(gotCorrection, word, false, new String[] {"ᓄᓇᕘᒥ", "ᓄᓇᕗᒻᒥ", "ᓄᓇᕗᑦ" });
 	}
 	
 	@Test 
@@ -276,7 +269,7 @@ public class SpellCheckerTest {
 		int wordNum = 0;
 		int ii = 2*wordNum;
 		SpellingCorrection wordCorr = gotCorrections.get(ii);
-		Assert.assertFalse("Word #"+wordNum+"="+wordCorr.orig+" should have deemed correctly spelled", wordCorr.wasMispelled);
+		assertCorrectionOK("Correction for word #"+wordNum+"="+wordCorr.orig+" was not as expected", wordCorr,  "inuktut", true);
 		
 
 		wordNum = 1;
@@ -298,6 +291,8 @@ public class SpellCheckerTest {
 		Assert.assertFalse("Word #"+ii+"="+wordCorr.orig+" should have deemd correctly spelled", wordCorr.wasMispelled);
 	}	
 	
+
+
 	@Test 
 	public void test__correctText__syllabic() throws Exception  {
 		String text = "ᐃᓄᑦᒧᑦ ᑕᑯᔪᖅ ᐃᒡᓗᑦᒥᒃ ᐊᕐᕌᒍᒥ";
@@ -307,36 +302,36 @@ public class SpellCheckerTest {
 		int wordNum = 0;
 		int ii = 2*wordNum;
 		SpellingCorrection wordCorr = gotCorrections.get(ii);
-		Assert.assertTrue("Word #"+wordNum+"="+wordCorr.orig+" should have been deemed MISSPELLED", wordCorr.wasMispelled);
-		// Note: The correct spelling is not in this list of corrections, but that's OK (kinda). 
-		//   This test mostly aims at testing the mechanics of SpellText.
-		//  
-		AssertHelpers.assertDeepEquals("Corrections for word#"+wordNum+"="+wordCorr.orig+" were not as expected", 
-				new String[] {"ᐃᓄᒃᑦᑐᑦ", "ᐃᓄᒃᑐᑦ", "ᐃᓄᑯᑦᑦ", "ᐃᓄᒃ", "ᐃᓄᒃᔅᓱᒃ"}, 
-				wordCorr.getPossibleSpellings());
+		assertCorrectionOK("Correction for word#"+wordNum+"="+wordCorr.orig+" was not as expected",
+				wordCorr, "ᐃᓄᑦᒧᑦ", false, 
+				// Note: The correct spelling is not in this list of corrections, but that's OK (kinda). 
+				//   This test mostly aims at testing the mechanics of SpellText.
+				//  				
+				new String[] {"ᐃᓄᒃᑦᑐᑦ", "ᐃᓄᒃᑐᑦ", "ᐃᓄᑯᑦᑦ", "ᐃᓄᒃ", "ᐃᓄᒃᔅᓱᒃ"});
 		
-
 		wordNum = 1;
 		ii = 2*wordNum;
 		wordCorr = gotCorrections.get(ii);
-		Assert.assertFalse("Word #"+wordNum+"="+wordCorr.orig+" should have deemd correctly spelled", wordCorr.wasMispelled);
+		assertCorrectionOK("Correction for word#"+wordNum+"="+wordCorr.orig+" was not as expected",
+				wordCorr, "ᑕᑯᔪᖅ", true);
 
 		wordNum = 2;
 		ii = 2*wordNum;
 		wordCorr = gotCorrections.get(ii);
-		Assert.assertTrue("Word #"+wordNum+"="+wordCorr.orig+" should have been deemed MISSPELLED", wordCorr.wasMispelled);
-		// Note: The correct spelling is not in this list of corrections, but that's OK (kinda). 
-		//   This test mostly aims at testing the mechanics of SpellText.
-		//  		
-		AssertHelpers.assertDeepEquals("Corrections for word#"+wordNum+"="+wordCorr.orig+" were not as expected", 
-				new String[] {}, 
-				wordCorr.getPossibleSpellings());
+		assertCorrectionOK("Correction for word#"+wordNum+"="+wordCorr.orig+" was not as expected",
+				wordCorr, "ᐃᒡᓗᑦᒥᒃ", false, 
+				// Note: The correct spelling is not in this list of corrections, but that's OK (kinda). 
+				//   This test mostly aims at testing the mechanics of SpellText.
+				//  				
+				new String[] {});
 
 		wordNum = 3;
 		ii = 2*wordNum;
 		wordCorr = gotCorrections.get(ii);
-		Assert.assertFalse("Word #"+wordNum+"="+wordCorr.orig+" should have deemd correctly spelled", wordCorr.wasMispelled);
+		assertCorrectionOK("Correction for word#"+wordNum+"="+wordCorr.orig+" was not as expected",
+				wordCorr, "ᐊᕐᕌᒍᒥ", true);
 	}	
+
 
 	@Test
 	public void test__correctText_ampersand() throws SpellCheckerException {
@@ -380,28 +375,55 @@ public class SpellCheckerTest {
 		return answer;
 	}
 
-	private void assertCorrectionIsOK(SpellingCorrection gotCorrection, boolean expMispelled) throws IOException {
-		assertCorrectionIsOK(gotCorrection, expMispelled, new String[] {});
-	}
-	
-	private void assertCorrectionIsOK(SpellingCorrection gotCorrection, boolean expMispelled, String[] expSpellings) throws IOException {
-		Assert.assertEquals("The misspelled status of the correction was not as expected.", 
-				expMispelled, gotCorrection.wasMispelled);
-		if (!gotCorrection.wasMispelled) {
-			AssertHelpers.assertDeepEquals("Word was correctly spelled, but its list of possible spellings was NOT empty", 
-					new String[] {}, gotCorrection.getPossibleSpellings());
-		}
-		
-		List<String> gotPossibleSpellings = gotCorrection.getPossibleSpellings();
-		AssertHelpers.assertContainsAll("The list of possible correct spellings did not contain all the expected alternatives", 
-				gotPossibleSpellings, expSpellings);
-		if (expSpellings.length > 0) {
-			String expTopSpelling = expSpellings[0];
-			AssertHelpers.assertStringEquals("The top spelling alternative was not as expected", 
-					expTopSpelling, gotPossibleSpellings.get(0));
-		}
-		
-	}
-	
+//	private void assertCorrectionOK(String mess, SpellingCorrection wordCorr, boolean expMispelled) {
+//		assertCorrectionOK(mess, wordCorr, expMispelled, null);		
+//	}
+//
+//	
+//	private void assertCorrectionOK(SpellingCorrection gotCorrection, String expOrig, boolean expMispelled) throws IOException {
+//		assertCorrectionOK(gotCorrection, expOrig, expMispelled, new String[] {});
+//	}
+//	
+//	private void assertCorrectionOK(SpellingCorrection gotCorrection, String expOrig, boolean expMispelled, String[] expSpellings) throws IOException {
+//		Assert.assertEquals("The orignal word was not as expected.", 
+//				expOrig, gotCorrection.orig);
+//		
+//		Assert.assertEquals("The misspelled status of the correction was not as expected.", 
+//				expMispelled, gotCorrection.wasMispelled);
+//		if (!gotCorrection.wasMispelled) {
+//			AssertHelpers.assertDeepEquals("Word was correctly spelled, but its list of possible spellings was NOT empty", 
+//					new String[] {}, gotCorrection.getPossibleSpellings());
+//		}
+//		
+//		List<String> gotPossibleSpellings = gotCorrection.getPossibleSpellings();
+//		AssertHelpers.assertContainsAll("The list of possible correct spellings did not contain all the expected alternatives", 
+//				gotPossibleSpellings, expSpellings);
+//		if (expSpellings.length > 0) {
+//			String expTopSpelling = expSpellings[0];
+//			AssertHelpers.assertStringEquals("The top spelling alternative was not as expected", 
+//					expTopSpelling, gotPossibleSpellings.get(0));
+//		}
+//	}
 
+	private void assertCorrectionOK(String mess, SpellingCorrection wordCorr, String expOrig, boolean expOK) throws Exception {
+		assertCorrectionOK(mess, wordCorr, expOrig, expOK, null);
+		
+	}
+	
+	private void assertCorrectionOK(SpellingCorrection wordCorr, String expOrig, boolean expOK, String[] expSpellings) throws Exception {
+		assertCorrectionOK("", wordCorr, expOrig, expOK, expSpellings);
+	}
+	
+	private void assertCorrectionOK(SpellingCorrection wordCorr, String expOrig, boolean expOK) throws Exception {
+		assertCorrectionOK("", wordCorr, expOrig, expOK, new String[] {});
+	}
+	
+	private void assertCorrectionOK(String mess, SpellingCorrection wordCorr, String expOrig, boolean expOK, String[] expSpellings) throws Exception {
+		if (expSpellings == null) {
+			expSpellings = new String[] {};
+		}
+		Assert.assertEquals(mess+"\nThe input word was not as expected",expOrig, wordCorr.orig);
+		Assert.assertEquals(mess+"\nThe correctness status was not as expected", expOK, !wordCorr.wasMispelled);
+		AssertHelpers.assertDeepEquals(mess+"\nThe list of spellings was not as expected", expSpellings, wordCorr.getPossibleSpellings());
+	}
 }
