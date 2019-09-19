@@ -26,7 +26,6 @@ public abstract class LinguisticDataAbstract {
     static LinguisticDataAbstract database;
 
     protected static Hashtable<String,Vector<SurfaceFormOfAffix>> surfaceFormsOfAffixes;
-    protected static Hashtable<String,Vector<Morpheme>> bases;
     
     protected static Hashtable<String,Base> basesId;
 //    protected Hashtable demonstrativesId;
@@ -167,11 +166,8 @@ public abstract class LinguisticDataAbstract {
      */
     @SuppressWarnings("unchecked")
 	public static Vector<Morpheme> getBases(String term) {
-        Vector<Morpheme> bs = null;
-        Vector<Morpheme> gets = bases.get(term);
-        if (gets != null)
-            bs = (Vector<Morpheme>) gets.clone();
-        return bs;
+    	Vector<Morpheme> bases = LinguisticData.getInstance().getBasesForCanonicalForm(term);
+    	return bases;
     }
     
     protected static Vector<Example> getExample(String key) {
@@ -302,11 +298,11 @@ public abstract class LinguisticDataAbstract {
     }
     
     protected static Hashtable<String,Vector<Morpheme>> getBases() {
-    	return bases;
-//    	return LinguisticData.getInstance();
+    	return LinguisticData.getInstance().getBasesForAllCanonicalForms_hashtable();
     }
     protected static String [] getAllBasesKeys() {
-    	return (String[]) bases.keySet().toArray(new String[0]); 	
+    	String[] keys = LinguisticData.getInstance().getCanonicalFormsForAllBases();
+    	return keys;
     }
     
     

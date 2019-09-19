@@ -55,7 +55,6 @@ public final class LinguisticDataCSV extends LinguisticDataAbstract {
 	
 	void createLinguisticDataCSV(String type) throws LinguisticDataException {
 		if (type==null) {
-			bases = new Hashtable();
 			basesId = new Hashtable();
 			words = new Hashtable();
 			surfaceFormsOfAffixes = new Hashtable();
@@ -63,7 +62,6 @@ public final class LinguisticDataCSV extends LinguisticDataAbstract {
 		}
 		else if (type.equals("r")) {
         	type = "Base";
-			bases = new Hashtable();
 			basesId = new Hashtable();
 			words = new Hashtable();
         }

@@ -665,6 +665,7 @@ qikiqtaalungmi qikiqtaalungmi {qikiqtaalung:qikiqtaaluk/1n}{mi:mi/tn-loc-s} 1
 qikiqtaaluup qikiqtaaluup {qikiqtaalu:qikiqtaaluk/1n}{up:up/tn-gen-s} 1
 qimirrujiit qimirrujiit {qimirru:qimirru/1v}{ji:ji/1vn}{it:it/tn-nom-p} 1
 qimirruniq qimirruniq {qimirru:qimirru/1v}{niq:niq/2vn} 1
+qingaummi qingaummi {qingaum:qingaq/2n}{mi:mi/tn-loc-s} 1
 qitingani qitingani {qiti:qitiq/1n}{ngani:ngani/tn-loc-s-4s} 2
 qitirmiuni qitirmiuni {qitirmiu:qitirmiut/1n}{ni:ni/tn-loc-p} 1
 qitirmiunit qitirmiunit {qitirmiu:qitirmiut/1n}{nit:nit/tn-abl-p} 1
@@ -912,4 +913,4 @@ uvvalu uvvalu {uvvalu:uvvalu/1c} 1
 uvvalukiaq uvvalukiaq {uvvalu:uvvalu/1c}{kiaq:kia/1q} 1
 uvvaluunniit uvvaluunniit {uvvaluunniit:uvvaluunniit/1c} 1
 vivvuari vivvuari {vivvuari:vivvuari/1n} 1
---- 914 /960 0.95208335
+--- 915 /960 0.953125

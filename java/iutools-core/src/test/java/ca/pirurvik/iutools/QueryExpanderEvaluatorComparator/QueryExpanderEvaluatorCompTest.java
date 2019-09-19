@@ -22,7 +22,7 @@ public class QueryExpanderEvaluatorCompTest {
 		
 		
 		double targetPrecision = 0.7253;
-		double targetRecall = 0.5555;
+		double targetRecall = 0.5393;
 		double precRecTolerance = 0.005;
 
 		long targetRuntimeSecs = 5 * 60; // 5 minutes

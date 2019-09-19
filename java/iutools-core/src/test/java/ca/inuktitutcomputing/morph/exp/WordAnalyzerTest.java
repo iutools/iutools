@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.io.FileNotFoundException;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ca.inuktitutcomputing.data.LinguisticDataSingleton;
@@ -84,7 +85,7 @@ public class WordAnalyzerTest {
 		assertEquals("",9,decompositions.size());
 	}
 
-	@Test
+	@Test @Ignore
 	public void test_analyze__Case_maligaliuqti() throws Exception {
 		LinguisticDataSingleton.getInstance("csv");
 		WordAnalyzer wordAnalyzer = new WordAnalyzer();
