@@ -299,7 +299,7 @@ public abstract class Data {
 
 	
 	public static void addToHash(Base x) throws LinguisticDataException {
-		LinguisticData.getInstance().addBase(x.morpheme, x);
+		LinguisticData.getInstance().addBaseForCanonicalForm(x.morpheme, x);
         Hashtable<String,Vector<Morpheme>> hash = LinguisticDataAbstract.getBases();
         Vector<Morpheme> current = null;
         try {

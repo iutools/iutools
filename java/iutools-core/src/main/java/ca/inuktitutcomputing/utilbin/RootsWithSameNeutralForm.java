@@ -1,26 +1,15 @@
 package ca.inuktitutcomputing.utilbin;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import ca.inuktitutcomputing.data.Base;
 import ca.inuktitutcomputing.data.LinguisticDataAbstract;
 import ca.inuktitutcomputing.data.LinguisticDataSingleton;
-import ca.nrc.json.PrettyPrinter;
 
-public class rootsWithSameNeutralForm {
+public class RootsWithSameNeutralForm {
 	
 	static HashMap<String,List<String>> rootMorphemes;
 	static HashMap<String,List<String>> duplicateRootMorphemes;
@@ -66,7 +55,5 @@ public class rootsWithSameNeutralForm {
 		duplicateRootMorphemes.put(morpheme, listForDuplicate);
 	}
 
-	
+
 }
-
-

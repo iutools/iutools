@@ -8,7 +8,7 @@ public class LinguisticData {
 	
 	private static LinguisticData singleton = null;
 	
-    protected static Map<String,Vector<Base>> basesId = new HashMap<String,Vector<Base>>();
+    protected static Map<String,Vector<Base>> basesForCanonicalForm = new HashMap<String,Vector<Base>>();
     
     public static LinguisticData getInstance() {
     	if (singleton == null) {
@@ -17,12 +17,17 @@ public class LinguisticData {
     	return singleton;
     }
     
-    public void addBase(String baseID, Base base) throws LinguisticDataException {
-    	if (!basesId.containsKey(baseID)) {
-    		basesId.put(baseID, new Vector<Base>());
+    public void addBaseForCanonicalForm(String canonicalForm, Base base) throws LinguisticDataException {
+    	if (!basesForCanonicalForm.containsKey(canonicalForm)) {
+    		basesForCanonicalForm.put(canonicalForm, new Vector<Base>());
     	}
     	
-    	basesId.get(baseID).add(base);
+    	basesForCanonicalForm.get(canonicalForm).add(base);
+    }
+    
+    public Vector<Base> getBasesForCanonicalForm(String canonicalForm) {
+    	Vector<Base> bases = basesForCanonicalForm.get(canonicalForm);
+    	return bases;
     }
 	
 }
