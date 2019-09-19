@@ -175,7 +175,6 @@ public class SpellChecker {
 	public SpellingCorrection correctWord(String word, int maxCorrections) throws SpellCheckerException {
 		Logger logger = Logger.getLogger("SpellChecker.correctWord");
 
-//		boolean wordIsLatin = Pattern.compile("[a-zA-Z]").matcher(word).find();
 		boolean wordIsSyllabic = Syllabics.allInuktitut(word);
 		
 		String wordInLatin = word;
@@ -213,13 +212,21 @@ public class SpellChecker {
  		return corr;
 	}
 	
-	protected boolean isMispelled(String word) throws SpellCheckerException {
-		boolean answer = false;
+	protected Boolean isMispelled(String word) throws SpellCheckerException {
+		Boolean answer = null;
 		if (corpus!=null && corpus.wordsFailedSegmentation.contains(word)) {
 			answer = true;
-		} else if (corpus!=null && corpus.segmentsCache.containsKey(word)) {
+		}
+		
+		if (answer == null && corpus!=null && corpus.segmentsCache.containsKey(word)) {
 			answer = false;
-		} else {
+		}
+		
+		if (answer == null && word.matches("^[0-9]+$")) {
+			answer = false;
+		}
+		
+		if (answer == null) {
 			answer = true;
 			try {
 				String[] segments = segmenter.segment(word);
@@ -232,6 +239,9 @@ public class SpellChecker {
 				throw new SpellCheckerException(e);
 			}
 		}
+		
+		
+		if (answer == null) answer = false;
 		
 		return answer;
 	}

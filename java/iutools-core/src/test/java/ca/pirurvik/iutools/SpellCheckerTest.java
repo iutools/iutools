@@ -258,6 +258,16 @@ public class SpellCheckerTest {
 		assertCorrectionOK(gotCorrection, word, false, new String[] {"ᓄᓇᕘᒥ", "ᓄᓇᕗᒻᒥ", "ᓄᓇᕗᑦ" });
 	}
 	
+	@Test
+	public void test__correctWord__number__ShouldBeDeemedCorrectlySpelled() throws Exception {
+		SpellChecker checker = new SpellChecker();
+		checker.setVerbose(false);
+		String word = "2019";
+		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
+		assertCorrectionOK(gotCorrection, word, true, new String[] {});
+	}
+	
+	
 	@Test 
 	public void test__correctText__roman() throws Exception  {
 		String text = "inuktut ninavut inuit inuktut";
