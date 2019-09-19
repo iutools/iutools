@@ -22,6 +22,9 @@ Spell check SYLLABIC -- Happy Path
   - Make sure that the chosen spelling is now displayed
     
     
+Progress Wheel
+- When you hit Spell button, make sure that the progress wheel is displayed
+    
  Spell check numbers
  - Spell check a number like: 2019
  - Make sure that it's NOT labelled as being mis-spelled

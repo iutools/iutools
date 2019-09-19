@@ -39,8 +39,10 @@ class SpellController extends WidgetController {
 		wholeTextElements.each(function(index,item) {
 			if ($(item).is('.corrections')) {
 				text = $(item).find('.selected').text();
-				  // Remove the \n at the end of the selected text
-				text = text.slice(0, -1)
+				if (text || 0 !== text.length) {
+					// Remove the \n at the end of the selected text
+					text = text.substring(0, text.length - 1);
+				}
 			}
 			else {
 				text = $(item).text();
