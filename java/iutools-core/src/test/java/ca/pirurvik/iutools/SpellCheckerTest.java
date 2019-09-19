@@ -266,27 +266,78 @@ public class SpellCheckerTest {
 	}
 	
 	@Test 
-	public void test__correctText_roman() throws Exception  {
+	public void test__correctText__roman() throws Exception  {
 		String text = "inuktut ninavut inuit inuktut";
 		List<SpellingCorrection> gotCorrections = checker.correctText(text);
 		
-		int ii = 0;
+		// Note we skip every other "correction" because they are just blank spaces
+		// between words
+		
+		int wordNum = 0;
+		int ii = 2*wordNum;
 		SpellingCorrection wordCorr = gotCorrections.get(ii);
-		Assert.assertFalse("Word #"+ii+"="+wordCorr.orig+" should have deemed correctly spelled", wordCorr.wasMispelled);
+		Assert.assertFalse("Word #"+wordNum+"="+wordCorr.orig+" should have deemed correctly spelled", wordCorr.wasMispelled);
 		
-		ii = 2;
+
+		wordNum = 1;
+		ii = 2*wordNum;
 		wordCorr = gotCorrections.get(ii);
-		Assert.assertTrue("Word #"+ii+"="+wordCorr.orig+" should have deemed MISPELLED", wordCorr.wasMispelled);
-		
-		ii = 4;
+		Assert.assertTrue("Word #"+wordNum+"="+wordCorr.orig+" should have deemed MISPELLED", wordCorr.wasMispelled);
+		AssertHelpers.assertDeepEquals("Corrections for word#"+wordNum+"="+wordCorr.orig+" were not as expected", 
+				new String[] {"nunavut"}, 
+				wordCorr.getPossibleSpellings());
+
+		wordNum = 2;
+		ii = 2*wordNum;
 		wordCorr = gotCorrections.get(ii);
 		Assert.assertFalse("Word #"+ii+"="+wordCorr.orig+" should have deemd correctly spelled", wordCorr.wasMispelled);
 
-		ii = 6;
+		wordNum = 3;
+		ii = 2*wordNum;
 		wordCorr = gotCorrections.get(ii);
 		Assert.assertFalse("Word #"+ii+"="+wordCorr.orig+" should have deemd correctly spelled", wordCorr.wasMispelled);
 	}	
 	
+	@Test 
+	public void test__correctText__syllabic() throws Exception  {
+		String text = "ᐃᓄᑦᒧᑦ ᑕᑯᔪᖅ ᐃᒡᓗᑦᒥᒃ ᐊᕐᕌᒍᒥ";
+		List<SpellingCorrection> gotCorrections = checker.correctText(text);
+		
+		
+		int wordNum = 0;
+		int ii = 2*wordNum;
+		SpellingCorrection wordCorr = gotCorrections.get(ii);
+		Assert.assertTrue("Word #"+wordNum+"="+wordCorr.orig+" should have been deemed MISSPELLED", wordCorr.wasMispelled);
+		// Note: The correct spelling is not in this list of corrections, but that's OK (kinda). 
+		//   This test mostly aims at testing the mechanics of SpellText.
+		//  
+		AssertHelpers.assertDeepEquals("Corrections for word#"+wordNum+"="+wordCorr.orig+" were not as expected", 
+				new String[] {"ᐃᓄᒃᑦᑐᑦ", "ᐃᓄᒃᑐᑦ", "ᐃᓄᑯᑦᑦ", "ᐃᓄᒃ", "ᐃᓄᒃᔅᓱᒃ"}, 
+				wordCorr.getPossibleSpellings());
+		
+
+		wordNum = 1;
+		ii = 2*wordNum;
+		wordCorr = gotCorrections.get(ii);
+		Assert.assertFalse("Word #"+wordNum+"="+wordCorr.orig+" should have deemd correctly spelled", wordCorr.wasMispelled);
+
+		wordNum = 2;
+		ii = 2*wordNum;
+		wordCorr = gotCorrections.get(ii);
+		Assert.assertTrue("Word #"+wordNum+"="+wordCorr.orig+" should have been deemed MISSPELLED", wordCorr.wasMispelled);
+		// Note: The correct spelling is not in this list of corrections, but that's OK (kinda). 
+		//   This test mostly aims at testing the mechanics of SpellText.
+		//  		
+		AssertHelpers.assertDeepEquals("Corrections for word#"+wordNum+"="+wordCorr.orig+" were not as expected", 
+				new String[] {}, 
+				wordCorr.getPossibleSpellings());
+
+		wordNum = 3;
+		ii = 2*wordNum;
+		wordCorr = gotCorrections.get(ii);
+		Assert.assertFalse("Word #"+wordNum+"="+wordCorr.orig+" should have deemd correctly spelled", wordCorr.wasMispelled);
+	}	
+
 	@Test
 	public void test__correctText_ampersand() throws SpellCheckerException {
 		String text = "inuktut sinik&uni";
