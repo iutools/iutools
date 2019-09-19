@@ -381,6 +381,7 @@ kisimili kisimili {kisimi:kisimi/1c}{li:li/1q} 1
 kisumut kisumut {kisu:kisu/1p}{mut:mut/tn-dat-s} 1
 kisunik kisunik {kisu:kisu/1p}{nik:nik/tn-acc-p} 1
 kisut kisut {kisut:kisut/1p} 1
+kisutuinnait kisutuinnait {kisutuinna:kisutuinnaq/1p}{it:it/tn-nom-p} 1
 kiujjutiit kiujjutiit {kiu:kiu/1v}{jjuti:ut/1vn}{it:it/tn-nom-p} 2
 kiujjutinga kiujjutinga {kiu:kiu/1v}{jjuti:ut/1vn}{nga:nga/tn-nom-s-4s} 2
 kiujjutit kiujjutit {kiu:kiu/1v}{jjut:ut/1vn}{it:it/tn-nom-p} 2
@@ -913,4 +914,4 @@ uvvalu uvvalu {uvvalu:uvvalu/1c} 1
 uvvalukiaq uvvalukiaq {uvvalu:uvvalu/1c}{kiaq:kia/1q} 1
 uvvaluunniit uvvaluunniit {uvvaluunniit:uvvaluunniit/1c} 1
 vivvuari vivvuari {vivvuari:vivvuari/1n} 1
---- 915 /960 0.953125
+--- 916 /960 0.95416665
