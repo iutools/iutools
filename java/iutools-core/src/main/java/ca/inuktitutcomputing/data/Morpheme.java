@@ -174,10 +174,10 @@ public abstract class Morpheme extends Object implements Cloneable {
     
     public static Morpheme getMorpheme(String morphemeId) {
     	    // Look for the morpheme in the affixes
-    	    Morpheme morph = (Morpheme)LinguisticDataAbstract.getAffix(morphemeId);
+    	    Morpheme morph = (Morpheme)LinguisticDataAbstract.getAffixWithId(morphemeId);
     	    // If not found, look for the morpheme in the roots
     	    if (morph == null)
-    	        morph = (Morpheme)LinguisticDataAbstract.getBase(morphemeId);
+    	        morph = (Morpheme)LinguisticDataAbstract.getBaseWithId(morphemeId);
             return morph;
         }
     

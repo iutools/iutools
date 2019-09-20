@@ -96,7 +96,7 @@ public class SurfaceFormOfAffix {
 	}
 
 	public Affix getAffix() {
-		return LinguisticDataAbstract.getAffix(uniqueId);
+		return LinguisticDataAbstract.getAffixWithId(uniqueId);
 	}
 
 	public String toString() {

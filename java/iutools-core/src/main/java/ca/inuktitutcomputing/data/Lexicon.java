@@ -53,7 +53,7 @@ public class Lexicon {
     static public Vector<Morpheme> lookForBase(String term, boolean syllabic) {
     	if (syllabic)
     		term = Syllabics.transcodeToRoman(term);
-        Vector<Morpheme> basesFound = LinguisticDataAbstract.getBases(term);
+        Vector<Morpheme> basesFound = LinguisticDataAbstract.getBasesForCanonicalForm(term);
         return basesFound;
     }
 

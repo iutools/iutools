@@ -15,7 +15,7 @@ public class AffixTest {
 	public void test_getFormsInContext__Case_ijaq() throws Exception {
 		LinguisticDataSingleton.getInstance("csv");
 		String affixId = "ijaq/1nv";
-		Affix affix = LinguisticDataAbstract.getAffix(affixId);
+		Affix affix = LinguisticDataAbstract.getAffixWithId(affixId);
 		
 		char context = 'V';
 		String form = affix.vform[0];
@@ -57,7 +57,7 @@ public class AffixTest {
 	public void test_getSurfaceFormsInContext__Case_ijaq() throws Exception {
 		LinguisticDataSingleton.getInstance("csv");
 		String affixId = "ijaq/1nv";
-		Affix affix = LinguisticDataAbstract.getAffix(affixId);
+		Affix affix = LinguisticDataAbstract.getAffixWithId(affixId);
 		
 		char context = 'V';
 		HashSet<SurfaceFormInContext> surfaceFormsInContext = affix.getSurfaceFormsInContext(context, affixId);

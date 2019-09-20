@@ -123,7 +123,7 @@ public class Base extends Morpheme {
 				// Attention!!!
 				// This root should already have been created. Let's get its
 				// list of idsOfCompositeWithThisRoot.
-				Base b = LinguisticDataAbstract.getBase(rootId);
+				Base b = LinguisticDataAbstract.getBaseWithId(rootId);
 				if (b != null) {
 					Vector<String> vids = b.idsOfCompositesWithThisRoot;
 					if (vids == null)

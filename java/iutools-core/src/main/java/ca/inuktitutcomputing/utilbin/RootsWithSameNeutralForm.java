@@ -20,7 +20,7 @@ public class RootsWithSameNeutralForm {
 		LinguisticDataSingleton.getInstance("csv");
 		String rootIDs[] = LinguisticDataAbstract.getAllBasesIds();
 		for (int iroot=0; iroot<rootIDs.length; iroot++) {
-			Base root = LinguisticDataAbstract.getBase(rootIDs[iroot]);
+			Base root = LinguisticDataAbstract.getBaseWithId(rootIDs[iroot]);
 			String rootMorpheme = root.morpheme;
 			String rootTableName = root.getTableName();
 			List<String> tableNamesForRoot = rootMorphemes.get(rootMorpheme);

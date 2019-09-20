@@ -7,10 +7,11 @@
 package ca.inuktitutcomputing.data;
 
 import java.io.*;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
+
+import org.apache.log4j.Logger;
 
 import ca.inuktitutcomputing.phonology.Dialect;
 import ca.inuktitutcomputing.dataCSV.LinguisticDataCSV;
@@ -22,21 +23,19 @@ import ca.inuktitutcomputing.utilities.MyStringTokenizer;
 public abstract class LinguisticDataAbstract {
 
     static Hashtable<String,String[]> textualRenderings;
-    static Hashtable<String,Vector<Example>> examples = new Hashtable<String,Vector<Example>>();
-    static LinguisticDataAbstract database;
+    static Hashtable<String,Vector<Example>> examples;
 
-    protected static Hashtable<String,Vector<SurfaceFormOfAffix>> surfaceFormsOfAffixes;
-//    protected static Hashtable<String,Vector<Morpheme>> bases;
-    
-    protected static Hashtable<String,Base> basesId;
+    protected static Hashtable<String,Vector<SurfaceFormOfAffix>> surfaceFormsOfAffixes = new Hashtable<String,Vector<SurfaceFormOfAffix>>();
+//    protected static Hashtable<String,Vector<Morpheme>> morphemesForCanonicalForm = new Hashtable<String,Vector<Morpheme>>();  // MOVED TO LINGUISTICDATA
+//    protected static Hashtable<String,Base> idToBaseTable = new Hashtable<String,Base>(); // MOVED TO LINGUISTICDATA
 //    protected Hashtable demonstrativesId;
-    protected static Hashtable<String,Affix> affixesId;
+    protected static Hashtable<String,Affix> idToAffixTable = new Hashtable<String,Affix>();
 
     // RENDU ICI AD
-    protected static Hashtable<String,VerbWord> words;
+    protected static Hashtable<String,VerbWord> words = new Hashtable<String,VerbWord>();
     protected static Hashtable<String,Source> sources;
     
-    static public Hashtable<Character,Vector<String>> groupsOfConsonants = new Hashtable<Character,Vector<String>>();
+    static public Hashtable<Character,Vector<String>> groupsOfConsonants;
 
     /*
      * source: "csv" - from the .csv files
@@ -53,6 +52,7 @@ public abstract class LinguisticDataAbstract {
     }
     
     public static boolean init(String source, String type) throws LinguisticDataException {
+    	initializeData();
     	if (source != null && !source.equals("csv") && !source.equals("compiled"))
     		return false;
     	if (type != null && !type.equals("r") && !type.equals("s"))
@@ -62,42 +62,54 @@ public abstract class LinguisticDataAbstract {
 //        if (source==null || source.equals("compiled"))
 //            database = new LinguisticDataCompiled(type);
 //        else if (source.equals("csv"))
-        database = new LinguisticDataCSV(type);
+        LinguisticDataCSV database = new LinguisticDataCSV(type);
         if (type==null || type.equals("s")) {
             // Ajouter le suffixe d'inchoativité.
             // 13 mars 2006: pour le moment, on décide de ne pas l'utiliser, mais
             // de plutôt placer dans la table des racines celles qui résultent de
             // ce processus, comme ikummaq- < ikuma-
-            Suffix spec = new Inchoative();
-            if (LinguisticDataAbstract.getAffixesIds().containsKey(spec.id)) {
-            	throw new RuntimeException("Key '"+spec.id+"' already exists in linguistic data hash");  
-            }
-            affixesId.put(spec.id, spec);
-            Data.addToForms(spec, spec.morpheme);
+//            Suffix spec = new Inchoative();
+//            if (LinguisticDataAbstract.getAffixesIds().containsKey(spec.id)) {
+//            	throw new RuntimeException("Key '"+spec.id+"' already exists in linguistic data hash");  
+//            }
+//            affixesId.put(spec.id, spec);
+//            Data.addToForms(spec, spec.morpheme);
         }
         makeGroupsOfConsonants();
         return true;
     }
     
+    public static void initializeData() {
+    	examples = new Hashtable<String,Vector<Example>>();
+    	textualRenderings = new Hashtable<String,String[]>();
+    	surfaceFormsOfAffixes = new Hashtable<String,Vector<SurfaceFormOfAffix>>();
+//    	morphemesForCanonicalForm = new Hashtable<String,Vector<Morpheme>>();
+//    	idToBaseTable = new Hashtable<String,Base>();
+    	idToAffixTable = new Hashtable<String,Affix>();
+        words = new Hashtable<String,VerbWord>();
+        sources = new Hashtable<String,Source>();
+        groupsOfConsonants = new Hashtable<Character,Vector<String>>();
+    }
+    
     private static void makeGroupsOfConsonants() {
-    	if (LinguisticDataAbstract.getBases() != null) {
+    	if (LinguisticDataAbstract.getFormToBasesTable() != null) {
     		String [] keys = LinguisticDataAbstract.getAllBasesKeys();
     		for (int i=0; i<keys.length; i++) {
     			String key = Orthography.simplifiedOrthographyLat(keys[i]);
-                groupsOfConsonants(key);
+                addToGroupsOfConsonants(key);
     		}
     	}
     	if (LinguisticDataAbstract.surfaceFormsOfAffixes != null) {
     		String [] forms = getAllAffixesSurfaceFormsKeys();
     		for (int i=0; i<forms.length; i++)
-                groupsOfConsonants(forms[i]);
+                addToGroupsOfConsonants(forms[i]);
     	}
     	String keys[] = Dialect.getKeys();
     	for (int i=0; i<keys.length; i++)
-    		groupsOfConsonants(keys[i]);
+    		addToGroupsOfConsonants(keys[i]);
     }
     
-    private static void groupsOfConsonants(String str) {
+    private static void addToGroupsOfConsonants(String str) {
         char chars[] = str.toCharArray();
         for (int i=0; i<chars.length-1; i++) {
             if (Roman.isConsonant(chars[i]) &&
@@ -133,22 +145,16 @@ public abstract class LinguisticDataAbstract {
 
 
     public static Morpheme getMorpheme(String morphId) {
+    	Logger logger = Logger.getLogger("LinguisticDataAbstract.getMorpheme");
         Morpheme morph;
-        morph = getBase(morphId);
-        if (morph==null)
-            morph = getAffix(morphId);
+        morph = getBaseWithId(morphId);
+        if (morph==null) {
+            morph = getAffixWithId(morphId);
+            if (morph==null) logger.debug("null affix: "+morphId);
+        }
         return morph;
     }
     
-    public static Affix getAffix(String uniqueId) {
-        Affix aff = (Affix)affixesId.get(uniqueId);
-        return aff;
-    }
-
-    public static Suffix getSuffix(String uniqueId) {
-        Suffix afs = (Suffix)affixesId.get(uniqueId);
-        return afs;
-    }
     
     protected static VerbWord getVerbWord(String term) {
         VerbWord mv = words.get(term);
@@ -166,7 +172,7 @@ public abstract class LinguisticDataAbstract {
      * @return Vector<Morpheme> a vector of Morpheme objects or null
      */
     @SuppressWarnings("unchecked")
-	public static Vector<Morpheme> getBases(String term) {
+	public static Vector<Morpheme> getBasesForCanonicalForm(String term) {
 //        Vector<Morpheme> bs = null;
 //        Vector<Morpheme> gets = bases.get(term);
 //        if (gets != null)
@@ -183,18 +189,24 @@ public abstract class LinguisticDataAbstract {
     
 
     
-    public static Base getBase(String morphId) {
-    	Base b = null;
-    	if (basesId != null)
-    		b = (Base)basesId.get(morphId);
-        return b;
+    public static Base getBaseWithId(String morphId) {
+//    	Base b = null;
+//    	if (idToBaseTable != null)
+//    		b = idToBaseTable.get(morphId);
+//        return b;
+
+        Base baseObject = LinguisticData.getInstance().getBaseWithId(morphId);
+        return baseObject;
     }
     
-    protected static Base getBase(Morpheme.Id morphId) {
-    	Base b = null;
-    	if (basesId != null)
-    		b = (Base)basesId.get(morphId.id);
-        return b;
+    protected static Base getBaseFromMorphemeIdObject(Morpheme.Id morphId) {
+//    	Base b = null;
+//    	if (idToBaseTable != null)
+//    		b = idToBaseTable.get(morphId.id);
+//        return b;
+
+        Base baseObject = LinguisticData.getInstance().getBaseFromMorphemeIdObject(morphId);
+        return baseObject;
     }
     
     /**
@@ -205,16 +217,6 @@ public abstract class LinguisticDataAbstract {
     // The keys of the hashtable 'surfaceFormsOfAffixes' are in the
     // simplified spelling (ng > N).  To search for a form
     // in the ICI spelling, one calls this method.
-    public static Vector<SurfaceFormOfAffix> getSurfaceForms(String form) {
-        // Simplify the spelling
-        String simplifiedForm = Orthography.simplifiedOrthographyLat(form);
-        return surfaceFormsOfAffixes.get(simplifiedForm);
-    }
-    
-    public static SurfaceFormOfAffix getForm(String morph) {
-    	return (SurfaceFormOfAffix)(LinguisticDataAbstract.getSurfaceForms(morph)).elementAt(0);
-    }
-    
     protected static void addForm(String str, SurfaceFormOfAffix form) {
         String simplifiedForm = Orthography.simplifiedOrthographyLat(str);
 		Vector<SurfaceFormOfAffix> v = surfaceFormsOfAffixes.get(simplifiedForm);
@@ -227,50 +229,95 @@ public abstract class LinguisticDataAbstract {
 		surfaceFormsOfAffixes.put(simplifiedForm, v);
     }
     
-    protected static String[] getAllExamplesKeys() {
-    	return (String[])examples.keySet().toArray(new String[0]);
+    public static Vector<SurfaceFormOfAffix> getSurfaceForms(String form) {
+        // Simplify the spelling
+        String simplifiedForm = Orthography.simplifiedOrthographyLat(form);
+        return surfaceFormsOfAffixes.get(simplifiedForm);
+    }
+    
+    public static SurfaceFormOfAffix getForm(String morph) {
+    	return (SurfaceFormOfAffix)(LinguisticDataAbstract.getSurfaceForms(morph)).elementAt(0);
     }
     
     public static String[] getAllAffixesSurfaceFormsKeys() {
     	return (String[]) surfaceFormsOfAffixes.keySet().toArray(new String[] {});
     }
     
-    protected static Hashtable<String,Morpheme> getAllSuffixes() {
-        Hashtable<String,Morpheme> hash = Suffix.hash;
-        if (hash.size()==0) {
-            for (Enumeration<String> keys = affixesId.keys(); keys.hasMoreElements();) {
-                Object key = keys.nextElement();
-                Affix aff = (Affix)affixesId.get(key);
-                aff.addToHash((String)key,aff);
-            }
-        }
-        return Suffix.hash;
+    protected static String[] getAllExamplesKeys() {
+    	return (String[])examples.keySet().toArray(new String[0]);
     }
     
-    public static Hashtable<String, Base> getBasesIds() {
-    	return basesId;
+    public static Hashtable<String, Base> getIdToBaseTable() {
+//    	return idToBaseTable;
+    	
+    	return LinguisticData.getInstance().getIdToBaseTable();
     }
+    
     public static String[] getAllBasesIds() {
-    	return (String[])basesId.keySet().toArray(new String[0]);
+//    	return (String[])idToBaseTable.keySet().toArray(new String[0]);
+    	
+    	return LinguisticData.getInstance().getAllBasesIds();
     }
 
-    public static Hashtable<String, Affix>getAffixesIds() {
-    	return affixesId;
+    
+    //------------------------ id2AffixTable -----------------------------
+    
+	protected static Hashtable<String, Morpheme> getId2SuffixTable() {
+		Hashtable<String, Morpheme> table = new Hashtable<String, Morpheme>();
+		for (Enumeration<String> affixIds = idToAffixTable.keys(); affixIds.hasMoreElements();) {
+			String affixId = affixIds.nextElement();
+			Affix aff = (Affix) idToAffixTable.get(affixId);
+			if (aff.getClass().getName().equals("Suffix"))
+				table.put(affixId, (Morpheme)aff);
+		}
+		return table;
+		
+//		return LinguisticData.getInstance().getId2SuffixTable();
+	}
+    
+
+    public static Hashtable<String, Affix> getIdToAffixTable() {
+    	return idToAffixTable;
+    	
+//    	return LinguisticData.getInstance().getIdToAffixTable();
     }
+    
     public static String[] getAllAffixesIds() {
-    	return (String[])affixesId.keySet().toArray(new String[0]);
+    	return (String[])idToAffixTable.keySet().toArray(new String[0]);
+    	
+//    	return LinguisticData.getInstance().getAllAffixesIds();
     }
 
-    public static String[] getAllSuffixesIds() {
-    	Hashtable<String,Morpheme> suffixes = getAllSuffixes();
-    	String [] suffixesIds = new String[suffixes.size()];
-    	int i=0;
-    	for (Enumeration<String> keys = suffixes.keys(); keys.hasMoreElements();) {
-    		Suffix suf = (Suffix)suffixes.get(keys.nextElement());
-    		suffixesIds[i++] = suf.id;
-    	}
-    	return suffixesIds;
+// APPELÉE NULLE PART
+//    public static String[] getAllSuffixesIds() {
+//    	Hashtable<String,Morpheme> suffixes = getId2SuffixTable();
+//    	String [] suffixesIds = new String[suffixes.size()];
+//    	int i=0;
+//    	for (Enumeration<String> keys = suffixes.keys(); keys.hasMoreElements();) {
+//    		Suffix suf = (Suffix)suffixes.get(keys.nextElement());
+//    		suffixesIds[i++] = suf.id;
+//    	}
+//    	return suffixesIds;
+//    	
+////		return LinguisticData.getInstance().getAllSuffixesIds();
+//
+//    }
+    
+    public static Affix getAffixWithId(String uniqueId) {
+        Affix aff = (Affix)idToAffixTable.get(uniqueId);
+        return aff;
+        
+//        return LinguisticData.getInstance().getAffixWithId(uniqueId);
     }
+
+    public static Suffix getSuffixWithId(String uniqueId) {
+        Suffix afs = (Suffix)idToAffixTable.get(uniqueId);
+        return afs;
+        
+//        return LinguisticData.getInstance().getSuffixWithId(uniqueId);
+   }
+
+    //------------------------ id2AffixTable -----------------------------
     
     protected static Hashtable<String,VerbWord> getWords() {
     	return words;
@@ -288,23 +335,23 @@ public abstract class LinguisticDataAbstract {
     }
 
 
-    protected static Hashtable<String,Morpheme> getAllRoots() {
-        Hashtable<String,Morpheme> hash = Base.hash;
-        if (hash.size()==0) {
-            String clazz = Base.class.getName();
-            for (Enumeration<String> keys = basesId.keys(); keys.hasMoreElements();) {
-                Object key = keys.nextElement();
-                Object obj = basesId.get(key);
-                if (obj.getClass().getName()==clazz) {
-                    Base root = (Base)basesId.get(key);
-                    root.addToHash((String)key,root);
-                }
-            }
-        }
-        return Base.hash;
-    }
+	protected static Hashtable<String, Morpheme> getIdToRootTable() {
+//		Hashtable<String, Morpheme> table = new Hashtable<String, Morpheme>();
+//		String clazz = Base.class.getName();
+//		for (Enumeration<String> rootIds = idToBaseTable.keys(); rootIds.hasMoreElements();) {
+//			String rootId = rootIds.nextElement();
+//			Object obj = idToBaseTable.get(rootId);
+//			if (obj.getClass().getName() == clazz) {
+//				Base root = idToBaseTable.get(rootId);
+//				table.put(rootId, root);
+//			}
+//		}
+//		return table;
+		
+		return LinguisticData.getInstance().getIdToRootTable();
+	}
     
-    protected static Hashtable<String,Vector<Morpheme>> getBases() {
+    protected static Hashtable<String,Vector<Morpheme>> getFormToBasesTable() {
 //    	return bases;
     	return LinguisticData.getInstance().getBasesForAllCanonicalForms_hashtable();
     }
@@ -314,39 +361,46 @@ public abstract class LinguisticDataAbstract {
     	return keys;
     }
     
+    protected static Hashtable<String,Base> getIdToGiVerbsTable() {
+    	return LinguisticData.getInstance().getIdToGiVerbsTable();
+    }
     
     protected static Base [] getGiVerbs() {
-    	Hashtable<String,Base> giverbsHash = new Hashtable<String,Base>();
-    	Hashtable<String,Morpheme> bases = getAllRoots();
-    	for (Enumeration<String> keys = bases.keys(); keys.hasMoreElements();) {
-    		String key = keys.nextElement();
-    		Base base = (Base)bases.get(key);
-    		if (base.isGiVerb())
-    			giverbsHash.put(key, base);
-    	}
-    	String [] giverbsKeysArray = (String[])giverbsHash.keySet().toArray(new String[]{});
-    	Arrays.sort(giverbsKeysArray);
-    	Base [] giverbs = new Base[giverbsKeysArray.length];
-    	for (int i=0; i<giverbsKeysArray.length; i++)
-    		giverbs[i] = (Base)giverbsHash.get(giverbsKeysArray[i]);
-    	return giverbs;
+//    	Hashtable<String,Base> giverbsHash = new Hashtable<String,Base>();
+//    	Hashtable<String,Morpheme> bases = getIdToRootTable();
+//    	for (Enumeration<String> keys = bases.keys(); keys.hasMoreElements();) {
+//    		String key = keys.nextElement();
+//    		Base base = (Base)bases.get(key);
+//    		if (base.isGiVerb())
+//    			giverbsHash.put(key, base);
+//    	}
+//    	String [] giverbsKeysArray = (String[])giverbsHash.keySet().toArray(new String[]{});
+//    	Arrays.sort(giverbsKeysArray);
+//    	Base [] giverbs = new Base[giverbsKeysArray.length];
+//    	for (int i=0; i<giverbsKeysArray.length; i++)
+//    		giverbs[i] = (Base)giverbsHash.get(giverbsKeysArray[i]);
+//    	return giverbs;
+    	
+    	return LinguisticData.getInstance().getGiVerbs();
     }
 
     
-    protected static Hashtable<String,Demonstrative> getAllDemonstratives() {
-        Hashtable<String,Demonstrative> hash = Demonstrative.hash;
-        if (hash.size()==0) {
-            String clazz = Demonstrative.class.getName();
-            for (Enumeration<String> keys = basesId.keys(); keys.hasMoreElements();) {
-                Object key = keys.nextElement();
-                Object obj = basesId.get(key);
-                if (obj.getClass().getName()==clazz) {
-                    Demonstrative dem = (Demonstrative)basesId.get(key);
-                    dem.addToHash((String)key,dem);
-                }
-            }
-        }
-        return Demonstrative.hash;
+    protected static Hashtable<String,Demonstrative> getIdToDemonstrativeTable() {
+//        Hashtable<String,Demonstrative> hash = Demonstrative.hash;
+//        if (hash.size()==0) {
+//            String clazz = Demonstrative.class.getName();
+//            for (Enumeration<String> keys = idToBaseTable.keys(); keys.hasMoreElements();) {
+//                Object key = keys.nextElement();
+//                Object obj = idToBaseTable.get(key);
+//                if (obj.getClass().getName()==clazz) {
+//                    Demonstrative dem = (Demonstrative)idToBaseTable.get(key);
+//                    dem.addToHash((String)key,dem);
+//                }
+//            }
+//        }
+//        return Demonstrative.hash;
+        
+        return LinguisticData.getInstance().getIdToDemonstrativeTable();
     }
 
     

@@ -61,7 +61,7 @@ public class Roots {
 
 			Base base = null;
 
-			base = (Base) LinguisticDataAbstract.getBase(rootId);
+			base = (Base) LinguisticDataAbstract.getBaseWithId(rootId);
 			output.append("<p>");
 			output.append(composeRootDisplay(base));
 			output.append("<br><br>\n");
@@ -970,7 +970,7 @@ public class Roots {
 
 	public static void displayListOfRoots(String args[], PrintStream out) {
 		lang = Util.getArgument(args, "l");
-		Hashtable<String,Morpheme> roots = LinguisticDataAbstract.getAllRoots();
+		Hashtable<String,Morpheme> roots = LinguisticDataAbstract.getIdToRootTable();
 		displayListOfMorphemes("rac", out, roots, lang);
 	}
 

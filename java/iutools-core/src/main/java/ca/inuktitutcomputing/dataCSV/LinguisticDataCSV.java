@@ -12,9 +12,9 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 
 import ca.inuktitutcomputing.data.Data;
+import ca.inuktitutcomputing.data.LinguisticData;
 import ca.inuktitutcomputing.data.LinguisticDataAbstract;
 import ca.inuktitutcomputing.data.LinguisticDataException;
-import ca.nrc.json.PrettyPrinter;
 
 public final class LinguisticDataCSV extends LinguisticDataAbstract {
 	
@@ -54,23 +54,25 @@ public final class LinguisticDataCSV extends LinguisticDataAbstract {
 	}
 	
 	void createLinguisticDataCSV(String type) throws LinguisticDataException {
+		LinguisticData.getInstance().reinitializeData();
+		LinguisticDataAbstract.initializeData();
 		if (type==null) {
 //			bases = new Hashtable();
-			basesId = new Hashtable();
-			words = new Hashtable();
-			surfaceFormsOfAffixes = new Hashtable();
-			affixesId = new Hashtable();		
+//			idToBaseTable = new Hashtable();
+//			words = new Hashtable();
+//			surfaceFormsOfAffixes = new Hashtable();
+//			affixesId = new Hashtable();		
 		}
 		else if (type.equals("r")) {
         	type = "Base";
 //			bases = new Hashtable();
-			basesId = new Hashtable();
-			words = new Hashtable();
+//			idToBaseTable = new Hashtable();
+//			words = new Hashtable();
         }
         else if (type.equals("s")) {
         	type = "Suffix";
-			surfaceFormsOfAffixes = new Hashtable();
-			affixesId = new Hashtable();
+//			surfaceFormsOfAffixes = new Hashtable();
+//			affixesId = new Hashtable();
         }
 		sources = new Hashtable();
 		for (int i=0; i < dataTables.length; i++) {
@@ -80,11 +82,6 @@ public final class LinguisticDataCSV extends LinguisticDataAbstract {
 		}
 	}
 	
-	public static void initAffixes() {
-		affixesId = new Hashtable();
-		surfaceFormsOfAffixes = new Hashtable();
-	}
-
 
     public static int readLinguisticDataCSV(String [] data) throws LinguisticDataException {
 //    	System.out.println("--- Start reading linguistic data for data= "+String.join("; ", data));    	
@@ -109,7 +106,7 @@ public final class LinguisticDataCSV extends LinguisticDataAbstract {
                     nextRow.put("dbName", dbName);
                     nextRow.put("tableName", tableName);
                     if (type.equals("Base")) {
-                    	logger.debug("nextRow: "+PrettyPrinter.print(nextRow));
+//                    	logger.debug("nextRow: "+PrettyPrinter.print(nextRow));
                         Data.makeBase(nextRow);
                     } else if (type.equals("Suffix")) {
                         Data.makeSuffix(nextRow);

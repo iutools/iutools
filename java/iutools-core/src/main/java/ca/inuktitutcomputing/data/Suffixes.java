@@ -70,7 +70,7 @@ public class Suffixes {
 
             StringBuffer output = new StringBuffer();
 
-            Suffix suf = (Suffix) LinguisticDataAbstract.getSuffix(suffixId);
+            Suffix suf = (Suffix) LinguisticDataAbstract.getSuffixWithId(suffixId);
 
             output.append(startParagraph());
 //            output.append(html.scriptDescSufJSP(lang,font));
@@ -1055,7 +1055,7 @@ public class Suffixes {
 
     public static void displayListOfSuffixes(String args[], PrintStream out) {
         lang = Util.getArgument(args,"l");
-        Hashtable<String,Morpheme> infs = LinguisticDataAbstract.getAllSuffixes();
+        Hashtable<String,Morpheme> infs = LinguisticDataAbstract.getId2SuffixTable();
         Roots.displayListOfMorphemes("suf",out,infs,lang);
  }
  

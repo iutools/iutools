@@ -202,7 +202,12 @@ public class SurfaceFormInContext extends Object {
 		logger.debug("precedingMorpheme.morphemeId: "+precedingMorpheme.morphemeId);
 		Morpheme prec = LinguisticDataAbstract.getMorpheme(precedingMorpheme.morphemeId);
 		Morpheme cur = LinguisticDataAbstract.getMorpheme(this.morphemeId);
-		Conditions conds = cur.getPrecCond();
+		Conditions conds = null;
+		try {
+			conds = cur.getPrecCond();
+		} catch (NullPointerException e) {
+			System.err.println("NullPointerException for "+this.morphemeId);
+		}
 		boolean res = prec.meetsConditions(conds);
 		return res;
 	}

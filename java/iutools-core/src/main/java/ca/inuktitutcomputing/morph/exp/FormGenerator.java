@@ -108,7 +108,7 @@ public class FormGenerator {
 		Logger logger = Logger.getLogger("FormGenerator.formsWithBeginnings");
 		logger.debug("morphemeId: "+morphemeId);
 		HashSet<SurfaceFormInContext> allSurfaceFormsInContext = new HashSet<SurfaceFormInContext>();
-		Affix affix = LinguisticDataAbstract.getAffix(morphemeId);
+		Affix affix = LinguisticDataAbstract.getAffixWithId(morphemeId);
 		char[] contexts = new char[] {'V','t','k','q'};
 		for (int iCtxt=0; iCtxt<contexts.length; iCtxt++) {
 			logger.debug("context: "+contexts[iCtxt]);
