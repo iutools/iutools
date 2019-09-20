@@ -1,7 +1,10 @@
 #Manual test plan for Inuktut apps
 
-##Spell Checker
+##Search Engine
 
+TO BE ADDED
+
+##Spell Checker
 
 Spell check LATIN -- Happy Path
 - Enter some text in LATIN, some of which are badly spelled, others not. 
@@ -45,3 +48,19 @@ Progress Wheel
   - Click on copy to clipboard and paste into a text editor
   - Copy text to text editor, and make sure that the selected spelling is the one that
     appears in the editor
+    
+##Morpheme Search
+
+Happy path
+- Enter morpheme 'tut', then click on Search
+  - Should see two  morphemes that match 'tut'
+  - Click on each of the morphemes and inspect the list of hits for it
+    - Words should be sorted in DECREASING order of frequency
+    - Clicking on a word should show:
+      - Description of the word
+      - A list of parallel English-Inuktut sentences using that word
+  
+Submit form with Enter key
+- Enter morpheme 'tut', then PRESS ENTER
+  - Form should be submitted 
+ 
