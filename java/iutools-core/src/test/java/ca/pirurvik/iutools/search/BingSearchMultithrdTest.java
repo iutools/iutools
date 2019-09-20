@@ -12,6 +12,7 @@ import ca.nrc.testing.AssertHelpers;
 import ca.pirurvik.iutools.testing.IUTTestHelpers;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class BingSearchMultithrdTest {
@@ -114,5 +115,17 @@ public class BingSearchMultithrdTest {
 				expTotalHits, gotPage2.estTotalHits);
 	}	
 
+	@Test @Ignore
+	public void test__BingSearchMultithrd__SearchWithOnlyPDFResults() throws Exception {
+		String [] terms = new String[] {"ᖃᐅᔨᓴᕈᓐᓇᕐᒪᖔᑕ"};
+		String query = "ᖃᐅᔨᓴᕈᓐᓇᕐᒪᖔᑕ";
+		BingSearchMultithrd searcher = new BingSearchMultithrd();
+		PageOfHits results = searcher.search(query);
+		Long totalEstHits = results.estTotalHits;
+		List<SearchHit> hits = results.hitsCurrPage;
+		
+		Assert.assertTrue("Total number of hits was lower than expected: "+totalEstHits, totalEstHits > 100);
+		IUTTestHelpers.assertMostHitsMatchWords(terms, hits, 0.79);
+	}	
 	
 }
