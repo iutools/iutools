@@ -42,15 +42,17 @@ public class ProcessQuery {
 		alignedSentencesFile = new File(path);
 	}
 	
-	public String[] run(String query) {
-		try {
+	public String[] run(String query) throws ConfigException, IOException {
+		Logger tLogger = Logger.getLogger("ca.inuktitutcomputing.nunhansearch.ProcessQuery.run");
+		tLogger.trace("** INVOKED");
+//		try {
 			query = "^"+query+":";
 			TermDistribution distribution = getDistribution(query);
 			String[] alignments = getAlignments(distribution.variantsDistributions);
 			return alignments;
-		} catch (Exception e) {
-			return new String[] {};
-		}
+//		} catch (Exception e) {
+//			return new String[] {};
+//		}
 	}
 	
 	/**
@@ -64,10 +66,20 @@ public class ProcessQuery {
 		Logger logger = Logger.getLogger("ProcessQuery.getAlignments");
 		logger.debug("getAlignments invoked");
 		logger.debug("alignedSentencesFile= "+alignedSentencesFile.getAbsolutePath());
-		BufferedReader br = new BufferedReader(new FileReader(alignedSentencesFile));
+		BufferedReader br = null;
+		try {
+			br = new BufferedReader(new FileReader(alignedSentencesFile));
+		} catch (FileNotFoundException e) {
+			throw new FileNotFoundException("Could not find aligned sentence file: "+alignedSentencesFile);
+		}
 		String l;
-		while ( (l=br.readLine()) != null)
-			logger.debug("l: '"+l+"'");
+		try {
+			while ( (l=br.readLine()) != null)
+				logger.debug("l: '"+l+"'");
+		} catch (IOException e) {
+			throw new IOException("Problem reading line from aligned sentence file: "+alignedSentencesFile);
+			
+		}
 		br.close();
 		RandomAccessFile raf = new RandomAccessFile(alignedSentencesFile.getAbsolutePath(), "r");
 		List<String> listAlignedSentences = new ArrayList<String>();
@@ -89,7 +101,7 @@ public class ProcessQuery {
 		return listAlignedSentences.toArray(new String[] {});
 	}
 
-	public TermDistribution getDistribution(String query) throws ConfigException {
+	public TermDistribution getDistribution(String query) throws ConfigException, FileNotFoundException {
 		String grepResult = grep(query,inuktutWordIndexFile);
 		String[] matchingLines = grepResult.split("\n");
 		Pattern pat = Pattern.compile("^([^:]+):([0-9]+):(.*)$");
@@ -120,7 +132,11 @@ public class ProcessQuery {
 		return distribution;
 	}
 	
-	public String grep(String query, File file) throws ConfigException {
+	public String grep(String query, File file) throws FileNotFoundException {
+		
+		if (!file.exists()) {
+			throw new FileNotFoundException("Could not find file "+file+".\nIt might be that you need to install the NunHanSearch data directory.");
+		}
 		Logger logger = Logger.getLogger("ProcessQuery.grep");
 		String queryRegexp = query.replace("*", "\\S*?");
 		StringOutput output = new StringOutput();

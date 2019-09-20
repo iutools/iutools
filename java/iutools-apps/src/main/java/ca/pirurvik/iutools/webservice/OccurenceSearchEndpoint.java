@@ -59,9 +59,11 @@ public class OccurenceSearchEndpoint extends HttpServlet {
 	}
 	
 	private void writeJsonResponse(HttpServletResponse response, String json) throws IOException {
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.webservice.OccurenceSearchEndpoint.writeJsonResponse");
 		PrintWriter writer = response.getWriter();
 		writer.write(json);
 		writer.close();
+		tLogger.trace("Returning json="+json);
 	}
 
 	public OccurenceSearchResponse executeEndPoint(OccurenceSearchInputs inputs) 
@@ -97,6 +99,7 @@ public class OccurenceSearchEndpoint extends HttpServlet {
 			ProcessQuery processQuery = new ProcessQuery();
 			String query = inputs.exampleWord;
 			logger.trace("query= "+query);
+			logger.trace("calling run() on processQuery="+processQuery);
 			String[] alignments = processQuery.run(query);
 			logger.trace("alignments= "+PrettyPrinter.print(alignments));
 			//Gson gson = new Gson();
