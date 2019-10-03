@@ -9,14 +9,12 @@
 package ca.inuktitutcomputing.data;
 
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
 import ca.inuktitutcomputing.script.Orthography;
-import ca.inuktitutcomputing.data.LinguisticDataAbstract;
+//import ca.inuktitutcomputing.data.LinguisticDataAbstract;
 import ca.inuktitutcomputing.data.Action;
 import ca.inuktitutcomputing.data.Affix;
 import ca.inuktitutcomputing.data.Base;
@@ -37,12 +35,11 @@ public abstract class Data {
 	public static void makeBase(HashMap<String,String> v) throws LinguisticDataException {
         Base x = new Base(v);
         addToHash(x,"base - original");
-        if (LinguisticDataAbstract.getIdToBaseTable().containsKey(x.id)) {
+        if (LinguisticData.getInstance().getIdToBaseTable().containsKey(x.id)) {
         	throw new RuntimeException("Bases ID already contains a key "+x.id+". This one is defined in "+x.tableName+"."+". Check your .csv files in the linguistics data");
 //        	System.err.println("Bases ID already contains a key "+x.id+". This one is defined in "+x.tableName+".");
         }
 		LinguisticData.getInstance().addEntryToIdToBaseTable(x.id, x);
-//        LinguisticDataAbstract.getIdToBaseTable().put(x.id, x);
         // If the root has variant forms, create a root object for each
         // one and link it to the original root.
         if (x.getVariant() != null) {
@@ -55,7 +52,6 @@ public abstract class Data {
                 v2.put("originalMorpheme",x.id);
                 Base x2 = new Base(v2);
                 addToHash(x2,"base - variant");
-//                LinguisticData.basesId.put(x2.id, x2);
             }
         }
         // If the root has a special root for composition, create such a
@@ -72,7 +68,6 @@ public abstract class Data {
                 v2.put("subtype","nc");
                 Base x2 = new Base(v2);
                 addToHash(x2,"base - composition");
-//                LinguisticData.basesId.put(x2.id, x2);
             }
         }
 	}
@@ -92,10 +87,9 @@ public abstract class Data {
 	    // 1ère forme
         Demonstrative x = new Demonstrative(v);
         addToHash(x);
-        if (LinguisticDataAbstract.getIdToBaseTable().containsKey(x.id)) throw new RuntimeException("Key '"+x.id+"' already exists in linguistic data hash");
+        if (LinguisticData.getInstance().getIdToBaseTable().containsKey(x.id)) throw new RuntimeException("Key '"+x.id+"' already exists in linguistic data hash");
 
 		LinguisticData.getInstance().addEntryToIdToBaseTable(x.id, x);
-//        LinguisticDataAbstract.getIdToBaseTable().put(x.id,x);
         // 2ème forme: créer un nouvel objet pour chaque form de racine
         String roots[] = x.getRoot().split(" ");
         for (int i=0; i<roots.length; i++) {
@@ -104,7 +98,7 @@ public abstract class Data {
             v2.put("root", roots[i]);
             Demonstrative x2 = new Demonstrative(v2, "r");
             addToHash(x2);
-            LinguisticDataAbstract.getIdToBaseTable().put(x2.id,x2);
+            LinguisticData.getInstance().addEntryToIdToBaseTable(x2.id,x2);
         }
 }
 	
@@ -112,9 +106,8 @@ public abstract class Data {
 	public static void makePronoun(HashMap<String,String> v) throws LinguisticDataException {
 	    Pronoun x = new Pronoun(v);
 	    addToHash(x);
-        if (LinguisticDataAbstract.getIdToBaseTable().containsKey(x.id)) throw new RuntimeException("Key '"+x.id+"' already exists in linguistic data hash");	    
+        if (LinguisticData.getInstance().getIdToBaseTable().containsKey(x.id)) throw new RuntimeException("Key '"+x.id+"' already exists in linguistic data hash");	    
 		LinguisticData.getInstance().addEntryToIdToBaseTable(x.id, x);
-//	    LinguisticDataAbstract.getIdToBaseTable().put(x.id, x);
         if (x.getVariant() != null) {
             StringTokenizer st = new StringTokenizer(x.getVariant());
             while (st.hasMoreTokens()) {
@@ -125,24 +118,22 @@ public abstract class Data {
                 v2.put("originalMorpheme",x.id);
                 Pronoun x2 = new Pronoun(v2);
                 addToHash(x2);
-//                LinguisticData.basesId.put(x2.id, x2);
+        		LinguisticData.getInstance().addEntryToIdToBaseTable(x2.id, x2);
             }
         }
 	}
 	
 	public static void makeSuffix(HashMap<String,String> v) {
         Suffix x = new Suffix(v);
-       if (LinguisticDataAbstract.getIdToAffixTable().containsKey(x.id)) throw new RuntimeException("Key '"+x.id+"' already exists in linguistic data hash");        
-       LinguisticDataAbstract.getIdToAffixTable().put(x.id,x);
-//       LinguisticData.getInstance().addEntryToIdToAffixTable(x.id,x);
+        if (LinguisticData.getInstance().getIdToAffixTable().containsKey(x.id)) throw new RuntimeException("Key '"+x.id+"' already exists in linguistic data hash");        
+        LinguisticData.getInstance().addEntryToIdToAffixTable(x.id,x);
        addToForms(x, x.morpheme);	    
 	}
 	
 	public static void makeNounEnding(HashMap<String,String> v) {
         NounEnding x = new NounEnding(v);
-        if (LinguisticDataAbstract.getIdToAffixTable().containsKey(x.id)) throw new RuntimeException("Key '"+x.id+"' already exists in linguistic data hash");        
-        LinguisticDataAbstract.getIdToAffixTable().put(x.id,x);
-//        LinguisticData.getInstance().addEntryToIdToAffixTable(x.id,x);
+        if (LinguisticData.getInstance().getIdToAffixTable().containsKey(x.id)) throw new RuntimeException("Key '"+x.id+"' already exists in linguistic data hash");        
+        LinguisticData.getInstance().addEntryToIdToAffixTable(x.id,x);
         addToForms(x, x.morpheme);	    
  	}
 	
@@ -150,33 +141,31 @@ public abstract class Data {
         VerbEnding x = new VerbEnding(v);
         // This test with a throw is commented out to allow the execution of scripts using the linguistic database.
         // This matter will be attended to shortlty (Benoît Farley, 2019-09-17)
-//        if (LinguisticDataAbstract.getAffixesIds().containsKey(x.id)) 
+//      if (LinguisticData.getInstance().getIdToAffixTable().containsKey(x.id)) 
 //        	throw new RuntimeException("Key '"+x.id+"' already exists in linguistic data hash");        
 //    		System.err.println("Key '"+x.id+"' already exists in linguistic data hash");        
-        LinguisticDataAbstract.getIdToAffixTable().put(x.id,x);
-//        LinguisticData.getInstance().addEntryToIdToAffixTable(x.id,x);
+        LinguisticData.getInstance().addEntryToIdToAffixTable(x.id,x);
         addToForms(x, x.morpheme);	    
 	}
 	
 	public static void makeDemonstrativeEnding(HashMap<String,String> v) {
         DemonstrativeEnding x = new DemonstrativeEnding(
                 v);
-        if (LinguisticDataAbstract.getIdToAffixTable().containsKey(x.id)) 
+        if (LinguisticData.getInstance().getIdToAffixTable().containsKey(x.id)) 
         	throw new RuntimeException("Key already exists in linguistic data hash");
 //    		System.err.println("Key already exists in linguistic data hash");
-        LinguisticDataAbstract.getIdToAffixTable().put(x.id,x);
-//        LinguisticData.getInstance().addEntryToIdToAffixTable(x.id,x);
+        LinguisticData.getInstance().addEntryToIdToAffixTable(x.id,x);
         addToForms(x, x.morpheme);	    
 	}
     
     public static void makeVerbWord(HashMap<String,String> v) {
         VerbWord x = new VerbWord(v);
-        LinguisticDataAbstract.getWords().put(x.verb,x);
+        LinguisticData.getInstance().addVerbWord(x.verb,x);
     }
 	
     public static void makeSource(HashMap<String,String> v) {
         Source s = new Source(v);
-        LinguisticDataAbstract.getSources().put(s.id,s);
+        LinguisticData.getInstance().addSource(s.id,s);
     }
 
 
@@ -282,7 +271,7 @@ public abstract class Data {
 				                context,
 				                actions1[i],
 				                actions2[i]);
-				    LinguisticDataAbstract.addForm(form1, newForm);
+				    LinguisticData.getInstance().addToSurfaceFormsOfAffixes(form1, newForm);
 				}
 
 				/*
@@ -301,7 +290,7 @@ public abstract class Data {
 							context,
 							actions1[i],
 							actions2[i]);
-					LinguisticDataAbstract.addForm(form2, otherForm);
+					LinguisticData.getInstance().addToSurfaceFormsOfAffixes(form2, otherForm);
 				}
 }
 		}
@@ -318,22 +307,5 @@ public abstract class Data {
 			if (caller != null) logger.debug("    from: "+caller);
 		}
 		LinguisticData.getInstance().addBaseForCanonicalForm(x.morpheme, x);
-//        Hashtable<String,Vector<Morpheme>> hash = LinguisticDataAbstract.getBases();
-//        Vector<Morpheme> current = null;
-//        try {
-//        	current = hash.get(x.morpheme);
-//        } catch (NullPointerException e) {
-////        	System.err.println("hash: "+hash);
-////        	System.err.println("x: "+x);
-////        	e.printStackTrace();
-//        }
-//        if (current == null) {
-//        	current = new Vector<Morpheme>();
-//        }
-//        current.add(x);
-//		// OK... current is the original Vector located at that key which we expanded with the new base 
-//        // if (hash.containsKey(x.morpheme)) throw new RuntimeException("Key already exists in linguistic data hash");
-//
-//        hash.put(x.morpheme, current);
     }
 }

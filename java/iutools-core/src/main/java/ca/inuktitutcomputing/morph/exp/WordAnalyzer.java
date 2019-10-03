@@ -22,6 +22,7 @@ import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 
 import ca.inuktitutcomputing.config.IUConfig;
+import ca.inuktitutcomputing.data.LinguisticData;
 import ca.inuktitutcomputing.data.LinguisticDataAbstract;
 import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.data.LinguisticDataSingleton;
@@ -170,7 +171,7 @@ public class WordAnalyzer {
 					for (int imid=0; imid<morphemeIds.length; imid++) {
 						String morphemeId = morphemeIds[imid];
 						logger.debug("morphemeId: "+morphemeId);
-						Morpheme morpheme = LinguisticDataAbstract.getMorpheme(morphemeId);
+						Morpheme morpheme = LinguisticData.getInstance().getMorpheme(morphemeId);
 						String[] morphemeCombinationElements = morpheme.getCombiningParts();
 						if (morphemeCombinationElements!=null && morphemeCombinationElements.length!=0) {
 							combinedMorphemesInDecompositions.put(morphemeId, morphemeCombinationElements);
@@ -412,12 +413,6 @@ public class WordAnalyzer {
 	public static void main(String[] args) throws Exception {
 		
 		WordAnalyzer analyzer = new WordAnalyzer();
-
-		try {
-			LinguisticDataSingleton.getInstance("csv");
-		} catch (LinguisticDataException e1) {
-			throw new WordAnalyzerException(e1);
-		}
 
 		System.out.print("Enter a word: ");
 		BufferedReader reader = new BufferedReader(new InputStreamReader(

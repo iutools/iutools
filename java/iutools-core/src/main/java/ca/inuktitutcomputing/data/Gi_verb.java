@@ -13,7 +13,7 @@ public class Gi_verb extends Item {
 		String def = lang.equals("en") ?
 				english_definition : french_definition;
 		output.append("<p>"+process_marked_up(def,false)+"</p>");
-		Base [] gi_verbs = LinguisticDataAbstract.getGiVerbs();
+		Base [] gi_verbs = LinguisticData.getInstance().getGiVerbs();
 		output.append(process_marked_up(output_of_list(gi_verbs,lang),false));
 		return output.toString();
 	}

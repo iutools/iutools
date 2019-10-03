@@ -6,17 +6,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
 import ca.inuktitutcomputing.data.Data;
 import ca.inuktitutcomputing.data.LinguisticData;
-import ca.inuktitutcomputing.data.LinguisticDataAbstract;
 import ca.inuktitutcomputing.data.LinguisticDataException;
 
-public final class LinguisticDataCSV extends LinguisticDataAbstract {
+public final class LinguisticDataCSV { //extends LinguisticDataAbstract {
 	
 	static public int OK = 0;
 	static public int FILE_NOT_FOUND = 1;
@@ -43,19 +41,21 @@ public final class LinguisticDataCSV extends LinguisticDataAbstract {
 	};
 	static Class thisClass;
 
-	public LinguisticDataCSV() throws LinguisticDataException {
-		createLinguisticDataCSV(null);
-	}
+//	public LinguisticDataCSV() throws LinguisticDataException {
+//		createLinguisticDataCSV(null);
+//	}
+//	/*
+//	 * 'type' peut �tre 'r' ou 's' ou null
+//	 */
+//	public LinguisticDataCSV(String type) throws LinguisticDataException {
+//		createLinguisticDataCSV(type);
+//	}
+	
 	/*
 	 * 'type' peut �tre 'r' ou 's' ou null
 	 */
-	public LinguisticDataCSV(String type) throws LinguisticDataException {
-		createLinguisticDataCSV(type);
-	}
-	
-	void createLinguisticDataCSV(String type) throws LinguisticDataException {
+	public static void createLinguisticDataCSV(String type) throws LinguisticDataException {
 		LinguisticData.getInstance().reinitializeData();
-		LinguisticDataAbstract.initializeData();
 		if (type==null) {
 //			bases = new Hashtable();
 //			idToBaseTable = new Hashtable();
@@ -74,7 +74,6 @@ public final class LinguisticDataCSV extends LinguisticDataAbstract {
 //			surfaceFormsOfAffixes = new Hashtable();
 //			affixesId = new Hashtable();
         }
-		sources = new Hashtable();
 		for (int i=0; i < dataTables.length; i++) {
 			if (type==null || dataTables[i][0].equals(type) ||
 					dataTables[i][0].equals("Source"))

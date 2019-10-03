@@ -70,8 +70,6 @@
 
 package ca.inuktitutcomputing.data;
 
-import ca.inuktitutcomputing.data.LinguisticDataAbstract;
-
 public class SurfaceFormOfAffix {
 	public String form;
 	public String key;
@@ -96,7 +94,7 @@ public class SurfaceFormOfAffix {
 	}
 
 	public Affix getAffix() {
-		return LinguisticDataAbstract.getAffixWithId(uniqueId);
+		return LinguisticData.getInstance().getAffixWithId(uniqueId);
 	}
 
 	public String toString() {

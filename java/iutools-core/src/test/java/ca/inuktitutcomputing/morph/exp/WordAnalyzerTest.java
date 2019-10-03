@@ -16,7 +16,6 @@ public class WordAnalyzerTest {
 
 	@Test
 	public void test_findRoot__Case_1() throws Exception {
-		LinguisticDataSingleton.getInstance("csv");
 		WordAnalyzer wordAnalyzer = new WordAnalyzer();
 		String string = "inullu";
 		List<String> rootElements = wordAnalyzer.findRoot(string);
@@ -49,7 +48,6 @@ public class WordAnalyzerTest {
 	
 	@Test
 	public void test_analyze__Case_inullu() throws Exception {
-		LinguisticDataSingleton.getInstance("csv");
 		WordAnalyzer wordAnalyzer = new WordAnalyzer();
 		String string = "inullu";
 		List<Decomposition> decompositions = wordAnalyzer.analyze(string);
@@ -59,7 +57,6 @@ public class WordAnalyzerTest {
 
 	@Test
 	public void test_analyse__Case_tikittuq() throws Exception {
-		LinguisticDataSingleton.getInstance("csv");
 		WordAnalyzer wordAnalyzer = new WordAnalyzer();
 		String string = "tikittuq";
 		List<Decomposition> decompositions = wordAnalyzer.analyze(string);
@@ -77,7 +74,6 @@ public class WordAnalyzerTest {
 
 	@Test
 	public void test_analyze__Case_umiarjualiuqti() throws Exception {
-		LinguisticDataSingleton.getInstance("csv");
 		WordAnalyzer wordAnalyzer = new WordAnalyzer();
 		String string = "umiarjualiuqti";
 		List<Decomposition> decompositions = wordAnalyzer.analyze(string);
@@ -87,7 +83,6 @@ public class WordAnalyzerTest {
 
 	@Test @Ignore
 	public void test_analyze__Case_maligaliuqti() throws Exception {
-		LinguisticDataSingleton.getInstance("csv");
 		WordAnalyzer wordAnalyzer = new WordAnalyzer();
 		String string = "maligaliuqti";
 		List<Decomposition> analyses = wordAnalyzer.analyze(string);
@@ -97,7 +92,6 @@ public class WordAnalyzerTest {
 
 	@Test
 	public void test_analyze__Case_niruarut() throws Exception {
-		LinguisticDataSingleton.getInstance("csv");
 		WordAnalyzer wordAnalyzer = new WordAnalyzer();
 		String string = "niruarut";
 		List<Decomposition> analyses = wordAnalyzer.analyze(string);

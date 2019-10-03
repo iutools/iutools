@@ -265,7 +265,6 @@ public class FormGeneratorTest {
 	
 	@Test
 	public void test_formsWithBeginnings__Case_infix_ijaq() throws FormGeneratorException, IOException, LinguisticDataException {
-		LinguisticDataAbstract.init("csv");
 		FormGenerator formGenerator = new FormGenerator();
 		String morphemeId = "ijaq/1nv";
 		HashSet<SurfaceFormInContext> formsWithBeginnings = formGenerator.formsWithBeginnings(morphemeId);

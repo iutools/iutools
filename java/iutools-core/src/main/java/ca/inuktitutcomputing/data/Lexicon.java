@@ -40,7 +40,7 @@ public class Lexicon {
 
     // Recherche d'un terme dans le lexique.
     static public Vector<SurfaceFormOfAffix> lookForForms(String term, boolean syllabic) {
-        Vector<SurfaceFormOfAffix> formsFound = LinguisticDataAbstract.getSurfaceForms(term);
+        Vector<SurfaceFormOfAffix> formsFound = LinguisticData.getInstance().getSurfaceForms(term);
         return formsFound;
     }
 
@@ -53,7 +53,7 @@ public class Lexicon {
     static public Vector<Morpheme> lookForBase(String term, boolean syllabic) {
     	if (syllabic)
     		term = Syllabics.transcodeToRoman(term);
-        Vector<Morpheme> basesFound = LinguisticDataAbstract.getBasesForCanonicalForm(term);
+        Vector<Morpheme> basesFound = LinguisticData.getInstance().getBasesForCanonicalForm(term);
         return basesFound;
     }
 

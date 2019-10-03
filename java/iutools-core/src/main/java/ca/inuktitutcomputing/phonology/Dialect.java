@@ -13,6 +13,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ca.inuktitutcomputing.data.LinguisticData;
 import ca.inuktitutcomputing.data.LinguisticDataAbstract;
 import ca.inuktitutcomputing.script.Orthography;
 import ca.inuktitutcomputing.script.Roman;
@@ -526,7 +527,7 @@ public class Dialect {
         for (int i=0; i<s.length(); i++) {
         	stpw.check("Dialect.explode2::528 -- i: "+i);
             if (s.charAt(i)=='@') {
-                Vector<String> grCons = LinguisticDataAbstract.getGroupsOfConsonants().get(new Character(s.charAt(i+1)));
+                Vector<String> grCons = LinguisticData.getInstance().getGroupsOfConsonants().get(new Character(s.charAt(i+1)));
                 if (grCons!=null) {
                 	for (int j=0; j<grCons.size(); j++) {
                     	stpw.check("Dialect.explode::533 -- j: "+j);

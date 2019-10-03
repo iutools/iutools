@@ -11,7 +11,6 @@ public class MorphInukTest {
 	@Test(expected=TimeoutException.class)
 	public void test__decomposeWord__timeout() throws Exception  {
 //		Assert.fail("Fix this test which seems to freeze forever");
-		LinguisticDataSingleton.getInstance("csv");
 		MorphInuk.stpwActive = true;
 		MorphInuk.millisTimeout = 3000;
 		String word = "ilisaqsitittijunnaqsisimannginnama";
@@ -26,7 +25,6 @@ public class MorphInukTest {
 	@Test(expected=TimeoutException.class)
 	public void test__decomposeWord__timeout_10s() throws Exception  {
 //		Assert.fail("Fix this test which seems to freeze forever");
-		LinguisticDataSingleton.getInstance("csv");
 		MorphInuk.stpwActive = true;
 		MorphInuk.millisTimeout = 10000;
 		String word = "ilisaqsitittijunnaqsisimannginnama";
@@ -40,7 +38,6 @@ public class MorphInukTest {
 
 	@Test
 	public void test__decomposeWord__maligatigut() throws Exception  {
-		LinguisticDataSingleton.getInstance("csv");
 		String word = "maligatigut";
 		try {
 			MorphInuk.stpwActive = false;
@@ -57,7 +54,6 @@ public class MorphInukTest {
 
 	@Test
 	public void test__decomposeWord__uqaqtiup() throws Exception  {
-		LinguisticDataSingleton.getInstance("csv");
 		String word = "uqaqtiup";
 		try {
 			MorphInuk.stpwActive = false;
@@ -75,7 +71,6 @@ public class MorphInukTest {
 	
 	@Test
 	public void test__decomposeWord__maligaliuqtinik() throws Exception  {
-		LinguisticDataSingleton.getInstance("csv");
 		String word = "maligaliuqtinik";
 		try {
 //			MorphInuk.stpwActive = false;

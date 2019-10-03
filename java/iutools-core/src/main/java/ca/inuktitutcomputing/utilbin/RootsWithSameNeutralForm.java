@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import ca.inuktitutcomputing.data.Base;
+import ca.inuktitutcomputing.data.LinguisticData;
 import ca.inuktitutcomputing.data.LinguisticDataAbstract;
 import ca.inuktitutcomputing.data.LinguisticDataSingleton;
 
@@ -17,10 +18,9 @@ public class RootsWithSameNeutralForm {
 	public static void main(String[] args) throws Exception {
 		rootMorphemes = new HashMap<String,List<String>>();
 		duplicateRootMorphemes = new HashMap<String,List<String>>();
-		LinguisticDataSingleton.getInstance("csv");
-		String rootIDs[] = LinguisticDataAbstract.getAllBasesIds();
+		String rootIDs[] = LinguisticData.getInstance().getAllBasesIds();
 		for (int iroot=0; iroot<rootIDs.length; iroot++) {
-			Base root = LinguisticDataAbstract.getBaseWithId(rootIDs[iroot]);
+			Base root = LinguisticData.getInstance().getBaseWithId(rootIDs[iroot]);
 			String rootMorpheme = root.morpheme;
 			String rootTableName = root.getTableName();
 			List<String> tableNamesForRoot = rootMorphemes.get(rootMorpheme);

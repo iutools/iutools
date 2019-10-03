@@ -40,8 +40,6 @@ public class CmdLookForMorpheme extends ConsoleCommand {
 		
 		//morphExtr.useDictionary(dictionaryFile);
 		
-		LinguisticDataSingleton.getInstance("csv");
-
 		boolean interactive = false;
 		List<MorphemeExtractor.Words> words = null;
 		if (morpheme == null) {

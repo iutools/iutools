@@ -8,6 +8,7 @@ import ca.inuktitutcomputing.data.Morpheme;
 import ca.inuktitutcomputing.data.constraints.Conditions;
 import ca.inuktitutcomputing.data.Action;
 import ca.inuktitutcomputing.data.Affix;
+import ca.inuktitutcomputing.data.LinguisticData;
 import ca.inuktitutcomputing.script.Roman;
 
 public class WordAnalysisMorpheme {
@@ -25,7 +26,7 @@ public class WordAnalysisMorpheme {
 		String[] idParts = this.id.split("/");
 		this.nominalForm = idParts[0];
 		this.type = new Type(this.id);
-		this.dbmorpheme = LinguisticDataAbstract.getMorpheme(this.id);
+		this.dbmorpheme = LinguisticData.getInstance().getMorpheme(this.id);
 	}
 	
 	public boolean agreesInTypeWith(WordAnalysisMorpheme receptorMorpheme) {

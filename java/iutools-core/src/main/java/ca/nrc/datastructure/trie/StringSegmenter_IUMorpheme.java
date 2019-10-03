@@ -30,11 +30,6 @@ public class StringSegmenter_IUMorpheme extends StringSegmenter {
 	}
 
 	public String[] segment(String string, boolean fullAnalysis) throws TimeoutException, StringSegmenterException {
-		try {
-			LinguisticDataSingleton.getInstance("csv");
-		} catch (LinguisticDataException e1) {
-			throw new StringSegmenterException(e1);
-		}
 		Decomposition [] decs = null;
 		String word = string;
 		if (Syllabics.allInuktitut(string))

@@ -174,10 +174,10 @@ public abstract class Morpheme extends Object implements Cloneable {
     
     public static Morpheme getMorpheme(String morphemeId) {
     	    // Look for the morpheme in the affixes
-    	    Morpheme morph = (Morpheme)LinguisticDataAbstract.getAffixWithId(morphemeId);
+    	    Morpheme morph = (Morpheme)LinguisticData.getInstance().getAffixWithId(morphemeId);
     	    // If not found, look for the morpheme in the roots
     	    if (morph == null)
-    	        morph = (Morpheme)LinguisticDataAbstract.getBaseWithId(morphemeId);
+    	        morph = (Morpheme)LinguisticData.getInstance().getBaseWithId(morphemeId);
             return morph;
         }
     
@@ -264,12 +264,12 @@ public abstract class Morpheme extends Object implements Cloneable {
     public static String combine(String combination, boolean withAction2, String highlightedMorpheme) {
         String combinedForm;
         String[]morphemes = combination.split("\\x2b"); // +
-        Morpheme morpheme = LinguisticDataAbstract.getMorpheme(morphemes[0]);
+        Morpheme morpheme = LinguisticData.getInstance().getMorpheme(morphemes[0]);
         combinedForm = morpheme.morpheme;
         char context = combinedForm.charAt(combinedForm.length()-1);
         for (int i=1; i<morphemes.length; i++) {
             String precForm = combinedForm;
-            Affix aff = (Affix)LinguisticDataAbstract.getMorpheme(morphemes[i]);
+            Affix aff = (Affix)LinguisticData.getInstance().getMorpheme(morphemes[i]);
             Action[] action1 = aff.getAction1(context);
             Action[] action2 = aff.getAction2(context);
             String formAff = aff.getForm(context)[0];

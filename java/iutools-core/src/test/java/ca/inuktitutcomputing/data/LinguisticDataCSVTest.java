@@ -26,7 +26,7 @@ public class LinguisticDataCSVTest {
 	public void test_getBases() throws Exception {
 //		LinguisticDataCSV data = new LinguisticDataCSV("r");
 //		Vector<Morpheme> baseObjects = data.getBasesForCanonicalForm("iglu");
-		Vector<Morpheme> baseObjects = LinguisticDataAbstract.getBasesForCanonicalForm("iglu");
+		Vector<Morpheme> baseObjects = LinguisticData.getInstance().getBasesForCanonicalForm("iglu");
 		Assert.assertEquals("The number of Base objects for the form 'iglu' is not as expected.", 1, baseObjects.size());
 		Assert.assertEquals("Base for the form 'iglu' was not as expected.", "iglu", baseObjects.get(0).morpheme);
 	}
@@ -35,7 +35,7 @@ public class LinguisticDataCSVTest {
 	public void test_getBaseWithId() throws Exception {
 //		LinguisticDataCSV data = new LinguisticDataCSV("r");
 //		Base gotBase = data.getBaseWithId("iglu/1n");
-		Base gotBase = LinguisticDataAbstract.getBaseWithId("iglu/1n");
+		Base gotBase = LinguisticData.getInstance().getBaseWithId("iglu/1n");
 		Assert.assertEquals("Morpheme for the base 'iglu/1n' was not as expected.", "iglu", gotBase.morpheme);
 	}
 
@@ -43,7 +43,7 @@ public class LinguisticDataCSVTest {
 	public void test_getIdToRootTable() throws Exception {
 //		LinguisticDataCSV data = new LinguisticDataCSV("r");
 //		Hashtable<String,Morpheme> gotTable = data.getIdToRootTable();
-		Hashtable<String,Morpheme> gotTable = LinguisticDataAbstract.getIdToRootTable();
+		Hashtable<String,Morpheme> gotTable = LinguisticData.getInstance().getIdToRootTable();
 		Morpheme morpheme = gotTable.get("iglu/1n");
 		Assert.assertEquals("Morpheme for the base 'iglu/1n' was not as expected.", "iglu", morpheme.morpheme);
 	}
@@ -52,7 +52,7 @@ public class LinguisticDataCSVTest {
 	public void test_getgetIdToGiVerbsTable() throws Exception {
 //		LinguisticDataCSV data = new LinguisticDataCSV();
 //		Hashtable<String,Base> gotTable = data.getIdToGiVerbsTable();
-		Hashtable<String,Base> gotTable = LinguisticDataAbstract.getIdToGiVerbsTable();
+		Hashtable<String,Base> gotTable = LinguisticData.getInstance().getIdToGiVerbsTable();
 		Base giVerb = gotTable.get("naglik/1v");
 		Assert.assertEquals("The base 'naglik/1v' was not found in the giverbs table.", "naglik", giVerb.morpheme);
 	}
@@ -61,7 +61,7 @@ public class LinguisticDataCSVTest {
 	public void test_getIdToDemonstrativeTable() throws Exception {
 //		LinguisticDataCSV data = new LinguisticDataCSV();
 //		Hashtable<String,Demonstrative> gotTable = data.getIdToDemonstrativeTable();
-		Hashtable<String,Demonstrative> gotTable = LinguisticDataAbstract.getIdToDemonstrativeTable();
+		Hashtable<String,Demonstrative> gotTable = LinguisticData.getInstance().getIdToDemonstrativeTable();
 		Demonstrative demBase = gotTable.get("makua/pd-ml-p");
 		Assert.assertEquals("The demonstrative [base] 'makua/pd-ml-p' was not found in the demonstrative table.", "makua", demBase.morpheme);
 	}

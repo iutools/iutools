@@ -23,9 +23,9 @@ public class ListMorphemes {
         try {
             bw = new BufferedWriter(new FileWriter("ressources/morphemes.txt"));
 
-            LinguisticDataAbstract.init("csv");
+            LinguisticData.getInstance();
 
-            String bases[] = (String[]) LinguisticDataAbstract.getAllBasesKeys();
+            String bases[] = (String[]) LinguisticData.getInstance().getAllBasesIds();
             Arrays.sort(bases);
             bw.write("Roots (simple & composite), including demonstratives:");
             bw.newLine();
@@ -39,11 +39,11 @@ public class ListMorphemes {
             Vector<String> suffixesV = new Vector<String>();
             Vector<String> endingsV = new Vector<String>();
             
-            String affixes[] = LinguisticDataAbstract.getAllAffixesSurfaceFormsKeys();
+            String affixes[] = LinguisticData.getInstance().getAllAffixesSurfaceFormsKeys();
             Arrays.sort(affixes);
             
             for (int i=0; i<affixes.length; i++) {
-                Vector<SurfaceFormOfAffix> vecForms = (Vector<SurfaceFormOfAffix>)LinguisticDataAbstract.getSurfaceForms(affixes[i]);
+                Vector<SurfaceFormOfAffix> vecForms = (Vector<SurfaceFormOfAffix>)LinguisticData.getInstance().getSurfaceForms(affixes[i]);
                 for (int j=0; j<vecForms.size(); j++) {
                     SurfaceFormOfAffix fa = (SurfaceFormOfAffix)vecForms.elementAt(j);
                     if (fa.type.equals("sn") || fa.type.equals("sv") || fa.type.equals("q"))

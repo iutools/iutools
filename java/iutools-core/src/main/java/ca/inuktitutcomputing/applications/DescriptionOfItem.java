@@ -27,6 +27,7 @@ package ca.inuktitutcomputing.applications;
 
 
 import ca.inuktitutcomputing.data.Items;
+import ca.inuktitutcomputing.data.LinguisticData;
 import ca.inuktitutcomputing.data.LinguisticDataAbstract;
 import ca.inuktitutcomputing.data.LinguisticDataException;
 
@@ -34,7 +35,7 @@ import ca.inuktitutcomputing.data.LinguisticDataException;
 public class DescriptionOfItem {
 
 	public static void main(String [] args) throws LinguisticDataException {
-    	LinguisticDataAbstract.init();
+    	LinguisticData.getInstance();
     	if (args.length==0) {
     		System.out.println("args: item");
     		System.exit(1);

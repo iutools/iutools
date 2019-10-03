@@ -61,7 +61,7 @@ public class Roots {
 
 			Base base = null;
 
-			base = (Base) LinguisticDataAbstract.getBaseWithId(rootId);
+			base = (Base) LinguisticData.getInstance().getBaseWithId(rootId);
 			output.append("<p>");
 			output.append(composeRootDisplay(base));
 			output.append("<br><br>\n");
@@ -461,7 +461,7 @@ public class Roots {
 			}
 			String nombre = null;
 			if (base.number != null)
-				nombre = LinguisticDataAbstract.getTextualRendering(base.number,
+				nombre = LinguisticData.getInstance().getTextualRendering(base.number,
 						lang);
 			if (lang.equals("en")) {
 				if (base.combinedMorphemes != null)
@@ -665,7 +665,7 @@ public class Roots {
 				output.append("???");
 			}
 			if (base.nature != null) {
-				String wordcase = LinguisticDataAbstract.getTextualRendering(
+				String wordcase = LinguisticData.getInstance().getTextualRendering(
 						base.nature, lang);
 				if (lang.equals("en")) {
 					output.append(" in the ");
@@ -814,7 +814,7 @@ public class Roots {
 				output.append("???");
 			}
 		} else {
-			output.append(LinguisticDataAbstract.getTextualRendering(base.type,
+			output.append(LinguisticData.getInstance().getTextualRendering(base.type,
 					lang));
 		}
 
@@ -829,7 +829,7 @@ public class Roots {
 					.append((lang.equals("en")) ? "This complex root is a combination of: "
 							: "Cett racine complexe est la combinaison de: ");
 			String baseId = base.combinedMorphemes[0];
-			Morpheme root = LinguisticDataAbstract.getMorpheme(baseId);
+			Morpheme root = LinguisticData.getInstance().getMorpheme(baseId);
 			if (root != null) {
 				output.append("<a href=\"javascript:appelerDescriptionRacine(");
 				if (inuktitutDisplayFont == null)
@@ -846,7 +846,7 @@ public class Roots {
 					+ baseId.substring(baseId.indexOf('/') + 1) + "</sub>");
 			for (int i = 1; i < base.combinedMorphemes.length; i++) {
 				String sufId = base.combinedMorphemes[i];
-				Morpheme inf = LinguisticDataAbstract.getMorpheme(sufId);
+				Morpheme inf = LinguisticData.getInstance().getMorpheme(sufId);
 				output.append("&nbsp;+&nbsp;");
 				if (inf != null) {
 					output
@@ -884,7 +884,7 @@ public class Roots {
 			for (int i = 1; i < base.combinedMorphemes.length; i++) {
 				output.append("<tr><td>");
 				String sufId = base.combinedMorphemes[i];
-				Morpheme inf = LinguisticDataAbstract.getMorpheme(sufId);
+				Morpheme inf = LinguisticData.getInstance().getMorpheme(sufId);
 				if (inf != null) {
 					output.append(inf.morpheme);
 					output.append("</td><td>");
@@ -970,7 +970,7 @@ public class Roots {
 
 	public static void displayListOfRoots(String args[], PrintStream out) {
 		lang = Util.getArgument(args, "l");
-		Hashtable<String,Morpheme> roots = LinguisticDataAbstract.getIdToRootTable();
+		Hashtable<String,Morpheme> roots = LinguisticData.getInstance().getIdToRootTable();
 		displayListOfMorphemes("rac", out, roots, lang);
 	}
 

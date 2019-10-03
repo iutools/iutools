@@ -21,23 +21,15 @@ package ca.inuktitutcomputing.applications;
 
 import java.io.*;
 
-import ca.inuktitutcomputing.data.LinguisticDataAbstract;
+import ca.inuktitutcomputing.data.LinguisticData;
 import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.data.Roots;
-import ca.inuktitutcomputing.utilities1.Util;
 
 
 public class DescriptionOfRoot {
 
     static public void main(String args[]) throws LinguisticDataException {
-    	if (args.length==0) {
-    		usage("Argument missing");
-    	}
-    	String source = Util.getArgument(args, "s");
-    	boolean res = LinguisticDataAbstract.init(source);
-    	if ( ! res ) {
-    		usage("'csv' is the only one accepted value for the \"source\" option '-s'");
-    	}
+    	LinguisticData.getInstance();
         try {
 			Roots.getDef(args,new PrintStream(System.out,true,"utf-8"));
 		} catch (UnsupportedEncodingException e) {

@@ -70,7 +70,7 @@ public class Suffixes {
 
             StringBuffer output = new StringBuffer();
 
-            Suffix suf = (Suffix) LinguisticDataAbstract.getSuffixWithId(suffixId);
+            Suffix suf = (Suffix)  LinguisticData.getInstance().getSuffixWithId(suffixId);
 
             output.append(startParagraph());
 //            output.append(html.scriptDescSufJSP(lang,font));
@@ -191,17 +191,17 @@ public class Suffixes {
         output.append("Type");
         if (!plain) output.append("</span>"); else output.append(":");
         output.append(newLine());
-		output.append(LinguisticDataAbstract.getTextualRendering(aff.type, lang));
+		output.append( LinguisticData.getInstance().getTextualRendering(aff.type, lang));
 	
 		// Suffix: fonction, mobilité, position
 		if (aff.type.equals("sn") || aff.type.equals("sv")) {
 			// Fonction
-			output.append(", " + LinguisticDataAbstract.getTextualRendering(aff.function, lang));
+			output.append(", " +  LinguisticData.getInstance().getTextualRendering(aff.function, lang));
 			output.append(
 				", "
-					+ LinguisticDataAbstract.getTextualRendering("function", lang)
+					+  LinguisticData.getInstance().getTextualRendering("function", lang)
 					+ " "
-					+ LinguisticDataAbstract.getTextualRendering(aff.function.substring(1, 2), lang));
+					+  LinguisticData.getInstance().getTextualRendering(aff.function.substring(1, 2), lang));
             
 			// Transitivité
 	        if (aff.antipassive != null) {
@@ -276,7 +276,7 @@ public class Suffixes {
 			output.append(
 				(lang.equals("en") ? "This suffix" : "Ce suffixe")
 					+ " "
-					+ LinguisticDataAbstract.getTextualRendering(aff.position + "!", lang)
+					+  LinguisticData.getInstance().getTextualRendering(aff.position + "!", lang)
 					+ ".");
             output.append(endParagraph());
 		}
@@ -285,7 +285,7 @@ public class Suffixes {
 		else if (aff.type.equals("tv")) {
 			// spécificité
 			String specif = ((VerbEnding)(Affix) aff).spec;
-			output.append(", " + LinguisticDataAbstract.getTextualRendering(specif, lang) + ", ");
+			output.append(", " +  LinguisticData.getInstance().getTextualRendering(specif, lang) + ", ");
 			
 			// mode
 			String mode = ((VerbEnding)(Affix) aff).mode;
@@ -294,13 +294,13 @@ public class Suffixes {
             output.append((lang.equals("en") ? "Mood" : "Mode"));
             if (!plain) output.append("</span>"); else output.append(":");
             output.append(newLine());
-			output.append(LinguisticDataAbstract.getTextualRendering(mode, lang));
+			output.append( LinguisticData.getInstance().getTextualRendering(mode, lang));
 			if (mode.equals("part")) {
 				String tense = ((VerbEnding)(Affix) aff).tense;
 				String pn = ((VerbEnding)(Affix) aff).posneg;
 				if (tense != null)
-					output.append(", " + LinguisticDataAbstract.getTextualRendering(tense, lang));
-				output.append(", " + LinguisticDataAbstract.getTextualRendering(pn, lang));
+					output.append(", " +  LinguisticData.getInstance().getTextualRendering(tense, lang));
+				output.append(", " +  LinguisticData.getInstance().getTextualRendering(pn, lang));
 			}
 			output.append(endParagraph());
 			
@@ -312,10 +312,10 @@ public class Suffixes {
             output.append(newLine());
 			String persSubj = ((VerbEnding)(Affix) aff).subjPers;
 			String numbSuj = ((VerbEnding)(Affix) aff).subjNumber;
-			output.append(LinguisticDataAbstract.getTextualRendering(persSubj + "ordinal", lang));
-			output.append(" " + LinguisticDataAbstract.getTextualRendering("personne", lang));
-			output.append(" " + LinguisticDataAbstract.getTextualRendering("du", lang));
-			output.append(" " + LinguisticDataAbstract.getTextualRendering(numbSuj, lang));
+			output.append( LinguisticData.getInstance().getTextualRendering(persSubj + "ordinal", lang));
+			output.append(" " +  LinguisticData.getInstance().getTextualRendering("personne", lang));
+			output.append(" " +  LinguisticData.getInstance().getTextualRendering("du", lang));
+			output.append(" " +  LinguisticData.getInstance().getTextualRendering(numbSuj, lang));
 			output.append(endParagraph());
 			if (specif.equals("sp")) {
 	        	output.append(startParagraph());
@@ -325,10 +325,10 @@ public class Suffixes {
 	            output.append(newLine());
 				String persObj = ((VerbEnding)(Affix) aff).objPers;
 				String numbObj = ((VerbEnding)(Affix) aff).objNumber;
-				output.append(LinguisticDataAbstract.getTextualRendering(persObj + "ordinal", lang));
-				output.append(" " + LinguisticDataAbstract.getTextualRendering("personne", lang));
-				output.append(" " + LinguisticDataAbstract.getTextualRendering("du", lang));
-				output.append(" " + LinguisticDataAbstract.getTextualRendering(numbObj, lang));
+				output.append( LinguisticData.getInstance().getTextualRendering(persObj + "ordinal", lang));
+				output.append(" " +  LinguisticData.getInstance().getTextualRendering("personne", lang));
+				output.append(" " +  LinguisticData.getInstance().getTextualRendering("du", lang));
+				output.append(" " +  LinguisticData.getInstance().getTextualRendering(numbObj, lang));
 				output.append(endParagraph());
 			}
 		}
@@ -341,22 +341,22 @@ public class Suffixes {
             output.append((lang.equals("en") ? "Case and number" : "Cas et number"));
             if (!plain) output.append("</span>"); else output.append(":");
             output.append(newLine());
-			output.append(LinguisticDataAbstract.getTextualRendering(grammCase, lang));
-			output.append(" " + LinguisticDataAbstract.getTextualRendering(nb, lang));
+			output.append( LinguisticData.getInstance().getTextualRendering(grammCase, lang));
+			output.append(" " +  LinguisticData.getInstance().getTextualRendering(nb, lang));
 			String persPos = ((NounEnding)(Affix) aff).possPers;
 			String nbPos = ((NounEnding)(Affix) aff).possNumber;
 			if (persPos != null) {
-				output.append(" " + LinguisticDataAbstract.getTextualRendering("possessif", lang));
+				output.append(" " +  LinguisticData.getInstance().getTextualRendering("possessif", lang));
 				output.append(endParagraph());
 	        	output.append(startParagraph());
 	            if (!plain) output.append("<span style=\"font-weight:bold\">");
-				output.append(LinguisticDataAbstract.getTextualRendering("possesseur", lang));
+				output.append( LinguisticData.getInstance().getTextualRendering("possesseur", lang));
 	            if (!plain) output.append("</span>"); else output.append(":");
 	            output.append(newLine());
-				output.append(LinguisticDataAbstract.getTextualRendering(persPos + "ordinal", lang));
-				output.append(" " + LinguisticDataAbstract.getTextualRendering("personne", lang));
-				output.append(" " + LinguisticDataAbstract.getTextualRendering("du", lang));
-				output.append(" " + LinguisticDataAbstract.getTextualRendering(nbPos, lang));
+				output.append( LinguisticData.getInstance().getTextualRendering(persPos + "ordinal", lang));
+				output.append(" " +  LinguisticData.getInstance().getTextualRendering("personne", lang));
+				output.append(" " +  LinguisticData.getInstance().getTextualRendering("du", lang));
+				output.append(" " +  LinguisticData.getInstance().getTextualRendering(nbPos, lang));
 				output.append(endParagraph());
 			}
 		} else
@@ -435,9 +435,9 @@ public class Suffixes {
 //            	output.append("<span style=\"text-decoration:underline\">");
 			} else
 				output.append(nl);
-			output.append(LinguisticDataAbstract.getTextualRendering("après", lang) + " ");
+			output.append( LinguisticData.getInstance().getTextualRendering("après", lang) + " ");
 			if (cntxt.equals("V"))
-				output.append(LinguisticDataAbstract.getTextualRendering(cntxt, lang));
+				output.append( LinguisticData.getInstance().getTextualRendering(cntxt, lang));
 			else
 				output.append(cntxt);
 			if (!plain) {
@@ -667,11 +667,11 @@ public class Suffixes {
 		String signatureKey = aff.morpheme + aff.getSignature();
 		boolean keyFound = false;
 		String endTDplusNBSP = "&nbsp;&nbsp;&nbsp;</td>";
-		String []exKeys = LinguisticDataAbstract.getAllExamplesKeys();
+		String []exKeys =  LinguisticData.getInstance().getAllExamplesIds();
 		for (int ie=0; ie<exKeys.length; ie++) {
 			String key = exKeys[ie];
 			if (key.equals(signatureKey)) {
-				Vector<Example> exs = LinguisticDataAbstract.getExample(signatureKey);
+				Vector<Example> exs =  LinguisticData.getInstance().getExample(signatureKey);
 				for (int i = 0; i < exs.size(); i++) {
 					Example ex1 = (Example) exs.elementAt(i);
 					if (!plain)
@@ -756,7 +756,7 @@ public class Suffixes {
             if (!plain) output.append("</span>"); else output.append(":");
             output.append(newLine());
             for (int n = 0; n < sources.length; n++) {
-                Source src = LinguisticDataAbstract.getSource(sources[n]);
+                Source src =  LinguisticData.getInstance().getSource(sources[n]);
                 output.append(src.authorSurName+", "+src.authorFirstName);
                 if (src.authorMidName!=null)
                     output.append(" "+src.authorMidName);
@@ -817,12 +817,12 @@ public class Suffixes {
             StringBuffer output = new StringBuffer();
             int action1Type = action1.getType();
             if (action1Type == Action.UNKNOWN) {
-                output.append(Util.premiereMaj(LinguisticDataAbstract.getTextualRendering("l'", lang)));
+                output.append(Util.premiereMaj( LinguisticData.getInstance().getTextualRendering("l'", lang)));
                 if (lang.equals("en"))
                     output.append(" ");
                 output.append("action ");
-                output.append(LinguisticDataAbstract.getTextualRendering("estSing", lang) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("inconnue", lang));
+                output.append( LinguisticData.getInstance().getTextualRendering("estSing", lang) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("inconnue", lang));
             } else if (action1Type == Action.NEUTRAL) {
                 if (action1.getCondition() != null) {
                     if (lang.equals("en")) {
@@ -847,19 +847,19 @@ public class Suffixes {
                     else
                         output.append(action1.getCondition());
                 output.append(", ");
-                output.append(LinguisticDataAbstract.getTextualRendering("il", lang) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("il", lang) + " ");
                 } else
-                    output.append(Util.premiereMaj(LinguisticDataAbstract.getTextualRendering("il", lang)) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("neutre", lang) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("la", lang) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("finale", lang) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("duradical", lang));
+                    output.append(Util.premiereMaj( LinguisticData.getInstance().getTextualRendering("il", lang)) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("neutre", lang) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("la", lang) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("finale", lang) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("duradical", lang));
             } else if (action1Type == Action.DELETION) {
-                output.append(Util.premiereMaj(LinguisticDataAbstract.getTextualRendering("il", lang)) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("suppr", lang) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("le", lang) + " ");
+                output.append(Util.premiereMaj( LinguisticData.getInstance().getTextualRendering("il", lang)) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("suppr", lang) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("le", lang) + " ");
                 output.append(cntxt + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("duradical", lang));
+                output.append( LinguisticData.getInstance().getTextualRendering("duradical", lang));
             } else if (action1Type == Action.CONDITIONALDELETION) {
                 if (lang.equals("en")) {
                     output.append("If the stem ");
@@ -882,18 +882,18 @@ public class Suffixes {
                 else
                     output.append(action1.getCondition());
                 output.append(", ");
-                output.append(LinguisticDataAbstract.getTextualRendering("il", lang) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("suppr", lang) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("le", lang) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("il", lang) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("suppr", lang) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("le", lang) + " ");
                 output.append(cntxt + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("duradical", lang));
+                output.append( LinguisticData.getInstance().getTextualRendering("duradical", lang));
             } else if (action1Type == Action.VOICING) {
-                output.append(Util.premiereMaj(LinguisticDataAbstract.getTextualRendering("il", lang)) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("sonor", lang) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("le", lang) + " ");
+                output.append(Util.premiereMaj( LinguisticData.getInstance().getTextualRendering("il", lang)) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("sonor", lang) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("le", lang) + " ");
                 output.append(cntxt + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("duradical", lang) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("en", lang) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("duradical", lang) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("en", lang) + " ");
 //              char so = Roman.voicedOfOcclusiveUnvoicedLat(cntxt.charAt(0));
                 String son = Action.Voicing.changementPhonologique(cntxt.charAt(0));
                 output.append(son);
@@ -903,12 +903,12 @@ public class Suffixes {
                     output.append(orth);
                 }
             } else if (action1Type == Action.NASALIZATION) {
-                output.append(Util.premiereMaj(LinguisticDataAbstract.getTextualRendering("il", lang)) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("nasal", lang) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("le", lang) + " ");
+                output.append(Util.premiereMaj( LinguisticData.getInstance().getTextualRendering("il", lang)) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("nasal", lang) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("le", lang) + " ");
                 output.append(cntxt + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("duradical", lang) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("en", lang) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("duradical", lang) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("en", lang) + " ");
 //              char na = Roman.nasalOfOcclusiveUnvoicedLat(cntxt.charAt(0));
 //              output.append(Orthography.orthographyICILat(na));
                 String son = Action.Nasalization.changementPhonologique(cntxt.charAt(0));
@@ -919,74 +919,74 @@ public class Suffixes {
                     output.append(orth);
                 }
             } else if (action1Type == Action.FUSION) {
-                output.append(Util.premiereMaj(LinguisticDataAbstract.getTextualRendering("il", lang)) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("fusion", lang) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("le", lang) + " ");
+                output.append(Util.premiereMaj( LinguisticData.getInstance().getTextualRendering("il", lang)) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("fusion", lang) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("le", lang) + " ");
                 output.append(cntxt + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("duradical", lang) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("avec", lang) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("le", lang) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("duradical", lang) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("avec", lang) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("le", lang) + " ");
                 output.append(morpheme.substring(0, 1) + " "); //******
-                output.append(LinguisticDataAbstract.getTextualRendering("dusuffixe", lang) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("en", lang) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("dusuffixe", lang) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("en", lang) + " ");
                 output.append(form.substring(0, 1));
             } else if (action1Type == Action.INSERTION) {
-                output.append(Util.premiereMaj(LinguisticDataAbstract.getTextualRendering("il", lang)) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("ins1", lang) + " ");
+                output.append(Util.premiereMaj( LinguisticData.getInstance().getTextualRendering("il", lang)) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("ins1", lang) + " ");
                 if (!plain)
                 	output.append("<span style=\"font-weight:bold\">");
                 output.append(action1.getInsert());
                 if (!plain)
                 	output.append("</span>");
-                output.append(" " + LinguisticDataAbstract.getTextualRendering("devantsuffixe", lang));
+                output.append(" " +  LinguisticData.getInstance().getTextualRendering("devantsuffixe", lang));
             } else if (action1Type == Action.ASSIMILATION) {
-                output.append(Util.premiereMaj(LinguisticDataAbstract.getTextualRendering("il", lang)) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("assim", lang) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("le", lang) + " ");
+                output.append(Util.premiereMaj( LinguisticData.getInstance().getTextualRendering("il", lang)) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("assim", lang) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("le", lang) + " ");
                 output.append(cntxt + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("duradical", lang) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("au", lang) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("duradical", lang) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("au", lang) + " ");
                 output.append(form.substring(0, 1) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("dusuffixe", lang));
+                output.append( LinguisticData.getInstance().getTextualRendering("dusuffixe", lang));
             } else if (action1Type == Action.SPECIFICASSIMILATION) {
-                output.append(Util.premiereMaj(LinguisticDataAbstract.getTextualRendering("il", lang)) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("assim", lang) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("le", lang) + " ");
+                output.append(Util.premiereMaj( LinguisticData.getInstance().getTextualRendering("il", lang)) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("assim", lang) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("le", lang) + " ");
                 output.append(cntxt + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("duradical", lang) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("à", lang) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("duradical", lang) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("à", lang) + " ");
                 output.append(action1.getAssimA());
             } else if (action1Type == Action.VOWELLENGTHENING) {
-                output.append(Util.premiereMaj(LinguisticDataAbstract.getTextualRendering("il", lang)) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("allonge", lang) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("la", lang) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("voyellefinale", lang) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("duradical", lang) + " ");
+                output.append(Util.premiereMaj( LinguisticData.getInstance().getTextualRendering("il", lang)) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("allonge", lang) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("la", lang) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("voyellefinale", lang) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("duradical", lang) + " ");
             } else if (action1Type == Action.DELETIONVOWELLENGTHENING) {
-                output.append(Util.premiereMaj(LinguisticDataAbstract.getTextualRendering("il", lang)) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("suppr", lang) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("le", lang) + " ");
+                output.append(Util.premiereMaj( LinguisticData.getInstance().getTextualRendering("il", lang)) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("suppr", lang) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("le", lang) + " ");
                 output.append(cntxt + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("duradical", lang) + ".  ");
+                output.append( LinguisticData.getInstance().getTextualRendering("duradical", lang) + ".  ");
                 output.append((lang.equals("en") ? "Then, it " : "Ensuite, il "));
-                output.append(LinguisticDataAbstract.getTextualRendering("allonge", lang) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("la", lang) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("voyellefinale", lang) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("duradical", lang) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("allonge", lang) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("la", lang) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("voyellefinale", lang) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("duradical", lang) + " ");
             } else if (action1Type == Action.INSERTIONVOWELLENGTHENING) {
-                output.append(Util.premiereMaj(LinguisticDataAbstract.getTextualRendering("il", lang)) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("ins1", lang) + " ");
+                output.append(Util.premiereMaj( LinguisticData.getInstance().getTextualRendering("il", lang)) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("ins1", lang) + " ");
                 if (!plain)
                 	output.append("<span style=\"font-weight:bold\">");
                 output.append(action1.getInsert());
                 if (!plain)
                 	output.append("</span>");
-                output.append(" " + LinguisticDataAbstract.getTextualRendering("devantsuffixe", lang) + ".  ");
+                output.append(" " +  LinguisticData.getInstance().getTextualRendering("devantsuffixe", lang) + ".  ");
                 output.append((lang.equals("en") ? "Then, it " : "Ensuite, il "));
-                output.append(LinguisticDataAbstract.getTextualRendering("allonge", lang) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("la", lang) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("voyellefinale", lang) + " ");
-                output.append(LinguisticDataAbstract.getTextualRendering("duradical", lang) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("allonge", lang) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("la", lang) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("voyellefinale", lang) + " ");
+                output.append( LinguisticData.getInstance().getTextualRendering("duradical", lang) + " ");
             }
             output.append(".");
             return output.toString();
@@ -1011,41 +1011,41 @@ public class Suffixes {
                     output.append(action1.toString(lang));
                     output.append(",");
                 }
-                output.append(" "+LinguisticDataAbstract.getTextualRendering("casVV", lang) + ", ");
+                output.append(" "+ LinguisticData.getInstance().getTextualRendering("casVV", lang) + ", ");
                 if (action2Type == Action.UNKNOWN) {
-                    output.append(LinguisticDataAbstract.getTextualRendering("l'", lang));
+                    output.append( LinguisticData.getInstance().getTextualRendering("l'", lang));
                     if (lang.equals("en"))
                         output.append(" ");
                     output.append("action ");
-                    output.append(LinguisticDataAbstract.getTextualRendering("estSing", lang) + " ");
-                    output.append(LinguisticDataAbstract.getTextualRendering("inconnue", lang));
+                    output.append( LinguisticData.getInstance().getTextualRendering("estSing", lang) + " ");
+                    output.append( LinguisticData.getInstance().getTextualRendering("inconnue", lang));
                 }
                 if (action2Type == Action.INSERTION) {
-                    output.append(LinguisticDataAbstract.getTextualRendering("il", lang) + " ");
-                    output.append(LinguisticDataAbstract.getTextualRendering("ins1", lang) + " ");
+                    output.append( LinguisticData.getInstance().getTextualRendering("il", lang) + " ");
+                    output.append( LinguisticData.getInstance().getTextualRendering("ins1", lang) + " ");
                     if (!plain)
                     	output.append("<span style=\"font-weight:bold\">");
                     output.append(action2.getInsert());
                     if (!plain)
                     	output.append("</span>");
-                    output.append(" " + LinguisticDataAbstract.getTextualRendering("devantsuffixe", lang));
+                    output.append(" " +  LinguisticData.getInstance().getTextualRendering("devantsuffixe", lang));
                 } else if (action2Type == Action.DELETION) {
-                    output.append(LinguisticDataAbstract.getTextualRendering("il", lang) + " ");
-                    output.append(LinguisticDataAbstract.getTextualRendering("suppr", lang) + " ");
-                    output.append(LinguisticDataAbstract.getTextualRendering("la", lang) + " ");
-                    output.append(LinguisticDataAbstract.getTextualRendering("derniereVoyelle", lang) + " ");
-                    output.append(LinguisticDataAbstract.getTextualRendering("duradical", lang));
+                    output.append( LinguisticData.getInstance().getTextualRendering("il", lang) + " ");
+                    output.append( LinguisticData.getInstance().getTextualRendering("suppr", lang) + " ");
+                    output.append( LinguisticData.getInstance().getTextualRendering("la", lang) + " ");
+                    output.append( LinguisticData.getInstance().getTextualRendering("derniereVoyelle", lang) + " ");
+                    output.append( LinguisticData.getInstance().getTextualRendering("duradical", lang));
                 } else if (action2Type == Action.SPECIFICDELETION) {
-                    output.append(LinguisticDataAbstract.getTextualRendering("et", lang) + " ");
-                    output.append(LinguisticDataAbstract.getTextualRendering("si", lang) + " ");
-                    output.append(LinguisticDataAbstract.getTextualRendering("la", lang) + " ");
-                    output.append(LinguisticDataAbstract.getTextualRendering("derniereVoyelle", lang) + " ");
-                    output.append(LinguisticDataAbstract.getTextualRendering("duradical", lang) + " ");
-                    output.append(LinguisticDataAbstract.getTextualRendering("estSing", lang) + " ");
+                    output.append( LinguisticData.getInstance().getTextualRendering("et", lang) + " ");
+                    output.append( LinguisticData.getInstance().getTextualRendering("si", lang) + " ");
+                    output.append( LinguisticData.getInstance().getTextualRendering("la", lang) + " ");
+                    output.append( LinguisticData.getInstance().getTextualRendering("derniereVoyelle", lang) + " ");
+                    output.append( LinguisticData.getInstance().getTextualRendering("duradical", lang) + " ");
+                    output.append( LinguisticData.getInstance().getTextualRendering("estSing", lang) + " ");
                     output.append(action2.getSuppr() + ", ");
-                    output.append(LinguisticDataAbstract.getTextualRendering("il", lang) + " ");
-                    output.append(LinguisticDataAbstract.getTextualRendering("suppr", lang) + " ");
-                    output.append(LinguisticDataAbstract.getTextualRendering("le", lang) + " ");
+                    output.append( LinguisticData.getInstance().getTextualRendering("il", lang) + " ");
+                    output.append( LinguisticData.getInstance().getTextualRendering("suppr", lang) + " ");
+                    output.append( LinguisticData.getInstance().getTextualRendering("le", lang) + " ");
                     output.append(action2.getSuppr());
                 }
                 output.append(".");
@@ -1055,7 +1055,7 @@ public class Suffixes {
 
     public static void displayListOfSuffixes(String args[], PrintStream out) {
         lang = Util.getArgument(args,"l");
-        Hashtable<String,Morpheme> infs = LinguisticDataAbstract.getId2SuffixTable();
+        Hashtable<String,Morpheme> infs =  LinguisticData.getInstance().getId2SuffixTable();
         Roots.displayListOfMorphemes("suf",out,infs,lang);
  }
  

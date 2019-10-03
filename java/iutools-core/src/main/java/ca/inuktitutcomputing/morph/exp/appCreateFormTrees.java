@@ -9,6 +9,7 @@ import java.util.List;
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 
+import ca.inuktitutcomputing.data.LinguisticData;
 import ca.inuktitutcomputing.data.LinguisticDataAbstract;
 import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.data.LinguisticDataSingleton;
@@ -21,7 +22,6 @@ public class appCreateFormTrees {
 
 	public static void main(String[] args) throws Exception {
 		String type = args[0]; // "root" or "affix"
-		LinguisticDataSingleton.getInstance("csv");
 		Trie trie = prepareTrie(type);
 		saveTrieToFile(type, trie);
 	}
@@ -53,9 +53,9 @@ public class appCreateFormTrees {
 		Gson gson = new Gson();
 		String[] morphemeIds;
 		if (type.equals("root"))
-			morphemeIds = LinguisticDataAbstract.getAllBasesIds();
+			morphemeIds = LinguisticData.getInstance().getAllBasesIds();
 		else
-			morphemeIds = LinguisticDataAbstract.getAllAffixesIds();
+			morphemeIds = LinguisticData.getInstance().getAllAffixesIds();
 
 		Trie trie = new Trie();
 		for (int i = 0; i < morphemeIds.length; i++) {

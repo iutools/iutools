@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 
 import ca.inuktitutcomputing.data.Affix;
+import ca.inuktitutcomputing.data.LinguisticData;
 import ca.inuktitutcomputing.data.LinguisticDataAbstract;
 import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.data.SurfaceFormInContext;
@@ -22,7 +23,6 @@ public class FormGenerator {
 	
 	public List<SurfaceFormInContext> run(String morpheme) throws FormGeneratorException, LinguisticDataException {
 		Logger logger = Logger.getLogger("FormGenerator.run");
-		LinguisticDataAbstract.init("csv");
 		HashSet<SurfaceFormInContext> surfaceForms = new HashSet<SurfaceFormInContext>();
 		String[] morphemeParts = morpheme.split("/");
 		baseForm = morphemeParts[0];
@@ -108,7 +108,7 @@ public class FormGenerator {
 		Logger logger = Logger.getLogger("FormGenerator.formsWithBeginnings");
 		logger.debug("morphemeId: "+morphemeId);
 		HashSet<SurfaceFormInContext> allSurfaceFormsInContext = new HashSet<SurfaceFormInContext>();
-		Affix affix = LinguisticDataAbstract.getAffixWithId(morphemeId);
+		Affix affix = LinguisticData.getInstance().getAffixWithId(morphemeId);
 		char[] contexts = new char[] {'V','t','k','q'};
 		for (int iCtxt=0; iCtxt<contexts.length; iCtxt++) {
 			logger.debug("context: "+contexts[iCtxt]);

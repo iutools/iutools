@@ -34,7 +34,6 @@ import ca.inuktitutcomputing.utilities1.Util;
 import ca.inuktitutcomputing.data.constraints.Conditions;
 import ca.inuktitutcomputing.data.constraints.Imacond;
 import ca.inuktitutcomputing.data.constraints.ParseException;
-import ca.inuktitutcomputing.data.LinguisticDataAbstract;
 import ca.inuktitutcomputing.data.VerbWord;
 
 public class Base extends Morpheme {
@@ -123,7 +122,7 @@ public class Base extends Morpheme {
 				// Attention!!!
 				// This root should already have been created. Let's get its
 				// list of idsOfCompositeWithThisRoot.
-				Base b = LinguisticDataAbstract.getBaseWithId(rootId);
+				Base b = LinguisticData.getInstance().getBaseWithId(rootId);
 				if (b != null) {
 					Vector<String> vids = b.idsOfCompositesWithThisRoot;
 					if (vids == null)
@@ -474,7 +473,7 @@ public class Base extends Morpheme {
 
 				String verbWord = key.replaceFirst("-[^-]+$","");
 				String verbPart = key.replace(verbWord, "");
-				VerbWord verb = (VerbWord) LinguisticDataAbstract.getWords().get(verbWord);
+				VerbWord verb = (VerbWord) LinguisticData.getInstance().getVerbWord(verbWord);
 				String partPassive = texte.substring(pos2, mpm.start());
 				String partReflexive = texte.substring(pos2, mpm.start());
 				if (lang.equals("en")) {

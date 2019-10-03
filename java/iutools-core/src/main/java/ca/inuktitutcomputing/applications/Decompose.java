@@ -10,6 +10,7 @@ import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ca.inuktitutcomputing.data.LinguisticData;
 import ca.inuktitutcomputing.data.LinguisticDataAbstract;
 import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.script.TransCoder;
@@ -103,7 +104,7 @@ public class Decompose {
         }
         	
         startInitTime = Calendar.getInstance().getTimeInMillis();
-        LinguisticDataAbstract.init(dataSource);
+        LinguisticData.getInstance();
         endInitTime = Calendar.getInstance().getTimeInMillis();
       
         startTime = Calendar.getInstance().getTimeInMillis();

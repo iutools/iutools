@@ -200,8 +200,8 @@ public class SurfaceFormInContext extends Object {
 	public boolean validateConstraints(SurfaceFormInContext precedingMorpheme) {
 		Logger logger = Logger.getLogger("SurfaceFormInContext.validateConstraints");
 		logger.debug("precedingMorpheme.morphemeId: "+precedingMorpheme.morphemeId);
-		Morpheme prec = LinguisticDataAbstract.getMorpheme(precedingMorpheme.morphemeId);
-		Morpheme cur = LinguisticDataAbstract.getMorpheme(this.morphemeId);
+		Morpheme prec = LinguisticData.getInstance().getMorpheme(precedingMorpheme.morphemeId);
+		Morpheme cur = LinguisticData.getInstance().getMorpheme(this.morphemeId);
 		Conditions conds = null;
 		try {
 			conds = cur.getPrecCond();
