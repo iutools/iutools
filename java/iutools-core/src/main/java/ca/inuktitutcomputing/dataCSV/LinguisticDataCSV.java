@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import ca.inuktitutcomputing.data.Data;
 import ca.inuktitutcomputing.data.LinguisticData;
 import ca.inuktitutcomputing.data.LinguisticDataException;
+import ca.nrc.file.ResourceGetter;
 
 public final class LinguisticDataCSV { //extends LinguisticDataAbstract {
 	
@@ -93,7 +94,7 @@ public final class LinguisticDataCSV { //extends LinguisticDataAbstract {
         try {
         	String fileName = tableName+".csv";
         	logger.trace("fileName="+fileName);
-            InputStream is = LinguisticDataCSV.class.getResourceAsStream(fileName);
+        	InputStream is = ResourceGetter.getResourceAsStream("ca/inuktitutcomputing/dataCSV/"+fileName);
             f =  new BufferedReader(new InputStreamReader(is));
         	String line;
             

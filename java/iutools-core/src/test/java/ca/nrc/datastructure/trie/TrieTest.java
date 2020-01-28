@@ -152,18 +152,18 @@ public class TrieTest {
 		StringSegmenter iuSegmenter = new StringSegmenter_IUMorpheme();
 		Trie iumorphemeTrie = new Trie();
 		String[] takujuq_segments = null;
-		try {
+//		try {
 			takujuq_segments = iuSegmenter.segment("takujuq");
 			iumorphemeTrie.add(takujuq_segments,"takujuq");
-		} catch (Exception e) {
-			assertFalse("An error occurred while adding an element to the trie.",true);
-		}
-		try {
+//		} catch (Exception e) {
+//			assertFalse("An error occurred while adding an element to the trie.",true);
+//		}
+//		try {
 			TrieNode secondTakujuqNode = iumorphemeTrie.add(takujuq_segments,"takujuq");
 			assertTrue("The node added for the second 'takujuq' should not be null.",secondTakujuqNode!=null);
-		} catch (TrieException e) {
-			assertFalse("An error occurred while adding an element to the trie.",true);
-		}
+//		} catch (TrieException e) {
+//			assertFalse("An error occurred while adding an element to the trie.",true);
+//		}
 	}
 	
 	@Test
