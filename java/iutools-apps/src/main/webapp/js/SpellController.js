@@ -34,20 +34,23 @@ class SpellController extends WidgetController {
 	
 	getSpellCheckedText() {
 		var wholeTextElements = $('div#div-results').contents();
-		var text;
 		var allText = '';
 		wholeTextElements.each(function(index,item) {
+			var text = "";
 			if ($(item).is('.corrections')) {
 				text = $(item).find('.selected').text();
-				if (text || 0 !== text.length) {
-					// Remove the \n at the end of the selected text
-					text = text.substring(0, text.length - 1);
-				}
+//				if (text || 0 !== text.length) {
+//					// Remove the \n at the end of the selected text
+//					text = text.substring(0, text.length - 1);
+//				}
+			console.log('item.select text= "'+text+'"');
 			}
-			else {
+			else if ($(item).is('span')) {
 				text = $(item).text();
+				console.log('item text= "'+text+'"');
 			}
 			allText += text;
+			console.log('allText= "'+allText+'"');
 		});
 		return allText;
 	}
@@ -196,8 +199,9 @@ class SpellController extends WidgetController {
 	}
 	
 	htmlify(text) {
-		text = text.replace(/\n/g, "<br/>\n");
-		return text;
+//		text = text.replace(/\n/g, "<br/>\n");
+		var html = '<span>'+text+'</span>';
+		return html;
 	}
 	
 	picklistFor(corrResult) {
