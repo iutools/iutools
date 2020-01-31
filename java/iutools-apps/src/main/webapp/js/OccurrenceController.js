@@ -45,7 +45,8 @@ class OccurrenceController extends WidgetController {
 		var divIconizedWordExample = occurrenceController.elementForProp("divIconizedExampleWord");
 		divIconizedWordExample.hide();
 		divExampleWord.show();
-		occurrenceController.showSpinningWheel("divMessageInExample","Searching");
+		//occurrenceController.showSpinningWheel("divMessageInExample","Searching");
+		super.showSpinningWheel("divMessageInExample","Searching");
 		occurrenceController.invokeExampleWordService(occurrenceController.getSearchRequestData(),
 				occurrenceController.successExampleWordCallback, occurrenceController.failureExampleWordCallback);
 	}

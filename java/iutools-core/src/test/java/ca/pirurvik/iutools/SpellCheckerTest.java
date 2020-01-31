@@ -356,8 +356,15 @@ public class SpellCheckerTest {
 		Assert.assertFalse("Word "+word+" should have been deemed correctly spelled", checker.isMispelled(word));
 	}
 
+	@Test
 	public void test__isMispelled__CorreclySpelledWordNOTFromCompiledCorpus() throws Exception  {
 		String word = "inuktut";
+		Assert.assertFalse("Word "+word+" should have been deemed correctly spelled", checker.isMispelled(word));
+	}
+
+	@Test
+	public void test__isMispelled__CorreclySpelledWordNumber() throws Exception  {
+		String word = "2018";
 		Assert.assertFalse("Word "+word+" should have been deemed correctly spelled", checker.isMispelled(word));
 	}
 

@@ -58,12 +58,18 @@ class SpellController extends WidgetController {
 	spellCheck() {
 			var isValid = this.validateInputs();
 			if (isValid) {
+				this.clearResults();
 				this.setBusy(true);
 				this.invokeSpellService(this.getSpellRequestData(), 
 						this.successCallback, this.failureCallback)
 			}
 	}
 	
+	clearResults() {
+		this.elementForProp('divError').empty();
+		this.elementForProp('divResults').empty();
+	}
+
 	invokeSpellService(jsonRequestData, _successCbk, _failureCbk) {
 			var controller = this;
 			var fctSuccess = 
@@ -80,7 +86,7 @@ class SpellController extends WidgetController {
 				url: 'srv/spell',
 				data: jsonRequestData,
 				dataType: 'json',
-				async: false,
+				async: true,
 		        success: fctSuccess,
 		        error: fctFailure
 			});
@@ -226,15 +232,15 @@ class SpellController extends WidgetController {
 	}
 	
 	setBusy(flag) {
+		console.log('setBusy: '+flag);
 		this.busy = flag;
 		if (flag) {
-			this.elementForProp('divResults').empty();
 			this.disableSpellButton();	
-			super.showSpinningWheel('divMessage', "Checking spelling");
+			this.showSpinningWheel('divMessage', "Checking");
 			this.error("");
 		} else {
 			this.enableSpellButton();
-			super.hideSpinningWheel('divMessage');
+			this.hideSpinningWheel('divMessage');
 		}		
 	}
 	
