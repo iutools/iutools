@@ -19,8 +19,9 @@ public class NRC_PDFDocumentTest extends TestCase {
 			NRC_PDFDocument doc = new NRC_PDFDocument(pdfURLName);
 			String contents = doc.getContents();
 			String[] fontNames = doc.getAllFontsNames();
-			System.out.println("font names: "+Arrays.toString(fontNames));
-			System.out.println(contents);
+			doc.close();
+//			System.out.println("font names: "+Arrays.toString(fontNames));
+//			System.out.println(contents);
 			String targetPattern = "Z\\?m4f5\\s+WJmJ5 g4yCsti4\\s+kNo8i Z\\?m4fi9l Wp5yC6t4f5,\\s+";
 			Pattern p = Pattern.compile(targetPattern);
 			Matcher mp = p.matcher(contents);
