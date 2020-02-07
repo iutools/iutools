@@ -97,7 +97,7 @@ public class BingSearchMultiQueryTest {
 				hitsPage1, hitsPage2, minDiffRatio);
 	}	
 
-	@Test
+	@Test @Ignore
 	public void test__BingSearchMultiQuery__FollowPagesUntilTheEnd() throws Exception  {
 		
 		// term = 'nanivara'
