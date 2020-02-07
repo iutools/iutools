@@ -3,6 +3,8 @@ package ca.pirurvik.iutools.search;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import ca.nrc.data.harvesting.BingSearchEngine;
 import ca.nrc.data.harvesting.SearchEngine;
 import ca.nrc.data.harvesting.SearchEngine.Query;
@@ -26,6 +28,8 @@ public class IUSearchEngine extends SearchEngineMultiQuery {
 	
 	@Override
 	public SearchResults search(Query query) throws SearchEngineException, IOException {
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.search.IUSearchEngine.search");
+		
 		if (query.lang != null && !query.lang.equals("iu")) {
 			throw new SearchEngineException(
 					this.getClass().getName()+

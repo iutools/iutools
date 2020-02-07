@@ -36,7 +36,12 @@ public class SearchEndpointTest {
 	
 	/***********************
 	 * VERIFICATION TESTS
-	 ***********************/	
+	 ***********************/
+	
+	@Test
+	public void test__TODOs() {
+		Assert.fail("Use the IUSearchEngine class for the search end point.\nREmember that it returns 10 pages' worht of hits.");
+	}
 	
 	@Test
 	public void test__SearchEndpoint__HappyPath() throws Exception {
@@ -59,33 +64,6 @@ public class SearchEndpointTest {
 		IUTServiceTestHelpers.assertMostHitsMatchWords(queryWords, response, tolerance);
 		AssertNumber.isGreaterOrEqualTo("Not enough hits found", srchResponse.totalHits, 2);
 	}
-	
-	@Test
-	public void test__SearchEndpoint__FirstAndSecondPagesOfHitsDiffer() throws Exception {
-		
-		SearchInputs searchInputs = new SearchInputs("nunavut").setHitsPerPage(10);
-
-		// Get the first page of hits
-		MockHttpServletResponse response = 
-				IUTServiceTestHelpers.postEndpointDirectly(
-					IUTServiceTestHelpers.EndpointNames.SEARCH,
-					searchInputs
-				);
-		List<SearchHit> hits1 = IUTServiceTestHelpers.toSearchResponse(response).hits;
-		
-		// Get the second page of hits
-		searchInputs.setPageNum(1);
-		response = 
-				IUTServiceTestHelpers.postEndpointDirectly(
-					IUTServiceTestHelpers.EndpointNames.SEARCH,
-					searchInputs
-				);
-		List<SearchHit> hits2 = IUTServiceTestHelpers.toSearchResponse(response).hits;
-		
-		double diffRatio = 0.80;
-		IUTTestHelpers.assertHitsPagesDifferByAtLeast("Hits from pages 1 and 2 should have been different", 
-				hits1, hits2, diffRatio);
-	}	
 	
 	@Test
 	public void test__SearchEndpoint__QueryIsAlreadyExpanded__DoesNotTryToExpandAgain() throws Exception {

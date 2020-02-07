@@ -30,11 +30,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ca.inuktitutcomputing.config.IUConfig;
 import ca.nrc.config.ConfigException;
-import ca.nrc.data.harvesting.BingSearchEngine;
-import ca.nrc.data.harvesting.SearchEngine;
+import ca.nrc.data.harvesting.SearchEngine.Query;
 import ca.nrc.data.harvesting.SearchEngine.Hit;
 import ca.nrc.data.harvesting.SearchEngine.SearchEngineException;
 import ca.nrc.data.harvesting.SearchEngine.Type;
+import ca.nrc.data.harvesting.SearchResults;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.json.PrettyPrinter;
 import ca.pirurvik.iutools.CompiledCorpus;
@@ -45,6 +45,7 @@ import ca.pirurvik.iutools.QueryExpander;
 import ca.pirurvik.iutools.QueryExpansion;
 import ca.pirurvik.iutools.search.BingSearchMultiQuery;
 import ca.pirurvik.iutools.search.BingSearchMultiQuery.BingSearchMultithrdException;
+import ca.pirurvik.iutools.search.IUSearchEngine;
 import ca.pirurvik.iutools.search.PageOfHits;
 import ca.pirurvik.iutools.search.SearchHit;
 
@@ -105,7 +106,7 @@ public class SearchEndpoint extends HttpServlet {
 		tLogger.trace("invoked");
 		SearchResponse results = new SearchResponse();
 
-		String query = inputs.prevPage.query;
+		String query = inputs.query;
 		if (query == null || query.isEmpty()) {
 			throw new SearchEndpointException("Query was empty or null");
 		}
@@ -120,35 +121,47 @@ public class SearchEndpoint extends HttpServlet {
 		}
 		
 		
-		PageOfHits hitsPage = search(queryWords, inputs);;
-		results.totalHits = hitsPage.estTotalHits;
-		results.hits = hitsPage.hitsCurrPage;
+		SearchResults searchResults = search(queryWords, inputs);;
+		results.totalHits = searchResults.estTotalHits;
+		
+		results.hits = new ArrayList<SearchHit>();
+		for (Hit aHit: searchResults.retrievedHits) {
+			results.hits.add(new SearchHit(aHit.url.toString(), aHit.title, aHit.summary));
+		}
 		
 		return results;
 	}
 
-	private PageOfHits search(List<String> queryWords, SearchInputs inputs) throws SearchEndpointException {
-		
+	private SearchResults search(List<String> queryWords, SearchInputs inputs) throws SearchEndpointException {
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.webservice.SearchEndpoint.search");
+
 		Long totalHits = new Long(0);
-		BingSearchMultiQuery engine;
-		engine = new BingSearchMultiQuery();
-				
-		PageOfHits results;
-		String[] queryWordsArr = queryWords.toArray(new String[queryWords.size()]);
-		while (true) {
-			try {
-				results = engine.retrieveNextPage(inputs.prevPage);
-			} catch (BingSearchMultithrdException e) {
-				throw new SearchEndpointException(e);
-			}
-		
-			if (results.hitsCurrPage.size() > 0) {
-				break;
-			} else {
-				results.incrBingPageNum();
-			}
+		IUSearchEngine engine;
+		try {
+			engine = new IUSearchEngine();
+		} catch (IOException | SearchEngineException e) {
+			throw new SearchEndpointException("Unable to create the search engine.", e);
 		}
-	
+		
+		
+		Query query = new Query();
+		{
+			// We collect 10 pages worth of hits
+			int hitsPerPage = inputs.hitsPerPage;
+			query.setMaxHits(10*hitsPerPage);
+			
+			query.terms = inputs.getTerms();
+			
+			query.lang = "iu";
+		}
+		
+		SearchResults results;
+		try {
+			results = engine.search(query);
+		} catch (SearchEngineException | IOException e) {
+			throw new SearchEndpointException("Error while searching for hits", e);
+		}
+		
 		return results;
 	}
 
