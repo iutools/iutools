@@ -224,7 +224,7 @@ public class Syllabics {
         makeUnicodeXsyl(Final.unicodeXsyl);
     }
     
-    static String [][] syllabicsToRomanICI = {
+    public static String [][] syllabicsToRomanICI = {
         {"\u1403", "i"},
         {"\u1431", "pi"},
         {"\u144E", "ti"},
