@@ -380,6 +380,50 @@ public class SpellCheckerTest {
 		Assert.assertTrue("Word "+word+" should have been deemed mis-spelled", checker.isMispelled(word));
 	}
 	
+	@Test
+	public void test__isMispelled__WordIsSingleInuktitutCharacter() throws Exception  {
+		String word = "ti";
+		Assert.assertFalse("Word "+word+" should have been deemed correctly spelled", checker.isMispelled(word));
+		word = "t";
+		Assert.assertFalse("Word "+word+" should have been deemed correctly spelled", checker.isMispelled(word));
+		word = "o";
+		Assert.assertTrue("Word "+word+" should have been deemed mis-spelled", checker.isMispelled(word));
+	}
+	
+	@Test
+	public void test__isMispelled__WordContainsMoreThanTwoConsecutiveConsonants() throws Exception  {
+		String word = "imglu";
+		Assert.assertTrue("Word "+word+" should have been acknowledged as having more than 2 consecutive consonants", checker.wordContainsMoreThanTwoConsecutiveConsonants(word));
+		word = "inglu";
+		Assert.assertFalse("Word "+word+" should have been acknowledged as not having more than 2 consecutive consonants", checker.wordContainsMoreThanTwoConsecutiveConsonants(word));
+		word = "innglu";
+		Assert.assertTrue("Word "+word+" should have been acknowledged as having more than 2 consecutive consonants", checker.wordContainsMoreThanTwoConsecutiveConsonants(word));
+	}
+	
+	@Test
+	public void test__isMispelled__wordIsNumberWithSuffix() throws Exception  {
+		String word = "34-mi";
+		Assert.assertTrue("Word "+word+" should have been acknowledged as a number-based word", checker.wordIsNumberWithSuffix(word));
+		word = "$34,000-mi";
+		Assert.assertTrue("Word "+word+" should have been acknowledged as a number-based word", checker.wordIsNumberWithSuffix(word));
+		word = "4:30-mi";
+		Assert.assertTrue("Word "+word+" should have been acknowledged as a number-based word", checker.wordIsNumberWithSuffix(word));
+		word = "5.5-mi";
+		Assert.assertTrue("Word "+word+" should have been acknowledged as a number-based word", checker.wordIsNumberWithSuffix(word));
+		word = "5,500.33-mi";
+		Assert.assertTrue("Word "+word+" should have been acknowledged as a number-based word", checker.wordIsNumberWithSuffix(word));
+	}
+	
+	@Test
+	public void test__isMispelled__wordIsPunctuation() throws Exception  {
+		String word = "-";
+		Assert.assertTrue("Word "+word+" should have been acknowledged as punctuation", checker.wordIsPunctuation(word));
+		word = "–";
+		Assert.assertTrue("Word "+word+" should have been acknowledged as punctuation", checker.wordIsPunctuation(word));
+	}
+	
+	
+	
 	/**********************************
 	 * TEST HELPERS
 	 **********************************/

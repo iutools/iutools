@@ -28,6 +28,7 @@ import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.StringUtils;
+import ca.inuktitutcomputing.script.Orthography;
 import ca.inuktitutcomputing.script.Syllabics;
 import ca.inuktitutcomputing.script.TransCoder;
 import ca.inuktitutcomputing.utilities.EditDistanceCalculator;
@@ -48,6 +49,12 @@ public class SpellChecker {
 	
 	public CompiledCorpus corpus = null;
 	private static StringSegmenter_IUMorpheme segmenter = null;
+	private static ArrayList<String> latinSingleInuktitutCharacters = new ArrayList<String>();
+	static {
+		for (int i=0; i<Syllabics.syllabicsToRomanICI.length; i++) {
+			latinSingleInuktitutCharacters.add(Syllabics.syllabicsToRomanICI[i][1]);
+		};
+	}
 	
 	
 	public SpellChecker() throws StringSegmenterException {
@@ -212,39 +219,88 @@ public class SpellChecker {
  		return corr;
 	}
 	
+	/*
+	 * A term is considered ok if:
+	 *   - it is recorded as successfully decomposed by the IMA during the compilation of the Hansard corpus, or
+	 *   - it consists of digits only, or
+	 *   - it consists of only 1 syllabic character (latin equivalent of)
+	 *   - it is not recorded as not decomposed by the IMA during the compilation of the Hansard corpus, or
+	 *   - it is a punctuation mark
+	 *   
+	 * A word is considered mispelled if:
+	 *   - it is recorded as UNsuccessfully decomposed by the IMA during the compilation of the Nunavut corpus, or
+	 *   - it cannot be decomposed by the IMA (if never encountered in the Hansard corpus)
+	 */
 	protected Boolean isMispelled(String word) throws SpellCheckerException {
-		Boolean answer = null;
+		boolean wordIsMispelled = false;
+		
 		if (corpus!=null && corpus.wordsFailedSegmentation.contains(word)) {
-			answer = true;
+			wordIsMispelled = true;
+		} 
+		else if (corpus!=null && corpus.segmentsCache.containsKey(word)) {
+			wordIsMispelled = false;
 		}
-		
-		if (answer == null && corpus!=null && corpus.segmentsCache.containsKey(word)) {
-			answer = false;
+		else if (word.matches("^[0-9]+$")) {
+			wordIsMispelled = false;
 		}
-		
-		if (answer == null && word.matches("^[0-9]+$")) {
-			answer = false;
+		else if (latinSingleInuktitutCharacters.contains(word)) {
+			wordIsMispelled = false;
 		}
-		
-		if (answer == null) {
-			answer = true;
+		else if (wordContainsMoreThanTwoConsecutiveConsonants(word)) {
+			wordIsMispelled = true;
+		}
+		else if (wordIsNumberWithSuffix(word)) {
+			wordIsMispelled = false;
+		}
+		else if (wordIsPunctuation(word)) {
+			wordIsMispelled = false;
+		}
+		else {
 			try {
 				String[] segments = segmenter.segment(word);
-				if (segments != null && segments.length > 0) {
-					answer = false;
+				if (segments == null || segments.length == 0) {
+					wordIsMispelled = true;
 				}
 			} catch (TimeoutException e) {
-				answer = false;
+				wordIsMispelled = false;
 			} catch (StringSegmenterException e) {
 				throw new SpellCheckerException(e);
 			}
 		}
 		
-		
-		if (answer == null) answer = false;
-		
-		return answer;
+		return wordIsMispelled;
 	}
+
+	protected boolean wordIsPunctuation(String word) {
+		Pattern p = Pattern.compile("(\\p{Punct}|[–])+");
+		Matcher mp = p.matcher(word);
+		return mp.matches();
+	}
+
+
+	protected boolean wordIsNumberWithSuffix(String word) {
+		Pattern p = Pattern.compile("^(\\$?\\d+(?:[.,:]\\d+)?(?:[.,:]\\d+)?)-?([agijklmnpqrstuv]+)$");
+		Matcher mp = p.matcher(word);
+		
+		return mp.matches();
+	}
+
+
+	protected boolean wordContainsMoreThanTwoConsecutiveConsonants(String word) {
+		Logger logger = Logger.getLogger("SpellChecker.wordContainsMoreThanTwoConsecutiveConsonants");
+		boolean result = false;
+		String wordInSimplifiedOrthography = Orthography.simplifiedOrthography(word, false);
+		logger.debug("wordInSimplifiedOrthography= "+wordInSimplifiedOrthography+" ("+word+")");
+		Pattern p = Pattern.compile("[gjklmnprstvN]{3,}");
+		Matcher mp = p.matcher(wordInSimplifiedOrthography);
+		if (mp.find()) {
+			logger.debug("match= "+mp.group());
+			result = true;
+		} 
+		
+		return result;
+	}
+
 
 	public Long ngramStat(String charSeq) {
 		Long val = new Long(0);
