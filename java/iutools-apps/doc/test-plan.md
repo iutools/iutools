@@ -2,7 +2,36 @@
 
 ##Search Engine
 
-TO BE ADDED
+Search for word in SYLLABIC -- Happy Path
+- Enter ᐅᒃᐱᕐᓂᖅ (= religion) in the query text box, then click [Search] 
+  button.
+- Check that the search term is replaced by this:
+
+     (ᐅᑉᐱᕐᓂᕐᒥᒃ OR ᐅᑉᐱᕐᓂᖅ OR ᐅᑉᐱᕐᓂᖏᑦ OR ᐅᑉᐱᕐᓂᐅᕗᖅ OR ᐅᑉᐱᓂᕐᒧᓪᓗ OR ᐅᒃᐱᕐᓂᖅ)
+
+  and that we get some hits.
+- Check that all hits on the first page contain at least one of those words. 
+- Click on the second page of hits and check that:
+  - They are different from the first page
+  - They all contain one of the query terms
+  
+
+Search for word in LATIN - Happy Path
+- Enter ukpirniq (= religion) in the search box, then click [Search] button
+- Check that the search term is replaced by this:
+
+     (ᐅᑉᐱᕐᓂᕐᒥᒃ OR ᐅᑉᐱᕐᓂᖅ OR ᐅᑉᐱᕐᓂᖏᑦ OR ᐅᑉᐱᕐᓂᐅᕗᖅ OR ᐅᑉᐱᓂᕐᒧᓪᓗ OR ᐅᒃᐱᕐᓂᖅ)
+
+  and that we get some hits.
+- Check that all hits contain at least one of those words 
+- Click on the second page of hits and check that:
+  - They are different from the first page
+  - They all contain one of the query terms
+
+  
+Search by pressing Enter key
+- Enter a search word in the text box, then instead of clicking 
+  [Search] button, press Enter key.
 
 ##Spell Checker
 
