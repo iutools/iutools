@@ -422,8 +422,10 @@ public class WordAnalyzer {
 		
 		try {
 			word = reader.readLine();
-			List<Decomposition> decompositions = analyzer.analyze(word);	
-			for (int id=0; id<decompositions.size(); id++)
+			List<Decomposition> decompositions = analyzer.analyze(word);
+			if (decompositions.size()==0)
+				System.out.println("Aucune décomposition");
+			else for (int id=0; id<decompositions.size(); id++)
 				System.out.println(">>> "+decompositions.get(id).toStr());
 			
 		} catch (IOException e) {
