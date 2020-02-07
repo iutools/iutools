@@ -9,16 +9,21 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import ca.inuktitutcomputing.script.Syllabics;
 import ca.nrc.data.harvesting.BingSearchEngine;
 import ca.nrc.data.harvesting.SearchEngine;
 import ca.nrc.data.harvesting.SearchEngine.Hit;
 import ca.nrc.data.harvesting.SearchEngine.SearchEngineException;
 import ca.nrc.data.harvesting.SearchEngine.Type;
+import ca.nrc.json.PrettyPrinter;
 
 public class BingSearchWorker implements Runnable {
 	public String query;
 	private Integer hitsPerPage;
 	public int hitsPageNum = 0;
+	
+	// Minimum ratio of syllabic chars required in a hit's snippet
+	public double minSnippetSyllabicRatio = 0.8;
 	
 	
 	public String thrName;
@@ -57,7 +62,7 @@ public class BingSearchWorker implements Runnable {
 	}
 	   
    public void run()  {
-	   Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.search.BingSearchWorker.run");
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.search.BingSearchWorker.run");
 	   
 		List<SearchHit> hitsList = new ArrayList<SearchHit>();
 		Long total = new Long(0);
@@ -69,6 +74,9 @@ public class BingSearchWorker implements Runnable {
 			return;
 		}
 		
+	    System.out.println("\n\n** BingSearchWorker[thrName="+thrName+"]: hitsPageNum="+this.hitsPageNum);
+
+		
 		SearchEngine.Query webQuery = 
 				new SearchEngine.Query(this.query).setType(Type.ANY)
 						.setLang("iu").setMaxHits(this.hitsPerPage)
@@ -76,7 +84,7 @@ public class BingSearchWorker implements Runnable {
 				;
 		List<SearchEngine.Hit> results;
 		try {
-			results = engine.search(webQuery);
+			results = engine.search(webQuery).retrievedHits;
 		} catch (SearchEngineException e) {
 			this.error = e;
 			return;
@@ -91,12 +99,16 @@ public class BingSearchWorker implements Runnable {
 			tLogger.trace("bingHit title= "+bingHit.title);
 			total = bingHit.outOfTotal;
 			SearchHit aHit = new SearchHit(bingHit.url.toString(), bingHit.title, bingHit.summary);
-			if (!this.excludedURLs.contains(aHit.url)) {
+			
+			if (hitSeemsOK(aHit)) {
 				hitsList.add(aHit);	
 			} else {
-				tLogger.trace("[thrName="+thrName+"] URL "+aHit.url+" was already seen in the search results");				
+				tLogger.trace("[thrName="+thrName+"] URL "+aHit.url+" was already seen in the search results");								
 			}
 		}
+		
+	    System.out.println("\n\n** BingSearchWorker[thrName="+thrName+"]: hitsList="+PrettyPrinter.print(hitsList));
+
 		
 		this.totalHits = total;
 		this.hits = hitsList;
@@ -104,7 +116,26 @@ public class BingSearchWorker implements Runnable {
 		tLogger.trace("[thrName="+thrName+"] upon exit, totalHits="+totalHits+", hits.size()="+hits.size());
    }
    
-   public void start () {
+   private boolean hitSeemsOK(SearchHit aHit) {
+	    System.out.println("** hitSeemsOK[thrName="+thrName+"]: invoked with URL="+aHit.url+"\nsnippet="+aHit.snippet);
+	    Boolean isOK = null;
+		if (this.excludedURLs.contains(aHit.url)) {
+			isOK = false;
+		}
+		
+		if (isOK == null) {
+			isOK = true;
+			double snippetSyllabicRatio = Syllabics.syllabicCharsRatio(aHit.snippet);
+			if (snippetSyllabicRatio < minSnippetSyllabicRatio) {
+				isOK = false;
+			}
+		}
+		
+	    System.out.println("** hitSeemsOK[thrName="+thrName+"]: returning "+isOK);
+		return isOK;
+   }
+
+public void start () {
 //	   System.out.println("-- BingSearcher.start: thrName="+this.thrName);
 	   if (thr == null) {
 		   thr = new Thread (this, this.thrName);

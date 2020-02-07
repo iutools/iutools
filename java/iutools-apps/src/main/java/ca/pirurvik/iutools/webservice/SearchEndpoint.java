@@ -43,8 +43,8 @@ import ca.pirurvik.iutools.CompiledCorpusRegistryException;
 import ca.pirurvik.iutools.QueryExpanderException;
 import ca.pirurvik.iutools.QueryExpander;
 import ca.pirurvik.iutools.QueryExpansion;
-import ca.pirurvik.iutools.search.BingSearchMultithrd;
-import ca.pirurvik.iutools.search.BingSearchMultithrd.BingSearchMultithrdException;
+import ca.pirurvik.iutools.search.BingSearchMultiQuery;
+import ca.pirurvik.iutools.search.BingSearchMultiQuery.BingSearchMultithrdException;
 import ca.pirurvik.iutools.search.PageOfHits;
 import ca.pirurvik.iutools.search.SearchHit;
 
@@ -130,20 +130,24 @@ public class SearchEndpoint extends HttpServlet {
 	private PageOfHits search(List<String> queryWords, SearchInputs inputs) throws SearchEndpointException {
 		
 		Long totalHits = new Long(0);
-		BingSearchMultithrd engine;
-		engine = new BingSearchMultithrd();
+		BingSearchMultiQuery engine;
+		engine = new BingSearchMultiQuery();
 				
 		PageOfHits results;
 		String[] queryWordsArr = queryWords.toArray(new String[queryWords.size()]);
-		try {
-			results = engine.retrieveNextPage(inputs.prevPage);
-			
-		} catch (BingSearchMultithrdException e) {
-			throw new SearchEndpointException(e);
-		}
+		while (true) {
+			try {
+				results = engine.retrieveNextPage(inputs.prevPage);
+			} catch (BingSearchMultithrdException e) {
+				throw new SearchEndpointException(e);
+			}
 		
-		Long estTotalHits = results.estTotalHits;
-		List<SearchHit> hits = results.hitsCurrPage;
+			if (results.hitsCurrPage.size() > 0) {
+				break;
+			} else {
+				results.incrBingPageNum();
+			}
+		}
 	
 		return results;
 	}

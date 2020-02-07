@@ -20,6 +20,7 @@ import ca.pirurvik.iutools.testing.IUTTestHelpers;
 import ca.pirurvik.iutools.webservice.SearchEndpoint;
 import ca.pirurvik.iutools.webservice.SearchInputs;
 import ca.nrc.testing.AssertHelpers;
+import ca.nrc.testing.AssertNumber;
 import ca.nrc.ui.web.testing.MockHttpServletResponse;
 
 
@@ -56,7 +57,7 @@ public class SearchEndpointTest {
 		double tolerance = 0.75;
 		SearchResponse srchResponse = IUTServiceTestHelpers.toSearchResponse(response);
 		IUTServiceTestHelpers.assertMostHitsMatchWords(queryWords, response, tolerance);
-		Assert.assertTrue(srchResponse.totalHits > 10);
+		AssertNumber.isGreaterOrEqualTo("Not enough hits found", srchResponse.totalHits, 2);
 	}
 	
 	@Test
@@ -105,7 +106,7 @@ public class SearchEndpointTest {
 		double tolerance = 0.7;
 		SearchResponse srchResponse = IUTServiceTestHelpers.toSearchResponse(response);
 		IUTServiceTestHelpers.assertMostHitsMatchWords(queryWords, response, tolerance);
-		Assert.assertTrue(srchResponse.totalHits > 10);
+		AssertNumber.isGreaterOrEqualTo("Not enough hits found", srchResponse.totalHits, 10);
 	}	
 
 	@Test

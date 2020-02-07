@@ -23,7 +23,27 @@ public class PageOfHits {
 	private String[] queryTerms = null;
 	
 		// Index of this page of hits
-	public Integer pageNum = -1;
+	private Integer pageNum = -1;
+		public Integer getPageNum() { return pageNum; }
+		public void incrPageNum() { 
+			pageNum++;
+			incrBingPageNum();
+		}
+//		public void setPageNum(Integer num) { bingPageNum = num; }
+	
+	
+		// Index of the Bing page of hits.
+		// If null, then same as pageNum
+	private Integer bingPageNum = null;
+		public Integer getBingPageNum() { 
+			Integer num = pageNum;
+			if (bingPageNum != null) { 
+				num = bingPageNum;
+			}
+			return num;
+		}
+		public void incrBingPageNum() { setBingPageNum(getBingPageNum() + 1); }
+		public void setBingPageNum(Integer num) { bingPageNum = num; }
 	
 		// True iif there is a next page of hits
 	public boolean hasNext = true;

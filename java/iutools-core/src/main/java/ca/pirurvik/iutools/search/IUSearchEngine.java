@@ -1,0 +1,34 @@
+package ca.pirurvik.iutools.search;
+
+import java.io.IOException;
+import java.util.List;
+
+import ca.nrc.data.harvesting.BingSearchEngine;
+import ca.nrc.data.harvesting.SearchEngine;
+import ca.nrc.data.harvesting.SearchEngine.SearchEngineException;
+import ca.nrc.data.harvesting.SearchResults;
+
+/**
+ * A BingSearchEngine that is specifically configured to deal better 
+ * with Inuktut searches
+ * 
+ * @author desilets
+ *
+ */
+public class IUSearchEngine extends BingSearchEngine {
+
+	public IUSearchEngine() throws IOException, SearchEngineException {
+		super();
+	}
+	
+	@Override
+	public SearchResults searchRaw(Query query) throws SearchEngineException {
+		if (query.lang != null && !query.lang.equals("iu")) {
+			throw new SearchEngineException(
+					this.getClass().getName()+
+					" cannot process a query for language="+query.lang+
+					".\nThis class of search engine can only process Inuktut queries (iu)");
+		}
+		return super.searchRaw(query);
+	}
+}

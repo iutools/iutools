@@ -12,7 +12,7 @@ import ca.nrc.datastructure.Cloner.ClonerException;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.datastructure.Pair;
 
-public class BingSearchMultithrd {
+public class BingSearchMultiQuery {
 	
 	public static class BingSearchMultithrdException extends Exception {
 		public BingSearchMultithrdException(Exception e) {super(e);}
@@ -20,7 +20,7 @@ public class BingSearchMultithrd {
 	
 	private BingSearchWorker[] workers = null;
 	
-	public BingSearchMultithrd() {
+	public BingSearchMultiQuery() {
 	}
 
 	public PageOfHits search(String query) throws BingSearchMultithrdException  {
@@ -51,7 +51,7 @@ public class BingSearchMultithrd {
 		long totalEstHits = 0;		
 		List<SearchHit> hits = new ArrayList<SearchHit>();
 		
-		page.pageNum++;
+		page.incrPageNum();
 		
 		// Create one worker per term
 		int numWorkers = page.getQueryTerms().length;
@@ -59,7 +59,7 @@ public class BingSearchMultithrd {
 		for (int ii=0; ii < numWorkers; ii++) {
 			String aTerm = page.getQueryTerms()[ii];
 			BingSearchWorker aWorker = 
-					new BingSearchWorker(aTerm, page.pageNum, page.hitsPerPage, "thr-"+ii+"-"+aTerm);
+					new BingSearchWorker(aTerm, page.getBingPageNum(), page.hitsPerPage, "thr-"+ii+"-"+aTerm);
 			aWorker.excludeUrls(page.urlsAllPreviousHits);
 			workers[ii] = aWorker;
 			aWorker.start();

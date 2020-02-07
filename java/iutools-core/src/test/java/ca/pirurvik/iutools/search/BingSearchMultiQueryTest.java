@@ -15,14 +15,14 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
-public class BingSearchMultithrdTest {
+public class BingSearchMultiQueryTest {
 
 	/*******************************
 	 * DOCUMENTATION TESTS
 	 *******************************/
 	
 	@Test
-	public void test__BingSearchMultithrd__Synopsis() throws Exception {
+	public void test__BingSearchMultiQuery__Synopsis() throws Exception {
 		//
 		// This class implements a workaround to a Bing Problem for Inuktut search.
 		// Essentially, if you do a Bing search with multiple Inuktut words, it
@@ -41,9 +41,9 @@ public class BingSearchMultithrdTest {
 		String query = "(ᖃᕋᓴᐅᔭᒃᑯᑦ OR ᖃᐅᔨᓴᖅᑎᒃᑯ OR ᐃᓕᓐᓂᐊᖅᑐᒧᑦ)";
 		
 		//
-		// First, you would create a BingSearchMultithrd...
+		// First, you would create a BingSearchMultiQuery...
 		//
-		BingSearchMultithrd searcher = new BingSearchMultithrd();
+		BingSearchMultiQuery searcher = new BingSearchMultiQuery();
 		
 		// 
 		// Then you run the search
@@ -57,25 +57,31 @@ public class BingSearchMultithrdTest {
 	/*******************************
 	 * VERIFICATION TESTS
 	 *******************************/
-	
+
 	@Test
-	public void test__BingSearchMultithrd__HappyPath() throws Exception {
-		String [] terms = new String[] {"ᖃᕋᓴᐅᔭᒃᑯᑦ", "ᖃᐅᔨᓴᖅᑎᒃᑯ", "ᐃᓕᓐᓂᐊᖅᑐᒧᑦ"};
-		String query = "(ᖃᕋᓴᐅᔭᒃᑯᑦ OR ᖃᐅᔨᓴᖅᑎᒃᑯ OR ᐃᓕᓐᓂᐊᖅᑐᒧᑦ)";
-		BingSearchMultithrd searcher = new BingSearchMultithrd();
-		PageOfHits results = searcher.search(query);
+	public void test__BingSearchMultiQuery__HappyPath() throws Exception {
+		// Test the search engine on the term 'nunavut'
+		//
+		String [] expandedTerm = new String[] {
+				"ᓄᓇᕗ", "ᓄᓇᕗᒻᒥ", "ᓄᓇᕘᒥ", "ᓄᓇᕘᑉ", "ᓄᓇᕗᒻᒥᐅᑦ", "ᓄᓇᕗᑦ"};
+		String queryStr = "(" + String.join(" OR ", expandedTerm) + ")";		
+		BingSearchMultiQuery searcher = new BingSearchMultiQuery();
+		PageOfHits results = searcher.search(queryStr);
 		Long totalEstHits = results.estTotalHits;
 		List<SearchHit> hits = results.hitsCurrPage;
 		
-		Assert.assertTrue("Total number of hits was lower than expected: "+totalEstHits, totalEstHits > 100);
-		IUTTestHelpers.assertMostHitsMatchWords(terms, hits, 0.79);
+		IUTTestHelpers.assertSufficientHitsFound(results, 20);		
+		IUTTestHelpers.assertMostHitsMatchWords(expandedTerm, hits, 0.80);
+		IUTTestHelpers.assertMostHitsAreInuktut(hits, 0.95, 0.8);
 	}	
 
+	
+	
 	@Test
-	public void test__BingSearchMultithrd__FirstAndSecondPagesOfHitsAreDifferent() throws Exception {
+	public void test__BingSearchMultiQuery__FirstAndSecondPagesOfHitsAreDifferent() throws Exception {
 		String [] terms = new String[] {"ᖃᕋᓴᐅᔭᒃᑯᑦ", "ᖃᐅᔨᓴᖅᑎᒃᑯ", "ᐃᓕᓐᓂᐊᖅᑐᒧᑦ"};
 		String query = "(ᖃᕋᓴᐅᔭᒃᑯᑦ OR ᖃᐅᔨᓴᖅᑎᒃᑯ OR ᐃᓕᓐᓂᐊᖅᑐᒧᑦ)";
-		BingSearchMultithrd searcher = new BingSearchMultithrd();
+		BingSearchMultiQuery searcher = new BingSearchMultiQuery();
 		
 		PageOfHits results = searcher.search(query);
 		List<SearchHit> hitsPage1 = results.hitsCurrPage;
@@ -92,17 +98,17 @@ public class BingSearchMultithrdTest {
 	}	
 
 	@Test
-	public void test__BingSearchMultithrd__FollowPagesUntilTheEnd() throws Exception  {
+	public void test__BingSearchMultiQuery__FollowPagesUntilTheEnd() throws Exception  {
 		
 		// term = 'nanivara'
 		// This term does not have any hits beyond the second page
 		//
 //		String [] terms = new String[] {"ᓇᓂᕙᕋ", "ᓇᓂᓯᔪᓐᓇᕈᑦᑕ", "ᓇᓂᔭᐅᓯᒪᔪᑦ", "ᓇᓂᓯᔾᔪᒻᒧ", "ᓇᓂᓯᔪᓐᓇᕈᒪ"};
-		String query = "(ᓇᓂᕙᕋ OR OR ᓇᓂᓯᔪᓐᓇᕈᑦᑕ OR ᓇᓂᔭᐅᓯᒪᔪᑦ OR ᓇᓂᓯᔾᔪᒻᒧ OR ᓇᓂᓯᔪᓐᓇᕈᒪ)";
+		String query = "(ᓇᓂᕙᕋ OR  ᓇᓂᓯᔪᓐᓇᕈᑦᑕ OR ᓇᓂᔭᐅᓯᒪᔪᑦ OR ᓇᓂᓯᔾᔪᒻᒧ OR ᓇᓂᓯᔪᓐᓇᕈᒪ)";
 		
 		
 		// Get the second page of hits
-		BingSearchMultithrd searcher = new BingSearchMultithrd();
+		BingSearchMultiQuery searcher = new BingSearchMultiQuery();
 		PageOfHits gotPage1 = searcher.search(query, 5);
 		Assert.assertTrue("First page of hits should have had a next page", gotPage1.hasNext);
 		
@@ -116,10 +122,10 @@ public class BingSearchMultithrdTest {
 	}	
 
 	@Test @Ignore
-	public void test__BingSearchMultithrd__SearchWithOnlyPDFResults() throws Exception {
+	public void test__BingSearchMultiQuery__SearchWithOnlyPDFResults() throws Exception {
 		String [] terms = new String[] {"ᖃᐅᔨᓴᕈᓐᓇᕐᒪᖔᑕ"};
 		String query = "ᖃᐅᔨᓴᕈᓐᓇᕐᒪᖔᑕ";
-		BingSearchMultithrd searcher = new BingSearchMultithrd();
+		BingSearchMultiQuery searcher = new BingSearchMultiQuery();
 		PageOfHits results = searcher.search(query);
 		Long totalEstHits = results.estTotalHits;
 		List<SearchHit> hits = results.hitsCurrPage;

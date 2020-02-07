@@ -1,20 +1,27 @@
 package ca.pirurvik.iutools.testing;
 
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.junit.Assert;
 
+import ca.inuktitutcomputing.script.Syllabics;
+import ca.nrc.data.harvesting.SearchResults;
 import ca.nrc.json.PrettyPrinter;
+import ca.pirurvik.iutools.search.PageOfHits;
 import ca.pirurvik.iutools.search.SearchHit;
 
 public class IUTTestHelpers {
 
 	public static void assertMostHitsMatchWords(String[] queryWords, List<SearchHit> gotHits, double tolerance) {
-		String regex = "(We would like to show you a description here but the site won’t allow us";
+		String regex = null;
 		for (String aWord: queryWords) {
 			if (regex == null) {
 				regex = "(";
@@ -23,7 +30,7 @@ public class IUTTestHelpers {
 			}
 			regex += aWord.toLowerCase();
 		}
-		regex += ")";
+		regex += "|We would like to show you a description here but the site won’t allow us)";
 		
 		Pattern patt = Pattern.compile(regex);
 		int  hitNum = 1;
@@ -76,6 +83,52 @@ public class IUTTestHelpers {
 				+PrettyPrinter.print(urls2);
 		
 		Assert.assertTrue(message, gotDiffRatio >= minDiffRatio);
+	}
+
+	public static void assertMostHitsAreInuktut(List<SearchHit> hits, double minOKHitRatio, double minIURatio) {
+		int totalHits = 0;
+		int okHits = 0;
+		Map<String,Double> badURLs = new HashMap<String, Double>();
+		List<String> badURLInfo = new ArrayList<String>();
+		DecimalFormat df = new DecimalFormat("#.##");				
+		for (SearchHit aHit: hits) {
+			totalHits++;
+			String snippet = aHit.snippet;
+			double iuRatio = Syllabics.syllabicCharsRatio(snippet);
+			if (iuRatio > minIURatio) {
+				okHits++;
+			} else {
+				badURLs.put(aHit.url, iuRatio);
+				String aHitInfo = 
+							aHit.url+"\n"+
+							"   IU chars ratio: "+df.format(iuRatio)+"\n"+
+							"   Snippet: "+snippet
+							;
+				badURLInfo.add(aHitInfo);
+			}
+		}
+		
+		double gotOKRatio = 1.0 * okHits / totalHits;
+		String message = 
+					"Too many hits were not predominantly Inuktitut characters.\n" +
+					"Ratio of 'good' URLs of "+gotOKRatio+" was lower than expected minimum ("+minOKHitRatio+")" +
+					"Below is the list of bad URLs with their ratio of non-Inuktut characters:\n"+
+					String.join("\n\n", badURLInfo)
+					;
+		Assert.assertTrue(message, gotOKRatio >= minOKHitRatio);
+		
+	}
+
+	public static void assertSufficientHitsFound(PageOfHits results, int expMinHits) {
+		Long totalEstHits = results.estTotalHits;
+		Assert.assertTrue("Estimated number of hits found was too low.\n   Expected at least: "+expMinHits+"\n   But was: "+totalEstHits, 
+				totalEstHits >= expMinHits);
+	}
+
+	public static void assertSufficientHitsFound(SearchResults results, int expMinHits) {
+		Long totalEstHits = results.estTotalHits;
+		Assert.assertTrue("Estimated number of hits found was too low.\n   Expected at least: "+expMinHits+"\n   But was: "+totalEstHits, 
+				totalEstHits >= expMinHits);
 	}
 
 }
