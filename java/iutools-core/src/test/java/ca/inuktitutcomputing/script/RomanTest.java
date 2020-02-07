@@ -136,5 +136,5 @@ public class RomanTest {
 		syllables = Roman.separateSyllables(word);
 		//System.out.println(PrettyPrinter.print(syllables));
 		assertArrayEquals(word,expected,syllables);
-	}
+	}	
 }
