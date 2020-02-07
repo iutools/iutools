@@ -11,7 +11,7 @@ class SpellController extends WidgetController {
 	// Setup handler methods for different HTML elements specified in the config.
 	attachHtmlElements() {
 		this.setEventHandler("btnSpell", "click", this.spellCheck);
-		this.setEventHandler("btnCopy", "click", this.copyToClipboard);
+//		this.setEventHandler("btnCopy", "click", this.copyToClipboard);
 	}
 	
 	copyToClipboard() {
@@ -190,6 +190,9 @@ class SpellController extends WidgetController {
 			}
 			spellController.setCorrectionsHandlers();
 		}
+		
+		this.setEventHandler("btnCopy", "click", this.copyToClipboard);
+
 		this.setBusy(false);
 	}
 

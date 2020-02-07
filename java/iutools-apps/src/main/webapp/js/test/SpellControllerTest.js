@@ -3,7 +3,9 @@ var spellControllerConfig = {
 		txtToCheck: "txt-to-check",
 		divChecked:  "div-checked",
 		divError: "div-error",
-		divMessage: "div-message"
+		divMessage: "div-message",
+    	divResults: "div-results",
+    	btnCopy: "btn-copy"
     };
 
 var helpers = new TestHelpers();
@@ -81,8 +83,9 @@ QUnit.module("SpellController Tests", {
           + "<textarea id=\""+spellControllerConfig.txtToCheck+"\" name=\""+spellControllerConfig.txtToCheck+"\" rows=5 cols=40></textarea><p/>" 
           + "<div id=\""+spellControllerConfig.divMessage+"\" class=\""+spellControllerConfig.divMessage+"\"></div><br/>\n"
           + "<div id=\""+spellControllerConfig.divError+"\" class=\""+spellControllerConfig.divError+"\"></div><br/>\n"
-          + "<div id=\""+spellControllerConfig.divChecked+"\" class=\""+spellControllerConfig.divChecked+"\"></div>"
-          
+          + "<div id=\""+spellControllerConfig.divChecked+"\" class=\""+spellControllerConfig.divChecked+"\"></div>\n"
+      	  + "<div id=\"div-results\" class=\"div-results\"></div>\n"
+      	  + "<button id=\"btn-copy\" type=\"button\" name=\"btn-copy\">Copy to clipboard</button>\n"
           ;
         $("#testMainDiv").html(formHTML);	
 	

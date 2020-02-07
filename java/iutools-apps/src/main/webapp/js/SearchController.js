@@ -9,6 +9,8 @@ class SearchController extends WidgetController {
 		this.hitsPerPage = 10;
 		this.totalHits = 0;
 		this.prevPage = this.initialPage();
+		this.prevPageNum = -1;
+		this.allHits = [];
 	} 
 	
 	initialPage(query) {
@@ -29,31 +31,64 @@ class SearchController extends WidgetController {
 	}
 	
 	onSearch() {
-		this.prevPage = this.initialPage(this.elementForProp("txtQuery").val());
-		this.alreadyShownHits = [];
-		this.searchFromCurrentPage();
+		this.retrieveAllHitsFromService();
+		this.showHitsPage(0);
+	}
+	
+	showHitsPage(pageNum) {
+		var divResults = this.elementForProp("divResults");		
+		divResults.empty();
+		
+		var results = hitsForPage(pageNum);
+		
+		for (var ii = 0; ii < results.length; ii++) {
+			var aHit = results[ii];
+			console.log('aHit.title= '+aHit.title);
+			var hitHtml = 
+					"<div id=\"hit"+ii+"\" class=\"hitDiv\">\n" +
+					"  <div id=\"hitTitle\" class=\"hitTitle\">"+
+					"    <a href=\""+aHit.url+"\" target=\"_blank\">"+aHit.title+"</a>"+"</div>\n" +
+					"  <div id=\"hitURL\" class=\"hitURL\">"+
+					"    <a href=\""+aHit.url+"\" target=\"_blank\">"+aHit.url+"</a>"+"</div>\n" +
+					"  <div id=\"hitSnippet\" class=\"hitSnippet\">"+aHit.snippet+"</div>\n" +
+					"<div>"
+				;
+			var aHitDiv = $.parseHTML(hitHtml);
+			divResults.append(aHitDiv);
+		}
+		
+	}
+	
+	hitsForPage(pageNum) {
+		var startIndex = pageNum * this.hitsPerPage;
+		var endIndex = startIndex + this.hitsPerPage;
+		var hits = this.allHits.slice(startIndex, endIndex+1);
+		
+		return hits;
 	}
 	
 	onSearchPrev() {
 		if (this.prevPage.pageNum > 0)
 			this.prevPage.pageNum--;
-		this.searchFromCurrentPage();
+		this.retrieveAllHitsFromService();
 	}
 
 	onSearchNext() {
 		var nbPages = Math.ceil(this.totalHits / this.hitsPerPage);
 		if (this.prevPage.pageNum < nbPages - 1)
 			this.prevPage.pageNum++;
-		this.searchFromCurrentPage();
+		this.retrieveAllHitsFromService();
 	}
+	
 
-	searchFromCurrentPage() {
+	retrieveAllHitsFromService() {
 		var isValid = this.validateQueryInput();
 		if (isValid) {
-			var divMessage = this.elementForProp("divMessage"); divMessage.html("searchFromCurrentPage---");
+			var divMessage = this.elementForProp("divMessage"); divMessage.html("retrieveAllHitsFromService---");
 			this.setBusy(true);
 			this.clearResults();
-			this.invokeSearchService(this.getSearchRequestData(), 
+			var data = this.getSearchRequestData();
+			this.invokeSearchService(data, 
 					this.successCallback, this.failureCallback)
 		}
 	}
@@ -108,6 +143,7 @@ class SearchController extends WidgetController {
 			this.setQuery(resp.expandedQuery);
 			this.setTotalHits(resp.totalHits);
 			this.totalHits = resp.totalHits;
+			this.allHits = resp.hits;
 			this.setResults(resp.hits);	
 			this.generatePagesButtons(resp.totalHits);
 			$(".page-number").removeClass('current-page');
@@ -142,13 +178,6 @@ class SearchController extends WidgetController {
 	}	
 	
 	getSearchRequestData() {
-		
-		var currPage = this.prevPage.pageNum;
-		if (typeof currPage === 'string' || currPage instanceof String) {
-			currPage = parseInt(currPage, 10);
-			this.prevPage.pageNum = currPage;
-		}
-		
 		var request = {
 				prevPage: this.prevPage
 		};
@@ -197,7 +226,7 @@ class SearchController extends WidgetController {
 		for (var ii = 0; ii < results.length; ii++) {
 			var aHit = results[ii];
 			console.log('aHit.title= '+aHit.title);
-			this.alreadyShownHits.push(aHit.url);
+//			this.alreadyShownHits.push(aHit.url);
 			var hitHtml = 
 					"<div id=\"hit"+ii+"\" class=\"hitDiv\">\n" +
 					"  <div id=\"hitTitle\" class=\"hitTitle\">"+
@@ -247,7 +276,7 @@ class SearchController extends WidgetController {
 		    				var el = ev.target;
 		    				var pageNumberOfButton = el.value;
 		    				thisSearchController.prevPage.pageNum = pageNumberOfButton;
-		    				thisSearchController.searchFromCurrentPage();
+		    				thisSearchController.retrieveAllHitsFromService();
 		    		  });
 	    }
 	}

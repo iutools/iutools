@@ -26,7 +26,7 @@ class WidgetController {
 		}
 		var eltID = this.config[property];
 		if (eltID == null) {
-			throw new Error("Controller has no config property called '"+property+"'");
+			throw new Error("Controller for widget '"+this.constructor.name+"' has no config property called '"+property+"'");
 		}
 		
 		var elt = $('#'+eltID);
