@@ -843,6 +843,26 @@ public class Syllabics {
         }
         return sb.toString();
     }
+
+
+	public static double syllabicCharsRatio(String text) {
+		int totalChars = 0;
+		int iuChars = 0;
+		for (int ii = 0; ii < text.length(); ii++){
+		    char c = text.charAt(ii); 
+		    if (Character.isWhitespace(c)) {
+		    	continue;
+		    }
+		    totalChars++;
+		    if (isInuktitutCharacter(c)) {
+		    	iuChars++;
+		    }
+		}
+		
+		double ratio = 1.0 * iuChars / totalChars;
+		
+		return ratio;
+	}
     
     
 }
