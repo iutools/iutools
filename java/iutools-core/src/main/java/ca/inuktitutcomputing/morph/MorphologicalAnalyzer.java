@@ -641,7 +641,7 @@ public class MorphologicalAnalyzer {
             		form, affix, posAffix, partOfComp);
         }
         else if (action1Type == Action.NEUTRAL && action2Type == Action.INSERTION) {
-        	res = validate_neutral_deletion(context, action1, action2, stem, affixCandidate, 
+        	res = validate_neutral_insertion(context, action1, action2, stem, affixCandidate, 
             		form, affix, posAffix, partOfComp);
         }
         else if (action1Type == Action.DELETION && action2Type == Action.NULLACTION) {

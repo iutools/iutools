@@ -5,6 +5,8 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MorphologicalAnalyzerTest {
 	
@@ -231,6 +233,36 @@ public class MorphologicalAnalyzerTest {
 	}
 
 
-	
+	@Test
+	public void test__decomposeWord__sivungujuq() throws Exception  {
+		MorphologicalAnalyzer analyzer = new MorphologicalAnalyzer();
+		String word = "sivungujuq";
+
+		try {
+//			analyzer.disactivateTimeout();;
+			Decomposition[] decs = analyzer.decomposeWord(word);
+			Assert.assertTrue(decs.length!=0);
+			Pattern p = Pattern.compile("^"+Pattern.quote("{sivu:sivu/1n}{ngu:u/1nv}"));
+			boolean found = false;
+			for (int i=0; i<decs.length; i++) {
+				System.out.println(decs[i].toStr2());
+				Matcher mp = p.matcher(decs[i].toStr2());
+				if (mp.find()) {
+					found = true;
+					break;
+				}
+			}
+			Assert.assertTrue("",found);
+		} catch(Exception e) {
+			throw e;
+		}
+	}
+
+
+//	@Test
+//	public void test_validate_neutral_deletion__() {
+//		MorphologicalAnalyzer analyzer = new MorphologicalAnalyzer();
+//		analyzer.validate_neutral_insertion(context, action1, action2, stem, affixCandidate, form, affix, posAffix, partOfComp);
+//	}
 
 }
