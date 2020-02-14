@@ -28,6 +28,9 @@ import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.StringUtils;
+import ca.inuktitutcomputing.morph.Decomposition;
+import ca.inuktitutcomputing.morph.MorphInukException;
+import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
 import ca.inuktitutcomputing.script.Orthography;
 import ca.inuktitutcomputing.script.Syllabics;
 import ca.inuktitutcomputing.script.TransCoder;
@@ -43,12 +46,14 @@ public class SpellChecker {
 	public int MAX_CANDIDATES = 300; //200; //100;
 	public int DEFAULT_CORRECTIONS = 5;
 	public String allWords = ",,";
+
 	public Map<String,Long> ngramStats = new HashMap<String,Long>();
 	public transient EditDistanceCalculator editDistanceCalculator;
 	public transient boolean verbose = true;
 	
 	public CompiledCorpus corpus = null;
 	private static StringSegmenter_IUMorpheme segmenter = null;
+	private transient String[] makeUpWords = new String[] {"aki","nua"};
 	private static ArrayList<String> latinSingleInuktitutCharacters = new ArrayList<String>();
 	static {
 		for (int i=0; i<Syllabics.syllabicsToRomanICI.length; i++) {
@@ -233,6 +238,7 @@ public class SpellChecker {
 	 */
 	protected Boolean isMispelled(String word) throws SpellCheckerException {
 		boolean wordIsMispelled = false;
+		String suffix = null;
 		
 		if (corpus!=null && corpus.wordsFailedSegmentation.contains(word)) {
 			wordIsMispelled = true;
@@ -249,8 +255,12 @@ public class SpellChecker {
 		else if (wordContainsMoreThanTwoConsecutiveConsonants(word)) {
 			wordIsMispelled = true;
 		}
-		else if (wordIsNumberWithSuffix(word)) {
-			wordIsMispelled = false;
+		else if ( (suffix=wordIsNumberWithSuffix(word)) != null) {
+			boolean pseudoWordWithSuffixAnalysesWithSuccess = assessEndingWithIMA(suffix);
+			wordIsMispelled = !pseudoWordWithSuffixAnalysesWithSuccess;
+			if (wordIsMispelled) {
+				
+			}
 		}
 		else if (wordIsPunctuation(word)) {
 			wordIsMispelled = false;
@@ -278,11 +288,13 @@ public class SpellChecker {
 	}
 
 
-	protected boolean wordIsNumberWithSuffix(String word) {
+	protected String wordIsNumberWithSuffix(String word) {
 		Pattern p = Pattern.compile("^(\\$?\\d+(?:[.,:]\\d+)?(?:[.,:]\\d+)?)-?([agijklmnpqrstuv]+)$");
 		Matcher mp = p.matcher(word);
-		
-		return mp.matches();
+		if (mp.matches())
+			return mp.group(2);
+		else
+			return null;
 	}
 
 
@@ -556,6 +568,28 @@ public class SpellChecker {
 		
 		return corrections;
 	}
+	
+	
+	protected boolean assessEndingWithIMA(String ending) {
+		boolean accepted = false;
+		MorphologicalAnalyzer morphAnalyzer = segmenter.getAnalyzer();
+		for (int i=0; i<makeUpWords.length; i++) {
+			accepted = false;
+			String term = makeUpWords[i]+ending;
+			Decomposition[] decs = null;
+			try {
+				decs = morphAnalyzer.decomposeWord(term);
+			} catch (TimeoutException | MorphInukException e) {
+			}
+			if (decs!=null && decs.length!=0) {
+				accepted = true;
+				break;
+			}
+		}
+		
+		return accepted;
+	}
+
 
 
 }

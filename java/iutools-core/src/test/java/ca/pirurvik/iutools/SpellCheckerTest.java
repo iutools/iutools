@@ -403,15 +403,30 @@ public class SpellCheckerTest {
 	@Test
 	public void test__isMispelled__wordIsNumberWithSuffix() throws Exception  {
 		String word = "34-mi";
-		Assert.assertTrue("Word "+word+" should have been acknowledged as a number-based word", checker.wordIsNumberWithSuffix(word));
+		Assert.assertEquals("Word "+word+" should have been acknowledged as a number-based word", "mi",checker.wordIsNumberWithSuffix(word));
 		word = "$34,000-mi";
-		Assert.assertTrue("Word "+word+" should have been acknowledged as a number-based word", checker.wordIsNumberWithSuffix(word));
+		Assert.assertEquals("Word "+word+" should have been acknowledged as a number-based word", "mi",checker.wordIsNumberWithSuffix(word));
 		word = "4:30-mi";
-		Assert.assertTrue("Word "+word+" should have been acknowledged as a number-based word", checker.wordIsNumberWithSuffix(word));
+		Assert.assertEquals("Word "+word+" should have been acknowledged as a number-based word", "mi",checker.wordIsNumberWithSuffix(word));
 		word = "5.5-mi";
-		Assert.assertTrue("Word "+word+" should have been acknowledged as a number-based word", checker.wordIsNumberWithSuffix(word));
+		Assert.assertEquals("Word "+word+" should have been acknowledged as a number-based word", "mi",checker.wordIsNumberWithSuffix(word));
 		word = "5,500.33-mi";
-		Assert.assertTrue("Word "+word+" should have been acknowledged as a number-based word", checker.wordIsNumberWithSuffix(word));
+		Assert.assertEquals("Word "+word+" should have been acknowledged as a number-based word", "mi",checker.wordIsNumberWithSuffix(word));
+		word = "bla";
+		Assert.assertEquals("Word "+word+" should have been rejected as a number-based word", null,checker.wordIsNumberWithSuffix(word));
+	}
+	
+	@Test
+	public void test__assessEndingWithIMA() throws Exception  {
+		String ending = "mi";
+		boolean goodEnding = checker.assessEndingWithIMA(ending);
+		Assert.assertTrue("Ending "+ending+" should have been acknowledged as valid word ending", goodEnding);
+		ending = "mitiguti";
+		goodEnding = checker.assessEndingWithIMA(ending);
+		Assert.assertFalse("Ending "+ending+" should have been rejected as valid word ending", goodEnding);
+		ending = "gumut";
+		goodEnding = checker.assessEndingWithIMA(ending);
+		Assert.assertFalse("Ending "+ending+" should have been rejected as valid word ending", goodEnding);
 	}
 	
 	@Test
