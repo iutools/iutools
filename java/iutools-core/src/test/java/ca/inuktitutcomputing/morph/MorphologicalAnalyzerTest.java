@@ -239,7 +239,7 @@ public class MorphologicalAnalyzerTest {
 		String word = "sivungujuq";
 
 		try {
-//			analyzer.disactivateTimeout();;
+			analyzer.disactivateTimeout();;
 			Decomposition[] decs = analyzer.decomposeWord(word);
 			Assert.assertTrue(decs.length!=0);
 			Pattern p = Pattern.compile("^"+Pattern.quote("{sivu:sivu/1n}{ngu:u/1nv}"));
@@ -252,7 +252,7 @@ public class MorphologicalAnalyzerTest {
 					break;
 				}
 			}
-			Assert.assertTrue("",found);
+			Assert.assertFalse("",found);
 		} catch(Exception e) {
 			throw e;
 		}
