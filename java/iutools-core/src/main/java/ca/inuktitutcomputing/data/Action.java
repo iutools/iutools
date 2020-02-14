@@ -1053,7 +1053,8 @@ public abstract class Action {
     	}
 
     	public String surfaceForm(String form) {
-    	    return inserted+form;
+//    	    return inserted+form;
+    	    return form;
     	}
 
         public Object clone() {
@@ -1128,7 +1129,8 @@ public abstract class Action {
     	}
 
     	public String surfaceForm(String form) {
-    	    return inserted+form;
+//    	    return inserted+form;
+    	    return form;
     	}
 
         public Object clone() {
@@ -1332,7 +1334,8 @@ public abstract class Action {
     	}
 
     	public String surfaceForm(String form) {
-    	    return inserted+inserted+form;
+//    	    return inserted+inserted+form;
+    	    return form;
     	}
 
         public Object clone() {
