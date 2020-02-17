@@ -55,7 +55,7 @@ iruti,1,sn,nv,m,t,,,,,n,i(ng),,i(a),,,s,i(ng),,s,i(ng),to remove all of s.t. (re
 isak,1,sn,nv,m,i,,,,,n,,,i(a),,,s,,,s,,to have almost no more of s.t.; there to be almost no more of s.t.,n'avoir presque plus de qqch.; n'y avoir presque plus de qqch.,,,,A1,,,m
 it,3,sn,nv,m,i,,,,,n,i(ng),,i(a) i(i),,,s,i(ng),,s s,i(ng) s(a),to be such,�tre tel,type:a,,,H1,,,m
 it,1,sn,nv,m,i,,,,,n,,-,-,,-,-,,-,-,,after -mi: to be in; to exist in; after -tut: to be like,apr�s -mi: �tre dans; exister dans; apr�s -tut: �tre comme,cas:loc cas:sim,,,H1,,,m
-it,2,sn,nv,m,i,,,,,n,i(ng),,i(a) i(i),,,s,i(ng),,s s,"i(ng) ssi(i$,a)",to have no s.t.; to be without s.t.,ne pas avoir de; manquer de,!cp(id:it/3nv),,,H1,,,m
+it,2,sn,nv,m,i,,,,,n,i(ng),,i(a) i(i),,,s,i(ng),,s s,"i(ng) ssi(i$,a)",to have no s.t.; to be without s.t.,ne pas avoir de; manquer de,"!cp(id:it/3nv),!type:tn",,,H1,,,m
 it,1,sv,vv,m,i,,,,,n,,,s,,,s,,,s,s(a),to be the contrary of,�tre le contraire de,"type:v,nature:a",,,,,,m
 jaq,1,sv,vn,t,,,,,,n,,taq,n,,taq,n,,taq,n,,he/that on whom/which the action is done (passive),personne ou chose sur laquelle l'action est accomplie (passif),!id:u/1nv,t,,H1,,,m
 jaq,1,sv,vv,m,i,,,,jaaq,n,,-,-,,-,-,,-,-,,"to seem, to be, to look, to act like being s.t. or s.o.","sembler, �tre, avoir l'air, agir comme qqch. ou qqn",id:u/1nv,,,H1 A1,,,m
