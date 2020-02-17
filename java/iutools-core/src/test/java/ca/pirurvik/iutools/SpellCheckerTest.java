@@ -50,6 +50,7 @@ public class SpellCheckerTest {
 		checker.addCorrectWord("inuk");
 		checker.addCorrectWord("inuksuk");
 		checker.addCorrectWord("nunavut");
+		checker.addCorrectWord("1988-mut");
 		// etc...
 		
 		// or
@@ -108,51 +109,58 @@ public class SpellCheckerTest {
 		Assert.assertFalse(containsWord("nunavut", checker));
 		checker.addCorrectWord("nunavut");
 		Assert.assertTrue(containsWord("nunavut", checker));
+		
+		Assert.assertFalse(containsNumericTerm("1988-mut", checker));
+		checker.addCorrectWord("1988-mut");
+		Assert.assertTrue(containsNumericTerm("1988-mut", checker));
+		
+		
 	}
 	
-	@Test
-	public void test__idf__HappyPath() {
-		Assert.assertEquals("IDF was wrong for sequence that starts words ('inu')", new Long(5), checker.ngramStat("inu"));
-		Assert.assertEquals("IDF was wrong for sequence at the middle of words ('ks')", new Long(1), checker.ngramStat("ks"));
-		Assert.assertEquals("IDF was wrong for sequence at the end of words ('ktut')", new Long(1), checker.ngramStat("ktut"));
-		Assert.assertEquals("IDF was wrong for sequence ('uk')", new Long(5), checker.ngramStat("uk"));
-		Assert.assertEquals("IDF was wrong for sequence with > 5 chars", new Long(0), checker.ngramStat("nunavu"));
-		Assert.assertEquals("IDF was wrong for sequence with =5 chars", new Long(1), checker.ngramStat("unavu"));
-		Assert.assertEquals("IDF was wrong for non-existant sequence",new Long(0), checker.ngramStat("blah"));
-	}
+//	@Test - test removed; ngramStat() not used anymore
+//	public void test__idf__HappyPath() {
+//		Assert.assertEquals("IDF was wrong for sequence that starts words ('inu')", new Long(5), checker.ngramStat("inu"));
+//		Assert.assertEquals("IDF was wrong for sequence at the middle of words ('ks')", new Long(1), checker.ngramStat("ks"));
+//		Assert.assertEquals("IDF was wrong for sequence at the end of words ('ktut')", new Long(1), checker.ngramStat("ktut"));
+//		Assert.assertEquals("IDF was wrong for sequence ('uk')", new Long(5), checker.ngramStat("uk"));
+//		Assert.assertEquals("IDF was wrong for sequence with > 5 chars", new Long(0), checker.ngramStat("nunavu"));
+//		Assert.assertEquals("IDF was wrong for sequence with =5 chars", new Long(1), checker.ngramStat("unavu"));
+//		Assert.assertEquals("IDF was wrong for non-existant sequence",new Long(0), checker.ngramStat("blah"));
+//	}
 
-	@Test
-	public void test__rarestSequencesOf__HappyPath() throws Exception {
-		List<Pair<String,Long>> rarest = checker.rarestSequencesOf("inukkshuk");
-		List<Pair<String,Long>> expected = new ArrayList<Pair<String,Long>>();
-		
-		expected.add(new Pair<String,Long>("s",new Long(1)));
-		expected.add(new Pair<String,Long>("h",new Long(1)));
-		expected.add(new Pair<String,Long>("ks",new Long(1)));
-		expected.add(new Pair<String,Long>("sh",new Long(1)));
-		expected.add(new Pair<String,Long>("hu",new Long(1)));
-		expected.add(new Pair<String,Long>("ksh",new Long(1)));
-		expected.add(new Pair<String,Long>("shu",new Long(1)));
-		expected.add(new Pair<String,Long>("huk",new Long(1)));
-		expected.add(new Pair<String,Long>("kshu",new Long(1)));
-		expected.add(new Pair<String,Long>("shuk",new Long(1)));
-		expected.add(new Pair<String,Long>("kshuk",new Long(1)));
-		expected.add(new Pair<String,Long>("i",new Long(5)));
-		expected.add(new Pair<String,Long>("k",new Long(5)));
-		expected.add(new Pair<String,Long>("in",new Long(5)));
-		expected.add(new Pair<String,Long>("uk",new Long(5)));
-		expected.add(new Pair<String,Long>("inu",new Long(5)));
-		expected.add(new Pair<String,Long>("nuk",new Long(5)));
-		expected.add(new Pair<String,Long>("inuk",new Long(5)));
-		expected.add(new Pair<String,Long>("n",new Long(6)));
-		expected.add(new Pair<String,Long>("u",new Long(6)));
-		expected.add(new Pair<String,Long>("nu",new Long(6)));
-		AssertHelpers.assertDeepEquals("The rarest sequence was ", expected, rarest);
-	}
+//	@Test - test removed; rarestSequencesOf() not used anymore
+//	public void test__rarestSequencesOf__HappyPath() throws Exception {
+//		List<Pair<String,Long>> rarest = checker.rarestSequencesOf("inukkshuk");
+//		List<Pair<String,Long>> expected = new ArrayList<Pair<String,Long>>();
+//		
+//		expected.add(new Pair<String,Long>("s",new Long(1)));
+//		expected.add(new Pair<String,Long>("h",new Long(1)));
+//		expected.add(new Pair<String,Long>("ks",new Long(1)));
+//		expected.add(new Pair<String,Long>("sh",new Long(1)));
+//		expected.add(new Pair<String,Long>("hu",new Long(1)));
+//		expected.add(new Pair<String,Long>("ksh",new Long(1)));
+//		expected.add(new Pair<String,Long>("shu",new Long(1)));
+//		expected.add(new Pair<String,Long>("huk",new Long(1)));
+//		expected.add(new Pair<String,Long>("kshu",new Long(1)));
+//		expected.add(new Pair<String,Long>("shuk",new Long(1)));
+//		expected.add(new Pair<String,Long>("kshuk",new Long(1)));
+//		expected.add(new Pair<String,Long>("i",new Long(5)));
+//		expected.add(new Pair<String,Long>("k",new Long(5)));
+//		expected.add(new Pair<String,Long>("in",new Long(5)));
+//		expected.add(new Pair<String,Long>("uk",new Long(5)));
+//		expected.add(new Pair<String,Long>("inu",new Long(5)));
+//		expected.add(new Pair<String,Long>("nuk",new Long(5)));
+//		expected.add(new Pair<String,Long>("inuk",new Long(5)));
+//		expected.add(new Pair<String,Long>("n",new Long(6)));
+//		expected.add(new Pair<String,Long>("u",new Long(6)));
+//		expected.add(new Pair<String,Long>("nu",new Long(6)));
+//		AssertHelpers.assertDeepEquals("The rarest sequence was ", expected, rarest);
+//	}
 	
 	@Test
 	public void test__wordsContainingSequ() {
 		String seq = "nuk";
+		checker.allWordsForCandidates = checker.allWords;
 		Set<String> wordsWithSeq = checker.wordsContainingSequ(seq);
 		String[] expected = new String[] {"inukshuk","inuk","inuktut"};
 			AssertHelpers.assertContainsAll("The list of words containing sequence "+seq+" was not as expected", 
@@ -175,6 +183,8 @@ public class SpellCheckerTest {
 		String[] expected;
 		Set<String> wordsWithSeq;
 		
+		checker.allWordsForCandidates = checker.allWords;
+
 		seq = "inu";
 		wordsWithSeq = checker.wordsContainingSequ(seq);
 		expected = new String[] {"inuktitut","inuksuk","inuttitut","takuinuit"};
@@ -200,25 +210,27 @@ public class SpellCheckerTest {
 				wordsWithSeq, expected);
 	}
 	
-	@Test
-	public void test__firstPassCandidates() throws Exception {
-		String badWord = "inukkshuk";
-		Set<String> candidates = checker.firstPassCandidates(badWord);
-	
-		
-		// ALAIN: The expected list below contains some misspelled words that come before some 
-		//   correctly spelled ones. But that does not matter as it is only a first pass.
-		//   The second pass should re-sort the candidates, taking into account whether or not
-		//   they were analyzed by the morphological segmenter.
-		//     - 
-		String[] expected = new String[] {"inuk","inukshuk","inukttut","inuktut","inukutt","nunavut"};		
-		AssertHelpers.assertDeepEquals("The list of candidate corrections for word "+badWord+" was not as expected", 
-				expected, candidates);
-	}
+//	@Test - test removed; firstPassCandidates() not used anymore, replaced by firstPassCandidates_TFIDF
+//	public void test__firstPassCandidates() throws Exception {
+//		String badWord = "inukkshuk";
+//		Set<String> candidates = checker.firstPassCandidates(badWord);
+//	
+//		
+//		// ALAIN: The expected list below contains some misspelled words that come before some 
+//		//   correctly spelled ones. But that does not matter as it is only a first pass.
+//		//   The second pass should re-sort the candidates, taking into account whether or not
+//		//   they were analyzed by the morphological segmenter.
+//		//     - 
+//		String[] expected = new String[] {"inuk","inukshuk","inukttut","inuktut","inukutt","nunavut"};		
+//		AssertHelpers.assertDeepEquals("The list of candidate corrections for word "+badWord+" was not as expected", 
+//				expected, candidates);
+//	}
 	
 	@Test
 	public void test__firstPassCandidates_TFIDF() throws Exception {
 		String badWord = "inukkshuk";
+		checker.allWordsForCandidates = checker.allWords;
+		checker.ngramStatsForCandidates = checker.ngramStats;
 		Set<String> candidates = checker.firstPassCandidates_TFIDF(badWord);
 	
 		
@@ -266,7 +278,22 @@ public class SpellCheckerTest {
 		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
 		assertCorrectionOK(gotCorrection, word, true, new String[] {});
 	}
+
+	@Test
+	public void test__correctWord__numeric_term_mispelled() throws Exception {
+		String[] correctWordsLatin = new String[] {
+				"inuktut", "nunavummi", "inuk", "inuksut", "nunavuumi", "nunavut",
+				"1988-mut", "$100-mik", "100-nginnik", "100-ngujumik"
+				};
+		SpellChecker checker = new SpellChecker();
+		checker.setVerbose(false);
+		for (String aWord: correctWordsLatin) checker.addCorrectWord(aWord);
+		String word = "1987-muti";
+		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
+		assertCorrectionOK(gotCorrection, word, false, new String[] { "1987-mut" });
+	}
 	
+
 	
 	@Test 
 	public void test__correctText__roman() throws Exception  {
@@ -391,7 +418,15 @@ public class SpellCheckerTest {
 	}
 	
 	@Test
-	public void test__isMispelled__WordContainsMoreThanTwoConsecutiveConsonants() throws Exception  {
+	public void test__isMispelled__WordIsNumericTermWithValidEnding() throws Exception  {
+		String word = "1988-mut";
+		Assert.assertFalse("Word "+word+" should have been deemed correctly spelled", checker.isMispelled(word));
+		word = "1988-muti";
+		Assert.assertTrue("Word "+word+" should have been deemed correctly spelled", checker.isMispelled(word));
+	}
+	
+	@Test
+	public void test__WordContainsMoreThanTwoConsecutiveConsonants() throws Exception  {
 		String word = "imglu";
 		Assert.assertTrue("Word "+word+" should have been acknowledged as having more than 2 consecutive consonants", checker.wordContainsMoreThanTwoConsecutiveConsonants(word));
 		word = "inglu";
@@ -401,19 +436,35 @@ public class SpellCheckerTest {
 	}
 	
 	@Test
-	public void test__isMispelled__wordIsNumberWithSuffix() throws Exception  {
+	public void test__wordIsNumberWithSuffix() throws Exception  {
 		String word = "34-mi";
-		Assert.assertEquals("Word "+word+" should have been acknowledged as a number-based word", "mi",checker.wordIsNumberWithSuffix(word));
+		String[] numericTermParts = checker.wordIsNumberWithSuffix(word);
+		Assert.assertTrue("Word "+word+" should have been acknowledged as a number-based word", numericTermParts != null);
+		Assert.assertEquals("The 'number' part is not as expected.", "34-", numericTermParts[0]);
+		Assert.assertEquals("The 'ending' part is not as expected.", "mi", numericTermParts[1]);
 		word = "$34,000-mi";
-		Assert.assertEquals("Word "+word+" should have been acknowledged as a number-based word", "mi",checker.wordIsNumberWithSuffix(word));
+		numericTermParts = checker.wordIsNumberWithSuffix(word);
+		Assert.assertTrue("Word "+word+" should have been acknowledged as a number-based word", numericTermParts != null);
+		Assert.assertEquals("The 'number' part is not as expected.", "$34,000-", numericTermParts[0]);
+		Assert.assertEquals("The 'ending' part is not as expected.", "mi", numericTermParts[1]);
 		word = "4:30-mi";
-		Assert.assertEquals("Word "+word+" should have been acknowledged as a number-based word", "mi",checker.wordIsNumberWithSuffix(word));
+		numericTermParts = checker.wordIsNumberWithSuffix(word);
+		Assert.assertTrue("Word "+word+" should have been acknowledged as a number-based word", numericTermParts != null);
+		Assert.assertEquals("The 'number' part is not as expected.", "4:30-", numericTermParts[0]);
+		Assert.assertEquals("The 'ending' part is not as expected.", "mi", numericTermParts[1]);
 		word = "5.5-mi";
-		Assert.assertEquals("Word "+word+" should have been acknowledged as a number-based word", "mi",checker.wordIsNumberWithSuffix(word));
+		numericTermParts = checker.wordIsNumberWithSuffix(word);
+		Assert.assertTrue("Word "+word+" should have been acknowledged as a number-based word", numericTermParts != null);
+		Assert.assertEquals("The 'number' part is not as expected.", "5.5-", numericTermParts[0]);
+		Assert.assertEquals("The 'ending' part is not as expected.", "mi", numericTermParts[1]);
 		word = "5,500.33-mi";
-		Assert.assertEquals("Word "+word+" should have been acknowledged as a number-based word", "mi",checker.wordIsNumberWithSuffix(word));
+		numericTermParts = checker.wordIsNumberWithSuffix(word);
+		Assert.assertTrue("Word "+word+" should have been acknowledged as a number-based word", numericTermParts != null);
+		Assert.assertEquals("The 'number' part is not as expected.", "5,500.33-", numericTermParts[0]);
+		Assert.assertEquals("The 'ending' part is not as expected.", "mi", numericTermParts[1]);
 		word = "bla";
-		Assert.assertEquals("Word "+word+" should have been rejected as a number-based word", null,checker.wordIsNumberWithSuffix(word));
+		numericTermParts = checker.wordIsNumberWithSuffix(word);
+		Assert.assertTrue("Word "+word+" should have been acknowledged as a number-based word", numericTermParts == null);
 	}
 	
 	@Test
@@ -430,7 +481,7 @@ public class SpellCheckerTest {
 	}
 	
 	@Test
-	public void test__isMispelled__wordIsPunctuation() throws Exception  {
+	public void test__wordIsPunctuation() throws Exception  {
 		String word = "-";
 		Assert.assertTrue("Word "+word+" should have been acknowledged as punctuation", checker.wordIsPunctuation(word));
 		word = "–";
@@ -446,6 +497,16 @@ public class SpellCheckerTest {
 	private boolean containsWord(String word, SpellChecker checker) {
 		boolean answer = false;
 		if (checker.allWords.indexOf(","+word+",") >= 0) {
+			answer = true;
+		}
+		return answer;
+	}
+
+	private boolean containsNumericTerm(String numericTerm, SpellChecker checker) {
+		boolean answer = false;
+		String[] numericTermParts = checker.wordIsNumberWithSuffix(numericTerm);
+		String normalizedNumericTerm = "0000"+numericTermParts[1];
+		if (checker.allNormalizedNumericTerms.indexOf(","+normalizedNumericTerm+",") >= 0) {
 			answer = true;
 		}
 		return answer;

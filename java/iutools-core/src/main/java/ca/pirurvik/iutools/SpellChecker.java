@@ -23,17 +23,20 @@ import org.apache.log4j.Logger;
 
 import com.google.gson.Gson;
 
+import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.StringUtils;
+import ca.inuktitutcomputing.config.IUConfig;
 import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.morph.MorphInukException;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
 import ca.inuktitutcomputing.script.Orthography;
 import ca.inuktitutcomputing.script.Syllabics;
 import ca.inuktitutcomputing.script.TransCoder;
+import ca.inuktitutcomputing.utilbin.AnalyzeNumberExpressions;
 import ca.inuktitutcomputing.utilities.EditDistanceCalculator;
 import ca.inuktitutcomputing.utilities.EditDistanceCalculatorFactory;
 import ca.inuktitutcomputing.utilities.EditDistanceCalculatorFactoryException;
@@ -46,14 +49,20 @@ public class SpellChecker {
 	public int MAX_CANDIDATES = 300; //200; //100;
 	public int DEFAULT_CORRECTIONS = 5;
 	public String allWords = ",,";
-
 	public Map<String,Long> ngramStats = new HashMap<String,Long>();
+	
+	public String allNormalizedNumericTerms = ",,";
+	public Map<String,Long> ngramStatsOfNumericTerms = new HashMap<String,Long>();
+	
+	public transient String allWordsForCandidates = null;
+	public transient Map<String,Long> ngramStatsForCandidates = null;
+
 	public transient EditDistanceCalculator editDistanceCalculator;
 	public transient boolean verbose = true;
 	
 	public CompiledCorpus corpus = null;
 	private static StringSegmenter_IUMorpheme segmenter = null;
-	private transient String[] makeUpWords = new String[] {"aki","nua"};
+	private transient String[] makeUpWords = new String[] {"sivu","sia"};
 	private static ArrayList<String> latinSingleInuktitutCharacters = new ArrayList<String>();
 	static {
 		for (int i=0; i<Syllabics.syllabicsToRomanICI.length; i++) {
@@ -68,7 +77,7 @@ public class SpellChecker {
 	}
 	
 	
-	public void setDictionaryFromCorpus() throws SpellCheckerException {
+	public void setDictionaryFromCorpus() throws SpellCheckerException, ConfigException, FileNotFoundException {
 		try {
 			corpus = CompiledCorpusRegistry.getCorpus(null);
 			__processCorpus();
@@ -77,7 +86,7 @@ public class SpellChecker {
 		}
 	}
 
-	public void setDictionaryFromCorpus(String _corpusName) throws SpellCheckerException {
+	public void setDictionaryFromCorpus(String _corpusName) throws SpellCheckerException, ConfigException, FileNotFoundException {
 		try {
 			corpus = CompiledCorpusRegistry.getCorpus(_corpusName);
 			__processCorpus();
@@ -96,12 +105,32 @@ public class SpellChecker {
 		}
 	}
 	
-	private void __processCorpus() {
+	private void __processCorpus() throws ConfigException, FileNotFoundException {
 		this.allWords = corpus.decomposedWordsSuite;
 		this.ngramStats = corpus.ngramStats;
 		corpus.setVerbose(verbose);
+		// Ideally, these should be compiled along with allWords and ngramsStats during corpus compilation
+		String dataPath = IUConfig.getIUDataPath();
+		FileReader fr = new FileReader(dataPath+"/data/numericTermsCorpus.json");
+		AnalyzeNumberExpressions numberExpressionsAnalysis = new Gson().fromJson(fr, AnalyzeNumberExpressions.class);
+		this.allNormalizedNumericTerms = getNormalizedNumericTerms(numberExpressionsAnalysis);
+		this.ngramStatsOfNumericTerms = getNgramsStatsOfNumericTerms(numberExpressionsAnalysis);
 	}
 	
+
+	/*
+	 * Ideally those 2 values should have been compiled during the corpus compilation.
+	 * But for now, they are compiled externally and stored in a special corpus compilation (json) file.
+	 * (see AnalyseNumberExpressions.java in ca.inuktitutcomputing.utilbin)
+	 */
+	private Map<String, Long> getNgramsStatsOfNumericTerms(AnalyzeNumberExpressions numberExpressionsAnalysis) {
+		return numberExpressionsAnalysis.getNgramStats();
+	}
+
+
+	private String getNormalizedNumericTerms(AnalyzeNumberExpressions numberExpressionsAnalysis) {
+		return numberExpressionsAnalysis.getDecomposedNormalizedNumericTermsSuite();
+	}
 
 
 	public void setEditDistanceAlgorithm(EditDistanceCalculatorFactory.DistanceMethod name) throws ClassNotFoundException, EditDistanceCalculatorFactoryException {
@@ -114,19 +143,24 @@ public class SpellChecker {
 	}
 	
 	public void addCorrectWord(String word) {
-		//System.out.println("-- addCorrectWord: word="+word);;
-		allWords += word+",,";
-		updateSequenceIDFForWord(word);
+		//System.out.println("-- addCorrectWord: word="+word);
+		String[] numericTermParts = null;
+		boolean wordIsNumericTerm = (numericTermParts=wordIsNumberWithSuffix(word)) != null;
+		if (wordIsNumericTerm && allNormalizedNumericTerms.indexOf(","+"0000"+numericTermParts[1]+",") < 0)
+			allNormalizedNumericTerms += "0000"+numericTermParts[1]+",,";
+		else
+			allWords += word+",,";
+		__updateSequenceIDFForWord(word,wordIsNumericTerm);
 	}
 	
-	private void updateSequenceIDFForWord(String word) {
+	private void __updateSequenceIDFForWord(String word, boolean wordIsNumericTerm) {
 		Set<String> seqSeenInWord = new HashSet<String>();
 		try {
 		for (int seqLen = 1; seqLen <= MAX_SEQ_LEN; seqLen++) {
 			for (int  start=0; start <= word.length() - seqLen; start++) {
 				String charSeq = word.substring(start, start+seqLen);
 				if (!seqSeenInWord.contains(charSeq)) {
-					updateSequenceIDF(charSeq);
+					__updateSequenceIDF(charSeq, wordIsNumericTerm);
 				}
 				seqSeenInWord.add(charSeq);
 			}
@@ -135,12 +169,18 @@ public class SpellChecker {
 		}
 	}
 
-	private void updateSequenceIDF(String charSeq) {
-		if (!ngramStats.containsKey(charSeq)) {
-			ngramStats.put(charSeq, new Long(0));
+	private void __updateSequenceIDF(String charSeq, boolean wordIsNumericTerm) {
+		if (wordIsNumericTerm) {
+			if (!ngramStatsOfNumericTerms.containsKey(charSeq)) {
+				ngramStatsOfNumericTerms.put(charSeq, new Long(0));
+			}
+			ngramStatsOfNumericTerms.put(charSeq, ngramStatsOfNumericTerms.get(charSeq) + 1);
+		} else {
+			if (!ngramStats.containsKey(charSeq)) {
+				ngramStats.put(charSeq, new Long(0));
+			}
+			ngramStats.put(charSeq, ngramStats.get(charSeq) + 1);
 		}
-		ngramStats.put(charSeq, ngramStats.get(charSeq)+1);
-		//System.out.println("-- udpateSequenceIDF:    upon exit, idfStats.get(charSeq)="+idfStats.get(charSeq));
 	}
 
 	public void saveToFile(File checkerFile) throws IOException {
@@ -198,12 +238,21 @@ public class SpellChecker {
 		corr.wasMispelled = isMispelled(wordInLatin);
 		logger.debug("wasMispelled= "+corr.wasMispelled);
 		if (corr.wasMispelled) {
-		
+			// set ngramStats and suite of words for candidates according to type of word (normal word or numeric expression)
+			String[] numericTermParts = wordIsNumberWithSuffix(wordInLatin);
+			boolean wordIsNumericTerm = numericTermParts != null;
+			allWordsForCandidates = getAllWordsToBeUsedForCandidates(wordIsNumericTerm);
+			ngramStatsForCandidates = getNgramStatsToBeUsedForCandidates(wordIsNumericTerm);
 			Set<String> candidates = firstPassCandidates_TFIDF(wordInLatin);
 			logger.debug("candidates= "+PrettyPrinter.print(candidates));
 			List<Pair<String,Double>> candidatesWithSim = computeCandidateSimilarities(wordInLatin, candidates);
 			List<String> corrections = sortCandidatesBySimilarity(candidatesWithSim);
 			logger.debug("corrections for "+word+": "+corrections.size());
+			
+			if (wordIsNumericTerm)
+				for (int ic=0; ic<corrections.size(); ic++) {
+					corrections.set(ic, corrections.get(ic).replace("0000",numericTermParts[0]));
+				}
 			
 	 		if (maxCorrections== -1)
 	 			corr.setPossibleSpellings(corrections);
@@ -238,7 +287,7 @@ public class SpellChecker {
 	 */
 	protected Boolean isMispelled(String word) throws SpellCheckerException {
 		boolean wordIsMispelled = false;
-		String suffix = null;
+		String[] numericTermParts = null;
 		
 		if (corpus!=null && corpus.wordsFailedSegmentation.contains(word)) {
 			wordIsMispelled = true;
@@ -255,12 +304,9 @@ public class SpellChecker {
 		else if (wordContainsMoreThanTwoConsecutiveConsonants(word)) {
 			wordIsMispelled = true;
 		}
-		else if ( (suffix=wordIsNumberWithSuffix(word)) != null) {
-			boolean pseudoWordWithSuffixAnalysesWithSuccess = assessEndingWithIMA(suffix);
+		else if ( (numericTermParts=wordIsNumberWithSuffix(word)) != null) {
+			boolean pseudoWordWithSuffixAnalysesWithSuccess = assessEndingWithIMA(numericTermParts[1]);
 			wordIsMispelled = !pseudoWordWithSuffixAnalysesWithSuccess;
-			if (wordIsMispelled) {
-				
-			}
 		}
 		else if (wordIsPunctuation(word)) {
 			wordIsMispelled = false;
@@ -288,11 +334,11 @@ public class SpellChecker {
 	}
 
 
-	protected String wordIsNumberWithSuffix(String word) {
-		Pattern p = Pattern.compile("^(\\$?\\d+(?:[.,:]\\d+)?(?:[.,:]\\d+)?)-?([agijklmnpqrstuv]+)$");
+	protected String[] wordIsNumberWithSuffix(String word) {
+		Pattern p = Pattern.compile("^(\\$?\\d+(?:[.,:]\\d+)?(?:[.,:]\\d+)?-?)([agijklmnpqrstuv]+)$");
 		Matcher mp = p.matcher(word);
 		if (mp.matches())
-			return mp.group(2);
+			return new String[] {mp.group(1),mp.group(2)};
 		else
 			return null;
 	}
@@ -314,13 +360,13 @@ public class SpellChecker {
 	}
 
 
-	public Long ngramStat(String charSeq) {
-		Long val = new Long(0);
-		if (ngramStats.containsKey(charSeq)) {
-			val = ngramStats.get(charSeq);
-		}
-		return val;
-	}
+//	public Long ngramStat(String charSeq) {
+//		Long val = new Long(0);
+//		if (ngramStats.containsKey(charSeq)) {
+//			val = ngramStats.get(charSeq);
+//		}
+//		return val;
+//	}
 	
 
 	private List<String> sortCandidatesBySimilarity(List<Pair<String, Double>> candidatesWithSim) {
@@ -357,37 +403,38 @@ public class SpellChecker {
 		return (double)distance;
 	}
 
-	public Set<String> firstPassCandidates(String badWord) {
-		Logger logger = Logger.getLogger("SpellChecker.firstPassCandidates");
-		Set<String> candidates = new HashSet<String>();
-		List<Pair<String,Long>> rarest = rarestSequencesOf(badWord);
-		while (!rarest.isEmpty()) {
-			Pair<String,Long> currSeqInfo = rarest.remove(0);
-			logger.debug("sequence: "+currSeqInfo.getFirst()+" ("+currSeqInfo.getSecond()+")");
-			Set<String> wordsWithSequence = wordsContainingSequ(currSeqInfo.getFirst());
-			logger.debug("  wordsWithSequence: "+wordsWithSequence.size());
-			
-			candidates.addAll(wordsWithSequence);
-			logger.debug("  candidates: "+candidates.size());
-			if (candidates.size() >= MAX_CANDIDATES) {
-				if (!rarest.isEmpty()) {
-					Pair<String,Long> nextSeqInfo = rarest.get(0);
-					if (currSeqInfo.getSecond() == nextSeqInfo.getSecond()) {
-						// The next sequence is just as rare as the current one, so 
-						// keep going.
-						continue;
-					} else {
-						break;
-					}
-				}
-			}
-		}
-		logger.debug("Nb. candidates: "+candidates.size());
-		Iterator<String> itcand = candidates.iterator();
-		//while (itcand.hasNext())
-		//	logger.debug("candidate: "+itcand.next());
-		return candidates;
-	}
+	// Not used anymore, replaced by firstPassCandidates_TFIDF - to be deleted
+//	public Set<String> firstPassCandidates(String badWord) {
+//		Logger logger = Logger.getLogger("SpellChecker.firstPassCandidates");
+//		Set<String> candidates = new HashSet<String>();
+//		List<Pair<String,Long>> rarest = rarestSequencesOf(badWord);
+//		while (!rarest.isEmpty()) {
+//			Pair<String,Long> currSeqInfo = rarest.remove(0);
+//			logger.debug("sequence: "+currSeqInfo.getFirst()+" ("+currSeqInfo.getSecond()+")");
+//			Set<String> wordsWithSequence = wordsContainingSequ(currSeqInfo.getFirst());
+//			logger.debug("  wordsWithSequence: "+wordsWithSequence.size());
+//			
+//			candidates.addAll(wordsWithSequence);
+//			logger.debug("  candidates: "+candidates.size());
+//			if (candidates.size() >= MAX_CANDIDATES) {
+//				if (!rarest.isEmpty()) {
+//					Pair<String,Long> nextSeqInfo = rarest.get(0);
+//					if (currSeqInfo.getSecond() == nextSeqInfo.getSecond()) {
+//						// The next sequence is just as rare as the current one, so 
+//						// keep going.
+//						continue;
+//					} else {
+//						break;
+//					}
+//				}
+//			}
+//		}
+//		logger.debug("Nb. candidates: "+candidates.size());
+//		Iterator<String> itcand = candidates.iterator();
+//		//while (itcand.hasNext())
+//		//	logger.debug("candidate: "+itcand.next());
+//		return candidates;
+//	}
 
 
 	public Set<String> firstPassCandidates_TFIDF(String badWord) {
@@ -410,7 +457,7 @@ public class SpellChecker {
 		Pair<String,Double> idf[] = new Pair[ngrams.length];
 		HashMap<String,Double> idfHash = new HashMap<String,Double>();
 		for (int i=0; i<ngrams.length; i++) {
-			Long ngramStat = ngramStats.get(ngrams[i]);
+			Long ngramStat = ngramStatsForCandidates.get(ngrams[i]); //ngramStats.get(ngrams[i])
 			if (ngramStat==null) ngramStat = (long)0;
 			double val = 1.0 / (ngramStat + 1);
 			idf[i] = new Pair<String,Double>(ngrams[i],val);
@@ -504,35 +551,35 @@ public class SpellChecker {
 		}
 		else
 			p = Pattern.compile(",([^,]*"+seq+"[^,]*),");
-		Matcher m = p.matcher(allWords);
+		Matcher m = p.matcher(allWordsForCandidates); //p.matcher(allWords)
 		Set<String> wordsWithSeq = new HashSet<String>();
 		while (m.find())
 			wordsWithSeq.add(m.group(1));
 		return wordsWithSeq;
 	}
 
-	public List<Pair<String, Long>> rarestSequencesOf(String string) {
-		List<Pair<String,Long>> listOfRarest = new ArrayList<Pair<String,Long>>();
-		// TODO:
-		for (int seqLen = 1; seqLen <= MAX_SEQ_LEN; seqLen++) {
-			for (int  start=0; start <= string.length() - seqLen; start++) {
-				String charSeq = string.substring(start, start+seqLen);
-				Long idf = ngramStat(charSeq);
-				//System.out.println("-- rarestSequencesOf:    charSeq="+charSeq+" ("+idf+")");;
-				if (idf != 0) {
-					Pair<String,Long> pair = new Pair<String,Long>(charSeq,idf);
-					if ( !listOfRarest.contains(pair) )
-						listOfRarest.add(pair);
-				}
-			}
-		}
-		Collections.sort(listOfRarest,(Object p1, Object p2) -> {
-			return ((Pair<String,Long>)p1).getSecond().compareTo(((Pair<String,Long>)p2).getSecond());
-		});
-		
-		return listOfRarest;
-		
-	}
+//	public List<Pair<String, Long>> rarestSequencesOf(String string) {
+//		List<Pair<String,Long>> listOfRarest = new ArrayList<Pair<String,Long>>();
+//		// TODO:
+//		for (int seqLen = 1; seqLen <= MAX_SEQ_LEN; seqLen++) {
+//			for (int  start=0; start <= string.length() - seqLen; start++) {
+//				String charSeq = string.substring(start, start+seqLen);
+//				Long idf = ngramStat(charSeq);
+//				//System.out.println("-- rarestSequencesOf:    charSeq="+charSeq+" ("+idf+")");;
+//				if (idf != 0) {
+//					Pair<String,Long> pair = new Pair<String,Long>(charSeq,idf);
+//					if ( !listOfRarest.contains(pair) )
+//						listOfRarest.add(pair);
+//				}
+//			}
+//		}
+//		Collections.sort(listOfRarest,(Object p1, Object p2) -> {
+//			return ((Pair<String,Long>)p1).getSecond().compareTo(((Pair<String,Long>)p2).getSecond());
+//		});
+//		
+//		return listOfRarest;
+//		
+//	}
 	
 	
 	
@@ -571,16 +618,19 @@ public class SpellChecker {
 	
 	
 	protected boolean assessEndingWithIMA(String ending) {
+		Logger logger = Logger.getLogger("SpellChecker.assessEndingWithIMA");
 		boolean accepted = false;
 		MorphologicalAnalyzer morphAnalyzer = segmenter.getAnalyzer();
 		for (int i=0; i<makeUpWords.length; i++) {
 			accepted = false;
 			String term = makeUpWords[i]+ending;
+			logger.debug("term= "+term);
 			Decomposition[] decs = null;
 			try {
 				decs = morphAnalyzer.decomposeWord(term);
 			} catch (TimeoutException | MorphInukException e) {
 			}
+			logger.debug("decs: "+(decs==null?"null":decs.length));
 			if (decs!=null && decs.length!=0) {
 				accepted = true;
 				break;
@@ -588,6 +638,15 @@ public class SpellChecker {
 		}
 		
 		return accepted;
+	}
+	
+	
+	Map<String,Long> getNgramStatsToBeUsedForCandidates(boolean wordIsNumericTerm) {
+		return wordIsNumericTerm? this.ngramStatsOfNumericTerms : this.ngramStats;
+	}
+
+	String getAllWordsToBeUsedForCandidates(boolean wordIsNumericTerm) {
+		return wordIsNumericTerm? this.allNormalizedNumericTerms : this.allWords;
 	}
 
 
