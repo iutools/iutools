@@ -16,8 +16,12 @@ import ca.pirurvik.iutools.search.PageOfHits;
 
 public class SearchInputs extends ServiceInputs {
 	
+	public SearchResultsPage prevPage = null;
+	
 	public String query = null;
+	
 	private List<String> termsList = null;
+	
 	public int hitsPerPage = 10;
 	
 	public SearchInputs() {

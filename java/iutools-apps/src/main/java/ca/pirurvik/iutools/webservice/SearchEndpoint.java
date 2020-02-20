@@ -129,12 +129,19 @@ public class SearchEndpoint extends HttpServlet {
 			results.hits.add(new SearchHit(aHit.url.toString(), aHit.title, aHit.summary));
 		}
 		
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("returning results=\n"+PrettyPrinter.print(results));
+		}
+		
 		return results;
 	}
 
 	private SearchResults search(List<String> queryWords, SearchInputs inputs) throws SearchEndpointException {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.webservice.SearchEndpoint.search");
-
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("Invoked with queryWords="+PrettyPrinter.print(queryWords));
+		}
+		
 		Long totalHits = new Long(0);
 		IUSearchEngine engine;
 		try {
@@ -150,8 +157,7 @@ public class SearchEndpoint extends HttpServlet {
 			int hitsPerPage = inputs.hitsPerPage;
 			query.setMaxHits(10*hitsPerPage);
 			
-			query.terms = inputs.getTerms();
-			
+			query.terms = queryWords;
 			query.lang = "iu";
 		}
 		

@@ -1,26 +1,19 @@
 package ca.pirurvik.iutools.webservice;
 
-import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import ca.pirurvik.iutools.QueryExpander;
 import ca.pirurvik.iutools.QueryExpansion;
-import ca.pirurvik.iutools.search.SearchHit;
-import ca.pirurvik.iutools.testing.IUTTestHelpers;
 import ca.pirurvik.iutools.webservice.SearchEndpoint;
 import ca.pirurvik.iutools.webservice.SearchInputs;
-import ca.nrc.testing.AssertHelpers;
 import ca.nrc.testing.AssertNumber;
+import ca.nrc.testing.AssertObject;
+import ca.nrc.testing.AssertString;
 import ca.nrc.ui.web.testing.MockHttpServletResponse;
 
 
@@ -39,11 +32,6 @@ public class SearchEndpointTest {
 	 ***********************/
 	
 	@Test
-	public void test__TODOs() {
-		Assert.fail("Use the IUSearchEngine class for the search end point.\nREmember that it returns 10 pages' worht of hits.");
-	}
-	
-	@Test
 	public void test__SearchEndpoint__HappyPath() throws Exception {
 		
 		SearchInputs searchInputs = new SearchInputs("nunavut").setHitsPerPage(20);
@@ -54,17 +42,37 @@ public class SearchEndpointTest {
 					searchInputs
 				);
 		
-		IUTServiceTestHelpers.assertExpandedQueryEquals(
-				"(ᓄᓇᕗ OR ᓄᓇᕗᒻᒥ OR ᓄᓇᕘᒥ OR ᓄᓇᕘᑉ OR ᓄᓇᕗᒻᒥᐅᑦ OR ᓄᓇᕗᑦ)", 
-				response);
-		
+		String expExpandedQuery = "(ᓄᓇᕗ OR ᓄᓇᕗᒻᒥ OR ᓄᓇᕘᒥ OR ᓄᓇᕘᑉ OR ᓄᓇᕗᒻᒥᐅᑦ OR ᓄᓇᕗᑦ)";		
 		String[] queryWords = new String[] {"ᓄᓇᕗ", "ᓄᓇᕗᒻᒥ", "ᓄᓇᕘᒥ", "ᓄᓇᕘᑉ", "ᓄᓇᕗᒻᒥᐅᑦ", "ᓄᓇᕗᑦ"};
-		double tolerance = 0.75;
-		SearchResponse srchResponse = IUTServiceTestHelpers.toSearchResponse(response);
-		IUTServiceTestHelpers.assertMostHitsMatchWords(queryWords, response, tolerance);
-		AssertNumber.isGreaterOrEqualTo("Not enough hits found", srchResponse.totalHits, 2);
+		double badHitsTolerance = 0.5;
+		long minTotalHits = 10000;
+		long minHitsRetrieved = 100;
+		IUTServiceTestHelpers.assertSearchResponseIsOK(response, expExpandedQuery, queryWords, badHitsTolerance, 
+				minTotalHits, minHitsRetrieved);
 	}
 	
+	@Test
+	public void test__SearchEndpoint__QueryWithLessThanOnePageOfHits() throws Exception {
+		
+		// This query (= 'religion') returns less than 10 hits (i.e. less than 
+		// a full page of hits).
+		SearchInputs searchInputs = new SearchInputs("ᐃᓂᓕᐅ").setHitsPerPage(20);
+				
+		MockHttpServletResponse response = 
+				IUTServiceTestHelpers.postEndpointDirectly(
+					IUTServiceTestHelpers.EndpointNames.SEARCH,
+					searchInputs
+				);
+		
+		String expExpandedQuery = "(ᐃᓂᓕᐅᕐᑐᑦ OR ᐃᓂᓕᐅᕈᕕᒃ OR ᐃᓂᓕᐅᕆᓂᕐᓗ OR ᐃᓂᓕᐅᕆᓂᕐᒥᒃ OR ᐃᓂᓕᐅᕐᑕᐅᓗᓂ OR ᐃᓂᓕᐅ)";
+		String[] queryWords = new String[] {"ᐃᓂᓕᐅᕐᑐᑦ", "ᐃᓂᓕᐅᕈᕕᒃ", "ᐃᓂᓕᐅᕆᓂᕐᓗ", "ᐃᓂᓕᐅᕆᓂᕐᒥᒃ", "ᐃᓂᓕᐅᕐᑕᐅᓗᓂ", "ᐃᓂᓕᐅ"};
+		double badHitsTolerance = 0.75;
+		long minTotalHits = 1;
+		long minHitsRetrieved = 1;
+		IUTServiceTestHelpers.assertSearchResponseIsOK(response, expExpandedQuery, queryWords, badHitsTolerance, 
+				minTotalHits, minHitsRetrieved);
+	}
+
 	@Test
 	public void test__SearchEndpoint__QueryIsAlreadyExpanded__DoesNotTryToExpandAgain() throws Exception {
 		
@@ -76,15 +84,13 @@ public class SearchEndpointTest {
 					searchInputs
 				);
 		
-		IUTServiceTestHelpers.assertExpandedQueryEquals(
-				"(ᓄᓇᕗ OR ᓄᓇᕗᒻᒥ OR ᓄᓇᕘᒥ OR ᓄᓇᕘᑉ OR ᓄᓇᕗᒻᒥᐅᑦ)", 
-				response);
-		
+		String expExpandedQuery = "(ᓄᓇᕗ OR ᓄᓇᕗᒻᒥ OR ᓄᓇᕘᒥ OR ᓄᓇᕘᑉ OR ᓄᓇᕗᒻᒥᐅᑦ)";
 		String[] queryWords = new String[] {"ᓄᓇᕗ", "ᓄᓇᕗᒻᒥ", "ᓄᓇᕘᒥ", "ᓄᓇᕘᑉ", "ᓄᓇᕗᒻᒥᐅᑦ"};
-		double tolerance = 0.7;
-		SearchResponse srchResponse = IUTServiceTestHelpers.toSearchResponse(response);
-		IUTServiceTestHelpers.assertMostHitsMatchWords(queryWords, response, tolerance);
-		AssertNumber.isGreaterOrEqualTo("Not enough hits found", srchResponse.totalHits, 10);
+		double badHitsTolerance = 0.5;
+		long minTotalHits = 1000;
+		long minHitsRetrieved = 100;
+		IUTServiceTestHelpers.assertSearchResponseIsOK(response, expExpandedQuery, queryWords, badHitsTolerance, 
+				minTotalHits, minHitsRetrieved);
 	}	
 
 	@Test
@@ -95,8 +101,8 @@ public class SearchEndpointTest {
 		
 		List<String> gotQueryWords = results.expandedQueryWords;
 		String[] expQueryWords = new String[] {nonAnalyzableWord};
-		AssertHelpers.assertDeepEquals("", expQueryWords, gotQueryWords);
-		AssertHelpers.assertStringEquals("("+nonAnalyzableWord+")", results.expandedQuery);
+		AssertObject.assertDeepEquals("", expQueryWords, gotQueryWords);
+		AssertString.assertStringEquals("("+nonAnalyzableWord+")", results.expandedQuery);
 	}
 	
 
@@ -109,7 +115,7 @@ public class SearchEndpointTest {
 				gotExpansionWords.add(exp.word);
 			}
 		}
-		AssertHelpers.assertDeepEquals("", expExpansionWords, gotExpansionWords);
+		AssertObject.assertDeepEquals("", expExpansionWords, gotExpansionWords);
 	}
 	
 }

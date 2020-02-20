@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.testing.AssertHelpers;
+import ca.nrc.testing.AssertNumber;
 import ca.nrc.ui.web.testing.MockHttpServletRequest;
 import ca.nrc.ui.web.testing.MockHttpServletResponse;
 import ca.pirurvik.iutools.search.SearchHit;
@@ -114,6 +115,15 @@ public class IUTServiceTestHelpers {
 			  unmatchedRatio <= tolerance
 			);
 	}
-	
-	
+
+	public static void assertSearchResponseIsOK(MockHttpServletResponse response, String expExpandedQuery,
+			String[] queryWords, double badHitsTolerance, long minTotalHits, long minHitsRetrieved) 
+			throws Exception {
+		IUTServiceTestHelpers.assertExpandedQueryEquals(expExpandedQuery, response);
+		
+		SearchResponse srchResponse = IUTServiceTestHelpers.toSearchResponse(response);
+		IUTServiceTestHelpers.assertMostHitsMatchWords(queryWords, response, badHitsTolerance);
+		AssertNumber.isGreaterOrEqualTo("The total number of potential hits was too low", srchResponse.totalHits, minTotalHits);
+		AssertNumber.isGreaterOrEqualTo("The number of hits actually retrieved was too low", new Long(srchResponse.hits.size()), minHitsRetrieved);
+	}
 }
