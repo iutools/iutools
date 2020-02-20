@@ -192,8 +192,8 @@ public class AnalyzeNumberExpressions {
 		}
 	}
 	
-	public HashMap<String,Long> getNgramStats() {
-		return (HashMap<String,Long>)ngramStats;
+	public Map<String,Long> getNgramStats() {
+		return ngramStats;
 	}
 	
 	public String getDecomposedNormalizedNumericTermsSuite() {
