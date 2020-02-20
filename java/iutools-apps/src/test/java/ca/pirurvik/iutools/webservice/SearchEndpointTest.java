@@ -34,7 +34,7 @@ public class SearchEndpointTest {
 	@Test
 	public void test__SearchEndpoint__HappyPath() throws Exception {
 		
-		SearchInputs searchInputs = new SearchInputs("nunavut").setHitsPerPage(20);
+		SearchInputs searchInputs = new SearchInputs("nunavut").setHitsPerPage(10);
 				
 		MockHttpServletResponse response = 
 				IUTServiceTestHelpers.postEndpointDirectly(
@@ -56,7 +56,7 @@ public class SearchEndpointTest {
 		
 		// This query (= 'religion') returns less than 10 hits (i.e. less than 
 		// a full page of hits).
-		SearchInputs searchInputs = new SearchInputs("ᐃᓂᓕᐅ").setHitsPerPage(20);
+		SearchInputs searchInputs = new SearchInputs("ᐃᓂᓕᐅ").setHitsPerPage(10);
 				
 		MockHttpServletResponse response = 
 				IUTServiceTestHelpers.postEndpointDirectly(
@@ -76,7 +76,7 @@ public class SearchEndpointTest {
 	@Test
 	public void test__SearchEndpoint__QueryIsAlreadyExpanded__DoesNotTryToExpandAgain() throws Exception {
 		
-		SearchInputs searchInputs = new SearchInputs("(ᓄᓇᕗ OR ᓄᓇᕗᒻᒥ OR ᓄᓇᕘᒥ OR ᓄᓇᕘᑉ OR ᓄᓇᕗᒻᒥᐅᑦ)").setHitsPerPage(20);
+		SearchInputs searchInputs = new SearchInputs("(ᓄᓇᕗ OR ᓄᓇᕗᒻᒥ OR ᓄᓇᕘᒥ OR ᓄᓇᕘᑉ OR ᓄᓇᕗᒻᒥᐅᑦ)").setHitsPerPage(10);
 				
 		MockHttpServletResponse response = 
 				IUTServiceTestHelpers.postEndpointDirectly(

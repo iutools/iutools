@@ -1,5 +1,6 @@
 package ca.pirurvik.iutools.webservice;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
@@ -12,6 +13,7 @@ import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.json.PrettyPrinter;
 import ca.pirurvik.iutools.SpellChecker;
@@ -43,9 +45,13 @@ public class SpellEndpoint extends HttpServlet {
 			} catch (StringSegmenterException e) {
 				throw new SpellCheckerException(e);
 			}
-			checker.setDictionaryFromCorpus(); // Spell Checker service uses Hansard corpus
+			// Spell Checker service uses Hansard corpus
+			try {
+				checker.setDictionaryFromCorpus();
+			} catch (FileNotFoundException | ConfigException e) {
+				throw new SpellCheckerException("Could not load corpus dictionary", e);
+			} 
 		}
-		
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {		

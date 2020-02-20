@@ -115,6 +115,8 @@ public class SpellChecker {
 		AnalyzeNumberExpressions numberExpressionsAnalysis = new Gson().fromJson(fr, AnalyzeNumberExpressions.class);
 		this.allNormalizedNumericTerms = getNormalizedNumericTerms(numberExpressionsAnalysis);
 		this.ngramStatsOfNumericTerms = getNgramsStatsOfNumericTerms(numberExpressionsAnalysis);
+		
+		return;
 	}
 	
 

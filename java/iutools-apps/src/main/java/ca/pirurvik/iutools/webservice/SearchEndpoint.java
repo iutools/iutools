@@ -1,41 +1,26 @@
 package ca.pirurvik.iutools.webservice;
 
-import java.io.BufferedWriter;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.Writer;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ca.inuktitutcomputing.config.IUConfig;
-import ca.nrc.config.ConfigException;
 import ca.nrc.data.harvesting.SearchEngine.Query;
 import ca.nrc.data.harvesting.SearchEngine.Hit;
 import ca.nrc.data.harvesting.SearchEngine.SearchEngineException;
-import ca.nrc.data.harvesting.SearchEngine.Type;
 import ca.nrc.data.harvesting.SearchResults;
-import ca.nrc.datastructure.Pair;
 import ca.nrc.json.PrettyPrinter;
 import ca.pirurvik.iutools.CompiledCorpus;
 import ca.pirurvik.iutools.CompiledCorpusRegistry;
@@ -43,10 +28,7 @@ import ca.pirurvik.iutools.CompiledCorpusRegistryException;
 import ca.pirurvik.iutools.QueryExpanderException;
 import ca.pirurvik.iutools.QueryExpander;
 import ca.pirurvik.iutools.QueryExpansion;
-import ca.pirurvik.iutools.search.BingSearchMultiQuery;
-import ca.pirurvik.iutools.search.BingSearchMultiQuery.BingSearchMultithrdException;
 import ca.pirurvik.iutools.search.IUSearchEngine;
-import ca.pirurvik.iutools.search.PageOfHits;
 import ca.pirurvik.iutools.search.SearchHit;
 
 
@@ -142,7 +124,6 @@ public class SearchEndpoint extends HttpServlet {
 			tLogger.trace("Invoked with queryWords="+PrettyPrinter.print(queryWords));
 		}
 		
-		Long totalHits = new Long(0);
 		IUSearchEngine engine;
 		try {
 			engine = new IUSearchEngine();
