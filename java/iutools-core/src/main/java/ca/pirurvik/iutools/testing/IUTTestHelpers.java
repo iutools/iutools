@@ -15,7 +15,6 @@ import org.junit.Assert;
 import ca.inuktitutcomputing.script.Syllabics;
 import ca.nrc.data.harvesting.SearchResults;
 import ca.nrc.json.PrettyPrinter;
-import ca.pirurvik.iutools.search.PageOfHits;
 import ca.pirurvik.iutools.search.SearchHit;
 
 public class IUTTestHelpers {
@@ -117,12 +116,6 @@ public class IUTTestHelpers {
 					;
 		Assert.assertTrue(message, gotOKRatio >= minOKHitRatio);
 		
-	}
-
-	public static void assertSufficientHitsFound(PageOfHits results, int expMinHits) {
-		Long totalEstHits = results.estTotalHits;
-		Assert.assertTrue("Estimated number of hits found was too low.\n   Expected at least: "+expMinHits+"\n   But was: "+totalEstHits, 
-				totalEstHits >= expMinHits);
 	}
 
 	public static void assertSufficientHitsFound(SearchResults results, int expMinHits) {

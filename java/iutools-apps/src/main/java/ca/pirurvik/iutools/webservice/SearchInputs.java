@@ -12,7 +12,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import ca.inuktitutcomputing.script.TransCoder;
 import ca.nrc.datastructure.Pair;
-import ca.pirurvik.iutools.search.PageOfHits;
 
 public class SearchInputs extends ServiceInputs {
 	
