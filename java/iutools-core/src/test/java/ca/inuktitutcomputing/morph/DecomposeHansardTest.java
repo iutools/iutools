@@ -14,6 +14,7 @@ import java.util.*;
 import java.nio.channels.*;
 import java.nio.file.Paths;
 
+import ca.inuktitutcomputing.data.LinguisticData;
 import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
 import ca.nrc.file.ResourceGetter;
@@ -66,6 +67,7 @@ public class DecomposeHansardTest {
 	 */
 	@Before
 	public void setUp() throws Exception {
+		new LinguisticData();
 		String className = this.getClass().getSimpleName();
 		dirOutputFiles = locateInputFile(dirOutputFiles);
 		fileGoldStandard = locateInputFile(fileGoldStandard);
