@@ -29,16 +29,16 @@ public class SpellEndpoint extends HttpServlet {
     static SpellChecker checker = null;    
     
 
-	public SpellEndpoint() throws SpellCheckerException {
+	public SpellEndpoint() throws SpellCheckerException, FileNotFoundException, ConfigException {
 		initialize();
 	};
 	
 	
-	protected void initialize() throws SpellCheckerException {
+	protected void initialize() throws SpellCheckerException, FileNotFoundException, ConfigException {
 		ensureCheckerIsInstantiated();
 	}
 	
-	private synchronized void ensureCheckerIsInstantiated() throws SpellCheckerException {
+	private synchronized void ensureCheckerIsInstantiated() throws SpellCheckerException, FileNotFoundException, ConfigException {
 		if (checker == null) {
 			try {
 				checker = new SpellChecker();
