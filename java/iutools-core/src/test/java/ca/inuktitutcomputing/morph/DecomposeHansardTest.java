@@ -279,7 +279,7 @@ public class DecomposeHansardTest {
 		
 	
 	protected void writeErrorMessage(int key) {
-		String targetSuccessfulAnalysisFile_src = "src/test/resources/target_" + new File(fileSuccessfulAnalysis).getName();
+		String targetSuccessfulAnalysisFile_src = "target_" + new File(fileSuccessfulAnalysis).getName();
 		
         if (!errorMessages.containsKey(new Integer(key))) {
             switch (key) {
