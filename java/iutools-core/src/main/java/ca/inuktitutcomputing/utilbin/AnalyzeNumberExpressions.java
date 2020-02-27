@@ -37,7 +37,7 @@ public class AnalyzeNumberExpressions {
 	HashMap<String,Integer> expressions = null;
 	String[] makeUpWords = new String[] {"sivu","sia"};
 	String replacementTermForNumericPart = "0000";
-	ArrayList<String> acceptedDeterminants = new ArrayList<String>();
+	public ArrayList<String> acceptedDeterminants = new ArrayList<String>();
 	ArrayList<String> rejectedDeterminants = new ArrayList<String>();
 	HashMap<String,ArrayList<String>> acceptedDeterminantsWithRoot = new HashMap<String,ArrayList<String>>();
 	String decomposedNormalizedNumericTermsSuite = ",,";
@@ -86,7 +86,8 @@ public class AnalyzeNumberExpressions {
 
 
 	public Result findAllExpressions() throws IOException {
-		String filename = "/Users/benoitfarley/Documents/git_repositories/iutools/java/iutools-data/data/NunHanSearch/1999-2007/SingleLineAligned.txt";
+		//String filename = "/Users/benoitfarley/Documents/git_repositories/iutools/java/iutools-data/data/NunHanSearch/1999-2007/SingleLineAligned.txt";
+		String filename = "/Users/benoitfarley/Downloads/Nunavut-Hansard-Inuktitut-English-Parallel-Corpus-3.0/NunavutHansard.iu_lat.txt";
 		BufferedReader br = new BufferedReader(new FileReader(filename));
 		HashMap<String,Integer> exprs = new HashMap<String,Integer>();
 		String line = null;
@@ -95,8 +96,8 @@ public class AnalyzeNumberExpressions {
 		Pattern pNumber = Pattern.compile("\\b(\\d+(?:[\\.\\,\\:]\\d+)*)(\\-?)([agijklmnpqrstuv&]+)");
 		while ( (line=br.readLine()) != null ) {
 			Matcher mpInuk = pInuk.matcher(line);
-		    if (mpInuk.find()) {
-		    	Matcher mpNumber = pNumber.matcher(mpInuk.group(1));
+		    //if (mpInuk.find()) {
+		    	Matcher mpNumber = pNumber.matcher(line); //pNumber.matcher(mpInuk.group(1));
 		    	while (mpNumber.find()) {
 		    		nNumericTerms++;
 		            String number = mpNumber.group(1);
@@ -113,7 +114,7 @@ public class AnalyzeNumberExpressions {
 		            else 
 		            	exprs.put(determinant, new Integer(1));
 		    	}
-		    }
+		    //}
 		}
 		br.close();
 		
@@ -157,7 +158,8 @@ public class AnalyzeNumberExpressions {
 						break;
 					}
 				}
-			addToDecomposedNumericTerms(replacementTermForNumericPart+ending);
+			if (i==0)
+				addToDecomposedNumericTerms(replacementTermForNumericPart+ending); // only 1 per ending
 			}
 		}
 		if (accepted) {
