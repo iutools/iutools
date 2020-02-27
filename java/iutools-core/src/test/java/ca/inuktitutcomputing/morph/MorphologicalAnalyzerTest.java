@@ -252,7 +252,7 @@ public class MorphologicalAnalyzerTest {
 					break;
 				}
 			}
-			Assert.assertFalse("",found);
+			Assert.assertTrue("",found);
 		} catch(Exception e) {
 			throw e;
 		}
