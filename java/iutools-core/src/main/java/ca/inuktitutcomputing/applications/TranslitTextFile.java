@@ -36,18 +36,10 @@ import ca.inuktitutcomputing.script.TransCoder;
 public class TranslitTextFile {
 
     public static void main(String[] args) {
-        translittererPage(args[0]);
+        translittererFichier(args[0]);
     }
 
-    public static void translittererPage(String fileName) {
-
-        //-------------------------------------------------------
-        // Lecture du fichier HTML et cr�ation d'un document HTML
-        // Traitement du document HTML (traitement du texte en inuktitut)
-        // Ecriture du document HTML dans un nouveau fichier HTML
-        //-------------------------------------------------------
-
-        //		Debogage.init();
+    public static void translittererFichier(String fileName) {
 
         try {
         	BufferedReader bf =
@@ -68,22 +60,21 @@ public class TranslitTextFile {
 
 
     //-----------------------------------------------------------
-    // Traitement du document HTML
     // - Recherche du texte en inuktitut et traitement de ce texte
     //------------------------------------------------------------
 
     private static void processFile(BufferedReader bf, Writer pw) {
 		String text;
-		int nLines = 30;
+		int nbLines = 100;
 		try {
-			while (nLines-- != 0 && (text = bf.readLine()) != null) {
-				System.out.println("> "+text);
-				String textUni = TransCoder.legacyToUnicode(text,"Naamajut");
-				System.out.println("> "+textUni);
-				//pw.write(textUni);
-				//pw.write("\n");
+			while ( //nbLines-- > 0 && 
+					(text = bf.readLine()) != null ) {
+				String translitText = TransCoder.unicodeToRoman(text);
+				//System.out.println("> "+translitText);
+				pw.write(translitText+"\n");
 			}
-			//pw.flush();
+			pw.flush();
+			pw.close();
 		} catch (Exception e) {
 
 		}
