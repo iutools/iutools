@@ -265,7 +265,7 @@ inunnut inunnut {inun:inuk/1n}{nut:nut/tn-dat-p} 1
 inuqutivut inuqutivut {inu:inuk/1n}{quti:quti/1nn}{vut:vut/tn-nom-s-1p} 1
 inuttitut inuttitut {inut:inuk/1n}{titut:titut/tn-sim-p} 1
 inutuqait inutuqait {inu:inuk/1n}{tuqa:tuqaq/1nn}{it:it/tn-nom-p} 1
-inuusilirijikkunullu inuusilirijikkunullu {inu:inuk/1n}{u:u/1nv}{si:siq/2vn}{liri:liri/1nv}{ji:ji/1vn}{kku:kkut/1nn}{nul:nut/tn-dat-p}{lu:lu/1q} 5
+inuusilirijikkunullu inuusilirijikkunullu {inu:inuk/1n}{u:u/1nv}{si:siq/2vn}{liri:liri/1nv}{ji:ji/1vn}{kku:kkut/1nn}{nul:nut/tn-dat-p}{lu:lu/1q} 4
 ippaksaq ippaksaq {ippaksaq:ikpaksaq/1a} 1
 ippassaq ippassaq {ippassaq:ikpaksaq/1a} 1
 ippatsaq ippatsaq {ippatsaq:ikpaksaq/1a} 1
@@ -382,9 +382,9 @@ kisumut kisumut {kisu:kisu/1p}{mut:mut/tn-dat-s} 1
 kisunik kisunik {kisu:kisu/1p}{nik:nik/tn-acc-p} 1
 kisut kisut {kisut:kisut/1p} 1
 kisutuinnait kisutuinnait {kisutuinna:kisutuinnaq/1p}{it:it/tn-nom-p} 1
-kiujjutiit kiujjutiit {kiu:kiu/1v}{jjuti:ut/1vn}{it:it/tn-nom-p} 2
-kiujjutinga kiujjutinga {kiu:kiu/1v}{jjuti:ut/1vn}{nga:nga/tn-nom-s-4s} 2
-kiujjutit kiujjutit {kiu:kiu/1v}{jjut:ut/1vn}{it:it/tn-nom-p} 2
+kiujjutiit kiujjutiit {kiu:kiu/1v}{jjuti:ut/1vn}{it:it/tn-nom-p} 1
+kiujjutinga kiujjutinga {kiu:kiu/1v}{jjuti:ut/1vn}{nga:nga/tn-nom-s-4s} 1
+kiujjutit kiujjutit {kiu:kiu/1v}{jjut:ut/1vn}{it:it/tn-nom-p} 1
 kivallirmi kivallirmi {kivallir:kivalliq/1n}{mi:mi/tn-loc-s} 1
 kivallirmut kivallirmut {kivallir:kivalliq/1n}{mut:mut/tn-dat-s} 1
 maajji maajji {maajji:maajji/1n} 1
@@ -504,6 +504,7 @@ naasautilik naasautilik {naasa:naasaq/1v}{uti:ut/1vn}{lik:lik/1nn} 1
 nakit nakit {nakit:nakit/1a} 1
 nakurmii nakurmii {nakur:nakuq/1v}{mii:miik/1vn} 1
 nakurmiik nakurmiik {nakur:nakuq/1v}{miik:miik/1vn} 1
+naliak naliak {naliak:naliak/1p} 1
 nalunanngittuq nalunanngittuq {naluna:nalunak/1v}{nngit:nngit/1vv}{tuq:juq/1vn} 1
 namminiq namminiq {namminiq:nangminiq/1n} 1
 namminiqaqtunut namminiqaqtunut {nammini:nangminiq/1n}{qaq:qaq/1nv}{tu:juq/1vn}{nut:nut/tn-dat-p} 1
@@ -576,10 +577,10 @@ pigiaqtitaujuq pigiaqtitaujuq {pi:pi/1v}{giaq:giaq/1vv}{ti:tit/1vv}{ta:jaq/1vn}{
 pigiarutiksanit pigiarutiksanit {pi:pi/1v}{gia:giaq/1vv}{ruti:ut/1vn}{ksa:ksaq/1nn}{nit:nit/tn-abl-p} 2
 pijjutigillugit pijjutigillugit {pi:pi/1v}{jjuti:jjut/1vn}{gi:gi/1nv}{llugit:lugit/tv-part-1s-3p-prespas} 1
 pijjutigillugu pijjutigillugu {pi:pi/1v}{jjuti:jjut/1vn}{gi:gi/1nv}{llugu:lugu/tv-part-1s-3s-prespas} 1
-pijjutilik pijjutilik {pi:pi/1v}{jjuti:jjut/1vn}{lik:lik/1nn} 2
-pijjutiqaqtunik pijjutiqaqtunik {pi:pi/1v}{jjuti:jjut/1vn}{qaq:qaq/1nv}{tu:juq/1vn}{nik:nik/tn-acc-p} 6
-pijjutiqaqtuq pijjutiqaqtuq {pi:pi/1v}{jjuti:jjut/1vn}{qaq:qaq/1nv}{tuq:juq/1vn} 3
-pijjutiqaqtut pijjutiqaqtut {pi:pi/1v}{jjuti:jjut/1vn}{qaq:qaq/1nv}{tut:jut/tv-ger-3p} 2
+pijjutilik pijjutilik {pi:pi/1v}{jjuti:jjut/1vn}{lik:lik/1nn} 1
+pijjutiqaqtunik pijjutiqaqtunik {pi:pi/1v}{jjuti:jjut/1vn}{qaq:qaq/1nv}{tu:juq/1vn}{nik:nik/tn-acc-p} 1
+pijjutiqaqtuq pijjutiqaqtuq {pi:pi/1v}{jjuti:jjut/1vn}{qaq:qaq/1nv}{tuq:juq/1vn} 1
+pijjutiqaqtut pijjutiqaqtut {pi:pi/1v}{jjuti:jjut/1vn}{qaq:qaq/1nv}{tut:jut/tv-ger-3p} 1
 piliriamik piliriamik {piliria:piliriaq/1n}{mik:mik/tn-acc-s} 1
 piliriamut piliriamut {piliria:piliriaq/1n}{mut:mut/tn-dat-s} 1
 piliriangujuq piliriangujuq {piliria:piliriaq/1n}{ngu:u/1nv}{juq:juq/1vn} 1
@@ -914,4 +915,4 @@ uvvalu uvvalu {uvvalu:uvvalu/1c} 1
 uvvalukiaq uvvalukiaq {uvvalu:uvvalu/1c}{kiaq:kia/1q} 1
 uvvaluunniit uvvaluunniit {uvvaluunniit:uvvaluunniit/1c} 1
 vivvuari vivvuari {vivvuari:vivvuari/1n} 1
---- 916 /960 0.95416665
+--- 917 /960 0.95520836
