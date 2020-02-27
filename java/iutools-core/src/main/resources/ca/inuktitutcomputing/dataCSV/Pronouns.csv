@@ -18,3 +18,5 @@ uva,,1,rpr,per,1,,me; us,moi; nous,,,.
 uvaguk,,1,p,per,1,d,we two; us two; ours (to us two),nous deux; à nous deux,,,.
 uvagut,,1,p,per,1,p,we many; us manu; ours (to many of us),nous plusieurs; à nous plusieurs,,,.
 uvanga,,1,p,per,1,s,I; me; mine,je; moi; à moi,,,.
+atu,,1,p,sem,,p,each of them,chacun d'eux,,"type:tn,number:p,cas:nom type:tn,number:p,cas:acc type:tn,number:p,cas:dat type:tn,number:p,cas:abl",.
+na,,1,p,sem,,,where,où,,"type:tn,(number:s number:p),(cas:loc cas:acc cas:dat)",
