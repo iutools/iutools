@@ -128,7 +128,7 @@ public class DecomposeHansardTest {
                     decs = morphAnalyzer.decomposeWord(wordToBeAnalyzed);
                 } catch (Exception e) {
                     decs = new Decomposition[]{};
-                    System.out.print("Exception in testDecomposer: "+e.getMessage());
+                    System.out.print("Exception in testDecomposer:\n  Exception Class: "+e.getClass()+"\n  Cause: "+e.getCause()+"\n  Message: "+e.getMessage());
                 }
                 nbWordsToBeAnalyzed++;
                 if (verbose) System.out.println(" []");
