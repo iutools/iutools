@@ -222,6 +222,19 @@ class SearchController extends WidgetController {
 		this.elementForProp('divTotalHits').text(totalHitsText);
 	}
 	
+	showOrHidePrevNextButtons(nbHits) {
+		if (this.currHitsPageNum == 0) {
+			this.elementForProp("prevPage").css("visibility", "hidden");
+		} else {
+			this.elementForProp("prevPage").css("visibility", "visible");			
+		}
+		if (this.currHitsPageNum == 9) {
+			this.elementForProp("nextPage").css("visibility", "hidden");
+		} else {
+			this.elementForProp("nextPage").css("visibility", "visible");			
+		}
+	}	
+	
 	generatePagesButtons(nbHits) {
 		var divPageNumbers = this.elementForProp('divPageNumbers');
 		divPageNumbers.empty();
@@ -259,10 +272,15 @@ class SearchController extends WidgetController {
 		    		  });
 	    }
 	    
+	    // Disable/enable the Previous and Next buttons depending on whether
+	    // we are on first/middle/last page of hits
+	    //
+	    this.showOrHidePrevNextButtons(nbHits);
+	    
 	    // Highlight the page button that corresponds to the current page of
 	    // hits.
 	    //
 		$(".page-number").removeClass('current-page');
 		$(".page-number[value='"+this.currHitsPageNum+"']").addClass('current-page');
-	}
+	}	
 }

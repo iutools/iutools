@@ -112,7 +112,7 @@ public class SearchEndpoint extends HttpServlet {
 		}
 		
 		if (tLogger.isTraceEnabled()) {
-			tLogger.trace("returning results=\n"+PrettyPrinter.print(results));
+			tLogger.trace("Number of hits found: "+results.hits.size());
 		}
 		
 		return results;
