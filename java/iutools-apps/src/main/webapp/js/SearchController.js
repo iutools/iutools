@@ -106,6 +106,8 @@ class SearchController extends WidgetController {
 		this.elementForProp('divTotalHits').empty();
 		this.elementForProp('divResults').empty();
 		this.elementForProp('divPageNumbers').empty();
+		this.elementForProp("prevPage").css("visibility", "hidden");
+		this.elementForProp("nextPage").css("visibility", "hidden");
 	}
 	
 	invokeSearchService(jsonRequestData, _successCbk, _failureCbk) {
