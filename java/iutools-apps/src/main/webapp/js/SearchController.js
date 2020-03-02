@@ -89,6 +89,7 @@ class SearchController extends WidgetController {
 	
 
 	retrieveAllHitsFromService() {
+		this.currHitsPageNum = 0;
 		var isValid = this.validateQueryInput();
 		if (isValid) {
 			var divMessage = this.elementForProp("divMessage"); divMessage.html("retrieveAllHitsFromService---");
