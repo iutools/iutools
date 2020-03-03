@@ -105,7 +105,7 @@ public class Decompose {
         	
         startInitTime = Calendar.getInstance().getTimeInMillis();
         //LinguisticData.getInstance();
-        new LinguisticData();
+        LinguisticData.init();
         endInitTime = Calendar.getInstance().getTimeInMillis();
       
         startTime = Calendar.getInstance().getTimeInMillis();

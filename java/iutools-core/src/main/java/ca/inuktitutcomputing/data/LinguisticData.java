@@ -37,6 +37,9 @@ public class LinguisticData {
     protected Hashtable<String,Vector<SurfaceFormOfAffix>> surfaceFormsOfAffixes = new Hashtable<String,Vector<SurfaceFormOfAffix>>();
     protected Hashtable<Character,Vector<String>> groupsOfConsonants = new Hashtable<Character,Vector<String>>();
 
+    static public void init() {
+    	singleton = null;
+    }
     public static LinguisticData getInstance() {
     	if (singleton == null) {
     		singleton = new LinguisticData();
