@@ -29,6 +29,7 @@ import ca.inuktitutcomputing.data.Roots;
 public class DescriptionOfRoot {
 
     static public void main(String args[]) throws LinguisticDataException {
+    	LinguisticData.init();
     	LinguisticData.getInstance();
         try {
 			Roots.getDef(args,new PrintStream(System.out,true,"utf-8"));
