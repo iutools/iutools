@@ -64,89 +64,91 @@ public class MorphologicalAnalyzer {
     /** 
      * DÉCOMPOSITION DU MOT.
      * Les décompositions résultantes sont ordonnées selon certaines règles.
-     * @param word String word to be decomposed
+     * L'analyse tient compte de certaines habitudes : l'omission de la consonne finale,
+     * et l'usage de 'n' au lieu de 't' en finale.
+     * @param word String word to be decomposed, in syllabics or roman alphabet
      * @return Decomposition[] array of decompositions
      */
-    
+	public Decomposition[] decomposeWord(String word) throws TimeoutException, MorphInukException {
+		return decomposeWord(word,true);
+	}
 
-    public Decomposition[] decomposeWord(String word) throws TimeoutException, MorphInukException {
-    	boolean decomposeCompositeRoot = false;
-        ArrayList<Decomposition> decsList = new ArrayList<Decomposition>();
-        Vector<String> words = null;
-        
-        // Trouver les mots correspondants selon les règles phonologiques
-        //        Vector<String> words = Dialect.termesCorrespondants(word);
-        words = new Vector<String>();
-        words.add(word);
-        
-        for (int i = 0; i < words.size(); i++) {
-        	String aWord = (String) words.elementAt(i);
-            // Décomposition initiale du mot.
-            // 2ème arg. : 'false': mot en caractères latins, non en syllabique;
-            // 3ème arg. : 'false': on ne demande pas la décomposition d'une racine
-            //              complexe, mais celle d'un mot entier.
-        	if (Syllabics.containsInuktitut(aWord))
-        		aWord = Syllabics.transcodeToRoman(aWord);
-            aWord = Util.enMinuscule(aWord);
-        	aWord = aWord.replaceAll("([iua])qk([iua])","$1qq$2");
-            Vector<Decomposition> decomps = _decompose(aWord, decomposeCompositeRoot);
+    /** 
+     * DÉCOMPOSITION DU MOT.
+     * Les décompositions résultantes sont ordonnées selon certaines règles.
+     * @param word String word to be decomposed, in syllabics or roman alphabet
+     * @param extendedAnalysis boolean if true, check also for possible missing consonant at the end of the word
+     * @return Decomposition[] array of decompositions
+     */
+	public Decomposition[] decomposeWord(String word, boolean extendedAnalysis) throws TimeoutException, MorphInukException {
+		boolean decomposeCompositeRoot = false; // do not decompose composite root
 
-        	// - ajouter '*' à la fin si le mot termine par une voyelle (pour une consonne manquante)
-        	// - remplacer un 'n' final par 't' (à cause d'une nasalisation de la finale - phénomène courant)
-            Vector<Decomposition> otherDecomps = decomposeForSpecialCases(aWord,decomposeCompositeRoot);
-            decomps.addAll(otherDecomps);
+		String formOfWordToBeAnalyzed = word;
+		if (Syllabics.containsInuktitut(formOfWordToBeAnalyzed))
+			formOfWordToBeAnalyzed = Syllabics.transcodeToRoman(formOfWordToBeAnalyzed);
+		formOfWordToBeAnalyzed = Util.enMinuscule(formOfWordToBeAnalyzed);
+		formOfWordToBeAnalyzed = formOfWordToBeAnalyzed.replaceAll("([iua])qk([iua])", "$1qq$2"); // to cope with error of transliteration
 
+		Vector<Decomposition> decomps = null;
+		if (formOfWordToBeAnalyzed.charAt(formOfWordToBeAnalyzed.length() - 1) != 'n') {
+			decomps = _decompose(formOfWordToBeAnalyzed, decomposeCompositeRoot);
+			if ( extendedAnalysis && Roman.typeOfLetterLat(formOfWordToBeAnalyzed.charAt(formOfWordToBeAnalyzed.length() - 1)) == Roman.V) {
+				Vector<Decomposition> otherDecomps = _decomposeForFinalConsonantPossiblyMissing(formOfWordToBeAnalyzed, decomposeCompositeRoot);
+				decomps.addAll(otherDecomps);
+			}
+		}
+		else {
+			decomps = _decomposeForFinalN(formOfWordToBeAnalyzed, decomposeCompositeRoot);
+		}
 
-            // A.
-            // Éliminer les décompositions qui contiennent une suite de suffixes
-            // pour laquelle il existe un suffixe composé, pour ne garder que
-            // la décomposition dans laquelle se trouve le suffixe composé.
-            Decomposition decsM[] = new Decomposition[] {};
-            decsM = (Decomposition[]) decomps.toArray(decsM);
-            Decomposition decsC[];
-            // TODO: check on ammalu --- result incorrect
-            decsC = Decomposition.removeCombinedSuffixes(decsM);
-            
-            // B.
-            // Ordonner les décompositions selon les règles suivantes:
-            //   1. racines les plus longues
-            //   2. nombre minimum de suffixes/terminaisons
-            //   (Ces règles sont incluses dans la classe Decomposition)
-            Decomposition[] decs;
-            decs = Decomposition.removeMultiples(decsC);
-            Arrays.sort(decs);
-            
-            decsList.addAll(Arrays.asList(decs));
-        }
-        Decomposition[] decs = (Decomposition[]) decsList
-                .toArray(new Decomposition[] {});
-        return decs;
-    }
+		
+		// A.
+		// Éliminer les décompositions qui contiennent une suite de suffixes
+		// pour laquelle il existe un suffixe composé, pour ne garder que
+		// la décomposition dans laquelle se trouve le suffixe composé.
+		Decomposition decsC[] = Decomposition.removeCombinedSuffixes(decomps.toArray(new Decomposition[] {}));
+		
+		// B. Éliminer les doublons 
+		Decomposition[] decs = Decomposition.removeMultiples(decsC);
 
-    private Vector<Decomposition> decomposeForSpecialCases(String aWord, boolean decomposeCompositeRoot) throws TimeoutException, MorphInukException {
-        Vector<Decomposition> newDecomps;
-        if (Roman.typeOfLetterLat(aWord.charAt(aWord.length() - 1)) == Roman.V) {
-            // Si le mot se termine par une voyelle, il est possible
-            // qu'il manque la consonne finale. On ajoute '*' à la fin
-            // du mot, qui tient lieu de n'importe quelle consonne.
-            newDecomps = _decompose(aWord + "*", false);
-        } else if (aWord.charAt(aWord.length() - 1) == 'n') {
-            // Si le mot se termine par la consonne 'n', il est possible
-            // qu'il s'agisse d'un 't'.
-            newDecomps = _decompose(aWord.substring(0, aWord.length() - 1)+ "t", decomposeCompositeRoot);
-            if (newDecomps!=null)
-                for (int j=0; j<newDecomps.size(); j++) {
-                    Decomposition dec = (Decomposition)newDecomps.elementAt(j);
-                    Object max[] = dec.morphParts;
-                    AffixPartOfComposition affixPart = null;
-                    if (max.length != 0) {
-                        affixPart = (AffixPartOfComposition)max[max.length-1];
-                        affixPart.setTerme(affixPart.getTerm().substring(0,affixPart.getTerm().length()-1)+"n");
-                    }
-                }
-        } else {
-            newDecomps = new Vector<Decomposition>();
-        }
+		// C.
+		// Ordonner les décompositions selon les règles suivantes:
+		// 1. racines les plus longues
+		// 2. nombre minimum de suffixes/terminaisons
+		// (Ces règles sont incluses dans la classe Decomposition)
+		Arrays.sort(decs);
+
+		return decs;
+	}
+
+	/*
+	 *  Si le mot se termine par la consonne 'n', il est possible qu'il s'agisse 
+	 *  d'un 't' nasalisé, phénomène couramment rencontré.
+	 */
+	private Vector<Decomposition> _decomposeForFinalN(String aWord, boolean decomposeCompositeRoot)
+			throws TimeoutException, MorphInukException {
+		String wordWithNReplaced = aWord.substring(0, aWord.length() - 1) + "t";
+		Vector<Decomposition> newDecomps = _decompose(wordWithNReplaced, decomposeCompositeRoot);
+		if (newDecomps != null)
+			for (int j = 0; j < newDecomps.size(); j++) {
+				Decomposition dec = (Decomposition) newDecomps.elementAt(j);
+				dec.stem.term = aWord;
+				Object max[] = dec.morphParts;
+				AffixPartOfComposition affixPart = null;
+				if (max.length != 0) {
+					affixPart = (AffixPartOfComposition) max[max.length - 1];
+					affixPart.setTerme(affixPart.getTerm().substring(0, affixPart.getTerm().length() - 1) + "n");
+				}
+			}
+		return newDecomps;
+	}
+
+    /* Si le mot se termine par une voyelle, il est possible
+     * qu'il manque la consonne finale. On ajoute '*' à la fin
+     * du mot, qui tient lieu de n'importe quelle consonne.
+     */
+    private Vector<Decomposition> _decomposeForFinalConsonantPossiblyMissing(String aWord, boolean decomposeCompositeRoot) throws TimeoutException, MorphInukException {
+    	Vector<Decomposition> newDecomps = _decompose(aWord + "*", false);
         return newDecomps;
 	}
 
