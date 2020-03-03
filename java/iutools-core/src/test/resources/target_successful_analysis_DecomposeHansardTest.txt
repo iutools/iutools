@@ -1,5 +1,6 @@
 Haammalakkut Haammalakkut {Haammala:Haammalat/1n}{kkut:kkut/1nn} 1
 Hamlakkut Hamlakkut {Hamla:Hamlat/1n}{kkut:kkut/1nn} 1
+aagga aagga {aagga:aakka/1a} 1
 aanniaqtulirijikkunnut aanniaqtulirijikkunnut {aanniaq:aanniaq/1v}{tu:juq/1vn}{liri:liri/1nv}{ji:ji/1vn}{kkun:kkut/1nn}{nut:nut/tn-dat-p} 1
 aanniaqtulirijikkut aanniaqtulirijikkut {aanniaq:aanniaq/1v}{tu:juq/1vn}{liri:liri/1nv}{ji:ji/1vn}{kkut:kkut/1nn} 1
 aanniaqtulirinirmut aanniaqtulirinirmut {aanniaq:aanniaq/1v}{tu:juq/1vn}{liri:liri/1nv}{nir:niq/2vn}{mut:mut/tn-dat-s} 1
@@ -9,6 +10,7 @@ aglattiu aglattiu {aglat:allak/1v}{ti:ji/1vn}{u:up/tn-gen-s} 2
 aippaanik aippaanik {aippa:aippaq/1n}{anik:nganik/tn-acc-s-4s} 4
 aippaanit aippaanit {aippa:aippaq/1n}{anit:nganit/tn-abl-s-4s} 4
 aippanga aippanga {aippa:aippaq/1n}{nga:nga/tn-nom-s-4s} 1
+aipuru aipuru {aipuru:iipuru/1n} 1
 ajauqtiit ajauqtiit {aja:ajak/1v}{uq:uq/3vv}{ti:ji/1vn}{it:it/tn-nom-p} 1
 ajjaqsijii ajjaqsijii {ajjaq:arjaq/1v}{si:si/1vv}{ji:ji/1vn}{i:k/tn-nom-d} 3
 ajjaqsiji ajjaqsiji {ajjaq:arjaq/1v}{si:si/1vv}{ji:ji/1vn} 3
@@ -79,7 +81,7 @@ arraagumut arraagumut {arraagu:arraagu/1n}{mut:mut/tn-dat-s} 1
 arraagunik arraagunik {arraagu:arraagu/1n}{nik:nik/tn-acc-p} 1
 arraagunit arraagunit {arraagu:arraagu/1n}{nit:nit/tn-abl-p} 1
 arraagunut arraagunut {arraagu:arraagu/1n}{nut:nut/tn-dat-p} 1
-arraagutamaat arraagutamaat {arraagu:arraagu/1n}{tamaat:tamaat/1nn} 1
+arraagutamaat arraagutamaat {arraagu:arraagu/1n}{tamaa:tamaaq/1nn}{t:it/tn-nom-p} 1
 arraaguttinni arraaguttinni {arraagu:arraagu/1n}{ttinni:ttinni/tn-loc-s-1d} 1
 arraaguup arraaguup {arraagu:arraagu/1n}{up:up/tn-gen-s} 1
 arraani arraani {arraani:arraani/1n} 1
@@ -161,7 +163,7 @@ iglulirijirjuakkut iglulirijirjuakkut {iglu:iglu/1n}{liri:liri/1nv}{ji:ji/1vn}{r
 iglulirinirmut iglulirinirmut {iglu:iglu/1n}{liri:liri/1nv}{nir:niq/2vn}{mut:mut/tn-dat-s} 1
 ii ii {ii:ii/1a} 2
 iipuru iipuru {iipuru:iipuru/1n} 1
-iipurul iipurul {iipurul:iipurul/1n} 1
+iipurul iipurul {iipurul:iipuru/1n} 1
 ikajuqtiit ikajuqtiit {ikajuq:ikajuq/1v}{ti:ji/1vn}{it:it/tn-nom-p} 1
 ikajuutit ikajuutit {ikaju:ikajuq/1v}{ut:ut/1vn}{it:it/tn-nom-p} 3
 ikpaksaq ikpaksaq {ikpaksaq:ikpaksaq/1a} 1
@@ -302,7 +304,7 @@ kajusijuq kajusijuq {kajusi:kajusi/1v}{juq:juq/1vn} 1
 kajusivuq kajusivuq {kajusi:kajusi/1v}{vuq:vuq/tv-dec-3s} 1
 kamagijalik kamagijalik {kama:kama/1v}{gi:gi/4vv}{ja:jaq/1vn}{lik:lik/1nn} 1
 kamajuq kamajuq {kama:kama/1v}{juq:juq/1vn} 1
-kamisana kamisana {kamisana:kamisana/1n} 1
+kamisana kamisana {kamisana:kamisina/1n} 1
 kamisina kamisina {kamisina:kamisina/1n} 1
 kamisinaup kamisinaup {kamisina:kamisina/1n}{up:up/tn-gen-s} 1
 kanannangani kanannangani {kananna:kanangnaq/1n}{ngani:ngani/tn-loc-s-4s} 1
@@ -387,7 +389,7 @@ kiujjutinga kiujjutinga {kiu:kiu/1v}{jjuti:ut/1vn}{nga:nga/tn-nom-s-4s} 1
 kiujjutit kiujjutit {kiu:kiu/1v}{jjut:ut/1vn}{it:it/tn-nom-p} 1
 kivallirmi kivallirmi {kivallir:kivalliq/1n}{mi:mi/tn-loc-s} 1
 kivallirmut kivallirmut {kivallir:kivalliq/1n}{mut:mut/tn-dat-s} 1
-maajji maajji {maajji:maajji/1n} 1
+maajji maajji {maajji:maatsi/1n} 1
 maani maani {ma:ma/rad-ml}{ani:ani/tad-loc} 4
 maanna maanna {maanna:maanna/1a} 1
 maannakkut maannakkut {maanna:maanna/1a}{kkut:kkut/1nn} 1
@@ -471,7 +473,7 @@ matuiqtauninga matuiqtauninga {matu:matu/1n}{iq:iq/1nv}{ta:jaq/1vn}{u:u/1nv}{ni:
 matuirutimut matuirutimut {matu:matu/1n}{i:iq/1nv}{ruti:ut/1vn}{mut:mut/tn-dat-s} 2
 miksaanut miksaanut {miksa:miksa/1n}{anut:nganut/tn-dat-s-4s} 4
 milian milian {milian:milian/1n} 1
-minisitaujuq minisitaujuq {minisita:minisita/1n}{u:u/1nv}{juq:juq/1vn} 1
+minisitaujuq minisitaujuq {minisita:minista/1n}{u:u/1nv}{juq:juq/1vn} 1
 minista minista {minista:minista/1n} 1
 ministaa ministaa {minista:minista/1n}{a:k/tn-nom-d} 2
 ministait ministait {minista:minista/1n}{it:it/tn-nom-p} 1
@@ -489,7 +491,7 @@ ministaup ministaup {minista:minista/1n}{up:up/tn-gen-s} 1
 mis mis {mis:mis/1n} 1
 missaanut missaanut {missa:miksa/1n}{anut:nganut/tn-dat-s-4s} 4
 mista mista {mista:mista/1n} 1
-mistu mistu {mistu:mistu/1n} 1
+mistu mistu {mistu:mista/1n} 1
 mitsaanut mitsaanut {mitsa:miksa/1n}{anut:nganut/tn-dat-s-4s} 4
 mittimatalimmi mittimatalimmi {mittimatalim:mittimatalik/1n}{mi:mi/tn-loc-s} 1
 mittimatalingmi mittimatalingmi {mittimataling:mittimatalik/1n}{mi:mi/tn-loc-s} 1
@@ -660,8 +662,8 @@ qaujimavunga qaujimavunga {qaujima:qaujima/1v}{vunga:vunga/tv-dec-1s} 1
 qaujisarniq qaujisarniq {qauji:qauji/1v}{sar:saq/1vv}{niq:niq/2vn} 1
 qaujisarnirmut qaujisarnirmut {qauji:qauji/1v}{sar:saq/1vv}{nir:niq/2vn}{mut:mut/tn-dat-s} 1
 qauppat qauppat {qauppat:qaukpat/1n} 1
-qautamaamut qautamaamut {qau:qau/1n}{tamaa:tamaat/1nn}{mut:mut/tn-dat-s} 3
-qautamaat qautamaat {qau:qau/1n}{tamaat:tamaat/1nn} 3
+qautamaamut qautamaamut {qau:qau/1n}{tamaa:tamaaq/1nn}{mut:mut/tn-dat-s} 3
+qautamaat qautamaat {qau:qau/1n}{tamaa:tamaaq/1nn}{t:it/tn-nom-p} 3
 qikiqtaalummi qikiqtaalummi {qikiqtaalum:qikiqtaaluk/1n}{mi:mi/tn-loc-s} 1
 qikiqtaalungmi qikiqtaalungmi {qikiqtaalung:qikiqtaaluk/1n}{mi:mi/tn-loc-s} 1
 qikiqtaaluup qikiqtaaluup {qikiqtaalu:qikiqtaaluk/1n}{up:up/tn-gen-s} 1
@@ -915,4 +917,4 @@ uvvalu uvvalu {uvvalu:uvvalu/1c} 1
 uvvalukiaq uvvalukiaq {uvvalu:uvvalu/1c}{kiaq:kia/1q} 1
 uvvaluunniit uvvaluunniit {uvvaluunniit:uvvaluunniit/1c} 1
 vivvuari vivvuari {vivvuari:vivvuari/1n} 1
---- 917 /960 0.95520836
+--- 919 /961 0.95629555
