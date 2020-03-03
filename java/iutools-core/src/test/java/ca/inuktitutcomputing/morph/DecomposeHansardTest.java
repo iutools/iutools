@@ -67,7 +67,7 @@ public class DecomposeHansardTest {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		new LinguisticData();
+		LinguisticData.init();
 		String className = this.getClass().getSimpleName();
 		dirOutputFiles = locateInputFile(dirOutputFiles);
 		fileGoldStandard = locateInputFile(fileGoldStandard);
@@ -174,7 +174,11 @@ public class DecomposeHansardTest {
         		int i;
         		for (i = 0; i < decs.length; i++) {
 //        			if (decs[i].toStrSimple().equals(goldStandardDecomposition)){
+//        			if (wordToBeAnalyzed.equals("ilitaqsiniq"))
+//        				System.out.println(decs[i].toStr2()+"\n"+goldStandardDecomposition+"\n");
             	    if (decs[i].toStr2().equals(goldStandardDecomposition)){
+//            			if (wordToBeAnalyzed.equals("ilitaqsiniq"))
+//            				System.out.println("===="+"\n");
         			    // Successful analysis
         				writerSuccessfulAnalysis.write(wordId + " " + wordToBeAnalyzed + " " + goldStandardDecomposition + " " + (i+1));
         				writerSuccessfulAnalysis.newLine();
@@ -313,8 +317,8 @@ public class DecomposeHansardTest {
             case hasMoreSuccessfulAnalyses:
                 errorMessages.put(new Integer(key),
                         "--- More successful analyses.\nDo the following commands in a terminal window:\n\n" +
-                        "  cd [iutools_home]\n" +
-                        "  cp " + fileSuccessfulAnalysis + " java/iutools-core/src/test/resources/"
+                        "  cd [iutools_home]/java/iutools-core\n" +
+                        "  cp " + fileSuccessfulAnalysis + " src/test/resources/"
                         	    + targetSuccessfulAnalysisFile_src + "\n" +
                         "  mvn install -DskipTests\n\n");
                 break;
