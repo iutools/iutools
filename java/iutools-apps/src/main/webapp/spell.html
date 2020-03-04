@@ -5,7 +5,7 @@
   <meta charset="utf-8">
 
   <title>Inuktut Spell Checker</title>
-  <link rel="stylesheet" href="css/styles.css?v1">
+  <link rel="stylesheet" href="css/styles.css?v2">
 
   <script src="js/jquery-3.3.1.min.js"></script>
   <script src="js/scripts.js?v1"></script>
@@ -20,18 +20,21 @@
 <main id="spell-checker">
     <h1>Inuktut Spell Checker</h1>
     
-    Enter some Inuktut text:<p/>
-    <textarea id="txt-to-check" name="txt-to-check" rows=20 cols=80></textarea><p/>
+    <p>Enter some Inuktut text:</p>
+    <textarea id="txt-to-check" name="txt-to-check" rows=20 cols=80></textarea>
+    <div id="div-suggestions"></div>
+    <p>&nbsp;</p>
     <button id="btn-spell" type="button" name="btn-spell" value="Spell">Spell Check</button>
+    <button id="btn-reset" type="button" name="btn-spell" value="Reset">Reset</button>
     <p></p>
     <div id="div-message" class="div-message"></div>
     <div id="div-error" class="div-error"></div>
     <div id="div-checked" class="div-checked">
     	<div id="title-and-copy">
     		<h2>Spell-checked content</h2>
-    		<button id="btn-copy" type="button" name="btn-copy">Copy to clipboard</button>
     		</div>
     	<div id="div-results" class="div-results"></div>
+        <button id="btn-copy" type="button" name="btn-copy">Copy to clipboard</button>
     	</div>
 
 </main>
@@ -64,6 +67,7 @@
 	// Setup and configure the controller for this page
     var config = {
     		btnSpell: "btn-spell",
+    		btnReset: "btn-reset",
     		txtToCheck: "txt-to-check",
     		divChecked:  "div-checked",
     		divError: "div-error",
