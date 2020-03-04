@@ -25,7 +25,8 @@ public class IUTokenizerTest {
 		List<String> words = tokenizer.run(text);
 		List<String> expectedWords = new ArrayList<String>();
 		expectedWords.add("ᑲᖏᖅᖠᓂᐅᑉ");
-		expectedWords.add("ᐅᐊᓐᓇᖓ-ᐃᒡᓗᓕᒑᕐᔪᒃ");
+		expectedWords.add("ᐅᐊᓐᓇᖓ");
+		expectedWords.add("ᐃᒡᓗᓕᒑᕐᔪᒃ");
 		AssertHelpers.assertDeepEquals("", expectedWords, words);
 		
 		text = "ᐅᖃᖅᑎ: ᒥᔅᑕ ᔫ ᐃᓄᒃ, ᒪᓕᒐᓕᐅᖅᑎ ᓄᓇᕗᑦ ᒪᓕᒐᓕᐅᕐᕕᖓ";
@@ -57,7 +58,8 @@ public class IUTokenizerTest {
 		expectedWords.add("ᐳᓚᕋᖅᑐᓕᕆᓂᕐᒧᓪᓗ");
 		expectedWords.add("ᒪᓕᒐᐅᑉ");
 		expectedWords.add("ᓄᑖᖑᕆᐊᖅᑕᐅᓂᖓ");
-		expectedWords.add("ᐃᐊᓪ-ᑲᓇᔪᖅ");
+		expectedWords.add("ᐃᐊᓪ");
+		expectedWords.add("ᑲᓇᔪᖅ");
 		expectedWords.add("159");
 		AssertHelpers.assertDeepEquals("", expectedWords, words);
 		
@@ -80,7 +82,9 @@ public class IUTokenizerTest {
 		expectedTokens.add(new Pair<>("ᓄᑖᖑᕆᐊᖅᑕᐅᓂᖓ",true));
 		expectedTokens.add(new Pair<>(" ",false));
 		expectedTokens.add(new Pair<>("(",false));
-		expectedTokens.add(new Pair<>("ᐃᐊᓪ-ᑲᓇᔪᖅ",true));
+		expectedTokens.add(new Pair<>("ᐃᐊᓪ",true));
+		expectedTokens.add(new Pair<>("-",false));
+		expectedTokens.add(new Pair<>("ᑲᓇᔪᖅ",true));
 		expectedTokens.add(new Pair<>(")",false));
 		expectedTokens.add(new Pair<>(" ",false));
 		expectedTokens.add(new Pair<>("159",true));

@@ -12,7 +12,8 @@ import ca.nrc.datastructure.Pair;
 public class IUTokenizer {
 	
 	static Pattern pParan = Pattern.compile("(\\((.*?)\\))");
-	static Pattern pPunct = Pattern.compile("(\\p{Punct}+)");
+	// TODO: add other signs that might be used in the stead of "dash"
+	static Pattern pPunct = Pattern.compile("((\\p{Punct}|\\u2212)+)");
 
 	private List<String> words;
 	private List<Pair<String,Boolean>> allTokens;
@@ -62,7 +63,9 @@ public class IUTokenizer {
 			int pos = 0;
 			while (mpunct.find()) {
 				logger.debug("found punctuation pattern in " + token + " at position " + mpunct.start(1));
-				if ((mpunct.group(1).equals("-") || mpunct.group(1).equals("&")) && mpunct.start(1) != 0)
+//				if ((mpunct.group(1).equals("-") || mpunct.group(1).equals("&")) && mpunct.start(1) != 0)
+				if ( (mpunct.group(1).equals("&")  && mpunct.start(1) != 0) ||
+					 (mpunct.group(1).equals("-") && mpunct.start(1) != 0 && wordIsNumberWithSuffix(token)!=null ) )
 					continue;
 				if ( pos != mpunct.start(1))
 					allTokens.add(new Pair<>(token.substring(pos,mpunct.start(1)), true));
@@ -74,7 +77,16 @@ public class IUTokenizer {
 		}
 
 	}	
-	
+
+	protected String[] wordIsNumberWithSuffix(String word) {
+		Pattern p = Pattern.compile("^(\\$?\\d+(?:[.,:]\\d+)?(?:[.,:]\\d+)?-?)([agijklmnpqrstuv]+)$");
+		Matcher mp = p.matcher(word);
+		if (mp.matches())
+			return new String[] {mp.group(1),mp.group(2)};
+		else
+			return null;
+	}
+
 	public List<String> onlyWords() {
 		List<String> onlyWords = new ArrayList<String>();
 		for (int iToken=0; iToken<allTokens.size(); iToken++) {
