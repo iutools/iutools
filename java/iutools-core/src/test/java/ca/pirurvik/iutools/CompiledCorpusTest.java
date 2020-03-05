@@ -131,7 +131,7 @@ public class CompiledCorpusTest extends TestCase
 		long expectedCurrentFileWordCounter = 6;
 		assertEquals("The value of the 'current file word counter' is wrong.", expectedCurrentFileWordCounter,
 				retrievedCompiledCorpus.currentFileWordCounter);
-		HashMap<String, String[]> segmentsCache = retrievedCompiledCorpus.segmentsCache;
+		HashMap<String, String[]> segmentsCache = retrievedCompiledCorpus.getSegmentsCache();
 		String[] expected_takulaaqtuq_segments = null;
 		assertArrayEquals("The cache should not contain the segments of 'takulaaqtuq'", expected_takulaaqtuq_segments,
 				segmentsCache.get("takulaaqtuq"));
@@ -154,7 +154,7 @@ public class CompiledCorpusTest extends TestCase
 		expectedCurrentFileWordCounter = 8;
 		assertEquals("The value of the 'current file word counter' is wrong.", expectedCurrentFileWordCounter,
 				retrievedCompiledCorpus.currentFileWordCounter);
-		segmentsCache = retrievedCompiledCorpus.segmentsCache;
+		segmentsCache = retrievedCompiledCorpus.getSegmentsCache();
 		expected_takulaaqtuq_segments = new String[] { "{taku/1v}", "{laaq/2vv}", "{juq/1vn}" };
 		assertArrayEquals("The cache should contain the segments of 'takulaaqtuq'", expected_takulaaqtuq_segments,
 				segmentsCache.get("takulaaqtuq"));
@@ -208,7 +208,7 @@ public class CompiledCorpusTest extends TestCase
 		long expectedCurrentFileWordCounter = 1;
 		assertEquals("The value of the 'current file word counter' is wrong.", expectedCurrentFileWordCounter,
 				retrievedCompiledCorpus.currentFileWordCounter);
-		HashMap<String, String[]> segmentsCache = retrievedCompiledCorpus.segmentsCache;
+		HashMap<String, String[]> segmentsCache = retrievedCompiledCorpus.getSegmentsCache();
 
 		String[] expected_iglumut_segments = null;
 		assertArrayEquals("The cache should not contain the segments of 'iglumut'", expected_iglumut_segments,
@@ -233,7 +233,7 @@ public class CompiledCorpusTest extends TestCase
 		expectedCurrentFileWordCounter = 3;
 		assertEquals("The value of the 'current file word counter' is wrong.", expectedCurrentFileWordCounter,
 				retrievedCompiledCorpus.currentFileWordCounter);
-		segmentsCache = retrievedCompiledCorpus.segmentsCache;
+		segmentsCache = retrievedCompiledCorpus.getSegmentsCache();
 		String[] expected_takulaaqtuq_segments = new String[] { "{taku/1v}", "{laaq/2vv}", "{juq/1vn}" };
 		assertArrayEquals("The cache should contain the segments of 'takulaaqtuq'", expected_takulaaqtuq_segments,
 				segmentsCache.get("takulaaqtuq"));
@@ -499,7 +499,7 @@ public class CompiledCorpusTest extends TestCase
 		long expectedCurrentFileWordCounter = 6;
 		assertEquals("The value of the 'current file word counter' is wrong.", expectedCurrentFileWordCounter,
 				retrievedCompiledCorpus.currentFileWordCounter);
-		HashMap<String, String[]> segmentsCache = retrievedCompiledCorpus.segmentsCache;
+		HashMap<String, String[]> segmentsCache = retrievedCompiledCorpus.getSegmentsCache();
 		String[] expected_takulaaqtuq_segments = null;
 		assertArrayEquals("The cache should not contain the segments of 'takulaaqtuq'", expected_takulaaqtuq_segments,
 				segmentsCache.get("takulaaqtuq"));
@@ -633,9 +633,9 @@ public class CompiledCorpusTest extends TestCase
         String[] keysOfFailedWord = new String[] {"{saqqik/1v}","{lauq/1vv}","{juq/1vn}"};
         TrieNode trieNode1 = compiledCorpus.getTrie().getNode(keysOfFailedWord);
         assertFalse("The node should not exist in the trie.",trieNode1 != null);
-        compiledCorpus.wordsFailedSegmentation.add(wordThatFailed);
+        compiledCorpus.getWordsFailedSegmentation().add(wordThatFailed);
         compiledCorpus.wordsFailedSegmentationWithFreqs.put(wordThatFailed, new Long(4));
-        compiledCorpus.segmentsCache.put(wordThatFailed, new String[] {});
+        compiledCorpus.getSegmentsCache().put(wordThatFailed, new String[] {});
         assertEquals("The number of words that failed segmentation is wrong.",2,
         		compiledCorpus.getNbWordsThatFailedSegmentations());
         assertEquals("The number of occurrences that failed segmentation is wrong.",5,
@@ -648,8 +648,8 @@ public class CompiledCorpusTest extends TestCase
         assertEquals("The number of occurrences that failed segmentation is wrong.",1,
         		compiledCorpus.getNbOccurrencesThatFailedSegmentations());
         assertEquals("","{saqqik/1v} {lauq/1vv} {juq/1vn}",
-        		String.join(" ", compiledCorpus.segmentsCache.get(wordThatFailed)));
-        TrieNode trieNode2 = compiledCorpus.getTrie().getNode(compiledCorpus.segmentsCache.get(wordThatFailed));
+        		String.join(" ", compiledCorpus.getSegmentsCache().get(wordThatFailed)));
+        TrieNode trieNode2 = compiledCorpus.getTrie().getNode(compiledCorpus.getSegmentsCache().get(wordThatFailed));
         assertTrue("The node should exist in the trie.",trieNode2 != null);
         assertEquals("The frequency of that node is not right.",4,trieNode2.getFrequency());
         // compilation file should be updated
@@ -660,10 +660,10 @@ public class CompiledCorpusTest extends TestCase
         assertEquals("(3) The number of occurrences that failed segmentation is wrong.",1,
         		newCompiledCorpus.getNbOccurrencesThatFailedSegmentations());
         assertEquals("(3)","{saqqik/1v} {lauq/1vv} {juq/1vn}",
-        		String.join(" ", newCompiledCorpus.segmentsCache.get(wordThatFailed)));
+        		String.join(" ", newCompiledCorpus.getSegmentsCache().get(wordThatFailed)));
         
         compiledCorpus.saveCompilerInJSONFile(completeCompilationFilePathname);
-        TrieNode trieNode3 = CompiledCorpus.createFromJson(completeCompilationFilePathname).getTrie().getNode(compiledCorpus.segmentsCache.get(wordThatFailed));
+        TrieNode trieNode3 = CompiledCorpus.createFromJson(completeCompilationFilePathname).getTrie().getNode(compiledCorpus.getSegmentsCache().get(wordThatFailed));
         assertTrue("The node should exist in the trie.",trieNode3 != null);
         assertEquals("The frequency of that node is not right.",4,trieNode3.getFrequency());
 	}

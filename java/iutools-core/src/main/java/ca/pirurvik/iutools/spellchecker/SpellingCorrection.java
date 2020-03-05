@@ -1,4 +1,4 @@
-package ca.pirurvik.iutools;
+package ca.pirurvik.iutools.spellchecker;
 
 import java.util.ArrayList;
 import java.util.Arrays;

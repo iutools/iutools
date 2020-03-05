@@ -9,8 +9,8 @@ import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.utilities.EditDistanceCalculatorFactory;
 import ca.pirurvik.iutools.CompiledCorpus;
 import ca.pirurvik.iutools.CompiledCorpusRegistry;
-import ca.pirurvik.iutools.SpellChecker;
-import ca.pirurvik.iutools.SpellingCorrection;
+import ca.pirurvik.iutools.spellchecker.SpellChecker;
+import ca.pirurvik.iutools.spellchecker.SpellingCorrection;
 
 public class CmdCheckSpelling extends ConsoleCommand {
 

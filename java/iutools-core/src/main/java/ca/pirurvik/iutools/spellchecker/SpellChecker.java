@@ -1,4 +1,4 @@
-package ca.pirurvik.iutools;
+package ca.pirurvik.iutools.spellchecker;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -29,6 +29,9 @@ import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.StringUtils;
+import ca.pirurvik.iutools.CompiledCorpus;
+import ca.pirurvik.iutools.CompiledCorpusRegistry;
+import ca.pirurvik.iutools.CompiledCorpusRegistryException;
 import ca.inuktitutcomputing.config.IUConfig;
 import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.morph.MorphInukException;
@@ -291,10 +294,10 @@ public class SpellChecker {
 		boolean wordIsMispelled = false;
 		String[] numericTermParts = null;
 		
-		if (corpus!=null && corpus.wordsFailedSegmentation.contains(word)) {
+		if (corpus!=null && corpus.getWordsFailedSegmentation().contains(word)) {
 			wordIsMispelled = true;
 		} 
-		else if (corpus!=null && corpus.segmentsCache.containsKey(word)) {
+		else if (corpus!=null && corpus.getSegmentsCache().containsKey(word)) {
 			wordIsMispelled = false;
 		}
 		else if (word.matches("^[0-9]+$")) {
@@ -650,7 +653,4 @@ public class SpellChecker {
 	String getAllWordsToBeUsedForCandidates(boolean wordIsNumericTerm) {
 		return wordIsNumericTerm? this.allNormalizedNumericTerms : this.allWords;
 	}
-
-
-
 }

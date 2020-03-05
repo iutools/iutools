@@ -105,7 +105,7 @@ public class QueryExpanderEvaluator {
     		QueryExpander queryExpander = new QueryExpander(compiledCorpus);
     		StringSegmenter segmenter = compiledCorpus.getSegmenter();
     		
-    		if (verbose) System.out.println("Size of segments cache: "+compiledCorpus.segmentsCache.size());
+    		if (verbose) System.out.println("Size of segments cache: "+compiledCorpus.getSegmentsCache().size());
             
             Pattern patMotFreq = Pattern.compile("^(.+) \\((\\d+)\\).*$");
             
@@ -266,7 +266,7 @@ public class QueryExpanderEvaluator {
 	}
 
 	private long freqDansCorpus(String reformulation) {
-		String[] keys = compiledCorpus.segmentsCache.get(reformulation);
+		String[] keys = compiledCorpus.getSegmentsCache().get(reformulation);
 		if (keys==null)
 			return 0;
 		long freqDansCorpus = compiledCorpus.trie.getFrequency(keys);

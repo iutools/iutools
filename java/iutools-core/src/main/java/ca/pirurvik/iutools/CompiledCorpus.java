@@ -57,8 +57,8 @@ public class CompiledCorpus
 	protected Trie trie = new Trie();
 	
 	// things related to the compiler's state and operation that need to be saved periodically and at termination
-	protected HashMap<String,String[]> segmentsCache = new HashMap<String, String[]>();
-	protected Vector<String> wordsFailedSegmentation = new Vector<String>();
+	private HashMap<String,String[]> segmentsCache = new HashMap<String, String[]>();
+	private Vector<String> wordsFailedSegmentation = new Vector<String>();
 	protected HashMap<String,Long> wordsFailedSegmentationWithFreqs = new HashMap<String,Long>();
 	
 	public String wordSegmentations = ",,";
@@ -305,7 +305,7 @@ public class CompiledCorpus
 	}
 	
 	public HashMap<String,String[]> getSegments() {
-		return this.segmentsCache;
+		return this.getSegmentsCache();
 	}
 	
 	/**
@@ -371,7 +371,7 @@ public class CompiledCorpus
 		CompiledCorpus compiledCorpus = createFromJson(jsonFilePath);
 		
 		this.trie = compiledCorpus.trie;
-		this.segmentsCache = compiledCorpus.segmentsCache;
+		this.setSegmentsCache(compiledCorpus.getSegmentsCache());
 		this.saveFilePath = compiledCorpus.saveFilePath;
 		this.segmenterClassName = compiledCorpus.segmenterClassName;
 		this.currentFileWordCounter = compiledCorpus.currentFileWordCounter;
@@ -379,7 +379,7 @@ public class CompiledCorpus
 		this.saveFrequency = compiledCorpus.saveFrequency;
 		this.filesCompiled = compiledCorpus.filesCompiled;
 		
-		this.wordsFailedSegmentation = compiledCorpus.wordsFailedSegmentation;
+		this.setWordsFailedSegmentation(compiledCorpus.getWordsFailedSegmentation());
 		this.wordsFailedSegmentationWithFreqs = compiledCorpus.wordsFailedSegmentationWithFreqs;
 		this.wordSegmentations = compiledCorpus.wordSegmentations;
 		this.decomposedWordsSuite = compiledCorpus.decomposedWordsSuite;
@@ -568,8 +568,8 @@ public class CompiledCorpus
 	}
 
 	private void removeFromListOfFailedSegmentation(String word) {
-		if (wordsFailedSegmentation.contains(word))
-			wordsFailedSegmentation.removeElement(word);
+		if (getWordsFailedSegmentation().contains(word))
+			getWordsFailedSegmentation().removeElement(word);
 		if (wordsFailedSegmentationWithFreqs.containsKey(word))
 				wordsFailedSegmentationWithFreqs.remove(word);
 	}
@@ -583,8 +583,8 @@ public class CompiledCorpus
 	}
 
 	private void addToListOfFailedSegmentation(String word) {
-		if ( !wordsFailedSegmentation.contains(word) )
-			wordsFailedSegmentation.add(word);
+		if ( !getWordsFailedSegmentation().contains(word) )
+			getWordsFailedSegmentation().add(word);
 
 		long nb;
 		if (wordsFailedSegmentationWithFreqs.containsKey(word))
@@ -654,15 +654,15 @@ public class CompiledCorpus
     // ----------------------------- private -------------------------------
 
 	private void addToCache(String word, String[] segments) {
-		segmentsCache.put(word, segments);
+		getSegmentsCache().put(word, segments);
 	}
 
 	private String[] fetchSegmentsFromCache(String word) {
 		String[] segmentsFromCache = null;
-		if (!segmentsCache.containsKey(word))
+		if (!getSegmentsCache().containsKey(word))
 			segmentsFromCache = new String[] {};
 		else
-			segmentsFromCache = segmentsCache.get(word);
+			segmentsFromCache = getSegmentsCache().get(word);
 		return segmentsFromCache;
 	}
 
@@ -727,15 +727,27 @@ public class CompiledCorpus
 	public String getWordsWithUnsuccessfulDecomposition() {
 		if (wordsWithUnsuccessfulDecomposition==null) {
 			wordsWithUnsuccessfulDecomposition = ",,";
-			for (int i=0; i<wordsFailedSegmentation.size(); i++) {
-				wordsWithUnsuccessfulDecomposition += wordsFailedSegmentation.get(i)+",,";
+			for (int i=0; i<getWordsFailedSegmentation().size(); i++) {
+				wordsWithUnsuccessfulDecomposition += getWordsFailedSegmentation().get(i)+",,";
 			}
 		}
 		return wordsWithUnsuccessfulDecomposition;
 	}
 
 	public String[] getWordsThatFailedDecomposition() {
-		return wordsFailedSegmentation.toArray(new String[] {});
+		return getWordsFailedSegmentation().toArray(new String[] {});
+	}
+	public Vector<String> getWordsFailedSegmentation() {
+		return wordsFailedSegmentation;
+	}
+	public void setWordsFailedSegmentation(Vector<String> wordsFailedSegmentation) {
+		this.wordsFailedSegmentation = wordsFailedSegmentation;
+	}
+	public HashMap<String,String[]> getSegmentsCache() {
+		return segmentsCache;
+	}
+	public void setSegmentsCache(HashMap<String,String[]> segmentsCache) {
+		this.segmentsCache = segmentsCache;
 	}
 
 }

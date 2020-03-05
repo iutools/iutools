@@ -13,9 +13,6 @@ import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.json.PrettyPrinter;
-import ca.pirurvik.iutools.SpellChecker;
-import ca.pirurvik.iutools.SpellCheckerException;
-import ca.pirurvik.iutools.SpellingCorrection;
 
 public class SpellCheckerEvaluator {
 	
@@ -27,6 +24,11 @@ public class SpellCheckerEvaluator {
 	Set<SpellCheckerExample> falseNeg = new HashSet<SpellCheckerExample>();
 	
 	Map<SpellCheckerExample,Integer> correctSpellingRank = new HashMap<SpellCheckerExample,Integer>();
+	Map<SpellCheckerExample,Pair<Integer,List<String>>> examplesWithBadRank = 
+			new HashMap<SpellCheckerExample,Pair<Integer,List<String>>>();
+	
+	private double sumRank = 0.0;
+	private int totalNonNullRank = 0;
 	
 	public SpellCheckerEvaluator() throws StringSegmenterException, FileNotFoundException, SpellCheckerException, ConfigException {
 		checker = new SpellChecker();
@@ -39,7 +41,6 @@ public class SpellCheckerEvaluator {
 		SpellingCorrection gotCorrection = checker.correctWord(example.wordToCheck);
 		
 		boolean shouldHaveBeenCorrect = (correctForms == null);
-		
 		
 		if (gotCorrection.wasMispelled) {
 			// Positive cases (i.e. where SpellChecker found an error)
@@ -71,8 +72,33 @@ public class SpellCheckerEvaluator {
 			}
 		}
 		
+		boolean rankBad = false;
+		if (rank == null) {
+			if (example.expMaxRank >= 0) {
+				rankBad = true;
+			}
+		} else {
+			if (rank > example.expMaxRank) {
+				rankBad = true;
+			}
+		}
+		if (rankBad) {
+			addExampleWithBadRank(example, rank, suggestions);
+		}
+
+		if (rank != null) {
+			sumRank += 1.0 * rank;
+			totalNonNullRank++;
+		}
+		
 		correctSpellingRank.put(example, rank);
 	}
+
+	private void addExampleWithBadRank(SpellCheckerExample example, 
+			Integer rank, List<String> suggestions) {
+		examplesWithBadRank.put(example, Pair.of(rank,suggestions));
+	}
+
 
 	private void onTruePositive(SpellCheckerExample example, SpellingCorrection gotCorrection) {
 		truePos.add(example);
@@ -160,6 +186,15 @@ public class SpellCheckerEvaluator {
 		}
 		
 		return relativeHistogram;
+	}
+	
+	public Double averageRank() {
+		Double avg = null;
+		if (totalNonNullRank > 0) {
+			avg = sumRank / totalNonNullRank;
+		}
+				
+		return avg;
 	}
 	
 }

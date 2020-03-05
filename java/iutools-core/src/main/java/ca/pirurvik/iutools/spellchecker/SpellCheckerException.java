@@ -1,4 +1,4 @@
-package ca.pirurvik.iutools;
+package ca.pirurvik.iutools.spellchecker;
 
 public class SpellCheckerException extends Exception {
 

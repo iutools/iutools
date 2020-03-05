@@ -16,9 +16,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.json.PrettyPrinter;
-import ca.pirurvik.iutools.SpellChecker;
-import ca.pirurvik.iutools.SpellCheckerException;
-import ca.pirurvik.iutools.SpellingCorrection;
+import ca.pirurvik.iutools.spellchecker.SpellChecker;
+import ca.pirurvik.iutools.spellchecker.SpellCheckerException;
+import ca.pirurvik.iutools.spellchecker.SpellingCorrection;
 
 
 public class SpellEndpoint extends HttpServlet {

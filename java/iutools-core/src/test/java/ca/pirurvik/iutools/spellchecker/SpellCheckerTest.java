@@ -1,4 +1,4 @@
-package ca.pirurvik.iutools;
+package ca.pirurvik.iutools.spellchecker;
 
 
 import java.io.File;
@@ -12,7 +12,9 @@ import org.junit.Test;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.testing.AssertHelpers;
-import ca.pirurvik.iutools.SpellChecker;
+import ca.pirurvik.iutools.spellchecker.SpellChecker;
+import ca.pirurvik.iutools.spellchecker.SpellCheckerException;
+import ca.pirurvik.iutools.spellchecker.SpellingCorrection;
 
 import org.junit.*;
 
@@ -54,7 +56,7 @@ public class SpellCheckerTest {
 		// etc...
 		
 		// or
-		
+		//
 		checker.setDictionaryFromCorpus("a_corpus_name");
 		
 		//
