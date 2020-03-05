@@ -25,6 +25,7 @@ package ca.inuktitutcomputing.script;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public abstract class Roman {
 
@@ -1359,6 +1360,33 @@ public abstract class Roman {
 			}
 		}
 		return syllables;
+	}
+
+	/**
+	 * Split an Inuktut word written with Roman characters 
+	 * into single "characters", taking into account the fact that
+	 * doubled characters (ex: 'aa', 'ii', 'nn', 'mm') count as a 
+	 * single character (because they correspond to a single 
+	 * syllabic character).
+	 * 
+	 * @param word
+	 * @return
+	 */
+	public static String[] splitChars(String word) {
+		
+		String[] chars = null;
+		
+		if (word != null) {
+			chars = new String[0];
+			if (!word.isEmpty()) {
+				word = word.replaceAll("((\\w)\\2*)", "|$1|");
+				word = word.replaceAll("^\\|","");
+				word = word.replaceAll("\\|$","");
+				chars = word.split("\\|\\|");
+			}
+		}
+		
+		return chars;
 	}
 
 }

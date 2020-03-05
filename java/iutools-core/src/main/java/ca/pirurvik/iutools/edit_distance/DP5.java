@@ -11,7 +11,7 @@ public class DP5 implements EditDistanceCalculator
 		else return z; 
 	} 
 
-	public int distance(String str1, String str2) {
+	public double distance(String str1, String str2) {
 		return distance(str1,str2,str1.length(),str2.length());
 	}
 	int distance(String str1, String str2, int m, int n) 
@@ -53,7 +53,7 @@ public class DP5 implements EditDistanceCalculator
 
 	
 
-	public static void main(String args[]) throws EditDistanceCalculatorFactoryException 
+	public static void main(String args[]) throws EditDistanceCalculatorFactoryException, EditDistanceCalculatorException 
 	{ 
 //		EditDistanceCalculator calculator = EditDistanceCalculatorFactory.getEditDistanceCalculator("DP5");
 		EditDistanceCalculator calculator = EditDistanceCalculatorFactory.getEditDistanceCalculator(EditDistanceCalculatorFactory.DistanceMethod.DP5);

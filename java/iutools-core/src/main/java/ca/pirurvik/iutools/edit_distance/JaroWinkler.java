@@ -37,7 +37,7 @@ import ca.pirurvik.iutools.edit_distance.EditDistanceCalculatorFactory.DistanceM
     		 * 
     		 * @author Thomas Trojer <thomas@trojer.net>
     		 */
-    		public int distance(String s1, String s2) {
+    		public double distance(String s1, String s2) {
     			double dist = ddistance(s1,s2); // between 0 and 1, 0 lowest similarity
     			int intDist = (int)((1.0-dist) * 100); // to get "cost-like" equivalent
     			return intDist;
@@ -102,7 +102,7 @@ import ca.pirurvik.iutools.edit_distance.EditDistanceCalculatorFactory.DistanceM
     			return boostedScore;
     		}
 
-    public static void main(String [] args) throws EditDistanceCalculatorFactoryException {
+    public static void main(String [] args) throws EditDistanceCalculatorFactoryException, EditDistanceCalculatorException {
     	EditDistanceCalculator calculator = EditDistanceCalculatorFactory.getEditDistanceCalculator(EditDistanceCalculatorFactory.DistanceMethod.JARO_WINKLER);
         String [] data = { "kitten", "sitting", "saturday", "sunday", "rosettacode", "raisethysword" };
         for (int i = 0; i < data.length; i += 2)

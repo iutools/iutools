@@ -33,6 +33,7 @@ import ca.pirurvik.iutools.CompiledCorpus;
 import ca.pirurvik.iutools.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.CompiledCorpusRegistryException;
 import ca.pirurvik.iutools.edit_distance.EditDistanceCalculator;
+import ca.pirurvik.iutools.edit_distance.EditDistanceCalculatorException;
 import ca.pirurvik.iutools.edit_distance.EditDistanceCalculatorFactory;
 import ca.pirurvik.iutools.edit_distance.EditDistanceCalculatorFactoryException;
 import ca.inuktitutcomputing.config.IUConfig;
@@ -381,7 +382,7 @@ public class SpellChecker {
 		return candidates;
 	}
 
-	protected List<Pair<String, Double>> computeCandidateSimilarities(String badWord, Set<String> candidates) {
+	protected List<Pair<String, Double>> computeCandidateSimilarities(String badWord, Set<String> candidates) throws SpellCheckerException {
 		List<Pair<String,Double>> candidateSimilarities = new ArrayList<Pair<String,Double>>();
 		Iterator<String> iterator = candidates.iterator();
 		while (iterator.hasNext()) {
@@ -393,10 +394,14 @@ public class SpellChecker {
 		return candidateSimilarities;
 	}
 
-	private double computeCandidateSimilarity(String badWord, String candidate) {
-		// TODO Auto-generated method stub
-		int distance = editDistanceCalculator.distance(candidate,badWord);
-		return (double)distance;
+	private double computeCandidateSimilarity(String badWord, String candidate) throws SpellCheckerException {
+		double distance;
+		try {
+			distance = editDistanceCalculator.distance(candidate,badWord);
+		} catch (EditDistanceCalculatorException e) {
+			throw new SpellCheckerException(e);
+		}
+		return distance;
 	}
 
 	// Not used anymore, replaced by firstPassCandidates_TFIDF - to be deleted

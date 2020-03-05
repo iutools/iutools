@@ -76,19 +76,19 @@
 		<dependency>
 			<groupId>ca.nrc.java-utils</groupId>
 			<artifactId>java-utils-core</artifactId>
-			<version>1.0.10-SNAPSHOT</version>
+			<version>1.0.11-SNAPSHOT</version>
 		</dependency>
 			
 		<dependency>
 			<groupId>ca.nrc.java-utils</groupId>
 			<artifactId>java-utils-string</artifactId>
-			<version>1.0.10-SNAPSHOT</version>
+			<version>1.0.11-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
 			<groupId>ca.nrc.java-utils</groupId>
 			<artifactId>java-utils-data</artifactId>
-			<version>1.0.10-SNAPSHOT</version>
+			<version>1.0.11-SNAPSHOT</version>
 		</dependency>	
 		
 		<dependency>

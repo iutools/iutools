@@ -2,7 +2,7 @@ package ca.pirurvik.iutools.edit_distance;
 
 public class LCS implements EditDistanceCalculator {
 	
-    public int distance(String X, String Y) { 
+    public double distance(String X, String Y) { 
         // Find LCS  
         int m = X.length(), n = Y.length(); 
         int L[][] = new int[m + 1][n + 1]; 
@@ -25,7 +25,7 @@ public class LCS implements EditDistanceCalculator {
     } 
   
     /* Driver program to test above function */
-    public static void main(String[] args) throws EditDistanceCalculatorFactoryException { 
+    public static void main(String[] args) throws EditDistanceCalculatorFactoryException, EditDistanceCalculatorException { 
     	EditDistanceCalculator calculator = EditDistanceCalculatorFactory.getEditDistanceCalculator(EditDistanceCalculatorFactory.DistanceMethod.LCS);
         String X = "abc", Y = "acd"; 
         System.out.println(calculator.distance(X, Y)); 

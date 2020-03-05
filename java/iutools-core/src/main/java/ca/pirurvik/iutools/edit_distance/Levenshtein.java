@@ -4,7 +4,7 @@ import ca.pirurvik.iutools.edit_distance.EditDistanceCalculatorFactory.DistanceM
 
 public class Levenshtein implements EditDistanceCalculator {
 	 
-    public int distance(String a, String b) {
+    public double distance(String a, String b) {
         a = a.toLowerCase();
         b = b.toLowerCase();
         // i == 0
@@ -24,7 +24,7 @@ public class Levenshtein implements EditDistanceCalculator {
         return costs[b.length()];
     }
  
-    public static void main(String [] args) throws EditDistanceCalculatorFactoryException {
+    public static void main(String [] args) throws EditDistanceCalculatorFactoryException, EditDistanceCalculatorException {
     	EditDistanceCalculator calculator = EditDistanceCalculatorFactory.getEditDistanceCalculator(EditDistanceCalculatorFactory.DistanceMethod.LEVENSHTEIN);
         String [] data = { "kitten", "sitting", "saturday", "sunday", "rosettacode", "raisethysword" };
         for (int i = 0; i < data.length; i += 2)

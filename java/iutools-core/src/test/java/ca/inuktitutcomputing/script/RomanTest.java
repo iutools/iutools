@@ -11,6 +11,7 @@ import java.util.Arrays;
 import org.junit.Test;
 
 import ca.nrc.json.PrettyPrinter;
+import ca.nrc.testing.AssertObject;
 
 //import org.junit.jupiter.api.Test;
 
@@ -137,4 +138,39 @@ public class RomanTest {
 		//System.out.println(PrettyPrinter.print(syllables));
 		assertArrayEquals(word,expected,syllables);
 	}	
+	
+	@Test
+	public void test__splitChars__HappyPath() throws Exception {
+		String word = "nakurmiit";
+		String[] gotChars = Roman.splitChars(word);
+		
+		// Notice how the double 'ii' is considered to be a single 
+		//    character.
+		String[] expChars = new String[] {"n","a","k","u","r","m","ii","t"};
+		
+		AssertObject.assertDeepEquals("Word "+word+" was not correctly split", 
+				expChars, gotChars);
+	}
+
+	@Test
+	public void test__splitChars__EmptyString() throws Exception {
+		String emptyString = "";
+		String[] gotChars = Roman.splitChars(emptyString);
+		
+		String[] expChars = new String[] {};
+		
+		AssertObject.assertDeepEquals("Word "+emptyString+" was not correctly split", 
+				expChars, gotChars);
+	}
+
+	@Test
+	public void test__splitChars__NullString() throws Exception {
+		String nullString = null;
+		String[] gotChars = Roman.splitChars(nullString);
+		
+		String[] expChars = null;
+		
+		AssertObject.assertDeepEquals("Word "+nullString+" was not correctly split", 
+				expChars, gotChars);
+	}
 }
