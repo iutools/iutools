@@ -2,10 +2,8 @@
  * Controller for the spell.html page.
  */
 
-originalText = null;
-
 class SpellController extends WidgetController {
-	
+
 	constructor(config) {
 		super(config);
 	} 
@@ -45,11 +43,14 @@ class SpellController extends WidgetController {
 //					// Remove the \n at the end of the selected text
 //					text = text.substring(0, text.length - 1);
 //				}
+			console.log('item.select text= "'+text+'"');
 			}
 			else if ($(item).is('span')) {
 				text = $(item).text();
+				console.log('item text= "'+text+'"');
 			}
 			allText += text;
+			console.log('allText= "'+allText+'"');
 		});
 		return allText;
 	}
@@ -100,45 +101,12 @@ class SpellController extends WidgetController {
 		}
 		return isValid;
 	}
-
-	hideSpellButton() {
-		this.elementForProp('btnSpell').hide();
-	}
-
-	showSpellButton() {
-		this.elementForProp('btnSpell').show();
-	}
-
-	hideResetButton() {
-		this.elementForProp('btnReset').hide();
-	}
-
-	showResetButton() {
-		this.elementForProp('btnReset').show();
-	}
-
-
+	
 	onClickOnCorrections(ev) {
 			var target = $(ev.target);
 			var divParent = target.closest('div');
-			var textWithHighlightedWord = originalText
-				.replace(new RegExp(divParent.attr('word'), 'g'),
-						'[[['+divParent.attr('word')+']]]');
-			$('textarea#txt-to-check').val(textWithHighlightedWord);
-			$('div#div-suggestions').html(divParent.html()).children().show();
-			$('div#div-suggestions').css('visibility','visible');
-	}
-	
-	resetSpellChecker(ev) {
-		originalText = null;
-		$('textarea#txt-to-check').val('');
-		$('div#div-suggestions').html('');
-		$('div#div-results').html('');
-		$('div#div-checked div#div-results').html('');
-		$('div#div-checked div#title-and-copy').hide();
-		$('div#div-checked button#btn-copy').hide();
-		$('button#btn-reset').hide();
-		$('button#btn-spell').show();
+			console.log('divParent: '+divParent.length+"; word= "+divParent.attr('word'));
+			$('span',divParent).css('display','block');
 	}
 	
 	setCorrectionsHandlers() {
@@ -149,18 +117,17 @@ class SpellController extends WidgetController {
 			$('.selected',divParent).css('display','block');
 			$('.additional input',divParent).val('');
 			});
-		$(document).find('button#btn-reset')
-			.on('click',this.resetSpellChecker);
 		$(document).find('span.suggestion.selected')
 			.on('click',this.onClickOnCorrections);
 		$(document).find('span.suggestion:not(.selected)')
 			.on('mouseover',function(ev){
-				$(ev.target).css('color','green');
+				$(ev.target).css({'color':'red'});
 				})
 			.on('mouseleave',function(ev){
 				$(ev.target).css('color','black')
 				})
 			.on('click',function(ev){
+				console.log('click');
 				var target = $(ev.target);
 				var divParent = target.closest('div');
 				$('span',divParent).css('display','none');
@@ -168,13 +135,14 @@ class SpellController extends WidgetController {
 				target.addClass('selected');
 				$('.additional input',divParent).val('');
 				$('.selected',divParent).css('display','block');
+				console.log('out of click');
 				spellController.setCorrectionsHandlers();
 				});
 		$(document).find('span.additional input')
 			.on('mouseleave',function(ev){
 				var target = $(ev.target);
 				var divParent = target.closest('div');
-				$('span',divParent).css('display','none');
+				//$('span',divParent).css('display','none');
 				$('.selected',divParent).css('display','block');
 				$('.additional input',divParent).val('');
 				})
@@ -203,7 +171,6 @@ class SpellController extends WidgetController {
 		if (resp.errorMessage != null) {
 			this.failureCallback(resp);
 		} else {
-			originalText = this.elementForProp('txtToCheck').val();
 			var divChecked = this.elementForProp('divChecked');
 			var divCheckedResults = divChecked.find('div#div-results');
 			var divCheckedTitle = divChecked.find('div#title-and-copy');
@@ -221,8 +188,6 @@ class SpellController extends WidgetController {
 				}
 				divCheckedResults.append(wordOutput);
 			}
-			var btnCopy = this.elementForProp('btnCopy');
-			btnCopy.show();
 			spellController.setCorrectionsHandlers();
 		}
 		
@@ -249,35 +214,39 @@ class SpellController extends WidgetController {
 	}
 	
 	picklistFor(corrResult) {
+		console.log("corrResult= "+JSON.stringify(corrResult));
 		var origWord = corrResult.orig;
 		var alternatives = corrResult.possibleSpellings;
 		var picklistHtml = "<div class='corrections' word='"+corrResult.orig+"'>\n";
+		picklistHtml += "<span class=\"suggestion original selected\">"+origWord+"</span>\n";
+		var inputLength = origWord.length;
 		for (var ii=0; ii < alternatives.length; ii++) {
 			var anAlternative = alternatives[ii];
 			picklistHtml += "<span class=\"suggestion";
-			if (ii==0)
-				picklistHtml += " selected";
-			picklistHtml += "\">"+anAlternative+"</span>\n"
+//			if (ii==0)
+//				picklistHtml += " selected";
+			picklistHtml += "\">"+anAlternative+"</span>\n";
+			if (anAlternative.length > inputLength)
+				inputLength = anAlternative.length;
 		}
-		picklistHtml += "<span class=\"suggestion original";
-		if (alternatives.length==0)
-			picklistHtml += " selected";
-		picklistHtml += "\">"+origWord+"</span>\n";
-		picklistHtml += "<span class=\"additional\">"+"<input type=\"text\">"+"</span>\n";
+//		picklistHtml += "<span class=\"suggestion original";
+//		if (alternatives.length==0)
+//			picklistHtml += " selected";
+//		picklistHtml += "\">"+origWord+"</span>\n";
+		picklistHtml += "<span class=\"additional\">"+"<input type=\"text\" />"+"</span>\n";
 		picklistHtml += "</div>\n";
 		return picklistHtml;
 	}
 	
 	setBusy(flag) {
+		console.log('setBusy: '+flag);
 		this.busy = flag;
 		if (flag) {
-			//this.disableSpellButton();
-			this.hideSpellButton();
+			this.disableSpellButton();	
 			this.showSpinningWheel('divMessage', "Checking");
 			this.error("");
 		} else {
-			//this.enableSpellButton();
-			this.showResetButton();
+			this.enableSpellButton();
 			this.hideSpinningWheel('divMessage');
 		}		
 	}
@@ -302,7 +271,7 @@ class SpellController extends WidgetController {
 		this.elementForProp('btnSpell').attr("disabled", false);
 
 	}
-
+	
 	error(err) {
 		this.elementForProp('divError').html(err);
 		this.elementForProp('divError').show();	 

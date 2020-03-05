@@ -22,10 +22,7 @@
     
     <p>Enter some Inuktut text:</p>
     <textarea id="txt-to-check" name="txt-to-check" rows=20 cols=80></textarea>
-    <div id="div-suggestions"></div>
-    <p>&nbsp;</p>
     <button id="btn-spell" type="button" name="btn-spell" value="Spell">Spell Check</button>
-    <button id="btn-reset" type="button" name="btn-spell" value="Reset">Reset</button>
     <p></p>
     <div id="div-message" class="div-message"></div>
     <div id="div-error" class="div-error"></div>
@@ -36,6 +33,7 @@
     	<div id="div-results" class="div-results"></div>
         <button id="btn-copy" type="button" name="btn-copy">Copy to clipboard</button>
     	</div>
+    <div style="min-height:6em;"></div>
 
 </main>
 
@@ -67,7 +65,6 @@
 	// Setup and configure the controller for this page
     var config = {
     		btnSpell: "btn-spell",
-    		btnReset: "btn-reset",
     		txtToCheck: "txt-to-check",
     		divChecked:  "div-checked",
     		divError: "div-error",

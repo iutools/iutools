@@ -207,30 +207,11 @@ div.corrections span.selected {
 	text-decoration:underline;
 }
 
-button#btn-copy, button#btn-reset {
+button#btn-copy {
 	display:none;
 }
 
-div#div-suggestions {
-	display:inline-block;
-	visibility:visible;
-	width:400px;
-	height:200px;
-	border:1px solid black;
-	padding:5px;
-	margin-left:30px;
-	vertical-align:top;
-}
-div#div-suggestions span {
-	display:block;
-}
-div#div-suggestions span:not(.additional):hover {
-	color:green;
-	cursor:pointer;
-}
-div#div-suggestions span.additional input {
+span.additional input {
 	width:98%;
-}
-div#div-suggestions span.original {
-	color:red;
+	padding:1%;
 }
