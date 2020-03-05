@@ -2,8 +2,8 @@ package ca.inuktitutcomputing.core.console;
 
 import java.util.Scanner;
 
-import ca.inuktitutcomputing.utilities.EditDistanceCalculatorFactory;
 import ca.nrc.ui.commandline.SubCommand;
+import ca.pirurvik.iutools.edit_distance.EditDistanceCalculatorFactory;
 
 public abstract class ConsoleCommand extends SubCommand {
 	

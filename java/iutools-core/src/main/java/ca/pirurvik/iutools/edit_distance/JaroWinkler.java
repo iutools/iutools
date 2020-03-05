@@ -1,6 +1,8 @@
-package ca.inuktitutcomputing.utilities;
+package ca.pirurvik.iutools.edit_distance;
 
     import java.util.Arrays;
+
+import ca.pirurvik.iutools.edit_distance.EditDistanceCalculatorFactory.DistanceMethod;
 
     /**
      * A similarity algorithm indicating the percentage of matched characters between two character sequences.

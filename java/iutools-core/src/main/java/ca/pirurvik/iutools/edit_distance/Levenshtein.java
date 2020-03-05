@@ -1,4 +1,6 @@
-package ca.inuktitutcomputing.utilities;
+package ca.pirurvik.iutools.edit_distance;
+
+import ca.pirurvik.iutools.edit_distance.EditDistanceCalculatorFactory.DistanceMethod;
 
 public class Levenshtein implements EditDistanceCalculator {
 	 

@@ -32,6 +32,9 @@ import ca.nrc.string.StringUtils;
 import ca.pirurvik.iutools.CompiledCorpus;
 import ca.pirurvik.iutools.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.CompiledCorpusRegistryException;
+import ca.pirurvik.iutools.edit_distance.EditDistanceCalculator;
+import ca.pirurvik.iutools.edit_distance.EditDistanceCalculatorFactory;
+import ca.pirurvik.iutools.edit_distance.EditDistanceCalculatorFactoryException;
 import ca.inuktitutcomputing.config.IUConfig;
 import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.morph.MorphInukException;
@@ -40,9 +43,6 @@ import ca.inuktitutcomputing.script.Orthography;
 import ca.inuktitutcomputing.script.Syllabics;
 import ca.inuktitutcomputing.script.TransCoder;
 import ca.inuktitutcomputing.utilbin.AnalyzeNumberExpressions;
-import ca.inuktitutcomputing.utilities.EditDistanceCalculator;
-import ca.inuktitutcomputing.utilities.EditDistanceCalculatorFactory;
-import ca.inuktitutcomputing.utilities.EditDistanceCalculatorFactoryException;
 import ca.inuktitutcomputing.utilities.IUTokenizer;
 import ca.inuktitutcomputing.utilities.NgramCompiler;
 
@@ -364,15 +364,6 @@ public class SpellChecker {
 		return result;
 	}
 
-
-//	public Long ngramStat(String charSeq) {
-//		Long val = new Long(0);
-//		if (ngramStats.containsKey(charSeq)) {
-//			val = ngramStats.get(charSeq);
-//		}
-//		return val;
-//	}
-	
 
 	private List<String> sortCandidatesBySimilarity(List<Pair<String, Double>> candidatesWithSim) {
 		Iterator<Pair<String, Double>> iteratorCand = candidatesWithSim.iterator();

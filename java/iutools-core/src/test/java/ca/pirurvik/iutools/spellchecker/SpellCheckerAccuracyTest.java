@@ -78,10 +78,10 @@ public class SpellCheckerAccuracyTest {
 		}
 		
 		Double expAverageRank = new Double(1.17);
-		double avgRankTolerance = 0.05;
+		Double avgRankTolerance = new Double(0.05);
 		AssertNumber.isLessOrEqualTo(
 				"The average rank was higher than expected.",
-				evaluator.averageRank(), expAverageRank + avgRankTolerance);
+				evaluator.averageRank(), new Double(expAverageRank + avgRankTolerance));
 		AssertNumber.isGreaterOrEqualTo(
 				"Significant improvement found in the average rank.\nYou might want to decrease the expectation so we don't loose that gain in the future.",
 				evaluator.averageRank(), expAverageRank - avgRankTolerance);;

@@ -6,9 +6,9 @@ import java.util.List;
 
 import ca.inuktitutcomputing.data.LinguisticDataSingleton;
 import ca.inuktitutcomputing.morph.Decomposition;
-import ca.inuktitutcomputing.utilities.EditDistanceCalculatorFactory;
 import ca.pirurvik.iutools.CompiledCorpus;
 import ca.pirurvik.iutools.CompiledCorpusRegistry;
+import ca.pirurvik.iutools.edit_distance.EditDistanceCalculatorFactory;
 import ca.pirurvik.iutools.spellchecker.SpellChecker;
 import ca.pirurvik.iutools.spellchecker.SpellingCorrection;
 

@@ -1,8 +1,8 @@
-package ca.inuktitutcomputing.utilities;
+package ca.pirurvik.iutools.edit_distance;
 
 public class EditDistanceCalculatorFactory {
 	
-	public enum DistanceMethod {LEVENSHTEIN, DP5, LCS, JARO_WINKLER};
+	public enum DistanceMethod {LEVENSHTEIN, DP5, LCS, JARO_WINKLER, IU_DIFF};
 	
 	private static final DistanceMethod defaultDistanceMethod = DistanceMethod.LEVENSHTEIN;
 	
@@ -20,6 +20,9 @@ public class EditDistanceCalculatorFactory {
 			edcalculator =  new LCS();
 		else if (method == DistanceMethod.JARO_WINKLER)
 			edcalculator =  new JaroWinkler();
+		else if (method == DistanceMethod.IU_DIFF) {
+			edcalculator = new IUSpellingDistance();
+		}
 		
 		return edcalculator;
 	}

@@ -1,4 +1,4 @@
-package ca.inuktitutcomputing.utilities;
+package ca.pirurvik.iutools.edit_distance;
 
 //A Dynamic Programming based Java program to find minimum 
 //number operations to convert str1 to str2 
