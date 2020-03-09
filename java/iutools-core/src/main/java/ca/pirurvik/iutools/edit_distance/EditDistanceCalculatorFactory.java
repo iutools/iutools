@@ -4,7 +4,7 @@ public class EditDistanceCalculatorFactory {
 	
 	public enum DistanceMethod {LEVENSHTEIN, DP5, LCS, JARO_WINKLER, IU_DIFF};
 	
-	private static final DistanceMethod defaultDistanceMethod = DistanceMethod.LEVENSHTEIN;
+	private static final DistanceMethod defaultDistanceMethod = DistanceMethod.IU_DIFF;
 	
 	public static EditDistanceCalculator getEditDistanceCalculator() {
 		return getEditDistanceCalculator(defaultDistanceMethod);

@@ -29,6 +29,7 @@ import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.StringUtils;
+import ca.nrc.string.diff.DiffCosting;
 import ca.pirurvik.iutools.CompiledCorpus;
 import ca.pirurvik.iutools.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.CompiledCorpusRegistryException;
@@ -149,7 +150,9 @@ public class SpellChecker {
 	}
 	
 	public void addCorrectWord(String word) {
-		//System.out.println("-- addCorrectWord: word="+word);
+		if (word.startsWith("tamain")) {
+			System.out.println("** SpellChecker.addCorrectWord: found word that starts with 'tamain': "+word);
+		}
 		String[] numericTermParts = null;
 		boolean wordIsNumericTerm = (numericTermParts=wordIsNumberWithSuffix(word)) != null;
 		if (wordIsNumericTerm && allNormalizedNumericTerms.indexOf(","+"0000"+numericTermParts[1]+",") < 0)
@@ -232,6 +235,8 @@ public class SpellChecker {
 
 	public SpellingCorrection correctWord(String word, int maxCorrections) throws SpellCheckerException {
 		Logger logger = Logger.getLogger("SpellChecker.correctWord");
+		
+		System.out.println("** SpellChecker.correctWord: word="+word);
 
 		boolean wordIsSyllabic = Syllabics.allInuktitut(word);
 		
@@ -241,8 +246,11 @@ public class SpellChecker {
 		}
 		
 		SpellingCorrection corr = new SpellingCorrection(word);
-		corr.wasMispelled = isMispelled(wordInLatin);
+		corr.wasMispelled = isMispelled(wordInLatin);		
 		logger.debug("wasMispelled= "+corr.wasMispelled);
+
+		List<Pair<String,Double>> sortedScoredCandidates = null;		
+		
 		if (corr.wasMispelled) {
 			// set ngramStats and suite of words for candidates according to type of word (normal word or numeric expression)
 			String[] numericTermParts = wordIsNumberWithSuffix(wordInLatin);
@@ -250,35 +258,58 @@ public class SpellChecker {
 			allWordsForCandidates = getAllWordsToBeUsedForCandidates(wordIsNumericTerm);
 			ngramStatsForCandidates = getNgramStatsToBeUsedForCandidates(wordIsNumericTerm);
 			Set<String> candidates = firstPassCandidates_TFIDF(wordInLatin);
-			logger.debug("candidates= "+PrettyPrinter.print(candidates));
+			
+			if (logger.isDebugEnabled()) logger.debug("candidates= "+PrettyPrinter.print(candidates));
+			
 			List<Pair<String,Double>> candidatesWithSim = computeCandidateSimilarities(wordInLatin, candidates);
-			List<String> corrections = sortCandidatesBySimilarity(candidatesWithSim);
-			logger.debug("corrections for "+word+": "+corrections.size());
+			sortedScoredCandidates = sortCandidatesBySimilarity(candidatesWithSim);
+			logger.debug("corrections for "+word+": "+sortedScoredCandidates.size());
 			
-			if (wordIsNumericTerm)
-				for (int ic=0; ic<corrections.size(); ic++) {
-					corrections.set(ic, corrections.get(ic).replace("0000",numericTermParts[0]));
+			if (wordIsNumericTerm) {
+				for (int ic=0; ic<sortedScoredCandidates.size(); ic++) {
+					Pair<String,Double> scoredCandidate = sortedScoredCandidates.get(ic);
+					scoredCandidate.getFirst().replace("0000",numericTermParts[0]);
 				}
+			}
 			
-	 		if (maxCorrections== -1)
-	 			corr.setPossibleSpellings(corrections);
-	 		else
-	 			corr.setPossibleSpellings(corrections.subList(0, maxCorrections>corrections.size()? corrections.size() : maxCorrections));
 		}
 		
 		if (wordIsSyllabic) {
-			// Transcode the spellings back to Syllabic
-			List<String> possSpellingsSyll = new ArrayList<String>();
-			for (String aSpelling: corr.getPossibleSpellings()) {
-				aSpelling = TransCoder.romanToUnicode(aSpelling);
-				possSpellingsSyll.add(aSpelling);
-			}
-			corr.setPossibleSpellings(possSpellingsSyll);
+			transcodeCandidatesToSyllabic(sortedScoredCandidates);
 		}
+
+ 		if (maxCorrections != -1) {
+ 			sortedScoredCandidates = 
+ 					sortedScoredCandidates
+ 					.subList(0, maxCorrections>sortedScoredCandidates.size()? sortedScoredCandidates.size() : maxCorrections); 			
+ 		}
  		
+ 		 List<ScoredSpelling> scoredSpellings = new ArrayList<ScoredSpelling>();
+ 		for (Pair<String,Double> aCand: sortedScoredCandidates) {
+ 			ScoredSpelling scSpelling = new ScoredSpelling(aCand.getFirst(), aCand.getSecond());
+ 			scoredSpellings.add(scSpelling);
+ 		}
+ 		
+ 		corr.setPossibleSpellings(scoredSpellings);
+// 		corr.setPossibleSpellings(sortedScoredCandidates);
+		
  		return corr;
 	}
 	
+	/**
+	 * Transcode a list of scored candidate spellings to 
+	 * syllabic.
+	 * 
+	 * @param sortedScoredCandidates
+	 */
+	private void transcodeCandidatesToSyllabic(List<Pair<String, Double>> sortedScoredCandidates) {
+		for (int ic=0; ic < sortedScoredCandidates.size(); ic++) {
+			Pair<String,Double> candidate = sortedScoredCandidates.get(ic);
+			candidate.setFirst(TransCoder.romanToUnicode(candidate.getFirst()));
+		}
+	}
+
+
 	/*
 	 * A term is considered ok if:
 	 *   - it is recorded as successfully decomposed by the IMA during the compilation of the Hansard corpus, or
@@ -366,20 +397,34 @@ public class SpellChecker {
 	}
 
 
-	private List<String> sortCandidatesBySimilarity(List<Pair<String, Double>> candidatesWithSim) {
+	private void traceScoredCandidates(String mess, List<Pair<String, Double>> candidatesWithSim) {
+		System.out.println("** printScoredCandidates("+mess+"): Scored candiates are:\n");
+		Iterator<Pair<String, Double>> iteratorCand = candidatesWithSim.iterator();
+		while (iteratorCand.hasNext()) {
+			Pair<String, Double> cand = iteratorCand.next();
+			System.out.println("  corr="+cand.getFirst()+"; score="+cand.getSecond());
+		}
+	}
+	
+	private List<Pair<String,Double>> sortCandidatesBySimilarity(List<Pair<String, Double>> candidatesWithSim) {
+		
+//		traceScoredCandidates("sortCandidatesBySimilarity on START", candidatesWithSim);
+		
 		Iterator<Pair<String, Double>> iteratorCand = candidatesWithSim.iterator();
 	
 		Collections.sort(candidatesWithSim, (Pair<String,Double> p1, Pair<String,Double> p2) -> {
 			return p1.getSecond().compareTo(p2.getSecond());
 		});
-		List<String> candidates = new ArrayList<String>();
-		iteratorCand = candidatesWithSim.iterator();
-		while (iteratorCand.hasNext()) {
-			Pair<String,Double> pair = iteratorCand.next();
-			candidates.add(pair.getFirst());
-			//System.out.println("-- sortCandidatesBySimiliraty (2): "+"candidate: "+pair.getFirst()+" ; similarity="+pair.getSecond());
-		}
-		return candidates;
+//		List<String> candidates = new ArrayList<String>();
+//		iteratorCand = candidatesWithSim.iterator();
+//		while (iteratorCand.hasNext()) {
+//			Pair<String,Double> pair = iteratorCand.next();
+//			candidates.add(pair.getFirst());
+//			//System.out.println("-- sortCandidatesBySimiliraty (2): "+"candidate: "+pair.getFirst()+" ; similarity="+pair.getSecond());
+//		}
+//		return candidates;
+		
+		return candidatesWithSim;
 	}
 
 	protected List<Pair<String, Double>> computeCandidateSimilarities(String badWord, Set<String> candidates) throws SpellCheckerException {
@@ -388,7 +433,9 @@ public class SpellChecker {
 		while (iterator.hasNext()) {
 			String candidate = iterator.next();
 			double similarity = computeCandidateSimilarity(badWord,candidate);
-			candidateSimilarities.add(new Pair<String,Double>(candidate,new Double(similarity)));
+			if (similarity < DiffCosting.INFINITE) {
+				candidateSimilarities.add(new Pair<String,Double>(candidate,new Double(similarity)));
+			}
 			//System.out.println("-- computeCandidateSimilarities:    "+"candidate: "+candidate+" ; similarity="+similarity);
 		}
 		return candidateSimilarities;
@@ -599,7 +646,7 @@ public class SpellChecker {
 		iutokenizer.run(text);
 		List<Pair<String,Boolean>> tokens = iutokenizer.getAllTokens();
 		
-		tLogger.trace("tokens= "+PrettyPrinter.print(tokens));
+		if (tLogger.isTraceEnabled()) tLogger.trace("tokens= "+PrettyPrinter.print(tokens));
 		
 		for (Pair<String,Boolean> aToken: tokens) {
 			String tokString = aToken.getFirst();

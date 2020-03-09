@@ -31,10 +31,20 @@ public class SpellCheckerEvaluator {
 	private int totalNonNullRank = 0;
 	
 	public SpellCheckerEvaluator() throws StringSegmenterException, FileNotFoundException, SpellCheckerException, ConfigException {
-		checker = new SpellChecker();
-		checker.setDictionaryFromCorpus();
+		init_SpellCheckerEvaluator(null);
+	}
+	
+	public SpellCheckerEvaluator(SpellChecker _checker) throws StringSegmenterException, FileNotFoundException, SpellCheckerException, ConfigException {
+		init_SpellCheckerEvaluator(_checker);
 	}
 
+	public void init_SpellCheckerEvaluator(SpellChecker _checker) throws StringSegmenterException, FileNotFoundException, SpellCheckerException, ConfigException {
+		if (_checker == null) {
+			_checker = new SpellChecker();
+		}
+		this.checker = _checker;
+		this.checker.setDictionaryFromCorpus();
+	}
 	
 	public void onNewExample(SpellCheckerExample example) throws SpellCheckerException {
 		Set<String> correctForms = example.acceptableCorrections;

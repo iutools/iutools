@@ -2,19 +2,27 @@ package ca.pirurvik.iutools.spellchecker;
 
 import static org.junit.Assert.*;
 
+import java.io.FileNotFoundException;
 import java.text.DecimalFormat;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.poi.ss.formula.EvaluationConditionalFormatRule;
-import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
+import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.Pair;
+import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.string.StringUtils;
-import ca.nrc.testing.AssertNumber;
 
 public class SpellCheckerAccuracyTest {
+	
+	SpellChecker checker = null;
 	
 	private static DecimalFormat df2 = new DecimalFormat("#.##");
 	
@@ -59,46 +67,130 @@ public class SpellCheckerAccuracyTest {
 		new SpellCheckerExample("immaqaqai", 5, "immaqaaqai"),
 		new SpellCheckerExample("taimak", 5, "taimaak")
 	};
-		
-
+	
+	@Before
+	public void setUp() throws FileNotFoundException, StringSegmenterException, SpellCheckerException, ConfigException {
+		checker = new SpellChecker();
+	}
+	
+	
 	@Test
-	public void test__EvaluateSugestions() throws Exception {
+	public void test__EvaluateSugestions_AssumingAllCorrectionsAreInDictionary() throws Exception {
+		//
+		// For this test, "pretend" that all the words from the 
+		// examples were seen in the corpus used by the SpellChecker.
+		// This is because so
+		assumeCorrectionsAreInCheckerDict(examplesForSuggestions);
+		SpellCheckerEvaluator evaluator = new SpellCheckerEvaluator(checker);
 		
-		SpellCheckerEvaluator evaluator = new SpellCheckerEvaluator();
+		
+		// Set this to a specific example if you only want 
+		// to evaluate that one.
+		String focusOnExample = null;
+//		String focusOnExample = "tanna";
 		
 		for (SpellCheckerExample exampleData: examplesForSuggestions) {
-			evaluator.onNewExample(exampleData);
+			if (focusOnExample == null || focusOnExample.equals(exampleData.wordToCheck)) {
+				evaluator.onNewExample(exampleData);				
+			}
 		}
 		
-		System.out.println("** test__EvaluateSugestions: Histogram of the rank of the first appropriate spelling");
-		List<Pair<Integer,Double>> histogram = evaluator.correctSpellingRankHistogramRelative();
-		for (Pair<Integer,Double> entry: histogram) {
-			String roundedFreq =  df2.format(entry.getSecond());
-			System.out.println("  "+entry.getFirst()+": "+roundedFreq);
-		}
-		
-		Double expAverageRank = new Double(1.17);
-		Double avgRankTolerance = new Double(0.05);
-		AssertNumber.isLessOrEqualTo(
-				"The average rank was higher than expected.",
-				evaluator.averageRank(), new Double(expAverageRank + avgRankTolerance));
-		AssertNumber.isGreaterOrEqualTo(
-				"Significant improvement found in the average rank.\nYou might want to decrease the expectation so we don't loose that gain in the future.",
-				evaluator.averageRank(), expAverageRank - avgRankTolerance);;
-		
-		
+		double expAverageRank = 1.17;
+		double avgRankTolerance = 0.05;
 		int N = 5;
 		double expPercentFoundInTopN = 0.87;
-		double tolerance = 0.01;
-		assertPercentFoundInTopN(expPercentFoundInTopN, N, 
-				histogram, tolerance);
-		
-		assertNoExampleWithBadRank(evaluator);
+		double tolerance = 0.01;		
+		assertEvaluationAsExpected(evaluator, N, expPercentFoundInTopN, tolerance,
+				expAverageRank, avgRankTolerance);
 	}
 
 
-	private void assertNoExampleWithBadRank(SpellCheckerEvaluator evaluator) {
-		String errMess = null;
+	private void assertEvaluationAsExpected(SpellCheckerEvaluator evaluator, int N, double expPercentFoundInTopN,
+			double tolerance, Double expAverageRank, Double avgRankTolerance) {
+		
+		String errMess = "";
+		
+		errMess += checkPercentInTopN(evaluator, N, expPercentFoundInTopN, tolerance);;
+		errMess += checkAverageRank(evaluator, expAverageRank, avgRankTolerance);
+		errMess += checkExamplesWithBadRank(evaluator);	
+		
+		if (!errMess.isEmpty()) {
+			fail(errMess);
+		}
+	}
+
+
+	private String checkPercentInTopN(SpellCheckerEvaluator evaluator, int N, 
+			double expPercentFoundInTopN, double tolerance) {
+			
+		String errMess = "";
+		
+		List<Pair<Integer,Double>> histogram = evaluator.correctSpellingRankHistogramRelative();
+		double gotPercentFoundInTopN = 0.0;
+		for (int rankFound=0; rankFound < N; rankFound++) {
+			if (histogram.size() > rankFound) {
+				Pair<Integer,Double> histEntry = histogram.get(rankFound);
+				gotPercentFoundInTopN += histEntry.getSecond();
+			}
+		}
+		
+		double delta = gotPercentFoundInTopN - expPercentFoundInTopN;
+		if (Math.abs(delta) > tolerance) {
+			if (delta < 0) {
+				errMess = 
+					"Significant DECREASE found for the percentage of words with an acceptable correction in the top "+N+
+						"\n  Got: "+gotPercentFoundInTopN+"\n  Exp: "+expPercentFoundInTopN+"\n  Delta: "+delta
+					;
+			} else {
+				errMess = 
+					"Significant INCREASE found for the percentage of words with an acceptable correction in the top "+N+
+						"\n  Got: "+gotPercentFoundInTopN+"\n  Exp: "+expPercentFoundInTopN+"\n  Delta: "+delta+
+						"\n\nYou should probably change the expectations for that test so we don't loose that improvement in the future."
+						;
+			}
+		}
+		
+		if (!errMess.isEmpty()) {
+			errMess += "\n\n---------------\n\n";
+			errMess = "\n"+errMess;
+		}
+		
+		return errMess;
+	}
+
+
+	private String checkAverageRank(SpellCheckerEvaluator evaluator, Double expAverageRank, Double avgRankTolerance) {
+		String errMess = "";
+		
+		double expMin = expAverageRank - avgRankTolerance;
+		double expMax = expAverageRank + avgRankTolerance;
+		if (evaluator.averageRank() == null) {
+			errMess = "Average rank was null!!!";
+		} else {
+			if (evaluator.averageRank() > expMax) {
+				errMess = 
+					"The average rank was higher than expected.\n"+
+					"  got: "+evaluator.averageRank()+
+					" (exp <= "+expMax+")";
+			} else if (evaluator.averageRank() < expMin) {
+				errMess = 
+					"Significant improvement found in the average rank.\n"+
+					"You might want to decrease the expectation so we don't loose that gain in the future.\n"+
+					"  got: "+evaluator.averageRank()+
+					" (exp >= "+expMin+")";
+			}
+		}
+		
+		if (!errMess.isEmpty()) {
+			errMess += "\n\n--------------------------\n\n";
+		}
+				
+		return errMess;
+	}
+
+
+	private String checkExamplesWithBadRank(SpellCheckerEvaluator evaluator) {
+		String errMess = "";
 		if (evaluator.examplesWithBadRank.size() > 0) {
 			errMess = 
 				"There were examples for which the rank of the first correct suggestion exceeded the expected maximum.\n"+
@@ -113,8 +205,7 @@ public class SpellCheckerAccuracyTest {
 							.stream()
 							.limit(20)
 							.collect(Collectors.toList());
-				errMess += "  "+word+": rank="+
-					evaluator.correctSpellingRank.get(word)+
+				errMess += "  "+word+": rank="+rank+
 					" (exp <= "+example.expMaxRank+")\n"+
 					"  Correctly spelled forms: "+
 					StringUtils.join(example.acceptableCorrections.iterator(), ", ")+"\n"+
@@ -122,35 +213,39 @@ public class SpellCheckerAccuracyTest {
 					StringUtils.join(topCandidates.iterator(), ", ")+"\n\n"
 					;
 			}
-			if (errMess != null) {
-				Assert.fail(errMess);
+		}
+		
+		return errMess;
+	}
+	
+	//////////////////////
+	// TEST HELPERS
+	//////////////////////
+	
+	/**
+	 * The spell checker relies heavily on 
+	 * of correct words that was compiled from a
+	 * corpus. Such dictionaries take a long 
+	 * time to compile, and sometimes, they are 
+	 * missing some words that are needed for 
+	 * the tests (because of a bug in that was 
+	 * in the corpus compiler at the time we 
+	 * compiled the corpus used for spell 
+	 * checking).
+	 * 
+	 * Rather than wait for a new better version 
+	 * of the corpus to be generated, we can use 
+	 * this method to patch up the dictionary and 
+	 * add words that are required by this a test 
+	 * 
+	 * @author desilets
+	 *
+	 */
+	private void assumeCorrectionsAreInCheckerDict(SpellCheckerExample[] examples) {
+		for (SpellCheckerExample anExample: examples) {
+			for (String aCorrection: anExample.acceptableCorrections) {
+				checker.addCorrectWord(aCorrection);				
 			}
 		}
-		
 	}
-
-
-	private void assertPercentFoundInTopN(double expPercentFoundInTopN, int N, 
-			List<Pair<Integer, Double>> histogram, double tolerance) {
-		
-		double gotPercentFoundInTopN = 0.0;
-		for (int rankFound=0; rankFound < N; rankFound++) {
-			Pair<Integer,Double> histEntry = histogram.get(rankFound);
-			gotPercentFoundInTopN += histEntry.getSecond();
-		}
-		
-		double delta = gotPercentFoundInTopN - expPercentFoundInTopN;
-		if (Math.abs(delta) > tolerance) {
-			if (delta < 0) {
-				fail("Significant DECREASE found for the percentage of words with an acceptable correction in the top "+N+
-						"\n  Got: "+gotPercentFoundInTopN+"\n  Exp: "+expPercentFoundInTopN+"\n  Delta: "+delta);
-			} else {
-				fail("Significant INCREASE found for the percentage of words with an acceptable correction in the top "+N+
-						"\n  Got: "+gotPercentFoundInTopN+"\n  Exp: "+expPercentFoundInTopN+"\n  Delta: "+delta+
-						"\n\nYou should probably change the expectations for that test so we don't loose that improvement in the future.");
-				
-			}
-		}
-	}
-
 }
