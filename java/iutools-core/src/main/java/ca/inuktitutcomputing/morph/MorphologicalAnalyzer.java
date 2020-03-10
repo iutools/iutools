@@ -31,6 +31,9 @@ import java.util.regex.*;
 
 import org.apache.log4j.Logger;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+
 import ca.inuktitutcomputing.data.constraints.Condition;
 import ca.inuktitutcomputing.data.constraints.Conditions;
 import ca.inuktitutcomputing.data.constraints.Imacond;
@@ -55,6 +58,11 @@ public class MorphologicalAnalyzer {
     private boolean stpwActive = true;
     private StopWatch stpw;
     private Hashtable<String,Graph.Arc[]> arcsByMorpheme = new Hashtable<String,Graph.Arc[]>();
+    
+    public static Cache<String, Decomposition[]> 
+    	decompsCache = 
+    		Caffeine.newBuilder().maximumSize(10000)
+    		  .build();
     
     public MorphologicalAnalyzer() throws LinguisticDataException {
 //		LinguisticDataSingleton.getInstance("csv");
@@ -81,6 +89,12 @@ public class MorphologicalAnalyzer {
      * @return Decomposition[] array of decompositions
      */
 	public Decomposition[] decomposeWord(String word, boolean extendedAnalysis) throws TimeoutException, MorphInukException {
+		
+		Decomposition[] cachedDecomps = uncache(word, extendedAnalysis);
+		if (cachedDecomps != null) {
+			return cachedDecomps;
+		}
+		
 		boolean decomposeCompositeRoot = false; // do not decompose composite root
 
 		String formOfWordToBeAnalyzed = word;
@@ -117,9 +131,24 @@ public class MorphologicalAnalyzer {
 		// 2. nombre minimum de suffixes/terminaisons
 		// (Ces règles sont incluses dans la classe Decomposition)
 		Arrays.sort(decs);
+		
+		cache(decs, word, extendedAnalysis);
 
 		return decs;
 	}
+
+	private void cache(Decomposition[] decs, String word, boolean extendedAnalysis) {
+		String key = cacheKeyFor(word, extendedAnalysis);
+		decompsCache.put(key, decs);
+	}
+
+
+	private Decomposition[] uncache(String word, boolean extendedAnalysis) {
+		String key = cacheKeyFor(word, extendedAnalysis);
+		Decomposition[] decomps = decompsCache.getIfPresent(key);
+		return decomps;
+	}
+
 
 	/*
 	 *  Si le mot se termine par la consonne 'n', il est possible qu'il s'agisse 
@@ -2437,11 +2466,26 @@ public class MorphologicalAnalyzer {
         return res;
 	}
 
-
-	public static void clearCache() {
-		
+	public static void removeFromCache(String word) {
+		removeFromCache(word, null);
 	}
-	
-	
 
+	public static void removeFromCache(String word, Boolean extendedAnalyses) {
+		if (extendedAnalyses == null) {
+			extendedAnalyses = false;
+		}
+		
+		String key = cacheKeyFor(word, extendedAnalyses);
+		
+		decompsCache.invalidate(key);
+	}
+
+
+	private static String cacheKeyFor(String word, boolean extendedAnalyses) {
+		String key = word; 
+		if (extendedAnalyses) {
+			key += "/extended";
+		}
+		return key;
+	}
 }

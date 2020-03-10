@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ca.inuktitutcomputing.data.LinguisticDataException;
+import ca.nrc.testing.AssertNumber;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
@@ -12,12 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MorphologicalAnalyzerTest {
-	
-	@Before
-	public void setUp() {
-		MorphologicalAnalyzer.clearCache();
-	}
-	
+		
 	@Test
 	public void test__MorphologicalAnalyzer_Synopsis() throws Exception {
 		// By default, the analyzer uses the linguistic database in the CSV format
@@ -269,19 +265,30 @@ public class MorphologicalAnalyzerTest {
 	@Test
 	public void test__decomposeWord__SameWordTwiceInARow__SecondTimeShouldBeInstantaneous() 
 					throws Exception {
+		
+		
 		MorphologicalAnalyzer analyzer = new MorphologicalAnalyzer();
 		
 		String word = "iglumik";
 		
+		// Remove the word from the decompositions cache.
+		// This ensures that the first time we 
+		// decompose the word, it will be done from scratch
+		//
+		MorphologicalAnalyzer.removeFromCache(word);
 		long start = System.currentTimeMillis();
 		Decomposition[] analyses = analyzer.decomposeWord(word);
 		long elapsedFirstTime = System.currentTimeMillis() - start;
 		
+		// Analyses for that word should now be in the cache
+		// so the second time should be much faster.
+		//
 		start = System.currentTimeMillis();
 		analyses = analyzer.decomposeWord(word);
 		long elapsedSecondTime = System.currentTimeMillis() - start;
 		
-		Assert.assertTrue("Second time we decompose word "+word+" should have been 100x faster", elapsedFirstTime > 100 * elapsedSecondTime);
+		AssertNumber.isLessOrEqualTo("Second time we decompose word "+word+" should have been 100x faster", 
+				elapsedSecondTime, elapsedFirstTime / 100);
 		
 	}
 	
