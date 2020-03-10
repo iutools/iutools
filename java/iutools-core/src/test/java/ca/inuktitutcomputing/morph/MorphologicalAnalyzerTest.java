@@ -1,7 +1,10 @@
 package ca.inuktitutcomputing.morph;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+
+import ca.inuktitutcomputing.data.LinguisticDataException;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
@@ -9,6 +12,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MorphologicalAnalyzerTest {
+	
+	@Before
+	public void setUp() {
+		MorphologicalAnalyzer.clearCache();
+	}
 	
 	@Test
 	public void test__MorphologicalAnalyzer_Synopsis() throws Exception {
@@ -23,7 +31,7 @@ public class MorphologicalAnalyzerTest {
 		// The purpose of the analyzer is to decompose an inuktitut word into its morphemes
 		String word = "iglumik";
 		try {
-			analyzer.decomposeWord(word);
+			 Decomposition[] analyses = analyzer.decomposeWord(word);
 		} catch (TimeoutException | MorphInukException e) {
 			// do something
 		}
@@ -258,11 +266,23 @@ public class MorphologicalAnalyzerTest {
 		}
 	}
 
-
-//	@Test
-//	public void test_validate_neutral_deletion__() {
-//		MorphologicalAnalyzer analyzer = new MorphologicalAnalyzer();
-//		analyzer.validate_neutral_insertion(context, action1, action2, stem, affixCandidate, form, affix, posAffix, partOfComp);
-//	}
-
+	@Test
+	public void test__decomposeWord__SameWordTwiceInARow__SecondTimeShouldBeInstantaneous() 
+					throws Exception {
+		MorphologicalAnalyzer analyzer = new MorphologicalAnalyzer();
+		
+		String word = "iglumik";
+		
+		long start = System.currentTimeMillis();
+		Decomposition[] analyses = analyzer.decomposeWord(word);
+		long elapsedFirstTime = System.currentTimeMillis() - start;
+		
+		start = System.currentTimeMillis();
+		analyses = analyzer.decomposeWord(word);
+		long elapsedSecondTime = System.currentTimeMillis() - start;
+		
+		Assert.assertTrue("Second time we decompose word "+word+" should have been 100x faster", elapsedFirstTime > 100 * elapsedSecondTime);
+		
+	}
+	
 }
