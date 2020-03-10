@@ -249,7 +249,8 @@ public class SpellChecker {
 		corr.wasMispelled = isMispelled(wordInLatin);		
 		logger.debug("wasMispelled= "+corr.wasMispelled);
 
-		List<Pair<String,Double>> sortedScoredCandidates = null;		
+		List<Pair<String,Double>> sortedScoredCandidates = 
+						new ArrayList<Pair<String,Double>>();		
 		
 		if (corr.wasMispelled) {
 			// set ngramStats and suite of words for candidates according to type of word (normal word or numeric expression)
@@ -268,7 +269,7 @@ public class SpellChecker {
 			if (wordIsNumericTerm) {
 				for (int ic=0; ic<sortedScoredCandidates.size(); ic++) {
 					Pair<String,Double> scoredCandidate = sortedScoredCandidates.get(ic);
-					scoredCandidate.getFirst().replace("0000",numericTermParts[0]);
+					scoredCandidate.setFirst(scoredCandidate.getFirst().replace("0000",numericTermParts[0]));
 				}
 			}
 			
@@ -291,7 +292,6 @@ public class SpellChecker {
  		}
  		
  		corr.setPossibleSpellings(scoredSpellings);
-// 		corr.setPossibleSpellings(sortedScoredCandidates);
 		
  		return corr;
 	}
@@ -301,6 +301,7 @@ public class SpellChecker {
 	 * syllabic.
 	 * 
 	 * @param sortedScoredCandidates
+	 * @return 
 	 */
 	private void transcodeCandidatesToSyllabic(List<Pair<String, Double>> sortedScoredCandidates) {
 		for (int ic=0; ic < sortedScoredCandidates.size(); ic++) {
@@ -355,7 +356,8 @@ public class SpellChecker {
 					wordIsMispelled = true;
 				}
 			} catch (TimeoutException e) {
-				wordIsMispelled = false;
+//				wordIsMispelled = false;
+				wordIsMispelled = true;
 			} catch (StringSegmenterException e) {
 				throw new SpellCheckerException(e);
 			}
@@ -433,9 +435,9 @@ public class SpellChecker {
 		while (iterator.hasNext()) {
 			String candidate = iterator.next();
 			double similarity = computeCandidateSimilarity(badWord,candidate);
-			if (similarity < DiffCosting.INFINITE) {
+//			if (similarity < DiffCosting.INFINITE) {
 				candidateSimilarities.add(new Pair<String,Double>(candidate,new Double(similarity)));
-			}
+//			}
 			//System.out.println("-- computeCandidateSimilarities:    "+"candidate: "+candidate+" ; similarity="+similarity);
 		}
 		return candidateSimilarities;

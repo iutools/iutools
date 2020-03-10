@@ -12,6 +12,7 @@ import org.junit.Test;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.testing.AssertHelpers;
+import ca.nrc.testing.AssertObject;
 import ca.pirurvik.iutools.spellchecker.SpellChecker;
 import ca.pirurvik.iutools.spellchecker.SpellCheckerException;
 import ca.pirurvik.iutools.spellchecker.SpellingCorrection;
@@ -26,11 +27,15 @@ public class SpellCheckerTest {
 	@Before
 	public void setUp() throws Exception {
 		
-		String[] correctWordsLatin = new String[] {"inuktut", "inukttut", "inuk", "inukutt", "inukshuk", "nunavut"};
+		String[] correctWordsLatin = new String[] {
+				"inuktut", "inukttut", "inuk", "inukutt", "inukshuk", 
+				"nunavut"};
 		if (checker == null) {
 			checker = new SpellChecker();
 			checker.setVerbose(false);
-			for (String aWord: correctWordsLatin) checker.addCorrectWord(aWord);
+			for (String aWord: correctWordsLatin) {
+				checker.addCorrectWord(aWord);
+			}
 		}
 	}
 
@@ -251,7 +256,8 @@ public class SpellCheckerTest {
 	public void test__correctWord__roman__MispelledInput() throws Exception {
 		String word = "inukkshuk";
 		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
-		assertCorrectionOK(gotCorrection, word, false, new String[] {"inukshuk", "inukttut", "inuktut", "inuk", "inukutt"});
+		assertCorrectionOK(gotCorrection, word, false, 
+				new String[] {"inukshuk", "inuk", "inukutt", "inukttut", "inuktut"});
 	}
 
 
@@ -297,6 +303,14 @@ public class SpellCheckerTest {
 	}
 	
 
+	@Test
+	public void test__correctWord__ninavut() throws Exception {
+		String word = "ninavut";
+		checker.setVerbose(false);
+		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
+		assertCorrectionOK(gotCorrection, word, false, 
+				new String[] { "nunavut" });
+	}
 	
 	@Test 
 	public void test__correctText__roman() throws Exception  {
@@ -316,7 +330,7 @@ public class SpellCheckerTest {
 		ii = 2*wordNum;
 		wordCorr = gotCorrections.get(ii);
 		Assert.assertTrue("Word #"+wordNum+"="+wordCorr.orig+" should have deemed MISPELLED", wordCorr.wasMispelled);
-		AssertHelpers.assertDeepEquals("Corrections for word#"+wordNum+"="+wordCorr.orig+" were not as expected", 
+		AssertObject.assertDeepEquals("Corrections for word#"+wordNum+"="+wordCorr.orig+" were not as expected", 
 				new String[] {"nunavut"}, 
 				wordCorr.getPossibleSpellings());
 
@@ -347,7 +361,13 @@ public class SpellCheckerTest {
 				// Note: The correct spelling is not in this list of corrections, but that's OK (kinda). 
 				//   This test mostly aims at testing the mechanics of SpellText.
 				//  				
-				new String[] {"ᐃᓄᒃᑦᑐᑦ", "ᐃᓄᒃᑐᑦ", "ᐃᓄᑯᑦᑦ", "ᐃᓄᒃ", "ᐃᓄᒃᔅᓱᒃ"});
+				new String[] {
+						  "ᐃᓄᒃᑐᑦ",
+						  "ᐃᓄᒃᑦᑐᑦ",
+						  "ᐃᓄᒃ",
+						  "ᐃᓄᑯᑦᑦ",
+						  "ᐃᓄᒃᔅᓱᒃ"
+				});
 		
 		wordNum = 1;
 		ii = 2*wordNum;

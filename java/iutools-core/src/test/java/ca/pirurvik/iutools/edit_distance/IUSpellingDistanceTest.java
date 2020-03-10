@@ -137,7 +137,8 @@ public class IUSpellingDistanceTest {
 		// Set this to the first word of an example if you 
 		// only want to run the test on that one example.
 		//
-		String focusOnExample = "tanna/taanna/taunna";
+		String focusOnExample = null;
+//		String focusOnExample = "tanna/taanna/taunna";
 		
 		for (Example3Way anExample: examples3Way) {
 			if (focusOnExample == null || 
@@ -169,8 +170,8 @@ public class IUSpellingDistanceTest {
 		// Set this to the first word of an example if you 
 		// only want to run the test on that one example.
 		//
-//		String focusOnExample = null;
-		String focusOnExample = "tanna/taanna";
+		String focusOnExample = null;
+//		String focusOnExample = "tanna/taanna";
 		
 		for (Example2Way anExample: examples2Way) {
 			

@@ -75,7 +75,7 @@ public class SpellingCorrection {
 	}
 
 	public SpellingCorrection setPossibleSpellings(List<ScoredSpelling> _scoredSpellings) {
-		scoredPossibleSpellings = scoredPossibleSpellings;
+		scoredPossibleSpellings = _scoredSpellings;
 
 		possibleSpellings = new ArrayList<String>();
 		possibleSpellingScores = new ArrayList<Double>();
