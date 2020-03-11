@@ -12,7 +12,8 @@ import ca.inuktitutcomputing.data.LinguisticDataSingleton;
 import ca.inuktitutcomputing.data.Morpheme;
 import ca.nrc.datastructure.Pair;
 import ca.pirurvik.iutools.CompiledCorpus;
-import ca.pirurvik.iutools.MorphemeExtractor;
+import ca.pirurvik.iutools.morphemesearcher.MorphemeSearcher;
+import ca.pirurvik.iutools.morphemesearcher.ScoredExample;
 
 public class CmdLookForMorpheme extends ConsoleCommand {
 
@@ -35,13 +36,13 @@ public class CmdLookForMorpheme extends ConsoleCommand {
 		CompiledCorpus compiledCorpus = new Gson().fromJson(fr, CompiledCorpus.class);
 		fr.close();
 		
-		MorphemeExtractor morphExtr = new MorphemeExtractor();
+		MorphemeSearcher morphExtr = new MorphemeSearcher();
 		morphExtr.useCorpus(compiledCorpus);
 		
 		//morphExtr.useDictionary(dictionaryFile);
 		
 		boolean interactive = false;
-		List<MorphemeExtractor.Words> words = null;
+		List<MorphemeSearcher.Words> words = null;
 		if (morpheme == null) {
 			interactive = true;
 		} else {
@@ -61,18 +62,18 @@ public class CmdLookForMorpheme extends ConsoleCommand {
 			}
 			
 			if (words != null && words.size() > 0) {
-				MorphemeExtractor.WordFreqComparator comparator = morphExtr.new WordFreqComparator();
-				Iterator<MorphemeExtractor.Words> itWords = words.iterator();
+				MorphemeSearcher.WordFreqComparator comparator = morphExtr.new WordFreqComparator();
+				Iterator<MorphemeSearcher.Words> itWords = words.iterator();
 				int nIt = 1;
 				while (itWords.hasNext()) {
-					MorphemeExtractor.Words wordsForMorpheme = itWords.next();
+					MorphemeSearcher.Words wordsForMorpheme = itWords.next();
 					String morphemeWithId = wordsForMorpheme.morphemeWithId;
-					Pair<String,Long>[] wordsAndFreqs = wordsForMorpheme.words.toArray(new Pair[] {});
+					ScoredExample[] wordsAndFreqs = wordsForMorpheme.words.toArray(new ScoredExample[] {});
 					Arrays.sort(wordsAndFreqs, comparator);
 
 					String[] wordList = new String[wordsAndFreqs.length];
 					for (int iWF=0; iWF<wordsAndFreqs.length; iWF++) {
-						wordList[iWF] = wordsAndFreqs[iWF].getFirst() + "(" + wordsAndFreqs[iWF].getSecond() + ")";
+						wordList[iWF] = wordsAndFreqs[iWF].word + "(" + wordsAndFreqs[iWF].score + ")";
 					}
 					
 					echo("\nMORPHEME ID: "+morphemeWithId+
