@@ -395,6 +395,10 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 		return sb.toString();
 	}
 	
+	public String toString() {
+		return this.toStr2();
+	}
+	
 	static public String[] getMeaningsInArrayOfStrings (String decstr, String lang, 
 			boolean includeSurface, boolean includeId) {
 		DecompositionExpression de = new DecompositionExpression(decstr);
@@ -477,6 +481,15 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 			return (String[])v.toArray(new String[]{});
 		}
 		
+		public String toStringWithoutSurfaceForms() {
+			String expr = "";
+			for (int ipart=0; ipart<parts.length; ipart++) {
+				String str = parts[ipart].toStringWithoutSurfaceForm();
+				expr += " " + str;
+			}
+			return expr.substring(1);
+		}
+		
 		static public class DecPart {
 			//
 			String str;
@@ -506,8 +519,30 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 				morphid = id;
 				str = startDelimitor + surface + interDelimitor + id + endDelimitor;
 			}
+			
+			public String toStringWithoutSurfaceForm() {
+				return startDelimitor + morphid + endDelimitor;
+			}
 		}
 		
+	}
+
+	public Boolean containsMorpheme(String morpheme) {
+		Boolean result = null;
+		if (this.stem.root.id.equals(morpheme))
+			result = true;
+		if (result==null) {
+			for (int imorph=0; imorph<this.morphParts.length; imorph++) {
+				if (morphParts[imorph].getAffix().id.equals(morpheme)) {
+					result = true;
+					break;
+				}
+			}
+		}
+		if (result==null)
+			result = false;
+		
+		return result;
 	}
 
 }
