@@ -292,4 +292,47 @@ public class MorphologicalAnalyzerTest {
 		
 	}
 	
+	public void test__decomposeWord__with_extendedAnalysis() throws Exception  {
+		MorphologicalAnalyzer analyzer = new MorphologicalAnalyzer();
+		String word = "makpiga";
+
+		try {
+			analyzer.disactivateTimeout();;
+			Decomposition[] decs = analyzer.decomposeWord(word,true);
+			Assert.assertTrue(decs.length!=0);
+			Pattern p = Pattern.compile(Pattern.quote("{ga:gaq/1vn}"));
+			boolean found = false;
+			for (int i=0; i<decs.length; i++) {
+				System.out.println(decs[i].toStr2());
+				Matcher mp = p.matcher(decs[i].toStr2());
+				if (mp.find()) {
+					found = true;
+					break;
+				}
+			}
+			Assert.assertTrue("",found);
+		} catch(Exception e) {
+			throw e;
+		}
+	}
+	@Test
+	public void test__decomposeWord__without_extendedAnalysis() throws Exception  {
+		MorphologicalAnalyzer analyzer = new MorphologicalAnalyzer();
+		String word = "makpiga";
+
+		try {
+			analyzer.disactivateTimeout();;
+			Decomposition[] decs = analyzer.decomposeWord(word,false);
+			Assert.assertTrue(decs.length==0);
+		} catch(Exception e) {
+			throw e;
+		}
+	}
+
+//	@Test
+//	public void test_validate_neutral_deletion__() {
+//		MorphologicalAnalyzer analyzer = new MorphologicalAnalyzer();
+//		analyzer.validate_neutral_insertion(context, action1, action2, stem, affixCandidate, form, affix, posAffix, partOfComp);
+//	}
+
 }
