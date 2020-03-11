@@ -20,7 +20,6 @@ public class CmdSegmentIU extends ConsoleCommand {
 	public void execute() throws Exception {
 		Logger logger = Logger.getLogger("CmdSegmentIU.execute");
 		String word = getWord(false);
-		String extendedAnalysis = getExtendedAnalysis(false);
 		boolean doExtendedAnalysis = this.cmdLine.hasOption("extended-analysis");
 		Decomposition[] decs = null;
 		

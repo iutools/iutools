@@ -13,7 +13,6 @@ public abstract class ConsoleCommand extends SubCommand {
 	public static final String OPT_GS_FILE = "gs-file";
 	public static final String OPT_MORPHEMES = "morphemes";
 	public static final String OPT_WORD = "word";
-	public static final String OPT_IMAANALYSIS = "analysis";
 	public static final String OPT_FROM_SCRATCH = "from-scratch";
 	public static final String OPT_REDO_FAILED = "redo-failed";
 	public static final String OPT_CONTENT = "content";
@@ -24,6 +23,7 @@ public abstract class ConsoleCommand extends SubCommand {
 	public static final String OPT_MAX_CORR = "max-corr";
 	public static final String OPT_ED_ALGO = "edit-dist";
 	public static final String OPT_MORPHEME = "morpheme";
+	public static final String OPT_EXTENDED_ANALYSIS = "extended-analysis";
 	
 	
 	public ConsoleCommand(String name) {
@@ -82,6 +82,14 @@ public abstract class ConsoleCommand extends SubCommand {
 	protected String getWord(boolean failIfAbsent) {
 		String wordStr = getOptionValue(ConsoleCommand.OPT_WORD, failIfAbsent);
 		return wordStr;		
+	}
+	
+	protected String getExtendedAnalysis() {
+		return getExtendedAnalysis(false);
+	}
+	protected String getExtendedAnalysis(boolean failIfAbsent) {
+		String option = getOptionValue(ConsoleCommand.OPT_EXTENDED_ANALYSIS, failIfAbsent);
+		return option;
 	}
 	
 	protected String getMorpheme() {

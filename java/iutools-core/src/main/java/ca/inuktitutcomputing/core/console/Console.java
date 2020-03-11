@@ -47,11 +47,11 @@ public class Console {
 			    .argName("WORD")
 			    .build();
 
-		Option optIMAAnalysis = Option.builder(null)
-				.longOpt(ConsoleCommand.OPT_IMAANALYSIS)
-			    .desc("An Inuktitut Morphological Analyzer analysis.")
-			    .hasArg()
-			    .argName("ANALYSIS")
+		Option optExtendedAnalysis = Option.builder(null)
+				.longOpt(ConsoleCommand.OPT_EXTENDED_ANALYSIS)
+			    .desc("Tells the morphological analyzer to extend the analysis by adding a consonant after a final vowel.")
+			    .argName("EXTENDED_ANALYSIS")
+			    .required(false)
 			    .build();
 
 		Option optFromScratch = Option.builder(null)
@@ -172,6 +172,7 @@ public class Console {
 		SubCommand segmentIU = 
 				new CmdSegmentIU("segment_iu")
 				.addOption(optWord)
+				.addOption(optExtendedAnalysis)
 				;
 		mainCmd.addSubCommand(segmentIU);
 		
