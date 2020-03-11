@@ -35,6 +35,8 @@ class OccurrenceController extends WidgetController {
 	
 	onWordSelect(elementID) {
 		var element = $('#'+elementID);
+		$(".word-example.selected").removeClass("selected");
+		element.addClass("selected");
 		console.log("word: "+$(element).text());
 		occurrenceController.elementForProp("inpExampleWord").val($(element).text());
 		occurrenceController.setWordExampleBusy(true);
