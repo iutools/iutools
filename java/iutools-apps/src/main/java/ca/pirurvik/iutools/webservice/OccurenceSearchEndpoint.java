@@ -27,7 +27,8 @@ import ca.nrc.json.PrettyPrinter;
 import ca.pirurvik.iutools.CompiledCorpus;
 import ca.pirurvik.iutools.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.CompiledCorpusRegistryException;
-import ca.pirurvik.iutools.MorphemeExtractor;
+import ca.pirurvik.iutools.morphemesearcher.MorphemeSearcher;
+import ca.pirurvik.iutools.morphemesearcher.ScoredExample;
 
 public class OccurenceSearchEndpoint extends HttpServlet {
 			
@@ -123,29 +124,29 @@ public class OccurenceSearchEndpoint extends HttpServlet {
 			throws SearchEndpointException, ConfigException, CompiledCorpusRegistryException, 
 					IOException, Exception {
 		
-		MorphemeExtractor morphExtractor = new MorphemeExtractor();
+		MorphemeSearcher morphExtractor = new MorphemeSearcher();
 		CompiledCorpus compiledCorpus = CompiledCorpusRegistry.getCorpus(corpusName);
 		morphExtractor.useCorpus(compiledCorpus);
 		
 		LinguisticDataSingleton.getInstance("csv");
 		
-		List<MorphemeExtractor.Words> wordsForMorphemes = morphExtractor.wordsContainingMorpheme(inputs.wordPattern);
+		List<MorphemeSearcher.Words> wordsForMorphemes = morphExtractor.wordsContainingMorpheme(inputs.wordPattern);
 		HashMap<String,MorphemeSearchResult> results = new HashMap<String,MorphemeSearchResult>();
-		MorphemeExtractor.WordFreqComparator comparator = morphExtractor.new WordFreqComparator();
-		Iterator<MorphemeExtractor.Words> itWFM = wordsForMorphemes.iterator();
+		MorphemeSearcher.WordFreqComparator comparator = morphExtractor.new WordFreqComparator();
+		Iterator<MorphemeSearcher.Words> itWFM = wordsForMorphemes.iterator();
 		while (itWFM.hasNext()) {
-			MorphemeExtractor.Words w = itWFM.next();
+			MorphemeSearcher.Words w = itWFM.next();
 			String meaningOfMorpheme = Morpheme.getMorpheme(w.morphemeWithId).englishMeaning;
-			List<Pair<String,Long>> wordsAndFreqs = w.words;
-			Pair<String,Long>[] wordsFreqsArray = wordsAndFreqs.toArray(new Pair[] {});
+			List<ScoredExample> wordsAndFreqs = w.words;
+			ScoredExample[] wordsFreqsArray = wordsAndFreqs.toArray(new ScoredExample[] {});
 			Arrays.sort(wordsFreqsArray, comparator);
 			List<String> words = new ArrayList<String>();
-			List<Long> wordFreqs = new ArrayList<Long>();
-			for (Pair<String,Long>pair : wordsFreqsArray) {
-				words.add(pair.getFirst());
-				wordFreqs.add(pair.getSecond());
+			List<Double> wordScores = new ArrayList<Double>();
+			for (ScoredExample example : wordsFreqsArray) {
+				words.add(example.word);
+				wordScores.add(example.score);
 			}
-			MorphemeSearchResult morpheSearchResult = new MorphemeSearchResult(meaningOfMorpheme,words,wordFreqs);
+			MorphemeSearchResult morpheSearchResult = new MorphemeSearchResult(meaningOfMorpheme,words,wordScores);
 			results.put(w.morphemeWithId, morpheSearchResult);
 		}
 	
