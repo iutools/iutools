@@ -149,7 +149,13 @@ public class Trie {
 	
 	public TrieNode[] getAllTerminals(String[] segments) {
 		TrieNode node = this.getNode(segments);
-		return node.getAllTerminals();
+		TrieNode[] allTerminals = null;
+		if (node==null)
+			allTerminals = new TrieNode[0];
+		else
+			allTerminals = node.getAllTerminals();
+		
+		return allTerminals;
 	}
 	
 	// --- MOST FREQUENT TERMINALS
