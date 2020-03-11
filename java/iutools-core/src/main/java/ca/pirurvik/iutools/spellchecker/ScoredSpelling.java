@@ -8,4 +8,9 @@ public class ScoredSpelling {
 		this.spelling = _spelling;
 		this.score = _score;
 	}
+	
+	public String toString() {
+		String str = spelling+" (score="+score+")";
+		return str;
+	}
 }

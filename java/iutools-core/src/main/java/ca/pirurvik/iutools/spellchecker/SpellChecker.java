@@ -236,7 +236,7 @@ public class SpellChecker {
 	public SpellingCorrection correctWord(String word, int maxCorrections) throws SpellCheckerException {
 		Logger logger = Logger.getLogger("SpellChecker.correctWord");
 		
-		System.out.println("** SpellChecker.correctWord: word="+word);
+//		System.out.println("** SpellChecker.correctWord: word="+word);
 
 		boolean wordIsSyllabic = Syllabics.allInuktitut(word);
 		
@@ -249,9 +249,6 @@ public class SpellChecker {
 		corr.wasMispelled = isMispelled(wordInLatin);		
 		logger.debug("wasMispelled= "+corr.wasMispelled);
 
-		List<Pair<String,Double>> sortedScoredCandidates = 
-						new ArrayList<Pair<String,Double>>();		
-		
 		if (corr.wasMispelled) {
 			// set ngramStats and suite of words for candidates according to type of word (normal word or numeric expression)
 			String[] numericTermParts = wordIsNumberWithSuffix(wordInLatin);
@@ -262,37 +259,30 @@ public class SpellChecker {
 			
 			if (logger.isDebugEnabled()) logger.debug("candidates= "+PrettyPrinter.print(candidates));
 			
-			List<Pair<String,Double>> candidatesWithSim = computeCandidateSimilarities(wordInLatin, candidates);
-			sortedScoredCandidates = sortCandidatesBySimilarity(candidatesWithSim);
-			logger.debug("corrections for "+word+": "+sortedScoredCandidates.size());
+			List<ScoredSpelling> scoredSpellings = computeCandidateSimilarities(wordInLatin, candidates);			
+			scoredSpellings = sortCandidatesBySimilarity(scoredSpellings);
 			
 			if (wordIsNumericTerm) {
-				for (int ic=0; ic<sortedScoredCandidates.size(); ic++) {
-					Pair<String,Double> scoredCandidate = sortedScoredCandidates.get(ic);
-					scoredCandidate.setFirst(scoredCandidate.getFirst().replace("0000",numericTermParts[0]));
+				for (int ic=0; ic<scoredSpellings.size(); ic++) {
+					ScoredSpelling scoredCandidate = scoredSpellings.get(ic);
+					scoredCandidate.spelling = 
+							scoredCandidate.spelling.replace("0000",numericTermParts[0]);
 				}
 			}
 			
+	 		if (maxCorrections != -1) {
+	 			scoredSpellings = 
+	 					scoredSpellings
+	 					.subList(0, maxCorrections>scoredSpellings.size()? scoredSpellings.size() : maxCorrections); 			
+	 		}
+			
+	 		corr.setPossibleSpellings(scoredSpellings);
 		}
 		
 		if (wordIsSyllabic) {
-			transcodeCandidatesToSyllabic(sortedScoredCandidates);
+			transcodeCandidatesToSyllabic(corr);
 		}
-
- 		if (maxCorrections != -1) {
- 			sortedScoredCandidates = 
- 					sortedScoredCandidates
- 					.subList(0, maxCorrections>sortedScoredCandidates.size()? sortedScoredCandidates.size() : maxCorrections); 			
- 		}
- 		
- 		 List<ScoredSpelling> scoredSpellings = new ArrayList<ScoredSpelling>();
- 		for (Pair<String,Double> aCand: sortedScoredCandidates) {
- 			ScoredSpelling scSpelling = new ScoredSpelling(aCand.getFirst(), aCand.getSecond());
- 			scoredSpellings.add(scSpelling);
- 		}
- 		
- 		corr.setPossibleSpellings(scoredSpellings);
-		
+	
  		return corr;
 	}
 	
@@ -303,11 +293,13 @@ public class SpellChecker {
 	 * @param sortedScoredCandidates
 	 * @return 
 	 */
-	private void transcodeCandidatesToSyllabic(List<Pair<String, Double>> sortedScoredCandidates) {
-		for (int ic=0; ic < sortedScoredCandidates.size(); ic++) {
-			Pair<String,Double> candidate = sortedScoredCandidates.get(ic);
-			candidate.setFirst(TransCoder.romanToUnicode(candidate.getFirst()));
+	private void transcodeCandidatesToSyllabic(SpellingCorrection corr) {
+		for (int ic=0; ic < corr.scoredCandidates.size(); ic++) {
+			ScoredSpelling candidate = corr.scoredCandidates.get(ic);
+			candidate.spelling = TransCoder.romanToUnicode(candidate.spelling);
 		}
+		
+		return;
 	}
 
 
@@ -408,39 +400,29 @@ public class SpellChecker {
 		}
 	}
 	
-	private List<Pair<String,Double>> sortCandidatesBySimilarity(List<Pair<String, Double>> candidatesWithSim) {
+	private List<ScoredSpelling> sortCandidatesBySimilarity(List<ScoredSpelling> scoredSpellings) {
 		
 //		traceScoredCandidates("sortCandidatesBySimilarity on START", candidatesWithSim);
 		
-		Iterator<Pair<String, Double>> iteratorCand = candidatesWithSim.iterator();
-	
-		Collections.sort(candidatesWithSim, (Pair<String,Double> p1, Pair<String,Double> p2) -> {
-			return p1.getSecond().compareTo(p2.getSecond());
+		Iterator<ScoredSpelling> iteratorCand = scoredSpellings.iterator();
+		Collections.sort(scoredSpellings, (ScoredSpelling p1, ScoredSpelling p2) -> {
+			return p1.score.compareTo(p2.score);
 		});
-//		List<String> candidates = new ArrayList<String>();
-//		iteratorCand = candidatesWithSim.iterator();
-//		while (iteratorCand.hasNext()) {
-//			Pair<String,Double> pair = iteratorCand.next();
-//			candidates.add(pair.getFirst());
-//			//System.out.println("-- sortCandidatesBySimiliraty (2): "+"candidate: "+pair.getFirst()+" ; similarity="+pair.getSecond());
-//		}
-//		return candidates;
 		
-		return candidatesWithSim;
+		return scoredSpellings;
 	}
 
-	protected List<Pair<String, Double>> computeCandidateSimilarities(String badWord, Set<String> candidates) throws SpellCheckerException {
-		List<Pair<String,Double>> candidateSimilarities = new ArrayList<Pair<String,Double>>();
+	protected List<ScoredSpelling> computeCandidateSimilarities(String badWord, Set<String> candidates) throws SpellCheckerException {
+		List<ScoredSpelling> scoredCandidates = new ArrayList<ScoredSpelling>();
+		
 		Iterator<String> iterator = candidates.iterator();
 		while (iterator.hasNext()) {
 			String candidate = iterator.next();
 			double similarity = computeCandidateSimilarity(badWord,candidate);
-//			if (similarity < DiffCosting.INFINITE) {
-				candidateSimilarities.add(new Pair<String,Double>(candidate,new Double(similarity)));
-//			}
-			//System.out.println("-- computeCandidateSimilarities:    "+"candidate: "+candidate+" ; similarity="+similarity);
+			scoredCandidates.add(new ScoredSpelling(candidate, new Double(similarity)));
 		}
-		return candidateSimilarities;
+		
+		return scoredCandidates;
 	}
 
 	private double computeCandidateSimilarity(String badWord, String candidate) throws SpellCheckerException {
@@ -608,33 +590,6 @@ public class SpellChecker {
 		return wordsWithSeq;
 	}
 
-//	public List<Pair<String, Long>> rarestSequencesOf(String string) {
-//		List<Pair<String,Long>> listOfRarest = new ArrayList<Pair<String,Long>>();
-//		// TODO:
-//		for (int seqLen = 1; seqLen <= MAX_SEQ_LEN; seqLen++) {
-//			for (int  start=0; start <= string.length() - seqLen; start++) {
-//				String charSeq = string.substring(start, start+seqLen);
-//				Long idf = ngramStat(charSeq);
-//				//System.out.println("-- rarestSequencesOf:    charSeq="+charSeq+" ("+idf+")");;
-//				if (idf != 0) {
-//					Pair<String,Long> pair = new Pair<String,Long>(charSeq,idf);
-//					if ( !listOfRarest.contains(pair) )
-//						listOfRarest.add(pair);
-//				}
-//			}
-//		}
-//		Collections.sort(listOfRarest,(Object p1, Object p2) -> {
-//			return ((Pair<String,Long>)p1).getSecond().compareTo(((Pair<String,Long>)p2).getSecond());
-//		});
-//		
-//		return listOfRarest;
-//		
-//	}
-	
-	
-	
-	
-
 	public List<SpellingCorrection> correctText(String text) throws SpellCheckerException {
 		return correctText(text, null);
 	}
@@ -665,7 +620,6 @@ public class SpellChecker {
 		
 		return corrections;
 	}
-	
 	
 	protected boolean assessEndingWithIMA(String ending) {
 		Logger logger = Logger.getLogger("SpellChecker.assessEndingWithIMA");

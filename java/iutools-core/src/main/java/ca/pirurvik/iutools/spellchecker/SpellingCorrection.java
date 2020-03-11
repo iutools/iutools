@@ -9,9 +9,7 @@ import ca.nrc.datastructure.Pair;
 public class SpellingCorrection {
 	public String orig;
 	public Boolean wasMispelled = false;
-	private List<String> possibleSpellings = new ArrayList<String>();
-	private List<Double> possibleSpellingScores = null;
-	private List<ScoredSpelling> scoredPossibleSpellings = 
+	public List<ScoredSpelling> scoredCandidates = 
 				new ArrayList<ScoredSpelling>();
 
 	public SpellingCorrection(String _orig, String[] _corrections, Boolean _wasMispelled) {
@@ -38,62 +36,34 @@ public class SpellingCorrection {
 	}
 
 
-		private void initialize(String _orig, List<String> _corrections, 
+	private void initialize(String _orig, List<String> _corrections, 
 			List<Double> _scores, Boolean _wasMispelled) {
 		this.orig = _orig;
-		if (_corrections != null) this.possibleSpellings = _corrections;
-		if (_scores != null) this.possibleSpellingScores = _scores;
 		if (_wasMispelled != null) this.wasMispelled = _wasMispelled;
 	}
-	
-//	public SpellingCorrection setPossibleSpellings(List<Pair<String,Double>> scoredCandidates) {
-//		
-//		possibleSpellings = new ArrayList<String>();
-//		possibleSpellingScores = new ArrayList<Double>();
-//		scoredPossibleSpellings = new ArrayList<ScoredSpelling>();
-//		for (Pair<String,Double> aCand: scoredCandidates) {
-//			possibleSpellings.add(aCand.getFirst());
-//			possibleSpellingScores.add(aCand.getSecond());
-//		}
-//				
-//		if (scoredCandidates != null && scoredCandidates.size() > 0 && scoredCandidates.get(0).equals(orig)) {
-//			this.possibleSpellings.remove(0);
-//			this.possibleSpellingScores.remove(0);
-//		}
-//		
-//		for (int ii=0; ii<scoredCandidates.size(); ii++) {
-//			String spelling = scoredCandidates.get(ii).getFirst();
-//			Double score = possibleSpellingScores.get(ii);
-//			this.scoredPossibleSpellings.add(new ScoredSpelling(spelling, score));
-//		}
-//		
-//		return this;
-//	}
 
+	public List<ScoredSpelling> getScoredPossibleSpellings() {
+		return scoredCandidates;
+	}
+	
+	
 	public List<String> getPossibleSpellings() {
-		return this.possibleSpellings;
+		List<String> possibleSpellings = new ArrayList<String>();
+		for (ScoredSpelling scoredSpelling: scoredCandidates) {
+			possibleSpellings.add(scoredSpelling.spelling);
+		}
+		return possibleSpellings;
 	}
 
 	public SpellingCorrection setPossibleSpellings(List<ScoredSpelling> _scoredSpellings) {
-		scoredPossibleSpellings = _scoredSpellings;
-
-		possibleSpellings = new ArrayList<String>();
-		possibleSpellingScores = new ArrayList<Double>();
-		for (ScoredSpelling aCand: scoredPossibleSpellings) {
-			possibleSpellings.add(aCand.spelling);
-			possibleSpellingScores.add(aCand.score);
-		}
+		scoredCandidates = _scoredSpellings;
 				
-		if (scoredPossibleSpellings != null 
-				&& scoredPossibleSpellings.size() > 0 
-				&& scoredPossibleSpellings.get(0).spelling.equals(orig)) {
-			this.possibleSpellings.remove(0);
-			this.possibleSpellingScores.remove(0);
-			this.scoredPossibleSpellings.remove(0);
+		if (scoredCandidates != null 
+				&& scoredCandidates.size() > 0 
+				&& scoredCandidates.get(0).spelling.equals(orig)) {
+			this.scoredCandidates.remove(0);
 		}
 				
 		return this;
 	}
-
-
 }
