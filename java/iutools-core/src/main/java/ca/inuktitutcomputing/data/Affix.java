@@ -64,6 +64,10 @@ public abstract class Affix extends Morpheme {
 	    return morpheme;
 	}
 	
+	public boolean isSuffix() {
+		return this.type.equals("sn") || this.type.equals("sv") || this.type.equals("q");
+	}
+	
 	public boolean isNonMobileSuffix() {
 		if (getClass() == Suffix.class && ((Suffix) this).mobility != null
 				&& ((Suffix) this).mobility.equals("nm"))
