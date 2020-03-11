@@ -200,7 +200,7 @@ div.corrections {
 }
 div.corrections span {
 	display:none;
-	
+	width:100%;
 }
 div.corrections span.selected {
 	display:block;
@@ -214,4 +214,12 @@ button#btn-copy {
 span.additional input {
 	width:98%;
 	padding:1%;
+}
+
+/* MORPHEME SEARCH */
+
+.word-example.selected {
+	color:red;
+	text-decoration:underline;
+	font-weight:bold;
 }
