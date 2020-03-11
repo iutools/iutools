@@ -1,6 +1,7 @@
 package ca.inuktitutcomputing.core.console;
 
-import ca.inuktitutcomputing.data.LinguisticDataSingleton;
+import org.apache.log4j.Logger;
+
 import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
 
@@ -17,7 +18,10 @@ public class CmdSegmentIU extends ConsoleCommand {
 
 	@Override
 	public void execute() throws Exception {
+		Logger logger = Logger.getLogger("CmdSegmentIU.execute");
 		String word = getWord(false);
+		String extendedAnalysis = getExtendedAnalysis(false);
+		boolean doExtendedAnalysis = this.cmdLine.hasOption("extended-analysis");
 		Decomposition[] decs = null;
 		
 		MorphologicalAnalyzer morphAnalyzer = new MorphologicalAnalyzer();
@@ -26,7 +30,7 @@ public class CmdSegmentIU extends ConsoleCommand {
 		if (word == null) {
 			interactive = true;
 		} else {
-			decs = morphAnalyzer.decomposeWord(word);
+			decs = morphAnalyzer.decomposeWord(word,doExtendedAnalysis);
 		}
 
 		while (true) {
@@ -35,7 +39,7 @@ public class CmdSegmentIU extends ConsoleCommand {
 				if (word == null) break;
 				decs = null;
 				try {
-					decs = morphAnalyzer.decomposeWord(word);
+					decs = morphAnalyzer.decomposeWord(word,doExtendedAnalysis);
 				} catch (Exception e) {
 					throw e;
 				}
