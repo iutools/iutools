@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="css/styles.css?v1">
 
   <script src="js/jquery-3.3.1.min.js"></script>
+  <script src="js/jquery-ui.min.js"></script>
   <script src="js/scripts.js?v1"></script>
 </head>
 
@@ -66,6 +67,8 @@
         $("div[data-includeHTML]").each(function () {                
             $(this).load($(this).attr("data-includeHTML"));
         });
+        
+        $('div#div-example-word').draggable({cursor: "move"}).resizable();
     });
     
 	// Setup and configure the controller for this page
