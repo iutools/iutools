@@ -492,9 +492,9 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 		
 		static public class DecPart {
 			//
-			String str;
-			String surface;
-			String morphid;
+			public String str;
+			public String surface;
+			public String morphid;
 			//
 			
 			public DecPart (String str) {
