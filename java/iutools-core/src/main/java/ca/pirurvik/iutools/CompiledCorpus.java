@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -748,6 +749,51 @@ public class CompiledCorpus
 	}
 	public void setSegmentsCache(HashMap<String,String[]> segmentsCache) {
 		this.segmentsCache = segmentsCache;
+	}
+	public long getNbOccurrencesOfWord(String word) {
+		Logger logger = Logger.getLogger("CompiledCorpus.getNbOccurrencesOfWord");
+		logger.debug("word: "+word);
+		long nbOccurrences = 0;
+		Pattern pattern = Pattern.compile(","+word+":"+"(.+?),");
+		Matcher matcher = pattern.matcher(wordSegmentations);
+		if ( matcher.find() ) {
+			String segmentsStr = matcher.group(1);
+			String segmentsStrWithSpaces = segmentsStr.replace("}{", "} {");
+			String[] segments = segmentsStrWithSpaces.split(" ");
+			TrieNode[] terminals = this.trie.getAllTerminals(segments);
+			nbOccurrences = terminals[0].getFrequency();
+			}
+	
+		return nbOccurrences;
+	}
+	
+	public List<WordWithMorpheme> getWordsContainingMorpheme(String morpheme) {
+		List<WordWithMorpheme> words = new ArrayList<WordWithMorpheme>();
+		Pattern pattern = Pattern.compile(",([^:,]+?)"+":([^:]*?\\{("+morpheme+"/.+?)\\}.*?),");
+		Matcher matcher = pattern.matcher(wordSegmentations);
+		while ( matcher.find() ) {
+			String word = matcher.group(1);
+			String morphId = matcher.group(3);
+			String decomposition = matcher.group(2);
+			long freq = this.getNbOccurrencesOfWord(word);
+			words.add(new WordWithMorpheme(word,morphId,decomposition,freq));
+		}
+		
+		return words;
+	}
+	
+	public static class WordWithMorpheme {
+		public String word;
+		public String morphemeId;
+		public String decomposition;
+		public Long frequency;
+		
+		public WordWithMorpheme(String _word, String _morphId, String _decomp, Long _freq) {
+			this.word = _word;
+			this.morphemeId = _morphId;
+			this.decomposition = _decomp;
+			this.frequency = _freq;
+		}
 	}
 
 }
