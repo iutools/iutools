@@ -201,11 +201,15 @@ class OccurrenceController extends WidgetController {
 		var corpusName = this.elementForProp("inpCorpusName").val().trim();
 		if (corpusName=='')
 			corpusName = null;
+		var nbExamples = this.elementForProp("inpNbExamples").val().trim();
+		if (nbExamples=='')
+			nbExamples = "20";
 
 		var request = {
 				wordPattern: wordPattern,
 				exampleWord: exampleWord,
-				corpusName: corpusName
+				corpusName: corpusName,
+				nbExamples: nbExamples
 		};
 		
 		var jsonInputs = JSON.stringify(request);;
@@ -255,7 +259,7 @@ class OccurrenceController extends WidgetController {
 		
 		var res = results.matchingWords;
 		var keys = Object.keys(res);
-		var html = 'The input is the nominal form of '+keys.length+' morpheme'+
+		var html = 'The input is the canonical form of '+keys.length+' morpheme'+
 			(keys.length==1?'':'s')+': ';
 		html += '<div id="list-of-morphemes">';
 		html += '<ul>';
@@ -272,13 +276,15 @@ class OccurrenceController extends WidgetController {
 			var key = keys[ires];
 			var meaning = res[key].meaning;
 			var words = res[key].words;
-			var wordFreqs = res[key].wordFrequencies;
+			var wordFreqs = res[key].wordScores;
 			var wordsFreqsArray = new Array(wordFreqs.length);
 			for (var iwf=0; iwf<wordFreqs.length; iwf++) {
 				wordsFreqsArray[iwf] = 
 					'<a class="word-example" id="word-example-'+words[iwf]+'"' +
 					' onclick="occurrenceController.onWordSelect(\''+'word-example-'+words[iwf]+'\')"'+
-					'>'+words[iwf]+'</a>'+'('+wordFreqs[iwf]+')';
+					'>'+words[iwf]+'</a>'
+					//+'('+wordFreqs[iwf]+')'
+					;
 			}
 			html += '<div class="morpheme-details">';
 			html += '<a name="'+key+'"></a>'+'<strong>'+key+'</strong>&nbsp;&nbsp;&nbsp;&ndash;&nbsp;&nbsp;&nbsp;'+meaning+

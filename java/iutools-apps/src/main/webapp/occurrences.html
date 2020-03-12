@@ -28,8 +28,14 @@
     
     <form id="form-query" method="post" action="">
     
-    Enter some Inuktut morpheme in its nominal form (e.g. gaq)<p/>
-    <input id="morpheme" name="morpheme" style="width:20em;"><p/>
+    <div>
+    Enter some Inuktut morpheme in its canonical form (e.g. gaq): 
+    <input id="morpheme" name="morpheme" style="width:20em;">
+    </div>
+    <div>
+    Max number of words: 
+    <input id="nb-examples" name="nb-examples" value="20" style="width:5em;">
+    </div><br>
     <button id="btn-occ" type="button" name="btn-occ" value="Occurrences">Get words</button>
     <input type="hidden" id="example-word" name="example-word" value="">
     <input type="hidden" id="corpus-name" name="corpus-name" value="">
@@ -72,6 +78,7 @@
     });
     
 	// Setup and configure the controller for this page
+    // TODO: replace corpus-name by corpus to get the value of the select, etc.
     var config = {
     		btnGet: "btn-occ",
     		inpMorpheme: "morpheme",
@@ -85,6 +92,7 @@
     		divIconizedExampleWord: "div-example-word-iconized",
     		divMessageInExample: "message-in-example",
     		divWordInExample: "word-in-example",
+    		inpNbExamples: "nb-examples"
         };
     var occurrenceController = new OccurrenceController(config);
 </script>
