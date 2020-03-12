@@ -13,7 +13,6 @@ import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieNode;
-import ca.nrc.datastructure.trie.TrieTerminalNode;
 import ca.pirurvik.iutools.CompiledCorpus;
 
 public class CmdSearchTrie extends ConsoleCommand {
