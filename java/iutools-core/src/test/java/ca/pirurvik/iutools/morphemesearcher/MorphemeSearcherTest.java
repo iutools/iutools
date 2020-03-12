@@ -18,10 +18,14 @@ import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.testing.AssertHelpers;
 import ca.pirurvik.iutools.CompiledCorpus;
+import ca.pirurvik.iutools.CompiledCorpus.WordWithMorpheme;
 import ca.pirurvik.iutools.CompiledCorpusException;
+import ca.pirurvik.iutools.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.MockCompiledCorpus;
 import ca.pirurvik.iutools.morphemesearcher.MorphemeSearcher;
 import ca.pirurvik.iutools.morphemesearcher.ScoredExample;
+import ca.pirurvik.iutools.morphemesearcher.MorphemeSearcher.Bin;
+import ca.pirurvik.iutools.morphemesearcher.MorphemeSearcher.WordFreq;
 
 import org.junit.*;
 
@@ -97,18 +101,15 @@ public class MorphemeSearcherTest {
 	public void test__wordsContainingMorpheme__root() throws Exception {
 		LinguisticData.init();
 		LinguisticData.getInstance();
-//		String morpheme = "root1";
 		String morpheme = "inuk";
 		List<MorphemeSearcher.Words> wordsForMorphemes = this.morphemeExtractor.wordsContainingMorpheme(morpheme);
 		Assert.assertTrue(wordsForMorphemes.size()==1);
 		List<ScoredExample> words = wordsForMorphemes.get(0).words;	
 		List<ScoredExample> expected = new ArrayList<ScoredExample>();
 		expected.add(new ScoredExample("inuit",10001.0,new Long(1))); 
-		expected.add(new ScoredExample("inuglu",10001.0,new Long(1)));
-		Assert.assertEquals(2, words.size());
+		Assert.assertEquals(1, words.size()); // only 1 word per root (here: inuk/1n)
 		AssertHelpers.assertDeepEquals("",expected,words);
 		
-//		morpheme = "root2";
 		morpheme = "nuna";
 		wordsForMorphemes = this.morphemeExtractor.wordsContainingMorpheme(morpheme);
 		Assert.assertTrue(wordsForMorphemes.size()==1);
@@ -118,26 +119,20 @@ public class MorphemeSearcherTest {
 		Assert.assertEquals(1, words.size());
 		AssertHelpers.assertDeepEquals("",expected,words);
 		
-		HashMap<String,String> dictionary = new HashMap<String,String>();
-//		dictionary.put("inuit", "{root1/idr1} {affix1/idaff1}");
-//		dictionary.put("nunami", "{root2/idr2} {affix21/idaff21}");
-//		dictionary.put("iglumik", "{root3/idr3} {affix21/idaff21} {affix32/idaff31}");
-//		dictionary.put("inuksuk", "{root1/idr1} {affix41/idaff411}");
-//		dictionary.put("iglumut", "{root3/idr3} {affix41/idaff411}");
-//		dictionary.put("nunatsiaq", "{root2/idr2} {affix41/idaff412} {affix42/idaff42}");
-		
+		HashMap<String,String> dictionary = new HashMap<String,String>();		
 		dictionary.put("inuit", "{inuk/1n} {it/tn-nom-p}");
 		dictionary.put("nunami", "{nuna/1n} {mi/tn-loc-s}");
 		dictionary.put("iglumik", "{iglu/1n} {mik/tn-acc-s}");
 		dictionary.put("inuglu", "{inuk/1n} {lu/1q}");
 		dictionary.put("iglumut", "{iglu/1n} {mut/tn-dat-s}");
 		dictionary.put("nunamut", "{nuna/1n} {mut/tn-dat-s}");
+		dictionary.put("igluvimmut", "{iglu/1n} {vim:vik/1nn} {mut/tn-dat-s}");
 
 		MockCompiledCorpus mockCompiledCorpus = new MockCompiledCorpus();
 		mockCompiledCorpus.setVerbose(false);
 		mockCompiledCorpus.setDictionary(dictionary);
 		String[] stringsOfWords = new String[] {
-				"inuit nunami iglumik inuglu iglumut nunamut"
+				"inuit nunami iglumik inuglu iglumut nunamut igluvimmut"
 				};
 		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
         try {
@@ -147,17 +142,16 @@ public class MorphemeSearcherTest {
         }
         morphemeExtractor.useCorpus(mockCompiledCorpus);
         
-//		morpheme = "affix41";
 		morpheme = "mut";
 		wordsForMorphemes = this.morphemeExtractor.wordsContainingMorpheme(morpheme);
 		Assert.assertTrue(wordsForMorphemes.size()==1);
 		
-			words = wordsForMorphemes.get(0).words;
-			expected = new ArrayList<ScoredExample>();
-			expected.add(new ScoredExample("iglumut", 10001.0, new Long(1))); 
-			expected.add(new ScoredExample("nunamut", 10001.0, new Long(1)));
-			Assert.assertEquals(2, words.size());
-			AssertHelpers.assertDeepEquals("",expected,words);
+		words = wordsForMorphemes.get(0).words;
+		expected = new ArrayList<ScoredExample>();
+		expected.add(new ScoredExample("iglumut", 10001.0, new Long(1))); 
+		expected.add(new ScoredExample("nunamut", 10001.0, new Long(1)));
+		Assert.assertEquals(2, words.size());
+		AssertHelpers.assertDeepEquals("",expected,words);
 	}
 	
 	public void test__wordsContainingMorpheme__infix() throws Exception {
@@ -239,10 +233,8 @@ public class MorphemeSearcherTest {
 		List<ScoredExample> words = wordsForMorphemes.get(0).words;	
 		List<ScoredExample> expected = new ArrayList<ScoredExample>();
 		expected.add(new ScoredExample("makpigarni",10002.0,(long)2));
-		expected.add(new ScoredExample("mappigarni",10002.0,(long)2));
-		Assert.assertEquals(2, words.size());
+		Assert.assertEquals(1, words.size());
 		AssertHelpers.assertDeepEquals("", expected.get(0), words.get(0));
-		AssertHelpers.assertDeepEquals("", expected.get(1), words.get(1));
 	}
 	
 	@Test @Ignore
@@ -272,6 +264,57 @@ public class MorphemeSearcherTest {
 
 		hashTest.put("", new String[] {});
 		fail("Not yet implemented");
+	}
+	
+	@Test
+	public void test__wordsContainingMorpheme__root__hansard() throws Exception {
+		LinguisticData.init();
+		LinguisticData.getInstance();
+		MorphemeSearcher morphemeSearcher = new MorphemeSearcher();
+		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpus();
+		morphemeSearcher.useCorpus(corpus);
+		System.out.println("Nb. occurrences in Hansard: "+corpus.getTrie().getNbOccurrences());
+		String morpheme = "galuaq";
+		List<MorphemeSearcher.Words> wordsForMorphemes = morphemeSearcher.wordsContainingMorpheme(morpheme);
+		System.out.println("Nb. morphemes with canonical form 'galuaq': "+wordsForMorphemes.size());
+		Assert.assertTrue(wordsForMorphemes.size()==2);
+		for (ScoredExample example : wordsForMorphemes.get(0).words) {
+			System.out.println(example.word+" ("+wordsForMorphemes.get(0).morphemeWithId+")");
+		}
+		System.out.println("\n");
+		for (ScoredExample example : wordsForMorphemes.get(1).words) {
+			System.out.println(example.word+" ("+wordsForMorphemes.get(1).morphemeWithId+")");
+		}
+	}
+	
+	@Test
+	public void test__separateWordsByRoot() throws IOException {
+		String[] stringsOfWords = new String[] {
+				"makpigarni", "mappigarni", "inuglu"
+				};
+		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
+        CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
+        compiledCorpus.setVerbose(false);
+        try {
+        	compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
+        } catch(CompiledCorpusException | StringSegmenterException e) {
+        }
+        MorphemeSearcher morphemeSearcher = new MorphemeSearcher();
+        morphemeSearcher.useCorpus(compiledCorpus);
+        
+		HashMap<String,List<WordWithMorpheme>> morphid2wordsFreqs = new HashMap<String,List<WordWithMorpheme>>();
+		List<WordWithMorpheme> wordsFreqs = new ArrayList<WordWithMorpheme>();
+		wordsFreqs.add(new WordWithMorpheme("takujuq","juq/1vn","{taku:taku/1v}{juq:juq/1vn}",(long)15));
+		wordsFreqs.add(new WordWithMorpheme("siniktuq","juq/1vn","{sinik:sinik/1v}{tuq:juq/1vn}",(long)10));
+		morphid2wordsFreqs.put("juq/1vn", wordsFreqs);
+		
+        Bin[] rootBins = morphemeSearcher.separateWordsByRoot(morphid2wordsFreqs);
+        Assert.assertEquals("The number of bins is incorrect.", 2, rootBins.length);
+        Assert.assertTrue("No bins returned with the right morpheme ids.", rootBins[0].rootId.equals("taku/1v") || rootBins[0].rootId.equals("sinik/1v"));
+        Assert.assertEquals("", 1, rootBins[0].morphid2wordsFreqs.keySet().size());
+        Assert.assertTrue("", rootBins[0].morphid2wordsFreqs.containsKey("juq/1vn"));
+        Assert.assertEquals("", 1, rootBins[1].morphid2wordsFreqs.keySet().size());
+        Assert.assertTrue("", rootBins[1].morphid2wordsFreqs.containsKey("juq/1vn"));
 	}
 
 	/**********************************

@@ -2,13 +2,14 @@ package ca.pirurvik.iutools.morphemesearcher;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeoutException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
@@ -17,15 +18,17 @@ import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.morph.Decomposition.DecompositionExpression;
 import ca.inuktitutcomputing.morph.MorphInukException;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
-import ca.nrc.datastructure.Pair;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieNode;
 import ca.pirurvik.iutools.CompiledCorpus;
+import ca.pirurvik.iutools.CompiledCorpus.WordWithMorpheme;
 
 public class MorphemeSearcher {
 	
 	protected String wordSegmentations = null;
 	protected CompiledCorpus corpus = null;
+	protected int nbWordsToBeDisplayed = 20;
+	protected int maxNbInitialCandidates = 100;
 	
 	public MorphemeSearcher() {
 	}
@@ -35,55 +38,161 @@ public class MorphemeSearcher {
 		wordSegmentations = _corpus.getWordSegmentations();
 	}
 	
+	public void setNbDisplayedWords(int n) {
+		this.nbWordsToBeDisplayed = n;
+	}
+	
 	public List<Words> wordsContainingMorpheme(String morpheme) throws Exception {
 		Logger logger = Logger.getLogger("MorphemeExtractor.wordsContainingMorpheme");
 		logger.debug("morpheme= "+morpheme);
+		
+		HashMap<String,List<WordWithMorpheme>> morphid2wordsFreqs = getMostFrequentWordsWithMorpheme(morpheme);
+		Bin[] rootBins = separateWordsByRoot(morphid2wordsFreqs);
+		HashMap<String,List<ScoredExample>> morphids2scoredExamples = computeWordsWithScoreFromBins(rootBins);
+	
+		logger.debug("morphids2scoredExamples: "+morphids2scoredExamples.size());
 		List<Words> words = new ArrayList<Words>();
-		HashMap<String,List<ScoredExample>> wordsForMorphemes = new HashMap<String,List<ScoredExample>>();
-		if (wordSegmentations==null)
-			throw new Exception("The word extractor has not been defined a compiled corpus.");
-		Trie corpusTrie = corpus.getTrie();
-		String regexp = ",([^:,]+?):([^:]*?\\{("+morpheme+"/.+?)\\}[^:,]*?),";
-		Pattern p = Pattern.compile(regexp);
-		Matcher m = p.matcher(this.wordSegmentations);
-		while (m.find()) {
-			String word = m.group(1);
-//			String segments = m.group(2);
-			String morphemeWithId = m.group(3);
-			List<ScoredExample> wordsForMorpheme;
-			if (wordsForMorphemes.containsKey(morphemeWithId)) {
-				wordsForMorpheme = wordsForMorphemes.get(morphemeWithId);
-			}
-			else {
-				wordsForMorpheme = new ArrayList<ScoredExample>();
-			}
-//			segments += " \\";
-//			String segmentsPlusSpaces = segments.replaceAll("\\}\\{", "} {");
-//			long freq = corpusTrie.getFrequency(segmentsPlusSpaces.split(" "));
-//			logger.debug(word+": "+freq+" --- "+segmentsPlusSpaces);
-			
-			ScoredExample scoredEx = generateScoredExample(word,morphemeWithId);
-			
-			wordsForMorpheme.add(scoredEx);
-			wordsForMorphemes.put(morphemeWithId,wordsForMorpheme);
+		Set<String> keys = morphids2scoredExamples.keySet();
+		Iterator<String> iter = keys.iterator();
+		while ( iter.hasNext()) {
+			String morphId = iter.next();
+			logger.debug("iteration for generation of Words - morphId: "+morphId);
+			List<ScoredExample> scoredExamples = morphids2scoredExamples.get(morphId);
+			Words wordsObject = new Words(morphId,scoredExamples);
+			words.add(wordsObject);
 		}
-		Iterator<String> it = wordsForMorphemes.keySet().iterator();
-		while (it.hasNext()) {
-			String morphemeID = it.next();
-			words.add(new Words(morphemeID,wordsForMorphemes.get(morphemeID)));
-		}
+		logger.debug("words: "+words.size());
 		return words;
 	}
 	
 	
+	protected HashMap<String, List<ScoredExample>> computeWordsWithScoreFromBins(Bin[] rootBins) throws MorphemeSearcherException {
+		HashMap<String, List<ScoredExample>> morphids2limitedScoredExamples = new HashMap<String, List<ScoredExample>>();
+		for (int ib=0; ib<rootBins.length; ib++) {
+			HashMap<String, List<ScoredExample>> morphid2scoredWords = computeWordsWithScore(rootBins[ib].morphid2wordsFreqs);
+			for (Map.Entry<String,List<ScoredExample>> mapElement : morphid2scoredWords.entrySet()) { 
+	            String morphid = mapElement.getKey(); 
+	            List<ScoredExample> listOfScoredExamples = mapElement.getValue();
+	            ScoredExample firstScoredExampleInBinForMorphid = listOfScoredExamples.get(0);
+	            if ( !morphids2limitedScoredExamples.containsKey(morphid) ) {
+	            	morphids2limitedScoredExamples.put(morphid, new ArrayList<ScoredExample>());
+	            }
+	            if (morphids2limitedScoredExamples.get(morphid).size() < nbWordsToBeDisplayed)
+	            	morphids2limitedScoredExamples.get(morphid).add(firstScoredExampleInBinForMorphid);
+			}
+		}
+		
+		return morphids2limitedScoredExamples;
+	}
+
+	protected Bin[] separateWordsByRoot(HashMap<String, List<WordWithMorpheme>> morphid2wordsFreqs) {
+		HashMap<String,Bin> bins = new HashMap<String,Bin>();
+		Set<String> keys = morphid2wordsFreqs.keySet();
+		Iterator<String> iter = keys.iterator();
+		while ( iter.hasNext() ) {
+			String morphId = iter.next();
+			List<WordWithMorpheme> wordWithMorphemeS = morphid2wordsFreqs.get(morphId);
+			for (int im=0; im<wordWithMorphemeS.size(); im++) {
+				WordWithMorpheme wordWithMorpheme = wordWithMorphemeS.get(im);
+				DecompositionExpression decomposition = new DecompositionExpression(wordWithMorpheme.decomposition);
+				String rootId = decomposition.parts[0].morphid;
+				Bin bin = null;
+				if ( !bins.containsKey(rootId) ) {
+					bin = new Bin(rootId, new HashMap<String,List<WordWithMorpheme>>());
+					bins.put(rootId, bin);
+				} 
+				bin = bins.get(rootId);
+				if ( !bin.morphid2wordsFreqs.containsKey(morphId) ) {
+					bin.morphid2wordsFreqs.put(morphId, new ArrayList<WordWithMorpheme>());
+				}
+				List<WordWithMorpheme> list = bin.morphid2wordsFreqs.get(morphId);
+				list.add(wordWithMorpheme);
+				bin.morphid2wordsFreqs.put(morphId,list);
+			}
+		}
+		
+		return bins.values().toArray(new Bin[] {});
+	}
+
+	private HashMap<String, List<ScoredExample>> computeWordsWithScore(HashMap<String, List<WordWithMorpheme>> mostFrequentWordsWithMorpheme) throws MorphemeSearcherException {
+		Logger logger = Logger.getLogger("MorphemeSearcher.computeWordsWithScore");
+		logger.debug("mostFrequentWordsWithMorpheme: "+mostFrequentWordsWithMorpheme.size());
+		HashMap<String, List<ScoredExample>> morphids2scoredExamples = new HashMap<String, List<ScoredExample>>();
+		Set<String> morphIds = mostFrequentWordsWithMorpheme.keySet();
+		Iterator<String> iter = morphIds.iterator();
+		while ( iter.hasNext() ) {
+			List<ScoredExample> scoredExamples = new ArrayList<ScoredExample>();
+			String morphId = iter.next();
+			List<WordWithMorpheme> wordsFreqs = mostFrequentWordsWithMorpheme.get(morphId);
+			logger.debug("wordsFreqs: "+wordsFreqs.size());
+			for (int iwf=0; iwf<wordsFreqs.size(); iwf++) {
+				logger.debug("iwf: "+iwf);
+				WordWithMorpheme wordFreq = wordsFreqs.get(iwf);
+				ScoredExample scoredEx = generateScoredExample(wordFreq.word,morphId);
+				scoredExamples.add(scoredEx);
+			}
+			Collections.sort(scoredExamples, (ScoredExample e1, ScoredExample e2) -> {
+				if (e1.score < e2.score)
+					return 1;
+				else if (e1.score > e2.score)
+					return -1;
+				else
+					return 0;
+			});
+				
+			morphids2scoredExamples.put(morphId, scoredExamples);
+		}
+		
+		return morphids2scoredExamples;
+	}
+
+	private HashMap<String,List<WordWithMorpheme>> getMostFrequentWordsWithMorpheme(String morpheme) {
+		List<WordWithMorpheme> wordsWithMorpheme = this.corpus.getWordsContainingMorpheme(morpheme);
+		HashMap<String,List<WordWithMorpheme>> morphid2WordsFreqs = new HashMap<String,List<WordWithMorpheme>>();
+		for (int iw=0; iw<wordsWithMorpheme.size(); iw++) {
+			WordWithMorpheme wordAndMorphid = wordsWithMorpheme.get(iw);
+			String word = wordAndMorphid.word;
+			String morphId = wordAndMorphid.morphemeId;
+			List<WordWithMorpheme> wordsFreqs = morphid2WordsFreqs.get(morphId);
+			if (wordsFreqs==null) {
+				wordsFreqs = new ArrayList<WordWithMorpheme>();
+			}
+			wordsFreqs.add(wordAndMorphid);
+			morphid2WordsFreqs.put(morphId, wordsFreqs);
+		}
+		
+		Set<String> morphIds = morphid2WordsFreqs.keySet();
+		Iterator<String> iter = morphIds.iterator();
+		while (iter.hasNext()) {
+			String morphId = iter.next();
+			List<WordWithMorpheme> wordsFreqs = morphid2WordsFreqs.get(morphId);
+			Collections.sort(wordsFreqs, (WordWithMorpheme p1, WordWithMorpheme p2) -> {
+				if (p1.frequency < p2.frequency)
+					return 1;
+				else if (p1.frequency > p2.frequency)
+					return -1;
+				else
+					return 0;
+			});
+			morphid2WordsFreqs.put(morphId,wordsFreqs.subList(0, Math.min(wordsFreqs.size(), maxNbInitialCandidates)));
+		}
+
+		return morphid2WordsFreqs;
+	}
+
+	
 	private ScoredExample generateScoredExample(String word, String morphemeWithId) throws MorphemeSearcherException {
+		Logger logger = Logger.getLogger("MorphemeSearcher.generateScoredExample");
 		ScoredExample scoredEx = null;
 		try {
 			boolean allowAnalysisWithAdditionalFinalConsonant = false;
+			logger.debug("    generateScoredExample --- step 1: morphFreqInAnalyses");
 			Double morphemeFreq = morphFreqInAnalyses(morphemeWithId, word, allowAnalysisWithAdditionalFinalConsonant);
+			logger.debug("    generateScoredExample --- step 2: wordFreqInCorpus");
 			Long wordFreq = wordFreqInCorpus(word,allowAnalysisWithAdditionalFinalConsonant);
 			Double score = 10000*morphemeFreq + wordFreq;
 			scoredEx = new ScoredExample(word, score, wordFreq);
+			logger.debug("    generateScoredExample --- finished");
 		} catch (LinguisticDataException | TimeoutException | MorphInukException e) {
 			throw new MorphemeSearcherException(e);
 		}
@@ -91,21 +200,26 @@ public class MorphemeSearcher {
 	}
 
 	private Long wordFreqInCorpus(String word, boolean allowAnalysisWithAdditionalFinalConsonant) throws MorphemeSearcherException {
-		MorphologicalAnalyzer analyzer;
-		long nbOccurrencesOfWord = 0;
-		try {
-			analyzer = new MorphologicalAnalyzer();
-			Decomposition[] decompositions = analyzer.decomposeWord(word,allowAnalysisWithAdditionalFinalConsonant);
-			for (int idec=0; idec<decompositions.length; idec++) {
-				long nwords = numberOfWordsInCorpusWithSuiteOfMorphemes(decompositions[idec].toString());
-				nbOccurrencesOfWord += nwords;
-			}
-			// TODO: additionner la fréq du noeud terminal pour chaque décomposition = fréquence du mot
-		} catch (LinguisticDataException | TimeoutException | MorphInukException e) {
-			throw new MorphemeSearcherException(e);
-		}
+		long nbOccurrencesOfWord = this.corpus.getNbOccurrencesOfWord(word);
 		return nbOccurrencesOfWord;
 	}
+
+//	private Long wordFreqInCorpus(String word, boolean allowAnalysisWithAdditionalFinalConsonant) throws MorphemeSearcherException {
+//		MorphologicalAnalyzer analyzer;
+//		long nbOccurrencesOfWord = 0;
+//		try {
+//			analyzer = new MorphologicalAnalyzer();
+//			Decomposition[] decompositions = analyzer.decomposeWord(word,allowAnalysisWithAdditionalFinalConsonant);
+//			for (int idec=0; idec<decompositions.length; idec++) {
+//				long nwords = numberOfWordsInCorpusWithSuiteOfMorphemes(decompositions[idec].toString());
+//				nbOccurrencesOfWord += nwords;
+//			}
+//			// TODO: additionner la fréq du noeud terminal pour chaque décomposition = fréquence du mot
+//		} catch (LinguisticDataException | TimeoutException | MorphInukException e) {
+//			throw new MorphemeSearcherException(e);
+//		}
+//		return nbOccurrencesOfWord;
+//	}
 
 	public long numberOfWordsInCorpusWithSuiteOfMorphemes(String decompositionExpression) {
     	DecompositionExpression expr = new DecompositionExpression(decompositionExpression);
@@ -146,6 +260,17 @@ public class MorphemeSearcher {
 			this.words = _words;
 		}
 	}
+	
+	public static class WordFreq {
+		public String word;
+		public Long freq;
+		public Double score = 0.0;
+		
+		public WordFreq(String _word, Long _freq) {
+			this.word = _word;
+			this.freq = _freq;
+		}
+	}
 
 	public class WordFreqComparator implements Comparator<ScoredExample> {
 	    @Override
@@ -157,6 +282,18 @@ public class MorphemeSearcher {
 	    	else 
 	    		return a.word.compareToIgnoreCase(b.word);
 	    }
+	}
+	
+	public class Bin {
+		public String rootId;
+		public HashMap<String,List<WordWithMorpheme>> morphid2wordsFreqs;
+		
+		public Bin(String _rootid, HashMap<String,List<WordWithMorpheme>> _morphid2wordsFreqs) {
+			this.rootId = _rootid;
+			this.morphid2wordsFreqs = _morphid2wordsFreqs;
+		}
+		
+		
 	}
 
 }
