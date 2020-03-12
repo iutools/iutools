@@ -3,6 +3,8 @@ package ca.pirurvik.iutools;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -36,6 +38,41 @@ public class CompiledCorpusRegistry {
 		}
 	}
 	
+	
+	@JsonIgnore
+	public static CompiledCorpus getCorpusWithName() throws CompiledCorpusRegistryException {
+		return getCorpusWithName(defaultCorpusName);
+	}
+
+	@JsonIgnore
+	public static CompiledCorpus getCorpusWithName(String corpusName) throws CompiledCorpusRegistryException {
+		if (corpusName==null) corpusName = defaultCorpusName;
+		CompiledCorpus corpus = null;
+			String corpusesPath;
+			try {
+				corpusesPath = IUConfig.getIUDataPath("data/compiled-corpuses");
+			} catch (ConfigException e) {
+				throw new CompiledCorpusRegistryException(e);
+			}
+			File directory = new File(corpusesPath);
+			File[] files = directory.listFiles();
+			String corpusFile = null;
+			for (int ifile=0; ifile<files.length; ifile++) {
+        		String fileName = files[ifile].getName();
+        		Pattern pattern = Pattern.compile("compiled[_\\-]corpus-"+corpusName);
+        		Matcher matcher = pattern.matcher(fileName);
+        		if (matcher.find()) {
+        			corpusFile = fileName;
+        			break;
+        		}
+			}
+			if (corpusFile != null) {
+				String jsonFilePath = corpusesPath+"/"+corpusFile;
+				corpus = makeCorpus(jsonFilePath);
+			}
+		
+		return corpus;
+	}
 	
 	@JsonIgnore
 	public static CompiledCorpus getCorpus() throws CompiledCorpusRegistryException {

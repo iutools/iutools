@@ -13,6 +13,7 @@ import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
@@ -29,7 +30,9 @@ import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.testing.AssertHelpers;
+import ca.nrc.testing.AssertObject;
 import ca.pirurvik.iutools.CompiledCorpus;
+import ca.pirurvik.iutools.CompiledCorpus.WordWithMorpheme;
 import junit.framework.TestCase;
 
 /**
@@ -711,6 +714,22 @@ public class CompiledCorpusTest extends TestCase
 		assertTrue("The word "+word+" is in the corpus with unsuccessful analysis; result should be false",result.booleanValue()==false);
 	}
 	
+	@Test
+	public void test__getWordsContainingMorpheme() throws Exception {
+		String[] stringsOfWords = new String[] {
+				"nunavut inuit takujuq sinilauqtuq uvlimik takulauqtunga"
+				};
+		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
+        CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
+        compiledCorpus.setVerbose(false);
+        compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
+		
+        List<WordWithMorpheme> words = compiledCorpus.getWordsContainingMorpheme("lauq");
+        Assert.assertEquals("", 2, words.size());
+        AssertObject.assertDeepEquals("", new WordWithMorpheme("sinilauqtuq","lauq/1vv","{sinik/1v}{lauq/1vv}{juq/1vn}",(long)1), words.get(0));
+        AssertObject.assertDeepEquals("", new WordWithMorpheme("takulauqtunga","lauq/1vv","{taku/1v}{lauq/1vv}{junga/tv-ger-1s}",(long)1), words.get(1));
+	}
+	
 
 	private void assertContains(CompiledCorpus compiledCorpus,
 			String[] segs, long expFreq, String[] expLongestTerminal) {
@@ -730,17 +749,27 @@ public class CompiledCorpusTest extends TestCase
 	}
 
 	public static File compileToFile(String[] words) throws Exception {
+		return compileToFile(words,null);
+	}
+	
+	
+	public static File compileToFile(String[] words, String fileId) throws Exception {
 		CompiledCorpus tempCorp = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
 		tempCorp.setVerbose(false);
 		InputStream iStream = IOUtils.toInputStream(String.join(" ", words), "utf-8");
 		InputStreamReader iSReader = new InputStreamReader(iStream);
 		BufferedReader br = new BufferedReader(iSReader);
 		tempCorp.processDocumentContents(br, "dummyFilePath");
-		
-		File tempFile = File.createTempFile("compiled_corpus", ".json");
+		String fileName = "compiled_corpus";
+		if (fileId != null)
+			fileName += "-"+fileId;
+		File tempFile = File.createTempFile(fileName, ".json");
 		tempCorp.saveCompilerInJSONFile(tempFile.toString());
 		return tempFile;
 	}
+	
+		
+	
 	
 	
 	
