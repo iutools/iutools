@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
@@ -75,10 +76,35 @@ public class SpellChecker {
 		};
 	}
 	
+	public SpellChecker() throws StringSegmenterException, SpellCheckerException {
+		init_SpellChecker(CompiledCorpusRegistry.defaultCorpusName);
+	}
 	
-	public SpellChecker() throws StringSegmenterException {
-		editDistanceCalculator = EditDistanceCalculatorFactory.getEditDistanceCalculator();
-		segmenter = new StringSegmenter_IUMorpheme();
+	public SpellChecker(String corpusName) throws StringSegmenterException, SpellCheckerException {
+		init_SpellChecker(corpusName);
+	}
+
+	public SpellChecker(File corpusFile) throws StringSegmenterException, SpellCheckerException {
+		init_SpellChecker(corpusFile);
+	}
+
+	private void init_SpellChecker(Object _corpus) throws SpellCheckerException  {
+		try {
+			editDistanceCalculator = EditDistanceCalculatorFactory.getEditDistanceCalculator();
+			segmenter = new StringSegmenter_IUMorpheme();
+			if (_corpus != null) {
+				if (_corpus instanceof String) {
+					String corpusName = (String)_corpus;
+					if (!corpusName.equals(CompiledCorpusRegistry.emptyCorpusName) ) {
+						setDictionaryFromCorpus((String)_corpus);						
+					}
+				} else if (_corpus instanceof File) {
+					setDictionaryFromCorpus((File)_corpus);
+				}
+			}			
+		} catch (StringSegmenterException | FileNotFoundException | SpellCheckerException | ConfigException e) {
+			throw new SpellCheckerException(e);
+		}
 	}
 	
 	
@@ -150,15 +176,20 @@ public class SpellChecker {
 	}
 	
 	public void addCorrectWord(String word) {
-		if (word.startsWith("tamain")) {
-			System.out.println("** SpellChecker.addCorrectWord: found word that starts with 'tamain': "+word);
-		}
+		
 		String[] numericTermParts = null;
 		boolean wordIsNumericTerm = (numericTermParts=wordIsNumberWithSuffix(word)) != null;
-		if (wordIsNumericTerm && allNormalizedNumericTerms.indexOf(","+"0000"+numericTermParts[1]+",") < 0)
-			allNormalizedNumericTerms += "0000"+numericTermParts[1]+",,";
-		else
-			allWords += word+",,";
+		if (wordIsNumericTerm && allNormalizedNumericTerms.indexOf(","+"0000"+numericTermParts[1]+",") < 0) {
+			if (allNormalizedNumericTerms == null || allNormalizedNumericTerms.isEmpty()) {
+				allNormalizedNumericTerms = "";
+			}
+			allNormalizedNumericTerms += ",0000"+numericTermParts[1]+",";
+		} else {
+			if (allWords == null || allWords.isEmpty()) {
+				allWords = "";
+			}
+			allWords += ","+word+",";
+		}
 		__updateSequenceIDFForWord(word,wordIsNumericTerm);
 	}
 	
@@ -236,8 +267,10 @@ public class SpellChecker {
 	public SpellingCorrection correctWord(String word, int maxCorrections) throws SpellCheckerException {
 		Logger logger = Logger.getLogger("SpellChecker.correctWord");
 		
-//		System.out.println("** SpellChecker.correctWord: word="+word);
-
+		SpellTracer.trace("SpellChecker.correctWord", 
+				"Invoked on word="+word, 
+				word, null);
+		
 		boolean wordIsSyllabic = Syllabics.allInuktitut(word);
 		
 		String wordInLatin = word;
@@ -249,6 +282,10 @@ public class SpellChecker {
 		corr.wasMispelled = isMispelled(wordInLatin);		
 		logger.debug("wasMispelled= "+corr.wasMispelled);
 
+		SpellTracer.trace("SpellChecker.correctWord", 
+				"corr.wasMispelled="+corr.wasMispelled, 
+				word, null);
+		
 		if (corr.wasMispelled) {
 			// set ngramStats and suite of words for candidates according to type of word (normal word or numeric expression)
 			String[] numericTermParts = wordIsNumberWithSuffix(wordInLatin);
@@ -257,10 +294,30 @@ public class SpellChecker {
 			ngramStatsForCandidates = getNgramStatsToBeUsedForCandidates(wordIsNumericTerm);
 			Set<String> candidates = firstPassCandidates_TFIDF(wordInLatin);
 			
+			SpellTracer.containsCorrection(
+					"SpellChecker.correctWord", 
+					"List of string candidates", 
+					word, "tamainni", candidates);
+			
+			SpellTracer.trace("SpellChecker.correctWord", 
+					"first pass candidates: "+StringUtils.join(candidates.iterator(), ", "), 
+					word, null);
+			
 			if (logger.isDebugEnabled()) logger.debug("candidates= "+PrettyPrinter.print(candidates));
 			
-			List<ScoredSpelling> scoredSpellings = computeCandidateSimilarities(wordInLatin, candidates);			
+			List<ScoredSpelling> scoredSpellings = computeCandidateSimilarities(wordInLatin, candidates);
+
+			SpellTracer.containsCorrection(
+					"SpellChecker.correctWord", 
+					"Unsorted List of scored spellings", 
+					word, "tamainni", scoredSpellings);
+			
 			scoredSpellings = sortCandidatesBySimilarity(scoredSpellings);
+
+			
+			SpellTracer.trace("SpellChecker.correctWord", 
+					"SORTED scored candidates: "+StringUtils.join(scoredSpellings.iterator(), ", "), 
+					word, null);
 			
 			if (wordIsNumericTerm) {
 				for (int ic=0; ic<scoredSpellings.size(); ic++) {
@@ -420,12 +477,22 @@ public class SpellChecker {
 			String candidate = iterator.next();
 			double similarity = computeCandidateSimilarity(badWord,candidate);
 			scoredCandidates.add(new ScoredSpelling(candidate, new Double(similarity)));
+			if (candidate.equals("niggiani")) {
+				System.out.println("** computeCandidateSimilarities: similarity score for 'niggiani' = "+similarity);
+			}
 		}
+		
+		
 		
 		return scoredCandidates;
 	}
 
 	private double computeCandidateSimilarity(String badWord, String candidate) throws SpellCheckerException {
+		
+		SpellTracer.trace("SpellChecker.computeCandidateSimilarity", 
+				"Invoked", 
+				badWord, candidate);
+		
 		double distance;
 		try {
 			distance = editDistanceCalculator.distance(candidate,badWord);
@@ -502,16 +569,29 @@ public class SpellChecker {
 		Set<String> candidates = new HashSet<String>();
 		for (int i=0; i<idf.length; i++) {
 			Set<String> candidatesWithNgram = wordsContainingSequ(idf[i].getFirst());
+			SpellTracer.trace("SpellChecker.firstPassCandidates_TFIDF", 
+					"Adding candidates that contain ngram="+idf[i].getFirst()+
+					", namely: "+StringUtils.join(candidatesWithNgram.iterator(), ","),
+					badWord, "tamainni");
 			candidates.addAll(candidatesWithNgram);	
 			if (candidates.size() > MAX_CANDIDATES)
 				break;
 		}
+		
+		SpellTracer.containsCorrection(
+				"SpellChecker.firstPassCandidates_TFIDF", 
+				"Unsorted candidates", 
+				badWord, "tamainni", candidates);
+		
 		
 		// 4. compute scores for each word and order words highest score first
 		List<Pair<String,Double>> scoreValues = new ArrayList<Pair<String,Double>>();
 		Iterator<String> it = candidates.iterator();
 		while (it.hasNext()) {
 			String candidate = it.next();
+			if (candidate.equals("niggiani")) {
+				System.out.println("** firstPassCandidates_TFIDF: scoring tfidf of 'niggiani'");
+			}
 			Set<String> ngramsOfCandidate = ngramCompiler.compile(candidate);
 			Set<String> all = new HashSet<String>();
 			all.addAll(ngramsOfBadWord);
@@ -524,6 +604,9 @@ public class SpellChecker {
 					double score = idfHash.get(el);
 					totalScore += score;
 				}
+			}
+			if (candidate.equals("niggiani")) {
+				System.out.println("** firstPassCandidates_TFIDF: tfidf score for 'niggiani' = "+totalScore);
 			}
 			scoreValues.add(new Pair<String,Double>(candidate,totalScore));
 		}
@@ -583,6 +666,12 @@ public class SpellChecker {
 		}
 		else
 			p = Pattern.compile(",([^,]*"+seq+"[^,]*),");
+		
+		if (seq.startsWith("tamain")) {
+			System.out.println("** wordsContainingSequ: looking for p="+p+
+					" in allWordsForCandidates="+allWordsForCandidates);
+		}
+		
 		Matcher m = p.matcher(allWordsForCandidates); //p.matcher(allWords)
 		Set<String> wordsWithSeq = new HashSet<String>();
 		while (m.find())

@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,10 +20,11 @@ import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.string.StringUtils;
+import ca.pirurvik.iutools.CompiledCorpusRegistry;
 
 public class SpellCheckerAccuracyTest {
 	
-	SpellChecker checker = null;
+	SpellChecker checkerLargeDict = null;
 	
 	private static DecimalFormat df2 = new DecimalFormat("#.##");
 	
@@ -62,33 +64,53 @@ public class SpellCheckerAccuracyTest {
 		new SpellCheckerExample("ugaalautaa", 5, "uqaalautaa"),
 		new SpellCheckerExample("tavani", 5, "tavvani"),
 		new SpellCheckerExample("iksivauitaaq", 5, "iksivautaaq", "iksivautaak", "issivautaaq", "issivautaak", "itsivautaaq", "itsivautaak"),
+		
 		new SpellCheckerExample("tamaini", 5, "tamainni"),
+		
 		new SpellCheckerExample("nniaqtulirijikkunnut", 5, "aanniaqtulirijikkunnut"),
 		new SpellCheckerExample("immaqaqai", 5, "immaqaaqai"),
 		new SpellCheckerExample("taimak", 5, "taimaak")
 	};
 	
-	@Before
-	public void setUp() throws FileNotFoundException, StringSegmenterException, SpellCheckerException, ConfigException {
-		checker = new SpellChecker();
+	private SpellChecker getLargeDictChecker() throws StringSegmenterException, SpellCheckerException {
+		if (checkerLargeDict == null) {
+			checkerLargeDict = new SpellChecker();
+		}
+		return checkerLargeDict;
+	}
+
+	@Test
+	public void test__EvaluateSugestions__SmallCustomDictionary() throws Exception {
+		// Set this to a specific example if you only want 
+		// to evaluate that one.
+		//
+//		String focusOnExample = null;
+		String focusOnExample = "tamaini";
+		
+		SpellChecker checker = new SpellChecker(CompiledCorpusRegistry.emptyCorpusName);
+		evaluateSuggestions(checker, focusOnExample);
 	}
 	
-	
+
 	@Test
-	public void test__EvaluateSugestions_AssumingAllCorrectionsAreInDictionary() throws Exception {
+	public void test__EvaluateSugestions__LargeDictionary() throws Exception {
+		// Set this to a specific example if you only want 
+		// to evaluate that one.
+		//
+//		String focusOnExample = null;
+		String focusOnExample = "tamaini";
+		
+		evaluateSuggestions(getLargeDictChecker(), focusOnExample);
+	}
+	
+	public void evaluateSuggestions(SpellChecker spellChecker, String focusOnExample) throws Exception {
 		//
 		// For this test, "pretend" that all the words from the 
 		// examples were seen in the corpus used by the SpellChecker.
 		// This is because so
-		assumeCorrectionsAreInCheckerDict(examplesForSuggestions);
-		SpellCheckerEvaluator evaluator = new SpellCheckerEvaluator(checker);
-		
-		
-		// Set this to a specific example if you only want 
-		// to evaluate that one.
-		String focusOnExample = null;
-//		String focusOnExample = "tanna";
-		
+		assumeCorrectionsAreInCheckerDict(examplesForSuggestions, spellChecker);
+		SpellCheckerEvaluator evaluator = new SpellCheckerEvaluator(spellChecker);
+				
 		for (SpellCheckerExample exampleData: examplesForSuggestions) {
 			if (focusOnExample == null || focusOnExample.equals(exampleData.wordToCheck)) {
 				evaluator.onNewExample(exampleData);				
@@ -98,10 +120,17 @@ public class SpellCheckerAccuracyTest {
 		double expAverageRank = 1.17;
 		double avgRankTolerance = 0.05;
 		int N = 5;
-		double expPercentFoundInTopN = 0.87;
+		
+		// Used to be able to get > 0.87. Why has this
+		// DECREASED eventhough I "improved" the suggestions 
+		// scoring algorithm?
+//		double expPercentFoundInTopN = 0.87;
+		double expPercentFoundInTopN = 0.6;
 		double tolerance = 0.01;		
 		assertEvaluationAsExpected(evaluator, N, expPercentFoundInTopN, tolerance,
 				expAverageRank, avgRankTolerance);
+		
+		Assert.fail("All current test expectations have been met, but those expectations are too low. See if we can improve the algorithm so it can meet higher expectations");
 	}
 
 
@@ -241,10 +270,10 @@ public class SpellCheckerAccuracyTest {
 	 * @author desilets
 	 *
 	 */
-	private void assumeCorrectionsAreInCheckerDict(SpellCheckerExample[] examples) {
+	private void assumeCorrectionsAreInCheckerDict(SpellCheckerExample[] examples, SpellChecker spellChecker) {
 		for (SpellCheckerExample anExample: examples) {
 			for (String aCorrection: anExample.acceptableCorrections) {
-				checker.addCorrectWord(aCorrection);				
+				spellChecker.addCorrectWord(aCorrection);				
 			}
 		}
 	}

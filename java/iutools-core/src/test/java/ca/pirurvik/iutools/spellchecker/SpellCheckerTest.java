@@ -10,9 +10,11 @@ import java.util.Set;
 import org.junit.Test;
 
 import ca.nrc.datastructure.Pair;
+import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.testing.AssertHelpers;
 import ca.nrc.testing.AssertObject;
+import ca.pirurvik.iutools.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.spellchecker.SpellChecker;
 import ca.pirurvik.iutools.spellchecker.SpellCheckerException;
 import ca.pirurvik.iutools.spellchecker.SpellingCorrection;
@@ -20,25 +22,39 @@ import ca.pirurvik.iutools.spellchecker.SpellingCorrection;
 import org.junit.*;
 
 public class SpellCheckerTest {
-	
-	private SpellChecker checker = null;
+		
 	private SpellChecker checkerSyll = null;
 	
-	@Before
-	public void setUp() throws Exception {
-		
-		String[] correctWordsLatin = new String[] {
-				"inuktut", "inukttut", "inuk", "inukutt", "inukshuk", 
-				"nunavut"};
-		if (checker == null) {
-			checker = new SpellChecker();
-			checker.setVerbose(false);
-			for (String aWord: correctWordsLatin) {
-				checker.addCorrectWord(aWord);
-			}
-		}
-	}
+	private static final String[] correctWordsLatin = new String[] {
+		"inuktut", "inukttut", "inuk", "inukutt", "inukshuk", 
+		"nunavut"
+	};
 
+
+	private SpellChecker makeCheckerLargeDict() throws StringSegmenterException, SpellCheckerException {
+		SpellChecker checker = new SpellChecker();
+		checker.setVerbose(false);
+		for (String aWord: correctWordsLatin) {
+			checker.addCorrectWord(aWord);
+		}
+		return checker;
+	}
+	
+	private SpellChecker makeCheckerSmallCustomDict() throws StringSegmenterException, SpellCheckerException {
+		SpellChecker checker = new SpellChecker(CompiledCorpusRegistry.emptyCorpusName);
+		checker.setVerbose(false);
+		for (String aWord: correctWordsLatin) {
+			checker.addCorrectWord(aWord);
+		}
+		return checker;
+	}
+	
+	private SpellChecker makeCheckerEmptyDict() throws StringSegmenterException, SpellCheckerException {
+		SpellChecker checker = new SpellChecker(CompiledCorpusRegistry.emptyCorpusName);
+		checker.setVerbose(false);
+		return checker;
+	}
+	
 	@Test(expected=SpellCheckerException.class)
 	public void test__SpellChecker__Synopsis() throws Exception {
 		//
@@ -107,7 +123,7 @@ public class SpellCheckerTest {
 	
 	@Test
 	public void test__addCorrectWord__HappyPath() throws Exception {
-		SpellChecker checker = new SpellChecker();
+		SpellChecker checker = makeCheckerEmptyDict();
 		checker.setVerbose(false);
 		
 		Assert.assertFalse(containsWord("inuktut", checker));
@@ -125,49 +141,12 @@ public class SpellCheckerTest {
 		
 	}
 	
-//	@Test - test removed; ngramStat() not used anymore
-//	public void test__idf__HappyPath() {
-//		Assert.assertEquals("IDF was wrong for sequence that starts words ('inu')", new Long(5), checker.ngramStat("inu"));
-//		Assert.assertEquals("IDF was wrong for sequence at the middle of words ('ks')", new Long(1), checker.ngramStat("ks"));
-//		Assert.assertEquals("IDF was wrong for sequence at the end of words ('ktut')", new Long(1), checker.ngramStat("ktut"));
-//		Assert.assertEquals("IDF was wrong for sequence ('uk')", new Long(5), checker.ngramStat("uk"));
-//		Assert.assertEquals("IDF was wrong for sequence with > 5 chars", new Long(0), checker.ngramStat("nunavu"));
-//		Assert.assertEquals("IDF was wrong for sequence with =5 chars", new Long(1), checker.ngramStat("unavu"));
-//		Assert.assertEquals("IDF was wrong for non-existant sequence",new Long(0), checker.ngramStat("blah"));
-//	}
-
-//	@Test - test removed; rarestSequencesOf() not used anymore
-//	public void test__rarestSequencesOf__HappyPath() throws Exception {
-//		List<Pair<String,Long>> rarest = checker.rarestSequencesOf("inukkshuk");
-//		List<Pair<String,Long>> expected = new ArrayList<Pair<String,Long>>();
-//		
-//		expected.add(new Pair<String,Long>("s",new Long(1)));
-//		expected.add(new Pair<String,Long>("h",new Long(1)));
-//		expected.add(new Pair<String,Long>("ks",new Long(1)));
-//		expected.add(new Pair<String,Long>("sh",new Long(1)));
-//		expected.add(new Pair<String,Long>("hu",new Long(1)));
-//		expected.add(new Pair<String,Long>("ksh",new Long(1)));
-//		expected.add(new Pair<String,Long>("shu",new Long(1)));
-//		expected.add(new Pair<String,Long>("huk",new Long(1)));
-//		expected.add(new Pair<String,Long>("kshu",new Long(1)));
-//		expected.add(new Pair<String,Long>("shuk",new Long(1)));
-//		expected.add(new Pair<String,Long>("kshuk",new Long(1)));
-//		expected.add(new Pair<String,Long>("i",new Long(5)));
-//		expected.add(new Pair<String,Long>("k",new Long(5)));
-//		expected.add(new Pair<String,Long>("in",new Long(5)));
-//		expected.add(new Pair<String,Long>("uk",new Long(5)));
-//		expected.add(new Pair<String,Long>("inu",new Long(5)));
-//		expected.add(new Pair<String,Long>("nuk",new Long(5)));
-//		expected.add(new Pair<String,Long>("inuk",new Long(5)));
-//		expected.add(new Pair<String,Long>("n",new Long(6)));
-//		expected.add(new Pair<String,Long>("u",new Long(6)));
-//		expected.add(new Pair<String,Long>("nu",new Long(6)));
-//		AssertHelpers.assertDeepEquals("The rarest sequence was ", expected, rarest);
-//	}
-	
 	@Test
-	public void test__wordsContainingSequ() {
+	public void test__wordsContainingSequ() throws Exception {
 		String seq = "nuk";
+		
+		SpellChecker checker = makeCheckerLargeDict();
+		
 		checker.allWordsForCandidates = checker.allWords;
 		Set<String> wordsWithSeq = checker.wordsContainingSequ(seq);
 		String[] expected = new String[] {"inukshuk","inuk","inuktut"};
@@ -236,6 +215,8 @@ public class SpellCheckerTest {
 	
 	@Test
 	public void test__firstPassCandidates_TFIDF() throws Exception {
+		SpellChecker checker = makeCheckerSmallCustomDict();
+		
 		String badWord = "inukkshuk";
 		checker.allWordsForCandidates = checker.allWords;
 		checker.ngramStatsForCandidates = checker.ngramStats;
@@ -248,12 +229,14 @@ public class SpellCheckerTest {
 		//   they were analyzed by the morphological segmenter.
 		//     - 
 		String[] expected = new String[] {"inuk","inukshuk","inukttut","inuktut","inukutt"};		
-		AssertHelpers.assertDeepEquals("The list of candidate corrections for word "+badWord+" was not as expected", 
+		AssertObject.assertDeepEquals("The list of candidate corrections for word "+badWord+" was not as expected", 
 				expected, candidates);
 	}
 	
 	@Test
 	public void test__correctWord__roman__MispelledInput() throws Exception {
+		SpellChecker checker = makeCheckerSmallCustomDict();
+		
 		String word = "inukkshuk";
 		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
 		assertCorrectionOK(gotCorrection, word, false, 
@@ -263,6 +246,8 @@ public class SpellCheckerTest {
 
 	@Test
 	public void test__correctWord__roman__CorrectlySpellendInput() throws Exception {
+		SpellChecker checker = makeCheckerLargeDict();
+
 		String word = "inuksuk";
 		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
 		assertCorrectionOK(gotCorrection, word, true);
@@ -271,7 +256,7 @@ public class SpellCheckerTest {
 	@Test
 	public void test__correctWord__syllabic__MispelledInput() throws Exception {
 		String[] correctWordsLatin = new String[] {"inuktut", "nunavummi", "inuk", "inuksut", "nunavuumi", "nunavut"};
-		SpellChecker checker = new SpellChecker();
+		SpellChecker checker = makeCheckerSmallCustomDict();
 		checker.setVerbose(false);
 		for (String aWord: correctWordsLatin) checker.addCorrectWord(aWord);
 		String word = "ᓄᓇᕗᖕᒥ";
@@ -294,7 +279,8 @@ public class SpellCheckerTest {
 				"inuktut", "nunavummi", "inuk", "inuksut", "nunavuumi", "nunavut",
 				"1988-mut", "$100-mik", "100-nginnik", "100-ngujumik"
 				};
-		SpellChecker checker = new SpellChecker();
+//		SpellChecker checker = new SpellChecker();
+		SpellChecker checker = makeCheckerSmallCustomDict();
 		checker.setVerbose(false);
 		for (String aWord: correctWordsLatin) checker.addCorrectWord(aWord);
 		String word = "1987-muti";
@@ -305,6 +291,8 @@ public class SpellCheckerTest {
 
 	@Test
 	public void test__correctWord__ninavut() throws Exception {
+		SpellChecker checker = makeCheckerSmallCustomDict();
+		
 		String word = "ninavut";
 		checker.setVerbose(false);
 		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
@@ -315,6 +303,10 @@ public class SpellCheckerTest {
 	@Test 
 	public void test__correctText__roman() throws Exception  {
 		String text = "inuktut ninavut inuit inuktut";
+		
+//		SpellChecker checker = makeCheckerLargeDict();
+		SpellChecker checker = makeCheckerSmallCustomDict();
+		
 		List<SpellingCorrection> gotCorrections = checker.correctText(text);
 		
 		// Note we skip every other "correction" because they are just blank spaces
@@ -349,6 +341,9 @@ public class SpellCheckerTest {
 
 	@Test 
 	public void test__correctText__syllabic() throws Exception  {
+//		SpellChecker checker = makeCheckerLargeDict();		
+		SpellChecker checker = makeCheckerSmallCustomDict();		
+		
 		String text = "ᐃᓄᑦᒧᑦ ᑕᑯᔪᖅ ᐃᒡᓗᑦᒥᒃ ᐊᕐᕌᒍᒥ";
 		List<SpellingCorrection> gotCorrections = checker.correctText(text);
 		
@@ -356,7 +351,7 @@ public class SpellCheckerTest {
 		int wordNum = 0;
 		int ii = 2*wordNum;
 		SpellingCorrection wordCorr = gotCorrections.get(ii);
-		assertCorrectionOK("Correction for word#"+wordNum+"="+wordCorr.orig+" was not as expected",
+		assertCorrectionOK("Correction for word #"+wordNum+"="+wordCorr.orig+" was not as expected",
 				wordCorr, "ᐃᓄᑦᒧᑦ", false, 
 				// Note: The correct spelling is not in this list of corrections, but that's OK (kinda). 
 				//   This test mostly aims at testing the mechanics of SpellText.
@@ -364,21 +359,21 @@ public class SpellCheckerTest {
 				new String[] {
 						  "ᐃᓄᒃᑐᑦ",
 						  "ᐃᓄᒃᑦᑐᑦ",
-						  "ᐃᓄᒃ",
 						  "ᐃᓄᑯᑦᑦ",
-						  "ᐃᓄᒃᔅᓱᒃ"
+						  "ᐃᓄᒃ",
+						  "ᐃᓄᒃᔅᓱᒃ"				
 				});
 		
 		wordNum = 1;
 		ii = 2*wordNum;
 		wordCorr = gotCorrections.get(ii);
-		assertCorrectionOK("Correction for word#"+wordNum+"="+wordCorr.orig+" was not as expected",
+		assertCorrectionOK("Correction for word #"+wordNum+"="+wordCorr.orig+" was not as expected",
 				wordCorr, "ᑕᑯᔪᖅ", true);
 
 		wordNum = 2;
 		ii = 2*wordNum;
 		wordCorr = gotCorrections.get(ii);
-		assertCorrectionOK("Correction for word#"+wordNum+"="+wordCorr.orig+" was not as expected",
+		assertCorrectionOK("Correction for word #"+wordNum+"="+wordCorr.orig+" was not as expected",
 				wordCorr, "ᐃᒡᓗᑦᒥᒃ", false, 
 				// Note: The correct spelling is not in this list of corrections, but that's OK (kinda). 
 				//   This test mostly aims at testing the mechanics of SpellText.
@@ -388,13 +383,14 @@ public class SpellCheckerTest {
 		wordNum = 3;
 		ii = 2*wordNum;
 		wordCorr = gotCorrections.get(ii);
-		assertCorrectionOK("Correction for word#"+wordNum+"="+wordCorr.orig+" was not as expected",
+		assertCorrectionOK("Correction for word #"+wordNum+"="+wordCorr.orig+" was not as expected",
 				wordCorr, "ᐊᕐᕌᒍᒥ", true);
 	}	
 
 
 	@Test
-	public void test__correctText_ampersand() throws SpellCheckerException {
+	public void test__correctText_ampersand() throws Exception {
+		SpellChecker checker = makeCheckerLargeDict();
 		String text = "inuktut sinik&uni";
 		List<SpellingCorrection> gotCorrections = checker.correctText(text);
 		Assert.assertEquals("The number of corrections is not as expected.",3,gotCorrections.size());
@@ -403,37 +399,52 @@ public class SpellCheckerTest {
 	@Test
 	public void test__isMispelled__CorreclySpelledWordFromCompiledCorpus() throws Exception  {
 		String word = "inuktitut";
-		Assert.assertFalse("Word "+word+" should have been deemed correctly spelled", checker.isMispelled(word));
+		Assert.assertFalse("Word "+word+" should have been deemed correctly spelled", 
+				makeCheckerLargeDict().isMispelled(word));
 	}
 
 	@Test
 	public void test__isMispelled__CorreclySpelledWordNOTFromCompiledCorpus() throws Exception  {
+		SpellChecker checker = makeCheckerLargeDict();
+		
 		String word = "inuktut";
-		Assert.assertFalse("Word "+word+" should have been deemed correctly spelled", checker.isMispelled(word));
+		Assert.assertFalse("Word "+word+" should have been deemed correctly spelled", 
+				checker.isMispelled(word));
 	}
 
 	@Test
 	public void test__isMispelled__CorreclySpelledWordNumber() throws Exception  {
 		String word = "2018";
-		Assert.assertFalse("Word "+word+" should have been deemed correctly spelled", checker.isMispelled(word));
+		Assert.assertFalse("Word "+word+" should have been deemed correctly spelled", 
+				makeCheckerLargeDict().isMispelled(word));
 	}
 
 	@Test
 	public void test__isMispelled__MispelledWordFromCompiledCorpus() throws Exception  {
+		SpellChecker checker = makeCheckerLargeDict();		
+		
 		String word = "inukutt";
-		Assert.assertTrue("Word "+word+" should have been deemed mis-spelled", checker.isMispelled(word));
+		Assert.assertTrue("Word "+word+" should have been deemed mis-spelled", 
+				checker.isMispelled(word));
 	}
 
 	@Test
 	public void test__isMispelled__MispelledWordNOTFromCompiledCorpus() throws Exception  {
+		SpellChecker checker = makeCheckerLargeDict();
+		
 		String word = "inuktuttt";
-		Assert.assertTrue("Word "+word+" should have been deemed mis-spelled", checker.isMispelled(word));
+		Assert.assertTrue("Word "+word+" should have been deemed mis-spelled", 
+				checker.isMispelled(word));
 	}
 	
 	@Test
 	public void test__isMispelled__WordIsSingleInuktitutCharacter() throws Exception  {
+//		SpellChecker checker = makeCheckerLargeDict();
+		SpellChecker checker = makeCheckerSmallCustomDict();
+		
 		String word = "ti";
-		Assert.assertFalse("Word "+word+" should have been deemed correctly spelled", checker.isMispelled(word));
+		Assert.assertFalse("Word "+word+" should have been deemed correctly spelled", 
+				checker.isMispelled(word));
 		word = "t";
 		Assert.assertFalse("Word "+word+" should have been deemed correctly spelled", checker.isMispelled(word));
 		word = "o";
@@ -442,6 +453,8 @@ public class SpellCheckerTest {
 	
 	@Test
 	public void test__isMispelled__WordIsNumericTermWithValidEnding() throws Exception  {
+		SpellChecker checker = makeCheckerLargeDict();
+		
 		String word = "1988-mut";
 		Assert.assertFalse("Word "+word+" should have been deemed correctly spelled", checker.isMispelled(word));
 		word = "1988-muti";
@@ -450,16 +463,22 @@ public class SpellCheckerTest {
 	
 	@Test
 	public void test__WordContainsMoreThanTwoConsecutiveConsonants() throws Exception  {
+		SpellChecker checker = makeCheckerLargeDict();
 		String word = "imglu";
-		Assert.assertTrue("Word "+word+" should have been acknowledged as having more than 2 consecutive consonants", checker.wordContainsMoreThanTwoConsecutiveConsonants(word));
+		Assert.assertTrue("Word "+word+" should have been acknowledged as having more than 2 consecutive consonants", 
+				checker.wordContainsMoreThanTwoConsecutiveConsonants(word));
 		word = "inglu";
-		Assert.assertFalse("Word "+word+" should have been acknowledged as not having more than 2 consecutive consonants", checker.wordContainsMoreThanTwoConsecutiveConsonants(word));
+		Assert.assertFalse("Word "+word+" should have been acknowledged as not having more than 2 consecutive consonants", 
+				checker.wordContainsMoreThanTwoConsecutiveConsonants(word));
 		word = "innglu";
-		Assert.assertTrue("Word "+word+" should have been acknowledged as having more than 2 consecutive consonants", checker.wordContainsMoreThanTwoConsecutiveConsonants(word));
+		Assert.assertTrue("Word "+word+" should have been acknowledged as having more than 2 consecutive consonants", 
+				checker.wordContainsMoreThanTwoConsecutiveConsonants(word));
 	}
 	
 	@Test
 	public void test__wordIsNumberWithSuffix() throws Exception  {
+		SpellChecker checker = makeCheckerLargeDict();
+		
 		String word = "34-mi";
 		String[] numericTermParts = checker.wordIsNumberWithSuffix(word);
 		Assert.assertTrue("Word "+word+" should have been acknowledged as a number-based word", numericTermParts != null);
@@ -492,6 +511,8 @@ public class SpellCheckerTest {
 	
 	@Test
 	public void test__assessEndingWithIMA() throws Exception  {
+		SpellChecker checker = makeCheckerLargeDict();
+		
 		String ending = "mi";
 		boolean goodEnding = checker.assessEndingWithIMA(ending);
 		Assert.assertTrue("Ending "+ending+" should have been acknowledged as valid word ending", goodEnding);
@@ -505,13 +526,23 @@ public class SpellCheckerTest {
 	
 	@Test
 	public void test__wordIsPunctuation() throws Exception  {
+		SpellChecker checker = makeCheckerLargeDict();
+		
 		String word = "-";
 		Assert.assertTrue("Word "+word+" should have been acknowledged as punctuation", checker.wordIsPunctuation(word));
 		word = "–";
 		Assert.assertTrue("Word "+word+" should have been acknowledged as punctuation", checker.wordIsPunctuation(word));
 	}
 	
-	
+	@Test
+	public void test__addWord__HappyPath() throws Exception {
+		SpellChecker checker = new SpellChecker();
+		String word = "tamainni";
+		assertWordUnknown(word, checker);
+		
+		checker.addCorrectWord(word);
+		assertWordIsKnown(word, checker);
+	}	
 	
 	/**********************************
 	 * TEST HELPERS
@@ -585,5 +616,15 @@ public class SpellCheckerTest {
 		Assert.assertEquals(mess+"\nThe input word was not as expected",expOrig, wordCorr.orig);
 		Assert.assertEquals(mess+"\nThe correctness status was not as expected", expOK, !wordCorr.wasMispelled);
 		AssertHelpers.assertDeepEquals(mess+"\nThe list of spellings was not as expected", expSpellings, wordCorr.getPossibleSpellings());
+	}
+	
+	private void assertWordIsKnown(String word, SpellChecker checker) {
+		Assert.assertTrue("Spell checker dictionary did not know about word '"+word+"'", 
+				checker.allWords.contains(","+word+","));
+	}
+
+	private void assertWordUnknown(String word, SpellChecker checker) {
+		Assert.assertFalse("Spell checker dictionary should NOT have known about word '"+word+"'", 
+				checker.allWords.contains(","+word+","));
 	}
 }

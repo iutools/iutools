@@ -9,6 +9,7 @@ import ca.nrc.datastructure.Pair;
 import ca.nrc.string.diff.DiffCosting;
 import ca.nrc.string.diff.DiffResult;
 import ca.nrc.string.diff.StringTransformation;
+import ca.pirurvik.iutools.spellchecker.SpellTracer;
 
 
 /**
@@ -23,31 +24,62 @@ import ca.nrc.string.diff.StringTransformation;
 public class IUDiffCosting extends DiffCosting {
 
 	public double cost(DiffResult diff) {
-		boolean trace = (diff.origStr().equals("sunainna") && 
-							diff.revStr().equals("tanna"));
-		if (trace) {
-			System.out.println("** cost: orig="+diff.origStr()+", rev="+diff.revStr());			
-		}
+		SpellTracer.trace("SpellChecker.computeCandidateSimilarity", 
+				"Invoked", 
+				diff.origStr(), diff.revStr());
 		
-		Double _cost = costAsLeadingCharChanges(diff);
-		if (trace) {
-			System.out.println("** cost: AFTER costAsLeadingCharChanges, _cost="+_cost);
-		}
+		Double _cost = costLeadingCharChanges(diff);
+		SpellTracer.trace("cost", 
+				"AFTER costAsLeadingCharChanges, _cost="+_cost,
+				diff.origStr(), diff.revStr());			
 		
 		for (int nn=0; nn < diff.transformations.size(); nn++) {
 			_cost += costNthTransformation(nn, diff);
 		}
 		
+		SpellTracer.trace("SpellChecker.computeCandidateSimilarity", 
+				"returning _cost="+_cost, 
+				diff.origStr(), diff.revStr());
+		
 		return _cost.doubleValue();
 	}
 
 	private Double costNthTransformation(int nn, DiffResult diff) {
+		return costNthTransformation(nn, diff, false);
+	}
+		
+	private Double costNthTransformation(int nn, DiffResult diff, 
+						boolean asLeadingCharChanges) {
+		
+		SpellTracer.trace("costNthTransformation", 
+				"Costing transf nn="+nn,
+				diff.revStr(), diff.origStr());
+		
+		Double _cost = null;
 		StringTransformation transf = diff.transformations.get(nn);
 		
-		Double _cost = costAsCharacterDoubling(nn, diff);
+		double unitCost = SMALL_COST;
+		if (asLeadingCharChanges && !wordsAreSingleMorphemes(diff)) {
+			// Changing the first few characters of a word has an 
+			// "infinite" cost, unless the word and its correction 
+			// are single morphme words
+			//
+			unitCost = INFINITE;
+		}
+				
+		// Note: If the transformation is doubling or 
+		//   dedoubling a character, then it will always 
+		//   use a small unit cost, even if it affects 
+		//   chars of the first morpheme
+		//
+		_cost = costAsCharacterDoubling(nn, diff);			
 		
 		if (_cost == null) {
-			_cost = 1.0 * transf.numAffectedTokens();
+			// No "special" costing was applied. Use
+			// a "generic" costing based on number of characters 
+			// affected.
+			//
+			_cost = unitCost * transf.numAffectedTokens();
 		}
 		
 		return _cost;
@@ -55,30 +87,35 @@ public class IUDiffCosting extends DiffCosting {
 	
 	private Double costAsCharacterDoubling(int transfNum, DiffResult diff) {
 	
-	Double cost = null;
-	
-	StringTransformation transf = diff.transformations.get(transfNum);
-	if (transf.origTokens.length == 1 && 
-			transf.revisedTokens.length == 1) {
-		// A character was changed to a different want.
-		// Check if one is the doubled version of the other, 
-		// for example: 'ii' -> 'i' or 'i' -> 'ii'
-		// 
-		String origStr = String.join("", transf.origTokens);
-		String revStr = String.join("", transf.revisedTokens);
+		Double cost = null;
 		
-		Matcher matcher = Pattern.compile("(.)\\1?").matcher(origStr);
-		matcher.matches();
-		String origChar = matcher.group(1);
+		// Note: Doubling or de-doubling a character ALWAYS has a small
+		//  cost, even if the change affects leading characters of the 
+		//  word.
+		//
+		Double unitCost = SMALL_COST;
 		
-		matcher = Pattern.compile(origChar+"{2}").matcher(revStr);
-		if (matcher.matches()) {
-			cost = SMALL_COST;
+		StringTransformation transf = diff.transformations.get(transfNum);
+		if (transf.origTokens.length == 1 && 
+				transf.revisedTokens.length == 1) {
+			// A character was changed to a different want.
+			// Check if one is the doubled version of the other, 
+			// for example: 'ii' -> 'i' or 'i' -> 'ii'
+			// 
+			String origStr = String.join("", transf.origTokens);
+			String revStr = String.join("", transf.revisedTokens);
+			
+			
+			String regex = "(.)\\1?";			
+			origStr = origStr.replaceAll(regex, "$1");
+			revStr = revStr.replaceAll(regex, "$1");
+			if (origStr.equals(revStr)) {
+				cost = unitCost;
+			}
 		}
-	}
-	
-	return cost;
-}	
+		
+		return cost;
+	}	
 
 
 	/**
@@ -91,53 +128,104 @@ public class IUDiffCosting extends DiffCosting {
 	 * @param diff
 	 * @return
 	 */
-	private Double costAsLeadingCharChanges(DiffResult diff) {
+	private Double costLeadingCharChanges(DiffResult diff) {
 		Double _cost = 0.0;
 		List<StringTransformation> transf = diff.transformations;
-		while (!transf.isEmpty()) {
-			 
-			StringTransformation headTransf = transf.get(0);
+		
+		// Identify transformations that affect the first
+		// few characters of word and its correction
+		//
+		int lastLeadCharTransf = -1;
+		int transfNum = -1;
+		while (true) {
+			transfNum++;
+			if (transfNum >= transf.size()) {
+				break;
+			}
+			StringTransformation headTransf = transf.get(transfNum);
 			if (headTransf.origTokenPos <= 2 ||
 					headTransf.revisedTokenPos <= 2) {
-				
-				// In general, it is not allowed to change the first 
-				// three chars of, but there can be exceptions...
-				_cost = costAllowableLeadingCharChanges(diff);
-				
-				if (_cost == null) {
-					// This is not one of those exceptions, so return
-					// an infinite cost.
-					_cost = INFINITE;
+				lastLeadCharTransf = transfNum;
+			} else {
+				break;
+			}
+		}
+		
+		if (lastLeadCharTransf >= 0) {
+			_cost = costSpecialCase_anniaq(diff);
+			if (_cost == null) {
+			
+				// Cost of any change in the leading chars of a word 
+				// should be considered "INFINITE", unless the word 
+				// and its correction are single morpheme words
+				//
+				boolean asLeadingCharChanges = true;
+				if (wordsAreSingleMorphemes(diff)) {
+					asLeadingCharChanges = false;
 				}
 				
-				// Remove the first transformation because we have
-				// costed it.
+				_cost = 0.0;
+				for (int ii=0; ii <= lastLeadCharTransf; ii++) {
+					_cost += costNthTransformation(ii, diff, asLeadingCharChanges);
+				}
+				
+			
+				// Remove transformations that affect leading chars
 				//
-				transf.remove(0);
-			} else {
-				// The rest of the transformations do not affect 
-				// beginning of the word
-				break;
+				for (int ii=0; ii <= lastLeadCharTransf; ii++) {
+					transf.remove(0);
+				}
 			}
 		}
 		
 		return _cost;
 	}
 
-	private Double costAllowableLeadingCharChanges(DiffResult diffRes) {
+	private Double costSpecialCase_anniaq(DiffResult diff) {
+		// This is a particular case that is very common in the 
+		// Hansard.
+		//
+		// Any word that starts with 'anniaq' or 'aniaq' can 
+		// be spelled alternatively with 'niaq' or 'nniaq'.
+		// This is technically a spelling mistake, but it is 
+		// used so commonly in the Hansard that it can be 
+		// deemed acceptable.
+		// 
+		//
+		Double cost = null;
+				
+		String origStr = diff.origStr();
+		String revStr = diff.revStr();
+		Pattern anniaq = Pattern.compile("^an+iaq[\\s\\S]*$");
+		Pattern nniaq = Pattern.compile("^n+iaq[\\s\\S]*$");
+		if (anniaq.matcher(origStr).matches() && 
+				nniaq.matcher(revStr).matches()) {
+			cost = SMALL_COST;
+		} else if (anniaq.matcher(revStr).matches() && 
+				nniaq.matcher(origStr).matches()) {
+			cost = SMALL_COST;
+		}
+		
+		return cost;
+	}
+
+	private Double costAllowableLeadingCharChanges(int lastLeadCharTransf, DiffResult diffRes) {
 		Double cost = null;
 		
 		String origStr = diffRes.origStr();
 		String revStr = diffRes.revStr();
 		
 		if (wordsAreSingleMorphemes(diffRes)) {
-			// If the word is correcgtion is made up of a 
+			// If the correction is made up of a 
 			// single morpheme, then it is OK to modify 
 			// the first few characters.
 			//
-			cost = costNthTransformation(0, diffRes);
+			cost = 0.0;
+			for (int ii=0; ii <=lastLeadCharTransf; ii++) {
+				cost += costNthTransformation(ii, diffRes);
+			}
 		}
-		
+				
 		// This is a particular case that is very common in the 
 		// Hansard.
 		//

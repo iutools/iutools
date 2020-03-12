@@ -1,8 +1,12 @@
 package ca.pirurvik.iutools.spellchecker;
 
 public class ScoredSpelling {
-	String spelling = null;
-	Double score = null;
+	public String spelling = null;
+	public Double score = null;
+	
+	public ScoredSpelling() {
+		
+	}
 	
 	public ScoredSpelling(String _spelling, Double _score) {
 		this.spelling = _spelling;

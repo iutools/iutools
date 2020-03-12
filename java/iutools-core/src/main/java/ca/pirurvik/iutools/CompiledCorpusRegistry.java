@@ -13,7 +13,8 @@ public class CompiledCorpusRegistry {
 	
 	private static Map<String,CompiledCorpus> corpusCache = new HashMap<String,CompiledCorpus>();
 	private static Map<String,File> registry = new HashMap<String,File>();
-	public static String defaultCorpusName = "Hansard1999-2002";
+	public static final String defaultCorpusName = "Hansard1999-2002";
+	public static final String emptyCorpusName = "EMPTYCORPUS";
 	
 	static {
 		try {

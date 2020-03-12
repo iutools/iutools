@@ -43,7 +43,6 @@ public class SpellCheckerEvaluator {
 			_checker = new SpellChecker();
 		}
 		this.checker = _checker;
-		this.checker.setDictionaryFromCorpus();
 	}
 	
 	public void onNewExample(SpellCheckerExample example) throws SpellCheckerException {
@@ -74,7 +73,10 @@ public class SpellCheckerEvaluator {
 
 	private void evaluateCheckerSuggestions(SpellCheckerExample example, SpellingCorrection gotCorrection) {
 		Integer rank = null;
-		List<String> suggestions = gotCorrection.getPossibleSpellings();
+		List<String> suggestions = new ArrayList<String>();
+		for (ScoredSpelling cand: gotCorrection.getScoredPossibleSpellings()) {
+			suggestions.add(cand.spelling);
+		}
 		for (int ii=0; ii < suggestions.size(); ii++) {
 			if (example.acceptableCorrections.contains(suggestions.get(ii))) {
 				rank = ii;
@@ -93,7 +95,7 @@ public class SpellCheckerEvaluator {
 			}
 		}
 		if (rankBad) {
-			addExampleWithBadRank(example, rank, suggestions);
+			addExampleWithBadRank(example, rank, gotCorrection.scoredCandidates);
 		}
 
 		if (rank != null) {
@@ -105,7 +107,13 @@ public class SpellCheckerEvaluator {
 	}
 
 	private void addExampleWithBadRank(SpellCheckerExample example, 
-			Integer rank, List<String> suggestions) {
+			Integer rank, List<ScoredSpelling> scoredSpellings) {
+		
+		List<String> suggestions = new ArrayList<String>();
+		for (ScoredSpelling aSpelling: scoredSpellings) {
+			suggestions.add(aSpelling.toString());
+		}
+		
 		examplesWithBadRank.put(example, Pair.of(rank,suggestions));
 	}
 

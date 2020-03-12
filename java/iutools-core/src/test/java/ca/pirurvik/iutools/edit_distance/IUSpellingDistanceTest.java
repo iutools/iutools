@@ -114,6 +114,9 @@ public class IUSpellingDistanceTest {
 				
 			new Example2Way("tanna", "sunainna").setMinDist(DiffCosting.INFINITE)
 					.setDescr("Changes in first morpheme, should have INFINITE when one of the words has more than one morpheme."),
+
+			new Example2Way("nigiani", "niggiani").setMaxDist(DiffCosting.SMALL_COST)
+				.setDescr("Doubling a consonant in first morpheme should be small cost"),
 	};
 
 	Example3Way[] examples3Way = new Example3Way[] {
@@ -171,7 +174,7 @@ public class IUSpellingDistanceTest {
 		// only want to run the test on that one example.
 		//
 		String focusOnExample = null;
-//		String focusOnExample = "tanna/taanna";
+//		String focusOnExample = "tanna/sunainna";
 		
 		for (Example2Way anExample: examples2Way) {
 			
