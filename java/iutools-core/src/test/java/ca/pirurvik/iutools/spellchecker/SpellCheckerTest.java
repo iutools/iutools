@@ -240,7 +240,7 @@ public class SpellCheckerTest {
 		String word = "inukkshuk";
 		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
 		assertCorrectionOK(gotCorrection, word, false, 
-				new String[] {"inukshuk", "inuk", "inukutt", "inukttut", "inuktut"});
+				new String[] {"inukshuk", "inuk", "inukutt", "inuktut", "inukttut"});
 	}
 
 
@@ -358,10 +358,10 @@ public class SpellCheckerTest {
 				//  				
 				new String[] {
 						  "ᐃᓄᒃᑐᑦ",
-						  "ᐃᓄᒃᑦᑐᑦ",
 						  "ᐃᓄᑯᑦᑦ",
+						  "ᐃᓄᒃᑦᑐᑦ",
 						  "ᐃᓄᒃ",
-						  "ᐃᓄᒃᔅᓱᒃ"				
+						  "ᐃᓄᒃᔅᓱᒃ"
 				});
 		
 		wordNum = 1;

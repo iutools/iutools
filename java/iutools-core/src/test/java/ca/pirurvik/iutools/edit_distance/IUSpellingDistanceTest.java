@@ -71,6 +71,7 @@ public class IUSpellingDistanceTest {
 		public String word2 = null;
 		public Double minDist = null;
 		public Double maxDist = null;
+		public Double expDist = null;
 		
 		public Example2Way(String _word1, String _word2) {
 			this.word1 = _word1;
@@ -79,13 +80,24 @@ public class IUSpellingDistanceTest {
 		
 		public Example2Way setMinDist(Double _minDist) {
 			this.minDist = _minDist;
+			this.expDist = null;			
 			return this;
 		}
 		
 		public Example2Way setMaxDist(Double _maxDist) {
 			this.maxDist = _maxDist;
+			this.expDist = null;
 			return this;
 		}
+		
+		public Example2Way setExpDist(double _expDist) {
+			this.expDist = _expDist;
+			this.maxDist = null;
+			this.minDist = null;
+			
+			return this;
+		}
+		
 		
 		public Example2Way setDescr(String _descr) {
 			this.descr = _descr;
@@ -105,18 +117,39 @@ public class IUSpellingDistanceTest {
 		public String toString() {
 			return word1+"/"+word2;
 		}
+
 	}
 	
 	Example2Way[] examples2Way = new Example2Way[] {
 			
-			new Example2Way("tanna", "taanna").setMaxDist(DiffCosting.SMALL_COST)
-				.setDescr("Doubling a vowel in first morpheme should be small cost"),
+			new Example2Way("tanna", "taanna")
+				.setExpDist(DiffCosting.TINY_COST)
+				.setDescr("Doubling a vowel in first morpheme should encure TINY cost"),
 				
-			new Example2Way("tanna", "sunainna").setMinDist(DiffCosting.INFINITE)
-					.setDescr("Changes in first morpheme, should have INFINITE when one of the words has more than one morpheme."),
+			new Example2Way("tanna", "sunainna")
+					.setMinDist(DiffCosting.INFINITE)
+					.setDescr("Changing first morpheme should encur INFINITE cost if at least one of the words is multi-morpheme."),
 
-			new Example2Way("nigiani", "niggiani").setMaxDist(DiffCosting.SMALL_COST)
-				.setDescr("Doubling a consonant in first morpheme should be small cost"),
+			new Example2Way("tuna", "suna")
+					.setExpDist(2*DiffCosting.SMALL_COST)
+					.setDescr("Changing first morpheme should encur SMALL cost if both words are single morphemes."),
+					
+			new Example2Way("nigiani", "niggiani")
+					.setMaxDist(DiffCosting.SMALL_COST)
+					.setDescr("Doubling a consonant shoudl have TINY cost, even in first morpheme"),
+				
+			new Example2Way("nakuqmi", "nakurmiik")
+					.setExpDist(DiffCosting.TINY_COST + 3*DiffCosting.SMALL_COST)
+					.setDescr("(a) Doubling a vowel, (b) substituting a char mid word and (c) appending a consonant at the end"),
+			
+			new Example2Way("nniaq", "aanniaq")
+					.setExpDist(DiffCosting.TINY_COST)
+					.setDescr("Special case: ommitting 'aa' from 'aaniaq', should encur TINY cost"),
+					
+			new Example2Way("aanniaq", "nniaq")
+					.setExpDist(DiffCosting.TINY_COST)
+					.setDescr("Special case: adding 'aa' to 'nniaq', should encur TINY cost"),
+
 	};
 
 	Example3Way[] examples3Way = new Example3Way[] {
@@ -174,7 +207,7 @@ public class IUSpellingDistanceTest {
 		// only want to run the test on that one example.
 		//
 		String focusOnExample = null;
-//		String focusOnExample = "tanna/sunainna";
+//		String focusOnExample = "aanniaq/nniaq";
 		
 		for (Example2Way anExample: examples2Way) {
 			
@@ -184,6 +217,13 @@ public class IUSpellingDistanceTest {
 			}
 			
 			double gotDist = distCalculator.distance(anExample.word1, anExample.word2);
+			if (anExample.expDist != null) {
+				Assert.assertEquals(
+						anExample.description()+
+						"\n  Distance was not as expected for word pair: ["+
+						anExample.word1+", "+anExample.word2+"]",
+						anExample.expDist, new Double(gotDist), DiffCosting.TINY_COST);
+			}
 			if (anExample.minDist != null) {
 				AssertNumber.isGreaterOrEqualTo(
 						anExample.description()+
@@ -221,7 +261,7 @@ public class IUSpellingDistanceTest {
 		double gotDist = distCalculator.distance(word1, word2);
 		double expDist = 0.1;
 		Assert.assertEquals("Spelling distance not as expected", 
-				expDist, gotDist, 0.01);
+				expDist, gotDist, DiffCosting.SMALL_COST);
 	}
 
 	@Test
@@ -233,15 +273,6 @@ public class IUSpellingDistanceTest {
 				gotDist, DiffCosting.INFINITE);
 	}
 
-	@Test
-	public void test__distance__anniaq__AllowCertainTransfInFirst3Chars() throws Exception {
-		String word1 = "nniaqamangittulirijiit";
-		String word2 = "anniaqarnangittulirijiit";
-		double gotDist = distCalculator.distance(word1, word2);
-		AssertNumber.isLessOrEqualTo("Removing leading character 'a' 'anniaq*' should NOT have yielded an 'infinite' cost.",
-				gotDist, DiffCosting.INFINITE-1);
-	}
-	
 	@Test
 	public void test__distance__DoublingCharacter__HasSmallCost() throws Exception {
 		String word1 = "nakumi";

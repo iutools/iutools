@@ -10,8 +10,9 @@ public class SpellTracer {
 	
 	
 	private static String[][] pairsToTraceArr = new String[][] {
-		new String[] {"tamaini", "tamainni"},
-		new String[] {"tamainni", "tamaini"}
+		new String[] {"nakuqmi","nakurmiik"}
+//		new String[] {"tamaini", "tamainni"},
+//		new String[] {"tamainni", "tamaini"}
 //		new String[] {"*", "tamaini"},
 //		new String[] {"tamainni", "*"}
 	};

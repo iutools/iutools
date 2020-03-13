@@ -43,4 +43,13 @@ public class SpellCheckerExample extends BinaryClassifierExample {
 		}
 	}
 	
+	public String toString() {
+		String str = 
+				wordToCheck+
+				" -->\n"+
+				"   ["+String.join(",", acceptableCorrections)+"]\n"+
+				"   exp max rank: "+expMaxRank
+				;
+		return str;
+	}
 }

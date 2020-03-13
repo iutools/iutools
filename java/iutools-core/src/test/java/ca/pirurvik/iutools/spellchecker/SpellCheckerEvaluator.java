@@ -29,6 +29,8 @@ public class SpellCheckerEvaluator {
 	
 	private double sumRank = 0.0;
 	private int totalNonNullRank = 0;
+
+	private Boolean verbose = false;
 	
 	public SpellCheckerEvaluator() throws StringSegmenterException, FileNotFoundException, SpellCheckerException, ConfigException {
 		init_SpellCheckerEvaluator(null);
@@ -46,6 +48,10 @@ public class SpellCheckerEvaluator {
 	}
 	
 	public void onNewExample(SpellCheckerExample example) throws SpellCheckerException {
+		if (verbose) {
+			System.out.println("Processing example "+example.toString()+"\n");
+		}
+		
 		Set<String> correctForms = example.acceptableCorrections;
 		SpellingCorrection gotCorrection = checker.correctWord(example.wordToCheck);
 		
@@ -213,6 +219,10 @@ public class SpellCheckerEvaluator {
 		}
 				
 		return avg;
+	}
+
+	public void setVerbose(Boolean _verbose) {
+		this.verbose  = _verbose;		
 	}
 	
 }
