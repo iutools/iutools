@@ -299,11 +299,11 @@ public class SpellChecker {
 					"List of string candidates", 
 					word, "tamainni", candidates);
 			
-			SpellTracer.trace("SpellChecker.correctWord", 
-					"first pass candidates: "+StringUtils.join(candidates.iterator(), ", "), 
-					word, null);
+//			SpellTracer.trace("SpellChecker.correctWord", 
+//					"first pass candidates: "+StringUtils.join(candidates.iterator(), ", "), 
+//					word, null);
 			
-			if (logger.isDebugEnabled()) logger.debug("candidates= "+PrettyPrinter.print(candidates));
+//			if (logger.isDebugEnabled()) logger.debug("candidates= "+PrettyPrinter.print(candidates));
 			
 			List<ScoredSpelling> scoredSpellings = computeCandidateSimilarities(wordInLatin, candidates);
 

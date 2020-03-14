@@ -549,7 +549,11 @@ public class SpellCheckerTest {
 	public void test__spellCheck__SpeedTest() throws Exception {
 		String text = 
 				"matuvviksanga: mai 02, 2014 angajuqqaalik aulattijimik "+
-//				"unikkaaqpak&unilu allavvilirinirmut pijjutiqarlunit "+
+				"takunakkanniliraangata iqqaqtuqtaunikunik."
+						
+				// Comment out the rest except when profiling
+
+//				+"unikkaaqpak&unilu allavvilirinirmut pijjutiqarlunit "+
 //				"iqqaqtuivingmi pijittirautinut tukimuaktittijimu, sivuliqtinu "+
 //				"maligalirinirmut piliriji uqaujjuujiuqattaqpuq iqqaqtuijimu "+
 //				"maligalirinirmullu pilirijimmaringmu allavvinganut "+
@@ -560,8 +564,8 @@ public class SpellCheckerTest {
 //				"aulattinirmut maligalirinirmik iqqaqtuijjutaujullu nunavut "+
 //				"iqqaqtuivingani. sivuliqtinu maligalirinirmut piliriji "+
 //				"inungnu tusagaksanu tusaumatittijiuvuq iqqaqtuivingmulu "+
-//				"titiqqanik tuqquqtuijiulluni ikajuqpak&unilu iqqaqtuijinik "+
-				"takunakkanniliraangata iqqaqtuqtaunikunik.";
+//				"titiqqanik tuqquqtuijiulluni ikajuqpak&unilu iqqaqtuijinik "
+		;
 		
 		SpellChecker checker = makeCheckerLargeDict();
 		Long start = System.currentTimeMillis();
@@ -569,7 +573,7 @@ public class SpellCheckerTest {
 		Double gotElapsed = (System.currentTimeMillis() - start) 
 							/ (1.0 * 1000);
 		
-		Double expMaxElapsed = 15.0;
+		Double expMaxElapsed = 5.0; // on Alain's macbook
 		AssertNumber.isLessOrEqualTo(
 				"SpellChecker performance was MUCH lower than expected.\n"+
 				"Note: This test may fail on occasion depending on the speed "+

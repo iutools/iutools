@@ -53,9 +53,9 @@ public class IUDiffCosting extends DiffCosting {
 	private Double costNthTransformation(int nn, DiffResult diff, 
 						boolean asLeadingCharChanges) {
 		
-		SpellTracer.trace("IUDiffCosting.costNthTransformation", 
-				"Costing transf nn="+nn,
-				diff.origStr(), diff.revStr());
+//		SpellTracer.trace("IUDiffCosting.costNthTransformation", 
+//				"Costing transf nn="+nn,
+//				diff.origStr(), diff.revStr());
 		
 		Double _cost = null;
 		StringTransformation transf = diff.transformations.get(nn);

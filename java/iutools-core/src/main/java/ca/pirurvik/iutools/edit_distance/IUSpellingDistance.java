@@ -20,7 +20,8 @@ import ca.nrc.string.diff.TextualDiff;
 public class IUSpellingDistance implements EditDistanceCalculator {
 	
 	IUDiffCosting diffCoster = new IUDiffCosting();
-	TextualDiff diffFinder = new TextualDiff();
+	TextualDiff diffFinder = 
+			new TextualDiff().setIgnoreSpaces(false);
 
 	@Override
 	public double distance(String word1, String word2) throws EditDistanceCalculatorException {
