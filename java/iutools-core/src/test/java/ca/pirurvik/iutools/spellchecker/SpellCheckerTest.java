@@ -13,6 +13,7 @@ import ca.nrc.datastructure.Pair;
 import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.testing.AssertHelpers;
+import ca.nrc.testing.AssertNumber;
 import ca.nrc.testing.AssertObject;
 import ca.pirurvik.iutools.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.spellchecker.SpellChecker;
@@ -543,6 +544,38 @@ public class SpellCheckerTest {
 		checker.addCorrectWord(word);
 		assertWordIsKnown(word, checker);
 	}	
+	
+	@Test
+	public void test__spellCheck__SpeedTest() throws Exception {
+		String text = 
+				"matuvviksanga: mai 02, 2014 angajuqqaalik aulattijimik "+
+//				"unikkaaqpak&unilu allavvilirinirmut pijjutiqarlunit "+
+//				"iqqaqtuivingmi pijittirautinut tukimuaktittijimu, sivuliqtinu "+
+//				"maligalirinirmut piliriji uqaujjuujiuqattaqpuq iqqaqtuijimu "+
+//				"maligalirinirmullu pilirijimmaringmu allavvinganut "+
+//				"iqqaqtuijiup nunavummi allavviullu-iluani "+
+//				"uqallaqatiqaqtiulluni maligani qaujisarnirmut "+
+//				"titiranngaqtaujunik tusaumaqatiqarnirmut maligarnik, "+
+//				"titiranngaliraangatalu atuagarnik pilirianut aktuutiju "+
+//				"aulattinirmut maligalirinirmik iqqaqtuijjutaujullu nunavut "+
+//				"iqqaqtuivingani. sivuliqtinu maligalirinirmut piliriji "+
+//				"inungnu tusagaksanu tusaumatittijiuvuq iqqaqtuivingmulu "+
+//				"titiqqanik tuqquqtuijiulluni ikajuqpak&unilu iqqaqtuijinik "+
+				"takunakkanniliraangata iqqaqtuqtaunikunik.";
+		
+		SpellChecker checker = makeCheckerLargeDict();
+		Long start = System.currentTimeMillis();
+		checker.correctText(text);
+		Double gotElapsed = (System.currentTimeMillis() - start) 
+							/ (1.0 * 1000);
+		
+		Double expMaxElapsed = 15.0;
+		AssertNumber.isLessOrEqualTo(
+				"SpellChecker performance was MUCH lower than expected.\n"+
+				"Note: This test may fail on occasion depending on the speed "+
+				"and current load of your machine.", 
+				gotElapsed, expMaxElapsed);
+	}
 	
 	/**********************************
 	 * TEST HELPERS
