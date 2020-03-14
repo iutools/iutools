@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Random;
 
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
@@ -41,6 +42,7 @@ public class CmdDescribeCorpus extends ConsoleCommand {
 		String corpusName = "this-corpus";
 		CompiledCorpusRegistry.registerCorpus(corpusName, compilationFile);
 		CompiledCorpus compiledCorpus = CompiledCorpusRegistry.getCorpus(corpusName);
+		Map<String,Long> ngramStats = compiledCorpus.ngramStats;
 		Trie trie = compiledCorpus.getTrie();
 		
 		System.out.println("Total number of analyzed words in trie (succeeded analysis): "+trie.getNbOccurrences());
@@ -49,6 +51,7 @@ public class CmdDescribeCorpus extends ConsoleCommand {
 		System.out.println("Number of distinct analyzed words in trie (succeeded analysis): "+trie.getSize());
 		System.out.println("Number of distinct words that failed analysis: "+compiledCorpus.getNbWordsThatFailedSegmentations());
 		System.out.println("");
+		System.out.println("The corpus has its ngrams set: "+(ngramStats==null? "no":"yes"));
 		
 		String action = "";
 		while ( action!=null ) {
