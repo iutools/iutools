@@ -379,34 +379,45 @@ public class SpellChecker {
 	 *   - it cannot be decomposed by the IMA (if never encountered in the Hansard corpus)
 	 */
 	protected Boolean isMispelled(String word) throws SpellCheckerException {
+		Logger logger = Logger.getLogger("SpellChecker.isMispelled");
+		logger.debug("word: "+word);
 		boolean wordIsMispelled = false;
 		String[] numericTermParts = null;
 		
-		if (corpus!=null && corpus.getWordsFailedSegmentation().contains(word)) {
-			wordIsMispelled = true;
-		} 
-		else if (corpus!=null && corpus.getSegmentsCache().containsKey(word)) {
+//		if (corpus!=null && corpus.getWordsFailedSegmentation().contains(word)) {
+//			wordIsMispelled = true;
+//		} 
+//		else 
+		if (corpus!=null && corpus.getSegmentsCache().containsKey(word) && corpus.getSegmentsCache().get(word).length != 0) {
+			logger.debug("word in segments cache has successfully decomposed");
 			wordIsMispelled = false;
 		}
 		else if (word.matches("^[0-9]+$")) {
+			logger.debug("word is all digits");
 			wordIsMispelled = false;
 		}
 		else if (latinSingleInuktitutCharacters.contains(word)) {
+			logger.debug("single inuktitut character");
 			wordIsMispelled = false;
 		}
 		else if (wordContainsMoreThanTwoConsecutiveConsonants(word)) {
+			logger.debug("more than 2 consecutive consonants in the word");
 			wordIsMispelled = true;
 		}
 		else if ( (numericTermParts=wordIsNumberWithSuffix(word)) != null) {
+			logger.debug("numeric expression: "+word+" ("+numericTermParts[1]+")");
 			boolean pseudoWordWithSuffixAnalysesWithSuccess = assessEndingWithIMA(numericTermParts[1]);
 			wordIsMispelled = !pseudoWordWithSuffixAnalysesWithSuccess;
+			logger.debug("numeric expression - wordIsMispelled: "+wordIsMispelled);
 		}
 		else if (wordIsPunctuation(word)) {
+			logger.debug("word is punctuation");
 			wordIsMispelled = false;
 		}
 		else {
 			try {
 				String[] segments = segmenter.segment(word);
+				logger.debug("word submitted to IMA: "+word);
 				if (segments == null || segments.length == 0) {
 					wordIsMispelled = true;
 				}
@@ -416,20 +427,21 @@ public class SpellChecker {
 			} catch (StringSegmenterException e) {
 				throw new SpellCheckerException(e);
 			}
+			logger.debug("word submitted to IMA - mispelled: "+wordIsMispelled);
 		}
 		
 		return wordIsMispelled;
 	}
 
 	protected boolean wordIsPunctuation(String word) {
-		Pattern p = Pattern.compile("(\\p{Punct}|[–])+");
+		Pattern p = Pattern.compile("(\\p{Punct}|[\u2013\u2212])+");
 		Matcher mp = p.matcher(word);
 		return mp.matches();
 	}
 
 
 	protected String[] wordIsNumberWithSuffix(String word) {
-		Pattern p = Pattern.compile("^(\\$?\\d+(?:[.,:]\\d+)?(?:[.,:]\\d+)?-?)([agijklmnpqrstuv]+)$");
+		Pattern p = Pattern.compile("^(\\$?\\d+(?:[.,:]\\d+)?(?:[.,:]\\d+)?[\\-\u2013\u2212]?)([agijklmnpqrstuv]+)$");
 		Matcher mp = p.matcher(word);
 		if (mp.matches())
 			return new String[] {mp.group(1),mp.group(2)};

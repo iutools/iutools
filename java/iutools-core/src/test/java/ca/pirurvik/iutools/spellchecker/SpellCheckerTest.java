@@ -508,7 +508,17 @@ public class SpellCheckerTest {
 		word = "bla";
 		numericTermParts = checker.wordIsNumberWithSuffix(word);
 		Assert.assertTrue("Word "+word+" should have been acknowledged as a number-based word", numericTermParts == null);
-	}
+		word = "34–mi";
+		numericTermParts = checker.wordIsNumberWithSuffix(word);
+		Assert.assertTrue("Word "+word+" should have been acknowledged as a number-based word", numericTermParts != null);
+		Assert.assertEquals("The 'number' part is not as expected.", "34–", numericTermParts[0]);
+		Assert.assertEquals("The 'ending' part is not as expected.", "mi", numericTermParts[1]);
+		word = "40−mi";
+		numericTermParts = checker.wordIsNumberWithSuffix(word);
+		Assert.assertTrue("Word "+word+" should have been acknowledged as a number-based word", numericTermParts != null);
+		Assert.assertEquals("The 'number' part is not as expected.", "40−", numericTermParts[0]);
+		Assert.assertEquals("The 'ending' part is not as expected.", "mi", numericTermParts[1]);
+		}
 	
 	@Test
 	public void test__assessEndingWithIMA() throws Exception  {
