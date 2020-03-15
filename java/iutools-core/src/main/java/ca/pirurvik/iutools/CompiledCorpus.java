@@ -27,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 
+import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.script.TransCoder;
 import ca.inuktitutcomputing.utilities.IUTokenizer;
 import ca.inuktitutcomputing.utilities.NgramCompiler;
@@ -76,6 +77,10 @@ public class CompiledCorpus
 	
 	public Map<String,Long> ngramStats = null;
 
+	private Map<String,WordInfo> word2infoMap = new HashMap<String,WordInfo>();
+	private Map<Long,String> key2word = new HashMap<Long,String>();
+	private Map<String,Set<Long>> ngram2wordKeysMap = 
+				new HashMap<String,Set<Long>> ();
 
 	// things that do not need to be saved 
 	@JsonIgnore
@@ -100,7 +105,7 @@ public class CompiledCorpus
 	@JsonIgnore
 	public transient String wordsWithUnsuccessfulDecomposition = null;
 	
-	
+	private Long nextWordKey = new Long(0);
 	
 	// ngrams from 1 to MAX_NGRAM_LEN of all decomposed words in the corpus
 	public Map<String,Long> getNgramStats() {
@@ -796,5 +801,98 @@ public class CompiledCorpus
 		}
 	}
 
+	public Long key4word(String word) {
+		Long key = null;
+		if (word2infoMap.containsKey(word)) {
+			key = word2infoMap.get(word).key;
+		}
+		return key;
+	}
+	
+	private String word4key(Long aWordKey) {
+		String word = null;
+		if (key2word.containsKey(aWordKey)) {
+			word = key2word.get(aWordKey);
+		}
+		return word;
+	}
+	
+	public void addWord(String word) throws CompiledCorpusException {
+		addWord(word, null);
+	}
+	
+	public void addWord(String word, Decomposition[] decomps) throws CompiledCorpusException {
+		if (word2infoMap.containsKey(word)) {
+			throw new CompiledCorpusException("Attempted to add a word for "+
+						"there was already an entry ("+word+").");
+		}
+		
+		key2word.put(nextWordKey, word);
+		WordInfo info = new WordInfo(this.nextWordKey);
+		if (decomps != null) {
+			info.setDecompositions(decomps);
+		}
+	
+		this.nextWordKey++;
+		word2infoMap.put(word, info);
+		
+		updateNGramIndex(word);
+	}
+	
+	
+	private void updateNGramIndex(String word) {
+		NgramCompiler ngramCompiler = new NgramCompiler();
+		ngramCompiler.setMin(3);
+		ngramCompiler.includeExtremities(true);
+		Set<String> ngramSet = ngramCompiler.compile(word);
+		addAllWordNGrams(word, ngramSet);
+	}
+	
+	private void addAllWordNGrams(String word, Set<String> ngrams) {
+		Long key = key4word(word);
+		for (String aNgram: ngrams) {
+			addSingleWordNGram(key, aNgram);
+		}
+	}
+	
+	private void addSingleWordNGram(Long wordKey, String ngram) {
+		if (!ngram2wordKeysMap.containsKey(ngram)) {
+			ngram2wordKeysMap.put(ngram, new HashSet<Long>());
+		}
+		ngram2wordKeysMap.get(ngram).add(wordKey);
+	}
+	
+	public Set<String> wordsContainingNgram(String ngram) {
+		Set<String>  words = null;
+		if (ngram2wordKeysMap.containsKey(ngram)) {
+			Set<Long> wordKeys = ngram2wordKeysMap.get(ngram);
+			words = new HashSet<String>();
+			for (Long aWordKey: wordKeys) {
+				String aWord = word4key(aWordKey);
+				words.add(aWord);
+			}
+		}
+		if (words == null) {
+			words = new HashSet<String>();
+		}
+		return words;		
+	}
+	public WordInfo info4word(String word) {
+		WordInfo wInfo = null;
+		if (word2infoMap.containsKey(word)) {
+			wInfo = word2infoMap.get(word);
+		}
+		
+		return wInfo;
+	}
+	public void incrementWordFreq(String word) throws CompiledCorpusException {
+		WordInfo wInfo = info4word(word);
+		if (wInfo == null) {
+			throw new CompiledCorpusException(
+					"Tried to increment frequency of unknown word "+word);
+		}
+		wInfo.frequency++;
+		
+	}
 }
 

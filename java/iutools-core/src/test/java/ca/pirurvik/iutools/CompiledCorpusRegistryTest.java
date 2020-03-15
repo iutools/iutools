@@ -4,12 +4,16 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieNode;
+import ca.nrc.testing.AssertObject;
 
 public class CompiledCorpusRegistryTest {
 	
@@ -57,8 +61,7 @@ public class CompiledCorpusRegistryTest {
 		//
 		corpus = corpus = CompiledCorpusRegistry.getCorpus(corpusName);
 	}
-	
-	
+		
 	//////////////////////////////
 	// VERIFICATION TESTS
 	//////////////////////////////
@@ -152,7 +155,4 @@ public class CompiledCorpusRegistryTest {
 		corpus = CompiledCorpusRegistry.getCorpusWithName(corpusName);
 		assertTrue("Corpus could not be found",corpus == null);
 	}
-	
-
-
 }

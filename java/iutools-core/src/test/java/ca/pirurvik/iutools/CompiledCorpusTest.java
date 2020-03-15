@@ -13,16 +13,19 @@ import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
+import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
+import ca.inuktitutcomputing.morph.Decomposition;
 import ca.nrc.config.ConfigException;
-import ca.nrc.datastructure.Pair;
 import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.Trie;
@@ -57,6 +60,10 @@ public class CompiledCorpusTest extends TestCase
         corpusDirectory = null;
     }
 
+	///////////////////////////
+	// DOCUMENTATION TESTS
+	///////////////////////////
+	
 	@Test
 	public void test__CompiledCorpus__Synopsis() throws Exception {
 		//
@@ -100,7 +107,167 @@ public class CompiledCorpusTest extends TestCase
 		} catch (CompiledCorpusException e) {
 			// do something
 		}
+		
+		// Once a corpus has been compiled, you can access all sorts of
+		// information about the words that were seen in the corpus.
+		//
+		WordInfo wInfo  = compiledCorpus.info4word("nunavut");
+		if (wInfo == null) {
+			// Means the corpus does not know about this word
+		} else {
+			// Total number of morphological for this word, as well as a
+			// short list of the first few decompositions found.
+			// 
+			// If those values are 'null', it means that the decomps have not 
+			// been computed.
+			// It does NOT mean that no decomps can be computed for this word.
+			//
+			Integer numDecomps = wInfo.totalDecompositions;
+			Decomposition[] decomps = wInfo.topDecompositions;
+		}
+		
+		// You can ask for information about the various ngrams 
+		// that were seen in the corpus.
+		//
+		// This returns all the words that START with "nuna"
+		//
+		Set<String> wordsWithNgram = 
+				compiledCorpus.wordsContainingNgram("^nuna");
+		
+		// Words that END with "vut"
+		//
+		wordsWithNgram = 
+				compiledCorpus.wordsContainingNgram("vut$");
+
+		// Words that have "nav" in the middle
+		//
+		wordsWithNgram = 
+				compiledCorpus.wordsContainingNgram("nav");
+		
+		// The most common way to populate a corpus is to compile it from a file 
+		// or series of text files.
+		//
+		// But you can also manually add some words to it.
+		// 
+		// You can add the word by itself, WITH or WITHOUT decompositions.
+		//
+		String word = "inukshuk";
+		compiledCorpus.addWord(word); // WITHOUT decompositions
+		word = "inuktut";
+		Decomposition[] decomps = new MorphologicalAnalyzer().decomposeWord(word);
+		compiledCorpus.addWord(word, decomps); // WITH decompositions
+		
+		// You can override the decompositions of a word that is already in the 
+		// corpus
+		//
+		compiledCorpus.info4word(word)
+			.setDecompositions(new Decomposition[0]);
+		
+		// Attempting to add a word that is already registered raises a 
+		// WordAlreadinInCorpusException exception.
+		// 
+		// So you should check for the existence of 
+		// the word before adding it.
+		//
+		if (compiledCorpus.info4word(word) == null) {
+			compiledCorpus.addWord(word);
+		}
+				
+		// When you encounter an occurence of a word, you can tell 
+		// the corpus about it as follows.
+		//
+		compiledCorpus.incrementWordFreq(word);
 	}
+	
+	
+	////////////////////////
+	// VERIFICATION TESTS
+    ////////////////////////
+	
+	
+	@Test
+	public void test__addWord__HappyPath() throws Exception {
+		CompiledCorpus corpus = new CompiledCorpus();
+		final String[] noWords = new String[] {};
+		String nunavut = "nunavut";
+		String nunavik = "nunavik";
+
+		String ngram_nuna = "^nuna";
+		String ngram_navik = "navik$";
+
+		// Check that the corpus is initially empty and does not know about any 
+		// of the words, nor their ngrams
+		//
+		{
+			for (String aWord: new String[] {nunavut, nunavik}) {
+				Long gotKey = corpus.key4word(aWord);
+				Assert.assertNull("Initially, corpus should not have known about word "+
+						aWord, gotKey);
+			}
+	
+			for (String ngram: new String[] {ngram_nuna, ngram_navik }) {
+				AssertObject.assertDeepEquals(
+					"Initially, no words should have been associated to ngram "+ngram,
+					noWords, corpus.wordsContainingNgram(ngram));
+			}
+		}
+		
+		// Add word 'nunavut' and check that the corpus now knows about it and 
+		// about its ngrams. But it should still not know about 'nunavik'.
+		//
+		{
+			corpus.addWord(nunavut);
+			Long gotKey = corpus.key4word(nunavut);
+			Assert.assertEquals("After addition of the word, corpus should have known about "+nunavut, 
+					gotKey, new Long(0));
+			gotKey = corpus.key4word(nunavik);
+			Assert.assertNull("After addition of word "+nunavut+
+					", corpus should NOT have known about word "+nunavik, 
+					gotKey);
+			
+			String[] expWords = new String[] {nunavut};
+			AssertObject.assertDeepEquals(
+				"After addition of word "+nunavut+" that word should have been associated to ngram "+ngram_nuna,
+				expWords, corpus.wordsContainingNgram(ngram_nuna));
+			AssertObject.assertDeepEquals(
+				"After addition of word "+nunavut+" that word should NOT have been associated to ngram "+ngram_navik,
+				expWords, corpus.wordsContainingNgram(ngram_nuna));
+		}
+		
+		// Add word 'nunavik' and check that the corpus now knows about it AND 
+		// about 'nunavut'.
+		//
+		{
+			corpus.addWord(nunavik);
+			
+			Long gotKey = corpus.key4word(nunavik);
+			Assert.assertEquals("After addition of "+nunavik+
+					", the corpus should know about that word (and the word key shold be key(nunavut)+1", 
+					gotKey, new Long(1));
+			gotKey = corpus.key4word(nunavut);
+			Assert.assertEquals("After addition of "+nunavik+
+					", the corpus should still know about "+nunavut, 
+					gotKey, new Long(0));
+			
+			Set<String> expWords = new HashSet<String>();
+			{
+				expWords.add(nunavut); expWords.add(nunavik);
+			}
+			AssertObject.assertDeepEquals(
+				"After addition of 2nd word "+nunavik+
+				" corpus should ngram of both words",
+				expWords, corpus.wordsContainingNgram(ngram_nuna));
+			expWords = new HashSet<String>();
+			{
+				expWords.add(nunavik);
+			}
+			AssertObject.assertDeepEquals(
+					"After addition of 2nd word "+nunavik+
+					" corpus should ngram of both words",
+				expWords, corpus.wordsContainingNgram(ngram_navik));
+		}
+	}
+	
 
 	@Test
     public void test__resume_compilation_of_corpus_after_crash_or_abortion__1_file_in_corpus_directory() throws CompiledCorpusException, StringSegmenterException, IOException 
