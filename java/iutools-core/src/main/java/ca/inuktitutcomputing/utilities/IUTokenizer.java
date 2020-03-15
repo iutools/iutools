@@ -13,7 +13,7 @@ public class IUTokenizer {
 	
 	static Pattern pParan = Pattern.compile("(\\((.*?)\\))");
 	// TODO: add other signs that might be used in the stead of "dash"
-	static Pattern pPunct = Pattern.compile("((\\p{Punct}|\\u2212)+)");
+	static Pattern pPunct = Pattern.compile("((\\p{Punct}|\u2212|\u2013)+)");
 
 	private List<String> words;
 	private List<Pair<String,Boolean>> allTokens;
@@ -59,27 +59,61 @@ public class IUTokenizer {
 			words.add(token);
 			allTokens.add(new Pair<>(token, true));
 		} else {
+			Pattern pInitialPunct = Pattern.compile("^(\\p{Punct}+)(.+)");
+			Matcher mInitialPunct = pInitialPunct.matcher(token);
+			if (mInitialPunct.matches()) {
+				allTokens.add(new Pair<>(mInitialPunct.group(1),false));
+				token = mInitialPunct.group(2);
+			}
+			Pattern pFinalPunct = Pattern.compile("^(.+[^\\p{Punct}])(\\p{Punct}+)$");
+			Matcher mFinalPunct = pFinalPunct.matcher(token);
+			if (mFinalPunct.matches()) {
+				token = mFinalPunct.group(1);
+			}
+			
 			Matcher mpunct = pPunct.matcher(token);
 			int pos = 0;
 			while (mpunct.find()) {
+				String punctuationMark = mpunct.group(1);
 				logger.debug("found punctuation pattern in " + token + " at position " + mpunct.start(1));
-//				if ((mpunct.group(1).equals("-") || mpunct.group(1).equals("&")) && mpunct.start(1) != 0)
-				if ( (mpunct.group(1).equals("&")  && mpunct.start(1) != 0) ||
-					 (mpunct.group(1).equals("-") && mpunct.start(1) != 0 && wordIsNumberWithSuffix(token)!=null ) )
+				if ( punctuationMark.equals("&")  && mpunct.start(1)!=0 )
+					continue;
+				if ( isDash(punctuationMark) && mpunct.start(1)!=0 && wordIsNumberWithSuffix(token)!=null )
 					continue;
 				if ( pos != mpunct.start(1))
 					allTokens.add(new Pair<>(token.substring(pos,mpunct.start(1)), true));
-				allTokens.add(new Pair<>(mpunct.group(1), false));
+				allTokens.add(new Pair<>(punctuationMark, false));
 				pos = mpunct.end(1);
 			}
 			if ( pos != token.length() )
 				allTokens.add(new Pair<>(token.substring(pos), true));
+
+			if (mFinalPunct.matches()) {
+				allTokens.add(new Pair<>(mFinalPunct.group(2),false));
+			}
+			
+//			Matcher mpunct = pPunct.matcher(token);
+//			int pos = 0;
+//			while (mpunct.find()) {
+//				String punctuationMark = mpunct.group(1);
+//				logger.debug("found punctuation pattern in " + token + " at position " + mpunct.start(1));
+//				if ( punctuationMark.equals("&")  && mpunct.start(1)!=0 )
+//					continue;
+//				if ( isDash(punctuationMark) && mpunct.start(1)!=0 && wordIsNumberWithSuffix(token)!=null )
+//					continue;
+//				if ( pos != mpunct.start(1))
+//					allTokens.add(new Pair<>(token.substring(pos,mpunct.start(1)), true));
+//				allTokens.add(new Pair<>(punctuationMark, false));
+//				pos = mpunct.end(1);
+//			}
+//			if ( pos != token.length() )
+//				allTokens.add(new Pair<>(token.substring(pos), true));
 		}
 
 	}	
 
 	protected String[] wordIsNumberWithSuffix(String word) {
-		Pattern p = Pattern.compile("^(\\$?\\d+(?:[.,:]\\d+)?(?:[.,:]\\d+)?-?)([agijklmnpqrstuv]+)$");
+		Pattern p = Pattern.compile("^(\\$?\\d+(?:[.,:]\\d+)?(?:[.,:]\\d+)?[\\-\u2013\u2212]?)([agijklmnpqrstuv]+)$");
 		Matcher mp = p.matcher(word);
 		if (mp.matches())
 			return new String[] {mp.group(1),mp.group(2)};
@@ -112,6 +146,10 @@ public class IUTokenizer {
 		}
 		
 		return str;
+	}
+	
+	public static boolean isDash(String character) {
+		return character.equals("-") || character.equals("\u2212") || character.equals("\u2013");
 	}
 
 }

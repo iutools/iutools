@@ -157,5 +157,27 @@ public class IUTokenizerTest {
 		List<Pair<String,Boolean>> allTokens = tokenizer.getAllTokens();
 		Assert.assertEquals("",1,allTokens.size());
 	}
+	@Test
+	public void test_run__Case_tiret() throws IOException {
+		IUTokenizer tokenizer = new IUTokenizer();
+		String text;
+		text = "2015−mit";
+		List<String>words = tokenizer.run(text);
+		List<String>expectedWords = new ArrayList<String>();
+		expectedWords.add("2015−mit");
+		AssertHelpers.assertDeepEquals("", expectedWords, words);
+	}
+	
+	@Test
+	public void test_run__Case_tiret_period() throws IOException {
+		IUTokenizer tokenizer = new IUTokenizer();
+		String text;
+		text = "2015−mit.";
+		tokenizer.run(text);
+		List<Pair<String,Boolean>>expectedTokens = new ArrayList<Pair<String,Boolean>>();
+		expectedTokens.add(new Pair<>("2015−mit",true));
+		expectedTokens.add(new Pair<>(".",false));
+		AssertHelpers.assertDeepEquals("", expectedTokens, tokenizer.getTokens());
+	}
 	
 }
