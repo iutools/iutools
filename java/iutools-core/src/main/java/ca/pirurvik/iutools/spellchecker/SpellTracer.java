@@ -40,7 +40,8 @@ public class SpellTracer {
 			return badWordsToTrace;
 		}
 		
-	private static Pair<Boolean,String> traceStatus(String badWord, String candidate) {
+	private static Pair<Boolean,String> traceStatus(String badWord, 
+			String candidate) {
 		Boolean traceIsOn = null;
 		String traceID = null;
 		

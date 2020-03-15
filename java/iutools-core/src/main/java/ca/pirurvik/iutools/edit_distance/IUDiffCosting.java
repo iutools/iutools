@@ -26,22 +26,22 @@ import ca.pirurvik.iutools.spellchecker.SpellTracer;
 public class IUDiffCosting extends DiffCosting {
 
 	public double cost(DiffResult diff) {
-		SpellTracer.trace("SpellChecker.computeCandidateSimilarity", 
-				"Invoked", 
-				diff.origStr(), diff.revStr());
+//		SpellTracer.trace("SpellChecker.computeCandidateSimilarity", 
+//				"Invoked", 
+//				diff.origStr(), diff.revStr());
 		
 		Double _cost = costFirstMorphemeChange(diff);
-		SpellTracer.trace("cost", 
-				"AFTER costAsLeadingCharChanges, _cost="+_cost,
-				diff.origStr(), diff.revStr());			
+//		SpellTracer.trace("cost", 
+//				"AFTER costAsLeadingCharChanges, _cost="+_cost,
+//				diff.origStr(), diff.revStr());			
 		
 		for (int nn=0; nn < diff.transformations.size(); nn++) {
 			_cost += costNthTransformation(nn, diff);
 		}
 		
-		SpellTracer.trace("SpellChecker.computeCandidateSimilarity", 
-				"returning _cost="+_cost, 
-				diff.origStr(), diff.revStr());
+//		SpellTracer.trace("SpellChecker.computeCandidateSimilarity", 
+//				"returning _cost="+_cost, 
+//				diff.origStr(), diff.revStr());
 		
 		return _cost.doubleValue();
 	}
@@ -89,15 +89,15 @@ public class IUDiffCosting extends DiffCosting {
 		
 		StringTransformation transf = diff.transformations.get(transfNum);
 		
-		SpellTracer.trace("IUDiffCosting.costNthTransformation", 
-				"Costing transf #"+transfNum+": "+transf.origStr()+"-->"+transf.revStr(),
-				diff.origStr(), diff.revStr());
+//		SpellTracer.trace("IUDiffCosting.costNthTransformation", 
+//				"Costing transf #"+transfNum+": "+transf.origStr()+"-->"+transf.revStr(),
+//				diff.origStr(), diff.revStr());
 		
 		if (transf.origTokens.length <= 3 && 
 				transf.revisedTokens.length <= 3) {
-			SpellTracer.trace("IUDiffCosting.costAsCharacterDoubling", 
-					"Transformation affects only one char at one end",
-					diff.origStr(), diff.revStr());
+//			SpellTracer.trace("IUDiffCosting.costAsCharacterDoubling", 
+//					"Transformation affects only one char at one end",
+//					diff.origStr(), diff.revStr());
 			
 			String[] charDoublingResult = isCharDoubling2ways(transf);
 			if (charDoublingResult != null) {
@@ -201,9 +201,9 @@ public class IUDiffCosting extends DiffCosting {
 		
 		if (transf.origTokens.length <= 3 && 
 				transf.revisedTokens.length <= 3) {
-			SpellTracer.trace("IUDiffCosting.isCharDoubling", 
-					"Transformation affects only one char at one end",
-					transf.origStr(), transf.revStr());
+//			SpellTracer.trace("IUDiffCosting.isCharDoubling", 
+//					"Transformation affects only one char at one end",
+//					transf.origStr(), transf.revStr());
 			
 			String origStr = String.join("", transf.origTokens);
 			String revStr = String.join("", transf.revisedTokens);

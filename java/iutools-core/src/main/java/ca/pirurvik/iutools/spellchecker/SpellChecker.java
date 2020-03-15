@@ -274,9 +274,9 @@ public class SpellChecker {
 	public SpellingCorrection correctWord(String word, int maxCorrections) throws SpellCheckerException {
 		Logger logger = Logger.getLogger("SpellChecker.correctWord");
 		
-		SpellTracer.trace("SpellChecker.correctWord", 
-				"Invoked on word="+word, 
-				word, null);
+//		SpellTracer.trace("SpellChecker.correctWord", 
+//				"Invoked on word="+word, 
+//				word, null);
 		
 		boolean wordIsSyllabic = Syllabics.allInuktitut(word);
 		
@@ -289,9 +289,9 @@ public class SpellChecker {
 		corr.wasMispelled = isMispelled(wordInLatin);		
 		logger.debug("wasMispelled= "+corr.wasMispelled);
 
-		SpellTracer.trace("SpellChecker.correctWord", 
-				"corr.wasMispelled="+corr.wasMispelled, 
-				word, null);
+//		SpellTracer.trace("SpellChecker.correctWord", 
+//				"corr.wasMispelled="+corr.wasMispelled, 
+//				word, null);
 		
 		if (corr.wasMispelled) {
 			// set ngramStats and suite of words for candidates according to type of word (normal word or numeric expression)
@@ -301,10 +301,10 @@ public class SpellChecker {
 			ngramStatsForCandidates = getNgramStatsToBeUsedForCandidates(wordIsNumericTerm);
 			Set<String> candidates = firstPassCandidates_TFIDF(wordInLatin);
 			
-			SpellTracer.containsCorrection(
-					"SpellChecker.correctWord", 
-					"List of string candidates", 
-					word, "tamainni", candidates);
+//			SpellTracer.containsCorrection(
+//					"SpellChecker.correctWord", 
+//					"List of string candidates", 
+//					word, "tamainni", candidates);
 			
 //			SpellTracer.trace("SpellChecker.correctWord", 
 //					"first pass candidates: "+StringUtils.join(candidates.iterator(), ", "), 
@@ -314,17 +314,16 @@ public class SpellChecker {
 			
 			List<ScoredSpelling> scoredSpellings = computeCandidateSimilarities(wordInLatin, candidates);
 
-			SpellTracer.containsCorrection(
-					"SpellChecker.correctWord", 
-					"Unsorted List of scored spellings", 
-					word, "tamainni", scoredSpellings);
+//			SpellTracer.containsCorrection(
+//					"SpellChecker.correctWord", 
+//					"Unsorted List of scored spellings", 
+//					word, "tamainni", scoredSpellings);
 			
 			scoredSpellings = sortCandidatesBySimilarity(scoredSpellings);
-
 			
-			SpellTracer.trace("SpellChecker.correctWord", 
-					"SORTED scored candidates: "+StringUtils.join(scoredSpellings.iterator(), ", "), 
-					word, null);
+//			SpellTracer.trace("SpellChecker.correctWord", 
+//					"SORTED scored candidates: "+StringUtils.join(scoredSpellings.iterator(), ", "), 
+//					word, null);
 			
 			if (wordIsNumericTerm) {
 				for (int ic=0; ic<scoredSpellings.size(); ic++) {
@@ -496,9 +495,9 @@ public class SpellChecker {
 
 	private double computeCandidateSimilarity(String badWord, String candidate) throws SpellCheckerException {
 		
-		SpellTracer.trace("SpellChecker.computeCandidateSimilarity", 
-				"Invoked", 
-				badWord, candidate);
+//		SpellTracer.trace("SpellChecker.computeCandidateSimilarity", 
+//				"Invoked", 
+//				badWord, candidate);
 		
 		double distance;
 		try {
@@ -542,19 +541,19 @@ public class SpellChecker {
 		Set<String> candidates = new HashSet<String>();
 		for (int i=0; i<idf.length; i++) {
 			Set<String> candidatesWithNgram = wordsContainingSequ(idf[i].getFirst());
-			SpellTracer.trace("SpellChecker.firstPassCandidates_TFIDF", 
-					"Adding candidates that contain ngram="+idf[i].getFirst()+
-					", namely: "+StringUtils.join(candidatesWithNgram.iterator(), ","),
-					badWord, "tamainni");
+//			SpellTracer.trace("SpellChecker.firstPassCandidates_TFIDF", 
+//					"Adding candidates that contain ngram="+idf[i].getFirst()+
+//					", namely: "+StringUtils.join(candidatesWithNgram.iterator(), ","),
+//					badWord, "tamainni");
 			candidates.addAll(candidatesWithNgram);	
 			if (candidates.size() > MAX_CANDIDATES)
 				break;
 		}
 		
-		SpellTracer.containsCorrection(
-				"SpellChecker.firstPassCandidates_TFIDF", 
-				"Unsorted candidates", 
-				badWord, "tamainni", candidates);
+//		SpellTracer.containsCorrection(
+//				"SpellChecker.firstPassCandidates_TFIDF", 
+//				"Unsorted candidates", 
+//				badWord, "tamainni", candidates);
 		
 		
 		// 4. compute scores for each word and order words highest score first
