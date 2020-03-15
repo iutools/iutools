@@ -22,7 +22,7 @@ public class WordInfo {
 	 * decompositions than are stored in the WordInfo. The total number of
 	 * decompositions that were avaible is provided by totalDecompositions.
 	 */
-	Decomposition[] topDecompositions = null;
+	String[] topDecompositions = null;
 	
 	/**
 	 * Total number of decompositions that were obtained for this word.
@@ -42,7 +42,7 @@ public class WordInfo {
 		this.key = _key;
 	}
 
-	public void setDecompositions(Decomposition[] decomps) {
+	public void setDecompositions(String[] decomps) {
 		if (decomps == null) {
 			topDecompositions = null;
 			totalDecompositions = null;

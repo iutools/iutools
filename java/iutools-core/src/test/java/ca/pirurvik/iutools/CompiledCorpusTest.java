@@ -123,7 +123,7 @@ public class CompiledCorpusTest extends TestCase
 			// It does NOT mean that no decomps can be computed for this word.
 			//
 			Integer numDecomps = wInfo.totalDecompositions;
-			Decomposition[] decomps = wInfo.topDecompositions;
+			String[] decomps = wInfo.topDecompositions;
 		}
 		
 		// You can ask for information about the various ngrams 
@@ -155,13 +155,17 @@ public class CompiledCorpusTest extends TestCase
 		compiledCorpus.addWord(word); // WITHOUT decompositions
 		word = "inuktut";
 		Decomposition[] decomps = new MorphologicalAnalyzer().decomposeWord(word);
-		compiledCorpus.addWord(word, decomps); // WITH decompositions
+		String[] decompsStr = new String[decomps.length];
+		for (int ii=0; ii < decomps.length; ii++) {
+			decompsStr[ii] = decomps[ii].toStr2();
+		}
+		compiledCorpus.addWord(word, decompsStr); // WITH decompositions
 		
 		// You can override the decompositions of a word that is already in the 
 		// corpus
 		//
 		compiledCorpus.info4word(word)
-			.setDecompositions(new Decomposition[0]);
+			.setDecompositions(new String[0]);
 		
 		// Attempting to add a word that is already registered raises a 
 		// WordAlreadinInCorpusException exception.

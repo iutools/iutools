@@ -39,6 +39,7 @@ import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.json.PrettyPrinter;
+import ca.nrc.ui.commandline.ProgressMonitor_Terminal;
 
 
 /**
@@ -78,6 +79,7 @@ public class CompiledCorpus
 	public Map<String,Long> ngramStats = null;
 
 	private Map<String,WordInfo> word2infoMap = new HashMap<String,WordInfo>();
+		
 	private Map<Long,String> key2word = new HashMap<Long,String>();
 	private Map<String,Set<Long>> ngram2wordKeysMap = 
 				new HashMap<String,Set<Long>> ();
@@ -291,21 +293,8 @@ public class CompiledCorpus
 			}
 		}
 		saveCompilerInDirectory(corpusDirectoryPathname);
-//		if (completeCompilationResultsFilePathname != null)
-//				saveCompilerInJSONFile(completeCompilationResultsFilePathname);
 	}
 	
-//	public boolean setCompleteCompilationFilePath(String _trieFilePath) {
-//		File f = new File(_trieFilePath);
-//		File dirF = f.getParentFile();
-//		if ( dirF != null && !dirF.isDirectory() ) {
-//			completeCompilationResultsFilePathname = null;
-//			return false;
-//		}
-//		completeCompilationResultsFilePathname = _trieFilePath;
-//		return true;
-//	}
-//	
 	public Trie getTrie() {
 		return this.trie;
 	}
@@ -331,7 +320,7 @@ public class CompiledCorpus
 			saveFile.delete();
 	}
 
-	private void saveCompilerInDirectory(String corpusDirectoryPathname) throws CompiledCorpusException  {
+	public void saveCompilerInDirectory(String corpusDirectoryPathname) throws CompiledCorpusException  {
 		String saveFilePathname = corpusDirectoryPathname + "/" + JSON_COMPILATION_FILE_NAME;
 		saveCompilerInJSONFile(saveFilePathname);
 	}
@@ -354,16 +343,6 @@ public class CompiledCorpus
 		} catch (JsonIOException | IOException e) {
 			throw new CompiledCorpusException(e);
 		}
-// This is what was done before to save the compiled corpus in a file. TO BE DELETED eventually.
-//		String json = gson.toJson(this);
-//		this.retrievedFileWordCounter = savedRetrievedFileWordCounter;
-//		try {
-//			saveFile.write(json);
-//			saveFile.flush();
-//			saveFile.close();
-//		} catch (IOException e) {
-//			throw new CompiledCorpusException(e);
-//		}
 		toConsole("saved in "+saveFilePathname);
 	}
 	
@@ -821,7 +800,7 @@ public class CompiledCorpus
 		addWord(word, null);
 	}
 	
-	public void addWord(String word, Decomposition[] decomps) throws CompiledCorpusException {
+	public void addWord(String word, String[] decomps) throws CompiledCorpusException {
 		if (word2infoMap.containsKey(word)) {
 			throw new CompiledCorpusException("Attempted to add a word for "+
 						"there was already an entry ("+word+").");
@@ -877,6 +856,7 @@ public class CompiledCorpus
 		}
 		return words;		
 	}
+		
 	public WordInfo info4word(String word) {
 		WordInfo wInfo = null;
 		if (word2infoMap.containsKey(word)) {
@@ -885,6 +865,7 @@ public class CompiledCorpus
 		
 		return wInfo;
 	}
+	
 	public void incrementWordFreq(String word) throws CompiledCorpusException {
 		WordInfo wInfo = info4word(word);
 		if (wInfo == null) {
@@ -892,7 +873,49 @@ public class CompiledCorpus
 					"Tried to increment frequency of unknown word "+word);
 		}
 		wInfo.frequency++;
-		
+	}
+	public void migrateWordInfoToNewDataStructure() throws CompiledCorpusException {
+		System.out.println(
+			"Migrate corpus to new data structure.\n"+
+			"This may take a few minutes...\n");
+				
+		String mess = "Migrating words for which morphological decomposition were found";
+		int numSteps = segmentsCache.keySet().size();
+		ProgressMonitor_Terminal monitor = 
+				new ProgressMonitor_Terminal(numSteps, mess);
+		int counter = 0;
+		Set<String> words = segmentsCache.keySet();
+		for (String aWord: words) {
+			counter++;
+			System.out.println("** migrateWordInfoOutOfPhonemeTrie: SEGMENTED word="+aWord+" ("+counter+" of "+numSteps+
+					": "+String.format("%.0f%%",100.0*counter/numSteps)+")"
+				);
+			long usedMem = Runtime.getRuntime().totalMemory();
+			long maxMem = Runtime.getRuntime().maxMemory();
+			long remainingMem = maxMem - usedMem;
+			double remainingMemPerc = 100.0 * remainingMem / maxMem;
+			System.out.println("  Remaining mem: "+remainingMem+" ("+String.format("%.0f%%",remainingMemPerc)+")");
+			String[] decomps = segmentsCache.get(aWord);
+			addWord(aWord, decomps);
+			// To save memory during upgrade, set the entry for that word
+			// to null;
+			segmentsCache.put(aWord, null);
+			monitor.stepCompleted();
+		}
+		segmentsCache = null;
+
+		mess = "Migrating words for which NO morphological decomposition were found";
+		numSteps = wordsFailedSegmentation.size();
+		monitor = new ProgressMonitor_Terminal(numSteps, mess);
+		counter = 0;
+		for (String word: wordsFailedSegmentation) {
+			counter++;
+			System.out.println("** migrateWordInfoOutOfPhonemeTrie: NON-Segmented word="+word+" ("+counter+" of "+numSteps+")");			
+			String[] decomps = new String[0];
+			addWord(word, decomps);
+			monitor.stepCompleted();
+		}
+		wordsFailedSegmentation = null;
 	}
 }
 
