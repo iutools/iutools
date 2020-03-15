@@ -22,6 +22,8 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.gson.Gson;
 
 import ca.nrc.config.ConfigException;
@@ -75,6 +77,11 @@ public class SpellChecker {
 			latinSingleInuktitutCharacters.add(Syllabics.syllabicsToRomanICI[i][1]);
 		};
 	}
+	
+    public static Cache<String, Set<String>> 
+		wordsWithNgramCache = 
+			Caffeine.newBuilder().maximumSize(10000)
+			.build();
 	
 	public SpellChecker() throws StringSegmenterException, SpellCheckerException {
 		init_SpellChecker(CompiledCorpusRegistry.defaultCorpusName);
@@ -175,8 +182,7 @@ public class SpellChecker {
 		if (corpus != null) corpus.setVerbose(value);
 	}
 	
-	public void addCorrectWord(String word) {
-		
+	public void addCorrectWord(String word) {		
 		String[] numericTermParts = null;
 		boolean wordIsNumericTerm = (numericTermParts=wordIsNumberWithSuffix(word)) != null;
 		if (wordIsNumericTerm && allNormalizedNumericTerms.indexOf(","+"0000"+numericTermParts[1]+",") < 0) {
@@ -191,6 +197,7 @@ public class SpellChecker {
 			allWords += ","+word+",";
 		}
 		__updateSequenceIDFForWord(word,wordIsNumericTerm);
+		clearWordsWithNgramCache();
 	}
 	
 	private void __updateSequenceIDFForWord(String word, boolean wordIsNumericTerm) {
@@ -502,40 +509,6 @@ public class SpellChecker {
 		return distance;
 	}
 
-	// Not used anymore, replaced by firstPassCandidates_TFIDF - to be deleted
-//	public Set<String> firstPassCandidates(String badWord) {
-//		Logger logger = Logger.getLogger("SpellChecker.firstPassCandidates");
-//		Set<String> candidates = new HashSet<String>();
-//		List<Pair<String,Long>> rarest = rarestSequencesOf(badWord);
-//		while (!rarest.isEmpty()) {
-//			Pair<String,Long> currSeqInfo = rarest.remove(0);
-//			logger.debug("sequence: "+currSeqInfo.getFirst()+" ("+currSeqInfo.getSecond()+")");
-//			Set<String> wordsWithSequence = wordsContainingSequ(currSeqInfo.getFirst());
-//			logger.debug("  wordsWithSequence: "+wordsWithSequence.size());
-//			
-//			candidates.addAll(wordsWithSequence);
-//			logger.debug("  candidates: "+candidates.size());
-//			if (candidates.size() >= MAX_CANDIDATES) {
-//				if (!rarest.isEmpty()) {
-//					Pair<String,Long> nextSeqInfo = rarest.get(0);
-//					if (currSeqInfo.getSecond() == nextSeqInfo.getSecond()) {
-//						// The next sequence is just as rare as the current one, so 
-//						// keep going.
-//						continue;
-//					} else {
-//						break;
-//					}
-//				}
-//			}
-//		}
-//		logger.debug("Nb. candidates: "+candidates.size());
-//		Iterator<String> itcand = candidates.iterator();
-//		//while (itcand.hasNext())
-//		//	logger.debug("candidate: "+itcand.next());
-//		return candidates;
-//	}
-
-
 	public Set<String> firstPassCandidates_TFIDF(String badWord) {
 		Logger logger = Logger.getLogger("SpellChecker.firstPassCandidates_TFIDF");
 		// 1. compile ngrams of badWord
@@ -645,37 +618,41 @@ public class SpellChecker {
 	    }
 	}
 
-
-
 	protected Set<String> wordsContainingSequ(String seq) {
 		Logger logger = Logger.getLogger("SpellChecker.wordsContainingSequ");
-		Pattern p;
-		if (seq.charAt(0)=='^' && seq.charAt(seq.length()-1)=='$') {
-			seq = seq.substring(1,seq.length()-1);
-			p = Pattern.compile(",("+seq+"),");
-		}
-		else if (seq.charAt(0)=='^') {
-			seq = seq.substring(1);
-			p = Pattern.compile(",("+seq+"[^,]*),");
-		}
-		else if (seq.charAt(seq.length()-1)=='$') {
-			logger.debug("seq= "+seq);
-			seq = seq.substring(0,seq.length()-1);
-			logger.debug(">>> seq= "+seq);
-			p = Pattern.compile(",([^,]*"+seq+"),");
-		}
-		else
-			p = Pattern.compile(",([^,]*"+seq+"[^,]*),");
 		
-		if (seq.startsWith("tamain")) {
-			System.out.println("** wordsContainingSequ: looking for p="+p+
-					" in allWordsForCandidates="+allWordsForCandidates);
+		Set<String> wordsWithSeq = uncacheWordsWithNgram(seq);
+//		Set<String> wordsWithSeq = null;
+		if (wordsWithSeq == null) {
+			Pattern p;
+			if (seq.charAt(0)=='^' && seq.charAt(seq.length()-1)=='$') {
+				seq = seq.substring(1,seq.length()-1);
+				p = Pattern.compile(",("+seq+"),");
+			}
+			else if (seq.charAt(0)=='^') {
+				seq = seq.substring(1);
+				p = Pattern.compile(",("+seq+"[^,]*),");
+			}
+			else if (seq.charAt(seq.length()-1)=='$') {
+				logger.debug("seq= "+seq);
+				seq = seq.substring(0,seq.length()-1);
+				logger.debug(">>> seq= "+seq);
+				p = Pattern.compile(",([^,]*"+seq+"),");
+			}
+			else
+				p = Pattern.compile(",([^,]*"+seq+"[^,]*),");
+			
+			if (seq.startsWith("tamain")) {
+				System.out.println("** wordsContainingSequ: looking for p="+p+
+						" in allWordsForCandidates="+allWordsForCandidates);
+			}
+			
+			Matcher m = p.matcher(allWordsForCandidates); //p.matcher(allWords)
+			wordsWithSeq = new HashSet<String>();
+			while (m.find())
+				wordsWithSeq.add(m.group(1));
+			cacheWordsWithNgram(seq, wordsWithSeq);
 		}
-		
-		Matcher m = p.matcher(allWordsForCandidates); //p.matcher(allWords)
-		Set<String> wordsWithSeq = new HashSet<String>();
-		while (m.find())
-			wordsWithSeq.add(m.group(1));
 		return wordsWithSeq;
 	}
 
@@ -740,5 +717,20 @@ public class SpellChecker {
 
 	String getAllWordsToBeUsedForCandidates(boolean wordIsNumericTerm) {
 		return wordIsNumericTerm? this.allNormalizedNumericTerms : this.allWords;
+	}
+	
+	private void cacheWordsWithNgram(String ngram, Set<String> words) {
+		wordsWithNgramCache.put(ngram, words);
+	}
+
+	private Set<String> uncacheWordsWithNgram(String ngram) {
+		Set<String> words = wordsWithNgramCache.getIfPresent(ngram);
+		return words;
+	}
+	
+	private void clearWordsWithNgramCache() {
+		wordsWithNgramCache = 
+				Caffeine.newBuilder().maximumSize(10000)
+				.build();
 	}
 }

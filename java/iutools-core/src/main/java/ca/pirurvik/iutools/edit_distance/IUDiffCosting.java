@@ -30,7 +30,7 @@ public class IUDiffCosting extends DiffCosting {
 				"Invoked", 
 				diff.origStr(), diff.revStr());
 		
-		Double _cost = costLeadingCharChanges(diff);
+		Double _cost = costFirstMorphemeChange(diff);
 		SpellTracer.trace("cost", 
 				"AFTER costAsLeadingCharChanges, _cost="+_cost,
 				diff.origStr(), diff.revStr());			
@@ -223,16 +223,15 @@ public class IUDiffCosting extends DiffCosting {
 	
 
 	/**
-	 * Check if the first transformation in a diff affects the head of the word and 
-	 * if so, see if it is an allowable transformation (if not, return an INFINITE 
-	 * cost).
+	 * Cost of transformations for the first morpheme of words follow different 
+	 * rules than transformation affecting rest of the morphemes. 
 	 * 
 	 * @param chars1
 	 * @param chars2
 	 * @param diff
 	 * @return
 	 */
-	private Double costLeadingCharChanges(DiffResult diff) {
+	private Double costFirstMorphemeChange(DiffResult diff) {
 		Double _cost = 0.0;
 		List<StringTransformation> transf = diff.transformations;
 		

@@ -579,6 +579,18 @@ public class SpellCheckerTest {
 				"Note: This test may fail on occasion depending on the speed "+
 				"and current load of your machine.", 
 				gotElapsed, expMaxElapsed);
+		
+		start = System.currentTimeMillis();
+		checker.correctText(text);
+		Double gotElapsedSecondTime = (System.currentTimeMillis() - start) 
+				/ (1.0 * 1000);
+		
+		double expSpeedupFactor = 2.0;
+		AssertNumber.isLessOrEqualTo(
+				"Correcting text second time should have been MUCH FASTER "+
+				"\n(exp speedup: x"+expSpeedupFactor+").",
+				gotElapsedSecondTime, gotElapsed / expSpeedupFactor);
+		
 	}
 	
 	/**********************************

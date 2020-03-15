@@ -29,7 +29,13 @@ public class SpellCheckerAccuracyTest {
 	
 	private static DecimalFormat df2 = new DecimalFormat("#.##");
 	
-	private static final SpellCheckerExample[] examplesForSuggestions = new SpellCheckerExample[] { 
+	private static final SpellCheckerExample[] examplesForSuggestions = new SpellCheckerExample[] {
+			
+		// Examples that currently do not work.
+		//
+//		new SpellCheckerExample("maliklugu", 5, "maliglugu"),	
+			
+		// Examples that currently work
 		new SpellCheckerExample("akitujutinut", 5, "akitujuutinut"),
 		new SpellCheckerExample("arragumi", 5, "arraagumi"),
 		new SpellCheckerExample("asuillaak", 5, "asuilaak"),
@@ -39,9 +45,9 @@ public class SpellCheckerAccuracyTest {
 		new SpellCheckerExample("katimajit", 5, "katimajiit"),
 		new SpellCheckerExample("katimmajjutiksaq", 5, "katimajjutiksaq"),
 		new SpellCheckerExample("kiinaujatigut", 5, "kiinaujaqtigut"),
-		new SpellCheckerExample("kiinaujat", 5, "kiinaujait"),
+		new SpellCheckerExample("kiinaujat", 5, "kiinaujait"),		
 		new SpellCheckerExample("maligaliqtit", 5, "maligaliqtiit"),
-		new SpellCheckerExample("maligatigut", 5, "maligaqtigut"),
+		new SpellCheckerExample("maligatigut", 5, "maligaqtigut"),		
 		new SpellCheckerExample("nakuqmi", 5, "nakurmiik"),
 		new SpellCheckerExample("nigiani", 5, "niggiani"),
 		new SpellCheckerExample("nniaqamangittulirijiit", 5, "aanniaqamangittulirijiit"),
@@ -85,7 +91,9 @@ public class SpellCheckerAccuracyTest {
 	@Test @Ignore
 	public void test__EvaluateSugestions__DEBUG_UsingSmallCustomDictionary() throws Exception {
 		//
-		// This test is used mostly for Debugging purposes.
+		// This test is used only for Debugging purposes and is usually left 
+		// @Ignored.
+		//
 		// It does the same thing as test
 		//
 		//   test__EvaluateSugestions__LargeDictionary
@@ -93,7 +101,6 @@ public class SpellCheckerAccuracyTest {
 		// except that it does it with a small dictionary.
 		// As a result, it loads and runs much faster.
 		//
-		
 		
 		// Set this to a specific example if you only want 
 		// to evaluate that one.
@@ -120,7 +127,7 @@ public class SpellCheckerAccuracyTest {
 		// to evaluate that one.
 		//
 		String focusOnExample = null;
-//		String focusOnExample = "tamaini";
+//		String focusOnExample = "maliklugu";
 		
 		boolean verbose = true;
 		double expPercentFoundInTopN = 0.90;

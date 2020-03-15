@@ -149,6 +149,10 @@ public class IUSpellingDistanceTest {
 			new Example2Way("aanniaq", "nniaq")
 					.setExpDist(DiffCosting.TINY_COST)
 					.setDescr("Special case: adding 'aa' to 'nniaq', should encur TINY cost"),
+										
+//			new Example2Way("maliklugu", "maliglugu")
+//					.setMinDist(DiffCosting.INFINITE)
+//					.setDescr("Changing first morpheme should encur INFINITE cost if at least one of the words is multi-morpheme."),
 
 	};
 
@@ -207,7 +211,7 @@ public class IUSpellingDistanceTest {
 		// only want to run the test on that one example.
 		//
 		String focusOnExample = null;
-//		String focusOnExample = "aanniaq/nniaq";
+//		String focusOnExample = "maliklugu/maliglugu";
 		
 		for (Example2Way anExample: examples2Way) {
 			
