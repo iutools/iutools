@@ -60,6 +60,7 @@ class SpellController extends WidgetController {
 			if (isValid) {
 				this.clearResults();
 				this.setBusy(true);
+				this.elementForProp('btnCopy').hide();
 				this.invokeSpellService(this.getSpellRequestData(), 
 						this.successCallback, this.failureCallback)
 			}
@@ -174,6 +175,7 @@ class SpellController extends WidgetController {
 			var divChecked = this.elementForProp('divChecked');
 			var divCheckedResults = divChecked.find('div#div-results');
 			var divCheckedTitle = divChecked.find('div#title-and-copy');
+			var btnCopy = this.elementForProp('btnCopy');
 			divCheckedResults.empty();
 			divCheckedTitle.css('display','block');
 			divCheckedResults.css('display','block');
@@ -191,6 +193,7 @@ class SpellController extends WidgetController {
 			spellController.setCorrectionsHandlers();
 		}
 		
+		btnCopy.show();
 		this.setEventHandler("btnCopy", "click", this.copyToClipboard);
 
 		this.setBusy(false);
