@@ -14,21 +14,20 @@ public class SpellCheckerExample extends BinaryClassifierExample {
 	
 	String wordToCheck = null;
 	Set<String> acceptableCorrections = null;
-	public int expMaxRank;
+	public Integer expMaxRank;
 
 	public SpellCheckerExample(String _wordToCheck) {
 		super(_wordToCheck);
 		this.init_SpellCheckerExample(_wordToCheck, -1, new String[] {});
-	}
-	
+	}	
 
-	public SpellCheckerExample(String _wordToCheck, int _expMaxRank, String... _acceptableCorrections) {
+	public SpellCheckerExample(String _wordToCheck, Integer _expMaxRank, String... _acceptableCorrections) {
 		super(_wordToCheck);
 		this.init_SpellCheckerExample(_wordToCheck, _expMaxRank, _acceptableCorrections);
 	}
 
 	private void init_SpellCheckerExample(String _wordToCheck, 
-			int _expMaxRank, String[] _acceptableCorrections) {
+			Integer _expMaxRank, String[] _acceptableCorrections) {
 		this.wordToCheck = _wordToCheck;
 		this.expMaxRank = _expMaxRank;
 		this.acceptableCorrections = new HashSet<String>();

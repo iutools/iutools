@@ -10,6 +10,8 @@ public class SpellDebug {
 	
 	
 	private static String[][] pairsToTraceArr = new String[][] {
+//		new String[] {"angijuqqaaqaqtutik", "angajuqqaaqaqtutik"},
+//		new String[] {"angijuqqaaqaqtutik", "*"},
 //		new String[] {"maliklugu","maligluglu"},
 //		new String[] {"maliklugu","*"},
 //		new String[] {"nakuqmi","nakurmiik"}

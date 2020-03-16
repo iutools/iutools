@@ -30,7 +30,7 @@ public class SpellCheckerEvaluator {
 	private double sumRank = 0.0;
 	private int totalNonNullRank = 0;
 
-	private Boolean verbose = false;
+	private Integer verbosity = 0;
 	
 	public SpellCheckerEvaluator() throws StringSegmenterException, FileNotFoundException, SpellCheckerException, ConfigException {
 		init_SpellCheckerEvaluator(null);
@@ -48,8 +48,8 @@ public class SpellCheckerEvaluator {
 	}
 	
 	public void onNewExample(SpellCheckerExample example) throws SpellCheckerException {
-		if (verbose) {
-			System.out.println("Processing example "+example.toString()+"\n");
+		if (verbosity > 0) {
+			System.out.print("\nProcessing example "+example.toString()+"\n");
 		}
 		
 		Set<String> correctForms = example.acceptableCorrections;
@@ -77,26 +77,34 @@ public class SpellCheckerEvaluator {
 	
 	
 
-	private void evaluateCheckerSuggestions(SpellCheckerExample example, SpellingCorrection gotCorrection) {
+	private void evaluateCheckerSuggestions(SpellCheckerExample example, 
+			SpellingCorrection gotCorrection) {
 		Integer rank = null;
 		List<String> suggestions = new ArrayList<String>();
 		for (ScoredSpelling cand: gotCorrection.getScoredPossibleSpellings()) {
 			suggestions.add(cand.spelling);
 		}
+		
+		if (verbosity > 1) {
+			System.out.println("   Got suggestions: "+
+					String.join(",", suggestions));
+		}
+		
 		for (int ii=0; ii < suggestions.size(); ii++) {
 			if (example.acceptableCorrections.contains(suggestions.get(ii))) {
-				rank = ii;
+				rank = ii + 1;
 				break;
 			}
 		}
 		
 		boolean rankBad = false;
 		if (rank == null) {
-			if (example.expMaxRank >= 0) {
+			if (example.expMaxRank != null) {
 				rankBad = true;
 			}
 		} else {
-			if (rank > example.expMaxRank) {
+			if (example.expMaxRank == null || 
+					rank > example.expMaxRank) {
 				rankBad = true;
 			}
 		}
@@ -107,6 +115,10 @@ public class SpellCheckerEvaluator {
 		if (rank != null) {
 			sumRank += 1.0 * rank;
 			totalNonNullRank++;
+		}
+		
+		if (verbosity > 1) {
+			System.out.println("   Got rank="+rank+" (exp max: "+example.expMaxRank+")");
 		}
 		
 		correctSpellingRank.put(example, rank);
@@ -125,20 +137,31 @@ public class SpellCheckerEvaluator {
 
 
 	private void onTruePositive(SpellCheckerExample example, SpellingCorrection gotCorrection) {
+		if (verbosity > 1) {
+			System.out.println("   True Positive: input word was deemed mis-spelled as it should have");
+		}		
 		truePos.add(example);
 		evaluateCheckerSuggestions(example, gotCorrection);		
 	}
 	
 	private void onFalsePositive(SpellCheckerExample example) {
+		if (verbosity > 1) {
+			System.out.println("   False Positive: input word was deemed mis-spelled but it should NOT have");
+		}		
 		falsePos.add(example);
 	}
 
 	private void onTrueNegative(SpellCheckerExample example) {
+		if (verbosity > 1) {
+			System.out.println("   True Negative: input word was deemed correctly spelled as it should have");
+		}		
 		trueNeg.add(example);
 	}
 
-
 	private void onFalseNegative(SpellCheckerExample example) {
+		if (verbosity > 1) {
+			System.out.println("   False Negative: input word was deemed correctly spelled but it should NOT have");
+		}				
 		falseNeg.add(example);
 	}
 	
@@ -221,8 +244,7 @@ public class SpellCheckerEvaluator {
 		return avg;
 	}
 
-	public void setVerbose(Boolean _verbose) {
-		this.verbose  = _verbose;		
+	public void setVerbose(Integer _verbosity) {
+		this.verbosity  = _verbosity;		
 	}
-	
 }

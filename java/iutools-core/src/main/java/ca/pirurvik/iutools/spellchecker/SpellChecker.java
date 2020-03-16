@@ -302,26 +302,11 @@ public class SpellChecker {
 			SpellDebug.containsCorrection(
 					"SpellChecker.correctWord", 
 					"List of string candidates", 
-					word, "maligluglu", candidates);
-			
-//			SpellTracer.trace("SpellChecker.correctWord", 
-//					"first pass candidates: "+StringUtils.join(candidates.iterator(), ", "), 
-//					word, null);
-			
-//			if (logger.isDebugEnabled()) logger.debug("candidates= "+PrettyPrinter.print(candidates));
+					word, "angajuqqaaqaqtutik", candidates);
 			
 			List<ScoredSpelling> scoredSpellings = computeCandidateSimilarities(wordInLatin, candidates);
 
-//			SpellTracer.containsCorrection(
-//					"SpellChecker.correctWord", 
-//					"Unsorted List of scored spellings", 
-//					word, "tamainni", scoredSpellings);
-			
 			scoredSpellings = sortCandidatesBySimilarity(scoredSpellings);
-			
-//			SpellTracer.trace("SpellChecker.correctWord", 
-//					"SORTED scored candidates: "+StringUtils.join(scoredSpellings.iterator(), ", "), 
-//					word, null);
 			
 			if (wordIsNumericTerm) {
 				for (int ic=0; ic<scoredSpellings.size(); ic++) {
@@ -504,27 +489,33 @@ public class SpellChecker {
 
 	public Set<String> firstPassCandidates_TFIDF(String badWord, 
 			boolean wordIsNumericTerm) {
-		Logger logger = Logger.getLogger("SpellChecker.firstPassCandidates_TFIDF");
-		
-		// 1. compile ngrams of badWord
-		// 2. compile IDF of each ngram = 1 / #words with this ngram + 1 and order highest first
-		// 3. add words for top IDFs to the set of candidates until the number of candidates exceeds the maximum
-		// 4. compute scores for each word and order words highest score first
-		// compute edit distance, etc.
-		
-		String allWordsForCandidates = getAllWordsToBeUsedForCandidates(wordIsNumericTerm);
 
-		ngramStatsForCandidates = getNgramStatsToBeUsedForCandidates(wordIsNumericTerm);		
+		// 1. compile ngrams of badWord
+		// 2. compile IDF of each ngram
+		// 3. add words for top IDFs to the set of candidates until the number 
+		//    of candidates exceeds the maximum
+		// 4. compute scores for each word and order words highest score first
+		//    compute edit distance, etc.
+		
+		String allWordsForCandidates = 
+			getAllWordsToBeUsedForCandidates(wordIsNumericTerm);
+
+		ngramStatsForCandidates = 
+			getNgramStatsToBeUsedForCandidates(wordIsNumericTerm);		
 		
 		NgramCompiler ngramCompiler = new NgramCompiler();
 		ngramCompiler.setMin(3);
 		ngramCompiler.includeExtremities(true);
 		
-		// Step 1: compile most significant ngrams of mis-spelled word
-		String[] badWordNgrams = 
-				computeMostSignificantNgrams(badWord, ngramCompiler);
+		// Step 1: compile ngrams for the bad word
+		//
+		String[] badWordNgrams = ngrams4word(badWord, ngramCompiler);
 		
-		// Step 2: compile IDF of each ngram = 1 / #words with this ngram + 1 and order highest first
+		// Step 2: compile Inverse Document Frequency (IDF) of each 
+		// ngram and sort them from highest to lowest IDF 
+		//
+		//    IDF(word) = 1 / (#words with this ngram + 1)
+		//
 		Pair<Pair<String,Double>[],Map<String,Double>> idfInfo = 
 				computeNgramIDFs(badWordNgrams);
 		Pair<String, Double>[] ngramsIDF = idfInfo.getFirst();
@@ -532,13 +523,16 @@ public class SpellChecker {
 		
 		// Step 3: Find words that most closely match the ngrams of the bad 
 		// (up to a maximum of MAX_CANDIDATES
+		//
 		Set<String> candidates = 
-				candidatesWithBestNGramsMatch(ngramsIDF, allWordsForCandidates);
+				candidatesWithBestNGramsMatch(ngramsIDF, 
+						allWordsForCandidates);
 		
-		// Step 4: compute scores for each word and sords words in decreasing 
-		// order of score (highest score first)
+		// Step 4: compute scores for each word and sort them from highest to
+		//   lowest score.
+		//
 		Pair<String,Double>[] arrScoreValues =
-				scoreAndSortCandidates_NEW(candidates, badWordNgrams, 
+				scoreAndSortCandidates(candidates, badWordNgrams, 
 						ngramsIDF, ngramCompiler);
 
 		Set<String> allCandidates = new HashSet<String>();
@@ -596,50 +590,8 @@ public class SpellChecker {
 		
 		return candidates;
 	}
-
-	private Pair<String,Double>[] scoreAndSortCandidates(
-			Set<String> candidates, 
-			String[] badWordNGrams, Map<String,Double> idfHash, 
-			NgramCompiler ngramCompiler) {
-		
-		Set<String> ngramsOfBadWord = new HashSet<String>();
-		for (String ngram: badWordNGrams) {ngramsOfBadWord.add(ngram);}
-		
-		List<Pair<String,Double>> scoreValues = new ArrayList<Pair<String,Double>>();
-		Iterator<String> it = candidates.iterator();
-		while (it.hasNext()) {
-			String candidate = it.next();
-			if (candidate.equals("niggiani")) {
-				System.out.println("** firstPassCandidates_TFIDF: scoring tfidf of 'niggiani'");
-			}
-			Set<String> ngramsOfCandidate = ngramCompiler.compile(candidate);
-			Set<String> all = new HashSet<String>();
-			for (String ngram: badWordNGrams) {
-				all.add(ngram);
-			}
-			all.addAll(ngramsOfCandidate);
-			double totalScore = 0;
-			Iterator<String> itall = all.iterator();
-			while (itall.hasNext()) {
-				String el = itall.next();
-				if (ngramsOfBadWord.contains(el) && ngramsOfCandidate.contains(el)) {
-					double score = idfHash.get(el);
-					totalScore += score;
-				}
-			}
-			if (candidate.equals("niggiani")) {
-				System.out.println("** firstPassCandidates_TFIDF: tfidf score for 'niggiani' = "+totalScore);
-			}
-			scoreValues.add(new Pair<String,Double>(candidate,totalScore));
-		}
-		WordScoreComparator comparator = new WordScoreComparator();
-		Pair<String,Double>[] arrScoreValues = scoreValues.toArray(new Pair[] {});
-		Arrays.sort(arrScoreValues, comparator);
-		
-		return arrScoreValues;
-	}
 	
-	private Pair<String, Double>[] scoreAndSortCandidates_NEW(
+	private Pair<String, Double>[] scoreAndSortCandidates(
 			Set<String> candidates, 
 			String[] badWordNGrams, Pair<String, Double>[] ngramsIDF, 
 			NgramCompiler ngramCompiler) {
@@ -656,9 +608,6 @@ public class SpellChecker {
 		Iterator<String> it = candidates.iterator();
 		while (it.hasNext()) {
 			String candidate = it.next();
-			if (candidate.equals("niggiani")) {
-				System.out.println("** firstPassCandidates_TFIDF: scoring tfidf of 'niggiani'");
-			}
 			Set<String> ngramsOfCandidate = ngramCompiler.compile(candidate);
 			Set<String> all = new HashSet<String>();
 			for (String ngram: badWordNGrams) {
@@ -674,9 +623,6 @@ public class SpellChecker {
 					totalScore += score;
 				}
 			}
-			if (candidate.equals("niggiani")) {
-				System.out.println("** firstPassCandidates_TFIDF: tfidf score for 'niggiani' = "+totalScore);
-			}
 			scoreValues.add(new Pair<String,Double>(candidate,totalScore));
 		}
 		WordScoreComparator comparator = new WordScoreComparator();
@@ -687,15 +633,15 @@ public class SpellChecker {
 	}
 	
 
-	private String[] computeMostSignificantNgrams(String badWord, 
+	private String[] ngrams4word(String word, 
 			NgramCompiler ngramCompiler) {
-		Set<String>ngramsOfBadWord = ngramCompiler.compile(badWord);
+		Set<String>ngramsOfBadWord = ngramCompiler.compile(word);
 		String[] ngrams = ngramsOfBadWord.toArray(new String[] {});
 		
-		if (SpellDebug.traceIsActive(badWord)) {
-			SpellDebug.trace("SpellChecker.computeMostSignificantNgrams", 
-					"badWord ngrams=['"+String.join("', '", ngrams)+"']", 
-					badWord, null);
+		if (SpellDebug.traceIsActive(word)) {
+			SpellDebug.trace("SpellChecker.ngrams4word", 
+					"word ngrams=['"+String.join("', '", ngrams)+"']", 
+					word, null);
 		}
 		
 		return ngrams;
