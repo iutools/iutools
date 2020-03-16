@@ -54,7 +54,7 @@ import ca.inuktitutcomputing.utilities.NgramCompiler;
 public class SpellChecker {
 	
 	public int MAX_SEQ_LEN = 5;
-	public int MAX_CANDIDATES = 300; //200; //100;
+	public int MAX_CANDIDATES = 1000;
 	public int DEFAULT_CORRECTIONS = 5;
 	public String allWords = ",,";
 	public Map<String,Long> ngramStats = new HashMap<String,Long>();
@@ -62,7 +62,6 @@ public class SpellChecker {
 	public String allNormalizedNumericTerms = ",,";
 	public Map<String,Long> ngramStatsOfNumericTerms = new HashMap<String,Long>();
 	
-	public transient String allWordsForCandidates = null;
 	public transient Map<String,Long> ngramStatsForCandidates = null;
 
 	public transient EditDistanceCalculator editDistanceCalculator;
@@ -297,14 +296,13 @@ public class SpellChecker {
 			// set ngramStats and suite of words for candidates according to type of word (normal word or numeric expression)
 			String[] numericTermParts = wordIsNumberWithSuffix(wordInLatin);
 			boolean wordIsNumericTerm = numericTermParts != null;
-			allWordsForCandidates = getAllWordsToBeUsedForCandidates(wordIsNumericTerm);
-			ngramStatsForCandidates = getNgramStatsToBeUsedForCandidates(wordIsNumericTerm);
-			Set<String> candidates = firstPassCandidates_TFIDF(wordInLatin);
 			
-//			SpellTracer.containsCorrection(
-//					"SpellChecker.correctWord", 
-//					"List of string candidates", 
-//					word, "tamainni", candidates);
+			Set<String> candidates = firstPassCandidates_TFIDF(wordInLatin, wordIsNumericTerm);
+			
+			SpellDebug.containsCorrection(
+					"SpellChecker.correctWord", 
+					"List of string candidates", 
+					word, "maligluglu", candidates);
 			
 //			SpellTracer.trace("SpellChecker.correctWord", 
 //					"first pass candidates: "+StringUtils.join(candidates.iterator(), ", "), 
@@ -466,18 +464,7 @@ public class SpellChecker {
 	}
 
 
-	private void traceScoredCandidates(String mess, List<Pair<String, Double>> candidatesWithSim) {
-		System.out.println("** printScoredCandidates("+mess+"): Scored candiates are:\n");
-		Iterator<Pair<String, Double>> iteratorCand = candidatesWithSim.iterator();
-		while (iteratorCand.hasNext()) {
-			Pair<String, Double> cand = iteratorCand.next();
-			System.out.println("  corr="+cand.getFirst()+"; score="+cand.getSecond());
-		}
-	}
-	
 	private List<ScoredSpelling> sortCandidatesBySimilarity(List<ScoredSpelling> scoredSpellings) {
-		
-//		traceScoredCandidates("sortCandidatesBySimilarity on START", candidatesWithSim);
 		
 		Iterator<ScoredSpelling> iteratorCand = scoredSpellings.iterator();
 		Collections.sort(scoredSpellings, (ScoredSpelling p1, ScoredSpelling p2) -> {
@@ -495,12 +482,7 @@ public class SpellChecker {
 			String candidate = iterator.next();
 			double similarity = computeCandidateSimilarity(badWord,candidate);
 			scoredCandidates.add(new ScoredSpelling(candidate, new Double(similarity)));
-			if (candidate.equals("niggiani")) {
-				System.out.println("** computeCandidateSimilarities: similarity score for 'niggiani' = "+similarity);
-			}
 		}
-		
-		
 		
 		return scoredCandidates;
 	}
@@ -520,23 +502,30 @@ public class SpellChecker {
 		return distance;
 	}
 
-	public Set<String> firstPassCandidates_TFIDF(String badWord) {
+	public Set<String> firstPassCandidates_TFIDF(String badWord, 
+			boolean wordIsNumericTerm) {
 		Logger logger = Logger.getLogger("SpellChecker.firstPassCandidates_TFIDF");
+		
 		// 1. compile ngrams of badWord
 		// 2. compile IDF of each ngram = 1 / #words with this ngram + 1 and order highest first
 		// 3. add words for top IDFs to the set of candidates until the number of candidates exceeds the maximum
 		// 4. compute scores for each word and order words highest score first
 		// compute edit distance, etc.
 		
-		// 1. compile ngrams of badWord
+		String allWordsForCandidates = getAllWordsToBeUsedForCandidates(wordIsNumericTerm);
+
+		ngramStatsForCandidates = getNgramStatsToBeUsedForCandidates(wordIsNumericTerm);		
+		
 		NgramCompiler ngramCompiler = new NgramCompiler();
 		ngramCompiler.setMin(3);
 		ngramCompiler.includeExtremities(true);
-		Set<String>ngramsOfBadWord = ngramCompiler.compile(badWord);
-		String[] ngrams = ngramsOfBadWord.toArray(new String[] {});
-		logger.debug("ngramsOfBadWord= "+String.join("; ", ngrams));
 		
-		// 2. compile IDF of each ngram = 1 / #words with this ngram + 1 and order highest first
+		// Step 1: compile most significant ngrams of mis-spelled word
+		String[] ngrams = computeMostSignificantNgrams(badWord, ngramCompiler);
+		Set<String> ngramsOfBadWord = new HashSet<String>();
+		for (String ngram: ngrams) {ngramsOfBadWord.add(ngram);}
+		
+		// Step 2: compile IDF of each ngram = 1 / #words with this ngram + 1 and order highest first
 		Pair<String,Double> idf[] = new Pair[ngrams.length];
 		HashMap<String,Double> idfHash = new HashMap<String,Double>();
 		for (int i=0; i<ngrams.length; i++) {
@@ -552,20 +541,24 @@ public class SpellChecker {
 		// 3. add words for top IDFs to the set of candidates until the number of candidates exceeds the maximum
 		Set<String> candidates = new HashSet<String>();
 		for (int i=0; i<idf.length; i++) {
-			Set<String> candidatesWithNgram = wordsContainingSequ(idf[i].getFirst());
-//			SpellTracer.trace("SpellChecker.firstPassCandidates_TFIDF", 
-//					"Adding candidates that contain ngram="+idf[i].getFirst()+
-//					", namely: "+StringUtils.join(candidatesWithNgram.iterator(), ","),
-//					badWord, "tamainni");
+			
+			Set<String> candidatesWithNgram = 
+					wordsContainingSequ(idf[i].getFirst(), allWordsForCandidates);
+			
+			SpellDebug.containsCorrection("SpellChecker.firstPassCandidates_TFIDF", 
+					"Words that contain ngram="+idf[i].getFirst(), 
+					"maliklugu","maligluglu", 
+					candidatesWithNgram);
+			
 			candidates.addAll(candidatesWithNgram);	
-			if (candidates.size() > MAX_CANDIDATES)
+			
+			if (candidates.size() > MAX_CANDIDATES) {
+				SpellDebug.trace("SpellCkecker.firstPassCandidates_TFIDF", 
+					"Max number of candidates reached: "+candidates.size()+" > "+MAX_CANDIDATES, 
+					badWord, null);
 				break;
+			}
 		}
-		
-//		SpellTracer.containsCorrection(
-//				"SpellChecker.firstPassCandidates_TFIDF", 
-//				"Unsorted candidates", 
-//				badWord, "tamainni", candidates);
 		
 		
 		// 4. compute scores for each word and order words highest score first
@@ -578,7 +571,10 @@ public class SpellChecker {
 			}
 			Set<String> ngramsOfCandidate = ngramCompiler.compile(candidate);
 			Set<String> all = new HashSet<String>();
-			all.addAll(ngramsOfBadWord);
+			for (String ngram: ngrams) {
+				all.add(ngram);
+			}
+//			all.addAll(ngramsOfBadWord);
 			all.addAll(ngramsOfCandidate);
 			double totalScore = 0;
 			Iterator<String> itall = all.iterator();
@@ -602,7 +598,26 @@ public class SpellChecker {
 		for (int i=0; i<arrScoreValues.length; i++) {
 			allCandidates.add(arrScoreValues[i].getFirst());
 		}
+		
+		SpellDebug.containsCorrection("SpellChecker.firstPassCandidates_TFIDF", 
+				"Returned list allCandidates", "maliklugu", "maligluglu", 
+				allCandidates);
+		
 		return allCandidates;
+	}
+
+	private String[] computeMostSignificantNgrams(String badWord, 
+			NgramCompiler ngramCompiler) {
+		Set<String>ngramsOfBadWord = ngramCompiler.compile(badWord);
+		String[] ngrams = ngramsOfBadWord.toArray(new String[] {});
+		
+		if (SpellDebug.traceIsActive(badWord)) {
+			SpellDebug.trace("SpellChecker.computeMostSignificantNgrams", 
+					"badWord ngrams=['"+String.join("', '", ngrams)+"']", 
+					badWord, null);
+		}
+		
+		return ngrams;
 	}
 
 	public class IDFComparator implements Comparator<Pair<String,Double>> {
@@ -629,7 +644,8 @@ public class SpellChecker {
 	    }
 	}
 
-	protected Set<String> wordsContainingSequ(String seq) {
+	protected Set<String> wordsContainingSequ(String seq, 
+			String allWordsForCandidates) {
 		Logger logger = Logger.getLogger("SpellChecker.wordsContainingSequ");
 		
 		Set<String> wordsWithSeq = uncacheWordsWithNgram(seq);
@@ -652,12 +668,7 @@ public class SpellChecker {
 			}
 			else
 				p = Pattern.compile(",([^,]*"+seq+"[^,]*),");
-			
-			if (seq.startsWith("tamain")) {
-				System.out.println("** wordsContainingSequ: looking for p="+p+
-						" in allWordsForCandidates="+allWordsForCandidates);
-			}
-			
+						
 			Matcher m = p.matcher(allWordsForCandidates); //p.matcher(allWords)
 			wordsWithSeq = new HashSet<String>();
 			while (m.find())

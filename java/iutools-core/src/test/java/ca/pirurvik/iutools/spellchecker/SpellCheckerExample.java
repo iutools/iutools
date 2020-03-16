@@ -43,6 +43,10 @@ public class SpellCheckerExample extends BinaryClassifierExample {
 		}
 	}
 	
+	public String key() {
+		return wordToCheck;
+	}
+	
 	public String toString() {
 		String str = 
 				wordToCheck+

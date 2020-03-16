@@ -11,7 +11,7 @@ import ca.nrc.datastructure.Pair;
 import ca.nrc.string.diff.DiffCosting;
 import ca.nrc.string.diff.DiffResult;
 import ca.nrc.string.diff.StringTransformation;
-import ca.pirurvik.iutools.spellchecker.SpellTracer;
+import ca.pirurvik.iutools.spellchecker.SpellDebug;
 
 
 /**

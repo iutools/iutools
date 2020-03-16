@@ -148,8 +148,8 @@ public class SpellCheckerTest {
 		
 		SpellChecker checker = makeCheckerLargeDict();
 		
-		checker.allWordsForCandidates = checker.allWords;
-		Set<String> wordsWithSeq = checker.wordsContainingSequ(seq);
+//		checker.allWordsForCandidates = checker.allWords;
+		Set<String> wordsWithSeq = checker.wordsContainingSequ(seq, checker.allWords);
 		String[] expected = new String[] {"inukshuk","inuk","inuktut"};
 			AssertHelpers.assertContainsAll("The list of words containing sequence "+seq+" was not as expected", 
 					wordsWithSeq, expected);
@@ -171,28 +171,28 @@ public class SpellCheckerTest {
 		String[] expected;
 		Set<String> wordsWithSeq;
 		
-		checker.allWordsForCandidates = checker.allWords;
+//		checker.allWordsForCandidates = checker.allWords;
 
 		seq = "inu";
-		wordsWithSeq = checker.wordsContainingSequ(seq);
+		wordsWithSeq = checker.wordsContainingSequ(seq, checker.allWords);
 		expected = new String[] {"inuktitut","inuksuk","inuttitut","takuinuit"};
 			AssertHelpers.assertContainsAll("The list of words containing sequence "+seq+" was not as expected", 
 					wordsWithSeq, expected);
 			
 		seq = "^inu";
-		wordsWithSeq = checker.wordsContainingSequ(seq);
+		wordsWithSeq = checker.wordsContainingSequ(seq, checker.allWords);
 		expected = new String[] {"inuktitut","inuksuk","inuttitut"};
 		AssertHelpers.assertContainsAll("The list of words containing sequence "+seq+" was not as expected", 
 					wordsWithSeq, expected);
 		
 	seq = "itut$";
-	wordsWithSeq = checker.wordsContainingSequ(seq);
+	wordsWithSeq = checker.wordsContainingSequ(seq, checker.allWords);
 	expected = new String[] {"inuktitut","inuttitut"};
 	AssertHelpers.assertContainsAll("The list of words containing sequence "+seq+" was not as expected", 
 				wordsWithSeq, expected);
 	
 	seq = "^taku$";
-	wordsWithSeq = checker.wordsContainingSequ(seq);
+	wordsWithSeq = checker.wordsContainingSequ(seq, checker.allWords);
 	expected = new String[] {"taku"};
 	AssertHelpers.assertContainsAll("The list of words containing sequence "+seq+" was not as expected", 
 				wordsWithSeq, expected);
@@ -219,9 +219,9 @@ public class SpellCheckerTest {
 		SpellChecker checker = makeCheckerSmallCustomDict();
 		
 		String badWord = "inukkshuk";
-		checker.allWordsForCandidates = checker.allWords;
+//		checker.allWordsForCandidates = checker.allWords;
 		checker.ngramStatsForCandidates = checker.ngramStats;
-		Set<String> candidates = checker.firstPassCandidates_TFIDF(badWord);
+		Set<String> candidates = checker.firstPassCandidates_TFIDF(badWord, false);
 	
 		
 		// ALAIN: The expected list below contains some misspelled words that come before some 

@@ -21,6 +21,7 @@ import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.string.StringUtils;
+import ca.nrc.testing.AssertHelpers;
 import ca.pirurvik.iutools.CompiledCorpusRegistry;
 
 public class SpellCheckerAccuracyTest {
@@ -29,11 +30,23 @@ public class SpellCheckerAccuracyTest {
 	
 	private static DecimalFormat df2 = new DecimalFormat("#.##");
 	
-	private static final SpellCheckerExample[] examplesForSuggestions = new SpellCheckerExample[] {
-			
-		// Examples that currently do not work.
-		//
-//		new SpellCheckerExample("maliklugu", 5, "maliglugu"),	
+	private SpellChecker getLargeDictChecker() throws StringSegmenterException, SpellCheckerException {
+		if (checkerLargeDict == null) {
+			checkerLargeDict = new SpellChecker();
+		}
+		return checkerLargeDict;
+	}	
+	
+	//
+	// With a few exceptions, the examples below are a subset of the 200 most 
+	// frequent spelling mistakes in the Hansard.
+	//
+	// This subset excludes:
+	// - Proper nouns
+	// - Words borrowed from English (ex: minista = minister)
+	//
+	private static final SpellCheckerExample[] 
+			examples_MostFrequenMisspelledWords = new SpellCheckerExample[] {
 			
 		// Examples that currently work
 		new SpellCheckerExample("akitujutinut", 5, "akitujuutinut"),
@@ -71,25 +84,44 @@ public class SpellCheckerAccuracyTest {
 		new SpellCheckerExample("tavani", 5, "tavvani"),
 		new SpellCheckerExample("ugaalautaa", 5, "uqaalautaa"),
 		new SpellCheckerExample("uvalu", 5, "uvvalu"),
-
-		
-		
 		new SpellCheckerExample("tamaini", 5, "tamainni"),
-		
 		new SpellCheckerExample("nniaqtulirijikkunnut", 5, "aanniaqtulirijikkunnut"),
 		new SpellCheckerExample("immaqaqai", 5, "immaqaaqai"),
 		new SpellCheckerExample("taimak", 5, "taimaak")
 	};
+		
+	//
+	// These examples were handpicked through a "butterfly collection" type of
+	// approach (i.e. try the SpellChecker on different texts and note 
+	// "interesting" failing cases).
+	//	
+	private static final SpellCheckerExample[] 
+			examples_HandPickedMispelledWords = new SpellCheckerExample[] {
+					new SpellCheckerExample("maliklugu", 5, "maliglugu"),	
+	};
 	
-	private SpellChecker getLargeDictChecker() throws StringSegmenterException, SpellCheckerException {
-		if (checkerLargeDict == null) {
-			checkerLargeDict = new SpellChecker();
-		}
-		return checkerLargeDict;
-	}
+	@Test
+	public void test__EvaluateSugestions__MostFrequentWords__LargeDictionary() throws Exception {
+		// Set this to a specific example if you only want 
+		// to evaluate that one.
+		//
+		String focusOnExample = null;
+		
+		boolean verbose = true;
+		double expPercentFoundInTopN = 0.90;
+		double tolerance = 0.01;
+		double expAverageRank = 2.1;
+		double avgRankTolerance = 0.1;
 
+		evaluateCheckerOnExamples(getLargeDictChecker(), 
+				examples_MostFrequenMisspelledWords, focusOnExample,
+				expPercentFoundInTopN, tolerance, 
+				expAverageRank, avgRankTolerance, 
+				verbose);
+	}
+	
 	@Test @Ignore
-	public void test__EvaluateSugestions__DEBUG_UsingSmallCustomDictionary() throws Exception {
+	public void test__EvaluateSugestions__DEBUG_MostFrequentWords__UsingSmallCustomDictionary() throws Exception {
 		//
 		// This test is used only for Debugging purposes and is usually left 
 		// @Ignored.
@@ -115,14 +147,15 @@ public class SpellCheckerAccuracyTest {
 		double tolerance = 0.01;	
 		double expAverageRank = 3.4;
 		double avgRankTolerance = 0.1;		
-		evaluateCheckerOnExamples(checker, focusOnExample, 
+		evaluateCheckerOnExamples(checker, 
+				examples_MostFrequenMisspelledWords, focusOnExample, 
 				expPercentFoundInTopN, tolerance,
 				expAverageRank, avgRankTolerance,
 				verbose);
-	}
+	}	
 
 	@Test
-	public void test__EvaluateSugestions__LargeDictionary() throws Exception {
+	public void test__EvaluateSugestions__HandpickedExamples__LargeDictionary() throws Exception {
 		// Set this to a specific example if you only want 
 		// to evaluate that one.
 		//
@@ -130,26 +163,30 @@ public class SpellCheckerAccuracyTest {
 //		String focusOnExample = "maliklugu";
 		
 		boolean verbose = true;
-		double expPercentFoundInTopN = 0.90;
+		double expPercentFoundInTopN = 1.0;
 		double tolerance = 0.01;
-		double expAverageRank = 2.1;
+		double expAverageRank = 3.0;
 		double avgRankTolerance = 0.1;
 
-		evaluateCheckerOnExamples(getLargeDictChecker(), focusOnExample,
+		evaluateCheckerOnExamples(getLargeDictChecker(), 
+				examples_HandPickedMispelledWords, focusOnExample,
 				expPercentFoundInTopN, tolerance, 
 				expAverageRank, avgRankTolerance, 
 				verbose);
 	}
 
-	public void evaluateCheckerOnExamples(SpellChecker spellChecker, String focusOnExample, 
+	public void evaluateCheckerOnExamples(SpellChecker spellChecker, 
+			SpellCheckerExample[] examples, String focusOnExample, 
 			double expPercentFoundInTopN, double tolerance,
 			double expAverageRank, double avgRankTolerance) throws Exception {
-		evaluateCheckerOnExamples(spellChecker, focusOnExample, 
+		evaluateCheckerOnExamples(spellChecker, 
+				examples, focusOnExample, 
 				expPercentFoundInTopN, tolerance, 
 				expAverageRank, avgRankTolerance, null);
 	}
 
-	public void evaluateCheckerOnExamples(SpellChecker spellChecker, String focusOnExample, 
+	public void evaluateCheckerOnExamples(SpellChecker spellChecker, 
+			SpellCheckerExample[] examples, String focusOnExample, 
 			double expPercentFoundInTopN, double tolerance, 
 			double expAverageRank, double avgRankTolerance,
 			Boolean verbose) throws Exception {
@@ -159,11 +196,11 @@ public class SpellCheckerAccuracyTest {
 		// For these tests, "pretend" that all the words from the 
 		// examples were seen in the corpus used by the SpellChecker.
 		//
-		assumeCorrectionsAreInCheckerDict(examplesForSuggestions, spellChecker);
+		assumeCorrectionsAreInCheckerDict(examples, spellChecker);
 		SpellCheckerEvaluator evaluator = new SpellCheckerEvaluator(spellChecker);
 		evaluator.setVerbose(verbose);
 				
-		for (SpellCheckerExample exampleData: examplesForSuggestions) {
+		for (SpellCheckerExample exampleData: examples) {
 			if (focusOnExample == null || focusOnExample.equals(exampleData.wordToCheck)) {
 				evaluator.onNewExample(exampleData);				
 			}
@@ -183,7 +220,8 @@ public class SpellCheckerAccuracyTest {
 				"de ces cas, je soupconne que je peux atteindre N < 5 en peuafinant le "+
 	            "costing du diff."
 						);
-	}
+	}	
+
 
 
 	private void assertEvaluationAsExpected(SpellCheckerEvaluator evaluator, int N, double expPercentFoundInTopN,
@@ -297,6 +335,39 @@ public class SpellCheckerAccuracyTest {
 		}
 		
 		return errMess;
+	}
+	
+	@Test
+	public void test__firstPassCandidates_TFIDF__HandPickedExamples() 
+			throws Exception {
+		// Set this to a specific example if you only want 
+		// to evaluate that one.
+		//
+//		String focusOnExample = null;
+		String focusOnExample = "maliklugu";
+		
+		SpellChecker checker = getLargeDictChecker();
+		
+		for (SpellCheckerExample anExample: examples_HandPickedMispelledWords) {
+			if (focusOnExample != null && 
+					!focusOnExample.equals(anExample.key())) {
+				continue;
+			}
+			
+			
+			String wordToCheck = anExample.wordToCheck;
+			Set<String> gotCandidates = 
+					checker.firstPassCandidates_TFIDF(wordToCheck, false);
+			
+			Set<Object> gotCandidatesObj = (Set)gotCandidates; 
+			Set<Object> expCandidatesObj = (Set)anExample.acceptableCorrections;
+//			Assert.fail("failed in test directly");
+			AssertHelpers.intersectionNotEmpty(
+				"\nThe first pass candidates for mis-spelled word '"+
+				wordToCheck+"' did not contain any of the acceptable corrections.\n"+
+				"Acceptable corrections were: ['"+String.join("', '", anExample.acceptableCorrections)+"]",
+				gotCandidatesObj, expCandidatesObj);
+		}
 	}
 	
 	//////////////////////

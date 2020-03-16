@@ -6,15 +6,17 @@ import java.util.Set;
 
 import ca.nrc.datastructure.Pair;
 
-public class SpellTracer {
+public class SpellDebug {
 	
 	
 	private static String[][] pairsToTraceArr = new String[][] {
-		new String[] {"nakuqmi","nakurmiik"}
+//		new String[] {"maliklugu","maligluglu"},
+//		new String[] {"maliklugu","*"},
+//		new String[] {"nakuqmi","nakurmiik"}
 //		new String[] {"tamaini", "tamainni"},
 //		new String[] {"tamainni", "tamaini"}
 //		new String[] {"*", "tamaini"},
-//		new String[] {"tamainni", "*"}
+//		new String[] {"tamainni", "*"},
 	};
 	
 	private static Set<String> pairsToTrace = null;
@@ -122,6 +124,19 @@ public class SpellTracer {
 					"): "+what+contain_or_not+" candidate spelling '"+
 					candidate+"'.");			
 		}
+	}
+
+	public static boolean traceIsActive(String badWord) {
+		return traceIsActive(badWord, null);
+	}
+
+	public static boolean traceIsActive(String badWord, String candidate) {
+		if (candidate == null) {
+			candidate = "*";
+		}
+		boolean isActive = traceStatus(badWord, candidate).getFirst();
+		
+		return isActive;
 	}
 
 }
