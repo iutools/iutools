@@ -9,9 +9,7 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import ca.nrc.datastructure.Pair;
 import ca.nrc.datastructure.trie.StringSegmenterException;
-import ca.nrc.json.PrettyPrinter;
 import ca.nrc.testing.AssertHelpers;
 import ca.nrc.testing.AssertNumber;
 import ca.nrc.testing.AssertObject;
