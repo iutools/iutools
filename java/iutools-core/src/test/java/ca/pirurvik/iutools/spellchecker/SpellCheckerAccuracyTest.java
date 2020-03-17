@@ -124,7 +124,7 @@ public class SpellCheckerAccuracyTest {
 		int verbosity = 1;
 		double expPercentFoundInTopN = 0.95;
 		double tolerance = 0.01;
-		double expAverageRank = 3.2;
+		double expAverageRank = 1.5;
 		double avgRankTolerance = 0.1;
 
 		evaluateCheckerOnExamples(getLargeDictChecker(), 

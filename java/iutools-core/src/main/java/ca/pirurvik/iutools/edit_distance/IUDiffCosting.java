@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.junit.Assert;
-
 import ca.inuktitutcomputing.script.Roman;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.string.diff.DiffCosting;
@@ -94,49 +92,6 @@ public class IUDiffCosting extends DiffCosting {
 		return _cost;
 	}
 	
-	private Double costAsCharacterDoubling__OLD(int transfNum, 
-				DiffResult diff, Double unitCost) {
-		
-		Double cost = null;
-		
-		StringTransformation transf = diff.transformations.get(transfNum);
-		
-//		SpellDebug.trace("IUDiffCosting.costNthTransformation", 
-//				"Costing transf #"+transfNum+": "+transf.origStr()+"-->"+transf.revStr(),
-//				diff.origStr(), diff.revStr());
-		
-		if (transf.origTokens.length <= 3 && 
-				transf.revisedTokens.length <= 3) {
-//			SpellDebug.trace("IUDiffCosting.costAsCharacterDoubling", 
-//					"Transformation affects only one char at one end",
-//					diff.origStr(), diff.revStr());
-			
-			String[] charDoublingResult = isCharDoubling2ways(transf);
-			if (charDoublingResult != null) {
-				// Transformation included a character doubling on 
-				// either sides.
-				//
-				// Cost this in a special way.
-				//
-				
-				// Character doubling encurs a "tiny" cost
-				cost = TINY_COST;
-				
-				// Character changes other than the doubling 
-				// encur the received unitCost (this may be INFINITE if
-				// the transformation affects 1st morpheme
-				//
-				int totalXtraChars = 
-						charDoublingResult[0].length() +
-						charDoublingResult[1].length();
-				
-				cost += unitCost * totalXtraChars;
-			}
-		}
-		
-		return cost;
-	}	
-	
 	private Double costAsCharacterDoubling(int transfNum, 
 			DiffResult diff, Double unitCost) {
 	
@@ -149,7 +104,7 @@ public class IUDiffCosting extends DiffCosting {
 				diff);
 		
 		Pair<Integer,Integer> charDoublingResult = 
-				isCharDoubling_NEW(transf.origStr(), transf.revStr());
+				isCharDoubling(transf.origStr(), transf.revStr());
 		
 		SpellDebug.trace("IUDiffCosting.costAsCharacterDoubling", 
 				"Char doubling info: "+charDoublingResult,
@@ -174,103 +129,6 @@ public class IUDiffCosting extends DiffCosting {
 		
 		return cost;
 	}	
-
-	/**
-	 * Check if a character from origStr has been doubled to 
-	 * yield revStr (also with a possible single char added or deleted 
-	 * at the start or end).
-	 */
-	protected String[] isCharDoubling(String origStr, String revStr) {
-		String[] answer = null;
-		
-//		System.out.println("** IUDiffCosting.isCharDoubling: origStr="+origStr+", revStr="+revStr);		
-		
-		Pattern patt = Pattern.compile("(.)(\\1){0,1}");
-		
-		{
-			// Check if a character from Orig has been doubled 
-			// in Rev
-			//
-			Matcher matcher = patt.matcher(revStr);
-//			System.out.println("   ** IUDiffCosting.isCharDoubling: matching revStr against patt='"+patt+"'");
-			
-			if (matcher.find() && matcher.group(2) != null) {
-				//
-				// revStr contains a double character.
-				//
-//				System.out.println("   ** IUDiffCosting.isCharDoubling: revStr contains a doubled character");				
-//				System.out.println("   ** IUDiffCosting.isCharDoubling: matcher.groups(x): 0='"+matcher.group(0)+"', 1='"+matcher.group(1)+"'"+"', 2='"+matcher.group(2)+"'");
-//				System.out.println("   ** IUDiffCosting.isCharDoubling: matcher.start/end(0): '"+matcher.start(0)+"', '"+matcher.end(0)+"'");
-//				System.out.println("   ** IUDiffCosting.isCharDoubling: matcher.start/end(1): '"+matcher.start(1)+"', '"+matcher.end(1)+"'");
-//				System.out.println("   ** IUDiffCosting.isCharDoubling: matcher.start/end(2): '"+matcher.start(2)+"', '"+matcher.end(2)+"'");				
-				
-				String doubledChar = matcher.group(1);
-				String prefix = revStr.substring(0, matcher.start());
-				String suffix = "";
-				if (matcher.end(2) > 0) {
-					suffix = revStr.substring(matcher.end(2));
-				}
-				
-//				System.out.println("   ** IUDiffCosting.isCharDoubling: p/c/s="+prefix+"/"+doubledChar+"/"+suffix);
-				
-				String revXtraChar = prefix+suffix;
-//				System.out.println("   ** IUDiffCosting.isCharDoubling: revXtraChar='"+revXtraChar+"'");				
-				
-				String notDoubledChar = "([^"+doubledChar+"]?)";
-				String regexp = notDoubledChar+doubledChar+"{1,2}"+notDoubledChar;
-//				System.out.println("   ** IUDiffCosting.isCharDoubling: matching origStr against regexp="+regexp);				
-				matcher = Pattern.compile(regexp).matcher(origStr);
-				
-				if (matcher.matches()) {
-//					System.out.println("   ** IUDiffCosting.isCharDoubling: origStr matched regexp");
-//					System.out.println("   ** IUDiffCosting.isCharDoubling: matcher.groups(x): 0='"+matcher.group(0)+"', 1='"+matcher.group(1)+"'"+"', 2='"+matcher.group(2)+"'");
-					String origXtraChar = matcher.group(1)+matcher.group(2);
-//					System.out.println("   ** IUDiffCosting.isCharDoubling: origXtraChar='"+origXtraChar+"'");					
-					answer = new String[] {origXtraChar, revXtraChar};
-				} else {
-//					System.out.println("   ** IUDiffCosting.isCharDoubling: origStr did NOT match regexp");					
-				}
-			} else {
-//				System.out.println("   ** IUDiffCosting.isCharDoubling: revStr did NOT contain a doubled character");
-			}
-		}
-		
-//		System.out.print("   ** IUDiffCosting.isCharDoubling: returning answer=");
-//		if (answer == null) {
-//			System.out.println("null");
-//		} else {
-//			System.out.println("["+String.join(",", answer)+"]");
-//		}
-		
-		return answer;
-	}
-	
-	protected String[] isCharDoubling2ways(StringTransformation transf) {
-		
-		String[] answer = null;
-		
-		if (transf.origTokens.length <= 3 && 
-				transf.revisedTokens.length <= 3) {
-//			SpellDebug.trace("IUDiffCosting.isCharDoubling", 
-//					"Transformation affects only one char at one end",
-//					transf.origStr(), transf.revStr());
-			
-			String origStr = String.join("", transf.origTokens);
-			String revStr = String.join("", transf.revisedTokens);
-			
-			answer = isCharDoubling(origStr, revStr);
-			if (answer == null) {
-				String[] answerOtherDir = isCharDoubling(revStr, origStr);
-				if (answerOtherDir != null) {
-					answer = new String[] {answerOtherDir[1], answerOtherDir[0]};
-				}
-			}
-		}
-		
-		return answer;
-	}
-
-	
 
 	/**
 	 * Cost of transformations for the first morpheme of words follow different 
@@ -439,7 +297,7 @@ public class IUDiffCosting extends DiffCosting {
 	 * @param revStr
 	 * @return
 	 */
-	public Pair<Integer, Integer> isCharDoubling_NEW(String origStr, String revStr) {
+	public Pair<Integer, Integer> isCharDoubling(String origStr, String revStr) {
 		Pair<Integer,Integer> result = null;
 		
 		Integer totalDblOps = 0;

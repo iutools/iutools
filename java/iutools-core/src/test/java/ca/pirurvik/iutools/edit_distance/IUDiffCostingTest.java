@@ -4,13 +4,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import ca.nrc.datastructure.Pair;
-import ca.nrc.string.diff.DiffCosting;
-import ca.nrc.string.diff.StringTransformation;
-import ca.nrc.testing.AssertNumber;
 import ca.nrc.testing.AssertObject;
 
 public class IUDiffCostingTest {
@@ -111,20 +107,6 @@ public class IUDiffCostingTest {
 	};	
 	
 	@Test
-	public void test__DELETE_ME() {
-		String[] strs = new String[] {"umm", "uum"};
-		Pattern patt = Pattern.compile("^(.)(\\1){0,1}");
-		for (String str: strs) {
-			Matcher matcher = patt.matcher(str);
-			if (matcher.find()) {
-				System.out.println("Pattern='"+patt+"' DID match str="+str);
-			} else {
-				System.out.println("Pattern='"+patt+"' did NOT match str="+str);
-			}
-		}
-	}
-	
-	@Test
 	public void test__isCharacterDoubling_NEW__1way() throws Exception {
 		IUDiffCosting costing = new IUDiffCosting();
 		
@@ -142,74 +124,13 @@ public class IUDiffCostingTest {
 			totalExamples++;
 			
 			Pair<Integer,Integer> gotResult = 
-				costing.isCharDoubling_NEW(anExample.origStr, anExample.revStr);
+				costing.isCharDoubling(anExample.origStr, anExample.revStr);
 			AssertObject.assertDeepEquals(
 					"Bad results for example: "+anExample, 
 					anExample.expResult_NEW, gotResult);
 		}
 		
 		Assert.assertTrue("No examples were tested!", totalExamples > 0);
-		
-		if (focusOnExample != null) {
-			Assert.fail("WARNING: This test was run on just one example.");
-		}		
-	}
-	
-	
-	@Test @Ignore
-	public void test__isCharacterDoubling1way__SeveralCases() throws Exception {
-		IUDiffCosting costing = new IUDiffCosting();
-		
-		String focusOnExample = null;
-//		String focusOnExample = "iq/ii";
-		
-		for (int ii=0; ii < isCharacterDoubling1way_Data.length; ii++) {
-			CharDoublingExample anExample = isCharacterDoubling1way_Data[ii];
-			
-			String exampleKey = anExample.origStr+"/"+anExample.revStr;
-			if (focusOnExample != null &&
-					!focusOnExample.equals(exampleKey)) {
-				continue;
-			}
-			
-			
-			String[] gotResult = 
-				costing.isCharDoubling(anExample.origStr, anExample.revStr);
-			AssertObject.assertDeepEquals(
-					"Bad results for example: "+anExample, 
-					anExample.expResult, gotResult);
-		}
-		
-		if (focusOnExample != null) {
-			Assert.fail("WARNING: This test was run on just one example.");
-		}		
-	}
-
-	@Test @Ignore
-	public void test__isCharacterDoubling2ways__SeveralCases() throws Exception {
-		IUDiffCosting costing = new IUDiffCosting();
-		
-		String focusOnExample = null;
-//		String focusOnExample = "iq/ii";
-		
-		for (int ii=0; ii < isCharacterDoubling2ways_Data.length; ii++) {
-			CharDoublingExample anExample = isCharacterDoubling2ways_Data[ii];
-			
-			String exampleKey = anExample.origStr+"/"+anExample.revStr;
-			if (focusOnExample != null &&
-					!focusOnExample.equals(exampleKey)) {
-				continue;
-			}
-			
-			String[] origTokens = anExample.origStr.split("");
-			String[] revTokens = anExample.revStr.split("");
-			StringTransformation transf = 
-					new StringTransformation(0, origTokens, 0, revTokens);
-			
-			String[] gotResult = 
-				costing.isCharDoubling2ways(transf);
-			AssertObject.assertDeepEquals("Bad results for example: "+anExample, anExample.expResult, gotResult);
-		}
 		
 		if (focusOnExample != null) {
 			Assert.fail("WARNING: This test was run on just one example.");
