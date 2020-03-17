@@ -14,22 +14,39 @@ public class SpellCheckerExample extends BinaryClassifierExample {
 	
 	String wordToCheck = null;
 	Set<String> acceptableCorrections = null;
-	public Integer expMaxRank;
+	public Integer maxRankAssumingInDict = null;
+	public Integer maxRankNOTAssumingInDict = null;
 
 	public SpellCheckerExample(String _wordToCheck) {
 		super(_wordToCheck);
-		this.init_SpellCheckerExample(_wordToCheck, -1, new String[] {});
+		this.init_SpellCheckerExample(_wordToCheck, -1, null, 
+				new String[] {});
 	}	
 
-	public SpellCheckerExample(String _wordToCheck, Integer _expMaxRank, String... _acceptableCorrections) {
+	public SpellCheckerExample(String _wordToCheck, Integer _expMaxRank, 
+			String... _acceptableCorrections) {
 		super(_wordToCheck);
-		this.init_SpellCheckerExample(_wordToCheck, _expMaxRank, _acceptableCorrections);
+		this.init_SpellCheckerExample(_wordToCheck, _expMaxRank, null,
+				_acceptableCorrections);
 	}
 
+	public SpellCheckerExample(String _wordToCheck, 
+			Integer _maxRankAssumingInDic, Integer _maxRankNOTAssumingInDic,
+			String... _acceptableCorrections) {
+		super(_wordToCheck);
+		this.init_SpellCheckerExample(_wordToCheck, 
+				_maxRankAssumingInDic, _maxRankNOTAssumingInDic, 
+				_acceptableCorrections);
+	}
+
+	
 	private void init_SpellCheckerExample(String _wordToCheck, 
-			Integer _expMaxRank, String[] _acceptableCorrections) {
+			Integer _maxRankAssumingInDict, 
+			Integer _maxRankNOTAssumingInDict,
+			String[] _acceptableCorrections) {
 		this.wordToCheck = _wordToCheck;
-		this.expMaxRank = _expMaxRank;
+		this.maxRankAssumingInDict = _maxRankAssumingInDict;
+		this.maxRankNOTAssumingInDict = _maxRankNOTAssumingInDict;
 		this.acceptableCorrections = new HashSet<String>();
 		for (String anAcceptable: _acceptableCorrections) {
 			this.acceptableCorrections.add(anAcceptable);
@@ -51,7 +68,7 @@ public class SpellCheckerExample extends BinaryClassifierExample {
 				wordToCheck+
 				" -->\n"+
 				"   ["+String.join(",", acceptableCorrections)+"]\n"+
-				"   exp max rank: "+expMaxRank
+				"   exp max rank: "+maxRankAssumingInDict
 				;
 		return str;
 	}

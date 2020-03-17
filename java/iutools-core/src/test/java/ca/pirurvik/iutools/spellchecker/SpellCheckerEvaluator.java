@@ -47,7 +47,8 @@ public class SpellCheckerEvaluator {
 		this.checker = _checker;
 	}
 	
-	public void onNewExample(SpellCheckerExample example) throws SpellCheckerException {
+	public void onNewExample(SpellCheckerExample example, 
+			Boolean assumesCorrectionsLoadeInDic) throws SpellCheckerException {
 		if (verbosity > 0) {
 			System.out.print("\nProcessing example "+example.toString()+"\n");
 		}
@@ -61,7 +62,8 @@ public class SpellCheckerEvaluator {
 			// Positive cases (i.e. where SpellChecker found an error)
 			//
 			if (!shouldHaveBeenCorrect) {
-				onTruePositive(example, gotCorrection);
+				onTruePositive(example, gotCorrection, 
+						assumesCorrectionsLoadeInDic);
 			} else {
 				onFalsePositive(example);
 			}
@@ -75,10 +77,10 @@ public class SpellCheckerEvaluator {
 		};
 	}
 	
-	
-
 	private void evaluateCheckerSuggestions(SpellCheckerExample example, 
-			SpellingCorrection gotCorrection) {
+			SpellingCorrection gotCorrection, 
+			Boolean assumesCorrectionsLoadeInDict) {
+		
 		Integer rank = null;
 		List<String> suggestions = new ArrayList<String>();
 		for (ScoredSpelling cand: gotCorrection.getScoredPossibleSpellings()) {
@@ -98,13 +100,24 @@ public class SpellCheckerEvaluator {
 		}
 		
 		boolean rankBad = false;
+		Integer maxRank = example.maxRankAssumingInDict;
+		if (!assumesCorrectionsLoadeInDict) {
+			// We are evaluating the examples WITHOUT having first ensured that 
+			// the correct spellings are known to the dictionary.
+			// The max rank expectations may be different in that situation
+			//
+			if (example.maxRankNOTAssumingInDict != null) {
+				maxRank = example.maxRankNOTAssumingInDict;
+			}
+		}
+
 		if (rank == null) {
-			if (example.expMaxRank != null) {
+			if (maxRank != null && maxRank > 0) {
 				rankBad = true;
 			}
 		} else {
-			if (example.expMaxRank == null || 
-					rank > example.expMaxRank) {
+			if (maxRank == null || maxRank < 0 ||
+					rank > maxRank) {
 				rankBad = true;
 			}
 		}
@@ -118,7 +131,7 @@ public class SpellCheckerEvaluator {
 		}
 		
 		if (verbosity > 1) {
-			System.out.println("   Got rank="+rank+" (exp max: "+example.expMaxRank+")");
+			System.out.println("   Got rank="+rank+" (exp max: "+maxRank+")");
 		}
 		
 		correctSpellingRank.put(example, rank);
@@ -136,12 +149,15 @@ public class SpellCheckerEvaluator {
 	}
 
 
-	private void onTruePositive(SpellCheckerExample example, SpellingCorrection gotCorrection) {
+	private void onTruePositive(SpellCheckerExample example, 
+			SpellingCorrection gotCorrection, 
+			Boolean assumesCorrectionsLoadeInDic) {
+		
 		if (verbosity > 1) {
 			System.out.println("   True Positive: input word was deemed mis-spelled as it should have");
 		}		
 		truePos.add(example);
-		evaluateCheckerSuggestions(example, gotCorrection);		
+		evaluateCheckerSuggestions(example, gotCorrection, assumesCorrectionsLoadeInDic);		
 	}
 	
 	private void onFalsePositive(SpellCheckerExample example) {

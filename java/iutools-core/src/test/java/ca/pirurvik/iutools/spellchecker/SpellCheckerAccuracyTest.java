@@ -41,12 +41,23 @@ public class SpellCheckerAccuracyTest {
 	private static final SpellCheckerExample[] 
 			examples_MostFrequenMisspelledWords = new SpellCheckerExample[] {
 			
-		// NEED-IMPROVEMENT: Examples with ranking > 5
+		// NEED-IMPROVEMENT: Examples with ranking > 5, 
+		//   EVEN if we assume the correction is in the dict
+		//
 		new SpellCheckerExample("nakuqmi", 6, "nakurmiik"),					
 		new SpellCheckerExample("nunavungmi", 12, "nunavummi"),
 		new SpellCheckerExample("nunavuumik", 26, "nunavummik"),
 		new SpellCheckerExample("nunavuumit", 37, "nunavummit"),
-					
+		new SpellCheckerExample("ugaalautaa", 6, "uqaalautaa"),
+		
+		// NEED-IMPROVEMENT: Examples with ranking > 5
+		//   ONLY if we don't assume the correction is in dict
+		new SpellCheckerExample("qallunaatitut", 5, -1, "qallunaaqtitut"),		
+		new SpellCheckerExample("tamaini", 5, -1, "tamainni"),
+		new SpellCheckerExample("nniaqamangittulirijiit", 5, -1, "aanniaqamangittulirijiit"),
+		new SpellCheckerExample("nniaqamangittulirinirmut", 5, -1, "aanniaqamangittulirinirmut"),
+		
+							
 		// OK: Examples with ranking <= 5
 		new SpellCheckerExample("akitujutinut", 5, "akitujuutinut"),
 		new SpellCheckerExample("arragumi", 5, "arraagumi"),
@@ -61,15 +72,12 @@ public class SpellCheckerAccuracyTest {
 		new SpellCheckerExample("maligaliqtit", 5, "maligaliqtiit"),
 		new SpellCheckerExample("maligatigut", 5, "maligaqtigut"),		
 		new SpellCheckerExample("nigiani", 5, "niggiani"),
-		new SpellCheckerExample("nniaqamangittulirijiit", 5, "aanniaqamangittulirijiit"),
-		new SpellCheckerExample("nniaqamangittulirinirmut", 5, "aanniaqamangittulirinirmut"),
 		new SpellCheckerExample("nniaqtulirinirmut", 5, "aanniaqtulirinirmut"),
 		new SpellCheckerExample("nunavumi", 5, "nunavummi"),
 		new SpellCheckerExample("nunavumiut", 5, "nunavummiut"),
 		new SpellCheckerExample("nunavumut", 5, "nunavummut"),
 		new SpellCheckerExample("nunavutmi", 5, "nunavummi"),
 		new SpellCheckerExample("pigiaqtitat", 5, "pigiaqtitait"),
-		new SpellCheckerExample("qallunaatitut", 5, "qallunaaqtitut"),
 		new SpellCheckerExample("sulikkanniiq", 5, "sulikkanniq"),
 		new SpellCheckerExample("takkua", 5, "taakkua"),
 		new SpellCheckerExample("tamakkuninnga", 5, "tamakkuninga"),
@@ -77,9 +85,7 @@ public class SpellCheckerAccuracyTest {
 		new SpellCheckerExample("tamatumunnga", 5, "tamatumunga"),
 		new SpellCheckerExample("tanna", 5, "taanna"),		
 		new SpellCheckerExample("tavani", 5, "tavvani"),
-		new SpellCheckerExample("ugaalautaa", 5, "uqaalautaa"),
 		new SpellCheckerExample("uvalu", 5, "uvvalu"),
-		new SpellCheckerExample("tamaini", 5, "tamainni"),
 		new SpellCheckerExample("nniaqtulirijikkunnut", 5, "aanniaqtulirijikkunnut"),
 		new SpellCheckerExample("immaqaqai", 5, "immaqaaqai"),
 		new SpellCheckerExample("taimak", 5, "taimaak")
@@ -119,21 +125,45 @@ public class SpellCheckerAccuracyTest {
 		// to evaluate that one.
 		//
 		String focusOnExample = null;
-//		focusOnExample = "nigiani";
+//		focusOnExample = "qallunaatitut";
 		
 		int verbosity = 1;
 		double expPercentFoundInTopN = 0.95;
 		double tolerance = 0.01;
 		double expAverageRank = 1.5;
 		double avgRankTolerance = 0.1;
+		Boolean loadCorrectWordInDict = true;
 
 		evaluateCheckerOnExamples(getLargeDictChecker(), 
 				examples_MostFrequenMisspelledWords, focusOnExample,
 				expPercentFoundInTopN, tolerance, 
 				expAverageRank, avgRankTolerance, 
-				verbosity);
+				loadCorrectWordInDict, verbosity);
 	}
 	
+	@Test
+	public void test__EvaluateSugestions__MostFrequentWords__WIHOUT_AssumingWordIsInDict() 
+			throws Exception {
+		//
+		// Set this to a specific example if you only want 
+		// to evaluate that one.
+		//
+		String focusOnExample = null;
+//		focusOnExample = "nigiani";
+		
+		int verbosity = 1;
+		double expPercentFoundInTopN = 0.85;
+		double tolerance = 0.01;
+		double expAverageRank = 1.6;
+		double avgRankTolerance = 0.1;
+		Boolean loadCorrectWordInDict = false;
+
+		evaluateCheckerOnExamples(getLargeDictChecker(), 
+				examples_MostFrequenMisspelledWords, focusOnExample,
+				expPercentFoundInTopN, tolerance, 
+				expAverageRank, avgRankTolerance, 
+				loadCorrectWordInDict, verbosity);
+	}	
 	@Test @Ignore
 	public void test__EvaluateSugestions__DEBUG_MostFrequentWords__UsingSmallCustomDictionary() throws Exception {
 		//
@@ -160,12 +190,13 @@ public class SpellCheckerAccuracyTest {
 		double expPercentFoundInTopN = 0.6;
 		double tolerance = 0.01;	
 		double expAverageRank = 3.4;
-		double avgRankTolerance = 0.1;		
+		double avgRankTolerance = 0.1;
+		Boolean loadCorrectWordInDict = true;
 		evaluateCheckerOnExamples(checker, 
 				examples_MostFrequenMisspelledWords, focusOnExample, 
 				expPercentFoundInTopN, tolerance,
 				expAverageRank, avgRankTolerance,
-				verbosity);
+				loadCorrectWordInDict, verbosity);
 	}	
 
 	@Test
@@ -181,12 +212,13 @@ public class SpellCheckerAccuracyTest {
 		double tolerance = 0.01;
 		double expAverageRank = 1.23;
 		double avgRankTolerance = 0.93;
+		Boolean loadCorrectWordInDict = true;
 
 		evaluateCheckerOnExamples(getLargeDictChecker(), 
 				examples_HandPickedMispelledWords, focusOnExample,
 				expPercentFoundInTopN, tolerance, 
 				expAverageRank, avgRankTolerance, 
-				verbosity);
+				loadCorrectWordInDict, verbosity);
 	}
 
 	public void evaluateCheckerOnExamples(SpellChecker spellChecker, 
@@ -196,27 +228,31 @@ public class SpellCheckerAccuracyTest {
 		evaluateCheckerOnExamples(spellChecker, 
 				examples, focusOnExample, 
 				expPercentFoundInTopN, tolerance, 
-				expAverageRank, avgRankTolerance, null);
+				expAverageRank, avgRankTolerance, null, null);
 	}
 
 	public void evaluateCheckerOnExamples(SpellChecker spellChecker, 
 			SpellCheckerExample[] examples, String focusOnExample, 
 			double expPercentFoundInTopN, double tolerance, 
 			double expAverageRank, double avgRankTolerance,
-			Integer verbosity) throws Exception {
+			Boolean loadCorrectWordInDict, Integer verbosity) throws Exception {
 		
 		if (verbosity == null) verbosity = 0;
+		if (loadCorrectWordInDict == null) loadCorrectWordInDict = false;
+		
 		//
 		// For these tests, "pretend" that all the words from the 
 		// examples were seen in the corpus used by the SpellChecker.
 		//
-		assumeCorrectionsAreInCheckerDict(examples, spellChecker);
+		if (loadCorrectWordInDict) {
+			assumeCorrectionsAreInCheckerDict(examples, spellChecker);
+		}
 		SpellCheckerEvaluator evaluator = new SpellCheckerEvaluator(spellChecker);
 		evaluator.setVerbose(verbosity);
 				
 		for (SpellCheckerExample exampleData: examples) {
 			if (focusOnExample == null || focusOnExample.equals(exampleData.wordToCheck)) {
-				evaluator.onNewExample(exampleData);				
+				evaluator.onNewExample(exampleData, loadCorrectWordInDict);				
 			}
 		}
 		
@@ -330,7 +366,7 @@ public class SpellCheckerAccuracyTest {
 							.limit(20)
 							.collect(Collectors.toList());
 				errMess += "  "+word+": rank="+rank+
-					" (exp <= "+example.expMaxRank+")\n"+
+					" (exp <= "+example.maxRankAssumingInDict+")\n"+
 					"  Correctly spelled forms: "+
 					StringUtils.join(example.acceptableCorrections.iterator(), ", ")+"\n"+
 					"  Top candidates were: "+
@@ -343,7 +379,7 @@ public class SpellCheckerAccuracyTest {
 	}
 	
 	@Test
-	public void test__firstPassCandidates_TFIDF__HandPickedExamples() 
+	public void test__firstPassCandidates_TFIDF__HandPickedExamples__WITHOUT_AssumingCorrectSpellingInDict() 
 			throws Exception {
 		// Set this to a specific example if you only want 
 		// to evaluate that one.
