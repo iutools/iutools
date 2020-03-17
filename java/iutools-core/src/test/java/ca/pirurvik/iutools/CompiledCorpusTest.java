@@ -76,16 +76,17 @@ public class CompiledCorpusTest extends TestCase
 		// By default, the compiler segments words on a character by character basis.
 		// 
 		// But you can also pass it a different segmenter. For example, the following
-		// compiler will segment words by morphemes.
+		// compiler will segment words by inuktitut morphemes.
 		//
 		compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
+
+		compiledCorpus.setVerbose(false); // set verbose to false for tests only
 
 		// Identify the full path of the corpus directory to be compiled
 		//
 		String corpusDirectoryPathname = "path/to/corpus/directory";
 		
 		// Compile the corpus given in argument as directory pathname from scratch
-		compiledCorpus.setVerbose(false); // set verbose to false for tests only
 		try {
 			compiledCorpus.compileCorpusFromScratch(corpusDirectoryPathname);
 		} catch(CompiledCorpusException | StringSegmenterException e) {
@@ -115,7 +116,7 @@ public class CompiledCorpusTest extends TestCase
 		if (wInfo == null) {
 			// Means the corpus does not know about this word
 		} else {
-			// Total number of morphological for this word, as well as a
+			// Total number of morphological decompositions for this word, as well as a
 			// short list of the first few decompositions found.
 			// 
 			// If those values are 'null', it means that the decomps have not 
