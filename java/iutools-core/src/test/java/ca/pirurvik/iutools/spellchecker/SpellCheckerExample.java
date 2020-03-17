@@ -72,11 +72,11 @@ public class SpellCheckerExample extends BinaryClassifierExample {
 	}
 
 	
-	public SpellCheckerExample setMaxRank(int maxAssumingCorrectionsInDict) {
+	public SpellCheckerExample setMaxRank(Integer maxAssumingCorrectionsInDict) {
 		return setMaxRank(maxAssumingCorrectionsInDict, null);
 	}
 	
-	public SpellCheckerExample setMaxRank(int maxAssumingCorrectionsInDict,
+	public SpellCheckerExample setMaxRank(Integer maxAssumingCorrectionsInDict,
 			Integer maxNOTAssumingCorrectionsInDict) {
 		this.maxRankAssumingInDict = maxAssumingCorrectionsInDict;
 		this.maxRankNOTAssumingInDict = maxNOTAssumingCorrectionsInDict;

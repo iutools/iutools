@@ -179,22 +179,48 @@ public class SpellCheckerAccuracyTest {
 	private static final SpellCheckerExample[] 
 			examples_RandomPageSample = new SpellCheckerExample[] {
 				// NEEDS-IMPROVEMENT: rank > 5 or null
-				new SpellCheckerExample("piliriqatigiinik", null, "piliriqatigiinnik"),
+				new SpellCheckerExample("piliriqatigiinik")
+						.isMisspelled("piliriqatigiinnik").setMaxRank(null),
 				
 				// OK: rank <= 5
-				new SpellCheckerExample("aanniaqarnngittulirijikkut", 5, "aanniaqanngittulirijikkut"),
-				new SpellCheckerExample("angijuqqaaqaqtutik", 5, "angajuqqaaqaqtutik"),					
-				new SpellCheckerExample("maliklugu", 5, "maliglugu"),
-				new SpellCheckerExample("pivagiijainiq", 5, "pivagiijarniq"),
-				new SpellCheckerExample("qassigasangnut", 5, "qassigalangnut"),
-				new SpellCheckerExample("qaujisarutinginniklu", 5, "qaujisarutinginniglu"),
-				new SpellCheckerExample("qaritaujarmuaqtiqtaujuni", 5, "qaritaujamuaqtitaujuni"),
-				new SpellCheckerExample("silataaniingaaqtulirinirmut", 5, "silataaninngaaqtulirinirmut"),
-				new SpellCheckerExample("sivunnganit", 5, "sivuninganit", "sivurnganit"),
-				new SpellCheckerExample("tukimuaktittiniaqtumik", 5, "tukimuaqtittiniaqtumik"),
-				new SpellCheckerExample("tukimuaktiungmata", 5, "tukimuaqtiungmata"),
-				new SpellCheckerExample("upalungaijanirmut", 5, "upalungaijarnirmut"),
-				new SpellCheckerExample("uqaujjigiarutiniklu", 5, "uqaujjigiarutiniglu"),
+				new SpellCheckerExample("aanniaqarnngittulirijikkut")
+						.isMisspelled("aanniaqanngittulirijikkut").setMaxRank(5),
+					
+				new SpellCheckerExample("angijuqqaaqaqtutik").setMaxRank(5)
+						.isMisspelled("angajuqqaaqaqtutik"),	
+						
+				new SpellCheckerExample("maliklugu").setMaxRank(5)
+						.isMisspelled("maliglugu"),
+						
+				new SpellCheckerExample("pivagiijainiq").setMaxRank(5)
+						.isMisspelled("pivagiijarniq"),
+						
+				new SpellCheckerExample("qassigasangnut").setMaxRank(5)
+						.isMisspelled("qassigalangnut"),
+						
+				new SpellCheckerExample("qaujisarutinginniklu").setMaxRank(5)
+						.isMisspelled("qaujisarutinginniglu"),
+						
+				new SpellCheckerExample("qaritaujarmuaqtiqtaujuni").setMaxRank(5)
+						.isMisspelled("qaritaujamuaqtitaujuni"),
+						
+				new SpellCheckerExample("silataaniingaaqtulirinirmut").setMaxRank(5)
+						.isMisspelled("silataaninngaaqtulirinirmut"),
+						
+				new SpellCheckerExample("sivunnganit").setMaxRank(5)
+						.isMisspelled("sivuninganit", "sivurnganit"),
+						
+				new SpellCheckerExample("tukimuaktittiniaqtumik").setMaxRank(5)
+						.isMisspelled("tukimuaqtittiniaqtumik"),
+						
+				new SpellCheckerExample("tukimuaktiungmata").setMaxRank(5)
+						.isMisspelled("tukimuaqtiungmata"),
+						
+				new SpellCheckerExample("upalungaijanirmut").setMaxRank(5)
+						.isMisspelled("upalungaijarnirmut"),
+						
+				new SpellCheckerExample("uqaujjigiarutiniklu").setMaxRank(5)
+						.isMisspelled("uqaujjigiarutiniglu"),
 	};
 	
 	@Test
