@@ -94,7 +94,7 @@ public class SpellCheckerAccuracyTest {
 			examples_HandPickedMispelledWords = new SpellCheckerExample[] {
 				// NEEDS-IMPROVEMENT: rank > 5 or null
 				new SpellCheckerExample("piliriqatigiinik", null, "piliriqatigiinnik"),
-
+				
 				// OK: rank <= 5
 				new SpellCheckerExample("aanniaqarnngittulirijikkut", 5, "aanniaqanngittulirijikkut"),
 				new SpellCheckerExample("angijuqqaaqaqtutik", 5, "angajuqqaaqaqtutik"),					
@@ -112,15 +112,17 @@ public class SpellCheckerAccuracyTest {
 	};
 	
 	@Test
-	public void test__EvaluateSugestions__MostFrequentWords__LargeDictionary() throws Exception {
+	public void test__EvaluateSugestions__MostFrequentWords__AssumingWordIsInDict() 
+			throws Exception {
 		//
 		// Set this to a specific example if you only want 
 		// to evaluate that one.
 		//
 		String focusOnExample = null;
+//		focusOnExample = "nigiani";
 		
 		int verbosity = 1;
-		double expPercentFoundInTopN = 0.90;
+		double expPercentFoundInTopN = 0.95;
 		double tolerance = 0.01;
 		double expAverageRank = 3.2;
 		double avgRankTolerance = 0.1;

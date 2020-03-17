@@ -9,6 +9,7 @@ import ca.nrc.string.diff.DiffResult;
 import ca.nrc.string.diff.StringDiffException;
 import ca.nrc.string.diff.StringTransformation;
 import ca.nrc.string.diff.TextualDiff;
+import ca.pirurvik.iutools.spellchecker.SpellDebug;
 
 /**
  * Computes edit distance between two Inuktut words, taking into 
@@ -25,6 +26,9 @@ public class IUSpellingDistance implements EditDistanceCalculator {
 
 	@Override
 	public double distance(String word1, String word2) throws EditDistanceCalculatorException {
+		SpellDebug.trace("IUSpellingDistance.distance", 
+				"Invoked", word1, word2);
+		
 		String wordRoman1 = word1;
 		if (Syllabics.allInuktitut(wordRoman1)) {
 			wordRoman1 = TransCoder.unicodeToRoman(wordRoman1);

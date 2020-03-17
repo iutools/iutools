@@ -9,6 +9,7 @@ import ca.inuktitutcomputing.morph.Decomposition;
 import ca.pirurvik.iutools.CompiledCorpus;
 import ca.pirurvik.iutools.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.edit_distance.EditDistanceCalculatorFactory;
+import ca.pirurvik.iutools.spellchecker.ScoredSpelling;
 import ca.pirurvik.iutools.spellchecker.SpellChecker;
 import ca.pirurvik.iutools.spellchecker.SpellingCorrection;
 
@@ -39,7 +40,8 @@ public class CmdCheckSpelling extends ConsoleCommand {
 		
 		String maxCorrectionsOpt = getMaxCorr(false);
 		int maxCorrections = maxCorrectionsOpt==null ? 5 : Integer.parseInt(maxCorrectionsOpt);
-		EditDistanceCalculatorFactory.DistanceMethod editDistanceAlgorithm = getEditDistanceAlgorithm(false);
+		EditDistanceCalculatorFactory.DistanceMethod editDistanceAlgorithm
+				= getEditDistanceAlgorithm(false);
 		
 		if (editDistanceAlgorithm!=null)
 			checker.setEditDistanceAlgorithm(editDistanceAlgorithm);
@@ -66,9 +68,9 @@ public class CmdCheckSpelling extends ConsoleCommand {
 				}
 			}
 			
-			List<String> suggestions = corr.getPossibleSpellings();
+			List<ScoredSpelling> suggestions = corr.getScoredPossibleSpellings();
 			if (suggestions != null && suggestions.size() > 0) {
-				Iterator<String> itSugg = suggestions.iterator();
+				Iterator<ScoredSpelling> itSugg = suggestions.iterator();
 				int nIt = 1;
 				while (itSugg.hasNext()) {
 					echo((nIt++)+". "+itSugg.next());
@@ -77,7 +79,5 @@ public class CmdCheckSpelling extends ConsoleCommand {
 			
 			if (!interactive) break;				
 		}
-
 	}
-
 }

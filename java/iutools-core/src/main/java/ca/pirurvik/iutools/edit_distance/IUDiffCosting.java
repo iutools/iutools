@@ -26,22 +26,22 @@ import ca.pirurvik.iutools.spellchecker.SpellDebug;
 public class IUDiffCosting extends DiffCosting {
 
 	public double cost(DiffResult diff) {
-//		SpellTracer.trace("SpellChecker.computeCandidateSimilarity", 
-//				"Invoked", 
-//				diff.origStr(), diff.revStr());
+		SpellDebug.trace("SpellChecker.computeCandidateSimilarity", 
+				"Invoked", 
+				diff.origStr(), diff.revStr());
 		
 		Double _cost = costFirstMorphemeChange(diff);
-//		SpellTracer.trace("cost", 
-//				"AFTER costAsLeadingCharChanges, _cost="+_cost,
-//				diff.origStr(), diff.revStr());			
+		SpellDebug.trace("cost", 
+				"AFTER costAsLeadingCharChanges, _cost="+_cost,
+				diff.origStr(), diff.revStr());			
 		
 		for (int nn=0; nn < diff.transformations.size(); nn++) {
 			_cost += costNthTransformation(nn, diff);
 		}
 		
-//		SpellTracer.trace("SpellChecker.computeCandidateSimilarity", 
-//				"returning _cost="+_cost, 
-//				diff.origStr(), diff.revStr());
+		SpellDebug.trace("SpellChecker.computeCandidateSimilarity", 
+				"returning _cost="+_cost, 
+				diff.origStr(), diff.revStr());
 		
 		return _cost.doubleValue();
 	}
@@ -53,13 +53,16 @@ public class IUDiffCosting extends DiffCosting {
 	private Double costNthTransformation(int nn, DiffResult diff, 
 						boolean asLeadingCharChanges) {
 		
-//		SpellTracer.trace("IUDiffCosting.costNthTransformation", 
-//				"Costing transf nn="+nn,
-//				diff.origStr(), diff.revStr());
 		
 		Double _cost = null;
 		StringTransformation transf = diff.transformations.get(nn);
 		
+		SpellDebug.trace("IUDiffCosting.costNthTransformation", 
+				"Costing transf nn="+nn+
+				": transf.origStr="+transf.origStr()+
+				", transf.revStr="+transf.revStr(),
+				diff);
+
 		double unitCost = SMALL_COST;
 		if (asLeadingCharChanges && !wordsAreSingleMorpheme(diff)) {
 			// Changing the first few characters of a word has an 
@@ -71,6 +74,10 @@ public class IUDiffCosting extends DiffCosting {
 				
 		_cost = costAsCharacterDoubling(nn, diff, unitCost);			
 		
+		SpellDebug.trace("IUDiffCosting.costNthTransformation", 
+				"After costing for doubled characters, _cost="+_cost,
+				diff);
+
 		if (_cost == null) {
 			// No "special" costing was applied. Use
 			// a "generic" costing based on number of characters 
@@ -79,23 +86,28 @@ public class IUDiffCosting extends DiffCosting {
 			_cost = unitCost * transf.numAffectedTokens();
 		}
 		
+		
+		SpellDebug.trace("IUDiffCosting.costNthTransformation", 
+				"returning _cost="+_cost,
+				diff);
+		
 		return _cost;
 	}
 	
-	private Double costAsCharacterDoubling(int transfNum, 
+	private Double costAsCharacterDoubling__OLD(int transfNum, 
 				DiffResult diff, Double unitCost) {
 		
 		Double cost = null;
 		
 		StringTransformation transf = diff.transformations.get(transfNum);
 		
-//		SpellTracer.trace("IUDiffCosting.costNthTransformation", 
+//		SpellDebug.trace("IUDiffCosting.costNthTransformation", 
 //				"Costing transf #"+transfNum+": "+transf.origStr()+"-->"+transf.revStr(),
 //				diff.origStr(), diff.revStr());
 		
 		if (transf.origTokens.length <= 3 && 
 				transf.revisedTokens.length <= 3) {
-//			SpellTracer.trace("IUDiffCosting.costAsCharacterDoubling", 
+//			SpellDebug.trace("IUDiffCosting.costAsCharacterDoubling", 
 //					"Transformation affects only one char at one end",
 //					diff.origStr(), diff.revStr());
 			
@@ -125,6 +137,44 @@ public class IUDiffCosting extends DiffCosting {
 		return cost;
 	}	
 	
+	private Double costAsCharacterDoubling(int transfNum, 
+			DiffResult diff, Double unitCost) {
+	
+		Double cost = null;
+		
+		StringTransformation transf = diff.transformations.get(transfNum);
+		
+		SpellDebug.trace("IUDiffCosting.costAsCharacterDoubling", 
+				"Costing transf #"+transfNum+": "+transf.origStr()+"-->"+transf.revStr(),
+				diff);
+		
+		Pair<Integer,Integer> charDoublingResult = 
+				isCharDoubling_NEW(transf.origStr(), transf.revStr());
+		
+		SpellDebug.trace("IUDiffCosting.costAsCharacterDoubling", 
+				"Char doubling info: "+charDoublingResult,
+				diff);
+		
+		if (charDoublingResult != null) {
+			// Transformation included character doublings or
+			// de-doubling.
+			//
+			// Cost this in a special way.
+			//
+			
+			// Character doubling/de-doubling encurs a "tiny" cost
+			cost = TINY_COST * charDoublingResult.getFirst();
+			
+			// Other types of transformation encure the received 
+			// unit cost. This may be INFINITE if the transformation
+			// affects the first phoneme
+			//
+			cost += unitCost * charDoublingResult.getSecond();				
+		}
+		
+		return cost;
+	}	
+
 	/**
 	 * Check if a character from origStr has been doubled to 
 	 * yield revStr (also with a possible single char added or deleted 
@@ -201,7 +251,7 @@ public class IUDiffCosting extends DiffCosting {
 		
 		if (transf.origTokens.length <= 3 && 
 				transf.revisedTokens.length <= 3) {
-//			SpellTracer.trace("IUDiffCosting.isCharDoubling", 
+//			SpellDebug.trace("IUDiffCosting.isCharDoubling", 
 //					"Transformation affects only one char at one end",
 //					transf.origStr(), transf.revStr());
 			
@@ -235,6 +285,9 @@ public class IUDiffCosting extends DiffCosting {
 		Double _cost = 0.0;
 		List<StringTransformation> transf = diff.transformations;
 		
+		SpellDebug.trace("IUDiffCosting.costFirstMorphemeChange", 
+				"Invoked",diff);
+		
 		// Identify transformations that affect the first
 		// few characters of word and its correction
 		//
@@ -254,8 +307,18 @@ public class IUDiffCosting extends DiffCosting {
 			}
 		}
 		
+		SpellDebug.trace("IUDiffCosting.costFirstMorphemeChange", 
+				"lastLeadCharTransf="+lastLeadCharTransf,diff);
+		
 		if (lastLeadCharTransf >= 0) {
+			SpellDebug.trace("IUDiffCosting.costFirstMorphemeChange", 
+					"There are SOME changes in the first morphme", diff);
+			
 			_cost = costSpecialCase_aanniaq(diff);
+			
+			SpellDebug.trace("IUDiffCosting.costFirstMorphemeChange", 
+					"After special case 'aanniaq', _cost="+_cost, diff);
+
 			if (_cost == null) {
 			
 				// Cost of any change in the leading chars of a word 
@@ -278,9 +341,13 @@ public class IUDiffCosting extends DiffCosting {
 			for (int ii=0; ii <= lastLeadCharTransf; ii++) {
 				transf.remove(0);
 			}
-			
+		} else {
+			SpellDebug.trace("IUDiffCosting.costFirstMorphemeChange", 
+					"No changes in the first morphme", diff);
 		}
 		
+		SpellDebug.trace("IUDiffCosting.costFirstMorphemeChange", 
+				"returning _cost="+_cost, diff);
 		return _cost;
 	}
 
@@ -358,5 +425,72 @@ public class IUDiffCosting extends DiffCosting {
 		boolean isSingle = (charsRev.length <= 5 && charsOrig.length <= 5);
 		
 		return isSingle;
+	}
+
+	/**
+	 * Check if a transformation involves doubling/de-doubling of characters.
+	 * If so, return a pair providing:
+	 * 
+	 * - number of doublings/de-doublings operations
+	 * - number of chars affected by other types of operations (substitution, 
+	 *     addition, deletion)
+	 * 
+	 * @param origStr
+	 * @param revStr
+	 * @return
+	 */
+	public Pair<Integer, Integer> isCharDoubling_NEW(String origStr, String revStr) {
+		Pair<Integer,Integer> result = null;
+		
+		Integer totalDblOps = 0;
+		Integer totalCharsOtherOps = 0;
+		if (origStr.length() <= 5 && origStr.length() <=5) {
+			
+			// Calculate char doubling at START of string
+			Pattern patt = Pattern.compile("^((.)(\\2?))");
+			Matcher matcherOrig = patt.matcher(origStr);
+			Matcher matcherRev = patt.matcher(revStr);
+			if (matcherOrig.find() && matcherRev.find()) {
+				String origStart = matcherOrig.group(1);
+				String revStart = matcherRev.group(1);
+				if ((origStart.length() > 1 || revStart.length() > 1) &&
+						matcherOrig.group(2).equals(matcherRev.group(2))) {
+					// The two strings start with same char, and one of them
+					// is doubled.
+					totalDblOps += 1;
+					origStr = origStr.substring(origStart.length());
+					revStr = revStr.substring(revStart.length());
+				}
+			}
+
+			// Calculate char doubling at END of string
+			patt = Pattern.compile("((.)(\\2?))$");
+			matcherOrig = patt.matcher(origStr);
+			matcherRev = patt.matcher(revStr);
+			if (matcherOrig.find() && matcherRev.find()) {
+				String origEnd = matcherOrig.group(1);
+				String revEnd = matcherRev.group(1);
+				if ((origEnd.length() > 1 || revEnd.length() > 1) &&
+						matcherOrig.group(2).equals(matcherRev.group(2))) {
+					// The two strings end with same char, and one of them
+					// is doubled.
+					totalDblOps += 1;
+					origStr = origStr.substring(0, origStr.length() - origEnd.length());
+					revStr = revStr.substring(0, revStr.length() - revEnd.length());
+				}
+			}
+		
+			// Any chars that still remaing are involved in a type of operation 
+			// other than doubling/de-doubling.
+			//
+			totalCharsOtherOps = origStr.length() + revStr.length();
+		}
+		
+		Pair<Integer,Integer> dblInfo = null;
+		if (totalDblOps + totalCharsOtherOps > 0) {
+			dblInfo = Pair.of(totalDblOps, totalCharsOtherOps);
+		}
+		
+		return dblInfo;
 	}
 }

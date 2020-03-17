@@ -593,7 +593,7 @@ public class SpellCheckerTest {
 		Double gotElapsedSecondTime = (System.currentTimeMillis() - start) 
 				/ (1.0 * 1000);
 		
-		double expSpeedupFactor = 2.0;
+		double expSpeedupFactor = 1.5;
 		AssertNumber.isLessOrEqualTo(
 				"Correcting text second time should have been MUCH FASTER "+
 				"\n(exp speedup: x"+expSpeedupFactor+").",

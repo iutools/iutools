@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import ca.nrc.datastructure.Pair;
+import ca.nrc.string.diff.DiffResult;
 
 public class SpellDebug {
 	
@@ -14,6 +15,8 @@ public class SpellDebug {
 //		new String[] {"angijuqqaaqaqtutik", "*"},
 //		new String[] {"maliklugu","maligluglu"},
 //		new String[] {"maliklugu","*"},
+//		new String[] {"nigiani", "niruarnaqsigasuarnilimaangani"},
+//		new String[] {"niruarnaqsigasuarnilimaangani", "nigiani"},
 //		new String[] {"nakuqmi","nakurmiik"}
 //		new String[] {"tamaini", "tamainni"},
 //		new String[] {"tamainni", "tamaini"}
@@ -76,10 +79,17 @@ public class SpellDebug {
 			String badWord, String candidate) {
 		Pair<Boolean,String> status = traceStatus(badWord, candidate);
 		if (status.getFirst()) {
-			System.out.println("-- "+who+"("+status.getSecond()+"): "+mess);			
+			System.out.println("-- "+who+"("+status.getSecond()+"):\n   "+mess);			
 		}
 	}
 
+	public static void trace(String who, String mess, DiffResult diff) {
+		Pair<Boolean,String> status = traceStatus(diff.origStr(), diff.revStr());
+		if (status.getFirst()) {
+			System.out.println("-- "+who+"("+status.getSecond()+"):\n   "+mess);			
+		}
+	}
+	
 	public static void containsCorrection(String who, String what, 
 			String badWord, String candidate,
 			List<ScoredSpelling> scoredSpellings) {
@@ -99,7 +109,7 @@ public class SpellDebug {
 			}
 			System.out.println("-- "+who+
 					"("+status.getSecond()+
-					"): "+what+contain_or_not+" candidate spelling '"+
+					"):\n   "+what+contain_or_not+" candidate spelling '"+
 					candidate+"'.");			
 		}
 	}
@@ -140,5 +150,4 @@ public class SpellDebug {
 		
 		return isActive;
 	}
-
 }

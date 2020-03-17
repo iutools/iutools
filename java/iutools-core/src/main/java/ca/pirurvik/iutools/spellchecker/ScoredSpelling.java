@@ -14,7 +14,7 @@ public class ScoredSpelling {
 	}
 	
 	public String toString() {
-		String str = spelling+" (score="+score+")";
+		String str = spelling+" (dist="+score+")";
 		return str;
 	}
 }

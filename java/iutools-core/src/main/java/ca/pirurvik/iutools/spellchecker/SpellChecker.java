@@ -480,7 +480,7 @@ public class SpellChecker {
 		
 		double distance;
 		try {
-			distance = editDistanceCalculator.distance(candidate,badWord);
+			distance = editDistanceCalculator.distance(badWord, candidate);
 		} catch (EditDistanceCalculatorException e) {
 			throw new SpellCheckerException(e);
 		}
