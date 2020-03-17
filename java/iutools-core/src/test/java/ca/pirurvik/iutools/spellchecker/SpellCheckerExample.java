@@ -16,6 +16,9 @@ public class SpellCheckerExample extends BinaryClassifierExample {
 	Set<String> acceptableCorrections = null;
 	public Integer maxRankAssumingInDict = null;
 	public Integer maxRankNOTAssumingInDict = null;
+	private boolean properNoun = false;
+	private boolean borrowed = false;
+	private boolean misspelled;
 
 	public SpellCheckerExample(String _wordToCheck) {
 		super(_wordToCheck);
@@ -58,6 +61,39 @@ public class SpellCheckerExample extends BinaryClassifierExample {
 			this.corectCategory = "misspelled";
 		}
 	}
+	
+	public SpellCheckerExample isMisspelled(String... admissibleCorrections) {
+		this.misspelled = true;
+		this.acceptableCorrections = new HashSet<String>();
+		for (String corr: admissibleCorrections) {
+			this.acceptableCorrections.add(corr);
+		}
+		return this;
+	}
+
+	
+	public SpellCheckerExample setMaxRank(int maxAssumingCorrectionsInDict) {
+		return setMaxRank(maxAssumingCorrectionsInDict, null);
+	}
+	
+	public SpellCheckerExample setMaxRank(int maxAssumingCorrectionsInDict,
+			Integer maxNOTAssumingCorrectionsInDict) {
+		this.maxRankAssumingInDict = maxAssumingCorrectionsInDict;
+		this.maxRankNOTAssumingInDict = maxNOTAssumingCorrectionsInDict;
+		return this;
+	}
+	
+		
+	public SpellCheckerExample isProperName() {
+		this.properNoun  = true;
+		return this;
+	}
+	
+	public SpellCheckerExample isBorrowed() {
+		this.borrowed  = true;
+		return this;
+	}
+
 	
 	public String key() {
 		return wordToCheck;
