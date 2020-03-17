@@ -29,6 +29,7 @@ public class SpellCheckerEvaluator {
 	
 	private double sumRank = 0.0;
 	private int totalNonNullRank = 0;
+	private int totalExamplesWithKnownCorrection = 0;	
 
 	private Integer verbosity = 0;
 	
@@ -56,7 +57,7 @@ public class SpellCheckerEvaluator {
 		Set<String> correctForms = example.acceptableCorrections;
 		SpellingCorrection gotCorrection = checker.correctWord(example.wordToCheck);
 		
-		boolean shouldHaveBeenCorrect = (correctForms == null);
+		boolean shouldHaveBeenCorrect = !example.misspelled;
 		
 		if (gotCorrection.wasMispelled) {
 			// Positive cases (i.e. where SpellChecker found an error)
@@ -81,60 +82,62 @@ public class SpellCheckerEvaluator {
 			SpellingCorrection gotCorrection, 
 			Boolean assumesCorrectionsLoadeInDict) {
 		
-		Integer rank = null;
-		List<String> suggestions = new ArrayList<String>();
-		for (ScoredSpelling cand: gotCorrection.getScoredPossibleSpellings()) {
-			suggestions.add(cand.spelling);
-		}
-		
-		if (verbosity > 1) {
-			System.out.println("   Got suggestions: "+
-					String.join(",", suggestions));
-		}
-		
-		for (int ii=0; ii < suggestions.size(); ii++) {
-			if (example.acceptableCorrections.contains(suggestions.get(ii))) {
-				rank = ii + 1;
-				break;
+		if (!example.acceptableCorrections.isEmpty()) {
+			Integer rank = null;
+			List<String> suggestions = new ArrayList<String>();
+			for (ScoredSpelling cand: gotCorrection.getScoredPossibleSpellings()) {
+				suggestions.add(cand.spelling);
 			}
-		}
-		
-		boolean rankBad = false;
-		Integer maxRank = example.maxRankAssumingInDict;
-		if (!assumesCorrectionsLoadeInDict) {
-			// We are evaluating the examples WITHOUT having first ensured that 
-			// the correct spellings are known to the dictionary.
-			// The max rank expectations may be different in that situation
-			//
-			if (example.maxRankNOTAssumingInDict != null) {
-				maxRank = example.maxRankNOTAssumingInDict;
+			
+			if (verbosity > 1) {
+				System.out.println("   Got suggestions: "+
+						String.join(",", suggestions));
 			}
-		}
-
-		if (rank == null) {
-			if (maxRank != null && maxRank > 0) {
-				rankBad = true;
+			
+			for (int ii=0; ii < suggestions.size(); ii++) {
+				if (example.acceptableCorrections.contains(suggestions.get(ii))) {
+					rank = ii + 1;
+					break;
+				}
 			}
-		} else {
-			if (maxRank == null || maxRank < 0 ||
-					rank > maxRank) {
-				rankBad = true;
+			
+			boolean rankBad = false;
+			Integer maxRank = example.maxRankAssumingInDict;
+			if (!assumesCorrectionsLoadeInDict) {
+				// We are evaluating the examples WITHOUT having first ensured that 
+				// the correct spellings are known to the dictionary.
+				// The max rank expectations may be different in that situation
+				//
+				if (example.maxRankNOTAssumingInDict != null) {
+					maxRank = example.maxRankNOTAssumingInDict;
+				}
 			}
+	
+			if (rank == null) {
+				if (maxRank != null && maxRank > 0) {
+					rankBad = true;
+				}
+			} else {
+				if (maxRank == null || maxRank < 0 ||
+						rank > maxRank) {
+					rankBad = true;
+				}
+			}
+			if (rankBad) {
+				addExampleWithBadRank(example, rank, gotCorrection.scoredCandidates);
+			}
+	
+			if (rank != null) {
+				sumRank += 1.0 * rank;
+				totalNonNullRank++;
+			}
+			
+			if (verbosity > 1) {
+				System.out.println("   Got rank="+rank+" (exp max: "+maxRank+")");
+			}
+			
+			correctSpellingRank.put(example, rank);
 		}
-		if (rankBad) {
-			addExampleWithBadRank(example, rank, gotCorrection.scoredCandidates);
-		}
-
-		if (rank != null) {
-			sumRank += 1.0 * rank;
-			totalNonNullRank++;
-		}
-		
-		if (verbosity > 1) {
-			System.out.println("   Got rank="+rank+" (exp max: "+maxRank+")");
-		}
-		
-		correctSpellingRank.put(example, rank);
 	}
 
 	private void addExampleWithBadRank(SpellCheckerExample example, 
@@ -262,5 +265,31 @@ public class SpellCheckerEvaluator {
 
 	public void setVerbose(Integer _verbosity) {
 		this.verbosity  = _verbosity;		
+	}
+	
+	public Double falsePositiveRate() {
+		Double rate = 0.0;
+		int inTotal = totalExamples();
+		if (inTotal > 0) {
+			rate = 1.0 * falsePos.size() / inTotal;
+		}
+		
+		return rate;
+	}
+
+	public Double falseNegativeRate() {
+		Double rate = 0.0;
+		int inTotal = totalExamples();
+		if (inTotal > 0) {
+			rate = 1.0 * falseNeg.size() / inTotal;
+		}
+		
+		return rate;
+	}
+
+	public int totalExamples() {
+		int total = truePos.size() + falsePos.size() +
+						trueNeg.size() + falseNeg.size();
+		return total;
 	}
 }

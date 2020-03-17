@@ -18,7 +18,7 @@ public class SpellCheckerExample extends BinaryClassifierExample {
 	public Integer maxRankNOTAssumingInDict = null;
 	private boolean properNoun = false;
 	private boolean borrowed = false;
-	private boolean misspelled;
+	boolean misspelled;
 
 	public SpellCheckerExample(String _wordToCheck) {
 		super(_wordToCheck);
@@ -60,6 +60,12 @@ public class SpellCheckerExample extends BinaryClassifierExample {
 		} else {
 			this.corectCategory = "misspelled";
 		}
+	}
+
+	public SpellCheckerExample notMisspelled() {
+		this.misspelled = false;
+		this.acceptableCorrections = new HashSet<String>();
+		return this;
 	}
 	
 	public SpellCheckerExample isMisspelled(String... admissibleCorrections) {

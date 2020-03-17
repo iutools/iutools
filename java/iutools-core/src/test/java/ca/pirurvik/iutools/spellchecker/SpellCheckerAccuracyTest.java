@@ -15,6 +15,7 @@ import ca.nrc.datastructure.Pair;
 import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.string.StringUtils;
 import ca.nrc.testing.AssertHelpers;
+import ca.nrc.testing.AssertNumber;
 import ca.pirurvik.iutools.CompiledCorpusRegistry;
 
 public class SpellCheckerAccuracyTest {
@@ -178,6 +179,94 @@ public class SpellCheckerAccuracyTest {
 	//	
 	private static final SpellCheckerExample[] 
 			examples_RandomPageSample = new SpellCheckerExample[] {
+				// NEEDS-IMPROVEMENT: False positives
+				//   i.e. words that the spell checker tags as mis-spelled 
+				//   eventhough they are correctly spelled.
+				//
+				new SpellCheckerExample("juusi")
+					.notMisspelled(),
+					
+				new SpellCheckerExample("siqinnisiurnimut")
+					.notMisspelled(),
+
+				new SpellCheckerExample("pigiannganirmut")
+					.notMisspelled(),
+
+				new SpellCheckerExample("uppiritsiatatinnik")
+					.notMisspelled(),
+
+				new SpellCheckerExample("nunalipaujakkut")
+					.notMisspelled(),
+
+				new SpellCheckerExample("pijiraqtitsinasuaqpattuni")
+					.notMisspelled(),
+
+				new SpellCheckerExample("katujjiqatigiigutaujumi")
+					.notMisspelled(),
+
+				new SpellCheckerExample("katujjiqatigiigutaujuq")
+					.notMisspelled(),
+
+				new SpellCheckerExample("amisurukkanniqullugit")
+					.notMisspelled(),
+
+				new SpellCheckerExample("aup")
+					.notMisspelled(),
+
+				new SpellCheckerExample("pirajangniuvuq")
+					.notMisspelled(),
+
+				new SpellCheckerExample("pirajangnirmut")
+					.notMisspelled(),
+
+				new SpellCheckerExample("pirajangniujuni")
+					.notMisspelled(),
+
+				new SpellCheckerExample("pirajaktailimanirmut")
+					.notMisspelled(),
+
+				new SpellCheckerExample("qanutigi")
+					.notMisspelled(),
+
+				new SpellCheckerExample("nalunaikkutanganni")
+					.notMisspelled(),
+
+				new SpellCheckerExample("pasijaujumik")
+					.notMisspelled(),
+
+				new SpellCheckerExample("qaujinasuarningani")
+					.notMisspelled(),
+
+				new SpellCheckerExample("saanngajunnaqpuq")
+					.notMisspelled(),
+
+				new SpellCheckerExample("akiliititaunajarningani")
+					.isMisspelled(),
+
+				new SpellCheckerExample("anullaksirnirmut")
+					.notMisspelled(),
+
+				new SpellCheckerExample("aquttunnailliniujumik")
+					.notMisspelled(),
+
+					
+				// NEEDS-IMPROVEMENT: Examples for which we only know
+				//   whether or not they are mis-spelled (need to 
+				//   figure out what the correct spellings are)
+					
+				new SpellCheckerExample("angijuqqaaqaqtutik")
+					.isMisspelled(),
+
+				new SpellCheckerExample("kanatilimaamik")
+					.isMisspelled(),
+					
+				new SpellCheckerExample("suulur")
+					.isMisspelled(),
+
+				new SpellCheckerExample("ujaranniarvimmi")
+					.isMisspelled(),
+					
+
 				// NEEDS-IMPROVEMENT: rank > 5 or null
 				new SpellCheckerExample("piliriqatigiinik")
 						.isMisspelled("piliriqatigiinnik").setMaxRank(null),
@@ -224,7 +313,7 @@ public class SpellCheckerAccuracyTest {
 	};
 	
 	@Test
-	public void test__EvaluateSugestions__MostFrequentWords__AssumingWordIsInDict() 
+	public void test__Evaluate__MostFrequentMisspelledWords__AssumingWordIsInDict() 
 			throws Exception {
 		//
 		// Set this to a specific example if you only want 
@@ -248,7 +337,7 @@ public class SpellCheckerAccuracyTest {
 	}
 	
 	@Test
-	public void test__EvaluateSugestions__MostFrequentWords__WIHOUT_AssumingWordIsInDict() 
+	public void test__Evaluate__MostFrequentMisspelledWords__WIHOUT_AssumingWordIsInDict() 
 			throws Exception {
 		//
 		// Set this to a specific example if you only want 
@@ -258,7 +347,7 @@ public class SpellCheckerAccuracyTest {
 //		focusOnExample = "nigiani";
 		
 		int verbosity = 1;
-		double expPercentFoundInTopN = 0.85;
+		double expPercentFoundInTopN = 0.92;
 		double tolerance = 0.01;
 		double expAverageRank = 1.6;
 		double avgRankTolerance = 0.1;
@@ -271,7 +360,7 @@ public class SpellCheckerAccuracyTest {
 				loadCorrectWordInDict, verbosity);
 	}	
 	@Test @Ignore
-	public void test__EvaluateSugestions__DEBUG_MostFrequentWords__UsingSmallCustomDictionary() throws Exception {
+	public void test__Evaluate__DEBUG_MostFrequentWords__UsingSmallCustomDictionary() throws Exception {
 		//
 		// This test is used only for Debugging purposes and is usually left 
 		// @Ignored.
@@ -306,12 +395,12 @@ public class SpellCheckerAccuracyTest {
 	}	
 
 	@Test
-	public void test__EvaluateSugestions__HandpickedExamples__LargeDictionary() throws Exception {
+	public void test__Evaluate__RandomPageSample__LargeDictionary() throws Exception {
 		// Set this to a specific example if you only want 
 		// to evaluate that one.
 		//
 		String focusOnExample = null;
-//		String focusOnExample = "pivagiijainiq";		
+//		focusOnExample = "angijuqqaaqaqtutik";		
 		
 		int verbosity = 2;
 		double expPercentFoundInTopN = 0.93;
@@ -319,12 +408,20 @@ public class SpellCheckerAccuracyTest {
 		double expAverageRank = 1.23;
 		double avgRankTolerance = 0.93;
 		Boolean loadCorrectWordInDict = true;
+		Double expFPRate = 0.52;
+		Double toleranceFPRate = 0.01;
+		
+		// We should not get ANY False Negatives
+		Double expFNRate = 0.0;
+		Double toleranceFNRate = 0.01;
 
 		evaluateCheckerOnExamples(getLargeDictChecker(), 
 				examples_RandomPageSample, focusOnExample,
 				expPercentFoundInTopN, tolerance, 
 				expAverageRank, avgRankTolerance, 
-				loadCorrectWordInDict, verbosity);
+				loadCorrectWordInDict, verbosity,
+				expFPRate, toleranceFPRate,
+				expFNRate, toleranceFNRate);
 	}
 
 	public void evaluateCheckerOnExamples(SpellChecker spellChecker, 
@@ -342,6 +439,22 @@ public class SpellCheckerAccuracyTest {
 			double expPercentFoundInTopN, double tolerance, 
 			double expAverageRank, double avgRankTolerance,
 			Boolean loadCorrectWordInDict, Integer verbosity) throws Exception {
+		
+		evaluateCheckerOnExamples(spellChecker, 
+				examples, focusOnExample, 
+				expPercentFoundInTopN, tolerance, 
+				expAverageRank, avgRankTolerance,
+				loadCorrectWordInDict, verbosity,
+				null, null, null, null);
+	}	
+	
+	private void evaluateCheckerOnExamples(SpellChecker spellChecker, 
+			SpellCheckerExample[] examples, String focusOnExample, 
+			double expPercentFoundInTopN, double tolerance, 
+			double expAverageRank, double avgRankTolerance,
+			Boolean loadCorrectWordInDict, Integer verbosity,
+			Double expFPRate, Double toleranceFPRate,
+			Double expFNRate, Double toleranceFNRate)  throws Exception {
 		
 		if (verbosity == null) verbosity = 0;
 		if (loadCorrectWordInDict == null) loadCorrectWordInDict = false;
@@ -362,29 +475,75 @@ public class SpellCheckerAccuracyTest {
 			}
 		}
 		
-		// Used to be able to get > 0.87. Why has this
-		// DECREASED eventhough I "improved" the suggestions 
-		// scoring algorithm?
 		int N = 5;
-		assertEvaluationAsExpected(evaluator, N, expPercentFoundInTopN, tolerance,
+		assertEvaluationAsExpected(evaluator, N, 
+				expPercentFoundInTopN, tolerance,
+				expAverageRank, avgRankTolerance,
+				expFPRate, toleranceFPRate,
+				expFNRate, toleranceFNRate);
+	}
+	
+	private void assertEvaluationAsExpected(SpellCheckerEvaluator evaluator, 
+			int N, double expPercentFoundInTopN, double tolerance, 
+			Double expAverageRank, Double avgRankTolerance) {
+	
+		assertEvaluationAsExpected(evaluator, 
+				N, expPercentFoundInTopN, tolerance, 
 				expAverageRank, avgRankTolerance);
-		
-	}	
+	}
 
-	private void assertEvaluationAsExpected(SpellCheckerEvaluator evaluator, int N, double expPercentFoundInTopN,
-			double tolerance, Double expAverageRank, Double avgRankTolerance) {
+	private void assertEvaluationAsExpected(SpellCheckerEvaluator evaluator, 
+			int N, double expPercentFoundInTopN, double tolerance, 
+			Double expAverageRank, Double avgRankTolerance, 
+			Double expFPRate,Double toleranceFPRate,
+			Double expFNRate, Double toleranceFNRate) {
 		
 		String errMess = "";
 		
+		errMess += checkFalsePositiveRate(evaluator, expFPRate, toleranceFPRate);
+		errMess += checkFalseNegativeRate(evaluator, expFNRate, toleranceFNRate);
 		errMess += checkPercentInTopN(evaluator, N, expPercentFoundInTopN, tolerance);;
 		errMess += checkAverageRank(evaluator, expAverageRank, avgRankTolerance);
 		errMess += checkExamplesWithBadRank(evaluator);	
 		
 		if (!errMess.isEmpty()) {
 			fail(errMess);
-		}
+		}		
 	}
 
+	private String checkFalsePositiveRate(SpellCheckerEvaluator evaluator, 
+			Double expFPRate, Double toleranceFPRate) {
+		
+		String errMess = "";
+		if (expFPRate != null) {
+			Double gotFPRate = evaluator.falsePositiveRate();
+			try {
+				AssertNumber.performanceHasNotChanged("False Positive Rate", 
+					gotFPRate, expFPRate, toleranceFPRate,
+					false);
+			} catch (AssertionError e) {
+				errMess = e.getMessage();
+			}
+		}
+		return errMess;
+	}
+
+	private String checkFalseNegativeRate(SpellCheckerEvaluator evaluator, 
+			Double expFNRate, Double toleranceFNRate) {
+		
+		String errMess = "";
+		if (expFNRate != null) {
+			Double gotFNRate = evaluator.falseNegativeRate();
+			try {
+				AssertNumber.performanceHasNotChanged("False Negative Rate", 
+					gotFNRate, expFNRate, toleranceFNRate,
+					false);
+			} catch (AssertionError e) {
+				errMess = e.getMessage();
+			}
+		}
+		return errMess;
+	}
 
 	private String checkPercentInTopN(SpellCheckerEvaluator evaluator, int N, 
 			double expPercentFoundInTopN, double tolerance) {
@@ -453,7 +612,6 @@ public class SpellCheckerAccuracyTest {
 				
 		return errMess;
 	}
-
 
 	private String checkExamplesWithBadRank(SpellCheckerEvaluator evaluator) {
 		String errMess = "";
