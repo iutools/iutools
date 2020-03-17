@@ -63,15 +63,12 @@ public class Trie {
     // If we assume that this method will not be called with an empty list of segments
     // (the test is done before calling this method),
     // then we can replace the commented lines with the lines with //***
+    //
 	public TrieNode add(String[] segments, String word) throws TrieException {
         TrieNode trieNode = root;
-//        if (trieNode == null)
-//            throw new TrieException("Can't add to a null root.");
-//        if (segments == null)
-//            return null; // null means the segmenter was not able to segment a word
-        
         Logger logger = Logger.getLogger("Trie.add");
         logger.debug("segments: "+Arrays.toString(segments));
+        
         String terminalSegment = "\\";
         ArrayList<String> segmentList = new ArrayList<String>(Arrays.asList(segments));
         segmentList.add(terminalSegment);
@@ -88,13 +85,6 @@ public class Trie {
             } else {
             	segmentNode = getChild(trieNode, segment);
             }
-			// if this is the last segment, indicate this is a word
-//			if (iseg == segments.length - 1) {
-//				segmentNode.incrementFrequency();
-//				segmentNode.surfaceForm = word;
-//				segmentNode.isWord = true;
-//				return segmentNode;
-//			}
             // current segment is in the keys, or it was not and has just been added 
 			// and is not the last segment: 
             trieNode = segmentNode;
@@ -104,9 +94,7 @@ public class Trie {
         // last segment (\)  = terminal node
         trieNode.addSurfaceForm(word); //***
         trieNode.isWord = true; //***
-        return trieNode; //***
-//        return null;
-		
+        return trieNode; //***		
 	}
 
 	public TrieNode getNode(String[] keys) {
