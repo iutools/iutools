@@ -29,7 +29,14 @@ public class SpellCheckerAccuracyTest {
 			checkerLargeDict = new SpellChecker();
 		}
 		return checkerLargeDict;
-	}	
+	}
+	
+	@Test
+	public void test__TODOs() {
+		Assert.fail("\n\nIGNORE THIS FAILURE!!\n\n"+
+				"It's just a reminder that the Accuracy tests are all messed up.\n\n"+
+				"Alain will deal with them after the demo.");
+	}
 	
 	//
 	// With a few exceptions, the examples below are a subset of the 200 most 
@@ -347,7 +354,7 @@ public class SpellCheckerAccuracyTest {
 //		focusOnExample = "nigiani";
 		
 		int verbosity = 1;
-		double expPercentFoundInTopN = 0.92;
+		double expPercentFoundInTopN = 0.94;
 		double tolerance = 0.01;
 		double expAverageRank = 1.6;
 		double avgRankTolerance = 0.1;

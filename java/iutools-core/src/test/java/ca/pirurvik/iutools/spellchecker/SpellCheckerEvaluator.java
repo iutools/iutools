@@ -82,6 +82,14 @@ public class SpellCheckerEvaluator {
 			SpellingCorrection gotCorrection, 
 			Boolean assumesCorrectionsLoadeInDict) {
 		
+		if (!assumesCorrectionsLoadeInDict && 
+				example.maxRankNOTAssumingInDict != null &&
+				example.maxRankNOTAssumingInDict == -1) {
+			// We don't expect this example to find the correction.
+			// So don't validate its rank
+			return;
+		}
+		
 		if (!example.acceptableCorrections.isEmpty()) {
 			Integer rank = null;
 			List<String> suggestions = new ArrayList<String>();
@@ -100,7 +108,7 @@ public class SpellCheckerEvaluator {
 					break;
 				}
 			}
-			
+						
 			boolean rankBad = false;
 			Integer maxRank = example.maxRankAssumingInDict;
 			if (!assumesCorrectionsLoadeInDict) {
