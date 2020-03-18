@@ -479,40 +479,40 @@ public class SpellCheckerTest {
 		SpellChecker checker = makeCheckerLargeDict();
 		
 		String word = "34-mi";
-		String[] numericTermParts = checker.wordIsNumberWithSuffix(word);
+		String[] numericTermParts = checker.wordIsNumberWithSuffixes(word);
 		Assert.assertTrue("Word "+word+" should have been acknowledged as a number-based word", numericTermParts != null);
 		Assert.assertEquals("The 'number' part is not as expected.", "34-", numericTermParts[0]);
 		Assert.assertEquals("The 'ending' part is not as expected.", "mi", numericTermParts[1]);
 		word = "$34,000-mi";
-		numericTermParts = checker.wordIsNumberWithSuffix(word);
+		numericTermParts = checker.wordIsNumberWithSuffixes(word);
 		Assert.assertTrue("Word "+word+" should have been acknowledged as a number-based word", numericTermParts != null);
 		Assert.assertEquals("The 'number' part is not as expected.", "$34,000-", numericTermParts[0]);
 		Assert.assertEquals("The 'ending' part is not as expected.", "mi", numericTermParts[1]);
 		word = "4:30-mi";
-		numericTermParts = checker.wordIsNumberWithSuffix(word);
+		numericTermParts = checker.wordIsNumberWithSuffixes(word);
 		Assert.assertTrue("Word "+word+" should have been acknowledged as a number-based word", numericTermParts != null);
 		Assert.assertEquals("The 'number' part is not as expected.", "4:30-", numericTermParts[0]);
 		Assert.assertEquals("The 'ending' part is not as expected.", "mi", numericTermParts[1]);
 		word = "5.5-mi";
-		numericTermParts = checker.wordIsNumberWithSuffix(word);
+		numericTermParts = checker.wordIsNumberWithSuffixes(word);
 		Assert.assertTrue("Word "+word+" should have been acknowledged as a number-based word", numericTermParts != null);
 		Assert.assertEquals("The 'number' part is not as expected.", "5.5-", numericTermParts[0]);
 		Assert.assertEquals("The 'ending' part is not as expected.", "mi", numericTermParts[1]);
 		word = "5,500.33-mi";
-		numericTermParts = checker.wordIsNumberWithSuffix(word);
+		numericTermParts = checker.wordIsNumberWithSuffixes(word);
 		Assert.assertTrue("Word "+word+" should have been acknowledged as a number-based word", numericTermParts != null);
 		Assert.assertEquals("The 'number' part is not as expected.", "5,500.33-", numericTermParts[0]);
 		Assert.assertEquals("The 'ending' part is not as expected.", "mi", numericTermParts[1]);
 		word = "bla";
-		numericTermParts = checker.wordIsNumberWithSuffix(word);
+		numericTermParts = checker.wordIsNumberWithSuffixes(word);
 		Assert.assertTrue("Word "+word+" should have been acknowledged as a number-based word", numericTermParts == null);
 		word = "34–mi";
-		numericTermParts = checker.wordIsNumberWithSuffix(word);
+		numericTermParts = checker.wordIsNumberWithSuffixes(word);
 		Assert.assertTrue("Word "+word+" should have been acknowledged as a number-based word", numericTermParts != null);
 		Assert.assertEquals("The 'number' part is not as expected.", "34–", numericTermParts[0]);
 		Assert.assertEquals("The 'ending' part is not as expected.", "mi", numericTermParts[1]);
 		word = "40−mi";
-		numericTermParts = checker.wordIsNumberWithSuffix(word);
+		numericTermParts = checker.wordIsNumberWithSuffixes(word);
 		Assert.assertTrue("Word "+word+" should have been acknowledged as a number-based word", numericTermParts != null);
 		Assert.assertEquals("The 'number' part is not as expected.", "40−", numericTermParts[0]);
 		Assert.assertEquals("The 'ending' part is not as expected.", "mi", numericTermParts[1]);
@@ -615,7 +615,7 @@ public class SpellCheckerTest {
 
 	private boolean containsNumericTerm(String numericTerm, SpellChecker checker) {
 		boolean answer = false;
-		String[] numericTermParts = checker.wordIsNumberWithSuffix(numericTerm);
+		String[] numericTermParts = checker.wordIsNumberWithSuffixes(numericTerm);
 		String normalizedNumericTerm = "0000"+numericTermParts[1];
 		if (checker.allNormalizedNumericTerms.indexOf(","+normalizedNumericTerm+",") >= 0) {
 			answer = true;

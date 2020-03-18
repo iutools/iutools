@@ -36,6 +36,7 @@ import ca.nrc.string.diff.DiffCosting;
 import ca.pirurvik.iutools.CompiledCorpus;
 import ca.pirurvik.iutools.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.CompiledCorpusRegistryException;
+import ca.pirurvik.iutools.NumericExpression;
 import ca.pirurvik.iutools.edit_distance.EditDistanceCalculator;
 import ca.pirurvik.iutools.edit_distance.EditDistanceCalculatorException;
 import ca.pirurvik.iutools.edit_distance.EditDistanceCalculatorFactory;
@@ -183,7 +184,7 @@ public class SpellChecker {
 	
 	public void addCorrectWord(String word) {		
 		String[] numericTermParts = null;
-		boolean wordIsNumericTerm = (numericTermParts=wordIsNumberWithSuffix(word)) != null;
+		boolean wordIsNumericTerm = (numericTermParts=wordIsNumberWithSuffixes(word)) != null;
 		if (wordIsNumericTerm && allNormalizedNumericTerms.indexOf(","+"0000"+numericTermParts[1]+",") < 0) {
 			if (allNormalizedNumericTerms == null || allNormalizedNumericTerms.isEmpty()) {
 				allNormalizedNumericTerms = "";
@@ -294,7 +295,7 @@ public class SpellChecker {
 		
 		if (corr.wasMispelled) {
 			// set ngramStats and suite of words for candidates according to type of word (normal word or numeric expression)
-			String[] numericTermParts = wordIsNumberWithSuffix(wordInLatin);
+			String[] numericTermParts = wordIsNumberWithSuffixes(wordInLatin);
 			boolean wordIsNumericTerm = numericTermParts != null;
 			
 			Set<String> candidates = firstPassCandidates_TFIDF(wordInLatin, wordIsNumericTerm);
@@ -387,7 +388,7 @@ public class SpellChecker {
 			logger.debug("more than 2 consecutive consonants in the word");
 			wordIsMispelled = true;
 		}
-		else if ( (numericTermParts=wordIsNumberWithSuffix(word)) != null) {
+		else if ( (numericTermParts=wordIsNumberWithSuffixes(word)) != null) {
 			logger.debug("numeric expression: "+word+" ("+numericTermParts[1]+")");
 			boolean pseudoWordWithSuffixAnalysesWithSuccess = assessEndingWithIMA(numericTermParts[1]);
 			wordIsMispelled = !pseudoWordWithSuffixAnalysesWithSuccess;
@@ -423,11 +424,10 @@ public class SpellChecker {
 	}
 
 
-	protected String[] wordIsNumberWithSuffix(String word) {
-		Pattern p = Pattern.compile("^(\\$?\\d+(?:[.,:]\\d+)?(?:[.,:]\\d+)?[\\-\u2013\u2212]?)([agijklmnpqrstuv]+)$");
-		Matcher mp = p.matcher(word);
-		if (mp.matches())
-			return new String[] {mp.group(1),mp.group(2)};
+	protected String[] wordIsNumberWithSuffixes(String word) {
+		NumericExpression numericExpression = NumericExpression.tokenIsNumberWithSuffix(word);
+		if (numericExpression != null)
+			return new String[] { numericExpression.numericFrontPart+numericExpression.separator, numericExpression.morphemicEndPart };
 		else
 			return null;
 	}
