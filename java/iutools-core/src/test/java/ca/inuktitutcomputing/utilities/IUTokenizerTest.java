@@ -16,6 +16,23 @@ public class IUTokenizerTest {
 	@Before
 	public void setUp() {
 	}
+	
+	@Test
+	public void test____processInitialPunctuation() {
+		IUTokenizer tokenizer = new IUTokenizer();
+		String remainingToken = tokenizer.__processInitialPunctuation("all words");
+		Assert.assertEquals("", "all words", remainingToken);
+		Assert.assertTrue("",tokenizer.tokens.size()==0);
+		Assert.assertTrue("",tokenizer.allTokensPunctuation.size()==0);
+		
+		tokenizer = new IUTokenizer();
+		remainingToken = tokenizer.__processInitialPunctuation("\"all words");
+		Assert.assertEquals("", "all words", remainingToken);
+		Assert.assertTrue("",tokenizer.tokens.size()==1);
+		Assert.assertEquals("", "\"", tokenizer.tokens.get(0));
+		Assert.assertTrue("",tokenizer.allTokensPunctuation.size()==1);
+		Assert.assertEquals("", "\"", tokenizer.allTokensPunctuation.get(0).getFirst());
+	}
 
 	@Test
 	public void test_run() throws IOException {
@@ -176,6 +193,56 @@ public class IUTokenizerTest {
 		tokenizer.run(text);
 		List<Pair<String,Boolean>>expectedTokens = new ArrayList<Pair<String,Boolean>>();
 		expectedTokens.add(new Pair<>("2015−mit",true));
+		expectedTokens.add(new Pair<>(".",false));
+		AssertHelpers.assertDeepEquals("", expectedTokens, tokenizer.getTokens());
+	}
+	
+	@Test
+	public void test_run__Case_quotes() throws IOException {
+		IUTokenizer tokenizer = new IUTokenizer();
+		String text;
+		text = "he said \"bla bla\".";
+		tokenizer.run(text);
+		List<Pair<String,Boolean>>expectedTokens = new ArrayList<Pair<String,Boolean>>();
+		expectedTokens.add(new Pair<>("he",true));
+		expectedTokens.add(new Pair<>(" ",false));
+		expectedTokens.add(new Pair<>("said",true));
+		expectedTokens.add(new Pair<>(" ",false));
+		expectedTokens.add(new Pair<>("\"",false));
+		expectedTokens.add(new Pair<>("bla",true));
+		expectedTokens.add(new Pair<>(" ",false));
+		expectedTokens.add(new Pair<>("bla",true));
+		expectedTokens.add(new Pair<>("\".",false));
+		AssertHelpers.assertDeepEquals("", expectedTokens, tokenizer.getTokens());
+	}
+	
+	@Test
+	public void test_run__Case_numbered_list() throws IOException {
+		IUTokenizer tokenizer = new IUTokenizer();
+		String text;
+		text = "he said 1. ok 2. fine ... 10. no.";
+		tokenizer.run(text);
+		List<Pair<String,Boolean>>expectedTokens = new ArrayList<Pair<String,Boolean>>();
+		expectedTokens.add(new Pair<>("he",true));
+		expectedTokens.add(new Pair<>(" ",false));
+		expectedTokens.add(new Pair<>("said",true));
+		expectedTokens.add(new Pair<>(" ",false));
+		expectedTokens.add(new Pair<>("1",true));
+		expectedTokens.add(new Pair<>(".",false));
+		expectedTokens.add(new Pair<>(" ",false));
+		expectedTokens.add(new Pair<>("ok",true));
+		expectedTokens.add(new Pair<>(" ",false));
+		expectedTokens.add(new Pair<>("2",true));
+		expectedTokens.add(new Pair<>(".",false));
+		expectedTokens.add(new Pair<>(" ",false));
+		expectedTokens.add(new Pair<>("fine",true));
+		expectedTokens.add(new Pair<>(" ",false));
+		expectedTokens.add(new Pair<>("...",false));
+		expectedTokens.add(new Pair<>(" ",false));
+		expectedTokens.add(new Pair<>("10",true));
+		expectedTokens.add(new Pair<>(".",false));
+		expectedTokens.add(new Pair<>(" ",false));
+		expectedTokens.add(new Pair<>("no",true));
 		expectedTokens.add(new Pair<>(".",false));
 		AssertHelpers.assertDeepEquals("", expectedTokens, tokenizer.getTokens());
 	}
