@@ -441,6 +441,7 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 		protected String decstr;
 		protected String partsStr[];
 		public DecPart parts[];
+		public String meanings[] = null;
 		//
 		
 		public DecompositionExpression() {
@@ -456,15 +457,14 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 		}
 		
 		public String[] getMeanings(String lang) {
-			String meanings[] = new String[parts.length];
-			for (int i=0; i<parts.length; i++) {
-				meanings[i] =
-					lang.equals("en")?
-							Morpheme.getMorpheme(parts[i].morphid).englishMeaning
-							:
-								Morpheme.getMorpheme(parts[i].morphid).frenchMeaning;
-							meanings[i] = meanings[i].replaceAll(" /", " ");
-							meanings[i] = meanings[i].replace("^/", "");
+			if (meanings == null) {
+				meanings = new String[parts.length];
+				for (int i = 0; i < parts.length; i++) {
+					meanings[i] = lang.equals("en") ? Morpheme.getMorpheme(parts[i].morphid).englishMeaning
+							: Morpheme.getMorpheme(parts[i].morphid).frenchMeaning;
+					meanings[i] = meanings[i].replaceAll(" /", " ");
+					meanings[i] = meanings[i].replace("^/", "");
+				}
 			}
 			return meanings;
 		}
