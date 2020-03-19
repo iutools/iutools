@@ -59,7 +59,7 @@ public class Dialect {
         // velC > CC : k, g, ng
         { "kt", "tt" }, { "ks", "ss" }, { "kp", "pp" }, { "kv", "vv" }, { "ks", "ts" }, 
                 { "k&", "ss" }, {"k&", "ts"}, {"k&", "kt"}, 
-        { "gl", "ll" }, { "gv", "vv" }, 
+        { "gl", "ll" }, { "gv", "vv" }, { "gj", "jj" },
         { "Nm", "mm" }, { "Nn", "nn" },
         // uvuC > CC : q, r
         { "qt", "tt" }, { "q&", "r&" }, {"qt", "rt"}, {"ql", "rl"}, {"qp", "rp"}, {"qs", "rs"},
