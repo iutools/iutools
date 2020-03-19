@@ -22,12 +22,6 @@ public class GistEndpointTest {
 	 ***********************/	
 	
 	@Test
-	public void test__DELETE_ME_LATER() throws Exception {
-		MorphologicalAnalyzer analyzer = new MorphologicalAnalyzer();
-		analyzer.decomposeWord("inuktitut");
-	}
-	
-	@Test
 	public void test__GistEndpoint__Roman__HappyPath() throws Exception {
 		GistInputs gistInputs = new GistInputs("inuktitut");
 		
