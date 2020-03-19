@@ -1,6 +1,6 @@
 package ca.pirurvik.iutools.morphemesearcher;
 
-public class ScoredExample {
+public class ScoredExample implements Comparable {
 	public String word;
 	public Double score;
 	public Long frequency;
@@ -9,5 +9,15 @@ public class ScoredExample {
 		this.word = _word;
 		this.score = _score;
 		this.frequency = _freq;
+	}
+	
+	@Override
+	public int compareTo(Object obj) {
+		if (this.score < ((ScoredExample)obj).score)
+			return 1;
+		else if (this.score > ((ScoredExample)obj).score)
+			return -1;
+		else
+			return 0;
 	}
 }
