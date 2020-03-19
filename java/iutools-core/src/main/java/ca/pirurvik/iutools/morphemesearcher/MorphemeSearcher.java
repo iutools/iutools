@@ -128,17 +128,17 @@ public class MorphemeSearcher {
 			for (int iwf=0; iwf<wordsFreqs.size(); iwf++) {
 				logger.debug("iwf: "+iwf);
 				WordWithMorpheme wordFreq = wordsFreqs.get(iwf);
-				ScoredExample scoredEx = generateScoredExample(wordFreq.word,morphId);
-				scoredExamples.add(scoredEx);
+				try {
+					ScoredExample scoredEx = generateScoredExample(wordFreq.word,morphId);
+					scoredExamples.add(scoredEx);
+				} catch (MorphemeSearcherException e) {
+					// generateScoredExample calls the morphpological analyzer, 
+					// which may time out; catch the exception, do not register a 
+					// scored example and continue with next word
+				}
 			}
-			Collections.sort(scoredExamples, (ScoredExample e1, ScoredExample e2) -> {
-				if (e1.score < e2.score)
-					return 1;
-				else if (e1.score > e2.score)
-					return -1;
-				else
-					return 0;
-			});
+//			Collections.sort(scoredExamples);
+			Collections.sort(scoredExamples, ScoredExamplesComparator);
 				
 			morphids2scoredExamples.put(morphId, scoredExamples);
 		}
@@ -146,6 +146,17 @@ public class MorphemeSearcher {
 		return morphids2scoredExamples;
 	}
 
+	public static Comparator<ScoredExample> ScoredExamplesComparator = new Comparator<ScoredExample>() {
+
+		public int compare(ScoredExample s1, ScoredExample s2) {
+			if (s1.score < s2.score)
+				return 1;
+			else if (s1.score > s2.score)
+				return -1;
+			else
+				return 0;
+	   }};	
+	   
 	private HashMap<String,List<WordWithMorpheme>> getMostFrequentWordsWithMorpheme(String morpheme) {
 		List<WordWithMorpheme> wordsWithMorpheme = this.corpus.getWordsContainingMorpheme(morpheme);
 		HashMap<String,List<WordWithMorpheme>> morphid2WordsFreqs = new HashMap<String,List<WordWithMorpheme>>();
