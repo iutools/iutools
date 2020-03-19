@@ -29,6 +29,21 @@
 		<url-pattern>/srv/spell/*</url-pattern>
 	</servlet-mapping>	
 	
+	<!-- GistBF Endpoint -->
+	<servlet>
+	   <servlet-name>GistBFEndpoint</servlet-name>
+	   <servlet-class>  
+	     ca.pirurvik.iutools.webservice.GistBFEndpoint
+	   </servlet-class>
+	</servlet> 
+	<servlet-mapping>
+		<servlet-name>GistBFEndpoint</servlet-name>
+		<url-pattern>/srv/gistbf/*</url-pattern>
+	</servlet-mapping>	
+
+
+
+	
 	<!-- Occurrence Search Endpoint -->
 	<servlet>
 	   <servlet-name>OccurenceSearchEndpoint</servlet-name>
