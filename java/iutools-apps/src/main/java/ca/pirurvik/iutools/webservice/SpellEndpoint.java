@@ -22,8 +22,7 @@ import ca.pirurvik.iutools.spellchecker.SpellingCorrection;
 
 
 public class SpellEndpoint extends HttpServlet {
-//	private String endPointName = null;
-//	private String esDefaultIndex = "dedupster";
+	
 	EndPointHelper helper = null;
 	
     static SpellChecker checker = null;    

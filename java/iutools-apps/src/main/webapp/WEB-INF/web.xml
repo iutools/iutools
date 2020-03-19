@@ -17,7 +17,6 @@
 		<url-pattern>/srv/search/*</url-pattern>
 	</servlet-mapping>	
 
-
 	<!--  Spell Endpoint -->
 	<servlet>
 	   <servlet-name>SpellEndpoint</servlet-name>
@@ -29,8 +28,6 @@
 		<servlet-name>SpellEndpoint</servlet-name>
 		<url-pattern>/srv/spell/*</url-pattern>
 	</servlet-mapping>	
-
-
 	
 	<!-- Occurrence Search Endpoint -->
 	<servlet>
@@ -42,6 +39,18 @@
 	<servlet-mapping>
 		<servlet-name>OccurenceSearchEndpoint</servlet-name>
 		<url-pattern>/srv/occurrences/*</url-pattern>
+	</servlet-mapping>	
+
+	<!-- Gist Search Endpoint -->
+	<servlet>
+	   <servlet-name>GistEndpoint</servlet-name>
+	   <servlet-class>  
+	     ca.pirurvik.iutools.webservice.GistEndpoint
+	   </servlet-class>
+	</servlet> 
+	<servlet-mapping>
+		<servlet-name>GistEndpoint</servlet-name>
+		<url-pattern>/srv/gist/*</url-pattern>
 	</servlet-mapping>	
 
 	<!--  Test UTF8 chars -->

@@ -22,7 +22,8 @@ public class EndPointHelper {
 		response.setCharacterEncoding("utf-8");
 	}
 
-	public static <T  extends ServiceInputs> T jsonInputs(HttpServletRequest request, Class<T> class1) throws IOException {
+	public static <T  extends ServiceInputs> T jsonInputs(
+			HttpServletRequest request, Class<T> class1) throws IOException {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.webservice.EndPointHelper.jsonInputs");
 		
 		String jsonRequestBody = IOUtils.toString(request.getReader());		

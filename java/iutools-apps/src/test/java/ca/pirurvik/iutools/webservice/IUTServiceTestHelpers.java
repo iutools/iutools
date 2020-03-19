@@ -17,9 +17,11 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ca.nrc.datastructure.Pair;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.testing.AssertHelpers;
 import ca.nrc.testing.AssertNumber;
+import ca.nrc.testing.AssertObject;
 import ca.nrc.ui.web.testing.MockHttpServletRequest;
 import ca.nrc.ui.web.testing.MockHttpServletResponse;
 import ca.pirurvik.iutools.search.SearchHit;
@@ -34,7 +36,7 @@ public class IUTServiceTestHelpers {
 	public static final long MEDIUM_WAIT = 2*SHORT_WAIT;
 	public static final long LONG_WAIT = 2*MEDIUM_WAIT;
 	
-	enum EndpointNames {SEARCH, SPELL};
+	enum EndpointNames {SEARCH, SPELL, GIST};
 	
 
 	public static MockHttpServletResponse postEndpointDirectly(EndpointNames eptName, Object inputs) throws Exception {
@@ -52,6 +54,8 @@ public class IUTServiceTestHelpers {
 			new SearchEndpoint().doPost(request, response);
 		} else if (eptName == EndpointNames.SPELL) {
 			new SpellEndpoint().doPost(request, response);	
+		} else if (eptName == EndpointNames.GIST) {
+			new GistEndpoint().doPost(request, response);
 		}
 		
 		String srvErr = ServiceResponse.jsonErrorMessage(response.getOutput());
@@ -64,11 +68,21 @@ public class IUTServiceTestHelpers {
 		return response;
 	}
 	
-	public static SearchResponse toSearchResponse(HttpServletResponse servletResp) throws IOException {
+	public static SearchResponse toSearchResponse(
+			HttpServletResponse servletResp) throws IOException {
 		String responseStr = servletResp.getOutputStream().toString();
 		SearchResponse response = new ObjectMapper().readValue(responseStr, SearchResponse.class);
 		return response;
 	}
+	
+	private static GistResponse toGistResponse(
+			MockHttpServletResponse servletResp) throws IOException {
+		String responseStr = servletResp.getOutputStream().toString();
+		GistResponse response = 
+				new ObjectMapper().readValue(responseStr, GistResponse.class);
+		return response;
+	}
+	
 
 
 	public static void assertExpandedQueryEquals(String expQuery, MockHttpServletResponse gotResponse) throws JsonParseException, JsonMappingException, IOException {
@@ -125,5 +139,27 @@ public class IUTServiceTestHelpers {
 		IUTServiceTestHelpers.assertMostHitsMatchWords(queryWords, response, badHitsTolerance);
 		AssertNumber.isGreaterOrEqualTo("The total number of potential hits was too low", srchResponse.totalHits, minTotalHits);
 		AssertNumber.isGreaterOrEqualTo("The number of hits actually retrieved was too low", new Long(srchResponse.hits.size()), minHitsRetrieved);
+	}
+
+	public static void assertGistResponseIsOK(
+			MockHttpServletResponse response, String[] expDecompsAsStrings,
+			Pair<String, String>[] expSentencePairs) throws Exception {
+		
+		GistResponse gistResponse = 
+				IUTServiceTestHelpers.toGistResponse(response);
+		
+		
+		String[] gotDecompsAsString = new String[gistResponse.decomps.length];
+		for (int ii=0; ii < gotDecompsAsString.length; ii++) {
+			gotDecompsAsString[ii] = gistResponse.decomps[ii].toStr2();
+		}
+		
+		AssertObject.assertDeepEquals(
+				"Decompositions were not as expected", 
+				expDecompsAsStrings, gotDecompsAsString);
+		
+		AssertObject.assertDeepEquals(
+				"Sentence pairs were not as expected", 
+				expSentencePairs, gistResponse.sentencePairs);
 	}
 }
