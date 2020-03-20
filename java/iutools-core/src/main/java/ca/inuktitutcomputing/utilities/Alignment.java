@@ -24,5 +24,12 @@ public class Alignment implements Serializable {
 	public Alignment(Map<String,String> _sentences) {
 		sentences = _sentences;
 	}
+	
+	public String get(String languageId) {
+		return sentences.get(languageId);
+	}
+	public void set(String languageId, String str) {
+		sentences.put(languageId, str);
+	}
 
 }

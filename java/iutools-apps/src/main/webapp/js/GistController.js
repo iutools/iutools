@@ -166,7 +166,7 @@ class GistController extends WidgetController {
 				+'<table id="tbl-alignments" class="alignments"><th>Inuktitut</th><th>English</th></tr>';
 			for (var ial=0; ial<Math.min(30,alignments.length); ial++) {
 				console.log(alignments[ial]);
-				var inuktitutSentence = alignments[ial].sentences.in;
+				var inuktitutSentence = alignments[ial].sentences.iu;
 				var englishSentence = alignments[ial].sentences.en;
 				html += '<tr><td>'+inuktitutSentence+'</td><td>'+englishSentence+'</td></tr>';
 			}

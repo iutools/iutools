@@ -96,20 +96,31 @@ public class GistEndpoint extends HttpServlet {
 			String[] alignments = processQuery.run(query);
 			sentencePairs = new Alignment[alignments.length];
 			for (int ial=0; ial<alignments.length; ial++) {
-				String alignment = alignments[ial];
-				String[] alignmentParts = alignment.split(":: ");
-				String[] sentences = alignmentParts[1].split("@----@");
-				String inuktitutSentence = 
-						sentences[0].replace(word,"<span class='highlighted'>"+word+"</span>")
-						.replace("/\\.{5,}/","...");
-				String englishSentence = sentences[1].replace("/\\.{5,}/","...");
-				Alignment sentencePair = new Alignment("in",inuktitutSentence,"en",englishSentence);
+				String alignmentString = alignments[ial];
+				Alignment sentencePair = computeSentencePair(alignmentString);
+				sentencePair.set("iu", sentencePair.get("iu").replace(word,"<span class='highlighted'>"+word+"</span>"));
 				sentencePairs[ial] = sentencePair;
 			}
 		} catch (ConfigException | IOException e) {
 		}
 		
 		return sentencePairs;
+	}
+
+	protected Alignment computeSentencePair(String alignmentString) {
+		Logger logger = Logger.getLogger("GistEndpoint.computeSentencePair");
+		String[] alignmentParts = alignmentString.split("::");
+		if (alignmentParts.length != 2)
+			logger.debug("alignment string without ':: ' --- "+alignmentString);
+		String[] sentences = alignmentParts[1].split("@----@");
+		String inuktitutSentence = 
+				sentences[0].replace("/\\.{5,}/","...").trim();
+		String englishSentence = "";
+		if (sentences.length > 1 && sentences[1] != null)
+			englishSentence = sentences[1].replace("/\\.{5,}/","...").trim();
+		Alignment sentencePair = new Alignment("iu",inuktitutSentence,"en",englishSentence);
+		
+		return sentencePair;
 	}
 
 	private void writeJsonResponse(HttpServletResponse response, String json) throws IOException {
