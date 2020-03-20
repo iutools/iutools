@@ -1,8 +1,5 @@
 package ca.nrc.datastructure.trie;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -15,7 +12,6 @@ import org.apache.log4j.Logger;
 import com.google.gson.Gson;
 
 import ca.nrc.json.PrettyPrinter;
-import ca.pirurvik.iutools.CompiledCorpus;
 
 
 public class Trie {
@@ -111,11 +107,11 @@ public class Trie {
         return trieNode;
 	}
 	
-	public TrieNode getParentNode(TrieNode node) {
+	protected TrieNode getParentNode(TrieNode node) {
 		return this.getParentNode(node.keys);
 	}
 	
-	public TrieNode getParentNode(String[] keys) {
+	protected TrieNode getParentNode(String[] keys) {
 		if (keys.length==0)
 			return null;
 		else
@@ -147,7 +143,7 @@ public class Trie {
 	}
 	
 	// --- MOST FREQUENT TERMINALS
-	public TrieNode getMostFrequentTerminal() {
+	protected TrieNode getMostFrequentTerminal() {
 		return root.getMostFrequentTerminal();
 	}
 	
@@ -155,11 +151,11 @@ public class Trie {
 		return getNMostFrequentTerminals(segments,1)[0];
 	}
 	
-	public TrieNode[] getNMostFrequentTerminals(int n) {
+	protected TrieNode[] getNMostFrequentTerminals(int n) {
 		return root.getMostFrequentTerminals(n);
 	}
 	
-	public TrieNode[] getNMostFrequentTerminals(String[] segments, int n) {
+	protected TrieNode[] getNMostFrequentTerminals(String[] segments, int n) {
 		TrieNode node = this.getNode(segments);
 		return node.getMostFrequentTerminals(n);
 	}
@@ -230,7 +226,7 @@ public class Trie {
 		return freqs;
 	}
 
-	public TrieNode getMostFrequentTerminalFromMostFrequentSequenceForRoot(String rootSegment) {
+	protected TrieNode getMostFrequentTerminalFromMostFrequentSequenceForRoot(String rootSegment) {
 		String[] mostFrequentSequence = getMostFrequentSequenceForRoot(rootSegment);
 		TrieNode node = this.getNode(mostFrequentSequence);
 		TrieNode[] terminals = node.getAllTerminals();

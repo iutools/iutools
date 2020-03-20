@@ -45,13 +45,20 @@ public class CmdDescribeCorpus extends ConsoleCommand {
 		Map<String,Long> ngramStats = compiledCorpus.ngramStats;
 		Trie trie = compiledCorpus.getTrie();
 		
-		System.out.println("Total number of analyzed words in trie (succeeded analysis): "+trie.getNbOccurrences());
-		System.out.println("Total number of words that failed analysis: "+compiledCorpus.getNbOccurrencesThatFailedSegmentations());
+		System.out.println(
+				"Total number of analyzed words in trie (succeeded analysis): "+
+				trie.getNbOccurrences());
+		System.out.println("Total number of words that failed analysis: "+
+				compiledCorpus.getNbOccurrencesThatFailedSegmentations());
 		System.out.println("");
-		System.out.println("Number of distinct analyzed words in trie (succeeded analysis): "+trie.getSize());
-		System.out.println("Number of distinct words that failed analysis: "+compiledCorpus.getNbWordsThatFailedSegmentations());
+		System.out.println(
+				"Number of distinct analyzed words in trie (succeeded analysis): "+
+				trie.getSize());
+		System.out.println("Number of distinct words that failed analysis: "+
+				compiledCorpus.getNbWordsThatFailedSegmentations());
 		System.out.println("");
-		System.out.println("The corpus has its ngrams set: "+(ngramStats==null? "no":"yes"));
+		System.out.println("The corpus has its ngrams set: "+
+				(ngramStats==null? "no":"yes"));
 		
 		String action = "";
 		while ( action!=null ) {
