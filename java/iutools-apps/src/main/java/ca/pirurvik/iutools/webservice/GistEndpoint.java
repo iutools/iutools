@@ -1,9 +1,7 @@
 package ca.pirurvik.iutools.webservice;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 import javax.servlet.http.HttpServlet;
@@ -16,14 +14,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.morph.Decomposition;
+import ca.inuktitutcomputing.morph.Decomposition.DecompositionExpression;
+import ca.inuktitutcomputing.nunhansearch.ProcessQuery;
+import ca.inuktitutcomputing.utilities.Alignment;
 import ca.inuktitutcomputing.morph.MorphInukException;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
 import ca.nrc.config.ConfigException;
-import ca.nrc.datastructure.Pair;
-import ca.nrc.json.PrettyPrinter;
-import ca.pirurvik.iutools.spellchecker.SpellChecker;
-import ca.pirurvik.iutools.spellchecker.SpellCheckerException;
-import ca.pirurvik.iutools.spellchecker.SpellingCorrection;
 
 public class GistEndpoint extends HttpServlet {
 
@@ -56,12 +52,6 @@ public class GistEndpoint extends HttpServlet {
 			EndPointHelper.setContenTypeAndEncoding(response);
 			inputs = EndPointHelper.jsonInputs(request, GistInputs.class);
 			GistResponse results = processInputs(inputs);			
-			
-			// Benoit, l'appel ci-dessous à writeValueAsString() semble causer
-			// une récursion infinie. Alors pour le moment, je ré-initialise 
-			// results.decomps à un array vide.
-			//
-			results.decomps = new Decomposition[0];
 			jsonResponse = new ObjectMapper().writeValueAsString(results);
 		} catch (Exception exc) {
 			jsonResponse = EndPointHelper.emitServiceExceptionResponse("General exception was raised\n", exc);
@@ -71,23 +61,55 @@ public class GistEndpoint extends HttpServlet {
 	}
 	
 	private GistResponse processInputs(GistInputs inputs) throws GistEndpointException {
+		Logger logger = Logger.getLogger("ca.pirurvik.iutools.webservice.GistEndpoint.processInputs");
 		GistResponse results = new GistResponse();
 		
 		try {
-			results.decomps = analyzer.decomposeWord(inputs.word);
+			Decomposition[] decompositions = analyzer.decomposeWord(inputs.word,false);
+			logger.debug("Nb. decompositions for "+inputs.word+": "+decompositions.length);
+			DecompositionExpression[] decompositionExpressions = new DecompositionExpression[decompositions.length];
+			for (int idec=0; idec<decompositions.length; idec++) {
+				DecompositionExpression decExp = new DecompositionExpression(decompositions[idec].toStr2());
+				decExp.getMeanings("en");
+				decompositionExpressions[idec] = decExp;
+			}
+			logger.debug("Nb. decompositionExpression: "+decompositionExpressions.length);
+			results.decompositions = decompositionExpressions;
 		} catch (TimeoutException | MorphInukException e) {
 			throw new GistEndpointException(
 					"Error trying to decompose word "+inputs.word, e);
 		}
 		
-		// Benoit: c'est ici que tu devrais aller chercher les
-		//  paires de phrases dans le hansard.
-		//
-		// Pour le moment, je retourne juste une array vide.
-		results.sentencePairs = new Pair[0];
+		Alignment[] sentencePairs = getSentencePairs(inputs.word);
+		results.sentencePairs = sentencePairs;
 		
 		
 		return results;
+	}
+
+	private Alignment[] getSentencePairs(String word) {
+		Alignment[] sentencePairs = new Alignment[] {};
+		ProcessQuery processQuery;
+		try {
+			processQuery = new ProcessQuery();
+			String query = word;
+			String[] alignments = processQuery.run(query);
+			sentencePairs = new Alignment[alignments.length];
+			for (int ial=0; ial<alignments.length; ial++) {
+				String alignment = alignments[ial];
+				String[] alignmentParts = alignment.split(":: ");
+				String[] sentences = alignmentParts[1].split("@----@");
+				String inuktitutSentence = 
+						sentences[0].replace(word,"<span class='highlighted'>"+word+"</span>")
+						.replace("/\\.{5,}/","...");
+				String englishSentence = sentences[1].replace("/\\.{5,}/","...");
+				Alignment sentencePair = new Alignment("in",inuktitutSentence,"en",englishSentence);
+				sentencePairs[ial] = sentencePair;
+			}
+		} catch (ConfigException | IOException e) {
+		}
+		
+		return sentencePairs;
 	}
 
 	private void writeJsonResponse(HttpServletResponse response, String json) throws IOException {

@@ -1,24 +1,19 @@
 package ca.pirurvik.iutools.webservice;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.naming.directory.SearchResult;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ca.nrc.datastructure.Pair;
-import ca.nrc.json.PrettyPrinter;
+import ca.inuktitutcomputing.utilities.Alignment;
 import ca.nrc.testing.AssertHelpers;
 import ca.nrc.testing.AssertNumber;
 import ca.nrc.testing.AssertObject;
@@ -56,7 +51,7 @@ public class IUTServiceTestHelpers {
 			new SpellEndpoint().doPost(request, response);	
 		} else if (eptName == EndpointNames.GIST) {
 			new GistEndpoint().doPost(request, response);
-		}
+		} 
 		
 		String srvErr = ServiceResponse.jsonErrorMessage(response.getOutput());
 		if (srvErr != null && ! expectServiceError) {
@@ -143,15 +138,15 @@ public class IUTServiceTestHelpers {
 
 	public static void assertGistResponseIsOK(
 			MockHttpServletResponse response, String[] expDecompsAsStrings,
-			Pair<String, String>[] expSentencePairs) throws Exception {
+			Alignment[] expSentencePairs) throws Exception {
 		
 		GistResponse gistResponse = 
 				IUTServiceTestHelpers.toGistResponse(response);
 		
 		
-		String[] gotDecompsAsString = new String[gistResponse.decomps.length];
+		String[] gotDecompsAsString = new String[gistResponse.decompositions.length];
 		for (int ii=0; ii < gotDecompsAsString.length; ii++) {
-			gotDecompsAsString[ii] = gistResponse.decomps[ii].toStr2();
+			gotDecompsAsString[ii] = gistResponse.decompositions[ii].decstr;
 		}
 		
 		AssertObject.assertDeepEquals(

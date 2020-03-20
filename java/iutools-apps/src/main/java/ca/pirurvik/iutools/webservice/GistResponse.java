@@ -1,12 +1,13 @@
 package ca.pirurvik.iutools.webservice;
 
-import ca.inuktitutcomputing.morph.Decomposition;
-import ca.nrc.datastructure.Pair;
+import ca.inuktitutcomputing.morph.Decomposition.DecompositionExpression;
+import ca.inuktitutcomputing.utilities.Alignment;
+
 
 public class GistResponse {
 
-	public Decomposition[] decomps;
-	public Pair<String,String>[] sentencePairs;
+	public DecompositionExpression[] decompositions;
+	public Alignment[] sentencePairs;
 	
 	public GistResponse() {}
 }
