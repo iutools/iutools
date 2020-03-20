@@ -24,6 +24,7 @@
 
 package ca.inuktitutcomputing.morph;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Vector;
@@ -436,16 +437,19 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
      * {<forme de surface>:<signature du morphème>}{...}...
 	 */
 
-	static public class DecompositionExpression {
+	static public class DecompositionExpression implements Serializable {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		//
-		protected String decstr;
+		public String decstr;
 		protected String partsStr[];
 		public DecPart parts[];
 		public String meanings[] = null;
 		//
 		
 		public DecompositionExpression() {
-			
 		}
 		
 		public DecompositionExpression (String decstr) {
@@ -454,6 +458,11 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 			parts = new DecPart[partsStr.length];
 			for (int i=0; i<parts.length; i++)
 				parts[i] = new DecPart(partsStr[i]);
+		}
+		
+		public DecompositionExpression (String _decstr, DecPart[] _parts) {
+			this.decstr = _decstr;
+			this.parts = _parts;
 		}
 		
 		public String[] getMeanings(String lang) {
@@ -490,12 +499,19 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 			return expr.substring(1);
 		}
 		
-		static public class DecPart {
+		static public class DecPart implements Serializable {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 			//
 			public String str;
 			public String surface;
 			public String morphid;
 			//
+			
+			public DecPart() {
+			}
 			
 			public DecPart (String str) {
 				this.str = str;
@@ -514,11 +530,18 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 				}
 			}
 			
-			public DecPart (String terme, String id) {
-				surface = terme;
+			public DecPart (String _surface, String id) {
+				surface = _surface;
 				morphid = id;
 				str = startDelimitor + surface + interDelimitor + id + endDelimitor;
 			}
+			
+			public DecPart (String _str, String _surface, String _id) {
+				surface = _surface;
+				morphid = _id;
+				str = _str;
+			}
+			
 			
 			public String toStringWithoutSurfaceForm() {
 				return startDelimitor + morphid + endDelimitor;
