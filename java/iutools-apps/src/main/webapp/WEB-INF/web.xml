@@ -41,8 +41,9 @@
 		<servlet-name>OccurenceSearchEndpoint</servlet-name>
 		<url-pattern>/srv/occurrences/*</url-pattern>
 	</servlet-mapping>	
+	
 
-	<!-- Gist Search Endpoint -->
+	<!-- Gist Endpoint -->
 	<servlet>
 	   <servlet-name>GistEndpoint</servlet-name>
 	   <servlet-class>  
@@ -53,6 +54,20 @@
 		<servlet-name>GistEndpoint</servlet-name>
 		<url-pattern>/srv/gist/*</url-pattern>
 	</servlet-mapping>	
+	
+
+	<!-- GistText Endpoint -->
+	<servlet>
+	   <servlet-name>GistTextEndpoint</servlet-name>
+	   <servlet-class>  
+	     ca.pirurvik.iutools.webservice.GistTextEndpoint
+	   </servlet-class>
+	</servlet> 
+	<servlet-mapping>
+		<servlet-name>GistTextEndpoint</servlet-name>
+		<url-pattern>/srv/gisttext/*</url-pattern>
+	</servlet-mapping>	
+	
 
 	<!--  Test UTF8 chars -->
 	<servlet>

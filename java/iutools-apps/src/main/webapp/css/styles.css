@@ -232,3 +232,52 @@ div#gist-decompositions table td { border:1px solid black; padding:3px; }
 div#gist-decompositions table tr.root { font-weight:regular; color:blue; }
 
 div#gist-alignments span.highlighted { font-weight:bold; color:red; }
+
+/* GISTTEXT */
+
+#div-gist {
+	position:fixed;
+	top:40px;
+	width:600px;
+	height:600px;
+	right:100px;
+	display:none;
+	border:1px solid black;
+	border-radius:3px;
+	background-color:#ccccff;
+	padding:5px;
+}
+#div-gist-word-holder { font-weight:bold; color:white; background-color:green; padding-left:6px; }
+#div-gist #div-gist-iconizer {
+	background-color:white;
+	position:absolute;
+	top:0;
+	right:0;
+	cursor:pointer;
+	vertical-align:middle;
+}
+#div-gist #div-gist-iconizer img {
+	vertical-align:middle;
+}
+#div-gist #div-gist-contents {
+	overflow-y: scroll;
+	height:577px;
+	margin-top:5px;
+}
+#div-gist-iconized {
+	position:fixed;
+	text-align:center;
+	right:0;
+	bottom:0;
+	width:30px;
+	height:30px;
+	line-height:30px;
+	background-color:#ccccff;
+	border:1px solid black;
+	display:none;
+	cursor:pointer;
+}
+#div-gist-iconized img {
+	vertical-align:middle;
+}
+
