@@ -11,6 +11,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class AlignmentResult {
 	
+	public boolean success = false;
+	public List<String> problemsEncountered = new ArrayList<String>();
+	
 	Map<String,String> pagesContent = new HashMap<String,String>();
 	Map<String,URL> pagesURL = new HashMap<String,URL>();
 

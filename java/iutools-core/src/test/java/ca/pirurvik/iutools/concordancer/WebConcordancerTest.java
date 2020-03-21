@@ -1,6 +1,7 @@
 package ca.pirurvik.iutools.concordancer;
 
 import java.net.URL;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -33,21 +34,28 @@ public class WebConcordancerTest {
 		AlignmentResult pageAligment = 
 				new WebConcordancer().alignPage(url, new String[] {"en", "iu"});
 		
-		// You can then loop through the alignemnts as follows
-		//
-		// Note: getAligments() provides the alignments in the exact order in 
-		//   which they appeared in the two pages.
-		//
-		for (Alignment alignment: pageAligment.getAligments()) {
-			// This is the text for each of the two languages
+		// You can then check if the alignment was successful or not
+		if (!pageAligment.success) {
+			// These will provide details about what went wrong
+			List<String> problems = pageAligment.problemsEncountered;
+		} else {
+			// Alignment was successful.
+			// Loop the aligned bit of text.
 			//
-			String iuText = alignment.getText("iu");
-			String enText = alignment.getText("en");			
-			
-			if (alignment.misaligned) {
-				// This means that the text on the two sides does not actually 
-				// correspond to each other. The aligner just got confused 
-				// and it knows it.
+			// Note: getAligments() provides the alignments in the exact order in 
+			//   which they appeared in the two pages.
+			//
+			for (Alignment alignment: pageAligment.getAligments()) {
+				// This is the text for each of the two languages
+				//
+				String iuText = alignment.getText("iu");
+				String enText = alignment.getText("en");			
+				
+				if (alignment.misaligned) {
+					// This means that the text on the two sides does not actually 
+					// correspond to each other. The aligner just got confused 
+					// and it knows it.
+				}
 			}
 		}
 	}
