@@ -93,10 +93,10 @@ public class GistEndpoint extends HttpServlet {
 		try {
 			processQuery = new ProcessQuery();
 			String query = word;
-			String[] alignments = processQuery.run(query);
-			sentencePairs = new Alignment[alignments.length];
-			for (int ial=0; ial<alignments.length; ial++) {
-				String alignmentString = alignments[ial];
+			String[] linesOfAlignedSentencesWithWord = processQuery.run(query);
+			sentencePairs = new Alignment[linesOfAlignedSentencesWithWord.length];
+			for (int ial=0; ial<linesOfAlignedSentencesWithWord.length; ial++) {
+				String alignmentString = linesOfAlignedSentencesWithWord[ial];
 				Alignment sentencePair = computeSentencePair(alignmentString);
 				sentencePair.set("iu", sentencePair.get("iu").replace(word,"<span class='highlighted'>"+word+"</span>"));
 				sentencePairs[ial] = sentencePair;
