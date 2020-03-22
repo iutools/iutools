@@ -50,4 +50,9 @@ public class AlignmentResult {
 		problemsEncountered.add(errMess);
 	}
 
+	public AlignmentResult setSuccess(boolean _success) {
+		this.success = _success;
+		return this;
+	}
+
 }

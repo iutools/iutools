@@ -21,6 +21,7 @@ import ca.nrc.data.harvesting.PageHarvesterException;
 public class WebConcordancer {
 	
 	PageHarvester harvester = null;
+	LanguageGuesser langGuesser = new LanguageGuesser_IU();
 	
 	protected PageHarvester getHarvester() {
 		if (harvester == null) {
@@ -111,11 +112,8 @@ public class WebConcordancer {
 	}
 
 
-	private String guessLang(String text) throws LanguageGuesserException {
-		
-		String lang;
-		lang = new LanguageGuesser().detect(text);
-		
+	private String guessLang(String text) throws LanguageGuesserException {		
+		String lang = langGuesser.detect(text);
 		return lang;
 	}
 

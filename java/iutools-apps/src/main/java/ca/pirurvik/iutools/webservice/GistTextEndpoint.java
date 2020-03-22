@@ -2,6 +2,7 @@ package ca.pirurvik.iutools.webservice;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.util.concurrent.TimeoutException;
 
 import javax.servlet.http.HttpServlet;
@@ -20,13 +21,16 @@ import ca.inuktitutcomputing.utilities.Alignment;
 import ca.inuktitutcomputing.morph.MorphInukException;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
 import ca.nrc.config.ConfigException;
+import ca.pirurvik.iutools.concordancer.AlignmentResult;
+import ca.pirurvik.iutools.concordancer.WebConcordancer;
+import ca.pirurvik.iutools.concordancer.WebConcordancerException;
 
 public class GistTextEndpoint extends HttpServlet {
 
 	EndPointHelper helper = null;
 	
     static MorphologicalAnalyzer analyzer = null;  
-	
+	WebConcordancer webConcordancer = null;
 
 	public GistTextEndpoint() throws GistTextEndpointException  {
 		init_GistTextEndpoint();
@@ -41,6 +45,8 @@ public class GistTextEndpoint extends HttpServlet {
 						"Could not create the morphological analyzer", e);
 			}
 		}
+		
+		webConcordancer = new WebConcordancer();
 	}
 	
 	protected void doPost(HttpServletRequest request, 
@@ -64,9 +70,28 @@ public class GistTextEndpoint extends HttpServlet {
 		Logger logger = Logger.getLogger("ca.pirurvik.iutools.webservice.GistEndpoint.processInputs");
 		GistTextResponse results = new GistTextResponse();
 		
+		String textToGist = inputs.word;
+		AlignmentResult alignResult = null;
+		
+		URL url = inputs.inputURL();
+		if (url != null) {
+			// The input "text" was in fact a URL.
+			// Fetch the "main" textual content of that page, and see if you 
+			// can find a corresponding page in 'en' (if so, produce alignments
+			// for the two pages).
+			//
+			try {
+				alignResult = webConcordancer.alignPage(url, new String[] {"iu", "en"});
+				textToGist = alignResult.getPageContent("iu"); 
+			} catch (WebConcordancerException e) {
+				throw new GistTextEndpointException(
+						"Could not fetch and align text for page "+url, e);
+			}
+		}
+		
 		try {
-			Decomposition[] decompositions = analyzer.decomposeWord(inputs.word,false);
-			logger.debug("Nb. decompositions for "+inputs.word+": "+decompositions.length);
+			Decomposition[] decompositions = analyzer.decomposeWord(textToGist,false);
+			logger.debug("Nb. decompositions for "+textToGist+": "+decompositions.length);
 			DecompositionExpression[] decompositionExpressions = new DecompositionExpression[decompositions.length];
 			for (int idec=0; idec<decompositions.length; idec++) {
 				DecompositionExpression decExp = new DecompositionExpression(decompositions[idec].toStr2());
@@ -77,10 +102,10 @@ public class GistTextEndpoint extends HttpServlet {
 			results.decompositions = decompositionExpressions;
 		} catch (TimeoutException | MorphInukException e) {
 			throw new GistTextEndpointException(
-					"Error trying to decompose word "+inputs.word, e);
+					"Error trying to decompose word "+textToGist, e);
 		}
 		
-		Alignment[] sentencePairs = getSentencePairs(inputs.word);
+		Alignment[] sentencePairs = getSentencePairs(textToGist);
 		results.sentencePairs = sentencePairs;
 		
 		
