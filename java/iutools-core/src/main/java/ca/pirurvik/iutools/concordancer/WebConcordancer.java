@@ -1,13 +1,14 @@
 package ca.pirurvik.iutools.concordancer;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.apache.poi.xwpf.usermodel.TextAlignment;
 
 import ca.nrc.data.harvesting.LanguageGuesser;
 import ca.nrc.data.harvesting.LanguageGuesserException;
-import ca.nrc.data.harvesting.PageHarvester;
+import ca.nrc.data.harvesting.PageHarvester_Barebones;
 import ca.nrc.data.harvesting.PageHarvesterException;
 
 /**
@@ -18,10 +19,15 @@ import ca.nrc.data.harvesting.PageHarvesterException;
  */
 public class WebConcordancer {
 	
-	PageHarvester harvester = new PageHarvester();	
+	PageHarvester_Barebones harvester = new PageHarvester_Barebones();	
 
 	public AlignmentResult alignPage(URL url, String[] languages) 
 			throws WebConcordancerException {
+		
+		if (url.toString().startsWith("http://mocksite.nu.ca/")) {
+			return mockAlignmentResult();
+		}
+		
 		AlignmentResult alignment = new AlignmentResult();
 		for (String lang: languages) {
 			alignment.setPageContent(lang, null);
@@ -31,6 +37,36 @@ public class WebConcordancer {
 		harvestOtherLangPage(alignment);
 		
 		return alignment;
+	}
+	
+	private AlignmentResult mockAlignmentResult() {
+		AlignmentResult result = new AlignmentResult();
+		
+		String[] enSentences = new String[] {
+			"As of today, there are no known cases of COVID-19 in the territory.", 
+			"The public health communicable disease team is following approximately 70 persons under investigation."				
+		};
+		String enText = String.join(" ", enSentences);
+
+		String[] iuSentences = new String[] {
+			"ᐅᓪᓗᒥᒧᑦ ᑎᑭᖦᖢᒍ, ᖃᐅᔨᒪᔭᐅᔪᓂᒃ ᓄᕙᒡᔪᐊᕐᓇᖅ-19−ᒧᑦ ᐱᑕᖃᙱᓚᖅ ᑕᒫᓂ ᐅᑭᐅᖅᑕᖅᑐᒥ ᐊᕕᒃᓯᒪᓂᕆᔭᐅᔪᒥ.",
+			"ᑭᒃᑯᑐᐃᓐᓇᓂᒃ ᐋᓐᓂᐊᖃᖅᑕᐃᓕᑎᑦᑎᓂᕐᒧᑦ ᐊᐃᑦᑐᕐᓘᑕᐅᔪᓐᓇᖅᑐᓄᑦ ᖃᓂᒪᑖᕆᔭᐅᔪᓐᓇᖅᑐᓄᑦ ᐱᓕᕆᖃᑎᒌᑦ ᒪᓕᒃᓯᕗᖅ 50-60−ᐸᓗᖕᓂᒃ ᐃᓄᖕᓂᒃ ᑖᒃᑯᐊ ᖃᐅᔨᓴᖅᑕᐅᕙᓪᓕᐊᓪᓗᑎᒃ."
+		};
+		String iuText = String.join(" ", iuSentences);
+		
+		try {
+			result.setPageURL("en", new URL("http://mocksite.nu.ca/en"));
+			result.setPageURL("iu", new URL("http://mocksite.nu.ca/iu"));
+		} catch (MalformedURLException e) {
+		}
+		
+		result.setPageContent("en", enText);
+		result.setPageContent("iu", iuText);
+		
+		result.addAlignment(new Alignment("en", enSentences[0], "iu", iuSentences[0]));
+		result.addAlignment(new Alignment("en", enSentences[1], "iu", iuSentences[1]));
+		
+		return result;
 	}
 
 	private void harvestOtherLangPage(AlignmentResult alignment) {
@@ -61,7 +97,7 @@ public class WebConcordancer {
 	private String guessLang(String text) throws LanguageGuesserException {
 		
 		String lang;
-		lang = LanguageGuesser.detect(text);
+		lang = new LanguageGuesser().detect(text);
 		
 		return lang;
 	}

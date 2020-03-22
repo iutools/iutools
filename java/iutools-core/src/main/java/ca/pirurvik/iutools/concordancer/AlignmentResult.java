@@ -13,13 +13,17 @@ public class AlignmentResult {
 	
 	public boolean success = false;
 	public List<String> problemsEncountered = new ArrayList<String>();
-	
+	List<Alignment> alignments = new ArrayList<Alignment>();
 	Map<String,String> pagesContent = new HashMap<String,String>();
 	Map<String,URL> pagesURL = new HashMap<String,URL>();
 
 	public List<Alignment> getAligments() {
-		List<Alignment> alignments = new ArrayList<Alignment>();
 		return alignments;
+	}
+	
+	public AlignmentResult addAlignment(Alignment alignment) {
+		alignments.add(alignment);
+		return this;
 	}
 
 	public void setPageContent(String lang, String text) {
