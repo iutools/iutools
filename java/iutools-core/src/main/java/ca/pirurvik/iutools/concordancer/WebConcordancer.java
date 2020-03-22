@@ -42,6 +42,7 @@ public class WebConcordancer {
 		
 		if (failedAlignForAllButMock) {
 			alignment.success = false;
+			alignment.addProblem("Could not find page in other language");
 		}
 		
 		return alignment;

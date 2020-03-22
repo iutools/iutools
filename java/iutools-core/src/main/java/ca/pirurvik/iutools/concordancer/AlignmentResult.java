@@ -46,4 +46,8 @@ public class AlignmentResult {
 		pagesURL.put(lang, url);
 	}
 
+	public void addProblem(String errMess) {
+		problemsEncountered.add(errMess);
+	}
+
 }
