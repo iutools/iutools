@@ -24,6 +24,10 @@ public class WebConcordancer {
 	public AlignmentResult alignPage(URL url, String[] languages) 
 			throws WebConcordancerException {
 		
+		// For now, return 'failed' alignments for all URLs except for 
+		// 'http://mockskite.nu.ca/'. Return hardcoded mock results for 
+		// the later
+		boolean failedAlignForAllButMock = true;
 		if (url.toString().startsWith("http://mocksite.nu.ca/")) {
 			return mockAlignmentResult();
 		}
@@ -35,6 +39,10 @@ public class WebConcordancer {
 		
 		harvestInputPage(url, alignment);
 		harvestOtherLangPage(alignment);
+		
+		if (failedAlignForAllButMock) {
+			alignment.success = false;
+		}
 		
 		return alignment;
 	}
