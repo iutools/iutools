@@ -8,6 +8,7 @@ import org.apache.poi.xwpf.usermodel.TextAlignment;
 
 import ca.nrc.data.harvesting.LanguageGuesser;
 import ca.nrc.data.harvesting.LanguageGuesserException;
+import ca.nrc.data.harvesting.PageHarvester;
 import ca.nrc.data.harvesting.PageHarvester_Barebones;
 import ca.nrc.data.harvesting.PageHarvesterException;
 
@@ -19,7 +20,14 @@ import ca.nrc.data.harvesting.PageHarvesterException;
  */
 public class WebConcordancer {
 	
-	PageHarvester_Barebones harvester = new PageHarvester_Barebones();	
+	PageHarvester harvester = null;
+	
+	protected PageHarvester getHarvester() {
+		if (harvester == null) {
+			harvester = new PageHarvester_Barebones();
+		}
+		return harvester;
+	}
 
 	public AlignmentResult alignPage(URL url, String[] languages) 
 			throws WebConcordancerException {
@@ -87,7 +95,7 @@ public class WebConcordancer {
 		String urlText = null;
 		String urlLang = null;
 		try {
-			urlText = harvester.harvestSinglePage(url);
+			urlText = getHarvester().harvestSinglePage(url);
 			urlLang = guessLang(urlText);
 		} catch (PageHarvesterException e) {
 			throw new WebConcordancerException("Could not harvest page to align", e);
