@@ -12,9 +12,28 @@ public class Alignment {
 	public boolean misaligned = false;
 	Map<String,String> langSentences = new HashMap<String,String>();
 	
-	public Alignment(String lang1, String text1, String lang2, String text2) {
+	public Alignment() {
+		init_Alignment(null, null, null, null, null);
+	}
+
+	public Alignment(String lang1, String text1, 
+			String lang2, String text2) {
+		init_Alignment(lang1, text1, lang2, text2, null);
+	}
+	
+	public Alignment(String lang1, String text1, 
+			String lang2, String text2, boolean _misaligned) {
+		init_Alignment(lang1, text1, lang2, text2, _misaligned);
+	}
+
+	protected void init_Alignment(String lang1, String text1, 
+			String lang2, String text2, Boolean _misaligned) {
+		if (_misaligned == null) {
+			_misaligned = false;
+		}
 		langSentences.put(lang1, text1);
 		langSentences.put(lang2, text2);
+		misaligned = _misaligned;
 	}
 
 	public String getText(String lang) {

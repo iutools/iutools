@@ -119,6 +119,7 @@ public class WebConcordancerTest {
 			.urlForLangEquals("iu", new URL("https://www.gov.nu.ca/iu"))
 			.pageInLangContains("en", "Premier of Nunavut")
 			.pageInLangContains("iu", "ᓯᕗᓕᖅᑎ ᓄᓇᕗᒻᒥ")
+//			.containsAlignment(new Alignment("en", "BLAH", "iu", "BLOB"))
 			;
 	}
 	
@@ -175,6 +176,13 @@ public class WebConcordancerTest {
 		
 		public AlignmentResultAssertion(DocAlignment pageAligment) {
 			this.gotAlignmentResult = pageAligment;
+		}
+
+		public void containsAlignment(Alignment expAlignment) {
+			
+			boolean found = false;
+			
+			Assert.assertTrue("Could not find aligment", found);			
 		}
 
 		public AlignmentResultAssertion wasSuccessful() {
