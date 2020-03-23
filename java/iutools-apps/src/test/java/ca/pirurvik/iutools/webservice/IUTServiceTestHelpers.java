@@ -3,6 +3,7 @@ package ca.pirurvik.iutools.webservice;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,6 +14,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ca.inuktitutcomputing.morph.Gist;
 import ca.inuktitutcomputing.utilities.Alignment;
 import ca.nrc.testing.AssertHelpers;
 import ca.nrc.testing.AssertNumber;
@@ -31,7 +33,7 @@ public class IUTServiceTestHelpers {
 	public static final long MEDIUM_WAIT = 2*SHORT_WAIT;
 	public static final long LONG_WAIT = 2*MEDIUM_WAIT;
 	
-	enum EndpointNames {SEARCH, SPELL, GIST};
+	enum EndpointNames {SEARCH, SPELL, GIST, MORPHEME, MORPHEMEEXAMPLE};
 	
 
 	public static MockHttpServletResponse postEndpointDirectly(EndpointNames eptName, Object inputs) throws Exception {
@@ -51,6 +53,10 @@ public class IUTServiceTestHelpers {
 			new SpellEndpoint().doPost(request, response);	
 		} else if (eptName == EndpointNames.GIST) {
 			new GistEndpoint().doPost(request, response);
+		} else if (eptName == EndpointNames.MORPHEME) {
+			new OccurenceSearchEndpoint().doPost(request, response);
+		} else if (eptName == EndpointNames.MORPHEMEEXAMPLE) {
+			new OccurenceExampleEndpoint().doPost(request, response);
 		} 
 		
 		String srvErr = ServiceResponse.jsonErrorMessage(response.getOutput());
@@ -75,6 +81,20 @@ public class IUTServiceTestHelpers {
 		String responseStr = servletResp.getOutputStream().toString();
 		GistResponse response = 
 				new ObjectMapper().readValue(responseStr, GistResponse.class);
+		return response;
+	}
+	private static OccurenceSearchResponse toOccurenceSearchResponse(
+			MockHttpServletResponse servletResp) throws IOException {
+		String responseStr = servletResp.getOutputStream().toString();
+		OccurenceSearchResponse response = 
+				new ObjectMapper().readValue(responseStr, OccurenceSearchResponse.class);
+		return response;
+	}
+	private static OccurenceExampleResponse toOccurenceExampleResponse(
+			MockHttpServletResponse servletResp) throws IOException {
+		String responseStr = servletResp.getOutputStream().toString();
+		OccurenceExampleResponse response = 
+				new ObjectMapper().readValue(responseStr, OccurenceExampleResponse.class);
 		return response;
 	}
 	
@@ -157,4 +177,49 @@ public class IUTServiceTestHelpers {
 				"Sentence pairs were not as expected", 
 				expSentencePairs, gistResponse.sentencePairs);
 	}
+
+
+	public static void assertOccurenceSearchResponseIsOK(
+			MockHttpServletResponse response, Map<String,MorphemeSearchResult> expected) throws Exception {
+		
+		OccurenceSearchResponse occurenceSearchResponse = 
+				IUTServiceTestHelpers.toOccurenceSearchResponse(response);
+		
+		Map<String,MorphemeSearchResult> got = occurenceSearchResponse.matchingWords;
+		Assert.assertEquals("The number of morphemes with the given canonical form is not as expected.", expected.size(), got.size());
+		String expMorphId = expected.keySet().toArray(new String[] {})[0];
+		String gotMorphId = got.keySet().toArray(new String[] {})[0];
+		Assert.assertEquals("The morpheme is not the one expected.", expMorphId, gotMorphId);
+		MorphemeSearchResult expectedResult = expected.get(expMorphId);
+		MorphemeSearchResult gotResult = got.get(expMorphId);
+		Assert.assertEquals("The number of words returned for the morpheme is not as expected.", expectedResult.words.size(), gotResult.words.size());
+		List<String> expectedWords = expectedResult.words;
+		List<String> gotWords = gotResult.words;
+		expectedWords.forEach ((expectedWord) -> {
+			Assert.assertTrue("The word "+expectedWord+" is not in the returned list of words.",gotWords.contains(expectedWord));
+		});	
+	}
+
+	public static void assertOccurenceExampleResponseIsOK(
+			MockHttpServletResponse response, ExampleWordWithMorpheme expected) throws Exception {
+		
+		OccurenceExampleResponse occurenceExampleResponse = 
+				IUTServiceTestHelpers.toOccurenceExampleResponse(response);
+		
+		ExampleWordWithMorpheme gotExampleWord = occurenceExampleResponse.exampleWord;
+		Gist gotGist = gotExampleWord.gist;
+		Gist expectedGist = expected.gist;
+		AssertObject.assertDeepEquals("The gists are not equal.",expectedGist, gotGist);
+		Assert.assertEquals("The word of the gist is not as expected.",  expectedGist.word, gotGist.word);
+		Alignment[] gotAlignments = gotExampleWord.alignments;
+		Alignment[] expectedAlignments = expected.alignments;
+		Assert.assertEquals("The alignments are not equal.",
+				expectedAlignments[0].get("iu").substring(0,100), 
+				gotAlignments[0].get("iu").substring(0,100));
+		Assert.assertEquals("The alignments are not equal.",
+				expectedAlignments[0].get("en").substring(0,100), 
+				gotAlignments[0].get("en").substring(0,100));
+	}
+
+
 }
