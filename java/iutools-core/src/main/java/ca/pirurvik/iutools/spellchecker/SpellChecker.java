@@ -42,6 +42,7 @@ import ca.pirurvik.iutools.edit_distance.EditDistanceCalculatorException;
 import ca.pirurvik.iutools.edit_distance.EditDistanceCalculatorFactory;
 import ca.pirurvik.iutools.edit_distance.EditDistanceCalculatorFactoryException;
 import ca.inuktitutcomputing.config.IUConfig;
+import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.morph.MorphInukException;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
@@ -57,6 +58,12 @@ public class SpellChecker {
 	public int MAX_SEQ_LEN = 5;
 	public int MAX_CANDIDATES = 1000;
 	public int DEFAULT_CORRECTIONS = 5;
+	
+	/** Maximum msecs allowed for decomposing a word during 
+	 *  spell checker
+	 */
+	private final long MAX_DECOMP_MSECS = 3*1000;
+
 	public String allWords = ",,";
 	public Map<String,Long> ngramStats = new HashMap<String,Long>();
 	
@@ -64,7 +71,20 @@ public class SpellChecker {
 	public Map<String,Long> ngramStatsOfNumericTerms = new HashMap<String,Long>();
 	
 	public transient Map<String,Long> ngramStatsForCandidates = null;
-
+	
+	/** If true, partial corrections are enabled. That measns the spell checker
+	 *  will identify the longest leading and tailing strings that seem 
+	 *  correctly spelled.*/
+	private boolean partialCorrectionEnabled = false;
+		public SpellChecker enablePartialCorrections() {
+			partialCorrectionEnabled = true;
+			return this;
+		}
+		public SpellChecker disablePartialCorrections() {
+			partialCorrectionEnabled = false;
+			return this;
+		}
+	
 	public transient EditDistanceCalculator editDistanceCalculator;
 	public transient boolean verbose = true;
 	
@@ -298,7 +318,9 @@ public class SpellChecker {
 			String[] numericTermParts = splitNumericExpression(wordInLatin);
 			boolean wordIsNumericTerm = numericTermParts != null;
 			
-			computeCorrectPortions(wordInLatin, corr);
+			if (partialCorrectionEnabled) {
+				computeCorrectPortions(wordInLatin, corr);
+			}
 			
 			Set<String> candidates = firstPassCandidates_TFIDF(wordInLatin, wordIsNumericTerm);
 			
@@ -336,28 +358,92 @@ public class SpellChecker {
 	}
 	
 	protected void computeCorrectPortions(String badWordRoman, 
-			SpellingCorrection corr) {
+			SpellingCorrection corr) throws SpellCheckerException {
+		System.out.println("SpellChecker.computeCorrectPortions: invoked with badWordRoman="+badWordRoman);
 		computeCorrectLead(badWordRoman, corr);
 		computeCorrectTail(badWordRoman, corr);
+		System.out.println("SpellChecker.computeCorrectPortions: DONE");
 	}
 
 	private void computeCorrectLead(String badWordRoman, 
-			SpellingCorrection corr) {
+			SpellingCorrection corr) throws SpellCheckerException {
+		
+		final int MAX_WORDS_TO_TRY = 5;
 		
 		String amongWords = getAllWordsToBeUsedForCandidates(badWordRoman);
 		
 		String longestCorrectLead = null;
 		for (int endPos=3; endPos < badWordRoman.length(); endPos++) {
-			String lead = "^"+badWordRoman.substring(0, endPos-1);
-			Set<String> words = wordsContainingSequ(lead, amongWords);
-			if (words.size() == 0) {
-				break;
+			//
+			// Loop through all the leading strings of the bad words, until we 
+			// reach a pointwhere we cannot find a correctly spelled word with 
+			// the following characteristics.
+			// 
+			// - Word leads with the same string
+			// - The lead string does not span across phonemes. In other words,
+			//   the last character of the lead corresponds to the end of a 
+			//   morpheme in the word.
+			//
+			String lead = badWordRoman.substring(0, endPos-1);
+			Set<String> words = wordsContainingSequ("^"+lead, amongWords);
+			boolean wordWasFoundForLead = false;
+			int wordCount = 0;
+			for (String aWord: words) {
+				wordCount++;
+				if (wordCount > MAX_WORDS_TO_TRY) {
+					break;
+				}
+				if (leadMorphemesMatch(lead, aWord)) {
+					// Found a word with the right characeristics				
+					wordWasFoundForLead = true;
+					break;
+				}
 			}
-			longestCorrectLead = badWordRoman.substring(0, endPos-1);
+			
+			if (wordWasFoundForLead) {
+				longestCorrectLead = badWordRoman.substring(0, endPos-1);
+			}
 		}
 		corr.correctLead = longestCorrectLead;
 	}
 	
+	protected boolean leadMorphemesMatch(String surfaceForm, String word) 
+			throws SpellCheckerException {
+		Boolean answer = null;
+		
+		Decomposition[] decomps = null;
+		try {
+			 decomps = 
+				new MorphologicalAnalyzer()
+						.setTimeout(MAX_DECOMP_MSECS)
+						.activateTimeout()
+						.decomposeWord(word);
+		} catch(TimeoutException e) {
+			answer = false;
+		} catch(MorphInukException | LinguisticDataException e) {
+			throw new SpellCheckerException(e);
+		}
+		
+		if (decomps != null) {
+			for (Decomposition aDecomp: decomps) {
+				List<String> morphemes = aDecomp.morphemeSurfaceForms();
+				String morphLead = "";
+				for (String morph: morphemes) {
+					morphLead += morph;
+					if (morphLead.equals(surfaceForm)) {
+						answer = true;
+						break;
+					}
+				}
+				if (answer != null) { break; }
+			}
+		}
+		
+		if (answer == null) { answer = false; }
+		
+		return answer.booleanValue();
+	}
+
 	private void computeCorrectTail(String badWordRoman, 
 			SpellingCorrection corr) {
 

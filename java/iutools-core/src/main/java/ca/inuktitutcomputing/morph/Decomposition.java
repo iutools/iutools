@@ -27,6 +27,7 @@ package ca.inuktitutcomputing.morph;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -567,5 +568,15 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 		
 		return result;
 	}
+
+	public List<String> morphemeSurfaceForms() {
+        List<String> surfaceForms = new ArrayList<String>();
+        surfaceForms.add(stem.term);
+        for (int ip=0; ip<morphParts.length; ip++) {
+            surfaceForms.add(morphParts[ip].term);
+        }
+       
+        return surfaceForms;
+    }	
 
 }

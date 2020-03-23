@@ -1234,14 +1234,17 @@ public class MorphologicalAnalyzer {
     }
     */
     
-    public void setTimeout(long val) {
+    public MorphologicalAnalyzer setTimeout(long val) {
     	millisTimeout = val;
+    	return this;
     }
-    public void disactivateTimeout() {
+    public MorphologicalAnalyzer disactivateTimeout() {
     	stpwActive = false;
+    	return this;
     }
-    public void activateTimeout() {
+    public MorphologicalAnalyzer activateTimeout() {
     	stpwActive = true;
+    	return this;
     }
     
     //--------------------- CONTEXT VALIDATION -------------------------------

@@ -2,8 +2,6 @@ package ca.pirurvik.iutools.spellchecker;
 
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -238,6 +236,7 @@ public class SpellCheckerTest {
 	@Test
 	public void test__correctWord__roman__MispelledInput() throws Exception {
 		SpellChecker checker = makeCheckerSmallCustomDict();
+		checker.enablePartialCorrections();
 		Pair<String,String> blah;
 		String word = "inukkshuk";
 		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
@@ -622,10 +621,26 @@ public class SpellCheckerTest {
 				new SpellingCorrection(badWord, new String[0], true);
 		checker.computeCorrectPortions(badWord, correction);
 		assertCorrection(correction)
-			.suggestsCorrectLead("inukt")
+			.suggestsCorrectLead("inuk")
 			.suggestsCorrectTail("shuk")
-			.suggestsCorrectExtremities("inukt[i]shuk")
+			.suggestsCorrectExtremities("inuk[ti]shuk")
 		;
+	}
+	
+	@Test
+	public void test__wordAnalysisStartsWith__HappyPath() throws Exception {
+		String word = "inuktitut";
+		SpellChecker checker = makeCheckerSmallCustomDict();
+		
+		String leadChars = "inuk";
+		Assert.assertTrue(
+				"Lead morphemes for word "+word+" SHOULD have matched "+leadChars, 
+				checker.leadMorphemesMatch(leadChars, word));
+		
+		leadChars = "inukt";
+		Assert.assertFalse(
+				"Lead morphemes for word "+word+" should NOT have matched "+leadChars, 
+				checker.leadMorphemesMatch(leadChars, word));
 	}
 	
 	/**********************************
@@ -649,36 +664,6 @@ public class SpellCheckerTest {
 		}
 		return answer;
 	}
-
-//	private void assertCorrectionOK(String mess, SpellingCorrection wordCorr, boolean expMispelled) {
-//		assertCorrectionOK(mess, wordCorr, expMispelled, null);		
-//	}
-//
-//	
-//	private void assertCorrectionOK(SpellingCorrection gotCorrection, String expOrig, boolean expMispelled) throws IOException {
-//		assertCorrectionOK(gotCorrection, expOrig, expMispelled, new String[] {});
-//	}
-//	
-//	private void assertCorrectionOK(SpellingCorrection gotCorrection, String expOrig, boolean expMispelled, String[] expSpellings) throws IOException {
-//		Assert.assertEquals("The orignal word was not as expected.", 
-//				expOrig, gotCorrection.orig);
-//		
-//		Assert.assertEquals("The misspelled status of the correction was not as expected.", 
-//				expMispelled, gotCorrection.wasMispelled);
-//		if (!gotCorrection.wasMispelled) {
-//			AssertObject.assertDeepEquals("Word was correctly spelled, but its list of possible spellings was NOT empty", 
-//					new String[] {}, gotCorrection.getPossibleSpellings());
-//		}
-//		
-//		List<String> gotPossibleSpellings = gotCorrection.getPossibleSpellings();
-//		AssertHelpers.assertContainsAll("The list of possible correct spellings did not contain all the expected alternatives", 
-//				gotPossibleSpellings, expSpellings);
-//		if (expSpellings.length > 0) {
-//			String expTopSpelling = expSpellings[0];
-//			AssertHelpers.assertStringEquals("The top spelling alternative was not as expected", 
-//					expTopSpelling, gotPossibleSpellings.get(0));
-//		}
-//	}
 
 	private void assertCorrectionOK(String mess, SpellingCorrection wordCorr, String expOrig, boolean expOK) throws Exception {
 		assertCorrectionOK(mess, wordCorr, expOrig, expOK, null);
