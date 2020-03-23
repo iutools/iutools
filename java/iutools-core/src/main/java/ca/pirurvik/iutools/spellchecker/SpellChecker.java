@@ -184,7 +184,7 @@ public class SpellChecker {
 	
 	public void addCorrectWord(String word) {		
 		String[] numericTermParts = null;
-		boolean wordIsNumericTerm = (numericTermParts=wordIsNumberWithSuffixes(word)) != null;
+		boolean wordIsNumericTerm = (numericTermParts=splitNumericExpression(word)) != null;
 		if (wordIsNumericTerm && allNormalizedNumericTerms.indexOf(","+"0000"+numericTermParts[1]+",") < 0) {
 			if (allNormalizedNumericTerms == null || allNormalizedNumericTerms.isEmpty()) {
 				allNormalizedNumericTerms = "";
@@ -295,8 +295,10 @@ public class SpellChecker {
 		
 		if (corr.wasMispelled) {
 			// set ngramStats and suite of words for candidates according to type of word (normal word or numeric expression)
-			String[] numericTermParts = wordIsNumberWithSuffixes(wordInLatin);
+			String[] numericTermParts = splitNumericExpression(wordInLatin);
 			boolean wordIsNumericTerm = numericTermParts != null;
+			
+			computeCorrectPortions(wordInLatin, corr);
 			
 			Set<String> candidates = firstPassCandidates_TFIDF(wordInLatin, wordIsNumericTerm);
 			
@@ -331,6 +333,48 @@ public class SpellChecker {
 		}
 	
  		return corr;
+	}
+	
+	protected void computeCorrectPortions(String badWordRoman, 
+			SpellingCorrection corr) {
+		computeCorrectLead(badWordRoman, corr);
+		computeCorrectTail(badWordRoman, corr);
+	}
+
+	private void computeCorrectLead(String badWordRoman, 
+			SpellingCorrection corr) {
+		
+		String amongWords = getAllWordsToBeUsedForCandidates(badWordRoman);
+		
+		String longestCorrectLead = null;
+		for (int endPos=3; endPos < badWordRoman.length(); endPos++) {
+			String lead = "^"+badWordRoman.substring(0, endPos-1);
+			Set<String> words = wordsContainingSequ(lead, amongWords);
+			if (words.size() == 0) {
+				break;
+			}
+			longestCorrectLead = badWordRoman.substring(0, endPos-1);
+		}
+		corr.correctLead = longestCorrectLead;
+	}
+	
+	private void computeCorrectTail(String badWordRoman, 
+			SpellingCorrection corr) {
+
+		String amongWords = getAllWordsToBeUsedForCandidates(badWordRoman);
+		
+		String longestCorrectTail = null;
+		for (int startPos = badWordRoman.length() - 3; 
+				startPos > 0; startPos--) {
+			String tail = badWordRoman.substring(startPos)+"$";
+			Set<String> words = wordsContainingSequ(tail, amongWords);
+			if (words.size() == 0) {
+				break;
+			}
+			longestCorrectTail = badWordRoman.substring(startPos);
+		}
+			
+		corr.correctTail = longestCorrectTail;
 	}
 	
 	/**
@@ -388,7 +432,7 @@ public class SpellChecker {
 			logger.debug("more than 2 consecutive consonants in the word");
 			wordIsMispelled = true;
 		}
-		else if ( (numericTermParts=wordIsNumberWithSuffixes(word)) != null) {
+		else if ( (numericTermParts=splitNumericExpression(word)) != null) {
 			logger.debug("numeric expression: "+word+" ("+numericTermParts[1]+")");
 			boolean pseudoWordWithSuffixAnalysesWithSuccess = assessEndingWithIMA(numericTermParts[1]);
 			wordIsMispelled = !pseudoWordWithSuffixAnalysesWithSuccess;
@@ -424,14 +468,28 @@ public class SpellChecker {
 	}
 
 
-	protected String[] wordIsNumberWithSuffixes(String word) {
+	/**
+	 * Check if a word is a numeric expression of the form
+	 * 
+	 *    DDDDD suffix1 suffix2 etc...
+	 *    
+	 * If so, split it into parts:
+	 * 
+	 *    - Numeric part
+	 *    - Suffixes
+	 *    
+	 * Otherwise, return null
+	 * 
+	 * @param word
+	 * @return
+	 */
+	protected String[] splitNumericExpression(String word) {
 		NumericExpression numericExpression = NumericExpression.tokenIsNumberWithSuffix(word);
 		if (numericExpression != null)
 			return new String[] { numericExpression.numericFrontPart+numericExpression.separator, numericExpression.morphemicEndPart };
 		else
 			return null;
 	}
-
 
 	protected boolean wordContainsMoreThanTwoConsecutiveConsonants(String word) {
 		Logger logger = Logger.getLogger("SpellChecker.wordContainsMoreThanTwoConsecutiveConsonants");
@@ -672,11 +730,10 @@ public class SpellChecker {
 	}
 
 	protected Set<String> wordsContainingSequ(String seq, 
-			String allWordsForCandidates) {
+			String amongWords) {
 		Logger logger = Logger.getLogger("SpellChecker.wordsContainingSequ");
 		
 		Set<String> wordsWithSeq = uncacheWordsWithNgram(seq);
-//		Set<String> wordsWithSeq = null;
 		if (wordsWithSeq == null) {
 			Pattern p;
 			if (seq.charAt(0)=='^' && seq.charAt(seq.length()-1)=='$') {
@@ -696,7 +753,7 @@ public class SpellChecker {
 			else
 				p = Pattern.compile(",([^,]*"+seq+"[^,]*),");
 						
-			Matcher m = p.matcher(allWordsForCandidates); //p.matcher(allWords)
+			Matcher m = p.matcher(amongWords); //p.matcher(allWords)
 			wordsWithSeq = new HashSet<String>();
 			while (m.find())
 				wordsWithSeq.add(m.group(1));
@@ -766,6 +823,11 @@ public class SpellChecker {
 
 	String getAllWordsToBeUsedForCandidates(boolean wordIsNumericTerm) {
 		return wordIsNumericTerm? this.allNormalizedNumericTerms : this.allWords;
+	}
+	
+	String getAllWordsToBeUsedForCandidates(String word) {
+		boolean isNumericTerm = (null != splitNumericExpression(word));
+		return getAllWordsToBeUsedForCandidates(isNumericTerm);
 	}
 	
 	private void cacheWordsWithNgram(String ngram, Set<String> words) {

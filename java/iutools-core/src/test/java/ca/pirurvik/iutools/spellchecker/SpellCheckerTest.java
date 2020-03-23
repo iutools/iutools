@@ -7,8 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Test;
-
+import ca.nrc.datastructure.Pair;
 import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.testing.AssertHelpers;
 import ca.nrc.testing.AssertNumber;
@@ -28,7 +27,6 @@ public class SpellCheckerTest {
 		"inuktut", "inukttut", "inuk", "inukutt", "inukshuk", 
 		"nunavut"
 	};
-
 
 	private SpellChecker makeCheckerLargeDict() throws StringSegmenterException, SpellCheckerException {
 		SpellChecker checker = new SpellChecker();
@@ -105,6 +103,12 @@ public class SpellCheckerTest {
 		SpellingCorrection correction = checker.correctWord(wordWithError, nCorrections);
 		if (correction.wasMispelled) {
 			List<String> possibleCorrectSpellings = correction.getPossibleSpellings();
+			// This is the longest leading string of the word which might 
+			// be correctly spelled
+			String correctLead = correction.correctLead;
+			// This is the longest tailing string of the word which might 
+			// be correctly spelled
+			String correctTail = correction.correctTail;
 		}
 		
 		//
@@ -112,7 +116,6 @@ public class SpellCheckerTest {
 		//
 		String text = "inuit inusuk nunnavut";
 		List<SpellingCorrection> corrections2 = checker.correctText(text, nCorrections);
-
 	}
 	
 		
@@ -208,7 +211,7 @@ public class SpellCheckerTest {
 //		//   they were analyzed by the morphological segmenter.
 //		//     - 
 //		String[] expected = new String[] {"inuk","inukshuk","inukttut","inuktut","inukutt","nunavut"};		
-//		AssertHelpers.assertDeepEquals("The list of candidate corrections for word "+badWord+" was not as expected", 
+//		AssertObject.assertDeepEquals("The list of candidate corrections for word "+badWord+" was not as expected", 
 //				expected, candidates);
 //	}
 	
@@ -235,11 +238,20 @@ public class SpellCheckerTest {
 	@Test
 	public void test__correctWord__roman__MispelledInput() throws Exception {
 		SpellChecker checker = makeCheckerSmallCustomDict();
-		
+		Pair<String,String> blah;
 		String word = "inukkshuk";
 		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
-		assertCorrectionOK(gotCorrection, word, false, 
-				new String[] {"inukshuk", "inuk", "inukutt", "inuktut", "inukttut"});
+		
+		assertCorrection(gotCorrection, 
+				  "Correction for word 'inukshuk' was wrong")
+			.wasMisspelled()
+			.suggestsSpellings(
+				new String[] {"inukshuk", "inuk", "inukutt", "inuktut", 
+						"inukttut"})
+			.suggestsCorrectLead("inuk")
+			.suggestsCorrectTail("kshuk")
+			.suggestsCorrectExtremities(null)
+			;
 	}
 
 
@@ -479,40 +491,40 @@ public class SpellCheckerTest {
 		SpellChecker checker = makeCheckerLargeDict();
 		
 		String word = "34-mi";
-		String[] numericTermParts = checker.wordIsNumberWithSuffixes(word);
+		String[] numericTermParts = checker.splitNumericExpression(word);
 		Assert.assertTrue("Word "+word+" should have been acknowledged as a number-based word", numericTermParts != null);
 		Assert.assertEquals("The 'number' part is not as expected.", "34-", numericTermParts[0]);
 		Assert.assertEquals("The 'ending' part is not as expected.", "mi", numericTermParts[1]);
 		word = "$34,000-mi";
-		numericTermParts = checker.wordIsNumberWithSuffixes(word);
+		numericTermParts = checker.splitNumericExpression(word);
 		Assert.assertTrue("Word "+word+" should have been acknowledged as a number-based word", numericTermParts != null);
 		Assert.assertEquals("The 'number' part is not as expected.", "$34,000-", numericTermParts[0]);
 		Assert.assertEquals("The 'ending' part is not as expected.", "mi", numericTermParts[1]);
 		word = "4:30-mi";
-		numericTermParts = checker.wordIsNumberWithSuffixes(word);
+		numericTermParts = checker.splitNumericExpression(word);
 		Assert.assertTrue("Word "+word+" should have been acknowledged as a number-based word", numericTermParts != null);
 		Assert.assertEquals("The 'number' part is not as expected.", "4:30-", numericTermParts[0]);
 		Assert.assertEquals("The 'ending' part is not as expected.", "mi", numericTermParts[1]);
 		word = "5.5-mi";
-		numericTermParts = checker.wordIsNumberWithSuffixes(word);
+		numericTermParts = checker.splitNumericExpression(word);
 		Assert.assertTrue("Word "+word+" should have been acknowledged as a number-based word", numericTermParts != null);
 		Assert.assertEquals("The 'number' part is not as expected.", "5.5-", numericTermParts[0]);
 		Assert.assertEquals("The 'ending' part is not as expected.", "mi", numericTermParts[1]);
 		word = "5,500.33-mi";
-		numericTermParts = checker.wordIsNumberWithSuffixes(word);
+		numericTermParts = checker.splitNumericExpression(word);
 		Assert.assertTrue("Word "+word+" should have been acknowledged as a number-based word", numericTermParts != null);
 		Assert.assertEquals("The 'number' part is not as expected.", "5,500.33-", numericTermParts[0]);
 		Assert.assertEquals("The 'ending' part is not as expected.", "mi", numericTermParts[1]);
 		word = "bla";
-		numericTermParts = checker.wordIsNumberWithSuffixes(word);
+		numericTermParts = checker.splitNumericExpression(word);
 		Assert.assertTrue("Word "+word+" should have been acknowledged as a number-based word", numericTermParts == null);
 		word = "34–mi";
-		numericTermParts = checker.wordIsNumberWithSuffixes(word);
+		numericTermParts = checker.splitNumericExpression(word);
 		Assert.assertTrue("Word "+word+" should have been acknowledged as a number-based word", numericTermParts != null);
 		Assert.assertEquals("The 'number' part is not as expected.", "34–", numericTermParts[0]);
 		Assert.assertEquals("The 'ending' part is not as expected.", "mi", numericTermParts[1]);
 		word = "40−mi";
-		numericTermParts = checker.wordIsNumberWithSuffixes(word);
+		numericTermParts = checker.splitNumericExpression(word);
 		Assert.assertTrue("Word "+word+" should have been acknowledged as a number-based word", numericTermParts != null);
 		Assert.assertEquals("The 'number' part is not as expected.", "40−", numericTermParts[0]);
 		Assert.assertEquals("The 'ending' part is not as expected.", "mi", numericTermParts[1]);
@@ -601,6 +613,21 @@ public class SpellCheckerTest {
 		
 	}
 	
+	@Test
+	public void test__computeCorrectPortions__HappyPath() throws Exception {
+		SpellChecker checker = makeCheckerSmallCustomDict();
+		
+		String badWord = "inuktishuk";
+		SpellingCorrection correction = 
+				new SpellingCorrection(badWord, new String[0], true);
+		checker.computeCorrectPortions(badWord, correction);
+		assertCorrection(correction)
+			.suggestsCorrectLead("inukt")
+			.suggestsCorrectTail("shuk")
+			.suggestsCorrectExtremities("inukt[i]shuk")
+		;
+	}
+	
 	/**********************************
 	 * TEST HELPERS
 	 **********************************/
@@ -615,7 +642,7 @@ public class SpellCheckerTest {
 
 	private boolean containsNumericTerm(String numericTerm, SpellChecker checker) {
 		boolean answer = false;
-		String[] numericTermParts = checker.wordIsNumberWithSuffixes(numericTerm);
+		String[] numericTermParts = checker.splitNumericExpression(numericTerm);
 		String normalizedNumericTerm = "0000"+numericTermParts[1];
 		if (checker.allNormalizedNumericTerms.indexOf(","+normalizedNumericTerm+",") >= 0) {
 			answer = true;
@@ -639,7 +666,7 @@ public class SpellCheckerTest {
 //		Assert.assertEquals("The misspelled status of the correction was not as expected.", 
 //				expMispelled, gotCorrection.wasMispelled);
 //		if (!gotCorrection.wasMispelled) {
-//			AssertHelpers.assertDeepEquals("Word was correctly spelled, but its list of possible spellings was NOT empty", 
+//			AssertObject.assertDeepEquals("Word was correctly spelled, but its list of possible spellings was NOT empty", 
 //					new String[] {}, gotCorrection.getPossibleSpellings());
 //		}
 //		
@@ -658,22 +685,53 @@ public class SpellCheckerTest {
 		
 	}
 	
-	private void assertCorrectionOK(SpellingCorrection wordCorr, String expOrig, boolean expOK, String[] expSpellings) throws Exception {
-		assertCorrectionOK("", wordCorr, expOrig, expOK, expSpellings);
+	private void assertCorrectionOK(SpellingCorrection wordCorr, String expOrig, 
+			boolean expOK, String[] expSpellings) throws Exception {
+		assertCorrectionOK("", wordCorr, expOrig, expOK, expSpellings, 
+				null, null);
 	}
 	
-	private void assertCorrectionOK(SpellingCorrection wordCorr, String expOrig, boolean expOK) throws Exception {
+	private void assertCorrectionOK(SpellingCorrection wordCorr, String expOrig, 
+			boolean expOK) throws Exception {
 		assertCorrectionOK("", wordCorr, expOrig, expOK, new String[] {});
 	}
 	
-	private void assertCorrectionOK(String mess, SpellingCorrection wordCorr, String expOrig, boolean expOK, String[] expSpellings) throws Exception {
+	private void assertCorrectionOK(String mess, SpellingCorrection wordCorr, 
+			String expOrig, boolean expOK, String[] expSpellings) 
+					throws Exception {
+		assertCorrectionOK(mess, wordCorr, 
+				expOrig, expOK, expSpellings, null, null);
+	}
+	
+	private void assertCorrectionOK(String mess, SpellingCorrection wordCorr, 
+			String expOrig, boolean expOK, String[] expSpellings,
+			String expCorrLead, String expCorrTail) throws Exception {
 		if (expSpellings == null) {
 			expSpellings = new String[] {};
 		}
 		Assert.assertEquals(mess+"\nThe input word was not as expected",expOrig, wordCorr.orig);
 		Assert.assertEquals(mess+"\nThe correctness status was not as expected", expOK, !wordCorr.wasMispelled);
-		AssertHelpers.assertDeepEquals(mess+"\nThe list of spellings was not as expected", expSpellings, wordCorr.getPossibleSpellings());
+		AssertObject.assertDeepEquals(
+				mess+"\nThe list of spellings was not as expected", 
+				expSpellings, wordCorr.getPossibleSpellings());
+		
+		if (expCorrLead != null) {
+			Assert.assertEquals(
+					"Longest Correctly Spelled leading string was not as expected", 
+					expCorrLead, wordCorr.correctLead);
+		}
+
+		if (expCorrTail != null) {
+			Assert.assertEquals(
+					"Longest Correctly tailing string was not as expected", 
+					expCorrLead, wordCorr.correctTail);
+		}
+	
 	}
+
+	
+	
+	
 	
 	private void assertWordIsKnown(String word, SpellChecker checker) {
 		Assert.assertTrue("Spell checker dictionary did not know about word '"+word+"'", 
@@ -683,5 +741,18 @@ public class SpellCheckerTest {
 	private void assertWordUnknown(String word, SpellChecker checker) {
 		Assert.assertFalse("Spell checker dictionary should NOT have known about word '"+word+"'", 
 				checker.allWords.contains(","+word+","));
+	}
+
+	public AssertSpellingCorrection assertCorrection(
+			SpellingCorrection gotCorrection) {
+		return assertCorrection(gotCorrection, null);
+	}
+	
+	public AssertSpellingCorrection assertCorrection(
+			SpellingCorrection gotCorrection, String mess) {
+		if (mess == null) { mess = ""; }
+		AssertSpellingCorrection assertion = 
+				new AssertSpellingCorrection(gotCorrection, mess);
+		return assertion;
 	}
 }

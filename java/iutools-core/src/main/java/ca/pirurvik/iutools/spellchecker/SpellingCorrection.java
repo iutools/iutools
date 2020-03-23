@@ -11,6 +11,8 @@ public class SpellingCorrection {
 	public Boolean wasMispelled = false;
 	public List<ScoredSpelling> scoredCandidates = 
 				new ArrayList<ScoredSpelling>();
+	public String correctLead;
+	public String correctTail;
 
 	public SpellingCorrection(String _orig, String[] _corrections, Boolean _wasMispelled) {
 		List<String> correctionsList = Arrays.asList(_corrections);
@@ -65,5 +67,21 @@ public class SpellingCorrection {
 		}
 				
 		return this;
+	}
+	
+	public String correctExtremities() {
+		String correctPortions = null;
+		if (correctLead != null && correctTail != null) {
+			int middleStart = correctLead.length();
+			int middleEnd = orig.length() - correctTail.length();
+			if (middleStart < middleEnd) {
+				correctPortions = 
+					correctLead+
+					"["+orig.substring(middleStart, middleEnd)+"]"+
+					correctTail;
+			}
+		}
+		
+		return correctPortions;
 	}
 }
