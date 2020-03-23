@@ -2,14 +2,14 @@ package ca.pirurvik.iutools.webservice;
 
 import ca.inuktitutcomputing.morph.Decomposition.DecompositionExpression;
 import ca.inuktitutcomputing.utilities.Alignment;
-import ca.pirurvik.iutools.concordancer.AlignmentResult;
+import ca.pirurvik.iutools.concordancer.DocAlignment;
 
 
 public class GistTextResponse {
 
 	public DecompositionExpression[] decompositions;
 	public Alignment[] sentencePairs;
-	AlignmentResult bilingualAlignments = new AlignmentResult().setSuccess(false);
+	DocAlignment bilingualAlignments = new DocAlignment().setSuccess(false);
 	
 	public GistTextResponse() {}
 }

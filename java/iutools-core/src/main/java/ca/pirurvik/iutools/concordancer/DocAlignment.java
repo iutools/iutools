@@ -1,15 +1,17 @@
 package ca.pirurvik.iutools.concordancer;
 
+import java.beans.Transient;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class AlignmentResult {
+public class DocAlignment {
 	
 	public boolean success = false;
 	public List<String> problemsEncountered = new ArrayList<String>();
@@ -17,17 +19,44 @@ public class AlignmentResult {
 	Map<String,String> pagesContent = new HashMap<String,String>();
 	Map<String,URL> pagesURL = new HashMap<String,URL>();
 
+	
+	public DocAlignment() {
+		init_DocAlignment(null, null);		
+	}
+	
+	public DocAlignment(String lang1, String lang2) {
+		init_DocAlignment(lang1, lang2);
+	}
+
+	private void init_DocAlignment(String lang1, String lang2) {
+		if (lang1 != null) {
+			pagesContent.put(lang1, null);
+			pagesURL.put(lang1, null);
+		}
+		if (lang2 != null) {
+			pagesContent.put(lang2, null);
+			pagesURL.put(lang2, null);
+		}
+	}
+	
+	@Transient
+	public Set<String> getLanguages() {
+		Set<String> langs = pagesContent.keySet();
+		return langs;
+	}
+
 	public List<Alignment> getAligments() {
 		return alignments;
 	}
 	
-	public AlignmentResult addAlignment(Alignment alignment) {
+	public DocAlignment addAlignment(Alignment alignment) {
 		alignments.add(alignment);
 		return this;
 	}
 
-	public void setPageContent(String lang, String text) {
+	public DocAlignment setPageContent(String lang, String text) {
 		pagesContent.put(lang, text);
+		return this;
 	}
 	
 	@JsonIgnore
@@ -37,22 +66,23 @@ public class AlignmentResult {
 	}
 
 	@JsonIgnore
-	public URL getPageURL(String lang) throws Exception {
+	public URL getPageURL(String lang)  {
 		URL url = pagesURL.get(lang);
 		return url;
 	}
 
-	public void setPageURL(String lang, URL url) {
+	public DocAlignment setPageURL(String lang, URL url) {
 		pagesURL.put(lang, url);
-	}
-
-	public void addProblem(String errMess) {
-		problemsEncountered.add(errMess);
-	}
-
-	public AlignmentResult setSuccess(boolean _success) {
-		this.success = _success;
 		return this;
 	}
 
+	public DocAlignment addProblem(String errMess) {
+		problemsEncountered.add(errMess);
+		return this;
+	}
+
+	public DocAlignment setSuccess(boolean _success) {
+		this.success = _success;
+		return this;
+	}
 }

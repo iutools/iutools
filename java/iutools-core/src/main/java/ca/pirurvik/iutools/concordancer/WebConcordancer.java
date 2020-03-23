@@ -1,15 +1,15 @@
 package ca.pirurvik.iutools.concordancer;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-
-import org.apache.poi.xwpf.usermodel.TextAlignment;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import ca.nrc.data.harvesting.LanguageGuesser;
 import ca.nrc.data.harvesting.LanguageGuesserException;
 import ca.nrc.data.harvesting.PageHarvester;
 import ca.nrc.data.harvesting.PageHarvester_Barebones;
+import ca.nrc.datastructure.Pair;
 import ca.nrc.data.harvesting.PageHarvesterException;
 
 /**
@@ -19,6 +19,8 @@ import ca.nrc.data.harvesting.PageHarvesterException;
  *
  */
 public class WebConcordancer {
+	
+	protected static enum StepOutcome {SUCCESS, FAILURE, KEEP_TRYING};
 	
 	PageHarvester harvester = null;
 	LanguageGuesser langGuesser = new LanguageGuesser_IU();
@@ -30,35 +32,41 @@ public class WebConcordancer {
 		return harvester;
 	}
 
-	public AlignmentResult alignPage(URL url, String[] languages) 
+	public DocAlignment alignPage(URL url, String[] languages) 
 			throws WebConcordancerException {
 		
 		// For now, return 'failed' alignments for all URLs except for 
 		// 'http://mockskite.nu.ca/'. Return hardcoded mock results for 
 		// the later
-		boolean failedAlignForAllButMock = true;
+		boolean failedAlignForAllButMock = false;
 		if (url.toString().startsWith("http://mocksite.nu.ca/")) {
 			return mockAlignmentResult();
 		}
 		
-		AlignmentResult alignment = new AlignmentResult();
+		DocAlignment alignment = new DocAlignment();
 		for (String lang: languages) {
 			alignment.setPageContent(lang, null);
 		}
 		
-		harvestInputPage(url, alignment);
+		harvestInputPage(url, alignment, languages);
 		harvestOtherLangPage(alignment);
+		alignContents(alignment);
 		
+		alignment.success = alignment.problemsEncountered.isEmpty();
 		if (failedAlignForAllButMock) {
 			alignment.success = false;
-			alignment.addProblem("Could not find page in other language");
 		}
 		
 		return alignment;
 	}
 	
-	private AlignmentResult mockAlignmentResult() {
-		AlignmentResult result = new AlignmentResult();
+	private void alignContents(DocAlignment alignment) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private DocAlignment mockAlignmentResult() {
+		DocAlignment result = new DocAlignment();
 		
 		String[] enSentences = new String[] {
 			"As of today, there are no known cases of COVID-19 in the territory.", 
@@ -87,17 +95,133 @@ public class WebConcordancer {
 		return result;
 	}
 
-	private void harvestOtherLangPage(AlignmentResult alignment) {
+	private void harvestOtherLangPage(DocAlignment alignment) throws WebConcordancerException {
+		StepOutcome status = StepOutcome.KEEP_TRYING;
 		
+		Pair<String,String> langPair = langPairUnfilledSecond(alignment);
+		String lang = langPair.getFirst();
+		String otherLang = langPair.getSecond();
 		
+		status = harvestOtherLangPage_KnownSites(alignment, lang, otherLang);
+		if (status == StepOutcome.KEEP_TRYING) {
+			status = harvestOtherLangPage_UnknownSites(alignment, 
+						lang, otherLang);
+		}
+		
+		return;
 	}
 
-	private void harvestInputPage(URL url, AlignmentResult alignment) throws WebConcordancerException {
+	protected Pair<String, String> langPairUnfilledSecond(
+			DocAlignment alignment) throws WebConcordancerException {
+		String filledLang = null;
+		String unfilledLang = null;
+		int filledCount = 0;
+		
+		for (String lang: alignment.getLanguages()) {
+			if (alignment.getPageContent(lang) == null) {
+				unfilledLang = lang;
+			} else {
+				filledLang = lang;
+				filledCount++;
+			}
+		}
+		
+		if (filledCount == 0) {
+			throw new WebConcordancerException("None of the languages was filled.");
+		}
+		if (filledCount > 1) {
+			throw new WebConcordancerException("Both of the languages were filled.");
+		}
+		
+		Pair<String,String> langPair = Pair.of(filledLang, unfilledLang);
+		
+		return langPair;
+	}
+
+	/** 
+	 * Harvest page in the other language, using strategies which are 
+	 * specific to that page's web site.
+	 * 
+	 * @param alignment
+	 * @param otherLang 
+	 * @param lang 
+	 * @return
+	 */
+	private StepOutcome harvestOtherLangPage_UnknownSites(
+			DocAlignment alignment, String lang, String otherLang) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/** 
+	 * Harvest page in the other language, using strategies which are 
+	 * NOT specific to that page's web site.
+	 * 
+	 * @param alignment
+	 * @param otherLang 
+	 * @param lang 
+	 * @return
+	 * @throws WebConcordancerException 
+	 * @throws Exception 
+	 */
+	private StepOutcome harvestOtherLangPage_KnownSites(
+			DocAlignment alignment, String lang, String otherLang) throws WebConcordancerException 
+					{
+		
+		StepOutcome status = StepOutcome.KEEP_TRYING;
+		
+		// For now, hardcode rules for dealing with just the one site:
+		//    
+		//    gov.nu.ca
+		//
+		// 
+		URL langURL = alignment.getPageURL(lang);
+		String site = langURL.getHost();
+		if (site.endsWith("gov.nu.ca")) {
+			if (otherLang.equals("iu")) {
+				String langURLstr = langURL.toString();
+				String otherLangURLstr = null;
+				Pattern patt = Pattern.compile("(.*?)/(iu|in|fr|en)?(/?)");
+				Matcher matcher = patt.matcher(langURLstr);
+				if (matcher.matches()) {
+					otherLangURLstr = 
+						matcher.group(1)+"/"+otherLang+
+						matcher.group(3);
+				}
+				
+				if (otherLangURLstr != null) {
+					try {
+						String otherLangContent = 
+								harvester.harvestSinglePage(new URL(otherLangURLstr));
+						URL otherLangURL = harvester.getCurrentURL();
+						alignment.setPageContent(otherLang, otherLangContent);
+						alignment.setPageURL(otherLang, otherLangURL);
+						status = StepOutcome.FAILURE;
+					} catch (MalformedURLException | PageHarvesterException e) {
+						throw new WebConcordancerException(e);
+					}					
+				}
+			}
+		}
+		
+		return status;
+	}
+
+	private void harvestInputPage(URL url, DocAlignment alignment, 
+			String[] languages) throws WebConcordancerException {
 		String urlText = null;
 		String urlLang = null;
 		try {
 			urlText = getHarvester().harvestSinglePage(url);
 			urlLang = guessLang(urlText);
+			if (!urlLang.equals(languages[0]) && 
+					!urlLang.equals(languages[1])) {
+				throw new WebConcordancerException(
+						"Langage of input page "+url+" was not as expected.\n"+
+						"   Got : "+urlLang+"; expected: ["+
+						String.join(",", languages)+"]");
+			}
+				
 		} catch (PageHarvesterException e) {
 			throw new WebConcordancerException("Could not harvest page to align", e);
 		} catch (LanguageGuesserException e) {
@@ -116,5 +240,4 @@ public class WebConcordancer {
 		String lang = langGuesser.detect(text);
 		return lang;
 	}
-
 }

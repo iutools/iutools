@@ -21,7 +21,7 @@ import ca.inuktitutcomputing.utilities.Alignment;
 import ca.inuktitutcomputing.morph.MorphInukException;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
 import ca.nrc.config.ConfigException;
-import ca.pirurvik.iutools.concordancer.AlignmentResult;
+import ca.pirurvik.iutools.concordancer.DocAlignment;
 import ca.pirurvik.iutools.concordancer.WebConcordancer;
 import ca.pirurvik.iutools.concordancer.WebConcordancerException;
 
@@ -71,7 +71,7 @@ public class GistTextEndpoint extends HttpServlet {
 		GistTextResponse results = new GistTextResponse();
 		
 		String textToGist = inputs.word;
-		AlignmentResult alignResult = null;
+		DocAlignment alignResult = null;
 		
 		URL url = inputs.inputURL();
 		if (url != null) {

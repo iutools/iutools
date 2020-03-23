@@ -2,17 +2,28 @@ package ca.pirurvik.iutools.concordancer;
 
 import java.net.URL;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import ca.nrc.datastructure.Pair;
 import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.AssertString;
 import ca.pirurvik.iutools.concordancer.Alignment;
-import ca.pirurvik.iutools.concordancer.AlignmentResult;
+import ca.pirurvik.iutools.concordancer.DocAlignment;
 import ca.pirurvik.iutools.concordancer.WebConcordancer;
 
 public class WebConcordancerTest {
+	
+	WebConcordancer concordancer = null;
+	
+	@Before
+	public void setUp() {
+		concordancer = new WebConcordancer();
+	}
 
 	//////////////////////////////////
 	// DOCUMENTATION TEST
@@ -33,7 +44,7 @@ public class WebConcordancerTest {
 		// You want to get aligned sentences for the en-iu (Inuktut) language 
 		// pair. You do this as follows.
 		//
-		AlignmentResult pageAligment = 
+		DocAlignment pageAligment = 
 				new WebConcordancer().alignPage(url, new String[] {"en", "iu"});
 		
 		// You can then check if the alignment was successful or not
@@ -75,7 +86,7 @@ public class WebConcordancerTest {
 	@Test
 	public void test__alignPage__MockSite() throws Exception {
 		URL url = new URL("http://mocksite.nu.ca/en");
-		AlignmentResult pageAligment = 
+		DocAlignment pageAligment = 
 					new WebConcordancer().alignPage(url, new String[] {"en", "iu"});
 
 		Pair<String,String>[] expAlignments = new Pair[] {
@@ -99,15 +110,49 @@ public class WebConcordancerTest {
 	@Test
 	public void test__alignPage__HappyPath() throws Exception {
 		URL url = new URL("https://www.gov.nu.ca/");
-		AlignmentResult pageAligment = 
+		DocAlignment pageAligment = 
 					new WebConcordancer().alignPage(url, new String[] {"en", "iu"});
 
 		assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
+			.wasSuccessful()
 			.urlForLangEquals("en", new URL("https://www.gov.nu.ca/"))
-//			.urlForLangEquals("iu", new URL("https://www.gov.nu.ca/blobIU"))
-			.pageInLangContains("en", "Government of Nunavut")
-//			.pageInLangContains("iu", "BLOB")
+			.urlForLangEquals("iu", new URL("https://www.gov.nu.ca/iu"))
+			.pageInLangContains("en", "Premier of Nunavut")
+			.pageInLangContains("iu", "ᓯᕗᓕᖅᑎ ᓄᓇᕗᒻᒥ")
 			;
+	}
+	
+	@Test
+	public void test__langPairUnfilledSecond__HappyPath() throws Exception {
+		DocAlignment alignment = 
+				new DocAlignment("en", "iu").setPageContent("en", "Hello");
+		
+		Pair<String,String> gotLangPair = 
+				concordancer.langPairUnfilledSecond(alignment);
+		Pair<String,String> expLangPair = Pair.of("en", "iu");
+		AssertObject.assertDeepEquals("Language pair not as expected", 
+				expLangPair, gotLangPair);
+	}
+
+	@Test(expected=WebConcordancerException.class)
+	public void test__langPairUnfilledSecond__BothLangFilled__RaisesException() 
+			throws Exception {
+		DocAlignment alignment = 
+				new DocAlignment("en", "iu")
+					.setPageContent("en", "Nunavut")
+					.setPageContent("iu", "ᓄᓇᕗᑦ");
+		
+		Pair<String,String> gotLangPair = 
+				concordancer.langPairUnfilledSecond(alignment);
+	}
+	
+	@Test(expected=WebConcordancerException.class)
+	public void test__langPairUnfilledSecond__NeitherLangFilled__RaisesException() 
+			throws Exception {
+		DocAlignment alignment = new DocAlignment("en", "iu");
+		
+		Pair<String,String> gotLangPair = 
+				concordancer.langPairUnfilledSecond(alignment);
 	}
 
 	//////////////////////////////////
@@ -115,7 +160,7 @@ public class WebConcordancerTest {
 	//////////////////////////////////
 	
 	
-	private AlignmentResultAssertion assertThat(AlignmentResult pageAligment, 
+	private AlignmentResultAssertion assertThat(DocAlignment pageAligment, 
 			String message) {
 		AlignmentResultAssertion assertion = 
 				new AlignmentResultAssertion(pageAligment);
@@ -126,10 +171,17 @@ public class WebConcordancerTest {
 
 		String baseMessage = "";
 		
-		AlignmentResult gotAlignmentResult = null;
+		DocAlignment gotAlignmentResult = null;
 		
-		public AlignmentResultAssertion(AlignmentResult pageAligment) {
+		public AlignmentResultAssertion(DocAlignment pageAligment) {
 			this.gotAlignmentResult = pageAligment;
+		}
+
+		public AlignmentResultAssertion wasSuccessful() {
+			Assert.assertTrue(
+					baseMessage+"\nAlignment should have been successful.",
+					gotAlignmentResult.success);
+			return this;
 		}
 
 		public void alignmentsEqual(String mess, String lang1, String lang2, 
