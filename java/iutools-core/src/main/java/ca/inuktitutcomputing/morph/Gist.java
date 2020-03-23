@@ -13,6 +13,8 @@ public class Gist {
 	
 	public String word = null;
 	public Pair<String,String>[] wordComponents = null;
+	
+	public Gist() {}
 
 	public Gist(String word) throws LinguisticDataException {
 		this.word = word;
