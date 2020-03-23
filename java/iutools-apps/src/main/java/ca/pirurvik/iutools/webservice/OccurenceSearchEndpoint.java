@@ -65,51 +65,30 @@ public class OccurenceSearchEndpoint extends HttpServlet {
 		tLogger.trace("Returning json="+json);
 	}
 
-	public OccurenceSearchResponse executeEndPoint(OccurenceSearchInputs inputs) 
-			throws Exception  {
+	public OccurenceSearchResponse executeEndPoint(OccurenceSearchInputs inputs) throws Exception {
 		Logger logger = Logger.getLogger("ca.pirurvik.iutools.webservice.OccurenceSearchEndpoint.executeEndPoint");
-		logger.trace("inputs= "+PrettyPrinter.print(inputs));
+		logger.trace("inputs= " + PrettyPrinter.print(inputs));
 		OccurenceSearchResponse results = new OccurenceSearchResponse();
-		
+
 		if (inputs.wordPattern == null || inputs.wordPattern.isEmpty()) {
 			throw new SearchEndpointException("Word pattern was empty or null");
 		}
-		
+
 		String corpusName = inputs.corpusName;
-		logger.trace("corpusName: "+corpusName);
+		logger.trace("corpusName: " + corpusName);
 		if (inputs.corpusName == null || inputs.corpusName.isEmpty()) {
 			corpusName = null; // will use default corpus = Hansard2002
 		}
-		
-		if (inputs.exampleWord == null) {
-			// Retrieve all words that match the wordPattern
-			// and put the results in results.matchingWords
+
+		// Retrieve all words that match the wordPattern
+		// and put the results in results.matchingWords
 //			List<Pair<String,List<String>>> wordsForMorphemes = getOccurrences(inputs);
-			HashMap<String,MorphemeSearchResult> wordsForMorphemes = getOccurrences(inputs,corpusName);
+		HashMap<String, MorphemeSearchResult> wordsForMorphemes = getOccurrences(inputs, corpusName);
 //			Gson gson = new Gson();
 //			String str = gson.toJson(wordsForMorphemes, HashMap.class);
 //			logger.trace("results in json: "+str);
 //			results.matchingWords = str;
-			results.matchingWords = wordsForMorphemes;
-		} else {
-			// Retrieve some occurences of the provided exampleWord
-			// and put the results in results.occurences
-			Gist gistOfWord = new Gist(inputs.exampleWord);
-			logger.trace("gist= "+PrettyPrinter.print(gistOfWord));
-			ProcessQuery processQuery = new ProcessQuery();
-			String query = inputs.exampleWord;
-			logger.trace("query= "+query);
-			logger.trace("calling run() on processQuery="+processQuery);
-			String[] alignments = processQuery.run(query);
-			logger.trace("alignments= "+PrettyPrinter.print(alignments));
-			//Gson gson = new Gson();
-			//results.exampleWord = gson.toJson(gistOfWord, Gist.class);
-			HashMap<String,Object> res = new HashMap<String,Object>();
-			res.put("gist", gistOfWord);
-			res.put("alignments", alignments);
-			results.exampleWord = res;
-		}
-		
+		results.matchingWords = wordsForMorphemes;
 
 		return results;
 	}

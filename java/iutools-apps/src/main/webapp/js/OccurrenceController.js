@@ -13,9 +13,9 @@ class OccurrenceController extends WidgetController {
 	// Setup handler methods for different HTML elements specified in the config.
 	attachHtmlElements() {
 		this.setEventHandler("btnGet", "click", this.onGet);
+		this.onReturnKey("inpMorpheme", this.onGet);
 		this.setEventHandler("iconizer", "click", this.iconizeDivExampleWord);
 		this.setEventHandler("divIconizedExampleWord", "click", this.deiconizeDivExampleWord);
-		this.onReturnKey("inpMorpheme", this.onGet);
 	}
 	
 	onGet() {
@@ -35,53 +35,32 @@ class OccurrenceController extends WidgetController {
 	
 	onWordSelect(elementID) {
 		var element = $('#'+elementID);
-		$(".word-example.selected").removeClass("selected");
-		element.addClass("selected");
-		console.log("word: "+$(element).text());
-		occurrenceController.elementForProp("inpExampleWord").val($(element).text());
-		occurrenceController.setWordExampleBusy(true);
-		var divExampleWord = occurrenceController.elementForProp("divExampleWord");
-		$('#contents',divExampleWord).html('');
-		var divWordInExample = occurrenceController.elementForProp("divWordInExample");
-		divWordInExample.html('');
-		var divIconizedWordExample = occurrenceController.elementForProp("divIconizedExampleWord");
-		divIconizedWordExample.hide();
-		divExampleWord.show();
-		//occurrenceController.showSpinningWheel("divMessageInExample","Searching");
+		var exampleWord = $(element).text();
+//		$(".word-example.selected").removeClass("selected");
+//		element.addClass("selected");
+//		console.log("word: "+$(element).text());
+//		occurrenceController.elementForProp("inpExampleWord").val($(element).text());
+//		occurrenceController.setWordExampleBusy(true);
+//		var divExampleWord = occurrenceController.elementForProp("divExampleWord");
+//		$('#contents',divExampleWord).html('');
+//		var divWordInExample = occurrenceController.elementForProp("divWordInExample");
+//		divWordInExample.html('');
+//		var divIconizedWordExample = occurrenceController.elementForProp("divIconizedExampleWord");
+//		divIconizedWordExample.hide();
+//		divExampleWord.show();
 		super.showSpinningWheel("divMessageInExample","Searching");
-		occurrenceController.invokeExampleWordService(occurrenceController.getSearchRequestData(),
+		occurrenceController.invokeExampleWordService(occurrenceController.getExampleWordRequestData(wordExample),
 				occurrenceController.successExampleWordCallback, occurrenceController.failureExampleWordCallback);
 	}
 	
-	iconizeDivExampleWord() {
-		var divExampleWord = this.elementForProp("divExampleWord");
-		divExampleWord.hide();
-		var divIconizedWordExample = this.elementForProp("divIconizedExampleWord");
-		divIconizedWordExample.show();
-	}
-	
-	deiconizeDivExampleWord() {
-		console.log('deiconize example word div');
-		var divExampleWord = this.elementForProp("divExampleWord");
-		divExampleWord.show();
-		var divIconizedWordExample = this.elementForProp("divIconizedExampleWord");
-		divIconizedWordExample.hide();
-	}
-	
-	clearResults() {
-		this.elementForProp('divError').empty();
-		this.elementForProp('divResults').empty();
-	}
-	
 	invokeGetService(jsonRequestData, _successCbk, _failureCbk) {
-		this.invokeSearchService(jsonRequestData, _successCbk, _failureCbk);
+		this.invokeSearchService(jsonRequestData, _successCbk, _failureCbk, 'srv/occurrences');
 	}
-	
 	invokeExampleWordService(jsonRequestData, _successCbk, _failureCbk) {
-		this.invokeSearchService(jsonRequestData, _successCbk, _failureCbk);
+		this.invokeSearchService(jsonRequestData, _successCbk, _failureCbk, 'srv/occurrenceexample');
 	}
 	
-	invokeSearchService(jsonRequestData, _successCbk, _failureCbk) {
+	invokeSearchService(jsonRequestData, _successCbk, _failureCbk, _url) {
 			var tracer = new Tracer('OccurenceController.invokeSearchService', true);
 			tracer.trace("_successCbk="+_successCbk+", jsonRequestData="+JSON.stringify(jsonRequestData));
 			this.busy = true;
@@ -100,7 +79,7 @@ class OccurrenceController extends WidgetController {
 		
 			$.ajax({
 				method: 'POST',
-				url: 'srv/occurrences',
+				url: _url,
 				data: jsonRequestData,
 				dataType: 'json',
 				async: true,
@@ -111,16 +90,7 @@ class OccurrenceController extends WidgetController {
 			tracer.trace('OccurenceController.invokeSearchService', "exited");
 	}
 	
-	validateQueryInput() {
-		var isValid = true;
-		var query = this.elementForProp("inpMorpheme").val();
-		if (query == null || query === "") {
-			isValid = false;
-			this.error("You need to enter something in the morpheme field");
-		}
-		return isValid;
-	}
-
+	
 	successGetCallback(resp) {
 		var tracer = new Tracer('OccurenceController.successGetCallback', true);
 		tracer.trace("resp="+JSON.stringify(resp));
@@ -195,26 +165,38 @@ class OccurrenceController extends WidgetController {
 		var wordPattern = this.elementForProp("inpMorpheme").val().trim();
 		if (wordPattern=='')
 			wordPattern = null;
-		var exampleWord = this.elementForProp("inpExampleWord").val();
-		if (exampleWord=='')
-			exampleWord = null;
 		var corpusName = this.elementForProp("inpCorpusName").val().trim();
 		if (corpusName=='')
 			corpusName = null;
-		var nbExamples = this.elementForProp("inpNbExamples").val().trim();
-		if (nbExamples=='')
-			nbExamples = "20";
+//		var exampleWord = this.elementForProp("inpExampleWord").val();
+//		if (exampleWord=='')
+//			exampleWord = null;
+//		var nbExamples = this.elementForProp("inpNbExamples").val().trim();
+//		if (nbExamples=='')
+//			nbExamples = "20";
 
 		var request = {
 				wordPattern: wordPattern,
-				exampleWord: exampleWord,
 				corpusName: corpusName,
-				nbExamples: nbExamples
+//				exampleWord: exampleWord,
+//				nbExamples: nbExamples
 		};
 		
 		var jsonInputs = JSON.stringify(request);;
 		
 		tracer.trace("returning jsonInputs="+jsonInputs);
+		return jsonInputs;
+	}
+	
+	getExampleWordRequestData(word) {
+		var nbExamples = this.elementForProp("inpNbExamples").val().trim();
+		if (nbExamples=='')
+			nbExamples = "20";
+		var request = { 
+			exampleWord: word,
+			nbExamples: nbExamples
+			};
+		var jsonInputs = JSON.stringify(request);;
 		return jsonInputs;
 	}
 	
@@ -226,25 +208,6 @@ class OccurrenceController extends WidgetController {
 		this.elementForProp('btnGet').attr("disabled", true);
 	}
 	
-//	enableGetWordExample() {
-//		var thisController = this;
-//		var anchorsWords = document.querySelectorAll('.word-example');
-//	    for (var ipn=0; ipn<anchorsWords.length; ipn++) {
-//	    	anchorsWords[ipn].addEventListener(
-//		    		  'click', thisController.onWordSelect);
-//	    }
-//	}
-//
-//	disableGetWordExample() {
-//		var thisController = this;
-//		var anchorsWords = document.querySelectorAll('.word-example');
-//	    for (var ipn=0; ipn<anchorsWords.length; ipn++) {
-//	    	anchorsWords[ipn].removeEventListener(
-//		    		  'click', thisController.onWordSelect);
-//	    }
-//	}
-	
-
 	error(err) {
 		this.elementForProp('divError').html(err);
 		this.elementForProp('divError').show();	 
@@ -337,6 +300,38 @@ class OccurrenceController extends WidgetController {
 		html += '</table>';
 		$('#contents',divExampleWord).html(html);
 	}
+
+	
+	validateQueryInput() {
+		var isValid = true;
+		var query = this.elementForProp("inpMorpheme").val();
+		if (query == null || query === "") {
+			isValid = false;
+			this.error("You need to enter something in the morpheme field");
+		}
+		return isValid;
+	}
+
+	iconizeDivExampleWord() {
+		var divExampleWord = this.elementForProp("divExampleWord");
+		divExampleWord.hide();
+		var divIconizedWordExample = this.elementForProp("divIconizedExampleWord");
+		divIconizedWordExample.show();
+	}
+	
+	deiconizeDivExampleWord() {
+		console.log('deiconize example word div');
+		var divExampleWord = this.elementForProp("divExampleWord");
+		divExampleWord.show();
+		var divIconizedWordExample = this.elementForProp("divIconizedExampleWord");
+		divIconizedWordExample.hide();
+	}
+	
+	clearResults() {
+		this.elementForProp('divError').empty();
+		this.elementForProp('divResults').empty();
+	}
+	
 
 	
 	// ---------------------- Test Section ------------------------------ //

@@ -43,6 +43,19 @@
 	</servlet-mapping>	
 	
 
+	<!-- Occurrence Example Endpoint -->
+	<servlet>
+	   <servlet-name>OccurenceExampleEndpoint</servlet-name>
+	   <servlet-class>  
+	     ca.pirurvik.iutools.webservice.OccurenceExampleEndpoint
+	   </servlet-class>
+	</servlet> 
+	<servlet-mapping>
+		<servlet-name>OccurenceExampleEndpoint</servlet-name>
+		<url-pattern>/srv/occurrenceexample/*</url-pattern>
+	</servlet-mapping>	
+	
+
 	<!-- Gist Endpoint -->
 	<servlet>
 	   <servlet-name>GistEndpoint</servlet-name>
