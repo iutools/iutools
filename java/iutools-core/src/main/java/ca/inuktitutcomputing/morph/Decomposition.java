@@ -433,6 +433,16 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 		return sb.toString();
 	}
 	
+	public List<String> getSurfaceForms() {
+		List<String> surfaceForms = new ArrayList<String>();
+		surfaceForms.add(stem.term);
+		for (int ip=0; ip<morphParts.length; ip++) {
+			surfaceForms.add(morphParts[ip].term);
+		}
+		
+		return surfaceForms;
+	}
+	
 	//----------------------------------------------------------------------------------------------
 	/*
      * {<forme de surface>:<signature du morphème>}{...}...
