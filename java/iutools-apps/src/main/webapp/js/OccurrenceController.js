@@ -155,9 +155,10 @@ class OccurrenceController extends WidgetController {
 		var corpusName = this.elementForProp("inpCorpusName").val().trim();
 		if (corpusName=='')
 			corpusName = null;
-//		var exampleWord = this.elementForProp("inpExampleWord").val();
-//		if (exampleWord=='')
-//			exampleWord = null;
+		var selectCorpus = this.elementForProp("selCorpusName");
+		var selectedCorpusName = selectCorpus.val();
+		console.log("selected corpus name: "+selectedCorpusName);
+		corpusName = selectedCorpusName;
 		var nbExamples = this.elementForProp("inpNbExamples").val().trim();
 		if (nbExamples=='')
 			nbExamples = "20";
@@ -165,7 +166,6 @@ class OccurrenceController extends WidgetController {
 		var request = {
 				wordPattern: wordPattern,
 				corpusName: corpusName,
-//				exampleWord: exampleWord,
 				nbExamples: nbExamples
 		};
 		

@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import ca.inuktitutcomputing.config.IUConfig;
@@ -52,31 +54,40 @@ public class CompiledCorpusRegistry {
 
 	@JsonIgnore
 	public static CompiledCorpus getCorpusWithName(String corpusName) throws CompiledCorpusRegistryException {
-		if (corpusName==null) corpusName = defaultCorpusName;
+		Logger logger = Logger.getLogger("CompiledCorpusRegistry.getCorpusWithName");
+		logger.debug("corpusName= '"+corpusName+"'");
+		if (corpusName == null)
+			corpusName = defaultCorpusName;
 		CompiledCorpus corpus = null;
-			String corpusesPath;
-			try {
-				corpusesPath = IUConfig.getIUDataPath("data/compiled-corpuses");
-			} catch (ConfigException e) {
-				throw new CompiledCorpusRegistryException(e);
+		String corpusesPath;
+		try {
+			corpusesPath = IUConfig.getIUDataPath("data/compiled-corpuses");
+		} catch (ConfigException e) {
+			throw new CompiledCorpusRegistryException(e);
+		}
+		File directory = new File(corpusesPath);
+		File[] files = directory.listFiles();
+		String corpusFile = null;
+		for (int ifile = 0; ifile < files.length; ifile++) {
+			String fileName = files[ifile].getName();
+			String patternStr = "compiled[_\\-]corpus-" + corpusName;
+			logger.debug("pattern: "+patternStr);
+			logger.debug("fileName: "+fileName);
+			Pattern pattern = Pattern.compile(patternStr,Pattern.CASE_INSENSITIVE);
+			Matcher matcher = pattern.matcher(fileName);
+			if (matcher.find()) {
+				logger.debug("MATCH");
+				corpusFile = fileName;
+				break;
 			}
-			File directory = new File(corpusesPath);
-			File[] files = directory.listFiles();
-			String corpusFile = null;
-			for (int ifile=0; ifile<files.length; ifile++) {
-        		String fileName = files[ifile].getName();
-        		Pattern pattern = Pattern.compile("compiled[_\\-]corpus-"+corpusName);
-        		Matcher matcher = pattern.matcher(fileName);
-        		if (matcher.find()) {
-        			corpusFile = fileName;
-        			break;
-        		}
-			}
-			if (corpusFile != null) {
-				String jsonFilePath = corpusesPath+"/"+corpusFile;
-				corpus = makeCorpus(jsonFilePath);
-			}
-		
+		}
+		if (corpusFile != null) {
+			String jsonFilePath = corpusesPath + "/" + corpusFile;
+			logger.debug("building corpus");
+			corpus = makeCorpus(jsonFilePath);
+			logger.debug("corpus built");
+		}
+
 		return corpus;
 	}
 	

@@ -149,10 +149,14 @@ public class CompiledCorpusRegistryTest {
 	public void test__getCorpusWithName() throws Exception {
 		String corpusName = "HANSARD-1999-2002";
 		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpusWithName(corpusName);
-		assertTrue("Corpus could not be found",corpus != null);
+		assertTrue("Corpus "+corpusName+"could not be found",corpus != null);
+		
+		corpusName = "Hansard-1999-2002";
+		corpus = CompiledCorpusRegistry.getCorpusWithName(corpusName);
+		assertTrue("Corpus "+corpusName+"could not be found",corpus != null);
 		
 		corpusName = "blabla";
 		corpus = CompiledCorpusRegistry.getCorpusWithName(corpusName);
-		assertTrue("Corpus could not be found",corpus == null);
+		assertTrue("Corpus "+corpusName+"could not be found",corpus == null);
 	}
 }
