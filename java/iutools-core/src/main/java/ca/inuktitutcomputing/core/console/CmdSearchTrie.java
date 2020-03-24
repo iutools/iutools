@@ -44,9 +44,7 @@ public class CmdSearchTrie extends ConsoleCommand {
 
 		boolean searchWord = false;
 		
-		FileReader fr = new FileReader(compilationFilePath);
-		CompiledCorpus compiledCorpus = new Gson().fromJson(fr, CompiledCorpus.class);
-		fr.close();
+		CompiledCorpus compiledCorpus = CompiledCorpus.createFromJson(compilationFilePath);
 		Trie trie = compiledCorpus.getTrie();
 
 		DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
