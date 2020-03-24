@@ -63,11 +63,19 @@ public class AssertSpellingCorrection {
 	}
 
 	public AssertSpellingCorrection suggestsCorrectExtremities(String expPartial) {
-		String gotPartial = gotCorrection.correctExtremities();
+		String gotPartial = gotCorrection.partiallyCorrectExtremities();
 		AssertString.assertStringEquals(
 			baseMessage+"\nSuggested correct portions of the word were not as expected.",
 			expPartial, gotPartial);
 		return this;
 	}
 
+	public AssertSpellingCorrection providesSuggestions(String[] expSugg) 
+				throws Exception {
+		AssertObject.assertDeepEquals(
+				baseMessage+"\nSuggestions were not as expected for word "+
+				gotCorrection.orig, 
+				expSugg, gotCorrection.getAllSuggestions());
+		return this;
+	}
 }

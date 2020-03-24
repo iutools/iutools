@@ -235,19 +235,20 @@ public class SpellCheckerTest {
 	public void test__correctWord__roman__MispelledInput() throws Exception {
 		SpellChecker checker = makeCheckerSmallCustomDict();
 		checker.enablePartialCorrections();
-		Pair<String,String> blah;
 		String word = "inuktigtut";
 		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
 		
 		AssertSpellingCorrection.assertThat(gotCorrection, 
 				  "Correction for word 'inukshuk' was wrong")
 			.wasMisspelled()
-			.suggestsSpellings(
-				new String[] {"inuktitut", "inuktut", "inukttut", 
-						"inukutt", "inuk"})
-			.suggestsCorrectLead("inukti")
-			.suggestsCorrectTail("tut")
-			.suggestsCorrectExtremities("inukti[g]tut")
+			.providesSuggestions(
+				new String[] {
+				  "inukti[g]tut",
+				  "inuktitut",
+				  "inuktut",
+				  "inukttut",
+				  "inukutt",
+				  "inuk"})
 			;
 	}
 
@@ -633,7 +634,7 @@ public class SpellCheckerTest {
 		SpellingCorrection correction = 
 				new SpellingCorrection(badWord, new String[0], true);
 		checker.computeCorrectPortions(badWord, correction);
-		AssertSpellingCorrection.assertThat(correction, "")
+		AssertSpellingCorrection.assertThat(correction, "")			
 			.suggestsCorrectLead("inukti")
 			.suggestsCorrectTail("tut")
 			.suggestsCorrectExtremities("inukti[q]tut")

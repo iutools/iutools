@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import ca.nrc.datastructure.Pair;
 
 public class SpellingCorrection {
@@ -54,6 +56,28 @@ public class SpellingCorrection {
 			}
 		}
 	}
+	
+	public List<String> getAllSuggestions() {
+		List<String> suggestions = new ArrayList<String>();
+		
+		suggestions.addAll(getPartiallyCorrect());
+		suggestions.addAll(getPossibleSpellings());
+		
+		return suggestions;
+	}
+
+	@JsonIgnore
+	private List<String> getPartiallyCorrect() {
+		List<String> partiallyCorrect = new ArrayList<String>();
+		if (partiallyCorrectExtremities() != null) {
+			partiallyCorrect.add(partiallyCorrectExtremities());
+		} else {
+			partiallyCorrect.add(correctLead);
+			partiallyCorrect.add(correctTail);
+		}
+		
+		return partiallyCorrect;
+	}
 
 	public List<ScoredSpelling> getScoredPossibleSpellings() {
 		return scoredCandidates;
@@ -80,7 +104,7 @@ public class SpellingCorrection {
 		return this;
 	}
 	
-	public String correctExtremities() {
+	public String partiallyCorrectExtremities() {
 		String correctPortions = null;
 		if (correctLead != null && correctTail != null) {
 			int middleStart = correctLead.length();
