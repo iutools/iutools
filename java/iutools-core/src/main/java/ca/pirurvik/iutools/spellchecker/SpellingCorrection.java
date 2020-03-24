@@ -13,6 +13,10 @@ public class SpellingCorrection {
 				new ArrayList<ScoredSpelling>();
 	public String correctLead;
 	public String correctTail;
+	
+	public SpellingCorrection() {
+		initialize(null, null, null, null);		
+	}
 
 	public SpellingCorrection(String _orig, String[] _corrections, Boolean _wasMispelled) {
 		List<String> correctionsList = Arrays.asList(_corrections);
@@ -37,18 +41,23 @@ public class SpellingCorrection {
 		initialize(word, null, null, _wasMispelled);
 	}
 
-
 	private void initialize(String _orig, List<String> _corrections, 
 			List<Double> _scores, Boolean _wasMispelled) {
 		this.orig = _orig;
 		if (_wasMispelled != null) this.wasMispelled = _wasMispelled;
+		if (_corrections != null && _scores != null) {
+			for (int ii=0; ii < _corrections.size(); ii++) {
+				String spelling = _corrections.get(ii);
+				Double score = _scores.get(ii);
+				scoredCandidates.add(new ScoredSpelling(spelling, score));
+			}
+		}
 	}
 
 	public List<ScoredSpelling> getScoredPossibleSpellings() {
 		return scoredCandidates;
 	}
-	
-	
+
 	public List<String> getPossibleSpellings() {
 		List<String> possibleSpellings = new ArrayList<String>();
 		for (ScoredSpelling scoredSpelling: scoredCandidates) {
