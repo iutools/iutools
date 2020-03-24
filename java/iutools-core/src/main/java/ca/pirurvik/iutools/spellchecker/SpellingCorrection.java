@@ -1,5 +1,6 @@
 package ca.pirurvik.iutools.spellchecker;
 
+import java.beans.Transient;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -58,6 +59,7 @@ public class SpellingCorrection {
 		return scoredCandidates;
 	}
 
+	@Transient
 	public List<String> getPossibleSpellings() {
 		List<String> possibleSpellings = new ArrayList<String>();
 		for (ScoredSpelling scoredSpelling: scoredCandidates) {

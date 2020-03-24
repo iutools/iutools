@@ -11,6 +11,13 @@ public class AssertSpellingCorrection {
 
 	private String baseMessage;
 	private SpellingCorrection gotCorrection;
+	
+	public static AssertSpellingCorrection assertThat(
+			SpellingCorrection _gotCorrection, 
+			String _mess) {
+		
+		return new AssertSpellingCorrection(_gotCorrection, _mess);
+	}
 
 	public AssertSpellingCorrection(SpellingCorrection _gotCorrection, 
 				String _mess) {

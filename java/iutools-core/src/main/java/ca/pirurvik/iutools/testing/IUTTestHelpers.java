@@ -15,6 +15,7 @@ import org.junit.Assert;
 import ca.inuktitutcomputing.script.Syllabics;
 import ca.nrc.data.harvesting.SearchResults;
 import ca.nrc.json.PrettyPrinter;
+import ca.nrc.ui.web.testing.MockHttpServletResponse;
 import ca.pirurvik.iutools.search.SearchHit;
 
 public class IUTTestHelpers {
@@ -123,5 +124,4 @@ public class IUTTestHelpers {
 		Assert.assertTrue("Estimated number of hits found was too low.\n   Expected at least: "+expMinHits+"\n   But was: "+totalEstHits, 
 				totalEstHits >= expMinHits);
 	}
-
 }

@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ca.nrc.ui.web.testing.MockHttpServletResponse;
+import ca.pirurvik.iutools.testing.IUTTestHelpers;
 
 public class SpellEndpointTest {
 
@@ -30,8 +31,29 @@ public class SpellEndpointTest {
 					IUTServiceTestHelpers.EndpointNames.SPELL,
 					spellInputs
 				);
+		
+		SpellCheckerAssertion.assertThat(response, "")
+			.raisedNoError()
+			.nthCorrectionIs(0, true, 
+					new String[] {
+					  "ᐃᓄᒻᒧᑦ",
+					  "ᐃᓄᑐᐊᒧᑦ",
+					  "ᐃᓄᑐᐊᕐᒧᑦ",
+					  "ᐃᓄᖕᒧᑦ",
+					  "ᐃᓄᑐᖃᕐᒧᑦ",
+					  "ᐃᓄᒻᒧᑦ",
+					  "ᐃᓄᑐᐊᒧᑦ",
+					  "ᐃᓄᑐᐊᕐᒧᑦ",
+					  "ᐃᓄᖕᒧᑦ",
+					  "ᐃᓄᑐᖃᕐᒧᑦ"
+					})
+			.nthCorrectionIs(1, false)
+			;
+		
 		return;	
 	}
+
+
 //	
 //	@Test
 //	public void test__SearchEndpoint__FirstAndSecondPagesOfHitsDiffer() throws Exception {

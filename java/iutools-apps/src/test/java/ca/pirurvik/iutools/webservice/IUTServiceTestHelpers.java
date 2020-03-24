@@ -68,6 +68,15 @@ public class IUTServiceTestHelpers {
 		
 		return response;
 	}
+
+	public static SpellResponse toSpellResponse(
+			HttpServletResponse servletResp) throws IOException {
+		String responseStr = servletResp.getOutputStream().toString();
+		SpellResponse response = 
+				new ObjectMapper().readValue(responseStr, SpellResponse.class);
+		return response;
+	}
+
 	
 	public static SearchResponse toSearchResponse(
 			HttpServletResponse servletResp) throws IOException {

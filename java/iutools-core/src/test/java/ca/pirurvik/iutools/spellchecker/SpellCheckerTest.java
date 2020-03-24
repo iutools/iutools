@@ -239,7 +239,7 @@ public class SpellCheckerTest {
 		String word = "inuktigtut";
 		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
 		
-		assertCorrection(gotCorrection, 
+		AssertSpellingCorrection.assertThat(gotCorrection, 
 				  "Correction for word 'inukshuk' was wrong")
 			.wasMisspelled()
 			.suggestsSpellings(
@@ -633,7 +633,7 @@ public class SpellCheckerTest {
 		SpellingCorrection correction = 
 				new SpellingCorrection(badWord, new String[0], true);
 		checker.computeCorrectPortions(badWord, correction);
-		assertCorrection(correction)
+		AssertSpellingCorrection.assertThat(correction, "")
 			.suggestsCorrectLead("inukti")
 			.suggestsCorrectTail("tut")
 			.suggestsCorrectExtremities("inukti[q]tut")
@@ -757,16 +757,16 @@ public class SpellCheckerTest {
 				checker.allWords.contains(","+word+","));
 	}
 
-	public AssertSpellingCorrection assertCorrection(
-			SpellingCorrection gotCorrection) {
-		return assertCorrection(gotCorrection, null);
-	}
-	
-	public AssertSpellingCorrection assertCorrection(
-			SpellingCorrection gotCorrection, String mess) {
-		if (mess == null) { mess = ""; }
-		AssertSpellingCorrection assertion = 
-				new AssertSpellingCorrection(gotCorrection, mess);
-		return assertion;
-	}
+//	public AssertSpellingCorrection assertCorrection(
+//			SpellingCorrection gotCorrection) {
+//		return assertCorrection(gotCorrection, null);
+//	}
+//	
+//	public AssertSpellingCorrection assertCorrection(
+//			SpellingCorrection gotCorrection, String mess) {
+//		if (mess == null) { mess = ""; }
+//		AssertSpellingCorrection assertion = 
+//				new AssertSpellingCorrection(gotCorrection, mess);
+//		return assertion;
+//	}
 }
