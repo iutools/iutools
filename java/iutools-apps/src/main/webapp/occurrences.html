@@ -43,7 +43,12 @@
     <div id="div-message" class="div-message"></div>
     <div id="div-error" class="div-error"></div>
     <div id="div-results" class="div-results"></div>
-    <div id="div-example-word" class="div-example-word"><div id=message-in-example></div><div id="word-in-example"></div><div id="iconizer" title="Minimize"><img src="imgs/minimize.png" ></div><div id="contents"></div></div>
+    <div id="div-example-word" class="div-example-word">
+    	<div id="message-in-example"></div>
+    	<div id="word-in-example"></div>
+    	<div id="iconizer" title="Minimize"><img src="imgs/minimize.png" ></div>
+    	<div id="example-contents"></div>
+    </div>
     <div id="div-example-word-iconized" title="Maximize"><img src="imgs/maximize.png" height=24 ></div>
     
       
@@ -92,7 +97,8 @@
     		divIconizedExampleWord: "div-example-word-iconized",
     		divMessageInExample: "message-in-example",
     		divWordInExample: "word-in-example",
-    		inpNbExamples: "nb-examples"
+    		divWordInExampleContents: "example-contents",
+    		inpNbExamples: "nb-examples",
         };
     var occurrenceController = new OccurrenceController(config);
 </script>

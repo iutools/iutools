@@ -6,8 +6,6 @@ class OccurrenceController extends WidgetController {
 
 	constructor(config) {
 		super(config);
-		this.totalHits = 0;
-		this.alreadyShownHits = [];
 	} 
 	
 	// Setup handler methods for different HTML elements specified in the config.
@@ -19,9 +17,9 @@ class OccurrenceController extends WidgetController {
 	}
 	
 	onGet() {
-		var divExampleWord = this.elementForProp("divExampleWord");
-		$('#contents',divExampleWord).html('').parent().hide();
+		this.elementForProp("divWordInExampleContents").html('').parent().hide();
 		this.elementForProp('inpExampleWord').val('');
+		this.elementForProp("divExampleWord").hide();
 		var isValid = this.validateQueryInput();
 		if (isValid) {
 			this.clearResults();
@@ -33,23 +31,12 @@ class OccurrenceController extends WidgetController {
 		}
 	}
 	
-	onWordSelect(elementID) {
-		var element = $('#'+elementID);
+	onWordSelect(ev) {
+		var element = ev.target;
+		console.log("onWordSelect: target="+element.id);
 		var exampleWord = $(element).text();
-//		$(".word-example.selected").removeClass("selected");
-//		element.addClass("selected");
-//		console.log("word: "+$(element).text());
-//		occurrenceController.elementForProp("inpExampleWord").val($(element).text());
-//		occurrenceController.setWordExampleBusy(true);
-//		var divExampleWord = occurrenceController.elementForProp("divExampleWord");
-//		$('#contents',divExampleWord).html('');
-//		var divWordInExample = occurrenceController.elementForProp("divWordInExample");
-//		divWordInExample.html('');
-//		var divIconizedWordExample = occurrenceController.elementForProp("divIconizedExampleWord");
-//		divIconizedWordExample.hide();
-//		divExampleWord.show();
-		super.showSpinningWheel("divMessageInExample","Searching");
-		occurrenceController.invokeExampleWordService(occurrenceController.getExampleWordRequestData(wordExample),
+		occurrenceController.showSpinningWheel("divMessageInExample","Searching");
+		occurrenceController.invokeExampleWordService(occurrenceController.getExampleWordRequestData(exampleWord),
 				occurrenceController.successExampleWordCallback, occurrenceController.failureExampleWordCallback);
 	}
 	
@@ -171,15 +158,15 @@ class OccurrenceController extends WidgetController {
 //		var exampleWord = this.elementForProp("inpExampleWord").val();
 //		if (exampleWord=='')
 //			exampleWord = null;
-//		var nbExamples = this.elementForProp("inpNbExamples").val().trim();
-//		if (nbExamples=='')
-//			nbExamples = "20";
+		var nbExamples = this.elementForProp("inpNbExamples").val().trim();
+		if (nbExamples=='')
+			nbExamples = "20";
 
 		var request = {
 				wordPattern: wordPattern,
 				corpusName: corpusName,
 //				exampleWord: exampleWord,
-//				nbExamples: nbExamples
+				nbExamples: nbExamples
 		};
 		
 		var jsonInputs = JSON.stringify(request);;
@@ -189,12 +176,8 @@ class OccurrenceController extends WidgetController {
 	}
 	
 	getExampleWordRequestData(word) {
-		var nbExamples = this.elementForProp("inpNbExamples").val().trim();
-		if (nbExamples=='')
-			nbExamples = "20";
 		var request = { 
-			exampleWord: word,
-			nbExamples: nbExamples
+			exampleWord: word
 			};
 		var jsonInputs = JSON.stringify(request);;
 		return jsonInputs;
@@ -243,9 +226,9 @@ class OccurrenceController extends WidgetController {
 			var wordsFreqsArray = new Array(wordFreqs.length);
 			for (var iwf=0; iwf<wordFreqs.length; iwf++) {
 				wordsFreqsArray[iwf] = 
-					'<a class="word-example" id="word-example-'+words[iwf]+'"' +
-					' onclick="occurrenceController.onWordSelect(\''+'word-example-'+words[iwf]+'\')"'+
-					'>'+words[iwf]+'</a>'
+					'<a class="word-example" id="word-example-'+words[iwf]+'"'
+//					+ ' onclick="occurrenceController.onWordSelect(\''+'word-example-'+words[iwf]+'\')"'
+					+ '>'+words[iwf]+'</a>'
 					//+'('+wordFreqs[iwf]+')'
 					;
 			}
@@ -256,49 +239,52 @@ class OccurrenceController extends WidgetController {
 		}
 		divResults.append(html);
 		
-		var thisController = this;
+		this.attachListenersToExampleWords();
 		
 		new RunWhen().domReady(function() {
 				divResults.show();
 		});
 	}
 	
-	attachListenersToExampleWords(controller) {
+	attachListenersToExampleWords() {
 		var anchorsWords = document.querySelectorAll('.word-example');
 	    for (var ipn=0; ipn<anchorsWords.length; ipn++) {
 	    	anchorsWords[ipn].addEventListener(
 		    		  'click', 
-		    		  controller.onWordSelect
+		    		  this.onWordSelect
 		    		  );
 	    }
 	}
 	
 		
 	setExampleWordResults(results) {
+		var tracer = new Tracer('OccurenceController.setExampleWordResults', true);
 		var divExampleWord = this.elementForProp("divExampleWord");
 		this.hideSpinningWheel("divMessageInExample");
 		var gist = results.exampleWord.gist;
-		console.log('gist= '+JSON.stringify(gist));
 		this.elementForProp("divWordInExample").html('Example word: '+'<strong>'+gist.word+'</strong>');
 		var wordComponents = gist.wordComponents;
-		console.log("wordComponents= "+JSON.stringify(wordComponents));
-		var html = '<table id="tbl-gist" class="gist"><tr><th>Morpheme</th><th>Meaning</th></tr>';
+		var htmlGist = '<table id="tbl-gist" class="gist"><tr><th>Morpheme</th><th>Meaning</th></tr>';
 		for (var iwc=0; iwc<wordComponents.length; iwc++) {
 			var component = wordComponents[iwc];
-			html += '<tr><td>'+component.fst+'</td><td>'+component.snd+'</td></tr>'
+			htmlGist += '<tr><td>'+component.fst+'</td><td>'+component.snd+'</td></tr>'
 		}
-		html += '</table>';
+		htmlGist += '</table>';
 		var alignments = results.exampleWord.alignments;
-		html += '<table id="tbl-alignments" class="alignments"><th>Inuktitut</th><th>English</th></tr>';
+		tracer.trace('Nb. alignments= '+alignments.length);
+		var htmlAlign = '<table id="tbl-alignments" class="alignments"><th>Inuktitut</th><th>English</th></tr>';
 		for (var ial=0; ial<Math.min(30,alignments.length); ial++) {
-			var alignmentParts = alignments[ial].split(":: ");
-			var sentences = alignmentParts[1].split("@----@");
-			var inuktitutSentence = sentences[0].replace(gist.word,'<strong>'+gist.word+'</strong>').replace(/\.{5,}/,'...');
-			var englishSentence = sentences[1].replace(/\.{5,}/,'...').trim();
-			html += '<tr><td>'+inuktitutSentence+'</td><td>'+englishSentence+'</td></tr>';
+			var alignment = alignments[ial];
+			console.log('alignment: '+JSON.stringify(alignment));
+			console.log('iu: '+alignment.sentences['iu']);
+			console.log('en: '+alignment.sentences['en']);
+			var inuktitutSentence = alignment.sentences['iu'].replace(gist.word,'<strong>'+gist.word+'</strong>').replace(/\.{5,}/,'...');
+			var englishSentence = alignment.sentences['en'].replace(/\.{5,}/,'...').trim();
+			htmlAlign += '<tr><td>'+inuktitutSentence+'</td><td>'+englishSentence+'</td></tr>';
 		}
-		html += '</table>';
-		$('#contents',divExampleWord).html(html);
+		htmlAlign += '</table>';
+		this.elementForProp("divWordInExampleContents").html(htmlGist+htmlAlign);
+		divExampleWord.show();
 	}
 
 	
