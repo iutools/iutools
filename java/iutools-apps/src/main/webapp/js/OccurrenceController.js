@@ -35,6 +35,9 @@ class OccurrenceController extends WidgetController {
 		var element = ev.target;
 		console.log("onWordSelect: target="+element.id);
 		var exampleWord = $(element).text();
+		occurrenceController.elementForProp("divWordInExampleContents").html('');
+		occurrenceController.elementForProp("divWordInExample").html('');
+		occurrenceController.elementForProp("divExampleWord").show();
 		occurrenceController.showSpinningWheel("divMessageInExample","Searching");
 		occurrenceController.invokeExampleWordService(occurrenceController.getExampleWordRequestData(exampleWord),
 				occurrenceController.successExampleWordCallback, occurrenceController.failureExampleWordCallback);
@@ -227,9 +230,7 @@ class OccurrenceController extends WidgetController {
 			for (var iwf=0; iwf<wordFreqs.length; iwf++) {
 				wordsFreqsArray[iwf] = 
 					'<a class="word-example" id="word-example-'+words[iwf]+'"'
-//					+ ' onclick="occurrenceController.onWordSelect(\''+'word-example-'+words[iwf]+'\')"'
 					+ '>'+words[iwf]+'</a>'
-					//+'('+wordFreqs[iwf]+')'
 					;
 			}
 			html += '<div class="morpheme-details">';
@@ -284,7 +285,6 @@ class OccurrenceController extends WidgetController {
 		}
 		htmlAlign += '</table>';
 		this.elementForProp("divWordInExampleContents").html(htmlGist+htmlAlign);
-		divExampleWord.show();
 	}
 
 	
