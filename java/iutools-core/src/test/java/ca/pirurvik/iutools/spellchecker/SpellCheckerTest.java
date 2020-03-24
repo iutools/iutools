@@ -252,7 +252,6 @@ public class SpellCheckerTest {
 			;
 	}
 
-
 	@Test
 	public void test__correctWord__roman__CorrectlySpellendInput() throws Exception {
 		SpellChecker checker = makeCheckerLargeDict();
@@ -744,10 +743,6 @@ public class SpellCheckerTest {
 	
 	}
 
-	
-	
-	
-	
 	private void assertWordIsKnown(String word, SpellChecker checker) {
 		Assert.assertTrue("Spell checker dictionary did not know about word '"+word+"'", 
 				checker.allWords.contains(","+word+","));
@@ -757,17 +752,4 @@ public class SpellCheckerTest {
 		Assert.assertFalse("Spell checker dictionary should NOT have known about word '"+word+"'", 
 				checker.allWords.contains(","+word+","));
 	}
-
-//	public AssertSpellingCorrection assertCorrection(
-//			SpellingCorrection gotCorrection) {
-//		return assertCorrection(gotCorrection, null);
-//	}
-//	
-//	public AssertSpellingCorrection assertCorrection(
-//			SpellingCorrection gotCorrection, String mess) {
-//		if (mess == null) { mess = ""; }
-//		AssertSpellingCorrection assertion = 
-//				new AssertSpellingCorrection(gotCorrection, mess);
-//		return assertion;
-//	}
 }
