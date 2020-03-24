@@ -584,29 +584,44 @@ public class SpellCheckerTest {
 //				"titiqqanik tuqquqtuijiulluni ikajuqpak&unilu iqqaqtuijinik "
 		;
 		
-		SpellChecker checker = makeCheckerLargeDict();
-		Long start = System.currentTimeMillis();
-		checker.correctText(text);
-		Double gotElapsed = (System.currentTimeMillis() - start) 
-							/ (1.0 * 1000);
+		Pair<Boolean,Double>[] configurations = new Pair[] {
+				// Expected time when partial correction is disabled
+				Pair.of(false, new Double(7.5)),
+				// Expected time when partial correction is enagled
+				Pair.of(true, new Double(20.0))
+		};
 		
-		Double expMaxElapsed = 6.0; // on Alain's macbook
-		AssertNumber.isLessOrEqualTo(
-				"SpellChecker performance was MUCH lower than expected.\n"+
-				"Note: This test may fail on occasion depending on the speed "+
-				"and current load of your machine.", 
-				gotElapsed, expMaxElapsed);
-		
-		start = System.currentTimeMillis();
-		checker.correctText(text);
-		Double gotElapsedSecondTime = (System.currentTimeMillis() - start) 
-				/ (1.0 * 1000);
-		
-		double expSpeedupFactor = 1.5;
-		AssertNumber.isLessOrEqualTo(
-				"Correcting text second time should have been MUCH FASTER "+
-				"\n(exp speedup: x"+expSpeedupFactor+").",
-				gotElapsedSecondTime, gotElapsed / expSpeedupFactor);
+		for (Pair<Boolean,Double> config: configurations) {
+			SpellChecker checker = makeCheckerLargeDict();
+			checker.setPartialCorrectionEnabled(config.getFirst());
+			Long start = System.currentTimeMillis();
+			checker.correctText(text);
+			Double gotElapsed = (System.currentTimeMillis() - start) 
+								/ (1.0 * 1000);
+			
+			Double expMaxElapsed = config.getSecond();
+			
+			String baseMess = "With partial correction set to "+
+								config.getFirst()+"...\n";
+			AssertNumber.isLessOrEqualTo(
+					baseMess+
+					"SpellChecker performance was MUCH lower than expected.\n"+
+					"Note: This test may fail on occasion depending on the speed "+
+					"and current load of your machine.", 
+					gotElapsed, expMaxElapsed);
+			
+			start = System.currentTimeMillis();
+			checker.correctText(text);
+			Double gotElapsedSecondTime = (System.currentTimeMillis() - start) 
+					/ (1.0 * 1000);
+			
+			double expSpeedupFactor = 1.5;
+			AssertNumber.isLessOrEqualTo(
+					baseMess+
+					"Correcting text second time should have been MUCH FASTER "+
+					"\n(exp speedup: x"+expSpeedupFactor+").",
+					gotElapsedSecondTime, gotElapsed / expSpeedupFactor);
+		}
 		
 	}
 	

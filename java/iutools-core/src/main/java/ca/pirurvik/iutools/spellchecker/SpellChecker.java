@@ -76,6 +76,10 @@ public class SpellChecker {
 	 *  will identify the longest leading and tailing strings that seem 
 	 *  correctly spelled.*/
 	private boolean partialCorrectionEnabled = false;
+		public SpellChecker setPartialCorrectionEnabled(boolean flag) {
+			partialCorrectionEnabled = flag;
+			return this;
+		}
 		public SpellChecker enablePartialCorrections() {
 			partialCorrectionEnabled = true;
 			return this;
