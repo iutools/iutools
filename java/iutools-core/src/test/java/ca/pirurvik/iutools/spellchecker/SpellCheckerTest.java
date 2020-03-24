@@ -21,9 +21,11 @@ public class SpellCheckerTest {
 		
 	private SpellChecker checkerSyll = null;
 	
+	// Note: These are not "real" correct words in Inuktut.
+	//  Just pretending that they are.
 	private static final String[] correctWordsLatin = new String[] {
 		"inuktut", "inukttut", "inuk", "inukutt", "inukshuk", 
-		"nunavut"
+		"nunavut", "inuktitut"
 	};
 
 	private SpellChecker makeCheckerLargeDict() throws StringSegmenterException, SpellCheckerException {
@@ -222,13 +224,9 @@ public class SpellCheckerTest {
 		checker.ngramStatsForCandidates = checker.ngramStats;
 		Set<String> candidates = checker.firstPassCandidates_TFIDF(badWord, false);
 	
-		
-		// ALAIN: The expected list below contains some misspelled words that come before some 
-		//   correctly spelled ones. But that does not matter as it is only a first pass.
-		//   The second pass should re-sort the candidates, taking into account whether or not
-		//   they were analyzed by the morphological segmenter.
-		//     - 
-		String[] expected = new String[] {"inuk","inukshuk","inukttut","inuktut","inukutt"};		
+		String[] expected = new String[] {
+				"inuk", "inukshuk", "inuktitut", "inukttut", "inuktut",
+				"inukutt"};		
 		AssertObject.assertDeepEquals("The list of candidate corrections for word "+badWord+" was not as expected", 
 				expected, candidates);
 	}
@@ -238,18 +236,18 @@ public class SpellCheckerTest {
 		SpellChecker checker = makeCheckerSmallCustomDict();
 		checker.enablePartialCorrections();
 		Pair<String,String> blah;
-		String word = "inukkshuk";
+		String word = "inuktigtut";
 		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
 		
 		assertCorrection(gotCorrection, 
 				  "Correction for word 'inukshuk' was wrong")
 			.wasMisspelled()
 			.suggestsSpellings(
-				new String[] {"inukshuk", "inuk", "inukutt", "inuktut", 
-						"inukttut"})
-			.suggestsCorrectLead("inuk")
-			.suggestsCorrectTail("kshuk")
-			.suggestsCorrectExtremities(null)
+				new String[] {"inuktitut", "inuktut", "inukttut", 
+						"inukutt", "inuk"})
+			.suggestsCorrectLead("inukti")
+			.suggestsCorrectTail("tut")
+			.suggestsCorrectExtremities("inukti[g]tut")
 			;
 	}
 
@@ -369,9 +367,9 @@ public class SpellCheckerTest {
 				new String[] {
 						  "ᐃᓄᒃᑐᑦ",
 						  "ᐃᓄᑯᑦᑦ",
+						  "ᐃᓄᒃᑎᑐᑦ",						  
 						  "ᐃᓄᒃᑦᑐᑦ",
-						  "ᐃᓄᒃ",
-						  "ᐃᓄᒃᔅᓱᒃ"
+						  "ᐃᓄᒃ"
 				});
 		
 		wordNum = 1;
@@ -592,7 +590,7 @@ public class SpellCheckerTest {
 		Double gotElapsed = (System.currentTimeMillis() - start) 
 							/ (1.0 * 1000);
 		
-		Double expMaxElapsed = 5.0; // on Alain's macbook
+		Double expMaxElapsed = 6.0; // on Alain's macbook
 		AssertNumber.isLessOrEqualTo(
 				"SpellChecker performance was MUCH lower than expected.\n"+
 				"Note: This test may fail on occasion depending on the speed "+
@@ -616,31 +614,47 @@ public class SpellCheckerTest {
 	public void test__computeCorrectPortions__HappyPath() throws Exception {
 		SpellChecker checker = makeCheckerSmallCustomDict();
 		
-		String badWord = "inuktishuk";
+		String badWord = "inuktiqtut";
 		SpellingCorrection correction = 
 				new SpellingCorrection(badWord, new String[0], true);
 		checker.computeCorrectPortions(badWord, correction);
 		assertCorrection(correction)
-			.suggestsCorrectLead("inuk")
-			.suggestsCorrectTail("shuk")
-			.suggestsCorrectExtremities("inuk[ti]shuk")
+			.suggestsCorrectLead("inukti")
+			.suggestsCorrectTail("tut")
+			.suggestsCorrectExtremities("inukti[q]tut")
 		;
 	}
 	
 	@Test
-	public void test__wordAnalysisStartsWith__HappyPath() throws Exception {
+	public void test__leadRespectsMorphemeBoundaries__HappyPath() throws Exception {
 		String word = "inuktitut";
 		SpellChecker checker = makeCheckerSmallCustomDict();
 		
 		String leadChars = "inuk";
 		Assert.assertTrue(
 				"Lead morphemes for word "+word+" SHOULD have matched "+leadChars, 
-				checker.leadMorphemesMatch(leadChars, word));
+				checker.leadRespectsMorphemeBoundaries(leadChars, word));
 		
 		leadChars = "inukt";
 		Assert.assertFalse(
 				"Lead morphemes for word "+word+" should NOT have matched "+leadChars, 
-				checker.leadMorphemesMatch(leadChars, word));
+				checker.leadRespectsMorphemeBoundaries(leadChars, word));
+	}
+
+	@Test
+	public void test__tailRespectsMorphemeBoundaries__HappyPath() throws Exception {
+		String word = "inuktitut";
+		SpellChecker checker = makeCheckerSmallCustomDict();
+		
+		String tailChars = "tut";
+		Assert.assertTrue(
+				"Tail morphemes for word "+word+" SHOULD have matched "+tailChars, 
+				checker.tailRespectsMorphemeBoundaries(tailChars, word));
+		
+		tailChars = "itut";
+		Assert.assertFalse(
+				"Tail morphemes for word "+word+" should NOT have matched "+tailChars, 
+				checker.tailRespectsMorphemeBoundaries(tailChars, word));
 	}
 	
 	/**********************************

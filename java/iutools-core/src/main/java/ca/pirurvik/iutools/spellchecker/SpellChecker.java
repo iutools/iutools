@@ -62,7 +62,7 @@ public class SpellChecker {
 	/** Maximum msecs allowed for decomposing a word during 
 	 *  spell checker
 	 */
-	private final long MAX_DECOMP_MSECS = 3*1000;
+	private final long MAX_DECOMP_MSECS = 5*1000;
 
 	public String allWords = ",,";
 	public Map<String,Long> ngramStats = new HashMap<String,Long>();
@@ -359,10 +359,10 @@ public class SpellChecker {
 	
 	protected void computeCorrectPortions(String badWordRoman, 
 			SpellingCorrection corr) throws SpellCheckerException {
-		System.out.println("SpellChecker.computeCorrectPortions: invoked with badWordRoman="+badWordRoman);
+//		System.out.println("SpellChecker.computeCorrectPortions: invoked with badWordRoman="+badWordRoman);
 		computeCorrectLead(badWordRoman, corr);
 		computeCorrectTail(badWordRoman, corr);
-		System.out.println("SpellChecker.computeCorrectPortions: DONE");
+//		System.out.println("SpellChecker.computeCorrectPortions: DONE");
 	}
 
 	private void computeCorrectLead(String badWordRoman, 
@@ -373,42 +373,47 @@ public class SpellChecker {
 		String amongWords = getAllWordsToBeUsedForCandidates(badWordRoman);
 		
 		String longestCorrectLead = null;
-		for (int endPos=3; endPos < badWordRoman.length(); endPos++) {
+		for (int endPos=badWordRoman.length()-1; endPos > 3; endPos--) {
 			//
-			// Loop through all the leading strings of the bad words, until we 
-			// reach a pointwhere we cannot find a correctly spelled word with 
-			// the following characteristics.
+			// Loop through all the leading strings L of the bad word, starting 
+			// the complete bad word and removing one tailing character at a time, 
+			// until we find a L that satifies the following conditions:
 			// 
-			// - Word leads with the same string
-			// - The lead string does not span across phonemes. In other words,
-			//   the last character of the lead corresponds to the end of a 
-			//   morpheme in the word.
+			// - There is a correctly spelled word W that also starts with L
+			// - L does not span across phonemes. In other words,
+			//   the last character L corresponds to the end of a 
+			//   morpheme in W.
 			//
 			String lead = badWordRoman.substring(0, endPos-1);
 			Set<String> words = wordsContainingSequ("^"+lead, amongWords);
+//			System.out.println("** SpellChecker.computeCorrectLead: lead="+
+//					lead+", words.size()="+words.size());
 			boolean wordWasFoundForLead = false;
-			int wordCount = 0;
 			for (String aWord: words) {
-				wordCount++;
-				if (wordCount > MAX_WORDS_TO_TRY) {
-					break;
-				}
-				if (leadMorphemesMatch(lead, aWord)) {
-					// Found a word with the right characeristics				
-					wordWasFoundForLead = true;
+				if (leadRespectsMorphemeBoundaries(lead, aWord)) {
+					// Found a word with the right characteristics
+					wordWasFoundForLead = true;					
+					longestCorrectLead = lead;
+//					System.out.println("** SpellChecker.computeCorrectLead: setting longestCorrectLead="+
+//							longestCorrectLead);
 					break;
 				}
 			}
 			
 			if (wordWasFoundForLead) {
-				longestCorrectLead = badWordRoman.substring(0, endPos-1);
-			}
+//				System.out.println("** SpellChecker.computeCorrectLead: setting longestCorrectLead="+
+//						longestCorrectLead);
+				break;
+			}			
 		}
 		corr.correctLead = longestCorrectLead;
 	}
 	
-	protected boolean leadMorphemesMatch(String surfaceForm, String word) 
+	protected boolean leadRespectsMorphemeBoundaries(String lead, String word) 
 			throws SpellCheckerException {
+//		System.out.println("** SpellChecker.leadRespectsMorphemeBoundaries: lead="+
+//				lead+", word=="+word);
+		
 		Boolean answer = null;
 		
 		Decomposition[] decomps = null;
@@ -427,41 +432,132 @@ public class SpellChecker {
 		if (decomps != null) {
 			for (Decomposition aDecomp: decomps) {
 				List<String> morphemes = aDecomp.morphemeSurfaceForms();
+//				System.out.println("** SpellChecker.leadRespectsMorphemeBoundaries:"+
+//						" looking at morphemes='"+String.join("', '", morphemes)+"'");
+				
 				String morphLead = "";
 				for (String morph: morphemes) {
 					morphLead += morph;
-					if (morphLead.equals(surfaceForm)) {
+					if (morphLead.equals(lead)) {
 						answer = true;
 						break;
 					}
 				}
 				if (answer != null) { break; }
+//				System.out.println("** SpellChecker.leadRespectsMorphemeBoundaries:"+
+//						"    after looking at morphemes, answer="+answer);
 			}
 		}
 		
 		if (answer == null) { answer = false; }
 		
+//		System.out.println("** SpellChecker.leadRespectsMorphemeBoundaries: lead="+
+//				lead+", word="+word+", returns answer="+answer);
+		
 		return answer.booleanValue();
 	}
+	
 
 	private void computeCorrectTail(String badWordRoman, 
-			SpellingCorrection corr) {
-
+			SpellingCorrection corr) throws SpellCheckerException {
+		
+		final int MAX_WORDS_TO_TRY = 5;
+		
 		String amongWords = getAllWordsToBeUsedForCandidates(badWordRoman);
 		
 		String longestCorrectTail = null;
-		for (int startPos = badWordRoman.length() - 3; 
-				startPos > 0; startPos--) {
-			String tail = badWordRoman.substring(startPos)+"$";
-			Set<String> words = wordsContainingSequ(tail, amongWords);
-			if (words.size() == 0) {
-				break;
+		for (int startPos=0; startPos < badWordRoman.length()-2; startPos++) {
+			//
+			// Loop through all the tailing strings L of the bad word, starting 
+			// the complete bad word and removing one leading character at a time, 
+			// until we find a L that satifies the following conditions:
+			// 
+			// - There is a correctly spelled word W that also starts with L
+			// - L does not span across phonemes. In other words,
+			//   the last character L corresponds to the end of a 
+			//   morpheme in W.
+			//
+			String tail = badWordRoman.substring(startPos);
+			Set<String> words = wordsContainingSequ(tail+"$", amongWords);
+//			System.out.println("** SpellChecker.computeCorrectTail: tail="+
+//					tail+", words.size()="+words.size());
+			boolean wordWasFoundForTail = false;
+			for (String aWord: words) {
+				if (tailRespectsMorphemeBoundaries(tail, aWord)) {
+					// Found a word with the right characteristics
+					wordWasFoundForTail = true;					
+					longestCorrectTail = tail;
+//					System.out.println("** SpellChecker.computeCorrectTail: setting longestCorrectTail="+
+//							longestCorrectTail);
+					break;
+				}
 			}
-			longestCorrectTail = badWordRoman.substring(startPos);
-		}
 			
+			if (wordWasFoundForTail) {
+//				System.out.println("** SpellChecker.computeCorrectTail: setting longestCorrectTail="+
+//						longestCorrectTail);
+				break;
+			}			
+		}
 		corr.correctTail = longestCorrectTail;
 	}
+	
+	public boolean tailRespectsMorphemeBoundaries(String tail, String word) 
+			throws SpellCheckerException {
+//		System.out.println("** SpellChecker.tailRespectsMorphemeBoundaries: tail="+
+//				tail+", word=="+word);
+		
+		Boolean answer = null;
+		
+		Decomposition[] decomps = null;
+		try {
+			 decomps = 
+				new MorphologicalAnalyzer()
+						.setTimeout(MAX_DECOMP_MSECS)
+						.activateTimeout()
+						.decomposeWord(word);
+		} catch(TimeoutException e) {
+			answer = false;
+		} catch(MorphInukException | LinguisticDataException e) {
+			throw new SpellCheckerException(e);
+		}
+		
+//		if (decomps == null) { System.out.println("** SpellChecker.tailRespectsMorphemeBoundaries:"+
+//				" decomps is NULL"); }
+
+//		if (decomps.length == 0) { System.out.println("** SpellChecker.tailRespectsMorphemeBoundaries:"+
+//				" decomps is Empty"); }
+		
+		if (decomps != null) {
+			for (Decomposition aDecomp: decomps) {
+				List<String> morphemes = aDecomp.morphemeSurfaceForms();
+//				System.out.println("** SpellChecker.tailRespectsMorphemeBoundaries:"+
+//						" looking at morphemes='"+String.join("', '", morphemes)+"'");
+				
+				String morphTail = "";
+				for (int ii=morphemes.size()-1; ii > 0; ii--) {
+					String morph = morphemes.get(ii);
+					morphTail = morph + morphTail;
+					if (morphTail.equals(tail)) {
+						answer = true;
+						break;
+					}
+				}
+				if (answer != null) { break; }
+//				System.out.println("** SpellChecker.tailRespectsMorphemeBoundaries:"+
+//						"    after looking at morphemes, answer="+answer);
+				
+			}
+		}
+		
+		if (answer == null) { answer = false; }
+		
+//		System.out.println("** SpellChecker.tailRespectsMorphemeBoundaries: tail="+
+//				tail+", word="+word+", returns answer="+answer);
+		
+		return answer.booleanValue();
+	}
+		
 	
 	/**
 	 * Transcode a list of scored candidate spellings to 
