@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 
 import ca.nrc.datastructure.Pair;
+import ca.pirurvik.iutools.NumericExpression;
 
 public class IUTokenizer {
 
@@ -72,8 +73,20 @@ public class IUTokenizer {
 		String[] tokenBeforeFinalPunctuationsAndFinalPunctuation = __processBeforePossibleFinalPunctuation(tokenAfterAcronym);
 		String tokenBeforeFinalPunctuation = tokenBeforeFinalPunctuationsAndFinalPunctuation[0];
 		String finalPunctuation = tokenBeforeFinalPunctuationsAndFinalPunctuation[1];
-		__processMainToken(tokenBeforeFinalPunctuation);
+		if ( !__processNumericExpression(tokenBeforeFinalPunctuation) ) {
+			__processMainToken(tokenBeforeFinalPunctuation);
+		}
 		__processFinalPunctuation(finalPunctuation);
+	}
+
+	private boolean __processNumericExpression(String token) {
+		boolean res = false;
+		if (wordIsNumberWithSuffix(token)!= null) {
+			allTokensPunctuation.add(new Pair<>(token,true));
+			res = true;
+		}
+		
+		return res;
 	}
 
 	protected void __processFinalPunctuation(String finalPunctuation) {
@@ -91,8 +104,6 @@ public class IUTokenizer {
 			logger.debug("found punctuation pattern in " + token + " at position " + mpunct.start(1));
 			if (punctuationMark.equals("&") && mpunct.start(1) != 0)
 				continue;
-			if (isDash(punctuationMark) && mpunct.start(1) != 0 && wordIsNumberWithSuffix(token) != null)
-				continue;
 			if (pos != mpunct.start(1))
 				allTokensPunctuation.add(new Pair<>(token.substring(pos, mpunct.start(1)), true));
 			allTokensPunctuation.add(new Pair<>(punctuationMark, false));
@@ -100,7 +111,6 @@ public class IUTokenizer {
 		}
 		if (pos != token.length())
 			allTokensPunctuation.add(new Pair<>(token.substring(pos), true));
-
 	}
 
 	protected String[] __processBeforePossibleFinalPunctuation(String token) {
@@ -145,13 +155,9 @@ public class IUTokenizer {
 			return token;
 	}
 
-	protected String[] wordIsNumberWithSuffix(String word) {
-		Pattern p = Pattern.compile("^(\\$?\\d+(?:[.,:]\\d+)?(?:[.,:]\\d+)?[\\-\u2013\u2212]?)([agijklmnpqrstuv]+)$");
-		Matcher mp = p.matcher(word);
-		if (mp.matches())
-			return new String[] { mp.group(1), mp.group(2) };
-		else
-			return null;
+	protected NumericExpression wordIsNumberWithSuffix(String token) {
+		NumericExpression numexp = NumericExpression.tokenIsNumberWithSuffix(token);
+		return numexp;
 	}
 
 	public List<String> onlyWords() {

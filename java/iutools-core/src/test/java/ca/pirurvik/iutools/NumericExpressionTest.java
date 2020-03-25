@@ -64,6 +64,12 @@ public class NumericExpressionTest {
 	Assert.assertEquals("The 'number' part is not as expected.", "0.08%", numericTermParts.numericFrontPart);
 	Assert.assertEquals("The 'separator' part is not as expected.", "-", numericTermParts.separator);
 	Assert.assertEquals("The 'ending' part is not as expected.", "mit", numericTermParts.morphemicEndPart);
+	token = "0.08%−mit";
+	numericTermParts = NumericExpression.tokenIsNumberWithSuffix(token);
+	Assert.assertTrue("Word "+token+" should have been acknowledged as a number-based word", numericTermParts != null);
+	Assert.assertEquals("The 'number' part is not as expected.", "0.08%", numericTermParts.numericFrontPart);
+	Assert.assertEquals("The 'separator' part is not as expected.", "−", numericTermParts.separator);
+	Assert.assertEquals("The 'ending' part is not as expected.", "mit", numericTermParts.morphemicEndPart);
 	token = "33mit";
 	numericTermParts = NumericExpression.tokenIsNumberWithSuffix(token);
 	Assert.assertTrue("Word "+token+" should have been acknowledged as a number-based word", numericTermParts != null);

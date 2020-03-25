@@ -214,6 +214,21 @@ public class IUTokenizerTest {
 	}
 	
 	@Test
+	public void test_run__Case_percent() throws IOException {
+		IUTokenizer tokenizer = new IUTokenizer();
+		String text;
+		text = "a 0.08%−mit c";
+		tokenizer.run(text);
+		List<Pair<String,Boolean>>expectedTokens = new ArrayList<Pair<String,Boolean>>();
+		expectedTokens.add(new Pair<>("a",true));
+		expectedTokens.add(new Pair<>(" ",false));
+		expectedTokens.add(new Pair<>("0.08%−mit",true));
+		expectedTokens.add(new Pair<>(" ",false));
+		expectedTokens.add(new Pair<>("c",true));
+		AssertHelpers.assertDeepEquals("", expectedTokens, tokenizer.getTokens());
+	}
+	
+	@Test
 	public void test_run__Case_quotes() throws IOException {
 		IUTokenizer tokenizer = new IUTokenizer();
 		String text;
