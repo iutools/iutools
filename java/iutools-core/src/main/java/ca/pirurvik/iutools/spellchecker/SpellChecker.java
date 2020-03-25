@@ -63,7 +63,7 @@ public class SpellChecker {
 	 *  spell checker
 	 */
 	private final long MAX_DECOMP_MSECS = 5*1000;
-
+	
 	public String allWords = ",,";
 	public Map<String,Long> ngramStats = new HashMap<String,Long>();
 	
@@ -393,7 +393,13 @@ public class SpellChecker {
 //			System.out.println("** SpellChecker.computeCorrectLead: lead="+
 //					lead+", words.size()="+words.size());
 			boolean wordWasFoundForLead = false;
+			
+			int wordCount = 0;
 			for (String aWord: words) {
+				wordCount++;
+				if (wordCount > 5) {
+					break;
+				}
 				if (leadRespectsMorphemeBoundaries(lead, aWord)) {
 					// Found a word with the right characteristics
 					wordWasFoundForLead = true;					
@@ -486,7 +492,12 @@ public class SpellChecker {
 //			System.out.println("** SpellChecker.computeCorrectTail: tail="+
 //					tail+", words.size()="+words.size());
 			boolean wordWasFoundForTail = false;
+			int wordCount = 0;
 			for (String aWord: words) {
+				wordCount++;
+				if (wordCount > 5) {
+					break;
+				}
 				if (tailRespectsMorphemeBoundaries(tail, aWord)) {
 					// Found a word with the right characteristics
 					wordWasFoundForTail = true;					

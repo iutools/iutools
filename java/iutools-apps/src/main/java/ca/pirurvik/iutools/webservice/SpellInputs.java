@@ -12,6 +12,7 @@ import ca.inuktitutcomputing.script.TransCoder;
 
 public class SpellInputs extends ServiceInputs {
 	public String text = null;
+	public boolean includePartiallyCorrect = false;
 	
 	public SpellInputs() {
 		

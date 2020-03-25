@@ -22,6 +22,10 @@
     
     <p>Enter some Inuktut text:</p>
     <textarea id="txt-to-check" name="txt-to-check" rows=20 cols=80></textarea>
+    <br/>
+    <input type="checkbox" id="chk-include-partials" name="chk-include-partials">
+    	Include partial corrections (slow)
+    <br/>
     <button id="btn-spell" type="button" name="btn-spell" value="Spell">Spell Check</button>
     <p></p>
     <div id="div-message" class="div-message"></div>
@@ -51,7 +55,7 @@
 
 <script src="js/RunWhen.js"></script>    
 <script src="js/WidgetController.js"></script>
-<script src="js/SpellController.js?version=0.00002"></script>
+<script src="js/SpellController.js?version=0.00004"></script>
 
 
 <script>
@@ -66,6 +70,7 @@
     var config = {
     		btnSpell: "btn-spell",
     		txtToCheck: "txt-to-check",
+    		chkIncludePartials: "chk-include-partials",
     		divChecked:  "div-checked",
     		divError: "div-error",
     		divMessage: "div-message",

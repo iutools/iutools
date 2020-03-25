@@ -86,6 +86,7 @@ public class SpellEndpoint extends HttpServlet {
 			throw new ServiceException("Query was empty or null");
 		}
 		
+		checker.setPartialCorrectionEnabled(inputs.includePartiallyCorrect);
 		List<SpellingCorrection> corrections = checker.correctText(inputs.text);
 		
 		tLogger.trace("inputs.text= "+inputs.text);

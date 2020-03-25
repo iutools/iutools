@@ -251,8 +251,12 @@ class SpellController extends WidgetController {
 	
 	getSpellRequestData() {
 		
+		var includePartials = 
+			this.elementForProp("chkIncludePartials").is(':checked')
+		
 		var request = {
 				text: this.elementForProp("txtToCheck").val(),
+				includePartiallyCorrect: includePartials
 		};
 		
 		var jsonInputs = JSON.stringify(request);
