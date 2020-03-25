@@ -75,7 +75,7 @@ public class TextExtractor {
 	public List<String> extractIUWordsFromString(String content) {
 		List<String> wordsList = new ArrayList<String>();
 		IUTokenizer iuTokenizer = new IUTokenizer();
-		List<String> words = iuTokenizer.run(content);
+		List<String> words = iuTokenizer.tokenize(content);
 		for (int iw=0; iw<words.size(); iw++) {
 			String word = words.get(iw);
 			if (Orthography.isUnicodeInuktitutWord(word)) {

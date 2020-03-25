@@ -273,18 +273,18 @@ public class MorphemeSearcherTest {
 		MorphemeSearcher morphemeSearcher = new MorphemeSearcher();
 		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpus();
 		morphemeSearcher.useCorpus(corpus);
-		System.out.println("Nb. occurrences in Hansard: "+corpus.getTrie().getNbOccurrences());
+//		System.out.println("Nb. occurrences in Hansard: "+corpus.getTrie().getNbOccurrences());
 		String morpheme = "galuaq";
 		List<MorphemeSearcher.Words> wordsForMorphemes = morphemeSearcher.wordsContainingMorpheme(morpheme);
-		System.out.println("Nb. morphemes with canonical form 'galuaq': "+wordsForMorphemes.size());
+//		System.out.println("Nb. morphemes with canonical form 'galuaq': "+wordsForMorphemes.size());
 		Assert.assertTrue(wordsForMorphemes.size()==2);
-		for (ScoredExample example : wordsForMorphemes.get(0).words) {
-			System.out.println(example.word+" ("+wordsForMorphemes.get(0).morphemeWithId+")");
-		}
-		System.out.println("\n");
-		for (ScoredExample example : wordsForMorphemes.get(1).words) {
-			System.out.println(example.word+" ("+wordsForMorphemes.get(1).morphemeWithId+")");
-		}
+//		for (ScoredExample example : wordsForMorphemes.get(0).words) {
+//			System.out.println(example.word+" ("+wordsForMorphemes.get(0).morphemeWithId+")");
+//		}
+//		System.out.println("\n");
+//		for (ScoredExample example : wordsForMorphemes.get(1).words) {
+//			System.out.println(example.word+" ("+wordsForMorphemes.get(1).morphemeWithId+")");
+//		}
 	}
 	
 	@Test

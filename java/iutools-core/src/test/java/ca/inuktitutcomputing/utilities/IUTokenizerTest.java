@@ -17,6 +17,22 @@ public class IUTokenizerTest {
 	public void setUp() {
 	}
 	
+	/////////////////////////////
+	// DOCUMENTATION TESTS
+	/////////////////////////////
+
+	@Test
+	public void test__IUTokenizer__Synopsis() {
+		// Use this class to tokenize text written in Inuktut
+		IUTokenizer tokenizer = new IUTokenizer();
+		String text = "(ᑲᖏᖅᖠᓂᐅᑉ ᐅᐊᓐᓇᖓ-ᐃᒡᓗᓕᒑᕐᔪᒃ)";
+		List<String> words = tokenizer.tokenize(text);
+	}
+	
+	/////////////////////////////
+	// VERIFICATION TESTS
+	/////////////////////////////
+	
 	@Test
 	public void test____processInitialPunctuation() {
 		IUTokenizer tokenizer = new IUTokenizer();
@@ -35,11 +51,11 @@ public class IUTokenizerTest {
 	}
 
 	@Test
-	public void test_run() throws IOException {
+	public void test__tokenize__HappyPath() throws IOException {
 		IUTokenizer tokenizer = new IUTokenizer();
 		String text;
 		text= "(ᑲᖏᖅᖠᓂᐅᑉ ᐅᐊᓐᓇᖓ-ᐃᒡᓗᓕᒑᕐᔪᒃ)";
-		List<String> words = tokenizer.run(text);
+		List<String> words = tokenizer.tokenize(text);
 		List<String> expectedWords = new ArrayList<String>();
 		expectedWords.add("ᑲᖏᖅᖠᓂᐅᑉ");
 		expectedWords.add("ᐅᐊᓐᓇᖓ");
@@ -47,7 +63,7 @@ public class IUTokenizerTest {
 		AssertHelpers.assertDeepEquals("", expectedWords, words);
 		
 		text = "ᐅᖃᖅᑎ: ᒥᔅᑕ ᔫ ᐃᓄᒃ, ᒪᓕᒐᓕᐅᖅᑎ ᓄᓇᕗᑦ ᒪᓕᒐᓕᐅᕐᕕᖓ";
-		words = tokenizer.run(text);
+		words = tokenizer.tokenize(text);
 		expectedWords = new ArrayList<String>();
 		expectedWords.add("ᐅᖃᖅᑎ");
 		expectedWords.add("ᒥᔅᑕ");
@@ -66,7 +82,7 @@ public class IUTokenizerTest {
 		List<String> words, expectedWords;
 		List<Pair<String,Boolean>> expectedTokens;
 		text = "009 - 4(3): ᐃᖏᕐᕋᖃᑦᑕᕐᓂᕐᒧᑦ ᐳᓚᕋᖅᑐᓕᕆᓂᕐᒧᓪᓗ ᒪᓕᒐᐅᑉ ᓄᑖᖑᕆᐊᖅᑕᐅᓂᖓ (ᐃᐊᓪ-ᑲᓇᔪᖅ) 159";
-		words = tokenizer.run(text);
+		words = tokenizer.tokenize(text);
 		expectedWords = new ArrayList<String>();
 		expectedWords.add("009");
 		expectedWords.add("4");
@@ -116,7 +132,7 @@ public class IUTokenizerTest {
 		String text;
 		List<String> words, expectedWords;
 		text = "044 - 4(3): ᕿᑭᖅᑖᓗᒻᒥ ᑐᑦᑐᓕᕆᓂᖅ (Hᐃᒃᔅ) 179";
-		words = tokenizer.run(text);
+		words = tokenizer.tokenize(text);
 		expectedWords = new ArrayList<String>();
 		expectedWords.add("044");
 		expectedWords.add("4");
@@ -136,7 +152,7 @@ public class IUTokenizerTest {
 		String text;
 		List<String> words, expectedWords;
 		text = "ᑖᓐᓇ G.R.E.A.T. ᐱᓕᕆᐊᖅ";
-		words = tokenizer.run(text);
+		words = tokenizer.tokenize(text);
 		expectedWords = new ArrayList<String>();
 		expectedWords.add("ᑖᓐᓇ");
 		expectedWords.add("G.R.E.A.T.");
@@ -144,7 +160,7 @@ public class IUTokenizerTest {
 		AssertHelpers.assertDeepEquals("", expectedWords, words);
 		
 		text = "ᐅᖃᖅᑎ: ᖁᔭᓐᓇᒦᒃ. ᒥᓂᔅᑕᐃ ᐅᖃᐅᓯᒃᓴᖏᑦ. ᒥᓂᔅᑐ ᒪᐃᒃ.";
-		words = tokenizer.run(text);
+		words = tokenizer.tokenize(text);
 		expectedWords = new ArrayList<String>();
 		expectedWords.add("ᐅᖃᖅᑎ");
 		expectedWords.add("ᖁᔭᓐᓇᒦᒃ");
@@ -160,7 +176,7 @@ public class IUTokenizerTest {
 		IUTokenizer tokenizer = new IUTokenizer();
 		String text;
 		text = "044 - 4(3): ᕿᑭᖅᑖᓗᒻᒥ ᑐᑦᑐᓕᕆᓂᖅ (Hᐃᒃᔅ) 179";
-		tokenizer.run(text);
+		tokenizer.tokenize(text);
 		String reconstructedText = tokenizer.reconstruct();
 		Assert.assertEquals("",text,reconstructedText);
 	}
@@ -170,7 +186,7 @@ public class IUTokenizerTest {
 		IUTokenizer tokenizer = new IUTokenizer();
 		String text;
 		text = "sinik&uni";
-		tokenizer.run(text);
+		tokenizer.tokenize(text);
 		List<Pair<String,Boolean>> allTokens = tokenizer.getAllTokens();
 		Assert.assertEquals("",1,allTokens.size());
 	}
@@ -179,7 +195,7 @@ public class IUTokenizerTest {
 		IUTokenizer tokenizer = new IUTokenizer();
 		String text;
 		text = "2015−mit";
-		List<String>words = tokenizer.run(text);
+		List<String>words = tokenizer.tokenize(text);
 		List<String>expectedWords = new ArrayList<String>();
 		expectedWords.add("2015−mit");
 		AssertHelpers.assertDeepEquals("", expectedWords, words);
@@ -190,7 +206,7 @@ public class IUTokenizerTest {
 		IUTokenizer tokenizer = new IUTokenizer();
 		String text;
 		text = "2015−mit.";
-		tokenizer.run(text);
+		tokenizer.tokenize(text);
 		List<Pair<String,Boolean>>expectedTokens = new ArrayList<Pair<String,Boolean>>();
 		expectedTokens.add(new Pair<>("2015−mit",true));
 		expectedTokens.add(new Pair<>(".",false));
@@ -202,7 +218,7 @@ public class IUTokenizerTest {
 		IUTokenizer tokenizer = new IUTokenizer();
 		String text;
 		text = "he said \"bla bla\".";
-		tokenizer.run(text);
+		tokenizer.tokenize(text);
 		List<Pair<String,Boolean>>expectedTokens = new ArrayList<Pair<String,Boolean>>();
 		expectedTokens.add(new Pair<>("he",true));
 		expectedTokens.add(new Pair<>(" ",false));
@@ -221,7 +237,7 @@ public class IUTokenizerTest {
 		IUTokenizer tokenizer = new IUTokenizer();
 		String text;
 		text = "he said 1. ok 2. fine ... 10. no.";
-		tokenizer.run(text);
+		tokenizer.tokenize(text);
 		List<Pair<String,Boolean>>expectedTokens = new ArrayList<Pair<String,Boolean>>();
 		expectedTokens.add(new Pair<>("he",true));
 		expectedTokens.add(new Pair<>(" ",false));

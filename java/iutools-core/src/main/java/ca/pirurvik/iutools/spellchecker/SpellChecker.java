@@ -969,7 +969,7 @@ public class SpellChecker {
 		List<SpellingCorrection> corrections = new ArrayList<SpellingCorrection>();
 		
 		IUTokenizer iutokenizer = new IUTokenizer();
-		iutokenizer.run(text);
+		iutokenizer.tokenize(text);
 		List<Pair<String,Boolean>> tokens = iutokenizer.getAllTokens();
 		
 		if (tLogger.isTraceEnabled()) tLogger.trace("tokens= "+PrettyPrinter.print(tokens));

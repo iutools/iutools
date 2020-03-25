@@ -27,7 +27,7 @@ public class IUTokenizer {
 	public IUTokenizer() {
 	}
 
-	public List<String> run(String text) {
+	public List<String> tokenize(String text) {
 		this.text = text;
 		tokens = new ArrayList<String>();
 		allTokensPunctuation = new ArrayList<Pair<String, Boolean>>();

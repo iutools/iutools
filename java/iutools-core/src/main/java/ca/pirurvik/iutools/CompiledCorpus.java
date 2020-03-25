@@ -413,7 +413,7 @@ public class CompiledCorpus
 		try {
 			contents = fileBeingProcessed.getContents();
 			IUTokenizer iuTokenizer = new IUTokenizer();
-			List<String> words = iuTokenizer.run(contents);
+			List<String> words = iuTokenizer.tokenize(contents);
 			processWords(words.toArray(new String[] {}));
 		} catch (CompiledCorpusException e) {
 			throw e;
