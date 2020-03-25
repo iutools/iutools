@@ -25,6 +25,8 @@ import ca.pirurvik.iutools.search.SearchHit;
 import ca.pirurvik.iutools.testing.IUTTestHelpers;
 import ca.pirurvik.iutools.webservice.SearchEndpoint;
 import ca.pirurvik.iutools.webservice.SearchResponse;
+import ca.pirurvik.iutools.webservice.tokenize.TokenizeEndpoint;
+import ca.pirurvik.iutools.webservice.tokenize.TokenizeResponse;
 
 import org.junit.*;
 
@@ -33,7 +35,8 @@ public class IUTServiceTestHelpers {
 	public static final long MEDIUM_WAIT = 2*SHORT_WAIT;
 	public static final long LONG_WAIT = 2*MEDIUM_WAIT;
 	
-	enum EndpointNames {SEARCH, SPELL, GIST, MORPHEME, MORPHEMEEXAMPLE};
+	public enum EndpointNames {
+		GIST, MORPHEME, MORPHEMEEXAMPLE, SEARCH, TOKENIZE, SPELL};
 	
 
 	public static MockHttpServletResponse postEndpointDirectly(EndpointNames eptName, Object inputs) throws Exception {
@@ -47,17 +50,19 @@ public class IUTServiceTestHelpers {
 		
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		
-		if (eptName == EndpointNames.SEARCH) {
-			new SearchEndpoint().doPost(request, response);
-		} else if (eptName == EndpointNames.SPELL) {
-			new SpellEndpoint().doPost(request, response);	
-		} else if (eptName == EndpointNames.GIST) {
+		if (eptName == EndpointNames.GIST) {
 			new GistEndpoint().doPost(request, response);
 		} else if (eptName == EndpointNames.MORPHEME) {
 			new OccurenceSearchEndpoint().doPost(request, response);
 		} else if (eptName == EndpointNames.MORPHEMEEXAMPLE) {
 			new OccurenceExampleEndpoint().doPost(request, response);
-		} 
+		} else if (eptName == EndpointNames.SEARCH) {
+			new SearchEndpoint().doPost(request, response);
+		} else if (eptName == EndpointNames.SPELL) {
+			new SpellEndpoint().doPost(request, response);	
+		} else if (eptName == EndpointNames.TOKENIZE) {
+			new TokenizeEndpoint().doPost(request, response);	
+		}
 		
 		String srvErr = ServiceResponse.jsonErrorMessage(response.getOutput());
 		if (srvErr != null && ! expectServiceError) {
@@ -68,6 +73,15 @@ public class IUTServiceTestHelpers {
 		
 		return response;
 	}
+	
+	private static GistResponse toGistResponse(
+			MockHttpServletResponse servletResp) throws IOException {
+		String responseStr = servletResp.getOutputStream().toString();
+		GistResponse response = 
+				new ObjectMapper().readValue(responseStr, GistResponse.class);
+		return response;
+	}
+	
 
 	public static SpellResponse toSpellResponse(
 			HttpServletResponse servletResp) throws IOException {
@@ -85,13 +99,14 @@ public class IUTServiceTestHelpers {
 		return response;
 	}
 	
-	private static GistResponse toGistResponse(
+	public static TokenizeResponse toTokenizeResponse(
 			MockHttpServletResponse servletResp) throws IOException {
 		String responseStr = servletResp.getOutputStream().toString();
-		GistResponse response = 
-				new ObjectMapper().readValue(responseStr, GistResponse.class);
+		TokenizeResponse response = 
+				new ObjectMapper().readValue(responseStr, TokenizeResponse.class);
 		return response;
 	}
+	
 	private static OccurenceSearchResponse toOccurenceSearchResponse(
 			MockHttpServletResponse servletResp) throws IOException {
 		String responseStr = servletResp.getOutputStream().toString();
@@ -229,6 +244,4 @@ public class IUTServiceTestHelpers {
 				expectedAlignments[0].get("en").substring(0,100), 
 				gotAlignments[0].get("en").substring(0,100));
 	}
-
-
 }

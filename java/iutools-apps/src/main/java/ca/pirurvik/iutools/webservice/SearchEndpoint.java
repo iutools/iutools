@@ -80,7 +80,7 @@ public class SearchEndpoint extends HttpServlet {
 		
 		writer.write(json);
 		writer.close();
-		}
+	}
 
 	public SearchResponse executeEndPoint(SearchInputs inputs) throws SearchEndpointException  {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.webservice.SearchEndpoint.executeEndPoint");

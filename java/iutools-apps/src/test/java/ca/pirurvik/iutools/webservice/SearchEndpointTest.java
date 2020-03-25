@@ -11,7 +11,6 @@ import org.junit.Test;
 import ca.pirurvik.iutools.QueryExpansion;
 import ca.pirurvik.iutools.webservice.SearchEndpoint;
 import ca.pirurvik.iutools.webservice.SearchInputs;
-import ca.nrc.testing.AssertNumber;
 import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.AssertString;
 import ca.nrc.ui.web.testing.MockHttpServletResponse;
