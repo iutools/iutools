@@ -218,7 +218,7 @@ public class IUTokenizerTest {
 		IUTokenizer tokenizer = new IUTokenizer();
 		String text;
 		text = "a 0.08%−mit c";
-		tokenizer.run(text);
+		tokenizer.tokenize(text);
 		List<Pair<String,Boolean>>expectedTokens = new ArrayList<Pair<String,Boolean>>();
 		expectedTokens.add(new Pair<>("a",true));
 		expectedTokens.add(new Pair<>(" ",false));
