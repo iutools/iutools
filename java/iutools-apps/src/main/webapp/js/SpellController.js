@@ -219,23 +219,17 @@ class SpellController extends WidgetController {
 	picklistFor(corrResult) {
 		console.log("corrResult= "+JSON.stringify(corrResult));
 		var origWord = corrResult.orig;
-		var alternatives = corrResult.possibleSpellings;
+		var alternatives = corrResult.allSuggestions;
 		var picklistHtml = "<div class='corrections' word='"+corrResult.orig+"'>\n";
 		picklistHtml += "<span class=\"suggestion original selected\">"+origWord+"</span>\n";
 		var inputLength = origWord.length;
 		for (var ii=0; ii < alternatives.length; ii++) {
 			var anAlternative = alternatives[ii];
 			picklistHtml += "<span class=\"suggestion";
-//			if (ii==0)
-//				picklistHtml += " selected";
 			picklistHtml += "\">"+anAlternative+"</span>\n";
 			if (anAlternative.length > inputLength)
 				inputLength = anAlternative.length;
 		}
-//		picklistHtml += "<span class=\"suggestion original";
-//		if (alternatives.length==0)
-//			picklistHtml += " selected";
-//		picklistHtml += "\">"+origWord+"</span>\n";
 		picklistHtml += "<span class=\"additional\">"+"<input type=\"text\" />"+"</span>\n";
 		picklistHtml += "</div>\n";
 		return picklistHtml;

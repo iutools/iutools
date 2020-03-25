@@ -40,7 +40,7 @@ public class SpellEndpoint extends HttpServlet {
 	private synchronized void ensureCheckerIsInstantiated() throws SpellCheckerException, FileNotFoundException, ConfigException {
 		if (checker == null) {
 			try {
-				checker = new SpellChecker();
+				checker = new SpellChecker().enablePartialCorrections();
 			} catch (StringSegmenterException e) {
 				throw new SpellCheckerException(e);
 			}

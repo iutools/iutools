@@ -59,6 +59,30 @@ public class CompiledCorpusRegistry {
 		if (corpusName == null)
 			corpusName = defaultCorpusName;
 		CompiledCorpus corpus = null;
+		
+		String corpusFile = null;
+		if (registry.containsKey(corpusName)) {
+			corpusFile = registry.get(corpusName).toString();
+		}  else {
+			corpusFile = scanDataDirForCorpusFile(corpusName);
+		}
+		
+		if (corpusFile == null) {
+			throw new CompiledCorpusRegistryException(
+					"Could not find a corpus that matches name "+corpusName);
+		}
+		logger.debug("building corpus");
+		corpus = makeCorpus(corpusFile);
+		logger.debug("corpus built");
+
+		return corpus;
+	}
+	
+	private static String scanDataDirForCorpusFile(String corpusName) 
+		throws CompiledCorpusRegistryException {
+		Logger logger = Logger.getLogger("CompiledCorpusRegistry.scanDataDirForCorpusFile");
+		logger.debug("corpusName= '"+corpusName+"'");
+		
 		String corpusesPath;
 		try {
 			corpusesPath = IUConfig.getIUDataPath("data/compiled-corpuses");
@@ -81,16 +105,14 @@ public class CompiledCorpusRegistry {
 				break;
 			}
 		}
+		
 		if (corpusFile != null) {
-			String jsonFilePath = corpusesPath + "/" + corpusFile;
-			logger.debug("building corpus");
-			corpus = makeCorpus(jsonFilePath);
-			logger.debug("corpus built");
+			corpusFile = new File(corpusesPath, corpusFile).toString();
 		}
-
-		return corpus;
+		
+		return corpusFile;
 	}
-	
+
 	@JsonIgnore
 	public static CompiledCorpus getCorpus() throws CompiledCorpusRegistryException {
 		return getCorpus(defaultCorpusName);
@@ -162,12 +184,10 @@ public class CompiledCorpusRegistry {
 		}
 	}
 
-
 	public static Map<String,File> getRegistry() {
 		return registry;
 	}
 	public static Map<String,CompiledCorpus> getCorpusCache() {
 		return corpusCache;
 	}
-
 }

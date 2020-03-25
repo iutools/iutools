@@ -45,7 +45,8 @@ public class OccurenceSearchEndpointTest {
 		compiledCorpus.saveCompilerInJSONFile(tempFile.getAbsolutePath());
 		CompiledCorpusRegistry.registerCorpus("compiled_corpus", tempFile);
 
-		OccurenceSearchInputs occurenceInputs = new OccurenceSearchInputs("siuq","compiled_corpus","2");
+		OccurenceSearchInputs occurenceInputs = 
+				new OccurenceSearchInputs("siuq","compiled_corpus","2");
 		
 		MockHttpServletResponse response = 
 				IUTServiceTestHelpers.postEndpointDirectly(

@@ -72,8 +72,12 @@ public class SpellingCorrection {
 		if (partiallyCorrectExtremities() != null) {
 			partiallyCorrect.add(partiallyCorrectExtremities());
 		} else {
-			partiallyCorrect.add(correctLead);
-			partiallyCorrect.add(correctTail);
+			if (correctLead != null) {
+				partiallyCorrect.add(correctLead);
+			}
+			if (correctTail != null) {
+				partiallyCorrect.add(correctTail);
+			}
 		}
 		
 		return partiallyCorrect;
