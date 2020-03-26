@@ -104,7 +104,7 @@ public class OccurenceSearchEndpoint extends HttpServlet {
 		Logger logger = Logger.getLogger("ca.pirurvik.iutools.webservice.OccurenceSearchEndpoint.getOccurrences");
 		MorphemeSearcher morphExtractor = new MorphemeSearcher();
 		//CompiledCorpus compiledCorpus = CompiledCorpusRegistry.getCorpus(corpusName);
-		CompiledCorpus compiledCorpus = CompiledCorpusRegistry.getCorpusWithName(corpusName);
+		CompiledCorpus compiledCorpus = CompiledCorpusRegistry.getCorpus(corpusName);
 		morphExtractor.useCorpus(compiledCorpus);
 		int nbExamples = Integer.valueOf(inputs.nbExamples);
 		morphExtractor.setNbDisplayedWords(nbExamples);

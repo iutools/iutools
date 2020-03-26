@@ -125,12 +125,18 @@ public class CompiledCorpusRegistry {
 		if (corpusCache.containsKey(corpusName)) {
 			corpus = corpusCache.get(corpusName);
 		} else {
-			if (!registry.containsKey(corpusName)) {
-				throw new CompiledCorpusRegistryException("Unknown corpus name: "+corpusName);
-			} else {
+			if (registry.containsKey(corpusName)) {
 				String jsonFilePath = registry.get(corpusName).toString();
 				corpus = makeCorpus(jsonFilePath);
 				corpusCache.put(corpusName, corpus);
+			} else {
+				String corpusFile = scanDataDirForCorpusFile(corpusName);
+				if (corpusFile != null) {
+					corpus = makeCorpus(corpusFile);
+					corpusCache.put(corpusName, corpus);
+				} else {
+					throw new CompiledCorpusRegistryException("Unknown corpus name: "+corpusName);
+				}
 			}
 		}
 		

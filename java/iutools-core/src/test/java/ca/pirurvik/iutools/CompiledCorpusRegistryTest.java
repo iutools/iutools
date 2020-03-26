@@ -59,7 +59,7 @@ public class CompiledCorpusRegistryTest {
 		// Once you have registered your own corpus, you can get an
 		// instance of it as usual
 		//
-		corpus = corpus = CompiledCorpusRegistry.getCorpus(corpusName);
+		corpus = CompiledCorpusRegistry.getCorpus(corpusName);
 	}
 		
 	//////////////////////////////
@@ -145,20 +145,24 @@ public class CompiledCorpusRegistryTest {
 	}
 	
 	@Test
-	public void test__getCorpusWithName() throws Exception {
+	public void test__getCorpus__with_name_part_of_compiled_corpus_filename_in_compiled_corpuses_directory() throws Exception {
 		String corpusName = "HANSARD-1999-2002";
-		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpusWithName(corpusName);
+//		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpusWithName(corpusName);
+		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpus(corpusName);
 		assertTrue("Corpus "+corpusName+"could not be found",corpus != null);
-		
-		corpusName = "Hansard-1999-2002";
-		corpus = CompiledCorpusRegistry.getCorpusWithName(corpusName);
+		// insensitive
+		corpusName = "Hansard-1999-2002"; 
+//		corpus = CompiledCorpusRegistry.getCorpusWithName(corpusName);
+		corpus = CompiledCorpusRegistry.getCorpus(corpusName);
 		assertTrue("Corpus "+corpusName+"could not be found",corpus != null);
 	}
 	
+	// With this change, this test is identical to test__getCorpus__get_from_unknown_corpus_name()
 	@Test(expected=CompiledCorpusRegistryException.class)
-	public void test__getCorpusWithName__UnknownCorpus__RaisesException() 
+	public void test__getCorpus__UnknownCorpus__RaisesException() 
 			throws Exception {
 		String corpusName = "blabla";
-		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpusWithName(corpusName);
+//		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpusWithName(corpusName);
+		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpus(corpusName);
 	}
 }
