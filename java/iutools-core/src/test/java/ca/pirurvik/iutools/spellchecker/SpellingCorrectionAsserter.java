@@ -7,37 +7,37 @@ import org.junit.Assert;
 import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.AssertString;
 
-public class AssertSpellingCorrection {
+public class SpellingCorrectionAsserter {
 
 	private String baseMessage;
 	private SpellingCorrection gotCorrection;
 	
-	public static AssertSpellingCorrection assertThat(
+	public static SpellingCorrectionAsserter assertThat(
 			SpellingCorrection _gotCorrection, 
 			String _mess) {
 		
-		return new AssertSpellingCorrection(_gotCorrection, _mess);
+		return new SpellingCorrectionAsserter(_gotCorrection, _mess);
 	}
 
-	public AssertSpellingCorrection(SpellingCorrection _gotCorrection, 
+	public SpellingCorrectionAsserter(SpellingCorrection _gotCorrection, 
 				String _mess) {
 		this.baseMessage = _mess;
 		this.gotCorrection = _gotCorrection;
 	}
 	
-	public AssertSpellingCorrection wasMisspelled() {
+	public SpellingCorrectionAsserter wasMisspelled() {
 		Assert.assertTrue(baseMessage+"\nWord should have been mis-spelled", 
 				gotCorrection.wasMispelled);
 		return this;
 	}
 
-	public AssertSpellingCorrection wasNotMisspelled() {
+	public SpellingCorrectionAsserter wasNotMisspelled() {
 		Assert.assertFalse(baseMessage+"\nWord should NOT have been mis-spelled", 
 				gotCorrection.wasMispelled);
 		return this;
 	}
 
-	public AssertSpellingCorrection suggestsSpellings(String[] expSuggs) 
+	public SpellingCorrectionAsserter suggestsSpellings(String[] expSuggs) 
 				throws Exception {
 		List<String> gotSuggs = gotCorrection.getPossibleSpellings();
 		AssertObject.assertDeepEquals(
@@ -46,7 +46,7 @@ public class AssertSpellingCorrection {
 		return this;
 	}
 
-	public AssertSpellingCorrection suggestsCorrectLead(String expLead) {
+	public SpellingCorrectionAsserter highlightsIncorrectTail(String expLead) {
 		String gotLead = gotCorrection.correctLead;
 		AssertString.assertStringEquals(
 			baseMessage+"\nSuggested correct leading chars were not as expected.",
@@ -54,7 +54,7 @@ public class AssertSpellingCorrection {
 		return this;
 	}
 
-	public AssertSpellingCorrection suggestsCorrectTail(String expTail) {
+	public SpellingCorrectionAsserter highlightsIncorrectLead(String expTail) {
 		String gotTail = gotCorrection.correctTail;
 		AssertString.assertStringEquals(
 			baseMessage+"\nSuggested correct tailing chars were not as expected.",
@@ -62,15 +62,15 @@ public class AssertSpellingCorrection {
 		return this;
 	}
 
-	public AssertSpellingCorrection suggestsCorrectExtremities(String expPartial) {
-		String gotPartial = gotCorrection.partiallyCorrectExtremities();
+	public SpellingCorrectionAsserter highlightsIncorrectMiddle(String expPartial) {
+		String gotPartial = gotCorrection.highlightIncorrectMiddle();
 		AssertString.assertStringEquals(
 			baseMessage+"\nSuggested correct portions of the word were not as expected.",
 			expPartial, gotPartial);
 		return this;
 	}
 
-	public AssertSpellingCorrection providesSuggestions(String[] expSugg) 
+	public SpellingCorrectionAsserter providesSuggestions(String[] expSugg) 
 				throws Exception {
 		AssertObject.assertDeepEquals(
 				baseMessage+"\nSuggestions were not as expected for word "+

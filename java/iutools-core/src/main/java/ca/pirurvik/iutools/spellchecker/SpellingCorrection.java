@@ -11,11 +11,26 @@ import ca.nrc.datastructure.Pair;
 
 public class SpellingCorrection {
 	public String orig;
+		public SpellingCorrection setOrig(String _orig) {
+			this.orig = _orig;
+			return this;
+		}
+	
 	public Boolean wasMispelled = false;
 	public List<ScoredSpelling> scoredCandidates = 
 				new ArrayList<ScoredSpelling>();
+	
 	public String correctLead;
+		public SpellingCorrection setCorrectLead(String _correctLead) {
+			this.correctLead = _correctLead;
+			return this;
+		}
+		
 	public String correctTail;
+		public SpellingCorrection setCorrectTail(String _correctTail) {
+			this.correctTail = _correctTail;
+			return this;
+		}
 	
 	public SpellingCorrection() {
 		initialize(null, null, null, null);		
@@ -60,28 +75,15 @@ public class SpellingCorrection {
 	public List<String> getAllSuggestions() {
 		List<String> suggestions = new ArrayList<String>();
 		
-		suggestions.addAll(getPartiallyCorrect());
+		String highlightedCorrection = highlightIncorrectMiddle();
+		if (highlightedCorrection != null) {
+			suggestions.add(highlightedCorrection);			
+		}
 		suggestions.addAll(getPossibleSpellings());
 		
 		return suggestions;
 	}
 
-	@JsonIgnore
-	private List<String> getPartiallyCorrect() {
-		List<String> partiallyCorrect = new ArrayList<String>();
-		if (partiallyCorrectExtremities() != null) {
-			partiallyCorrect.add(partiallyCorrectExtremities());
-		} else {
-			if (correctLead != null) {
-				partiallyCorrect.add(correctLead);
-			}
-			if (correctTail != null) {
-				partiallyCorrect.add(correctTail);
-			}
-		}
-		
-		return partiallyCorrect;
-	}
 
 	public List<ScoredSpelling> getScoredPossibleSpellings() {
 		return scoredCandidates;
@@ -108,19 +110,60 @@ public class SpellingCorrection {
 		return this;
 	}
 	
-	public String partiallyCorrectExtremities() {
-		String correctPortions = null;
+	/** Highlight middle portion of the word that seem incorrect. */
+	protected String highlightIncorrectMiddle() {
+		String wordWithBadPortionsHighlighted = null;	
 		if (correctLead != null && correctTail != null) {
-			int middleStart = correctLead.length();
-			int middleEnd = orig.length() - correctTail.length();
-			if (middleStart < middleEnd) {
-				correctPortions = 
-					correctLead+
-					"["+orig.substring(middleStart, middleEnd)+"]"+
-					correctTail;
+			int highlightStart = -1;
+			int highlightEnd = -1;
+			int extremetiesLength = correctLead.length() + correctTail.length();
+			
+			if (extremetiesLength < orig.length()) {
+				// There is a gap between the correct leads and tail.
+				// So the problem must be in the characters in between.	
+				//
+				highlightStart = correctLead.length();
+				highlightEnd = orig.length() - correctTail.length();
+			} else if (extremetiesLength > orig.length()) {
+				// The correct lead and tail overlap.
+				// So the problem must be somewhere in the overlapping chars.
+				//
+				highlightStart = orig.length() - correctTail.length();
+				highlightEnd = correctLead.length();
+			} else {
+				// Correct lead and tail exactly cover the word (no gap nor 
+				// overlap). No highglighting to be done so leave the 
+				// highlight start and end at -1
+			}
+			if (highlightStart > 0 && highlightEnd > 0) {
+				wordWithBadPortionsHighlighted = 
+					orig.substring(0, highlightStart) + "[" +
+					orig.substring(highlightStart, highlightEnd) + "]" +
+					orig.substring(highlightEnd);
 			}
 		}
-		
-		return correctPortions;
+				
+		return wordWithBadPortionsHighlighted;
 	}
+	
+	
+	/** Highlight the portion of the word that precedes the apparently correct 
+	 * leading text */
+	private String highlightIncorrectLead() {
+		String tail = 
+				"[" + orig.substring(0, orig.length() - correctTail.length()) + 
+				"]" + correctTail;
+			
+			return tail;
+	}
+
+	/** Highlight the portion of the word that follows the apparently correct 
+	 * tailing text */
+	private String highlightIncorrectTail() {
+		String lead = 
+			correctLead + "[" + orig.substring(correctLead.length()) + "]";
+		
+		return lead;
+	}
+
 }

@@ -232,13 +232,43 @@ public class SpellCheckerTest {
 	}
 	
 	@Test
+	public void test__correctWord__CorrectLeadAndTailOverlap() throws Exception {
+		SpellChecker checker = makeCheckerLargeDict();
+		
+		checker.enablePartialCorrections();
+		
+		// The correct lead ('ujaranni') and tail ('nniarvimmi') overlap by 
+		// several characters ('nni'). In this case, we can't show the badly 
+		// spelled middle part, because there isn't one. Yet, we know that 
+		// the word is mis-spelled, so something must be wrong in that middle
+		// part
+		//
+		String word = "ujaranniarvimmi";
+		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
+		
+		SpellingCorrectionAsserter.assertThat(gotCorrection, 
+				  "Correction for word 'inukshuk' was wrong")
+			.wasMisspelled()
+			.providesSuggestions(
+				new String[] {
+				  "ujara[nni]arvimmi",
+				  "ujararniarvimmi",
+				  "ujararniarvimmik",
+				  "ujararniarvimmit",
+				  "ujararniarvingmi",
+				  "ujarattarniarvimmi"
+				})
+			;
+	}
+	
+	@Test
 	public void test__correctWord__roman__MispelledInput() throws Exception {
 		SpellChecker checker = makeCheckerSmallCustomDict();
 		checker.enablePartialCorrections();
 		String word = "inuktigtut";
 		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
 		
-		AssertSpellingCorrection.assertThat(gotCorrection, 
+		SpellingCorrectionAsserter.assertThat(gotCorrection, 
 				  "Correction for word 'inukshuk' was wrong")
 			.wasMisspelled()
 			.providesSuggestions(
@@ -633,10 +663,10 @@ public class SpellCheckerTest {
 		SpellingCorrection correction = 
 				new SpellingCorrection(badWord, new String[0], true);
 		checker.computeCorrectPortions(badWord, correction);
-		AssertSpellingCorrection.assertThat(correction, "")			
-			.suggestsCorrectLead("inukti")
-			.suggestsCorrectTail("tut")
-			.suggestsCorrectExtremities("inukti[q]tut")
+		SpellingCorrectionAsserter.assertThat(correction, "")			
+			.highlightsIncorrectTail("inukti")
+			.highlightsIncorrectLead("tut")
+			.highlightsIncorrectMiddle("inukti[q]tut")
 		;
 	}
 	
