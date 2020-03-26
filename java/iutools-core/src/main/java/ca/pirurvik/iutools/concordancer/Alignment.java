@@ -10,38 +10,38 @@ import ca.nrc.datastructure.Pair;
 public class Alignment {
 
 	public boolean misaligned = false;
-	Map<String,String> langSentences = new HashMap<String,String>();
+	Map<String,String> langText = new HashMap<String,String>();
 	
 	public Alignment() {
 		init_Alignment(null, null, null, null, null);
 	}
 
-	public Alignment(String lang1, String text1, 
-			String lang2, String text2) {
-		init_Alignment(lang1, text1, lang2, text2, null);
+	public Alignment(String lang1, String textLang1, 
+			String lang2, String textLang2) {
+		init_Alignment(lang1, textLang1, lang2, textLang2, null);
 	}
 	
-	public Alignment(String lang1, String text1, 
-			String lang2, String text2, boolean _misaligned) {
-		init_Alignment(lang1, text1, lang2, text2, _misaligned);
+	public Alignment(String lang1,  String textLang1, 
+			String lang2, String textLang2, boolean _misaligned) {
+		init_Alignment(lang1, textLang1, lang2, textLang2, _misaligned);
 	}
 
-	protected void init_Alignment(String lang1, String text1, 
-			String lang2, String text2, Boolean _misaligned) {
+	protected void init_Alignment(String lang1, String textLang1, 
+			String lang2, String textLang2, Boolean _misaligned) {
 		if (_misaligned == null) {
 			_misaligned = false;
 		}
-		langSentences.put(lang1, text1);
-		langSentences.put(lang2, text2);
+		langText.put(lang1, textLang1);
+		langText.put(lang2, textLang2);
 		misaligned = _misaligned;
 	}
 
 	public String getText(String lang) {
-		return langSentences.get(lang);
+		return langText.get(lang);
 	}
 	
 	public Pair<String,String> langs() {
-		String[] langsArr = langSentences.keySet().toArray(new String[langSentences.keySet().size()]);
+		String[] langsArr = langText.keySet().toArray(new String[langText.keySet().size()]);
 	    
 		Pair<String,String> langPair = null;
 		if (langsArr[0].compareTo(langsArr[1]) < 0) { 
@@ -52,7 +52,7 @@ public class Alignment {
 		
 		return langPair;
 	}
-	
+		
 	public String toString() {
 		Pair<String,String> langPair = langs();
 		
@@ -66,5 +66,4 @@ public class Alignment {
 
 		return toStr;
 	}
-
 }

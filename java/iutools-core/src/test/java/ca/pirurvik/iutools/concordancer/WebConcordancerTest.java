@@ -2,16 +2,12 @@ package ca.pirurvik.iutools.concordancer;
 
 import java.net.URL;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import ca.nrc.datastructure.Pair;
 import ca.nrc.testing.AssertObject;
-import ca.nrc.testing.AssertString;
 import ca.pirurvik.iutools.concordancer.Alignment;
 import ca.pirurvik.iutools.concordancer.DocAlignment;
 import ca.pirurvik.iutools.concordancer.WebConcordancer;
@@ -95,7 +91,7 @@ public class WebConcordancerTest {
 				Pair.of("The public health communicable disease team is following approximately 70 persons under investigation.", 
 						"ᑭᒃᑯᑐᐃᓐᓇᓂᒃ ᐋᓐᓂᐊᖃᖅᑕᐃᓕᑎᑦᑎᓂᕐᒧᑦ ᐊᐃᑦᑐᕐᓘᑕᐅᔪᓐᓇᖅᑐᓄᑦ ᖃᓂᒪᑖᕆᔭᐅᔪᓐᓇᖅᑐᓄᑦ ᐱᓕᕆᖃᑎᒌᑦ ᒪᓕᒃᓯᕗᖅ 50-60−ᐸᓗᖕᓂᒃ ᐃᓄᖕᓂᒃ ᑖᒃᑯᐊ ᖃᐅᔨᓴᖅᑕᐅᕙᓪᓕᐊᓪᓗᑎᒃ.")
 		};
-		assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
+		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
 			.urlForLangEquals("en", new URL("http://mocksite.nu.ca/en"))
 			.urlForLangEquals("iu", new URL("http://mocksite.nu.ca/iu"))
 			.pageInLangContains("en", "COVID-19")
@@ -113,7 +109,7 @@ public class WebConcordancerTest {
 		DocAlignment pageAligment = 
 					new WebConcordancer().alignPage(url, new String[] {"en", "iu"});
 
-		assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
+		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
 			.wasSuccessful()
 			.urlForLangEquals("en", new URL("https://www.gov.nu.ca/"))
 			.urlForLangEquals("iu", new URL("https://www.gov.nu.ca/iu"))
@@ -159,79 +155,5 @@ public class WebConcordancerTest {
 	//////////////////////////////////
 	// TEST HELPERS
 	//////////////////////////////////
-	
-	
-	private AlignmentResultAssertion assertThat(DocAlignment pageAligment, 
-			String message) {
-		AlignmentResultAssertion assertion = 
-				new AlignmentResultAssertion(pageAligment);
-		return assertion;
-	}
-	
-	public static class AlignmentResultAssertion {
-
-		String baseMessage = "";
-		
-		DocAlignment gotAlignmentResult = null;
-		
-		public AlignmentResultAssertion(DocAlignment pageAligment) {
-			this.gotAlignmentResult = pageAligment;
-		}
-
-		public void containsAlignment(Alignment expAlignment) {
-			
-			boolean found = false;
-			
-			Assert.assertTrue("Could not find aligment", found);			
-		}
-
-		public AlignmentResultAssertion wasSuccessful() {
-			Assert.assertTrue(
-					baseMessage+"\nAlignment should have been successful.",
-					gotAlignmentResult.success);
-			return this;
-		}
-
-		public void alignmentsEqual(String mess, String lang1, String lang2, 
-				Pair<String, String>[] expAlPairs) throws Exception {
-
-			String[] expAlStrs = new String[expAlPairs.length];
-			for (int ii=0; ii < expAlPairs.length; ii++) {
-				expAlStrs[ii] = 
-						"(" +
-						lang1 + ":" + expAlPairs[ii].getFirst() + 
-						" <--> " +
-						lang2 + ":" + expAlPairs[ii].getSecond() + 
-						")";
-			}
-			List<Alignment> gotAlList = this.gotAlignmentResult.getAligments();
-			String[] gotAlStrs = new String[gotAlList.size()];
-			for (int ii=0; ii < gotAlList.size(); ii++) {
-				gotAlStrs[ii] = gotAlList.get(ii).toString();
-			}
-			
-			AssertObject.assertDeepEquals(
-					"Alignments texts were not as expected.", 
-					expAlStrs, gotAlStrs);
-		}
-
-		public AlignmentResultAssertion urlForLangEquals(
-					String lang, URL expURL) throws Exception {
-			URL gotURL = gotAlignmentResult.getPageURL(lang);
-			AssertString.assertStringEquals(
-					"URL of the "+lang+" page was not as expected.",
-					expURL.toString(), gotURL.toString());;
-			return this;
-		}
-
-		public AlignmentResultAssertion pageInLangContains(String lang, String expText) {
-			String gotText = gotAlignmentResult.getPageContent(lang);
-			AssertString.assertStringContains(
-					baseMessage+"\nContent of the "+lang+" page was not as expected", 
-					gotText, expText);	
-			return this;
-		}
-		
-	}
 
 }

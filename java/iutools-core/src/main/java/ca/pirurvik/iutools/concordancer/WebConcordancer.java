@@ -2,14 +2,18 @@ package ca.pirurvik.iutools.concordancer;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ca.inuktitutcomputing.utilities.IUTokenizer;
 import ca.nrc.data.harvesting.LanguageGuesser;
 import ca.nrc.data.harvesting.LanguageGuesserException;
 import ca.nrc.data.harvesting.PageHarvester;
 import ca.nrc.data.harvesting.PageHarvester_Barebones;
 import ca.nrc.datastructure.Pair;
+import net.loomchild.maligna.util.bind.al.Alignmentlist;
 import ca.nrc.data.harvesting.PageHarvesterException;
 
 /**
@@ -24,6 +28,8 @@ public class WebConcordancer {
 	
 	PageHarvester harvester = null;
 	LanguageGuesser langGuesser = new LanguageGuesser_IU();
+	Aligner_Maligna aligner = new Aligner_Maligna();
+	IUTokenizer tokenizer = new IUTokenizer();
 	
 	protected PageHarvester getHarvester() {
 		if (harvester == null) {
@@ -60,9 +66,31 @@ public class WebConcordancer {
 		return alignment;
 	}
 	
-	private void alignContents(DocAlignment alignment) {
-		// TODO Auto-generated method stub
+	private void alignContents(DocAlignment docAlignment) throws WebConcordancerException {
+		List<List<String>> langSents = new ArrayList<List<String>>();
+		List<String> langs = new ArrayList<String>();
+		for (String lang: docAlignment.getLanguages()) {
+			langs.add(lang);
+			List<String> sents = 
+				tokenizer.tokenize(docAlignment.getPageContent(lang));
+			langSents.add(sents);
+		}
 		
+		List<Pair<String, String>> alignedPairs = null;
+		try {
+			alignedPairs = aligner.align(langSents.get(0), langSents.get(1));
+		} catch (AlignerException e) {
+			throw new WebConcordancerException(e);
+		}
+		
+		docAlignment.alignments = new ArrayList<Alignment>();
+		for (Pair<String,String> aPair: alignedPairs) {
+			Alignment anAlignment = 
+				new Alignment(
+						langs.get(0), aPair.getFirst(),
+						langs.get(1), aPair.getSecond());
+			docAlignment.addAlignment(anAlignment);
+		}
 	}
 
 	private DocAlignment mockAlignmentResult() {
