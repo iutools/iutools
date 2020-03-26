@@ -70,7 +70,7 @@
 	
 
 	<!-- GisterPrep Endpoint -->
-	<servlet>
+	<!--<servlet>
 	   <servlet-name>GisterPrepEndpoint</servlet-name>
 	   <servlet-class>  
 	     ca.pirurvik.iutools.webservice.GisterPrepEndpoint
@@ -80,7 +80,7 @@
 		<servlet-name>GisterPrepEndpoint</servlet-name>
 		<url-pattern>/srv/gistprep/*</url-pattern>
 	</servlet-mapping>	
-	
+	-->
 
 	<!-- GistText Endpoint -->
 	<servlet>
