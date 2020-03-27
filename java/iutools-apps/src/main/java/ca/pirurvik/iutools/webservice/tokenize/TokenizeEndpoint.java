@@ -12,9 +12,9 @@ import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ca.inuktitutcomputing.utilities.IUTokenizer;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.json.PrettyPrinter;
+import ca.pirurvik.iutools.text.segmentation.IUTokenizer;
 import ca.pirurvik.iutools.webservice.EndPointHelper;
 import ca.pirurvik.iutools.webservice.SearchInputs;
 import ca.pirurvik.iutools.webservice.ServiceResponse;

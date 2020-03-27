@@ -6,7 +6,7 @@
  * par / by Benoit Farley
  * 
  */
-package ca.inuktitutcomputing.utilities;
+package ca.pirurvik.iutools.text.segmentation;
 
 import java.util.StringTokenizer;
 import java.util.Vector;

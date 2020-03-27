@@ -29,8 +29,6 @@ import com.google.gson.JsonIOException;
 
 import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.script.TransCoder;
-import ca.inuktitutcomputing.utilities.IUTokenizer;
-import ca.inuktitutcomputing.utilities.NgramCompiler;
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_Char;
@@ -40,6 +38,8 @@ import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.ui.commandline.ProgressMonitor_Terminal;
+import ca.pirurvik.iutools.text.ngrams.NgramCompiler;
+import ca.pirurvik.iutools.text.segmentation.IUTokenizer;
 
 
 /**

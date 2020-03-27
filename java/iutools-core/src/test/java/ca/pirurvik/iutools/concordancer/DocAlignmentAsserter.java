@@ -2,6 +2,8 @@ package ca.pirurvik.iutools.concordancer;
 
 import java.net.URL;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.junit.Assert;
 
@@ -54,13 +56,12 @@ public class DocAlignmentAsserter {
 			"Got:\n";
 				
 		for (Alignment anAlignment: gotDocAlignment.alignments) {
+			errMess += "  "+anAlignment.toString()+"\n";
 			if (anAlignment.toString().equals(expAlignment.toString())) {
-				errMess += "  "+anAlignment.toString()+"\n";
 				found = true;
 				break;
 			}
 		}
-		
 		
 		Assert.assertTrue(errMess, found);			
 	}
@@ -109,6 +110,21 @@ public class DocAlignmentAsserter {
 		AssertString.assertStringContains(
 				baseMessage+"\nContent of the "+lang+" page was not as expected", 
 				gotText, expText);	
+		return this;
+	}
+
+	public DocAlignmentAsserter contentIsPlainText(String... langs) {
+		
+		for (String aLang: langs) {
+			String langContent = gotDocAlignment.getPageContent(aLang);
+			
+			Matcher matcher = Pattern.compile("(</([^>])>)").matcher(langContent);
+			if (matcher.find() && matcher.group(0).length() < 20) {
+				Assert.fail(
+					"Content for language "+aLang+" contained HTML tags\n"+
+					"First tag found: "+matcher.group(0));
+			}
+		}
 		return this;
 	}
 }

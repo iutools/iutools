@@ -1,4 +1,4 @@
-package ca.inuktitutcomputing.utilities;
+package ca.pirurvik.iutools.text.ngrams;
 
 import java.util.HashSet;
 

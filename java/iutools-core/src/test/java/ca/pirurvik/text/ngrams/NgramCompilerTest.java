@@ -1,4 +1,4 @@
-package ca.inuktitutcomputing.utilities;
+package ca.pirurvik.text.ngrams;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.*;
 
 import ca.nrc.testing.AssertHelpers;
+import ca.pirurvik.iutools.text.ngrams.NgramCompiler;
 
 public class NgramCompilerTest {
 	

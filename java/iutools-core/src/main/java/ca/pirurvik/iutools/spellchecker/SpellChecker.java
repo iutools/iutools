@@ -41,6 +41,8 @@ import ca.pirurvik.iutools.edit_distance.EditDistanceCalculator;
 import ca.pirurvik.iutools.edit_distance.EditDistanceCalculatorException;
 import ca.pirurvik.iutools.edit_distance.EditDistanceCalculatorFactory;
 import ca.pirurvik.iutools.edit_distance.EditDistanceCalculatorFactoryException;
+import ca.pirurvik.iutools.text.ngrams.NgramCompiler;
+import ca.pirurvik.iutools.text.segmentation.IUTokenizer;
 import ca.inuktitutcomputing.config.IUConfig;
 import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.morph.Decomposition;
@@ -50,8 +52,6 @@ import ca.inuktitutcomputing.script.Orthography;
 import ca.inuktitutcomputing.script.Syllabics;
 import ca.inuktitutcomputing.script.TransCoder;
 import ca.inuktitutcomputing.utilbin.AnalyzeNumberExpressions;
-import ca.inuktitutcomputing.utilities.IUTokenizer;
-import ca.inuktitutcomputing.utilities.NgramCompiler;
 
 public class SpellChecker {
 	

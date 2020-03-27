@@ -1,4 +1,4 @@
-package ca.inuktitutcomputing.utilities;
+package ca.pirurvik.iutools.text.segmentation;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import ca.nrc.datastructure.Pair;
 import ca.nrc.testing.AssertHelpers;
+import ca.pirurvik.iutools.text.segmentation.IUTokenizer;
 
 public class IUTokenizerTest {
 	

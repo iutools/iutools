@@ -28,9 +28,9 @@ import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.morph.MorphInukException;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
-import ca.inuktitutcomputing.utilities.NgramCompiler;
 import ca.nrc.config.ConfigException;
 import ca.nrc.file.ResourceGetter;
+import ca.pirurvik.iutools.text.ngrams.NgramCompiler;
 
 public class AnalyzeNumberExpressions {
 	

@@ -12,11 +12,11 @@ import org.apache.log4j.Logger;
 
 import ca.inuktitutcomputing.script.Orthography;
 import ca.inuktitutcomputing.script.Syllabics;
-import ca.inuktitutcomputing.utilities.IUTokenizer;
 import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.pirurvik.iutools.CompiledCorpusException;
 import ca.pirurvik.iutools.CorpusDocument_File;
 import ca.pirurvik.iutools.CorpusReader_Directory;
+import ca.pirurvik.iutools.text.segmentation.IUTokenizer;
 
 public class TextExtractor {
 	
