@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ca.nrc.datastructure.Pair;
@@ -103,7 +104,7 @@ public class WebConcordancerTest {
 
 	}
 	
-	@Test
+	@Test @Ignore
 	public void test__alignPage__HappyPath() throws Exception {
 		URL url = new URL("https://www.gov.nu.ca/");
 		DocAlignment pageAligment = 
@@ -111,11 +112,12 @@ public class WebConcordancerTest {
 
 		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
 			.wasSuccessful()
+			.contentIsPlainText("en", "iu")
 			.urlForLangEquals("en", new URL("https://www.gov.nu.ca/"))
 			.urlForLangEquals("iu", new URL("https://www.gov.nu.ca/iu"))
 			.pageInLangContains("en", "Premier of Nunavut")
 			.pageInLangContains("iu", "ᓯᕗᓕᖅᑎ ᓄᓇᕗᒻᒥ")
-//			.containsAlignment(new Alignment("en", "BLAH", "iu", "BLOB"))
+			.containsAlignment(new Alignment("en", "BLAH", "iu", "BLOB"))
 			;
 	}
 	

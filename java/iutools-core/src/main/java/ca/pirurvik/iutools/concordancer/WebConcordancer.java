@@ -7,12 +7,13 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import ca.inuktitutcomputing.utilities.IUTokenizer;
 import ca.nrc.data.harvesting.LanguageGuesser;
 import ca.nrc.data.harvesting.LanguageGuesserException;
 import ca.nrc.data.harvesting.PageHarvester;
 import ca.nrc.data.harvesting.PageHarvester_Barebones;
 import ca.nrc.datastructure.Pair;
+import ca.pirurvik.iutools.text.segmentation.IUTokenizer;
+import ca.pirurvik.iutools.text.segmentation.Segmenter;
 import net.loomchild.maligna.util.bind.al.Alignmentlist;
 import ca.nrc.data.harvesting.PageHarvesterException;
 
@@ -26,14 +27,15 @@ public class WebConcordancer {
 	
 	protected static enum StepOutcome {SUCCESS, FAILURE, KEEP_TRYING};
 	
-	PageHarvester harvester = null;
+	PageHarvester_Barebones harvester = null;
 	LanguageGuesser langGuesser = new LanguageGuesser_IU();
 	Aligner_Maligna aligner = new Aligner_Maligna();
-	IUTokenizer tokenizer = new IUTokenizer();
+//	IUTokenizer tokenizer = new IUTokenizer();
 	
-	protected PageHarvester getHarvester() {
+	protected PageHarvester_Barebones getHarvester() {
 		if (harvester == null) {
 			harvester = new PageHarvester_Barebones();
+			harvester.setHarvestFullText(true);
 		}
 		return harvester;
 	}
@@ -71,8 +73,9 @@ public class WebConcordancer {
 		List<String> langs = new ArrayList<String>();
 		for (String lang: docAlignment.getLanguages()) {
 			langs.add(lang);
+			Segmenter segmenter = Segmenter.makeSegmenter(lang);
 			List<String> sents = 
-				tokenizer.tokenize(docAlignment.getPageContent(lang));
+				segmenter.segment(docAlignment.getPageContent(lang));
 			langSents.add(sents);
 		}
 		
@@ -219,8 +222,9 @@ public class WebConcordancer {
 				
 				if (otherLangURLstr != null) {
 					try {
-						String otherLangContent = 
-								harvester.harvestSinglePage(new URL(otherLangURLstr));
+						harvester.harvestSinglePage(new URL(otherLangURLstr));
+						String otherLangContent = harvester.getText();
+								
 						URL otherLangURL = harvester.getCurrentURL();
 						alignment.setPageContent(otherLang, otherLangContent);
 						alignment.setPageURL(otherLang, otherLangURL);
@@ -240,7 +244,8 @@ public class WebConcordancer {
 		String urlText = null;
 		String urlLang = null;
 		try {
-			urlText = getHarvester().harvestSinglePage(url);
+			getHarvester().harvestSinglePage(url);
+			urlText = getHarvester().getText();
 			urlLang = guessLang(urlText);
 			if (!urlLang.equals(languages[0]) && 
 					!urlLang.equals(languages[1])) {
