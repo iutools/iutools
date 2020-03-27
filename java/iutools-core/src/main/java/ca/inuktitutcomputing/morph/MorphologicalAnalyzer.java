@@ -65,7 +65,7 @@ public class MorphologicalAnalyzer {
     		  .build();
     
     public MorphologicalAnalyzer() throws LinguisticDataException {
-//		LinguisticDataSingleton.getInstance("csv");
+		LinguisticData.getInstance();
     }
 
 

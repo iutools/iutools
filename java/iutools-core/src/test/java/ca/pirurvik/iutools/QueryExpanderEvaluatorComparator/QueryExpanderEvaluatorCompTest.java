@@ -14,7 +14,7 @@ import ca.pirurvik.iutools.QueryExpanderEvaluator;
 
 public class QueryExpanderEvaluatorCompTest {
 
-	@Test
+	@Test @Ignore
 	public void test__QueryExpanderEvaluatorComp() throws Exception {
 		
 		System.out.println("\n\n*** Running test__QueryExpanderEvaluatorComp. This test can take a few minutes to complete\n\n");;
