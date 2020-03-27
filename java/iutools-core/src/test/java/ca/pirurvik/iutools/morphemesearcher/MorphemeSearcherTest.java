@@ -94,8 +94,6 @@ public class MorphemeSearcherTest {
 	
 	@Test
 	public void test__wordsContainingMorpheme__root() throws Exception {
-//		LinguisticData.init();
-//		LinguisticData.getInstance();
 		String morpheme = "inuk";
 		List<MorphemeSearcher.Words> wordsForMorphemes = this.morphemeExtractor.wordsContainingMorpheme(morpheme);
 		Assert.assertTrue(wordsForMorphemes.size()==1);
