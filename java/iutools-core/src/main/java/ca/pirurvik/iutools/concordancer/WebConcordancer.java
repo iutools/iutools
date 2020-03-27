@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 import ca.nrc.data.harvesting.LanguageGuesser;
 import ca.nrc.data.harvesting.LanguageGuesserException;
 import ca.nrc.data.harvesting.PageHarvester;
-import ca.nrc.data.harvesting.PageHarvester_Barebones;
+import ca.nrc.data.harvesting.PageHarvester_HtmlCleaner;
 import ca.nrc.datastructure.Pair;
 import ca.pirurvik.iutools.text.segmentation.IUTokenizer;
 import ca.pirurvik.iutools.text.segmentation.Segmenter;
@@ -27,14 +27,14 @@ public class WebConcordancer {
 	
 	protected static enum StepOutcome {SUCCESS, FAILURE, KEEP_TRYING};
 	
-	PageHarvester_Barebones harvester = null;
+	PageHarvester_HtmlCleaner harvester = null;
 	LanguageGuesser langGuesser = new LanguageGuesser_IU();
 	Aligner_Maligna aligner = new Aligner_Maligna();
 //	IUTokenizer tokenizer = new IUTokenizer();
 	
-	protected PageHarvester_Barebones getHarvester() {
+	protected PageHarvester_HtmlCleaner getHarvester() {
 		if (harvester == null) {
-			harvester = new PageHarvester_Barebones();
+			harvester = new PageHarvester_HtmlCleaner();
 			harvester.setHarvestFullText(true);
 		}
 		return harvester;
