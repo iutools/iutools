@@ -2,6 +2,8 @@ package ca.pirurvik.iutools.concordancer;
 
 import org.junit.Assert;
 
+import ca.pirurvik.iutools.testing.Asserter;
+
 public class AlignmentAsserter extends Asserter {
 
 	public static AlignmentAsserter assertThat(Alignment _gotAlignment, 

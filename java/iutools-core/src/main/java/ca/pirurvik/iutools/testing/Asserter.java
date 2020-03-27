@@ -1,4 +1,4 @@
-package ca.pirurvik.iutools.concordancer;
+package ca.pirurvik.iutools.testing;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,10 +12,6 @@ public class Asserter {
 	public Asserter(Object _gotObject, String mess, Class<?> gotObjectClass) 
 		throws Exception {
 		this.baseMessage = mess;
-		
-		ObjectMapper mapper = new ObjectMapper();
-		String json = mapper.writeValueAsString(_gotObject);
-		gotObject = mapper.readValue(json, gotObjectClass);
 	}
 	
 }

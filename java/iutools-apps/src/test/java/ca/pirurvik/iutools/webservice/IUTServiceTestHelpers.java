@@ -25,6 +25,8 @@ import ca.pirurvik.iutools.search.SearchHit;
 import ca.pirurvik.iutools.testing.IUTTestHelpers;
 import ca.pirurvik.iutools.webservice.SearchEndpoint;
 import ca.pirurvik.iutools.webservice.SearchResponse;
+import ca.pirurvik.iutools.webservice.gist.GistWordEndpoint;
+import ca.pirurvik.iutools.webservice.gist.GistWordResponse;
 import ca.pirurvik.iutools.webservice.tokenize.TokenizeEndpoint;
 import ca.pirurvik.iutools.webservice.tokenize.TokenizeResponse;
 
@@ -36,7 +38,7 @@ public class IUTServiceTestHelpers {
 	public static final long LONG_WAIT = 2*MEDIUM_WAIT;
 	
 	public enum EndpointNames {
-		GIST, MORPHEME, MORPHEMEEXAMPLE, SEARCH, TOKENIZE, SPELL};
+		GIST, GIST_WORD, MORPHEME, MORPHEMEEXAMPLE, SEARCH, TOKENIZE, SPELL};
 	
 
 	public static MockHttpServletResponse postEndpointDirectly(EndpointNames eptName, Object inputs) throws Exception {
@@ -52,6 +54,8 @@ public class IUTServiceTestHelpers {
 		
 		if (eptName == EndpointNames.GIST) {
 			new GistEndpoint().doPost(request, response);
+		} else if (eptName == EndpointNames.GIST_WORD) {
+			new GistWordEndpoint().doPost(request, response);
 		} else if (eptName == EndpointNames.MORPHEME) {
 			new OccurenceSearchEndpoint().doPost(request, response);
 		} else if (eptName == EndpointNames.MORPHEMEEXAMPLE) {
@@ -81,6 +85,15 @@ public class IUTServiceTestHelpers {
 				new ObjectMapper().readValue(responseStr, GistResponse.class);
 		return response;
 	}
+	
+	public static Object toGistWordResponse(
+			MockHttpServletResponse gotResponse) throws IOException {
+		String responseStr = gotResponse.getOutputStream().toString();
+		GistWordResponse response = 
+				new ObjectMapper().readValue(responseStr, GistWordResponse.class);
+		return response;
+	}
+	
 	
 
 	public static SpellResponse toSpellResponse(
@@ -244,4 +257,5 @@ public class IUTServiceTestHelpers {
 				expectedAlignments[0].get("en").substring(0,100), 
 				gotAlignments[0].get("en").substring(0,100));
 	}
+
 }

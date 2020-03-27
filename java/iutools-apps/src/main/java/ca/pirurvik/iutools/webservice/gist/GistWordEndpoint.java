@@ -30,7 +30,7 @@ public class GistWordEndpoint extends HttpServlet {
 	protected void init_GistWordEndpoint() {
 	}
 	
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.webservice.OccurenceExampleEndpoint.doPost");
 		tLogger.trace("invoked");
 		tLogger.trace("request URI= "+request.getRequestURI());
@@ -73,7 +73,7 @@ public class GistWordEndpoint extends HttpServlet {
 		// Retrieve aligned sentences that contain the word
 		//
 		ProcessQuery processQuery = new ProcessQuery();
-		String query = inputs.word;
+		String query = inputs.wordRomanized;
 		logger.trace("query= " + query);
 		logger.trace("calling run() on processQuery=" + processQuery);
 		String[] alignments = processQuery.run(query);

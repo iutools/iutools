@@ -511,4 +511,12 @@ public class TransCoder {
         }
     }
 
+    public static String ensureRoman(String text) {
+    	String romanText = text;
+    	if (Syllabics.syllabicCharsRatio(text) > 0.8) {
+    		romanText = unicodeToRoman(text);
+    	}
+    	
+    	return romanText;
+    }
 }

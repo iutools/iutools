@@ -1,12 +1,14 @@
 package ca.pirurvik.iutools.webservice.gist;
 
 import ca.inuktitutcomputing.morph.Gist;
+import ca.inuktitutcomputing.script.TransCoder;
 import ca.inuktitutcomputing.utilities.Alignment;
 import ca.pirurvik.iutools.webservice.ServiceResponse;
 
 public class GistWordResponse extends ServiceResponse {
 	
-	public String word = null;
+	public String inputWord = null;
+	public String wordRomanized = null;
 	public Gist wordGist = null;
 	public Alignment[] alignments = null;
 	
@@ -19,6 +21,9 @@ public class GistWordResponse extends ServiceResponse {
 	}
 
 	private void init_GistWordResponse(String _word) {
-		this.word = _word;
+		this.inputWord = _word;
+		if (_word != null) {
+			this.wordRomanized = TransCoder.ensureRoman(_word);
+		}
 	}
 }

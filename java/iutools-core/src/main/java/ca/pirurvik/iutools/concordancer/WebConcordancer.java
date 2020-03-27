@@ -9,12 +9,9 @@ import java.util.regex.Pattern;
 
 import ca.nrc.data.harvesting.LanguageGuesser;
 import ca.nrc.data.harvesting.LanguageGuesserException;
-import ca.nrc.data.harvesting.PageHarvester;
 import ca.nrc.data.harvesting.PageHarvester_HtmlCleaner;
 import ca.nrc.datastructure.Pair;
-import ca.pirurvik.iutools.text.segmentation.IUTokenizer;
 import ca.pirurvik.iutools.text.segmentation.Segmenter;
-import net.loomchild.maligna.util.bind.al.Alignmentlist;
 import ca.nrc.data.harvesting.PageHarvesterException;
 
 /**
