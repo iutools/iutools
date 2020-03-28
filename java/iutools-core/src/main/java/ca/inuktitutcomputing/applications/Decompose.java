@@ -106,7 +106,6 @@ public class Decompose {
         }
         	
         startInitTime = Calendar.getInstance().getTimeInMillis();
-        LinguisticData.init();
         endInitTime = Calendar.getInstance().getTimeInMillis();
       
         startTime = Calendar.getInstance().getTimeInMillis();
@@ -147,7 +146,8 @@ public class Decompose {
         // Décomposition du mot.
         Decomposition[] decs;
         try {
-        	MorphologicalAnalyzer morphAnalyzer = new MorphologicalAnalyzer();
+            LinguisticData.init(); // make sure the LinguisticData instance is null
+            MorphologicalAnalyzer morphAnalyzer = new MorphologicalAnalyzer();
         	morphAnalyzer.disactivateTimeout();
         	
 			decs = morphAnalyzer.decomposeWord(word,extendedAnalysis);
