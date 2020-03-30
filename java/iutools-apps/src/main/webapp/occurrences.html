@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
 
-  <title>InuktutiTools Word Occurrences</title>
+  <title>InuktutiTools Morpheme Examples Search</title>
   <link rel="stylesheet" href="css/styles.css?v1">
 
   <script src="js/jquery-3.3.1.min.js"></script>
@@ -19,25 +19,26 @@
 </header>
 
 <main>
-    <h1 style="text-align:left;">Words with morpheme from corpus
-    	<select id="corpus">
-    		<option value="Hansard-1999-2002" selected>Nunavut Hansard 1999-2002</option>
-    		<option value="Hansard-1999-2018">Nunavut Hansard 1999-2018</option>
-    		<option value="CBC">CBC transcripts</option>
-    	</select>
+    <h1 style="text-align:left;">Find examples of a morpheme's use
     </h1>
+
+	<b>In corpus: </b>
+    <select id="corpus">
+   		<option value="Hansard-1999-2002" selected>Nunavut Hansard 1999-2002</option>
+   		<option value="Hansard-1999-2018">Nunavut Hansard 1999-2018</option>
+   		<option value="CBC">CBC transcripts</option>
+   	</select>
     
     <form id="form-query" method="post" action="">
-    
     <div>
-    Enter some Inuktut morpheme in its canonical form (e.g. gaq): 
-    <input id="morpheme" name="morpheme" style="width:20em;">
-    </div>
-    <div>
-    Max number of words: 
+    Max examples: 
     <input id="nb-examples" name="nb-examples" value="20" style="width:5em;">
     </div><br>
-    <button id="btn-occ" type="button" name="btn-occ" value="Occurrences">Get words</button>
+    <div>
+    Morpheme(e.g. gaq): 
+    <input id="morpheme" name="morpheme" style="width:20em;">
+    </div>    
+    <button id="btn-occ" type="button" name="btn-occ" value="Occurrences">Find examples</button>
     <input type="hidden" id="example-word" name="example-word" value="">
     <input type="hidden" id="corpus-name" name="corpus-name" value="">
     <p></p>
@@ -71,7 +72,7 @@
 
 <script src="js/RunWhen.js"></script>
 <script src="js/WidgetController.js"></script>
-<script src="js/OccurrenceController.js"></script>
+<script src="js/OccurrenceController.js?version=0.00005"></script>
 
 <script>
 	// Load the header, footer etc...

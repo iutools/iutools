@@ -10,13 +10,13 @@ class OccurrenceController extends WidgetController {
 	
 	// Setup handler methods for different HTML elements specified in the config.
 	attachHtmlElements() {
-		this.setEventHandler("btnGet", "click", this.onGet);
-		this.onReturnKey("inpMorpheme", this.onGet);
+		this.setEventHandler("btnGet", "click", this.onFindExamples);
+		this.onReturnKey("inpMorpheme", this.onFindExamples);
 		this.setEventHandler("iconizer", "click", this.iconizeDivExampleWord);
 		this.setEventHandler("divIconizedExampleWord", "click", this.deiconizeDivExampleWord);
 	}
 	
-	onGet() {
+	onFindExamples() {
 		this.elementForProp("divWordInExampleContents").html('').parent().hide();
 		this.elementForProp('inpExampleWord').val('');
 		this.elementForProp("divExampleWord").hide();
@@ -26,32 +26,37 @@ class OccurrenceController extends WidgetController {
 			this.setGetBusy(true);
 			var requestData = this.getSearchRequestData();
 			console.log('requestData= '+JSON.stringify(requestData));
-			this.invokeGetService(requestData, 
+			this.invokeFindExampleService(requestData, 
 					this.successGetCallback, this.failureGetCallback);
 		}
 	}
 	
-	onWordSelect(ev) {
+	onExampleSelect(ev) {
 		var element = ev.target;
-		console.log("onWordSelect: target="+element.id);
+		console.log("onExampleSelect: target="+element.id);
 		var exampleWord = $(element).text();
 		occurrenceController.elementForProp("divWordInExampleContents").html('');
 		occurrenceController.elementForProp("divWordInExample").html('');
 		occurrenceController.elementForProp("divExampleWord").show();
 		occurrenceController.showSpinningWheel("divMessageInExample","Searching");
-		occurrenceController.invokeExampleWordService(occurrenceController.getExampleWordRequestData(exampleWord),
-				occurrenceController.successExampleWordCallback, occurrenceController.failureExampleWordCallback);
+		occurrenceController.invokeGistWordService(
+				occurrenceController.getExampleWordRequestData(exampleWord),
+				occurrenceController.successExampleWordCallback, 
+				occurrenceController.failureExampleWordCallback);
 	}
 	
-	invokeGetService(jsonRequestData, _successCbk, _failureCbk) {
-		this.invokeSearchService(jsonRequestData, _successCbk, _failureCbk, 'srv/occurrences');
-	}
-	invokeExampleWordService(jsonRequestData, _successCbk, _failureCbk) {
-		this.invokeSearchService(jsonRequestData, _successCbk, _failureCbk, 'srv/occurrenceexample');
+	invokeFindExampleService(jsonRequestData, _successCbk, _failureCbk) {
+		this.invokeService(jsonRequestData, _successCbk, _failureCbk, 
+				'srv/occurrences');
 	}
 	
-	invokeSearchService(jsonRequestData, _successCbk, _failureCbk, _url) {
-			var tracer = new Tracer('OccurenceController.invokeSearchService', true);
+	invokeGistWordService(jsonRequestData, _successCbk, _failureCbk) {
+		this.invokeService(jsonRequestData, _successCbk, _failureCbk, 
+				'srv/occurrenceexample');
+	}
+	
+	invokeService(jsonRequestData, _successCbk, _failureCbk, _url) {
+			var tracer = new Tracer('OccurenceController.invokeService', true);
 			tracer.trace("_successCbk="+_successCbk+", jsonRequestData="+JSON.stringify(jsonRequestData));
 			this.busy = true;
 			var controller = this;
@@ -77,7 +82,7 @@ class OccurrenceController extends WidgetController {
 		        error: fctFailure
 			});
 			
-			tracer.trace('OccurenceController.invokeSearchService', "exited");
+			tracer.trace('OccurenceController.invokeService', "exited");
 	}
 	
 	
@@ -252,7 +257,7 @@ class OccurrenceController extends WidgetController {
 	    for (var ipn=0; ipn<anchorsWords.length; ipn++) {
 	    	anchorsWords[ipn].addEventListener(
 		    		  'click', 
-		    		  this.onWordSelect
+		    		  this.onExampleSelect
 		    		  );
 	    }
 	}
