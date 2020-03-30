@@ -58,6 +58,19 @@
 
 	<!-- Gist Endpoint -->
 	<servlet>
+	   <servlet-name>GistWordEndpoint</servlet-name>
+	   <servlet-class>  
+	     ca.pirurvik.iutools.webservice.gist.GistWordEndpoint
+	   </servlet-class>
+	</servlet> 
+	<servlet-mapping>
+		<servlet-name>GistWordEndpoint</servlet-name>
+		<url-pattern>/srv/gistword/*</url-pattern>
+	</servlet-mapping>	
+	
+
+	<!-- Gist Endpoint -->
+	<servlet>
 	   <servlet-name>GistEndpoint</servlet-name>
 	   <servlet-class>  
 	     ca.pirurvik.iutools.webservice.GistEndpoint

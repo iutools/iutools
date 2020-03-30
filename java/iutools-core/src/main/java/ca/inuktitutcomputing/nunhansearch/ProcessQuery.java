@@ -31,8 +31,10 @@ public class ProcessQuery {
 	File alignedSentencesFile = null;
 	
 	public ProcessQuery() throws ConfigException {
+		Logger tLogger = Logger.getLogger("ca.inuktitutcomputing.nunhansearch.ProcessQuery.constructor");
 		inuktutWordIndexFile = new File(IUConfig.getIUDataPath()+"/"+inuktutWordIndexFilePath);
 		alignedSentencesFile = new File(IUConfig.getIUDataPath()+"/"+alignedSentencesFilePath);
+		tLogger.trace("inuktutWordIndexFile="+inuktutWordIndexFile);;
 	}
 	
 	public void setInuktutWordIndexFile(String path) {
@@ -44,15 +46,17 @@ public class ProcessQuery {
 	
 	public String[] run(String query) throws ConfigException, IOException {
 		Logger tLogger = Logger.getLogger("ca.inuktitutcomputing.nunhansearch.ProcessQuery.run");
-		tLogger.trace("** INVOKED");
-//		try {
-			query = "^"+query+":";
-			TermDistribution distribution = getDistribution(query);
-			String[] alignments = getAlignments(distribution.variantsDistributions);
-			return alignments;
-//		} catch (Exception e) {
-//			return new String[] {};
-//		}
+		query = "^"+query+":";
+		tLogger.trace("query='"+query+"'");
+		TermDistribution distribution = getDistribution(query);
+		String[] alignments = getAlignments(distribution.variantsDistributions);
+		
+		
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("returning alignments=\n[\n   "+String.join("\n  ", alignments)+"\n]");
+		}
+		
+		return alignments;
 	}
 	
 	/**
@@ -63,9 +67,9 @@ public class ProcessQuery {
 	 */
 	
 	public String[] getAlignments(HashMap<String, Long[]> variantsDistributions) throws IOException {
-		Logger logger = Logger.getLogger("ProcessQuery.getAlignments");
-		logger.debug("getAlignments invoked");
-		logger.debug("alignedSentencesFile= "+alignedSentencesFile.getAbsolutePath());
+		Logger logger = Logger.getLogger("ca.inuktitutcomputing.nunhansearch.ProcessQuery.getAlignments");
+		logger.trace("getAlignments invoked");
+		logger.trace("alignedSentencesFile= "+alignedSentencesFile.getAbsolutePath());
 		BufferedReader br = null;
 		try {
 			br = new BufferedReader(new FileReader(alignedSentencesFile));
@@ -74,8 +78,9 @@ public class ProcessQuery {
 		}
 		String l;
 		try {
-			while ( (l=br.readLine()) != null)
-				logger.debug("l: '"+l+"'");
+			while ( (l=br.readLine()) != null) {
+//				logger.trace("l: '"+l+"'");
+			}
 		} catch (IOException e) {
 			throw new IOException("Problem reading line from aligned sentence file: "+alignedSentencesFile);
 			
@@ -87,21 +92,33 @@ public class ProcessQuery {
 		Iterator<String> itVar = variants.iterator();
 		while (itVar.hasNext()) {
 			String variant = itVar.next();
-			logger.debug("variant= "+variant);
+			logger.trace("variant='"+variant+"'");
 			Long[] positions = variantsDistributions.get(variant);
 			for (int ip=0; ip<positions.length; ip++) {
 				long position = positions[ip].longValue();
-				logger.debug("position= "+position);
+				logger.trace("position= "+position);
 				raf.seek(position);
 				String line = raf.readLine();
 				listAlignedSentences.add(line);
 			}
 		}
 		raf.close();
-		return listAlignedSentences.toArray(new String[] {});
+		
+		String[] alignmentsArray = 
+				listAlignedSentences
+					.toArray(new String[listAlignedSentences.size()]);
+		if (logger.isTraceEnabled()) {
+			logger.trace("returning alignmentsArray=[\n"+String.join("\n  ", alignmentsArray)+"\n]");
+		}
+		return alignmentsArray;
+		
 	}
 
-	public TermDistribution getDistribution(String query) throws ConfigException, FileNotFoundException {
+	public TermDistribution getDistribution(String query) 
+			throws ConfigException, FileNotFoundException {
+		Logger tLogger = Logger.getLogger("ca.inuktitutcomputing.nunhansearch.ProcessQuery.getDistribution");
+		tLogger.trace("inuktutWordIndexFile="+inuktutWordIndexFile);
+		
 		String grepResult = grep(query,inuktutWordIndexFile);
 		String[] matchingLines = grepResult.split("\n");
 		Pattern pat = Pattern.compile("^([^:]+):([0-9]+):(.*)$");
@@ -133,15 +150,18 @@ public class ProcessQuery {
 	}
 	
 	public String grep(String query, File file) throws FileNotFoundException {
-		
+		Logger tLogger = Logger.getLogger("ca.inuktitutcomputing.nunhansearch.ProcessQuery.grep");
 		if (!file.exists()) {
 			throw new FileNotFoundException("Could not find file "+file+".\nIt might be that you need to install the NunHanSearch data directory.");
 		}
-		Logger logger = Logger.getLogger("ProcessQuery.grep");
 		String queryRegexp = query.replace("*", "\\S*?");
 		StringOutput output = new StringOutput();
-		logger.debug("queryRegexp= "+queryRegexp);
+		tLogger.trace("queryRegexp= "+queryRegexp);
 		Unix4j.grep(queryRegexp, file).toOutput(output);
+		
+
+		tLogger.trace("returning output="+output.toString());
+		
 		return output.toString();
 	}
 

@@ -6,7 +6,14 @@ import ca.pirurvik.iutools.webservice.ServiceInputs;
 public class GistWordInputs extends ServiceInputs {
 
 	public String word = null;
-	public String wordRomanized = null;
+	private String wordRomanized = null;
+		public void setWordRomanized(String wr) { this.wordRomanized = wr; }
+		public String getWordRomanized() {
+			if (this.wordRomanized == null) {
+				this.wordRomanized = TransCoder.ensureRoman(this.word);
+			}
+			return this.wordRomanized;
+		}
 
 	public GistWordInputs() {
 		init_GistWordInputs(null);

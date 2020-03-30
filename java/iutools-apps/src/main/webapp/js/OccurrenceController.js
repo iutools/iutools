@@ -52,7 +52,7 @@ class OccurrenceController extends WidgetController {
 	
 	invokeGistWordService(jsonRequestData, _successCbk, _failureCbk) {
 		this.invokeService(jsonRequestData, _successCbk, _failureCbk, 
-				'srv/occurrenceexample');
+				'srv/gistword');
 	}
 	
 	invokeService(jsonRequestData, _successCbk, _failureCbk, _url) {
@@ -105,7 +105,7 @@ class OccurrenceController extends WidgetController {
 		if (resp.errorMessage != null) {
 			this.failureExampleWordCallback(resp);
 		} else {
-			this.setExampleWordResults(resp);	
+			this.displayWordGist(resp);	
 		}
 		this.setWordExampleBusy(false);
 	}
@@ -183,9 +183,9 @@ class OccurrenceController extends WidgetController {
 		return jsonInputs;
 	}
 	
-	getExampleWordRequestData(word) {
+	getExampleWordRequestData(_word) {
 		var request = { 
-			exampleWord: word
+			word: _word
 			};
 		var jsonInputs = JSON.stringify(request);;
 		return jsonInputs;
@@ -263,11 +263,11 @@ class OccurrenceController extends WidgetController {
 	}
 	
 		
-	setExampleWordResults(results) {
-		var tracer = new Tracer('OccurenceController.setExampleWordResults', true);
+	displayWordGist(results) {
+		var tracer = new Tracer('OccurenceController.displayWordGist', true);
 		var divExampleWord = this.elementForProp("divExampleWord");
 		this.hideSpinningWheel("divMessageInExample");
-		var gist = results.exampleWord.gist;
+		var gist = results.wordGist;
 		this.elementForProp("divWordInExample").html('Example word: '+'<strong>'+gist.word+'</strong>');
 		var wordComponents = gist.wordComponents;
 		var htmlGist = '<table id="tbl-gist" class="gist"><tr><th>Morpheme</th><th>Meaning</th></tr>';
@@ -276,7 +276,7 @@ class OccurrenceController extends WidgetController {
 			htmlGist += '<tr><td>'+component.fst+'</td><td>'+component.snd+'</td></tr>'
 		}
 		htmlGist += '</table>';
-		var alignments = results.exampleWord.alignments;
+		var alignments = results.alignments;
 		tracer.trace('Nb. alignments= '+alignments.length);
 		var htmlAlign = '<table id="tbl-alignments" class="alignments"><th>Inuktitut</th><th>English</th></tr>';
 		for (var ial=0; ial<Math.min(30,alignments.length); ial++) {
