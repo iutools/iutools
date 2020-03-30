@@ -7,8 +7,10 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ca.pirurvik.iutools.text.segmentation.IUTokenizer;
 import ca.nrc.data.harvesting.LanguageGuesser;
 import ca.nrc.data.harvesting.LanguageGuesserException;
+import ca.nrc.data.harvesting.PageHarvester;
 import ca.nrc.data.harvesting.PageHarvester_HtmlCleaner;
 import ca.nrc.datastructure.Pair;
 import ca.pirurvik.iutools.text.segmentation.Segmenter;

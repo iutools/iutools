@@ -3,6 +3,7 @@ package ca.pirurvik.iutools.concordancer;
 import java.net.URL;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -28,6 +29,12 @@ public class WebConcordancerTest {
 		
 	@Test
 	public void test__WebConcordancer__Synopsis() throws Exception {
+		Assert.fail(
+			"\n\n** TODO: This test started failing when WebConcordancer started aligning plaintext instead of html\n"+
+			"Started happening at commit 74699f874735b793d3de69861370e319426458d5 (2020-03-27@06h44)\n"
+					
+		);
+		
 		//
 		// Use this class to fetch aligned sentences from a multilingual 
 		// web page.
