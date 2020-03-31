@@ -107,7 +107,7 @@ span#plural {
 	color:red;
 	text-decoration:underline;
 }
-#div-example-word {
+#div-gist {
 	position:fixed;
 	top:40px;
 	width:600px;
@@ -119,7 +119,7 @@ span#plural {
 	background-color:#ccccff;
 	padding:5px;
 }
-#div-example-word #iconizer {
+#div-gist #div-gist-iconizer {
 	background-color:white;
 	position:absolute;
 	top:0;
@@ -127,20 +127,20 @@ span#plural {
 	cursor:pointer;
 	vertical-align:middle;
 }
-#div-example-word #iconizer img {
+#div-gist #div-gist-iconizer img {
 	vertical-align:middle;
 }
-#div-example-word #example-contents {
+#div-gist #div-gist-contents {
 	overflow-y: scroll;
 	height:577px;
 	margin-top:5px;
 }
-#div-example-word #word-in-example {
+#div-gist #div-gist-word {
 }
-#div-example-word #message-in-example {
+#div-gist #div-gist-message {
 	display:none;
 }
-div#div-example-word-iconized {
+div#div-gist-iconized {
 	position:fixed;
 	text-align:center;
 	right:0;
@@ -153,7 +153,7 @@ div#div-example-word-iconized {
 	display:none;
 	cursor:pointer;
 }
-div#div-example-word-iconized img {
+div#div-gist-iconized img {
 	vertical-align:middle;
 }
 table.gist, table.alignments {
@@ -247,7 +247,7 @@ div#gist-alignments span.highlighted { font-weight:bold; color:red; }
 	background-color:#ccccff;
 	padding:5px;
 }
-#div-gist-word-holder { font-weight:bold; color:white; background-color:green; padding-left:6px; }
+#div-gist-holder { font-weight:bold; color:white; background-color:green; padding-left:6px; }
 #div-gist #div-gist-iconizer {
 	background-color:white;
 	position:absolute;

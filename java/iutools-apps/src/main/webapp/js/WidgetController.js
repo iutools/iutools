@@ -45,16 +45,29 @@ class WidgetController {
 		return elt;
 	}
 	
-	setEventHandler(propName, evtName, handler) {
-		var elt = this.elementForProp(propName);
+	setEventHandler(propNameOrElt, evtName, handler) {
+		console.log("** WidgetController.setEventHandler: propNameOrElt="+
+			propNameOrElt);
+		var elt = propNameOrElt;
+		if (typeof(propNameOrElt) == "string") {
+			elt = this.elementForProp(propNameOrElt);
+		}
+		
 		var controller = this;
 		var fct_handler =
-				function() {
-					handler.call(controller);
+				function(evt) {
+					handler.call(controller, evt);
 				};
+		console.log("** WidgetController.setEventHandler: elt class="+
+			elt.constructor.name);
+
 		if (evtName == "click") {
 			elt.off('click').on("click", fct_handler);
 		}
+
+		console.log("** WidgetController.setEventHandler: "+
+			"succesfully added handler");
+		
 	}	
 	
 	onReturnKey(id, method) {
@@ -63,7 +76,7 @@ class WidgetController {
 		
 		var keypressHandler = 
 				function(event) {
-					console.log("-- onReturnKey.keypressHandler: event="+JSON.stringify(event));
+//					console.log("-- onReturnKey.keypressHandler: event="+JSON.stringify(event));
 					var keycode = (event.keyCode ? event.keyCode : event.which);
 					if(keycode == '13'){
 						method.call(controller);

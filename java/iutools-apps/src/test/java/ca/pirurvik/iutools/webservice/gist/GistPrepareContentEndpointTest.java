@@ -40,6 +40,7 @@ public class GistPrepareContentEndpointTest {
 		GistPrepareContentAsserter.assertThat(response, 
 			"Content not prepared as expecte")
 			.iuSentencesEquals(expIUSentences)
+			.inputWasActualContent(true)
 		;
 	}
 }

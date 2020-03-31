@@ -45,13 +45,15 @@
     <div id="div-message" class="div-message"></div>
     <div id="div-error" class="div-error"></div>
     <div id="div-results" class="div-results"></div>
-    <div id="div-example-word" class="div-example-word">
-    	<div id="message-in-example"></div>
-    	<div id="word-in-example"></div>
-    	<div id="iconizer" title="Minimize"><img src="imgs/minimize.png" ></div>
-    	<div id="example-contents"></div>
+    
+    <!-- Floating div where we put the gist of the example word -->
+    <div id="div-gist" class="div-gist">
+    	<div id="div-gist-message"></div>
+    	<div id="div-gist-word"></div>
+    	<div id="div-gist-iconizer" title="Minimize"><img src="imgs/minimize.png" ></div>
+    	<div id="div-gist-contents"></div>
     </div>
-    <div id="div-example-word-iconized" title="Maximize"><img src="imgs/maximize.png" height=24 ></div>
+    <div id="div-gist-iconized" title="Maximize"><img src="imgs/maximize.png" height=24 ></div>
     
       
     </form>
@@ -71,8 +73,9 @@
 </script>
 
 <script src="js/RunWhen.js"></script>
-<script src="js/WidgetController.js"></script>
-<script src="js/OccurrenceController.js?version=0.00011"></script>
+<script src="js/WidgetController.js?version=0.00013"></script>
+<script src="js/gist/WordGistController.js?version=0.00025"></script>
+<script src="js/OccurrenceController.js?version=0.00042"></script>
 
 <script>
 	// Load the header, footer etc...
@@ -81,27 +84,40 @@
             $(this).load($(this).attr("data-includeHTML"));
         });
         
-        $('div#div-example-word').draggable({cursor: "move"}).resizable();
+        $('div#div-gist').draggable({cursor: "move"}).resizable();
     });
     
 	// Setup and configure the controller for this page
     // TODO: replace corpus-name by corpus to get the value of the select, etc.
     var config = {
-    		btnGet: "btn-occ",
+    		// Morpheme for which we are searching examples		
     		inpMorpheme: "morpheme",
-    		inpExampleWord: "example-word",
+
+    		// Widgets for specifying the corpus in which to search examples
     		inpCorpusName: "corpus-name",
     		selCorpusName: "corpus",
+
+    		// Button for starting the search
+    		btnGet: "btn-occ",
+
+    		// Areas where to display results, progress status and error message.
     		divResults:  "div-results",
     		divMessage: "div-message",
-    		divExampleWord: "div-example-word",
     		divError: "div-error",
-    		iconizer: "iconizer",
-    		divIconizedExampleWord: "div-example-word-iconized",
-    		divMessageInExample: "message-in-example",
-    		divWordInExample: "word-in-example",
-    		divWordInExampleContents: "example-contents",
+    		
+    		inpExampleWord: "example-word",
     		inpNbExamples: "nb-examples",
+    		
+    		
+    		// Floating div where we display the "gist" of an example word 
+    		// (after the user clicks on the example word)
+    		//
+    		divGist: "div-gist",
+    		divGist_contents: "div-gist-contents",
+    		divGist_iconizer: "div-gist-iconizer",
+    		divGist_iconized: "div-gist-iconized",
+    		divGist_message: "div-gist-message",
+    		divGist_word: "div-gist-word",
         };
     var occurrenceController = new OccurrenceController(config);
 </script>

@@ -4,12 +4,12 @@ var occControllerConfig = {
 		inpExampleWord: "example-word",
 		divResults:  "div-results",
 		divMessage: "div-message",
-		divExampleWord: "div-example-word",
+		divGist: "div-gist",
 		divError: "div-error",
-		iconizer: "iconizer",
-		divIconizedExampleWord: "div-example-word-iconized",
-		divMessageInExample: "message-in-example",
-		divWordInExample: "word-in-example",
+		divGist_iconizer: "div-gist-iconizer",
+		divGist_iconized: "div-gist-iconized",
+		divGist_message: "div-gist-message",
+		divGist_word: "div-gist-word",
 	};
 
 var occController = null;
@@ -95,7 +95,7 @@ QUnit.module("OccurenceController Tests", {
 	    assertWordInExampleEquals = function(assert, expectedText, caseDescr) {
 	    	var message = "Checking the top line of the example window.";
 	    	if (caseDescr != null) message = caseDescr+"\n"+message;
-	    	var wordElt = $.safeSelect("#"+occControllerConfig.divWordInExample);
+	    	var wordElt = $.safeSelect("#"+occControllerConfig.divGist_word);
 	    	var gotText = wordElt.text();
 	    	new TestHelpers().assertStringEquals(assert, message, gotText, expectedText, true);
 	    }
@@ -128,10 +128,10 @@ QUnit.module("OccurenceController Tests", {
         	"<div id=\""+occControllerConfig.divMessage+"\" class=\"div-message\"></div>\n"+
         	"<div id=\""+occControllerConfig.divError+"\" class=\"div-error\"></div>\n"+
         	"<div id=\""+occControllerConfig.divResults+"\" class=\"div-results\"></div>\n"+
-        	"<div id=\""+occControllerConfig.divExampleWord+"\" class=\"div-example-word\">"+
-        		"<div id=\""+occControllerConfig.divMessageInExample+"\"></div><div id=\""+occControllerConfig.divWordInExample+"\"></div><div id=\""+occControllerConfig.iconizer+"\" title=\"Minimize\"><img src=\"imgs/minimize.png\" ></div><div id=\"contents\"></div></div>\n"+
+        	"<div id=\""+occControllerConfig.divGist+"\" class=\"div-gist\">"+
+        		"<div id=\""+occControllerConfig.divGist_message+"\"></div><div id=\""+occControllerConfig.divGist_word+"\"></div><div id=\""+occControllerConfig.divGist_iconizer+"\" title=\"Minimize\"><img src=\"imgs/minimize.png\" ></div><div id=\"contents\"></div></div>\n"+
 
-        	"<div id=\""+occControllerConfig.divIconizedExampleWord+"\" title=\"Maximize\"><img src=\"imgs/maximize.png\" height=24 ></div>"
+        	"<div id=\""+occControllerConfig.divGist_iconized+"\" title=\"Maximize\"><img src=\"imgs/maximize.png\" height=24 ></div>"
             ;
 		$("#testMainDiv").html(formHTML);
 		
@@ -156,7 +156,7 @@ QUnit.module("OccurenceController Tests", {
 	},
 	
 	afterEach: function(assert) {
-		occController.elementForProp("divExampleWord").hide();
+		occController.elementForProp("divGist").hide();
 	}
 });
 
@@ -207,7 +207,7 @@ QUnit.test("OccurenceController.Acceptance -- HappyPath", function( assert )
 		
 		// Check that the details about that word are correctly displayed
 		new RunWhen().conditionMet(occControllerNotBusy, function () {
-			assertElementIsVisible(assert,"div-example-word",caseDescr+" (word-example-nanusiuqti)");
+			assertElementIsVisible(assert,"div-gist",caseDescr+" (word-example-nanusiuqti)");
 			assertWordInExampleEquals(assert,"Example word: nanusiuqti", caseDescr);
 			assertTableContentsEquals(assert,"tbl-gist","MorphemeMeaningnanusealsiuqto hunttione who...", caseDescr);
 			var expectedAlignmentsText = "InuktitutEnglish"+
@@ -296,9 +296,9 @@ QUnit.test("OccurenceController.Acceptance -- HappyPath", function( assert )
 //});
 
 function checkWordExampleWindowIsDisplayed(word) {
-	var divWordInExample = occurrenceController.elementForProp('divWordInExample');
+	var divGist_word = occurrenceController.elementForProp('divGist_word');
 	var expected = "";
-	var got = divWordInExample.text();
+	var got = divGist_word.text();
 	assert.equals("",expected,got);
 }
 

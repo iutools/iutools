@@ -2,6 +2,8 @@ package ca.pirurvik.iutools.webservice.gist;
 
 import java.util.List;
 
+import org.junit.Assert;
+
 import ca.nrc.introspection.Introspection;
 import ca.nrc.testing.AssertObject;
 import ca.nrc.ui.web.testing.MockHttpServletResponse;
@@ -22,17 +24,26 @@ public class GistPrepareContentAsserter extends Asserter {
 		this.gotObject = IUTServiceTestHelpers.toGistPrepareContentResponse(gotResponse);
 	}
 
-	public void iuSentencesEquals(String[][] expIUSentences) throws Exception {
+	public GistPrepareContentAsserter iuSentencesEquals(String[][] expIUSentences) throws Exception {
 		AssertObject.assertDeepEquals(baseMessage+"\nIU sentences not as expected", 
 				expIUSentences, responseIUSentences());
+		return this;
+	}
+	
+	public GistPrepareContentAsserter inputWasActualContent(boolean expStatus) {
+		Assert.assertEquals(expStatus, gotResponse().wasActualText);
+		return this;
 	}
 
 	private List<String[]> responseIUSentences() {
-		int x = 1;
 		List<String[]> gotIUSentences = 
-			((GistPrepareContentResponse)gotObject).iuSentences;
+			gotResponse().iuSentences;
 		
 		return gotIUSentences;
+	}
+	
+	private GistPrepareContentResponse gotResponse() {
+		return ((GistPrepareContentResponse)gotObject);
 	}
 	
 }

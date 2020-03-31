@@ -12,24 +12,15 @@ class GistTextController extends WidgetController {
 	// Setup handler methods for different HTML elements specified in the config.
 	attachHtmlElements() {
 		this.setEventHandler("btnGist", "click", this.onGistSubmit)
-		this.setEventHandler("divGistIconizer", "click", this.iconizeDivGist);
-		this.setEventHandler("divGistIconized", "click", this.deiconizeDivGist);
+		this.setEventHandler("divGistWordIconizer", "click", this.iconizeDivGist);
+		this.setEventHandler("divGistWordIconized", "click", this.deiconizeDivGist);
 	}
 	
 	onGistSubmit() {
-		var textOrURL = this.elementForProp('txtUrlOrText').val();
-		gistTextOrUrl(textOrUrl);
+		var textOrUrl = this.elementForProp('txtUrlOrText').val();
+		this.gistTextOrUrl(textOrUrl);
     }
 	
-//	gistActualText(text) {
-//		var tokens = this.tokenizeText(text);
-//	}
-//	
-//	gistURL(url) {
-//		console.log("** GistTextNEWController.gistURL: invoked with url="+
-//			JSON.stringify(url));
-//	}
-//	
 	gistTextOrUrl(textOrUrl) {
 		var inputs = {
 			textOrUrl: textOrUrl
@@ -47,6 +38,9 @@ class GistTextController extends WidgetController {
 		} else {
 			console.log("** GistTextNEWController.prepareContentSuccessCallback: successfully prepared text to: "+
 				JSON.stringify(resp));
+			if (resp.wasActualText) {
+				this.displayActualTextGist(resp.iuSentences);
+			}
 		}
 	}
 
@@ -60,26 +54,20 @@ class GistTextController extends WidgetController {
 		this.error(resp.errorMessage);
 		this.setBusy(false);
 	}
-
 	
-	
-	isURL(str) {
-		var answer = false;
-		try {
-			new URL(string);
-			answer = true;
-		} catch (_) {
-			answer = false;
+	displayActualTextGist(iuSentences) {
+		console.log("** displayActualTextGist: displaying sentences:\v"+
+			JSON.stringify(iuSentences));
+		var text = "";
+		for (var sentNum=0; sentNum < iuSentences.length; sentNum++) {
+			var sent = iuSentences[sentNum];
+			for (var tokenNum=0; tokenNum < sent.length; tokenNum++) {
+				text += sent[tokenNum];
+			}
 		}
-		return answer;  
-	}
-	
-	prepareTextForGisting(text) {
-		var divText = this.elementForProp('divText');
-		var textWithLinks = this.addLinksToText(text);
-		divText.html(textWithLinks);
-		this.attachListenersToIUWords(this);
-	}
+		var html = this.addLinksToText(text);
+		this.displayResultsHtml(html);
+	}	
 	
 	attachListenersToIUWords(controller) {
 		var anchorsWords = document.querySelectorAll('.iuword');
@@ -91,6 +79,17 @@ class GistTextController extends WidgetController {
 	    }
 	}
 
+	displayResultsHtml(html) {
+		html = "<h2>Click on words to see their gist</h2>\n"+html;
+		var div_results = this.elementForProp("divGistTextResults");
+		div_results.html(html);
+		this.attachListenersToIUWords(this)
+	}	
+	
+	clearResults() {
+		var div_results = this.elementForProp("divGistTextResults");
+		div_results.html("");		
+	}
 	
 	onCLickIUWord() {
 		var clickedWord = $(this).text();
@@ -141,16 +140,16 @@ class GistTextController extends WidgetController {
 	}
 
 	iconizeDivGist() {
-		var divGist = this.elementForProp("divGist");
+		var divGist = this.elementForProp("divGistWord");
 		divGist.hide();
-		var divGistIconized = this.elementForProp("divGistIconized");
+		var divGistIconized = this.elementForProp("divGistWordIconized");
 		divGistIconized.show();
 	}
 	
 	deiconizeDivGist() {
-		var divGist = this.elementForProp("divGist");
+		var divGist = this.elementForProp("divGistWord");
 		divGist.show();
-		var divGistIconized = this.elementForProp("divGistIconized");
+		var divGistIconized = this.elementForProp("divGistWordIconized");
 		divGistIconized.hide();
 	}
 	
@@ -184,8 +183,9 @@ class GistTextController extends WidgetController {
 	setGetResults(results) {
 		var tracer = new Tracer('GistTextController.setGetResults', true);
 		var jsonResults = JSON.stringify(results);
-		var divGist = gistTextController.elementForProp("divGist");
-		var divGistContents = gistTextController.elementForProp("divGistContents");
+		
+		var divGist = gistTextController.elementForProp("divGistWord");
+		var divGistContents = gistTextController.elementForProp("divGistWordContents");
 		divGistContents.empty();
 		var divGistWordHolder = gistTextController.elementForProp("divGistWordHolder");
 		divGistWordHolder.text("word");

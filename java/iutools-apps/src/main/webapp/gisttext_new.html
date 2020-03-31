@@ -16,7 +16,7 @@
 	  	min-width:500px; min-height:400px; display:inline-box; 
 	  	border:1px solid red;
 	  }
-	  .iuword { text-decoration:underline; cursor:pointer; }
+	  .iuword { cursor:pointer; }
   </style>
 
 </head>
@@ -42,13 +42,24 @@
     <div id="div-error" class="div-error"></div>
     <div id="div-results" class="div-results"></div>
     <div id="div-gist" class="div-gist">
-    	<div id="div-gist-word-holder"></div>
+    	<div id="div-gist-holder"></div>
     	<div id="div-gist-iconizer" title="Minimize"><img src="imgs/minimize.png" ></div>
     	<div id="div-gist-contents"></div>
     </div>
     <div id="div-gist-iconized" title="Maximize"><img src="imgs/maximize.png" height=24 ></div>
     <p/>
     <button id="btn-gisttext">Gist text</button>
+
+    <div id="div-gist-text-results" class="div-gist-text-results">
+    
+    <div id="div-gist" class="div-gist">
+    	<div id="div-gist-message"></div>
+    	<div id="div-gist-word"></div>
+    	<div id="iconizer" title="Minimize"><img src="imgs/minimize.png" ></div>
+    	<div id="div-gist-contents"></div>
+    </div>
+    <div id="div-gist-iconized" title="Maximize"><img src="imgs/maximize.png" height=24 ></div>
+    
       
     <!--</form>-->
 
@@ -67,8 +78,8 @@
 </script>
 
 <script src="js/RunWhen.js"></script>
-<script src="js/WidgetController.js?version=0.00002"></script>
-<script src="js/GistTextNEWController.js?version=0.00018"></script>
+<script src="js/WidgetController.js?version=0.00003"></script>
+<script src="js/GistTextNEWController.js?version=0.00034"></script>
 
 <script>
 	// Load the header, footer etc...
@@ -87,11 +98,17 @@
     		txtUrlOrText: "txt-url-or-text",
     		divMessage: "div-message",
     		divError: "div-error",
-    		divGist: "div-gist",
-    		divGistWordHolder: "div-gist-word-holder",
-    		divGistContents: "div-gist-contents",
-    		divGistIconizer: "div-gist-iconizer",
-    		divGistIconized: "div-gist-iconized"
+    		
+    		// Area where to put the clickable gist of the whole text
+    		divGistTextResults: "div-gist-text-results",
+
+    		// Floating div where we put the gist of a single word that was 
+    		// clicked on.
+    		divGistWord: "div-gist",
+    		divGistWordHolder: "div-gist-holder",
+    		divGistWordContents: "div-gist-contents",
+    		divGistWordIconizer: "div-gist-iconizer",
+    		divGistWordIconized: "div-gist-iconized"
         };
     var gistTextController = new GistTextController(config);
 </script>

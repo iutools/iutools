@@ -6,6 +6,7 @@ class GistTextController extends WidgetController {
 
 	constructor(config) {
 		super(config);
+		this.wordGistController = new WordGistController(config);
 	} 
 	
 	// Setup handler methods for different HTML elements specified in the config.
@@ -170,51 +171,13 @@ class GistTextController extends WidgetController {
 				resp.responseText;
 		}				
 		gistTextController.error(resp.errorMessage);
-//		gistTextController.setGetBusy(false);
 	}
-//	
-//	setGetBusy(flag) {
-//		this.busy = flag;
-//		if (flag) {
-//			this.disableSearchButton();	
-//			this.showSpinningWheel('divMessage','Searching');
-//			this.error("");
-//		} else {
-//			this.enableSearchButton();		
-//			this.hideSpinningWheel('divMessage');
-//		}
-//	}
-//	
-//	getSearchRequestData() {
-//		var tracer = new Tracer('GistTextController.getSearchRequestData');
-//		var word = this.elementForProp("inpWord").val().trim();
-//		if (word=='')
-//			word = null;
-//
-//		var request = {
-//				word: word,
-//		};
-//		
-//		var jsonInputs = JSON.stringify(request);;
-//		
-//		tracer.trace("returning jsonInputs="+jsonInputs);
-//		return jsonInputs;
-//	}
-//	
-//	enableSearchButton() {
-//		this.elementForProp('btnGet').attr("disabled", false);
-//	}
-//	
-//	disableSearchButton() {
-//		this.elementForProp('btnGet').attr("disabled", true);
-//	}
-//	
+
 	error(err) {
 		this.elementForProp('divError').html(err);
 		this.elementForProp('divError').show();	 
 	}
-//	
-//
+
 	setGetResults(results) {
 		var tracer = new Tracer('GistTextController.setGetResults', true);
 		var jsonResults = JSON.stringify(results);
