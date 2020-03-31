@@ -7,6 +7,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
+import ca.nrc.datastructure.Pair;
 import ca.nrc.testing.AssertObject;
 import ca.pirurvik.iutools.text.segmentation.Segmenter;
 
@@ -34,6 +35,10 @@ public class SegmenterTest {
 		//
 		String text = "";
 		List<String> sentences = segmenter.segment(text);
+		
+		// You can also ask to have the sentences be split into tokens
+		//
+		List<String[]> tokenizedSents = segmenter.segmentTokenized(text);
 	}
 	
 	//////////////////////////////////
@@ -85,6 +90,19 @@ public class SegmenterTest {
 				"Hello world    ", "Take me to your leader."
 		};
 		AssertObject.assertDeepEquals("Sentences not as expected", 
+			expSentences, gotSentences);
+	}
+	@Test
+	public void test__segmentTokenized__HappyPath() throws Exception {
+		Segmenter segmenter = Segmenter.makeSegmenter("en");
+		String text = "Hello world. Greetings universe!";
+		List<String[]> gotSentences = segmenter.segmentTokenized(text);
+		
+		String[][] expSentences = new String[][] {
+			new String[] {"Hello", " ", "world", ". "},
+			new String[] {"Greetings", " ", "universe", "!"}
+		};
+		AssertObject.assertDeepEquals("Tokenized Sentences not as expected", 
 			expSentences, gotSentences);
 	}
 	

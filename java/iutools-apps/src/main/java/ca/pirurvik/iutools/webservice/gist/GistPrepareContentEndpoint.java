@@ -1,10 +1,9 @@
-package ca.pirurvik.iutools.webservice.tokenize;
+package ca.pirurvik.iutools.webservice.gist;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,24 +12,34 @@ import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ca.inuktitutcomputing.script.TransCoder;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.json.PrettyPrinter;
 import ca.pirurvik.iutools.text.segmentation.IUTokenizer;
+import ca.pirurvik.iutools.text.segmentation.Segmenter;
 import ca.pirurvik.iutools.webservice.EndPointHelper;
-import ca.pirurvik.iutools.webservice.SearchInputs;
 import ca.pirurvik.iutools.webservice.ServiceResponse;
+import ca.pirurvik.iutools.webservice.tokenize.GistPrepareContentInputs;
+import ca.pirurvik.iutools.webservice.tokenize.TokenizeResponse;
 
-public class TokenizeEndpoint extends HttpServlet {
-	
-	protected void doGet(HttpServletRequest request, 
-			HttpServletResponse response) throws ServletException, IOException {
-		Logger logger = Logger.getLogger("TokenizeEndpoint.doGet");
-		logger.debug("doGet()");
-	}
-	
+/**
+ * Endpoint used by the Gist application to prepare some text for 
+ * gisting.
+ *
+ * If the text is a URL:
+ * - fetch that page and its English equivalent and align the two
+ * - tokenize the content
+ * 
+ * If the text is NOT a URL;
+ * - just tokenize that text
+ * 
+ * @author desilets
+ *
+ */
+public class GistPrepareContentEndpoint extends HttpServlet {
 	public void doPost(HttpServletRequest request, 
 			HttpServletResponse response) throws IOException {
-		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.webservice.TokenizeEndpoint.doPost");
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.webservice.GistPrepareContentEndpoint.doPost");
 		
 		tLogger.trace("invoked with request=\n"+request);
 				
@@ -53,16 +62,31 @@ public class TokenizeEndpoint extends HttpServlet {
 	}
 
 	private ServiceResponse executeEndPoint(GistPrepareContentInputs inputs) {
-		IUTokenizer tokenizer = new IUTokenizer();
+		GistPrepareContentResponse response = new GistPrepareContentResponse();
 		
-		tokenizer.tokenize(inputs.textOrUrl);
-		List<Pair<String,Boolean>> tokens = tokenizer.getAllTokens();
-		
-		TokenizeResponse response = new TokenizeResponse(tokens);		
+		if (inputs.isURL()) {
+			doPrepareURL(inputs, response);
+		} else {
+			doPrepareActualText(inputs, response);
+		}
 		
 		return response;
 	}
 	
+	private void doPrepareActualText(GistPrepareContentInputs inputs, 
+			GistPrepareContentResponse response) {
+		String text = inputs.textOrUrl;
+		text = TransCoder.ensureRoman(text);
+		Segmenter segmenter = Segmenter.makeSegmenter("iu");
+		List<String[]> sentences = segmenter.segmentTokenized(text);
+		response.iuSentences = sentences;
+	}
+
+	private void doPrepareURL(GistPrepareContentInputs inputs, GistPrepareContentResponse response) {
+		// TODO Auto-generated method stub
+		
+	}
+
 	private void writeJsonResponse(HttpServletResponse response, String json) throws IOException {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.webservice.writeJsonResponse");
 		
@@ -72,5 +96,5 @@ public class TokenizeEndpoint extends HttpServlet {
 		writer.write(json);
 		writer.close();
 	}
-	
+
 }

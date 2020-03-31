@@ -1,0 +1,101 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>InuktutiTools Gist</title>
+  <link rel="stylesheet" href="css/styles.css?v1">
+
+  <script src="js/jquery-3.3.1.min.js"></script>
+  <script src="js/jquery-ui.min.js"></script>
+  <script src="js/scripts.js?v1"></script>
+
+  <style>
+	  div#div-text { 
+	  	min-width:500px; min-height:400px; display:inline-box; 
+	  	border:1px solid red;
+	  }
+	  .iuword { text-decoration:underline; cursor:pointer; }
+  </style>
+
+</head>
+
+<body>
+
+<header>
+     <div data-includeHTML="pages/_HeaderPartial.html"></div>
+</header>
+
+<main>
+    <h1 style="text-align:left;">Gist text
+    </h1>
+    
+    <!--<form id="form-query" method="post" action="">-->
+    
+    <div>
+	<b>Text to gist:</b>
+	<p/>
+    <textarea id="txt-url-or-text" name="txt-to-check" rows=20 cols=80></textarea>
+    <p></p>
+    <div id="div-message" class="div-message"></div>
+    <div id="div-error" class="div-error"></div>
+    <div id="div-results" class="div-results"></div>
+    <div id="div-gist" class="div-gist">
+    	<div id="div-gist-word-holder"></div>
+    	<div id="div-gist-iconizer" title="Minimize"><img src="imgs/minimize.png" ></div>
+    	<div id="div-gist-contents"></div>
+    </div>
+    <div id="div-gist-iconized" title="Maximize"><img src="imgs/maximize.png" height=24 ></div>
+    <p/>
+    <button id="btn-gisttext">Gist text</button>
+      
+    <!--</form>-->
+
+</main>
+
+<footer>
+    <div data-includeHTML="pages/_FooterPartial.html"></div>
+</footer>
+
+<script src="js/Tracer.js?version=0.00003"></script>          
+<script src="js/TracerConfig.js"></script>
+<script>if (typeof activeTraces !== 'undefined' && !Array.isArray(activeTraces)) {
+ throw "Wrong type for variable 'activeTraces' in file js/TracerConfig.js."+
+ 		"\nShould have been 'array' but was '"+type+"'.'";
+}
+</script>
+
+<script src="js/RunWhen.js"></script>
+<script src="js/WidgetController.js?version=0.00002"></script>
+<script src="js/GistTextNEWController.js?version=0.00018"></script>
+
+<script>
+	// Load the header, footer etc...
+	$(document).ready(function () {
+        $("div[data-includeHTML]").each(function () {                
+            $(this).load($(this).attr("data-includeHTML"));
+        });
+        $('div#div-gist').draggable({cursor: "move"}).resizable();
+    });
+    
+	// Setup and configure the controller for this page
+    // TODO: replace corpus-name by corpus to get the value of the select, etc.
+    var config = {
+    		btnGist: "btn-gisttext",
+    		divResults:  "div-results",
+    		txtUrlOrText: "txt-url-or-text",
+    		divMessage: "div-message",
+    		divError: "div-error",
+    		divGist: "div-gist",
+    		divGistWordHolder: "div-gist-word-holder",
+    		divGistContents: "div-gist-contents",
+    		divGistIconizer: "div-gist-iconizer",
+    		divGistIconized: "div-gist-iconized"
+        };
+    var gistTextController = new GistTextController(config);
+</script>
+    
+</body>
+
+</html>

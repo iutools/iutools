@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import ca.nrc.string.SimpleTokenizer;
-
 public abstract class Segmenter {
 	
 	public static final String ENDS_WITH_PERIOD = "[\\.\\!\\?](\\s*$)$";
@@ -37,20 +35,46 @@ public abstract class Segmenter {
 		
 	}
 	
-	public List<String> segment(String text) {
+	public List<String[]> segmentTokenized(String text) {
 		String[] tokens = tokenize(text);
-		List<String> sentences = new ArrayList<String>();
-		String currSentence = "";
+		List<String[]> sentences = new ArrayList<String[]>();
+		List<String> currSentence = new ArrayList<String>();
 		for (int nn=0; nn < tokens.length; nn++) {
-			currSentence += tokens[nn];
+			currSentence.add(tokens[nn]);
 			if (tokenIsSentenceEnd(nn, tokens)) {
-				sentences.add(currSentence);
-				currSentence = "";
+				sentences.add(currSentence.toArray(new String[currSentence.size()]));
+				currSentence = new ArrayList<String>();
 			}
 		}
 		
-		if (!currSentence.isEmpty()) {
-			sentences.add(currSentence);
+		if (currSentence.size() > 0) {
+			sentences.add(currSentence.toArray(new String[currSentence.size()]));
+		}
+
+		return sentences;
+	}
+	
+	
+	public List<String> segment(String text) {
+//		String[] tokens = tokenize(text);
+//		List<String> sentences = new ArrayList<String>();
+//		String currSentence = "";
+//		for (int nn=0; nn < tokens.length; nn++) {
+//			currSentence += tokens[nn];
+//			if (tokenIsSentenceEnd(nn, tokens)) {
+//				sentences.add(currSentence);
+//				currSentence = "";
+//			}
+//		}
+//		
+//		if (!currSentence.isEmpty()) {
+//			sentences.add(currSentence);
+//		}
+		
+		List<String[]> tokenizedSentences = segmentTokenized(text);
+		List<String> sentences = new ArrayList<String>();
+		for (String[] aTokenizeSent: tokenizedSentences) {
+			sentences.add(String.join("", aTokenizeSent));
 		}
 
 		return sentences;
@@ -93,4 +117,5 @@ public abstract class Segmenter {
 
 		return isSentenceEnd;
 	}
+
 }

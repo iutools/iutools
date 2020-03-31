@@ -9,7 +9,7 @@ import ca.nrc.datastructure.Pair;
 import ca.nrc.ui.web.testing.MockHttpServletResponse;
 import ca.pirurvik.iutools.webservice.IUTServiceTestHelpers;
 import ca.pirurvik.iutools.webservice.IUTServiceTestHelpers.EndpointNames;
-import ca.pirurvik.iutools.webservice.tokenize.TokenizeInputs;
+import ca.pirurvik.iutools.webservice.tokenize.GistPrepareContentInputs;
 import ca.pirurvik.iutools.webservice.tokenize.TokenizeEndpoint;
 import ca.pirurvik.iutools.webservice.SearchEndpoint;
 import ca.pirurvik.iutools.webservice.SearchInputs;
@@ -31,7 +31,7 @@ public class TokenizeEndpointTest {
 	@Test
 	public void test__TokenizeEndpoint__HappyPath() throws Exception {
 		
-		TokenizeInputs searchInputs = new TokenizeInputs("nunavut, inuktut");
+		GistPrepareContentInputs searchInputs = new GistPrepareContentInputs("nunavut, inuktut");
 				
 		MockHttpServletResponse response = 
 				IUTServiceTestHelpers.postEndpointDirectly(

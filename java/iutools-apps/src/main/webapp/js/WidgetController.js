@@ -86,4 +86,26 @@ class WidgetController {
 		divMessage.empty();
 		divMessage.hide();
 	}
+	
+	invokeWebService(url, jsonRequestData, _successCbk, _failureCbk) {
+		var controller = this;
+		var fctSuccess = 
+				function(resp) {
+					_successCbk.call(controller, resp);
+				};
+		var fctFailure = 
+				function(resp) {
+					_failureCbk.call(controller, resp);
+				};
+	
+		$.ajax({
+			type: 'POST',
+			url: url,
+			data: jsonRequestData,
+			dataType: 'json',
+			async: true,
+	        success: fctSuccess,
+	        error: fctFailure
+		});
+	}
 }

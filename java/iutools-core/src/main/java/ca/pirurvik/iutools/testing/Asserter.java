@@ -12,6 +12,7 @@ public class Asserter {
 	public Asserter(Object _gotObject, String mess, Class<?> gotObjectClass) 
 		throws Exception {
 		this.baseMessage = mess;
+		this.gotObject = _gotObject;
 	}
 	
 }
