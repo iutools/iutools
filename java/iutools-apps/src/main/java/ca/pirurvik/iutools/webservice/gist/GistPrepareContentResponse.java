@@ -9,6 +9,7 @@ import ca.pirurvik.iutools.webservice.ServiceResponse;
 public class GistPrepareContentResponse extends ServiceResponse {
 
 	public List<String[]> iuSentences = new ArrayList<String[]>();
+	public List<String[]> enSentences = null;
 	public boolean wasActualText = true;
 
 	public GistPrepareContentResponse() {

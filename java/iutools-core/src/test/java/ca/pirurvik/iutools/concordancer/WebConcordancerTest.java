@@ -29,12 +29,6 @@ public class WebConcordancerTest {
 		
 	@Test
 	public void test__WebConcordancer__Synopsis() throws Exception {
-		Assert.fail(
-			"\n\n** TODO: This test started failing when WebConcordancer started aligning plaintext instead of html\n"+
-			"Started happening at commit 74699f874735b793d3de69861370e319426458d5 (2020-03-27@06h44)\n"
-					
-		);
-		
 		//
 		// Use this class to fetch aligned sentences from a multilingual 
 		// web page.
@@ -111,7 +105,7 @@ public class WebConcordancerTest {
 
 	}
 	
-	@Test @Ignore
+	@Test
 	public void test__alignPage__HappyPath() throws Exception {
 		URL url = new URL("https://www.gov.nu.ca/");
 		DocAlignment pageAligment = 
@@ -124,7 +118,7 @@ public class WebConcordancerTest {
 			.urlForLangEquals("iu", new URL("https://www.gov.nu.ca/iu"))
 			.pageInLangContains("en", "Premier of Nunavut")
 			.pageInLangContains("iu", "ᓯᕗᓕᖅᑎ ᓄᓇᕗᒻᒥ")
-			.containsAlignment(new Alignment("en", "BLAH", "iu", "BLOB"))
+			.containsAlignment(new Alignment("en", "Government of Nunavut |", "iu", "ᓄᓇᕗᑦ ᒐᕙᒪᖓ |"))
 			;
 	}
 	

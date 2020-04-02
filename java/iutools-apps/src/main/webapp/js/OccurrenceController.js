@@ -34,27 +34,9 @@ class OccurrenceController extends WidgetController {
 		var exampleWord = $(element).text();
 		occurrenceController.elementForProp("divGist_contents").html('');
 		occurrenceController.elementForProp("divGist_word").html('');
-		this.wordGistController.gistWord(exampleWord);		
-		
-//		TODO: extract this as a method wordGistController.gistWord(exampleWord)....
-//		{
-//			occurrenceController.elementForProp("divGist").show();
-//			occurrenceController.showSpinningWheel("divGist_message","Searching");
-//			
-//			occurrenceController.invokeGistWordService(
-//					occurrenceController.getExampleWordRequestData(exampleWord),
-//					occurrenceController.successExampleWordCallback, 
-//					occurrenceController.failureExampleWordCallback);
-//		}
+		this.wordGistController.gistWord(exampleWord);				
 	}
 
-//	TODO: Move this to WordGistController
-//	invokeGistWordService(jsonRequestData, _successCbk, _failureCbk) {
-//		this.invokeService(jsonRequestData, _successCbk, _failureCbk, 
-//				'srv/gist/gistword');
-//	}
-	
-	
 	invokeFindExampleService(jsonRequestData, _successCbk, _failureCbk) {
 		this.invokeService(jsonRequestData, _successCbk, _failureCbk, 
 				'srv/occurrences');
@@ -112,30 +94,6 @@ class OccurrenceController extends WidgetController {
 		this.setGetBusy(false);
 	}
 	
-//	TODO: Move this to WordGistController...
-//	successExampleWordCallback(resp) {
-//		var tracer = new Tracer('OccurenceController.successExampleWordCallback', true);
-//		if (resp.errorMessage != null) {
-//			this.failureExampleWordCallback(resp);
-//		} else {
-//			this.displayWordGist(resp);	
-//		}
-//		this.setWordExampleBusy(false);
-//	}
-	
-//	TODO: Move this to WordGistController...	
-//	failureExampleWordCallback(resp) {
-//		if (! resp.hasOwnProperty("errorMessage")) {
-//			// Error condition comes from tomcat itself, not from our servlet
-//			resp.errorMessage = 
-//				"Server generated a "+resp.status+" error:\n\n" +
-//				resp.responseText;
-//		}				
-//		this.error(resp.errorMessage);
-//		this.hideSpinningWheel("divGist_message");
-//	}
-	
-	
 	setGetBusy(flag) {
 		this.busy = flag;
 		if (flag) {
@@ -147,17 +105,6 @@ class OccurrenceController extends WidgetController {
 			this.hideSpinningWheel('divMessage');
 		}
 	}
-	
-//	TODO: Move this to WordGistController...	
-//	setWordExampleBusy(flag) {
-//		this.busy = flag;		
-//		if (flag) {
-//			this.showSpinningWheel('divGist_message','Searching');
-//		} else {
-//			this.hideSpinningWheel('divGist_message');
-//		}
-//	}
-	
 	
 	getSearchRequestData() {
 		var tracer = new Tracer('OccurenceController.getSearchRequestData');
@@ -184,15 +131,6 @@ class OccurrenceController extends WidgetController {
 		
 		return jsonInputs;
 	}
-	
-//	TODO: Move this to WordGistController...
-//	getExampleWordRequestData(_word) {
-//		var request = { 
-//			word: _word
-//			};
-//		var jsonInputs = JSON.stringify(request);;
-//		return jsonInputs;
-//	}
 	
 	enableSearchButton() {
 		this.elementForProp('btnGet').attr("disabled", false);
@@ -257,39 +195,12 @@ class OccurrenceController extends WidgetController {
 		});
 	}
 	
-	attachListenersToExampleWords() {
-		
-//		setEventHandler(propName, evtName, handler) {
-//			var elt = this.elementForProp(propName);
-//			var controller = this;
-//			var fct_handler =
-//					function() {
-//						handler.call(controller);
-//					};
-//			if (evtName == "click") {
-//				elt.off('click').on("click", fct_handler);
-//			}
-//		}	
-		
-//		var anchorsWords = document.querySelectorAll('.word-example');
-		
-//		var anchorsWords = $('.word-example').select();
+	attachListenersToExampleWords() {		
 		var anchorsWords = $(document).find('.word-example');
 	    for (var ipn=0; ipn<anchorsWords.length; ipn++) {
-//	    	anchorsWords[ipn].addEventListener(
-//		    		  'click', 
-//		    		  this.onExampleSelect
-//		    		  );
 	    	this.setEventHandler(anchorsWords.eq(ipn), "click", this.onExampleSelect);	   
 	    }
 	}
-	
-//	TODO: Move this to WordGistController...
-//	displayWordGist(results) {
-//		var tracer = new Tracer('OccurenceController.displayWordGist', true);
-//		this.wordGistController.displayWordGist(results);
-//	}
-
 	
 	validateQueryInput() {
 		var isValid = true;

@@ -2,6 +2,9 @@ package ca.pirurvik.iutools.webservice.gist;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServlet;
@@ -15,9 +18,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ca.inuktitutcomputing.script.TransCoder;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.json.PrettyPrinter;
+import ca.pirurvik.iutools.concordancer.Alignment;
+import ca.pirurvik.iutools.concordancer.DocAlignment;
+import ca.pirurvik.iutools.concordancer.WebConcordancer;
+import ca.pirurvik.iutools.concordancer.WebConcordancerException;
 import ca.pirurvik.iutools.text.segmentation.IUTokenizer;
 import ca.pirurvik.iutools.text.segmentation.Segmenter;
 import ca.pirurvik.iutools.webservice.EndPointHelper;
+import ca.pirurvik.iutools.webservice.ServiceException;
 import ca.pirurvik.iutools.webservice.ServiceResponse;
 import ca.pirurvik.iutools.webservice.tokenize.GistPrepareContentInputs;
 import ca.pirurvik.iutools.webservice.tokenize.TokenizeResponse;
@@ -37,6 +45,7 @@ import ca.pirurvik.iutools.webservice.tokenize.TokenizeResponse;
  *
  */
 public class GistPrepareContentEndpoint extends HttpServlet {
+	
 	public void doPost(HttpServletRequest request, 
 			HttpServletResponse response) throws IOException {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.webservice.GistPrepareContentEndpoint.doPost");
@@ -61,7 +70,8 @@ public class GistPrepareContentEndpoint extends HttpServlet {
 		writeJsonResponse(response, jsonResponse);
 	}
 
-	private ServiceResponse executeEndPoint(GistPrepareContentInputs inputs) {
+	private ServiceResponse executeEndPoint(GistPrepareContentInputs inputs) 
+			throws ServiceException {
 		GistPrepareContentResponse response = new GistPrepareContentResponse();
 		
 		if (inputs.isURL()) {
@@ -82,9 +92,49 @@ public class GistPrepareContentEndpoint extends HttpServlet {
 		response.iuSentences = sentences;
 	}
 
-	private void doPrepareURL(GistPrepareContentInputs inputs, GistPrepareContentResponse response) {
-		// TODO Auto-generated method stub
+	private void doPrepareURL(GistPrepareContentInputs inputs, 
+		GistPrepareContentResponse response) throws ServiceException {
 		
+		response.wasActualText = false;
+		WebConcordancer concordancer = new WebConcordancer();
+		URL url;
+		try {
+			url = new URL(inputs.textOrUrl);
+			DocAlignment alignments = concordancer.alignPage(url, new String[] {"en", "iu"});
+			response.iuSentences = new ArrayList<String[]>();
+			response.enSentences = new ArrayList<String[]>();
+			for (Alignment anAlignment: alignments.getAligments()) {
+				addAlignment(anAlignment, response);
+			}
+		} catch (MalformedURLException | WebConcordancerException e) {
+			throw new ServiceException(e);
+		}
+	}
+
+	private void addAlignment(Alignment anAlignment, GistPrepareContentResponse response) {
+		IUTokenizer tokenizer = new IUTokenizer();
+
+		{
+			String iuText = anAlignment.getText("iu");
+			tokenizer.tokenize(iuText);
+			List<Pair<String,Boolean>> iuTokensLst = tokenizer.getAllTokens();
+			String[] iuTokens = new String[iuTokensLst.size()];
+			for (int ii=0; ii < iuTokens.length; ii++) {
+				iuTokens[ii] = iuTokensLst.get(ii).getFirst();
+			}
+			response.iuSentences.add(iuTokens);
+		}
+
+		{		
+			String enText = anAlignment.getText("en");
+			tokenizer.tokenize(enText);
+			List<Pair<String,Boolean>> enTokensLst = tokenizer.getAllTokens();
+			String[] enTokens = new String[enTokensLst.size()];
+			for (int ii=0; ii < enTokens.length; ii++) {
+				enTokens[ii] = enTokensLst.get(ii).getFirst();
+			}
+			response.enSentences.add(enTokens);
+		}
 	}
 
 	private void writeJsonResponse(HttpServletResponse response, String json) throws IOException {

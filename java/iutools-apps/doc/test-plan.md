@@ -1,5 +1,28 @@
 #Manual test plan for Inuktut apps
 
+##Gister
+
+Syllabic text
+- Copy and paste some Syllabic text from https://www.gov.nu.ca/iu
+- Hit [Gist Text]
+- Check that 
+  - Text has been Romanized
+  - Hover the mouse over a word:
+    - It shows that it's clickable
+    - Clicking on that IU word produces a Gist with:
+      - Morphological analysis
+      - Parallel sentenecs
+  - Hover the mouse over a NON-word (ex: period, comma, space):
+    - It does NOT show that it's clickable
+    - Clicking on that NON-word does NOT produce a Gist
+    
+Word that does not decompose
+- Enter text: 'ᓴᕕᑲᑖᖅ' (This is a proper noun)
+- Click on the romanized word: 'savikataaq'
+- Make sure that the Gist does not crash and that it says:
+  - Word could not be decomposed
+  - No sentences found for this word
+
 ##Search Engine
 
 Search for word in SYLLABIC -- Happy Path
