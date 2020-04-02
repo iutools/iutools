@@ -97,6 +97,18 @@ span#plural {
 	display:none;
 }
 
+/* Gist Text */
+
+.iu-word {
+	cursor:pointer;
+	font-family:serif;
+	font-size:20px;
+}
+.iu-word:hover {
+	color:red;
+	text-decoration:underline;
+}
+
 /* OCCURRENCES */
 .word-example {
 	cursor:pointer;
