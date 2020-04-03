@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -46,8 +47,14 @@ import ca.pirurvik.iutools.webservice.tokenize.TokenizeResponse;
  */
 public class GistPrepareContentEndpoint extends HttpServlet {
 	
+	protected void log4jReload() {
+		String log4jprops = "/Users/desilets/Documents/conf/log4j.properties";
+		PropertyConfigurator.configure(log4jprops);
+	}
+	
 	public void doPost(HttpServletRequest request, 
 			HttpServletResponse response) throws IOException {
+		log4jReload();
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.webservice.GistPrepareContentEndpoint.doPost");
 		
 		tLogger.trace("invoked with request=\n"+request);
@@ -120,7 +127,8 @@ public class GistPrepareContentEndpoint extends HttpServlet {
 			List<Pair<String,Boolean>> iuTokensLst = tokenizer.getAllTokens();
 			String[] iuTokens = new String[iuTokensLst.size()];
 			for (int ii=0; ii < iuTokens.length; ii++) {
-				iuTokens[ii] = iuTokensLst.get(ii).getFirst();
+				String origToken = iuTokensLst.get(ii).getFirst();
+				iuTokens[ii] = TransCoder.ensureRoman(origToken);
 			}
 			response.iuSentences.add(iuTokens);
 		}

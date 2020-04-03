@@ -1,17 +1,11 @@
 package ca.pirurvik.iutools.webservice.gist;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
-
 import org.junit.Test;
 
-import ca.nrc.datastructure.Pair;
 import ca.nrc.ui.web.testing.MockHttpServletResponse;
 import ca.pirurvik.iutools.concordancer.Alignment;
 import ca.pirurvik.iutools.webservice.IUTServiceTestHelpers;
 import ca.pirurvik.iutools.webservice.tokenize.GistPrepareContentInputs;
-import ca.pirurvik.iutools.webservice.tokenize.TokenizeResponseAssertion;
 
 public class GistPrepareContentEndpointTest {
 
@@ -47,7 +41,7 @@ public class GistPrepareContentEndpointTest {
 	}
 
 	@Test
-	public void test__GistPrepareContentEndpoint__InputIsURL() throws Exception {
+	public void test__GistPrepareContentEndpoint__InputIsEnURL() throws Exception {
 		
 		String url = "https://www.gov.nu.ca/";
 		GistPrepareContentInputs prepareInputs = 
@@ -63,7 +57,28 @@ public class GistPrepareContentEndpointTest {
 			"Content not prepared as expected")
 			.inputWasActualContent(false)
 			.containsAlignment(
-				new Alignment("iu", "ᓄᓇᕗᑦ ᒐᕙᒪᖓ |", "en", "Government of Nunavut |"))
+				new Alignment("iu", "nunavut gavamanga |", "en", "Government of Nunavut |"))
 		;
 	}
+	@Test
+	public void test__GistPrepareContentEndpoint__InputIsIuURL() throws Exception {
+		
+		String url = "https://www.gov.nu.ca/iu/";
+		GistPrepareContentInputs prepareInputs = 
+				new GistPrepareContentInputs(url);
+				
+		MockHttpServletResponse response = 
+				IUTServiceTestHelpers.postEndpointDirectly(
+					IUTServiceTestHelpers.EndpointNames.GIST_PREPARE_CONTENT,
+					prepareInputs
+				);
+		
+		GistPrepareContentAsserter.assertThat(response, 
+			"Content not prepared as expected")
+			.inputWasActualContent(false)
+			.containsAlignment(
+				new Alignment("iu", "nunavut gavamanga |", "en", "Government of Nunavut |"))
+		;
+	}
+
 }
