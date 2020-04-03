@@ -75,36 +75,6 @@ public class WebConcordancerTest {
 	// VERIFICATION TEST
 	//////////////////////////////////
 	
-	
-	// For now, alignPage returns an empty set of alignments, EXCEPT for 
-	// when we ask for pages on mocksite.nu.ca. 
-	//
-	// In that case, it returns some hard coded results
-	//
-	@Test
-	public void test__alignPage__MockSite() throws Exception {
-		URL url = new URL("http://mocksite.nu.ca/en");
-		DocAlignment pageAligment = 
-					new WebConcordancer().alignPage(url, new String[] {"en", "iu"});
-
-		Pair<String,String>[] expAlignments = new Pair[] {
-				Pair.of("As of today, there are no known cases of COVID-19 in the territory.", 
-						"ᐅᓪᓗᒥᒧᑦ ᑎᑭᖦᖢᒍ, ᖃᐅᔨᒪᔭᐅᔪᓂᒃ ᓄᕙᒡᔪᐊᕐᓇᖅ-19−ᒧᑦ ᐱᑕᖃᙱᓚᖅ ᑕᒫᓂ ᐅᑭᐅᖅᑕᖅᑐᒥ ᐊᕕᒃᓯᒪᓂᕆᔭᐅᔪᒥ."),
-				Pair.of("The public health communicable disease team is following approximately 70 persons under investigation.", 
-						"ᑭᒃᑯᑐᐃᓐᓇᓂᒃ ᐋᓐᓂᐊᖃᖅᑕᐃᓕᑎᑦᑎᓂᕐᒧᑦ ᐊᐃᑦᑐᕐᓘᑕᐅᔪᓐᓇᖅᑐᓄᑦ ᖃᓂᒪᑖᕆᔭᐅᔪᓐᓇᖅᑐᓄᑦ ᐱᓕᕆᖃᑎᒌᑦ ᒪᓕᒃᓯᕗᖅ 50-60−ᐸᓗᖕᓂᒃ ᐃᓄᖕᓂᒃ ᑖᒃᑯᐊ ᖃᐅᔨᓴᖅᑕᐅᕙᓪᓕᐊᓪᓗᑎᒃ.")
-		};
-		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
-			.urlForLangEquals("en", new URL("http://mocksite.nu.ca/en"))
-			.urlForLangEquals("iu", new URL("http://mocksite.nu.ca/iu"))
-			.pageInLangContains("en", "COVID-19")
-			.pageInLangContains("iu", "ᓄᕙᒡᔪᐊᕐᓇᖅ-19−ᒧᑦ")
-			.alignmentsEqual(
-					"Mock Alignments were not as expected",
-					"en", "iu", expAlignments);
-			;
-
-	}
-	
 	@Test
 	public void test__alignPage__HappyPath() throws Exception {
 		URL url = new URL("https://www.gov.nu.ca/");

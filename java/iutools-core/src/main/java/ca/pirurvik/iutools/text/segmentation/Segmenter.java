@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
+
 public abstract class Segmenter {
 	
 	public static final String ENDS_WITH_PERIOD = "[\\.\\!\\?](\\s*$)$";
@@ -36,6 +38,8 @@ public abstract class Segmenter {
 	}
 	
 	public List<String[]> segmentTokenized(String text) {
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.text.segmentTokenized");
+		tLogger.trace("invoked with text='"+text+"'");
 		String[] tokens = tokenize(text);
 		List<String[]> sentences = new ArrayList<String[]>();
 		List<String> currSentence = new ArrayList<String>();
@@ -56,21 +60,8 @@ public abstract class Segmenter {
 	
 	
 	public List<String> segment(String text) {
-//		String[] tokens = tokenize(text);
-//		List<String> sentences = new ArrayList<String>();
-//		String currSentence = "";
-//		for (int nn=0; nn < tokens.length; nn++) {
-//			currSentence += tokens[nn];
-//			if (tokenIsSentenceEnd(nn, tokens)) {
-//				sentences.add(currSentence);
-//				currSentence = "";
-//			}
-//		}
-//		
-//		if (!currSentence.isEmpty()) {
-//			sentences.add(currSentence);
-//		}
-		
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.text.segmentation.segment");
+		tLogger.trace("invoked with text='"+text+"'");
 		List<String[]> tokenizedSentences = segmentTokenized(text);
 		List<String> sentences = new ArrayList<String>();
 		for (String[] aTokenizeSent: tokenizedSentences) {

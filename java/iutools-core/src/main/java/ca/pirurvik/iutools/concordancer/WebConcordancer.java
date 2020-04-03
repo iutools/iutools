@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
+
 import ca.pirurvik.iutools.text.segmentation.IUTokenizer;
 import ca.nrc.data.harvesting.LanguageGuesser;
 import ca.nrc.data.harvesting.LanguageGuesserException;
@@ -41,38 +43,60 @@ public class WebConcordancer {
 
 	public DocAlignment alignPage(URL url, String[] languages) 
 			throws WebConcordancerException {
-		
-		// For now, return 'failed' alignments for all URLs except for 
-		// 'http://mockskite.nu.ca/'. Return hardcoded mock results for 
-		// the later
-		boolean failedAlignForAllButMock = false;
-		if (url.toString().startsWith("http://mocksite.nu.ca/")) {
-			return mockAlignmentResult();
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.concordancer.alignPage");
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("invoked with url="+url+
+			", languages="+String.join(", ", languages));
 		}
-		
+
 		DocAlignment alignment = new DocAlignment();
 		for (String lang: languages) {
 			alignment.setPageContent(lang, null);
 		}
 		
 		harvestInputPage(url, alignment, languages);
+		if (tLogger.isTraceEnabled()) {
+			String mess = "After fetching input URL, content of pages is:\n\n";
+			for (String lang: languages) {
+				mess += "   "+lang+": "+alignment.getPageContent(lang)+"\n\n";
+			}
+			tLogger.trace(mess);
+		}
+		
 		harvestOtherLangPage(alignment);
+		if (tLogger.isTraceEnabled()) {
+			String mess = "After fetching other lang URL, content of pages is:\n\n";
+			for (String lang: languages) {
+				mess += "   "+lang+": "+alignment.getPageContent(lang)+"\n\n";
+			}
+			tLogger.trace(mess);
+		}
+
 		alignContents(alignment);
+		if (tLogger.isTraceEnabled()) {
+			String mess = "After aligning content of the two pages, alignments are:";
+			for (Alignment anAlignment: alignment.getAligments()) {
+				mess += "   "+anAlignment+"\n";
+			}
+			tLogger.trace(mess);
+		}
 		
 		alignment.success = alignment.problemsEncountered.isEmpty();
-		if (failedAlignForAllButMock) {
-			alignment.success = false;
-		}
 		
 		return alignment;
 	}
 	
 	private void alignContents(DocAlignment docAlignment) throws WebConcordancerException {
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.concordancer.alignContents");
 		List<List<String>> langSents = new ArrayList<List<String>>();
 		List<String> langs = new ArrayList<String>();
 		for (String lang: docAlignment.getLanguages()) {
 			langs.add(lang);
 			Segmenter segmenter = Segmenter.makeSegmenter(lang);
+			if (tLogger.isTraceEnabled()) {
+				tLogger.trace("segmenting content for lang="+lang+": "+docAlignment.getPageContent(lang));
+			}
+
 			List<String> sents = 
 				segmenter.segment(docAlignment.getPageContent(lang));
 			langSents.add(sents);
@@ -208,7 +232,7 @@ public class WebConcordancer {
 		URL langURL = alignment.getPageURL(lang);
 		String site = langURL.getHost();
 		if (site.endsWith("gov.nu.ca")) {
-			if (otherLang.equals("iu")) {
+			if (otherLang.equals("iu") || otherLang.equals("en")) {
 				String langURLstr = langURL.toString();
 				String otherLangURLstr = null;
 				Pattern patt = Pattern.compile("(.*?)/(iu|in|fr|en)?(/?)");
@@ -220,6 +244,10 @@ public class WebConcordancer {
 				}
 				
 				if (otherLangURLstr != null) {
+					// The English version of a page does not have /en at the 
+					// end
+					otherLangURLstr = otherLangURLstr.replaceAll("/en/?$", "");
+					
 					try {
 						harvester.harvestSinglePage(new URL(otherLangURLstr));
 						String otherLangContent = harvester.getText();
@@ -240,11 +268,14 @@ public class WebConcordancer {
 
 	private void harvestInputPage(URL url, DocAlignment alignment, 
 			String[] languages) throws WebConcordancerException {
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.concordancer.harvestInputPage");
+		tLogger.trace("invoked with url="+url);
 		String urlText = null;
 		String urlLang = null;
 		try {
 			getHarvester().harvestSinglePage(url);
 			urlText = getHarvester().getText();
+			tLogger.trace("retrieved urlText=\n"+urlText);
 			urlLang = guessLang(urlText);
 			if (!urlLang.equals(languages[0]) && 
 					!urlLang.equals(languages[1])) {
