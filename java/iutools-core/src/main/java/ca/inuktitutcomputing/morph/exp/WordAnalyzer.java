@@ -120,7 +120,7 @@ public class WordAnalyzer {
 	
 	
 	
-	List<Decomposition> analyze(String word) {
+	List<Decomposition> analyze(String word) throws LinguisticDataException {
 		
 		List<Decomposition> decompositions = findAllPossibleDecompositions(word);
 				
@@ -132,9 +132,10 @@ public class WordAnalyzer {
 	 * Forms and actions of affixes in the context of the stem's final are dealt with.
 	 * @param word String
 	 * @return a List of DecompositionTree objects
+	 * @throws LinguisticDataException 
 	 */
 
-	List<Decomposition> findAllPossibleDecompositions(String word) {
+	List<Decomposition> findAllPossibleDecompositions(String word) throws LinguisticDataException {
 		Logger logger = Logger.getLogger("WordAnalyzer.findAllPossibleSequencesOfMorphemes");
 		List<DecompositionTree> decompositionTrees = new ArrayList<DecompositionTree>();
 		
@@ -267,7 +268,7 @@ public class WordAnalyzer {
 			String stem, 
 			String remainingPartOfWord, 
 			SurfaceFormInContext precedingMorpheme
-			) {
+			) throws LinguisticDataException {
 		Logger logger = Logger.getLogger("WordAnalyzer.analyzeRemainingForAffixes");
 		logger.debug("precedingMorpheme: "+precedingMorpheme.surfaceForm);
 		logger.debug("remainingPartOfWord: "+remainingPartOfWord);
@@ -304,7 +305,7 @@ public class WordAnalyzer {
 			String stem,
 			String remainingPartOfWord,
 			SurfaceFormInContext precedingMorpheme
-			) {
+			) throws LinguisticDataException {
 		Logger logger = Logger.getLogger("WordAnalyzer.processPossibleAffix");		
 		logger.debug("\naffix: "+morphemeComponent.surfaceForm+"; "+morphemeComponent.morphemeId);
 		

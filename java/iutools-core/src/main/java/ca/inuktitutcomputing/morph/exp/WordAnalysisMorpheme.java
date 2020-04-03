@@ -4,6 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ca.inuktitutcomputing.data.LinguisticDataAbstract;
+import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.data.Morpheme;
 import ca.inuktitutcomputing.data.constraints.Conditions;
 import ca.inuktitutcomputing.data.Action;
@@ -116,7 +117,7 @@ public class WordAnalysisMorpheme {
 	}
 	
 	
-	public boolean agreesWithOtherConstraints (WordAnalysisMorpheme stemwamorpheme) {		
+	public boolean agreesWithOtherConstraints (WordAnalysisMorpheme stemwamorpheme) throws LinguisticDataException {		
 		boolean result = true;
 		Morpheme stem = stemwamorpheme.dbmorpheme;
 		Affix affix = (Affix) this.dbmorpheme;
