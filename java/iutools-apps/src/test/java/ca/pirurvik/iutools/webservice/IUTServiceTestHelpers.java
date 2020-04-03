@@ -56,9 +56,7 @@ public class IUTServiceTestHelpers {
 		
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		
-		if (eptName == EndpointNames.GIST) {
-			new GistEndpoint().doPost(request, response);
-		} else if (eptName == EndpointNames.GIST_WORD) {
+		if (eptName == EndpointNames.GIST_WORD) {
 			new GistWordEndpoint().doPost(request, response);
 		} else if (eptName == EndpointNames.GIST_PREPARE_CONTENT) {
 			new GistPrepareContentEndpoint().doPost(request, response);
@@ -84,14 +82,6 @@ public class IUTServiceTestHelpers {
 		return response;
 	}
 	
-	private static GistResponse toGistResponse(
-			MockHttpServletResponse servletResp) throws IOException {
-		String responseStr = servletResp.getOutputStream().toString();
-		GistResponse response = 
-				new ObjectMapper().readValue(responseStr, GistResponse.class);
-		return response;
-	}
-
 	public static GistPrepareContentResponse toGistPrepareContentResponse(
 			MockHttpServletResponse gotResponse) throws IOException {
 		String responseStr = gotResponse.getOutputStream().toString();
@@ -205,29 +195,6 @@ public class IUTServiceTestHelpers {
 		AssertNumber.isGreaterOrEqualTo("The total number of potential hits was too low", srchResponse.totalHits, minTotalHits);
 		AssertNumber.isGreaterOrEqualTo("The number of hits actually retrieved was too low", new Long(srchResponse.hits.size()), minHitsRetrieved);
 	}
-
-	public static void assertGistResponseIsOK(
-			MockHttpServletResponse response, String[] expDecompsAsStrings,
-			Alignment[] expSentencePairs) throws Exception {
-		
-		GistResponse gistResponse = 
-				IUTServiceTestHelpers.toGistResponse(response);
-		
-		
-		String[] gotDecompsAsString = new String[gistResponse.decompositions.length];
-		for (int ii=0; ii < gotDecompsAsString.length; ii++) {
-			gotDecompsAsString[ii] = gistResponse.decompositions[ii].decstr;
-		}
-		
-		AssertObject.assertDeepEquals(
-				"Decompositions were not as expected", 
-				expDecompsAsStrings, gotDecompsAsString);
-		
-		AssertObject.assertDeepEquals(
-				"Sentence pairs were not as expected", 
-				expSentencePairs, gistResponse.sentencePairs);
-	}
-
 
 	public static void assertOccurenceSearchResponseIsOK(
 			MockHttpServletResponse response, Map<String,MorphemeSearchResult> expected) throws Exception {

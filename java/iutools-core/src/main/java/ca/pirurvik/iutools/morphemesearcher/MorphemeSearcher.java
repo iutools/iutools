@@ -43,25 +43,30 @@ public class MorphemeSearcher {
 	}
 	
 	public List<Words> wordsContainingMorpheme(String morpheme) throws Exception {
-		Logger logger = Logger.getLogger("MorphemeExtractor.wordsContainingMorpheme");
-		logger.debug("morpheme= "+morpheme);
+		Logger logger = Logger.getLogger("ca.pirurvik.iutools.morphemesearcher.MorphemeExtractor.wordsContainingMorpheme");
+		logger.trace("morpheme= "+morpheme);
 		
 		HashMap<String,List<WordWithMorpheme>> morphid2wordsFreqs = getMostFrequentWordsWithMorpheme(morpheme);
 		Bin[] rootBins = separateWordsByRoot(morphid2wordsFreqs);
-		HashMap<String,List<ScoredExample>> morphids2scoredExamples = computeWordsWithScoreFromBins(rootBins);
-	
-		logger.debug("morphids2scoredExamples: "+morphids2scoredExamples.size());
+
+		HashMap<String,List<ScoredExample>> morphids2scoredExamples = null;
+		try {
+			morphids2scoredExamples = computeWordsWithScoreFromBins(rootBins);
+		} catch (Exception e) {
+			throw new MorphemeSearcherException(e);
+		}
+		logger.trace("morphids2scoredExamples: "+morphids2scoredExamples.size());
 		List<Words> words = new ArrayList<Words>();
 		Set<String> keys = morphids2scoredExamples.keySet();
 		Iterator<String> iter = keys.iterator();
 		while ( iter.hasNext()) {
 			String morphId = iter.next();
-			logger.debug("iteration for generation of Words - morphId: "+morphId);
+			logger.trace("iteration for generation of Words - morphId: "+morphId);
 			List<ScoredExample> scoredExamples = morphids2scoredExamples.get(morphId);
 			Words wordsObject = new Words(morphId,scoredExamples);
 			words.add(wordsObject);
 		}
-		logger.debug("words: "+words.size());
+		logger.trace("words: "+words.size());
 		return words;
 	}
 	
@@ -115,8 +120,10 @@ public class MorphemeSearcher {
 	}
 
 	private HashMap<String, List<ScoredExample>> computeWordsWithScore(HashMap<String, List<WordWithMorpheme>> mostFrequentWordsWithMorpheme) throws MorphemeSearcherException {
-		Logger logger = Logger.getLogger("MorphemeSearcher.computeWordsWithScore");
-		logger.debug("mostFrequentWordsWithMorpheme: "+mostFrequentWordsWithMorpheme.size());
+		Logger logger = Logger.getLogger("ca.pirurvik.iutools.morphemesearcher.MorphemeSearcher.computeWordsWithScore");
+		if (logger.isTraceEnabled()) {
+			logger.trace("invoked with mostFrequentWordsWithMorpheme.size()="+mostFrequentWordsWithMorpheme.size());
+		}
 		HashMap<String, List<ScoredExample>> morphids2scoredExamples = new HashMap<String, List<ScoredExample>>();
 		Set<String> morphIds = mostFrequentWordsWithMorpheme.keySet();
 		Iterator<String> iter = morphIds.iterator();
@@ -124,9 +131,9 @@ public class MorphemeSearcher {
 			List<ScoredExample> scoredExamples = new ArrayList<ScoredExample>();
 			String morphId = iter.next();
 			List<WordWithMorpheme> wordsFreqs = mostFrequentWordsWithMorpheme.get(morphId);
-			logger.debug("wordsFreqs: "+wordsFreqs.size());
+			logger.trace("wordsFreqs.size()="+wordsFreqs.size());
 			for (int iwf=0; iwf<wordsFreqs.size(); iwf++) {
-				logger.debug("iwf: "+iwf);
+				logger.trace("iwf: "+iwf);
 				WordWithMorpheme wordFreq = wordsFreqs.get(iwf);
 				try {
 					ScoredExample scoredEx = generateScoredExample(wordFreq.word,morphId);
@@ -193,17 +200,17 @@ public class MorphemeSearcher {
 
 	
 	private ScoredExample generateScoredExample(String word, String morphemeWithId) throws MorphemeSearcherException {
-		Logger logger = Logger.getLogger("MorphemeSearcher.generateScoredExample");
+		Logger logger = Logger.getLogger("ca.pirurvik.iutools.morphemesearcher.MorphemeSearcher.generateScoredExample");
 		ScoredExample scoredEx = null;
 		try {
 			boolean allowAnalysisWithAdditionalFinalConsonant = false;
-			logger.debug("    generateScoredExample --- step 1: morphFreqInAnalyses");
+			logger.trace("    generateScoredExample --- step 1: morphFreqInAnalyses");
 			Double morphemeFreq = morphFreqInAnalyses(morphemeWithId, word, allowAnalysisWithAdditionalFinalConsonant);
-			logger.debug("    generateScoredExample --- step 2: wordFreqInCorpus");
+			logger.trace("    generateScoredExample --- step 2: wordFreqInCorpus");
 			Long wordFreq = wordFreqInCorpus(word,allowAnalysisWithAdditionalFinalConsonant);
 			Double score = 10000*morphemeFreq + wordFreq;
 			scoredEx = new ScoredExample(word, score, wordFreq);
-			logger.debug("    generateScoredExample --- finished");
+			logger.trace("    generateScoredExample --- finished");
 		} catch (LinguisticDataException | TimeoutException | MorphInukException e) {
 			throw new MorphemeSearcherException(e);
 		}
