@@ -33,7 +33,7 @@ class GistTextController extends WidgetController {
 	prepareContentSuccessCallback(resp) {
 		console.log('resp= '+JSON.stringify(resp));
 		if (resp.errorMessage != null) {
-			this.tokenizeFailureCallback(resp);
+			this.prepareContentFailureCallback(resp);
 		} else {
 			console.log("** GistTextNEWController.prepareContentSuccessCallback: successfully prepared text to: "+
 				JSON.stringify(resp));
@@ -78,6 +78,46 @@ class GistTextController extends WidgetController {
 		this.displayTextWithClickableWords(html);
 	}	
 	
+	displayBilingualGist(iuSentences, enSentences) {
+		var html = "";
+		var maxSents = Math.max(iuSentences.length, enSentences.length);
+		if (maxSents > 0) {
+			html += 	
+				"<table id=\"tbl-alignments\" class=\"alignments\">\n"+
+				"<tr><th>Inuktitut</th><th>English</th></tr>\n";
+			
+			for (var sentNum=0; sentNum < maxSents; sentNum++) {
+				// Create new row for an alignment
+				html += "<tr>\n"
+				html = this.htmlAddAlignmentOneSide(html, sentNum, iuSentences);
+				html = this.htmlAddAlignmentOneSide(html, sentNum, enSentences);
+				// Close the current alignment row
+				html += "<tr>\n"
+			}
+			html += "</table>";
+			this.displayTextWithClickableWords(html);
+		}		
+	}
+	
+	htmlAddAlignmentOneSide(html, sentNum, sentences) {
+		html += "<td>"
+		var sent = [];
+		if (sentences.length > sentNum) {
+			sent = sentences[sentNum];
+		}
+		for (var ii=0; ii < sent.length; ii++) {
+			var token = sent[ii];
+			if (IUUtils.isInuktut(token)) {
+				html += '<a class="iu-word">'+token+"</a>";
+			} else {
+				html += token;
+			}
+		}
+		html += "</td>"
+			
+		return html;
+	}
+	
 	displayTextWithClickableWords(html) {
 		html = "<h2>Click on words to see their gist</h2>\n"+html;
 		var div_results = this.elementForProp("divGistTextResults");
@@ -102,127 +142,11 @@ class GistTextController extends WidgetController {
 		var iuWord = $(element).text();
 		this.wordGistController.gistWord(iuWord);				
 	}
-	
-//	makeWordClickable(text) {
-//		var output = "";
-//		var tokens = text.split(" ");
-//		// TODO: envoyer un appel AJAX au code JAVA IUTokenizer
-//		for (var itok=0; itok<tokens.length; itok++) {
-//			if (this.allInuktitutCharacters(tokens[itok]))
-//				output += "<span class='iuword'>"+tokens[itok]+"</span>";
-//			else
-//				output += tokens[itok];
-//			output += " ";
-//		}
-//		return output;
-//	}
-	
-//	allInuktitutCharacters(text) {
-//		var res = true;
-//		var iuchars = ["a","i","u","g","j","k","l","m","n","p","q","r","s","t","v","&"];
-//		for (var ich=0; ich<text.length; ich++)
-//			if ( !iuchars.includes(text.charAt(ich)) ) {
-//				res = false;
-//				break;
-//			}
-//		return res;
-//	}
-//
-//	iconizeDivGist() {
-//		var divGist = this.elementForProp("divGistWord");
-//		divGist.hide();
-//		var divGistIconized = this.elementForProp("divGistWordIconized");
-//		divGistIconized.show();
-//	}
-//	
-//	deiconizeDivGist() {
-//		var divGist = this.elementForProp("divGistWord");
-//		divGist.show();
-//		var divGistIconized = this.elementForProp("divGistWordIconized");
-//		divGistIconized.hide();
-//	}
-//	
-//	successGetGistCallback(resp) {
-//		var tracer = new Tracer('GistTextController.successGetCallback', true);
-//		tracer.trace("resp="+JSON.stringify(resp));
-//		
-//		if (resp.errorMessage != null) {
-//			this.failureGetCallback(resp);
-//		} else {
-//			this.setGetResults(resp);	
-//		}
-//		tracer.trace("exited");
-//	}
-//	
-//	failureGetGistCallback(resp) {
-//		if (! resp.hasOwnProperty("errorMessage")) {
-//			// Error condition comes from tomcat itself, not from our servlet
-//			resp.errorMessage = 
-//				"Server generated a "+resp.status+" error:\n\n" +
-//				resp.responseText;
-//		}				
-//		gistTextController.error(resp.errorMessage);
-//	}
 
 	error(err) {
 		this.elementForProp('divError').html(err);
 		this.elementForProp('divError').show();	 
 	}
-
-//	setGetResults(results) {
-//		var tracer = new Tracer('GistTextController.setGetResults', true);
-//		var jsonResults = JSON.stringify(results);
-//		
-//		var divGist = gistTextController.elementForProp("divGistWord");
-//		var divGistContents = gistTextController.elementForProp("divGistWordContents");
-//		divGistContents.empty();
-//		var divGistWordHolder = gistTextController.elementForProp("divGistWordHolder");
-//		divGistWordHolder.text("word");
-//
-//		var decompositions = results.decompositions;
-//		tracer.trace("nb. decompositions="+decompositions.length);
-//		var html = 'The word has the following decompositions: ';
-//		html += '<div id="gist-decompositions">';
-//		for (var idec=0; idec<decompositions.length; idec++) {
-//			html += this.generateTableForDecomposition(decompositions[idec]);
-//			var decomposition = decompositions[idec];
-//		}
-//		html += '</div>';
-//		
-//		var alignments = results.sentencePairs;
-//		if (alignments.length != 0) {
-//			html += "<div id='gist-alignments'>"
-//				+'<table id="tbl-alignments" class="alignments"><th>Inuktitut</th><th>English</th></tr>';
-//			for (var ial=0; ial<Math.min(30,alignments.length); ial++) {
-//				var inuktitutSentence = alignments[ial].sentences.iu;
-//				var englishSentence = alignments[ial].sentences.en;
-//				html += '<tr><td>'+inuktitutSentence+'</td><td>'+englishSentence+'</td></tr>';
-//			}
-//			html += '</table></div>';
-//		} else {
-//			html += "This word was not found in the Hansard 1999-2002.";
-//		}
-//		
-//		divGistContents.html(html);
-//
-//		new RunWhen().domReady(function() {
-//				divGist.show();
-//		});
-//	}
-	
-//	generateTableForDecomposition(decomposition) {
-//		var parts = decomposition.parts;
-//		var meanings = decomposition.meanings;
-//		var html = "<table>";
-//		for (var ipart=0; ipart<parts.length; ipart++) {
-//			html += "<tr"+(ipart==0?" class='root'":"")+">"
-//				+"<td>"+parts[ipart].surface+"</td>"
-//				+"<td>"+meanings[ipart]+"</td>"
-//				+"</tr>";
-//		}
-//		html += "</table>";
-//		return html;
-//	}
 	
 	setBusy(flag) {
 		this.busy = flag;
