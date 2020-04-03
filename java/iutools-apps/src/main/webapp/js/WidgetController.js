@@ -46,8 +46,6 @@ class WidgetController {
 	}
 	
 	setEventHandler(propNameOrElt, evtName, handler) {
-		console.log("** WidgetController.setEventHandler: propNameOrElt="+
-			propNameOrElt);
 		var elt = propNameOrElt;
 		if (typeof(propNameOrElt) == "string") {
 			elt = this.elementForProp(propNameOrElt);
@@ -58,16 +56,10 @@ class WidgetController {
 				function(evt) {
 					handler.call(controller, evt);
 				};
-		console.log("** WidgetController.setEventHandler: elt class="+
-			elt.constructor.name);
 
 		if (evtName == "click") {
 			elt.off('click').on("click", fct_handler);
 		}
-
-		console.log("** WidgetController.setEventHandler: "+
-			"succesfully added handler");
-		
 	}	
 	
 	onReturnKey(id, method) {
