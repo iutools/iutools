@@ -14,4 +14,8 @@ public class TrieException extends Exception {
 	public TrieException(String mess) {
 		super(mess);
 	}
+	
+	public TrieException(Exception e) {
+		super(e);
+	}
 }
