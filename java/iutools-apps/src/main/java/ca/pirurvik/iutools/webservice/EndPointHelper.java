@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,7 +19,6 @@ import ca.nrc.json.PrettyPrinter;
 public class EndPointHelper {
 
 	public static void setContenTypeAndEncoding(HttpServletResponse response) {
-//		response.setContentType("application/json;charset=utf-8");
 		response.setCharacterEncoding("utf-8");
 	}
 
@@ -65,5 +65,9 @@ public class EndPointHelper {
 		int x = 1/0;
 		return output;
 	}
-
+	
+	public static void log4jReload() {
+		String log4jprops = System.getProperty("log4j.config");
+		PropertyConfigurator.configure(log4jprops);
+	}
 }
