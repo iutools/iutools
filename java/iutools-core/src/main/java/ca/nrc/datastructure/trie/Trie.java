@@ -1,5 +1,7 @@
 package ca.nrc.datastructure.trie;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -28,6 +30,19 @@ public class Trie {
 		Gson gson = new Gson();
 		String json = gson.toJson(this);
 		return json;
+    }
+    
+    public static Trie fromJSON(String filePath) throws TrieException {
+		FileReader jsonFileReader;
+		try {
+			jsonFileReader = new FileReader(filePath);
+		} catch (FileNotFoundException e) {
+			throw new TrieException(e);
+		}
+		Gson gson = new Gson();
+		Trie trie = gson.fromJson(jsonFileReader, Trie.class);
+	
+		return trie;
     }
     
 	public TrieNode getRoot() {
