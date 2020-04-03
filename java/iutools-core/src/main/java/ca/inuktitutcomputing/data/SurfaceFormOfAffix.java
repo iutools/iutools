@@ -93,7 +93,7 @@ public class SurfaceFormOfAffix {
 		action2 = a2;
 	}
 
-	public Affix getAffix() {
+	public Affix getAffix() throws LinguisticDataException {
 		return LinguisticData.getInstance().getAffixWithId(uniqueId);
 	}
 

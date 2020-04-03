@@ -7,11 +7,8 @@
 package ca.inuktitutcomputing.applications;
 
 import java.util.Calendar;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import ca.inuktitutcomputing.data.LinguisticData;
-import ca.inuktitutcomputing.data.LinguisticDataAbstract;
 import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.script.TransCoder;
 import ca.inuktitutcomputing.morph.Decomposition;
@@ -165,12 +162,12 @@ public class Decompose {
     }
     
 	static public String getMeaningsInString (String decstr, String lang, 
-			boolean includeSurface, boolean includeId) {
+			boolean includeSurface, boolean includeId) throws LinguisticDataException {
 		return Decomposition.getMeaningsInString (decstr, lang, includeSurface, includeId);
 	}
 	
 	static public String[] getMeaningsInArrayOfStrings (String decstr, String lang, 
-			boolean includeSurface, boolean includeId) {
+			boolean includeSurface, boolean includeId) throws LinguisticDataException {
 		return Decomposition.getMeaningsInArrayOfStrings (decstr, lang, includeSurface, includeId);
 	}
 	

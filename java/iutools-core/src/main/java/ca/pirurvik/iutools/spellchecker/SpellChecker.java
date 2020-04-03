@@ -14,7 +14,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
@@ -31,8 +30,6 @@ import ca.nrc.datastructure.Pair;
 import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.json.PrettyPrinter;
-import ca.nrc.string.StringUtils;
-import ca.nrc.string.diff.DiffCosting;
 import ca.pirurvik.iutools.CompiledCorpus;
 import ca.pirurvik.iutools.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.CompiledCorpusRegistryException;
@@ -649,7 +646,7 @@ public class SpellChecker {
 			} catch (TimeoutException e) {
 //				wordIsMispelled = false;
 				wordIsMispelled = true;
-			} catch (StringSegmenterException e) {
+			} catch (StringSegmenterException | LinguisticDataException e) {
 				throw new SpellCheckerException(e);
 			}
 			logger.debug("word submitted to IMA - mispelled: "+wordIsMispelled);
@@ -1001,7 +998,7 @@ public class SpellChecker {
 			Decomposition[] decs = null;
 			try {
 				decs = morphAnalyzer.decomposeWord(term);
-			} catch (TimeoutException | MorphInukException e) {
+			} catch (TimeoutException | MorphInukException | LinguisticDataException e) {
 			}
 			logger.debug("decs: "+(decs==null?"null":decs.length));
 			if (decs!=null && decs.length!=0) {

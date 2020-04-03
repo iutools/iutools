@@ -61,10 +61,11 @@ public class MorphInuk {
      * Les décompositions résultantes sont ordonnées selon certaines règles.
      * @param word String word to be decomposed
      * @return Decomposition[] array of decompositions
+     * @throws LinguisticDataException 
      */
     
 
-    public static Decomposition[] decomposeWord(String word) throws TimeoutException, MorphInukException {
+    public static Decomposition[] decomposeWord(String word) throws TimeoutException, MorphInukException, LinguisticDataException {
     	boolean decomposeCompositeRoot = false;
         ArrayList<Decomposition> decsList = new ArrayList<Decomposition>();
         Vector<String> words = null;
@@ -117,7 +118,7 @@ public class MorphInuk {
         return decs;
     }
 
-    private static Vector<Decomposition> decomposeForSpecialCases(String aWord, boolean decomposeCompositeRoot) throws TimeoutException, MorphInukException {
+    private static Vector<Decomposition> decomposeForSpecialCases(String aWord, boolean decomposeCompositeRoot) throws TimeoutException, MorphInukException, LinguisticDataException {
         Vector<Decomposition> newDecomps;
         if (Roman.typeOfLetterLat(aWord.charAt(aWord.length() - 1)) == Roman.V) {
             // Si le mot se termine par une voyelle, il est possible
@@ -166,7 +167,7 @@ public class MorphInuk {
     // faite privée.
 
 	private static Vector<Decomposition> _decompose(String term, boolean decomposeCompositeRoot)
-			throws TimeoutException, MorphInukException {
+			throws TimeoutException, MorphInukException, LinguisticDataException {
 
 		Vector<AffixPartOfComposition> morphPartsInit = new Vector<AffixPartOfComposition>();
 		Graph.State state;
@@ -232,7 +233,7 @@ public class MorphInuk {
             Graph.State states[],
             Conditions preConds,
             String transitivity
-            ) throws TimeoutException, MorphInukException {
+            ) throws TimeoutException, MorphInukException, LinguisticDataException {
 
         Vector<Decomposition> completeAnalysis = new Vector<Decomposition>();
         
@@ -270,7 +271,7 @@ public class MorphInuk {
 			String simplifiedTerm,
 			String word,
 			Vector<AffixPartOfComposition> morphParts, State[] states,
-			Conditions preCond, String transitivity) throws TimeoutException, MorphInukException {
+			Conditions preCond, String transitivity) throws TimeoutException, MorphInukException, LinguisticDataException {
 
         Vector<Decomposition> completeAnalysis = new Vector<Decomposition>();
         Vector<SurfaceFormOfAffix> formsOfAffixFound;
@@ -453,7 +454,7 @@ public class MorphInuk {
             Vector<AffixPartOfComposition> morphParts,
             String word,
             boolean notResultingFromDialectalPhonologicalTransformation
-            ) throws TimeoutException, MorphInukException {
+            ) throws TimeoutException, MorphInukException, LinguisticDataException {
 
         Vector<Decomposition> completeAnalysis = new Vector<Decomposition>();
         
@@ -581,7 +582,7 @@ public class MorphInuk {
             Action action1, Action action2, String stem, int posAffix,
             Affix affix, SurfaceFormOfAffix form, boolean isSyllabic,
             boolean checkPossibleDialectalChanges,
-            String affixCandidate) throws TimeoutException, MorphInukException {
+            String affixCandidate) throws TimeoutException, MorphInukException, LinguisticDataException {
 
         int action1Type = action1.getType();
         int action2Type = action2.getType();
@@ -1600,7 +1601,7 @@ public class MorphInuk {
 	private static Vector<Decomposition> analyzeAsRoot(String term, String termOrig, 
             String word, Vector<AffixPartOfComposition> morphParts, Graph.State states[],
             Conditions preConds,
-            String transitivity) throws TimeoutException {
+            String transitivity) throws TimeoutException, LinguisticDataException {
 
         Vector<Decomposition> allAnalyses = new Vector<Decomposition>();
 
@@ -1675,10 +1676,11 @@ public class MorphInuk {
      * @param transitivity
      * @return
      * @throws TimeoutException
+     * @throws LinguisticDataException 
      */
 	private static Vector<Decomposition> checkRoots(Vector<Morpheme> lexs, String word, String termOrigICI,
             Vector<AffixPartOfComposition> morphParts, Graph.State states[], Conditions preConds,
-            String transitivity) throws TimeoutException {
+            String transitivity) throws TimeoutException, LinguisticDataException {
 
         Vector<Decomposition> rootAnalyses = new Vector<Decomposition>();
         
@@ -1742,7 +1744,7 @@ public class MorphInuk {
 	
 	private static Graph.Arc checkValidityOfRoot(Morpheme root, Graph.State states[],
 			Vector<AffixPartOfComposition> morphParts, Conditions preConds,
-            String transitivity) throws TimeoutException {
+            String transitivity) throws TimeoutException, LinguisticDataException {
        	/* il faut vérifier si le type de la
          * racine correspond à un arc à partir de l'état actuel, et cet
          * arc doit conduire à l'état final (aucun arc partant de cet
@@ -1881,7 +1883,7 @@ public class MorphInuk {
      * celles qui retournent le suffixe "a" d'action de groupe deux fois
      * lorsqu'on a un double "a" dans le mot.
      */
-    private static boolean sameAsNext(Morpheme morpheme, Vector<AffixPartOfComposition> partsAlreadyAnalyzed) {
+    private static boolean sameAsNext(Morpheme morpheme, Vector<AffixPartOfComposition> partsAlreadyAnalyzed) throws LinguisticDataException {
         boolean isSameAsNext = false;
         if (partsAlreadyAnalyzed.size() != 0) {
             Affix affPrec = ((AffixPartOfComposition) partsAlreadyAnalyzed.elementAt(0)).getAffix();
@@ -1919,7 +1921,7 @@ public class MorphInuk {
      */
         
     private static Graph.Arc[] arcsSuivis(Morpheme morpheme, Graph.State states[],
-			String keyStateIDs) throws TimeoutException {
+			String keyStateIDs) throws TimeoutException, LinguisticDataException {
 		Graph.Arc arcsFollowed[] = null;
 		String keyMorphemeStateIDs = morpheme.id + ":" + keyStateIDs;
 		Graph.Arc[] arcsFollowedByHash = (Graph.Arc[]) arcsByMorpheme
@@ -1963,7 +1965,7 @@ public class MorphInuk {
             String stem, 
             int positionAffixInWord, 
             SurfaceFormOfAffix form,
-            boolean notResultingFromDialectalPhonologicalTransformation) throws TimeoutException, MorphInukException {
+            boolean notResultingFromDialectalPhonologicalTransformation) throws TimeoutException, MorphInukException, LinguisticDataException {
         Object[][] stemAffs = null;
         boolean checkStartOfConsonantsGroup = true;
         /*

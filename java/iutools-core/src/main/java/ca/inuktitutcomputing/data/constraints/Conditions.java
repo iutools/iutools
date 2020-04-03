@@ -8,12 +8,13 @@
  */
 package ca.inuktitutcomputing.data.constraints;
 
+import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.data.Morpheme;
 
 public interface Conditions {
 
-    boolean isMetBy(Morpheme m);
-    boolean isMetByFullMorphem(Morpheme m);
+    boolean isMetBy(Morpheme m) throws LinguisticDataException;
+    boolean isMetByFullMorphem(Morpheme m) throws LinguisticDataException;
     String toText(String lang);
     Condition expand();
 }

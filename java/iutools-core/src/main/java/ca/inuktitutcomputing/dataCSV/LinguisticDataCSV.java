@@ -56,7 +56,6 @@ public final class LinguisticDataCSV { //extends LinguisticDataAbstract {
 	 * 'type' peut �tre 'r' ou 's' ou null
 	 */
 	public static void createLinguisticDataCSV(String type) throws LinguisticDataException {
-		LinguisticData.getInstance().reinitializeData();
 		if (type==null) {
 //			bases = new Hashtable();
 //			idToBaseTable = new Hashtable();

@@ -13,6 +13,7 @@ import java.util.Hashtable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.data.Morpheme;
 
 /*
@@ -42,7 +43,7 @@ public class AttrValCond extends Condition implements Conditions,Cloneable {
      * condition must be met. 
      * argument: (Morpheme) morph
      */
-    public boolean isMetBy(Morpheme morph) {
+    public boolean isMetBy(Morpheme morph) throws LinguisticDataException {
         boolean res = true;
         Morpheme lm = morph.getLastCombiningMorpheme();
         res = true;

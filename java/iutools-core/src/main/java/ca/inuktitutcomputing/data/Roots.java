@@ -72,7 +72,7 @@ public class Roots {
 		}
 	}
 
-	private static String composeRootDisplay(Base base) {
+	private static String composeRootDisplay(Base base) throws LinguisticDataException {
 		StringBuffer output = new StringBuffer();
 		output.append("<span style=\"font-size:10pt;color:green\">");
 		output.append("<span style=\"font-weight:bold;\">");
@@ -968,7 +968,7 @@ public class Roots {
 		return output.toString();
 	}
 
-	public static void displayListOfRoots(String args[], PrintStream out) {
+	public static void displayListOfRoots(String args[], PrintStream out) throws LinguisticDataException {
 		lang = Util.getArgument(args, "l");
 		Hashtable<String,Morpheme> roots = LinguisticData.getInstance().getIdToRootTable();
 		displayListOfMorphemes("rac", out, roots, lang);

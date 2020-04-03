@@ -47,14 +47,9 @@ import ca.pirurvik.iutools.webservice.tokenize.TokenizeResponse;
  */
 public class GistPrepareContentEndpoint extends HttpServlet {
 	
-	protected void log4jReload() {
-		String log4jprops = "/Users/desilets/Documents/conf/log4j.properties";
-		PropertyConfigurator.configure(log4jprops);
-	}
-	
 	public void doPost(HttpServletRequest request, 
 			HttpServletResponse response) throws IOException {
-		log4jReload();
+		EndPointHelper.log4jReload();
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.webservice.GistPrepareContentEndpoint.doPost");
 		
 		tLogger.trace("invoked with request=\n"+request);

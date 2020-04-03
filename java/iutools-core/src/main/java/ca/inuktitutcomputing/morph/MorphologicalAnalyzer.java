@@ -52,11 +52,8 @@ import ca.inuktitutcomputing.utilities1.Util;
 //-------------------------------------------------
 
 
-public class MorphologicalAnalyzer {
+public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 
-    private long millisTimeout = 10000;
-    private boolean stpwActive = true;
-    private StopWatch stpw;
     private Hashtable<String,Graph.Arc[]> arcsByMorpheme = new Hashtable<String,Graph.Arc[]>();
     
     public static Cache<String, Decomposition[]> 
@@ -65,30 +62,18 @@ public class MorphologicalAnalyzer {
     		  .build();
     
     public MorphologicalAnalyzer() throws LinguisticDataException {
+    	super();
 		LinguisticData.getInstance();
     }
 
 
-    /** 
-     * DÉCOMPOSITION DU MOT.
-     * Les décompositions résultantes sont ordonnées selon certaines règles.
-     * L'analyse tient compte de certaines habitudes : l'omission de la consonne finale,
-     * et l'usage de 'n' au lieu de 't' en finale.
-     * @param word String word to be decomposed, in syllabics or roman alphabet
-     * @return Decomposition[] array of decompositions
-     */
-	public Decomposition[] decomposeWord(String word) throws TimeoutException, MorphInukException {
+    @Override
+	public Decomposition[] decomposeWord(String word) throws TimeoutException, MorphInukException, LinguisticDataException {
 		return decomposeWord(word,true);
 	}
 
-    /** 
-     * DÉCOMPOSITION DU MOT.
-     * Les décompositions résultantes sont ordonnées selon certaines règles.
-     * @param word String word to be decomposed, in syllabics or roman alphabet
-     * @param extendedAnalysis boolean if true, check also for possible missing consonant at the end of the word
-     * @return Decomposition[] array of decompositions
-     */
-	public Decomposition[] decomposeWord(String word, boolean extendedAnalysis) throws TimeoutException, MorphInukException {
+    @Override
+	public Decomposition[] decomposeWord(String word, boolean extendedAnalysis) throws TimeoutException, MorphInukException, LinguisticDataException {
 		
 		Decomposition[] cachedDecomps = uncache(word, extendedAnalysis);
 		if (cachedDecomps != null) {
@@ -155,7 +140,7 @@ public class MorphologicalAnalyzer {
 	 *  d'un 't' nasalisé, phénomène couramment rencontré.
 	 */
 	private Vector<Decomposition> _decomposeForFinalN(String aWord, boolean decomposeCompositeRoot)
-			throws TimeoutException, MorphInukException {
+			throws TimeoutException, MorphInukException, LinguisticDataException {
 		String wordWithNReplaced = aWord.substring(0, aWord.length() - 1) + "t";
 		Vector<Decomposition> newDecomps = _decompose(wordWithNReplaced, decomposeCompositeRoot);
 		if (newDecomps != null)
@@ -176,7 +161,7 @@ public class MorphologicalAnalyzer {
      * qu'il manque la consonne finale. On ajoute '*' à la fin
      * du mot, qui tient lieu de n'importe quelle consonne.
      */
-    private Vector<Decomposition> _decomposeForFinalConsonantPossiblyMissing(String aWord, boolean decomposeCompositeRoot) throws TimeoutException, MorphInukException {
+    private Vector<Decomposition> _decomposeForFinalConsonantPossiblyMissing(String aWord, boolean decomposeCompositeRoot) throws TimeoutException, MorphInukException, LinguisticDataException {
     	Vector<Decomposition> newDecomps = _decompose(aWord + "*", false);
         return newDecomps;
 	}
@@ -203,7 +188,7 @@ public class MorphologicalAnalyzer {
     // faite privée.
 
 	private Vector<Decomposition> _decompose(String term, boolean decomposeCompositeRoot)
-			throws TimeoutException, MorphInukException {
+			throws TimeoutException, MorphInukException, LinguisticDataException {
 
 		Vector<AffixPartOfComposition> morphPartsInit = new Vector<AffixPartOfComposition>();
 		Graph.State state;
@@ -269,7 +254,7 @@ public class MorphologicalAnalyzer {
             Graph.State states[],
             Conditions preConds,
             String transitivity
-            ) throws TimeoutException, MorphInukException {
+            ) throws TimeoutException, MorphInukException, LinguisticDataException {
 
         Vector<Decomposition> completeAnalysis = new Vector<Decomposition>();
         
@@ -303,7 +288,7 @@ public class MorphologicalAnalyzer {
 			String simplifiedTerm,
 			String word,
 			Vector<AffixPartOfComposition> morphParts, State[] states,
-			Conditions preCond, String transitivity) throws TimeoutException, MorphInukException {
+			Conditions preCond, String transitivity) throws TimeoutException, MorphInukException, LinguisticDataException {
 
     	Logger logger = Logger.getLogger("MorphologicalAnalyzer.analyzeAsSequenceOfMorphemes");
     	logger.debug("++++++simplifiedTerm= "+simplifiedTerm);
@@ -462,7 +447,7 @@ public class MorphologicalAnalyzer {
 	}
     
     
-    public Vector<SurfaceFormOfAffix> lookForForms(String term, boolean syllabic) {
+    public Vector<SurfaceFormOfAffix> lookForForms(String term, boolean syllabic) throws LinguisticDataException {
     	String[] cons = syllabic ? Lexicon.consonantsSyl : Lexicon.consonants;
     	Vector<SurfaceFormOfAffix> formsFound;
         if (term.endsWith("*")) {
@@ -511,7 +496,7 @@ public class MorphologicalAnalyzer {
             Vector<AffixPartOfComposition> morphParts,
             String word,
             boolean notResultingFromDialectalPhonologicalTransformation
-            ) throws TimeoutException, MorphInukException {
+            ) throws TimeoutException, MorphInukException, LinguisticDataException {
 
     	Logger logger = Logger.getLogger("MorphologicalAnalyzer.analyzeWithCandidateAffixes");
     	logger.debug("***stem= "+stem);
@@ -641,7 +626,7 @@ public class MorphologicalAnalyzer {
             Action action1, Action action2, String stem, int posAffix,
             Affix affix, SurfaceFormOfAffix form, boolean isSyllabic,
             boolean checkPossibleDialectalChanges,
-            String affixCandidate) throws TimeoutException, MorphInukException {
+            String affixCandidate) throws TimeoutException, MorphInukException, LinguisticDataException {
 
         int action1Type = action1.getType();
         int action2Type = action2.getType();
@@ -780,7 +765,7 @@ public class MorphologicalAnalyzer {
 	private Vector<Decomposition> analyzeAsRoot(String term, String termOrig, 
             String word, Vector<AffixPartOfComposition> morphParts, Graph.State states[],
             Conditions preConds,
-            String transitivity) throws TimeoutException {
+            String transitivity) throws TimeoutException, LinguisticDataException {
 
         Vector<Decomposition> allAnalyses = new Vector<Decomposition>();
 
@@ -844,7 +829,7 @@ public class MorphologicalAnalyzer {
         return allAnalyses;
     }
     
-    public Vector<Morpheme> lookForBase(String termICI, boolean isSyllabic) {
+    public Vector<Morpheme> lookForBase(String termICI, boolean isSyllabic) throws LinguisticDataException {
     	Vector<Morpheme> basesFound = null;
     	if (termICI.endsWith("*")) {
     		String[] cons = isSyllabic ? Lexicon.consonantsSyl : Lexicon.consonants;
@@ -877,10 +862,11 @@ public class MorphologicalAnalyzer {
      * @param transitivity
      * @return
      * @throws TimeoutException
+     * @throws LinguisticDataException 
      */
 	private Vector<Decomposition> checkRoots(Vector<Morpheme> lexs, String word, String termOrigICI,
             Vector<AffixPartOfComposition> morphParts, Graph.State states[], Conditions preConds,
-            String transitivity) throws TimeoutException {
+            String transitivity) throws TimeoutException, LinguisticDataException {
 
         Vector<Decomposition> rootAnalyses = new Vector<Decomposition>();
         
@@ -944,7 +930,7 @@ public class MorphologicalAnalyzer {
 	
 	private Graph.Arc checkValidityOfRoot(Morpheme root, Graph.State states[],
 			Vector<AffixPartOfComposition> morphParts, Conditions preConds,
-            String transitivity) throws TimeoutException {
+            String transitivity) throws TimeoutException, LinguisticDataException {
        	/* il faut vérifier si le type de la
          * racine correspond à un arc à partir de l'état actuel, et cet
          * arc doit conduire à l'état final (aucun arc partant de cet
@@ -1086,7 +1072,7 @@ public class MorphologicalAnalyzer {
      * celles qui retournent le suffixe "a" d'action de groupe deux fois
      * lorsqu'on a un double "a" dans le mot.
      */
-    private boolean sameAsNext(Morpheme morpheme, Vector<AffixPartOfComposition> partsAlreadyAnalyzed) {
+    private boolean sameAsNext(Morpheme morpheme, Vector<AffixPartOfComposition> partsAlreadyAnalyzed) throws LinguisticDataException {
         boolean isSameAsNext = false;
         if (partsAlreadyAnalyzed.size() != 0) {
             Affix affPrec = ((AffixPartOfComposition) partsAlreadyAnalyzed.elementAt(0)).getAffix();
@@ -1124,7 +1110,7 @@ public class MorphologicalAnalyzer {
      */
         
     private Graph.Arc[] arcsSuivis(Morpheme morpheme, Graph.State states[],
-			String keyStateIDs) throws TimeoutException {
+			String keyStateIDs) throws TimeoutException, LinguisticDataException {
 		Graph.Arc arcsFollowed[] = null;
 		String keyMorphemeStateIDs = morpheme.id + ":" + keyStateIDs;
 		Graph.Arc[] arcsFollowedByHash = (Graph.Arc[]) arcsByMorpheme
@@ -1168,7 +1154,7 @@ public class MorphologicalAnalyzer {
             String stem, 
             int positionAffixInWord, 
             SurfaceFormOfAffix form,
-            boolean notResultingFromDialectalPhonologicalTransformation) throws TimeoutException, MorphInukException {
+            boolean notResultingFromDialectalPhonologicalTransformation) throws TimeoutException, MorphInukException, LinguisticDataException {
         Object[][] stemAffs = null;
         boolean checkStartOfConsonantsGroup = true;
         /*
@@ -1233,19 +1219,6 @@ public class MorphologicalAnalyzer {
         return newLexs;
     }
     */
-    
-    public MorphologicalAnalyzer setTimeout(long val) {
-    	millisTimeout = val;
-    	return this;
-    }
-    public MorphologicalAnalyzer disactivateTimeout() {
-    	stpwActive = false;
-    	return this;
-    }
-    public MorphologicalAnalyzer activateTimeout() {
-    	stpwActive = true;
-    	return this;
-    }
     
     //--------------------- CONTEXT VALIDATION -------------------------------
     
@@ -2366,7 +2339,7 @@ public class MorphologicalAnalyzer {
 	protected Vector<Object[]> validate_neutral_selfdecapitation(String context, Action action1, Action action2, String stem,
 			String affixCandidate, SurfaceFormOfAffix form, Affix affix, int posAffix,
 			AffixPartOfComposition partOfComp, boolean checkPossibleDialectalChanges)
-			throws TimeoutException, MorphInukException {
+			throws TimeoutException, MorphInukException, LinguisticDataException {
 
 		Vector<Object[]> res = new Vector<Object[]>();
 		// Caractère final du radical.
@@ -2405,7 +2378,7 @@ public class MorphologicalAnalyzer {
   	protected Vector<Object[]> validate_deletion_selfdecapitation(String context, Action action1, Action action2, String stem,
 			String affixCandidate, SurfaceFormOfAffix form, Affix affix, int posAffix,
 			AffixPartOfComposition partOfComp, boolean checkPossibleDialectalChanges)
-			throws TimeoutException, MorphInukException {
+			throws TimeoutException, MorphInukException, LinguisticDataException {
 
 		Vector<Object[]> res = new Vector<Object[]>();
 		// Caractère final du radical.

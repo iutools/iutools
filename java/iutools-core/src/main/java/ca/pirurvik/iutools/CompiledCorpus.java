@@ -27,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 
+import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.script.TransCoder;
 import ca.nrc.datastructure.trie.StringSegmenter;
@@ -267,9 +268,10 @@ public class CompiledCorpus
 	 * @param corpusDirectoryPathname
 	 * @throws StringSegmenterException 
 	 * @throws CompiledCorpusException 
+	 * @throws LinguisticDataException 
 	 * @throws IOException 
 	 */
-	public void recompileWordsThatFailedAnalysis(String corpusDirectoryPathname) throws CompiledCorpusException, StringSegmenterException {
+	public void recompileWordsThatFailedAnalysis(String corpusDirectoryPathname) throws CompiledCorpusException, StringSegmenterException, LinguisticDataException {
 		toConsole("[INFO] *** Recompiling into trie the words that failed analysis previously"+"\n");
 		segmenter = new StringSegmenter_IUMorpheme();
 		wordCounter = 0;
@@ -425,7 +427,7 @@ public class CompiledCorpus
 	}
 
 
-	protected void processDocumentContents(String fileAbsolutePath) throws CompiledCorpusException, StringSegmenterException {
+	protected void processDocumentContents(String fileAbsolutePath) throws CompiledCorpusException, StringSegmenterException, LinguisticDataException {
 		BufferedReader bufferedReader = null;
 		try {
 			bufferedReader = new BufferedReader(new FileReader(fileAbsolutePath));
@@ -438,7 +440,7 @@ public class CompiledCorpus
 	
 	
 	public void processDocumentContents(BufferedReader bufferedReader, String fileAbsolutePath)
-			throws CompiledCorpusException, StringSegmenterException {
+			throws CompiledCorpusException, StringSegmenterException, LinguisticDataException {
 		Logger logger = Logger.getLogger("CompiledCorpus.processDocumentContents");
 		String line;
 		currentFileWordCounter = 0;
@@ -462,7 +464,7 @@ public class CompiledCorpus
 
 	
 	
-	private void processWords(String[] words) throws CompiledCorpusException, StringSegmenterException {
+	private void processWords(String[] words) throws CompiledCorpusException, StringSegmenterException, LinguisticDataException {
     	Logger logger = Logger.getLogger("CompiledCorpus.processWords");
 		logger.debug("words: "+words.length);
 		for (int n = 0; n < words.length; n++) {
@@ -502,10 +504,10 @@ public class CompiledCorpus
 
 	
 	
-	private void processWord(String word) throws CompiledCorpusException, StringSegmenterException {
+	private void processWord(String word) throws CompiledCorpusException, StringSegmenterException, LinguisticDataException {
     	processWord(word,false);
     }
-    private void processWord(String word, boolean recompilingFailedWord) throws CompiledCorpusException, StringSegmenterException {
+    private void processWord(String word, boolean recompilingFailedWord) throws CompiledCorpusException, StringSegmenterException, LinguisticDataException {
     	Logger logger = Logger.getLogger("CompiledCorpus.processWord");
 		toConsole("[INFO]     "+wordCounter + "(" + currentFileWordCounter + "+). " + word + "... ");
 		String[] segments = fetchSegmentsFromCache(word);

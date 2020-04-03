@@ -197,7 +197,7 @@ public class SurfaceFormInContext extends Object {
 		return res;
 	}
 
-	public boolean validateConstraints(SurfaceFormInContext precedingMorpheme) {
+	public boolean validateConstraints(SurfaceFormInContext precedingMorpheme) throws LinguisticDataException {
 		Logger logger = Logger.getLogger("SurfaceFormInContext.validateConstraints");
 		logger.debug("precedingMorpheme.morphemeId: "+precedingMorpheme.morphemeId);
 		Morpheme prec = LinguisticData.getInstance().getMorpheme(precedingMorpheme.morphemeId);

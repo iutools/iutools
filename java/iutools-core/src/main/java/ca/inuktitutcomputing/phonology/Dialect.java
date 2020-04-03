@@ -14,7 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ca.inuktitutcomputing.data.LinguisticData;
-import ca.inuktitutcomputing.data.LinguisticDataAbstract;
+import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.script.Orthography;
 import ca.inuktitutcomputing.script.Roman;
 import ca.inuktitutcomputing.utilities.StopWatch;
@@ -114,7 +114,7 @@ public class Dialect {
      * 
      * The results of each check are joined.
      */
-    public static Vector<String> newCandidates(String stem, String candidateMorpheme, String followingMorpheme) throws TimeoutException {
+    public static Vector<String> newCandidates(String stem, String candidateMorpheme, String followingMorpheme) throws TimeoutException, LinguisticDataException {
         Vector<String> cands = new Vector<String>(); // to hold the new candidates
         ArrayList<Object[]> candsAndChanges = new ArrayList<Object[]>();
         
@@ -226,7 +226,7 @@ public class Dialect {
         return cands;
     }
     
-	public static Vector<String> newRootCandidates(String rootICI) throws TimeoutException {
+	public static Vector<String> newRootCandidates(String rootICI) throws TimeoutException, LinguisticDataException {
 		Vector<String> cands = new Vector<String>(); // to hold the new candidates
 
 		/*
@@ -457,11 +457,11 @@ public class Dialect {
      * is deleted. This method returns a number of possible words corresponding
      * to the 'candidate' word assuming that Schneide's law has been applied to it.
      */
-    public static Vector<String> _schneiderCandidates(String stem, String candidate) throws TimeoutException {
+    public static Vector<String> _schneiderCandidates(String stem, String candidate) throws TimeoutException, LinguisticDataException {
     	return __schneiderCandidates(stem,candidate,'@');
     }
     
-    private static Vector<String> __schneiderCandidates(String stem, String candidate, char mark) throws TimeoutException {
+    private static Vector<String> __schneiderCandidates(String stem, String candidate, char mark) throws TimeoutException, LinguisticDataException {
     	String markedCandidate = schneiderCandidatesToString(stem,candidate,mark);
         Vector<String> cands = __explode(markedCandidate);
 //        for (int i=0; i<cands.size(); i++)
@@ -510,7 +510,7 @@ public class Dialect {
 //    static char cons[] = {'p', 't', 'k', 'g', 'm', 'n', 's', 'l', 'j', 'v',
 //            'r', 'q', 'N', '&'};
     
-    private static Vector<String> __explode(String s) throws TimeoutException {
+    private static Vector<String> __explode(String s) throws TimeoutException, LinguisticDataException {
         if (s.length()==0)
             return new Vector<String>();
         else
@@ -521,7 +521,7 @@ public class Dialect {
      * Wherever there might be a deleted consonant, add a word with one of the
      * possible consonant at that place.
      */
-    private static Vector<String> __explode2(String s) throws TimeoutException {
+    private static Vector<String> __explode2(String s) throws TimeoutException, LinguisticDataException {
         Vector<String> a = new Vector<String>();
         StringBuffer sb = new StringBuffer();
         for (int i=0; i<s.length(); i++) {

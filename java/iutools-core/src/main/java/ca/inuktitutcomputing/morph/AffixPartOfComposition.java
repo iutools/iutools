@@ -26,6 +26,7 @@ package ca.inuktitutcomputing.morph;
 import java.util.Vector;
 
 import ca.inuktitutcomputing.data.Affix;
+import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.data.SurfaceFormOfAffix;
 import ca.inuktitutcomputing.data.Morpheme;
 import ca.inuktitutcomputing.data.VerbEnding;
@@ -62,15 +63,15 @@ public class AffixPartOfComposition extends PartOfComposition {
 		return reflexive;
 	}
 	
-	public Morpheme getMorpheme() {
+	public Morpheme getMorpheme() throws LinguisticDataException {
 	    return form.getAffix();
 	}
 
-	public Affix getAffix() {
+	public Affix getAffix() throws LinguisticDataException {
 		return form.getAffix();
 	}
     
-    public String getType() {
+    public String getType() throws LinguisticDataException {
         return form.getAffix().type;
     }
 
@@ -100,7 +101,7 @@ public class AffixPartOfComposition extends PartOfComposition {
 	}
 	
 	
-	public String toStr() {
+	public String toStr() throws LinguisticDataException {
 		String trm;
 		Affix aff = (Affix) form.getAffix();
 		if (term != null && term.length() != 0 && term.charAt(term.length()-1)=='*')

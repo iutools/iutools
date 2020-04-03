@@ -65,7 +65,7 @@ public abstract class Morpheme extends Object implements Cloneable {
     
     //------------------------------------------------------------------------------------------------------------
 	abstract boolean agreeWithTransitivity(String trans); //
-    public abstract String showData();
+    public abstract String showData() throws LinguisticDataException;
     abstract void setAttrs();
 
     //------------------------------------------------------------------------------------------------------------
@@ -110,7 +110,7 @@ public abstract class Morpheme extends Object implements Cloneable {
     }
     
     
-    public boolean meetsConditions (Conditions conds) {
+    public boolean meetsConditions (Conditions conds) throws LinguisticDataException {
         boolean res = true;
         /*
          * Il faut que les conditions spécifiques soient rencontrées. Par
@@ -125,7 +125,7 @@ public abstract class Morpheme extends Object implements Cloneable {
         return res;
     }
   
-    public boolean meetsConditions (Conditions conds, Vector<AffixPartOfComposition> followingMorphemes) {
+    public boolean meetsConditions (Conditions conds, Vector<AffixPartOfComposition> followingMorphemes) throws LinguisticDataException {
     	Logger logger = Logger.getLogger("Morpheme.meetsConditions");
 //    	String[] idsOfFollowingMorphemes = new String[followingMorphemes.size()];
 //    	for (int iv=0; iv<followingMorphemes.size(); iv++)
@@ -159,7 +159,7 @@ public abstract class Morpheme extends Object implements Cloneable {
 
 //    public abstract Vector getIdsOfCompositesWithThisRoot();
     
-    public Morpheme getLastCombiningMorpheme() {
+    public Morpheme getLastCombiningMorpheme() throws LinguisticDataException {
         String [] parts = getCombiningParts();
         String lastPart = null;
         Morpheme lastMorpheme = null;
@@ -172,7 +172,7 @@ public abstract class Morpheme extends Object implements Cloneable {
         return lastMorpheme;
     }
     
-    public static Morpheme getMorpheme(String morphemeId) {
+    public static Morpheme getMorpheme(String morphemeId) throws LinguisticDataException {
     	    // Look for the morpheme in the affixes
     	    Morpheme morph = (Morpheme)LinguisticData.getInstance().getAffixWithId(morphemeId);
     	    // If not found, look for the morpheme in the roots
@@ -261,7 +261,7 @@ public abstract class Morpheme extends Object implements Cloneable {
 		attributes.put("combinedMorphemes",combinedMorphemes);
 	}
 	
-    public static String combine(String combination, boolean withAction2, String highlightedMorpheme) {
+    public static String combine(String combination, boolean withAction2, String highlightedMorpheme) throws LinguisticDataException {
         String combinedForm;
         String[]morphemes = combination.split("\\x2b"); // +
         Morpheme morpheme = LinguisticData.getInstance().getMorpheme(morphemes[0]);

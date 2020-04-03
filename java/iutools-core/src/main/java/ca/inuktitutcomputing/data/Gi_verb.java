@@ -5,7 +5,7 @@ package ca.inuktitutcomputing.data;
 
 public class Gi_verb extends Item {
 	
-	static public String affichage(String lang) {
+	static public String affichage(String lang) throws LinguisticDataException {
 		StringBuffer output = new StringBuffer();
 		String title = lang.equals("en") ?
 			"GI Verbs" : "Les verbes GI";

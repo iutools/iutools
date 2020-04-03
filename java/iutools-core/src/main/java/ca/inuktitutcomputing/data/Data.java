@@ -123,21 +123,21 @@ public abstract class Data {
         }
 	}
 	
-	public static void makeSuffix(HashMap<String,String> v) {
+	public static void makeSuffix(HashMap<String,String> v) throws LinguisticDataException {
         Suffix x = new Suffix(v);
         if (LinguisticData.getInstance().getIdToAffixTable().containsKey(x.id)) throw new RuntimeException("Key '"+x.id+"' already exists in linguistic data hash");        
         LinguisticData.getInstance().addEntryToIdToAffixTable(x.id,x);
        addToForms(x, x.morpheme);	    
 	}
 	
-	public static void makeNounEnding(HashMap<String,String> v) {
+	public static void makeNounEnding(HashMap<String,String> v) throws LinguisticDataException {
         NounEnding x = new NounEnding(v);
         if (LinguisticData.getInstance().getIdToAffixTable().containsKey(x.id)) throw new RuntimeException("Key '"+x.id+"' already exists in linguistic data hash");        
         LinguisticData.getInstance().addEntryToIdToAffixTable(x.id,x);
         addToForms(x, x.morpheme);	    
  	}
 	
-	public static void makeVerbEnding(HashMap<String,String> v) {
+	public static void makeVerbEnding(HashMap<String,String> v) throws LinguisticDataException {
         VerbEnding x = new VerbEnding(v);
         // This test with a throw is commented out to allow the execution of scripts using the linguistic database.
         // This matter will be attended to shortlty (Benoît Farley, 2019-09-17)
@@ -148,7 +148,7 @@ public abstract class Data {
         addToForms(x, x.morpheme);	    
 	}
 	
-	public static void makeDemonstrativeEnding(HashMap<String,String> v) {
+	public static void makeDemonstrativeEnding(HashMap<String,String> v) throws LinguisticDataException {
         DemonstrativeEnding x = new DemonstrativeEnding(
                 v);
         if (LinguisticData.getInstance().getIdToAffixTable().containsKey(x.id)) 
@@ -158,12 +158,12 @@ public abstract class Data {
         addToForms(x, x.morpheme);	    
 	}
     
-    public static void makeVerbWord(HashMap<String,String> v) {
+    public static void makeVerbWord(HashMap<String,String> v) throws LinguisticDataException {
         VerbWord x = new VerbWord(v);
         LinguisticData.getInstance().addVerbWord(x.verb,x);
     }
 	
-    public static void makeSource(HashMap<String,String> v) {
+    public static void makeSource(HashMap<String,String> v) throws LinguisticDataException {
         Source s = new Source(v);
         LinguisticData.getInstance().addSource(s.id,s);
     }
@@ -178,7 +178,7 @@ public abstract class Data {
 
 	public static void addToForms(
 		DemonstrativeEnding ending,
-		String key) {
+		String key) throws LinguisticDataException {
 
 		addToForms1(
 			new String[] { ending.morpheme },
@@ -193,7 +193,7 @@ public abstract class Data {
 	
 	public static void addToForms(
 		Affix affix,
-		String key) {
+		String key) throws LinguisticDataException {
 
 		addToForms1(
 			affix.vform,
@@ -240,7 +240,7 @@ public abstract class Data {
 		String id,
 		String context,
 		Action[] actions1,
-		Action[] actions2) {
+		Action[] actions2) throws LinguisticDataException {
 //	    if (altForms != null)
 //	        for (int i=0; i<altForms.length; i++)
 //	            System.out.println("altForms["+i+"]= "+altForms[i]);

@@ -24,6 +24,7 @@
 
 package ca.inuktitutcomputing.morph;
 
+import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.data.Morpheme;
 
 // Morceau:	String terme
@@ -76,7 +77,7 @@ public abstract class PartOfComposition implements Cloneable {
 
 
     
-    abstract Morpheme getMorpheme();
+    abstract Morpheme getMorpheme() throws LinguisticDataException;
     
     
 	 

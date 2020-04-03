@@ -106,7 +106,7 @@ public class Suffixes {
     	return plain ? nl : "<br>";
     }
 
-	private static String composeSuffixeDisplay(Suffix aff) {
+	private static String composeSuffixeDisplay(Suffix aff) throws LinguisticDataException {
 		StringBuffer output = new StringBuffer();
 		if (!plain) {
 			output.append("<span style=\"font-size:10pt;color:green\">");
@@ -811,7 +811,7 @@ public class Suffixes {
             Suffix aff,
             String form,
             String cntxt,
-            String lang) {
+            String lang) throws LinguisticDataException {
             
             String morpheme = aff.morpheme;
             StringBuffer output = new StringBuffer();
@@ -998,7 +998,7 @@ public class Suffixes {
             Suffix aff,
             String form,
             String cntxt,
-            String lang) {
+            String lang) throws LinguisticDataException {
             
             StringBuffer output = new StringBuffer();
             int action1Type = action1.getType();
@@ -1053,7 +1053,7 @@ public class Suffixes {
             return output.toString();
         }
 
-    public static void displayListOfSuffixes(String args[], PrintStream out) {
+    public static void displayListOfSuffixes(String args[], PrintStream out) throws LinguisticDataException {
         lang = Util.getArgument(args,"l");
         Hashtable<String,Morpheme> infs =  LinguisticData.getInstance().getId2SuffixTable();
         Roots.displayListOfMorphemes("suf",out,infs,lang);

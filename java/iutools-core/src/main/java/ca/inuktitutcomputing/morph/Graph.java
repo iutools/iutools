@@ -10,6 +10,7 @@ package ca.inuktitutcomputing.morph;
 
 import java.util.Vector;
 
+import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.data.Morpheme;
 import ca.inuktitutcomputing.data.constraints.Conditions;
 import ca.inuktitutcomputing.data.constraints.Imacond;
@@ -48,7 +49,7 @@ public class Graph {
 		        arcs[i].setStartState(this);
 		}
 
-		public Vector<Graph.Arc> verify(Morpheme affixe) {
+		public Vector<Graph.Arc> verify(Morpheme affixe) throws LinguisticDataException {
 			Vector<Graph.Arc> possibleArcs = new Vector<Graph.Arc>();
 			for (int i = 0; i < arcs.length; i++) {
 				Graph.Arc arc = arcs[i];

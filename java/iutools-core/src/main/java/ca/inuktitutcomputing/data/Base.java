@@ -68,7 +68,7 @@ public class Base extends Morpheme {
 	static public Hashtable<String,Morpheme> hash = new Hashtable<String,Morpheme>();
 	//
 	
-	public Base(HashMap<String,String> v) {
+	public Base(HashMap<String,String> v) throws LinguisticDataException {
 		makeRoot(v);
 	}
 		
@@ -76,7 +76,7 @@ public class Base extends Morpheme {
 	}
 
 	//-----------------------------------------------------------------------------------------------
-	private void makeRoot(HashMap<String,String> v) {
+	private void makeRoot(HashMap<String,String> v) throws LinguisticDataException {
 		getAndSetBaseAttributes(v);
 		variant = v.get("variant");
 		originalMorpheme = v.get("originalMorpheme");
@@ -117,20 +117,26 @@ public class Base extends Morpheme {
 			if (combinedMorphemes.length < 2) {
 //				System.out.println("combinaison avec problème: '" + comb + "' [" + morpheme + "]");
 				combinedMorphemes = null;
-			} else {
-				String rootId = combinedMorphemes[0];
-				// Attention!!!
-				// This root should already have been created. Let's get its
-				// list of idsOfCompositeWithThisRoot.
-				Base b = LinguisticData.getInstance().getBaseWithId(rootId);
-				if (b != null) {
-					Vector<String> vids = b.idsOfCompositesWithThisRoot;
-					if (vids == null)
-						vids = new Vector<String>();
-					vids.add(comb);
-					b.setIdsOfCompositesWithThisRoot(vids);
+			} else
+				try {
+					{
+						String rootId = combinedMorphemes[0];
+						// Attention!!!
+						// This root should already have been created. Let's get its
+						// list of idsOfCompositeWithThisRoot.
+						Base b = LinguisticData.getInstance().getBaseWithId(rootId);
+						if (b != null) {
+							Vector<String> vids = b.idsOfCompositesWithThisRoot;
+							if (vids == null)
+								vids = new Vector<String>();
+							vids.add(comb);
+							b.setIdsOfCompositesWithThisRoot(vids);
+						}
+					}
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-			}
 		}
 		setAttrs();
 	}
@@ -290,7 +296,7 @@ public class Base extends Morpheme {
     /*
      * The next 4 methods should be called for transitive verbs only.
      */
-    String getTransitiveMeaning(String lang) {
+    String getTransitiveMeaning(String lang) throws LinguisticDataException {
         if (type.equals("v") && transitivity != null && transitivity.equals("t")) {
             String transitiveMeaning = lang.equals("en")?
                     transitiveMeaning_e:transitiveMeaning_f;
@@ -302,7 +308,7 @@ public class Base extends Morpheme {
             return "";
     }
     
-    String getPassiveMeaning(String lang) {
+    String getPassiveMeaning(String lang) throws LinguisticDataException {
         if (type.equals("v") && transitivity != null && transitivity.equals("t")) {
             String passiveMeaning = lang.equals("en")?
                     passiveMeaning_e:passiveMeaning_f;
@@ -314,7 +320,7 @@ public class Base extends Morpheme {
             return null;
     }
     
-    String getResultMeaning(String lang) {
+    String getResultMeaning(String lang) throws LinguisticDataException {
         if (type.equals("v") && transitivity != null && transitivity.equals("t")) {
             String resultMeaning = lang.equals("en")?
                     resultMeaning_e:resultMeaning_f;
@@ -326,7 +332,7 @@ public class Base extends Morpheme {
             return "";
     }
     
-    String getReflexiveMeaning(String lang) {
+    String getReflexiveMeaning(String lang) throws LinguisticDataException {
         if (type.equals("v") && transitivity != null && transitivity.equals("t")) {
             String reflexiveMeaning = lang.equals("en")?
                     reflexiveMeaning_e:reflexiveMeaning_f;
@@ -403,7 +409,7 @@ public class Base extends Morpheme {
      *        - pour les verbes pouvant avoir un complément d'objet, 
      *          celui-ci est représenté par '(trans.: s.t.)' ou '(trans.: s.o.)'
      */
-    private void makeVerbMeanings() {
+    private void makeVerbMeanings() throws LinguisticDataException {
 		String[] englishMeanings = makeVerbMeanings(englishMeaning, "en");
 		if (englishMeanings != null) {
 			transitiveMeaning_e = englishMeanings[0];
@@ -420,7 +426,7 @@ public class Base extends Morpheme {
 		}
 	}
     
-    private static String[] makeVerbMeanings(String sense, String lang) {
+    private static String[] makeVerbMeanings(String sense, String lang) throws LinguisticDataException {
 		if (sense == null)
 			return null;
 		String transitiveMeaning = "";
@@ -669,7 +675,7 @@ public class Base extends Morpheme {
 	}
 
 	//---------------------------------------------------------------------------------------------------------
-	public String showData() {
+	public String showData() throws LinguisticDataException {
 		StringBuffer sb = new StringBuffer();
 		sb.append("[Base: morpheme= " + morpheme + "\n");
 		sb.append("id= "+id+"\n");

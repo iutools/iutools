@@ -112,7 +112,7 @@ public class FormGenerator {
 		char[] contexts = new char[] {'V','t','k','q'};
 		for (int iCtxt=0; iCtxt<contexts.length; iCtxt++) {
 			logger.debug("context: "+contexts[iCtxt]);
-			HashSet<SurfaceFormInContext> surfaceFormsInContext = affix.getSurfaceFormsInContext(contexts[iCtxt],morphemeId);
+			HashSet<SurfaceFormInContext> surfaceFormsInContext = null; //affix.getSurfaceFormsInContext(contexts[iCtxt],morphemeId);
 			logger.debug("surfaceFormsInContext: "+PrettyPrinter.print(surfaceFormsInContext));
 			allSurfaceFormsInContext.addAll(surfaceFormsInContext);
 			logger.debug("allSurfaceFormsInContext: "+allSurfaceFormsInContext.size());

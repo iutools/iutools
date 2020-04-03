@@ -6,7 +6,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ca.inuktitutcomputing.data.LinguisticDataException;
-import ca.inuktitutcomputing.data.LinguisticDataSingleton;
 import ca.inuktitutcomputing.morph.MorphInukException;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
 import ca.inuktitutcomputing.script.Syllabics;
@@ -25,11 +24,11 @@ public class StringSegmenter_IUMorpheme extends StringSegmenter {
 		}
 	}
 	
-	public String[] segment(String string) throws TimeoutException, StringSegmenterException {
+	public String[] segment(String string) throws TimeoutException, StringSegmenterException, LinguisticDataException {
 		return segment(string,false);
 	}
 
-	public String[] segment(String string, boolean fullAnalysis) throws TimeoutException, StringSegmenterException {
+	public String[] segment(String string, boolean fullAnalysis) throws TimeoutException, StringSegmenterException, LinguisticDataException {
 		Decomposition [] decs = null;
 		String word = string;
 		if (Syllabics.allInuktitut(string))

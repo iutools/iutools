@@ -35,6 +35,7 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 
 import ca.inuktitutcomputing.data.Base;
+import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.data.Morpheme;
 import ca.inuktitutcomputing.script.Orthography;
 
@@ -173,7 +174,7 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 		return returnValue;
 	}
 
-	public boolean isEqualDecomposition(Decomposition dec) {
+	public boolean isEqualDecomposition(Decomposition dec) throws LinguisticDataException {
 		if (this.toStr2().equals(dec.toStr2()))
 			return true;
 		else
@@ -181,7 +182,7 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 	}
 
 	// Note: � faire avec des HashSet: plus rapide probablement.
-	static public Decomposition[] removeMultiples(Decomposition[] decs) {
+	static public Decomposition[] removeMultiples(Decomposition[] decs) throws LinguisticDataException {
 		if (decs == null || decs.length == 0)
 			return decs;
 		Vector<Decomposition> v = new Vector<Decomposition>();
@@ -207,7 +208,7 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 	// is the combination of -juq/vn and -ksaq/nn. The analyzer will find
 	// a decomposition with -juksaq but will also find a decomposition with
 	// juq+ksaq ; this is to remove the latter.
-	static public Decomposition[] removeCombinedSuffixes(Decomposition decs[]) {
+	static public Decomposition[] removeCombinedSuffixes(Decomposition decs[]) throws LinguisticDataException {
 		Logger logger = Logger.getLogger("Decomposition.removeCombinedSuffixes");
         Object[][] decsAndKeepstatus = new Object[decs.length][2];
         for (int i = 0; i < decs.length; i++) {
@@ -256,7 +257,7 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 	protected static void removeDecsWithCombinationAsSeparateElements(
 			Decomposition dec, Vector<AffixPartOfComposition> vParts, int indexOfProcessedVPart,
 			String[] cs,
-			Object[][] decsAndKeepstatus) {
+			Object[][] decsAndKeepstatus) throws LinguisticDataException {
         // Trouver les décompositions qui ont les éléments du
         // suffixe combiné flanqués de part et d'autre par les
         // mêmes morphèmes, et les enlever de la liste.
@@ -385,7 +386,7 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 	/*
      * {<forme de surface>:<signature du morph�me>}...
 	 */
-	public String toStr2() {
+	public String toStr2() throws LinguisticDataException {
 		StringBuffer sb = new StringBuffer();
 		Object[] morphParts = getMorphParts();
 		sb.append(stem.toStr());
@@ -397,12 +398,13 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 		return sb.toString();
 	}
 	
-	public String toString() {
-		return this.toStr2();
-	}
+//	public String toString()
+//	{
+//		return this.toStr2();
+//	}
 	
 	static public String[] getMeaningsInArrayOfStrings (String decstr, String lang, 
-			boolean includeSurface, boolean includeId) {
+			boolean includeSurface, boolean includeId) throws LinguisticDataException {
 		DecompositionExpression de = new DecompositionExpression(decstr);
 		String mngs[] = de.getMeanings(lang);
 		for (int i=0; i<mngs.length; i++) {
@@ -417,7 +419,7 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 	}
 	
 	static public String getMeaningsInString (String decstr, String lang, 
-			boolean includeSurface, boolean includeId) {
+			boolean includeSurface, boolean includeId) throws LinguisticDataException {
 		DecompositionExpression de = new DecompositionExpression(decstr);
 		StringBuffer sb = new StringBuffer();
 		String mngs[] = de.getMeanings(lang);
@@ -476,7 +478,7 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 			this.parts = _parts;
 		}
 		
-		public String[] getMeanings(String lang) {
+		public String[] getMeanings(String lang) throws LinguisticDataException {
 			if (meanings == null) {
 				meanings = new String[parts.length];
 				for (int i = 0; i < parts.length; i++) {
@@ -561,7 +563,7 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 		
 	}
 
-	public Boolean containsMorpheme(String morpheme) {
+	public Boolean containsMorpheme(String morpheme) throws LinguisticDataException {
 		Boolean result = null;
 		if (this.stem.root.id.equals(morpheme))
 			result = true;

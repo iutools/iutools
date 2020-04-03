@@ -39,7 +39,7 @@ public class Lexicon {
             "\u1466", "\u155d", "\u15a6", "\u1596" };
 
     // Recherche d'un terme dans le lexique.
-    static public Vector<SurfaceFormOfAffix> lookForForms(String term, boolean syllabic) {
+    static public Vector<SurfaceFormOfAffix> lookForForms(String term, boolean syllabic) throws LinguisticDataException {
         Vector<SurfaceFormOfAffix> formsFound = LinguisticData.getInstance().getSurfaceForms(term);
         return formsFound;
     }
@@ -49,8 +49,9 @@ public class Lexicon {
      * @param term String string in the ICI (Inuit Cultural Institute) standard
      * @param syllabic boolean indicates whether the term is in syllabic (true) or not (false)
      * @return Vector<Morpheme> a vector of Morpheme objects or null
+     * @throws LinguisticDataException 
      */
-    static public Vector<Morpheme> lookForBase(String term, boolean syllabic) {
+    static public Vector<Morpheme> lookForBase(String term, boolean syllabic) throws LinguisticDataException {
     	if (syllabic)
     		term = Syllabics.transcodeToRoman(term);
         Vector<Morpheme> basesFound = LinguisticData.getInstance().getBasesForCanonicalForm(term);

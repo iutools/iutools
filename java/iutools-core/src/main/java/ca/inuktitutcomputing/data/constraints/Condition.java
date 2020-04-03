@@ -10,6 +10,7 @@ package ca.inuktitutcomputing.data.constraints;
 
 import java.util.Vector;
 
+import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.data.Morpheme;
 
 public class Condition {
@@ -161,7 +162,7 @@ public class Condition {
             conds.add(c2);
         }
         
-        public boolean isMetBy(Morpheme m) {
+        public boolean isMetBy(Morpheme m) throws LinguisticDataException {
             boolean res = true;
             Morpheme lm = m.getLastCombiningMorpheme();
             for (int i=0; i<conds.size(); i++)
@@ -191,7 +192,7 @@ public class Condition {
                 return !res;
         }
 
-        public boolean isMetByFullMorphem(Morpheme m) {
+        public boolean isMetByFullMorphem(Morpheme m) throws LinguisticDataException {
             boolean res = true;
             for (int i=0; i<conds.size(); i++)
                 if (!((Conditions)conds.elementAt(i)).isMetBy(m)) {
@@ -254,7 +255,7 @@ public class Condition {
             conds = c2s;
         }
         
-        public boolean isMetBy(Morpheme m) {
+        public boolean isMetBy(Morpheme m) throws LinguisticDataException {
             boolean res = false;
             Morpheme lm = m.getLastCombiningMorpheme();
             /*
@@ -278,7 +279,7 @@ public class Condition {
                 return !res;
         }
         
-        public boolean isMetByFullMorphem(Morpheme m) {
+        public boolean isMetByFullMorphem(Morpheme m) throws LinguisticDataException {
             boolean res = false;
            for (int i=0; i<conds.size(); i++)
                 if (((Conditions)conds.elementAt(i)).isMetBy(m)) {
@@ -357,7 +358,7 @@ public class Condition {
          * The condition to check is actually the condition of the morpheme.
          * 
          */
-        public boolean isMetBy(Morpheme m) {
+        public boolean isMetBy(Morpheme m) throws LinguisticDataException {
             boolean res;
             Morpheme lm = m.getLastCombiningMorpheme();
             Conditions cond;
@@ -382,7 +383,7 @@ public class Condition {
                 return !res;
         }
         
-        public boolean isMetByFullMorphem(Morpheme m) {
+        public boolean isMetByFullMorphem(Morpheme m) throws LinguisticDataException {
             boolean res;
             Conditions cond;
             Morpheme morphWithCond = Morpheme.getMorpheme(morphid);
