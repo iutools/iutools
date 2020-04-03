@@ -7,8 +7,6 @@ import java.util.List;
 
 import ca.inuktitutcomputing.data.Base;
 import ca.inuktitutcomputing.data.LinguisticData;
-import ca.inuktitutcomputing.data.LinguisticDataAbstract;
-import ca.inuktitutcomputing.data.LinguisticDataSingleton;
 
 public class RootsWithSameNeutralForm {
 	
@@ -36,6 +34,7 @@ public class RootsWithSameNeutralForm {
 			String tables = String.join("; ",duplicateRootMorphemes.get(morpheme).toArray(new String[] {}));
 			System.out.println(morpheme+" = "+tables);
 		}
+		System.out.println("Nb. items: "+duplicateRootMorphemes.size());
 				
 	}
 	
