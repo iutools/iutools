@@ -38,6 +38,7 @@ public class OccurenceSearchEndpoint extends HttpServlet {
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		EndPointHelper.log4jReload();		
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.webservice.OccurenceSearchEndpoint.doPost");
 		tLogger.trace("invoked");
 		tLogger.trace("request URI= "+request.getRequestURI());

@@ -53,7 +53,9 @@ public class SpellEndpoint extends HttpServlet {
 		}
 	}
 	
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {		
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		EndPointHelper.log4jReload();
+		
 		String jsonResponse = null;
 
 		SpellInputs inputs = null;

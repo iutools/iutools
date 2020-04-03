@@ -31,6 +31,7 @@ public class GistWordEndpoint extends HttpServlet {
 	}
 	
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		EndPointHelper.log4jReload();
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.webservice.OccurenceExampleEndpoint.doPost");
 		tLogger.trace("invoked");
 		tLogger.trace("request URI= "+request.getRequestURI());

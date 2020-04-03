@@ -39,6 +39,7 @@ public class OccurenceExampleEndpoint extends HttpServlet {
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		EndPointHelper.log4jReload();
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.webservice.OccurenceExampleEndpoint.doPost");
 		tLogger.trace("invoked");
 		tLogger.trace("request URI= "+request.getRequestURI());
@@ -68,7 +69,10 @@ public class OccurenceExampleEndpoint extends HttpServlet {
 
 	public OccurenceExampleResponse executeEndPoint(OccurenceExampleInputs inputs) throws Exception {
 		Logger logger = Logger.getLogger("ca.pirurvik.iutools.webservice.OccurenceExampleEndpoint.executeEndPoint");
-		logger.trace("inputs= " + PrettyPrinter.print(inputs));
+		if (logger.isTraceEnabled()) {
+			logger.trace("inputs= " + PrettyPrinter.print(inputs));
+		}
+				
 		OccurenceExampleResponse results = new OccurenceExampleResponse();
 
 		// Retrieve some occurences of the provided exampleWord

@@ -30,6 +30,7 @@ public class TokenizeEndpoint extends HttpServlet {
 	
 	public void doPost(HttpServletRequest request, 
 			HttpServletResponse response) throws IOException {
+		EndPointHelper.log4jReload();
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.webservice.TokenizeEndpoint.doPost");
 		
 		tLogger.trace("invoked with request=\n"+request);
