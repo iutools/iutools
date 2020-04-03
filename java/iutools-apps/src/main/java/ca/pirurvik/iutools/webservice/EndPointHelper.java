@@ -68,6 +68,8 @@ public class EndPointHelper {
 	
 	public static void log4jReload() {
 		String log4jprops = System.getProperty("log4j.config");
-		PropertyConfigurator.configure(log4jprops);
+		if (log4jprops != null) {
+			PropertyConfigurator.configure(log4jprops);
+		}
 	}
 }
