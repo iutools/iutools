@@ -171,6 +171,9 @@ div#div-gist-iconized img {
 table.gist, table.alignments {
 	margin-top:5px;
 }
+table.alignments td {
+	word-wrap:break-word;
+}
 table.gist td {
 	background-color:#e6e6ff;
 }

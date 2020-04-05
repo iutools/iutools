@@ -199,8 +199,9 @@ class GistTextController extends WidgetController {
 		
 		var alignments = results.sentencePairs;
 		if (alignments.length != 0) {
-			html += "<div id='gist-alignments'>"
-				+'<table id="tbl-alignments" class="alignments"><th>Inuktitut</th><th>English</th></tr>';
+			html += "<div id='gist-alignments'>"+
+				"table id=\"tbl-alignments\" style=\"table-layout: fixed; width: 100%\" class=\"alignments\">\n"+
+				"<th>Inuktitut</th><th>English</th></tr>\n";
 			for (var ial=0; ial<Math.min(30,alignments.length); ial++) {
 				var inuktitutSentence = alignments[ial].sentences.iu;
 				var englishSentence = alignments[ial].sentences.en;

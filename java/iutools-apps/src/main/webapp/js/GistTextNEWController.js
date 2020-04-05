@@ -83,7 +83,7 @@ class GistTextController extends WidgetController {
 		var maxSents = Math.max(iuSentences.length, enSentences.length);
 		if (maxSents > 0) {
 			html += 	
-				"<table id=\"tbl-alignments\" class=\"alignments\">\n"+
+				"<table id=\"tbl-alignments\" class=\"alignments\" style=\"table-layout: fixed; width: 100%\">\n"+
 				"<tr><th>Inuktitut</th><th>English</th></tr>\n";
 			
 			for (var sentNum=0; sentNum < maxSents; sentNum++) {
