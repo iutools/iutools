@@ -64,12 +64,17 @@ public class GistPrepareContentEndpoint extends HttpServlet {
 			inputs = EndPointHelper.jsonInputs(request, GistPrepareContentInputs.class);
 			tLogger.trace("inputs="+PrettyPrinter.print(inputs));
 			ServiceResponse results = executeEndPoint(inputs);
+			if (tLogger.isTraceEnabled()) {
+				tLogger.trace("endpoint execution yielded results=\n"+
+						PrettyPrinter.print(results));
+			}
+			
 			jsonResponse = new ObjectMapper().writeValueAsString(results);
 		} catch (Exception exc) {
 			jsonResponse = EndPointHelper.emitServiceExceptionResponse("General exception was raised\n", exc);
 		}
 		
-		writeJsonResponse(response, jsonResponse);
+		writeJsonResponse(response, jsonResponse);		
 	}
 
 	private ServiceResponse executeEndPoint(GistPrepareContentInputs inputs) 
@@ -108,14 +113,15 @@ public class GistPrepareContentEndpoint extends HttpServlet {
 			for (Alignment anAlignment: alignments.getAligments()) {
 				addAlignment(anAlignment, response);
 			}
-		} catch (MalformedURLException | WebConcordancerException e) {
+		} catch (MalformedURLException e) {
 			throw new ServiceException(e);
 		}
 	}
 
 	private void addAlignment(Alignment anAlignment, GistPrepareContentResponse response) {
-		IUTokenizer tokenizer = new IUTokenizer();
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.webservice.GistPrepareContentEndpoint.addAlignment");
 
+		IUTokenizer tokenizer = new IUTokenizer();
 		{
 			String iuText = anAlignment.getText("iu");
 			tokenizer.tokenize(iuText);

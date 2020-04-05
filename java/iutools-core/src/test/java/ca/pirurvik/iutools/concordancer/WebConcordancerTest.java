@@ -1,17 +1,16 @@
 package ca.pirurvik.iutools.concordancer;
 
 import java.net.URL;
-import java.util.List;
+import java.util.Map;
 
-import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import ca.nrc.datastructure.Pair;
 import ca.nrc.testing.AssertObject;
 import ca.pirurvik.iutools.concordancer.Alignment;
 import ca.pirurvik.iutools.concordancer.DocAlignment;
+import ca.pirurvik.iutools.concordancer.DocAlignment.Problem;
 import ca.pirurvik.iutools.concordancer.WebConcordancer;
 
 public class WebConcordancerTest {
@@ -48,7 +47,8 @@ public class WebConcordancerTest {
 		// You can then check if the alignment was successful or not
 		if (!pageAligment.success) {
 			// These will provide details about what went wrong
-			List<String> problems = pageAligment.problemsEncountered;
+			Map<DocAlignment.Problem, Exception> problems = 
+				pageAligment.problemsEncountered;
 		} else {
 			// Alignment was successful.
 			// Loop the aligned bit of text.
@@ -93,19 +93,69 @@ public class WebConcordancerTest {
 	}
 	
 	@Test
+	public void test__alignPage__URLWith_PageNotFound() throws Exception {
+		// Server returns Page not found for this URL
+		//
+		URL url = new URL("https://www.gov.nu.ca/doesnotexist/iu");
+		DocAlignment pageAligment = 
+					new WebConcordancer().alignPage(url, new String[] {"en", "iu"});
+
+		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
+			.wasSuccessful(false)
+			.encounteredProblems(new Problem[] {Problem.FETCHING_INPUT_URL})
+			;
+	}
+	
+	@Test
+	public void test__alignPage__NonExistantServer() throws Exception {
+		URL url = new URL("https://nonexistantserver.nu.ca");
+		DocAlignment pageAligment = 
+					new WebConcordancer().alignPage(url, new String[] {"en", "iu"});
+
+		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
+			.wasSuccessful(false)
+			.encounteredProblems(new Problem[] {Problem.FETCHING_INPUT_URL})
+			;
+	}
+	
+	@Test
+	public void test__alignPage__PageWhoseTranslationCannotBeDeduced() throws Exception {
+		
+		// The English URL for this IU url is:
+		//
+		//   https://www.gov.nu.ca/community-and-government-services
+		//
+		// which currently cannot be deduced by the concordancer.
+		//
+		URL url = new URL("https://www.gov.nu.ca/iu/cgs-iu");
+		DocAlignment pageAligment = 
+					new WebConcordancer().alignPage(url, new String[] {"en", "iu"});
+
+		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
+			.wasSuccessful()
+			.contentIsPlainText("iu")
+			.hasNoContentForLang("en")
+			.urlForLangEquals("iu", url)
+			.pageInLangContains("iu", "ᓄᓇᓕᖕᓂ ᒐᕙᒪᒃᑯᓐᓂᓪᓗ ᐱᔨᑦᑎᕋᖅᑎᒃᑯᑦ")
+			.hasNoAlignments()
+			.containsSentenceStartingWith("iu", "* ᓄᓇᓕᖕᓂ ᒐᕙᒪᒃᑯᓐᓂᓪᓗ")
+			;
+	}
+
+	@Test
 	public void test__langPairUnfilledSecond__HappyPath() throws Exception {
 		DocAlignment alignment = 
 				new DocAlignment("en", "iu").setPageContent("en", "Hello");
 		
 		Pair<String,String> gotLangPair = 
-				concordancer.langPairUnfilledSecond(alignment);
+				concordancer.langAndOtherLang(alignment);
 		Pair<String,String> expLangPair = Pair.of("en", "iu");
 		AssertObject.assertDeepEquals("Language pair not as expected", 
 				expLangPair, gotLangPair);
 	}
 
-	@Test(expected=WebConcordancerException.class)
-	public void test__langPairUnfilledSecond__BothLangFilled__RaisesException() 
+	@Test
+	public void test__langAndOtherLang__BothLangFilled__ReturnsPairOfNulls() 
 			throws Exception {
 		DocAlignment alignment = 
 				new DocAlignment("en", "iu")
@@ -113,17 +163,20 @@ public class WebConcordancerTest {
 					.setPageContent("iu", "ᓄᓇᕗᑦ");
 		
 		Pair<String,String> gotLangPair = 
-				concordancer.langPairUnfilledSecond(alignment);
+				concordancer.langAndOtherLang(alignment);
+		Pair<String,String> expLangPair = Pair.of(null, null);
+		AssertObject.assertDeepEquals(
+			"", expLangPair, gotLangPair);
 	}
 	
-	@Test(expected=WebConcordancerException.class)
-	public void test__langPairUnfilledSecond__NeitherLangFilled__RaisesException() 
+	@Test
+	public void test__langAndOtherLang__NeitherLangFilled__ReturnsPairOfNulls()
 			throws Exception {
 		DocAlignment alignment = new DocAlignment("en", "iu");
 		
 		Pair<String,String> gotLangPair = 
-				concordancer.langPairUnfilledSecond(alignment);
-	}
+				concordancer.langAndOtherLang(alignment);
+	}	
 
 	//////////////////////////////////
 	// TEST HELPERS

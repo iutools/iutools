@@ -1,5 +1,7 @@
 package ca.pirurvik.iutools.webservice.gist;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Assert;
@@ -57,7 +59,7 @@ public class GistPrepareContentAsserter extends Asserter {
 		return ((GistPrepareContentResponse)gotObject);
 	}
 
-	public void containsAlignment(Alignment expAlignment) {
+	public GistPrepareContentAsserter containsAlignment(Alignment expAlignment) {
 		
 		Assert.assertEquals(
 			"IU and EN alignments did not contain the same number of sentences", 
@@ -83,6 +85,43 @@ public class GistPrepareContentAsserter extends Asserter {
 		Assert.assertTrue(
 			"Alignment not found: "+expAlignment+"\n"+alignments, 
 			found);
+		
+		return this;
+	}
+
+	public GistPrepareContentAsserter hasNoContentForLang(String lang) {
+		List<String[]> gotContent = null;
+		if (lang.equals("iu")) {
+			gotContent = gotResponse().iuSentences;
+		} else if (lang.equals("en")) {
+			gotContent = gotResponse().enSentences;
+		}
+		Assert.assertEquals(
+			"There should not have been any content for language "+lang, 
+			new ArrayList<String[]>(), gotContent);
+		
+		return this;		
+	}
+	
+	public GistPrepareContentAsserter hasNoAlignments() {
+		boolean gotAvailable = gotResponse().getAlignmentsAvailable();
+		Assert.assertFalse("Alignments should NOT have been available", gotAvailable);
+		return this;
+	}
+
+	public GistPrepareContentAsserter couldNotFetchIUContent() throws Exception {
+		AssertObject.assertDeepEquals(
+			"Should NOT have been able to fetch content of IU page", 
+			new ArrayList<String[]>(), gotResponse().iuSentences);
+		return this;
+	}
+
+	public GistPrepareContentAsserter couldNotFetchEnContent() 
+			throws Exception {
+		AssertObject.assertDeepEquals(
+				"Should NOT have been able to fetch content of EN page", 
+				new ArrayList<String[]>(), gotResponse().enSentences);
+		return this;
 	}
 
 	

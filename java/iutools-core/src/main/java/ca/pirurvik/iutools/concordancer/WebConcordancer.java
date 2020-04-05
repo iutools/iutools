@@ -3,18 +3,21 @@ package ca.pirurvik.iutools.concordancer;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
+import ca.pirurvik.iutools.concordancer.DocAlignment.Problem;
 import ca.pirurvik.iutools.text.segmentation.IUTokenizer;
 import ca.nrc.data.harvesting.LanguageGuesser;
 import ca.nrc.data.harvesting.LanguageGuesserException;
 import ca.nrc.data.harvesting.PageHarvester;
 import ca.nrc.data.harvesting.PageHarvester_HtmlCleaner;
 import ca.nrc.datastructure.Pair;
+import ca.nrc.string.StringUtils;
 import ca.pirurvik.iutools.text.segmentation.Segmenter;
 import ca.nrc.data.harvesting.PageHarvesterException;
 
@@ -28,10 +31,12 @@ public class WebConcordancer {
 	
 	protected static enum StepOutcome {SUCCESS, FAILURE, KEEP_TRYING};
 	
+	private static enum AlignmentPart {
+		PAGES_CONTENT, PROBLEMS};
+	
 	PageHarvester_HtmlCleaner harvester = null;
 	LanguageGuesser langGuesser = new LanguageGuesser_IU();
 	Aligner_Maligna aligner = new Aligner_Maligna();
-//	IUTokenizer tokenizer = new IUTokenizer();
 	
 	protected PageHarvester_HtmlCleaner getHarvester() {
 		if (harvester == null) {
@@ -41,8 +46,7 @@ public class WebConcordancer {
 		return harvester;
 	}
 
-	public DocAlignment alignPage(URL url, String[] languages) 
-			throws WebConcordancerException {
+	public DocAlignment alignPage(URL url, String[] languages) {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.concordancer.alignPage");
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("invoked with url="+url+
@@ -55,68 +59,125 @@ public class WebConcordancer {
 		}
 		
 		harvestInputPage(url, alignment, languages);
-		if (tLogger.isTraceEnabled()) {
-			String mess = "After fetching input URL, content of pages is:\n\n";
-			for (String lang: languages) {
-				mess += "   "+lang+": "+alignment.getPageContent(lang)+"\n\n";
-			}
-			tLogger.trace(mess);
-		}
 		
-		harvestOtherLangPage(alignment);
-		if (tLogger.isTraceEnabled()) {
-			String mess = "After fetching other lang URL, content of pages is:\n\n";
-			for (String lang: languages) {
-				mess += "   "+lang+": "+alignment.getPageContent(lang)+"\n\n";
+		trace(tLogger, "After fetching input URL", alignment, 
+				AlignmentPart.PAGES_CONTENT, AlignmentPart.PROBLEMS);
+		
+		if (!alignment.encounteredProblems()) {
+			harvestOtherLangPage(alignment);
+			if (tLogger.isTraceEnabled()) {
+				String mess = "After fetching other lang URL, content of pages is:\n\n";
+				for (String lang: languages) {
+					mess += "   "+lang+": "+alignment.getPageContent(lang)+"\n\n";
+				}
+				tLogger.trace(mess);
 			}
-			tLogger.trace(mess);
 		}
 
-		alignContents(alignment);
-		if (tLogger.isTraceEnabled()) {
-			String mess = "After aligning content of the two pages, alignments are:";
-			for (Alignment anAlignment: alignment.getAligments()) {
-				mess += "   "+anAlignment+"\n";
+		if (!alignment.encounteredProblems()) {
+			alignContents(alignment);
+			if (tLogger.isTraceEnabled()) {
+				String mess = "After aligning content of the two pages, alignments are:";
+				for (Alignment anAlignment: alignment.getAligments()) {
+					mess += "   "+anAlignment+"\n";
+				}
+				tLogger.trace(mess);
 			}
-			tLogger.trace(mess);
 		}
 		
-		alignment.success = alignment.problemsEncountered.isEmpty();
+		alignment.success = !alignment.encounteredProblems();
 		
 		return alignment;
 	}
 	
-	private void alignContents(DocAlignment docAlignment) throws WebConcordancerException {
-		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.concordancer.alignContents");
-		List<List<String>> langSents = new ArrayList<List<String>>();
-		List<String> langs = new ArrayList<String>();
-		for (String lang: docAlignment.getLanguages()) {
-			langs.add(lang);
-			Segmenter segmenter = Segmenter.makeSegmenter(lang);
-			if (tLogger.isTraceEnabled()) {
-				tLogger.trace("segmenting content for lang="+lang+": "+docAlignment.getPageContent(lang));
+	private void trace(Logger tLogger, String mess, 
+		DocAlignment alignment, AlignmentPart... alignmentParts ) {
+		if (tLogger.isTraceEnabled()) {
+			for (AlignmentPart part: alignmentParts) {
+				mess = traceAlignmentPart(mess, alignment, part);
 			}
+			tLogger.trace(mess);
+		}		
+	}
 
-			List<String> sents = 
-				segmenter.segment(docAlignment.getPageContent(lang));
-			langSents.add(sents);
+	private String traceAlignmentPart(String mess, 
+			DocAlignment alignment, AlignmentPart part) {
+		if (part == AlignmentPart.PAGES_CONTENT) {
+			mess = tracePagesContent(mess, alignment);
+		} else if (part == AlignmentPart.PROBLEMS) {
+			mess = traceProblems(mess, alignment);
 		}
 		
-		List<Pair<String, String>> alignedPairs = null;
-		try {
-			alignedPairs = aligner.align(langSents.get(0), langSents.get(1));
-		} catch (AlignerException e) {
-			throw new WebConcordancerException(e);
+		return mess;
+	}
+
+	private String traceProblems(String mess, DocAlignment alignment) {
+		mess += "\nEncoutered problems: ";
+		if (!alignment.encounteredProblems()) {
+			mess += "None\n";
+		} else {
+			Iterator<DocAlignment.Problem> probIter = 
+				alignment.problemsEncountered.keySet().iterator();
+			mess += "\n   "+StringUtils.join(probIter, "\n   ")+"\n";
 		}
 		
-		docAlignment.alignments = new ArrayList<Alignment>();
-		for (Pair<String,String> aPair: alignedPairs) {
-			Alignment anAlignment = 
-				new Alignment(
-						langs.get(0), aPair.getFirst(),
-						langs.get(1), aPair.getSecond());
-			docAlignment.addAlignment(anAlignment);
+		return mess;
+	}
+
+	private String tracePagesContent(String mess, DocAlignment alignment) {
+		mess += "\nContent of pages is:\n\n";
+		for (String lang: alignment.getLanguages()) {
+			mess += "   "+lang+": "+alignment.getPageContent(lang)+"\n\n";
 		}
+
+		return mess;
+	}
+
+	private void alignContents(DocAlignment docAlignment)  {
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.concordancer.alignContents");
+		
+		if (docAlignment.hasContentForBothLanguages()) {
+			List<List<String>> langSents = new ArrayList<List<String>>();
+			List<String> langs = new ArrayList<String>();
+			for (String lang: docAlignment.getLanguages()) {
+				langs.add(lang);
+				
+				Segmenter segmenter = Segmenter.makeSegmenter(lang);
+				if (tLogger.isTraceEnabled()) {
+					tLogger.trace("segmenting content for lang="+lang+": "+docAlignment.getPageContent(lang));
+				}
+				
+				List<String >sents = 
+						segmentText(lang, docAlignment.getPageContent(lang));
+				docAlignment.setPageSentences(lang, sents);
+				langSents.add(sents);
+			}
+			
+			List<Pair<String, String>> alignedPairs = null;
+			try {
+				alignedPairs = aligner.align(langSents.get(0), langSents.get(1));
+			} catch (AlignerException e) {
+				raiseProblem(Problem.ALIGNING_SENTENCES, docAlignment, e);
+			}
+			
+			docAlignment.alignments = new ArrayList<Alignment>();
+			for (Pair<String,String> aPair: alignedPairs) {
+				Alignment anAlignment = 
+					new Alignment(
+							langs.get(0), aPair.getFirst(),
+							langs.get(1), aPair.getSecond());
+				docAlignment.addAlignment(anAlignment);
+			}
+		}
+	}
+
+	private List<String> segmentText(String lang, String text) {
+		List<String> sentences = new ArrayList<String>();
+		if (text != null) {
+			Segmenter segmenter = Segmenter.makeSegmenter(lang);
+			sentences = segmenter.segment(text);			
+		}
+		return sentences;
 	}
 
 	private DocAlignment mockAlignmentResult() {
@@ -149,24 +210,37 @@ public class WebConcordancer {
 		return result;
 	}
 
-	private void harvestOtherLangPage(DocAlignment alignment) throws WebConcordancerException {
+	private void harvestOtherLangPage(DocAlignment alignment) {
+		if (alignment.encounteredProblems()) {
+			return;
+		}
+		
 		StepOutcome status = StepOutcome.KEEP_TRYING;
 		
-		Pair<String,String> langPair = langPairUnfilledSecond(alignment);
-		String lang = langPair.getFirst();
-		String otherLang = langPair.getSecond();
-		
-		status = harvestOtherLangPage_KnownSites(alignment, lang, otherLang);
-		if (status == StepOutcome.KEEP_TRYING) {
-			status = harvestOtherLangPage_UnknownSites(alignment, 
-						lang, otherLang);
+		if (!alignment.bothLangsContentFetched()) {
+			Pair<String,String> langPair = langAndOtherLang(alignment);
+			String lang = langPair.getFirst();
+			String otherLang = langPair.getSecond();
+			
+			status = harvestOtherLangPage_KnownSites(alignment, lang, otherLang);
+			if (status == StepOutcome.KEEP_TRYING) {
+				status = harvestOtherLangPage_UnknownSites(alignment, 
+							lang, otherLang);
+			}	
+			
+			List<String> sentences = null;
+			if (status == StepOutcome.SUCCESS) {
+				sentences = 
+					segmentText(otherLang, alignment.getPageContent(otherLang));
+			}
+			alignment.setPageSentences(otherLang, sentences);
 		}
 		
 		return;
 	}
 
-	protected Pair<String, String> langPairUnfilledSecond(
-			DocAlignment alignment) throws WebConcordancerException {
+	protected Pair<String, String> langAndOtherLang(
+			DocAlignment alignment) {
 		String filledLang = null;
 		String unfilledLang = null;
 		int filledCount = 0;
@@ -180,14 +254,10 @@ public class WebConcordancer {
 			}
 		}
 		
-		if (filledCount == 0) {
-			throw new WebConcordancerException("None of the languages was filled.");
+		Pair<String,String> langPair = Pair.of(null, null);
+		if (filledCount == 1) {
+			langPair = Pair.of(filledLang, unfilledLang);
 		}
-		if (filledCount > 1) {
-			throw new WebConcordancerException("Both of the languages were filled.");
-		}
-		
-		Pair<String,String> langPair = Pair.of(filledLang, unfilledLang);
 		
 		return langPair;
 	}
@@ -219,8 +289,7 @@ public class WebConcordancer {
 	 * @throws Exception 
 	 */
 	private StepOutcome harvestOtherLangPage_KnownSites(
-			DocAlignment alignment, String lang, String otherLang) throws WebConcordancerException 
-					{
+			DocAlignment alignment, String lang, String otherLang) { 
 		
 		StepOutcome status = StepOutcome.KEEP_TRYING;
 		
@@ -250,15 +319,22 @@ public class WebConcordancer {
 					
 					try {
 						harvester.harvestSinglePage(new URL(otherLangURLstr));
+					} catch (MalformedURLException | PageHarvesterException e) {
+						raiseProblem(
+							Problem.FETCHING_CONTENT_OF_OTHER_LANG_PAGE, 
+							alignment, 
+							"Could not fetch content of other langauge page: "+
+									otherLangURLstr);
+					}
+					
+					if (!alignment.encounteredProblems()) {
 						String otherLangContent = harvester.getText();
 								
 						URL otherLangURL = harvester.getCurrentURL();
 						alignment.setPageContent(otherLang, otherLangContent);
 						alignment.setPageURL(otherLang, otherLangURL);
 						status = StepOutcome.FAILURE;
-					} catch (MalformedURLException | PageHarvesterException e) {
-						throw new WebConcordancerException(e);
-					}					
+					}
 				}
 			}
 		}
@@ -267,7 +343,7 @@ public class WebConcordancer {
 	}
 
 	private void harvestInputPage(URL url, DocAlignment alignment, 
-			String[] languages) throws WebConcordancerException {
+			String[] languages)  {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.concordancer.harvestInputPage");
 		tLogger.trace("invoked with url="+url);
 		String urlText = null;
@@ -275,32 +351,59 @@ public class WebConcordancer {
 		try {
 			getHarvester().harvestSinglePage(url);
 			urlText = getHarvester().getText();
-			tLogger.trace("retrieved urlText=\n"+urlText);
-			urlLang = guessLang(urlText);
-			if (!urlLang.equals(languages[0]) && 
-					!urlLang.equals(languages[1])) {
-				throw new WebConcordancerException(
+			if (urlText == null) {
+ 				raiseProblem(Problem.FETCHING_INPUT_URL, alignment, 
+					"Could not fetch content of url: "+url);
+			} else {
+				tLogger.trace("retrieved urlText=\n"+urlText);
+				urlLang = guessLang(urlText);
+				if (urlLang != null && 
+						!urlLang.equals(languages[0]) && 
+						!urlLang.equals(languages[1])) {
+					alignment.raiseProblem(
+						Problem.GUESSING_LANGUAGE_OF_INPUT_URL,
 						"Langage of input page "+url+" was not as expected.\n"+
 						"   Got : "+urlLang+"; expected: ["+
 						String.join(",", languages)+"]");
+				}
 			}
 				
 		} catch (PageHarvesterException e) {
-			throw new WebConcordancerException("Could not harvest page to align", e);
+			raiseProblem(DocAlignment.Problem.FETCHING_INPUT_URL, alignment, e);
 		} catch (LanguageGuesserException e) {
-			throw new WebConcordancerException(
-					"Could not guess language of page to align", e);
+			alignment.raiseProblem(
+					Problem.GUESSING_LANGUAGE_OF_INPUT_URL,
+					"Langage of input page "+url+" was not as expected.\n"+
+					"   Got : "+urlLang+"; expected: ["+
+					String.join(",", languages)+"]");
 		}
 		
-		alignment.setPageContent(urlLang, urlText);
-		alignment.setPageURL(urlLang, url);
-
+		if (!alignment.encounteredProblems()) {
+			alignment.setPageContent(urlLang, urlText);
+			alignment.setPageURL(urlLang, url);
+			List<String> sentences = segmentText(urlLang, urlText);
+			alignment.setPageSentences(urlLang, sentences);
+		}
+		
 		return;
 	}
 
+	private void raiseProblem(DocAlignment.Problem descr, 
+			DocAlignment alignment, 
+			String mess) {
+		alignment.raiseProblem(descr, new Exception(mess));
+	}
 
-	private String guessLang(String text) throws LanguageGuesserException {		
-		String lang = langGuesser.detect(text);
+	private void raiseProblem(DocAlignment.Problem descr, DocAlignment alignment, 
+		Exception e) {
+		alignment.raiseProblem(descr, e);
+	}
+
+	private String guessLang(String text) throws LanguageGuesserException {
+		String lang = null;
+		if (text != null) {
+			lang = langGuesser.detect(text);
+		}
 		return lang;
 	}
 }

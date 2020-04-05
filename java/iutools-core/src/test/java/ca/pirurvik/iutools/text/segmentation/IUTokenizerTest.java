@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import ca.nrc.datastructure.Pair;
 import ca.nrc.testing.AssertHelpers;
+import ca.nrc.testing.AssertObject;
 import ca.pirurvik.iutools.text.segmentation.IUTokenizer;
 
 public class IUTokenizerTest {
@@ -122,8 +123,7 @@ public class IUTokenizerTest {
 		expectedTokens.add(new Pair<>(")",false));
 		expectedTokens.add(new Pair<>(" ",false));
 		expectedTokens.add(new Pair<>("159",true));
-		AssertHelpers.assertDeepEquals("", expectedTokens, tokenizer.getTokens());
-		
+		AssertObject.assertDeepEquals("", expectedTokens, tokenizer.getTokens());
 	}
 
 	
@@ -279,4 +279,23 @@ public class IUTokenizerTest {
 		AssertHelpers.assertDeepEquals("", expectedTokens, tokenizer.getTokens());
 	}
 	
+	@Test
+	public void test__tokenize__URL() throws IOException {
+		IUTokenizer tokenizer = new IUTokenizer();
+		String text = "http://www.somewhere.com/path-with-lots-of-hyphens/";
+		tokenizer.tokenize(text);
+		List<Pair<String, Boolean>> gotTokens = tokenizer.getAllTokens();
+		Pair<String,Boolean>[] expTokens = new Pair[] {
+			Pair.of("http", true), Pair.of("://", false), Pair.of("www", true), 
+			Pair.of(".", false), Pair.of("somewhere", true), Pair.of(".", false),
+			Pair.of("com", true), Pair.of("/", false),  
+			Pair.of("path", true), Pair.of("-", false),
+			Pair.of("with", true), Pair.of("-", false),
+			Pair.of("lots", true), Pair.of("-", false),
+			Pair.of("of", true), Pair.of("-", false),
+			Pair.of("hyphens", true), Pair.of("/", false),
+			
+		};
+		AssertObject.assertDeepEquals("", expTokens, gotTokens);
+	}	
 }

@@ -92,6 +92,7 @@ public class SegmenterTest {
 		AssertObject.assertDeepEquals("Sentences not as expected", 
 			expSentences, gotSentences);
 	}
+
 	@Test
 	public void test__segmentTokenized__HappyPath() throws Exception {
 		Segmenter segmenter = Segmenter.makeSegmenter("en");
@@ -105,5 +106,5 @@ public class SegmenterTest {
 		AssertObject.assertDeepEquals("Tokenized Sentences not as expected", 
 			expSentences, gotSentences);
 	}
-	
+
 }

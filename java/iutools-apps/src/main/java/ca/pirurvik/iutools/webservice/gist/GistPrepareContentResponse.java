@@ -15,6 +15,18 @@ public class GistPrepareContentResponse extends ServiceResponse {
 	public GistPrepareContentResponse() {
 		
 	}
+
+	public boolean getAlignmentsAvailable() {
+		boolean available = 
+			(iuSentences != null && !iuSentences.isEmpty() &&
+				enSentences != null && !enSentences.isEmpty());
+ 		
+		return available;
+	}
 	
-			
+	
+	public void setAlignmentsAvailable(boolean available) {
+		// Do nothing. This method is there just so the Jackson serializer
+		// does not raise an UnrecognizedPropertyException
+	}
 }

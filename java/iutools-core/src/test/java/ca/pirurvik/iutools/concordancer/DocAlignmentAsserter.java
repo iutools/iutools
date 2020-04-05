@@ -1,6 +1,7 @@
 package ca.pirurvik.iutools.concordancer;
 
 import java.net.URL;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -8,8 +9,10 @@ import java.util.regex.Pattern;
 import org.junit.Assert;
 
 import ca.nrc.datastructure.Pair;
+import ca.nrc.string.StringUtils;
 import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.AssertString;
+import ca.pirurvik.iutools.concordancer.DocAlignment.Problem;
 
 public class DocAlignmentAsserter {
 	private static final DocAlignment pageAlignment = null;
@@ -67,11 +70,17 @@ public class DocAlignmentAsserter {
 	}
 
 	public DocAlignmentAsserter wasSuccessful() {
-		Assert.assertTrue(
-				baseMessage+"\nAlignment should have been successful.",
-				gotDocAlignment.success);
+		return wasSuccessful(true);
+	}
+
+	public DocAlignmentAsserter wasSuccessful(boolean expSuccess) {
+		Assert.assertEquals(
+				baseMessage+"\nSuccess status of alignments was not as expected.",
+				expSuccess, gotDocAlignment.success);
 		return this;
 	}
+	
+	
 
 	public void alignmentsEqual(String mess, String lang1, String lang2, 
 			Pair<String, String>[] expAlPairs) throws Exception {
@@ -126,5 +135,73 @@ public class DocAlignmentAsserter {
 			}
 		}
 		return this;
+	}
+
+	public DocAlignmentAsserter hasNoContentForLang(String lang) {
+		String content = gotDocAlignment.getPageContent(lang);
+		Assert.assertEquals(
+			"Alignment should not have had content for language "+lang,
+			null, content);
+		
+		return this;
+	}
+
+	public DocAlignmentAsserter hasNoAlignments() {
+		List<Alignment> gotAlignments = gotDocAlignment.alignments;
+		Assert.assertEquals(
+			"Document alignment should not have contained any alignments", 
+			0, gotAlignments.size());
+		return this;
+	}
+	
+	public DocAlignmentAsserter containsSentenceStartingWith(String lang, String expSent) {
+		String errMess = 
+			"Could not find sentences for lang="+lang+": "+expSent+"\n"+
+			"Sentences were:\n"
+			;
+		boolean found = false;
+		for (String gotSent: gotDocAlignment.getPageSentences(lang)) {
+			if (gotSent.startsWith(expSent)) {
+				found = true;
+				break;
+			}
+			errMess += "   '"+gotSent+"'\n";
+		}
+		
+		Assert.assertTrue(errMess, found);
+		
+		return this;
+	}
+	
+
+	public DocAlignmentAsserter encounteredProblems(Problem[] expProblems) {
+		
+		Iterator<DocAlignment.Problem> probIter = 
+				gotDocAlignment.problemsEncountered.keySet().iterator();
+		
+			String encounteredProbsMess = 
+				"'\nProblems actually encountered were:\n   "+
+				StringUtils.join(probIter, "\n   ")+"\n";
+		
+		for (Problem probDescr: expProblems) {
+			String errMess = 
+				baseMessage+"\nShould have encountered problem '"+probDescr+
+				encounteredProbsMess;
+
+			Assert.assertTrue(
+				errMess,
+				gotDocAlignment.problemsEncountered.get(probDescr) != null);
+		}
+		return this;
+	}
+
+	private Problem[] toProblemObjects(String[] problemsStr) {
+		Problem[] problems = new Problem[problemsStr.length];
+		for (int ii=0; ii < problemsStr.length; ii++) {
+			Problem iithProblem = Problem.valueOf(problemsStr[ii]);
+			problems[ii] = iithProblem;
+		}
+			
+		return problems;
 	}
 }

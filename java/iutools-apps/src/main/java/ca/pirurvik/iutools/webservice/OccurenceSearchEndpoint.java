@@ -109,9 +109,7 @@ public class OccurenceSearchEndpoint extends HttpServlet {
 		morphExtractor.useCorpus(compiledCorpus);
 		int nbExamples = Integer.valueOf(inputs.nbExamples);
 		morphExtractor.setNbDisplayedWords(nbExamples);
-		
-		LinguisticDataSingleton.getInstance("csv");
-		
+				
 		List<MorphemeSearcher.Words> wordsForMorphemes = morphExtractor.wordsContainingMorpheme(inputs.wordPattern);
 		logger.debug("wordsForMorphemes: "+wordsForMorphemes.size());
 		HashMap<String,MorphemeSearchResult> results = new HashMap<String,MorphemeSearchResult>();

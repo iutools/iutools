@@ -1,5 +1,7 @@
 package ca.pirurvik.iutools.webservice.gist;
 
+import java.net.URL;
+
 import org.junit.Test;
 
 import ca.nrc.ui.web.testing.MockHttpServletResponse;
@@ -60,6 +62,7 @@ public class GistPrepareContentEndpointTest {
 				new Alignment("iu", "nunavut gavamanga |", "en", "Government of Nunavut |"))
 		;
 	}
+
 	@Test
 	public void test__GistPrepareContentEndpoint__InputIsIuURL() throws Exception {
 		
@@ -81,4 +84,50 @@ public class GistPrepareContentEndpointTest {
 		;
 	}
 
+	@Test
+	public void test__GistPrepareContentEndpoint__InputIsURL_WhoseTranslationCannotBeDeduced() throws Exception {
+		// The English URL for this IU url is:
+		//
+		//   https://www.gov.nu.ca/community-and-government-services
+		//
+		// which currently cannot be deduced by the concordancer.
+		//
+		String url = "https://www.gov.nu.ca/iu/cgs-iu";
+		GistPrepareContentInputs prepareInputs = 
+				new GistPrepareContentInputs(url);
+				
+		MockHttpServletResponse response = 
+				IUTServiceTestHelpers.postEndpointDirectly(
+					IUTServiceTestHelpers.EndpointNames.GIST_PREPARE_CONTENT,
+					prepareInputs
+				);
+		
+		GistPrepareContentAsserter.assertThat(response, 
+			"Content not prepared as expected")
+			.inputWasActualContent(false)
+			.hasNoContentForLang("en")
+			.hasNoAlignments()
+		;
+	}
+	
+	@Test
+	public void test__GistPrepareContentEndpoint__InputIsURL_NonExistantURL() throws Exception {
+		
+		String url = "https://www.gov.nu.ca/doesnotexist/iu";
+		GistPrepareContentInputs prepareInputs = 
+				new GistPrepareContentInputs(url);
+				
+		MockHttpServletResponse response = 
+				IUTServiceTestHelpers.postEndpointDirectly(
+					IUTServiceTestHelpers.EndpointNames.GIST_PREPARE_CONTENT,
+					prepareInputs
+				);
+		
+		GistPrepareContentAsserter.assertThat(response, 
+			"Content not prepared as expected")
+			.inputWasActualContent(false)
+			.couldNotFetchIUContent()
+			.couldNotFetchEnContent()
+		;
+	}	
 }
