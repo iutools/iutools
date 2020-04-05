@@ -174,7 +174,7 @@ public class Suffix extends Affix {
 	// i: intransitive: the resulting stem is intransitive
 	//    if nature=t, the resulting stem may also be transitive
 	// n: neutral: the resulting stem is the same as the preceding stem
-	boolean agreeWithTransitivity(String trans) {
+	public boolean agreeWithTransitivity(String trans) {
 	    if (trans==null)
 	        return true;
 	    else if (transitivity==null || transitivity.equals("n"))

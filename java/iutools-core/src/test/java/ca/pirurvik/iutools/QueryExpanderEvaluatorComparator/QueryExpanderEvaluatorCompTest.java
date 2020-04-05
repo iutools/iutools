@@ -6,6 +6,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 
 import ca.inuktitutcomputing.config.IUConfig;
 import ca.pirurvik.iutools.CompiledCorpus;
@@ -14,7 +15,7 @@ import ca.pirurvik.iutools.QueryExpanderEvaluator;
 
 public class QueryExpanderEvaluatorCompTest {
 
-	@Test @Ignore
+	@Test
 	public void test__QueryExpanderEvaluatorComp() throws Exception {
 		
 		System.out.println("\n\n*** Running test__QueryExpanderEvaluatorComp. This test can take a few minutes to complete\n\n");;

@@ -131,6 +131,9 @@ public abstract class Action {
 	abstract public String surfaceForm(String form);
     abstract public String expressionResult(String context, String form, Action act2);
     abstract public String combine(String form1, String form2, Action act2);
+    // The following methods are used to compute the different forms of the affixes used by the experimental analyzer.
+    abstract public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction);
+    abstract public String apply(String form);
     
 	public String getInsert() {
 		return null;
@@ -281,6 +284,19 @@ public abstract class Action {
             }
         }
 
+		@Override
+		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
+			if (context=='V')
+				return "V";
+			else
+				return "C";
+		}
+
+		@Override
+		public String apply(String form) {
+			return form;
+		}
+
         
 //        public String[] finalRadInitAff(String context, String form) {
 //            String initAff = form.substring(0,1);
@@ -390,6 +406,25 @@ public abstract class Action {
              }
         }
 
+		@Override
+		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
+			String constraintOnEndOfStemAfterAction;
+			if (rankOfAction==1) {
+				if (context=='V')
+					constraintOnEndOfStemAfterAction = "C";
+				else
+					constraintOnEndOfStemAfterAction = "V";
+			} else {
+				constraintOnEndOfStemAfterAction = "V";
+			}
+			
+			return constraintOnEndOfStemAfterAction;
+		}
+
+		@Override
+		public String apply(String form) {
+			return form;
+		}
 
 //        public String[] finalRadInitAff(String context, String form) {
 //            String initAff = form.substring(0,1);
@@ -430,6 +465,16 @@ public abstract class Action {
             return null;
         }
 
+		@Override
+		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
+			return "";
+		}
+
+		@Override
+		public String apply(String form) {
+			return form;
+		}
+        
 
 //        public String[] finalRadInitAff(String context, String form) {
 //            return new String[]{};
@@ -465,6 +510,16 @@ public abstract class Action {
             return null;
         }
 
+		@Override
+		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
+			return "";
+		}
+
+		@Override
+		public String apply(String form) {
+			return form;
+		}
+        
 
 //        public String[] finalRadInitAff(String context, String form) {
 //            return new String[]{};
@@ -518,6 +573,15 @@ public abstract class Action {
             return form1.substring(0,form1.length()-1)+form2.charAt(0)+form2;
         }
 
+		@Override
+		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
+			return "C";
+		}
+
+		@Override
+		public String apply(String form) {
+			return form;
+		}
 
 //        public String[] finalRadInitAff(String context, String form) {
 //            String initAff = form.substring(0,1);
@@ -587,6 +651,16 @@ public abstract class Action {
             return form1.substring(0,form1.length()-1)+assimileA+form2;
         }
 
+		@Override
+		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
+			return "C";
+		}
+
+		@Override
+		public String apply(String form) {
+			return form;
+		}
+        
 
 	}
 	
@@ -626,6 +700,15 @@ public abstract class Action {
             return form1.substring(0,form1.length()-1)+form2;
         }
 
+		@Override
+		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
+			return "C";
+		}
+
+		@Override
+		public String apply(String form) {
+			return form;
+		}
 
 //        public String[] finalRadInitAff(String context, String form) {
 //            String initAff = form.substring(0,1);
@@ -693,6 +776,16 @@ public abstract class Action {
             Roman.voicedOfOcclusiveUnvoicedLat(form1.charAt(form1.length()-1))+form2;
         }
 
+		@Override
+		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
+			return "C";
+		}
+
+		@Override
+		public String apply(String form) {
+			return form;
+		}
+        
 
 //        public String[] finalRadInitAff(String context, String form) {
 //            String initAff = form.substring(0,1);
@@ -758,7 +851,16 @@ public abstract class Action {
             Orthography.orthographyICILat(Roman.nasalOfOcclusiveUnvoicedLat(form1.charAt(form1.length()-1)))+form2;
         }
 
-       
+		@Override
+		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
+			return "C";
+		}
+
+		@Override
+		public String apply(String form) {
+			return form;
+		}
+        
 
 //        public String[] finalRadInitAff(String context, String form) {
 //            String initAff = form.substring(0,1);
@@ -823,6 +925,15 @@ public abstract class Action {
             Orthography.orthographyICILat(Roman.nasalOfOcclusiveUnvoicedLat(form1.charAt(form1.length()-1)))+form2;
         }
 
+		@Override
+		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
+			return "C";
+		}
+
+		@Override
+		public String apply(String form) {
+			return form;
+		} 
 	}
 	
 
@@ -885,6 +996,16 @@ public abstract class Action {
             return null;
         }
 
+		@Override
+		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
+			// happens only in rank 2
+			return "V";
+		}
+
+		@Override
+		public String apply(String form) {
+			return form;
+		}
         
 
 	}
@@ -949,6 +1070,16 @@ public abstract class Action {
             return form1.substring(0,form1.length()-1)+form2;
         }
 
+		@Override
+		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
+			return "C"; // should be the penultiate char of the id (e.g. ssi(ssi(id:uti/1vv) = 't')
+		}
+
+		@Override
+		public String apply(String form) {
+			return form;
+		}
+       
 
 	}
 
@@ -1007,7 +1138,24 @@ public abstract class Action {
             return form1+inserted+form2;
         }
 
-       
+		@Override
+		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
+			if (rankOfAction==1) {
+				if (context=='V')
+					return "V";
+				else
+					return "C";
+			} else {
+				return "VV";	
+			}
+				
+		}
+
+		@Override
+		public String apply(String form) {
+			return null;
+		}
+        
 
 	}
 
@@ -1072,7 +1220,21 @@ public abstract class Action {
             return form1.substring(0,form1.length()-1)+inserted+form2;
         }
 
-       
+		@Override
+		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
+			// happens only as action 1
+			if (context=='V')
+				return "V";
+			else
+				return "C";
+		}
+
+		@Override
+		public String apply(String form) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+        
 
 	}
 
@@ -1115,6 +1277,16 @@ public abstract class Action {
             return form1+form1.charAt(form1.length()-1)+form2;
         }
 
+		@Override
+		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
+			return "V"; //"VV";
+		}
+
+		@Override
+		public String apply(String form) {
+			// TODO Auto-generated method stub
+			return null;
+		}
 
 //        public String[] finalRadInitAff(String context, String form) {
 //            String initAff = form.substring(0,1);
@@ -1151,6 +1323,16 @@ public abstract class Action {
             return null;
         }
 
+		@Override
+		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
+			return "";
+		}
+
+		@Override
+		public String apply(String form) {
+			// TODO Auto-generated method stub
+			return null;
+		}
 
 //        public String[] finalRadInitAff(String context, String form) {
 //            String initAff = form.substring(0,1);
@@ -1192,6 +1374,16 @@ public abstract class Action {
             return form1+form2.substring(1);
         }
 
+		@Override
+		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
+			return "VV";
+		}
+
+		@Override
+		public String apply(String form) {
+			// TODO Auto-generated method stub
+			return null;
+		}
 
 //        public String[] finalRadInitAff(String context, String form) {
 //            String secondAff = form.substring(1,2);
@@ -1258,7 +1450,17 @@ public abstract class Action {
             return form1+inserted+inserted+form2;
         }
 
-       
+		@Override
+		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
+			return "C";  // should probablement be the context of the action
+		}
+
+		@Override
+		public String apply(String form) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+        
 
 	}
 
@@ -1301,6 +1503,17 @@ public abstract class Action {
             return sform+sform.charAt(sform.length()-1)+form2;
         }
 
+		@Override
+		public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction) {
+			// happens only as first action after deleting a consonant
+			return "V"; //"VV";
+		}
+
+		@Override
+		public String apply(String form) {
+			// TODO Auto-generated method stub
+			return null;
+		}
 
 
 //        public String[] finalRadInitAff(String context, String form) {

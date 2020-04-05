@@ -51,8 +51,8 @@ public class WordAnalyzer {
 	}
 	
 	private void prepareTries() throws ConfigException, FileNotFoundException {
-		String affixFullPathname = getMorphemeTrieFilePath("iuAffixTrie.json");
-		String rootFullPathname = getMorphemeTrieFilePath("iuRootTrie.json");
+		String affixFullPathname = getMorphemeTrieFilePath("iuFormTrie-affix.json");
+		String rootFullPathname = getMorphemeTrieFilePath("iuFormTrie-root.json");
 		JsonReader affixReader;
 		affixReader = new JsonReader(new FileReader(affixFullPathname));
 		JsonReader rootReader;
@@ -120,7 +120,7 @@ public class WordAnalyzer {
 	
 	
 	
-	List<Decomposition> analyze(String word) throws LinguisticDataException {
+	public List<Decomposition> analyze(String word) throws LinguisticDataException {
 		
 		List<Decomposition> decompositions = findAllPossibleDecompositions(word);
 				

@@ -66,7 +66,7 @@ public class DemonstrativeEnding extends Affix {
 	}
 
 	//--------------------------------------------------------------------------------------------------------
-	boolean agreeWithTransitivity(String trans) {
+	public boolean agreeWithTransitivity(String trans) {
 	    return true;
 	}
 	

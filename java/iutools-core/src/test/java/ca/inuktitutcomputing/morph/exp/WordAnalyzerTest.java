@@ -51,7 +51,7 @@ public class WordAnalyzerTest {
 		WordAnalyzer wordAnalyzer = new WordAnalyzer();
 		String string = "inullu";
 		List<Decomposition> decompositions = wordAnalyzer.analyze(string);
-//		for (int i=0; i<decompositions.size(); i++) System.out.println((i+1)+". "+decompositions.get(i).toStr());
+		for (int i=0; i<decompositions.size(); i++) System.out.println((i+1)+". "+decompositions.get(i).toStr());
 		assertEquals("",1,decompositions.size());
 	}
 

@@ -50,14 +50,15 @@ public abstract class Affix extends Morpheme {
 	String[] qform = null;
 	Action[] qaction1 = null;
 	Action[] qaction2 = null;
+	Map<Character,ContextualBehaviour[]> contextualBehaviours = new HashMap<Character,ContextualBehaviour[]>();
 	//
 	
 	//---------------------------------------------------------------------------------------------------------
 	public abstract String getTransitivityConstraint(); //
+	public abstract boolean agreeWithTransitivity(String trans); //
 	public abstract void addToHash(String key, Object obj); //
 	
 	//---------------------------------------------------------------------------------------------------------
-	abstract boolean agreeWithTransitivity(String trans); //
 
 	//---------------------------------------------------------------------------------------------------------
 	public String getOriginalMorpheme() {
@@ -323,30 +324,30 @@ public abstract class Affix extends Morpheme {
 		a2 = (Action[])a2V.toArray(new Action[]{Action.makeAction()});
 
 		// Enregistrer dans l'object affixe
-		if (context.equals("V")) {
+		Character contextChar = context.charAt(0);
+		if (contextChar=='V') {
 			vform = forms;
 			vaction1 = a1;
 			vaction2 = a2;
-		} else if (context.equals("t")) {
+		} else if (contextChar=='t') {
 			tform = forms;
 			taction1 = a1;
 			taction2 = a2;
-		} else if (context.equals("k")) {
+		} else if (contextChar=='k') {
 			kform = forms;
 			kaction1 = a1;
 			kaction2 = a2;
-		} else if (context.equals("q")) {
+		} else if (contextChar=='q') {
 			qform = forms;
 			qaction1 = a1;
 			qaction2 = a2;
 		}
-		
-		/*
-		 * Mis hors-compilation parce pas utile, mais conserv� pour usage futur
-		 */
-//		for (int j=0; j<forms.length; j++) {
-//		    fillFinalRadInitAffHashSet(context,forms[j],a1[j],a2[j]);
-//		}
+		ContextualBehaviour[] behaviours = new ContextualBehaviour[forms.length];
+		for (int ifo=0; ifo<forms.length; ifo++) {
+			behaviours[ifo] = new ContextualBehaviour(contextChar,forms[ifo],a1[ifo],a2[ifo]);
+		}
+		contextualBehaviours.put(contextChar, behaviours);
+
 	}
 	
 //	void fillFinalRadInitAffHashSet(String context, String form, Action a1, Action a2) {
