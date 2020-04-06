@@ -82,8 +82,8 @@ public class FormGenerator {
 					SurfaceFormInContext surfaceForInContextForFormWithBeginning = 
 							new SurfaceFormInContext(
 									form,
-									formWithBeginning.contextualConstraintOnStem,
-									formWithBeginning.contextualContraintOnReceivingMorpheme,morpheme);
+									formWithBeginning.constraintOnEndOfStem,
+									formWithBeginning.endOfCanonicalFormOfReceivingMorpheme,morpheme);
 					logger.debug(surfaceForInContextForFormWithBeginning);
 					surfaceForms.add(surfaceForInContextForFormWithBeginning);
 					logger.debug("surfaceForms: "+surfaceForms.size());

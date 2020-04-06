@@ -1,9 +1,11 @@
 package ca.inuktitutcomputing.data;
 
+import java.util.Set;
+
 public class ContextualBehaviour {
 	
 	/*
-	 * context: last character of stem: V (vowel), t, k, q
+	 * context: last character of stem: V (any vowel), t, k, q
 	 * form: surface of the affix for in this context
 	 * action1: action of the affix on (last character of) stem in this context;
 	 *          in the vowel context, it must be only one vowel, not two
@@ -21,6 +23,11 @@ public class ContextualBehaviour {
 		this.form = _form;
 		this.action1 = _action1;
 		this.action2 = _action2;
+	}
+	
+	public Set<SurfaceFormInContext> formsInContext(String canonicalFormOfAffix) {
+		String formStr = action1.apply(canonicalFormOfAffix);
+		return null;
 	}
 
 }

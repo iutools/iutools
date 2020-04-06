@@ -18,38 +18,38 @@ import ca.nrc.json.PrettyPrinter;
  * 
  *  form – string that represents the surface form of the morpheme resulting
  *         from an affix's actions
- *  contextualConstraintOnStem – string that represents the end of stems to which
- *                               this form may attach (see below)
- *  contextualContraintOnReceivingMorpheme – string that represents the final
- *                                           character of the basic form of the
- *                                           morphemes to which this form may attach
- *  morphemeId – id of the represented morpheme in the data base
+ *  constraintOnEndOfStem – string that represents the end of stems to which
+ *                          this form may attach (see below)
+ *                          - null: no condition on the end of the stem
+ *                          - V: the stem must end with a single vowel
+ *                          - VV: the stem must end with 2 vowels
+ *                          - C: the stem must end with a consonant
+ *
+ *  endOfCanonicalFormOfReceivingMorpheme – string that represents the final
+ *                                          character of the basic form of the
+ *                                          morphemes to which this form may attach
+ *                                          - V, t, k, q
+ *  morphemeId – id of the morpheme in the data base
  *  
- *  (end of the stem to which it may be attached). The context hence
+ * The context hence
  * becomes a constraint (a condition) to be met by the stem.
  * 
- * The context (contextualConstraintOnStem) can be:
- *   - null: no condition on the end of the stem
- *   - V: the stem must end with a single vowel
- *   - VV: the stem must end with 2 vowels
- *   - C: the stem must end with a consonant
- *   
+ * Example: affix 'aluk/
  * 
- *   
  */
 
 public class SurfaceFormInContext extends Object {
 
     public String surfaceForm;
-    public String contextualConstraintOnStem;
-    public String contextualContraintOnReceivingMorpheme;
+    public String constraintOnEndOfStem;
+    public String endOfCanonicalFormOfReceivingMorpheme;
     public String morphemeId;
     public String basicForm;
     
 	@Override
 	public String toString() {
 		return "SurfaceFormInContext["+
-				surfaceForm+"; "+morphemeId+"; "+basicForm+"; "+contextualConstraintOnStem+"; "+contextualContraintOnReceivingMorpheme+"]";
+				surfaceForm+"; "+morphemeId+"; "+basicForm+"; "+constraintOnEndOfStem+"; "+endOfCanonicalFormOfReceivingMorpheme+"]";
 	}
 
 
@@ -58,8 +58,8 @@ public class SurfaceFormInContext extends Object {
     	if (_morphemeId.equals("tikiq/1n") || _morphemeId.equals("patiq/1v") || _morphemeId.equals("jarniq/1vv"))
     		logger.debug(_morphemeId+"; "+form+"; "+_constraintOnStem+"; "+String.valueOf(_contextualContraintOnReceivingMorpheme)); 
         this.surfaceForm = form;
-        this.contextualConstraintOnStem = _constraintOnStem;
-        this.contextualContraintOnReceivingMorpheme = _contextualContraintOnReceivingMorpheme;
+        this.constraintOnEndOfStem = _constraintOnStem;
+        this.endOfCanonicalFormOfReceivingMorpheme = _contextualContraintOnReceivingMorpheme;
         this.morphemeId = _morphemeId;
         String[] partsOfMorphemeId = this.morphemeId.split("/");
         this.basicForm = partsOfMorphemeId[0];
@@ -67,14 +67,14 @@ public class SurfaceFormInContext extends Object {
     
     public boolean isValidForStem(String stem) {
 		String lastChar = stem.substring(stem.length()-1);
-		if (contextualConstraintOnStem==null) {
+		if (constraintOnEndOfStem==null) {
 			return true;
-		} else if (contextualConstraintOnStem.equals("V")) {
+		} else if (constraintOnEndOfStem.equals("V")) {
     		if (lastChar.equals("i") || lastChar.equals("u") || lastChar.equals("a"))
     			return true;
     		else
     			return false;
-    	} else if (contextualConstraintOnStem.equals("VV")) {
+    	} else if (constraintOnEndOfStem.equals("VV")) {
     		String penultChar = stem.substring(stem.length()-2,stem.length()-1);
     		if ( (lastChar.equals("i") || lastChar.equals("u") || lastChar.equals("a")) &&
     				(penultChar.equals("i") || penultChar.equals("u") || penultChar.equals("a")) )
@@ -102,11 +102,11 @@ public class SurfaceFormInContext extends Object {
     		if ( !oo.morphemeId.equals(this.morphemeId) ) {
     			return false;
     		}
-    		logger.debug(oo.contextualConstraintOnStem+" vs "+this.contextualConstraintOnStem);
-    		if ( !oo.contextualConstraintOnStem.equals(this.contextualConstraintOnStem) )
+    		logger.debug(oo.constraintOnEndOfStem+" vs "+this.constraintOnEndOfStem);
+    		if ( !oo.constraintOnEndOfStem.equals(this.constraintOnEndOfStem) )
     			return false;
-    		logger.debug(oo.contextualContraintOnReceivingMorpheme+" vs "+this.contextualContraintOnReceivingMorpheme);
-    		if ( !oo.contextualContraintOnReceivingMorpheme.equals(this.contextualContraintOnReceivingMorpheme) )
+    		logger.debug(oo.endOfCanonicalFormOfReceivingMorpheme+" vs "+this.endOfCanonicalFormOfReceivingMorpheme);
+    		if ( !oo.endOfCanonicalFormOfReceivingMorpheme.equals(this.endOfCanonicalFormOfReceivingMorpheme) )
     			return false;
     		return true;
     	}
@@ -124,19 +124,19 @@ public class SurfaceFormInContext extends Object {
     	logger.debug("this: "+PrettyPrinter.print(this));
 		char finalOfPrecedingMorpheme =
 			precedingMorpheme.basicForm.substring(precedingMorpheme.basicForm.length()-1).charAt(0);
-		if (this.contextualContraintOnReceivingMorpheme.equals("V")) {
+		if (this.endOfCanonicalFormOfReceivingMorpheme.equals("V")) {
 			if (finalOfPrecedingMorpheme!='i' && finalOfPrecedingMorpheme!='u' && finalOfPrecedingMorpheme!='a')
 				return false;
-		} else if (finalOfPrecedingMorpheme!=this.contextualContraintOnReceivingMorpheme.charAt(0))
+		} else if (finalOfPrecedingMorpheme!=this.endOfCanonicalFormOfReceivingMorpheme.charAt(0))
 			return false;
 		String stem = precedingMorpheme.surfaceForm;
 		String lastCharOfStem = stem.substring(stem.length()-1);
-		if (contextualConstraintOnStem.equals("V"))
+		if (constraintOnEndOfStem.equals("V"))
 			if (lastCharOfStem.equals("i") || lastCharOfStem.equals("u") || lastCharOfStem.equals("a"))
 				return true;
 			else
 				return false;
-		else if (contextualConstraintOnStem.equals("C"))
+		else if (constraintOnEndOfStem.equals("C"))
 			if (lastCharOfStem.equals("i") || lastCharOfStem.equals("u") || lastCharOfStem.equals("a"))
 				return false;
 			else

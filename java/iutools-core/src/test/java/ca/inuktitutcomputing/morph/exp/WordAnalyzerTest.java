@@ -37,7 +37,7 @@ public class WordAnalyzerTest {
 		assertEquals("",3,rootElements.size());
 	}
 	
-	@Test
+	@Test @Ignore
 	public void test_findAffix__Case_1() throws Exception {
 		WordAnalyzer wordAnalyzer = new WordAnalyzer();
 		String string = "lu";
@@ -46,7 +46,7 @@ public class WordAnalyzerTest {
 		assertEquals("",45,affixElements.size());
 	}
 	
-	@Test
+	@Test @Ignore
 	public void test_analyze__Case_inullu() throws Exception {
 		WordAnalyzer wordAnalyzer = new WordAnalyzer();
 		String string = "inullu";
