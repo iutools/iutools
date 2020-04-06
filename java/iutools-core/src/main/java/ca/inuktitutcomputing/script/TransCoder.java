@@ -38,6 +38,8 @@ public class TransCoder {
     Hashtable conversionHash;
     String dotCodes = null;
     
+    public static enum Script {SYLLABIC, ROMAN, MIXED};
+    
     /* 
      * conversionTable: { {<code unicode>,<code de la police>}, {}, ... }
      * direction: 1 = ToUnicode      -1 = ToLegacy
@@ -300,7 +302,10 @@ public class TransCoder {
 //    }
 
     public static String romanToUnicode(String s) {
-        String syll = Roman.transcodeToUnicode(s,null);
+    	String syll = null;
+    	if (s != null) {
+    		syll = Roman.transcodeToUnicode(s,null);
+    	}
         return syll;
     }
 
@@ -512,11 +517,58 @@ public class TransCoder {
     }
 
     public static String ensureRoman(String text) {
-    	String romanText = text;
-    	if (Syllabics.syllabicCharsRatio(text) > 0.8) {
-    		romanText = unicodeToRoman(text);
+    	String romanText = null;
+    	if (text != null) {
+	    	romanText = text;
+	    	if (Syllabics.syllabicCharsRatio(text) > 0.8) {
+	    		romanText = unicodeToRoman(text);
+	    	}
     	}
     	
     	return romanText;
     }
+    
+	public static String ensureScript(Script script, String text) throws TransCoderException {		
+		String textInScript = null;
+		if (text != null) {
+			Script currScript = textScript(text);
+			if (script == currScript) {
+				textInScript = text;
+			} else {
+				if (currScript == Script.SYLLABIC && 
+						script == Script.ROMAN) {
+					textInScript = unicodeToRoman(text);
+				} else if (currScript == Script.ROMAN &&
+						script == Script.SYLLABIC) {
+					textInScript = romanToUnicode(text);
+				} else {
+					throw new TransCoderException(
+						"Cannot transcode from "+currScript+" to "+script);
+				}
+			}
+		}
+		
+		return textInScript;
+	}
+
+	public static Script textScript(String text) {
+		Script script = null;
+		if (text != null) {
+			String textNoPunctNorDigits = text.replaceAll("[\\s0-9\\p{Punct}]", "");
+			script = Script.MIXED;
+			if (Syllabics.allInuktitut(textNoPunctNorDigits)) {
+				script = Script.SYLLABIC;
+			} else if (Roman.allInuktitut(textNoPunctNorDigits)) {
+				script = Script.ROMAN;
+			}
+		}
+		return script;
+	}
+
+	public static String ensureSameScriptAsSecond(String text, String otherText) 
+			throws TransCoderException {
+		Script otherTextScript = textScript(otherText);
+		String textInOthersScript = ensureScript(otherTextScript, text);
+		return textInOthersScript;
+	}
 }
