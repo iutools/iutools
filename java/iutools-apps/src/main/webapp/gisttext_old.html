@@ -5,7 +5,7 @@
   <meta charset="utf-8">
 
   <title>InuktutiTools Gist</title>
-  <link rel="stylesheet" href="css/styles.css?v2">
+  <link rel="stylesheet" href="css/styles.css?v1">
 
   <script src="js/jquery-3.3.1.min.js"></script>
   <script src="js/jquery-ui.min.js"></script>
@@ -16,7 +16,7 @@
 	  	min-width:500px; min-height:400px; display:inline-box; 
 	  	border:1px solid red;
 	  }
-	  .iuword { cursor:pointer; }
+	  .iuword { text-decoration:underline; cursor:pointer; }
   </style>
 
 </head>
@@ -28,33 +28,27 @@
 </header>
 
 <main>
-    <h1 style="text-align:left;">Gist text
+    <h1 style="text-align:left;">Gist of a word
     </h1>
     
     <!--<form id="form-query" method="post" action="">-->
     
-    <!-- Form for submitting text or url to gist -->
     <div>
-	<b>Text to gist:</b>
-	<p/>
-    <textarea id="txt-url-or-text" name="txt-to-check" rows=20 cols=80></textarea>
+	Paste the contents of the clipboard into the box below by clicking the
+    Paste text button. Then click on a word to get its gist.<br>
+    <button id="btn-paste">Paste text</button>
+    <div id="div-text"></div>
     <p></p>
-    <button id="btn-gisttext">Gist text</button>
-    
-    <!-- Areas where to put the results, as well as status and error messages -->
     <div id="div-message" class="div-message"></div>
     <div id="div-error" class="div-error"></div>
     <div id="div-results" class="div-results"></div>
-    <div id="div-gist-text-results" class="div-gist-text-results"></div>
-    
-    <!-- Floating div where we put the gist of the example word -->
     <div id="div-gist" class="div-gist">
-    	<div id="div-gist-message"></div>
-    	<div id="div-gist-word"></div>
+    	<div id="div-gist-holder"></div>
     	<div id="div-gist-iconizer" title="Minimize"><img src="imgs/minimize.png" ></div>
     	<div id="div-gist-contents"></div>
     </div>
     <div id="div-gist-iconized" title="Maximize"><img src="imgs/maximize.png" height=24 ></div>
+    
       
     <!--</form>-->
 
@@ -74,9 +68,7 @@
 
 <script src="js/RunWhen.js"></script>
 <script src="js/WidgetController.js"></script>
-<script src="js/gist/WordGistController.js"></script>
-<script src="js/GistTextNEWController.js"></script>
-<script src="js/utils/IUUtils.js"></script>
+<script src="js/GistTextController.js"></script>
 
 <script>
 	// Load the header, footer etc...
@@ -90,24 +82,16 @@
 	// Setup and configure the controller for this page
     // TODO: replace corpus-name by corpus to get the value of the select, etc.
     var config = {
-    		btnGist: "btn-gisttext",
+    		btnPaste: "btn-paste",
     		divResults:  "div-results",
-    		txtUrlOrText: "txt-url-or-text",
+    		divText: "div-text",
     		divMessage: "div-message",
     		divError: "div-error",
-    		
-    		// Area where to put the clickable gist of the whole text
-    		divGistTextResults: "div-gist-text-results",
-
-       		// Floating div where we display the "gist" of a word
-       		// (after the user clicks on the example word)
-       		//
-       		divGist: "div-gist",
-       		divGist_contents: "div-gist-contents",
-       		divGist_iconizer: "div-gist-iconizer",
-       		divGist_iconized: "div-gist-iconized",
-       		divGist_message: "div-gist-message",
-       		divGist_word: "div-gist-word",
+    		divGist: "div-gist",
+    		divGistWordHolder: "div-gist-holder",
+    		divGistContents: "div-gist-contents",
+    		divGistIconizer: "div-gist-iconizer",
+    		divGistIconized: "div-gist-iconized"
         };
     var gistTextController = new GistTextController(config);
 </script>
