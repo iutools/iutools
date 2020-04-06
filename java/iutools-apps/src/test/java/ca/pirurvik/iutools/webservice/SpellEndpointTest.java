@@ -53,6 +53,38 @@ public class SpellEndpointTest {
 		return;	
 	}
 
+	@Test
+	public void test__SpellEndpoint__WordWithSyllCharsThatAreExpressedAsTwoRomanChars() 
+			throws Exception {
+		
+		SpellInputs spellInputs = new SpellInputs("ᒐᕙᒪᒃᑯᑎᒍᑦ");
+				
+		MockHttpServletResponse response = 
+				IUTServiceTestHelpers.postEndpointDirectly(
+					IUTServiceTestHelpers.EndpointNames.SPELL,
+					spellInputs
+				);
+		
+//		SpellCheckerAssertion.assertThat(response, "")
+//			.raisedNoError()
+//			.nthCorrectionIs(0, true, 
+//					new String[] {
+//					  "ᐃᓄᒻᒧᑦ",
+//					  "ᐃᓄᑐᐊᒧᑦ",
+//					  "ᐃᓄᑐᐊᕐᒧᑦ",
+//					  "ᐃᓄᖕᒧᑦ",
+//					  "ᐃᓄᑐᖃᕐᒧᑦ",
+//					  "ᐃᓄᒻᒧᑦ",
+//					  "ᐃᓄᑐᐊᒧᑦ",
+//					  "ᐃᓄᑐᐊᕐᒧᑦ",
+//					  "ᐃᓄᖕᒧᑦ",
+//					  "ᐃᓄᑐᖃᕐᒧᑦ"
+//					})
+//			.nthCorrectionIs(1, false)
+//			;
+		
+		return;	
+	}
 
 //	
 //	@Test

@@ -5,30 +5,58 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import ca.inuktitutcomputing.script.Syllabics;
+import ca.inuktitutcomputing.script.TransCoder;
+import ca.inuktitutcomputing.script.TransCoderException;
 import ca.nrc.datastructure.Pair;
 
 public class SpellingCorrection {
 	public String orig;
 		public SpellingCorrection setOrig(String _orig) {
 			this.orig = _orig;
+//			this._origIsSyll = null;
+//			if (_orig != null) {
+//				this.orig = TransCoder.ensureRoman(_orig);
+//			}
 			return this;
 		}
+		
+//	private Boolean _origIsSyll = null;	
+//		private Boolean origIsSyll() {
+//			if (this._origIsSyll == null && this.orig != null) {
+//				this._origIsSyll = Syllabics.allInuktitut(orig);
+//			}
+//			return this._origIsSyll;
+//		}
+//	private String orig = null;
 	
 	public Boolean wasMispelled = false;
 	public List<ScoredSpelling> scoredCandidates = 
 				new ArrayList<ScoredSpelling>();
 	
 	public String correctLead;
-		public SpellingCorrection setCorrectLead(String _correctLead) {
-			this.correctLead = _correctLead;
+		public SpellingCorrection setCorrectLead(String _correctLead) throws SpellCheckerException {
+			try {
+				this.correctLead = 
+					TransCoder.ensureSameScriptAsSecond(_correctLead, orig);
+			} catch (TransCoderException e) {
+				throw new SpellCheckerException(e);
+			}
 			return this;
 		}
 		
 	public String correctTail;
-		public SpellingCorrection setCorrectTail(String _correctTail) {
-			this.correctTail = _correctTail;
+		public SpellingCorrection setCorrectTail(String _correctTail) throws SpellCheckerException {
+			try {
+				this.correctTail =
+						TransCoder.ensureSameScriptAsSecond(_correctTail, orig);
+			} catch (TransCoderException e) {
+				throw new SpellCheckerException(e);
+			}
 			return this;
 		}
 	
@@ -61,7 +89,7 @@ public class SpellingCorrection {
 
 	private void initialize(String _orig, List<String> _corrections, 
 			List<Double> _scores, Boolean _wasMispelled) {
-		this.orig = _orig;
+		this.setOrig(_orig);
 		if (_wasMispelled != null) this.wasMispelled = _wasMispelled;
 		if (_corrections != null && _scores != null) {
 			for (int ii=0; ii < _corrections.size(); ii++) {
@@ -73,6 +101,11 @@ public class SpellingCorrection {
 	}
 	
 	public List<String> getAllSuggestions() {
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.spellchecker.SpellingCorrection.getAllSuggestions");
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("invoked for orig="+orig);
+		}
+
 		List<String> suggestions = new ArrayList<String>();
 		
 		String highlightedCorrection = highlightIncorrectMiddle();
@@ -80,7 +113,11 @@ public class SpellingCorrection {
 			suggestions.add(highlightedCorrection);			
 		}
 		suggestions.addAll(getPossibleSpellings());
-		
+
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("returning suggestions="+String.join(",", suggestions));
+		}
+
 		return suggestions;
 	}
 
@@ -112,12 +149,18 @@ public class SpellingCorrection {
 	
 	/** Highlight middle portion of the word that seem incorrect. */
 	protected String highlightIncorrectMiddle() {
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.spellchecker.SpellingCorrection.highlightIncorrectMiddle");
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("invoked for orig="+orig+
+				", correctLead="+correctLead+", correctTail="+correctTail);
+		}
+		
 		String wordWithBadPortionsHighlighted = null;	
 		if (correctLead != null && correctTail != null) {
 			int highlightStart = -1;
 			int highlightEnd = -1;
 			int extremetiesLength = correctLead.length() + correctTail.length();
-			
+						
 			if (extremetiesLength < orig.length()) {
 				// There is a gap between the correct leads and tail.
 				// So the problem must be in the characters in between.	
@@ -135,12 +178,23 @@ public class SpellingCorrection {
 				// overlap). No highglighting to be done so leave the 
 				// highlight start and end at -1
 			}
+			
+			if (tLogger.isTraceEnabled()) {
+				tLogger.trace("highlightStart="+highlightStart+", "+
+					"highlightEnd="+highlightEnd);
+			}
+			
 			if (highlightStart > 0 && highlightEnd > 0) {
 				wordWithBadPortionsHighlighted = 
 					orig.substring(0, highlightStart) + "[" +
 					orig.substring(highlightStart, highlightEnd) + "]" +
 					orig.substring(highlightEnd);
 			}
+		}
+				
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("returning wordWithBadPortionsHighlighted="+
+				wordWithBadPortionsHighlighted);
 		}
 				
 		return wordWithBadPortionsHighlighted;
@@ -153,8 +207,8 @@ public class SpellingCorrection {
 		String tail = 
 				"[" + orig.substring(0, orig.length() - correctTail.length()) + 
 				"]" + correctTail;
-			
-			return tail;
+				
+		return tail;
 	}
 
 	/** Highlight the portion of the word that follows the apparently correct 

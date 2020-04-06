@@ -22,6 +22,43 @@ Word that does not decompose
 - Make sure that the Gist does not crash and that it says:
   - Word could not be decomposed
   - No sentences found for this word
+  
+IU url (Happy Path)
+- Enter url https://www.gov.nu.ca/iu
+- Check that
+  - IU sentences on the left, En on the right
+  - IU Text has been Romanized
+  - Hover the mouse over a word:
+    - It shows that it's clickable
+    - Clicking on that IU word produces a Gist with:
+      - Morphological analysis
+      - Parallel sentenecs
+  - Hover the mouse over a NON-word (ex: period, comma, space):
+    - It does NOT show that it's clickable
+    - Clicking on that NON-word does NOT produce a Gist
+
+En url (Happy Path)
+- Enter WHAT????
+- Check that
+  - IU sentences on the left, En on the right
+  - IU Text has been Romanized
+  - Hover the mouse over a word:
+    - It shows that it's clickable
+    - Clicking on that IU word produces a Gist with:
+      - Morphological analysis
+      - Parallel sentenecs
+  - Hover the mouse over a NON-word (ex: period, comma, space):
+    - It does NOT show that it's clickable
+    - Clicking on that NON-word does NOT produce a Gist
+
+IU page whose En page cannot be determined
+
+EN page whose IU page cannot be determined
+
+URL on a server that does not exist
+
+URL on existing server that returns page not found
+
 
 ##Search Engine
 

@@ -17,6 +17,8 @@ import ca.pirurvik.iutools.spellchecker.SpellingCorrection;
 
 import org.junit.*;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class SpellCheckerTest {
 		
 	private SpellChecker checkerSyll = null;
@@ -336,6 +338,21 @@ public class SpellCheckerTest {
 		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
 		assertCorrectionOK(gotCorrection, word, false, 
 				new String[] { "nunavut" });
+	}
+	
+	@Test
+	public void test__correctWord__WordWithSyllCharsThatTranscodeAsTwoRomanChars() 
+			throws Exception {
+		SpellChecker checker = makeCheckerLargeDict();
+		
+		String word = "ᒐᕙᒪᒃᑯᑎᒍᑦ";
+		checker.setVerbose(false);
+		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
+		
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.writeValueAsString(gotCorrection);
+		assertCorrectionOK(gotCorrection, word, false, 
+				new String[] { "BLAH" });
 	}
 	
 	@Test 

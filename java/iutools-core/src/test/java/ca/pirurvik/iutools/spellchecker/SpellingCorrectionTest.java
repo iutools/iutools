@@ -14,7 +14,8 @@ public class SpellingCorrectionTest {
 	//////////////////////
 
 	@Test
-	public void test__highlightIncorrectMiddle__LeadAndTailLeaveGap() {
+	public void test__highlightIncorrectMiddle__LeadAndTailLeaveGap() 
+			throws Exception {
 		SpellingCorrection gotCorr = 
 			new SpellingCorrection()
 				.setOrig("inuqtitut")
@@ -30,7 +31,8 @@ public class SpellingCorrectionTest {
 	}
 
 	@Test
-	public void test__highlightIncorrectMiddle__LeadAndTailOverlap() {
+	public void test__highlightIncorrectMiddle__LeadAndTailOverlap() 
+			throws Exception {
 		SpellingCorrection gotCorr = 
 			new SpellingCorrection()
 				.setOrig("inuqtitut")
@@ -46,7 +48,8 @@ public class SpellingCorrectionTest {
 	}
 	
 	@Test
-	public void test__highlightIncorrectMiddle__LeadAndTailExactlyCoverWord() {
+	public void test__highlightIncorrectMiddle__LeadAndTailExactlyCoverWord() 
+			throws Exception {
 		SpellingCorrection gotCorr = 
 			new SpellingCorrection()
 				.setOrig("inuqtitut")
@@ -60,7 +63,6 @@ public class SpellingCorrectionTest {
 				.highlightsIncorrectMiddle(null)
 		;
 	}
-	
 	
 	@Test
 	public void test__SpellingCorrection__Serialization() throws Exception {
