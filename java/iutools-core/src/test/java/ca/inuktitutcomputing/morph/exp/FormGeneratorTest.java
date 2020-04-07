@@ -16,6 +16,7 @@ import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.data.SurfaceFormInContext;
 import ca.nrc.json.PrettyPrinter;
 
+@Ignore
 public class FormGeneratorTest {
 
 	@Test

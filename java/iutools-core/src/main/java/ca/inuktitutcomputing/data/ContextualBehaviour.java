@@ -25,8 +25,10 @@ public class ContextualBehaviour {
 		this.action2 = _action2;
 	}
 	
-	public Set<SurfaceFormInContext> formsInContext(String canonicalFormOfAffix) {
-		String formStr = action1.apply(canonicalFormOfAffix);
+	public Set<SurfaceFormInContext> formsInContext(Affix affix) {
+		String canonicalFormOfAffix = affix.morpheme;
+		SurfaceFormInContext[] formsAfterAction1 = action1.resultingFormInContext(canonicalFormOfAffix,context,1,affix.id);
+		if ()
 		return null;
 	}
 

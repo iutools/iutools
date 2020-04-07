@@ -88,7 +88,7 @@ public abstract class Affix extends Morpheme {
     public Set<SurfaceFormInContext> getFormsInContext(Character context) {
     	ContextualBehaviour[] behaviours = contextualBehaviours.get(context);
     	for ( ContextualBehaviour behaviour : behaviours) {
-    		Set<SurfaceFormInContext> formsInContext = behaviour.formsInContext(this.morpheme);
+    		Set<SurfaceFormInContext> formsInContext = behaviour.formsInContext(this);
     	}
     	return null;
     }

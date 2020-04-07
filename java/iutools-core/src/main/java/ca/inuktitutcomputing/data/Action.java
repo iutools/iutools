@@ -54,6 +54,7 @@ public abstract class Action {
 
 	public int type;
 	String strng;
+	public int rank = 0;
 
 	static public Action makeAction() {
 	    return null;
@@ -69,7 +70,7 @@ public abstract class Action {
                 inside = m.group(1);
         }
         
-		if (strng == null || strng.equals("-") || strng.equals("0")) //***
+		if (strng == null || strng.equals("-") || strng.equals("0")) //*** 0 not found in csv files
 			action = new NullAction();
 		else if (strng.equals("?")) //***
 			action = new Unknow();
@@ -96,7 +97,7 @@ public abstract class Action {
 		else if (strng.equals("nas") || strng.equals("nasal")) //***
             action = new Nasalization();
 		else if (strng.startsWith("nassi(")) //***
-            action = new ConditionalNasalization(inside); //***
+            action = new ConditionalNasalization(inside); //*** nassi( not found in csv files
         else if (strng.equals("fus") || strng.equals("fusion")) //***
             action = new Fusion();
 		else if (strng.equals("n") || strng.equals("neutre")) //***
@@ -134,7 +135,7 @@ public abstract class Action {
     // The following methods are used to compute the different forms of the affixes used by the experimental analyzer.
     abstract public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction);
     abstract public String apply(String form);
-    abstract public SurfaceFormInContext[] resultingFormInContext(String form, String context, int rankOfAction, String AffixId);
+    abstract public SurfaceFormInContext[] resultingFormInContext(String form, Character context, int rankOfAction, String AffixId);
     
 	public String getInsert() {
 		return null;
@@ -299,8 +300,10 @@ public abstract class Action {
 		}
 
 		@Override
-		public SurfaceFormInContext[] resultingFormInContext(String form, String context, int rankOfAction, String affixId) {
-			return null;
+		public SurfaceFormInContext[] resultingFormInContext(String form, Character context, int rankOfAction, String affixId) {
+			return new SurfaceFormInContext[] {
+					new SurfaceFormInContext(form,null,context,affixId)
+				};
 		}
 
         
@@ -433,10 +436,17 @@ public abstract class Action {
 		}
 
 		@Override
-		public SurfaceFormInContext[] resultingFormInContext(String form, String context, int rankOfAction,
-				String AffixId) {
-			// TODO Auto-generated method stub
-			return null;
+		public SurfaceFormInContext[] resultingFormInContext(String form, Character context, int rankOfAction,
+				String affixId) {
+			String constraintOnEndOfStem;
+			if (rankOfAction==1) {
+				constraintOnEndOfStem = "V"; // deletion never in V context as action1; so C deleted, therefore end of stem is V
+			} else {
+				constraintOnEndOfStem = context=='V'? "1V" : "2V"; // deletion as action2
+			}
+			return new SurfaceFormInContext[] {
+				new SurfaceFormInContext(form,constraintOnEndOfStem,context,affixId)
+				};
 		}
 
 //        public String[] finalRadInitAff(String context, String form) {
@@ -489,10 +499,9 @@ public abstract class Action {
 		}
 
 		@Override
-		public SurfaceFormInContext[] resultingFormInContext(String form, String context, int rankOfAction,
-				String AffixId) {
-			// TODO Auto-generated method stub
-			return null;
+		public SurfaceFormInContext[] resultingFormInContext(String form, Character context, int rankOfAction,
+				String affixId) {
+			return null; 
 		}
         
 
@@ -541,9 +550,8 @@ public abstract class Action {
 		}
 
 		@Override
-		public SurfaceFormInContext[] resultingFormInContext(String form, String context, int rankOfAction,
-				String AffixId) {
-			// TODO Auto-generated method stub
+		public SurfaceFormInContext[] resultingFormInContext(String form, Character context, int rankOfAction,
+				String affixId) {
 			return null;
 		}
         
@@ -611,10 +619,12 @@ public abstract class Action {
 		}
 
 		@Override
-		public SurfaceFormInContext[] resultingFormInContext(String form, String context, int rankOfAction,
-				String AffixId) {
-			// TODO Auto-generated method stub
-			return null;
+		public SurfaceFormInContext[] resultingFormInContext(String form, Character context, int rankOfAction,
+				String affixId) {
+			// assimilation happens only as action1
+			return new SurfaceFormInContext[] {
+					new SurfaceFormInContext(form,context.toString(),context,affixId)	
+			};
 		}
 
 //        public String[] finalRadInitAff(String context, String form) {
@@ -696,10 +706,12 @@ public abstract class Action {
 		}
 
 		@Override
-		public SurfaceFormInContext[] resultingFormInContext(String form, String context, int rankOfAction,
-				String AffixId) {
-			// TODO Auto-generated method stub
-			return null;
+		public SurfaceFormInContext[] resultingFormInContext(String form, Character context, int rankOfAction,
+				String affixId) {
+			// specific assimilation only happens as action1 if T context
+			return new SurfaceFormInContext[] {
+					new SurfaceFormInContext(form,assimileA,context,affixId)	
+			};
 		}
         
 
@@ -752,10 +764,12 @@ public abstract class Action {
 		}
 
 		@Override
-		public SurfaceFormInContext[] resultingFormInContext(String form, String context, int rankOfAction,
-				String AffixId) {
-			// TODO Auto-generated method stub
-			return null;
+		public SurfaceFormInContext[] resultingFormInContext(String form, Character context, int rankOfAction,
+				String affixId) {
+			// fusion always as action1 and in Consonant context; equivalent to deletion
+			return new SurfaceFormInContext[] {
+					new SurfaceFormInContext(form,"V",context,affixId)	
+			};
 		}
 
 //        public String[] finalRadInitAff(String context, String form) {
@@ -835,10 +849,12 @@ public abstract class Action {
 		}
 
 		@Override
-		public SurfaceFormInContext[] resultingFormInContext(String form, String context, int rankOfAction,
-				String AffixId) {
-			// TODO Auto-generated method stub
-			return null;
+		public SurfaceFormInContext[] resultingFormInContext(String form, Character context, int rankOfAction,
+				String affixId) {
+			// voicing always happens only as action1
+			return new SurfaceFormInContext[] {
+					new SurfaceFormInContext(form,"C",context,affixId)	
+			};
 		}
         
 
@@ -917,10 +933,12 @@ public abstract class Action {
 		}
 
 		@Override
-		public SurfaceFormInContext[] resultingFormInContext(String form, String context, int rankOfAction,
-				String AffixId) {
-			// TODO Auto-generated method stub
-			return null;
+		public SurfaceFormInContext[] resultingFormInContext(String form, Character context, int rankOfAction,
+				String affixId) {
+			// nasalization always happens only as action1
+			return new SurfaceFormInContext[] {
+					new SurfaceFormInContext(form,"C",context,affixId)	
+			};
 		}
         
 
@@ -998,9 +1016,9 @@ public abstract class Action {
 		}
 
 		@Override
-		public SurfaceFormInContext[] resultingFormInContext(String form, String context, int rankOfAction,
+		public SurfaceFormInContext[] resultingFormInContext(String form, Character context, int rankOfAction,
 				String AffixId) {
-			// TODO Auto-generated method stub
+			// does not appear in any csv file
 			return null;
 		} 
 	}
@@ -1077,9 +1095,14 @@ public abstract class Action {
 		}
 
 		@Override
-		public SurfaceFormInContext[] resultingFormInContext(String form, String context, int rankOfAction,
-				String AffixId) {
-			// TODO Auto-generated method stub
+		public SurfaceFormInContext[] resultingFormInContext(String form, Character context, int rankOfAction,
+				String affixId) {
+			// only as action2 in Q context
+			if (rankOfAction==2) {
+				return new SurfaceFormInContext[] {
+					new SurfaceFormInContext(form,"1V",context,affixId)
+				};
+			}
 			return null;
 		}
         
@@ -1157,7 +1180,7 @@ public abstract class Action {
 		}
 
 		@Override
-		public SurfaceFormInContext[] resultingFormInContext(String form, String context, int rankOfAction,
+		public SurfaceFormInContext[] resultingFormInContext(String form, Character context, int rankOfAction,
 				String AffixId) {
 			// TODO Auto-generated method stub
 			return null;
@@ -1240,7 +1263,7 @@ public abstract class Action {
 		}
 
 		@Override
-		public SurfaceFormInContext[] resultingFormInContext(String form, String context, int rankOfAction,
+		public SurfaceFormInContext[] resultingFormInContext(String form, Character context, int rankOfAction,
 				String AffixId) {
 			// TODO Auto-generated method stub
 			return null;
@@ -1326,7 +1349,7 @@ public abstract class Action {
 		}
 
 		@Override
-		public SurfaceFormInContext[] resultingFormInContext(String form, String context, int rankOfAction,
+		public SurfaceFormInContext[] resultingFormInContext(String form, Character context, int rankOfAction,
 				String AffixId) {
 			// TODO Auto-generated method stub
 			return null;
@@ -1386,7 +1409,7 @@ public abstract class Action {
 		}
 
 		@Override
-		public SurfaceFormInContext[] resultingFormInContext(String form, String context, int rankOfAction,
+		public SurfaceFormInContext[] resultingFormInContext(String form, Character context, int rankOfAction,
 				String AffixId) {
 			// TODO Auto-generated method stub
 			return null;
@@ -1439,7 +1462,7 @@ public abstract class Action {
 		}
 
 		@Override
-		public SurfaceFormInContext[] resultingFormInContext(String form, String context, int rankOfAction,
+		public SurfaceFormInContext[] resultingFormInContext(String form, Character context, int rankOfAction,
 				String AffixId) {
 			// TODO Auto-generated method stub
 			return null;
@@ -1497,7 +1520,7 @@ public abstract class Action {
 		}
 
 		@Override
-		public SurfaceFormInContext[] resultingFormInContext(String form, String context, int rankOfAction,
+		public SurfaceFormInContext[] resultingFormInContext(String form, Character context, int rankOfAction,
 				String AffixId) {
 			// TODO Auto-generated method stub
 			return null;
@@ -1580,7 +1603,7 @@ public abstract class Action {
 		}
 
 		@Override
-		public SurfaceFormInContext[] resultingFormInContext(String form, String context, int rankOfAction,
+		public SurfaceFormInContext[] resultingFormInContext(String form, Character context, int rankOfAction,
 				String AffixId) {
 			// TODO Auto-generated method stub
 			return null;
@@ -1641,7 +1664,7 @@ public abstract class Action {
 		}
 
 		@Override
-		public SurfaceFormInContext[] resultingFormInContext(String form, String context, int rankOfAction,
+		public SurfaceFormInContext[] resultingFormInContext(String form, Character context, int rankOfAction,
 				String AffixId) {
 			// TODO Auto-generated method stub
 			return null;

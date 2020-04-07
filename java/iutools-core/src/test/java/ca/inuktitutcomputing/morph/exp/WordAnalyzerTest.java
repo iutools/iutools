@@ -12,6 +12,7 @@ import ca.inuktitutcomputing.data.LinguisticDataSingleton;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.json.PrettyPrinter;
 
+@Ignore
 public class WordAnalyzerTest {
 
 	@Test
