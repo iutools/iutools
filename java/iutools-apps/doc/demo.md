@@ -13,14 +13,19 @@
     
 ## Gister
 
+- COPY AND PASTE CONTENT
+  - Copy some content from the page: https://www.gov.nu.ca/
+  - Show the UNILINGUAL gist with clickable words
+  - Good words to show:
+    - ????  
+
 - Enter this URL 
      https://www.gov.nu.ca/
   - Show the parallel sentences
-    - With cliquable gist
+    - With clickable gist
+  - Good words to show:
+     - ????
   
-- Copy and paste text from anywhere
-  - Show the parallel sentences
-    - With cliquable gist  
     
 ## Morpheme search
 
