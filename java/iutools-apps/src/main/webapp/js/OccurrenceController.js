@@ -141,6 +141,7 @@ class OccurrenceController extends WidgetController {
 	}
 	
 	error(err) {
+		err = err.replace("\n", "<br/>\n");
 		this.elementForProp('divError').html(err);
 		this.elementForProp('divError').show();	 
 	}

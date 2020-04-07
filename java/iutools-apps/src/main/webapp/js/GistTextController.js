@@ -71,7 +71,8 @@ class GistTextController extends WidgetController {
 		for (var sentNum=0; sentNum < iuSentences.length; sentNum++) {
 			var sent = iuSentences[sentNum];
 			for (var tokenNum=0; tokenNum < sent.length; tokenNum++) {
-				var token = sent[tokenNum];
+				var rawToken = sent[tokenNum];
+				var token = HtmlUtils.escapeHtmlEntities(rawToken);
 				if (IUUtils.isInuktut(token)) {
 					html += "<a class=\"iu-word\">"+token+"</a>";
 				} else {

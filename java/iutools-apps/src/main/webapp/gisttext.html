@@ -38,7 +38,6 @@
 	<b>Text to gist:</b>
 	<p/>
 	
-	<script>Document.write("HELLO");</script><p/>	
 
     <textarea id="txt-url-or-text" name="txt-to-check" rows=20 cols=80></textarea>
     <p></p>
@@ -80,6 +79,7 @@
 <script src="js/gist/WordGistController.js"></script>
 <script src="js/GistTextController.js"></script>
 <script src="js/utils/IUUtils.js"></script>
+<script src="js/utils/HtmlUtils.js"></script>
 
 <script>
 	// Load the header, footer etc...
@@ -89,7 +89,7 @@
         });
         $('div#div-gist').draggable({cursor: "move"}).resizable();
     });
-    
+	    
 	// Setup and configure the controller for this page
     // TODO: replace corpus-name by corpus to get the value of the select, etc.
     var config = {
