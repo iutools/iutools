@@ -535,11 +535,9 @@ public class TransCoder {
 			if (script == currScript) {
 				textInScript = text;
 			} else {
-				if (currScript == Script.SYLLABIC && 
-						script == Script.ROMAN) {
+				if (script == Script.ROMAN && currScript != Script.ROMAN) {
 					textInScript = unicodeToRoman(text);
-				} else if (currScript == Script.ROMAN &&
-						script == Script.SYLLABIC) {
+				} else if (script == Script.SYLLABIC && currScript != Script.SYLLABIC) {
 					textInScript = romanToUnicode(text);
 				} else {
 					throw new TransCoderException(
