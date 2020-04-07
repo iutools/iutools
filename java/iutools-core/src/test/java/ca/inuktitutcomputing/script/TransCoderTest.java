@@ -114,6 +114,20 @@ public class TransCoderTest {
 	}
 
 	@Test
+	public void test__ensureScript__Mixed2Rom__HappyPath() throws Exception{
+		String syllText = "ᐃᓄᒃᑐᑦ-1, inuktut-2";
+		String gotRomanText = TransCoder.ensureScript(Script.ROMAN, syllText);
+		AssertString.assertStringEquals("inuktut-1, inuktut-2", gotRomanText);
+	}
+
+	@Test
+	public void test__ensureScript__Mixed2Syll__HappyPath() throws Exception{
+		String syllText = "ᐃᓄᒃᑐᑦ-1, inuktut-2";
+		String gotRomanText = TransCoder.ensureScript(Script.SYLLABIC, syllText);
+		AssertString.assertStringEquals("ᐃᓄᒃᑐᑦ-1, ᐃᓄᒃᑐᑦ-2", gotRomanText);
+	}
+	
+	@Test
 	public void test__textScript__Roman() {
 		String text = "inuktut, 2020";
 		Script gotScript = TransCoder.textScript(text);

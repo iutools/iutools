@@ -3,12 +3,18 @@ package ca.pirurvik.iutools.webservice.gist;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.sql.rowset.serial.SerialException;
+
+import ca.inuktitutcomputing.script.TransCoder;
+import ca.inuktitutcomputing.script.TransCoder.Script;
+import ca.inuktitutcomputing.script.TransCoderException;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.string.SimpleTokenizer;
 import ca.pirurvik.iutools.concordancer.Alignment;
 import ca.pirurvik.iutools.concordancer.DocAlignment;
 import ca.pirurvik.iutools.concordancer.DocAlignment.Problem;
 import ca.pirurvik.iutools.text.segmentation.IUTokenizer;
+import ca.pirurvik.iutools.webservice.ServiceException;
 import ca.pirurvik.iutools.webservice.ServiceResponse;
 
 public class GistPrepareContentResponse extends ServiceResponse {
@@ -35,7 +41,7 @@ public class GistPrepareContentResponse extends ServiceResponse {
 		// does not raise an UnrecognizedPropertyException
 	}
 
-	public void fillFromDocAlignment(DocAlignment docAlignment) {
+	public void fillFromDocAlignment(DocAlignment docAlignment) throws ServiceException {
 		if (docAlignment.encounteredProblem(Problem.ALIGNING_SENTENCES) ||
 				docAlignment.encounteredProblem(Problem.FETCHING_CONTENT_OF_OTHER_LANG_PAGE)) {
 			fillFromUnsuccessfulAlignment(docAlignment);
@@ -52,14 +58,20 @@ public class GistPrepareContentResponse extends ServiceResponse {
 	 * to be aligned).
 	 * 
 	 * @param docAlignment
+	 * @throws ServiceException 
 	 */
-	private void fillFromUnsuccessfulAlignment(DocAlignment docAlignment) {
+	private void fillFromUnsuccessfulAlignment(DocAlignment docAlignment) throws ServiceException {
 		if (docAlignment != null) {
 			iuSentences = new ArrayList<String[]>();
 			List<String> alignmentSents = docAlignment.getPageSentences("iu");
 			if (alignmentSents != null) {
 				IUTokenizer iuTokenizer = new IUTokenizer();
 				for (String sent: alignmentSents) {
+					try {
+						sent = TransCoder.ensureScript(Script.ROMAN, sent);
+					} catch (TransCoderException e) {
+						throw new ServiceException(e);
+					}
 					iuTokenizer.tokenize(sent);
 					List<String> wordsLst = iuTokenizer.wordsAndAll();
 					iuSentences
@@ -72,6 +84,11 @@ public class GistPrepareContentResponse extends ServiceResponse {
 			if (alignmentSents != null){
 				SimpleTokenizer enTokenizer = new SimpleTokenizer();
 				for (String sent: alignmentSents) {
+					try {
+						sent = TransCoder.ensureScript(Script.ROMAN, sent);
+					} catch (TransCoderException e) {
+						throw new ServiceException(e);
+					}					
 					String[] words = enTokenizer.tokenize(sent, true);
 					enSentences.add(words);
 				}
@@ -95,11 +112,13 @@ public class GistPrepareContentResponse extends ServiceResponse {
 		IUTokenizer iuTokenizer = new IUTokenizer();
 		SimpleTokenizer enTokenizer = new SimpleTokenizer();
 		for (Alignment anAlignment: docAlignment.getAligments()) {
-			iuTokenizer.tokenize(anAlignment.getText("iu"));
+			String iuSent = TransCoder.ensureRoman(anAlignment.getText("iu"));
+			iuTokenizer.tokenize(iuSent);
 			List<String> iuWords = iuTokenizer.wordsAndAll();
 			iuSentences.add(iuWords.toArray(new String[iuWords.size()]));
 			
-			String[] enWords = enTokenizer.tokenize(anAlignment.getText("en"), true);
+			String enSent = TransCoder.ensureRoman(anAlignment.getText("en"));
+			String[] enWords = enTokenizer.tokenize(enSent, true);
 			enSentences.add(enWords);
 		}
 		

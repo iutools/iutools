@@ -59,8 +59,8 @@ public class GistPrepareContentEndpointTest {
 			"Content not prepared as expected")
 			.inputWasActualContent(false)
 			.containsAlignment(
-//				new Alignment("iu", "nunavut gavamanga |", "en", "Government of Nunavut |"))
-				new Alignment("iu", "ᓄᓇᕗᑦ ᒐᕙᒪᖓ |", "en", "Government of Nunavut |"))
+				new Alignment("iu", "nunavut gavamanga |", "en", "Government of Nunavut |"))
+//				new Alignment("iu", "ᓄᓇᕗᑦ ᒐᕙᒪᖓ |", "en", "Government of Nunavut |"))
 		;
 	}
 
@@ -81,7 +81,7 @@ public class GistPrepareContentEndpointTest {
 			"Content not prepared as expected")
 			.inputWasActualContent(false)
 			.containsAlignment(
-				new Alignment("iu", "ᓄᓇᕗᑦ ᒐᕙᒪᖓ |", "en", "Government of Nunavut |"))
+				new Alignment("iu", "nunavut gavamanga |", "en", "Government of Nunavut |"))
 		;
 	}
 	
@@ -110,7 +110,7 @@ public class GistPrepareContentEndpointTest {
 			.inputWasActualContent(false)
 			.hasNoContentForLang("en")
 			.hasNoAlignments()
-			.containsIUSentenceStartingWith("ᓄᓇᓕᖕᓂ ᒐᕙᒪᒃᑯᓐᓂᓪᓗ ᐱᔨᑦᑎᕋᖅᑎᒃᑯᑦ")
+			.containsIUSentenceStartingWith("nunalingni gavamakkunnillu pijittiraqtikkut")
 		;
 	}
 	
