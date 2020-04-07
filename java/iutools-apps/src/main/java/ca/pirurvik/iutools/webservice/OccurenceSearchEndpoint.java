@@ -102,32 +102,37 @@ public class OccurenceSearchEndpoint extends HttpServlet {
 	private HashMap<String,MorphemeSearchResult> getOccurrences(OccurenceSearchInputs inputs, String corpusName) 
 			throws SearchEndpointException, ConfigException, CompiledCorpusRegistryException, 
 					IOException, Exception {
-		Logger logger = Logger.getLogger("ca.pirurvik.iutools.webservice.OccurenceSearchEndpoint.getOccurrences");
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.webservice.OccurenceSearchEndpoint.getOccurrences");
+		
+		tLogger.trace("invoked with inputs.wordPattern="+inputs.wordPattern+", inputs.nbExamples="+inputs.nbExamples);
+
+		tLogger.trace("Creating the MorphemeSearcher instance");		
 		MorphemeSearcher morphExtractor = new MorphemeSearcher();
-		//CompiledCorpus compiledCorpus = CompiledCorpusRegistry.getCorpus(corpusName);
+		
+		tLogger.trace("Loading the corpus");		
 		CompiledCorpus compiledCorpus = CompiledCorpusRegistry.getCorpus(corpusName);
 		morphExtractor.useCorpus(compiledCorpus);
 		int nbExamples = Integer.valueOf(inputs.nbExamples);
 		morphExtractor.setNbDisplayedWords(nbExamples);
 				
+		tLogger.trace("Finding words that contain the morpheme");
 		List<MorphemeSearcher.Words> wordsForMorphemes = morphExtractor.wordsContainingMorpheme(inputs.wordPattern);
-		logger.debug("wordsForMorphemes: "+wordsForMorphemes.size());
+		tLogger.trace("wordsForMorphemes: "+wordsForMorphemes.size());
 		HashMap<String,MorphemeSearchResult> results = new HashMap<String,MorphemeSearchResult>();
 		MorphemeSearcher.WordFreqComparator comparator = morphExtractor.new WordFreqComparator();
 		Iterator<MorphemeSearcher.Words> itWFM = wordsForMorphemes.iterator();
 		while (itWFM.hasNext()) {
 			MorphemeSearcher.Words w = itWFM.next();
-			logger.debug("morphemeWithId: "+w.morphemeWithId);
+			tLogger.trace("morphemeWithId: "+w.morphemeWithId);
 			String meaningOfMorpheme = Morpheme.getMorpheme(w.morphemeWithId).englishMeaning;
-			logger.debug("meaningOfMorpheme: "+meaningOfMorpheme);
+			tLogger.trace("meaningOfMorpheme: "+meaningOfMorpheme);
 			List<ScoredExample> wordsAndFreqs = w.words;
-			logger.debug("wordsAndFreqs: "+wordsAndFreqs.size());
+			tLogger.trace("wordsAndFreqs: "+wordsAndFreqs.size());
 			ScoredExample[] wordsFreqsArray = wordsAndFreqs.toArray(new ScoredExample[] {});
-//			Arrays.sort(wordsFreqsArray, comparator);
 			List<String> words = new ArrayList<String>();
 			List<Double> wordScores = new ArrayList<Double>();
 			for (ScoredExample example : wordsFreqsArray) {
-				logger.debug("example.word: "+example.word);
+				tLogger.trace("example.word: "+example.word);
 				words.add(example.word);
 				wordScores.add(example.score);
 			}
@@ -135,7 +140,7 @@ public class OccurenceSearchEndpoint extends HttpServlet {
 			results.put(w.morphemeWithId, morpheSearchResult);
 		}
 	
-		logger.debug("end of method");
+		tLogger.trace("end of method");
 		return results;
 	}
 

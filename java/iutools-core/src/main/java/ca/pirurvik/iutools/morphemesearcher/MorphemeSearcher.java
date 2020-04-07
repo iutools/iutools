@@ -20,6 +20,7 @@ import ca.inuktitutcomputing.morph.MorphInukException;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieNode;
+import ca.nrc.json.PrettyPrinter;
 import ca.pirurvik.iutools.CompiledCorpus;
 import ca.pirurvik.iutools.CompiledCorpus.WordWithMorpheme;
 
@@ -43,8 +44,8 @@ public class MorphemeSearcher {
 	}
 	
 	public List<Words> wordsContainingMorpheme(String morpheme) throws Exception {
-		Logger logger = Logger.getLogger("ca.pirurvik.iutools.morphemesearcher.MorphemeExtractor.wordsContainingMorpheme");
-		logger.trace("morpheme= "+morpheme);
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.morphemesearcher.MorphemeSearcher.wordsContainingMorpheme");
+		tLogger.trace("morpheme= "+morpheme);
 		
 		HashMap<String,List<WordWithMorpheme>> morphid2wordsFreqs = getMostFrequentWordsWithMorpheme(morpheme);
 		Bin[] rootBins = separateWordsByRoot(morphid2wordsFreqs);
@@ -55,35 +56,55 @@ public class MorphemeSearcher {
 		} catch (Exception e) {
 			throw new MorphemeSearcherException(e);
 		}
-		logger.trace("morphids2scoredExamples: "+morphids2scoredExamples.size());
+		tLogger.trace("morphids2scoredExamples: "+morphids2scoredExamples.size());
 		List<Words> words = new ArrayList<Words>();
 		Set<String> keys = morphids2scoredExamples.keySet();
 		Iterator<String> iter = keys.iterator();
 		while ( iter.hasNext()) {
 			String morphId = iter.next();
-			logger.trace("iteration for generation of Words - morphId: "+morphId);
+			tLogger.trace("iteration for generation of Words - morphId: "+morphId);
 			List<ScoredExample> scoredExamples = morphids2scoredExamples.get(morphId);
 			Words wordsObject = new Words(morphId,scoredExamples);
 			words.add(wordsObject);
 		}
-		logger.trace("words: "+words.size());
+		tLogger.trace("words: "+words.size());
 		return words;
 	}
 	
 	
-	protected HashMap<String, List<ScoredExample>> computeWordsWithScoreFromBins(Bin[] rootBins) throws MorphemeSearcherException {
-		HashMap<String, List<ScoredExample>> morphids2limitedScoredExamples = new HashMap<String, List<ScoredExample>>();
+	protected HashMap<String, List<ScoredExample>> computeWordsWithScoreFromBins(
+			Bin[] rootBins) throws MorphemeSearcherException {
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.morphemesearcher.MorphemeSearcher.computeWordsWithScoreFromBins");
+		
+		HashMap<String, List<ScoredExample>> morphids2limitedScoredExamples = 
+				new HashMap<String, List<ScoredExample>>();
 		for (int ib=0; ib<rootBins.length; ib++) {
-			HashMap<String, List<ScoredExample>> morphid2scoredWords = computeWordsWithScore(rootBins[ib].morphid2wordsFreqs);
+			tLogger.trace("Looking at bin #"+ib);
+			HashMap<String, List<ScoredExample>> morphid2scoredWords = 
+					computeWordsWithScore(rootBins[ib].morphid2wordsFreqs);
+			tLogger.trace("Finished scoring words in bin");
+
 			for (Map.Entry<String,List<ScoredExample>> mapElement : morphid2scoredWords.entrySet()) { 
 	            String morphid = mapElement.getKey(); 
+				tLogger.trace("Looking at bin #"+ib+"; morphid="+morphid);
 	            List<ScoredExample> listOfScoredExamples = mapElement.getValue();
-	            ScoredExample firstScoredExampleInBinForMorphid = listOfScoredExamples.get(0);
-	            if ( !morphids2limitedScoredExamples.containsKey(morphid) ) {
-	            	morphids2limitedScoredExamples.put(morphid, new ArrayList<ScoredExample>());
-	            }
-	            if (morphids2limitedScoredExamples.get(morphid).size() < nbWordsToBeDisplayed)
-	            	morphids2limitedScoredExamples.get(morphid).add(firstScoredExampleInBinForMorphid);
+				if (tLogger.isTraceEnabled()) {
+					tLogger.trace("Finished scoring words in bin. "+
+						"listOfScoredExamples.size()="+listOfScoredExamples.size());
+				}
+
+				if (!listOfScoredExamples.isEmpty()) {
+					tLogger.trace("Bin has some examples");
+		            ScoredExample firstScoredExampleInBinForMorphid = 
+		            		listOfScoredExamples.get(0);
+		            if ( !morphids2limitedScoredExamples.containsKey(morphid) ) {
+		            	morphids2limitedScoredExamples.put(morphid, new ArrayList<ScoredExample>());
+		            }
+		            if (morphids2limitedScoredExamples.get(morphid).size() < nbWordsToBeDisplayed)
+		            	morphids2limitedScoredExamples.get(morphid).add(firstScoredExampleInBinForMorphid);
+				} else {
+					tLogger.trace("Bin is EMPTY");					
+				}
 			}
 		}
 		
