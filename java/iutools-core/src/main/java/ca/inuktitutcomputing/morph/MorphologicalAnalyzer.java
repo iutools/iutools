@@ -56,7 +56,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 
     private Hashtable<String,Graph.Arc[]> arcsByMorpheme = new Hashtable<String,Graph.Arc[]>();
     
-    public static Cache<String, Decomposition[]> 
+    private static Cache<String, Decomposition[]> 
     	decompsCache = 
     		Caffeine.newBuilder().maximumSize(10000)
     		  .build();
@@ -122,13 +122,13 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 		return decs;
 	}
 
-	private void cache(Decomposition[] decs, String word, boolean extendedAnalysis) {
+	private synchronized void cache(Decomposition[] decs, String word, boolean extendedAnalysis) {
 		String key = cacheKeyFor(word, extendedAnalysis);
 		decompsCache.put(key, decs);
 	}
 
 
-	private Decomposition[] uncache(String word, boolean extendedAnalysis) {
+	private synchronized Decomposition[]  uncache(String word, boolean extendedAnalysis) {
 		String key = cacheKeyFor(word, extendedAnalysis);
 		Decomposition[] decomps = decompsCache.getIfPresent(key);
 		return decomps;
@@ -2446,7 +2446,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 		removeFromCache(word, null);
 	}
 
-	public static void removeFromCache(String word, Boolean extendedAnalyses) {
+	public static synchronized void removeFromCache(String word, Boolean extendedAnalyses) {
 		if (extendedAnalyses == null) {
 			extendedAnalyses = false;
 		}
