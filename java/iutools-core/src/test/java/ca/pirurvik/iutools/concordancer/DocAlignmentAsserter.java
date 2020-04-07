@@ -3,12 +3,14 @@ package ca.pirurvik.iutools.concordancer;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.junit.Assert;
 
 import ca.nrc.datastructure.Pair;
+import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.StringUtils;
 import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.AssertString;
@@ -69,19 +71,14 @@ public class DocAlignmentAsserter {
 		Assert.assertTrue(errMess, found);			
 	}
 
-	public DocAlignmentAsserter wasSuccessful() {
-		return wasSuccessful(true);
-	}
 
-	public DocAlignmentAsserter wasSuccessful(boolean expSuccess) {
-		Assert.assertEquals(
+	public DocAlignmentAsserter didNotEncounterProblems() {
+		Assert.assertFalse(
 				baseMessage+"\nSuccess status of alignments was not as expected.",
-				expSuccess, gotDocAlignment.success);
+				gotDocAlignment.encounteredSomeProblems());
 		return this;
-	}
+	}	
 	
-	
-
 	public void alignmentsEqual(String mess, String lang1, String lang2, 
 			Pair<String, String>[] expAlPairs) throws Exception {
 
@@ -173,7 +170,11 @@ public class DocAlignmentAsserter {
 		return this;
 	}
 	
+	public DocAlignmentAsserter encounteredProblems(Problem expProblem) {
+		return encounteredProblems(new Problem[] {expProblem});
+	}
 
+	
 	public DocAlignmentAsserter encounteredProblems(Problem[] expProblems) {
 		
 		Iterator<DocAlignment.Problem> probIter = 

@@ -413,7 +413,7 @@ public class SpellChecker {
 				break;
 			}			
 		}
-		corr.correctLead = longestCorrectLead;
+		corr.setCorrectLead(longestCorrectLead);
 	}
 	
 	protected boolean leadRespectsMorphemeBoundaries(String lead, String word) 
@@ -499,25 +499,19 @@ public class SpellChecker {
 					// Found a word with the right characteristics
 					wordWasFoundForTail = true;					
 					longestCorrectTail = tail;
-//					System.out.println("** SpellChecker.computeCorrectTail: setting longestCorrectTail="+
-//							longestCorrectTail);
 					break;
 				}
 			}
 			
 			if (wordWasFoundForTail) {
-//				System.out.println("** SpellChecker.computeCorrectTail: setting longestCorrectTail="+
-//						longestCorrectTail);
 				break;
 			}			
 		}
-		corr.correctTail = longestCorrectTail;
+		corr.setCorrectTail(longestCorrectTail);
 	}
 	
 	public boolean tailRespectsMorphemeBoundaries(String tail, String word) 
 			throws SpellCheckerException {
-//		System.out.println("** SpellChecker.tailRespectsMorphemeBoundaries: tail="+
-//				tail+", word=="+word);
 		
 		Boolean answer = null;
 		

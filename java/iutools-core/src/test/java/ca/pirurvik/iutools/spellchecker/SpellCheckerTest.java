@@ -107,10 +107,10 @@ public class SpellCheckerTest {
 			List<String> possibleCorrectSpellings = correction.getPossibleSpellings();
 			// This is the longest leading string of the word which might 
 			// be correctly spelled
-			String correctLead = correction.correctLead;
+			String correctLead = correction.getCorrectLead();
 			// This is the longest tailing string of the word which might 
 			// be correctly spelled
-			String correctTail = correction.correctTail;
+			String correctTail = correction.getCorrectTail();
 		}
 		
 		//
@@ -338,21 +338,6 @@ public class SpellCheckerTest {
 		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
 		assertCorrectionOK(gotCorrection, word, false, 
 				new String[] { "nunavut" });
-	}
-	
-	@Test
-	public void test__correctWord__WordWithSyllCharsThatTranscodeAsTwoRomanChars() 
-			throws Exception {
-		SpellChecker checker = makeCheckerLargeDict();
-		
-		String word = "ᒐᕙᒪᒃᑯᑎᒍᑦ";
-		checker.setVerbose(false);
-		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
-		
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.writeValueAsString(gotCorrection);
-		assertCorrectionOK(gotCorrection, word, false, 
-				new String[] { "BLAH" });
 	}
 	
 	@Test 
@@ -779,13 +764,13 @@ public class SpellCheckerTest {
 		if (expCorrLead != null) {
 			Assert.assertEquals(
 					"Longest Correctly Spelled leading string was not as expected", 
-					expCorrLead, wordCorr.correctLead);
+					expCorrLead, wordCorr.getCorrectLead());
 		}
 
 		if (expCorrTail != null) {
 			Assert.assertEquals(
 					"Longest Correctly tailing string was not as expected", 
-					expCorrLead, wordCorr.correctTail);
+					expCorrLead, wordCorr.getCorrectTail());
 		}
 	
 	}

@@ -133,8 +133,12 @@ public class DocAlignment {
 		return answer;
 	}
 
-	public boolean encounteredProblems() {
+	public boolean encounteredSomeProblems() {
 		return !problemsEncountered.isEmpty();
+	}
+	
+	public boolean encounteredProblem(Problem problem) {
+		return problemsEncountered.containsKey(problem);
 	}
 	
 	public boolean bothLangsContentFetched() {

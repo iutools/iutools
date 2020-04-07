@@ -58,10 +58,10 @@ public class Alignment {
 		
 		String toStr = 
 				"(" + 
-				langPair.getFirst()+":" + getText(langPair.getFirst()) +
-				" <--> " +
-				langPair.getSecond()+":" + getText(langPair.getSecond()) +
-				")"
+				langPair.getFirst()+":\"" + getText(langPair.getFirst()) +
+				"\" <--> " +
+				langPair.getSecond()+":\"" + getText(langPair.getSecond()) +
+				"\")"
 				;
 
 		return toStr;

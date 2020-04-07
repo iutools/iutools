@@ -82,7 +82,7 @@ public class WebConcordancerTest {
 					new WebConcordancer().alignPage(url, new String[] {"en", "iu"});
 
 		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
-			.wasSuccessful()
+			.didNotEncounterProblems()
 			.contentIsPlainText("en", "iu")
 			.urlForLangEquals("en", new URL("https://www.gov.nu.ca/"))
 			.urlForLangEquals("iu", new URL("https://www.gov.nu.ca/iu"))
@@ -101,8 +101,7 @@ public class WebConcordancerTest {
 					new WebConcordancer().alignPage(url, new String[] {"en", "iu"});
 
 		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
-			.wasSuccessful(false)
-			.encounteredProblems(new Problem[] {Problem.FETCHING_INPUT_URL})
+			.encounteredProblems(Problem.FETCHING_INPUT_URL)
 			;
 	}
 	
@@ -113,8 +112,7 @@ public class WebConcordancerTest {
 					new WebConcordancer().alignPage(url, new String[] {"en", "iu"});
 
 		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
-			.wasSuccessful(false)
-			.encounteredProblems(new Problem[] {Problem.FETCHING_INPUT_URL})
+			.encounteredProblems(Problem.FETCHING_INPUT_URL)
 			;
 	}
 	
@@ -132,13 +130,7 @@ public class WebConcordancerTest {
 					new WebConcordancer().alignPage(url, new String[] {"en", "iu"});
 
 		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
-			.wasSuccessful()
-			.contentIsPlainText("iu")
-			.hasNoContentForLang("en")
-			.urlForLangEquals("iu", url)
-			.pageInLangContains("iu", "ᓄᓇᓕᖕᓂ ᒐᕙᒪᒃᑯᓐᓂᓪᓗ ᐱᔨᑦᑎᕋᖅᑎᒃᑯᑦ")
-			.hasNoAlignments()
-			.containsSentenceStartingWith("iu", "* ᓄᓇᓕᖕᓂ ᒐᕙᒪᒃᑯᓐᓂᓪᓗ")
+			.encounteredProblems(Problem.FETCHING_CONTENT_OF_OTHER_LANG_PAGE)
 			;
 	}
 

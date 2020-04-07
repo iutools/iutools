@@ -47,7 +47,7 @@ public class SpellingCorrectionAsserter {
 	}
 
 	public SpellingCorrectionAsserter highlightsIncorrectTail(String expLead) {
-		String gotLead = gotCorrection.correctLead;
+		String gotLead = gotCorrection.getCorrectLead();
 		AssertString.assertStringEquals(
 			baseMessage+"\nSuggested correct leading chars were not as expected.",
 			expLead, gotLead);
@@ -55,7 +55,7 @@ public class SpellingCorrectionAsserter {
 	}
 
 	public SpellingCorrectionAsserter highlightsIncorrectLead(String expTail) {
-		String gotTail = gotCorrection.correctTail;
+		String gotTail = gotCorrection.getCorrectTail();
 		AssertString.assertStringEquals(
 			baseMessage+"\nSuggested correct tailing chars were not as expected.",
 			expTail, gotTail);

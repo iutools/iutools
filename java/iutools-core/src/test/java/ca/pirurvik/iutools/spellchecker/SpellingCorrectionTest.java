@@ -71,7 +71,7 @@ public class SpellingCorrectionTest {
 					new String[] {"inuktut", "inuktitut"}, 
 					true);
 		
-		origCorr.correctLead = "inuk";
-		origCorr.correctTail = "tut";
+		origCorr.setCorrectLead("inuk");
+		origCorr.setCorrectTail("tut");
 	}
 }

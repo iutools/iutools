@@ -170,6 +170,17 @@ public class IUTokenizer {
 
 		return onlyWords;
 	}
+	
+	public List<String> wordsAndAll() {
+		List<String> wordsAndAll = new ArrayList<String>();
+		for (int iToken = 0; iToken < allTokensPunctuation.size(); iToken++) {
+			Pair<String, Boolean> token = allTokensPunctuation.get(iToken);
+			wordsAndAll.add(token.getFirst());
+		}
+
+		return wordsAndAll;
+		
+	}
 
 	public String reconstruct() {
 		String str = "";

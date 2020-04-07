@@ -28,12 +28,34 @@ public class IUTokenizerTest {
 		// Use this class to tokenize text written in Inuktut
 		IUTokenizer tokenizer = new IUTokenizer();
 		String text = "(ᑲᖏᖅᖠᓂᐅᑉ ᐅᐊᓐᓇᖓ-ᐃᒡᓗᓕᒑᕐᔪᒃ)";
+		
+		// This only returns tokens that are actual words
 		List<String> words = tokenizer.tokenize(text);
+		
+		// If you want to have all tokens, including spaces, punctuation 
+		// etc.., you then have to invoke this method
+		//
+		List<String> everything = tokenizer.wordsAndAll();
+		
+		// You can also get a list of tokens, with an indicator that 
+		// says if it was a word or not
+		//
+		List<Pair<String,Boolean>> tokens = tokenizer.getAllTokens();
+		for (Pair<String,Boolean> aToken: tokens) {
+			String tokString = aToken.getFirst();
+			if (aToken.getSecond()) {
+				// Token is an actual word
+			} else {
+				// Token is NOT a word
+			}
+		}
 	}
 	
 	/////////////////////////////
 	// VERIFICATION TESTS
 	/////////////////////////////
+	
+	
 	
 	@Test
 	public void test____processInitialPunctuation() {

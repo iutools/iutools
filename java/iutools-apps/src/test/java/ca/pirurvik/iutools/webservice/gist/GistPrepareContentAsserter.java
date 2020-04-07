@@ -2,12 +2,14 @@ package ca.pirurvik.iutools.webservice.gist;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.junit.Assert;
 
 import ca.nrc.introspection.Introspection;
 import ca.nrc.string.StringUtils;
+import ca.nrc.testing.AssertCollection;
 import ca.nrc.testing.AssertObject;
 import ca.nrc.ui.web.testing.MockHttpServletResponse;
 import ca.pirurvik.iutools.concordancer.Alignment;
@@ -121,6 +123,24 @@ public class GistPrepareContentAsserter extends Asserter {
 		AssertObject.assertDeepEquals(
 				"Should NOT have been able to fetch content of EN page", 
 				new ArrayList<String[]>(), gotResponse().enSentences);
+		return this;
+	}
+
+	public GistPrepareContentAsserter containsIUSentenceStartingWith(String expSentence) {
+		boolean found = false;
+		String mess = baseMessage+"Alignment did not contain IU sentence that starts with: "+
+				expSentence+"\nIU sentence were:\n";
+		for (String[] aSentTokens: gotResponse().iuSentences) {
+			String gotSent = String.join("", aSentTokens);
+			if (gotSent.startsWith(expSentence)) {
+				found = true;
+				break;
+			}
+			mess += "  "+gotSent+"\n";
+		}		
+		
+		Assert.assertTrue(mess, found);
+		
 		return this;
 	}
 

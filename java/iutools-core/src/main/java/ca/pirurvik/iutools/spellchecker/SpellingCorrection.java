@@ -18,27 +18,14 @@ public class SpellingCorrection {
 	public String orig;
 		public SpellingCorrection setOrig(String _orig) {
 			this.orig = _orig;
-//			this._origIsSyll = null;
-//			if (_orig != null) {
-//				this.orig = TransCoder.ensureRoman(_orig);
-//			}
 			return this;
 		}
 		
-//	private Boolean _origIsSyll = null;	
-//		private Boolean origIsSyll() {
-//			if (this._origIsSyll == null && this.orig != null) {
-//				this._origIsSyll = Syllabics.allInuktitut(orig);
-//			}
-//			return this._origIsSyll;
-//		}
-//	private String orig = null;
-	
 	public Boolean wasMispelled = false;
 	public List<ScoredSpelling> scoredCandidates = 
 				new ArrayList<ScoredSpelling>();
 	
-	public String correctLead;
+	private String correctLead;
 		public SpellingCorrection setCorrectLead(String _correctLead) throws SpellCheckerException {
 			try {
 				this.correctLead = 
@@ -48,8 +35,11 @@ public class SpellingCorrection {
 			}
 			return this;
 		}
+		public String getCorrectLead() {
+			return this.correctLead;
+		}
 		
-	public String correctTail;
+	private String correctTail;
 		public SpellingCorrection setCorrectTail(String _correctTail) throws SpellCheckerException {
 			try {
 				this.correctTail =
@@ -58,6 +48,9 @@ public class SpellingCorrection {
 				throw new SpellCheckerException(e);
 			}
 			return this;
+		}
+		public String getCorrectTail() {
+			return correctTail;
 		}
 	
 	public SpellingCorrection() {

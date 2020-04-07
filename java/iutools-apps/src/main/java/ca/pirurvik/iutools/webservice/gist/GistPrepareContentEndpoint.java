@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ca.inuktitutcomputing.script.TransCoder;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.json.PrettyPrinter;
+import ca.nrc.string.SimpleTokenizer;
 import ca.pirurvik.iutools.concordancer.Alignment;
 import ca.pirurvik.iutools.concordancer.DocAlignment;
 import ca.pirurvik.iutools.concordancer.WebConcordancer;
@@ -102,17 +103,14 @@ public class GistPrepareContentEndpoint extends HttpServlet {
 	private void doPrepareURL(GistPrepareContentInputs inputs, 
 		GistPrepareContentResponse response) throws ServiceException {
 		
+
 		response.wasActualText = false;
 		WebConcordancer concordancer = new WebConcordancer();
 		URL url;
 		try {
 			url = new URL(inputs.textOrUrl);
 			DocAlignment alignments = concordancer.alignPage(url, new String[] {"en", "iu"});
-			response.iuSentences = new ArrayList<String[]>();
-			response.enSentences = new ArrayList<String[]>();
-			for (Alignment anAlignment: alignments.getAligments()) {
-				addAlignment(anAlignment, response);
-			}
+			response.fillFromDocAlignment(alignments);
 		} catch (MalformedURLException e) {
 			throw new ServiceException(e);
 		}
