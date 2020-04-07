@@ -14,6 +14,7 @@ import java.util.StringTokenizer;
 import org.apache.log4j.Logger;
 
 import ca.inuktitutcomputing.script.Orthography;
+import ca.nrc.debug.Debug;
 //import ca.inuktitutcomputing.data.LinguisticDataAbstract;
 import ca.inuktitutcomputing.data.Action;
 import ca.inuktitutcomputing.data.Affix;
@@ -32,12 +33,16 @@ public abstract class Data {
 	//-----Faire les objets des morph�mes------------------------------
 	
 	@SuppressWarnings("unchecked")
-	public static void makeBase(HashMap<String,String> v) throws LinguisticDataException {
+	public static synchronized void makeBase(HashMap<String,String> v) throws LinguisticDataException {
+		Logger logger = Logger.getLogger("ca.inuktitutcomputing.data.makeBase");
         Base x = new Base(v);
         addToHash(x,"base - original");
         if (LinguisticData.getInstance().getIdToBaseTable().containsKey(x.id)) {
-        	throw new RuntimeException("Bases ID already contains a key "+x.id+". This one is defined in "+x.tableName+"."+". Check your .csv files in the linguistics data");
-//        	System.err.println("Bases ID already contains a key "+x.id+". This one is defined in "+x.tableName+".");
+        	String callStack = Debug.printCallStack();
+        	throw new RuntimeException(
+        		"Bases ID already contains a key "+x.id+". This one is defined in "+
+        		x.tableName+"."+". Check your .csv files in the linguistics data\n"+
+        		"\nCall stack was:\n"+callStack);
         }
 		LinguisticData.getInstance().addEntryToIdToBaseTable(x.id, x);
         // If the root has variant forms, create a root object for each
@@ -83,7 +88,7 @@ public abstract class Data {
      * Le champ 'racine' peut en fait contenir plus d'une valeur.
      */
 	@SuppressWarnings("unchecked")
-	public static void makeDemonstrative(HashMap<String,String> v) throws LinguisticDataException {
+	public static synchronized void makeDemonstrative(HashMap<String,String> v) throws LinguisticDataException {
 	    // 1ère forme
         Demonstrative x = new Demonstrative(v);
         addToHash(x);
@@ -103,7 +108,7 @@ public abstract class Data {
 }
 	
 	@SuppressWarnings("unchecked")
-	public static void makePronoun(HashMap<String,String> v) throws LinguisticDataException {
+	public static synchronized void makePronoun(HashMap<String,String> v) throws LinguisticDataException {
 	    Pronoun x = new Pronoun(v);
 	    addToHash(x);
         if (LinguisticData.getInstance().getIdToBaseTable().containsKey(x.id)) throw new RuntimeException("Key '"+x.id+"' already exists in linguistic data hash");	    
@@ -123,21 +128,21 @@ public abstract class Data {
         }
 	}
 	
-	public static void makeSuffix(HashMap<String,String> v) throws LinguisticDataException {
+	public static synchronized void makeSuffix(HashMap<String,String> v) throws LinguisticDataException {
         Suffix x = new Suffix(v);
         if (LinguisticData.getInstance().getIdToAffixTable().containsKey(x.id)) throw new RuntimeException("Key '"+x.id+"' already exists in linguistic data hash");        
         LinguisticData.getInstance().addEntryToIdToAffixTable(x.id,x);
        addToForms(x, x.morpheme);	    
 	}
 	
-	public static void makeNounEnding(HashMap<String,String> v) throws LinguisticDataException {
+	public static synchronized void makeNounEnding(HashMap<String,String> v) throws LinguisticDataException {
         NounEnding x = new NounEnding(v);
         if (LinguisticData.getInstance().getIdToAffixTable().containsKey(x.id)) throw new RuntimeException("Key '"+x.id+"' already exists in linguistic data hash");        
         LinguisticData.getInstance().addEntryToIdToAffixTable(x.id,x);
         addToForms(x, x.morpheme);	    
  	}
 	
-	public static void makeVerbEnding(HashMap<String,String> v) throws LinguisticDataException {
+	public static synchronized void makeVerbEnding(HashMap<String,String> v) throws LinguisticDataException {
         VerbEnding x = new VerbEnding(v);
         // This test with a throw is commented out to allow the execution of scripts using the linguistic database.
         // This matter will be attended to shortlty (Benoît Farley, 2019-09-17)
@@ -148,7 +153,7 @@ public abstract class Data {
         addToForms(x, x.morpheme);	    
 	}
 	
-	public static void makeDemonstrativeEnding(HashMap<String,String> v) throws LinguisticDataException {
+	public static synchronized void makeDemonstrativeEnding(HashMap<String,String> v) throws LinguisticDataException {
         DemonstrativeEnding x = new DemonstrativeEnding(
                 v);
         if (LinguisticData.getInstance().getIdToAffixTable().containsKey(x.id)) 
@@ -158,12 +163,12 @@ public abstract class Data {
         addToForms(x, x.morpheme);	    
 	}
     
-    public static void makeVerbWord(HashMap<String,String> v) throws LinguisticDataException {
+    public static synchronized void makeVerbWord(HashMap<String,String> v) throws LinguisticDataException {
         VerbWord x = new VerbWord(v);
         LinguisticData.getInstance().addVerbWord(x.verb,x);
     }
 	
-    public static void makeSource(HashMap<String,String> v) throws LinguisticDataException {
+    public static synchronized void makeSource(HashMap<String,String> v) throws LinguisticDataException {
         Source s = new Source(v);
         LinguisticData.getInstance().addSource(s.id,s);
     }

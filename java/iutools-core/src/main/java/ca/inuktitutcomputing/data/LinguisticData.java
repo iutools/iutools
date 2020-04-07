@@ -40,7 +40,7 @@ public class LinguisticData {
     static public void init() {
     	singleton = null;
     }
-    public static LinguisticData getInstance() {
+    public static synchronized LinguisticData getInstance() {
     	if (singleton == null) {
     		singleton = new LinguisticData();
     		try {
