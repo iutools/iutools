@@ -59,7 +59,7 @@ class GistTextController extends WidgetController {
 	displayTextGist(response) {
 		var iuSentences = response.iuSentences;
 		var enSentences = response.enSentences;
-		if (enSentences != null) {
+		if (response.alignmentsAvailable) {
 			this.displayBilingualGist(iuSentences, enSentences);
 		} else {
 			this.displayUnilingualGist(iuSentences);
