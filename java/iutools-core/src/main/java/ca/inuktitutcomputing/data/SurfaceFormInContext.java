@@ -10,7 +10,6 @@ package ca.inuktitutcomputing.data;
 import org.apache.log4j.Logger;
 
 import ca.inuktitutcomputing.data.constraints.Conditions;
-import ca.nrc.json.PrettyPrinter;
 
 /*
  * This class represents a surface form of a morpheme, which will constiture
@@ -148,8 +147,6 @@ public class SurfaceFormInContext extends Object {
 
 	public boolean validateWithStem(SurfaceFormInContext precedingMorpheme) {
     	Logger logger = Logger.getLogger("SurfaceFormInContext.validateWithStem");
-    	logger.debug("--------------------\nprecedingMorpheme: "+PrettyPrinter.print(precedingMorpheme));
-    	logger.debug("this: "+PrettyPrinter.print(this));
 		char finalOfPrecedingMorpheme =
 			precedingMorpheme.basicForm.substring(precedingMorpheme.basicForm.length()-1).charAt(0);
 		if (this.endOfCanonicalFormOfReceivingMorpheme.equals("V")) {

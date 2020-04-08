@@ -59,7 +59,7 @@ public class FormGenerator {
 			Iterator<String> itForms = forms.iterator();
 			while (itForms.hasNext()) {
 				String form = itForms.next();
-				surfaceForms.add(new SurfaceFormInContext(form,"","",morpheme));
+				surfaceForms.add(new SurfaceFormInContext(form,"",null,morpheme));
 			}
 		} 
 		/*
