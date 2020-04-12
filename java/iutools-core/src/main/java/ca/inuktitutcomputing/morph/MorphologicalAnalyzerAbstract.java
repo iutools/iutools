@@ -19,8 +19,10 @@ public abstract class MorphologicalAnalyzerAbstract {
      * @param word String word to be decomposed, in syllabics or roman alphabet
      * @return Decomposition[] array of decompositions
      * @throws LinguisticDataException 
+     * @throws MorphologicalAnalyzerException 
      */
-    abstract public Decomposition[] decomposeWord(String word) throws TimeoutException, MorphInukException, LinguisticDataException;
+    abstract public Decomposition[] decomposeWord(String word) 
+    		throws TimeoutException, MorphInukException, LinguisticDataException;
     /** 
      * DÉCOMPOSITION DU MOT.
      * Les décompositions résultantes sont ordonnées selon certaines règles.
@@ -28,8 +30,9 @@ public abstract class MorphologicalAnalyzerAbstract {
      * @param extendedAnalysis boolean if true, check also for possible missing consonant at the end of the word
      * @return Decomposition[] array of decompositions
      * @throws LinguisticDataException 
+     * @throws MorphologicalAnalyzerException 
      */
-    abstract public Decomposition[] decomposeWord(String word, boolean extendedAnalysis) throws TimeoutException, MorphInukException, LinguisticDataException;
+    abstract public Decomposition[] decomposeWord(String word, boolean extendedAnalysis) throws TimeoutException, MorphInukException, LinguisticDataException, MorphologicalAnalyzerException;
 
 
     public MorphologicalAnalyzerAbstract()  throws LinguisticDataException {

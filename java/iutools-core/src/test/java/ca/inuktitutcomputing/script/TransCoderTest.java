@@ -42,7 +42,7 @@ public class TransCoderTest {
 		// in
 		//
 		@SuppressWarnings("unused")
-		Script script = TransCoder.textScript(romanText);
+		Script script = TransCoder.textScript(romanText);		
 	}
 
 	//////////////////////////
