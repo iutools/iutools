@@ -13,10 +13,10 @@ import ca.inuktitutcomputing.morph.MorphologicalAnalyzerAbstract;
 import ca.inuktitutcomputing.morph.expAlain.DecompositionState.Step;
 import ca.inuktitutcomputing.morph.MorphInukException;
 
-public class MorphologicalAnalyzer_expAlain 
+public class MorphologicalAnalyzer_L2R 
 				extends MorphologicalAnalyzerAbstract {
 
-	public MorphologicalAnalyzer_expAlain() throws LinguisticDataException {
+	public MorphologicalAnalyzer_L2R() throws LinguisticDataException {
 		super();
 	}
 
@@ -63,7 +63,7 @@ public class MorphologicalAnalyzer_expAlain
 	
 	private void doStep(DecompositionState state) 
 			throws MorphInukException {
-		Logger tLogger = Logger.getLogger("ca.inukitutcomputing.morph.expAlain.MorphologicalAnalyzer_expAlain.doStep");
+		Logger tLogger = Logger.getLogger("ca.inukitutcomputing.morph.expAlain.MorphologicalAnalyzer_L2R.doStep");
 		
 		Step step = state.nextStep;
 		
@@ -96,7 +96,7 @@ public class MorphologicalAnalyzer_expAlain
 	 * @return
 	 */
 	private boolean doProcessPartialDecomp(DecompositionState state) {		
-		Logger tLogger = Logger.getLogger("ca.inukitutcomputing.morph.expAlain.MorphologicalAnalyzer_expAlain.doProcessPartialDecomp");
+		Logger tLogger = Logger.getLogger("ca.inukitutcomputing.morph.expAlain.MorphologicalAnalyzer_L2R.doProcessPartialDecomp");
 		
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("Upon entry, state is\n"+state.toString());
@@ -206,7 +206,7 @@ public class MorphologicalAnalyzer_expAlain
 	 */
 	private void doExtendChoiceTree(DecompositionState state) 
 			throws MorphInukException {
-		Logger tLogger = Logger.getLogger("ca.inukitutcomputing.morph.expAlain.MorphologicalAnalyzer_expAlain.doExtendChoiceTree");
+		Logger tLogger = Logger.getLogger("ca.inukitutcomputing.morph.expAlain.MorphologicalAnalyzer_L2R.doExtendChoiceTree");
 		
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("Upon entry, state=\n"+state.toString());
@@ -226,7 +226,7 @@ public class MorphologicalAnalyzer_expAlain
 	private List<WrittenMorpheme> nextLevelChoices(DecompositionState state) 
 			throws MorphInukException {
 		
-		Logger tLogger = Logger.getLogger("ca.inukitutcomputing.morph.expAlain.MorphologicalAnalyzer_expAlain.nextLevelChoices");
+		Logger tLogger = Logger.getLogger("ca.inukitutcomputing.morph.expAlain.MorphologicalAnalyzer_L2R.nextLevelChoices");
 		
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("Upon entry, state=\n"+state.toString());

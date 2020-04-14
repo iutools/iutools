@@ -14,8 +14,8 @@ public class MorphologicalAnalyzer_expAlainTest {
 	
 	@Test
 	public void test__decompose__HappyPath() throws Exception {
-		MorphologicalAnalyzer_expAlain analyzer = 
-				new MorphologicalAnalyzer_expAlain();
+		MorphologicalAnalyzer_L2R analyzer = 
+				new MorphologicalAnalyzer_L2R();
 		
 		String word = "inuktitut";
 		DecompositionState state = analyzer.decompose(word);
