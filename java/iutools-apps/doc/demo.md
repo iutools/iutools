@@ -2,11 +2,6 @@
 
 ## Preparation
 
-- In a terminal, start the following iutools command
-  - iutools_console gist
-  - iutools_console segment_iu
-- Open the inuktitut computing transcoder app
-    http://inuktitutcomputing.ca/Transcoder/index.php?lang=en
 - Start the Apache service (for webitext)
   - cd [GitRepos]/webitext/admin
   - perl webitextadm.pl apache_services --action=start
