@@ -48,7 +48,7 @@ public class WrittenMorpheme {
 	private void parseID() throws MorphInukException {
 		if (morphID == null) {
 			_attachesTo = null;
-			_type = "1";
+			_type = "S";
 		} else try {
 			Matcher matcher = morphIDPatt.matcher(morphID);
 			if (matcher.matches()) {

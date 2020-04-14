@@ -1,9 +1,10 @@
 package ca.inuktitutcomputing.morph.expAlain;
 
-import static org.junit.Assert.*;
 
-import org.junit.Ignore;
 import org.junit.Test;
+
+import ca.inuktitutcomputing.morph.Decomposition;
+import ca.nrc.datastructure.Pair;
 
 public class MorphologicalAnalyzer_expAlainTest {
 
@@ -11,13 +12,21 @@ public class MorphologicalAnalyzer_expAlainTest {
 	// VERIFICATION TESTS
 	////////////////////////////
 	
-	@Test @Ignore
-	public void test__decomposeWord__HappyPath() throws Exception {
+	@Test
+	public void test__decompose__HappyPath() throws Exception {
 		MorphologicalAnalyzer_expAlain analyzer = 
 				new MorphologicalAnalyzer_expAlain();
 		
 		String word = "inuktitut";
-		analyzer.decomposeWord(word);
+		DecompositionState state = analyzer.decompose(word);
+		DecompositionStateAsserter.assertThat(state, "")
+			.containsDecomposition(
+				new WrittenMorpheme[] {
+					new WrittenMorpheme("inuk/1n", "inuk"),
+					new WrittenMorpheme("titut/nn", "titut")
+				}
+			);
+		;
 	}
 
 }

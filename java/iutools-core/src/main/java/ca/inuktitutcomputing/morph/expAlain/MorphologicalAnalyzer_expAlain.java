@@ -44,7 +44,7 @@ public class MorphologicalAnalyzer_expAlain
 		return decomps;
 	}
 	
-	private DecompositionState decompose(String word) 
+	DecompositionState decompose(String word) 
 			throws MorphInukException {
 		
 		DecompositionState state = initState(word);
@@ -63,21 +63,25 @@ public class MorphologicalAnalyzer_expAlain
 	
 	private void doStep(DecompositionState state) 
 			throws MorphInukException {
-		Logger tLogger = Logger.getLogger("ca.inukitutcomputing.morph.expAlain.doStep");
+		Logger tLogger = Logger.getLogger("ca.inukitutcomputing.morph.expAlain.MorphologicalAnalyzer_expAlain.doStep");
+		
+		Step step = state.nextStep;
 		
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("Upon entry, state is\n"+state.toString());
 		}
 		
-		if (state.nextStep == Step.EXTEND_CHOICE_TREE) {
+		if (step == Step.EXTEND_CHOICE_TREE) {
 			doExtendChoiceTree(state);
-		} else if (state.nextStep == Step.BACKTRACK) {
+		} else if (step == Step.BACKTRACK) {
 			doBacktrack(state);
-		} else if (state.nextStep == Step.MOVE_DEEPEST_CURSOR) {
+		} else if (step == Step.MOVE_DEEPEST_CURSOR) {
 			doMoveDeepestCursor(state);
-		} else if (state.nextStep == Step.PROCESS_PARTIAL_DECOMP) {
+		} else if (step == Step.PROCESS_PARTIAL_DECOMP) {
 			doProcessPartialDecomp(state);
 		}
+		
+		state.prevStep = step;
 		
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("Upon exit, state is\n"+state.toString());
@@ -92,7 +96,12 @@ public class MorphologicalAnalyzer_expAlain
 	 * @return
 	 */
 	private boolean doProcessPartialDecomp(DecompositionState state) {		
+		Logger tLogger = Logger.getLogger("ca.inukitutcomputing.morph.expAlain.MorphologicalAnalyzer_expAlain.doProcessPartialDecomp");
 		
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("Upon entry, state is\n"+state.toString());
+		}
+
 		boolean isValid = true;
 		Step next = null;
 		{
@@ -102,36 +111,35 @@ public class MorphologicalAnalyzer_expAlain
 			// Code to be added later
 		}
 		
-		// If we have matched the whole word, then add the current sequence of 
-		// morphemes to the list of all analyses
-		//
-		if (isValid) {
-			if (state.remainingChars().isEmpty()) {
-				// Found a valid complete decomposition.
-				// Add it to the list of all valid decompositions, then 
-				state.acceptCurrentDecomposition();
-				next = Step.MOVE_DEEPEST_CURSOR;
-			} else {
-				// Partial decomp is valid so far. 
-				// Next, try to extend it 
-				next = Step.EXTEND_CHOICE_TREE;
+		String remainingChars = state.remainingChars();
+		if (isValid && remainingChars.isEmpty()) {
+			// Found a valid complete decomposition.
+			//
+			// Add it to the list of all valid decompositions, then
+			// try next morpheme option at the deepest level of the choice tree.
+			//
+			if (tLogger.isTraceEnabled()) {
+				tLogger.trace("Found complete, valid decomposition");
 			}
-		} else {
-			// Partial decomp is not valid. Try next morpheme option for the
-			// deepest level of the decomposition state
+			
+			state.onNewCompleteDecomposition();
+			next = Step.MOVE_DEEPEST_CURSOR;
+		}
+		
+		if (next == null && isValid && !remainingChars.isEmpty()) {
+			// Partial decomp is valid so far. 
+			// Next, try to extend it 
+			//
+			next = Step.EXTEND_CHOICE_TREE;
+		}
+		
+		if (next == null && !isValid) {
+			// Partial decomp is NOT valid. 
+			// Try next morpheme option at the deepest level of the choice tree.
 			//
 			next = Step.MOVE_DEEPEST_CURSOR;
 		}
-		
-		if (state.remainingChars().isEmpty()) {
-			if (isValid) {
 				
-			}
-			next = Step.MOVE_DEEPEST_CURSOR;
-		} else {
-			next = Step.MOVE_DEEPEST_CURSOR;
-		}
-		
 		state.nextStep = next;
 		
 		return isValid;
@@ -169,13 +177,15 @@ public class MorphologicalAnalyzer_expAlain
 	 * @param state
 	 */
 	private void doBacktrack(DecompositionState state) {
-		boolean stop = false;
-		while (stop) {
+		while (true) {
 			// Keep removing the deepest level in the choice tree until we 
 			// reach a level that still has some options
 			//
 			state.removeDepeestLevel();
-			stop = state.moveDeepestLevelCursor();
+			boolean deepestLevelHasMoreOptions = state.moveDeepestLevelCursor();
+			if (state.choiceTree.isEmpty() || deepestLevelHasMoreOptions) {
+				break;
+			}
 		}
 		
 		if (state.choiceTree.isEmpty()) {
@@ -196,7 +206,14 @@ public class MorphologicalAnalyzer_expAlain
 	 */
 	private void doExtendChoiceTree(DecompositionState state) 
 			throws MorphInukException {
+		Logger tLogger = Logger.getLogger("ca.inukitutcomputing.morph.expAlain.MorphologicalAnalyzer_expAlain.doExtendChoiceTree");
+		
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("Upon entry, state=\n"+state.toString());
+		}
+		
 		state.extendChoiceTree(nextLevelChoices(state));
+		state.nextStep = Step.MOVE_DEEPEST_CURSOR;
 	}
 
 	/**
@@ -208,6 +225,13 @@ public class MorphologicalAnalyzer_expAlain
 	 */
 	private List<WrittenMorpheme> nextLevelChoices(DecompositionState state) 
 			throws MorphInukException {
+		
+		Logger tLogger = Logger.getLogger("ca.inukitutcomputing.morph.expAlain.MorphologicalAnalyzer_expAlain.nextLevelChoices");
+		
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("Upon entry, state=\n"+state.toString());
+		}
+		
 		// TODO Generate a list of choices for the next level in the choice tree
 		//
 		// The choices should be morphemes that:
