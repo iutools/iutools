@@ -104,12 +104,8 @@ public class MorphologicalAnalyzer_L2R
 
 		boolean isValid = true;
 		Step next = null;
-		{
-			// Check if the sequence of choices currently made at each level 
-			// is a valid sequence of morphemes. If not, set isValid = false;
-			//
-			// Code to be added later
-		}
+		
+		isValid = checkLastTwoMorphemesValidity(state);
 		
 		String remainingChars = state.remainingChars();
 		if (isValid && remainingChars.isEmpty()) {
@@ -141,6 +137,20 @@ public class MorphologicalAnalyzer_L2R
 		}
 				
 		state.nextStep = next;
+		
+		return isValid;
+	}
+
+	private boolean checkLastTwoMorphemesValidity(DecompositionState state) {
+		boolean isValid = true;
+		int depth = state.choiceTree.size();
+		if (depth > 1) {
+			WrittenMorpheme lastMorpheme = state.choiceAtLevel(depth);
+			WrittenMorpheme prevMorpheme = state.choiceAtLevel(depth-1);
+			isValid = 
+				MorphoPhonoRules.getInstance()
+					.canJoin(prevMorpheme, lastMorpheme);
+		}
 		
 		return isValid;
 	}
