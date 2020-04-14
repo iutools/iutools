@@ -11,6 +11,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
+
 import ca.inuktitutcomputing.morph.MorphInukException;
 
 public class MorphemeWrittenForms {
@@ -65,11 +67,19 @@ public class MorphemeWrittenForms {
 	 */
 	private synchronized static void generateSingleton() 
 			throws MorphInukException {
+		Logger tLogger = 
+			Logger.getLogger("ca.inukitutcomputing.morph.expAlain.MorphemeWrittenForms.generateSingleton");
+		
 		// Make sure that singleton has not already been created by another 
 		// thread while we were waiting for the method 'sync'
 		//
 		if (_singleton == null) {
 			_singleton = new MorphemeWrittenForms();
+			if (tLogger.isTraceEnabled()) {
+				tLogger.trace("Regexp for all written forms is:\n"+
+						_singleton.allWrittenFormsPattern());
+			}
+			
 		}
 	}
 
