@@ -22,6 +22,7 @@ import ca.pirurvik.iutools.CompiledCorpus.WordWithMorpheme;
 import ca.pirurvik.iutools.CompiledCorpusException;
 import ca.pirurvik.iutools.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.MockCompiledCorpus;
+import ca.pirurvik.iutools.MockCompiledCorpusFactory;
 import ca.pirurvik.iutools.morphemesearcher.MorphemeSearcher;
 import ca.pirurvik.iutools.morphemesearcher.ScoredExample;
 import ca.pirurvik.iutools.morphemesearcher.MorphemeSearcher.Bin;
@@ -35,30 +36,9 @@ public class MorphemeSearcherTest {
 	private MockCompiledCorpus mockCompiledCorpus;
 	
 	@Before
-	public void setUp() throws CompiledCorpusException {
-		HashMap<String,String> dictionary = new HashMap<String,String>();
-		dictionary.put("inuit", "{inuk/1n} {it/tn-nom-p}");
-		dictionary.put("nunami", "{nuna/1n} {mi/tn-loc-s}");
-		dictionary.put("iglumik", "{iglu/1n} {mik/tn-acc-s}");
-		dictionary.put("inuglu", "{inuk/1n} {lu/1q}");
-		
-		mockCompiledCorpus = new MockCompiledCorpus();
-		mockCompiledCorpus.setVerbose(false);
-		// The MockCompiledCorpus's segmenter will use this dictionary instead of calling 
-		// the morphological analyzer.
-		mockCompiledCorpus.setDictionary(dictionary);
-		String[] stringsOfWords = new String[] {
-				"inuit nunami iglumik inuglu"
-				};
-        try {
-    		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
-        	mockCompiledCorpus.compileCorpusFromScratch(corpusDirPathname);
-            morphemeExtractor.useCorpus(mockCompiledCorpus);
-        } catch(Exception e) {
-        	System.err.println("Exiting from compiler");
-        	System.err.println("because: "+e.getMessage());
-        	System.exit(1);
-        }
+	public void setUp() throws CompiledCorpusException, IOException {
+		mockCompiledCorpus = MockCompiledCorpusFactory.makeSmallCorpus();
+        morphemeExtractor.useCorpus(mockCompiledCorpus);
 	}
 
 	@Test
@@ -290,6 +270,4 @@ public class MorphemeSearcherTest {
         }
         return corpusDirPath;
 	}
-
-
 }

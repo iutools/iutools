@@ -51,4 +51,12 @@ public class WordInfo {
 			totalDecompositions = decomps.length;
 		}
 	}
+
+	public Boolean decomposesSuccessfully() {
+		Boolean answer = null;
+		if (topDecompositions != null) {
+			answer = (topDecompositions.length > 0);
+		}
+		return answer;
+	}
 }

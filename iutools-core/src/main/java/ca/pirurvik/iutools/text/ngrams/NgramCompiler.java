@@ -42,16 +42,18 @@ public class NgramCompiler {
 		return seqSeenInWord;
 	}
 	
-	public void setMin(int val) {
+	public NgramCompiler setMin(int val) {
 		if (val<1)
 			val = 1;
 		this.min = val;
+		return this;
 	}
 
-	public void setMax(int val) {
+	public NgramCompiler setMax(int val) {
 		if (val<0)
 			val = 0;
 		this.max = val;
+		return this;
 	}
 
 	public void includeExtremities(boolean val) {

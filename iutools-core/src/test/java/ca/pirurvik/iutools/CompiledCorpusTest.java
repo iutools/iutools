@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -109,22 +110,33 @@ public class CompiledCorpusTest extends TestCase
 			// do something
 		}
 		
-		// Once a corpus has been compiled, you can access all sorts of
-		// information about the words that were seen in the corpus.
+		// Once a corpus has been compiled, you can loop throug all the words
+		// that were seen in it, and get information about those words.
 		//
-		WordInfo wInfo  = compiledCorpus.info4word("nunavut");
-		if (wInfo == null) {
-			// Means the corpus does not know about this word
-		} else {
-			// Total number of morphological decompositions for this word, as well as a
-			// short list of the first few decompositions found.
-			// 
-			// If those values are 'null', it means that the decomps have not 
-			// been computed.
-			// It does NOT mean that no decomps can be computed for this word.
-			//
-			Integer numDecomps = wInfo.totalDecompositions;
-			String[] decomps = wInfo.topDecompositions;
+		Iterator<String> iter = compiledCorpus.allWords();
+		while (iter.hasNext()) {
+			String word = iter.next();
+			WordInfo wInfo  = compiledCorpus.info4word(word);
+			if (wInfo == null) {
+				// Means the corpus does not know about this word
+				//
+				// Note: Should not happen in this case, because we obtained 
+				// 'word' through the allWords() iterator (so it know that this
+				// word was seen in the corpus).
+				//
+			} else {
+				// Total number of morphological decompositions for this word, 
+				// as well as a short list of the first few decompositions 
+				// found.
+				// 
+				// If those two values are 'null', it means that the decomps 
+				// have not been computed.
+				// It does NOT mean that no decomps can be computed for this 
+				// word.
+				//
+				Integer numDecomps = wInfo.totalDecompositions;
+				String[] decomps = wInfo.topDecompositions;
+			}			
 		}
 		
 		// You can ask for information about the various ngrams 
@@ -182,13 +194,11 @@ public class CompiledCorpusTest extends TestCase
 		// the corpus about it as follows.
 		//
 		compiledCorpus.incrementWordFreq(word);
-	}
-	
+	}	
 	
 	////////////////////////
 	// VERIFICATION TESTS
     ////////////////////////
-	
 	
 	@Test
 	public void test__addWord__HappyPath() throws Exception {
@@ -939,12 +949,4 @@ public class CompiledCorpusTest extends TestCase
 		tempCorp.saveCompilerInJSONFile(tempFile.toString());
 		return tempFile;
 	}
-	
-		
-	
-	
-	
-	
-	
-
 }

@@ -82,6 +82,8 @@ public class CompiledCorpus
 	private Map<String,WordInfo> word2infoMap = new HashMap<String,WordInfo>();
 		
 	private Map<Long,String> key2word = new HashMap<Long,String>();
+	private Map<String,Long> word2key = new HashMap<String,Long>();
+	
 	private Map<String,Set<Long>> ngram2wordKeysMap = 
 				new HashMap<String,Set<Long>> ();
 
@@ -117,6 +119,7 @@ public class CompiledCorpus
 		}
 		return ngramStats;
 	}
+	
 	public void setNgramStats() {
 		ngramStats = new HashMap<String,Long>();
 		String[] words = decomposedWordsSuite.split(",,");
@@ -158,14 +161,7 @@ public class CompiledCorpus
 			} catch (ClassNotFoundException e) {
 				throw new CompiledCorpusException(e);
 			}
-//			Constructor<?> constr;
-//			try {
-//				constr = cls.getConstructor();
-//			} catch (NoSuchMethodException | SecurityException e) {
-//				throw new CompiledCorpusException(e);
-//			}
 			try {
-//				segmenter = (StringSegmenter) constr.newInstance();
 				segmenter = (StringSegmenter) cls.newInstance();
 			} catch (Exception e) {
 				throw new CompiledCorpusException(e);
@@ -230,6 +226,11 @@ public class CompiledCorpus
 		
 		toConsole("[INFO] *** Compilation completed."+"\n");
 		saveCompilerInDirectory(corpusDirectoryPathname);
+	}
+	
+	public Iterator<String> allWords() {
+		Iterator<String> iter = segmentsCache.keySet().iterator();
+		return iter;
 	}
 	
 	public String getWordSegmentations() {
@@ -784,8 +785,13 @@ public class CompiledCorpus
 
 	public Long key4word(String word) {
 		Long key = null;
-		if (word2infoMap.containsKey(word)) {
-			key = word2infoMap.get(word).key;
+		if (word2key.containsKey(word)) {
+			key = word2key.get(word);
+		} else {
+			nextWordKey++;
+			key = nextWordKey;
+			word2key.put(word, key);
+			key2word.put(key, word);
 		}
 		return key;
 	}
@@ -809,6 +815,7 @@ public class CompiledCorpus
 		}
 		
 		key2word.put(nextWordKey, word);
+		word2key.put(word, nextWordKey);
 		WordInfo info = new WordInfo(this.nextWordKey);
 		if (decomps != null) {
 			info.setDecompositions(decomps);
@@ -863,6 +870,13 @@ public class CompiledCorpus
 		WordInfo wInfo = null;
 		if (word2infoMap.containsKey(word)) {
 			wInfo = word2infoMap.get(word);
+		} else if (segmentsCache.containsKey(word)){
+			Long wordKey = key4word(word);
+			wInfo = new WordInfo(wordKey);
+			String[] decomps = segmentsCache.get(word);
+			wInfo.topDecompositions = decomps;
+			wInfo.totalDecompositions = decomps.length;
+			word2infoMap.put(word, wInfo);
 		}
 		
 		return wInfo;
