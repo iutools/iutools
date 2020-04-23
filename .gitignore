@@ -2,33 +2,33 @@ iutools-data/data/tries
 
 **/.~lock.*
 .DS_Store
-/java/.settings/
-/java/.metadata/
-/java/target/
-/java/.classpath
-/java/.project
+/.settings/
+/.metadata/
+/target/
+/.classpath
+/.project
 
-/java/bin/
+/bin/
 
-/java/iutools-core/.settings/
-/java/iutools-core/target/
-/java/iutools-core/.classpath
-/java/iutools-core/.project
-/java/iutools-core/bin/
-/java/iutools-core/.metadata/
+/iutools-core/.settings/
+/iutools-core/target/
+/iutools-core/.classpath
+/iutools-core/.project
+/iutools-core/bin/
+/iutools-core/.metadata/
 
-/java/iutools-apps/.settings/
-/java/iutools-apps/target/
-/java/iutools-apps/.classpath
-/java/iutools-apps/.project
-/java/iutools-apps/bin/
-/java/iutools-apps/.metadata/
+/iutools-apps/.settings/
+/iutools-apps/target/
+/iutools-apps/.classpath
+/iutools-apps/.project
+/iutools-apps/bin/
+/iutools-apps/.metadata/
 
-/java/iutools-data/.settings/
-/java/iutools-data/target/
-/java/iutools-data/.classpath
-/java/iutools-data/.project
-/java/iutools-data/bin/
-/java/iutools-data/.metadata/
+/iutools-data/.settings/
+/iutools-data/target/
+/iutools-data/.classpath
+/iutools-data/.project
+/iutools-data/bin/
+/iutools-data/.metadata/
 
 
