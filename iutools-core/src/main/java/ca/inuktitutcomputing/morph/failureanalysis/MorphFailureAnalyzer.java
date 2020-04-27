@@ -29,6 +29,9 @@ public class MorphFailureAnalyzer {
 	private Integer minNgramLen = 3;
 	private Integer maxNgramLen = 10;
 	
+	private long totalSuccesses = 0;
+	private long totalFailures = 0;
+	
 	Map<String,ProblematicNGram> ngramStats = 
 		new HashMap<String,ProblematicNGram>();
 
@@ -54,6 +57,7 @@ public class MorphFailureAnalyzer {
 	}
 	
 	private void onFailingWord(String word, Set<String> ngrams) {
+		totalFailures++;		
 		for (String aNgram: ngrams) {
 			ProblematicNGram stats = statsForNGram(aNgram);
 			stats.numFailures++;
@@ -62,6 +66,7 @@ public class MorphFailureAnalyzer {
 	}
 
 	private void onSuccesfulWord(String word, Set<String> ngrams) {
+		totalSuccesses++;
 		for (String aNgram: ngrams) {
 			ProblematicNGram stats = statsForNGram(aNgram);
 			stats.numSuccesses++;
@@ -139,8 +144,32 @@ public class MorphFailureAnalyzer {
 	}
 
 	public void analyseFailures() {
-		// TODO Auto-generated method stub
-		
+		computeFSRatios();	
+	}
+
+	private void computeFSRatios() {
+		for (ProblematicNGram problem: ngramStats.values()) {
+			Double fsRatio = Double.MAX_VALUE;
+			if (problem.numSuccesses > 0) {
+				// Number of failures that contains this ngram, as a ratio
+				// of all failures
+				//
+				Double failFreq = 1.0 * problem.numFailures / totalFailures;
+
+				// Number of sucesses that contains this ngram, as a ratio
+				// of all success		
+				//
+				Double successFreq = 1.0 * problem.numSuccesses / totalSuccesses;
+				
+				// Failure/Success ratio.
+				// Indicates to what extent the ngram tends to be more frequent 
+				// in failing words than in successful ones (in relative terms)
+				//
+				fsRatio = failFreq / successFreq;
+			}
+			
+			problem.setFailureSuccessRatio(fsRatio);
+		}
 	}
 
 	public MorphFailureAnalyzer setMinNgramLen(int minLen) {

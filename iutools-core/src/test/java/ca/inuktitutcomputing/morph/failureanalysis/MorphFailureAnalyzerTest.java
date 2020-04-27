@@ -107,7 +107,7 @@ public class MorphFailureAnalyzerTest {
 		
 			// Sort the problems by Fail/Success ratio
 			.mostProblematicNgramEqual(SortBy.FS_RATIO, 
-					new String[] {"ati", "inn", "iga"})
+					new String[] {"inn", "iga", "ssi"})
 			
 			// Sort the problems by Num failures
 			// Note: Order is same as SortBy.FS_Ratio, because 
@@ -116,7 +116,7 @@ public class MorphFailureAnalyzerTest {
 			//   to yield the same order
 			//
 			.mostProblematicNgramEqual(SortBy.N_FAILURES, 
-					new String[] {"ati", "inn", "iga"})
+					new String[] {"inn", "iga", "ssi"})
 
 			// This is an ngram that ONLY appears in failing 
 			// words
@@ -128,15 +128,15 @@ public class MorphFailureAnalyzerTest {
 			// This is an ngram that appears in some failing and some 
 			// succeeding words
 			//
-			.statsForNgramEqual("liu", 0.5, 1, 
+			.statsForNgramEqual("liu", 0.83, 1, 
 					new String[] {"maligaliuqtiuqatitinni"}, 
 					new String[] {"kiinaujaliurutiqarasuarnirmit", 
 						"kiinaujaliurasuanngittut"})
 			
 			// This is an ngram that has the most number of failures
-			.statsForNgramEqual("ati", Double.MAX_VALUE, 2, 
+			.statsForNgramEqual("inn", Double.MAX_VALUE, 2, 
 					new String[] {"maligaliuqtiuqatitinni", 
-						"qaujivvigittialaurnatigut"}, 
+						"apiqkusirijassinnut"}, 
 					new String[] {})
 			
 			;
@@ -158,7 +158,7 @@ public class MorphFailureAnalyzerTest {
 		analyzer.addWord("takuksaulaarmijuk", false);
 		analyzer.addWord("maligaliuqtiuqatitinni", false);
 		analyzer.addWord("apiqkusirijassinnut", false);
-		analyzer.addWord("auktajuumik", false);
-		analyzer.addWord("qaujivvigittialaurnatigut", false);
+//		analyzer.addWord("auktajuumik", false);
+//		analyzer.addWord("qaujivvigittialaurnatigut", false);
 	}
 }

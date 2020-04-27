@@ -15,6 +15,7 @@ public class ProblematicNGram {
 	public long numSuccesses = 0;
 	public Set<String> failureExamples = new HashSet<String>();
 	public Set<String> successExamples = new HashSet<String>();
+	private Double failureSuccessRatio = null;
 	
 	public ProblematicNGram(String _ngram) {
 		initProblematicNGram(_ngram);
@@ -36,19 +37,17 @@ public class ProblematicNGram {
 		}
 	}
 	
-
-	public Double getFailSucceedRatio() {
-		Double ratio = new Double(Double.MAX_VALUE);
-		if (numSuccesses > 0) {
-			ratio = 1.0 * numFailures / numSuccesses;
-		}
-		
-		return ratio;
-	}
-
 	public Long getNumFailures() {
 		return numFailures;
 	}
+	
+	public void setFailureSuccessRatio(Double ratio) {
+		this.failureSuccessRatio = ratio;
+	}	
+	
+	public Double getFailSucceedRatio() {
+		return this.failureSuccessRatio;
+	}	
 
 	public String toCSV() {
 		String csv = ngram+","+getFailSucceedRatio()+","+getNumFailures()+","+
@@ -64,4 +63,5 @@ public class ProblematicNGram {
 			"ngram,fs_ratio,n_failures,failure_examples,success_examples";
 		return headers;
 	}
+
 }

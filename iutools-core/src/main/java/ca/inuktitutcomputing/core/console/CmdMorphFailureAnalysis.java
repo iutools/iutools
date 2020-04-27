@@ -7,8 +7,6 @@ import java.util.regex.Pattern;
 import ca.inuktitutcomputing.morph.failureanalysis.MorphFailureAnalyzer;
 import ca.inuktitutcomputing.morph.failureanalysis.ProblematicNGram;
 import ca.inuktitutcomputing.morph.failureanalysis.ProblematicNGram.SortBy;
-import ca.nrc.ui.commandline.SubCommand;
-import ca.nrc.ui.commandline.UserIO;
 import ca.nrc.ui.commandline.UserIO.Verbosity;
 import ca.pirurvik.iutools.CompiledCorpus;
 import ca.pirurvik.iutools.CompiledCorpusRegistry;
@@ -41,7 +39,7 @@ public class CmdMorphFailureAnalysis extends ConsoleCommand {
 		
 		Long numProblems = getMaxNgrams();
 		if (numProblems == null) {
-			numProblems = new Long(200);
+			numProblems = Long.MAX_VALUE;
 		}
 		
 		String exclude = getExcludePattern();
@@ -81,6 +79,8 @@ public class CmdMorphFailureAnalysis extends ConsoleCommand {
 				break;
 			}
 		}
+		
+		analyzer.analyseFailures();
 	}
 	
 	private void printMostProblematicNgrams(MorphFailureAnalyzer analyzer, 
