@@ -49,16 +49,23 @@ public class Console {
 
 		Option optMaxWords = Option.builder(null)
 				.longOpt(ConsoleCommand.OPT_MAX_WORDS)
-			    .desc("Maximum number of words to be processed or displayed.")
+			    .desc("Maximum number of words to be considered.")
 			    .hasArg()
 			    .argName("MAX_WORDS")
 			    .build();
 
 		Option optMaxNgrams = Option.builder(null)
 				.longOpt(ConsoleCommand.OPT_MAX_NGRAMS)
-			    .desc("Maximum number of ngrams to be processed or displayed.")
+			    .desc("Maximum number of ngrams to be considered.")
 			    .hasArg()
 			    .argName("MAX_NGRAMS")
+			    .build();
+
+		Option optMinNgramLen = Option.builder(null)
+				.longOpt(ConsoleCommand.OPT_MIN_NGRAM_LEN)
+			    .desc("Minimum length of ngrams to be considered.")
+			    .hasArg()
+			    .argName("MIN_NGRAM_LEN")
 			    .build();
 
 		Option optExtendedAnalysis = Option.builder(null)
@@ -151,6 +158,14 @@ public class Console {
 			    .argName("MORPHEME")
 			    .build();
 
+		Option optExclude = Option.builder(null)
+				.longOpt(ConsoleCommand.OPT_EXCLUDE)
+			    .desc("Exclude some data from processing.")
+			    .hasArg()
+			    .argName("EXCLUDE_PATTERN")
+			    .build();
+
+		
 		// --- COMMANDS
 
 		// Compile a corpus and save it to file
@@ -260,6 +275,8 @@ public class Console {
 		SubCommand morphFailureAnalysis = 
 				new CmdMorphFailureAnalysis("morph_failure_analysis")
 				.addOption(optMaxWords)
+				.addOption(optExclude)
+				.addOption(optMinNgramLen)
 				;
 		mainCmd.addSubCommand(morphFailureAnalysis);
 				

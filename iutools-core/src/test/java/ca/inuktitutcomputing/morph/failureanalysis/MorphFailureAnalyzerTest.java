@@ -107,9 +107,14 @@ public class MorphFailureAnalyzerTest {
 		
 			// Sort the problems by Fail/Success ratio
 			.mostProblematicNgramEqual(SortBy.FS_RATIO, 
-					new String[] {"iga", "ssi", "igi"})
+					new String[] {"ati", "inn", "iga"})
 			
 			// Sort the problems by Num failures
+			// Note: Order is same as SortBy.FS_Ratio, because 
+			//   the latter sorts by FS_RATIO first, and then by
+			//   N_FAILURES. And in this particular case, it turns out
+			//   to yield the same order
+			//
 			.mostProblematicNgramEqual(SortBy.N_FAILURES, 
 					new String[] {"ati", "inn", "iga"})
 

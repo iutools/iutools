@@ -14,7 +14,8 @@ public abstract class ConsoleCommand extends SubCommand {
 	public static final String OPT_MORPHEMES = "morphemes";
 	public static final String OPT_WORD = "word";
 	public static final String OPT_MAX_WORDS = "max-words";
-	public static final String OPT_MAX_NGRAMS = "max-ngrams";	
+	public static final String OPT_MAX_NGRAMS = "max-ngrams";
+	public static final String OPT_MIN_NGRAM_LEN = "min-ngram-len";	
 	public static final String OPT_FROM_SCRATCH = "from-scratch";
 	public static final String OPT_REDO_FAILED = "redo-failed";
 	public static final String OPT_CONTENT = "content";
@@ -26,6 +27,7 @@ public abstract class ConsoleCommand extends SubCommand {
 	public static final String OPT_ED_ALGO = "edit-dist";
 	public static final String OPT_MORPHEME = "morpheme";
 	public static final String OPT_EXTENDED_ANALYSIS = "extended-analysis";
+	public static final String OPT_EXCLUDE = "exclude";
 	
 	public ConsoleCommand(String name) {
 		super(name);
@@ -109,9 +111,28 @@ public abstract class ConsoleCommand extends SubCommand {
 		return max;
 	}
 
+	protected Integer getMinNgramLen() {
+		String minStr = getOptionValue(ConsoleCommand.OPT_MIN_NGRAM_LEN, false);
+		Integer min = null;
+		if (minStr != null) {
+			try {
+				min = Integer.parseInt(minStr);
+			} catch (Exception e) {
+				usageBadOption(ConsoleCommand.OPT_MAX_WORDS, 
+						"Value must be an integer");
+			}
+		}
+		return min;
+	}
+
 	protected String getWord(boolean failIfAbsent) {
 		String wordStr = getOptionValue(ConsoleCommand.OPT_WORD, failIfAbsent);
 		return wordStr;		
+	}
+	
+	protected String getExcludePattern() {
+		String pattern = getOptionValue(ConsoleCommand.OPT_EXCLUDE, false);
+		return pattern;		
 	}
 	
 	protected String getExtendedAnalysis() {
