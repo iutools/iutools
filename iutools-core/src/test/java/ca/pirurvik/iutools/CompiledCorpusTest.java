@@ -215,9 +215,9 @@ public class CompiledCorpusTest extends TestCase
 		//
 		{
 			for (String aWord: new String[] {nunavut, nunavik}) {
-				Long gotKey = corpus.key4word(aWord);
-				Assert.assertNull("Initially, corpus should not have known about word "+
-						aWord, gotKey);
+				Assert.assertFalse(
+						"Initially, corpus should not have known about word ",
+						corpus.containsWord(aWord));
 			}
 	
 			for (String ngram: new String[] {ngram_nuna, ngram_navik }) {
@@ -235,10 +235,9 @@ public class CompiledCorpusTest extends TestCase
 			Long gotKey = corpus.key4word(nunavut);
 			Assert.assertEquals("After addition of the word, corpus should have known about "+nunavut, 
 					gotKey, new Long(0));
-			gotKey = corpus.key4word(nunavik);
-			Assert.assertNull("After addition of word "+nunavut+
+			Assert.assertFalse("After addition of word "+nunavut+
 					", corpus should NOT have known about word "+nunavik, 
-					gotKey);
+					corpus.containsWord(nunavik));
 			
 			String[] expWords = new String[] {nunavut};
 			AssertObject.assertDeepEquals(

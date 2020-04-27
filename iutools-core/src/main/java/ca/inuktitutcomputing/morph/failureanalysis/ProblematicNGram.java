@@ -3,6 +3,8 @@ package ca.inuktitutcomputing.morph.failureanalysis;
 import java.util.HashSet;
 import java.util.Set;
 
+import ca.nrc.string.StringUtils;
+
 public class ProblematicNGram {
 	
 	public static final int MAX_EXAMPLES = 20;
@@ -46,5 +48,20 @@ public class ProblematicNGram {
 
 	public Long getNumFailures() {
 		return numFailures;
+	}
+
+	public String toCSV() {
+		String csv = ngram+","+getFailSucceedRatio()+","+getNumFailures()+","+
+			StringUtils.join(failureExamples.iterator(), "; ")+","+
+			StringUtils.join(successExamples.iterator(), "; ")
+			;
+				
+		return csv;
+	}
+
+	public static String csvHeaders() {
+		String headers = 
+			"ngram,fs_ratio,n_failures,failure_examples,success_examples";
+		return headers;
 	}
 }

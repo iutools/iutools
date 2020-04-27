@@ -47,6 +47,20 @@ public class Console {
 			    .argName("WORD")
 			    .build();
 
+		Option optMaxWords = Option.builder(null)
+				.longOpt(ConsoleCommand.OPT_MAX_WORDS)
+			    .desc("Maximum number of words to be processed or displayed.")
+			    .hasArg()
+			    .argName("MAX_WORDS")
+			    .build();
+
+		Option optMaxNgrams = Option.builder(null)
+				.longOpt(ConsoleCommand.OPT_MAX_NGRAMS)
+			    .desc("Maximum number of ngrams to be processed or displayed.")
+			    .hasArg()
+			    .argName("MAX_NGRAMS")
+			    .build();
+
 		Option optExtendedAnalysis = Option.builder(null)
 				.longOpt(ConsoleCommand.OPT_EXTENDED_ANALYSIS)
 			    .desc("Tells the morphological analyzer to extend the analysis by adding a consonant after a final vowel.")
@@ -177,7 +191,7 @@ public class Console {
 		mainCmd.addSubCommand(segmentIU);
 		
 				
-		// Decompose an Inuktut word
+		// Check spelling of some Inuktut text
 		SubCommand checkSpelling = 
 				new CmdCheckSpelling("check_spelling")
 				.addOption(optCompFile)	
@@ -242,6 +256,12 @@ public class Console {
 				;
 		mainCmd.addSubCommand(lookForMorpheme);
 		
+		// Analyse failures of the morphological analyser
+		SubCommand morphFailureAnalysis = 
+				new CmdMorphFailureAnalysis("morph_failure_analysis")
+				.addOption(optMaxWords)
+				;
+		mainCmd.addSubCommand(morphFailureAnalysis);
 				
 				
 		return mainCmd;
@@ -251,25 +271,4 @@ public class Console {
 		MainCommand mainCmd = defineMainCommand();
 		mainCmd.run(args);
 	}
-	
-//	public ConsoleCommand getConsoleCommand(String commandName) throws CommandLineException {
-//		MainCommand mainCmd = defineMainCommand();
-//		ConsoleCommand cmd = (ConsoleCommand) mainCmd.getSubCommandWithName(commandName);
-//		
-//		return cmd;
-//	}
-//
-//	public static void runCommand(String cmdName, String[] args) throws Exception {
-//		String[] commandWithArgs = new String[args.length+3];
-//		commandWithArgs[0] = cmdName;
-//		for (int ii=0; ii < args.length; ii++) {
-//			commandWithArgs[ii+1] = args[ii];
-//		}
-//		commandWithArgs[commandWithArgs.length-2] = "-verbosity";
-//		commandWithArgs[commandWithArgs.length-1] = "null";
-//		
-//		Console.main(commandWithArgs);
-//		
-//		Thread.sleep(1*1000);
-//	}	
 }

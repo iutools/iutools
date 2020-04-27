@@ -113,15 +113,26 @@ public class MorphFailureAnalyzer {
 		
 		if (sortBy == SortBy.FS_RATIO) {
 			comparator = 
-				(ProblematicNGram p1, ProblematicNGram p2) ->
-					p2.getFailSucceedRatio()
+				(ProblematicNGram p1, ProblematicNGram p2) -> {
+					int comp = p2.getFailSucceedRatio()
 						.compareTo(p1.getFailSucceedRatio());
+					if (comp == 0) {
+						comp = 	p2.getNumFailures()
+						.compareTo(p1.getNumFailures());
+					}
+					return comp;
+				};
 		} else {
 			comparator = 
-				(ProblematicNGram p1, ProblematicNGram p2) ->
-					p2.getNumFailures()
+				(ProblematicNGram p1, ProblematicNGram p2) -> {
+					int comp = p2.getNumFailures()
 						.compareTo(p1.getNumFailures());
-			
+					if (comp == 0) {
+						comp = p2.getFailSucceedRatio()
+							.compareTo(p1.getFailSucceedRatio());
+					}
+					return comp;
+				};
 		}
 				
 		return comparator;

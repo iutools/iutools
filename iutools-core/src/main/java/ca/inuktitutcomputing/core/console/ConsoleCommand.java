@@ -13,6 +13,8 @@ public abstract class ConsoleCommand extends SubCommand {
 	public static final String OPT_GS_FILE = "gs-file";
 	public static final String OPT_MORPHEMES = "morphemes";
 	public static final String OPT_WORD = "word";
+	public static final String OPT_MAX_WORDS = "max-words";
+	public static final String OPT_MAX_NGRAMS = "max-ngrams";	
 	public static final String OPT_FROM_SCRATCH = "from-scratch";
 	public static final String OPT_REDO_FAILED = "redo-failed";
 	public static final String OPT_CONTENT = "content";
@@ -24,7 +26,6 @@ public abstract class ConsoleCommand extends SubCommand {
 	public static final String OPT_ED_ALGO = "edit-dist";
 	public static final String OPT_MORPHEME = "morpheme";
 	public static final String OPT_EXTENDED_ANALYSIS = "extended-analysis";
-	
 	
 	public ConsoleCommand(String name) {
 		super(name);
@@ -79,6 +80,35 @@ public abstract class ConsoleCommand extends SubCommand {
 	protected String getWord() {
 		return getWord(true);
 	}
+	
+	protected Long getMaxWords() {
+		String maxStr = getOptionValue(ConsoleCommand.OPT_MAX_WORDS, false);
+		Long max = Long.MAX_VALUE;
+		if (maxStr != null) {
+			try {
+				max = Long.parseLong(maxStr);
+			} catch (Exception e) {
+				usageBadOption(ConsoleCommand.OPT_MAX_WORDS, 
+						"Value must be an integer");
+			}
+		}
+		return max;
+	}
+	
+	protected Long getMaxNgrams() {
+		String maxStr = getOptionValue(ConsoleCommand.OPT_MAX_NGRAMS, false);
+		Long max = null;
+		if (maxStr != null) {
+			try {
+				max = Long.parseLong(maxStr);
+			} catch (Exception e) {
+				usageBadOption(ConsoleCommand.OPT_MAX_WORDS, 
+						"Value must be an integer");
+			}
+		}
+		return max;
+	}
+
 	protected String getWord(boolean failIfAbsent) {
 		String wordStr = getOptionValue(ConsoleCommand.OPT_WORD, failIfAbsent);
 		return wordStr;		

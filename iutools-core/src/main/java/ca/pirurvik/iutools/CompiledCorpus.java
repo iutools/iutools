@@ -192,7 +192,9 @@ public class CompiledCorpus
 	
 
 	public void initialize(String _segmenterClassName) {
-		if (_segmenterClassName != null) this.segmenterClassName = _segmenterClassName;
+		if (_segmenterClassName != null) {
+			this.segmenterClassName = _segmenterClassName;
+		}
 	}
 	
 	public  void compileCorpus(String corpusDirectoryPathname) throws CompiledCorpusException, StringSegmenterException {
@@ -932,6 +934,11 @@ public class CompiledCorpus
 			monitor.stepCompleted();
 		}
 		wordsFailedSegmentation = null;
+	}
+
+	public boolean containsWord(String word) {
+		boolean answer = (segmentsCache.keySet().contains(word));
+		return answer;
 	}
 }
 
