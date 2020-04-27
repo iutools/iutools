@@ -8,6 +8,7 @@ import org.junit.Assert;
 
 import ca.inuktitutcomputing.morph.failureanalysis.ProblematicNGram.SortBy;
 import ca.nrc.string.StringUtils;
+import ca.nrc.testing.AssertNumber;
 import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.Asserter;
 
@@ -44,33 +45,51 @@ public class MorphFailureAnalyserAsserter
 	}
 
 	public MorphFailureAnalyserAsserter statsForNgramEqual(String ngram, 
-			double expFSRaio, int expNumFail) {
-		return statsForNgramEqual(ngram, expFSRaio, expNumFail, null, null);
+			double expFSRaio, int expNumFail, Long expFailureMass) {
+		return statsForNgramEqual(ngram, 
+				expFSRaio, expNumFail, expFailureMass,
+				null, null);
 	}
 	
 	public MorphFailureAnalyserAsserter statsForNgramEqual(String ngram, 
-			double expFSRaio, int expNumFail, 
+			Double expFSRatio, int expNumFail, Long expFailureMass,
 			String[] expFailures, String[] expSuccesse) {
+		
+		Double exp = null;
+		Double got = null;
+		AssertNumber.assertEquals("Nevermind ",exp, got, 0.01);
+		
+		if (expFailureMass == null) {
+			expFailureMass = new Long(-1);
+		}
 		
 		if (expFailures == null) {
 			expFailures = new String[0];
 		}
+		
 		if (expSuccesse == null) {
 			expSuccesse = new String[0];
 		}
+		
 		ProblematicNGram ngramStats = analyzer().statsForNGram(ngram);
 		
-		double gotFSRatio = ngramStats.getFailSucceedRatio();
-		Assert.assertEquals(
+		Double gotFSRatio = ngramStats.getFailSucceedRatio();
+		AssertNumber.assertEquals(
 				baseMessage+"\nFail/Success ratio not as expected for ngram "+
 					ngram, 
-					expFSRaio, gotFSRatio, 0.01);
+					expFSRatio, gotFSRatio, 0.01);
 		
 		long gotNumFail = ngramStats.getNumFailures();
 		Assert.assertEquals(
 				baseMessage+"\nNumber of failing words not as expected for ngram "+
 					ngram, 
 					expNumFail, gotNumFail);
+
+		Long gotFailureMass = new Long(ngramStats.failureMass);
+		Assert.assertEquals(
+				baseMessage+"\nFailure mass not as expected for ngram "+
+					ngram, 
+					expFailureMass, gotFailureMass);
 		
 		for (String expExample: expFailures) {
 			String mess = 

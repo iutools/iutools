@@ -39,15 +39,13 @@ public class CmdMorphFailureAnalysis extends ConsoleCommand {
 		
 		Long numProblems = getMaxNgrams();
 		if (numProblems == null) {
-			numProblems = Long.MAX_VALUE;
+			numProblems = new Long(200);
 		}
 		
-		String exclude = getExcludePattern();
-		
 		printMostProblematicNgrams(analyzer, SortBy.FS_RATIO, 
-				numProblems, exclude);
+				numProblems);
 		printMostProblematicNgrams(analyzer, SortBy.N_FAILURES, 
-				numProblems, exclude);
+				numProblems);
 	}
 
 	private MorphFailureAnalyzer makeAnalyzer() {
@@ -57,6 +55,9 @@ public class CmdMorphFailureAnalysis extends ConsoleCommand {
 			minNgramLen = 3;
 		}
 		analyzer.setMinNgramLen(minNgramLen);
+		
+		String excludePatt = getExcludePattern();
+		analyzer.setExclude(excludePatt);
 
 		return analyzer;
 	}
@@ -73,7 +74,7 @@ public class CmdMorphFailureAnalysis extends ConsoleCommand {
 			if (verbosityLevelIsMet(Verbosity.Level1)) {
 				echo("loading word: "+word+" (decomposes: "+decomposes+")");
 			}
-			analyzer.addWord(word, decomposes);
+			analyzer.addWord(word, decomposes, wInfo.frequency);
 			countdown--;
 			if (countdown == 0) {
 				break;
@@ -84,7 +85,7 @@ public class CmdMorphFailureAnalysis extends ConsoleCommand {
 	}
 	
 	private void printMostProblematicNgrams(MorphFailureAnalyzer analyzer, 
-			SortBy sortBy, Long maxProblems, String excludeNgramPatt) {
+			SortBy sortBy, Long maxProblems) {
 		
 		echo("List of "+maxProblems+" most problematic ngrams");
 		echo("  sorted by "+sortBy);
@@ -96,9 +97,6 @@ public class CmdMorphFailureAnalysis extends ConsoleCommand {
 			List<ProblematicNGram> problems = analyzer.getProblems(sortBy);
 			for (int ii=0; ii < problems.size(); ii++) {
 				ProblematicNGram aProblem = problems.get(ii);
-				if (excludeProblem(aProblem, excludeNgramPatt) ) {
-					continue;
-				}				
 				echo(aProblem.toCSV());
 				if (problemCount == maxProblems) {
 					break;
@@ -107,42 +105,5 @@ public class CmdMorphFailureAnalysis extends ConsoleCommand {
 			}
 		}
 		echo(-1);
-	}
-
-	private boolean excludeProblem(ProblematicNGram aProblem, 
-			String excludeNgramRegex) {
-		
-		
-		Boolean exclude = null;
-		if (excludeNgramRegex != null) {
-			Pattern exclPatt = 
-				Pattern.compile("^.*"+excludeNgramRegex+".*$");
-			if (exclPatt.matcher(aProblem.ngram).matches()) {
-				// ngram matches the exclusion pattern
-				exclude = true;
-			}
-			
-			if (exclude == null) {
-				// The ngram does NOT match the exclusion pattern.
-				// Check if all the failure examples match the pattern
-				//
-				boolean allFailuresMatch = true;
-				for (String aFailure: aProblem.failureExamples) {
-					if (!exclPatt.matcher(aFailure).matches()) {
-						allFailuresMatch = false;
-						break;
-					}
-				}
-				if (allFailuresMatch) {
-					exclude = true;
-				}
-			}
-		}
-		
-		if (exclude == null) {
-			exclude = false;
-		}
-		
-		return exclude.booleanValue();
 	}
 }

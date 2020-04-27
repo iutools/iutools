@@ -13,6 +13,7 @@ public class ProblematicNGram {
 	public String ngram = null;
 	public long numFailures = 0;
 	public long numSuccesses = 0;
+	public long failureMass = -1;
 	public Set<String> failureExamples = new HashSet<String>();
 	public Set<String> successExamples = new HashSet<String>();
 	private Double failureSuccessRatio = null;
@@ -50,7 +51,9 @@ public class ProblematicNGram {
 	}	
 
 	public String toCSV() {
-		String csv = ngram+","+getFailSucceedRatio()+","+getNumFailures()+","+
+		String csv = 
+			ngram+","+
+			getFailSucceedRatio()+","+getNumFailures()+","+failureMass+","+
 			StringUtils.join(failureExamples.iterator(), "; ")+","+
 			StringUtils.join(successExamples.iterator(), "; ")
 			;
@@ -60,7 +63,7 @@ public class ProblematicNGram {
 
 	public static String csvHeaders() {
 		String headers = 
-			"ngram,fs_ratio,n_failures,failure_examples,success_examples";
+			"ngram,fs_ratio,n_failures,failure_mass,failure_examples,success_examples";
 		return headers;
 	}
 

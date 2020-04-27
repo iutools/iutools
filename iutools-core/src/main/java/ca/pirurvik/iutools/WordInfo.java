@@ -36,7 +36,7 @@ public class WordInfo {
 	 */
 	Integer totalDecompositions = null;
 
-	public int frequency = 0;;
+	public long frequency = 0;;
 
 	public WordInfo(Long _key) {
 		this.key = _key;

@@ -878,12 +878,24 @@ public class CompiledCorpus
 			String[] decomps = segmentsCache.get(word);
 			wInfo.topDecompositions = decomps;
 			wInfo.totalDecompositions = decomps.length;
+			wInfo.frequency = computeWordFreq(word);
 			word2infoMap.put(word, wInfo);
 		}
 		
 		return wInfo;
 	}
 	
+	private long computeWordFreq(String word) {
+		long freq = 0;
+		
+		// For now, we are only able to compute frequency of 
+		// failed words
+		if (wordsFailedSegmentationWithFreqs.containsKey(word)) {
+			freq = wordsFailedSegmentationWithFreqs.get(word);
+		}
+		return freq;
+	}
+
 	public void incrementWordFreq(String word) throws CompiledCorpusException {
 		WordInfo wInfo = info4word(word);
 		if (wInfo == null) {

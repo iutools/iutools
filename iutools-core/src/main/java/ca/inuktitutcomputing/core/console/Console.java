@@ -262,7 +262,6 @@ public class Console {
 				.addOption(optWord)
 				;
 		mainCmd.addSubCommand(convertIU);
-		
 
 		SubCommand lookForMorpheme = 
 				new CmdLookForMorpheme("look_for_morpheme")

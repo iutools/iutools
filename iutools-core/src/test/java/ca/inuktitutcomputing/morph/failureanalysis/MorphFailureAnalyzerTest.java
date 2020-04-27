@@ -121,20 +121,23 @@ public class MorphFailureAnalyzerTest {
 			// This is an ngram that ONLY appears in failing 
 			// words
 			//
-			.statsForNgramEqual("iga", Double.MAX_VALUE, 1, 
+			.statsForNgramEqual("iga", 
+				Double.MAX_VALUE, 1, null,
 				new String[] {"maligaliuqtiuqatitinni"}, 
 				new String[] {})
 			
 			// This is an ngram that appears in some failing and some 
 			// succeeding words
 			//
-			.statsForNgramEqual("liu", 0.83, 1, 
+			.statsForNgramEqual("liu", 
+					0.83, 1, null, 
 					new String[] {"maligaliuqtiuqatitinni"}, 
 					new String[] {"kiinaujaliurutiqarasuarnirmit", 
 						"kiinaujaliurasuanngittut"})
 			
 			// This is an ngram that has the most number of failures
-			.statsForNgramEqual("inn", Double.MAX_VALUE, 2, 
+			.statsForNgramEqual("inn", 
+					Double.MAX_VALUE, 2, null, 
 					new String[] {"maligaliuqtiuqatitinni", 
 						"apiqkusirijassinnut"}, 
 					new String[] {})
@@ -142,6 +145,51 @@ public class MorphFailureAnalyzerTest {
 			;
 	}
 
+	@Test
+	public void test__MorpFailureAnalyzer__WithExclusionPattern() throws Exception {
+		MorphFailureAnalyzer analyzer = 
+			new MorphFailureAnalyzer()
+				.setMinNgramLen(3)
+				.setMaxNgramLen(3)
+				
+				// This will ignore one of the failing words 
+				// (apiqkusirijassinnut) which decreases the FS ratio of the 
+				// following ngrams:
+				//
+				//   - inn
+				//   - ssi
+				//
+				// which otherwise would be the first and third topmost 
+				// ngrams.
+				// 
+				.setExclude("(apiq)");
+		
+		addSomeTestWords(analyzer);
+		analyzer.analyseFailures();
+		
+		new MorphFailureAnalyserAsserter(analyzer, "")
+		
+			// Sort the problems by Fail/Success ratio
+			.mostProblematicNgramEqual(SortBy.FS_RATIO, 
+					new String[] {"juk", "iga", "aku"})
+			
+			.statsForNgramEqual("juk", 
+					Double.MAX_VALUE, 1, null,
+					new String[] {"takuksaulaarmijuk"}, 
+					new String[] {})
+			.statsForNgramEqual("iga", 
+					Double.MAX_VALUE, 1, null,
+					new String[] {"maligaliuqtiuqatitinni"}, 
+					new String[] {})
+			.statsForNgramEqual("aku", 
+					Double.MAX_VALUE, 1, null,
+				new String[] {"takuksaulaarmijuk"}, 
+				new String[] {})
+			
+			;
+	}
+
+	
 	//////////////////////////
 	// TEST HELPERS
 	//////////////////////////
@@ -158,7 +206,43 @@ public class MorphFailureAnalyzerTest {
 		analyzer.addWord("takuksaulaarmijuk", false);
 		analyzer.addWord("maligaliuqtiuqatitinni", false);
 		analyzer.addWord("apiqkusirijassinnut", false);
-//		analyzer.addWord("auktajuumik", false);
-//		analyzer.addWord("qaujivvigittialaurnatigut", false);
+	}
+	
+	@Test
+	public void test__addWord__NoWordFreq() throws Exception {
+		MorphFailureAnalyzer analyzer = 
+			new MorphFailureAnalyzer()
+				.setMinNgramLen(3)
+				.setMaxNgramLen(3);
+		
+		analyzer.addWord("inuktut", true);
+		analyzer.addWord("inuksuk", true);
+		analyzer.addWord("inukkkkk", false);
+		new MorphFailureAnalyserAsserter(analyzer, "")
+		
+			.statsForNgramEqual("inu", 
+				null, 1, new Long(-1),
+				new String[] {"inukkkkk"}, 
+				new String[] {"inuksuk", "inuktut"})
+			;
+	}
+	
+	@Test
+	public void test__addWord__WithWordFreq() throws Exception {
+		MorphFailureAnalyzer analyzer = 
+			new MorphFailureAnalyzer()
+				.setMinNgramLen(3)
+				.setMaxNgramLen(3);
+		
+		analyzer.addWord("inuktut", true, new Long(1000));
+		analyzer.addWord("inuksuk", true, new Long(103));
+		analyzer.addWord("inukkkkk", false, new Long(18));
+		new MorphFailureAnalyserAsserter(analyzer, "")
+		
+			.statsForNgramEqual("inu", 
+				null, 1, new Long(18),
+				new String[] {"inukkkkk"}, 
+				new String[] {"inuksuk", "inuktut"})
+			;
 	}
 }

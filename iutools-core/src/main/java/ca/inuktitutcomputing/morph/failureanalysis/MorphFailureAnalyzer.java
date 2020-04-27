@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -28,6 +29,7 @@ public class MorphFailureAnalyzer {
 
 	private Integer minNgramLen = 3;
 	private Integer maxNgramLen = 10;
+	private Pattern pattNgramExclusion = null;
 	
 	private long totalSuccesses = 0;
 	private long totalFailures = 0;
@@ -41,31 +43,57 @@ public class MorphFailureAnalyzer {
 
 	private void initMorphFailureAnalyzer() {
 	}
-	
+
 	public void addWord(String word, boolean analyzesSuccessfully) {
-		Set<String> ngrams = 
-			new NgramCompiler()
-				.setMin(minNgramLen)
-				.setMax(maxNgramLen)
-				.compile(word);
+		addWord(word, analyzesSuccessfully, null);
+	}
 	
-		if (analyzesSuccessfully) {
-			onSuccesfulWord(word, ngrams);
-		} else {
-			onFailingWord(word, ngrams);
+
+	public void addWord(String word, boolean analyzesSuccessfully,
+			Long freq) {
+		if (!ignoreWord(word)) {		
+			Set<String> ngrams = 
+				new NgramCompiler()
+					.setMin(minNgramLen)
+					.setMax(maxNgramLen)
+					.compile(word);
+		
+			if (analyzesSuccessfully) {
+				onSuccesfulWord(word, ngrams, freq);
+			} else {
+				onFailingWord(word, ngrams, freq);
+			}
 		}
 	}
 	
-	private void onFailingWord(String word, Set<String> ngrams) {
+	private boolean ignoreWord(String word) {
+		boolean ignore = false;
+		if (pattNgramExclusion != null &&
+				pattNgramExclusion.matcher(word).matches()) {
+			ignore = true;
+		}
+		return ignore;
+	}
+
+	private void onFailingWord(String word, Set<String> ngrams, Long freq) {
 		totalFailures++;		
 		for (String aNgram: ngrams) {
 			ProblematicNGram stats = statsForNGram(aNgram);
+			
 			stats.numFailures++;
+			
+			if (freq != null) {
+				if (stats.failureMass == -1) {
+					stats.failureMass = 0;
+				}
+				stats.failureMass += freq;
+			}
+			
 			stats.addFailureExample(word);
 		}
 	}
 
-	private void onSuccesfulWord(String word, Set<String> ngrams) {
+	private void onSuccesfulWord(String word, Set<String> ngrams, Long freq) {
 		totalSuccesses++;
 		for (String aNgram: ngrams) {
 			ProblematicNGram stats = statsForNGram(aNgram);
@@ -179,6 +207,12 @@ public class MorphFailureAnalyzer {
 
 	public MorphFailureAnalyzer setMaxNgramLen(int maxLen) {
 		this.maxNgramLen = maxLen;
+		return this;
+	}
+
+	public MorphFailureAnalyzer setExclude(String regexNgramExclusion) {
+		this.pattNgramExclusion  = 
+			Pattern.compile("^.*"+regexNgramExclusion+".*$");
 		return this;
 	}
 }
