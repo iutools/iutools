@@ -51,21 +51,7 @@
 	<servlet-mapping>
 		<servlet-name>OccurenceSearchEndpoint</servlet-name>
 		<url-pattern>/srv/occurrences/*</url-pattern>
-	</servlet-mapping>	
-	
-
-	<!-- Occurrence Example Endpoint -->
-	<servlet>
-	   <servlet-name>OccurenceExampleEndpoint</servlet-name>
-	   <servlet-class>  
-	     ca.pirurvik.iutools.webservice.OccurenceExampleEndpoint
-	   </servlet-class>
-	</servlet> 
-	<servlet-mapping>
-		<servlet-name>OccurenceExampleEndpoint</servlet-name>
-		<url-pattern>/srv/occurrenceexample/*</url-pattern>
-	</servlet-mapping>	
-	
+	</servlet-mapping>		
 
 	<!-- GistPrepareContent Endpoint -->
 	<servlet>
