@@ -1,10 +1,12 @@
 package ca.inuktitutcomputing.morph.failureanalysis;
 
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 
 import ca.inuktitutcomputing.morph.failureanalysis.ProblematicNGram.SortBy;
+import ca.nrc.datastructure.Pair;
 
 public class MorphFailureAnalyzerTest {
 
@@ -75,18 +77,27 @@ public class MorphFailureAnalyzerTest {
 				// lot of curently failing words
 				//
 				long numFailure = problem.getNumFailures();
+				
+				//
+				// Total number of OCCURENCES of failing words that contain 
+				// the ngram.
+				//
+				long failureMass = problem.failureMass;
+				
+				// Most frequent failing words that contain the ngram
+				// You can get just the words, or the words with their 
+				// frequency
+				List<String> failureExamples = problem.failureExamples();
+				List<Pair<String,Long>> failureExamplesWithFreqs =
+						problem.failureExamplesWithFreq();
+
+				// Most frequent succeding words that contain the ngram
+				// You can get just the words, or the words with their 
+				// frequency
+				List<String> successExamples = problem.successExamples();
+				List<Pair<String,Long>> successExamplesWithFreqs =
+						problem.successExamplesWithFreq();
 			}
-			
-			// You can also get a sample of successful/failing words
-			// that contain that ngram. This should allow you to zero-in on the
-			// nature of the problem that the morphological analyzer has with 
-			// this ngram.
-			//
-			int sampleSize = 20;
-			List<String> failingWordsSample = 
-				analyzer.failureExamplesFor(problem);
-			List<String> succeedingWordsSample = 
-					analyzer.successExamplesFor(problem);
 		}
 	}
 

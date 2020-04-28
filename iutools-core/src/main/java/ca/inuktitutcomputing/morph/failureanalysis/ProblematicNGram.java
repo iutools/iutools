@@ -1,8 +1,13 @@
 package ca.inuktitutcomputing.morph.failureanalysis;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
+import ca.nrc.datastructure.Pair;
 import ca.nrc.string.StringUtils;
 
 public class ProblematicNGram {
@@ -14,8 +19,15 @@ public class ProblematicNGram {
 	public long numFailures = 0;
 	public long numSuccesses = 0;
 	public long failureMass = -1;
-	public Set<String> failureExamples = new HashSet<String>();
-	public Set<String> successExamples = new HashSet<String>();
+	
+	private Map<String,Long> failureExampleFreq = new HashMap<String,Long>();
+	private Pair<String,Long> failureExampleWithSmallestFreq = 
+			Pair.of("", new Long(-2)); 
+	
+	private Map<String,Long> successExampleFreq = new HashMap<String,Long>();
+	private Pair<String,Long> successExampleWithSmallestFreq = 
+			Pair.of("", new Long(-2)); 
+	
 	private Double failureSuccessRatio = null;
 	
 	public ProblematicNGram(String _ngram) {
@@ -25,17 +37,64 @@ public class ProblematicNGram {
 	private void initProblematicNGram(String _ngram) {
 		this.ngram = _ngram;
 	}
-	
+
 	public void addFailureExample(String word) {
-		if (failureExamples.size() < MAX_EXAMPLES) {
-			failureExamples.add(word);
+		addFailureExample(word, null);
+	}
+	
+	public void addFailureExample(String word, Long freq) {
+		if (freq == null) {
+			freq = new Long(-1);
+		}
+		if (failureExampleFreq.keySet().size() < MAX_EXAMPLES) {
+			failureExampleFreq.put(word, freq);
+		} else {
+			// Too many examples. Insert this one if its frequency 
+			// is higher than the lowes-frequency example
+			//
+			if (freq > failureExampleWithSmallestFreq.getSecond()) {
+				failureExampleFreq.remove(
+					failureExampleWithSmallestFreq.getFirst());
+				failureExampleFreq.put(word, freq);
+				failureExampleWithSmallestFreq = 
+					exampleWithSmallestFreq(failureExampleFreq);
+			}
 		}
 	}
 
-	public void addSuccessExample(String word) {
-		if (successExamples.size() < MAX_EXAMPLES) {
-			successExamples.add(word);
+	private Pair<String, Long> exampleWithSmallestFreq(Map<String, Long> examples) {
+		Pair<String,Long> example = null;
+		for (Entry<String, Long> entry: examples.entrySet()) {
+			if (example == null || entry.getValue() < example.getSecond()) {
+				example = Pair.of(entry.getKey(), entry.getValue());
+			}
 		}
+		return example;
+	}
+
+	public void addSuccessExample(String word) {
+		addSuccessExample(word, null);
+	}
+	
+	public void addSuccessExample(String word, Long freq) {
+		if (freq == null) {
+			freq = new Long(-1);
+		}
+		if (successExampleFreq.keySet().size() < MAX_EXAMPLES) {
+			successExampleFreq.put(word, freq);
+		} else {
+			// Too many examples. Insert this one if its frequency 
+			// is higher than the lowest-frequency example
+			//
+			if (freq > successExampleWithSmallestFreq.getSecond()) {
+				successExampleFreq.remove(
+					successExampleWithSmallestFreq.getFirst());
+				successExampleFreq.put(word, freq);
+				successExampleWithSmallestFreq = 
+					exampleWithSmallestFreq(successExampleFreq);
+			}
+		}
+		
 	}
 	
 	public Long getNumFailures() {
@@ -54,10 +113,9 @@ public class ProblematicNGram {
 		String csv = 
 			ngram+","+
 			getFailSucceedRatio()+","+getNumFailures()+","+failureMass+","+
-			StringUtils.join(failureExamples.iterator(), "; ")+","+
-			StringUtils.join(successExamples.iterator(), "; ")
+			StringUtils.join(failureExamples().iterator(), "; ")+","+
+			StringUtils.join(successExamples().iterator(), "; ")
 			;
-				
 		return csv;
 	}
 
@@ -67,4 +125,62 @@ public class ProblematicNGram {
 		return headers;
 	}
 
+	public List<String> failureExamples() {
+		List<Pair<String,Long>> examplesWithFreq = 
+				failureExamplesWithFreq();
+		List<String> examples = new ArrayList<String>();
+		for (Pair<String,Long> anExample: examplesWithFreq) {
+			examples.add(anExample.getFirst());
+		}
+		return examples;
+	}
+	
+	public List<Pair<String, Long>> failureExamplesWithFreq() {
+		List<Pair<String,Long>> examples = 
+			new ArrayList<Pair<String,Long>>();
+		for (String word: failureExampleFreq.keySet()) {
+			examples.add(Pair.of(word, failureExampleFreq.get(word)));
+		}
+		
+		sortExamplesByFreq(examples);
+				
+		return examples;
+	}
+	
+
+	private void sortExamplesByFreq(List<Pair<String, Long>> examples) {
+		Collections.sort(examples, 
+			(Pair<String,Long> e1, Pair<String,Long> e2) -> {
+				Long e1Freq = e1.getSecond();
+				Long e2Freq = e2.getSecond();
+				int compare = 0;
+				if (e1Freq != null && e2Freq != null) {
+					compare = e1.getSecond().compareTo(e2.getSecond());
+				}
+				return compare;
+			});
+	}
+
+	public List<String> successExamples() {
+		List<Pair<String,Long>> examplesWithFreq = 
+				successExamplesWithFreq();
+		List<String> examples = new ArrayList<String>();
+		for (Pair<String,Long> anExample: examplesWithFreq) {
+			examples.add(anExample.getFirst());
+		}
+		return examples;
+	}
+
+
+	public List<Pair<String, Long>> successExamplesWithFreq() {
+		List<Pair<String,Long>> examples = 
+				new ArrayList<Pair<String,Long>>();
+			for (String word: successExampleFreq.keySet()) {
+				examples.add(Pair.of(word, failureExampleFreq.get(word)));
+			}
+			
+			sortExamplesByFreq(examples);
+					
+			return examples;
+	}
 }

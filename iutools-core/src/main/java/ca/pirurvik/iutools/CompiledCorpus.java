@@ -886,7 +886,7 @@ public class CompiledCorpus
 	}
 	
 	private long computeWordFreq(String word) {
-		long freq = 0;
+		long freq = 0;		
 		
 		// For now, we are only able to compute frequency of 
 		// failed words

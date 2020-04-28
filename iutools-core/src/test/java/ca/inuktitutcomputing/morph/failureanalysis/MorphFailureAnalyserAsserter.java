@@ -97,10 +97,10 @@ public class MorphFailureAnalyserAsserter
 				"\nExamples of failure for ngram "+ngram+
 				" were not as expected.\nShould have contained word: "+
 				expExample+"\nGot examples: "+
-				StringUtils.join(ngramStats.failureExamples.iterator(), ", ");
+				StringUtils.join(ngramStats.failureExamples().iterator(), ", ");
 			
 			Assert.assertTrue(mess, 
-				ngramStats.failureExamples.contains(expExample));
+				ngramStats.failureExamples().contains(expExample));
 		}
 
 		for (String expExample: expSuccesse) {
@@ -109,10 +109,10 @@ public class MorphFailureAnalyserAsserter
 				"\nExamples of successes for ngram "+ngram+
 				" were not as expected.\nShould have contained word: "+
 				expExample+"\nGot examples: "+
-				StringUtils.join(ngramStats.successExamples.iterator(), ", ");
+				StringUtils.join(ngramStats.successExamples().iterator(), ", ");
 			
 			Assert.assertTrue(mess, 
-				ngramStats.successExamples.contains(expExample));
+				ngramStats.successExamples().contains(expExample));
 		}
 
 		return this;

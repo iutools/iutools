@@ -111,15 +111,15 @@ public class MorphFailureAnalyzer {
 		return stats;
 	}
 
-	public List<String> failureExamplesFor(ProblematicNGram problem) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public List<String> successExamplesFor(ProblematicNGram problem) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	public List<String> failureExamplesFor(ProblematicNGram problem) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+//
+//	public List<String> successExamplesFor(ProblematicNGram problem) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
 	@JsonIgnore
 	public List<ProblematicNGram> getProblems(SortBy sortBy) {
