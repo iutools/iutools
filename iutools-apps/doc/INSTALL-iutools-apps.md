@@ -29,8 +29,25 @@ In `setenv.sh`, aßdd the following line:
 The `ca_nrc.properties` file supports the following configuration properties:
 
 - `ca.nrc.iutools.datapath`: Path to the root of your `iutools-data` project.
-- `ca.nrc.javautils.bingKey` (OPTIONAL): For the Inuktut Search Engine to work, you need to set this
-     to a valid Microsoft Azure Cognitive Service Bing key.
+- `ca.nrc.javautils.bingKey` (OPTIONAL): For the Inuktut Search Engine to work, 
+     you need to set this to a valid Microsoft Azure Cognitive Service Bing key.
+ 
+##Install the corpora files
+
+IUTools requires a number of large corpora files. Because of their size, those 
+files cannot be put under Git. Instead, we put them on cyclosa.web.net, under 
+the path:
+
+    /var/iutools/data/data
+    
+All the files contained in that directory must be transfered to your 
+installation machine under iutoools-data/data. As of May 2020, this directory 
+contains the following files and directories:
+- LanguageData		
+- compiled-corpuses	
+- tries
+- NunHanSearch		
+- numericTermsCorpus*.json
      
 ## Deploying the app
 
