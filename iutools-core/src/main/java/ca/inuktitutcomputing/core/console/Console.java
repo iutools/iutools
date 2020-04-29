@@ -87,6 +87,15 @@ public class Console {
 			    .required(false)
 			    .build();
 
+		Option optPipelineMode = Option.builder(null)
+				.longOpt(ConsoleCommand.OPT_PIPELINE_MODE)
+			    .desc(
+					"If present, run the command in pipeline mode.\n"+
+					"The command will then read inputs from STDIN and produce outputs on STDOUT.\n"+
+					"For each line of STDIN, it will produce EXACTLY one line on STDOUT (even if an\n"+
+					"excepion was raised.")
+			    .build();
+
 		Option optFromScratch = Option.builder(null)
 				.longOpt(ConsoleCommand.OPT_FROM_SCRATCH)
 			    .desc("Tells the compiler to start from scratch.")
@@ -212,6 +221,7 @@ public class Console {
 				.addOption(optCompFile)	
 				.addOption(optMorphemes)
 				.addOption(optWord)
+				.addOption(optPipelineMode)
 				;
 		mainCmd.addSubCommand(searchTrie);
 		

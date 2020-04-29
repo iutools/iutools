@@ -33,6 +33,7 @@ public abstract class ConsoleCommand extends SubCommand {
 	public static final String OPT_ED_ALGO = "edit-dist";
 	public static final String OPT_EXTENDED_ANALYSIS = "extended-analysis";
 	public static final String OPT_EXCLUDE = "exclude";
+	public static final String OPT_PIPELINE_MODE = "pipeline-mode";
 
 	public ConsoleCommand(String name) {
 		super(name);
@@ -152,6 +153,10 @@ public abstract class ConsoleCommand extends SubCommand {
 	protected boolean getExtendedAnalysis() {
 		boolean option = hasOption(ConsoleCommand.OPT_EXTENDED_ANALYSIS);
 		return option;
+	}
+	
+	protected boolean inPipelineMode() {
+		return hasOption(ConsoleCommand.OPT_PIPELINE_MODE);
 	}
 	
 	protected String getMorpheme() {

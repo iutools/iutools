@@ -22,6 +22,7 @@ public class CmdSegmentIU extends ConsoleCommand {
 		String word = getWord(false);
 		boolean doExtendedAnalysis = getExtendedAnalysis();
 		Decomposition[] decs = null;
+		boolean pipelineMode = inPipelineMode();
 		
 		MorphologicalAnalyzer morphAnalyzer = new MorphologicalAnalyzer();
 
