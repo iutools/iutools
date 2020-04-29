@@ -1,0 +1,62 @@
+#Set up for IUTools development
+
+## Clone iutools project
+
+If you are reading this file, it means that you presumably already cloned the 
+iutools project from Github. If not, you need to do so from this URL:
+
+   https://github.com/alaindesilets/iutools.git
+   
+## Clone the java-utils project, or obtain its jars
+
+The *iutools* project has a dependency on a project called *java-utils*. The 
+sources for this project are  currently available only to NRC employees. This 
+is something that will be remedied soon.
+
+If you are an NRC employee, you can obtain those sources by cloning the 
+following project:
+
+   https://git.dt.nrc.ca/gitroot/java-utils.git
+
+If you are NOT an NRC employee, you must procure the java-utils JARs 
+from from an NRC partner and copy them to your maven repo under path:
+
+    .m2/repository/ca/nrc/java-utils
+   
+If you have access to the `cyclosa.web.net` server, the jar files are under:
+
+    /var/iutools/lib/java-utils
+    
+## Obtain corpora files
+
+*iutools* requires a number of large data files which cannot be tracked on git. 
+
+These are currently stored on server *cyclosa.web.net*, under the path:
+
+    /var/iutools/data/data
+   
+Files and folders contained in that directory (compiled-corpuses, LanguageData, 
+etc...) must be copied over to your local machine under path
+
+    iutools/iutools-data/data
+      
+## The iutools modules
+
+At this point you should be able do load the *iutools* project in your 
+preferred IDE, and use it to modify, test and install its various modules. 
+
+There are three modules in *iutools*:
+
+- `iutools-data:` Data files required by the other two modules.
+- `iutools-core:` Core algorithms and datastructures. Also, command-line 
+     interface (CLI) to those core algorithms.
+- `iutools-apps:` Web apps.
+
+## Deploying the *iutools* web apps
+
+Once you have compiled the `iutools-apps` module, you can deploy its apps on 
+Tomcat.
+
+Simply follow the instructions in the file
+
+    doc/INSTALL-iutools-apps.md
