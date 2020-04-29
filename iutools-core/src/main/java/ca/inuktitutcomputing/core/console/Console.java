@@ -26,6 +26,13 @@ public class Console {
 			    .argName("CORPUS_COMPILATION_FILE")
 			    .build();
 
+		Option optDataFile = Option.builder(null)
+				.longOpt(ConsoleCommand.OPT_DATA_FILE)
+				.desc("Path of the data file to be read or written.")
+				.hasArg()
+				.argName("DATA_FILE")
+				.build();
+
 		Option optCorpusName = Option.builder(null)
 				.longOpt(ConsoleCommand.OPT_CORPUS_NAME)
 			    .desc("Name of the corpus to be processed or used.")
@@ -67,6 +74,11 @@ public class Console {
 			    .hasArg()
 			    .argName("MIN_NGRAM_LEN")
 			    .build();
+
+		Option optWordsOnly = Option.builder(null)
+				.longOpt(ConsoleCommand.OPT_WORDS_ONLY)
+				.desc("If provided, only process words")
+				.build();
 
 		Option optExtendedAnalysis = Option.builder(null)
 				.longOpt(ConsoleCommand.OPT_EXTENDED_ANALYSIS)
@@ -177,15 +189,22 @@ public class Console {
 				.addOption(optRedoFailed)
 				;
 		mainCmd.addSubCommand(compileCorpus);
-		
-		
-		// Describe a corpus
-		SubCommand describeCorpus = 
-				new CmdDescribeCorpus("describe_corpus")
-				.addOption(optCompFile)	
+
+		// Dump a corpus to file
+		SubCommand dumpCorpus =
+				new CmdDumpCorpus("dump_corpus")
+						.addOption(optCorpusName)
+						.addOption(optDataFile)
+						.addOption(optWordsOnly)
 				;
-		mainCmd.addSubCommand(describeCorpus);
-		
+		mainCmd.addSubCommand(dumpCorpus);
+
+		// Describe a corpus
+//		SubCommand describeCorpus = 
+//				new CmdDescribeCorpus("describe_corpus")
+//				.addOption(optCompFile)	
+//				;
+//		mainCmd.addSubCommand(describeCorpus);
 		
 		// Search a trie for a sequence of morphemes
 		SubCommand searchTrie = 

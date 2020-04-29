@@ -33,7 +33,7 @@ public class NgramCompilerTest {
 		String word = "anyword";
 		Set<String> ngrams = ngramCompiler.compile(word);
 	}
-	
+
 	@Test
 	public void test_compile() throws IOException {
 		NgramCompiler ngramCompiler = new NgramCompiler();

@@ -20,7 +20,7 @@ public class CmdSegmentIU extends ConsoleCommand {
 	public void execute() throws Exception {
 		Logger logger = Logger.getLogger("CmdSegmentIU.execute");
 		String word = getWord(false);
-		boolean doExtendedAnalysis = this.cmdLine.hasOption("extended-analysis");
+		boolean doExtendedAnalysis = getExtendedAnalysis();
 		Decomposition[] decs = null;
 		
 		MorphologicalAnalyzer morphAnalyzer = new MorphologicalAnalyzer();

@@ -1,34 +1,39 @@
 package ca.inuktitutcomputing.core.console;
 
+import java.io.File;
 import java.util.Scanner;
 
 import ca.nrc.ui.commandline.SubCommand;
 import ca.pirurvik.iutools.edit_distance.EditDistanceCalculatorFactory;
 
 public abstract class ConsoleCommand extends SubCommand {
-	
+
+	public static final String OPT_DATA_FILE = "data-file";
+	public static final String OPT_INPUT_FILE = "input-file";
 	public static final String OPT_CORPUS_DIR = "corpus-dir";
 	public static final String OPT_CORPUS_NAME = "corpus-name";
 	public static final String OPT_COMP_FILE = "comp-file";
 	public static final String OPT_GS_FILE = "gs-file";
+
 	public static final String OPT_MORPHEMES = "morphemes";
+	public static final String OPT_MORPHEME = "morpheme";
 	public static final String OPT_WORD = "word";
 	public static final String OPT_MAX_WORDS = "max-words";
+	public static final String OPT_WORDS_ONLY = "words-only";
 	public static final String OPT_MAX_NGRAMS = "max-ngrams";
-	public static final String OPT_MIN_NGRAM_LEN = "min-ngram-len";	
+	public static final String OPT_MIN_NGRAM_LEN = "min-ngram-len";
+
 	public static final String OPT_FROM_SCRATCH = "from-scratch";
 	public static final String OPT_REDO_FAILED = "redo-failed";
 	public static final String OPT_CONTENT = "content";
-	public static final String OPT_INPUT_FILE = "input-file";
 	public static final String OPT_FONT = "font";
 	public static final String OPT_SOM = "stats-over-morphemes";
 	public static final String OPT_DICT_FILE = "dict-file";
 	public static final String OPT_MAX_CORR = "max-corr";
 	public static final String OPT_ED_ALGO = "edit-dist";
-	public static final String OPT_MORPHEME = "morpheme";
 	public static final String OPT_EXTENDED_ANALYSIS = "extended-analysis";
 	public static final String OPT_EXCLUDE = "exclude";
-	
+
 	public ConsoleCommand(String name) {
 		super(name);
 	}
@@ -42,6 +47,11 @@ public abstract class ConsoleCommand extends SubCommand {
 			tFile = tFile + ".json";
 		}
 		return tFile;
+	}
+
+	protected File getDataFile() {
+		String fileStr = getOptionValue(ConsoleCommand.OPT_DATA_FILE);
+		return new File(fileStr);
 	}
 	
 	protected String getDictFile() {
@@ -82,7 +92,11 @@ public abstract class ConsoleCommand extends SubCommand {
 	protected String getWord() {
 		return getWord(true);
 	}
-	
+
+	protected boolean getWordsOnlyOpt() {
+		return hasOption(OPT_WORDS_ONLY);
+	}
+
 	protected Long getMaxWords() {
 		String maxStr = getOptionValue(ConsoleCommand.OPT_MAX_WORDS, false);
 		Long max = Long.MAX_VALUE;
@@ -135,11 +149,8 @@ public abstract class ConsoleCommand extends SubCommand {
 		return pattern;		
 	}
 	
-	protected String getExtendedAnalysis() {
-		return getExtendedAnalysis(false);
-	}
-	protected String getExtendedAnalysis(boolean failIfAbsent) {
-		String option = getOptionValue(ConsoleCommand.OPT_EXTENDED_ANALYSIS, failIfAbsent);
+	protected boolean getExtendedAnalysis() {
+		boolean option = hasOption(ConsoleCommand.OPT_EXTENDED_ANALYSIS);
 		return option;
 	}
 	
