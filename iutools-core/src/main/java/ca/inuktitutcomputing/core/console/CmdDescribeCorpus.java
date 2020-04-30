@@ -11,7 +11,7 @@ import java.util.Random;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.Trie;
 import ca.pirurvik.iutools.CompiledCorpus;
-import ca.pirurvik.iutools.CompiledCorpusRegistry;
+import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 
 public class CmdDescribeCorpus extends ConsoleCommand {
 

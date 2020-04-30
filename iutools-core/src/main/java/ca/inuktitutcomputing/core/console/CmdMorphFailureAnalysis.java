@@ -9,8 +9,8 @@ import ca.inuktitutcomputing.morph.failureanalysis.ProblematicNGram;
 import ca.inuktitutcomputing.morph.failureanalysis.ProblematicNGram.SortBy;
 import ca.nrc.ui.commandline.UserIO.Verbosity;
 import ca.pirurvik.iutools.CompiledCorpus;
-import ca.pirurvik.iutools.CompiledCorpusRegistry;
-import ca.pirurvik.iutools.WordInfo;
+import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
+import ca.pirurvik.iutools.corpus.WordInfo;
 
 public class CmdMorphFailureAnalysis extends ConsoleCommand {
 	

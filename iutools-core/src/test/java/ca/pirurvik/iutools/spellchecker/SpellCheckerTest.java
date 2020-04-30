@@ -10,7 +10,7 @@ import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.testing.AssertHelpers;
 import ca.nrc.testing.AssertNumber;
 import ca.nrc.testing.AssertObject;
-import ca.pirurvik.iutools.CompiledCorpusRegistry;
+import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.spellchecker.SpellChecker;
 import ca.pirurvik.iutools.spellchecker.SpellCheckerException;
 import ca.pirurvik.iutools.spellchecker.SpellingCorrection;

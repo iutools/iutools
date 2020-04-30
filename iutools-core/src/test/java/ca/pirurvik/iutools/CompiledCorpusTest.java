@@ -36,7 +36,11 @@ import ca.nrc.json.PrettyPrinter;
 import ca.nrc.testing.AssertHelpers;
 import ca.nrc.testing.AssertObject;
 import ca.pirurvik.iutools.CompiledCorpus;
+import ca.pirurvik.iutools.CompiledCorpusException;
+import ca.pirurvik.iutools.CompiledCorpusRegistryException;
 import ca.pirurvik.iutools.CompiledCorpus.WordWithMorpheme;
+import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
+import ca.pirurvik.iutools.corpus.WordInfo;
 import junit.framework.TestCase;
 
 /**

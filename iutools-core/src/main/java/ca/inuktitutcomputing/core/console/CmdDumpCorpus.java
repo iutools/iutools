@@ -1,8 +1,8 @@
 package ca.inuktitutcomputing.core.console;
 
 import ca.pirurvik.iutools.CompiledCorpus;
-import ca.pirurvik.iutools.CompiledCorpusRegistry;
-import ca.pirurvik.iutools.WordInfo;
+import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
+import ca.pirurvik.iutools.corpus.WordInfo;
 
 import java.io.File;
 import java.io.FileWriter;

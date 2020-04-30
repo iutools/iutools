@@ -10,8 +10,8 @@ import static org.junit.Assert.fail;
 
 import ca.inuktitutcomputing.config.IUConfig;
 import ca.pirurvik.iutools.CompiledCorpus;
-import ca.pirurvik.iutools.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.QueryExpanderEvaluator;
+import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 
 public class QueryExpanderEvaluatorCompTest {
 

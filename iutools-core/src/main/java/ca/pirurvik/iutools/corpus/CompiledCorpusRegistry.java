@@ -1,4 +1,4 @@
-package ca.pirurvik.iutools;
+package ca.pirurvik.iutools.corpus;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,6 +18,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import ca.inuktitutcomputing.config.IUConfig;
 import ca.nrc.config.ConfigException;
+import ca.pirurvik.iutools.CompiledCorpus;
+import ca.pirurvik.iutools.CompiledCorpusException;
+import ca.pirurvik.iutools.CompiledCorpusRegistryException;
 
 public class CompiledCorpusRegistry {
 	

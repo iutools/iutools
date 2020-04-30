@@ -1,4 +1,4 @@
-package ca.pirurvik.iutools;
+package ca.pirurvik.iutools.corpus;
 
 import java.util.Arrays;
 
@@ -22,7 +22,7 @@ public class WordInfo {
 	 * decompositions than are stored in the WordInfo. The total number of
 	 * decompositions that were avaible is provided by totalDecompositions.
 	 */
-	String[] topDecompositions = null;
+	public String[] topDecompositions = null;
 	
 	/**
 	 * Total number of decompositions that were obtained for this word.
@@ -34,7 +34,7 @@ public class WordInfo {
 	 * A value of 0 on the other hand, DOES mean that the morphological 
 	 * analyzer is not able to process that word.
 	 */
-	Integer totalDecompositions = null;
+	public Integer totalDecompositions = null;
 
 	public long frequency = 0;;
 

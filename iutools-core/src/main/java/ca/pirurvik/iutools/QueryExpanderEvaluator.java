@@ -22,6 +22,7 @@ import com.google.gson.Gson;
 
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.pirurvik.iutools.QueryExpansion;
+import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 
 public class QueryExpanderEvaluator {
 	

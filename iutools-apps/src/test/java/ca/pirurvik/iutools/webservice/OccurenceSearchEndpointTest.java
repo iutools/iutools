@@ -17,7 +17,7 @@ import org.junit.Test;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.ui.web.testing.MockHttpServletResponse;
 import ca.pirurvik.iutools.CompiledCorpus;
-import ca.pirurvik.iutools.CompiledCorpusRegistry;
+import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 
 public class OccurenceSearchEndpointTest {
 

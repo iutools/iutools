@@ -11,8 +11,8 @@ import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.datastructure.trie.TrieNode;
 import ca.pirurvik.iutools.CompiledCorpus;
-import ca.pirurvik.iutools.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.CompiledCorpusRegistryException;
+import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;

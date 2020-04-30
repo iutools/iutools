@@ -1,4 +1,4 @@
-package ca.pirurvik.iutools;
+package ca.pirurvik.iutools.corpus;
 
 public abstract class CorpusReader {
 

@@ -39,6 +39,9 @@ import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.ui.commandline.ProgressMonitor_Terminal;
+import ca.pirurvik.iutools.corpus.CorpusDocument_File;
+import ca.pirurvik.iutools.corpus.CorpusReader_Directory;
+import ca.pirurvik.iutools.corpus.WordInfo;
 import ca.pirurvik.iutools.text.ngrams.NgramCompiler;
 import ca.pirurvik.iutools.text.segmentation.IUTokenizer;
 

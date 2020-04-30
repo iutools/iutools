@@ -1,4 +1,4 @@
-package ca.pirurvik.iutools;
+package ca.pirurvik.iutools.corpus;
 
 import static org.junit.Assert.assertTrue;
 
@@ -14,6 +14,10 @@ import org.junit.Test;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.testing.AssertObject;
+import ca.pirurvik.iutools.CompiledCorpus;
+import ca.pirurvik.iutools.CompiledCorpusRegistryException;
+import ca.pirurvik.iutools.CompiledCorpusTest;
+import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 
 public class CompiledCorpusRegistryTest {
 	

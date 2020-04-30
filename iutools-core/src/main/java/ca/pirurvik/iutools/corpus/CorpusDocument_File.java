@@ -1,4 +1,4 @@
-package ca.pirurvik.iutools;
+package ca.pirurvik.iutools.corpus;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
