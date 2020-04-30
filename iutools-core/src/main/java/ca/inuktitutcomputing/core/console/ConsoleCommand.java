@@ -53,7 +53,12 @@ public abstract class ConsoleCommand extends SubCommand {
 	}
 
 	protected File getDataFile() {
-		String fileStr = getOptionValue(ConsoleCommand.OPT_DATA_FILE);
+		return getDataFile(false);
+	}
+	
+	protected File getDataFile(boolean failIfAbsent) {
+		String fileStr = 
+			getOptionValue(ConsoleCommand.OPT_DATA_FILE, failIfAbsent);
 		return new File(fileStr);
 	}
 	
