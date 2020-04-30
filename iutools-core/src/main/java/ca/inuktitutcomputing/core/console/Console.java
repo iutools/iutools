@@ -81,14 +81,14 @@ public class Console {
 				.build();
 
 		Option optExtendedAnalysis = Option.builder(null)
-				.longOpt(ConsoleCommand.OPT_EXTENDED_ANALYSIS)
+				.longOpt(ConsoleCommand.OPT_LENIENT_DECOMPS)
 			    .desc("Tells the morphological analyzer to extend the analysis by adding a consonant after a final vowel.")
 			    .argName("EXTENDED_ANALYSIS")
 			    .required(false)
 			    .build();
 
 		Option optPipelineMode = Option.builder(null)
-				.longOpt(ConsoleCommand.OPT_PIPELINE_MODE)
+				.longOpt(ConsoleCommand.OPT_PIPELINE)
 			    .desc(
 					"If present, run the command in pipeline mode.\n"+
 					"The command will then read inputs from STDIN and produce outputs on STDOUT.\n"+

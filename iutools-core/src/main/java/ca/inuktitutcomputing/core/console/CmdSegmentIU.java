@@ -55,7 +55,7 @@ public class CmdSegmentIU extends ConsoleCommand {
 		String decsStr = "null";
 		String sep = "\n";
 		if (mode == Mode.PIPELINE) {
-			sep = " ";
+			sep = ", ";
 		}
 		if (decs != null) {
 			decsStr = "";

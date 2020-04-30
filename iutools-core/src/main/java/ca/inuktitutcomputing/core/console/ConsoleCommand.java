@@ -33,9 +33,9 @@ public abstract class ConsoleCommand extends SubCommand {
 	public static final String OPT_DICT_FILE = "dict-file";
 	public static final String OPT_MAX_CORR = "max-corr";
 	public static final String OPT_ED_ALGO = "edit-dist";
-	public static final String OPT_EXTENDED_ANALYSIS = "extended-analysis";
+	public static final String OPT_LENIENT_DECOMPS = "lenient-decomps";
 	public static final String OPT_EXCLUDE = "exclude";
-	public static final String OPT_PIPELINE_MODE = "pipeline-mode";
+	public static final String OPT_PIPELINE = "pipeline";
 
 	public ConsoleCommand(String name) {
 		super(name);
@@ -153,7 +153,7 @@ public abstract class ConsoleCommand extends SubCommand {
 	}
 	
 	protected boolean getExtendedAnalysis() {
-		boolean option = hasOption(ConsoleCommand.OPT_EXTENDED_ANALYSIS);
+		boolean option = hasOption(ConsoleCommand.OPT_LENIENT_DECOMPS);
 		return option;
 	}
 
@@ -177,14 +177,14 @@ public abstract class ConsoleCommand extends SubCommand {
 			interactive = 1;
 		}
 		int pipeline = 0;
-		if (hasOption(ConsoleCommand.OPT_PIPELINE_MODE)) {
+		if (hasOption(ConsoleCommand.OPT_PIPELINE)) {
 			pipeline = 1;
 		}
 		
 		if (singleInput + interactive + pipeline > 1) {
 			String options = 
 				ConsoleCommand.OPT_INTERACTIVE+", "+
-				ConsoleCommand.OPT_PIPELINE_MODE+", ";
+				ConsoleCommand.OPT_PIPELINE+", ";
 			for (String option: singleInputOptions) {
 				options += option+", ";
 			}
