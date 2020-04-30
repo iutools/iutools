@@ -7,8 +7,11 @@ import org.apache.log4j.Logger;
 import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
+import ca.nrc.debug.Debug;
 
 public class CmdSegmentIU extends ConsoleCommand {
+	
+	Scanner stdinScanner = new Scanner(System.in);
 	
 	public CmdSegmentIU(String name) {
 		super(name);
@@ -21,33 +24,44 @@ public class CmdSegmentIU extends ConsoleCommand {
 
 	@Override
 	public void execute() throws Exception {
-		Logger logger = Logger.getLogger("CmdSegmentIU.execute");
 		Mode mode = getMode(ConsoleCommand.OPT_WORD);
+
 		boolean doExtendedAnalysis = getExtendedAnalysis();
 		MorphologicalAnalyzer morphAnalyzer = new MorphologicalAnalyzer();
-		String word = nextInputWord(mode);
+		
 		while (true) {
-			Decomposition[] decs = null;
-			
 			try {
-				decs = morphAnalyzer.decomposeWord(word,doExtendedAnalysis);
+				String word = nextInputWord(mode);
+				if (word == null) {
+					break;
+				}
+				Decomposition[] decs = 
+					morphAnalyzer.decomposeWord(word,doExtendedAnalysis);
+				printDecompositions(decs, mode);
+				if (mode == Mode.SINGLE_INPUT) {
+					break;
+				}
 			} catch (Exception e) {
 				if (mode == Mode.PIPELINE) {
+					// In pipeline mode, we print exceptions on STDOUT
+					// so that every line of input has a corresponding line of 
+					// output
+					//
+					// Note: This assumes that no exception is raised AFTER the
+					//   word's decompositions have been printed to STDOUT.
+					//
 					printException(e);
+					System.err.println(Debug.printCallStack());
 				} else {
-					throw(e);
+					throw e;
 				}
-			}
-			printDecompositions(decs, mode);
-			word = nextInputWord(mode);
-			if (mode == Mode.SINGLE_INPUT || word == null) {
-				break;
 			}
 		}
 	}
 
 	private void printException(Exception e) {
-		echo("EXCEPTION RAISED: "+e.getMessage());
+		String message = e.getMessage().replaceAll("[\n\r]+", "\\n");
+		echo("EXCEPTION RAISED: "+message);
 	}
 
 	private void printDecompositions(Decomposition[] decs, Mode mode) 
@@ -65,16 +79,7 @@ public class CmdSegmentIU extends ConsoleCommand {
 				if (decsCount > 1) {
 					decsStr += sep;
 				}
-				try {
-					decsStr += aDecomp.toStr2();
-				} catch (LinguisticDataException e) {
-					if (mode == Mode.PIPELINE) {
-						printException(e);
-						break;
-					} else {
-						throw e;
-					}
-				}
+				decsStr += aDecomp.toStr2();
 			}
 		}		
 		echo(decsStr);
@@ -87,10 +92,9 @@ public class CmdSegmentIU extends ConsoleCommand {
 		} else if (mode == Mode.INTERACTIVE) {
 			word = prompt("Enter Inuktut word");			
 		} else if (mode == Mode.PIPELINE) {
-			Scanner scanner = new Scanner(System.in);
 			word = null;
-			if (scanner.hasNext()) {
-				word = scanner.nextLine();
+			if (stdinScanner.hasNext()) {
+				word = stdinScanner.nextLine();
 			}
 		}
 		

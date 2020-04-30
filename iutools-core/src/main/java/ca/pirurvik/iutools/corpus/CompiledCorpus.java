@@ -64,7 +64,7 @@ public class CompiledCorpus
 	private Vector<String> wordsFailedSegmentation = new Vector<String>();
 	public HashMap<String,Long> wordsFailedSegmentationWithFreqs = new HashMap<String,Long>();
 	
-	public String wordSegmentations = ",,";
+	private String wordSegmentations = ",,";
 	public String decomposedWordsSuite = ",,";
 
 	protected Vector<String> filesCompiled = new Vector<String>();	
