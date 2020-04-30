@@ -7,6 +7,8 @@ import ca.nrc.ui.commandline.SubCommand;
 import ca.pirurvik.iutools.edit_distance.EditDistanceCalculatorFactory;
 
 public abstract class ConsoleCommand extends SubCommand {
+	
+	public static enum Mode {SINGLE_INPUT, INTERACTIVE, PIPELINE}
 
 	public static final String OPT_DATA_FILE = "data-file";
 	public static final String OPT_INPUT_FILE = "input-file";
@@ -154,9 +156,49 @@ public abstract class ConsoleCommand extends SubCommand {
 		boolean option = hasOption(ConsoleCommand.OPT_EXTENDED_ANALYSIS);
 		return option;
 	}
-	
-	protected boolean inPipelineMode() {
-		return hasOption(ConsoleCommand.OPT_PIPELINE_MODE);
+
+	protected Mode getMode() {
+		return getMode(new String[0]);
+	}
+
+	protected Mode getMode(String... singleInputOptions) {
+		// Check of an option that provides a single input
+		int singleInput = 0;
+		for (String option: singleInputOptions) {
+			if (hasOption(option)) {
+				singleInput = 1;
+				break;
+			}
+		}
+		
+		// Check if the --interactive or --pipeline-mode options are present
+		int interactive = 0;
+		if (hasOption(ConsoleCommand.OPT_INTERACTIVE)) {
+			interactive = 1;
+		}
+		int pipeline = 0;
+		if (hasOption(ConsoleCommand.OPT_PIPELINE_MODE)) {
+			pipeline = 1;
+		}
+		
+		if (singleInput + interactive + pipeline > 1) {
+			String options = 
+				ConsoleCommand.OPT_INTERACTIVE+", "+
+				ConsoleCommand.OPT_PIPELINE_MODE+", ";
+			for (String option: singleInputOptions) {
+				options += option+", ";
+			}
+			usageBadOption(options, "These options are mutually exclusive.");
+		}
+		
+		Mode mode = Mode.SINGLE_INPUT;
+		if (pipeline > 0) {
+			mode = Mode.PIPELINE;
+		} else if (interactive > 0) {
+			mode = Mode.INTERACTIVE;
+		}
+		
+		return mode;
 	}
 	
 	protected String getMorpheme() {

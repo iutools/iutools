@@ -1,12 +1,15 @@
 package ca.inuktitutcomputing.core.console;
 
+import java.util.Scanner;
+
 import org.apache.log4j.Logger;
 
+import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
 
 public class CmdSegmentIU extends ConsoleCommand {
-
+	
 	public CmdSegmentIU(String name) {
 		super(name);
 	}
@@ -19,41 +22,79 @@ public class CmdSegmentIU extends ConsoleCommand {
 	@Override
 	public void execute() throws Exception {
 		Logger logger = Logger.getLogger("CmdSegmentIU.execute");
-		String word = getWord(false);
+		Mode mode = getMode(ConsoleCommand.OPT_WORD);
 		boolean doExtendedAnalysis = getExtendedAnalysis();
-		Decomposition[] decs = null;
-		boolean pipelineMode = inPipelineMode();
-		
 		MorphologicalAnalyzer morphAnalyzer = new MorphologicalAnalyzer();
-
-		boolean interactive = false;
-		if (word == null) {
-			interactive = true;
-		} else {
-			decs = morphAnalyzer.decomposeWord(word,doExtendedAnalysis);
-		}
-
+		String word = nextInputWord(mode);
 		while (true) {
-			if (interactive) {
-				word = prompt("Enter Inuktut word");
-				if (word == null) break;
-				decs = null;
-				try {
-					decs = morphAnalyzer.decomposeWord(word,doExtendedAnalysis);
-				} catch (Exception e) {
-					throw e;
+			Decomposition[] decs = null;
+			
+			try {
+				decs = morphAnalyzer.decomposeWord(word,doExtendedAnalysis);
+			} catch (Exception e) {
+				if (mode == Mode.PIPELINE) {
+					printException(e);
+				} else {
+					throw(e);
 				}
 			}
-			
-			if (decs != null && decs.length > 0) {
-				for (Decomposition dec : decs) {
-					echo(dec.toStr2());
-				}
+			printDecompositions(decs, mode);
+			word = nextInputWord(mode);
+			if (mode == Mode.SINGLE_INPUT || word == null) {
+				break;
 			}
-			
-			if (!interactive) break;				
 		}
+	}
 
+	private void printException(Exception e) {
+		echo("EXCEPTION RAISED: "+e.getMessage());
+	}
+
+	private void printDecompositions(Decomposition[] decs, Mode mode) 
+			throws LinguisticDataException {
+		String decsStr = "null";
+		String sep = "\n";
+		if (mode == Mode.PIPELINE) {
+			sep = " ";
+		}
+		if (decs != null) {
+			decsStr = "";
+			int decsCount = 0;
+			for (Decomposition aDecomp: decs) {
+				decsCount++;
+				if (decsCount > 1) {
+					decsStr += sep;
+				}
+				try {
+					decsStr += aDecomp.toStr2();
+				} catch (LinguisticDataException e) {
+					if (mode == Mode.PIPELINE) {
+						printException(e);
+						break;
+					} else {
+						throw e;
+					}
+				}
+			}
+		}		
+		echo(decsStr);
+	}
+
+	private String nextInputWord(Mode mode) {
+		String word = null;
+		if (mode == Mode.SINGLE_INPUT) {
+			word = getWord();
+		} else if (mode == Mode.INTERACTIVE) {
+			word = prompt("Enter Inuktut word");			
+		} else if (mode == Mode.PIPELINE) {
+			Scanner scanner = new Scanner(System.in);
+			word = null;
+			if (scanner.hasNext()) {
+				word = scanner.nextLine();
+			}
+		}
+		
+		return word;
 	}
 
 }
