@@ -11,7 +11,7 @@ import com.google.gson.Gson;
 import ca.inuktitutcomputing.data.LinguisticDataSingleton;
 import ca.inuktitutcomputing.data.Morpheme;
 import ca.nrc.datastructure.Pair;
-import ca.pirurvik.iutools.CompiledCorpus;
+import ca.pirurvik.iutools.corpus.CompiledCorpus;
 import ca.pirurvik.iutools.morphemesearcher.MorphemeSearcher;
 import ca.pirurvik.iutools.morphemesearcher.ScoredExample;
 

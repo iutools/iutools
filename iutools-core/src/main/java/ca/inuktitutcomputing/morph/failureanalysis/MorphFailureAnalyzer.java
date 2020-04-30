@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import ca.inuktitutcomputing.morph.failureanalysis.ProblematicNGram.SortBy;
-import ca.pirurvik.iutools.CompiledCorpus;
+import ca.pirurvik.iutools.corpus.CompiledCorpus;
 import ca.pirurvik.iutools.corpus.WordInfo;
 import ca.pirurvik.iutools.text.ngrams.NgramCompiler;
 

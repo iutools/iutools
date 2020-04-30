@@ -1,4 +1,4 @@
-package ca.pirurvik.iutools;
+package ca.pirurvik.iutools.corpus;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -39,9 +39,6 @@ import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.ui.commandline.ProgressMonitor_Terminal;
-import ca.pirurvik.iutools.corpus.CorpusDocument_File;
-import ca.pirurvik.iutools.corpus.CorpusReader_Directory;
-import ca.pirurvik.iutools.corpus.WordInfo;
 import ca.pirurvik.iutools.text.ngrams.NgramCompiler;
 import ca.pirurvik.iutools.text.segmentation.IUTokenizer;
 
@@ -56,17 +53,16 @@ import ca.pirurvik.iutools.text.segmentation.IUTokenizer;
  *
  */ 
 public class CompiledCorpus 
-{
-	
+{	
 	public int MAX_NGRAM_LEN = 5;
 	public static String JSON_COMPILATION_FILE_NAME = "trie_compilation.json";
 	
-	protected Trie trie = new Trie();
+	public Trie trie = new Trie();
 	
 	// things related to the compiler's state and operation that need to be saved periodically and at termination
 	private HashMap<String,String[]> segmentsCache = new HashMap<String, String[]>();
 	private Vector<String> wordsFailedSegmentation = new Vector<String>();
-	protected HashMap<String,Long> wordsFailedSegmentationWithFreqs = new HashMap<String,Long>();
+	public HashMap<String,Long> wordsFailedSegmentationWithFreqs = new HashMap<String,Long>();
 	
 	public String wordSegmentations = ",,";
 	public String decomposedWordsSuite = ",,";
@@ -74,7 +70,7 @@ public class CompiledCorpus
 	protected Vector<String> filesCompiled = new Vector<String>();	
 	protected String saveFilePath = null;	
 	protected String segmenterClassName = StringSegmenter_Char.class.getName();	
-	protected long currentFileWordCounter = -1;
+	public long currentFileWordCounter = -1;
 	protected long retrievedFileWordCounter = -1;	
 	public int saveFrequency = 1000;	
 	protected Long terminalsSumFreq = null;
@@ -359,7 +355,7 @@ public class CompiledCorpus
 	 * interrupted while running.
 	 * @throws CompiledCorpusException 
 	 */
-	protected void __resumeCompilation(String corpusDirectoryPathname) throws CompiledCorpusException {
+	public void __resumeCompilation(String corpusDirectoryPathname) throws CompiledCorpusException {
 		String jsonFilePath = corpusDirectoryPathname+"/"+JSON_COMPILATION_FILE_NAME;
 		CompiledCorpus compiledCorpus = createFromJson(jsonFilePath);
 		

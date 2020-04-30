@@ -1,6 +1,6 @@
 package ca.inuktitutcomputing.core.console;
 
-import ca.pirurvik.iutools.CompiledCorpus;
+import ca.pirurvik.iutools.corpus.CompiledCorpus;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.corpus.WordInfo;
 

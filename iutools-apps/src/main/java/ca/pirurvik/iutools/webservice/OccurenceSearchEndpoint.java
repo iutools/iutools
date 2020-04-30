@@ -22,9 +22,9 @@ import ca.inuktitutcomputing.morph.Gist;
 import ca.inuktitutcomputing.nunhansearch.ProcessQuery;
 import ca.nrc.config.ConfigException;
 import ca.nrc.json.PrettyPrinter;
-import ca.pirurvik.iutools.CompiledCorpus;
-import ca.pirurvik.iutools.CompiledCorpusRegistryException;
+import ca.pirurvik.iutools.corpus.CompiledCorpus;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
+import ca.pirurvik.iutools.corpus.CompiledCorpusRegistryException;
 import ca.pirurvik.iutools.morphemesearcher.MorphemeSearcher;
 import ca.pirurvik.iutools.morphemesearcher.ScoredExample;
 

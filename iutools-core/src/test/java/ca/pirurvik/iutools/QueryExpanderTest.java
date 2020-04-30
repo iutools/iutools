@@ -17,9 +17,9 @@ import org.junit.Test;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.testing.AssertHelpers;
-import ca.pirurvik.iutools.CompiledCorpus;
 import ca.pirurvik.iutools.QueryExpander;
 import ca.pirurvik.iutools.QueryExpansion;
+import ca.pirurvik.iutools.corpus.CompiledCorpus;
 
 public class QueryExpanderTest {
 

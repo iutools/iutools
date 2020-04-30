@@ -9,9 +9,9 @@ import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.morph.Decomposition.DecompositionExpression;
 import ca.inuktitutcomputing.script.Roman;
 import ca.inuktitutcomputing.script.Syllabics;
-import ca.pirurvik.iutools.CompiledCorpus;
 import ca.pirurvik.iutools.QueryExpander;
 import ca.pirurvik.iutools.QueryExpansion;
+import ca.pirurvik.iutools.corpus.CompiledCorpus;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
 
 public class CmdExpandQuery extends ConsoleCommand {

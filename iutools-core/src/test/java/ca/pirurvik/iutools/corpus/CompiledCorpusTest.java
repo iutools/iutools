@@ -1,4 +1,4 @@
-package ca.pirurvik.iutools;
+package ca.pirurvik.iutools.corpus;
 
 import static org.junit.Assert.assertArrayEquals;
 
@@ -35,12 +35,10 @@ import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.testing.AssertHelpers;
 import ca.nrc.testing.AssertObject;
-import ca.pirurvik.iutools.CompiledCorpus;
-import ca.pirurvik.iutools.CompiledCorpusException;
-import ca.pirurvik.iutools.CompiledCorpusRegistryException;
-import ca.pirurvik.iutools.CompiledCorpus.WordWithMorpheme;
+import ca.pirurvik.iutools.corpus.CompiledCorpus;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.corpus.WordInfo;
+import ca.pirurvik.iutools.corpus.CompiledCorpus.WordWithMorpheme;
 import junit.framework.TestCase;
 
 /**

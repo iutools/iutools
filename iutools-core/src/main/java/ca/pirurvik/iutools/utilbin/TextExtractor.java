@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 import ca.inuktitutcomputing.script.Orthography;
 import ca.inuktitutcomputing.script.Syllabics;
 import ca.nrc.datastructure.trie.StringSegmenterException;
-import ca.pirurvik.iutools.CompiledCorpusException;
+import ca.pirurvik.iutools.corpus.CompiledCorpusException;
 import ca.pirurvik.iutools.corpus.CorpusDocument_File;
 import ca.pirurvik.iutools.corpus.CorpusReader_Directory;
 import ca.pirurvik.iutools.text.segmentation.IUTokenizer;

@@ -16,7 +16,7 @@ import ca.inuktitutcomputing.data.LinguisticDataSingleton;
 import ca.inuktitutcomputing.data.SurfaceFormInContext;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieException;
-import ca.pirurvik.iutools.CompiledCorpusException;
+import ca.pirurvik.iutools.corpus.CompiledCorpusException;
 
 public class appCreateFormTrees {
 

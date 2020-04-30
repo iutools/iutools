@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
-import ca.pirurvik.iutools.CompiledCorpus;
+import ca.pirurvik.iutools.corpus.CompiledCorpus;
 
 public class CmdCompileCorpus extends ConsoleCommand {
 

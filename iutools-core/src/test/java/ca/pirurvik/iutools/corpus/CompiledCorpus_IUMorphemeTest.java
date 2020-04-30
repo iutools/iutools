@@ -1,4 +1,4 @@
-package ca.pirurvik.iutools;
+package ca.pirurvik.iutools.corpus;
 
 import static org.junit.Assert.assertArrayEquals;
 
@@ -7,7 +7,6 @@ import org.junit.Test;
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.Trie;
-import ca.pirurvik.iutools.CompiledCorpus_IUMorpheme;
 
 /**
  * Unit test for simple App.

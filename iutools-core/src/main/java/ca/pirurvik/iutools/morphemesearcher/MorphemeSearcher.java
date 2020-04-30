@@ -21,8 +21,8 @@ import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.json.PrettyPrinter;
-import ca.pirurvik.iutools.CompiledCorpus;
-import ca.pirurvik.iutools.CompiledCorpus.WordWithMorpheme;
+import ca.pirurvik.iutools.corpus.CompiledCorpus;
+import ca.pirurvik.iutools.corpus.CompiledCorpus.WordWithMorpheme;
 
 public class MorphemeSearcher {
 	

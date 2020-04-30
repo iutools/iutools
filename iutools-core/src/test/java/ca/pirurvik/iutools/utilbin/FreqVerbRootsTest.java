@@ -17,8 +17,8 @@ import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.testing.AssertHelpers;
-import ca.pirurvik.iutools.CompiledCorpus;
-import ca.pirurvik.iutools.CompiledCorpusException;
+import ca.pirurvik.iutools.corpus.CompiledCorpus;
+import ca.pirurvik.iutools.corpus.CompiledCorpusException;
 
 public class FreqVerbRootsTest {
 
