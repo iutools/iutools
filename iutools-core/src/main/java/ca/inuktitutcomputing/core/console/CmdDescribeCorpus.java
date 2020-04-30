@@ -42,7 +42,7 @@ public class CmdDescribeCorpus extends ConsoleCommand {
 		String corpusName = "this-corpus";
 		CompiledCorpusRegistry.registerCorpus(corpusName, compilationFile);
 		CompiledCorpus compiledCorpus = CompiledCorpusRegistry.getCorpus(corpusName);
-		Map<String,Long> ngramStats = compiledCorpus.ngramStats;
+//		Map<String,Long> ngramStats = compiledCorpus.ngramStats;
 		Trie trie = compiledCorpus.getTrie();
 		
 		System.out.println(
@@ -58,7 +58,8 @@ public class CmdDescribeCorpus extends ConsoleCommand {
 				compiledCorpus.getNbWordsThatFailedSegmentations());
 		System.out.println("");
 		System.out.println("The corpus has its ngrams set: "+
-				(ngramStats==null? "no":"yes"));
+				compiledCorpus.ngramsAreComputed());
+//				(ngramStats==null? "no":"yes"));
 		
 		String action = "";
 		while ( action!=null ) {

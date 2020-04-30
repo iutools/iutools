@@ -52,7 +52,7 @@ import ca.pirurvik.iutools.text.segmentation.IUTokenizer;
  * 
  *
  */ 
-public class CompiledCorpus 
+public class CompiledCorpus extends CompiledCorpus_Base 
 {	
 	public int MAX_NGRAM_LEN = 5;
 	public static String JSON_COMPILATION_FILE_NAME = "trie_compilation.json";
@@ -69,7 +69,7 @@ public class CompiledCorpus
 
 	protected Vector<String> filesCompiled = new Vector<String>();	
 	protected String saveFilePath = null;	
-	protected String segmenterClassName = StringSegmenter_Char.class.getName();	
+//	protected String segmenterClassName = StringSegmenter_Char.class.getName();	
 	public long currentFileWordCounter = -1;
 	protected long retrievedFileWordCounter = -1;	
 	public int saveFrequency = 1000;	
@@ -95,10 +95,10 @@ public class CompiledCorpus
 	private transient StringSegmenter segmenter = null;
 	@JsonIgnore
 	public transient int stopAfter = -1;
-	@JsonIgnore
-	public transient boolean verbose = true;
-	@JsonIgnore
-	public transient String name;
+//	@JsonIgnore
+//	public transient boolean verbose = true;
+//	@JsonIgnore
+//	public transient String name;
 	@JsonIgnore
 	public transient NgramCompiler ngramCompiler;
 	@JsonIgnore
@@ -141,13 +141,13 @@ public class CompiledCorpus
 	}
 
 	
-	public void setVerbose(boolean value) {
-		verbose = value;
-	}
-	
-	public void setName(String _name) {
-		name = _name;
-	}
+//	public void setVerbose(boolean value) {
+//		verbose = value;
+//	}
+//	
+//	public void setName(String _name) {
+//		name = _name;
+//	}
 	
 	@SuppressWarnings("unchecked")
 	@JsonIgnore
@@ -181,20 +181,20 @@ public class CompiledCorpus
 	// ------- Constructors ----------------------------------------------------
 	
 	public CompiledCorpus() {
-		initialize(StringSegmenter_Char.class.getName()); 
+		super(); 
 	}
 	
 	public CompiledCorpus(String segmenterClassName) {
-		initialize(segmenterClassName);
+		super(segmenterClassName);
 	}
 	//--------------------------------------------------------------------------
 	
 
-	public void initialize(String _segmenterClassName) {
-		if (_segmenterClassName != null) {
-			this.segmenterClassName = _segmenterClassName;
-		}
-	}
+//	public void initialize(String _segmenterClassName) {
+//		if (_segmenterClassName != null) {
+//			this.segmenterClassName = _segmenterClassName;
+//		}
+//	}
 	
 	public  void compileCorpus(String corpusDirectoryPathname) throws CompiledCorpusException, StringSegmenterException {
 		_compileCorpus(corpusDirectoryPathname,false);
@@ -950,6 +950,16 @@ public class CompiledCorpus
 	public boolean containsWord(String word) {
 		boolean answer = (segmentsCache.keySet().contains(word));
 		return answer;
+	}
+	
+	public boolean ngramsAreComputed() {
+		return ngramStats != null;
+	}
+
+	@Override
+	protected Set<String> wordsContainingMorphNgram(String[] morphemes) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
 

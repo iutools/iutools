@@ -240,6 +240,7 @@ public class SpellChecker {
 
 	private void __updateSequenceIDF(String charSeq, boolean wordIsNumericTerm) {
 		if (wordIsNumericTerm) {
+			
 			if (!ngramStatsOfNumericTerms.containsKey(charSeq)) {
 				ngramStatsOfNumericTerms.put(charSeq, new Long(0));
 			}
