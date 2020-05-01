@@ -21,6 +21,7 @@ import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -44,17 +45,19 @@ import junit.framework.TestCase;
 /**
  * Unit test for simple App.
  */
-public class CompiledCorpusTest extends TestCase
+public class CompiledCorpusTest extends CompiledCorpus_BaseTest
 {
-    /**
-     * Rigorous Test :-)
-     * @throws Exception 
-     */
+
+	@Override
+	protected CompiledCorpus_Base makeCorpusUnderTest() {
+		return new CompiledCorpus();
+	}
+
 	
 	private File corpusDirectory = null;
 	
-	@Override
-    protected void tearDown() throws Exception {
+	@After
+    public void tearDown() throws Exception {
         if (corpusDirectory != null) {
         	File[] listOfFiles = corpusDirectory.listFiles();
         	for (File file : listOfFiles)
@@ -315,7 +318,7 @@ public class CompiledCorpusTest extends TestCase
         
 		Trie trie = retrievedCompiledCorpus.trie;
 		long expectedCurrentFileWordCounter = 6;
-		assertEquals("The value of the 'current file word counter' is wrong.", expectedCurrentFileWordCounter,
+		Assert.assertEquals("The value of the 'current file word counter' is wrong.", expectedCurrentFileWordCounter,
 				retrievedCompiledCorpus.currentFileWordCounter);
 		HashMap<String, String[]> segmentsCache = retrievedCompiledCorpus.getSegmentsCache();
 		String[] expected_takulaaqtuq_segments = null;
@@ -329,16 +332,16 @@ public class CompiledCorpusTest extends TestCase
 				segmentsCache.get("iglumik"));
 		TrieNode taku_juq_node = trie.getNode(new String[] { "{taku/1v}", "{juq/1vn}" });
 		String expectedText = "{taku/1v} {juq/1vn}";
-		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, taku_juq_node.getKeysAsString());
+		Assert.assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, taku_juq_node.getKeysAsString());
 		TrieNode nuna_it_node = trie.getNode(new String[] { "{nuna/1n}", "{it/tn-nom-p}" });
-		assertTrue("The trie should not contain the node for 'nunait'.", nuna_it_node == null);
+	Assert.assertTrue("The trie should not contain the node for 'nunait'.", nuna_it_node == null);
 
 		// resume compilation
 		retrievedCompiledCorpus.stopAfter = -1; // do not stop anymore; let compilation continue til the end
 		retrievedCompiledCorpus.compileCorpus(corpusDirPathname);
 
 		expectedCurrentFileWordCounter = 8;
-		assertEquals("The value of the 'current file word counter' is wrong.", expectedCurrentFileWordCounter,
+		Assert.assertEquals("The value of the 'current file word counter' is wrong.", expectedCurrentFileWordCounter,
 				retrievedCompiledCorpus.currentFileWordCounter);
 		segmentsCache = retrievedCompiledCorpus.getSegmentsCache();
 		expected_takulaaqtuq_segments = new String[] { "{taku/1v}", "{laaq/2vv}", "{juq/1vn}" };
@@ -352,11 +355,11 @@ public class CompiledCorpusTest extends TestCase
 				segmentsCache.get("iglumik"));
 		taku_juq_node = retrievedCompiledCorpus.trie.getNode(new String[] { "{taku/1v}", "{juq/1vn}" });
 		expectedText = "{taku/1v} {juq/1vn}";
-		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, taku_juq_node.getKeysAsString());
+		Assert.assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, taku_juq_node.getKeysAsString());
 		nuna_it_node = retrievedCompiledCorpus.trie.getNode(new String[] { "{nuna/1n}", "{it/tn-nom-p}" });
-		assertTrue("The trie should contain the node for 'nunait'.", nuna_it_node != null);
+	Assert.assertTrue("The trie should contain the node for 'nunait'.", nuna_it_node != null);
 		expectedText = "{nuna/1n} {it/tn-nom-p}";
-		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, nuna_it_node.getKeysAsString());
+	Assert.assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, nuna_it_node.getKeysAsString());
     }
         
     
@@ -392,7 +395,7 @@ public class CompiledCorpusTest extends TestCase
 
         Trie trie = retrievedCompiledCorpus.trie;
 		long expectedCurrentFileWordCounter = 1;
-		assertEquals("The value of the 'current file word counter' is wrong.", expectedCurrentFileWordCounter,
+	Assert.assertEquals("The value of the 'current file word counter' is wrong.", expectedCurrentFileWordCounter,
 				retrievedCompiledCorpus.currentFileWordCounter);
 		HashMap<String, String[]> segmentsCache = retrievedCompiledCorpus.getSegmentsCache();
 
@@ -407,9 +410,9 @@ public class CompiledCorpusTest extends TestCase
 				segmentsCache.get("iglumik"));
 		TrieNode taku_juq_node = trie.getNode(new String[] { "{taku/1v}", "{juq/1vn}" });
 		String expectedText = "{taku/1v} {juq/1vn}";
-		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, taku_juq_node.getKeysAsString());
+	Assert.assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, taku_juq_node.getKeysAsString());
 		TrieNode nuna_it_node = trie.getNode(new String[] { "{nuna/1n}", "{it/tn-nom-p}" });
-		assertTrue("The trie should not contain the node for 'nunait'.", nuna_it_node != null);
+	Assert.assertTrue("The trie should not contain the node for 'nunait'.", nuna_it_node != null);
 
 		// resume compilation
 		retrievedCompiledCorpus.stopAfter = -1; // do not stop anymore; let compilation continue til the end
@@ -417,7 +420,7 @@ public class CompiledCorpusTest extends TestCase
 
         Trie completeTrie = retrievedCompiledCorpus.trie;
 		expectedCurrentFileWordCounter = 3;
-		assertEquals("The value of the 'current file word counter' is wrong.", expectedCurrentFileWordCounter,
+	Assert.assertEquals("The value of the 'current file word counter' is wrong.", expectedCurrentFileWordCounter,
 				retrievedCompiledCorpus.currentFileWordCounter);
 		segmentsCache = retrievedCompiledCorpus.getSegmentsCache();
 		String[] expected_takulaaqtuq_segments = new String[] { "{taku/1v}", "{laaq/2vv}", "{juq/1vn}" };
@@ -431,27 +434,27 @@ public class CompiledCorpusTest extends TestCase
 				segmentsCache.get("iglumik"));
 		taku_juq_node = completeTrie.getNode(new String[] { "{taku/1v}", "{juq/1vn}" });
 		expectedText = "{taku/1v} {juq/1vn}";
-		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, taku_juq_node.getKeysAsString());
+	Assert.assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, taku_juq_node.getKeysAsString());
 		nuna_it_node = completeTrie.getNode(new String[] { "{nuna/1n}", "{it/tn-nom-p}" });
-		assertTrue("The trie should contain the node for 'nunait'.", nuna_it_node != null);
+	Assert.assertTrue("The trie should contain the node for 'nunait'.", nuna_it_node != null);
 		expectedText = "{nuna/1n} {it/tn-nom-p}";
-		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, nuna_it_node.getKeysAsString());
+	Assert.assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, nuna_it_node.getKeysAsString());
 
 		TrieNode iglu_mut_node = completeTrie.getNode(new String[] { "{iglu/1n}", "{mut/tn-dat-s}" });
-		assertTrue("The trie should contain the node for 'iglumut'.", iglu_mut_node != null);
+	Assert.assertTrue("The trie should contain the node for 'iglumut'.", iglu_mut_node != null);
 		expectedText = "{iglu/1n} {mut/tn-dat-s}";
-		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, iglu_mut_node.getKeysAsString());
+	Assert.assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, iglu_mut_node.getKeysAsString());
 
 		TrieNode sana_lauqsima_juq_node = completeTrie
 				.getNode(new String[] { "{sana/1v}", "{lauqsima/1vv}", "{juq/1vn}" });
-		assertTrue("The trie should contain the node for 'sanalauqsimajuq'.", sana_lauqsima_juq_node != null);
+	Assert.assertTrue("The trie should contain the node for 'sanalauqsimajuq'.", sana_lauqsima_juq_node != null);
 		expectedText = "{sana/1v} {lauqsima/1vv} {juq/1vn}";
-		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText,
+	Assert.assertEquals("The text of the node should be '" + expectedText + "'.", expectedText,
 				sana_lauqsima_juq_node.getKeysAsString());
 		
 		// 11 words, but one did not analyze.
-		assertEquals("The frequency of the word sanalauqsimajuq should be 1.",1,sana_lauqsima_juq_node.getFrequency());
-		assertEquals("The size of the trie should be 10.",10,completeTrie.getSize());
+	Assert.assertEquals("The frequency of the word sanalauqsimajuq should be 1.",1,sana_lauqsima_juq_node.getFrequency());
+	Assert.assertEquals("The size of the trie should be 10.",10,completeTrie.getSize());
 		
 		
     }
@@ -489,14 +492,14 @@ public class CompiledCorpusTest extends TestCase
 		Trie trie = retrievedCompiledCorpus.trie;
 
 		TrieNode iglu_mut_node = trie.getNode(new String[] { "{iglu/1n}", "{mut/tn-dat-s}" });
-		assertTrue("The trie should contain the node for 'iglumut'.", iglu_mut_node != null);
+	Assert.assertTrue("The trie should contain the node for 'iglumut'.", iglu_mut_node != null);
 		String expectedText = "{iglu/1n} {mut/tn-dat-s}";
-		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, iglu_mut_node.getKeysAsString());
+	Assert.assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, iglu_mut_node.getKeysAsString());
 
 		TrieNode sana_lauqsima_juq_node = trie.getNode(new String[] { "{sana/1v}", "{lauqsima/1vv}", "{juq/1vn}" });
-		assertTrue("The trie should contain the node for 'sanalauqsimajuq'.", sana_lauqsima_juq_node != null);
+	Assert.assertTrue("The trie should contain the node for 'sanalauqsimajuq'.", sana_lauqsima_juq_node != null);
 		expectedText = "{sana/1v} {lauqsima/1vv} {juq/1vn}";
-		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText,
+	Assert.assertEquals("The text of the node should be '" + expectedText + "'.", expectedText,
 				sana_lauqsima_juq_node.getKeysAsString());
 				
     }
@@ -528,11 +531,11 @@ public class CompiledCorpusTest extends TestCase
         	compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
         	Trie trie = compiledCorpus.getTrie();
         	TrieNode terminals[] = trie.getAllTerminals();
-        	assertEquals("The number of terminals in the trie is incorrect.",10,terminals.length);
+        Assert.assertEquals("The number of terminals in the trie is incorrect.",10,terminals.length);
         } catch(CompiledCorpusException | StringSegmenterException e) {
         }
         
-        assertTrue("The compilation file is not in the corpus directory.",corpusSaveFile.exists());
+       Assert.assertTrue("The compilation file is not in the corpus directory.",corpusSaveFile.exists());
 
     }
     
@@ -555,11 +558,11 @@ public class CompiledCorpusTest extends TestCase
        // takujuq should add something only once into wordSegmentations and decomposedWordsSuite
        String expected = ",,nunavut:{nunavut/1n},,takujuq:{taku/1v}{juq/1vn},,iglumik:{iglu/1n}{mik/tn-acc-s},,iijuq:{ii/1v}{juq/1vn},,";
        String wordSegmentations = compiledCorpus.getWordSegmentations();
-	   assertEquals("The word segmentations string is not correct.", expected, wordSegmentations);
+	  Assert.assertEquals("The word segmentations string is not correct.", expected, wordSegmentations);
 		
        String expectedSuite = ",,nunavut,,takujuq,,iglumik,,iijuq,,";
        String decomposedWordsSuite = compiledCorpus.getDecomposedWordsSuite();
-	   assertEquals("The decomposed words suite string is not correct.", expectedSuite, decomposedWordsSuite);
+	  Assert.assertEquals("The decomposed words suite string is not correct.", expectedSuite, decomposedWordsSuite);
 	   
 	   Map<String,Long> expectedNgramStats = new HashMap<String,Long>();
 	   expectedNgramStats.put("nun", new Long(1));
@@ -629,12 +632,12 @@ public class CompiledCorpusTest extends TestCase
         CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
         compiledCorpus.setVerbose(false);
         boolean canBeResumed = compiledCorpus.canBeResumed(corpusDirPathname);
-        assertFalse("The compiler should not be able to resume; there is no JSON compilation backup.",canBeResumed);
+       Assert.assertFalse("The compiler should not be able to resume; there is no JSON compilation backup.",canBeResumed);
 
         File jsonFile = new File(corpusDirPathname+"/"+CompiledCorpus.JSON_COMPILATION_FILE_NAME);
         jsonFile.createNewFile();
         canBeResumed = compiledCorpus.canBeResumed(corpusDirPathname);
-        assertTrue("The compiler should be able to resume; there is a JSON compilation backup.",canBeResumed);
+       Assert.assertTrue("The compiler should be able to resume; there is a JSON compilation backup.",canBeResumed);
 }
     
 	@Test
@@ -680,10 +683,10 @@ public class CompiledCorpusTest extends TestCase
 		Trie trie = retrievedCompiledCorpus.trie;
 		long trieSize = trie.getSize();
 		long expectedSize = 5;
-		assertEquals("The number of terminals in the retrieved trie is faulty.",expectedSize,trieSize);
+	Assert.assertEquals("The number of terminals in the retrieved trie is faulty.",expectedSize,trieSize);
 
 		long expectedCurrentFileWordCounter = 6;
-		assertEquals("The value of the 'current file word counter' is wrong.", expectedCurrentFileWordCounter,
+	Assert.assertEquals("The value of the 'current file word counter' is wrong.", expectedCurrentFileWordCounter,
 				retrievedCompiledCorpus.currentFileWordCounter);
 		HashMap<String, String[]> segmentsCache = retrievedCompiledCorpus.getSegmentsCache();
 		String[] expected_takulaaqtuq_segments = null;
@@ -697,9 +700,9 @@ public class CompiledCorpusTest extends TestCase
 				segmentsCache.get("iglumik"));
 		TrieNode taku_juq_node = trie.getNode(new String[] { "{taku/1v}", "{juq/1vn}" });
 		String expectedText = "{taku/1v} {juq/1vn}";
-		assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, taku_juq_node.getKeysAsString());
+	Assert.assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, taku_juq_node.getKeysAsString());
 		TrieNode nuna_it_node = trie.getNode(new String[] { "{nuna/1n}", "{it/tn-nom-p}" });
-		assertTrue("The trie should not contain the node for 'nunait'.", nuna_it_node == null);
+	Assert.assertTrue("The trie should not contain the node for 'nunait'.", nuna_it_node == null);
 		
 }
 	
@@ -717,11 +720,11 @@ public class CompiledCorpusTest extends TestCase
 		charTrie.add("helicopter".split(""),"helicopter");
 		compiledCorpus.trie = charTrie;
 		} catch (Exception e) {
-			assertFalse("An error occurred while adding an element to the trie.",true);
+		Assert.assertFalse("An error occurred while adding an element to the trie.",true);
 		}
 		TrieNode mostFrequent = compiledCorpus.getMostFrequentTerminal("hel".split(""));
-		assertEquals("The frequency of the most frequent found is wrong.",2,mostFrequent.getFrequency());
-		assertEquals("The text of the the most frequent found is wrong.","h e l i c o p t e r \\",mostFrequent.getKeysAsString());
+	Assert.assertEquals("The frequency of the most frequent found is wrong.",2,mostFrequent.getFrequency());
+	Assert.assertEquals("The text of the the most frequent found is wrong.","h e l i c o p t e r \\",mostFrequent.getKeysAsString());
 	}
 
 	@Test
@@ -736,7 +739,7 @@ public class CompiledCorpusTest extends TestCase
 		charTrie.add("helicopter".split(""),"helicopter");
 		compiledCorpus.trie = charTrie;
 		long nbCompiledOccurrences = compiledCorpus.getNumberOfCompiledOccurrences();
-		assertEquals("The sum of the frequencies of all terminals is incorrect.",5,nbCompiledOccurrences);
+	Assert.assertEquals("The sum of the frequencies of all terminals is incorrect.",5,nbCompiledOccurrences);
 		
 	}
 	
@@ -792,9 +795,9 @@ public class CompiledCorpusTest extends TestCase
         CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
         compiledCorpus.setVerbose(false);
         compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
-        assertEquals("The number of words that failed segmentation is wrong.",1,
+       Assert.assertEquals("The number of words that failed segmentation is wrong.",1,
         		compiledCorpus.getNbWordsThatFailedSegmentations());
-        assertEquals("The number of occurrences that failed segmentation is wrong.",1,
+       Assert.assertEquals("The number of occurrences that failed segmentation is wrong.",1,
         		compiledCorpus.getNbOccurrencesThatFailedSegmentations());
 	}
 	
@@ -810,48 +813,48 @@ public class CompiledCorpusTest extends TestCase
         String completeCompilationFilePathname = corpusDirPathname+"/compiled_corpus.json";
 //        compiledCorpus.setCompleteCompilationFilePath(completeCompilationFilePathname);
         compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
-        assertEquals("The number of words that failed segmentation is wrong.",1,
+       Assert.assertEquals("The number of words that failed segmentation is wrong.",1,
         		compiledCorpus.getNbWordsThatFailedSegmentations());
-        assertEquals("The number of occurrences that failed segmentation is wrong.",1,
+       Assert.assertEquals("The number of occurrences that failed segmentation is wrong.",1,
         		compiledCorpus.getNbOccurrencesThatFailedSegmentations());
 
         String wordThatFailed = "saqkilauqtuq";
         String[] keysOfFailedWord = new String[] {"{saqqik/1v}","{lauq/1vv}","{juq/1vn}"};
         TrieNode trieNode1 = compiledCorpus.getTrie().getNode(keysOfFailedWord);
-        assertFalse("The node should not exist in the trie.",trieNode1 != null);
+        Assert.assertFalse("The node should not exist in the trie.",trieNode1 != null);
         compiledCorpus.getWordsFailedSegmentation().add(wordThatFailed);
         compiledCorpus.wordsFailedSegmentationWithFreqs.put(wordThatFailed, new Long(4));
         compiledCorpus.getSegmentsCache().put(wordThatFailed, new String[] {});
-        assertEquals("The number of words that failed segmentation is wrong.",2,
+        Assert.assertEquals("The number of words that failed segmentation is wrong.",2,
         		compiledCorpus.getNbWordsThatFailedSegmentations());
-        assertEquals("The number of occurrences that failed segmentation is wrong.",5,
+        Assert.assertEquals("The number of occurrences that failed segmentation is wrong.",5,
         		compiledCorpus.getNbOccurrencesThatFailedSegmentations());
         
         compiledCorpus.recompileWordsThatFailedAnalysis(corpusDirPathname);
         
-        assertEquals("The number of words that failed segmentation is wrong.",1,
+       Assert.assertEquals("The number of words that failed segmentation is wrong.",1,
         		compiledCorpus.getNbWordsThatFailedSegmentations());
-        assertEquals("The number of occurrences that failed segmentation is wrong.",1,
+       Assert.assertEquals("The number of occurrences that failed segmentation is wrong.",1,
         		compiledCorpus.getNbOccurrencesThatFailedSegmentations());
-        assertEquals("","{saqqik/1v} {lauq/1vv} {juq/1vn}",
+       Assert.assertEquals("","{saqqik/1v} {lauq/1vv} {juq/1vn}",
         		String.join(" ", compiledCorpus.getSegmentsCache().get(wordThatFailed)));
         TrieNode trieNode2 = compiledCorpus.getTrie().getNode(compiledCorpus.getSegmentsCache().get(wordThatFailed));
-        assertTrue("The node should exist in the trie.",trieNode2 != null);
-        assertEquals("The frequency of that node is not right.",4,trieNode2.getFrequency());
+       Assert.assertTrue("The node should exist in the trie.",trieNode2 != null);
+       Assert.assertEquals("The frequency of that node is not right.",4,trieNode2.getFrequency());
         // compilation file should be updated
         String compiledCorpusFilename = corpusDirPathname+"/"+CompiledCorpus.JSON_COMPILATION_FILE_NAME;
         CompiledCorpus newCompiledCorpus = CompiledCorpus.createFromJson(compiledCorpusFilename);
-        assertEquals("(3) The number of words that failed segmentation is wrong.",1,
+       Assert.assertEquals("(3) The number of words that failed segmentation is wrong.",1,
         		newCompiledCorpus.getNbWordsThatFailedSegmentations());
-        assertEquals("(3) The number of occurrences that failed segmentation is wrong.",1,
+       Assert.assertEquals("(3) The number of occurrences that failed segmentation is wrong.",1,
         		newCompiledCorpus.getNbOccurrencesThatFailedSegmentations());
-        assertEquals("(3)","{saqqik/1v} {lauq/1vv} {juq/1vn}",
+       Assert.assertEquals("(3)","{saqqik/1v} {lauq/1vv} {juq/1vn}",
         		String.join(" ", newCompiledCorpus.getSegmentsCache().get(wordThatFailed)));
         
         compiledCorpus.saveCompilerInJSONFile(completeCompilationFilePathname);
         TrieNode trieNode3 = CompiledCorpus.createFromJson(completeCompilationFilePathname).getTrie().getNode(compiledCorpus.getSegmentsCache().get(wordThatFailed));
-        assertTrue("The node should exist in the trie.",trieNode3 != null);
-        assertEquals("The frequency of that node is not right.",4,trieNode3.getFrequency());
+       Assert.assertTrue("The node should exist in the trie.",trieNode3 != null);
+       Assert.assertEquals("The frequency of that node is not right.",4,trieNode3.getFrequency());
 	}
 	
 	@Test
@@ -868,7 +871,7 @@ public class CompiledCorpusTest extends TestCase
 		CompiledCorpusRegistry.registerCorpus("compiled_corpus", tempFile);
 		
 		CompiledCorpus savedCompiledCorpus = CompiledCorpusRegistry.getCorpus("compiled_corpus");
-		assertEquals("",",,nunavut,,inuit,,",savedCompiledCorpus.decomposedWordsSuite);
+	Assert.assertEquals("",",,nunavut,,inuit,,",savedCompiledCorpus.decomposedWordsSuite);
 	}
 	
 	
@@ -886,15 +889,15 @@ public class CompiledCorpusTest extends TestCase
 		
 		word = "iben";
 		result = compiledCorpus.isWordInCorpus(word);
-		assertTrue("The word "+word+" is not in the corpus; result should be null",result==null);
+	Assert.assertTrue("The word "+word+" is not in the corpus; result should be null",result==null);
 		
 		word = "takujuq";
 		result = compiledCorpus.isWordInCorpus(word);
-		assertTrue("The word "+word+" is in the corpus with successful analysis; result should be true",result.booleanValue()==true);
+	Assert.assertTrue("The word "+word+" is in the corpus with successful analysis; result should be true",result.booleanValue()==true);
 		
 		word = "uvlimik";
 		result = compiledCorpus.isWordInCorpus(word);
-		assertTrue("The word "+word+" is in the corpus with unsuccessful analysis; result should be false",result.booleanValue()==false);
+	Assert.assertTrue("The word "+word+" is in the corpus with unsuccessful analysis; result should be false",result.booleanValue()==false);
 	}
 	
 	@Test

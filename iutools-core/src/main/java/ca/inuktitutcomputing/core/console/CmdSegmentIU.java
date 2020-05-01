@@ -1,8 +1,12 @@
 package ca.inuktitutcomputing.core.console;
 
 import java.util.Scanner;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.log4j.Logger;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.morph.Decomposition;
@@ -12,6 +16,8 @@ import ca.nrc.debug.Debug;
 public class CmdSegmentIU extends ConsoleCommand {
 	
 	Scanner stdinScanner = new Scanner(System.in);
+	Mode mode = null;
+	boolean lenient = false;
 	
 	public CmdSegmentIU(String name) {
 		super(name);
@@ -24,20 +30,23 @@ public class CmdSegmentIU extends ConsoleCommand {
 
 	@Override
 	public void execute() throws Exception {
-		Mode mode = getMode(ConsoleCommand.OPT_WORD);
+		mode = getMode(ConsoleCommand.OPT_WORD);
 
-		boolean doExtendedAnalysis = getExtendedAnalysis();
+		lenient = getExtendedAnalysis();
 		MorphologicalAnalyzer morphAnalyzer = new MorphologicalAnalyzer();
 		
 		while (true) {
+			String word = null;
 			try {
-				String word = nextInputWord(mode);
+				word = nextInputWord();
 				if (word == null) {
 					break;
 				}
+				long start = System.currentTimeMillis();				
 				Decomposition[] decs = 
-					morphAnalyzer.decomposeWord(word,doExtendedAnalysis);
-				printDecompositions(decs, mode);
+					morphAnalyzer.decomposeWord(word,lenient);
+				long elapsed = System.currentTimeMillis() - start;
+				printDecompositions(word, decs, elapsed);
 				if (mode == Mode.SINGLE_INPUT) {
 					break;
 				}
@@ -50,8 +59,7 @@ public class CmdSegmentIU extends ConsoleCommand {
 					// Note: This assumes that no exception is raised AFTER the
 					//   word's decompositions have been printed to STDOUT.
 					//
-					printException(e);
-					System.err.println(Debug.printCallStack());
+					printExceptionResult(word, e);
 				} else {
 					throw e;
 				}
@@ -59,33 +67,66 @@ public class CmdSegmentIU extends ConsoleCommand {
 		}
 	}
 
-	private void printException(Exception e) {
-		String message = e.getMessage().replaceAll("[\n\r]+", "\\n");
-		echo("EXCEPTION RAISED: "+message);
-	}
-
-	private void printDecompositions(Decomposition[] decs, Mode mode) 
-			throws LinguisticDataException {
-		String decsStr = "null";
-		String sep = "\n";
-		if (mode == Mode.PIPELINE) {
-			sep = ", ";
+	private void printExceptionResult(String word, Exception e) 
+			throws ConsoleException {
+		
+		WordResult result = new WordResult(word);
+		if (e instanceof TimeoutException) {
+			result.setTimedout(true);
+		} else {
+			result.setException(e);
 		}
-		if (decs != null) {
-			decsStr = "";
-			int decsCount = 0;
-			for (Decomposition aDecomp: decs) {
-				decsCount++;
-				if (decsCount > 1) {
-					decsStr += sep;
-				}
-				decsStr += aDecomp.toStr2();
-			}
-		}		
-		echo(decsStr);
+		
+		printWordResult(result);
 	}
 
-	private String nextInputWord(Mode mode) {
+	private void printDecompositions(String word, Decomposition[] decs, 
+			long elapsedMSecs) throws ConsoleException {
+		if (mode == Mode.PIPELINE) {
+			printDecompositionsPipeline(word, decs, elapsedMSecs);
+		} else {
+			printDecompositionsUserModes(decs, elapsedMSecs);
+		}
+	}
+
+	private void printDecompositionsUserModes(Decomposition[] decs, 
+			long elapsedMSecs) throws ConsoleException {
+		if (decs == null) {
+			echo("Morphological analyzer failed");
+		} else if (decs.length == 0) {
+			echo("No decompositions found");
+		} else {
+			for (Decomposition aDec: decs) {
+				try {
+					echo(aDec.toStr2());
+				} catch (LinguisticDataException e) {
+					throw new ConsoleException(e);
+				}
+			}
+		}
+	}
+
+	private void printDecompositionsPipeline(String _word, Decomposition[] decs, 
+			long elapsed) throws ConsoleException {
+		try {
+			WordResult result = new WordResult(_word, decs, lenient, elapsed);
+			printWordResult(result);
+		} catch (Exception e) {
+			throw new ConsoleException(e);
+		}
+	}
+
+	private void printWordResult(WordResult result) throws ConsoleException {
+		String output;
+		try {
+			output = new ObjectMapper().writeValueAsString(result);
+		} catch (JsonProcessingException e) {
+			throw new ConsoleException(e);
+		}
+		echo(output);
+	}
+
+	private String nextInputWord() {
 		String word = null;
 		if (mode == Mode.SINGLE_INPUT) {
 			word = getWord();
@@ -101,4 +142,69 @@ public class CmdSegmentIU extends ConsoleCommand {
 		return word;
 	}
 
+	public static class WordResult {
+		public String word = null;;
+		public String[] decompositions = new String[0];
+		public String exception = null;
+		public Long elapsedMSecs = null;
+		public boolean lenient = false;
+		public boolean timedOut = false;
+		
+		public WordResult(String _word) throws ConsoleException {
+			initializeWordResult(_word, null, null, null, null);
+		}
+
+		public WordResult(String _word, Exception exc) 
+				throws ConsoleException {
+			initializeWordResult(_word, null, null, null, exc);
+		}
+
+		public WordResult(String _word, Decomposition[] decomps, 
+				Boolean _lenient, Long elapsed) throws ConsoleException {
+			initializeWordResult(_word, decomps, elapsed, _lenient, null);
+		}
+
+		public WordResult(String _word, Decomposition[] decomps, 
+				Long elapsed, Exception exc) throws ConsoleException {
+			initializeWordResult(_word, decomps, elapsed, null, exc);
+		}
+		
+		public WordResult setTimedout(boolean flag) {
+			this.timedOut  = flag;
+			return this;
+		}
+		
+		public WordResult setException(Exception exc) {
+			if (exc != null) {
+				this.exception = singleLineMessage(exc);
+			}
+			return this;
+		}
+
+		private void initializeWordResult(String _word, Decomposition[] decomps, 
+			Long elapsed, Boolean _lenient, Exception exc) throws ConsoleException {
+			this.word = _word;
+			this.elapsedMSecs = elapsed;			
+			if (_lenient != null) {
+				this.lenient = _lenient;
+			}
+			if (decomps != null) {
+				this.decompositions = new String[decomps.length];
+				for (int ii=0; ii < decomps.length; ii++) {
+					try {
+						this.decompositions[ii] = decomps[ii].toStr2();
+					} catch (LinguisticDataException e) {
+						throw new ConsoleException(e);
+					}
+				}
+			}
+			setException(exc);
+		}
+
+		private String singleLineMessage(Exception exc) {
+			String mess = exc.getMessage()+"\n"+Debug.printCallStack();
+			mess = mess.replaceAll("[\n\r]+", "\\n");
+			return mess;
+		}
+	}
 }
