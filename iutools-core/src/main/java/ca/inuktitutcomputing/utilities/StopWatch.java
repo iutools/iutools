@@ -14,9 +14,10 @@ public class StopWatch {
 	private long startTime;
 	private boolean disactivated = false;
 	
+	private int clockNotForcedSince = 0;
+	
 	public StopWatch(long _timeout) {
 		this.timeout = _timeout;
-		
 	}
 	
 	public void start() {
@@ -70,23 +71,29 @@ public class StopWatch {
 		ClockUpdateStrategy updateStrat =
 //				ForceUpdateStrategy.CALL_STACK;
 //				ForceUpdateStrategy.WRITE_FILE;
-//				ClockUpdateStrategy.CHECK_FILE;
-				ClockUpdateStrategy.NONE;
+				ClockUpdateStrategy.CHECK_FILE;
+//				ClockUpdateStrategy.NONE;
 		
-		if (updateStrat == ClockUpdateStrategy.CALL_STACK) {
-			Debug.printCallStack();
-		} else if (updateStrat == ClockUpdateStrategy.WRITE_FILE) {
-			File file = new File("/tmp/stopwatch.txt");
-			try {
-				FileWriter fr = new FileWriter(file);
-				fr.write("nevermind");
-				fr.close();	
-			} catch (Exception e) {
-				e.printStackTrace();
-			}	
-		} else if (updateStrat == ClockUpdateStrategy.CHECK_FILE) {
-			File file = new File("/tmp/stopwatch.txt");
-			file.exists();
+		clockNotForcedSince++;
+		// Don't force at each iteration as it will slow things down
+		if (clockNotForcedSince > 100) {
+			clockNotForcedSince = 0;
+		
+			if (updateStrat == ClockUpdateStrategy.CALL_STACK) {
+				Debug.printCallStack();
+			} else if (updateStrat == ClockUpdateStrategy.WRITE_FILE) {
+				File file = new File("/tmp/stopwatch.txt");
+				try {
+					FileWriter fr = new FileWriter(file);
+					fr.write("nevermind");
+					fr.close();	
+				} catch (Exception e) {
+					e.printStackTrace();
+				}	
+			} else if (updateStrat == ClockUpdateStrategy.CHECK_FILE) {
+				File file = new File("/tmp/stopwatch.txt");
+				file.exists();
+			}
 		}
 	}
 
