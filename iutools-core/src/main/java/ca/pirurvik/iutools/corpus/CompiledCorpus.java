@@ -527,7 +527,7 @@ public class CompiledCorpus extends CompiledCorpus_Base
 					addToDecomposedWordsSuite(word);
 				}
 			} catch (TimeoutException e) {
-				toConsole("** EXCEPTION RAISED");
+				toConsole("** Timeout EXCEPTION RAISED");
 				toConsole(" ??? " + e.getClass().getName() + " --- " + e.getMessage() + " ");
 				segments = new String[] {};
 			}

@@ -1070,6 +1070,7 @@ public class Roots {
 			}
 			out.append("</tr></table>");
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 

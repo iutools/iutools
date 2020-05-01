@@ -212,6 +212,7 @@ public class Debugging {
 				System.out.print("\n[" + origine + "] ");
 				System.out.println(s);
 			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 	}
@@ -228,6 +229,7 @@ public class Debugging {
 				out.write(s);
 				out.flush();
 			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 	}
@@ -243,6 +245,7 @@ public class Debugging {
 				System.out.print("\n[" + origine + "] ");
 				System.out.println(s);
 			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 	}

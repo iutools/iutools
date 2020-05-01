@@ -87,10 +87,12 @@ public class Dialect {
      * @throws TimeoutException 
      */
     public static Vector<String> equivalentGroups(char l1, char l2) throws TimeoutException {
+    	stpw.check("\"Dialect.equivalentGroups -- upon entry, l1="+
+    		l1+", l2="+l2);
         String group = new String(new char[] { l1, l2 });
         Vector<String> terms = new Vector<String>();
         for (int i = 0; i < groups.length; i++) {
-        	stpw.check("Dialect.equivalentGroups::93 -- i: "+i);
+        	stpw.check("Dialect.equivalentGroups -- first loop, i="+i);
             if (groups[i][0].equals(group)) {
                 terms.add(groups[i][1]);
             }
@@ -114,7 +116,13 @@ public class Dialect {
      * 
      * The results of each check are joined.
      */
-    public static Vector<String> newCandidates(String stem, String candidateMorpheme, String followingMorpheme) throws TimeoutException, LinguisticDataException {
+    public static Vector<String> newCandidates(String stem, String candidateMorpheme, 
+    		String followingMorpheme) throws TimeoutException, 
+    		LinguisticDataException {
+    	
+    	stpw.check("newCandidates -- upon entry, stem="+stem+
+    		", candidateMorpheme="+candidateMorpheme+", followingMorpheme="+
+    			followingMorpheme);
         Vector<String> cands = new Vector<String>(); // to hold the new candidates
         ArrayList<Object[]> candsAndChanges = new ArrayList<Object[]>();
         
@@ -362,10 +370,13 @@ public class Dialect {
 
 
     public static ArrayList<Object[]> correspondingTermsEquivalentGroups(String term, int pos) throws TimeoutException {
+    	stpw.check(
+    		"Dialect.correspondingTermsEquivalentGroups -- upon entry, term="+
+    		term+", pos="+pos);
         ArrayList<Object[]> termsAndAlterations = new ArrayList<Object[]>();
         int i;
         for (i = pos; i < term.length() - 1; i++) {
-        	stpw.check("Dialect.correspondingTermsEquivalentGroups::368 -- i: "+i);
+        	stpw.check("Dialect.correspondingTermsEquivalentGroups -- first loop, i="+i);
             String groupOfConsonants =
                 new String(new char[]{term.charAt(i), term.charAt(i + 1)});
             Vector<String> greqs = equivalentGroups(term.charAt(i), term

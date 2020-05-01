@@ -1965,7 +1965,8 @@ public class MorphInuk {
             String stem, 
             int positionAffixInWord, 
             SurfaceFormOfAffix form,
-            boolean notResultingFromDialectalPhonologicalTransformation) throws TimeoutException, MorphInukException, LinguisticDataException {
+            boolean notResultingFromDialectalPhonologicalTransformation) 
+            	throws TimeoutException, MorphInukException, LinguisticDataException {
         Object[][] stemAffs = null;
         boolean checkStartOfConsonantsGroup = true;
         /*

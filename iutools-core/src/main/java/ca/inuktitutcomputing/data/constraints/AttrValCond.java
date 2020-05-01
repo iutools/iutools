@@ -163,6 +163,7 @@ public class AttrValCond extends Condition implements Conditions,Cloneable {
                 attribute = new String(sts[0]);
                 value = sts[1];
             } catch (Exception e) {
+            	e.printStackTrace();
             }
         }
     }

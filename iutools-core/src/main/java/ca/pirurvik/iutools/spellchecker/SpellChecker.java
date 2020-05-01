@@ -235,6 +235,7 @@ public class SpellChecker {
 			}
 		}
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 

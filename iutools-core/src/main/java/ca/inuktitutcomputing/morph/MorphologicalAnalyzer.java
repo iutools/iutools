@@ -161,7 +161,11 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
      * qu'il manque la consonne finale. On ajoute '*' à la fin
      * du mot, qui tient lieu de n'importe quelle consonne.
      */
-    private Vector<Decomposition> _decomposeForFinalConsonantPossiblyMissing(String aWord, boolean decomposeCompositeRoot) throws TimeoutException, MorphInukException, LinguisticDataException {
+    private Vector<Decomposition> _decomposeForFinalConsonantPossiblyMissing(
+    		String aWord, boolean decomposeCompositeRoot) throws TimeoutException, MorphInukException, LinguisticDataException {
+    	stpw.check(
+    		"_decomposeForFinalConsonantPossiblyMissing -- upon entry, word="+
+    		aWord+", decomposeCompositeRoot="+decomposeCompositeRoot);
     	Vector<Decomposition> newDecomps = _decompose(aWord + "*", false);
         return newDecomps;
 	}
@@ -256,6 +260,8 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
             String transitivity
             ) throws TimeoutException, MorphInukException, LinguisticDataException {
 
+    	stpw.check("__decompose_simplified_term__ -- Upon entry");
+
         Vector<Decomposition> completeAnalysis = new Vector<Decomposition>();
         
         /*
@@ -290,6 +296,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 			Vector<AffixPartOfComposition> morphParts, State[] states,
 			Conditions preCond, String transitivity) throws TimeoutException, MorphInukException, LinguisticDataException {
 
+    	stpw.check("analyzeAsSequenceOfMorphemes -- Upon entry");
     	Logger logger = Logger.getLogger("MorphologicalAnalyzer.analyzeAsSequenceOfMorphemes");
     	logger.debug("++++++simplifiedTerm= "+simplifiedTerm);
         Vector<Decomposition> completeAnalysis = new Vector<Decomposition>();

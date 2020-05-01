@@ -177,6 +177,7 @@ public class Orthography {
                 }
             }
         } catch (Exception e) {
+        	e.printStackTrace();
         }
         return sb.toString();
     }
