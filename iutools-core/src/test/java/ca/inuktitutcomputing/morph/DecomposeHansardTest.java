@@ -5,6 +5,7 @@
  */
 package ca.inuktitutcomputing.morph;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -107,11 +108,16 @@ public class DecomposeHansardTest {
 
 		Calendar startCalendar = Calendar.getInstance();
 		
-		while ((st=readLineST(readerGoldStandard)) != null) {
+		MorphAnalGoldStandard goldStandard = new MorphAnalGoldStandard();
+		for (String wordId: goldStandard.allCases()) {
+//		while ((st=readLineST(readerGoldStandard)) != null) {
 		    boolean noProcessing = false;
-		    String wordId = st.nextToken();
-			String wordToBeAnalyzed = st.nextToken();
-			String goldStandardDecomposition = st.nextToken();
+//		    String wordId = st.nextToken();
+//			String wordToBeAnalyzed = st.nextToken();
+//			String goldStandardDecomposition = st.nextToken();
+		    Pair<String,String> caseData = goldStandard.caseData(wordId);
+		    String wordToBeAnalyzed = caseData.getLeft();
+		    String goldStandardDecomposition = caseData.getRight();
 			if (verbose) System.out.print("> :"+wordToBeAnalyzed+":");
 			Decomposition [] decs = null;
 			/*
