@@ -30,6 +30,12 @@ public class MorphAnalGoldStandard {
 	public Set<String> allWords() {
 		return answerForWord.keySet();
 	}
+
+	public String correctDecomp(String word) {
+		Pair<String,String> data = caseData(word);
+		String decomp = data.getRight();
+		return decomp;
+	}
 	
 	public Pair<String,String> caseData(String word) {
 		return answerForWord.get(word);

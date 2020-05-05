@@ -24,6 +24,8 @@
 
 package ca.inuktitutcomputing.morph;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -398,10 +400,16 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 		return sb.toString();
 	}
 	
-//	public String toString()
-//	{
-//		return this.toStr2();
-//	}
+	public String toString()
+	{
+		String toStr = null;
+		try {
+			toStr = this.toStr2();
+		} catch (LinguisticDataException e) {
+			e.printStackTrace();
+		}
+		return toStr;
+	}
 	
 	static public String[] getMeaningsInArrayOfStrings (String decstr, String lang, 
 			boolean includeSurface, boolean includeId) throws LinguisticDataException {
