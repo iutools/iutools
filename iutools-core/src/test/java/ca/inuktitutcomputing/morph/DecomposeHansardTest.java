@@ -109,15 +109,12 @@ public class DecomposeHansardTest {
 		Calendar startCalendar = Calendar.getInstance();
 		
 		MorphAnalGoldStandard goldStandard = new MorphAnalGoldStandard();
-		for (String wordId: goldStandard.allCases()) {
-//		while ((st=readLineST(readerGoldStandard)) != null) {
+		for (String wordToBeAnalyzed: goldStandard.allWords()) {
 		    boolean noProcessing = false;
-//		    String wordId = st.nextToken();
-//			String wordToBeAnalyzed = st.nextToken();
-//			String goldStandardDecomposition = st.nextToken();
-		    Pair<String,String> caseData = goldStandard.caseData(wordId);
-		    String wordToBeAnalyzed = caseData.getLeft();
+		    Pair<String,String> caseData = goldStandard.caseData(wordToBeAnalyzed);
+		    String wordId = caseData.getLeft();
 		    String goldStandardDecomposition = caseData.getRight();
+		    
 			if (verbose) System.out.print("> :"+wordToBeAnalyzed+":");
 			Decomposition [] decs = null;
 			/*
