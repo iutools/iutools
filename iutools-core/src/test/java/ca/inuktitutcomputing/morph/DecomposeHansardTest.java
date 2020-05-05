@@ -112,40 +112,32 @@ public class DecomposeHansardTest {
 		for (String wordToBeAnalyzed: goldStandard.allWords()) {
 		    boolean noProcessing = false;
 		    Pair<String,String> caseData = goldStandard.caseData(wordToBeAnalyzed);
+
+		    if (skipCase(caseData)) {
+		    	continue;
+		    }
+
 		    String wordId = caseData.getLeft();
 		    String goldStandardDecomposition = caseData.getRight();
 		    
+		    
+		    AnalysisOutcome outcome = decompose(wordToBeAnalyzed);
+		    
 			if (verbose) System.out.print("> :"+wordToBeAnalyzed+":");
 			Decomposition [] decs = null;
-			/*
-			 * *x: x is a proper name of some sort
-			 * ?x: x's real decomposition is unknown
-			 * #x: x is known to contain an error, typo or orthographic
-			 * 
-			 * Those x words are not analyzed in this test.
-			 * 
-			 * @x: x is not to be considered only in the test destined to users
-			 */
-			if (!wordId.startsWith("*") && !wordId.startsWith("?") && !wordId.startsWith("#")) {
-                try {
-                    decs = morphAnalyzer.decomposeWord(wordToBeAnalyzed);
-                } catch (Exception e) {
-                    decs = new Decomposition[]{};
-                    System.out.print("Exception in testDecomposer:\n  Exception Class: "+e.getClass()+"\n  Cause: "+e.getCause()+"\n  Message: "+e.getMessage());
-                }
-                nbWordsToBeAnalyzed++;
-                if (verbose) System.out.println(" []");
-            } else {
-			    noProcessing = true;
-			    if (verbose) System.out.println(" [not analyzed]");
-			}
-
-			if (noProcessing) {
-			    
-			}
-			//No decompositions: the analyzer fails to decompose the word	
-        	else if (decs.length == 0) {
-        	    // Either the word was previously analyzed with success and now failed,
+            try {
+                decs = morphAnalyzer.decomposeWord(wordToBeAnalyzed);
+            } catch (Exception e) {
+                decs = new Decomposition[]{};
+                System.out.print("Exception in testDecomposer:\n  Exception Class: "+e.getClass()+"\n  Cause: "+e.getCause()+"\n  Message: "+e.getMessage());
+            }
+            nbWordsToBeAnalyzed++;
+            if (verbose) System.out.println(" []");
+            
+        	if (decs.length == 0) {
+    			//No decompositions: the analyzer fails to decompose the word	
+        		//
+        		// Either the word was previously analyzed with success and now failed,
         	    // or it was not analyzed with success.
         		if (hashTargetSuccessfulAnalysis != null && hashTargetSuccessfulAnalysis.containsKey(wordId)){
             		//if it was previously successful and now it failed write the word in the appropriate file
@@ -283,8 +275,33 @@ public class DecomposeHansardTest {
 		
 	}
 	
+	private boolean skipCase(Pair<String,String> caseData) {
+		boolean skip = false;
+		String wordId = caseData.getLeft();
 		
+		/*
+		 * *x: x is a proper name of some sort
+		 * ?x: x's real decomposition is unknown
+		 * #x: x is known to contain an error, typo or orthographic
+		 * 
+		 * Those x words are not analyzed in this test.
+		 * 
+		 * @x: x is not to be considered only in the test destined to users
+		 */
+		
+		if (wordId.startsWith("*") || wordId.startsWith("?") 
+				|| wordId.startsWith("#")) {
+			skip = true;
+		}
+		
+		return skip;
+	}
 	
+	private AnalysisOutcome decompose(String wordToBeAnalyzed) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	protected void writeErrorMessage(int key) {
 		String targetSuccessfulAnalysisFile_src = "target_" + new File(fileSuccessfulAnalysis).getName();
 		
