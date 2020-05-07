@@ -44,11 +44,11 @@ public class DecomposeHansardTest {
 		System.out.println("Running testDecomposer. This test can take a few minutes to complete.");
 		
 		//
-		// Set to a word if you want to run the tests just on that one word.
-		// Set to null to run on all words
+		// Leave this at null to run on all words
+		// Set it to a word if you want to run the tests just on that one word.
 		//
-//		String focusOnWord = "taaksumunga";
 		String focusOnWord = null;
+//		focusOnWord = "iksivautaaq";
 		
 		morphAnalyzer = new MorphologicalAnalyzer();
 		MorphAnalCurrentExpectations expectations = new MorphAnalCurrentExpectations();
@@ -60,14 +60,13 @@ public class DecomposeHansardTest {
         
 		for (String wordToBeAnalyzed: goldStandard.allWords()) {
 		    boolean noProcessing = false;
-		    Pair<String,String> caseData = goldStandard.caseData(wordToBeAnalyzed);
+		    AnalyzerCase caseData = goldStandard.caseData(wordToBeAnalyzed);
 
 		    if (skipCase(caseData, focusOnWord)) {
 		    	continue;
 		    }
 
-		    String wordId = caseData.getLeft();
-		    String goldStandardDecomposition = caseData.getRight();
+		    String goldStandardDecomposition = caseData.correctDecomp;
 			if (verbose) System.out.print("> :"+wordToBeAnalyzed+":");
 		    AnalysisOutcome outcome = decompose(wordToBeAnalyzed);
 		    
@@ -209,29 +208,16 @@ public class DecomposeHansardTest {
 		outcomeDifferences.put(word, diffMess);
 	}
 
-	private boolean skipCase(Pair<String,String> caseData, String focusOnWord) {
+	private boolean skipCase(AnalyzerCase caseData, String focusOnWord) {
 		Boolean skip = null;
 		
-		String wordId = caseData.getLeft();
-		if (focusOnWord != null) {
-			if (!wordId.endsWith(focusOnWord)) {
-				skip = true;
-			}
+		if (focusOnWord != null  && !focusOnWord.equals(caseData.word)) {
+			skip = true;
 		}
 		
 		if (skip == null) {
-			/*
-			 * *x: x is a proper name of some sort
-			 * ?x: x's real decomposition is unknown
-			 * #x: x is known to contain an error, typo or orthographic
-			 * 
-			 * Those x words are not analyzed in this test.
-			 * 
-			 * @x: x is not to be considered only in the test destined to users
-			 */
-			
-			if (wordId.startsWith("*") || wordId.startsWith("?") 
-					|| wordId.startsWith("#")) {
+			if (caseData.isMisspelled || caseData.properName || 
+				 caseData.skipped || caseData.decompUnknown) {
 				skip = true;
 			}
 		}
@@ -242,7 +228,7 @@ public class DecomposeHansardTest {
 		
 		return skip;
 	}
-	
+
 	private AnalysisOutcome decompose(String word) throws MorphInukException, LinguisticDataException {
 		AnalysisOutcome outcome = new AnalysisOutcome();
 		
