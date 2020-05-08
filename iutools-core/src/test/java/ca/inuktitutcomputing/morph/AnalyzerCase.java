@@ -14,6 +14,10 @@ public class AnalyzerCase {
 	public boolean decompUnknown = false;
 	public boolean properName = false;
 	public String comment = null;
+
+	public AnalyzerCase(String _word) throws Exception {
+		initAnalyzerCase(_word, null);
+	}
 	
 	public AnalyzerCase(String _word, String _correctDecomp) throws Exception {
 		initAnalyzerCase(_word, _correctDecomp);
@@ -33,7 +37,13 @@ public class AnalyzerCase {
 			"Yet, this case was assigned exepcted decomposition: "+_correctAnalysis);
 	}
 
-	public AnalyzerCase isMisspelled() {
+	public AnalyzerCase isMisspelled() throws Exception {
+//		if (correctDecomp != null) {
+//			throw new Exception(
+//				"Mis-spelled word "+word+
+//				" should have a null correct decomposition.\n"+
+//				"Assigned correct decomposition is: "+correctDecomp);
+//		}
 		isMisspelled = true;
 		return this;
 	}

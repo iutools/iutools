@@ -31,9 +31,11 @@ import java.util.Map;
  */
 public class MorphAnalCurrentExpectations {
 	
+	// IMPORTANT: The order of those matters. They are from 
+	//   least successful to most successful
+	//
 	public static enum OutcomeType {
-		SUCCESS, CORRECT_NOT_FIRST, CORRECT_NOT_PRESENT, 
-		TIMEOUT, NO_DECOMPS};
+		NO_DECOMPS, CORRECT_NOT_PRESENT, CORRECT_NOT_FIRST, SUCCESS};
 	
 	
 	Map<String,OutcomeType> expFailures = 
@@ -104,7 +106,6 @@ public class MorphAnalCurrentExpectations {
 		expectFailure("katimaniq", OutcomeType.CORRECT_NOT_FIRST);
 		expectFailure("maligaliuqti", OutcomeType.CORRECT_NOT_FIRST);
 		expectFailure("uqausirnik", OutcomeType.CORRECT_NOT_FIRST);
-		expectFailure("niqsunaqtuq", OutcomeType.CORRECT_NOT_FIRST);
 		expectFailure("uqausilirinirmut", OutcomeType.CORRECT_NOT_FIRST);
 		expectFailure("taissumani", OutcomeType.CORRECT_NOT_FIRST);
 		expectFailure("inulirijikkut", OutcomeType.CORRECT_NOT_FIRST);
@@ -231,7 +232,6 @@ public class MorphAnalCurrentExpectations {
 		expectFailure("uqausinga", OutcomeType.CORRECT_NOT_FIRST);
 		expectFailure("innatuqarnik", OutcomeType.CORRECT_NOT_FIRST);
 		expectFailure("maligaliuqtimut", OutcomeType.CORRECT_NOT_FIRST);
-		expectFailure("imaimmat", OutcomeType.CORRECT_NOT_FIRST);
 		expectFailure("titiraqti", OutcomeType.CORRECT_NOT_FIRST);
 		expectFailure("qanuittunik", OutcomeType.CORRECT_NOT_FIRST);
 		expectFailure("katimajjutiksait", OutcomeType.CORRECT_NOT_FIRST);
@@ -381,50 +381,52 @@ public class MorphAnalCurrentExpectations {
 		// Words that produce some analyses, but none of them is the correct 
 		// one.
 		//
-		expectFailure("imaimmat", OutcomeType.CORRECT_NOT_PRESENT);
-		expectFailure("iksivautaaq", OutcomeType.CORRECT_NOT_PRESENT);
-		expectFailure("mamianaq", OutcomeType.CORRECT_NOT_PRESENT);
-		expectFailure("marrunnik", OutcomeType.CORRECT_NOT_PRESENT);
-		expectFailure("nalliani", OutcomeType.CORRECT_NOT_PRESENT);
-		expectFailure("nunnguani", OutcomeType.CORRECT_NOT_PRESENT);
-		expectFailure("paktaqtuqtut", OutcomeType.CORRECT_NOT_PRESENT);
-		expectFailure("pigiaqtitat", OutcomeType.CORRECT_NOT_PRESENT);
-		expectFailure("piliriaksat", OutcomeType.CORRECT_NOT_PRESENT);
-		expectFailure("piqujaksat", OutcomeType.CORRECT_NOT_PRESENT);
-		expectFailure("taaksumunga", OutcomeType.CORRECT_NOT_PRESENT);		
-		expectFailure("taimannganit", OutcomeType.CORRECT_NOT_PRESENT);
-		expectFailure("titiqqak", OutcomeType.CORRECT_NOT_PRESENT);
-		expectFailure("titiqqaq", OutcomeType.CORRECT_NOT_PRESENT);
-		expectFailure("titiqqat", OutcomeType.CORRECT_NOT_PRESENT);		
-		expectFailure("ukiuqtaqtumi", OutcomeType.CORRECT_NOT_PRESENT);
-		expectFailure("ukiurtartumi", OutcomeType.CORRECT_NOT_PRESENT);
-		expectFailure("uqausiksat", OutcomeType.CORRECT_NOT_PRESENT);
+		// Hum... actually, all those words are currently tagged as
+		//   "skip()" in the Gold Standard, so it doesn't really 
+		//   matter whether they fail or not.
+		//
+//		expectFailure("nunnguani", OutcomeType.CORRECT_NOT_PRESENT);
+//		expectFailure("paktaqtuqtut", OutcomeType.CORRECT_NOT_PRESENT);
+//		expectFailure("pigiaqtitat", OutcomeType.CORRECT_NOT_PRESENT);
+//		expectFailure("piliriaksat", OutcomeType.CORRECT_NOT_PRESENT);
+//		expectFailure("piqujaksat", OutcomeType.CORRECT_NOT_PRESENT);
+//		expectFailure("taaksumunga", OutcomeType.CORRECT_NOT_PRESENT);		
+//		expectFailure("taimannganit", OutcomeType.CORRECT_NOT_PRESENT);
+//		expectFailure("titiqqak", OutcomeType.CORRECT_NOT_PRESENT);
+//		expectFailure("titiqqaq", OutcomeType.CORRECT_NOT_PRESENT);
+//		expectFailure("titiqqat", OutcomeType.CORRECT_NOT_PRESENT);		
+//		expectFailure("ukiuqtaqtumi", OutcomeType.CORRECT_NOT_PRESENT);
+//		expectFailure("ukiurtartumi", OutcomeType.CORRECT_NOT_PRESENT);
+//		expectFailure("uqausiksat", OutcomeType.CORRECT_NOT_PRESENT);
 
 		// 
 		// Words that produce no decomposition at all
 		//
-		expectFailure("issivautaaq", OutcomeType.NO_DECOMPS);
-		expectFailure("itsivautaaq", OutcomeType.NO_DECOMPS);
-		expectFailure("katimajit", OutcomeType.NO_DECOMPS);
-		expectFailure("katimmajjutiksaq", OutcomeType.NO_DECOMPS);
-		expectFailure("kiinaujatigut", OutcomeType.NO_DECOMPS);
-		expectFailure("maligaliuqtit", OutcomeType.NO_DECOMPS);
-		expectFailure("maligatigut", OutcomeType.NO_DECOMPS);
-		expectFailure("milianik", OutcomeType.NO_DECOMPS);
-		expectFailure("milianit", OutcomeType.NO_DECOMPS);
-		expectFailure("nakuqmi", OutcomeType.NO_DECOMPS);
-		expectFailure("naliqqangit", OutcomeType.NO_DECOMPS);
-		expectFailure("nigiani", OutcomeType.NO_DECOMPS);
-		expectFailure("niqsunaqtuq", OutcomeType.NO_DECOMPS);
-		expectFailure("qallunaatitut", OutcomeType.NO_DECOMPS);
-		expectFailure("qattinik", OutcomeType.NO_DECOMPS);
-		expectFailure("tamani", OutcomeType.NO_DECOMPS);
-		expectFailure("tanna", OutcomeType.NO_DECOMPS);
-		expectFailure("titiqqakkut", OutcomeType.NO_DECOMPS);
-		expectFailure("titiqqakkuvik", OutcomeType.NO_DECOMPS);
-		expectFailure("titiqqamik", OutcomeType.NO_DECOMPS);
-		expectFailure("titiqqanik", OutcomeType.NO_DECOMPS);
-		expectFailure("titiqqanit", OutcomeType.NO_DECOMPS);
-		expectFailure("titiqqatigut", OutcomeType.NO_DECOMPS);
+		// Hum... actually, all those words are currently tagged as
+		//   "skip()" in the Gold Standard, so it doesn't really 
+		//   matter whether they fail or not.
+		//
+//		expectFailure("issivautaaq", OutcomeType.NO_DECOMPS);
+//		expectFailure("itsivautaaq", OutcomeType.NO_DECOMPS);
+//		expectFailure("katimajit", OutcomeType.NO_DECOMPS);
+//		expectFailure("katimmajjutiksaq", OutcomeType.NO_DECOMPS);
+//		expectFailure("kiinaujatigut", OutcomeType.NO_DECOMPS);
+//		expectFailure("maligaliuqtit", OutcomeType.NO_DECOMPS);
+//		expectFailure("maligatigut", OutcomeType.NO_DECOMPS);
+//		expectFailure("milianik", OutcomeType.NO_DECOMPS);
+//		expectFailure("milianit", OutcomeType.NO_DECOMPS);
+//		expectFailure("nakuqmi", OutcomeType.NO_DECOMPS);
+//		expectFailure("naliqqangit", OutcomeType.NO_DECOMPS);
+//		expectFailure("niqsunaqtuq", OutcomeType.NO_DECOMPS);
+//		expectFailure("qallunaatitut", OutcomeType.NO_DECOMPS);
+//		expectFailure("qattinik", OutcomeType.NO_DECOMPS);
+//		expectFailure("tamani", OutcomeType.NO_DECOMPS);
+//		expectFailure("tanna", OutcomeType.NO_DECOMPS);
+//		expectFailure("titiqqakkut", OutcomeType.NO_DECOMPS);
+//		expectFailure("titiqqakkuvik", OutcomeType.NO_DECOMPS);
+//		expectFailure("titiqqamik", OutcomeType.NO_DECOMPS);
+//		expectFailure("titiqqanik", OutcomeType.NO_DECOMPS);
+//		expectFailure("titiqqanit", OutcomeType.NO_DECOMPS);
+//		expectFailure("titiqqatigut", OutcomeType.NO_DECOMPS);
 	}
 }

@@ -5,20 +5,18 @@
  */
 package ca.inuktitutcomputing.morph;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
 
 import ca.inuktitutcomputing.data.LinguisticData;
 import ca.inuktitutcomputing.data.LinguisticDataException;
-import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.morph.MorphAnalCurrentExpectations.OutcomeType;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
-import ca.nrc.dtrc.stats.Histogram;
 
 /**
  * @author Marta
@@ -54,7 +52,7 @@ public class DecomposeHansardTest {
 		// Set it to a word if you want to run the tests just on that one word.
 		//
 		String focusOnWord = null;
-//		focusOnWord = "iksivautaaq";
+//		focusOnWord = "itsivautaaq";
 		
 		morphAnalyzer = new MorphologicalAnalyzer();
 		MorphAnalCurrentExpectations expectations = new MorphAnalCurrentExpectations();
@@ -65,18 +63,15 @@ public class DecomposeHansardTest {
         Map<String,String> outcomeDifferences = new HashMap<String,String>();
         
 		for (String wordToBeAnalyzed: goldStandard.allWords()) {
-		    boolean noProcessing = false;
 		    AnalyzerCase caseData = goldStandard.caseData(wordToBeAnalyzed);
 
 		    if (skipCase(caseData, focusOnWord)) {
 		    	continue;
 		    }
 
-		    String goldStandardDecomposition = caseData.correctDecomp;
 			if (verbose) System.out.print("> :"+wordToBeAnalyzed+":");
 		    AnalysisOutcome outcome = decompose(wordToBeAnalyzed);
 		    
-			Decomposition [] decs = outcome.decompositions;
             if (verbose) System.out.println(" []");
             
             checkOutcome(wordToBeAnalyzed, outcome, expectations, goldStandard, 
@@ -90,6 +85,8 @@ public class DecomposeHansardTest {
         if (verbose) System.out.println("");
         if (verbose) System.out.println("Time in milliseconds: "+time);
         
+        printOutcomeHistogram();
+        
         assertOutcomesHaveNotChanged(outcomeDifferences);
         
         if (focusOnWord != null) {
@@ -98,6 +95,36 @@ public class DecomposeHansardTest {
         }
 	}
 	
+	private void printOutcomeHistogram() {
+		int totalCases = 0;
+		for (OutcomeType type: outcomeHist.keySet()) {
+			totalCases += outcomeHist.get(type);
+		}
+		
+		Map<OutcomeType,String> histPercent = new HashMap<OutcomeType,String>();
+		for (OutcomeType type: outcomeHist.keySet()) {
+			double percent = 100.0 * outcomeHist.get(type) / totalCases;
+			String percentStr = new DecimalFormat("#.#").format(percent)+"%";
+			histPercent.put(type, percentStr);
+		}
+		
+		echo("\nCases with:");
+		{		
+			echo("  First decomposition is correct            : "+
+					outcomeHist.get(OutcomeType.SUCCESS)+" ("+
+				 	histPercent.get(OutcomeType.SUCCESS)+")");
+			echo("  Corr. decomp. not in 1st place            : "+
+					outcomeHist.get(OutcomeType.CORRECT_NOT_FIRST)+" ("+
+				 	histPercent.get(OutcomeType.CORRECT_NOT_FIRST)+")");
+			echo("  Some decomps produced but not correct one : "+
+					outcomeHist.get(OutcomeType.CORRECT_NOT_PRESENT)+" ("+
+				 	histPercent.get(OutcomeType.CORRECT_NOT_PRESENT)+")");
+			echo("  No decomps produced at all                : "+
+					outcomeHist.get(OutcomeType.NO_DECOMPS)+" ("+
+				 	histPercent.get(OutcomeType.NO_DECOMPS)+")");		
+		}
+	}
+
 	private void assertOutcomesHaveNotChanged(Map<String, String> outcomeDifferences) {
 		if (!outcomeDifferences.isEmpty()) {
 			int nDiff = outcomeDifferences.keySet().size();
@@ -126,97 +153,78 @@ public class DecomposeHansardTest {
 		MorphAnalCurrentExpectations expectations, 
 		MorphAnalGoldStandard goldStandard, 
 		Map<String, String> outcomeDiffs) {
-
-		OutcomeType expOutcome = expectations.expectedOutcome(word);
-		String correctDecomp = goldStandard.correctDecomp(word);
 		
-		if (expOutcome == OutcomeType.SUCCESS) {
-			checkOutcomeAgainstSuccess(word, gotOutcome, correctDecomp, 
-				outcomeDiffs);
-		} else if (expOutcome == OutcomeType.CORRECT_NOT_FIRST) {
-			checkOutcomeAgainstCorrectNotFirst(word, gotOutcome, correctDecomp, outcomeDiffs);			
-		} else if (expOutcome == OutcomeType.CORRECT_NOT_PRESENT) {
-			checkOutcomeAgainstCorrectNotPresent(word, gotOutcome, correctDecomp, outcomeDiffs);			
-		} else if (expOutcome == OutcomeType.NO_DECOMPS) {
-			checkOutcomeAgainstNoDecomps(word, gotOutcome, outcomeDiffs);
-		} else if (expOutcome == OutcomeType.TIMEOUT) {
-			checkOutcomeAgainstTimeout(word, gotOutcome, outcomeDiffs);
+		OutcomeType expOutcomeType = expectations.expectedOutcome(word);
+		String correctDecomp = goldStandard.correctDecomp(word);
+		OutcomeType gotOutcomeType = 
+			expectations.type4outcome(gotOutcome, correctDecomp);
+		
+		incrementOutcomeHistogram(gotOutcomeType);
+		
+		if (gotOutcomeType != expOutcomeType) {
+			String diffMess = 
+				diffMessage(expOutcomeType, gotOutcomeType, gotOutcome, 
+						correctDecomp);
+			logOutcomeDifference(word, diffMess, outcomeDiffs);
 		}
 	}
 	
-	private void checkOutcomeAgainstSuccess(String word, 
-			AnalysisOutcome gotOutcome, String correctDecomp, 
-			Map<String, String> outcomeDiffs) {
-		String gotTopDecomp = null;
-		Decomposition[] gotDecomps = gotOutcome.decompositions;
-		if (gotDecomps != null && gotDecomps.length > 0) {
-			gotTopDecomp = gotDecomps[0].toString();
+	private String diffMessage(OutcomeType expOutcomeType, 
+			OutcomeType gotOutcomeType, AnalysisOutcome gotOutcome, 
+			String correctDecomp) {
+		String mess = "";
+		int comp = gotOutcomeType.compareTo(expOutcomeType);
+		boolean improved = false;
+		if (gotOutcomeType.compareTo(expOutcomeType) > 0) {
+			improved = true;
 		}
-		if (!correctDecomp.equals(gotTopDecomp)) {
-			// Top decomp used to be the correct one but it isn't anymore
-			String diffMess = 
-				"Top decomposition used to be correct but it isn't anymore.\n"+
-			    "\n"+
-				"Correct decomp    : "+correctDecomp+"\n"+
-			    "Top decomp is now : "+gotTopDecomp;
-			logOutcomeDifference(word, diffMess, false, outcomeDiffs);
+		
+		if (improved) {
+			mess += "GOOD NEWS\n";	
+			mess += improvementMessage(expOutcomeType);
+		} else {
+			mess += "BAD NEWS\n";
+			mess += worseningMessage(expOutcomeType);
+			mess += currentStateMessage(gotOutcome, correctDecomp);
 		}
-	}	
+		
+		return mess;
+	}
+
+	private String currentStateMessage(AnalysisOutcome gotOutcome, String correctDecomp) {
+		String mess = 
+			"\n" +
+			"Correct decomp : "+correctDecomp+"\n"+
+			"Got decomps:\n"+gotOutcome.joinDecomps();
+		return mess;
+	}
+
+	private String worseningMessage(OutcomeType expOutcomeType) {
+		String mess = null;
+		if (expOutcomeType == OutcomeType.SUCCESS) {
+			mess = "Correct decomposition used to be first in the list";
+		} else if (expOutcomeType == OutcomeType.CORRECT_NOT_FIRST) {
+			mess = "Correct decompositions used to be somewhere in the list";
+		}
+		return mess;
+	}
+
+	private String improvementMessage(OutcomeType expOutcomeType) {
+		String mess = null;
+		if (expOutcomeType == OutcomeType.CORRECT_NOT_FIRST) {
+			mess = "Correct decomposition is now first in the list.";
+		}
+		
+		return mess;
+	}
 
 	private void incrementOutcomeHistogram(OutcomeType type) {
 		Integer count = outcomeHist.get(type);
 		outcomeHist.put(type, count+1);		
 	}
 
-	private void checkOutcomeAgainstCorrectNotFirst(String word, 
-		AnalysisOutcome gotOutcome, String correctDecomp, 
-		Map<String, String> outcomeDiffs) {
-		
-		if (!gotOutcome.includesDecomp(correctDecomp)) {
-			String diffMess = 
-				"Decompositions for the word used to include the correct one, but they don't anymore.\n"+
-				"Correct decomp : "+correctDecomp+"\n"+
-				"Got decomps:\n"+gotOutcome.joinDecomps();
-			logOutcomeDifference(word, diffMess, false, outcomeDiffs);
-		}		
-	}
-
-	private void checkOutcomeAgainstCorrectNotPresent(String word, 
-			AnalysisOutcome gotOutcome, String correctDecomp,
-			Map<String, String> outcomeDiffs) {
-		
-		if (gotOutcome.includesDecomp(correctDecomp)) {
-			String diffMess =
-				"Correct decomposition did NOT use to be in the list of decompositions, but it now is!";
-			logOutcomeDifference(word, diffMess, true, outcomeDiffs);
-		}		
-	}
-	
-	private void checkOutcomeAgainstNoDecomps(String word, AnalysisOutcome gotOutcome, Map<String, String> outcomeDiffs) {
-		Decomposition[] gotDecomps = gotOutcome.decompositions;
-		if (gotDecomps != null && gotDecomps.length > 0) {
-			String diffMess = 
-				"Word is now producing decompositions!\n";
-			logOutcomeDifference(word, diffMess, true, outcomeDiffs);
-		}
-	}
-
-	private void checkOutcomeAgainstTimeout(String word, 
-			AnalysisOutcome gotOutcome, Map<String, String> outcomeDiffs) {
-		if (!gotOutcome.timedOut) {
-			logOutcomeDifference(word, "Word stopped timing out!", true,
-					outcomeDiffs);
-		}
-	}
-	
 	private void logOutcomeDifference(String word, String diffMess, 
-			boolean isImprovement, Map<String, String> outcomeDifferences) {
-		
-		if (isImprovement) {
-			diffMess = "GOOD news!!!\n" + diffMess;
-		} else {
-			diffMess = "BAD news.\n" + diffMess;
-		}
+			Map<String, String> outcomeDifferences) {		
 		outcomeDifferences.put(word, diffMess);
 	}
 
@@ -229,7 +237,8 @@ public class DecomposeHansardTest {
 		
 		if (skip == null) {
 			if (caseData.isMisspelled || caseData.properName || 
-				 caseData.skipped || caseData.decompUnknown) {
+				 caseData.skipped || 
+				 caseData.decompUnknown) {
 				skip = true;
 			}
 		}
