@@ -51,6 +51,37 @@ public class MorphAnalCurrentExpectations {
 		expFailures.put(word, type);
 	}
 
+	public OutcomeType type4outcome(AnalysisOutcome outcome, 
+			String correctDecomp) {
+		
+		OutcomeType type = null;
+		
+		if (outcome.decompositions == null || 
+			outcome.decompositions.length == 0) {
+			type = OutcomeType.NO_DECOMPS;
+		}
+		
+		if (type == null) {
+			// The Decomp produces some decompositions. 
+			// What is the position of the correct one in that list?
+			//
+			Integer rank = outcome.decompRank(correctDecomp);
+			if (rank == null) {
+				type = OutcomeType.CORRECT_NOT_PRESENT;
+			} else if (rank > 0) {
+				type = OutcomeType.CORRECT_NOT_FIRST;
+			} else {
+				type = OutcomeType.SUCCESS;
+			}
+		}
+		
+		if (type == null) {
+			type = OutcomeType.SUCCESS;
+		}
+		
+		return type;
+	}
+	
 	public OutcomeType expectedOutcome(String word) {
 		OutcomeType outcome = OutcomeType.SUCCESS;
 		if (expFailures.containsKey(word)) {

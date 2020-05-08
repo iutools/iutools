@@ -11,16 +11,22 @@ public class AnalysisOutcome {
 	public Decomposition[] decompositions = new Decomposition[0];
 	
 	public boolean includesDecomp(String decomp) {
-		boolean includes = false;
-		for (Decomposition aDecomp: decompositions) {
-			if (aDecomp.toString().equals(decomp)) {
-				includes = true;
+		boolean includes = (null != decompRank(decomp));		
+		return includes;
+	}
+	
+	public Integer decompRank(String decomp) {
+		Integer rank = null;
+		for (int ii = 0; ii < decompositions.length; ii++) {
+			if (decompositions[ii].toString().equals(decomp)) {
+				rank = ii;
 				break;
 			}
 		}
 		
-		return includes;
+		return rank;
 	}
+
 	
 	public String joinDecomps() {
 		String joined = "";

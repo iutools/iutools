@@ -66,7 +66,6 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 		LinguisticData.getInstance();
     }
 
-
     @Override
 	public Decomposition[] decomposeWord(String word) throws TimeoutException, MorphInukException, LinguisticDataException {
 		return decomposeWord(word,true);

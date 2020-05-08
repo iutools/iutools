@@ -18,6 +18,7 @@ import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.morph.MorphAnalCurrentExpectations.OutcomeType;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
+import ca.nrc.dtrc.stats.Histogram;
 
 /**
  * @author Marta
@@ -28,6 +29,7 @@ public class DecomposeHansardTest {
 	boolean verbose = true;
 	
 	MorphologicalAnalyzer morphAnalyzer = null;
+	Map<OutcomeType,Integer> outcomeHist = null;
 	
 	/*
 	 * @see TestCase#setUp()
@@ -35,7 +37,11 @@ public class DecomposeHansardTest {
 	@Before
 	public void setUp() throws Exception {
 		morphAnalyzer = new MorphologicalAnalyzer();
-		LinguisticData.init();		
+		LinguisticData.init();	
+		outcomeHist = new HashMap<OutcomeType,Integer>();
+		for (OutcomeType type: OutcomeType.values()) {
+			outcomeHist.put(type, new Integer(0));
+		}
 	}
 	
 	@Test
@@ -125,7 +131,8 @@ public class DecomposeHansardTest {
 		String correctDecomp = goldStandard.correctDecomp(word);
 		
 		if (expOutcome == OutcomeType.SUCCESS) {
-			checkOutcomeAgainstSuccess(word, gotOutcome, correctDecomp, outcomeDiffs);
+			checkOutcomeAgainstSuccess(word, gotOutcome, correctDecomp, 
+				outcomeDiffs);
 		} else if (expOutcome == OutcomeType.CORRECT_NOT_FIRST) {
 			checkOutcomeAgainstCorrectNotFirst(word, gotOutcome, correctDecomp, outcomeDiffs);			
 		} else if (expOutcome == OutcomeType.CORRECT_NOT_PRESENT) {
@@ -155,6 +162,11 @@ public class DecomposeHansardTest {
 			logOutcomeDifference(word, diffMess, false, outcomeDiffs);
 		}
 	}	
+
+	private void incrementOutcomeHistogram(OutcomeType type) {
+		Integer count = outcomeHist.get(type);
+		outcomeHist.put(type, count+1);		
+	}
 
 	private void checkOutcomeAgainstCorrectNotFirst(String word, 
 		AnalysisOutcome gotOutcome, String correctDecomp, 
