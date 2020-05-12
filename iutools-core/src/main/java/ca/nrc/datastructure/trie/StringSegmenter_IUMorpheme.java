@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.morph.MorphInukException;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
+import ca.inuktitutcomputing.morph.MorphologicalAnalyzerException;
 import ca.inuktitutcomputing.script.Syllabics;
 import ca.inuktitutcomputing.morph.Decomposition;
 
@@ -36,7 +37,7 @@ public class StringSegmenter_IUMorpheme extends StringSegmenter {
 
 		try {
 			decs = morphAnalyzer.decomposeWord(word);
-		} catch (MorphInukException e) {
+		} catch (MorphologicalAnalyzerException e) {
 			throw new StringSegmenterException(e);
 		}
         if (decs != null && decs.length>0) {

@@ -18,6 +18,7 @@ import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.morph.Decomposition.DecompositionExpression;
 import ca.inuktitutcomputing.morph.MorphInukException;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
+import ca.inuktitutcomputing.morph.MorphologicalAnalyzerException;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.json.PrettyPrinter;
@@ -273,9 +274,14 @@ public class MorphemeSearcher {
 		return nbWord;
 	}
 
-	public Double morphFreqInAnalyses(String morpheme, String word, boolean allowAnalysisWithAdditionalFinalConsonant) throws LinguisticDataException, TimeoutException, MorphInukException {
+	public Double morphFreqInAnalyses(String morpheme, String word, boolean allowAnalysisWithAdditionalFinalConsonant) throws LinguisticDataException, TimeoutException, MorphInukException, MorphemeSearcherException {
 		MorphologicalAnalyzer analyzer = new MorphologicalAnalyzer();
-		Decomposition[] decompositions = analyzer.decomposeWord(word,allowAnalysisWithAdditionalFinalConsonant);
+		Decomposition[] decompositions;
+		try {
+			decompositions = analyzer.decomposeWord(word,allowAnalysisWithAdditionalFinalConsonant);
+		} catch (MorphologicalAnalyzerException e) {
+			throw new MorphemeSearcherException(e);
+		}
 		int numDecsWithMorpheme = 0;
 		for (int idec=0; idec<decompositions.length; idec++) {
 			Decomposition dec = decompositions[idec];

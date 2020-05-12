@@ -435,7 +435,7 @@ public class SpellChecker {
 						.decomposeWord(word);
 		} catch(TimeoutException e) {
 			answer = false;
-		} catch(MorphInukException | LinguisticDataException e) {
+		} catch(MorphologicalAnalyzerException | LinguisticDataException e) {
 			throw new SpellCheckerException(e);
 		}
 		
@@ -527,7 +527,7 @@ public class SpellChecker {
 						.decomposeWord(word);
 		} catch(TimeoutException e) {
 			answer = false;
-		} catch(MorphInukException | LinguisticDataException e) {
+		} catch(MorphologicalAnalyzerException | LinguisticDataException e) {
 			throw new SpellCheckerException(e);
 		}
 		
@@ -995,7 +995,7 @@ public class SpellChecker {
 			Decomposition[] decs = null;
 			try {
 				decs = morphAnalyzer.decomposeWord(term);
-			} catch (TimeoutException | MorphInukException | LinguisticDataException e) {
+			} catch (TimeoutException | MorphologicalAnalyzerException e) {
 			}
 			logger.debug("decs: "+(decs==null?"null":decs.length));
 			if (decs!=null && decs.length!=0) {

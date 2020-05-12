@@ -28,7 +28,7 @@ public class MorphologicalAnalyzerTest {
 		String word = "iglumik";
 		try {
 			 Decomposition[] analyses = analyzer.decomposeWord(word);
-		} catch (TimeoutException | MorphInukException e) {
+		} catch (TimeoutException e) {
 			// do something
 		}
 	}

@@ -10,6 +10,7 @@ import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.morph.MorphInukException;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzerAbstract;
+import ca.inuktitutcomputing.morph.MorphologicalAnalyzerException;
 import ca.inuktitutcomputing.morph.expAlain.DecompositionState.Step;
 import ca.inuktitutcomputing.morph.MorphInukException;
 
@@ -20,23 +21,32 @@ public class MorphologicalAnalyzer_L2R
 		super();
 	}
 
-	@Override
-	public Decomposition[] decomposeWord(String word)
-			throws TimeoutException, MorphInukException, 
-			LinguisticDataException {
-		DecompositionState finalState = decompose(word);
-		List<Decomposition> decompsLst = finalState.allDecompositions;
-		Decomposition[] decomps = 
-			decompsLst.toArray(new Decomposition[decompsLst.size()]);
-		
-		return decomps;
-	}
+//	@Override
+//	public Decomposition[] decomposeWord(String word)
+//			throws TimeoutException, MorphInukException, 
+//			LinguisticDataException {
+//		DecompositionState finalState = decompose(word);
+//		List<Decomposition> decompsLst = finalState.allDecompositions;
+//		Decomposition[] decomps = 
+//			decompsLst.toArray(new Decomposition[decompsLst.size()]);
+//		
+//		return decomps;
+//	}
 
+		
 	@Override
-	public Decomposition[] decomposeWord(String word, boolean extendedAnalysis)
-			throws TimeoutException, MorphInukException, 
-			LinguisticDataException, MorphInukException {
-		DecompositionState finalState = decompose(word);
+	public Decomposition[] doDecompose(String word, Boolean extendedAnalysis) 
+		throws MorphologicalAnalyzerException {
+		if (extendedAnalysis == null) {
+			extendedAnalysis = true;
+		}
+		
+		DecompositionState finalState;
+		try {
+			finalState = decompose(word);
+		} catch (MorphInukException e) {
+			throw new MorphologicalAnalyzerException(e);
+		}
 		List<Decomposition> decompsLst = finalState.allDecompositions;
 		Decomposition[] decomps = 
 			decompsLst.toArray(new Decomposition[decompsLst.size()]);
@@ -255,5 +265,19 @@ public class MorphologicalAnalyzer_L2R
 		List<WrittenMorpheme> nextChoices = MorphemeWrittenForms.getInstance().morphemesThatCanFollow(attachTo, matchSurfForm);
 		
 		return nextChoices;
+	}
+
+	@Override
+	public Decomposition[] decomposeWord(String word)
+			throws TimeoutException, MorphologicalAnalyzerException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Decomposition[] decomposeWord(String word, Boolean extendedAnalysis)
+			throws TimeoutException, MorphologicalAnalyzerException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

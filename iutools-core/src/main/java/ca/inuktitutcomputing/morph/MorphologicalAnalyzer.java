@@ -67,13 +67,18 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
     }
 
     @Override
-	public Decomposition[] decomposeWord(String word) throws TimeoutException, MorphInukException, LinguisticDataException {
-		return decomposeWord(word,true);
-	}
-
-    @Override
-	public Decomposition[] decomposeWord(String word, boolean extendedAnalysis) throws TimeoutException, MorphInukException, LinguisticDataException {
+	public Decomposition[] decomposeWord(String word, Boolean _lenient) 
+			throws TimeoutException, MorphologicalAnalyzerException {
+		return doDecompose(word,_lenient);
+	}    
+    
+	@Override
+	protected Decomposition[] doDecompose(String word, Boolean extendedAnalysis) 
+			throws MorphologicalAnalyzerException, TimeoutException {
 		
+		if (extendedAnalysis == null) {
+			extendedAnalysis = true;
+		}
 		Decomposition[] cachedDecomps = uncache(word, extendedAnalysis);
 		if (cachedDecomps != null) {
 			return cachedDecomps;
@@ -82,41 +87,46 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 		boolean decomposeCompositeRoot = false; // do not decompose composite root
 
 		String formOfWordToBeAnalyzed = word;
-		if (Syllabics.containsInuktitut(formOfWordToBeAnalyzed))
-			formOfWordToBeAnalyzed = Syllabics.transcodeToRoman(formOfWordToBeAnalyzed);
-		formOfWordToBeAnalyzed = Util.enMinuscule(formOfWordToBeAnalyzed);
-		formOfWordToBeAnalyzed = formOfWordToBeAnalyzed.replaceAll("([iua])qk([iua])", "$1qq$2"); // to cope with error of transliteration
-
-		Vector<Decomposition> decomps = null;
-		if (formOfWordToBeAnalyzed.charAt(formOfWordToBeAnalyzed.length() - 1) != 'n') {
-			decomps = _decompose(formOfWordToBeAnalyzed, decomposeCompositeRoot);
-			if ( extendedAnalysis && Roman.typeOfLetterLat(formOfWordToBeAnalyzed.charAt(formOfWordToBeAnalyzed.length() - 1)) == Roman.V) {
-				Vector<Decomposition> otherDecomps = _decomposeForFinalConsonantPossiblyMissing(formOfWordToBeAnalyzed, decomposeCompositeRoot);
-				decomps.addAll(otherDecomps);
+		Decomposition[] decs = null;
+		try {
+			if (Syllabics.containsInuktitut(formOfWordToBeAnalyzed))
+				formOfWordToBeAnalyzed = Syllabics.transcodeToRoman(formOfWordToBeAnalyzed);
+			formOfWordToBeAnalyzed = Util.enMinuscule(formOfWordToBeAnalyzed);
+			formOfWordToBeAnalyzed = formOfWordToBeAnalyzed.replaceAll("([iua])qk([iua])", "$1qq$2"); // to cope with error of transliteration
+	
+			Vector<Decomposition> decomps = null;
+			if (formOfWordToBeAnalyzed.charAt(formOfWordToBeAnalyzed.length() - 1) != 'n') {
+				decomps = _decompose(formOfWordToBeAnalyzed, decomposeCompositeRoot);
+				if ( extendedAnalysis && Roman.typeOfLetterLat(formOfWordToBeAnalyzed.charAt(formOfWordToBeAnalyzed.length() - 1)) == Roman.V) {
+					Vector<Decomposition> otherDecomps = _decomposeForFinalConsonantPossiblyMissing(formOfWordToBeAnalyzed, decomposeCompositeRoot);
+					decomps.addAll(otherDecomps);
+				}
 			}
+			else {
+				decomps = _decomposeForFinalN(formOfWordToBeAnalyzed, decomposeCompositeRoot);
+			}
+			
+			// A.
+			// Éliminer les décompositions qui contiennent une suite de suffixes
+			// pour laquelle il existe un suffixe composé, pour ne garder que
+			// la décomposition dans laquelle se trouve le suffixe composé.
+			Decomposition decsC[] = Decomposition.removeCombinedSuffixes(decomps.toArray(new Decomposition[] {}));
+			
+			// B. Éliminer les doublons 
+			decs = Decomposition.removeMultiples(decsC);
+			
+			// C.
+			// Ordonner les décompositions selon les règles suivantes:
+			// 1. racines les plus longues
+			// 2. nombre minimum de suffixes/terminaisons
+			// (Ces règles sont incluses dans la classe Decomposition)
+			Arrays.sort(decs);
+			
+			cache(decs, word, extendedAnalysis);
+			
+		} catch (LinguisticDataException | MorphInukException e) {
+			throw new MorphologicalAnalyzerException(e);
 		}
-		else {
-			decomps = _decomposeForFinalN(formOfWordToBeAnalyzed, decomposeCompositeRoot);
-		}
-
-		
-		// A.
-		// Éliminer les décompositions qui contiennent une suite de suffixes
-		// pour laquelle il existe un suffixe composé, pour ne garder que
-		// la décomposition dans laquelle se trouve le suffixe composé.
-		Decomposition decsC[] = Decomposition.removeCombinedSuffixes(decomps.toArray(new Decomposition[] {}));
-		
-		// B. Éliminer les doublons 
-		Decomposition[] decs = Decomposition.removeMultiples(decsC);
-
-		// C.
-		// Ordonner les décompositions selon les règles suivantes:
-		// 1. racines les plus longues
-		// 2. nombre minimum de suffixes/terminaisons
-		// (Ces règles sont incluses dans la classe Decomposition)
-		Arrays.sort(decs);
-		
-		cache(decs, word, extendedAnalysis);
 
 		return decs;
 	}

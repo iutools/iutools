@@ -249,7 +249,7 @@ public class DecomposeHansardTest {
 		
 		try {
 			outcome.decompositions = morphAnalyzer.decomposeWord(word);
-		} catch (TimeoutException e) {
+		} catch (TimeoutException | MorphologicalAnalyzerException e) {
 			outcome.timedOut = true;
 		}
 		

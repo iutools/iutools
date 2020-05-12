@@ -21,8 +21,11 @@ public abstract class MorphologicalAnalyzerAbstract {
      * @throws LinguisticDataException 
      * @throws MorphologicalAnalyzerException 
      */
-    abstract public Decomposition[] decomposeWord(String word) 
-    		throws TimeoutException, MorphInukException, LinguisticDataException;
+     public Decomposition[] decomposeWord(String word) 
+    	throws TimeoutException, MorphologicalAnalyzerException {
+    	 return decomposeWord(word, null);
+     }
+     
     /** 
      * DÉCOMPOSITION DU MOT.
      * Les décompositions résultantes sont ordonnées selon certaines règles.
@@ -32,10 +35,19 @@ public abstract class MorphologicalAnalyzerAbstract {
      * @throws LinguisticDataException 
      * @throws MorphologicalAnalyzerException 
      */
-    abstract public Decomposition[] decomposeWord(String word, boolean extendedAnalysis) throws TimeoutException, MorphInukException, LinguisticDataException, MorphologicalAnalyzerException;
+    abstract public Decomposition[] decomposeWord(String word, 
+    	Boolean extendedAnalysis) 
+    	throws TimeoutException, MorphologicalAnalyzerException;
 
-
-    public MorphologicalAnalyzerAbstract()  throws LinguisticDataException {
+	protected Decomposition[] doDecompose(String word) 
+			throws MorphologicalAnalyzerException, TimeoutException {
+		return doDecompose(word, null);
+	}
+    
+	protected abstract Decomposition[] doDecompose(String word, Boolean lenient) 
+		throws MorphologicalAnalyzerException, TimeoutException;
+    
+    public MorphologicalAnalyzerAbstract() throws LinguisticDataException {
     	
     }
     

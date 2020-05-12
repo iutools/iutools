@@ -28,6 +28,7 @@ import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.morph.MorphInukException;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
+import ca.inuktitutcomputing.morph.MorphologicalAnalyzerException;
 import ca.nrc.config.ConfigException;
 import ca.nrc.file.ResourceGetter;
 import ca.pirurvik.iutools.text.ngrams.NgramCompiler;
@@ -136,7 +137,7 @@ public class AnalyzeNumberExpressions {
 			Decomposition[] decs = null;
 			try {
 				decs = morphAnalyzer.decomposeWord(term);
-			} catch (TimeoutException | MorphInukException e) {
+			} catch (TimeoutException | MorphologicalAnalyzerException e) {
 			}
 			logger.debug("decs: "+(decs==null?"null":decs.length));
 			if (decs!=null && decs.length!=0) {
