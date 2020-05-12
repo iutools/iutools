@@ -277,7 +277,8 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("iksivauta", "{iksiva:iksiva/1v}{uta:ut/1vn}"));
 		addCase(new AnalyzerCase("iksivautaa", "{iksiva:iksiva/1v}{uta:ut/1vn}{a:k/tn-nom-d}"));
 		addCase(new AnalyzerCase("iksivautaaq", "[decomposition:/iksiva(iksiva)/utaaq(ut)/]")
-			.skip());
+			.possiblyMisspelledWord()
+			.comment("TODO-BF: Please add a SHORT comment"));
 		addCase(new AnalyzerCase("iksivautap", "{iksiva:iksiva/1v}{uta:ut/1vn}{p:up/tn-gen-s}")
 			.isMisspelled());
 		addCase(new AnalyzerCase("iksivautaq", "{iksiva:iksiva/1v}{utaq:ut/1vn}"));

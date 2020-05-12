@@ -9,7 +9,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
 
@@ -17,6 +16,7 @@ import ca.inuktitutcomputing.data.LinguisticData;
 import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.morph.MorphAnalCurrentExpectations.OutcomeType;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
+import ca.nrc.dtrc.stats.FrequencyHistogram;
 
 /**
  * @author Marta
@@ -27,7 +27,9 @@ public class DecomposeHansardTest {
 	boolean verbose = true;
 	
 	MorphologicalAnalyzer morphAnalyzer = null;
-	Map<OutcomeType,Integer> outcomeHist = null;
+	
+	FrequencyHistogram<OutcomeType> gotOutcomeHist = new FrequencyHistogram<OutcomeType>();
+	FrequencyHistogram<OutcomeType> expOutcomeHist = new FrequencyHistogram<OutcomeType>();
 	
 	/*
 	 * @see TestCase#setUp()
@@ -35,11 +37,9 @@ public class DecomposeHansardTest {
 	@Before
 	public void setUp() throws Exception {
 		morphAnalyzer = new MorphologicalAnalyzer();
-		LinguisticData.init();	
-		outcomeHist = new HashMap<OutcomeType,Integer>();
-		for (OutcomeType type: OutcomeType.values()) {
-			outcomeHist.put(type, new Integer(0));
-		}
+		LinguisticData.init();
+		gotOutcomeHist = new FrequencyHistogram<OutcomeType>();
+		expOutcomeHist = new FrequencyHistogram<OutcomeType>();
 	}
 	
 	@Test
@@ -70,6 +70,7 @@ public class DecomposeHansardTest {
 		    }
 
 			if (verbose) System.out.print("> :"+wordToBeAnalyzed+":");
+			
 		    AnalysisOutcome outcome = decompose(wordToBeAnalyzed);
 		    
             if (verbose) System.out.println(" []");
@@ -85,7 +86,7 @@ public class DecomposeHansardTest {
         if (verbose) System.out.println("");
         if (verbose) System.out.println("Time in milliseconds: "+time);
         
-        printOutcomeHistogram();
+        printPerformanceStats();
         
         assertOutcomesHaveNotChanged(outcomeDifferences);
         
@@ -95,33 +96,29 @@ public class DecomposeHansardTest {
         }
 	}
 	
-	private void printOutcomeHistogram() {
-		int totalCases = 0;
-		for (OutcomeType type: outcomeHist.keySet()) {
-			totalCases += outcomeHist.get(type);
-		}
+	private void printPerformanceStats() {
+        printOutcomeHistogram("Histogram of EXPECTED outcome types", expOutcomeHist);
+        printOutcomeHistogram("Histogram of ACTUAL outcome types", gotOutcomeHist);
+	}
+
+	private void printOutcomeHistogram(String title, 
+			FrequencyHistogram<OutcomeType> outcomeHist) {
+		echo("\n== "+title+" ==\n");
 		
-		Map<OutcomeType,String> histPercent = new HashMap<OutcomeType,String>();
-		for (OutcomeType type: outcomeHist.keySet()) {
-			double percent = 100.0 * outcomeHist.get(type) / totalCases;
-			String percentStr = new DecimalFormat("#.#").format(percent)+"%";
-			histPercent.put(type, percentStr);
-		}
-		
-		echo("\nCases with:");
+		echo("Cases with:");
 		{		
 			echo("  First decomposition is correct            : "+
-					outcomeHist.get(OutcomeType.SUCCESS)+" ("+
-				 	histPercent.get(OutcomeType.SUCCESS)+")");
+					outcomeHist.frequency(OutcomeType.SUCCESS)+" ("+
+					outcomeHist.relativeFrequency(OutcomeType.SUCCESS, 1)+")");
 			echo("  Corr. decomp. not in 1st place            : "+
-					outcomeHist.get(OutcomeType.CORRECT_NOT_FIRST)+" ("+
-				 	histPercent.get(OutcomeType.CORRECT_NOT_FIRST)+")");
+					outcomeHist.frequency(OutcomeType.CORRECT_NOT_FIRST)+" ("+
+					outcomeHist.relativeFrequency(OutcomeType.CORRECT_NOT_FIRST, 1)+")");
 			echo("  Some decomps produced but not correct one : "+
-					outcomeHist.get(OutcomeType.CORRECT_NOT_PRESENT)+" ("+
-				 	histPercent.get(OutcomeType.CORRECT_NOT_PRESENT)+")");
+					outcomeHist.frequency(OutcomeType.CORRECT_NOT_PRESENT)+" ("+
+					outcomeHist.relativeFrequency(OutcomeType.CORRECT_NOT_PRESENT, 1)+")");
 			echo("  No decomps produced at all                : "+
-					outcomeHist.get(OutcomeType.NO_DECOMPS)+" ("+
-				 	histPercent.get(OutcomeType.NO_DECOMPS)+")");		
+					outcomeHist.frequency(OutcomeType.NO_DECOMPS)+" ("+
+					outcomeHist.relativeFrequency(OutcomeType.NO_DECOMPS, 1)+")");		
 		}
 	}
 
@@ -155,11 +152,12 @@ public class DecomposeHansardTest {
 		Map<String, String> outcomeDiffs) {
 		
 		OutcomeType expOutcomeType = expectations.expectedOutcome(word);
+		expOutcomeHist.updateFreq(expOutcomeType);
+		
 		String correctDecomp = goldStandard.correctDecomp(word);
 		OutcomeType gotOutcomeType = 
 			expectations.type4outcome(gotOutcome, correctDecomp);
-		
-		incrementOutcomeHistogram(gotOutcomeType);
+		gotOutcomeHist.updateFreq(gotOutcomeType);
 		
 		if (gotOutcomeType != expOutcomeType) {
 			String diffMess = 
@@ -218,11 +216,6 @@ public class DecomposeHansardTest {
 		return mess;
 	}
 
-	private void incrementOutcomeHistogram(OutcomeType type) {
-		Integer count = outcomeHist.get(type);
-		outcomeHist.put(type, count+1);		
-	}
-
 	private void logOutcomeDifference(String word, String diffMess, 
 			Map<String, String> outcomeDifferences) {		
 		outcomeDifferences.put(word, diffMess);
@@ -236,9 +229,10 @@ public class DecomposeHansardTest {
 		}
 		
 		if (skip == null) {
-			if (caseData.isMisspelled || caseData.properName || 
-				 caseData.skipped || 
-				 caseData.decompUnknown) {
+			if (caseData.isMisspelled || caseData.possiblyMisspelled ||
+					caseData.properName || 
+					caseData.skipped || 
+					caseData.decompUnknown) {
 				skip = true;
 			}
 		}

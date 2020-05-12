@@ -10,6 +10,7 @@ public class AnalyzerCase {
 	public String word;
 	public String correctDecomp = null;
 	public boolean isMisspelled = false;
+	public boolean possiblyMisspelled = false;
 	public boolean skipped = false;
 	public boolean decompUnknown = false;
 	public boolean properName = false;
@@ -65,6 +66,11 @@ public class AnalyzerCase {
 
 	public AnalyzerCase comment(String _comment) {
 		this.comment = _comment;
+		return this;
+	}
+
+	public AnalyzerCase possiblyMisspelledWord() {
+		this.possiblyMisspelled = true;
 		return this;
 	}
 }
