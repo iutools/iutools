@@ -12,19 +12,21 @@ import java.util.concurrent.Callable;
 public class MorphAnalyzerTask implements Callable<Decomposition[]> {
 
 	String word = null;
-	boolean lenient = false;
+	boolean lenient = true;
 	MorphologicalAnalyzerAbstract analyzer = null;
 	
-	public MorphAnalyzerTask(String _word, boolean _lenient, 
+	public MorphAnalyzerTask(String _word, Boolean _lenient, 
 			MorphologicalAnalyzerAbstract morphologicalAnalyzerAbstract) {
 		this.word = _word;
-		this.lenient = _lenient;
+		if (_lenient != null) {
+			this.lenient = _lenient;
+		}
 		this.analyzer = morphologicalAnalyzerAbstract;
 	}
 	
 	@Override
 	public Decomposition[] call() throws Exception {
-		Decomposition[] decomps = analyzer.doDecompose(word);
+		Decomposition[] decomps = analyzer.doDecompose(word, lenient);
 		return decomps;
 	}
 	

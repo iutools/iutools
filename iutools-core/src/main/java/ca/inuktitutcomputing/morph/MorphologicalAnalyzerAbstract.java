@@ -1,5 +1,10 @@
 package ca.inuktitutcomputing.morph;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import ca.inuktitutcomputing.data.LinguisticDataException;
@@ -35,9 +40,33 @@ public abstract class MorphologicalAnalyzerAbstract {
      * @throws LinguisticDataException 
      * @throws MorphologicalAnalyzerException 
      */
-    abstract public Decomposition[] decomposeWord(String word, 
-    	Boolean extendedAnalysis) 
-    	throws TimeoutException, MorphologicalAnalyzerException;
+    public Decomposition[] decomposeWord(String word, 
+    	Boolean lenient) 
+    			throws TimeoutException, MorphologicalAnalyzerException {
+    	
+    	if (lenient == null) {
+    		lenient = true;
+    	}
+    	
+    	Decomposition[] decomps = null;
+    	
+    	MorphAnalyzerTask task = new MorphAnalyzerTask(word, lenient, this);
+    	
+		ExecutorService executor = Executors.newCachedThreadPool();
+		Future<Decomposition[]> future = executor.submit(task);
+		try {
+			decomps = (Decomposition[])future.get(millisTimeout, TimeUnit.MILLISECONDS);
+			System.out.println("   Completed successfully with decomps.length="+decomps.length);
+		} catch (InterruptedException e) {
+			int x = 0;
+		} catch (ExecutionException e) {
+			throw new MorphologicalAnalyzerException(e);
+		} finally {
+		   future.cancel(true); // may or may not desire this
+		}	
+    	
+    	return decomps;
+    }
 
 	protected Decomposition[] doDecompose(String word) 
 			throws MorphologicalAnalyzerException, TimeoutException {

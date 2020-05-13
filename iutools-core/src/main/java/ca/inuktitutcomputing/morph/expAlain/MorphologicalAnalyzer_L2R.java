@@ -267,17 +267,17 @@ public class MorphologicalAnalyzer_L2R
 		return nextChoices;
 	}
 
-	@Override
-	public Decomposition[] decomposeWord(String word)
-			throws TimeoutException, MorphologicalAnalyzerException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	@Override
+//	public Decomposition[] decomposeWord(String word)
+//			throws TimeoutException, MorphologicalAnalyzerException {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
-	@Override
-	public Decomposition[] decomposeWord(String word, Boolean extendedAnalysis)
-			throws TimeoutException, MorphologicalAnalyzerException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	@Override
+//	public Decomposition[] decomposeWord(String word, Boolean extendedAnalysis)
+//			throws TimeoutException, MorphologicalAnalyzerException {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 }

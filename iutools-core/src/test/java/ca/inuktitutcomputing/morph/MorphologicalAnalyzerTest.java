@@ -40,22 +40,14 @@ public class MorphologicalAnalyzerTest {
 		MorphologicalAnalyzer analyzer = new MorphologicalAnalyzer();
 		analyzer.setTimeout(2000);
 		String word = "ilisaqsitittijunnaqsisimannginnama";
-		try {
-			analyzer.decomposeWord(word);
-		} catch(Exception e) {
-			throw e;
-		}
+		analyzer.decomposeWord(word);
 	}
 
 	@Test(expected=TimeoutException.class)
 	public void test__decomposeWord__timeout_10s() throws Exception  {
 		MorphologicalAnalyzer analyzer = new MorphologicalAnalyzer();
 		String word = "ilisaqsitittijunnaqsisimannginnama";
-		try {
-			analyzer.decomposeWord(word);
-		} catch(Exception e) {
-			throw e;
-		}
+		analyzer.decomposeWord(word);
 	}
 
 	@Test
@@ -287,8 +279,8 @@ public class MorphologicalAnalyzerTest {
 		analyses = analyzer.decomposeWord(word);
 		long elapsedSecondTime = System.currentTimeMillis() - start;
 		
-		AssertNumber.isLessOrEqualTo("Second time we decompose word "+word+" should have been 100x faster", 
-				elapsedSecondTime, elapsedFirstTime / 100);
+		AssertNumber.isLessOrEqualTo("Second time we decompose word "+word+" should have been 10x faster", 
+				1.0 * elapsedSecondTime, 1.0 * elapsedFirstTime / 10);
 		
 	}
 	
@@ -322,8 +314,9 @@ public class MorphologicalAnalyzerTest {
 
 		try {
 			analyzer.disactivateTimeout();;
-			Decomposition[] decs = analyzer.decomposeWord(word,false);
-			Assert.assertTrue(decs.length==0);
+			Decomposition[] decs = analyzer.decomposeWord(word, false);
+			Assert.assertTrue("NO decompositions should have been produced", 
+					decs.length==0);
 		} catch(Exception e) {
 			throw e;
 		}

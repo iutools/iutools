@@ -54,6 +54,8 @@ import ca.inuktitutcomputing.utilities1.Util;
 
 public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 
+	Vector<Decomposition> decompsSoFar = new Vector<Decomposition>();
+	
     private Hashtable<String,Graph.Arc[]> arcsByMorpheme = new Hashtable<String,Graph.Arc[]>();
     
     private static Cache<String, Decomposition[]> 
@@ -65,12 +67,6 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
     	super();
 		LinguisticData.getInstance();
     }
-
-    @Override
-	public Decomposition[] decomposeWord(String word, Boolean _lenient) 
-			throws TimeoutException, MorphologicalAnalyzerException {
-		return doDecompose(word,_lenient);
-	}    
     
 	@Override
 	protected Decomposition[] doDecompose(String word, Boolean extendedAnalysis) 
@@ -79,6 +75,9 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 		if (extendedAnalysis == null) {
 			extendedAnalysis = true;
 		}
+		
+		decompsSoFar = new Vector<Decomposition>();
+		
 		Decomposition[] cachedDecomps = uncache(word, extendedAnalysis);
 		if (cachedDecomps != null) {
 			return cachedDecomps;
@@ -216,8 +215,6 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 
 		arcsByMorpheme.clear();
 
-//        term = Util.enMinuscule(term);
-
 		// Etat de départ dans le graphe d'états.
 		if (decomposeCompositeRoot)
 			state = null;
@@ -296,8 +293,6 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 
         return completeAnalysis;
     }
-    
-    
     
     private Vector<Decomposition> analyzeAsSequenceOfMorphemes(
 			String simplifiedTerm,
