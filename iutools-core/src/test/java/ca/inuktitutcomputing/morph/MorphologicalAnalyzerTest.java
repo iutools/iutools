@@ -1,5 +1,6 @@
 package ca.inuktitutcomputing.morph;
 
+import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -257,7 +258,7 @@ public class MorphologicalAnalyzerTest {
 	@Test
 	public void test__decomposeWord__SameWordTwiceInARow__SecondTimeShouldBeInstantaneous() 
 					throws Exception {
-		
+		Logger tLogger = Logger.getLogger("test__decomposeWord__SameWordTwiceInARow__SecondTimeShouldBeInstantaneous");
 		
 		MorphologicalAnalyzer analyzer = new MorphologicalAnalyzer();
 		
@@ -268,20 +269,21 @@ public class MorphologicalAnalyzerTest {
 		// decompose the word, it will be done from scratch
 		//
 		MorphologicalAnalyzer.removeFromCache(word);
-		long start = System.currentTimeMillis();
+		long start = System.nanoTime();
 		Decomposition[] analyses = analyzer.decomposeWord(word);
-		long elapsedFirstTime = System.currentTimeMillis() - start;
+		long elapsedFirstTime = System.nanoTime() - start;
 		
 		// Analyses for that word should now be in the cache
 		// so the second time should be much faster.
 		//
-		start = System.currentTimeMillis();
+		start = System.nanoTime();
 		analyses = analyzer.decomposeWord(word);
-		long elapsedSecondTime = System.currentTimeMillis() - start;
+		long elapsedSecondTime = System.nanoTime() - start;
+		
+		tLogger.trace("elapsedFirstTime="+elapsedFirstTime+", elapsedSecondTime="+elapsedSecondTime);
 		
 		AssertNumber.isLessOrEqualTo("Second time we decompose word "+word+" should have been 10x faster", 
 				1.0 * elapsedSecondTime, 1.0 * elapsedFirstTime / 10);
-		
 	}
 	
 	public void test__decomposeWord__with_extendedAnalysis() throws Exception  {

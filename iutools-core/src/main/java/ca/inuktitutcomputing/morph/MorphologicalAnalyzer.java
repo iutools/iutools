@@ -210,7 +210,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 
 		stpw = new StopWatch(millisTimeout);
 		Dialect.setStopWatch(stpw);
-        if (!stpwActive) stpw.disactivate(); // for debugging
+        if (!timeoutActive) stpw.disactivate(); // for debugging
 		stpw.start();
 
 		arcsByMorpheme.clear();
@@ -832,11 +832,6 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 
         allAnalyses.addAll(rootAnalyses);
         
-//        Vector<Decomposition> inchoativeAnalyses = 
-//        		checkForInchoative(termICI, termOrigICI, word, newRootCandidates, 
-//        				morphParts, states, preConds, transitivity);
-//        allAnalyses.addAll(inchoativeAnalyses);
-        
         return allAnalyses;
     }
     
@@ -1016,55 +1011,6 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 	}
 
 	//-----------------------------------------------
-
-
-    /*
-     * Vérifier la possibilité que la règle suivante s'applique: pour les
-     * racines verbales, le redoublement de la dernière consonne
-     * intervocalique et l'addition possible de 'q' à la fin du radical
-     * exprime généralement le fait qu'une action débute.
-     * 
-     * Dans ce cas, on ajoute aux morphParts un morceau spécial correspondant
-     * à cette règle.  Sa position sera la même que le dernier morceau trouvé, puisqu'il
-     * ne correspond pas à un suite de caractères à la suite de la racine.
-     */
-    
-    /* !!!!
-     * 13 mars 2006: on a décidé de ne pas appliquer ce processus aux 
-     * racines et de plutôt ajouter à la table des racines toute racine
-     * résultant de ce processus trouvée dans les dictionnaires, comme
-     * ikummaq- < ikuma-
-    */
-//    private Vector<Decomposition> checkForInchoative(String termICI, 
-//    		String termOrigICI, String word, Vector<String> newRootCandidates, 
-//    		Vector<AffixPartOfComposition> morphParts,
-//    		Graph.State states[],
-//            Conditions preConds,
-//            String transitivity) {
-//        
-//        Vector<Decomposition> analysesIncho = new Vector<Decomposition>();
-//        Vector<String> v = new Vector<String>();
-//        v.add(termICI);
-//        v.addAll(newRootCandidates);
-//        Vector<Object> lexs2 = checkForDoubleConsonantInVerbalRoots(v);
-//        Vector<AffixPartOfComposition> mcx = (Vector<AffixPartOfComposition>)morphParts.clone();
-//        if (lexs2.size() != 0) {
-//            if (morphParts.size() != 0) {
-//            	AffixPartOfComposition dernierMorceau = (AffixPartOfComposition)morphParts.elementAt(0);
-//            	AffixPartOfComposition mspecial = new AffixPartOfComposition.Inchoative(dernierMorceau.position);
-//                
-//                mcx.add(0,mspecial);
-//            } else {
-//                mcx.add(new AffixPartOfComposition.Inchoative(termICI.length()));
-//            }
-//        }
-//        analysesIncho = checkRoots(lexs2,word,termOrigICI,mcx,states,
-//                preConds,transitivity);  
-//
-//        return analysesIncho;
-//	}
-
-
 	
 	private Graph.Arc arcToZero(Graph.Arc[] arcsFollowed) throws TimeoutException {
         for (int i=0; i<arcsFollowed.length; i++) {
@@ -1189,48 +1135,6 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
         return stemAffs;
     }
     
-    
-    
-    /*
-     * Vérifier si les candidats racines qui ont une dernière consonne
-     * intervocalique double et soit une voyelle, soit un 'q' à la fin,
-     * correspondent à des racines verbales où cette consonne est simple et le
-     * 'q' est absent ou présent.
-     */
-    /* NOT USED --- private Vector<Base> checkForDoubleConsonantInVerbalRoots(Vector<String> rootCandidates) {
-        Vector<Base> newLexs = new Vector<Base>();
-        Vector<String> newRootCandidates = new Vector<String>();
-        for (int i=0; i<rootCandidates.size(); i++) {
-//          stpw.check("checkForDoubleConsonantInVerbalRoots -- rootCandidate: "+((Base)rootCandidates.elementAt(i)).morpheme);
-            String rootCandidate = (String)rootCandidates.elementAt(i);
-            for (int j=rootCandidate.length()-2; j>0; j--) {
-                if (Roman.isConsonant(rootCandidate.charAt(j))) {
-                    if (rootCandidate.charAt(j-1)==rootCandidate.charAt(j) &&
-                        (Roman.isVowel(rootCandidate.charAt(rootCandidate.length()-1)) ||
-                                rootCandidate.charAt(rootCandidate.length()-1)=='q')) {
-                        String newRootCandidate = rootCandidate.substring(0,j-1)+
-                        rootCandidate.substring(j);
-                        if (newRootCandidate.charAt(newRootCandidate.length()-1)=='q')
-                            newRootCandidates.add(newRootCandidate.substring(0,newRootCandidate.length()-1));
-                        newRootCandidates.add(newRootCandidate);
-                    }
-                    break;
-                }
-            }
-        }
-        for (int i=0; i<newRootCandidates.size(); i++) {
-//          stpw.check("checkForDoubleConsonantInVerbalRoots -- newRootCandidate: "+((Base)newRootCandidates.elementAt(i)).morpheme);
-            Vector<Object> tr = Lexicon.lookForBase((String) newRootCandidates
-                    .elementAt(i), false);
-            if (tr != null)
-                for (int j=0; j<tr.size(); j++)
-                    if (((Base)tr.elementAt(j)).type.equals("v"))
-                        newLexs.add((Base)tr.elementAt(j));
-        }
-        return newLexs;
-    }
-    */
-    
     //--------------------- CONTEXT VALIDATION -------------------------------
     
     /*
@@ -1298,7 +1202,6 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
              * suffix?
              */
             if (true
-//                    checkPossibleDialectalChanges
                     && typeOfStemEndChar == Roman.C 
                     && typeOfFormFirstChar == Roman.C) {
                 // Both are consonants
@@ -1372,9 +1275,6 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
         
         return res;
     }
-    
-    
-    
     
     /*
      * ------- NEUTRAL + DELETION
@@ -1507,8 +1407,6 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 		return res;
 	}
     
-    
-
     /*
      * ------- DELETION
      * 
@@ -1548,8 +1446,6 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
         
         return res;
     }
-   
-   
 
    /*
     * //----- DELETION ET INSERTION
@@ -1587,8 +1483,6 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
         return res;
    }
    
-   
-
    /*
     * ----- DELETION CONDITIONNELLE
     * 
@@ -1675,7 +1569,6 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 		return res;
 	}
    
-   
 
    /*
     * ----- VOICING
@@ -1754,7 +1647,6 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
         
         return res;
    }
-   
    
 
    /*
@@ -1839,8 +1731,6 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
         return res;
    }
    
-   
-
    /*
     * ------- NASALIZATION CONDITIONNELLE
     */
@@ -1930,8 +1820,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
         
         return res;
    }
-   
-   
+      
    /*
     * ------- INSERTION
     * 
@@ -1960,8 +1849,6 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
         
         return res;
    }
-   
-   
 
 
    /*
@@ -1993,8 +1880,6 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 		return res;
 	}
 	
-	
-
     /*
      * ------- ASSIMILATION
      * 
@@ -2050,8 +1935,6 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
         return res;
 	}
 	
-	
-
     /*
      * ------- SPECIFICASSIMILATION
      * 
