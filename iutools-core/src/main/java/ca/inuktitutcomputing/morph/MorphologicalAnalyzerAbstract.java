@@ -29,7 +29,9 @@ public abstract class MorphologicalAnalyzerAbstract {
 	public static enum TimeoutStrategy {
 		EXECUTOR, STOPWATCH, BOTH}
 	
-	protected TimeoutStrategy timeoutStrategy = TimeoutStrategy.STOPWATCH;
+//	protected TimeoutStrategy timeoutStrategy = TimeoutStrategy.STOPWATCH;
+//	protected TimeoutStrategy timeoutStrategy = TimeoutStrategy.BOTH;
+	protected TimeoutStrategy timeoutStrategy = TimeoutStrategy.EXECUTOR;
     protected Long millisTimeout = new Long(10*1000);
     protected boolean timeoutActive = true;
     protected StopWatch stpw;
@@ -98,7 +100,7 @@ public abstract class MorphologicalAnalyzerAbstract {
     	
     	String word = task.word;
 		
-        ExecutorService executor = Executors.newCachedThreadPool();    	
+        ExecutorService executor = Executors.newCachedThreadPool();
 		Future<Decomposition[]> future = executor.submit(task);
 		Decomposition[] decomps = null;	
     	long start = System.currentTimeMillis();
@@ -122,6 +124,7 @@ public abstract class MorphologicalAnalyzerAbstract {
 		} finally {
 			checkElapsedTime(word, start);
 			future.cancel(true); // may or may not desire this
+			executor.shutdown();
 		}	
 				
 		return decomps;
@@ -177,6 +180,10 @@ public abstract class MorphologicalAnalyzerAbstract {
 				tLogger.trace(mess);
 			} 
     	}
+    	
+    	if (tLogger.isTraceEnabled()) {
+    		tLogger.trace("Upon exit, number of threads = "+Thread.activeCount());
+    	}
 	}
 
 	protected Decomposition[] doDecompose(String word) 
@@ -192,7 +199,13 @@ public abstract class MorphologicalAnalyzerAbstract {
     }
     
     public MorphologicalAnalyzerAbstract setTimeout(long val) {
-    	millisTimeout = val;
+    	return setTimeout(new Long(val));
+    }
+
+    public MorphologicalAnalyzerAbstract setTimeout(Long val) {
+    	if (val != null) {
+    		millisTimeout = val;
+    	}
     	return this;
     }
     
