@@ -29,6 +29,7 @@ import static org.junit.Assert.assertNotNull;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
 import java.util.regex.Matcher;
@@ -411,6 +412,35 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 		return toStr;
 	}
 	
+	public static String toString(Collection<Decomposition> decomps) {
+		StringBuilder sb = new StringBuilder();
+		boolean first = true;
+		for (Decomposition aDecomp: decomps) {
+			if (!first) {
+				sb.append("\n");
+			}
+			first = false;
+			sb.append(aDecomp.toString());
+		}
+		
+		return sb.toString();
+	}
+
+	public static String toString(Decomposition[] decomps) {
+		StringBuilder sb = new StringBuilder();
+		boolean first = true;
+		for (Decomposition aDecomp: decomps) {
+			if (!first) {
+				sb.append("\n");
+			}
+			first = false;
+			sb.append(aDecomp.toString());
+		}
+		
+		return sb.toString();
+	}	
+	
+	
 	static public String[] getMeaningsInArrayOfStrings (String decstr, String lang, 
 			boolean includeSurface, boolean includeId) throws LinguisticDataException {
 		DecompositionExpression de = new DecompositionExpression(decstr);
@@ -597,6 +627,5 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
         }
        
         return surfaceForms;
-    }	
-
+    }
 }
