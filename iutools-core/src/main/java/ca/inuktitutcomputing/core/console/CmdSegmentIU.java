@@ -31,9 +31,10 @@ public class CmdSegmentIU extends ConsoleCommand {
 	@Override
 	public void execute() throws Exception {
 		mode = getMode(ConsoleCommand.OPT_WORD);
-
 		lenient = getExtendedAnalysis();
+		Long timeoutMSecs = getTimeoutMSecs();
 		MorphologicalAnalyzer morphAnalyzer = new MorphologicalAnalyzer();
+		morphAnalyzer.setTimeout(timeoutMSecs);
 		
 		while (true) {
 			String word = null;
@@ -47,9 +48,6 @@ public class CmdSegmentIU extends ConsoleCommand {
 					morphAnalyzer.decomposeWord(word,lenient);
 				long elapsed = System.currentTimeMillis() - start;
 				printDecompositions(word, decs, elapsed);
-				if (mode == Mode.SINGLE_INPUT) {
-					break;
-				}
 			} catch (Exception e) {
 				if (mode == Mode.PIPELINE) {
 					// In pipeline mode, we print exceptions on STDOUT
@@ -61,7 +59,15 @@ public class CmdSegmentIU extends ConsoleCommand {
 					//
 					printExceptionResult(word, e);
 				} else {
-					throw e;
+					if (e instanceof TimeoutException) {
+						onCommandTimeout((TimeoutException)e);
+					} else {
+						throw e;
+					}
+				}
+			} finally {
+				if (mode == Mode.SINGLE_INPUT) {
+					break;
 				}
 			}
 		}

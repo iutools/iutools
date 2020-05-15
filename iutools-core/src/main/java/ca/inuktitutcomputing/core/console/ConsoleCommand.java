@@ -2,6 +2,7 @@ package ca.inuktitutcomputing.core.console;
 
 import java.io.File;
 import java.util.Scanner;
+import java.util.concurrent.TimeoutException;
 
 import ca.nrc.ui.commandline.SubCommand;
 import ca.pirurvik.iutools.edit_distance.EditDistanceCalculatorFactory;
@@ -36,6 +37,7 @@ public abstract class ConsoleCommand extends SubCommand {
 	public static final String OPT_LENIENT_DECOMPS = "lenient-decomps";
 	public static final String OPT_EXCLUDE = "exclude";
 	public static final String OPT_PIPELINE = "pipeline";
+	public static final String OPT_TIMEOUT_SECS = "timeout-secs";
 
 	public ConsoleCommand(String name) {
 		super(name);
@@ -206,6 +208,20 @@ public abstract class ConsoleCommand extends SubCommand {
 		return mode;
 	}
 	
+	protected Long getTimeoutMSecs() {
+		String timeoutStr = getOptionValue(ConsoleCommand.OPT_TIMEOUT_SECS, false);
+		Long timeoutMSecs = null;
+		try {
+			if (timeoutStr != null) {
+				timeoutMSecs = 1000 * Long.parseLong(timeoutStr);
+			}
+		} catch (Exception e) {
+			usageBadOption(ConsoleCommand.OPT_TIMEOUT_SECS, 
+				"Value must be a Long integer");
+		}
+		return timeoutMSecs;
+	}
+	
 	protected String getMorpheme() {
 		return getMorpheme(true);
 	}
@@ -280,5 +296,12 @@ public abstract class ConsoleCommand extends SubCommand {
 		return resp;
 	}
 	
+	protected void onCommandTimeout(TimeoutException e) {
+		echo("Command timed out");
+		String mess = e.getMessage();
+		if (mess != null) {
+			echo("  "+mess);
+		}
+	}
 
 }

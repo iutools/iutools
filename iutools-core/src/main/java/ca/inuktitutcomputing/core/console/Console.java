@@ -84,6 +84,13 @@ public class Console {
 				.longOpt(ConsoleCommand.OPT_LENIENT_DECOMPS)
 			    .desc("Tells the morphological analyzer to extend the analysis by adding a consonant after a final vowel.")
 			    .argName("EXTENDED_ANALYSIS")
+			    .build();
+		
+		Option optTimeoutSecs = Option.builder(null)
+				.longOpt(ConsoleCommand.OPT_TIMEOUT_SECS)
+			    .desc("Max number of seconds that a command is allowed to run before timing out.")
+			    .hasArg()			    
+			    .argName("TIMEOUT_SECS")
 			    .required(false)
 			    .build();
 
@@ -222,6 +229,7 @@ public class Console {
 				.addOption(optMorphemes)
 				.addOption(optWord)
 				.addOption(optPipelineMode)
+				.addOption(optTimeoutSecs)
 				;
 		mainCmd.addSubCommand(searchTrie);
 		
