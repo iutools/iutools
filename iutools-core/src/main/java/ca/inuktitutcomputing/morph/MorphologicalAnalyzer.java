@@ -54,8 +54,6 @@ import ca.inuktitutcomputing.utilities1.Util;
 
 
 public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
-
-	Set<Decomposition> decompsSoFar = new HashSet<Decomposition>();
 	
     private Hashtable<String,Graph.Arc[]> arcsByMorpheme = new Hashtable<String,Graph.Arc[]>();
     
@@ -77,7 +75,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 			extendedAnalysis = true;
 		}
 		
-		decompsSoFar = new HashSet<Decomposition>();
+		Vector<Decomposition> decompsSoFar = new Vector<Decomposition>();
 		
 		Decomposition[] cachedDecomps = uncache(word, extendedAnalysis);
 		if (cachedDecomps != null) {
@@ -90,7 +88,9 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 		Decomposition[] decs = null;
 		
 		try {
-			Vector<Decomposition> decomps = decomposeUntilTimeoutOrCompletion(word, extendedAnalysis, decomposeCompositeRoot);
+			Vector<Decomposition> decomps = 
+				decomposeUntilTimeoutOrCompletion(word, extendedAnalysis, 
+						decomposeCompositeRoot, decompsSoFar);
 						
 			// A.
 			// Éliminer les décompositions qui contiennent une suite de suffixes
@@ -118,17 +118,21 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 	}
 
 
-	private Vector<Decomposition> decomposeUntilTimeoutOrCompletion(String formOfWordToBeAnalyzed, Boolean extendedAnalysis,
-			boolean decomposeCompositeRoot) throws TimeoutException, MorphInukException, LinguisticDataException {
+	private Vector<Decomposition> decomposeUntilTimeoutOrCompletion(
+		String formOfWordToBeAnalyzed, Boolean extendedAnalysis,
+		boolean decomposeCompositeRoot, Vector<Decomposition> decompsSoFar) 
+		throws TimeoutException, MorphInukException, LinguisticDataException {
+		
 		Vector<Decomposition> decomps = null;
+		decompsSoFar = new Vector<Decomposition>();
 		if (Syllabics.containsInuktitut(formOfWordToBeAnalyzed))
 			formOfWordToBeAnalyzed = Syllabics.transcodeToRoman(formOfWordToBeAnalyzed);
 		formOfWordToBeAnalyzed = Util.enMinuscule(formOfWordToBeAnalyzed);
 		formOfWordToBeAnalyzed = formOfWordToBeAnalyzed.replaceAll("([iua])qk([iua])", "$1qq$2"); // to cope with error of transliteration
 
-		decomps = null;
 		if (formOfWordToBeAnalyzed.charAt(formOfWordToBeAnalyzed.length() - 1) != 'n') {
-			decomps = _decompose(formOfWordToBeAnalyzed, decomposeCompositeRoot);
+			decomps = _decompose(formOfWordToBeAnalyzed, decomposeCompositeRoot, decompsSoFar);
+			decompsSoFar.addAll(decomps);
 			if ( extendedAnalysis && Roman.typeOfLetterLat(formOfWordToBeAnalyzed.charAt(formOfWordToBeAnalyzed.length() - 1)) == Roman.V) {
 				Vector<Decomposition> otherDecomps = _decomposeForFinalConsonantPossiblyMissing(formOfWordToBeAnalyzed, decomposeCompositeRoot);
 				decomps.addAll(otherDecomps);
@@ -137,9 +141,10 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 		}
 		else {
 			decomps = _decomposeForFinalN(formOfWordToBeAnalyzed, decomposeCompositeRoot);
+			decompsSoFar.addAll(decomps);
 		}
-		
-		return decomps;
+				
+		return decompsSoFar;
 	}
 
 	private synchronized void cache(Decomposition[] decs, String word, boolean extendedAnalysis) {
@@ -212,7 +217,8 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
     // méthodes devraient plutôt appeler decomposeWord, et alors decompose sera
     // faite privée.
 
-	private Vector<Decomposition> _decompose(String term, boolean decomposeCompositeRoot)
+	private Vector<Decomposition> _decompose(String term, 
+			boolean decomposeCompositeRoot, Vector<Decomposition> decompsSoFar)
 			throws TimeoutException, MorphInukException, LinguisticDataException {
 		
 		Vector<AffixPartOfComposition> morphPartsInit = new Vector<AffixPartOfComposition>();
@@ -245,7 +251,18 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 			decomposition = __decompose_simplified_term__(simplifiedTerm, simplifiedTerm, simplifiedTerm,
 					morphPartsInit, new Graph.State[] { state }, preCond, transitivity);
 		}
+		
+		if (decompsSoFar != null) {
+			decompsSoFar.addAll(decomposition);
+		}
+		
 		return decomposition;
+	}
+	
+	private Vector<Decomposition> _decompose(String term, 
+			boolean decomposeCompositeRoot)
+			throws TimeoutException, MorphInukException, LinguisticDataException {
+		return _decompose(term, decomposeCompositeRoot, null);
 	}
 
     //==========================DECOMPOSER====================================
@@ -294,7 +311,6 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
                 word,morphParts,states, preConds, transitivity
                 );
         completeAnalysis.addAll(analysesAsRoot);
-        decompsSoFar.addAll(analysesAsRoot);
         
         /*
          * -------------- MORPHÈMES -----------------
@@ -304,7 +320,6 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
                 word,morphParts,states, preConds, transitivity
                 );
         completeAnalysis.addAll(analysesAsSequenceOfMorphemes);
-        decompsSoFar.addAll(analysesAsSequenceOfMorphemes);
 
         return completeAnalysis;
     }
@@ -451,7 +466,6 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
                         seqOfCharsPossibleAffix, states, preCond, transitivity,
                         positionAffix, morphParts, word, true);
             completeAnalysis.addAll(anas);
-            decompsSoFar.addAll(anas);
                 
             /*
              * 2. Les candidats-suffixes à partir des chaînes transformées
@@ -463,7 +477,6 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
                         remainingStem, seqOfCharsPossibleAffix, states, preCond,
                         transitivity, positionAffix, morphParts, word, false);
             completeAnalysis.addAll(anas);
-            decompsSoFar.addAll(anas);
             
             /*
              * Retour de la boucle. On poursuit la décomposition de 'simplifiedTerm',
@@ -633,7 +646,6 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
                             );
                     if (analyses != null && analyses.size() != 0) {
                         completeAnalysis.addAll(analyses);
-                    	decompsSoFar.addAll(analyses);
                     }
                 }
             } // if <condition et contexte>
@@ -853,7 +865,6 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
                 preConds,transitivity);
         
         allAnalyses.addAll(rootAnalyses);
-        decompsSoFar.addAll(rootAnalyses);
         
         return allAnalyses;
     }
