@@ -167,7 +167,6 @@ public abstract class MorphologicalAnalyzerAbstract {
 					"  Elapsed: "+elapsedMSecs/1000+"secs\n"+
 					"  Timeout: "+millisTimeout/1000+"secs");
 	    	}
-			System.out.println("--** word="+word+", elapsedMSecs="+elapsedMSecs+"msecs, timeoutMSecs="+millisTimeout);
 			
 			long excess = elapsedMSecs - millisTimeout;
 			
@@ -176,7 +175,6 @@ public abstract class MorphologicalAnalyzerAbstract {
 					"Word "+word+" exceeded millisTimeout="+millisTimeout+
 					" by "+excess+"msecs (elapsedMSecs="+
 					elapsedMSecs+"msecs)\ncallStack="+Debug.printCallStack();
-				System.out.println("--** checkElapsedTime: "+mess);
 				tLogger.trace(mess);
 			} 
     	}

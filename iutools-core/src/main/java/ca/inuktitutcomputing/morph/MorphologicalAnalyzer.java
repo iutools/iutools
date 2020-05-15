@@ -100,12 +100,13 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 				if ( extendedAnalysis && Roman.typeOfLetterLat(formOfWordToBeAnalyzed.charAt(formOfWordToBeAnalyzed.length() - 1)) == Roman.V) {
 					Vector<Decomposition> otherDecomps = _decomposeForFinalConsonantPossiblyMissing(formOfWordToBeAnalyzed, decomposeCompositeRoot);
 					decomps.addAll(otherDecomps);
+					decompsSoFar.addAll(otherDecomps);
 				}
 			}
 			else {
 				decomps = _decomposeForFinalN(formOfWordToBeAnalyzed, decomposeCompositeRoot);
 			}
-			
+						
 			// A.
 			// Éliminer les décompositions qui contiennent une suite de suffixes
 			// pour laquelle il existe un suffixe composé, pour ne garder que
@@ -150,6 +151,8 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 	 */
 	private Vector<Decomposition> _decomposeForFinalN(String aWord, boolean decomposeCompositeRoot)
 			throws TimeoutException, MorphInukException, LinguisticDataException {
+		
+		decompsSoFar = new Vector<Decomposition>();
 		String wordWithNReplaced = aWord.substring(0, aWord.length() - 1) + "t";
 		Vector<Decomposition> newDecomps = _decompose(wordWithNReplaced, decomposeCompositeRoot);
 		if (newDecomps != null)
@@ -203,6 +206,8 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 	private Vector<Decomposition> _decompose(String term, boolean decomposeCompositeRoot)
 			throws TimeoutException, MorphInukException, LinguisticDataException {
 
+		decompsSoFar = new Vector<Decomposition>();
+		
 		Vector<AffixPartOfComposition> morphPartsInit = new Vector<AffixPartOfComposition>();
 		Graph.State state;
 		Vector<Decomposition> decomposition = null;
@@ -282,6 +287,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
                 word,morphParts,states, preConds, transitivity
                 );
         completeAnalysis.addAll(analysesAsRoot);
+        decompsSoFar.addAll(analysesAsRoot);
         
         /*
          * -------------- MORPHÈMES -----------------
@@ -291,6 +297,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
                 word,morphParts,states, preConds, transitivity
                 );
         completeAnalysis.addAll(analysesAsSequenceOfMorphemes);
+        decompsSoFar.addAll(analysesAsSequenceOfMorphemes);
 
         return completeAnalysis;
     }
@@ -411,8 +418,9 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
                         Vector<SurfaceFormOfAffix> tr = lookForForms(newCandidates.elementAt(k), isSyllabic);
                         if (otherFormsOfAffixFound == null)
                             otherFormsOfAffixFound = new Vector<SurfaceFormOfAffix>();
-                        if (tr != null)
+                        if (tr != null) {
                             otherFormsOfAffixFound.addAll(tr);
+                        }
                     }
             // }
             
@@ -436,6 +444,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
                         seqOfCharsPossibleAffix, states, preCond, transitivity,
                         positionAffix, morphParts, word, true);
             completeAnalysis.addAll(anas);
+            decompsSoFar.addAll(anas);
                 
             /*
              * 2. Les candidats-suffixes à partir des chaînes transformées
@@ -447,6 +456,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
                         remainingStem, seqOfCharsPossibleAffix, states, preCond,
                         transitivity, positionAffix, morphParts, word, false);
             completeAnalysis.addAll(anas);
+            decompsSoFar.addAll(anas);
             
             /*
              * Retour de la boucle. On poursuit la décomposition de 'simplifiedTerm',
@@ -470,8 +480,9 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
             for (int i = 0; i < cons.length; i++) {
                 termWithConsonant = termWithoutStar + cons[i];
                 formsFoundForTermWithAddedConsonant = Lexicon.lookForForms(termWithConsonant, syllabic);
-                if (formsFoundForTermWithAddedConsonant != null)
+                if (formsFoundForTermWithAddedConsonant != null) {
                 	formsFound.addAll(formsFoundForTermWithAddedConsonant);
+                }
             }
             if (formsFound.size() == 0)
             	formsFound = null;
@@ -613,8 +624,10 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
                             newCond,
                             newTransitivity
                             );
-                    if (analyses != null && analyses.size() != 0)
+                    if (analyses != null && analyses.size() != 0) {
                         completeAnalysis.addAll(analyses);
+                    	decompsSoFar.addAll(analyses);
+                    }
                 }
             } // if <condition et contexte>
             
@@ -825,13 +838,15 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
                 if (tr != null)
                     if (lexs == null)
                         lexs = (Vector<Morpheme>) tr.clone();
-                    else
+                    else {
                         lexs.addAll(tr);
+                    }
             }
         Vector<Decomposition> rootAnalyses = checkRoots(lexs,word,termOrigICI,morphParts,states,
                 preConds,transitivity);
-
+        
         allAnalyses.addAll(rootAnalyses);
+        decompsSoFar.addAll(rootAnalyses);
         
         return allAnalyses;
     }
@@ -846,8 +861,9 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
             for (int i = 0; i < cons.length; i++) {
                 String termICIWithConsonant = termICIWithoutStar + cons[i];
                 Vector<Morpheme> morphemesFoundForWordWithAddedConsonant = Lexicon.lookForBase(termICIWithConsonant, isSyllabic);
-                if (morphemesFoundForWordWithAddedConsonant != null)
+                if (morphemesFoundForWordWithAddedConsonant != null) {
                     basesFound.addAll(morphemesFoundForWordWithAddedConsonant);
+                }
             }
             if (basesFound.size() == 0)
                 basesFound = null;
