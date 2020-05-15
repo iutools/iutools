@@ -55,7 +55,7 @@ import ca.inuktitutcomputing.utilities1.Util;
 
 public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 
-	Vector<Decomposition> decompsSoFar = new Vector<Decomposition>();
+	Set<Decomposition> decompsSoFar = new HashSet<Decomposition>();
 	
     private Hashtable<String,Graph.Arc[]> arcsByMorpheme = new Hashtable<String,Graph.Arc[]>();
     
@@ -77,7 +77,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 			extendedAnalysis = true;
 		}
 		
-		decompsSoFar = new Vector<Decomposition>();
+		decompsSoFar = new HashSet<Decomposition>();
 		
 		Decomposition[] cachedDecomps = uncache(word, extendedAnalysis);
 		if (cachedDecomps != null) {
@@ -89,26 +89,8 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 		String formOfWordToBeAnalyzed = word;
 		Decomposition[] decs = null;
 		
-		decomposeUntilTimeoutOrCompletion(word, extendedAnalysis, decomposeCompositeRoot);
-		
 		try {
-			if (Syllabics.containsInuktitut(formOfWordToBeAnalyzed))
-				formOfWordToBeAnalyzed = Syllabics.transcodeToRoman(formOfWordToBeAnalyzed);
-			formOfWordToBeAnalyzed = Util.enMinuscule(formOfWordToBeAnalyzed);
-			formOfWordToBeAnalyzed = formOfWordToBeAnalyzed.replaceAll("([iua])qk([iua])", "$1qq$2"); // to cope with error of transliteration
-	
-			Vector<Decomposition> decomps = null;
-			if (formOfWordToBeAnalyzed.charAt(formOfWordToBeAnalyzed.length() - 1) != 'n') {
-				decomps = _decompose(formOfWordToBeAnalyzed, decomposeCompositeRoot);
-				if ( extendedAnalysis && Roman.typeOfLetterLat(formOfWordToBeAnalyzed.charAt(formOfWordToBeAnalyzed.length() - 1)) == Roman.V) {
-					Vector<Decomposition> otherDecomps = _decomposeForFinalConsonantPossiblyMissing(formOfWordToBeAnalyzed, decomposeCompositeRoot);
-					decomps.addAll(otherDecomps);
-					decompsSoFar.addAll(otherDecomps);
-				}
-			}
-			else {
-				decomps = _decomposeForFinalN(formOfWordToBeAnalyzed, decomposeCompositeRoot);
-			}
+			Vector<Decomposition> decomps = decomposeUntilTimeoutOrCompletion(word, extendedAnalysis, decomposeCompositeRoot);
 						
 			// A.
 			// Éliminer les décompositions qui contiennent une suite de suffixes
@@ -136,10 +118,28 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 	}
 
 
-	private void decomposeUntilTimeoutOrCompletion(String word, Boolean extendedAnalysis,
-			boolean decomposeCompositeRoot) {
-		// TODO Auto-generated method stub
+	private Vector<Decomposition> decomposeUntilTimeoutOrCompletion(String formOfWordToBeAnalyzed, Boolean extendedAnalysis,
+			boolean decomposeCompositeRoot) throws TimeoutException, MorphInukException, LinguisticDataException {
+		Vector<Decomposition> decomps = null;
+		if (Syllabics.containsInuktitut(formOfWordToBeAnalyzed))
+			formOfWordToBeAnalyzed = Syllabics.transcodeToRoman(formOfWordToBeAnalyzed);
+		formOfWordToBeAnalyzed = Util.enMinuscule(formOfWordToBeAnalyzed);
+		formOfWordToBeAnalyzed = formOfWordToBeAnalyzed.replaceAll("([iua])qk([iua])", "$1qq$2"); // to cope with error of transliteration
+
+		decomps = null;
+		if (formOfWordToBeAnalyzed.charAt(formOfWordToBeAnalyzed.length() - 1) != 'n') {
+			decomps = _decompose(formOfWordToBeAnalyzed, decomposeCompositeRoot);
+			if ( extendedAnalysis && Roman.typeOfLetterLat(formOfWordToBeAnalyzed.charAt(formOfWordToBeAnalyzed.length() - 1)) == Roman.V) {
+				Vector<Decomposition> otherDecomps = _decomposeForFinalConsonantPossiblyMissing(formOfWordToBeAnalyzed, decomposeCompositeRoot);
+				decomps.addAll(otherDecomps);
+				decompsSoFar.addAll(otherDecomps);
+			}
+		}
+		else {
+			decomps = _decomposeForFinalN(formOfWordToBeAnalyzed, decomposeCompositeRoot);
+		}
 		
+		return decomps;
 	}
 
 	private synchronized void cache(Decomposition[] decs, String word, boolean extendedAnalysis) {
@@ -162,7 +162,6 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 	private Vector<Decomposition> _decomposeForFinalN(String aWord, boolean decomposeCompositeRoot)
 			throws TimeoutException, MorphInukException, LinguisticDataException {
 		
-		decompsSoFar = new Vector<Decomposition>();
 		String wordWithNReplaced = aWord.substring(0, aWord.length() - 1) + "t";
 		Vector<Decomposition> newDecomps = _decompose(wordWithNReplaced, decomposeCompositeRoot);
 		if (newDecomps != null)
@@ -215,8 +214,6 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 
 	private Vector<Decomposition> _decompose(String term, boolean decomposeCompositeRoot)
 			throws TimeoutException, MorphInukException, LinguisticDataException {
-
-		decompsSoFar = new Vector<Decomposition>();
 		
 		Vector<AffixPartOfComposition> morphPartsInit = new Vector<AffixPartOfComposition>();
 		Graph.State state;

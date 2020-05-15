@@ -43,6 +43,20 @@ public class DecomposeHansardTest {
 	}
 	
 	@Test
+	public void test__DELETE_LATER() throws Exception {
+		Set<Decomposition> decompsSet = new HashSet<Decomposition>();
+		Decomposition[] decomps = decompose("inuktitut").decompositions;
+		for (Decomposition aDecomp: decomps) {
+			decompsSet.add(aDecomp);
+		}
+		int initSize = decompsSet.size();
+		for (Decomposition aDecomp: decomps) {
+			decompsSet.add(aDecomp);
+		}
+		Assert.assertEquals(initSize, decompsSet.size());
+	}
+	
+	@Test
 	public void testDecomposer() throws Exception {
 				
 		System.out.println("Running testDecomposer. This test can take a few minutes to complete.");

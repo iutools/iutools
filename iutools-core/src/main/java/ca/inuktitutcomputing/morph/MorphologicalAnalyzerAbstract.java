@@ -115,11 +115,13 @@ public abstract class MorphologicalAnalyzerAbstract {
 			tLogger.trace("Caught InterruptedException");
 		} catch (ExecutionException e) {
 			tLogger.trace("Caught ExecutionException e.getClass()="+e.getClass()+", e.getCause()="+e.getCause()+", e="+Debug.printCallStack(e));
-			Exception cause = (Exception) e.getCause();
+			Throwable cause =  e.getCause();
 			if (cause instanceof TimeoutException) {
 				throw (TimeoutException) cause;
+			} else if (cause instanceof Exception){
+				throw new MorphologicalAnalyzerException((Exception)cause);
 			} else {
-				throw new MorphologicalAnalyzerException(cause);
+				throw new MorphologicalAnalyzerException(e.getLocalizedMessage());
 			}
 		} finally {
 			checkElapsedTime(word, start);
