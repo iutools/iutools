@@ -2,52 +2,78 @@ package ca.inuktitutcomputing.utilities;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.log4j.Logger;
 
 import ca.nrc.debug.Debug;
 
+/**
+ * This class can used to monitor the running time of long operation, and raise 
+ * a TimeoutException if it exceeds a particular threshold.
+ * 
+ * WARNING: This class may be in a "solution in search of a problem" as Java is 
+ * supposed to provide native ways of doing this (ex: Executer, Future). But we 
+ * have been experiencing problems with those native solutions and are therefore 
+ * trying some homegrown approaches.
+ * 
+ * @author desilets
+ *
+ */
 public class StopWatch {
 	
-	private long timeout; // milliseconds
+	private long timeoutMSecs; // milliseconds
 	private long startTime;
 	private boolean disactivated = false;
 	
 	private int clockNotForcedSince = 0;
 	
-	public StopWatch(long _timeout) {
-		this.timeout = _timeout;
+	public StopWatch(long _timeoutMSecs) {
+		initStopWatch(_timeoutMSecs);
 	}
 	
+	private void initStopWatch(long _timeoutMSecs) {
+		this.timeoutMSecs = _timeoutMSecs;
+	}
+
 	public void start() {
-		this.startTime = now();
+		this.startTime = nowMSecs();
 	}
 	
-	private long now() {
+	private long nowMSecs() {
 		long time = System.nanoTime() / 1000000;
 		return time;
 	}
 
 	public void check(String message) throws TimeoutException {
+		boolean deactivated = false;
+		boolean justUpdateClock = false;
+		boolean justPrintTimeout = false;
+		
+		if (deactivated) { 
+			return; 
+		}
+		
 		Logger tLogger = Logger.getLogger("ca.inuktitutcomputing.utilities.StopWatch.check");
 
 		if (!disactivated) {
 			forceClockUpdate();
 		}
-
-		Long elapsed = now() - startTime;
 		
-		if (tLogger.isTraceEnabled()) {
-			String callstack = Debug.printCallStack();
-			tLogger.trace("elapsed="+elapsed+"\nCall stack:\n"+callstack);
+		if (justUpdateClock) {
+			return;
 		}
+
+		Long elapsed = nowMSecs() - startTime;
 		
-		if (!disactivated && elapsed > timeout) {
+		if (!disactivated && elapsed > timeoutMSecs) {
 			if (tLogger.isTraceEnabled()) {
 				tLogger.trace("TIMED OUT!! Raising TimeoutException");
 			}
-			throw new TimeoutException(message);
+			if (!justPrintTimeout) {
+				throw new MorphTimeoutException(message+"\nTimed out after "+elapsed+"msecs");
+			}
 		}
 	}
 	

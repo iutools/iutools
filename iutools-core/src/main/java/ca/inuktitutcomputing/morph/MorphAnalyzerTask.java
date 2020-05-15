@@ -2,6 +2,8 @@ package ca.inuktitutcomputing.morph;
 
 import java.util.concurrent.Callable;
 
+import ca.inuktitutcomputing.utilities.StopWatch;
+
 /**
  * Class for calling the morphological analyzer in a way that supports 
  * timeouts.
@@ -11,6 +13,7 @@ import java.util.concurrent.Callable;
  */
 public class MorphAnalyzerTask implements Callable<Decomposition[]> {
 
+	StopWatch stopWatch = null;
 	String word = null;
 	boolean lenient = true;
 	MorphologicalAnalyzerAbstract analyzer = null;
@@ -26,8 +29,10 @@ public class MorphAnalyzerTask implements Callable<Decomposition[]> {
 	
 	@Override
 	public Decomposition[] call() throws Exception {
+		long start = System.currentTimeMillis();
 		Decomposition[] decomps = analyzer.doDecompose(word, lenient);
+		long elapsed = System.currentTimeMillis() - start;
+		
 		return decomps;
 	}
-	
 }

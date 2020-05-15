@@ -248,6 +248,9 @@ public class DecomposeHansardTest {
 		AnalysisOutcome outcome = new AnalysisOutcome();
 		
 		try {
+			// AD-2020-05-13: Does this help ensure that timeout works?
+			//
+			morphAnalyzer = new MorphologicalAnalyzer();
 			outcome.decompositions = morphAnalyzer.decomposeWord(word);
 		} catch (TimeoutException | MorphologicalAnalyzerException e) {
 			outcome.timedOut = true;

@@ -15,10 +15,25 @@ import ca.nrc.debug.Debug;
 
 public abstract class MorphologicalAnalyzerAbstract {
 	
-    protected Long millisTimeout = new Long(10000);
+	/**
+	 * Strategy used to monitor execution of the analyzer and timing it out 
+	 * after a set time.
+	 * 
+	 * - EXECUTOR: Use the Java Executor+Future classes
+	 * - STOPWATCH: Use the homegrown StopWatch class
+	 * - BOTH: Use the EXECUTOR approach in tandem with STOPWATCH 
+	 * 
+	 * @author desilets
+	 *
+	 */
+	public static enum TimeoutStrategy {
+		EXECUTOR, STOPWATCH, BOTH}
+	
+	protected TimeoutStrategy timeoutStrategy = TimeoutStrategy.STOPWATCH;
+    protected Long millisTimeout = new Long(10*1000);
     protected boolean timeoutActive = true;
     protected StopWatch stpw;
-    
+
     /** 
      * DÉCOMPOSITION DU MOT.
      * Les décompositions résultantes sont ordonnées selon certaines règles.
@@ -49,6 +64,11 @@ public abstract class MorphologicalAnalyzerAbstract {
     		lenient = true;
     	}
     	
+    	long start = System.currentTimeMillis();
+    	if (timeoutStrategy != TimeoutStrategy.EXECUTOR) {
+    		this.stpw = new StopWatch(millisTimeout);
+    	}
+    	
     	Logger tLogger = Logger.getLogger("ca.inuktitutcomputing.morph.decomposeWord");
     	tLogger.trace("word="+word+", lenient="+lenient);
     	
@@ -56,15 +76,39 @@ public abstract class MorphologicalAnalyzerAbstract {
     	
     	MorphAnalyzerTask task = new MorphAnalyzerTask(word, lenient, this);
     	
-		ExecutorService executor = Executors.newCachedThreadPool();
+		String mess = "Decomp of word="+word+"; STARTS at "+start+"msecs";
+		tLogger.trace(mess);
+    	
+    	if (timeoutStrategy == TimeoutStrategy.STOPWATCH) {
+    		decomps = invokeDirectly(word, lenient);
+    	} else {
+    		decomps = invokeThroughExecutor(task);
+    	}
+    	
+		long elapsed = System.currentTimeMillis() - start;
+		mess = "Decompositio of word="+word+"; ENDS with elapsed="+elapsed+"msecs";
+		tLogger.trace(mess);
+		
+    	return decomps;
+    }
+
+    private Decomposition[] invokeThroughExecutor(MorphAnalyzerTask task) 
+    		throws TimeoutException, MorphologicalAnalyzerException {
+    	Logger tLogger = Logger.getLogger("ca.inuktitutcomputing.morph.invokeThroughExecutor");
+    	
+    	String word = task.word;
+		
+        ExecutorService executor = Executors.newCachedThreadPool();    	
 		Future<Decomposition[]> future = executor.submit(task);
+		Decomposition[] decomps = null;	
+    	long start = System.currentTimeMillis();
+		
 		try {
 			if (timeoutActive) {
 				decomps = (Decomposition[])future.get(millisTimeout, TimeUnit.MILLISECONDS);
 			} else {
 				decomps = (Decomposition[])future.get();
 			}
-			System.out.println("   Completed successfully with decomps.length="+decomps.length);
 		} catch (InterruptedException e) {
 			tLogger.trace("Caught InterruptedException");
 		} catch (ExecutionException e) {
@@ -76,13 +120,66 @@ public abstract class MorphologicalAnalyzerAbstract {
 				throw new MorphologicalAnalyzerException(cause);
 			}
 		} finally {
-		   future.cancel(true); // may or may not desire this
+			checkElapsedTime(word, start);
+			future.cancel(true); // may or may not desire this
 		}	
-    	
-    	return decomps;
-    }
+				
+		return decomps;
+	}
 
-    protected Decomposition[] doDecompose(String word) 
+	private Decomposition[] invokeDirectly(String word, boolean lenient) 
+			throws TimeoutException, MorphologicalAnalyzerException {
+    	Logger tLogger = Logger.getLogger("ca.inuktitutcomputing.morph.invokeDirectly");
+    	
+    	long start = System.currentTimeMillis();
+    	Decomposition[] decomps = null;    	
+		try {
+			decomps = doDecompose(word, lenient);
+		} catch (TimeoutException e) {
+			throw(e);
+		} catch (Exception e) {
+			tLogger.trace("Caught Exception e.getClass()="+e.getClass()+", e.getCause()="+e.getCause()+", e="+Debug.printCallStack(e));
+			Exception cause = (Exception) e.getCause();
+			if (cause instanceof TimeoutException) {
+				throw (TimeoutException) cause;
+			} else {
+				throw new MorphologicalAnalyzerException(cause);
+			}
+		} finally {
+			checkElapsedTime(word, start);
+		}	
+				
+		return decomps;
+	}
+
+	private void checkElapsedTime(String word, long start) {
+    	Logger tLogger = Logger.getLogger("ca.inuktitutcomputing.morph.MorphologicalAnalyzerAbstract.checkElapsedTime");
+    	
+    	if (timeoutActive) {
+	    	long elapsedMSecs = System.currentTimeMillis() - start;
+	    	if (elapsedMSecs > 1.1 * millisTimeout) {
+				tLogger.trace(
+					"word="+word+
+					"; Elapsed time was significantly greater than the specified timeout value.\n"+
+					"  Elapsed: "+elapsedMSecs/1000+"secs\n"+
+					"  Timeout: "+millisTimeout/1000+"secs");
+	    	}
+			System.out.println("--** word="+word+", elapsedMSecs="+elapsedMSecs+"msecs, timeoutMSecs="+millisTimeout);
+			
+			long excess = elapsedMSecs - millisTimeout;
+			
+			if (excess  > 2*1000) {
+				String mess = 
+					"Word "+word+" exceeded millisTimeout="+millisTimeout+
+					" by "+excess+"msecs (elapsedMSecs="+
+					elapsedMSecs+"msecs)\ncallStack="+Debug.printCallStack();
+				System.out.println("--** checkElapsedTime: "+mess);
+				tLogger.trace(mess);
+			} 
+    	}
+	}
+
+	protected Decomposition[] doDecompose(String word) 
 			throws MorphologicalAnalyzerException, TimeoutException {
 		return doDecompose(word, null);
 	}
@@ -106,6 +203,11 @@ public abstract class MorphologicalAnalyzerAbstract {
     
     public MorphologicalAnalyzerAbstract activateTimeout() {
     	timeoutActive = true;
+    	return this;
+    }
+    
+    public MorphologicalAnalyzerAbstract setTimeoutStrategy(TimeoutStrategy _strat) {
+    	this.timeoutStrategy = _strat;
     	return this;
     }
 }

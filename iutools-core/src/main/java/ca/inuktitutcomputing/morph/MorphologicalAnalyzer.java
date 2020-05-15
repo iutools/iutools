@@ -26,6 +26,7 @@ package ca.inuktitutcomputing.morph;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.*;
 
