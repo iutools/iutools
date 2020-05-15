@@ -88,6 +88,9 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 
 		String formOfWordToBeAnalyzed = word;
 		Decomposition[] decs = null;
+		
+		decomposeUntilTimeoutOrCompletion(word, extendedAnalysis, decomposeCompositeRoot);
+		
 		try {
 			if (Syllabics.containsInuktitut(formOfWordToBeAnalyzed))
 				formOfWordToBeAnalyzed = Syllabics.transcodeToRoman(formOfWordToBeAnalyzed);
@@ -130,6 +133,13 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 		}
 
 		return decs;
+	}
+
+
+	private void decomposeUntilTimeoutOrCompletion(String word, Boolean extendedAnalysis,
+			boolean decomposeCompositeRoot) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	private synchronized void cache(Decomposition[] decs, String word, boolean extendedAnalysis) {
