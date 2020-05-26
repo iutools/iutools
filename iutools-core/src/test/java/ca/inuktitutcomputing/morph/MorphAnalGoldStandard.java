@@ -276,9 +276,9 @@ public class MorphAnalGoldStandard {
 			.isMisspelled());
 		addCase(new AnalyzerCase("iksivauta", "{iksiva:iksiva/1v}{uta:ut/1vn}"));
 		addCase(new AnalyzerCase("iksivautaa", "{iksiva:iksiva/1v}{uta:ut/1vn}{a:k/tn-nom-d}"));
-		addCase(new AnalyzerCase("iksivautaaq", "[decomposition:/iksiva(iksiva)/utaaq(ut)/]")
+		addCase(new AnalyzerCase("iksivautaaq", null)
 			.possiblyMisspelledWord()
-			.comment("TODO-BF: Please add a SHORT comment"));
+			.comment("TODO-BF: Please add a SHORT comment; [decomposition:/iksiva(iksiva)/utaaq(ut)/]"));
 		addCase(new AnalyzerCase("iksivautap", "{iksiva:iksiva/1v}{uta:ut/1vn}{p:up/tn-gen-s}")
 			.isMisspelled());
 		addCase(new AnalyzerCase("iksivautaq", "{iksiva:iksiva/1v}{utaq:ut/1vn}"));
@@ -351,8 +351,9 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("ilulingita", "{ilu:ilu/1n}{li:lik/1nn}{ngita:ngita/tn-gen-p-4s}"));
 		addCase(new AnalyzerCase("iluunnatik", "{iluunnatik:iluunnatik/1p}"));
 		addCase(new AnalyzerCase("imaak", "{imaak:imaak/1a}"));
-		addCase(new AnalyzerCase("imaimmat", "[decomposition:/imaimmat(imaimmat)/]")
-			.skip());
+		addCase(new AnalyzerCase("imaimmat", null)
+			.possiblyMisspelledWord()
+			.comment("TODO-BF: Please add a SHORT comment; [decomposition:/imaimmat(imaimmat)/]"));
 		addCase(new AnalyzerCase("imanna", "{imanna:imannak/1a}"));
 		addCase(new AnalyzerCase("imannak", "{imannak:imannak/1a}"));
 		addCase(new AnalyzerCase("immagaa", "{immagaa:immaqaa/1a}")
@@ -425,14 +426,16 @@ public class MorphAnalGoldStandard {
 			.isProperName());
 		addCase(new AnalyzerCase("issivauta", "{issiva:iksiva/1v}{uta:ut/1vn}"));
 		addCase(new AnalyzerCase("issivautaa", "{issiva:iksiva/1v}{uta:ut/1vn}{a:k/tn-nom-d}"));
-		addCase(new AnalyzerCase("issivautaaq", "[decomposition:/issiva(iksiva)/utaaq(ut)/]")
-			.skip());
+		addCase(new AnalyzerCase("issivautaaq", "")
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment; "));
 		addCase(new AnalyzerCase("issivautaq", "{issiva:iksiva/1v}{utaq:ut/1vn}"));
 		addCase(new AnalyzerCase("isumagillugu", "{isuma:isuma/1n}{gi:gi/1nv}{llugu:lugu/tv-part-1s-3s-prespas}"));
 		addCase(new AnalyzerCase("itsivauta", "{itsiva:iksiva/1v}{uta:ut/1vn}"));
 		addCase(new AnalyzerCase("itsivautaa", "{itsiva:iksiva/1v}{uta:ut/1vn}{a:k/tn-nom-d}"));
-		addCase(new AnalyzerCase("itsivautaaq", "[decomposition:/itsiva(iksiva)/utaaq(ut)/]")
-			.skip());
+		addCase(new AnalyzerCase("itsivautaaq", null)
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment; [decomposition:/itsiva(iksiva)/utaaq(ut)/]"));
 		addCase(new AnalyzerCase("itsivautaq", "{itsiva:iksiva/1v}{utaq:ut/1vn}"));
 		addCase(new AnalyzerCase("ivvit", "{ivvit:igvit/1p}"));
 		addCase(new AnalyzerCase("jaak", "[decomposition:/jaak(jaak)/]")
@@ -484,7 +487,8 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("katimajiralaanut", "{kati:kati/1v}{ma:ma/1vv}{ji:ji/1vn}{ralaa:ralaaq/1nn}{nut:nut/tn-dat-p}"));
 		addCase(new AnalyzerCase("katimajiralaat", "{kati:kati/1v}{ma:ma/1vv}{ji:ji/1vn}{ralaa:ralaaq/1nn}{t:it/tn-nom-p}"));
 		addCase(new AnalyzerCase("katimajit", "{kati:kati/1v}{ma:ma/1vv}{ji:ji/1vn}{t:it/tn-nom-p}")
-			.skip());
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment"));
 		addCase(new AnalyzerCase("katimajiujut", "{kati:kati/1v}{ma:ma/1vv}{ji:ji/1vn}{u:u/1nv}{jut:jut/tv-ger-3p}"));
 		addCase(new AnalyzerCase("katimajiuqataujut", "{kati:kati/1v}{ma:ma/1vv}{ji:ji/1vn}{u:u/1nv}{qatau:qatau/1vv}{jut:jut/tv-ger-3p}"));
 		addCase(new AnalyzerCase("katimajjutiksait", "{kati:kati/1v}{ma:ma/1vv}{jjuti:jjut/1vn}{ksa:ksaq/1nn}{it:it/tn-nom-p}"));
@@ -499,7 +503,8 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("katimautitsa", "{kati:kati/1v}{ma:ma/1vv}{uti:ut/1vn}{tsa:ksaq/1nn}"));
 		addCase(new AnalyzerCase("katimavimmi", "{kati:kati/1v}{ma:ma/1vv}{vim:vik/3vn}{mi:mi/tn-loc-s}"));
 		addCase(new AnalyzerCase("katimmajjutiksaq", "{kati:kati/1v}{mma:ma/1v}{jjuti:jjut/1vn}{ksaq:ksaq/1nn}")
-			.skip());
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment;"));
 		addCase(new AnalyzerCase("katitsutik", "{katit:katit/1v}{sutik:lutik/tv-part-3p-prespas}"));
 		addCase(new AnalyzerCase("katittugit", "{katit:katit/1v}{tugit:lugit/tv-part-4p-3p-prespas}"));
 		addCase(new AnalyzerCase("kattuk", "[decomposition:/kattuk(kattuk)/]")
@@ -520,7 +525,8 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("kiinaujanit", "{kiinauja:kiinaujaq/1n}{nit:nit/tn-abl-p}"));
 		addCase(new AnalyzerCase("kiinaujanut", "{kiinauja:kiinaujaq/1n}{nut:nut/tn-dat-p}"));
 		addCase(new AnalyzerCase("kiinaujatigut", "{kiinauja:kiinaujaq/1n}{tigut:tigut/tn-via-p}")
-			.skip());
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment;"));
 		addCase(new AnalyzerCase("kikkulimaanut", "{kikku:kikkut/1p}{limaa:limaaq/1nn}{nut:nut/tn-dat-p}"));
 		addCase(new AnalyzerCase("kikkulimaat", "{kikku:kikkut/1p}{limaa:limaaq/1nn}{t:it/tn-nom-p}"));
 		addCase(new AnalyzerCase("kikkut", "{kikkut:kikkut/1p}"));
@@ -615,7 +621,8 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("maligaliuqtinit", "{mali:malik/1v}{ga:gaq/1vn}{liuq:liuq/1nv}{ti:ji/1vn}{nit:nit/tn-abl-p}"));
 		addCase(new AnalyzerCase("maligaliuqtinut", "{mali:malik/1v}{ga:gaq/1vn}{liuq:liuq/1nv}{ti:ji/1vn}{nut:nut/tn-dat-p}"));
 		addCase(new AnalyzerCase("maligaliuqtit", "{maliga:maligaq/1n}{liuq:liuq/1nv}{ti:ji/1vn}{t:it/tn-nom-p}")
-			.skip());
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment; "));
 		addCase(new AnalyzerCase("maligaliuqtiujuq", "{mali:malik/1v}{ga:gaq/1vn}{liuq:liuq/1nv}{ti:ji/1vn}{u:u/1nv}{juq:juq/1vn}"));
 		addCase(new AnalyzerCase("maligaliuqtiujut", "{mali:malik/1v}{ga:gaq/1vn}{liuq:liuq/1nv}{ti:ji/1vn}{u:u/1nv}{jut:jut/tv-ger-3p}"));
 		addCase(new AnalyzerCase("maligaliuqtiup", "{mali:malik/1v}{ga:gaq/1vn}{liuq:liuq/1nv}{ti:ji/1vn}{up:up/tn-gen-s}"));
@@ -643,7 +650,8 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("maligassait", "{mali:malik/1v}{ga:gaq/1vn}{ssa:ksaq/1nn}{it:it/tn-nom-p}"));
 		addCase(new AnalyzerCase("maligassaq", "{mali:malik/1v}{ga:gaq/1vn}{ssaq:ksaq/1nn}"));
 		addCase(new AnalyzerCase("maligatigut", "{maliga:maligaq/1n}{tigut:tigut/tn-via-p}")
-			.skip());
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment; "));
 		addCase(new AnalyzerCase("maligatsait", "{mali:malik/1v}{ga:gaq/1vn}{tsa:ksaq/1nn}{it:it/tn-nom-p}"));
 		addCase(new AnalyzerCase("maligatsaq", "{mali:malik/1v}{ga:gaq/1vn}{tsaq:ksaq/1nn}"));
 		addCase(new AnalyzerCase("maligaujuq", "{mali:malik/1v}{ga:gaq/1vn}{u:u/1nv}{juq:juq/1vn}"));
@@ -655,7 +663,8 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("malittugit", "{malit:malik/1v}{tugit:lugit/tv-part-1s-3p-prespas}"));
 		addCase(new AnalyzerCase("malittugu", "{malit:malik/1v}{tugu:lugu/tv-part-1s-3s-prespas}"));
 		addCase(new AnalyzerCase("mamianaq", "{mamia:mamiak/1v}{naq:naq/1vn}")
-			.skip());
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment; "));
 		addCase(new AnalyzerCase("mamiappunga", "{mamiap:mamiak/1v}{punga:vunga/tv-dec-1s}"));
 		addCase(new AnalyzerCase("maniittuq", "[decomposition:/maniittuq(maniittuq)/]")
 			.isProperName());
@@ -664,7 +673,8 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("mappigaq", "{mappi:makpiq/1v}{gaq:gaq/1vn}"));
 		addCase(new AnalyzerCase("mappiqtugaq", "{mappiq:makpiq/1v}{tu:tuq/1vv}{gaq:gaq/1vn}"));
 		addCase(new AnalyzerCase("marrunnik", "{marrun:marruuk/1n}{nik:nik/tn-acc-p}")
-			.skip());
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment; "));
 		addCase(new AnalyzerCase("marruuk", "{marruuk:marruuk/1n}"));
 		addCase(new AnalyzerCase("marruunni", "{marruun:marruuk/1n}{ni:ni/tn-loc-p}"));
 		addCase(new AnalyzerCase("marruunnik", "{marruun:marruuk/1n}{nik:nik/tn-acc-p}"));
@@ -675,9 +685,11 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("miksaanut", "{miksa:miksa/1n}{anut:nganut/tn-dat-s-4s}"));
 		addCase(new AnalyzerCase("milian", "{milian:miliat/1n}"));
 		addCase(new AnalyzerCase("milianik", "{milia:milian/1n}{nik:nik/tn-acc-p}")
-			.skip());
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment; "));
 		addCase(new AnalyzerCase("milianit", "{milia:milian/1n}{nit:nit/tn-abl-p}")
-			.skip());
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment; "));
 		addCase(new AnalyzerCase("minisitaujuq", "{minisita:minista/1n}{u:u/1nv}{juq:juq/1vn}"));
 		addCase(new AnalyzerCase("minista", "{minista:minista/1n}"));
 		addCase(new AnalyzerCase("ministaa", "{minista:minista/1n}{a:k/tn-nom-d}"));
@@ -712,16 +724,20 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("naasautilik", "{naasa:naasaq/1v}{uti:ut/1vn}{lik:lik/1nn}"));
 		addCase(new AnalyzerCase("nakit", "{nakit:nakit/1a}"));
 		addCase(new AnalyzerCase("nakuqmi", "{nakuq:nakuq/1v}{mi:miik/1vn}")
-			.skip());
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment; "));
 		addCase(new AnalyzerCase("nakuqmii", "{nakuq:nakuq/1v}{mii:miik/1vn}")
-			.skip());
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment; "));
 		addCase(new AnalyzerCase("nakurmii", "{nakur:nakuq/1v}{mii:miik/1vn}"));
 		addCase(new AnalyzerCase("nakurmiik", "{nakur:nakuq/1v}{miik:miik/1vn}"));
 		addCase(new AnalyzerCase("naliak", "{naliak:naliak/1p}"));
 		addCase(new AnalyzerCase("naliqqangit", "{naliqqa:naliqqaq/1n}{ngit:ngit/tn-nom-p-4s}")
-			.skip());
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment; "));
 		addCase(new AnalyzerCase("nalliani", "{nalli:nalliq/1p}{ani:ngani/tn-loc-s-4s}")
-			.skip());
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment; "));
 		addCase(new AnalyzerCase("nalunanngittuq", "{naluna:nalunak/1v}{nngit:nngit/1vv}{tuq:juq/1vn}"));
 		addCase(new AnalyzerCase("namminiq", "{namminiq:nangminiq/1n}"));
 		addCase(new AnalyzerCase("namminiqaqtunut", "{nammini:nangminiq/1n}{qaq:qaq/1nv}{tu:juq/1vn}{nut:nut/tn-dat-p}"));
@@ -733,10 +749,12 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("naujaani", "{naujaa:naujaat/1n}{ni:ni/tn-loc-p}"));
 		addCase(new AnalyzerCase("naukkut", "{nau:nauk/1a}{kkut:kkut/1nn}"));
 		addCase(new AnalyzerCase("nigiani", "{nigi:niggig/1n}{ani:ngani/tn-loc-s-4s}")
-			.skip());
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment; "));
 		addCase(new AnalyzerCase("nikuvippunga", "{nikuvip:nikuvik/1v}{punga:vunga/tv-dec-1s}"));
 		addCase(new AnalyzerCase("niqsunaqtuq", "{niqsu:niqtuq/1v}{naq:naq/1vv}{tuq:juq/1vn}")
-			.skip());
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment; "));
 		addCase(new AnalyzerCase("niqtunaqtuq", "{niqtu:niqtuq/1v}{naq:naq/1vv}{tuq:juq/1vn}"));
 		addCase(new AnalyzerCase("niriuppugut", "{niriup:niriuk/1v}{pugut:vugut/tv-dec-1p}"));
 		addCase(new AnalyzerCase("niriuppunga", "{niriup:niriuk/1v}{punga:vunga/tv-dec-1s}"));
@@ -795,7 +813,8 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("nunavuut", "{nunavu:nunavut/1n}{ut:up/tn-gen-s}")
 			.isMisspelled());
 		addCase(new AnalyzerCase("nunnguani", "{nunngu:nunnguq/1n}{ani:ngani/tn-loc-s-4s}")
-			.skip());
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment; "));
 		addCase(new AnalyzerCase("nuqqaqpuq", "{nuqqaq:nuqqaq/1v}{puq:vuq/tv-dec-3s}"));
 		addCase(new AnalyzerCase("nutaami", "{nutaa:nutaaq/1n}{mi:mi/tn-loc-s}"));
 		addCase(new AnalyzerCase("nutaamik", "{nutaa:nutaaq/1n}{mik:mik/tn-acc-s}"));
@@ -817,7 +836,8 @@ public class MorphAnalGoldStandard {
 			.isProperName()
 			.comment("Barnabas"));
 		addCase(new AnalyzerCase("paktaqtuqtut", "{paktak:paktak/1v}{tuq:tuq/1vv}{tut:jut/tv-ger-3p}")
-			.skip());
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment; "));
 		addCase(new AnalyzerCase("paliisikkut", "{paliisi:paliisi/1n}{kkut:kkut/1nn}"));
 		addCase(new AnalyzerCase("panniqtuumi", "{panniqtuu:pangnirtuuq/1n}{mi:mi/tn-loc-s}"));
 		addCase(new AnalyzerCase("panniqtuuq", "{panniqtuuq:pangnirtuuq/1n}"));
@@ -835,7 +855,8 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("pigiaqtitamut", "{pi:pi/1v}{giaq:giaq/1vv}{ti:tit/1vv}{ta:jaq/1vn}{mut:mut/tn-dat-s}"));
 		addCase(new AnalyzerCase("pigiaqtitaq", "{pi:pi/1v}{giaq:giaq/1vv}{ti:tit/1vv}{taq:jaq/1vn}"));
 		addCase(new AnalyzerCase("pigiaqtitat", "{pi:pi/1v}{giaq:giaq/1vv}{ti:tit/1vv}{ta:jaq/1vn}{t:it/tn-nom-p}")
-			.skip());
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment; "));
 		addCase(new AnalyzerCase("pigiaqtitaujuq", "{pi:pi/1v}{giaq:giaq/1vv}{ti:tit/1vv}{ta:jaq/1vn}{u:u/1nv}{juq:juq/1vn}"));
 		addCase(new AnalyzerCase("pigiarutiksanit", "{pi:pi/1v}{gia:giaq/1vv}{ruti:ut/1vn}{ksa:ksaq/1nn}{nit:nit/tn-abl-p}"));
 		addCase(new AnalyzerCase("piiku", null)
@@ -857,7 +878,8 @@ public class MorphAnalGoldStandard {
 			.isProperName()
 			.comment("Picco"));
 		addCase(new AnalyzerCase("piliriaksat", "{piliria:piliriaq/1n}{ksa:ksaq/1nn}{t:it/tn-nom-p}")
-			.skip());
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment; "));
 		addCase(new AnalyzerCase("piliriamik", "{piliria:piliriaq/1n}{mik:mik/tn-acc-s}"));
 		addCase(new AnalyzerCase("piliriamut", "{piliria:piliriaq/1n}{mut:mut/tn-dat-s}"));
 		addCase(new AnalyzerCase("piliriangujuq", "{piliria:piliriaq/1n}{ngu:u/1nv}{juq:juq/1vn}"));
@@ -895,7 +917,8 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("piqujaksait", "{pi:pi/1v}{qu:qu/2vv}{ja:jaq/1vn}{ksa:ksaq/1nn}{it:it/tn-nom-p}"));
 		addCase(new AnalyzerCase("piqujaksaq", "{pi:pi/1v}{qu:qu/2vv}{ja:jaq/1vn}{ksaq:ksaq/1nn}"));
 		addCase(new AnalyzerCase("piqujaksat", "{pi:pi/1v}{qu:qu/2vv}{ja:jaq/1vn}{ksa:ksaq/1nn}{t:it/tn-nom-p}")
-			.skip());
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment; "));
 		addCase(new AnalyzerCase("piqujaq", "{pi:pi/1v}{qu:qu/2vv}{jaq:jaq/1vn}"));
 		addCase(new AnalyzerCase("pivalliatittinirmut", "{pi:pi/1v}{vallia:vallia/1vv}{tit:tit/1vv}{ti:si/1vv}{nir:niq/2vn}{mut:mut/tn-dat-s}"));
 		addCase(new AnalyzerCase("pu", "[decomposition:/pu(pu)/]")
@@ -918,7 +941,8 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("puriimmia", "{puriimmia:puriimmia/1n}"));
 		addCase(new AnalyzerCase("qallunaat", "{qallunaa:qaplunaaq/1n}{t:it/tn-nom-p}"));
 		addCase(new AnalyzerCase("qallunaatitut", "{qallunaaq:qaplunaaq/1n}{titut:titut/tn-sim-p}")
-			.skip());
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment; "));
 		addCase(new AnalyzerCase("qamaniqtuaq", "{qamaniqtuaq:qamaniqjuaq/1n}"));
 		addCase(new AnalyzerCase("qamaniqtuarmi", "{qamaniqtuar:qamaniqjuaq/1n}{mi:mi/tn-loc-s}"));
 		addCase(new AnalyzerCase("qamanittuarmi", "{qamanittuar:qamaniqjuaq/1n}{mi:mi/tn-loc-s}"));
@@ -932,7 +956,8 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("qanurli", "{qanur:qanuq/1a}{li:li/1q}"));
 		addCase(new AnalyzerCase("qanutuinnaq", "{qanu:qanuq/1a}{tuinnaq:tuinnaq/2nn}"));
 		addCase(new AnalyzerCase("qattinik", "{qatti:qapsit/1n}{nit:nit/tn-acc-p}")
-			.skip());
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment; "));
 		addCase(new AnalyzerCase("qaujigiarutit", "{qauji:qauji/1v}{gia:giaq/1vv}{rut:ut/1vn}{it:it/tn-nom-p}"));
 		addCase(new AnalyzerCase("qaujigumajunga", "{qauji:qauji/1v}{guma:juma/1vv}{junga:junga/tv-ger-1s}"));
 		addCase(new AnalyzerCase("qaujijumajunga", "{qauji:qauji/1v}{juma:juma/1vv}{junga:junga/tv-ger-1s}"));
@@ -1044,7 +1069,8 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("taakkuninga", "{taakku:taakku/rpd-sc-p}{ninga:ninga/tpd-acc-p}"));
 		addCase(new AnalyzerCase("taakkununga", "{taakku:taakku/rpd-sc-p}{nunga:nunga/tpd-dat-p}"));
 		addCase(new AnalyzerCase("taaksumunga", "{taaksu:taapsu/rpd-sc-s}{munga:munga/tpd-dat-s}")
-			.skip());
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment; "));
 		addCase(new AnalyzerCase("taalait", "{taala:taala/1n}{it:it/tn-nom-p}"));
 		addCase(new AnalyzerCase("taampsan", "[decomposition:/taampsan(taampsan)/]")
 			.isProperName());
@@ -1083,7 +1109,8 @@ public class MorphAnalGoldStandard {
 			.isMisspelled());
 		addCase(new AnalyzerCase("taimannaummat", "{taimanna:taimanna/1a}{u:u/1nv}{mmat:mat/tv-caus-4s}"));
 		addCase(new AnalyzerCase("taimannganit", "{taimanngat:taimanngat/1a}{nit:nit/tn-abl-p}")
-			.skip());
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment; "));
 		addCase(new AnalyzerCase("taimanngat", "{taimanngat:taimanngat/1a}"));
 		addCase(new AnalyzerCase("tainna", "{tainna:taingna/pd-sc-s}"));
 		addCase(new AnalyzerCase("taissumani", "{taissu:taiksu/rpd-sc-s}{mani:mani/tpd-loc-s}"));
@@ -1106,7 +1133,8 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("tamaksuminga", "{tamaksu:tamaksu/rpd-ml-s}{minga:minga/tpd-acc-s}"));
 		addCase(new AnalyzerCase("tamaksumunga", "{tamaksu:tamaksu/rpd-ml-s}{munga:munga/tpd-dat-s}"));
 		addCase(new AnalyzerCase("tamani", "{tam:tama/rad-ml}{ani:ani/tad-loc}")
-			.skip());
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment; "));
 		addCase(new AnalyzerCase("tamanna", "{tamanna:tamanna/pd-ml-s}"));
 		addCase(new AnalyzerCase("tamannali", "{tamanna:tamanna/pd-ml-s}{li:li/1q}"));
 		addCase(new AnalyzerCase("tamannalu", "{tamanna:tamanna/pd-ml-s}{lu:lu/1q}"));
@@ -1123,7 +1151,8 @@ public class MorphAnalGoldStandard {
 			.isMisspelled());
 		addCase(new AnalyzerCase("tamaunga", "{tama:tama/rad-ml}{unga:unga/tad-dat}"));
 		addCase(new AnalyzerCase("tanna", "{tanna:taamna/pd-sc-s}")
-			.skip());
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment; "));
 		addCase(new AnalyzerCase("taqqaani", "{taqqa:taqqa/rad-sc}{ani:ani/tad-loc}"));
 		addCase(new AnalyzerCase("taqqakkununga", "{taqqakku:taqqapku/rpd-?-p}{nunga:nunga/tpd-dat-p}"));
 		addCase(new AnalyzerCase("taqqiit", "{taqqi:taqqiq/1n}{it:it/tn-nom-p}"));
@@ -1141,24 +1170,33 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("timimigut", "{timi:timi/1n}{migut:migut/tn-via-s-3s}"));
 		addCase(new AnalyzerCase("timiujuq", "{timi:timi/1n}{u:u/1nv}{juq:juq/1vn}"));
 		addCase(new AnalyzerCase("timiujut", "{timi:timi/1n}{u:u/1nv}{jut:jut/tv-ger-3p}"));
-		addCase(new AnalyzerCase("titiqqak", "[decomposition:/titiqqak(titiqqaq)/]")
-			.skip());
-		addCase(new AnalyzerCase("titiqqakkut", "[decomposition:/titiqqa(titiqqaq)/kkut(kkut)/]")
-			.skip());
-		addCase(new AnalyzerCase("titiqqakkuvik", "[decomposition:/titiqqa(titiqqaq)/kku(kkut)/vik(vik)/]")
-			.skip());
-		addCase(new AnalyzerCase("titiqqamik", "[decomposition:/titiqqa(titiqqaq)/mik(mik)/]")
-			.skip());
+		addCase(new AnalyzerCase("titiqqak", null)
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment; [decomposition:/titiqqak(titiqqaq)/]"));
+		addCase(new AnalyzerCase("titiqqakkut", null)
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment; [decomposition:/titiqqa(titiqqaq)/kkut(kkut)/]"));
+		addCase(new AnalyzerCase("titiqqakkuvik", null)
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment; [decomposition:/titiqqa(titiqqaq)/kku(kkut)/vik(vik)/]"));
+		addCase(new AnalyzerCase("titiqqamik", null)
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment; [decomposition:/titiqqa(titiqqaq)/mik(mik)/]"));
 		addCase(new AnalyzerCase("titiqqanik", "[decomposition:/titiqqa(titiqqaq)/nik(nik)/]")
-			.skip());
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment; "));
 		addCase(new AnalyzerCase("titiqqanit", "[decomposition:/titiqqa(titiqqaq)/nit(nit)/]")
-			.skip());
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment; "));
 		addCase(new AnalyzerCase("titiqqaq", "[decomposition:/titiqqaq(titiqqaq)/]")
-			.skip());
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment; "));
 		addCase(new AnalyzerCase("titiqqat", "[decomposition:/titiqqat(titiqqat)/]")
-			.skip());
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment; "));
 		addCase(new AnalyzerCase("titiqqatigut", "[decomposition:/titiqqa(titiqqaq)/tigut(tigut)/]")
-			.skip());
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment; "));
 		addCase(new AnalyzerCase("titiraqsimajunik", "{titi:titiq/1v}{raq:raq/1vv}{sima:sima/1vv}{ju:juq/1vn}{nik:nik/tn-acc-p}"));
 		addCase(new AnalyzerCase("titiraqsimajunut", "{titi:titiq/1v}{raq:raq/1vv}{sima:sima/1vv}{ju:juq/1vn}{nut:nut/tn-dat-p}"));
 		addCase(new AnalyzerCase("titiraqsimajut", "{titi:titiq/1v}{raq:raq/1vv}{sima:sima/1vv}{jut:jut/tv-ger-3p}"));
@@ -1222,9 +1260,11 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("ukiunik", "{ukiu:ukiuq/1n}{nik:nik/tn-acc-p}"));
 		addCase(new AnalyzerCase("ukiunut", "{ukiu:ukiuq/1n}{nut:nut/tn-dat-p}"));
 		addCase(new AnalyzerCase("ukiuqtaqtumi", "{ukiuqtaqtu:ukiuqtaqtu/1n}{mi:mi/tn-loc-s}")
-			.skip());
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment; "));
 		addCase(new AnalyzerCase("ukiurtartumi", "{ukiurtartu:ukiuqtaqtu/1n}{mi:mi/tn-loc-s}")
-			.skip());
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment; "));
 		addCase(new AnalyzerCase("ukua", "{ukua:ukua/pd-sc-p}"));
 		addCase(new AnalyzerCase("ukunani", "{uku:uku/1v}{nani:nani/tv-part-3s}"));
 		addCase(new AnalyzerCase("ukuninga", "{uku:uku/rpd-sc-p}{ninga:ninga/tpd-acc-p}"));
@@ -1279,7 +1319,8 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("uqausiksait", "{uqa:uqaq/1v}{usi:usiq/1vn}{ksa:ksaq/1nn}{it:it/tn-nom-p}"));
 		addCase(new AnalyzerCase("uqausiksangit", "{uqa:uqaq/1v}{usi:usiq/1vn}{ksa:ksaq/1nn}{ngit:ngit/tn-nom-p-4s}"));
 		addCase(new AnalyzerCase("uqausiksat", "{uqausi:uqausiq/1n}{ksa:ksaq/1nn}{t:it/tn-nom-p}")
-			.skip());
+				.possiblyMisspelledWord()
+				.comment("TODO-BF: Please add a SHORT comment; "));
 		addCase(new AnalyzerCase("uqausilirinirmut", "{uqa:uqaq/1v}{usi:usiq/1vn}{liri:liri/1nv}{nir:niq/2vn}{mut:mut/tn-dat-s}"));
 		addCase(new AnalyzerCase("uqausinga", "{uqa:uqaq/1v}{usi:usiq/1vn}{nga:nga/tn-nom-s-4s}"));
 		addCase(new AnalyzerCase("uqausingit", "{uqa:uqaq/1v}{usi:usiq/1vn}{ngit:ngit/tn-nom-p-4s}"));
