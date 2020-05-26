@@ -46,6 +46,15 @@ public class StopWatch {
 		return time;
 	}
 
+	// TODO: Can we replace StopWatch by a class TimeoutChecker 
+	//   with a single static method
+	//
+	// public static void check() {
+	//    if (Thread.interrupted()) {
+	//       throw new TimeoutException();
+	//    }
+	//  }
+	//
 	public void check(String message) throws TimeoutException {
 		boolean deactivated = false;
 		boolean justUpdateClock = false;
@@ -56,7 +65,7 @@ public class StopWatch {
 		}
 		
 		Logger tLogger = Logger.getLogger("ca.inuktitutcomputing.utilities.StopWatch.check");
-
+		
 		if (!disactivated) {
 			forceClockUpdate();
 		}
@@ -92,13 +101,21 @@ public class StopWatch {
 	 * 
 	 * Not sure what kind of "dark magic" is at play here, but this hack seems 
 	 * to do the trick.
+	 * @throws MorphTimeoutException 
 	 */	
-	private void forceClockUpdate() {
+	private void forceClockUpdate() throws MorphTimeoutException {
+		Logger mLogger = Logger.getLogger("ca.inuktitutcomputing.utilities.StopWatch.forceClockUpdate");
+
 		ClockUpdateStrategy updateStrat =
 //				ForceUpdateStrategy.CALL_STACK;
 //				ForceUpdateStrategy.WRITE_FILE;
 				ClockUpdateStrategy.CHECK_FILE;
 //				ClockUpdateStrategy.NONE;
+		
+		if (Thread.interrupted()) {
+			mLogger.trace("Thread was interrupted");
+			throw new MorphTimeoutException("Analyzer task was interreputed");
+		}
 		
 		clockNotForcedSince++;
 		// Don't force at each iteration as it will slow things down

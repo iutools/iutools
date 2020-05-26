@@ -2,6 +2,9 @@ package ca.inuktitutcomputing.morph;
 
 import java.util.concurrent.Callable;
 
+import org.apache.log4j.Logger;
+
+import ca.inuktitutcomputing.utilities.MorphTimeoutException;
 import ca.inuktitutcomputing.utilities.StopWatch;
 
 /**
@@ -29,10 +32,15 @@ public class MorphAnalyzerTask implements Callable<Decomposition[]> {
 	
 	@Override
 	public Decomposition[] call() throws Exception {
+		Logger mLogger = Logger.getLogger("ca.inuktitutcomputing.morph.MorphAnalyzerTask.call");
+		mLogger.trace("Calling on word="+word);
 		long start = System.currentTimeMillis();
-		Decomposition[] decomps = analyzer.doDecompose(word, lenient);
+		Decomposition[] decomps = new Decomposition[0];
+		decomps = analyzer.doDecompose(word, lenient);
 		long elapsed = System.currentTimeMillis() - start;
 		
+		mLogger.trace("exiting for word="+word);
+
 		return decomps;
 	}
 }

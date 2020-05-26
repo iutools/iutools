@@ -93,14 +93,10 @@ public class TrieTest {
 	public void test_add__check_terminal_inuktitut() throws Exception {
 		StringSegmenter iuSegmenter = new StringSegmenter_IUMorpheme();
 		Trie iumorphemeTrie = new Trie();
-		try {
-			iumorphemeTrie.add(iuSegmenter.segment("takujuq"),"takujuq");
-			iumorphemeTrie.add(iuSegmenter.segment("nalunaiqsivut"),"nalunaiqsivut");
-			iumorphemeTrie.add(iuSegmenter.segment("nalunairsivut"),"nalunairsivut");
-			iumorphemeTrie.add(iuSegmenter.segment("nalunaiqsivut"),"nalunaiqsivut");
-		} catch (Exception e) {
-			assertFalse("An error occurred while adding an element to the trie.",true);
-		}
+		iumorphemeTrie.add(iuSegmenter.segment("takujuq"),"takujuq");
+		iumorphemeTrie.add(iuSegmenter.segment("nalunaiqsivut"),"nalunaiqsivut");
+		iumorphemeTrie.add(iuSegmenter.segment("nalunairsivut"),"nalunairsivut");
+		iumorphemeTrie.add(iuSegmenter.segment("nalunaiqsivut"),"nalunaiqsivut");
 		TrieNode terminalNode = iumorphemeTrie.getNode("{nalunaq/1n} {iq/1nv} {si/2vv} {vut/tv-dec-3p} \\".split(" "));
 		assertEquals("The terminal node is not correct.","nalunaiqsivut",terminalNode.getSurfaceForm());
 		HashMap<String,Long> surfaceForms = terminalNode.getSurfaceForms();

@@ -13,7 +13,7 @@ import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.utilities.StopWatch;
 import ca.nrc.debug.Debug;
 
-public abstract class MorphologicalAnalyzerAbstract {
+public abstract class MorphologicalAnalyzerAbstract implements AutoCloseable {
 	
 	/**
 	 * Strategy used to monitor execution of the analyzer and timing it out 
@@ -30,12 +30,37 @@ public abstract class MorphologicalAnalyzerAbstract {
 		EXECUTOR, STOPWATCH, BOTH}
 	
 //	protected TimeoutStrategy timeoutStrategy = TimeoutStrategy.STOPWATCH;
-//	protected TimeoutStrategy timeoutStrategy = TimeoutStrategy.BOTH;
-	protected TimeoutStrategy timeoutStrategy = TimeoutStrategy.EXECUTOR;
+	protected TimeoutStrategy timeoutStrategy = TimeoutStrategy.BOTH;
+//	protected TimeoutStrategy timeoutStrategy = TimeoutStrategy.EXECUTOR;
     protected Long millisTimeout = new Long(10*1000);
     protected boolean timeoutActive = true;
     protected StopWatch stpw;
-
+    
+    protected static ExecutorService executor = null;
+    
+    
+    public void close() throws Exception {
+    	System.out.println("--** MorphologicalAnalyzerAbstract.close: INVOKED");
+    }
+    
+    // TODO: Make that synchronized?
+    public static void shutdownExecutorPool() {
+    	Logger mLogger = Logger.getLogger("ca.inuktitutcomputing.morph.MorphologicalAnalyzerAbstract.shutdownExecutorPool");
+    	if (executor != null) {
+    		int secs = 0;
+        	mLogger.trace("Shutting down morph executor pool, #threads="+Thread.activeCount());
+        	try {
+            	mLogger.trace("** Sleeping for "+secs+" secs before shutdown");
+				Thread.sleep(secs*1000);
+			} catch (InterruptedException e) {
+				mLogger.trace("InterruptedException caught: "+e.getMessage());
+			}
+    		executor.shutdownNow();
+    	}
+    	executor = null;
+    	mLogger.trace("Upon exit, #threads="+Thread.activeCount());
+    }
+    
     /** 
      * DÉCOMPOSITION DU MOT.
      * Les décompositions résultantes sont ordonnées selon certaines règles.
@@ -84,7 +109,11 @@ public abstract class MorphologicalAnalyzerAbstract {
     	if (timeoutStrategy == TimeoutStrategy.STOPWATCH) {
     		decomps = invokeDirectly(word, lenient);
     	} else {
-    		decomps = invokeThroughExecutor(task);
+    		try {
+				decomps = invokeThroughExecutor(task);
+			} catch (InterruptedException e) {
+				tLogger.trace("InterruptedException caught: "+e.getMessage());				
+			}
     	}
     	
 		long elapsed = System.currentTimeMillis() - start;
@@ -95,26 +124,45 @@ public abstract class MorphologicalAnalyzerAbstract {
     }
 
     private Decomposition[] invokeThroughExecutor(MorphAnalyzerTask task) 
-    		throws TimeoutException, MorphologicalAnalyzerException {
+    		throws TimeoutException, MorphologicalAnalyzerException, InterruptedException {
     	Logger tLogger = Logger.getLogger("ca.inuktitutcomputing.morph.invokeThroughExecutor");
     	
     	String word = task.word;
+    	tLogger.trace("processing word="+word);
+    	if (executor == null) {
+    		// TODO: Make the creation of the executor synchronized
+    		//   ... as in https://dzone.com/articles/prevent-breaking-a-singleton-class-pattern
+    		// make it a call to a method getExecutor()...
+    		// The method itself will not be synchronized, but the bit of code that actually
+    		// creates the executor will be.
+    		//
+    		tLogger.trace("Before creating the executor, #threads="+Thread.activeCount());
+    		executor = Executors.newCachedThreadPool();
+    		tLogger.trace("AFTER creating the executor, #threads="+Thread.activeCount());
+    	}
+
 		
-        ExecutorService executor = Executors.newCachedThreadPool();
+		tLogger.trace("Before submitting the future, #threads="+Thread.activeCount());
 		Future<Decomposition[]> future = executor.submit(task);
+		tLogger.trace("After submitting the future, #threads="+Thread.activeCount());
 		Decomposition[] decomps = null;	
     	long start = System.currentTimeMillis();
 		
+		tLogger.trace("Before getting the future, #threads="+Thread.activeCount());
 		try {
 			if (timeoutActive) {
 				decomps = (Decomposition[])future.get(millisTimeout, TimeUnit.MILLISECONDS);
 			} else {
 				decomps = (Decomposition[])future.get();
 			}
-		} catch (InterruptedException e) {
-			tLogger.trace("Caught InterruptedException");
+	    	tLogger.trace("Future  has completed normally, #threads="+Thread.activeCount());
+//		} catch (InterruptedException e) {
+//			tLogger.trace("Future for word="+task.word+" caught InterruptedException");
 		} catch (ExecutionException e) {
-			tLogger.trace("Caught ExecutionException e.getClass()="+e.getClass()+", e.getCause()="+e.getCause()+", e="+Debug.printCallStack(e));
+			tLogger.trace("Future for word="+task.word+
+				" caught ExecutionException e.getClass()="+e.getClass()+
+				", e.getCause()="+e.getCause()+", e="+Debug.printCallStack(e)+
+				"\n#threads="+Thread.activeCount());
 			Throwable cause =  e.getCause();
 			if (cause instanceof TimeoutException) {
 				throw (TimeoutException) cause;
@@ -124,9 +172,12 @@ public abstract class MorphologicalAnalyzerAbstract {
 				throw new MorphologicalAnalyzerException(e.getLocalizedMessage());
 			}
 		} finally {
+			
+			tLogger.trace("'finally' clause; Before cancelling the future, #threads="+Thread.activeCount());
 			checkElapsedTime(word, start);
 			future.cancel(true); // may or may not desire this
-			executor.shutdown();
+			tLogger.trace("'finally' clause; After cancelling the future, #threads="+Thread.activeCount());
+//			executor.shutdown();
 		}	
 				
 		return decomps;

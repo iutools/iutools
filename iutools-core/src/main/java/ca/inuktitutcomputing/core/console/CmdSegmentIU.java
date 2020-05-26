@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
+import ca.inuktitutcomputing.morph.MorphologicalAnalyzerAbstract;
 import ca.nrc.debug.Debug;
 
 public class CmdSegmentIU extends ConsoleCommand {
@@ -30,24 +31,33 @@ public class CmdSegmentIU extends ConsoleCommand {
 
 	@Override
 	public void execute() throws Exception {
+		Logger mLogger = Logger.getLogger("ca.inuktitutcomputing.core.console.SegmentIU.execute");
 		mode = getMode(ConsoleCommand.OPT_WORD);
 		lenient = getExtendedAnalysis();
 		Long timeoutMSecs = getTimeoutMSecs();
 		MorphologicalAnalyzer morphAnalyzer = new MorphologicalAnalyzer();
 		morphAnalyzer.setTimeout(timeoutMSecs);
 		
+		mLogger.trace("invoked with mode="+mode+", lenient="+lenient+
+			", timeoutMsecs="+timeoutMSecs);
+				
 		while (true) {
 			String word = null;
 			try {
 				word = nextInputWord();
 				if (word == null) {
+					mLogger.trace("No more words");
 					break;
 				}
-				long start = System.currentTimeMillis();				
+				long start = System.currentTimeMillis();	
+				mLogger.trace("Working on word="+word+"(@"+start+" msecs)");
+
 				Decomposition[] decs = 
 					morphAnalyzer.decomposeWord(word,lenient);
 				long elapsed = System.currentTimeMillis() - start;
 				printDecompositions(word, decs, elapsed);
+				mLogger.trace("DONE Working on word="+word+"(@"+start+" msecs)");
+				
 			} catch (Exception e) {
 				if (mode == Mode.PIPELINE) {
 					// In pipeline mode, we print exceptions on STDOUT
@@ -71,6 +81,10 @@ public class CmdSegmentIU extends ConsoleCommand {
 				}
 			}
 		}
+		
+		MorphologicalAnalyzerAbstract.shutdownExecutorPool();
+		
+		mLogger.trace("Done!");	
 	}
 
 	private void printExceptionResult(String word, Exception e) 
