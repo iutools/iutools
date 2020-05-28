@@ -227,7 +227,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 		String simplifiedTerm = null;
 		Conditions preCond = null;
 
-		stpw = new StopWatch(millisTimeout);
+		stpw = new StopWatch(millisTimeout, "Decomposing word="+term);
 		Dialect.setStopWatch(stpw);
         if (!timeoutActive) stpw.disactivate(); // for debugging
 		stpw.start();

@@ -1,5 +1,9 @@
 package ca.inuktitutcomputing.morph;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -12,6 +16,7 @@ import org.apache.log4j.Logger;
 import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.utilities.StopWatch;
 import ca.nrc.debug.Debug;
+import ca.nrc.string.StringUtils;
 
 public abstract class MorphologicalAnalyzerAbstract implements AutoCloseable {
 	
@@ -37,6 +42,8 @@ public abstract class MorphologicalAnalyzerAbstract implements AutoCloseable {
     protected StopWatch stpw;
     
     protected static ExecutorService executor = null;
+    public static Map<String,Future<Decomposition[]>> taskFutures = 
+    	new HashMap<String,Future<Decomposition[]>>();
     
     
     public void close() throws Exception {
@@ -46,6 +53,9 @@ public abstract class MorphologicalAnalyzerAbstract implements AutoCloseable {
     // TODO: Make that synchronized?
     public static void shutdownExecutorPool() {
     	Logger mLogger = Logger.getLogger("ca.inuktitutcomputing.morph.MorphologicalAnalyzerAbstract.shutdownExecutorPool");
+    	
+    	traceTasks(mLogger, "Before shutting down executor pool");
+    	
     	if (executor != null) {
     		int secs = 0;
         	mLogger.trace("Shutting down morph executor pool, #threads="+Thread.activeCount());
@@ -57,11 +67,56 @@ public abstract class MorphologicalAnalyzerAbstract implements AutoCloseable {
 			}
     		executor.shutdownNow();
     	}
+    	traceTasks(mLogger, "AFTER shutting down executor pool");
     	executor = null;
     	mLogger.trace("Upon exit, #threads="+Thread.activeCount());
     }
     
-    /** 
+    private static void traceTasks(Logger logger) {
+    	traceTasks(logger, null);
+    }
+
+    
+    private static void traceTasks(Logger logger, String mess) {
+    	if (mess == null) {
+    		mess = "";
+    	}
+		if (logger.isTraceEnabled()) {
+			int numDone = 0;
+			int numCancelled = 0;
+			int numPending = 0;
+			Set<String> pendingWords = new HashSet<String>();
+			Set<String> cancelledWords = new HashSet<String>();
+			for (String word: taskFutures.keySet()) {
+				Future<Decomposition[]> aFuture = taskFutures.get(word);
+				if (aFuture.isCancelled()) {
+					cancelledWords.add(word);
+					numCancelled++;
+				} else if (aFuture.isDone()) {
+					numDone++;
+				} else {
+					pendingWords.add(word);
+					numPending++;
+				}
+			}
+			mess += 
+				"\nState of all decomposition tasks\n"+
+				"  #Done      : "+numDone+"\n"+
+				"  #Cancelled : "+numCancelled+"\n"+
+				"  #Pending   : "+numPending+"\n"+
+				"\n"+
+				"Cancelled words:\n  "+
+				StringUtils.join(cancelledWords.iterator(), "\n  ")+"\n"+
+				"\n"+
+				"Pending words:\n  "+
+				StringUtils.join(pendingWords.iterator(), "\n  ")
+				;
+			
+			logger.trace(mess);			
+		}
+	}
+
+	/** 
      * DÉCOMPOSITION DU MOT.
      * Les décompositions résultantes sont ordonnées selon certaines règles.
      * L'analyse tient compte de certaines habitudes : l'omission de la consonne finale,
@@ -93,7 +148,7 @@ public abstract class MorphologicalAnalyzerAbstract implements AutoCloseable {
     	
     	long start = System.currentTimeMillis();
     	if (timeoutStrategy != TimeoutStrategy.EXECUTOR) {
-    		this.stpw = new StopWatch(millisTimeout);
+    		this.stpw = new StopWatch(millisTimeout, "Decomposing word="+word);
     	}
     	
     	Logger tLogger = Logger.getLogger("ca.inuktitutcomputing.morph.decomposeWord");
@@ -128,7 +183,7 @@ public abstract class MorphologicalAnalyzerAbstract implements AutoCloseable {
     	Logger tLogger = Logger.getLogger("ca.inuktitutcomputing.morph.invokeThroughExecutor");
     	
     	String word = task.word;
-    	tLogger.trace("processing word="+word);
+    	traceTasks(tLogger, "processing word="+word);
     	if (executor == null) {
     		// TODO: Make the creation of the executor synchronized
     		//   ... as in https://dzone.com/articles/prevent-breaking-a-singleton-class-pattern
@@ -136,30 +191,32 @@ public abstract class MorphologicalAnalyzerAbstract implements AutoCloseable {
     		// The method itself will not be synchronized, but the bit of code that actually
     		// creates the executor will be.
     		//
-    		tLogger.trace("Before creating the executor, #threads="+Thread.activeCount());
+    		traceTasks(tLogger, "Before creating the executor for word="+word+", #threads="+Thread.activeCount());
     		executor = Executors.newCachedThreadPool();
-    		tLogger.trace("AFTER creating the executor, #threads="+Thread.activeCount());
+    		traceTasks(tLogger, "AFTER creating the executor for word="+word+", #threads="+Thread.activeCount());
     	}
 
 		
-		tLogger.trace("Before submitting the future, #threads="+Thread.activeCount());
+    	traceTasks(tLogger, "Before submitting the future for word="+word+", #threads="+Thread.activeCount());
 		Future<Decomposition[]> future = executor.submit(task);
-		tLogger.trace("After submitting the future, #threads="+Thread.activeCount());
+		taskFutures.put(word, future);
+		traceTasks(tLogger, "After submitting the future for word="+word+", #threads="+Thread.activeCount());
 		Decomposition[] decomps = null;	
     	long start = System.currentTimeMillis();
 		
-		tLogger.trace("Before getting the future, #threads="+Thread.activeCount());
+    	traceTasks(tLogger, "Before getting the future for word="+word+", #threads="+Thread.activeCount());
 		try {
 			if (timeoutActive) {
 				decomps = (Decomposition[])future.get(millisTimeout, TimeUnit.MILLISECONDS);
 			} else {
 				decomps = (Decomposition[])future.get();
 			}
-	    	tLogger.trace("Future  has completed normally, #threads="+Thread.activeCount());
-//		} catch (InterruptedException e) {
-//			tLogger.trace("Future for word="+task.word+" caught InterruptedException");
+			traceTasks(tLogger, "Future for word="+word+" has completed normally, #threads="+Thread.activeCount());
+		} catch (InterruptedException e) {
+			traceTasks(tLogger, "Future for word="+task.word+" caught InterruptedException; Rethrowing it...");
+			throw e;
 		} catch (ExecutionException e) {
-			tLogger.trace("Future for word="+task.word+
+			traceTasks(tLogger, "Future for word="+task.word+
 				" caught ExecutionException e.getClass()="+e.getClass()+
 				", e.getCause()="+e.getCause()+", e="+Debug.printCallStack(e)+
 				"\n#threads="+Thread.activeCount());
@@ -172,14 +229,14 @@ public abstract class MorphologicalAnalyzerAbstract implements AutoCloseable {
 				throw new MorphologicalAnalyzerException(e.getLocalizedMessage());
 			}
 		} finally {
-			
-			tLogger.trace("'finally' clause; Before cancelling the future, #threads="+Thread.activeCount());
+			traceTasks(tLogger, "'finally' clause for word="+word+"; at beginning, #threads="+Thread.activeCount());
 			checkElapsedTime(word, start);
-			future.cancel(true); // may or may not desire this
-			tLogger.trace("'finally' clause; After cancelling the future, #threads="+Thread.activeCount());
+//			future.cancel(true); // may or may not desire this
+			tLogger.trace("'finally' clause for word="+word+"; at END, #threads="+Thread.activeCount());
 //			executor.shutdown();
 		}	
 				
+		traceTasks(tLogger, "Upon exit for word="+word+", #threads="+Thread.activeCount());
 		return decomps;
 	}
 

@@ -23,18 +23,69 @@ import ca.nrc.debug.Debug;
  */
 public class StopWatch {
 	
+	private String taskName = "";
 	private long timeoutMSecs; // milliseconds
 	private long startTime;
 	private boolean disactivated = false;
 	
 	private int clockNotForcedSince = 0;
+	private long checksSoFar = 0;
 	
-	public StopWatch(long _timeoutMSecs) {
-		initStopWatch(_timeoutMSecs);
+	public StopWatch(long _timeoutMSecs, String taskName) {
+		initStopWatch(_timeoutMSecs, taskName);
 	}
 	
-	private void initStopWatch(long _timeoutMSecs) {
+	public StopWatch(long _timeoutMSecs) {
+		initStopWatch(_timeoutMSecs, "");
+	}
+	
+	private void initStopWatch(long _timeoutMSecs, String _taskName) {
 		this.timeoutMSecs = _timeoutMSecs;
+		this.taskName = _taskName;
+	}
+	
+	public void check(String message) throws TimeoutException {
+		Logger mLogger = Logger.getLogger("ca.inuktitutcomputing.utilities.StopWatch.check");
+		
+		if (disactivated) {
+			return;
+		}
+
+		checksSoFar++;
+		
+		// We only print traces every 10K calls...
+		boolean traceThisCall = (checksSoFar % 10000) == 0;
+		
+		if (traceThisCall) {
+			mLogger.trace("Checking for task="+taskName+" (#checks="+checksSoFar+")");
+		}
+		
+		checkForInterruption();
+		
+		forceClockUpdate();
+		
+		Long elapsed = nowMSecs() - startTime;
+		if (traceThisCall) {
+			mLogger.trace("Task "+taskName+" elapsed = "+elapsed/1000+" secs (max: "+timeoutMSecs/1000+" secs)");
+		}
+		
+		if (elapsed > timeoutMSecs) {
+			mLogger.trace("Task "+taskName+" exceeded its allocated time.\nThrowing a TimeoutException");
+			throw new TimeoutException(message+"\nTimed out after "+elapsed+"msecs");
+		}
+	}
+	
+	private void checkForInterruption() throws TimeoutException {
+		Logger mLogger = Logger.getLogger("ca.inuktitutcomputing.utilities.StopWatch.checkForInterruption");
+		
+		if (Thread.interrupted()) {
+			mLogger.trace("Task "+taskName+" was interrupted.\nRaising TimeoutException");
+			// Note: The call to interrupted() sets the thread's interrupted 
+			//  status to false. So we invoke interrupt() to reset it true in 
+			//  someone above us depends on that.  
+			Thread.currentThread().interrupt(); 
+			throw new TimeoutException("Analyzer task was interrupted");
+		}
 	}
 
 	public void start() {
@@ -46,46 +97,6 @@ public class StopWatch {
 		return time;
 	}
 
-	// TODO: Can we replace StopWatch by a class TimeoutChecker 
-	//   with a single static method
-	//
-	// public static void check() {
-	//    if (Thread.interrupted()) {
-	//       throw new TimeoutException();
-	//    }
-	//  }
-	//
-	public void check(String message) throws TimeoutException {
-		boolean deactivated = false;
-		boolean justUpdateClock = false;
-		boolean justPrintTimeout = false;
-		
-		if (deactivated) { 
-			return; 
-		}
-		
-		Logger tLogger = Logger.getLogger("ca.inuktitutcomputing.utilities.StopWatch.check");
-		
-		if (!disactivated) {
-			forceClockUpdate();
-		}
-		
-		if (justUpdateClock) {
-			return;
-		}
-
-		Long elapsed = nowMSecs() - startTime;
-		
-		if (!disactivated && elapsed > timeoutMSecs) {
-			if (tLogger.isTraceEnabled()) {
-				tLogger.trace("TIMED OUT!! Raising TimeoutException");
-			}
-			if (!justPrintTimeout) {
-				throw new MorphTimeoutException(message+"\nTimed out after "+elapsed+"msecs");
-			}
-		}
-	}
-	
 	static enum ClockUpdateStrategy {
 		NONE, CALL_STACK, WRITE_FILE, CHECK_FILE};
 	
@@ -105,21 +116,17 @@ public class StopWatch {
 	 */	
 	private void forceClockUpdate() throws MorphTimeoutException {
 		Logger mLogger = Logger.getLogger("ca.inuktitutcomputing.utilities.StopWatch.forceClockUpdate");
-
+		
 		ClockUpdateStrategy updateStrat =
 //				ForceUpdateStrategy.CALL_STACK;
 //				ForceUpdateStrategy.WRITE_FILE;
 				ClockUpdateStrategy.CHECK_FILE;
 //				ClockUpdateStrategy.NONE;
 		
-		if (Thread.interrupted()) {
-			mLogger.trace("Thread was interrupted");
-			throw new MorphTimeoutException("Analyzer task was interreputed");
-		}
-		
 		clockNotForcedSince++;
 		// Don't force at each iteration as it will slow things down
 		if (clockNotForcedSince > 100) {
+			mLogger.trace("Forcing clock updated for Task "+taskName);			
 			clockNotForcedSince = 0;
 		
 			if (updateStrat == ClockUpdateStrategy.CALL_STACK) {
