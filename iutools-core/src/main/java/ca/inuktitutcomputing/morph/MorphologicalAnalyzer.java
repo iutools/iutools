@@ -230,7 +230,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 		stpw = new StopWatch(millisTimeout, "Decomposing word="+term);
 		Dialect.setStopWatch(stpw);
         if (!timeoutActive) stpw.disactivate(); // for debugging
-		stpw.start();
+		stpw.reset();
 
 		arcsByMorpheme.clear();
 

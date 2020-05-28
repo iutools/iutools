@@ -13,10 +13,22 @@ import ca.nrc.debug.Debug;
  * This class can used to monitor the running time of long operation, and raise 
  * a TimeoutException if it exceeds a particular threshold.
  * 
- * WARNING: This class may be in a "solution in search of a problem" as Java is 
- * supposed to provide native ways of doing this (ex: Executer, Future). But we 
- * have been experiencing problems with those native solutions and are therefore 
- * trying some homegrown approaches.
+ * It can be used in one of three modes:
+ * - Executor mode
+ * - Standalone  mode
+ * 
+ * Executor mode
+ *    In this mode, the long task is run through an ExecutorService which will 
+ *    interrupt the task when the run time is exceeded. In this mode, the role 
+ *    of the StopWatch is simply to ensure that the task is responsive to thread 
+ *    interruption, and will that its thread will terminate if and when the 
+ *    it is terminated by the ExecutorService (after the allocated time).
+ *    
+ * Standalone mode
+ *    In this mode, the long task is run directly, without going through an
+ *    ExecutorService. In this mode, the StopWatch monitors the running time 
+ *    (as opposed to letting the ExecutorService do that) and raises a 
+ *    TimeoutException if and when it exceeds the allocated time.
  * 
  * @author desilets
  *
@@ -24,10 +36,11 @@ import ca.nrc.debug.Debug;
 public class StopWatch {
 	
 	private String taskName = "";
-	private long timeoutMSecs; // milliseconds
-	private long startTime;
-	private boolean disactivated = false;
+	public long timeoutMSecs;	
+	private boolean deactivated = false;
+	private final int updateClockEveryNTimes = 100;
 	
+	private long startTime = -1;
 	private int clockNotForcedSince = 0;
 	private long checksSoFar = 0;
 	
@@ -44,11 +57,18 @@ public class StopWatch {
 		this.taskName = _taskName;
 	}
 	
+	public void reset() {
+		this.startTime = nowMSecs();
+	}
+	
 	public void check(String message) throws TimeoutException {
 		Logger mLogger = Logger.getLogger("ca.inuktitutcomputing.utilities.StopWatch.check");
 		
-		if (disactivated) {
+		if (deactivated) {
 			return;
+		}
+		if (startTime == -1) {	
+			this.startTime = nowMSecs();
 		}
 
 		checksSoFar++;
@@ -61,9 +81,12 @@ public class StopWatch {
 		}
 		
 		checkForInterruption();
-		
 		forceClockUpdate();
-		
+		checkElapsedTime(traceThisCall);
+	}
+	
+	private void checkElapsedTime(boolean traceThisCall) throws TimeoutException {
+		Logger mLogger = Logger.getLogger("ca.inuktitutcomputing.utilities.StopWatch.checkElapsedTime");		
 		Long elapsed = nowMSecs() - startTime;
 		if (traceThisCall) {
 			mLogger.trace("Task "+taskName+" elapsed = "+elapsed/1000+" secs (max: "+timeoutMSecs/1000+" secs)");
@@ -71,10 +94,10 @@ public class StopWatch {
 		
 		if (elapsed > timeoutMSecs) {
 			mLogger.trace("Task "+taskName+" exceeded its allocated time.\nThrowing a TimeoutException");
-			throw new TimeoutException(message+"\nTimed out after "+elapsed+"msecs");
+			throw new TimeoutException("Task "+taskName+"\nTimed out after "+elapsed+"msecs");
 		}
 	}
-	
+
 	private void checkForInterruption() throws TimeoutException {
 		Logger mLogger = Logger.getLogger("ca.inuktitutcomputing.utilities.StopWatch.checkForInterruption");
 		
@@ -88,10 +111,6 @@ public class StopWatch {
 		}
 	}
 
-	public void start() {
-		this.startTime = nowMSecs();
-	}
-	
 	private long nowMSecs() {
 		long time = System.nanoTime() / 1000000;
 		return time;
@@ -102,30 +121,27 @@ public class StopWatch {
 	
 	/**
 	 * For some reason or another, the StopWatch does not always seem to keep 
-	 * the time correctly unless there is some sort of operation that forces 
-	 * the system to increment the clock.
+	 * the time or check for interruption correctly unless it does some 
+	 * operation there is some sort of operation that produces or responds to 
+	 * interrupts.
 	 * 
 	 * Operations that we have found to work are:
-	 * - Writing to a file
 	 * - Checking existence of a file
+	 * - Writing to a file
 	 * - Getting the stack trace
 	 * 
 	 * Not sure what kind of "dark magic" is at play here, but this hack seems 
 	 * to do the trick.
-	 * @throws MorphTimeoutException 
 	 */	
 	private void forceClockUpdate() throws MorphTimeoutException {
 		Logger mLogger = Logger.getLogger("ca.inuktitutcomputing.utilities.StopWatch.forceClockUpdate");
 		
 		ClockUpdateStrategy updateStrat =
-//				ForceUpdateStrategy.CALL_STACK;
-//				ForceUpdateStrategy.WRITE_FILE;
 				ClockUpdateStrategy.CHECK_FILE;
-//				ClockUpdateStrategy.NONE;
 		
 		clockNotForcedSince++;
 		// Don't force at each iteration as it will slow things down
-		if (clockNotForcedSince > 100) {
+		if (clockNotForcedSince > updateClockEveryNTimes) {
 			mLogger.trace("Forcing clock updated for Task "+taskName);			
 			clockNotForcedSince = 0;
 		
@@ -148,6 +164,6 @@ public class StopWatch {
 	}
 
 	public void disactivate() {
-		disactivated = true;
+		deactivated = true;
 	}
 }
