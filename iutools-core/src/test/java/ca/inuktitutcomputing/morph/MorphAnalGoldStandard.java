@@ -276,9 +276,21 @@ public class MorphAnalGoldStandard {
 			.isMisspelled());
 		addCase(new AnalyzerCase("iksivauta", "{iksiva:iksiva/1v}{uta:ut/1vn}"));
 		addCase(new AnalyzerCase("iksivautaa", "{iksiva:iksiva/1v}{uta:ut/1vn}{a:k/tn-nom-d}"));
+		
+//		2020-04, BF
+//		iksivautaaq :	fréquence : 15140 – et ses variantes « itsivautaaq » (2571), « issivautaaq » (1941)
+//		Ce mot (fréquence : 15140) est toujours utilisé en adresse à cette personne qui est le « Mr. Speaker ». Dans le même contexte, on trouve également les formes 
+//		« iksivautaq » (29893), « itsivautaq » (4381), « issivautaq » (2733)
+//		« iksivautaa » (2493), « itsivautaa » (787), « issivautaa » (104)
+//		
+//		La forme en « utaq » est de loin beaucoup plus fréquente que les formes en « utaaq » et « utaa » et s’analyse avec, comme dernier morphème, le morphème « ut » dont une des formes est « utaq ».
+//
+//		Les formes en « utaaq » et « utaa » sont en fait la même forme « utaaq » où le « q » dans la 2ème forme a été escamotée, phénomène rencontré très souvent : la consonne finale d’un mot n’est pas écrite. Mais comment s’explique cette forme « utaaq » avec un double « a » ? Je crois que le double « a » vient du contexte d’adresse : on utilise dans ce contexte une forme « vocative » qui, normalement, se réalise par la forme duelle : suppression de la consonne finale, allongement (dédoublement) de la voyelle et ajout de « k ». Dans ces cas-ci, il n’y a pas de « k ». Est-ce une erreur ? Je ne le sais pas.
+//		
+//		* pour l’instant, taggons le comme possiblyMisspelled()
+//		
 		addCase(new AnalyzerCase("iksivautaaq", null)
-			.possiblyMisspelledWord()
-			.comment("TODO-BF: Please add a SHORT comment; [decomposition:/iksiva(iksiva)/utaaq(ut)/]"));
+			.possiblyMisspelledWord());
 		addCase(new AnalyzerCase("iksivautap", "{iksiva:iksiva/1v}{uta:ut/1vn}{p:up/tn-gen-s}")
 			.isMisspelled());
 		addCase(new AnalyzerCase("iksivautaq", "{iksiva:iksiva/1v}{utaq:ut/1vn}"));
@@ -351,9 +363,20 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("ilulingita", "{ilu:ilu/1n}{li:lik/1nn}{ngita:ngita/tn-gen-p-4s}"));
 		addCase(new AnalyzerCase("iluunnatik", "{iluunnatik:iluunnatik/1p}"));
 		addCase(new AnalyzerCase("imaak", "{imaak:imaak/1a}"));
-		addCase(new AnalyzerCase("imaimmat", null)
-			.possiblyMisspelledWord()
-			.comment("TODO-BF: Please add a SHORT comment; [decomposition:/imaimmat(imaimmat)/]"));
+		
+//		2020-04, BF:
+//		imaimmat :	Fréquence = 229 "whereas", "as it is"
+//				C'est compliqué, comme tout ce qui touche aux adverbes.
+//				Il y a un mot dans Spalding : "imannaittuq" qui signifie "one like this (as shown)". Ce mot est basé sur la racine "imanna", avec ce que je crois être le suffixe "it", et finalement suffixe "juq/tuq". On y associe le mot "imaittuq" utilisé dans South Baffin et East Coast Hudson Bay, et le mot "tamainnaittuq" (même sens). "ima" serait une forme de "imanna". Il y a aussi une entrée "taimaittuq" qui signifie "it is like that" ou "one like that (which is shown)" associé à "imaittuq".
+//				"ta" est un « préfixe », unique en son genre en inuktitut, qui se place devant les adverbes. Il a une signification particulière dont je ne me souviens plus des détails. Il y a toujours des duos "X" et "taX", comme "ima" et "taima", "imanna" et "taimanna". 
+//				Le mot "imaimmat" est d'après moi la même chose :  ima + it + mat où "mat" est une terminaison verbale [n'oublie pas que "juq/tuq" est à la fois suffixe ET terminaison verbale].
+//				Je pense qu'on devrait définir la décomposition de ce mot comme ceci :
+//				{ima:ima/1a}{im:it/3nv}{mat:mat/tv-caus-4s}
+//				de la même façon que "taimaimmat", qui est effectivement analysé avec succès par l'analyseur : 
+//				{taima:taima/1a}{im:it/3nv}{mat:mat/tv-caus-4s}
+//				Pour l'instant, "imaimmat" ne sera pas décomposé parce que la forme "ima" n'est pas connue. "taima" est un adverbe dans la base de données qui signifie 1) "so", "therefore" 2) "That's it! It's finished!", "Enough! Stop!". Je suppose qu'on pourrait ajouter la forme "ima" en parallèle à "taima", mais comme j'ai dit, les adverbes, c'est compliqué, j'avais l'intention de revisiter ça après avoir réétudié ça, mais jamais eu le temps.
+		addCase(new AnalyzerCase("imaimmat", "{ima:ima/1a}{im:it/3nv}{mat:mat/tv-caus-4s}"));
+		
 		addCase(new AnalyzerCase("imanna", "{imanna:imannak/1a}"));
 		addCase(new AnalyzerCase("imannak", "{imannak:imannak/1a}"));
 		addCase(new AnalyzerCase("immagaa", "{immagaa:immaqaa/1a}")
@@ -372,6 +395,20 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("innatuqarnut", "{inna:innaq/1n}{tuqar:tuqaq/1nn}{nut:nut/tn-dat-p}"));
 		addCase(new AnalyzerCase("innirvik", "[decomposition:/innirvik(innirvik)/]")
 			.isProperName());
+// 2020-04, BF: 
+//		inuinnaqtun :	Ceci est le nom du dialecte parlé à l’ouest du Nunavut. 
+//		Il se décompose en inu + innaq + tun, où « tun » correspond à « tut » 
+//		utilisé ailleurs ; il est usuel de trouver « n » à la fin des mots au 
+//		lieu de « t ».
+//		Ce mot est à la base de plusieurs mots
+//		Je ne sais pas trop pour l’instant quoi faire avec ce mot : 
+//		- l’ajouter tel quel dans la base de données, mais sous quelle 
+//		  dénomination ? ce n’est pas un nom, ce n’est pas un verbe. Peut-être 
+//		  dans le fichier CommonCompositeWords.csv avec « inuinnaqtut » dans le 
+//		  champ « morpheme » et « inuinnaqtun » dans le champ « variant » ; 
+//		  à expérimenter.
+//		Pour le moment, on le taggue comme decomposition unknown
+//		
 		addCase(new AnalyzerCase("inuinnaqtun", "[decomposition:/inuinnaqtun(inuinnaqtun)/]")
 			.correctDecompUnknown());
 		addCase(new AnalyzerCase("inuit", "{inu:inuk/1n}{it:it/tn-nom-p}"));
@@ -486,6 +523,17 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("katimajiralaanit", "{kati:kati/1v}{ma:ma/1vv}{ji:ji/1vn}{ralaa:ralaaq/1nn}{nit:nit/tn-abl-p}"));
 		addCase(new AnalyzerCase("katimajiralaanut", "{kati:kati/1v}{ma:ma/1vv}{ji:ji/1vn}{ralaa:ralaaq/1nn}{nut:nut/tn-dat-p}"));
 		addCase(new AnalyzerCase("katimajiralaat", "{kati:kati/1v}{ma:ma/1vv}{ji:ji/1vn}{ralaa:ralaaq/1nn}{t:it/tn-nom-p}"));
+		
+//		2020-04, BF:
+//		katimajit :	(fréquence : 189) le mot devrait être « katimajiit » (fréquence : 2767). 
+//		Il s’agit ici du phénomène par lequel le pluriel, qui devrait normalement être « it », est rendu par « t », sans le « i ».  Je ne sais pas quoi faire avec ce phénomène, c’est pourquoi j’ai mis le mot avec @.
+//
+//		J’ai trouvé dernièrement de l’information sur le pluriel sans « i » qui expliquerait son absence dans les mots finissant par le morphème « ksaq ». Mais j’ai besoin d’étudier ça davantage.
+//
+//		Même chose pour : maligaliuqtit, pigiaqtitat, piliriaksat, piqujaksat, uqausiksat
+//		
+//		Pour le moment, tagggons le comme possiblyMisspelled()
+//
 		addCase(new AnalyzerCase("katimajit", "{kati:kati/1v}{ma:ma/1vv}{ji:ji/1vn}{t:it/tn-nom-p}")
 				.possiblyMisspelledWord()
 				.comment("TODO-BF: Please add a SHORT comment"));
@@ -502,9 +550,20 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("katimautinik", "{kati:kati/1v}{ma:ma/1vv}{uti:ut/1vn}{nik:nik/tn-acc-p}"));
 		addCase(new AnalyzerCase("katimautitsa", "{kati:kati/1v}{ma:ma/1vv}{uti:ut/1vn}{tsa:ksaq/1nn}"));
 		addCase(new AnalyzerCase("katimavimmi", "{kati:kati/1v}{ma:ma/1vv}{vim:vik/3vn}{mi:mi/tn-loc-s}"));
+		
+//		2020-04, BF:
+//		katimmajjutiksaq :	(fréquence : 514) le mot est basé sur la racine 
+//		« katima ». On trouve la variante « katimajjutiksaq » avec une 
+//		fréquence de 2782. La seule façon dont je peux expliquer le 2ème « m » 
+//		est le phénomène de l’« inchoativité » qui consiste à doubler la 
+//		dernière consonne d’une racine verbale. « Inchoatif » signifie en gros 
+//		« commencer à être, à arriver ». J’ai cru comprendre que ce n’est pas 
+//		quelque chose qui s’applique à toutes les racines verbales, alors en 
+//		attendant d’en savoir plus sur le sujet, j’ai décidé de le laisser de 
+//		côté dans l’analyse morphologique, de là le correctDecompUnknown().
+//			
 		addCase(new AnalyzerCase("katimmajjutiksaq", "{kati:kati/1v}{mma:ma/1v}{jjuti:jjut/1vn}{ksaq:ksaq/1nn}")
-				.possiblyMisspelledWord()
-				.comment("TODO-BF: Please add a SHORT comment;"));
+				.correctDecompUnknown());
 		addCase(new AnalyzerCase("katitsutik", "{katit:katit/1v}{sutik:lutik/tv-part-3p-prespas}"));
 		addCase(new AnalyzerCase("katittugit", "{katit:katit/1v}{tugit:lugit/tv-part-4p-3p-prespas}"));
 		addCase(new AnalyzerCase("kattuk", "[decomposition:/kattuk(kattuk)/]")
@@ -524,6 +583,7 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("kiinaujanik", "{kiinauja:kiinaujaq/1n}{nik:nik/tn-acc-p}"));
 		addCase(new AnalyzerCase("kiinaujanit", "{kiinauja:kiinaujaq/1n}{nit:nit/tn-abl-p}"));
 		addCase(new AnalyzerCase("kiinaujanut", "{kiinauja:kiinaujaq/1n}{nut:nut/tn-dat-p}"));
+		
 		addCase(new AnalyzerCase("kiinaujatigut", "{kiinauja:kiinaujaq/1n}{tigut:tigut/tn-via-p}")
 				.possiblyMisspelledWord()
 				.comment("TODO-BF: Please add a SHORT comment;"));
@@ -578,8 +638,8 @@ public class MorphAnalGoldStandard {
 			.isProperName());
 		addCase(new AnalyzerCase("livai", "[decomposition:/livai(livai)/]")
 			.isProperName());
-		addCase(new AnalyzerCase("na", "[decomposition:/na(na)/]")
-			.correctDecompUnknown());
+//		addCase(new AnalyzerCase("na", "[decomposition:/na(na)/]")
+//			.correctDecompUnknown());
 		addCase(new AnalyzerCase("maajji", "{maajji:maatsi/1n}"));
 		addCase(new AnalyzerCase("maani", "{ma:ma/rad-ml}{ani:ani/tad-loc}"));
 		addCase(new AnalyzerCase("maanna", "{maanna:maanna/1a}"));
