@@ -23,17 +23,17 @@ public class TrieTest {
 	@Test
 	public void test__Trie__Synopsis() {
 		//
-		// Use a Trie to index a sequence of 'parts' of a string.
+		// Use a Trie to index word by a key that consists of a sequence of 
+		// strings.
+		// 
+		// The elements of a word's key can be anything you want, for example:
+		// - The word's sequence of characters
+		// - The word's sequence of morpheme IDs
+		// - The word's sequence of morpheme written forms
 		//
-		// Depending on your application, each part may consist of
+		// In the rest of this test, we will assume the first use case (i.e. 
+		// index words by their sequence of characters).
 		//
-		// - an individual character
-		// - a word
-		// - a morpheme
-		// - anything else that makes sense to you (as long as it is a string)
-		//
-		// Let's say you want to use individual characters as the 
-		// parts. You would then create a Trie as follows:
 		//
 		Trie trie = new Trie();
 		
@@ -41,20 +41,20 @@ public class TrieTest {
 		//
 		// The first thing you need to do is add words to the trie:
 		//
+		String[] helloChars = "hello".split("");
 		try {
-			trie.add(new String[]{"h","e","l","l","o"},"hello");
+			trie.add(helloChars, "hello");
 		} catch (TrieException e) {
 		}
 		
-		// Then, you can retrieve the node that corresponds to a particular string.
-		// The argument to getNode is an array of keys:
+		// Then, you can retrieve the node that corresponds to a particular 
+		// sequence of chars.
 		//
-		TrieNode node = trie.getNode("hell".split(""));
+		TrieNode node = trie.getNode(helloChars);
 		if (node == null) {
 			// This means the string was not found in the Trie
+		} else {
 		}
-		
-		// 	
 	}
 	
 	@Test

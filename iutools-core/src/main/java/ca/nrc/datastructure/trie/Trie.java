@@ -65,7 +65,7 @@ public class Trie {
     /**
      * Add an entry to the Trie.
      * 
-     * @param segments
+     * @param partsSequence
      * @param word
      * @return an object of class TrieNode
      * @throws TrieException
@@ -75,19 +75,19 @@ public class Trie {
     // (the test is done before calling this method),
     // then we can replace the commented lines with the lines with //***
     //
-	public TrieNode add(String[] segments, String word) throws TrieException {
+	public TrieNode add(String[] partsSequence, String word) throws TrieException {
         TrieNode trieNode = root;
         Logger logger = Logger.getLogger("Trie.add");
-        logger.debug("segments: "+Arrays.toString(segments));
+        logger.debug("segments: "+Arrays.toString(partsSequence));
         
         String terminalSegment = "\\";
-        ArrayList<String> segmentList = new ArrayList<String>(Arrays.asList(segments));
+        ArrayList<String> segmentList = new ArrayList<String>(Arrays.asList(partsSequence));
         segmentList.add(terminalSegment);
-        segments = segmentList.toArray(new String[] {});
-        logger.debug("segments after adding \\: "+Arrays.toString(segments));
+        partsSequence = segmentList.toArray(new String[] {});
+        logger.debug("segments after adding \\: "+Arrays.toString(partsSequence));
         int iseg = 0;
-        while (iseg < segments.length) {
-        	String segment = segments[iseg];
+        while (iseg < partsSequence.length) {
+        	String segment = partsSequence[iseg];
             Set<String> childrenKeys = trieNode.getChildren().keySet();
             TrieNode segmentNode = null;
             // if the current segment is not in the keys, add a new node for it

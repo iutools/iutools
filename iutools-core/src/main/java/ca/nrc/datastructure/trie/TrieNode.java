@@ -257,5 +257,5 @@ public class TrieNode {
 		ensureStatIsDefined(statName);
 		stats.put(statName, val);
 	}
-	
+
 }
