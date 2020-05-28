@@ -11,7 +11,7 @@ public class AnalyzerCase {
 	public String correctDecomp = null;
 	public boolean isMisspelled = false;
 	public boolean possiblyMisspelled = false;
-	public boolean skipped = false;
+	public boolean isBorrowed = false;
 	public boolean decompUnknown = false;
 	public boolean properName = false;
 	public String comment = null;
@@ -39,21 +39,15 @@ public class AnalyzerCase {
 	}
 
 	public AnalyzerCase isMisspelled() throws Exception {
-//		if (correctDecomp != null) {
-//			throw new Exception(
-//				"Mis-spelled word "+word+
-//				" should have a null correct decomposition.\n"+
-//				"Assigned correct decomposition is: "+correctDecomp);
-//		}
 		isMisspelled = true;
 		return this;
 	}
 
-	public AnalyzerCase skip() {
-		skipped = true;
+	public AnalyzerCase isBorrowedWord() throws Exception {
+		isBorrowed = true;
 		return this;
 	}
-	
+
 	public AnalyzerCase correctDecompUnknown() {
 		decompUnknown = true;
 		return this;

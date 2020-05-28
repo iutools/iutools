@@ -66,7 +66,7 @@ public class DecomposeHansardTest {
 		// Set it to a word if you want to run the tests just on that one word.
 		//
 		String focusOnWord = null;
-//		focusOnWord = "itsivautaaq";
+//		focusOnWord = "ukiuqtaqtumi";
 		
 		morphAnalyzer = new MorphologicalAnalyzer();
 		MorphAnalCurrentExpectations expectations = new MorphAnalCurrentExpectations();
@@ -245,7 +245,7 @@ public class DecomposeHansardTest {
 		if (skip == null) {
 			if (caseData.isMisspelled || caseData.possiblyMisspelled ||
 					caseData.properName || 
-					caseData.skipped || 
+					caseData.isBorrowed ||
 					caseData.decompUnknown) {
 				skip = true;
 			}

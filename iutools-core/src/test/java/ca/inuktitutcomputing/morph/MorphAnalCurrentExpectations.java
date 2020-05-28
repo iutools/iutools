@@ -290,7 +290,6 @@ public class MorphAnalCurrentExpectations {
 		expectFailure("iglulirijikkut", OutcomeType.CORRECT_NOT_FIRST);
 		expectFailure("katimajinginnut", OutcomeType.CORRECT_NOT_FIRST);
 		expectFailure("ukiurtartumi", OutcomeType.CORRECT_NOT_FIRST);
-		expectFailure("mamianaq", OutcomeType.CORRECT_NOT_FIRST);
 		expectFailure("uqsualuit", OutcomeType.CORRECT_NOT_FIRST);
 		expectFailure("naalautikkut", OutcomeType.CORRECT_NOT_FIRST);
 		expectFailure("amittuq", OutcomeType.CORRECT_NOT_FIRST);
@@ -363,7 +362,6 @@ public class MorphAnalCurrentExpectations {
 		expectFailure("uuttuutigilugu", OutcomeType.CORRECT_NOT_FIRST);
 		expectFailure("maani", OutcomeType.CORRECT_NOT_FIRST);
 		expectFailure("pinasuarusiulauqtumi", OutcomeType.CORRECT_NOT_FIRST);
-		expectFailure("ukiuqtaqtumi", OutcomeType.CORRECT_NOT_FIRST);
 		expectFailure("katimajiralaanit", OutcomeType.CORRECT_NOT_FIRST);
 		expectFailure("maligatsaq", OutcomeType.CORRECT_NOT_FIRST);
 		expectFailure("katimajjutiksanut", OutcomeType.CORRECT_NOT_FIRST);
@@ -382,6 +380,7 @@ public class MorphAnalCurrentExpectations {
 		// one.
 		//
 		//
+		expectFailure("taaksumunga", OutcomeType.CORRECT_NOT_PRESENT);
 		expectFailure("imaimmat", OutcomeType.CORRECT_NOT_PRESENT);
 
 		// 

@@ -584,6 +584,16 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("kiinaujanit", "{kiinauja:kiinaujaq/1n}{nit:nit/tn-abl-p}"));
 		addCase(new AnalyzerCase("kiinaujanut", "{kiinauja:kiinaujaq/1n}{nut:nut/tn-dat-p}"));
 		
+//		2020-04, BF:
+//		kiinaujatigut : fréquence : 1152. 
+//		Variante « kiinaujaqtigut : fréquence 108. 
+//		D’après mes connaissances, il devrait y avoir un « q » devant « tigut », 
+//		mais on rencontre cette forme plus souvent que celle que j’aurais 
+//		pensée correcte. Alors : je ne sais pas – encore – quoi faire avec ça, 
+//		d’où le possiblyMisspelledWord.
+//
+//		Même chose pour : maligatigut, qallunaatitut
+//		
 		addCase(new AnalyzerCase("kiinaujatigut", "{kiinauja:kiinaujaq/1n}{tigut:tigut/tn-via-p}")
 				.possiblyMisspelledWord()
 				.comment("TODO-BF: Please add a SHORT comment;"));
@@ -722,9 +732,7 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("malillugu", "{malil:malik/1v}{lugu:lugu/tv-part-1s-3s-fut}"));
 		addCase(new AnalyzerCase("malittugit", "{malit:malik/1v}{tugit:lugit/tv-part-1s-3p-prespas}"));
 		addCase(new AnalyzerCase("malittugu", "{malit:malik/1v}{tugu:lugu/tv-part-1s-3s-prespas}"));
-		addCase(new AnalyzerCase("mamianaq", "{mamia:mamiak/1v}{naq:naq/1vn}")
-				.possiblyMisspelledWord()
-				.comment("TODO-BF: Please add a SHORT comment; "));
+		addCase(new AnalyzerCase("mamianaq", "{mamia:mamiak/1v}{naq:naq/2vn}"));
 		addCase(new AnalyzerCase("mamiappunga", "{mamiap:mamiak/1v}{punga:vunga/tv-dec-1s}"));
 		addCase(new AnalyzerCase("maniittuq", "[decomposition:/maniittuq(maniittuq)/]")
 			.isProperName());
@@ -733,8 +741,7 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("mappigaq", "{mappi:makpiq/1v}{gaq:gaq/1vn}"));
 		addCase(new AnalyzerCase("mappiqtugaq", "{mappiq:makpiq/1v}{tu:tuq/1vv}{gaq:gaq/1vn}"));
 		addCase(new AnalyzerCase("marrunnik", "{marrun:marruuk/1n}{nik:nik/tn-acc-p}")
-				.possiblyMisspelledWord()
-				.comment("TODO-BF: Please add a SHORT comment; "));
+				.isMisspelled());
 		addCase(new AnalyzerCase("marruuk", "{marruuk:marruuk/1n}"));
 		addCase(new AnalyzerCase("marruunni", "{marruun:marruuk/1n}{ni:ni/tn-loc-p}"));
 		addCase(new AnalyzerCase("marruunnik", "{marruun:marruuk/1n}{nik:nik/tn-acc-p}"));
@@ -743,10 +750,14 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("matuiqtauninga", "{matu:matu/1n}{iq:iq/1nv}{ta:jaq/1vn}{u:u/1nv}{ni:niq/2vn}{nga:nga/tn-nom-s-4s}"));
 		addCase(new AnalyzerCase("matuirutimut", "{matu:matu/1n}{i:iq/1nv}{ruti:ut/1vn}{mut:mut/tn-dat-s}"));
 		addCase(new AnalyzerCase("miksaanut", "{miksa:miksa/1n}{anut:nganut/tn-dat-s-4s}"));
-		addCase(new AnalyzerCase("milian", "{milian:miliat/1n}"));
+		addCase(new AnalyzerCase("milian", "{milian:miliat/1n}")
+			.isBorrowedWord()
+			.comment("One of the many iu renderings for 'million'"));
 		addCase(new AnalyzerCase("milianik", "{milia:milian/1n}{nik:nik/tn-acc-p}")
-				.possiblyMisspelledWord()
-				.comment("TODO-BF: Please add a SHORT comment; "));
+				.isBorrowedWord()
+				.comment("One of the many iu renderings for 'million'"));
+		
+		// 2020-04, BF: Voir commentaire de 'milianik' ci-dessus.
 		addCase(new AnalyzerCase("milianit", "{milia:milian/1n}{nit:nit/tn-abl-p}")
 				.possiblyMisspelledWord()
 				.comment("TODO-BF: Please add a SHORT comment; "));
@@ -784,20 +795,25 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("naasautilik", "{naasa:naasaq/1v}{uti:ut/1vn}{lik:lik/1nn}"));
 		addCase(new AnalyzerCase("nakit", "{nakit:nakit/1a}"));
 		addCase(new AnalyzerCase("nakuqmi", "{nakuq:nakuq/1v}{mi:miik/1vn}")
-				.possiblyMisspelledWord()
-				.comment("TODO-BF: Please add a SHORT comment; "));
+				.isMisspelled()
+				.comment("Should be 'nakurmi'"));
 		addCase(new AnalyzerCase("nakuqmii", "{nakuq:nakuq/1v}{mii:miik/1vn}")
-				.possiblyMisspelledWord()
-				.comment("TODO-BF: Please add a SHORT comment; "));
+				.isMisspelled()
+				.comment("Should be 'nakurmii'"));
 		addCase(new AnalyzerCase("nakurmii", "{nakur:nakuq/1v}{mii:miik/1vn}"));
 		addCase(new AnalyzerCase("nakurmiik", "{nakur:nakuq/1v}{miik:miik/1vn}"));
 		addCase(new AnalyzerCase("naliak", "{naliak:naliak/1p}"));
 		addCase(new AnalyzerCase("naliqqangit", "{naliqqa:naliqqaq/1n}{ngit:ngit/tn-nom-p-4s}")
-				.possiblyMisspelledWord()
-				.comment("TODO-BF: Please add a SHORT comment; "));
+				.correctDecompUnknown());
+		
+//		2020-04, BF:
+//		nalliani :	Fréquence : 132. « any », « some », ...
+//		La décomposition attendue proposée contient la racine nalliq/1p. 
+//		Celle-ci, qui serait un pronom, n’existe pas dans la base de données ! 
+//		Spalding la présente comme une alternative à « naliak » qui signifie 
+//		« which one ? ». 
 		addCase(new AnalyzerCase("nalliani", "{nalli:nalliq/1p}{ani:ngani/tn-loc-s-4s}")
-				.possiblyMisspelledWord()
-				.comment("TODO-BF: Please add a SHORT comment; "));
+				.correctDecompUnknown());
 		addCase(new AnalyzerCase("nalunanngittuq", "{naluna:nalunak/1v}{nngit:nngit/1vv}{tuq:juq/1vn}"));
 		addCase(new AnalyzerCase("namminiq", "{namminiq:nangminiq/1n}"));
 		addCase(new AnalyzerCase("namminiqaqtunut", "{nammini:nangminiq/1n}{qaq:qaq/1nv}{tu:juq/1vn}{nut:nut/tn-dat-p}"));
@@ -809,12 +825,20 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("naujaani", "{naujaa:naujaat/1n}{ni:ni/tn-loc-p}"));
 		addCase(new AnalyzerCase("naukkut", "{nau:nauk/1a}{kkut:kkut/1nn}"));
 		addCase(new AnalyzerCase("nigiani", "{nigi:niggig/1n}{ani:ngani/tn-loc-s-4s}")
-				.possiblyMisspelledWord()
-				.comment("TODO-BF: Please add a SHORT comment; "));
+				.isMisspelled()
+				.comment("Should be 'niggiani'"));
 		addCase(new AnalyzerCase("nikuvippunga", "{nikuvip:nikuvik/1v}{punga:vunga/tv-dec-1s}"));
+		
+//		2020-04, BF:
+//		niqsunaqtuq : 	« honourable » Fréquence : 584.
+//		Spalding a la racine « nirtur » = « niqtuq ». On trouve 1679 fois le 
+//		mot « niqtunaqtuq ».  Schneider a aussi la forme « niqtuq ». 
+//		Je ne sais pas. J’ai souvent constaté qu’il y a confusion entre « s » 
+//		et « t » en inuktitut, mais je ne sais pas quoi faire dans ce cas-ci, 
+//		de là le possiblyMisspelledWord(). 
+//
 		addCase(new AnalyzerCase("niqsunaqtuq", "{niqsu:niqtuq/1v}{naq:naq/1vv}{tuq:juq/1vn}")
-				.possiblyMisspelledWord()
-				.comment("TODO-BF: Please add a SHORT comment; "));
+				.possiblyMisspelledWord());
 		addCase(new AnalyzerCase("niqtunaqtuq", "{niqtu:niqtuq/1v}{naq:naq/1vv}{tuq:juq/1vn}"));
 		addCase(new AnalyzerCase("niriuppugut", "{niriup:niriuk/1v}{pugut:vugut/tv-dec-1p}"));
 		addCase(new AnalyzerCase("niriuppunga", "{niriup:niriuk/1v}{punga:vunga/tv-dec-1s}"));
@@ -872,9 +896,18 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("nunavuup", "{nunavu:nunavut/1n}{up:up/tn-gen-s}"));
 		addCase(new AnalyzerCase("nunavuut", "{nunavu:nunavut/1n}{ut:up/tn-gen-s}")
 			.isMisspelled());
+		
+//		2020-04, BF:
+//		nunnguani :	« its end »
+//		Spalding a la racine verbale « nungut » qui signifie « to be used up, 
+//		consumed, worn away, erased », ce qui a un lien ténu mais plausible 
+//		avec « end ». Mais « ani » est une terminaison nominale, or il n’y a 
+//		pas de pronom « nungu... » ou « nunngu... » ni dans Spalding, ni dans 
+//		Schneider. Je ne sais donc pas quoi faire avec ça, d’où le 
+//		correctDecompUnknown()
+//		
 		addCase(new AnalyzerCase("nunnguani", "{nunngu:nunnguq/1n}{ani:ngani/tn-loc-s-4s}")
-				.possiblyMisspelledWord()
-				.comment("TODO-BF: Please add a SHORT comment; "));
+				.correctDecompUnknown());
 		addCase(new AnalyzerCase("nuqqaqpuq", "{nuqqaq:nuqqaq/1v}{puq:vuq/tv-dec-3s}"));
 		addCase(new AnalyzerCase("nutaami", "{nutaa:nutaaq/1n}{mi:mi/tn-loc-s}"));
 		addCase(new AnalyzerCase("nutaamik", "{nutaa:nutaaq/1n}{mik:mik/tn-acc-s}"));
@@ -895,9 +928,20 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("paanapas", null)
 			.isProperName()
 			.comment("Barnabas"));
+		
+//		2020-04, BF:
+//		paktaqtuqtut :	« Applause » Fréquence : 179.
+//		Spalding n’a pas de racine verbale « paktak ». Il a par contre une 
+//		racine « patik » qui, ajouté le suffixe fréquentatif « taq », signifie 
+//		« to clap hands together in ovation or approval », ce qui est 
+//		effectivement des applaudissements. Schneider a également « patik » 
+//		avec le même sens, et aussi « pattak » (to slap with the palm of one’s 
+//		hand). En y ajoutant le fréquentatif « tuq » (autre forme de 
+//		fréquentatif équivalente à « taq », on pourrait expliquer le 
+//		mot « paktaqtuqtut ». Mais le mot a « paktaQ » et non 
+//		« paktaK ». Je ne sais donc pas quoi faire avec ça actuellement.
 		addCase(new AnalyzerCase("paktaqtuqtut", "{paktak:paktak/1v}{tuq:tuq/1vv}{tut:jut/tv-ger-3p}")
-				.possiblyMisspelledWord()
-				.comment("TODO-BF: Please add a SHORT comment; "));
+				.correctDecompUnknown());
 		addCase(new AnalyzerCase("paliisikkut", "{paliisi:paliisi/1n}{kkut:kkut/1nn}"));
 		addCase(new AnalyzerCase("panniqtuumi", "{panniqtuu:pangnirtuuq/1n}{mi:mi/tn-loc-s}"));
 		addCase(new AnalyzerCase("panniqtuuq", "{panniqtuuq:pangnirtuuq/1n}"));
@@ -1015,9 +1059,16 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("qanuq", "{qanuq:qanuq/1a}"));
 		addCase(new AnalyzerCase("qanurli", "{qanur:qanuq/1a}{li:li/1q}"));
 		addCase(new AnalyzerCase("qanutuinnaq", "{qanu:qanuq/1a}{tuinnaq:tuinnaq/2nn}"));
+		
+		// 2020-04, BF:
+//		qattinik :	on a vu pendant le contrat que ce mot serait en fait basé 
+//		sur la racine « qapsi » et qu’il manquerait alors quelque chose dans la 
+//		base de données pour expliquer et accepter la forme 
+//		« qatti » = « qapsi ». Comme je ne connais pas encore le lien entre les 
+//		deux, d'ou le correctDecompUnknown()
+//		
 		addCase(new AnalyzerCase("qattinik", "{qatti:qapsit/1n}{nit:nit/tn-acc-p}")
-				.possiblyMisspelledWord()
-				.comment("TODO-BF: Please add a SHORT comment; "));
+				.correctDecompUnknown());
 		addCase(new AnalyzerCase("qaujigiarutit", "{qauji:qauji/1v}{gia:giaq/1vv}{rut:ut/1vn}{it:it/tn-nom-p}"));
 		addCase(new AnalyzerCase("qaujigumajunga", "{qauji:qauji/1v}{guma:juma/1vv}{junga:junga/tv-ger-1s}"));
 		addCase(new AnalyzerCase("qaujijumajunga", "{qauji:qauji/1v}{juma:juma/1vv}{junga:junga/tv-ger-1s}"));
@@ -1128,9 +1179,7 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("taakkunanngat", "{taakku:taakku/rpd-sc-p}{nanngat:nanngat/tpd-abl-p}"));
 		addCase(new AnalyzerCase("taakkuninga", "{taakku:taakku/rpd-sc-p}{ninga:ninga/tpd-acc-p}"));
 		addCase(new AnalyzerCase("taakkununga", "{taakku:taakku/rpd-sc-p}{nunga:nunga/tpd-dat-p}"));
-		addCase(new AnalyzerCase("taaksumunga", "{taaksu:taapsu/rpd-sc-s}{munga:munga/tpd-dat-s}")
-				.possiblyMisspelledWord()
-				.comment("TODO-BF: Please add a SHORT comment; "));
+		addCase(new AnalyzerCase("taaksumunga", "taaksumunga taaksumunga {taaksu:taangna/rpd-ml-s}{munga:munga/tpd-dat-s}"));
 		addCase(new AnalyzerCase("taalait", "{taala:taala/1n}{it:it/tn-nom-p}"));
 		addCase(new AnalyzerCase("taampsan", "[decomposition:/taampsan(taampsan)/]")
 			.isProperName());
@@ -1168,9 +1217,20 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("taimannak", "{taimannak:taimanna/1a}")
 			.isMisspelled());
 		addCase(new AnalyzerCase("taimannaummat", "{taimanna:taimanna/1a}{u:u/1nv}{mmat:mat/tv-caus-4s}"));
+		
+		// 2020-04, BF:
+//		taimannganit :	« since (then) » Fréquence : 203
+//		Spalding et Schneider ont « taimanngat » (187 dans les Hansard), 
+//		adverbe. « nit » pourrait être la terminaison nominale plurielle, mais 
+//		je ne vois pas pourquoi on pourrait ajouter une terminaison nominale 
+//		plurielle à cet adverbe. Peut-être que ça s’explique : « nit » signifie 
+//		« from », qui a un lien avec « since » ; et le ’t’ final de l’adverbe 
+//		pourrait avoir un lien avec le pluriel ? De là le @. Si je pouvais 
+//		expliquer le lien avec la terminaison « nit », on pourrait 
+//		enlever le correctDecompUnknown().
+//		
 		addCase(new AnalyzerCase("taimannganit", "{taimanngat:taimanngat/1a}{nit:nit/tn-abl-p}")
-				.possiblyMisspelledWord()
-				.comment("TODO-BF: Please add a SHORT comment; "));
+				.correctDecompUnknown());
 		addCase(new AnalyzerCase("taimanngat", "{taimanngat:taimanngat/1a}"));
 		addCase(new AnalyzerCase("tainna", "{tainna:taingna/pd-sc-s}"));
 		addCase(new AnalyzerCase("taissumani", "{taissu:taiksu/rpd-sc-s}{mani:mani/tpd-loc-s}"));
@@ -1192,9 +1252,11 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("tamakkununga", "{tamakku:tamakku/rpd-ml-p}{nunga:nunga/tpd-dat-p}"));
 		addCase(new AnalyzerCase("tamaksuminga", "{tamaksu:tamaksu/rpd-ml-s}{minga:minga/tpd-acc-s}"));
 		addCase(new AnalyzerCase("tamaksumunga", "{tamaksu:tamaksu/rpd-ml-s}{munga:munga/tpd-dat-s}"));
+		
+		
 		addCase(new AnalyzerCase("tamani", "{tam:tama/rad-ml}{ani:ani/tad-loc}")
-				.possiblyMisspelledWord()
-				.comment("TODO-BF: Please add a SHORT comment; "));
+				.isMisspelled()
+				.comment("Should be 'tamaani'"));
 		addCase(new AnalyzerCase("tamanna", "{tamanna:tamanna/pd-ml-s}"));
 		addCase(new AnalyzerCase("tamannali", "{tamanna:tamanna/pd-ml-s}{li:li/1q}"));
 		addCase(new AnalyzerCase("tamannalu", "{tamanna:tamanna/pd-ml-s}{lu:lu/1q}"));
@@ -1211,8 +1273,8 @@ public class MorphAnalGoldStandard {
 			.isMisspelled());
 		addCase(new AnalyzerCase("tamaunga", "{tama:tama/rad-ml}{unga:unga/tad-dat}"));
 		addCase(new AnalyzerCase("tanna", "{tanna:taamna/pd-sc-s}")
-				.possiblyMisspelledWord()
-				.comment("TODO-BF: Please add a SHORT comment; "));
+				.isMisspelled()
+				.comment("Should be 'taanna'"));
 		addCase(new AnalyzerCase("taqqaani", "{taqqa:taqqa/rad-sc}{ani:ani/tad-loc}"));
 		addCase(new AnalyzerCase("taqqakkununga", "{taqqakku:taqqapku/rpd-?-p}{nunga:nunga/tpd-dat-p}"));
 		addCase(new AnalyzerCase("taqqiit", "{taqqi:taqqiq/1n}{it:it/tn-nom-p}"));
@@ -1230,33 +1292,41 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("timimigut", "{timi:timi/1n}{migut:migut/tn-via-s-3s}"));
 		addCase(new AnalyzerCase("timiujuq", "{timi:timi/1n}{u:u/1nv}{juq:juq/1vn}"));
 		addCase(new AnalyzerCase("timiujut", "{timi:timi/1n}{u:u/1nv}{jut:jut/tv-ger-3p}"));
+		
+		// 2020-04, BF:
+//		titiqqa... :	toute la série de mots commençant par « titiqqa... »
+//		titiqqat : « document », « petition », « letter » --- quelque chose qui est écrit
+//
+//		J’ai lu récemment que « qqat » serait une forme plurielle équivalente à « rait » (raq + it).
+//		Je n’ai jamais su comment traiter ça auparavant. J’aurais peut-être maintenant une solution, mais je dois étudier ça davantage. 
+//		De là le correctDecompUnknown().
+		
 		addCase(new AnalyzerCase("titiqqak", null)
-				.possiblyMisspelledWord()
-				.comment("TODO-BF: Please add a SHORT comment; [decomposition:/titiqqak(titiqqaq)/]"));
+				.correctDecompUnknown());
 		addCase(new AnalyzerCase("titiqqakkut", null)
-				.possiblyMisspelledWord()
-				.comment("TODO-BF: Please add a SHORT comment; [decomposition:/titiqqa(titiqqaq)/kkut(kkut)/]"));
+				.correctDecompUnknown()
+				.comment("See comment for 'titiqqak'"));
 		addCase(new AnalyzerCase("titiqqakkuvik", null)
-				.possiblyMisspelledWord()
-				.comment("TODO-BF: Please add a SHORT comment; [decomposition:/titiqqa(titiqqaq)/kku(kkut)/vik(vik)/]"));
+				.correctDecompUnknown()
+				.comment("See comment for 'titiqqak'"));
 		addCase(new AnalyzerCase("titiqqamik", null)
-				.possiblyMisspelledWord()
-				.comment("TODO-BF: Please add a SHORT comment; [decomposition:/titiqqa(titiqqaq)/mik(mik)/]"));
+				.correctDecompUnknown()
+				.comment("See comment for 'titiqqak'"));
 		addCase(new AnalyzerCase("titiqqanik", "[decomposition:/titiqqa(titiqqaq)/nik(nik)/]")
-				.possiblyMisspelledWord()
-				.comment("TODO-BF: Please add a SHORT comment; "));
+				.correctDecompUnknown()
+				.comment("See comment for 'titiqqak'"));
 		addCase(new AnalyzerCase("titiqqanit", "[decomposition:/titiqqa(titiqqaq)/nit(nit)/]")
-				.possiblyMisspelledWord()
-				.comment("TODO-BF: Please add a SHORT comment; "));
+				.correctDecompUnknown()
+				.comment("See comment for 'titiqqak'"));
 		addCase(new AnalyzerCase("titiqqaq", "[decomposition:/titiqqaq(titiqqaq)/]")
-				.possiblyMisspelledWord()
-				.comment("TODO-BF: Please add a SHORT comment; "));
+				.correctDecompUnknown()
+				.comment("See comment for 'titiqqak'"));
 		addCase(new AnalyzerCase("titiqqat", "[decomposition:/titiqqat(titiqqat)/]")
-				.possiblyMisspelledWord()
-				.comment("TODO-BF: Please add a SHORT comment; "));
+				.correctDecompUnknown()
+				.comment("See comment for 'titiqqak'"));
 		addCase(new AnalyzerCase("titiqqatigut", "[decomposition:/titiqqa(titiqqaq)/tigut(tigut)/]")
-				.possiblyMisspelledWord()
-				.comment("TODO-BF: Please add a SHORT comment; "));
+				.correctDecompUnknown()
+				.comment("See comment for 'titiqqak'"));
 		addCase(new AnalyzerCase("titiraqsimajunik", "{titi:titiq/1v}{raq:raq/1vv}{sima:sima/1vv}{ju:juq/1vn}{nik:nik/tn-acc-p}"));
 		addCase(new AnalyzerCase("titiraqsimajunut", "{titi:titiq/1v}{raq:raq/1vv}{sima:sima/1vv}{ju:juq/1vn}{nut:nut/tn-dat-p}"));
 		addCase(new AnalyzerCase("titiraqsimajut", "{titi:titiq/1v}{raq:raq/1vv}{sima:sima/1vv}{jut:jut/tv-ger-3p}"));
@@ -1319,12 +1389,9 @@ public class MorphAnalGoldStandard {
 		addCase(new AnalyzerCase("ukiukkut", "{ukiu:ukiuq/1n}{kkut:kkut/1nn}"));
 		addCase(new AnalyzerCase("ukiunik", "{ukiu:ukiuq/1n}{nik:nik/tn-acc-p}"));
 		addCase(new AnalyzerCase("ukiunut", "{ukiu:ukiuq/1n}{nut:nut/tn-dat-p}"));
-		addCase(new AnalyzerCase("ukiuqtaqtumi", "{ukiuqtaqtu:ukiuqtaqtu/1n}{mi:mi/tn-loc-s}")
-				.possiblyMisspelledWord()
-				.comment("TODO-BF: Please add a SHORT comment; "));
-		addCase(new AnalyzerCase("ukiurtartumi", "{ukiurtartu:ukiuqtaqtu/1n}{mi:mi/tn-loc-s}")
-				.possiblyMisspelledWord()
-				.comment("TODO-BF: Please add a SHORT comment; "));
+		addCase(new AnalyzerCase("ukiuqtaqtumi", "{ukiuqtaqtu:ukiuqtaqtuq/1n}{mi:mi/tn-loc-s}"));
+		addCase(new AnalyzerCase("ukiurtartumi", "{ukiurtartu:ukiuqtaqtuq/1n}{mi:mi/tn-loc-s}")
+				.isMisspelled());
 		addCase(new AnalyzerCase("ukua", "{ukua:ukua/pd-sc-p}"));
 		addCase(new AnalyzerCase("ukunani", "{uku:uku/1v}{nani:nani/tv-part-3s}"));
 		addCase(new AnalyzerCase("ukuninga", "{uku:uku/rpd-sc-p}{ninga:ninga/tpd-acc-p}"));
