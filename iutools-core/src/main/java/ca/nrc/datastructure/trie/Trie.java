@@ -15,12 +15,21 @@ import com.google.gson.Gson;
 
 import ca.nrc.json.PrettyPrinter;
 
+// TODO: Maybe the polymorphism should be in the TrieNode class, NOT in the 
+//   Trie class?
+//
+// In other words, make Trie be a generic class...
+//
+//   public class Trie<TrieNode> {
+//
+// and TrieNode will be an abstract class with methods that allow you to 
+// get the children, parents etc... from an in memory versus File System
+//
 
-public class Trie {
+
+public abstract class Trie {
 
     protected TrieNode root;
-    // REMOVED: protected long size;
-    
     
     public Trie() {
     	root = new TrieNode();
@@ -74,6 +83,9 @@ public class Trie {
     // If we assume that this method will not be called with an empty list of segments
     // (the test is done before calling this method),
     // then we can replace the commented lines with the lines with //***
+    //
+    //
+    // TODO: Check that partsSequence is NOT empty. If it is, raise exception
     //
 	public TrieNode add(String[] partsSequence, String word) throws TrieException {
         TrieNode trieNode = root;

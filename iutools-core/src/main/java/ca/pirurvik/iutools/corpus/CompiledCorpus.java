@@ -37,6 +37,7 @@ import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
+import ca.nrc.datastructure.trie.Trie_InMemory;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.ui.commandline.ProgressMonitor_Terminal;
 import ca.pirurvik.iutools.text.ngrams.NgramCompiler;
@@ -57,7 +58,7 @@ public class CompiledCorpus extends CompiledCorpus_Base
 	public int MAX_NGRAM_LEN = 5;
 	public static String JSON_COMPILATION_FILE_NAME = "trie_compilation.json";
 	
-	public Trie trie = new Trie();
+	public Trie_InMemory trie = new Trie_InMemory();
 	
 	// things related to the compiler's state and operation that need to be saved periodically and at termination
 	private HashMap<String,String[]> segmentsCache = new HashMap<String, String[]>();
@@ -216,7 +217,7 @@ public class CompiledCorpus extends CompiledCorpus_Base
 			}
 		} else {
 			this.deleteJSON(corpusDirectoryPathname);
-			trie = new Trie();
+			trie = new Trie_InMemory();
 		}
 		
 		wordCounter = 0;

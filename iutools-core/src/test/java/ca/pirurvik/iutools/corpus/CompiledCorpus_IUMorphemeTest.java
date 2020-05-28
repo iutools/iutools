@@ -7,6 +7,7 @@ import org.junit.Test;
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.Trie;
+import ca.nrc.datastructure.trie.Trie_InMemory;
 
 /**
  * Unit test for simple App.
@@ -21,7 +22,7 @@ public class CompiledCorpus_IUMorphemeTest
 	public void test__getMostFrequentCompletionForRootType() throws Exception {
 		CompiledCorpus_IUMorpheme compiledCorpus = new CompiledCorpus_IUMorpheme();
 		StringSegmenter segmenter = new StringSegmenter_IUMorpheme();
-		Trie trie = new Trie();
+		Trie_InMemory trie = new Trie_InMemory();
 		trie.add(segmenter.segment("inuit"),"inuit");
 		trie.add(segmenter.segment("takujuq"),"takujuq");
 		trie.add(segmenter.segment("igluit"),"igluit");

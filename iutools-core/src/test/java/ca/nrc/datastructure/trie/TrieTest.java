@@ -14,7 +14,9 @@ import com.google.gson.Gson;
 
 import ca.nrc.testing.AssertHelpers;
 
-public class TrieTest {
+public abstract class TrieTest {
+	
+	public abstract Trie makeTrieToTest();
 	
 	/******************************************
 	 * DOCUMENTATION TESTS
@@ -35,7 +37,7 @@ public class TrieTest {
 		// index words by their sequence of characters).
 		//
 		//
-		Trie trie = new Trie();
+		Trie trie = makeTrieToTest();
 		
 		// For the rest of the test we will use a character-based trie.
 		//
@@ -59,7 +61,7 @@ public class TrieTest {
 	
 	@Test
 	public void test_getParentNode() throws TrieException {
-		Trie charTrie = new Trie();
+		Trie charTrie = makeTrieToTest();
 		charTrie.add("hello".split(""),"hello");
 		charTrie.add("hit".split(""),"hit");
 		charTrie.add("abba".split(""),"abba");
@@ -80,7 +82,7 @@ public class TrieTest {
 	
 	@Test
 	public void test_add__check_terminal() throws TrieException {
-		Trie charTrie = new Trie();
+		Trie charTrie = makeTrieToTest();
 		charTrie.add("hi".split(""), "hi");
 		TrieNode terminalNode = charTrie.getNode("hi\\".split(""));
 		assertEquals("The terminal node is not correct.","hi",terminalNode.getSurfaceForm());
@@ -92,7 +94,7 @@ public class TrieTest {
 	@Test
 	public void test_add__check_terminal_inuktitut() throws Exception {
 		StringSegmenter iuSegmenter = new StringSegmenter_IUMorpheme();
-		Trie iumorphemeTrie = new Trie();
+		Trie iumorphemeTrie = makeTrieToTest();
 		iumorphemeTrie.add(iuSegmenter.segment("takujuq"),"takujuq");
 		iumorphemeTrie.add(iuSegmenter.segment("nalunaiqsivut"),"nalunaiqsivut");
 		iumorphemeTrie.add(iuSegmenter.segment("nalunairsivut"),"nalunairsivut");
@@ -110,7 +112,7 @@ public class TrieTest {
 	
 	@Test
 	public void test__add_get__Char() {
-		Trie charTrie = new Trie();
+		Trie charTrie = makeTrieToTest();
 		try {
 			charTrie.add(new String[]{"h","e","l","l","o"},"hello");
 			charTrie.add(new String[]{"h","e","l","l"," ","b","o","y"},"hello boy");
@@ -131,7 +133,7 @@ public class TrieTest {
 
 	@Test
 	public void test__add_get__Word() {
-		Trie wordTrie = new Trie();
+		Trie wordTrie = makeTrieToTest();
 		try {
 			wordTrie.add(new String[]{"hello","there"},"hello there");
 		} catch (TrieException e) {
@@ -146,7 +148,7 @@ public class TrieTest {
 	@Test
 	public void test__add_get__IUMorpheme_same_word_twice() throws Exception {
 		StringSegmenter iuSegmenter = new StringSegmenter_IUMorpheme();
-		Trie iumorphemeTrie = new Trie();
+		Trie iumorphemeTrie = makeTrieToTest();
 		String[] takujuq_segments = null;
 		takujuq_segments = iuSegmenter.segment("takujuq");
 		iumorphemeTrie.add(takujuq_segments,"takujuq");
@@ -157,7 +159,7 @@ public class TrieTest {
 	@Test
 	public void test__add_get__IUMorpheme_one_word() throws Exception {
 		StringSegmenter iuSegmenter = new StringSegmenter_IUMorpheme();
-		Trie iumorphemeTrie = new Trie();
+		Trie iumorphemeTrie = makeTrieToTest();
 		String[] takujuq_segments = null;
 		try {
 			takujuq_segments = iuSegmenter.segment("takujuq");
@@ -173,7 +175,7 @@ public class TrieTest {
 	
 	@Test
 	public void test__frequenciesOfWords() {
-		Trie charTrie = new Trie();
+		Trie charTrie = makeTrieToTest();
 		try {
 		charTrie.add("hello".split(""),"hello");
 		charTrie.add("world".split(""),"world");
@@ -198,7 +200,7 @@ public class TrieTest {
 	
 	@Test
 	public void test_getAllTerminals() throws Exception {
-		Trie charTrie = new Trie();
+		Trie charTrie = makeTrieToTest();
 		charTrie.add("hello".split(""),"hello");
 		charTrie.add("hit".split(""),"hit");
 		charTrie.add("abba".split(""),"abba");
@@ -218,7 +220,7 @@ public class TrieTest {
 	
 	@Test
 	public void test_getNbOccurrences() throws Exception {
-		Trie charTrie = new Trie();
+		Trie charTrie = makeTrieToTest();
 		charTrie.add("hello".split(""),"hello");
 		charTrie.add("hello".split(""),"hello");
 		charTrie.add("hit".split(""),"hit");
@@ -236,13 +238,13 @@ public class TrieTest {
 	
 	@Test
 	public void test_toJSON__Char() throws TrieException {
-		Trie charTrie = new Trie();
+		Trie charTrie = makeTrieToTest();
 		charTrie.add("he".split(""),"he");
 		charTrie.add("hit".split(""),"hit");
 		charTrie.add("ok".split(""),"ok");
 		String json = charTrie.toJSON();
 		Gson gson = new Gson();
-		Trie retrievedCharTrie = gson.fromJson(json,Trie.class);
+		Trie_InMemory retrievedCharTrie = (Trie_InMemory) gson.fromJson(json, Trie_InMemory.class);
 		TrieNode node = retrievedCharTrie.getNode(new String[] {"h","i","t","\\"});
 		Assert.assertTrue("The node should be terminal.",node.isWord);
 		Assert.assertEquals("The surface form is not correct.", "hit", node.surfaceForm);
@@ -250,7 +252,7 @@ public class TrieTest {
 	
 	@Test
 	public void test_getMostFrequentTerminal() throws TrieException {
-		Trie charTrie = new Trie();
+		Trie charTrie = makeTrieToTest();
 		charTrie.add("hello".split(""),"hello");
 		charTrie.add("hello".split(""),"hello");
 		charTrie.add("hells".split(""),"hells");
@@ -277,7 +279,7 @@ public class TrieTest {
 	
 	@Test
 	public void test_getNMostFrequentTerminals() throws TrieException {
-		Trie charTrie = new Trie();
+		Trie charTrie = makeTrieToTest();
 		charTrie.add("hello".split(""),"hello");
 		charTrie.add("hello".split(""),"hello");
 		charTrie.add("hells".split(""),"hells");
@@ -326,7 +328,7 @@ public class TrieTest {
 	
 	@Test
 	public void test__mostFrequentSequenceForRoot__Char() throws TrieException, IOException {
-		Trie charTrie = new Trie();
+		Trie charTrie = makeTrieToTest();
 		charTrie.add("hello".split(""),"hello");
 		charTrie.add("hint".split(""),"hint");
 		charTrie.add("helicopter".split(""),"helicopter");
@@ -339,7 +341,7 @@ public class TrieTest {
 	
 	@Test
 	public void test__mostFrequentSequenceForRoot__IUMorpheme() throws TrieException, IOException {
-		Trie morphTrie = new Trie();
+		Trie morphTrie = makeTrieToTest();
 		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"},"takujuq");
 		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{juq/1vn}"},"takulaaqtuq");
 		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{sima/1vv}","{juq/1vn}"},"takulaaqsimajuq");
@@ -352,7 +354,7 @@ public class TrieTest {
 	
 	@Test
 	public void test__getMostFrequentTerminalFromMostFrequenceSequenceFromRoot__1() throws TrieException {
-		Trie morphTrie = new Trie();
+		Trie morphTrie = makeTrieToTest();
 		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"},"takujuq");
 		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"},"takujuq");
 		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{juq/1vn}"},"takulaaqtuq");
@@ -365,7 +367,7 @@ public class TrieTest {
 	
 	@Test
 	public void test__getMostFrequentTerminalFromMostFrequenceSequenceFromRoot__2() throws TrieException {
-		Trie morphTrie = new Trie();
+		Trie morphTrie = makeTrieToTest();
 		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"},"takujuq");
 		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"},"takujuq");
 		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"},"takujuq");
@@ -380,7 +382,7 @@ public class TrieTest {
 	
 	@Test
 	public void test__getMostFrequentTerminalFromMostFrequenceSequenceFromRoot__3() throws TrieException {
-		Trie morphTrie = new Trie();
+		Trie morphTrie = makeTrieToTest();
 		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"},"takujuq");
 		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"},"takujuq");
 		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{juq/1vn}"},"takulaaqtuq");

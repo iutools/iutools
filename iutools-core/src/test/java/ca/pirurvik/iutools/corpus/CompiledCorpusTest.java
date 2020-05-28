@@ -33,6 +33,7 @@ import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
+import ca.nrc.datastructure.trie.Trie_InMemory;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.testing.AssertHelpers;
 import ca.nrc.testing.AssertObject;
@@ -711,7 +712,7 @@ public class CompiledCorpusTest extends CompiledCorpus_BaseTest
 	public void test__mostFrequentWordWithRadical() {
 		CompiledCorpus compiledCorpus = new CompiledCorpus();
         compiledCorpus.setVerbose(false);
-		Trie charTrie = new Trie();
+        Trie_InMemory charTrie = new Trie_InMemory();
 		try {
 		charTrie.add("hello".split(""),"hello");
 		charTrie.add("hint".split(""),"hint");
@@ -731,7 +732,7 @@ public class CompiledCorpusTest extends CompiledCorpus_BaseTest
 	public void test__getTerminalsSumFreq() throws TrieException {
 		CompiledCorpus compiledCorpus = new CompiledCorpus();
         compiledCorpus.setVerbose(false);
-		Trie charTrie = new Trie();
+        Trie_InMemory charTrie = new Trie_InMemory();
 		charTrie.add("hello".split(""),"hello");
 		charTrie.add("hint".split(""),"hint");
 		charTrie.add("helicopter".split(""),"helicopter");

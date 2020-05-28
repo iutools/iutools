@@ -136,7 +136,7 @@ public class TrieNodeTest {
 	
 	@Test
 	public void test__add() throws Exception {
-		Trie charTrie = new Trie();
+		Trie charTrie = new Trie_InMemory();
 		charTrie.add("hello".split(""),"hello");
 		charTrie.add("hint".split(""),"hint");
 		charTrie.add("helicopter".split(""),"helicopter");
@@ -176,7 +176,7 @@ public class TrieNodeTest {
 	
 	@Test
 	public void test_getAllTerminals() throws Exception {
-		Trie charTrie = new Trie();
+		Trie charTrie = new Trie_InMemory();
 		charTrie.add("hello".split(""),"hello");
 		charTrie.add("hit".split(""),"hit");
 		charTrie.add("abba".split(""),"abba");
@@ -209,7 +209,7 @@ public class TrieNodeTest {
 	
 	@Test
 	public void test_getMostFrequentTerminal() throws TrieException {
-		Trie charTrie = new Trie();
+		Trie charTrie = new Trie_InMemory();
 		charTrie.add("hello".split(""),"hello");
 		charTrie.add("hint".split(""),"hint");
 		charTrie.add("helicopter".split(""),"helicopter");
@@ -224,7 +224,7 @@ public class TrieNodeTest {
 	
 	@Test
 	public void test_getMostFrequentTerminals() throws TrieException {
-		Trie charTrie = new Trie();
+		Trie charTrie = new Trie_InMemory();
 		charTrie.add("hello".split(""),"hello");
 		charTrie.add("hint".split(""),"hint");
 		charTrie.add("helicopter".split(""),"helicopter");
@@ -252,7 +252,7 @@ public class TrieNodeTest {
 	
 	@Test
 	public void test_toString() throws TrieException {
-		Trie charTrie = new Trie();
+		Trie charTrie = new Trie_InMemory();
 		charTrie.add("hello".split(""),"hello");
 		charTrie.add("hint".split(""),"hint");
 		charTrie.add("helicopter".split(""),"helicopter");

@@ -16,6 +16,7 @@ import ca.inuktitutcomputing.data.LinguisticDataSingleton;
 import ca.inuktitutcomputing.data.SurfaceFormInContext;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieException;
+import ca.nrc.datastructure.trie.Trie_InMemory;
 import ca.pirurvik.iutools.corpus.CompiledCorpusException;
 
 public class appCreateFormTrees {
@@ -57,7 +58,7 @@ public class appCreateFormTrees {
 		else
 			morphemeIds = LinguisticData.getInstance().getAllAffixesIds();
 
-		Trie trie = new Trie();
+		Trie trie = new Trie_InMemory();
 		for (int i = 0; i < morphemeIds.length; i++) {
 			try {
 				String morphemeId = morphemeIds[i];
