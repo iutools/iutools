@@ -15,18 +15,39 @@ public class TrieNode {
     public String[] keys = new String[] {};
     protected boolean isWord = false;
     protected long frequency = 0;
-    protected HashMap<String,TrieNode> children;
+    protected Map<String,TrieNode> children = new HashMap<String,TrieNode>();
     protected TrieNode mostFrequentTerminal;
     protected Map<String,Object> stats = new HashMap<String,Object>();
     protected String surfaceForm = null;
     protected HashMap<String,Long> surfaceForms = new HashMap<String,Long>();
+    
+    public TrieNode() {
+    	init_TrieNode(null, null);
+    }
+
+    public TrieNode(String[] _keys) {
+    	init_TrieNode(_keys, null);
+    }
+    
+    public TrieNode(String[] _keys, boolean _isWord) {
+    	init_TrieNode(_keys, _isWord);
+    }
+
+    private void init_TrieNode(String[] _keys, Boolean _isWord) {
+        if (_keys != null) {
+        	this.keys = _keys;
+        }
+        if (_isWord != null) {
+        	this.isWord = _isWord;
+        }
+    }
     
     
     public String key() {
     	return keys[keys.length-1];
     }
     
-	public HashMap<String,TrieNode> getChildren() {
+	public Map<String,TrieNode> getChildren() {
 		return children;
 	}
 	
@@ -87,14 +108,6 @@ public class TrieNode {
     	this.mostFrequentTerminal = _mostFrequentTerminal;
     }*/
 
-    public TrieNode() {
-        this.children = new HashMap<String,TrieNode>();
-    }
-
-    public TrieNode(String[] _keys) {
-        this();
-        this.keys = _keys;
-    }
     
     public String getKeysAsString() {
         return String.join(" ",this.keys);
@@ -183,7 +196,7 @@ public class TrieNode {
 		// Add terminals of children of this node, if any
 		else {
 			Vector<TrieNode> list = new Vector<TrieNode>();
-			HashMap<String, TrieNode> children = this.getChildren();
+			Map<String, TrieNode> children = this.getChildren();
 			String[] keys = children.keySet().toArray(new String[] {});
 			for (int i = 0; i < keys.length; i++) {
 				TrieNode childNode = children.get(keys[i]);
@@ -194,25 +207,25 @@ public class TrieNode {
 		}
 	}
 	
-    @Override
+	@Override
     public String toString() {
-    	String str = "[TrieNode:\n" +
-        		"    segments = "+this.getKeysAsString()+"\n"+
-        		"    frequency = "+this.frequency+"\n"+
-        		"    isWord = "+this.isWord+"\n";
-    	if (this.isWord()) {
-    		if (this.surfaceForms.size()==0)
-    			str += "    surfaceForm = "+this.surfaceForm;
-    		else {
-    			Object[][] formsFreqs = this.getOrderedSurfaceForms();
-				str += "    surfaceForms = "+formsFreqs[0][0]+" ("+formsFreqs[0][1]+")\n";
-				
-    			for (int i=1; i<formsFreqs.length; i++)
-    				str += "                   "+formsFreqs[i][0]+" ("+formsFreqs[i][1]+")\n";
-    		}
-    	}
-        str += "    ]";
-        return str;
+		String toS = "[";
+		if (isWord) {
+			toS += "TrieNode:";			
+		} else {
+			toS += "TrieTerminalNode:";
+		}
+		toS += 
+			"\n"+
+        	"    segments = "+this.getKeysAsString()+"\n"+
+        	"    frequency = "+this.frequency+"\n"+
+        	"    isWord = "+this.isWord+"\n";
+        if (isWord) {
+        	toS += "    surfaceForm = "+this.surfaceForm+"\n"; 
+        }
+        toS += "    ]";
+        
+        return toS;
     }
 
 	// Stats

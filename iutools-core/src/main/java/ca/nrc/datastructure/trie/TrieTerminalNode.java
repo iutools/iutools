@@ -1,5 +1,6 @@
 package ca.nrc.datastructure.trie;
 
+import java.util.HashMap;
 import java.util.Vector;
 
 public class TrieTerminalNode extends TrieNode {
@@ -23,4 +24,22 @@ public class TrieTerminalNode extends TrieNode {
         		"    surfaceForm = "+this.surfaceForm+"\n"+
         		"    ]";
     }
+
+	@Override
+	public HashMap<String, TrieNode> getChildren() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public TrieNode[] getChildrenNodes() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setChildren(HashMap<String, TrieNode> _children) {
+		// TODO Auto-generated method stub
+		
+	}
 }

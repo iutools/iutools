@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,7 +35,7 @@ public class FreqVerbRootsCompiler {
 		Logger logger = Logger.getLogger("FreqVerbRootsCompiler.compileFreqs");
 		HashMap<String,Long> freqsOfVerbRoots = new HashMap<String,Long>();
 		Trie trie = corpus.getTrie();
-		HashMap<String,TrieNode> nodesOfRootsOfWords = trie.getRoot().getChildren();
+		Map<String,TrieNode> nodesOfRootsOfWords = trie.getRoot().getChildren();
 		String rootIds[] = nodesOfRootsOfWords.keySet().toArray(new String[] {});
 		logger.debug("rootIds: "+PrettyPrinter.print(rootIds));
 		Pattern pat = Pattern.compile("\\{(.+/\\d+v)\\}");

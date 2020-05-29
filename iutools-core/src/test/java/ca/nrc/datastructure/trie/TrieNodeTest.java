@@ -141,36 +141,13 @@ public class TrieNodeTest {
 		charTrie.add("hint".split(""),"hint");
 		charTrie.add("helicopter".split(""),"helicopter");
 		charTrie.add("helios".split(""),"helios");
-		charTrie.add("helicopter".split(""),"helicopter");
-				
-//		TrieNode helNode = charTrie.getNode("hel".split(""));
-//		Assert.assertTrue("The most frequent terminal node from here should not be set yet.",
-//				helNode.mostFrequentTerminal==null);
-//		
-//		TrieNode mostFrequent = helNode.getMostFrequentTerminal();
-//		Assert.assertEquals("The most frequent terminal node from here should be 'helicopter'.",
-//				"h e l i c o p t e r \\",helNode.mostFrequentTerminal.getKeysAsString());
-//		
-//		charTrie.add("helios".split(""),"helios");
-//		Assert.assertTrue("The most frequent terminal node from here, after adding a new child, should not be set yet.",
-//				helNode.mostFrequentTerminal==null);
-//		
-//		mostFrequent = helNode.getMostFrequentTerminal();
-//		Assert.assertEquals("The most frequent terminal node from here should be 'helicopter'.",
-//				"h e l i c o p t e r \\",helNode.mostFrequentTerminal.getKeysAsString());
-//		
-//		charTrie.add("helios".split(""),"helios");
-//		mostFrequent = helNode.getMostFrequentTerminal();
-//		Assert.assertEquals("The most frequent terminal node from here should be 'helios'.",
-//				"h e l i o s \\",helNode.mostFrequentTerminal.getKeysAsString());
-		
+		charTrie.add("helicopter".split(""),"helicopter");						
 		charTrie.add("hellon".split(""), "hellon");
 		charTrie.add("hello".split(""), "hello");
 		TrieNode hello = charTrie.getNode("hello".split(""));
 		Assert.assertEquals("The frequency of the node is not correct.", 3, hello.frequency);
 		TrieNode helloTerminal = charTrie.getNode("hello\\".split(""));
 		Assert.assertEquals("The frequency of the terminal is not correct.", 2, helloTerminal.frequency);
-		
 		}
 
 	

@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -32,7 +33,7 @@ public class FreqVerbRootsTest {
         compiledCorpus.setVerbose(false);
         compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
 		Trie trie = compiledCorpus.getTrie();
-		HashMap<String,TrieNode> nodesOfRootsOfWords = trie.getRoot().getChildren();
+		Map<String,TrieNode> nodesOfRootsOfWords = trie.getRoot().getChildren();
 		String rootIds[] = nodesOfRootsOfWords.keySet().toArray(new String[] {});
 		assertEquals("", 5, rootIds.length);
 		FreqVerbRootsCompiler freqVerbRootsCompiler = new FreqVerbRootsCompiler();

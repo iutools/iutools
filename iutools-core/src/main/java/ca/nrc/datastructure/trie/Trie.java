@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -121,7 +122,7 @@ public abstract class Trie {
 	}
 
 	public TrieNode getNode(String[] keys) {
-        HashMap<String,TrieNode> children = root.getChildren();
+        Map<String,TrieNode> children = root.getChildren();
         TrieNode trieNode = null;
         for (int i = 0; i < keys.length; i++) {
             String key = keys[i];
@@ -282,8 +283,6 @@ public abstract class Trie {
       trieNode.addChild(segment, newNode);
       return newNode;
     }
-    
-
 }
 
 class NodeFrequencyComparator implements Comparator<TrieNode> {
