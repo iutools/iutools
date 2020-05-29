@@ -16,7 +16,7 @@ import org.junit.Test;
 import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.Trie_InMemory;
-import ca.nrc.datastructure.trie.TrieNode_InMemory;
+import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.testing.AssertHelpers;
 import ca.pirurvik.iutools.corpus.CompiledCorpus;
 import ca.pirurvik.iutools.corpus.CompiledCorpusException;
@@ -33,7 +33,7 @@ public class FreqVerbRootsTest {
         compiledCorpus.setVerbose(false);
         compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
 		Trie_InMemory trie = compiledCorpus.getTrie();
-		Map<String,TrieNode_InMemory> nodesOfRootsOfWords = trie.getRoot().getChildren();
+		Map<String,TrieNode> nodesOfRootsOfWords = trie.getRoot().getChildren();
 		String rootIds[] = nodesOfRootsOfWords.keySet().toArray(new String[] {});
 		assertEquals("", 5, rootIds.length);
 		FreqVerbRootsCompiler freqVerbRootsCompiler = new FreqVerbRootsCompiler();

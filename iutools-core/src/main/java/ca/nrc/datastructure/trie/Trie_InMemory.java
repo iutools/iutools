@@ -32,21 +32,21 @@ import ca.nrc.json.PrettyPrinter;
 
 public class Trie_InMemory extends Trie_Base {
 
-    protected TrieNode_InMemory root;
+    protected TrieNode root;
     
     public Trie_InMemory() {
-    	root = new TrieNode_InMemory();
+    	root = new TrieNode();
 	}
     
-    public TrieNode_InMemory newNode(String[] keys, Boolean isWord) {
-    	return new TrieNode_InMemory(keys, isWord);
+    public TrieNode newNode(String[] keys, Boolean isWord) {
+    	return new TrieNode(keys, isWord);
     }
     
-    public TrieNode_InMemory newNode() {
+    public TrieNode newNode() {
     	return newNode(null, null);
     }
     
-    public TrieNode_InMemory newNode(String[] keys) {
+    public TrieNode newNode(String[] keys) {
     	return newNode(keys, null);
     }
     
@@ -69,7 +69,7 @@ public class Trie_InMemory extends Trie_Base {
 		return trie;
     }
     
-	public TrieNode_InMemory getRoot() {
+	public TrieNode getRoot() {
     	return this.root;
     }
     
@@ -78,9 +78,9 @@ public class Trie_InMemory extends Trie_Base {
     }
     
     public long getNbOccurrences() {
-    	TrieNode_InMemory[] terminals = getAllTerminals();
+    	TrieNode[] terminals = getAllTerminals();
     	long nbOccurrences = 0;
-    	for (TrieNode_InMemory terminal : terminals) {
+    	for (TrieNode terminal : terminals) {
     		nbOccurrences += terminal.getFrequency();
     	}
     	return nbOccurrences;
@@ -102,8 +102,8 @@ public class Trie_InMemory extends Trie_Base {
     //
     // TODO: Check that partsSequence is NOT empty. If it is, raise exception
     //
-	public TrieNode_InMemory add(String[] partsSequence, String word) throws TrieException {
-        TrieNode_InMemory trieNode = root;
+	public TrieNode add(String[] partsSequence, String word) throws TrieException {
+        TrieNode trieNode = root;
         Logger logger = Logger.getLogger("Trie.add");
         logger.debug("segments: "+Arrays.toString(partsSequence));
         
@@ -116,7 +116,7 @@ public class Trie_InMemory extends Trie_Base {
         while (iseg < partsSequence.length) {
         	String segment = partsSequence[iseg];
             Set<String> childrenKeys = trieNode.getChildren().keySet();
-            TrieNode_InMemory segmentNode = null;
+            TrieNode segmentNode = null;
             // if the current segment is not in the keys, add a new node for it
             if (!childrenKeys.contains(segment)) {
                 segmentNode = insertNode(trieNode, segment); // where new child is added to the node
@@ -135,13 +135,13 @@ public class Trie_InMemory extends Trie_Base {
         return trieNode; //***		
 	}
 
-	public TrieNode_InMemory getNode(String[] keys) {
-        Map<String,TrieNode_InMemory> children = root.getChildren();
-        TrieNode_InMemory trieNode = null;
+	public TrieNode getNode(String[] keys) {
+        Map<String,TrieNode> children = root.getChildren();
+        TrieNode trieNode = null;
         for (int i = 0; i < keys.length; i++) {
             String key = keys[i];
             if (children.containsKey(key)) {
-                trieNode = (TrieNode_InMemory) children.get(key);
+                trieNode = (TrieNode) children.get(key);
                 children = trieNode.getChildren();
             } else 
             	return null;
@@ -149,11 +149,11 @@ public class Trie_InMemory extends Trie_Base {
         return trieNode;
 	}
 	
-	protected TrieNode_InMemory getParentNode(TrieNode_InMemory node) {
+	protected TrieNode getParentNode(TrieNode node) {
 		return this.getParentNode(node.keys);
 	}
 	
-	protected TrieNode_InMemory getParentNode(String[] keys) {
+	protected TrieNode getParentNode(String[] keys) {
 		if (keys.length==0)
 			return null;
 		else
@@ -161,7 +161,7 @@ public class Trie_InMemory extends Trie_Base {
 	}
 	
 	public long getFrequency(String[] segments) {
-		TrieNode_InMemory node = this.getNode(segments);
+		TrieNode node = this.getNode(segments);
 		if (node != null)
 			return node.getFrequency();
 		else
@@ -169,102 +169,102 @@ public class Trie_InMemory extends Trie_Base {
 	}
 	
 	// --- ALL TERMINALS
-	public TrieNode_InMemory[] getAllTerminals() {
-		TrieNode_InMemory[] allTerminals = getAllTerminals(root);
+	public TrieNode[] getAllTerminals() {
+		TrieNode[] allTerminals = getAllTerminals(root);
 		return allTerminals;
 	}
 	
-	public TrieNode_InMemory[] getAllTerminals(TrieNode_InMemory node) {
-		List<TrieNode_InMemory> allTerminalsLst = 
-			new ArrayList<TrieNode_InMemory>();
+	public TrieNode[] getAllTerminals(TrieNode node) {
+		List<TrieNode> allTerminalsLst = 
+			new ArrayList<TrieNode>();
 			
 		collectAllTerminals(node, allTerminalsLst);
 		
-		return allTerminalsLst.toArray(new TrieNode_InMemory[allTerminalsLst.size()]);
+		return allTerminalsLst.toArray(new TrieNode[allTerminalsLst.size()]);
 	}
 
-	private void collectAllTerminals(TrieNode_InMemory node, 
-			List<TrieNode_InMemory> collected) {
+	private void collectAllTerminals(TrieNode node, 
+			List<TrieNode> collected) {
 		if (node.isWord()) {
 			collected.add(node);
 		} else {
-			for (TrieNode_InMemory aChild: node.getChildrenNodes()) {
+			for (TrieNode aChild: node.getChildrenNodes()) {
 				collectAllTerminals(aChild, collected);
 			}
 		}
 	}
 
-	public TrieNode_InMemory[] getAllTerminals(String[] segments) {
-		TrieNode_InMemory node = this.getNode(segments);
-		TrieNode_InMemory[] allTerminals = null;
+	public TrieNode[] getAllTerminals(String[] segments) {
+		TrieNode node = this.getNode(segments);
+		TrieNode[] allTerminals = null;
 		if (node==null)
-			allTerminals = new TrieNode_InMemory[0];
+			allTerminals = new TrieNode[0];
 		else
 			allTerminals = getAllTerminals(node);
 		
 		return allTerminals;
 	}
 	
-	public TrieNode_InMemory getMostFrequentTerminal() {
+	public TrieNode getMostFrequentTerminal() {
 		return getMostFrequentTerminal(root);
 	}
 
-	public TrieNode_InMemory getMostFrequentTerminal(TrieNode_InMemory node) {
-		TrieNode_InMemory mostFrequent = null;
-		TrieNode_InMemory[] terminals = getMostFrequentTerminals(1, node, null);
+	public TrieNode getMostFrequentTerminal(TrieNode node) {
+		TrieNode mostFrequent = null;
+		TrieNode[] terminals = getMostFrequentTerminals(1, node, null);
 		if (terminals != null && terminals.length > 0) {
 			mostFrequent = terminals[0];
 		}
 		return mostFrequent;
 	}
 
-	public TrieNode_InMemory getMostFrequentTerminal(String[] segments) {
-		TrieNode_InMemory node = getNode(segments);
+	public TrieNode getMostFrequentTerminal(String[] segments) {
+		TrieNode node = getNode(segments);
 		return getMostFrequentTerminal(node);
 	}
 	
-	TrieNode_InMemory[] getMostFrequentTerminals(int n) {
+	TrieNode[] getMostFrequentTerminals(int n) {
 		return getMostFrequentTerminals(n, root, null);
 	}
 
 	
-	TrieNode_InMemory[] getMostFrequentTerminals(int n, String[] segments) {
-		TrieNode_InMemory node = getNode(segments);
+	TrieNode[] getMostFrequentTerminals(int n, String[] segments) {
+		TrieNode node = getNode(segments);
 		return getMostFrequentTerminals(n, node, null);
 	}
 	
-	TrieNode_InMemory[] getMostFrequentTerminals(String[] segments) {
-		TrieNode_InMemory node = getNode(segments);
+	TrieNode[] getMostFrequentTerminals(String[] segments) {
+		TrieNode node = getNode(segments);
 		return getMostFrequentTerminals(null, node, null);
 	}
 
-	TrieNode_InMemory[] getMostFrequentTerminals() {
+	TrieNode[] getMostFrequentTerminals() {
 		return getMostFrequentTerminals(null, root, null);
 	}
 	
-	TrieNode_InMemory[] getMostFrequentTerminals(
-			Integer n, TrieNode_InMemory node) {
+	TrieNode[] getMostFrequentTerminals(
+			Integer n, TrieNode node) {
 		return getMostFrequentTerminals(n, node, null);
 	}
 
-	TrieNode_InMemory[] getMostFrequentTerminals(
-			Integer n, TrieNode_InMemory node, 
-			TrieNode_InMemory[] exclusions) {
+	TrieNode[] getMostFrequentTerminals(
+			Integer n, TrieNode node, 
+			TrieNode[] exclusions) {
 		if (exclusions == null) {
-			exclusions = new TrieNode_InMemory[0];
+			exclusions = new TrieNode[0];
 		}
-		TrieNode_InMemory[] terminals = getAllTerminals(node);
-		for (TrieNode_InMemory nodeToExclude : exclusions)
-			terminals = (TrieNode_InMemory[]) ArrayUtils.removeElement(terminals, nodeToExclude);
-	    Arrays.sort(terminals, new Comparator<TrieNode_InMemory>() {
+		TrieNode[] terminals = getAllTerminals(node);
+		for (TrieNode nodeToExclude : exclusions)
+			terminals = (TrieNode[]) ArrayUtils.removeElement(terminals, nodeToExclude);
+	    Arrays.sort(terminals, new Comparator<TrieNode>() {
 	        @Override
-	        public int compare(TrieNode_InMemory o1, TrieNode_InMemory o2) {
+	        public int compare(TrieNode o1, TrieNode o2) {
 	        	if (o1.getFrequency() == o2.getFrequency())
 	        		return 0;
 	            return o1.getFrequency() < o2.getFrequency()? 1 : -1;
 	        }
 	    });
-	    TrieNode_InMemory[] mostFrequentTerminals;
+	    TrieNode[] mostFrequentTerminals;
 	    if (n > terminals.length) {
 	    	mostFrequentTerminals = Arrays.copyOfRange(terminals, 0, terminals.length);
 	    } else {
@@ -281,10 +281,10 @@ public class Trie_InMemory extends Trie_Base {
 	public String[] getMostFrequentSequenceForRoot(String rootKey) {
 		Logger logger = Logger.getLogger("CompiledCorpus.getMostFrequentSequenceToTerminals");
 		HashMap<String, Long> freqs = new HashMap<String, Long>();
-		TrieNode_InMemory rootSegmentNode = this.getNode(new String[] {rootKey});
-		TrieNode_InMemory[] terminals = getAllTerminals(rootSegmentNode);
+		TrieNode rootSegmentNode = this.getNode(new String[] {rootKey});
+		TrieNode[] terminals = getAllTerminals(rootSegmentNode);
 		logger.debug("all terminals: "+terminals.length);
-		for (TrieNode_InMemory terminalNode : terminals) {
+		for (TrieNode terminalNode : terminals) {
 			//logger.debug("terminalNode: "+PrettyPrinter.print(terminalNode));
 			String[] terminalNodeKeys = Arrays.copyOfRange(terminalNode.keys, 1, terminalNode.keys.length);
 			freqs = computeFreqs(terminalNodeKeys,freqs,rootKey);
@@ -326,7 +326,7 @@ public class Trie_InMemory extends Trie_Base {
 		String newCumulativeKeys = (cumulativeKeys + " " + key).trim();
 		String[] remKeys = Arrays.copyOfRange(terminalNodeKeys, 1, terminalNodeKeys.length);
 		// node of rootSegment + newCumulativeKeys
-		TrieNode_InMemory node = this.getNode((rootSegment+" "+newCumulativeKeys).split(" "));
+		TrieNode node = this.getNode((rootSegment+" "+newCumulativeKeys).split(" "));
 		long incr = node.getFrequency();
 		if (!freqs.containsKey(newCumulativeKeys))
 			freqs.put(newCumulativeKeys, new Long(incr));
@@ -337,13 +337,13 @@ public class Trie_InMemory extends Trie_Base {
 		return freqs;
 	}
 
-	protected TrieNode_InMemory getMostFrequentTerminalFromMostFrequentSequenceForRoot(String rootSegment) {
+	protected TrieNode getMostFrequentTerminalFromMostFrequentSequenceForRoot(String rootSegment) {
 		String[] mostFrequentSequence = getMostFrequentSequenceForRoot(rootSegment);
-		TrieNode_InMemory node = this.getNode(mostFrequentSequence);
-		TrieNode_InMemory[] terminals = getAllTerminals(node);
+		TrieNode node = this.getNode(mostFrequentSequence);
+		TrieNode[] terminals = getAllTerminals(node);
 		long max = 0;
-		TrieNode_InMemory mostFrequentTerminal = null;
-		for (TrieNode_InMemory terminal : terminals)
+		TrieNode mostFrequentTerminal = null;
+		for (TrieNode terminal : terminals)
 			if (terminal.getFrequency() > max) {
 				max = terminal.getFrequency();
 				mostFrequentTerminal = terminal;
@@ -355,23 +355,23 @@ public class Trie_InMemory extends Trie_Base {
 	
 	// --------------------- PRIVATE------------------------------
 
-    private TrieNode_InMemory getChild(TrieNode_InMemory trieNode, String segment) {
-        return (TrieNode_InMemory) trieNode.getChildren().get(segment);
+    private TrieNode getChild(TrieNode trieNode, String segment) {
+        return (TrieNode) trieNode.getChildren().get(segment);
     }
 
-    private TrieNode_InMemory insertNode(TrieNode_InMemory trieNode, String segment) {
+    private TrieNode insertNode(TrieNode trieNode, String segment) {
       ArrayList<String> keys = new ArrayList<String>(Arrays.asList(trieNode.keys));
       keys.add(segment);
-      TrieNode_InMemory newNode = new TrieNode_InMemory(keys.toArray(new String[] {}));
+      TrieNode newNode = new TrieNode(keys.toArray(new String[] {}));
       trieNode.addChild(segment, newNode);
       return newNode;
     }
 }
 
-class NodeFrequencyComparator implements Comparator<TrieNode_InMemory> {
+class NodeFrequencyComparator implements Comparator<TrieNode> {
 
 	@Override
-	public int compare(TrieNode_InMemory o1, TrieNode_InMemory o2) {
+	public int compare(TrieNode o1, TrieNode o2) {
 		long o1Freq = o1.getFrequency();
 		long o2Freq = o2.getFrequency();
 		if ( o1Freq==o2Freq)

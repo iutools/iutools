@@ -12,7 +12,7 @@ import com.google.gson.Gson;
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.Trie_InMemory;
-import ca.nrc.datastructure.trie.TrieNode_InMemory;
+import ca.nrc.datastructure.trie.TrieNode;
 import ca.pirurvik.iutools.corpus.CompiledCorpus;
 
 public class CmdSearchTrie extends ConsoleCommand {
@@ -85,10 +85,10 @@ public class CmdSearchTrie extends ConsoleCommand {
 			
 			echo("\nSearching for morphemes: "+String.join(" ", morphemes)+"\n");
 			
-			TrieNode_InMemory node = trie.getNode(morphemes);
+			TrieNode node = trie.getNode(morphemes);
 			if (node != null) {
 				String nodeString = node.toString();
-				TrieNode_InMemory mostFrequentTerminal = compiledCorpus.getMostFrequentTerminal(node);
+				TrieNode mostFrequentTerminal = compiledCorpus.getMostFrequentTerminal(node);
 				echo(nodeString);
 				echo("Most frequent terminal: "+mostFrequentTerminal.toString());
 			} else {

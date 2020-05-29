@@ -26,7 +26,7 @@ public class TrieNodeTest {
 		// it corresponds to.
 		//
 		String[] sequenceElements = new String[] { "e", "x", "a", "c", "t" };
-		TrieNode_InMemory node = new TrieNode_InMemory(sequenceElements);
+		TrieNode node = new TrieNode(sequenceElements);
 		
 		//
 		// You can use a node to store and manipulate the frequency at which you saw a sequence
@@ -79,7 +79,7 @@ public class TrieNodeTest {
 	
 	@Test
 	public void test__TrieNode__frequency__HappyPath() {
-		TrieNode_InMemory node = new TrieNode_InMemory("hello".split(""));
+		TrieNode node = new TrieNode("hello".split(""));
 		long gotFreq = node.getFrequency(); 	
 		Assert.assertEquals("Frequency should have been 0 initialy", 0, gotFreq);
 		node.incrementFrequency();       
@@ -89,7 +89,7 @@ public class TrieNodeTest {
 	
 	@Test
 	public void test__TrieNode__setgetStat__HappyPath() throws Exception {
-		TrieNode_InMemory node = new TrieNode_InMemory("hello".split(""));
+		TrieNode node = new TrieNode("hello".split(""));
 		String statName = "lengthSum";
 		node.defineStat(statName);
 		
@@ -102,7 +102,7 @@ public class TrieNodeTest {
 
 	@Test(expected = TrieNodeException.class)
 	public void test__TrieNode__setStat__RaisesExceptionIfStatNameIsUnknown() throws Exception {
-		TrieNode_InMemory node = new TrieNode_InMemory("hello".split(""));
+		TrieNode node = new TrieNode("hello".split(""));
 		String statName = "lengthSum";
 		node.defineStat(statName);
 		
@@ -111,7 +111,7 @@ public class TrieNodeTest {
 
 	@Test(expected = TrieNodeException.class)
 	public void test__TrieNode__getStat__RaisesExceptionIfStatNameIsUnknown() throws Exception {
-		TrieNode_InMemory node = new TrieNode_InMemory("hello".split(""));
+		TrieNode node = new TrieNode("hello".split(""));
 		String statName = "lengthSum";
 		node.defineStat(statName);
 		
@@ -120,7 +120,7 @@ public class TrieNodeTest {
 
 	@Test
 	public void test__TrieNode__incrementStat__HappyPath() throws Exception {
-		TrieNode_InMemory node = new TrieNode_InMemory("hello".split(""));
+		TrieNode node = new TrieNode("hello".split(""));
 		String statName = "lengthSum";
 		node.defineStat(statName);
 		
@@ -145,9 +145,9 @@ public class TrieNodeTest {
 		charTrie.add("helicopter".split(""),"helicopter");						
 		charTrie.add("hellon".split(""), "hellon");
 		charTrie.add("hello".split(""), "hello");
-		TrieNode_InMemory hello = charTrie.getNode("hello".split(""));
+		TrieNode hello = charTrie.getNode("hello".split(""));
 		Assert.assertEquals("The frequency of the node is not correct.", 3, hello.frequency);
-		TrieNode_InMemory helloTerminal = charTrie.getNode("hello\\".split(""));
+		TrieNode helloTerminal = charTrie.getNode("hello\\".split(""));
 		Assert.assertEquals("The frequency of the terminal is not correct.", 2, helloTerminal.frequency);
 	}
 	
@@ -162,7 +162,7 @@ public class TrieNodeTest {
 		charTrie.add("helios".split(""),"helios");
 		charTrie.add("helios".split(""),"helios");
 		
-		TrieNode_InMemory helNode = charTrie.getNode("hel".split(""));
+		TrieNode helNode = charTrie.getNode("hel".split(""));
 		String gotString = helNode.toString();
 		String expString = 
 			"[TrieTerminalNode:\n" + 

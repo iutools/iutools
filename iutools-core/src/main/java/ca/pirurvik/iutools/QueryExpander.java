@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 import ca.inuktitutcomputing.script.TransCoder;
 import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.Pair;
-import ca.nrc.datastructure.trie.TrieNode_InMemory;
+import ca.nrc.datastructure.trie.TrieNode;
 import ca.pirurvik.iutools.corpus.CompiledCorpus;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistryException;
@@ -85,7 +85,7 @@ public class QueryExpander {
 		
 		if (segments !=null && segments.length >0) {
 			logger.debug("segments: "+segments.length);
-			TrieNode_InMemory node = this.compiledCorpus.trie.getNode(segments);	
+			TrieNode node = this.compiledCorpus.trie.getNode(segments);	
 			if (node==null)
 				mostFrequentTerminalsForWord = new ArrayList<QueryExpansion>();
 			else
@@ -128,7 +128,7 @@ public class QueryExpander {
 			String[] segmentsBack1 = Arrays.copyOfRange(segments,0,segments.length-1);
 			if (segmentsBack1.length != 0) {
 				logger.debug("back one segment -- "+String.join(" ", segmentsBack1));
-				TrieNode_InMemory node = this.compiledCorpus.trie.getNode(segmentsBack1);
+				TrieNode node = this.compiledCorpus.trie.getNode(segmentsBack1);
 				if (node==null)
 					return __getExpansions(mostFrequentTerminalsForReformulations, segmentsBack1, word);
 				logger.debug("node: "+node.getKeysAsString());
@@ -145,14 +145,14 @@ public class QueryExpander {
 		}
 	}
 	
-	public ArrayList<QueryExpansion> getNMostFrequentForms(TrieNode_InMemory node, int n, String word, ArrayList<QueryExpansion> exclusions) {
+	public ArrayList<QueryExpansion> getNMostFrequentForms(TrieNode node, int n, String word, ArrayList<QueryExpansion> exclusions) {
 		Logger logger = Logger.getLogger("QueryExpander.getNMostFrequentForms");
 		ArrayList<String> listOfExclusions = new ArrayList<String>();
 		for (int i=0; i<exclusions.size(); i++)
 			listOfExclusions.add(exclusions.get(i).word);
-		TrieNode_InMemory[] terminals = compiledCorpus.getTrie().getAllTerminals(node);
+		TrieNode[] terminals = compiledCorpus.getTrie().getAllTerminals(node);
 		ArrayList<Object[]> forms= new ArrayList<Object[]>();
-		for (TrieNode_InMemory terminal : terminals) {
+		for (TrieNode terminal : terminals) {
 			HashMap<String,Long> surfaceForms = terminal.getSurfaceForms();
 			if (surfaceForms.size()==0) {
 				surfaceForms = new HashMap<String,Long>();

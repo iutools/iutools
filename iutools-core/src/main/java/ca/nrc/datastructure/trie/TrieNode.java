@@ -11,25 +11,25 @@ import java.util.Vector;
 
 import org.apache.commons.lang.ArrayUtils;
 
-public class TrieNode_InMemory {
+public class TrieNode {
     public String[] keys = new String[] {};
     protected boolean isWord = false;
     protected long frequency = 0;
-    protected Map<String,TrieNode_InMemory> children = new HashMap<String,TrieNode_InMemory>();
-    protected TrieNode_InMemory mostFrequentTerminal;
+    protected Map<String,TrieNode> children = new HashMap<String,TrieNode>();
+    protected TrieNode mostFrequentTerminal;
     protected Map<String,Object> stats = new HashMap<String,Object>();
     protected String surfaceForm = null;
     protected HashMap<String,Long> surfaceForms = new HashMap<String,Long>();
     
-    public TrieNode_InMemory() {
+    public TrieNode() {
     	init_TrieNode(null, null);
     }
 
-    public TrieNode_InMemory(String[] _keys) {
+    public TrieNode(String[] _keys) {
     	init_TrieNode(_keys, null);
     }
     
-    public TrieNode_InMemory(String[] _keys, boolean _isWord) {
+    public TrieNode(String[] _keys, boolean _isWord) {
     	init_TrieNode(_keys, _isWord);
     }
 
@@ -47,16 +47,16 @@ public class TrieNode_InMemory {
     	return keys[keys.length-1];
     }
     
-	public Map<String,TrieNode_InMemory> getChildren() {
+	public Map<String,TrieNode> getChildren() {
 		return children;
 	}
 	
-	public TrieNode_InMemory[] getChildrenNodes() {
-		Collection<TrieNode_InMemory> childrenNodes = (Collection<TrieNode_InMemory>) children.values();
-		return childrenNodes.toArray(new TrieNode_InMemory[] {});
+	public TrieNode[] getChildrenNodes() {
+		Collection<TrieNode> childrenNodes = (Collection<TrieNode>) children.values();
+		return childrenNodes.toArray(new TrieNode[] {});
 	}
 	
-	public void addChild(String key, TrieNode_InMemory node) {
+	public void addChild(String key, TrieNode node) {
 		this.getChildren().put(key, node);
 	}
 	
@@ -64,14 +64,14 @@ public class TrieNode_InMemory {
 		return this.getChildren().containsKey(key);
 	}
 	
-    public void setChildren(HashMap<String,TrieNode_InMemory> _children) {
+    public void setChildren(HashMap<String,TrieNode> _children) {
     	this.children = _children;
     }
     
     public boolean hasTerminalNode() {
     	return this.hasChild("\\");
     }
-    public TrieNode_InMemory getChildTerminalNode() {
+    public TrieNode getChildTerminalNode() {
     	return this.getChildren().get("\\");
     }
     

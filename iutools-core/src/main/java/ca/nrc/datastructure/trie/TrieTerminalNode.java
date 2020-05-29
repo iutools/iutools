@@ -3,7 +3,7 @@ package ca.nrc.datastructure.trie;
 import java.util.HashMap;
 import java.util.Vector;
 
-public class TrieTerminalNode extends TrieNode_InMemory {
+public class TrieTerminalNode extends TrieNode {
 	
 	public TrieTerminalNode(String _surfaceForm) {
 		super();
@@ -26,19 +26,19 @@ public class TrieTerminalNode extends TrieNode_InMemory {
     }
 
 	@Override
-	public HashMap<String, TrieNode_InMemory> getChildren() {
+	public HashMap<String, TrieNode> getChildren() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public TrieNode_InMemory[] getChildrenNodes() {
+	public TrieNode[] getChildrenNodes() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void setChildren(HashMap<String, TrieNode_InMemory> _children) {
+	public void setChildren(HashMap<String, TrieNode> _children) {
 		// TODO Auto-generated method stub
 		
 	}

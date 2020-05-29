@@ -20,7 +20,7 @@ import ca.inuktitutcomputing.morph.MorphInukException;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzerException;
 import ca.nrc.datastructure.trie.Trie_InMemory;
-import ca.nrc.datastructure.trie.TrieNode_InMemory;
+import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.json.PrettyPrinter;
 import ca.pirurvik.iutools.corpus.CompiledCorpus;
 import ca.pirurvik.iutools.corpus.CompiledCorpus.WordWithMorpheme;
@@ -266,7 +266,7 @@ public class MorphemeSearcher {
     	String exprWithoutSurfaceForms = expr.toStringWithoutSurfaceForms();
     	String[] sequenceOfMorphemes = exprWithoutSurfaceForms.split(" ");
     	Trie_InMemory trie = corpus.getTrie();
-    	TrieNode_InMemory[] terminals = trie.getAllTerminals(sequenceOfMorphemes);
+    	TrieNode[] terminals = trie.getAllTerminals(sequenceOfMorphemes);
     	long nbWord = 0;
     	for (int iterm=0; iterm<terminals.length; iterm++) {
     		nbWord += terminals[iterm].getFrequency();

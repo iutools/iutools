@@ -36,7 +36,7 @@ import ca.nrc.datastructure.trie.StringSegmenter_Char;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.Trie_InMemory;
 import ca.nrc.datastructure.trie.TrieException;
-import ca.nrc.datastructure.trie.TrieNode_InMemory;
+import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.datastructure.trie.Trie_InMemory;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.ui.commandline.ProgressMonitor_Terminal;
@@ -535,7 +535,7 @@ public class CompiledCorpus extends CompiledCorpus_Base
 			addToCache(word, segments);
 		}
 		try {
-			TrieNode_InMemory result = null;
+			TrieNode result = null;
 			if (segments.length != 0) {
 				result = trie.add(segments,word);
 				if (recompilingFailedWord) {
@@ -627,8 +627,8 @@ public class CompiledCorpus extends CompiledCorpus_Base
 	public long getNumberOfCompiledOccurrences() {
 		if (this.terminalsSumFreq == null) {
 			long sumFreqs = 0;
-			TrieNode_InMemory[] terminals = this.trie.getAllTerminals();
-			for (TrieNode_InMemory terminal : terminals)
+			TrieNode[] terminals = this.trie.getAllTerminals();
+			for (TrieNode terminal : terminals)
 				sumFreqs += terminal.getFrequency();
 			this.terminalsSumFreq = new Long(sumFreqs);
 		}
@@ -690,11 +690,11 @@ public class CompiledCorpus extends CompiledCorpus_Base
 		return words;
 	}
 
-	public TrieNode_InMemory getMostFrequentTerminal(TrieNode_InMemory node) {
+	public TrieNode getMostFrequentTerminal(TrieNode node) {
 		return this.trie.getMostFrequentTerminal(node);
 	}
 
-	public TrieNode_InMemory getMostFrequentTerminal(String[] segments) {
+	public TrieNode getMostFrequentTerminal(String[] segments) {
 		return this.trie.getMostFrequentTerminal(segments);
 	}
 
@@ -753,7 +753,7 @@ public class CompiledCorpus extends CompiledCorpus_Base
 			String segmentsStr = matcher.group(1);
 			String segmentsStrWithSpaces = segmentsStr.replace("}{", "} {");
 			String[] segments = segmentsStrWithSpaces.split(" ");
-			TrieNode_InMemory[] terminals = this.trie.getAllTerminals(segments);
+			TrieNode[] terminals = this.trie.getAllTerminals(segments);
 			nbOccurrences = terminals[0].getFrequency();
 			}
 	

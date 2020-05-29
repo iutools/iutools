@@ -6,14 +6,14 @@ public abstract class Trie_Base {
 
     public abstract long getSize();
 
-	public abstract TrieNode_InMemory getNode(String[] keys);
+	public abstract TrieNode getNode(String[] keys);
 	
-	public abstract TrieNode_InMemory add(String[] partsSequence, String word) 
+	public abstract TrieNode add(String[] partsSequence, String word) 
 		throws TrieException;
 	
-	public abstract TrieNode_InMemory[] getAllTerminals(String[] segments);
+	public abstract TrieNode[] getAllTerminals(String[] segments);
 	
-	public abstract TrieNode_InMemory getRoot();
+	public abstract TrieNode getRoot();
 	
 	public abstract String toJSON();
 }

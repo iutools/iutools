@@ -32,7 +32,7 @@ import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.datastructure.trie.Trie_InMemory;
 import ca.nrc.datastructure.trie.TrieException;
-import ca.nrc.datastructure.trie.TrieNode_InMemory;
+import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.file.ResourceGetter;
 import ca.nrc.json.PrettyPrinter;
 
@@ -317,7 +317,7 @@ public class WordAnalyzer {
 		int charCounter;
 		// Parse the morpheme
 		for (charCounter = 0; charCounter < chars.length; charCounter++) {
-			TrieNode_InMemory nodeForCurrentKeys = null;
+			TrieNode nodeForCurrentKeys = null;
 			currentChar = chars[charCounter];
 			currentKeys.add(currentChar);
 			String currentKeysAsString = String.join("", currentKeys.toArray(new String[] {}));
@@ -330,7 +330,7 @@ public class WordAnalyzer {
 				// there is a morpheme 'currentKeys'
 				ArrayList<String> searchForSlashNodeKeys = (ArrayList<String>) currentKeys.clone();
 				searchForSlashNodeKeys.add("\\");
-				TrieNode_InMemory terminalNode = trie.getNode(searchForSlashNodeKeys.toArray(new String[] {}));
+				TrieNode terminalNode = trie.getNode(searchForSlashNodeKeys.toArray(new String[] {}));
 				if (terminalNode != null) {
 				// this is a complete morpheme
 					Set<String> surfaceForms = terminalNode.getSurfaceForms().keySet();

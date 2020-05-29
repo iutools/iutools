@@ -52,7 +52,7 @@ public abstract class TrieTest {
 		// Then, you can retrieve the node that corresponds to a particular 
 		// sequence of chars.
 		//
-		TrieNode_InMemory node = trie.getNode(helloChars);
+		TrieNode node = trie.getNode(helloChars);
 		if (node == null) {
 			// This means the string was not found in the Trie
 		} else {
@@ -69,7 +69,7 @@ public abstract class TrieTest {
 		charTrie.add("helm".split(""),"helm");
 		charTrie.add("ok".split(""),"ok");
 		
-		TrieNode_InMemory parent;
+		TrieNode parent;
 		// pass keys as argument
 		parent = charTrie.getParentNode(new String[] {});
 		assertTrue("The parent node of the root should be null.",parent==null);
@@ -84,7 +84,7 @@ public abstract class TrieTest {
 	public void test_add__check_terminal() throws TrieException {
 		Trie_InMemory charTrie = makeTrieToTest();
 		charTrie.add("hi".split(""), "hi");
-		TrieNode_InMemory terminalNode = charTrie.getNode("hi\\".split(""));
+		TrieNode terminalNode = charTrie.getNode("hi\\".split(""));
 		assertEquals("The terminal node is not correct.","hi",terminalNode.getSurfaceForm());
 		HashMap<String,Long> surfaceForms = terminalNode.getSurfaceForms();
 		assertArrayEquals("",new String[] {"hi"},surfaceForms.keySet().toArray(new String[] {}));
@@ -99,7 +99,7 @@ public abstract class TrieTest {
 		iumorphemeTrie.add(iuSegmenter.segment("nalunaiqsivut"),"nalunaiqsivut");
 		iumorphemeTrie.add(iuSegmenter.segment("nalunairsivut"),"nalunairsivut");
 		iumorphemeTrie.add(iuSegmenter.segment("nalunaiqsivut"),"nalunaiqsivut");
-		TrieNode_InMemory terminalNode = iumorphemeTrie.getNode("{nalunaq/1n} {iq/1nv} {si/2vv} {vut/tv-dec-3p} \\".split(" "));
+		TrieNode terminalNode = iumorphemeTrie.getNode("{nalunaq/1n} {iq/1nv} {si/2vv} {vut/tv-dec-3p} \\".split(" "));
 		assertEquals("The terminal node is not correct.","nalunaiqsivut",terminalNode.getSurfaceForm());
 		HashMap<String,Long> surfaceForms = terminalNode.getSurfaceForms();
 		assertEquals("The number of surface forms for {nalunaq/1n} {iq/1nv} {si/2vv} {vut/tv-dec-3p} is wrong.",2,surfaceForms.size());
@@ -119,7 +119,7 @@ public abstract class TrieTest {
 		} catch (TrieException e) {
 			assertFalse("An error occurred while adding an element to the trie.",true);
 		}
-		TrieNode_InMemory node = charTrie.getNode("hello".split(""));
+		TrieNode node = charTrie.getNode("hello".split(""));
 		assertTrue("The node for 'hello' is not null.",node!=null);
 		assertEquals("The key for this node is correct.","h e l l o",node.getKeysAsString());
 		assertTrue("This node represents a full word.",node.hasTerminalNode());
@@ -139,7 +139,7 @@ public abstract class TrieTest {
 		} catch (TrieException e) {
 			assertFalse("An error occurred while adding an element to the trie.",true);
 		}
-		TrieNode_InMemory node = wordTrie.getNode(new String[]{"hello"});
+		TrieNode node = wordTrie.getNode(new String[]{"hello"});
 		assertTrue("The node for 'hello' is not null.",node!=null);
 		assertEquals("The key for this node is correct.","hello",node.getKeysAsString());
 		assertFalse("This node should not a full word.",node.isWord());
@@ -152,7 +152,7 @@ public abstract class TrieTest {
 		String[] takujuq_segments = null;
 		takujuq_segments = iuSegmenter.segment("takujuq");
 		iumorphemeTrie.add(takujuq_segments,"takujuq");
-		TrieNode_InMemory secondTakujuqNode = iumorphemeTrie.add(takujuq_segments,"takujuq");
+		TrieNode secondTakujuqNode = iumorphemeTrie.add(takujuq_segments,"takujuq");
 		assertTrue("The node added for the second 'takujuq' should not be null.",secondTakujuqNode!=null);
 	}
 	
@@ -167,7 +167,7 @@ public abstract class TrieTest {
 		} catch (Exception e) {
 			assertFalse("An error occurred while adding an element to the trie.",true);
 		}
-		TrieNode_InMemory node = iumorphemeTrie.getNode(new String[]{"{taku/1v}"});
+		TrieNode node = iumorphemeTrie.getNode(new String[]{"{taku/1v}"});
 		assertTrue("The node for 'taku/1n' should not be null.",node!=null);
 		assertEquals("The key for this node is not correct.","{taku/1v}",node.getKeysAsString());
 		assertFalse("This node should not a full word.",node.isWord());
@@ -207,13 +207,13 @@ public abstract class TrieTest {
 		charTrie.add("helios".split(""),"helios");
 		charTrie.add("helm".split(""),"helm");
 		charTrie.add("ok".split(""),"ok");
-		TrieNode_InMemory[] h_terminals = charTrie.getAllTerminals("h".split(""));
+		TrieNode[] h_terminals = charTrie.getAllTerminals("h".split(""));
 		Assert.assertEquals("The number of words starting with 'h' should be 4.",
 				4,h_terminals.length);
-		TrieNode_InMemory[] hel_terminals = charTrie.getAllTerminals("hel".split(""));
+		TrieNode[] hel_terminals = charTrie.getAllTerminals("hel".split(""));
 		Assert.assertEquals("The number of words starting with 'hel' should be 3.",
 				3,hel_terminals.length);
-		TrieNode_InMemory[] o_terminals = charTrie.getAllTerminals("o".split(""));
+		TrieNode[] o_terminals = charTrie.getAllTerminals("o".split(""));
 		Assert.assertEquals("The number of words starting with 'o' should be 1.",
 				1,o_terminals.length);
 	}
@@ -230,23 +230,23 @@ public abstract class TrieTest {
 		charTrie.add("ok".split(""),"ok");
 		charTrie.add("okdoo".split(""),"okdoo");
 		
-		TrieNode_InMemory hNode = charTrie.getNode("h".split(""));
-		TrieNode_InMemory[] h_terminals = charTrie.getAllTerminals(hNode);
+		TrieNode hNode = charTrie.getNode("h".split(""));
+		TrieNode[] h_terminals = charTrie.getAllTerminals(hNode);
 		Assert.assertEquals("The number of words starting with 'h' should be 4.",
 				4,h_terminals.length);
 		
-		TrieNode_InMemory helNode = charTrie.getNode("hel".split(""));
-		TrieNode_InMemory[] hel_terminals = charTrie.getAllTerminals(helNode);
+		TrieNode helNode = charTrie.getNode("hel".split(""));
+		TrieNode[] hel_terminals = charTrie.getAllTerminals(helNode);
 		Assert.assertEquals("The number of words starting with 'hel' should be 3.",
 				3,hel_terminals.length);
 		
-		TrieNode_InMemory oNode = charTrie.getNode("o".split(""));
-		TrieNode_InMemory[] o_terminals = charTrie.getAllTerminals(oNode);
+		TrieNode oNode = charTrie.getNode("o".split(""));
+		TrieNode[] o_terminals = charTrie.getAllTerminals(oNode);
 		Assert.assertEquals("The number of words starting with 'o' should be 2.",
 				2,o_terminals.length);
 		
-		TrieNode_InMemory okNode = charTrie.getNode("ok".split(""));
-		TrieNode_InMemory[] ok_terminals = charTrie.getAllTerminals(okNode);
+		TrieNode okNode = charTrie.getNode("ok".split(""));
+		TrieNode[] ok_terminals = charTrie.getAllTerminals(okNode);
 		Assert.assertEquals("The number of words starting with 'ok' should be 2.",
 				2,o_terminals.length);
 	}	
@@ -277,7 +277,7 @@ public abstract class TrieTest {
 		String json = charTrie.toJSON();
 		Gson gson = new Gson();
 		Trie_InMemory retrievedCharTrie = (Trie_InMemory) gson.fromJson(json, Trie_InMemory.class);
-		TrieNode_InMemory node = retrievedCharTrie.getNode(new String[] {"h","i","t","\\"});
+		TrieNode node = retrievedCharTrie.getNode(new String[] {"h","i","t","\\"});
 		Assert.assertTrue("The node should be terminal.",node.isWord);
 		Assert.assertEquals("The surface form is not correct.", "hit", node.surfaceForm);
 	}
@@ -299,10 +299,10 @@ public abstract class TrieTest {
 		charTrie.add("ok".split(""),"ok");
 		charTrie.add("ok".split(""),"ok");
 		charTrie.add("ok".split(""),"ok");
-		TrieNode_InMemory mostFrequentTerminalRoot = charTrie.getMostFrequentTerminal();
+		TrieNode mostFrequentTerminalRoot = charTrie.getMostFrequentTerminal();
 		String expectedKeysMFTR = "o k \\";
 		assertEquals("The terminal returned as the most frequent terminal of the whole trie is wrong.",expectedKeysMFTR,mostFrequentTerminalRoot.getKeysAsString());
-		TrieNode_InMemory mostFrequentTerminalHell = charTrie.getMostFrequentTerminal("hell".split(""));
+		TrieNode mostFrequentTerminalHell = charTrie.getMostFrequentTerminal("hell".split(""));
 		String expectedKeys = "h e l l a m \\";
 		assertEquals("The terminal returned as the most frequent terminal related to 'hell' is wrong.",expectedKeys,mostFrequentTerminalHell.getKeysAsString());
 		String expectedSurfaceForm = "hellam";
@@ -319,7 +319,7 @@ public abstract class TrieTest {
 		charTrie.add("helicopter".split(""),"helicopter");
 		charTrie.add("helios".split(""),"helios");
 		charTrie.add("helios".split(""),"helios");
-		TrieNode_InMemory helNode = charTrie.getNode("hel".split(""));
+		TrieNode helNode = charTrie.getNode("hel".split(""));
 		Assert.assertEquals("The most frequent terminal returned is faulty.",
 			"helios", 
 			charTrie.getMostFrequentTerminal(helNode).surfaceForm);
@@ -343,7 +343,7 @@ public abstract class TrieTest {
 		charTrie.add("ok".split(""),"ok");
 		charTrie.add("ok".split(""),"ok");
 		
-		TrieNode_InMemory[] mostFrequentTerminals;
+		TrieNode[] mostFrequentTerminals;
 		String[] expected;
 		String[] got;
 		
@@ -384,20 +384,20 @@ public abstract class TrieTest {
 		charTrie.add("helicopter".split(""),"helicopter");
 		charTrie.add("helios".split(""),"helios");
 		charTrie.add("helios".split(""),"helios");
-		TrieNode_InMemory helNode = charTrie.getNode("hel".split(""));
+		TrieNode helNode = charTrie.getNode("hel".split(""));
 		// test n < number of terminals
-		TrieNode_InMemory[] mostFrequentTerminals = charTrie.getMostFrequentTerminals(2, helNode);
+		TrieNode[] mostFrequentTerminals = charTrie.getMostFrequentTerminals(2, helNode);
 		Assert.assertEquals("The number of nodes returned is wrong.",2,mostFrequentTerminals.length);
 		Assert.assertEquals("The first most frequent terminal returned is faulty.","helios",mostFrequentTerminals[0].surfaceForm);
 		Assert.assertEquals("The second most frequent terminal returned is faulty.","helicopter",mostFrequentTerminals[1].surfaceForm);
 		// test n > number of terminals
-		TrieNode_InMemory[] mostFrequentTerminals4 = charTrie.getMostFrequentTerminals(4, helNode);
+		TrieNode[] mostFrequentTerminals4 = charTrie.getMostFrequentTerminals(4, helNode);
 		Assert.assertEquals("The number of nodes returned is wrong.",3,mostFrequentTerminals4.length);
 		// test with exclusion of nodes
-		TrieNode_InMemory nodeToExclude = charTrie.getNode("hello\\".split(""));
-		TrieNode_InMemory[] mostFrequentTerminalsExcl = 
+		TrieNode nodeToExclude = charTrie.getNode("hello\\".split(""));
+		TrieNode[] mostFrequentTerminalsExcl = 
 			charTrie.getMostFrequentTerminals(4, helNode, 
-				new TrieNode_InMemory[] {nodeToExclude});
+				new TrieNode[] {nodeToExclude});
 		Assert.assertEquals("The number of nodes returned without excluded nodes is wrong.",2,mostFrequentTerminalsExcl.length);
 		Assert.assertEquals("", "helios", mostFrequentTerminalsExcl[0].getSurfaceForm());
 		Assert.assertEquals("", "helicopter", mostFrequentTerminalsExcl[1].getSurfaceForm());
@@ -438,7 +438,7 @@ public abstract class TrieTest {
 		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{juq/1vn}"},"takulaaqtuq");
 		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{sima/1vv}","{juq/1vn}"},"takulaaqsimajuq");
 		morphTrie.add(new String[] {"{taku/1v}","{sima/1vv}","{juq/1vn}"},"takusimajuq");
-		TrieNode_InMemory mostFrequentTerminal = morphTrie.getMostFrequentTerminalFromMostFrequentSequenceForRoot("{taku/1v}");
+		TrieNode mostFrequentTerminal = morphTrie.getMostFrequentTerminalFromMostFrequentSequenceForRoot("{taku/1v}");
 		String expected = "{taku/1v} {juq/1vn} \\";
 		assertEquals("The most frequent term for 'taku' in the trie is not correct.",expected,mostFrequentTerminal.getKeysAsString());
 	}
@@ -453,7 +453,7 @@ public abstract class TrieTest {
 		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{juq/1vn}"},"takulaaqtuq");
 		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{sima/1vv}","{juq/1vn}"},"takulaaqsimajuq");
 		morphTrie.add(new String[] {"{taku/1v}","{sima/1vv}","{juq/1vn}"},"takusimajuq");
-		TrieNode_InMemory mostFrequentTerminal = morphTrie.getMostFrequentTerminalFromMostFrequentSequenceForRoot("{taku/1v}");
+		TrieNode mostFrequentTerminal = morphTrie.getMostFrequentTerminalFromMostFrequentSequenceForRoot("{taku/1v}");
 		String expected = "{taku/1v} {juq/1vn} \\";
 		assertEquals("The most frequent term for 'taku' in the trie is not correct.",expected,mostFrequentTerminal.getKeysAsString());
 	}
@@ -468,7 +468,7 @@ public abstract class TrieTest {
 		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{juq/1vn}"},"takulaaqtuq");
 		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{sima/1vv}","{juq/1vn}"},"takulaaqsimajuq");
 		morphTrie.add(new String[] {"{taku/1v}","{sima/1vv}","{juq/1vn}"},"takusimajuq");
-		TrieNode_InMemory mostFrequentTerminal = morphTrie.getMostFrequentTerminalFromMostFrequentSequenceForRoot("{taku/1v}");
+		TrieNode mostFrequentTerminal = morphTrie.getMostFrequentTerminalFromMostFrequentSequenceForRoot("{taku/1v}");
 		String expected = "{taku/1v} {laaq/2vv} {juq/1vn} \\";
 		assertEquals("The most frequent term for 'taku' in the trie is not correct.",expected,mostFrequentTerminal.getKeysAsString());
 	}
