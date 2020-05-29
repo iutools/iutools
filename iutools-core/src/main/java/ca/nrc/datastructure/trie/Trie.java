@@ -36,6 +36,16 @@ public abstract class Trie {
     	root = new TrieNode();
 	}
     
+    protected abstract TrieNode makeNode(String[] keys, Boolean isWord);
+    
+    protected TrieNode makeNode() {
+    	return makeNode(null, null);
+    }
+    
+    protected TrieNode makeNode(String[] keys) {
+    	return makeNode(keys, null);
+    }
+    
     public String toJSON() {
 		Gson gson = new Gson();
 		String json = gson.toJson(this);
