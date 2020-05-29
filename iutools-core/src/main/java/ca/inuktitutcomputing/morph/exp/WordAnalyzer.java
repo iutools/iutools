@@ -30,9 +30,9 @@ import ca.inuktitutcomputing.data.Morpheme;
 import ca.inuktitutcomputing.data.SurfaceFormInContext;
 import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.Pair;
-import ca.nrc.datastructure.trie.Trie;
+import ca.nrc.datastructure.trie.Trie_InMemory;
 import ca.nrc.datastructure.trie.TrieException;
-import ca.nrc.datastructure.trie.TrieNode;
+import ca.nrc.datastructure.trie.TrieNode_InMemory;
 import ca.nrc.file.ResourceGetter;
 import ca.nrc.json.PrettyPrinter;
 
@@ -43,8 +43,8 @@ import ca.nrc.json.PrettyPrinter;
 
 public class WordAnalyzer {
 
-	private Trie root_trie = null;
-	private Trie affix_trie = null;	
+	private Trie_InMemory root_trie = null;
+	private Trie_InMemory affix_trie = null;	
 	
 	public WordAnalyzer() throws IOException, ConfigException {
 		prepareTries();
@@ -58,68 +58,11 @@ public class WordAnalyzer {
 		JsonReader rootReader;
 		rootReader = new JsonReader(new FileReader(rootFullPathname));
 		Gson gson = new Gson();
-		affix_trie = (Trie)gson.fromJson(affixReader, Trie.class);
-		root_trie = (Trie)gson.fromJson(rootReader, Trie.class);
+		affix_trie = (Trie_InMemory)gson.fromJson(affixReader, Trie_InMemory.class);
+		root_trie = (Trie_InMemory)gson.fromJson(rootReader, Trie_InMemory.class);
 	}
 	
-//	private void prepareTries() throws FormGeneratorException {
-//		String[] roots = new String[]{
-//			"umiaq/1n",
-//			"inuk/1n",
-//			"iglu/1n", 
-//			"taku/1v", 
-//			"tikit/1v",
-//			"umik/1v",
-//			"niruaq/1v",
-//			"malik/1v"
-//		};
-//		String[] affixes = new String[]{
-//			"lu/1q",
-//			"juq/1vn",
-//			"juq/tv-ger-3s",
-//			"junga/tv-ger-1s",
-//			"niaq/2vv",
-//			"juaq/1nn",
-//			"liuq/1nv",
-//			"ji/1vn",
-//			"gaq/1vn",
-//			"gaq/2vv",
-//			"ut/1vn"
-//		};
-//		
-//		FormGenerator formGenerator = new FormGenerator();
-//		Gson gson = new Gson();
-//		
-//		root_trie = new Trie();
-//		for (int i=0; i<roots.length; i++) {
-//			try {
-//				String rootId = roots[i];
-//				List<SurfaceFormInContext> rootsFormsInContext = formGenerator.run(rootId);
-//				for (int irf=0; irf<rootsFormsInContext.size(); irf++) {
-//					SurfaceFormInContext surfaceFormInContext = rootsFormsInContext.get(irf);
-//					root_trie.add(surfaceFormInContext.form.split(""),gson.toJson(surfaceFormInContext));
-//				}
-//			} catch (TrieException e) {
-//			}
-//		}
-//
-//		affix_trie = new Trie();
-//		for (int i=0; i<affixes.length; i++) {
-//			try {
-//				String affixId = affixes[i];
-//				List<SurfaceFormInContext> affixesFormsInContext = formGenerator.run(affixId);
-//				for (int irf=0; irf<affixesFormsInContext.size(); irf++) {
-//					SurfaceFormInContext surfaceFormInContext = affixesFormsInContext.get(irf);
-//					affix_trie.add(surfaceFormInContext.form.split(""),gson.toJson(surfaceFormInContext));
-//				}
-//			} catch (TrieException e) {
-//			}
-//		}
-//		
-//	}
-	
-	
-	
+
 	public List<Decomposition> analyze(String word) throws LinguisticDataException {
 		
 		List<Decomposition> decompositions = findAllPossibleDecompositions(word);
@@ -365,7 +308,7 @@ public class WordAnalyzer {
 	 */
 
 	@SuppressWarnings("unchecked")
-	private List<String> findMorpheme(String[] chars, Trie trie) {
+	private List<String> findMorpheme(String[] chars, Trie_InMemory trie) {
 		
 		List<Pair<String,String>> pairsOfRoots = new ArrayList<Pair<String,String>>();
 		List<String> morphemeSurfaceFormsInContextInJsonFormat = new ArrayList<String>();
@@ -374,7 +317,7 @@ public class WordAnalyzer {
 		int charCounter;
 		// Parse the morpheme
 		for (charCounter = 0; charCounter < chars.length; charCounter++) {
-			TrieNode nodeForCurrentKeys = null;
+			TrieNode_InMemory nodeForCurrentKeys = null;
 			currentChar = chars[charCounter];
 			currentKeys.add(currentChar);
 			String currentKeysAsString = String.join("", currentKeys.toArray(new String[] {}));
@@ -387,7 +330,7 @@ public class WordAnalyzer {
 				// there is a morpheme 'currentKeys'
 				ArrayList<String> searchForSlashNodeKeys = (ArrayList<String>) currentKeys.clone();
 				searchForSlashNodeKeys.add("\\");
-				TrieNode terminalNode = trie.getNode(searchForSlashNodeKeys.toArray(new String[] {}));
+				TrieNode_InMemory terminalNode = trie.getNode(searchForSlashNodeKeys.toArray(new String[] {}));
 				if (terminalNode != null) {
 				// this is a complete morpheme
 					Set<String> surfaceForms = terminalNode.getSurfaceForms().keySet();

@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
-import ca.nrc.datastructure.trie.TrieNode;
+import ca.nrc.datastructure.trie.TrieNode_InMemory;
 
 public class CompiledCorpus_IUMorpheme extends CompiledCorpus {
 	
@@ -20,8 +20,8 @@ public class CompiledCorpus_IUMorpheme extends CompiledCorpus {
 		HashMap<String,Long> completionKeysFreqs = new HashMap<String,Long>();
 		long maxFreq = 0;
 		String mostFrequentCompletionKeys = null;
-		TrieNode[] terminals = this.trie.getAllTerminals();
-		for (TrieNode terminal : terminals) {
+		TrieNode_InMemory[] terminals = this.trie.getAllTerminals();
+		for (TrieNode_InMemory terminal : terminals) {
 			String terminalRootKey = terminal.keys[0]; // {surface_form/id}
 			String[] partsRootKey = terminalRootKey.split("/");
 			String rootTypePart = partsRootKey[1].substring(0, partsRootKey[1].length()-1);

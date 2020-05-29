@@ -3,6 +3,7 @@ package ca.nrc.datastructure.trie;
 import org.junit.Assert;
 import org.junit.Test;
 
+import ca.nrc.testing.AssertString;
 
 public class TrieNodeTest {
 	
@@ -25,7 +26,7 @@ public class TrieNodeTest {
 		// it corresponds to.
 		//
 		String[] sequenceElements = new String[] { "e", "x", "a", "c", "t" };
-		TrieNode node = new TrieNode(sequenceElements);
+		TrieNode_InMemory node = new TrieNode_InMemory(sequenceElements);
 		
 		//
 		// You can use a node to store and manipulate the frequency at which you saw a sequence
@@ -78,7 +79,7 @@ public class TrieNodeTest {
 	
 	@Test
 	public void test__TrieNode__frequency__HappyPath() {
-		TrieNode node = new TrieNode("hello".split(""));
+		TrieNode_InMemory node = new TrieNode_InMemory("hello".split(""));
 		long gotFreq = node.getFrequency(); 	
 		Assert.assertEquals("Frequency should have been 0 initialy", 0, gotFreq);
 		node.incrementFrequency();       
@@ -88,7 +89,7 @@ public class TrieNodeTest {
 	
 	@Test
 	public void test__TrieNode__setgetStat__HappyPath() throws Exception {
-		TrieNode node = new TrieNode("hello".split(""));
+		TrieNode_InMemory node = new TrieNode_InMemory("hello".split(""));
 		String statName = "lengthSum";
 		node.defineStat(statName);
 		
@@ -101,7 +102,7 @@ public class TrieNodeTest {
 
 	@Test(expected = TrieNodeException.class)
 	public void test__TrieNode__setStat__RaisesExceptionIfStatNameIsUnknown() throws Exception {
-		TrieNode node = new TrieNode("hello".split(""));
+		TrieNode_InMemory node = new TrieNode_InMemory("hello".split(""));
 		String statName = "lengthSum";
 		node.defineStat(statName);
 		
@@ -110,7 +111,7 @@ public class TrieNodeTest {
 
 	@Test(expected = TrieNodeException.class)
 	public void test__TrieNode__getStat__RaisesExceptionIfStatNameIsUnknown() throws Exception {
-		TrieNode node = new TrieNode("hello".split(""));
+		TrieNode_InMemory node = new TrieNode_InMemory("hello".split(""));
 		String statName = "lengthSum";
 		node.defineStat(statName);
 		
@@ -119,7 +120,7 @@ public class TrieNodeTest {
 
 	@Test
 	public void test__TrieNode__incrementStat__HappyPath() throws Exception {
-		TrieNode node = new TrieNode("hello".split(""));
+		TrieNode_InMemory node = new TrieNode_InMemory("hello".split(""));
 		String statName = "lengthSum";
 		node.defineStat(statName);
 		
@@ -136,7 +137,7 @@ public class TrieNodeTest {
 	
 	@Test
 	public void test__add() throws Exception {
-		Trie charTrie = new Trie_InMemory();
+		Trie_InMemory charTrie = new Trie_InMemory();
 		charTrie.add("hello".split(""),"hello");
 		charTrie.add("hint".split(""),"hint");
 		charTrie.add("helicopter".split(""),"helicopter");
@@ -144,92 +145,15 @@ public class TrieNodeTest {
 		charTrie.add("helicopter".split(""),"helicopter");						
 		charTrie.add("hellon".split(""), "hellon");
 		charTrie.add("hello".split(""), "hello");
-		TrieNode hello = charTrie.getNode("hello".split(""));
+		TrieNode_InMemory hello = charTrie.getNode("hello".split(""));
 		Assert.assertEquals("The frequency of the node is not correct.", 3, hello.frequency);
-		TrieNode helloTerminal = charTrie.getNode("hello\\".split(""));
+		TrieNode_InMemory helloTerminal = charTrie.getNode("hello\\".split(""));
 		Assert.assertEquals("The frequency of the terminal is not correct.", 2, helloTerminal.frequency);
-		}
-
-	
-	@Test
-	public void test_getAllTerminals() throws Exception {
-		Trie charTrie = new Trie_InMemory();
-		charTrie.add("hello".split(""),"hello");
-		charTrie.add("hit".split(""),"hit");
-		charTrie.add("abba".split(""),"abba");
-		charTrie.add("helios".split(""),"helios");
-		charTrie.add("helm".split(""),"helm");
-		charTrie.add("ok".split(""),"ok");
-		charTrie.add("okdoo".split(""),"okdoo");
-		
-		TrieNode hNode = charTrie.getNode("h".split(""));
-		TrieNode[] h_terminals = hNode.getAllTerminals();
-		Assert.assertEquals("The number of words starting with 'h' should be 4.",
-				4,h_terminals.length);
-		
-		TrieNode helNode = charTrie.getNode("hel".split(""));
-		TrieNode[] hel_terminals = helNode.getAllTerminals();
-		Assert.assertEquals("The number of words starting with 'hel' should be 3.",
-				3,hel_terminals.length);
-		
-		TrieNode oNode = charTrie.getNode("o".split(""));
-		TrieNode[] o_terminals = oNode.getAllTerminals();
-		Assert.assertEquals("The number of words starting with 'o' should be 2.",
-				2,o_terminals.length);
-		
-		TrieNode okNode = charTrie.getNode("ok".split(""));
-		TrieNode[] ok_terminals = okNode.getAllTerminals();
-		Assert.assertEquals("The number of words starting with 'ok' should be 2.",
-				2,o_terminals.length);
 	}
-	
-	
-	@Test
-	public void test_getMostFrequentTerminal() throws TrieException {
-		Trie charTrie = new Trie_InMemory();
-		charTrie.add("hello".split(""),"hello");
-		charTrie.add("hint".split(""),"hint");
-		charTrie.add("helicopter".split(""),"helicopter");
-		charTrie.add("helios".split(""),"helios");
-		charTrie.add("helicopter".split(""),"helicopter");
-		charTrie.add("helios".split(""),"helios");
-		charTrie.add("helios".split(""),"helios");
-		TrieNode helNode = charTrie.getNode("hel".split(""));
-		Assert.assertEquals("The most frequent terminal returned is faulty.","helios",helNode.getMostFrequentTerminal().surfaceForm);
-	}
-	
-	
-	@Test
-	public void test_getMostFrequentTerminals() throws TrieException {
-		Trie charTrie = new Trie_InMemory();
-		charTrie.add("hello".split(""),"hello");
-		charTrie.add("hint".split(""),"hint");
-		charTrie.add("helicopter".split(""),"helicopter");
-		charTrie.add("helios".split(""),"helios");
-		charTrie.add("helicopter".split(""),"helicopter");
-		charTrie.add("helios".split(""),"helios");
-		charTrie.add("helios".split(""),"helios");
-		TrieNode helNode = charTrie.getNode("hel".split(""));
-		// test n < number of terminals
-		TrieNode[] mostFrequentTerminals = helNode.getMostFrequentTerminals(2);
-		Assert.assertEquals("The number of nodes returned is wrong.",2,mostFrequentTerminals.length);
-		Assert.assertEquals("The first most frequent terminal returned is faulty.","helios",mostFrequentTerminals[0].surfaceForm);
-		Assert.assertEquals("The second most frequent terminal returned is faulty.","helicopter",mostFrequentTerminals[1].surfaceForm);
-		// test n > number of terminals
-		TrieNode[] mostFrequentTerminals4 = helNode.getMostFrequentTerminals(4);
-		Assert.assertEquals("The number of nodes returned is wrong.",3,mostFrequentTerminals4.length);
-		// test with exclusion of nodes
-		TrieNode nodeToExclude = charTrie.getNode("hello\\".split(""));
-		TrieNode[] mostFrequentTerminalsExcl = helNode.getMostFrequentTerminals(4,new TrieNode[] {nodeToExclude});
-		Assert.assertEquals("The number of nodes returned without excluded nodes is wrong.",2,mostFrequentTerminalsExcl.length);
-		Assert.assertEquals("", "helios", mostFrequentTerminalsExcl[0].getSurfaceForm());
-		Assert.assertEquals("", "helicopter", mostFrequentTerminalsExcl[1].getSurfaceForm());
-	}
-	
 	
 	@Test
 	public void test_toString() throws TrieException {
-		Trie charTrie = new Trie_InMemory();
+		Trie_InMemory charTrie = new Trie_InMemory();
 		charTrie.add("hello".split(""),"hello");
 		charTrie.add("hint".split(""),"hint");
 		charTrie.add("helicopter".split(""),"helicopter");
@@ -237,10 +161,17 @@ public class TrieNodeTest {
 		charTrie.add("helicopter".split(""),"helicopter");
 		charTrie.add("helios".split(""),"helios");
 		charTrie.add("helios".split(""),"helios");
-		TrieNode helNode = charTrie.getNode("hel".split(""));
-		Assert.assertFalse("The string returned for the first most frequent terminal is faulty.",helNode.toString().contains("surfaceForm"));
-		TrieNode[] mostFrequentTerminals = helNode.getMostFrequentTerminals(2);
-		Assert.assertTrue("The string returned for the first most frequent terminal is faulty.",mostFrequentTerminals[0].toString().contains("helios"));
-		Assert.assertTrue("The string returned for the second most frequent terminal is faulty.",mostFrequentTerminals[1].toString().contains("helicopter"));
+		
+		TrieNode_InMemory helNode = charTrie.getNode("hel".split(""));
+		String gotString = helNode.toString();
+		String expString = 
+			"[TrieTerminalNode:\n" + 
+			"    segments = h e l\n" + 
+			"    frequency = 6\n" + 
+			"    isWord = false\n" + 
+			"    ]";
+		AssertString.assertStringEquals(
+			"Stringified node was not as expected for 'hel'", 
+			expString, gotString);
 	}
 }

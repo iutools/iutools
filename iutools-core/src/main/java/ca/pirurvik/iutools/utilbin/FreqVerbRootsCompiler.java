@@ -15,8 +15,8 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 
 import ca.nrc.datastructure.Pair;
-import ca.nrc.datastructure.trie.Trie;
-import ca.nrc.datastructure.trie.TrieNode;
+import ca.nrc.datastructure.trie.Trie_InMemory;
+import ca.nrc.datastructure.trie.TrieNode_InMemory;
 import ca.nrc.json.PrettyPrinter;
 import ca.pirurvik.iutools.corpus.CompiledCorpus;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
@@ -34,8 +34,8 @@ public class FreqVerbRootsCompiler {
 	public HashMap<String,Long> compileFreqs(CompiledCorpus corpus) {
 		Logger logger = Logger.getLogger("FreqVerbRootsCompiler.compileFreqs");
 		HashMap<String,Long> freqsOfVerbRoots = new HashMap<String,Long>();
-		Trie trie = corpus.getTrie();
-		Map<String,TrieNode> nodesOfRootsOfWords = trie.getRoot().getChildren();
+		Trie_InMemory trie = corpus.getTrie();
+		Map<String,TrieNode_InMemory> nodesOfRootsOfWords = trie.getRoot().getChildren();
 		String rootIds[] = nodesOfRootsOfWords.keySet().toArray(new String[] {});
 		logger.debug("rootIds: "+PrettyPrinter.print(rootIds));
 		Pattern pat = Pattern.compile("\\{(.+/\\d+v)\\}");

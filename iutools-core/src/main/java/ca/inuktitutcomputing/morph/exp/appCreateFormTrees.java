@@ -14,7 +14,7 @@ import ca.inuktitutcomputing.data.LinguisticDataAbstract;
 import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.data.LinguisticDataSingleton;
 import ca.inuktitutcomputing.data.SurfaceFormInContext;
-import ca.nrc.datastructure.trie.Trie;
+import ca.nrc.datastructure.trie.Trie_InMemory;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.Trie_InMemory;
 import ca.pirurvik.iutools.corpus.CompiledCorpusException;
@@ -23,11 +23,11 @@ public class appCreateFormTrees {
 
 	public static void main(String[] args) throws Exception {
 		String type = args[0]; // "root" or "affix"
-		Trie trie = prepareTrie(type);
+		Trie_InMemory trie = prepareTrie(type);
 		saveTrieToFile(type, trie);
 	}
 
-	public static void saveTrieToFile(String type, Trie trie) throws Exception {
+	public static void saveTrieToFile(String type, Trie_InMemory trie) throws Exception {
 		FileWriter saveFileWriter = null;
 		String saveFilePathname = "inuktitutFormTrie-" + type + ".json";
 		File saveFile = new File(saveFilePathname);
@@ -48,7 +48,7 @@ public class appCreateFormTrees {
 	}
 
 
-	private static Trie prepareTrie(String type) throws FormGeneratorException {
+	private static Trie_InMemory prepareTrie(String type) throws FormGeneratorException {
 		System.out.println("Preparation of "+type+" trie...");
 		FormGenerator formGenerator = new FormGenerator();
 		Gson gson = new Gson();
@@ -58,7 +58,7 @@ public class appCreateFormTrees {
 		else
 			morphemeIds = LinguisticData.getInstance().getAllAffixesIds();
 
-		Trie trie = new Trie_InMemory();
+		Trie_InMemory trie = new Trie_InMemory();
 		for (int i = 0; i < morphemeIds.length; i++) {
 			try {
 				String morphemeId = morphemeIds[i];

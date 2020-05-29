@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
-import ca.nrc.datastructure.trie.Trie;
+import ca.nrc.datastructure.trie.Trie_InMemory;
 import ca.nrc.datastructure.trie.Trie_InMemory;
 
 /**

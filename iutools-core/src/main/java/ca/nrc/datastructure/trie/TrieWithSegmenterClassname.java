@@ -5,10 +5,10 @@ public class TrieWithSegmenterClassname {
 
     private long size;
     private String segmenterclassname;
-    private TrieNode root;
+    private TrieNode_InMemory root;
     
     
-    public TrieWithSegmenterClassname(String _segmenterclassname, TrieNode _root, long _size) {
+    public TrieWithSegmenterClassname(String _segmenterclassname, TrieNode_InMemory _root, long _size) {
     	this.size = _size;
     	this.root = _root;
     	this.segmenterclassname = _segmenterclassname;

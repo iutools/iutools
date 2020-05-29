@@ -11,8 +11,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import ca.nrc.datastructure.trie.Trie;
-import ca.nrc.datastructure.trie.TrieNode;
+import ca.nrc.datastructure.trie.Trie_InMemory;
+import ca.nrc.datastructure.trie.TrieNode_InMemory;
 import ca.nrc.testing.AssertObject;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 
@@ -70,8 +70,8 @@ public class CompiledCorpusRegistryTest {
 	@Test
 	public void test__getCorpus__No_argument__Returns_default_corpus() throws CompiledCorpusRegistryException {
 		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpus();
-		Trie trie = corpus.getTrie();
-		TrieNode[] ammaTerminals = trie.getAllTerminals(new String[] {"{amma/1c}"});
+		Trie_InMemory trie = corpus.getTrie();
+		TrieNode_InMemory[] ammaTerminals = trie.getAllTerminals(new String[] {"{amma/1c}"});
 		int got = ammaTerminals.length;
 		assertTrue("Incorrect number of terminals for amma/1c;\nexpected more than 0",got>0);
 	}
@@ -100,8 +100,8 @@ public class CompiledCorpusRegistryTest {
 	@Test
 	public void test__getCorpus__get_from_corpus_name_statically_initialized() throws CompiledCorpusRegistryException {
 		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpus("Hansard1999-2002");
-		Trie trie = corpus.getTrie();
-		TrieNode[] ammaTerminals = trie.getAllTerminals(new String[] {"{amma/1c}"});
+		Trie_InMemory trie = corpus.getTrie();
+		TrieNode_InMemory[] ammaTerminals = trie.getAllTerminals(new String[] {"{amma/1c}"});
 		int got = ammaTerminals.length;
 		assertTrue("Incorrect number of terminals for amma/1c;\nexpected more than 0",got>0);
 	}
@@ -124,8 +124,8 @@ public class CompiledCorpusRegistryTest {
 		corpusFile.deleteOnExit();
 		CompiledCorpusRegistry.registerCorpus("2words", corpusFile);
 		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpus("2words");
-		Trie trie = corpus.getTrie();
-		TrieNode[] nunaTerminals = trie.getAllTerminals(new String[] {"{nuna/1n}"});
+		Trie_InMemory trie = corpus.getTrie();
+		TrieNode_InMemory[] nunaTerminals = trie.getAllTerminals(new String[] {"{nuna/1n}"});
 		int got = nunaTerminals.length;
 		assertTrue("Incorrect number of terminals for nuna/1n;\nexpected more than 0",got>0);
 	}

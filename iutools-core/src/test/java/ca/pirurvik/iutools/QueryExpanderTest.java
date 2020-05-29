@@ -15,7 +15,7 @@ import java.util.List;
 import org.junit.Test;
 
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
-import ca.nrc.datastructure.trie.TrieNode;
+import ca.nrc.datastructure.trie.TrieNode_InMemory;
 import ca.nrc.testing.AssertHelpers;
 import ca.pirurvik.iutools.QueryExpander;
 import ca.pirurvik.iutools.QueryExpansion;
@@ -182,7 +182,7 @@ public class QueryExpanderTest {
 
 		
 		// test n < number of terminals
-        TrieNode tutsi = compiledCorpus.trie.getNode(new String[]{"{tuksiq/1v}"});
+        TrieNode_InMemory tutsi = compiledCorpus.trie.getNode(new String[]{"{tuksiq/1v}"});
         List<QueryExpansion> mostFrequentTerminalsAL = expander.getNMostFrequentForms(tutsi,5,"tuksiraut",new ArrayList<QueryExpansion>());
         QueryExpansion[] mostFrequentTerminals = mostFrequentTerminalsAL.toArray(new QueryExpansion[] {});
         QueryExpansion[] expected = new QueryExpansion[] {
