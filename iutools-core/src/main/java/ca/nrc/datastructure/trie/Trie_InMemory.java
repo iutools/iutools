@@ -183,17 +183,6 @@ public class Trie_InMemory extends Trie_Base {
 		return allTerminalsLst.toArray(new TrieNode[allTerminalsLst.size()]);
 	}
 
-	private void collectAllTerminals(TrieNode node, 
-			List<TrieNode> collected) {
-		if (node.isWord()) {
-			collected.add(node);
-		} else {
-			for (TrieNode aChild: node.getChildrenNodes()) {
-				collectAllTerminals(aChild, collected);
-			}
-		}
-	}
-
 	public TrieNode[] getAllTerminals(String[] segments) {
 		TrieNode node = this.getNode(segments);
 		TrieNode[] allTerminals = null;
@@ -203,6 +192,17 @@ public class Trie_InMemory extends Trie_Base {
 			allTerminals = getAllTerminals(node);
 		
 		return allTerminals;
+	}
+
+	private void collectAllTerminals(TrieNode node, 
+			List<TrieNode> collected) {
+		if (node.isWord()) {
+			collected.add(node);
+		} else {
+			for (TrieNode aChild: node.getChildrenNodes()) {
+				collectAllTerminals(aChild, collected);
+			}
+		}
 	}
 	
 	public TrieNode getMostFrequentTerminal() {
@@ -223,31 +223,31 @@ public class Trie_InMemory extends Trie_Base {
 		return getMostFrequentTerminal(node);
 	}
 	
-	TrieNode[] getMostFrequentTerminals(int n) {
+	public TrieNode[] getMostFrequentTerminals(int n) {
 		return getMostFrequentTerminals(n, root, null);
 	}
 
 	
-	TrieNode[] getMostFrequentTerminals(int n, String[] segments) {
+	public TrieNode[] getMostFrequentTerminals(int n, String[] segments) {
 		TrieNode node = getNode(segments);
 		return getMostFrequentTerminals(n, node, null);
 	}
 	
-	TrieNode[] getMostFrequentTerminals(String[] segments) {
+	public TrieNode[] getMostFrequentTerminals(String[] segments) {
 		TrieNode node = getNode(segments);
 		return getMostFrequentTerminals(null, node, null);
 	}
 
-	TrieNode[] getMostFrequentTerminals() {
+	public TrieNode[] getMostFrequentTerminals() {
 		return getMostFrequentTerminals(null, root, null);
 	}
 	
-	TrieNode[] getMostFrequentTerminals(
+	public TrieNode[] getMostFrequentTerminals(
 			Integer n, TrieNode node) {
 		return getMostFrequentTerminals(n, node, null);
 	}
 
-	TrieNode[] getMostFrequentTerminals(
+	public TrieNode[] getMostFrequentTerminals(
 			Integer n, TrieNode node, 
 			TrieNode[] exclusions) {
 		if (exclusions == null) {

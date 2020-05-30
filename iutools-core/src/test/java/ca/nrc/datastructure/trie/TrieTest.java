@@ -2,7 +2,6 @@ package ca.nrc.datastructure.trie;
 
 import static org.junit.Assert.*;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -16,14 +15,14 @@ import ca.nrc.testing.AssertHelpers;
 
 public abstract class TrieTest {
 	
-	public abstract Trie_InMemory makeTrieToTest();
+	public abstract Trie_Base makeTrieToTest() throws Exception;
 	
 	/******************************************
 	 * DOCUMENTATION TESTS
 	 ******************************************/
 	
 	@Test
-	public void test__Trie__Synopsis() {
+	public void test__Trie__Synopsis() throws Exception {
 		//
 		// Use a Trie to index word by a key that consists of a sequence of 
 		// strings.
@@ -37,7 +36,7 @@ public abstract class TrieTest {
 		// index words by their sequence of characters).
 		//
 		//
-		Trie_InMemory trie = makeTrieToTest();
+		Trie_Base trie = makeTrieToTest();
 		
 		// For the rest of the test we will use a character-based trie.
 		//
@@ -60,8 +59,8 @@ public abstract class TrieTest {
 	}
 	
 	@Test
-	public void test_getParentNode() throws TrieException {
-		Trie_InMemory charTrie = makeTrieToTest();
+	public void test_getParentNode() throws Exception {
+		Trie_Base charTrie = makeTrieToTest();
 		charTrie.add("hello".split(""),"hello");
 		charTrie.add("hit".split(""),"hit");
 		charTrie.add("abba".split(""),"abba");
@@ -81,8 +80,8 @@ public abstract class TrieTest {
 	}
 	
 	@Test
-	public void test_add__check_terminal() throws TrieException {
-		Trie_InMemory charTrie = makeTrieToTest();
+	public void test_add__check_terminal() throws Exception {
+		Trie_Base charTrie = makeTrieToTest();
 		charTrie.add("hi".split(""), "hi");
 		TrieNode terminalNode = charTrie.getNode("hi\\".split(""));
 		assertEquals("The terminal node is not correct.","hi",terminalNode.getSurfaceForm());
@@ -94,7 +93,7 @@ public abstract class TrieTest {
 	@Test
 	public void test_add__check_terminal_inuktitut() throws Exception {
 		StringSegmenter iuSegmenter = new StringSegmenter_IUMorpheme();
-		Trie_InMemory iumorphemeTrie = makeTrieToTest();
+		Trie_Base iumorphemeTrie = makeTrieToTest();
 		iumorphemeTrie.add(iuSegmenter.segment("takujuq"),"takujuq");
 		iumorphemeTrie.add(iuSegmenter.segment("nalunaiqsivut"),"nalunaiqsivut");
 		iumorphemeTrie.add(iuSegmenter.segment("nalunairsivut"),"nalunairsivut");
@@ -111,8 +110,8 @@ public abstract class TrieTest {
 	}
 	
 	@Test
-	public void test__add_get__Char() {
-		Trie_InMemory charTrie = makeTrieToTest();
+	public void test__add_get__Char() throws Exception {
+		Trie_Base charTrie = makeTrieToTest();
 		try {
 			charTrie.add(new String[]{"h","e","l","l","o"},"hello");
 			charTrie.add(new String[]{"h","e","l","l"," ","b","o","y"},"hello boy");
@@ -132,8 +131,8 @@ public abstract class TrieTest {
 	}
 
 	@Test
-	public void test__add_get__Word() {
-		Trie_InMemory wordTrie = makeTrieToTest();
+	public void test__add_get__Word() throws Exception {
+		Trie_Base wordTrie = makeTrieToTest();
 		try {
 			wordTrie.add(new String[]{"hello","there"},"hello there");
 		} catch (TrieException e) {
@@ -148,7 +147,7 @@ public abstract class TrieTest {
 	@Test
 	public void test__add_get__IUMorpheme_same_word_twice() throws Exception {
 		StringSegmenter iuSegmenter = new StringSegmenter_IUMorpheme();
-		Trie_InMemory iumorphemeTrie = makeTrieToTest();
+		Trie_Base iumorphemeTrie = makeTrieToTest();
 		String[] takujuq_segments = null;
 		takujuq_segments = iuSegmenter.segment("takujuq");
 		iumorphemeTrie.add(takujuq_segments,"takujuq");
@@ -159,7 +158,7 @@ public abstract class TrieTest {
 	@Test
 	public void test__add_get__IUMorpheme_one_word() throws Exception {
 		StringSegmenter iuSegmenter = new StringSegmenter_IUMorpheme();
-		Trie_InMemory iumorphemeTrie = makeTrieToTest();
+		Trie_Base iumorphemeTrie = makeTrieToTest();
 		String[] takujuq_segments = null;
 		try {
 			takujuq_segments = iuSegmenter.segment("takujuq");
@@ -174,8 +173,8 @@ public abstract class TrieTest {
 	}
 	
 	@Test
-	public void test__frequenciesOfWords() {
-		Trie_InMemory charTrie = makeTrieToTest();
+	public void test__frequenciesOfWords() throws Exception {
+		Trie_Base charTrie = makeTrieToTest();
 		try {
 		charTrie.add("hello".split(""),"hello");
 		charTrie.add("world".split(""),"world");
@@ -200,7 +199,7 @@ public abstract class TrieTest {
 	
 	@Test
 	public void test_getAllTerminals() throws Exception {
-		Trie_InMemory charTrie = makeTrieToTest();
+		Trie_Base charTrie = makeTrieToTest();
 		charTrie.add("hello".split(""),"hello");
 		charTrie.add("hit".split(""),"hit");
 		charTrie.add("abba".split(""),"abba");
@@ -221,7 +220,7 @@ public abstract class TrieTest {
 	
 	@Test
 	public void test_getAllTerminals__Case2() throws Exception {
-		Trie_InMemory charTrie = makeTrieToTest();
+		Trie_Base charTrie = makeTrieToTest();
 		charTrie.add("hello".split(""),"hello");
 		charTrie.add("hit".split(""),"hit");
 		charTrie.add("abba".split(""),"abba");
@@ -252,7 +251,7 @@ public abstract class TrieTest {
 	}	
 	@Test
 	public void test_getNbOccurrences() throws Exception {
-		Trie_InMemory charTrie = makeTrieToTest();
+		Trie_Base charTrie = makeTrieToTest();
 		charTrie.add("hello".split(""),"hello");
 		charTrie.add("hello".split(""),"hello");
 		charTrie.add("hit".split(""),"hit");
@@ -269,22 +268,22 @@ public abstract class TrieTest {
 	
 	
 	@Test
-	public void test_toJSON__Char() throws TrieException {
-		Trie_InMemory charTrie = makeTrieToTest();
+	public void test_toJSON__Char() throws Exception {
+		Trie_Base charTrie = makeTrieToTest();
 		charTrie.add("he".split(""),"he");
 		charTrie.add("hit".split(""),"hit");
 		charTrie.add("ok".split(""),"ok");
 		String json = charTrie.toJSON();
 		Gson gson = new Gson();
-		Trie_InMemory retrievedCharTrie = (Trie_InMemory) gson.fromJson(json, Trie_InMemory.class);
+		Trie_Base retrievedCharTrie = (Trie_Base) gson.fromJson(json, charTrie.getClass());
 		TrieNode node = retrievedCharTrie.getNode(new String[] {"h","i","t","\\"});
 		Assert.assertTrue("The node should be terminal.",node.isWord);
 		Assert.assertEquals("The surface form is not correct.", "hit", node.surfaceForm);
 	}
 	
 	@Test
-	public void test_getMostFrequentTerminal() throws TrieException {
-		Trie_InMemory charTrie = makeTrieToTest();
+	public void test_getMostFrequentTerminal() throws Exception {
+		Trie_Base charTrie = makeTrieToTest();
 		charTrie.add("hello".split(""),"hello");
 		charTrie.add("hello".split(""),"hello");
 		charTrie.add("hells".split(""),"hells");
@@ -310,8 +309,8 @@ public abstract class TrieTest {
 	}
 	
 	@Test
-	public void test_getMostFrequentTerminal__Case2() throws TrieException {
-		Trie_InMemory charTrie = new Trie_InMemory();
+	public void test_getMostFrequentTerminal__Case2() throws Exception {
+		Trie_Base charTrie = makeTrieToTest();
 		charTrie.add("hello".split(""),"hello");
 		charTrie.add("hint".split(""),"hint");
 		charTrie.add("helicopter".split(""),"helicopter");
@@ -326,8 +325,8 @@ public abstract class TrieTest {
 	}	
 	
 	@Test
-	public void test_getMostFrequentTerminals() throws TrieException {
-		Trie_InMemory charTrie = makeTrieToTest();
+	public void test_getMostFrequentTerminals() throws Exception {
+		Trie_Base charTrie = makeTrieToTest();
 		charTrie.add("hello".split(""),"hello");
 		charTrie.add("hello".split(""),"hello");
 		charTrie.add("hells".split(""),"hells");
@@ -375,8 +374,8 @@ public abstract class TrieTest {
 	}
 	
 	@Test
-	public void test__getMostFrequentTerminals__Case2() throws TrieException {
-		Trie_InMemory charTrie = new Trie_InMemory();
+	public void test__getMostFrequentTerminals__Case2() throws Exception {
+		Trie_Base charTrie = makeTrieToTest();
 		charTrie.add("hello".split(""),"hello");
 		charTrie.add("hint".split(""),"hint");
 		charTrie.add("helicopter".split(""),"helicopter");
@@ -405,8 +404,8 @@ public abstract class TrieTest {
 	
 	
 	@Test
-	public void test__mostFrequentSequenceForRoot__Char() throws TrieException, IOException {
-		Trie_InMemory charTrie = makeTrieToTest();
+	public void test__mostFrequentSequenceForRoot__Char() throws Exception {
+		Trie_Base charTrie = makeTrieToTest();
 		charTrie.add("hello".split(""),"hello");
 		charTrie.add("hint".split(""),"hint");
 		charTrie.add("helicopter".split(""),"helicopter");
@@ -418,8 +417,8 @@ public abstract class TrieTest {
 	}
 	
 	@Test
-	public void test__mostFrequentSequenceForRoot__IUMorpheme() throws TrieException, IOException {
-		Trie_InMemory morphTrie = makeTrieToTest();
+	public void test__mostFrequentSequenceForRoot__IUMorpheme() throws Exception {
+		Trie_Base morphTrie = makeTrieToTest();
 		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"},"takujuq");
 		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{juq/1vn}"},"takulaaqtuq");
 		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{sima/1vv}","{juq/1vn}"},"takulaaqsimajuq");
@@ -431,8 +430,8 @@ public abstract class TrieTest {
 	}
 	
 	@Test
-	public void test__getMostFrequentTerminalFromMostFrequenceSequenceFromRoot__1() throws TrieException {
-		Trie_InMemory morphTrie = makeTrieToTest();
+	public void test__getMostFrequentTerminalFromMostFrequenceSequenceFromRoot__1() throws Exception {
+		Trie_Base morphTrie = makeTrieToTest();
 		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"},"takujuq");
 		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"},"takujuq");
 		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{juq/1vn}"},"takulaaqtuq");
@@ -444,8 +443,8 @@ public abstract class TrieTest {
 	}
 	
 	@Test
-	public void test__getMostFrequentTerminalFromMostFrequenceSequenceFromRoot__2() throws TrieException {
-		Trie_InMemory morphTrie = makeTrieToTest();
+	public void test__getMostFrequentTerminalFromMostFrequenceSequenceFromRoot__2() throws Exception {
+		Trie_Base morphTrie = makeTrieToTest();
 		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"},"takujuq");
 		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"},"takujuq");
 		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"},"takujuq");
@@ -459,8 +458,8 @@ public abstract class TrieTest {
 	}
 	
 	@Test
-	public void test__getMostFrequentTerminalFromMostFrequenceSequenceFromRoot__3() throws TrieException {
-		Trie_InMemory morphTrie = makeTrieToTest();
+	public void test__getMostFrequentTerminalFromMostFrequenceSequenceFromRoot__3() throws Exception {
+		Trie_Base morphTrie = makeTrieToTest();
 		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"},"takujuq");
 		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"},"takujuq");
 		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{juq/1vn}"},"takulaaqtuq");
