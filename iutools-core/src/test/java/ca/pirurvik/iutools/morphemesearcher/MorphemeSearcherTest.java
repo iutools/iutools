@@ -169,7 +169,7 @@ public class MorphemeSearcherTest {
     }
     
     @Test
-    public void test__numberOfWordsInCorpusWithSuiteOfMorphemes() throws IOException {
+    public void test__numberOfWordsInCorpusWithSuiteOfMorphemes() throws Exception {
 		String[] stringsOfWords = new String[] {
 				"makpigarni", "mappigarni", "inuglu"
 				};

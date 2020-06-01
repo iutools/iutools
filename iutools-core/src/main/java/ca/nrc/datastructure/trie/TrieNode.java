@@ -3,45 +3,73 @@ package ca.nrc.datastructure.trie;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
 
-import org.apache.commons.lang.ArrayUtils;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class TrieNode {
     public String[] keys = new String[] {};
-    protected boolean isWord = false;
+    
+    // If not null, it means this node is a "terminal" node, i.e.
+    // it corresponds to an complete expression that cannot have 
+    // children.
+    //
+    public String surfaceForm = null;
+    
+    // TODO: This attribute it redundant with (surfaceForm != null)
+    //   getRid of it once we have converted the Trie from an InMemory 
+    //   version to a InFileSystem version
+    //
+    public boolean isWord = false;
+    
     protected long frequency = 0;
     protected Map<String,TrieNode> children = new HashMap<String,TrieNode>();
     protected TrieNode mostFrequentTerminal;
     protected Map<String,Object> stats = new HashMap<String,Object>();
-    protected String surfaceForm = null;
     protected HashMap<String,Long> surfaceForms = new HashMap<String,Long>();
     
     public TrieNode() {
-    	init_TrieNode(null, null);
+    	init_TrieNode(null, null, null);
     }
 
     public TrieNode(String[] _keys) {
-    	init_TrieNode(_keys, null);
+    	init_TrieNode(_keys, null, null);
     }
     
-    public TrieNode(String[] _keys, boolean _isWord) {
-    	init_TrieNode(_keys, _isWord);
+    public TrieNode(String[] _keys, String _surfaceForm) {
+    	init_TrieNode(_keys, _surfaceForm, null);
     }
 
-    private void init_TrieNode(String[] _keys, Boolean _isWord) {
+    public TrieNode(String[] _keys, String _surfaceForm, boolean _isTerminal) {
+    	init_TrieNode(_keys, _surfaceForm, _isTerminal);
+    }
+
+    private void init_TrieNode(String[] _keys, String _surfaceForm, 
+    		Boolean _isTerminal) {
         if (_keys != null) {
         	this.keys = _keys;
         }
-        if (_isWord != null) {
-        	this.isWord = _isWord;
+        if (_surfaceForm != null) {
+        	this.addSurfaceForm(_surfaceForm);
+        }
+        if (_isTerminal != null) {
+        	this.surfaceForm = _surfaceForm;
         }
     }
     
+    @JsonIgnore
+    public boolean isTerminal() {
+    	return surfaceForm != null;
+    }
+    
+    public void setTerminalSurfaceForm(String _form) {
+    	this.surfaceForm = _form;
+    }
+    
+    public String getTerminalSurfaceForm() {
+    	return this.surfaceForm;
+    }
     
     public String key() {
     	return keys[keys.length-1];
@@ -51,7 +79,7 @@ public class TrieNode {
 		return children;
 	}
 	
-	public TrieNode[] getChildrenNodes() {
+	public TrieNode[] childrenNodes() {
 		Collection<TrieNode> childrenNodes = (Collection<TrieNode>) children.values();
 		return childrenNodes.toArray(new TrieNode[] {});
 	}
@@ -69,21 +97,23 @@ public class TrieNode {
     }
     
     public boolean hasTerminalNode() {
-    	return this.hasChild("\\");
-    }
-    public TrieNode getChildTerminalNode() {
-    	return this.getChildren().get("\\");
+    	return this.hasChild("$") || this.hasChild("\\");
     }
     
-    public String getSurfaceForm() {
-    	return surfaceForm;
+    public TrieNode childTerminalNode() {
+    	TrieNode terminal = this.getChildren().get("\\");
+    	if (terminal == null) {
+    		terminal = this.getChildren().get("$");
+    	}
+    	
+    	return terminal;
     }
-    
+        
     public HashMap<String,Long> getSurfaceForms() {
     	return surfaceForms;
     }
     
-    public Object[][] getOrderedSurfaceForms() {
+    public Object[][] orderedSurfaceForms() {
     	ArrayList<Object> listObjects = new ArrayList<Object>();
     	for (String key : this.surfaceForms.keySet()) {
     		listObjects.add(new Object[] {key,this.surfaceForms.get(key)});
@@ -96,7 +126,7 @@ public class TrieNode {
     }
     
     public void addSurfaceForm(String form) {
-    	this.surfaceForm = form;
+//    	this.surfaceForm = form;
     	if (this.surfaceForms.containsKey(form)) {
     		this.surfaceForms.put(form, new Long(this.surfaceForms.get(form).longValue()+1));
     	} else {
@@ -109,16 +139,8 @@ public class TrieNode {
     }*/
 
     
-    public String getKeysAsString() {
-        return String.join(" ",this.keys);
-    }
-
-    public boolean isWord() {
-        return isWord;
-    }
-
-    public void setIsWord(boolean word) {
-        isWord = word;
+    public String keysAsString() {
+        return String.join(" ", this.keys);
     }
     
     public long getFrequency() {
@@ -132,19 +154,11 @@ public class TrieNode {
 	@Override
     public String toString() {
 		String toS = "[";
-		if (isWord) {
-			toS += "TrieNode:";			
-		} else {
-			toS += "TrieTerminalNode:";
-		}
 		toS += 
-			"\n"+
-        	"    segments = "+this.getKeysAsString()+"\n"+
-        	"    frequency = "+this.frequency+"\n"+
-        	"    isWord = "+this.isWord+"\n";
-        if (isWord) {
-        	toS += "    surfaceForm = "+this.surfaceForm+"\n"; 
-        }
+			"TrieNode:\n"+
+		    "    segments = "+this.keysAsString()+"\n"+
+			"    surfaceForm = "+surfaceForm+"\n"+
+        	"    frequency = "+this.frequency+"\n";
         toS += "    ]";
         
         return toS;
@@ -192,5 +206,4 @@ public class TrieNode {
 		ensureStatIsDefined(statName);
 		stats.put(statName, val);
 	}
-
 }

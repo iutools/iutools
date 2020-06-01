@@ -165,10 +165,10 @@ public class TrieNodeTest {
 		TrieNode helNode = charTrie.getNode("hel".split(""));
 		String gotString = helNode.toString();
 		String expString = 
-			"[TrieTerminalNode:\n" + 
+			"[TrieNode:\n" + 
 			"    segments = h e l\n" + 
+			"    surfaceForm = null\n" +
 			"    frequency = 6\n" + 
-			"    isWord = false\n" + 
 			"    ]";
 		AssertString.assertStringEquals(
 			"Stringified node was not as expected for 'hel'", 

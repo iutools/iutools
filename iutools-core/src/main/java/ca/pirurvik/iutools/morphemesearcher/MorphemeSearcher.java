@@ -20,10 +20,12 @@ import ca.inuktitutcomputing.morph.MorphInukException;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzerException;
 import ca.nrc.datastructure.trie.Trie_InMemory;
+import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.json.PrettyPrinter;
 import ca.pirurvik.iutools.corpus.CompiledCorpus;
 import ca.pirurvik.iutools.corpus.CompiledCorpus.WordWithMorpheme;
+import ca.pirurvik.iutools.corpus.CompiledCorpusException;
 
 public class MorphemeSearcher {
 	
@@ -186,8 +188,13 @@ public class MorphemeSearcher {
 				return 0;
 	   }};	
 	   
-	private HashMap<String,List<WordWithMorpheme>> getMostFrequentWordsWithMorpheme(String morpheme) {
-		List<WordWithMorpheme> wordsWithMorpheme = this.corpus.getWordsContainingMorpheme(morpheme);
+	private HashMap<String,List<WordWithMorpheme>> getMostFrequentWordsWithMorpheme(String morpheme) throws MorphemeSearcherException {
+		List<WordWithMorpheme> wordsWithMorpheme;
+		try {
+			wordsWithMorpheme = this.corpus.getWordsContainingMorpheme(morpheme);
+		} catch (CompiledCorpusException e) {
+			throw new MorphemeSearcherException(e);
+		}
 		HashMap<String,List<WordWithMorpheme>> morphid2WordsFreqs = new HashMap<String,List<WordWithMorpheme>>();
 		for (int iw=0; iw<wordsWithMorpheme.size(); iw++) {
 			WordWithMorpheme wordAndMorphid = wordsWithMorpheme.get(iw);
@@ -240,33 +247,27 @@ public class MorphemeSearcher {
 	}
 
 	private Long wordFreqInCorpus(String word, boolean allowAnalysisWithAdditionalFinalConsonant) throws MorphemeSearcherException {
-		long nbOccurrencesOfWord = this.corpus.getNbOccurrencesOfWord(word);
+		long nbOccurrencesOfWord;
+		try {
+			nbOccurrencesOfWord = this.corpus.getNbOccurrencesOfWord(word);
+		} catch (CompiledCorpusException e) {
+			throw new MorphemeSearcherException(e);
+		}
 		return nbOccurrencesOfWord;
 	}
 
-//	private Long wordFreqInCorpus(String word, boolean allowAnalysisWithAdditionalFinalConsonant) throws MorphemeSearcherException {
-//		MorphologicalAnalyzer analyzer;
-//		long nbOccurrencesOfWord = 0;
-//		try {
-//			analyzer = new MorphologicalAnalyzer();
-//			Decomposition[] decompositions = analyzer.decomposeWord(word,allowAnalysisWithAdditionalFinalConsonant);
-//			for (int idec=0; idec<decompositions.length; idec++) {
-//				long nwords = numberOfWordsInCorpusWithSuiteOfMorphemes(decompositions[idec].toString());
-//				nbOccurrencesOfWord += nwords;
-//			}
-//			// TODO: additionner la fréq du noeud terminal pour chaque décomposition = fréquence du mot
-//		} catch (LinguisticDataException | TimeoutException | MorphInukException e) {
-//			throw new MorphemeSearcherException(e);
-//		}
-//		return nbOccurrencesOfWord;
-//	}
-
-	public long numberOfWordsInCorpusWithSuiteOfMorphemes(String decompositionExpression) {
+	public long numberOfWordsInCorpusWithSuiteOfMorphemes(
+			String decompositionExpression) throws MorphemeSearcherException {
     	DecompositionExpression expr = new DecompositionExpression(decompositionExpression);
     	String exprWithoutSurfaceForms = expr.toStringWithoutSurfaceForms();
     	String[] sequenceOfMorphemes = exprWithoutSurfaceForms.split(" ");
     	Trie_InMemory trie = corpus.getTrie();
-    	TrieNode[] terminals = trie.getAllTerminals(sequenceOfMorphemes);
+    	TrieNode[] terminals;
+		try {
+			terminals = trie.getAllTerminals(sequenceOfMorphemes);
+		} catch (TrieException e) {
+			throw new MorphemeSearcherException(e);
+		}
     	long nbWord = 0;
     	for (int iterm=0; iterm<terminals.length; iterm++) {
     		nbWord += terminals[iterm].getFrequency();

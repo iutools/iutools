@@ -21,6 +21,7 @@ import org.apache.log4j.Logger;
 import com.google.gson.Gson;
 
 import ca.nrc.datastructure.trie.StringSegmenter;
+import ca.nrc.datastructure.trie.TrieException;
 import ca.pirurvik.iutools.QueryExpansion;
 import ca.pirurvik.iutools.corpus.CompiledCorpus;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
@@ -268,11 +269,17 @@ public class QueryExpanderEvaluator {
         }
 	}
 
-	private long freqDansCorpus(String reformulation) {
+	private long freqDansCorpus(String reformulation) 
+			throws QueryExpanderException {
 		String[] keys = compiledCorpus.getSegmentsCache().get(reformulation);
 		if (keys==null)
 			return 0;
-		long freqDansCorpus = compiledCorpus.trie.getFrequency(keys);
+		long freqDansCorpus;
+		try {
+			freqDansCorpus = compiledCorpus.trie.getFrequency(keys);
+		} catch (TrieException e) {
+			throw new QueryExpanderException(e);
+		}
 		return freqDansCorpus;
 	}
 	

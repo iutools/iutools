@@ -68,7 +68,8 @@ public class CompiledCorpusRegistryTest {
 	//////////////////////////////
 
 	@Test
-	public void test__getCorpus__No_argument__Returns_default_corpus() throws CompiledCorpusRegistryException {
+	public void test__getCorpus__No_argument__Returns_default_corpus() 
+			throws Exception {
 		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpus();
 		Trie_InMemory trie = corpus.getTrie();
 		TrieNode[] ammaTerminals = trie.getAllTerminals(new String[] {"{amma/1c}"});
@@ -98,7 +99,8 @@ public class CompiledCorpusRegistryTest {
 //	}
 	
 	@Test
-	public void test__getCorpus__get_from_corpus_name_statically_initialized() throws CompiledCorpusRegistryException {
+	public void test__getCorpus__get_from_corpus_name_statically_initialized() 
+			throws Exception {
 		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpus("Hansard1999-2002");
 		Trie_InMemory trie = corpus.getTrie();
 		TrieNode[] ammaTerminals = trie.getAllTerminals(new String[] {"{amma/1c}"});

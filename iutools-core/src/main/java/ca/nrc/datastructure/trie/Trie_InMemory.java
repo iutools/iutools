@@ -24,18 +24,6 @@ public class Trie_InMemory extends Trie {
     public Trie_InMemory() {
 	}
     
-    public TrieNode newNode(String[] keys, Boolean isWord) {
-    	return new TrieNode(keys, isWord);
-    }
-    
-    public TrieNode newNode() {
-    	return newNode(null, null);
-    }
-    
-    public TrieNode newNode(String[] keys) {
-    	return newNode(keys, null);
-    }
-    
     public static Trie_InMemory fromJSON(String filePath) throws TrieException {
 		FileReader jsonFileReader;
 		try {
@@ -94,7 +82,8 @@ public class Trie_InMemory extends Trie {
         }
         // last segment (\)  = terminal node
         trieNode.addSurfaceForm(word); //***
-        trieNode.isWord = true; //***
+        trieNode.surfaceForm = word; //***
+        trieNode.isWord = true;
         return trieNode; //***		
 	}
 
@@ -106,8 +95,9 @@ public class Trie_InMemory extends Trie {
             if (children.containsKey(key)) {
                 trieNode = (TrieNode) children.get(key);
                 children = trieNode.getChildren();
-            } else 
+            } else {
             	return null;
+            }
         }
         return trieNode;
 	}
@@ -115,10 +105,10 @@ public class Trie_InMemory extends Trie {
 	@Override
 	protected void collectAllTerminals(TrieNode node, 
 			List<TrieNode> collected) {
-		if (node.isWord()) {
-			collected.add(node);
+		if (node.isTerminal()) {
+			collected.add((TrieNode)node);
 		} else {
-			for (TrieNode aChild: node.getChildrenNodes()) {
+			for (TrieNode aChild: node.childrenNodes()) {
 				collectAllTerminals(aChild, collected);
 			}
 		}

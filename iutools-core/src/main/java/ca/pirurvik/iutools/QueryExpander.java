@@ -131,7 +131,7 @@ public class QueryExpander {
 				TrieNode node = this.compiledCorpus.trie.getNode(segmentsBack1);
 				if (node==null)
 					return __getExpansions(mostFrequentTerminalsForReformulations, segmentsBack1, word);
-				logger.debug("node: "+node.getKeysAsString());
+				logger.debug("node: "+node.keysAsString());
 				ArrayList<QueryExpansion> mostFrequentTerminalsForNode = getNMostFrequentForms(node,
 					this.numberOfReformulations - mostFrequentTerminalsForReformulations.size(),
 					word, mostFrequentTerminalsForReformulations);
@@ -156,7 +156,7 @@ public class QueryExpander {
 			HashMap<String,Long> surfaceForms = terminal.getSurfaceForms();
 			if (surfaceForms.size()==0) {
 				surfaceForms = new HashMap<String,Long>();
-				surfaceForms.put(terminal.getSurfaceForm(), new Long(terminal.getFrequency()));
+				surfaceForms.put(terminal.getTerminalSurfaceForm(), new Long(terminal.getFrequency()));
 			}
 			for (String surfaceForm : surfaceForms.keySet().toArray(new String[] {}))
 				if ( !listOfExclusions.contains(surfaceForm))

@@ -543,7 +543,7 @@ public class CompiledCorpus extends CompiledCorpus_Base
 					for (int ifr=0; ifr<freq; ifr++)
 						trie.add(segments, word);
 				}
-				toConsole(result.getKeysAsString()+"\n");
+				toConsole(result.keysAsString()+"\n");
 				removeFromListOfFailedSegmentation(word);
 			} else {
 				toConsole("XXX\n");
@@ -694,12 +694,20 @@ public class CompiledCorpus extends CompiledCorpus_Base
 		return this.trie.getMostFrequentTerminal(node);
 	}
 
-	public TrieNode getMostFrequentTerminal(String[] segments) {
-		return this.trie.getMostFrequentTerminal(segments);
+	public TrieNode getMostFrequentTerminal(String[] segments) throws CompiledCorpusException {		
+		try {
+			return this.trie.getMostFrequentTerminal(segments);
+		} catch (TrieException e) {
+			throw new CompiledCorpusException(e);
+		}
 	}
 
-	public String[] getMostFrequentSequenceForRoot(String string) {
-		return this.trie.getMostFrequentSequenceForRoot(string);
+	public String[] getMostFrequentSequenceForRoot(String string) throws CompiledCorpusException {
+		try {
+			return this.trie.getMostFrequentSequenceForRoot(string);
+		} catch (TrieException e) {
+			throw new CompiledCorpusException(e);
+		}
 	}
 	
 	
@@ -743,7 +751,7 @@ public class CompiledCorpus extends CompiledCorpus_Base
 	public void setSegmentsCache(HashMap<String,String[]> segmentsCache) {
 		this.segmentsCache = segmentsCache;
 	}
-	public long getNbOccurrencesOfWord(String word) {
+	public long getNbOccurrencesOfWord(String word) throws CompiledCorpusException {
 		Logger logger = Logger.getLogger("CompiledCorpus.getNbOccurrencesOfWord");
 		logger.debug("word: "+word);
 		long nbOccurrences = 0;
@@ -753,14 +761,19 @@ public class CompiledCorpus extends CompiledCorpus_Base
 			String segmentsStr = matcher.group(1);
 			String segmentsStrWithSpaces = segmentsStr.replace("}{", "} {");
 			String[] segments = segmentsStrWithSpaces.split(" ");
-			TrieNode[] terminals = this.trie.getAllTerminals(segments);
-			nbOccurrences = terminals[0].getFrequency();
+			TrieNode[] terminals;
+			try {
+				terminals = this.trie.getAllTerminals(segments);
+				nbOccurrences = terminals[0].getFrequency();
+			} catch (TrieException e) {
+				throw new CompiledCorpusException(e);
 			}
+		}
 	
 		return nbOccurrences;
 	}
 	
-	public List<WordWithMorpheme> getWordsContainingMorpheme(String morpheme) {
+	public List<WordWithMorpheme> getWordsContainingMorpheme(String morpheme) throws CompiledCorpusException {
 		List<WordWithMorpheme> words = new ArrayList<WordWithMorpheme>();
 		Pattern pattern = Pattern.compile(",([^:,]+?)"+":([^:]*?\\{("+morpheme+"/.+?)\\}.*?),");
 		Matcher matcher = pattern.matcher(wordSegmentations);

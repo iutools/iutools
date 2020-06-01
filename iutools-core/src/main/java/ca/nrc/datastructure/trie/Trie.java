@@ -17,7 +17,7 @@ public abstract class Trie {
 	
     protected TrieNode root = new TrieNode();
 	
-	public abstract TrieNode getNode(String[] keys);
+	public abstract TrieNode getNode(String[] keys) throws TrieException;
 	
 	public abstract TrieNode add(String[] partsSequence, String word) 
 		throws TrieException;
@@ -33,12 +33,16 @@ public abstract class Trie {
     	return getAllTerminals().length;
     }
     
+	public TrieNode getNode(List<String> keys) throws TrieException {
+		return getNode(keys.toArray(new String[keys.size()]));
+	}
+
 	public TrieNode[] getAllTerminals() {
 		TrieNode[] allTerminals = getAllTerminals(root);
 		return allTerminals;
 	}
 	
-	public TrieNode[] getAllTerminals(String[] segments) {
+	public TrieNode[] getAllTerminals(String[] segments) throws TrieException {
 		TrieNode node = this.getNode(segments);
 		TrieNode[] allTerminals = null;
 		if (node==null)
@@ -81,7 +85,7 @@ public abstract class Trie {
 		return mostFrequent;
 	}
 	
-	public TrieNode getMostFrequentTerminal(String[] segments) {
+	public TrieNode getMostFrequentTerminal(String[] segments) throws TrieException {
 		TrieNode node = getNode(segments);
 		return getMostFrequentTerminal(node);
 	}
@@ -90,12 +94,12 @@ public abstract class Trie {
 		return getMostFrequentTerminals(n, root, null);
 	}	
 	
-	public TrieNode[] getMostFrequentTerminals(int n, String[] segments) {
+	public TrieNode[] getMostFrequentTerminals(int n, String[] segments) throws TrieException {
 		TrieNode node = getNode(segments);
 		return getMostFrequentTerminals(n, node, null);
 	}
 	
-	public TrieNode[] getMostFrequentTerminals(String[] segments) {
+	public TrieNode[] getMostFrequentTerminals(String[] segments) throws TrieException {
 		TrieNode node = getNode(segments);
 		return getMostFrequentTerminals(null, node, null);
 	}
@@ -135,7 +139,7 @@ public abstract class Trie {
 		return mostFrequentTerminals;
 	}	
 	
-	protected TrieNode getMostFrequentTerminalFromMostFrequentSequenceForRoot(String rootSegment) {
+	protected TrieNode getMostFrequentTerminalFromMostFrequentSequenceForRoot(String rootSegment) throws TrieException {
 		String[] mostFrequentSequence = getMostFrequentSequenceForRoot(rootSegment);
 		TrieNode node = this.getNode(mostFrequentSequence);
 		TrieNode[] terminals = getAllTerminals(node);
@@ -150,18 +154,18 @@ public abstract class Trie {
 	}
 	
     
-	protected TrieNode getParentNode(TrieNode node) {
+	protected TrieNode getParentNode(TrieNode node) throws TrieException {
 		return this.getParentNode(node.keys);
 	}    
 	
-	protected TrieNode getParentNode(String[] keys) {
+	protected TrieNode getParentNode(String[] keys) throws TrieException {
 		if (keys.length==0)
 			return null;
 		else
 			return this.getNode(Arrays.copyOfRange(keys, 0, keys.length-1));
 	}
 	
-	public long getFrequency(String[] segments) {
+	public long getFrequency(String[] segments) throws TrieException {
 		TrieNode node = this.getNode(segments);
 		if (node != null)
 			return node.getFrequency();
@@ -179,8 +183,9 @@ public abstract class Trie {
 	 * 
 	 * @param String rootKey
 	 * @return String[] space-separated keys of the most frequent sequence of morphemes following rootSegment
+	 * @throws TrieException 
 	 */
-	public String[] getMostFrequentSequenceForRoot(String rootKey) {
+	public String[] getMostFrequentSequenceForRoot(String rootKey) throws TrieException {
 		Logger logger = Logger.getLogger("CompiledCorpus.getMostFrequentSequenceToTerminals");
 		HashMap<String, Long> freqs = new HashMap<String, Long>();
 		TrieNode rootSegmentNode = this.getNode(new String[] {rootKey});
@@ -214,11 +219,11 @@ public abstract class Trie {
 		return (rootKey+" "+seq).split(" ");
 	}    
     
-	private HashMap<String, Long> computeFreqs(String[] terminalNodeKeys, HashMap<String, Long> freqs, String rootSegment) {
+	private HashMap<String, Long> computeFreqs(String[] terminalNodeKeys, HashMap<String, Long> freqs, String rootSegment) throws TrieException {
 		return _computeFreqs("",terminalNodeKeys,freqs,rootSegment);
 	}
 
-	private HashMap<String, Long> _computeFreqs(String cumulativeKeys, String[] terminalNodeKeys, HashMap<String, Long> freqs, String rootSegment) {
+	private HashMap<String, Long> _computeFreqs(String cumulativeKeys, String[] terminalNodeKeys, HashMap<String, Long> freqs, String rootSegment) throws TrieException {
 		Logger logger = Logger.getLogger("CompiledCorpus._computeFreqs");
 		if (terminalNodeKeys.length==0)
 			return freqs;
