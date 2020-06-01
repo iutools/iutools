@@ -4,10 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import org.junit.Ignore;
 
-public class Trie_InFileSystem extends Trie_Base {
+public class Trie_InFileSystem extends Trie {
 	
 	File rootDir = null;
 
@@ -166,5 +167,11 @@ public class Trie_InFileSystem extends Trie_Base {
 	public long getFrequency(String[] segments) {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	@Override
+	protected void collectAllTerminals(TrieNode node, List<TrieNode> collected) {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -18,24 +18,10 @@ import com.google.gson.Gson;
 
 import ca.nrc.json.PrettyPrinter;
 
-// TODO: Maybe the polymorphism should be in the TrieNode class, NOT in the 
-//   Trie class?
-//
-// In other words, make Trie be a generic class...
-//
-//   public class Trie<TrieNode> {
-//
-// and TrieNode will be an abstract class with methods that allow you to 
-// get the children, parents etc... from an in memory versus File System
-//
 
-
-public class Trie_InMemory extends Trie_Base {
-
-    protected TrieNode root;
+public class Trie_InMemory extends Trie {
     
     public Trie_InMemory() {
-    	root = new TrieNode();
 	}
     
     public TrieNode newNode(String[] keys, Boolean isWord) {
@@ -50,12 +36,6 @@ public class Trie_InMemory extends Trie_Base {
     	return newNode(keys, null);
     }
     
-    public String toJSON() {
-		Gson gson = new Gson();
-		String json = gson.toJson(this);
-		return json;
-    }
-    
     public static Trie_InMemory fromJSON(String filePath) throws TrieException {
 		FileReader jsonFileReader;
 		try {
@@ -68,24 +48,7 @@ public class Trie_InMemory extends Trie_Base {
 	
 		return trie;
     }
-    
-	public TrieNode getRoot() {
-    	return this.root;
-    }
-    
-    public long getSize() {
-    	return getAllTerminals().length;
-    }
-    
-    public long getNbOccurrences() {
-    	TrieNode[] terminals = getAllTerminals();
-    	long nbOccurrences = 0;
-    	for (TrieNode terminal : terminals) {
-    		nbOccurrences += terminal.getFrequency();
-    	}
-    	return nbOccurrences;
-    }
-    
+        
     /**
      * Add an entry to the Trie.
      * 
@@ -149,52 +112,8 @@ public class Trie_InMemory extends Trie_Base {
         return trieNode;
 	}
 	
-	protected TrieNode getParentNode(TrieNode node) {
-		return this.getParentNode(node.keys);
-	}
-	
-	protected TrieNode getParentNode(String[] keys) {
-		if (keys.length==0)
-			return null;
-		else
-			return this.getNode(Arrays.copyOfRange(keys, 0, keys.length-1));
-	}
-	
-	public long getFrequency(String[] segments) {
-		TrieNode node = this.getNode(segments);
-		if (node != null)
-			return node.getFrequency();
-		else
-			return 0;
-	}
-	
-	// --- ALL TERMINALS
-	public TrieNode[] getAllTerminals() {
-		TrieNode[] allTerminals = getAllTerminals(root);
-		return allTerminals;
-	}
-	
-	public TrieNode[] getAllTerminals(TrieNode node) {
-		List<TrieNode> allTerminalsLst = 
-			new ArrayList<TrieNode>();
-			
-		collectAllTerminals(node, allTerminalsLst);
-		
-		return allTerminalsLst.toArray(new TrieNode[allTerminalsLst.size()]);
-	}
-
-	public TrieNode[] getAllTerminals(String[] segments) {
-		TrieNode node = this.getNode(segments);
-		TrieNode[] allTerminals = null;
-		if (node==null)
-			allTerminals = new TrieNode[0];
-		else
-			allTerminals = getAllTerminals(node);
-		
-		return allTerminals;
-	}
-
-	private void collectAllTerminals(TrieNode node, 
+	@Override
+	protected void collectAllTerminals(TrieNode node, 
 			List<TrieNode> collected) {
 		if (node.isWord()) {
 			collected.add(node);
@@ -204,114 +123,7 @@ public class Trie_InMemory extends Trie_Base {
 			}
 		}
 	}
-	
-	public TrieNode getMostFrequentTerminal() {
-		return getMostFrequentTerminal(root);
-	}
-
-	public TrieNode getMostFrequentTerminal(TrieNode node) {
-		TrieNode mostFrequent = null;
-		TrieNode[] terminals = getMostFrequentTerminals(1, node, null);
-		if (terminals != null && terminals.length > 0) {
-			mostFrequent = terminals[0];
-		}
-		return mostFrequent;
-	}
-
-	public TrieNode getMostFrequentTerminal(String[] segments) {
-		TrieNode node = getNode(segments);
-		return getMostFrequentTerminal(node);
-	}
-	
-	public TrieNode[] getMostFrequentTerminals(int n) {
-		return getMostFrequentTerminals(n, root, null);
-	}
-
-	
-	public TrieNode[] getMostFrequentTerminals(int n, String[] segments) {
-		TrieNode node = getNode(segments);
-		return getMostFrequentTerminals(n, node, null);
-	}
-	
-	public TrieNode[] getMostFrequentTerminals(String[] segments) {
-		TrieNode node = getNode(segments);
-		return getMostFrequentTerminals(null, node, null);
-	}
-
-	public TrieNode[] getMostFrequentTerminals() {
-		return getMostFrequentTerminals(null, root, null);
-	}
-	
-	public TrieNode[] getMostFrequentTerminals(
-			Integer n, TrieNode node) {
-		return getMostFrequentTerminals(n, node, null);
-	}
-
-	public TrieNode[] getMostFrequentTerminals(
-			Integer n, TrieNode node, 
-			TrieNode[] exclusions) {
-		if (exclusions == null) {
-			exclusions = new TrieNode[0];
-		}
-		TrieNode[] terminals = getAllTerminals(node);
-		for (TrieNode nodeToExclude : exclusions)
-			terminals = (TrieNode[]) ArrayUtils.removeElement(terminals, nodeToExclude);
-	    Arrays.sort(terminals, new Comparator<TrieNode>() {
-	        @Override
-	        public int compare(TrieNode o1, TrieNode o2) {
-	        	if (o1.getFrequency() == o2.getFrequency())
-	        		return 0;
-	            return o1.getFrequency() < o2.getFrequency()? 1 : -1;
-	        }
-	    });
-	    TrieNode[] mostFrequentTerminals;
-	    if (n > terminals.length) {
-	    	mostFrequentTerminals = Arrays.copyOfRange(terminals, 0, terminals.length);
-	    } else {
-	    	mostFrequentTerminals = Arrays.copyOfRange(terminals, 0, n);
-	    }
-		return mostFrequentTerminals;
-	}
-
-	/**
-	 * 
-	 * @param String rootKey
-	 * @return String[] space-separated keys of the most frequent sequence of morphemes following rootSegment
-	 */
-	public String[] getMostFrequentSequenceForRoot(String rootKey) {
-		Logger logger = Logger.getLogger("CompiledCorpus.getMostFrequentSequenceToTerminals");
-		HashMap<String, Long> freqs = new HashMap<String, Long>();
-		TrieNode rootSegmentNode = this.getNode(new String[] {rootKey});
-		TrieNode[] terminals = getAllTerminals(rootSegmentNode);
-		logger.debug("all terminals: "+terminals.length);
-		for (TrieNode terminalNode : terminals) {
-			//logger.debug("terminalNode: "+PrettyPrinter.print(terminalNode));
-			String[] terminalNodeKeys = Arrays.copyOfRange(terminalNode.keys, 1, terminalNode.keys.length);
-			freqs = computeFreqs(terminalNodeKeys,freqs,rootKey);
-		}
-		logger.debug("freqs: "+PrettyPrinter.print(freqs));
-		long maxFreq = 0;
-		int minLength = 1000;
-		String seq = null;
-		String[] freqsKeys = freqs.keySet().toArray(new String[] {});
-		for (int i=0; i<freqsKeys.length; i++) {
-			String freqKey = freqsKeys[i];
-			int nbKeys = freqKey.split(" ").length;
-			if (freqs.get(freqKey)==maxFreq) {
-				if (nbKeys<minLength) {
-					maxFreq = freqs.get(freqKey);
-					minLength = nbKeys;
-					seq = freqKey;
-				} 
-			} else if (freqs.get(freqKey) > maxFreq) {
-				maxFreq = freqs.get(freqKey);
-				minLength = nbKeys;
-				seq = freqKey;
-			}
-		}
-		return (rootKey+" "+seq).split(" ");
-	}
-	
+		
 	private HashMap<String, Long> computeFreqs(String[] terminalNodeKeys, HashMap<String, Long> freqs, String rootSegment) {
 		return _computeFreqs("",terminalNodeKeys,freqs,rootSegment);
 	}
@@ -337,24 +149,6 @@ public class Trie_InMemory extends Trie_Base {
 		return freqs;
 	}
 
-	protected TrieNode getMostFrequentTerminalFromMostFrequentSequenceForRoot(String rootSegment) {
-		String[] mostFrequentSequence = getMostFrequentSequenceForRoot(rootSegment);
-		TrieNode node = this.getNode(mostFrequentSequence);
-		TrieNode[] terminals = getAllTerminals(node);
-		long max = 0;
-		TrieNode mostFrequentTerminal = null;
-		for (TrieNode terminal : terminals)
-			if (terminal.getFrequency() > max) {
-				max = terminal.getFrequency();
-				mostFrequentTerminal = terminal;
-			}
-		return mostFrequentTerminal;
-	}
-
-
-	
-	// --------------------- PRIVATE------------------------------
-
     private TrieNode getChild(TrieNode trieNode, String segment) {
         return (TrieNode) trieNode.getChildren().get(segment);
     }
@@ -379,5 +173,4 @@ class NodeFrequencyComparator implements Comparator<TrieNode> {
 		else
 			return o1Freq<o2Freq? 1:-1;
 	}
-	
 }

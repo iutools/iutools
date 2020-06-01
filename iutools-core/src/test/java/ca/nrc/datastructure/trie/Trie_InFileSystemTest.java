@@ -14,7 +14,7 @@ public abstract class Trie_InFileSystemTest extends TrieTest {
 
 
 	@Override
-	public Trie_Base makeTrieToTest() throws Exception {
+	public Trie makeTrieToTest() throws Exception {
 		Path rootDir = Files.createTempDirectory("trie");
 		Trie_InFileSystem trie = new Trie_InFileSystem(rootDir.toFile());
 		return trie;
