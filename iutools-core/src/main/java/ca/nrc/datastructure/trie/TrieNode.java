@@ -4,29 +4,66 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class TrieNode {
+	
+	// TODO: Rename to keySequence???
+	//
     public String[] keys = new String[] {};
     
-    // If not null, it means this node is a "terminal" node, i.e.
-    // it corresponds to an complete expression that cannot have 
-    // children.
+    // TODO: I *THINK* this corresponds to the most frequent surface form
+    //   for the node. That's the only possible explanation nodes (even 
+    //   terminal ones) cannot be garanteed to have just one surface form. 
+    //
+    //   If that is indeed the correct meaning of this attribute, then it realy 
+    //   should be replaced by a method mostFrequentSurfaceForm().
+    //   This method would look in the surfaceForms attribute and find the most 
+    //   frequent one. The value could be cached so we don't need to recompute 
+    //   everytime (unles a call to addSurfaceForm() has been made, in which 
+    //   case the cached value should be set to null to indicate that it needs 
+    //   to be recomputed. 
     //
     public String surfaceForm = null;
     
-    // TODO: This attribute it redundant with (surfaceForm != null)
-    //   getRid of it once we have converted the Trie from an InMemory 
-    //   version to a InFileSystem version
+    // TODO: Eventually get rid of this and replace by method 
+    //   isTerminal(), which will check if the last entry in 
+    //   keys is equal to either $ or \
     //
     public boolean isWord = false;
     
     protected long frequency = 0;
+    
+    
+    // TODO: Eventually, remplace to 
+    //
+    //      Set<String> extensions
+    //
+    //   Each element in extensions is a key that can be used to 
+    //   extend the 'keys' sequence.
+    //
+    //   This will avoid creating references between nodes 
+    //
     protected Map<String,TrieNode> children = new HashMap<String,TrieNode>();
+    
     protected TrieNode mostFrequentTerminal;
     protected Map<String,Object> stats = new HashMap<String,Object>();
+    
+    protected String cachedMostFrequentSurfaceForm = null;
+    
+    // TODO: The name of this attribute is confusing. It's not 
+    //   the surface forms, but rather their frequencies.
+    //   
+    //   Eventually, rename it surfaceForms --> surfaceFormFreqs and
+    //   implement a method surfaceForms() that will return its keys.
+    //
+    //   Can't do that until we get rid of the InMemory trie because 
+    //   it stores the nodes in a large JSON file and the JSON of nodes
+    //   uses the name .surfaceForms.
     protected HashMap<String,Long> surfaceForms = new HashMap<String,Long>();
     
     public TrieNode() {
@@ -49,10 +86,19 @@ public class TrieNode {
     		Boolean _isTerminal) {
         if (_keys != null) {
         	this.keys = _keys;
+        	if (_keys.length > 0) {
+            	String lastKey = _keys[_keys.length-1];
+            	if (lastKey.equals("\\") || lastKey.equals("$")) {
+            		this.isWord = true;
+            	}
+        		
+        	}
         }
+        
         if (_surfaceForm != null) {
         	this.addSurfaceForm(_surfaceForm);
         }
+        
         if (_isTerminal != null) {
         	this.surfaceForm = _surfaceForm;
         }
@@ -60,11 +106,28 @@ public class TrieNode {
     
     @JsonIgnore
     public boolean isTerminal() {
-    	return surfaceForm != null;
+    	boolean answer = false;
+    	String last = lastKey();
+    	if (last!= null) {
+    		if (last.equals("$") || last.equals("\\")) {
+    			answer = true;
+    		}
+    	}
+    	
+    	return answer;
     }
     
     public void setTerminalSurfaceForm(String _form) {
     	this.surfaceForm = _form;
+    }    
+    
+    protected String lastKey() {
+    	String last = null;
+    	if (keys != null && keys.length > 0) {
+    		last = keys[keys.length-1];
+    	}
+    	
+    	return last;
     }
     
     public String getTerminalSurfaceForm() {
@@ -126,7 +189,9 @@ public class TrieNode {
     }
     
     public void addSurfaceForm(String form) {
-//    	this.surfaceForm = form;
+    	this.surfaceForm = form;
+    	cachedMostFrequentSurfaceForm = null;
+    	
     	if (this.surfaceForms.containsKey(form)) {
     		this.surfaceForms.put(form, new Long(this.surfaceForms.get(form).longValue()+1));
     	} else {
@@ -205,5 +270,9 @@ public class TrieNode {
 	public void setStat(String statName, Object val) throws TrieNodeException {
 		ensureStatIsDefined(statName);
 		stats.put(statName, val);
+	}
+
+	public Set<String> childrenSegments() {
+		return children.keySet();
 	}
 }

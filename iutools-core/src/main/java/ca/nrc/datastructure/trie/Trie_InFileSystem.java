@@ -7,6 +7,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,17 +21,9 @@ public class Trie_InFileSystem extends Trie {
 	public Trie_InFileSystem(File _rootDir) {
 		this.rootDir = _rootDir;
 	}
-
 	@Override
-	public long getNbOccurrences() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public long getSize() {
-		// TODO Auto-generated method stub
-		return 0;
+	public TrieNode getRoot() throws TrieException {
+		return getNode(new String[0]);
 	}
 
 	@Override
@@ -57,28 +50,42 @@ public class Trie_InFileSystem extends Trie {
 	
 	@Override
 	public TrieNode add(String[] wordKeys, String word) throws TrieException {
-		
-		TrieNode node = new TrieNode(wordKeys, word, true);
+		String[] extendedKeys = appendTerminalKey(wordKeys);
+		TrieNode node = getNode(extendedKeys);
+		if (node == null) {
+			node = new TrieNode(wordKeys);
+		}
+		node.addSurfaceForm(word);
+		node.frequency++;
 		saveNode(node);
-		incrementAllAncestorFrequencies(wordKeys);
+		updateAncestors(extendedKeys);
 		
 		return node;
 	}
 
-	private void incrementAllAncestorFrequencies(String[] nodeKeys) throws TrieException {
-		List<String> ancestorKeys = new ArrayList<String>();
-		for (String aKey: nodeKeys) {
-			ancestorKeys.add(aKey);
-			incrementNodeFrequency(ancestorKeys);
+	private void updateAncestors(String[] nodeKeys) throws TrieException {
+		updateAncestors(Arrays.asList(nodeKeys));
+	}
+	
+	private void updateAncestors(List<String> nodeSegments) throws TrieException {
+		if (nodeSegments.size() > 0) {
+			List<String> parentSegments = 
+					nodeSegments.subList(0, nodeSegments.size()-1);
+			
+			TrieNode parentNode = getNode(parentSegments);
+			parentNode.frequency++;
+			
+			String childSegment = nodeSegments.get(nodeSegments.size()-1);
+			parentNode.addChild(childSegment, getNode(nodeSegments));
+			
+			saveNode(parentNode);
+			
+			updateAncestors(parentSegments);
+		} else {
+			int x = 1;
 		}
 	}
-
-	private void incrementNodeFrequency(List<String> nodeKeys) throws TrieException {
-		TrieNode node = getNode(nodeKeys);
-		node.frequency++;
-		saveNode(node);		
-	}
-
+		
 	private void saveNode(TrieNode node) throws TrieException {
 		File nodeFile = file4node(node);
 		try {
@@ -90,37 +97,6 @@ public class Trie_InFileSystem extends Trie {
 		
 	}
 
-	private void ensureNodeExists(List<String> ancestorKeys) throws TrieException {
-		File nodeFile = file4node(ancestorKeys);
-		File nodeDir = nodeFile.getParentFile();
-		if (!nodeDir.exists()) {
-			nodeDir.mkdir();
-		}
-		if (!nodeFile.exists()) {
-			try {
-				new ObjectMapper().writeValue(nodeFile, new TrieNode());
-			} catch (IOException e) {
-				throw new TrieException(
-					"Unable to create node file for keys: "+
-					StringUtils.join(ancestorKeys.iterator()), 
-					e);
-			}
-		}
-	}
-	
-	@Override
-	public TrieNode[] getAllTerminals(String[] segments) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public TrieNode getRoot() {
-		TrieNode root = null;
-//		root = getNode(new String[0]);
-		return root;
-	}
-
 	@Override
 	public String toJSON() {
 		// TODO Auto-generated method stub
@@ -128,23 +104,18 @@ public class Trie_InFileSystem extends Trie {
 	}
 	
 	private File file4node(TrieNode node) throws TrieException {
-		String[] keys = null;
-		if (node.isTerminal()) {
-			keys = appendTerminalKey(node.keys);
-		} else {
-			keys = node.keys;
-		}
+		String[] keys = node.keys;
 		return file4node(keys);
 	}
 	
 	private File file4node(String[] keys) throws TrieException {
 		
-		keys = escapeKeys(keys);
+		String[] escapedKeys = escapeKeys(keys);
 		
 		File nodeFile = 
 			new File(rootDir, 
-					 String.join(File.separator, keys)+
-					 File.separator+"data.json");
+					 String.join(File.separator, escapedKeys)+
+					 File.separator+"node.json");
 		
 		if (!nodeFile.exists()) {
 			try {
@@ -165,18 +136,6 @@ public class Trie_InFileSystem extends Trie {
 		return file4node(ancestorKeys.toArray(new String[ancestorKeys.size()]));
 	}
 	
-	@Override
-	public TrieNode[] getAllTerminals() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public TrieNode[] getAllTerminals(TrieNode node) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	@Override
 	public TrieNode getMostFrequentTerminal() {
 		// TODO Auto-generated method stub
@@ -249,12 +208,6 @@ public class Trie_InFileSystem extends Trie {
 		return 0;
 	}
 
-	@Override
-	protected void collectAllTerminals(TrieNode node, List<TrieNode> collected) {
-		// TODO Auto-generated method stub
-		
-	}
-	
 	protected String[] appendTerminalKey(String[] origKeys) throws TrieException {
 		String[] extendedKeys = new String[origKeys.length + 1];
 		for (int ii=0; ii < origKeys.length; ii++) {

@@ -498,7 +498,11 @@ public class CompiledCorpus extends CompiledCorpus_Base
 				}
 				if (wordCounter % saveFrequency == 0) {
 					toConsole("[INFO]     --- saving jsoned compiler ---" + "\n");
-					logger.debug("size of trie: " + trie.getSize());
+					try {
+						logger.debug("size of trie: " + trie.getSize());
+					} catch (TrieException e) {
+						throw new CompiledCorpusException(e);
+					}
 					saveCompilerInDirectory(this.corpusDirectory);
 				}
 			}
@@ -624,10 +628,15 @@ public class CompiledCorpus extends CompiledCorpus_Base
     	return nb;
     }
     
-	public long getNumberOfCompiledOccurrences() {
+	public long getNumberOfCompiledOccurrences() throws CompiledCorpusException {
 		if (this.terminalsSumFreq == null) {
 			long sumFreqs = 0;
-			TrieNode[] terminals = this.trie.getAllTerminals();
+			TrieNode[] terminals;
+			try {
+				terminals = this.trie.getAllTerminals();
+			} catch (TrieException e) {
+				throw new CompiledCorpusException(e);
+			}
 			for (TrieNode terminal : terminals)
 				sumFreqs += terminal.getFrequency();
 			this.terminalsSumFreq = new Long(sumFreqs);
@@ -690,8 +699,12 @@ public class CompiledCorpus extends CompiledCorpus_Base
 		return words;
 	}
 
-	public TrieNode getMostFrequentTerminal(TrieNode node) {
-		return this.trie.getMostFrequentTerminal(node);
+	public TrieNode getMostFrequentTerminal(TrieNode node) throws CompiledCorpusException {
+		try {
+			return this.trie.getMostFrequentTerminal(node);
+		} catch (TrieException e) {
+			throw new CompiledCorpusException(e);
+		}
 	}
 
 	public TrieNode getMostFrequentTerminal(String[] segments) throws CompiledCorpusException {		

@@ -107,23 +107,8 @@ public class Trie_InFileSystemTest extends TrieTest {
 	///////////////////////////////////////////////////////////
 	
 	@Test @Ignore
-	public void test_add__check_terminal_inuktitut() throws Exception {}
-		
-	@Test @Ignore
-	public void test__add_get__IUMorpheme_one_word() throws Exception {}
-	
-	@Test @Ignore
 	public void test__frequenciesOfWords() throws Exception {}
-	
-	@Test @Ignore
-	public void test_getAllTerminals() throws Exception {}
-	
-	@Test @Ignore
-	public void test_getAllTerminals__Case2() throws Exception {}
-	
-	@Test @Ignore
-	public void test_getNbOccurrences() throws Exception {}
-	
+			
 	@Test @Ignore
 	public void test_toJSON__Char() throws Exception {}
 	

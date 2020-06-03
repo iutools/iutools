@@ -15,6 +15,7 @@ import org.junit.Test;
 
 import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
+import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.Trie_InMemory;
 import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.testing.AssertHelpers;
@@ -24,7 +25,7 @@ import ca.pirurvik.iutools.corpus.CompiledCorpusException;
 public class FreqVerbRootsTest {
 
 	@Test
-	public void test_compileFreqs() throws IOException, CompiledCorpusException, StringSegmenterException {
+	public void test_compileFreqs() throws IOException, CompiledCorpusException, StringSegmenterException, TrieException {
 		String[] stringsOfWords = new String[] {
 				"nunami takujuq iglumik siniktuq takujaujuq iijuq"
 				};

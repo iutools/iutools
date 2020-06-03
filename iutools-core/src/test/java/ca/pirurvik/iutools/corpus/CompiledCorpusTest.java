@@ -290,7 +290,8 @@ public class CompiledCorpusTest extends CompiledCorpus_BaseTest
 	
 
 	@Test
-    public void test__resume_compilation_of_corpus_after_crash_or_abortion__1_file_in_corpus_directory() throws CompiledCorpusException, StringSegmenterException, IOException 
+    public void test__resume_compilation_of_corpus_after_crash_or_abortion__1_file_in_corpus_directory() 
+    		throws Exception  
     {
     	// The corpus directory contains 1 file with 8 words :
     	// nunavut inuit
@@ -365,7 +366,7 @@ public class CompiledCorpusTest extends CompiledCorpus_BaseTest
         
     
 	@Test
-    public void test__resume_compilation_of_corpus_after_crash_or_abortion__2_files_in_corpus_directory() throws CompiledCorpusException, StringSegmenterException, IOException 
+    public void test__resume_compilation_of_corpus_after_crash_or_abortion__2_files_in_corpus_directory() throws Exception 
     {
     	// contains 2 files: 
     	// 1 with 8 words:      		   1 with 3 words:
@@ -507,7 +508,7 @@ public class CompiledCorpusTest extends CompiledCorpus_BaseTest
     
     
     @Test
-    public void test__compile_2_subdirectories() throws IOException {
+    public void test__compile_2_subdirectories() throws Exception {
 		String[] stringsOfWords11 = new String[] {
 				"nunavut", "takujuq", "iglumik", "plugak", "takujuq", "iijuq"
 				};
@@ -729,7 +730,7 @@ public class CompiledCorpusTest extends CompiledCorpus_BaseTest
 	}
 
 	@Test
-	public void test__getTerminalsSumFreq() throws TrieException {
+	public void test__getTerminalsSumFreq() throws Exception {
 		CompiledCorpus compiledCorpus = new CompiledCorpus();
         compiledCorpus.setVerbose(false);
         Trie_InMemory charTrie = new Trie_InMemory();
@@ -919,7 +920,8 @@ public class CompiledCorpusTest extends CompiledCorpus_BaseTest
 	
 
 	private void assertContains(CompiledCorpus compiledCorpus,
-			String[] segs, long expFreq, String[] expLongestTerminal) {
+			String[] segs, long expFreq, String[] expLongestTerminal) 
+					throws Exception {
 		TrieNode gotNode = compiledCorpus.trie.getNode(segs);
 		String seqs_asString = String.join(", ", segs);
 		String jsonCorpus = compiledCorpus.trie.toJSON();

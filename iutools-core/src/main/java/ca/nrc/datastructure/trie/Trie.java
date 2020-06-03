@@ -13,23 +13,28 @@ import com.google.gson.Gson;
 
 import ca.nrc.json.PrettyPrinter;
 
+// TODO: Standardize the vocabulary used for methods and variable names
+//   The trie indexes a series of string EXPRESSIONS.
+//   Each expression can be decomposed into a sequence of SEGMENTS
+//   Segments have
+//
+//   - ID: Some canonical form that represent the segment
+//   - SURFACE FORM: The way that the segment was actually written 
+//       in the expression
+//
+//   Note: The ID and SURFACE FORM can be the same thing, but not necessarily
+//
+
 public abstract class Trie {
 	
-    protected TrieNode root = new TrieNode();
+	public abstract TrieNode getRoot() throws TrieException;
 	
 	public abstract TrieNode getNode(String[] keys) throws TrieException;
 	
-	public abstract TrieNode add(String[] partsSequence, String word) 
+	public abstract TrieNode add(String[] segments, String expression) 
 		throws TrieException;
-	
-	protected abstract void collectAllTerminals(TrieNode node, 
-			List<TrieNode> collected); 
 		
-	public TrieNode getRoot() {
-    	return this.root;
-    }
-	
-    public long getSize() {
+    public long getSize() throws TrieException {
     	return getAllTerminals().length;
     }
     
@@ -37,8 +42,8 @@ public abstract class Trie {
 		return getNode(keys.toArray(new String[keys.size()]));
 	}
 
-	public TrieNode[] getAllTerminals() {
-		TrieNode[] allTerminals = getAllTerminals(root);
+	public TrieNode[] getAllTerminals() throws TrieException {
+		TrieNode[] allTerminals = getAllTerminals(getRoot());
 		return allTerminals;
 	}
 	
@@ -53,7 +58,7 @@ public abstract class Trie {
 		return allTerminals;
 	}
 	
-	public TrieNode[] getAllTerminals(TrieNode node) {
+	public TrieNode[] getAllTerminals(TrieNode node) throws TrieException {
 		List<TrieNode> allTerminalsLst = 
 			new ArrayList<TrieNode>();
 			
@@ -62,8 +67,38 @@ public abstract class Trie {
 		return allTerminalsLst.toArray(new TrieNode[allTerminalsLst.size()]);
 	}
 	
-        
-    public long getNbOccurrences() {
+	protected void collectAllTerminals(TrieNode node, 
+			List<TrieNode> collected) throws TrieException {
+		if (node.isTerminal()) {
+			collected.add((TrieNode)node);
+		} else {
+			for (TrieNode aChild: childrenNodes(node)) {
+				collectAllTerminals(aChild, collected);
+			}
+		}
+	}
+	
+    private List<TrieNode> childrenNodes(TrieNode node) throws TrieException {
+    	List<TrieNode> children = new ArrayList<TrieNode>();
+    	for (String extension: node.childrenSegments()) {
+    		TrieNode childNode = getNode(extendSegments(node.keys, extension ));
+    		children.add(childNode);
+    	}
+    	
+		return children;
+	}
+
+	private String[] extendSegments(String[] orig, String extension) {
+		String[] extended = new String[orig.length+1];
+		for (int ii=0; ii < orig.length; ii++) {
+			extended[ii] = orig[ii];
+		}
+		extended[extended.length-1] = extension;
+		
+		return extended;
+	}
+
+	public long getNbOccurrences() throws TrieException {
     	TrieNode[] terminals = getAllTerminals();
     	long nbOccurrences = 0;
     	for (TrieNode terminal : terminals) {
@@ -72,11 +107,11 @@ public abstract class Trie {
     	return nbOccurrences;
     }
     
-	public TrieNode getMostFrequentTerminal() {
-		return getMostFrequentTerminal(root);
+	public TrieNode getMostFrequentTerminal() throws TrieException {
+		return getMostFrequentTerminal(getRoot());
 	}
     
-	public TrieNode getMostFrequentTerminal(TrieNode node) {
+	public TrieNode getMostFrequentTerminal(TrieNode node) throws TrieException {
 		TrieNode mostFrequent = null;
 		TrieNode[] terminals = getMostFrequentTerminals(1, node, null);
 		if (terminals != null && terminals.length > 0) {
@@ -90,8 +125,8 @@ public abstract class Trie {
 		return getMostFrequentTerminal(node);
 	}
 	
-	public TrieNode[] getMostFrequentTerminals(int n) {
-		return getMostFrequentTerminals(n, root, null);
+	public TrieNode[] getMostFrequentTerminals(int n) throws TrieException {
+		return getMostFrequentTerminals(n, getRoot(), null);
 	}	
 	
 	public TrieNode[] getMostFrequentTerminals(int n, String[] segments) throws TrieException {
@@ -104,18 +139,18 @@ public abstract class Trie {
 		return getMostFrequentTerminals(null, node, null);
 	}
 
-	public TrieNode[] getMostFrequentTerminals() {
-		return getMostFrequentTerminals(null, root, null);
+	public TrieNode[] getMostFrequentTerminals() throws TrieException {
+		return getMostFrequentTerminals(null, getRoot(), null);
 	}
 	
 	public TrieNode[] getMostFrequentTerminals(
-			Integer n, TrieNode node) {
+			Integer n, TrieNode node) throws TrieException {
 		return getMostFrequentTerminals(n, node, null);
 	}
 
 	public TrieNode[] getMostFrequentTerminals(
 			Integer n, TrieNode node, 
-			TrieNode[] exclusions) {
+			TrieNode[] exclusions) throws TrieException {
 		if (exclusions == null) {
 			exclusions = new TrieNode[0];
 		}
@@ -153,7 +188,6 @@ public abstract class Trie {
 		return mostFrequentTerminal;
 	}
 	
-    
 	protected TrieNode getParentNode(TrieNode node) throws TrieException {
 		return this.getParentNode(node.keys);
 	}    
@@ -196,7 +230,9 @@ public abstract class Trie {
 			String[] terminalNodeKeys = Arrays.copyOfRange(terminalNode.keys, 1, terminalNode.keys.length);
 			freqs = computeFreqs(terminalNodeKeys,freqs,rootKey);
 		}
-		logger.debug("freqs: "+PrettyPrinter.print(freqs));
+		if (logger.isDebugEnabled()) {
+			logger.debug("freqs: "+PrettyPrinter.print(freqs));
+		}
 		long maxFreq = 0;
 		int minLength = 1000;
 		String seq = null;

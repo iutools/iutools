@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import ca.inuktitutcomputing.script.TransCoder;
 import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.Pair;
+import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
 import ca.pirurvik.iutools.corpus.CompiledCorpus;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
@@ -67,9 +68,10 @@ public class QueryExpander {
 	 * 
 	 * @param word String - an inuktitut word
 	 * @return String[] An array of the most frequent inuktitut words related to the input word
+	 * @throws QueryExpanderException 
 	 * @throws Exception
 	 */
-	public QueryExpansion[] getExpansions(String word)  {
+	public QueryExpansion[] getExpansions(String word) throws QueryExpanderException  {
     	Logger logger = Logger.getLogger("QueryExpander.getExpansions");
 		logger.debug("word: "+word);
 		QueryExpansion[] expansionsArr = new QueryExpansion[] {};
@@ -85,7 +87,12 @@ public class QueryExpander {
 		
 		if (segments !=null && segments.length >0) {
 			logger.debug("segments: "+segments.length);
-			TrieNode node = this.compiledCorpus.trie.getNode(segments);	
+			TrieNode node;
+			try {
+				node = this.compiledCorpus.trie.getNode(segments);
+			} catch (TrieException e) {
+				throw new QueryExpanderException(e);
+			}	
 			if (node==null)
 				mostFrequentTerminalsForWord = new ArrayList<QueryExpansion>();
 			else
@@ -115,7 +122,7 @@ public class QueryExpander {
 	}
 	
 	
-	public ArrayList<QueryExpansion> __getExpansions(ArrayList<QueryExpansion> mostFrequentTerminalsForReformulations, String[] segments, String word) {
+	public ArrayList<QueryExpansion> __getExpansions(ArrayList<QueryExpansion> mostFrequentTerminalsForReformulations, String[] segments, String word) throws QueryExpanderException {
 		Logger logger = Logger.getLogger("QueryExpander.__getExpansions");
 		logger.debug("nb. segments : "+segments.length);
 		logger.debug("nb. most frequent : "+mostFrequentTerminalsForReformulations.size());
@@ -128,7 +135,12 @@ public class QueryExpander {
 			String[] segmentsBack1 = Arrays.copyOfRange(segments,0,segments.length-1);
 			if (segmentsBack1.length != 0) {
 				logger.debug("back one segment -- "+String.join(" ", segmentsBack1));
-				TrieNode node = this.compiledCorpus.trie.getNode(segmentsBack1);
+				TrieNode node;
+				try {
+					node = this.compiledCorpus.trie.getNode(segmentsBack1);
+				} catch (TrieException e) {
+					throw new QueryExpanderException(e);
+				}
 				if (node==null)
 					return __getExpansions(mostFrequentTerminalsForReformulations, segmentsBack1, word);
 				logger.debug("node: "+node.keysAsString());
@@ -145,12 +157,17 @@ public class QueryExpander {
 		}
 	}
 	
-	public ArrayList<QueryExpansion> getNMostFrequentForms(TrieNode node, int n, String word, ArrayList<QueryExpansion> exclusions) {
+	public ArrayList<QueryExpansion> getNMostFrequentForms(TrieNode node, int n, String word, ArrayList<QueryExpansion> exclusions) throws QueryExpanderException {
 		Logger logger = Logger.getLogger("QueryExpander.getNMostFrequentForms");
 		ArrayList<String> listOfExclusions = new ArrayList<String>();
 		for (int i=0; i<exclusions.size(); i++)
 			listOfExclusions.add(exclusions.get(i).word);
-		TrieNode[] terminals = compiledCorpus.getTrie().getAllTerminals(node);
+		TrieNode[] terminals;
+		try {
+			terminals = compiledCorpus.getTrie().getAllTerminals(node);
+		} catch (TrieException e) {
+			throw new QueryExpanderException(e);
+		}
 		ArrayList<Object[]> forms= new ArrayList<Object[]>();
 		for (TrieNode terminal : terminals) {
 			HashMap<String,Long> surfaceForms = terminal.getSurfaceForms();

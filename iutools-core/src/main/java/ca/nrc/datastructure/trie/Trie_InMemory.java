@@ -20,8 +20,15 @@ import ca.nrc.json.PrettyPrinter;
 
 
 public class Trie_InMemory extends Trie {
+	
+	TrieNode root = new TrieNode();
     
     public Trie_InMemory() {
+	}
+    
+	@Override
+	public TrieNode getRoot() throws TrieException {
+		return root;
 	}
     
     public static Trie_InMemory fromJSON(String filePath) throws TrieException {
@@ -54,7 +61,7 @@ public class Trie_InMemory extends Trie {
     // TODO: Check that partsSequence is NOT empty. If it is, raise exception
     //
 	public TrieNode add(String[] partsSequence, String word) throws TrieException {
-        TrieNode trieNode = root;
+        TrieNode trieNode = getRoot();
         Logger logger = Logger.getLogger("Trie.add");
         logger.debug("segments: "+Arrays.toString(partsSequence));
         
@@ -87,38 +94,30 @@ public class Trie_InMemory extends Trie {
         return trieNode; //***		
 	}
 
-	public TrieNode getNode(String[] keys) {
-        Map<String,TrieNode> children = root.getChildren();
+	public TrieNode getNode(String[] keys) throws TrieException {
         TrieNode trieNode = null;
-        for (int i = 0; i < keys.length; i++) {
-            String key = keys[i];
-            if (children.containsKey(key)) {
-                trieNode = (TrieNode) children.get(key);
-                children = trieNode.getChildren();
-            } else {
-            	return null;
-            }
+        if (keys.length == 0) {
+        	trieNode = root;
+        } else {
+	        Map<String,TrieNode> children = getRoot().getChildren();
+	        for (int i = 0; i < keys.length; i++) {
+	            String key = keys[i];
+	            if (children.containsKey(key)) {
+	                trieNode = (TrieNode) children.get(key);
+	                children = trieNode.getChildren();
+	            } else {
+	            	return null;
+	            }
+	        }
         }
         return trieNode;
 	}
 	
-	@Override
-	protected void collectAllTerminals(TrieNode node, 
-			List<TrieNode> collected) {
-		if (node.isTerminal()) {
-			collected.add((TrieNode)node);
-		} else {
-			for (TrieNode aChild: node.childrenNodes()) {
-				collectAllTerminals(aChild, collected);
-			}
-		}
-	}
-		
-	private HashMap<String, Long> computeFreqs(String[] terminalNodeKeys, HashMap<String, Long> freqs, String rootSegment) {
+	private HashMap<String, Long> computeFreqs(String[] terminalNodeKeys, HashMap<String, Long> freqs, String rootSegment) throws TrieException {
 		return _computeFreqs("",terminalNodeKeys,freqs,rootSegment);
 	}
 
-	private HashMap<String, Long> _computeFreqs(String cumulativeKeys, String[] terminalNodeKeys, HashMap<String, Long> freqs, String rootSegment) {
+	private HashMap<String, Long> _computeFreqs(String cumulativeKeys, String[] terminalNodeKeys, HashMap<String, Long> freqs, String rootSegment) throws TrieException {
 		Logger logger = Logger.getLogger("CompiledCorpus._computeFreqs");
 		if (terminalNodeKeys.length==0)
 			return freqs;

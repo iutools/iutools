@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
+import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
 
 public class CompiledCorpus_IUMorpheme extends CompiledCorpus {
@@ -16,11 +17,16 @@ public class CompiledCorpus_IUMorpheme extends CompiledCorpus {
 		super(StringSegmenter_IUMorpheme.class.getName());
 	}
 	
-	public String[] getMostFrequentCompletionForRootType(String rootType) {
+	public String[] getMostFrequentCompletionForRootType(String rootType) throws CompiledCorpusException {
 		HashMap<String,Long> completionKeysFreqs = new HashMap<String,Long>();
 		long maxFreq = 0;
 		String mostFrequentCompletionKeys = null;
-		TrieNode[] terminals = this.trie.getAllTerminals();
+		TrieNode[] terminals;
+		try {
+			terminals = this.trie.getAllTerminals();
+		} catch (TrieException e) {
+			throw new CompiledCorpusException(e);
+		}
 		for (TrieNode terminal : terminals) {
 			String terminalRootKey = terminal.keys[0]; // {surface_form/id}
 			String[] partsRootKey = terminalRootKey.split("/");

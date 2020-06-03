@@ -28,6 +28,7 @@ import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.data.LinguisticDataSingleton;
 import ca.inuktitutcomputing.data.Morpheme;
 import ca.inuktitutcomputing.data.SurfaceFormInContext;
+import ca.inuktitutcomputing.morph.MorphologicalAnalyzerException;
 import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.datastructure.trie.Trie_InMemory;
@@ -63,7 +64,7 @@ public class WordAnalyzer {
 	}
 	
 
-	public List<Decomposition> analyze(String word) throws LinguisticDataException {
+	public List<Decomposition> analyze(String word) throws LinguisticDataException, MorphologicalAnalyzerException {
 		
 		List<Decomposition> decompositions = findAllPossibleDecompositions(word);
 				
@@ -76,9 +77,10 @@ public class WordAnalyzer {
 	 * @param word String
 	 * @return a List of DecompositionTree objects
 	 * @throws LinguisticDataException 
+	 * @throws MorphologicalAnalyzerException 
 	 */
 
-	List<Decomposition> findAllPossibleDecompositions(String word) throws LinguisticDataException {
+	List<Decomposition> findAllPossibleDecompositions(String word) throws LinguisticDataException, MorphologicalAnalyzerException {
 		Logger logger = Logger.getLogger("WordAnalyzer.findAllPossibleSequencesOfMorphemes");
 		List<DecompositionTree> decompositionTrees = new ArrayList<DecompositionTree>();
 		
@@ -211,7 +213,7 @@ public class WordAnalyzer {
 			String stem, 
 			String remainingPartOfWord, 
 			SurfaceFormInContext precedingMorpheme
-			) throws LinguisticDataException {
+			) throws LinguisticDataException, MorphologicalAnalyzerException {
 		Logger logger = Logger.getLogger("WordAnalyzer.analyzeRemainingForAffixes");
 		logger.debug("precedingMorpheme: "+precedingMorpheme.surfaceForm);
 		logger.debug("remainingPartOfWord: "+remainingPartOfWord);
@@ -248,7 +250,7 @@ public class WordAnalyzer {
 			String stem,
 			String remainingPartOfWord,
 			SurfaceFormInContext precedingMorpheme
-			) throws LinguisticDataException {
+			) throws LinguisticDataException, MorphologicalAnalyzerException {
 		Logger logger = Logger.getLogger("WordAnalyzer.processPossibleAffix");		
 		logger.debug("\naffix: "+morphemeComponent.surfaceForm+"; "+morphemeComponent.morphemeId);
 		
@@ -279,14 +281,14 @@ public class WordAnalyzer {
 	
 
 
-	protected List<String> findRoot(String string) {
+	protected List<String> findRoot(String string) throws MorphologicalAnalyzerException {
 		String[] chars = string.split("");
 		List<String> possibleRoots = findMorpheme(chars, root_trie);
 
 		return possibleRoots;
 	}	
 	
-	protected List<String> findAffix(String string) {
+	protected List<String> findAffix(String string) throws MorphologicalAnalyzerException {
 		List<String> possibleAffixes = new ArrayList<String>();
 		if (string.length()!=0) {
 			String[] chars = string.split("");
@@ -305,10 +307,11 @@ public class WordAnalyzer {
 	 * @return List of Pair<String,String> of 
 	 *   - surface form
 	 *   - morpheme id
+	 * @throws MorphologicalAnalyzerException 
 	 */
 
 	@SuppressWarnings("unchecked")
-	private List<String> findMorpheme(String[] chars, Trie_InMemory trie) {
+	private List<String> findMorpheme(String[] chars, Trie_InMemory trie) throws MorphologicalAnalyzerException {
 		
 		List<Pair<String,String>> pairsOfRoots = new ArrayList<Pair<String,String>>();
 		List<String> morphemeSurfaceFormsInContextInJsonFormat = new ArrayList<String>();
@@ -321,8 +324,12 @@ public class WordAnalyzer {
 			currentChar = chars[charCounter];
 			currentKeys.add(currentChar);
 			String currentKeysAsString = String.join("", currentKeys.toArray(new String[] {}));
-			nodeForCurrentKeys = trie.getNode(currentKeys.toArray(new String[] {}));
-			nodeForCurrentKeys = trie.getNode(currentKeys.toArray(new String[] {}));
+			try {
+				nodeForCurrentKeys = trie.getNode(currentKeys.toArray(new String[] {}));
+				nodeForCurrentKeys = trie.getNode(currentKeys.toArray(new String[] {}));
+			} catch (TrieException e) {
+				throw new MorphologicalAnalyzerException(e);
+			}
 			if (nodeForCurrentKeys == null) {
 				// no morpheme 'currentKeys'
 				break;
@@ -330,7 +337,12 @@ public class WordAnalyzer {
 				// there is a morpheme 'currentKeys'
 				ArrayList<String> searchForSlashNodeKeys = (ArrayList<String>) currentKeys.clone();
 				searchForSlashNodeKeys.add("\\");
-				TrieNode terminalNode = trie.getNode(searchForSlashNodeKeys.toArray(new String[] {}));
+				TrieNode terminalNode;
+				try {
+					terminalNode = trie.getNode(searchForSlashNodeKeys.toArray(new String[] {}));
+				} catch (TrieException e) {
+					throw new MorphologicalAnalyzerException(e);
+				}
 				if (terminalNode != null) {
 				// this is a complete morpheme
 					Set<String> surfaceForms = terminalNode.getSurfaceForms().keySet();

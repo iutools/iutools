@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -86,18 +87,30 @@ public abstract class TrieTest {
 		Trie charTrie = makeTrieToTest();
 		String word = "hi";
 		charTrie.add(word.split(""), word);
+		
 		TrieNode terminalNode = charTrie.getNode((word+"\\").split(""));
-		assertEquals(
-			"Surface form of terminal node is not correct for word "+word,
-			word,terminalNode.getTerminalSurfaceForm());
-		Map<String,Long> surfaceForms = terminalNode.getSurfaceForms();
-		Map<String,Long> expSurfFormFreqs = new HashMap<String,Long>();
-		{
-			expSurfFormFreqs.put(word, new Long(1));
-		}
-		AssertObject.assertDeepEquals(
-			"Surface form frequencies not as expected for word "+word,
-			expSurfFormFreqs, terminalNode.getSurfaceForms());
+		new AssertTrieNode(terminalNode, 
+				"Terminal node for word "+word+" was not as expected")
+			.isTerminal()
+			.hasMostFrequentForm(word)
+			.surfaceFormFrequenciesEqual(
+				new Pair[] {
+					Pair.of(word, new Long(1))
+				})
+			;
+				
+		
+//		assertEquals(
+//			"Surface form of terminal node is not correct for word "+word,
+//			word,terminalNode.mostFrequentSurfaceForm());
+//		Map<String,Long> surfaceForms = terminalNode.getSurfaceForms();
+//		Map<String,Long> expSurfFormFreqs = new HashMap<String,Long>();
+//		{
+//			expSurfFormFreqs.put(word, new Long(1));
+//		}
+//		AssertObject.assertDeepEquals(
+//			"Surface form frequencies not as expected for word "+word,
+//			expSurfFormFreqs, terminalNode.getSurfaceForms());
 	}
 	
 	@Test
@@ -108,8 +121,20 @@ public abstract class TrieTest {
 		iumorphemeTrie.add(iuSegmenter.segment("nalunaiqsivut"),"nalunaiqsivut");
 		iumorphemeTrie.add(iuSegmenter.segment("nalunairsivut"),"nalunairsivut");
 		iumorphemeTrie.add(iuSegmenter.segment("nalunaiqsivut"),"nalunaiqsivut");
-		TrieNode terminalNode = iumorphemeTrie.getNode("{nalunaq/1n} {iq/1nv} {si/2vv} {vut/tv-dec-3p} \\".split(" "));
-		assertEquals("The terminal node is not correct.","nalunaiqsivut",terminalNode.getTerminalSurfaceForm());
+		
+		String[] segments = new String[] {
+			"{nalunaq/1n}", "{iq/1nv}", "{si/2vv}", "{vut/tv-dec-3p}", "\\"
+		};
+		TrieNode terminalNode = iumorphemeTrie.getNode(segments);
+		new AssertTrieNode(terminalNode, "Node for segments="+String.join(", ", segments))
+				.isTerminal()
+				.surfaceFormFrequenciesEqual(
+					new Pair[] {
+						Pair.of("nalunaiqsivut", new Long(2)),
+						Pair.of("nalunairsivut", new Long(1))
+					})
+			;
+		
 		HashMap<String,Long> surfaceForms = terminalNode.getSurfaceForms();
 		assertEquals("The number of surface forms for {nalunaq/1n} {iq/1nv} {si/2vv} {vut/tv-dec-3p} is wrong.",2,surfaceForms.size());
 		ArrayList<String> keys = new ArrayList<String>(Arrays.asList(surfaceForms.keySet().toArray(new String[] {})));
@@ -126,17 +151,22 @@ public abstract class TrieTest {
 		charTrie.add(new String[]{"h","e","l","l"," ","b","o","y"},"hello boy");
 		
 		TrieNode node = charTrie.getNode("hello".split(""));
-		assertTrue("The node for 'hello' should not be null.",node != null);
-		assertEquals(
-			"The key for this node was not as expected.",
-			"h e l l o", node.keysAsString());
-		assertTrue("This node should correspond to a full word.",node.hasTerminalNode());
-		
+		AssertTrieNode asserter = new AssertTrieNode(node, "");
+		asserter.isNotNull();
+		asserter
+			.hasTerminalNode()
+			.hasSegments("hello".split(""))
+			.hasFrequency(1)
+			;
+
 		node = charTrie.getNode("hell".split(""));
-		assertTrue("The node for 'hell' should not be null.",node!=null);
-		assertEquals("The key for this node was not as expected.","h e l l",node.keysAsString());
-		assertEquals("The frequency for this node is not as expected.",2,node.getFrequency());
-		assertFalse("This node should correspond to a full word.",node.hasTerminalNode());
+		asserter = new AssertTrieNode(node, "");
+		asserter.isNotNull();
+		asserter
+			.hasSegments("hell".split(""))
+			.doesNotHaveATerminalNode()
+			.hasFrequency(2)
+			;		
 	}
 
 	@Test
@@ -215,15 +245,21 @@ public abstract class TrieTest {
 		charTrie.add("helios".split(""),"helios");
 		charTrie.add("helm".split(""),"helm");
 		charTrie.add("ok".split(""),"ok");
-		TrieNode[] h_terminals = charTrie.getAllTerminals("h".split(""));
-		Assert.assertEquals("The number of words starting with 'h' should be 4.",
-				4,h_terminals.length);
-		TrieNode[] hel_terminals = charTrie.getAllTerminals("hel".split(""));
-		Assert.assertEquals("The number of words starting with 'hel' should be 3.",
-				3,hel_terminals.length);
-		TrieNode[] o_terminals = charTrie.getAllTerminals("o".split(""));
-		Assert.assertEquals("The number of words starting with 'o' should be 1.",
-				1,o_terminals.length);
+		
+		new AssertTrie(charTrie)
+				.terminalsForNodeEqual(
+					"h".split(""), 
+					new String[] {"helios", "hello", "helm", "hit"});
+		
+		new AssertTrie(charTrie)
+			.terminalsForNodeEqual(
+				"hel".split(""), 
+				new String[] {"helios", "hello", "helm"});
+
+		new AssertTrie(charTrie)
+			.terminalsForNodeEqual(
+				"o".split(""), 
+				new String[] {"ok"});
 	}
 	
 	
@@ -269,9 +305,14 @@ public abstract class TrieTest {
 		charTrie.add("helm".split(""),"helm");
 		charTrie.add("ok".split(""),"ok");
 		charTrie.add("ok".split(""),"ok");
-		Assert.assertEquals("The number of terminals should be 6.",6,charTrie.getAllTerminals().length);
-		long nb = charTrie.getNbOccurrences();
-		Assert.assertEquals("The number of occurrences is wrong.",8,nb);
+		
+		new AssertTrie(charTrie, "")
+			.hasTerminals(
+				new String[] {
+					"abba", "helios", "hello", "helm", "hit", "ok"
+				})
+			.hasNbOccurences(8)
+			;
 	}
 	
 	@Test
@@ -286,9 +327,11 @@ public abstract class TrieTest {
 		TrieNode node = retrievedCharTrie.getNode(new String[] {"h","i","t","\\"});
 		Assert.assertTrue("The node should be terminal.",node.isTerminal());
 
-		Assert.assertEquals(
-			"The surface form is not correct.", 
-			"hit", node.getTerminalSurfaceForm());
+		new AssertTrieNode(node, "")
+				.hasMostFrequentForm("hit");
+//		Assert.assertEquals(
+//			"The surface form is not correct.", 
+//			"hit", node.getTerminalSurfaceForm());
 	}
 	
 	@Test
