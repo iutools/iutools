@@ -3,7 +3,9 @@ package ca.pirurvik.iutools.concordancer;
 import java.net.URL;
 import java.util.Map;
 
+import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ca.nrc.datastructure.Pair;
@@ -22,11 +24,25 @@ public class WebConcordancerTest {
 		concordancer = new WebConcordancer();
 	}
 
+	@Test
+	public void test__FixMalignaIssues() throws Exception {
+		Assert.fail(
+			"\n\nIGNORE THIS FAILURE!\n\n"+
+			"It is just a reminder to deal with some failing (currently @Ignored) tests.\n"+
+			"These tests started failing on 2020-06-03\n" + 
+			"It seems the content of the www.gov.nu.ca home pages has changed\n" + 
+			"in a way that makes Maligna crash.\n"+
+			"Will need to fix the Maligna bug and submit the fix to its maintainers.");
+	}
+	
 	//////////////////////////////////
 	// DOCUMENTATION TEST
 	//////////////////////////////////
 		
-	@Test
+	// This test started failing on 2020-06-03
+	// It seems the content of the www.gov.nu.ca home pages has changed
+	// in a way that makes Maligna crash.
+	@Test @Ignore 
 	public void test__WebConcordancer__Synopsis() throws Exception {
 		//
 		// Use this class to fetch aligned sentences from a multilingual 
@@ -75,7 +91,11 @@ public class WebConcordancerTest {
 	// VERIFICATION TEST
 	//////////////////////////////////
 	
-	@Test
+	// This test started failing on 2020-06-03
+	// It seems the content of the www.gov.nu.ca home pages has changed
+	// in a way that makes Maligna crash.
+	//
+	@Test @Ignore
 	public void test__alignPage__HappyPath() throws Exception {
 		URL url = new URL("https://www.gov.nu.ca/");
 		DocAlignment pageAligment = 
