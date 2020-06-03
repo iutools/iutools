@@ -137,75 +137,9 @@ public class Trie_InFileSystem extends Trie {
 	}
 	
 	@Override
-	public TrieNode getMostFrequentTerminal() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public TrieNode getMostFrequentTerminal(TrieNode node) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public TrieNode getMostFrequentTerminal(String[] segments) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public TrieNode[] getMostFrequentTerminals(int n) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public TrieNode[] getMostFrequentTerminals(int n, String[] segments) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public TrieNode[] getMostFrequentTerminals(String[] segments) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public TrieNode[] getMostFrequentTerminals() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public TrieNode[] getMostFrequentTerminals(Integer n, TrieNode node) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public TrieNode[] getMostFrequentTerminals(Integer n, TrieNode node, TrieNode[] exclusions) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String[] getMostFrequentSequenceForRoot(String rootKey) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	protected TrieNode getMostFrequentTerminalFromMostFrequentSequenceForRoot(String rootSegment) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public long getFrequency(String[] segments) {
-		// TODO Auto-generated method stub
-		return 0;
+	public long getFrequency(String[] segments) throws TrieException {
+		long freq = getNode(segments).frequency;
+		return freq;
 	}
 
 	protected String[] appendTerminalKey(String[] origKeys) throws TrieException {

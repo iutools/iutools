@@ -203,10 +203,25 @@ public class TrieNode {
     	this.mostFrequentTerminal = _mostFrequentTerminal;
     }*/
 
-    
+
     public String keysAsString() {
-        return String.join(" ", this.keys);
+    	return keysAsString(null);
     }
+    
+    public String keysAsString(Boolean chopTerminalChar) {
+    	if (chopTerminalChar == null) {
+    		chopTerminalChar = false;
+    	}
+    	
+    	String[] keysToPrint = keys;
+    	if (chopTerminalChar) {
+    		keysToPrint = Arrays.copyOfRange(keys, 0, keys.length-1);
+    	}
+    	String keyStr = String.join(" ", keysToPrint);
+    	return keyStr;
+    }
+    
+    
     
     public long getFrequency() {
     	return frequency;

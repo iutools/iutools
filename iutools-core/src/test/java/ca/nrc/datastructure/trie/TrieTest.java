@@ -214,7 +214,6 @@ public abstract class TrieTest {
 	@Test
 	public void test__frequenciesOfWords() throws Exception {
 		Trie charTrie = makeTrieToTest();
-		try {
 		charTrie.add("hello".split(""),"hello");
 		charTrie.add("world".split(""),"world");
 		charTrie.add("hell boy".split(""),"hell boy");
@@ -223,17 +222,13 @@ public abstract class TrieTest {
 		charTrie.add("world".split(""),"world");
 		charTrie.add("heaven".split(""),"heaven");
 		charTrie.add("world".split(""),"world");
-		} catch (Exception e) {
-			assertFalse("An error occurred while adding an element to the trie.",true);
-		}
-		long freq_blah = charTrie.getFrequency("blah".split(""));
-		assertEquals("The frequency of the word 'blah' is wrong.",0,freq_blah);
-		long freq_worship = charTrie.getFrequency("worship".split(""));
-		assertEquals("The frequency of the word 'worship' is wrong.",1,freq_worship);
-		long freq_heaven = charTrie.getFrequency("heaven".split(""));
-		assertEquals("The frequency of the word 'heaven' is wrong.",2,freq_heaven);
-		long freq_world = charTrie.getFrequency("world".split(""));
-		assertEquals("The frequency of the word 'world' is wrong.",3,freq_world);
+		
+		AssertTrie asserter = new AssertTrie(charTrie, "");
+		
+		asserter.frequencyEquals("blah".split(""), 0);
+		asserter.frequencyEquals("worship".split(""), 1);
+		asserter.frequencyEquals("heaven".split(""), 2);
+		asserter.frequencyEquals("world".split(""), 3);
 	}
 	
 	@Test
@@ -351,18 +346,11 @@ public abstract class TrieTest {
 		charTrie.add("ok".split(""),"ok");
 		charTrie.add("ok".split(""),"ok");
 		charTrie.add("ok".split(""),"ok");
-		TrieNode mostFrequentTerminalRoot = 
-			charTrie.getMostFrequentTerminal();
-		String expectedKeysMFTR = "o k \\";
-		assertEquals("The terminal returned as the most frequent terminal of the whole trie is wrong.",expectedKeysMFTR,mostFrequentTerminalRoot.keysAsString());
-		TrieNode mostFrequentTerminalHell = charTrie.getMostFrequentTerminal("hell".split(""));
-		String expectedKeys = "h e l l a m \\";
-		assertEquals("The terminal returned as the most frequent terminal related to 'hell' is wrong.",expectedKeys,mostFrequentTerminalHell.keysAsString());
-		String expectedSurfaceForm = "hellam";
-		assertEquals(
-			"The terminal returned as the most frequent terminal related to 'hell' is wrong.",
-			expectedSurfaceForm,
-			mostFrequentTerminalHell.getTerminalSurfaceForm());
+		
+		new AssertTrie(charTrie, "")
+			.mostFrequentTerminalEquals(null, "ok")
+			.mostFrequentTerminalEquals("hell".split(""), "hellam")
+			;
 	}
 	
 	@Test
@@ -399,44 +387,18 @@ public abstract class TrieTest {
 		charTrie.add("ok".split(""),"ok");
 		charTrie.add("ok".split(""),"ok");
 		
-		TrieNode[] mostFrequentTerminals;
-		String[] expected;
-		String[] got;
-		
-		// next case: there are more than enough candidates with regard to the number requested
-		mostFrequentTerminals = charTrie.getMostFrequentTerminals(2, "hell".split(""));
-		assertEquals("The number of terminals returned is wrong.",2,mostFrequentTerminals.length);
-		expected = new String[] {"h e l l a m \\", "h e l l o \\"};
-		got = new String[] {mostFrequentTerminals[0].keysAsString(),mostFrequentTerminals[1].keysAsString()};
-		assertArrayEquals("The terminals returned as the 2 most frequent terminals related to 'hell' are wrong.",expected,got);
-		// next case: there are less candidates than the number requested
-		mostFrequentTerminals = charTrie.getMostFrequentTerminals(4, "hell".split(""));
-		assertEquals("The number of terminals returned is wrong.",3,mostFrequentTerminals.length);
-		expected = new String[] {"h e l l a m \\", "h e l l o \\", "h e l l s \\"};
-		got = new String[] {mostFrequentTerminals[0].keysAsString(),mostFrequentTerminals[1].keysAsString(),mostFrequentTerminals[2].keysAsString()};
-		assertArrayEquals("The terminals returned as the 4 most frequent terminals related to 'hell' are wrong.",expected,got);
-		expected = new String[] {"hellam", "hello", "hells"};
-		got = new String[] {
-			mostFrequentTerminals[0].getTerminalSurfaceForm(),
-			mostFrequentTerminals[1].getTerminalSurfaceForm(),
-			mostFrequentTerminals[2].getTerminalSurfaceForm()};
-		assertArrayEquals(
-			"The surface forms for the terminals returned as the 3 most frequent terminals related to 'hell' are wrong.",
-			expected, got);
-		
-		mostFrequentTerminals = charTrie.getMostFrequentTerminals(1);
-		expected = new String[] {"ok"};
-		got = new String[] {mostFrequentTerminals[0].getTerminalSurfaceForm()};
-		assertArrayEquals("The surface forms for the terminals returned as the 1 most frequent terminal of the whole trie are wrong.",expected,got);
-		
-		mostFrequentTerminals = charTrie.getMostFrequentTerminals(3);
-		expected = new String[] {"ok","hellam","hello"};
-		got = new String[] {
-			mostFrequentTerminals[0].getTerminalSurfaceForm(),
-			mostFrequentTerminals[1].getTerminalSurfaceForm(),
-			mostFrequentTerminals[2].getTerminalSurfaceForm()
-		};
-		assertArrayEquals("The surface forms for the terminals returned as the 3 most frequent terminal of the whole trie are wrong.",expected,got);
+		new AssertTrie(charTrie, "")
+			.mostFrequentTerminalsEqual(1, new String[] {"o k"})
+			
+			.mostFrequentTerminalsEqual(
+				2, "hell".split(""), 
+				new String[] {"h e l l a m", "h e l l o"})
+			
+			.mostFrequentTerminalsEqual(
+					4, "hell".split(""), 
+					new String[] {"h e l l a m", "h e l l o", "h e l l s"})
+			
+			;		
 	}
 	
 	@Test
@@ -449,27 +411,18 @@ public abstract class TrieTest {
 		charTrie.add("helicopter".split(""),"helicopter");
 		charTrie.add("helios".split(""),"helios");
 		charTrie.add("helios".split(""),"helios");
-		TrieNode helNode = charTrie.getNode("hel".split(""));
-		// test n < number of terminals
-		TrieNode[] mostFrequentTerminals = charTrie.getMostFrequentTerminals(2, helNode);
-		Assert.assertEquals("The number of nodes returned is wrong.",2,mostFrequentTerminals.length);
-		Assert.assertEquals(
-			"The first most frequent terminal returned is faulty.",
-			"helios", mostFrequentTerminals[0].getTerminalSurfaceForm());
-		Assert.assertEquals(
-			"The second most frequent terminal returned is faulty.",
-			"helicopter", mostFrequentTerminals[1].getTerminalSurfaceForm());
-		// test n > number of terminals
-		TrieNode[] mostFrequentTerminals4 = charTrie.getMostFrequentTerminals(4, helNode);
-		Assert.assertEquals("The number of nodes returned is wrong.",3,mostFrequentTerminals4.length);
-		// test with exclusion of nodes
-		TrieNode nodeToExclude = charTrie.getNode("hello\\".split(""));
-		TrieNode[] mostFrequentTerminalsExcl = 
-			charTrie.getMostFrequentTerminals(4, helNode, 
-				new TrieNode[] {nodeToExclude});
-		Assert.assertEquals("The number of nodes returned without excluded nodes is wrong.",2,mostFrequentTerminalsExcl.length);
-		Assert.assertEquals("", "helios", mostFrequentTerminalsExcl[0].getTerminalSurfaceForm());
-		Assert.assertEquals("", "helicopter", mostFrequentTerminalsExcl[1].getTerminalSurfaceForm());
+		
+		new AssertTrie(charTrie, "")
+		
+			// test n < number of terminals
+			.mostFrequentTerminalsEqual(2, "hel".split(""), 
+				new String[] {"h e l i o s", "h e l i c o p t e r"})
+		
+			// test with exclusion of nodes
+		.mostFrequentTerminalsEqual(4, "hello".split(""), 
+				new String[] {"h e l l o"})
+		
+		;
 	}
 	
 	
@@ -507,9 +460,10 @@ public abstract class TrieTest {
 		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{juq/1vn}"},"takulaaqtuq");
 		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{sima/1vv}","{juq/1vn}"},"takulaaqsimajuq");
 		morphTrie.add(new String[] {"{taku/1v}","{sima/1vv}","{juq/1vn}"},"takusimajuq");
-		TrieNode mostFrequentTerminal = morphTrie.getMostFrequentTerminalFromMostFrequentSequenceForRoot("{taku/1v}");
-		String expected = "{taku/1v} {juq/1vn} \\";
-		assertEquals("The most frequent term for 'taku' in the trie is not correct.",expected,mostFrequentTerminal.keysAsString());
+		
+		new AssertTrie(morphTrie, "")
+				.mostFrequentTerminalEquals(
+						new String[] {"{taku/1v}"}, "{taku/1v}{juq/1vn}");
 	}
 	
 	@Test
@@ -522,9 +476,10 @@ public abstract class TrieTest {
 		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{juq/1vn}"},"takulaaqtuq");
 		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{sima/1vv}","{juq/1vn}"},"takulaaqsimajuq");
 		morphTrie.add(new String[] {"{taku/1v}","{sima/1vv}","{juq/1vn}"},"takusimajuq");
-		TrieNode mostFrequentTerminal = morphTrie.getMostFrequentTerminalFromMostFrequentSequenceForRoot("{taku/1v}");
-		String expected = "{taku/1v} {juq/1vn} \\";
-		assertEquals("The most frequent term for 'taku' in the trie is not correct.",expected,mostFrequentTerminal.keysAsString());
+		
+		new AssertTrie(morphTrie, "")
+			.mostFrequentTerminalEquals(
+				new String[] {"{taku/1v}"}, "{taku/1v}{juq/1vn}");
 	}
 	
 	@Test
@@ -537,8 +492,9 @@ public abstract class TrieTest {
 		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{juq/1vn}"},"takulaaqtuq");
 		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{sima/1vv}","{juq/1vn}"},"takulaaqsimajuq");
 		morphTrie.add(new String[] {"{taku/1v}","{sima/1vv}","{juq/1vn}"},"takusimajuq");
-		TrieNode mostFrequentTerminal = morphTrie.getMostFrequentTerminalFromMostFrequentSequenceForRoot("{taku/1v}");
-		String expected = "{taku/1v} {laaq/2vv} {juq/1vn} \\";
-		assertEquals("The most frequent term for 'taku' in the trie is not correct.",expected,mostFrequentTerminal.keysAsString());
+		
+		new AssertTrie(morphTrie, "")
+			.mostFrequentTerminalEquals(
+				new String[] {"{taku/1v}"}, "{taku/1v}{laaq/2vv}{juq/1vn}");
 	}
 }

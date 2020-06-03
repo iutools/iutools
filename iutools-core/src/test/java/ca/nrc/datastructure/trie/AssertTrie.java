@@ -51,8 +51,57 @@ public class AssertTrie extends Asserter<Trie> {
 		return this;
 	}
 	
+	public AssertTrie frequencyEquals(String[] segments, long expFreq) 
+			throws Exception{
+		long gotFreq = trie().getFrequency(segments);
+		Assert.assertEquals(
+			baseMessage+"\nWrong frequency for segmens: "+
+					String.join(", ", segments), 
+			expFreq, gotFreq);
+		
+		return this;
+	}
 	
 	protected Trie trie() {
 		return gotObject;
+	}
+
+	public AssertTrie mostFrequentTerminalEquals(
+		String[] segments, String expMostFrequent) throws Exception {
+		if (segments == null) {
+			segments = new String[0];
+		}
+		TrieNode gotMostFrequentNode = trie().getMostFrequentTerminal(segments);
+		String gotKeys = String.join("", gotMostFrequentNode.keys);
+		String gotMostFrequent = gotKeys.substring(0, gotKeys.length()-1);
+		Assert.assertEquals(
+			baseMessage+"\nMost frequent terminal not as expected for node: "+
+					String.join(",", segments), 
+			expMostFrequent, gotMostFrequent);
+		return this;
+	}
+
+	public AssertTrie mostFrequentTerminalsEqual(
+			int n, String[] expMostFrequentTerminals) throws Exception {
+		return mostFrequentTerminalsEqual(n, null, expMostFrequentTerminals);
+	}
+	
+	public AssertTrie mostFrequentTerminalsEqual(
+			int n, String[] segments, String[] expMostFrequentTerminals) throws Exception {
+		if (segments == null) {
+			segments = new String[0];
+		}
+		TrieNode[] gotNodes = trie().getMostFrequentTerminals(n, segments);
+		String[] gotMostFrequentTerminals = new String[gotNodes.length];
+		for (int ii=0; ii < gotNodes.length; ii++) {
+			gotMostFrequentTerminals[ii] = gotNodes[ii].keysAsString(true);
+		}
+		AssertObject.assertDeepEquals(
+			baseMessage+"\n"+n+
+				" most frequent terminals not as expected for node=["+
+				String.join(",", segments)+"]", 
+				expMostFrequentTerminals, gotMostFrequentTerminals);
+		
+		return this;
 	}
 }

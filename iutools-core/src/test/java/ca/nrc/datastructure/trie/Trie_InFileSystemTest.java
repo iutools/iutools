@@ -98,45 +98,5 @@ public class Trie_InFileSystemTest extends TrieTest {
 		AssertObject.assertDeepEquals(
 				"Unescaped keys should have been like the original keys", 
 				keys, gotUnescaped);
-	}
-	
-	/////////////////////////////////////////////////////////
-	// Override and ignore some tests from the parent test 
-	// These are tests that are not yet working for the FS 
-	// implementation of the Trie
-	///////////////////////////////////////////////////////////
-	
-	@Test @Ignore
-	public void test__frequenciesOfWords() throws Exception {}
-			
-	@Test @Ignore
-	public void test_toJSON__Char() throws Exception {}
-	
-	@Test @Ignore
-	public void test_getMostFrequentTerminal() throws Exception {}
-	
-	@Test @Ignore
-	public void test_getMostFrequentTerminal__Case2() throws Exception {}	
-	
-	@Test @Ignore
-	public void test_getMostFrequentTerminals() throws Exception {}
-	
-	@Test @Ignore
-	public void test__getMostFrequentTerminals__Case2() throws Exception {}
-	
-	
-	@Test @Ignore
-	public void test__mostFrequentSequenceForRoot__Char() throws Exception {}
-	
-	@Test @Ignore
-	public void test__mostFrequentSequenceForRoot__IUMorpheme() throws Exception {}
-	
-	@Test @Ignore
-	public void test__getMostFrequentTerminalFromMostFrequenceSequenceFromRoot__1() throws Exception {}
-	
-	@Test @Ignore
-	public void test__getMostFrequentTerminalFromMostFrequenceSequenceFromRoot__2() throws Exception {}
-	
-	@Test @Ignore
-	public void test__getMostFrequentTerminalFromMostFrequenceSequenceFromRoot__3() throws Exception {}	
+	}	
 }
