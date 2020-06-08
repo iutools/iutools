@@ -206,13 +206,7 @@ public abstract class Trie {
 		else
 			return 0;
 	}
-    
-    public String toJSON() {
-		Gson gson = new Gson();
-		String json = gson.toJson(this);
-		return json;
-    }
-    
+        
 	/**
 	 * 
 	 * @param String rootKey

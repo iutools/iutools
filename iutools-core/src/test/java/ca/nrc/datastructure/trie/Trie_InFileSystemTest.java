@@ -3,8 +3,11 @@ package ca.nrc.datastructure.trie;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import com.google.gson.Gson;
 
 import ca.nrc.testing.AssertObject;
 

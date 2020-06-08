@@ -310,24 +310,7 @@ public abstract class TrieTest {
 			;
 	}
 	
-	@Test
-	public void test_toJSON__Char() throws Exception {
-		Trie charTrie = makeTrieToTest();
-		charTrie.add("he".split(""),"he");
-		charTrie.add("hit".split(""),"hit");
-		charTrie.add("ok".split(""),"ok");
-		String json = charTrie.toJSON();
-		Gson gson = new Gson();
-		Trie retrievedCharTrie = (Trie) gson.fromJson(json, charTrie.getClass());
-		TrieNode node = retrievedCharTrie.getNode(new String[] {"h","i","t","\\"});
-		Assert.assertTrue("The node should be terminal.",node.isTerminal());
 
-		new AssertTrieNode(node, "")
-				.hasMostFrequentForm("hit");
-//		Assert.assertEquals(
-//			"The surface form is not correct.", 
-//			"hit", node.getTerminalSurfaceForm());
-	}
 	
 	@Test
 	public void test_getMostFrequentTerminal() throws Exception {

@@ -97,12 +97,6 @@ public class Trie_InFileSystem extends Trie {
 		
 	}
 
-	@Override
-	public String toJSON() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
 	private File file4node(TrieNode node) throws TrieException {
 		String[] keys = node.keys;
 		return file4node(keys);

@@ -149,6 +149,13 @@ public class Trie_InMemory extends Trie {
       trieNode.addChild(segment, newNode);
       return newNode;
     }
+    
+    public String toJSON() {
+		Gson gson = new Gson();
+		String json = gson.toJson(this);
+		return json;
+    }
+    
 }
 
 class NodeFrequencyComparator implements Comparator<TrieNode> {
