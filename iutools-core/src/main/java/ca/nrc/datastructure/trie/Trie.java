@@ -5,11 +5,12 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
-
-import com.google.gson.Gson;
 
 import ca.nrc.json.PrettyPrinter;
 
@@ -26,39 +27,80 @@ import ca.nrc.json.PrettyPrinter;
 //
 
 public abstract class Trie {
-	
+		
 	public abstract TrieNode getRoot() throws TrieException;
 	
 	public abstract TrieNode getNode(String[] keys) throws TrieException;
-	
-	public abstract TrieNode add(String[] segments, String expression) 
+		
+	public abstract boolean contains(String[] segments) throws TrieException;
+		
+	public abstract TrieNode addExpression(String[] segments, String expression) 
 		throws TrieException;
+	
+	protected String allTerminalsJoined = ";";
+	
+	public TrieNode add(String[] segments, String expression) 
+			throws TrieException {
+		addToJoinedTerminals(segments);
+		return addExpression(segments, expression);
+	}
 		
     public long getSize() throws TrieException {
-    	return getAllTerminals().length;
+    	return getTerminals().length;
     }
     
 	public TrieNode getNode(List<String> keys) throws TrieException {
 		return getNode(keys.toArray(new String[keys.size()]));
 	}
 
-	public TrieNode[] getAllTerminals() throws TrieException {
-		TrieNode[] allTerminals = getAllTerminals(getRoot());
+	public TrieNode[] getTerminals() throws TrieException {
+		TrieNode[] allTerminals = getTerminals(getRoot());
 		return allTerminals;
 	}
+	public TrieNode[] getTerminals(String[] segments) throws TrieException {
+		return getTerminals(segments, null);
+	}
 	
-	public TrieNode[] getAllTerminals(String[] segments) throws TrieException {
-		TrieNode node = this.getNode(segments);
-		TrieNode[] allTerminals = null;
-		if (node==null)
-			allTerminals = new TrieNode[0];
-		else
-			allTerminals = getAllTerminals(node);
+	public TrieNode[] getTerminals(String[] segments, Boolean matchStart) 
+			throws TrieException {
+
+		if (matchStart == null) {
+			matchStart = true;
+		}
+		
+		TrieNode[] allTerminals = new TrieNode[0];
+		if (segments.length > 0 && segments[0].equals("^")) {
+			matchStart = true;
+		}
+		
+		if (!matchStart) {
+			getTerminalsMatchingNgram(segments);
+		} else {
+			TrieNode node = this.getNode(segments);
+			if (node==null)
+				allTerminals = new TrieNode[0];
+			else
+				allTerminals = getTerminals(node);
+		}
 		
 		return allTerminals;
 	}
 	
-	public TrieNode[] getAllTerminals(TrieNode node) throws TrieException {
+	public TrieNode[] getTerminalsMatchingNgram(String[] segments) 
+			throws TrieException {
+		
+		List<TrieNode> terminalsLst = new ArrayList<TrieNode>();
+		Matcher matcher = joinedTerminalsMatcher(segments, true);
+		while (matcher.find()) {
+			String terminalStr = matcher.group(1);
+			String[] matchSegs = terminalStr.split(",");
+			terminalsLst.add(getNode(matchSegs));
+		}
+		
+		return terminalsLst.toArray(new TrieNode[terminalsLst.size()]);	
+	}	
+	
+	public TrieNode[] getTerminals(TrieNode node) throws TrieException {
 		List<TrieNode> allTerminalsLst = 
 			new ArrayList<TrieNode>();
 			
@@ -99,7 +141,7 @@ public abstract class Trie {
 	}
 
 	public long getNbOccurrences() throws TrieException {
-    	TrieNode[] terminals = getAllTerminals();
+    	TrieNode[] terminals = getTerminals();
     	long nbOccurrences = 0;
     	for (TrieNode terminal : terminals) {
     		nbOccurrences += terminal.getFrequency();
@@ -154,7 +196,7 @@ public abstract class Trie {
 		if (exclusions == null) {
 			exclusions = new TrieNode[0];
 		}
-		TrieNode[] terminals = getAllTerminals(node);
+		TrieNode[] terminals = getTerminals(node);
 		for (TrieNode nodeToExclude : exclusions)
 			terminals = (TrieNode[]) ArrayUtils.removeElement(terminals, nodeToExclude);
 	    Arrays.sort(terminals, new Comparator<TrieNode>() {
@@ -177,7 +219,7 @@ public abstract class Trie {
 	protected TrieNode getMostFrequentTerminalFromMostFrequentSequenceForRoot(String rootSegment) throws TrieException {
 		String[] mostFrequentSequence = getMostFrequentSequenceForRoot(rootSegment);
 		TrieNode node = this.getNode(mostFrequentSequence);
-		TrieNode[] terminals = getAllTerminals(node);
+		TrieNode[] terminals = getTerminals(node);
 		long max = 0;
 		TrieNode mostFrequentTerminal = null;
 		for (TrieNode terminal : terminals)
@@ -217,7 +259,7 @@ public abstract class Trie {
 		Logger logger = Logger.getLogger("CompiledCorpus.getMostFrequentSequenceToTerminals");
 		HashMap<String, Long> freqs = new HashMap<String, Long>();
 		TrieNode rootSegmentNode = this.getNode(new String[] {rootKey});
-		TrieNode[] terminals = getAllTerminals(rootSegmentNode);
+		TrieNode[] terminals = getTerminals(rootSegmentNode);
 		logger.debug("all terminals: "+terminals.length);
 		for (TrieNode terminalNode : terminals) {
 			//logger.debug("terminalNode: "+PrettyPrinter.print(terminalNode));
@@ -272,5 +314,40 @@ public abstract class Trie {
 		//}
 		freqs = _computeFreqs(newCumulativeKeys, remKeys, freqs, rootSegment);
 		return freqs;
+	}
+
+	public String[] wordChars(String word) {
+		String[] chars = Arrays.copyOf(word.split(""), word.length()+1);
+		chars[chars.length-1] = "$";
+		return chars;
+	}
+	
+	protected String getAllTerminalJoined() {
+		return allTerminalsJoined;
+	}
+	
+	protected void addToJoinedTerminals(String[] segments) {
+		Matcher matcher = joinedTerminalsMatcher(segments);
+		if (!matcher.find()) {
+			allTerminalsJoined += ";"+String.join(",", segments)+";";			
+		}
+	}
+	
+	protected Matcher joinedTerminalsMatcher(String[] segments) {
+		return joinedTerminalsMatcher(segments, false);
+	}
+	
+	private Matcher joinedTerminalsMatcher(String[] segments, boolean partial) {
+		String[] segmentsRegexQuoted = new String[segments.length];
+		for (int ii=0; ii < segments.length; ii++) {
+			segmentsRegexQuoted[ii] = Pattern.quote(segments[ii]);
+		}
+		String regex = String.join(",", segmentsRegexQuoted);
+		if (partial) {
+			regex = "[^;]*" + regex + "[^;]*";
+		}
+		regex = ";(" + regex + ");";
+		Matcher matcher = Pattern.compile(regex).matcher(getAllTerminalJoined());
+		return matcher;
 	}
 }

@@ -21,7 +21,7 @@ public class AssertTrie extends Asserter<Trie> {
 
 	public AssertTrie terminalsForNodeEqual(String[] segments, String[] expTerminals) 
 				throws Exception {
-		TrieNode[] allTerminalsNodes = trie().getAllTerminals(segments);
+		TrieNode[] allTerminalsNodes = trie().getTerminals(segments);
 		Set<String> gotTerminals = new HashSet<String>();
 		for (TrieNode node: allTerminalsNodes) {
 			gotTerminals.add(node.surfaceForm);
@@ -103,5 +103,23 @@ public class AssertTrie extends Asserter<Trie> {
 				expMostFrequentTerminals, gotMostFrequentTerminals);
 		
 		return this;
+	}
+
+	public void terminalsMatchingNGramEqual(String ngram, String[] expTerminals) 
+			throws Exception {
+		TrieNode[]  gotTerminalNodes = trie().getTerminalsMatchingNgram(ngram.split(""));
+		String[] gotTerminals = nodes2stringkeys(gotTerminalNodes);
+		AssertObject.assertDeepEquals(
+			baseMessage+"\nTerminal nodes matching ngram "+ngram+
+			" were not as expected", 
+			expTerminals, gotTerminals);
+	}
+	
+	protected String[] nodes2stringkeys(TrieNode[] nodes) {
+		String[] stringkeys = new String[nodes.length];
+		for (int ii=0; ii < nodes.length; ii++) {
+			stringkeys[ii] = nodes[ii].keysAsString();
+		}
+		return stringkeys;
 	}
 }

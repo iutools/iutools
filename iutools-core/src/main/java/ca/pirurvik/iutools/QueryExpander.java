@@ -11,7 +11,7 @@ import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
-import ca.pirurvik.iutools.corpus.CompiledCorpus;
+import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistryException;
 
@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
 
 public class QueryExpander {
 	
-	public CompiledCorpus compiledCorpus;
+	public CompiledCorpus_InMemory compiledCorpus;
 	public int numberOfReformulations = 5;
 	protected boolean verbose = true;
 
@@ -33,12 +33,12 @@ public class QueryExpander {
 		initializeWithCorpusName(corpusName);
 	}
 
-	public QueryExpander(CompiledCorpus _compiledCorpus) throws QueryExpanderException {
+	public QueryExpander(CompiledCorpus_InMemory _compiledCorpus) throws QueryExpanderException {
 		this.compiledCorpus = _compiledCorpus;
 		initialize(_compiledCorpus);
 	}
 	
-	private void initialize(CompiledCorpus _compiledCorpus) throws QueryExpanderException {
+	private void initialize(CompiledCorpus_InMemory _compiledCorpus) throws QueryExpanderException {
 		if (_compiledCorpus == null) {
 			try {
 				_compiledCorpus = CompiledCorpusRegistry.getCorpus();
@@ -80,7 +80,7 @@ public class QueryExpander {
 		ArrayList<QueryExpansion> mostFrequentTerminalsForWord;
 		
 		try {
-			segments = this.compiledCorpus.getSegmenter().segment(word);
+			segments = this.compiledCorpus.segmentText(word);
 		} catch (Exception e) {
 			segments = null;
 		}
@@ -164,7 +164,7 @@ public class QueryExpander {
 			listOfExclusions.add(exclusions.get(i).word);
 		TrieNode[] terminals;
 		try {
-			terminals = compiledCorpus.getTrie().getAllTerminals(node);
+			terminals = compiledCorpus.getTrie().getTerminals(node);
 		} catch (TrieException e) {
 			throw new QueryExpanderException(e);
 		}

@@ -11,7 +11,7 @@ import com.google.gson.Gson;
 import ca.inuktitutcomputing.data.LinguisticDataSingleton;
 import ca.inuktitutcomputing.data.Morpheme;
 import ca.nrc.datastructure.Pair;
-import ca.pirurvik.iutools.corpus.CompiledCorpus;
+import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 import ca.pirurvik.iutools.morphemesearcher.MorphemeSearcher;
 import ca.pirurvik.iutools.morphemesearcher.ScoredExample;
 
@@ -33,7 +33,7 @@ public class CmdLookForMorpheme extends ConsoleCommand {
 		//File dictionaryFile = new File(dictionaryFilePathname);
 		String compiledCorpusFilePath = getCompilationFile();
 		FileReader fr = new FileReader(compiledCorpusFilePath);
-		CompiledCorpus compiledCorpus = new Gson().fromJson(fr, CompiledCorpus.class);
+		CompiledCorpus_InMemory compiledCorpus = new Gson().fromJson(fr, CompiledCorpus_InMemory.class);
 		fr.close();
 		
 		MorphemeSearcher morphExtr = new MorphemeSearcher();

@@ -11,7 +11,7 @@ import ca.inuktitutcomputing.script.Roman;
 import ca.inuktitutcomputing.script.Syllabics;
 import ca.pirurvik.iutools.QueryExpander;
 import ca.pirurvik.iutools.QueryExpansion;
-import ca.pirurvik.iutools.corpus.CompiledCorpus;
+import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
 
 public class CmdExpandQuery extends ConsoleCommand {
@@ -34,7 +34,7 @@ public class CmdExpandQuery extends ConsoleCommand {
 		
 		String compilationFilePath = getCompilationFile();
 		FileReader fr = new FileReader(compilationFilePath);
-		CompiledCorpus compiledCorpus = new Gson().fromJson(fr, CompiledCorpus.class);
+		CompiledCorpus_InMemory compiledCorpus = new Gson().fromJson(fr, CompiledCorpus_InMemory.class);
 		fr.close();
 		QueryExpander reformulator = new QueryExpander(compiledCorpus);
 		CmdConvertIUSegments convertCommand = new CmdConvertIUSegments("");

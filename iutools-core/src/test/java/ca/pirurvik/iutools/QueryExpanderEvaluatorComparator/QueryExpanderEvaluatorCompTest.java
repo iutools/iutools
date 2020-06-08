@@ -10,7 +10,7 @@ import static org.junit.Assert.fail;
 
 import ca.inuktitutcomputing.config.IUConfig;
 import ca.pirurvik.iutools.QueryExpanderEvaluator;
-import ca.pirurvik.iutools.corpus.CompiledCorpus;
+import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 
 public class QueryExpanderEvaluatorCompTest {
@@ -45,7 +45,7 @@ public class QueryExpanderEvaluatorCompTest {
 		// Set this to true if you want to see print statements.
 		evaluator.verbose = false;
 
-		CompiledCorpus compiledCorpus = CompiledCorpusRegistry.getCorpus();
+		CompiledCorpus_InMemory compiledCorpus = CompiledCorpusRegistry.getCorpus();
 		compiledCorpus.setVerbose(false);
 		evaluator.setCompiledCorpus(compiledCorpus);
 		evaluator.setGoldStandard(new File(goldStandardCSVFilePath));

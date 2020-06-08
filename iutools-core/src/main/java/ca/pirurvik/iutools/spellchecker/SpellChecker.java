@@ -31,7 +31,7 @@ import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.json.PrettyPrinter;
 import ca.pirurvik.iutools.NumericExpression;
-import ca.pirurvik.iutools.corpus.CompiledCorpus;
+import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistryException;
 import ca.pirurvik.iutools.edit_distance.EditDistanceCalculator;
@@ -90,7 +90,7 @@ public class SpellChecker {
 	public transient EditDistanceCalculator editDistanceCalculator;
 	public transient boolean verbose = true;
 	
-	public CompiledCorpus corpus = null;
+	public CompiledCorpus_InMemory corpus = null;
 	private static StringSegmenter_IUMorpheme segmenter = null;
 	private transient String[] makeUpWords = new String[] {"sivu","sia"};
 	private static ArrayList<String> latinSingleInuktitutCharacters = new ArrayList<String>();
@@ -157,7 +157,7 @@ public class SpellChecker {
 
 	public void setDictionaryFromCorpus(File compiledCorpusFile) throws SpellCheckerException {
 		try {
-			corpus = CompiledCorpus.createFromJson(compiledCorpusFile.toString());
+			corpus = CompiledCorpus_InMemory.createFromJson(compiledCorpusFile.toString());
 			__processCorpus();
 		} catch (Exception e) {
 			throw new SpellCheckerException(

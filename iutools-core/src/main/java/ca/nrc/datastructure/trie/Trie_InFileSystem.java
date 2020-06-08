@@ -21,6 +21,7 @@ public class Trie_InFileSystem extends Trie {
 	public Trie_InFileSystem(File _rootDir) {
 		this.rootDir = _rootDir;
 	}
+	
 	@Override
 	public TrieNode getRoot() throws TrieException {
 		return getNode(new String[0]);
@@ -49,7 +50,7 @@ public class Trie_InFileSystem extends Trie {
 	}
 	
 	@Override
-	public TrieNode add(String[] wordKeys, String word) throws TrieException {
+	public TrieNode addExpression(String[] wordKeys, String word) throws TrieException {
 		String[] extendedKeys = appendTerminalKey(wordKeys);
 		TrieNode node = getNode(extendedKeys);
 		if (node == null) {
@@ -86,7 +87,7 @@ public class Trie_InFileSystem extends Trie {
 		}
 	}
 		
-	private void saveNode(TrieNode node) throws TrieException {
+	public void saveNode(TrieNode node) throws TrieException {
 		File nodeFile = file4node(node);
 		try {
 			new ObjectMapper().writeValue(nodeFile, node);
@@ -184,5 +185,12 @@ public class Trie_InFileSystem extends Trie {
 			}
 		}
 		return escaped;
+	}
+	
+	@Override
+	public boolean contains(String[] segments) throws TrieException {
+		File nodeFile = file4node(segments);
+		boolean answer = nodeFile.exists();
+		return answer;
 	}
 }

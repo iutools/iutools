@@ -21,7 +21,7 @@ import ca.nrc.config.ConfigException;
 
 public class CompiledCorpusRegistry {
 	
-	private static Map<String,CompiledCorpus> corpusCache = new HashMap<String,CompiledCorpus>();
+	private static Map<String,CompiledCorpus_InMemory> corpusCache = new HashMap<String,CompiledCorpus_InMemory>();
 	private static Map<String,File> registry = new HashMap<String,File>();
 	public static final String defaultCorpusName = "Hansard1999-2002";
 	public static final String emptyCorpusName = "EMPTYCORPUS";
@@ -48,17 +48,17 @@ public class CompiledCorpusRegistry {
 	
 	
 	@JsonIgnore
-	public static CompiledCorpus getCorpusWithName() throws CompiledCorpusRegistryException {
+	public static CompiledCorpus_InMemory getCorpusWithName() throws CompiledCorpusRegistryException {
 		return getCorpusWithName(defaultCorpusName);
 	}
 
 	@JsonIgnore
-	public static CompiledCorpus getCorpusWithName(String corpusName) throws CompiledCorpusRegistryException {
+	public static CompiledCorpus_InMemory getCorpusWithName(String corpusName) throws CompiledCorpusRegistryException {
 		Logger logger = Logger.getLogger("CompiledCorpusRegistry.getCorpusWithName");
 		logger.debug("corpusName= '"+corpusName+"'");
 		if (corpusName == null)
 			corpusName = defaultCorpusName;
-		CompiledCorpus corpus = null;
+		CompiledCorpus_InMemory corpus = null;
 		
 		String corpusFile = null;
 		if (registry.containsKey(corpusName)) {
@@ -114,14 +114,14 @@ public class CompiledCorpusRegistry {
 	}
 
 	@JsonIgnore
-	public static CompiledCorpus getCorpus() throws CompiledCorpusRegistryException {
+	public static CompiledCorpus_InMemory getCorpus() throws CompiledCorpusRegistryException {
 		return getCorpus(defaultCorpusName);
 	}
 
 	@JsonIgnore
-	public static CompiledCorpus getCorpus(String corpusName) throws CompiledCorpusRegistryException {
+	public static CompiledCorpus_InMemory getCorpus(String corpusName) throws CompiledCorpusRegistryException {
 		if (corpusName==null) corpusName = defaultCorpusName;
-		CompiledCorpus corpus = null;
+		CompiledCorpus_InMemory corpus = null;
 		if (corpusCache.containsKey(corpusName)) {
 			corpus = corpusCache.get(corpusName);
 		} else {
@@ -143,14 +143,14 @@ public class CompiledCorpusRegistry {
 		return corpus;
 	}
 	
-	private static CompiledCorpus makeCorpus(String corpusJsonFPath) throws CompiledCorpusRegistryException  {
-		CompiledCorpus corpus = null;
+	private static CompiledCorpus_InMemory makeCorpus(String corpusJsonFPath) throws CompiledCorpusRegistryException  {
+		CompiledCorpus_InMemory corpus = null;
 		if (! new File(corpusJsonFPath).exists()) {
 			throw new CompiledCorpusRegistryException("Did not find the corpus compilation file. Please retrieve it and place it in "+
 					corpusJsonFPath+".");
 		}
 		try {
-			corpus = CompiledCorpus.createFromJson(corpusJsonFPath);
+			corpus = CompiledCorpus_InMemory.createFromJson(corpusJsonFPath);
 			possiblyUpgradeCorpus(corpus, corpusJsonFPath);
 		} catch (Exception e) {
 			throw new CompiledCorpusRegistryException("Could not read compiled corpus from file: "+corpusJsonFPath, e);
@@ -159,7 +159,7 @@ public class CompiledCorpusRegistry {
 		return corpus;
 	}
 	
-	private static void possiblyUpgradeCorpus(CompiledCorpus corpus, 
+	private static void possiblyUpgradeCorpus(CompiledCorpus_InMemory corpus, 
 			String corpusJsonFPath) 
 			throws CompiledCorpusRegistryException, CompiledCorpusException {
 
@@ -193,7 +193,7 @@ public class CompiledCorpusRegistry {
 	public static Map<String,File> getRegistry() {
 		return registry;
 	}
-	public static Map<String,CompiledCorpus> getCorpusCache() {
+	public static Map<String,CompiledCorpus_InMemory> getCorpusCache() {
 		return corpusCache;
 	}
 }

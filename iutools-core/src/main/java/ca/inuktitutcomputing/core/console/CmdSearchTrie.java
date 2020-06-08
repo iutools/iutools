@@ -11,9 +11,10 @@ import com.google.gson.Gson;
 
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
+import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.Trie_InMemory;
 import ca.nrc.datastructure.trie.TrieNode;
-import ca.pirurvik.iutools.corpus.CompiledCorpus;
+import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 
 public class CmdSearchTrie extends ConsoleCommand {
 	
@@ -44,8 +45,8 @@ public class CmdSearchTrie extends ConsoleCommand {
 
 		boolean searchWord = false;
 		
-		CompiledCorpus compiledCorpus = CompiledCorpus.createFromJson(compilationFilePath);
-		Trie_InMemory trie = compiledCorpus.getTrie();
+		CompiledCorpus_InMemory compiledCorpus = CompiledCorpus_InMemory.createFromJson(compilationFilePath);
+		Trie trie = compiledCorpus.getTrie();
 
 		DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
 		DecimalFormatSymbols symbols = formatter.getDecimalFormatSymbols();

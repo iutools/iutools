@@ -15,7 +15,7 @@ import org.junit.Test;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.pirurvik.iutools.QueryExpanderEvaluator;
-import ca.pirurvik.iutools.corpus.CompiledCorpus;
+import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 
 public class QueryExpanderEvaluatorTest {
 
@@ -34,7 +34,7 @@ public class QueryExpanderEvaluatorTest {
 	@Test
 	public void test__run__stats_compiled_over_surface_forms_of_words() throws Exception {
 		// compile some corpus
-		CompiledCorpus compiledCorpus =
+		CompiledCorpus_InMemory compiledCorpus =
 			getACompiledCorpus(new String[] {
 			"takujumaguvit:1",
 			"takujumajunga:16","takujumammata:11","takugumagatta:11","takugumavugut:10",
@@ -121,7 +121,7 @@ public class QueryExpanderEvaluatorTest {
 	@Test
 	public void test__run__stats_compiled_over_morphemes() throws Exception {
 		// compile some corpus
-		CompiledCorpus compiledCorpus =
+		CompiledCorpus_InMemory compiledCorpus =
 			getACompiledCorpus(new String[] {
 			"takujumaguvit:1",
 			"takujumajunga:16","takujumammata:11","takugumagatta:11","takugumavugut:10",
@@ -209,7 +209,7 @@ public class QueryExpanderEvaluatorTest {
 
 	// ---------------
 	
-	private CompiledCorpus getACompiledCorpus(String[] entries) throws Exception {
+	private CompiledCorpus_InMemory getACompiledCorpus(String[] entries) throws Exception {
 		File dir = Files.createTempDirectory("").toFile();
 		dir.deleteOnExit();
 		String corpusDir = dir.getAbsolutePath();
@@ -221,10 +221,8 @@ public class QueryExpanderEvaluatorTest {
 				bw.write(wordFreq[0]+" ");
 		}
 		bw.close();
-        CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
-        StringSegmenter_IUMorpheme segmenter = (StringSegmenter_IUMorpheme)compiledCorpus.getSegmenter();
-        MorphologicalAnalyzer analyzer = segmenter.getAnalyzer();
-        analyzer.disactivateTimeout();
+        CompiledCorpus_InMemory compiledCorpus = new CompiledCorpus_InMemory(StringSegmenter_IUMorpheme.class.getName());
+        compiledCorpus.disactivateSegmenterTimeout();
         compiledCorpus.setVerbose(false);
         compiledCorpus.compileCorpusFromScratch(corpusDir);
         return compiledCorpus;

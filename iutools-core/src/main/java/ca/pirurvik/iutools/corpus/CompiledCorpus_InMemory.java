@@ -22,6 +22,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
+import org.junit.Assert;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.gson.Gson;
@@ -34,6 +35,7 @@ import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_Char;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
+import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.Trie_InMemory;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
@@ -43,17 +45,7 @@ import ca.nrc.ui.commandline.ProgressMonitor_Terminal;
 import ca.pirurvik.iutools.text.ngrams.NgramCompiler;
 import ca.pirurvik.iutools.text.segmentation.IUTokenizer;
 
-
-/**
- * This creates a Trie of the (Inuktitut) words in the Nunavut Hansard
- * 
- * segmentsCache: for each compiled word, contains the segments 
- *                (may be empty list if word did not get segmented)
- *                
- * 
- *
- */ 
-public class CompiledCorpus extends CompiledCorpus_Base 
+public class CompiledCorpus_InMemory extends CompiledCorpus_Base 
 {	
 	public int MAX_NGRAM_LEN = 5;
 	public static String JSON_COMPILATION_FILE_NAME = "trie_compilation.json";
@@ -61,7 +53,6 @@ public class CompiledCorpus extends CompiledCorpus_Base
 	public Trie_InMemory trie = new Trie_InMemory();
 	
 	// things related to the compiler's state and operation that need to be saved periodically and at termination
-	private HashMap<String,String[]> segmentsCache = new HashMap<String, String[]>();
 	private Vector<String> wordsFailedSegmentation = new Vector<String>();
 	public HashMap<String,Long> wordsFailedSegmentationWithFreqs = new HashMap<String,Long>();
 	
@@ -70,7 +61,6 @@ public class CompiledCorpus extends CompiledCorpus_Base
 
 	protected Vector<String> filesCompiled = new Vector<String>();	
 	protected String saveFilePath = null;	
-//	protected String segmenterClassName = StringSegmenter_Char.class.getName();	
 	public long currentFileWordCounter = -1;
 	protected long retrievedFileWordCounter = -1;	
 	public int saveFrequency = 1000;	
@@ -93,13 +83,7 @@ public class CompiledCorpus extends CompiledCorpus_Base
 	@JsonIgnore
 	private transient String corpusDirectory;
 	@JsonIgnore
-	private transient StringSegmenter segmenter = null;
-	@JsonIgnore
 	public transient int stopAfter = -1;
-//	@JsonIgnore
-//	public transient boolean verbose = true;
-//	@JsonIgnore
-//	public transient String name;
 	@JsonIgnore
 	public transient NgramCompiler ngramCompiler;
 	@JsonIgnore
@@ -150,27 +134,6 @@ public class CompiledCorpus extends CompiledCorpus_Base
 //		name = _name;
 //	}
 	
-	@SuppressWarnings("unchecked")
-	@JsonIgnore
-	public StringSegmenter getSegmenter() throws CompiledCorpusException {
-		if (segmenter == null) {
-			//Class<StringSegmenter> cls = (Class<StringSegmenter>) Class.forName(segmenterClassName);
-			Class cls;
-			try {
-				cls = Class.forName(segmenterClassName);
-			} catch (ClassNotFoundException e) {
-				throw new CompiledCorpusException(e);
-			}
-			try {
-				segmenter = (StringSegmenter) cls.newInstance();
-			} catch (Exception e) {
-				throw new CompiledCorpusException(e);
-			}
-		}
-		return segmenter;
-	}
-			
-	
 	
 	@SuppressWarnings("serial")
 	public static class CorpusTrieCompilerException extends Exception {
@@ -181,11 +144,11 @@ public class CompiledCorpus extends CompiledCorpus_Base
 	
 	// ------- Constructors ----------------------------------------------------
 	
-	public CompiledCorpus() {
+	public CompiledCorpus_InMemory() {
 		super(); 
 	}
 	
-	public CompiledCorpus(String segmenterClassName) {
+	public CompiledCorpus_InMemory(String segmenterClassName) {
 		super(segmenterClassName);
 	}
 	//--------------------------------------------------------------------------
@@ -198,20 +161,20 @@ public class CompiledCorpus extends CompiledCorpus_Base
 //	}
 	
 	public  void compileCorpus(String corpusDirectoryPathname) throws CompiledCorpusException, StringSegmenterException {
-		_compileCorpus(corpusDirectoryPathname,false);
+		compileCorpus(corpusDirectoryPathname,false);
 	}
 	
 	public  void compileCorpusFromScratch(String corpusDirectoryPathname) throws CompiledCorpusException, StringSegmenterException {
-		_compileCorpus(corpusDirectoryPathname,true);
+		compileCorpus(corpusDirectoryPathname,true);
 	}
 	
-	public  void _compileCorpus(String corpusDirectoryPathname, boolean fromScratch) throws CompiledCorpusException, StringSegmenterException {
+	public  void compileCorpus(String corpusDirectoryPathname, boolean fromScratch) throws CompiledCorpusException, StringSegmenterException {
 		toConsole("[INFO] *** Compiling trie for documents in "+corpusDirectoryPathname+"\n");
 		segmenter = getSegmenter(); //new StringSegmenter_IUMorpheme();
 		
 		if ( !fromScratch ) {
 			if (this.canBeResumed(corpusDirectoryPathname)) {
-				this.__resumeCompilation(corpusDirectoryPathname);
+				this.resumeCompilation(corpusDirectoryPathname);
 			} else {
 				// no json compilation in the corpus directory: will do as if from scratch
 			}
@@ -231,7 +194,7 @@ public class CompiledCorpus extends CompiledCorpus_Base
 	}
 	
 	public Iterator<String> allWords() {
-		Iterator<String> iter = segmentsCache.keySet().iterator();
+		Iterator<String> iter = getSegmentsCache().keySet().iterator();
 		return iter;
 	}
 	
@@ -248,23 +211,6 @@ public class CompiledCorpus extends CompiledCorpus_Base
 	public String getDecomposedWordsSuite() {
 		return decomposedWordsSuite;
 	}
-	
-	/*private void __compileWordSegmentations() {
-		Collection<String> segmentationsKeys = segmentsCache.keySet();
-		int nbDecompositions = segmentationsKeys.size();
-		int i = 1;
-		Iterator<String> it = segmentationsKeys.iterator();
-		while (it.hasNext()) {
-			String word = it.next();
-			String[] segments = segmentsCache.get(word);
-			System.out.println("<<>> "+(i++)+"/"+nbDecompositions+" : "+word+" ("+segments.length+")");
-			System.out.flush();
-			if ( segments.length != 0 ) 
-				addToWordSegmentations(word,segments);
-			//if (i>10) break;
-		}
-	}*/
-	
 	
 	/**
 	 * Recompile only the words that failed morphological analysis in a previous run
@@ -300,7 +246,7 @@ public class CompiledCorpus extends CompiledCorpus_Base
 		saveCompilerInDirectory(corpusDirectoryPathname);
 	}
 	
-	public Trie_InMemory getTrie() {
+	public Trie getTrie() {
 		return this.trie;
 	}
 	
@@ -330,6 +276,7 @@ public class CompiledCorpus extends CompiledCorpus_Base
 		saveCompilerInJSONFile(saveFilePathname);
 	}
 	
+	// TODO-June2020: Rename to save(File saveDir)
 	public void saveCompilerInJSONFile (String saveFilePathname) throws CompiledCorpusException {
 		FileWriter saveFile = null;
 		try {
@@ -356,9 +303,9 @@ public class CompiledCorpus extends CompiledCorpus_Base
 	 * interrupted while running.
 	 * @throws CompiledCorpusException 
 	 */
-	public void __resumeCompilation(String corpusDirectoryPathname) throws CompiledCorpusException {
+	public void resumeCompilation(String corpusDirectoryPathname) throws CompiledCorpusException {
 		String jsonFilePath = corpusDirectoryPathname+"/"+JSON_COMPILATION_FILE_NAME;
-		CompiledCorpus compiledCorpus = createFromJson(jsonFilePath);
+		CompiledCorpus_InMemory compiledCorpus = createFromJson(jsonFilePath);
 		
 		this.trie = compiledCorpus.trie;
 		this.setSegmentsCache(compiledCorpus.getSegmentsCache());
@@ -568,12 +515,9 @@ public class CompiledCorpus extends CompiledCorpus_Base
 				wordsFailedSegmentationWithFreqs.remove(word);
 	}
 	
-	private void addToDecomposedWordsSuite(String word) {
+	@Override
+	protected void addToDecomposedWordsSuite(String word) {
 		decomposedWordsSuite += word+",,";
-	}
-
-	private void addToWordSegmentations(String word,String[] segments) {
-		wordSegmentations += word+":"+String.join("", segments)+",,";
 	}
 
 	private void addToListOfFailedSegmentation(String word) {
@@ -599,11 +543,11 @@ public class CompiledCorpus extends CompiledCorpus_Base
     
     // ----------------------------- static -------------------------------
     
-    public static CompiledCorpus createFromJson(String jsonCompilationFilePathname) throws CompiledCorpusException {
+    public static CompiledCorpus_InMemory createFromJson(String jsonCompilationFilePathname) throws CompiledCorpusException {
     	try {
     		FileReader jsonFileReader = new FileReader(jsonCompilationFilePathname);
     		Gson gson = new Gson();
-    		CompiledCorpus compiledCorpus = gson.fromJson(jsonFileReader, CompiledCorpus.class);
+    		CompiledCorpus_InMemory compiledCorpus = gson.fromJson(jsonFileReader, CompiledCorpus_InMemory.class);
     		jsonFileReader.close();
     		return compiledCorpus;
     	} catch (FileNotFoundException e) {
@@ -628,15 +572,20 @@ public class CompiledCorpus extends CompiledCorpus_Base
     	return nb;
     }
     
+	@Override
+	protected TrieNode[] getAllTerminals() throws CompiledCorpusException {
+		try {
+			return this.trie.getTerminals();
+		} catch (TrieException e) {
+			throw new CompiledCorpusException(e);
+		}
+	}
+    
 	public long getNumberOfCompiledOccurrences() throws CompiledCorpusException {
 		if (this.terminalsSumFreq == null) {
 			long sumFreqs = 0;
 			TrieNode[] terminals;
-			try {
-				terminals = this.trie.getAllTerminals();
-			} catch (TrieException e) {
-				throw new CompiledCorpusException(e);
-			}
+			terminals = this.getAllTerminals();
 			for (TrieNode terminal : terminals)
 				sumFreqs += terminal.getFrequency();
 			this.terminalsSumFreq = new Long(sumFreqs);
@@ -652,18 +601,18 @@ public class CompiledCorpus extends CompiledCorpus_Base
 
     // ----------------------------- private -------------------------------
 
-	private void addToCache(String word, String[] segments) {
-		getSegmentsCache().put(word, segments);
-	}
+//	void addToCache(String word, String[] segments) {
+//		getSegmentsCache().put(word, segments);
+//	}
 
-	private String[] fetchSegmentsFromCache(String word) {
-		String[] segmentsFromCache = null;
-		if (!getSegmentsCache().containsKey(word))
-			segmentsFromCache = new String[] {};
-		else
-			segmentsFromCache = getSegmentsCache().get(word);
-		return segmentsFromCache;
-	}
+//	String[] fetchSegmentsFromCache(String word) {
+//		String[] segmentsFromCache = null;
+//		if (!getSegmentsCache().containsKey(word))
+//			segmentsFromCache = new String[] {};
+//		else
+//			segmentsFromCache = getSegmentsCache().get(word);
+//		return segmentsFromCache;
+//	}
 
 	private static boolean isInuktitutWord(String string) {
 		Pattern p = Pattern.compile("[agHijklmnpqrstuv&]+");
@@ -681,7 +630,7 @@ public class CompiledCorpus extends CompiledCorpus_Base
 	}
 
 	private static String[] extractWordsFromLine(String line) {
-		Logger logger = Logger.getLogger("CompiledCorpus.extractWordsFromLine");
+		Logger logger = Logger.getLogger("ca.pirurvik.iutools.corpus.CorpusCompiler.CompiledCorpus.extractWordsFromLine");
 		line = line.replace('.', ' ');
 		line = line.replace(',', ' ');
 		logger.debug("line= '"+line+"'");
@@ -707,9 +656,9 @@ public class CompiledCorpus extends CompiledCorpus_Base
 		}
 	}
 
-	public TrieNode getMostFrequentTerminal(String[] segments) throws CompiledCorpusException {		
+	public TrieNode getMostFrequentTerminal(String[] morphemes) throws CompiledCorpusException {		
 		try {
-			return this.trie.getMostFrequentTerminal(segments);
+			return this.trie.getMostFrequentTerminal(morphemes);
 		} catch (TrieException e) {
 			throw new CompiledCorpusException(e);
 		}
@@ -724,7 +673,7 @@ public class CompiledCorpus extends CompiledCorpus_Base
 	}
 	
 	
-	public Boolean isWordInCorpus(String word) {
+	public Boolean isWordInCorpus(String word) throws CompiledCorpusException {
 		Boolean result;
 		if (getWordsWithSuccessfulDecomposition().contains(",,"+word+",,"))
 			result = new Boolean(true);
@@ -758,12 +707,12 @@ public class CompiledCorpus extends CompiledCorpus_Base
 	public void setWordsFailedSegmentation(Vector<String> wordsFailedSegmentation) {
 		this.wordsFailedSegmentation = wordsFailedSegmentation;
 	}
-	public HashMap<String,String[]> getSegmentsCache() {
-		return segmentsCache;
-	}
-	public void setSegmentsCache(HashMap<String,String[]> segmentsCache) {
-		this.segmentsCache = segmentsCache;
-	}
+//	public HashMap<String,String[]> getSegmentsCache() {
+//		return segmentsCache;
+//	}
+//	public void setSegmentsCache(HashMap<String,String[]> segmentsCache) {
+//		this.segmentsCache = segmentsCache;
+//	}
 	public long getNbOccurrencesOfWord(String word) throws CompiledCorpusException {
 		Logger logger = Logger.getLogger("CompiledCorpus.getNbOccurrencesOfWord");
 		logger.debug("word: "+word);
@@ -776,7 +725,7 @@ public class CompiledCorpus extends CompiledCorpus_Base
 			String[] segments = segmentsStrWithSpaces.split(" ");
 			TrieNode[] terminals;
 			try {
-				terminals = this.trie.getAllTerminals(segments);
+				terminals = this.trie.getTerminals(segments);
 				nbOccurrences = terminals[0].getFrequency();
 			} catch (TrieException e) {
 				throw new CompiledCorpusException(e);
@@ -859,6 +808,15 @@ public class CompiledCorpus extends CompiledCorpus_Base
 		updateNGramIndex(word);
 	}
 	
+	@Override
+	protected void addToWordSegmentations(String word,String[] segments) {
+		wordSegmentations += word+":"+String.join("", segments)+",,";
+	}	
+	
+	@Override
+	protected void addToWordNGrams(String word, String[] segments) {
+		updateNGramIndex(word);
+	}
 	
 	private void updateNGramIndex(String word) {
 		NgramCompiler ngramCompiler = new NgramCompiler();
@@ -882,7 +840,8 @@ public class CompiledCorpus extends CompiledCorpus_Base
 		ngram2wordKeysMap.get(ngram).add(wordKey);
 	}
 	
-	public Set<String> wordsContainingNgram(String ngram) {
+	public Set<String> wordsContainingNgram(String ngram) 
+			throws CompiledCorpusException {
 		Set<String>  words = null;
 		if (ngram2wordKeysMap.containsKey(ngram)) {
 			Set<Long> wordKeys = ngram2wordKeysMap.get(ngram);
@@ -902,10 +861,10 @@ public class CompiledCorpus extends CompiledCorpus_Base
 		WordInfo wInfo = null;
 		if (word2infoMap.containsKey(word)) {
 			wInfo = word2infoMap.get(word);
-		} else if (segmentsCache.containsKey(word)){
+		} else if (getSegmentsCache().containsKey(word)){
 			Long wordKey = key4word(word);
 			wInfo = new WordInfo(wordKey);
-			String[] decomps = segmentsCache.get(word);
+			String[] decomps = getSegmentsCache().get(word);
 			wInfo.topDecompositions = decomps;
 			wInfo.totalDecompositions = decomps.length;
 			wInfo.frequency = computeWordFreq(word);
@@ -940,11 +899,11 @@ public class CompiledCorpus extends CompiledCorpus_Base
 			"This may take a few minutes...\n");
 				
 		String mess = "Migrating words for which morphological decomposition were found";
-		int numSteps = segmentsCache.keySet().size();
+		int numSteps = getSegmentsCache().keySet().size();
 		ProgressMonitor_Terminal monitor = 
 				new ProgressMonitor_Terminal(numSteps, mess);
 		int counter = 0;
-		Set<String> words = segmentsCache.keySet();
+		Set<String> words = getSegmentsCache().keySet();
 		for (String aWord: words) {
 			counter++;
 			System.out.println("** migrateWordInfoOutOfPhonemeTrie: SEGMENTED word="+aWord+" ("+counter+" of "+numSteps+
@@ -955,14 +914,14 @@ public class CompiledCorpus extends CompiledCorpus_Base
 			long remainingMem = maxMem - usedMem;
 			double remainingMemPerc = 100.0 * remainingMem / maxMem;
 			System.out.println("  Remaining mem: "+remainingMem+" ("+String.format("%.0f%%",remainingMemPerc)+")");
-			String[] decomps = segmentsCache.get(aWord);
+			String[] decomps = getSegmentsCache().get(aWord);
 			addWord(aWord, decomps);
 			// To save memory during upgrade, set the entry for that word
 			// to null;
-			segmentsCache.put(aWord, null);
+			getSegmentsCache().put(aWord, null);
 			monitor.stepCompleted();
 		}
-		segmentsCache = null;
+		setSegmentsCache(null);
 
 		mess = "Migrating words for which NO morphological decomposition were found";
 		numSteps = wordsFailedSegmentation.size();
@@ -979,7 +938,7 @@ public class CompiledCorpus extends CompiledCorpus_Base
 	}
 
 	public boolean containsWord(String word) {
-		boolean answer = (segmentsCache.keySet().contains(word));
+		boolean answer = (getSegmentsCache().keySet().contains(word));
 		return answer;
 	}
 	
@@ -991,6 +950,42 @@ public class CompiledCorpus extends CompiledCorpus_Base
 	protected Set<String> wordsContainingMorphNgram(String[] morphemes) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public long charNgramFrequency(String ngram) {
+		long freq = 0;
+		Map<String, Long> freqs = getNgramStats();
+		if (freqs.containsKey(ngram)) {
+			freq = freqs.get(ngram);
+		}
+		return freq;
+	}
+
+	@Override
+	public long morphemeNgramFrequency(String[] morphNgram) throws CompiledCorpusException {
+		TrieNode node;
+		try {
+			node = trie.getNode(morphNgram);
+		} catch (TrieException e) {
+			throw new CompiledCorpusException(e);
+		}
+		long freq = node.getFrequency();
+		
+		return freq;
+	}
+	
+	public String[] topSegmentation(String word) {
+		Matcher matcher = 
+			Pattern.compile(","+word+":([^,]*),").matcher(wordSegmentations);
+		
+		String[] topSeg = new String[0];
+		if (matcher.find()) {
+			String topSegStr = matcher.group(1).replaceAll("(^\\{|\\}$)","");
+			topSeg = topSegStr.split("\\}\\s*\\{");
+		}
+		
+		return topSeg;
 	}
 }
 

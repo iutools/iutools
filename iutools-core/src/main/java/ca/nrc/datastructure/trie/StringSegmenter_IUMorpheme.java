@@ -63,4 +63,9 @@ public class StringSegmenter_IUMorpheme extends StringSegmenter {
 		return morphAnalyzer;
 	}
 
+	@Override
+	public void disactivateTimeout() {
+		getAnalyzer().disactivateTimeout();
+	}
+
 }

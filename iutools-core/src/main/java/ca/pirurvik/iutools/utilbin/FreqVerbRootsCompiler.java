@@ -16,10 +16,11 @@ import org.apache.log4j.Logger;
 
 import ca.nrc.datastructure.Pair;
 import ca.nrc.datastructure.trie.Trie_InMemory;
+import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.json.PrettyPrinter;
-import ca.pirurvik.iutools.corpus.CompiledCorpus;
+import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistryException;
 
@@ -32,10 +33,10 @@ public class FreqVerbRootsCompiler {
 	public FreqVerbRootsCompiler() {
 	}
 	
-	public HashMap<String,Long> compileFreqs(CompiledCorpus corpus) throws TrieException {
+	public HashMap<String,Long> compileFreqs(CompiledCorpus_InMemory corpus) throws TrieException {
 		Logger logger = Logger.getLogger("FreqVerbRootsCompiler.compileFreqs");
 		HashMap<String,Long> freqsOfVerbRoots = new HashMap<String,Long>();
-		Trie_InMemory trie = corpus.getTrie();
+		Trie trie = corpus.getTrie();
 		Map<String,TrieNode> nodesOfRootsOfWords = trie.getRoot().getChildren();
 		String rootIds[] = nodesOfRootsOfWords.keySet().toArray(new String[] {});
 		logger.debug("rootIds: "+PrettyPrinter.print(rootIds));
@@ -82,7 +83,7 @@ public class FreqVerbRootsCompiler {
 			File corpusJsonFile = new File(corpusDirectoryPathname+"/"+"trie_compilation.json");
 			String corpusName = "work-corpus";
 			CompiledCorpusRegistry.registerCorpus(corpusName,corpusJsonFile);
-			CompiledCorpus corpus = CompiledCorpusRegistry.getCorpus(corpusName);
+			CompiledCorpus_InMemory corpus = CompiledCorpusRegistry.getCorpus(corpusName);
 			HashMap<String,Long> freqsOfVerbRoots = freqCompiler.compileFreqs(corpus);
 			
 			if (sorting.equals("root")) {

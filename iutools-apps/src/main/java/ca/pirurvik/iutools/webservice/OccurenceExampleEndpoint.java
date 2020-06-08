@@ -23,7 +23,7 @@ import ca.inuktitutcomputing.nunhansearch.ProcessQuery;
 import ca.inuktitutcomputing.utilities.Alignment;
 import ca.nrc.config.ConfigException;
 import ca.nrc.json.PrettyPrinter;
-import ca.pirurvik.iutools.corpus.CompiledCorpus;
+import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistryException;
 import ca.pirurvik.iutools.morphemesearcher.MorphemeSearcher;

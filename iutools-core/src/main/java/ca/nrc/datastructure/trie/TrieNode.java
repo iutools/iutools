@@ -1,5 +1,6 @@
 package ca.nrc.datastructure.trie;
 
+import java.beans.Transient;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -51,7 +52,14 @@ public class TrieNode {
     protected Map<String,TrieNode> children = new HashMap<String,TrieNode>();
     
     protected TrieNode mostFrequentTerminal;
+    
+    // TODO: When we have gotten rid of Trie_InMemory, get rid of 
+    //   this attribute. The 'data' attribute is filling the role 
+    //   that 'stats' used to fill
+    //
     protected Map<String,Object> stats = new HashMap<String,Object>();
+    
+    protected Map<String,Object> data = new HashMap<String,Object>();
     
     protected String cachedMostFrequentSurfaceForm = null;
     
@@ -289,5 +297,15 @@ public class TrieNode {
 
 	public Set<String> childrenSegments() {
 		return children.keySet();
+	}
+
+	@Transient
+	public void setData(String fldName, Object fldValue) {
+		data.put(fldName, fldValue);
+	}
+	
+	@Transient
+	public Object getData(String fldName) {
+		return data.get(fldName);
 	}
 }

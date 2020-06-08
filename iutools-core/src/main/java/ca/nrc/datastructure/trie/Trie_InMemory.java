@@ -1,5 +1,6 @@
 package ca.nrc.datastructure.trie;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
@@ -43,6 +44,13 @@ public class Trie_InMemory extends Trie {
 	
 		return trie;
     }
+    
+	@Override
+	public boolean contains(String[] segments) throws TrieException {
+		boolean answer = null != getNode(segments);
+		return answer;
+	}
+    
         
     /**
      * Add an entry to the Trie.
@@ -60,7 +68,7 @@ public class Trie_InMemory extends Trie {
     //
     // TODO: Check that partsSequence is NOT empty. If it is, raise exception
     //
-	public TrieNode add(String[] partsSequence, String word) throws TrieException {
+	public TrieNode addExpression(String[] partsSequence, String word) throws TrieException {
         TrieNode trieNode = getRoot();
         Logger logger = Logger.getLogger("Trie.add");
         logger.debug("segments: "+Arrays.toString(partsSequence));
@@ -155,7 +163,6 @@ public class Trie_InMemory extends Trie {
 		String json = gson.toJson(this);
 		return json;
     }
-    
 }
 
 class NodeFrequencyComparator implements Comparator<TrieNode> {

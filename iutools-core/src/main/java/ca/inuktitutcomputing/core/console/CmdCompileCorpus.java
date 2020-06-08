@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
-import ca.pirurvik.iutools.corpus.CompiledCorpus;
+import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 
 public class CmdCompileCorpus extends ConsoleCommand {
 
@@ -34,7 +34,7 @@ public class CmdCompileCorpus extends ConsoleCommand {
 		}
 		echo(-1);
 		
-		CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
+		CompiledCorpus_InMemory compiledCorpus = new CompiledCorpus_InMemory(StringSegmenter_IUMorpheme.class.getName());
 		boolean ok = true;
 		if ( compilationFile != null )
 			ok = checkFilePath(compilationFile);
@@ -49,9 +49,9 @@ public class CmdCompileCorpus extends ConsoleCommand {
 			else if (!redoFailed)
 				compiledCorpus.compileCorpus(corpusDir);
 			else {
-				File compilationBackupFile = new File(corpusDir + "/" + CompiledCorpus.JSON_COMPILATION_FILE_NAME);
+				File compilationBackupFile = new File(corpusDir + "/" + CompiledCorpus_InMemory.JSON_COMPILATION_FILE_NAME);
 				if (compilationBackupFile.exists()) {
-					compiledCorpus = CompiledCorpus.createFromJson(compilationBackupFile.getAbsolutePath());
+					compiledCorpus = CompiledCorpus_InMemory.createFromJson(compilationBackupFile.getAbsolutePath());
 					compiledCorpus.recompileWordsThatFailedAnalysis(corpusDir);
 				} else {
 					System.err.println("ERROR: " + "No json compilation backup file in corpus directory. The compilation cannot resume. Abort.");

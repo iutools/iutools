@@ -23,7 +23,7 @@ import com.google.gson.Gson;
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.pirurvik.iutools.QueryExpansion;
-import ca.pirurvik.iutools.corpus.CompiledCorpus;
+import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistryException;
 
@@ -33,7 +33,7 @@ public class QueryExpanderEvaluator {
 	
 //	static String csvGoldStandardFilePath = "/Users/benoitfarley/Inuktitut/Pirurvik/IU100Words.csv";
 //	static String compiledCorpusTrieFilePath = "/Users/benoitfarley/temp/trie_compilation-bak-2019-02-19.json";
-	public CompiledCorpus compiledCorpus = null;
+	public CompiledCorpus_InMemory compiledCorpus = null;
 	public CSVParser csvParser = null;
 	public boolean computeStatsOverSurfaceForms = true;
 	public float precision = -1;
@@ -69,12 +69,12 @@ public class QueryExpanderEvaluator {
 	
 	public void setCompiledCorpus(File compiledCorpusTrieFilePath) throws IOException {
 		FileReader fr = new FileReader(compiledCorpusTrieFilePath);
-		compiledCorpus = new Gson().fromJson(fr, CompiledCorpus.class);    		
+		compiledCorpus = new Gson().fromJson(fr, CompiledCorpus_InMemory.class);    		
 		fr.close();
 		compiledCorpus.setVerbose(verbose);
 	}
 	
-	public void setCompiledCorpus(CompiledCorpus _compiledCorpus) {
+	public void setCompiledCorpus(CompiledCorpus_InMemory _compiledCorpus) {
 		compiledCorpus = _compiledCorpus;
 		compiledCorpus.setVerbose(verbose);
 	}
@@ -107,7 +107,7 @@ public class QueryExpanderEvaluator {
 		
         try {
     		QueryExpander queryExpander = new QueryExpander(compiledCorpus);
-    		StringSegmenter segmenter = compiledCorpus.getSegmenter();
+//    		StringSegmenter segmenter = compiledCorpus.getSegmenter();
     		
     		if (verbose) System.out.println("Size of segments cache: "+compiledCorpus.getSegmentsCache().size());
             
@@ -160,7 +160,7 @@ public class QueryExpanderEvaluator {
                     	if (verbose) System.out.println("        "+gsalternative+" : "+freqGSAlternativeInCorpus);
                     	String altDecomp = null;
                     	try {
-                    		altDecomp = String.join(" ",segmenter.segment(gsalternative))+" \\";
+                    		altDecomp = String.join(" ",compiledCorpus.segmentText(gsalternative))+" \\";
                         	gsalternativesMorphemes[igs] = altDecomp;
                     	} catch (Exception e) {
                     		altDecomp = "";

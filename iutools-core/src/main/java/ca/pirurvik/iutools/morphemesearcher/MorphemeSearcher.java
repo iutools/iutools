@@ -20,24 +20,26 @@ import ca.inuktitutcomputing.morph.MorphInukException;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzerException;
 import ca.nrc.datastructure.trie.Trie_InMemory;
+import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.json.PrettyPrinter;
-import ca.pirurvik.iutools.corpus.CompiledCorpus;
-import ca.pirurvik.iutools.corpus.CompiledCorpus.WordWithMorpheme;
+import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
+import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory.WordWithMorpheme;
 import ca.pirurvik.iutools.corpus.CompiledCorpusException;
+import ca.pirurvik.iutools.corpus.CompiledCorpus_Base;
 
 public class MorphemeSearcher {
 	
 	protected String wordSegmentations = null;
-	protected CompiledCorpus corpus = null;
+	protected CompiledCorpus_Base corpus = null;
 	protected int nbWordsToBeDisplayed = 20;
 	protected int maxNbInitialCandidates = 100;
 	
 	public MorphemeSearcher() {
 	}
 	
-	public void useCorpus(CompiledCorpus _corpus) throws IOException {
+	public void useCorpus(CompiledCorpus_Base _corpus) throws IOException {
 		corpus = _corpus;
 		wordSegmentations = _corpus.getWordSegmentations();
 	}
@@ -261,10 +263,10 @@ public class MorphemeSearcher {
     	DecompositionExpression expr = new DecompositionExpression(decompositionExpression);
     	String exprWithoutSurfaceForms = expr.toStringWithoutSurfaceForms();
     	String[] sequenceOfMorphemes = exprWithoutSurfaceForms.split(" ");
-    	Trie_InMemory trie = corpus.getTrie();
+    	Trie trie = corpus.getTrie();
     	TrieNode[] terminals;
 		try {
-			terminals = trie.getAllTerminals(sequenceOfMorphemes);
+			terminals = trie.getTerminals(sequenceOfMorphemes);
 		} catch (TrieException e) {
 			throw new MorphemeSearcherException(e);
 		}

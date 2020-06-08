@@ -8,7 +8,7 @@ import java.util.Iterator;
 
 import com.google.gson.Gson;
 
-import ca.pirurvik.iutools.corpus.CompiledCorpus;
+import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 
 public class WordsNotDecomposed {
 	
@@ -17,7 +17,7 @@ public class WordsNotDecomposed {
 	public static void main(String[] args) throws FileNotFoundException {
 		String compilationFilePath = args[0];
 		FileReader fr = new FileReader(compilationFilePath);
-		CompiledCorpus compiledCorpus = new Gson().fromJson(fr, CompiledCorpus.class);
+		CompiledCorpus_InMemory compiledCorpus = new Gson().fromJson(fr, CompiledCorpus_InMemory.class);
 		HashMap<String,Long> wordsThatWereNotDecomposed = compiledCorpus.getWordsThatFailedSegmentationWithFreqs();
 		int nWords = wordsThatWereNotDecomposed.size();
 		Object[][] objs = new Object[nWords][2];

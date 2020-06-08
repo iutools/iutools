@@ -19,7 +19,7 @@ import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.testing.AssertHelpers;
 import ca.pirurvik.iutools.QueryExpander;
 import ca.pirurvik.iutools.QueryExpansion;
-import ca.pirurvik.iutools.corpus.CompiledCorpus;
+import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 
 public class QueryExpanderTest {
 
@@ -33,7 +33,7 @@ public class QueryExpanderTest {
 		// Given an Inuktut word, a QueryExpander can find a list of words that are 
 		// semantically close to this input, and are very frequent in a given corpus.
 		//
-        CompiledCorpus compiledCorpus = getACompiledCorpus(); 
+        CompiledCorpus_InMemory compiledCorpus = getACompiledCorpus(); 
         QueryExpander expander = new QueryExpander(compiledCorpus);
         expander.setVerbose(false);
 		QueryExpansion[] expansions = expander.getExpansions("nunavut");
@@ -51,7 +51,7 @@ public class QueryExpanderTest {
 				"iglu", "iglumut", "iglumut", "iglumut", "iglumik", "iglu",
 				"takujuq", "takujumajunga"
 		};
-        CompiledCorpus compiledCorpus = compileCorpusFromWords(words);        
+        CompiledCorpus_InMemory compiledCorpus = compileCorpusFromWords(words);        
         QueryExpander reformulator = new QueryExpander(compiledCorpus);
         reformulator.setVerbose(false);
         QueryExpansion[] expansions = reformulator.getExpansions("iglu");
@@ -74,7 +74,7 @@ public class QueryExpanderTest {
 				"iglu", "iglumut", "iglumut", "iglumut", "iglumik", "iglu", "iglumiutaq",
 				"takujuq", "takujumajunga"
 		};
-        CompiledCorpus compiledCorpus = compileCorpusFromWords(words);
+        CompiledCorpus_InMemory compiledCorpus = compileCorpusFromWords(words);
         QueryExpander reformulator = new QueryExpander(compiledCorpus);
         reformulator.setVerbose(false);
         QueryExpansion[] expansions = reformulator.getExpansions("iglumiutaq");
@@ -97,7 +97,7 @@ public class QueryExpanderTest {
 				"takujuq", "takujumajunga", "takujumavalliajanginnik",
 				"iglumut"
 		};
-        CompiledCorpus compiledCorpus = compileCorpusFromWords(corpusWords);
+        CompiledCorpus_InMemory compiledCorpus = compileCorpusFromWords(corpusWords);
         QueryExpander reformulator = new QueryExpander(compiledCorpus);
         reformulator.setVerbose(false);
         QueryExpansion[] expansions = reformulator.getExpansions("takujumaguvit");
@@ -120,7 +120,7 @@ public class QueryExpanderTest {
 				"takujuq", "takujumajunga", "takujumavalliajanginnik",
 				"iglumut"
 		};
-        CompiledCorpus compiledCorpus = compileCorpusFromWords(corpusWords);
+        CompiledCorpus_InMemory compiledCorpus = compileCorpusFromWords(corpusWords);
         QueryExpander expander = new QueryExpander(compiledCorpus);
         expander.setVerbose(false);
         QueryExpansion[] gotExpansions = expander.getExpansions("takujuq");
@@ -136,7 +136,7 @@ public class QueryExpanderTest {
 				"takujuq", "takujumajunga", "takujumavalliajanginnik",
 				"iglumut"
 		};
-        CompiledCorpus compiledCorpus = compileCorpusFromWords(corpusWords);
+        CompiledCorpus_InMemory compiledCorpus = compileCorpusFromWords(corpusWords);
         QueryExpander expander = new QueryExpander(compiledCorpus);
         expander.setVerbose(false);
         
@@ -176,7 +176,7 @@ public class QueryExpanderTest {
 		// tutsirautiit : 1
 		// 
 		// attendu : tutsiraummut, tuksiraummut, tuksiraut, tussiraut, tutsiraut
-        CompiledCorpus compiledCorpus = compileCorpusFromWords(words);
+        CompiledCorpus_InMemory compiledCorpus = compileCorpusFromWords(words);
         QueryExpander expander = new QueryExpander(compiledCorpus);        
         expander.setVerbose(false);
 
@@ -215,11 +215,11 @@ public class QueryExpanderTest {
 	}
 
 	
-	private CompiledCorpus getACompiledCorpus() throws Exception {
+	private CompiledCorpus_InMemory getACompiledCorpus() throws Exception {
 		return compileCorpusFromWords(new String[] {"nunavut"});
 	}
 	
-	public CompiledCorpus compileCorpusFromWords(String[] words) throws Exception {
+	public CompiledCorpus_InMemory compileCorpusFromWords(String[] words) throws Exception {
 		File dir = Files.createTempDirectory("").toFile();
 		dir.deleteOnExit();
 		String corpusDir = dir.getAbsolutePath();
@@ -227,7 +227,7 @@ public class QueryExpanderTest {
 				new File(corpusDir+"/corpusText.txt")));
 		bw.write(String.join(" ", words));
 		bw.close();
-        CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
+        CompiledCorpus_InMemory compiledCorpus = new CompiledCorpus_InMemory(StringSegmenter_IUMorpheme.class.getName());
         compiledCorpus.setVerbose(false);
         compiledCorpus.compileCorpusFromScratch(corpusDir);
         return compiledCorpus;

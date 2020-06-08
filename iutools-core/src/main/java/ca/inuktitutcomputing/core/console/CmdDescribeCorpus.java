@@ -9,8 +9,9 @@ import java.util.Map;
 import java.util.Random;
 
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
+import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.Trie_InMemory;
-import ca.pirurvik.iutools.corpus.CompiledCorpus;
+import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 
 public class CmdDescribeCorpus extends ConsoleCommand {
@@ -41,9 +42,9 @@ public class CmdDescribeCorpus extends ConsoleCommand {
 		File compilationFile = new File(compilationFilePathname);
 		String corpusName = "this-corpus";
 		CompiledCorpusRegistry.registerCorpus(corpusName, compilationFile);
-		CompiledCorpus compiledCorpus = CompiledCorpusRegistry.getCorpus(corpusName);
+		CompiledCorpus_InMemory compiledCorpus = CompiledCorpusRegistry.getCorpus(corpusName);
 //		Map<String,Long> ngramStats = compiledCorpus.ngramStats;
-		Trie_InMemory trie = compiledCorpus.getTrie();
+		Trie trie = compiledCorpus.getTrie();
 		
 		System.out.println(
 				"Total number of analyzed words in trie (succeeded analysis): "+

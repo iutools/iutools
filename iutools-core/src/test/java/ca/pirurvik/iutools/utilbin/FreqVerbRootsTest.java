@@ -15,11 +15,12 @@ import org.junit.Test;
 
 import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
+import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.Trie_InMemory;
 import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.testing.AssertHelpers;
-import ca.pirurvik.iutools.corpus.CompiledCorpus;
+import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 import ca.pirurvik.iutools.corpus.CompiledCorpusException;
 
 public class FreqVerbRootsTest {
@@ -30,10 +31,10 @@ public class FreqVerbRootsTest {
 				"nunami takujuq iglumik siniktuq takujaujuq iijuq"
 				};
 		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
-        CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
+        CompiledCorpus_InMemory compiledCorpus = new CompiledCorpus_InMemory(StringSegmenter_IUMorpheme.class.getName());
         compiledCorpus.setVerbose(false);
         compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
-		Trie_InMemory trie = compiledCorpus.getTrie();
+		Trie trie = compiledCorpus.getTrie();
 		Map<String,TrieNode> nodesOfRootsOfWords = trie.getRoot().getChildren();
 		String rootIds[] = nodesOfRootsOfWords.keySet().toArray(new String[] {});
 		assertEquals("", 5, rootIds.length);

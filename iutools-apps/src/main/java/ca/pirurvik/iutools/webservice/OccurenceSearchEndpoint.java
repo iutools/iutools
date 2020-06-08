@@ -22,9 +22,10 @@ import ca.inuktitutcomputing.morph.Gist;
 import ca.inuktitutcomputing.nunhansearch.ProcessQuery;
 import ca.nrc.config.ConfigException;
 import ca.nrc.json.PrettyPrinter;
-import ca.pirurvik.iutools.corpus.CompiledCorpus;
+import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistryException;
+import ca.pirurvik.iutools.corpus.CompiledCorpus_Base;
 import ca.pirurvik.iutools.morphemesearcher.MorphemeSearcher;
 import ca.pirurvik.iutools.morphemesearcher.ScoredExample;
 
@@ -110,7 +111,7 @@ public class OccurenceSearchEndpoint extends HttpServlet {
 		MorphemeSearcher morphExtractor = new MorphemeSearcher();
 		
 		tLogger.trace("Loading the corpus");		
-		CompiledCorpus compiledCorpus = CompiledCorpusRegistry.getCorpus(corpusName);
+		CompiledCorpus_Base compiledCorpus = CompiledCorpusRegistry.getCorpus(corpusName);
 		morphExtractor.useCorpus(compiledCorpus);
 		int nbExamples = Integer.valueOf(inputs.nbExamples);
 		morphExtractor.setNbDisplayedWords(nbExamples);

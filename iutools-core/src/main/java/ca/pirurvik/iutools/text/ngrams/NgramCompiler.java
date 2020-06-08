@@ -20,6 +20,10 @@ public class NgramCompiler {
 		this.max = _max;
 		this.includeExtremities = _includeExtremities;
 	}
+	
+	public NgramCompiler(boolean _includeExtremities) {
+		this.includeExtremities = _includeExtremities;		
+	}
 
 	public HashSet<String> compile(String word) {
 		HashSet<String> seqSeenInWord = new HashSet<String>();

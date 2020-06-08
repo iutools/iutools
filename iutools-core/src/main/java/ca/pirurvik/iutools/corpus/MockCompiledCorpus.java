@@ -8,7 +8,7 @@ import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenterException;
 
 
-public class MockCompiledCorpus extends CompiledCorpus {
+public class MockCompiledCorpus extends CompiledCorpus_InMemory {
 	
 	
 	public MockCompiledCorpus() throws CompiledCorpusException {	
@@ -42,5 +42,9 @@ class MockStringSegmenter_IUMorpheme extends StringSegmenter {
 	
 	public void setDictionary(HashMap<String,String> _dictionary) {
 		dictionary = _dictionary;
+	}
+
+	@Override
+	public void disactivateTimeout() {
 	}
 }

@@ -17,12 +17,12 @@ import ca.inuktitutcomputing.data.LinguisticData;
 import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.testing.AssertHelpers;
-import ca.pirurvik.iutools.corpus.CompiledCorpus;
+import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 import ca.pirurvik.iutools.corpus.CompiledCorpusException;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.corpus.MockCompiledCorpus;
 import ca.pirurvik.iutools.corpus.MockCompiledCorpusFactory;
-import ca.pirurvik.iutools.corpus.CompiledCorpus.WordWithMorpheme;
+import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory.WordWithMorpheme;
 import ca.pirurvik.iutools.morphemesearcher.MorphemeSearcher;
 import ca.pirurvik.iutools.morphemesearcher.ScoredExample;
 import ca.pirurvik.iutools.morphemesearcher.MorphemeSearcher.Bin;
@@ -50,7 +50,7 @@ public class MorphemeSearcherTest {
 		// 
 		// For example
 		//
-		CompiledCorpus corpus = mockCompiledCorpus;
+		CompiledCorpus_InMemory corpus = mockCompiledCorpus;
 		morphemeExtractor.useCorpus(corpus);
 		
 		//
@@ -136,7 +136,7 @@ public class MorphemeSearcherTest {
 				"makpigarni", "mappigarni", "inuglu"
 				};
 		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
-        CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
+        CompiledCorpus_InMemory compiledCorpus = new CompiledCorpus_InMemory(StringSegmenter_IUMorpheme.class.getName());
         compiledCorpus.setVerbose(false);
         try {
         	compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
@@ -174,7 +174,7 @@ public class MorphemeSearcherTest {
 				"makpigarni", "mappigarni", "inuglu"
 				};
 		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
-        CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
+        CompiledCorpus_InMemory compiledCorpus = new CompiledCorpus_InMemory(StringSegmenter_IUMorpheme.class.getName());
         compiledCorpus.setVerbose(false);
         try {
         	compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
@@ -216,7 +216,7 @@ public class MorphemeSearcherTest {
 	// necessary here.
 	@Test @Ignore
 	public void test__wordsContainingMorpheme__infix__hansard() throws Exception {
-		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpus();
+		CompiledCorpus_InMemory corpus = CompiledCorpusRegistry.getCorpus();
 		MorphemeSearcher morphemeSearcher = new MorphemeSearcher();
 		morphemeSearcher.useCorpus(corpus);
 		String morpheme = "galuaq";
@@ -230,7 +230,7 @@ public class MorphemeSearcherTest {
 				"makpigarni", "mappigarni", "inuglu"
 				};
 		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
-        CompiledCorpus compiledCorpus = new CompiledCorpus(StringSegmenter_IUMorpheme.class.getName());
+        CompiledCorpus_InMemory compiledCorpus = new CompiledCorpus_InMemory(StringSegmenter_IUMorpheme.class.getName());
         compiledCorpus.setVerbose(false);
         try {
         	compiledCorpus.compileCorpusFromScratch(corpusDirPathname);

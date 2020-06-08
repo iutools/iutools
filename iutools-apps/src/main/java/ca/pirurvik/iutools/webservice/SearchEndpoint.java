@@ -25,7 +25,7 @@ import ca.nrc.json.PrettyPrinter;
 import ca.pirurvik.iutools.QueryExpanderException;
 import ca.pirurvik.iutools.QueryExpander;
 import ca.pirurvik.iutools.QueryExpansion;
-import ca.pirurvik.iutools.corpus.CompiledCorpus;
+import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistryException;
 import ca.pirurvik.iutools.search.IUSearchEngine;
@@ -162,7 +162,7 @@ public class SearchEndpoint extends HttpServlet {
 			QueryExpansion[] expansions = null;
 			expansionWords = new ArrayList<String>();			
 			if (expander == null) {
-				CompiledCorpus compiledCorpus = CompiledCorpusRegistry.getCorpus();
+				CompiledCorpus_InMemory compiledCorpus = CompiledCorpusRegistry.getCorpus();
 				expander = new QueryExpander(compiledCorpus);
 			}
 			expansions = expander.getExpansions(query);			

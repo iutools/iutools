@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
@@ -59,6 +61,18 @@ public abstract class TrieTest {
 			// This means the string was not found in the Trie
 		} else {
 		}
+		
+		// You can also get lists of terminals that match certain 
+		// sequences of charactercs
+		
+		// Get all of the terminals
+		TrieNode[] nodes = trie.getTerminals();
+		
+		// Get all the terminals that START with "hel"
+		nodes = trie.getTerminals("hel".split(""));
+		
+		// Get all the terminals that contain the ngram "el"
+		nodes = trie.getTerminals("el".split(""), false);
 	}
 	
 	@Test
@@ -270,22 +284,22 @@ public abstract class TrieTest {
 		charTrie.add("okdoo".split(""),"okdoo");
 		
 		TrieNode hNode = charTrie.getNode("h".split(""));
-		TrieNode[] h_terminals = charTrie.getAllTerminals(hNode);
+		TrieNode[] h_terminals = charTrie.getTerminals(hNode);
 		Assert.assertEquals("The number of words starting with 'h' should be 4.",
 				4,h_terminals.length);
 		
 		TrieNode helNode = charTrie.getNode("hel".split(""));
-		TrieNode[] hel_terminals = charTrie.getAllTerminals(helNode);
+		TrieNode[] hel_terminals = charTrie.getTerminals(helNode);
 		Assert.assertEquals("The number of words starting with 'hel' should be 3.",
 				3,hel_terminals.length);
 		
 		TrieNode oNode = charTrie.getNode("o".split(""));
-		TrieNode[] o_terminals = charTrie.getAllTerminals(oNode);
+		TrieNode[] o_terminals = charTrie.getTerminals(oNode);
 		Assert.assertEquals("The number of words starting with 'o' should be 2.",
 				2,o_terminals.length);
 		
 		TrieNode okNode = charTrie.getNode("ok".split(""));
-		TrieNode[] ok_terminals = charTrie.getAllTerminals(okNode);
+		TrieNode[] ok_terminals = charTrie.getTerminals(okNode);
 		Assert.assertEquals("The number of words starting with 'ok' should be 2.",
 				2,o_terminals.length);
 	}	
@@ -479,5 +493,27 @@ public abstract class TrieTest {
 		new AssertTrie(morphTrie, "")
 			.mostFrequentTerminalEquals(
 				new String[] {"{taku/1v}"}, "{taku/1v}{laaq/2vv}{juq/1vn}");
+	}
+	
+	@Test
+	public void test__wordChars__HappyPath() throws Exception {
+		String word = "hello";
+		String[] gotChars = makeTrieToTest().wordChars(word);
+		String[] expChars = new String[] {"h","e","l","l","o","$"};
+		AssertObject.assertDeepEquals("", expChars, gotChars);
+	}
+	
+	@Test
+	public void test__getTerminalsMatchingNgram__HappyPath() throws Exception {
+		Trie charTrie = makeTrieToTest();
+		charTrie.add("hello".split(""),"hello");
+		charTrie.add("hit".split(""),"hit");
+		charTrie.add("helios".split(""),"helios");
+		charTrie.add("helm".split(""),"helm");
+		
+		new AssertTrie(charTrie, "")
+			.terminalsMatchingNGramEqual(
+				"el", new String[] {"h e l l o", "h e l i o s", "h e l m"})
+		;
 	}
 }
