@@ -170,11 +170,12 @@ public abstract class CompiledCorpus_Base {
 		this.segmentsCache = segmentsCache;
 	}
 
-	@JsonIgnore
-	public void setWordDecompositions(Decomposition[] decomps) {
-		// TODO Auto-generated method stub
-		
-	}
+//	@JsonIgnore
+//	public void setWordDecompositions(Decomposition[] decomps) {
+//		// TODO Auto-generated method stub
+//		
+//	}
+
 	public abstract String getWordSegmentations();
 	
 	public abstract long getNbOccurrencesOfWord(String word) throws CompiledCorpusException;

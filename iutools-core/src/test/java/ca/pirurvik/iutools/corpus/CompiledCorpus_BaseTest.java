@@ -9,13 +9,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
@@ -64,7 +62,7 @@ public abstract class CompiledCorpus_BaseTest {
 	//////////////////////////
 	
 	@Test
-	public void test__CompiledCorpus_Base__Synopsis() throws Exception {
+	public void test__CompiledCorpus__Synopsis() throws Exception {
 		//
 		// Use a CompiledCorpus to trie-compile a corpus and compute statistics.
 		//
@@ -77,9 +75,6 @@ public abstract class CompiledCorpus_BaseTest {
 		// But you can also provide a morpheme segmenter which will allow the 
 		// corpus to keep stats on morphme-ngrams
 		// 
-		// But you can also pass it a different segmenter. For example, the following
-		// compiler will segment words by inuktitut morphemes.
-		//
 		compiledCorpus.setSegmenterClassName(
 				StringSegmenter_IUMorpheme.class.getName());
 
@@ -106,20 +101,10 @@ public abstract class CompiledCorpus_BaseTest {
 		String word = "inuksuk";
 		compiledCorpus.addWordOccurence(word);
 		
-		// You can also provide a list of possible morphological decompositions 
-		// for that word. This will:
-		//
-		// - Store the decompositions in the word's entry
-		// - Update the stats for all the morpheme-ngrams contained in any of  
-		//   the provided analyses.
-		// 
-		// Note that the word's entry will only store the first 
-		// N=decompsSampleSize decompositions, but it will remember how many 
-		// decompositions were passed to setWordDecompositions()
-		//
-		MorphologicalAnalyzer analyzer = new MorphologicalAnalyzer();
-		Decomposition[] decomps = analyzer.decomposeWord(word);
-		compiledCorpus.setWordDecompositions(decomps);
+		// TODO-June2020: Show how you can a provide frequency increment != 1
+//		compiledCorpus.addWordOccurence(word, 3); // Increase freq by +3
+//		compiledCorpus.addWordOccurence(word, 0); // Freq will remain unchanged
+		
 		
 		// Once you have added all this information to the CompiledCorpus, you 
 		// can do all sort of useful stuff with that info.
@@ -209,179 +194,8 @@ public abstract class CompiledCorpus_BaseTest {
 			wordsWithMorphemes = 
 				compiledCorpus.wordsContainingMorphNgram(morphemes);
 		}
-		
-		
-//		
-//		// The most common way to populate a corpus is to compile it from a file 
-//		// or series of text files.
-//		//
-//		// But you can also manually add some words to it.
-//		// 
-//		// You can add the word by itself, WITH or WITHOUT decompositions.
-//		//
-//		String word = "inukshuk";
-//		compiledCorpus.addWord(word); // WITHOUT decompositions
-//		word = "inuktut";
-//		Decomposition[] decomps = new MorphologicalAnalyzer().decomposeWord(word);
-//		String[] decompsStr = new String[decomps.length];
-//		for (int ii=0; ii < decomps.length; ii++) {
-//			decompsStr[ii] = decomps[ii].toStr2();
-//		}
-//		compiledCorpus.addWord(word, decompsStr); // WITH decompositions
-//		
-//		// You can override the decompositions of a word that is already in the 
-//		// corpus
-//		//
-//		compiledCorpus.info4word(word)
-//			.setDecompositions(new String[0]);
-//		
-//		// Attempting to add a word that is already registered raises a 
-//		// WordAlreadinInCorpusException exception.
-//		// 
-//		// So you should check for the existence of 
-//		// the word before adding it.
-//		//
-//		if (compiledCorpus.info4word(word) == null) {
-//			compiledCorpus.addWord(word);
-//		}
-//				
-//		// When you encounter an occurence of a word, you can tell 
-//		// the corpus about it as follows.
-//		//
-//		compiledCorpus.incrementWordFreq(word);
 	}
 	
-	
-	@Test
-	public void test__CompiledCorpus__Synopsis() throws Exception {
-		//
-		// Use a CompiledCorpus to trie-compile a corpus and compute statistics.
-		//
-		//
-		CompiledCorpus_InMemory compiledCorpus = new CompiledCorpus_InMemory();
-		
-		// 
-		// By default, the compiler segments words on a character by character basis.
-		// 
-		// But you can also pass it a different segmenter. For example, the following
-		// compiler will segment words by inuktitut morphemes.
-		//
-		compiledCorpus = new CompiledCorpus_InMemory(StringSegmenter_IUMorpheme.class.getName());
-
-		compiledCorpus.setVerbose(false); // set verbose to false for tests only
-
-		// Identify the full path of the corpus directory to be compiled
-		//
-		String corpusDirectoryPathname = "path/to/corpus/directory";
-		
-		// Compile the corpus given in argument as directory pathname from scratch
-		try {
-			compiledCorpus.compileCorpusFromScratch(corpusDirectoryPathname);
-		} catch(CompiledCorpusException | StringSegmenterException e) {
-			// do something
-		}
-		
-		// Compile the corpus given in argument as directory pathname (will resume where it was left after the last run)
-		try {
-			compiledCorpus.compileCorpus(corpusDirectoryPathname);
-		} catch(CompiledCorpusException | StringSegmenterException e) {
-			// do something
-		}
-		
-		// Eventually, when a corpus has been compiled, one will want to save it
-		// for later use:
-		String trieCompilationFilePathname = "path/to/file";
-		try {
-			compiledCorpus.saveCompilerInJSONFile(trieCompilationFilePathname);
-		} catch (CompiledCorpusException e) {
-			// do something
-		}
-		
-		// Once a corpus has been compiled, you can loop throug all the words
-		// that were seen in it, and get information about those words.
-		//
-		Iterator<String> iter = compiledCorpus.allWords();
-		while (iter.hasNext()) {
-			String word = iter.next();
-			WordInfo wInfo  = compiledCorpus.info4word(word);
-			if (wInfo == null) {
-				// Means the corpus does not know about this word
-				//
-				// Note: Should not happen in this case, because we obtained 
-				// 'word' through the allWords() iterator (so it know that this
-				// word was seen in the corpus).
-				//
-			} else {
-				// Total number of morphological decompositions for this word, 
-				// as well as a short list of the first few decompositions 
-				// found.
-				// 
-				// If those two values are 'null', it means that the decomps 
-				// have not been computed.
-				// It does NOT mean that no decomps can be computed for this 
-				// word.
-				//
-				Integer numDecomps = wInfo.totalDecompositions;
-				String[] decomps = wInfo.topDecompositions;
-			}			
-		}
-		
-		// You can ask for information about the various ngrams 
-		// that were seen in the corpus.
-		//
-		// This returns all the words that START with "nuna"
-		//
-		Set<String> wordsWithNgram = 
-				compiledCorpus.wordsContainingNgram("^nuna");
-		
-		// Words that END with "vut"
-		//
-		wordsWithNgram = 
-				compiledCorpus.wordsContainingNgram("vut$");
-
-		// Words that have "nav" in the middle
-		//
-		wordsWithNgram = 
-				compiledCorpus.wordsContainingNgram("nav");
-		
-		// The most common way to populate a corpus is to compile it from a file 
-		// or series of text files.
-		//
-		// But you can also manually add some words to it.
-		// 
-		// You can add the word by itself, WITH or WITHOUT decompositions.
-		//
-		String word = "inukshuk";
-		compiledCorpus.addWord(word); // WITHOUT decompositions
-		word = "inuktut";
-		Decomposition[] decomps = new MorphologicalAnalyzer().decomposeWord(word);
-		String[] decompsStr = new String[decomps.length];
-		for (int ii=0; ii < decomps.length; ii++) {
-			decompsStr[ii] = decomps[ii].toStr2();
-		}
-		compiledCorpus.addWord(word, decompsStr); // WITH decompositions
-		
-		// You can override the decompositions of a word that is already in the 
-		// corpus
-		//
-		compiledCorpus.info4word(word)
-			.setDecompositions(new String[0]);
-		
-		// Attempting to add a word that is already registered raises a 
-		// WordAlreadinInCorpusException exception.
-		// 
-		// So you should check for the existence of 
-		// the word before adding it.
-		//
-		if (compiledCorpus.info4word(word) == null) {
-			compiledCorpus.addWord(word);
-		}
-				
-		// When you encounter an occurence of a word, you can tell 
-		// the corpus about it as follows.
-		//
-		compiledCorpus.incrementWordFreq(word);
-	}	
 	
 	///////////////////////////////
 	// VERIFICATION TESTS
@@ -462,58 +276,8 @@ public abstract class CompiledCorpus_BaseTest {
         jsonFile.createNewFile();
         canBeResumed = compiledCorpus.canBeResumed(corpusDirPathname);
        Assert.assertTrue("The compiler should be able to resume; there is a JSON compilation backup.",canBeResumed);
-}
+    }
     	
-	@Test
-	public void test__readFromJson() throws Exception {
-		String[] stringsOfWords = new String[] {
-				"nunavut inuit takujuq amma kanaujaq iglumik takulaaqtuq nunait"
-				};
-		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
-        CompiledCorpus_InMemory compiledCorpus = new CompiledCorpus_InMemory(StringSegmenter_IUMorpheme.class.getName());
-        compiledCorpus.setVerbose(false);
-        compiledCorpus.saveFrequency = 3;
-        compiledCorpus.stopAfter = 7; 
-        // Compilation should stop after takulaaqtuq. This is to simulate
-        // an exception raised during the segmentation of takulaaqtuq, which
-        // should result in takulaaqtuq not being compiled.
-        try {
-        	compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
-        } catch(CompiledCorpusException | StringSegmenterException e) {
-        }
-        
-        CompiledCorpus_InMemory retrievedCompiledCorpus = new CompiledCorpus_InMemory(StringSegmenter_IUMorpheme.class.getName());
-        retrievedCompiledCorpus.resumeCompilation(corpusDirPathname);
-        retrievedCompiledCorpus.setVerbose(false);
-        //FileUtils.deleteDirectory(dir);
-
-		Trie_InMemory trie = retrievedCompiledCorpus.trie;
-		long trieSize = trie.getSize();
-		long expectedSize = 5;
-	Assert.assertEquals("The number of terminals in the retrieved trie is faulty.",expectedSize,trieSize);
-
-		long expectedCurrentFileWordCounter = 6;
-	Assert.assertEquals("The value of the 'current file word counter' is wrong.", expectedCurrentFileWordCounter,
-				retrievedCompiledCorpus.currentFileWordCounter);
-		HashMap<String, String[]> segmentsCache = retrievedCompiledCorpus.getSegmentsCache();
-		String[] expected_takulaaqtuq_segments = null;
-		assertArrayEquals("The cache should not contain the segments of 'takulaaqtuq'", expected_takulaaqtuq_segments,
-				segmentsCache.get("takulaaqtuq"));
-		String[] expected_nunait_segments = null;
-		assertArrayEquals("The cache should not contain the segments of 'nunait'", expected_nunait_segments,
-				segmentsCache.get("nunait"));
-		String[] expected_iglumik_segments = new String[] { "{iglu/1n}", "{mik/tn-acc-s}" };
-		assertArrayEquals("The cache should contain the segments of 'iglumik'", expected_iglumik_segments,
-				segmentsCache.get("iglumik"));
-		TrieNode taku_juq_node = trie.getNode(new String[] { "{taku/1v}", "{juq/1vn}" });
-		String expectedText = "{taku/1v} {juq/1vn}";
-	Assert.assertEquals("The text of the node should be '" + expectedText + "'.", expectedText, taku_juq_node.keysAsString());
-		TrieNode nuna_it_node = trie.getNode(new String[] { "{nuna/1n}", "{it/tn-nom-p}" });
-	Assert.assertTrue("The trie should not contain the node for 'nunait'.", nuna_it_node == null);
-		
-}
-	
-	
 	@Test
 	public void test__mostFrequentWordWithRadical() throws Exception {
 		CompiledCorpus_InMemory compiledCorpus = new CompiledCorpus_InMemory();
@@ -711,6 +475,4 @@ public abstract class CompiledCorpus_BaseTest {
 		tempCorp.saveCompilerInJSONFile(tempFile.toString());
 		return tempFile;
 	}
-	
-	
 }
