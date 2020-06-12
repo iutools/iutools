@@ -30,7 +30,7 @@ import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory.WordWithMorpheme;
  */
 public abstract class CompiledCorpus_Base {
 	
-	public abstract Iterator<String> allWords();
+	public abstract Iterator<String> allWords() throws CompiledCorpusException;
 	
 	public abstract WordInfo info4word(String word);
 	
@@ -55,13 +55,16 @@ public abstract class CompiledCorpus_Base {
 	public abstract String[] topSegmentation(String word);
 	
 	// TODO-June2020: Should probably choose a better name
-	protected abstract void addToWordSegmentations(String word,String[] segments);
+	protected abstract void addToWordSegmentations(String word,String[] segments) 
+		throws CompiledCorpusException;
+	
+	protected abstract void addToWordCharIndex(String word, String[] segments) throws CompiledCorpusException;
+
 	
 	// TODO-June2020: Should probably choose a better name
-	protected abstract void addToWordNGrams(String word, String[] segments);
+	protected abstract void addToWordNGrams(String word, String[] morphemes) throws CompiledCorpusException;
 	
 	// TODO-June2020: Should move this out ouf CompiledCorpus_Base.
-	//   It seems to be an implementation detail related to the InMemory version
 	protected abstract void addToDecomposedWordsSuite(String word);
 
 	protected String segmenterClassName = StringSegmenter_Char.class.getName();
@@ -131,6 +134,7 @@ public abstract class CompiledCorpus_Base {
 		}
 		// new word decomposed or word that now decomposed: add to word segmentations string
 		if (segments.length != 0) {
+			addToWordCharIndex(word, segments);
 			addToWordSegmentations(word,segments);
 			addToWordNGrams(word, segments);
 			addToDecomposedWordsSuite(word);

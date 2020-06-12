@@ -1,10 +1,15 @@
 package ca.pirurvik.iutools.corpus;
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
 import org.junit.Assert;
 
 import ca.nrc.datastructure.trie.AssertTrieNode;
 import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.testing.AssertHelpers;
+import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.Asserter;
 
 public class AssertCompiledCorpus extends Asserter<CompiledCorpus_Base> {
@@ -12,6 +17,7 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus_Base> {
 	public AssertCompiledCorpus(
 			CompiledCorpus_Base _gotObject, String mess) {
 		super(_gotObject, mess);
+		ignoreFields.add("segmenter");
 	}
 	
 	protected CompiledCorpus_Base corpus() {
@@ -128,5 +134,16 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus_Base> {
 			baseMessage+"\nFrequency of char ngram '"+ngram+"' was not as expected", 
 			expFreq, gotFreq);
 		return this;
+	}
+
+	public void wordsAre(String... expWords) throws Exception {
+		Iterator<String> iter = corpus().allWords();
+		Set<String> gotWords = new HashSet<String>();
+		while (iter.hasNext()) {
+			gotWords.add(iter.next());
+		}
+		AssertObject.assertDeepEquals(
+			baseMessage+"\nThe corpus did not have the expected list of words", 
+			expWords, gotWords);
 	}
 }

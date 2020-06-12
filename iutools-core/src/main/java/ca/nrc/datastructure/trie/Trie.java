@@ -14,7 +14,24 @@ import org.apache.log4j.Logger;
 
 import ca.nrc.json.PrettyPrinter;
 
-// TODO: Standardize the vocabulary used for methods and variable names
+// TODO-June2020: Methods that return a set or list of TrieNodes should
+//   instead return an Iterator<TrieNode>, because the list of nodes may be
+//   very large so it's better to not assume that they all will be in 
+//   memory.
+//
+//   In the case of the _InFileSystem version, create a class 
+//
+//      class FSTrieNodeIterator extends Iterator<TrieNode> {
+//
+//   This class will use FileUtils.iterateFiles() to create a File<Iterator>
+//   and it will use that File<Iterator> to iterate through the files for 
+//   the corresponding TrieNode
+//
+//    http://commons.apache.org/proper/commons-io/javadocs/api-2.5/org/apache/commons/io/FileUtils.html#iterateFiles(java.io.File,%20org.apache.commons.io.filefilter.IOFileFilter,%20org.apache.commons.io.filefilter.IOFileFilter)
+//
+
+
+// TODO-June2020: Standardize the vocabulary used for methods and variable names
 //   The trie indexes a series of string EXPRESSIONS.
 //   Each expression can be decomposed into a sequence of SEGMENTS
 //   Segments have

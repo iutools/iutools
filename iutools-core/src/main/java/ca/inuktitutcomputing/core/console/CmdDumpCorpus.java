@@ -1,6 +1,7 @@
 package ca.inuktitutcomputing.core.console;
 
 import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
+import ca.pirurvik.iutools.corpus.CompiledCorpusException;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.corpus.WordInfo;
 
@@ -33,7 +34,7 @@ public class CmdDumpCorpus extends ConsoleCommand {
     }
 
     private void dumpCorpus(CompiledCorpus_InMemory corpus, boolean wordsOnly, 
-    		File outputFile) throws IOException, CLIException {
+    		File outputFile) throws IOException, CLIException, CompiledCorpusException {
 
         FileWriter fWriter = new FileWriter(outputFile);
 

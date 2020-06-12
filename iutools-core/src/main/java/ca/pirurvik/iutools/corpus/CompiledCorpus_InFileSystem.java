@@ -15,7 +15,7 @@ import ca.pirurvik.iutools.text.ngrams.NgramCompiler;
 
 public class CompiledCorpus_InFileSystem extends CompiledCorpus_InMemory {
 	
-	File corpusDir = null;
+	public File corpusDir = null;
 	
 	Trie_InFileSystem wordCharTrie = null;
 	Trie_InFileSystem charNgramsTrie = null;
@@ -27,6 +27,7 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus_InMemory {
 	}
 
 	private void init_CompiledCorpus_InFileSystem(File _corpusDir) {
+		this.corpusDir = _corpusDir;
 		wordCharTrie = new Trie_InFileSystem(new File(_corpusDir, "wordCharTrie"));
 		charNgramsTrie = new Trie_InFileSystem(new File(_corpusDir, "charNgramsTrie"));
 		wordMorphTrie = new Trie_InFileSystem(new File(_corpusDir, "wordMorphTrie"));
@@ -112,8 +113,17 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus_InMemory {
 	}
 
 	@Override
-	public Iterator<String> allWords() {
-		return super.allWords();
+	public Iterator<String> allWords() throws CompiledCorpusException {
+		HashSet<String> allWordsSet = new HashSet<String>();
+		try {
+			TrieNode[] terminalNodes = wordCharTrie.getTerminals();
+			for (TrieNode aTerminal: terminalNodes) {
+				allWordsSet.add(aTerminal.getTerminalSurfaceForm());
+			}
+		} catch (TrieException e) {
+			throw new CompiledCorpusException(e);
+		}
+		return allWordsSet.iterator();
 	}
 
 	@Override
@@ -165,4 +175,38 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus_InMemory {
 	public List<WordWithMorpheme> getWordsContainingMorpheme(String morpheme) throws CompiledCorpusException {
 		return super.getWordsContainingMorpheme(morpheme);
 	}
+	
+	
+    @Override
+	protected void addToWordCharIndex(String word, String[] segments) 
+		throws CompiledCorpusException {
+    	super.addToWordCharIndex(word, segments);
+		try {
+			wordCharTrie.add(word.split(""), word);
+		} catch (TrieException e) {
+			throw new CompiledCorpusException(e);
+		}
+		
+	}
+	
+	@Override
+	protected void addToWordSegmentations(String word,String[] segments) throws CompiledCorpusException {
+		super.addToWordSegmentations(word, segments);
+		try {
+			morphNgramsTrie.add(segments, word);
+		} catch (TrieException e) {
+			throw new CompiledCorpusException(e);
+		}
+	}	
+
+	@Override
+	protected void addToWordNGrams(String word, String[] segments) throws CompiledCorpusException {
+		super.addToWordNGrams(word, segments);
+		try {
+			charNgramsTrie.add(word.split(""), word);
+		} catch (TrieException e) {
+			throw new CompiledCorpusException(e);
+		}
+	}
+
 }

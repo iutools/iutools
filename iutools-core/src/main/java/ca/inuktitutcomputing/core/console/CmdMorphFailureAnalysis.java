@@ -9,6 +9,7 @@ import ca.inuktitutcomputing.morph.failureanalysis.ProblematicNGram;
 import ca.inuktitutcomputing.morph.failureanalysis.ProblematicNGram.SortBy;
 import ca.nrc.ui.commandline.UserIO.Verbosity;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
+import ca.pirurvik.iutools.corpus.CompiledCorpusException;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.corpus.WordInfo;
 
@@ -63,7 +64,7 @@ public class CmdMorphFailureAnalysis extends ConsoleCommand {
 	}
 
 	private void loadCorpusWords(CompiledCorpus_InMemory corpus, 
-			MorphFailureAnalyzer analyzer) {
+			MorphFailureAnalyzer analyzer) throws CompiledCorpusException {
 		
 		Long countdown = getMaxWords();
 		Iterator<String> iter = corpus.allWords();

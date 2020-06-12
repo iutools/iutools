@@ -22,24 +22,20 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
-import org.junit.Assert;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 
 import ca.inuktitutcomputing.data.LinguisticDataException;
-import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.script.TransCoder;
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenterException;
-import ca.nrc.datastructure.trie.StringSegmenter_Char;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.Trie_InMemory;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
-import ca.nrc.datastructure.trie.Trie_InMemory;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.ui.commandline.ProgressMonitor_Terminal;
 import ca.pirurvik.iutools.text.ngrams.NgramCompiler;
@@ -193,7 +189,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus_Base
 		saveCompilerInDirectory(corpusDirectoryPathname);
 	}
 	
-	public Iterator<String> allWords() {
+	public Iterator<String> allWords() throws CompiledCorpusException {
 		Iterator<String> iter = getSegmentsCache().keySet().iterator();
 		return iter;
 	}
@@ -477,6 +473,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus_Base
 				if (segments.length != 0) {
 					addToWordSegmentations(word,segments);
 					addToDecomposedWordsSuite(word);
+					addToWordCharIndex(word,segments);
 				}
 			} catch (TimeoutException e) {
 				toConsole("** Timeout EXCEPTION RAISED");
@@ -506,6 +503,11 @@ public class CompiledCorpus_InMemory extends CompiledCorpus_Base
 			toConsole("--** Problem adding word: " + word + " (" + e.getMessage() + ").");
 			throw new CompiledCorpusException(e);
 		}
+	}
+
+    @Override
+	protected void addToWordCharIndex(String word, String[] segments) 
+			throws CompiledCorpusException {
 	}
 
 	private void removeFromListOfFailedSegmentation(String word) {
@@ -809,12 +811,12 @@ public class CompiledCorpus_InMemory extends CompiledCorpus_Base
 	}
 	
 	@Override
-	protected void addToWordSegmentations(String word,String[] segments) {
+	protected void addToWordSegmentations(String word,String[] segments) throws CompiledCorpusException {
 		wordSegmentations += word+":"+String.join("", segments)+",,";
 	}	
 	
 	@Override
-	protected void addToWordNGrams(String word, String[] segments) {
+	protected void addToWordNGrams(String word, String[] segments) throws CompiledCorpusException {
 		updateNGramIndex(word);
 	}
 	
