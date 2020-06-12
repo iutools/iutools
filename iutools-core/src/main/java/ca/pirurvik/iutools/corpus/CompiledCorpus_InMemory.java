@@ -726,7 +726,9 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 			TrieNode[] terminals;
 			try {
 				terminals = this.trie.getTerminals(segments);
-				nbOccurrences = terminals[0].getFrequency();
+				if (terminals.length > 0) {
+					nbOccurrences = terminals[0].getFrequency();
+				}
 			} catch (TrieException e) {
 				throw new CompiledCorpusException(e);
 			}

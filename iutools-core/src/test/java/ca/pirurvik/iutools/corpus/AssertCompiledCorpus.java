@@ -1,9 +1,13 @@
 package ca.pirurvik.iutools.corpus;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.junit.Assert;
 
 import ca.nrc.datastructure.trie.AssertTrieNode;
@@ -11,6 +15,7 @@ import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.testing.AssertHelpers;
 import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.Asserter;
+import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory.WordWithMorpheme;
 
 public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 	
@@ -136,7 +141,7 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 		return this;
 	}
 
-	public void wordsAre(String... expWordsArr) throws Exception {
+	public AssertCompiledCorpus wordsAre(String... expWordsArr) throws Exception {
 		Iterator<String> iter = corpus().allWords();
 		Set<String> gotWords = new HashSet<String>();
 		while (iter.hasNext()) {
@@ -149,5 +154,23 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 		AssertObject.assertDeepEquals(
 			baseMessage+"\nThe corpus did not have the expected list of words", 
 			expWords, gotWords);
+		
+		return this;
+	}
+	
+	public AssertCompiledCorpus wordsContainingMorphemeAre(
+		String morpheme, Triple<String,String,String>... expWords) throws Exception {
+		List<WordWithMorpheme> gotWordWithMorph = corpus().getWordsContainingMorpheme(morpheme);
+		List<Triple<String,String,String>> gotWords = new ArrayList<Triple<String,String,String>>();
+		for (WordWithMorpheme wrdWithMorph: gotWordWithMorph) {
+			gotWords.add(
+				Triple.of(
+					wrdWithMorph.word, wrdWithMorph.morphemeId, 
+					wrdWithMorph.decomposition));
+		}
+		AssertObject.assertDeepEquals(
+			baseMessage+"\nList of words containing morpheme '"+morpheme+"' was wrong", 
+			expWords, gotWords);
+		return this;
 	}
 }

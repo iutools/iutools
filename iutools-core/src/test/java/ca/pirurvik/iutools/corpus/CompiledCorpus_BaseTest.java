@@ -17,9 +17,12 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ca.inuktitutcomputing.morph.Decomposition;
@@ -61,7 +64,7 @@ public abstract class CompiledCorpus_BaseTest {
 	// DOCUMENTATION TESTS
 	//////////////////////////
 	
-	@Test
+	@Test @Ignore
 	public void test__DELETE_ME_LATER() {
 		Assert.fail("TODO: Continue removing calls to CompiledCorpus_InMemory.compileCorpusFromScratch() from the various tests.\nThen from production code.\nWhen they are all gone, delete that method");
 	}
@@ -265,25 +268,7 @@ public abstract class CompiledCorpus_BaseTest {
 			.charNgramFrequencyIs("juq", 2)
 			;
     }
-    
-    // TODO-June2020: This test should use makeCorpusUnderTest()
-    @Test
-    public void test__canBeResumed() throws ConfigException, IOException {
-		String[] stringsOfWords = new String[] {
-				"nunavut inuit takujuq amma kanaujaq iglumik takulaaqtuq nunait"
-				};
-		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
-        CompiledCorpus_InMemory compiledCorpus = new CompiledCorpus_InMemory(StringSegmenter_IUMorpheme.class.getName());
-        compiledCorpus.setVerbose(false);
-        boolean canBeResumed = compiledCorpus.canBeResumed(corpusDirPathname);
-       Assert.assertFalse("The compiler should not be able to resume; there is no JSON compilation backup.",canBeResumed);
-
-        File jsonFile = new File(corpusDirPathname+"/"+CompiledCorpus_InMemory.JSON_COMPILATION_FILE_NAME);
-        jsonFile.createNewFile();
-        canBeResumed = compiledCorpus.canBeResumed(corpusDirPathname);
-       Assert.assertTrue("The compiler should be able to resume; there is a JSON compilation backup.",canBeResumed);
-    }
-    
+        
     // TODO-June2020: This test should use makeCorpusUnderTest()
 	@Test
 	public void test__mostFrequentWordWithRadical() throws Exception {
@@ -382,44 +367,21 @@ public abstract class CompiledCorpus_BaseTest {
 
     // TODO-June2020: This test should use makeCorpusUnderTest()
 	@Test
-	public void test__getWordsContainingMorpheme() throws Exception {
+	public void test__getWordsContainingMorpheme__HappyPath() throws Exception {
 		String[] stringsOfWords = new String[] {
-				"nunavut inuit takujuq sinilauqtuq uvlimik takulauqtunga"
+				"nunavut", "inuit", "takujuq", "sinilauqtuq", "uvlimik", "takulauqtunga"
 				};
-		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
         CompiledCorpus_InMemory compiledCorpus = new CompiledCorpus_InMemory(StringSegmenter_IUMorpheme.class.getName());
         compiledCorpus.setVerbose(false);
-        compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
-		
-        List<WordWithMorpheme> words = compiledCorpus.getWordsContainingMorpheme("lauq");
-        Assert.assertEquals("", 2, words.size());
-        AssertObject.assertDeepEquals("", new WordWithMorpheme("sinilauqtuq","lauq/1vv","{sinik/1v}{lauq/1vv}{juq/1vn}",(long)1), words.get(0));
-        AssertObject.assertDeepEquals("", new WordWithMorpheme("takulauqtunga","lauq/1vv","{taku/1v}{lauq/1vv}{junga/tv-ger-1s}",(long)1), words.get(1));
-	}
-	
-
-	private void assertContains(CompiledCorpus_InMemory compiledCorpus,
-			String[] segs, long expFreq, String[] expLongestTerminal) 
-					throws Exception {
-		TrieNode gotNode = compiledCorpus.trie.getNode(segs);
-		String seqs_asString = String.join(", ", segs);
-		String jsonCorpus = compiledCorpus.trie.toJSON();
-		Assert.assertTrue(
-			"Trie should have contained sequence: "+seqs_asString+
-			"\nCorpus is:\n"+jsonCorpus, 
-			gotNode != null);
-		long gotFreq = gotNode.getFrequency();
-		Assert.assertEquals("Frequency was not as expected for segmenets: "+seqs_asString, expFreq, gotFreq);
-		
-		if (expLongestTerminal != null) {
-			TrieNode mostFrequent = compiledCorpus.getMostFrequentTerminal(gotNode);
-			String gotMostFreqTerminalTxt = mostFrequent.keysAsString();
-			String expMostFreqTerminalTxt = String.join(" ", expLongestTerminal);
-			AssertHelpers.assertStringEquals("Most frequent terminal was not as expected for segs "+seqs_asString, 
-					expMostFreqTerminalTxt, gotMostFreqTerminalTxt);
-			
-		}
-	}
+        compiledCorpus.addWordOccurences(stringsOfWords);
+        
+        new AssertCompiledCorpus(compiledCorpus, "")
+        		.wordsContainingMorphemeAre(
+        			"lauq", 
+        			Triple.of("sinilauqtuq", "lauq/1vv", "{sinik/1v}{lauq/1vv}{juq/1vn}"),
+        			Triple.of("takulauqtunga","lauq/1vv","{taku/1v}{lauq/1vv}{junga/tv-ger-1s}")
+        		);
+	}	
 
 	public static File compileToFile(String[] words) throws Exception {
 		return compileToFile(words,null);
