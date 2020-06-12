@@ -27,19 +27,19 @@ import ca.nrc.json.PrettyPrinter;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory.WordWithMorpheme;
 import ca.pirurvik.iutools.corpus.CompiledCorpusException;
-import ca.pirurvik.iutools.corpus.CompiledCorpus_Base;
+import ca.pirurvik.iutools.corpus.CompiledCorpus;
 
 public class MorphemeSearcher {
 	
 	protected String wordSegmentations = null;
-	protected CompiledCorpus_Base corpus = null;
+	protected CompiledCorpus corpus = null;
 	protected int nbWordsToBeDisplayed = 20;
 	protected int maxNbInitialCandidates = 100;
 	
 	public MorphemeSearcher() {
 	}
 	
-	public void useCorpus(CompiledCorpus_Base _corpus) throws IOException {
+	public void useCorpus(CompiledCorpus _corpus) throws IOException {
 		corpus = _corpus;
 		wordSegmentations = _corpus.getWordSegmentations();
 	}

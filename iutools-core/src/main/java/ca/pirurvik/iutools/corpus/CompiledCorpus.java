@@ -28,7 +28,7 @@ import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory.WordWithMorpheme;
  * @author desilets
  *
  */
-public abstract class CompiledCorpus_Base {
+public abstract class CompiledCorpus {
 	
 	public abstract Iterator<String> allWords() throws CompiledCorpusException;
 	
@@ -86,11 +86,11 @@ public abstract class CompiledCorpus_Base {
 	
 	public abstract long charNgramFrequency(String ngram);
 	
-	public CompiledCorpus_Base() {
+	public CompiledCorpus() {
 		initialize(StringSegmenter_Char.class.getName()); 
 	}
 	
-	public CompiledCorpus_Base(String segmenterClassName) {
+	public CompiledCorpus(String segmenterClassName) {
 		initialize(segmenterClassName);
 	}
 
@@ -100,23 +100,23 @@ public abstract class CompiledCorpus_Base {
 		}
 	}
 	
-	public CompiledCorpus_Base setVerbose(boolean value) {
+	public CompiledCorpus setVerbose(boolean value) {
 		verbose = value;
 		return this;
 	}
 	
-	public CompiledCorpus_Base setName(String _name) {
+	public CompiledCorpus setName(String _name) {
 		name = _name;
 		return this;
 	}
 	
-	public CompiledCorpus_Base setSegmenterClassName(String className) {
+	public CompiledCorpus setSegmenterClassName(String className) {
 		segmenterClassName = className;
 		return this;
 	}
 	
 
-	public CompiledCorpus_Base setDecompsSampleSize(int size) {
+	public CompiledCorpus setDecompsSampleSize(int size) {
 		return this;
 	}
 
@@ -132,13 +132,10 @@ public abstract class CompiledCorpus_Base {
 			segments = segmentText(word);
 			addToCache(word, segments);	
 		}
-		// new word decomposed or word that now decomposed: add to word segmentations string
-		if (segments.length != 0) {
-			addToWordCharIndex(word, segments);
-			addToWordSegmentations(word,segments);
-			addToWordNGrams(word, segments);
-			addToDecomposedWordsSuite(word);
-		}
+		addToWordCharIndex(word, segments);
+		addToWordSegmentations(word,segments);
+		addToWordNGrams(word, segments);
+		addToDecomposedWordsSuite(word);
 	}
 
 	// TODO-June2020: Is this really necessary?
@@ -169,12 +166,6 @@ public abstract class CompiledCorpus_Base {
 	public void setSegmentsCache(HashMap<String,String[]> segmentsCache) {
 		this.segmentsCache = segmentsCache;
 	}
-
-//	@JsonIgnore
-//	public void setWordDecompositions(Decomposition[] decomps) {
-//		// TODO Auto-generated method stub
-//		
-//	}
 
 	public abstract String getWordSegmentations();
 	

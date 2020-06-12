@@ -9,10 +9,10 @@ import ca.nrc.datastructure.trie.StringSegmenter;
 public class CompiledCorpus_InFileSystemTest extends CompiledCorpus_BaseTest {
 
 	@Override
-	protected CompiledCorpus_Base makeCorpusUnderTest(
+	protected CompiledCorpus makeCorpusUnderTest(
 			Class<? extends StringSegmenter> segmenterClass) {
 		File rootDir = Files.createTempDir();
-		CompiledCorpus_Base corpus = new CompiledCorpus_InFileSystem(rootDir);
+		CompiledCorpus corpus = new CompiledCorpus_InFileSystem(rootDir);
 		corpus.setSegmenterClassName(segmenterClass.getName());
 		return corpus;
 	}

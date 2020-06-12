@@ -7,20 +7,20 @@ import ca.nrc.file.FileCopy;
 public class RW_CompiledCorpus_InFileSystem extends RW_CompiledCorpus {
 
 	@Override
-	protected CompiledCorpus_Base newCorpus(File savePath) {
+	protected CompiledCorpus newCorpus(File savePath) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	protected CompiledCorpus_Base readCorpus(File savePath) throws CompiledCorpusException {
+	protected CompiledCorpus readCorpus(File savePath) throws CompiledCorpusException {
 		CompiledCorpus_InFileSystem corpus = new CompiledCorpus_InFileSystem(savePath);
 		
 		return corpus;
 	}
 
 	@Override
-	protected void writeCorpus(CompiledCorpus_Base corpus, File savePath) 
+	protected void writeCorpus(CompiledCorpus corpus, File savePath) 
 		throws CompiledCorpusException {
 		
 		File corpusDir = ((CompiledCorpus_InFileSystem)corpus).corpusDir;

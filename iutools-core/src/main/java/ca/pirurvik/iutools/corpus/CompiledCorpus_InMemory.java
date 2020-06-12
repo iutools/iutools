@@ -41,7 +41,7 @@ import ca.nrc.ui.commandline.ProgressMonitor_Terminal;
 import ca.pirurvik.iutools.text.ngrams.NgramCompiler;
 import ca.pirurvik.iutools.text.segmentation.IUTokenizer;
 
-public class CompiledCorpus_InMemory extends CompiledCorpus_Base 
+public class CompiledCorpus_InMemory extends CompiledCorpus 
 {	
 	public int MAX_NGRAM_LEN = 5;
 	public static String JSON_COMPILATION_FILE_NAME = "trie_compilation.json";
@@ -470,11 +470,9 @@ public class CompiledCorpus_InMemory extends CompiledCorpus_Base
 				StringSegmenter segmenter = getSegmenter();
 				segments = segmenter.segment(word);
 				// new word decomposed or word that now decomposed: add to word segmentations string
-				if (segments.length != 0) {
-					addToWordSegmentations(word,segments);
-					addToDecomposedWordsSuite(word);
-					addToWordCharIndex(word,segments);
-				}
+				addToWordSegmentations(word,segments);
+				addToDecomposedWordsSuite(word);
+				addToWordCharIndex(word,segments);
 			} catch (TimeoutException e) {
 				toConsole("** Timeout EXCEPTION RAISED");
 				toConsole(" ??? " + e.getClass().getName() + " --- " + e.getMessage() + " ");
@@ -812,7 +810,15 @@ public class CompiledCorpus_InMemory extends CompiledCorpus_Base
 	
 	@Override
 	protected void addToWordSegmentations(String word,String[] segments) throws CompiledCorpusException {
-		wordSegmentations += word+":"+String.join("", segments)+",,";
+		if (segments != null && segments.length > 0) {
+			wordSegmentations += word+":"+String.join("", segments)+",,";
+		} else {
+			Long freq = wordsFailedSegmentationWithFreqs.get(word);
+			if (freq == null) {
+				freq = new Long(0);
+			}
+			wordsFailedSegmentationWithFreqs.put(word, freq+1);
+		}
 	}	
 	
 	@Override

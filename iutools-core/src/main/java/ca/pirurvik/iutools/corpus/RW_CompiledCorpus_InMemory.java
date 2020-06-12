@@ -14,12 +14,12 @@ public class RW_CompiledCorpus_InMemory extends RW_CompiledCorpus {
 	Gson gson = new Gson();
 	
 	@Override
-	protected CompiledCorpus_Base newCorpus(File savePath) {
+	protected CompiledCorpus newCorpus(File savePath) {
 		return new CompiledCorpus_InMemory();
 	}
 
 	@Override
-	protected CompiledCorpus_Base readCorpus(File savePath) 
+	protected CompiledCorpus readCorpus(File savePath) 
 			throws CompiledCorpusException {
 		
 		CompiledCorpus_InMemory corpus = null;
@@ -33,7 +33,7 @@ public class RW_CompiledCorpus_InMemory extends RW_CompiledCorpus {
 	}
 
 	@Override
-	protected void writeCorpus(CompiledCorpus_Base corpus, File savePath) 
+	protected void writeCorpus(CompiledCorpus corpus, File savePath) 
 		throws CompiledCorpusException {
 		try {
 //			mapper.writeValue(savePath, corpus);

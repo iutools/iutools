@@ -11,31 +11,31 @@ import java.io.File;
 
 public abstract class RW_CompiledCorpus {
 	
-	protected abstract void writeCorpus(CompiledCorpus_Base corpus, 
+	protected abstract void writeCorpus(CompiledCorpus corpus, 
 		File savePath) throws CompiledCorpusException;
 
-	protected abstract CompiledCorpus_Base readCorpus(File savePath) 
+	protected abstract CompiledCorpus readCorpus(File savePath) 
 		throws CompiledCorpusException;
 
-	protected abstract CompiledCorpus_Base newCorpus(File savePath);
+	protected abstract CompiledCorpus newCorpus(File savePath);
 
-	public static void write(CompiledCorpus_Base corpus, File _savePath) 
+	public static void write(CompiledCorpus corpus, File _savePath) 
 		throws CompiledCorpusException {
 		RW_CompiledCorpus rw = makeRW(corpus.getClass());
 		rw.writeCorpus(corpus, _savePath);
 	}
 
-	public static CompiledCorpus_Base read(File savePath, 
-			Class<? extends CompiledCorpus_Base> corpusClass) 
+	public static CompiledCorpus read(File savePath, 
+			Class<? extends CompiledCorpus> corpusClass) 
 			throws CompiledCorpusException {
 		RW_CompiledCorpus rw = makeRW(corpusClass);
-		CompiledCorpus_Base corpus = rw.readCorpus(savePath);
+		CompiledCorpus corpus = rw.readCorpus(savePath);
 		
 		return corpus;
 	}
 
 	private static RW_CompiledCorpus makeRW(
-			Class<? extends CompiledCorpus_Base> corpusClass) {
+			Class<? extends CompiledCorpus> corpusClass) {
 		RW_CompiledCorpus rw = null;
 		if (corpusClass == CompiledCorpus_InFileSystem.class) {
 			rw = new RW_CompiledCorpus_InFileSystem();

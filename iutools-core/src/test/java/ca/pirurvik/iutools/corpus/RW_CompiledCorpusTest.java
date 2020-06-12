@@ -42,13 +42,13 @@ public class RW_CompiledCorpusTest {
 	@Test
 	public void test__read_write__InMemory_Corpus() throws Exception {
 		
-		CompiledCorpus_Base origCorpus = new CompiledCorpus_InMemory();
+		CompiledCorpus origCorpus = new CompiledCorpus_InMemory();
 		origCorpus.addWordOccurences(new String[] {"hello", "world"});
 		
 		File savePath = File.createTempFile("corpus", ".json");
 		RW_CompiledCorpus.write(origCorpus, savePath);
 		
-		CompiledCorpus_Base readCorpus = 
+		CompiledCorpus readCorpus = 
 			RW_CompiledCorpus
 				.read(savePath, CompiledCorpus_InMemory.class);
 		
@@ -66,7 +66,7 @@ public class RW_CompiledCorpusTest {
 		File savePath = Files.createTempDir();
 		RW_CompiledCorpus.write(origCorpus, savePath);
 		
-		CompiledCorpus_Base readCorpus = 
+		CompiledCorpus readCorpus = 
 			RW_CompiledCorpus
 				.read(savePath, CompiledCorpus_InFileSystem.class);
 		
@@ -79,11 +79,11 @@ public class RW_CompiledCorpusTest {
 	///////////////////////////////////
 		
 	private void checkOrigAgainsRead(
-			CompiledCorpus_Base origCorpus, CompiledCorpus_Base readCorpus) 
+			CompiledCorpus origCorpus, CompiledCorpus readCorpus) 
 			throws Exception {
 			String corpName = "orig";
-			for (CompiledCorpus_Base corpus: 
-				new CompiledCorpus_Base[] {origCorpus, readCorpus}) {
+			for (CompiledCorpus corpus: 
+				new CompiledCorpus[] {origCorpus, readCorpus}) {
 				
 				new AssertCompiledCorpus(corpus, 
 						"The "+corpName+" corpus was not as expectee")

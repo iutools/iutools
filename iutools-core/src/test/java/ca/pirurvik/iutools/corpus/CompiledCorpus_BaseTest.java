@@ -38,10 +38,10 @@ import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory.WordWithMorpheme;
 
 public abstract class CompiledCorpus_BaseTest {
 		
-	protected abstract CompiledCorpus_Base makeCorpusUnderTest(
+	protected abstract CompiledCorpus makeCorpusUnderTest(
 		Class<? extends StringSegmenter> segmenterClass);
 	
-	protected CompiledCorpus_Base makeCorpusUnderTest() {
+	protected CompiledCorpus makeCorpusUnderTest() {
 		return makeCorpusUnderTest(StringSegmenter_Char.class);
 	}
 	
@@ -62,12 +62,17 @@ public abstract class CompiledCorpus_BaseTest {
 	//////////////////////////
 	
 	@Test
+	public void test__DELETE_ME_LATER() {
+		Assert.fail("TODO: Continue removing calls to CompiledCorpus_InMemory.compileCorpusFromScratch() from the various tests.\nThen from production code.\nWhen they are all gone, delete that method");
+	}
+	
+	@Test
 	public void test__CompiledCorpus__Synopsis() throws Exception {
 		//
 		// Use a CompiledCorpus to trie-compile a corpus and compute statistics.
 		//
 		//
-		CompiledCorpus_Base compiledCorpus = makeCorpusUnderTest();
+		CompiledCorpus compiledCorpus = makeCorpusUnderTest();
 		
 		// 
 		// By default, the compiler always computes character-ngrams.
@@ -203,7 +208,7 @@ public abstract class CompiledCorpus_BaseTest {
 	
 	@Test
 	public void test__addWordOccurences__HappyPath() throws Exception {
-		CompiledCorpus_Base corpus = makeCorpusUnderTest();
+		CompiledCorpus corpus = makeCorpusUnderTest();
 		final String[] noWords = new String[] {};
 		String nunavut = "nunavut";
 		String nunavik = "nunavik";
@@ -231,7 +236,7 @@ public abstract class CompiledCorpus_BaseTest {
 	@Test
     public void test__topSegmentation__HappyPath() throws Exception {
 		String[] words = new String[] {"nunavut", "takujuq", "plugak"};
-		CompiledCorpus_Base compiledCorpus = 
+		CompiledCorpus compiledCorpus = 
 				makeCorpusUnderTest(StringSegmenter_IUMorpheme.class);		
 		compiledCorpus.addWordOccurences(words);
 		
@@ -249,7 +254,7 @@ public abstract class CompiledCorpus_BaseTest {
     {
 		String[] words = new String[] {
 			"nunavut", "takujuq", "iijuq"};
-		CompiledCorpus_Base compiledCorpus = 
+		CompiledCorpus compiledCorpus = 
 				makeCorpusUnderTest(StringSegmenter_IUMorpheme.class);		
 		compiledCorpus.addWordOccurences(words);
 	   
@@ -261,6 +266,7 @@ public abstract class CompiledCorpus_BaseTest {
 			;
     }
     
+    // TODO-June2020: This test should use makeCorpusUnderTest()
     @Test
     public void test__canBeResumed() throws ConfigException, IOException {
 		String[] stringsOfWords = new String[] {
@@ -277,7 +283,8 @@ public abstract class CompiledCorpus_BaseTest {
         canBeResumed = compiledCorpus.canBeResumed(corpusDirPathname);
        Assert.assertTrue("The compiler should be able to resume; there is a JSON compilation backup.",canBeResumed);
     }
-    	
+    
+    // TODO-June2020: This test should use makeCorpusUnderTest()
 	@Test
 	public void test__mostFrequentWordWithRadical() throws Exception {
 		CompiledCorpus_InMemory compiledCorpus = new CompiledCorpus_InMemory();
@@ -298,6 +305,7 @@ public abstract class CompiledCorpus_BaseTest {
 	Assert.assertEquals("The text of the the most frequent found is wrong.","h e l i c o p t e r \\",mostFrequent.keysAsString());
 	}
 
+    // TODO-June2020: This test should use makeCorpusUnderTest()
 	@Test
 	public void test__getTerminalsSumFreq() throws Exception {
 		CompiledCorpus_InMemory compiledCorpus = new CompiledCorpus_InMemory();
@@ -357,65 +365,22 @@ public abstract class CompiledCorpus_BaseTest {
     }
 
 
+    // TODO-June2020: This test should use makeCorpusUnderTest()
 	@Test
 	public void test__getNbFailedSegmentations() throws Exception {
 		String[] stringsOfWords = new String[] {
-				"nunavut inuit takujuq amma kanaujaq iglumik takulaaqtuq nunait"
+				"nunavut", "inuit", "takujuq", "amma", "kanaujaq", "iglumik", "takulaaqtuq", "nunait"
 				};
-		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
         CompiledCorpus_InMemory compiledCorpus = new CompiledCorpus_InMemory(StringSegmenter_IUMorpheme.class.getName());
+        compiledCorpus.addWordOccurences(stringsOfWords);
         compiledCorpus.setVerbose(false);
-        compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
        Assert.assertEquals("The number of words that failed segmentation is wrong.",1,
         		compiledCorpus.getNbWordsThatFailedSegmentations());
        Assert.assertEquals("The number of occurrences that failed segmentation is wrong.",1,
         		compiledCorpus.getNbOccurrencesThatFailedSegmentations());
 	}
-	
 
-	@Test
-	public void test__saveCompilerInJSONFile() throws IOException, CompiledCorpusException, StringSegmenterException, CompiledCorpusRegistryException {
-		String[] stringsOfWords = new String[] {
-				"nunavut inuit"
-				};
-		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
-        CompiledCorpus_InMemory compiledCorpus = new CompiledCorpus_InMemory(StringSegmenter_IUMorpheme.class.getName());
-        compiledCorpus.setVerbose(false);
-        compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
-		File tempFile = File.createTempFile("compiled_corpus", ".json");
-		compiledCorpus.saveCompilerInJSONFile(tempFile.getAbsolutePath());
-		CompiledCorpusRegistry.registerCorpus("compiled_corpus", tempFile);
-		
-		CompiledCorpus_InMemory savedCompiledCorpus = CompiledCorpusRegistry.getCorpus("compiled_corpus");
-	Assert.assertEquals("",",,nunavut,,inuit,,",savedCompiledCorpus.decomposedWordsSuite);
-	}
-	
-	
-	@Test
-	public void test__isWordInCorpus() throws IOException, CompiledCorpusException, StringSegmenterException {
-		String[] stringsOfWords = new String[] {
-				"nunavut inuit takujuq uvlimik"
-				};
-		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
-        CompiledCorpus_InMemory compiledCorpus = new CompiledCorpus_InMemory(StringSegmenter_IUMorpheme.class.getName());
-        compiledCorpus.setVerbose(false);
-        compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
-		String word;
-		Boolean result;
-		
-		word = "iben";
-		result = compiledCorpus.isWordInCorpus(word);
-	Assert.assertTrue("The word "+word+" is not in the corpus; result should be null",result==null);
-		
-		word = "takujuq";
-		result = compiledCorpus.isWordInCorpus(word);
-	Assert.assertTrue("The word "+word+" is in the corpus with successful analysis; result should be true",result.booleanValue()==true);
-		
-		word = "uvlimik";
-		result = compiledCorpus.isWordInCorpus(word);
-	Assert.assertTrue("The word "+word+" is in the corpus with unsuccessful analysis; result should be false",result.booleanValue()==false);
-	}
-	
+    // TODO-June2020: This test should use makeCorpusUnderTest()
 	@Test
 	public void test__getWordsContainingMorpheme() throws Exception {
 		String[] stringsOfWords = new String[] {
@@ -460,7 +425,7 @@ public abstract class CompiledCorpus_BaseTest {
 		return compileToFile(words,null);
 	}
 	
-	
+    // TODO-June2020: Get rid of this helper method
 	public static File compileToFile(String[] words, String fileId) throws Exception {
 		CompiledCorpus_InMemory tempCorp = new CompiledCorpus_InMemory(StringSegmenter_IUMorpheme.class.getName());
 		tempCorp.setVerbose(false);

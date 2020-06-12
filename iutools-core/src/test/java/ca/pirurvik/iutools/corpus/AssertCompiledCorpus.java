@@ -12,15 +12,15 @@ import ca.nrc.testing.AssertHelpers;
 import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.Asserter;
 
-public class AssertCompiledCorpus extends Asserter<CompiledCorpus_Base> {
+public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 	
 	public AssertCompiledCorpus(
-			CompiledCorpus_Base _gotObject, String mess) {
+			CompiledCorpus _gotObject, String mess) {
 		super(_gotObject, mess);
 		ignoreFields.add("segmenter");
 	}
 	
-	protected CompiledCorpus_Base corpus() {
+	protected CompiledCorpus corpus() {
 		return gotObject;
 	}
 
@@ -136,11 +136,15 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus_Base> {
 		return this;
 	}
 
-	public void wordsAre(String... expWords) throws Exception {
+	public void wordsAre(String... expWordsArr) throws Exception {
 		Iterator<String> iter = corpus().allWords();
 		Set<String> gotWords = new HashSet<String>();
 		while (iter.hasNext()) {
 			gotWords.add(iter.next());
+		}
+		Set<String> expWords = new HashSet<String>();
+		for (String word: expWordsArr) {
+			expWords.add(word);
 		}
 		AssertObject.assertDeepEquals(
 			baseMessage+"\nThe corpus did not have the expected list of words", 

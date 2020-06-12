@@ -51,7 +51,7 @@ import junit.framework.TestCase;
 public class CompiledCorpus_InMemoryTest extends CompiledCorpus_BaseTest
 {
 	@Override
-	protected CompiledCorpus_Base makeCorpusUnderTest(
+	protected CompiledCorpus makeCorpusUnderTest(
 			Class<? extends StringSegmenter> segmenterClass) {			
 		CompiledCorpus_InMemory corpus = new CompiledCorpus_InMemory();
 		corpus.setSegmenterClassName(segmenterClass.getName());
