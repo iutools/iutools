@@ -17,6 +17,7 @@ import ca.nrc.datastructure.trie.StringSegmenter_Char;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieNode;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory.WordWithMorpheme;
+import ca.pirurvik.iutools.text.ngrams.NgramCompiler;
 
 /**
  * This class stores stats about Inuktut words seen in a corpus, such as:
@@ -31,17 +32,18 @@ public abstract class CompiledCorpus {
 	
 	public abstract Iterator<String> allWords() throws CompiledCorpusException;
 	
-	public abstract WordInfo info4word(String word);
+	public abstract WordInfo info4word(String word) throws CompiledCorpusException;
 	
 	// TODO-June2020: Rename to exprContainingCharNgram(String ngram)
 	public abstract Set<String> wordsContainingNgram(String ngram) 
 			throws CompiledCorpusException;
 	
 	// TODO-June2020: Rename to containsExpression(String expression)
-	public abstract boolean containsWord(String word);
+	public abstract boolean containsWord(String word) throws CompiledCorpusException;
 	
 	// TODO-June2020: Should rename to exprContainingSegmentNgram
-	protected abstract Set<String> wordsContainingMorphNgram(String[] morphemes);
+	protected abstract Set<String> wordsContainingMorphNgram(String[] morphemes) 
+			throws CompiledCorpusException;
 	
 	// TODO-June2020: Doesn't seem like it belongs in CompiledCorpus
 	//  TrieNode classes are an internal implementation detail of 
@@ -51,16 +53,21 @@ public abstract class CompiledCorpus {
 	//
 	protected abstract TrieNode[] getAllTerminals() throws CompiledCorpusException;
 	
-	public abstract String[] topSegmentation(String word);
+	public abstract long totalOccurences() throws CompiledCorpusException;
+	
+	public abstract String[] topSegmentation(String word) throws CompiledCorpusException;
 	
 	// TODO-June2020: Should probably choose a better name
-	protected abstract void addToWordSegmentations(String word,String[] segments) 
+	protected abstract void addToWordSegmentations(
+			String word,String[][] decomps) 
 		throws CompiledCorpusException;
 	
-	protected abstract void addToWordCharIndex(String word, String[] segments) throws CompiledCorpusException;
+	protected abstract void addToWordCharIndex(
+		String word, String[][] decomps) throws CompiledCorpusException;
 	
 	// TODO-June2020: Should probably choose a better name
-	protected abstract void addToWordNGrams(String word, String[] morphemes) throws CompiledCorpusException;
+	protected abstract void addToWordNGrams(
+		String word, String[][] decomps) throws CompiledCorpusException;
 	
 	// TODO-June2020: Should move this out ouf CompiledCorpus_Base.
 	protected abstract void addToDecomposedWordsSuite(String word);
@@ -82,7 +89,9 @@ public abstract class CompiledCorpus {
 	@JsonIgnore
 	public transient String name;
 	
-	public abstract long charNgramFrequency(String ngram);
+	protected transient NgramCompiler ngramCompiler;	
+	
+	public abstract long charNgramFrequency(String ngram) throws CompiledCorpusException;
 	
 	public CompiledCorpus() {
 		initialize(StringSegmenter_Char.class.getName()); 
@@ -137,14 +146,17 @@ public abstract class CompiledCorpus {
 	}
 	
 	public void addWordOccurence(String word) throws CompiledCorpusException {
-		String[] segments = fetchSegmentsFromCache(word);
-		if (segments == null) {
-			segments = segmentText(word);
-			addToCache(word, segments);	
+		
+		String[][] decomps;
+		try {
+			decomps = getSegmenter().possibleSegmentations(word);
+		} catch (TimeoutException | StringSegmenterException e) {
+			throw new CompiledCorpusException(e);
 		}
-		addToWordCharIndex(word, segments);
-		addToWordSegmentations(word,segments);
-		addToWordNGrams(word, segments);
+		
+		addToWordCharIndex(word, decomps);
+		addToWordSegmentations(word,decomps);
+		addToWordNGrams(word, decomps);
 		addToDecomposedWordsSuite(word);
 	}
 
@@ -223,4 +235,12 @@ public abstract class CompiledCorpus {
 		long numWords = wordsContainingNgram(ngram).size();
 		return numWords > 0;
 	}
+	
+	@JsonIgnore
+	protected NgramCompiler getNgramCompiler() {
+		if (ngramCompiler == null) {
+			ngramCompiler = new NgramCompiler(3,0,true);
+		}
+		return ngramCompiler;
+	}		
 }

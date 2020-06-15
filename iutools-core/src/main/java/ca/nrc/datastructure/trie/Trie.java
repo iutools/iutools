@@ -44,7 +44,7 @@ import ca.nrc.json.PrettyPrinter;
 //
 
 public abstract class Trie {
-		
+			
 	public abstract TrieNode getRoot() throws TrieException;
 	
 	public abstract TrieNode getNode(String[] keys) throws TrieException;
@@ -147,7 +147,7 @@ public abstract class Trie {
 		return children;
 	}
 
-	private String[] extendSegments(String[] orig, String extension) {
+	public static String[] extendSegments(String[] orig, String extension) {
 		String[] extended = new String[orig.length+1];
 		for (int ii=0; ii < orig.length; ii++) {
 			extended[ii] = orig[ii];
@@ -333,10 +333,23 @@ public abstract class Trie {
 		return freqs;
 	}
 
-	public String[] wordChars(String word) {
+	public static String[] wordChars(String word) {
 		String[] chars = Arrays.copyOf(word.split(""), word.length()+1);
-		chars[chars.length-1] = "$";
+		chars[chars.length-1] = TrieNode.TERMINAL_SEG;
 		return chars;
+	}
+	
+	public static String[] ensureTerminal(String[] segments) {
+		String[] terminal = null;
+		if (segments.length > 0 && 
+				segments[segments.length-1].equals(TrieNode.TERMINAL_SEG)) {
+			terminal = segments;
+		} else {
+			terminal = Arrays.copyOf(segments, segments.length+1);
+			terminal[terminal.length-1] = TrieNode.TERMINAL_SEG;
+		}
+		
+		return terminal;
 	}
 	
 	protected String getAllTerminalJoined() {

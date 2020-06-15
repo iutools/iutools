@@ -38,10 +38,18 @@ public class WordInfo {
 
 	public long frequency = 0;;
 
+	public WordInfo() {
+		init_WordInfo(null);
+	}	
+
 	public WordInfo(Long _key) {
+		init_WordInfo(_key);
+	}
+	
+	private void init_WordInfo(Long _key) {
 		this.key = _key;
 	}
-
+	
 	public void setDecompositions(String[] decomps) {
 		if (decomps == null) {
 			topDecompositions = null;
@@ -58,5 +66,15 @@ public class WordInfo {
 			answer = (topDecompositions.length > 0);
 		}
 		return answer;
+	}
+
+	public WordInfo setFrequency(long _freq) {
+		this.frequency = _freq;
+		return this;
+	}
+	
+	public WordInfo setTopDecompositions(String[] _topDecomps) {
+		this.topDecompositions = _topDecomps;
+		return this;
 	}
 }

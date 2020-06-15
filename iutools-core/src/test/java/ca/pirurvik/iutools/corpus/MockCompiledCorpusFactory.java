@@ -7,9 +7,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.HashMap;
 
-import ca.nrc.datastructure.trie.StringSegmenterException;
-import ca.pirurvik.iutools.morphemesearcher.MorphemeSearcher;
-
 public class MockCompiledCorpusFactory {
 
 	public static MockCompiledCorpus makeSmallCorpus() 

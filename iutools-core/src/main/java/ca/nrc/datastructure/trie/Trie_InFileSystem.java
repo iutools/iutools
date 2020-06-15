@@ -104,7 +104,13 @@ public class Trie_InFileSystem extends Trie {
 	}
 	
 	private File file4node(String[] keys) throws TrieException {
-		
+		return file4node(keys, null);
+	}
+	
+	private File file4node(String[] keys, Boolean ensureExists) throws TrieException {
+		if (ensureExists == null) {
+			ensureExists = true;
+		}
 		String[] escapedKeys = escapeKeys(keys);
 		
 		File nodeFile = 
@@ -112,7 +118,7 @@ public class Trie_InFileSystem extends Trie {
 					 String.join(File.separator, escapedKeys)+
 					 File.separator+"node.json");
 		
-		if (!nodeFile.exists()) {
+		if (!nodeFile.exists() && ensureExists) {
 			try {
 				nodeFile.getParentFile().mkdirs();
 				TrieNode node = new TrieNode(keys);
@@ -142,7 +148,7 @@ public class Trie_InFileSystem extends Trie {
 		for (int ii=0; ii < origKeys.length; ii++) {
 			extendedKeys[ii] = origKeys[ii];
 		}
-		extendedKeys[extendedKeys.length-1] = "$";
+		extendedKeys[extendedKeys.length-1] = TrieNode.TERMINAL_SEG;
 		
 		return extendedKeys;
 	}
@@ -152,7 +158,7 @@ public class Trie_InFileSystem extends Trie {
 		for (int ii=0; ii < origKeys.length; ii++) {
 			String key = origKeys[ii];
 			if (ii == origKeys.length-1 && 
-				(key.equals("$") || key.equals("\\"))) {
+				(key.equals(TrieNode.TERMINAL_SEG) || key.equals("\\"))) {
 				// Leave the last key alone if it's the 'termina' key
 				//
 				escaped[ii] = origKeys[ii];
@@ -168,7 +174,7 @@ public class Trie_InFileSystem extends Trie {
 		}
 		
 		if (escaped.length > 0 && escaped[escaped.length-1].equals("\\")) {
-			escaped[escaped.length-1] = "$";
+			escaped[escaped.length-1] = TrieNode.TERMINAL_SEG;
 		}
 		
 		return escaped;
@@ -189,7 +195,7 @@ public class Trie_InFileSystem extends Trie {
 	
 	@Override
 	public boolean contains(String[] segments) throws TrieException {
-		File nodeFile = file4node(segments);
+		File nodeFile = file4node(segments, false);
 		boolean answer = nodeFile.exists();
 		return answer;
 	}

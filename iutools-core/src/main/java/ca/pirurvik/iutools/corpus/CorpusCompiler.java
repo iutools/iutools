@@ -322,45 +322,6 @@ public class CorpusCompiler {
 		toConsole("[INFO]     "+wordCounter + "(" + currentFileWordCounter + "+). " + word + "... ");
 		
 		getCorpus().addWordOccurence(word);
-		
-		String[] segments = fetchSegmentsFromCache(word);
-		// null      --> word has not yet been encountered
-		// String[0] --> word could previously not be decomposed by analyzer
-		//
-		// In either case we compute the decompositions (in the second case
-		// we do it in case the analyzer has improved since the last time)
-		//
-		if (segments==null || segments.length==0 ) {
-			String now = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss").format(new Date());
-			toConsole("[segmenting] ("+now+") ");
-			try {
-				StringSegmenter segmenter = getSegmenter();
-				segments = segmenter.segment(word);
-				// new word decomposed or word that now decomposed: add to word segmentations string
-				if (segments.length != 0) {
-					getCorpus().addToWordSegmentations(word,segments);
-					getCorpus().addToDecomposedWordsSuite(word);
-				}
-			} catch (TimeoutException e) {
-				toConsole("** Timeout EXCEPTION RAISED");
-				toConsole(" ??? " + e.getClass().getName() + " --- " + e.getMessage() + " ");
-				segments = new String[] {};
-			}
-			getCorpus().addToCache(word, segments);
-		}
-		
-		
-		try {
-			TrieNode result = null;
-			if (segments.length != 0) {
-				result = getCorpus().trie.add(segments,word);
-			} else {
-				toConsole("XXX\n");
-			}
-		} catch (TrieException e) {
-			toConsole("--** Problem adding word: " + word + " (" + e.getMessage() + ").");
-			throw new CompiledCorpusException(e);
-		}
 	}
 
 	private String[] fetchSegmentsFromCache(String word) {

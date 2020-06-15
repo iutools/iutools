@@ -1,17 +1,18 @@
 package ca.nrc.datastructure.trie;
 
-import java.beans.Transient;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class TrieNode {
+	
+	public static final String TERMINAL_SEG = "_$";
 	
 	// TODO: Rename to keySequence???
 	//
@@ -59,6 +60,7 @@ public class TrieNode {
     //
     protected Map<String,Object> stats = new HashMap<String,Object>();
     
+    @JsonProperty
     protected Map<String,Object> data = new HashMap<String,Object>();
     
     protected String cachedMostFrequentSurfaceForm = null;
@@ -96,7 +98,7 @@ public class TrieNode {
         	this.keys = _keys;
         	if (_keys.length > 0) {
             	String lastKey = _keys[_keys.length-1];
-            	if (lastKey.equals("\\") || lastKey.equals("$")) {
+            	if (lastKey.equals("\\") || lastKey.equals(TERMINAL_SEG)) {
             		this.isWord = true;
             	}
         		
@@ -117,7 +119,7 @@ public class TrieNode {
     	boolean answer = false;
     	String last = lastKey();
     	if (last!= null) {
-    		if (last.equals("$") || last.equals("\\")) {
+    		if (last.equals(TERMINAL_SEG) || last.equals("\\")) {
     			answer = true;
     		}
     	}
@@ -168,13 +170,13 @@ public class TrieNode {
     }
     
     public boolean hasTerminalNode() {
-    	return this.hasChild("$") || this.hasChild("\\");
+    	return this.hasChild(TERMINAL_SEG) || this.hasChild("\\");
     }
     
     public TrieNode childTerminalNode() {
     	TrieNode terminal = this.getChildren().get("\\");
     	if (terminal == null) {
-    		terminal = this.getChildren().get("$");
+    		terminal = this.getChildren().get(TERMINAL_SEG);
     	}
     	
     	return terminal;
@@ -299,13 +301,25 @@ public class TrieNode {
 		return children.keySet();
 	}
 
-	@Transient
-	public void setData(String fldName, Object fldValue) {
+
+	@JsonIgnore
+	public void setField(String fldName, Object fldValue) {
 		data.put(fldName, fldValue);
 	}
 	
-	@Transient
-	public Object getData(String fldName) {
+	@JsonIgnore
+	public Object getField(String fldName) {
 		return data.get(fldName);
+	}
+	
+	@JsonIgnore
+	public  <T> T getField(String fldName, T newEntry) {
+		T value = (T)data.get(fldName);
+		if (value == null) {
+			data.put(fldName, newEntry);
+			value = newEntry;
+		}
+		
+		return value;
 	}
 }

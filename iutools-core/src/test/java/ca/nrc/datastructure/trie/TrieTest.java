@@ -499,7 +499,7 @@ public abstract class TrieTest {
 	public void test__wordChars__HappyPath() throws Exception {
 		String word = "hello";
 		String[] gotChars = makeTrieToTest().wordChars(word);
-		String[] expChars = new String[] {"h","e","l","l","o","$"};
+		String[] expChars = new String[] {"h","e","l","l","o",TrieNode.TERMINAL_SEG};
 		AssertObject.assertDeepEquals("", expChars, gotChars);
 	}
 	
@@ -515,5 +515,25 @@ public abstract class TrieTest {
 			.terminalsMatchingNGramEqual(
 				"el", new String[] {"h e l l o", "h e l i o s", "h e l m"})
 		;
+	}
+	
+	@Test
+	public void test__ensureTerminal__SegmentsNotAlreadyTerminal__AppendsTerminalChar() throws Exception {
+		String[] segments = new String[] {"hello", "world"};
+		String[] gotTerminal = Trie.ensureTerminal(segments);
+		String[] expTerminal = new String[] {"hello", "world", TrieNode.TERMINAL_SEG};
+		AssertObject.assertDeepEquals(
+			"The list of segments should have been made into a terminal list", 
+			gotTerminal, expTerminal);
+	}
+
+	@Test
+	public void test__ensureTerminal__SegmentsAlreadyTerminal__LeavesThemAlone() throws Exception {
+		String[] segments = new String[] {"hello", "world", TrieNode.TERMINAL_SEG};
+		String[] gotTerminal = Trie.ensureTerminal(segments);
+		String[] expTerminal = new String[] {"hello", "world", TrieNode.TERMINAL_SEG};
+		AssertObject.assertDeepEquals(
+			"The list of segments should have been made into a terminal list", 
+			gotTerminal, expTerminal);
 	}
 }

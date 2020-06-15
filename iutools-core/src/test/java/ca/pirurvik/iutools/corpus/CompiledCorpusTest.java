@@ -32,14 +32,11 @@ import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_Char;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
-import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.datastructure.trie.Trie_InMemory;
 import ca.nrc.testing.AssertHelpers;
-import ca.nrc.testing.AssertObject;
-import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory.WordWithMorpheme;
 
-public abstract class CompiledCorpus_BaseTest {
+public abstract class CompiledCorpusTest {
 		
 	protected abstract CompiledCorpus makeCorpusUnderTest(
 		Class<? extends StringSegmenter> segmenterClass);
@@ -258,9 +255,9 @@ public abstract class CompiledCorpus_BaseTest {
 	   
 		new AssertCompiledCorpus(compiledCorpus, "")
 			// Ngram with freq = 1
-			.charNgramFrequencyIs("nun", 1)
+			.charNgramFrequencyIs("^nun", 1)
 			// Ngram with freq > 1
-			.charNgramFrequencyIs("juq", 2)
+			.charNgramFrequencyIs("juq$", 2)
 			;
     }
         
@@ -287,18 +284,16 @@ public abstract class CompiledCorpus_BaseTest {
 
     // TODO-June2020: This test should use makeCorpusUnderTest()
 	@Test
-	public void test__getTerminalsSumFreq() throws Exception {
-		CompiledCorpus_InMemory compiledCorpus = new CompiledCorpus_InMemory();
-        compiledCorpus.setVerbose(false);
-        Trie_InMemory charTrie = new Trie_InMemory();
-		charTrie.add("hello".split(""),"hello");
-		charTrie.add("hint".split(""),"hint");
-		charTrie.add("helicopter".split(""),"helicopter");
-		charTrie.add("helios".split(""),"helios");
-		charTrie.add("helicopter".split(""),"helicopter");
-		compiledCorpus.trie = charTrie;
-		long nbCompiledOccurrences = compiledCorpus.getNumberOfCompiledOccurrences();
-		Assert.assertEquals("The sum of the frequencies of all terminals is incorrect.",5,nbCompiledOccurrences);	
+	public void test__totalOccurences__HappyPath() throws Exception {
+		CompiledCorpus compiledCorpus = makeCorpusUnderTest();
+		compiledCorpus.addWordOccurences(
+			new String[] {"hello", "hint", "helicopter", "helios",
+					// Note: two occurences of "helicopter"
+					"helicopter"});
+	
+		new AssertCompiledCorpus(compiledCorpus, "")
+			.totalOccurencesEquals(5)
+			;
 	}
 	
 	/*
@@ -397,4 +392,62 @@ public abstract class CompiledCorpus_BaseTest {
 		RW_CompiledCorpus.write(tempCorp, tempFile);
 		return tempFile;
 	}
+	
+	@Test
+	public void test__morphemeNgramFrequency__HappyPath() throws Exception {
+		String[] words = new String[] {"inuit", "inuglu", "nunami"};
+		CompiledCorpus corpus = makeCorpusUnderTest();
+		corpus.setSegmenterClassName(MockStringSegmenter_IUMorpheme.class.getName());
+		corpus.addWordOccurences(words);
+		new AssertCompiledCorpus(corpus, "")
+			// Morpheme with freq > 1
+			.morphemeNgramFreqEquals(2, "{inuk/1n}")
+			// Morpheme with freq = 1
+			.morphemeNgramFreqEquals(1, "{nuna/1n}")
+			// Morpheme that is not the root
+			.morphemeNgramFreqEquals(1, "{lu/1q}")				
+			;
+	}
+	
+	@Test
+	public void test__wordsContainingNgram__VariousCases() throws Exception {
+		CompiledCorpus corpus = makeCorpusUnderTest();
+		corpus.setSegmenterClassName(StringSegmenter_IUMorpheme.class.getCanonicalName());
+		corpus.addWordOccurences(
+			new String[] {"inuktitut", "inuksuk", "inuttitut", "inakkut", 
+					"takuinuit", "taku", "intakuinuit"});
+		
+		String seq;
+		String[] expected;
+		Set<String> wordsWithSeq;
+
+		// ngram in the middle of a word
+		seq = "inu";
+		wordsWithSeq = corpus.wordsContainingNgram(seq);
+		expected = new String[] {
+				"intakuinuit", "takuinuit"
+		};
+		AssertHelpers.assertContainsAll(
+				"The list of words containing sequence "+seq+" was not as expected", 
+				wordsWithSeq, expected);
+			
+		// ngram at beginning of word
+		seq = "^inu";
+		wordsWithSeq = corpus.wordsContainingNgram(seq);
+		expected = new String[] {"inuktitut","inuksuk","inuttitut"};
+		AssertHelpers.assertContainsAll("The list of words containing sequence "+seq+" was not as expected", 
+					wordsWithSeq, expected);
+		
+		seq = "itut$";
+		wordsWithSeq = corpus.wordsContainingNgram(seq);
+		expected = new String[] {"inuktitut","inuttitut"};
+		AssertHelpers.assertContainsAll("The list of words containing sequence "+seq+" was not as expected", 
+					wordsWithSeq, expected);
+		
+		seq = "^taku$";
+		wordsWithSeq = corpus.wordsContainingNgram(seq);
+		expected = new String[] {"taku"};
+		AssertHelpers.assertContainsAll("The list of words containing sequence "+seq+" was not as expected", 
+					wordsWithSeq, expected);
+	}	
 }

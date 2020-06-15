@@ -185,13 +185,13 @@ public class CorpusCompilerTest {
 		
 		asserter
 			// ngram with freq=1
-			.charNgramFrequencyEquals("nun", 1)
+			.charNgramFrequencyEquals("^nun", 1)
 			// ngram with freq > 1
-			.charNgramFrequencyEquals("juq", 3)
+			.charNgramFrequencyEquals("juq$", 3)
 			// ngram that corresponds to a complete word
-			.charNgramFrequencyEquals("nunavut", 1)
+			.charNgramFrequencyEquals("^nunavut$", 1)
 			// ngram with freq = -
-			.charNgramFrequencyEquals("nunavik", 0)
+			.charNgramFrequencyEquals("^nunavik$", 0)
 			;
     }
 	    

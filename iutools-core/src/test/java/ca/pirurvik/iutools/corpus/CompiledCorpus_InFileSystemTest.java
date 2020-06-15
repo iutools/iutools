@@ -6,7 +6,7 @@ import com.google.common.io.Files;
 
 import ca.nrc.datastructure.trie.StringSegmenter;
 
-public class CompiledCorpus_InFileSystemTest extends CompiledCorpus_BaseTest {
+public class CompiledCorpus_InFileSystemTest extends CompiledCorpusTest {
 
 	@Override
 	protected CompiledCorpus makeCorpusUnderTest(

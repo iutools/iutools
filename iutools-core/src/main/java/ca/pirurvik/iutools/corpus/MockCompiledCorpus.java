@@ -2,6 +2,7 @@ package ca.pirurvik.iutools.corpus;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
@@ -25,11 +26,19 @@ public class MockCompiledCorpus extends CompiledCorpus_InMemory {
 
 class MockStringSegmenter_IUMorpheme extends StringSegmenter {
 
-	private HashMap<String,String> dictionary;
+	private Map<String,String> dictionary = new HashMap<String,String>();
 
 	public MockStringSegmenter_IUMorpheme() {
+		init_MockStringSegmenter_IUMorpheme();
 	}
 	
+	private void init_MockStringSegmenter_IUMorpheme() {
+		dictionary.put("inuit", "{inuk/1n} {it/tn-nom-p}");
+		dictionary.put("nunami", "{nuna/1n} {mi/tn-loc-s}");
+		dictionary.put("iglumik", "{iglu/1n} {mik/tn-acc-s}");
+		dictionary.put("inuglu", "{inuk/1n} {lu/1q}");
+	}
+
 	public String[] segment(String word) throws TimeoutException, StringSegmenterException{
 		return segment(word,true);
 	}
@@ -45,5 +54,11 @@ class MockStringSegmenter_IUMorpheme extends StringSegmenter {
 
 	@Override
 	public void disactivateTimeout() {
+	}
+
+	@Override
+	public String[][] possibleSegmentations(String string, boolean fullAnalysis)
+			throws TimeoutException, StringSegmenterException {
+		return new String[][] { segment(string, fullAnalysis) };
 	}
 }

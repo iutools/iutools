@@ -60,7 +60,8 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 		return this;
 	}
 
-	public AssertCompiledCorpus charNgramFrequencyEquals(String ngram, long expFreq) {
+	public AssertCompiledCorpus charNgramFrequencyEquals(
+		String ngram, long expFreq) throws Exception {
 		long gotFreq = corpus().charNgramFrequency(ngram);
 		Assert.assertEquals(baseMessage+"\nFrequency of char ngram "+
 		ngram+" was not as expected",  
@@ -72,8 +73,9 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 	public AssertCompiledCorpus morphemeNgramFreqEquals(
 			long expFreq, String... ngram) throws Exception {
 		long gotFreq = corpus().morphemeNgramFrequency(ngram);
-		Assert.assertEquals(baseMessage+"\nFrequency of morpheme ngram "+
-		ngram+" was not as expected",  
+		Assert.assertEquals(
+		baseMessage+"\nFrequency of morpheme ngram "+
+		String.join(",", ngram)+" was not as expected",  
 		expFreq, gotFreq);
 		
 		return this;
@@ -86,7 +88,8 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 		return this;
 	}
 
-	public AssertCompiledCorpus doesNotContainWords(String... words) {
+	public AssertCompiledCorpus doesNotContainWords(String... words) 
+		throws Exception {
 		for (String aWord: words) {
 			Assert.assertFalse(
 				baseMessage+"\nCorpus should not have contained word "+aWord, 
@@ -95,7 +98,8 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 		return this;
 	}
 	
-	public AssertCompiledCorpus containsWords(String... words) {
+	public AssertCompiledCorpus containsWords(String... words) 
+		throws Exception {
 		for (String aWord: words) {
 			Assert.assertTrue(
 				baseMessage+"\nCorpus should have contained word "+aWord, 
@@ -126,14 +130,14 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 	}
 
 	public AssertCompiledCorpus topSegmentationIs(
-			String word, String expTopSegmentation) {
+			String word, String expTopSegmentation) throws Exception {
 		String[] gotTopSegmentation = corpus().topSegmentation(word);
 		
 		return this;
 	}
 
 	public AssertCompiledCorpus charNgramFrequencyIs(
-		String ngram, long expFreq) {
+		String ngram, long expFreq) throws Exception {
 		long gotFreq = corpus().charNgramFrequency(ngram);
 		Assert.assertEquals(
 			baseMessage+"\nFrequency of char ngram '"+ngram+"' was not as expected", 
@@ -171,6 +175,15 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 		AssertObject.assertDeepEquals(
 			baseMessage+"\nList of words containing morpheme '"+morpheme+"' was wrong", 
 			expWords, gotWords);
+		return this;
+	}
+
+	public AssertCompiledCorpus totalOccurencesEquals(long expTotal) 
+			throws Exception {
+		long gotTotal = corpus().totalOccurences();
+		Assert.assertEquals(
+			baseMessage+"\nTotal number of occurences not as expected.", 
+			expTotal, gotTotal);
 		return this;
 	}
 }

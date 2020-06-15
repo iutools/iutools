@@ -1,5 +1,6 @@
 package ca.nrc.datastructure.trie;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -72,8 +73,10 @@ public class AssertTrie extends Asserter<Trie> {
 			segments = new String[0];
 		}
 		TrieNode gotMostFrequentNode = trie().getMostFrequentTerminal(segments);
-		String gotKeys = String.join("", gotMostFrequentNode.keys);
-		String gotMostFrequent = gotKeys.substring(0, gotKeys.length()-1);
+		String[] gotKeysArr = Arrays.copyOfRange(gotMostFrequentNode.keys, 
+					0, gotMostFrequentNode.keys.length-1);
+		String gotKeys = String.join("", gotKeysArr);
+		String gotMostFrequent = gotKeys.substring(0, gotKeys.length());
 		Assert.assertEquals(
 			baseMessage+"\nMost frequent terminal not as expected for node: "+
 					String.join(",", segments), 

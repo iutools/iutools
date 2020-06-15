@@ -40,6 +40,9 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	public HashMap<String,Long> wordsFailedSegmentationWithFreqs = new HashMap<String,Long>();
 	
 	private String wordSegmentations = ",,";
+	
+	private Map<String,String[][]> wordDecomps = 
+			new HashMap<String,String[][]>();
 	public String decomposedWordsSuite = ",,";
 
 	protected Long terminalsSumFreq = null;
@@ -59,9 +62,6 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	private transient String corpusDirectory;
 
 	@JsonIgnore
-	public transient NgramCompiler ngramCompiler;
-	
-	@JsonIgnore
 	public transient String wordsWithSuccessfulDecomposition = null;
 	@JsonIgnore
 	public transient String wordsWithUnsuccessfulDecomposition = null;
@@ -79,14 +79,14 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	public void setNgramStats() {
 		ngramStats = new HashMap<String,Long>();
 		String[] words = decomposedWordsSuite.split(",,");
-		ngramCompiler = new NgramCompiler(3,0,false);
+//		ngramCompilerNoExtremities = new NgramCompiler(3,0,false);
 		for (int iw=1; iw<words.length; iw++) {
 			updateSequenceNgramsForWord(words[iw]);
 		}
 	}
 	private void updateSequenceNgramsForWord(String word) {
 		Set<String> seqsSeenInWord = new HashSet<String>();
-		seqsSeenInWord = ngramCompiler.compile(word);
+		seqsSeenInWord = getNgramCompiler().compile(word);
 		Iterator<String> itngram = seqsSeenInWord.iterator();
 		while (itngram.hasNext()) {
 			String ngram = itngram.next();
@@ -126,7 +126,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 
 	
 	public Iterator<String> allWords() throws CompiledCorpusException {
-		Iterator<String> iter = getSegmentsCache().keySet().iterator();
+		Iterator<String> iter = wordDecomps.keySet().iterator();
 		return iter;
 	}
 	
@@ -141,11 +141,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	public Trie getTrie() {
 		return this.trie;
 	}
-	
-	public HashMap<String,String[]> getSegments() {
-		return this.getSegmentsCache();
-	}
-	
+		
 	/**
 	 * Cette méthode retourne vrai si et seulement si il y a un fichier de sauvegarde pour le répertoire corpusDir.
 	 * @param corpusDirPathname
@@ -158,8 +154,9 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	}
 	
     @Override
-	protected void addToWordCharIndex(String word, String[] segments) 
+	protected void addToWordCharIndex(String word, String[][] decomps) 
 			throws CompiledCorpusException {
+    	wordDecomps.put(word, decomps);
 	}
 
 	private void removeFromListOfFailedSegmentation(String word) {
@@ -255,19 +252,6 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 
     // ----------------------------- private -------------------------------
 
-//	void addToCache(String word, String[] segments) {
-//		getSegmentsCache().put(word, segments);
-//	}
-
-//	String[] fetchSegmentsFromCache(String word) {
-//		String[] segmentsFromCache = null;
-//		if (!getSegmentsCache().containsKey(word))
-//			segmentsFromCache = new String[] {};
-//		else
-//			segmentsFromCache = getSegmentsCache().get(word);
-//		return segmentsFromCache;
-//	}
-
 	private static boolean isInuktitutWord(String string) {
 		Pattern p = Pattern.compile("[agHijklmnpqrstuv&]+");
 		Matcher m = p.matcher(string);
@@ -361,12 +345,6 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	public void setWordsFailedSegmentation(Vector<String> wordsFailedSegmentation) {
 		this.wordsFailedSegmentation = wordsFailedSegmentation;
 	}
-//	public HashMap<String,String[]> getSegmentsCache() {
-//		return segmentsCache;
-//	}
-//	public void setSegmentsCache(HashMap<String,String[]> segmentsCache) {
-//		this.segmentsCache = segmentsCache;
-//	}
 	public long getNbOccurrencesOfWord(String word) throws CompiledCorpusException {
 		Logger logger = Logger.getLogger("CompiledCorpus.getNbOccurrencesOfWord");
 		logger.debug("word: "+word);
@@ -465,12 +443,16 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	}
 	
 	@Override
-	protected void addToWordSegmentations(String word,String[] segments) 
+	protected void addToWordSegmentations(
+			String word, String[][] decomps) 
 			throws CompiledCorpusException {
-		if (segments != null && segments.length > 0) {
-			wordSegmentations += word+":"+String.join("", segments)+",,";
+		
+		if (decomps != null && decomps.length > 0) {
+			String[] bestDecomp = decomps[0];
+
+			wordSegmentations += word+":"+String.join("", bestDecomp)+",,";
 			try {
-				getTrie().add(segments, word);
+				getTrie().add(bestDecomp, word);
 			} catch (TrieException e) {
 				throw new CompiledCorpusException(e);
 			}
@@ -484,7 +466,8 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	}	
 	
 	@Override
-	protected void addToWordNGrams(String word, String[] segments) throws CompiledCorpusException {
+	protected void addToWordNGrams(
+		String word, String[][] decomps) throws CompiledCorpusException {
 		updateNGramIndex(word);
 	}
 	
@@ -527,7 +510,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 		return words;		
 	}
 		
-	public WordInfo info4word(String word) {
+	public WordInfo info4word(String word) throws CompiledCorpusException {
 		WordInfo wInfo = null;
 		if (word2infoMap.containsKey(word)) {
 			wInfo = word2infoMap.get(word);
@@ -607,8 +590,8 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 		wordsFailedSegmentation = null;
 	}
 
-	public boolean containsWord(String word) {
-		boolean answer = (getSegmentsCache().keySet().contains(word));
+	public boolean containsWord(String word) throws CompiledCorpusException {
+		boolean answer = (wordDecomps.keySet().contains(word));
 		return answer;
 	}
 	
@@ -617,13 +600,14 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	}
 
 	@Override
-	protected Set<String> wordsContainingMorphNgram(String[] morphemes) {
+	protected Set<String> wordsContainingMorphNgram(String[] morphemes) 
+			throws CompiledCorpusException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public long charNgramFrequency(String ngram) {
+	public long charNgramFrequency(String ngram) throws CompiledCorpusException {
 		long freq = 0;
 		Map<String, Long> freqs = getNgramStats();
 		if (freqs.containsKey(ngram)) {
@@ -634,18 +618,21 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 
 	@Override
 	public long morphemeNgramFrequency(String[] morphNgram) throws CompiledCorpusException {
-		TrieNode node;
+		long freq = 0;
+		
 		try {
-			node = trie.getNode(morphNgram);
+			TrieNode node = trie.getNode(morphNgram);
+			if (node != null) {
+				freq = node.getFrequency();
+			}
 		} catch (TrieException e) {
 			throw new CompiledCorpusException(e);
 		}
-		long freq = node.getFrequency();
 		
 		return freq;
 	}
 	
-	public String[] topSegmentation(String word) {
+	public String[] topSegmentation(String word) throws CompiledCorpusException {
 		Matcher matcher = 
 			Pattern.compile(","+word+":([^,]*),").matcher(wordSegmentations);
 		
@@ -656,6 +643,10 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 		}
 		
 		return topSeg;
+	}
+	
+	public long totalOccurences() throws CompiledCorpusException {
+		return getNumberOfCompiledOccurrences();
 	}
 }
 

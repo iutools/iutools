@@ -201,28 +201,12 @@ public class SpellCheckerTest {
 				wordsWithSeq, expected);
 	}
 	
-//	@Test - test removed; firstPassCandidates() not used anymore, replaced by firstPassCandidates_TFIDF
-//	public void test__firstPassCandidates() throws Exception {
-//		String badWord = "inukkshuk";
-//		Set<String> candidates = checker.firstPassCandidates(badWord);
-//	
-//		
-//		// ALAIN: The expected list below contains some misspelled words that come before some 
-//		//   correctly spelled ones. But that does not matter as it is only a first pass.
-//		//   The second pass should re-sort the candidates, taking into account whether or not
-//		//   they were analyzed by the morphological segmenter.
-//		//     - 
-//		String[] expected = new String[] {"inuk","inukshuk","inukttut","inuktut","inukutt","nunavut"};		
-//		AssertObject.assertDeepEquals("The list of candidate corrections for word "+badWord+" was not as expected", 
-//				expected, candidates);
-//	}
 	
 	@Test
 	public void test__firstPassCandidates_TFIDF() throws Exception {
 		SpellChecker checker = makeCheckerSmallCustomDict();
 		
 		String badWord = "inukkshuk";
-//		checker.allWordsForCandidates = checker.allWords;
 		checker.ngramStatsForCandidates = checker.ngramStats;
 		Set<String> candidates = checker.firstPassCandidates_TFIDF(badWord, false);
 	

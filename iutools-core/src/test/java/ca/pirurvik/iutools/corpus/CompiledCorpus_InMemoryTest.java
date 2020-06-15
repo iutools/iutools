@@ -48,7 +48,7 @@ import junit.framework.TestCase;
 /**
  * Unit test for simple App.
  */
-public class CompiledCorpus_InMemoryTest extends CompiledCorpus_BaseTest
+public class CompiledCorpus_InMemoryTest extends CompiledCorpusTest
 {
 	@Override
 	protected CompiledCorpus makeCorpusUnderTest(
@@ -60,12 +60,14 @@ public class CompiledCorpus_InMemoryTest extends CompiledCorpus_BaseTest
 	
 	///////////////////////////////////////////////////////////////
 	// These CompiledCorpus_BaseTest tests are 
-	// currently not working for CompiledCorpus_InFileSystem class
+	// currently not working for CompiledCorpus_Memory class
 	///////////////////////////////////////////////////////////////
 	
-	@Test @Ignore
-	public void test__saveCompilerInJSONFile() throws IOException, CompiledCorpusException, StringSegmenterException, CompiledCorpusRegistryException {
-	}
 	
+	// Method morphemeNgramFrequency() was never supported by InMemory 
+	// in the first place. 
+	@Test @Ignore
+	public void test__morphemeNgramFrequency__HappyPath() throws Exception {
+	}
 	
 }

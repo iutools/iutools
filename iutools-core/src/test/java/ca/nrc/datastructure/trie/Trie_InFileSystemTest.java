@@ -29,7 +29,7 @@ public class Trie_InFileSystemTest extends TrieTest {
 		Trie_InFileSystem trie = makeTrieToTest();
 		String[] keys = "hi".split("");
 		String[] gotExtended = trie.appendTerminalKey(keys);
-		String[] expExtended = new String[] {"h","i","$"};
+		String[] expExtended = new String[] {"h","i",TrieNode.TERMINAL_SEG};
 		AssertObject.assertDeepEquals(
 			"Terminal key not appended to original keys", 
 			expExtended, gotExtended);		
@@ -55,10 +55,10 @@ public class Trie_InFileSystemTest extends TrieTest {
 	@Test
 	public void test__escape_unescapeKeys__TrailingCharIsDollar__LeavesItAlone() throws Exception {
 		Trie_InFileSystem trie = makeTrieToTest();
-		String[] keys = new String[] {"h","i","$"};
+		String[] keys = new String[] {"h","i",TrieNode.TERMINAL_SEG};
 		String[] gotEscaped = trie.escapeKeys(keys);
 		String[] expEscaped = new String[] {
-				"h","i","$"};
+				"h","i",TrieNode.TERMINAL_SEG};
 		AssertObject.assertDeepEquals(
 			"Escaped keys not as expected", 
 			expEscaped, gotEscaped);

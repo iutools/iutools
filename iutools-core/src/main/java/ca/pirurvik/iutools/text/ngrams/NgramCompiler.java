@@ -1,6 +1,7 @@
 package ca.pirurvik.iutools.text.ngrams;
 
 import java.util.HashSet;
+import java.util.Set;
 
 public class NgramCompiler {
 
@@ -25,7 +26,7 @@ public class NgramCompiler {
 		this.includeExtremities = _includeExtremities;		
 	}
 
-	public HashSet<String> compile(String word) {
+	public Set<String> compile(String word) {
 		HashSet<String> seqSeenInWord = new HashSet<String>();
 		if (word.length() != 0) {
 			int maxseq = max;

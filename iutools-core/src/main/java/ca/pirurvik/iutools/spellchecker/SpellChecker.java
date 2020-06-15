@@ -603,10 +603,6 @@ public class SpellChecker {
 		boolean wordIsMispelled = false;
 		String[] numericTermParts = null;
 		
-//		if (corpus!=null && corpus.getWordsFailedSegmentation().contains(word)) {
-//			wordIsMispelled = true;
-//		} 
-//		else 
 		if (corpus!=null && corpus.getSegmentsCache().containsKey(word) && corpus.getSegmentsCache().get(word).length != 0) {
 			logger.debug("word in segments cache has successfully decomposed");
 			wordIsMispelled = false;

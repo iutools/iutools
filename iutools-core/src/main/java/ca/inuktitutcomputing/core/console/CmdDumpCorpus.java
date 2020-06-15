@@ -47,7 +47,8 @@ public class CmdDumpCorpus extends ConsoleCommand {
     }
 
 	private void printWord(String word, CompiledCorpus_InMemory corpus, 
-			boolean wordsOnly, FileWriter fWriter) throws CLIException, IOException {
+			boolean wordsOnly, FileWriter fWriter) 
+			throws CLIException, IOException, CompiledCorpusException {
 		String infoStr = word;
 		if (!wordsOnly) {
             WordInfo wInfo = corpus.info4word(word);
