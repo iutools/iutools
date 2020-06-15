@@ -107,16 +107,12 @@ public class MorphemeSearcherTest {
 		MockCompiledCorpus mockCompiledCorpus = new MockCompiledCorpus();
 		mockCompiledCorpus.setVerbose(false);
 		mockCompiledCorpus.setDictionary(dictionary);
-		String[] stringsOfWords = new String[] {
-				"inuit nunami iglumik inuglu iglumut nunamut igluvimmut"
+		String[] wordsToAdd = new String[] {
+				"inuit", "nunami", "iglumik", "inuglu", "iglumut", "nunamut", "igluvimmut"
 				};
-		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
-        try {
-        	mockCompiledCorpus.compileCorpusFromScratch(corpusDirPathname);
-        } catch(Exception e) {
-        	System.err.println("Exiting from compiler");
-        }
-        morphemeExtractor.useCorpus(mockCompiledCorpus);
+		mockCompiledCorpus.addWordOccurences(wordsToAdd);
+
+		morphemeExtractor.useCorpus(mockCompiledCorpus);
         
 		String morpheme = "mut";
 		List<MorphemeSearcher.Words>wordsForMorphemes = this.morphemeExtractor.wordsContainingMorpheme(morpheme);
@@ -132,16 +128,11 @@ public class MorphemeSearcherTest {
 	
     @Test
 	public void test__wordsContainingMorpheme__infix__gaq1vn() throws Exception {
-		String[] stringsOfWords = new String[] {
+		String[] corpWords = new String[] {
 				"makpigarni", "mappigarni", "inuglu"
 				};
-		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
         CompiledCorpus_InMemory compiledCorpus = new CompiledCorpus_InMemory(StringSegmenter_IUMorpheme.class.getName());
-        compiledCorpus.setVerbose(false);
-        try {
-        	compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
-        } catch(CompiledCorpusException | StringSegmenterException e) {
-        }
+        compiledCorpus.addWordOccurences(corpWords);
 		
         MorphemeSearcher morphemeSearcher = new MorphemeSearcher();
         morphemeSearcher.useCorpus(compiledCorpus);
@@ -170,16 +161,12 @@ public class MorphemeSearcherTest {
     
     @Test
     public void test__numberOfWordsInCorpusWithSuiteOfMorphemes() throws Exception {
-		String[] stringsOfWords = new String[] {
+		String[] corpusWords = new String[] {
 				"makpigarni", "mappigarni", "inuglu"
 				};
-		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
+		String corpusDirPathname = createTemporaryCorpusDirectory(corpusWords);
         CompiledCorpus_InMemory compiledCorpus = new CompiledCorpus_InMemory(StringSegmenter_IUMorpheme.class.getName());
-        compiledCorpus.setVerbose(false);
-        try {
-        	compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
-        } catch(CompiledCorpusException | StringSegmenterException e) {
-        }
+        compiledCorpus.addWordOccurences(corpusWords);
 		
         MorphemeSearcher morphemeSearch = new MorphemeSearcher();
         morphemeSearch.useCorpus(compiledCorpus);
@@ -225,17 +212,13 @@ public class MorphemeSearcherTest {
 	}
 	
 	@Test
-	public void test__separateWordsByRoot() throws IOException {
-		String[] stringsOfWords = new String[] {
+	public void test__separateWordsByRoot() throws Exception {
+		String[] corpusWords = new String[] {
 				"makpigarni", "mappigarni", "inuglu"
 				};
-		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
+		String corpusDirPathname = createTemporaryCorpusDirectory(corpusWords);
         CompiledCorpus_InMemory compiledCorpus = new CompiledCorpus_InMemory(StringSegmenter_IUMorpheme.class.getName());
-        compiledCorpus.setVerbose(false);
-        try {
-        	compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
-        } catch(CompiledCorpusException | StringSegmenterException e) {
-        }
+        compiledCorpus.addWordOccurences(corpusWords);
         MorphemeSearcher morphemeSearcher = new MorphemeSearcher();
         morphemeSearcher.useCorpus(compiledCorpus);
         

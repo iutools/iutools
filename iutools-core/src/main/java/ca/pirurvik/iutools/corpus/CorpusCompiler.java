@@ -85,7 +85,7 @@ public class CorpusCompiler {
 		compileExtras();
 		
 		toConsole("[INFO] *** Compilation completed."+"\n");
-		saveCompilerInDirectory(corpusDirectory);
+		save(corpusDirectory);
 	}
 	
 
@@ -127,7 +127,7 @@ public class CorpusCompiler {
 			docFilePath = docFile.toString();
 		}
 		try {
-			getCorpus().processDocumentContents(br, docFilePath);
+			processDocumentContents(br, docFilePath);
 		} catch (CompiledCorpusException | StringSegmenterException | LinguisticDataException e) {
 			throw new CorpusCompilerException(e);
 		}
@@ -280,7 +280,7 @@ public class CorpusCompiler {
 				continue;
 			++wordCounter;
 
-			if (!filesCompiled.contains(fileBeingProcessed.id)) {
+			if (fileBeingProcessed == null || !filesCompiled.contains(fileBeingProcessed.id)) {
 				++currentFileWordCounter;
 				if (retrievedFileWordCounter != -1) {
 					if (currentFileWordCounter < retrievedFileWordCounter) {
@@ -305,7 +305,7 @@ public class CorpusCompiler {
 					} catch (TrieException e) {
 						throw new CompiledCorpusException(e);
 					}
-					saveCompilerInDirectory(this.corpusDirectory);
+					save(this.corpusDirectory);
 				}
 			}
 		}
@@ -316,6 +316,7 @@ public class CorpusCompiler {
 	private void processWord(String word) throws CompiledCorpusException, StringSegmenterException, LinguisticDataException {
     	processWord(word,false);
     }
+	
     private void processWord(String word, boolean recompilingFailedWord) throws CompiledCorpusException, StringSegmenterException, LinguisticDataException {
     	Logger logger = Logger.getLogger("CompiledCorpus.processWord");
 		toConsole("[INFO]     "+wordCounter + "(" + currentFileWordCounter + "+). " + word + "... ");
@@ -353,19 +354,9 @@ public class CorpusCompiler {
 			TrieNode result = null;
 			if (segments.length != 0) {
 				result = getCorpus().trie.add(segments,word);
-//				if (recompilingFailedWord) {
-//					int freq = wordsFailedSegmentationWithFreqs.get(word).intValue()-1;
-//					for (int ifr=0; ifr<freq; ifr++)
-//						trie.add(segments, word);
-//				}
-//				toConsole(result.keysAsString()+"\n");
-//				removeFromListOfFailedSegmentation(word);
 			} else {
 				toConsole("XXX\n");
-//				if ( !recompilingFailedWord )
-//					addToListOfFailedSegmentation(word);
 			}
-
 		} catch (TrieException e) {
 			toConsole("--** Problem adding word: " + word + " (" + e.getMessage() + ").");
 			throw new CompiledCorpusException(e);
@@ -381,7 +372,7 @@ public class CorpusCompiler {
 	}
 	
 
-	public void saveCompilerInDirectory(File corpusDirectory) throws CompiledCorpusException  {
+	public void save(File corpusDirectory) throws CompiledCorpusException  {
 		File saveFilePathname = new File(corpusDirectory, CompiledCorpus_InMemory.JSON_COMPILATION_FILE_NAME);
 		saveCompilerInJSONFile(saveFilePathname);
 	}

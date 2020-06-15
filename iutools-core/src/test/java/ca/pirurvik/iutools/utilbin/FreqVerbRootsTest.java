@@ -20,33 +20,30 @@ import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.Trie_InMemory;
 import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.testing.AssertHelpers;
+import ca.nrc.testing.AssertObject;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 import ca.pirurvik.iutools.corpus.CompiledCorpusException;
 
 public class FreqVerbRootsTest {
 
 	@Test
-	public void test_compileFreqs() throws IOException, CompiledCorpusException, StringSegmenterException, TrieException {
-		String[] stringsOfWords = new String[] {
-				"nunami takujuq iglumik siniktuq takujaujuq iijuq"
+	public void test__compileFreqs__HappyPath() throws IOException, CompiledCorpusException, StringSegmenterException, TrieException {
+		String[] corpusWords = new String[] {
+				"nunami", "takujuq", "iglumik", "siniktuq", "takujaujuq", "iijuq"
 				};
-		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
         CompiledCorpus_InMemory compiledCorpus = new CompiledCorpus_InMemory(StringSegmenter_IUMorpheme.class.getName());
-        compiledCorpus.setVerbose(false);
-        compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
-		Trie trie = compiledCorpus.getTrie();
-		Map<String,TrieNode> nodesOfRootsOfWords = trie.getRoot().getChildren();
-		String rootIds[] = nodesOfRootsOfWords.keySet().toArray(new String[] {});
-		assertEquals("", 5, rootIds.length);
+        compiledCorpus.addWordOccurences(corpusWords);
+        
 		FreqVerbRootsCompiler freqVerbRootsCompiler = new FreqVerbRootsCompiler();
 		HashMap<String,Long> freqsVerbRoots = freqVerbRootsCompiler.compileFreqs(compiledCorpus);
-		String verbRootIds[] = freqsVerbRoots.keySet().toArray(new String[] {});
-		assertEquals("The number of verb roots returned is incorrect.",3,verbRootIds.length);
-		String expected[] = new String[] {"taku/1v","sinik/1v","ii/1v"};
-		Long expectedFreqs[] = new Long[] {new Long(2),new Long(1),new Long(1)};
-		AssertHelpers.assertContainsAll("The verb roots returned are not as expected.", verbRootIds, expected);
-		for (int i=0; i<verbRootIds.length; i++)
-			assertEquals("The frequency of "+expected[i]+" is not as expected.",expectedFreqs[i],freqsVerbRoots.get(expected[i]));
+		
+		Map<String,Long> expVerbRoots = new HashMap<String,Long>();
+		{
+			expVerbRoots.put("taku/1v", new Long(2));
+			expVerbRoots.put("sinik/1v", new Long(1));
+			expVerbRoots.put("ii/1v", new Long(1));
+		}
+		AssertObject.assertDeepEquals("", expVerbRoots, freqsVerbRoots);
 	}
 	
 	// -----------------------------------------------------------------

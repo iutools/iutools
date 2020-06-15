@@ -208,5 +208,4 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus_InMemory {
 			throw new CompiledCorpusException(e);
 		}
 	}
-
 }

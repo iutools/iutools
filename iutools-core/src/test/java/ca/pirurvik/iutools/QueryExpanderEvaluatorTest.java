@@ -8,6 +8,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -210,22 +212,16 @@ public class QueryExpanderEvaluatorTest {
 	// ---------------
 	
 	private CompiledCorpus_InMemory getACompiledCorpus(String[] entries) throws Exception {
-		File dir = Files.createTempDirectory("").toFile();
-		dir.deleteOnExit();
-		String corpusDir = dir.getAbsolutePath();
-		BufferedWriter bw = new BufferedWriter(new FileWriter(
-				new File(corpusDir+"/corpusText.txt")));
+		List<String> words = new ArrayList<String>();
 		for (String entry : entries) {
 			String[] wordFreq = entry.split(":");
-			for (int i=0; i<Integer.parseInt(wordFreq[1]); i++)
-				bw.write(wordFreq[0]+" ");
+			for (int i=0; i<Integer.parseInt(wordFreq[1]); i++) {
+				words.add(wordFreq[0]);
+			}
 		}
-		bw.close();
         CompiledCorpus_InMemory compiledCorpus = new CompiledCorpus_InMemory(StringSegmenter_IUMorpheme.class.getName());
         compiledCorpus.disactivateSegmenterTimeout();
-        compiledCorpus.setVerbose(false);
-        compiledCorpus.compileCorpusFromScratch(corpusDir);
+        compiledCorpus.addWordOccurences(words);
         return compiledCorpus;
 	}
-
 }

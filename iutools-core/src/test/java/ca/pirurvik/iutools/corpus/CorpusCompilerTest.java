@@ -212,8 +212,10 @@ public class CorpusCompilerTest {
 		String documentContents = "inuit takujuq nunavut takujuq takulaaqtuq";
 		BufferedReader br = new BufferedReader(new StringReader(documentContents));
         CompiledCorpus_InMemory compiledCorpus = new CompiledCorpus_InMemory(StringSegmenter_IUMorpheme.class.getName());
-        compiledCorpus.setVerbose(false);
-        compiledCorpus.processDocumentContents(br,null);
+		CorpusCompiler compiler = new CorpusCompiler(compiledCorpus);
+		compiler.setVerbose(false);
+		File file = null;
+		compiler.processDocumentContents(br,file);
 		
 		String[] inuit_segments = new String[]{"{inuk/1n}","{it/tn-nom-p}"};
 		String[] taku_segments = new String[]{"{taku/1v}"};
@@ -286,7 +288,6 @@ public class CorpusCompilerTest {
         
         compiledCorpus.setVerbose(false);
         compiler.setVerbose(false);
-        compiledCorpus.saveFrequency = 3;
         compiler.saveFrequency = 3;
         
         return compiler;

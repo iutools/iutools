@@ -151,43 +151,11 @@ public class CompiledCorpusRegistry {
 		}
 		try {
 			corpus = CompiledCorpus_InMemory.createFromJson(corpusJsonFPath);
-			possiblyUpgradeCorpus(corpus, corpusJsonFPath);
 		} catch (Exception e) {
 			throw new CompiledCorpusRegistryException("Could not read compiled corpus from file: "+corpusJsonFPath, e);
 		}
 		
 		return corpus;
-	}
-	
-	private static void possiblyUpgradeCorpus(CompiledCorpus_InMemory corpus, 
-			String corpusJsonFPath) 
-			throws CompiledCorpusRegistryException, CompiledCorpusException {
-
-		// This takes way too much memory and ends up crashing the system.
-		// So for now, just disable it.
-		// 
-		boolean disabled = true;
-		if (!disabled) {
-			File corpusFile = new File(corpusJsonFPath);
-			GregorianCalendar cal = new GregorianCalendar();
-			cal.set(2020, 2, 15); 
-			Date cutoffDate = cal.getTime();
-			Date corpusFileDate = new Date(corpusFile.lastModified());
-			if (corpusFileDate.before(cutoffDate)) {
-				// The corpus file was produced in the days when we
-				// stored info about words in the phonemes trie instead
-				// of using the more direct WordInfo data structures.
-				//
-				// Upgrade the dictionary to use that new data structure 
-				// and save it to disk afterards
-				//
-				System.out.println("*** Upgrading corpus file: "+corpusJsonFPath);
-				corpus.migrateWordInfoToNewDataStructure();
-				System.out.println("*** Saving upgraded corpus to file: "+corpusJsonFPath);
-				corpus.saveCompilerInDirectory(corpusJsonFPath);
-				System.out.println("  *** DONE Saving upgraded corpus to file: "+corpusJsonFPath);
-			}
-		}
 	}
 
 	public static Map<String,File> getRegistry() {

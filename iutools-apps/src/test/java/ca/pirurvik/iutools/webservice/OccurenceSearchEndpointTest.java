@@ -17,6 +17,7 @@ import org.junit.Test;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.ui.web.testing.MockHttpServletResponse;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
+import ca.pirurvik.iutools.corpus.RW_CompiledCorpus;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 
 public class OccurenceSearchEndpointTest {
@@ -34,15 +35,13 @@ public class OccurenceSearchEndpointTest {
 	
 	@Test
 	public void test__OccurenceSearchEndpoint__HappyPath() throws Exception {
-		String[] stringsOfWords = new String[] {
-				"ujaraqsiurnirmik aanniasiuqtiit iglumik tuktusiuqti"
+		String[] corpusWords = new String[] {
+				"ujaraqsiurnirmik", "aanniasiuqtiit", "iglumik", "tuktusiuqti"
 				};
-		String corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
         CompiledCorpus_InMemory compiledCorpus = new CompiledCorpus_InMemory(StringSegmenter_IUMorpheme.class.getName());
-        compiledCorpus.setVerbose(false);
-        compiledCorpus.compileCorpusFromScratch(corpusDirPathname);
 		File tempFile = File.createTempFile("compiled_corpus", ".json");
-		compiledCorpus.saveCompilerInJSONFile(tempFile.getAbsolutePath());
+		compiledCorpus.addWordOccurences(corpusWords);
+		RW_CompiledCorpus.write(compiledCorpus, tempFile);
 		CompiledCorpusRegistry.registerCorpus("compiled_corpus", tempFile);
 
 		OccurenceSearchInputs occurenceInputs = 

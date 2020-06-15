@@ -220,17 +220,8 @@ public class QueryExpanderTest {
 	}
 	
 	public CompiledCorpus_InMemory compileCorpusFromWords(String[] words) throws Exception {
-		File dir = Files.createTempDirectory("").toFile();
-		dir.deleteOnExit();
-		String corpusDir = dir.getAbsolutePath();
-		BufferedWriter bw = new BufferedWriter(new FileWriter(
-				new File(corpusDir+"/corpusText.txt")));
-		bw.write(String.join(" ", words));
-		bw.close();
         CompiledCorpus_InMemory compiledCorpus = new CompiledCorpus_InMemory(StringSegmenter_IUMorpheme.class.getName());
-        compiledCorpus.setVerbose(false);
-        compiledCorpus.compileCorpusFromScratch(corpusDir);
+        compiledCorpus.addWordOccurences(words);
         return compiledCorpus;
 	}
-
 }

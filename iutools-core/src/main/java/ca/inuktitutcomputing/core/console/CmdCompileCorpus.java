@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
+import ca.pirurvik.iutools.corpus.CorpusCompiler;
 
 public class CmdCompileCorpus extends ConsoleCommand {
 
@@ -20,17 +21,14 @@ public class CmdCompileCorpus extends ConsoleCommand {
 	@Override
 	public void execute() throws Exception {
 		
-		String corpusDir = getCorpusDir();
+		String corpusDirStr = getCorpusDir();
 		
 		String compilationFile = getCompilationFile();
 		
-		boolean fromScratch = this.cmdLine.hasOption("from-scratch");
-		boolean redoFailed = this.cmdLine.hasOption("redo-failed");
-
 		echo("\nCompiling corpus:\n");
 		echo(1);
 		{
-			echo("corpus directory: "+corpusDir+"\noutput json file: "+compilationFile+"\nfrom scratch: "+fromScratch+"\n");
+			echo("corpus directory: "+corpusDirStr+"\noutput json file: "+compilationFile+"\n");
 		}
 		echo(-1);
 		
@@ -43,26 +41,9 @@ public class CmdCompileCorpus extends ConsoleCommand {
 			System.exit(1);
 		}
 		
-		try {
-			if (fromScratch)
-				compiledCorpus.compileCorpusFromScratch(corpusDir);
-			else if (!redoFailed)
-				compiledCorpus.compileCorpus(corpusDir);
-			else {
-				File compilationBackupFile = new File(corpusDir + "/" + CompiledCorpus_InMemory.JSON_COMPILATION_FILE_NAME);
-				if (compilationBackupFile.exists()) {
-					compiledCorpus = CompiledCorpus_InMemory.createFromJson(compilationBackupFile.getAbsolutePath());
-					compiledCorpus.recompileWordsThatFailedAnalysis(corpusDir);
-				} else {
-					System.err.println("ERROR: " + "No json compilation backup file in corpus directory. The compilation cannot resume. Abort.");
-					System.exit(1);
-				}
-			}
-			compiledCorpus.saveCompilerInJSONFile(compilationFile);
-			echo("\nThe result of the compilation has been saved in the file " + compilationFile + ".\n");
-		} catch (Exception e) {
-			System.err.println("ERROR: " + e.getMessage());
-		}
+		CorpusCompiler compiler = new CorpusCompiler(compiledCorpus);
+		File corpusDir = new File(corpusDirStr);
+		compiler.compile(corpusDir);
 	}
 	
 	private boolean checkFilePath(String _trieFilePath) {
@@ -73,6 +54,4 @@ public class CmdCompileCorpus extends ConsoleCommand {
 		}
 		return true;
 	}
-	
-
 }

@@ -2,6 +2,7 @@ package ca.pirurvik.iutools.corpus;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
 import ca.nrc.datastructure.trie.StringSegmenter;
@@ -19,8 +20,6 @@ public class MockCompiledCorpus extends CompiledCorpus_InMemory {
 	public void setDictionary(HashMap<String,String> _dictionary) throws CompiledCorpusException {
 		((MockStringSegmenter_IUMorpheme)getSegmenter()).setDictionary(_dictionary);
 	}
-	
-
 }
 
 

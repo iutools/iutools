@@ -1,7 +1,7 @@
 package ca.pirurvik.iutools.corpus;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.io.File;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -11,7 +11,6 @@ import java.util.concurrent.TimeoutException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import ca.inuktitutcomputing.data.LinguisticDataException;
-import ca.inuktitutcomputing.morph.Decomposition;
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_Char;
@@ -59,7 +58,6 @@ public abstract class CompiledCorpus {
 		throws CompiledCorpusException;
 	
 	protected abstract void addToWordCharIndex(String word, String[] segments) throws CompiledCorpusException;
-
 	
 	// TODO-June2020: Should probably choose a better name
 	protected abstract void addToWordNGrams(String word, String[] morphemes) throws CompiledCorpusException;
@@ -120,10 +118,22 @@ public abstract class CompiledCorpus {
 		return this;
 	}
 
-	public void addWordOccurences(String[] words) throws CompiledCorpusException {
+	public void addWordOccurences(String[] words) 
+			throws CompiledCorpusException {
 		for (String aWord: words) {
 			addWordOccurence(aWord);
+		}		
+	}
+	
+	public void addWordOccurences(Collection<String> words) 
+			throws CompiledCorpusException {
+		String[] wordsArr = new String[words.size()];
+		int pos = 0;
+		for (String aWord: words) {
+			wordsArr[pos] = aWord;
+			pos++;
 		}
+		addWordOccurences(wordsArr);
 	}
 	
 	public void addWordOccurence(String word) throws CompiledCorpusException {

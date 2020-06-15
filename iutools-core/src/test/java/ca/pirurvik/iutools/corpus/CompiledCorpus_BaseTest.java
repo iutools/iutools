@@ -64,11 +64,6 @@ public abstract class CompiledCorpus_BaseTest {
 	// DOCUMENTATION TESTS
 	//////////////////////////
 	
-	@Test @Ignore
-	public void test__DELETE_ME_LATER() {
-		Assert.fail("TODO: Continue removing calls to CompiledCorpus_InMemory.compileCorpusFromScratch() from the various tests.\nThen from production code.\nWhen they are all gone, delete that method");
-	}
-	
 	@Test
 	public void test__CompiledCorpus__Synopsis() throws Exception {
 		//
@@ -303,8 +298,7 @@ public abstract class CompiledCorpus_BaseTest {
 		charTrie.add("helicopter".split(""),"helicopter");
 		compiledCorpus.trie = charTrie;
 		long nbCompiledOccurrences = compiledCorpus.getNumberOfCompiledOccurrences();
-	Assert.assertEquals("The sum of the frequencies of all terminals is incorrect.",5,nbCompiledOccurrences);
-		
+		Assert.assertEquals("The sum of the frequencies of all terminals is incorrect.",5,nbCompiledOccurrences);	
 	}
 	
 	/*
@@ -390,16 +384,17 @@ public abstract class CompiledCorpus_BaseTest {
     // TODO-June2020: Get rid of this helper method
 	public static File compileToFile(String[] words, String fileId) throws Exception {
 		CompiledCorpus_InMemory tempCorp = new CompiledCorpus_InMemory(StringSegmenter_IUMorpheme.class.getName());
-		tempCorp.setVerbose(false);
+		CorpusCompiler compiler = new CorpusCompiler(tempCorp);
+		compiler.setVerbose(false);
 		InputStream iStream = IOUtils.toInputStream(String.join(" ", words), "utf-8");
 		InputStreamReader iSReader = new InputStreamReader(iStream);
 		BufferedReader br = new BufferedReader(iSReader);
-		tempCorp.processDocumentContents(br, "dummyFilePath");
+		compiler.processDocumentContents(br, "dummyFilePath");
 		String fileName = "compiled_corpus";
 		if (fileId != null)
 			fileName += "-"+fileId;
 		File tempFile = File.createTempFile(fileName, ".json");
-		tempCorp.saveCompilerInJSONFile(tempFile.toString());
+		RW_CompiledCorpus.write(tempCorp, tempFile);
 		return tempFile;
 	}
 }
