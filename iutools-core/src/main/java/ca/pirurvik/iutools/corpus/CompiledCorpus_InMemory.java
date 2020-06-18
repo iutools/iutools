@@ -210,11 +210,11 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
     
     // ----------------------------- STATISTICS -------------------------------
     
-    public long getNbWordsThatFailedSegmentations() {
+    public long totalWordsWithNoDecomp() {
     	return wordsFailedSegmentationWithFreqs.size();
     }
     
-    public long getNbOccurrencesThatFailedSegmentations() {
+    public long totalOccurencesWithNoDecomp() {
     	Long[] nbOccurrences = wordsFailedSegmentationWithFreqs.values().toArray(new Long[] {});
     	long nb = 0;
     	for (Long nbOcc: nbOccurrences)
@@ -222,6 +222,22 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
     	return nb;
     }
     
+	public Long totalOccurencesWithDecomps() throws CompiledCorpusException {
+		try {
+			return getTrie().getNbOccurrences();
+		} catch (TrieException e) {
+			throw new CompiledCorpusException(e);
+		}
+	}
+	
+	public long totalWordsWithDecomps() throws CompiledCorpusException {
+		try {
+			return getTrie().getSize();
+		} catch (TrieException e) {
+			throw new CompiledCorpusException(e);
+		}
+	}
+	
 	protected TrieNode[] getAllTerminals() throws CompiledCorpusException {
 		try {
 			return this.trie.getTerminals();
@@ -604,8 +620,47 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	}
 	
 	@Override
-	public long totalWords() {
-		return wordDecomps.keySet().size();
+	public WordInfo[] mostFrequentWordsExtending(String[] morphemes, Integer N) 
+			throws CompiledCorpusException {
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpus.mostFrequentWordsExtending");
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("morphemes="+String.join(",", morphemes));
+		}
+		
+		List<WordInfo> mostFrequentLst = new ArrayList<WordInfo>();
+		TrieNode node;
+		N = Math.min(N,  Integer.MAX_VALUE);
+		try {
+			node = trie.getNode(morphemes);
+			if (tLogger.isTraceEnabled()) {
+				tLogger.trace("node for morphemes is:\n"+node);
+			}
+			if (node != null) {
+				TrieNode[] mostFreqExtensions = 
+					trie.getMostFrequentTerminals(N, morphemes);
+				for (TrieNode anExtension: mostFreqExtensions) {
+					for (String word: anExtension.getSurfaceForms().keySet()) {
+						WordInfo winfo = info4word(word);
+						mostFrequentLst.add(winfo);						
+					}
+				}
+			}
+		} catch (TrieException e) {
+			throw new CompiledCorpusException(e);
+		}
+		
+		return mostFrequentLst.toArray(new WordInfo[mostFrequentLst.size()]);
+	}
+	
+	@Override
+	public long totalWords() throws CompiledCorpusException {
+		long total;
+		try {
+			total = totalOccurencesWithNoDecomp() + totalWordsWithDecomps();
+		} catch (CompiledCorpusException e) {
+			throw new CompiledCorpusException(e);
+		}
+		return total;
 	}
 }
 

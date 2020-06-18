@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
@@ -21,7 +23,8 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus_InMemory {
 	Trie_InFileSystem wordCharTrie = null;
 	Trie_InFileSystem charNgramsTrie = null;
 	Trie_InFileSystem wordMorphTrie = null;
-	Trie_InFileSystem morphNgramsTrie = null;
+	// TODO-June2020: Make that private again after debugging
+	public Trie_InFileSystem morphNgramsTrie = null;
 	
 	public CompiledCorpus_InFileSystem(File _corpusDir) {
 		init_CompiledCorpus_InFileSystem(_corpusDir);
@@ -209,7 +212,7 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus_InMemory {
 					Arrays.copyOfRange(bestDecomp, start, end);
 				try {
 					String joinedMorphNgram = String.join(" ", morphNgram);
-					TrieNode node = morphNgramsTrie.add(morphNgram, joinedMorphNgram);
+					TrieNode node = morphNgramsTrie.add(morphNgram, word);
 				} catch (TrieException e) {
 					throw new CompiledCorpusException(e);
 				}
@@ -339,8 +342,34 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus_InMemory {
 	
 	// TODO-June2020: Make this method independant of super impl.
 	@Override
-	public long totalWords() {
+	public long totalWords() throws CompiledCorpusException {
 		return super.totalWords();
-	}
+	}	
 	
+	@Override
+	public WordInfo[] mostFrequentWordsExtending(String[] morphemes, Integer N) 
+			throws CompiledCorpusException {
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpus_InFileSystem.mostFrequentWordsExtending");
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("morphemes="+String.join(",", morphemes));
+		}
+		
+		List<WordInfo> mostFrequentLst = new ArrayList<WordInfo>();
+		TrieNode node;
+		N = Math.min(N,  Integer.MAX_VALUE);
+		try {
+			TrieNode[] mostFreqExtensions = 
+				morphNgramsTrie.getMostFrequentTerminals(N, morphemes);
+			for (TrieNode anExtension: mostFreqExtensions) {
+				for (String word: anExtension.getSurfaceForms().keySet()) {
+					WordInfo winfo = info4word(word);
+					mostFrequentLst.add(winfo);
+				}
+			}
+		} catch (TrieException e) {
+			throw new CompiledCorpusException(e);
+		}
+		
+		return mostFrequentLst.toArray(new WordInfo[mostFrequentLst.size()]);
+	}
 }

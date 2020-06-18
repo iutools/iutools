@@ -30,7 +30,7 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 	}
 
 	public AssertCompiledCorpus containsNWords(long expN) throws Exception {
-		long gotN = corpus().getTrie().getTerminals().length;
+		long gotN = corpus().totalWords();
 		Assert.assertEquals(
 			baseMessage+"\nNumber of words in compiled corpus was not as expected", 
 			expN, gotN);
@@ -41,21 +41,10 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 			throws Exception {
 		String message = baseMessage+"\nNode for word '"+word+"' was not as expected";
 		
-		TrieNode gotNode = corpus().getTrie().getNode(morphemes);
+		WordInfo gotWinfo = corpus().info4word(word);
 		Assert.assertTrue(
-				message+"\nNo node found for this sequence of morphemes.", 
-				gotNode != null);
-		
-		TrieNode gotTerminalNode = gotNode.childTerminalNode();
-		Assert.assertTrue(
-				message+"\nNo terminal node found for this sequence of morphemes.", 
-				gotTerminalNode != null);
-		
-		AssertTrieNode nodeAsserter = 
-			new AssertTrieNode(gotTerminalNode, message);
-		
-		nodeAsserter.isNotNull();
-		nodeAsserter.isTerminal().hasMostFrequentForm(word);
+				message+"\nNo word found for this sequence of morphemes.", 
+				gotWinfo != null);
 		
 		return this;
 	}

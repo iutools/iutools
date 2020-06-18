@@ -46,7 +46,7 @@ public class CmdDescribeCorpus extends ConsoleCommand {
 		
 		long totalOccurences = compiledCorpus.totalOccurences();
 		long totalOccurencesNoDecomp = 
-			compiledCorpus.getNbOccurrencesThatFailedSegmentations();
+			compiledCorpus.totalOccurencesWithNoDecomp();
 		long totalOccurenceWithDecomp = 
 				totalOccurences - totalOccurencesNoDecomp;
 		
@@ -61,11 +61,10 @@ public class CmdDescribeCorpus extends ConsoleCommand {
 				compiledCorpus.
 				trie.getSize());
 		System.out.println("Number of distinct words that failed analysis: "+
-				compiledCorpus.getNbWordsThatFailedSegmentations());
+				compiledCorpus.totalWordsWithNoDecomp());
 		System.out.println("");
 		System.out.println("The corpus has its ngrams set: "+
 				compiledCorpus.ngramsAreComputed());
-//				(ngramStats==null? "no":"yes"));
 		
 		String action = "";
 		while ( action!=null ) {

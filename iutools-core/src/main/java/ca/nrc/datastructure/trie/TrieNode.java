@@ -243,15 +243,16 @@ public class TrieNode {
 	
 	@Override
     public String toString() {
-		String toS = "[";
-		toS += 
-			"TrieNode:\n"+
-		    "    segments = "+this.keysAsString()+"\n"+
-			"    surfaceForm = "+surfaceForm+"\n"+
-        	"    frequency = "+this.frequency+"\n";
-        toS += "    ]";
+		StringBuilder builder = new StringBuilder();
+		builder.append("{\n");
+		builder.append("  TrieNode:\n");
+		builder.append("    segments = "+this.keysAsString()+"\n");
+		builder.append("    surfaceForm = "+surfaceForm+"\n");
+		builder.append("    frequency = "+this.frequency+"\n");
+		builder.append("    children = "+String.join(",", children.keySet())+"\n");
+		builder.append("}");
         
-        return toS;
+        return builder.toString();
     }
 
 	// Stats

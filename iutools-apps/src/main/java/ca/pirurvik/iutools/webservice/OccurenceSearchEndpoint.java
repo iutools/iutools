@@ -26,6 +26,7 @@ import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistryException;
 import ca.pirurvik.iutools.corpus.CompiledCorpus;
+import ca.pirurvik.iutools.morphemesearcher.MorphSearchResults;
 import ca.pirurvik.iutools.morphemesearcher.MorphemeSearcher;
 import ca.pirurvik.iutools.morphemesearcher.ScoredExample;
 
@@ -117,13 +118,13 @@ public class OccurenceSearchEndpoint extends HttpServlet {
 		morphExtractor.setNbDisplayedWords(nbExamples);
 				
 		tLogger.trace("Finding words that contain the morpheme");
-		List<MorphemeSearcher.Words> wordsForMorphemes = morphExtractor.wordsContainingMorpheme(inputs.wordPattern);
+		List<MorphSearchResults> wordsForMorphemes = morphExtractor.wordsContainingMorpheme(inputs.wordPattern);
 		tLogger.trace("wordsForMorphemes: "+wordsForMorphemes.size());
 		HashMap<String,MorphemeSearchResult> results = new HashMap<String,MorphemeSearchResult>();
 		MorphemeSearcher.WordFreqComparator comparator = morphExtractor.new WordFreqComparator();
-		Iterator<MorphemeSearcher.Words> itWFM = wordsForMorphemes.iterator();
+		Iterator<MorphSearchResults> itWFM = wordsForMorphemes.iterator();
 		while (itWFM.hasNext()) {
-			MorphemeSearcher.Words w = itWFM.next();
+			MorphSearchResults w = itWFM.next();
 			tLogger.trace("morphemeWithId: "+w.morphemeWithId);
 			String meaningOfMorpheme = Morpheme.getMorpheme(w.morphemeWithId).englishMeaning;
 			tLogger.trace("meaningOfMorpheme: "+meaningOfMorpheme);

@@ -39,6 +39,7 @@ public class CorpusCompilerTest {
 
 		
 		String[] stringsOfWords11 = new String[] {
+				// Note: "takujuq" appears twice
 				"nunavut", "takujuq", "iglumik", "plugak", "takujuq", "iijuq"
 				};
 		String[] stringsOfWords12 = new String[] {
@@ -113,7 +114,7 @@ public class CorpusCompilerTest {
 		compiler.compileCorpusFromScratch(singleFileCorpus);
 		
 		new AssertCompiledCorpus(compiler.getCorpus(), "")
-			.containsNWords(13)
+			.containsNWords(14)
 			.containsWord("iglumut", "{iglu/1n}", "{mut/tn-dat-s}")
 			.containsWord("sanalauqsimajuq", "{sana/1v}", "{lauqsima/1vv}", "{juq/1vn}")
 		;
@@ -126,7 +127,7 @@ public class CorpusCompilerTest {
 		compiler.compileCorpusFromScratch(multiDirCorpus);
 		
 		new AssertCompiledCorpus(compiler.getCorpus(), "")
-			.containsNWords(10)
+			.containsNWords(11)
 		;
     }
     
@@ -157,7 +158,7 @@ public class CorpusCompilerTest {
 		new AssertCompiledCorpus(
 				compiler.getCorpus(), 
 				"Resumed compilation did not yield expected results")
-				.containsNWords(13)
+				.containsNWords(14)
 			;
     }	
 
@@ -171,6 +172,7 @@ public class CorpusCompilerTest {
     public void test__compile__VerifyNgramFreqsAfterCompilation() throws Exception
     {
 		String[] stringsOfWords = new String[] {
+				// Note: "takujuq" appears twice
 				"nunavut takujuq iglumik plugak takujuq iijuq"
 				};
 		File corpusDirPathname = createTemporaryCorpusDirectory(stringsOfWords);
@@ -181,7 +183,7 @@ public class CorpusCompilerTest {
 		AssertCompiledCorpus asserter = 
 			new AssertCompiledCorpus(compiler.getCorpus(), "");
 		
-		asserter.containsNWords(4);
+		asserter.containsNWords(5);
 		
 		asserter
 			// ngram with freq=1

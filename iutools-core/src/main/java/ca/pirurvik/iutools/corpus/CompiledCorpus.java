@@ -46,6 +46,9 @@ public abstract class CompiledCorpus {
 
 	public abstract String[] topDecompositions(String word) throws CompiledCorpusException;
 	
+	public abstract WordInfo[] mostFrequentWordsExtending(
+			String[] morphemes, Integer N) throws CompiledCorpusException;
+
 	// TODO-June2020: Should probably choose a better name
 	protected abstract void addToWordSegmentations(
 			String word,String[][] decomps) 
@@ -137,14 +140,10 @@ public abstract class CompiledCorpus {
 	
 	public abstract long totalOccurencesOf(String word) throws CompiledCorpusException;
 	
-	// TODO-June2020: Does not belong in CompiledCorpus. It is 
-	//   an internal implementation detail of the _InMemory version.
-	public abstract Trie getTrie();
-	
 	public abstract List<WordWithMorpheme> wordsContainingMorpheme(String morpheme) throws CompiledCorpusException;
 
 	public abstract long morphemeNgramFrequency(String[] ngram) throws CompiledCorpusException;
-	
+
 	@JsonIgnore
 	protected StringSegmenter getSegmenter() throws CompiledCorpusException {
 		if (segmenter == null) {
@@ -189,4 +188,14 @@ public abstract class CompiledCorpus {
 		}
 		return ngramCompiler;
 	}	
+	
+	public WordInfo mostFrequentWordExtending(String[] morphemes) 
+			throws CompiledCorpusException {
+		WordInfo mostFrequent = null;
+		WordInfo[] mostFrequentWords = mostFrequentWordsExtending(morphemes, 1);
+		if (mostFrequentWords != null && mostFrequentWords.length > 0) {
+			mostFrequent = mostFrequentWords[0];
+		}
+		return mostFrequent;
+	}
 }

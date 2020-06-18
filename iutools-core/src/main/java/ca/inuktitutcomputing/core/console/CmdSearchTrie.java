@@ -15,6 +15,7 @@ import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.Trie_InMemory;
 import ca.nrc.datastructure.trie.TrieNode;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
+import ca.pirurvik.iutools.corpus.WordInfo;
 
 public class CmdSearchTrie extends ConsoleCommand {
 	
@@ -46,22 +47,34 @@ public class CmdSearchTrie extends ConsoleCommand {
 		boolean searchWord = false;
 		
 		CompiledCorpus_InMemory compiledCorpus = CompiledCorpus_InMemory.createFromJson(compilationFilePath);
-		Trie trie = compiledCorpus.getTrie();
 
 		DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
 		DecimalFormatSymbols symbols = formatter.getDecimalFormatSymbols();
 		symbols.setGroupingSeparator(' ');
 		formatter.setDecimalFormatSymbols(symbols);
+		
+		
+		long occsWithSuccessfulDecomp = compiledCorpus.totalOccurencesWithDecomps();
+		String occSucc = prepend(' ',11,formatter.format(occsWithSuccessfulDecomp));
+		
+		long occsWithFailedDecomp = compiledCorpus.totalOccurencesWithNoDecomp();
+		String occFail = prepend(' ',11,formatter.format(occsWithFailedDecomp));
+		
+		long wordsWithSuccesfulDecomp = compiledCorpus.totalWordsWithDecomps();
+		String wrdSucc = prepend(' ',11,formatter.format(wordsWithSuccesfulDecomp));
+
+		long wordsWithFailedDecomp = compiledCorpus.totalWordsWithNoDecomp();
+		String wrdFail = prepend(' ',11,formatter.format(wordsWithFailedDecomp));
 
 		echo("              ____________________________");
 		echo("              |             |             |");
-		echo("              |   in trie   |    failed   |");
+		echo("              | with decomp | no decomp  |");
 		echo("______________|_____________|_____________|");
 		echo("|             |             |             |");
-		echo("| Occurrences | "+prepend(' ',11,formatter.format(trie.getNbOccurrences()))+" | "+prepend(' ',11,formatter.format(compiledCorpus.getNbOccurrencesThatFailedSegmentations()))+" |");
+		echo("| Occurrences | "+occSucc+" | "+occFail+" |");
 		echo("|_____________|_____________|_____________|");
 		echo("|             |             |             |");
-		echo("| Words       | "+prepend(' ',11,formatter.format(trie.getSize()))+" | "+prepend(' ',11,formatter.format(compiledCorpus.getNbWordsThatFailedSegmentations()))+" |");
+		echo("| Words       | "+wrdSucc+" | "+wrdFail+" |");
 		echo("|_____________|_____________|_____________|");
 		
 		while (true) {
@@ -86,12 +99,9 @@ public class CmdSearchTrie extends ConsoleCommand {
 			
 			echo("\nSearching for morphemes: "+String.join(" ", morphemes)+"\n");
 			
-			TrieNode node = trie.getNode(morphemes);
-			if (node != null) {
-				String nodeString = node.toString();
-				TrieNode mostFrequentTerminal = compiledCorpus.getMostFrequentTerminal(node);
-				echo(nodeString);
-				echo("Most frequent terminal: "+mostFrequentTerminal.toString());
+			WordInfo winfo = compiledCorpus.mostFrequentWordExtending(morphemes);			
+			if (winfo != null) {
+				echo("Most frequent word: \n"+winfo.toString());
 			} else {
 				echo("No node has been found for that sequence of morphemes.");
 			}
@@ -100,7 +110,6 @@ public class CmdSearchTrie extends ConsoleCommand {
 		}
 		
 	}
-
 
 	private String prepend(char prependChar, int maxPlaces, String numberStr) {
 		return CharBuffer.allocate(maxPlaces-numberStr.length()).toString().replace( '\0', prependChar)+numberStr; 

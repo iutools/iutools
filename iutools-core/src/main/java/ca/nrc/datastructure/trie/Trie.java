@@ -139,9 +139,19 @@ public abstract class Trie {
 	
 	protected void collectAllTerminals(TrieNode node, 
 			List<TrieNode> collected) throws TrieException {
+		Logger tLogger = Logger.getLogger("ca.nrc.datastructure.trie.Trie.collectAllTerminals");
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("node="+node);
+		}
 		if (node.isTerminal()) {
+			tLogger.trace("node is terminal; collecting it.");
 			collected.add((TrieNode)node);
 		} else {
+			if (tLogger.isTraceEnabled()) {
+				tLogger.trace(
+					"node is NOT terminal; traversing children, node.children.keysSet()="+
+					String.join(",", node.children.keySet()));
+			}
 			for (TrieNode aChild: childrenNodes(node)) {
 				collectAllTerminals(aChild, collected);
 			}
@@ -149,6 +159,10 @@ public abstract class Trie {
 	}
 	
     private List<TrieNode> childrenNodes(TrieNode node) throws TrieException {
+    	Logger tLogger = Logger.getLogger("ca.nrc.datastructure.trie.Trie.childrenNodes");
+    	if (tLogger.isTraceEnabled()) {
+    		tLogger.trace("node="+node+"\nnode.children.keySet="+node.children.keySet());
+    	}
     	List<TrieNode> children = new ArrayList<TrieNode>();
     	for (String extension: node.childrenSegments()) {
     		TrieNode childNode = getNode(extendSegments(node.keys, extension ));
@@ -200,7 +214,14 @@ public abstract class Trie {
 	}	
 	
 	public TrieNode[] getMostFrequentTerminals(int n, String[] segments) throws TrieException {
+		Logger tLogger = Logger.getLogger("ca.nrc.datastructure.trie.Trie.getMostFrequentTerminals");
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("segments="+String.join(",", segments));
+		}
 		TrieNode node = getNode(segments);
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("node="+node);
+		}
 		return getMostFrequentTerminals(n, node, null);
 	}
 	

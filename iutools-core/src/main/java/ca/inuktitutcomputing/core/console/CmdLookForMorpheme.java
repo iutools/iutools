@@ -12,6 +12,7 @@ import ca.inuktitutcomputing.data.LinguisticDataSingleton;
 import ca.inuktitutcomputing.data.Morpheme;
 import ca.nrc.datastructure.Pair;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
+import ca.pirurvik.iutools.morphemesearcher.MorphSearchResults;
 import ca.pirurvik.iutools.morphemesearcher.MorphemeSearcher;
 import ca.pirurvik.iutools.morphemesearcher.ScoredExample;
 
@@ -42,7 +43,7 @@ public class CmdLookForMorpheme extends ConsoleCommand {
 		//morphExtr.useDictionary(dictionaryFile);
 		
 		boolean interactive = false;
-		List<MorphemeSearcher.Words> words = null;
+		List<MorphSearchResults> words = null;
 		if (morpheme == null) {
 			interactive = true;
 		} else {
@@ -63,10 +64,10 @@ public class CmdLookForMorpheme extends ConsoleCommand {
 			
 			if (words != null && words.size() > 0) {
 				MorphemeSearcher.WordFreqComparator comparator = morphExtr.new WordFreqComparator();
-				Iterator<MorphemeSearcher.Words> itWords = words.iterator();
+				Iterator<MorphSearchResults> itWords = words.iterator();
 				int nIt = 1;
 				while (itWords.hasNext()) {
-					MorphemeSearcher.Words wordsForMorpheme = itWords.next();
+					MorphSearchResults wordsForMorpheme = itWords.next();
 					String morphemeWithId = wordsForMorpheme.morphemeWithId;
 					ScoredExample[] wordsAndFreqs = wordsForMorpheme.words.toArray(new ScoredExample[] {});
 					Arrays.sort(wordsAndFreqs, comparator);

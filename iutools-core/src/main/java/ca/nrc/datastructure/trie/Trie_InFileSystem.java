@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ca.nrc.datastructure.trie.Trie.NodeOption;
@@ -30,8 +32,13 @@ public class Trie_InFileSystem extends Trie {
 
 	@Override
 	public TrieNode getNode(String[] keys, NodeOption... options) throws TrieException {
+		Logger tLogger = Logger.getLogger("ca.nrc.datastructure.trie.Trie_InFileSystem.getNode");
 		TrieNode node = null;
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("looking for keys="+String.join(",", keys));
+		}
 		File nodeFile = file4node(keys, options);
+		tLogger.trace("nodeFile="+nodeFile);
 		if (nodeFile != null) {
 		
 			ObjectMapper mapper = new ObjectMapper();	
@@ -47,6 +54,10 @@ public class Trie_InFileSystem extends Trie {
 				String child = aChildDir.getName();
 				node.children.put(child, null);
 			}
+		}
+		
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("returning node=\n"+node);;
 		}
 		
 		return node;

@@ -344,9 +344,9 @@ public abstract class CompiledCorpusTest {
         CompiledCorpus_InMemory compiledCorpus = new CompiledCorpus_InMemory(StringSegmenter_IUMorpheme.class.getName());
         compiledCorpus.addWordOccurences(stringsOfWords);
        Assert.assertEquals("The number of words that failed segmentation is wrong.",1,
-        		compiledCorpus.getNbWordsThatFailedSegmentations());
+        		compiledCorpus.totalWordsWithNoDecomp());
        Assert.assertEquals("The number of occurrences that failed segmentation is wrong.",1,
-        		compiledCorpus.getNbOccurrencesThatFailedSegmentations());
+        		compiledCorpus.totalOccurencesWithNoDecomp());
 	}
 
     // TODO-June2020: This test should use makeCorpusUnderTest()

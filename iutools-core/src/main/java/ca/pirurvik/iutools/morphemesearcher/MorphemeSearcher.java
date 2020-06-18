@@ -1,6 +1,7 @@
 package ca.pirurvik.iutools.morphemesearcher;
 
 import java.io.IOException;
+import java.security.cert.Extension;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -26,6 +27,7 @@ import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.json.PrettyPrinter;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory.WordWithMorpheme;
+import ca.pirurvik.iutools.corpus.WordInfo;
 import ca.pirurvik.iutools.corpus.CompiledCorpusException;
 import ca.pirurvik.iutools.corpus.CompiledCorpus;
 
@@ -46,7 +48,7 @@ public class MorphemeSearcher {
 		this.nbWordsToBeDisplayed = n;
 	}
 	
-	public List<Words> wordsContainingMorpheme(String morpheme) throws Exception {
+	public List<MorphSearchResults> wordsContainingMorpheme(String morpheme) throws Exception {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.morphemesearcher.MorphemeSearcher.wordsContainingMorpheme");
 		tLogger.trace("morpheme= "+morpheme);
 		
@@ -60,14 +62,14 @@ public class MorphemeSearcher {
 			throw new MorphemeSearcherException(e);
 		}
 		tLogger.trace("morphids2scoredExamples: "+morphids2scoredExamples.size());
-		List<Words> words = new ArrayList<Words>();
+		List<MorphSearchResults> words = new ArrayList<MorphSearchResults>();
 		Set<String> keys = morphids2scoredExamples.keySet();
 		Iterator<String> iter = keys.iterator();
 		while ( iter.hasNext()) {
 			String morphId = iter.next();
 			tLogger.trace("iteration for generation of Words - morphId: "+morphId);
 			List<ScoredExample> scoredExamples = morphids2scoredExamples.get(morphId);
-			Words wordsObject = new Words(morphId,scoredExamples);
+			MorphSearchResults wordsObject = new MorphSearchResults(morphId,scoredExamples);
 			words.add(wordsObject);
 		}
 		tLogger.trace("words: "+words.size());
@@ -261,18 +263,18 @@ public class MorphemeSearcher {
     	DecompositionExpression expr = new DecompositionExpression(decompositionExpression);
     	String exprWithoutSurfaceForms = expr.toStringWithoutSurfaceForms();
     	String[] sequenceOfMorphemes = exprWithoutSurfaceForms.split(" ");
-    	Trie trie = corpus.getTrie();
-    	TrieNode[] terminals;
-		try {
-			terminals = trie.getTerminals(sequenceOfMorphemes);
-		} catch (TrieException e) {
+    	long nbWord = 0;
+    	try {
+			WordInfo[] extensions = 
+				corpus.mostFrequentWordsExtending(sequenceOfMorphemes, Integer.MAX_VALUE);
+			if (extensions != null) {
+				nbWord = extensions.length;
+			}
+		} catch (CompiledCorpusException e) {
 			throw new MorphemeSearcherException(e);
 		}
-    	long nbWord = 0;
-    	for (int iterm=0; iterm<terminals.length; iterm++) {
-    		nbWord += terminals[iterm].getFrequency();
-    	}
-		return nbWord;
+    	
+    	return nbWord;
 	}
 
 	public Double morphFreqInAnalyses(String morpheme, String word, boolean allowAnalysisWithAdditionalFinalConsonant) throws LinguisticDataException, TimeoutException, MorphInukException, MorphemeSearcherException {
@@ -296,17 +298,6 @@ public class MorphemeSearcher {
 	
 	//--------------------------------------------------------------------------
 
-	public class Words {
-		
-		public String morphemeWithId;
-		public List<ScoredExample> words;
-		
-		public Words(String _morphemeWithId, List<ScoredExample> _words) {
-			this.morphemeWithId = _morphemeWithId;
-			this.words = _words;
-		}
-	}
-	
 	public static class WordFreq {
 		public String word;
 		public Long freq;
@@ -338,10 +329,7 @@ public class MorphemeSearcher {
 			this.rootId = _rootid;
 			this.morphid2wordsFreqs = _morphid2wordsFreqs;
 		}
-		
-		
 	}
-
 }
 
 
