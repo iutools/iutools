@@ -13,19 +13,7 @@ import ca.nrc.testing.AssertHelpers;
 import ca.nrc.testing.AssertObject;
 
 public class Aligner_MalignaTest {
-	
-	@Test
-	public void test__FixMalignaIssues() throws Exception {
-		Assert.fail(
-			"\n\nIGNORE THIS FAILURE!\n\n"+
-			"It is just a reminder to deal with some failing (currently @Ignored) tests.\n"+
-			"These tests started failing on 2020-06-03\n" + 
-			"It seems the content of the www.gov.nu.ca home pages has changed\n" + 
-			"in a way that makes Maligna crash.\n"+
-			"Will need to fix the Maligna bug and submit the fix to its maintainers.");
-	}
-	
-	
+		
 	/////////////////////////////
 	// DOCUMENTATION TESTS
 	/////////////////////////////
@@ -58,12 +46,7 @@ public class Aligner_MalignaTest {
 	// VERIFICATION TESTS
 	////////////////////////
 	
-	
-	// This test started failing on 2020-06-03
-	// It seems the content of the www.gov.nu.ca home pages has changed
-	// in a way that makes Maligna crash.
-	//
-	@Test @Ignore
+	@Test
 	public void test__align__HappyPath() throws Exception {
 		String[] enSents = new String[] {
 			"Hello World.",
@@ -92,11 +75,7 @@ public class Aligner_MalignaTest {
 				expAlignments, gotAlignments);
 	}
 	
-	// This test started failing on 2020-06-03
-	// It seems the content of the www.gov.nu.ca home pages has changed
-	// in a way that makes Maligna crash.
-	//
-	@Test @Ignore
+	@Test
 	public void test__Aligner_Maligna__CallAsMain() throws Exception {
 		String f1Path = ResourceGetter.getResourcePath("ca/pirurvik/iutools/concordancer/l1_sents.txt");
 		String f2Path = ResourceGetter.getResourcePath("ca/pirurvik/iutools/concordancer/l2_sents.txt");
