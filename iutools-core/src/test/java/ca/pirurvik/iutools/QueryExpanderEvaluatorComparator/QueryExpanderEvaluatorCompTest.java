@@ -46,7 +46,6 @@ public class QueryExpanderEvaluatorCompTest {
 		evaluator.verbose = false;
 
 		CompiledCorpus_InMemory compiledCorpus = CompiledCorpusRegistry.getCorpus();
-		compiledCorpus.setVerbose(false);
 		evaluator.setCompiledCorpus(compiledCorpus);
 		evaluator.setGoldStandard(new File(goldStandardCSVFilePath));
 		// whether statistics are to be computed over words (default [true]) or morphemes [false]:

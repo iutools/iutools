@@ -43,17 +43,22 @@ public class CmdDescribeCorpus extends ConsoleCommand {
 		String corpusName = "this-corpus";
 		CompiledCorpusRegistry.registerCorpus(corpusName, compilationFile);
 		CompiledCorpus_InMemory compiledCorpus = CompiledCorpusRegistry.getCorpus(corpusName);
-//		Map<String,Long> ngramStats = compiledCorpus.ngramStats;
-		Trie trie = compiledCorpus.getTrie();
+		
+		long totalOccurences = compiledCorpus.totalOccurences();
+		long totalOccurencesNoDecomp = 
+			compiledCorpus.getNbOccurrencesThatFailedSegmentations();
+		long totalOccurenceWithDecomp = 
+				totalOccurences - totalOccurencesNoDecomp;
 		
 		System.out.println(
 				"Total number of analyzed words in trie (succeeded analysis): "+
-				trie.getNbOccurrences());
+				totalOccurenceWithDecomp);
 		System.out.println("Total number of words that failed analysis: "+
-				compiledCorpus.getNbOccurrencesThatFailedSegmentations());
+				totalOccurencesNoDecomp);
 		System.out.println("");
 		System.out.println(
 				"Number of distinct analyzed words in trie (succeeded analysis): "+
+				compiledCorpus.
 				trie.getSize());
 		System.out.println("Number of distinct words that failed analysis: "+
 				compiledCorpus.getNbWordsThatFailedSegmentations());
@@ -121,6 +126,4 @@ public class CmdDescribeCorpus extends ConsoleCommand {
 		}
 		return true;
 	}
-	
-
 }

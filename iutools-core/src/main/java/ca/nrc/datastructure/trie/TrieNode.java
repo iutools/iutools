@@ -322,4 +322,14 @@ public class TrieNode {
 		
 		return value;
 	}
+
+	public String[] keysNoTerminal() {
+		String[] keysNoTerm = keys;
+		if (keys != null && keys.length > 0 &&
+				keys[keys.length-1].equals(TERMINAL_SEG)) {
+			// Remove the terminal segment
+			keysNoTerm = Arrays.copyOf(keys, keys.length-1);
+		}
+		return keysNoTerm;
+	}
 }

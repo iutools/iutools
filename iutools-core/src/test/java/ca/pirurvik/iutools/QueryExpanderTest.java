@@ -35,7 +35,6 @@ public class QueryExpanderTest {
 		//
         CompiledCorpus_InMemory compiledCorpus = getACompiledCorpus(); 
         QueryExpander expander = new QueryExpander(compiledCorpus);
-        expander.setVerbose(false);
 		QueryExpansion[] expansions = expander.getExpansions("nunavut");
 	}
 
@@ -53,7 +52,6 @@ public class QueryExpanderTest {
 		};
         CompiledCorpus_InMemory compiledCorpus = compileCorpusFromWords(words);        
         QueryExpander reformulator = new QueryExpander(compiledCorpus);
-        reformulator.setVerbose(false);
         QueryExpansion[] expansions = reformulator.getExpansions("iglu");
         String[] gotExpansions = new String[expansions.length];
         for (int i=0; i<expansions.length; i++)
@@ -76,7 +74,6 @@ public class QueryExpanderTest {
 		};
         CompiledCorpus_InMemory compiledCorpus = compileCorpusFromWords(words);
         QueryExpander reformulator = new QueryExpander(compiledCorpus);
-        reformulator.setVerbose(false);
         QueryExpansion[] expansions = reformulator.getExpansions("iglumiutaq");
         String[] gotExpansions = new String[expansions.length];
         for (int i=0; i<expansions.length; i++)
@@ -99,7 +96,6 @@ public class QueryExpanderTest {
 		};
         CompiledCorpus_InMemory compiledCorpus = compileCorpusFromWords(corpusWords);
         QueryExpander reformulator = new QueryExpander(compiledCorpus);
-        reformulator.setVerbose(false);
         QueryExpansion[] expansions = reformulator.getExpansions("takujumaguvit");
         String[] gotExpansions = new String[expansions.length];
         for (int i=0; i<expansions.length; i++)
@@ -122,7 +118,6 @@ public class QueryExpanderTest {
 		};
         CompiledCorpus_InMemory compiledCorpus = compileCorpusFromWords(corpusWords);
         QueryExpander expander = new QueryExpander(compiledCorpus);
-        expander.setVerbose(false);
         QueryExpansion[] gotExpansions = expander.getExpansions("takujuq");
 		String[] expExpansions = new String[] {"takujuq", "takujumajunga", "takujumavalliajanginnik"};
 		assertExpansionsAre(expExpansions, gotExpansions);		
@@ -138,7 +133,6 @@ public class QueryExpanderTest {
 		};
         CompiledCorpus_InMemory compiledCorpus = compileCorpusFromWords(corpusWords);
         QueryExpander expander = new QueryExpander(compiledCorpus);
-        expander.setVerbose(false);
         
         String taqujuq = "ᑕᑯᔪᖅ";
         QueryExpansion[] gotExpansions = expander.getExpansions(taqujuq);
@@ -178,8 +172,6 @@ public class QueryExpanderTest {
 		// attendu : tutsiraummut, tuksiraummut, tuksiraut, tussiraut, tutsiraut
         CompiledCorpus_InMemory compiledCorpus = compileCorpusFromWords(words);
         QueryExpander expander = new QueryExpander(compiledCorpus);        
-        expander.setVerbose(false);
-
 		
 		// test n < number of terminals
         TrieNode tutsi = compiledCorpus.trie.getNode(new String[]{"{tuksiq/1v}"});

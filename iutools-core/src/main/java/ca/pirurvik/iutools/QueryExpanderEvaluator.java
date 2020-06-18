@@ -24,6 +24,8 @@ import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.pirurvik.iutools.QueryExpansion;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
+import ca.pirurvik.iutools.corpus.WordInfo;
+import ca.pirurvik.iutools.corpus.CompiledCorpusException;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistryException;
 
@@ -31,8 +33,6 @@ public class QueryExpanderEvaluator {
 	
 	public boolean verbose = false;
 	
-//	static String csvGoldStandardFilePath = "/Users/benoitfarley/Inuktitut/Pirurvik/IU100Words.csv";
-//	static String compiledCorpusTrieFilePath = "/Users/benoitfarley/temp/trie_compilation-bak-2019-02-19.json";
 	public CompiledCorpus_InMemory compiledCorpus = null;
 	public CSVParser csvParser = null;
 	public boolean computeStatsOverSurfaceForms = true;
@@ -64,25 +64,21 @@ public class QueryExpanderEvaluator {
 		
 	public void setCompiledCorpus(String corpusName) throws CompiledCorpusRegistryException {
 		compiledCorpus = CompiledCorpusRegistry.getCorpus(corpusName);
-		compiledCorpus.setVerbose(verbose);
 	}
 	
 	public void setCompiledCorpus(File compiledCorpusTrieFilePath) throws IOException {
 		FileReader fr = new FileReader(compiledCorpusTrieFilePath);
 		compiledCorpus = new Gson().fromJson(fr, CompiledCorpus_InMemory.class);    		
 		fr.close();
-		compiledCorpus.setVerbose(verbose);
 	}
 	
 	public void setCompiledCorpus(CompiledCorpus_InMemory _compiledCorpus) {
 		compiledCorpus = _compiledCorpus;
-		compiledCorpus.setVerbose(verbose);
 	}
 	
 	
 	public void setVerbose(boolean value) {
 		verbose = value;
-		if (compiledCorpus != null) compiledCorpus.setVerbose(value);
 	}
 	
 	public void setGoldStandard(File csvGoldStandardFile) throws IOException {
@@ -107,9 +103,6 @@ public class QueryExpanderEvaluator {
 		
         try {
     		QueryExpander queryExpander = new QueryExpander(compiledCorpus);
-//    		StringSegmenter segmenter = compiledCorpus.getSegmenter();
-    		
-    		if (verbose) System.out.println("Size of segments cache: "+compiledCorpus.getSegmentsCache().size());
             
             Pattern patMotFreq = Pattern.compile("^(.+) \\((\\d+)\\).*$");
             
@@ -160,7 +153,7 @@ public class QueryExpanderEvaluator {
                     	if (verbose) System.out.println("        "+gsalternative+" : "+freqGSAlternativeInCorpus);
                     	String altDecomp = null;
                     	try {
-                    		altDecomp = String.join(" ",compiledCorpus.segmentText(gsalternative))+" \\";
+                    		altDecomp = String.join(" ",compiledCorpus.decomposeWord(gsalternative));
                         	gsalternativesMorphemes[igs] = altDecomp;
                     	} catch (Exception e) {
                     		altDecomp = "";
@@ -271,25 +264,32 @@ public class QueryExpanderEvaluator {
 
 	private long freqDansCorpus(String reformulation) 
 			throws QueryExpanderException {
-		String[] keys = compiledCorpus.getSegmentsCache().get(reformulation);
-		if (keys==null)
-			return 0;
-		long freqDansCorpus;
+		
+//		String[] keys = compiledCorpus.getSegmentsCache().get(reformulation);
+//		if (keys==null)
+//			return 0;				
+//		
+//		long freqDansCorpus;
+//		try {
+//			freqDansCorpus = compiledCorpus.trie.getFrequency(keys);
+//		} catch (TrieException e) {
+//			throw new QueryExpanderException(e);
+//		}
+		long freqDansCorpus = 0;
 		try {
-			freqDansCorpus = compiledCorpus.trie.getFrequency(keys);
-		} catch (TrieException e) {
+			WordInfo wInfo = compiledCorpus.info4word(reformulation);
+			if (wInfo != null) {
+				freqDansCorpus = wInfo.frequency;
+			}
+		} catch (CompiledCorpusException e) {
 			throw new QueryExpanderException(e);
 		}
+	
 		return freqDansCorpus;
 	}
 	
-
-
-
 	public static void main(String[] args) throws IOException {
 		QueryExpanderEvaluator evaluator = new QueryExpanderEvaluator(args[0],args[1]);
 		evaluator.run();
 	}
-
-
 }

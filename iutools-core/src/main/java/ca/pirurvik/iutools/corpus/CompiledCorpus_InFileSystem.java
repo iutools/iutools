@@ -159,7 +159,7 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus_InMemory {
 	}
 
 	@Override
-	public long getNbOccurrencesOfWord(String word) throws CompiledCorpusException {
+	public long totalOccurencesOf(String word) throws CompiledCorpusException {
 		String[] wordChars = Arrays.copyOf(word.split(""), word.length());
 		
 		TrieNode wordNode;
@@ -178,8 +178,8 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus_InMemory {
 
 	// TODO-June2020: Make this method independant the 'super' implementation
 	@Override
-	public List<WordWithMorpheme> getWordsContainingMorpheme(String morpheme) throws CompiledCorpusException {
-		return super.getWordsContainingMorpheme(morpheme);
+	public List<WordWithMorpheme> wordsContainingMorpheme(String morpheme) throws CompiledCorpusException {
+		return super.wordsContainingMorpheme(morpheme);
 	}
 	
 	
@@ -190,7 +190,7 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus_InMemory {
 		try {
 			String[] chars = Trie.wordChars(word);
 			TrieNode node = wordCharTrie.getNode(chars);
-			node.setField("topDecomp", decomps);
+			node.setField("topDecomps", decomps);
 			wordCharTrie.add(word.split(""), word);
 		} catch (TrieException e) {
 			throw new CompiledCorpusException(e);
@@ -253,7 +253,7 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus_InMemory {
 	}
 
 	@Override
-	public String[] topSegmentation(String word) throws CompiledCorpusException {
+	public String[] topDecompositions(String word) throws CompiledCorpusException {
 		String[] topDec = null;
 		TrieNode node;
 		try {
@@ -263,7 +263,11 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus_InMemory {
 		}
 		
 		if (node != null) {
-			topDec = (String[]) node.getField("topDecomp");
+			String[][] topDecomps = 
+				node.getField("topDecomps", new String[0][]);
+			if (topDecomps.length > 0) {
+				topDec = topDecomps[0];
+			}
 		}
 		
 		return topDec;
@@ -332,4 +336,11 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus_InMemory {
 		}		
 		return info;
 	}
+	
+	// TODO-June2020: Make this method independant of super impl.
+	@Override
+	public long totalWords() {
+		return super.totalWords();
+	}
+	
 }

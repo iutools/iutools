@@ -105,7 +105,6 @@ public class MorphemeSearcherTest {
 		dictionary.put("igluvimmut", "{iglu/1n} {vim:vik/1nn} {mut/tn-dat-s}");
 
 		MockCompiledCorpus mockCompiledCorpus = new MockCompiledCorpus();
-		mockCompiledCorpus.setVerbose(false);
 		mockCompiledCorpus.setDictionary(dictionary);
 		String[] wordsToAdd = new String[] {
 				"inuit", "nunami", "iglumik", "inuglu", "iglumut", "nunamut", "igluvimmut"

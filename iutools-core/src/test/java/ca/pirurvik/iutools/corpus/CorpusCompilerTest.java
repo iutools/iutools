@@ -286,7 +286,6 @@ public class CorpusCompilerTest {
         CompiledCorpus_InMemory compiledCorpus = new CompiledCorpus_InMemory(StringSegmenter_IUMorpheme.class.getName());
         CorpusCompiler compiler = new CorpusCompiler(compiledCorpus);
         
-        compiledCorpus.setVerbose(false);
         compiler.setVerbose(false);
         compiler.saveFrequency = 3;
         

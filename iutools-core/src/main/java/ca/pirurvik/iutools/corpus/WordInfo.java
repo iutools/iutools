@@ -22,12 +22,28 @@ public class WordInfo {
 	 * decompositions than are stored in the WordInfo. The total number of
 	 * decompositions that were avaible is provided by totalDecompositions.
 	 */
+	// TODO-June2020: Get rid of this once we don't need the 
+	//   CompiledCorpus_InMemory (that class stores the attribute in the
+	//   json file)
 	public String[] topDecompositions = null;
+	
+	/** Sample of the top decompositions for the word
+	 * 
+	 * A null value does NOT mean that the word has no decomposition.
+	 * It just means that we haven't yet stored them in the WordInfo.
+	 * An EMPTY array on the other hand, DOES mean that the morphological 
+	 * analyzer is not able to process that word.
+	 * 
+	 * Note that the morphological analyser might have produced more 
+	 * decompositions than are stored in the WordInfo. The total number of
+	 * decompositions that were available is provided by totalDecompositions.
+	 */
+	public String[][] decompositionsSample = null;
 	
 	/**
 	 * Total number of decompositions that were obtained for this word.
-	 * This may be different from the size of topDecompositions, as the later
-	 * only provides the top few decompositions.
+	 * This may be different from the size of decompositionsSample, as the later
+	 * only provides the top N decompositions.
 	 * 
 	 * A null value does NOT mean that the word has no decomposition.
 	 * It just means that we haven't yet stored them in the WordInfo.

@@ -5,13 +5,13 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
 
+import ca.nrc.datastructure.trie.Trie.NodeOption;
 import ca.nrc.json.PrettyPrinter;
 
 // TODO-June2020: Methods that return a set or list of TrieNodes should
@@ -44,22 +44,29 @@ import ca.nrc.json.PrettyPrinter;
 //
 
 public abstract class Trie {
+	
+	public static enum NodeOption {NO_CREATE, TERMINAL};
 			
 	public abstract TrieNode getRoot() throws TrieException;
 	
-	public abstract TrieNode getNode(String[] keys) throws TrieException;
+	public abstract TrieNode getNode(String[] keys, NodeOption... options) throws TrieException;
 		
 	public abstract boolean contains(String[] segments) throws TrieException;
 		
-	public abstract TrieNode addExpression(String[] segments, String expression) 
-		throws TrieException;
-	
+	public abstract void saveNode(TrieNode node) throws TrieException;
+			
 	protected String allTerminalsJoined = ";";
 	
 	public TrieNode add(String[] segments, String expression) 
 			throws TrieException {
 		addToJoinedTerminals(segments);
-		return addExpression(segments, expression);
+		TrieNode node = getNode(segments, NodeOption.TERMINAL);
+		node.addSurfaceForm(expression);
+		node.frequency++;
+		saveNode(node);
+		updateAncestors(node);
+		
+		return node;		
 	}
 		
     public long getSize() throws TrieException {
@@ -68,6 +75,10 @@ public abstract class Trie {
     
 	public TrieNode getNode(List<String> keys) throws TrieException {
 		return getNode(keys.toArray(new String[keys.size()]));
+	}
+	
+	public TrieNode getNode(String[] keys) throws TrieException {
+		return getNode(keys, new NodeOption[0]);
 	}
 
 	public TrieNode[] getTerminals() throws TrieException {
@@ -379,5 +390,44 @@ public abstract class Trie {
 		regex = ";(" + regex + ");";
 		Matcher matcher = Pattern.compile(regex).matcher(getAllTerminalJoined());
 		return matcher;
+	}
+	
+//	protected void updateAncestors(String[] nodeKeys) throws TrieException {
+//		updateAncestors(Arrays.asList(nodeKeys));
+//	}
+	
+//	// TODO-June2020: This should really be updateAncestors(TrieNode)
+//	//   since we can get the parent from the TrieNode
+//	//
+//	protected void updateAncestors(List<String> nodeSegments) throws TrieException {
+//		if (nodeSegments.size() > 0) {
+//			List<String> parentSegments = 
+//					nodeSegments.subList(0, nodeSegments.size()-1);
+//			
+//			TrieNode parentNode = getNode(parentSegments);
+//			parentNode.frequency++;
+//			
+//			String childSegment = nodeSegments.get(nodeSegments.size()-1);
+//			parentNode.addChild(childSegment, getNode(nodeSegments));
+//			
+//			saveNode(parentNode);
+//			
+//			updateAncestors(parentSegments);
+//		}
+//	}
+	
+	protected void updateAncestors(TrieNode node) throws TrieException {
+		TrieNode parentNode = getParentNode(node);
+		if (parentNode != null) {
+			String[] nodeSegments = node.keys;
+			parentNode.frequency++;
+			
+			String childSegment = nodeSegments[nodeSegments.length-1];
+			parentNode.addChild(childSegment, node);
+			
+			saveNode(parentNode);
+			
+			updateAncestors(parentNode);
+		}
 	}
 }

@@ -166,7 +166,6 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 				wordsFailedSegmentationWithFreqs.remove(word);
 	}
 	
-	@Override
 	protected void addToDecomposedWordsSuite(String word) {
 		decomposedWordsSuite += word+",,";
 	}
@@ -223,7 +222,6 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
     	return nb;
     }
     
-	@Override
 	protected TrieNode[] getAllTerminals() throws CompiledCorpusException {
 		try {
 			return this.trie.getTerminals();
@@ -244,12 +242,6 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 		return this.terminalsSumFreq;
 	}
 	
-
-	public void toConsole(String message) {
-		if (verbose) System.out.print(message);
-	}
-
-
     // ----------------------------- private -------------------------------
 
 	private static boolean isInuktitutWord(String string) {
@@ -345,7 +337,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	public void setWordsFailedSegmentation(Vector<String> wordsFailedSegmentation) {
 		this.wordsFailedSegmentation = wordsFailedSegmentation;
 	}
-	public long getNbOccurrencesOfWord(String word) throws CompiledCorpusException {
+	public long totalOccurencesOf(String word) throws CompiledCorpusException {
 		Logger logger = Logger.getLogger("CompiledCorpus.getNbOccurrencesOfWord");
 		logger.debug("word: "+word);
 		long nbOccurrences = 0;
@@ -369,7 +361,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 		return nbOccurrences;
 	}
 	
-	public List<WordWithMorpheme> getWordsContainingMorpheme(String morpheme) throws CompiledCorpusException {
+	public List<WordWithMorpheme> wordsContainingMorpheme(String morpheme) throws CompiledCorpusException {
 		List<WordWithMorpheme> words = new ArrayList<WordWithMorpheme>();
 		Pattern pattern = Pattern.compile(",([^:,]+?)"+":([^:]*?\\{("+morpheme+"/.+?)\\}.*?),");
 		Matcher matcher = pattern.matcher(wordSegmentations);
@@ -377,7 +369,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 			String word = matcher.group(1);
 			String morphId = matcher.group(3);
 			String decomposition = matcher.group(2);
-			long freq = this.getNbOccurrencesOfWord(word);
+			long freq = this.totalOccurencesOf(word);
 			words.add(new WordWithMorpheme(word,morphId,decomposition,freq));
 		}
 		
@@ -463,6 +455,8 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 			}
 			wordsFailedSegmentationWithFreqs.put(word, freq+1);
 		}
+		
+		addToDecomposedWordsSuite(word);
 	}	
 	
 	@Override
@@ -514,12 +508,15 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 		WordInfo wInfo = null;
 		if (word2infoMap.containsKey(word)) {
 			wInfo = word2infoMap.get(word);
-		} else if (getSegmentsCache().containsKey(word)){
+		} else if (wordDecomps.containsKey(word)){
 			Long wordKey = key4word(word);
 			wInfo = new WordInfo(wordKey);
-			String[] decomps = getSegmentsCache().get(word);
-			wInfo.topDecompositions = decomps;
-			wInfo.totalDecompositions = decomps.length;
+			String[][] decomps = wordDecomps.get(word);
+			wInfo.decompositionsSample = decomps;
+			if (decomps != null && decomps.length > 0) {
+				wInfo.topDecompositions = decomps[0];
+				wInfo.totalDecompositions = decomps.length;
+			}
 			wInfo.frequency = computeWordFreq(word);
 			word2infoMap.put(word, wInfo);
 		}
@@ -545,49 +542,6 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 					"Tried to increment frequency of unknown word "+word);
 		}
 		wInfo.frequency++;
-	}
-	public void migrateWordInfoToNewDataStructure() throws CompiledCorpusException {
-		System.out.println(
-			"Migrate corpus to new data structure.\n"+
-			"This may take a few minutes...\n");
-				
-		String mess = "Migrating words for which morphological decomposition were found";
-		int numSteps = getSegmentsCache().keySet().size();
-		ProgressMonitor_Terminal monitor = 
-				new ProgressMonitor_Terminal(numSteps, mess);
-		int counter = 0;
-		Set<String> words = getSegmentsCache().keySet();
-		for (String aWord: words) {
-			counter++;
-			System.out.println("** migrateWordInfoOutOfPhonemeTrie: SEGMENTED word="+aWord+" ("+counter+" of "+numSteps+
-					": "+String.format("%.0f%%",100.0*counter/numSteps)+")"
-				);
-			long usedMem = Runtime.getRuntime().totalMemory();
-			long maxMem = Runtime.getRuntime().maxMemory();
-			long remainingMem = maxMem - usedMem;
-			double remainingMemPerc = 100.0 * remainingMem / maxMem;
-			System.out.println("  Remaining mem: "+remainingMem+" ("+String.format("%.0f%%",remainingMemPerc)+")");
-			String[] decomps = getSegmentsCache().get(aWord);
-			addWord(aWord, decomps);
-			// To save memory during upgrade, set the entry for that word
-			// to null;
-			getSegmentsCache().put(aWord, null);
-			monitor.stepCompleted();
-		}
-		setSegmentsCache(null);
-
-		mess = "Migrating words for which NO morphological decomposition were found";
-		numSteps = wordsFailedSegmentation.size();
-		monitor = new ProgressMonitor_Terminal(numSteps, mess);
-		counter = 0;
-		for (String word: wordsFailedSegmentation) {
-			counter++;
-			System.out.println("** migrateWordInfoOutOfPhonemeTrie: NON-Segmented word="+word+" ("+counter+" of "+numSteps+")");			
-			String[] decomps = new String[0];
-			addWord(word, decomps);
-			monitor.stepCompleted();
-		}
-		wordsFailedSegmentation = null;
 	}
 
 	public boolean containsWord(String word) throws CompiledCorpusException {
@@ -632,7 +586,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 		return freq;
 	}
 	
-	public String[] topSegmentation(String word) throws CompiledCorpusException {
+	public String[] topDecompositions(String word) throws CompiledCorpusException {
 		Matcher matcher = 
 			Pattern.compile(","+word+":([^,]*),").matcher(wordSegmentations);
 		
@@ -647,6 +601,11 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	
 	public long totalOccurences() throws CompiledCorpusException {
 		return getNumberOfCompiledOccurrences();
+	}
+	
+	@Override
+	public long totalWords() {
+		return wordDecomps.keySet().size();
 	}
 }
 

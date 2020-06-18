@@ -23,7 +23,6 @@ public class MockCompiledCorpusFactory {
 		} catch (CompiledCorpusException e1) {
 			throw new CompiledCorpusException(e1);
 		}
-		mockCorpus.setVerbose(false);
 		
 		// The MockCompiledCorpus's segmenter will use this dictionary instead 
 		// of calling the morphological analyzer.

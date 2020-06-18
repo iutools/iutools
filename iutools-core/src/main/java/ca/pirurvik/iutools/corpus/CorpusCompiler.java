@@ -324,15 +324,10 @@ public class CorpusCompiler {
 		getCorpus().addWordOccurence(word);
 	}
 
-	private String[] fetchSegmentsFromCache(String word) {
-		return getCorpus().fetchSegmentsFromCache(word);
-	}
-
 	protected void compileExtras() {
 		corpus.setNgramStats();
 	}
 	
-
 	public void save(File corpusDirectory) throws CompiledCorpusException  {
 		File saveFilePathname = new File(corpusDirectory, CompiledCorpus_InMemory.JSON_COMPILATION_FILE_NAME);
 		saveCompilerInJSONFile(saveFilePathname);

@@ -15,6 +15,7 @@ import org.junit.Test;
 
 import com.google.gson.Gson;
 
+import ca.nrc.datastructure.trie.Trie.NodeOption;
 import ca.nrc.testing.AssertHelpers;
 import ca.nrc.testing.AssertObject;
 
@@ -62,6 +63,21 @@ public abstract class TrieTest {
 		} else {
 		}
 		
+		// By default, getNode() will create the node if it does not
+		// exist. But you can override that with the NO_CREATE option
+		//
+		node = trie.getNode("nonexistant".split(""), NodeOption.NO_CREATE);
+		
+		// You can also ask to get the terminal (aka leaf) node that corresponds to 
+		// the sequence of segments. You do this using the TERMINAL option.
+		//
+		node = trie.getNode("hello".split(""), NodeOption.TERMINAL);
+		
+		// You can also use NO_CREATE and TERMINAL together
+		//
+		node = trie.getNode("nonexistant".split(""), 
+					NodeOption.NO_CREATE, NodeOption.TERMINAL);
+
 		// You can also get lists of terminals that match certain 
 		// sequences of charactercs
 		
@@ -76,7 +92,40 @@ public abstract class TrieTest {
 	}
 	
 	@Test
-	public void test_getParentNode() throws Exception {
+	public void test__getNode__NO_CREATE() throws Exception {
+		Trie charTrie = makeTrieToTest();
+		String[] nonExistantKeys = "nonexistant".split("");
+		
+		TrieNode node = charTrie.getNode(nonExistantKeys, NodeOption.NO_CREATE);
+		Assert.assertTrue(
+			"getNode(NO_CREATE) should return null for non-existant key sequence", 
+			node == null);
+
+		node = charTrie.getNode(nonExistantKeys);
+		Assert.assertTrue(
+			"getNode() should return new empty node for non-existant key sequence", 
+			node != null);
+		
+	}
+
+	@Test
+	public void test__getNode__TERMINAL() throws Exception {
+		Trie charTrie = makeTrieToTest();
+		String[] helloChars = "hello".split("");
+		charTrie.add(helloChars, "hello");
+		TrieNode node = charTrie.getNode(helloChars, NodeOption.TERMINAL);
+		Assert.assertTrue(
+			"getNode(TERMINAL) should return a terminal node", 
+			node.isTerminal());
+		
+		node = charTrie.getNode(helloChars);
+		Assert.assertTrue(
+			"getNode() should return a non-terminal for keys: "+String.join(",", helloChars), 
+			!node.isTerminal());
+	}
+	
+	@Test
+	public void test__getParentNode() throws Exception {
 		Trie charTrie = makeTrieToTest();
 		charTrie.add("hello".split(""),"hello");
 		charTrie.add("hit".split(""),"hit");
@@ -100,9 +149,10 @@ public abstract class TrieTest {
 	public void test_add__check_terminal() throws Exception {
 		Trie charTrie = makeTrieToTest();
 		String word = "hi";
-		charTrie.add(word.split(""), word);
+		String[] wordChars = word.split("");
+		charTrie.add(wordChars, word);
 		
-		TrieNode terminalNode = charTrie.getNode((word+"\\").split(""));
+		TrieNode terminalNode = charTrie.getNode(wordChars, NodeOption.TERMINAL);
 		new AssertTrieNode(terminalNode, 
 				"Terminal node for word "+word+" was not as expected")
 			.isTerminal()
@@ -137,9 +187,9 @@ public abstract class TrieTest {
 		iumorphemeTrie.add(iuSegmenter.segment("nalunaiqsivut"),"nalunaiqsivut");
 		
 		String[] segments = new String[] {
-			"{nalunaq/1n}", "{iq/1nv}", "{si/2vv}", "{vut/tv-dec-3p}", "\\"
+			"{nalunaq/1n}", "{iq/1nv}", "{si/2vv}", "{vut/tv-dec-3p}"
 		};
-		TrieNode terminalNode = iumorphemeTrie.getNode(segments);
+		TrieNode terminalNode = iumorphemeTrie.getNode(segments, NodeOption.TERMINAL);
 		new AssertTrieNode(terminalNode, "Node for segments="+String.join(", ", segments))
 				.isTerminal()
 				.surfaceFormFrequenciesEqual(
@@ -161,23 +211,32 @@ public abstract class TrieTest {
 	@Test
 	public void test__add_get__Char() throws Exception {
 		Trie charTrie = makeTrieToTest();
-		charTrie.add(new String[]{"h","e","l","l","o"},"hello");
-		charTrie.add(new String[]{"h","e","l","l"," ","b","o","y"},"hello boy");
 		
-		TrieNode node = charTrie.getNode("hello".split(""));
+		String hello = "hello";
+		String[] helloChars = hello.split("");
+		charTrie.add(helloChars, hello);
+		
+		String hellBoy = "hell boy";
+		String[] hellBoyChars = hellBoy.split("");
+		charTrie.add(hellBoyChars, hellBoy);
+		
+		TrieNode node = charTrie.getNode(helloChars, NodeOption.NO_CREATE);
 		AssertTrieNode asserter = new AssertTrieNode(node, "");
 		asserter.isNotNull();
 		asserter
 			.hasTerminalNode()
-			.hasSegments("hello".split(""))
+			.hasSegments(helloChars)
 			.hasFrequency(1)
 			;
 
-		node = charTrie.getNode("hell".split(""));
+		
+		String[] hellChars = "hell".split("");
+		node = charTrie.getNode(hellChars);
 		asserter = new AssertTrieNode(node, "");
-		asserter.isNotNull();
 		asserter
-			.hasSegments("hell".split(""))
+			.isNotNull();
+		asserter
+			.hasSegments(hellChars)
 			.doesNotHaveATerminalNode()
 			.hasFrequency(2)
 			;		

@@ -84,7 +84,7 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 	public AssertCompiledCorpus isEmpty() throws Exception {
 		Assert.assertEquals(
 			baseMessage+"\nNumber of terminals should have been 0.",
-			0, corpus().getAllTerminals().length);
+			0, corpus().totalOccurences());
 		return this;
 	}
 
@@ -131,7 +131,7 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 
 	public AssertCompiledCorpus topSegmentationIs(
 			String word, String expTopSegmentation) throws Exception {
-		String[] gotTopSegmentation = corpus().topSegmentation(word);
+		String[] gotTopSegmentation = corpus().topDecompositions(word);
 		
 		return this;
 	}
@@ -164,7 +164,7 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 	
 	public AssertCompiledCorpus wordsContainingMorphemeAre(
 		String morpheme, Triple<String,String,String>... expWords) throws Exception {
-		List<WordWithMorpheme> gotWordWithMorph = corpus().getWordsContainingMorpheme(morpheme);
+		List<WordWithMorpheme> gotWordWithMorph = corpus().wordsContainingMorpheme(morpheme);
 		List<Triple<String,String,String>> gotWords = new ArrayList<Triple<String,String,String>>();
 		for (WordWithMorpheme wrdWithMorph: gotWordWithMorph) {
 			gotWords.add(

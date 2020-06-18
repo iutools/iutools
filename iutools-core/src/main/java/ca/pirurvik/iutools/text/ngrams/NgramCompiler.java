@@ -64,5 +64,33 @@ public class NgramCompiler {
 	public void includeExtremities(boolean val) {
 		this.includeExtremities = val;
 	}
+	
+	public static String[] atBeginningOfString(String[] ngram) {
+		String[] extNgram = ngram;
+		if (ngram != null) {
+			if (ngram.length == 0 || !ngram[0].equals("^")) {
+				extNgram = new String[ngram.length+1];
+				extNgram[0] = "^";
+				for (int ii=0; ii < ngram.length; ii++) {
+					extNgram[ii+1] = ngram[ii];
+				}
+			}
+		}
+		return extNgram;
+	}
+
+	public static String[] atEndOfString(String[] ngram) {
+		String[] extNgram = ngram;
+		if (ngram != null) {
+			if (ngram.length == 0 || !ngram[ngram.length-1].equals("$")) {
+				extNgram = new String[ngram.length+1];
+				extNgram[extNgram.length-1] = "$";
+				for (int ii=0; ii < ngram.length; ii++) {
+					extNgram[ii] = ngram[ii];
+				}
+			}
+		}
+		return extNgram;
+	}
 
 }

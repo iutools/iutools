@@ -3,6 +3,8 @@ package ca.nrc.datastructure.trie;
 import org.junit.Assert;
 import org.junit.Test;
 
+import ca.nrc.datastructure.trie.Trie.NodeOption;
+import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.AssertString;
 
 public class TrieNodeTest {
@@ -136,22 +138,6 @@ public class TrieNodeTest {
 	}
 	
 	@Test
-	public void test__add() throws Exception {
-		Trie_InMemory charTrie = new Trie_InMemory();
-		charTrie.add("hello".split(""),"hello");
-		charTrie.add("hint".split(""),"hint");
-		charTrie.add("helicopter".split(""),"helicopter");
-		charTrie.add("helios".split(""),"helios");
-		charTrie.add("helicopter".split(""),"helicopter");						
-		charTrie.add("hellon".split(""), "hellon");
-		charTrie.add("hello".split(""), "hello");
-		TrieNode hello = charTrie.getNode("hello".split(""));
-		Assert.assertEquals("The frequency of the node is not correct.", 3, hello.frequency);
-		TrieNode helloTerminal = charTrie.getNode("hello\\".split(""));
-		Assert.assertEquals("The frequency of the terminal is not correct.", 2, helloTerminal.frequency);
-	}
-	
-	@Test
 	public void test_toString() throws TrieException {
 		Trie_InMemory charTrie = new Trie_InMemory();
 		charTrie.add("hello".split(""),"hello");
@@ -173,5 +159,45 @@ public class TrieNodeTest {
 		AssertString.assertStringEquals(
 			"Stringified node was not as expected for 'hel'", 
 			expString, gotString);
+	}
+	
+	@Test
+	public void test__keysNoTerminal__KeysEndWithTerminalSeg__RemovesTerminalSeb() 
+			throws Exception {
+		String hello = "hello";
+		String[] helloTermKeys = 
+			new String[] {"h","e","l","l","o",TrieNode.TERMINAL_SEG};
+		TrieNode node = new TrieNode(helloTermKeys, hello);
+		String[] gotKeys = node.keysNoTerminal();
+		String[] expKeys = hello.split("");
+		AssertObject.assertDeepEquals(
+			"Terminal segment should have been removed", 
+			expKeys, gotKeys);
+	}
+
+	@Test
+	public void test__keysNoTerminal__KeysDoesNotEndWithTerminalSeg__LeavesKeyAlong() 
+			throws Exception {
+		String hello = "hello";
+		String[] helloTermKeys = hello.split("");
+		TrieNode node = new TrieNode(helloTermKeys, hello);
+		String[] gotKeys = node.keysNoTerminal();
+		String[] expKeys = hello.split("");
+		AssertObject.assertDeepEquals(
+			"Modified keys were not as expected", 
+			expKeys, gotKeys);
+	}
+
+	@Test
+	public void test__keysNoTerminal__EmptyKeys() 
+			throws Exception {
+		String emptyWord = "";
+		String[] emptyKeys = new String[0];
+		TrieNode node = new TrieNode(emptyKeys, emptyWord);
+		String[] gotKeys = node.keysNoTerminal();
+		String[] expKeys = emptyKeys;
+		AssertObject.assertDeepEquals(
+			"Terminal segment should have been removed", 
+			expKeys, gotKeys);
 	}
 }

@@ -202,12 +202,10 @@ public class QueryExpanderEvaluatorTest {
         float fmeasure_expected = 2 * precision_expected * recall_expected / (precision_expected + recall_expected);
         
         float epsilon = (float) 0.01;
-        assertEquals(precision_expected,evaluator.precision,epsilon);
-        assertEquals(recall_expected,evaluator.recall,epsilon);
-        assertEquals(fmeasure_expected,evaluator.fmeasure,epsilon);
+        assertEquals("Precision not as expected", precision_expected,evaluator.precision,epsilon);
+        assertEquals("Recall not as expected", recall_expected,evaluator.recall,epsilon);
+        assertEquals("F-measure not as expected", fmeasure_expected,evaluator.fmeasure,epsilon);
  	}
-
-	
 
 	// ---------------
 	

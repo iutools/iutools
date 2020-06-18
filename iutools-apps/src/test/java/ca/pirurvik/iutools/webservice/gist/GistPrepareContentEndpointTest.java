@@ -16,19 +16,7 @@ public class GistPrepareContentEndpointTest {
 	/***********************
 	 * VERIFICATION TESTS
 	 ***********************/
-	
-	@Test
-	public void test__FixMalignaBugs() {
-		Assert.fail(
-			"\n\nIGNORE THIS FAILURE!!\n\n"+
-			"It is just a reminder to fix some tests that are currently failing because of some bugs in Maligna.\n"+
-			"(those tests are currently tagged with @Ignore)\n"+
-			"\n"+
-			"Those tests started failing on 2020-06-03, and it seems that it's because the home pages of gov.nu.ca\n"+
-			"has changed and that the new content is causing Maligna to crash. This in turn seems to be due to a bug\n"+
-			"in Maligna");
-	}
-	
+		
 	@Test
 	public void test__GistPrepareContentEndpoint__InputIsContent() throws Exception {
 		

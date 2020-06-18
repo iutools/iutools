@@ -89,4 +89,12 @@ public class AssertTrieNode extends Asserter<TrieNode> {
 			expFreq, node().getFrequency());
 		return this;
 	}
+
+	public AssertTrieNode hasSurfaceForm(String expSurfForm) {
+		String gotSurfForm = node().surfaceForm;
+		Assert.assertEquals(
+			baseMessage+"\nSurface form of the node was not as expected", 
+			expSurfForm, gotSurfForm);
+		return this;
+	}
 }

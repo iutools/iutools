@@ -28,6 +28,7 @@ import org.junit.Test;
 import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
 import ca.nrc.config.ConfigException;
+import ca.nrc.datastructure.trie.AssertTrieNode;
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_Char;
@@ -78,9 +79,6 @@ public abstract class CompiledCorpusTest {
 		compiledCorpus.setSegmenterClassName(
 				StringSegmenter_IUMorpheme.class.getName());
 
-		// set verbose to false for tests only
-		compiledCorpus.setVerbose(false); 
-		
 		// Set the maximum number of morphological decompositions that you want 
 		// to keep for each word. Note that the entry for a word will always 
 		// know how many decompositions existed, even if it only stores the 
@@ -263,23 +261,21 @@ public abstract class CompiledCorpusTest {
         
     // TODO-June2020: This test should use makeCorpusUnderTest()
 	@Test
-	public void test__mostFrequentWordWithRadical() throws Exception {
+	public void test__getMostFrequentTerminal__HappyPath() throws Exception {
 		CompiledCorpus_InMemory compiledCorpus = new CompiledCorpus_InMemory();
-        compiledCorpus.setVerbose(false);
         Trie_InMemory charTrie = new Trie_InMemory();
-		try {
 		charTrie.add("hello".split(""),"hello");
 		charTrie.add("hint".split(""),"hint");
 		charTrie.add("helicopter".split(""),"helicopter");
 		charTrie.add("helios".split(""),"helios");
 		charTrie.add("helicopter".split(""),"helicopter");
 		compiledCorpus.trie = charTrie;
-		} catch (Exception e) {
-		Assert.assertFalse("An error occurred while adding an element to the trie.",true);
-		}
 		TrieNode mostFrequent = compiledCorpus.getMostFrequentTerminal("hel".split(""));
-	Assert.assertEquals("The frequency of the most frequent found is wrong.",2,mostFrequent.getFrequency());
-	Assert.assertEquals("The text of the the most frequent found is wrong.","h e l i c o p t e r \\",mostFrequent.keysAsString());
+		new AssertTrieNode(mostFrequent, "")
+		    .isTerminal()
+			.hasFrequency(2)
+			.hasSurfaceForm("helicopter")
+			;
 	}
 
     // TODO-June2020: This test should use makeCorpusUnderTest()
@@ -347,7 +343,6 @@ public abstract class CompiledCorpusTest {
 				};
         CompiledCorpus_InMemory compiledCorpus = new CompiledCorpus_InMemory(StringSegmenter_IUMorpheme.class.getName());
         compiledCorpus.addWordOccurences(stringsOfWords);
-        compiledCorpus.setVerbose(false);
        Assert.assertEquals("The number of words that failed segmentation is wrong.",1,
         		compiledCorpus.getNbWordsThatFailedSegmentations());
        Assert.assertEquals("The number of occurrences that failed segmentation is wrong.",1,
@@ -361,7 +356,6 @@ public abstract class CompiledCorpusTest {
 				"nunavut", "inuit", "takujuq", "sinilauqtuq", "uvlimik", "takulauqtunga"
 				};
         CompiledCorpus_InMemory compiledCorpus = new CompiledCorpus_InMemory(StringSegmenter_IUMorpheme.class.getName());
-        compiledCorpus.setVerbose(false);
         compiledCorpus.addWordOccurences(stringsOfWords);
         
         new AssertCompiledCorpus(compiledCorpus, "")

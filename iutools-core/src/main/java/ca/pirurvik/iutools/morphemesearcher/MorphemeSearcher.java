@@ -31,7 +31,6 @@ import ca.pirurvik.iutools.corpus.CompiledCorpus;
 
 public class MorphemeSearcher {
 	
-	protected String wordSegmentations = null;
 	protected CompiledCorpus corpus = null;
 	protected int nbWordsToBeDisplayed = 20;
 	protected int maxNbInitialCandidates = 100;
@@ -41,7 +40,6 @@ public class MorphemeSearcher {
 	
 	public void useCorpus(CompiledCorpus _corpus) throws IOException {
 		corpus = _corpus;
-		wordSegmentations = _corpus.getWordSegmentations();
 	}
 	
 	public void setNbDisplayedWords(int n) {
@@ -193,7 +191,7 @@ public class MorphemeSearcher {
 	private HashMap<String,List<WordWithMorpheme>> getMostFrequentWordsWithMorpheme(String morpheme) throws MorphemeSearcherException {
 		List<WordWithMorpheme> wordsWithMorpheme;
 		try {
-			wordsWithMorpheme = this.corpus.getWordsContainingMorpheme(morpheme);
+			wordsWithMorpheme = this.corpus.wordsContainingMorpheme(morpheme);
 		} catch (CompiledCorpusException e) {
 			throw new MorphemeSearcherException(e);
 		}
@@ -251,7 +249,7 @@ public class MorphemeSearcher {
 	private Long wordFreqInCorpus(String word, boolean allowAnalysisWithAdditionalFinalConsonant) throws MorphemeSearcherException {
 		long nbOccurrencesOfWord;
 		try {
-			nbOccurrencesOfWord = this.corpus.getNbOccurrencesOfWord(word);
+			nbOccurrencesOfWord = this.corpus.totalOccurencesOf(word);
 		} catch (CompiledCorpusException e) {
 			throw new MorphemeSearcherException(e);
 		}

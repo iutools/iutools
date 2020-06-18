@@ -1,8 +1,6 @@
 package ca.pirurvik.iutools.corpus;
 
-import java.io.File;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -34,28 +32,19 @@ public abstract class CompiledCorpus {
 	
 	public abstract WordInfo info4word(String word) throws CompiledCorpusException;
 	
-	// TODO-June2020: Rename to exprContainingCharNgram(String ngram)
 	public abstract Set<String> wordsContainingNgram(String ngram) 
 			throws CompiledCorpusException;
 	
-	// TODO-June2020: Rename to containsExpression(String expression)
 	public abstract boolean containsWord(String word) throws CompiledCorpusException;
 	
-	// TODO-June2020: Should rename to exprContainingSegmentNgram
 	protected abstract Set<String> wordsContainingMorphNgram(String[] morphemes) 
 			throws CompiledCorpusException;
 	
-	// TODO-June2020: Doesn't seem like it belongs in CompiledCorpus
-	//  TrieNode classes are an internal implementation detail of 
-	//  implementations of CompiledCorpus which use Tries.
-	//
-	//  Some CompiledCorpus implementation may not use Tries at all...
-	//
-	protected abstract TrieNode[] getAllTerminals() throws CompiledCorpusException;
-	
 	public abstract long totalOccurences() throws CompiledCorpusException;
 	
-	public abstract String[] topSegmentation(String word) throws CompiledCorpusException;
+	public abstract long totalWords() throws CompiledCorpusException;
+
+	public abstract String[] topDecompositions(String word) throws CompiledCorpusException;
 	
 	// TODO-June2020: Should probably choose a better name
 	protected abstract void addToWordSegmentations(
@@ -69,22 +58,10 @@ public abstract class CompiledCorpus {
 	protected abstract void addToWordNGrams(
 		String word, String[][] decomps) throws CompiledCorpusException;
 	
-	// TODO-June2020: Should move this out ouf CompiledCorpus_Base.
-	protected abstract void addToDecomposedWordsSuite(String word);
-
 	protected String segmenterClassName = StringSegmenter_Char.class.getName();
 	protected transient StringSegmenter segmenter = null;
-	
-	// TODO-June2020: Is this really necessary?
-	//   Why don't we just look up in the chars trie to 
-	//   see if the word has already been analyzed?	
-	private HashMap<String,String[]> segmentsCache = new HashMap<String, String[]>();
-	
+		
 	private int decompsSampleSize = Integer.MAX_VALUE;
-	
-	// TODO-June2020: Is this still needed?
-	@JsonIgnore
-	public transient boolean verbose = true;
 	
 	@JsonIgnore
 	public transient String name;
@@ -107,11 +84,6 @@ public abstract class CompiledCorpus {
 		}
 	}
 	
-	public CompiledCorpus setVerbose(boolean value) {
-		verbose = value;
-		return this;
-	}
-	
 	public CompiledCorpus setName(String _name) {
 		name = _name;
 		return this;
@@ -121,7 +93,6 @@ public abstract class CompiledCorpus {
 		segmenterClassName = className;
 		return this;
 	}
-	
 
 	public CompiledCorpus setDecompsSampleSize(int size) {
 		return this;
@@ -157,45 +128,20 @@ public abstract class CompiledCorpus {
 		addToWordCharIndex(word, decomps);
 		addToWordSegmentations(word,decomps);
 		addToWordNGrams(word, decomps);
-		addToDecomposedWordsSuite(word);
+//		addToDecomposedWordsSuite(word);
 	}
 
-	// TODO-June2020: Is this really necessary?
-	//   Why don't we just look up in the chars trie to 
-	//   see if the word has already been analyzed?	
-	protected void addToCache(String word, String[] segments) {
-		getSegmentsCache().put(word, segments);
-	}
-		
-	// TODO-June2020: Is this really necessary?
-	//   Why don't we just look up in the chars trie to 
-	//   see if the word has already been analyzed?
-	String[] fetchSegmentsFromCache(String word) {
-		String[] segmentsFromCache = null;
-		if (getSegmentsCache().containsKey(word)) {
-			segmentsFromCache = getSegmentsCache().get(word);
-		}
-		return segmentsFromCache;
-	}	
+//	// TODO-June2020: Does not belong in CompiledCorpus. It is 
+//	//   an internal implementation detail of the _InMemory version.
+//	public abstract String getWordSegmentations();
 	
-	// TODO-June2020: Is this really necessary?
-	//   Why don't we just look up in the chars trie to 
-	//   see if the word has already been analyzed?	
-	public HashMap<String,String[]> getSegmentsCache() {
-		return segmentsCache;
-	}
-
-	public void setSegmentsCache(HashMap<String,String[]> segmentsCache) {
-		this.segmentsCache = segmentsCache;
-	}
-
-	public abstract String getWordSegmentations();
+	public abstract long totalOccurencesOf(String word) throws CompiledCorpusException;
 	
-	public abstract long getNbOccurrencesOfWord(String word) throws CompiledCorpusException;
-	
+	// TODO-June2020: Does not belong in CompiledCorpus. It is 
+	//   an internal implementation detail of the _InMemory version.
 	public abstract Trie getTrie();
 	
-	public abstract List<WordWithMorpheme> getWordsContainingMorpheme(String morpheme) throws CompiledCorpusException;
+	public abstract List<WordWithMorpheme> wordsContainingMorpheme(String morpheme) throws CompiledCorpusException;
 
 	public abstract long morphemeNgramFrequency(String[] ngram) throws CompiledCorpusException;
 	
@@ -217,10 +163,10 @@ public abstract class CompiledCorpus {
 		return segmenter;
 	}
 			
-	public String[] segmentText(String text) throws CompiledCorpusException {
+	public String[] decomposeWord(String word) throws CompiledCorpusException {
 		String[] segments;
 		try {
-			segments = getSegmenter().segment(text);
+			segments = getSegmenter().segment(word);
 		} catch (TimeoutException | StringSegmenterException | LinguisticDataException | CompiledCorpusException e) {
 			throw new CompiledCorpusException(e);
 		}
@@ -242,5 +188,5 @@ public abstract class CompiledCorpus {
 			ngramCompiler = new NgramCompiler(3,0,true);
 		}
 		return ngramCompiler;
-	}		
+	}	
 }

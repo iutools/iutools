@@ -12,6 +12,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ca.nrc.datastructure.trie.Trie.NodeOption;
 import ca.nrc.string.StringUtils;
 
 public class Trie_InFileSystem extends Trie {
@@ -28,64 +29,29 @@ public class Trie_InFileSystem extends Trie {
 	}
 
 	@Override
-	public TrieNode getNode(String[] keys) throws TrieException {
-		File nodeFile = file4node(keys);
-		
-		ObjectMapper mapper = new ObjectMapper();	
+	public TrieNode getNode(String[] keys, NodeOption... options) throws TrieException {
 		TrieNode node = null;
-		try {
-			node = mapper.readValue(nodeFile, TrieNode.class);
-		} catch (IOException e) {
-			throw new TrieException(
-					"Unable to read TrieNode from file "+nodeFile, e);
-		}
+		File nodeFile = file4node(keys, options);
+		if (nodeFile != null) {
 		
-		File[] children = nodeFile.getParentFile().listFiles(File::isDirectory);
-		for (File aChildDir: children) {
-			String child = aChildDir.getName();
-			node.children.put(child, null);
+			ObjectMapper mapper = new ObjectMapper();	
+			try {
+				node = mapper.readValue(nodeFile, TrieNode.class);
+			} catch (IOException e) {
+				throw new TrieException(
+						"Unable to read TrieNode from file "+nodeFile, e);
+			}
+			
+			File[] children = nodeFile.getParentFile().listFiles(File::isDirectory);
+			for (File aChildDir: children) {
+				String child = aChildDir.getName();
+				node.children.put(child, null);
+			}
 		}
 		
 		return node;
 	}
 	
-	@Override
-	public TrieNode addExpression(String[] wordKeys, String word) throws TrieException {
-		String[] extendedKeys = appendTerminalKey(wordKeys);
-		TrieNode node = getNode(extendedKeys);
-		if (node == null) {
-			node = new TrieNode(wordKeys);
-		}
-		node.addSurfaceForm(word);
-		node.frequency++;
-		saveNode(node);
-		updateAncestors(extendedKeys);
-		
-		return node;
-	}
-
-	private void updateAncestors(String[] nodeKeys) throws TrieException {
-		updateAncestors(Arrays.asList(nodeKeys));
-	}
-	
-	private void updateAncestors(List<String> nodeSegments) throws TrieException {
-		if (nodeSegments.size() > 0) {
-			List<String> parentSegments = 
-					nodeSegments.subList(0, nodeSegments.size()-1);
-			
-			TrieNode parentNode = getNode(parentSegments);
-			parentNode.frequency++;
-			
-			String childSegment = nodeSegments.get(nodeSegments.size()-1);
-			parentNode.addChild(childSegment, getNode(nodeSegments));
-			
-			saveNode(parentNode);
-			
-			updateAncestors(parentSegments);
-		} else {
-			int x = 1;
-		}
-	}
 		
 	public void saveNode(TrieNode node) throws TrieException {
 		File nodeFile = file4node(node);
@@ -104,12 +70,22 @@ public class Trie_InFileSystem extends Trie {
 	}
 	
 	private File file4node(String[] keys) throws TrieException {
-		return file4node(keys, null);
+		return file4node(keys, new NodeOption[0]);
 	}
 	
-	private File file4node(String[] keys, Boolean ensureExists) throws TrieException {
-		if (ensureExists == null) {
-			ensureExists = true;
+	private File file4node(String[] keys, NodeOption... options) throws TrieException {
+		boolean createIfNotExist = true;
+		boolean terminal = false;
+		for (NodeOption anOption: options) {
+			if (anOption == NodeOption.NO_CREATE) {
+				createIfNotExist = false;
+			} else if (anOption == NodeOption.TERMINAL) {
+				terminal = true;
+			}
+		}
+		
+		if (terminal) {
+			keys = ensureTerminal(keys);
 		}
 		String[] escapedKeys = escapeKeys(keys);
 		
@@ -118,15 +94,19 @@ public class Trie_InFileSystem extends Trie {
 					 String.join(File.separator, escapedKeys)+
 					 File.separator+"node.json");
 		
-		if (!nodeFile.exists() && ensureExists) {
-			try {
-				nodeFile.getParentFile().mkdirs();
-				TrieNode node = new TrieNode(keys);
-				new ObjectMapper().writeValue(nodeFile, node);
-			} catch (IOException e) {
-				throw new TrieException(
-					"Unable to create node file for keys: "+
-					String.join(", ", keys), e);
+		if (!nodeFile.exists()) {
+			if (!createIfNotExist) {
+				nodeFile = null;
+			} else {
+				try {
+					nodeFile.getParentFile().mkdirs();
+					TrieNode node = new TrieNode(keys);
+					new ObjectMapper().writeValue(nodeFile, node);
+				} catch (IOException e) {
+					throw new TrieException(
+						"Unable to create node file for keys: "+
+						String.join(", ", keys), e);
+				}
 			}
 		}
 		
@@ -195,8 +175,8 @@ public class Trie_InFileSystem extends Trie {
 	
 	@Override
 	public boolean contains(String[] segments) throws TrieException {
-		File nodeFile = file4node(segments, false);
-		boolean answer = nodeFile.exists();
+		File nodeFile = file4node(segments, NodeOption.NO_CREATE);
+		boolean answer = (nodeFile != null && nodeFile.exists());
 		return answer;
 	}
 }

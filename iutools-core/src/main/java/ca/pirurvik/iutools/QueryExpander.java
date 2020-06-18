@@ -47,23 +47,16 @@ public class QueryExpander {
 			}
 		}
 		compiledCorpus = _compiledCorpus;
-		compiledCorpus.setVerbose(verbose);
 	}
 	
 	private void initializeWithCorpusName(String corpusName) throws QueryExpanderException {
 		try {
 			compiledCorpus = CompiledCorpusRegistry.getCorpus(corpusName);
-			compiledCorpus.setVerbose(verbose);
 		} catch (CompiledCorpusRegistryException e) {
 			throw new QueryExpanderException("Problem creating a QueryExpander with default pre-compiled corpus", e);
 		}
 	}
-	
-	public void setVerbose(boolean value) {
-		verbose = value;
-		if (compiledCorpus != null) compiledCorpus.setVerbose(value);
-	}
-	
+		
 	/**
 	 * 
 	 * @param word String - an inuktitut word
@@ -80,7 +73,7 @@ public class QueryExpander {
 		ArrayList<QueryExpansion> mostFrequentTerminalsForWord;
 		
 		try {
-			segments = this.compiledCorpus.segmentText(word);
+			segments = this.compiledCorpus.decomposeWord(word);
 		} catch (Exception e) {
 			segments = null;
 		}
@@ -177,7 +170,7 @@ public class QueryExpander {
 			}
 			for (String surfaceForm : surfaceForms.keySet().toArray(new String[] {}))
 				if ( !listOfExclusions.contains(surfaceForm))
-					forms.add(new Object[] {surfaceForm,surfaceForms.get(surfaceForm),terminal.keys});
+					forms.add(new Object[] {surfaceForm,surfaceForms.get(surfaceForm),terminal.keysNoTerminal()});
 		}
 		Object[][] listForms = forms.toArray(new Object[][] {});
 		for (int i=0; i<listForms.length; i++)

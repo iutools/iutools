@@ -69,55 +69,51 @@ public class Trie_InMemory extends Trie {
     // TODO: Check that partsSequence is NOT empty. If it is, raise exception
     //
 	public TrieNode addExpression(String[] partsSequence, String word) throws TrieException {
-        TrieNode trieNode = getRoot();
-        Logger logger = Logger.getLogger("Trie.add");
-        logger.debug("segments: "+Arrays.toString(partsSequence));
-        
-        String terminalSegment = "\\";
-        ArrayList<String> segmentList = new ArrayList<String>(Arrays.asList(partsSequence));
-        segmentList.add(terminalSegment);
-        partsSequence = segmentList.toArray(new String[] {});
-        logger.debug("segments after adding \\: "+Arrays.toString(partsSequence));
-        int iseg = 0;
-        while (iseg < partsSequence.length) {
-        	String segment = partsSequence[iseg];
-            Set<String> childrenKeys = trieNode.getChildren().keySet();
-            TrieNode segmentNode = null;
-            // if the current segment is not in the keys, add a new node for it
-            if (!childrenKeys.contains(segment)) {
-                segmentNode = insertNode(trieNode, segment); // where new child is added to the node
-            } else {
-            	segmentNode = getChild(trieNode, segment);
-            }
-            // current segment is in the keys, or it was not and has just been added 
-			// and is not the last segment: 
-            trieNode = segmentNode;
-            trieNode.incrementFrequency();
-            iseg++;
-        }
-        // last segment (\)  = terminal node
-        trieNode.addSurfaceForm(word); //***
-        trieNode.surfaceForm = word; //***
-        trieNode.isWord = true;
-        return trieNode; //***		
+		TrieNode node = getNode(partsSequence, NodeOption.TERMINAL);
+		node.surfaceForm = word;
+		node.frequency++;
+		node.addSurfaceForm(word);
+		return node;
 	}
 
-	public TrieNode getNode(String[] keys) throws TrieException {
-        TrieNode trieNode = null;
-        if (keys.length == 0) {
-        	trieNode = root;
-        } else {
-	        Map<String,TrieNode> children = getRoot().getChildren();
+	public TrieNode getNode(String[] keys, NodeOption... options ) 
+			throws TrieException {
+		boolean createIfNotExist = true;
+		boolean terminal = false;
+		for (NodeOption anOption: options) {
+			if (anOption == NodeOption.NO_CREATE) {
+				createIfNotExist = false;
+			} else if (anOption == NodeOption.TERMINAL) {
+				terminal = true;
+			}
+		}
+		
+		if (terminal) {
+			keys = ensureTerminal(keys);
+		}
+		
+        TrieNode trieNode = root;
+        Map<String,TrieNode> children = getRoot().getChildren();        
+        if (keys.length > 0) {
 	        for (int i = 0; i < keys.length; i++) {
 	            String key = keys[i];
 	            if (children.containsKey(key)) {
 	                trieNode = (TrieNode) children.get(key);
-	                children = trieNode.getChildren();
 	            } else {
-	            	return null;
+	            	if (createIfNotExist) {
+	            		TrieNode newNode = 
+	            			new TrieNode(Arrays.copyOfRange(keys, 0, i+1));
+	            		trieNode.addChild(key, newNode);
+	            		trieNode = newNode;
+	            	} else {
+		            	trieNode = null;
+		            	break;
+	            	}
 	            }
+                children = trieNode.getChildren();
 	        }
         }
+        
         return trieNode;
 	}
 	
@@ -163,6 +159,13 @@ public class Trie_InMemory extends Trie {
 		String json = gson.toJson(this);
 		return json;
     }
+
+	@Override
+	public void saveNode(TrieNode node) throws TrieException {
+		// Nothing to do. For an InMemory trie, the nodes are 
+		// always up to date in the memory.
+		
+	}
 }
 
 class NodeFrequencyComparator implements Comparator<TrieNode> {

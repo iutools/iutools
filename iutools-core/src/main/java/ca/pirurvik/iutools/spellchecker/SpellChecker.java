@@ -32,6 +32,8 @@ import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.json.PrettyPrinter;
 import ca.pirurvik.iutools.NumericExpression;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
+import ca.pirurvik.iutools.corpus.WordInfo;
+import ca.pirurvik.iutools.corpus.CompiledCorpusException;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistryException;
 import ca.pirurvik.iutools.edit_distance.EditDistanceCalculator;
@@ -168,7 +170,6 @@ public class SpellChecker {
 	private void __processCorpus() throws ConfigException, FileNotFoundException {
 		this.allWords = corpus.decomposedWordsSuite;
 		this.ngramStats = corpus.ngramStats;
-		corpus.setVerbose(verbose);
 		// Ideally, these should be compiled along with allWords and ngramsStats during corpus compilation
 		String dataPath = IUConfig.getIUDataPath();
 		FileReader fr = new FileReader(dataPath+"/data/numericTermsCorpus.json");
@@ -201,7 +202,6 @@ public class SpellChecker {
 	
 	public void setVerbose(boolean value) {
 		verbose = value;
-		if (corpus != null) corpus.setVerbose(value);
 	}
 	
 	public void addCorrectWord(String word) {		
@@ -600,36 +600,54 @@ public class SpellChecker {
 	protected Boolean isMispelled(String word) throws SpellCheckerException {
 		Logger logger = Logger.getLogger("SpellChecker.isMispelled");
 		logger.debug("word: "+word);
-		boolean wordIsMispelled = false;
+		Boolean wordIsMispelled = null;
 		String[] numericTermParts = null;
 		
-		if (corpus!=null && corpus.getSegmentsCache().containsKey(word) && corpus.getSegmentsCache().get(word).length != 0) {
-			logger.debug("word in segments cache has successfully decomposed");
-			wordIsMispelled = false;
+		if (corpus!=null) {
+			try {
+				WordInfo wInfo = corpus.info4word(word);
+				if (wInfo != null && wInfo.totalDecompositions > 0) {
+					wordIsMispelled = false;
+					logger.debug("Corpus contains some decompositions for this word");					
+				}
+			} catch (CompiledCorpusException e) {
+				throw new SpellCheckerException(e);
+			}
+//			if (corpus.getSegmentsCache().containsKey(word) && 
+//					corpus.getSegmentsCache().get(word).length != 0) {
+//				logger.debug("word in segments cache has successfully decomposed");
+//				wordIsMispelled = false;
+//			}
 		}
-		else if (word.matches("^[0-9]+$")) {
+		
+		if (wordIsMispelled == null && word.matches("^[0-9]+$")) {
 			logger.debug("word is all digits");
 			wordIsMispelled = false;
 		}
-		else if (latinSingleInuktitutCharacters.contains(word)) {
+		
+		if (wordIsMispelled == null && latinSingleInuktitutCharacters.contains(word)) {
 			logger.debug("single inuktitut character");
 			wordIsMispelled = false;
 		}
-		else if (wordContainsMoreThanTwoConsecutiveConsonants(word)) {
+		
+		if (wordIsMispelled == null && wordContainsMoreThanTwoConsecutiveConsonants(word)) {
 			logger.debug("more than 2 consecutive consonants in the word");
 			wordIsMispelled = true;
 		}
-		else if ( (numericTermParts=splitNumericExpression(word)) != null) {
+		
+		if (wordIsMispelled == null &&  (numericTermParts=splitNumericExpression(word)) != null) {
 			logger.debug("numeric expression: "+word+" ("+numericTermParts[1]+")");
 			boolean pseudoWordWithSuffixAnalysesWithSuccess = assessEndingWithIMA(numericTermParts[1]);
 			wordIsMispelled = !pseudoWordWithSuffixAnalysesWithSuccess;
 			logger.debug("numeric expression - wordIsMispelled: "+wordIsMispelled);
 		}
-		else if (wordIsPunctuation(word)) {
+		
+		if (wordIsMispelled == null && wordIsPunctuation(word)) {
 			logger.debug("word is punctuation");
 			wordIsMispelled = false;
 		}
-		else {
+		
+		if (wordIsMispelled == null) {
 			try {
 				String[] segments = segmenter.segment(word);
 				logger.debug("word submitted to IMA: "+word);
@@ -643,6 +661,10 @@ public class SpellChecker {
 				throw new SpellCheckerException(e);
 			}
 			logger.debug("word submitted to IMA - mispelled: "+wordIsMispelled);
+		}
+		
+		if (wordIsMispelled == null) {
+			wordIsMispelled = false;
 		}
 		
 		return wordIsMispelled;
