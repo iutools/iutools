@@ -7,7 +7,7 @@ import java.io.File;
  * 
  * @author desilets
  *
- */
+ *************************************/
 
 public abstract class RW_CompiledCorpus {
 	

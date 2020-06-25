@@ -1,6 +1,5 @@
 package ca.nrc.datastructure.trie;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
@@ -8,17 +7,11 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
 
 import com.google.gson.Gson;
-
-import ca.nrc.json.PrettyPrinter;
-
 
 public class Trie_InMemory extends Trie {
 	

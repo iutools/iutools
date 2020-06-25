@@ -33,7 +33,7 @@ public abstract class MorphemeSearcherTest {
 	
 	protected abstract CompiledCorpus makeCorpus();
 	
-	private MorphemeSearcher morphemeExtractor = new MorphemeSearcher();
+	private MorphemeSearcher morphemeSearcher = new MorphemeSearcher();
 	private CompiledCorpus smallCorpus;
 	
 	@Before
@@ -41,7 +41,7 @@ public abstract class MorphemeSearcherTest {
         smallCorpus = makeCorpus();
         smallCorpus.addWordOccurences(
         	new String[] {"inuit", "nunami", "iglumik", "inuglu"});
-        morphemeExtractor.useCorpus(smallCorpus);
+        morphemeSearcher.useCorpus(smallCorpus);
 	}
 	
 	@Test
@@ -101,14 +101,14 @@ public abstract class MorphemeSearcherTest {
 	public void test__wordsContainingMorpheme__root() throws Exception {
 		String morpheme = "inuk";
 		List<MorphSearchResults> msearchResults = 
-			morphemeExtractor.wordsContainingMorpheme(morpheme);
+			morphemeSearcher.wordsContainingMorpheme(morpheme);
 		new AssertMorphSearchResults(msearchResults, "")
 			.foundMorphemes("inuk/1n")
 			.examplesForMorphemeAre("inuk/1n", Pair.of("inuit", new Long(1)))
 			;
 		
 		morpheme = "nuna";
-		msearchResults = this.morphemeExtractor.wordsContainingMorpheme(morpheme);
+		msearchResults = this.morphemeSearcher.wordsContainingMorpheme(morpheme);
 		new AssertMorphSearchResults(msearchResults, "")
 			.foundMorphemes("nuna/1n")
 			.examplesForMorphemeAre("nuna/1n", Pair.of("nunami", new Long(1)))
@@ -133,10 +133,10 @@ public abstract class MorphemeSearcherTest {
 				};
 		mockCompiledCorpus.addWordOccurences(wordsToAdd);
 
-		morphemeExtractor.useCorpus(mockCompiledCorpus);
+		morphemeSearcher.useCorpus(mockCompiledCorpus);
         
 		String morpheme = "mut";
-		List<MorphSearchResults> wordsForMorphemes = this.morphemeExtractor.wordsContainingMorpheme(morpheme);
+		List<MorphSearchResults> wordsForMorphemes = this.morphemeSearcher.wordsContainingMorpheme(morpheme);
 		
 		new AssertMorphSearchResults(wordsForMorphemes, "")
 			.foundMorphemes("mut/tn-dat-s")
@@ -163,7 +163,7 @@ public abstract class MorphemeSearcherTest {
 		
 		new AssertMorphSearchResults(wordsForMorphemes, "")
 			.foundMorphemes("gaq/1vn")
-			.examplesForMorphemeAre("gaq/1vn", Pair.of("makpigarni", new Long(2)))
+			.examplesForMorphemeAre("gaq/1vn", Pair.of("makpigarni", new Long(1)))
 			;
 	}
 	
@@ -171,10 +171,10 @@ public abstract class MorphemeSearcherTest {
     public void test__morphFreqInAnalyses__HappyPath() throws Exception {
         String morpheme = "gaq/2vv";
         String word = "makpigarni";
-        Double freq2vv = morphemeExtractor.morphFreqInAnalyses(morpheme, word, true);
+        Double freq2vv = morphemeSearcher.morphFreqInAnalyses(morpheme, word, true);
 
         morpheme = "gaq/1vn";
-        Double freq1vn = morphemeExtractor.morphFreqInAnalyses(morpheme, word, true);
+        Double freq1vn = morphemeSearcher.morphFreqInAnalyses(morpheme, word, true);
         
         Assert.assertTrue("Frequency of gaq/1vn should have been much higher than frequency of gaq/2vv.", freq1vn > 1.5*freq2vv);
     }

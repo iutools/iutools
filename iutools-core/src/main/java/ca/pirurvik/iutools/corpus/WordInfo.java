@@ -1,9 +1,5 @@
 package ca.pirurvik.iutools.corpus;
 
-import java.util.Arrays;
-
-import ca.inuktitutcomputing.morph.Decomposition;
-
 public class WordInfo {
 	
 	/** 
@@ -66,13 +62,17 @@ public class WordInfo {
 		this.key = _key;
 	}
 	
-	public void setDecompositions(String[] decomps) {
-		if (decomps == null) {
+	public void setDecompositions(String[][] sampleDecomps, int totalDecomps) {
+		if (sampleDecomps == null) {
 			topDecompositions = null;
 			totalDecompositions = null;
-		} else {
-			topDecompositions = Arrays.copyOfRange(decomps, 0, 5);
-			totalDecompositions = decomps.length;
+			decompositionsSample = null;
+		} else {			
+			decompositionsSample = sampleDecomps;
+			totalDecompositions = totalDecomps;
+			if (decompositionsSample.length > 0) {
+				topDecompositions = decompositionsSample[0];
+			}
 		}
 	}
 

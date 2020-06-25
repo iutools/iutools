@@ -227,17 +227,17 @@ public abstract class CompiledCorpusTest {
 	}
 	
 	@Test
-    public void test__topSegmentation__HappyPath() throws Exception {
+    public void test__bestDecomposition__HappyPath() throws Exception {
 		String[] words = new String[] {"nunavut", "takujuq", "plugak"};
 		CompiledCorpus compiledCorpus = 
 				makeCorpusUnderTest(StringSegmenter_IUMorpheme.class);		
 		compiledCorpus.addWordOccurences(words);
 		
 		new AssertCompiledCorpus(compiledCorpus,"")
-			.topSegmentationIs("nunavut", "{nunavut/1n}")
-			.topSegmentationIs("takujuq", "{taku/1v}{juq/1vn}")
+			.bestDecompositionIs("nunavut", "{nunavut/1n}")
+			.bestDecompositionIs("takujuq", "{taku/1v}{juq/1vn}")
 			// This is a word that does not decompose
-			.topSegmentationIs("plugak", null)
+			.bestDecompositionIs("plugak", null)
 			;		
     }
 	
@@ -444,4 +444,40 @@ public abstract class CompiledCorpusTest {
 		AssertHelpers.assertContainsAll("The list of words containing sequence "+seq+" was not as expected", 
 					wordsWithSeq, expected);
 	}	
+	
+	@Test
+	public void test__info4word__WordIsInCorpus() throws Exception {
+		// Note: "hello" appears twice
+		String[] words = new String[] {"hello", "world", "hello", "again"};
+		CompiledCorpus corpus = 
+				makeCorpusUnderTest(StringSegmenter_Char.class);		
+		corpus.addWordOccurences(words);
+		
+		WordInfo gotInfo = corpus.info4word("hello");
+		AssertWordInfo asserter = new AssertWordInfo(gotInfo, "");
+		asserter.isNotNull();
+		asserter
+			.frequencyIs(2)
+			.topDecompIs("hello".split(""))
+			;
+		
+		gotInfo = corpus.info4word("world");
+		asserter = new AssertWordInfo(gotInfo, "");
+		asserter.isNotNull();
+		asserter
+			.frequencyIs(1)
+			.topDecompIs("world".split(""))
+			;
+	}
+
+	@Test
+	public void test__info4word__WordNotInCorpus() throws Exception {
+		String[] words = new String[] {"hello", "world"};
+		CompiledCorpus corpus = 
+				makeCorpusUnderTest(StringSegmenter_Char.class);		
+		corpus.addWordOccurences(words);
+		
+		WordInfo gotInfo = corpus.info4word("greetings");
+		new AssertWordInfo(gotInfo, "").isNull();
+	}
 }

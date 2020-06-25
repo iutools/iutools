@@ -1,5 +1,6 @@
 package ca.pirurvik.iutools.corpus;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -12,8 +13,6 @@ import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_Char;
-import ca.nrc.datastructure.trie.Trie;
-import ca.nrc.datastructure.trie.TrieNode;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory.WordWithMorpheme;
 import ca.pirurvik.iutools.text.ngrams.NgramCompiler;
 
@@ -44,22 +43,22 @@ public abstract class CompiledCorpus {
 	
 	public abstract long totalWords() throws CompiledCorpusException;
 
-	public abstract String[] topDecompositions(String word) throws CompiledCorpusException;
+	public abstract String[] bestDecomposition(String word) throws CompiledCorpusException;
 	
 	public abstract WordInfo[] mostFrequentWordsExtending(
 			String[] morphemes, Integer N) throws CompiledCorpusException;
 
 	// TODO-June2020: Should probably choose a better name
 	protected abstract void addToWordSegmentations(
-			String word,String[][] decomps) 
+			String word,String[][] sampleDecomps, int totalDecomps) 
 		throws CompiledCorpusException;
 	
 	protected abstract void addToWordCharIndex(
-		String word, String[][] decomps) throws CompiledCorpusException;
+		String word, String[][] sampleDecomps, int totalDecomps) throws CompiledCorpusException;
 	
 	// TODO-June2020: Should probably choose a better name
 	protected abstract void addToWordNGrams(
-		String word, String[][] decomps) throws CompiledCorpusException;
+		String word, String[][] sampleDecomps, int totalDecomps) throws CompiledCorpusException;
 	
 	protected String segmenterClassName = StringSegmenter_Char.class.getName();
 	protected transient StringSegmenter segmenter = null;
@@ -97,6 +96,12 @@ public abstract class CompiledCorpus {
 		return this;
 	}
 
+	public CompiledCorpus setSegmenterClassName(
+			Class<? extends StringSegmenter> segClass) {
+		segmenterClassName = segClass.getName();
+		return this;
+	}
+
 	public CompiledCorpus setDecompsSampleSize(int size) {
 		return this;
 	}
@@ -122,21 +127,26 @@ public abstract class CompiledCorpus {
 	public void addWordOccurence(String word) throws CompiledCorpusException {
 		
 		String[][] decomps;
+		
 		try {
 			decomps = getSegmenter().possibleSegmentations(word);
 		} catch (TimeoutException | StringSegmenterException e) {
 			throw new CompiledCorpusException(e);
 		}
 		
-		addToWordCharIndex(word, decomps);
-		addToWordSegmentations(word,decomps);
-		addToWordNGrams(word, decomps);
-//		addToDecomposedWordsSuite(word);
+		int totalDecomps = decomps.length;
+		int numToKeep = Math.min(totalDecomps, decompsSampleSize);
+		String[][] sampleDecomps = Arrays.copyOfRange(decomps, 0, numToKeep);
+		
+		addWordOccurence(word, sampleDecomps, totalDecomps);
 	}
-
-//	// TODO-June2020: Does not belong in CompiledCorpus. It is 
-//	//   an internal implementation detail of the _InMemory version.
-//	public abstract String getWordSegmentations();
+	
+	public void addWordOccurence(String word, String[][] sampleDecomps, 
+			int totalDecomps) throws CompiledCorpusException {
+		addToWordCharIndex(word, sampleDecomps, totalDecomps);
+		addToWordSegmentations(word, sampleDecomps, totalDecomps);
+		addToWordNGrams(word, sampleDecomps, totalDecomps);
+	}
 	
 	public abstract long totalOccurencesOf(String word) throws CompiledCorpusException;
 	

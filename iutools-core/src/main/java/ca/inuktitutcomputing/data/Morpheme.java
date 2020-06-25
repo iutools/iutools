@@ -38,7 +38,7 @@ import ca.inuktitutcomputing.data.constraints.Conditions;
 import ca.inuktitutcomputing.data.LinguisticDataAbstract;
 import ca.inuktitutcomputing.data.Affix;
 
-public abstract class Morpheme extends Object implements Cloneable {
+public abstract class Morpheme implements Cloneable {
 	//
 	public String id = null;
 	public String type = null;
@@ -157,8 +157,6 @@ public abstract class Morpheme extends Object implements Cloneable {
     return res;
 	}
 
-//    public abstract Vector getIdsOfCompositesWithThisRoot();
-    
     public Morpheme getLastCombiningMorpheme() throws LinguisticDataException {
         String [] parts = getCombiningParts();
         String lastPart = null;
@@ -320,6 +318,12 @@ public abstract class Morpheme extends Object implements Cloneable {
             String sign = morphemeId.substring(morphemeId.indexOf(delimiter)+1);
             return morphName+"<sub>"+sign+"</sub>";
         }
+	}
+
+	public static boolean hasCanonicalForm(String morpheme, String canonicalForm) {
+		boolean answer = 
+			morpheme.matches("^\\{?"+canonicalForm+"/.*$");
+		return answer;
 	}
 
 

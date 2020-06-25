@@ -36,7 +36,6 @@ public class RW_CompiledCorpus_InMemory extends RW_CompiledCorpus {
 	protected void writeCorpus(CompiledCorpus corpus, File savePath) 
 		throws CompiledCorpusException {
 		try {
-//			mapper.writeValue(savePath, corpus);
 			FileWriter fw = new FileWriter(savePath);
 			new Gson().toJson(corpus, fw);
 			fw.flush();
@@ -47,5 +46,4 @@ public class RW_CompiledCorpus_InMemory extends RW_CompiledCorpus {
 		
 		return;
 	}
-
 }

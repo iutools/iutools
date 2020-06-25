@@ -6,21 +6,24 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
-import ca.nrc.datastructure.trie.Trie.NodeOption;
-import ca.nrc.string.StringUtils;
 
 public class Trie_InFileSystem extends Trie {
 	
 	File rootDir = null;
-
+	
+	protected ObjectWriter nodeWriter = null;
+	
 	public Trie_InFileSystem(File _rootDir) {
 		this.rootDir = _rootDir;
 	}
@@ -52,6 +55,7 @@ public class Trie_InFileSystem extends Trie {
 			File[] children = nodeFile.getParentFile().listFiles(File::isDirectory);
 			for (File aChildDir: children) {
 				String child = aChildDir.getName();
+				child = unescapeKey(child);
 				node.children.put(child, null);
 			}
 		}
@@ -67,7 +71,7 @@ public class Trie_InFileSystem extends Trie {
 	public void saveNode(TrieNode node) throws TrieException {
 		File nodeFile = file4node(node);
 		try {
-			new ObjectMapper().writeValue(nodeFile, node);
+			getNodeWriter().writeValue(nodeFile, node);
 		} catch (IOException e) {
 			throw new TrieException(
 				"Could not save node: "+String.join(", ", node.keys), e);
@@ -112,7 +116,7 @@ public class Trie_InFileSystem extends Trie {
 				try {
 					nodeFile.getParentFile().mkdirs();
 					TrieNode node = new TrieNode(keys);
-					new ObjectMapper().writeValue(nodeFile, node);
+					getNodeWriter().writeValue(nodeFile, node);
 				} catch (IOException e) {
 					throw new TrieException(
 						"Unable to create node file for keys: "+
@@ -174,20 +178,43 @@ public class Trie_InFileSystem extends Trie {
 	protected String[] unescapeKeys(String[] origKeys) throws TrieException {
 		String[] escaped = new String[origKeys.length];
 		for (int ii=0; ii < origKeys.length; ii++) {
-			try {
-				escaped[ii] = URLDecoder.decode(
-					origKeys[ii], StandardCharsets.UTF_8.toString());
-			} catch (UnsupportedEncodingException e) {
-				throw new TrieException("Could not unescape key "+origKeys[ii], e);
-			}
+			escaped[ii] = unescapeKey(origKeys[ii]);
 		}
 		return escaped;
 	}
 	
+	protected String unescapeKey(String origKey) throws TrieException {
+		String escaped = null;
+		try {
+			escaped = URLDecoder.decode(
+					origKey, StandardCharsets.UTF_8.toString());
+		} catch (UnsupportedEncodingException e) {
+			throw new TrieException(e);
+		}
+		return escaped;
+	}
+
 	@Override
 	public boolean contains(String[] segments) throws TrieException {
 		File nodeFile = file4node(segments, NodeOption.NO_CREATE);
 		boolean answer = (nodeFile != null && nodeFile.exists());
 		return answer;
+	}
+	
+	// JSon writer that filters some TrieNode properties which should not be 
+	// written to the node's json file.
+	//
+	@JsonIgnore
+	protected ObjectWriter getNodeWriter() {
+		if (nodeWriter == null) 
+		{
+			SimpleBeanPropertyFilter propsFilter = SimpleBeanPropertyFilter
+				.serializeAllExcept("children");
+			FilterProvider filters = new SimpleFilterProvider()
+				      .addFilter("TrieNodeFilter", propsFilter);
+			nodeWriter = new ObjectMapper().writer(filters);
+		}
+		
+		return nodeWriter;
 	}
 }

@@ -6,12 +6,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,7 +23,6 @@ import ca.inuktitutcomputing.script.TransCoder;
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.TrieException;
-import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.json.PrettyPrinter;
 import ca.pirurvik.iutools.text.segmentation.IUTokenizer;
 
@@ -167,6 +163,7 @@ public class CorpusCompiler {
 		if (saveFile.exists())
 			saveFile.delete();
 	}
+
 	private void process(File corpusDirectory) throws CompiledCorpusException, StringSegmenterException {
 		toConsole("[INFO] --- compiling directory "+corpusDirectory+"\n");
 		this.corpusDirectory = corpusDirectory;
@@ -219,7 +216,6 @@ public class CorpusCompiler {
 		}
 	}
 
-
 	protected void processDocumentContents(String fileAbsolutePath) throws CompiledCorpusException, StringSegmenterException, LinguisticDataException {
 		BufferedReader bufferedReader = null;
 		try {
@@ -229,8 +225,6 @@ public class CorpusCompiler {
 		}
 		processDocumentContents(bufferedReader,fileAbsolutePath);
 	}
-	
-	
 	
 	public void processDocumentContents(BufferedReader bufferedReader, String fileAbsolutePath)
 			throws CompiledCorpusException, StringSegmenterException, LinguisticDataException {
@@ -311,8 +305,6 @@ public class CorpusCompiler {
 		}
 	}
 
-	
-	
 	private void processWord(String word) throws CompiledCorpusException, StringSegmenterException, LinguisticDataException {
     	processWord(word,false);
     }
@@ -372,5 +364,4 @@ public class CorpusCompiler {
 		logger.debug("words= "+PrettyPrinter.print(words));
 		return words;
 	}
-
 }

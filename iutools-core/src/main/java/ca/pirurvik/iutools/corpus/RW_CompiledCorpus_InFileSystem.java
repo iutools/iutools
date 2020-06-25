@@ -35,5 +35,4 @@ public class RW_CompiledCorpus_InFileSystem extends RW_CompiledCorpus {
 		
 		return;
 	}
-
 }

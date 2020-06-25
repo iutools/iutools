@@ -25,7 +25,6 @@ import ca.nrc.datastructure.trie.Trie_InMemory;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.json.PrettyPrinter;
-import ca.nrc.ui.commandline.ProgressMonitor_Terminal;
 import ca.pirurvik.iutools.text.ngrams.NgramCompiler;
 
 public class CompiledCorpus_InMemory extends CompiledCorpus 
@@ -79,7 +78,6 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	public void setNgramStats() {
 		ngramStats = new HashMap<String,Long>();
 		String[] words = decomposedWordsSuite.split(",,");
-//		ngramCompilerNoExtremities = new NgramCompiler(3,0,false);
 		for (int iw=1; iw<words.length; iw++) {
 			updateSequenceNgramsForWord(words[iw]);
 		}
@@ -97,16 +95,6 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 		}
 	}
 
-	
-//	public void setVerbose(boolean value) {
-//		verbose = value;
-//	}
-//	
-//	public void setName(String _name) {
-//		name = _name;
-//	}
-	
-	
 	@SuppressWarnings("serial")
 	public static class CorpusTrieCompilerException extends Exception {
 		public CorpusTrieCompilerException(String mess) {
@@ -123,7 +111,6 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	public CompiledCorpus_InMemory(String segmenterClassName) {
 		super(segmenterClassName);
 	}
-
 	
 	public Iterator<String> allWords() throws CompiledCorpusException {
 		Iterator<String> iter = wordDecomps.keySet().iterator();
@@ -154,9 +141,31 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	}
 	
     @Override
-	protected void addToWordCharIndex(String word, String[][] decomps) 
-			throws CompiledCorpusException {
-    	wordDecomps.put(word, decomps);
+	protected void addToWordCharIndex(String word, String[][] sampleDecomps, 
+			int totalDecomps) throws CompiledCorpusException {
+    	wordDecomps.put(word, sampleDecomps);
+    	updateWordInfo(word, sampleDecomps, totalDecomps);
+		
+		updateNGramIndex(word);    	
+	}
+
+	private void updateWordInfo(String word, String[][] sampleDecomps, int totalDecomps) {
+		WordInfo info = word2infoMap.get(word);
+		if (info == null) {
+			key2word.put(nextWordKey, word);
+			word2key.put(word, nextWordKey);	
+			info = new WordInfo(this.nextWordKey);
+			this.nextWordKey++;			
+		}
+		
+		if (sampleDecomps != null) {
+			info.setDecompositions(sampleDecomps, totalDecomps);
+			info.frequency++;
+		}
+	
+		word2infoMap.put(word, info);
+		
+		return;
 	}
 
 	private void removeFromListOfFailedSegmentation(String word) {
@@ -347,33 +356,21 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	public String[] getWordsThatFailedDecomposition() {
 		return getWordsFailedSegmentation().toArray(new String[] {});
 	}
+
 	public Vector<String> getWordsFailedSegmentation() {
 		return wordsFailedSegmentation;
 	}
+	
 	public void setWordsFailedSegmentation(Vector<String> wordsFailedSegmentation) {
 		this.wordsFailedSegmentation = wordsFailedSegmentation;
 	}
+	
 	public long totalOccurencesOf(String word) throws CompiledCorpusException {
 		Logger logger = Logger.getLogger("CompiledCorpus.getNbOccurrencesOfWord");
-		logger.debug("word: "+word);
-		long nbOccurrences = 0;
-		Pattern pattern = Pattern.compile(","+word+":"+"(.+?),");
-		Matcher matcher = pattern.matcher(wordSegmentations);
-		if ( matcher.find() ) {
-			String segmentsStr = matcher.group(1);
-			String segmentsStrWithSpaces = segmentsStr.replace("}{", "} {");
-			String[] segments = segmentsStrWithSpaces.split(" ");
-			TrieNode[] terminals;
-			try {
-				terminals = this.trie.getTerminals(segments);
-				if (terminals.length > 0) {
-					nbOccurrences = terminals[0].getFrequency();
-				}
-			} catch (TrieException e) {
-				throw new CompiledCorpusException(e);
-			}
-		}
-	
+
+		WordInfo winfo = info4word(word);
+		long nbOccurrences = winfo.frequency;
+		
 		return nbOccurrences;
 	}
 	
@@ -399,7 +396,18 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 		public Long frequency;
 		
 		public WordWithMorpheme(String _word, String _morphId, String _decomp, Long _freq) {
+			init_WordWithMorpheme(_word, _morphId, _decomp, _freq);
+		}
+
+		public WordWithMorpheme(String _word, String _morphId, String _decomp, long _freq) {
+			init_WordWithMorpheme(_word, _morphId, _decomp, new Long(_freq));
+		}
+		
+		private void init_WordWithMorpheme(String _word, String _morphId, String _decomp, Long _freq) {
 			this.word = _word;
+			if (_morphId != null) {
+				_morphId = _morphId.replaceAll("(^\\{|\\}$)", "");
+			}
 			this.morphemeId = _morphId;
 			this.decomposition = _decomp;
 			this.frequency = _freq;
@@ -427,36 +435,13 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 		return word;
 	}
 	
-	public void addWord(String word) throws CompiledCorpusException {
-		addWord(word, null);
-	}
-	
-	public void addWord(String word, String[] decomps) throws CompiledCorpusException {
-		if (word2infoMap.containsKey(word)) {
-			throw new CompiledCorpusException("Attempted to add a word for "+
-						"there was already an entry ("+word+").");
-		}
-		
-		key2word.put(nextWordKey, word);
-		word2key.put(word, nextWordKey);
-		WordInfo info = new WordInfo(this.nextWordKey);
-		if (decomps != null) {
-			info.setDecompositions(decomps);
-		}
-	
-		this.nextWordKey++;
-		word2infoMap.put(word, info);
-		
-		updateNGramIndex(word);
-	}
-	
 	@Override
 	protected void addToWordSegmentations(
-			String word, String[][] decomps) 
+			String word, String[][] sampleDecomps, int totalDecomps) 
 			throws CompiledCorpusException {
 		
-		if (decomps != null && decomps.length > 0) {
-			String[] bestDecomp = decomps[0];
+		if (sampleDecomps != null && sampleDecomps.length > 0) {
+			String[] bestDecomp = sampleDecomps[0];
 
 			wordSegmentations += word+":"+String.join("", bestDecomp)+",,";
 			try {
@@ -476,8 +461,8 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	}	
 	
 	@Override
-	protected void addToWordNGrams(
-		String word, String[][] decomps) throws CompiledCorpusException {
+	protected void addToWordNGrams(String word, String[][] sampleDecomps, 
+		int totalDecomps) throws CompiledCorpusException {
 		updateNGramIndex(word);
 	}
 	
@@ -602,7 +587,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 		return freq;
 	}
 	
-	public String[] topDecompositions(String word) throws CompiledCorpusException {
+	public String[] bestDecomposition(String word) throws CompiledCorpusException {
 		Matcher matcher = 
 			Pattern.compile(","+word+":([^,]*),").matcher(wordSegmentations);
 		

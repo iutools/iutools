@@ -7,9 +7,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@JsonFilter("TrieNodeFilter")
 public class TrieNode {
 	
 	public static final String TERMINAL_SEG = "_$";
@@ -38,8 +40,7 @@ public class TrieNode {
     //
     public boolean isWord = false;
     
-    protected long frequency = 0;
-    
+    protected long frequency = 0;    
     
     // TODO: Eventually, remplace to 
     //
@@ -209,11 +210,6 @@ public class TrieNode {
     	}
     }
 
-    /*public void setMostFrequentTerminal(TrieNode _mostFrequentTerminal) {
-    	this.mostFrequentTerminal = _mostFrequentTerminal;
-    }*/
-
-
     public String keysAsString() {
     	return keysAsString(null);
     }
@@ -230,8 +226,6 @@ public class TrieNode {
     	String keyStr = String.join(" ", keysToPrint);
     	return keyStr;
     }
-    
-    
     
     public long getFrequency() {
     	return frequency;

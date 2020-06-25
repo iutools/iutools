@@ -10,11 +10,12 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import ca.inuktitutcomputing.data.Morpheme;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.datastructure.trie.Trie_InFileSystem;
-import ca.pirurvik.iutools.text.ngrams.NgramCompiler;
+import ca.nrc.datastructure.trie.Trie.NodeOption;
 
 public class CompiledCorpus_InFileSystem extends CompiledCorpus_InMemory {
 	
@@ -36,14 +37,6 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus_InMemory {
 		charNgramsTrie = new Trie_InFileSystem(new File(_corpusDir, "charNgramsTrie"));
 		wordMorphTrie = new Trie_InFileSystem(new File(_corpusDir, "wordMorphTrie"));
 		morphNgramsTrie = new Trie_InFileSystem(new File(_corpusDir, "morphNgramsTrie"));
-	}
-
-	@Override
-	public void addWord(String word, String[] decomps) throws CompiledCorpusException {
-		super.addWord(word,  decomps);
-		String[] wordChars = word.split("");
-		addWordCharTrie(word, wordChars, decomps);
-		addWordMorphTrie(word, decomps);
 	}
 
 	private void addWordCharTrie(String word, String[] wordChars, 
@@ -174,45 +167,85 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus_InMemory {
 		return wordNode.getFrequency();
 	}
 
-	@Override
-	public Trie getTrie() {
-		return super.getTrie();
-	}
-
 	// TODO-June2020: Make this method independant the 'super' implementation
 	@Override
-	public List<WordWithMorpheme> wordsContainingMorpheme(String morpheme) throws CompiledCorpusException {
-		return super.wordsContainingMorpheme(morpheme);
+	public List<WordWithMorpheme> wordsContainingMorpheme(String morpheme) 
+			throws CompiledCorpusException {
+		
+		Set<String> matchingMorphemes = morphemesWithCanonicalForm(morpheme);
+		List<WordWithMorpheme> results = new ArrayList<WordWithMorpheme>();
+		for (String morphID: matchingMorphemes) {
+			try {
+				TrieNode node = 
+					morphNgramsTrie.getNode(
+						new String[] {morphID}, NodeOption.TERMINAL);
+				List<String> matchingWords = node.getField("words", new ArrayList<String>());
+				for (String aWord: matchingWords) {
+					WordInfo aWordInfo = info4word(aWord);
+					results.add(
+						new WordWithMorpheme(aWord, morphID, String.join(" ", aWordInfo.topDecompositions), aWordInfo.frequency));					
+				}
+				
+				
+			} catch (TrieException e) {
+				throw new CompiledCorpusException(e);
+			}
+		}
+		return results;
 	}
 	
 	
-    @Override
-	protected void addToWordCharIndex(
-		String word, String[][] decomps) 
-		throws CompiledCorpusException {
+    protected Set<String> morphemesWithCanonicalForm(String canonicalMorpheme) throws CompiledCorpusException {
+    	Set<String> matchingMorphemes = new HashSet<String>();
 		try {
+			for (String candMorpheme: morphNgramsTrie.getRoot().childrenSegments()) {
+				if (Morpheme.hasCanonicalForm(candMorpheme, canonicalMorpheme)) {
+					matchingMorphemes.add(candMorpheme);
+				}
+			}
+		} catch (TrieException e) {
+			throw new CompiledCorpusException(e);
+		}
+			
+		return matchingMorphemes;
+	}
+
+	@Override
+	protected void addToWordCharIndex(
+		String word, String[][] sampleDecomps, int totalDecomps) 
+		throws CompiledCorpusException {
+    	
+		try {			
 			String[] chars = Trie.wordChars(word);
-			TrieNode node = wordCharTrie.getNode(chars);
-			node.setField("topDecomps", decomps);
-			wordCharTrie.add(word.split(""), word);
+			TrieNode node = wordCharTrie.add(chars, word);
+			node.setField("topDecomps", sampleDecomps);
+			wordCharTrie.saveNode(node);
 		} catch (TrieException e) {
 			throw new CompiledCorpusException(e);
 		}
 	}
 	
 	@Override
-	protected void addToWordSegmentations(String word, String[][] decomps) throws CompiledCorpusException {
+	protected void addToWordSegmentations(String word, String[][] sampleDecomps, 
+		int totalDecomps) throws CompiledCorpusException {
 		String[] bestDecomp = new String[0];
-		if (decomps != null && decomps.length > 0) {
-			bestDecomp = decomps[0];
+		if (sampleDecomps != null && sampleDecomps.length > 0) {
+			bestDecomp = sampleDecomps[0];
 		}
+		
 		for (int start=0; start < bestDecomp.length; start++) {
 			for (int end=start+1; end < bestDecomp.length+1; end++) {
 				String[] morphNgram = 
 					Arrays.copyOfRange(bestDecomp, start, end);
 				try {
 					String joinedMorphNgram = String.join(" ", morphNgram);
+					//
+					// TODO-June2020: Instead of passing 'word' as second argument,
+					// maybe we should pass the concatenation of the written forms
+					// of the morphemes?
+					//
 					TrieNode node = morphNgramsTrie.add(morphNgram, word);
+					addWordToMorphNgram(word, node);
 				} catch (TrieException e) {
 					throw new CompiledCorpusException(e);
 				}
@@ -226,10 +259,22 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus_InMemory {
 		}
 	}	
 
+	private void addWordToMorphNgram(String word, TrieNode ngramNode) throws CompiledCorpusException {
+		List<String> words = new ArrayList<String>();
+		words = ngramNode.getField("words", words);
+		words.add(word);
+		try {
+			morphNgramsTrie.saveNode(ngramNode);
+		} catch (TrieException e) {
+			throw new CompiledCorpusException(e);
+		}
+	}
+
+
 	@Override
 	protected void addToWordNGrams(
-		String word, String[][] decomps) throws CompiledCorpusException {
-		super.addToWordNGrams(word, decomps);
+		String word, String[][] sampleDecomps, int totalDecomps) throws CompiledCorpusException {
+		super.addToWordNGrams(word, sampleDecomps, totalDecomps);
 		
 		try {
 			Set<String> ngrams = getNgramCompiler().compile(word);
@@ -256,24 +301,19 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus_InMemory {
 	}
 
 	@Override
-	public String[] topDecompositions(String word) throws CompiledCorpusException {
-		String[] topDec = null;
+	public String[] bestDecomposition(String word) throws CompiledCorpusException {
+		String[] topDecs = null;
 		TrieNode node;
 		try {
 			node = wordCharTrie.getNode(Trie.ensureTerminal(word.split("")));
+			if (node != null) {
+				topDecs = nodeBestDecomp(node);
+			}
 		} catch (TrieException e) {
 			throw new CompiledCorpusException(e);
 		}
-		
-		if (node != null) {
-			String[][] topDecomps = 
-				node.getField("topDecomps", new String[0][]);
-			if (topDecomps.length > 0) {
-				topDec = topDecomps[0];
-			}
-		}
-		
-		return topDec;
+				
+		return topDecs;
 	}
 
 	// TODO-June2020: Make this method independant of CompiledCorpus_InMemory
@@ -284,7 +324,6 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus_InMemory {
 
 	@Override
 	public long charNgramFrequency(String ngram) throws CompiledCorpusException {
-//		return super.charNgramFrequency(ngram);
 		long freq = 0;
 		try {
 			String[] ngramChars = Trie.wordChars(ngram);
@@ -329,10 +368,14 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus_InMemory {
 	public WordInfo info4word(String word) throws CompiledCorpusException {
 		WordInfo info = null;
 		try {
-			TrieNode node = wordCharTrie.getNode(Trie.ensureTerminal(word.split("")));
+			String[] chars = Trie.ensureTerminal(word.split(""));
+			TrieNode node = 
+				wordCharTrie.getNode(chars, NodeOption.NO_CREATE);
 			if (node != null) {
 				info = new WordInfo()
-					.setFrequency(node.getFrequency());
+					.setFrequency(node.getFrequency())
+					.setTopDecompositions(nodeBestDecomp(node))
+					;
 			}
 		} catch (TrieException e) {
 			throw new CompiledCorpusException(e);
@@ -340,6 +383,17 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus_InMemory {
 		return info;
 	}
 	
+	private String[] nodeBestDecomp(TrieNode node) {
+		String[] bestDecomp = null;
+		List<List<String>> topDecomps = 
+			node.getField("topDecomps", new ArrayList<List<String>>());
+		if (topDecomps != null && topDecomps.size() > 0) {
+			List<String> bestDecompLst = topDecomps.get(0);
+			bestDecomp = bestDecompLst.toArray(new String[0]);
+		}
+		return bestDecomp;
+	}
+
 	// TODO-June2020: Make this method independant of super impl.
 	@Override
 	public long totalWords() throws CompiledCorpusException {
