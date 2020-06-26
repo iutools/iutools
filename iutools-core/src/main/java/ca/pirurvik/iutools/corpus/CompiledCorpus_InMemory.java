@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -84,7 +85,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	}
 	private void updateSequenceNgramsForWord(String word) {
 		Set<String> seqsSeenInWord = new HashSet<String>();
-		seqsSeenInWord = getNgramCompiler().compile(word);
+		seqsSeenInWord = getCharsNgramCompiler().compile(word);
 		Iterator<String> itngram = seqsSeenInWord.iterator();
 		while (itngram.hasNext()) {
 			String ngram = itngram.next();
@@ -113,8 +114,11 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	}
 	
 	public Iterator<String> allWords() throws CompiledCorpusException {
-		Iterator<String> iter = wordDecomps.keySet().iterator();
-		return iter;
+		Set<String> allWordsSet = new HashSet<String>();
+		allWordsSet.addAll(wordsFailedSegmentationWithFreqs.keySet());
+		Collections.addAll(allWordsSet, decomposedWordsSuite.split(",,"));
+		allWordsSet.remove("");
+		return allWordsSet.iterator();
 	}
 	
 	public String getWordSegmentations() {
@@ -141,7 +145,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	}
 	
     @Override
-	protected void addToWordCharIndex(String word, String[][] sampleDecomps, 
+	protected void updateWordIndex(String word, String[][] sampleDecomps, 
 			int totalDecomps) throws CompiledCorpusException {
     	wordDecomps.put(word, sampleDecomps);
     	updateWordInfo(word, sampleDecomps, totalDecomps);
@@ -219,7 +223,8 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
     
     // ----------------------------- STATISTICS -------------------------------
     
-    public long totalWordsWithNoDecomp() {
+    @Override
+    public long totalWordsWithNoDecomp() throws CompiledCorpusException {
     	return wordsFailedSegmentationWithFreqs.size();
     }
     
@@ -239,6 +244,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 		}
 	}
 	
+	@Override
 	public long totalWordsWithDecomps() throws CompiledCorpusException {
 		try {
 			return getTrie().getSize();
@@ -388,31 +394,6 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 		
 		return words;
 	}
-	
-	public static class WordWithMorpheme {
-		public String word;
-		public String morphemeId;
-		public String decomposition;
-		public Long frequency;
-		
-		public WordWithMorpheme(String _word, String _morphId, String _decomp, Long _freq) {
-			init_WordWithMorpheme(_word, _morphId, _decomp, _freq);
-		}
-
-		public WordWithMorpheme(String _word, String _morphId, String _decomp, long _freq) {
-			init_WordWithMorpheme(_word, _morphId, _decomp, new Long(_freq));
-		}
-		
-		private void init_WordWithMorpheme(String _word, String _morphId, String _decomp, Long _freq) {
-			this.word = _word;
-			if (_morphId != null) {
-				_morphId = _morphId.replaceAll("(^\\{|\\}$)", "");
-			}
-			this.morphemeId = _morphId;
-			this.decomposition = _decomp;
-			this.frequency = _freq;
-		}
-	}
 
 	public Long key4word(String word) {
 		Long key = null;
@@ -436,7 +417,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	}
 	
 	@Override
-	protected void addToWordSegmentations(
+	protected void updateDecompositionsIndex(
 			String word, String[][] sampleDecomps, int totalDecomps) 
 			throws CompiledCorpusException {
 		
@@ -461,7 +442,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	}	
 	
 	@Override
-	protected void addToWordNGrams(String word, String[][] sampleDecomps, 
+	protected void updateCharNgramIndex(String word, String[][] sampleDecomps, 
 		int totalDecomps) throws CompiledCorpusException {
 		updateNGramIndex(word);
 	}
@@ -479,6 +460,8 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 		for (String aNgram: ngrams) {
 			addSingleWordNGram(key, aNgram);
 		}
+		
+		return;
 	}
 	
 	private void addSingleWordNGram(Long wordKey, String ngram) {
@@ -557,8 +540,8 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	@Override
 	protected Set<String> wordsContainingMorphNgram(String[] morphemes) 
 			throws CompiledCorpusException {
-		// TODO Auto-generated method stub
-		return null;
+		// Note: This method is not supported by this class
+		return new HashSet<String>();
 	}
 
 	@Override
@@ -599,9 +582,11 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 		
 		return topSeg;
 	}
-	
+
+	@Override
 	public long totalOccurences() throws CompiledCorpusException {
-		return getNumberOfCompiledOccurrences();
+		long total = totalOccurencesWithNoDecomp() + totalOccurencesWithDecomps();
+		return total;
 	}
 	
 	@Override
@@ -636,16 +621,4 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 		
 		return mostFrequentLst.toArray(new WordInfo[mostFrequentLst.size()]);
 	}
-	
-	@Override
-	public long totalWords() throws CompiledCorpusException {
-		long total;
-		try {
-			total = totalOccurencesWithNoDecomp() + totalWordsWithDecomps();
-		} catch (CompiledCorpusException e) {
-			throw new CompiledCorpusException(e);
-		}
-		return total;
-	}
 }
-

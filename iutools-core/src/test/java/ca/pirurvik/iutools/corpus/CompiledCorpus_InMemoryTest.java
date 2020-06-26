@@ -29,6 +29,7 @@ import org.junit.Test;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
 import ca.inuktitutcomputing.morph.Decomposition;
 import ca.nrc.config.ConfigException;
+import ca.nrc.datastructure.trie.AssertTrieNode;
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
@@ -42,7 +43,6 @@ import ca.nrc.testing.AssertObject;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.corpus.WordInfo;
-import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory.WordWithMorpheme;
 import junit.framework.TestCase;
 
 /**
@@ -58,6 +58,25 @@ public class CompiledCorpus_InMemoryTest extends CompiledCorpusTest
 		return corpus;
 	}	
 	
+	@Test
+	public void test__getMostFrequentTerminal__HappyPath() throws Exception {
+		CompiledCorpus_InMemory compiledCorpus = new CompiledCorpus_InMemory();
+        Trie_InMemory charTrie = new Trie_InMemory();
+		charTrie.add("hello".split(""),"hello");
+		charTrie.add("hint".split(""),"hint");
+		charTrie.add("helicopter".split(""),"helicopter");
+		charTrie.add("helios".split(""),"helios");
+		charTrie.add("helicopter".split(""),"helicopter");
+		compiledCorpus.trie = charTrie;
+		TrieNode mostFrequent = compiledCorpus.getMostFrequentTerminal("hel".split(""));
+		new AssertTrieNode(mostFrequent, "")
+		    .isTerminal()
+			.hasFrequency(2)
+			.hasSurfaceForm("helicopter")
+			;
+	}
+	
+	
 	///////////////////////////////////////////////////////////////
 	// These CompiledCorpus_BaseTest tests are 
 	// currently not working for CompiledCorpus_Memory class
@@ -70,4 +89,9 @@ public class CompiledCorpus_InMemoryTest extends CompiledCorpusTest
 	public void test__morphemeNgramFrequency__HappyPath() throws Exception {
 	}
 	
+	// Method wordsContainingMorphNgram() was never supported by InMemory 
+	// in the first place. 
+	@Test
+	public void test__wordsContainingMorphNgram__HappyPath() throws Exception {
+	}	
 }

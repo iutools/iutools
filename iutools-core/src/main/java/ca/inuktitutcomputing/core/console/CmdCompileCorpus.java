@@ -3,9 +3,13 @@ package ca.inuktitutcomputing.core.console;
 import java.io.File;
 import java.io.IOException;
 
+import ca.nrc.datastructure.trie.StringSegmenter_AlwaysNull;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
+import ca.pirurvik.iutools.corpus.CompiledCorpus;
+import ca.pirurvik.iutools.corpus.CompiledCorpus_InFileSystem;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 import ca.pirurvik.iutools.corpus.CorpusCompiler;
+import ca.pirurvik.iutools.corpus.RW_CompiledCorpus;
 
 public class CmdCompileCorpus extends ConsoleCommand {
 
@@ -20,8 +24,7 @@ public class CmdCompileCorpus extends ConsoleCommand {
 
 	@Override
 	public void execute() throws Exception {
-		
-		String corpusDirStr = getCorpusDir();
+		String corpusDirStr = getInputDir();
 		
 		String compilationFile = getCompilationFile();
 		
@@ -32,14 +35,18 @@ public class CmdCompileCorpus extends ConsoleCommand {
 		}
 		echo(-1);
 		
-		CompiledCorpus_InMemory compiledCorpus = new CompiledCorpus_InMemory(StringSegmenter_IUMorpheme.class.getName());
 		boolean ok = true;
 		if ( compilationFile != null )
 			ok = checkFilePath(compilationFile);
 		if ( !ok ) {
-			System.err.println("ERROR: The --corpus-dir argument points to a non-existent directory. Abort.");
-			System.exit(1);
+			usageBadOption(OPT_CORPUS_SAVE_PATH, "The provided path does not exist");
 		}
+		
+		
+		CompiledCorpus compiledCorpus = 
+			new CompiledCorpus_InFileSystem(new File(compilationFile))
+			.setSegmenterClassName(StringSegmenter_AlwaysNull.class)
+			;
 		
 		CorpusCompiler compiler = new CorpusCompiler(compiledCorpus);
 		File corpusDir = new File(corpusDirStr);

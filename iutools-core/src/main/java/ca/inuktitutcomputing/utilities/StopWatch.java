@@ -111,11 +111,11 @@ public class StopWatch {
 		}
 	}
 
-	private long nowMSecs() {
+	public static long nowMSecs() {
 		long time = System.nanoTime() / 1000000;
 		return time;
 	}
-
+	
 	static enum ClockUpdateStrategy {
 		NONE, CALL_STACK, WRITE_FILE, CHECK_FILE};
 	
@@ -166,4 +166,33 @@ public class StopWatch {
 	public void disactivate() {
 		deactivated = true;
 	}
+
+	public static long elapsedMsecsSince(long start) {
+		long end = nowMSecs();
+		long elapsed = end - start;
+		return elapsed;
+	}
+
+	public static long now(TimeUnit unit) throws StopWatchException {
+		long time = System.nanoTime();
+		long nanosPerUnit = 1;
+		if (unit == TimeUnit.MILLISECONDS) {
+			nanosPerUnit = 1000000;
+		} else if (unit == TimeUnit.SECONDS) {
+			nanosPerUnit = 1000000000;
+		} else {
+			throw new StopWatchException("Unsupported time unit "+unit);
+		}
+		
+		time = time / nanosPerUnit;
+		
+		return time;
+	}
+	
+	public static long elapsedSince(long start, TimeUnit unit) throws StopWatchException {
+		long end = now(unit);
+		long elapsed = end - start;
+		return elapsed;
+	}
+	
 }

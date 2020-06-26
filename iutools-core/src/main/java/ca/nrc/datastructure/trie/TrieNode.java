@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class TrieNode {
 	
 	public static final String TERMINAL_SEG = "_$";
+	public static final String NULL_SEG = "_NULL";
 	
 	// TODO: Rename to keySequence???
 	//

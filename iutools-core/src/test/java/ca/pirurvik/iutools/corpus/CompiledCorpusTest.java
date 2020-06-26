@@ -11,31 +11,24 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
-import ca.inuktitutcomputing.morph.Decomposition;
-import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
-import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.trie.AssertTrieNode;
 import ca.nrc.datastructure.trie.StringSegmenter;
-import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_Char;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.datastructure.trie.Trie_InMemory;
 import ca.nrc.testing.AssertHelpers;
+import ca.nrc.testing.AssertObject;
 
 public abstract class CompiledCorpusTest {
 		
@@ -227,6 +220,57 @@ public abstract class CompiledCorpusTest {
 	}
 	
 	@Test
+	public void test__addWordOccurences__WordWithNoDecomps() throws Exception {
+		CompiledCorpus corpus = makeCorpusUnderTest();
+		final String[] noWords = new String[] {};
+		
+		String nnnunavut = "nnnunavut";
+		String ngram_nuna = "nuna";		
+
+		corpus.addWordOccurence(nnnunavut);
+		new AssertCompiledCorpus(corpus, "After adding non-decomposable word "+nnnunavut)
+			.containsWords(nnnunavut)
+			.bestDecompositionIs(nnnunavut, null)
+			;
+	}
+
+
+	@Test
+	public void test__totalWords__HappyPath() throws Exception {
+		CompiledCorpus corpus = makeCorpusUnderTest();
+		corpus.setSegmenterClassName(MockStringSegmenter_IUMorpheme.class);
+		
+		String iiinuit = "iiinuit";
+		String inuit = "inuit";
+		String nunami = "nunami";
+		final String[] words = new String[] {iiinuit, inuit, nunami};
+		corpus.addWordOccurences(words);
+		new AssertCompiledCorpus(corpus, "")
+			.totalWordsIs(3)
+			.totalWordsWithoutDecompsIs(1)
+			.totalWordsWithDecompIs(2)
+			;
+	}
+
+	@Test
+	public void test__totalOccurences__OfVariousTypes() throws Exception {
+		CompiledCorpus corpus = makeCorpusUnderTest();
+		corpus.setSegmenterClassName(MockStringSegmenter_IUMorpheme.class);
+		
+		String iiinuit = "iiinuit";
+		String inuit = "inuit";
+		String nunami = "nunami";
+		final String[] words = new String[] {
+			iiinuit, iiinuit, inuit, nunami, nunami};
+		corpus.addWordOccurences(words);
+		new AssertCompiledCorpus(corpus, "")
+			.totalOccurencesIs(5)
+			.totalOccurencesWithNoDecompIs(2)
+			.totalOccurencesWithDecompIs(3)
+			;
+	}
+	
+	@Test
     public void test__bestDecomposition__HappyPath() throws Exception {
 		String[] words = new String[] {"nunavut", "takujuq", "plugak"};
 		CompiledCorpus compiledCorpus = 
@@ -259,26 +303,6 @@ public abstract class CompiledCorpusTest {
 			;
     }
         
-    // TODO-June2020: This test should use makeCorpusUnderTest()
-	@Test
-	public void test__getMostFrequentTerminal__HappyPath() throws Exception {
-		CompiledCorpus_InMemory compiledCorpus = new CompiledCorpus_InMemory();
-        Trie_InMemory charTrie = new Trie_InMemory();
-		charTrie.add("hello".split(""),"hello");
-		charTrie.add("hint".split(""),"hint");
-		charTrie.add("helicopter".split(""),"helicopter");
-		charTrie.add("helios".split(""),"helios");
-		charTrie.add("helicopter".split(""),"helicopter");
-		compiledCorpus.trie = charTrie;
-		TrieNode mostFrequent = compiledCorpus.getMostFrequentTerminal("hel".split(""));
-		new AssertTrieNode(mostFrequent, "")
-		    .isTerminal()
-			.hasFrequency(2)
-			.hasSurfaceForm("helicopter")
-			;
-	}
-
-    // TODO-June2020: This test should use makeCorpusUnderTest()
 	@Test
 	public void test__totalOccurences__HappyPath() throws Exception {
 		CompiledCorpus compiledCorpus = makeCorpusUnderTest();
@@ -288,7 +312,7 @@ public abstract class CompiledCorpusTest {
 					"helicopter"});
 	
 		new AssertCompiledCorpus(compiledCorpus, "")
-			.totalOccurencesEquals(5)
+			.totalOccurencesIs(5)
 			;
 	}
 	
@@ -335,13 +359,12 @@ public abstract class CompiledCorpusTest {
     }
 
 
-    // TODO-June2020: This test should use makeCorpusUnderTest()
 	@Test
 	public void test__getNbFailedSegmentations() throws Exception {
 		String[] stringsOfWords = new String[] {
 				"nunavut", "inuit", "takujuq", "amma", "kanaujaq", "iglumik", "takulaaqtuq", "nunait"
 				};
-        CompiledCorpus_InMemory compiledCorpus = new CompiledCorpus_InMemory(StringSegmenter_IUMorpheme.class.getName());
+		CompiledCorpus compiledCorpus = makeCorpusUnderTest(StringSegmenter_IUMorpheme.class);
         compiledCorpus.addWordOccurences(stringsOfWords);
        Assert.assertEquals("The number of words that failed segmentation is wrong.",1,
         		compiledCorpus.totalWordsWithNoDecomp());
@@ -349,13 +372,12 @@ public abstract class CompiledCorpusTest {
         		compiledCorpus.totalOccurencesWithNoDecomp());
 	}
 
-    // TODO-June2020: This test should use makeCorpusUnderTest()
 	@Test
 	public void test__getWordsContainingMorpheme__HappyPath() throws Exception {
 		String[] stringsOfWords = new String[] {
 				"nunavut", "inuit", "takujuq", "sinilauqtuq", "uvlimik", "takulauqtunga"
 				};
-        CompiledCorpus_InMemory compiledCorpus = new CompiledCorpus_InMemory(StringSegmenter_IUMorpheme.class.getName());
+		CompiledCorpus compiledCorpus = makeCorpusUnderTest(StringSegmenter_IUMorpheme.class);
         compiledCorpus.addWordOccurences(stringsOfWords);
         
         new AssertCompiledCorpus(compiledCorpus, "")
@@ -370,7 +392,6 @@ public abstract class CompiledCorpusTest {
 		return compileToFile(words,null);
 	}
 	
-    // TODO-June2020: Get rid of this helper method
 	public static File compileToFile(String[] words, String fileId) throws Exception {
 		CompiledCorpus_InMemory tempCorp = new CompiledCorpus_InMemory(StringSegmenter_IUMorpheme.class.getName());
 		CorpusCompiler compiler = new CorpusCompiler(tempCorp);
@@ -479,5 +500,28 @@ public abstract class CompiledCorpusTest {
 		
 		WordInfo gotInfo = corpus.info4word("greetings");
 		new AssertWordInfo(gotInfo, "").isNull();
+	}
+	
+	@Test
+	public void test__wordsContainingMorphNgram__HappyPath() throws Exception {
+		CompiledCorpus corpus = makeCorpusUnderTest(MockStringSegmenter_IUMorpheme.class);
+		String[] words = new String[] {"inuit", "inuglu", "nunami"};
+		corpus.addWordOccurences(words);
+		
+		String[] morphNgram = new String[] {
+				"inuk/1n"};
+		Set<String> gotWords = 
+			corpus.wordsContainingMorphNgram(morphNgram);
+		String[] expWords = new String[] {"inuglu", "inuit"};
+		AssertObject.assertDeepEquals(
+			"Wrong list of words for morpheme ngram "+String.join(",", morphNgram), 
+			expWords, gotWords);
+
+		morphNgram = new String[] {"^", "inuk/1n"};
+		gotWords = corpus.wordsContainingMorphNgram(morphNgram);
+		expWords = new String[] {"inuglu", "inuit"};
+		AssertObject.assertDeepEquals(
+			"Wrong list of words for morpheme ngram "+String.join(",", morphNgram), 
+			expWords, gotWords);
 	}
 }

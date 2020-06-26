@@ -71,6 +71,14 @@ public class Trie_InMemory extends Trie {
 
 	public TrieNode getNode(String[] keys, NodeOption... options ) 
 			throws TrieException {
+		// TODO-June2020: Implement all getNode() entry points at level of parent
+		//  Trie class. These methods will check that segments is not null, then 
+		//  invoke getNodeAssumingNonNullSegments()
+		//
+		if (keys == null) {
+			keys = new String[] {TrieNode.NULL_SEG};
+		}
+		
 		boolean createIfNotExist = true;
 		boolean terminal = false;
 		for (NodeOption anOption: options) {

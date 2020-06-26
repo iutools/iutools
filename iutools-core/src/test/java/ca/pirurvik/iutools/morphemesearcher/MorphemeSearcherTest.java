@@ -21,7 +21,7 @@ import ca.pirurvik.iutools.corpus.CompiledCorpus;
 import ca.pirurvik.iutools.corpus.CompiledCorpusException;
 import ca.pirurvik.iutools.corpus.MockCompiledCorpus;
 import ca.pirurvik.iutools.corpus.MockCompiledCorpusFactory;
-import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory.WordWithMorpheme;
+import ca.pirurvik.iutools.corpus.WordWithMorpheme;
 import ca.pirurvik.iutools.morphemesearcher.MorphemeSearcher;
 import ca.pirurvik.iutools.morphemesearcher.ScoredExample;
 import ca.pirurvik.iutools.morphemesearcher.MorphemeSearcher.Bin;

@@ -6,8 +6,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
+import ca.inuktitutcomputing.data.LinguisticDataException;
+import ca.inuktitutcomputing.morph.Decomposition;
+import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
+import ca.inuktitutcomputing.morph.MorphologicalAnalyzerException;
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenterException;
+import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 
 
 public class MockCompiledCorpus extends CompiledCorpus_InMemory {
@@ -45,7 +50,18 @@ class MockStringSegmenter_IUMorpheme extends StringSegmenter {
 
 	@Override
 	public String[] segment(String word, boolean fullAnalysis) throws TimeoutException, StringSegmenterException {
-		return dictionary.get(word).split(" ");
+		String[] segments = null;
+		String segmentsStr = dictionary.get(word);
+		if (segmentsStr != null) {
+			segments = segmentsStr.split(" ");
+		} else {
+			try {
+				segments = new StringSegmenter_IUMorpheme().segment(word);
+			} catch (LinguisticDataException e) {
+				throw new StringSegmenterException(e);
+			}
+		}
+		return segments;
 	}
 	
 	public void setDictionary(HashMap<String,String> _dictionary) {
@@ -59,6 +75,11 @@ class MockStringSegmenter_IUMorpheme extends StringSegmenter {
 	@Override
 	public String[][] possibleSegmentations(String string, boolean fullAnalysis)
 			throws TimeoutException, StringSegmenterException {
-		return new String[][] { segment(string, fullAnalysis) };
+		String[][] possSegs = null;
+		String[] bestSegmentation = segment(string, fullAnalysis);
+		if (bestSegmentation != null) {
+			possSegs = new String[][] { segment(string, fullAnalysis) };
+		}
+		return possSegs;
 	}
 }

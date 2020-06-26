@@ -78,27 +78,6 @@ public class CompiledCorpusRegistryTest {
 		assertTrue("Incorrect number of terminals for amma/1c;\nexpected more than 0",got>0);
 	}
 	
-//	@Test
-//	public void test__getCorpus__get_from_file_path() throws Exception {
-//		String[] words = new String[] {"nunami","iglumik"};
-//		File corpusFile = CompiledCorpusTest.compileToFile(words);
-//		corpusFile.deleteOnExit();
-//		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpus(corpusFile);
-//		Trie trie = corpus.getTrie();
-//		TrieNode[] nunaTerminals = trie.getAllTerminals(new String[] {"{nuna/1n}"});
-//		int got = nunaTerminals.length;
-//		assertTrue("Incorrect number of terminals for nuna/1n;\nexpected more than 0",got>0);
-//		
-//		Map<String,CompiledCorpus> corpusCache = CompiledCorpusRegistry.getCorpusCache();
-//		assertTrue("The registry does not contain the corpus specified by the file path.",corpusCache.containsKey("FILE="+corpusFile));
-//
-//		CompiledCorpus corpus2words = CompiledCorpusRegistry.getCorpus(corpusFile);
-//		Trie trie2words = corpus2words.getTrie();
-//		TrieNode[] igluTerminals = trie2words.getAllTerminals(new String[] {"{iglu/1n}"});
-//		got = igluTerminals.length;
-//		assertTrue("Incorrect number of terminals for iglu/1n;\nexpected more than 0",got>0);
-//	}
-	
 	@Test
 	public void test__getCorpus__get_from_corpus_name_statically_initialized() 
 			throws Exception {

@@ -1,7 +1,9 @@
 package ca.nrc.datastructure.trie;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -97,4 +99,17 @@ public class AssertTrieNode extends Asserter<TrieNode> {
 			expSurfForm, gotSurfForm);
 		return this;
 	}
+
+	public AssertTrieNode hasSurfaceForms(String[] expFormsArr) 
+			throws Exception {
+		Set<String> gotForms = node().surfaceForms.keySet();
+		Set<String> expForms = new HashSet<String>();
+		Collections.addAll(expForms, expFormsArr);
+		
+		AssertObject.assertDeepEquals(
+			baseMessage+"\nSurface forms for the node were not as expected", 
+			expForms, gotForms);
+		return this;
+	}
+	
 }

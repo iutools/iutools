@@ -5,15 +5,19 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import ca.inuktitutcomputing.data.LinguisticDataException;
+import ca.inuktitutcomputing.utilities.StopWatch;
+import ca.inuktitutcomputing.utilities.StopWatchException;
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_Char;
-import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory.WordWithMorpheme;
 import ca.pirurvik.iutools.text.ngrams.NgramCompiler;
 
 /**
@@ -41,23 +45,25 @@ public abstract class CompiledCorpus {
 	
 	public abstract long totalOccurences() throws CompiledCorpusException;
 	
-	public abstract long totalWords() throws CompiledCorpusException;
-
+	public abstract long totalWordsWithNoDecomp() throws CompiledCorpusException;
+	public abstract long totalWordsWithDecomps() throws CompiledCorpusException;
+    public abstract long totalOccurencesWithNoDecomp() throws CompiledCorpusException;
+	public abstract Long totalOccurencesWithDecomps() throws CompiledCorpusException;
+	
+	
 	public abstract String[] bestDecomposition(String word) throws CompiledCorpusException;
 	
 	public abstract WordInfo[] mostFrequentWordsExtending(
 			String[] morphemes, Integer N) throws CompiledCorpusException;
 
-	// TODO-June2020: Should probably choose a better name
-	protected abstract void addToWordSegmentations(
+	protected abstract void updateDecompositionsIndex(
 			String word,String[][] sampleDecomps, int totalDecomps) 
 		throws CompiledCorpusException;
 	
-	protected abstract void addToWordCharIndex(
+	protected abstract void updateWordIndex(
 		String word, String[][] sampleDecomps, int totalDecomps) throws CompiledCorpusException;
 	
-	// TODO-June2020: Should probably choose a better name
-	protected abstract void addToWordNGrams(
+	protected abstract void updateCharNgramIndex(
 		String word, String[][] sampleDecomps, int totalDecomps) throws CompiledCorpusException;
 	
 	protected String segmenterClassName = StringSegmenter_Char.class.getName();
@@ -68,7 +74,8 @@ public abstract class CompiledCorpus {
 	@JsonIgnore
 	public transient String name;
 	
-	protected transient NgramCompiler ngramCompiler;	
+	protected transient NgramCompiler charsNgramCompiler = null;	
+	protected transient NgramCompiler morphsNgramCompiler = null;
 	
 	public abstract long charNgramFrequency(String ngram) throws CompiledCorpusException;
 	
@@ -126,7 +133,7 @@ public abstract class CompiledCorpus {
 	
 	public void addWordOccurence(String word) throws CompiledCorpusException {
 		
-		String[][] decomps;
+		String[][] decomps = null;
 		
 		try {
 			decomps = getSegmenter().possibleSegmentations(word);
@@ -134,18 +141,82 @@ public abstract class CompiledCorpus {
 			throw new CompiledCorpusException(e);
 		}
 		
-		int totalDecomps = decomps.length;
-		int numToKeep = Math.min(totalDecomps, decompsSampleSize);
-		String[][] sampleDecomps = Arrays.copyOfRange(decomps, 0, numToKeep);
-		
+		String[][] sampleDecomps = null;
+		int totalDecomps = 0;
+		if (decomps != null) {
+			totalDecomps = decomps.length;
+			int numToKeep = Math.min(totalDecomps, decompsSampleSize);
+			sampleDecomps = Arrays.copyOfRange(decomps, 0, numToKeep);
+		}		
 		addWordOccurence(word, sampleDecomps, totalDecomps);
+		return;
 	}
 	
 	public void addWordOccurence(String word, String[][] sampleDecomps, 
 			int totalDecomps) throws CompiledCorpusException {
-		addToWordCharIndex(word, sampleDecomps, totalDecomps);
-		addToWordSegmentations(word, sampleDecomps, totalDecomps);
-		addToWordNGrams(word, sampleDecomps, totalDecomps);
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpus.addWordOccurence");
+		Logger tLogger_STEPS = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpus.addWordOccurence_STEPS");
+
+		TimeUnit tunit = TimeUnit.MILLISECONDS;
+		long methodStart = 0;
+		if (tLogger.isTraceEnabled()) {
+			try {
+				methodStart = StopWatch.now(tunit);
+			} catch (StopWatchException e) {
+				throw new CompiledCorpusException(e);
+			}
+			tLogger.trace("Adding word="+word);
+		}
+
+		long start = 0;
+		if (tLogger_STEPS.isTraceEnabled()) {
+			try {
+				start = StopWatch.now(tunit);
+			} catch (StopWatchException e) {
+				throw new CompiledCorpusException(e);
+			}
+		}
+		
+		updateWordIndex(word, sampleDecomps, totalDecomps);
+		if (tLogger_STEPS.isTraceEnabled()) {
+			try {
+				tLogger_STEPS.trace("addToWordCharIndex took "+
+					StopWatch.elapsedSince(start, tunit)+" "+tunit);
+				start = StopWatch.now(tunit);
+			} catch (StopWatchException e) {
+				throw new CompiledCorpusException(e);
+			};
+		}
+		
+		updateDecompositionsIndex(word, sampleDecomps, totalDecomps);
+		if (tLogger_STEPS.isTraceEnabled()) {
+			try {
+				tLogger_STEPS.trace("addToWordSegmentations took "+
+					StopWatch.elapsedSince(start, tunit)+" "+tunit);
+				start = StopWatch.now(tunit);
+			} catch (StopWatchException e) {
+				throw new CompiledCorpusException(e);
+			};
+		}
+
+		updateCharNgramIndex(word, sampleDecomps, totalDecomps);
+		if (tLogger_STEPS.isTraceEnabled()) {
+			try {
+				tLogger_STEPS.trace("updateCharNgramIndex took "+
+					StopWatch.elapsedSince(start, tunit)+" "+tunit);
+			} catch (StopWatchException e) {
+				throw new CompiledCorpusException(e);
+			};
+		}
+		
+		if (tLogger.isTraceEnabled()) {
+			try {
+				tLogger.trace("addWordOccurence took "+
+					StopWatch.elapsedSince(methodStart, tunit)+" "+tunit+"\n");
+			} catch (StopWatchException e) {
+				throw new CompiledCorpusException(e);
+			};			
+		}
 	}
 	
 	public abstract long totalOccurencesOf(String word) throws CompiledCorpusException;
@@ -192,13 +263,21 @@ public abstract class CompiledCorpus {
 	}
 	
 	@JsonIgnore
-	protected NgramCompiler getNgramCompiler() {
-		if (ngramCompiler == null) {
-			ngramCompiler = new NgramCompiler(3,0,true);
+	protected NgramCompiler getCharsNgramCompiler() {
+		if (charsNgramCompiler == null) {
+			charsNgramCompiler = new NgramCompiler(3,true);
 		}
-		return ngramCompiler;
+		return charsNgramCompiler;
 	}	
 	
+	@JsonIgnore
+	protected NgramCompiler getMorphsNgramCompiler() {
+		if (morphsNgramCompiler == null) {
+			morphsNgramCompiler = new NgramCompiler(0,true);
+		}
+		return morphsNgramCompiler;
+	}	
+
 	public WordInfo mostFrequentWordExtending(String[] morphemes) 
 			throws CompiledCorpusException {
 		WordInfo mostFrequent = null;
@@ -207,5 +286,15 @@ public abstract class CompiledCorpus {
 			mostFrequent = mostFrequentWords[0];
 		}
 		return mostFrequent;
+	}
+	
+	public long totalWords() throws CompiledCorpusException {
+		long total;
+		try {
+			total = totalWordsWithNoDecomp() + totalWordsWithDecomps();
+		} catch (CompiledCorpusException e) {
+			throw new CompiledCorpusException(e);
+		}
+		return total;
 	}
 }

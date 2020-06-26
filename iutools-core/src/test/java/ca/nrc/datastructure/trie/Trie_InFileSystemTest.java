@@ -1,5 +1,8 @@
 package ca.nrc.datastructure.trie;
 
+import static org.junit.Assert.fail;
+
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -9,6 +12,7 @@ import org.junit.Test;
 
 import com.google.gson.Gson;
 
+import ca.inuktitutcomputing.utilities.StopWatch;
 import ca.nrc.testing.AssertObject;
 
 public class Trie_InFileSystemTest extends TrieTest {
@@ -102,4 +106,9 @@ public class Trie_InFileSystemTest extends TrieTest {
 				"Unescaped keys should have been like the original keys", 
 				keys, gotUnescaped);
 	}	
+
+	/////////////////////////////
+	// TEST HELPERS
+	/////////////////////////////
+
 }

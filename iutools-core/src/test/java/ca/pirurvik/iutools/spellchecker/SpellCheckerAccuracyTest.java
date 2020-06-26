@@ -330,9 +330,9 @@ public class SpellCheckerAccuracyTest {
 //		focusOnExample = "qallunaatitut";
 		
 		int verbosity = 1;
-		double expPercentFoundInTopN = 0.95;
+		double expPercentFoundInTopN = 0.97;
 		double tolerance = 0.01;
-		double expAverageRank = 1.5;
+		double expAverageRank = 1.35;
 		double avgRankTolerance = 0.1;
 		Boolean loadCorrectWordInDict = true;
 
@@ -354,9 +354,9 @@ public class SpellCheckerAccuracyTest {
 //		focusOnExample = "nigiani";
 		
 		int verbosity = 1;
-		double expPercentFoundInTopN = 0.94;
+		double expPercentFoundInTopN = 0.97;
 		double tolerance = 0.01;
-		double expAverageRank = 1.6;
+		double expAverageRank = 1.4;
 		double avgRankTolerance = 0.1;
 		Boolean loadCorrectWordInDict = false;
 

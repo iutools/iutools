@@ -12,18 +12,18 @@ public class Console {
 	protected static MainCommand defineMainCommand() throws CommandLineException {
 		MainCommand mainCmd = new MainCommand("Command line console for iutools.");
 
-		Option optCorpusDir = Option.builder(null)
-				.longOpt(ConsoleCommand.OPT_CORPUS_DIR)
-			    .desc("Path of a directory contains files for a corpus to be processed.")
+		Option optInputDir = Option.builder(null)
+				.longOpt(ConsoleCommand.OPT_INPUT_DIR)
+			    .desc("Input directory to be processed.")
 			    .hasArg()
-			    .argName("CORPUS_DIR")
+			    .argName("INPUT_DIR")
 			    .build();
 
 		Option optCompFile = Option.builder(null)
-				.longOpt(ConsoleCommand.OPT_COMP_FILE)
-			    .desc("Path of json file where the result of the compilation is saved (trie, etc).")
+				.longOpt(ConsoleCommand.OPT_CORPUS_SAVE_PATH)
+			    .desc("Path where to save the compiled corpus")
 			    .hasArg()
-			    .argName("CORPUS_COMPILATION_FILE")
+			    .argName("CORPUS_SAVE_PATH")
 			    .build();
 
 		Option optDataFile = Option.builder(null)
@@ -199,7 +199,7 @@ public class Console {
 		// Compile a corpus and save it to file
 		SubCommand compileCorpus = 
 				new CmdCompileCorpus("compile_corpus")
-				.addOption(optCorpusDir)				
+				.addOption(optInputDir)				
 				.addOption(optCompFile)
 				.addOption(optFromScratch)
 				.addOption(optRedoFailed)

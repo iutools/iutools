@@ -197,7 +197,7 @@ public class CorpusCompilerTest {
 			;
     }
 	    
-    @Test
+    @Test @Ignore
     public void test__canBeResumed() throws Exception {
     	CorpusCompiler compiler = makeCompiler();
         boolean canBeResumed = compiler.canBeResumed(singleFileCorpus);

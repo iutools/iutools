@@ -241,8 +241,10 @@ public class SpellCheckerTest {
 				  "ujararniarvimmi",
 				  "ujararniarvimmik",
 				  "ujararniarvimmit",
-				  "ujararniarvingmi",
-				  "ujarattarniarvimmi"
+				  "ujarattarniarvimmi",
+//				  "ujararniarvingmi",
+				  "ujararniarvimmut"
+//				  "ujarattarniarvimmi"
 				})
 			;
 	}

@@ -13,9 +13,9 @@ public abstract class ConsoleCommand extends SubCommand {
 
 	public static final String OPT_DATA_FILE = "data-file";
 	public static final String OPT_INPUT_FILE = "input-file";
-	public static final String OPT_CORPUS_DIR = "corpus-dir";
+	public static final String OPT_INPUT_DIR = "input-dir";
 	public static final String OPT_CORPUS_NAME = "corpus-name";
-	public static final String OPT_COMP_FILE = "comp-file";
+	public static final String OPT_CORPUS_SAVE_PATH = "corpus-save-path";
 	public static final String OPT_GS_FILE = "gs-file";
 
 	public static final String OPT_MORPHEMES = "morphemes";
@@ -47,10 +47,10 @@ public abstract class ConsoleCommand extends SubCommand {
 		return getCompilationFile(true);
 	}
 	protected String getCompilationFile(boolean failIfAbsent) {
-		String tFile = getOptionValue(ConsoleCommand.OPT_COMP_FILE, failIfAbsent);
-		if (tFile != null && !tFile.endsWith("json")) {
-			tFile = tFile + ".json";
-		}
+		String tFile = getOptionValue(ConsoleCommand.OPT_CORPUS_SAVE_PATH, failIfAbsent);
+//		if (tFile != null && !tFile.endsWith("json")) {
+//			tFile = tFile + ".json";
+//		}
 		return tFile;
 	}
 
@@ -72,8 +72,8 @@ public abstract class ConsoleCommand extends SubCommand {
 		return dFile;
 	}
 
-	protected String getCorpusDir() {
-		String dir = getOptionValue(ConsoleCommand.OPT_CORPUS_DIR, true);
+	protected String getInputDir() {
+		String dir = getOptionValue(ConsoleCommand.OPT_INPUT_DIR, true);
 		return dir;
 	}
 
@@ -303,5 +303,4 @@ public abstract class ConsoleCommand extends SubCommand {
 			echo("  "+mess);
 		}
 	}
-
 }

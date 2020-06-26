@@ -59,6 +59,9 @@ public abstract class Trie {
 	
 	public TrieNode add(String[] segments, String expression) 
 			throws TrieException {
+		if (segments == null) {
+			segments = new String[] {TrieNode.NULL_SEG};
+		}
 		addToJoinedTerminals(segments);
 		TrieNode node = getNode(segments, NodeOption.TERMINAL);
 		node.addSurfaceForm(expression);
@@ -390,9 +393,11 @@ public abstract class Trie {
 	}
 	
 	protected void addToJoinedTerminals(String[] segments) {
-		Matcher matcher = joinedTerminalsMatcher(segments);
-		if (!matcher.find()) {
-			allTerminalsJoined += ";"+String.join(",", segments)+";";			
+		if (segments!= null) {
+			Matcher matcher = joinedTerminalsMatcher(segments);
+			if (!matcher.find()) {
+				allTerminalsJoined += ";"+String.join(",", segments)+";";			
+			}
 		}
 	}
 	

@@ -325,8 +325,26 @@ public abstract class Morpheme implements Cloneable {
 			morpheme.matches("^\\{?"+canonicalForm+"/.*$");
 		return answer;
 	}
+	
+	public static String[] withBraces(String[] morphemes) {
+		String[] morphsWithBraces = new String[morphemes.length];
+		for (int ii=0; ii < morphemes.length; ii++) {
+			morphsWithBraces[ii] = withBraces(morphemes[ii]);
+		}
+		
+		return morphsWithBraces;
+	}
 
-
+	public static String withBraces(String morph) {
+		if (!morph.startsWith("{")) {
+			morph = "{" + morph;
+		}
+		if (!morph.endsWith("}")) {
+			morph += "}";
+		}
+		
+		return morph;
+	}
 }
 
 

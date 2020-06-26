@@ -6,26 +6,30 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
 import ca.inuktitutcomputing.data.Morpheme;
+import ca.inuktitutcomputing.utilities.StopWatch;
+import ca.inuktitutcomputing.utilities.StopWatchException;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.datastructure.trie.Trie_InFileSystem;
 import ca.nrc.datastructure.trie.Trie.NodeOption;
 
-public class CompiledCorpus_InFileSystem extends CompiledCorpus_InMemory {
+public class CompiledCorpus_InFileSystem extends CompiledCorpus
+	{
 	
 	public File corpusDir = null;
 	
 	Trie_InFileSystem wordCharTrie = null;
 	Trie_InFileSystem charNgramsTrie = null;
 	Trie_InFileSystem wordMorphTrie = null;
-	// TODO-June2020: Make that private again after debugging
-	public Trie_InFileSystem morphNgramsTrie = null;
+	Trie_InFileSystem morphNgramsTrie = null;
 	
 	public CompiledCorpus_InFileSystem(File _corpusDir) {
 		init_CompiledCorpus_InFileSystem(_corpusDir);
@@ -54,7 +58,7 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus_InMemory {
 	private void addCharNgramTrie(String word, String[] wordChars) 
 			throws CompiledCorpusException {
 		
-		Set<String> ngrams = getNgramCompiler().compile(word);
+		Set<String> ngrams = getCharsNgramCompiler().compile(word);
 		for (String aNgram: ngrams) {
 			try {
 				charNgramsTrie.add(aNgram.split(""), aNgram);
@@ -75,26 +79,17 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus_InMemory {
 		}		
 	}
 	
-	@Override
-	protected TrieNode[] getAllTerminals() throws CompiledCorpusException {
-		try {
-			return this.wordMorphTrie.getTerminals();
-		} catch (TrieException e) {
-			throw new CompiledCorpusException(e);
-		}
-	}
-	
-	@Override
-	public TrieNode getMostFrequentTerminal(String[] morphemes) throws CompiledCorpusException {
-		TrieNode mostFrequent = null;
-		try {
-			mostFrequent = this.wordMorphTrie.getMostFrequentTerminal(morphemes);
-		} catch (TrieException e) {
-			throw new CompiledCorpusException(e);
-		}
-		
-		return mostFrequent;
-	}
+//	@Override
+//	public TrieNode getMostFrequentTerminal(String[] morphemes) throws CompiledCorpusException {
+//		TrieNode mostFrequent = null;
+//		try {
+//			mostFrequent = this.wordMorphTrie.getMostFrequentTerminal(morphemes);
+//		} catch (TrieException e) {
+//			throw new CompiledCorpusException(e);
+//		}
+//		
+//		return mostFrequent;
+//	}
 	
 	
 	public Boolean isWordInCorpus(String word) throws CompiledCorpusException {
@@ -145,13 +140,35 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus_InMemory {
 	@Override
 	protected Set<String> wordsContainingMorphNgram(String[] morphemes) 
 			throws CompiledCorpusException {
-		return super.wordsContainingMorphNgram(morphemes);
+		Set<String> words = new HashSet<String>();
+		try {
+			morphemes = morphemesWithBraces(morphemes);
+			TrieNode node = 
+				morphNgramsTrie.getNode(morphemes, 
+					NodeOption.TERMINAL, NodeOption.NO_CREATE);
+			if (node != null) {
+				List<String> matchingWords = node.getField("words", new ArrayList<String>());
+				words.addAll(matchingWords);
+			}
+		} catch (TrieException e) {
+			throw new CompiledCorpusException(e);
+		}
+		
+		return words;
 	}
 
-	// TODO-June2020: Make this method independant the 'super' implementation
-	@Override
-	public String getWordSegmentations() {
-		return super.getWordSegmentations();
+	private String[] morphemesWithBraces(String[] morphemes) {
+		String[] withBraces = new String[morphemes.length];
+		for (int ii=0; ii < morphemes.length; ii++) {
+			String aMorpheme = morphemes[ii];
+			if (!aMorpheme.matches("[\\^\\$]")) {
+				withBraces[ii] = Morpheme.withBraces(aMorpheme);
+			} else {
+				withBraces[ii] = aMorpheme;
+			}
+		}
+
+		return withBraces;
 	}
 
 	@Override
@@ -167,7 +184,6 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus_InMemory {
 		return wordNode.getFrequency();
 	}
 
-	// TODO-June2020: Make this method independant the 'super' implementation
 	@Override
 	public List<WordWithMorpheme> wordsContainingMorpheme(String morpheme) 
 			throws CompiledCorpusException {
@@ -183,7 +199,7 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus_InMemory {
 				for (String aWord: matchingWords) {
 					WordInfo aWordInfo = info4word(aWord);
 					results.add(
-						new WordWithMorpheme(aWord, morphID, String.join(" ", aWordInfo.topDecompositions), aWordInfo.frequency));					
+						new WordWithMorpheme(aWord, morphID, String.join("", aWordInfo.topDecompositions), aWordInfo.frequency));					
 				}
 				
 				
@@ -211,44 +227,65 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus_InMemory {
 	}
 
 	@Override
-	protected void addToWordCharIndex(
+	protected void updateWordIndex(
 		String word, String[][] sampleDecomps, int totalDecomps) 
 		throws CompiledCorpusException {
     	
-		try {			
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpus_InFileSystem.updateWordIndex");
+		long start = 0;
+		TimeUnit unit = TimeUnit.MILLISECONDS;
+		try {
+			if (tLogger.isTraceEnabled()) {
+				start = StopWatch.now(unit);
+			}
 			String[] chars = Trie.wordChars(word);
+			if (tLogger.isTraceEnabled()) {
+				tLogger.trace("wordChars took "+StopWatch.elapsedSince(start, unit)+unit);
+				start = StopWatch.now(unit);
+			}
 			TrieNode node = wordCharTrie.add(chars, word);
+			if (tLogger.isTraceEnabled()) {
+				tLogger.trace("add took "+StopWatch.elapsedSince(start, unit)+unit);
+				start = StopWatch.now(unit);
+			}
 			node.setField("topDecomps", sampleDecomps);
+			if (tLogger.isTraceEnabled()) {
+				tLogger.trace("setField(\"topDecomps\") took "+StopWatch.elapsedSince(start, unit)+unit);
+				start = StopWatch.now(unit);
+			}
 			wordCharTrie.saveNode(node);
-		} catch (TrieException e) {
+			if (tLogger.isTraceEnabled()) {
+				tLogger.trace("saveNode took "+StopWatch.elapsedSince(start, unit)+unit);
+				start = StopWatch.now(unit);
+			}
+			
+		} catch (TrieException | StopWatchException e) {
 			throw new CompiledCorpusException(e);
 		}
 	}
 	
 	@Override
-	protected void addToWordSegmentations(String word, String[][] sampleDecomps, 
+	protected void updateDecompositionsIndex(String word, String[][] sampleDecomps, 
 		int totalDecomps) throws CompiledCorpusException {
-		String[] bestDecomp = new String[0];
+		
+		String[] bestDecomp = null;
 		if (sampleDecomps != null && sampleDecomps.length > 0) {
 			bestDecomp = sampleDecomps[0];
 		}
 		
-		for (int start=0; start < bestDecomp.length; start++) {
-			for (int end=start+1; end < bestDecomp.length+1; end++) {
-				String[] morphNgram = 
-					Arrays.copyOfRange(bestDecomp, start, end);
-				try {
-					String joinedMorphNgram = String.join(" ", morphNgram);
-					//
-					// TODO-June2020: Instead of passing 'word' as second argument,
-					// maybe we should pass the concatenation of the written forms
-					// of the morphemes?
-					//
-					TrieNode node = morphNgramsTrie.add(morphNgram, word);
-					addWordToMorphNgram(word, node);
-				} catch (TrieException e) {
-					throw new CompiledCorpusException(e);
-				}
+		Set<String[]> morphNgrams = getMorphsNgramCompiler().compile(bestDecomp);
+		for (String[] morphNgram: morphNgrams) {
+			try {
+				String joinedMorphNgram = String.join(" ", morphNgram);
+				//
+				// TODO-June2020: Instead of passing 'word' as second argument,
+				// maybe we should pass the concatenation of the written forms
+				// of the morphemes?
+				//
+				TrieNode node = morphNgramsTrie.add(morphNgram, word);
+				addWordToMorphNgram(word, node);
+			} catch (TrieException e) {
+				throw new CompiledCorpusException(e);
 			}
 		}
 		
@@ -272,19 +309,48 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus_InMemory {
 
 
 	@Override
-	protected void addToWordNGrams(
+	protected void updateCharNgramIndex(
 		String word, String[][] sampleDecomps, int totalDecomps) throws CompiledCorpusException {
-		super.addToWordNGrams(word, sampleDecomps, totalDecomps);
 		
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpus_InFileSystem.updateCharNgramIndex");
+		Logger tLogger_TIME = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpus_InFileSystem.updateCharNgramIndexTIME");
+		
+		tLogger.trace("word = "+word);
+		
+		long start = 0; TimeUnit unit = TimeUnit.MILLISECONDS;
 		try {
-			Set<String> ngrams = getNgramCompiler().compile(word);
+			if (tLogger_TIME.isTraceEnabled()) {
+				start = StopWatch.now(unit);
+			}
+			Set<String> ngrams = getCharsNgramCompiler().compile(word);
+			tLogger.trace("Updating a total of "+ngrams.size()+" ngrams");
+			if (tLogger_TIME.isTraceEnabled()) {
+				tLogger_TIME.trace("compile(); took "+
+					StopWatch.elapsedSince(start, unit)+" "+unit);
+				start = StopWatch.now(unit);
+			}
 			for (String aNgram: ngrams) {
 				TrieNode node = charNgramsTrie.add(aNgram.split(""), word);
+				if (tLogger_TIME.isTraceEnabled()) {
+					tLogger_TIME.trace("add() took "+
+						StopWatch.elapsedSince(start, unit)+" "+unit);
+					start = StopWatch.now(unit);
+				}				
 				List<String> ngramWords = node.getField("words", new ArrayList<String>());
+				if (tLogger_TIME.isTraceEnabled()) {
+					tLogger_TIME.trace("getField(\"words\") took "+
+						StopWatch.elapsedSince(start, unit)+" "+unit);
+					start = StopWatch.now(unit);
+				}				
 				ngramWords.add(word);
 				charNgramsTrie.saveNode(node);
+				if (tLogger_TIME.isTraceEnabled()) {
+					tLogger_TIME.trace("saveNode() took "+
+						StopWatch.elapsedSince(start, unit)+" "+unit);
+					start = StopWatch.now(unit);
+				}				
 			}
-		} catch (TrieException e) {
+		} catch (TrieException | StopWatchException e) {
 			throw new CompiledCorpusException(e);
 		}
 	}
@@ -314,12 +380,6 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus_InMemory {
 		}
 				
 		return topDecs;
-	}
-
-	// TODO-June2020: Make this method independant of CompiledCorpus_InMemory
-	@Override
-	protected void addToDecomposedWordsSuite(String word) {
-		super.addToDecomposedWordsSuite(word);
 	}
 
 	@Override
@@ -393,12 +453,6 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus_InMemory {
 		}
 		return bestDecomp;
 	}
-
-	// TODO-June2020: Make this method independant of super impl.
-	@Override
-	public long totalWords() throws CompiledCorpusException {
-		return super.totalWords();
-	}	
 	
 	@Override
 	public WordInfo[] mostFrequentWordsExtending(String[] morphemes, Integer N) 
@@ -408,22 +462,119 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus_InMemory {
 			tLogger.trace("morphemes="+String.join(",", morphemes));
 		}
 		
+		morphemes = ensureLeading(morphemes);
+		
 		List<WordInfo> mostFrequentLst = new ArrayList<WordInfo>();
-		TrieNode node;
-		N = Math.min(N,  Integer.MAX_VALUE);
+//		TrieNode node;
+//		N = Math.min(N,  Integer.MAX_VALUE);
+//		try {
+//			TrieNode[] mostFreqExtensions = 
+//				morphNgramsTrie.getMostFrequentTerminals(N, morphemes);
+//			for (TrieNode anExtension: mostFreqExtensions) {
+//				for (String word: anExtension.getSurfaceForms().keySet()) {
+//					WordInfo winfo = info4word(word);
+//					mostFrequentLst.add(winfo);
+//				}
+//			}
+//		} catch (TrieException e) {
+//			throw new CompiledCorpusException(e);
+//		}
+//		
+//		return mostFrequentLst.toArray(new WordInfo[mostFrequentLst.size()]);
+		
 		try {
-			TrieNode[] mostFreqExtensions = 
-				morphNgramsTrie.getMostFrequentTerminals(N, morphemes);
-			for (TrieNode anExtension: mostFreqExtensions) {
-				for (String word: anExtension.getSurfaceForms().keySet()) {
-					WordInfo winfo = info4word(word);
-					mostFrequentLst.add(winfo);
-				}
+			TrieNode node = morphNgramsTrie.getNode(morphemes, NodeOption.TERMINAL);
+			List<String> extensions = node.getField("words", new ArrayList<String>());
+			for (String aWord: extensions) {
+				WordInfo winfo = info4word(aWord);
+				mostFrequentLst.add(winfo);				
 			}
 		} catch (TrieException e) {
 			throw new CompiledCorpusException(e);
 		}
 		
 		return mostFrequentLst.toArray(new WordInfo[mostFrequentLst.size()]);
+	}
+
+	private String[] ensureLeading(String[] ngram) {
+		String[] withLeading = ngram;
+		if (ngram != null && ngram.length > 0) {
+			if (!ngram[0].equals("^")) {
+				withLeading = new String[ngram.length+1];
+				withLeading[0] = "^";
+				for (int ii=0; ii < ngram.length; ii++) {
+					withLeading[ii+1] = ngram[ii];
+				}
+			}
+		}
+		return withLeading;
+	}
+
+	private String[] ensureTailing(String[] ngram) {
+		String[] withTailing = ngram;
+		if (ngram != null && ngram.length > 0) {
+			if (!ngram[ngram.length-1].equals("^")) {
+				withTailing = new String[ngram.length+1];
+				for (int ii=0; ii < ngram.length; ii++) {
+					withTailing[ii] = ngram[ii];
+				}
+				withTailing[ngram.length-1] = "$";
+			}
+		}
+		return withTailing;
+	}
+
+	@Override
+	public long totalWords() throws CompiledCorpusException {
+		long total = -1;
+		try {
+			total = wordCharTrie.getTerminals().length;
+		} catch (TrieException e) {
+			throw new CompiledCorpusException(e);
+		}
+		return total;
+	}
+	
+	@Override
+	public long totalWordsWithNoDecomp() throws CompiledCorpusException {
+		long total = 0;
+		try {
+			TrieNode node = morphNgramsTrie.getNode(null, NodeOption.TERMINAL);
+			if (node != null) {
+				total = node.getSurfaceForms().size();
+			}
+		} catch (TrieException e) {
+			throw new CompiledCorpusException(e);
+		}
+		
+		return total;
+	}
+
+	@Override
+	public long totalWordsWithDecomps() throws CompiledCorpusException {
+		long total = totalWords() - totalWordsWithNoDecomp();
+		return total;
+	}
+
+	@Override
+	public long totalOccurencesWithNoDecomp() throws CompiledCorpusException {
+		long total = 0;
+		try {
+			TrieNode node = 
+				morphNgramsTrie.getNode(null, NodeOption.TERMINAL);
+			for (Entry<String, Long> entry: node.getSurfaceForms().entrySet()) {
+				total += entry.getValue();
+			}
+		} catch (TrieException e) {
+			throw new CompiledCorpusException(e);
+		}
+		
+		return total;
+	}
+
+	@Override
+	public Long totalOccurencesWithDecomps() throws CompiledCorpusException {
+		long total = totalOccurences() - totalOccurencesWithNoDecomp();
+		return total;
 	}
 }

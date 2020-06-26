@@ -144,6 +144,23 @@ public abstract class TrieTest {
 		parent = charTrie.getParentNode(parent);
 		assertEquals("The parent node of 'he' should be 'h'.","h",parent.keysAsString());
 	}
+
+	@Test
+	public void test__add__NullInputSegments() throws Exception {
+		Trie charTrie = makeTrieToTest();
+		String word1 = "someWordThatDoesNotSegment";
+		String word2 = "someOtherWordThatDoesNotSegment";
+		String[] nullSegments = null;
+		charTrie.add(nullSegments, word1);
+		charTrie.add(nullSegments, word2);
+		TrieNode gotNode = charTrie.getNode(nullSegments, NodeOption.TERMINAL);
+		new AssertTrieNode(gotNode, "")
+			.hasSurfaceForms(new String[] {word1, word2})
+			;
+		
+		
+
+	}
 	
 	@Test
 	public void test_add__check_terminal() throws Exception {

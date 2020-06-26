@@ -15,7 +15,6 @@ import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.testing.AssertHelpers;
 import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.Asserter;
-import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory.WordWithMorpheme;
 
 public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 	
@@ -167,12 +166,60 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 		return this;
 	}
 
-	public AssertCompiledCorpus totalOccurencesEquals(long expTotal) 
+	public AssertCompiledCorpus totalOccurencesIs(long expTotal) 
 			throws Exception {
 		long gotTotal = corpus().totalOccurences();
 		Assert.assertEquals(
 			baseMessage+"\nTotal number of occurences not as expected.", 
 			expTotal, gotTotal);
+		return this;
+	}
+	
+	public AssertCompiledCorpus totalOccurencesWithNoDecompIs(long expTotal) 
+		throws Exception {
+		long gotTotal = corpus().totalOccurencesWithNoDecomp();
+		Assert.assertEquals(
+				baseMessage+"\nNumber of occurences with no decomp is wrong.", 
+				expTotal, gotTotal);
+		return this;
+	}
+	
+	public AssertCompiledCorpus totalOccurencesWithDecompIs(long expTotal) 
+		throws Exception {
+		long gotTotal = corpus().totalOccurencesWithDecomps();
+		Assert.assertEquals(
+				baseMessage+"\nNumber of occurences with decomps is wrong.", 
+				expTotal, gotTotal);
+		return this;
+	}
+	
+
+	public AssertCompiledCorpus totalWordsIs(long expTotal) throws Exception {
+		long gotTotal = corpus().totalWords();
+		Assert.assertEquals(
+			baseMessage+"\nTotal number of words not as expected", 
+			expTotal, gotTotal);
+		
+		return this;
+	}
+
+	public AssertCompiledCorpus totalWordsWithDecompIs(long expTotal) 
+		throws Exception {
+		long gotTotal = corpus().totalWordsWithDecomps();
+		Assert.assertEquals(
+			baseMessage+"\nTotal number of words with Decomp not as expected", 
+			expTotal, gotTotal);
+		
+		return this;
+	}
+
+	public AssertCompiledCorpus totalWordsWithoutDecompsIs(long expTotal) 
+		throws Exception {
+		long gotTotal = corpus().totalWordsWithNoDecomp();
+		Assert.assertEquals(
+			baseMessage+"\nTotal number of words with no Decomp not as expected", 
+			expTotal, gotTotal);
+		
 		return this;
 	}
 }

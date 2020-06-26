@@ -1,8 +1,10 @@
 package ca.pirurvik.iutools.corpus;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -68,8 +70,9 @@ public class CorpusDocument_File extends CorpusDocument {
 		return contents;
 	}
 
-	private String getPDFContent() throws Exception {
-		NRC_PDFDocument doc = new NRC_PDFDocument("file://"+id);
+	private String getPDFContent() throws IOException {
+		NRC_PDFDocument doc;
+		doc = new NRC_PDFDocument("file://"+id);
 		String contents = doc.getContents();
 		doc.close();
 		return contents;
@@ -80,5 +83,36 @@ public class CorpusDocument_File extends CorpusDocument {
 		return ext;
 	}
 
-
+	@Override
+	public BufferedReader contentsReader() throws CorpusDocumentException {
+		BufferedReader reader = null;
+		try {
+			String fileType = getType();
+			if (fileType.equals("txt")) {
+				reader = new BufferedReader(new FileReader(id));
+			} else {
+				String content = null;
+				if (fileType.equals("pdf")) {
+					content = getPDFContent();
+				} else if (fileType.equals("doc")) {
+					content = getDOCContent();
+				} else if (fileType.equals("docx")) {
+					content = getDOCXContent();
+				} else if (fileType.equals("txt")) {
+					content = getTxtContent();
+				} else {
+					throw new IOException("Unsupported content type "+fileType+
+						" for file "+id);
+				}
+				File tempFile = File.createTempFile("doc", "txt");
+				tempFile.deleteOnExit();
+				Files.write(tempFile.toPath(), content.getBytes());
+				reader = new BufferedReader(new FileReader(id));
+			}
+		} catch (Exception e) {
+			throw new CorpusDocumentException(e);
+		}
+		
+		return reader;
+	}
 }

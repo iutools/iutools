@@ -66,9 +66,12 @@ public class NgramCompilerTest {
 		String word = "any";
 		Set<String> ngrams = ngramCompiler.compile(word);
 		Set<String> expected = new HashSet<String>();
-		expected.add("^a"); expected.add("^an"); expected.add("^any$"); 
-		expected.add("n"); expected.add("ny$");
-		expected.add("y$"); 
+		expected.add("^a"); expected.add("^an"); expected.add("^any"); 
+		expected.add("^any$");
+		expected.add("a"); expected.add("an"); expected.add("any"); 
+		expected.add("any$");
+		expected.add("n"); expected.add("ny"); expected.add("ny$");
+		expected.add("y"); expected.add("y$"); 
 		AssertHelpers.assertDeepEquals("", expected, ngrams);
 	}
 	

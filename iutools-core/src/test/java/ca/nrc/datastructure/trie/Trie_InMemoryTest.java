@@ -1,5 +1,7 @@
 package ca.nrc.datastructure.trie;
 
+import static org.junit.Assert.fail;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -30,5 +32,4 @@ public class Trie_InMemoryTest extends TrieTest {
 		new AssertTrieNode(node, "")
 				.hasMostFrequentForm("hit");
 	}	
-	
 }

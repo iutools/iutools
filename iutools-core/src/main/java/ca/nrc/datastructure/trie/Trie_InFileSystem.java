@@ -6,6 +6,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -17,6 +18,7 @@ import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
+import ca.inuktitutcomputing.utilities.StopWatch;
 
 public class Trie_InFileSystem extends Trie {
 	
@@ -36,6 +38,15 @@ public class Trie_InFileSystem extends Trie {
 	@Override
 	public TrieNode getNode(String[] keys, NodeOption... options) throws TrieException {
 		Logger tLogger = Logger.getLogger("ca.nrc.datastructure.trie.Trie_InFileSystem.getNode");
+		
+		// TODO-June2020: Implement all getNode() entry points at level of parent
+		//  Trie class. These methods will check that segments is not null, then 
+		//  invoke getNodeAssumingNonNullSegments()
+		//
+		if (keys == null) {
+			keys = new String[] {TrieNode.NULL_SEG};
+		}
+		
 		TrieNode node = null;
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("looking for keys="+String.join(",", keys));
@@ -45,12 +56,7 @@ public class Trie_InFileSystem extends Trie {
 		if (nodeFile != null) {
 		
 			ObjectMapper mapper = new ObjectMapper();	
-			try {
-				node = mapper.readValue(nodeFile, TrieNode.class);
-			} catch (IOException e) {
-				throw new TrieException(
-						"Unable to read TrieNode from file "+nodeFile, e);
-			}
+			node = readNodeFile(nodeFile);
 			
 			File[] children = nodeFile.getParentFile().listFiles(File::isDirectory);
 			for (File aChildDir: children) {
@@ -68,13 +74,35 @@ public class Trie_InFileSystem extends Trie {
 	}
 	
 		
+	protected TrieNode readNodeFile(File nodeFile) throws TrieException {
+		TrieNode node;
+		try {
+			node = new ObjectMapper().readValue(nodeFile, TrieNode.class);
+		} catch (IOException e) {
+			throw new TrieException(e);
+		}
+		return node;
+	}
+
 	public void saveNode(TrieNode node) throws TrieException {
 		File nodeFile = file4node(node);
+		writeNodeFile(node, nodeFile);
+	}
+
+	protected void writeNodeFile(TrieNode node, File nodeFile) throws TrieException {
+		Logger tLogger = Logger.getLogger("ca.nrc.datastructure.trie.Trie_InFileSystem.writeNodeFile");
+		long start = 0;
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("Writing node to file.\n   Node["+String.join(",", node.keys)+"] --> "+nodeFile);
+			start = StopWatch.nowMSecs();
+		}
 		try {
 			getNodeWriter().writeValue(nodeFile, node);
 		} catch (IOException e) {
-			throw new TrieException(
-				"Could not save node: "+String.join(", ", node.keys), e);
+			throw new TrieException(e);
+		}
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("Writing took "+StopWatch.elapsedMsecsSince(start)+" msecs");
 		}
 		
 	}
@@ -88,7 +116,7 @@ public class Trie_InFileSystem extends Trie {
 		return file4node(keys, new NodeOption[0]);
 	}
 	
-	private File file4node(String[] keys, NodeOption... options) throws TrieException {
+	protected File file4node(String[] keys, NodeOption... options) throws TrieException {
 		boolean createIfNotExist = true;
 		boolean terminal = false;
 		for (NodeOption anOption: options) {
@@ -113,15 +141,9 @@ public class Trie_InFileSystem extends Trie {
 			if (!createIfNotExist) {
 				nodeFile = null;
 			} else {
-				try {
-					nodeFile.getParentFile().mkdirs();
-					TrieNode node = new TrieNode(keys);
-					getNodeWriter().writeValue(nodeFile, node);
-				} catch (IOException e) {
-					throw new TrieException(
-						"Unable to create node file for keys: "+
-						String.join(", ", keys), e);
-				}
+				nodeFile.getParentFile().mkdirs();
+				TrieNode node = new TrieNode(keys);
+				writeNodeFile(node, nodeFile);
 			}
 		}
 		
@@ -216,5 +238,5 @@ public class Trie_InFileSystem extends Trie {
 		}
 		
 		return nodeWriter;
-	}
+	}	
 }
