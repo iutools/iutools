@@ -1,5 +1,7 @@
 package ca.pirurvik.iutools.corpus;
 
+import java.util.List;
+
 public class WordInfo {
 	
 	/** 
@@ -92,5 +94,23 @@ public class WordInfo {
 	public WordInfo setTopDecompositions(String[] _topDecomps) {
 		this.topDecompositions = _topDecomps;
 		return this;
+	}
+	
+	public WordInfo setSampleDecompositions(String[][] _sampleDecomps) {
+		this.decompositionsSample = _sampleDecomps;
+		return this;
+	}
+
+	public WordInfo setTotalDecompositions(int _totalDecomps ) {
+		this.totalDecompositions = _totalDecomps;
+		return this;
+	}
+	
+	public String[] topDecomposition() {
+		String[] topDecomp = null;
+		if (decompositionsSample != null && decompositionsSample.length > 0) {
+			topDecomp = decompositionsSample[0];
+		}
+		return topDecomp;
 	}
 }

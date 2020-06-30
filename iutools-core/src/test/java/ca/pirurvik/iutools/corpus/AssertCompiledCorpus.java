@@ -1,6 +1,7 @@
 package ca.pirurvik.iutools.corpus;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -151,9 +152,11 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 	}
 	
 	public AssertCompiledCorpus wordsContainingMorphemeAre(
-		String morpheme, Triple<String,String,String>... expWords) throws Exception {
+		String morpheme, Triple<String,String,String>... expWordsArr) throws Exception {
+		Set<Triple<String,String,String>> expWords = new HashSet<Triple<String,String,String>>();
+		Collections.addAll(expWords, expWordsArr);
 		List<WordWithMorpheme> gotWordWithMorph = corpus().wordsContainingMorpheme(morpheme);
-		List<Triple<String,String,String>> gotWords = new ArrayList<Triple<String,String,String>>();
+		Set<Triple<String,String,String>> gotWords = new HashSet<Triple<String,String,String>>();
 		for (WordWithMorpheme wrdWithMorph: gotWordWithMorph) {
 			gotWords.add(
 				Triple.of(

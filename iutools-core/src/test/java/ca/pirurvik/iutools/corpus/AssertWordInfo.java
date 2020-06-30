@@ -25,7 +25,7 @@ public class AssertWordInfo extends Asserter<WordInfo> {
 	public AssertWordInfo topDecompIs(String[] expTopDecomp) throws Exception {
 		AssertObject.assertDeepEquals(
 			baseMessage+"\nTop decomposition was not as expected", 
-			expTopDecomp, winfo().topDecompositions);
+			expTopDecomp, winfo().topDecomposition());
 		return this;
 	}
 }

@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,6 +22,8 @@ import org.apache.log4j.Logger;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.gson.Gson;
 
+import ca.inuktitutcomputing.utilities.StopWatch;
+import ca.inuktitutcomputing.utilities.StopWatchException;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.Trie_InMemory;
 import ca.nrc.datastructure.trie.TrieException;
@@ -83,6 +86,77 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 			updateSequenceNgramsForWord(words[iw]);
 		}
 	}
+	
+	@Override
+	public void addWordOccurence(String word, String[][] sampleDecomps, 
+			int totalDecomps) throws CompiledCorpusException {
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory.addWordOccurence");
+		Logger tLogger_STEPS = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory.addWordOccurence_STEPS");
+
+		TimeUnit tunit = TimeUnit.MILLISECONDS;
+		long methodStart = 0;
+		if (tLogger.isTraceEnabled()) {
+			try {
+				methodStart = StopWatch.now(tunit);
+			} catch (StopWatchException e) {
+				throw new CompiledCorpusException(e);
+			}
+			tLogger.trace("Adding word="+word);
+		}
+
+		long start = 0;
+		if (tLogger_STEPS.isTraceEnabled()) {
+			try {
+				start = StopWatch.now(tunit);
+			} catch (StopWatchException e) {
+				throw new CompiledCorpusException(e);
+			}
+		}
+		
+		updateWordIndex(word, sampleDecomps, totalDecomps);
+		if (tLogger_STEPS.isTraceEnabled()) {
+			try {
+				tLogger_STEPS.trace("addToWordCharIndex took "+
+					StopWatch.elapsedSince(start, tunit)+" "+tunit);
+				start = StopWatch.now(tunit);
+			} catch (StopWatchException e) {
+				throw new CompiledCorpusException(e);
+			};
+		}
+		
+		updateDecompositionsIndex(word, sampleDecomps, totalDecomps);
+		if (tLogger_STEPS.isTraceEnabled()) {
+			try {
+				tLogger_STEPS.trace("addToWordSegmentations took "+
+					StopWatch.elapsedSince(start, tunit)+" "+tunit);
+				start = StopWatch.now(tunit);
+			} catch (StopWatchException e) {
+				throw new CompiledCorpusException(e);
+			};
+		}
+
+		updateCharNgramIndex(word, sampleDecomps, totalDecomps);
+		if (tLogger_STEPS.isTraceEnabled()) {
+			try {
+				tLogger_STEPS.trace("updateCharNgramIndex took "+
+					StopWatch.elapsedSince(start, tunit)+" "+tunit);
+			} catch (StopWatchException e) {
+				throw new CompiledCorpusException(e);
+			};
+		}
+		
+		if (tLogger.isTraceEnabled()) {
+			try {
+				tLogger.trace("addWordOccurence took "+
+					StopWatch.elapsedSince(methodStart, tunit)+" "+tunit+"\n");
+			} catch (StopWatchException e) {
+				throw new CompiledCorpusException(e);
+			};			
+		}
+	}
+	
+	
+	
 	private void updateSequenceNgramsForWord(String word) {
 		Set<String> seqsSeenInWord = new HashSet<String>();
 		seqsSeenInWord = getCharsNgramCompiler().compile(word);
@@ -144,7 +218,6 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 		return jsonFile.exists();
 	}
 	
-    @Override
 	protected void updateWordIndex(String word, String[][] sampleDecomps, 
 			int totalDecomps) throws CompiledCorpusException {
     	wordDecomps.put(word, sampleDecomps);
@@ -416,7 +489,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 		return word;
 	}
 	
-	@Override
+//	@Override
 	protected void updateDecompositionsIndex(
 			String word, String[][] sampleDecomps, int totalDecomps) 
 			throws CompiledCorpusException {
@@ -441,7 +514,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 		addToDecomposedWordsSuite(word);
 	}	
 	
-	@Override
+//	@Override
 	protected void updateCharNgramIndex(String word, String[][] sampleDecomps, 
 		int totalDecomps) throws CompiledCorpusException {
 		updateNGramIndex(word);

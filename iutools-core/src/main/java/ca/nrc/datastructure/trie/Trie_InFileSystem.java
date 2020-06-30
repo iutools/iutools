@@ -6,25 +6,23 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.ser.FilterProvider;
-import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
-import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
 import ca.inuktitutcomputing.utilities.StopWatch;
 
 public class Trie_InFileSystem extends Trie {
 	
 	File rootDir = null;
-	
-	protected ObjectWriter nodeWriter = null;
+	public File getRootDir() {
+		return rootDir;
+	}
+ 	
+	private RW_TrieNode nodeMapper = null;
 	
 	public Trie_InFileSystem(File _rootDir) {
 		this.rootDir = _rootDir;
@@ -54,8 +52,6 @@ public class Trie_InFileSystem extends Trie {
 		File nodeFile = file4node(keys, options);
 		tLogger.trace("nodeFile="+nodeFile);
 		if (nodeFile != null) {
-		
-			ObjectMapper mapper = new ObjectMapper();	
 			node = readNodeFile(nodeFile);
 			
 			File[] children = nodeFile.getParentFile().listFiles(File::isDirectory);
@@ -75,11 +71,11 @@ public class Trie_InFileSystem extends Trie {
 	
 		
 	protected TrieNode readNodeFile(File nodeFile) throws TrieException {
-		TrieNode node;
+		TrieNode node = null;
 		try {
-			node = new ObjectMapper().readValue(nodeFile, TrieNode.class);
-		} catch (IOException e) {
-			throw new TrieException(e);
+			node = getNodeMapper().readValue(nodeFile);
+		} catch (RW_TrieNodeException e) {
+			throw new TrieException("Error reading node from file: "+nodeFile, e);
 		}
 		return node;
 	}
@@ -97,14 +93,13 @@ public class Trie_InFileSystem extends Trie {
 			start = StopWatch.nowMSecs();
 		}
 		try {
-			getNodeWriter().writeValue(nodeFile, node);
-		} catch (IOException e) {
+			getNodeMapper().writeValue(nodeFile, node);
+		} catch (RW_TrieNodeException e) {
 			throw new TrieException(e);
 		}
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("Writing took "+StopWatch.elapsedMsecsSince(start)+" msecs");
 		}
-		
 	}
 
 	private File file4node(TrieNode node) throws TrieException {
@@ -222,21 +217,21 @@ public class Trie_InFileSystem extends Trie {
 		boolean answer = (nodeFile != null && nodeFile.exists());
 		return answer;
 	}
-	
-	// JSon writer that filters some TrieNode properties which should not be 
-	// written to the node's json file.
-	//
-	@JsonIgnore
-	protected ObjectWriter getNodeWriter() {
-		if (nodeWriter == null) 
-		{
-			SimpleBeanPropertyFilter propsFilter = SimpleBeanPropertyFilter
-				.serializeAllExcept("children");
-			FilterProvider filters = new SimpleFilterProvider()
-				      .addFilter("TrieNodeFilter", propsFilter);
-			nodeWriter = new ObjectMapper().writer(filters);
+
+	public void reset() throws TrieException {
+		try {
+			FileUtils.deleteDirectory(getRootDir());
+		} catch (IOException e) {
+			throw new TrieException(e);
 		}
-		
-		return nodeWriter;
+		return;
 	}	
+	
+	@JsonIgnore
+	private RW_TrieNode getNodeMapper() {
+		if (nodeMapper == null) {
+			nodeMapper = new RW_TrieNode();
+		}
+		return nodeMapper;
+	}
 }

@@ -144,6 +144,26 @@ public abstract class TrieTest {
 		parent = charTrie.getParentNode(parent);
 		assertEquals("The parent node of 'he' should be 'h'.","h",parent.keysAsString());
 	}
+	
+	@Test
+	public void test__add__FreqIncrementGreaterThanOne() throws Exception {
+		Trie charTrie = makeTrieToTest();
+		String word = "hi";
+		String[] wordChars = word.split("");
+		charTrie.add(wordChars, word);
+		
+		TrieNode terminalNode = charTrie.getNode(wordChars, NodeOption.TERMINAL);
+		new AssertTrieNode(terminalNode, 
+				"After adding word "+word+" withouth specifying a frequency increment")
+			.hasFrequency(1);
+		
+		charTrie.add(wordChars, word, 10);
+		terminalNode = charTrie.getNode(wordChars, NodeOption.TERMINAL);		
+		new AssertTrieNode(terminalNode, 
+				"After adding word "+word+" with frequency increment = 10")
+			.hasFrequency(11);
+		
+	}
 
 	@Test
 	public void test__add__NullInputSegments() throws Exception {

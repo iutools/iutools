@@ -1,5 +1,6 @@
 package ca.pirurvik.iutools.corpus;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -18,6 +19,7 @@ import ca.inuktitutcomputing.utilities.StopWatchException;
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_Char;
+import ca.nrc.datastructure.trie.Trie_InFileSystem;
 import ca.pirurvik.iutools.text.ngrams.NgramCompiler;
 
 /**
@@ -56,15 +58,8 @@ public abstract class CompiledCorpus {
 	public abstract WordInfo[] mostFrequentWordsExtending(
 			String[] morphemes, Integer N) throws CompiledCorpusException;
 
-	protected abstract void updateDecompositionsIndex(
-			String word,String[][] sampleDecomps, int totalDecomps) 
-		throws CompiledCorpusException;
-	
-	protected abstract void updateWordIndex(
-		String word, String[][] sampleDecomps, int totalDecomps) throws CompiledCorpusException;
-	
-	protected abstract void updateCharNgramIndex(
-		String word, String[][] sampleDecomps, int totalDecomps) throws CompiledCorpusException;
+	protected abstract void addWordOccurence(String word, String[][] sampleDecomps, 
+			int totalDecomps) throws CompiledCorpusException;
 	
 	protected String segmenterClassName = StringSegmenter_Char.class.getName();
 	protected transient StringSegmenter segmenter = null;
@@ -152,72 +147,72 @@ public abstract class CompiledCorpus {
 		return;
 	}
 	
-	public void addWordOccurence(String word, String[][] sampleDecomps, 
-			int totalDecomps) throws CompiledCorpusException {
-		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpus.addWordOccurence");
-		Logger tLogger_STEPS = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpus.addWordOccurence_STEPS");
-
-		TimeUnit tunit = TimeUnit.MILLISECONDS;
-		long methodStart = 0;
-		if (tLogger.isTraceEnabled()) {
-			try {
-				methodStart = StopWatch.now(tunit);
-			} catch (StopWatchException e) {
-				throw new CompiledCorpusException(e);
-			}
-			tLogger.trace("Adding word="+word);
-		}
-
-		long start = 0;
-		if (tLogger_STEPS.isTraceEnabled()) {
-			try {
-				start = StopWatch.now(tunit);
-			} catch (StopWatchException e) {
-				throw new CompiledCorpusException(e);
-			}
-		}
-		
-		updateWordIndex(word, sampleDecomps, totalDecomps);
-		if (tLogger_STEPS.isTraceEnabled()) {
-			try {
-				tLogger_STEPS.trace("addToWordCharIndex took "+
-					StopWatch.elapsedSince(start, tunit)+" "+tunit);
-				start = StopWatch.now(tunit);
-			} catch (StopWatchException e) {
-				throw new CompiledCorpusException(e);
-			};
-		}
-		
-		updateDecompositionsIndex(word, sampleDecomps, totalDecomps);
-		if (tLogger_STEPS.isTraceEnabled()) {
-			try {
-				tLogger_STEPS.trace("addToWordSegmentations took "+
-					StopWatch.elapsedSince(start, tunit)+" "+tunit);
-				start = StopWatch.now(tunit);
-			} catch (StopWatchException e) {
-				throw new CompiledCorpusException(e);
-			};
-		}
-
-		updateCharNgramIndex(word, sampleDecomps, totalDecomps);
-		if (tLogger_STEPS.isTraceEnabled()) {
-			try {
-				tLogger_STEPS.trace("updateCharNgramIndex took "+
-					StopWatch.elapsedSince(start, tunit)+" "+tunit);
-			} catch (StopWatchException e) {
-				throw new CompiledCorpusException(e);
-			};
-		}
-		
-		if (tLogger.isTraceEnabled()) {
-			try {
-				tLogger.trace("addWordOccurence took "+
-					StopWatch.elapsedSince(methodStart, tunit)+" "+tunit+"\n");
-			} catch (StopWatchException e) {
-				throw new CompiledCorpusException(e);
-			};			
-		}
-	}
+//	public void addWordOccurence(String word, String[][] sampleDecomps, 
+//			int totalDecomps) throws CompiledCorpusException {
+//		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpus.addWordOccurence");
+//		Logger tLogger_STEPS = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpus.addWordOccurence_STEPS");
+//
+//		TimeUnit tunit = TimeUnit.MILLISECONDS;
+//		long methodStart = 0;
+//		if (tLogger.isTraceEnabled()) {
+//			try {
+//				methodStart = StopWatch.now(tunit);
+//			} catch (StopWatchException e) {
+//				throw new CompiledCorpusException(e);
+//			}
+//			tLogger.trace("Adding word="+word);
+//		}
+//
+//		long start = 0;
+//		if (tLogger_STEPS.isTraceEnabled()) {
+//			try {
+//				start = StopWatch.now(tunit);
+//			} catch (StopWatchException e) {
+//				throw new CompiledCorpusException(e);
+//			}
+//		}
+//		
+//		updateWordIndex(word, sampleDecomps, totalDecomps);
+//		if (tLogger_STEPS.isTraceEnabled()) {
+//			try {
+//				tLogger_STEPS.trace("addToWordCharIndex took "+
+//					StopWatch.elapsedSince(start, tunit)+" "+tunit);
+//				start = StopWatch.now(tunit);
+//			} catch (StopWatchException e) {
+//				throw new CompiledCorpusException(e);
+//			};
+//		}
+//		
+//		updateDecompositionsIndex(word, sampleDecomps, totalDecomps);
+//		if (tLogger_STEPS.isTraceEnabled()) {
+//			try {
+//				tLogger_STEPS.trace("addToWordSegmentations took "+
+//					StopWatch.elapsedSince(start, tunit)+" "+tunit);
+//				start = StopWatch.now(tunit);
+//			} catch (StopWatchException e) {
+//				throw new CompiledCorpusException(e);
+//			};
+//		}
+//
+//		updateCharNgramIndex(word, sampleDecomps, totalDecomps);
+//		if (tLogger_STEPS.isTraceEnabled()) {
+//			try {
+//				tLogger_STEPS.trace("updateCharNgramIndex took "+
+//					StopWatch.elapsedSince(start, tunit)+" "+tunit);
+//			} catch (StopWatchException e) {
+//				throw new CompiledCorpusException(e);
+//			};
+//		}
+//		
+//		if (tLogger.isTraceEnabled()) {
+//			try {
+//				tLogger.trace("addWordOccurence took "+
+//					StopWatch.elapsedSince(methodStart, tunit)+" "+tunit+"\n");
+//			} catch (StopWatchException e) {
+//				throw new CompiledCorpusException(e);
+//			};			
+//		}
+//	}
 	
 	public abstract long totalOccurencesOf(String word) throws CompiledCorpusException;
 	

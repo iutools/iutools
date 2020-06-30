@@ -108,7 +108,7 @@ public class TrieNode {
         }
         
         if (_surfaceForm != null) {
-        	this.addSurfaceForm(_surfaceForm);
+        	this.updateSurfaceForms(_surfaceForm);
         }
         
         if (_isTerminal != null) {
@@ -200,17 +200,21 @@ public class TrieNode {
     	return objects;
     }
     
-    public void addSurfaceForm(String form) {
+    public void updateSurfaceForms(String form) {
+    	updateSurfaceForms(form, 1);
+    }
+
+	public void updateSurfaceForms(String form, long freqIncr) {
     	this.surfaceForm = form;
     	cachedMostFrequentSurfaceForm = null;
     	
     	if (this.surfaceForms.containsKey(form)) {
-    		this.surfaceForms.put(form, new Long(this.surfaceForms.get(form).longValue()+1));
+    		this.surfaceForms.put(form, new Long(this.surfaceForms.get(form).longValue()+freqIncr));
     	} else {
-    		this.surfaceForms.put(form, new Long(1));
-    	}
-    }
-
+    		this.surfaceForms.put(form, new Long(freqIncr));
+    	}    	
+	}
+    
     public String keysAsString() {
     	return keysAsString(null);
     }
@@ -233,7 +237,10 @@ public class TrieNode {
     }
     
     public void incrementFrequency() {
-    	frequency++;
+    	frequency++;    }
+
+    public void incrementFrequency(long freqIncr) {
+    	frequency += freqIncr;
     }
 	
 	@Override

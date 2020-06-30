@@ -53,21 +53,6 @@ public class Trie_InMemory extends Trie {
      * @return an object of class TrieNode
      * @throws TrieException
      */
-    
-    // If we assume that this method will not be called with an empty list of segments
-    // (the test is done before calling this method),
-    // then we can replace the commented lines with the lines with //***
-    //
-    //
-    // TODO: Check that partsSequence is NOT empty. If it is, raise exception
-    //
-	public TrieNode addExpression(String[] partsSequence, String word) throws TrieException {
-		TrieNode node = getNode(partsSequence, NodeOption.TERMINAL);
-		node.surfaceForm = word;
-		node.frequency++;
-		node.addSurfaceForm(word);
-		return node;
-	}
 
 	public TrieNode getNode(String[] keys, NodeOption... options ) 
 			throws TrieException {

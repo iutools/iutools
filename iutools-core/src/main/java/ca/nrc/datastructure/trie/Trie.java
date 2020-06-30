@@ -56,16 +56,21 @@ public abstract class Trie {
 	public abstract void saveNode(TrieNode node) throws TrieException;
 			
 	protected String allTerminalsJoined = ";";
-	
+
 	public TrieNode add(String[] segments, String expression) 
+			throws TrieException {
+		return add(segments, expression, 1);
+	}
+	
+	public TrieNode add(String[] segments, String expression, long freqIncr) 
 			throws TrieException {
 		if (segments == null) {
 			segments = new String[] {TrieNode.NULL_SEG};
 		}
 		addToJoinedTerminals(segments);
 		TrieNode node = getNode(segments, NodeOption.TERMINAL);
-		node.addSurfaceForm(expression);
-		node.frequency++;
+		node.updateSurfaceForms(expression, freqIncr);
+		node.frequency += freqIncr;
 		saveNode(node);
 		updateAncestors(node);
 		
