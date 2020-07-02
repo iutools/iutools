@@ -8,7 +8,7 @@ import ca.inuktitutcomputing.morph.failureanalysis.MorphFailureAnalyzer;
 import ca.inuktitutcomputing.morph.failureanalysis.ProblematicNGram;
 import ca.inuktitutcomputing.morph.failureanalysis.ProblematicNGram.SortBy;
 import ca.nrc.ui.commandline.UserIO.Verbosity;
-import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
+import ca.pirurvik.iutools.corpus.CompiledCorpus;
 import ca.pirurvik.iutools.corpus.CompiledCorpusException;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.corpus.WordInfo;
@@ -33,7 +33,7 @@ public class CmdMorphFailureAnalysis extends ConsoleCommand {
 	@Override
 	public void execute() throws Exception {
 
-		CompiledCorpus_InMemory corpus = CompiledCorpusRegistry.getCorpus();
+		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpus();
 		MorphFailureAnalyzer analyzer = makeAnalyzer();
 				
 		loadCorpusWords(corpus, analyzer);
@@ -63,7 +63,7 @@ public class CmdMorphFailureAnalysis extends ConsoleCommand {
 		return analyzer;
 	}
 
-	private void loadCorpusWords(CompiledCorpus_InMemory corpus, 
+	private void loadCorpusWords(CompiledCorpus corpus, 
 			MorphFailureAnalyzer analyzer) throws CompiledCorpusException {
 		
 		Long countdown = getMaxWords();

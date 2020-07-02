@@ -29,7 +29,7 @@ public class CmdCheckSpelling extends ConsoleCommand {
 		SpellChecker checker = new SpellChecker();
 
 		String word = getWord(false);
-		String compiledCorpusFilePathname = getCompilationFile(false);
+		String compiledCorpusFilePathname = getCorpusSavePath(false);
 		if (compiledCorpusFilePathname!=null) {
 			File compiledCorpusFile = new File(compiledCorpusFilePathname);
 			checker.setDictionaryFromCorpus(compiledCorpusFile);

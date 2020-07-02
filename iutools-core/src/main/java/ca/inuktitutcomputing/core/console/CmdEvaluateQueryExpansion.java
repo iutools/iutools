@@ -15,7 +15,7 @@ public class CmdEvaluateQueryExpansion extends ConsoleCommand {
 
 	@Override
 	public void execute() throws Exception {
-		String compilationFilePath = getCompilationFile();
+		String compilationFilePath = getCorpusSavePath();
 		String goldStandardCSVFilePath = getGoldStandardFile();
 		boolean statsOverMorphemes = getStatsOverMorphemes()==null? false : true;
 		

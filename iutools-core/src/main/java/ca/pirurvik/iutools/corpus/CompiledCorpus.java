@@ -59,7 +59,7 @@ public abstract class CompiledCorpus {
 			String[] morphemes, Integer N) throws CompiledCorpusException;
 
 	protected abstract void addWordOccurence(String word, String[][] sampleDecomps, 
-			int totalDecomps) throws CompiledCorpusException;
+			Integer totalDecomps) throws CompiledCorpusException;
 	
 	protected String segmenterClassName = StringSegmenter_Char.class.getName();
 	protected transient StringSegmenter segmenter = null;
@@ -127,22 +127,27 @@ public abstract class CompiledCorpus {
 	}
 	
 	public void addWordOccurence(String word) throws CompiledCorpusException {
-		
-		String[][] decomps = null;
-		
-		try {
-			decomps = getSegmenter().possibleSegmentations(word);
-		} catch (TimeoutException | StringSegmenterException e) {
-			throw new CompiledCorpusException(e);
-		}
+		addWordOccurence(word, false);
+	}
+	
+	public void addWordOccurence(String word, boolean frequenciesOnly) throws CompiledCorpusException {
 		
 		String[][] sampleDecomps = null;
-		int totalDecomps = 0;
-		if (decomps != null) {
-			totalDecomps = decomps.length;
-			int numToKeep = Math.min(totalDecomps, decompsSampleSize);
-			sampleDecomps = Arrays.copyOfRange(decomps, 0, numToKeep);
-		}		
+		Integer totalDecomps = null;
+		if (!frequenciesOnly) {
+			String[][] decomps = null;
+			try {
+				decomps = getSegmenter().possibleSegmentations(word);
+			} catch (TimeoutException | StringSegmenterException e) {
+				throw new CompiledCorpusException(e);
+			}
+			 
+			if (decomps != null) {
+				totalDecomps = decomps.length;
+				int numToKeep = Math.min(totalDecomps, decompsSampleSize);
+				sampleDecomps = Arrays.copyOfRange(decomps, 0, numToKeep);
+			}		
+		}
 		addWordOccurence(word, sampleDecomps, totalDecomps);
 		return;
 	}

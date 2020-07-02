@@ -32,7 +32,7 @@ public class CmdLookForMorpheme extends ConsoleCommand {
 		String morpheme = getMorpheme(false);
 		//String dictionaryFilePathname = getDictFile(true);
 		//File dictionaryFile = new File(dictionaryFilePathname);
-		String compiledCorpusFilePath = getCompilationFile();
+		String compiledCorpusFilePath = getCorpusSavePath();
 		FileReader fr = new FileReader(compiledCorpusFilePath);
 		CompiledCorpus_InMemory compiledCorpus = new Gson().fromJson(fr, CompiledCorpus_InMemory.class);
 		fr.close();

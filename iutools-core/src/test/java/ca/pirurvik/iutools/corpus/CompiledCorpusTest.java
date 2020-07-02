@@ -399,7 +399,7 @@ public abstract class CompiledCorpusTest {
 		InputStream iStream = IOUtils.toInputStream(String.join(" ", words), "utf-8");
 		InputStreamReader iSReader = new InputStreamReader(iStream);
 		BufferedReader br = new BufferedReader(iSReader);
-		compiler.processDocumentContents(br, "dummyFilePath");
+		compiler.processDocumentContents(br, "dummyFilePath", null);
 		String fileName = "compiled_corpus";
 		if (fileId != null)
 			fileName += "-"+fileId;

@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,6 +24,8 @@ import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.script.TransCoder;
 import ca.inuktitutcomputing.utilities.StopWatch;
 import ca.inuktitutcomputing.utilities.StopWatchException;
+import ca.nrc.data.file.ObjectStreamReader;
+import ca.nrc.data.file.ObjectStreamReaderException;
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.TrieException;
@@ -30,6 +33,9 @@ import ca.nrc.json.PrettyPrinter;
 import ca.pirurvik.iutools.text.segmentation.IUTokenizer;
 
 public class CorpusCompiler {
+	
+//	public static enum CompilationOption {FROM_SCRATCH, FREQUENCIES_ONLY, LENIENT_DECOMPS};
+	public static enum CompileWhat {FREQUENCIES, DECOMPOSITIONS, ALL};
 
 	protected boolean verbose = true;
 	public long saveFrequency;
@@ -51,7 +57,7 @@ public class CorpusCompiler {
 		this.corpus = _corpus;
 	}
 
-	public void compile(File corpusDirectory) throws CorpusCompilerException {
+	public void compileWordFrequencies(File corpusDirectory) throws CorpusCompilerException {
 		try {
 			compileCorpusFromScratch(corpusDirectory);
 		} catch (CompiledCorpusException | StringSegmenterException e) {
@@ -62,8 +68,17 @@ public class CorpusCompiler {
 	public  void compileCorpusFromScratch(File corpusDirectory) throws CompiledCorpusException, StringSegmenterException {
 		compileCorpus(corpusDirectory, true);
 	}
+
+	public void compileCorpus(File corpusDirectory, boolean fromScratch) 
+			throws CompiledCorpusException, StringSegmenterException {
+		CompileWhat what = CompileWhat.ALL;
+		compileCorpus(corpusDirectory, fromScratch, what);
+	}
 	
-	public  void compileCorpus(File corpusDirectory, boolean fromScratch) throws CompiledCorpusException, StringSegmenterException {
+	public  void compileCorpus(
+		File corpusDirectory, boolean fromScratch, CompileWhat what) 
+		throws CompiledCorpusException, StringSegmenterException {
+		
 		toConsole("[INFO] *** Compiling trie for documents in "+corpusDirectory+"\n");
 		segmenter = getSegmenter(); //new StringSegmenter_IUMorpheme();
 		
@@ -79,7 +94,7 @@ public class CorpusCompiler {
 		
 		wordCounter = 0;
 			
-		process(corpusDirectory);
+		process(corpusDirectory, what);
 		
 		compileExtras();
 		
@@ -87,7 +102,6 @@ public class CorpusCompiler {
 		save(corpusDirectory);
 	}
 	
-
 	public void setVerbose(boolean _verbose) {
 		this.verbose = _verbose;
 	}
@@ -121,13 +135,13 @@ public class CorpusCompiler {
 		return true;
 	}
 
-	public void processDocumentContents(BufferedReader br, File docFile) throws CorpusCompilerException {
+	public void processDocumentContents(BufferedReader br, File docFile, CompileWhat what) throws CorpusCompilerException {
 		String docFilePath = null;
 		if (docFile != null) {
 			docFilePath = docFile.toString();
 		}
 		try {
-			processDocumentContents(br, docFilePath);
+			processDocumentContents(br, docFilePath, what);
 		} catch (CompiledCorpusException | StringSegmenterException | LinguisticDataException e) {
 			throw new CorpusCompilerException(e);
 		}
@@ -169,12 +183,19 @@ public class CorpusCompiler {
 	}
 
 	private void process(File corpusDirectory) throws CompiledCorpusException, StringSegmenterException {
-		toConsole("[INFO] --- compiling directory "+corpusDirectory+"\n");
-		this.corpusDirectory = corpusDirectory;
-		processDirectory(corpusDirectory);
+		process(corpusDirectory, null);
 	}
 	
-	private void processDirectory(File directory) throws CompiledCorpusException, StringSegmenterException {
+	private void process(File corpDir, CompileWhat what) 
+		throws CompiledCorpusException, StringSegmenterException {
+		toConsole("[INFO] --- compiling directory "+corpDir+"\n");
+		this.corpusDirectory = corpDir;
+		processDirectory(corpDir, what);
+	}
+	
+	
+	private void processDirectory(File directory, CompileWhat what) 
+		throws CompiledCorpusException, StringSegmenterException {
 		Logger logger = Logger.getLogger("CompiledCorpus.processDirectory");
     	CorpusReader_Directory corpusReader = new CorpusReader_Directory();
     	Iterator<CorpusDocument_File> files = 
@@ -184,24 +205,26 @@ public class CorpusCompiler {
     		File file = new File(corpusDocumentFile.id);
     		logger.debug("file: "+file.getAbsolutePath());
     		if (file.isDirectory()) {
-    			processDirectory(new File(corpusDocumentFile.id));
+    			processDirectory(new File(corpusDocumentFile.id), what);
     		} else {
-    			processFile(corpusDocumentFile);
+    			processFile(corpusDocumentFile, what);
     		}
     	}
 	}
 
-	private void processFile(CorpusDocument_File file) throws CompiledCorpusException, StringSegmenterException {
-			String fileAbsolutePath = file.id;
-			fileBeingProcessed = file;
-			toConsole("[INFO] --- compiling document "+new File(fileAbsolutePath).getName()+"\n");
-			processDocumentContents();
-			if ( !this.filesCompiled.contains(fileAbsolutePath) )
-				filesCompiled.add(fileAbsolutePath);
+	private void processFile(
+		CorpusDocument_File file, CompileWhat what) 
+		throws CompiledCorpusException, StringSegmenterException {
+		String fileAbsolutePath = file.id;
+		fileBeingProcessed = file;
+		toConsole("[INFO] --- compiling document "+new File(fileAbsolutePath).getName()+"\n");
+		processDocumentContents(what);
+		if ( !this.filesCompiled.contains(fileAbsolutePath) )
+			filesCompiled.add(fileAbsolutePath);
 	}
 	
 	
-	public void processDocumentContents()
+	public void processDocumentContents(CompileWhat what)
 			throws CompiledCorpusException, StringSegmenterException {
 		Logger logger = Logger.getLogger("CorpusCompiler.processDocumentContents");
 		currentFileWordCounter = 0;
@@ -213,7 +236,7 @@ public class CorpusCompiler {
 			while ((line = reader.readLine()) != null) {
 				IUTokenizer iuTokenizer = new IUTokenizer();
 				List<String> words = iuTokenizer.tokenize(line);
-				processWords(words.toArray(new String[] {}));
+				processWords(words.toArray(new String[] {}), what);
 			}
 		} catch (CompiledCorpusException e) {
 			throw e;
@@ -224,18 +247,21 @@ public class CorpusCompiler {
 		}
 	}
 
-	protected void processDocumentContents(String fileAbsolutePath) throws CompiledCorpusException, StringSegmenterException, LinguisticDataException, CorpusCompilerException {
-		BufferedReader bufferedReader = null;
-		try {
-			bufferedReader = new BufferedReader(new FileReader(fileAbsolutePath));
-		} catch (FileNotFoundException e) {
-			throw new CompiledCorpusException(e);
-		}
-		processDocumentContents(bufferedReader,fileAbsolutePath);
-	}
+//	protected void processDocumentContents(String fileAbsolutePath) throws CompiledCorpusException, StringSegmenterException, LinguisticDataException, CorpusCompilerException {
+//		BufferedReader bufferedReader = null;
+//		try {
+//			bufferedReader = new BufferedReader(new FileReader(fileAbsolutePath));
+//		} catch (FileNotFoundException e) {
+//			throw new CompiledCorpusException(e);
+//		}
+//		processDocumentContents(bufferedReader,fileAbsolutePath);
+//	}
 	
-	public void processDocumentContents(BufferedReader bufferedReader, String fileAbsolutePath)
-			throws CompiledCorpusException, StringSegmenterException, LinguisticDataException, CorpusCompilerException {
+	public void processDocumentContents(
+		BufferedReader bufferedReader, String fileAbsolutePath, 
+		CompileWhat what)
+		throws CompiledCorpusException, StringSegmenterException, LinguisticDataException, CorpusCompilerException {
+		
 		Logger logger = Logger.getLogger("CompiledCorpus.processDocumentContents");
 		String line;
 		currentFileWordCounter = 0;
@@ -243,7 +269,7 @@ public class CorpusCompiler {
 			while ((line = bufferedReader.readLine()) != null) {
 				logger.debug("line: '"+line+"'");
 				String[] words = extractWordsFromLine(line);
-				processWords(words);
+				processWords(words, what);
 			}
 			bufferedReader.close();
 		} catch (IOException e) {
@@ -271,7 +297,7 @@ public class CorpusCompiler {
 		return false;
 	}
 
-	private void processWords(String[] words) throws CompiledCorpusException, StringSegmenterException, LinguisticDataException, CorpusCompilerException {
+	private void processWords(String[] words, CompileWhat what) throws CompiledCorpusException, StringSegmenterException, LinguisticDataException, CorpusCompilerException {
     	Logger logger = Logger.getLogger("CompiledCorpus.processWords");
 		logger.debug("words: "+words.length);
 		for (int n = 0; n < words.length; n++) {
@@ -292,7 +318,7 @@ public class CorpusCompiler {
 					}
 				}
 
-				processWord(wordInRomanAlphabet);
+				processWord(wordInRomanAlphabet, what);
 
 				// this line allows to make the compiler stop at a given point (for tests
 				// purposes only)
@@ -313,12 +339,12 @@ public class CorpusCompiler {
 		}
 	}
 
-	private void processWord(String word) throws CompiledCorpusException, StringSegmenterException, LinguisticDataException, CorpusCompilerException {
-    	processWord(word,false);
-    }
-	
-    private void processWord(String word, boolean recompilingFailedWord) throws CompiledCorpusException, StringSegmenterException, LinguisticDataException, CorpusCompilerException {
+	private void processWord(String word, CompileWhat what) throws CompiledCorpusException, StringSegmenterException, LinguisticDataException, CorpusCompilerException {
     	Logger logger = Logger.getLogger("ca.pirurvik.iutools.corpus.CorpusCompiler.processWord");
+    	
+    	if (what == null) {
+    		what = CompileWhat.ALL;
+    	}
     	
     	long start = 0;
     	TimeUnit tunit = TimeUnit.MILLISECONDS;
@@ -329,9 +355,14 @@ public class CorpusCompiler {
 				throw new CorpusCompilerException(e);
 			}
     	}
+    	boolean frequenciesOnly = false;
+    	if (what == CompileWhat.FREQUENCIES) {
+    		frequenciesOnly = true;
+    	}
+    	
 		toConsole("[INFO]     "+wordCounter + "(" + currentFileWordCounter + "+). " + word + "... \n");
 		
-		getCorpus().addWordOccurence(word);
+		getCorpus().addWordOccurence(word, frequenciesOnly);
 		
     	if (logger.isTraceEnabled()) {
     		try {
@@ -393,5 +424,23 @@ public class CorpusCompiler {
 		}
 		logger.debug("words= "+PrettyPrinter.print(words));
 		return words;
+	}
+
+	public void updateWordDecompositions(File decompsFile) throws CompiledCorpusException {
+		ObjectStreamReader reader = null;
+		try {
+			reader = new ObjectStreamReader(decompsFile);
+		} catch (FileNotFoundException e) {
+			throw new CompiledCorpusException(
+				"Cannot open the decompositions file "+decompsFile, e);
+		}
+		
+		try {
+			Map<String,Object> wordDecomp = (Map<String, Object>) reader.readObject();
+		} catch (ClassNotFoundException | IOException | ObjectStreamReaderException e) {
+			throw new CompiledCorpusException(
+				"Error reading Map<Strin,Object> from decompositions file "+
+				decompsFile, e);
+		}
 	}
 }

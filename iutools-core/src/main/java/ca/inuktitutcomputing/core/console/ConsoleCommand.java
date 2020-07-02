@@ -17,6 +17,7 @@ public abstract class ConsoleCommand extends SubCommand {
 	public static final String OPT_CORPUS_NAME = "corpus-name";
 	public static final String OPT_CORPUS_SAVE_PATH = "corpus-save-path";
 	public static final String OPT_GS_FILE = "gs-file";
+	public static final String OPT_DECOMPOSITIONS_FILE = "decomps-file";
 
 	public static final String OPT_MORPHEMES = "morphemes";
 	public static final String OPT_MORPHEME = "morpheme";
@@ -43,15 +44,21 @@ public abstract class ConsoleCommand extends SubCommand {
 		super(name);
 	}
 	
-	protected String getCompilationFile() {
-		return getCompilationFile(true);
+	protected String getCorpusSavePath() {
+		return getCorpusSavePath(true);
 	}
-	protected String getCompilationFile(boolean failIfAbsent) {
+	protected String getCorpusSavePath(boolean failIfAbsent) {
 		String tFile = getOptionValue(ConsoleCommand.OPT_CORPUS_SAVE_PATH, failIfAbsent);
-//		if (tFile != null && !tFile.endsWith("json")) {
-//			tFile = tFile + ".json";
-//		}
 		return tFile;
+	}
+	
+	protected File getDecompositionsFile() {
+		String fileStr = getOptionValue(ConsoleCommand.OPT_DECOMPOSITIONS_FILE, false);
+		File file = null;
+		if (fileStr != null) {
+			file = new File(fileStr);
+		}
+		return file;
 	}
 
 	protected File getDataFile() {

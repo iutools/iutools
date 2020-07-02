@@ -11,7 +11,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import ca.nrc.datastructure.trie.Trie_InMemory;
+import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.testing.AssertObject;
@@ -24,7 +24,7 @@ public class CompiledCorpusRegistryTest {
 	@Before
 	public void setUp() throws Exception {
 		String[] words = new String[] {"nunami","iglumik"};
-		jsonFile = CompiledCorpus_InMemoryTest.compileToFile(words);
+		jsonFile = CompiledCorpusTest.compileToFile(words);
 	}
 	
 	//////////////////////////////
@@ -38,7 +38,7 @@ public class CompiledCorpusRegistryTest {
 		//
 		// For example, to get the "default" corpus, do this:
 		//
-		CompiledCorpus_InMemory corpus = CompiledCorpusRegistry.getCorpus();
+		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpus();
 		
 		//
 		// If you want to get a specific corpus, do this:
@@ -92,7 +92,7 @@ public class CompiledCorpusRegistryTest {
 	public void test__getCorpus__get_from_unknown_corpus_name() {
 		boolean errorCaught = false;
 		try {
-			CompiledCorpus_InMemory corpus = CompiledCorpusRegistry.getCorpus("blah");
+			CompiledCorpus corpus = CompiledCorpusRegistry.getCorpus("blah");
 		} catch (CompiledCorpusRegistryException e) {
 			errorCaught = e.getMessage().contains("Unknown corpus name");
 		}
@@ -102,7 +102,7 @@ public class CompiledCorpusRegistryTest {
 	@Test
 	public void test__getCorpus__get_from_custom_registered_corpus() throws Exception {
 		String[] words = new String[] {"nunami","iglumik"};
-		File corpusFile = CompiledCorpus_InMemoryTest.compileToFile(words);
+		File corpusFile = CompiledCorpusTest.compileToFile(words);
 		corpusFile.deleteOnExit();
 		CompiledCorpusRegistry.registerCorpus("2words", corpusFile);
 		CompiledCorpus_InMemory corpus = CompiledCorpusRegistry.getCorpus("2words");
@@ -131,7 +131,7 @@ public class CompiledCorpusRegistryTest {
 	public void test__getCorpus__with_name_part_of_compiled_corpus_filename_in_compiled_corpuses_directory() throws Exception {
 		String corpusName = "HANSARD-1999-2002";
 //		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpusWithName(corpusName);
-		CompiledCorpus_InMemory corpus = CompiledCorpusRegistry.getCorpus(corpusName);
+		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpus(corpusName);
 		assertTrue("Corpus "+corpusName+"could not be found",corpus != null);
 		// insensitive
 		corpusName = "Hansard-1999-2002"; 
@@ -146,6 +146,6 @@ public class CompiledCorpusRegistryTest {
 			throws Exception {
 		String corpusName = "blabla";
 //		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpusWithName(corpusName);
-		CompiledCorpus_InMemory corpus = CompiledCorpusRegistry.getCorpus(corpusName);
+		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpus(corpusName);
 	}
 }

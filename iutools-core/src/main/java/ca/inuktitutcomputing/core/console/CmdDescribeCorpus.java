@@ -12,6 +12,7 @@ import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.Trie_InMemory;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
+import ca.pirurvik.iutools.corpus.CompiledCorpus;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 
 public class CmdDescribeCorpus extends ConsoleCommand {
@@ -28,7 +29,7 @@ public class CmdDescribeCorpus extends ConsoleCommand {
 	@Override
 	public void execute() throws Exception {
 		
-		String compilationFilePathname = getCompilationFile(true);
+		String compilationFilePathname = getCorpusSavePath(true);
 		
 		echo("\nDescription of corpus:\n");
 		echo("corpus json file: "+compilationFilePathname+"\n");
@@ -42,7 +43,7 @@ public class CmdDescribeCorpus extends ConsoleCommand {
 		File compilationFile = new File(compilationFilePathname);
 		String corpusName = "this-corpus";
 		CompiledCorpusRegistry.registerCorpus(corpusName, compilationFile);
-		CompiledCorpus_InMemory compiledCorpus = CompiledCorpusRegistry.getCorpus(corpusName);
+		CompiledCorpus compiledCorpus = CompiledCorpusRegistry.getCorpus(corpusName);
 		
 		long totalOccurences = compiledCorpus.totalOccurences();
 		long totalOccurencesNoDecomp = 
@@ -58,13 +59,10 @@ public class CmdDescribeCorpus extends ConsoleCommand {
 		System.out.println("");
 		System.out.println(
 				"Number of distinct analyzed words in trie (succeeded analysis): "+
-				compiledCorpus.
-				trie.getSize());
+				compiledCorpus.totalWordsWithDecomps());
 		System.out.println("Number of distinct words that failed analysis: "+
 				compiledCorpus.totalWordsWithNoDecomp());
 		System.out.println("");
-		System.out.println("The corpus has its ngrams set: "+
-				compiledCorpus.ngramsAreComputed());
 		
 		String action = "";
 		while ( action!=null ) {
@@ -76,37 +74,38 @@ public class CmdDescribeCorpus extends ConsoleCommand {
 				if (subaction==null)
 					action = null;
 				if (subaction!=null) {
-					String allFailed[] = compiledCorpus.getWordsThatFailedDecomposition();
-					if (subaction.equals("a")) {
-						Arrays.sort(allFailed);
-						System.out.println(String.join(" ",allFailed)+"\n");
-					} else if (subaction.equals("s")) {
-						Random rand = new Random();
-						int randomIndices[] = rand.ints(0, allFailed.length).distinct().limit(50).toArray();
-						int maxWordsPerLine = 5;
-						for (int i=0; i<randomIndices.length; i++) {
-							System.out.print(allFailed[randomIndices[i]]+"   ");
-							if ((i+1) % maxWordsPerLine == 0)
-								System.out.println();
-						}
-						System.out.println("");
-					} else if (subaction.equals("f")) {
-						String fileName = prompt(">>> enter file name (or q to quit): ");
-						if (fileName==null)
-							break;
-						Arrays.sort(allFailed);
-						File outputFile = new File(fileName);
-						BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile));
-						int maxWordsPerLine = 7;
-						for (int i=0; i<allFailed.length; i++) {
-							bw.write(allFailed[i]+"   ");
-							if ((i+1) % maxWordsPerLine == 0)
-								bw.newLine();
-						}
-						bw.flush();
-						bw.close();
-						System.out.println("Words saved in "+outputFile.getAbsolutePath()+"\n");
-					}
+// TODO-June2020: Reactivate this code
+//					String allFailed[] = compiledCorpus.wor();
+//					if (subaction.equals("a")) {
+//						Arrays.sort(allFailed);
+//						System.out.println(String.join(" ",allFailed)+"\n");
+//					} else if (subaction.equals("s")) {
+//						Random rand = new Random();
+//						int randomIndices[] = rand.ints(0, allFailed.length).distinct().limit(50).toArray();
+//						int maxWordsPerLine = 5;
+//						for (int i=0; i<randomIndices.length; i++) {
+//							System.out.print(allFailed[randomIndices[i]]+"   ");
+//							if ((i+1) % maxWordsPerLine == 0)
+//								System.out.println();
+//						}
+//						System.out.println("");
+//					} else if (subaction.equals("f")) {
+//						String fileName = prompt(">>> enter file name (or q to quit): ");
+//						if (fileName==null)
+//							break;
+//						Arrays.sort(allFailed);
+//						File outputFile = new File(fileName);
+//						BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile));
+//						int maxWordsPerLine = 7;
+//						for (int i=0; i<allFailed.length; i++) {
+//							bw.write(allFailed[i]+"   ");
+//							if ((i+1) % maxWordsPerLine == 0)
+//								bw.newLine();
+//						}
+//						bw.flush();
+//						bw.close();
+//						System.out.println("Words saved in "+outputFile.getAbsolutePath()+"\n");
+//					}
 				}
 			}
 		}

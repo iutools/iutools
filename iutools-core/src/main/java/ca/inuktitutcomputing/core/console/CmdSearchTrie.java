@@ -14,6 +14,8 @@ import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.Trie_InMemory;
 import ca.nrc.datastructure.trie.TrieNode;
+import ca.pirurvik.iutools.corpus.CompiledCorpus;
+import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 import ca.pirurvik.iutools.corpus.WordInfo;
 
@@ -32,7 +34,7 @@ public class CmdSearchTrie extends ConsoleCommand {
 
 	@Override
 	public void execute() throws Exception {
-		String compilationFilePath = getCompilationFile();
+		String corpusSavePath = getCorpusSavePath();
 		String[] morphemes = getMorphemes(false); 
 		String word = getWord(false); 
 		StringSegmenter segmenter = new StringSegmenter_IUMorpheme();
@@ -46,7 +48,7 @@ public class CmdSearchTrie extends ConsoleCommand {
 
 		boolean searchWord = false;
 		
-		CompiledCorpus_InMemory compiledCorpus = CompiledCorpus_InMemory.createFromJson(compilationFilePath);
+		CompiledCorpus compiledCorpus = CompiledCorpusRegistry.getCorpus(corpusSavePath);
 
 		DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
 		DecimalFormatSymbols symbols = formatter.getDecimalFormatSymbols();

@@ -48,7 +48,7 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus
 	}
 	
 	public void addWordOccurence(String word, String[][] sampleDecomps, 
-			int totalDecomps) throws CompiledCorpusException {
+			Integer totalDecomps) throws CompiledCorpusException {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpus_InFileSystem.addWordOccurence");
 
 		makeStale(charNgramsTrie);
@@ -289,7 +289,7 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus
 	}
 
 	protected void updateWordIndex(
-		String word, String[][] sampleDecomps, int totalDecomps) 
+		String word, String[][] sampleDecomps, Integer totalDecomps) 
 		throws CompiledCorpusException {
     	
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpus_InFileSystem.updateWordIndex");

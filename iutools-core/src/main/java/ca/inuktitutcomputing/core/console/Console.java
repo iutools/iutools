@@ -26,6 +26,14 @@ public class Console {
 			    .argName("CORPUS_SAVE_PATH")
 			    .build();
 
+		
+		Option optDecompsFile = Option.builder(null)
+			.longOpt(ConsoleCommand.OPT_DECOMPOSITIONS_FILE)
+		    .desc("Path of json file containing decompositions of words")
+		    .hasArg()
+		    .argName("DECOMPOSITIONS_FILE")
+		    .build();
+
 		Option optDataFile = Option.builder(null)
 				.longOpt(ConsoleCommand.OPT_DATA_FILE)
 				.desc("Path of the data file to be read or written.")
@@ -203,6 +211,7 @@ public class Console {
 				.addOption(optCompFile)
 				.addOption(optFromScratch)
 				.addOption(optRedoFailed)
+				.addOption(optDecompsFile)
 				;
 		mainCmd.addSubCommand(compileCorpus);
 

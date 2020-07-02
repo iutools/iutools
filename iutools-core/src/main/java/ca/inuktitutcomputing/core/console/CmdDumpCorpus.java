@@ -1,6 +1,7 @@
 package ca.inuktitutcomputing.core.console;
 
 import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
+import ca.pirurvik.iutools.corpus.CompiledCorpus;
 import ca.pirurvik.iutools.corpus.CompiledCorpusException;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.corpus.WordInfo;
@@ -27,13 +28,13 @@ public class CmdDumpCorpus extends ConsoleCommand {
     @Override
     public void execute() throws Exception {
         String corpusName = getCorpusName(false);
-        CompiledCorpus_InMemory corpus = CompiledCorpusRegistry.getCorpus(corpusName);
+        CompiledCorpus corpus = CompiledCorpusRegistry.getCorpus(corpusName);
         boolean wordsOnly = getWordsOnlyOpt();
         File outputFile = getDataFile(true);
         dumpCorpus(corpus, wordsOnly, outputFile);
     }
 
-    private void dumpCorpus(CompiledCorpus_InMemory corpus, boolean wordsOnly, 
+    private void dumpCorpus(CompiledCorpus corpus, boolean wordsOnly, 
     		File outputFile) throws IOException, CLIException, CompiledCorpusException {
 
         FileWriter fWriter = new FileWriter(outputFile);
@@ -46,7 +47,7 @@ public class CmdDumpCorpus extends ConsoleCommand {
         fWriter.close();
     }
 
-	private void printWord(String word, CompiledCorpus_InMemory corpus, 
+	private void printWord(String word, CompiledCorpus corpus, 
 			boolean wordsOnly, FileWriter fWriter) 
 			throws CLIException, IOException, CompiledCorpusException {
 		String infoStr = word;

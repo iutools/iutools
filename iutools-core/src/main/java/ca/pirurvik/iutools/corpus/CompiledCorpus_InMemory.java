@@ -89,7 +89,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	
 	@Override
 	public void addWordOccurence(String word, String[][] sampleDecomps, 
-			int totalDecomps) throws CompiledCorpusException {
+			Integer totalDecomps) throws CompiledCorpusException {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory.addWordOccurence");
 		Logger tLogger_STEPS = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory.addWordOccurence_STEPS");
 
@@ -219,14 +219,14 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	}
 	
 	protected void updateWordIndex(String word, String[][] sampleDecomps, 
-			int totalDecomps) throws CompiledCorpusException {
+			Integer totalDecomps) throws CompiledCorpusException {
     	wordDecomps.put(word, sampleDecomps);
     	updateWordInfo(word, sampleDecomps, totalDecomps);
 		
 		updateNGramIndex(word);    	
 	}
 
-	private void updateWordInfo(String word, String[][] sampleDecomps, int totalDecomps) {
+	private void updateWordInfo(String word, String[][] sampleDecomps, Integer totalDecomps) {
 		WordInfo info = word2infoMap.get(word);
 		if (info == null) {
 			key2word.put(nextWordKey, word);
@@ -491,7 +491,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	
 //	@Override
 	protected void updateDecompositionsIndex(
-			String word, String[][] sampleDecomps, int totalDecomps) 
+			String word, String[][] sampleDecomps, Integer totalDecomps) 
 			throws CompiledCorpusException {
 		
 		if (sampleDecomps != null && sampleDecomps.length > 0) {
@@ -516,7 +516,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	
 //	@Override
 	protected void updateCharNgramIndex(String word, String[][] sampleDecomps, 
-		int totalDecomps) throws CompiledCorpusException {
+		Integer totalDecomps) throws CompiledCorpusException {
 		updateNGramIndex(word);
 	}
 	

@@ -17,13 +17,16 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import ca.inuktitutcomputing.applications.WordsNotDecomposed;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
+import ca.nrc.file.ResourceGetter;
 
 public class CorpusCompilerTest {
 	
 	File corporaDirectory = null;
 	File singleFileCorpus = null;
 	File multiDirCorpus = null;
+	File wordDecompsFile = null;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -55,7 +58,8 @@ public class CorpusCompilerTest {
     	};
 
     	multiDirCorpus = createTemporaryCorpusDirectoryWithSubdirectories(subdirs);
-		
+	
+    	wordDecompsFile = ResourceGetter.copyResourceToTempLocation("ca/pirurvik/iutools/corpus/wordDecomps.json");
 	}
 	
 	@After
@@ -86,12 +90,20 @@ public class CorpusCompilerTest {
 		//
 		compiler.setVerbose(false);
 		
-		// You can compile all the files contained in a directory
+		// You can compile the word frequencies for the files contained in a directory
 		// Note that the compiler does not recursively walk through 
 		// the directory and only looks at the files contained at the 
 		// root directory.
 		//
-		compiler.compile(corporaDirectory);
+		compiler.compileWordFrequencies(corporaDirectory);
+		
+		// Note that compileWordFrequencies() does not compile information 
+		// about the morphological decompositions of the various words.
+		//
+		// To add that information, you use updateWordDecompositions()
+		// method
+		
+		compiler.updateWordDecompositions(wordDecompsFile);
 		
 		// At this point, information about the words will have been 
 		// put into the CompiledCorpus object you provided at construction 
@@ -108,6 +120,21 @@ public class CorpusCompilerTest {
 	// VERIFICATION TESTS
 	///////////////////////////
 	
+    @Test
+    public void test__compileWordFrequencies__SingleFileCorpus() throws Exception
+    {
+		CorpusCompiler compiler = makeCompiler();
+		compiler.compileWordFrequencies(singleFileCorpus);
+		
+		new AssertCompiledCorpus(compiler.getCorpus(), "Before updating word decomps")
+			.containsNWords(14)
+			.containsWord("iglumut", "{iglu/1n}", "{mut/tn-dat-s}")
+			.containsWord("sanalauqsimajuq", "{sana/1v}", "{lauqsima/1vv}", "{juq/1vn}")
+		;
+		
+		compiler.updateWordDecompositions(wordDecompsFile);	
+    }
+
     @Test
     public void test__compile__SingleFileCorpus() throws Exception
     {
@@ -142,7 +169,7 @@ public class CorpusCompilerTest {
 		//
 		compiler.stopAfter = 3;
 		try {
-			compiler.compile(corporaDirectory);
+			compiler.compileWordFrequencies(corporaDirectory);
 		} catch (Exception e) {
 			// We expect an error to be raised, because of the 
 			// stopAfter.
@@ -155,7 +182,7 @@ public class CorpusCompilerTest {
 		
 		// Resume compilation after the failure.
 		compiler.stopAfter = -1;
-		compiler.compile(corporaDirectory);
+		compiler.compileWordFrequencies(corporaDirectory);
 		new AssertCompiledCorpus(
 				compiler.getCorpus(), 
 				"Resumed compilation did not yield expected results")
@@ -218,7 +245,7 @@ public class CorpusCompilerTest {
 		CorpusCompiler compiler = new CorpusCompiler(compiledCorpus);
 		compiler.setVerbose(false);
 		File file = null;
-		compiler.processDocumentContents(br,file);
+		compiler.processDocumentContents(br,file, null);
 		
 		String[] inuit_segments = new String[]{"{inuk/1n}","{it/tn-nom-p}"};
 		String[] taku_segments = new String[]{"{taku/1v}"};
