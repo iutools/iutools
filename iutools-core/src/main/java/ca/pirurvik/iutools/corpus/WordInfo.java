@@ -4,8 +4,15 @@ import java.util.List;
 
 public class WordInfo {
 	
+	/**
+	 * The word. May be left to null if we prefer to use numerical
+	 * IDs to identify the word.
+	 */
+	String word = null;
+	
 	/** 
-	 * Internal key for this word.
+	 * Internal key for this word. May be left to null if we prefer to use strings
+	 * IDs to identify the word.
 	 */
 	Long key = null;
 	
@@ -53,14 +60,23 @@ public class WordInfo {
 	public long frequency = 0;;
 
 	public WordInfo() {
-		init_WordInfo(null);
+		init_WordInfo(null, null);
 	}	
+	
+	public WordInfo(String _word) {
+		init_WordInfo(_word, null);
+	}
 
 	public WordInfo(Long _key) {
-		init_WordInfo(_key);
+		init_WordInfo(null, _key);
+	}
+
+	public WordInfo(String _word, Long _key) {
+		init_WordInfo(_word, _key);
 	}
 	
-	private void init_WordInfo(Long _key) {
+	private void init_WordInfo(String _word, Long _key) {
+		this.word = _word;
 		this.key = _key;
 	}
 	

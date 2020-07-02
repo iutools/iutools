@@ -3,7 +3,9 @@ package ca.pirurvik.iutools;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import ca.inuktitutcomputing.script.TransCoder;
@@ -12,6 +14,7 @@ import ca.nrc.datastructure.Pair;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
+import ca.pirurvik.iutools.corpus.WordInfo;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistryException;
 
@@ -70,7 +73,7 @@ public class QueryExpander {
 		QueryExpansion[] expansionsArr = new QueryExpansion[] {};
 				
 		String[] segments;
-		ArrayList<QueryExpansion> mostFrequentTerminalsForWord;
+		List<QueryExpansion> mostFrequentTerminalsForWord;
 		
 		try {
 			segments = this.compiledCorpus.decomposeWord(word);
@@ -86,12 +89,15 @@ public class QueryExpander {
 			} catch (TrieException e) {
 				throw new QueryExpanderException(e);
 			}	
-			if (node==null)
+			if (node==null) {
 				mostFrequentTerminalsForWord = new ArrayList<QueryExpansion>();
-			else
+			} else {
 				mostFrequentTerminalsForWord = getNMostFrequentForms(node,this.numberOfReformulations,word,new ArrayList<QueryExpansion>());
+				getNMostFrequentForms(segments, this.numberOfReformulations,word,new ArrayList<QueryExpansion>());
+			}
+			
 			logger.debug("mostFrequentTerminalsForWord: "+mostFrequentTerminalsForWord.size());
-			ArrayList<QueryExpansion> expansions = __getExpansions(mostFrequentTerminalsForWord, segments, word);
+			List<QueryExpansion> expansions = __getExpansions(mostFrequentTerminalsForWord, segments, word);
 			logger.debug("expansions: "+expansions.size());
 			
 						
@@ -103,7 +109,7 @@ public class QueryExpander {
 		return expansionsArr;
 	}
 	
-	private ArrayList<QueryExpansion> possiblyConvertToSyllabic(String word, ArrayList<QueryExpansion> expansions) {
+	private List<QueryExpansion> possiblyConvertToSyllabic(String word, List<QueryExpansion> expansions) {
 		boolean inputIsLatin = Pattern.compile("[a-zA-Z]").matcher(word).find();
 		if (!inputIsLatin) {
 			for (int ii=0; ii < expansions.size(); ii++) {
@@ -115,7 +121,7 @@ public class QueryExpander {
 	}
 	
 	
-	public ArrayList<QueryExpansion> __getExpansions(ArrayList<QueryExpansion> mostFrequentTerminalsForReformulations, String[] segments, String word) throws QueryExpanderException {
+	public List<QueryExpansion> __getExpansions(List<QueryExpansion> mostFrequentTerminalsForReformulations, String[] segments, String word) throws QueryExpanderException {
 		Logger logger = Logger.getLogger("QueryExpander.__getExpansions");
 		logger.debug("nb. segments : "+segments.length);
 		logger.debug("nb. most frequent : "+mostFrequentTerminalsForReformulations.size());
@@ -137,7 +143,7 @@ public class QueryExpander {
 				if (node==null)
 					return __getExpansions(mostFrequentTerminalsForReformulations, segmentsBack1, word);
 				logger.debug("node: "+node.keysAsString());
-				ArrayList<QueryExpansion> mostFrequentTerminalsForNode = getNMostFrequentForms(node,
+				List<QueryExpansion> mostFrequentTerminalsForNode = getNMostFrequentForms(node,
 					this.numberOfReformulations - mostFrequentTerminalsForReformulations.size(),
 					word, mostFrequentTerminalsForReformulations);
 				
@@ -150,7 +156,7 @@ public class QueryExpander {
 		}
 	}
 	
-	public ArrayList<QueryExpansion> getNMostFrequentForms(TrieNode node, int n, String word, ArrayList<QueryExpansion> exclusions) throws QueryExpanderException {
+	public List<QueryExpansion> getNMostFrequentForms(TrieNode node, int n, String word, List<QueryExpansion> exclusions) throws QueryExpanderException {
 		Logger logger = Logger.getLogger("QueryExpander.getNMostFrequentForms");
 		ArrayList<String> listOfExclusions = new ArrayList<String>();
 		for (int i=0; i<exclusions.size(); i++)
@@ -234,5 +240,29 @@ public class QueryExpander {
 		return mostFrequentForms;
 	}
 
+	
+	private List<QueryExpansion> getNMostFrequentForms(
+		String[] segments, int n, String word, 
+		List<QueryExpansion> exclusions) throws QueryExpanderException {
+		
+		Logger logger = Logger.getLogger("QueryExpander.getNMostFrequentForms");
+		
+		List<QueryExpansion> mostFrequentForms = new ArrayList<QueryExpansion>();
+		
+//		Set<String> listOfExclusions = new HashSet<String>();
+//		for (int i=0; i<exclusions.size(); i++) {
+//			listOfExclusions.add(exclusions.get(i).word);
+//		}
+		
+//		WordInfo[] extendingWords = compiledCorpus.mostFrequentWordsExtending(segments, n);
+//		for (WordInfo winfo: extendingWords) {
+//			if (!listOfExclusions.contains(winfo.word)) {
+//				mostFrequentForms.add(new QueryExpansion(winfo.word, segments, winfo.frequency));
+//			}
+//		}
+		
+		return mostFrequentForms;	
+	}
+	
 
 }

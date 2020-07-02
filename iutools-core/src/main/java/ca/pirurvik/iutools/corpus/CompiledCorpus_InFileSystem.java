@@ -496,7 +496,7 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus
 			
 			String[][] nullDecomps = null;
 			if (node != null) {
-				info = new WordInfo()
+				info = new WordInfo(word)
 					.setFrequency(node.getFrequency())
 					.setTopDecompositions(nodeBestDecomp(node))
 					.setSampleDecompositions(node.getField("sampleDecompositions", nullDecomps))

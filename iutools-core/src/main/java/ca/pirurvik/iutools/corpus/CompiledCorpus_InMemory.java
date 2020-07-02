@@ -567,7 +567,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 			wInfo = word2infoMap.get(word);
 		} else if (wordDecomps.containsKey(word)){
 			Long wordKey = key4word(word);
-			wInfo = new WordInfo(wordKey);
+			wInfo = new WordInfo(word, wordKey);
 			String[][] decomps = wordDecomps.get(word);
 			wInfo.decompositionsSample = decomps;
 			if (decomps != null && decomps.length > 0) {
