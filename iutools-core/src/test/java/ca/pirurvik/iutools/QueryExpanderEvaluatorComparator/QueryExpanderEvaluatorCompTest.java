@@ -23,8 +23,8 @@ public class QueryExpanderEvaluatorCompTest {
 		boolean computeStatsOverSurfaceForms = true;
 		
 		
-		double targetPrecision = 0.7253;
-		double targetRecall = 0.5393;
+		double targetPrecision = 0.6314;
+		double targetRecall = 0.4707;
 		double precRecTolerance = 0.015;
 
 		long targetRuntimeSecs = 3 * 60; // 5 minutes
@@ -43,7 +43,8 @@ public class QueryExpanderEvaluatorCompTest {
 		
 		QueryExpanderEvaluator evaluator = new QueryExpanderEvaluator();
 		// Set this to true if you want to see print statements.
-		evaluator.verbose = false;
+//		evaluator.verbose = false;
+		evaluator.verbose = true;
 
 		CompiledCorpus_InMemory compiledCorpus = CompiledCorpusRegistry.getCorpus();
 		evaluator.setCompiledCorpus(compiledCorpus);
@@ -53,6 +54,7 @@ public class QueryExpanderEvaluatorCompTest {
 
 		
 		long startMSecs = System.currentTimeMillis();
+		evaluator.verbose = true;
 		evaluator.run();
 		long gotElapsedSecs = (System.currentTimeMillis() - startMSecs) / 1000;
 		

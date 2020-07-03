@@ -111,7 +111,7 @@ public class SearchEndpointTest {
 			gotExpansionWords = null;
 		} else {
 			for (QueryExpansion exp: gotExpansions) {
-				gotExpansionWords.add(exp.word);
+				gotExpansionWords.add(exp.getWord());
 			}
 		}
 		AssertObject.assertDeepEquals("", expExpansionWords, gotExpansionWords);

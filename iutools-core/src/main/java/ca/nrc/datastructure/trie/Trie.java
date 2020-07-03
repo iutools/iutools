@@ -2,9 +2,12 @@ package ca.nrc.datastructure.trie;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,6 +15,9 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
 
 import ca.nrc.datastructure.trie.Trie.NodeOption;
+import ca.nrc.datastructure.trie.visitors.TrieNodeVisitor;
+import ca.nrc.datastructure.trie.visitors.VisitorFindMostFrequentTerminals;
+import ca.nrc.datastructure.trie.visitors.VisitorNodeCounter;
 import ca.nrc.json.PrettyPrinter;
 
 // TODO-June2020: Methods that return a set or list of TrieNodes should
@@ -78,7 +84,7 @@ public abstract class Trie {
 	}
 		
     public long getSize() throws TrieException {
-    	return getTerminals().length;
+    	return totalTerminals();
     }
     
 	public TrieNode getNode(List<String> keys) throws TrieException {
@@ -149,21 +155,27 @@ public abstract class Trie {
 	protected void collectAllTerminals(TrieNode node, 
 			List<TrieNode> collected) throws TrieException {
 		Logger tLogger = Logger.getLogger("ca.nrc.datastructure.trie.Trie.collectAllTerminals");
-		if (tLogger.isTraceEnabled()) {
-			tLogger.trace("node="+node);
-		}
+		
+		NodeTracer.trace(tLogger, node, "Upon entry, collected="+
+			NodeTracer.printKeys(collected));
 		if (node.isTerminal()) {
-			tLogger.trace("node is terminal; collecting it.");
 			collected.add((TrieNode)node);
+			NodeTracer.trace(tLogger, node, 
+					"node is terminal; collecting it;\nNow, collected="+
+					NodeTracer.printKeys(collected));
 		} else {
-			if (tLogger.isTraceEnabled()) {
-				tLogger.trace(
-					"node is NOT terminal; traversing children, node.children.keysSet()="+
-					String.join(",", node.children.keySet()));
-			}
+			NodeTracer.trace(
+				tLogger, node,
+				"node is NOT terminal; traversing children");
 			for (TrieNode aChild: childrenNodes(node)) {
 				collectAllTerminals(aChild, collected);
 			}
+		}
+		
+		if (NodeTracer.shouldTrace(tLogger, node)) {
+			NodeTracer.trace(tLogger, node, 
+				"Upon exit, collected nodes are: "+
+				NodeTracer.printKeys(collected));
 		}
 	}
 	
@@ -190,15 +202,6 @@ public abstract class Trie {
 		
 		return extended;
 	}
-
-	public long getNbOccurrences() throws TrieException {
-    	TrieNode[] terminals = getTerminals();
-    	long nbOccurrences = 0;
-    	for (TrieNode terminal : terminals) {
-    		nbOccurrences += terminal.getFrequency();
-    	}
-    	return nbOccurrences;
-    }
     
 	public TrieNode getMostFrequentTerminal() throws TrieException {
 		return getMostFrequentTerminal(getRoot());
@@ -251,42 +254,13 @@ public abstract class Trie {
 	public TrieNode[] getMostFrequentTerminals(
 			Integer n, TrieNode node, 
 			TrieNode[] exclusions) throws TrieException {
-		if (exclusions == null) {
-			exclusions = new TrieNode[0];
-		}
-		TrieNode[] terminals = getTerminals(node);
-		for (TrieNode nodeToExclude : exclusions)
-			terminals = (TrieNode[]) ArrayUtils.removeElement(terminals, nodeToExclude);
-	    Arrays.sort(terminals, new Comparator<TrieNode>() {
-	        @Override
-	        public int compare(TrieNode o1, TrieNode o2) {
-	        	if (o1.getFrequency() == o2.getFrequency())
-	        		return 0;
-	            return o1.getFrequency() < o2.getFrequency()? 1 : -1;
-	        }
-	    });
-	    TrieNode[] mostFrequentTerminals;
-	    if (n > terminals.length) {
-	    	mostFrequentTerminals = Arrays.copyOfRange(terminals, 0, terminals.length);
-	    } else {
-	    	mostFrequentTerminals = Arrays.copyOfRange(terminals, 0, n);
-	    }
-		return mostFrequentTerminals;
+		
+		VisitorFindMostFrequentTerminals visitor = 
+			new VisitorFindMostFrequentTerminals(n, exclusions);
+		traverseNodes(node, visitor);
+		
+		return visitor.mostFrequentTerminals();
 	}	
-	
-	protected TrieNode getMostFrequentTerminalFromMostFrequentSequenceForRoot(String rootSegment) throws TrieException {
-		String[] mostFrequentSequence = getMostFrequentSequenceForRoot(rootSegment);
-		TrieNode node = this.getNode(mostFrequentSequence);
-		TrieNode[] terminals = getTerminals(node);
-		long max = 0;
-		TrieNode mostFrequentTerminal = null;
-		for (TrieNode terminal : terminals)
-			if (terminal.getFrequency() > max) {
-				max = terminal.getFrequency();
-				mostFrequentTerminal = terminal;
-			}
-		return mostFrequentTerminal;
-	}
 	
 	protected TrieNode getParentNode(TrieNode node) throws TrieException {
 		return this.getParentNode(node.keys);
@@ -307,47 +281,47 @@ public abstract class Trie {
 			return 0;
 	}
         
-	/**
-	 * 
-	 * @param String rootKey
-	 * @return String[] space-separated keys of the most frequent sequence of morphemes following rootSegment
-	 * @throws TrieException 
-	 */
-	public String[] getMostFrequentSequenceForRoot(String rootKey) throws TrieException {
-		Logger logger = Logger.getLogger("CompiledCorpus.getMostFrequentSequenceToTerminals");
-		HashMap<String, Long> freqs = new HashMap<String, Long>();
-		TrieNode rootSegmentNode = this.getNode(new String[] {rootKey});
-		TrieNode[] terminals = getTerminals(rootSegmentNode);
-		logger.debug("all terminals: "+terminals.length);
-		for (TrieNode terminalNode : terminals) {
-			//logger.debug("terminalNode: "+PrettyPrinter.print(terminalNode));
-			String[] terminalNodeKeys = Arrays.copyOfRange(terminalNode.keys, 1, terminalNode.keys.length);
-			freqs = computeFreqs(terminalNodeKeys,freqs,rootKey);
-		}
-		if (logger.isDebugEnabled()) {
-			logger.debug("freqs: "+PrettyPrinter.print(freqs));
-		}
-		long maxFreq = 0;
-		int minLength = 1000;
-		String seq = null;
-		String[] freqsKeys = freqs.keySet().toArray(new String[] {});
-		for (int i=0; i<freqsKeys.length; i++) {
-			String freqKey = freqsKeys[i];
-			int nbKeys = freqKey.split(" ").length;
-			if (freqs.get(freqKey)==maxFreq) {
-				if (nbKeys<minLength) {
-					maxFreq = freqs.get(freqKey);
-					minLength = nbKeys;
-					seq = freqKey;
-				} 
-			} else if (freqs.get(freqKey) > maxFreq) {
-				maxFreq = freqs.get(freqKey);
-				minLength = nbKeys;
-				seq = freqKey;
-			}
-		}
-		return (rootKey+" "+seq).split(" ");
-	}    
+//	/**
+//	 * 
+//	 * @param String rootKey
+//	 * @return String[] space-separated keys of the most frequent sequence of morphemes following rootSegment
+//	 * @throws TrieException 
+//	 */
+//	public String[] getMostFrequentSequenceForRoot(String rootKey) throws TrieException {
+//		Logger logger = Logger.getLogger("CompiledCorpus.getMostFrequentSequenceToTerminals");
+//		HashMap<String, Long> freqs = new HashMap<String, Long>();
+//		TrieNode rootSegmentNode = this.getNode(new String[] {rootKey});
+//		TrieNode[] terminals = getTerminals(rootSegmentNode);
+//		logger.debug("all terminals: "+terminals.length);
+//		for (TrieNode terminalNode : terminals) {
+//			//logger.debug("terminalNode: "+PrettyPrinter.print(terminalNode));
+//			String[] terminalNodeKeys = Arrays.copyOfRange(terminalNode.keys, 1, terminalNode.keys.length);
+//			freqs = computeFreqs(terminalNodeKeys,freqs,rootKey);
+//		}
+//		if (logger.isDebugEnabled()) {
+//			logger.debug("freqs: "+PrettyPrinter.print(freqs));
+//		}
+//		long maxFreq = 0;
+//		int minLength = 1000;
+//		String seq = null;
+//		String[] freqsKeys = freqs.keySet().toArray(new String[] {});
+//		for (int i=0; i<freqsKeys.length; i++) {
+//			String freqKey = freqsKeys[i];
+//			int nbKeys = freqKey.split(" ").length;
+//			if (freqs.get(freqKey)==maxFreq) {
+//				if (nbKeys<minLength) {
+//					maxFreq = freqs.get(freqKey);
+//					minLength = nbKeys;
+//					seq = freqKey;
+//				} 
+//			} else if (freqs.get(freqKey) > maxFreq) {
+//				maxFreq = freqs.get(freqKey);
+//				minLength = nbKeys;
+//				seq = freqKey;
+//			}
+//		}
+//		return (rootKey+" "+seq).split(" ");
+//	}    
     
 	private HashMap<String, Long> computeFreqs(String[] terminalNodeKeys, HashMap<String, Long> freqs, String rootSegment) throws TrieException {
 		return _computeFreqs("",terminalNodeKeys,freqs,rootSegment);
@@ -438,4 +412,76 @@ public abstract class Trie {
 			updateAncestors(parentNode);
 		}
 	}
+
+	public void traverseNodes(TrieNodeVisitor visitor) throws TrieException {
+		traverseNodes(getRoot(), visitor, null);
+	}
+
+	public void traverseNodes(TrieNodeVisitor visitor, boolean onlyTerminals) throws TrieException {
+		traverseNodes(getRoot(), visitor, onlyTerminals);
+	}
+	
+	public void traverseNodes(TrieNode node, TrieNodeVisitor visitor) throws TrieException {
+		traverseNodes(node, visitor, null);
+	}
+
+	public void traverseNodes(TrieNode node, TrieNodeVisitor visitor, 
+		Boolean onlyTerminals) 
+		throws TrieException {
+		Logger tLogger = Logger.getLogger("ca.nrc.datastructure.trie.Trie.traverseNodes");
+		if (onlyTerminals == null) {
+			onlyTerminals = true;
+		}
+		
+//		if (node.isTerminal() || !onlyTerminals) {
+//			visitor.visitNode(node);
+//		}
+		
+		if (node.isTerminal()) {
+			NodeTracer.trace(tLogger, node, 
+					"node is terminal; visiting it");
+			visitor.visitNode(node);
+		} else {
+			NodeTracer.trace(
+				tLogger, node,
+				"node is NOT terminal");
+			if (!onlyTerminals) {
+				NodeTracer.trace(tLogger, node, 
+						"visiting non-terminal node");
+				visitor.visitNode(node);
+			
+			}
+			NodeTracer.trace(
+					tLogger, node,
+					"visiting node children");
+			for (TrieNode aChild: childrenNodes(node)) {
+				traverseNodes(aChild, visitor, onlyTerminals);
+			}
+		}
+		
+		NodeTracer.trace(tLogger, node, "Exiting");
+	}
+
+	public long totalTerminals() throws TrieException {
+		return totalTerminals(new String[0]);
+	}
+	
+	public long totalTerminals(String[] segments) throws TrieException {
+		TrieNode node = getNode(segments, NodeOption.NO_CREATE);
+		VisitorNodeCounter visitor = new VisitorNodeCounter();
+		traverseNodes(node, visitor, true);
+		return visitor.nodesCount;
+	}
+
+	public long totalTerminalOccurences() throws TrieException {
+		return totalTerminalOccurences(new String[0]);
+	}
+	
+	public long totalTerminalOccurences(String[] segments) throws TrieException {
+		TrieNode node = getNode(segments, NodeOption.NO_CREATE);
+		VisitorNodeCounter visitor = new VisitorNodeCounter();
+		traverseNodes(node, visitor, true);
+		return visitor.occurencesCount;
+	}
+	
 }

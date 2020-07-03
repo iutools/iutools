@@ -22,7 +22,7 @@ public class CompiledCorpusRegistry {
 	
 	static {
 		try {
-			String Hansard19992002_compilationFilePath = IUConfig.getIUDataPath("data/compiled-corpuses/compiled-corpus-HANSARD-1999-2002---single-form-in-terminals.json");
+			String Hansard19992002_compilationFilePath = IUConfig.getIUDataPath("data/compiled-corpuses/compiled-corpus-HANSARD-1999-2002--withWordInfoMap.json");
 			registry.put("Hansard1999-2002", new File(Hansard19992002_compilationFilePath));
 		} catch (ConfigException e) {
 			throw new ExceptionInInitializerError(e);
@@ -117,17 +117,33 @@ public class CompiledCorpusRegistry {
 		if (corpusName==null) corpusName = defaultCorpusName;
 		CompiledCorpus_InMemory corpus = null;
 		if (corpusCache.containsKey(corpusName)) {
+			// We have already generated a corpus for that name
 			corpus = corpusCache.get(corpusName);
 		} else {
+			// We have NOT generated a corpus for that name.
+			// Check if the name corresponds to an actual corpus name
 			if (registry.containsKey(corpusName)) {
+				// The name is an actual corpus name.
+				// Get the file it corresponds to and load it
 				String jsonFilePath = registry.get(corpusName).toString();
 				corpus = makeCorpus(jsonFilePath);
 				corpusCache.put(corpusName, corpus);
+				corpusCache.put(jsonFilePath, corpus);
 			} else {
+				// The "name" does not correspond to the name of an actual 
+				// corpus. See if there is a corpus file or directory that
+				// contains that "name"
+				//
 				String corpusFile = scanDataDirForCorpusFile(corpusName);
 				if (corpusFile != null) {
-					corpus = makeCorpus(corpusFile);
-					corpusCache.put(corpusName, corpus);
+					// Found a file that matches corpusName
+					// Load it
+					if (corpusCache.containsKey(corpusFile)) {
+						corpus = corpusCache.get(corpusFile);
+					} else {
+						corpus = makeCorpus(corpusFile);
+						corpusCache.put(corpusFile, corpus);
+					}
 				} else {
 					throw new CompiledCorpusRegistryException("Unknown corpus name: "+corpusName);
 				}

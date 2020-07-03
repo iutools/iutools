@@ -1,27 +1,43 @@
 package ca.pirurvik.iutools;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Test;
 
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
-import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.testing.AssertHelpers;
+import ca.nrc.testing.AssertObject;
 import ca.pirurvik.iutools.QueryExpander;
 import ca.pirurvik.iutools.QueryExpansion;
+import ca.pirurvik.iutools.corpus.CompiledCorpus;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
+import junit.framework.Assert;
 
+// TODO-June2020: Create two versions of this: 
+//  - one that uses an _InMemory corpus
+//  - one that uses a _InFileSystem
+//
 public class QueryExpanderTest {
+	
+	@Test
+	public void test_DELETE_ME() {
+		Set<QueryExpansion> expansions = new HashSet<QueryExpansion>();
+		QueryExpansion exp1 = new QueryExpansion("hello", null, 100);
+		QueryExpansion exp2 = new QueryExpansion("hello", null, 100);
+		for (QueryExpansion exp: new QueryExpansion[] {exp1, exp2}) {
+			expansions.add(exp);
+		}
+		Assert.assertEquals("Set should have had only one element", 1, expansions.size());
+	}
+	
+	public CompiledCorpus makeCorpus(String[] words) throws Exception {
+		CompiledCorpus corpus = new CompiledCorpus_InMemory();
+		corpus.addWordOccurences(words);
+		return corpus;
+	}
 
 	/**********************************
 	 * DOCUMENTATION TESTS
@@ -41,7 +57,6 @@ public class QueryExpanderTest {
 	/**********************************
 	 * VERIFICATION TESTS
 	 **********************************/
-
 	
 	@Test
 	public void test__getExpansions__HappyPath() throws Exception {
@@ -50,18 +65,13 @@ public class QueryExpanderTest {
 				"iglu", "iglumut", "iglumut", "iglumut", "iglumik", "iglu",
 				"takujuq", "takujumajunga"
 		};
-        CompiledCorpus_InMemory compiledCorpus = compileCorpusFromWords(words);        
+		CompiledCorpus compiledCorpus = makeCorpus(words);
         QueryExpander reformulator = new QueryExpander(compiledCorpus);
         QueryExpansion[] expansions = reformulator.getExpansions("iglu");
-        String[] gotExpansions = new String[expansions.length];
-        for (int i=0; i<expansions.length; i++)
-        	gotExpansions[i] = expansions[i].word;
-        String[] expected = new String[] {"iglumut","iglu","iglumik"};
+        String[] expected = new String[] {"iglumut", "iglumik"};
         
-        assertEquals("The number of reformulations returned is wrong.",3,gotExpansions.length);
-        List<String> reformulationsList = Arrays.asList(gotExpansions);
-        for (String expectedRef : expected)
-        	assertTrue("The word '"+expectedRef+"' should have been returned.",reformulationsList.contains(expectedRef));
+        new AssertQueryExpansionArray(expansions, "")
+        	.wordsAre(expected);
 	}
 
 
@@ -69,22 +79,16 @@ public class QueryExpanderTest {
 	public void test__getExpansions__Case_with_stepping_back_one_node() throws Exception {
 		String[] words = new String[] {
 				"nuna", "nunait", 
-				"iglu", "iglumut", "iglumut", "iglumut", "iglumik", "iglu", "iglumiutaq",
-				"takujuq", "takujumajunga"
+				"iglu", "iglumut", "iglumut", "iglumut", "iglumik", "iglu", 
+				"iglumiutaq", "takujuq", "takujumajunga"
 		};
         CompiledCorpus_InMemory compiledCorpus = compileCorpusFromWords(words);
         QueryExpander reformulator = new QueryExpander(compiledCorpus);
         QueryExpansion[] expansions = reformulator.getExpansions("iglumiutaq");
-        String[] gotExpansions = new String[expansions.length];
-        for (int i=0; i<expansions.length; i++)
-        	gotExpansions[i] = expansions[i].word;
-        String[] expected = new String[] {"iglumut","iglu","iglumik","iglumiutaq"};
-        
-        
-        assertEquals("The number of reformulations returned is wrong.",4,gotExpansions.length);
-        List<String> reformulationsList = Arrays.asList(gotExpansions);
-        for (String expectedRef : expected)
-        	assertTrue("The word '"+expectedRef+"' should have been returned.",reformulationsList.contains(expectedRef));
+        String[] expected = new String[] {
+        	"iglumut","iglu","iglumik"};
+        new AssertQueryExpansionArray(expansions, "")
+        	.wordsAre(expected);
 	}
 	
 	@Test
@@ -97,16 +101,11 @@ public class QueryExpanderTest {
         CompiledCorpus_InMemory compiledCorpus = compileCorpusFromWords(corpusWords);
         QueryExpander reformulator = new QueryExpander(compiledCorpus);
         QueryExpansion[] expansions = reformulator.getExpansions("takujumaguvit");
-        String[] gotExpansions = new String[expansions.length];
-        for (int i=0; i<expansions.length; i++)
-        	gotExpansions[i] = expansions[i].word;
-        String[] expected = new String[] {"takujuq","takujumavalliajanginnik","takujumajunga"};
+        String[] expected = new String[] {
+        	"takujumajunga","takujumavalliajanginnik","takujuq",};
         
-        
-        assertEquals("The number of reformulations returned is wrong.",3,gotExpansions.length);
-        List<String> reformulationsList = Arrays.asList(gotExpansions);
-        for (String expectedRef : expected)
-        	assertTrue("The word '"+expectedRef+"' should have been returned.",reformulationsList.contains(expectedRef));
+        new AssertQueryExpansionArray(expansions, "")
+    		.wordsAre(expected);
 	}
 	
 	@Test
@@ -119,7 +118,8 @@ public class QueryExpanderTest {
         CompiledCorpus_InMemory compiledCorpus = compileCorpusFromWords(corpusWords);
         QueryExpander expander = new QueryExpander(compiledCorpus);
         QueryExpansion[] gotExpansions = expander.getExpansions("takujuq");
-		String[] expExpansions = new String[] {"takujuq", "takujumajunga", "takujumavalliajanginnik"};
+		String[] expExpansions = new String[] {
+			"takujumajunga", "takujumavalliajanginnik"};
 		assertExpansionsAre(expExpansions, gotExpansions);		
 	}
 	
@@ -139,60 +139,7 @@ public class QueryExpanderTest {
 		String[] expExpansions = new String[] {"ᑕᑯᔪᖅ", "ᑕᑯᔪᒪᔪᖓ", "ᑕᑯᔪᒪᕙᓪᓕᐊᔭᖏᓐᓂᒃ"};
 		assertExpansionsAre(expExpansions, gotExpansions);		
 	}
-
-	@Test
-	public void test_getNMostFrequentForms() throws Exception {
-		String[] words = new String[] {
-				"nuna", "nunait", "nunavummi", "nunavummut",
-				"nunavummiutait", "nunavummit",
-				"takujuq", "takujumajunga", "takujumavalliajanginnik",
-				"takujumalauqtuq", "takujumanngittuq", "takujaujuq",
-				"takujaujumajuq","takujumajuq", "takujumajuq", "takujumajuq",
-				"takujaujut",
-				"takujumajunga", "takujumajunga",
-				"iglumut",
-				"tutsirautiit", "tussirautiit",
-				"tutsiraut",
-				"tuksiraut","tuksiraut",
-				"tussiraut",  
-				"tussiraummut", 
-				"tutsiraummut", "tutsiraummut", "tutsiraummut", 
-				"tuksiraummut", "tuksiraummut"
-		};
-		
-		// tussiraummut : 1
-		// tutsiraummut : 3
-		// tuksiraummut : 2
-		// tussiraut : 1
-		// tutsiraut : 1
-		// tuksiraut : 2
-		// tussirautiit : 1
-		// tutsirautiit : 1
-		// 
-		// attendu : tutsiraummut, tuksiraummut, tuksiraut, tussiraut, tutsiraut
-        CompiledCorpus_InMemory compiledCorpus = compileCorpusFromWords(words);
-        QueryExpander expander = new QueryExpander(compiledCorpus);        
-		
-		// test n < number of terminals
-        TrieNode tutsi = compiledCorpus.trie.getNode(new String[]{"{tuksiq/1v}"});
-        List<QueryExpansion> mostFrequentTerminalsAL = expander.getNMostFrequentForms(tutsi,5,"tuksiraut",new ArrayList<QueryExpansion>());
-        QueryExpansion[] mostFrequentTerminals = mostFrequentTerminalsAL.toArray(new QueryExpansion[] {});
-        QueryExpansion[] expected = new QueryExpansion[] {
-        		new QueryExpansion("tutsiraummut", null, 3),
-        		new QueryExpansion("tuksiraut", null, 2),
-        		new QueryExpansion("tuksiraummut", null, 2),
-        		new QueryExpansion("tussiraut", null, 1),
-        		new QueryExpansion("tutsiraut", null, 1)
-        		};
-        assertEquals("The number of terminals returned is not right.",5,mostFrequentTerminals.length);
-        for (int i=0; i<expected.length; i++) {
-        	assertEquals("The terminal at index "+i+" is not right.",expected[i].word,mostFrequentTerminals[i].word);
-        	assertEquals("The frequency of the terminal at index "+i+" is not right.",expected[i].frequency,mostFrequentTerminals[i].frequency);
-        }
-}
 	
-	
-
 	/**********************************
 	 * HELPER METHODS
 	 **********************************/
@@ -200,9 +147,9 @@ public class QueryExpanderTest {
 	private void assertExpansionsAre(String[] expExpansions, QueryExpansion[] gotExpansionObjs) throws IOException {
         String[] gotExpansions = new String[gotExpansionObjs.length];
         for (int i=0; i<gotExpansionObjs.length; i++)
-        	gotExpansions[i] = gotExpansionObjs[i].word;
+        	gotExpansions[i] = gotExpansionObjs[i].getWord();
         
-        AssertHelpers.assertDeepEquals("", expExpansions, gotExpansions);
+        AssertObject.assertDeepEquals("", expExpansions, gotExpansions);
 		
 	}
 

@@ -8,7 +8,7 @@ public class WordInfo {
 	 * The word. May be left to null if we prefer to use numerical
 	 * IDs to identify the word.
 	 */
-	String word = null;
+	public String word = null;
 	
 	/** 
 	 * Internal key for this word. May be left to null if we prefer to use strings

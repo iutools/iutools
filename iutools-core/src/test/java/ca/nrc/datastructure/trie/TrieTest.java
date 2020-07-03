@@ -5,23 +5,26 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.google.gson.Gson;
-
 import ca.nrc.datastructure.trie.Trie.NodeOption;
-import ca.nrc.testing.AssertHelpers;
+import ca.nrc.datastructure.trie.visitors.TrieNodeVisitor;
 import ca.nrc.testing.AssertObject;
 
 public abstract class TrieTest {
 	
 	public abstract Trie makeTrieToTest() throws Exception;
+	
+	public Trie makeTrieToTest(String[] words) throws Exception {
+		Trie trie = makeTrieToTest();
+		for (String word: words) {
+			trie.add(word.split(""), word);
+		}
+		return trie;
+	}
 	
 	/******************************************
 	 * DOCUMENTATION TESTS
@@ -78,6 +81,14 @@ public abstract class TrieTest {
 		node = trie.getNode("nonexistant".split(""), 
 					NodeOption.NO_CREATE, NodeOption.TERMINAL);
 
+		// You can find out the number of terminal nodes  
+		// that match certain sequences of characters
+		//
+		//    For example, this returns the total number of terminal 
+		//    nodes that start with "hel"
+		//
+		long total = trie.totalTerminals("hel".split(""));
+		
 		// You can also get lists of terminals that match certain 
 		// sequences of charactercs
 		
@@ -89,6 +100,19 @@ public abstract class TrieTest {
 		
 		// Get all the terminals that contain the ngram "el"
 		nodes = trie.getTerminals("el".split(""), false);
+		
+		// You can also traverse all nodes and invoke 
+		// a visitor on each node. For example, this
+		// visitor will count the number of nodes
+		//
+		
+		TrieNodeVisitor visitor = new TrieNodeVisitor() {
+			public long count = 0;
+            public void visitNode(TrieNode node) {
+            	count++;
+            }
+        };
+		trie.traverseNodes(visitor);
 	}
 	
 	@Test
@@ -126,13 +150,16 @@ public abstract class TrieTest {
 	
 	@Test
 	public void test__getParentNode() throws Exception {
-		Trie charTrie = makeTrieToTest();
-		charTrie.add("hello".split(""),"hello");
-		charTrie.add("hit".split(""),"hit");
-		charTrie.add("abba".split(""),"abba");
-		charTrie.add("helios".split(""),"helios");
-		charTrie.add("helm".split(""),"helm");
-		charTrie.add("ok".split(""),"ok");
+		String[] words = new String[] {
+			"hello", "hit", "abba", "helios", "helm", "ok"
+		};
+		Trie charTrie = makeTrieToTest(words);
+//		charTrie.add("hello".split(""),"hello");
+//		charTrie.add("hit".split(""),"hit");
+//		charTrie.add("abba".split(""),"abba");
+//		charTrie.add("helios".split(""),"helios");
+//		charTrie.add("helm".split(""),"helm");
+//		charTrie.add("ok".split(""),"ok");
 		
 		TrieNode parent;
 		// pass keys as argument
@@ -167,19 +194,16 @@ public abstract class TrieTest {
 
 	@Test
 	public void test__add__NullInputSegments() throws Exception {
-		Trie charTrie = makeTrieToTest();
 		String word1 = "someWordThatDoesNotSegment";
 		String word2 = "someOtherWordThatDoesNotSegment";
 		String[] nullSegments = null;
+		Trie charTrie = makeTrieToTest();
 		charTrie.add(nullSegments, word1);
 		charTrie.add(nullSegments, word2);
 		TrieNode gotNode = charTrie.getNode(nullSegments, NodeOption.TERMINAL);
 		new AssertTrieNode(gotNode, "")
 			.hasSurfaceForms(new String[] {word1, word2})
 			;
-		
-		
-
 	}
 	
 	@Test
@@ -217,7 +241,9 @@ public abstract class TrieTest {
 	@Test
 	public void test_add__check_terminal_inuktitut() throws Exception {
 		StringSegmenter iuSegmenter = new StringSegmenter_IUMorpheme();
+		
 		Trie iumorphemeTrie = makeTrieToTest();
+		
 		iumorphemeTrie.add(iuSegmenter.segment("takujuq"),"takujuq");
 		iumorphemeTrie.add(iuSegmenter.segment("nalunaiqsivut"),"nalunaiqsivut");
 		iumorphemeTrie.add(iuSegmenter.segment("nalunairsivut"),"nalunairsivut");
@@ -323,15 +349,21 @@ public abstract class TrieTest {
 	
 	@Test
 	public void test__frequenciesOfWords() throws Exception {
-		Trie charTrie = makeTrieToTest();
-		charTrie.add("hello".split(""),"hello");
-		charTrie.add("world".split(""),"world");
-		charTrie.add("hell boy".split(""),"hell boy");
-		charTrie.add("heaven".split(""),"heaven");
-		charTrie.add("worship".split(""),"worship");
-		charTrie.add("world".split(""),"world");
-		charTrie.add("heaven".split(""),"heaven");
-		charTrie.add("world".split(""),"world");
+//		Trie charTrie = makeTrieToTest();
+//		charTrie.add("hello".split(""),"hello");
+//		charTrie.add("world".split(""),"world");
+//		charTrie.add("hell boy".split(""),"hell boy");
+//		charTrie.add("heaven".split(""),"heaven");
+//		charTrie.add("worship".split(""),"worship");
+//		charTrie.add("world".split(""),"world");
+//		charTrie.add("heaven".split(""),"heaven");
+//		charTrie.add("world".split(""),"world");
+		String[] words = new String[] {
+			"hello", "world", "hell boy", "heaven", "worship",
+			// These words appear more than once
+			"world", "heaven", "world"
+		};
+		Trie charTrie = makeTrieToTest(words);
 		
 		AssertTrie asserter = new AssertTrie(charTrie, "");
 		
@@ -343,14 +375,17 @@ public abstract class TrieTest {
 	
 	@Test
 	public void test_getAllTerminals() throws Exception {
-		Trie charTrie = makeTrieToTest();
-		charTrie.add("hello".split(""),"hello");
-		charTrie.add("hit".split(""),"hit");
-		charTrie.add("abba".split(""),"abba");
-		charTrie.add("helios".split(""),"helios");
-		charTrie.add("helm".split(""),"helm");
-		charTrie.add("ok".split(""),"ok");
-		
+//		Trie charTrie = makeTrieToTest();
+//		charTrie.add("hello".split(""),"hello");
+//		charTrie.add("hit".split(""),"hit");
+//		charTrie.add("abba".split(""),"abba");
+//		charTrie.add("helios".split(""),"helios");
+//		charTrie.add("helm".split(""),"helm");
+//		charTrie.add("ok".split(""),"ok");
+		String[] words = new String[] {
+			"hello", "hit", "abba", "helios", "helm", "ok"
+		};
+		Trie charTrie = makeTrieToTest(words);
 		new AssertTrie(charTrie)
 				.terminalsForNodeEqual(
 					"h".split(""), 
@@ -416,11 +451,9 @@ public abstract class TrieTest {
 				new String[] {
 					"abba", "helios", "hello", "helm", "hit", "ok"
 				})
-			.hasNbOccurences(8)
+			.hasTotalTerminalOccurences(8)
 			;
 	}
-	
-
 	
 	@Test
 	public void test_getMostFrequentTerminal() throws Exception {
@@ -442,7 +475,6 @@ public abstract class TrieTest {
 		
 		new AssertTrie(charTrie, "")
 			.mostFrequentTerminalEquals(null, "ok")
-			.mostFrequentTerminalEquals("hell".split(""), "hellam")
 			;
 	}
 	
@@ -511,38 +543,10 @@ public abstract class TrieTest {
 			.mostFrequentTerminalsEqual(2, "hel".split(""), 
 				new String[] {"h e l i o s", "h e l i c o p t e r"})
 		
-			// test with exclusion of nodes
-		.mostFrequentTerminalsEqual(4, "hello".split(""), 
-				new String[] {"h e l l o"})
-		
+			// Test with n > number of terminals
+			.mostFrequentTerminalsEqual(2, "hel".split(""), 
+				new String[] {"h e l i o s", "h e l i c o p t e r"})
 		;
-	}
-	
-	
-	@Test
-	public void test__mostFrequentSequenceForRoot__Char() throws Exception {
-		Trie charTrie = makeTrieToTest();
-		charTrie.add("hello".split(""),"hello");
-		charTrie.add("hint".split(""),"hint");
-		charTrie.add("helicopter".split(""),"helicopter");
-		charTrie.add("helios".split(""),"helios");
-		charTrie.add("helicopter".split(""),"helipcopter");
-		String[] mostFrequentSegments = charTrie.getMostFrequentSequenceForRoot("h");
-		String[] expected = new String[] {"h","e"};
-		AssertHelpers.assertDeepEquals("The most frequent sequence should be heli.",expected,mostFrequentSegments);
-	}
-	
-	@Test
-	public void test__mostFrequentSequenceForRoot__IUMorpheme() throws Exception {
-		Trie morphTrie = makeTrieToTest();
-		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"},"takujuq");
-		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{juq/1vn}"},"takulaaqtuq");
-		morphTrie.add(new String[] {"{taku/1v}","{laaq/2vv}","{sima/1vv}","{juq/1vn}"},"takulaaqsimajuq");
-		morphTrie.add(new String[] {"{taku/1v}","{sima/1vv}","{juq/1vn}"},"takusimajuq");
-		morphTrie.add(new String[] {"{taku/1v}","{juq/1vn}"},"takujuq");
-		String[] mostFrequentSegments = morphTrie.getMostFrequentSequenceForRoot("{taku/1v}");
-		String[] expected = new String[] {"{taku/1v}","{juq/1vn}"};
-		AssertHelpers.assertDeepEquals("The most frequent sequence should be heli.",expected,mostFrequentSegments);
 	}
 	
 	@Test
@@ -631,5 +635,69 @@ public abstract class TrieTest {
 		AssertObject.assertDeepEquals(
 			"The list of segments should have been made into a terminal list", 
 			gotTerminal, expTerminal);
+	}
+	
+	@Test
+	public void test__traverseNodes__HappyPath() throws Exception {
+		String[] words = new String[] {"hello", "world"};
+		Trie trie = makeTrieToTest();
+		for (String aWord: words) {
+			trie.add(aWord.split(""), aWord);
+		}
+		
+		NodeCountingVisitor visitor1 = new NodeCountingVisitor();
+		trie.traverseNodes(visitor1);
+		Assert.assertEquals(
+			"Number of nodes of any type was not as expected", 
+			2, visitor1.count);
+
+		visitor1 = new NodeCountingVisitor();
+		trie.traverseNodes(visitor1, false);
+		Assert.assertEquals(
+			"Number of terminal nodes was not as expected", 
+			13, visitor1.count);
+		
+		
+	}
+
+	@Test
+	public void test__totalTerminals__HappyPath() throws Exception {
+		String[] words = new String[] {
+			"hello", "hello", // "hello" occurs twice
+			"world", "helios"};
+		Trie trie = makeTrieToTest(words);
+		
+		String[] chars = "hel".split("");
+		new AssertTrie(trie, "")
+			.totalTerminalsIs(chars, 2)
+			.totalTerminalOccurencesIs(chars, 3)
+		;		
+	}
+	
+	@Test
+	public void test__getSize__HappyPath() throws Exception {
+		String[] words = new String[] {
+				"hello", "hello", // "hello" occurs twice
+				"world", "helios"};
+		Trie trie = makeTrieToTest(words);
+		
+		String[] chars = "hel".split("");
+		new AssertTrie(trie, "")
+			.sizeIs(3)
+		;		
+		
+	}
+	
+	////////////////////////////////////////
+	// TEST HELPERS
+	////////////////////////////////////////
+	
+	public static class NodeCountingVisitor extends TrieNodeVisitor {
+		public long count = 0;
+
+		@Override
+		public void visitNode(TrieNode node) {
+			count++;
+		}
 	}
 }

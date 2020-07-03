@@ -81,16 +81,16 @@ public class CmdExpandQuery extends ConsoleCommand {
 			if (reformulations != null && reformulations.length > 0) {
 				String[] syllRefs = new String[reformulations.length];
 				for (int i=0; i<reformulations.length; i++) {
-					if (reformulations[i].word.equals(latin)) {
-						freqWord = reformulations[i].frequency;
+					if (reformulations[i].getWord().equals(latin)) {
+						freqWord = reformulations[i].getFrequency();
 						continue;
 					}
-					String syllRef = Roman.transcodeToUnicode(reformulations[i].word, null);
-					expansions += "\n  "+reformulations[i].word+" ("+syllRef+") : "+
-							reformulations[i].frequency;
+					String syllRef = Roman.transcodeToUnicode(reformulations[i].getWord(), null);
+					expansions += "\n  "+reformulations[i].getWord()+" ("+syllRef+") : "+
+							reformulations[i].getFrequency();
 					expansions += "\n\n    "+
 							String.join("\n    ", Decompose.getMeaningsInArrayOfStrings(
-									String.join("", reformulations[i].morphemes),"en",false,true))+
+									String.join("", reformulations[i].getMorphemes()),"en",false,true))+
 							"\n";
 				}
 			} else {

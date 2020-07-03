@@ -41,14 +41,46 @@ public class AssertTrie extends Asserter<Trie> {
 		return this;
 	}
 	
+	public AssertTrie totalTerminalsIs(String[] segments, long expTotal) 
+		throws Exception {
+		long gotTotal = trie().totalTerminals(segments);
+		Assert.assertEquals(
+			baseMessage+"\nTotal number of terminal was not as expected for segments"+
+			String.join(",", segments), 
+			expTotal, gotTotal);
+		
+		return this;
+	}
+	
+	public AssertTrie totalTerminalOccurencesIs(String[] segments, long expTotal) 
+		throws Exception {
+		long gotTotal = trie().totalTerminalOccurences(segments);
+		Assert.assertEquals(
+			baseMessage+"\nTotal number of terminal occurences was not as expected for segments"+
+			String.join(",", segments), 
+			expTotal, gotTotal);
+		
+		return this;
+	}
+	
+	public AssertTrie sizeIs(long expSize) throws Exception {
+		long gotSize = trie().getSize();
+		Assert.assertEquals(
+			baseMessage+"\nTrie size was not as expected", 
+			expSize, gotSize);
+		
+		return this;
+	}
+	
+	
 	public AssertTrie hasTerminals(String[] expTerminals) throws Exception {
 		return terminalsForNodeEqual(new String[0], expTerminals);
 	}
 	
-	public AssertTrie hasNbOccurences(long expNbOccurences) throws Exception {
+	public AssertTrie hasTotalTerminalOccurences(long expNbOccurences) throws Exception {
 		Assert.assertEquals(
 			baseMessage+"\nTotal number of occurences was not as expected", 
-			expNbOccurences, trie().getNbOccurrences());
+			expNbOccurences, trie().totalTerminalOccurences());
 		return this;
 	}
 	
@@ -69,14 +101,17 @@ public class AssertTrie extends Asserter<Trie> {
 
 	public AssertTrie mostFrequentTerminalEquals(
 		String[] segments, String expMostFrequent) throws Exception {
+		String gotMostFrequent = null;
 		if (segments == null) {
 			segments = new String[0];
 		}
 		TrieNode gotMostFrequentNode = trie().getMostFrequentTerminal(segments);
-		String[] gotKeysArr = Arrays.copyOfRange(gotMostFrequentNode.keys, 
-					0, gotMostFrequentNode.keys.length-1);
-		String gotKeys = String.join("", gotKeysArr);
-		String gotMostFrequent = gotKeys.substring(0, gotKeys.length());
+		if (gotMostFrequentNode != null) {
+			String[] gotKeysArr = Arrays.copyOfRange(gotMostFrequentNode.keys, 
+						0, gotMostFrequentNode.keys.length-1);
+			String gotKeys = String.join("", gotKeysArr);
+			gotMostFrequent = gotKeys.substring(0, gotKeys.length());
+		}
 		Assert.assertEquals(
 			baseMessage+"\nMost frequent terminal not as expected for node: "+
 					String.join(",", segments), 

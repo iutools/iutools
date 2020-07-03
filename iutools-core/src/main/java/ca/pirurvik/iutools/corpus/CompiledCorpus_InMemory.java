@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
@@ -26,9 +27,11 @@ import ca.inuktitutcomputing.utilities.StopWatch;
 import ca.inuktitutcomputing.utilities.StopWatchException;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.Trie_InMemory;
+import ca.nrc.datastructure.trie.visitors.TrieNodeVisitor;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.json.PrettyPrinter;
+import ca.nrc.ui.commandline.ProgressMonitor_Terminal;
 import ca.pirurvik.iutools.text.ngrams.NgramCompiler;
 
 public class CompiledCorpus_InMemory extends CompiledCorpus 
@@ -226,21 +229,29 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 		updateNGramIndex(word);    	
 	}
 
-	private void updateWordInfo(String word, String[][] sampleDecomps, Integer totalDecomps) {
-		WordInfo info = word2infoMap.get(word);
+	private void updateWordInfo(String word, String[][] sampleDecomps, 
+		Integer totalDecomps) throws CompiledCorpusException {
+		updateWordInfo(word, sampleDecomps, totalDecomps, 1);
+	}
+
+	private void updateWordInfo(String word, String[][] sampleDecomps, 
+		Integer totalDecomps, long freqIncr) throws CompiledCorpusException {
+		WordInfo info = getWord2infoMap().get(word);
 		if (info == null) {
 			key2word.put(nextWordKey, word);
 			word2key.put(word, nextWordKey);	
-			info = new WordInfo(this.nextWordKey);
+			info = new WordInfo(word, this.nextWordKey);
 			this.nextWordKey++;			
 		}
 		
 		if (sampleDecomps != null) {
 			info.setDecompositions(sampleDecomps, totalDecomps);
-			info.frequency++;
 		}
+		
+		info.frequency += freqIncr;
+
 	
-		word2infoMap.put(word, info);
+		getWord2infoMap().put(word, info);
 		
 		return;
 	}
@@ -311,7 +322,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
     
 	public Long totalOccurencesWithDecomps() throws CompiledCorpusException {
 		try {
-			return getTrie().getNbOccurrences();
+			return getTrie().totalTerminalOccurences();
 		} catch (TrieException e) {
 			throw new CompiledCorpusException(e);
 		}
@@ -332,18 +343,6 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 		} catch (TrieException e) {
 			throw new CompiledCorpusException(e);
 		}
-	}
-    
-	public long getNumberOfCompiledOccurrences() throws CompiledCorpusException {
-		if (this.terminalsSumFreq == null) {
-			long sumFreqs = 0;
-			TrieNode[] terminals;
-			terminals = this.getAllTerminals();
-			for (TrieNode terminal : terminals)
-				sumFreqs += terminal.getFrequency();
-			this.terminalsSumFreq = new Long(sumFreqs);
-		}
-		return this.terminalsSumFreq;
 	}
 	
     // ----------------------------- private -------------------------------
@@ -398,13 +397,13 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 		}
 	}
 
-	public String[] getMostFrequentSequenceForRoot(String string) throws CompiledCorpusException {
-		try {
-			return this.trie.getMostFrequentSequenceForRoot(string);
-		} catch (TrieException e) {
-			throw new CompiledCorpusException(e);
-		}
-	}
+//	public String[] getMostFrequentSequenceForRoot(String string) throws CompiledCorpusException {
+//		try {
+//			return this.trie.getMostFrequentSequenceForRoot(string);
+//		} catch (TrieException e) {
+//			throw new CompiledCorpusException(e);
+//		}
+//	}
 	
 	
 	public Boolean isWordInCorpus(String word) throws CompiledCorpusException {
@@ -563,8 +562,8 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 		
 	public WordInfo info4word(String word) throws CompiledCorpusException {
 		WordInfo wInfo = null;
-		if (word2infoMap.containsKey(word)) {
-			wInfo = word2infoMap.get(word);
+		if (getWord2infoMap().containsKey(word)) {
+			wInfo = getWord2infoMap().get(word);
 		} else if (wordDecomps.containsKey(word)){
 			Long wordKey = key4word(word);
 			wInfo = new WordInfo(word, wordKey);
@@ -575,7 +574,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 				wInfo.totalDecompositions = decomps.length;
 			}
 			wInfo.frequency = computeWordFreq(word);
-			word2infoMap.put(word, wInfo);
+			getWord2infoMap().put(word, wInfo);
 		}
 		
 		return wInfo;
@@ -693,5 +692,92 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 		}
 		
 		return mostFrequentLst.toArray(new WordInfo[mostFrequentLst.size()]);
+	}
+	
+	@JsonIgnore @Override
+	public Trie getMorphNgramsTrie() throws CompiledCorpusException {
+		return trie;
+	}
+	
+	@JsonIgnore
+	private Map<String,WordInfo> getWord2infoMap() throws CompiledCorpusException {
+		if (word2infoMap == null) {
+			generateWord2infoMap();
+		}
+		return word2infoMap;
+	}
+
+	// TODO-June2020: Once we have updated the JSON file for the 
+	//  Hansard 1999-2002 and 1999-2018 corpora, make this method
+	//  be private
+	public void generateWord2infoMap() throws CompiledCorpusException {
+		System.out.println("Computing the word2info map. This may take a while...");
+		
+		word2infoMap = new HashMap<String,WordInfo>();
+		
+		updateWordInfoMap_WordsWithDecomps();
+		updateWordInfoMap_WordsWithoutDecomps();
+		
+		
+		long totalWords = word2infoMap.keySet().size();
+		System.out.println("DONE Computing the word2info map. Map now contains "+totalWords+" words");
+	}
+	
+	private void updateWordInfoMap_WordsWithDecomps() throws CompiledCorpusException {
+		System.out.println("Adding words that have decomps to the word2info map. This may take a while...");
+		
+		TrieNode2WordInfoVisitor visitor = new TrieNode2WordInfoVisitor(this);
+		try {
+			getMorphNgramsTrie().traverseNodes(visitor);
+		} catch (TrieException e) {
+			throw new CompiledCorpusException(e);
+		}
+		System.out.println("DONE - Adding words that have decomps to the word2info map. This may take a while...");
+	}
+	
+	private void updateWordInfoMap_WordsWithoutDecomps() throws CompiledCorpusException {
+		System.out.println("Adding words that do NOT have decomps to the word2info map. This may take a while...");
+		
+		for (Entry<String,Long> failure: wordsFailedSegmentationWithFreqs.entrySet()) {
+			String word = failure.getKey();
+			Long frequency = failure.getValue();
+			updateWordInfo(word, new String[0][], 0, frequency);
+		}
+		System.out.println("DONE - Adding words that do NOT have decomps to the word2info map. This may take a while...");
+		
+	}
+	
+	public static class TrieNode2WordInfoVisitor extends TrieNodeVisitor {
+
+		private CompiledCorpus_InMemory corpus;
+		ProgressMonitor_Terminal progressMonitor = null;
+
+		public TrieNode2WordInfoVisitor(CompiledCorpus_InMemory _corpus) 
+			throws CompiledCorpusException {
+			this.corpus = _corpus;
+			long totalWordsWithDecomp = corpus.totalWordsWithDecomps();
+			progressMonitor = 
+				new ProgressMonitor_Terminal(totalWordsWithDecomp, "");
+		}
+		
+		@Override
+		public void visitNode(TrieNode node) throws TrieException {
+			if (node.isTerminal()) {
+				String word = node.surfaceForm;
+				String[][] nullDecomps = null;
+				String[] bestDecomp = node.keys;
+				String[][] sampleDecomps = new String[][] {bestDecomp};
+				int totalDecomps = 1;
+				long frequency = node.getFrequency();
+				try {
+					corpus.updateWordInfo(word, sampleDecomps, totalDecomps, frequency);
+				} catch (CompiledCorpusException e) {
+					throw new TrieException(e);
+				}
+				
+				progressMonitor.stepCompleted();
+			}
+			
+		}
 	}
 }

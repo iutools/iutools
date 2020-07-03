@@ -130,12 +130,10 @@ public class CompiledCorpusRegistryTest {
 	@Test
 	public void test__getCorpus__with_name_part_of_compiled_corpus_filename_in_compiled_corpuses_directory() throws Exception {
 		String corpusName = "HANSARD-1999-2002";
-//		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpusWithName(corpusName);
 		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpus(corpusName);
 		assertTrue("Corpus "+corpusName+"could not be found",corpus != null);
 		// insensitive
 		corpusName = "Hansard-1999-2002"; 
-//		corpus = CompiledCorpusRegistry.getCorpusWithName(corpusName);
 		corpus = CompiledCorpusRegistry.getCorpus(corpusName);
 		assertTrue("Corpus "+corpusName+"could not be found",corpus != null);
 	}
@@ -145,7 +143,6 @@ public class CompiledCorpusRegistryTest {
 	public void test__getCorpus__UnknownCorpus__RaisesException() 
 			throws Exception {
 		String corpusName = "blabla";
-//		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpusWithName(corpusName);
 		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpus(corpusName);
 	}
 }

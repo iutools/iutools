@@ -17,11 +17,13 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.log4j.Logger;
+import org.junit.Assert;
 
 import com.google.gson.Gson;
 
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.TrieException;
+import ca.nrc.debug.Debug;
 import ca.pirurvik.iutools.QueryExpansion;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 import ca.pirurvik.iutools.corpus.WordInfo;
@@ -99,6 +101,11 @@ public class QueryExpanderEvaluator {
 	
 	public void run() {
 		
+		// Set this to a word if you want to only run that one
+		// word. Leave it at null to run all words
+		String focusOnWord = null;
+//		focusOnWord = "silattusarvimmi";
+		
 		Logger logger = Logger.getLogger("QueryExpanderEvaluator");
 		
         try {
@@ -132,11 +139,12 @@ public class QueryExpanderEvaluator {
                     	mot = m.group(1);
                     	freqMotGoogle = Long.parseUnsignedLong(m.group(2));
                     }
+                    
+                    if (focusOnWord != null && !mot.equals(focusOnWord)) {
+                    	continue;
+                    }
                     if (verbose) System.out.println("\n"+mot+" "+"("+freqMotGoogle+")");
                     if (mot==null) continue;
-                    
-//                  if (mot.equals("akigiliutinajaqtuq"))
-//                    	stop = true;
                     
                     //String decMot = String.join(" ",compiledCorpus.getSegmenter().segment(mot))+" \\";
                     nbTotalCases++;
@@ -175,17 +183,17 @@ public class QueryExpanderEvaluator {
                     		}
                     		Arrays.sort(expansions, (QueryExpansion a, QueryExpansion b) ->
                     			{
-                    				if (a.frequency == b.frequency)
+                    				if (a.getFrequency() == b.getFrequency())
                     					return 0;
                     				else
-                    					return a.frequency < b.frequency? 1 : -1;
+                    					return a.getFrequency() < b.getFrequency()? 1 : -1;
                     			});
                     		for (QueryExpansion expansion : expansions) {
-                    			long freqExpansion =expansion.frequency;
+                    			long freqExpansion =expansion.getFrequency();
                     			boolean expansionInGSalternatives = true;
-                    			String expansionMorphemes = String.join(" ", expansion.morphemes);
+                    			String expansionMorphemes = String.join(" ", expansion.getMorphemes());
                     			if (computeStatsOverSurfaceForms) {
-                    				if ( !listgsalternatives.contains(expansion.word) ) {
+                    				if ( !listgsalternatives.contains(expansion.getWord()) ) {
                     					nbTotalExpansionsNotInGSAlternatives++;
                     					expansionInGSalternatives = false;
                     				}
@@ -195,9 +203,9 @@ public class QueryExpanderEvaluator {
                     					expansionInGSalternatives = false;
                     				}
                     			}
-                    			if (verbose) System.out.println("        "+expansion.word+" : "+freqExpansion+(expansionInGSalternatives? " ***":""));
+                    			if (verbose) System.out.println("        "+expansion.getWord()+" : "+freqExpansion+(expansionInGSalternatives? " ***":""));
                     			listexpansionsmorphemes.add(expansionMorphemes);
-                    			listexpansions.add(expansion.word);
+                    			listexpansions.add(expansion.getWord());
                     		}
                     		if (computeStatsOverSurfaceForms) {
                     			for (String gsalternative : gsalternatives)
@@ -216,9 +224,10 @@ public class QueryExpanderEvaluator {
                     		if (verbose) System.out.println("        the word could not be decomposed.");
                     	}
                     } catch(Exception e) {
-                    	if (verbose) System.err.println("Error during getting the expansions: "+e.getMessage());
+                    	System.out.println(
+                    		"Error getting the expansions for word: "+mot+"\n"+
+                    		Debug.printCallStack(e));
                     }
-                    
             }
             csvParser.close();
             
@@ -259,6 +268,10 @@ public class QueryExpanderEvaluator {
 				} catch (IOException e1) {
 					if (verbose) System.err.println(e1.getMessage());
 				}
+        }
+        
+        if (focusOnWord != null) {
+        	Assert.fail("TEST WAS RUN ON A SINGLE WORD!\nRemember to set focusOnWord = null to run the test on all words");
         }
 	}
 

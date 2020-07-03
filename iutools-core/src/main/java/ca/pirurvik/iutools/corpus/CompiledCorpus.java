@@ -19,6 +19,7 @@ import ca.inuktitutcomputing.utilities.StopWatchException;
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_Char;
+import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.Trie_InFileSystem;
 import ca.pirurvik.iutools.text.ngrams.NgramCompiler;
 
@@ -60,6 +61,11 @@ public abstract class CompiledCorpus {
 
 	protected abstract void addWordOccurence(String word, String[][] sampleDecomps, 
 			Integer totalDecomps) throws CompiledCorpusException;
+	
+	// TODO-June2020: Get rid of this method.
+	//   The trie is an internal detail of the Corpus
+	@JsonIgnore
+	public abstract Trie getMorphNgramsTrie() throws CompiledCorpusException;
 	
 	protected String segmenterClassName = StringSegmenter_Char.class.getName();
 	protected transient StringSegmenter segmenter = null;
@@ -296,5 +302,5 @@ public abstract class CompiledCorpus {
 			throw new CompiledCorpusException(e);
 		}
 		return total;
-	}
+	}	
 }

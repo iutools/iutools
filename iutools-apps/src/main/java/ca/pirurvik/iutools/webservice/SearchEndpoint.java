@@ -174,8 +174,8 @@ public class SearchEndpoint extends HttpServlet {
 				if (!isFirst) {
 					expandedQuery += " OR ";
 				}
-				expandedQuery += exp.word;
-				if (exp.word.equals(query)) {
+				expandedQuery += exp.getWord();
+				if (exp.getWord().equals(query)) {
 					inputWordInExpansions = true;
 				}
 				isFirst = false;
@@ -191,7 +191,7 @@ public class SearchEndpoint extends HttpServlet {
 			expandedQuery += ")";	
 			
 			for (QueryExpansion anExpansion: expansions) {
-				expansionWords.add(anExpansion.word);
+				expansionWords.add(anExpansion.getWord());
 			}
 		}
 	

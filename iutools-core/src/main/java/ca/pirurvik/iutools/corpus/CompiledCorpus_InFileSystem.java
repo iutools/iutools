@@ -594,7 +594,7 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus
 	public long totalWords() throws CompiledCorpusException {
 		long total = -1;
 		try {
-			total = wordCharTrie.getTerminals().length;
+			total = wordCharTrie.totalTerminals();
 		} catch (TrieException e) {
 			throw new CompiledCorpusException(e);
 		}
@@ -674,8 +674,8 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus
 		return;
 	}
 	
-	@JsonIgnore
-	protected Trie_InFileSystem getMorphNgramsTrie() throws CompiledCorpusException {
+	@JsonIgnore @Override
+	public Trie getMorphNgramsTrie() throws CompiledCorpusException {
 		if (isStale(morphNgramsTrie)) {
 			regenerateMorphNgramsTrie();
 		}
@@ -704,5 +704,5 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus
 		}
 		
 		return;
-	}	
+	}
 }

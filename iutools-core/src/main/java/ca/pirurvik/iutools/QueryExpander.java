@@ -2,28 +2,26 @@ package ca.pirurvik.iutools;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 import ca.inuktitutcomputing.script.TransCoder;
-import ca.nrc.config.ConfigException;
-import ca.nrc.datastructure.Pair;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
-import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 import ca.pirurvik.iutools.corpus.WordInfo;
+import ca.pirurvik.iutools.corpus.CompiledCorpus;
+import ca.pirurvik.iutools.corpus.CompiledCorpusException;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistryException;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 
 public class QueryExpander {
 	
-	public CompiledCorpus_InMemory compiledCorpus;
+	public CompiledCorpus compiledCorpus;
 	public int numberOfReformulations = 5;
 	protected boolean verbose = true;
 
@@ -36,12 +34,12 @@ public class QueryExpander {
 		initializeWithCorpusName(corpusName);
 	}
 
-	public QueryExpander(CompiledCorpus_InMemory _compiledCorpus) throws QueryExpanderException {
+	public QueryExpander(CompiledCorpus _compiledCorpus) throws QueryExpanderException {
 		this.compiledCorpus = _compiledCorpus;
 		initialize(_compiledCorpus);
 	}
 	
-	private void initialize(CompiledCorpus_InMemory _compiledCorpus) throws QueryExpanderException {
+	private void initialize(CompiledCorpus _compiledCorpus) throws QueryExpanderException {
 		if (_compiledCorpus == null) {
 			try {
 				_compiledCorpus = CompiledCorpusRegistry.getCorpus();
@@ -70,10 +68,8 @@ public class QueryExpander {
 	public QueryExpansion[] getExpansions(String word) throws QueryExpanderException  {
     	Logger logger = Logger.getLogger("QueryExpander.getExpansions");
 		logger.debug("word: "+word);
-		QueryExpansion[] expansionsArr = new QueryExpansion[] {};
-				
+		
 		String[] segments;
-		List<QueryExpansion> mostFrequentTerminalsForWord;
 		
 		try {
 			segments = this.compiledCorpus.decomposeWord(word);
@@ -81,188 +77,263 @@ public class QueryExpander {
 			segments = null;
 		}
 		
-		if (segments !=null && segments.length >0) {
-			logger.debug("segments: "+segments.length);
-			TrieNode node;
-			try {
-				node = this.compiledCorpus.trie.getNode(segments);
-			} catch (TrieException e) {
-				throw new QueryExpanderException(e);
-			}	
-			if (node==null) {
-				mostFrequentTerminalsForWord = new ArrayList<QueryExpansion>();
-			} else {
-				mostFrequentTerminalsForWord = getNMostFrequentForms(node,this.numberOfReformulations,word,new ArrayList<QueryExpansion>());
-				getNMostFrequentForms(segments, this.numberOfReformulations,word,new ArrayList<QueryExpansion>());
-			}
-			
-			logger.debug("mostFrequentTerminalsForWord: "+mostFrequentTerminalsForWord.size());
-			List<QueryExpansion> expansions = __getExpansions(mostFrequentTerminalsForWord, segments, word);
-			logger.debug("expansions: "+expansions.size());
-			
-						
-			expansions = possiblyConvertToSyllabic(word, expansions);
-			
-			expansionsArr =  expansions.toArray(new QueryExpansion[] {});
+		Set<QueryExpansion> expansions = new HashSet<QueryExpansion>();
+
+		String[] wordMorphemes = null;
+		if (segments != null) {
+			wordMorphemes = segments.clone();
 		}
 		
-		return expansionsArr;
+		List<QueryExpansion> bestNeighbors = new ArrayList<QueryExpansion>();
+		
+		if (segments != null) {
+			String[] workingSegments = segments.clone();
+			Set<QueryExpansion> candidateNeighbors = new HashSet<QueryExpansion>();
+			while (true) {
+				boolean keepGoing =
+					collectMorphologicalNeighbors(word, wordMorphemes, workingSegments, 
+						candidateNeighbors);
+				
+				if (keepGoing) {
+					workingSegments = 
+						Arrays.copyOfRange(workingSegments, 0, 
+							workingSegments.length - 1);
+				} else {
+					break;
+				}
+			}
+			try {
+				bestNeighbors = bestExpansions(candidateNeighbors);
+				
+				traceExpansions(logger, bestNeighbors, 
+					"bestNeighbors=");
+			} catch (Exception e) {
+				throw new QueryExpanderException(e);
+			} 	
+		}
+		bestNeighbors = possiblyConvertToSyllabic(word, bestNeighbors);
+		
+		traceExpansions(logger, bestNeighbors, "Returning bestNeighbors=");
+		
+		return bestNeighbors.toArray(new QueryExpansion[0]);
+	}
+	
+	private boolean collectMorphologicalNeighbors(
+		String origWord, String[] origWordMorphemes, 
+		String[] currentMorphemes, Set<QueryExpansion> collectedSoFar) 
+		throws QueryExpanderException {
+				
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.QueryExpander.collectMorphologicalNeighbors");
+		
+		if (tLogger.isTraceEnabled()) {
+			traceExpansions(tLogger, collectedSoFar, 
+				"Upon entry, morphemes="+String.join(", ", currentMorphemes)+
+				"collectedSoFar=\n"+collectedSoFar);
+		}
+		Boolean keepGoing = null;
+		
+		if (currentMorphemes == null || currentMorphemes.length == 0) {
+			// We have reached the root of the morphemes Trie.
+			// No more searching to be done.
+			keepGoing = false;
+		}
+		
+		if (keepGoing == null) {
+			try {
+				TrieNode[] wordNodes = 
+					compiledCorpus.getMorphNgramsTrie()
+						.getTerminals(currentMorphemes);
+				for (TrieNode aWordNode: wordNodes) {
+					if (!aWordNode.surfaceForm.equals(origWord)) {
+						QueryExpansion neighbor = 
+							word2neigbhor(origWord, origWordMorphemes, 
+								aWordNode.surfaceForm);
+						collectedSoFar.add(neighbor);
+					}
+					for (String aSurfaceForm: 
+							aWordNode.getSurfaceForms().keySet()) {
+						QueryExpansion neighbor = 
+							word2neigbhor(origWord, origWordMorphemes, 
+								aSurfaceForm);
+						if (!aSurfaceForm.equals(origWord)) {
+							collectedSoFar.add(neighbor);
+						}
+					}
+				}
+				if (collectedSoFar.size() > numberOfReformulations) {
+					// We have collected as many neighbors as reequired
+					// No more searching to be done
+					keepGoing = false;
+				}
+			} catch (TrieException | CompiledCorpusException e) {
+				throw new QueryExpanderException(e);
+			}
+		}
+		
+		if (keepGoing == null) {
+			keepGoing = true;
+		}
+		
+//		if (tLogger.isTraceEnabled()) {
+//			traceExpansions(tLogger, origWord, collectedSoFar, 
+//				"Upon exit, for morphemes="+String.join(", ", morphemes)+
+//				"collectedSoFar=\n"+collectedSoFar);
+//		}
+				
+		return keepGoing;	
+	}
+
+	private List<QueryExpansion> bestExpansions(
+			Set<QueryExpansion> expansions) throws CompiledCorpusException 
+		{
+			List<QueryExpansion> best = null;
+			try {
+				best = sortQueryExpansions(expansions);
+			} catch (Exception e) {
+				throw new CompiledCorpusException(e);
+			}
+			
+			int maxExpansions = 
+				Math.min(numberOfReformulations, best.size());
+			best = best.subList(0, maxExpansions);
+			
+			return best;
+		}
+
+	private QueryExpansion word2neigbhor(
+		String origWord, String[] origMorphemes, String word)
+		throws CompiledCorpusException {
+		String[] topDecomp = null;
+		long frequency = 0;
+		WordInfo winfo = compiledCorpus.info4word(word);
+		if (winfo != null) {
+			topDecomp = winfo.topDecomposition();
+			frequency = winfo.frequency;
+		}
+		
+		QueryExpansion expansion = 
+			new QueryExpansion(word, topDecomp, frequency, origWord, 
+					origMorphemes);
+		
+		return expansion; 
+	}
+	
+	private List<QueryExpansion> sortQueryExpansions(Set<QueryExpansion> expansions) {
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.QueryExpander.sortQueryExpansions");
+		traceExpansions(tLogger, expansions, "Upon entry, expansions=");
+
+		List<QueryExpansion> expansionsLst = new ArrayList<QueryExpansion>();
+		expansionsLst.addAll(expansions);
+		
+		Collections.sort(expansionsLst,
+			(QueryExpansion e1, QueryExpansion e2) -> 
+			{
+				// We favor expansions that have the most morphemes in 
+				// common with the original word
+				//
+				int e1Common = e1.morphemesInCommon().size(); 
+				int e2Common = e2.morphemesInCommon().size(); 
+				int comparison = Integer.compare(e2Common, e1Common);
+				
+//				// AD-July2020: THIS SEEMS TO MAKE THINGS WORSE....
+//				//   So comment it out for now.
+//				// In case of futher tie, we favor expansions that are closest to 
+//				// the original word in the morphem Tree
+//				//
+//				if (comparison == 0) {
+//					int e1Dist = e1.morphologicalDistance();
+//					int e2Dist = e2.morphologicalDistance();
+//					comparison = Integer.compare(e2Dist, e1Dist);
+//				}
+				
+				// In case of further tie, we favor expansions that have high frequency
+				//
+				if (comparison == 0) {
+					comparison = Long.compare(e2.getFrequency(), e1.getFrequency());
+				}
+				
+				// In case of a further tie, we favor expansions whose lenght is 
+				// closest to the lenght of the original word.
+				//
+				if (comparison == 0) {
+					int e1LengDiff = 
+						Math.abs(e1.getWord().length() - e1.getOrigWord().length());
+					int e2LengDiff = 
+						Math.abs(e2.getWord().length() - e2.getOrigWord().length());
+					comparison = Integer.compare(e1LengDiff, e2LengDiff);
+				}
+				
+				// In case of further tie, we sort alphabetically to garantee 
+				// a deterministic order
+				//
+				if (comparison == 0) {
+					comparison = e1.getWord().compareTo(e2.getWord());
+				}				
+				
+				return comparison;
+			}
+		);
+		
+		traceExpansions(tLogger, expansionsLst, "Returning expansionsLst=");
+		
+		return expansionsLst;
 	}
 	
 	private List<QueryExpansion> possiblyConvertToSyllabic(String word, List<QueryExpansion> expansions) {
 		boolean inputIsLatin = Pattern.compile("[a-zA-Z]").matcher(word).find();
 		if (!inputIsLatin) {
 			for (int ii=0; ii < expansions.size(); ii++) {
-				expansions.get(ii).word = TransCoder.romanToUnicode(expansions.get(ii).word);
+				expansions.get(ii).setWord(TransCoder.romanToUnicode(expansions.get(ii).getWord()));
 			}
 			
 		}
 		return expansions;
 	}
 	
-	
-	public List<QueryExpansion> __getExpansions(List<QueryExpansion> mostFrequentTerminalsForReformulations, String[] segments, String word) throws QueryExpanderException {
-		Logger logger = Logger.getLogger("QueryExpander.__getExpansions");
-		logger.debug("nb. segments : "+segments.length);
-		logger.debug("nb. most frequent : "+mostFrequentTerminalsForReformulations.size());
-		
-		if (segments.length == 0 || mostFrequentTerminalsForReformulations.size() == this.numberOfReformulations) {
-			return mostFrequentTerminalsForReformulations;
-		}
-		else {
-			// back one node
-			String[] segmentsBack1 = Arrays.copyOfRange(segments,0,segments.length-1);
-			if (segmentsBack1.length != 0) {
-				logger.debug("back one segment -- "+String.join(" ", segmentsBack1));
-				TrieNode node;
-				try {
-					node = this.compiledCorpus.trie.getNode(segmentsBack1);
-				} catch (TrieException e) {
-					throw new QueryExpanderException(e);
+	public void traceExpansions(Logger tLogger, QueryExpansion[] expansions, 
+		String message) {
+		if (tLogger.isTraceEnabled()) {
+			message += "\nThe expansions are: ";
+			for (QueryExpansion anExpansion: expansions) {
+				message += anExpansion.getWord();
+				long freq = anExpansion.getFrequency();
+				if (freq >= 0) {
+					message += ":f="+freq;
 				}
-				if (node==null)
-					return __getExpansions(mostFrequentTerminalsForReformulations, segmentsBack1, word);
-				logger.debug("node: "+node.keysAsString());
-				List<QueryExpansion> mostFrequentTerminalsForNode = getNMostFrequentForms(node,
-					this.numberOfReformulations - mostFrequentTerminalsForReformulations.size(),
-					word, mostFrequentTerminalsForReformulations);
 				
-				ArrayList<QueryExpansion> newMostFrequentTerminalsForReformulations = new ArrayList<QueryExpansion>();
-				newMostFrequentTerminalsForReformulations.addAll(mostFrequentTerminalsForReformulations);
-				newMostFrequentTerminalsForReformulations.addAll(mostFrequentTerminalsForNode);
-				return __getExpansions(newMostFrequentTerminalsForReformulations, segmentsBack1, word);
-			} else
-				return __getExpansions(mostFrequentTerminalsForReformulations, segmentsBack1, word);
-		}
-	}
-	
-	public List<QueryExpansion> getNMostFrequentForms(TrieNode node, int n, String word, List<QueryExpansion> exclusions) throws QueryExpanderException {
-		Logger logger = Logger.getLogger("QueryExpander.getNMostFrequentForms");
-		ArrayList<String> listOfExclusions = new ArrayList<String>();
-		for (int i=0; i<exclusions.size(); i++)
-			listOfExclusions.add(exclusions.get(i).word);
-		TrieNode[] terminals;
-		try {
-			terminals = compiledCorpus.getTrie().getTerminals(node);
-		} catch (TrieException e) {
-			throw new QueryExpanderException(e);
-		}
-		ArrayList<Object[]> forms= new ArrayList<Object[]>();
-		for (TrieNode terminal : terminals) {
-			HashMap<String,Long> surfaceForms = terminal.getSurfaceForms();
-			if (surfaceForms.size()==0) {
-				surfaceForms = new HashMap<String,Long>();
-				surfaceForms.put(terminal.getTerminalSurfaceForm(), new Long(terminal.getFrequency()));
+				List<String> commonMorphemes = anExpansion.morphemesInCommon();
+				if (commonMorphemes != null) {
+					message += ":c="+commonMorphemes.size();
+				}
+				message += ", ";
 			}
-			for (String surfaceForm : surfaceForms.keySet().toArray(new String[] {}))
-				if ( !listOfExclusions.contains(surfaceForm))
-					forms.add(new Object[] {surfaceForm,surfaceForms.get(surfaceForm),terminal.keysNoTerminal()});
+			tLogger.trace(message);
 		}
-		Object[][] listForms = forms.toArray(new Object[][] {});
-		for (int i=0; i<listForms.length; i++)
-			logger.debug(listForms[i][0]+" ("+listForms[i][1]+")");
-	    Arrays.sort(listForms, (Object[] o1, Object[] o2) -> {
-	    	
-/*	    	
-    			String word1 = (String)o1[0];
-    			String word2 = (String)o2[0];
-	        	Long o1Freq = (Long)o1[1];
-	        	Long o2Freq = (Long)o2[1];
-	        	
-	        	// First compare frequency 
-	        	int comp = o1Freq.compareTo(o2Freq);
-	        	
-	        	if (comp == 0) {
-	        		// In case of tie, look at the difference in length between
-	        		// the expansion and the input word
-	        		int word1Length = word1.length();
-	        		int word2Length = word2.length();
-	        		int diff1WithWord = Math.abs(word1Length-word.length());
-	        		int diff2WithWord = Math.abs(word2Length-word.length());
-	        		comp = diff1WithWord > diff2WithWord? 1 : -1;
-	        	}
-	        	if (comp == 0) {
-	        		// If still tied, sort alphabetically
-	        		comp = word1.compareTo(word2);
-	        	}
-	        	
-	        	return comp;
-*/	        	
-				String word1 = (String)o1[0];
-				String word2 = (String)o2[0];
-	        	Long o1Freq = (Long)o1[1];
-	        	Long o2Freq = (Long)o2[1];
-	        	
-	        	if (o1Freq.compareTo(o2Freq)==0) {
-	        		int word1Length = word1.length();
-	        		int word2Length = word2.length();
-	        		int diff1WithWord = Math.abs(word1Length-word.length());
-	        		int diff2WithWord = Math.abs(word2Length-word.length());
-	        		if (diff1WithWord==diff2WithWord) {
-	        			return  word1.compareTo(word2);
-	        		}
-	        		else {
-	        			return diff1WithWord > diff2WithWord? 1 : -1;
-	        		}
-	        	} else
-	        		return o2Freq.compareTo(o1Freq);
-	        }
-	    );
-	    ArrayList<QueryExpansion> mostFrequentForms = new ArrayList<QueryExpansion>();
-	    int max = listForms.length>n? n : listForms.length;
-	    for (int i=0; i<max; i++) {
-	    	// TODO: morphemes
-	    	String surfaceForm = (String)listForms[i][0];
-	    	String[] morphemes = (String[])listForms[i][2];
-	    	long frequency = ((Long)listForms[i][1]).longValue();
-	    	mostFrequentForms.add(new QueryExpansion(surfaceForm,morphemes,frequency));
-	    }
-		return mostFrequentForms;
 	}
 
-	
-	private List<QueryExpansion> getNMostFrequentForms(
-		String[] segments, int n, String word, 
-		List<QueryExpansion> exclusions) throws QueryExpanderException {
+	public void traceExpansions(Logger tLogger, Set<QueryExpansion> expansionSet, 
+			String message) {
+			if (tLogger.isTraceEnabled()) {
+				List<QueryExpansion> expansions = new ArrayList<QueryExpansion>();
+				expansions.addAll(expansionSet);
+				expansions.sort(
+					(QueryExpansion e1, QueryExpansion e2) -> {
+						return e1.getWord().compareTo(e2.getWord());
+					}
+				);
+				QueryExpansion[] expansionArr = expansions.toArray(new QueryExpansion[0]);
+				traceExpansions(tLogger, expansionArr, message);
+			}
+		}
 		
-		Logger logger = Logger.getLogger("QueryExpander.getNMostFrequentForms");
-		
-		List<QueryExpansion> mostFrequentForms = new ArrayList<QueryExpansion>();
-		
-//		Set<String> listOfExclusions = new HashSet<String>();
-//		for (int i=0; i<exclusions.size(); i++) {
-//			listOfExclusions.add(exclusions.get(i).word);
-//		}
-		
-//		WordInfo[] extendingWords = compiledCorpus.mostFrequentWordsExtending(segments, n);
-//		for (WordInfo winfo: extendingWords) {
-//			if (!listOfExclusions.contains(winfo.word)) {
-//				mostFrequentForms.add(new QueryExpansion(winfo.word, segments, winfo.frequency));
-//			}
-//		}
-		
-		return mostFrequentForms;	
-	}
-	
-
+	private void traceExpansions(Logger logger, List<QueryExpansion> expansions, 
+		String message) {
+		if (logger.isTraceEnabled()) {
+			QueryExpansion[] expansionsArr = null;
+			if (expansions != null) {
+				expansionsArr = expansions.toArray(new QueryExpansion[0]);
+			}
+			traceExpansions(logger, expansionsArr, message);
+		}
+	}	
 }
