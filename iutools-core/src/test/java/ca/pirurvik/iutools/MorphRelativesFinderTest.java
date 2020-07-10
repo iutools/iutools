@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.junit.Test;
 
+import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.testing.AssertObject;
 import ca.pirurvik.iutools.MorphRelativesFinder;
@@ -16,7 +17,11 @@ import ca.pirurvik.iutools.corpus.CompiledCorpus;
 public abstract class MorphRelativesFinderTest {
 	
 	protected abstract CompiledCorpus makeCorpus(
+<<<<<<< HEAD
 		Class<StringSegmenter_IUMorpheme> segClass) throws Exception;
+=======
+		Class<? extends StringSegmenter> segClass) throws Exception;
+>>>>>>> [REF] CompiledCorpus et al - MorphRelativeFinder now tested with
 
 	
 	public CompiledCorpus makeCorpus(String[] words) throws Exception {
