@@ -10,9 +10,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.pirurvik.iutools.MorphRelativesFinderEvaluator;
-import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 
 public class MorphRelativesFinderEvaluatorTest {
 
