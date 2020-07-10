@@ -10,8 +10,8 @@ import org.junit.Test;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.testing.AssertHelpers;
 import ca.nrc.testing.AssertObject;
-import ca.pirurvik.iutools.QueryExpander;
-import ca.pirurvik.iutools.QueryExpansion;
+import ca.pirurvik.iutools.MorphRelativesFinder;
+import ca.pirurvik.iutools.MorphologicalRelative;
 import ca.pirurvik.iutools.corpus.CompiledCorpus;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 import junit.framework.Assert;
@@ -20,18 +20,7 @@ import junit.framework.Assert;
 //  - one that uses an _InMemory corpus
 //  - one that uses a _InFileSystem
 //
-public class QueryExpanderTest {
-	
-	@Test
-	public void test_DELETE_ME() {
-		Set<QueryExpansion> expansions = new HashSet<QueryExpansion>();
-		QueryExpansion exp1 = new QueryExpansion("hello", null, 100);
-		QueryExpansion exp2 = new QueryExpansion("hello", null, 100);
-		for (QueryExpansion exp: new QueryExpansion[] {exp1, exp2}) {
-			expansions.add(exp);
-		}
-		Assert.assertEquals("Set should have had only one element", 1, expansions.size());
-	}
+public class MorphRelativesFinderTest {
 	
 	public CompiledCorpus makeCorpus(String[] words) throws Exception {
 		CompiledCorpus corpus = new CompiledCorpus_InMemory();
@@ -50,8 +39,8 @@ public class QueryExpanderTest {
 		// semantically close to this input, and are very frequent in a given corpus.
 		//
         CompiledCorpus_InMemory compiledCorpus = getACompiledCorpus(); 
-        QueryExpander expander = new QueryExpander(compiledCorpus);
-		QueryExpansion[] expansions = expander.getExpansions("nunavut");
+        MorphRelativesFinder expander = new MorphRelativesFinder(compiledCorpus);
+		MorphologicalRelative[] expansions = expander.getRelatives("nunavut");
 	}
 
 	/**********************************
@@ -66,11 +55,11 @@ public class QueryExpanderTest {
 				"takujuq", "takujumajunga"
 		};
 		CompiledCorpus compiledCorpus = makeCorpus(words);
-        QueryExpander reformulator = new QueryExpander(compiledCorpus);
-        QueryExpansion[] expansions = reformulator.getExpansions("iglu");
+        MorphRelativesFinder reformulator = new MorphRelativesFinder(compiledCorpus);
+        MorphologicalRelative[] expansions = reformulator.getRelatives("iglu");
         String[] expected = new String[] {"iglumut", "iglumik"};
         
-        new AssertQueryExpansionArray(expansions, "")
+        new AssertMorphologicalRelativeArray(expansions, "")
         	.wordsAre(expected);
 	}
 
@@ -83,11 +72,11 @@ public class QueryExpanderTest {
 				"iglumiutaq", "takujuq", "takujumajunga"
 		};
         CompiledCorpus_InMemory compiledCorpus = compileCorpusFromWords(words);
-        QueryExpander reformulator = new QueryExpander(compiledCorpus);
-        QueryExpansion[] expansions = reformulator.getExpansions("iglumiutaq");
+        MorphRelativesFinder reformulator = new MorphRelativesFinder(compiledCorpus);
+        MorphologicalRelative[] expansions = reformulator.getRelatives("iglumiutaq");
         String[] expected = new String[] {
         	"iglumut","iglu","iglumik"};
-        new AssertQueryExpansionArray(expansions, "")
+        new AssertMorphologicalRelativeArray(expansions, "")
         	.wordsAre(expected);
 	}
 	
@@ -99,12 +88,12 @@ public class QueryExpanderTest {
 				"iglumut"
 		};
         CompiledCorpus_InMemory compiledCorpus = compileCorpusFromWords(corpusWords);
-        QueryExpander reformulator = new QueryExpander(compiledCorpus);
-        QueryExpansion[] expansions = reformulator.getExpansions("takujumaguvit");
+        MorphRelativesFinder reformulator = new MorphRelativesFinder(compiledCorpus);
+        MorphologicalRelative[] expansions = reformulator.getRelatives("takujumaguvit");
         String[] expected = new String[] {
         	"takujumajunga","takujumavalliajanginnik","takujuq",};
         
-        new AssertQueryExpansionArray(expansions, "")
+        new AssertMorphologicalRelativeArray(expansions, "")
     		.wordsAre(expected);
 	}
 	
@@ -116,8 +105,8 @@ public class QueryExpanderTest {
 				"iglumut"
 		};
         CompiledCorpus_InMemory compiledCorpus = compileCorpusFromWords(corpusWords);
-        QueryExpander expander = new QueryExpander(compiledCorpus);
-        QueryExpansion[] gotExpansions = expander.getExpansions("takujuq");
+        MorphRelativesFinder expander = new MorphRelativesFinder(compiledCorpus);
+        MorphologicalRelative[] gotExpansions = expander.getRelatives("takujuq");
 		String[] expExpansions = new String[] {
 			"takujumajunga", "takujumavalliajanginnik"};
 		assertExpansionsAre(expExpansions, gotExpansions);		
@@ -132,10 +121,10 @@ public class QueryExpanderTest {
 				"iglumut"
 		};
         CompiledCorpus_InMemory compiledCorpus = compileCorpusFromWords(corpusWords);
-        QueryExpander expander = new QueryExpander(compiledCorpus);
+        MorphRelativesFinder expander = new MorphRelativesFinder(compiledCorpus);
         
         String taqujuq = "ᑕᑯᔪᖅ";
-        QueryExpansion[] gotExpansions = expander.getExpansions(taqujuq);
+        MorphologicalRelative[] gotExpansions = expander.getRelatives(taqujuq);
 		String[] expExpansions = new String[] {"ᑕᑯᔪᖅ", "ᑕᑯᔪᒪᔪᖓ", "ᑕᑯᔪᒪᕙᓪᓕᐊᔭᖏᓐᓂᒃ"};
 		assertExpansionsAre(expExpansions, gotExpansions);		
 	}
@@ -144,7 +133,7 @@ public class QueryExpanderTest {
 	 * HELPER METHODS
 	 **********************************/
 
-	private void assertExpansionsAre(String[] expExpansions, QueryExpansion[] gotExpansionObjs) throws IOException {
+	private void assertExpansionsAre(String[] expExpansions, MorphologicalRelative[] gotExpansionObjs) throws IOException {
         String[] gotExpansions = new String[gotExpansionObjs.length];
         for (int i=0; i<gotExpansionObjs.length; i++)
         	gotExpansions[i] = gotExpansionObjs[i].getWord();

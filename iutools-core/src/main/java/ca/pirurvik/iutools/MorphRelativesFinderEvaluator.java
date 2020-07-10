@@ -24,14 +24,14 @@ import com.google.gson.Gson;
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.debug.Debug;
-import ca.pirurvik.iutools.QueryExpansion;
+import ca.pirurvik.iutools.MorphologicalRelative;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 import ca.pirurvik.iutools.corpus.WordInfo;
 import ca.pirurvik.iutools.corpus.CompiledCorpusException;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistryException;
 
-public class QueryExpanderEvaluator {
+public class MorphRelativesFinderEvaluator {
 	
 	public boolean verbose = false;
 	
@@ -54,10 +54,10 @@ public class QueryExpanderEvaluator {
 	 * 7. Notes
 	 */
 	
-	public QueryExpanderEvaluator() {
+	public MorphRelativesFinderEvaluator() {
 	}
 	
-	public QueryExpanderEvaluator(String compiledCorpusTrieFilePath, String csvGoldStandardFilePath) throws IOException {
+	public MorphRelativesFinderEvaluator(String compiledCorpusTrieFilePath, String csvGoldStandardFilePath) throws IOException {
 		File compiledCorpusTrieFile = new File(compiledCorpusTrieFilePath);
 		setCompiledCorpus(compiledCorpusTrieFile);
 		File goldStandardFile = new File(csvGoldStandardFilePath);
@@ -109,7 +109,7 @@ public class QueryExpanderEvaluator {
 		Logger logger = Logger.getLogger("QueryExpanderEvaluator");
 		
         try {
-    		QueryExpander queryExpander = new QueryExpander(compiledCorpus);
+    		MorphRelativesFinder queryExpander = new MorphRelativesFinder(compiledCorpus);
             
             Pattern patMotFreq = Pattern.compile("^(.+) \\((\\d+)\\).*$");
             
@@ -171,7 +171,7 @@ public class QueryExpanderEvaluator {
                     
                     if (verbose) System.out.println("    Query Expander expansions (frequencies in compiled corpus):");
                     try {
-                    	QueryExpansion[] expansions = queryExpander.getExpansions(mot);
+                    	MorphologicalRelative[] expansions = queryExpander.getRelatives(mot);
                     	if ( expansions != null ) {
                         	logger.debug(mot+" - expansions: "+expansions.length);
                     		ArrayList<String> listexpansionsmorphemes = new ArrayList<String>();
@@ -181,14 +181,14 @@ public class QueryExpanderEvaluator {
                         		nbTotalCasesWithNoExpansion++;
                         		if (verbose) System.out.println("        0 expansion");
                     		}
-                    		Arrays.sort(expansions, (QueryExpansion a, QueryExpansion b) ->
+                    		Arrays.sort(expansions, (MorphologicalRelative a, MorphologicalRelative b) ->
                     			{
                     				if (a.getFrequency() == b.getFrequency())
                     					return 0;
                     				else
                     					return a.getFrequency() < b.getFrequency()? 1 : -1;
                     			});
-                    		for (QueryExpansion expansion : expansions) {
+                    		for (MorphologicalRelative expansion : expansions) {
                     			long freqExpansion =expansion.getFrequency();
                     			boolean expansionInGSalternatives = true;
                     			String expansionMorphemes = String.join(" ", expansion.getMorphemes());
@@ -276,7 +276,7 @@ public class QueryExpanderEvaluator {
 	}
 
 	private long freqDansCorpus(String reformulation) 
-			throws QueryExpanderException {
+			throws MorphRelativesFinderException {
 		
 //		String[] keys = compiledCorpus.getSegmentsCache().get(reformulation);
 //		if (keys==null)
@@ -295,14 +295,14 @@ public class QueryExpanderEvaluator {
 				freqDansCorpus = wInfo.frequency;
 			}
 		} catch (CompiledCorpusException e) {
-			throw new QueryExpanderException(e);
+			throw new MorphRelativesFinderException(e);
 		}
 	
 		return freqDansCorpus;
 	}
 	
 	public static void main(String[] args) throws IOException {
-		QueryExpanderEvaluator evaluator = new QueryExpanderEvaluator(args[0],args[1]);
+		MorphRelativesFinderEvaluator evaluator = new MorphRelativesFinderEvaluator(args[0],args[1]);
 		evaluator.run();
 	}
 }

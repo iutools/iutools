@@ -1,6 +1,6 @@
 package ca.inuktitutcomputing.core.console;
 
-import ca.pirurvik.iutools.QueryExpanderEvaluator;
+import ca.pirurvik.iutools.MorphRelativesFinderEvaluator;
 
 public class CmdEvaluateQueryExpansion extends ConsoleCommand {
 
@@ -19,7 +19,7 @@ public class CmdEvaluateQueryExpansion extends ConsoleCommand {
 		String goldStandardCSVFilePath = getGoldStandardFile();
 		boolean statsOverMorphemes = getStatsOverMorphemes()==null? false : true;
 		
-		QueryExpanderEvaluator evaluator = new QueryExpanderEvaluator(
+		MorphRelativesFinderEvaluator evaluator = new MorphRelativesFinderEvaluator(
 				compilationFilePath, goldStandardCSVFilePath
 				);
 		evaluator.setOptionComputeStatsOverSurfaceForms(statsOverMorphemes);

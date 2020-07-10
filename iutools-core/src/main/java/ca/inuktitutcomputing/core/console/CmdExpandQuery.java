@@ -9,8 +9,8 @@ import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.morph.Decomposition.DecompositionExpression;
 import ca.inuktitutcomputing.script.Roman;
 import ca.inuktitutcomputing.script.Syllabics;
-import ca.pirurvik.iutools.QueryExpander;
-import ca.pirurvik.iutools.QueryExpansion;
+import ca.pirurvik.iutools.MorphRelativesFinder;
+import ca.pirurvik.iutools.MorphologicalRelative;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
 
@@ -30,13 +30,13 @@ public class CmdExpandQuery extends ConsoleCommand {
 		String word = getWord(false);
 		String latin = null;
 		String syll = null;
-		QueryExpansion[] reformulations = null;
+		MorphologicalRelative[] reformulations = null;
 		
 		String compilationFilePath = getCorpusSavePath();
 		FileReader fr = new FileReader(compilationFilePath);
 		CompiledCorpus_InMemory compiledCorpus = new Gson().fromJson(fr, CompiledCorpus_InMemory.class);
 		fr.close();
-		QueryExpander reformulator = new QueryExpander(compiledCorpus);
+		MorphRelativesFinder reformulator = new MorphRelativesFinder(compiledCorpus);
 		CmdConvertIUSegments convertCommand = new CmdConvertIUSegments("");
 		
 		MorphologicalAnalyzer morphAnalyzer = new MorphologicalAnalyzer();
@@ -53,7 +53,7 @@ public class CmdExpandQuery extends ConsoleCommand {
 				latin = word;
 				syll = Roman.transcodeToUnicode(latin, null);
 			}
-			reformulations = reformulator.getExpansions(latin);
+			reformulations = reformulator.getRelatives(latin);
 		}
 
 		while (true) {
@@ -70,7 +70,7 @@ public class CmdExpandQuery extends ConsoleCommand {
 				}
 				reformulations = null;
 				try {
-					reformulations = reformulator.getExpansions(latin);
+					reformulations = reformulator.getRelatives(latin);
 				} catch (Exception e) {
 					throw e;
 				}

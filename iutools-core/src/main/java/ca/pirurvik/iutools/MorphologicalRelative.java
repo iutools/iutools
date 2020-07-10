@@ -8,8 +8,12 @@ import ca.nrc.datastructure.trie.TrieNode;
 import difflib.myers.Equalizer;
 
 
-// TODO-June2020: Rename this class MorphologicalNeighbour
-public class QueryExpansion {
+/**
+ * Represents a word that is morphologically close to another words
+ * @author desilets
+ *
+ */
+public class MorphologicalRelative {
 	
 	private String word;
 		public String getWord() {return word;}
@@ -30,31 +34,31 @@ public class QueryExpansion {
 	
 	private String toStringCached = null;
 
-	public QueryExpansion(String _word, String[] _morphemes, 
+	public MorphologicalRelative(String _word, String[] _morphemes, 
 			long _frequency, String[] _origMorphemes) {
-		init_QueryExpansion(_word, _morphemes, _frequency, null, 
+		init_MorphologicalRelative(_word, _morphemes, _frequency, null, 
 				origMorphemes);
 	}
 	
-	public QueryExpansion(String _word, String[] _morphemes, 
+	public MorphologicalRelative(String _word, String[] _morphemes, 
 			long _frequency) {
-		init_QueryExpansion(_word, _morphemes, _frequency, null, 
+		init_MorphologicalRelative(_word, _morphemes, _frequency, null, 
 				null);
 	}
 	
-	public QueryExpansion(String _word, String[] _morphemes, 
+	public MorphologicalRelative(String _word, String[] _morphemes, 
 			long _frequency, String _origWord) {
-		init_QueryExpansion(_word, _morphemes, _frequency, _origWord, 
+		init_MorphologicalRelative(_word, _morphemes, _frequency, _origWord, 
 				null);
 	}
 	
-	public QueryExpansion(String _word, String[] _morphemes, 
+	public MorphologicalRelative(String _word, String[] _morphemes, 
 		long _frequency, String _origWord, String[] _origMorphemes) {
-		init_QueryExpansion(_word, _morphemes, _frequency, _origWord, 
+		init_MorphologicalRelative(_word, _morphemes, _frequency, _origWord, 
 			_origMorphemes);
 	}
 
-	private void init_QueryExpansion(String _word, String[] _morphemes, long _frequency, String _origWord,
+	private void init_MorphologicalRelative(String _word, String[] _morphemes, long _frequency, String _origWord,
 			String[] _origMorphemes) {
 		this.word = _word;
 		if (_morphemes != null) {
@@ -67,7 +71,7 @@ public class QueryExpansion {
 
 	/**
 	 * Computes the number of steps you have to take in the morpheme
-	 * tree to get from original word to expanded word
+	 * tree to get from original word to morphological relative
 	 * @return
 	 */
 	public int morphologicalDistance() {

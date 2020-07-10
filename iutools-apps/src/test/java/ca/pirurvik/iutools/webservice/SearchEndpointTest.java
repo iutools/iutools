@@ -8,7 +8,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import ca.pirurvik.iutools.QueryExpansion;
+import ca.pirurvik.iutools.MorphologicalRelative;
 import ca.pirurvik.iutools.webservice.SearchEndpoint;
 import ca.pirurvik.iutools.webservice.SearchInputs;
 import ca.nrc.testing.AssertObject;
@@ -105,12 +105,12 @@ public class SearchEndpointTest {
 	}
 	
 
-	private void assertExpansionWordsAre(String[] expExpansionWords, QueryExpansion[] gotExpansions) throws IOException {
+	private void assertExpansionWordsAre(String[] expExpansionWords, MorphologicalRelative[] gotExpansions) throws IOException {
 		List<String> gotExpansionWords = new ArrayList<String>();
 		if (gotExpansions == null) {
 			gotExpansionWords = null;
 		} else {
-			for (QueryExpansion exp: gotExpansions) {
+			for (MorphologicalRelative exp: gotExpansions) {
 				gotExpansionWords.add(exp.getWord());
 			}
 		}

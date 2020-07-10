@@ -9,18 +9,18 @@ import org.junit.Assert;
 import org.junit.Test;
 
 
-public class QueryExpansionTest {
+public class MorphologicalRelativeTest {
 
 	@Test
 	public void test__Equality() {
-		Set<QueryExpansion> expansions = new HashSet<QueryExpansion>();
+		Set<MorphologicalRelative> expansions = new HashSet<MorphologicalRelative>();
 		
 		// These two should be considered equal
-		QueryExpansion exp1 = new QueryExpansion("hello", null, 100);
-		QueryExpansion exp2 = new QueryExpansion("hello", null, 100);
+		MorphologicalRelative exp1 = new MorphologicalRelative("hello", null, 100);
+		MorphologicalRelative exp2 = new MorphologicalRelative("hello", null, 100);
 		
 		// This one is distinc from the first two
-		QueryExpansion exp3 = new QueryExpansion("word", null, 87);
+		MorphologicalRelative exp3 = new MorphologicalRelative("word", null, 87);
 		
 		Assert.assertTrue(exp1.equals(exp2));
 		Assert.assertFalse(exp1.equals(exp3));
@@ -34,7 +34,7 @@ public class QueryExpansionTest {
 			exp1.hashCode(),  exp3.hashCode());
 		
 		// Test inclusion of equal objects in a set
-		for (QueryExpansion exp: new QueryExpansion[] {exp1, exp2, exp3}) {
+		for (MorphologicalRelative exp: new MorphologicalRelative[] {exp1, exp2, exp3}) {
 			expansions.add(exp);
 		}
 		Assert.assertEquals(
@@ -48,8 +48,8 @@ public class QueryExpansionTest {
 		String[] oriMorphemes = new String[] {"taku", "juq"};
 		String expansionWord = "takulauqtuq";
 		String[] expansionMorphemes = new String[] {"taku", "lauq", "tuq"};
-		QueryExpansion expansion = 
-			new QueryExpansion(expansionWord, expansionMorphemes, 12, 
+		MorphologicalRelative expansion = 
+			new MorphologicalRelative(expansionWord, expansionMorphemes, 12, 
 				origWord, oriMorphemes);
 		
 		int gotDistance = expansion.morphologicalDistance();
@@ -65,8 +65,8 @@ public class QueryExpansionTest {
 		String[] oriMorphemes = new String[] {"taku", "juq"};
 		String expansionWord = "takuju";
 		String[] expansionMorphemes = new String[] {"taku", "juq"};
-		QueryExpansion expansion = 
-			new QueryExpansion(expansionWord, expansionMorphemes, 12, 
+		MorphologicalRelative expansion = 
+			new MorphologicalRelative(expansionWord, expansionMorphemes, 12, 
 				origWord, oriMorphemes);
 		
 		int gotDistance = expansion.morphologicalDistance();

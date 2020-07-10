@@ -19,42 +19,52 @@ import ca.pirurvik.iutools.corpus.CompiledCorpusRegistryException;
 
 import org.apache.log4j.Logger;
 
-public class QueryExpander {
+/**
+ * Given an input word, this class finds a list of "good" Morphological 
+ * Relatives. The relatives are chosen such that they:
+ * 
+ * - are morphologically close to the input word
+ * - have a reasonably high frequency in a given corpus
+ * 
+ * @author desilets
+ *
+ */
+public class MorphRelativesFinder {
 	
 	public CompiledCorpus compiledCorpus;
-	public int numberOfReformulations = 5;
+	public int maxRelatives = 5;
 	protected boolean verbose = true;
 
 	
-	public QueryExpander() throws QueryExpanderException {
+	public MorphRelativesFinder() throws MorphRelativesFinderException {
 		initializeWithCorpusName(null);
 	}
 	
-	public QueryExpander(String corpusName) throws QueryExpanderException {
+	public MorphRelativesFinder(String corpusName) throws MorphRelativesFinderException {
 		initializeWithCorpusName(corpusName);
 	}
 
-	public QueryExpander(CompiledCorpus _compiledCorpus) throws QueryExpanderException {
+	public MorphRelativesFinder(CompiledCorpus _compiledCorpus) throws MorphRelativesFinderException {
 		this.compiledCorpus = _compiledCorpus;
 		initialize(_compiledCorpus);
 	}
 	
-	private void initialize(CompiledCorpus _compiledCorpus) throws QueryExpanderException {
+	private void initialize(CompiledCorpus _compiledCorpus) throws MorphRelativesFinderException {
 		if (_compiledCorpus == null) {
 			try {
 				_compiledCorpus = CompiledCorpusRegistry.getCorpus();
 			} catch (CompiledCorpusRegistryException e) {
-				throw new QueryExpanderException("Problem creating a QueryExpander with default pre-compiled corpus", e);
+				throw new MorphRelativesFinderException("Problem creating a MorphRelativesFinder with default pre-compiled corpus", e);
 			}
 		}
 		compiledCorpus = _compiledCorpus;
 	}
 	
-	private void initializeWithCorpusName(String corpusName) throws QueryExpanderException {
+	private void initializeWithCorpusName(String corpusName) throws MorphRelativesFinderException {
 		try {
 			compiledCorpus = CompiledCorpusRegistry.getCorpus(corpusName);
 		} catch (CompiledCorpusRegistryException e) {
-			throw new QueryExpanderException("Problem creating a QueryExpander with default pre-compiled corpus", e);
+			throw new MorphRelativesFinderException("Problem creating a MorphRelativesFinder with default pre-compiled corpus", e);
 		}
 	}
 		
@@ -62,11 +72,11 @@ public class QueryExpander {
 	 * 
 	 * @param word String - an inuktitut word
 	 * @return String[] An array of the most frequent inuktitut words related to the input word
-	 * @throws QueryExpanderException 
+	 * @throws MorphRelativesFinderException 
 	 * @throws Exception
 	 */
-	public QueryExpansion[] getExpansions(String word) throws QueryExpanderException  {
-    	Logger logger = Logger.getLogger("QueryExpander.getExpansions");
+	public MorphologicalRelative[] getRelatives(String word) throws MorphRelativesFinderException  {
+    	Logger logger = Logger.getLogger("MorphRelativesFinder.getRelatives");
 		logger.debug("word: "+word);
 		
 		String[] segments;
@@ -77,18 +87,18 @@ public class QueryExpander {
 			segments = null;
 		}
 		
-		Set<QueryExpansion> expansions = new HashSet<QueryExpansion>();
+		Set<MorphologicalRelative> relatives = new HashSet<MorphologicalRelative>();
 
 		String[] wordMorphemes = null;
 		if (segments != null) {
 			wordMorphemes = segments.clone();
 		}
 		
-		List<QueryExpansion> bestNeighbors = new ArrayList<QueryExpansion>();
+		List<MorphologicalRelative> bestNeighbors = new ArrayList<MorphologicalRelative>();
 		
 		if (segments != null) {
 			String[] workingSegments = segments.clone();
-			Set<QueryExpansion> candidateNeighbors = new HashSet<QueryExpansion>();
+			Set<MorphologicalRelative> candidateNeighbors = new HashSet<MorphologicalRelative>();
 			while (true) {
 				boolean keepGoing =
 					collectMorphologicalNeighbors(word, wordMorphemes, workingSegments, 
@@ -103,30 +113,30 @@ public class QueryExpander {
 				}
 			}
 			try {
-				bestNeighbors = bestExpansions(candidateNeighbors);
+				bestNeighbors = bestRelatives(candidateNeighbors);
 				
-				traceExpansions(logger, bestNeighbors, 
+				traceRelatives(logger, bestNeighbors, 
 					"bestNeighbors=");
 			} catch (Exception e) {
-				throw new QueryExpanderException(e);
+				throw new MorphRelativesFinderException(e);
 			} 	
 		}
 		bestNeighbors = possiblyConvertToSyllabic(word, bestNeighbors);
 		
-		traceExpansions(logger, bestNeighbors, "Returning bestNeighbors=");
+		traceRelatives(logger, bestNeighbors, "Returning bestNeighbors=");
 		
-		return bestNeighbors.toArray(new QueryExpansion[0]);
+		return bestNeighbors.toArray(new MorphologicalRelative[0]);
 	}
 	
 	private boolean collectMorphologicalNeighbors(
 		String origWord, String[] origWordMorphemes, 
-		String[] currentMorphemes, Set<QueryExpansion> collectedSoFar) 
-		throws QueryExpanderException {
+		String[] currentMorphemes, Set<MorphologicalRelative> collectedSoFar) 
+		throws MorphRelativesFinderException {
 				
-		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.QueryExpander.collectMorphologicalNeighbors");
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.MorphRelativesFinder.collectMorphologicalNeighbors");
 		
 		if (tLogger.isTraceEnabled()) {
-			traceExpansions(tLogger, collectedSoFar, 
+			traceRelatives(tLogger, collectedSoFar, 
 				"Upon entry, morphemes="+String.join(", ", currentMorphemes)+
 				"collectedSoFar=\n"+collectedSoFar);
 		}
@@ -145,14 +155,14 @@ public class QueryExpander {
 						.getTerminals(currentMorphemes);
 				for (TrieNode aWordNode: wordNodes) {
 					if (!aWordNode.surfaceForm.equals(origWord)) {
-						QueryExpansion neighbor = 
+						MorphologicalRelative neighbor = 
 							word2neigbhor(origWord, origWordMorphemes, 
 								aWordNode.surfaceForm);
 						collectedSoFar.add(neighbor);
 					}
 					for (String aSurfaceForm: 
 							aWordNode.getSurfaceForms().keySet()) {
-						QueryExpansion neighbor = 
+						MorphologicalRelative neighbor = 
 							word2neigbhor(origWord, origWordMorphemes, 
 								aSurfaceForm);
 						if (!aSurfaceForm.equals(origWord)) {
@@ -160,47 +170,41 @@ public class QueryExpander {
 						}
 					}
 				}
-				if (collectedSoFar.size() > numberOfReformulations) {
+				if (collectedSoFar.size() > maxRelatives) {
 					// We have collected as many neighbors as reequired
 					// No more searching to be done
 					keepGoing = false;
 				}
 			} catch (TrieException | CompiledCorpusException e) {
-				throw new QueryExpanderException(e);
+				throw new MorphRelativesFinderException(e);
 			}
 		}
 		
 		if (keepGoing == null) {
 			keepGoing = true;
 		}
-		
-//		if (tLogger.isTraceEnabled()) {
-//			traceExpansions(tLogger, origWord, collectedSoFar, 
-//				"Upon exit, for morphemes="+String.join(", ", morphemes)+
-//				"collectedSoFar=\n"+collectedSoFar);
-//		}
-				
+						
 		return keepGoing;	
 	}
 
-	private List<QueryExpansion> bestExpansions(
-			Set<QueryExpansion> expansions) throws CompiledCorpusException 
+	private List<MorphologicalRelative> bestRelatives(
+			Set<MorphologicalRelative> relatives) throws CompiledCorpusException 
 		{
-			List<QueryExpansion> best = null;
+			List<MorphologicalRelative> best = null;
 			try {
-				best = sortQueryExpansions(expansions);
+				best = sortRelatives(relatives);
 			} catch (Exception e) {
 				throw new CompiledCorpusException(e);
 			}
 			
-			int maxExpansions = 
-				Math.min(numberOfReformulations, best.size());
-			best = best.subList(0, maxExpansions);
+			int maxBest = 
+				Math.min(maxRelatives, best.size());
+			best = best.subList(0, maxBest);
 			
 			return best;
 		}
 
-	private QueryExpansion word2neigbhor(
+	private MorphologicalRelative word2neigbhor(
 		String origWord, String[] origMorphemes, String word)
 		throws CompiledCorpusException {
 		String[] topDecomp = null;
@@ -211,24 +215,25 @@ public class QueryExpander {
 			frequency = winfo.frequency;
 		}
 		
-		QueryExpansion expansion = 
-			new QueryExpansion(word, topDecomp, frequency, origWord, 
+		MorphologicalRelative relative = 
+			new MorphologicalRelative(word, topDecomp, frequency, origWord, 
 					origMorphemes);
 		
-		return expansion; 
+		return relative; 
 	}
 	
-	private List<QueryExpansion> sortQueryExpansions(Set<QueryExpansion> expansions) {
-		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.QueryExpander.sortQueryExpansions");
-		traceExpansions(tLogger, expansions, "Upon entry, expansions=");
+	private List<MorphologicalRelative> sortRelatives(
+		Set<MorphologicalRelative> relatives) {
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.MorphRelativesFinder.sortRelatives");
+		traceRelatives(tLogger, relatives, "Upon entry, relatives=");
 
-		List<QueryExpansion> expansionsLst = new ArrayList<QueryExpansion>();
-		expansionsLst.addAll(expansions);
+		List<MorphologicalRelative> relativesLst = new ArrayList<MorphologicalRelative>();
+		relativesLst.addAll(relatives);
 		
-		Collections.sort(expansionsLst,
-			(QueryExpansion e1, QueryExpansion e2) -> 
+		Collections.sort(relativesLst,
+			(MorphologicalRelative e1, MorphologicalRelative e2) -> 
 			{
-				// We favor expansions that have the most morphemes in 
+				// We favor relatives that have the most morphemes in 
 				// common with the original word
 				//
 				int e1Common = e1.morphemesInCommon().size(); 
@@ -237,7 +242,7 @@ public class QueryExpander {
 				
 //				// AD-July2020: THIS SEEMS TO MAKE THINGS WORSE....
 //				//   So comment it out for now.
-//				// In case of futher tie, we favor expansions that are closest to 
+//				// In case of futher tie, we favor relatives that are closest to 
 //				// the original word in the morphem Tree
 //				//
 //				if (comparison == 0) {
@@ -246,13 +251,13 @@ public class QueryExpander {
 //					comparison = Integer.compare(e2Dist, e1Dist);
 //				}
 				
-				// In case of further tie, we favor expansions that have high frequency
+				// In case of further tie, we favor relatives that have high frequency
 				//
 				if (comparison == 0) {
 					comparison = Long.compare(e2.getFrequency(), e1.getFrequency());
 				}
 				
-				// In case of a further tie, we favor expansions whose lenght is 
+				// In case of a further tie, we favor relatives whose lenght is 
 				// closest to the lenght of the original word.
 				//
 				if (comparison == 0) {
@@ -274,34 +279,35 @@ public class QueryExpander {
 			}
 		);
 		
-		traceExpansions(tLogger, expansionsLst, "Returning expansionsLst=");
+		traceRelatives(tLogger, relativesLst, "Returning relativesLst=");
 		
-		return expansionsLst;
+		return relativesLst;
 	}
 	
-	private List<QueryExpansion> possiblyConvertToSyllabic(String word, List<QueryExpansion> expansions) {
+	private List<MorphologicalRelative> possiblyConvertToSyllabic(
+		String word, List<MorphologicalRelative> relatives) {
 		boolean inputIsLatin = Pattern.compile("[a-zA-Z]").matcher(word).find();
 		if (!inputIsLatin) {
-			for (int ii=0; ii < expansions.size(); ii++) {
-				expansions.get(ii).setWord(TransCoder.romanToUnicode(expansions.get(ii).getWord()));
+			for (int ii=0; ii < relatives.size(); ii++) {
+				relatives.get(ii).setWord(TransCoder.romanToUnicode(relatives.get(ii).getWord()));
 			}
 			
 		}
-		return expansions;
+		return relatives;
 	}
 	
-	public void traceExpansions(Logger tLogger, QueryExpansion[] expansions, 
+	public void traceRelatives(Logger tLogger, MorphologicalRelative[] relatives, 
 		String message) {
 		if (tLogger.isTraceEnabled()) {
-			message += "\nThe expansions are: ";
-			for (QueryExpansion anExpansion: expansions) {
-				message += anExpansion.getWord();
-				long freq = anExpansion.getFrequency();
+			message += "\nThe relatives are: ";
+			for (MorphologicalRelative aRelative: relatives) {
+				message += aRelative.getWord();
+				long freq = aRelative.getFrequency();
 				if (freq >= 0) {
 					message += ":f="+freq;
 				}
 				
-				List<String> commonMorphemes = anExpansion.morphemesInCommon();
+				List<String> commonMorphemes = aRelative.morphemesInCommon();
 				if (commonMorphemes != null) {
 					message += ":c="+commonMorphemes.size();
 				}
@@ -311,29 +317,29 @@ public class QueryExpander {
 		}
 	}
 
-	public void traceExpansions(Logger tLogger, Set<QueryExpansion> expansionSet, 
+	public void traceRelatives(Logger tLogger, Set<MorphologicalRelative> relatiesSet, 
 			String message) {
 			if (tLogger.isTraceEnabled()) {
-				List<QueryExpansion> expansions = new ArrayList<QueryExpansion>();
-				expansions.addAll(expansionSet);
-				expansions.sort(
-					(QueryExpansion e1, QueryExpansion e2) -> {
+				List<MorphologicalRelative> relatives = new ArrayList<MorphologicalRelative>();
+				relatives.addAll(relatiesSet);
+				relatives.sort(
+					(MorphologicalRelative e1, MorphologicalRelative e2) -> {
 						return e1.getWord().compareTo(e2.getWord());
 					}
 				);
-				QueryExpansion[] expansionArr = expansions.toArray(new QueryExpansion[0]);
-				traceExpansions(tLogger, expansionArr, message);
+				MorphologicalRelative[] relativesArr = relatives.toArray(new MorphologicalRelative[0]);
+				traceRelatives(tLogger, relativesArr, message);
 			}
 		}
 		
-	private void traceExpansions(Logger logger, List<QueryExpansion> expansions, 
-		String message) {
+	private void traceRelatives(Logger logger, 
+		List<MorphologicalRelative> relatives, String message) {
 		if (logger.isTraceEnabled()) {
-			QueryExpansion[] expansionsArr = null;
-			if (expansions != null) {
-				expansionsArr = expansions.toArray(new QueryExpansion[0]);
+			MorphologicalRelative[] relativesArr = null;
+			if (relatives != null) {
+				relativesArr = relatives.toArray(new MorphologicalRelative[0]);
 			}
-			traceExpansions(logger, expansionsArr, message);
+			traceRelatives(logger, relativesArr, message);
 		}
 	}	
 }

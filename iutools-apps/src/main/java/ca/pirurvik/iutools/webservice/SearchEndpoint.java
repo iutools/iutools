@@ -22,9 +22,9 @@ import ca.nrc.data.harvesting.SearchEngine.Hit;
 import ca.nrc.data.harvesting.SearchEngine.SearchEngineException;
 import ca.nrc.data.harvesting.SearchResults;
 import ca.nrc.json.PrettyPrinter;
-import ca.pirurvik.iutools.QueryExpanderException;
-import ca.pirurvik.iutools.QueryExpander;
-import ca.pirurvik.iutools.QueryExpansion;
+import ca.pirurvik.iutools.MorphRelativesFinderException;
+import ca.pirurvik.iutools.MorphRelativesFinder;
+import ca.pirurvik.iutools.MorphologicalRelative;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistryException;
@@ -39,7 +39,7 @@ public class SearchEndpoint extends HttpServlet {
 	private static final long serialVersionUID = -4670287970764735344L;
 	EndPointHelper helper = null;
 	
-    QueryExpander expander = null;    
+    MorphRelativesFinder expander = null;    
     	
 	public SearchEndpoint() {
 	};
@@ -99,7 +99,7 @@ public class SearchEndpoint extends HttpServlet {
 			expandQuery(inputs.convertQueryToSyllabic(), results);
 			tLogger.trace("Expanded query is "+PrettyPrinter.print(results.expandedQueryWords));
 			queryWords = results.expandedQueryWords;
-		} catch (CompiledCorpusRegistryException | QueryExpanderException e) {
+		} catch (CompiledCorpusRegistryException | MorphRelativesFinderException e) {
 			throw new SearchEndpointException("Unable to expand the query", e);
 		}
 		
@@ -153,24 +153,24 @@ public class SearchEndpoint extends HttpServlet {
 		return results;
 	}
 
-	protected void expandQuery(String query, SearchResponse results) throws SearchEndpointException, CompiledCorpusRegistryException, QueryExpanderException {
+	protected void expandQuery(String query, SearchResponse results) throws SearchEndpointException, CompiledCorpusRegistryException, MorphRelativesFinderException {
 		
 		List<String> expansionWords = this.isExpandedQuery(query);
 		String expandedQuery = query;
 		if (expansionWords == null) {
 			// The query was not already an expanded query
-			QueryExpansion[] expansions = null;
+			MorphologicalRelative[] expansions = null;
 			expansionWords = new ArrayList<String>();			
 			if (expander == null) {
 				CompiledCorpus_InMemory compiledCorpus = CompiledCorpusRegistry.getCorpus();
-				expander = new QueryExpander(compiledCorpus);
+				expander = new MorphRelativesFinder(compiledCorpus);
 			}
-			expansions = expander.getExpansions(query);			
+			expansions = expander.getRelatives(query);			
 						
 			expandedQuery = "(";
 			boolean inputWordInExpansions = false;
 			boolean isFirst = true;
-			for (QueryExpansion exp: expansions) {
+			for (MorphologicalRelative exp: expansions) {
 				if (!isFirst) {
 					expandedQuery += " OR ";
 				}
@@ -190,7 +190,7 @@ public class SearchEndpoint extends HttpServlet {
 			}
 			expandedQuery += ")";	
 			
-			for (QueryExpansion anExpansion: expansions) {
+			for (MorphologicalRelative anExpansion: expansions) {
 				expansionWords.add(anExpansion.getWord());
 			}
 		}

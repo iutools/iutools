@@ -11,18 +11,18 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
-import ca.pirurvik.iutools.QueryExpanderEvaluator;
+import ca.pirurvik.iutools.MorphRelativesFinderEvaluator;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 
-public class QueryExpanderEvaluatorTest {
+public class MorphRelativesFinderEvaluatorTest {
 
 	@Test(expected=FileNotFoundException.class)
 	public void test__QueryExpanderEvaluator__Synopsis() throws Exception {
 		
 		String compiledCorpusTrieFilePath = "/path/to/json/file/of/compiled/corpus";
 		String goldStandardCSVFilePath = "/path/to/gold/standard/csv/file";
-		QueryExpanderEvaluator evaluator = 
-			new QueryExpanderEvaluator(compiledCorpusTrieFilePath,goldStandardCSVFilePath);
+		MorphRelativesFinderEvaluator evaluator = 
+			new MorphRelativesFinderEvaluator(compiledCorpusTrieFilePath,goldStandardCSVFilePath);
 		// if statistics are to be computed over morphemes instead of words:
 		evaluator.setOptionComputeStatsOverSurfaceForms(true);
 		evaluator.run();

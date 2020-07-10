@@ -2,14 +2,12 @@ package ca.pirurvik.iutools.QueryExpanderEvaluatorComparator;
 
 import java.io.File;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
 
 import ca.inuktitutcomputing.config.IUConfig;
-import ca.pirurvik.iutools.QueryExpanderEvaluator;
+import ca.pirurvik.iutools.MorphRelativesFinderEvaluator;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 
@@ -41,7 +39,7 @@ public class QueryExpanderEvaluatorCompTest {
 		
 		String goldStandardCSVFilePath = IUConfig.getIUDataPath("/src/test/resources/ca/pirurvik/iutools/IU100Words-expansions-added-to-alternatives.csv");
 		
-		QueryExpanderEvaluator evaluator = new QueryExpanderEvaluator();
+		MorphRelativesFinderEvaluator evaluator = new MorphRelativesFinderEvaluator();
 		// Set this to true if you want to see print statements.
 //		evaluator.verbose = false;
 		evaluator.verbose = true;
