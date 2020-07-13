@@ -17,7 +17,7 @@ public class MorphRelativesFinder_InFileSystemTest
 		extends MorphRelativesFinderTest {
 
 	@Override
-	protected CompiledCorpus makeCorpus(Class<StringSegmenter_IUMorpheme> segClass) throws Exception {
+	protected CompiledCorpus makeCorpus(Class<? extends StringSegmenter> segClass) throws Exception {
 		File corpDir = Files.createTempDir();
 		corpDir.deleteOnExit();
 		CompiledCorpus corpus = new CompiledCorpus_InFileSystem(corpDir);

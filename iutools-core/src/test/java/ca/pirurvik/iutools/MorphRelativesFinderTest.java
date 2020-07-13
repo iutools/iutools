@@ -17,12 +17,7 @@ import ca.pirurvik.iutools.corpus.CompiledCorpus;
 public abstract class MorphRelativesFinderTest {
 	
 	protected abstract CompiledCorpus makeCorpus(
-<<<<<<< HEAD
-		Class<StringSegmenter_IUMorpheme> segClass) throws Exception;
-=======
 		Class<? extends StringSegmenter> segClass) throws Exception;
->>>>>>> [REF] CompiledCorpus et al - MorphRelativeFinder now tested with
-
 	
 	public CompiledCorpus makeCorpus(String[] words) throws Exception {
 		CompiledCorpus corpus = makeCorpus(StringSegmenter_IUMorpheme.class);
