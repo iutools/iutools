@@ -524,4 +524,23 @@ public abstract class CompiledCorpusTest {
 			"Wrong list of words for morpheme ngram "+String.join(",", morphNgram), 
 			expWords, gotWords);
 	}
+	
+	@Test
+	public void test__wordsWithNoDecomposition__HappyPath() throws Exception {
+		CompiledCorpus corpus = makeCorpusUnderTest(MockStringSegmenter_IUMorpheme.class);
+		String[] words = new String[] {"inuit", "inuglu", "nunami", "nunnnavut", "innnuglu"};
+		corpus.addWordOccurences(words);
+		new AssertCompiledCorpus(corpus, "")
+			.wordsWithNoDecompositionAre(new String[] {"innnuglu", "nunnnavut"});
+	}
+
+	@Test
+	public void test__wordsWithNoDecomposition__AllWordsDecompose() throws Exception {
+		CompiledCorpus corpus = makeCorpusUnderTest(MockStringSegmenter_IUMorpheme.class);
+		String[] words = new String[] {"inuit", "inuglu", "nunami"};
+		corpus.addWordOccurences(words);
+		new AssertCompiledCorpus(corpus, "")
+			.wordsWithNoDecompositionAre(new String[0]);
+	}
+
 }

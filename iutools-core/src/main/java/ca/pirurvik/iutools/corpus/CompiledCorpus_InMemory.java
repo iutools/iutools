@@ -42,7 +42,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	public Trie_InMemory trie = new Trie_InMemory();
 	
 	// things related to the compiler's state and operation that need to be saved periodically and at termination
-	private Vector<String> wordsFailedSegmentation = new Vector<String>();
+	private Set<String> wordsFailedSegmentation = new HashSet<String>();
 	public HashMap<String,Long> wordsFailedSegmentationWithFreqs = new HashMap<String,Long>();
 	
 	private String wordSegmentations = ",,";
@@ -92,7 +92,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	
 	@Override
 	public void addWordOccurence(String word, String[][] sampleDecomps, 
-			Integer totalDecomps) throws CompiledCorpusException {
+			Integer totalDecomps, long freqIncr) throws CompiledCorpusException {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory.addWordOccurence");
 		Logger tLogger_STEPS = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory.addWordOccurence_STEPS");
 
@@ -116,7 +116,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 			}
 		}
 		
-		updateWordIndex(word, sampleDecomps, totalDecomps);
+		updateWordIndex(word, sampleDecomps, totalDecomps, freqIncr);
 		if (tLogger_STEPS.isTraceEnabled()) {
 			try {
 				tLogger_STEPS.trace("addToWordCharIndex took "+
@@ -222,9 +222,9 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	}
 	
 	protected void updateWordIndex(String word, String[][] sampleDecomps, 
-			Integer totalDecomps) throws CompiledCorpusException {
+			Integer totalDecomps, long freqIncr) throws CompiledCorpusException {
     	wordDecomps.put(word, sampleDecomps);
-    	updateWordInfo(word, sampleDecomps, totalDecomps);
+    	updateWordInfo(word, sampleDecomps, totalDecomps, freqIncr);
 		
 		updateNGramIndex(word);    	
 	}
@@ -255,12 +255,15 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 		
 		return;
 	}
-
+	
 	private void removeFromListOfFailedSegmentation(String word) {
-		if (getWordsFailedSegmentation().contains(word))
-			getWordsFailedSegmentation().removeElement(word);
-		if (wordsFailedSegmentationWithFreqs.containsKey(word))
-				wordsFailedSegmentationWithFreqs.remove(word);
+		if (getWordsFailedSegmentation().contains(word)) {
+//			getWordsFailedSegmentation().removeElement(word);
+			getWordsFailedSegmentation().remove(word);
+		}
+		if (wordsFailedSegmentationWithFreqs.containsKey(word)) {
+			wordsFailedSegmentationWithFreqs.remove(word);
+		}
 	}
 	
 	protected void addToDecomposedWordsSuite(String word) {
@@ -424,8 +427,11 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	public String getWordsWithUnsuccessfulDecomposition() {
 		if (wordsWithUnsuccessfulDecomposition==null) {
 			wordsWithUnsuccessfulDecomposition = ",,";
-			for (int i=0; i<getWordsFailedSegmentation().size(); i++) {
-				wordsWithUnsuccessfulDecomposition += getWordsFailedSegmentation().get(i)+",,";
+//			for (int i=0; i<getWordsFailedSegmentation().size(); i++) {
+//				wordsWithUnsuccessfulDecomposition += getWordsFailedSegmentation().get(i)+",,";
+//			}
+			for (String aWord: getWordsFailedSegmentation()) {
+				wordsWithUnsuccessfulDecomposition += aWord+",,";
 			}
 		}
 		return wordsWithUnsuccessfulDecomposition;
@@ -435,11 +441,11 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 		return getWordsFailedSegmentation().toArray(new String[] {});
 	}
 
-	public Vector<String> getWordsFailedSegmentation() {
+	public Set<String> getWordsFailedSegmentation() {
 		return wordsFailedSegmentation;
 	}
 	
-	public void setWordsFailedSegmentation(Vector<String> wordsFailedSegmentation) {
+	public void setWordsFailedSegmentation(Set<String> wordsFailedSegmentation) {
 		this.wordsFailedSegmentation = wordsFailedSegmentation;
 	}
 	
@@ -508,6 +514,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 				freq = new Long(0);
 			}
 			wordsFailedSegmentationWithFreqs.put(word, freq+1);
+			wordsFailedSegmentation.add(word);
 		}
 		
 		addToDecomposedWordsSuite(word);
@@ -779,5 +786,10 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 			}
 			
 		}
+	}
+
+	@Override
+	public Iterator<String> wordsWithNoDecomposition() throws CompiledCorpusException {
+		return wordsFailedSegmentation.iterator();
 	}
 }

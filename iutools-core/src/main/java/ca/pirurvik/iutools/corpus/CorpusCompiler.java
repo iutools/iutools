@@ -158,23 +158,30 @@ public class CorpusCompiler {
 	 * @throws CompiledCorpusException 
 	 */
 	public void resumeCompilation(File corpusDirectory) throws CompiledCorpusException {
+		Class<? extends CompiledCorpus> corpusClass = CompiledCorpus_InFileSystem.class;
 		File jsonFilePath = new File(corpusDirectory, CompiledCorpus_InMemory.JSON_COMPILATION_FILE_NAME);
-		corpus = createFromJson(jsonFilePath.toString());
+		if (jsonFilePath.exists()) {
+			corpus = RW_CompiledCorpus.read(
+				jsonFilePath, CompiledCorpus_InMemory.class);
+		} else {
+			corpus = RW_CompiledCorpus.read(
+				corpusDirectory, CompiledCorpus_InFileSystem.class);
+		}
 	}
 
-    public static CompiledCorpus_InMemory createFromJson(String jsonCompilationFilePathname) throws CompiledCorpusException {
-    	try {
-    		FileReader jsonFileReader = new FileReader(jsonCompilationFilePathname);
-    		Gson gson = new Gson();
-    		CompiledCorpus_InMemory compiledCorpus = gson.fromJson(jsonFileReader, CompiledCorpus_InMemory.class);
-    		jsonFileReader.close();
-    		return compiledCorpus;
-    	} catch (FileNotFoundException e) {
-    		throw new CompiledCorpusException("File "+jsonCompilationFilePathname+"does not exist. Could not create a compiled corpus.");
-    	} catch (IOException e) {
-    		throw new CompiledCorpusException(e);
-    	}
-    }
+//    public static CompiledCorpus_InMemory createFromJson(String jsonCompilationFilePathname) throws CompiledCorpusException {
+//    	try {
+//    		FileReader jsonFileReader = new FileReader(jsonCompilationFilePathname);
+//    		Gson gson = new Gson();
+//    		CompiledCorpus_InMemory compiledCorpus = gson.fromJson(jsonFileReader, CompiledCorpus_InMemory.class);
+//    		jsonFileReader.close();
+//    		return compiledCorpus;
+//    	} catch (FileNotFoundException e) {
+//    		throw new CompiledCorpusException("File "+jsonCompilationFilePathname+"does not exist. Could not create a compiled corpus.");
+//    	} catch (IOException e) {
+//    		throw new CompiledCorpusException(e);
+//    	}
+//    }
     
 	private void deleteJSON(File corpusDirectory) {
 		File saveFile = new File(corpusDirectory, CompiledCorpus_InMemory.JSON_COMPILATION_FILE_NAME);
@@ -382,30 +389,34 @@ public class CorpusCompiler {
 	}
 	
 	public void save(File corpusDirectory) throws CompiledCorpusException  {
-		File saveFilePathname = new File(corpusDirectory, CompiledCorpus_InMemory.JSON_COMPILATION_FILE_NAME);
-		saveCompilerInJSONFile(saveFilePathname);
+		if (corpus instanceof CompiledCorpus_InMemory) {
+			File saveFilePathname = new File(corpusDirectory, CompiledCorpus_InMemory.JSON_COMPILATION_FILE_NAME);
+			RW_CompiledCorpus.write(corpus, saveFilePathname);
+		} else {
+			RW_CompiledCorpus.write(corpus, corpusDirectory);
+		}
 	}
 	
-	public void saveCompilerInJSONFile (File savePath) throws CompiledCorpusException {
-		FileWriter saveFile = null;
-		try {
-			saveFile = new FileWriter(savePath);
-		} catch (IOException e1) {
-			throw new CompiledCorpusException(e1);
-		}
-		Gson gson = new Gson();
-		long savedRetrievedFileWordCounter = this.retrievedFileWordCounter;
-		this.retrievedFileWordCounter = this.currentFileWordCounter;
-		try {
-			gson.toJson(this, saveFile);
-			saveFile.flush();
-			saveFile.close();
-			this.retrievedFileWordCounter = savedRetrievedFileWordCounter;
-		} catch (JsonIOException | IOException e) {
-			throw new CompiledCorpusException(e);
-		}
-		toConsole("saved in "+savePath);
-	}
+//	public void saveCompilerInJSONFile (File savePath) throws CompiledCorpusException {
+//		FileWriter saveFile = null;
+//		try {
+//			saveFile = new FileWriter(savePath);
+//		} catch (IOException e1) {
+//			throw new CompiledCorpusException(e1);
+//		}
+//		Gson gson = new Gson();
+//		long savedRetrievedFileWordCounter = this.retrievedFileWordCounter;
+//		this.retrievedFileWordCounter = this.currentFileWordCounter;
+//		try {
+//			gson.toJson(this, saveFile);
+//			saveFile.flush();
+//			saveFile.close();
+//			this.retrievedFileWordCounter = savedRetrievedFileWordCounter;
+//		} catch (JsonIOException | IOException e) {
+//			throw new CompiledCorpusException(e);
+//		}
+//		toConsole("saved in "+savePath);
+//	}
 
 	private static String[] extractWordsFromLine(String line) {
 		Logger logger = Logger.getLogger("ca.pirurvik.iutools.corpus.CorpusCompiler.extractWordsFromLine");

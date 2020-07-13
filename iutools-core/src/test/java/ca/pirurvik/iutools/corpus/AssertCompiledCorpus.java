@@ -225,4 +225,22 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 		
 		return this;
 	}
+
+	public AssertCompiledCorpus wordsWithNoDecompositionAre(
+		String[] expWordsArr) throws Exception {
+		Iterator<String> iterator = corpus().wordsWithNoDecomposition();
+		Set<String> gotWords = new HashSet<String>();
+		while (iterator.hasNext()) {
+			gotWords.add(iterator.next());
+		}
+		Set<String> expWords = new HashSet<String>();
+		for (String aWord: expWordsArr) {
+			expWords.add(aWord);
+		}
+		AssertObject.assertDeepEquals(
+			"Words with no decompositions were not as expected", 
+			expWords, gotWords);
+		
+		return this;
+	}
 }

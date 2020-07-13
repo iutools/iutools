@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -48,7 +49,7 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus
 	}
 	
 	public void addWordOccurence(String word, String[][] sampleDecomps, 
-			Integer totalDecomps) throws CompiledCorpusException {
+			Integer totalDecomps, long freqIncr) throws CompiledCorpusException {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpus_InFileSystem.addWordOccurence");
 
 		makeStale(charNgramsTrie);
@@ -65,7 +66,7 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus
 			tLogger.trace("Adding word="+word);
 		}
 
-		updateWordIndex(word, sampleDecomps, totalDecomps);
+		updateWordIndex(word, sampleDecomps, totalDecomps, freqIncr);
 		
 		if (tLogger.isTraceEnabled()) {
 			try {
@@ -289,7 +290,8 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus
 	}
 
 	protected void updateWordIndex(
-		String word, String[][] sampleDecomps, Integer totalDecomps) 
+		String word, String[][] sampleDecomps, Integer totalDecomps, 
+		long freqIncr) 
 		throws CompiledCorpusException {
     	
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpus_InFileSystem.updateWordIndex");
@@ -301,7 +303,7 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus
 				tLogger.trace("word="+word);				
 			}
 			String[] chars = Trie.wordChars(word);
-			TrieNode node = wordCharTrie.add(chars, word);
+			TrieNode node = wordCharTrie.add(chars, word, freqIncr);
 			node.setField("sampleDecompositions", sampleDecomps);
 			node.setField("totalDecompositions", totalDecomps);
 			wordCharTrie.saveNode(node);
@@ -314,15 +316,7 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus
 		}
 	}
 	
-//	protected void updateDecompositionsIndex(String word, String[][] sampleDecomps, 
-//		int totalDecomps) throws CompiledCorpusException {
 	protected void updateDecompositionsIndex(String word, WordInfo winfo) throws CompiledCorpusException {
-//		
-//		String[] bestDecomp = null;
-//		if (sampleDecomps != null && sampleDecomps.length > 0) {
-//			bestDecomp = sampleDecomps[0];
-//		}
-//		
 		Set<String[]> morphNgrams = new HashSet<String[]>();
 		String[] bestDecomp = winfo.topDecomposition();
 		if (bestDecomp == null) {
@@ -346,13 +340,7 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus
 			} catch (TrieException e) {
 				throw new CompiledCorpusException(e);
 			}
-		}
-		
-//		try {
-//			morphNgramsTrie.add(bestDecomp, word);
-//		} catch (TrieException e) {
-//			throw new CompiledCorpusException(e);
-//		}
+		}		
 	}	
 
 	private void addWordToMorphNgram(String word, TrieNode ngramNode) throws CompiledCorpusException {
@@ -690,9 +678,6 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus
 			while (iter.hasNext()) {
 				String word = iter.next();
 				WordInfo winfo = info4word(word);
-//				long freq = winfo.frequency;
-//				String[][] sampleDecomps = winfo.decompositionsSample;
-//				int totalDecomps = winfo.totalDecompositions;
 				updateDecompositionsIndex(word, winfo);
 			}			
 		} catch (TrieException e) {
@@ -704,5 +689,21 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus
 		}
 		
 		return;
+	}
+
+	@Override
+	public Iterator<String> wordsWithNoDecomposition() 
+		throws CompiledCorpusException {
+		Iterator<String> iterator = new HashSet<String>().iterator();
+		try {
+			TrieNode node = getMorphNgramsTrie().getNode(null, NodeOption.TERMINAL);
+			if (node != null) {
+				iterator = node.getSurfaceForms().keySet().iterator();
+			}
+		} catch (TrieException e) {
+			throw new CompiledCorpusException(e);
+		}
+		
+		return iterator;
 	}
 }

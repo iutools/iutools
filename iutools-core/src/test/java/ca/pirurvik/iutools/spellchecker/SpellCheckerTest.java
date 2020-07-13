@@ -17,8 +17,6 @@ import ca.pirurvik.iutools.spellchecker.SpellingCorrection;
 
 import org.junit.*;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 public class SpellCheckerTest {
 		
 	private SpellChecker checkerSyll = null;
@@ -58,9 +56,13 @@ public class SpellCheckerTest {
 	public void test__SpellChecker__Synopsis() throws Exception {
 		//
 		// Before you can use a spell checker, you must first build its
-		// dictionary of correct words. This can be done in 2 ways:
+		// dictionary of known words. This can be done in 2 ways:
+		//
 		// - directly by adding correct words to the dictionary;
-		// - by specifying a corpus, the words of which will be added to the dictionary
+		// - by specifying a corpus, the words of which will be added to the 
+		//   dictionary (Note: in this case, we assume that words are correctly
+		//   spelled if and only if they decompose)
+		//
 		
 		SpellChecker checker = new SpellChecker();
 		checker.setVerbose(false);
@@ -75,7 +77,11 @@ public class SpellCheckerTest {
 		checker.addCorrectWord("1988-mut");
 		// etc...
 		
-		// or
+		// OR
+		//
+		// Note: In this case, we don't assume that all words contained 
+		//   in the corpus are correctly spelled. Instead, we use the 
+		//   SpellChecker to determine if they are or not.
 		//
 		checker.setDictionaryFromCorpus("a_corpus_name");
 		

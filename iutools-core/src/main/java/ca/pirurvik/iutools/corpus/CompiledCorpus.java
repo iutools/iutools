@@ -1,26 +1,20 @@
 package ca.pirurvik.iutools.corpus;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
-import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import ca.inuktitutcomputing.data.LinguisticDataException;
-import ca.inuktitutcomputing.utilities.StopWatch;
-import ca.inuktitutcomputing.utilities.StopWatchException;
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_Char;
 import ca.nrc.datastructure.trie.Trie;
-import ca.nrc.datastructure.trie.Trie_InFileSystem;
 import ca.pirurvik.iutools.text.ngrams.NgramCompiler;
 
 /**
@@ -42,7 +36,7 @@ public abstract class CompiledCorpus {
 			throws CompiledCorpusException;
 	
 	public abstract boolean containsWord(String word) throws CompiledCorpusException;
-	
+		
 	protected abstract Set<String> wordsContainingMorphNgram(String[] morphemes) 
 			throws CompiledCorpusException;
 	
@@ -53,6 +47,8 @@ public abstract class CompiledCorpus {
     public abstract long totalOccurencesWithNoDecomp() throws CompiledCorpusException;
 	public abstract Long totalOccurencesWithDecomps() throws CompiledCorpusException;
 	
+	public abstract Iterator<String> wordsWithNoDecomposition() throws CompiledCorpusException;
+
 	
 	public abstract String[] bestDecomposition(String word) throws CompiledCorpusException;
 	
@@ -60,7 +56,7 @@ public abstract class CompiledCorpus {
 			String[] morphemes, Integer N) throws CompiledCorpusException;
 
 	protected abstract void addWordOccurence(String word, String[][] sampleDecomps, 
-			Integer totalDecomps) throws CompiledCorpusException;
+			Integer totalDecomps, long freqIncr) throws CompiledCorpusException;
 	
 	// TODO-June2020: Get rid of this method.
 	//   The trie is an internal detail of the Corpus
@@ -158,73 +154,12 @@ public abstract class CompiledCorpus {
 		return;
 	}
 	
-//	public void addWordOccurence(String word, String[][] sampleDecomps, 
-//			int totalDecomps) throws CompiledCorpusException {
-//		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpus.addWordOccurence");
-//		Logger tLogger_STEPS = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpus.addWordOccurence_STEPS");
-//
-//		TimeUnit tunit = TimeUnit.MILLISECONDS;
-//		long methodStart = 0;
-//		if (tLogger.isTraceEnabled()) {
-//			try {
-//				methodStart = StopWatch.now(tunit);
-//			} catch (StopWatchException e) {
-//				throw new CompiledCorpusException(e);
-//			}
-//			tLogger.trace("Adding word="+word);
-//		}
-//
-//		long start = 0;
-//		if (tLogger_STEPS.isTraceEnabled()) {
-//			try {
-//				start = StopWatch.now(tunit);
-//			} catch (StopWatchException e) {
-//				throw new CompiledCorpusException(e);
-//			}
-//		}
-//		
-//		updateWordIndex(word, sampleDecomps, totalDecomps);
-//		if (tLogger_STEPS.isTraceEnabled()) {
-//			try {
-//				tLogger_STEPS.trace("addToWordCharIndex took "+
-//					StopWatch.elapsedSince(start, tunit)+" "+tunit);
-//				start = StopWatch.now(tunit);
-//			} catch (StopWatchException e) {
-//				throw new CompiledCorpusException(e);
-//			};
-//		}
-//		
-//		updateDecompositionsIndex(word, sampleDecomps, totalDecomps);
-//		if (tLogger_STEPS.isTraceEnabled()) {
-//			try {
-//				tLogger_STEPS.trace("addToWordSegmentations took "+
-//					StopWatch.elapsedSince(start, tunit)+" "+tunit);
-//				start = StopWatch.now(tunit);
-//			} catch (StopWatchException e) {
-//				throw new CompiledCorpusException(e);
-//			};
-//		}
-//
-//		updateCharNgramIndex(word, sampleDecomps, totalDecomps);
-//		if (tLogger_STEPS.isTraceEnabled()) {
-//			try {
-//				tLogger_STEPS.trace("updateCharNgramIndex took "+
-//					StopWatch.elapsedSince(start, tunit)+" "+tunit);
-//			} catch (StopWatchException e) {
-//				throw new CompiledCorpusException(e);
-//			};
-//		}
-//		
-//		if (tLogger.isTraceEnabled()) {
-//			try {
-//				tLogger.trace("addWordOccurence took "+
-//					StopWatch.elapsedSince(methodStart, tunit)+" "+tunit+"\n");
-//			} catch (StopWatchException e) {
-//				throw new CompiledCorpusException(e);
-//			};			
-//		}
-//	}
+	private void addWordOccurence(String word, String[][] sampleDecomps, 
+			Integer totalDecomps) throws CompiledCorpusException {
+		addWordOccurence(word, sampleDecomps, totalDecomps, 1);
+	}
 	
+		
 	public abstract long totalOccurencesOf(String word) throws CompiledCorpusException;
 	
 	public abstract List<WordWithMorpheme> wordsContainingMorpheme(String morpheme) throws CompiledCorpusException;
@@ -302,5 +237,25 @@ public abstract class CompiledCorpus {
 			throw new CompiledCorpusException(e);
 		}
 		return total;
-	}	
+	}
+	
+	protected void updateWordDecompositions(String word, 
+			String[][] wordDecomps) throws CompiledCorpusException {
+		String[][] sampleDecomps = decompsSample(wordDecomps);
+		Integer totalDecomps = null;
+		if (wordDecomps != null) {
+			totalDecomps = wordDecomps.length;
+		}
+		addWordOccurence(word, sampleDecomps, totalDecomps, 0);
+	}
+	
+	protected String[][] decompsSample(String[][] allDecomps) {
+		String[][] sample = null;
+		if (allDecomps != null) {
+			int sampleSize = Math.min(decompsSampleSize, allDecomps.length);
+			sample = Arrays.copyOfRange(allDecomps, 0, sampleSize);
+		}
+		return sample;
+	}
+	
 }

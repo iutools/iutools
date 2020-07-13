@@ -64,7 +64,19 @@ public class SpellChecker {
 	 */
 	private final long MAX_DECOMP_MSECS = 5*1000;
 	
+	// TODO-June2020: Have two sets 
+	//  - Set<String> knownCorrect: contains words that we KNOW for a fact
+	//    are correct because they were manually vetted by a human
+	//  - Set<String> assumedCorrect: contains words that we ASSUME are correct
+	//    because they decompose.
+	//
+	// The first of those will contain entries created with addCorrectWord().
+	//
+	// The second of those will contain all the words returned by 
+	//   corpus.wordsWithDecompositions().
+	//
 	public String allWords = ",,";
+	
 	public Map<String,Long> ngramStats = new HashMap<String,Long>();
 	
 	public String allNormalizedNumericTerms = ",,";

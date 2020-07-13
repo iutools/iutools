@@ -1,7 +1,5 @@
 package ca.pirurvik.iutools.morphemesearcher;
 
-import static org.junit.Assert.fail;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -13,12 +11,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import ca.nrc.datastructure.trie.MockStringSegmenter_IUMorpheme;
-import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
-import ca.nrc.testing.AssertHelpers;
-import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 import ca.pirurvik.iutools.corpus.CompiledCorpus;
-import ca.pirurvik.iutools.corpus.CompiledCorpusException;
 import ca.pirurvik.iutools.corpus.MockCompiledCorpus;
 import ca.pirurvik.iutools.corpus.MockCompiledCorpusFactory;
 import ca.pirurvik.iutools.corpus.WordWithMorpheme;
