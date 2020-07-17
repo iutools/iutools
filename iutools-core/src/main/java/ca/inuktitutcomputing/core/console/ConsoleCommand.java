@@ -79,8 +79,19 @@ public abstract class ConsoleCommand extends SubCommand {
 		return dFile;
 	}
 
-	protected String getInputDir() {
-		String dir = getOptionValue(ConsoleCommand.OPT_INPUT_DIR, true);
+	protected File getInputDir() {
+		return getInputDir(null);
+	}	
+	
+	protected File getInputDir(Boolean failIfAbsent) {
+		if (failIfAbsent == null) {
+			failIfAbsent = false;
+		}
+		String dirStr = getOptionValue(ConsoleCommand.OPT_INPUT_DIR, failIfAbsent);
+		File dir = null;
+		if (dirStr != null) {
+			dir = new File(dirStr);
+		}
 		return dir;
 	}
 

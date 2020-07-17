@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -14,6 +15,9 @@ import org.junit.Test;
  *
  */
 
+// TODO-June2020: Activate this test Once we have finalized the default 
+// InFileSystem corpus 
+@Ignore
 public class CorpusSanityCheck_DefaulInFileSystem 
 	extends CorpusSanityCheck {
 
@@ -24,7 +28,7 @@ public class CorpusSanityCheck_DefaulInFileSystem
 
 	@Override
 	protected CompiledCorpus corpusToCheck() throws Exception {
-		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpus("HANSARD-1999-2002.with-decomps");
+		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpus("HANSARD-1999-2002.v2020-07-19");
 		return corpus;
 	}
 

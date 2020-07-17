@@ -14,7 +14,6 @@ import ca.inuktitutcomputing.data.LinguisticDataAbstract;
 import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.data.LinguisticDataSingleton;
 import ca.inuktitutcomputing.data.SurfaceFormInContext;
-import ca.nrc.datastructure.trie.Trie_InMemory;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.Trie_InMemory;
 import ca.pirurvik.iutools.corpus.CompiledCorpusException;

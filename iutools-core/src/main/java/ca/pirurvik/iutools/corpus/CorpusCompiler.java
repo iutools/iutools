@@ -21,6 +21,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 
 import ca.inuktitutcomputing.data.LinguisticDataException;
+import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.script.TransCoder;
 import ca.inuktitutcomputing.utilities.StopWatch;
 import ca.inuktitutcomputing.utilities.StopWatchException;
@@ -149,7 +150,7 @@ public class CorpusCompiler {
 	}
 	
 	public void toConsole(String message) {
-		if (verbose) System.out.print(message);
+		if (verbose) System.out.print(message+"\n");
 	}
 	
 	/**
@@ -441,17 +442,39 @@ public class CorpusCompiler {
 		ObjectStreamReader reader = null;
 		try {
 			reader = new ObjectStreamReader(decompsFile);
-		} catch (FileNotFoundException e) {
+			reader.setEndOfBodyMarker("NEW_LINE");
+		} catch (FileNotFoundException | ObjectStreamReaderException e) {
 			throw new CompiledCorpusException(
 				"Cannot open the decompositions file "+decompsFile, e);
 		}
 		
-		try {
-			Map<String,Object> wordDecomp = (Map<String, Object>) reader.readObject();
-		} catch (ClassNotFoundException | IOException | ObjectStreamReaderException e) {
-			throw new CompiledCorpusException(
-				"Error reading Map<Strin,Object> from decompositions file "+
-				decompsFile, e);
+		while (true) {
+			Map<String,Object> wordDecompInfo;
+			try {
+				wordDecompInfo = (Map<String, Object>) reader.readObject();
+			} catch (ClassNotFoundException | IOException | ObjectStreamReaderException e) {
+				throw new CompiledCorpusException(
+					"Error reading Map<Strin,Object> from decompositions file "+
+					decompsFile, e);
+			}
+			if (wordDecompInfo == null) {
+				break;
+			}
+			
+			String word = (String) wordDecompInfo.get("word");			
+			if (!corpus.containsWord(word)) {
+				toConsole("Skipping word "+word);
+			} else {
+				toConsole("Updating decompositions for word "+word);
+				List<String> decompStrings = (List<String>) wordDecompInfo.get("decompositions");
+				String[][] decomps = Decomposition.decomps2morphemes(decompStrings);
+				corpus.updateWordDecompositions(word, decomps);
+			}
 		}
+		
+		// This will force recreation of the morphemes ngram trie
+		toConsole("Regenerating the morpheme ngram trie. This could take a while...");
+		corpus.getMorphNgramsTrie();
+		toConsole("DONE regenerating the morpheme ngram trie.");
 	}
 }

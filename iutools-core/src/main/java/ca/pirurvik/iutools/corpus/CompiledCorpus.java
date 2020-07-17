@@ -32,6 +32,9 @@ public abstract class CompiledCorpus {
 	
 	public abstract WordInfo info4word(String word) throws CompiledCorpusException;
 	
+	public abstract void updateDecompositionsIndex(WordInfo winfo) 
+			throws CompiledCorpusException;
+	
 	public abstract Set<String> wordsContainingNgram(String ngram) 
 			throws CompiledCorpusException;
 	
@@ -66,7 +69,7 @@ public abstract class CompiledCorpus {
 	protected String segmenterClassName = StringSegmenter_Char.class.getName();
 	protected transient StringSegmenter segmenter = null;
 		
-	private int decompsSampleSize = Integer.MAX_VALUE;
+	private int decompsSampleSize = 10;
 	
 	@JsonIgnore
 	public transient String name;

@@ -31,9 +31,9 @@ import ca.inuktitutcomputing.data.SurfaceFormInContext;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzerException;
 import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.Pair;
-import ca.nrc.datastructure.trie.Trie_InMemory;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
+import ca.nrc.datastructure.trie.Trie_InMemory;
 import ca.nrc.file.ResourceGetter;
 import ca.nrc.json.PrettyPrinter;
 

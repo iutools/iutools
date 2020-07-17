@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -33,8 +32,7 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus
 	
 	Trie_InFileSystem wordCharTrie = null;
 	Trie_InFileSystem charNgramsTrie = null;
-	Trie_InFileSystem wordMorphTrie = null;
-	Trie_InFileSystem morphNgramsTrie = null;
+	Trie_InFileSystem morphNgramsTrie = null;	
 	
 	public CompiledCorpus_InFileSystem(File _corpusDir) {
 		init_CompiledCorpus_InFileSystem(_corpusDir);
@@ -44,7 +42,6 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus
 		this.corpusDir = _corpusDir;
 		wordCharTrie = new Trie_InFileSystem(new File(_corpusDir, "wordCharTrie"));
 		charNgramsTrie = new Trie_InFileSystem(new File(_corpusDir, "charNgramsTrie"));
-		wordMorphTrie = new Trie_InFileSystem(new File(_corpusDir, "wordMorphTrie"));
 		morphNgramsTrie = new Trie_InFileSystem(new File(_corpusDir, "morphNgramsTrie"));
 	}
 	
@@ -134,30 +131,6 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus
 		}
 	}
 
-	private void addWordMorphTrie(String word, String[] decomps) throws CompiledCorpusException {
-		if (decomps != null && decomps.length > 0) {
-			String[] topDecomp = decomps[0].split("\\s+");
-			try {
-				wordMorphTrie.add(topDecomp, word);
-			} catch (TrieException e) {
-				throw new CompiledCorpusException(e);
-			}	
-		}		
-	}
-	
-//	@Override
-//	public TrieNode getMostFrequentTerminal(String[] morphemes) throws CompiledCorpusException {
-//		TrieNode mostFrequent = null;
-//		try {
-//			mostFrequent = this.wordMorphTrie.getMostFrequentTerminal(morphemes);
-//		} catch (TrieException e) {
-//			throw new CompiledCorpusException(e);
-//		}
-//		
-//		return mostFrequent;
-//	}
-	
-	
 	public Boolean isWordInCorpus(String word) throws CompiledCorpusException {
 		Boolean inCorpus = null;
 		try {
@@ -315,8 +288,9 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus
 			throw new CompiledCorpusException(e);
 		}
 	}
-	
-	protected void updateDecompositionsIndex(String word, WordInfo winfo) throws CompiledCorpusException {
+		
+	public void updateDecompositionsIndex(WordInfo winfo) throws CompiledCorpusException {
+		String word = winfo.word;
 		Set<String[]> morphNgrams = new HashSet<String[]>();
 		String[] bestDecomp = winfo.topDecomposition();
 		if (bestDecomp == null) {
@@ -672,14 +646,13 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus
 	
 	private void regenerateMorphNgramsTrie() throws CompiledCorpusException {
 		try {
+			System.out.println("Regenerating the morpheme ngrams index");
 			makeNotStale(morphNgramsTrie);	
 			morphNgramsTrie.reset();
-			Iterator<String> iter = allWords();
-			while (iter.hasNext()) {
-				String word = iter.next();
-				WordInfo winfo = info4word(word);
-				updateDecompositionsIndex(word, winfo);
-			}			
+			
+			Visitor_UpdateMorphNgram visitor = 
+					new Visitor_UpdateMorphNgram(this); 
+			wordCharTrie.traverseNodes(visitor);			
 		} catch (TrieException e) {
 			// If an exception is raised before regeneration is complete, 
 			// re-flag the charNgramsTrie as being stale

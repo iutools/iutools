@@ -15,10 +15,10 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 
 import ca.nrc.datastructure.Pair;
-import ca.nrc.datastructure.trie.Trie_InMemory;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
+import ca.nrc.datastructure.trie.Trie_InMemory;
 import ca.nrc.json.PrettyPrinter;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;

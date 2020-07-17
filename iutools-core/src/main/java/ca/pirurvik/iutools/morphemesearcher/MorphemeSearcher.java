@@ -210,14 +210,19 @@ public class MorphemeSearcher {
 			String morphId = iter.next();
 			List<WordWithMorpheme> wordsFreqs = morphid2WordsFreqs.get(morphId);
 			Collections.sort(wordsFreqs, (WordWithMorpheme p1, WordWithMorpheme p2) -> {
-				if (p1.frequency < p2.frequency)
-					return 1;
-				else if (p1.frequency > p2.frequency)
-					return -1;
-				else
-					return 0;
+				int cmp = Long.compare(p2.frequency, p1.frequency);
+				if (cmp == 0) {
+					cmp = Integer.compare(p1.word.length(), p2.word.length());
+				}
+				if (cmp == 0) {
+					cmp = p1.word.compareTo(p2.word);
+				}
+				return cmp;
 			});
-			morphid2WordsFreqs.put(morphId,wordsFreqs.subList(0, Math.min(wordsFreqs.size(), maxNbInitialCandidates)));
+			
+			int truncateSize = 
+					Math.min(wordsFreqs.size(), maxNbInitialCandidates);
+			morphid2WordsFreqs.put(morphId,wordsFreqs.subList(0, truncateSize));
 		}
 
 		return morphid2WordsFreqs;

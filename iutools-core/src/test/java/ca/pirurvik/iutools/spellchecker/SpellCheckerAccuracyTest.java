@@ -703,9 +703,10 @@ public class SpellCheckerAccuracyTest {
 	 * add words that are required by this a test 
 	 * 
 	 * @author desilets
+	 * @throws SpellCheckerException 
 	 *
 	 */
-	private void assumeCorrectionsAreInCheckerDict(SpellCheckerExample[] examples, SpellChecker spellChecker) {
+	private void assumeCorrectionsAreInCheckerDict(SpellCheckerExample[] examples, SpellChecker spellChecker) throws SpellCheckerException {
 		for (SpellCheckerExample anExample: examples) {
 			for (String aCorrection: anExample.acceptableCorrections) {
 				spellChecker.addCorrectWord(aCorrection);				

@@ -26,10 +26,10 @@ import com.google.gson.Gson;
 import ca.inuktitutcomputing.utilities.StopWatch;
 import ca.inuktitutcomputing.utilities.StopWatchException;
 import ca.nrc.datastructure.trie.Trie;
-import ca.nrc.datastructure.trie.Trie_InMemory;
 import ca.nrc.datastructure.trie.visitors.TrieNodeVisitor;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
+import ca.nrc.datastructure.trie.Trie_InMemory;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.ui.commandline.ProgressMonitor_Terminal;
 import ca.pirurvik.iutools.text.ngrams.NgramCompiler;
@@ -494,7 +494,12 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 		return word;
 	}
 	
-//	@Override
+	@Override
+	public void updateDecompositionsIndex(WordInfo winfo) throws CompiledCorpusException {
+		updateDecompositionsIndex(winfo.word, winfo.decompositionsSample, 
+			winfo.totalDecompositions);
+	}
+
 	protected void updateDecompositionsIndex(
 			String word, String[][] sampleDecomps, Integer totalDecomps) 
 			throws CompiledCorpusException {

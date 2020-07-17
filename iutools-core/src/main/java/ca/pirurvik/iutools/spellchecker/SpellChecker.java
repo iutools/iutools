@@ -28,11 +28,13 @@ import com.google.gson.Gson;
 import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.datastructure.trie.StringSegmenterException;
+import ca.nrc.datastructure.trie.StringSegmenter_AlwaysNull;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.json.PrettyPrinter;
 import ca.pirurvik.iutools.NumericExpression;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 import ca.pirurvik.iutools.corpus.WordInfo;
+import ca.pirurvik.iutools.corpus.CompiledCorpus;
 import ca.pirurvik.iutools.corpus.CompiledCorpusException;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistryException;
@@ -45,13 +47,21 @@ import ca.pirurvik.iutools.text.segmentation.IUTokenizer;
 import ca.inuktitutcomputing.config.IUConfig;
 import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.morph.Decomposition;
-import ca.inuktitutcomputing.morph.MorphInukException;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzerException;
 import ca.inuktitutcomputing.script.Orthography;
 import ca.inuktitutcomputing.script.Syllabics;
 import ca.inuktitutcomputing.script.TransCoder;
 import ca.inuktitutcomputing.utilbin.AnalyzeNumberExpressions;
+
+// TODO-June2020: Handling of numeric vs non-numeric expressions is a bloody 
+//    mess!! Refactor code so we don't need to keep separate data structures 
+//    (ex: ngram stats) for numeric versus non-numeric expressions.
+//
+//    Better to spell check numeric and non-numeric expressions in the exact 
+//    same fashion, except that for numeric expressions, we run a final filter 
+//    at the end to only retain candidates which are numeric expressions.
+//
 
 public class SpellChecker {
 	
@@ -64,25 +74,31 @@ public class SpellChecker {
 	 */
 	private final long MAX_DECOMP_MSECS = 5*1000;
 	
-	// TODO-June2020: Have two sets 
-	//  - Set<String> knownCorrect: contains words that we KNOW for a fact
-	//    are correct because they were manually vetted by a human
-	//  - Set<String> assumedCorrect: contains words that we ASSUME are correct
-	//    because they decompose.
-	//
-	// The first of those will contain entries created with addCorrectWord().
-	//
-	// The second of those will contain all the words returned by 
-	//   corpus.wordsWithDecompositions().
-	//
+	private CompiledCorpus explicitlyCorrectWords = 
+		new CompiledCorpus_InMemory()
+		.setSegmenterClassName(StringSegmenter_AlwaysNull.class);
+	
+	// TODO-June2020: Can we get rid of this and use the explicitlyCorrectWords
+	//   CompiledCorpus instance instead?
+	/** 
+	 * Words that are NOT numeric expressions and were EXPLICLITLY as being 
+	 * correct
+	 */
+	protected Set<String> explicitlyCorrect_NonNumeric = new HashSet<String>();
+
+	// TODO-June2020: Can we get rid of this and use the explicitlyCorrectWords
+	//   CompiledCorpus instance instead?	
+	/** 
+	 * Words that ARE numeric expressions and were EXPLICLITLY as being 
+	 * correct
+	 */
+	protected Set<String> explicitlyCorrect_Numeric = new HashSet<String>();
+
+	// TODO-June2020: Can we get rid of this attribute?
 	public String allWords = ",,";
 	
-	public Map<String,Long> ngramStats = new HashMap<String,Long>();
-	
+	// TODO-June2020: Can we get rid of this attribute?
 	public String allNormalizedNumericTerms = ",,";
-	public Map<String,Long> ngramStatsOfNumericTerms = new HashMap<String,Long>();
-	
-	public transient Map<String,Long> ngramStatsForCandidates = null;
 	
 	/** If true, partial corrections are enabled. That measns the spell checker
 	 *  will identify the longest leading and tailing strings that seem 
@@ -105,6 +121,7 @@ public class SpellChecker {
 	public transient boolean verbose = true;
 	
 	public CompiledCorpus_InMemory corpus = null;
+	
 	private static StringSegmenter_IUMorpheme segmenter = null;
 	private transient String[] makeUpWords = new String[] {"sivu","sia"};
 	private static ArrayList<String> latinSingleInuktitutCharacters = new ArrayList<String>();
@@ -137,10 +154,7 @@ public class SpellChecker {
 			segmenter = new StringSegmenter_IUMorpheme();
 			if (_corpus != null) {
 				if (_corpus instanceof String) {
-					String corpusName = (String)_corpus;
-					if (!corpusName.equals(CompiledCorpusRegistry.emptyCorpusName) ) {
-						setDictionaryFromCorpus((String)_corpus);						
-					}
+					setDictionaryFromCorpus((String)_corpus);						
 				} else if (_corpus instanceof File) {
 					setDictionaryFromCorpus((File)_corpus);
 				}
@@ -181,13 +195,13 @@ public class SpellChecker {
 	
 	private void __processCorpus() throws ConfigException, FileNotFoundException {
 		this.allWords = corpus.decomposedWordsSuite;
-		this.ngramStats = corpus.ngramStats;
+//		this.ngramStats = corpus.ngramStats;
 		// Ideally, these should be compiled along with allWords and ngramsStats during corpus compilation
 		String dataPath = IUConfig.getIUDataPath();
 		FileReader fr = new FileReader(dataPath+"/data/numericTermsCorpus.json");
 		AnalyzeNumberExpressions numberExpressionsAnalysis = new Gson().fromJson(fr, AnalyzeNumberExpressions.class);
 		this.allNormalizedNumericTerms = getNormalizedNumericTerms(numberExpressionsAnalysis);
-		this.ngramStatsOfNumericTerms = getNgramsStatsOfNumericTerms(numberExpressionsAnalysis);
+//		this.ngramStatsOfNumericTerms = getNgramsStatsOfNumericTerms(numberExpressionsAnalysis);
 		
 		return;
 	}
@@ -216,9 +230,22 @@ public class SpellChecker {
 		verbose = value;
 	}
 	
-	public void addCorrectWord(String word) {		
+	public void addCorrectWord(String word) throws SpellCheckerException {
+		try {
+			explicitlyCorrectWords.addWordOccurence(word);
+		} catch (CompiledCorpusException e) {
+			throw new SpellCheckerException(e);
+		}
+		
 		String[] numericTermParts = null;
 		boolean wordIsNumericTerm = (numericTermParts=splitNumericExpression(word)) != null;
+		if (wordIsNumericTerm) {
+			explicitlyCorrect_Numeric.add(word);
+		} else {
+			explicitlyCorrect_NonNumeric.add(word);
+		}
+		
+		// TODO-June2020: Is this still needed?
 		if (wordIsNumericTerm && allNormalizedNumericTerms.indexOf(","+"0000"+numericTermParts[1]+",") < 0) {
 			if (allNormalizedNumericTerms == null || allNormalizedNumericTerms.isEmpty()) {
 				allNormalizedNumericTerms = "";
@@ -240,9 +267,9 @@ public class SpellChecker {
 		for (int seqLen = 1; seqLen <= MAX_SEQ_LEN; seqLen++) {
 			for (int  start=0; start <= word.length() - seqLen; start++) {
 				String charSeq = word.substring(start, start+seqLen);
-				if (!seqSeenInWord.contains(charSeq)) {
-					__updateSequenceIDF(charSeq, wordIsNumericTerm);
-				}
+//				if (!seqSeenInWord.contains(charSeq)) {
+//					__updateSequenceIDF(charSeq, wordIsNumericTerm);
+//				}
 				seqSeenInWord.add(charSeq);
 			}
 		}
@@ -251,20 +278,20 @@ public class SpellChecker {
 		}
 	}
 
-	private void __updateSequenceIDF(String charSeq, boolean wordIsNumericTerm) {
-		if (wordIsNumericTerm) {
-			
-			if (!ngramStatsOfNumericTerms.containsKey(charSeq)) {
-				ngramStatsOfNumericTerms.put(charSeq, new Long(0));
-			}
-			ngramStatsOfNumericTerms.put(charSeq, ngramStatsOfNumericTerms.get(charSeq) + 1);
-		} else {
-			if (!ngramStats.containsKey(charSeq)) {
-				ngramStats.put(charSeq, new Long(0));
-			}
-			ngramStats.put(charSeq, ngramStats.get(charSeq) + 1);
-		}
-	}
+//	private void __updateSequenceIDF(String charSeq, boolean wordIsNumericTerm) {
+//		if (wordIsNumericTerm) {
+//			
+//			if (!ngramStatsOfNumericTerms.containsKey(charSeq)) {
+//				ngramStatsOfNumericTerms.put(charSeq, new Long(0));
+//			}
+//			ngramStatsOfNumericTerms.put(charSeq, ngramStatsOfNumericTerms.get(charSeq) + 1);
+//		} else {
+//			if (!ngramStats.containsKey(charSeq)) {
+//				ngramStats.put(charSeq, new Long(0));
+//			}
+//			ngramStats.put(charSeq, ngramStats.get(charSeq) + 1);
+//		}
+//	}
 
 	public void saveToFile(File checkerFile) throws IOException {
 		FileWriter saveFile = new FileWriter(checkerFile);
@@ -283,13 +310,13 @@ public class SpellChecker {
 		this.MAX_SEQ_LEN = checker.getMaxSeqLen();
 		this.MAX_CANDIDATES = checker.getMaxCandidates();
 		this.allWords = checker.getAllWords();
-		this.ngramStats = checker.getIdfStats();
+//		this.ngramStats = checker.getIdfStats();
 		return this;
 	}
 
-	private Map<String, Long> getIdfStats() {
-		return this.ngramStats;
-	}
+//	private Map<String, Long> getIdfStats() {
+//		return this.ngramStats;
+//	}
 
 	private String getAllWords() {
 		return this.allWords;
@@ -612,10 +639,15 @@ public class SpellChecker {
 	protected Boolean isMispelled(String word) throws SpellCheckerException {
 		Logger logger = Logger.getLogger("SpellChecker.isMispelled");
 		logger.debug("word: "+word);
-		Boolean wordIsMispelled = null;
-		String[] numericTermParts = null;
 		
-		if (corpus!=null) {
+		Boolean wordIsMispelled = null;
+		
+		if (isExplicitlyCorrect(word)) {
+			logger.debug("word is was explicity tagged as being correct");
+			wordIsMispelled = false;
+		}
+		
+		if (wordIsMispelled == null && corpus!=null) {
 			try {
 				WordInfo wInfo = corpus.info4word(word);
 				if (wInfo != null && wInfo.totalDecompositions > 0) {
@@ -625,11 +657,6 @@ public class SpellChecker {
 			} catch (CompiledCorpusException e) {
 				throw new SpellCheckerException(e);
 			}
-//			if (corpus.getSegmentsCache().containsKey(word) && 
-//					corpus.getSegmentsCache().get(word).length != 0) {
-//				logger.debug("word in segments cache has successfully decomposed");
-//				wordIsMispelled = false;
-//			}
 		}
 		
 		if (wordIsMispelled == null && word.matches("^[0-9]+$")) {
@@ -647,6 +674,7 @@ public class SpellChecker {
 			wordIsMispelled = true;
 		}
 		
+		String[] numericTermParts = null;
 		if (wordIsMispelled == null &&  (numericTermParts=splitNumericExpression(word)) != null) {
 			logger.debug("numeric expression: "+word+" ("+numericTermParts[1]+")");
 			boolean pseudoWordWithSuffixAnalysesWithSuccess = assessEndingWithIMA(numericTermParts[1]);
@@ -667,7 +695,6 @@ public class SpellChecker {
 					wordIsMispelled = true;
 				}
 			} catch (TimeoutException e) {
-//				wordIsMispelled = false;
 				wordIsMispelled = true;
 			} catch (StringSegmenterException | LinguisticDataException e) {
 				throw new SpellCheckerException(e);
@@ -682,6 +709,16 @@ public class SpellChecker {
 		return wordIsMispelled;
 	}
 
+	private boolean isExplicitlyCorrect(String word) throws SpellCheckerException {
+		boolean answer;
+		try {
+			answer = explicitlyCorrectWords.containsWord(word);
+		} catch (CompiledCorpusException e) {
+			throw new SpellCheckerException(e);
+		}
+		return answer;
+	}
+	
 	protected boolean wordIsPunctuation(String word) {
 		Pattern p = Pattern.compile("(\\p{Punct}|[\u2013\u2212])+");
 		Matcher mp = p.matcher(word);
@@ -767,7 +804,7 @@ public class SpellChecker {
 	}
 
 	public Set<String> firstPassCandidates_TFIDF(String badWord, 
-			boolean wordIsNumericTerm) {
+			boolean wordIsNumericTerm) throws SpellCheckerException {
 
 		// 1. compile ngrams of badWord
 		// 2. compile IDF of each ngram
@@ -779,8 +816,8 @@ public class SpellChecker {
 		String allWordsForCandidates = 
 			getAllWordsToBeUsedForCandidates(wordIsNumericTerm);
 
-		ngramStatsForCandidates = 
-			getNgramStatsToBeUsedForCandidates(wordIsNumericTerm);		
+//		Map<String,Long> ngramStatsForCandidates = 
+//			getNgramStatsToBeUsedForCandidates(wordIsNumericTerm);		
 		
 		NgramCompiler ngramCompiler = new NgramCompiler();
 		ngramCompiler.setMin(3);
@@ -803,6 +840,20 @@ public class SpellChecker {
 		// Step 3: Find words that most closely match the ngrams of the bad 
 		// (up to a maximum of MAX_CANDIDATES
 		//
+		
+		// TODO-June2020: Use this approach instead, in order to 
+		//   determine the initial candidates...
+		//
+//			Set<String> explicitCandidates = 
+//					candidatesWithBestNGramsMatch(ngramsIDF, 
+//							explicitlyCorrectWords);
+//			Set<String> nonExplicitCandidates = 
+//					candidatesWithBestNGramsMatch(ngramsIDF, 
+//							explicitlyCorrectWords);
+//			Set<String> candidates = new HashSet<String>();
+//			candidates.addAll(explicitCandidates);
+//			candidates.addAll(nonExplicitCandidates);
+				
 		Set<String> candidates = 
 				candidatesWithBestNGramsMatch(ngramsIDF, 
 						allWordsForCandidates);
@@ -811,8 +862,8 @@ public class SpellChecker {
 		//   lowest score.
 		//
 		Pair<String,Double>[] arrScoreValues =
-				scoreAndSortCandidates(candidates, badWordNgrams, 
-						ngramsIDF, ngramCompiler);
+				scoreAndSortCandidates(wordIsNumericTerm, candidates, 
+					badWordNgrams, ngramsIDF, ngramCompiler);
 
 		Set<String> allCandidates = new HashSet<String>();
 		for (int i=0; i<arrScoreValues.length; i++) {
@@ -826,16 +877,15 @@ public class SpellChecker {
 		return allCandidates;
 	}
 
-	private Pair<Pair<String,Double>[],Map<String,Double>> computeNgramIDFs(String[] ngrams) {
+	private Pair<Pair<String,Double>[],Map<String,Double>> computeNgramIDFs(String[] ngrams) throws SpellCheckerException {
 		Map<String,Double>  idfHash = 
 				new HashMap<String,Double>();
 		
 		Pair<String,Double> idf[] = new Pair[ngrams.length];
 		
 		for (int i=0; i<ngrams.length; i++) {
-			Long ngramStat = ngramStatsForCandidates.get(ngrams[i]); //ngramStats.get(ngrams[i])
-			if (ngramStat==null) ngramStat = (long)0;
-			double val = 1.0 / (ngramStat + 1);
+			Long ngramFreq = ngramFrequency(ngrams[i]);
+			double val = 1.0 / (ngramFreq + 1);
 			idf[i] = new Pair<String,Double>(ngrams[i],val);
 			idfHash.put(ngrams[i], val);
 		}
@@ -844,6 +894,17 @@ public class SpellChecker {
 		
 		
 		return Pair.of(idf, idfHash);
+	}
+
+	private long ngramFrequency(String ngram) throws SpellCheckerException {
+		long freq = 0;
+		try {
+			freq = corpus.charNgramFrequency(ngram);
+		} catch (CompiledCorpusException e) {
+			throw new SpellCheckerException(e);
+		}
+		
+		return freq;
 	}
 
 	private Set<String> candidatesWithBestNGramsMatch(
@@ -870,10 +931,42 @@ public class SpellChecker {
 		return candidates;
 	}
 	
+	private Set<String> candidatesWithBestNGramsMatch(
+			Pair<String, Double>[] ngramsWithIDF, 
+			CompiledCorpus inCorpus) throws SpellCheckerException {
+		Set<String> candidates = new HashSet<String>();		
+		for (int i=0; i<ngramsWithIDF.length; i++) {
+			Set<String> candidatesWithNgram;
+			try {
+				candidatesWithNgram = inCorpus.wordsContainingNgram(ngramsWithIDF[i].getFirst());
+			} catch (CompiledCorpusException e) {
+				throw new SpellCheckerException(e);
+			}
+			
+			SpellDebug.containsCorrection("SpellChecker.firstPassCandidates_TFIDF", 
+					"Words that contain ngram="+ngramsWithIDF[i].getFirst(), 
+					"maliklugu","maligluglu", 
+					candidatesWithNgram);
+			
+			candidates.addAll(candidatesWithNgram);	
+			
+			if (candidates.size() > MAX_CANDIDATES) {
+				break;
+			}
+		}
+		
+		return candidates;
+	}	
+	
 	private Pair<String, Double>[] scoreAndSortCandidates(
-			Set<String> candidates, 
+			boolean onlyNumericTerms, Set<String> initialCands, 
 			String[] badWordNGrams, Pair<String, Double>[] ngramsIDF, 
 			NgramCompiler ngramCompiler) {
+		
+		Set<String> candidates = initialCands;
+		if (onlyNumericTerms) {
+			candidates = keepOnlyNumericTerms(initialCands);
+		}
 		
 		Map<String,Double> idfHash = new HashMap<String,Double>();
 		for (Pair<String,Double> ngramInfo: ngramsIDF) {
@@ -912,6 +1005,17 @@ public class SpellChecker {
 	}
 	
 
+	private Set<String> keepOnlyNumericTerms(Set<String> initialCands) {
+		Set<String> filteredCands = new HashSet<String>();
+		for (String aCand: initialCands) {
+			String[] numericParts = splitNumericExpression(aCand);
+			if (numericParts != null) {
+				filteredCands.add(aCand);
+			}
+		}
+		return filteredCands;
+	}
+	
 	private String[] ngrams4word(String word, 
 			NgramCompiler ngramCompiler) {
 		Set<String>ngramsOfBadWord = ngramCompiler.compile(word);
@@ -1038,9 +1142,9 @@ public class SpellChecker {
 	}
 	
 	
-	Map<String,Long> getNgramStatsToBeUsedForCandidates(boolean wordIsNumericTerm) {
-		return wordIsNumericTerm? this.ngramStatsOfNumericTerms : this.ngramStats;
-	}
+//	Map<String,Long> getNgramStatsToBeUsedForCandidates(boolean wordIsNumericTerm) {
+//		return wordIsNumericTerm? this.ngramStatsOfNumericTerms : this.ngramStats;
+//	}
 
 	String getAllWordsToBeUsedForCandidates(boolean wordIsNumericTerm) {
 		return wordIsNumericTerm? this.allNormalizedNumericTerms : this.allWords;
