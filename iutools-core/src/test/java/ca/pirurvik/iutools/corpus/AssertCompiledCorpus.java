@@ -243,4 +243,20 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 		
 		return this;
 	}
+
+	public void infoForWordIs(String word, long expFreq, int expTotalDecomps, 
+			String[][] expSampleDecomps) throws Exception {
+		WordInfo winfo = corpus().info4word(word);
+		String message = 
+			baseMessage + "\nInfo was not as expected for word "+word;
+		Assert.assertEquals(
+			message+"\nFrequency not as expected", 
+			expFreq, winfo.frequency);
+		Assert.assertEquals(
+			message+"\nTotal number of decompositions was not as expected.", 
+			new Integer(expTotalDecomps), winfo.totalDecompositions);
+		AssertObject.assertDeepEquals(
+			message+"\nSample decompositions were not as expected.", 
+			expSampleDecomps, winfo.decompositionsSample);
+	}
 }
