@@ -1,17 +1,13 @@
 package ca.inuktitutcomputing.core.console;
 
 import java.io.File;
-import java.io.IOException;
 
 import ca.nrc.datastructure.trie.StringSegmenter_AlwaysNull;
-import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.pirurvik.iutools.corpus.CompiledCorpus;
 import ca.pirurvik.iutools.corpus.CompiledCorpusException;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_InFileSystem;
-import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 import ca.pirurvik.iutools.corpus.CorpusCompiler;
 import ca.pirurvik.iutools.corpus.CorpusCompilerException;
-import ca.pirurvik.iutools.corpus.RW_CompiledCorpus;
 
 public class CmdCompileCorpus extends ConsoleCommand {
 
@@ -29,6 +25,13 @@ public class CmdCompileCorpus extends ConsoleCommand {
 		File corpusDir = getInputDir();
 		String corpusSavePath = getCorpusSavePath();
 		File decompsFile = getDecompositionsFile();
+		
+		if (corpusDir == null && decompsFile == null) {
+			throw new ConsoleException(
+				"Command requires at least one of options: "+
+				ConsoleCommand.OPT_INPUT_DIR+" or "+
+				ConsoleCommand.OPT_DECOMPOSITIONS_FILE);
+		}
 		
 		if (corpusDir != null) {
 			// We were give a directory of files that contains the text of 
