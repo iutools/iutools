@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import ca.nrc.ui.commandline.ProgressMonitor_Terminal;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -439,15 +440,23 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus
 	}
 	
 	public long totalOccurences() throws CompiledCorpusException {
-		Iterator<String> iter = allWords();
-		long sumFreqs = 0;
-		while (iter.hasNext()) {
-			WordInfo wInfo = info4word(iter.next());
-			sumFreqs += wInfo.frequency;
+//		Iterator<String> iter = allWords();
+//		long sumFreqs = 0;
+//		while (iter.hasNext()) {
+//			WordInfo wInfo = info4word(iter.next());
+//			sumFreqs += wInfo.frequency;
+//		}
+//
+//		return sumFreqs;
+		long totalOccurences = 0;
+		try {
+			totalOccurences = wordCharTrie.getRoot().getFrequency();
+		} catch (TrieException e) {
+			throw new CompiledCorpusException(e);
 		}
-
-		return sumFreqs;
+		return totalOccurences;
 	}
+
 	@Override
 	public WordInfo info4word(String word) throws CompiledCorpusException {
 		WordInfo info = null;
