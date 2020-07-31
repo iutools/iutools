@@ -316,7 +316,13 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus
 				throw new CompiledCorpusException(e);
 			}
 		}		
-	}	
+	}
+
+	@Override
+	public void regenerateMorphNgramsIndex() throws CompiledCorpusException {
+		makeStale(morphNgramsTrie);
+		getMorphNgramsTrie();
+	}
 
 	private void addWordToMorphNgram(String word, TrieNode ngramNode) throws CompiledCorpusException {
 		List<String> words = new ArrayList<String>();
@@ -440,14 +446,6 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus
 	}
 	
 	public long totalOccurences() throws CompiledCorpusException {
-//		Iterator<String> iter = allWords();
-//		long sumFreqs = 0;
-//		while (iter.hasNext()) {
-//			WordInfo wInfo = info4word(iter.next());
-//			sumFreqs += wInfo.frequency;
-//		}
-//
-//		return sumFreqs;
 		long totalOccurences = 0;
 		try {
 			totalOccurences = wordCharTrie.getRoot().getFrequency();

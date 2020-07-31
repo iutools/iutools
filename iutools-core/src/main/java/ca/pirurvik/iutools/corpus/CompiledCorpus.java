@@ -33,8 +33,11 @@ public abstract class CompiledCorpus {
 	public abstract WordInfo info4word(String word) throws CompiledCorpusException;
 	
 	public abstract void updateDecompositionsIndex(WordInfo winfo) 
-			throws CompiledCorpusException;
-	
+		throws CompiledCorpusException;
+
+	public abstract void regenerateMorphNgramsIndex()
+		throws CompiledCorpusException;
+
 	public abstract Set<String> wordsContainingNgram(String ngram) 
 			throws CompiledCorpusException;
 	
@@ -260,5 +263,4 @@ public abstract class CompiledCorpus {
 		}
 		return sample;
 	}
-	
 }

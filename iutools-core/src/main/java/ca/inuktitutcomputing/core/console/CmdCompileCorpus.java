@@ -25,14 +25,7 @@ public class CmdCompileCorpus extends ConsoleCommand {
 		File corpusDir = getInputDir();
 		String corpusSavePath = getCorpusSavePath();
 		File decompsFile = getDecompositionsFile();
-		
-		if (corpusDir == null && decompsFile == null) {
-			throw new ConsoleException(
-				"Command requires at least one of options: "+
-				ConsoleCommand.OPT_INPUT_DIR+" or "+
-				ConsoleCommand.OPT_DECOMPOSITIONS_FILE);
-		}
-		
+
 		if (corpusDir != null) {
 			// We were give a directory of files that contains the text of 
 			// a corpus to be analyzed. Compute the word frequencies from those
@@ -69,7 +62,7 @@ public class CmdCompileCorpus extends ConsoleCommand {
 				new CompiledCorpus_InFileSystem(new File(corpusSavePath))
 				.setSegmenterClassName(StringSegmenter_AlwaysNull.class)
 				;
-			compiledCorpus.getMorphNgramsTrie();
+			compiledCorpus.regenerateMorphNgramsIndex();
 		}
 	}
 

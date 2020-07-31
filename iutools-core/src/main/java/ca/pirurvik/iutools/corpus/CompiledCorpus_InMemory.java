@@ -500,6 +500,12 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 			winfo.totalDecompositions);
 	}
 
+	@Override
+	public void regenerateMorphNgramsIndex() throws CompiledCorpusException {
+		throw new CompiledCorpusException(
+			"This method is not currently supported by "+this.getClass());
+	}
+
 	protected void updateDecompositionsIndex(
 			String word, String[][] sampleDecomps, Integer totalDecomps) 
 			throws CompiledCorpusException {
