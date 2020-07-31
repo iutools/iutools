@@ -448,7 +448,12 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus
 	public long totalOccurences() throws CompiledCorpusException {
 		long totalOccurences = 0;
 		try {
-			totalOccurences = wordCharTrie.getRoot().getFrequency();
+			Set<String> rootChildren =
+				wordCharTrie.getRoot().getChildren().keySet();
+			for (String aChild: rootChildren) {
+				long childFreq = wordCharTrie.getFrequency(new String[] {aChild});
+				totalOccurences += childFreq;
+			}
 		} catch (TrieException e) {
 			throw new CompiledCorpusException(e);
 		}
