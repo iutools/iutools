@@ -15,12 +15,20 @@ public class NodeTracer {
 		throws TrieException {
 		trace(tLogger, node, message, null);
 	}
-	
+
+
 	public static void trace(Logger tLogger, TrieNode node, String message,
 			String specificNodesRegex) 
 		throws TrieException {
-		if (shouldTrace(tLogger, node, specificNodesRegex)) {
-			tLogger.trace("Node:\n"+node+"\n"+message);
+		trace(tLogger, node.keys, message, specificNodesRegex);
+	}
+
+	public static void trace(Logger tLogger, String[] nodeKeys, String message,
+							 String specificNodesRegex)
+			throws TrieException {
+		if (shouldTrace(tLogger, nodeKeys, specificNodesRegex)) {
+			String key = String.join(",", nodeKeys);
+			tLogger.trace("Node:\n"+nodeKeys.toString()+"\n"+message);
 		}
 	}
 
@@ -31,10 +39,15 @@ public class NodeTracer {
 	
 	public static boolean shouldTrace(Logger tLogger, TrieNode node, 
 			String nodesToTraceRegex) throws TrieException {
-		
-		boolean trace = false;
+		return shouldTrace(tLogger, node.keys, nodesToTraceRegex);
+	}
+
+	public static boolean shouldTrace(Logger tLogger, String[] nodeKeys,
+				String nodesToTraceRegex) throws TrieException {
+
+			boolean trace = false;
 		if (tLogger.isTraceEnabled()) {
-			String nodeKeys = String.join("", node.keys);
+			String key = String.join("", nodeKeys);
 			if (nodesToTraceRegex == null) {
 				try {
 					nodesToTraceRegex = new IUConfig().nodesToTraceRegex();
@@ -44,7 +57,7 @@ public class NodeTracer {
 			}
 			trace = true;
 			if  (nodesToTraceRegex != null) {
-				trace = (nodeKeys.matches(nodesToTraceRegex));
+				trace = (key.matches(nodesToTraceRegex));
 			}
 		}
 		
@@ -57,8 +70,9 @@ public class NodeTracer {
 			joinedKeys.add(String.join("", node.keys));
 		}
 		
-		String pretty = StringUtils.join(joinedKeys.iterator(), ",");
-		
+		String pretty;
+		pretty = StringUtils.join(joinedKeys.iterator(), ",");
+
 		return pretty;
 	}
 }
