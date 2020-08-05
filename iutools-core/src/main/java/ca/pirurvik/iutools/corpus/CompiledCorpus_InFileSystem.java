@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import ca.nrc.datastructure.trie.*;
 import ca.nrc.ui.commandline.ProgressMonitor_Terminal;
 import org.apache.log4j.Logger;
 
@@ -20,10 +21,6 @@ import com.google.common.io.Files;
 import ca.inuktitutcomputing.data.Morpheme;
 import ca.inuktitutcomputing.utilities.StopWatch;
 import ca.inuktitutcomputing.utilities.StopWatchException;
-import ca.nrc.datastructure.trie.Trie;
-import ca.nrc.datastructure.trie.TrieException;
-import ca.nrc.datastructure.trie.TrieNode;
-import ca.nrc.datastructure.trie.Trie_InFileSystem;
 import ca.nrc.datastructure.trie.Trie.NodeOption;
 
 public class CompiledCorpus_InFileSystem extends CompiledCorpus
@@ -145,16 +142,11 @@ public class CompiledCorpus_InFileSystem extends CompiledCorpus
 
 	@Override
 	public Iterator<String> allWords() throws CompiledCorpusException {
-		HashSet<String> allWordsSet = new HashSet<String>();
 		try {
-			TrieNode[] terminalNodes = wordCharTrie.getTerminals();
-			for (TrieNode aTerminal: terminalNodes) {
-				allWordsSet.add(aTerminal.getTerminalSurfaceForm());
-			}
+			return new SurfaceFormsIterator(wordCharTrie);
 		} catch (TrieException e) {
 			throw new CompiledCorpusException(e);
 		}
-		return allWordsSet.iterator();
 	}
 
 	@Override

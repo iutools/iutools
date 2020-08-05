@@ -6,19 +6,20 @@ import ca.nrc.testing.AssertSet;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
 public abstract class NodesIteratorTest {
 
-    protected abstract Trie makeTrie();
+    protected abstract Trie makeTrie() throws IOException;
 
     Trie trie;
 
     @Before
     public void setUp() throws Exception {
         trie = makeTrie();
-        for (String word: new String[] {"hello", "world"}) {
+        for (String word: new String[] {"hello", "hell", "world"}) {
             trie.add(word.split(""), word);
         }
     }
@@ -44,7 +45,7 @@ public abstract class NodesIteratorTest {
     public void test__NodesIterator__IterateFromRoot() throws Exception {
         NodesIterator iter = new NodesIterator(trie);
         String[] expNodes = new String[] {
-            "h e l l o _$", "h e l l o", "h e l l", "h e l", "h e", "h",
+            "h e l l o _$", "h e l l o", "h e l l", "h e l l _$", "h e l", "h e", "h",
             "w o r l d _$", "w o r l d", "w o r l", "w o r", "w o", "w"};
         assertIteratedNodesEqual("", iter, expNodes);
     }
@@ -54,7 +55,7 @@ public abstract class NodesIteratorTest {
         String[] startKeys = new String[] {"h", "e"};
         NodesIterator iter = new NodesIterator(trie, startKeys);
         String[] expNodes = new String[] {
-                "h e l l o _$", "h e l l o", "h e l l", "h e l"};
+                "h e l l o _$", "h e l l o", "h e l l", "h e l l _$", "h e l"};
         assertIteratedNodesEqual("", iter, expNodes);
     }
 

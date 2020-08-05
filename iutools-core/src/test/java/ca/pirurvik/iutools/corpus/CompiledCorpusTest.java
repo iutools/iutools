@@ -14,6 +14,7 @@ import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.Set;
 
+import ca.nrc.testing.AssertSet;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.log4j.Logger;
@@ -440,11 +441,10 @@ public abstract class CompiledCorpusTest {
 		seq = "inu";
 		wordsWithSeq = corpus.wordsContainingNgram(seq);
 		expected = new String[] {
-				"intakuinuit", "takuinuit"
-		};
-		AssertHelpers.assertContainsAll(
+			"inuktitut", "inuksuk", "inuttitut", "takuinuit", "intakuinuit"};
+		AssertSet.assertEquals(
 				"The list of words containing sequence "+seq+" was not as expected", 
-				wordsWithSeq, expected);
+				expected, wordsWithSeq);
 			
 		// ngram at beginning of word
 		seq = "^inu";
