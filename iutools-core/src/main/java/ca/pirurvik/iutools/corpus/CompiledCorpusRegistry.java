@@ -118,6 +118,8 @@ public class CompiledCorpusRegistry {
 
 	@JsonIgnore
 	public static CompiledCorpus_InMemory getCorpus(String corpusName) throws CompiledCorpusRegistryException {
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpusRegistry.getCorpus");
+		tLogger.trace("corpusName="+corpusName);
 		if (corpusName==null) {
 			corpusName = defaultCorpusName;
 		}
@@ -136,6 +138,7 @@ public class CompiledCorpusRegistry {
 					// The name is an actual corpus name.
 					// Get the file it corresponds to and load it
 					String jsonFilePath = registry.get(corpusName).toString();
+					tLogger.trace("This is an EXPLICITLY registered name; loading it from associated file: "+jsonFilePath);
 					corpus = makeCorpus(jsonFilePath);
 					corpusCache.put(corpusName, corpus);
 					corpusCache.put(jsonFilePath, corpus);

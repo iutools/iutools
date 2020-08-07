@@ -23,21 +23,18 @@ public class SpellCheckerAccuracyTest {
 	SpellChecker checkerLargeDict = null;
 	
 	private static DecimalFormat df2 = new DecimalFormat("#.##");
-	
+
+	protected String usingCorpus() {
+		return "Hansard1999-2002";
+	}
+
 	private SpellChecker getLargeDictChecker() throws StringSegmenterException, SpellCheckerException {
 		if (checkerLargeDict == null) {
-			checkerLargeDict = new SpellChecker();
+			checkerLargeDict = new SpellChecker(usingCorpus());
 		}
 		return checkerLargeDict;
 	}
-	
-	@Test
-	public void test__TODOs() {
-		Assert.fail("\n\nIGNORE THIS FAILURE!!\n\n"+
-				"It's just a reminder that the Accuracy tests are all messed up.\n\n"+
-				"Alain will deal with them after the demo.");
-	}
-	
+
 	//
 	// With a few exceptions, the examples below are a subset of the 200 most 
 	// frequent spelling mistakes in the Hansard.
