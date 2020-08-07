@@ -5,7 +5,7 @@ import java.io.File;
 import ca.nrc.datastructure.trie.StringSegmenter_AlwaysNull;
 import ca.pirurvik.iutools.corpus.CompiledCorpus;
 import ca.pirurvik.iutools.corpus.CompiledCorpusException;
-import ca.pirurvik.iutools.corpus.CompiledCorpus_InFileSystem;
+import ca.pirurvik.iutools.corpus.CompiledCorpus_v2FS;
 import ca.pirurvik.iutools.corpus.CorpusCompiler;
 import ca.pirurvik.iutools.corpus.CorpusCompilerException;
 
@@ -59,7 +59,7 @@ public class CmdCompileCorpus extends ConsoleCommand {
 				"Regenerate the morpheme ngrams index? ");
 		if (regenerate) {
 			CompiledCorpus compiledCorpus = 
-				new CompiledCorpus_InFileSystem(new File(corpusSavePath))
+				new CompiledCorpus_v2FS(new File(corpusSavePath))
 				.setSegmenterClassName(StringSegmenter_AlwaysNull.class)
 				;
 			compiledCorpus.regenerateMorphNgramsIndex();
@@ -90,7 +90,7 @@ public class CmdCompileCorpus extends ConsoleCommand {
 			
 			
 			CompiledCorpus compiledCorpus = 
-				new CompiledCorpus_InFileSystem(new File(corpusSavePath))
+				new CompiledCorpus_v2FS(new File(corpusSavePath))
 					.setSegmenterClassName(StringSegmenter_AlwaysNull.class)
 					;
 			
@@ -131,7 +131,7 @@ public class CmdCompileCorpus extends ConsoleCommand {
 		
 		
 		CompiledCorpus compiledCorpus = 
-			new CompiledCorpus_InFileSystem(new File(corpusSavePath))
+			new CompiledCorpus_v2FS(new File(corpusSavePath))
 			.setSegmenterClassName(StringSegmenter_AlwaysNull.class)
 			;
 		

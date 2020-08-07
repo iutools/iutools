@@ -3,31 +3,29 @@ package ca.pirurvik.iutools.corpus;
 import java.io.File;
 import java.util.Set;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.io.Files;
 
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
-import ca.nrc.datastructure.trie.Trie_InFileSystem;
 import ca.nrc.testing.AssertObject;
 
-public class CompiledCorpus_InFileSystemTest extends CompiledCorpusTest {
+public class CompiledCorpus_v2FSTest extends CompiledCorpusTest {
 
 	@Override
 	protected CompiledCorpus makeCorpusUnderTest(
 			Class<? extends StringSegmenter> segmenterClass) {
 		File rootDir = Files.createTempDir();
-		CompiledCorpus corpus = new CompiledCorpus_InFileSystem(rootDir);
+		CompiledCorpus corpus = new CompiledCorpus_v2FS(rootDir);
 		corpus.setSegmenterClassName(segmenterClass.getName());
 		return corpus;
 	}
 	
 	@Test
 	public void test__morphemesWithCanonicalForm__HappyPath() throws Exception {
-		CompiledCorpus_InFileSystem corpus = 
-			(CompiledCorpus_InFileSystem) 
+		CompiledCorpus_v2FS corpus =
+			(CompiledCorpus_v2FS)
 			makeCorpusUnderTest(StringSegmenter_IUMorpheme.class);
 		String[] words = new String[] {"inuk", "iglu"};
 		corpus.addWordOccurences(words);
@@ -41,18 +39,18 @@ public class CompiledCorpus_InFileSystemTest extends CompiledCorpusTest {
 	
 	@Test 
 	public void test__makeStale__HappyPath() throws Exception {
-		CompiledCorpus_InFileSystem corpus = 
-				(CompiledCorpus_InFileSystem) 
+		CompiledCorpus_v2FS corpus =
+				(CompiledCorpus_v2FS)
 				makeCorpusUnderTest(MockStringSegmenter_IUMorpheme.class);
 		
-		new AssertCompiledCorpus_InFileSystem(corpus, "Before adding any words")
+		new AssertCompiledCorpus_v2(corpus, "Before adding any words")
 			.isNotStale(corpus.charNgramsTrie)
 			.isNotStale(corpus.morphNgramsTrie)
 			.isNotStale(corpus.wordCharTrie)
 		;
 		
 		corpus.addWordOccurence("inuit");
-		new AssertCompiledCorpus_InFileSystem(corpus, "After adding a word")
+		new AssertCompiledCorpus_v2(corpus, "After adding a word")
 			.isStale(corpus.charNgramsTrie)
 			.isStale(corpus.morphNgramsTrie)
 			.isNotStale(corpus.wordCharTrie)
@@ -61,7 +59,7 @@ public class CompiledCorpus_InFileSystemTest extends CompiledCorpusTest {
 		corpus.makeNotStale(corpus.charNgramsTrie);
 		corpus.makeNotStale(corpus.morphNgramsTrie);
 		
-		new AssertCompiledCorpus_InFileSystem(corpus, "After un-staling charNgramsTrie")
+		new AssertCompiledCorpus_v2(corpus, "After un-staling charNgramsTrie")
 			.isNotStale(corpus.charNgramsTrie)
 			.isNotStale(corpus.morphNgramsTrie)
 			.isNotStale(corpus.wordCharTrie)

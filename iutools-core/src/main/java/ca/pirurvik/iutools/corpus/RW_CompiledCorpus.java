@@ -37,7 +37,7 @@ public abstract class RW_CompiledCorpus {
 	private static RW_CompiledCorpus makeRW(
 			Class<? extends CompiledCorpus> corpusClass) {
 		RW_CompiledCorpus rw = null;
-		if (corpusClass == CompiledCorpus_InFileSystem.class) {
+		if (corpusClass == CompiledCorpus_v2FS.class) {
 			rw = new RW_CompiledCorpus_InFileSystem();
 		} else if (corpusClass == CompiledCorpus_InMemory.class) {
 			rw = new RW_CompiledCorpus_InMemory();

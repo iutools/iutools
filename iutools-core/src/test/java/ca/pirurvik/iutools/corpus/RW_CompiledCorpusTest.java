@@ -1,14 +1,10 @@
 package ca.pirurvik.iutools.corpus;
 
-import static org.junit.Assert.*;
-
 import java.io.File;
 
 import org.junit.Test;
 
 import com.google.common.io.Files;
-
-import ca.nrc.testing.AssertObject;
 
 public class RW_CompiledCorpusTest {
 
@@ -21,8 +17,8 @@ public class RW_CompiledCorpusTest {
 		
 		// Say you have a CompiledCorpus object
 		File tmpDir = Files.createTempDir(); tmpDir.deleteOnExit();
-		CompiledCorpus_InFileSystem corpus = 
-			new CompiledCorpus_InFileSystem(tmpDir);
+		CompiledCorpus_v2FS corpus =
+			new CompiledCorpus_v2FS(tmpDir);
 		
 		// You can save it to disk using a RW object 
 		//
@@ -59,8 +55,8 @@ public class RW_CompiledCorpusTest {
 	public void test__read_write__InFileSystem_Corpus() throws Exception {
 		
 		File corpusDir = Files.createTempDir();
-		CompiledCorpus_InFileSystem origCorpus = 
-			new CompiledCorpus_InFileSystem(corpusDir);
+		CompiledCorpus_v2FS origCorpus =
+			new CompiledCorpus_v2FS(corpusDir);
 		origCorpus.addWordOccurences(new String[] {"hello", "world"});
 		
 		File savePath = Files.createTempDir();
@@ -68,7 +64,7 @@ public class RW_CompiledCorpusTest {
 		
 		CompiledCorpus readCorpus = 
 			RW_CompiledCorpus
-				.read(savePath, CompiledCorpus_InFileSystem.class);
+				.read(savePath, CompiledCorpus_v2FS.class);
 		
 		checkOrigAgainsRead(origCorpus, readCorpus);
 	}

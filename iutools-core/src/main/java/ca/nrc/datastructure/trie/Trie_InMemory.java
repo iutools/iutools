@@ -19,7 +19,12 @@ public class Trie_InMemory extends Trie {
     
     public Trie_InMemory() {
 	}
-    
+
+	@Override
+	public void reset() throws TrieException {
+		root = new TrieNode();
+	}
+
 	@Override
 	public TrieNode getRoot() throws TrieException {
 		return root;

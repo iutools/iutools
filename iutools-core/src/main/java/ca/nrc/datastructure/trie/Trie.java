@@ -52,6 +52,8 @@ import ca.nrc.json.PrettyPrinter;
 public abstract class Trie {
 	
 	public static enum NodeOption {NO_CREATE, TERMINAL};
+
+	public abstract void reset() throws TrieException;
 			
 	public abstract TrieNode getRoot() throws TrieException;
 	

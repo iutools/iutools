@@ -3,8 +3,6 @@ package ca.pirurvik.iutools.corpus;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -17,8 +15,6 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.gson.Gson;
-import com.google.gson.JsonIOException;
 
 import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.morph.Decomposition;
@@ -29,7 +25,6 @@ import ca.nrc.data.file.ObjectStreamReader;
 import ca.nrc.data.file.ObjectStreamReaderException;
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenterException;
-import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.json.PrettyPrinter;
 import ca.pirurvik.iutools.text.segmentation.IUTokenizer;
 
@@ -159,14 +154,14 @@ public class CorpusCompiler {
 	 * @throws CompiledCorpusException 
 	 */
 	public void resumeCompilation(File corpusDirectory) throws CompiledCorpusException {
-		Class<? extends CompiledCorpus> corpusClass = CompiledCorpus_InFileSystem.class;
+		Class<? extends CompiledCorpus> corpusClass = CompiledCorpus_v2FS.class;
 		File jsonFilePath = new File(corpusDirectory, CompiledCorpus_InMemory.JSON_COMPILATION_FILE_NAME);
 		if (jsonFilePath.exists()) {
 			corpus = RW_CompiledCorpus.read(
 				jsonFilePath, CompiledCorpus_InMemory.class);
 		} else {
 			corpus = RW_CompiledCorpus.read(
-				corpusDirectory, CompiledCorpus_InFileSystem.class);
+				corpusDirectory, CompiledCorpus_v2FS.class);
 		}
 	}
 

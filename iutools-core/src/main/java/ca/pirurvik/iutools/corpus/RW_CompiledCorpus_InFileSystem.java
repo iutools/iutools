@@ -14,7 +14,7 @@ public class RW_CompiledCorpus_InFileSystem extends RW_CompiledCorpus {
 
 	@Override
 	protected CompiledCorpus readCorpus(File savePath) throws CompiledCorpusException {
-		CompiledCorpus_InFileSystem corpus = new CompiledCorpus_InFileSystem(savePath);
+		CompiledCorpus_v2FS corpus = new CompiledCorpus_v2FS(savePath);
 		
 		return corpus;
 	}
@@ -23,7 +23,7 @@ public class RW_CompiledCorpus_InFileSystem extends RW_CompiledCorpus {
 	protected void writeCorpus(CompiledCorpus corpus, File savePath) 
 		throws CompiledCorpusException {
 		
-		File corpusDir = ((CompiledCorpus_InFileSystem)corpus).corpusDir;
+		File corpusDir = ((CompiledCorpus_v2FS)corpus).corpusDir;
 		// If the corpus is already using the savePath as its corpusDir, then
 		// there is nothing to do.
 		//
