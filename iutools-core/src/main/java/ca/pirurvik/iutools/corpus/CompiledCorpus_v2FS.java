@@ -17,21 +17,21 @@ public class CompiledCorpus_v2FS extends CompiledCorpus_v2 {
 	}
 
 	@Override
-	protected Trie_InFileSystem makeWordCharTrie() {
+	protected Trie makeWordCharTrie() {
 		File trieRoot = new File(corpusDir, "wordCharTrie");
 		Trie_InFileSystem trie = new Trie_InFileSystem(trieRoot);
 		return trie;
 	}
 
 	@Override
-	protected Trie_InFileSystem makeCharNgramsTrie() {
+	protected Trie makeCharNgramsTrie() {
 		File trieRoot = new File(corpusDir, "charNgramsTrie");
 		Trie_InFileSystem trie = new Trie_InFileSystem(trieRoot);
 		return trie;
 	}
 
 	@Override
-	protected Trie_InFileSystem makeMorphNgramsTrie() {
+	protected Trie makeMorphNgramsTrie() {
 		File trieRoot = new File(corpusDir, "morphNgramsTrie");
 		Trie_InFileSystem trie = new Trie_InFileSystem(trieRoot);
 		return trie;

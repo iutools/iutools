@@ -8,9 +8,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ca.inuktitutcomputing.utilities.StopWatch;
+import ca.inuktitutcomputing.utilities.StopWatchException;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
 
@@ -19,6 +22,7 @@ import ca.nrc.datastructure.trie.visitors.TrieNodeVisitor;
 import ca.nrc.datastructure.trie.visitors.VisitorFindMostFrequentTerminals;
 import ca.nrc.datastructure.trie.visitors.VisitorNodeCounter;
 import ca.nrc.json.PrettyPrinter;
+import sun.rmi.runtime.Log;
 
 // TODO-June2020: Methods that return a set or list of TrieNodes should
 //   instead return an Iterator<TrieNode>, because the list of nodes may be
@@ -72,16 +76,41 @@ public abstract class Trie {
 	
 	public TrieNode add(String[] segments, String expression, long freqIncr) 
 			throws TrieException {
+		Logger tLogger = Logger.getLogger("ca.nrc.datastructure.trie.Trie.add");
+
+		long start = 0;
+		TimeUnit unit = TimeUnit.MILLISECONDS;
+
 		if (segments == null) {
 			segments = new String[] {TrieNode.NULL_SEG};
 		}
+
+		if (tLogger.isTraceEnabled()) {
+			try {
+				start = StopWatch.now(unit);
+			} catch (StopWatchException e) {
+				throw new TrieException(e);
+			}
+			tLogger.trace("segments="+String.join(",", segments));
+		}
+
 		addToJoinedTerminals(segments);
 		TrieNode node = getNode(segments, NodeOption.TERMINAL);
 		node.updateSurfaceForms(expression, freqIncr);
+
 		node.frequency += freqIncr;
 		saveNode(node);
+
 		updateAncestors(node);
-		
+
+		if (tLogger.isTraceEnabled()) {
+			try {
+				tLogger.trace("COMPLETED segments="+String.join(",", segments)+" in "+StopWatch.elapsedSince(start, unit)+unit.name());
+			} catch (StopWatchException e) {
+				throw new TrieException(e);
+			}
+		}
+
 		return node;		
 	}
 		
@@ -374,12 +403,21 @@ public abstract class Trie {
 	}
 	
 	protected void addToJoinedTerminals(String[] segments) {
+		Logger tLogger = Logger.getLogger("ca.nrc.datastructure.trie.Trie.addToJoinedTerminals");
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("segments="+String.join(",", segments));
+		}
 		if (segments!= null) {
 			Matcher matcher = joinedTerminalsMatcher(segments);
 			if (!matcher.find()) {
 				allTerminalsJoined += ";"+String.join(",", segments)+";";			
 			}
 		}
+
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("EXITING segments="+String.join(",", segments));
+		}
+
 	}
 	
 	protected Matcher joinedTerminalsMatcher(String[] segments) {

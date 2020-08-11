@@ -11,8 +11,6 @@ import com.google.gson.stream.JsonReader;
 
 public class RW_CompiledCorpus_InMemory extends RW_CompiledCorpus {
 
-	Gson gson = new Gson();
-	
 	@Override
 	protected CompiledCorpus newCorpus(File savePath) {
 		return new CompiledCorpus_InMemory();

@@ -49,17 +49,24 @@ public class RW_TrieNode {
 		return nodeWriter;
 	}
 
-	public void writeValue(File nodeFile, TrieNode node) 
+	public void writeNode(File nodeFile, TrieNode node)
 			throws RW_TrieNodeException {
 		try {
 			getNodeWriter().writeValue(nodeFile, node);
 		} catch (IOException e) {
 			throw new RW_TrieNodeException(e);
 		}
-		
 	}
 
-	public TrieNode readValue(File nodeFile) throws RW_TrieNodeException {
+	public void writeValue(File file, Object value) throws RW_TrieNodeException {
+		try {
+			getNodeWriter().writeValue(file, value);
+		} catch (IOException e) {
+			throw new RW_TrieNodeException(e);
+		}
+	}
+
+	public TrieNode readNode(File nodeFile) throws RW_TrieNodeException {
 		TrieNode node = null;
 		try {
 			node = getNodeMapper().readValue(nodeFile, TrieNode.class);
@@ -67,5 +74,15 @@ public class RW_TrieNode {
 			throw new RW_TrieNodeException(e);
 		}
 		return node;
+	}
+
+	public <T extends Object> T readValue(File file, Class<T> clazz) throws RW_TrieNodeException {
+		T value = null;
+		try {
+			value = getNodeMapper().readValue(file, clazz);
+		} catch (IOException e) {
+			throw new RW_TrieNodeException(e);
+		}
+		return value;
 	}
 }

@@ -45,7 +45,7 @@ public class Trie_InMemory extends Trie {
     
 	@Override
 	public boolean contains(String[] segments) throws TrieException {
-		boolean answer = null != getNode(segments);
+		boolean answer = null != getNode(segments, NodeOption.NO_CREATE);
 		return answer;
 	}
     

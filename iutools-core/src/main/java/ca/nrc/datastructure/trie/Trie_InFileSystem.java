@@ -73,7 +73,7 @@ public class Trie_InFileSystem extends Trie {
 	protected TrieNode readNodeFile(File nodeFile) throws TrieException {
 		TrieNode node = null;
 		try {
-			node = getNodeMapper().readValue(nodeFile);
+			node = getNodeMapper().readNode(nodeFile);
 		} catch (RW_TrieNodeException e) {
 			throw new TrieException("Error reading node from file: "+nodeFile, e);
 		}
@@ -93,7 +93,7 @@ public class Trie_InFileSystem extends Trie {
 			start = StopWatch.nowMSecs();
 		}
 		try {
-			getNodeMapper().writeValue(nodeFile, node);
+			getNodeMapper().writeNode(nodeFile, node);
 		} catch (RW_TrieNodeException e) {
 			throw new TrieException(e);
 		}

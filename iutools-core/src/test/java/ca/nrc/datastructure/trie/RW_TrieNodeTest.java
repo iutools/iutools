@@ -1,7 +1,5 @@
 package ca.nrc.datastructure.trie;
 
-import static org.junit.Assert.*;
-
 import java.io.File;
 
 import org.junit.Test;
@@ -28,8 +26,8 @@ public class RW_TrieNodeTest {
 		RW_TrieNode rw = new RW_TrieNode();
 		File tempFile = File.createTempFile("node", ".json");
 		tempFile.deleteOnExit();
-		rw.writeValue(tempFile, node);
-		TrieNode readNode = rw.readValue(tempFile);
+		rw.writeNode(tempFile, node);
+		TrieNode readNode = rw.readNode(tempFile);
 	}
 
 	///////////////////////////////////////////
@@ -52,8 +50,8 @@ public class RW_TrieNodeTest {
 		tempFile.deleteOnExit();
 		
 		RW_TrieNode rw = new RW_TrieNode();
-		rw.writeValue(tempFile, origNode);;
-		TrieNode readNode = rw.readValue(tempFile);
+		rw.writeNode(tempFile, origNode);;
+		TrieNode readNode = rw.readNode(tempFile);
 		
 		AssertObject.assertDeepEquals(
 			"Read node should have been the same as the original", 

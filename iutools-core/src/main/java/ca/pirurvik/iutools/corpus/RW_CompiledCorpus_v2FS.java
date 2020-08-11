@@ -4,11 +4,10 @@ import java.io.File;
 
 import ca.nrc.file.FileCopy;
 
-public class RW_CompiledCorpus_InFileSystem extends RW_CompiledCorpus {
+public class RW_CompiledCorpus_v2FS extends RW_CompiledCorpus {
 
 	@Override
 	protected CompiledCorpus newCorpus(File savePath) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

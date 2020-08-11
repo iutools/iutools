@@ -1,6 +1,12 @@
 package ca.pirurvik.iutools.corpus;
 
-import java.io.File;
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
+
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /*************************************
  * Class reading/writing CompiledCorpus objects from/to file.
@@ -19,6 +25,8 @@ public abstract class RW_CompiledCorpus {
 
 	protected abstract CompiledCorpus newCorpus(File savePath);
 
+	protected Gson gson = new Gson();
+
 	public static void write(CompiledCorpus corpus, File _savePath) 
 		throws CompiledCorpusException {
 		RW_CompiledCorpus rw = makeRW(corpus.getClass());
@@ -35,13 +43,17 @@ public abstract class RW_CompiledCorpus {
 	}
 
 	private static RW_CompiledCorpus makeRW(
-			Class<? extends CompiledCorpus> corpusClass) {
+			Class<? extends CompiledCorpus> corpusClass) throws CompiledCorpusException {
 		RW_CompiledCorpus rw = null;
 		if (corpusClass == CompiledCorpus_v2FS.class) {
-			rw = new RW_CompiledCorpus_InFileSystem();
+			rw = new RW_CompiledCorpus_v2FS();
+		} else if (corpusClass == CompiledCorpus_v2Mem.class) {
+			rw = new RW_CompiledCorpus_v2Mem();
 		} else if (corpusClass == CompiledCorpus_InMemory.class) {
 			rw = new RW_CompiledCorpus_InMemory();
+		} else {
+			throw new CompiledCorpusException("No writer for corpus class "+corpusClass);
 		}
 		return rw;
-	}	
+	}
 }
