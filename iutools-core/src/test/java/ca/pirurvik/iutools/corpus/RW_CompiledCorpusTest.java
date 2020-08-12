@@ -36,7 +36,7 @@ public class RW_CompiledCorpusTest {
 	///////////////////////////////////
 	
 	@Test
-	public void test__read_write__InMemory_Corpus() throws Exception {
+	public void test__read_write__v1_Corpus() throws Exception {
 		
 		CompiledCorpus origCorpus = new CompiledCorpus_InMemory();
 		origCorpus.addWordOccurences(new String[] {"hello", "world"});
@@ -52,7 +52,7 @@ public class RW_CompiledCorpusTest {
 	}
 
 	@Test
-	public void test__read_write__InFileSystem_Corpus() throws Exception {
+	public void test__read_write__v2FS_Corpus() throws Exception {
 		
 		File corpusDir = Files.createTempDir();
 		CompiledCorpus_v2FS origCorpus =
@@ -69,7 +69,24 @@ public class RW_CompiledCorpusTest {
 		checkOrigAgainsRead(origCorpus, readCorpus);
 	}
 
-	
+	@Test
+	public void test__read_write__v2Mem_Corpus() throws Exception {
+
+		File corpusDir = Files.createTempDir();
+		CompiledCorpus_v2Mem origCorpus =
+				new CompiledCorpus_v2Mem(corpusDir);
+		origCorpus.addWordOccurences(new String[] {"hello", "world"});
+
+		File savePath = Files.createTempDir();
+		RW_CompiledCorpus.write(origCorpus, savePath);
+
+		CompiledCorpus readCorpus =
+				RW_CompiledCorpus
+						.read(savePath, CompiledCorpus_v2Mem.class);
+
+		checkOrigAgainsRead(origCorpus, readCorpus);
+	}
+
 	///////////////////////////////////
 	// TEST HELPERS
 	///////////////////////////////////

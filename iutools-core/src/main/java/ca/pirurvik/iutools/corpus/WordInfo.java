@@ -111,7 +111,7 @@ public class WordInfo {
 		this.topDecompositions = _topDecomps;
 		return this;
 	}
-	
+
 	public WordInfo setSampleDecompositions(String[][] _sampleDecomps) {
 		this.decompositionsSample = _sampleDecomps;
 		return this;

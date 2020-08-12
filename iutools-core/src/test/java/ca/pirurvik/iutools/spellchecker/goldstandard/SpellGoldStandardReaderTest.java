@@ -1,11 +1,14 @@
 package ca.pirurvik.iutools.spellchecker.goldstandard;
 
 import ca.nrc.file.ResourceGetter;
+import ca.nrc.testing.AssertObject;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.IOException;
 
 public class SpellGoldStandardReaderTest {
 
@@ -32,7 +35,7 @@ public class SpellGoldStandardReaderTest {
     // VERIFICATION TESTS
     ////////////////////////////////////
 
-    @Test @Ignore
+    @Test
     public void test__read__HappyPath() throws Exception {
         SpellGoldStandard gotGS = SpellGoldStandardReader.read(gsDir);
         new AssertSpellGoldStandard(gotGS, "")
@@ -41,4 +44,13 @@ public class SpellGoldStandardReaderTest {
             ;
     }
 
+    @Test
+    public void test__idAndRevisorForFile__HappyPath() throws Exception {
+        File csvFile = new File("hello_world.joe.csv");
+        SpellGoldStandardReader.CSVConsumer consumer = new SpellGoldStandardReader.CSVConsumer(new SpellGoldStandard());
+        Pair<String,String> gotInfo = consumer.idAndRevisorForFile(csvFile.toPath());
+        AssertObject.assertDeepEquals(
+            "",
+             Pair.of("hello_world", "joe"), gotInfo);
+    }
 }

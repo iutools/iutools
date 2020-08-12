@@ -1,6 +1,8 @@
 package ca.pirurvik.iutools.corpus;
 
 import ca.nrc.datastructure.trie.*;
+import ca.nrc.json.TypePreservingMapper;
+import ca.nrc.json.TypePreservingMapperException;
 import com.google.gson.stream.JsonReader;
 
 import java.io.*;
@@ -12,28 +14,40 @@ public class RW_CompiledCorpus_v2Mem extends RW_CompiledCorpus {
     protected static final String charNgramsFname = "charNgrams.json";
     protected static final String morphNgramsFname = "morphNgramsTrie.json";
 
+    TypePreservingMapper _mapper = null;
+
+    protected TypePreservingMapper mapper() throws CompiledCorpusException {
+        if (_mapper == null) {
+            try {
+                _mapper = new TypePreservingMapper();
+            } catch (TypePreservingMapperException e) {
+                throw new CompiledCorpusException(e);
+            }
+        }
+        return _mapper;
+    }
+
     @Override
     protected void writeCorpus(CompiledCorpus corpus, File savePath) throws CompiledCorpusException {
         CompiledCorpus_v2Mem memCorp = (CompiledCorpus_v2Mem)corpus;
         File corpusDir = memCorp.corpusDir;
-        writeTrie((Trie_InMemory) memCorp.wordCharTrie, wordCharFile(memCorp));
-        writeTrie((Trie_InMemory) memCorp.charNgramsTrie, charNgramsFile(memCorp));
-        writeTrie((Trie_InMemory) memCorp.morphNgramsTrie, morphNgramsFile(memCorp));
+        writeTrie((Trie_InMemory) memCorp.wordCharTrie, wordCharFile(savePath));
+        writeTrie((Trie_InMemory) memCorp.charNgramsTrie, charNgramsFile(savePath));
+        writeTrie((Trie_InMemory) memCorp.morphNgramsTrie, morphNgramsFile(savePath));
 
         return;
     }
 
     protected void writeTrie(Trie_InMemory trie, File file) throws CompiledCorpusException {
-        try {
-            if (file.exists()) {
-                backupTrieFile(file);
+        if (trie != null) {
+            try {
+                if (file.exists()) {
+                    backupTrieFile(file);
+                }
+                mapper().writeValue(file, trie);
+            } catch (TypePreservingMapperException e) {
+                throw new CompiledCorpusException("Error writing trie to JSON file " + file, e);
             }
-            FileWriter fw = new FileWriter(file);
-            gson.toJson(trie, fw);
-            fw.flush();
-            fw.close();
-        } catch (IOException e) {
-            throw new CompiledCorpusException("Error writing trie to JSON file "+file, e);
         }
 
         return;
@@ -68,9 +82,8 @@ public class RW_CompiledCorpus_v2Mem extends RW_CompiledCorpus {
             value = new Trie_InMemory();
         } else {
             try {
-                JsonReader reader = new JsonReader(new FileReader(file));
-                value = gson.fromJson(reader, Trie_InMemory.class);
-            } catch (FileNotFoundException e) {
+                value = mapper().readValue(file, Trie_InMemory.class);
+            } catch (TypePreservingMapperException e) {
                 throw new CompiledCorpusException("Error trie from JSON file", e);
             }
         }

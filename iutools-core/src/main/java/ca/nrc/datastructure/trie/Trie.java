@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 
 import ca.inuktitutcomputing.utilities.StopWatch;
 import ca.inuktitutcomputing.utilities.StopWatchException;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
 
@@ -58,9 +59,10 @@ public abstract class Trie {
 	public static enum NodeOption {NO_CREATE, TERMINAL};
 
 	public abstract void reset() throws TrieException;
-			
+
 	public abstract TrieNode getRoot() throws TrieException;
-	
+
+	@JsonIgnore
 	public abstract TrieNode getNode(String[] keys, NodeOption... options) throws TrieException;
 		
 	public abstract boolean contains(String[] segments) throws TrieException;
@@ -113,28 +115,34 @@ public abstract class Trie {
 
 		return node;		
 	}
-		
+
+	@JsonIgnore
     public long getSize() throws TrieException {
     	return totalTerminals();
     }
-    
+
+	@JsonIgnore
 	public TrieNode getNode(List<String> keys) throws TrieException {
 		return getNode(keys.toArray(new String[keys.size()]));
 	}
-	
+
+	@JsonIgnore
 	public TrieNode getNode(String[] keys) throws TrieException {
 		return getNode(keys, new NodeOption[0]);
 	}
 
+	@JsonIgnore
 	public TrieNode[] getTerminals() throws TrieException {
 		TrieNode[] allTerminals = getTerminals(getRoot());
 		return allTerminals;
 	}
 
+	@JsonIgnore
 	public TrieNode[] getTerminals(String[] segments) throws TrieException {
 		return getTerminals(segments, null);
 	}
-	
+
+	@JsonIgnore
 	public TrieNode[] getTerminals(String[] segments, Boolean matchStart) 
 			throws TrieException {
 
@@ -159,7 +167,8 @@ public abstract class Trie {
 		
 		return allTerminals;
 	}
-	
+
+	@JsonIgnore
 	public TrieNode[] getTerminalsMatchingNgram(String[] segments) 
 			throws TrieException {
 		
@@ -172,8 +181,9 @@ public abstract class Trie {
 		}
 		
 		return terminalsLst.toArray(new TrieNode[terminalsLst.size()]);	
-	}	
-	
+	}
+
+	@JsonIgnore
 	public TrieNode[] getTerminals(TrieNode node) throws TrieException {
 		List<TrieNode> allTerminalsLst = 
 			new ArrayList<TrieNode>();
@@ -233,11 +243,13 @@ public abstract class Trie {
 		
 		return extended;
 	}
-    
+
+	@JsonIgnore
 	public TrieNode getMostFrequentTerminal() throws TrieException {
 		return getMostFrequentTerminal(getRoot());
 	}
-    
+
+	@JsonIgnore
 	public TrieNode getMostFrequentTerminal(TrieNode node) throws TrieException {
 		TrieNode mostFrequent = null;
 		TrieNode[] terminals = getMostFrequentTerminals(1, node, null);
@@ -246,16 +258,19 @@ public abstract class Trie {
 		}
 		return mostFrequent;
 	}
-	
+
+	@JsonIgnore
 	public TrieNode getMostFrequentTerminal(String[] segments) throws TrieException {
 		TrieNode node = getNode(segments);
 		return getMostFrequentTerminal(node);
 	}
-	
+
+	@JsonIgnore
 	public TrieNode[] getMostFrequentTerminals(int n) throws TrieException {
 		return getMostFrequentTerminals(n, getRoot(), null);
-	}	
-	
+	}
+
+	@JsonIgnore
 	public TrieNode[] getMostFrequentTerminals(int n, String[] segments) throws TrieException {
 		Logger tLogger = Logger.getLogger("ca.nrc.datastructure.trie.Trie.getMostFrequentTerminals");
 		if (tLogger.isTraceEnabled()) {
@@ -267,21 +282,25 @@ public abstract class Trie {
 		}
 		return getMostFrequentTerminals(n, node, null);
 	}
-	
+
+	@JsonIgnore
 	public TrieNode[] getMostFrequentTerminals(String[] segments) throws TrieException {
 		TrieNode node = getNode(segments);
 		return getMostFrequentTerminals(null, node, null);
 	}
 
+	@JsonIgnore
 	public TrieNode[] getMostFrequentTerminals() throws TrieException {
 		return getMostFrequentTerminals(null, getRoot(), null);
 	}
-	
+
+	@JsonIgnore
 	public TrieNode[] getMostFrequentTerminals(
 			Integer n, TrieNode node) throws TrieException {
 		return getMostFrequentTerminals(n, node, null);
 	}
 
+	@JsonIgnore
 	public TrieNode[] getMostFrequentTerminals(
 			Integer n, TrieNode node, 
 			TrieNode[] exclusions) throws TrieException {
@@ -291,19 +310,22 @@ public abstract class Trie {
 		traverseNodes(node, visitor);
 		
 		return visitor.mostFrequentTerminals();
-	}	
-	
+	}
+
+	@JsonIgnore
 	protected TrieNode getParentNode(TrieNode node) throws TrieException {
 		return this.getParentNode(node.keys);
-	}    
-	
+	}
+
+	@JsonIgnore
 	protected TrieNode getParentNode(String[] keys) throws TrieException {
 		if (keys.length==0)
 			return null;
 		else
 			return this.getNode(Arrays.copyOfRange(keys, 0, keys.length-1));
 	}
-	
+
+	@JsonIgnore
 	public long getFrequency(String[] segments) throws TrieException {
 		TrieNode node = this.getNode(segments);
 		if (node != null)
@@ -311,48 +333,6 @@ public abstract class Trie {
 		else
 			return 0;
 	}
-        
-//	/**
-//	 * 
-//	 * @param String rootKey
-//	 * @return String[] space-separated keys of the most frequent sequence of morphemes following rootSegment
-//	 * @throws TrieException 
-//	 */
-//	public String[] getMostFrequentSequenceForRoot(String rootKey) throws TrieException {
-//		Logger logger = Logger.getLogger("CompiledCorpus.getMostFrequentSequenceToTerminals");
-//		HashMap<String, Long> freqs = new HashMap<String, Long>();
-//		TrieNode rootSegmentNode = this.getNode(new String[] {rootKey});
-//		TrieNode[] terminals = getTerminals(rootSegmentNode);
-//		logger.debug("all terminals: "+terminals.length);
-//		for (TrieNode terminalNode : terminals) {
-//			//logger.debug("terminalNode: "+PrettyPrinter.print(terminalNode));
-//			String[] terminalNodeKeys = Arrays.copyOfRange(terminalNode.keys, 1, terminalNode.keys.length);
-//			freqs = computeFreqs(terminalNodeKeys,freqs,rootKey);
-//		}
-//		if (logger.isDebugEnabled()) {
-//			logger.debug("freqs: "+PrettyPrinter.print(freqs));
-//		}
-//		long maxFreq = 0;
-//		int minLength = 1000;
-//		String seq = null;
-//		String[] freqsKeys = freqs.keySet().toArray(new String[] {});
-//		for (int i=0; i<freqsKeys.length; i++) {
-//			String freqKey = freqsKeys[i];
-//			int nbKeys = freqKey.split(" ").length;
-//			if (freqs.get(freqKey)==maxFreq) {
-//				if (nbKeys<minLength) {
-//					maxFreq = freqs.get(freqKey);
-//					minLength = nbKeys;
-//					seq = freqKey;
-//				} 
-//			} else if (freqs.get(freqKey) > maxFreq) {
-//				maxFreq = freqs.get(freqKey);
-//				minLength = nbKeys;
-//				seq = freqKey;
-//			}
-//		}
-//		return (rootKey+" "+seq).split(" ");
-//	}    
     
 	private HashMap<String, Long> computeFreqs(String[] terminalNodeKeys, HashMap<String, Long> freqs, String rootSegment) throws TrieException {
 		return _computeFreqs("",terminalNodeKeys,freqs,rootSegment);
@@ -372,9 +352,6 @@ public abstract class Trie {
 		long incr = node.getFrequency();
 		if (!freqs.containsKey(newCumulativeKeys))
 			freqs.put(newCumulativeKeys, new Long(incr));
-		//else {
-		//	freqs.put(newCumulativeKeys, new Long(freqs.get(newCumulativeKeys).longValue() + incr));
-		//}
 		freqs = _computeFreqs(newCumulativeKeys, remKeys, freqs, rootSegment);
 		return freqs;
 	}
@@ -397,7 +374,8 @@ public abstract class Trie {
 		
 		return terminal;
 	}
-	
+
+	@JsonIgnore
 	protected String getAllTerminalJoined() {
 		return allTerminalsJoined;
 	}
@@ -417,7 +395,6 @@ public abstract class Trie {
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("EXITING segments="+String.join(",", segments));
 		}
-
 	}
 	
 	protected Matcher joinedTerminalsMatcher(String[] segments) {
@@ -472,10 +449,6 @@ public abstract class Trie {
 		if (onlyTerminals == null) {
 			onlyTerminals = true;
 		}
-		
-//		if (node.isTerminal() || !onlyTerminals) {
-//			visitor.visitNode(node);
-//		}
 		
 		if (node.isTerminal()) {
 			NodeTracer.trace(tLogger, node, 

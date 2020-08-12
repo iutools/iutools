@@ -3,6 +3,8 @@ package ca.nrc.datastructure.trie;
 import java.io.File;
 import java.io.IOException;
 
+import ca.nrc.json.TypePreservingMapper;
+import ca.nrc.json.TypePreservingMapperException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,49 +21,35 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
  */
 public class RW_TrieNode {
 	
-	private ObjectWriter nodeWriter = null;
-	private ObjectMapper nodeMapper = null; 
-	
-	@JsonIgnore
-	private ObjectMapper getNodeMapper() {
-		if (nodeMapper == null) {
-			nodeMapper = new ObjectMapper();
-			nodeMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
-		}
-		return nodeMapper;
-	}
+//	private ObjectWriter nodeWriter = null;
+//	private ObjectMapper nodeMapper = null;
 
-	@JsonIgnore
-	private ObjectWriter getNodeWriter() {
-		if (nodeWriter == null) 
-		{
-			// We don't write 'children' attribute to JSON because it should
-			// be deduced from the set of subdirectories in a node file's 
-			// parent directory.
-			//
-			SimpleBeanPropertyFilter propsFilter = SimpleBeanPropertyFilter
-				.serializeAllExcept("children");
-			FilterProvider filters = new SimpleFilterProvider()
-				      .addFilter("TrieNodeFilter", propsFilter);
-			nodeWriter = getNodeMapper().writer(filters);
+	private TypePreservingMapper _mapper = null;
+
+	TypePreservingMapper mapper() throws RW_TrieNodeException {
+		if (_mapper == null) {
+			try {
+				_mapper = new TypePreservingMapper();
+			} catch (TypePreservingMapperException e) {
+				throw new RW_TrieNodeException(e);
+			}
 		}
-		
-		return nodeWriter;
+		return _mapper;
 	}
 
 	public void writeNode(File nodeFile, TrieNode node)
 			throws RW_TrieNodeException {
 		try {
-			getNodeWriter().writeValue(nodeFile, node);
-		} catch (IOException e) {
+			mapper().writeValue(nodeFile, node);
+		} catch (TypePreservingMapperException e) {
 			throw new RW_TrieNodeException(e);
 		}
 	}
 
 	public void writeValue(File file, Object value) throws RW_TrieNodeException {
 		try {
-			getNodeWriter().writeValue(file, value);
-		} catch (IOException e) {
+			mapper().writeValue(file, value);
+		} catch (TypePreservingMapperException e) {
 			throw new RW_TrieNodeException(e);
 		}
 	}
@@ -69,8 +57,8 @@ public class RW_TrieNode {
 	public TrieNode readNode(File nodeFile) throws RW_TrieNodeException {
 		TrieNode node = null;
 		try {
-			node = getNodeMapper().readValue(nodeFile, TrieNode.class);
-		} catch (IOException e) {
+			node = mapper().readValue(nodeFile, TrieNode.class);
+		} catch (TypePreservingMapperException e) {
 			throw new RW_TrieNodeException(e);
 		}
 		return node;
@@ -79,8 +67,8 @@ public class RW_TrieNode {
 	public <T extends Object> T readValue(File file, Class<T> clazz) throws RW_TrieNodeException {
 		T value = null;
 		try {
-			value = getNodeMapper().readValue(file, clazz);
-		} catch (IOException e) {
+			value = mapper().readValue(file, clazz);
+		} catch (TypePreservingMapperException e) {
 			throw new RW_TrieNodeException(e);
 		}
 		return value;

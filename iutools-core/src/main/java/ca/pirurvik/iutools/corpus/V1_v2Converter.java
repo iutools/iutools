@@ -215,11 +215,10 @@ public class V1_v2Converter {
         conversionStatus.whatTrie = TrieName.charNgramsTrie;
         saveCorpus();
 
-        // We don't need th v1 corpus anymore since all its raw information is now
-        // included in the v1 wordCharTrie.
+        // We don't need th v2 charNGram Trie anymore
         // So set it to null to allow reclaiming of memory
         //
-        v1Corpus = null;
+        v2Corpus.charNgramsTrie = null;
     }
 
     private void convertCharNgramsTrie() throws CompiledCorpusException {
@@ -228,7 +227,6 @@ public class V1_v2Converter {
             echo("Skipping completed step: " + stepMess);
         } else {
             echo(stepMess);
-            conversionStatus.totalWords = v1Corpus.totalWords();
             ProgressMonitor_Terminal progMonitor =
                     makeProgressMonitor(stepMess, conversionStatus.totalWords);
             Iterator<String> iter = v2Corpus.allWords();

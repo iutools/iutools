@@ -430,12 +430,12 @@ public abstract class CompiledCorpus_v2 extends CompiledCorpus {
 
     @Override
     public WordInfo info4word(String word) throws CompiledCorpusException {
+
         WordInfo info = null;
         try {
             String[] chars = Trie.ensureTerminal(word.split(""));
             TrieNode node =
                     wordCharTrie.getNode(chars, Trie.NodeOption.NO_CREATE);
-
             String[][] nullDecomps = null;
             if (node != null) {
                 info = new WordInfo(word)

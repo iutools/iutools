@@ -10,8 +10,8 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.apache.log4j.Logger;
 
-@JsonFilter("TrieNodeFilter")
 public class TrieNode {
 	
 	public static final String TERMINAL_SEG = "_$";
@@ -317,12 +317,15 @@ public class TrieNode {
 	
 	@JsonIgnore
 	public  <T> T getField(String fldName, T newEntry) {
+		Logger tLogger = Logger.getLogger("ca.nrc.datastructure.trie.TrieNode.getField");
+		tLogger.trace("For fldName="+fldName+", default entry is of class "+((newEntry == null) ? null: newEntry.getClass()));
 		T value = (T)data.get(fldName);
 		if (value == null) {
 			data.put(fldName, newEntry);
 			value = newEntry;
 		}
-		
+
+		tLogger.trace("For fldName="+fldName+", returning value  "+((value == null) ? "": value.getClass())+"="+value);
 		return value;
 	}
 
