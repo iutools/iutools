@@ -3,12 +3,12 @@ package ca.pirurvik.iutools.spellchecker.goldstandard;
 import ca.nrc.file.ResourceGetter;
 import ca.nrc.testing.AssertObject;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.IOException;
 
 public class SpellGoldStandardReaderTest {
 
@@ -35,12 +35,23 @@ public class SpellGoldStandardReaderTest {
     // VERIFICATION TESTS
     ////////////////////////////////////
 
-    @Test
+    @Test @Ignore
     public void test__read__HappyPath() throws Exception {
         SpellGoldStandard gotGS = SpellGoldStandardReader.read(gsDir);
+        String[] expGood = new String[] {
+            "good", "hello", "morning", "universe"
+        };
         new AssertSpellGoldStandard(gotGS, "")
-            .correctlySpelledWordsAre("BLAH")
-            .wordsWithMultipleCorrectionsAre(new String[][]{})
+            .wordsAre(new String[] {"good", "greetinhs", "hello", "morning",
+                "universe", "wrld"})
+            .correctlySpelledWordsAre(
+                new String[] {"good", "hello", "morning", "universe"})
+            .misspelledWordsAre(new String[] {"greetinhs", "wrld"})
+            .wordsWithMultipleCorrectionsAre(
+                new String[][]{
+                    new String[] {"greetinhs", "greetings", "greetinhs"}
+                })
+            .missedRevisionsAre(Triple.of("BLAH","BLAH", "BLAH"))
             ;
     }
 

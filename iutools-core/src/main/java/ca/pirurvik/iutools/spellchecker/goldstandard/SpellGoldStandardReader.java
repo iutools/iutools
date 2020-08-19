@@ -47,7 +47,9 @@ public class SpellGoldStandardReader {
         }
 
         protected void processCSVFile(Path csvFile) throws SpellCheckerException {
-            Pair<String,String> fileIDandRevisor = idAndRevisorForFile(csvFile);
+            Pair<String,String> fileID_andRevisor = idAndRevisorForFile(csvFile);
+            String docID = fileID_andRevisor.getLeft();
+            String revisor = fileID_andRevisor.getRight();
             List<List<String>> lines = null;
             try {
                 lines = new CSVReader().read(csvFile.toString());
@@ -66,7 +68,7 @@ public class SpellGoldStandardReader {
                 String correctedWord = aLine.get(3).toLowerCase();
                 String comment = null;
                 if (aLine.size() > 4) {
-                    comment = aLine.get(5);
+                    comment = aLine.get(4);
                 }
                 if (!origWord.equals(correctedWord) &&
                     (comment == null || comment.isEmpty())) {
@@ -82,7 +84,7 @@ public class SpellGoldStandardReader {
                                     "Line: "+ StringUtils.join(aLine.iterator(), ","));
                 } else {
                     // Valid line
-//                    ???
+                    goldStandard.addCase(origWord, correctedWord, docID, revisor);
                 }
             }
         }

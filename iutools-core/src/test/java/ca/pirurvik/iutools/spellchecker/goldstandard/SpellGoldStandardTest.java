@@ -1,12 +1,11 @@
 package ca.pirurvik.iutools.spellchecker.goldstandard;
 
-import ca.pirurvik.iutools.spellchecker.goldstandard.AssertSpellGoldStandard;
-import ca.pirurvik.iutools.spellchecker.goldstandard.SpellGoldStandard;
-import ca.pirurvik.iutools.spellchecker.goldstandard.SpellGoldStandardCase;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 public class SpellGoldStandardTest {
 
@@ -21,18 +20,7 @@ public class SpellGoldStandardTest {
         //
         SpellGoldStandard gs = new SpellGoldStandard();
 
-        // A gold standard is maded up of a bunch of text document, where each
-        // document was proof-read by one or more human evaluators.
-        //
-        // Here is how you add a document to the GS
-        //
-        String docID = "doc1";
-        String docText = "Hello world";
-        gs.addDoc(docID, docText);
-
-        // This is how you add proof reading
-
-        // You build the Gold Standard by adding "cases". Each case consists
+        // You build a Gold Standard by adding "cases". Each case consists
         // of a word from a given document, that was evaluated by a human
         // proof-reader.
         //
@@ -51,8 +39,8 @@ public class SpellGoldStandardTest {
         //
         gs.addCase(origWord, "hell", docName, "Jane");
 
-        // The Gold Standard will typically include all the words that are seen
-        // in a collection of documents. This includes words that are correctly
+        // The Gold Standard should include all the words that are seen
+        // in each of the documents. This includes words that are correctly
         // spelled. For those, just pass null as the correction.
         //
         gs.addCase("hell", null, "TheDivineComedy.docx", "Jane");
@@ -62,12 +50,17 @@ public class SpellGoldStandardTest {
         // a list of words for which more than one possible corrections have
         // been provided
         //
-        Map<String, String[]> anomalies = gs.wordsWithMultipleCorrections();
+        Map<String, Set<String>> anomalies = gs.wordsWithMultipleCorrections();
         for (String word: anomalies.keySet()) {
-            String[] conflictingCorrections = anomalies.get(word);
+            Set<String> conflictingCorrections = anomalies.get(word);
         }
 
-        // You can also iterate through all the words in the gold standard
+        // You can also look for words that have been missed by one or more revisors
+        //
+//        List<Triple<String,String,String>> missedRevisions = gs.missedRevisions();
+
+
+        // Of course, you can also iterate through all the words in the gold standard
         //
         Iterator<SpellGoldStandardCase> iter = gs.allWords();
         while (iter.hasNext()) {
@@ -89,11 +82,10 @@ public class SpellGoldStandardTest {
         gs.addCase(origWord, "hell", docName, "Jane");
         gs.addCase("hell", null, "TheDivineComedy.docx", "Jane");
 
-//        gs.wordsWithMultipleCorrections()
         new AssertSpellGoldStandard(gs, "")
             .wordsWithMultipleCorrectionsAre(
                 new String[][] {
-                    new String[] {"helll", "hello", "hell"}
+                    new String[] {"helll", "hell", "hello"}
                 }
             )
             .correctlySpelledWordsAre("hell")
