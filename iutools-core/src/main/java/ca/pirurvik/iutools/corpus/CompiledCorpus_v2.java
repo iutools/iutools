@@ -4,6 +4,7 @@ import ca.inuktitutcomputing.data.Morpheme;
 import ca.inuktitutcomputing.utilities.StopWatch;
 import ca.inuktitutcomputing.utilities.StopWatchException;
 import ca.nrc.datastructure.trie.*;
+import ca.nrc.ui.commandline.ProgressMonitor_Terminal;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.log4j.Logger;
 
@@ -313,7 +314,7 @@ public abstract class CompiledCorpus_v2 extends CompiledCorpus {
         Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpus_InFileSystem.updateCharNgramIndex");
         Logger tLogger_TIME = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpus_InFileSystem.updateCharNgramIndexTIME");
 
-        tLogger.trace("word = "+word);
+        tLogger.trace("word="+word+", freqIncr="+freqIncr);
 
         long start = 0; TimeUnit unit = TimeUnit.MILLISECONDS;
         try {
@@ -430,7 +431,7 @@ public abstract class CompiledCorpus_v2 extends CompiledCorpus {
 
     @Override
     public WordInfo info4word(String word) throws CompiledCorpusException {
-
+        Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpus_v2.info4word");
         WordInfo info = null;
         try {
             String[] chars = Trie.ensureTerminal(word.split(""));
@@ -438,6 +439,11 @@ public abstract class CompiledCorpus_v2 extends CompiledCorpus {
                     wordCharTrie.getNode(chars, Trie.NodeOption.NO_CREATE);
             String[][] nullDecomps = null;
             if (node != null) {
+                if (tLogger.isTraceEnabled()) {
+                    Object value = node.getField("sampleDecompositions", nullDecomps);
+                    String type = value == null ? null : value.getClass().getName();
+                    tLogger.trace("Type of field sampleDecompositions="+type);
+                }
                 info = new WordInfo(word)
                         .setFrequency(node.getFrequency())
                         .setTopDecompositions(nodeBestDecomp(node))
@@ -595,11 +601,19 @@ public abstract class CompiledCorpus_v2 extends CompiledCorpus {
     }
 
     private void regenerateCharNgramsTrie() throws CompiledCorpusException {
+        regenerateCharNgramsTrie(null);
+    }
+
+    private void regenerateCharNgramsTrie(ProgressMonitor_Terminal progMonitor) throws CompiledCorpusException {
+        Logger tLogger = Logger.getLogger("ca.nrc.pirurvik.iutools.corpus.CompiledCorpus_v2.regenerateCharNgramsTrie");
         try {
             makeNotStale(charNgramsTrie);
             charNgramsTrie.reset();
             Iterator<String> iter = allWords();
             while (iter.hasNext()) {
+                if (progMonitor != null) {
+                    progMonitor.stepCompleted();
+                }
                 String word = iter.next();
                 WordInfo winfo = info4word(word);
                 long freq = winfo.frequency;
@@ -658,5 +672,9 @@ public abstract class CompiledCorpus_v2 extends CompiledCorpus {
         }
 
         return iterator;
+    }
+
+    public void resetCharNgramsTrie() {
+        charNgramsTrie = makeCharNgramsTrie();
     }
 }

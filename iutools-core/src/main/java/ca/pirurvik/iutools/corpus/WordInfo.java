@@ -1,8 +1,10 @@
 package ca.pirurvik.iutools.corpus;
 
+import ca.nrc.dtrc.elasticsearch.Document;
+
 import java.util.List;
 
-public class WordInfo {
+public class WordInfo extends Document {
 	
 	/**
 	 * The word. May be left to null if we prefer to use numerical
@@ -80,7 +82,7 @@ public class WordInfo {
 		this.key = _key;
 	}
 	
-	public void setDecompositions(String[][] sampleDecomps, int totalDecomps) {
+	public void setDecompositions(String[][] sampleDecomps, Integer totalDecomps) {
 		if (sampleDecomps == null) {
 			topDecompositions = null;
 			totalDecompositions = null;

@@ -67,8 +67,9 @@ public class V1_v2Converter {
     }
 
     private void run() throws CompiledCorpusException {
-
+        echo("Reading the v1 corpus");
         v1Corpus = (CompiledCorpus_InMemory) RW_CompiledCorpus.read(v1_path, CompiledCorpus_InMemory.class);
+        echo("DONE Reading the v1 corpus");
         resumeFromLastSave();
         convert();
     }
@@ -229,11 +230,13 @@ public class V1_v2Converter {
             echo(stepMess);
             ProgressMonitor_Terminal progMonitor =
                     makeProgressMonitor(stepMess, conversionStatus.totalWords);
+            v2Corpus.resetCharNgramsTrie();
             Iterator<String> iter = v2Corpus.allWords();
             while (iter.hasNext()) {
                 progMonitor.stepCompleted();
                 String word =  iter.next();
                 WordInfo winfo = v2Corpus.info4word(word);
+                echo("Updating char ngrams for word="+word);
                 v2Corpus.updateCharNgramIndex(word, winfo.frequency);
 
                 if (secsSinceLastSave() > saveEveryNSecs) {

@@ -34,9 +34,9 @@ import ca.nrc.testing.AssertObject;
 public abstract class CompiledCorpusTest {
 		
 	protected abstract CompiledCorpus makeCorpusUnderTest(
-		Class<? extends StringSegmenter> segmenterClass);
+		Class<? extends StringSegmenter> segmenterClass) throws Exception;
 	
-	protected CompiledCorpus makeCorpusUnderTest() {
+	protected CompiledCorpus makeCorpusUnderTest()  throws Exception {
 		return makeCorpusUnderTest(StringSegmenter_Char.class);
 	}
 	
