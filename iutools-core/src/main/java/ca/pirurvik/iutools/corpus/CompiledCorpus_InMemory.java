@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.Vector;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -325,7 +324,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
     
 	public Long totalOccurencesWithDecomps() throws CompiledCorpusException {
 		try {
-			return getTrie().totalTerminalOccurences();
+			return getTrie().totalOccurences();
 		} catch (TrieException e) {
 			throw new CompiledCorpusException(e);
 		}
@@ -334,7 +333,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	@Override
 	public long totalWordsWithDecomps() throws CompiledCorpusException {
 		try {
-			return getTrie().getSize();
+			return getTrie().totalTerminals();
 		} catch (TrieException e) {
 			throw new CompiledCorpusException(e);
 		}

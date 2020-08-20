@@ -6,7 +6,6 @@ import java.util.Set;
 
 import org.junit.Assert;
 
-import ca.nrc.string.StringUtils;
 import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.Asserter;
 
@@ -54,7 +53,7 @@ public class AssertTrie extends Asserter<Trie> {
 	
 	public AssertTrie totalTerminalOccurencesIs(String[] segments, long expTotal) 
 		throws Exception {
-		long gotTotal = trie().totalTerminalOccurences(segments);
+		long gotTotal = trie().totalOccurences(segments);
 		Assert.assertEquals(
 			baseMessage+"\nTotal number of terminal occurences was not as expected for segments"+
 			String.join(",", segments), 
@@ -64,7 +63,7 @@ public class AssertTrie extends Asserter<Trie> {
 	}
 	
 	public AssertTrie sizeIs(long expSize) throws Exception {
-		long gotSize = trie().getSize();
+		long gotSize = trie().totalTerminals();
 		Assert.assertEquals(
 			baseMessage+"\nTrie size was not as expected", 
 			expSize, gotSize);
@@ -80,7 +79,7 @@ public class AssertTrie extends Asserter<Trie> {
 	public AssertTrie hasTotalTerminalOccurences(long expNbOccurences) throws Exception {
 		Assert.assertEquals(
 			baseMessage+"\nTotal number of occurences was not as expected", 
-			expNbOccurences, trie().totalTerminalOccurences());
+			expNbOccurences, trie().totalOccurences());
 		return this;
 	}
 	

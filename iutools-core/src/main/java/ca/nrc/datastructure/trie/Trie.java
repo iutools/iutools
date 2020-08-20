@@ -69,7 +69,7 @@ public abstract class Trie {
 		if (_info == null) {
 			_info = new TrieInfo();
 			_info.totalTerminals = computeTotalTerminals();
-			_info.totalOccurences = totalTerminalOccurences();
+			_info.totalOccurences = computeTotalOccurences();
 		}
 		return _info;
 	}
@@ -125,11 +125,6 @@ public abstract class Trie {
 
 		return node;		
 	}
-
-	@JsonIgnore
-    public long getSize() throws TrieException {
-    	return totalTerminals();
-    }
 
 	@JsonIgnore
 	public TrieNode getNode(List<String> keys) throws TrieException {
@@ -496,27 +491,32 @@ public abstract class Trie {
 		return computeTotalTerminals(segments);
 	}
 
-	public long computeTotalTerminals() throws TrieException {
+	protected long computeTotalTerminals() throws TrieException {
 		return computeTotalTerminals(new String[0]);
 	}
 	
-	public long computeTotalTerminals(String[] segments) throws TrieException {
+	protected long computeTotalTerminals(String[] segments) throws TrieException {
 		TrieNode node = getNode(segments, NodeOption.NO_CREATE);
 		VisitorNodeCounter visitor = new VisitorNodeCounter();
 		traverseNodes(node, visitor, true);
 		return visitor.nodesCount;
 	}
 
-	public long totalTerminalOccurences_NEW() throws TrieException {
+	public long totalOccurences() throws TrieException {
 		long total = info().totalOccurences;
 		return total;
 	}
 
-	public long totalTerminalOccurences() throws TrieException {
-		return totalTerminalOccurences(new String[0]);
+	public long totalOccurences(String[] segments) throws TrieException {
+		long total = computeTotalOccurences(segments);
+		return total;
+	}
+
+	protected long computeTotalOccurences() throws TrieException {
+		return computeTotalOccurences(new String[0]);
 	}
 	
-	public long totalTerminalOccurences(String[] segments) throws TrieException {
+	protected long computeTotalOccurences(String[] segments) throws TrieException {
 		TrieNode node = getNode(segments, NodeOption.NO_CREATE);
 		VisitorNodeCounter visitor = new VisitorNodeCounter();
 		traverseNodes(node, visitor, true);

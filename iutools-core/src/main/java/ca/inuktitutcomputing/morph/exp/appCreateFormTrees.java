@@ -43,7 +43,7 @@ public class appCreateFormTrees {
 		} catch (JsonIOException | IOException e) {
 			throw new CompiledCorpusException(e);
 		}
-		System.out.println(type + "s " + "saved in " + saveFile.getAbsolutePath()+"; trie size: "+trie.getSize());
+		System.out.println(type + "s " + "saved in " + saveFile.getAbsolutePath()+"; trie size: "+trie.totalTerminals());
 	}
 
 
