@@ -20,7 +20,9 @@ public class NodeTracer {
 	public static void trace(Logger tLogger, TrieNode node, String message,
 			String specificNodesRegex) 
 		throws TrieException {
-		trace(tLogger, node.keys, message, specificNodesRegex);
+		if (node != null) {
+			trace(tLogger, node.keys, message, specificNodesRegex);
+		}
 	}
 
 	public static void trace(Logger tLogger, String[] nodeKeys, String message,

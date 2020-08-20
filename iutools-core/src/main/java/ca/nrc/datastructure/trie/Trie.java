@@ -2,12 +2,8 @@ package ca.nrc.datastructure.trie;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,15 +11,11 @@ import java.util.regex.Pattern;
 import ca.inuktitutcomputing.utilities.StopWatch;
 import ca.inuktitutcomputing.utilities.StopWatchException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
 
-import ca.nrc.datastructure.trie.Trie.NodeOption;
 import ca.nrc.datastructure.trie.visitors.TrieNodeVisitor;
 import ca.nrc.datastructure.trie.visitors.VisitorFindMostFrequentTerminals;
 import ca.nrc.datastructure.trie.visitors.VisitorNodeCounter;
-import ca.nrc.json.PrettyPrinter;
-import sun.rmi.runtime.Log;
 
 // TODO-June2020: Methods that return a set or list of TrieNodes should
 //   instead return an Iterator<TrieNode>, because the list of nodes may be
@@ -71,7 +63,18 @@ public abstract class Trie {
 			
 	protected String allTerminalsJoined = ";";
 
-	public TrieNode add(String[] segments, String expression) 
+	private TrieInfo _info = null;
+
+	public TrieInfo info() throws TrieException {
+		if (_info == null) {
+			_info = new TrieInfo();
+			_info.totalTerminals = computeTotalTerminals();
+			_info.totalOccurences = totalTerminalOccurences();
+		}
+		return _info;
+	}
+
+	public TrieNode add(String[] segments, String expression)
 			throws TrieException {
 		return add(segments, expression, 1);
 	}
@@ -82,6 +85,8 @@ public abstract class Trie {
 
 		long start = 0;
 		TimeUnit unit = TimeUnit.MILLISECONDS;
+
+		TrieInfo info = info();
 
 		if (segments == null) {
 			segments = new String[] {TrieNode.NULL_SEG};
@@ -98,9 +103,14 @@ public abstract class Trie {
 
 		addToJoinedTerminals(segments);
 		TrieNode node = getNode(segments, NodeOption.TERMINAL);
+		if (node.frequency == 0) {
+			// This is a brand new node
+			info.totalTerminals++;
+		}
 		node.updateSurfaceForms(expression, freqIncr);
 
 		node.frequency += freqIncr;
+		info.totalOccurences += freqIncr;
 		saveNode(node);
 
 		updateAncestors(node);
@@ -446,44 +456,60 @@ public abstract class Trie {
 		Boolean onlyTerminals) 
 		throws TrieException {
 		Logger tLogger = Logger.getLogger("ca.nrc.datastructure.trie.Trie.traverseNodes");
-		if (onlyTerminals == null) {
-			onlyTerminals = true;
-		}
-		
-		if (node.isTerminal()) {
-			NodeTracer.trace(tLogger, node, 
-					"node is terminal; visiting it");
-			visitor.visitNode(node);
-		} else {
-			NodeTracer.trace(
-				tLogger, node,
-				"node is NOT terminal");
-			if (!onlyTerminals) {
-				NodeTracer.trace(tLogger, node, 
-						"visiting non-terminal node");
+		if (node != null) {
+			if (onlyTerminals == null) {
+				onlyTerminals = true;
+			}
+
+			if (node.isTerminal()) {
+				NodeTracer.trace(tLogger, node,
+						"node is terminal; visiting it");
 				visitor.visitNode(node);
-			
-			}
-			NodeTracer.trace(
-					tLogger, node,
-					"visiting node children");
-			for (TrieNode aChild: childrenNodes(node)) {
-				traverseNodes(aChild, visitor, onlyTerminals);
+			} else {
+				NodeTracer.trace(
+						tLogger, node,
+						"node is NOT terminal");
+				if (!onlyTerminals) {
+					NodeTracer.trace(tLogger, node,
+							"visiting non-terminal node");
+					visitor.visitNode(node);
+
+				}
+				NodeTracer.trace(
+						tLogger, node,
+						"visiting node children");
+				for (TrieNode aChild : childrenNodes(node)) {
+					traverseNodes(aChild, visitor, onlyTerminals);
+				}
 			}
 		}
-		
+
 		NodeTracer.trace(tLogger, node, "Exiting");
 	}
 
 	public long totalTerminals() throws TrieException {
-		return totalTerminals(new String[0]);
+		long total = info().totalTerminals;
+		return total;
+	}
+
+	public long totalTerminals(String[] segments) throws TrieException {
+		return computeTotalTerminals(segments);
+	}
+
+	public long computeTotalTerminals() throws TrieException {
+		return computeTotalTerminals(new String[0]);
 	}
 	
-	public long totalTerminals(String[] segments) throws TrieException {
+	public long computeTotalTerminals(String[] segments) throws TrieException {
 		TrieNode node = getNode(segments, NodeOption.NO_CREATE);
 		VisitorNodeCounter visitor = new VisitorNodeCounter();
 		traverseNodes(node, visitor, true);
 		return visitor.nodesCount;
+	}
+
+	public long totalTerminalOccurences_NEW() throws TrieException {
+		long total = info().totalOccurences;
+		return total;
 	}
 
 	public long totalTerminalOccurences() throws TrieException {
@@ -496,5 +522,4 @@ public abstract class Trie {
 		traverseNodes(node, visitor, true);
 		return visitor.occurencesCount;
 	}
-	
 }
