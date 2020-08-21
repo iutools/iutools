@@ -52,14 +52,8 @@ public class Trie_InMemory extends Trie {
         
     /**
      * Add an entry to the Trie.
-     * 
-     * @param partsSequence
-     * @param word
-     * @return an object of class TrieNode
-     * @throws TrieException
      */
-
-	public TrieNode getNode(String[] keys, NodeOption... options ) 
+	public TrieNode retrieveNode(String[] keys, NodeOption... options )
 			throws TrieException {
 		// TODO-June2020: Implement all getNode() entry points at level of parent
 		//  Trie class. These methods will check that segments is not null, then 

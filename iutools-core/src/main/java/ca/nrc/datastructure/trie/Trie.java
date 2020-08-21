@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 
 import ca.inuktitutcomputing.utilities.StopWatch;
 import ca.inuktitutcomputing.utilities.StopWatchException;
+import ca.nrc.ui.commandline.ProgressMonitor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.log4j.Logger;
 
@@ -48,14 +49,14 @@ import ca.nrc.datastructure.trie.visitors.VisitorNodeCounter;
 
 public abstract class Trie {
 	
-	public static enum NodeOption {NO_CREATE, TERMINAL};
+	public static enum NodeOption {NO_CREATE, TERMINAL, ENSURE_UPTODATE_STATS};
 
 	public abstract void reset() throws TrieException;
 
 	public abstract TrieNode getRoot() throws TrieException;
 
 	@JsonIgnore
-	public abstract TrieNode getNode(String[] keys, NodeOption... options) throws TrieException;
+	public abstract TrieNode retrieveNode(String[] keys, NodeOption... options) throws TrieException;
 		
 	public abstract boolean contains(String[] segments) throws TrieException;
 		
@@ -72,6 +73,42 @@ public abstract class Trie {
 			_info.totalOccurences = computeTotalOccurences();
 		}
 		return _info;
+	}
+
+	/**
+	 * Get the node corresponding to a sequence of keys.
+	 *
+	 * Note that the node's aggregate stats like 'frequency' may NOT be up to
+	 * date. To ensure up to date stats, use
+	 *
+	 *    getNode(keys, NodeOption.ENSURE_UPTODATE_STATS)
+	 */
+	@JsonIgnore
+	public TrieNode getNode(List<String> keys) throws TrieException {
+		return getNode(keys.toArray(new String[keys.size()]), new NodeOption[0]);
+	}
+
+	@JsonIgnore
+	public TrieNode getNode(String[] keys) throws TrieException {
+		return getNode(keys, new NodeOption[0]);
+	}
+
+	@JsonIgnore
+	public TrieNode getNode(String[] keys, NodeOption... options)
+			throws TrieException {
+		boolean ensureUptodateStats = false;
+		for (NodeOption anOption: options) {
+			if (anOption == NodeOption.ENSURE_UPTODATE_STATS) {
+				ensureUptodateStats = true;
+				break;
+			}
+		}
+
+		if (ensureUptodateStats && info().aggregateStatsAreStale) {
+			recomputeAggregateStats(keys);
+		}
+		TrieNode node = retrieveNode(keys, options);
+		return node;
 	}
 
 	public TrieNode add(String[] segments, String expression)
@@ -124,16 +161,6 @@ public abstract class Trie {
 		}
 
 		return node;		
-	}
-
-	@JsonIgnore
-	public TrieNode getNode(List<String> keys) throws TrieException {
-		return getNode(keys.toArray(new String[keys.size()]));
-	}
-
-	@JsonIgnore
-	public TrieNode getNode(String[] keys) throws TrieException {
-		return getNode(keys, new NodeOption[0]);
 	}
 
 	@JsonIgnore
@@ -522,4 +549,42 @@ public abstract class Trie {
 		traverseNodes(node, visitor, true);
 		return visitor.occurencesCount;
 	}
+
+	public void recomputeAggregateStats(String[] keys) throws TrieException {
+		TrieNode node = getNode(keys, NodeOption.NO_CREATE);
+		if (node != null) {
+			recomputeAggregateStats(node);
+		}
+	}
+
+	private void recomputeAggregateStats(TrieNode node) throws TrieException {
+		recomputeAggregateStats(node, null);
+	}
+
+	private void recomputeAggregateStats(TrieNode node, ProgressMonitor progMonitor) throws TrieException {
+		if (node.isTerminal()) {
+			if (progMonitor != null) {
+				progMonitor.stepCompleted();
+			} else {
+				List<TrieNode> children = childrenNodes(node);
+
+				// Compute the aggregate stats of each child
+				for (TrieNode aChild: children) {
+					recomputeAggregateStats(aChild, progMonitor);
+				}
+
+				// Compute this node's aggregate stats based on
+				// the stats of its children
+				node.frequency = 0;
+				for (TrieNode aChild: children) {
+					node.incrementFrequency(aChild.getFrequency());
+				}
+			}
+		}
+
+		if (node == getRoot()) {
+			info().aggregateStatsAreStale = false;
+		}
+	}
+
 }

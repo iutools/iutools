@@ -36,7 +36,7 @@ public class Trie_InFileSystem extends Trie {
 	}
 
 	@Override
-	public TrieNode getNode(String[] keys, NodeOption... options) throws TrieException {
+	public TrieNode retrieveNode(String[] keys, NodeOption... options) throws TrieException {
 		Logger tLogger = Logger.getLogger("ca.nrc.datastructure.trie.Trie_InFileSystem.getNode");
 
 		// TODO-June2020: Implement all getNode() entry points at level of parent
