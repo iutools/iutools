@@ -128,7 +128,7 @@ public abstract class CompiledCorpus_v2 extends CompiledCorpus {
             throws CompiledCorpusException {
         List<String> words = new ArrayList<String>();
         try {
-            TrieNode node = getCharNgramsTrie().getNode(getCharNgramsTrie().wordChars(ngram));
+            TrieNode node = getCharNgramsTrie().node4keys(getCharNgramsTrie().wordChars(ngram));
             if (node != null) {
                 words = node.getField("words", words);
             }
@@ -150,7 +150,7 @@ public abstract class CompiledCorpus_v2 extends CompiledCorpus {
         try {
             morphemes = morphemesWithBraces(morphemes);
             TrieNode node =
-                    getMorphNgramsTrie().getNode(morphemes,
+                    getMorphNgramsTrie().node4keys(morphemes,
                             Trie.NodeOption.TERMINAL, Trie.NodeOption.NO_CREATE);
             if (node != null) {
                 List<String> matchingWords = node.getField("words", new ArrayList<String>());
@@ -183,7 +183,7 @@ public abstract class CompiledCorpus_v2 extends CompiledCorpus {
 
         TrieNode wordNode;
         try {
-            wordNode = this.wordCharTrie.getNode(wordChars);
+            wordNode = this.wordCharTrie.node4keys(wordChars);
         } catch (TrieException e) {
             throw new CompiledCorpusException(e);
         }
@@ -199,7 +199,7 @@ public abstract class CompiledCorpus_v2 extends CompiledCorpus {
         for (String morphID: matchingMorphemes) {
             try {
                 TrieNode node =
-                        getMorphNgramsTrie().getNode(
+                        getMorphNgramsTrie().node4keys(
                                 new String[] {morphID}, Trie.NodeOption.TERMINAL);
                 List<String> matchingWords = node.getField("words", new ArrayList<String>());
                 for (String aWord: matchingWords) {
@@ -371,7 +371,7 @@ public abstract class CompiledCorpus_v2 extends CompiledCorpus {
         String[] topDecs = null;
         TrieNode node;
         try {
-            node = wordCharTrie.getNode(Trie.ensureTerminal(word.split("")));
+            node = wordCharTrie.node4keys(Trie.ensureTerminal(word.split("")));
             if (node != null) {
                 topDecs = nodeBestDecomp(node);
             }
@@ -387,7 +387,7 @@ public abstract class CompiledCorpus_v2 extends CompiledCorpus {
         long freq = 0;
         try {
             String[] ngramChars = Trie.wordChars(ngram);
-            TrieNode node = getCharNgramsTrie().getNode(ngramChars);
+            TrieNode node = getCharNgramsTrie().node4keys(ngramChars);
             if (node != null) {
                 freq = node.getFrequency();
             }
@@ -403,7 +403,7 @@ public abstract class CompiledCorpus_v2 extends CompiledCorpus {
         long freq = 0;
         try {
             String[] termMorphemes = Trie.ensureTerminal(morphemes);
-            TrieNode node = getMorphNgramsTrie().getNode(termMorphemes);
+            TrieNode node = getMorphNgramsTrie().node4keys(termMorphemes);
             if (node != null) {
                 freq = node.getFrequency();
             }
@@ -436,7 +436,7 @@ public abstract class CompiledCorpus_v2 extends CompiledCorpus {
         try {
             String[] chars = Trie.ensureTerminal(word.split(""));
             TrieNode node =
-                    wordCharTrie.getNode(chars, Trie.NodeOption.NO_CREATE);
+                    wordCharTrie.node4keys(chars, Trie.NodeOption.NO_CREATE);
             String[][] nullDecomps = null;
             if (node != null) {
                 if (tLogger.isTraceEnabled()) {
@@ -497,7 +497,7 @@ public abstract class CompiledCorpus_v2 extends CompiledCorpus {
 //		return mostFrequentLst.toArray(new WordInfo[mostFrequentLst.size()]);
 
         try {
-            TrieNode node = getMorphNgramsTrie().getNode(morphemes, Trie.NodeOption.TERMINAL);
+            TrieNode node = getMorphNgramsTrie().node4keys(morphemes, Trie.NodeOption.TERMINAL);
             List<String> extensions = node.getField("words", new ArrayList<String>());
             for (String aWord: extensions) {
                 WordInfo winfo = info4word(aWord);
@@ -553,7 +553,7 @@ public abstract class CompiledCorpus_v2 extends CompiledCorpus {
     public long totalWordsWithNoDecomp() throws CompiledCorpusException {
         long total = 0;
         try {
-            TrieNode node = getMorphNgramsTrie().getNode(null, Trie.NodeOption.TERMINAL);
+            TrieNode node = getMorphNgramsTrie().node4keys(null, Trie.NodeOption.TERMINAL);
             if (node != null) {
                 total = node.getSurfaceForms().size();
             }
@@ -575,7 +575,7 @@ public abstract class CompiledCorpus_v2 extends CompiledCorpus {
         long total = 0;
         try {
             TrieNode node =
-                    getMorphNgramsTrie().getNode(null, Trie.NodeOption.TERMINAL);
+                    getMorphNgramsTrie().node4keys(null, Trie.NodeOption.TERMINAL);
             for (Map.Entry<String, Long> entry: node.getSurfaceForms().entrySet()) {
                 total += entry.getValue();
             }
@@ -663,7 +663,7 @@ public abstract class CompiledCorpus_v2 extends CompiledCorpus {
             throws CompiledCorpusException {
         Iterator<String> iterator = new HashSet<String>().iterator();
         try {
-            TrieNode node = getMorphNgramsTrie().getNode(null, Trie.NodeOption.TERMINAL);
+            TrieNode node = getMorphNgramsTrie().node4keys(null, Trie.NodeOption.TERMINAL);
             if (node != null) {
                 iterator = node.getSurfaceForms().keySet().iterator();
             }

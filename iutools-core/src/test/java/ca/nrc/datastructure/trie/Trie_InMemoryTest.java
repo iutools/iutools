@@ -26,7 +26,7 @@ public class Trie_InMemoryTest extends TrieTest {
 		String json = charTrie.toJSON();
 		Gson gson = new Gson();
 		Trie retrievedCharTrie = (Trie) gson.fromJson(json, charTrie.getClass());
-		TrieNode node = retrievedCharTrie.getNode(new String[] {"h","i","t"}, NodeOption.TERMINAL);
+		TrieNode node = retrievedCharTrie.node4keys(new String[] {"h","i","t"}, NodeOption.TERMINAL);
 		Assert.assertTrue("The node should be terminal.",node.isTerminal());
 
 		new AssertTrieNode(node, "")

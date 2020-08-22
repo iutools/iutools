@@ -8,7 +8,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import com.google.common.io.Files;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
@@ -32,11 +31,11 @@ public class Trie_InFileSystem extends Trie {
 
 	@Override
 	public TrieNode getRoot() throws TrieException {
-		return getNode(new String[0]);
+		return node4keys(new String[0]);
 	}
 
 	@Override
-	public TrieNode retrieveNode(String[] keys, NodeOption... options) throws TrieException {
+	public TrieNode retrieveNode_NoStatsRefresh(String[] keys, NodeOption... options) throws TrieException {
 		Logger tLogger = Logger.getLogger("ca.nrc.datastructure.trie.Trie_InFileSystem.getNode");
 
 		// TODO-June2020: Implement all getNode() entry points at level of parent
@@ -152,7 +151,7 @@ public class Trie_InFileSystem extends Trie {
 
 	@Override
 	public long getFrequency(String[] segments) throws TrieException {
-		long freq = getNode(segments).frequency;
+		long freq = node4keys(segments).frequency;
 		return freq;
 	}
 

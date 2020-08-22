@@ -45,7 +45,7 @@ public class Trie_InMemory extends Trie {
     
 	@Override
 	public boolean contains(String[] segments) throws TrieException {
-		boolean answer = null != getNode(segments, NodeOption.NO_CREATE);
+		boolean answer = null != node4keys(segments, NodeOption.NO_CREATE);
 		return answer;
 	}
     
@@ -53,7 +53,7 @@ public class Trie_InMemory extends Trie {
     /**
      * Add an entry to the Trie.
      */
-	public TrieNode retrieveNode(String[] keys, NodeOption... options )
+	public TrieNode retrieveNode_NoStatsRefresh(String[] keys, NodeOption... options )
 			throws TrieException {
 		// TODO-June2020: Implement all getNode() entry points at level of parent
 		//  Trie class. These methods will check that segments is not null, then 
@@ -116,7 +116,7 @@ public class Trie_InMemory extends Trie {
 		String newCumulativeKeys = (cumulativeKeys + " " + key).trim();
 		String[] remKeys = Arrays.copyOfRange(terminalNodeKeys, 1, terminalNodeKeys.length);
 		// node of rootSegment + newCumulativeKeys
-		TrieNode node = this.getNode((rootSegment+" "+newCumulativeKeys).split(" "));
+		TrieNode node = this.node4keys((rootSegment+" "+newCumulativeKeys).split(" "));
 		long incr = node.getFrequency();
 		if (!freqs.containsKey(newCumulativeKeys))
 			freqs.put(newCumulativeKeys, new Long(incr));

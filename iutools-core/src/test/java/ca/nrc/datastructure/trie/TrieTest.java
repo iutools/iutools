@@ -60,7 +60,7 @@ public abstract class TrieTest {
 		// Then, you can retrieve the node that corresponds to a particular 
 		// sequence of chars.
 		//
-		TrieNode node = trie.getNode(helloChars);
+		TrieNode node = trie.node4keys(helloChars);
 		if (node == null) {
 			// This means the string was not found in the Trie
 		} else {
@@ -69,16 +69,16 @@ public abstract class TrieTest {
 		// By default, getNode() will create the node if it does not
 		// exist. But you can override that with the NO_CREATE option
 		//
-		node = trie.getNode("nonexistant".split(""), NodeOption.NO_CREATE);
+		node = trie.node4keys("nonexistant".split(""), NodeOption.NO_CREATE);
 		
 		// You can also ask to get the terminal (aka leaf) node that corresponds to 
 		// the sequence of segments. You do this using the TERMINAL option.
 		//
-		node = trie.getNode("hello".split(""), NodeOption.TERMINAL);
+		node = trie.node4keys("hello".split(""), NodeOption.TERMINAL);
 		
 		// You can also use NO_CREATE and TERMINAL together
 		//
-		node = trie.getNode("nonexistant".split(""), 
+		node = trie.node4keys("nonexistant".split(""),
 					NodeOption.NO_CREATE, NodeOption.TERMINAL);
 
 		// You can find out the number of terminal nodes  
@@ -120,12 +120,12 @@ public abstract class TrieTest {
 		Trie charTrie = makeTrieToTest();
 		String[] nonExistantKeys = "nonexistant".split("");
 		
-		TrieNode node = charTrie.getNode(nonExistantKeys, NodeOption.NO_CREATE);
+		TrieNode node = charTrie.node4keys(nonExistantKeys, NodeOption.NO_CREATE);
 		Assert.assertTrue(
 			"getNode(NO_CREATE) should return null for non-existant key sequence", 
 			node == null);
 
-		node = charTrie.getNode(nonExistantKeys);
+		node = charTrie.node4keys(nonExistantKeys);
 		Assert.assertTrue(
 			"getNode() should return new empty node for non-existant key sequence", 
 			node != null);
@@ -137,12 +137,12 @@ public abstract class TrieTest {
 		Trie charTrie = makeTrieToTest();
 		String[] helloChars = "hello".split("");
 		charTrie.add(helloChars, "hello");
-		TrieNode node = charTrie.getNode(helloChars, NodeOption.TERMINAL);
+		TrieNode node = charTrie.node4keys(helloChars, NodeOption.TERMINAL);
 		Assert.assertTrue(
 			"getNode(TERMINAL) should return a terminal node", 
 			node.isTerminal());
 		
-		node = charTrie.getNode(helloChars);
+		node = charTrie.node4keys(helloChars);
 		Assert.assertTrue(
 			"getNode() should return a non-terminal for keys: "+String.join(",", helloChars), 
 			!node.isTerminal());
@@ -179,13 +179,13 @@ public abstract class TrieTest {
 		String[] wordChars = word.split("");
 		charTrie.add(wordChars, word);
 		
-		TrieNode terminalNode = charTrie.getNode(wordChars, NodeOption.TERMINAL);
+		TrieNode terminalNode = charTrie.node4keys(wordChars, NodeOption.TERMINAL);
 		new AssertTrieNode(terminalNode, 
 				"After adding word "+word+" withouth specifying a frequency increment")
 			.hasFrequency(1);
 		
 		charTrie.add(wordChars, word, 10);
-		terminalNode = charTrie.getNode(wordChars, NodeOption.TERMINAL);		
+		terminalNode = charTrie.node4keys(wordChars, NodeOption.TERMINAL);
 		new AssertTrieNode(terminalNode, 
 				"After adding word "+word+" with frequency increment = 10")
 			.hasFrequency(11);
@@ -200,7 +200,7 @@ public abstract class TrieTest {
 		Trie charTrie = makeTrieToTest();
 		charTrie.add(nullSegments, word1);
 		charTrie.add(nullSegments, word2);
-		TrieNode gotNode = charTrie.getNode(nullSegments, NodeOption.TERMINAL);
+		TrieNode gotNode = charTrie.node4keys(nullSegments, NodeOption.TERMINAL);
 		new AssertTrieNode(gotNode, "")
 			.hasSurfaceForms(new String[] {word1, word2})
 			;
@@ -213,7 +213,7 @@ public abstract class TrieTest {
 		String[] wordChars = word.split("");
 		charTrie.add(wordChars, word);
 		
-		TrieNode terminalNode = charTrie.getNode(wordChars, NodeOption.TERMINAL);
+		TrieNode terminalNode = charTrie.node4keys(wordChars, NodeOption.TERMINAL);
 		new AssertTrieNode(terminalNode, 
 				"Terminal node for word "+word+" was not as expected")
 			.isTerminal()
@@ -252,7 +252,7 @@ public abstract class TrieTest {
 		String[] segments = new String[] {
 			"{nalunaq/1n}", "{iq/1nv}", "{si/2vv}", "{vut/tv-dec-3p}"
 		};
-		TrieNode terminalNode = iumorphemeTrie.getNode(segments, NodeOption.TERMINAL);
+		TrieNode terminalNode = iumorphemeTrie.node4keys(segments, NodeOption.TERMINAL);
 		new AssertTrieNode(terminalNode, "Node for segments="+String.join(", ", segments))
 				.isTerminal()
 				.surfaceFormFrequenciesEqual(
@@ -283,7 +283,7 @@ public abstract class TrieTest {
 		String[] hellBoyChars = hellBoy.split("");
 		charTrie.add(hellBoyChars, hellBoy);
 		
-		TrieNode node = charTrie.getNode(helloChars, NodeOption.NO_CREATE);
+		TrieNode node = charTrie.node4keys(helloChars, NodeOption.NO_CREATE);
 		AssertTrieNode asserter = new AssertTrieNode(node, "");
 		asserter.isNotNull();
 		asserter
@@ -294,7 +294,7 @@ public abstract class TrieTest {
 
 		
 		String[] hellChars = "hell".split("");
-		node = charTrie.getNode(hellChars);
+		node = charTrie.node4keys(hellChars);
 		asserter = new AssertTrieNode(node, "");
 		asserter
 			.isNotNull();
@@ -313,7 +313,7 @@ public abstract class TrieTest {
 		} catch (TrieException e) {
 			assertFalse("An error occurred while adding an element to the trie.",true);
 		}
-		TrieNode node = wordTrie.getNode(new String[]{"hello"});
+		TrieNode node = wordTrie.node4keys(new String[]{"hello"});
 		assertTrue("The node for 'hello' is not null.",node!=null);
 		assertEquals("The key for this node is correct.","hello",node.keysAsString());
 		assertFalse("This node should not a full word.",node.isTerminal());
@@ -341,7 +341,7 @@ public abstract class TrieTest {
 		} catch (Exception e) {
 			assertFalse("An error occurred while adding an element to the trie.",true);
 		}
-		TrieNode node = iumorphemeTrie.getNode(new String[]{"{taku/1v}"});
+		TrieNode node = iumorphemeTrie.node4keys(new String[]{"{taku/1v}"});
 		assertTrue("The node for 'taku/1n' should not be null.",node!=null);
 		assertEquals("The key for this node is not correct.","{taku/1v}",node.keysAsString());
 		assertFalse("This node should not a full word.",node.isTerminal());
@@ -414,22 +414,22 @@ public abstract class TrieTest {
 		charTrie.add("ok".split(""),"ok");
 		charTrie.add("okdoo".split(""),"okdoo");
 		
-		TrieNode hNode = charTrie.getNode("h".split(""));
+		TrieNode hNode = charTrie.node4keys("h".split(""));
 		TrieNode[] h_terminals = charTrie.getTerminals(hNode);
 		Assert.assertEquals("The number of words starting with 'h' should be 4.",
 				4,h_terminals.length);
 		
-		TrieNode helNode = charTrie.getNode("hel".split(""));
+		TrieNode helNode = charTrie.node4keys("hel".split(""));
 		TrieNode[] hel_terminals = charTrie.getTerminals(helNode);
 		Assert.assertEquals("The number of words starting with 'hel' should be 3.",
 				3,hel_terminals.length);
 		
-		TrieNode oNode = charTrie.getNode("o".split(""));
+		TrieNode oNode = charTrie.node4keys("o".split(""));
 		TrieNode[] o_terminals = charTrie.getTerminals(oNode);
 		Assert.assertEquals("The number of words starting with 'o' should be 2.",
 				2,o_terminals.length);
 		
-		TrieNode okNode = charTrie.getNode("ok".split(""));
+		TrieNode okNode = charTrie.node4keys("ok".split(""));
 		TrieNode[] ok_terminals = charTrie.getTerminals(okNode);
 		Assert.assertEquals("The number of words starting with 'ok' should be 2.",
 				2,o_terminals.length);
@@ -488,7 +488,7 @@ public abstract class TrieTest {
 		charTrie.add("helicopter".split(""),"helicopter");
 		charTrie.add("helios".split(""),"helios");
 		charTrie.add("helios".split(""),"helios");
-		TrieNode helNode = charTrie.getNode("hel".split(""));
+		TrieNode helNode = charTrie.node4keys("hel".split(""));
 		Assert.assertEquals("The most frequent terminal returned is faulty.",
 			"helios", 
 			charTrie.getMostFrequentTerminal(helNode).getTerminalSurfaceForm());

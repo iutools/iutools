@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.log4j.Logger;
@@ -16,9 +15,13 @@ public class TrieNode {
 	
 	public static final String TERMINAL_SEG = "_$";
 	public static final String NULL_SEG = "_NULL";
+
+	/**
+	 * Time at which we last made sure that the node's aggregate stats
+	 * (ex: frequency) were up to date with those of its descendants.
+	 */
+	public long statsRefeshedOn = 0;
 	
-	// TODO: Rename to keySequence???
-	//
     public String[] keys = new String[] {};
     
     // TODO: I *THINK* this corresponds to the most frequent surface form
@@ -257,14 +260,20 @@ public class TrieNode {
         return builder.toString();
     }
 
-	// Stats
-	
+	// TODO: When we have gotten rid of Trie_InMemory, get rid of
+	//   this method. The 'data' attribute is filling the role
+	//   that 'stats' used to fill
+	//
 	public void defineStat(String statName) {
 		if (! stats.containsKey(statName)) {
 			stats.put(statName, null);
 		}
 	}
-	
+
+	// TODO: When we have gotten rid of Trie_InMemory, get rid of
+	//   this method. The 'data' attribute is filling the role
+	//   that 'stats' used to fill
+	//
 	public void ensureStatIsDefined(String statName) throws TrieNodeException {
 		if (! stats.containsKey(statName)) {
 			throw new TrieNodeException("No statistic with name "+statName+" have been defined");
@@ -287,14 +296,22 @@ public class TrieNode {
 			}
 		}
 	}
-	
+
+	// TODO: When we have gotten rid of Trie_InMemory, get rid of
+	//   this method. The 'data' attribute is filling the role
+	//   that 'stats' used to fill
+	//
 	public Object getStat(String statName) throws TrieNodeException {
 		ensureStatIsDefined(statName);
 		Object val = stats.get(statName);
 		
 		return val;
 	}
-	
+
+	// TODO: When we have gotten rid of Trie_InMemory, get rid of
+	//   this method. The 'data' attribute is filling the role
+	//   that 'stats' used to fill
+	//
 	public void setStat(String statName, Object val) throws TrieNodeException {
 		ensureStatIsDefined(statName);
 		stats.put(statName, val);
@@ -337,5 +354,12 @@ public class TrieNode {
 			keysNoTerm = Arrays.copyOf(keys, keys.length-1);
 		}
 		return keysNoTerm;
+	}
+
+	public boolean statsMayNeedRefreshing(long lastTerminalChangeTime) {
+    	boolean answer =
+			(statsRefeshedOn == 0 ||
+				statsRefeshedOn < lastTerminalChangeTime);
+    	return answer;
 	}
 }

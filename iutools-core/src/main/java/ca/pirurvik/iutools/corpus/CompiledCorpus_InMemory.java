@@ -648,7 +648,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 		long freq = 0;
 		
 		try {
-			TrieNode node = trie.getNode(morphNgram);
+			TrieNode node = trie.node4keys(morphNgram);
 			if (node != null) {
 				freq = node.getFrequency();
 			}
@@ -690,7 +690,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 		TrieNode node;
 		N = Math.min(N,  Integer.MAX_VALUE);
 		try {
-			node = trie.getNode(morphemes);
+			node = trie.node4keys(morphemes);
 			if (tLogger.isTraceEnabled()) {
 				tLogger.trace("node for morphemes is:\n"+node);
 			}

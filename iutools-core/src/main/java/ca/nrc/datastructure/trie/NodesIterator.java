@@ -41,7 +41,7 @@ public class NodesIterator implements Iterator<TrieNode> {
         Logger tLogger = Logger.getLogger("ca.nrc.datastructure.trie.NodesIterator.next");
         TrieNode node = null;
         try {
-            node = trie.getNode(state.nextNodeKeys);
+            node = trie.node4keys(state.nextNodeKeys);
             state.nextNodeKeys = null;
             if (state.nextStep != Step.DONE) {
                 stepUntilNextNode();
@@ -171,7 +171,7 @@ public class NodesIterator implements Iterator<TrieNode> {
 
     private TrieNode currrentLevelNode(NodesIterationState state) throws TrieException {
         List<String> keys = state.currentNodeKeys();
-        TrieNode node = trie.getNode(keys);
+        TrieNode node = trie.node4keys(keys);
         return node;
     }
 }

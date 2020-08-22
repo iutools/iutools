@@ -53,10 +53,17 @@ public abstract class Trie {
 
 	public abstract void reset() throws TrieException;
 
+	// TODO-2020: Rename to rootNode()
 	public abstract TrieNode getRoot() throws TrieException;
 
+	/**
+	 * Retrieve the node that corresponds to a particular sequence of keys.
+	 * The method does not make any attempt to ensure that the node's aggregate
+	 * stats (ex: frequency) are up to date with those of its children.
+	 */
 	@JsonIgnore
-	public abstract TrieNode retrieveNode(String[] keys, NodeOption... options) throws TrieException;
+	protected abstract TrieNode retrieveNode_NoStatsRefresh(
+		String[] keys, NodeOption... options) throws TrieException;
 		
 	public abstract boolean contains(String[] segments) throws TrieException;
 		
@@ -81,20 +88,35 @@ public abstract class Trie {
 	 * Note that the node's aggregate stats like 'frequency' may NOT be up to
 	 * date. To ensure up to date stats, use
 	 *
-	 *    getNode(keys, NodeOption.ENSURE_UPTODATE_STATS)
+	 *    node4keys(keys, NodeOption.ENSURE_UPTODATE_STATS)
 	 */
 	@JsonIgnore
-	public TrieNode getNode(List<String> keys) throws TrieException {
-		return getNode(keys.toArray(new String[keys.size()]), new NodeOption[0]);
+	public TrieNode node4keys(List<String> keys) throws TrieException {
+		return node4keys(keys.toArray(new String[keys.size()]), new NodeOption[0]);
 	}
 
+	/**
+	 * Get the node corresponding to a sequence of keys.
+	 *
+	 * Note that the node's aggregate stats like 'frequency' may NOT be up to
+	 * date. To ensure up to date stats, use
+	 *
+	 *    node4keys(keys, NodeOption.ENSURE_UPTODATE_STATS)
+	 */
 	@JsonIgnore
-	public TrieNode getNode(String[] keys) throws TrieException {
-		return getNode(keys, new NodeOption[0]);
+	public TrieNode node4keys(String[] keys) throws TrieException {
+		return node4keys(keys, new NodeOption[0]);
 	}
 
+	/**
+	 * Get the node corresponding to a sequence of keys.
+	 *
+	 * If NodeOption.ENSURE_UPTODATE_STATS is provided, the system will
+	 * additionally ensure that the node's aggregate stats like 'frequency' are
+	 * up to date.
+	 */
 	@JsonIgnore
-	public TrieNode getNode(String[] keys, NodeOption... options)
+	public TrieNode node4keys(String[] keys, NodeOption... options)
 			throws TrieException {
 		boolean ensureUptodateStats = false;
 		for (NodeOption anOption: options) {
@@ -104,10 +126,12 @@ public abstract class Trie {
 			}
 		}
 
-		if (ensureUptodateStats && info().aggregateStatsAreStale) {
-			recomputeAggregateStats(keys);
+		TrieNode node = retrieveNode_NoStatsRefresh(keys, options);
+		if (ensureUptodateStats &&
+				node.statsMayNeedRefreshing(info().lastTerminalChangeTime)) {
+			recomputeAggregateStats(node);
 		}
-		TrieNode node = retrieveNode(keys, options);
+
 		return node;
 	}
 
@@ -124,6 +148,7 @@ public abstract class Trie {
 		TimeUnit unit = TimeUnit.MILLISECONDS;
 
 		TrieInfo info = info();
+		info.lastTerminalChangeTime = System.currentTimeMillis();
 
 		if (segments == null) {
 			segments = new String[] {TrieNode.NULL_SEG};
@@ -139,7 +164,7 @@ public abstract class Trie {
 		}
 
 		addToJoinedTerminals(segments);
-		TrieNode node = getNode(segments, NodeOption.TERMINAL);
+		TrieNode node = node4keys(segments, NodeOption.TERMINAL);
 		if (node.frequency == 0) {
 			// This is a brand new node
 			info.totalTerminals++;
@@ -190,7 +215,7 @@ public abstract class Trie {
 		if (!matchStart) {
 			getTerminalsMatchingNgram(segments);
 		} else {
-			TrieNode node = this.getNode(segments);
+			TrieNode node = this.node4keys(segments);
 			if (node==null)
 				allTerminals = new TrieNode[0];
 			else
@@ -209,7 +234,7 @@ public abstract class Trie {
 		while (matcher.find()) {
 			String terminalStr = matcher.group(1);
 			String[] matchSegs = terminalStr.split(",");
-			terminalsLst.add(getNode(matchSegs));
+			terminalsLst.add(node4keys(matchSegs));
 		}
 		
 		return terminalsLst.toArray(new TrieNode[terminalsLst.size()]);	
@@ -259,7 +284,7 @@ public abstract class Trie {
     	}
     	List<TrieNode> children = new ArrayList<TrieNode>();
     	for (String extension: node.childrenSegments()) {
-    		TrieNode childNode = getNode(extendSegments(node.keys, extension ));
+    		TrieNode childNode = node4keys(extendSegments(node.keys, extension ));
     		children.add(childNode);
     	}
     	
@@ -293,7 +318,7 @@ public abstract class Trie {
 
 	@JsonIgnore
 	public TrieNode getMostFrequentTerminal(String[] segments) throws TrieException {
-		TrieNode node = getNode(segments);
+		TrieNode node = node4keys(segments);
 		return getMostFrequentTerminal(node);
 	}
 
@@ -308,7 +333,7 @@ public abstract class Trie {
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("segments="+String.join(",", segments));
 		}
-		TrieNode node = getNode(segments);
+		TrieNode node = node4keys(segments);
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("node="+node);
 		}
@@ -317,7 +342,7 @@ public abstract class Trie {
 
 	@JsonIgnore
 	public TrieNode[] getMostFrequentTerminals(String[] segments) throws TrieException {
-		TrieNode node = getNode(segments);
+		TrieNode node = node4keys(segments);
 		return getMostFrequentTerminals(null, node, null);
 	}
 
@@ -354,12 +379,12 @@ public abstract class Trie {
 		if (keys.length==0)
 			return null;
 		else
-			return this.getNode(Arrays.copyOfRange(keys, 0, keys.length-1));
+			return this.node4keys(Arrays.copyOfRange(keys, 0, keys.length-1));
 	}
 
 	@JsonIgnore
 	public long getFrequency(String[] segments) throws TrieException {
-		TrieNode node = this.getNode(segments);
+		TrieNode node = this.node4keys(segments);
 		if (node != null)
 			return node.getFrequency();
 		else
@@ -380,7 +405,7 @@ public abstract class Trie {
 		String newCumulativeKeys = (cumulativeKeys + " " + key).trim();
 		String[] remKeys = Arrays.copyOfRange(terminalNodeKeys, 1, terminalNodeKeys.length);
 		// node of rootSegment + newCumulativeKeys
-		TrieNode node = this.getNode((rootSegment+" "+newCumulativeKeys).split(" "));
+		TrieNode node = this.node4keys((rootSegment+" "+newCumulativeKeys).split(" "));
 		long incr = node.getFrequency();
 		if (!freqs.containsKey(newCumulativeKeys))
 			freqs.put(newCumulativeKeys, new Long(incr));
@@ -523,7 +548,7 @@ public abstract class Trie {
 	}
 	
 	protected long computeTotalTerminals(String[] segments) throws TrieException {
-		TrieNode node = getNode(segments, NodeOption.NO_CREATE);
+		TrieNode node = node4keys(segments, NodeOption.NO_CREATE);
 		VisitorNodeCounter visitor = new VisitorNodeCounter();
 		traverseNodes(node, visitor, true);
 		return visitor.nodesCount;
@@ -544,14 +569,14 @@ public abstract class Trie {
 	}
 	
 	protected long computeTotalOccurences(String[] segments) throws TrieException {
-		TrieNode node = getNode(segments, NodeOption.NO_CREATE);
+		TrieNode node = node4keys(segments, NodeOption.NO_CREATE);
 		VisitorNodeCounter visitor = new VisitorNodeCounter();
 		traverseNodes(node, visitor, true);
 		return visitor.occurencesCount;
 	}
 
 	public void recomputeAggregateStats(String[] keys) throws TrieException {
-		TrieNode node = getNode(keys, NodeOption.NO_CREATE);
+		TrieNode node = node4keys(keys, NodeOption.NO_CREATE);
 		if (node != null) {
 			recomputeAggregateStats(node);
 		}
@@ -582,9 +607,11 @@ public abstract class Trie {
 			}
 		}
 
-		if (node == getRoot()) {
-			info().aggregateStatsAreStale = false;
-		}
+//		if (node == getRoot()) {
+//			info().aggregateStatsAreStale = false;
+//		}
+
+		node.statsRefeshedOn = System.currentTimeMillis();
 	}
 
 }

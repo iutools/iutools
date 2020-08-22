@@ -15,8 +15,9 @@ public class TrieInfo {
     Long totalTerminals = null;
 
     /**
-     * If true, it means that node's aggregate stats about their descendantes
-     * (ex: total occurences) is out of date and needs to be recomputed.
+     * Time (as of System.currentTimeMillis()) at which we last updated a
+     * terminal node. Node stats (ex: frequency) that were computed before
+     * that time may have become stale.
      */
-    boolean aggregateStatsAreStale = false;
+    long lastTerminalChangeTime = 0;
 }

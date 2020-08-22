@@ -3,7 +3,6 @@ package ca.nrc.datastructure.trie;
 import org.junit.Assert;
 import org.junit.Test;
 
-import ca.nrc.datastructure.trie.Trie.NodeOption;
 import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.AssertString;
 
@@ -148,7 +147,7 @@ public class TrieNodeTest {
 		charTrie.add("helios".split(""),"helios");
 		charTrie.add("helios".split(""),"helios");
 		
-		TrieNode helNode = charTrie.getNode("hel".split(""));
+		TrieNode helNode = charTrie.node4keys("hel".split(""));
 		String gotString = helNode.toString();
 		String expString = 
 			"{\n"+

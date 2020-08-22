@@ -23,9 +23,7 @@ import com.google.gson.stream.JsonReader;
 
 import ca.inuktitutcomputing.config.IUConfig;
 import ca.inuktitutcomputing.data.LinguisticData;
-import ca.inuktitutcomputing.data.LinguisticDataAbstract;
 import ca.inuktitutcomputing.data.LinguisticDataException;
-import ca.inuktitutcomputing.data.LinguisticDataSingleton;
 import ca.inuktitutcomputing.data.Morpheme;
 import ca.inuktitutcomputing.data.SurfaceFormInContext;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzerException;
@@ -34,7 +32,6 @@ import ca.nrc.datastructure.Pair;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.datastructure.trie.Trie_InMemory;
-import ca.nrc.file.ResourceGetter;
 import ca.nrc.json.PrettyPrinter;
 
 /*
@@ -325,8 +322,8 @@ public class WordAnalyzer {
 			currentKeys.add(currentChar);
 			String currentKeysAsString = String.join("", currentKeys.toArray(new String[] {}));
 			try {
-				nodeForCurrentKeys = trie.getNode(currentKeys.toArray(new String[] {}));
-				nodeForCurrentKeys = trie.getNode(currentKeys.toArray(new String[] {}));
+				nodeForCurrentKeys = trie.node4keys(currentKeys.toArray(new String[] {}));
+				nodeForCurrentKeys = trie.node4keys(currentKeys.toArray(new String[] {}));
 			} catch (TrieException e) {
 				throw new MorphologicalAnalyzerException(e);
 			}
@@ -339,7 +336,7 @@ public class WordAnalyzer {
 				searchForSlashNodeKeys.add("\\");
 				TrieNode terminalNode;
 				try {
-					terminalNode = trie.getNode(searchForSlashNodeKeys.toArray(new String[] {}));
+					terminalNode = trie.node4keys(searchForSlashNodeKeys.toArray(new String[] {}));
 				} catch (TrieException e) {
 					throw new MorphologicalAnalyzerException(e);
 				}
