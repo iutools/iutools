@@ -29,8 +29,11 @@ public class NodeTracer {
 							 String specificNodesRegex)
 			throws TrieException {
 		if (shouldTrace(tLogger, nodeKeys, specificNodesRegex)) {
-			String key = String.join(",", nodeKeys);
-			tLogger.trace("Node:\n"+nodeKeys.toString()+"\n"+message);
+			String key = "null";
+			if (nodeKeys != null) {
+			    key = StringUtils.join(nodeKeys, ",");
+            }
+			tLogger.trace("\n  Node: "+key+"\n  "+message);
 		}
 	}
 

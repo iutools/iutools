@@ -45,7 +45,7 @@ public class Trie_InMemory extends Trie {
     
 	@Override
 	public boolean contains(String[] segments) throws TrieException {
-		boolean answer = null != node4keys(segments, NodeOption.NO_CREATE);
+		boolean answer = null != retrieveNode_NoStatsRefresh(segments, NodeOption.NO_CREATE);
 		return answer;
 	}
     
@@ -55,7 +55,7 @@ public class Trie_InMemory extends Trie {
      */
 	public TrieNode retrieveNode_NoStatsRefresh(String[] keys, NodeOption... options )
 			throws TrieException {
-		// TODO-June2020: Implement all getNode() entry points at level of parent
+		// TODO-June2020: Implement all retrieveNode_NoStatsRefresh() entry points at level of parent
 		//  Trie class. These methods will check that segments is not null, then 
 		//  invoke getNodeAssumingNonNullSegments()
 		//

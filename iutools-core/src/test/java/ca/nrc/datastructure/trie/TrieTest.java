@@ -66,7 +66,7 @@ public abstract class TrieTest {
 		} else {
 		}
 		
-		// By default, getNode() will create the node if it does not
+		// By default, node4keys() will create the node if it does not
 		// exist. But you can override that with the NO_CREATE option
 		//
 		node = trie.node4keys("nonexistant".split(""), NodeOption.NO_CREATE);
@@ -116,35 +116,35 @@ public abstract class TrieTest {
 	}
 	
 	@Test
-	public void test__getNode__NO_CREATE() throws Exception {
+	public void test__node4keys__NO_CREATE() throws Exception {
 		Trie charTrie = makeTrieToTest();
 		String[] nonExistantKeys = "nonexistant".split("");
 		
 		TrieNode node = charTrie.node4keys(nonExistantKeys, NodeOption.NO_CREATE);
 		Assert.assertTrue(
-			"getNode(NO_CREATE) should return null for non-existant key sequence", 
+			"node4keys(NO_CREATE) should return null for non-existant key sequence",
 			node == null);
 
 		node = charTrie.node4keys(nonExistantKeys);
 		Assert.assertTrue(
-			"getNode() should return new empty node for non-existant key sequence", 
+			"node4keys() should return new empty node for non-existant key sequence",
 			node != null);
 		
 	}
 
 	@Test
-	public void test__getNode__TERMINAL() throws Exception {
+	public void test__node4keys__TERMINAL() throws Exception {
 		Trie charTrie = makeTrieToTest();
 		String[] helloChars = "hello".split("");
 		charTrie.add(helloChars, "hello");
 		TrieNode node = charTrie.node4keys(helloChars, NodeOption.TERMINAL);
 		Assert.assertTrue(
-			"getNode(TERMINAL) should return a terminal node", 
+			"node4keys(TERMINAL) should return a terminal node",
 			node.isTerminal());
 		
 		node = charTrie.node4keys(helloChars);
 		Assert.assertTrue(
-			"getNode() should return a non-terminal for keys: "+String.join(",", helloChars), 
+			"node4keys() should return a non-terminal for keys: "+String.join(",", helloChars),
 			!node.isTerminal());
 	}
 	
@@ -154,13 +154,7 @@ public abstract class TrieTest {
 			"hello", "hit", "abba", "helios", "helm", "ok"
 		};
 		Trie charTrie = makeTrieToTest(words);
-//		charTrie.add("hello".split(""),"hello");
-//		charTrie.add("hit".split(""),"hit");
-//		charTrie.add("abba".split(""),"abba");
-//		charTrie.add("helios".split(""),"helios");
-//		charTrie.add("helm".split(""),"helm");
-//		charTrie.add("ok".split(""),"ok");
-		
+
 		TrieNode parent;
 		// pass keys as argument
 		parent = charTrie.getParentNode(new String[] {});
@@ -282,7 +276,7 @@ public abstract class TrieTest {
 		String hellBoy = "hell boy";
 		String[] hellBoyChars = hellBoy.split("");
 		charTrie.add(hellBoyChars, hellBoy);
-		
+
 		TrieNode node = charTrie.node4keys(helloChars, NodeOption.NO_CREATE);
 		AssertTrieNode asserter = new AssertTrieNode(node, "");
 		asserter.isNotNull();
@@ -292,7 +286,6 @@ public abstract class TrieTest {
 			.hasFrequency(1)
 			;
 
-		
 		String[] hellChars = "hell".split("");
 		node = charTrie.node4keys(hellChars);
 		asserter = new AssertTrieNode(node, "");
@@ -302,7 +295,7 @@ public abstract class TrieTest {
 			.hasSegments(hellChars)
 			.doesNotHaveATerminalNode()
 			.hasFrequency(2)
-			;		
+			;
 	}
 
 	@Test

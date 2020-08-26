@@ -49,7 +49,7 @@ import ca.nrc.datastructure.trie.visitors.VisitorNodeCounter;
 
 public abstract class Trie {
 	
-	public static enum NodeOption {NO_CREATE, TERMINAL, ENSURE_UPTODATE_STATS};
+public static enum NodeOption {NO_CREATE, TERMINAL};
 
 	public abstract void reset() throws TrieException;
 
@@ -118,16 +118,8 @@ public abstract class Trie {
 	@JsonIgnore
 	public TrieNode node4keys(String[] keys, NodeOption... options)
 			throws TrieException {
-		boolean ensureUptodateStats = false;
-		for (NodeOption anOption: options) {
-			if (anOption == NodeOption.ENSURE_UPTODATE_STATS) {
-				ensureUptodateStats = true;
-				break;
-			}
-		}
-
 		TrieNode node = retrieveNode_NoStatsRefresh(keys, options);
-		if (ensureUptodateStats &&
+		if (node != null &&
 				node.statsMayNeedRefreshing(info().lastTerminalChangeTime)) {
 			recomputeAggregateStats(node);
 		}
@@ -164,7 +156,7 @@ public abstract class Trie {
 		}
 
 		addToJoinedTerminals(segments);
-		TrieNode node = node4keys(segments, NodeOption.TERMINAL);
+		TrieNode node = retrieveNode_NoStatsRefresh(segments, NodeOption.TERMINAL);
 		if (node.frequency == 0) {
 			// This is a brand new node
 			info.totalTerminals++;
@@ -376,10 +368,11 @@ public abstract class Trie {
 
 	@JsonIgnore
 	protected TrieNode getParentNode(String[] keys) throws TrieException {
-		if (keys.length==0)
-			return null;
-		else
-			return this.node4keys(Arrays.copyOfRange(keys, 0, keys.length-1));
+		TrieNode parent = null;
+		if (keys != null && keys.length > 0) {
+			parent = this.retrieveNode_NoStatsRefresh(Arrays.copyOfRange(keys, 0, keys.length - 1));
+		}
+		return parent;
 	}
 
 	@JsonIgnore
@@ -576,7 +569,7 @@ public abstract class Trie {
 	}
 
 	public void recomputeAggregateStats(String[] keys) throws TrieException {
-		TrieNode node = node4keys(keys, NodeOption.NO_CREATE);
+		TrieNode node = retrieveNode_NoStatsRefresh(keys, NodeOption.NO_CREATE);
 		if (node != null) {
 			recomputeAggregateStats(node);
 		}
@@ -587,31 +580,45 @@ public abstract class Trie {
 	}
 
 	private void recomputeAggregateStats(TrieNode node, ProgressMonitor progMonitor) throws TrieException {
+		Logger tLogger = Logger.getLogger("ca.nrc.datastructure.trie.Trie.recomputeAggregateStats");
+		NodeTracer.trace(tLogger, node, "Invoked");
+
 		if (node.isTerminal()) {
+			// For a terminal node, there are no desendants to aggregate.
+			// Just notify the progress monitor that we have processed
+			// one terminal node out of all the trie's terminals.
+			//
+			NodeTracer.trace(tLogger, node, "Node is terminal");
 			if (progMonitor != null) {
 				progMonitor.stepCompleted();
-			} else {
-				List<TrieNode> children = childrenNodes(node);
+			}
+		} else {
+			// This is a non-terminal node.
+			// Aggregate over the node's children.
+			//
+			List<TrieNode> children = childrenNodes(node);
+			NodeTracer.trace(tLogger, node, "Non-terminal node.");
 
-				// Compute the aggregate stats of each child
-				for (TrieNode aChild: children) {
-					recomputeAggregateStats(aChild, progMonitor);
+			// First, Compute the aggregate stats of each child
+			for (TrieNode aChild: children) {
+				if (tLogger.isTraceEnabled()) {
+					NodeTracer.trace(tLogger, node, "Computing aggregate of child "+aChild.keysAsString());
 				}
+				recomputeAggregateStats(aChild, progMonitor);
+			}
 
-				// Compute this node's aggregate stats based on
-				// the stats of its children
-				node.frequency = 0;
-				for (TrieNode aChild: children) {
-					node.incrementFrequency(aChild.getFrequency());
-				}
+			// Compute this node's aggregate stats based on
+			// the stats of its children
+			NodeTracer.trace(tLogger, node, "Done computing aggregate stats of children");
+			node.frequency = 0;
+			for (TrieNode aChild: children) {
+				node.incrementFrequency(aChild.getFrequency());
 			}
 		}
 
-//		if (node == getRoot()) {
-//			info().aggregateStatsAreStale = false;
-//		}
-
 		node.statsRefeshedOn = System.currentTimeMillis();
+
+		NodeTracer.trace(tLogger, node, "exiting with node.frequency="+node.frequency);
 	}
 
 }

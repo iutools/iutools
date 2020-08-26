@@ -36,9 +36,9 @@ public class Trie_InFileSystem extends Trie {
 
 	@Override
 	public TrieNode retrieveNode_NoStatsRefresh(String[] keys, NodeOption... options) throws TrieException {
-		Logger tLogger = Logger.getLogger("ca.nrc.datastructure.trie.Trie_InFileSystem.getNode");
+		Logger tLogger = Logger.getLogger("ca.nrc.datastructure.trie.Trie_InFileSystem.node4keys");
 
-		// TODO-June2020: Implement all getNode() entry points at level of parent
+		// TODO-June2020: Implement all node4keys() entry points at level of parent
 		//  Trie class. These methods will check that segments is not null, then 
 		//  invoke getNodeAssumingNonNullSegments()
 		//

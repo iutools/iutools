@@ -7,7 +7,9 @@ import com.google.common.io.Files;
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.pirurvik.iutools.corpus.CompiledCorpus;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_v2FS;
+import org.junit.Ignore;
 
+@Ignore
 public class MorphRelativesFinder_InFileSystemTest 
 		extends MorphRelativesFinderTest {
 
