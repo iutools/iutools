@@ -152,7 +152,11 @@ public class TrieNode {
     public String key() {
     	return keys[keys.length-1];
     }
-    
+
+    // TODO-2020: Get rid of this. We already have TrieNode[] childrenNodes()
+	//   and we should add String[] childrenSegments()
+	//   - getChildrenNodes
+	//
 	public Map<String,TrieNode> getChildren() {
 		return children;
 	}

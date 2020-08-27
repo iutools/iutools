@@ -6,6 +6,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -30,8 +31,12 @@ public class Trie_InFileSystem extends Trie {
 	}
 
 	@Override
-	public TrieNode getRoot() throws TrieException {
-		return node4keys(new String[0]);
+	public TrieNode getRoot(boolean ensureUptodateAggrStats) throws TrieException {
+		TrieNode root = retrieveNode_NoStatsRefresh(new String[0]);
+		if (ensureUptodateAggrStats) {
+			recomputeAggregateStats(root);
+		}
+		return root;
 	}
 
 	@Override
@@ -137,9 +142,24 @@ public class Trie_InFileSystem extends Trie {
 								File.separator + "node.json");
 
 		if (!nodeFile.exists() && createIfNotExist) {
+			// Create all directories along the node's path
 			nodeFile.getParentFile().mkdirs();
-			TrieNode node = new TrieNode(keys);
-			writeNodeFile(node, nodeFile);
+
+			// For each directory along the path, make sure there is
+			// a node.js file
+			//
+			for (int ii=0; ii <= escapedKeys.length; ii++) {
+				String[] ancestorKeys = Arrays.copyOfRange(keys, 0, ii);
+				String[] ancestorEscKeys = Arrays.copyOfRange(escapedKeys, 0, ii);
+				File ancestorFile =
+					new File(rootDir,
+					String.join(File.separator, ancestorEscKeys) +
+							File.separator + "node.json");
+				if (!ancestorFile.exists()) {
+					TrieNode node = new TrieNode(ancestorKeys);
+					writeNodeFile(node, ancestorFile);
+				}
+			}
 		}
 
 		return nodeFile;

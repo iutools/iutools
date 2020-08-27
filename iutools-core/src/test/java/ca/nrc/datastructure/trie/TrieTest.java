@@ -680,6 +680,19 @@ public abstract class TrieTest {
 		;		
 		
 	}
+
+	@Test
+	public void test__getRoot__HappyPath() throws Exception {
+		TrieNode root =
+			makeTrieToTest(new String[] {"hello", "hell"})
+			.getRoot();
+		AssertTrieNode asserter = new AssertTrieNode(root, "");
+		asserter.isNotNull();
+		asserter
+			.isNotTerminal()
+			.hasSegments(new String[0])
+			;
+	}
 	
 	////////////////////////////////////////
 	// TEST HELPERS

@@ -54,7 +54,7 @@ public static enum NodeOption {NO_CREATE, TERMINAL};
 	public abstract void reset() throws TrieException;
 
 	// TODO-2020: Rename to rootNode()
-	public abstract TrieNode getRoot() throws TrieException;
+	public abstract TrieNode getRoot(boolean ensureUptodateAggrStats) throws TrieException;
 
 	/**
 	 * Retrieve the node that corresponds to a particular sequence of keys.
@@ -125,6 +125,10 @@ public static enum NodeOption {NO_CREATE, TERMINAL};
 		}
 
 		return node;
+	}
+
+	public TrieNode getRoot() throws TrieException {
+		return getRoot(false);
 	}
 
 	public TrieNode add(String[] segments, String expression)
@@ -466,18 +470,6 @@ public static enum NodeOption {NO_CREATE, TERMINAL};
 	}
 	
 	protected void updateAncestors(TrieNode node) throws TrieException {
-		TrieNode parentNode = getParentNode(node);
-		if (parentNode != null) {
-			String[] nodeSegments = node.keys;
-			parentNode.frequency++;
-			
-			String childSegment = nodeSegments[nodeSegments.length-1];
-			parentNode.addChild(childSegment, node);
-			
-			saveNode(parentNode);
-			
-			updateAncestors(parentNode);
-		}
 	}
 
 	public void traverseNodes(TrieNodeVisitor visitor) throws TrieException {
@@ -575,7 +567,7 @@ public static enum NodeOption {NO_CREATE, TERMINAL};
 		}
 	}
 
-	private void recomputeAggregateStats(TrieNode node) throws TrieException {
+	public void recomputeAggregateStats(TrieNode node) throws TrieException {
 		recomputeAggregateStats(node, null);
 	}
 

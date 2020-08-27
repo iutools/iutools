@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ca.pirurvik.iutools.corpus.*;
 import org.apache.log4j.Logger;
 
 import ca.nrc.datastructure.Pair;
@@ -20,9 +21,6 @@ import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
 import ca.nrc.datastructure.trie.Trie_InMemory;
 import ca.nrc.json.PrettyPrinter;
-import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
-import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
-import ca.pirurvik.iutools.corpus.CompiledCorpusRegistryException;
 
 public class FreqVerbRootsCompiler {
 	
@@ -33,21 +31,22 @@ public class FreqVerbRootsCompiler {
 	public FreqVerbRootsCompiler() {
 	}
 	
-	public HashMap<String,Long> compileFreqs(CompiledCorpus_InMemory corpus) throws TrieException {
+	public HashMap<String,Long> compileFreqs(CompiledCorpus corpus) throws TrieException, CompiledCorpusException {
 		Logger logger = Logger.getLogger("FreqVerbRootsCompiler.compileFreqs");
 		HashMap<String,Long> freqsOfVerbRoots = new HashMap<String,Long>();
-		Trie trie = corpus.getTrie();
+		Trie trie = corpus.getMorphNgramsTrie();
+		TrieNode[] wordRootNodes = trie.getRoot(true).childrenNodes();
 		Map<String,TrieNode> nodesOfRootsOfWords = trie.getRoot().getChildren();
 		String rootIds[] = nodesOfRootsOfWords.keySet().toArray(new String[] {});
 		logger.debug("rootIds: "+PrettyPrinter.print(rootIds));
 		Pattern pat = Pattern.compile("\\{(.+/\\d+v)\\}");
-		for (int i=0; i<rootIds.length; i++) {
+		for (TrieNode aWordRootNode: wordRootNodes) {
 			Long freq = (long)0;
-			String rootId = rootIds[i];
+			String rootId = aWordRootNode.keysAsString();
 			logger.debug("rootId: "+rootId);
 			Matcher mat = pat.matcher(rootId);
 			if (mat.matches()) {
-				freq = nodesOfRootsOfWords.get(rootId).getFrequency();
+				freq = aWordRootNode.getFrequency();
 				freqsOfVerbRoots.put(mat.group(1), freq);
 			}
 		}
@@ -111,7 +110,7 @@ public class FreqVerbRootsCompiler {
 					System.out.println(pair.getFirst()+","+freqsOfVerbRoots.get(pair.getFirst()));
 				}
 			}
-		} catch (CompiledCorpusRegistryException e) {
+		} catch (CompiledCorpusRegistryException | CompiledCorpusException e) {
 			System.err.println(e.getMessage());
 		}
 	}

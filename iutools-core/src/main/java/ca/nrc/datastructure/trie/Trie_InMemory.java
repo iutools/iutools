@@ -26,8 +26,11 @@ public class Trie_InMemory extends Trie {
 	}
 
 	@Override
-	public TrieNode getRoot() throws TrieException {
-		return root;
+	public TrieNode getRoot(boolean ensureUptodateAggrStats) throws TrieException {
+    	if (ensureUptodateAggrStats) {
+			recomputeAggregateStats(root);
+		}
+    	return root;
 	}
     
     public static Trie_InMemory fromJSON(String filePath) throws TrieException {
