@@ -171,8 +171,6 @@ public static enum NodeOption {NO_CREATE, TERMINAL};
 		info.totalOccurences += freqIncr;
 		saveNode(node);
 
-		updateAncestors(node);
-
 		if (tLogger.isTraceEnabled()) {
 			try {
 				tLogger.trace("COMPLETED segments="+String.join(",", segments)+" in "+StopWatch.elapsedSince(start, unit)+unit.name());
@@ -469,9 +467,6 @@ public static enum NodeOption {NO_CREATE, TERMINAL};
 		return matcher;
 	}
 	
-	protected void updateAncestors(TrieNode node) throws TrieException {
-	}
-
 	public void traverseNodes(TrieNodeVisitor visitor) throws TrieException {
 		traverseNodes(getRoot(), visitor, null);
 	}

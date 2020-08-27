@@ -41,7 +41,6 @@ public class MorphRelativesFinderAccuracyTest {
 		
 		MorphRelativesFinderEvaluator evaluator = new MorphRelativesFinderEvaluator();
 		// Set this to true if you want to see print statements.
-//		evaluator.verbose = false;
 		evaluator.verbose = true;
 
 		CompiledCorpus_InMemory compiledCorpus = CompiledCorpusRegistry.getCorpus();
