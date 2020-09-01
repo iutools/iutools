@@ -224,13 +224,22 @@ public class Console {
 				;
 		mainCmd.addSubCommand(dumpCorpus);
 
+		// Load a corpus into ElasticSearch
+		SubCommand esLoadCorpus =
+			new CmdEsLoadCorpus("es_load_corpus")
+				.addOption(optCorpusName)
+				.addOption(optInputFile)
+				.addOption(optVerbosity)
+			;
+		mainCmd.addSubCommand(esLoadCorpus);
+
 		// Describe a corpus
-//		SubCommand describeCorpus = 
+//		SubCommand describeCorpus =
 //				new CmdDescribeCorpus("describe_corpus")
-//				.addOption(optCompFile)	
+//				.addOption(optCompFile)
 //				;
 //		mainCmd.addSubCommand(describeCorpus);
-		
+
 		// Search a trie for a sequence of morphemes
 		SubCommand searchTrie = 
 				new CmdSearchTrie("search_trie")

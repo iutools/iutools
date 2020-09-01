@@ -275,7 +275,7 @@ public abstract class ConsoleCommand extends SubCommand {
 	protected String getGoldStandardFile(boolean failIfAbsent) {
 		return getOptionValue(ConsoleCommand.OPT_GS_FILE, failIfAbsent);
 	}
-	
+
 	protected String getStatsOverMorphemes() {
 		return getStatsOverMorphemes(false);
 	}

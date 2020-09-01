@@ -1,10 +1,7 @@
 package ca.inuktitutcomputing.core.console;
 
-import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
-import ca.pirurvik.iutools.corpus.CompiledCorpus;
-import ca.pirurvik.iutools.corpus.CompiledCorpusException;
-import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
-import ca.pirurvik.iutools.corpus.WordInfo;
+import ca.nrc.ui.commandline.ProgressMonitor_Terminal;
+import ca.pirurvik.iutools.corpus.*;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -37,22 +34,39 @@ public class CmdDumpCorpus extends ConsoleCommand {
     private void dumpCorpus(CompiledCorpus corpus, boolean wordsOnly, 
     		File outputFile) throws IOException, CLIException, CompiledCorpusException {
 
+        long totalWords = corpus.totalWords();
+        ProgressMonitor_Terminal progMonitor =
+            new ProgressMonitor_Terminal(totalWords, "Dumping words of corpus to file");
+
         FileWriter fWriter = new FileWriter(outputFile);
+
+        printHeaders(fWriter);
 
         Iterator<String> iterator = corpus.allWords();
         while (iterator.hasNext()) {
             String word = iterator.next();
             printWord(word, corpus, wordsOnly, fWriter);
+            progMonitor.stepCompleted();
         }
         fWriter.close();
     }
 
-	private void printWord(String word, CompiledCorpus corpus, 
+    private void printHeaders(FileWriter fWriter) throws IOException {
+        fWriter.write("" +
+            "class=ca.pirurvik.iutools.corpus.WordInfo_ES\n" +
+            "bodyEndMarker=NEW_LINE\n\n");
+    }
+
+    private void printWord(String word, CompiledCorpus corpus, 
 			boolean wordsOnly, FileWriter fWriter) 
 			throws CLIException, IOException, CompiledCorpusException {
 		String infoStr = word;
 		if (!wordsOnly) {
             WordInfo wInfo = corpus.info4word(word);
+            if (wInfo == null) {
+                wInfo = new WordInfo_ES(word);
+                wInfo.setDecompositions(new String[0][], 0);
+            }
 			ObjectMapper mapper = new ObjectMapper();
 			try {
 				infoStr = mapper.writeValueAsString(wInfo);
