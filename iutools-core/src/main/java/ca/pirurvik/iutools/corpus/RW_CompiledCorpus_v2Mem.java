@@ -30,10 +30,13 @@ public class RW_CompiledCorpus_v2Mem extends RW_CompiledCorpus {
     @Override
     protected void writeCorpus(CompiledCorpus corpus, File savePath) throws CompiledCorpusException {
         CompiledCorpus_v2Mem memCorp = (CompiledCorpus_v2Mem)corpus;
+        if (!savePath.exists()) {
+            savePath.mkdirs();
+        }
         File corpusDir = memCorp.corpusDir;
         writeTrie((Trie_InMemory) memCorp.wordCharTrie, wordCharFile(savePath));
-        writeTrie((Trie_InMemory) memCorp.charNgramsTrie, charNgramsFile(savePath));
         writeTrie((Trie_InMemory) memCorp.morphNgramsTrie, morphNgramsFile(savePath));
+        writeTrie((Trie_InMemory) memCorp.charNgramsTrie, charNgramsFile(savePath));
 
         return;
     }

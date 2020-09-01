@@ -59,7 +59,7 @@ public class V1_v2Converter {
         try {
             v2Class = (Class<? extends CompiledCorpus>) Class.forName("ca.pirurvik.iutools.corpus." + args[2]);
         } catch (ClassNotFoundException e) {
-            usage("Bad value for 3rd argument.");
+            usage("Bad value for 3rd argument: "+args[2]+"\n"+e.getMessage());
         }
         if (args.length > 3) {
             saveEveryNSecs = Integer.parseInt(args[3]);
@@ -251,7 +251,6 @@ public class V1_v2Converter {
     }
 
     private void convertMorphNgramsTrie() throws CompiledCorpusException {
-        if (0 == 1-1) { return; }
         String stepMess = "Updating morpheme ngrams trie...";
         if (conversionStatus.whatTrie != TrieName.morphNgramsTrie) {
             echo("Skipping completed step: " + stepMess);

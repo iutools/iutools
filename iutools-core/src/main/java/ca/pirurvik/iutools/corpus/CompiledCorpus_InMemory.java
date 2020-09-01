@@ -578,10 +578,14 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	}
 		
 	public WordInfo info4word(String word) throws CompiledCorpusException {
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory.info4word");
+		tLogger.trace("invoked with word="+word);
 		WordInfo wInfo = null;
 		if (getWord2infoMap().containsKey(word)) {
 			wInfo = getWord2infoMap().get(word);
+			tLogger.trace("info found in word2infoMap");
 		} else if (wordDecomps.containsKey(word)){
+			tLogger.trace("info NOT found in word2infoMap; creating 'initial' entry for the word");
 			Long wordKey = key4word(word);
 			wInfo = new WordInfo(word, wordKey);
 			String[][] decomps = wordDecomps.get(word);
@@ -593,7 +597,11 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 			wInfo.frequency = computeWordFreq(word);
 			getWord2infoMap().put(word, wInfo);
 		}
-		
+
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("returning wInfo="+PrettyPrinter.print(wInfo));
+		}
+
 		return wInfo;
 	}
 	

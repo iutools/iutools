@@ -218,8 +218,6 @@ public class CorpusCompilerTest {
 			.charNgramFrequencyEquals("^nun", 1)
 			// ngram with freq > 1
 			.charNgramFrequencyEquals("juq$", 3)
-			// ngram that corresponds to a complete word
-			.charNgramFrequencyEquals("^nunavut$", 1)
 			// ngram with freq = -
 			.charNgramFrequencyEquals("^nunavik$", 0)
 			;

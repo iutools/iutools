@@ -3,6 +3,7 @@ package ca.pirurvik.iutools.corpus;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.dtrc.elasticsearch.*;
 
+import java.io.File;
 import java.util.*;
 
 import static ca.nrc.dtrc.elasticsearch.StreamlinedClient.ESOptions.CREATE_IF_NOT_EXISTS;
@@ -14,15 +15,37 @@ import static ca.nrc.dtrc.elasticsearch.StreamlinedClient.ESOptions.UPDATES_WAIT
  */
 public class CompiledCorpus_ES extends CompiledCorpus {
 
-    StreamlinedClient esClient = null;
+    String indexName = null;
+    StreamlinedClient _esClient = null;
     public final String WORD_INFO_TYPE = "WordInfo_ES";
     public final WordInfo_ES winfoPrototype = new WordInfo_ES("");
 
-    public CompiledCorpus_ES(String indexName) throws CompiledCorpusException {
+    public CompiledCorpus_ES(String _indexName) throws CompiledCorpusException {
+        indexName = _indexName;
+    }
+
+    protected StreamlinedClient esClient() throws CompiledCorpusException {
+        if (_esClient == null) {
+            try {
+                _esClient =
+                        new StreamlinedClient(indexName, CREATE_IF_NOT_EXISTS, UPDATES_WAIT_FOR_REFRESH)
+                            .setSleepSecs(0.5);
+            } catch (ElasticSearchException e) {
+                throw new CompiledCorpusException(e);
+            }
+
+        }
+        return _esClient;
+    }
+
+
+    public  void loadFromFile(File jsonFile, Boolean verbose) throws CompiledCorpusException {
+        if (verbose == null) {
+            verbose = true;
+        }
+        boolean forceIndexCreation = true;
         try {
-            esClient =
-                new StreamlinedClient(indexName, CREATE_IF_NOT_EXISTS, UPDATES_WAIT_FOR_REFRESH)
-                .setSleepSecs(0.5);
+            esClient().bulkIndex(jsonFile.toString(), WORD_INFO_TYPE, 100, verbose, forceIndexCreation);
         } catch (ElasticSearchException e) {
             throw new CompiledCorpusException(e);
         }
@@ -32,7 +55,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
     public long totalWords() throws CompiledCorpusException {
         long total = 0;
         try {
-            SearchResults<WordInfo_ES> results = esClient.listAll(WORD_INFO_TYPE, winfoPrototype);
+            SearchResults<WordInfo_ES> results = esClient().listAll(WORD_INFO_TYPE, winfoPrototype);
             total = results.getTotalHits();
         } catch (ElasticSearchException e) {
             throw new CompiledCorpusException(e);
@@ -99,7 +122,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
     public boolean containsWord(String word) throws CompiledCorpusException {
         WordInfo_ES winfo = null;
         try {
-            winfo = (WordInfo_ES) esClient.getDocumentWithID(
+            winfo = (WordInfo_ES) esClient().getDocumentWithID(
                     word, WordInfo_ES.class, WORD_INFO_TYPE);
         } catch (ElasticSearchException e) {
 //            if (!e.isNoSuchIndex()) {
@@ -122,7 +145,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
         SearchResults<WordInfo_ES> results = null;
         long total = 0;
         try {
-            results = esClient.listAll(WORD_INFO_TYPE, winfoPrototype);
+            results = esClient().listAll(WORD_INFO_TYPE, winfoPrototype);
             Iterator<Hit<WordInfo_ES>> iter = results.iterator();
             while (iter.hasNext()) {
                 Hit<WordInfo_ES> hit = iter.next();
@@ -153,12 +176,12 @@ public class CompiledCorpus_ES extends CompiledCorpus {
     public long totalWordsWithDecomps() throws CompiledCorpusException {
         Map<String,Object> queryMap =
                 new QueryBuilder()
-                        .addObject("query")
-                        .addObject("bool")
-                        .addObject("must")
-                        .addObject("exists")
-                        .addObject("field", "topDecompositionStr")
-                        .buildMap();
+                    .addObject("query")
+                    .addObject("bool")
+                    .addObject("must")
+                    .addObject("exists")
+                    .addObject("field", "topDecompositionStr")
+                    .buildMap();
         SearchResults<WordInfo_ES> results = searchES_queryMap(queryMap);
 
         return results.getTotalHits();
@@ -166,12 +189,44 @@ public class CompiledCorpus_ES extends CompiledCorpus {
 
     @Override
     public long totalOccurencesWithNoDecomp() throws CompiledCorpusException {
-        return 0;
+        Map<String,Object> queryMap =
+                new QueryBuilder()
+                        .addObject("query")
+                        .addObject("bool")
+                        .addObject("must_not")
+                        .addObject("exists")
+                        .addObject("field", "topDecompositionStr")
+                        .buildMap();
+        SearchResults<WordInfo_ES> results = searchES_queryMap(queryMap);
+        Iterator<Hit<WordInfo_ES>> iter = results.iterator();
+        long total = 0;
+        while (iter.hasNext()) {
+            WordInfo_ES nextWordInfo = iter.next().getDocument();
+            total += nextWordInfo.frequency;
+        }
+
+        return total;
     }
 
     @Override
     public Long totalOccurencesWithDecomps() throws CompiledCorpusException {
-        return null;
+        Map<String,Object> queryMap =
+                new QueryBuilder()
+                        .addObject("query")
+                        .addObject("bool")
+                        .addObject("must")
+                        .addObject("exists")
+                        .addObject("field", "topDecompositionStr")
+                        .buildMap();
+        SearchResults<WordInfo_ES> results = searchES_queryMap(queryMap);
+        Iterator<Hit<WordInfo_ES>> iter = results.iterator();
+        long total = 0;
+        while (iter.hasNext()) {
+            WordInfo_ES nextWordInfo = iter.next().getDocument();
+            total += nextWordInfo.frequency;
+        }
+
+        return total;
     }
 
     @Override
@@ -195,7 +250,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
 
         WordInfo_ES winfo = null;
         try {
-            winfo = (WordInfo_ES) esClient.getDocumentWithID(
+            winfo = (WordInfo_ES) esClient().getDocumentWithID(
                 word, WordInfo_ES.class, WORD_INFO_TYPE);
         } catch (ElasticSearchException e) {
             // If this is a "no such index" exception, then don't worry.
@@ -213,7 +268,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
         winfo.frequency += freqIncr;
         winfo.setDecompositions(sampleDecomps, totalDecomps);
         try {
-            esClient.putDocument(WORD_INFO_TYPE, winfo);
+            esClient().putDocument(WORD_INFO_TYPE, winfo);
         } catch (ElasticSearchException e) {
             throw new CompiledCorpusException("Error putting ES info for word "+word, e);
         }
@@ -235,7 +290,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
         SearchResults<WordInfo_ES> results = null;
         try {
             results =
-                esClient.searchFreeform(
+                esClient().searchFreeform(
                     query, WORD_INFO_TYPE, new WordInfo_ES());
         } catch (ElasticSearchException e) {
             throw new CompiledCorpusException(e);
@@ -248,7 +303,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
         SearchResults<WordInfo_ES> results = null;
         try {
             results =
-                    esClient.search(
+                    esClient().search(
                             queryMap, WORD_INFO_TYPE, new WordInfo_ES());
         } catch (ElasticSearchException e) {
             throw new CompiledCorpusException(e);
@@ -258,3 +313,4 @@ public class CompiledCorpus_ES extends CompiledCorpus {
     }
 
 }
+

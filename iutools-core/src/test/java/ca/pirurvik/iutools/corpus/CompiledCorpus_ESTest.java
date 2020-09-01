@@ -45,32 +45,17 @@ public class CompiledCorpus_ESTest extends CompiledCorpusTest {
 
     @Test
     @Ignore
-    public void test__totalOccurences__OfVariousTypes() throws Exception {
-
-    }
-
-    @Test
-    @Ignore
     public void test__charNGramFrequency__HappyPath() throws Exception {
-
     }
 
-    @Test
-    @Ignore
-    public void test__totalOccurences__HappyPath() throws Exception {
-
-    }
-
-    @Test
-    @Ignore
+    @Test @Ignore
     public void test__getNbFailedSegmentations() throws Exception {
-
     }
+
 
     @Test
     @Ignore
     public void test__getWordsContainingMorpheme__HappyPath() throws Exception {
-
     }
 
 

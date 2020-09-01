@@ -51,6 +51,18 @@ public class WordInfo_ES extends WordInfo {
     }
 
     @Override
+    public WordInfo_ES setId(String _id) {
+        super.setId(_id);
+        word = _id;
+        return this;
+    }
+
+    @Override
+    public String getId() {
+        return this.word;
+    }
+
+    @Override
     public void setDecompositions(String[][] sampleDecomps, Integer totalDecomps) {
         super.setDecompositions(sampleDecomps, totalDecomps);
         String[] topDecomp = topDecomposition();

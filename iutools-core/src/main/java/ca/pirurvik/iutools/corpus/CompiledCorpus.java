@@ -212,7 +212,7 @@ public abstract class CompiledCorpus {
 	@JsonIgnore
 	protected NgramCompiler getCharsNgramCompiler() {
 		if (charsNgramCompiler == null) {
-			charsNgramCompiler = new NgramCompiler(3,true);
+			charsNgramCompiler = new NgramCompiler(3, 6,true);
 		}
 		return charsNgramCompiler;
 	}	
@@ -220,7 +220,7 @@ public abstract class CompiledCorpus {
 	@JsonIgnore
 	protected NgramCompiler getMorphsNgramCompiler() {
 		if (morphsNgramCompiler == null) {
-			morphsNgramCompiler = new NgramCompiler(0,true);
+			morphsNgramCompiler = new NgramCompiler(0, 3,true);
 		}
 		return morphsNgramCompiler;
 	}	
