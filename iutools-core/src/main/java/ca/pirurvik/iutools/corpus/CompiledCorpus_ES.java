@@ -51,6 +51,9 @@ public class CompiledCorpus_ES extends CompiledCorpus {
         }
     }
 
+    // TODO-Sept2020: Modify listaLL method so you can pass it an aggregeation
+    //  sepecification (Map<String,Object>). We can then pass an aggregation
+    //  spec that asks for the sum of the frequencies.
     @Override
     public long totalWords() throws CompiledCorpusException {
         long total = 0;
@@ -190,20 +193,30 @@ public class CompiledCorpus_ES extends CompiledCorpus {
     @Override
     public long totalOccurencesWithNoDecomp() throws CompiledCorpusException {
         Map<String,Object> queryMap =
-                new QueryBuilder()
-                        .addObject("query")
-                        .addObject("bool")
+            new QueryBuilder()
+                .addObject("query")
+                    .addObject("bool")
                         .addObject("must_not")
-                        .addObject("exists")
-                        .addObject("field", "topDecompositionStr")
-                        .buildMap();
+                            .addObject("exists")
+                                .addObject( "field", "topDecompositionStr")
+                                .closeObject()
+                            .closeObject()
+                        .closeObject()
+                    .closeObject()
+                .closeObject()
+
+                .addObject("aggs")
+                    .addObject("totalOccurences")
+                        .addObject("sum")
+                            .addObject("field", "frequency")
+
+                .buildMap()
+                ;
+
         SearchResults<WordInfo_ES> results = searchES_queryMap(queryMap);
-        Iterator<Hit<WordInfo_ES>> iter = results.iterator();
-        long total = 0;
-        while (iter.hasNext()) {
-            WordInfo_ES nextWordInfo = iter.next().getDocument();
-            total += nextWordInfo.frequency;
-        }
+        Double totalDbl =
+                (Double) results.aggrResult("totalOccurences");
+        long total = Math.round(totalDbl);
 
         return total;
     }
@@ -211,20 +224,30 @@ public class CompiledCorpus_ES extends CompiledCorpus {
     @Override
     public Long totalOccurencesWithDecomps() throws CompiledCorpusException {
         Map<String,Object> queryMap =
-                new QueryBuilder()
-                        .addObject("query")
-                        .addObject("bool")
+            new QueryBuilder()
+                .addObject("query")
+                    .addObject("bool")
                         .addObject("must")
-                        .addObject("exists")
-                        .addObject("field", "topDecompositionStr")
-                        .buildMap();
+                            .addObject("exists")
+                                .addObject( "field", "topDecompositionStr")
+                                .closeObject()
+                            .closeObject()
+                        .closeObject()
+                    .closeObject()
+                .closeObject()
+
+                .addObject("aggs")
+                    .addObject("totalOccurences")
+                        .addObject("sum")
+                            .addObject("field", "frequency")
+
+            .buildMap()
+            ;
+
         SearchResults<WordInfo_ES> results = searchES_queryMap(queryMap);
-        Iterator<Hit<WordInfo_ES>> iter = results.iterator();
-        long total = 0;
-        while (iter.hasNext()) {
-            WordInfo_ES nextWordInfo = iter.next().getDocument();
-            total += nextWordInfo.frequency;
-        }
+        Double totalDbl =
+            (Double) results.aggrResult("totalOccurences");
+        long total = Math.round(totalDbl);
 
         return total;
     }
@@ -283,7 +306,24 @@ public class CompiledCorpus_ES extends CompiledCorpus {
 
     @Override
     public long charNgramFrequency(String ngram) throws CompiledCorpusException {
-        return 0;
+        String query =
+            "wordCharsSpaceConcatenated:\""+
+            WordInfo_ES.insertSpaces(ngram)+
+            "\"";
+
+        SearchResults<WordInfo_ES> results = searchES_freeform(query);
+        Iterator<Hit<WordInfo_ES>> iter = results.iterator();
+        long freq = 0;
+        while (iter.hasNext()) {
+            freq += iter.next().getDocument().frequency;
+        }
+
+        return freq;
+    }
+
+    private static String insertSpaces(String orig) {
+        String withSpaces = orig.replaceAll("(.)", "$1 ");
+        return withSpaces;
     }
 
     private SearchResults<WordInfo_ES> searchES_freeform(String query) throws CompiledCorpusException {

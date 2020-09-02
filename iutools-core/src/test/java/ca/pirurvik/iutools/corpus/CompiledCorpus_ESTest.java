@@ -43,11 +43,6 @@ public class CompiledCorpus_ESTest extends CompiledCorpusTest {
     public void test__CompiledCorpus__Synopsis() throws Exception {
     }
 
-    @Test
-    @Ignore
-    public void test__charNGramFrequency__HappyPath() throws Exception {
-    }
-
     @Test @Ignore
     public void test__getNbFailedSegmentations() throws Exception {
     }
