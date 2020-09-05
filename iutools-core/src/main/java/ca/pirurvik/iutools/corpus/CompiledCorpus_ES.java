@@ -2,6 +2,8 @@ package ca.pirurvik.iutools.corpus;
 
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.dtrc.elasticsearch.*;
+import ca.nrc.dtrc.elasticsearch.request.Query;
+import ca.nrc.dtrc.elasticsearch.request.RequestBuilder;
 
 import java.io.File;
 import java.util.*;
@@ -162,58 +164,59 @@ public class CompiledCorpus_ES extends CompiledCorpus {
 
     @Override
     public long totalWordsWithNoDecomp() throws CompiledCorpusException {
-        Map<String,Object> queryMap =
-            new QueryBuilder()
-                .addObject("query")
+        Query query = new Query();
+        new RequestBuilder(query)
+            .addObject("query")
                 .addObject("bool")
-                .addObject("must_not")
-                .addObject("exists")
-                .addObject("field", "topDecompositionStr")
-                .buildMap();
-        SearchResults<WordInfo_ES> results = searchES_queryMap(queryMap);
+                    .addObject("must_not")
+                        .addObject("exists")
+                            .addObject("field", "topDecompositionStr")
+            .build();
+        SearchResults<WordInfo_ES> results = searchES_queryMap(query);
 
         return results.getTotalHits();
     }
 
     @Override
     public long totalWordsWithDecomps() throws CompiledCorpusException {
-        Map<String,Object> queryMap =
-                new QueryBuilder()
-                    .addObject("query")
+        Query query = new Query();
+            new RequestBuilder(query)
+                .addObject("query")
                     .addObject("bool")
-                    .addObject("must")
-                    .addObject("exists")
-                    .addObject("field", "topDecompositionStr")
-                    .buildMap();
-        SearchResults<WordInfo_ES> results = searchES_queryMap(queryMap);
+                        .addObject("must")
+                            .addObject("exists")
+                                .addObject("field", "topDecompositionStr")
+                .build();
+        SearchResults<WordInfo_ES> results = searchES_queryMap(query);
 
         return results.getTotalHits();
     }
 
+    // TODO-Sept2020: Seperate the 'aggs' part from the 'query' part
     @Override
     public long totalOccurencesWithNoDecomp() throws CompiledCorpusException {
-        Map<String,Object> queryMap =
-            new QueryBuilder()
-                .addObject("query")
-                    .addObject("bool")
-                        .addObject("must_not")
-                            .addObject("exists")
-                                .addObject( "field", "topDecompositionStr")
-                                .closeObject()
+        Query query = new Query();
+        new RequestBuilder(query)
+            .addObject("query")
+                .addObject("bool")
+                    .addObject("must_not")
+                        .addObject("exists")
+                            .addObject( "field", "topDecompositionStr")
                             .closeObject()
                         .closeObject()
                     .closeObject()
                 .closeObject()
+            .closeObject()
 
-                .addObject("aggs")
-                    .addObject("totalOccurences")
-                        .addObject("sum")
-                            .addObject("field", "frequency")
+            .addObject("aggs")
+                .addObject("totalOccurences")
+                    .addObject("sum")
+                        .addObject("field", "frequency")
 
-                .buildMap()
-                ;
+            .build()
+            ;
 
-        SearchResults<WordInfo_ES> results = searchES_queryMap(queryMap);
+        SearchResults<WordInfo_ES> results = searchES_queryMap(query);
         Double totalDbl =
                 (Double) results.aggrResult("totalOccurences");
         long total = Math.round(totalDbl);
@@ -221,30 +224,31 @@ public class CompiledCorpus_ES extends CompiledCorpus {
         return total;
     }
 
+    // TODO-Sept2020: Seperate the 'aggs' part from the 'query' part
     @Override
     public Long totalOccurencesWithDecomps() throws CompiledCorpusException {
-        Map<String,Object> queryMap =
-            new QueryBuilder()
-                .addObject("query")
-                    .addObject("bool")
-                        .addObject("must")
-                            .addObject("exists")
-                                .addObject( "field", "topDecompositionStr")
-                                .closeObject()
+        Query query = new Query();
+        new RequestBuilder(query)
+            .addObject("query")
+                .addObject("bool")
+                    .addObject("must")
+                        .addObject("exists")
+                            .addObject( "field", "topDecompositionStr")
                             .closeObject()
                         .closeObject()
                     .closeObject()
                 .closeObject()
+            .closeObject()
 
-                .addObject("aggs")
-                    .addObject("totalOccurences")
-                        .addObject("sum")
-                            .addObject("field", "frequency")
+            .addObject("aggs")
+                .addObject("totalOccurences")
+                    .addObject("sum")
+                        .addObject("field", "frequency")
 
-            .buildMap()
-            ;
+        .build()
+        ;
 
-        SearchResults<WordInfo_ES> results = searchES_queryMap(queryMap);
+        SearchResults<WordInfo_ES> results = searchES_queryMap(query);
         Double totalDbl =
             (Double) results.aggrResult("totalOccurences");
         long total = Math.round(totalDbl);
@@ -330,7 +334,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
         SearchResults<WordInfo_ES> results = null;
         try {
             results =
-                esClient().searchFreeform(
+                esClient().search(
                     query, WORD_INFO_TYPE, new WordInfo_ES());
         } catch (ElasticSearchException e) {
             throw new CompiledCorpusException(e);
@@ -339,18 +343,17 @@ public class CompiledCorpus_ES extends CompiledCorpus {
         return results;
     }
 
-    private SearchResults<WordInfo_ES> searchES_queryMap(Map<String, Object> queryMap) throws CompiledCorpusException {
+    private SearchResults<WordInfo_ES> searchES_queryMap(Query query) throws CompiledCorpusException {
         SearchResults<WordInfo_ES> results = null;
         try {
             results =
                     esClient().search(
-                            queryMap, WORD_INFO_TYPE, new WordInfo_ES());
+                            query, WORD_INFO_TYPE, new WordInfo_ES());
         } catch (ElasticSearchException e) {
             throw new CompiledCorpusException(e);
         }
 
         return results;
     }
-
 }
 
