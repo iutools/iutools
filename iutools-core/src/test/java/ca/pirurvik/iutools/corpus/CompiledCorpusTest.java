@@ -32,14 +32,21 @@ import ca.nrc.testing.AssertHelpers;
 import ca.nrc.testing.AssertObject;
 
 public abstract class CompiledCorpusTest {
-		
-	protected abstract CompiledCorpus makeCorpusUnderTest(
-		Class<? extends StringSegmenter> segmenterClass) throws Exception;
-	
-	protected CompiledCorpus makeCorpusUnderTest()  throws Exception {
+
+	protected abstract CompiledCorpus makeCorpusWithDefaultSegmenter()
+		throws Exception;
+
+	protected  CompiledCorpus makeCorpusUnderTest()  throws Exception {
 		return makeCorpusUnderTest(StringSegmenter_Char.class);
 	}
-	
+
+	protected CompiledCorpus makeCorpusUnderTest(
+			Class<? extends StringSegmenter> segmenterClass) throws Exception {
+		CompiledCorpus corpus = makeCorpusWithDefaultSegmenter();
+		corpus.setSegmenterClassName(segmenterClass);
+		return corpus;
+	}
+
 	protected File corpusDirectory = null;
 	
 	@After
@@ -361,7 +368,7 @@ public abstract class CompiledCorpusTest {
 
 
 	@Test
-	public void test__getNbFailedSegmentations() throws Exception {
+	public void test__totalWordsWithNoDecomp__HappyPath() throws Exception {
 		String[] stringsOfWords = new String[] {
 				"nunavut", "inuit", "takujuq", "amma", "kanaujaq", "iglumik", "takulaaqtuq", "nunait"
 				};
@@ -374,7 +381,7 @@ public abstract class CompiledCorpusTest {
 	}
 
 	@Test
-	public void test__getWordsContainingMorpheme__HappyPath() throws Exception {
+	public void test__wordsContainingMorpheme__HappyPath() throws Exception {
 		String[] stringsOfWords = new String[] {
 				"nunavut", "inuit", "takujuq", "sinilauqtuq", "uvlimik", "takulauqtunga"
 				};

@@ -50,12 +50,10 @@ import junit.framework.TestCase;
 public class CompiledCorpus_InMemoryTest extends CompiledCorpusTest
 {
 	@Override
-	protected CompiledCorpus makeCorpusUnderTest(
-			Class<? extends StringSegmenter> segmenterClass) {			
+	protected CompiledCorpus makeCorpusWithDefaultSegmenter() throws Exception {
 		CompiledCorpus_InMemory corpus = new CompiledCorpus_InMemory();
-		corpus.setSegmenterClassName(segmenterClass.getName());
 		return corpus;
-	}	
+	}
 	
 	@Test
 	public void test__getMostFrequentTerminal__HappyPath() throws Exception {

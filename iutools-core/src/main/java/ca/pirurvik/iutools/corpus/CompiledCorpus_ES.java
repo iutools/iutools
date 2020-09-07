@@ -2,11 +2,12 @@ package ca.pirurvik.iutools.corpus;
 
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.dtrc.elasticsearch.*;
-import ca.nrc.dtrc.elasticsearch.request.Query;
-import ca.nrc.dtrc.elasticsearch.request.RequestBuilder;
+import ca.nrc.dtrc.elasticsearch.request.*;
 
 import java.io.File;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static ca.nrc.dtrc.elasticsearch.StreamlinedClient.ESOptions.CREATE_IF_NOT_EXISTS;
 import static ca.nrc.dtrc.elasticsearch.StreamlinedClient.ESOptions.UPDATES_WAIT_FOR_REFRESH;
@@ -76,12 +77,50 @@ public class CompiledCorpus_ES extends CompiledCorpus {
 
     @Override
     public List<WordWithMorpheme> wordsContainingMorpheme(String morpheme) throws CompiledCorpusException {
-        return null;
+        List<WordWithMorpheme> words = new ArrayList<WordWithMorpheme>();
+        String query =
+                "morphemesSpaceConcatenated:\""+morpheme+"\"";
+
+        SearchResults<WordInfo_ES> results = searchES(query);
+        Iterator<Hit<WordInfo_ES>> iter = results.iterator();
+        Pattern morphPatt = Pattern.compile("(^|\\s)([^\\s]*"+morpheme+"[^\\s]*)(\\s|$)");
+        while (iter.hasNext()) {
+            WordInfo_ES winfo = iter.next().getDocument();
+
+            String morphId = null;
+            Matcher morphMatcher =morphPatt.matcher(winfo.topDecompositionStr);
+            if (morphMatcher.find()) {
+                morphId = morphMatcher.group(2);
+            }
+
+            String topDecomp =
+                winfo.topDecompositionStr.replaceAll("\\s+", "");
+
+            WordWithMorpheme aWord =
+                new WordWithMorpheme(
+                    winfo.word, morphId, topDecomp,
+                    winfo.frequency);
+            words.add(aWord);
+        }
+
+        return words;
     }
 
     @Override
     public long morphemeNgramFrequency(String[] ngram) throws CompiledCorpusException {
-        return 0;
+        String query =
+                "morphemesSpaceConcatenated:\""+
+                        WordInfo_ES.insertSpaces(ngram)+
+                        "\"";
+
+        SearchResults<WordInfo_ES> results = searchES(query);
+        Iterator<Hit<WordInfo_ES>> iter = results.iterator();
+        long freq = 0;
+        while (iter.hasNext()) {
+            freq += iter.next().getDocument().frequency;
+        }
+
+        return freq;
     }
 
     @Override
@@ -113,7 +152,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
             "wordCharsSpaceConcatenated:\"" +
             WordInfo_ES.insertSpaces(ngram) +
             "\"";
-        SearchResults<WordInfo_ES> results = searchES_freeform(query);
+        SearchResults<WordInfo_ES> results = searchES(query);
         Iterator<Hit<WordInfo_ES>> iter = results.iterator();
         while (iter.hasNext()) {
             Hit<WordInfo_ES> hit = iter.next();
@@ -165,14 +204,14 @@ public class CompiledCorpus_ES extends CompiledCorpus {
     @Override
     public long totalWordsWithNoDecomp() throws CompiledCorpusException {
         Query query = new Query();
-        new RequestBuilder(query)
-            .addObject("query")
-                .addObject("bool")
-                    .addObject("must_not")
-                        .addObject("exists")
-                            .addObject("field", "topDecompositionStr")
-            .build();
-        SearchResults<WordInfo_ES> results = searchES_queryMap(query);
+        query
+            .openAttr("bool")
+                .openAttr("must_not")
+                    .openAttr("exists")
+                        .openAttr("field")
+                        .setOpenedAttr("topDecompositionStr")
+            ;
+        SearchResults<WordInfo_ES> results = searchES(query);
 
         return results.getTotalHits();
     }
@@ -180,14 +219,14 @@ public class CompiledCorpus_ES extends CompiledCorpus {
     @Override
     public long totalWordsWithDecomps() throws CompiledCorpusException {
         Query query = new Query();
-            new RequestBuilder(query)
-                .addObject("query")
-                    .addObject("bool")
-                        .addObject("must")
-                            .addObject("exists")
-                                .addObject("field", "topDecompositionStr")
-                .build();
-        SearchResults<WordInfo_ES> results = searchES_queryMap(query);
+        query
+            .openAttr("bool")
+                .openAttr("must")
+                    .openAttr("exists")
+                        .openAttr("field")
+                        .setOpenedAttr("topDecompositionStr")
+            ;
+        SearchResults<WordInfo_ES> results = searchES(query);
 
         return results.getTotalHits();
     }
@@ -196,27 +235,18 @@ public class CompiledCorpus_ES extends CompiledCorpus {
     @Override
     public long totalOccurencesWithNoDecomp() throws CompiledCorpusException {
         Query query = new Query();
-        new RequestBuilder(query)
-            .addObject("query")
-                .addObject("bool")
-                    .addObject("must_not")
-                        .addObject("exists")
-                            .addObject( "field", "topDecompositionStr")
-                            .closeObject()
-                        .closeObject()
-                    .closeObject()
-                .closeObject()
-            .closeObject()
-
-            .addObject("aggs")
-                .addObject("totalOccurences")
-                    .addObject("sum")
-                        .addObject("field", "frequency")
-
-            .build()
+        query
+            .openAttr("bool")
+                .openAttr("must_not")
+                    .openAttr("exists")
+                        .openAttr( "field")
+                        .setOpenedAttr("topDecompositionStr")
             ;
 
-        SearchResults<WordInfo_ES> results = searchES_queryMap(query);
+        Aggs aggs = new Aggs();
+        aggs.aggregate("totalOccurences", "sum", "frequency");
+
+        SearchResults<WordInfo_ES> results = searchES(query, aggs);
         Double totalDbl =
                 (Double) results.aggrResult("totalOccurences");
         long total = Math.round(totalDbl);
@@ -228,27 +258,23 @@ public class CompiledCorpus_ES extends CompiledCorpus {
     @Override
     public Long totalOccurencesWithDecomps() throws CompiledCorpusException {
         Query query = new Query();
-        new RequestBuilder(query)
-            .addObject("query")
-                .addObject("bool")
-                    .addObject("must")
-                        .addObject("exists")
-                            .addObject( "field", "topDecompositionStr")
-                            .closeObject()
-                        .closeObject()
-                    .closeObject()
-                .closeObject()
-            .closeObject()
+        query
+            .openAttr("bool")
+                .openAttr("must")
+                    .openAttr("exists")
+                        .openAttr( "field")
+                        .setOpenedAttr("topDecompositionStr")
+            ;
 
-            .addObject("aggs")
-                .addObject("totalOccurences")
-                    .addObject("sum")
-                        .addObject("field", "frequency")
+        Aggs aggs = new Aggs();
+        aggs
+            .openAttr("totalOccurences")
+                .openAttr("sum")
+                    .openAttr("field")
+                    .setOpenedAttr("frequency")
+            ;
 
-        .build()
-        ;
-
-        SearchResults<WordInfo_ES> results = searchES_queryMap(query);
+        SearchResults<WordInfo_ES> results = searchES(query, aggs);
         Double totalDbl =
             (Double) results.aggrResult("totalOccurences");
         long total = Math.round(totalDbl);
@@ -315,7 +341,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
             WordInfo_ES.insertSpaces(ngram)+
             "\"";
 
-        SearchResults<WordInfo_ES> results = searchES_freeform(query);
+        SearchResults<WordInfo_ES> results = searchES(query);
         Iterator<Hit<WordInfo_ES>> iter = results.iterator();
         long freq = 0;
         while (iter.hasNext()) {
@@ -330,7 +356,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
         return withSpaces;
     }
 
-    private SearchResults<WordInfo_ES> searchES_freeform(String query) throws CompiledCorpusException {
+    private SearchResults<WordInfo_ES> searchES(String query) throws CompiledCorpusException {
         SearchResults<WordInfo_ES> results = null;
         try {
             results =
@@ -343,12 +369,13 @@ public class CompiledCorpus_ES extends CompiledCorpus {
         return results;
     }
 
-    private SearchResults<WordInfo_ES> searchES_queryMap(Query query) throws CompiledCorpusException {
+    private SearchResults<WordInfo_ES> searchES(
+        Query query, RequestBodyElement... additionalReqBodies) throws CompiledCorpusException {
         SearchResults<WordInfo_ES> results = null;
         try {
             results =
-                    esClient().search(
-                            query, WORD_INFO_TYPE, new WordInfo_ES());
+                esClient().search(
+                    query, WORD_INFO_TYPE, new WordInfo_ES(), additionalReqBodies);
         } catch (ElasticSearchException e) {
             throw new CompiledCorpusException(e);
         }

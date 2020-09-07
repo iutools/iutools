@@ -28,6 +28,13 @@ public class WordInfo_ES extends WordInfo {
      */
     public String wordCharsSpaceConcatenated = null;
 
+    /**
+     * Morphemes of the word, separated by space.
+     * This allows us to compose an ES query that finds all the
+     * words that contain a particular ngram of morphemes.
+     */
+    public String morphemesSpaceConcatenated = null;
+
     public WordInfo_ES() {
         super();
     }
@@ -39,15 +46,17 @@ public class WordInfo_ES extends WordInfo {
 
     public static String insertSpaces(String ngram) {
         String[] ngramArr = ngram.split("");
+        return insertSpaces(ngramArr);
+    }
+
+    public static String insertSpaces(String[] ngramArr) {
         String ngramWithSpaces = StringUtils.join(ngramArr, " ");
         return ngramWithSpaces;
     }
 
+
     private void init_WordInfo_ES(String _word) {
         this.id = _word;
-        String[] wordChars = _word.split("");
-        this.wordCharsSpaceConcatenated =
-            "^ " + String.join(" ", wordChars) + " $";
     }
 
     @Override
@@ -71,4 +80,23 @@ public class WordInfo_ES extends WordInfo {
         }
     }
 
+    public String getWordCharsSpaceConcatenated() {
+        if (wordCharsSpaceConcatenated == null && word != null) {
+            String[] wordChars = word.split("");
+            this.wordCharsSpaceConcatenated =
+                    "^ " + String.join(" ", wordChars) + " $";
+        }
+        return wordCharsSpaceConcatenated;
+    }
+
+    public String getMorphemesSpaceConcatenated() {
+        if (morphemesSpaceConcatenated == null) {
+            String[] topDecomp = topDecomposition();
+            if (topDecomp != null) {
+                morphemesSpaceConcatenated =
+                    "^ " + String.join(" ", topDecomp) + " $";
+            }
+        }
+        return morphemesSpaceConcatenated;
+    }
 }

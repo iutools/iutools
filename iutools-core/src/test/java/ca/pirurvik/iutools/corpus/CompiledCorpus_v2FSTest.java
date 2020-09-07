@@ -14,14 +14,12 @@ import ca.nrc.testing.AssertObject;
 public class CompiledCorpus_v2FSTest extends CompiledCorpusTest {
 
 	@Override
-	protected CompiledCorpus makeCorpusUnderTest(
-			Class<? extends StringSegmenter> segmenterClass) {
+	protected CompiledCorpus makeCorpusWithDefaultSegmenter() throws Exception {
 		File rootDir = Files.createTempDir();
 		CompiledCorpus corpus = new CompiledCorpus_v2FS(rootDir);
-		corpus.setSegmenterClassName(segmenterClass.getName());
 		return corpus;
 	}
-	
+
 	@Test
 	public void test__morphemesWithCanonicalForm__HappyPath() throws Exception {
 		CompiledCorpus_v2FS corpus =

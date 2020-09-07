@@ -7,7 +7,6 @@ import ca.nrc.ui.commandline.ProgressMonitor_Terminal;
 
 public class Mem2FSConversionVisitor extends TrieNodeVisitor {
 
-
     long totalWords = -1;
     Trie_InFileSystem fsTrie = null;
     ProgressMonitor_Terminal progMonitor = null;

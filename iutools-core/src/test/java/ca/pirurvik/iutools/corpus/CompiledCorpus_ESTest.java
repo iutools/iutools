@@ -26,10 +26,8 @@ public class CompiledCorpus_ESTest extends CompiledCorpusTest {
     }
 
     @Override
-    protected CompiledCorpus makeCorpusUnderTest(
-            Class<? extends StringSegmenter> segmenterClass) throws Exception {
+    protected CompiledCorpus makeCorpusWithDefaultSegmenter() throws Exception {
         CompiledCorpus_ES corpus = new CompiledCorpus_ES(testIndex);
-
         return corpus;
     }
 
@@ -41,29 +39,6 @@ public class CompiledCorpus_ESTest extends CompiledCorpusTest {
     @Test
     @Ignore
     public void test__CompiledCorpus__Synopsis() throws Exception {
-    }
-
-    @Test @Ignore
-    public void test__getNbFailedSegmentations() throws Exception {
-    }
-
-
-    @Test
-    @Ignore
-    public void test__getWordsContainingMorpheme__HappyPath() throws Exception {
-    }
-
-
-    @Test
-    @Ignore
-    public void test__morphemeNgramFrequency__HappyPath() throws Exception {
-
-    }
-
-    @Test
-    @Ignore
-    public void test__wordsContainingNgram__VariousCases() throws Exception {
-
     }
 
     @Test
