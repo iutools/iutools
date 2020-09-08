@@ -31,6 +31,8 @@ iutools-data/data/tries
 /iutools-data/bin/
 /iutools-data/.metadata/
 
-
 /.idea/
 /iutools.iml
+
+/foo*.txt
+/*.NEW
