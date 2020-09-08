@@ -34,5 +34,5 @@ iutools-data/data/tries
 /.idea/
 /iutools.iml
 
-/foo*.txt
-/*.NEW
+**/foo*.txt
+**/*.java.NEW
