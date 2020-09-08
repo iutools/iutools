@@ -1,6 +1,7 @@
 package ca.inuktitutcomputing.core.console;
 
 import ca.nrc.ui.commandline.ProgressMonitor_Terminal;
+import ca.nrc.ui.commandline.UserIO;
 import ca.pirurvik.iutools.corpus.*;
 
 import java.io.File;
@@ -60,9 +61,15 @@ public class CmdDumpCorpus extends ConsoleCommand {
     private void printWord(String word, CompiledCorpus corpus, 
 			boolean wordsOnly, FileWriter fWriter) 
 			throws CLIException, IOException, CompiledCorpusException {
+
+        if (verbosityLevelIsMet(UserIO.Verbosity.Level1)) {
+            echo("Dumping info for word="+word);
+        }
+
 		String infoStr = word;
 		if (!wordsOnly) {
-            WordInfo wInfo = corpus.info4word(word);
+            WordInfo wInfo = winfo4word(word, corpus);
+
             if (wInfo == null) {
                 wInfo = new WordInfo_ES(word);
                 wInfo.setDecompositions(new String[0][], 0);
@@ -76,4 +83,26 @@ public class CmdDumpCorpus extends ConsoleCommand {
 		}
 		fWriter.write(infoStr+"\n");
 	}
+
+    private WordInfo_ES winfo4word(String word, CompiledCorpus corpus)
+        throws CompiledCorpusException {
+        WordInfo wInfo = corpus.info4word(word);
+
+        String[][] decompsSample = new String[0][];
+        Integer totalDecomps = 0;
+        if (wInfo != null) {
+            // wInfo == null can happen with an old InMemory corpus.
+            // That class of corpus did not keep WordInfo about words that
+            // do not decompose.
+            //
+            decompsSample = wInfo.decompositionsSample;
+            totalDecomps = wInfo.totalDecompositions;
+        }
+
+        // Convert the WordInfo to WordInfo_ES
+        WordInfo_ES wInfoES = new WordInfo_ES(word);
+        wInfoES.setDecompositions(decompsSample, totalDecomps);
+
+        return wInfoES;
+    }
 }

@@ -54,14 +54,12 @@ public class CompiledCorpus_ES extends CompiledCorpus {
         }
     }
 
-    // TODO-Sept2020: Modify listaLL method so you can pass it an aggregeation
-    //  sepecification (Map<String,Object>). We can then pass an aggregation
-    //  spec that asks for the sum of the frequencies.
     @Override
     public long totalWords() throws CompiledCorpusException {
         long total = 0;
         try {
-            SearchResults<WordInfo_ES> results = esClient().listAll(WORD_INFO_TYPE, winfoPrototype);
+            SearchResults<WordInfo_ES> results =
+                esClient().listAll(WORD_INFO_TYPE, winfoPrototype);
             total = results.getTotalHits();
         } catch (ElasticSearchException e) {
             throw new CompiledCorpusException(e);
@@ -78,10 +76,10 @@ public class CompiledCorpus_ES extends CompiledCorpus {
     @Override
     public List<WordWithMorpheme> wordsContainingMorpheme(String morpheme) throws CompiledCorpusException {
         List<WordWithMorpheme> words = new ArrayList<WordWithMorpheme>();
-        String query =
-                "morphemesSpaceConcatenated:\""+morpheme+"\"";
 
-        SearchResults<WordInfo_ES> results = searchES(query);
+        String query = morphNgramQuery(morpheme);
+
+        SearchResults<WordInfo_ES> results = esSearch(query);
         Iterator<Hit<WordInfo_ES>> iter = results.iterator();
         Pattern morphPatt = Pattern.compile("(^|\\s)([^\\s]*"+morpheme+"[^\\s]*)(\\s|$)");
         while (iter.hasNext()) {
@@ -106,6 +104,19 @@ public class CompiledCorpus_ES extends CompiledCorpus {
         return words;
     }
 
+    private String morphNgramQuery(String[] morphemes) {
+        String query =
+            "morphemesSpaceConcatenated:\""+
+            WordInfo_ES.insertSpaces(morphemes)+
+            "\"";
+        return query;
+    }
+
+    private String morphNgramQuery(String morpheme) {
+        String[] morphemes = new String[] {morpheme};
+        return morphNgramQuery(morphemes);
+    }
+
     @Override
     public long morphemeNgramFrequency(String[] ngram) throws CompiledCorpusException {
         String query =
@@ -113,7 +124,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
                         WordInfo_ES.insertSpaces(ngram)+
                         "\"";
 
-        SearchResults<WordInfo_ES> results = searchES(query);
+        SearchResults<WordInfo_ES> results = esSearch(query);
         Iterator<Hit<WordInfo_ES>> iter = results.iterator();
         long freq = 0;
         while (iter.hasNext()) {
@@ -125,12 +136,17 @@ public class CompiledCorpus_ES extends CompiledCorpus {
 
     @Override
     public Iterator<String> allWords() throws CompiledCorpusException {
-        return null;
+        SearchResults<WordInfo_ES> allWinfo = esListall();
+        Iterator<String> wordsIter = allWinfo.docIDIterator();
+
+        return wordsIter;
     }
 
     @Override
     public WordInfo info4word(String word) throws CompiledCorpusException {
-        return null;
+        WordInfo_ES winfo = esGetDocumentWithID(word);
+
+        return winfo;
     }
 
     @Override
@@ -152,7 +168,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
             "wordCharsSpaceConcatenated:\"" +
             WordInfo_ES.insertSpaces(ngram) +
             "\"";
-        SearchResults<WordInfo_ES> results = searchES(query);
+        SearchResults<WordInfo_ES> results = esSearch(query);
         Iterator<Hit<WordInfo_ES>> iter = results.iterator();
         while (iter.hasNext()) {
             Hit<WordInfo_ES> hit = iter.next();
@@ -169,9 +185,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
             winfo = (WordInfo_ES) esClient().getDocumentWithID(
                     word, WordInfo_ES.class, WORD_INFO_TYPE);
         } catch (ElasticSearchException e) {
-//            if (!e.isNoSuchIndex()) {
             throw new CompiledCorpusException(e);
-//            }
         }
 
         boolean answer = (winfo != null);
@@ -181,7 +195,15 @@ public class CompiledCorpus_ES extends CompiledCorpus {
 
     @Override
     protected Set<String> wordsContainingMorphNgram(String[] morphemes) throws CompiledCorpusException {
-        return null;
+        Set<String> words = new HashSet<String>();
+        String query = morphNgramQuery(morphemes);
+        SearchResults<WordInfo_ES> hits = esSearch(query);
+        Iterator<Hit<WordInfo_ES>> hitsIter = hits.iterator();
+        while (hitsIter.hasNext()) {
+            words.add(hitsIter.next().getDocument().word);
+        }
+
+        return words;
     }
 
     @Override
@@ -203,15 +225,8 @@ public class CompiledCorpus_ES extends CompiledCorpus {
 
     @Override
     public long totalWordsWithNoDecomp() throws CompiledCorpusException {
-        Query query = new Query();
-        query
-            .openAttr("bool")
-                .openAttr("must_not")
-                    .openAttr("exists")
-                        .openAttr("field")
-                        .setOpenedAttr("topDecompositionStr")
-            ;
-        SearchResults<WordInfo_ES> results = searchES(query);
+        String query = "totalDecompositions:0";
+        SearchResults<WordInfo_ES> results = esSearch(query);
 
         return results.getTotalHits();
     }
@@ -226,12 +241,11 @@ public class CompiledCorpus_ES extends CompiledCorpus {
                         .openAttr("field")
                         .setOpenedAttr("topDecompositionStr")
             ;
-        SearchResults<WordInfo_ES> results = searchES(query);
+        SearchResults<WordInfo_ES> results = esSearch(query);
 
         return results.getTotalHits();
     }
 
-    // TODO-Sept2020: Seperate the 'aggs' part from the 'query' part
     @Override
     public long totalOccurencesWithNoDecomp() throws CompiledCorpusException {
         Query query = new Query();
@@ -246,7 +260,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
         Aggs aggs = new Aggs();
         aggs.aggregate("totalOccurences", "sum", "frequency");
 
-        SearchResults<WordInfo_ES> results = searchES(query, aggs);
+        SearchResults<WordInfo_ES> results = esSearch(query, aggs);
         Double totalDbl =
                 (Double) results.aggrResult("totalOccurences");
         long total = Math.round(totalDbl);
@@ -254,7 +268,6 @@ public class CompiledCorpus_ES extends CompiledCorpus {
         return total;
     }
 
-    // TODO-Sept2020: Seperate the 'aggs' part from the 'query' part
     @Override
     public Long totalOccurencesWithDecomps() throws CompiledCorpusException {
         Query query = new Query();
@@ -274,7 +287,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
                     .setOpenedAttr("frequency")
             ;
 
-        SearchResults<WordInfo_ES> results = searchES(query, aggs);
+        SearchResults<WordInfo_ES> results = esSearch(query, aggs);
         Double totalDbl =
             (Double) results.aggrResult("totalOccurences");
         long total = Math.round(totalDbl);
@@ -284,7 +297,12 @@ public class CompiledCorpus_ES extends CompiledCorpus {
 
     @Override
     public Iterator<String> wordsWithNoDecomposition() throws CompiledCorpusException {
-        return null;
+        List<String> words = new ArrayList<String>();
+        String query = "totalDecompositions:0";
+        SearchResults<WordInfo_ES> hits = esSearch(query);
+
+        Iterator<String> wordsIter = hits.docIDIterator();
+        return wordsIter;
     }
 
     @Override
@@ -341,7 +359,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
             WordInfo_ES.insertSpaces(ngram)+
             "\"";
 
-        SearchResults<WordInfo_ES> results = searchES(query);
+        SearchResults<WordInfo_ES> results = esSearch(query);
         Iterator<Hit<WordInfo_ES>> iter = results.iterator();
         long freq = 0;
         while (iter.hasNext()) {
@@ -356,7 +374,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
         return withSpaces;
     }
 
-    private SearchResults<WordInfo_ES> searchES(String query) throws CompiledCorpusException {
+    private SearchResults<WordInfo_ES> esSearch(String query) throws CompiledCorpusException {
         SearchResults<WordInfo_ES> results = null;
         try {
             results =
@@ -369,7 +387,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
         return results;
     }
 
-    private SearchResults<WordInfo_ES> searchES(
+    private SearchResults<WordInfo_ES> esSearch(
         Query query, RequestBodyElement... additionalReqBodies) throws CompiledCorpusException {
         SearchResults<WordInfo_ES> results = null;
         try {
@@ -381,6 +399,28 @@ public class CompiledCorpus_ES extends CompiledCorpus {
         }
 
         return results;
+    }
+
+    private WordInfo_ES esGetDocumentWithID(String word) throws CompiledCorpusException {
+        WordInfo_ES winfo = null;
+        try {
+            winfo = (WordInfo_ES) esClient().getDocumentWithID(word, WordInfo_ES.class, WORD_INFO_TYPE);
+        } catch (ElasticSearchException e) {
+            throw new CompiledCorpusException(e);
+        }
+
+        return winfo;
+    }
+
+    private SearchResults<WordInfo_ES> esListall() throws CompiledCorpusException {
+        SearchResults<WordInfo_ES> allWinfos = null;
+        try {
+            allWinfos = esClient().listAll(WORD_INFO_TYPE, winfoPrototype);
+        } catch (ElasticSearchException e) {
+            throw new CompiledCorpusException(e);
+        }
+
+        return allWinfos;
     }
 }
 

@@ -149,8 +149,15 @@ public abstract class CompiledCorpus {
 			} catch (TimeoutException | StringSegmenterException e) {
 				throw new CompiledCorpusException(e);
 			}
-			 
-			if (decomps != null) {
+
+			if (decomps == null) {
+				// Analyser timed out before we could find a decomp.
+				// Set decomps to empty array instead of null, to distinguish
+				// this from a situation where we simply have not yet computed
+				// the decompositions for a word.
+				sampleDecomps = new String[0][];
+				totalDecomps = 0;
+			} else  {
 				totalDecomps = decomps.length;
 				int numToKeep = Math.min(totalDecomps, decompsSampleSize);
 				sampleDecomps = Arrays.copyOfRange(decomps, 0, numToKeep);

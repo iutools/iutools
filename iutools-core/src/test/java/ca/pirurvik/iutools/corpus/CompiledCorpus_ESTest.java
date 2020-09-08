@@ -36,37 +36,8 @@ public class CompiledCorpus_ESTest extends CompiledCorpusTest {
     // not passing for the ES subclass
     ///////////////////////////////////////////
 
-    @Test
-    @Ignore
-    public void test__CompiledCorpus__Synopsis() throws Exception {
-    }
-
-    @Test
-    @Ignore
-    public void test__info4word__WordIsInCorpus() throws Exception {
-
-    }
-
-    @Test @Ignore
-    public void test__info4word__WordNotInCorpus() throws Exception {
-
-    }
-
-    @Test
-    @Ignore
-    public void test__wordsContainingMorphNgram__HappyPath() throws Exception {
-
-    }
-
-    @Test
-    @Ignore
-    public void test__wordsWithNoDecomposition__HappyPath() throws Exception {
-
-    }
-
-    @Test
-    @Ignore
-    public void test__wordsWithNoDecomposition__AllWordsDecompose() throws Exception {
-
-    }
+//    @Test
+//    @Ignore
+//    public void test__CompiledCorpus__Synopsis() throws Exception {
+//    }
 }
