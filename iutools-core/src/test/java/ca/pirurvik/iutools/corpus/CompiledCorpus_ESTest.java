@@ -2,10 +2,12 @@ package ca.pirurvik.iutools.corpus;
 
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.dtrc.elasticsearch.StreamlinedClient;
+import ca.nrc.testing.AssertString;
 import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,13 +33,12 @@ public class CompiledCorpus_ESTest extends CompiledCorpusTest {
         return corpus;
     }
 
-    ///////////////////////////////////////////
-    // We Ovrerride and @Ignore all tests that are currently
-    // not passing for the ES subclass
-    ///////////////////////////////////////////
-
-//    @Test
-//    @Ignore
-//    public void test__CompiledCorpus__Synopsis() throws Exception {
-//    }
+    @Test
+    public void test__corpusName4File__HappyPath() {
+        File jsonFile = new File("/some/path/some-corpus.ES.json");
+        String gotName = CompiledCorpus_ES.corpusName4File(jsonFile);
+        AssertString.assertStringEquals(
+                "Corpus name was not as expected for file: "+jsonFile,
+                "some-corpus", gotName);
+    }
 }

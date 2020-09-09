@@ -19,6 +19,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ca.pirurvik.iutools.corpus.*;
 import org.apache.log4j.Logger;
 
 import com.github.benmanes.caffeine.cache.Cache;
@@ -32,12 +33,6 @@ import ca.nrc.datastructure.trie.StringSegmenter_AlwaysNull;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.json.PrettyPrinter;
 import ca.pirurvik.iutools.NumericExpression;
-import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
-import ca.pirurvik.iutools.corpus.WordInfo;
-import ca.pirurvik.iutools.corpus.CompiledCorpus;
-import ca.pirurvik.iutools.corpus.CompiledCorpusException;
-import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
-import ca.pirurvik.iutools.corpus.CompiledCorpusRegistryException;
 import ca.pirurvik.iutools.edit_distance.EditDistanceCalculator;
 import ca.pirurvik.iutools.edit_distance.EditDistanceCalculatorException;
 import ca.pirurvik.iutools.edit_distance.EditDistanceCalculatorFactory;
@@ -120,7 +115,7 @@ public class SpellChecker {
 	public transient EditDistanceCalculator editDistanceCalculator;
 	public transient boolean verbose = true;
 	
-	public CompiledCorpus_InMemory corpus = null;
+	public CompiledCorpus corpus = null;
 	
 	private static StringSegmenter_IUMorpheme segmenter = null;
 	private transient String[] makeUpWords = new String[] {"sivu","sia"};
@@ -144,6 +139,10 @@ public class SpellChecker {
 		init_SpellChecker(corpusName);
 	}
 
+	public SpellChecker(CompiledCorpus _corpus) throws SpellCheckerException {
+		init_SpellChecker(_corpus);
+	}
+
 	public SpellChecker(File corpusFile) throws StringSegmenterException, SpellCheckerException {
 		init_SpellChecker(corpusFile);
 	}
@@ -153,7 +152,9 @@ public class SpellChecker {
 			editDistanceCalculator = EditDistanceCalculatorFactory.getEditDistanceCalculator();
 			segmenter = new StringSegmenter_IUMorpheme();
 			if (_corpus != null) {
-				if (_corpus instanceof String) {
+				if (_corpus instanceof CompiledCorpus) {
+					setDictionaryFromCorpus((CompiledCorpus)_corpus);
+				} else if (_corpus instanceof String) {
 					setDictionaryFromCorpus((String)_corpus);						
 				} else if (_corpus instanceof File) {
 					setDictionaryFromCorpus((File)_corpus);
@@ -174,10 +175,15 @@ public class SpellChecker {
 		}
 	}
 
+	public void setDictionaryFromCorpus(CompiledCorpus _corpus) throws SpellCheckerException, ConfigException, FileNotFoundException {
+		this.corpus = _corpus;
+		__processCorpus();
+	}
+
 	public void setDictionaryFromCorpus(String _corpusName) throws SpellCheckerException, ConfigException, FileNotFoundException {
 		try {
 			corpus = CompiledCorpusRegistry.getCorpus(_corpusName);
-			__processCorpus();
+			setDictionaryFromCorpus(corpus);
 		} catch (CompiledCorpusRegistryException e) {
 			throw new SpellCheckerException(e);
 		}
@@ -185,17 +191,21 @@ public class SpellChecker {
 
 	public void setDictionaryFromCorpus(File compiledCorpusFile) throws SpellCheckerException {
 		try {
-			corpus = CompiledCorpus_InMemory.createFromJson(compiledCorpusFile.toString());
-			__processCorpus();
+//			corpus = CompiledCorpus_InMemory.createFromJson(compiledCorpusFile.toString());
+			CompiledCorpus corpus = RW_CompiledCorpus.read(compiledCorpusFile);
+			setDictionaryFromCorpus(corpus);
 		} catch (Exception e) {
 			throw new SpellCheckerException(
 					"Could not create the compiled corpus from file: " + compiledCorpusFile.toString(), e);
 		}
+
+		return;
 	}
 	
 	private void __processCorpus() throws ConfigException, FileNotFoundException {
-		this.allWords = corpus.decomposedWordsSuite;
-//		this.ngramStats = corpus.ngramStats;
+		if (corpus instanceof CompiledCorpus_InMemory) {
+			this.allWords = ((CompiledCorpus_InMemory)corpus).decomposedWordsSuite;
+		}
 		// Ideally, these should be compiled along with allWords and ngramsStats during corpus compilation
 		String dataPath = IUConfig.getIUDataPath();
 		FileReader fr = new FileReader(dataPath+"/data/numericTermsCorpus.json");

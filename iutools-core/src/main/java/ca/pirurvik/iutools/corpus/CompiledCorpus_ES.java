@@ -3,8 +3,10 @@ package ca.pirurvik.iutools.corpus;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.dtrc.elasticsearch.*;
 import ca.nrc.dtrc.elasticsearch.request.*;
+import ca.nrc.ui.commandline.UserIO;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,8 +25,16 @@ public class CompiledCorpus_ES extends CompiledCorpus {
     public final String WORD_INFO_TYPE = "WordInfo_ES";
     public final WordInfo_ES winfoPrototype = new WordInfo_ES("");
 
+    static Pattern pattSavePath = Pattern.compile(".*?(^|[^/\\\\.]*)\\.ES\\.json$");
+
     public CompiledCorpus_ES(String _indexName) throws CompiledCorpusException {
         indexName = _indexName;
+    }
+
+    public CompiledCorpus_ES setIndexName(String _name) {
+        this.indexName = _name;
+        _esClient = null;
+        return this;
     }
 
     protected StreamlinedClient esClient() throws CompiledCorpusException {
@@ -41,17 +51,37 @@ public class CompiledCorpus_ES extends CompiledCorpus {
         return _esClient;
     }
 
-
     public  void loadFromFile(File jsonFile, Boolean verbose) throws CompiledCorpusException {
+        loadFromFile(jsonFile, verbose, null);
+    }
+
+
+    public  void loadFromFile(File jsonFile, Boolean verbose, Boolean overwrite) throws CompiledCorpusException {
         if (verbose == null) {
             verbose = true;
         }
-        boolean forceIndexCreation = true;
-        try {
-            esClient().bulkIndex(jsonFile.toString(), WORD_INFO_TYPE, 100, verbose, forceIndexCreation);
-        } catch (ElasticSearchException e) {
-            throw new CompiledCorpusException(e);
+        if (overwrite == null) {
+            overwrite = false;
         }
+
+        setIndexName(corpusName4File(jsonFile));
+
+        if (esClient().indexExists()) {
+            if (overwrite) {
+                esClearIndex();
+            }
+        }
+
+        if (!esClient().indexExists() || overwrite) {
+            boolean forceIndexCreation = true;
+            try {
+                esClient().bulkIndex(jsonFile.toString(), WORD_INFO_TYPE, 100, verbose, forceIndexCreation);
+            } catch (ElasticSearchException e) {
+                throw new CompiledCorpusException(e);
+            }
+        }
+
+        return;
     }
 
     @Override
@@ -421,6 +451,47 @@ public class CompiledCorpus_ES extends CompiledCorpus {
         }
 
         return allWinfos;
+    }
+
+    private void esClearIndex() throws CompiledCorpusException {
+        try {
+            esClient().clearIndex();
+        } catch (ElasticSearchException | IOException | InterruptedException e) {
+            throw new CompiledCorpusException(e);
+        }
+    }
+
+    public void deleteAll() throws CompiledCorpusException {
+        deleteAll(null);
+    }
+
+    public void deleteAll(Boolean force) throws CompiledCorpusException {
+        if (force == null) {
+            force = false;
+        }
+
+        if (!force) {
+            boolean delete =
+                new UserIO().prompt_yes_or_no(
+                    "Delete all content of the ElasticSearch corpus "+
+                    indexName);
+            if (delete) {
+                try {
+                    esClearIndex();
+                } catch (CompiledCorpusException e) {
+                    throw new CompiledCorpusException(e);
+                }
+            }
+        }
+    }
+
+    protected static String corpusName4File(File savePath) {
+        String corpusName = null;
+        Matcher matcher = pattSavePath.matcher(savePath.toString());
+        if (matcher.matches()) {
+            corpusName = matcher.group(1);
+        }
+        return corpusName;
     }
 }
 

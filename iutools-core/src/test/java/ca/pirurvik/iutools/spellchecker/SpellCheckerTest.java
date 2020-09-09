@@ -5,6 +5,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Set;
 
+import ca.inuktitutcomputing.config.IUConfig;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.testing.AssertHelpers;
@@ -18,17 +19,17 @@ import ca.pirurvik.iutools.spellchecker.SpellingCorrection;
 import org.junit.*;
 
 public class SpellCheckerTest {
-		
-	private SpellChecker checkerSyll = null;
+
+	protected SpellChecker checkerSyll = null;
 	
 	// Note: These are not "real" correct words in Inuktut.
 	//  Just pretending that they are.
-	private static final String[] correctWordsLatin = new String[] {
+	protected static final String[] correctWordsLatin = new String[] {
 		"inuktut", "inukttut", "inuk", "inukutt", "inukshuk", 
 		"nunavut", "inuktitut"
 	};
 
-	private SpellChecker makeCheckerLargeDict() throws StringSegmenterException, SpellCheckerException {
+	protected SpellChecker makeCheckerLargeDict() throws Exception {
 		SpellChecker checker = new SpellChecker();
 		checker.setVerbose(false);
 		for (String aWord: correctWordsLatin) {
@@ -36,8 +37,8 @@ public class SpellCheckerTest {
 		}
 		return checker;
 	}
-	
-	private SpellChecker makeCheckerSmallCustomDict() throws StringSegmenterException, SpellCheckerException {
+
+	protected SpellChecker makeCheckerSmallCustomDict() throws Exception {
 		SpellChecker checker = new SpellChecker(CompiledCorpusRegistry.emptyCorpusName);
 		checker.setVerbose(false);
 		for (String aWord: correctWordsLatin) {
@@ -45,8 +46,8 @@ public class SpellCheckerTest {
 		}
 		return checker;
 	}
-	
-	private SpellChecker makeCheckerEmptyDict() throws StringSegmenterException, SpellCheckerException {
+
+	protected SpellChecker makeCheckerEmptyDict() throws Exception {
 		SpellChecker checker = new SpellChecker(CompiledCorpusRegistry.emptyCorpusName);
 		checker.setVerbose(false);
 		return checker;
@@ -584,7 +585,7 @@ public class SpellCheckerTest {
 	
 	@Test
 	public void test__addWord__HappyPath() throws Exception {
-		SpellChecker checker = new SpellChecker();
+		SpellChecker checker = makeCheckerLargeDict();
 		String word = "tamainni";
 		assertWordUnknown(word, checker);
 		

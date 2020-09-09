@@ -1,5 +1,6 @@
 package ca.inuktitutcomputing.core.console;
 
+import ca.nrc.json.PrettyPrinter;
 import ca.nrc.ui.commandline.ProgressMonitor_Terminal;
 import ca.nrc.ui.commandline.UserIO;
 import ca.pirurvik.iutools.corpus.*;
@@ -53,9 +54,9 @@ public class CmdDumpCorpus extends ConsoleCommand {
     }
 
     private void printHeaders(FileWriter fWriter) throws IOException {
-        fWriter.write("" +
-            "class=ca.pirurvik.iutools.corpus.WordInfo_ES\n" +
-            "bodyEndMarker=NEW_LINE\n\n");
+        fWriter.write(
+            "bodyEndMarker=\"bodyEndMarker=BLANK_LINE\n"+
+            "class=ca.pirurvik.iutools.corpus.WordInfo_ES\n\n");
     }
 
     private void printWord(String word, CompiledCorpus corpus, 
@@ -75,12 +76,9 @@ public class CmdDumpCorpus extends ConsoleCommand {
                 wInfo.setDecompositions(new String[0][], 0);
             }
 			ObjectMapper mapper = new ObjectMapper();
-			try {
-				infoStr = mapper.writeValueAsString(wInfo);
-			} catch (JsonProcessingException e) {
-				throw new CLIException(e);
-			}
-		}
+            infoStr = mapper.writeValueAsString(wInfo);
+//            infoStr = PrettyPrinter.print(wInfo);
+        }
 		fWriter.write(infoStr+"\n");
 	}
 
