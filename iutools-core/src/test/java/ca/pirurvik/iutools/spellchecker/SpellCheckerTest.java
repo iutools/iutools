@@ -8,6 +8,7 @@ import java.util.Set;
 import ca.inuktitutcomputing.config.IUConfig;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.datastructure.trie.StringSegmenterException;
+import ca.nrc.testing.AssertCollection;
 import ca.nrc.testing.AssertHelpers;
 import ca.nrc.testing.AssertNumber;
 import ca.nrc.testing.AssertObject;
@@ -35,6 +36,7 @@ public class SpellCheckerTest {
 		for (String aWord: correctWordsLatin) {
 			checker.addCorrectWord(aWord);
 		}
+
 		return checker;
 	}
 
@@ -65,7 +67,7 @@ public class SpellCheckerTest {
 		//   spelled if and only if they decompose)
 		//
 		
-		SpellChecker checker = new SpellChecker();
+		SpellChecker checker = makeCheckerLargeDict();
 		checker.setVerbose(false);
 		
 		// 
@@ -158,13 +160,16 @@ public class SpellCheckerTest {
 //		checker.allWordsForCandidates = checker.allWords;
 		Set<String> wordsWithSeq = checker.wordsContainingSequ(seq, checker.allWords);
 		String[] expected = new String[] {"inukshuk","inuk","inuktut"};
+		AssertCollection.assertContainsAll(
+				"The list of words containing sequence "+seq+" was not as expected",
+				expected, wordsWithSeq);
 			AssertHelpers.assertContainsAll("The list of words containing sequence "+seq+" was not as expected", 
 					wordsWithSeq, expected);
 	}
 	
 	@Test
 	public void test__wordsContainingSequ__Case_considering_extremities() throws Exception {
-		SpellChecker checker = new SpellChecker();
+		SpellChecker checker = makeCheckerLargeDict();
 		checker.setVerbose(false);
 		checker.addCorrectWord("inuktitut");
 		checker.addCorrectWord("inuksuk");
@@ -295,7 +300,7 @@ public class SpellCheckerTest {
 	
 	@Test
 	public void test__correctWord__number__ShouldBeDeemedCorrectlySpelled() throws Exception {
-		SpellChecker checker = new SpellChecker();
+		SpellChecker checker = makeCheckerLargeDict();
 		checker.setVerbose(false);
 		String word = "2019";
 		SpellingCorrection gotCorrection = checker.correctWord(word, 5);

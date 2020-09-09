@@ -69,7 +69,7 @@ public class SpellChecker {
 	 */
 	private final long MAX_DECOMP_MSECS = 5*1000;
 	
-	private CompiledCorpus explicitlyCorrectWords = 
+	protected CompiledCorpus explicitlyCorrectWords =
 		new CompiledCorpus_InMemory()
 		.setSegmenterClassName(StringSegmenter_AlwaysNull.class);
 	
@@ -274,34 +274,16 @@ public class SpellChecker {
 	private void __updateSequenceIDFForWord(String word, boolean wordIsNumericTerm) {
 		Set<String> seqSeenInWord = new HashSet<String>();
 		try {
-		for (int seqLen = 1; seqLen <= MAX_SEQ_LEN; seqLen++) {
-			for (int  start=0; start <= word.length() - seqLen; start++) {
-				String charSeq = word.substring(start, start+seqLen);
-//				if (!seqSeenInWord.contains(charSeq)) {
-//					__updateSequenceIDF(charSeq, wordIsNumericTerm);
-//				}
-				seqSeenInWord.add(charSeq);
+			for (int seqLen = 1; seqLen <= MAX_SEQ_LEN; seqLen++) {
+				for (int  start=0; start <= word.length() - seqLen; start++) {
+					String charSeq = word.substring(start, start+seqLen);
+					seqSeenInWord.add(charSeq);
+				}
 			}
-		}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-
-//	private void __updateSequenceIDF(String charSeq, boolean wordIsNumericTerm) {
-//		if (wordIsNumericTerm) {
-//			
-//			if (!ngramStatsOfNumericTerms.containsKey(charSeq)) {
-//				ngramStatsOfNumericTerms.put(charSeq, new Long(0));
-//			}
-//			ngramStatsOfNumericTerms.put(charSeq, ngramStatsOfNumericTerms.get(charSeq) + 1);
-//		} else {
-//			if (!ngramStats.containsKey(charSeq)) {
-//				ngramStats.put(charSeq, new Long(0));
-//			}
-//			ngramStats.put(charSeq, ngramStats.get(charSeq) + 1);
-//		}
-//	}
 
 	public void saveToFile(File checkerFile) throws IOException {
 		FileWriter saveFile = new FileWriter(checkerFile);
@@ -320,13 +302,8 @@ public class SpellChecker {
 		this.MAX_SEQ_LEN = checker.getMaxSeqLen();
 		this.MAX_CANDIDATES = checker.getMaxCandidates();
 		this.allWords = checker.getAllWords();
-//		this.ngramStats = checker.getIdfStats();
 		return this;
 	}
-
-//	private Map<String, Long> getIdfStats() {
-//		return this.ngramStats;
-//	}
 
 	private String getAllWords() {
 		return this.allWords;
@@ -919,12 +896,12 @@ public class SpellChecker {
 
 	private Set<String> candidatesWithBestNGramsMatch(
 			Pair<String, Double>[] idf, 
-			String amongWords) {
+			String amongWords) throws SpellCheckerException {
 		Set<String> candidates = new HashSet<String>();		
 		for (int i=0; i<idf.length; i++) {
 			
 			Set<String> candidatesWithNgram = 
-					wordsContainingSequ(idf[i].getFirst(), amongWords);
+				wordsContainingSequ(idf[i].getFirst(), amongWords);
 			
 			SpellDebug.containsCorrection("SpellChecker.firstPassCandidates_TFIDF", 
 					"Words that contain ngram="+idf[i].getFirst(), 
@@ -1065,34 +1042,45 @@ public class SpellChecker {
 	}
 
 	protected Set<String> wordsContainingSequ(String seq, 
-			String amongWords) {
+			String amongWords) throws SpellCheckerException {
 		Logger logger = Logger.getLogger("SpellChecker.wordsContainingSequ");
-		
-		Set<String> wordsWithSeq = uncacheWordsWithNgram(seq);
-		if (wordsWithSeq == null) {
-			Pattern p;
-			if (seq.charAt(0)=='^' && seq.charAt(seq.length()-1)=='$') {
-				seq = seq.substring(1,seq.length()-1);
-				p = Pattern.compile(",("+seq+"),");
+
+		Set<String> wordsWithSeq = null;
+
+		// TODO-Sept2020: Get rid of this 'if' once we don't use
+		//  CompiledCorpus_InMemory anymore
+		//
+		if (!(corpus instanceof CompiledCorpus_InMemory)) {
+			try {
+				wordsWithSeq = corpus.wordsContainingNgram(seq);
+				wordsWithSeq.addAll(explicitlyCorrectWords.wordsContainingNgram(seq));
+			} catch (CompiledCorpusException e) {
+				throw new SpellCheckerException(e);
 			}
-			else if (seq.charAt(0)=='^') {
-				seq = seq.substring(1);
-				p = Pattern.compile(",("+seq+"[^,]*),");
+		} else {
+			wordsWithSeq = uncacheWordsWithNgram(seq);
+			if (wordsWithSeq == null) {
+				Pattern p;
+				if (seq.charAt(0) == '^' && seq.charAt(seq.length() - 1) == '$') {
+					seq = seq.substring(1, seq.length() - 1);
+					p = Pattern.compile(",(" + seq + "),");
+				} else if (seq.charAt(0) == '^') {
+					seq = seq.substring(1);
+					p = Pattern.compile(",(" + seq + "[^,]*),");
+				} else if (seq.charAt(seq.length() - 1) == '$') {
+					logger.debug("seq= " + seq);
+					seq = seq.substring(0, seq.length() - 1);
+					logger.debug(">>> seq= " + seq);
+					p = Pattern.compile(",([^,]*" + seq + "),");
+				} else
+					p = Pattern.compile(",([^,]*" + seq + "[^,]*),");
+
+				Matcher m = p.matcher(amongWords); //p.matcher(allWords)
+				wordsWithSeq = new HashSet<String>();
+				while (m.find())
+					wordsWithSeq.add(m.group(1));
+				cacheWordsWithNgram(seq, wordsWithSeq);
 			}
-			else if (seq.charAt(seq.length()-1)=='$') {
-				logger.debug("seq= "+seq);
-				seq = seq.substring(0,seq.length()-1);
-				logger.debug(">>> seq= "+seq);
-				p = Pattern.compile(",([^,]*"+seq+"),");
-			}
-			else
-				p = Pattern.compile(",([^,]*"+seq+"[^,]*),");
-						
-			Matcher m = p.matcher(amongWords); //p.matcher(allWords)
-			wordsWithSeq = new HashSet<String>();
-			while (m.find())
-				wordsWithSeq.add(m.group(1));
-			cacheWordsWithNgram(seq, wordsWithSeq);
 		}
 		return wordsWithSeq;
 	}

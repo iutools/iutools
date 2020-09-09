@@ -4,6 +4,7 @@ import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.dtrc.elasticsearch.*;
 import ca.nrc.dtrc.elasticsearch.request.*;
 import ca.nrc.ui.commandline.UserIO;
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -105,6 +106,10 @@ public class CompiledCorpus_ES extends CompiledCorpus {
 
     @Override
     public List<WordWithMorpheme> wordsContainingMorpheme(String morpheme) throws CompiledCorpusException {
+        Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpus_ES.wordsContainingMorpheme");
+
+        tLogger.trace("Invoked with morpheme="+morpheme);
+
         List<WordWithMorpheme> words = new ArrayList<WordWithMorpheme>();
 
         String query = morphNgramQuery(morpheme);
@@ -130,6 +135,8 @@ public class CompiledCorpus_ES extends CompiledCorpus {
                     winfo.frequency);
             words.add(aWord);
         }
+
+        tLogger.trace("Returning");
 
         return words;
     }
@@ -384,17 +391,22 @@ public class CompiledCorpus_ES extends CompiledCorpus {
 
     @Override
     public long charNgramFrequency(String ngram) throws CompiledCorpusException {
+        Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpus_ES.charNgramFrequency");
+        tLogger.trace("invoked with ngram="+ngram);
         String query =
             "wordCharsSpaceConcatenated:\""+
             WordInfo_ES.insertSpaces(ngram)+
             "\"";
 
-        SearchResults<WordInfo_ES> results = esSearch(query);
-        Iterator<Hit<WordInfo_ES>> iter = results.iterator();
-        long freq = 0;
-        while (iter.hasNext()) {
-            freq += iter.next().getDocument().frequency;
-        }
+        Aggs aggs = new Aggs()
+            .aggregate("totalOccurences", "sum", "frequency");
+
+        SearchResults<WordInfo_ES> results = esSearch(query, aggs);
+
+        Double freqDbl = (Double) results.aggrResult("totalOccurences");
+
+        long freq = Math.round(freqDbl);
+        tLogger.trace("Returning freq="+freq);
 
         return freq;
     }
@@ -405,11 +417,17 @@ public class CompiledCorpus_ES extends CompiledCorpus {
     }
 
     private SearchResults<WordInfo_ES> esSearch(String query) throws CompiledCorpusException {
+        return esSearch(query, new RequestBodyElement[0]);
+    }
+
+    private SearchResults<WordInfo_ES> esSearch(
+        String query, RequestBodyElement... additionalReqBodies)
+        throws CompiledCorpusException {
         SearchResults<WordInfo_ES> results = null;
         try {
             results =
                 esClient().search(
-                    query, WORD_INFO_TYPE, new WordInfo_ES());
+                    query, WORD_INFO_TYPE, new WordInfo_ES(), additionalReqBodies);
         } catch (ElasticSearchException e) {
             throw new CompiledCorpusException(e);
         }
