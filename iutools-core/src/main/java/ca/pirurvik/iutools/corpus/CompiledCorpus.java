@@ -38,12 +38,12 @@ public abstract class CompiledCorpus {
 	public abstract void regenerateMorphNgramsIndex()
 		throws CompiledCorpusException;
 
-	public abstract Set<String> wordsContainingNgram(String ngram) 
+	public abstract Set<String> wordsContainingNgram(String ngram)
 			throws CompiledCorpusException;
 	
 	public abstract boolean containsWord(String word) throws CompiledCorpusException;
 		
-	protected abstract Set<String> wordsContainingMorphNgram(String[] morphemes) 
+	protected abstract Iterator<String> wordsContainingMorphNgram(String[] morphemes)
 			throws CompiledCorpusException;
 	
 	public abstract long totalOccurences() throws CompiledCorpusException;

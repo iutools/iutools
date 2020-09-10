@@ -263,7 +263,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
     }
 
     @Override
-    protected Set<String> wordsContainingMorphNgram(String[] morphemes) throws CompiledCorpusException {
+    protected Iterator<String> wordsContainingMorphNgram(String[] morphemes) throws CompiledCorpusException {
         Set<String> words = new HashSet<String>();
         String query = morphNgramQuery(morphemes);
         SearchResults<WordInfo_ES> hits = esSearch(query);
@@ -272,7 +272,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
             words.add(hitsIter.next().getDocument().word);
         }
 
-        return words;
+        return words.iterator();
     }
 
     @Override
@@ -498,7 +498,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
         sort.sortBy("word", Sort.Order.asc);
         try {
             allWinfos =
-                esClient().listAll(WORD_INFO_TYPE, winfoPrototype, sort);
+                esClient().listAll(WORD_INFO_TYPE, winfoPrototype);
         } catch (ElasticSearchException e) {
             throw new CompiledCorpusException(e);
         }

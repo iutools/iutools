@@ -175,7 +175,7 @@ public abstract class CompiledCorpusTest {
 			//
 			String[] morphemes = new String[] {
 				"^", "inuk/1n", "titut/tn-sim-p"};
-			Set<String> wordsWithMorphemes = 
+			Iterator<String> wordsWithMorphemes =
 				compiledCorpus.wordsContainingMorphNgram(morphemes);
 
 			// This will find all the words that END with titut/tn-sim-p
@@ -517,7 +517,7 @@ public abstract class CompiledCorpusTest {
 		
 		String[] morphNgram = new String[] {
 				"inuk/1n"};
-		Set<String> gotWords = 
+		Iterator<String> gotWords =
 			corpus.wordsContainingMorphNgram(morphNgram);
 		String[] expWords = new String[] {"inuglu", "inuit"};
 		AssertObject.assertDeepEquals(

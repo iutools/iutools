@@ -3,13 +3,14 @@ package ca.pirurvik.iutools.corpus;
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.dtrc.elasticsearch.StreamlinedClient;
 import ca.nrc.testing.AssertString;
+import org.apache.commons.collections.iterators.IteratorChain;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class CompiledCorpus_ESTest extends CompiledCorpusTest {
 
