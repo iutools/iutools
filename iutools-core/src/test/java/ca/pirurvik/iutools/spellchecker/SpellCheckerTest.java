@@ -5,17 +5,12 @@ import java.io.File;
 import java.util.List;
 import java.util.Set;
 
-import ca.inuktitutcomputing.config.IUConfig;
 import ca.nrc.datastructure.Pair;
-import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.testing.AssertCollection;
 import ca.nrc.testing.AssertHelpers;
 import ca.nrc.testing.AssertNumber;
 import ca.nrc.testing.AssertObject;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
-import ca.pirurvik.iutools.spellchecker.SpellChecker;
-import ca.pirurvik.iutools.spellchecker.SpellCheckerException;
-import ca.pirurvik.iutools.spellchecker.SpellingCorrection;
 
 import org.junit.*;
 
@@ -158,7 +153,7 @@ public class SpellCheckerTest {
 		SpellChecker checker = makeCheckerLargeDict();
 		
 //		checker.allWordsForCandidates = checker.allWords;
-		Set<String> wordsWithSeq = checker.wordsContainingSequ(seq, checker.allWords);
+		Set<String> wordsWithSeq = checker.wordsContainingNgram(seq, checker.allWords);
 		String[] expected = new String[] {"inukshuk","inuk","inuktut"};
 		AssertCollection.assertContainsAll(
 				"The list of words containing sequence "+seq+" was not as expected",
@@ -181,33 +176,51 @@ public class SpellCheckerTest {
 		
 		String seq;
 		String[] expected;
+		String[] unexpected;
 		Set<String> wordsWithSeq;
 		
-//		checker.allWordsForCandidates = checker.allWords;
+		seq = "inukt";
+		wordsWithSeq = checker.wordsContainingNgram(seq, checker.allWords);
+		expected = new String[] {"inuktitut","inuktaluk","inuktigut"};
+		AssertCollection.assertContainsAll(
+		"The list of words containing sequence "+seq+" was not as expected",
+			expected, wordsWithSeq);
 
-		seq = "inu";
-		wordsWithSeq = checker.wordsContainingSequ(seq, checker.allWords);
-		expected = new String[] {"inuktitut","inuksuk","inuttitut","takuinuit"};
-			AssertHelpers.assertContainsAll("The list of words containing sequence "+seq+" was not as expected", 
-					wordsWithSeq, expected);
-			
-		seq = "^inu";
-		wordsWithSeq = checker.wordsContainingSequ(seq, checker.allWords);
-		expected = new String[] {"inuktitut","inuksuk","inuttitut"};
-		AssertHelpers.assertContainsAll("The list of words containing sequence "+seq+" was not as expected", 
-					wordsWithSeq, expected);
-		
-	seq = "itut$";
-	wordsWithSeq = checker.wordsContainingSequ(seq, checker.allWords);
-	expected = new String[] {"inuktitut","inuttitut"};
-	AssertHelpers.assertContainsAll("The list of words containing sequence "+seq+" was not as expected", 
-				wordsWithSeq, expected);
-	
-	seq = "^taku$";
-	wordsWithSeq = checker.wordsContainingSequ(seq, checker.allWords);
-	expected = new String[] {"taku"};
-	AssertHelpers.assertContainsAll("The list of words containing sequence "+seq+" was not as expected", 
-				wordsWithSeq, expected);
+		seq = "^inukt";
+		wordsWithSeq = checker.wordsContainingNgram(seq, checker.allWords);
+		expected = new String[] {"inuktitut","inuktaluk","inuktigut"};
+		AssertCollection.assertContainsAll(
+			"The list of words containing sequence "+seq+" was not as expected",
+			expected, wordsWithSeq);
+		// This word contains inukt, but not at the start of the word
+		unexpected = new String[] {"qaujijumatuinnaqtungainuktituunganingit"};
+		AssertCollection.assertContainsNoneOf(
+				"The list of words containing sequence "+seq+" was not as expected",
+				unexpected, wordsWithSeq);
+
+		seq = "itut$";
+		wordsWithSeq = checker.wordsContainingNgram(seq, checker.allWords);
+		expected = new String[] {"inuktitut","inuttitut"};
+		AssertCollection.assertContainsAll(
+			"The list of words containing sequence "+seq+" was not as expected",
+			expected, wordsWithSeq);
+		// This word contains itut, but not at the end
+		unexpected = new String[] {"jiiqatigiituta"};
+		AssertCollection.assertContainsNoneOf(
+				"The list of words containing sequence "+seq+" was not as expected",
+				unexpected, wordsWithSeq);
+
+		seq = "^taku$";
+		wordsWithSeq = checker.wordsContainingNgram(seq, checker.allWords);
+		expected = new String[] {"taku"};
+		AssertCollection.assertContainsAll(
+			"The list of words containing sequence "+seq+" was not as expected",
+			expected, wordsWithSeq);
+		// This word contains taku, but it is not bounded by start and end of word
+		unexpected = new String[] {"aktakuniglu"};
+		AssertCollection.assertContainsNoneOf(
+			"The list of words containing sequence "+seq+" was not as expected",
+			unexpected, wordsWithSeq);
 	}
 	
 	

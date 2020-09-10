@@ -415,7 +415,7 @@ public class SpellChecker {
 			//   morpheme in W.
 			//
 			String lead = badWordRoman.substring(0, endPos-1);
-			Set<String> words = wordsContainingSequ("^"+lead, amongWords);
+			Set<String> words = wordsContainingNgram("^"+lead, amongWords);
 //			System.out.println("** SpellChecker.computeCorrectLead: lead="+
 //					lead+", words.size()="+words.size());
 			boolean wordWasFoundForLead = false;
@@ -514,9 +514,7 @@ public class SpellChecker {
 			//   morpheme in W.
 			//
 			String tail = badWordRoman.substring(startPos);
-			Set<String> words = wordsContainingSequ(tail+"$", amongWords);
-//			System.out.println("** SpellChecker.computeCorrectTail: tail="+
-//					tail+", words.size()="+words.size());
+			Set<String> words = wordsContainingNgram(tail+"$", amongWords);
 			boolean wordWasFoundForTail = false;
 			int wordCount = 0;
 			for (String aWord: words) {
@@ -901,7 +899,7 @@ public class SpellChecker {
 		for (int i=0; i<idf.length; i++) {
 			
 			Set<String> candidatesWithNgram = 
-				wordsContainingSequ(idf[i].getFirst(), amongWords);
+				wordsContainingNgram(idf[i].getFirst(), amongWords);
 			
 			SpellDebug.containsCorrection("SpellChecker.firstPassCandidates_TFIDF", 
 					"Words that contain ngram="+idf[i].getFirst(), 
@@ -1041,8 +1039,8 @@ public class SpellChecker {
 	    }
 	}
 
-	protected Set<String> wordsContainingSequ(String seq, 
-			String amongWords) throws SpellCheckerException {
+	protected Set<String> wordsContainingNgram(String seq,
+											   String amongWords) throws SpellCheckerException {
 		Logger logger = Logger.getLogger("SpellChecker.wordsContainingSequ");
 
 		Set<String> wordsWithSeq = null;
