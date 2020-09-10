@@ -4,6 +4,7 @@ import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.dtrc.elasticsearch.*;
 import ca.nrc.dtrc.elasticsearch.request.*;
 import ca.nrc.ui.commandline.UserIO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -27,6 +28,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
     public final WordInfo_ES winfoPrototype = new WordInfo_ES("");
 
     static Pattern pattSavePath = Pattern.compile(".*?(^|[^/\\\\.]*)\\.ES\\.json$");
+    private boolean esClientVerbose = true;
 
     public CompiledCorpus_ES(String _indexName) throws CompiledCorpusException {
         indexName = _indexName;
@@ -35,6 +37,13 @@ public class CompiledCorpus_ES extends CompiledCorpus {
     public CompiledCorpus_ES setIndexName(String _name) {
         this.indexName = _name;
         _esClient = null;
+        return this;
+    }
+
+    public CompiledCorpus_ES setESClientVerbose(boolean verbose) {
+        if (verbose) {
+            esClientVerbose = verbose;
+        }
         return this;
     }
 
@@ -47,7 +56,11 @@ public class CompiledCorpus_ES extends CompiledCorpus {
             } catch (ElasticSearchException e) {
                 throw new CompiledCorpusException(e);
             }
-
+        }
+        if (!esClientVerbose) {
+            _esClient.setUserIO(null);
+        } else  {
+            _esClient.setUserIO(new UserIO(UserIO.Verbosity.Level1));
         }
         return _esClient;
     }
@@ -65,10 +78,16 @@ public class CompiledCorpus_ES extends CompiledCorpus {
             overwrite = false;
         }
 
-        setIndexName(corpusName4File(jsonFile));
+        String indexName = corpusName4File(jsonFile);
+        setIndexName(indexName);
+        setESClientVerbose(verbose);
+
 
         if (esClient().indexExists()) {
             if (overwrite) {
+                if (verbose) {
+                    System.out.println("Clearing index "+indexName);
+                }
                 esClearIndex();
             }
         }
@@ -201,9 +220,10 @@ public class CompiledCorpus_ES extends CompiledCorpus {
         Set<String> matchingWords = new HashSet<String>();
 
         String[] ngramArr = ngram.split("");
+        ngramArr = replaceCaretAndDollar(ngramArr);
         String query =
             "wordCharsSpaceConcatenated:\"" +
-            WordInfo_ES.insertSpaces(ngram) +
+            WordInfo_ES.insertSpaces(ngramArr) +
             "\"";
         SearchResults<WordInfo_ES> results = esSearch(query);
         Iterator<Hit<WordInfo_ES>> iter = results.iterator();
@@ -213,6 +233,18 @@ public class CompiledCorpus_ES extends CompiledCorpus {
         }
 
         return matchingWords;
+    }
+
+    private String[] replaceCaretAndDollar(String[] ngramArr) {
+        String[] ngramArrRepl = Arrays.copyOfRange(ngramArr, 0, ngramArr.length);
+        if (ngramArrRepl[0].equals("^")) {
+            ngramArrRepl[0] = "BEGIN";
+        }
+        int last = ngramArrRepl.length-1;
+        if (ngramArrRepl[last].equals("$")) {
+            ngramArrRepl[last] = "END";
+        }
+        return ngramArrRepl;
     }
 
     @Override
@@ -462,8 +494,11 @@ public class CompiledCorpus_ES extends CompiledCorpus {
 
     private SearchResults<WordInfo_ES> esListall() throws CompiledCorpusException {
         SearchResults<WordInfo_ES> allWinfos = null;
+        Sort sort = new Sort();
+        sort.sortBy("word", Sort.Order.asc);
         try {
-            allWinfos = esClient().listAll(WORD_INFO_TYPE, winfoPrototype);
+            allWinfos =
+                esClient().listAll(WORD_INFO_TYPE, winfoPrototype, sort);
         } catch (ElasticSearchException e) {
             throw new CompiledCorpusException(e);
         }

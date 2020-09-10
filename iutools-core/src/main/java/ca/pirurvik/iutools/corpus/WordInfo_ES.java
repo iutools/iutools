@@ -84,7 +84,7 @@ public class WordInfo_ES extends WordInfo {
         if (wordCharsSpaceConcatenated == null && word != null) {
             String[] wordChars = word.split("");
             this.wordCharsSpaceConcatenated =
-                    "^ " + String.join(" ", wordChars) + " $";
+                    "BEGIN " + String.join(" ", wordChars) + " END";
         }
         return wordCharsSpaceConcatenated;
     }
@@ -93,8 +93,13 @@ public class WordInfo_ES extends WordInfo {
         if (morphemesSpaceConcatenated == null) {
             String[] topDecomp = topDecomposition();
             if (topDecomp != null) {
+                int last = topDecomp.length-1;
+                if (topDecomp[last].equals("\\\\")) {
+                    // In old corpora, \\ is used to denote the end of the decomp
+                    topDecomp[last] = "";
+                }
                 morphemesSpaceConcatenated =
-                    "^ " + String.join(" ", topDecomp) + " $";
+                    "BEGIN " + String.join(" ", topDecomp) + " END";
             }
         }
         return morphemesSpaceConcatenated;
