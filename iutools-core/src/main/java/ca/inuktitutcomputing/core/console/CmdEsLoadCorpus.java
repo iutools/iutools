@@ -25,7 +25,7 @@ public class CmdEsLoadCorpus extends ConsoleCommand {
         System.out.println("Loading file "+jsonFile+
             " into ElasticSearch corpus "+corpusName);
         System.out.println((verbose?"":"non-")+"verbose ");
-        corpus.loadFromFile(jsonFile, verbose);
+        corpus.loadFromFile(jsonFile, verbose, true);
     }
 
     @Override

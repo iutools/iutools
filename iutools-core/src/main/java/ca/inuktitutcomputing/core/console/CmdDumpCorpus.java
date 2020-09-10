@@ -55,7 +55,7 @@ public class CmdDumpCorpus extends ConsoleCommand {
 
     private void printHeaders(FileWriter fWriter) throws IOException {
         fWriter.write(
-            "bodyEndMarker=\"bodyEndMarker=BLANK_LINE\n"+
+            "bodyEndMarker=BLANK_LINE\n"+
             "class=ca.pirurvik.iutools.corpus.WordInfo_ES\n\n");
     }
 
@@ -75,9 +75,9 @@ public class CmdDumpCorpus extends ConsoleCommand {
                 wInfo = new WordInfo_ES(word);
                 wInfo.setDecompositions(new String[0][], 0);
             }
-			ObjectMapper mapper = new ObjectMapper();
-            infoStr = mapper.writeValueAsString(wInfo);
-//            infoStr = PrettyPrinter.print(wInfo);
+//			ObjectMapper mapper = new ObjectMapper();
+//            infoStr = mapper.writeValueAsString(wInfo);
+            infoStr = PrettyPrinter.print(wInfo)+"\n";
         }
 		fWriter.write(infoStr+"\n");
 	}
