@@ -560,7 +560,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 		ngram2wordKeysMap.get(ngram).add(wordKey);
 	}
 	
-	public Set<String> wordsContainingNgram(String ngram) 
+	public Iterator<String> wordsContainingNgram(String ngram)
 			throws CompiledCorpusException {
 		Set<String>  words = null;
 		if (ngram2wordKeysMap.containsKey(ngram)) {
@@ -574,7 +574,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 		if (words == null) {
 			words = new HashSet<String>();
 		}
-		return words;		
+		return words.iterator();
 	}
 		
 	public WordInfo info4word(String word) throws CompiledCorpusException {

@@ -14,6 +14,7 @@ import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.Set;
 
+import ca.nrc.testing.AssertIterator;
 import ca.nrc.testing.AssertSet;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Triple;
@@ -150,9 +151,9 @@ public abstract class CompiledCorpusTest {
 		// that were seen in the corpus.
 		//
 		{
-			// This returns all the words that START with "nuna"
+			// This iterator contains all the words that START with "nuna"
 			//
-			Set<String> wordsWithNgram = 
+			Iterator<String> wordsWithNgram =
 					compiledCorpus.wordsContainingNgram("^nuna");
 			
 			// Words that END with "vut"
@@ -442,35 +443,35 @@ public abstract class CompiledCorpusTest {
 		
 		String seq;
 		String[] expected;
-		Set<String> wordsWithSeq;
+		Iterator<String> wordsWithSeq;
 
 		// ngram in the middle of a word
 		seq = "inu";
 		wordsWithSeq = corpus.wordsContainingNgram(seq);
 		expected = new String[] {
 			"inuktitut", "inuksuk", "inuttitut", "takuinuit", "intakuinuit"};
-		AssertSet.assertEquals(
-				"The list of words containing sequence "+seq+" was not as expected", 
+		AssertIterator.assertElementsEquals(
+				"The list of words containing sequence "+seq+" was not as expected",
 				expected, wordsWithSeq);
 			
 		// ngram at beginning of word
 		seq = "^inu";
 		wordsWithSeq = corpus.wordsContainingNgram(seq);
 		expected = new String[] {"inuktitut","inuksuk","inuttitut"};
-		AssertHelpers.assertContainsAll("The list of words containing sequence "+seq+" was not as expected", 
-					wordsWithSeq, expected);
+		AssertIterator.assertContainsAll("The list of words containing sequence "+seq+" was not as expected",
+			expected, wordsWithSeq);
 		
 		seq = "itut$";
 		wordsWithSeq = corpus.wordsContainingNgram(seq);
 		expected = new String[] {"inuktitut","inuttitut"};
-		AssertHelpers.assertContainsAll("The list of words containing sequence "+seq+" was not as expected", 
-					wordsWithSeq, expected);
+		AssertIterator.assertContainsAll("The list of words containing sequence "+seq+" was not as expected",
+			expected, wordsWithSeq);
 		
 		seq = "^taku$";
 		wordsWithSeq = corpus.wordsContainingNgram(seq);
 		expected = new String[] {"taku"};
-		AssertHelpers.assertContainsAll("The list of words containing sequence "+seq+" was not as expected", 
-					wordsWithSeq, expected);
+		AssertIterator.assertContainsAll("The list of words containing sequence "+seq+" was not as expected",
+			expected, wordsWithSeq);
 	}	
 	
 	@Test

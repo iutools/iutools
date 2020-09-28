@@ -38,7 +38,7 @@ public abstract class CompiledCorpus {
 	public abstract void regenerateMorphNgramsIndex()
 		throws CompiledCorpusException;
 
-	public abstract Set<String> wordsContainingNgram(String ngram)
+	public abstract Iterator<String> wordsContainingNgram(String ngram)
 			throws CompiledCorpusException;
 	
 	public abstract boolean containsWord(String word) throws CompiledCorpusException;
@@ -212,8 +212,8 @@ public abstract class CompiledCorpus {
 	}
 	
 	public boolean containsCharNgram(String ngram) throws CompiledCorpusException {
-		long numWords = wordsContainingNgram(ngram).size();
-		return numWords > 0;
+		boolean answer = wordsContainingNgram(ngram).hasNext();
+		return answer;
 	}
 	
 	@JsonIgnore

@@ -124,7 +124,7 @@ public abstract class CompiledCorpus_v2 extends CompiledCorpus {
     }
 
     @Override
-    public Set<String> wordsContainingNgram(String ngram)
+    public Iterator<String> wordsContainingNgram(String ngram)
             throws CompiledCorpusException {
         List<String> words = new ArrayList<String>();
         try {
@@ -140,7 +140,7 @@ public abstract class CompiledCorpus_v2 extends CompiledCorpus {
         wordsSet.addAll(words);
 
 
-        return wordsSet;
+        return wordsSet.iterator();
     }
 
     @Override

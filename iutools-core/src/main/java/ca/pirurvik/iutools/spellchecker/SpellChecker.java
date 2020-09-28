@@ -595,9 +595,6 @@ public class SpellChecker {
 	/**
 	 * Transcode a list of scored candidate spellings to 
 	 * syllabic.
-	 * 
-	 * @param sortedScoredCandidates
-	 * @return 
 	 */
 	private void transcodeCandidatesToSyllabic(SpellingCorrection corr) {
 		for (int ic=0; ic < corr.scoredCandidates.size(); ic++) {
@@ -921,9 +918,12 @@ public class SpellChecker {
 			CompiledCorpus inCorpus) throws SpellCheckerException {
 		Set<String> candidates = new HashSet<String>();		
 		for (int i=0; i<ngramsWithIDF.length; i++) {
-			Set<String> candidatesWithNgram;
+			Set<String> candidatesWithNgram = new HashSet<String>();
 			try {
-				candidatesWithNgram = inCorpus.wordsContainingNgram(ngramsWithIDF[i].getFirst());
+				Iterator<String> iterCandidates = inCorpus.wordsContainingNgram(ngramsWithIDF[i].getFirst());
+				while (iterCandidates.hasNext()) {
+					candidatesWithNgram.add(iterCandidates.next());
+				}
 			} catch (CompiledCorpusException e) {
 				throw new SpellCheckerException(e);
 			}
@@ -1043,15 +1043,18 @@ public class SpellChecker {
 											   String amongWords) throws SpellCheckerException {
 		Logger logger = Logger.getLogger("SpellChecker.wordsContainingSequ");
 
-		Set<String> wordsWithSeq = null;
+		Set<String> wordsWithSeq = new HashSet<String>();
 
 		// TODO-Sept2020: Get rid of this 'if' once we don't use
 		//  CompiledCorpus_InMemory anymore
 		//
 		if (!(corpus instanceof CompiledCorpus_InMemory)) {
 			try {
-				wordsWithSeq = corpus.wordsContainingNgram(seq);
-				wordsWithSeq.addAll(explicitlyCorrectWords.wordsContainingNgram(seq));
+				corpus.wordsContainingNgram(seq)
+					.forEachRemaining(wordsWithSeq::add);
+
+				explicitlyCorrectWords.wordsContainingNgram(seq)
+					.forEachRemaining(wordsWithSeq::add);
 			} catch (CompiledCorpusException e) {
 				throw new SpellCheckerException(e);
 			}

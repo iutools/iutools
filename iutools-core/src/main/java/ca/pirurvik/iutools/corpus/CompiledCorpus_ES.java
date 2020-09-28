@@ -216,7 +216,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
     }
 
     @Override
-    public Set<String> wordsContainingNgram(String ngram) throws CompiledCorpusException {
+    public Iterator<String> wordsContainingNgram(String ngram) throws CompiledCorpusException {
         Set<String> matchingWords = new HashSet<String>();
 
         String[] ngramArr = ngram.split("");
@@ -232,7 +232,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
             matchingWords.add(hit.document.word);
         }
 
-        return matchingWords;
+        return matchingWords.iterator();
     }
 
     private String[] replaceCaretAndDollar(String[] ngramArr) {
