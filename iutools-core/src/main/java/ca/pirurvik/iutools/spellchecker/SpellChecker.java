@@ -20,6 +20,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ca.pirurvik.iutools.corpus.*;
+import org.apache.commons.collections4.iterators.IteratorChain;
 import org.apache.log4j.Logger;
 
 import com.github.benmanes.caffeine.cache.Cache;
@@ -356,13 +357,23 @@ public class SpellChecker {
 			
 			SpellDebug.containsCorrection(
 					"SpellChecker.correctWord", 
-					"List of string candidates", 
-					word, "angajuqqaaqaqtutik", candidates);
+					"First pass candidates",
+					word, "nunavut", candidates);
 			
 			List<ScoredSpelling> scoredSpellings = computeCandidateSimilarities(wordInLatin, candidates);
 
+			SpellDebug.containsCorrection(
+					"SpellChecker.correctWord",
+					"UNSORTED scored spellings",
+					word, scoredSpellings);
+
 			scoredSpellings = sortCandidatesBySimilarity(scoredSpellings);
-			
+
+			SpellDebug.containsCorrection(
+				"SpellChecker.correctWord",
+				"SORTED scored spellings",
+				word, scoredSpellings);
+
 			if (wordIsNumericTerm) {
 				for (int ic=0; ic<scoredSpellings.size(); ic++) {
 					ScoredSpelling scoredCandidate = scoredSpellings.get(ic);
@@ -373,9 +384,15 @@ public class SpellChecker {
 			
 	 		if (maxCorrections != -1) {
 	 			scoredSpellings = 
-	 					scoredSpellings
-	 					.subList(0, maxCorrections>scoredSpellings.size()? scoredSpellings.size() : maxCorrections); 			
+					scoredSpellings
+					.subList(0, maxCorrections>scoredSpellings.size()? scoredSpellings.size() : maxCorrections);
 	 		}
+
+			SpellDebug.containsCorrection(
+				"SpellChecker.correctWord",
+				"TOP PORTION of SORTED scored spellings",
+				word, scoredSpellings);
+
 			
 	 		corr.setPossibleSpellings(scoredSpellings);
 		}
@@ -415,13 +432,12 @@ public class SpellChecker {
 			//   morpheme in W.
 			//
 			String lead = badWordRoman.substring(0, endPos-1);
-			Set<String> words = wordsContainingNgram("^"+lead, amongWords);
-//			System.out.println("** SpellChecker.computeCorrectLead: lead="+
-//					lead+", words.size()="+words.size());
+			Iterator<String> iterWords = wordsContainingNgram("^"+lead, amongWords);
 			boolean wordWasFoundForLead = false;
 			
 			int wordCount = 0;
-			for (String aWord: words) {
+			while (iterWords.hasNext()) {
+				String aWord = iterWords.next();
 				wordCount++;
 				if (wordCount > 5) {
 					break;
@@ -514,10 +530,11 @@ public class SpellChecker {
 			//   morpheme in W.
 			//
 			String tail = badWordRoman.substring(startPos);
-			Set<String> words = wordsContainingNgram(tail+"$", amongWords);
+			Iterator<String> iterWords = wordsContainingNgram(tail+"$", amongWords);
 			boolean wordWasFoundForTail = false;
 			int wordCount = 0;
-			for (String aWord: words) {
+			while (iterWords.hasNext()) {
+				String aWord = iterWords.next();
 				wordCount++;
 				if (wordCount > 5) {
 					break;
@@ -788,6 +805,8 @@ public class SpellChecker {
 	public Set<String> firstPassCandidates_TFIDF(String badWord, 
 			boolean wordIsNumericTerm) throws SpellCheckerException {
 
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.spellchecker.SpellChecker.firstPassCandidates_TFIDF");
+
 		// 1. compile ngrams of badWord
 		// 2. compile IDF of each ngram
 		// 3. add words for top IDFs to the set of candidates until the number 
@@ -822,7 +841,11 @@ public class SpellChecker {
 		// Step 3: Find words that most closely match the ngrams of the bad 
 		// (up to a maximum of MAX_CANDIDATES
 		//
-		
+
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("Finding correct words that best match ngramsIDF="+PrettyPrinter.print(ngramsIDF));
+		}
+
 		// TODO-June2020: Use this approach instead, in order to 
 		//   determine the initial candidates...
 		//
@@ -853,7 +876,7 @@ public class SpellChecker {
 		}
 		
 		SpellDebug.containsCorrection("SpellChecker.firstPassCandidates_TFIDF", 
-				"Returned list allCandidates", "maliklugu", "maligluglu", 
+				"Returned list allCandidates", badWord,
 				allCandidates);
 		
 		return allCandidates;
@@ -892,17 +915,18 @@ public class SpellChecker {
 	private Set<String> candidatesWithBestNGramsMatch(
 			Pair<String, Double>[] idf, 
 			String amongWords) throws SpellCheckerException {
-		Set<String> candidates = new HashSet<String>();		
+
+		Set<String> candidates = new HashSet<String>();
 		for (int i=0; i<idf.length; i++) {
-			
-			Set<String> candidatesWithNgram = 
-				wordsContainingNgram(idf[i].getFirst(), amongWords);
-			
-			SpellDebug.containsCorrection("SpellChecker.firstPassCandidates_TFIDF", 
-					"Words that contain ngram="+idf[i].getFirst(), 
-					"maliklugu","maligluglu", 
-					candidatesWithNgram);
-			
+
+			String ngram = idf[i].getFirst();
+
+			Iterator<String> iterCandsWithNgram =
+				wordsContainingNgram(ngram, amongWords);
+
+			Set<String> candidatesWithNgram = new HashSet<String>();
+			iterCandsWithNgram.forEachRemaining(candidatesWithNgram::add);
+
 			candidates.addAll(candidatesWithNgram);	
 			
 			if (candidates.size() > MAX_CANDIDATES) {
@@ -1006,7 +1030,7 @@ public class SpellChecker {
 		Set<String>ngramsOfBadWord = ngramCompiler.compile(word);
 		String[] ngrams = ngramsOfBadWord.toArray(new String[] {});
 		
-		if (SpellDebug.traceIsActive(word)) {
+		if (SpellDebug.traceIsActive("SpellChecker.ngrams4word", word)) {
 			SpellDebug.trace("SpellChecker.ngrams4word", 
 					"word ngrams=['"+String.join("', '", ngrams)+"']", 
 					word, null);
@@ -1039,8 +1063,8 @@ public class SpellChecker {
 	    }
 	}
 
-	protected Set<String> wordsContainingNgram(String seq,
-											   String amongWords) throws SpellCheckerException {
+	protected Iterator<String> wordsContainingNgram(String seq,
+		String amongWords) throws SpellCheckerException {
 		Logger logger = Logger.getLogger("SpellChecker.wordsContainingSequ");
 
 		Set<String> wordsWithSeq = new HashSet<String>();
@@ -1048,13 +1072,16 @@ public class SpellChecker {
 		// TODO-Sept2020: Get rid of this 'if' once we don't use
 		//  CompiledCorpus_InMemory anymore
 		//
+		Iterator<String> wordsIter = null;
 		if (!(corpus instanceof CompiledCorpus_InMemory)) {
 			try {
-				corpus.wordsContainingNgram(seq)
-					.forEachRemaining(wordsWithSeq::add);
 
-				explicitlyCorrectWords.wordsContainingNgram(seq)
-					.forEachRemaining(wordsWithSeq::add);
+				Iterator<String> wordsIter1 = corpus.wordsContainingNgram(seq);
+
+				Iterator<String> wordsIter2 =
+					explicitlyCorrectWords.wordsContainingNgram(seq);
+
+				wordsIter = new IteratorChain<String>(wordsIter1, wordsIter2);
 			} catch (CompiledCorpusException e) {
 				throw new SpellCheckerException(e);
 			}
@@ -1078,12 +1105,15 @@ public class SpellChecker {
 
 				Matcher m = p.matcher(amongWords); //p.matcher(allWords)
 				wordsWithSeq = new HashSet<String>();
-				while (m.find())
+				while (m.find()) {
 					wordsWithSeq.add(m.group(1));
+				}
 				cacheWordsWithNgram(seq, wordsWithSeq);
 			}
+			wordsIter = wordsWithSeq.iterator();
 		}
-		return wordsWithSeq;
+
+		return wordsIter;
 	}
 
 	public List<SpellingCorrection> correctText(String text) throws SpellCheckerException {

@@ -24,7 +24,8 @@ public class SpellChecker_ES extends SpellChecker {
         }
 
         try {
-            explicitlyCorrectWords = new CompiledCorpus_ES(_checkerIndexName);
+            corpus = new CompiledCorpus_ES(_checkerIndexName);
+            explicitlyCorrectWords = new CompiledCorpus_ES(_checkerIndexName+"_EXPLICLTY_CORRECT");
         } catch (CompiledCorpusException e) {
             throw new SpellCheckerException(e);
         }

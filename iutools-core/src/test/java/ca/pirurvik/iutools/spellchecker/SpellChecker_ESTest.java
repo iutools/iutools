@@ -1,12 +1,9 @@
 package ca.pirurvik.iutools.spellchecker;
 
 import ca.inuktitutcomputing.config.IUConfig;
-import ca.nrc.datastructure.trie.StringSegmenterException;
-import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_ES;
 import ca.pirurvik.iutools.corpus.RW_CompiledCorpus;
 import org.junit.Ignore;
-import org.junit.Test;
 
 import java.io.File;
 
@@ -25,7 +22,7 @@ public class SpellChecker_ESTest extends SpellCheckerTest {
 
     @Override
     protected SpellChecker makeCheckerSmallCustomDict() throws Exception {
-        SpellChecker checker = new SpellChecker(emptyESCorpus());
+        SpellChecker checker = new SpellChecker_ES("empty-corpus");
         checker.setVerbose(false);
         for (String aWord : correctWordsLatin) {
             checker.addCorrectWord(aWord);

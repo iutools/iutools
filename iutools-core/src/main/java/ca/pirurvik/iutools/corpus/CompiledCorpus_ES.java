@@ -217,8 +217,6 @@ public class CompiledCorpus_ES extends CompiledCorpus {
 
     @Override
     public Iterator<String> wordsContainingNgram(String ngram) throws CompiledCorpusException {
-        Set<String> matchingWords = new HashSet<String>();
-
         String[] ngramArr = ngram.split("");
         ngramArr = replaceCaretAndDollar(ngramArr);
         String query =
@@ -226,13 +224,8 @@ public class CompiledCorpus_ES extends CompiledCorpus {
             WordInfo_ES.insertSpaces(ngramArr) +
             "\"";
         SearchResults<WordInfo_ES> results = esSearch(query);
-        Iterator<Hit<WordInfo_ES>> iter = results.iterator();
-        while (iter.hasNext()) {
-            Hit<WordInfo_ES> hit = iter.next();
-            matchingWords.add(hit.document.word);
-        }
 
-        return matchingWords.iterator();
+        return results.docIDIterator();
     }
 
     private String[] replaceCaretAndDollar(String[] ngramArr) {
@@ -267,12 +260,8 @@ public class CompiledCorpus_ES extends CompiledCorpus {
         Set<String> words = new HashSet<String>();
         String query = morphNgramQuery(morphemes);
         SearchResults<WordInfo_ES> hits = esSearch(query);
-        Iterator<Hit<WordInfo_ES>> hitsIter = hits.iterator();
-        while (hitsIter.hasNext()) {
-            words.add(hitsIter.next().getDocument().word);
-        }
 
-        return words.iterator();
+        return hits.docIDIterator();
     }
 
     @Override

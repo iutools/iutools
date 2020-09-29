@@ -2,14 +2,12 @@ package ca.pirurvik.iutools.spellchecker;
 
 
 import java.io.File;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import ca.nrc.datastructure.Pair;
-import ca.nrc.testing.AssertCollection;
-import ca.nrc.testing.AssertHelpers;
-import ca.nrc.testing.AssertNumber;
-import ca.nrc.testing.AssertObject;
+import ca.nrc.testing.*;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 
 import org.junit.*;
@@ -152,14 +150,11 @@ public class SpellCheckerTest {
 		
 		SpellChecker checker = makeCheckerLargeDict();
 		
-//		checker.allWordsForCandidates = checker.allWords;
-		Set<String> wordsWithSeq = checker.wordsContainingNgram(seq, checker.allWords);
+		Iterator<String> wordsWithSeq = checker.wordsContainingNgram(seq, checker.allWords);
 		String[] expected = new String[] {"inukshuk","inuk","inuktut"};
-		AssertCollection.assertContainsAll(
-				"The list of words containing sequence "+seq+" was not as expected",
-				expected, wordsWithSeq);
-			AssertHelpers.assertContainsAll("The list of words containing sequence "+seq+" was not as expected", 
-					wordsWithSeq, expected);
+		AssertIterator.assertContainsAll(
+			"The list of words containing sequence "+seq+" was not as expected",
+			expected, wordsWithSeq);
 	}
 	
 	@Test
@@ -177,48 +172,49 @@ public class SpellCheckerTest {
 		String seq;
 		String[] expected;
 		String[] unexpected;
-		Set<String> wordsWithSeq;
+		Iterator<String> wordsWithSeq;
 		
 		seq = "inukt";
 		wordsWithSeq = checker.wordsContainingNgram(seq, checker.allWords);
 		expected = new String[] {"inuktitut","inuktaluk","inuktigut"};
-		AssertCollection.assertContainsAll(
+		AssertIterator.assertContainsAll(
 		"The list of words containing sequence "+seq+" was not as expected",
 			expected, wordsWithSeq);
 
 		seq = "^inukt";
 		wordsWithSeq = checker.wordsContainingNgram(seq, checker.allWords);
 		expected = new String[] {"inuktitut","inuktaluk","inuktigut"};
-		AssertCollection.assertContainsAll(
+		AssertIterator.assertContainsAll(
 			"The list of words containing sequence "+seq+" was not as expected",
 			expected, wordsWithSeq);
 		// This word contains inukt, but not at the start of the word
 		unexpected = new String[] {"qaujijumatuinnaqtungainuktituunganingit"};
-		AssertCollection.assertContainsNoneOf(
+		AssertIterator.assertContainsNoneOf(
 				"The list of words containing sequence "+seq+" was not as expected",
 				unexpected, wordsWithSeq);
 
 		seq = "itut$";
 		wordsWithSeq = checker.wordsContainingNgram(seq, checker.allWords);
 		expected = new String[] {"inuktitut","inuttitut"};
-		AssertCollection.assertContainsAll(
+		AssertIterator.assertContainsAll(
 			"The list of words containing sequence "+seq+" was not as expected",
 			expected, wordsWithSeq);
 		// This word contains itut, but not at the end
 		unexpected = new String[] {"jiiqatigiituta"};
-		AssertCollection.assertContainsNoneOf(
+		AssertIterator.assertContainsNoneOf(
 				"The list of words containing sequence "+seq+" was not as expected",
 				unexpected, wordsWithSeq);
 
 		seq = "^taku$";
 		wordsWithSeq = checker.wordsContainingNgram(seq, checker.allWords);
 		expected = new String[] {"taku"};
-		AssertCollection.assertContainsAll(
+		AssertIterator.assertContainsAll(
 			"The list of words containing sequence "+seq+" was not as expected",
 			expected, wordsWithSeq);
+
 		// This word contains taku, but it is not bounded by start and end of word
 		unexpected = new String[] {"aktakuniglu"};
-		AssertCollection.assertContainsNoneOf(
+		AssertIterator.assertContainsNoneOf(
 			"The list of words containing sequence "+seq+" was not as expected",
 			unexpected, wordsWithSeq);
 	}
@@ -354,7 +350,7 @@ public class SpellCheckerTest {
 		checker.setVerbose(false);
 		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
 		assertCorrectionOK(gotCorrection, word, false, 
-				new String[] { "nunavut" });
+				new String[] { "nunavut"});
 	}
 	
 	@Test 
@@ -763,16 +759,27 @@ public class SpellCheckerTest {
 	}
 	
 	private void assertCorrectionOK(String mess, SpellingCorrection wordCorr, 
-			String expOrig, boolean expOK, String[] expSpellings,
+			String expOrig, boolean expOK, String[] expTopSpellings,
 			String expCorrLead, String expCorrTail) throws Exception {
-		if (expSpellings == null) {
-			expSpellings = new String[] {};
+		if (expTopSpellings == null) {
+			expTopSpellings = new String[] {};
 		}
-		Assert.assertEquals(mess+"\nThe input word was not as expected",expOrig, wordCorr.orig);
-		Assert.assertEquals(mess+"\nThe correctness status was not as expected", expOK, !wordCorr.wasMispelled);
+		Assert.assertEquals(
+			mess+"\nThe input word was not as expected",
+			expOrig, wordCorr.orig);
+		Assert.assertEquals(
+			mess+"\nThe correctness status was not as expected",
+			expOK, !wordCorr.wasMispelled);
+
+		List<String> gotTopSpellings = wordCorr.getPossibleSpellings();
+		gotTopSpellings =
+			gotTopSpellings
+				.subList(
+					0,
+					Math.min(gotTopSpellings.size(), expTopSpellings.length));
 		AssertObject.assertDeepEquals(
 				mess+"\nThe list of spellings was not as expected", 
-				expSpellings, wordCorr.getPossibleSpellings());
+				expTopSpellings, gotTopSpellings);
 		
 		if (expCorrLead != null) {
 			Assert.assertEquals(

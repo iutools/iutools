@@ -435,6 +435,8 @@ public abstract class CompiledCorpusTest {
 	
 	@Test
 	public void test__wordsContainingNgram__VariousCases() throws Exception {
+    	boolean IN_ANY_ORDER = true;
+
 		CompiledCorpus corpus = makeCorpusUnderTest();
 		corpus.setSegmenterClassName(StringSegmenter_IUMorpheme.class.getCanonicalName());
 		corpus.addWordOccurences(
@@ -452,21 +454,21 @@ public abstract class CompiledCorpusTest {
 			"inuktitut", "inuksuk", "inuttitut", "takuinuit", "intakuinuit"};
 		AssertIterator.assertElementsEquals(
 				"The list of words containing sequence "+seq+" was not as expected",
-				expected, wordsWithSeq);
+				expected, wordsWithSeq, IN_ANY_ORDER);
 			
 		// ngram at beginning of word
 		seq = "^inu";
 		wordsWithSeq = corpus.wordsContainingNgram(seq);
 		expected = new String[] {"inuktitut","inuksuk","inuttitut"};
-		AssertIterator.assertContainsAll("The list of words containing sequence "+seq+" was not as expected",
-			expected, wordsWithSeq);
-		
+		AssertIterator.assertElementsEquals("The list of words containing sequence "+seq+" was not as expected",
+				expected, wordsWithSeq, IN_ANY_ORDER);
+
 		seq = "itut$";
 		wordsWithSeq = corpus.wordsContainingNgram(seq);
 		expected = new String[] {"inuktitut","inuttitut"};
-		AssertIterator.assertContainsAll("The list of words containing sequence "+seq+" was not as expected",
-			expected, wordsWithSeq);
-		
+		AssertIterator.assertElementsEquals("The list of words containing sequence "+seq+" was not as expected",
+				expected, wordsWithSeq, IN_ANY_ORDER);
+
 		seq = "^taku$";
 		wordsWithSeq = corpus.wordsContainingNgram(seq);
 		expected = new String[] {"taku"};
