@@ -4,11 +4,13 @@ import ca.inuktitutcomputing.config.IUConfig;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_ES;
 import ca.pirurvik.iutools.corpus.RW_CompiledCorpus;
 import org.junit.Ignore;
+import org.junit.Test;
 
 import java.io.File;
 
-@Ignore
 public class SpellChecker_ESTest extends SpellCheckerTest {
+
+    private static final String emptyCorpusName = "empty-corpus";
 
     @Override
     protected SpellChecker makeCheckerLargeDict() throws Exception {
@@ -22,12 +24,28 @@ public class SpellChecker_ESTest extends SpellCheckerTest {
 
     @Override
     protected SpellChecker makeCheckerSmallCustomDict() throws Exception {
-        SpellChecker checker = new SpellChecker_ES("empty-corpus");
+        SpellChecker_ES checker = new SpellChecker_ES(emptyCorpusName);
+        clearESIndices(checker);
         checker.setVerbose(false);
         for (String aWord : correctWordsLatin) {
             checker.addCorrectWord(aWord);
         }
         return checker;
+    }
+
+    private void clearESIndices(SpellChecker_ES checker) throws Exception {
+        if (!checker.corpusIndexName().equals(emptyCorpusName)) {
+            throw new Exception(
+                    "You are only allowed to clear the ES index that corresponds to a corpus that is meant to be initially empty!!");
+        }
+
+        CompiledCorpus_ES corpus = (CompiledCorpus_ES) checker.corpus;
+        corpus.deleteAll(true);
+
+        corpus = (CompiledCorpus_ES) checker.explicitlyCorrectWords;
+        corpus.deleteAll(true);
+
+        return;
     }
 
     @Override
@@ -59,30 +77,15 @@ public class SpellChecker_ESTest extends SpellCheckerTest {
     // Temporarily disable some failings tests that are inherited from parent test
     ////////////////////////////////////////////////////////////////////////////////
 
-//    @Test
-//    @Ignore
-//    public void test__correctWord__ninavut() throws Exception {
-//    }
-//
-//    @Test
-//    @Ignore
-//    public void test__correctWord__syllabic__MispelledInput() throws Exception {
-//    }
-//
-//
-//    @Test
-//    @Ignore
-//    public void test__correctWord__CorrectLeadAndTailOverlap() throws Exception {
-//    }
-//
-//
-//    @Test @Ignore
-//    public void test__correctText__roman() throws Exception  {}
-//
-//    @Test @Ignore
-//    public void test__correctText__syllabic() throws Exception  {}
+    @Test
+    @Ignore
+    public void test__correctWord__CorrectLeadAndTailOverlap() throws Exception {
+    }
 
-//    @Test @Ignore
-//    public void test__correctWord__numeric_term_mispelled() throws Exception {}
+
+    @Test
+    @Ignore
+    public void test__correctWord__numeric_term_mispelled() throws Exception {
+    }
 
 }

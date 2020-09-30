@@ -17,24 +17,26 @@ public class SpellDebug {
 
 
 	// - Keys are the misspelled words to trace
-	// - Values are the correct spelling for those words
+	// - Values are the ordered list of suggested corrections that you expect
+	//   to get for those words
 	//
 	// If left at null, then all misspelled words will be traced, but
 	// we won't be able to trace whether or not the correct spelling was found
 	// at a given stage.
 	//
-	private static Map<String,String> badWordsToTrace = null;
+	private static Map<String,String[]> badWordsToTrace = null;
 	static {
-		badWordsToTrace = new HashMap<String,String>();
-		badWordsToTrace.put("ninavut", "nunavut");
-	}
 
-	private static Map<String,String> getBadWordsToTrace() {
-		if (badWordsToTrace == null) {
-			badWordsToTrace = new HashMap<String,String>();
-		}
-
-		return badWordsToTrace;
+		badWordsToTrace = new HashMap<String,String[]>();
+		badWordsToTrace
+			.put("inuktigtut",
+				new String[] {
+					"inuktitut",
+					"inuktut",
+					"inukttut",
+					"inukutt",
+					"inuk"
+				});
 	}
 
 	private static Set<String> candidatesToTrace = null;
@@ -43,24 +45,10 @@ public class SpellDebug {
 //		candidatesToTrace.add("nunavut");
 	}
 
-	private static Set<String> getCandidatesToTrace() {
-		if (candidatesToTrace == null) {
-			candidatesToTrace = new HashSet<String>();
-		}
-		return candidatesToTrace;
-	}
-
 	private static Set<String> ngramsToTrace = null;
 	static {
 //		ngramsToTrace = new HashSet<String>();
 //		ngramsToTrace.add("navu");
-	}
-
-	private static Set<String> getNgramsToTrace() {
-		if (ngramsToTrace == null) {
-			ngramsToTrace = new HashSet<String>();
-		}
-		return ngramsToTrace;
 	}
 
 	private static Pair<Boolean,String> traceStatus(String method, String badWord,
@@ -93,7 +81,7 @@ public class SpellDebug {
 		if (candidate != null) {
 			candShouldBeTraced =
 				(candidatesToTrace == null ||
-						getCandidatesToTrace().contains(candidate));
+						candidatesToTrace.contains(candidate));
 			candTraceID = candidate;
 		}
 
@@ -148,25 +136,33 @@ public class SpellDebug {
 			Set<String> possibleSpellings) {
 		Pair<Boolean,String> status = traceStatus(who, badWord, (String) null, ngram);
 		if (status.getFirst()) {
-			String correctSpelling =
+			String[] suggestedCorrections =
 				badWordsToTrace == null ? null: badWordsToTrace.get(badWord);
-			if (correctSpelling != null) {
-				boolean found = false;
+
+			if (suggestedCorrections != null) {
+				Set<String> missingSuggestions = new HashSet<String>();
+				Collections.addAll(missingSuggestions, suggestedCorrections);
+
 				for (String spelling : possibleSpellings) {
-					if (spelling.equals(correctSpelling)) {
-						found = true;
+					if (missingSuggestions.contains(spelling)) {
+						missingSuggestions.remove(spelling);
+					}
+					if (missingSuggestions.isEmpty()) {
 						break;
 					}
 				}
 
-				String contain_or_not = " did NOT contain";
-				if (found) {
-					contain_or_not = " DID contain";
+				String missing_or_not = " was NOT missing ANY suggested corrections";
+				if (!missingSuggestions.isEmpty()) {
+					missing_or_not =
+						" WAS missing the following suggested corrections:\n"+
+						"   "+String.join(", ", missingSuggestions)
+					;
 				}
+
 				System.out.println("-- " + who +
 						"(" + status.getSecond() +
-						"): \n   " + what + contain_or_not + " candidate spelling '" +
-						correctSpelling + "'.");
+						"): \n   " + what + missing_or_not + ".");
 			}
 		}
 	}
@@ -181,26 +177,33 @@ public class SpellDebug {
 		  Collection<ScoredSpelling> possibleSpellings) {
 		Pair<Boolean,String> status = traceStatus(who, badWord, (String) null, ngram);
 		if (status.getFirst()) {
-			String correctSpelling =
-					badWordsToTrace == null ? null: badWordsToTrace.get(badWord);
-			if (correctSpelling != null) {
-				boolean found = false;
+			String[] suggestedCorrections =
+					badWordsToTrace == null ? null : badWordsToTrace.get(badWord);
+
+			if (suggestedCorrections != null) {
+				Set<String> missingSuggestions = new HashSet<String>();
+				Collections.addAll(missingSuggestions, suggestedCorrections);
+
 				for (ScoredSpelling scoredSpelling : possibleSpellings) {
-					;
-					if (scoredSpelling.spelling.equals(correctSpelling)) {
-						found = true;
+					if (missingSuggestions.contains(scoredSpelling.spelling)) {
+						missingSuggestions.remove(scoredSpelling.spelling);
+					}
+					if (missingSuggestions.isEmpty()) {
 						break;
 					}
 				}
 
-				String contain_or_not = " did NOT contain";
-				if (found) {
-					contain_or_not = " DID contain";
+				String missing_or_not = " was NOT missing ANY suggested corrections";
+				if (!missingSuggestions.isEmpty()) {
+					missing_or_not =
+							" WAS missing the following suggested corrections:\n" +
+									"   " + String.join(", ", missingSuggestions)
+					;
 				}
+
 				System.out.println("-- " + who +
 						"(" + status.getSecond() +
-						"): \n   " + what + contain_or_not + " candidate spelling '" +
-						correctSpelling + "'.");
+						"): \n   " + what + missing_or_not + ".");
 			}
 		}
 	}

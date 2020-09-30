@@ -265,7 +265,7 @@ public class SpellCheckerTest {
 				})
 			;
 	}
-	
+
 	@Test
 	public void test__correctWord__roman__MispelledInput() throws Exception {
 		SpellChecker checker = makeCheckerSmallCustomDict();
@@ -304,7 +304,8 @@ public class SpellCheckerTest {
 		for (String aWord: correctWordsLatin) checker.addCorrectWord(aWord);
 		String word = "ᓄᓇᕗᖕᒥ";
 		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
-		assertCorrectionOK(gotCorrection, word, false, new String[] {"ᓄᓇᕘᒥ", "ᓄᓇᕗᒻᒥ", "ᓄᓇᕗᑦ" });
+		assertCorrectionOK(gotCorrection, word, false,
+			new String[] {"ᓄᓇᕘᒥ", "ᓄᓇᕗᒻᒥ", "ᓄᓇᕗᑦ" });
 	}
 	
 	@Test

@@ -512,17 +512,18 @@ public class CompiledCorpus_ES extends CompiledCorpus {
             force = false;
         }
 
+        boolean delete = true;
         if (!force) {
-            boolean delete =
+            delete =
                 new UserIO().prompt_yes_or_no(
-                    "Delete all content of the ElasticSearch corpus "+
-                    indexName);
-            if (delete) {
-                try {
-                    esClearIndex();
-                } catch (CompiledCorpusException e) {
-                    throw new CompiledCorpusException(e);
-                }
+                        "Delete all content of the ElasticSearch corpus " +
+                                indexName);
+        }
+        if (delete) {
+            try {
+                esClearIndex();
+            } catch (CompiledCorpusException e) {
+                throw new CompiledCorpusException(e);
             }
         }
     }

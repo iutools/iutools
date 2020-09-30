@@ -325,9 +325,9 @@ public class SpellChecker {
 	public SpellingCorrection correctWord(String word, int maxCorrections) throws SpellCheckerException {
 		Logger logger = Logger.getLogger("SpellChecker.correctWord");
 		
-//		SpellTracer.trace("SpellChecker.correctWord", 
-//				"Invoked on word="+word, 
-//				word, null);
+		SpellDebug.trace("SpellChecker.correctWord",
+				"Invoked on word="+word,
+				word, null);
 		
 		boolean wordIsSyllabic = Syllabics.allInuktitut(word);
 		
@@ -340,9 +340,9 @@ public class SpellChecker {
 		corr.wasMispelled = isMispelled(wordInLatin);		
 		logger.debug("wasMispelled= "+corr.wasMispelled);
 
-//		SpellTracer.trace("SpellChecker.correctWord", 
-//				"corr.wasMispelled="+corr.wasMispelled, 
-//				word, null);
+		SpellDebug.trace("SpellChecker.correctWord",
+				"corr.wasMispelled="+corr.wasMispelled,
+				word, null);
 		
 		if (corr.wasMispelled) {
 			// set ngramStats and suite of words for candidates according to type of word (normal word or numeric expression)
@@ -356,9 +356,9 @@ public class SpellChecker {
 			Set<String> candidates = firstPassCandidates_TFIDF(wordInLatin, wordIsNumericTerm);
 			
 			SpellDebug.containsCorrection(
-					"SpellChecker.correctWord", 
-					"First pass candidates",
-					word, "nunavut", candidates);
+				"SpellChecker.correctWord",
+				"First pass candidates",
+				word, "nunavut", candidates);
 			
 			List<ScoredSpelling> scoredSpellings = computeCandidateSimilarities(wordInLatin, candidates);
 

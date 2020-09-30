@@ -8,6 +8,8 @@ public class SpellChecker_ES extends SpellChecker {
 
     private static final String DEFAULT_CHECKER_INDEX = "spell_checker";
 
+    protected String esIndexNameRoot = null;
+
     public SpellChecker_ES() throws StringSegmenterException, SpellCheckerException {
         super();
         init_SpellChecker_ES(null);
@@ -23,11 +25,23 @@ public class SpellChecker_ES extends SpellChecker {
             _checkerIndexName = DEFAULT_CHECKER_INDEX;
         }
 
+        esIndexNameRoot = _checkerIndexName;
+
         try {
-            corpus = new CompiledCorpus_ES(_checkerIndexName);
-            explicitlyCorrectWords = new CompiledCorpus_ES(_checkerIndexName+"_EXPLICLTY_CORRECT");
+            corpus = new CompiledCorpus_ES(corpusIndexName());
+            explicitlyCorrectWords =
+                new CompiledCorpus_ES(
+                    explicitlyCorrectWordsIndexName());
         } catch (CompiledCorpusException e) {
             throw new SpellCheckerException(e);
         }
+    }
+
+    protected String explicitlyCorrectWordsIndexName() {
+        return esIndexNameRoot+"_EXPLICLTY_CORRECT";
+    }
+
+    protected String corpusIndexName() {
+        return esIndexNameRoot;
     }
 }
