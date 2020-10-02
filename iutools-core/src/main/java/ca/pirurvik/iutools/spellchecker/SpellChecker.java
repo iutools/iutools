@@ -69,7 +69,7 @@ public class SpellChecker {
 	 *  spell checker
 	 */
 	private final long MAX_DECOMP_MSECS = 5*1000;
-	
+
 	protected CompiledCorpus explicitlyCorrectWords =
 		new CompiledCorpus_InMemory()
 		.setSegmenterClassName(StringSegmenter_AlwaysNull.class);
@@ -348,18 +348,37 @@ public class SpellChecker {
 			// set ngramStats and suite of words for candidates according to type of word (normal word or numeric expression)
 			String[] numericTermParts = splitNumericExpression(wordInLatin);
 			boolean wordIsNumericTerm = numericTermParts != null;
-			
+
+			SpellDebug.trace("SpellChecker.correctWord",
+				"wordIsNumericTerm="+wordIsNumericTerm,
+				word, null);
+
 			if (partialCorrectionEnabled) {
+				SpellDebug.trace("SpellChecker.correctWord",
+						"Computing longest correct head and tail of the word",
+						word, null);
 				computeCorrectPortions(wordInLatin, corr);
 			}
-			
+
+			SpellDebug.trace("SpellChecker.correctWord",
+				"Computing 1st pass candidates",
+				word, null);
+
 			Set<String> candidates = firstPassCandidates_TFIDF(wordInLatin, wordIsNumericTerm);
-			
+
+			SpellDebug.trace("SpellChecker.correctWord",
+			"Number of 1st pass candidates="+(candidates.size()),
+			word, null);
+
 			SpellDebug.containsCorrection(
 				"SpellChecker.correctWord",
 				"First pass candidates",
 				word, "nunavut", candidates);
-			
+
+			SpellDebug.trace("SpellChecker.correctWord",
+				"Computing candidates similariy using "+editDistanceCalculator.getClass(),
+				word, null);
+
 			List<ScoredSpelling> scoredSpellings = computeCandidateSimilarities(wordInLatin, candidates);
 
 			SpellDebug.containsCorrection(
@@ -378,7 +397,7 @@ public class SpellChecker {
 				for (int ic=0; ic<scoredSpellings.size(); ic++) {
 					ScoredSpelling scoredCandidate = scoredSpellings.get(ic);
 					scoredCandidate.spelling = 
-							scoredCandidate.spelling.replace("0000",numericTermParts[0]);
+							scoredCandidate.spelling.replaceAll("\\d+-*",numericTermParts[0]);
 				}
 			}
 			
@@ -392,7 +411,12 @@ public class SpellChecker {
 				"SpellChecker.correctWord",
 				"TOP PORTION of SORTED scored spellings",
 				word, scoredSpellings);
-
+			if (SpellDebug.traceIsActive("SpellChecker.correctWord", word)) {
+				SpellDebug.trace("SpellChecker.correctWord",
+						"TOP PORTION of SORTED scored spellings is:\n"+
+							PrettyPrinter.print(scoredSpellings),
+						word, null);
+			}
 			
 	 		corr.setPossibleSpellings(scoredSpellings);
 		}
@@ -406,10 +430,8 @@ public class SpellChecker {
 	
 	protected void computeCorrectPortions(String badWordRoman, 
 			SpellingCorrection corr) throws SpellCheckerException {
-//		System.out.println("SpellChecker.computeCorrectPortions: invoked with badWordRoman="+badWordRoman);
 		computeCorrectLead(badWordRoman, corr);
 		computeCorrectTail(badWordRoman, corr);
-//		System.out.println("SpellChecker.computeCorrectPortions: DONE");
 	}
 
 	private void computeCorrectLead(String badWordRoman, 
@@ -775,6 +797,11 @@ public class SpellChecker {
 	}
 
 	protected List<ScoredSpelling> computeCandidateSimilarities(String badWord, Set<String> candidates) throws SpellCheckerException {
+		SpellDebug.trace("SpellChecker.computeCandidateSimilarities",
+				"Invoked on word="+badWord+
+					", editDistanceCalculator=\n"+editDistanceCalculator.getClass()+
+					PrettyPrinter.print(editDistanceCalculator),
+				badWord, null);
 		List<ScoredSpelling> scoredCandidates = new ArrayList<ScoredSpelling>();
 		
 		Iterator<String> iterator = candidates.iterator();
@@ -788,10 +815,13 @@ public class SpellChecker {
 	}
 
 	private double computeCandidateSimilarity(String badWord, String candidate) throws SpellCheckerException {
-		
-//		SpellTracer.trace("SpellChecker.computeCandidateSimilarity", 
-//				"Invoked", 
-//				badWord, candidate);
+
+		if (candidate.equals("ujararniarvimmik")) {
+			System.out.println("--** computeCandidateSimilarity: starting candidate="+candidate);
+		}
+		SpellDebug.trace("SpellChecker.computeCandidateSimilarity",
+			"Invoked, editDistanceCalculator="+editDistanceCalculator.getClass(),
+			badWord, candidate);
 		
 		double distance;
 		try {
@@ -799,6 +829,15 @@ public class SpellChecker {
 		} catch (EditDistanceCalculatorException e) {
 			throw new SpellCheckerException(e);
 		}
+
+		SpellDebug.trace("SpellChecker.computeCandidateSimilarity",
+				"returning distance="+distance,
+				badWord, candidate);
+
+		if (candidate.equals("ujararniarvimmik")) {
+			System.out.println("--** computeCandidateSimilarity: DONE candidate="+candidate);
+		}
+
 		return distance;
 	}
 

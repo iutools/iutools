@@ -373,7 +373,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
         return new WordInfo[0];
     }
 
-    protected  void addWordOccurence(
+    public void addWordOccurence(
         String word, String[][] sampleDecomps, Integer totalDecomps,
         long freqIncr) throws CompiledCorpusException {
 

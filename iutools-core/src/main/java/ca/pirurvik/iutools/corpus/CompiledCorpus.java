@@ -54,15 +54,14 @@ public abstract class CompiledCorpus {
 	public abstract Long totalOccurencesWithDecomps() throws CompiledCorpusException;
 	
 	public abstract Iterator<String> wordsWithNoDecomposition() throws CompiledCorpusException;
-
 	
 	public abstract String[] bestDecomposition(String word) throws CompiledCorpusException;
 	
 	public abstract WordInfo[] mostFrequentWordsExtending(
 			String[] morphemes, Integer N) throws CompiledCorpusException;
 
-	protected abstract void addWordOccurence(String word, String[][] sampleDecomps, 
-			Integer totalDecomps, long freqIncr) throws CompiledCorpusException;
+	public abstract void addWordOccurence(String word, String[][] sampleDecomps,
+										  Integer totalDecomps, long freqIncr) throws CompiledCorpusException;
 	
 	// TODO-June2020: Get rid of this method.
 	//   The trie is an internal detail of the Corpus
@@ -269,5 +268,10 @@ public abstract class CompiledCorpus {
 			sample = Arrays.copyOfRange(allDecomps, 0, sampleSize);
 		}
 		return sample;
+	}
+
+	public boolean isEmpty() throws CompiledCorpusException {
+		boolean answer = (0 == totalWords());
+		return answer;
 	}
 }

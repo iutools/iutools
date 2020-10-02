@@ -10,11 +10,12 @@ public class SpellDebug {
 	// List of SpellChecker methods that need to be traced
 	//
 	private static Set<String> methodsToTrace = null;
-	static {
-		methodsToTrace = new HashSet<String>();
-		methodsToTrace.add("SpellChecker.correctWord");
-	}
-
+//	static {
+//		methodsToTrace = new HashSet<String>();
+//		methodsToTrace.add("SpellChecker.correctWord");
+//		methodsToTrace.add("SpellChecker.computeCandidateSimilarities");
+//		methodsToTrace.add("SpellChecker.computeCandidateSimilarity");
+//	}
 
 	// - Keys are the misspelled words to trace
 	// - Values are the ordered list of suggested corrections that you expect
@@ -26,29 +27,50 @@ public class SpellDebug {
 	//
 	private static Map<String,String[]> badWordsToTrace = null;
 	static {
-
 		badWordsToTrace = new HashMap<String,String[]>();
 		badWordsToTrace
-			.put("inuktigtut",
+			.put("ujaranniarvimmi",
 				new String[] {
-					"inuktitut",
-					"inuktut",
-					"inukttut",
-					"inukutt",
-					"inuk"
+					"ujararniarvimmi", "ujaranniarvimmit"
 				});
 	}
 
+	// List of candidate spellings to be traced.
+	// If null, then trace all of them
+	//
 	private static Set<String> candidatesToTrace = null;
-	static {
+//	static {
 //		candidatesToTrace = new HashSet<String>();
-//		candidatesToTrace.add("nunavut");
-	}
+//		candidatesToTrace.add("ujararniarvimmi");
+//		candidatesToTrace.add("ujararniarvimmik");
+//		candidatesToTrace.add("ujarattarniarvimmi");
+//	}
 
+	// List of ngrams to be traced.
+	// If nulll, then trace all of them.
+	//
 	private static Set<String> ngramsToTrace = null;
 	static {
 //		ngramsToTrace = new HashSet<String>();
 //		ngramsToTrace.add("navu");
+	}
+
+	private static Map<String,String[]> badWordsToTraceNormalized = null;
+
+	private static Map<String,String[]> getBadWordsToTrace() {
+		if (badWordsToTraceNormalized == null) {
+			if (badWordsToTrace != null) {
+				badWordsToTraceNormalized = new HashMap<String, String[]>();
+				for (Map.Entry<String, String[]> anEntry : badWordsToTrace.entrySet()) {
+					String[] suggestions = anEntry.getValue();
+					for (int ii = 0; ii < suggestions.length; ii++) {
+						suggestions[ii] = normalizeNumerical(suggestions[ii]);
+						badWordsToTraceNormalized.put(anEntry.getKey(), suggestions);
+					}
+				}
+			}
+		}
+		return badWordsToTraceNormalized;
 	}
 
 	private static Pair<Boolean,String> traceStatus(String method, String badWord,
@@ -69,8 +91,8 @@ public class SpellDebug {
 		String badWordTraceID = "*";
 		if (badWord != null) {
 			badWordShouldBeTraced =
-				(badWordsToTrace == null ||
-					badWordsToTrace.containsKey(badWord));
+				(getBadWordsToTrace() == null ||
+					getBadWordsToTrace().containsKey(badWord));
 			badWordTraceID = badWord;
 		}
 
@@ -137,7 +159,8 @@ public class SpellDebug {
 		Pair<Boolean,String> status = traceStatus(who, badWord, (String) null, ngram);
 		if (status.getFirst()) {
 			String[] suggestedCorrections =
-				badWordsToTrace == null ? null: badWordsToTrace.get(badWord);
+				null == getBadWordsToTrace()  ?
+					null: getBadWordsToTrace().get(badWord);
 
 			if (suggestedCorrections != null) {
 				Set<String> missingSuggestions = new HashSet<String>();
@@ -175,6 +198,7 @@ public class SpellDebug {
 	public static void containsCorrection(String who, String what,
 		  String badWord, String ngram,
 		  Collection<ScoredSpelling> possibleSpellings) {
+		String normalizedBadWord = normalizeNumerical(badWord);
 		Pair<Boolean,String> status = traceStatus(who, badWord, (String) null, ngram);
 		if (status.getFirst()) {
 			String[] suggestedCorrections =
@@ -213,11 +237,13 @@ public class SpellDebug {
 	}
 
 	public static boolean traceIsActive(String who, String badWord, String candidate) {
-		if (candidate == null) {
-			candidate = "*";
-		}
 		boolean isActive = traceStatus(who, badWord, candidate, null).getFirst();
 		
 		return isActive;
+	}
+
+	protected static String normalizeNumerical(String orig) {
+		String normalized = orig.replaceAll("(\\d+-*)", "0000");
+		return normalized;
 	}
 }

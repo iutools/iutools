@@ -3,6 +3,7 @@ package ca.pirurvik.iutools.spellchecker;
 import ca.inuktitutcomputing.config.IUConfig;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_ES;
 import ca.pirurvik.iutools.corpus.RW_CompiledCorpus;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -12,9 +13,15 @@ public class SpellChecker_ESTest extends SpellCheckerTest {
 
     private static final String emptyCorpusName = "empty-corpus";
 
+    @Before
+    public void setUp() throws Exception {
+        // Make sure the ES indices are empty for the empty corpus name
+        clearESIndices(new SpellChecker_ES(emptyCorpusName));
+    }
+
     @Override
     protected SpellChecker makeCheckerLargeDict() throws Exception {
-        SpellChecker checker = new SpellChecker(largeESCorpusFile());
+        SpellChecker checker = new SpellChecker_ES("hansard-1999-2002");
         checker.setVerbose(false);
         for (String aWord : correctWordsLatin) {
             checker.addCorrectWord(aWord);
@@ -79,13 +86,5 @@ public class SpellChecker_ESTest extends SpellCheckerTest {
 
     @Test
     @Ignore
-    public void test__correctWord__CorrectLeadAndTailOverlap() throws Exception {
-    }
-
-
-    @Test
-    @Ignore
-    public void test__correctWord__numeric_term_mispelled() throws Exception {
-    }
-
+    public void test__spellCheck__SpeedTest() throws Exception {}
 }
