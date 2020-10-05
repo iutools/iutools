@@ -155,7 +155,7 @@ public abstract class CompiledCorpusTest {
 			//
 			Iterator<String> wordsWithNgram =
 					compiledCorpus.wordsContainingNgram("^nuna");
-			
+
 			// Words that END with "vut"
 			//
 			wordsWithNgram = 
@@ -165,6 +165,11 @@ public abstract class CompiledCorpusTest {
 			//
 			wordsWithNgram = 
 					compiledCorpus.wordsContainingNgram("nav");
+
+			// If you just want to know the NUMBER of words that contain
+			// a particular ngram, you can do this:
+			//
+			long numWords = compiledCorpus.totalWordsWithNgram("nuna");
 		}
 		
 		// Similarly, you can also ask for information about words that contain 
@@ -395,7 +400,19 @@ public abstract class CompiledCorpusTest {
         			Triple.of("sinilauqtuq", "lauq/1vv", "{sinik/1v}{lauq/1vv}{juq/1vn}"),
         			Triple.of("takulauqtunga","lauq/1vv","{taku/1v}{lauq/1vv}{junga/tv-ger-1s}")
         		);
-	}	
+	}
+
+	@Test
+	public void test__totalWordsWithNgram__HappyPath() throws Exception {
+		String[] stringsOfWords = new String[] {
+				"nunavut", "inuit", "takujuq", "sinilauqtuq", "uvlimik", "takulauqtunga"
+		};
+		CompiledCorpus compiledCorpus = makeCorpusUnderTest(StringSegmenter_IUMorpheme.class);
+		compiledCorpus.addWordOccurences(stringsOfWords);
+
+		new AssertCompiledCorpus(compiledCorpus, "")
+			.totalWordsWithNgramEquals("lauq", 2);
+	}
 
 	public static File compileToFile(String[] words) throws Exception {
 		return compileToFile(words,null);

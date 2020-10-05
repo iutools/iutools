@@ -52,6 +52,7 @@ public abstract class CompiledCorpus {
 	public abstract long totalWordsWithDecomps() throws CompiledCorpusException;
     public abstract long totalOccurencesWithNoDecomp() throws CompiledCorpusException;
 	public abstract Long totalOccurencesWithDecomps() throws CompiledCorpusException;
+	public abstract long totalWordsWithNgram(String ngram) throws CompiledCorpusException;
 	
 	public abstract Iterator<String> wordsWithNoDecomposition() throws CompiledCorpusException;
 	

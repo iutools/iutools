@@ -127,7 +127,7 @@ public class SpellCheckerTest {
 	 * VERIFICATION TESTS
 	 **********************************/
 	
-	@Test 
+	@Test
 	public void test__addCorrectWord__HappyPath() throws Exception {
 		SpellChecker checker = makeCheckerEmptyDict();
 		checker.setVerbose(false);

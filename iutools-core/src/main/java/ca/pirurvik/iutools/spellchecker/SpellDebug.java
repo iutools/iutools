@@ -8,8 +8,11 @@ import ca.nrc.string.diff.DiffResult;
 public class SpellDebug {
 
 	// List of SpellChecker methods that need to be traced
+	// If null, trace them all.
+	// If empty, trace none
 	//
-	private static Set<String> methodsToTrace = null;
+	private static Set<String> methodsToTrace = new HashSet<String>();
+//	methodsToTrace = null;
 //	static {
 //		methodsToTrace = new HashSet<String>();
 //		methodsToTrace.add("SpellChecker.correctWord");
@@ -26,17 +29,18 @@ public class SpellDebug {
 	// at a given stage.
 	//
 	private static Map<String,String[]> badWordsToTrace = null;
-	static {
-		badWordsToTrace = new HashMap<String,String[]>();
-		badWordsToTrace
-			.put("ujaranniarvimmi",
-				new String[] {
-					"ujararniarvimmi", "ujaranniarvimmit"
-				});
-	}
+//	static {
+//		badWordsToTrace = new HashMap<String,String[]>();
+//		badWordsToTrace
+//			.put("ujaranniarvimmi",
+//				new String[] {
+//					"ujararniarvimmi", "ujaranniarvimmit"
+//				});
+//	}
 
 	// List of candidate spellings to be traced.
 	// If null, then trace all of them
+	// If empty, trace none
 	//
 	private static Set<String> candidatesToTrace = null;
 //	static {
@@ -48,6 +52,7 @@ public class SpellDebug {
 
 	// List of ngrams to be traced.
 	// If nulll, then trace all of them.
+	// If empty, trace none
 	//
 	private static Set<String> ngramsToTrace = null;
 	static {

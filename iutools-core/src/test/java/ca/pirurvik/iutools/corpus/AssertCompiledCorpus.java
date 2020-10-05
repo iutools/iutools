@@ -259,4 +259,12 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 			message+"\nSample decompositions were not as expected.", 
 			expSampleDecomps, winfo.decompositionsSample);
 	}
+
+    public void totalWordsWithNgramEquals(String ngram, long expTotal)
+		throws Exception {
+		long gotTotal = corpus().totalWordsWithNgram(ngram);
+		Assert.assertEquals(
+			"Wrong number of words for ngram="+ngram,
+			expTotal, gotTotal);
+    }
 }
