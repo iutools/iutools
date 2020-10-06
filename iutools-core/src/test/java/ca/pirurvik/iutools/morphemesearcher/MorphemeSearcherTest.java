@@ -9,12 +9,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import ca.pirurvik.iutools.corpus.*;
 import org.junit.Test;
 
-import ca.pirurvik.iutools.corpus.CompiledCorpus;
-import ca.pirurvik.iutools.corpus.MockCompiledCorpus;
-import ca.pirurvik.iutools.corpus.MockCompiledCorpusFactory;
-import ca.pirurvik.iutools.corpus.WordWithMorpheme;
 import ca.pirurvik.iutools.morphemesearcher.MorphemeSearcher;
 import ca.pirurvik.iutools.morphemesearcher.ScoredExample;
 import ca.pirurvik.iutools.morphemesearcher.MorphemeSearcher.Bin;
@@ -24,7 +21,7 @@ import org.junit.*;
 
 public abstract class MorphemeSearcherTest {
 	
-	protected abstract CompiledCorpus makeCorpus();
+	protected abstract CompiledCorpus makeCorpus() throws CompiledCorpusException, Exception;
 	
 	private MorphemeSearcher morphemeSearcher = new MorphemeSearcher();
 	private CompiledCorpus smallCorpus;
@@ -152,7 +149,8 @@ public abstract class MorphemeSearcherTest {
         morphemeSearcher.useCorpus(compiledCorpus);
         
  		String morpheme = "gaq";
-		List<MorphSearchResults> wordsForMorphemes = morphemeSearcher.wordsContainingMorpheme(morpheme);
+		List<MorphSearchResults> wordsForMorphemes =
+			morphemeSearcher.wordsContainingMorpheme(morpheme);
 		
 		new AssertMorphSearchResults(wordsForMorphemes, "")
 			.foundMorphemes("gaq/1vn")
@@ -171,24 +169,7 @@ public abstract class MorphemeSearcherTest {
         
         Assert.assertTrue("Frequency of gaq/1vn should have been much higher than frequency of gaq/2vv.", freq1vn > 1.5*freq2vv);
     }
-    
-    @Test
-    public void test__numberOfWordsInCorpusWithSuiteOfMorphemes() throws Exception {
-		String[] corpusWords = new String[] {
-				"makpigarni", "mappigarni", "inuglu"
-				};
-		CompiledCorpus compiledCorpus = makeCorpus();
-        compiledCorpus.addWordOccurences(corpusWords);
-        
-        MorphemeSearcher morphemeSearch = new MorphemeSearcher();
-        morphemeSearch.useCorpus(compiledCorpus);
-    	
-    	String decompositionExpression = "{makpi:makpiq/1v}{gar:gaq/1vn}{ni:ni/tn-loc-p}";
-    	long nWords = morphemeSearch.numberOfWordsInCorpusWithSuiteOfMorphemes(decompositionExpression);
-    	long expected = 2;
-    	Assert.assertEquals("The number of words in the corpus with the given sequence of morphemes that was returned is incorrect.", expected, nWords);
-    }
-		
+
 	@Test
 	public void test__separateWordsByRoot() throws Exception {
 		String[] corpusWords = new String[] {

@@ -257,25 +257,6 @@ public class MorphemeSearcher {
 		return nbOccurrencesOfWord;
 	}
 
-	public long numberOfWordsInCorpusWithSuiteOfMorphemes(
-			String decompositionExpression) throws MorphemeSearcherException {
-    	DecompositionExpression expr = new DecompositionExpression(decompositionExpression);
-    	String exprWithoutSurfaceForms = expr.toStringWithoutSurfaceForms();
-    	String[] sequenceOfMorphemes = exprWithoutSurfaceForms.split(" ");
-    	long nbWord = 0;
-    	try {
-			WordInfo[] extensions = 
-				corpus.mostFrequentWordsExtending(sequenceOfMorphemes, Integer.MAX_VALUE);
-			if (extensions != null) {
-				nbWord = extensions.length;
-			}
-		} catch (CompiledCorpusException e) {
-			throw new MorphemeSearcherException(e);
-		}
-    	
-    	return nbWord;
-	}
-
 	public Double morphFreqInAnalyses(String morpheme, String word, boolean allowAnalysisWithAdditionalFinalConsonant) throws LinguisticDataException, TimeoutException, MorphInukException, MorphemeSearcherException {
 		MorphologicalAnalyzer analyzer = new MorphologicalAnalyzer();
 		Decomposition[] decompositions;

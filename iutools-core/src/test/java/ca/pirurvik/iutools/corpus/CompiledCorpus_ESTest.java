@@ -16,7 +16,7 @@ public class CompiledCorpus_ESTest extends CompiledCorpusTest {
 
     private Set<String> generatedIdices = new HashSet<String>();
 
-    final String testIndex = "iutools_corpus_test";
+    public final static String testIndex = "iutools_corpus_test";
 
     @After
     public void setUp() throws Exception {

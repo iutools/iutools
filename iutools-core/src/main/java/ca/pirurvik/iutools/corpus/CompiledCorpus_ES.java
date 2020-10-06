@@ -119,7 +119,15 @@ public class CompiledCorpus_ES extends CompiledCorpus {
 
     @Override
     public long totalOccurencesOf(String word) throws CompiledCorpusException {
-        return 0;
+        WordInfo_ES winfo =null;
+        try {
+            winfo =
+                (WordInfo_ES) esClient()
+                    .getDocumentWithID(word, WordInfo_ES.class, WORD_INFO_TYPE);
+        } catch (ElasticSearchException e) {
+            throw new CompiledCorpusException(e);
+        }
+        return winfo.frequency;
     }
 
     @Override
