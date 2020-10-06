@@ -65,11 +65,15 @@ public class CompiledCorpus_ES extends CompiledCorpus {
     }
 
     public  void loadFromFile(File jsonFile, Boolean verbose) throws CompiledCorpusException {
-        loadFromFile(jsonFile, verbose, null);
+        loadFromFile(jsonFile, verbose, null, null);
     }
 
-
     public  void loadFromFile(File jsonFile, Boolean verbose, Boolean overwrite) throws CompiledCorpusException {
+        loadFromFile(jsonFile, verbose, overwrite, (String)null);
+    }
+
+    public  void loadFromFile(File jsonFile, Boolean verbose,
+        Boolean overwrite, String indexName) throws CompiledCorpusException {
         if (verbose == null) {
             verbose = true;
         }
@@ -77,10 +81,11 @@ public class CompiledCorpus_ES extends CompiledCorpus {
             overwrite = false;
         }
 
-        String indexName = corpusName4File(jsonFile);
+        if (indexName == null) {
+            indexName = corpusName4File(jsonFile);
+        }
         setIndexName(indexName);
         setESClientVerbose(verbose);
-
 
         if (esClient().indexExists()) {
             if (overwrite) {
