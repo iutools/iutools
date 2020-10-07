@@ -7,20 +7,30 @@ import ca.nrc.string.diff.DiffResult;
 
 public class SpellDebug {
 
+	// Set to true to deactivate all traces
+	private static final boolean disableAllTraces = true;
+
 	// List of SpellChecker methods that need to be traced
 	// If null, trace them all.
 	// If empty, trace none
 	//
 	private static Set<String> methodsToTrace = new HashSet<String>();
-//	methodsToTrace = null;
-//	static {
+	static {
+//		methodsToTrace = null;
 //		methodsToTrace = new HashSet<String>();
-//		methodsToTrace.add("SpellChecker.correctWord");
-//		methodsToTrace.add("SpellChecker.computeCandidateSimilarities");
+		methodsToTrace.add("SpellChecker.correctWord");
+		methodsToTrace.add("SpellChecker.firstPassCandidates_TFIDF");
+		methodsToTrace.add("SpellChecker.candidatesWithBestNGramsMatch");
 //		methodsToTrace.add("SpellChecker.computeCandidateSimilarity");
-//	}
+	}
 
-	// - Keys are the misspelled words to trace
+    // If this is not-null, then when a trace does not provide the word
+    // being corrected, we assume it is the value of assumeBadWordIs
+    //
+    private static String assumeBadWordIs = null;
+//	private static String assumeBadWordIs = null;
+
+    // - Keys are the misspelled words to trace
 	// - Values are the ordered list of suggested corrections that you expect
 	//   to get for those words
 	//
@@ -29,14 +39,14 @@ public class SpellDebug {
 	// at a given stage.
 	//
 	private static Map<String,String[]> badWordsToTrace = null;
-//	static {
-//		badWordsToTrace = new HashMap<String,String[]>();
-//		badWordsToTrace
-//			.put("ujaranniarvimmi",
-//				new String[] {
-//					"ujararniarvimmi", "ujaranniarvimmit"
-//				});
-//	}
+	static {
+		badWordsToTrace = new HashMap<String,String[]>();
+		badWordsToTrace
+			.put("katimajit",
+				new String[] {
+					"katimajiit"
+				});
+	}
 
 	// List of candidate spellings to be traced.
 	// If null, then trace all of them
@@ -56,8 +66,8 @@ public class SpellDebug {
 	//
 	private static Set<String> ngramsToTrace = null;
 	static {
-//		ngramsToTrace = new HashSet<String>();
-//		ngramsToTrace.add("navu");
+		ngramsToTrace = new HashSet<String>();
+		ngramsToTrace.add("katimaji");
 	}
 
 	private static Map<String,String[]> badWordsToTraceNormalized = null;
@@ -80,6 +90,10 @@ public class SpellDebug {
 
 	private static Pair<Boolean,String> traceStatus(String method, String badWord,
 			String candidate, String ngram) {
+
+		if (disableAllTraces) {
+			return Pair.of(false, "None");
+		}
 
 		Boolean traceIsOn = null;
 		String traceID = null;
@@ -163,13 +177,12 @@ public class SpellDebug {
 			Set<String> possibleSpellings) {
 		Pair<Boolean,String> status = traceStatus(who, badWord, (String) null, ngram);
 		if (status.getFirst()) {
-			String[] suggestedCorrections =
-				null == getBadWordsToTrace()  ?
-					null: getBadWordsToTrace().get(badWord);
+			String[] correctSpellings =
+                correctSpellingsFor(badWord);
 
-			if (suggestedCorrections != null) {
+			if (correctSpellings != null) {
 				Set<String> missingSuggestions = new HashSet<String>();
-				Collections.addAll(missingSuggestions, suggestedCorrections);
+				Collections.addAll(missingSuggestions, correctSpellings);
 
 				for (String spelling : possibleSpellings) {
 					if (missingSuggestions.contains(spelling)) {
@@ -184,7 +197,8 @@ public class SpellDebug {
 				if (!missingSuggestions.isEmpty()) {
 					missing_or_not =
 						" WAS missing the following suggested corrections:\n"+
-						"   "+String.join(", ", missingSuggestions)
+						"   "+String.join(", ", missingSuggestions)+"\n"+
+						"   Total candidates in the list = "+possibleSpellings.size()
 					;
 				}
 
@@ -206,12 +220,12 @@ public class SpellDebug {
 		String normalizedBadWord = normalizeNumerical(badWord);
 		Pair<Boolean,String> status = traceStatus(who, badWord, (String) null, ngram);
 		if (status.getFirst()) {
-			String[] suggestedCorrections =
-					badWordsToTrace == null ? null : badWordsToTrace.get(badWord);
+			String[] correctSpellings =
+                correctSpellingsFor(badWord);
 
-			if (suggestedCorrections != null) {
+			if (correctSpellings != null) {
 				Set<String> missingSuggestions = new HashSet<String>();
-				Collections.addAll(missingSuggestions, suggestedCorrections);
+				Collections.addAll(missingSuggestions, correctSpellings);
 
 				for (ScoredSpelling scoredSpelling : possibleSpellings) {
 					if (missingSuggestions.contains(scoredSpelling.spelling)) {
@@ -236,6 +250,77 @@ public class SpellDebug {
 			}
 		}
 	}
+
+	public static String[] correctSpellingsFor(String badWord) {
+		String[] correctSpellings = null;
+		if (badWord == null && assumeBadWordIs != null) {
+			badWord = assumeBadWordIs;
+		}
+		if (badWord != null) {
+            correctSpellings = getBadWordsToTrace().get(badWord);
+		}
+
+		return correctSpellings;
+	}
+
+    public static void containsNgramsToTrace(String who, String what,
+             String badWord, String ngram, Pair<String, Double>[] ngramFreqs) {
+
+        if (ngramsToTrace != null) {
+            Pair<Boolean, String> status = traceStatus(who, badWord, (String) null, ngram);
+            if (status.getFirst()) {
+                Set<String> missingNgrams = new HashSet<String>();
+                missingNgrams.addAll(ngramsToTrace);
+
+                Set<String> gotNgrams = new HashSet<String>();
+                for (Pair<String,Double> aNgramFreq: ngramFreqs) {
+                    gotNgrams.add(aNgramFreq.getFirst());
+                }
+
+                for (String aNgram : ngramsToTrace) {
+                    if (gotNgrams.contains(aNgram)) {
+                        missingNgrams.remove(aNgram);
+                    }
+                    if (missingNgrams.isEmpty()) {
+                        break;
+                    }
+                }
+
+                String missing_or_not = " was NOT missing ANY of the ngrams";
+                if (!missingNgrams.isEmpty()) {
+                    missing_or_not =
+                            " WAS missing the following ngrams:\n" +
+                                    "   " + String.join(", ", missingNgrams)
+                    ;
+                }
+
+                System.out.println("-- " + who +
+                        "(" + status.getSecond() +
+                        "): \n   " + what + missing_or_not + ".");
+            }
+        }
+    }
+
+    public static void traceNgrams(String who, String mess, String badWord,
+       String ngram, Pair<String, Double>[] ngramsIDF) {
+
+        Pair<Boolean, String> status = traceStatus(who, badWord, (String) null, ngram);
+        if (traceIsActive(who, badWord)) {
+            String ngrams = "";
+            for (Pair<String, Double> aNgramIDF: ngramsIDF) {
+                if (!ngrams.equals("")) {
+					ngrams += "\n      ";
+				}
+                ngrams += aNgramIDF.getFirst()+": "+aNgramIDF.getSecond();
+            }
+
+            trace(who,
+                mess+"\n   Ngrams are:\n"+ngrams,
+                badWord, ngram);
+        }
+
+    }
+
 
 	public static boolean traceIsActive(String who, String badWord) {
 		return traceIsActive(who, badWord, null);
