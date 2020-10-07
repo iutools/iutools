@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -18,21 +17,17 @@ import ca.nrc.testing.AssertHelpers;
 import ca.nrc.testing.AssertNumber;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 
-public class SpellCheckerAccuracyTest {
-	
+public abstract class SpellCheckerAccuracyTest {
+
+	protected abstract SpellChecker makeLargeDictChecker() throws Exception;
+	protected abstract SpellChecker makeEmptyDictChecker() throws Exception;
+
 	SpellChecker checkerLargeDict = null;
 	
 	private static DecimalFormat df2 = new DecimalFormat("#.##");
 
 	protected String usingCorpus() {
 		return "Hansard1999-2002";
-	}
-
-	private SpellChecker getLargeDictChecker() throws StringSegmenterException, SpellCheckerException {
-		if (checkerLargeDict == null) {
-			checkerLargeDict = new SpellChecker(usingCorpus());
-		}
-		return checkerLargeDict;
 	}
 
 	//
@@ -324,7 +319,7 @@ public class SpellCheckerAccuracyTest {
 		// to evaluate that one.
 		//
 		String focusOnExample = null;
-//		focusOnExample = "qallunaatitut";
+//		focusOnExample = "katimajit";
 		
 		int verbosity = 1;
 		double expPercentFoundInTopN = 0.97;
@@ -333,7 +328,7 @@ public class SpellCheckerAccuracyTest {
 		double avgRankTolerance = 0.1;
 		Boolean loadCorrectWordInDict = true;
 
-		evaluateCheckerOnExamples(getLargeDictChecker(), 
+		evaluateCheckerOnExamples(makeLargeDictChecker(),
 				examples_MostFrequenMisspelledWords, focusOnExample,
 				expPercentFoundInTopN, tolerance, 
 				expAverageRank, avgRankTolerance, 
@@ -357,13 +352,13 @@ public class SpellCheckerAccuracyTest {
 		double avgRankTolerance = 0.1;
 		Boolean loadCorrectWordInDict = false;
 
-		evaluateCheckerOnExamples(getLargeDictChecker(), 
+		evaluateCheckerOnExamples(makeLargeDictChecker(),
 				examples_MostFrequenMisspelledWords, focusOnExample,
 				expPercentFoundInTopN, tolerance, 
 				expAverageRank, avgRankTolerance, 
 				loadCorrectWordInDict, verbosity);
 	}	
-	@Test @Ignore
+	@Ignore @Test
 	public void test__Evaluate__DEBUG_MostFrequentWords__UsingSmallCustomDictionary() throws Exception {
 		//
 		// This test is used only for Debugging purposes and is usually left 
@@ -383,7 +378,7 @@ public class SpellCheckerAccuracyTest {
 		String focusOnExample = null;
 //		String focusOnExample = "tamaini";
 
-		SpellChecker checker = new SpellChecker(CompiledCorpusRegistry.emptyCorpusName);
+		SpellChecker checker = makeEmptyDictChecker();
 
 		int verbosity = 1;
 		double expPercentFoundInTopN = 0.6;
@@ -419,7 +414,7 @@ public class SpellCheckerAccuracyTest {
 		Double expFNRate = 0.0;
 		Double toleranceFNRate = 0.01;
 
-		evaluateCheckerOnExamples(getLargeDictChecker(), 
+		evaluateCheckerOnExamples(makeLargeDictChecker(),
 				examples_RandomPageSample, focusOnExample,
 				expPercentFoundInTopN, tolerance, 
 				expAverageRank, avgRankTolerance, 
@@ -655,7 +650,7 @@ public class SpellCheckerAccuracyTest {
 //		String focusOnExample = null;
 		String focusOnExample = "maliklugu";
 		
-		SpellChecker checker = getLargeDictChecker();
+		SpellChecker checker = makeLargeDictChecker();
 		
 		for (SpellCheckerExample anExample: examples_RandomPageSample) {
 			if (focusOnExample != null && 
