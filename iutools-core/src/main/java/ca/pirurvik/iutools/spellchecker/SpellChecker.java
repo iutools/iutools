@@ -405,12 +405,8 @@ public class SpellChecker {
 							scoredCandidate.spelling.replaceAll("\\d+-*",numericTermParts[0]);
 				}
 			}
-			
-	 		if (maxCorrections != -1) {
-	 			scoredSpellings = 
-					scoredSpellings
-					.subList(0, maxCorrections>scoredSpellings.size()? scoredSpellings.size() : maxCorrections);
-	 		}
+
+			scoredSpellings = selectTopCandidates(maxCorrections, scoredSpellings);
 
 			SpellDebug.containsCorrection(
 				"SpellChecker.correctWord",
@@ -432,7 +428,29 @@ public class SpellChecker {
 	
  		return corr;
 	}
-	
+
+	private List<ScoredSpelling> selectTopCandidates(int maxCorrections, List<ScoredSpelling> sortedCandidates) throws SpellCheckerException {
+		List<ScoredSpelling> topCandidates = sortedCandidates;
+		if (maxCorrections != -1) {
+			topCandidates = new ArrayList<ScoredSpelling>();
+			Iterator<ScoredSpelling> iterCand = sortedCandidates.iterator();
+			while (iterCand.hasNext() && topCandidates.size() < maxCorrections) {
+				ScoredSpelling candidate = iterCand.next();
+				// Make sure all the retained candidates are correctly spelled
+				//
+				try {
+					if (!isMispelled(candidate.spelling)) {
+						topCandidates.add(candidate);
+					}
+				} catch (SpellCheckerException e) {
+					throw new SpellCheckerException(e);
+				}
+			}
+		}
+
+		return topCandidates;
+	}
+
 	protected void computeCorrectPortions(String badWordRoman, 
 			SpellingCorrection corr) throws SpellCheckerException {
 		computeCorrectLead(badWordRoman, corr);
