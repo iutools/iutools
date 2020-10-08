@@ -29,66 +29,71 @@ import ca.pirurvik.iutools.text.ngrams.NgramCompiler;
 public abstract class CompiledCorpus {
 
 	public static enum SearchOption {EXCL_MISSPELLED};
-	
+
 	public abstract Iterator<String> allWords() throws CompiledCorpusException;
-	
+
 	public abstract WordInfo info4word(String word) throws CompiledCorpusException;
-	
-	public abstract void updateDecompositionsIndex(WordInfo winfo) 
-		throws CompiledCorpusException;
+
+	public abstract void updateDecompositionsIndex(WordInfo winfo)
+			throws CompiledCorpusException;
 
 	public abstract void regenerateMorphNgramsIndex()
-		throws CompiledCorpusException;
+			throws CompiledCorpusException;
 
 	public abstract Iterator<String> wordsContainingNgram(
-		String ngram, SearchOption... options)
+			String ngram, SearchOption... options)
 			throws CompiledCorpusException;
 
 	public abstract boolean containsWord(String word) throws CompiledCorpusException;
-		
+
 	protected abstract Iterator<String> wordsContainingMorphNgram(String[] morphemes)
 			throws CompiledCorpusException;
-	
+
 	public abstract long totalOccurences() throws CompiledCorpusException;
-	
+
 	public abstract long totalWordsWithNoDecomp() throws CompiledCorpusException;
+
 	public abstract long totalWordsWithDecomps() throws CompiledCorpusException;
-    public abstract long totalOccurencesWithNoDecomp() throws CompiledCorpusException;
+
+	public abstract long totalOccurencesWithNoDecomp() throws CompiledCorpusException;
+
 	public abstract Long totalOccurencesWithDecomps() throws CompiledCorpusException;
+
 	public abstract long totalWordsWithNgram(String ngram) throws CompiledCorpusException;
-	
+
 	public abstract Iterator<String> wordsWithNoDecomposition() throws CompiledCorpusException;
-	
+
 	public abstract String[] bestDecomposition(String word) throws CompiledCorpusException;
-	
+
 	public abstract WordInfo[] mostFrequentWordsExtending(
 			String[] morphemes, Integer N) throws CompiledCorpusException;
 
 	public abstract void addWordOccurence(String word, String[][] sampleDecomps,
 										  Integer totalDecomps, long freqIncr) throws CompiledCorpusException;
-	
+
 	// TODO-June2020: Get rid of this method.
 	//   The trie is an internal detail of the Corpus
 	@JsonIgnore
 	public abstract Trie getMorphNgramsTrie() throws CompiledCorpusException;
-	
+
 	protected String segmenterClassName = StringSegmenter_Char.class.getName();
 	protected transient StringSegmenter segmenter = null;
-		
+
 	private int decompsSampleSize = 10;
-	
+
 	@JsonIgnore
 	public transient String name;
-	
-	protected transient NgramCompiler charsNgramCompiler = null;	
+
+	protected transient NgramCompiler charsNgramCompiler = null;
 	protected transient NgramCompiler morphsNgramCompiler = null;
-	
-	public abstract long charNgramFrequency(String ngram) throws CompiledCorpusException;
-	
+
+	public abstract long charNgramFrequency(
+		String ngram, SearchOption... options) throws CompiledCorpusException;
+
 	public CompiledCorpus() {
-		initialize(StringSegmenter_Char.class.getName()); 
+		initialize(StringSegmenter_Char.class.getName());
 	}
-	
+
 	public CompiledCorpus(String segmenterClassName) {
 		initialize(segmenterClassName);
 	}
@@ -98,12 +103,12 @@ public abstract class CompiledCorpus {
 			this.segmenterClassName = _segmenterClassName;
 		}
 	}
-	
+
 	public CompiledCorpus setName(String _name) {
 		name = _name;
 		return this;
 	}
-	
+
 	public CompiledCorpus setSegmenterClassName(String className) {
 		segmenterClassName = className;
 		return this;
@@ -119,30 +124,30 @@ public abstract class CompiledCorpus {
 		return this;
 	}
 
-	public void addWordOccurences(String[] words) 
+	public void addWordOccurences(String[] words)
 			throws CompiledCorpusException {
-		for (String aWord: words) {
+		for (String aWord : words) {
 			addWordOccurence(aWord);
-		}		
+		}
 	}
-	
-	public void addWordOccurences(Collection<String> words) 
+
+	public void addWordOccurences(Collection<String> words)
 			throws CompiledCorpusException {
 		String[] wordsArr = new String[words.size()];
 		int pos = 0;
-		for (String aWord: words) {
+		for (String aWord : words) {
 			wordsArr[pos] = aWord;
 			pos++;
 		}
 		addWordOccurences(wordsArr);
 	}
-	
+
 	public void addWordOccurence(String word) throws CompiledCorpusException {
 		addWordOccurence(word, false);
 	}
-	
+
 	public void addWordOccurence(String word, boolean frequenciesOnly) throws CompiledCorpusException {
-		
+
 		String[][] sampleDecomps = null;
 		Integer totalDecomps = null;
 		if (!frequenciesOnly) {
@@ -160,23 +165,23 @@ public abstract class CompiledCorpus {
 				// the decompositions for a word.
 				sampleDecomps = new String[0][];
 				totalDecomps = 0;
-			} else  {
+			} else {
 				totalDecomps = decomps.length;
 				int numToKeep = Math.min(totalDecomps, decompsSampleSize);
 				sampleDecomps = Arrays.copyOfRange(decomps, 0, numToKeep);
-			}		
+			}
 		}
 		addWordOccurence(word, sampleDecomps, totalDecomps);
 		return;
 	}
-	
-	private void addWordOccurence(String word, String[][] sampleDecomps, 
-			Integer totalDecomps) throws CompiledCorpusException {
+
+	private void addWordOccurence(String word, String[][] sampleDecomps,
+								  Integer totalDecomps) throws CompiledCorpusException {
 		addWordOccurence(word, sampleDecomps, totalDecomps, 1);
 	}
 
 	public abstract long totalOccurencesOf(String word) throws CompiledCorpusException;
-	
+
 	public abstract List<WordWithMorpheme> wordsContainingMorpheme(String morpheme) throws CompiledCorpusException;
 
 	public abstract long morphemeNgramFrequency(String[] ngram) throws CompiledCorpusException;
@@ -184,6 +189,11 @@ public abstract class CompiledCorpus {
 	public Iterator<String> wordsContainingNgram(String ngram)
 			throws CompiledCorpusException {
 		return wordsContainingNgram(ngram, new SearchOption[0]);
+	}
+
+	public long charNgramFrequency(String ngram)
+		throws CompiledCorpusException {
+		return charNgramFrequency(ngram, new SearchOption[0]);
 	}
 
 	@JsonIgnore

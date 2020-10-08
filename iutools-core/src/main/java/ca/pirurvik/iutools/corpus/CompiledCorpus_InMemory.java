@@ -647,8 +647,9 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 		return new HashSet<String>().iterator();
 	}
 
+	// TODO-2020-10: Take SearchOptions into account
 	@Override
-	public long charNgramFrequency(String ngram) throws CompiledCorpusException {
+	public long charNgramFrequency(String ngram, SearchOption... options) throws CompiledCorpusException {
 		long freq = 0;
 		Map<String, Long> freqs = getNgramStats();
 		if (freqs.containsKey(ngram)) {

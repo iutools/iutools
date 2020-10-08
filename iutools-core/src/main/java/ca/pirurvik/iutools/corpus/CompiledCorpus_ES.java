@@ -434,8 +434,10 @@ public class CompiledCorpus_ES extends CompiledCorpus {
         return null;
     }
 
+    // TODO-2020-10: Take SearchOptions into account
     @Override
-    public long charNgramFrequency(String ngram) throws CompiledCorpusException {
+    public long charNgramFrequency(String ngram, SearchOption... options)
+        throws CompiledCorpusException {
         Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpus_ES.charNgramFrequency");
         tLogger.trace("invoked with ngram="+ngram);
         String query =
