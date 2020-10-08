@@ -448,7 +448,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
         Aggs aggs = new Aggs()
             .aggregate("totalOccurences", "sum", "frequency");
 
-        SearchResults<WordInfo_ES> results = esWinfoSearch(query, aggs);
+        SearchResults<WordInfo_ES> results = esWinfoSearch(query, options, aggs);
 
         Double freqDbl = (Double) results.aggrResult("totalOccurences");
 
@@ -464,13 +464,16 @@ public class CompiledCorpus_ES extends CompiledCorpus {
     }
 
     private SearchResults<WordInfo_ES> esWinfoSearch(String query) throws CompiledCorpusException {
-        return esWinfoSearch(query, new RequestBodyElement[0]);
+        return esWinfoSearch(query, new SearchOption[0], new RequestBodyElement[0]);
     }
 
     private SearchResults<WordInfo_ES> esWinfoSearch(
-        String query, RequestBodyElement... additionalReqBodies)
+        String query, SearchOption[] options, RequestBodyElement... additionalReqBodies)
         throws CompiledCorpusException {
         SearchResults<WordInfo_ES> results = null;
+
+        query = augmentRequestWithOptions(query, additionalReqBodies, options);
+
         try {
             results =
                 esClient().search(
@@ -495,9 +498,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
         Collections.addAll(optionsSet, options);
         SearchResults<WordInfo_ES> results = null;
 
-        if (ArrayUtils.contains(options, SearchOption.EXCL_MISSPELLED)) {
-            query = expandQueryToExcludeMisspelled(query);
-        }
+        query = augmentRequestWithOptions(query, additionalReqBodies, options);
         try {
             results =
                 esClient().search(
@@ -509,9 +510,31 @@ public class CompiledCorpus_ES extends CompiledCorpus {
         return results;
     }
 
-    private Query expandQueryToExcludeMisspelled(Query query) {
+    private Query augmentRequestWithOptions(
+        Query query, RequestBodyElement[] additionalReqBodies,
+        SearchOption[] options) throws CompiledCorpusException {
+        if (ArrayUtils.contains(options, SearchOption.EXCL_MISSPELLED)) {
+            throw new CompiledCorpusException(
+                "Option "+SearchOption.EXCL_MISSPELLED+
+                " is currently not supported by this method");
+        }
+
         return query;
     }
+
+    private String augmentRequestWithOptions(String query, RequestBodyElement[] additionalReqBodies, SearchOption[] options) {
+        if (ArrayUtils.contains(options, SearchOption.EXCL_MISSPELLED)) {
+            query = augmentQueryToExcludeMisspelled(query);
+        }
+
+        return query;
+    }
+
+    private String augmentQueryToExcludeMisspelled(String query) {
+        query += " totalDecompositions:>0";
+        return query;
+    }
+
 
     private WordInfo_ES esGetDocumentWithID(String word) throws CompiledCorpusException {
         WordInfo_ES winfo = null;
