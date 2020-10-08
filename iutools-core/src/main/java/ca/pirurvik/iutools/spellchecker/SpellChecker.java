@@ -928,7 +928,8 @@ public class SpellChecker {
 	private Pair<Pair<String,Double>[],Map<String,Double>> computeNgramIDFs(String[] ngrams) throws SpellCheckerException {
 		Map<String,Double>  idfHash =
 				new HashMap<String,Double>();
-		
+
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.spellchecker.SpellChecker.computeNgramIDFs");
 		Pair<String,Double> idf[] = new Pair[ngrams.length];
 		
 		for (int i=0; i<ngrams.length; i++) {
@@ -940,7 +941,10 @@ public class SpellChecker {
 		IDFComparator dcomparator = new IDFComparator();
 		Arrays.sort(idf,dcomparator);
 		
-		
+
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("returning idf="+PrettyPrinter.print(idf));
+		}
 		return Pair.of(idf, idfHash);
 	}
 
