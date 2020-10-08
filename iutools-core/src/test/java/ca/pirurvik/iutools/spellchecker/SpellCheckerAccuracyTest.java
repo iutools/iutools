@@ -58,7 +58,7 @@ public abstract class SpellCheckerAccuracyTest {
 					.isMisspelled("nunavummit").setMaxRank(37),
 
 				new SpellCheckerExample("ugaalautaa")
-					.isMisspelled("uqaalautaa").setMaxRank(6),
+					.isMisspelled("uqaalautaa").setMaxRank(9),
 				
 				// NEED-IMPROVEMENT: Examples with ranking > 5
 				//   ONLY if we don't assume the correction is in dict

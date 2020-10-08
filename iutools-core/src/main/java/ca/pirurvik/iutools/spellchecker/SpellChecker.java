@@ -1104,9 +1104,9 @@ public class SpellChecker {
 	public class IDFComparator implements Comparator<Pair<String,Double>> {
 	    @Override
 	    public int compare(Pair<String,Double> a, Pair<String,Double> b) {
-	    	if (a.getSecond().longValue() > b.getSecond().longValue())
+	    	if (a.getSecond() > b.getSecond())
 	    		return -1;
-	    	else if (a.getSecond().longValue() < b.getSecond().longValue())
+	    	else if (a.getSecond() < b.getSecond())
 				return 1;
 	    	else 
 	    		return 0;
