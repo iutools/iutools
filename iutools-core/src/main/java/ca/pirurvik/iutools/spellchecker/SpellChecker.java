@@ -683,71 +683,75 @@ public class SpellChecker {
 	protected Boolean isMispelled(String word) throws SpellCheckerException {
 		Logger logger = Logger.getLogger("SpellChecker.isMispelled");
 		logger.debug("word: "+word);
-		
-		Boolean wordIsMispelled = null;
-		
-		if (isExplicitlyCorrect(word)) {
-			logger.debug("word is was explicity tagged as being correct");
-			wordIsMispelled = false;
-		}
-		
-		if (wordIsMispelled == null && corpus!=null) {
-			try {
-				WordInfo wInfo = corpus.info4word(word);
-				if (wInfo != null && wInfo.totalDecompositions > 0) {
-					wordIsMispelled = false;
-					logger.debug("Corpus contains some decompositions for this word");					
-				}
-			} catch (CompiledCorpusException e) {
-				throw new SpellCheckerException(e);
-			}
-		}
-		
-		if (wordIsMispelled == null && word.matches("^[0-9]+$")) {
-			logger.debug("word is all digits");
-			wordIsMispelled = false;
-		}
-		
-		if (wordIsMispelled == null && latinSingleInuktitutCharacters.contains(word)) {
-			logger.debug("single inuktitut character");
-			wordIsMispelled = false;
-		}
-		
-		if (wordIsMispelled == null && wordContainsMoreThanTwoConsecutiveConsonants(word)) {
-			logger.debug("more than 2 consecutive consonants in the word");
-			wordIsMispelled = true;
-		}
-		
-		String[] numericTermParts = null;
-		if (wordIsMispelled == null &&  (numericTermParts=splitNumericExpression(word)) != null) {
-			logger.debug("numeric expression: "+word+" ("+numericTermParts[1]+")");
-			boolean pseudoWordWithSuffixAnalysesWithSuccess = assessEndingWithIMA(numericTermParts[1]);
-			wordIsMispelled = !pseudoWordWithSuffixAnalysesWithSuccess;
-			logger.debug("numeric expression - wordIsMispelled: "+wordIsMispelled);
-		}
-		
-		if (wordIsMispelled == null && wordIsPunctuation(word)) {
-			logger.debug("word is punctuation");
-			wordIsMispelled = false;
-		}
-		
+
+		Boolean wordIsMispelled = uncacheIsMisspelled(word);
 		if (wordIsMispelled == null) {
-			try {
-				String[] segments = segmenter.segment(word);
-				logger.debug("word submitted to IMA: "+word);
-				if (segments == null || segments.length == 0) {
-					wordIsMispelled = true;
+
+			if (isExplicitlyCorrect(word)) {
+				logger.debug("word is was explicity tagged as being correct");
+				wordIsMispelled = false;
+			}
+
+			if (wordIsMispelled == null && corpus != null) {
+				try {
+					WordInfo wInfo = corpus.info4word(word);
+					if (wInfo != null && wInfo.totalDecompositions > 0) {
+						wordIsMispelled = false;
+						logger.debug("Corpus contains some decompositions for this word");
+					}
+				} catch (CompiledCorpusException e) {
+					throw new SpellCheckerException(e);
 				}
-			} catch (TimeoutException e) {
+			}
+
+			if (wordIsMispelled == null && word.matches("^[0-9]+$")) {
+				logger.debug("word is all digits");
+				wordIsMispelled = false;
+			}
+
+			if (wordIsMispelled == null && latinSingleInuktitutCharacters.contains(word)) {
+				logger.debug("single inuktitut character");
+				wordIsMispelled = false;
+			}
+
+			if (wordIsMispelled == null && wordContainsMoreThanTwoConsecutiveConsonants(word)) {
+				logger.debug("more than 2 consecutive consonants in the word");
 				wordIsMispelled = true;
-			} catch (StringSegmenterException | LinguisticDataException e) {
-				throw new SpellCheckerException(e);
 			}
-			logger.debug("word submitted to IMA - mispelled: "+wordIsMispelled);
-		}
-		
-		if (wordIsMispelled == null) {
-			wordIsMispelled = false;
+
+			String[] numericTermParts = null;
+			if (wordIsMispelled == null && (numericTermParts = splitNumericExpression(word)) != null) {
+				logger.debug("numeric expression: " + word + " (" + numericTermParts[1] + ")");
+				boolean pseudoWordWithSuffixAnalysesWithSuccess = assessEndingWithIMA(numericTermParts[1]);
+				wordIsMispelled = !pseudoWordWithSuffixAnalysesWithSuccess;
+				logger.debug("numeric expression - wordIsMispelled: " + wordIsMispelled);
+			}
+
+			if (wordIsMispelled == null && wordIsPunctuation(word)) {
+				logger.debug("word is punctuation");
+				wordIsMispelled = false;
+			}
+
+			if (wordIsMispelled == null) {
+				try {
+					String[] segments = segmenter.segment(word);
+					logger.debug("word submitted to IMA: " + word);
+					if (segments == null || segments.length == 0) {
+						wordIsMispelled = true;
+					}
+				} catch (TimeoutException e) {
+					wordIsMispelled = true;
+				} catch (StringSegmenterException | LinguisticDataException e) {
+					throw new SpellCheckerException(e);
+				}
+				logger.debug("word submitted to IMA - mispelled: " + wordIsMispelled);
+			}
+
+			if (wordIsMispelled == null) {
+				wordIsMispelled = false;
+			}
+
+			cacheIsMisspelled(word, wordIsMispelled);
 		}
 		
 		return wordIsMispelled;
@@ -999,6 +1003,10 @@ public class SpellChecker {
 			Set<String> candidatesWithNgram = new HashSet<String>();
 			iterCandsWithNgram.forEachRemaining(candidatesWithNgram::add);
 
+			SpellDebug.containsCorrection(
+				"SpellChecker.candidatesWithBestNGramsMatch", "Words containing ngram="+ngram,
+				null, candidatesWithNgram);
+
 			candidates.addAll(candidatesWithNgram);
 			tLogger.trace("DONE adding candidates that contain ngram="+ngram+"; total added = "+candidatesWithNgram.size());
 
@@ -1011,7 +1019,22 @@ public class SpellChecker {
 		
 		return candidates;
 	}
-	
+
+	private Set<String> correctlySpelledCandidatesAmong(
+		Iterator<String> iterCandsWithNgram) throws SpellCheckerException {
+		Set<String> candidatesWithNgram = new HashSet<String>();
+//		while (iterCandsWithNgram.hasNext()) {
+//			String aCandidate = iterCandsWithNgram.next();
+//			if (! isMispelled(aCandidate)) {
+//				candidatesWithNgram.add(aCandidate);
+//			}
+//		}
+
+		iterCandsWithNgram.forEachRemaining(candidatesWithNgram::add);
+
+		return candidatesWithNgram;
+	}
+
 	private Set<String> candidatesWithBestNGramsMatch(
 			Pair<String, Double>[] ngramsWithIDF, 
 			CompiledCorpus inCorpus) throws SpellCheckerException {
