@@ -31,7 +31,7 @@ public class SpellCheckerEvaluator {
 	private int totalNonNullRank = 0;
 	private int totalExamplesWithKnownCorrection = 0;	
 
-	private Integer verbosity = 0;
+	private Integer verbosity = 1;
 	
 	public SpellCheckerEvaluator() throws StringSegmenterException, FileNotFoundException, SpellCheckerException, ConfigException {
 		init_SpellCheckerEvaluator(null);

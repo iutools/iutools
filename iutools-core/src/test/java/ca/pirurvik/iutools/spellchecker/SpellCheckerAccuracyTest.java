@@ -319,7 +319,7 @@ public abstract class SpellCheckerAccuracyTest {
 		// to evaluate that one.
 		//
 		String focusOnExample = null;
-//		focusOnExample = "katimajit";
+//		focusOnExample = "ugaalautaa";
 		
 		int verbosity = 1;
 		double expPercentFoundInTopN = 0.97;

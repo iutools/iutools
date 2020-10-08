@@ -131,7 +131,12 @@ public class SpellChecker {
 		wordsWithNgramCache = 
 			Caffeine.newBuilder().maximumSize(10000)
 			.build();
-	
+
+	public static Cache<String, Boolean>
+			isMisspelledCache =
+			Caffeine.newBuilder().maximumSize(10000)
+					.build();
+
 	public SpellChecker() throws StringSegmenterException, SpellCheckerException {
 		init_SpellChecker(CompiledCorpusRegistry.defaultCorpusName);
 	}
@@ -192,7 +197,6 @@ public class SpellChecker {
 
 	public void setDictionaryFromCorpus(File compiledCorpusFile) throws SpellCheckerException {
 		try {
-//			corpus = CompiledCorpus_InMemory.createFromJson(compiledCorpusFile.toString());
 			CompiledCorpus corpus = RW_CompiledCorpus.read(compiledCorpusFile);
 			setDictionaryFromCorpus(corpus);
 		} catch (Exception e) {
@@ -270,6 +274,7 @@ public class SpellChecker {
 		}
 		__updateSequenceIDFForWord(word,wordIsNumericTerm);
 		clearWordsWithNgramCache();
+		removeFromMisspelledCache(word);
 	}
 	
 	private void __updateSequenceIDFForWord(String word, boolean wordIsNumericTerm) {
@@ -1107,9 +1112,9 @@ public class SpellChecker {
 	public class WordScoreComparator implements Comparator<Pair<String,Double>> {
 	    @Override
 	    public int compare(Pair<String,Double> a, Pair<String,Double> b) {
-	    	if (a.getSecond().longValue() > b.getSecond().longValue())
+	    	if (a.getSecond() > b.getSecond())
 	    		return -1;
-	    	else if (a.getSecond().longValue() < b.getSecond().longValue())
+	    	else if (a.getSecond() < b.getSecond())
 				return 1;
 	    	else 
 	    		return a.getFirst().compareToIgnoreCase(b.getFirst());
@@ -1251,4 +1256,24 @@ public class SpellChecker {
 				Caffeine.newBuilder().maximumSize(10000)
 				.build();
 	}
+
+	private void cacheIsMisspelled(String word, Boolean misspelled) {
+		isMisspelledCache.put(word, misspelled);
+	}
+
+	private Boolean uncacheIsMisspelled(String word) {
+		Boolean misspelled = isMisspelledCache.getIfPresent(word);
+		return misspelled;
+	}
+
+	private void clearIsMisspelledCache() {
+		isMisspelledCache =
+				Caffeine.newBuilder().maximumSize(10000)
+						.build();
+	}
+
+	private void removeFromMisspelledCache(String word) {
+		isMisspelledCache.invalidate(word);
+	}
+
 }
