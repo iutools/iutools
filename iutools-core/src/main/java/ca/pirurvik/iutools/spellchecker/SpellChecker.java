@@ -1003,8 +1003,8 @@ public class SpellChecker {
 				wordsContainingNgram(ngram, amongWords);
 
 			tLogger.trace("adding candidates that contain ngram="+ngram+" (ngramIDF="+ngramIDF+")");
-			Set<String> candidatesWithNgram = new HashSet<String>();
-			iterCandsWithNgram.forEachRemaining(candidatesWithNgram::add);
+			Set<String> candidatesWithNgram =
+				correctlySpelledCandidatesAmong(iterCandsWithNgram);
 
 			SpellDebug.containsCorrection(
 				"SpellChecker.candidatesWithBestNGramsMatch", "Words containing ngram="+ngram,
