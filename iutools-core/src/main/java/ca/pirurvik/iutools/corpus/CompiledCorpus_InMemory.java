@@ -560,9 +560,10 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 		ngram2wordKeysMap.get(ngram).add(wordKey);
 	}
 
-	public Iterator<String> wordsContainingNgram(String ngram) throws CompiledCorpusException {
+	// TODO-2020-10: Take SearchOption array into account
+	@Override
+	public Iterator<String> wordsContainingNgram(String ngram, SearchOption... options) throws CompiledCorpusException {
 		return wordsContainingNgram_asSet(ngram).iterator();
-
 	}
 
 	protected Set<String> wordsContainingNgram_asSet(String ngram)

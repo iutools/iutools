@@ -166,6 +166,11 @@ public abstract class CompiledCorpusTest {
 			wordsWithNgram = 
 					compiledCorpus.wordsContainingNgram("nav");
 
+			// You can limit the ngram search to words that are correctly
+			// spelled
+			wordsWithNgram =
+					compiledCorpus.wordsContainingNgram("nav", CompiledCorpus.SearchOption.EXCL_MISSPELLED);
+
 			// If you just want to know the NUMBER of words that contain
 			// a particular ngram, you can do this:
 			//
@@ -173,7 +178,7 @@ public abstract class CompiledCorpusTest {
 		}
 		
 		// Similarly, you can also ask for information about words that contain 
-		// certain sequences of ngrams (aka morphem-ngrams)
+		// certain sequences of morphemes (aka morphem-ngrams)
 		//
 		{
 			// This will find all the words that START with morphemes

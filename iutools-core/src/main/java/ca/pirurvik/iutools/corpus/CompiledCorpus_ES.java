@@ -4,6 +4,7 @@ import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.dtrc.elasticsearch.*;
 import ca.nrc.dtrc.elasticsearch.request.*;
 import ca.nrc.ui.commandline.UserIO;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -228,7 +229,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
     }
 
     @Override
-    public Iterator<String> wordsContainingNgram(String ngram) throws CompiledCorpusException {
+    public Iterator<String> wordsContainingNgram(String ngram, SearchOption... options) throws CompiledCorpusException {
         return searchWordsContainingNgram(ngram).docIDIterator();
     }
 
@@ -480,8 +481,21 @@ public class CompiledCorpus_ES extends CompiledCorpus {
     }
 
     private SearchResults<WordInfo_ES> esWinfoSearch(
-        Query query, RequestBodyElement... additionalReqBodies) throws CompiledCorpusException {
+            Query query, RequestBodyElement... additionalReqBodies) throws CompiledCorpusException {
+
+        return esWinfoSearch(query, new SearchOption[0], additionalReqBodies);
+    }
+
+
+    private SearchResults<WordInfo_ES> esWinfoSearch(
+        Query query, SearchOption[] options, RequestBodyElement... additionalReqBodies) throws CompiledCorpusException {
+        Set<SearchOption> optionsSet = new HashSet<SearchOption>();
+        Collections.addAll(optionsSet, options);
         SearchResults<WordInfo_ES> results = null;
+
+        if (ArrayUtils.contains(options, SearchOption.EXCL_MISSPELLED)) {
+            query = expandQueryToExcludeMisspelled(query);
+        }
         try {
             results =
                 esClient().search(
@@ -491,6 +505,10 @@ public class CompiledCorpus_ES extends CompiledCorpus {
         }
 
         return results;
+    }
+
+    private Query expandQueryToExcludeMisspelled(Query query) {
+        return query;
     }
 
     private WordInfo_ES esGetDocumentWithID(String word) throws CompiledCorpusException {

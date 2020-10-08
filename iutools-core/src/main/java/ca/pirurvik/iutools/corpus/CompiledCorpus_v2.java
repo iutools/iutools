@@ -123,8 +123,9 @@ public abstract class CompiledCorpus_v2 extends CompiledCorpus {
         }
     }
 
+    // TODO-2020-10: Take SearchOption array into account
     @Override
-    public Iterator<String> wordsContainingNgram(String ngram) throws CompiledCorpusException {
+    public Iterator<String> wordsContainingNgram(String ngram, SearchOption... options) throws CompiledCorpusException {
         return wordsContainingNgram_asSet(ngram).iterator();
     }
 

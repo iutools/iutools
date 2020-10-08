@@ -1004,7 +1004,7 @@ public class SpellChecker {
 
 			tLogger.trace("adding candidates that contain ngram="+ngram+" (ngramIDF="+ngramIDF+")");
 			Set<String> candidatesWithNgram =
-				correctlySpelledCandidatesAmong(iterCandsWithNgram);
+				collectCandidatesWithNgram(iterCandsWithNgram);
 
 			SpellDebug.containsCorrection(
 				"SpellChecker.candidatesWithBestNGramsMatch", "Words containing ngram="+ngram,
@@ -1023,7 +1023,7 @@ public class SpellChecker {
 		return candidates;
 	}
 
-	private Set<String> correctlySpelledCandidatesAmong(
+	private Set<String> collectCandidatesWithNgram(
 		Iterator<String> iterCandsWithNgram) throws SpellCheckerException {
 		Set<String> candidatesWithNgram = new HashSet<String>();
 //		while (iterCandsWithNgram.hasNext()) {
@@ -1182,10 +1182,13 @@ public class SpellChecker {
 		if (!(corpus instanceof CompiledCorpus_InMemory)) {
 			try {
 
-				Iterator<String> wordsIter1 = corpus.wordsContainingNgram(seq);
+				Iterator<String> wordsIter1 =
+					corpus.wordsContainingNgram(
+						seq, CompiledCorpus.SearchOption.EXCL_MISSPELLED);
 
 				Iterator<String> wordsIter2 =
-					explicitlyCorrectWords.wordsContainingNgram(seq);
+					explicitlyCorrectWords.wordsContainingNgram(
+						seq, CompiledCorpus.SearchOption.EXCL_MISSPELLED);
 
 				wordsIter = new IteratorChain<String>(wordsIter1, wordsIter2);
 			} catch (CompiledCorpusException e) {

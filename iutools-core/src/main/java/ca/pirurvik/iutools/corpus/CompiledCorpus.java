@@ -27,6 +27,8 @@ import ca.pirurvik.iutools.text.ngrams.NgramCompiler;
  *
  */
 public abstract class CompiledCorpus {
+
+	public static enum SearchOption {EXCL_MISSPELLED};
 	
 	public abstract Iterator<String> allWords() throws CompiledCorpusException;
 	
@@ -38,9 +40,10 @@ public abstract class CompiledCorpus {
 	public abstract void regenerateMorphNgramsIndex()
 		throws CompiledCorpusException;
 
-	public abstract Iterator<String> wordsContainingNgram(String ngram)
+	public abstract Iterator<String> wordsContainingNgram(
+		String ngram, SearchOption... options)
 			throws CompiledCorpusException;
-	
+
 	public abstract boolean containsWord(String word) throws CompiledCorpusException;
 		
 	protected abstract Iterator<String> wordsContainingMorphNgram(String[] morphemes)
@@ -171,13 +174,17 @@ public abstract class CompiledCorpus {
 			Integer totalDecomps) throws CompiledCorpusException {
 		addWordOccurence(word, sampleDecomps, totalDecomps, 1);
 	}
-	
-		
+
 	public abstract long totalOccurencesOf(String word) throws CompiledCorpusException;
 	
 	public abstract List<WordWithMorpheme> wordsContainingMorpheme(String morpheme) throws CompiledCorpusException;
 
 	public abstract long morphemeNgramFrequency(String[] ngram) throws CompiledCorpusException;
+
+	public Iterator<String> wordsContainingNgram(String ngram)
+			throws CompiledCorpusException {
+		return wordsContainingNgram(ngram, new SearchOption[0]);
+	}
 
 	@JsonIgnore
 	protected StringSegmenter getSegmenter() throws CompiledCorpusException {
