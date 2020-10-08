@@ -322,10 +322,8 @@ public abstract class SpellCheckerAccuracyTest {
 //		focusOnExample = "ugaalautaa";
 		
 		int verbosity = 1;
-//		double expPercentFoundInTopN = 0.97;
 		double expPercentFoundInTopN = 0.95;
 		double tolerance = 0.01;
-//		double expAverageRank = 1.35;
 		double expAverageRank = 1.55;
 		double avgRankTolerance = 0.1;
 		Boolean loadCorrectWordInDict = true;

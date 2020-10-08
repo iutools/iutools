@@ -895,10 +895,18 @@ public class SpellChecker {
 		//
 		//    IDF(word) = 1 / (#words with this ngram + 1)
 		//
-		Pair<Pair<String,Double>[],Map<String,Double>> idfInfo =
+		Pair<String,Double>[] ngramsIDF =
 				computeNgramIDFs(badWordNgrams);
-		Pair<String, Double>[] ngramsIDF = idfInfo.getFirst();
-		Map<String, Double> idfHash = idfInfo.getSecond();
+
+		SpellDebug.containsNgramsToTrace(
+		"SpellChecker.firstPassCandidates_TFIDF",
+		"Most significant ngrams of the misspelled word",
+			(String)null, (String)null, ngramsIDF);
+
+		SpellDebug.traceNgrams("SpellChecker.firstPassCandidates_TFIDF",
+			"Most significant ngrams of the misspelled word",
+			(String)null, (String)null, ngramsIDF);
+
 		
 		// Step 3: Find words that most closely match the ngrams of the bad 
 		// (up to a maximum of MAX_CANDIDATES
@@ -947,27 +955,22 @@ public class SpellChecker {
 		return allCandidates;
 	}
 
-	private Pair<Pair<String,Double>[],Map<String,Double>> computeNgramIDFs(String[] ngrams) throws SpellCheckerException {
-		Map<String,Double>  idfHash =
-				new HashMap<String,Double>();
+	private Pair<String,Double>[] computeNgramIDFs(String[] ngrams) throws SpellCheckerException {
+		Pair<String,Double> idf[] = new Pair[ngrams.length];
 
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.spellchecker.SpellChecker.computeNgramIDFs");
-		Pair<String,Double> idf[] = new Pair[ngrams.length];
-		
 		for (int i=0; i<ngrams.length; i++) {
 			Long ngramFreq = ngramFrequency(ngrams[i]);
 			double val = 1.0 / (ngramFreq + 1);
 			idf[i] = new Pair<String,Double>(ngrams[i],val);
-			idfHash.put(ngrams[i], val);
 		}
 		IDFComparator dcomparator = new IDFComparator();
 		Arrays.sort(idf,dcomparator);
-		
 
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("returning idf="+PrettyPrinter.print(idf));
 		}
-		return Pair.of(idf, idfHash);
+		return idf;
 	}
 
 	private long ngramFrequency(String ngram) throws SpellCheckerException {
