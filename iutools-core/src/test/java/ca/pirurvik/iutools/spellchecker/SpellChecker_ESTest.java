@@ -20,7 +20,7 @@ public class SpellChecker_ESTest extends SpellCheckerTest {
     }
 
     @Override
-    protected SpellChecker makeCheckerLargeDict() throws Exception {
+    protected SpellChecker largeDictCheckerWithTestWords() throws Exception {
         SpellChecker checker = new SpellChecker_ES("hansard-1999-2002.v2020-10-06");
         checker.setVerbose(false);
         for (String aWord : correctWordsLatin) {
@@ -30,7 +30,7 @@ public class SpellChecker_ESTest extends SpellCheckerTest {
     }
 
     @Override
-    protected SpellChecker makeCheckerSmallCustomDict() throws Exception {
+    protected SpellChecker smallDictCheckerWithTestWords() throws Exception {
         SpellChecker_ES checker = new SpellChecker_ES(emptyCorpusName);
         clearESIndices(checker);
         checker.setVerbose(false);

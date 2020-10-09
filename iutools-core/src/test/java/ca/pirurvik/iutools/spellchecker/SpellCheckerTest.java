@@ -23,8 +23,9 @@ public abstract class SpellCheckerTest {
 		"nunavut", "inuktitut"
 	};
 
-	protected SpellChecker makeCheckerLargeDict() throws Exception {
+	protected SpellChecker largeDictCheckerWithTestWords() throws Exception {
 		SpellChecker checker = new SpellChecker();
+		// SpellChecker checker = largeDictChecker();
 		checker.setVerbose(false);
 		for (String aWord: correctWordsLatin) {
 			checker.addCorrectWord(aWord);
@@ -33,7 +34,7 @@ public abstract class SpellCheckerTest {
 		return checker;
 	}
 
-	protected SpellChecker makeCheckerSmallCustomDict() throws Exception {
+	protected SpellChecker smallDictCheckerWithTestWords() throws Exception {
 		SpellChecker checker = new SpellChecker(CompiledCorpusRegistry.emptyCorpusName);
 		checker.setVerbose(false);
 		for (String aWord: correctWordsLatin) {
@@ -60,7 +61,7 @@ public abstract class SpellCheckerTest {
 		//   spelled if and only if they decompose)
 		//
 		
-		SpellChecker checker = makeCheckerLargeDict();
+		SpellChecker checker = largeDictCheckerWithTestWords();
 		checker.setVerbose(false);
 		
 		// 
@@ -148,7 +149,7 @@ public abstract class SpellCheckerTest {
 	public void test__wordsContainingSequ() throws Exception {
 		String seq = "nuk";
 		
-		SpellChecker checker = makeCheckerLargeDict();
+		SpellChecker checker = largeDictCheckerWithTestWords();
 		
 		Iterator<String> wordsWithSeq = checker.wordsContainingNgram(seq, checker.allWords);
 		String[] expected = new String[] {"inukshuk","inuk","inuktut"};
@@ -159,7 +160,7 @@ public abstract class SpellCheckerTest {
 	
 	@Test 
 	public void test__wordsContainingSequ__Case_considering_extremities() throws Exception {
-		SpellChecker checker = makeCheckerLargeDict();
+		SpellChecker checker = largeDictCheckerWithTestWords();
 		checker.setVerbose(false);
 		checker.addCorrectWord("inuktitut");
 		checker.addCorrectWord("inuksuk");
@@ -222,7 +223,7 @@ public abstract class SpellCheckerTest {
 	
 	@Test 
 	public void test__firstPassCandidates_TFIDF() throws Exception {
-		SpellChecker checker = makeCheckerSmallCustomDict();
+		SpellChecker checker = smallDictCheckerWithTestWords();
 		
 		String badWord = "inukkshuk";
 		Set<String> candidates = checker.firstPassCandidates_TFIDF(badWord, false);
@@ -236,7 +237,7 @@ public abstract class SpellCheckerTest {
 	
 	@Test
 	public void test__correctWord__CorrectLeadAndTailOverlap() throws Exception {
-		SpellChecker checker = makeCheckerLargeDict();
+		SpellChecker checker = largeDictCheckerWithTestWords();
 
 		checker.enablePartialCorrections();
 		
@@ -268,7 +269,7 @@ public abstract class SpellCheckerTest {
 
 	@Test 
 	public void test__correctWord__roman__MispelledInput() throws Exception {
-		SpellChecker checker = makeCheckerSmallCustomDict();
+		SpellChecker checker = smallDictCheckerWithTestWords();
 		checker.enablePartialCorrections();
 		String word = "inuktigtut";
 		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
@@ -289,7 +290,7 @@ public abstract class SpellCheckerTest {
 
 	@Test 
 	public void test__correctWord__roman__CorrectlySpellendInput() throws Exception {
-		SpellChecker checker = makeCheckerLargeDict();
+		SpellChecker checker = largeDictCheckerWithTestWords();
 
 		String word = "inuksuk";
 		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
@@ -299,7 +300,7 @@ public abstract class SpellCheckerTest {
 	@Test 
 	public void test__correctWord__syllabic__MispelledInput() throws Exception {
 		String[] correctWordsLatin = new String[] {"inuktut", "nunavummi", "inuk", "inuksut", "nunavuumi", "nunavut"};
-		SpellChecker checker = makeCheckerSmallCustomDict();
+		SpellChecker checker = smallDictCheckerWithTestWords();
 		checker.setVerbose(false);
 		for (String aWord: correctWordsLatin) checker.addCorrectWord(aWord);
 		String word = "ᓄᓇᕗᖕᒥ";
@@ -310,7 +311,7 @@ public abstract class SpellCheckerTest {
 	
 	@Test 
 	public void test__correctWord__number__ShouldBeDeemedCorrectlySpelled() throws Exception {
-		SpellChecker checker = makeCheckerLargeDict();
+		SpellChecker checker = largeDictCheckerWithTestWords();
 		checker.setVerbose(false);
 		String word = "2019";
 		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
@@ -323,7 +324,7 @@ public abstract class SpellCheckerTest {
 			"inuktut", "nunavummi", "inuk", "inuksut", "nunavuumi", "nunavut",
 			"1988-mut", "$100-mik", "100-nginnik", "100-ngujumik"
 		};
-		SpellChecker checker = makeCheckerSmallCustomDict();
+		SpellChecker checker = smallDictCheckerWithTestWords();
 		checker.setVerbose(false);
 		for (String aWord: correctWordsLatin) checker.addCorrectWord(aWord);
 		String word = "1987-muti";
@@ -352,7 +353,7 @@ public abstract class SpellCheckerTest {
 
 	@Test 
 	public void test__correctWord__ninavut() throws Exception {
-		SpellChecker checker = makeCheckerSmallCustomDict();
+		SpellChecker checker = smallDictCheckerWithTestWords();
 		
 		String word = "ninavut";
 		checker.setVerbose(false);
@@ -366,7 +367,7 @@ public abstract class SpellCheckerTest {
 		String text = "inuktut ninavut inuit inuktut";
 		
 //		SpellChecker checker = makeCheckerLargeDict();
-		SpellChecker checker = makeCheckerSmallCustomDict();
+		SpellChecker checker = smallDictCheckerWithTestWords();
 		
 		List<SpellingCorrection> gotCorrections = checker.correctText(text);
 		
@@ -403,7 +404,7 @@ public abstract class SpellCheckerTest {
 	@Test  
 	public void test__correctText__syllabic() throws Exception  {
 //		SpellChecker checker = makeCheckerLargeDict();		
-		SpellChecker checker = makeCheckerSmallCustomDict();		
+		SpellChecker checker = smallDictCheckerWithTestWords();
 		
 		String text = "ᐃᓄᑦᒧᑦ ᑕᑯᔪᖅ ᐃᒡᓗᑦᒥᒃ ᐊᕐᕌᒍᒥ";
 		List<SpellingCorrection> gotCorrections = checker.correctText(text);
@@ -451,7 +452,7 @@ public abstract class SpellCheckerTest {
 
 	@Test 
 	public void test__correctText_ampersand() throws Exception {
-		SpellChecker checker = makeCheckerLargeDict();
+		SpellChecker checker = largeDictCheckerWithTestWords();
 		String text = "inuktut sinik&uni";
 		List<SpellingCorrection> gotCorrections = checker.correctText(text);
 		Assert.assertEquals("The number of corrections is not as expected.",3,gotCorrections.size());
@@ -461,12 +462,12 @@ public abstract class SpellCheckerTest {
 	public void test__isMispelled__CorreclySpelledWordFromCompiledCorpus() throws Exception  {
 		String word = "inuktitut";
 		Assert.assertFalse("Word "+word+" should have been deemed correctly spelled", 
-				makeCheckerLargeDict().isMispelled(word));
+				largeDictCheckerWithTestWords().isMispelled(word));
 	}
 
 	@Test 
 	public void test__isMispelled__CorreclySpelledWordNOTFromCompiledCorpus() throws Exception  {
-		SpellChecker checker = makeCheckerLargeDict();
+		SpellChecker checker = largeDictCheckerWithTestWords();
 		
 		String word = "inuktut";
 		Assert.assertFalse("Word "+word+" should have been deemed correctly spelled", 
@@ -477,12 +478,12 @@ public abstract class SpellCheckerTest {
 	public void test__isMispelled__CorreclySpelledWordNumber() throws Exception  {
 		String word = "2018";
 		Assert.assertFalse("Word "+word+" should have been deemed correctly spelled", 
-				makeCheckerLargeDict().isMispelled(word));
+				largeDictCheckerWithTestWords().isMispelled(word));
 	}
 
 	@Test 
 	public void test__isMispelled__MispelledWordFromCompiledCorpus() throws Exception  {
-		SpellChecker checker = makeCheckerLargeDict();		
+		SpellChecker checker = largeDictCheckerWithTestWords();
 		
 		String word = "inukkkkutt";
 		Assert.assertTrue("Word "+word+" should have been deemed mis-spelled", 
@@ -491,7 +492,7 @@ public abstract class SpellCheckerTest {
 
 	@Test 
 	public void test__isMispelled__MispelledWordNOTFromCompiledCorpus() throws Exception  {
-		SpellChecker checker = makeCheckerLargeDict();
+		SpellChecker checker = largeDictCheckerWithTestWords();
 		
 		String word = "inuktuttt";
 		Assert.assertTrue("Word "+word+" should have been deemed mis-spelled", 
@@ -501,7 +502,7 @@ public abstract class SpellCheckerTest {
 	@Test 
 	public void test__isMispelled__WordIsSingleInuktitutCharacter() throws Exception  {
 //		SpellChecker checker = makeCheckerLargeDict();
-		SpellChecker checker = makeCheckerSmallCustomDict();
+		SpellChecker checker = smallDictCheckerWithTestWords();
 		
 		String word = "ti";
 		Assert.assertFalse("Word "+word+" should have been deemed correctly spelled", 
@@ -514,7 +515,7 @@ public abstract class SpellCheckerTest {
 	
 	@Test 
 	public void test__isMispelled__WordIsNumericTermWithValidEnding() throws Exception  {
-		SpellChecker checker = makeCheckerLargeDict();
+		SpellChecker checker = largeDictCheckerWithTestWords();
 		
 		String word = "1988-mut";
 		Assert.assertFalse("Word "+word+" should have been deemed correctly spelled", checker.isMispelled(word));
@@ -524,7 +525,7 @@ public abstract class SpellCheckerTest {
 	
 	@Test 
 	public void test__WordContainsMoreThanTwoConsecutiveConsonants() throws Exception  {
-		SpellChecker checker = makeCheckerLargeDict();
+		SpellChecker checker = largeDictCheckerWithTestWords();
 		String word = "imglu";
 		Assert.assertTrue("Word "+word+" should have been acknowledged as having more than 2 consecutive consonants", 
 				checker.wordContainsMoreThanTwoConsecutiveConsonants(word));
@@ -538,7 +539,7 @@ public abstract class SpellCheckerTest {
 	
 	@Test 
 	public void test__wordIsNumberWithSuffix() throws Exception  {
-		SpellChecker checker = makeCheckerLargeDict();
+		SpellChecker checker = largeDictCheckerWithTestWords();
 		
 		String word = "34-mi";
 		String[] numericTermParts = checker.splitNumericExpression(word);
@@ -582,7 +583,7 @@ public abstract class SpellCheckerTest {
 	
 	@Test 
 	public void test__assessEndingWithIMA() throws Exception  {
-		SpellChecker checker = makeCheckerLargeDict();
+		SpellChecker checker = largeDictCheckerWithTestWords();
 		
 		String ending = "mi";
 		boolean goodEnding = checker.assessEndingWithIMA(ending);
@@ -597,7 +598,7 @@ public abstract class SpellCheckerTest {
 	
 	@Test 
 	public void test__wordIsPunctuation() throws Exception  {
-		SpellChecker checker = makeCheckerLargeDict();
+		SpellChecker checker = largeDictCheckerWithTestWords();
 		
 		String word = "-";
 		Assert.assertTrue("Word "+word+" should have been acknowledged as punctuation", checker.wordIsPunctuation(word));
@@ -607,7 +608,7 @@ public abstract class SpellCheckerTest {
 	
 	@Test 
 	public void test__addWord__HappyPath() throws Exception {
-		SpellChecker checker = makeCheckerLargeDict();
+		SpellChecker checker = largeDictCheckerWithTestWords();
 		String word = "tamainni";
 		assertWordUnknown(word, checker);
 		
@@ -645,7 +646,7 @@ public abstract class SpellCheckerTest {
 		};
 
 		for (Pair<Boolean,Double> config: configurations) {
-			SpellChecker checker = makeCheckerLargeDict();
+			SpellChecker checker = largeDictCheckerWithTestWords();
 			checker.setPartialCorrectionEnabled(config.getFirst());
 			Long start = System.currentTimeMillis();
 			checker.correctText(text);
@@ -680,7 +681,7 @@ public abstract class SpellCheckerTest {
 	
 	@Test 
 	public void test__computeCorrectPortions__HappyPath() throws Exception {
-		SpellChecker checker = makeCheckerSmallCustomDict();
+		SpellChecker checker = smallDictCheckerWithTestWords();
 		
 		String badWord = "inuktiqtut";
 		SpellingCorrection correction = 
@@ -696,7 +697,7 @@ public abstract class SpellCheckerTest {
 	@Test 
 	public void test__leadRespectsMorphemeBoundaries__HappyPath() throws Exception {
 		String word = "inuktitut";
-		SpellChecker checker = makeCheckerSmallCustomDict();
+		SpellChecker checker = smallDictCheckerWithTestWords();
 		
 		String leadChars = "inuk";
 		Assert.assertTrue(
@@ -712,7 +713,7 @@ public abstract class SpellCheckerTest {
 	@Test 
 	public void test__tailRespectsMorphemeBoundaries__HappyPath() throws Exception {
 		String word = "inuktitut";
-		SpellChecker checker = makeCheckerSmallCustomDict();
+		SpellChecker checker = smallDictCheckerWithTestWords();
 		
 		String tailChars = "tut";
 		Assert.assertTrue(
