@@ -6,4 +6,8 @@ import org.junit.Ignore;
 @Ignore
 public class SpellChecker_InFileSystemTest extends SpellCheckerTest {
 
+    @Override
+    protected SpellChecker largeDictChecker() throws Exception {
+        return null;
+    }
 }

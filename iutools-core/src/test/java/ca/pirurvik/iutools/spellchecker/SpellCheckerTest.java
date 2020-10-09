@@ -14,6 +14,8 @@ import org.junit.*;
 
 public abstract class SpellCheckerTest {
 
+	protected abstract SpellChecker largeDictChecker() throws Exception;
+
 	protected SpellChecker checkerSyll = null;
 	
 	// Note: These are not "real" correct words in Inuktut.
@@ -24,8 +26,7 @@ public abstract class SpellCheckerTest {
 	};
 
 	protected SpellChecker largeDictCheckerWithTestWords() throws Exception {
-		SpellChecker checker = new SpellChecker();
-		// SpellChecker checker = largeDictChecker();
+		SpellChecker checker = largeDictChecker();
 		checker.setVerbose(false);
 		for (String aWord: correctWordsLatin) {
 			checker.addCorrectWord(aWord);

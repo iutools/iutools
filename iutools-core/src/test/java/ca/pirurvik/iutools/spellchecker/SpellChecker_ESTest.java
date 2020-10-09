@@ -20,12 +20,8 @@ public class SpellChecker_ESTest extends SpellCheckerTest {
     }
 
     @Override
-    protected SpellChecker largeDictCheckerWithTestWords() throws Exception {
+    protected SpellChecker largeDictChecker() throws Exception {
         SpellChecker checker = new SpellChecker_ES("hansard-1999-2002.v2020-10-06");
-        checker.setVerbose(false);
-        for (String aWord : correctWordsLatin) {
-            checker.addCorrectWord(aWord);
-        }
         return checker;
     }
 
