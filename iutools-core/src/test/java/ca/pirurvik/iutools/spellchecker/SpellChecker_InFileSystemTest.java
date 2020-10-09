@@ -10,4 +10,9 @@ public class SpellChecker_InFileSystemTest extends SpellCheckerTest {
     protected SpellChecker largeDictChecker() throws Exception {
         return null;
     }
+
+    @Override
+    protected SpellChecker smallDictChecker() throws Exception {
+        return null;
+    }
 }

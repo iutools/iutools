@@ -26,15 +26,21 @@ public class SpellChecker_ESTest extends SpellCheckerTest {
     }
 
     @Override
-    protected SpellChecker smallDictCheckerWithTestWords() throws Exception {
-        SpellChecker_ES checker = new SpellChecker_ES(emptyCorpusName);
-        clearESIndices(checker);
-        checker.setVerbose(false);
-        for (String aWord : correctWordsLatin) {
-            checker.addCorrectWord(aWord);
-        }
+    protected SpellChecker smallDictChecker() throws Exception {
+        SpellChecker checker = new SpellChecker_ES(emptyCorpusName);
         return checker;
     }
+
+//    @Override
+//    protected SpellChecker smallDictCheckerWithTestWords() throws Exception {
+//        SpellChecker_ES checker = new SpellChecker_ES(emptyCorpusName);
+//        clearESIndices(checker);
+//        checker.setVerbose(false);
+//        for (String aWord : correctWordsLatin) {
+//            checker.addCorrectWord(aWord);
+//        }
+//        return checker;
+//    }
 
     private void clearESIndices(SpellChecker_ES checker) throws Exception {
         if (!checker.corpusIndexName().equals(emptyCorpusName)) {

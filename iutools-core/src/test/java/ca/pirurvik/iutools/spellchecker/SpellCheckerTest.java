@@ -15,6 +15,7 @@ import org.junit.*;
 public abstract class SpellCheckerTest {
 
 	protected abstract SpellChecker largeDictChecker() throws Exception;
+	protected abstract SpellChecker smallDictChecker() throws Exception;
 
 	protected SpellChecker checkerSyll = null;
 	
@@ -36,7 +37,8 @@ public abstract class SpellCheckerTest {
 	}
 
 	protected SpellChecker smallDictCheckerWithTestWords() throws Exception {
-		SpellChecker checker = new SpellChecker(CompiledCorpusRegistry.emptyCorpusName);
+//		SpellChecker checker = new SpellChecker(CompiledCorpusRegistry.emptyCorpusName);
+		SpellChecker checker = smallDictChecker();
 		checker.setVerbose(false);
 		for (String aWord: correctWordsLatin) {
 			checker.addCorrectWord(aWord);
