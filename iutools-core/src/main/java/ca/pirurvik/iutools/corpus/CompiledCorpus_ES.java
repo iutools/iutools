@@ -441,7 +441,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
         Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpus_ES.charNgramFrequency");
         tLogger.trace("invoked with ngram="+ngram);
         String query =
-            "wordCharsSpaceConcatenated:\""+
+            "+wordCharsSpaceConcatenated:\""+
             WordInfo_ES.insertSpaces(ngram)+
             "\"";
 
@@ -531,7 +531,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
     }
 
     private String augmentQueryToExcludeMisspelled(String query) {
-        query += " totalDecompositions:>0";
+        query += " +totalDecompositions:>0";
         return query;
     }
 

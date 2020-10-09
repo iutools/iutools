@@ -962,12 +962,14 @@ public class SpellChecker {
 	}
 
 	private Pair<String,Double>[] computeNgramIDFs(String[] ngrams) throws SpellCheckerException {
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.spellchecker.SpellChecker.computeNgramIDFs");
 		Pair<String,Double> idf[] = new Pair[ngrams.length];
 
-		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.spellchecker.SpellChecker.computeNgramIDFs");
 		for (int i=0; i<ngrams.length; i++) {
 			Long ngramFreq = ngramFrequency(ngrams[i]);
+			tLogger.trace("for ngram="+ngrams[i]+", ngramFreq="+ngramFreq);
 			double val = 1.0 / (ngramFreq + 1);
+//			double val = 1.0 * ngramFreq;
 			idf[i] = new Pair<String,Double>(ngrams[i],val);
 		}
 		IDFComparator dcomparator = new IDFComparator();
@@ -1157,8 +1159,10 @@ public class SpellChecker {
 	    public int compare(Pair<String,Double> a, Pair<String,Double> b) {
 	    	if (a.getSecond() > b.getSecond())
 	    		return -1;
+//	    		return 1;
 	    	else if (a.getSecond() < b.getSecond())
 				return 1;
+//	    		return -1;
 	    	else 
 	    		return 0;
 	    }
