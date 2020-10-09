@@ -138,40 +138,47 @@ public class SpellChecker {
 					.build();
 
 	public SpellChecker() throws StringSegmenterException, SpellCheckerException {
-		init_SpellChecker(CompiledCorpusRegistry.defaultCorpusName);
-	}
-	
-	public SpellChecker(String corpusName) throws StringSegmenterException, SpellCheckerException {
-		init_SpellChecker(corpusName);
-	}
-
-	public SpellChecker(CompiledCorpus _corpus) throws SpellCheckerException {
-		init_SpellChecker(_corpus);
-	}
-
-	public SpellChecker(File corpusFile) throws StringSegmenterException, SpellCheckerException {
-		init_SpellChecker(corpusFile);
-	}
-
-	private void init_SpellChecker(Object _corpus) throws SpellCheckerException  {
 		try {
-			editDistanceCalculator = EditDistanceCalculatorFactory.getEditDistanceCalculator();
-			segmenter = new StringSegmenter_IUMorpheme();
-			if (_corpus != null) {
-				if (_corpus instanceof CompiledCorpus) {
-					setDictionaryFromCorpus((CompiledCorpus)_corpus);
-				} else if (_corpus instanceof String) {
-					setDictionaryFromCorpus((String)_corpus);						
-				} else if (_corpus instanceof File) {
-					setDictionaryFromCorpus((File)_corpus);
-				}
-			}			
-		} catch (StringSegmenterException | FileNotFoundException | SpellCheckerException | ConfigException e) {
+			CompiledCorpus corpus = CompiledCorpusRegistry.getCorpus();
+			init_SpellChecker_CorpusObject(corpus);
+		} catch (CompiledCorpusRegistryException e) {
 			throw new SpellCheckerException(e);
 		}
 	}
 	
-	
+	public SpellChecker(String corpusName) throws StringSegmenterException, SpellCheckerException {
+		try {
+			CompiledCorpus corpus = CompiledCorpusRegistry.getCorpus(corpusName);
+			init_SpellChecker_CorpusObject(corpus);
+		} catch (CompiledCorpusRegistryException e) {
+			throw new SpellCheckerException(e);
+		}
+	}
+
+	public SpellChecker(CompiledCorpus _corpus) throws SpellCheckerException {
+		init_SpellChecker_CorpusObject(_corpus);
+	}
+
+	public SpellChecker(File corpusFile) throws StringSegmenterException, SpellCheckerException {
+		try {
+			CompiledCorpus corpus = RW_CompiledCorpus.read(corpusFile);
+			init_SpellChecker_CorpusObject(corpus);
+		} catch (CompiledCorpusException e) {
+			throw new SpellCheckerException(e);
+		}
+	}
+
+	private void init_SpellChecker_CorpusObject(CompiledCorpus _corpus)
+		throws SpellCheckerException  {
+		try {
+			editDistanceCalculator = EditDistanceCalculatorFactory.getEditDistanceCalculator();
+			segmenter = new StringSegmenter_IUMorpheme();
+			setDictionaryFromCorpus(_corpus);
+		} catch (StringSegmenterException | FileNotFoundException | SpellCheckerException | ConfigException e) {
+			throw new SpellCheckerException(e);
+		}
+	}
+
 	public void setDictionaryFromCorpus() throws SpellCheckerException, ConfigException, FileNotFoundException {
 		try {
 			corpus = CompiledCorpusRegistry.getCorpus(null);
@@ -207,7 +214,7 @@ public class SpellChecker {
 		return;
 	}
 	
-	private void __processCorpus() throws ConfigException, FileNotFoundException {
+	protected void __processCorpus() throws ConfigException, FileNotFoundException {
 		if (corpus instanceof CompiledCorpus_InMemory) {
 			this.allWords = ((CompiledCorpus_InMemory)corpus).decomposedWordsSuite;
 		}
@@ -216,8 +223,7 @@ public class SpellChecker {
 		FileReader fr = new FileReader(dataPath+"/data/numericTermsCorpus.json");
 		AnalyzeNumberExpressions numberExpressionsAnalysis = new Gson().fromJson(fr, AnalyzeNumberExpressions.class);
 		this.allNormalizedNumericTerms = getNormalizedNumericTerms(numberExpressionsAnalysis);
-//		this.ngramStatsOfNumericTerms = getNgramsStatsOfNumericTerms(numberExpressionsAnalysis);
-		
+
 		return;
 	}
 	

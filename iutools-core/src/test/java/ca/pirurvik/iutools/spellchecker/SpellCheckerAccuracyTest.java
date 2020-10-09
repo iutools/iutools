@@ -320,7 +320,7 @@ public abstract class SpellCheckerAccuracyTest {
 		// to evaluate that one.
 		//
 		String focusOnExample = null;
-//		focusOnExample = "ugaalautaa";
+//		focusOnExample = "piliriqatigiinik";
 		
 		int verbosity = 1;
 		double expPercentFoundInTopN = 0.95;
@@ -344,10 +344,9 @@ public abstract class SpellCheckerAccuracyTest {
 		// to evaluate that one.
 		//
 		String focusOnExample = null;
-//		focusOnExample = "nigiani";
+//		focusOnExample = "piliriqatigiinik";
 		
 		int verbosity = 1;
-//		double expPercentFoundInTopN = 0.97;
 		double expPercentFoundInTopN = 0.94;
 		double tolerance = 0.01;
 //		double expAverageRank = 1.4;
@@ -483,6 +482,11 @@ public abstract class SpellCheckerAccuracyTest {
 				expAverageRank, avgRankTolerance,
 				expFPRate, toleranceFPRate,
 				expFNRate, toleranceFNRate);
+
+		if (focusOnExample != null) {
+			Assert.fail("The test was only carried out on word "+focusOnExample+".\n" +
+				"Don't forget to set focusOnExample=null to run the test on all words");
+		}
 	}
 	
 	private void assertEvaluationAsExpected(SpellCheckerEvaluator evaluator, 

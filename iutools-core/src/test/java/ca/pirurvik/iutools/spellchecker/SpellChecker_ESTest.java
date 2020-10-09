@@ -43,6 +43,8 @@ public class SpellChecker_ESTest extends SpellCheckerTest {
         corpus = (CompiledCorpus_ES) checker.explicitlyCorrectWords;
         corpus.deleteAll(true);
 
+        Thread.sleep(100);
+
         return;
     }
 
