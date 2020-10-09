@@ -4,7 +4,6 @@ import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 import org.junit.Ignore;
 
-// TODO-June2020: Activate this test and make it use an InMemory corpus
 public class SpellChecker_InMemoryTest extends SpellCheckerTest {
 
     @Override
