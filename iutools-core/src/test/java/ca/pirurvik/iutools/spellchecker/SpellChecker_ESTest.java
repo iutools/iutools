@@ -9,7 +9,6 @@ import org.junit.Test;
 
 import java.io.File;
 
-@Ignore
 public class SpellChecker_ESTest extends SpellCheckerTest {
 
     private static final String emptyCorpusName = "empty-corpus";

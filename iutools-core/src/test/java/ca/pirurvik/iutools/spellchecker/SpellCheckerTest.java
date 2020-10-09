@@ -12,7 +12,7 @@ import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 
 import org.junit.*;
 
-public class SpellCheckerTest {
+public abstract class SpellCheckerTest {
 
 	protected SpellChecker checkerSyll = null;
 	
@@ -248,29 +248,14 @@ public class SpellCheckerTest {
 		//
 		String word = "ujaranniarvimmi";
 
-		String[] expSuggestions = new String[] {
-				"ujara[nni]arvimmi",
-				"ujaranniarvimmit",
-				"ujaranniarvimmik",
-				"ujaranniavimmi",
-				"ujararniarvimmi"
+		String[] expSuggestions = new String[]{
+			"ujara[nni]arvimmi",
+			"ujararniarvimmi",
+			"ujararniarvimmik",
+			"ujararniarvimmit",
+			"ujarattarniarvimmi",
+			"ujararniarvimmut"
 		};
-		// For some reason, the non ES-spell checker is unable to
-		// 1st-pass-retrieve candidates like "ujararniarvimmik" which have
-		// the lowest edit distance (because the single character that is
-		// changed is a tailing consonant, and deletion of such tailing
-		// consonants has lower cost than changing a charager mid-word)
-		//
-		if (!(checker instanceof SpellChecker_ES)) {
-			expSuggestions = new String[]{
-				"ujara[nni]arvimmi",
-				"ujararniarvimmi",
-				"ujararniarvimmik",
-				"ujararniarvimmit",
-				"ujarattarniarvimmi",
-				"ujararniarvimmut"
-			};
-		}
 
 		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
 

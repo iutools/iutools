@@ -8,7 +8,7 @@ import ca.nrc.string.diff.DiffResult;
 public class SpellDebug {
 
 	// Set to true to deactivate all traces
-	private static final boolean disableAllTraces = true;
+	private static final boolean disableAllTraces = false;
 
 	// List of SpellChecker methods that need to be traced
 	// If null, trace them all.
@@ -27,8 +27,8 @@ public class SpellDebug {
     // If this is not-null, then when a trace does not provide the word
     // being corrected, we assume it is the value of assumeBadWordIs
     //
-    private static String assumeBadWordIs = null;
-//	private static String assumeBadWordIs = null;
+//    private static String assumeBadWordIs = null;
+	private static String assumeBadWordIs = "piliriqatigiinik";
 
     // - Keys are the misspelled words to trace
 	// - Values are the ordered list of suggested corrections that you expect
@@ -42,9 +42,9 @@ public class SpellDebug {
 	static {
 		badWordsToTrace = new HashMap<String,String[]>();
 		badWordsToTrace
-			.put("katimajit",
+			.put("piliriqatigiinik",
 				new String[] {
-					"katimajiit"
+					"piliriqatigiinnik"
 				});
 	}
 
