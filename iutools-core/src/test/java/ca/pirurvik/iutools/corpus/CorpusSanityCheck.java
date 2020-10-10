@@ -1,12 +1,9 @@
 package ca.pirurvik.iutools.corpus;
 
-import java.util.Iterator;
 import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import ca.nrc.json.PrettyPrinter;
 
 /**
  * Do a sanity check on an actual compiled corpus.
@@ -26,17 +23,15 @@ public abstract class CorpusSanityCheck {
 		corpus = corpusToCheck();
 	}
 	
-	
-	
 	@Test
 	public void test__BasicStats() throws Exception {
 		
-		System.out.println("totalWords="+corpus.totalWords());
-		System.out.println("totaltotalOccurences="+corpus.totalOccurences());
-		System.out.println("totalWordsWithDecomps="+corpus.totalWordsWithDecomps());
-		System.out.println("totalOccurencesWithDecomps="+corpus.totalOccurencesWithDecomps());
-		System.out.println("totalWordsWithNoDecomp="+corpus.totalWordsWithNoDecomp());
-		System.out.println("totalOccurencesWithNoDecomp="+corpus.totalOccurencesWithNoDecomp());
+//		System.out.println("totalWords="+corpus.totalWords());
+//		System.out.println("totaltotalOccurences="+corpus.totalOccurences());
+//		System.out.println("totalWordsWithDecomps="+corpus.totalWordsWithDecomps());
+//		System.out.println("totalOccurencesWithDecomps="+corpus.totalOccurencesWithDecomps());
+//		System.out.println("totalWordsWithNoDecomp="+corpus.totalWordsWithNoDecomp());
+//		System.out.println("totalOccurencesWithNoDecomp="+corpus.totalOccurencesWithNoDecomp());
 		new AssertCompiledCorpus(corpus, "")
 			.totalWordsIs(expTotalWords())
 			.totalOccurencesIs(1456076)
@@ -60,7 +55,39 @@ public abstract class CorpusSanityCheck {
 			;	
 		
 		WordInfo gotInfo = corpus.info4word("inuktut");
-		System.out.println("info for inuktut:\n"+PrettyPrinter.print(gotInfo));
+//		System.out.println("info for inuktut:\n"+PrettyPrinter.print(gotInfo));
+	}
+
+	@Test
+	public void test__nuna__ngram() throws Exception{
+		String nuna = "nuna";
+
+		new AssertCompiledCorpus(corpus, "")
+			.charNgramFrequencyEquals(nuna, expNgramFreq(nuna))
+			.totalWordsWithNgramEquals(nuna, expNgramTotalWords(nuna))
+			;
+	}
+
+	private long expNgramTotalWords(String ngram) throws Exception {
+		String key = ngram+":totalWords";
+		if (! expectations().containsKey(key)) {
+			throw new Exception(
+				"Expectations did not provide a totalWords for ngram "+ngram+
+				"\nMake sure you include a key "+key+" in the map returned by method expectations()");
+		}
+		long exp = (long) (expectations().get(key));
+		return exp;
+	}
+
+	private long expNgramFreq(String ngram) throws Exception{
+		String key = ngram+":freq";
+		if (! expectations().containsKey(key)) {
+			throw new Exception(
+				"Expectations did not provide a frequency for ngram "+ngram+
+				"\nMake sure you include a key "+key+" in the map returned by method expectations()");
+		}
+		long exp = (long) (expectations().get(key));
+		return exp;
 	}
 
 	private String[][] expSampleDecomps(String word) throws Exception {

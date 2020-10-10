@@ -960,23 +960,40 @@ public class SpellChecker {
 
 	private Pair<String,Double>[] computeNgramFrequencies(String[] ngrams) throws SpellCheckerException {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.spellchecker.SpellChecker.computeNgramIDFs");
-		Pair<String,Double> idf[] = new Pair[ngrams.length];
+		Pair<String,Double> ngramFreqs[] = new Pair[ngrams.length];
 
 		for (int i=0; i<ngrams.length; i++) {
 			Long ngramFreq = ngramFrequency(ngrams[i]);
 			tLogger.trace("for ngram="+ngrams[i]+", ngramFreq="+ngramFreq);
-			idf[i] = new Pair<String,Double>(ngrams[i],1.0*ngramFreq);
+			ngramFreqs[i] = new Pair<String,Double>(ngrams[i],1.0*ngramFreq);
 		}
 		IDFComparator dcomparator = new IDFComparator();
-		Arrays.sort(idf,dcomparator);
+		Arrays.sort(ngramFreqs,dcomparator);
+
+//		ngramFreqs = removeNgramsWithNoOccurences(ngramFreqs);
 
 		if (tLogger.isTraceEnabled()) {
-			tLogger.trace("returning idf="+PrettyPrinter.print(idf));
+			tLogger.trace("returning idf="+PrettyPrinter.print(ngramFreqs));
 		}
-		return idf;
+		return ngramFreqs;
 	}
 
-	private long ngramFrequency(String ngram) throws SpellCheckerException {
+//	private Pair<String, Double>[] removeNgramsWithNoOccurences(Pair<String, Double>[] ngramFreqs) {
+//		List<Pair<String, Double>> retainedNgrams = new ArrayList<Pair<String, Double>>();
+//		for (Pair<String, Double> aNgramFreq: ngramFreqs) {
+//			if (aNgramFreq.getSecond() > 0) {
+//				retainedNgrams.add(aNgramFreq);
+//			}
+//		}
+//
+//
+//		Pair<String, Double>[] retainedArr =
+//			retainedNgrams.toArray(new Pair[0]);
+//
+//		return retainedArr;
+//	}
+
+	public long ngramFrequency(String ngram) throws SpellCheckerException {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.spellchecker.SpellChecker.ngramFrequency");
 		long freq = 0;
 		try {
@@ -1108,8 +1125,10 @@ public class SpellChecker {
 			while (itall.hasNext()) {
 				String el = itall.next();
 				if (ngramsOfBadWord.contains(el) && ngramsOfCandidate.contains(el)) {
-					double score = idfHash.get(el);
-					totalScore += score;
+					Double score = idfHash.get(el);
+					if (score != null) {
+						totalScore += score;
+					}
 				}
 			}
 			scoreValues.add(new Pair<String,Double>(candidate,totalScore));

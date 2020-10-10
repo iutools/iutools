@@ -29,20 +29,14 @@ public abstract class SpellCheckerTest {
 	protected SpellChecker largeDictCheckerWithTestWords() throws Exception {
 		SpellChecker checker = largeDictChecker();
 		checker.setVerbose(false);
-		for (String aWord: correctWordsLatin) {
-			checker.addCorrectWord(aWord);
-		}
-
+		addCorrectWordsLatin(checker);
 		return checker;
 	}
 
 	protected SpellChecker smallDictCheckerWithTestWords() throws Exception {
-//		SpellChecker checker = new SpellChecker(CompiledCorpusRegistry.emptyCorpusName);
 		SpellChecker checker = smallDictChecker();
 		checker.setVerbose(false);
-		for (String aWord: correctWordsLatin) {
-			checker.addCorrectWord(aWord);
-		}
+		addCorrectWordsLatin(checker);
 		return checker;
 	}
 
@@ -51,7 +45,18 @@ public abstract class SpellCheckerTest {
 		checker.setVerbose(false);
 		return checker;
 	}
-	
+
+	private void addCorrectWordsLatin(SpellChecker checker) throws Exception {
+		for (String aWord: correctWordsLatin) {
+			checker.addCorrectWord(aWord);
+		}
+
+		if (checker instanceof SpellChecker_ES) {
+			// Sleep a bit to allow the ElasticSearch index to synchronize
+			Thread.sleep(100);
+		}
+	}
+
 	@Test(expected=SpellCheckerException.class) 
 	public void test__SpellChecker__Synopsis() throws Exception {
 		//
@@ -728,7 +733,7 @@ public abstract class SpellCheckerTest {
 				"Tail morphemes for word "+word+" should NOT have matched "+tailChars, 
 				checker.tailRespectsMorphemeBoundaries(tailChars, word));
 	}
-	
+
 	/**********************************
 	 * TEST HELPERS
 	 **********************************/

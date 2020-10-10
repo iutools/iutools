@@ -28,6 +28,7 @@ public class CorpusSanityCheck_DefaultInMemory extends CorpusSanityCheck {
 	protected Map<String, Object> expectations() {
 		Map<String,Object> exp = new HashMap<String,Object>();
 		exp.put("totalWords", new Long(387303));
+
 		exp.put("inuktut:freq", new Long(5));
 		exp.put("inuktut:totDecomps", new Integer(1));
 		exp.put("inuktut:sampleDecomps", 
@@ -35,7 +36,10 @@ public class CorpusSanityCheck_DefaultInMemory extends CorpusSanityCheck {
 				new String[] {"{inuk/1n}", "{tut/tn-sim-s}", "\\"}
 			}
 		);
-		
+
+		exp.put("nuna:freq", new Long(2823));
+		exp.put("nuna:totalWords", new Long(-1));
+
 		return exp;
 	}
 

@@ -574,5 +574,4 @@ public abstract class CompiledCorpusTest {
 		new AssertCompiledCorpus(corpus, "")
 			.wordsWithNoDecompositionAre(new String[0]);
 	}
-
 }

@@ -8,7 +8,7 @@ import ca.nrc.string.diff.DiffResult;
 public class SpellDebug {
 
 	// Set to true to deactivate all traces
-	private static final boolean disableAllTraces = true;
+	private static final boolean disableAllTraces = false;
 
 	// List of SpellChecker methods that need to be traced
 	// If null, trace them all.
