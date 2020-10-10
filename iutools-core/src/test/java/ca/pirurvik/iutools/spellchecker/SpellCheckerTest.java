@@ -229,7 +229,7 @@ public abstract class SpellCheckerTest {
 		SpellChecker checker = smallDictCheckerWithTestWords();
 		
 		String badWord = "inukkshuk";
-		Set<String> candidates = checker.firstPassCandidates_TFIDF(badWord, false);
+		Set<String> candidates = checker.candidatesWithSimilarNgrams(badWord, false);
 	
 		String[] expected = new String[] {
 				"inuk", "inukshuk", "inuktitut", "inukttut", "inuktut",

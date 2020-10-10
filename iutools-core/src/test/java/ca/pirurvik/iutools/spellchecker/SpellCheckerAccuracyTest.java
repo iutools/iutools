@@ -12,11 +12,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import ca.nrc.datastructure.Pair;
-import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.string.StringUtils;
 import ca.nrc.testing.AssertHelpers;
 import ca.nrc.testing.AssertNumber;
-import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 
 public abstract class SpellCheckerAccuracyTest {
 
@@ -681,7 +679,7 @@ public abstract class SpellCheckerAccuracyTest {
 
 			String wordToCheck = anExample.wordToCheck;
 			Set<String> gotCandidates =
-					checker.firstPassCandidates_TFIDF(wordToCheck, false);
+					checker.candidatesWithSimilarNgrams(wordToCheck, false);
 			
 			Set<Object> gotCandidatesObj = (Set)gotCandidates; 
 			Set<Object> expCandidatesObj = (Set)anExample.acceptableCorrections;
