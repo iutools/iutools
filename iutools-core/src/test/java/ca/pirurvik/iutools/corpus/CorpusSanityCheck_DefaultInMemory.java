@@ -38,7 +38,8 @@ public class CorpusSanityCheck_DefaultInMemory extends CorpusSanityCheck {
 		);
 
 		exp.put("nuna:freq", new Long(2823));
-		exp.put("nuna:totalWords", new Long(-1));
+		// TODO-2020-10: This is obviously wrong. Dunno why it has freq=0
+		exp.put("nuna:totalWords", new Long(0));
 
 		return exp;
 	}

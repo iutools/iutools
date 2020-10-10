@@ -870,7 +870,7 @@ public class SpellChecker {
 	public Set<String> candidatesWithSimilarNgrams(String badWord,
 												   boolean wordIsNumericTerm) throws SpellCheckerException {
 
-		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.spellchecker.SpellChecker.firstPassCandidates_TFIDF");
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.spellchecker.SpellChecker.candidatesWithSimilarNgrams");
 		tLogger.trace("Starting");
 
 		// 1. compile ngrams of badWord
@@ -1087,11 +1087,11 @@ public class SpellChecker {
 		}
 		
 		return candidates;
-	}	
-	
+	}
+
 	private Pair<String, Double>[] scoreAndSortCandidates(
 			boolean onlyNumericTerms, Set<String> initialCands, 
-			String[] badWordNGrams, Pair<String, Double>[] ngramsIDF,
+			String[] badWordNGrams, Pair<String, Double>[] badWordNgramFreqs,
 			NgramCompiler ngramCompiler) {
 
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.spellchecker.SpellChecker.scoreAndSortCandidates");
@@ -1102,13 +1102,17 @@ public class SpellChecker {
 			candidates = keepOnlyNumericTerms(initialCands);
 		}
 		
-		Map<String,Double> idfHash = new HashMap<String,Double>();
-		for (Pair<String,Double> ngramInfo: ngramsIDF) {
-			idfHash.put(ngramInfo.getFirst(), ngramInfo.getSecond());
+		Map<String,Double> badWordNgramInvFreqHash = new HashMap<String,Double>();
+		for (Pair<String,Double> ngramInfo: badWordNgramFreqs) {
+			badWordNgramInvFreqHash.put(
+				ngramInfo.getFirst(),
+				inverseFrequency(ngramInfo.getSecond()));
 		}
 		
-		Set<String> ngramsOfBadWord = new HashSet<String>();
-		for (String ngram: badWordNGrams) {ngramsOfBadWord.add(ngram);}
+		Set<String> ngramsOfBadWord_Set = new HashSet<String>();
+		for (String ngram: badWordNGrams) {
+			ngramsOfBadWord_Set.add(ngram);
+		}
 		
 		List<Pair<String,Double>> scoreValues = new ArrayList<Pair<String,Double>>();
 		Iterator<String> it = candidates.iterator();
@@ -1124,8 +1128,8 @@ public class SpellChecker {
 			Iterator<String> itall = all.iterator();
 			while (itall.hasNext()) {
 				String el = itall.next();
-				if (ngramsOfBadWord.contains(el) && ngramsOfCandidate.contains(el)) {
-					Double score = idfHash.get(el);
+				if (ngramsOfBadWord_Set.contains(el) && ngramsOfCandidate.contains(el)) {
+					Double score = badWordNgramInvFreqHash.get(el);
 					if (score != null) {
 						totalScore += score;
 					}
@@ -1350,4 +1354,8 @@ public class SpellChecker {
 		isMisspelledCache.invalidate(word);
 	}
 
+	protected double inverseFrequency(double freq) {
+		double iFreq = 1.0 / (freq + 1);
+		return iFreq;
+	}
 }
