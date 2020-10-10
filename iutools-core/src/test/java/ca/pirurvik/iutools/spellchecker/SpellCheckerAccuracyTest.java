@@ -648,13 +648,13 @@ public abstract class SpellCheckerAccuracyTest {
 
 	// TODO-2020-10: Either make this test pass or get rid of it
 	@Ignore @Test
-	public void test__firstPassCandidates_TFIDF__HandPickedExamples__WITHOUT_AssumingCorrectSpellingInDict() 
+	public void test__candidatesWithSimilarNgrams__HandPickedExamples__WITHOUT_AssumingCorrectSpellingInDict()
 			throws Exception {
 		// Set this to a specific example if you only want 
 		// to evaluate that one.
 		//
 		String focusOnExample = null;
-//		focusOnExample = "piliriqatigiinik";
+//		focusOnExample = "nunavuumik";
 		
 		SpellChecker checker = makeLargeDictChecker();
 		
@@ -665,7 +665,7 @@ public abstract class SpellCheckerAccuracyTest {
 			}
 
 			if (!anExample.misspelled) {
-				// The firstPassCandidates_TFIDF() method is only ever used for
+				// The candidatesWithSimilarNgrams() method is only ever used for
 				// words that are mis-spelled. So don't test it on words that
 				// are correctly spelled.
 				continue;
