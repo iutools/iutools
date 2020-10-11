@@ -62,7 +62,9 @@ import ca.inuktitutcomputing.utilbin.AnalyzeNumberExpressions;
 public class SpellChecker {
 	
 	public int MAX_SEQ_LEN = 5;
-	public int MAX_CANDIDATES = 1000;
+//	public int MAX_CANDIDATES = 1000;
+//	public int MAX_CANDIDATES = 2000;
+	public int MAX_CANDIDATES = 5000;
 	public int DEFAULT_CORRECTIONS = 5;
 	
 	/** Maximum msecs allowed for decomposing a word during 
@@ -1027,11 +1029,13 @@ public class SpellChecker {
 			Set<String> candidatesWithNgram =
 				collectCandidatesWithNgram(iterCandsWithNgram);
 
-			SpellDebug.containsCorrection(
-				"SpellChecker.candidatesWithBestNGramsMatch", "Words containing ngram="+ngram,
-				null, candidatesWithNgram);
-
 			candidates.addAll(candidatesWithNgram);
+
+			SpellDebug.containsCorrection(
+			"SpellChecker.candidatesWithBestNGramsMatch",
+			"After adding words containing ngram="+ngram,
+			null, candidates);
+
 			tLogger.trace("DONE adding candidates that contain ngram="+ngram+"; total added = "+candidatesWithNgram.size());
 
 			if (candidates.size() > MAX_CANDIDATES) {
@@ -1196,8 +1200,13 @@ public class SpellChecker {
 	    }
 	}
 
+	protected Iterator<String> wordsContainingNgram(
+		String seq, String amongWords) throws SpellCheckerException {
+		return wordsContainingNgram(seq, amongWords, new CompiledCorpus.SearchOption[0]);
+	}
+
 	protected Iterator<String> wordsContainingNgram(String seq,
-		String amongWords) throws SpellCheckerException {
+		String amongWords, CompiledCorpus.SearchOption... options) throws SpellCheckerException {
 		Logger logger = Logger.getLogger("SpellChecker.wordsContainingSequ");
 
 		Set<String> wordsWithSeq = new HashSet<String>();
@@ -1211,7 +1220,7 @@ public class SpellChecker {
 
 				Iterator<String> wordsIter1 =
 					corpus.wordsContainingNgram(
-						seq, CompiledCorpus.SearchOption.EXCL_MISSPELLED);
+						seq, options);
 
 				Iterator<String> wordsIter2 =
 					explicitlyCorrectWords.wordsContainingNgram(

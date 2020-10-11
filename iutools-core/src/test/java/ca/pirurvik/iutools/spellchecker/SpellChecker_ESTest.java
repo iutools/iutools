@@ -80,4 +80,9 @@ public class SpellChecker_ESTest extends SpellCheckerTest {
     @Test
     @Ignore
     public void test__spellCheck__SpeedTest() throws Exception {}
+
+    @Test
+    public void test__ngramFrequency__ExcludeMisspelled() throws Exception {
+        SpellChecker corpus = largeDictChecker();
+    }
 }

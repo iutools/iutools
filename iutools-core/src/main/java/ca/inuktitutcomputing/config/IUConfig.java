@@ -27,7 +27,6 @@ public class IUConfig extends Config {
 		return iuDataPath;
 	}
 
-
 	public String nodesToTraceRegex() throws ConfigException {
 		String regex = 
 			getConfigProperty(

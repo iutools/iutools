@@ -2,13 +2,26 @@ package ca.pirurvik.iutools.spellchecker;
 
 import java.util.*;
 
+import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.string.diff.DiffResult;
+
+import org.apache.log4j.Logger;
 
 public class SpellDebug {
 
 	// Set to true to deactivate all traces
-	private static final boolean disableAllTraces = false;
+	private static final boolean debugActive;
+
+	static {
+		try {
+			debugActive =
+				Logger.getLogger("ca.pirurvik.iutools.spellchecker.SpellDebug")
+				.isTraceEnabled();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 	// List of SpellChecker methods that need to be traced
 	// If null, trace them all.
@@ -28,7 +41,7 @@ public class SpellDebug {
     // being corrected, we assume it is the value of assumeBadWordIs
     //
 //    private static String assumeBadWordIs = null;
-	private static String assumeBadWordIs = "nunavuumik";
+	private static String assumeBadWordIs = "kiinaujatigut";
 
     // - Keys are the misspelled words to trace
 	// - Values are the ordered list of suggested corrections that you expect
@@ -42,9 +55,9 @@ public class SpellDebug {
 	static {
 		badWordsToTrace = new HashMap<String,String[]>();
 		badWordsToTrace
-			.put("nunavuumik",
+			.put("kiinaujatigut",
 				new String[] {
-					"nunavummik"
+					"kiinaujaqtigut"
 				});
 	}
 
@@ -91,7 +104,7 @@ public class SpellDebug {
 	private static Pair<Boolean,String> traceStatus(String method, String badWord,
 			String candidate, String ngram) {
 
-		if (disableAllTraces) {
+		if (!debugActive) {
 			return Pair.of(false, "None");
 		}
 
@@ -172,7 +185,8 @@ public class SpellDebug {
 	}
 
 
-	public static void containsCorrection(String who, String what,
+	public static void
+	containsCorrection(String who, String what,
 			String badWord, String ngram,
 			Set<String> possibleSpellings) {
 		Pair<Boolean,String> status = traceStatus(who, badWord, (String) null, ngram);
@@ -253,8 +267,9 @@ public class SpellDebug {
 
 	public static String[] correctSpellingsFor(String badWord) {
 		String[] correctSpellings = null;
-		if (badWord == null && assumeBadWordIs != null) {
-			badWord = assumeBadWordIs;
+//		if (badWord == null && assumeBadWordIs != null) {
+		if (badWord == null && badWordsToTrace.size() == 1) {
+			badWord = badWordsToTrace.keySet().iterator().next();
 		}
 		if (badWord != null) {
             correctSpellings = getBadWordsToTrace().get(badWord);

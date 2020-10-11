@@ -230,17 +230,17 @@ public class CompiledCorpus_ES extends CompiledCorpus {
 
     @Override
     public Iterator<String> wordsContainingNgram(String ngram, SearchOption... options) throws CompiledCorpusException {
-        return searchWordsContainingNgram(ngram).docIDIterator();
+        return searchWordsContainingNgram(ngram, options).docIDIterator();
     }
 
-    public SearchResults<WordInfo_ES> searchWordsContainingNgram(String ngram) throws CompiledCorpusException {
+    public SearchResults<WordInfo_ES> searchWordsContainingNgram(String ngram, SearchOption... options) throws CompiledCorpusException {
         String[] ngramArr = ngram.split("");
         ngramArr = replaceCaretAndDollar(ngramArr);
         String query =
-            "wordCharsSpaceConcatenated:\"" +
+            "+wordCharsSpaceConcatenated:\"" +
             WordInfo_ES.insertSpaces(ngramArr) +
             "\"";
-        SearchResults<WordInfo_ES> results = esWinfoSearch(query);
+        SearchResults<WordInfo_ES> results = esWinfoSearch(query, options);
 
         return results;
     }
