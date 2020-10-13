@@ -48,7 +48,7 @@ public abstract class SpellCheckerTest {
 
 	private void addCorrectWordsLatin(SpellChecker checker) throws Exception {
 		for (String aWord: correctWordsLatin) {
-			checker.addCorrectWord(aWord);
+			checker.addExplicitlyCorrectWord(aWord);
 		}
 
 		if (checker instanceof SpellChecker_ES) {
@@ -75,11 +75,11 @@ public abstract class SpellCheckerTest {
 		// 
 		// For example
 		//
-		checker.addCorrectWord("inuktut");
-		checker.addCorrectWord("inuk");
-		checker.addCorrectWord("inuksuk");
-		checker.addCorrectWord("nunavut");
-		checker.addCorrectWord("1988-mut");
+		checker.addExplicitlyCorrectWord("inuktut");
+		checker.addExplicitlyCorrectWord("inuk");
+		checker.addExplicitlyCorrectWord("inuksuk");
+		checker.addExplicitlyCorrectWord("nunavut");
+		checker.addExplicitlyCorrectWord("1988-mut");
 		// etc...
 		
 		// OR
@@ -146,7 +146,7 @@ public abstract class SpellCheckerTest {
 			"Initially, word "+word+" should have been deemed mis-spelled",
 			checker.isMispelled(word));
 		
-		checker.addCorrectWord(word);
+		checker.addExplicitlyCorrectWord(word);
 		Assert.assertFalse(
 			"After being explicitly labelled as correct, word "+word+
 			" should NOT have been deemed mis-spelled",
@@ -170,13 +170,13 @@ public abstract class SpellCheckerTest {
 	public void test__wordsContainingSequ__Case_considering_extremities() throws Exception {
 		SpellChecker checker = largeDictCheckerWithTestWords();
 		checker.setVerbose(false);
-		checker.addCorrectWord("inuktitut");
-		checker.addCorrectWord("inuksuk");
-		checker.addCorrectWord("inuttitut");
-		checker.addCorrectWord("inakkut");
-		checker.addCorrectWord("takuinuit");
-		checker.addCorrectWord("taku");
-		checker.addCorrectWord("intakuinuit");
+		checker.addExplicitlyCorrectWord("inuktitut");
+		checker.addExplicitlyCorrectWord("inuksuk");
+		checker.addExplicitlyCorrectWord("inuttitut");
+		checker.addExplicitlyCorrectWord("inakkut");
+		checker.addExplicitlyCorrectWord("takuinuit");
+		checker.addExplicitlyCorrectWord("taku");
+		checker.addExplicitlyCorrectWord("intakuinuit");
 		
 		String seq;
 		String[] expected;
@@ -262,8 +262,9 @@ public abstract class SpellCheckerTest {
 			"ujararniarvimmi",
 			"ujararniarvimmik",
 			"ujararniarvimmit",
+			"ujararniarvingmi",
 			"ujarattarniarvimmi",
-			"ujararniarvimmut"
+//			"ujararniarvimmut"
 		};
 
 		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
@@ -310,7 +311,7 @@ public abstract class SpellCheckerTest {
 		String[] correctWordsLatin = new String[] {"inuktut", "nunavummi", "inuk", "inuksut", "nunavuumi", "nunavut"};
 		SpellChecker checker = smallDictCheckerWithTestWords();
 		checker.setVerbose(false);
-		for (String aWord: correctWordsLatin) checker.addCorrectWord(aWord);
+		for (String aWord: correctWordsLatin) checker.addExplicitlyCorrectWord(aWord);
 		String word = "ᓄᓇᕗᖕᒥ";
 		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
 		assertCorrectionOK(gotCorrection, word, false,
@@ -334,7 +335,7 @@ public abstract class SpellCheckerTest {
 		};
 		SpellChecker checker = smallDictCheckerWithTestWords();
 		checker.setVerbose(false);
-		for (String aWord: correctWordsLatin) checker.addCorrectWord(aWord);
+		for (String aWord: correctWordsLatin) checker.addExplicitlyCorrectWord(aWord);
 		String word = "1987-muti";
 		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
 		
@@ -620,7 +621,7 @@ public abstract class SpellCheckerTest {
 		String word = "tamainni";
 		assertWordUnknown(word, checker);
 		
-		checker.addCorrectWord(word);
+		checker.addExplicitlyCorrectWord(word);
 		assertWordIsKnown(word, checker);
 	}	
 	

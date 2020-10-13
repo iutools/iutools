@@ -62,9 +62,7 @@ import ca.inuktitutcomputing.utilbin.AnalyzeNumberExpressions;
 public class SpellChecker {
 	
 	public int MAX_SEQ_LEN = 5;
-//	public int MAX_CANDIDATES = 1000;
-//	public int MAX_CANDIDATES = 2000;
-	public int MAX_CANDIDATES = 5000;
+	public int MAX_CANDIDATES = 2000;
 	public int DEFAULT_CORRECTIONS = 5;
 	
 	/** Maximum msecs allowed for decomposing a word during 
@@ -253,7 +251,7 @@ public class SpellChecker {
 		verbose = value;
 	}
 	
-	public void addCorrectWord(String word) throws SpellCheckerException {
+	public void addExplicitlyCorrectWord(String word) throws SpellCheckerException {
 		try {
 			explicitlyCorrectWords.addWordOccurence(word);
 		} catch (CompiledCorpusException e) {

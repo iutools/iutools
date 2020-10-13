@@ -48,13 +48,13 @@ public abstract class SpellCheckerAccuracyTest {
 					.isMisspelled("nakurmiik").setMaxRank(6),
 
 				new SpellCheckerExample("nunavungmi")
-					.isMisspelled("nunavummi").setMaxRank(12),
+					.isMisspelled("nunavummi").setMaxRank(1),
 
 				new SpellCheckerExample("nunavuumik")
-					.isMisspelled("nunavummik").setMaxRank(26),
+					.isMisspelled("nunavummik").setMaxRank(1),
 
 				new SpellCheckerExample("nunavuumit")
-					.isMisspelled("nunavummit").setMaxRank(37),
+					.isMisspelled("nunavummit").setMaxRank(3),
 
 				new SpellCheckerExample("ugaalautaa")
 					.isMisspelled("uqaalautaa").setMaxRank(9),
@@ -63,109 +63,112 @@ public abstract class SpellCheckerAccuracyTest {
 				//   ONLY if we don't assume the correction is in dict
 
 				new SpellCheckerExample("qallunaatitut")
-					.isMisspelled("qallunaaqtitut").setMaxRank(5, -1),
+					.isMisspelled("qallunaaqtitut").setMaxRank(1, -1),
 
 				new SpellCheckerExample("tamaini")
-					.isMisspelled("tamainni").setMaxRank(5, -1),
+					.isMisspelled("tamainni").setMaxRank(1, -1),
 
 				new SpellCheckerExample("nniaqamangittulirijiit")
-					.isMisspelled("aanniaqamangittulirijiit").setMaxRank(5, -1),
+					.isMisspelled("aanniaqamangittulirijiit")
+					.setMaxRank(1, -1),
 
 				new SpellCheckerExample("nniaqamangittulirinirmut")
-					.isMisspelled("aanniaqamangittulirinirmut").setMaxRank(5, -1),
+					.isMisspelled("aanniaqamangittulirinirmut")
+					.setMaxRank(1, -1),
 				
 									
 				// OK: Examples with ranking <= 5
 
 				new SpellCheckerExample("akitujutinut")
-					.isMisspelled("akitujuutinut").setMaxRank(5),
+					.isMisspelled("akitujuutinut").setMaxRank(1),
 
 				new SpellCheckerExample("arragumi")
-					.isMisspelled("arraagumi").setMaxRank(5),
+					.isMisspelled("arraagumi").setMaxRank(1),
 
 				new SpellCheckerExample("asuillaak")
-					.isMisspelled("asuilaak").setMaxRank(5),
+					.isMisspelled("asuilaak").setMaxRank(1),
 
 				new SpellCheckerExample("iksivauitaaq")
-					.isMisspelled("iksivautaaq", "iksivautaak", "issivautaaq", "issivautaak", "itsivautaaq", "itsivautaak").setMaxRank(5),
+					.isMisspelled("iksivautaaq", "iksivautaak", "issivautaaq", "issivautaak", "itsivautaaq", "itsivautaak")
+					.setMaxRank(1),
 
 				new SpellCheckerExample("iksivautap")
-					.isMisspelled("iksivautaup").setMaxRank(5),
+					.isMisspelled("iksivautaup").setMaxRank(1),
 
 				new SpellCheckerExample("immaqa")
-					.isMisspelled("immaqaa").setMaxRank(5),
+					.isMisspelled("immaqaa").setMaxRank(1),
 
 				new SpellCheckerExample("katimajit")
-					.isMisspelled("katimajiit").setMaxRank(5),
+					.isMisspelled("katimajiit").setMaxRank(1),
 
 				new SpellCheckerExample("katimmajjutiksaq")
-					.isMisspelled("katimajjutiksaq").setMaxRank(5),
+					.isMisspelled("katimajjutiksaq").setMaxRank(1),
 
 				new SpellCheckerExample("kiinaujatigut")
-					.isMisspelled("kiinaujaqtigut").setMaxRank(5),
+					.isMisspelled("kiinaujaqtigut").setMaxRank(2),
 
 				new SpellCheckerExample("kiinaujat")
-					.isMisspelled("kiinaujait").setMaxRank(5),
+					.isMisspelled("kiinaujait").setMaxRank(2),
 
 				new SpellCheckerExample("maligaliqtit")
-					.isMisspelled("maligaliqtiit").setMaxRank(5),
+					.isMisspelled("maligaliqtiit").setMaxRank(1),
 
 				new SpellCheckerExample("maligatigut")
-					.isMisspelled("maligaqtigut").setMaxRank(5),
+					.isMisspelled("maligaqtigut").setMaxRank(2),
 
 				new SpellCheckerExample("nigiani")
-					.isMisspelled("niggiani").setMaxRank(5),
+					.isMisspelled("niggiani").setMaxRank(1),
 
 				new SpellCheckerExample("nniaqtulirinirmut")
-					.isMisspelled("aanniaqtulirinirmut").setMaxRank(5),
+					.isMisspelled("aanniaqtulirinirmut").setMaxRank(1),
 
 				new SpellCheckerExample("nunavumi")
-					.isMisspelled("nunavummi").setMaxRank(5),
+					.isMisspelled("nunavummi").setMaxRank(1),
 
 				new SpellCheckerExample("nunavumiut")
-					.isMisspelled("nunavummiut").setMaxRank(5),
+					.isMisspelled("nunavummiut").setMaxRank(2),
 
 				new SpellCheckerExample("nunavumut")
-					.isMisspelled("nunavummut").setMaxRank(5),
+					.isMisspelled("nunavummut").setMaxRank(1),
 
 				new SpellCheckerExample("nunavutmi")
-					.isMisspelled("nunavummi").setMaxRank(5),
+					.isMisspelled("nunavummi").setMaxRank(1),
 
 				new SpellCheckerExample("pigiaqtitat")
-					.isMisspelled("pigiaqtitait").setMaxRank(5),
+					.isMisspelled("pigiaqtitait").setMaxRank(3),
 
 				new SpellCheckerExample("sulikkanniiq")
-					.isMisspelled("sulikkanniq").setMaxRank(5),
+					.isMisspelled("sulikkanniq").setMaxRank(1),
 
 				new SpellCheckerExample("takkua")
-					.isMisspelled("taakkua").setMaxRank(5),
+					.isMisspelled("taakkua").setMaxRank(1),
 
 				new SpellCheckerExample("tamakkuninnga")
-					.isMisspelled("tamakkuninga").setMaxRank(5),
+					.isMisspelled("tamakkuninga").setMaxRank(1),
 
 				new SpellCheckerExample("tamatuminnga")
-					.isMisspelled("tamatuminga").setMaxRank(5),
+					.isMisspelled("tamatuminga").setMaxRank(1),
 
 				new SpellCheckerExample("tamatumunnga")
-					.isMisspelled("tamatumunga").setMaxRank(5),
+					.isMisspelled("tamatumunga").setMaxRank(1),
 
 				new SpellCheckerExample("tanna")
-					.isMisspelled("taanna").setMaxRank(5),
+					.isMisspelled("taanna").setMaxRank(1),
 
 				new SpellCheckerExample("tavani")
-					.isMisspelled("tavvani").setMaxRank(5),
+					.isMisspelled("tavvani").setMaxRank(1),
 
 				new SpellCheckerExample("uvalu")
-					.isMisspelled("uvvalu").setMaxRank(5),
+					.isMisspelled("uvvalu").setMaxRank(1),
 
 				new SpellCheckerExample("nniaqtulirijikkunnut")
-					.isMisspelled("aanniaqtulirijikkunnut").setMaxRank(5),
+					.isMisspelled("aanniaqtulirijikkunnut").setMaxRank(1),
 
 				new SpellCheckerExample("immaqaqai")
-					.isMisspelled("immaqaaqai").setMaxRank(5),
+					.isMisspelled("immaqaaqai").setMaxRank(1),
 
 				new SpellCheckerExample("taimak")
-					.isMisspelled("taimaak").setMaxRank(5),
+					.isMisspelled("taimaak").setMaxRank(1),
 	};
 		
 	//
@@ -267,7 +270,7 @@ public abstract class SpellCheckerAccuracyTest {
 
 				// NEEDS-IMPROVEMENT: rank > 5 or null
 				new SpellCheckerExample("piliriqatigiinik")
-						.isMisspelled("piliriqatigiinnik").setMaxRank(null),
+						.isMisspelled("piliriqatigiinnik").setMaxRank(1),
 				
 				// OK: rank <= 5
 				new SpellCheckerExample("aanniaqarnngittulirijikkut")
@@ -318,7 +321,7 @@ public abstract class SpellCheckerAccuracyTest {
 		// to evaluate that one.
 		//
 		String focusOnExample = null;
-//		focusOnExample = "kiinaujatigut";
+//		focusOnExample = "maligatigut";
 		
 		int verbosity = 1;
 		double expPercentFoundInTopN = 0.95;
@@ -399,10 +402,11 @@ public abstract class SpellCheckerAccuracyTest {
 		// to evaluate that one.
 		//
 		String focusOnExample = null;
-//		focusOnExample = "angijuqqaaqaqtutik";		
+//		focusOnExample = "piliriqatigiinik";
 		
 		int verbosity = 2;
-		double expPercentFoundInTopN = 0.93;
+//		double expPercentFoundInTopN = 0.93;
+		double expPercentFoundInTopN = 1.0;
 		double tolerance = 0.01;
 		double expAverageRank = 1.23;
 		double avgRankTolerance = 0.93;
@@ -473,7 +477,12 @@ public abstract class SpellCheckerAccuracyTest {
 				evaluator.onNewExample(exampleData, loadCorrectWordInDict);				
 			}
 		}
-		
+
+		int numExamples = evaluator.totalExamples();
+		Assert.assertTrue(
+	"No examples were evaluated!\nMaybe you set 'focusOnExample' to a word that is not in the list of examples?",
+			numExamples > 0);
+
 		int N = 5;
 		assertEvaluationAsExpected(evaluator, N, 
 				expPercentFoundInTopN, tolerance,
@@ -508,8 +517,9 @@ public abstract class SpellCheckerAccuracyTest {
 		errMess += checkFalseNegativeRate(evaluator, expFNRate, toleranceFNRate);
 		errMess += checkPercentInTopN(evaluator, N, expPercentFoundInTopN, tolerance);;
 		errMess += checkAverageRank(evaluator, expAverageRank, avgRankTolerance);
-		errMess += checkExamplesWithBadRank(evaluator);	
-		
+		errMess += checkExamplesWithWorseRank(evaluator);
+		errMess += checkExamplesWithBetterRank(evaluator);
+
 		if (!errMess.isEmpty()) {
 			fail(errMess);
 		}		
@@ -617,11 +627,11 @@ public abstract class SpellCheckerAccuracyTest {
 		return errMess;
 	}
 
-	private String checkExamplesWithBadRank(SpellCheckerEvaluator evaluator) {
+	private String checkExamplesWithWorseRank(SpellCheckerEvaluator evaluator) {
 		String errMess = "";
 		if (evaluator.examplesWithBadRank.size() > 0) {
 			errMess = 
-				"There were examples for which the rank of the first correct suggestion exceeded the expected maximum.\n"+
+				"\nThere were examples for which the rank of the first correct suggestion was WORSE than the expected maximum.\n"+
 				"List of such examples below.\n\n";
 			for (SpellCheckerExample example: evaluator.examplesWithBadRank.keySet()) {
 				Pair<Integer,List<String>> problem = 
@@ -643,6 +653,35 @@ public abstract class SpellCheckerAccuracyTest {
 			}
 		}
 		
+		return errMess;
+	}
+
+	private String checkExamplesWithBetterRank(SpellCheckerEvaluator evaluator) {
+		String errMess = "";
+		if (evaluator.examplesWithBetterRank.size() > 0) {
+			errMess =
+					"\nThere were examples for which the rank of the first correct suggestion was BETTER than the expected maximum.\n"+
+							"List of such examples below.\n\n";
+			for (SpellCheckerExample example: evaluator.examplesWithBetterRank.keySet()) {
+				Pair<Integer,List<String>> problem =
+						evaluator.examplesWithBetterRank.get(example);
+				String word = example.wordToCheck;
+				Integer rank = problem.getFirst();
+				List<String> topCandidates =
+						problem.getSecond()
+								.stream()
+								.limit(20)
+								.collect(Collectors.toList());
+				errMess += "  "+word+": rank="+rank+
+						" (exp <= "+example.maxRankAssumingInDict+")\n"+
+						"  Correctly spelled forms: "+
+						StringUtils.join(example.acceptableCorrections.iterator(), ", ")+"\n"+
+						"  Top candidates were: "+
+						StringUtils.join(topCandidates.iterator(), ", ")+"\n\n"
+				;
+			}
+		}
+
 		return errMess;
 	}
 
@@ -724,7 +763,7 @@ public abstract class SpellCheckerAccuracyTest {
 	private void assumeCorrectionsAreInCheckerDict(SpellCheckerExample[] examples, SpellChecker spellChecker) throws SpellCheckerException {
 		for (SpellCheckerExample anExample: examples) {
 			for (String aCorrection: anExample.acceptableCorrections) {
-				spellChecker.addCorrectWord(aCorrection);				
+				spellChecker.addExplicitlyCorrectWord(aCorrection);
 			}
 		}
 	}

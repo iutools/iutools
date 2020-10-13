@@ -7,6 +7,10 @@ import java.util.*;
 public class SpellGoldStandard {
     private Map<String, SpellGoldStandardCase> _cases = null;
 
+    /**
+     * Key: String docName
+     * Value: Map<String revisorName, DocHumanRevison revisionByThatRevisor></String>
+     */
     private Map<String, Map<String,DocHumanRevision>> docRevisions =
         new HashMap<String, Map<String,DocHumanRevision>>();
 
@@ -102,14 +106,67 @@ public class SpellGoldStandard {
 
     public Set<Triple<String, String, String>> missedRevisions() {
         Set<Triple<String, String, String>> missed = new HashSet<Triple<String, String, String>>();
-
-        Map<String,Map<String,Set<String>>> wordsByDoc =
-            new HashMap<String,Map<String,Set<String>>>();
-        Iterator<SpellGoldStandardCase> iter = allWords();
-        while (iter.hasNext()) {
-            SpellGoldStandardCase aCase = iter.next();
+        for (String doc: allDocs()) {
+            Map<String, DocHumanRevision> oneDocRevisions = docRevisions.get(doc);
+            Set<Triple<String, String, String>> missedOneDoc =
+                missedRevisionInDoc(oneDocRevisions);
+            missed.addAll(missedOneDoc);
         }
 
         return missed;
     }
+
+    /**
+     *
+     * @param allRevsOneDoc:
+     *    Map<String revisorName, DocHumanRevision revisionByThatRevisor>
+     *    All revisions made for one document.
+     *
+     * @return
+     */
+    private Set<Triple<String, String, String>> missedRevisionInDoc(
+        Map<String, DocHumanRevision> allRevsOneDoc) {
+
+        Set<Triple<String, String, String>> missed =
+                new HashSet<Triple<String, String, String>>();
+
+        if (!allRevsOneDoc.isEmpty()) {
+            String doc =
+                allRevsOneDoc.entrySet().iterator().next()
+                .getValue().docID;
+
+            // Build a map of what evaluators looked at what words
+            //
+            Map<String, Set<String>> evaluators4word = new HashMap<String, Set<String>>();
+            Set<String> allEvaluators = new HashSet<String>();
+            for (String evaluator : allRevsOneDoc.keySet()) {
+                allEvaluators.add(evaluator);
+                DocHumanRevision aRev = allRevsOneDoc.get(evaluator);
+                for (String word : aRev.allWords()) {
+                    if (!evaluators4word.containsKey(word)) {
+                        evaluators4word.put(word, new HashSet<String>());
+                    }
+                    Set<String> evaluatorsThisWord = evaluators4word.get(word);
+                    evaluatorsThisWord.add(evaluator);
+                }
+            }
+
+            // Report any word that has not been seen by all evaluators.
+            for (String word : evaluators4word.keySet()) {
+                Set<String> evaluatorsThisWord = evaluators4word.get(word);
+                for (String evaluator : allEvaluators) {
+                    if (!evaluatorsThisWord.contains(evaluator)) {
+                        missed.add(Triple.of(doc, word, evaluator));
+                    }
+                }
+            }
+        }
+
+        return missed;
+    }
+
+    private Set<String> allDocs() {
+        return docRevisions.keySet();
+    }
 }
+

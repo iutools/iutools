@@ -12,7 +12,6 @@ import java.util.Set;
 import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.datastructure.trie.StringSegmenterException;
-import ca.nrc.json.PrettyPrinter;
 
 public class SpellCheckerEvaluator {
 	
@@ -26,7 +25,9 @@ public class SpellCheckerEvaluator {
 	Map<SpellCheckerExample,Integer> correctSpellingRank = new HashMap<SpellCheckerExample,Integer>();
 	Map<SpellCheckerExample,Pair<Integer,List<String>>> examplesWithBadRank = 
 			new HashMap<SpellCheckerExample,Pair<Integer,List<String>>>();
-	
+	Map<SpellCheckerExample,Pair<Integer,List<String>>> examplesWithBetterRank =
+			new HashMap<SpellCheckerExample,Pair<Integer,List<String>>>();
+
 	private double sumRank = 0.0;
 	private int totalNonNullRank = 0;
 	private int totalExamplesWithKnownCorrection = 0;	
@@ -80,9 +81,9 @@ public class SpellCheckerEvaluator {
 	
 	private void evaluateCheckerSuggestions(SpellCheckerExample example, 
 			SpellingCorrection gotCorrection, 
-			Boolean assumesCorrectionsLoadeInDict) {
+			Boolean assumesCorrectionsLoadedInDict) {
 		
-		if (!assumesCorrectionsLoadeInDict && 
+		if (!assumesCorrectionsLoadedInDict &&
 				example.maxRankNOTAssumingInDict != null &&
 				example.maxRankNOTAssumingInDict == -1) {
 			// We don't expect this example to find the correction.
@@ -108,10 +109,12 @@ public class SpellCheckerEvaluator {
 					break;
 				}
 			}
-						
-			boolean rankBad = false;
+
+			String comparison = null;
+			boolean rankWorseThanExpected = false;
+			boolean rankBetterThanExpected = false;
 			Integer maxRank = example.maxRankAssumingInDict;
-			if (!assumesCorrectionsLoadeInDict) {
+			if (!assumesCorrectionsLoadedInDict) {
 				// We are evaluating the examples WITHOUT having first ensured that 
 				// the correct spellings are known to the dictionary.
 				// The max rank expectations may be different in that situation
@@ -120,19 +123,37 @@ public class SpellCheckerEvaluator {
 					maxRank = example.maxRankNOTAssumingInDict;
 				}
 			}
-	
+
 			if (rank == null) {
-				if (maxRank != null && maxRank > 0) {
-					rankBad = true;
+				// got == null;
+				if (maxRank == null) {
+					// got == null; exp == null
+					comparison = "same";
+				} else {
+					// got == null; exp != null
+					comparison = "worse";
 				}
 			} else {
-				if (maxRank == null || maxRank < 0 ||
-						rank > maxRank) {
-					rankBad = true;
+				// got != null;
+				if (maxRank == null) {
+					// got != null; exp == null;
+					comparison = "better";
+				} else {
+					// got != null; exp != null;
+					if (rank > maxRank) {
+						comparison = "worse";
+					} else if (rank < maxRank){
+						comparison = "better";
+					} else {
+						comparison = "same";
+					}
 				}
 			}
-			if (rankBad) {
-				addExampleWithBadRank(example, rank, gotCorrection.scoredCandidates);
+
+			if (comparison.equals("worse")) {
+				addExampleWithWorseRank(example, rank, gotCorrection.scoredCandidates);
+			} else if (comparison.equals("better")) {
+				addExampleWithBetterRank(example, rank, gotCorrection.scoredCandidates);
 			}
 	
 			if (rank != null) {
@@ -148,8 +169,8 @@ public class SpellCheckerEvaluator {
 		}
 	}
 
-	private void addExampleWithBadRank(SpellCheckerExample example, 
-			Integer rank, List<ScoredSpelling> scoredSpellings) {
+	private void addExampleWithWorseRank(SpellCheckerExample example,
+										 Integer rank, List<ScoredSpelling> scoredSpellings) {
 		
 		List<String> suggestions = new ArrayList<String>();
 		for (ScoredSpelling aSpelling: scoredSpellings) {
@@ -157,6 +178,17 @@ public class SpellCheckerEvaluator {
 		}
 		
 		examplesWithBadRank.put(example, Pair.of(rank,suggestions));
+	}
+
+	private void addExampleWithBetterRank(SpellCheckerExample example,
+										 Integer rank, List<ScoredSpelling> scoredSpellings) {
+
+		List<String> suggestions = new ArrayList<String>();
+		for (ScoredSpelling aSpelling: scoredSpellings) {
+			suggestions.add(aSpelling.toString());
+		}
+
+		examplesWithBetterRank.put(example, Pair.of(rank,suggestions));
 	}
 
 

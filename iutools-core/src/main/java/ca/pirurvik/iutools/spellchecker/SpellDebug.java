@@ -41,7 +41,7 @@ public class SpellDebug {
     // being corrected, we assume it is the value of assumeBadWordIs
     //
 //    private static String assumeBadWordIs = null;
-	private static String assumeBadWordIs = "kiinaujatigut";
+//	private static String assumeBadWordIs = "kiinaujatigut";
 
     // - Keys are the misspelled words to trace
 	// - Values are the ordered list of suggested corrections that you expect
@@ -55,9 +55,9 @@ public class SpellDebug {
 	static {
 		badWordsToTrace = new HashMap<String,String[]>();
 		badWordsToTrace
-			.put("kiinaujatigut",
+			.put("nunavuumik",
 				new String[] {
-					"kiinaujaqtigut"
+					"nunavummik"
 				});
 	}
 

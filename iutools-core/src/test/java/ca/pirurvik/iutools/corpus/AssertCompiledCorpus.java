@@ -1,19 +1,14 @@
 package ca.pirurvik.iutools.corpus;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.junit.Assert;
 
-import ca.nrc.datastructure.trie.AssertTrieNode;
-import ca.nrc.datastructure.trie.TrieNode;
-import ca.nrc.testing.AssertHelpers;
 import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.Asserter;
 
@@ -262,7 +257,7 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 
     public void totalWordsWithNgramEquals(String ngram, long expTotal)
 		throws Exception {
-		long gotTotal = corpus().totalWordsWithNgram(ngram);
+		long gotTotal = corpus().charNgramFrequency(ngram);
 		Assert.assertEquals(
 			"Wrong number of words for ngram="+ngram,
 			expTotal, gotTotal);

@@ -1,7 +1,5 @@
 package ca.pirurvik.iutools.corpus;
 
-import static org.junit.Assert.*;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -12,10 +10,8 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Iterator;
-import java.util.Set;
 
 import ca.nrc.testing.AssertIterator;
-import ca.nrc.testing.AssertSet;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.log4j.Logger;
@@ -23,13 +19,9 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
-import ca.nrc.datastructure.trie.AssertTrieNode;
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenter_Char;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
-import ca.nrc.datastructure.trie.TrieNode;
-import ca.nrc.datastructure.trie.Trie_InMemory;
-import ca.nrc.testing.AssertHelpers;
 import ca.nrc.testing.AssertObject;
 
 public abstract class CompiledCorpusTest {
@@ -174,7 +166,7 @@ public abstract class CompiledCorpusTest {
 			// If you just want to know the NUMBER of words that contain
 			// a particular ngram, you can do this:
 			//
-			long numWords = compiledCorpus.totalWordsWithNgram("nuna");
+			long numWords = compiledCorpus.charNgramFrequency("nuna");
 		}
 		
 		// Similarly, you can also ask for information about words that contain 

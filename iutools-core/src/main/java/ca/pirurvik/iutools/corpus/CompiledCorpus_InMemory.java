@@ -52,7 +52,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 
 	protected Long terminalsSumFreq = null;
 	
-	public Map<String,Long> ngramStats = null;
+	public Map<String,Long> ngramNumWordStats = null;
 
 	private Map<String,WordInfo> word2infoMap = new HashMap<String,WordInfo>();
 		
@@ -74,15 +74,15 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	private Long nextWordKey = new Long(0);
 	
 	// ngrams from 1 to MAX_NGRAM_LEN of all decomposed words in the corpus
-	public Map<String,Long> getNgramStats() {
-		if (ngramStats==null) {
-			setNgramStats();
+	public Map<String,Long> getNgramNumWordStats() {
+		if (ngramNumWordStats ==null) {
+			setNgramNumWordStats();
 		}
-		return ngramStats;
+		return ngramNumWordStats;
 	}
 	
-	public void setNgramStats() {
-		ngramStats = new HashMap<String,Long>();
+	public void setNgramNumWordStats() {
+		ngramNumWordStats = new HashMap<String,Long>();
 		String[] words = decomposedWordsSuite.split(",,");
 		for (int iw=1; iw<words.length; iw++) {
 			updateSequenceNgramsForWord(words[iw]);
@@ -165,10 +165,10 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 		Iterator<String> itngram = seqsSeenInWord.iterator();
 		while (itngram.hasNext()) {
 			String ngram = itngram.next();
-			Long freq = ngramStats.get(ngram);
+			Long freq = ngramNumWordStats.get(ngram);
 			if (freq==null)
 				freq = (long)0;
-			ngramStats.put(ngram, ++freq);
+			ngramNumWordStats.put(ngram, ++freq);
 		}
 	}
 
@@ -287,7 +287,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	
 	
 	protected void compileExtras() {
-		setNgramStats();
+		setNgramNumWordStats();
 	}
     
     // ----------------------------- static -------------------------------
@@ -637,7 +637,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	}
 	
 	public boolean ngramsAreComputed() {
-		return ngramStats != null;
+		return ngramNumWordStats != null;
 	}
 
 	@Override
@@ -651,7 +651,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	@Override
 	public long charNgramFrequency(String ngram, SearchOption... options) throws CompiledCorpusException {
 		long freq = 0;
-		Map<String, Long> freqs = getNgramStats();
+		Map<String, Long> freqs = getNgramNumWordStats();
 		if (freqs.containsKey(ngram)) {
 			freq = freqs.get(ngram);
 		}

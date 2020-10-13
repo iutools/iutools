@@ -1,9 +1,12 @@
 package ca.pirurvik.iutools.spellchecker.goldstandard;
 
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.apache.commons.lang3.tuple.Triple;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -57,7 +60,7 @@ public class SpellGoldStandardTest {
 
         // You can also look for words that have been missed by one or more revisors
         //
-//        List<Triple<String,String,String>> missedRevisions = gs.missedRevisions();
+        Set<Triple<String, String, String>> missedRevisions = gs.missedRevisions();
 
 
         // Of course, you can also iterate through all the words in the gold standard
@@ -82,6 +85,9 @@ public class SpellGoldStandardTest {
         gs.addCase(origWord, "hell", docName, "Jane");
         gs.addCase("hell", null, "TheDivineComedy.docx", "Jane");
 
+        Triple.of("", "", "");
+
+        new ImmutableTriple<String, String, String>("blah", "blah", "blah");
         new AssertSpellGoldStandard(gs, "")
             .wordsWithMultipleCorrectionsAre(
                 new String[][] {
@@ -89,7 +95,28 @@ public class SpellGoldStandardTest {
                 }
             )
             .correctlySpelledWordsAre("hell")
-            .spellings4wordAre("helll", "hello", "hell");
+            .spellings4wordAre("helll", "hello", "hell")
+            .missedRevisionsAre();
             ;
     }
+
+    @Test
+    public void test__SpellGoldStandard__MissedSomeRevisions() throws Exception {
+        SpellGoldStandard gs = new SpellGoldStandard();
+        String docName = "SomeDoc.txt";
+
+        // This one was revised by both revisors
+        String origWord = "helll";
+        gs.addCase(origWord, "hello", docName, "Joe");
+        gs.addCase(origWord, "hell", docName, "Jane");
+
+        // This one was missed by Joe
+        origWord = "wrld";
+        gs.addCase(origWord, "world", docName, "Jane");
+
+        new AssertSpellGoldStandard(gs, "")
+            .missedRevisionsAre(Triple.of("Blah", "blah", "blah"));
+        ;
+    }
+
 }
