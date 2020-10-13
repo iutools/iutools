@@ -389,7 +389,7 @@ public abstract class CompiledCorpus_v2 extends CompiledCorpus {
 
     // TODO-2020-10: Take SearchOptions into account
     @Override
-    public long charNgramFrequency(String ngram, SearchOption... options)
+    public long totalWordsWithCharNgram(String ngram, SearchOption... options)
         throws CompiledCorpusException {
         long freq = 0;
         try {

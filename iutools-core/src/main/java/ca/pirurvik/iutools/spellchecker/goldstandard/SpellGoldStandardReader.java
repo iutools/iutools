@@ -11,8 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,12 +24,30 @@ import static org.apache.log4j.helpers.LogLog.warn;
  */
 public class SpellGoldStandardReader {
 
+    public static enum GSReaderOption {WARN_CORRECTIONS_WITH_NO_COMMENT}
+
     public static class CSVConsumer implements Consumer<Path> {
 
-        private final SpellGoldStandard goldStandard;
+        private Set<GSReaderOption> options = null;
+
+        private SpellGoldStandard goldStandard;
+
         List<Path> processedFiles = new ArrayList<Path>();
 
         public CSVConsumer(SpellGoldStandard _gs) {
+            init_CSVConsumer(_gs, null);
+        }
+
+        public CSVConsumer(SpellGoldStandard _gs, GSReaderOption[] _options) {
+            init_CSVConsumer(_gs, _options);
+        }
+
+        private void init_CSVConsumer(SpellGoldStandard _gs, GSReaderOption[] _options) {
+            if (_options == null) {
+                _options = new GSReaderOption[0];
+            }
+            options = new HashSet<GSReaderOption>();
+            Collections.addAll(options, _options);
             this.goldStandard = _gs;
         }
 
@@ -63,6 +80,19 @@ public class SpellGoldStandardReader {
                     // Skip the first line as well as empty lines
                     continue;
                 }
+
+                if (aLine.size() < 3) {
+                    throw new SpellCheckerException(
+                        "Wrong number of fields in a CSV file line\n"+
+                        "  In file      : "+csvFile+"\n"+
+                        "  At Line      :"+lineCounter+"\n" +
+                        "  Got #fields  : "+aLine.size()+"\n" +
+                        "  Exp at least : 3\n" +
+                        "  Line fields were: \n    "+String.join("\n    ", aLine)
+                    );
+                }
+
+                fillCSVOptionalFields(aLine);
                 String wordID = aLine.get(0);
                 String origWord = aLine.get(2).toLowerCase();
                 String correctedWord = aLine.get(3).toLowerCase();
@@ -89,8 +119,17 @@ public class SpellGoldStandardReader {
             }
         }
 
+        private void fillCSVOptionalFields(List<String> csvLine) {
+            int lengthDiff = 6 - csvLine.size();
+            for (int ii=0; ii < lengthDiff; ii++) {
+                csvLine.add("");
+            }
+        }
+
         private void warn(String mess) {
-            System.out.println("WARNING: "+mess);
+            if (options.contains(GSReaderOption.WARN_CORRECTIONS_WITH_NO_COMMENT)) {
+                System.out.println("WARNING: " + mess);
+            }
         }
 
         protected Pair<String,String> idAndRevisorForFile(Path csvFile) {
@@ -113,11 +152,16 @@ public class SpellGoldStandardReader {
         }
 
     }
-
     public static SpellGoldStandard read(File gsRootDir) throws IOException {
+        return read(gsRootDir, new GSReaderOption[0]);
+    }
+
+
+    public static SpellGoldStandard read(
+        File gsRootDir, GSReaderOption... options) throws IOException {
         SpellGoldStandard gs = new SpellGoldStandard();
 
-        CSVConsumer consumer = new CSVConsumer(gs);
+        CSVConsumer consumer = new CSVConsumer(gs, options);
 
         gsRootDir.toPath();
         Files.walk(Paths.get(gsRootDir.toString(), new String[]{}))
@@ -125,8 +169,6 @@ public class SpellGoldStandardReader {
 
         return gs;
     }
-
-
 
     private static void processCSVFile(Path csvPath) {
         System.out.println("Process csv file: "+csvPath);

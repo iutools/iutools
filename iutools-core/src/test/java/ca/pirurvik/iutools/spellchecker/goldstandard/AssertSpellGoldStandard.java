@@ -4,6 +4,7 @@ import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.AssertSet;
 import ca.nrc.testing.Asserter;
 import org.apache.commons.lang3.tuple.Triple;
+import org.junit.Assert;
 
 import java.util.*;
 
@@ -74,10 +75,35 @@ public class AssertSpellGoldStandard extends Asserter<SpellGoldStandard> {
         return this;
     }
 
-    public void missedRevisionsAre(Triple<String, String, String>... expMissedArr) throws Exception {
+    public AssertSpellGoldStandard missedRevisionsAre(Triple<String, String, String>... expMissedArr) throws Exception {
         Set<Triple<String, String, String>> expMissed = new HashSet<Triple<String, String, String>>();
         Collections.addAll(expMissed, expMissedArr);
         Set<Triple<String, String, String>> gotMissed = goldStandard().missedRevisions();
         AssertSet.assertEquals(baseMessage+"\nThe missed revisions were not as expected", expMissed, gotMissed);
+        return this;
+    }
+
+    public AssertSpellGoldStandard totalDocsEquals(int expTotalDocs) {
+        int gotTotalDocs = goldStandard().totalDocs();
+        Assert.assertEquals(
+            "Number of documents in the Gold Standard was not as expected.",
+            expTotalDocs, gotTotalDocs);
+        return this;
+    }
+
+    public AssertSpellGoldStandard totalMisspelledWordsEquals(int expTotalMisspelled) {
+        int gotTotalMisspelled = goldStandard().totalMisspelledWords();
+        Assert.assertEquals(
+    "Total number of misspelled words was not as expected.",
+            expTotalMisspelled, gotTotalMisspelled);
+        return this;
+    }
+
+    public AssertSpellGoldStandard totalCorrectlySpelledWordsEquals(int expTotal) {
+        int gotTotal = goldStandard().totalCorrectlySpelledWords();
+        Assert.assertEquals(
+            "Total number of correctly spelled words was not as expected.",
+            expTotal, gotTotal);
+        return this;
     }
 }

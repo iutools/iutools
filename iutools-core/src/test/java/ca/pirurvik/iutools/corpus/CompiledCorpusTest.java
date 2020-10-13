@@ -166,7 +166,7 @@ public abstract class CompiledCorpusTest {
 			// If you just want to know the NUMBER of words that contain
 			// a particular ngram, you can do this:
 			//
-			long numWords = compiledCorpus.charNgramFrequency("nuna");
+			long numWords = compiledCorpus.totalWordsWithCharNgram("nuna");
 		}
 		
 		// Similarly, you can also ask for information about words that contain 

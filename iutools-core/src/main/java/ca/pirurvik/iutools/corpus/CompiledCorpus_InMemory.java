@@ -52,7 +52,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 
 	protected Long terminalsSumFreq = null;
 	
-	public Map<String,Long> ngramNumWordStats = null;
+	public Map<String,Long> ngramNumWords = null;
 
 	private Map<String,WordInfo> word2infoMap = new HashMap<String,WordInfo>();
 		
@@ -74,15 +74,15 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	private Long nextWordKey = new Long(0);
 	
 	// ngrams from 1 to MAX_NGRAM_LEN of all decomposed words in the corpus
-	public Map<String,Long> getNgramNumWordStats() {
-		if (ngramNumWordStats ==null) {
+	public Map<String,Long> getNgramNumWords() {
+		if (ngramNumWords ==null) {
 			setNgramNumWordStats();
 		}
-		return ngramNumWordStats;
+		return ngramNumWords;
 	}
 	
 	public void setNgramNumWordStats() {
-		ngramNumWordStats = new HashMap<String,Long>();
+		ngramNumWords = new HashMap<String,Long>();
 		String[] words = decomposedWordsSuite.split(",,");
 		for (int iw=1; iw<words.length; iw++) {
 			updateSequenceNgramsForWord(words[iw]);
@@ -165,10 +165,10 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 		Iterator<String> itngram = seqsSeenInWord.iterator();
 		while (itngram.hasNext()) {
 			String ngram = itngram.next();
-			Long freq = ngramNumWordStats.get(ngram);
+			Long freq = ngramNumWords.get(ngram);
 			if (freq==null)
 				freq = (long)0;
-			ngramNumWordStats.put(ngram, ++freq);
+			ngramNumWords.put(ngram, ++freq);
 		}
 	}
 
@@ -637,7 +637,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	}
 	
 	public boolean ngramsAreComputed() {
-		return ngramNumWordStats != null;
+		return ngramNumWords != null;
 	}
 
 	@Override
@@ -649,9 +649,9 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 
 	// TODO-2020-10: Take SearchOptions into account
 	@Override
-	public long charNgramFrequency(String ngram, SearchOption... options) throws CompiledCorpusException {
+	public long totalWordsWithCharNgram(String ngram, SearchOption... options) throws CompiledCorpusException {
 		long freq = 0;
-		Map<String, Long> freqs = getNgramNumWordStats();
+		Map<String, Long> freqs = getNgramNumWords();
 		if (freqs.containsKey(ngram)) {
 			freq = freqs.get(ngram);
 		}

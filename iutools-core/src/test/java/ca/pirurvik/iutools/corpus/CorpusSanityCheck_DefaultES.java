@@ -26,7 +26,8 @@ public class CorpusSanityCheck_DefaultES extends CorpusSanityCheck {
                 }
         );
 
-        exp.put("nuna:freq", new Long(2823));
+        exp.put("nuna:freq", new Long(-1));
+        exp.put("nuna:totalWords", new Long(2823));
 
         return exp;
     }

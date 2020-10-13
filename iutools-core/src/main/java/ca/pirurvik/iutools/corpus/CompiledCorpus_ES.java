@@ -436,7 +436,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
 
     // TODO-2020-10: Take SearchOptions into account
     @Override
-    public long charNgramFrequency(String ngram, SearchOption... options)
+    public long totalWordsWithCharNgram(String ngram, SearchOption... options)
         throws CompiledCorpusException {
         Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpus_ES.charNgramFrequency");
         tLogger.trace("invoked with ngram="+ngram);
@@ -445,14 +445,9 @@ public class CompiledCorpus_ES extends CompiledCorpus {
             WordInfo_ES.insertSpaces(ngram)+
             "\"";
 
-        Aggs aggs = new Aggs()
-            .aggregate("totalOccurences", "sum", "frequency");
+        SearchResults<WordInfo_ES> results = esWinfoSearch(query, options);
 
-        SearchResults<WordInfo_ES> results = esWinfoSearch(query, options, aggs);
-
-        Double freqDbl = (Double) results.aggrResult("totalOccurences");
-
-        long freq = Math.round(freqDbl);
+        long freq = results.getTotalHits();
         tLogger.trace("Returning freq="+freq);
 
         return freq;

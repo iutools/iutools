@@ -168,5 +168,17 @@ public class SpellGoldStandard {
     private Set<String> allDocs() {
         return docRevisions.keySet();
     }
+
+    public int totalDocs() {
+        return allDocs().size();
+    }
+
+    public int totalMisspelledWords() {
+        return misspelledWords().size();
+    }
+
+    public int totalCorrectlySpelledWords() {
+        return correctlySpelledWords().size();
+    }
 }
 

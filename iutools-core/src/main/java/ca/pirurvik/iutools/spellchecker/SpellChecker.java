@@ -997,7 +997,7 @@ public class SpellChecker {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.spellchecker.SpellChecker.ngramFrequency");
 		long freq = 0;
 		try {
-			freq = corpus.charNgramFrequency(
+			freq = corpus.totalWordsWithCharNgram(
 					ngram, CompiledCorpus.SearchOption.EXCL_MISSPELLED);
 		} catch (CompiledCorpusException e) {
 			throw new SpellCheckerException(e);

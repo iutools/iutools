@@ -85,7 +85,7 @@ public abstract class CompiledCorpus {
 	protected transient NgramCompiler charsNgramCompiler = null;
 	protected transient NgramCompiler morphsNgramCompiler = null;
 
-	public abstract long charNgramFrequency(
+	public abstract long totalWordsWithCharNgram(
 		String ngram, SearchOption... options) throws CompiledCorpusException;
 
 	public CompiledCorpus() {
@@ -189,9 +189,9 @@ public abstract class CompiledCorpus {
 		return wordsContainingNgram(ngram, new SearchOption[0]);
 	}
 
-	public long charNgramFrequency(String ngram)
+	public long totalWordsWithCharNgram(String ngram)
 		throws CompiledCorpusException {
-		return charNgramFrequency(ngram, new SearchOption[0]);
+		return totalWordsWithCharNgram(ngram, new SearchOption[0]);
 	}
 
 	@JsonIgnore

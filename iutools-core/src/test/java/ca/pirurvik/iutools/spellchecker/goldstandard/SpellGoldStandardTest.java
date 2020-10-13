@@ -115,8 +115,7 @@ public class SpellGoldStandardTest {
         gs.addCase(origWord, "world", docName, "Jane");
 
         new AssertSpellGoldStandard(gs, "")
-            .missedRevisionsAre(Triple.of("Blah", "blah", "blah"));
+            .missedRevisionsAre(Triple.of("SomeDoc.txt", "wrld", "Joe"));
         ;
     }
-
 }

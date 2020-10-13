@@ -44,16 +44,6 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 		return this;
 	}
 
-	public AssertCompiledCorpus charNgramFrequencyEquals(
-		String ngram, long expFreq) throws Exception {
-		long gotFreq = corpus().charNgramFrequency(ngram);
-		Assert.assertEquals(baseMessage+"\nFrequency of char ngram "+
-		ngram+" was not as expected",  
-		expFreq, gotFreq);
-		
-		return this;
-	}
-
 	public AssertCompiledCorpus morphemeNgramFreqEquals(
 			long expFreq, String... ngram) throws Exception {
 		long gotFreq = corpus().morphemeNgramFrequency(ngram);
@@ -122,7 +112,7 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 
 	public AssertCompiledCorpus charNgramFrequencyIs(
 		String ngram, long expFreq) throws Exception {
-		long gotFreq = corpus().charNgramFrequency(ngram);
+		long gotFreq = corpus().totalWordsWithCharNgram(ngram);
 		Assert.assertEquals(
 			baseMessage+"\nFrequency of char ngram '"+ngram+"' was not as expected", 
 			expFreq, gotFreq);
@@ -239,7 +229,7 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 		return this;
 	}
 
-	public void infoForWordIs(String word, long expFreq, int expTotalDecomps, 
+	public AssertCompiledCorpus infoForWordIs(String word, long expFreq, int expTotalDecomps,
 			String[][] expSampleDecomps) throws Exception {
 		WordInfo winfo = corpus().info4word(word);
 		String message = 
@@ -253,13 +243,15 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 		AssertObject.assertDeepEquals(
 			message+"\nSample decompositions were not as expected.", 
 			expSampleDecomps, winfo.decompositionsSample);
+		return this;
 	}
 
-    public void totalWordsWithNgramEquals(String ngram, long expTotal)
+    public AssertCompiledCorpus totalWordsWithNgramEquals(String ngram, long expTotal)
 		throws Exception {
-		long gotTotal = corpus().charNgramFrequency(ngram);
+		long gotTotal = corpus().totalWordsWithCharNgram(ngram);
 		Assert.assertEquals(
 			"Wrong number of words for ngram="+ngram,
 			expTotal, gotTotal);
+		return this;
     }
 }

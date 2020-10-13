@@ -215,11 +215,11 @@ public class CorpusCompilerTest {
 		
 		asserter
 			// ngram with freq=1
-			.charNgramFrequencyEquals("^nun", 1)
+			.totalWordsWithNgramEquals("^nun", 1)
 			// ngram with freq > 1
-			.charNgramFrequencyEquals("juq$", 3)
+			.totalWordsWithNgramEquals("juq$", 3)
 			// ngram with freq = -
-			.charNgramFrequencyEquals("^nunavik$", 0)
+			.totalWordsWithNgramEquals("^nunavik$", 0)
 			;
     }
 	    
