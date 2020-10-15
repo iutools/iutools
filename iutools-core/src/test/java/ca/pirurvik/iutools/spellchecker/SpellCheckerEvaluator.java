@@ -16,6 +16,7 @@ import ca.nrc.datastructure.trie.StringSegmenterException;
 public class SpellCheckerEvaluator {
 	
 	SpellChecker checker = null;
+	int examplesCount = 0;
 	
 	Set<SpellCheckerExample> truePos = new HashSet<SpellCheckerExample>();
 	Set<SpellCheckerExample> falsePos = new HashSet<SpellCheckerExample>();
@@ -47,12 +48,14 @@ public class SpellCheckerEvaluator {
 			_checker = new SpellChecker();
 		}
 		this.checker = _checker;
+		this.examplesCount = 0;
 	}
 	
 	public void onNewExample(SpellCheckerExample example, 
 			Boolean assumesCorrectionsLoadeInDic) throws SpellCheckerException {
+		examplesCount++;
 		if (verbosity > 0) {
-			System.out.print("\nProcessing example "+example.toString()+"\n");
+			System.out.print("\nProcessing example #"+examplesCount+": "+example.toString()+"\n");
 		}
 		
 		Set<String> correctForms = example.acceptableCorrections;
@@ -154,6 +157,12 @@ public class SpellCheckerEvaluator {
 				addExampleWithWorseRank(example, rank, gotCorrection.scoredCandidates);
 			} else if (comparison.equals("better")) {
 				addExampleWithBetterRank(example, rank, gotCorrection.scoredCandidates);
+			}
+
+			if (verbosity > 0) {
+				if (!comparison.equals("same")) {
+					System.out.println("   rank of the correct spelling was "+comparison+" than expected!!!");
+				}
 			}
 	
 			if (rank != null) {

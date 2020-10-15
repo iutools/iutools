@@ -1,11 +1,17 @@
 package ca.pirurvik.iutools.spellchecker.goldstandard;
 
+import ca.inuktitutcomputing.phonology.Dialect;
+import ca.inuktitutcomputing.phonology.DialectException;
+import ca.pirurvik.iutools.spellchecker.SpellCheckerException;
 import org.apache.commons.lang3.tuple.Triple;
 
 import java.util.*;
 
 public class SpellGoldStandard {
     private Map<String, SpellGoldStandardCase> _cases = null;
+
+    private Map<String,Set<Dialect.Name>> possibleDialectsForDoc =
+        new HashMap<String,Set<Dialect.Name>>();
 
     /**
      * Key: String docName
@@ -14,7 +20,8 @@ public class SpellGoldStandard {
     private Map<String, Map<String,DocHumanRevision>> docRevisions =
         new HashMap<String, Map<String,DocHumanRevision>>();
 
-    public void addCase(String origWord, String correctWord, String docName, String evaluator) {
+    public void addCase(String origWord, String correctWord, String docName,
+        String evaluator) throws SpellCheckerException {
         _cases = null; // Will force regeneration of the cases
 
         if (!docRevisions.containsKey(docName)) {
@@ -26,6 +33,16 @@ public class SpellGoldStandard {
         }
         DocHumanRevision revisionByEvaluator = revision4doc.get(evaluator);
         revisionByEvaluator.addWord(origWord, correctWord);
+
+        if (!possibleDialectsForDoc.containsKey(docName)) {
+            possibleDialectsForDoc.put(docName, new HashSet<Dialect.Name>());
+        }
+        Set<Dialect.Name> dialecstThisDoc = possibleDialectsForDoc.get(docName);
+        try {
+            dialecstThisDoc.addAll(Dialect.possibleDialects(origWord));
+        } catch (DialectException e) {
+            throw new SpellCheckerException(e);
+        }
     }
 
     public Map<String, SpellGoldStandardCase> cases() {
@@ -179,6 +196,21 @@ public class SpellGoldStandard {
 
     public int totalCorrectlySpelledWords() {
         return correctlySpelledWords().size();
+    }
+
+    public int totalDocsInDialect(Dialect.Name dialect) {
+        Set<String> docsInDialect = new HashSet<String>();
+        for (String doc: allDocs()) {
+            if (possibleDialectsForDoc.get(doc).contains(dialect)) {
+                docsInDialect.add(doc);
+            }
+        }
+
+        return docsInDialect.size();
+    }
+
+    public int totalErrorsMissedByAtLeastOneRevisor() {
+        return missedRevisions().size();
     }
 }
 

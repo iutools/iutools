@@ -1,5 +1,6 @@
 package ca.pirurvik.iutools.spellchecker.goldstandard;
 
+import ca.pirurvik.iutools.spellchecker.SpellCheckerException;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
 import org.junit.Ignore;
@@ -17,7 +18,7 @@ public class SpellGoldStandardTest {
     /////////////////////////////////////////
 
     @Test
-    public void test__SpellGoldStandard__Synopsis() {
+    public void test__SpellGoldStandard__Synopsis() throws SpellCheckerException {
         // Use this class to create a Gold Standard for evaluating the accuracy
         // of the spell checker
         //

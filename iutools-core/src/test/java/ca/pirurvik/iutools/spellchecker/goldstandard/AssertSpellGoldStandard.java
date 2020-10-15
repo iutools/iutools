@@ -1,5 +1,6 @@
 package ca.pirurvik.iutools.spellchecker.goldstandard;
 
+import ca.inuktitutcomputing.phonology.Dialect;
 import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.AssertSet;
 import ca.nrc.testing.Asserter;
@@ -77,8 +78,11 @@ public class AssertSpellGoldStandard extends Asserter<SpellGoldStandard> {
 
     public AssertSpellGoldStandard missedRevisionsAre(Triple<String, String, String>... expMissedArr) throws Exception {
         Set<Triple<String, String, String>> expMissed = new HashSet<Triple<String, String, String>>();
-        Collections.addAll(expMissed, expMissedArr);
-        Set<Triple<String, String, String>> gotMissed = goldStandard().missedRevisions();
+        if (expMissedArr != null) {
+            Collections.addAll(expMissed, expMissedArr);
+        }
+        Set<Triple<String, String, String>> gotMissed =
+            goldStandard().missedRevisions();
         AssertSet.assertEquals(baseMessage+"\nThe missed revisions were not as expected", expMissed, gotMissed);
         return this;
     }
@@ -104,6 +108,23 @@ public class AssertSpellGoldStandard extends Asserter<SpellGoldStandard> {
         Assert.assertEquals(
             "Total number of correctly spelled words was not as expected.",
             expTotal, gotTotal);
+        return this;
+    }
+
+    public AssertSpellGoldStandard totalDocsInDialectIs(
+            int expTotal, Dialect.Name dialect) {
+        int gotTotal = goldStandard().totalDocsInDialect(dialect);
+        Assert.assertEquals(
+    "Total number of documents in dialect "+dialect+" was not as expected.",
+            expTotal, gotTotal);
+        return this;
+    }
+
+    public AssertSpellGoldStandard totalErrorsMissedByAtLeastOneRevisorIs(int expTotal) {
+        int gotTotal = goldStandard().totalErrorsMissedByAtLeastOneRevisor();
+        Assert.assertEquals(
+                "Total number of errors missed by at least one revisor was not as expected.",
+                expTotal, gotTotal);
         return this;
     }
 }

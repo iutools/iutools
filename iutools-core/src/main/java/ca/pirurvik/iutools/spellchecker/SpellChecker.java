@@ -15,10 +15,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ca.inuktitutcomputing.utilities.StopWatch;
+import ca.inuktitutcomputing.utilities.StopWatchException;
 import ca.pirurvik.iutools.corpus.*;
 import org.apache.commons.collections4.iterators.IteratorChain;
 import org.apache.log4j.Logger;
@@ -334,8 +337,10 @@ public class SpellChecker {
 	}
 
 	public SpellingCorrection correctWord(String word, int maxCorrections) throws SpellCheckerException {
-		Logger logger = Logger.getLogger("SpellChecker.correctWord");
-		
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.spellchecker.SpellChecker.correctWord");
+
+		long start = StopWatch.nowMSecs();
+
 		SpellDebug.trace("SpellChecker.correctWord",
 				"Invoked on word="+word,
 				word, null);
@@ -349,7 +354,7 @@ public class SpellChecker {
 		
 		SpellingCorrection corr = new SpellingCorrection(word);
 		corr.wasMispelled = isMispelled(wordInLatin);		
-		logger.debug("wasMispelled= "+corr.wasMispelled);
+		tLogger.debug("wasMispelled= "+corr.wasMispelled);
 
 		SpellDebug.trace("SpellChecker.correctWord",
 				"corr.wasMispelled="+corr.wasMispelled,
@@ -431,6 +436,9 @@ public class SpellChecker {
 		if (wordIsSyllabic) {
 			transcodeCandidatesToSyllabic(corr);
 		}
+
+		long elapsed = StopWatch.elapsedMsecsSince(start);
+		tLogger.trace("word="+word+" took "+elapsed+"msecs");
 	
  		return corr;
 	}
@@ -868,10 +876,12 @@ public class SpellChecker {
 	}
 
 	public Set<String> candidatesWithSimilarNgrams(String badWord,
-												   boolean wordIsNumericTerm) throws SpellCheckerException {
+	   boolean wordIsNumericTerm) throws SpellCheckerException {
 
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.spellchecker.SpellChecker.candidatesWithSimilarNgrams");
 		tLogger.trace("Starting");
+
+		long start = StopWatch.nowMSecs();
 
 		// 1. compile ngrams of badWord
 		// 2. compile IDF of each ngram
@@ -886,7 +896,7 @@ public class SpellChecker {
 		tLogger.trace("Computing the most significant NGrams for the mis-spelled words");
 		
 		NgramCompiler ngramCompiler = new NgramCompiler();
-		ngramCompiler.setMin(3);
+		ngramCompiler.setMin(3).setMax(6);
 		ngramCompiler.includeExtremities(true);
 		
 		// Step 1: compile ngrams for the bad word
@@ -954,12 +964,17 @@ public class SpellChecker {
 
 		tLogger.trace("Returning candidates list of size="+allCandidates.size());
 
+		long elapsed = StopWatch.elapsedMsecsSince(start);
+		tLogger.trace("word="+badWord+" took "+elapsed+"msecs");
 
 		return allCandidates;
 	}
 
 	private Pair<String,Double>[] computeNgramFrequencies(String[] ngrams) throws SpellCheckerException {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.spellchecker.SpellChecker.computeNgramIDFs");
+
+		long start = StopWatch.nowMSecs();
+
 		Pair<String,Double> ngramFreqs[] = new Pair[ngrams.length];
 
 		for (int i=0; i<ngrams.length; i++) {
@@ -974,6 +989,7 @@ public class SpellChecker {
 
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("returning idf="+PrettyPrinter.print(ngramFreqs));
+			tLogger.trace("completed in "+StopWatch.elapsedMsecsSince(start)+"msecs");
 		}
 		return ngramFreqs;
 	}
@@ -1012,6 +1028,8 @@ public class SpellChecker {
 			String amongWords) throws SpellCheckerException {
 
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.spellchecker.SpellChecker.candidatesWithBestNGramsMatch");
+
+		long start = StopWatch.nowMSecs();
 		tLogger.trace("Started");
 
 		Set<String> candidates = new HashSet<String>();
@@ -1021,29 +1039,33 @@ public class SpellChecker {
 			Double ngramIDF = idf[i].getSecond();
 
 			Iterator<String> iterCandsWithNgram =
-				wordsContainingNgram(ngram, amongWords);
+					wordsContainingNgram(ngram, amongWords, CompiledCorpus.SearchOption.EXCL_MISSPELLED);
 
-			tLogger.trace("adding candidates that contain ngram="+ngram+" (ngramIDF="+ngramIDF+")");
+			tLogger.trace("adding candidates that contain ngram=" + ngram + " (ngramIDF=" + ngramIDF + ")");
 			Set<String> candidatesWithNgram =
-				collectCandidatesWithNgram(iterCandsWithNgram);
+					collectCandidatesWithNgram(iterCandsWithNgram);
 
 			candidates.addAll(candidatesWithNgram);
 
 			SpellDebug.containsCorrection(
-			"SpellChecker.candidatesWithBestNGramsMatch",
-			"After adding words containing ngram="+ngram,
-			null, candidates);
+					"SpellChecker.candidatesWithBestNGramsMatch",
+					"After adding words containing ngram=" + ngram,
+					null, candidates);
 
-			tLogger.trace("DONE adding candidates that contain ngram="+ngram+"; total added = "+candidatesWithNgram.size());
+			tLogger.trace("DONE adding candidates that contain ngram=" + ngram + "; total added = " + candidatesWithNgram.size());
 
 			if (candidates.size() > MAX_CANDIDATES) {
 				break;
 			}
 		}
 
-		tLogger.trace("Finished");
+		long elapsed = 0;
+		elapsed = StopWatch.elapsedMsecsSince(start);
+
+		tLogger.trace("Completed in "+elapsed+"msecs");
 		
 		return candidates;
+
 	}
 
 	private Set<String> collectCandidatesWithNgram(
@@ -1205,7 +1227,9 @@ public class SpellChecker {
 
 	protected Iterator<String> wordsContainingNgram(String seq,
 		String amongWords, CompiledCorpus.SearchOption... options) throws SpellCheckerException {
-		Logger logger = Logger.getLogger("SpellChecker.wordsContainingSequ");
+		Logger logger = Logger.getLogger("ca.pirurvik.iutools.spellchecker.SpellChecker.wordsContainingSequ");
+
+		long start = StopWatch.nowMSecs();
 
 		Set<String> wordsWithSeq = new HashSet<String>();
 
@@ -1256,6 +1280,8 @@ public class SpellChecker {
 			wordsIter = wordsWithSeq.iterator();
 		}
 
+		long elapsed = StopWatch.elapsedMsecsSince(start);
+		logger.trace("seq="+seq+" took "+elapsed+"msecs");
 		return wordsIter;
 	}
 

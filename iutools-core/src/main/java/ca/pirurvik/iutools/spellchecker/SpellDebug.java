@@ -34,6 +34,7 @@ public class SpellDebug {
 		methodsToTrace.add("SpellChecker.correctWord");
 		methodsToTrace.add("SpellChecker.firstPassCandidates_TFIDF");
 		methodsToTrace.add("SpellChecker.candidatesWithBestNGramsMatch");
+		methodsToTrace.add("CompiledCorpus_InMemory.updateSequenceNgramsForWord");
 //		methodsToTrace.add("SpellChecker.computeCandidateSimilarity");
 	}
 
@@ -55,9 +56,9 @@ public class SpellDebug {
 	static {
 		badWordsToTrace = new HashMap<String,String[]>();
 		badWordsToTrace
-			.put("nunavuumik",
+			.put("nunavungmi",
 				new String[] {
-					"nunavummik"
+					"nunavummi", "nunavungmii"
 				});
 	}
 
@@ -80,7 +81,7 @@ public class SpellDebug {
 	private static Set<String> ngramsToTrace = null;
 	static {
 		ngramsToTrace = new HashSet<String>();
-		ngramsToTrace.add("katimaji");
+		ngramsToTrace.add("unavun");
 	}
 
 	private static Map<String,String[]> badWordsToTraceNormalized = null;
@@ -139,7 +140,7 @@ public class SpellDebug {
 			candTraceID = candidate;
 		}
 
-		// Should this candidate be traced?
+		// Should this ngram be traced?
 		//
 		boolean ngramShouldBeTraced = true;
 		String ngramTraceID = "*";
@@ -164,7 +165,7 @@ public class SpellDebug {
 	}
 
 	public static void trace(String who, String mess, String badWord,
-							 String candidate, String ngram) {
+		 String candidate, String ngram) {
 		Pair<Boolean,String> status = traceStatus(who, badWord, candidate, ngram);
 		if (status.getFirst()) {
 			System.out.println("-- "+who+"("+status.getSecond()+"):\n   "+mess);

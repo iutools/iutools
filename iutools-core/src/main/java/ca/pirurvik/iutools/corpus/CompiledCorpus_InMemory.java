@@ -4,19 +4,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ca.pirurvik.iutools.spellchecker.SpellDebug;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -87,6 +81,8 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 		for (int iw=1; iw<words.length; iw++) {
 			updateSequenceNgramsForWord(words[iw]);
 		}
+
+		return;
 	}
 	
 	@Override
@@ -157,14 +153,16 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 		}
 	}
 	
-	
-	
 	private void updateSequenceNgramsForWord(String word) {
 		Set<String> seqsSeenInWord = new HashSet<String>();
 		seqsSeenInWord = getCharsNgramCompiler().compile(word);
 		Iterator<String> itngram = seqsSeenInWord.iterator();
 		while (itngram.hasNext()) {
 			String ngram = itngram.next();
+			SpellDebug.trace(
+				"CompiledCorpus_InMemory.updateSequenceNgramsForWord",
+				"Found ngram="+ngram+" in word="+word,
+				null, null, ngram);
 			Long freq = ngramNumWords.get(ngram);
 			if (freq==null)
 				freq = (long)0;

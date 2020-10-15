@@ -3,10 +3,12 @@ package ca.pirurvik.iutools.spellchecker;
 import static org.junit.Assert.*;
 
 import java.text.DecimalFormat;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import ca.nrc.json.PrettyPrinter;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -334,7 +336,7 @@ public abstract class SpellCheckerAccuracyTest {
 		// to evaluate that one.
 		//
 		String focusOnExample = null;
-//		focusOnExample = "nunavuumik";
+//		focusOnExample = "nunavungmi";
 		
 		int verbosity = 1;
 		double expPercentFoundInTopN = 0.95;
@@ -343,7 +345,20 @@ public abstract class SpellCheckerAccuracyTest {
 		double avgRankTolerance = 0.1;
 		Boolean loadCorrectWordInDict = true;
 
-		evaluateCheckerOnExamples(makeLargeDictChecker(),
+		SpellChecker checker = makeLargeDictChecker();
+		int x = 1;
+
+		// Comment this out unless debuggings
+		{
+			String ngram = "unavun";
+			String word = "nunavunmiut";
+			System.out.println("--** SpellCheckerAccuracyTest: total words with ngram " + ngram + "=" + checker.ngramFrequency(ngram));
+			System.out.println("--** SpellCheckerAccuracyTest: info for word " + word + "=" + PrettyPrinter.print(checker.corpus.info4word(word)));
+//			Iterator<String> iter = checker.wordsContainingNgram(ngram, null);
+//			System.out.println("--** SpellCheckerAccuracyTest: list of words with ngram " + ngram + "=" + StringUtils.join(iter, ", "));
+		}
+
+		evaluateCheckerOnExamples(checker,
 				examples_MostFrequenMisspelledWords, focusOnExample,
 				expPercentFoundInTopN, tolerance, 
 				expAverageRank, avgRankTolerance, 
