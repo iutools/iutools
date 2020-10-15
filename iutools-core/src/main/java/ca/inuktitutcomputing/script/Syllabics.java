@@ -365,7 +365,7 @@ public class Syllabics {
         {"\u15AF", "b"}
     };
     
-    static String [][] syllabicsToRomanAIPAITAI = {
+    public static String [][] syllabicsToRomanAIPAITAI = {
         // groupe des "ai"
         {"\u1401","ai"}, // ai
         {"\u142f","pai"}, // pai

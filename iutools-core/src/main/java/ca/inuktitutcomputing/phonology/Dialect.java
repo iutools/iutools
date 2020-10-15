@@ -8,6 +8,8 @@
 package ca.inuktitutcomputing.phonology;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
@@ -15,11 +17,13 @@ import java.util.regex.Pattern;
 
 import ca.inuktitutcomputing.data.LinguisticData;
 import ca.inuktitutcomputing.data.LinguisticDataException;
-import ca.inuktitutcomputing.script.Orthography;
-import ca.inuktitutcomputing.script.Roman;
+import ca.inuktitutcomputing.fonts.FontAipainunavik;
+import ca.inuktitutcomputing.script.*;
 import ca.inuktitutcomputing.utilities.StopWatch;
 
 public class Dialect {
+
+    public static enum Name {NUNAVIK, NUNAVUT, INUINNAQTUN};
 	
 	private static StopWatch stpw;
 
@@ -563,4 +567,35 @@ public class Dialect {
 	public static void setStopWatch(StopWatch _stpw) {
 		stpw = _stpw;
 	}
+
+	public static Set<Name> possibleDialects(String word) throws DialectException {
+        Set<Name> dialects = new HashSet<Name>();
+        try {
+            word = TransCoder.ensureScript(TransCoder.Script.SYLLABIC, word);
+            if (containsNunavikChars(word)) {
+                dialects.add(Name.NUNAVIK);
+            }
+        } catch (TransCoderException e) {
+            throw new DialectException(e);
+        }
+
+        if (dialects.isEmpty()) {
+            dialects.add(Name.NUNAVUT);
+        }
+
+        return dialects;
+    }
+
+    private static boolean containsNunavikChars(String word) {
+        String charFound = null;
+        for (String[] charDef: Syllabics.syllabicsToRomanAIPAITAI) {
+            String aChar = charDef[0];
+            if (word.contains(aChar)) {
+                charFound = aChar;
+                break;
+            }
+        }
+
+        return charFound != null ;
+    }
 }
