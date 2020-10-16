@@ -3,6 +3,7 @@ package ca.pirurvik.iutools.corpus;
 import java.io.File;
 import java.util.Set;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.io.Files;
@@ -11,6 +12,7 @@ import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.testing.AssertObject;
 
+@Ignore
 public class CompiledCorpus_v2FSTest extends CompiledCorpusTest {
 
 	@Override

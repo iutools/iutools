@@ -24,6 +24,10 @@ public class SpellGoldStandard {
         String evaluator) throws SpellCheckerException {
         _cases = null; // Will force regeneration of the cases
 
+        if (correctWord == null || correctWord.isEmpty()) {
+            correctWord = origWord;
+        }
+
         if (!docRevisions.containsKey(docName)) {
             docRevisions.put(docName, new HashMap<String,DocHumanRevision>());
         }
@@ -62,13 +66,13 @@ public class SpellGoldStandard {
                         // word corrections produced by that human evaluator
                         //
                         if (!_cases.containsKey(word)) {
-                            _cases.put(word, new SpellGoldStandardCase(word));
+                            _cases.put(word, new SpellGoldStandardCase(word, doc));
                         }
                         SpellGoldStandardCase case4word = _cases.get(word);
 
                         Set<String> spellings = revOneEvaluator.spellings4word(word);
                         for (String aSpelling: spellings) {
-                            case4word.addCorrectSpelling(aSpelling);
+                            case4word.addCorrectSpelling(evaluator, aSpelling);
                         }
                     }
 
@@ -82,7 +86,13 @@ public class SpellGoldStandard {
         Map<String,Set<String>> anomalies = new HashMap<String,Set<String>>();
         cases().forEach((word, wordCase) -> {
             if (wordCase.correctSpellings.size() > 1) {
-                anomalies.put(wordCase.id(), wordCase.correctSpellings);
+                Set<String> corrections = new HashSet<String>();
+                for (String evaluator: wordCase.spelling4evaluator.keySet()) {
+                    corrections.add(evaluator+":'"+
+                        wordCase.spelling4evaluator.get(evaluator)+"'");
+                }
+
+                anomalies.put(wordCase.id(), corrections);
             }
         });
         return anomalies;

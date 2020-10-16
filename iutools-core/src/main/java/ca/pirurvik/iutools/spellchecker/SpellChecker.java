@@ -64,10 +64,11 @@ import ca.inuktitutcomputing.utilbin.AnalyzeNumberExpressions;
 
 public class SpellChecker {
 	
-	public int MAX_SEQ_LEN = 5;
+	public int MAX_SEQ_LEN = 3;
 
 	public int MIN_NGRAM_LEN = 3;
-	public int MAX_NGRAM_LEN = 6;
+	public int MAX_NGRAM_LEN = 4;
+
 
 	public int MAX_CANDIDATES = 2000;
 	public int DEFAULT_CORRECTIONS = 5;

@@ -1,26 +1,34 @@
 package ca.pirurvik.iutools.spellchecker.goldstandard;
 
+import ca.nrc.json.PrettyPrinter;
+
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 public class SpellGoldStandardCase {
     public String orig = null;
     public Set<String> correctSpellings = new HashSet<String>();
+    protected Map<String,String> spelling4evaluator =
+        new HashMap<String,String>();
     public String inDoc = null;
     private String _id = null;
 
     private final Pattern pattDoc = Pattern.compile(".*/([^/]+)");
 
-    public SpellGoldStandardCase(String _orig) {
-        init_SpellGoldStandardCase(_orig);
+    public SpellGoldStandardCase(String _orig, String _inDoc) {
+        init_SpellGoldStandardCase(_orig, _inDoc);
     }
 
-    private void init_SpellGoldStandardCase(String _orig) {
+    private void init_SpellGoldStandardCase(String _orig, String _inDoc) {
         this.orig = _orig.toLowerCase();
+        this.inDoc = _inDoc;
     }
 
-    public void addCorrectSpelling(String correct) {
+    public void addCorrectSpelling(String evaluator, String correct) {
+        spelling4evaluator.put(evaluator, correct);
         correctSpellings.add(correct);
     }
 
@@ -36,9 +44,8 @@ public class SpellGoldStandardCase {
     }
 
     public String id() {
-        System.out.println("--** SpellGoldStandardCase.id: this="+ PrettyPrinter.print(this));
         if (_id == null) {
-            _id = DocHumanRevision.docID(inDoc);
+            _id = orig+":in "+DocHumanRevision.docID(inDoc);
         }
         return _id;
     }

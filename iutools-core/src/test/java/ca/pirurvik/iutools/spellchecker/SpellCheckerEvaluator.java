@@ -17,6 +17,8 @@ public class SpellCheckerEvaluator {
 	
 	SpellChecker checker = null;
 	int examplesCount = 0;
+	int totalWithCorrectTopSuggestion = 0;
+	int totalExamplesWithKnownCorrections = 0;
 	
 	Set<SpellCheckerExample> truePos = new HashSet<SpellCheckerExample>();
 	Set<SpellCheckerExample> falsePos = new HashSet<SpellCheckerExample>();
@@ -105,12 +107,20 @@ public class SpellCheckerEvaluator {
 				System.out.println("   Got suggestions: "+
 						String.join(",", suggestions));
 			}
+
+			if (!suggestions.isEmpty()) {
+				totalExamplesWithKnownCorrections++;
+			}
 			
 			for (int ii=0; ii < suggestions.size(); ii++) {
 				if (example.acceptableCorrections.contains(suggestions.get(ii))) {
 					rank = ii + 1;
 					break;
 				}
+			}
+
+			if (rank == 1) {
+				totalWithCorrectTopSuggestion++;
 			}
 
 			String comparison = null;
@@ -340,5 +350,12 @@ public class SpellCheckerEvaluator {
 		int total = truePos.size() + falsePos.size() +
 						trueNeg.size() + falseNeg.size();
 		return total;
+	}
+
+	public double percWithCorrectTopSuggestion() {
+		double perc =
+			1.0 * totalWithCorrectTopSuggestion /
+					totalExamplesWithKnownCorrections;
+		return perc;
 	}
 }

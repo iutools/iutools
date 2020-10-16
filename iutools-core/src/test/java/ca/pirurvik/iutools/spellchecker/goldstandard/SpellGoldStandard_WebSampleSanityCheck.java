@@ -39,8 +39,8 @@ public class SpellGoldStandard_WebSampleSanityCheck {
                     "\n\n" + String.format("%.1f", percMultipleCorr * 100) +
                     "% of mispelled words had multiple corrections.\nSee liste below:");
                 for (String word : wordsWithMultipleCorr.keySet()) {
-                    System.out.println("   " + word + ": " +
-                            StringUtils.join(wordsWithMultipleCorr.get(word).iterator(), ", "));
+                    System.out.println("   (" + word + ") --> \n      " +
+                            StringUtils.join(wordsWithMultipleCorr.get(word).iterator(), "\n      "));
                 }
             }
 
@@ -64,10 +64,10 @@ public class SpellGoldStandard_WebSampleSanityCheck {
         new AssertSpellGoldStandard(gs, "")
             .totalDocsEquals(1)
             .totalDocsInDialectIs(0, Dialect.Name.NUNAVIK)
-            .totalMisspelledWordsEquals(117)
-            .totalCorrectlySpelledWordsEquals(125)
-            .totalWordsWithMultipleCorrectionsIs(59)
-            .percentWordsWithMultipleCorrectionsIs(0.5)
+            .totalMisspelledWordsEquals(96)
+            .totalCorrectlySpelledWordsEquals(146)
+            .totalWordsWithMultipleCorrectionsIs(38)
+            .percentWordsWithMultipleCorrectionsIs(0.40)
             .totalWordsMissedByAtLeastOneRevisorIs(6)
             ;
 

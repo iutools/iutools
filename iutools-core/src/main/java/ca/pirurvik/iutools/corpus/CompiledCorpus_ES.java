@@ -27,6 +27,8 @@ public class CompiledCorpus_ES extends CompiledCorpus {
     public final String WORD_INFO_TYPE = "WordInfo_ES";
     public final WordInfo_ES winfoPrototype = new WordInfo_ES("");
 
+    public int searchBatchSize = 100;
+
     static Pattern pattSavePath = Pattern.compile(".*?(^|[^/\\\\.]*)\\.ES\\.json$");
     private boolean esClientVerbose = true;
 
@@ -468,11 +470,16 @@ public class CompiledCorpus_ES extends CompiledCorpus {
         SearchResults<WordInfo_ES> results = null;
 
         query = augmentRequestWithOptions(query, additionalReqBodies, options);
+        new Size(searchBatchSize);
+        additionalReqBodies =
+            (RequestBodyElement[])
+                ArrayUtils.add( additionalReqBodies, new Size(searchBatchSize));
 
         try {
             results =
                 esClient().search(
-                    query, WORD_INFO_TYPE, new WordInfo_ES(), additionalReqBodies);
+                    query, WORD_INFO_TYPE, new WordInfo_ES(),
+                    additionalReqBodies);
         } catch (ElasticSearchException e) {
             throw new CompiledCorpusException(e);
         }

@@ -41,7 +41,6 @@ public class DocHumanRevision {
     }
 
     public static String docID(String docPath) {
-        System.out.println("--** docID: docPath="+docPath);
         String id = null;
         Matcher matcher = pattDoc.matcher(docPath);
         if (matcher.matches()) {

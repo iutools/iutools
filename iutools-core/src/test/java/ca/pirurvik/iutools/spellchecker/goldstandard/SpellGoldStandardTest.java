@@ -81,7 +81,7 @@ public class SpellGoldStandardTest {
     public void test__SpellGoldStandard__HappyPath() throws Exception {
         SpellGoldStandard gs = new SpellGoldStandard();
         String origWord = "helll";
-        String docName = "SomeDoc.txt";
+        String docName = "/SomeDoc.txt";
         gs.addCase(origWord, "hello", docName, "Joe");
         gs.addCase(origWord, "hell", docName, "Jane");
         gs.addCase("hell", null, "TheDivineComedy.docx", "Jane");
@@ -92,7 +92,7 @@ public class SpellGoldStandardTest {
         new AssertSpellGoldStandard(gs, "")
             .wordsWithMultipleCorrectionsAre(
                 new String[][] {
-                    new String[] {"helll", "hell", "hello"}
+                    new String[] {"helll:in SomeDoc.txt", "Jane:'hell'", "Joe:'hello'"}
                 }
             )
             .correctlySpelledWordsAre("hell")
@@ -104,7 +104,7 @@ public class SpellGoldStandardTest {
     @Test
     public void test__SpellGoldStandard__MissedSomeRevisions() throws Exception {
         SpellGoldStandard gs = new SpellGoldStandard();
-        String docName = "SomeDoc.txt";
+        String docName = "/SomeDoc.txt";
 
         // This one was revised by both revisors
         String origWord = "helll";

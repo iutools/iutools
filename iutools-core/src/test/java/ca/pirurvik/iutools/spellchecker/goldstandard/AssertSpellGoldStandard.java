@@ -37,9 +37,10 @@ public class AssertSpellGoldStandard extends Asserter<SpellGoldStandard> {
 
     public AssertSpellGoldStandard totalWordsWithMultipleCorrectionsIs(int expTotal)
             throws Exception {
+        Map<String, Set<String>> anomalies = goldStandard().wordsWithMultipleCorrections();
         int gotTotal = goldStandard().wordsWithMultipleCorrections().size();
         AssertObject.assertDeepEquals(
-                baseMessage+"\n#Words with multiple corrections was not as expected",
+                baseMessage+"\n# of Words with multiple corrections was not as expected",
                 expTotal, gotTotal);
 
         return this;

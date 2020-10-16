@@ -12,6 +12,8 @@ public class SpellChecker_InMemory extends SpellChecker {
     public SpellChecker_InMemory()
         throws StringSegmenterException, SpellCheckerException {
         super();
+        this.MAX_SEQ_LEN = 5;
+        this.MAX_NGRAM_LEN = 6;
     }
 
     @Override

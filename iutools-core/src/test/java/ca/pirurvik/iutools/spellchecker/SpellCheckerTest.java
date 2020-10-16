@@ -143,12 +143,13 @@ public abstract class SpellCheckerTest {
 		
 		String word = "inukkkutttt";
 		Assert.assertTrue(
-			"Initially, word "+word+" should have been deemed mis-spelled",
+	"Initially, word "+word+" should have been deemed mis-spelled",
 			checker.isMispelled(word));
 		
 		checker.addExplicitlyCorrectWord(word);
+		Thread.sleep(1000);
 		Assert.assertFalse(
-			"After being explicitly labelled as correct, word "+word+
+	"After being explicitly labelled as correct, word "+word+
 			" should NOT have been deemed mis-spelled",
 			checker.isMispelled(word));
 	}

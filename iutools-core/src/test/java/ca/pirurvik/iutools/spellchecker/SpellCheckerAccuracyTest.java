@@ -341,6 +341,7 @@ public abstract class SpellCheckerAccuracyTest {
 		int verbosity = 1;
 		double expPercentFoundInTopN = 0.97;
 		double tolerance = 0.01;
+		double expPercTopSuggestionOK = 0.90;
 		double expAverageRank = 2.3;
 		double avgRankTolerance = 0.1;
 		Boolean loadCorrectWordInDict = true;
@@ -349,7 +350,8 @@ public abstract class SpellCheckerAccuracyTest {
 
 		evaluateCheckerOnExamples(checker,
 				examples_MostFrequenMisspelledWords, focusOnExample,
-				expPercentFoundInTopN, tolerance, 
+				expPercentFoundInTopN, tolerance,
+				expPercTopSuggestionOK, tolerance,
 				expAverageRank, avgRankTolerance, 
 				loadCorrectWordInDict, verbosity);
 	}
@@ -365,18 +367,20 @@ public abstract class SpellCheckerAccuracyTest {
 //		focusOnExample = "nunavuumik";
 		
 		int verbosity = 1;
-		double expPercentFoundInTopN = 0.97;
 		double tolerance = 0.01;
+		double expPercentFoundInTopN = 0.97;
+		double expPercTopSuggestionOK = 0.9;
 		double expAverageRank = 2.5;
 		double avgRankTolerance = 0.1;
 		Boolean loadCorrectWordInDict = false;
 
 		evaluateCheckerOnExamples(makeLargeDictChecker(),
 				examples_MostFrequenMisspelledWords, focusOnExample,
-				expPercentFoundInTopN, tolerance, 
-				expAverageRank, avgRankTolerance, 
+				expPercentFoundInTopN, tolerance,
+				expPercTopSuggestionOK, tolerance,
+				expAverageRank, avgRankTolerance,
 				loadCorrectWordInDict, verbosity);
-	}	
+	}
 	@Ignore @Test
 	public void test__Evaluate__DEBUG_MostFrequentWords__UsingSmallCustomDictionary() throws Exception {
 		//
@@ -401,13 +405,15 @@ public abstract class SpellCheckerAccuracyTest {
 
 		int verbosity = 1;
 		double expPercentFoundInTopN = 0.6;
-		double tolerance = 0.01;	
+		double tolerance = 0.01;
+		double expPercTopSuggestionOK = 0.90;
 		double expAverageRank = 3.4;
 		double avgRankTolerance = 0.1;
 		Boolean loadCorrectWordInDict = true;
 		evaluateCheckerOnExamples(checker, 
-				examples_MostFrequenMisspelledWords, focusOnExample, 
+				examples_MostFrequenMisspelledWords, focusOnExample,
 				expPercentFoundInTopN, tolerance,
+				expPercTopSuggestionOK, tolerance,
 				expAverageRank, avgRankTolerance,
 				loadCorrectWordInDict, verbosity);
 	}	
@@ -424,6 +430,7 @@ public abstract class SpellCheckerAccuracyTest {
 //		double expPercentFoundInTopN = 0.93;
 		double expPercentFoundInTopN = 1.0;
 		double tolerance = 0.01;
+		double expPercTopSuggestionOK = 0.90;
 		double expAverageRank = 1.23;
 		double avgRankTolerance = 0.93;
 		Boolean loadCorrectWordInDict = true;
@@ -436,7 +443,8 @@ public abstract class SpellCheckerAccuracyTest {
 
 		evaluateCheckerOnExamples(makeLargeDictChecker(),
 				examples_RandomPageSample, focusOnExample,
-				expPercentFoundInTopN, tolerance, 
+				expPercentFoundInTopN, tolerance,
+				expPercTopSuggestionOK, tolerance,
 				expAverageRank, avgRankTolerance, 
 				loadCorrectWordInDict, verbosity,
 				expFPRate, toleranceFPRate,
@@ -444,24 +452,16 @@ public abstract class SpellCheckerAccuracyTest {
 	}
 
 	public void evaluateCheckerOnExamples(SpellChecker spellChecker, 
-			SpellCheckerExample[] examples, String focusOnExample, 
-			double expPercentFoundInTopN, double tolerance,
-			double expAverageRank, double avgRankTolerance) throws Exception {
-		evaluateCheckerOnExamples(spellChecker, 
-				examples, focusOnExample, 
-				expPercentFoundInTopN, tolerance, 
-				expAverageRank, avgRankTolerance, null, null);
-	}
-
-	public void evaluateCheckerOnExamples(SpellChecker spellChecker, 
-			SpellCheckerExample[] examples, String focusOnExample, 
-			double expPercentFoundInTopN, double tolerance, 
-			double expAverageRank, double avgRankTolerance,
-			Boolean loadCorrectWordInDict, Integer verbosity) throws Exception {
+		SpellCheckerExample[] examples, String focusOnExample,
+		double expPercentFoundInTopN, double tolerance,
+		double expPercTopSuggestionOK, double percTopSuggestionOKTolerance,
+		double expAverageRank, double avgRankTolerance,
+		Boolean loadCorrectWordInDict, Integer verbosity) throws Exception {
 		
 		evaluateCheckerOnExamples(spellChecker, 
 				examples, focusOnExample, 
-				expPercentFoundInTopN, tolerance, 
+				expPercentFoundInTopN, tolerance,
+				expPercTopSuggestionOK, percTopSuggestionOKTolerance,
 				expAverageRank, avgRankTolerance,
 				loadCorrectWordInDict, verbosity,
 				null, null, null, null);
@@ -469,7 +469,8 @@ public abstract class SpellCheckerAccuracyTest {
 	
 	private void evaluateCheckerOnExamples(SpellChecker spellChecker, 
 			SpellCheckerExample[] examples, String focusOnExample, 
-			double expPercentFoundInTopN, double tolerance, 
+			double expPercentFoundInTopN, double tolerance,
+			double expPercTopSuggestionOK, double percTopSuggestionOKTolerance,
 			double expAverageRank, double avgRankTolerance,
 			Boolean loadCorrectWordInDict, Integer verbosity,
 			Double expFPRate, Double toleranceFPRate,
@@ -511,7 +512,7 @@ public abstract class SpellCheckerAccuracyTest {
 				"Don't forget to set focusOnExample=null to run the test on all words");
 		}
 	}
-	
+
 	private void assertEvaluationAsExpected(SpellCheckerEvaluator evaluator, 
 			int N, double expPercentFoundInTopN, double tolerance, 
 			Double expAverageRank, Double avgRankTolerance) {
