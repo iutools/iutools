@@ -35,6 +35,16 @@ public class AssertSpellGoldStandard extends Asserter<SpellGoldStandard> {
         return this;
     }
 
+    public AssertSpellGoldStandard totalWordsWithMultipleCorrectionsIs(int expTotal)
+            throws Exception {
+        int gotTotal = goldStandard().wordsWithMultipleCorrections().size();
+        AssertObject.assertDeepEquals(
+                baseMessage+"\n#Words with multiple corrections was not as expected",
+                expTotal, gotTotal);
+
+        return this;
+    }
+
     public AssertSpellGoldStandard correctlySpelledWordsAre(String... expWords)
         throws Exception {
         Set<String> gotWords = goldStandard().correctlySpelledWords();
@@ -120,11 +130,22 @@ public class AssertSpellGoldStandard extends Asserter<SpellGoldStandard> {
         return this;
     }
 
-    public AssertSpellGoldStandard totalErrorsMissedByAtLeastOneRevisorIs(int expTotal) {
+    public AssertSpellGoldStandard totalWordsMissedByAtLeastOneRevisorIs(int expTotal) {
         int gotTotal = goldStandard().totalErrorsMissedByAtLeastOneRevisor();
         Assert.assertEquals(
                 "Total number of errors missed by at least one revisor was not as expected.",
                 expTotal, gotTotal);
+        return this;
+    }
+
+    public AssertSpellGoldStandard percentWordsWithMultipleCorrectionsIs(
+        double expPercent) {
+
+        double gotPercent = goldStandard().percentWordsWithMultipleCorrections();
+        Assert.assertEquals(
+    baseMessage+
+            "\nPercentage of misspelled words that have more than one correction was not as expected.",
+            expPercent, gotPercent, 0.01);
         return this;
     }
 }

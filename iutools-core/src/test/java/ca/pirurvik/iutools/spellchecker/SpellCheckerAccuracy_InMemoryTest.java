@@ -2,7 +2,9 @@ package ca.pirurvik.iutools.spellchecker;
 
 import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
+import org.junit.Ignore;
 
+@Ignore
 public class SpellCheckerAccuracy_InMemoryTest extends SpellCheckerAccuracyTest {
 
     @Override

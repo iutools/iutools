@@ -5,6 +5,7 @@ import ca.nrc.string.StringUtils;
 import ca.pirurvik.iutools.spellchecker.SpellCheckerException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,8 +16,6 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static org.apache.log4j.helpers.LogLog.warn;
 
 /**
  * Read a Spelling Gold Standard from a bunch of files produced by human
@@ -100,22 +99,7 @@ public class SpellGoldStandardReader {
                 if (aLine.size() > 4) {
                     comment = aLine.get(4);
                 }
-                if (!origWord.equals(correctedWord) &&
-                    (comment == null || comment.isEmpty())) {
-                    this.warn(
-                        "Invalid line in human revision file: "+csvFile+"\n"+
-                        "The original word differed from the corrected one, but there was no comment\n"+
-                        "Line: "+ StringUtils.join(aLine.iterator(), ","));
-                } else if (origWord.equals(correctedWord) &&
-                    (comment != null && !comment.isEmpty())) {
-                    this.warn(
-                            "Invalid line in human revision file: "+csvFile+"\n"+
-                            "The original word was the same as the corrected one, but there was a comment\n"+
-                                    "Line: "+ StringUtils.join(aLine.iterator(), ","));
-                } else {
-                    // Valid line
-                    goldStandard.addCase(origWord, correctedWord, docID, revisor);
-                }
+                goldStandard.addCase(origWord, correctedWord, docID, revisor);
             }
         }
 
@@ -124,6 +108,10 @@ public class SpellGoldStandardReader {
             for (int ii=0; ii < lengthDiff; ii++) {
                 csvLine.add("");
             }
+        }
+
+        private static void error(String mess) {
+            System.out.println("ERROR: "+mess);
         }
 
         private void warn(String mess) {
@@ -167,10 +155,44 @@ public class SpellGoldStandardReader {
         Files.walk(Paths.get(gsRootDir.toString(), new String[]{}))
                 .forEach(consumer);
 
+        validateGoldStandard(gs);
+
         return gs;
+    }
+
+    private static void validateGoldStandard(SpellGoldStandard gs) {
+        if (gs.totalDocs() == 0) {
+            error("No documents were read");
+        }
+        if (!gs.allWords().hasNext()) {
+            error("No words were read");
+        }
+
+        Set<Triple<String, String, String>> missedRevs = gs.missedRevisions();
+        if (gs.missedRevisions().size() > 0) {
+            String missedRevsStr = "";
+            for (Triple<String, String, String> aMissedRev : missedRevs) {
+                if (!missedRevsStr.equals("   ")) {
+                    missedRevsStr += "\n   ";
+                }
+                missedRevsStr +=
+                    aMissedRev.getMiddle()+
+                    " (Revisor: "+aMissedRev.getRight()+
+                    "; Doc: "+aMissedRev.getLeft()+")";
+            }
+
+            error(
+                "Some words were missed by some revisors\n" +
+                "Details below:"+missedRevsStr
+            );
+        }
     }
 
     private static void processCSVFile(Path csvPath) {
         System.out.println("Process csv file: "+csvPath);
+    }
+
+    private static void error(String mess) {
+        System.out.print("ERROR: "+mess);
     }
 }

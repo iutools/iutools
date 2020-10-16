@@ -47,7 +47,7 @@ public abstract class SpellCheckerAccuracyTest {
 				//
 
 				new SpellCheckerExample("nakuqmi")
-					.isMisspelled("nakurmiik").setMaxRank(6),
+					.isMisspelled("nakurmiik").setMaxRank(1),
 
 				new SpellCheckerExample("nunavungmi")
 					.isMisspelled("nunavummi").setMaxRank(1),
@@ -59,7 +59,7 @@ public abstract class SpellCheckerAccuracyTest {
 					.isMisspelled("nunavummit").setMaxRank(3),
 
 				new SpellCheckerExample("ugaalautaa")
-					.isMisspelled("uqaalautaa").setMaxRank(9),
+					.isMisspelled("uqaalautaa").setMaxRank(45),
 				
 				// NEED-IMPROVEMENT: Examples with ranking > 5
 				//   ONLY if we don't assume the correction is in dict
@@ -107,7 +107,7 @@ public abstract class SpellCheckerAccuracyTest {
 					.isMisspelled("katimajjutiksaq").setMaxRank(1),
 
 				new SpellCheckerExample("kiinaujatigut")
-					.isMisspelled("kiinaujaqtigut").setMaxRank(2),
+					.isMisspelled("kiinaujaqtigut").setMaxRank(1),
 
 				new SpellCheckerExample("kiinaujat")
 					.isMisspelled("kiinaujait").setMaxRank(2),
@@ -116,7 +116,7 @@ public abstract class SpellCheckerAccuracyTest {
 					.isMisspelled("maligaliqtiit").setMaxRank(1),
 
 				new SpellCheckerExample("maligatigut")
-					.isMisspelled("maligaqtigut").setMaxRank(2),
+					.isMisspelled("maligaqtigut").setMaxRank(1),
 
 				new SpellCheckerExample("nigiani")
 					.isMisspelled("niggiani").setMaxRank(1),
@@ -158,7 +158,7 @@ public abstract class SpellCheckerAccuracyTest {
 					.isMisspelled("taanna").setMaxRank(1),
 
 				new SpellCheckerExample("tavani")
-					.isMisspelled("tavvani").setMaxRank(1),
+					.isMisspelled("tavvani").setMaxRank(2),
 
 				new SpellCheckerExample("uvalu")
 					.isMisspelled("uvvalu").setMaxRank(1),
@@ -285,7 +285,7 @@ public abstract class SpellCheckerAccuracyTest {
 						.isMisspelled("angajuqqaaqaqtutik"),	
 						
 				new SpellCheckerExample("maliklugu")
-						.setMaxRank(4)
+						.setMaxRank(3)
 						.isMisspelled("maliglugu"),
 						
 				new SpellCheckerExample("pivagiijainiq")
@@ -339,24 +339,13 @@ public abstract class SpellCheckerAccuracyTest {
 //		focusOnExample = "nunavungmi";
 		
 		int verbosity = 1;
-		double expPercentFoundInTopN = 0.95;
+		double expPercentFoundInTopN = 0.97;
 		double tolerance = 0.01;
-		double expAverageRank = 1.55;
+		double expAverageRank = 2.3;
 		double avgRankTolerance = 0.1;
 		Boolean loadCorrectWordInDict = true;
 
 		SpellChecker checker = makeLargeDictChecker();
-		int x = 1;
-
-		// Comment this out unless debuggings
-		{
-			String ngram = "unavun";
-			String word = "nunavunmiut";
-			System.out.println("--** SpellCheckerAccuracyTest: total words with ngram " + ngram + "=" + checker.ngramFrequency(ngram));
-			System.out.println("--** SpellCheckerAccuracyTest: info for word " + word + "=" + PrettyPrinter.print(checker.corpus.info4word(word)));
-//			Iterator<String> iter = checker.wordsContainingNgram(ngram, null);
-//			System.out.println("--** SpellCheckerAccuracyTest: list of words with ngram " + ngram + "=" + StringUtils.join(iter, ", "));
-		}
 
 		evaluateCheckerOnExamples(checker,
 				examples_MostFrequenMisspelledWords, focusOnExample,
@@ -376,10 +365,9 @@ public abstract class SpellCheckerAccuracyTest {
 //		focusOnExample = "nunavuumik";
 		
 		int verbosity = 1;
-		double expPercentFoundInTopN = 0.94;
+		double expPercentFoundInTopN = 0.97;
 		double tolerance = 0.01;
-//		double expAverageRank = 1.4;
-		double expAverageRank = 1.6;
+		double expAverageRank = 2.5;
 		double avgRankTolerance = 0.1;
 		Boolean loadCorrectWordInDict = false;
 

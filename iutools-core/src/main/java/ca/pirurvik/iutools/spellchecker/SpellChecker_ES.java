@@ -21,6 +21,10 @@ public class SpellChecker_ES extends SpellChecker {
     }
 
     private void init_SpellChecker_ES(String _checkerIndexName) throws SpellCheckerException {
+
+        this.MAX_SEQ_LEN = 3;
+        this.MAX_NGRAM_LEN = 4;
+
         if (_checkerIndexName == null) {
             _checkerIndexName = DEFAULT_CHECKER_INDEX;
         }

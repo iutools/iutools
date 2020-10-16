@@ -82,7 +82,18 @@ public class SpellGoldStandard {
         Map<String,Set<String>> anomalies = new HashMap<String,Set<String>>();
         cases().forEach((word, wordCase) -> {
             if (wordCase.correctSpellings.size() > 1) {
-                anomalies.put(word, wordCase.correctSpellings);
+                anomalies.put(wordCase.id(), wordCase.correctSpellings);
+            }
+        });
+        return anomalies;
+    }
+
+    public Map<String,Set<String>> wordsWithMultipleCorrections__NEW() {
+        Map<String,Set<String>> anomalies = new HashMap<String,Set<String>>();
+        cases().forEach((word, wordCase) -> {
+            if (wordCase.correctSpellings.size() > 1) {
+                String caseID = wordCase.id();
+                anomalies.put(caseID, wordCase.correctSpellings);
             }
         });
         return anomalies;
@@ -150,7 +161,7 @@ public class SpellGoldStandard {
         if (!allRevsOneDoc.isEmpty()) {
             String doc =
                 allRevsOneDoc.entrySet().iterator().next()
-                .getValue().docID;
+                .getValue().docID();
 
             // Build a map of what evaluators looked at what words
             //
@@ -211,6 +222,15 @@ public class SpellGoldStandard {
 
     public int totalErrorsMissedByAtLeastOneRevisor() {
         return missedRevisions().size();
+    }
+
+    public double percentWordsWithMultipleCorrections() {
+        int mispelled = totalMisspelledWords();
+        int withMultCorrections = wordsWithMultipleCorrections().size();
+
+        double perc = 1.0 * withMultCorrections / mispelled;
+
+        return perc;
     }
 }
 
