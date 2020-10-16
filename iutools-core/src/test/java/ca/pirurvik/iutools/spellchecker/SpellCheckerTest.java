@@ -666,8 +666,8 @@ public abstract class SpellCheckerTest {
 		
 		Pair<Boolean,Double>[] configurations = new Pair[] {
 				// Expected time when partial correction is disabled
-				Pair.of(false, new Double(7.5)),
-				// Expected time when partial correction is enagled
+				Pair.of(false, new Double(14)),
+				// Expected time when partial correction is enabled
 				Pair.of(true, new Double(20.0))
 		};
 

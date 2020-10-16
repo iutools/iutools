@@ -1,4 +1,4 @@
-package ca.pirurvik.iutools;
+package ca.pirurvik.iutools.morphrelatives;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -75,7 +75,7 @@ public class MorphRelativesFinder {
 	 * @throws MorphRelativesFinderException 
 	 * @throws Exception
 	 */
-	public MorphologicalRelative[] getRelatives(String word) throws MorphRelativesFinderException  {
+	public MorphologicalRelative[] findRelatives(String word) throws MorphRelativesFinderException  {
     	Logger logger = Logger.getLogger("MorphRelativesFinder.getRelatives");
 		logger.debug("word: "+word);
 		

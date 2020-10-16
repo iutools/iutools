@@ -1,11 +1,6 @@
-package ca.pirurvik.iutools;
-
-import static org.junit.Assert.*;
-
-import org.junit.Test;
+package ca.pirurvik.iutools.morphrelatives;
 
 import ca.nrc.datastructure.trie.StringSegmenter;
-import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.pirurvik.iutools.corpus.CompiledCorpus;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 

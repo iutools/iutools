@@ -2,14 +2,17 @@ package ca.pirurvik.iutools.QueryExpanderEvaluatorComparator;
 
 import java.io.File;
 
+import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
+import ca.pirurvik.iutools.corpus.CompiledCorpus;
+import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
+import ca.pirurvik.iutools.corpus.CompiledCorpus_ES;
+import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
 
 import ca.inuktitutcomputing.config.IUConfig;
-import ca.pirurvik.iutools.MorphRelativesFinderEvaluator;
-import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
-import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
+import ca.pirurvik.iutools.morphrelatives.MorphRelativesFinderEvaluator;
 
 public class QueryExpanderEvaluatorCompTest {
 
@@ -46,6 +49,10 @@ public class QueryExpanderEvaluatorCompTest {
 
 		CompiledCorpus_InMemory compiledCorpus = CompiledCorpusRegistry.getCorpus();
 		evaluator.setCompiledCorpus(compiledCorpus);
+//		CompiledCorpus corpus = new CompiledCorpus_ES("HANSARD-1999-2002");
+//		corpus.setSegmenterClassName(StringSegmenter_IUMorpheme.class);
+//		evaluator.setCompiledCorpus(corpus);
+
 		evaluator.setGoldStandard(new File(goldStandardCSVFilePath));
 		// whether statistics are to be computed over words (default [true]) or morphemes [false]:
 		evaluator.setOptionComputeStatsOverSurfaceForms(computeStatsOverSurfaceForms);

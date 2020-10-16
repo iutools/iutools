@@ -1,4 +1,4 @@
-package ca.pirurvik.iutools;
+package ca.pirurvik.iutools.morphrelatives;
 
 import java.io.File;
 

@@ -1,4 +1,4 @@
-package ca.pirurvik.iutools;
+package ca.pirurvik.iutools.morphrelatives;
 
 import java.io.File;
 
@@ -7,7 +7,6 @@ import org.junit.Test;
 import static org.junit.Assert.assertFalse;
 
 import ca.inuktitutcomputing.config.IUConfig;
-import ca.pirurvik.iutools.MorphRelativesFinderEvaluator;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 
@@ -16,7 +15,7 @@ public class MorphRelativesFinderAccuracyTest {
 	@Test
 	public void test__MorphRelativesFinderAccuracy() throws Exception {
 		
-		System.out.println("\n\n*** Running test__QueryExpanderEvaluatorComp. This test can take a few minutes to complete\n\n");;
+		System.out.println("\n\n*** Running test__MorphRelativesFinderAccuracy. This test can take a few minutes to complete\n\n");;
 		
 		boolean computeStatsOverSurfaceForms = true;
 		

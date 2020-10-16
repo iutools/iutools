@@ -22,9 +22,9 @@ import ca.nrc.data.harvesting.SearchEngine.Hit;
 import ca.nrc.data.harvesting.SearchEngine.SearchEngineException;
 import ca.nrc.data.harvesting.SearchResults;
 import ca.nrc.json.PrettyPrinter;
-import ca.pirurvik.iutools.MorphRelativesFinderException;
-import ca.pirurvik.iutools.MorphRelativesFinder;
-import ca.pirurvik.iutools.MorphologicalRelative;
+import ca.pirurvik.iutools.morphrelatives.MorphRelativesFinderException;
+import ca.pirurvik.iutools.morphrelatives.MorphRelativesFinder;
+import ca.pirurvik.iutools.morphrelatives.MorphologicalRelative;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistryException;
@@ -165,7 +165,7 @@ public class SearchEndpoint extends HttpServlet {
 				CompiledCorpus_InMemory compiledCorpus = CompiledCorpusRegistry.getCorpus();
 				expander = new MorphRelativesFinder(compiledCorpus);
 			}
-			expansions = expander.getRelatives(query);			
+			expansions = expander.findRelatives(query);
 						
 			expandedQuery = "(";
 			boolean inputWordInExpansions = false;

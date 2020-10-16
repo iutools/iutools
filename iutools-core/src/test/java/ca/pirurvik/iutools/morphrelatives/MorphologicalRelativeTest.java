@@ -1,10 +1,9 @@
-package ca.pirurvik.iutools;
-
-import static org.junit.Assert.*;
+package ca.pirurvik.iutools.morphrelatives;
 
 import java.util.HashSet;
 import java.util.Set;
 
+import ca.pirurvik.iutools.morphrelatives.MorphologicalRelative;
 import org.junit.Assert;
 import org.junit.Test;
 

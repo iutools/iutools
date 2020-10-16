@@ -1,4 +1,4 @@
-package ca.pirurvik.iutools;
+package ca.pirurvik.iutools.morphrelatives;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ca.pirurvik.iutools.corpus.*;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -21,21 +22,13 @@ import org.junit.Assert;
 
 import com.google.gson.Gson;
 
-import ca.nrc.datastructure.trie.StringSegmenter;
-import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.debug.Debug;
-import ca.pirurvik.iutools.MorphologicalRelative;
-import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
-import ca.pirurvik.iutools.corpus.WordInfo;
-import ca.pirurvik.iutools.corpus.CompiledCorpusException;
-import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
-import ca.pirurvik.iutools.corpus.CompiledCorpusRegistryException;
 
 public class MorphRelativesFinderEvaluator {
 	
 	public boolean verbose = false;
 	
-	public CompiledCorpus_InMemory compiledCorpus = null;
+	public CompiledCorpus compiledCorpus = null;
 	public CSVParser csvParser = null;
 	public boolean computeStatsOverSurfaceForms = true;
 	public float precision = -1;
@@ -74,7 +67,7 @@ public class MorphRelativesFinderEvaluator {
 		fr.close();
 	}
 	
-	public void setCompiledCorpus(CompiledCorpus_InMemory _compiledCorpus) {
+	public void setCompiledCorpus(CompiledCorpus _compiledCorpus) {
 		compiledCorpus = _compiledCorpus;
 	}
 	
@@ -104,7 +97,7 @@ public class MorphRelativesFinderEvaluator {
 		// Set this to a word if you want to only run that one
 		// word. Leave it at null to run all words
 		String focusOnWord = null;
-//		focusOnWord = "silattusarvimmi";
+//		focusOnWord = "qarasaujakkut";
 		
 		Logger logger = Logger.getLogger("QueryExpanderEvaluator");
 		
@@ -171,7 +164,7 @@ public class MorphRelativesFinderEvaluator {
                     
                     if (verbose) System.out.println("    Query Expander expansions (frequencies in compiled corpus):");
                     try {
-                    	MorphologicalRelative[] expansions = queryExpander.getRelatives(mot);
+                    	MorphologicalRelative[] expansions = queryExpander.findRelatives(mot);
                     	if ( expansions != null ) {
                         	logger.debug(mot+" - expansions: "+expansions.length);
                     		ArrayList<String> listexpansionsmorphemes = new ArrayList<String>();

@@ -1,16 +1,11 @@
-package ca.pirurvik.iutools;
+package ca.pirurvik.iutools.morphrelatives;
 
 
 import static org.junit.Assert.assertEquals;
 
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.junit.Assert;
 import org.junit.Test;
-
-import ca.pirurvik.iutools.MorphRelativesFinderEvaluator;
 
 public class MorphRelativesFinderEvaluatorTest {
 

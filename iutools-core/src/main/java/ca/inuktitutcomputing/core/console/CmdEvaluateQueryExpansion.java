@@ -1,6 +1,6 @@
 package ca.inuktitutcomputing.core.console;
 
-import ca.pirurvik.iutools.MorphRelativesFinderEvaluator;
+import ca.pirurvik.iutools.morphrelatives.MorphRelativesFinderEvaluator;
 
 public class CmdEvaluateQueryExpansion extends ConsoleCommand {
 

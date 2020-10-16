@@ -6,11 +6,10 @@ import com.google.gson.Gson;
 
 import ca.inuktitutcomputing.applications.Decompose;
 import ca.inuktitutcomputing.morph.Decomposition;
-import ca.inuktitutcomputing.morph.Decomposition.DecompositionExpression;
 import ca.inuktitutcomputing.script.Roman;
 import ca.inuktitutcomputing.script.Syllabics;
-import ca.pirurvik.iutools.MorphRelativesFinder;
-import ca.pirurvik.iutools.MorphologicalRelative;
+import ca.pirurvik.iutools.morphrelatives.MorphRelativesFinder;
+import ca.pirurvik.iutools.morphrelatives.MorphologicalRelative;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
 
@@ -53,7 +52,7 @@ public class CmdExpandQuery extends ConsoleCommand {
 				latin = word;
 				syll = Roman.transcodeToUnicode(latin, null);
 			}
-			reformulations = reformulator.getRelatives(latin);
+			reformulations = reformulator.findRelatives(latin);
 		}
 
 		while (true) {
@@ -70,7 +69,7 @@ public class CmdExpandQuery extends ConsoleCommand {
 				}
 				reformulations = null;
 				try {
-					reformulations = reformulator.getRelatives(latin);
+					reformulations = reformulator.findRelatives(latin);
 				} catch (Exception e) {
 					throw e;
 				}
