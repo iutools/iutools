@@ -149,38 +149,9 @@ public class MorphRelativesFinder {
 		}
 		
 		if (keepGoing == null) {
-//			try {
-				keepGoing =
-					collectDescendants(origWord, origWordMorphemes,
-						currentMorphemes, collectedSoFar);
-//				TrieNode[] wordNodes =
-//					compiledCorpus.getMorphNgramsTrie()
-//						.getTerminals(currentMorphemes);
-//				for (TrieNode aWordNode: wordNodes) {
-//					if (!aWordNode.surfaceForm.equals(origWord)) {
-//						MorphologicalRelative neighbor =
-//							word2neigbhor(origWord, origWordMorphemes,
-//								aWordNode.surfaceForm);
-//						collectedSoFar.add(neighbor);
-//					}
-//					for (String aSurfaceForm:
-//							aWordNode.getSurfaceForms().keySet()) {
-//						MorphologicalRelative neighbor =
-//							word2neigbhor(origWord, origWordMorphemes,
-//								aSurfaceForm);
-//						if (!aSurfaceForm.equals(origWord)) {
-//							collectedSoFar.add(neighbor);
-//						}
-//					}
-//				}
-//				if (collectedSoFar.size() > maxRelatives) {
-//					// We have collected as many neighbors as reequired
-//					// No more searching to be done
-//					keepGoing = false;
-//				}
-//			} catch (TrieException | CompiledCorpusException e) {
-//				throw new MorphRelativesFinderException(e);
-//			}
+			keepGoing =
+				collectDescendants(origWord, origWordMorphemes,
+					currentMorphemes, collectedSoFar);
 		}
 
 		if (keepGoing == null) {
