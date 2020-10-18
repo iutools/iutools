@@ -29,13 +29,13 @@ public abstract class MorphRelativesFinderTest {
 	 **********************************/
 	
 	@Test
-	public void test__QueryExpander__Synopsis() throws Exception {
+	public void test__MorphRelativesFinder__Synopsis() throws Exception {
 		//
-		// Given an Inuktut word, a QueryExpander can find a list of words that are 
+		// Given an Inuktut word, a MorphRelativesFinder can find a list of words that are
 		// semantically close to this input, and are very frequent in a given corpus.
 		//
-        MorphRelativesFinder expander = makeFinder();
-		MorphologicalRelative[] expansions = expander.findRelatives("nunavut");
+        MorphRelativesFinder finder = makeFinder();
+		MorphologicalRelative[] expansions = finder.findRelatives("nunavut");
 	}
 
 	/**********************************
@@ -98,12 +98,12 @@ public abstract class MorphRelativesFinderTest {
 				"takujuq", "takujumajunga", "takujumavalliajanginnik",
 				"iglumut"
 		};
-		MorphRelativesFinder expander = makeFinder(corpusWords);
+		MorphRelativesFinder finder = makeFinder(corpusWords);
 
-        MorphologicalRelative[] gotExpansions = expander.findRelatives("takujuq");
+        MorphologicalRelative[] gotRelatives = finder.findRelatives("takujuq");
 		String[] expExpansions = new String[] {
 			"takujumajunga", "takujumavalliajanginnik"};
-		assertExpansionsAre(expExpansions, gotExpansions);		
+		assertExpansionsAre(expExpansions, gotRelatives);
 	}
 	
 
@@ -114,12 +114,12 @@ public abstract class MorphRelativesFinderTest {
 				"takujuq", "takujumajunga", "takujumavalliajanginnik",
 				"iglumut"
 		};
-		MorphRelativesFinder expander = makeFinder(corpusWords);
+		MorphRelativesFinder finder = makeFinder(corpusWords);
 
         String taqujuq = "ᑕᑯᔪᖅ";
-        MorphologicalRelative[] gotExpansions = expander.findRelatives(taqujuq);
+        MorphologicalRelative[] gotRelatives = finder.findRelatives(taqujuq);
 		String[] expExpansions = new String[] {"ᑕᑯᔪᖅ", "ᑕᑯᔪᒪᔪᖓ", "ᑕᑯᔪᒪᕙᓪᓕᐊᔭᖏᓐᓂᒃ"};
-		assertExpansionsAre(expExpansions, gotExpansions);		
+		assertExpansionsAre(expExpansions, gotRelatives);
 	}
 	
 	/**********************************
@@ -127,11 +127,11 @@ public abstract class MorphRelativesFinderTest {
 	 **********************************/
 
 	private void assertExpansionsAre(String[] expExpansions, MorphologicalRelative[] gotExpansionObjs) throws IOException {
-        String[] gotExpansions = new String[gotExpansionObjs.length];
+        String[] gotRelatives = new String[gotExpansionObjs.length];
         for (int i=0; i<gotExpansionObjs.length; i++)
-        	gotExpansions[i] = gotExpansionObjs[i].getWord();
+        	gotRelatives[i] = gotExpansionObjs[i].getWord();
         
-        AssertObject.assertDeepEquals("", expExpansions, gotExpansions);
+        AssertObject.assertDeepEquals("", expExpansions, gotRelatives);
 		
 	}
 }
