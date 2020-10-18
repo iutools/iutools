@@ -3,6 +3,7 @@ package ca.pirurvik.iutools.morphrelatives;
 
 import java.io.IOException;
 
+import ca.pirurvik.iutools.corpus.CompiledCorpusException;
 import org.junit.Test;
 
 import ca.nrc.datastructure.trie.StringSegmenter;
@@ -11,7 +12,19 @@ import ca.nrc.testing.AssertObject;
 import ca.pirurvik.iutools.corpus.CompiledCorpus;
 
 public abstract class MorphRelativesFinderTest {
-	
+
+	protected abstract MorphRelativesFinder makeFinder() throws Exception;
+
+	protected MorphRelativesFinder makeFinder(String[] words) throws Exception {
+		MorphRelativesFinder finder = makeFinder();
+		for (String aWord: words) {
+			finder.compiledCorpus.addWordOccurence(aWord);
+		}
+
+		return finder;
+	}
+
+
 	protected abstract CompiledCorpus makeCorpus(
 		Class<? extends StringSegmenter> segClass) throws Exception;
 	

@@ -190,7 +190,7 @@ public class MorphRelativesFinder {
 		return keepGoing;	
 	}
 
-	private Boolean collectDescendants(String origWord,
+	protected Boolean collectDescendants(String origWord,
 	    String[] origWordMorphemes, String[] currentMorphemes, Set<MorphologicalRelative> collectedSoFar) throws MorphRelativesFinderException {
 
 		Boolean keepGoing = null;
@@ -244,7 +244,7 @@ public class MorphRelativesFinder {
 			return best;
 		}
 
-	private MorphologicalRelative word2neigbhor(
+	protected MorphologicalRelative word2neigbhor(
 		String origWord, String[] origMorphemes, String word)
 		throws CompiledCorpusException {
 		String[] topDecomp = null;
