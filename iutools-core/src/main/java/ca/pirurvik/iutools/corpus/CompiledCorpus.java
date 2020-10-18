@@ -44,7 +44,7 @@ public abstract class CompiledCorpus {
 
 	public abstract boolean containsWord(String word) throws CompiledCorpusException;
 
-	protected abstract Iterator<String> wordsContainingMorphNgram(String[] morphemes)
+	public abstract Iterator<String> wordsContainingMorphNgram(String[] morphemes)
 			throws CompiledCorpusException;
 
 	public abstract long totalOccurences() throws CompiledCorpusException;

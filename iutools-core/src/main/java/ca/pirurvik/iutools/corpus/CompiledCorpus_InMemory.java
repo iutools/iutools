@@ -639,7 +639,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	}
 
 	@Override
-	protected Iterator<String> wordsContainingMorphNgram(String[] morphemes)
+	public Iterator<String> wordsContainingMorphNgram(String[] morphemes)
 			throws CompiledCorpusException {
 		// Note: This method is not supported by this class
 		return new HashSet<String>().iterator();

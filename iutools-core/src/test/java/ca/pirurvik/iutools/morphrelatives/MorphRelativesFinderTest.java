@@ -24,20 +24,6 @@ public abstract class MorphRelativesFinderTest {
 		return finder;
 	}
 
-
-	protected abstract CompiledCorpus makeCorpus(
-		Class<? extends StringSegmenter> segClass) throws Exception;
-	
-	public CompiledCorpus makeCorpus(String[] words) throws Exception {
-		CompiledCorpus corpus = makeCorpus(StringSegmenter_IUMorpheme.class);
-		corpus.addWordOccurences(words);
-		return corpus;
-	}
-	
-	public CompiledCorpus makeCorpus() throws Exception {
-		return makeCorpus(new String[0]);
-	}
-
 	/**********************************
 	 * DOCUMENTATION TESTS
 	 **********************************/
@@ -48,8 +34,7 @@ public abstract class MorphRelativesFinderTest {
 		// Given an Inuktut word, a QueryExpander can find a list of words that are 
 		// semantically close to this input, and are very frequent in a given corpus.
 		//
-        CompiledCorpus compiledCorpus = makeCorpus(); 
-        MorphRelativesFinder expander = new MorphRelativesFinder(compiledCorpus);
+        MorphRelativesFinder expander = makeFinder();
 		MorphologicalRelative[] expansions = expander.findRelatives("nunavut");
 	}
 
@@ -58,14 +43,13 @@ public abstract class MorphRelativesFinderTest {
 	 **********************************/
 	
 	@Test
-	public void test__getExpansions__HappyPath() throws Exception {
+	public void test__findRelatives__HappyPath() throws Exception {
 		String[] words = new String[] {
 				"nuna", "nunait", 
 				"iglu", "iglumut", "iglumut", "iglumut", "iglumik", "iglu",
 				"takujuq", "takujumajunga"
 		};
-		CompiledCorpus compiledCorpus = makeCorpus(words);
-        MorphRelativesFinder reformulator = new MorphRelativesFinder(compiledCorpus);
+		MorphRelativesFinder reformulator = makeFinder(words);
         MorphologicalRelative[] expansions = reformulator.findRelatives("iglu");
         String[] expected = new String[] {"iglumut", "iglumik"};
         
@@ -75,14 +59,14 @@ public abstract class MorphRelativesFinderTest {
 
 
 	@Test
-	public void test__getExpansions__Case_with_stepping_back_one_node() throws Exception {
+	public void test__findRelatives__Case_with_stepping_back_one_node() throws Exception {
 		String[] words = new String[] {
 				"nuna", "nunait", 
 				"iglu", "iglumut", "iglumut", "iglumut", "iglumik", "iglu", 
 				"iglumiutaq", "takujuq", "takujumajunga"
 		};
-        CompiledCorpus compiledCorpus = makeCorpus(words);
-        MorphRelativesFinder reformulator = new MorphRelativesFinder(compiledCorpus);
+		MorphRelativesFinder reformulator = makeFinder(words);
+
         MorphologicalRelative[] expansions = reformulator.findRelatives("iglumiutaq");
         String[] expected = new String[] {
         	"iglumut","iglu","iglumik"};
@@ -91,14 +75,14 @@ public abstract class MorphRelativesFinderTest {
 	}
 	
 	@Test
-	public void test__getExpansions__Case_takujumaguvit() throws Exception {
+	public void test__findRelatives__Case_takujumaguvit() throws Exception {
 		String[] corpusWords = new String[] {
 				"nuna", "nunait", 
 				"takujuq", "takujumajunga", "takujumavalliajanginnik",
 				"iglumut"
 		};
-        CompiledCorpus compiledCorpus = makeCorpus(corpusWords);
-        MorphRelativesFinder reformulator = new MorphRelativesFinder(compiledCorpus);
+		MorphRelativesFinder reformulator = makeFinder(corpusWords);
+
         MorphologicalRelative[] expansions = reformulator.findRelatives("takujumaguvit");
         String[] expected = new String[] {
         	"takujumajunga","takujumavalliajanginnik","takujuq",};
@@ -108,14 +92,14 @@ public abstract class MorphRelativesFinderTest {
 	}
 	
 	@Test
-	public void test__getExpansions__LatinInput__ReturnsLatin() throws Exception {
+	public void test__findRelatives__LatinInput__ReturnsLatin() throws Exception {
 		String[] corpusWords = new String[] {
 				"nuna", "nunait", 
 				"takujuq", "takujumajunga", "takujumavalliajanginnik",
 				"iglumut"
 		};
-        CompiledCorpus compiledCorpus = makeCorpus(corpusWords);
-        MorphRelativesFinder expander = new MorphRelativesFinder(compiledCorpus);
+		MorphRelativesFinder expander = makeFinder(corpusWords);
+
         MorphologicalRelative[] gotExpansions = expander.findRelatives("takujuq");
 		String[] expExpansions = new String[] {
 			"takujumajunga", "takujumavalliajanginnik"};
@@ -124,15 +108,14 @@ public abstract class MorphRelativesFinderTest {
 	
 
 	@Test
-	public void test__getExpansions__SyllabicInput__ReturnsSyllabic() throws Exception {
+	public void test__findRelatives__SyllabicInput__ReturnsSyllabic() throws Exception {
 		String[] corpusWords = new String[] {
 				"nuna", "nunait", 
 				"takujuq", "takujumajunga", "takujumavalliajanginnik",
 				"iglumut"
 		};
-        CompiledCorpus compiledCorpus = makeCorpus(corpusWords);
-        MorphRelativesFinder expander = new MorphRelativesFinder(compiledCorpus);
-        
+		MorphRelativesFinder expander = makeFinder(corpusWords);
+
         String taqujuq = "ᑕᑯᔪᖅ";
         MorphologicalRelative[] gotExpansions = expander.findRelatives(taqujuq);
 		String[] expExpansions = new String[] {"ᑕᑯᔪᖅ", "ᑕᑯᔪᒪᔪᖓ", "ᑕᑯᔪᒪᕙᓪᓕᐊᔭᖏᓐᓂᒃ"};

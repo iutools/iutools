@@ -275,7 +275,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
     }
 
     @Override
-    protected Iterator<String> wordsContainingMorphNgram(String[] morphemes) throws CompiledCorpusException {
+    public Iterator<String> wordsContainingMorphNgram(String[] morphemes) throws CompiledCorpusException {
         Set<String> words = new HashSet<String>();
         String query = morphNgramQuery(morphemes);
         SearchResults<WordInfo_ES> hits = esWinfoSearch(query);

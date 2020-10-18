@@ -19,12 +19,4 @@ public class MorphRelativesFinder_ESTest extends MorphRelativesFinderTest {
 
         return finder;
     }
-
-    @Override
-    protected CompiledCorpus makeCorpus(Class<? extends StringSegmenter> segClass) throws Exception {
-        CompiledCorpus corpus = new CompiledCorpus_ES("hansard-1999-2002.v2020-10-06");
-        corpus.setSegmenterClassName(segClass.getName());
-
-        return corpus;
-    }
 }

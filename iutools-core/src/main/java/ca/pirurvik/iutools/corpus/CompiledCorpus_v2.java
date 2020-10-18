@@ -149,7 +149,7 @@ public abstract class CompiledCorpus_v2 extends CompiledCorpus {
     }
 
     @Override
-    protected Iterator<String> wordsContainingMorphNgram(String[] morphemes)
+    public Iterator<String> wordsContainingMorphNgram(String[] morphemes)
             throws CompiledCorpusException {
         Set<String> words = new HashSet<String>();
         try {
