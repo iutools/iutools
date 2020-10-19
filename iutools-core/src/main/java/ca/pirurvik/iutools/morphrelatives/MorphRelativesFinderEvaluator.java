@@ -27,6 +27,8 @@ import ca.nrc.debug.Debug;
 public class MorphRelativesFinderEvaluator {
 	
 	public boolean verbose = false;
+
+	public Integer stopAfterNWords = null;
 	
 	public CompiledCorpus compiledCorpus = null;
 	public CSVParser csvParser = null;
@@ -70,6 +72,10 @@ public class MorphRelativesFinderEvaluator {
 	public void setCompiledCorpus(CompiledCorpus _compiledCorpus) {
 		compiledCorpus = _compiledCorpus;
 	}
+
+	public void setStopAfterNWords(Integer _stopAfterNWords) {
+		this.stopAfterNWords = _stopAfterNWords;
+	}
 	
 	
 	public void setVerbose(boolean value) {
@@ -102,8 +108,10 @@ public class MorphRelativesFinderEvaluator {
 		Logger logger = Logger.getLogger("QueryExpanderEvaluator");
 		
         try {
-    		MorphRelativesFinder queryExpander = new MorphRelativesFinder(compiledCorpus);
-            
+    		MorphRelativesFinder relsFinder = new MorphRelativesFinder(compiledCorpus);
+//			CompiledCorpus_ES corpus = new CompiledCorpus_ES("hansard-1999-2002.v2020-10-06");
+//    		MorphRelativesFinder relsFinder = new MorphRelativesFinder_ES(corpus);
+
             Pattern patMotFreq = Pattern.compile("^(.+) \\((\\d+)\\).*$");
             
             int nbTotalCases = 0;
@@ -118,9 +126,13 @@ public class MorphRelativesFinderEvaluator {
             
             boolean stop = false;
            
-            int i = 0;
+            int wordCount = 0;
             for (CSVRecord csvRecord : csvParser) {
-            		if (i++ == 0) continue;
+            		wordCount++;
+            		if (stopAfterNWords != null &&
+						wordCount > stopAfterNWords) {
+            			break;
+					}
             		if (stop) break;
             		
                     // Accessing Values by Column Index
@@ -136,7 +148,7 @@ public class MorphRelativesFinderEvaluator {
                     if (focusOnWord != null && !mot.equals(focusOnWord)) {
                     	continue;
                     }
-                    if (verbose) System.out.println("\n"+mot+" "+"("+freqMotGoogle+")");
+                    if (verbose) System.out.println("\nProcessing word #"+wordCount+": "+mot+" "+"("+freqMotGoogle+")");
                     if (mot==null) continue;
                     
                     //String decMot = String.join(" ",compiledCorpus.getSegmenter().segment(mot))+" \\";
@@ -164,9 +176,10 @@ public class MorphRelativesFinderEvaluator {
                     
                     if (verbose) System.out.println("    Query Expander expansions (frequencies in compiled corpus):");
                     try {
-                    	MorphologicalRelative[] expansions = queryExpander.findRelatives(mot);
+                    	MorphologicalRelative[] expansions = relsFinder.findRelatives(mot);
                     	if ( expansions != null ) {
                         	logger.debug(mot+" - expansions: "+expansions.length);
+                        	removeTailingBackslashFromDecomps(expansions);
                     		ArrayList<String> listexpansionsmorphemes = new ArrayList<String>();
                     		ArrayList<String> listexpansions = new ArrayList<String>();
                     		nbTotalExpansionsFromCorpus += expansions.length;
@@ -294,8 +307,18 @@ public class MorphRelativesFinderEvaluator {
 		return freqDansCorpus;
 	}
 	
-	public static void main(String[] args) throws IOException {
-		MorphRelativesFinderEvaluator evaluator = new MorphRelativesFinderEvaluator(args[0],args[1]);
-		evaluator.run();
+	private void removeTailingBackslashFromDecomps(
+		MorphologicalRelative[] morphologicalRelatives) {
+		MorphologicalRelative[] morphRelativesTrimmed =
+			new MorphologicalRelative[morphologicalRelatives.length];
+		for (int ii=0; ii < morphologicalRelatives.length; ii++) {
+			MorphologicalRelative aRelative = morphologicalRelatives[ii];
+			String[] aDecomp = aRelative.getMorphemes();
+			if (aDecomp != null && aDecomp.length > 0 &&
+				aDecomp[aDecomp.length-1].equals("\\")) {
+				aDecomp = Arrays.copyOfRange(aDecomp, 0, aDecomp.length-1);
+				aRelative.setMorphemes(aDecomp);
+			}
+		}
 	}
 }

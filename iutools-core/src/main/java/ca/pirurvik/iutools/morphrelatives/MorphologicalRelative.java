@@ -25,6 +25,9 @@ public class MorphologicalRelative {
 		public long getFrequency() {return frequency;}
  	private String[] morphemes = new String[0];
  		public String[] getMorphemes() {return morphemes;}
+ 		public void setMorphemes(String[] _morphemes) {
+ 			this.morphemes = _morphemes;
+		}
 	private String origWord = null;
  		public String getOrigWord() {return origWord;}
 	private String[] origMorphemes = null;

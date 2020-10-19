@@ -2,8 +2,6 @@ package ca.pirurvik.iutools.corpus;
 
 import ca.nrc.dtrc.elasticsearch.Document;
 
-import java.util.List;
-
 public class WordInfo extends Document {
 	
 	/**
@@ -83,6 +81,7 @@ public class WordInfo extends Document {
 	}
 	
 	public void setDecompositions(String[][] sampleDecomps, Integer totalDecomps) {
+
 		if (sampleDecomps == null) {
 			topDecompositions = null;
 			totalDecompositions = null;

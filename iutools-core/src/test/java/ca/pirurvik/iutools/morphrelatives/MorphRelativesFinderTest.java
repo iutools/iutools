@@ -3,8 +3,6 @@ package ca.pirurvik.iutools.morphrelatives;
 
 import java.io.IOException;
 
-import ca.pirurvik.iutools.corpus.CompiledCorpusException;
-import ca.pirurvik.iutools.corpus.WordInfo;
 import org.junit.Test;
 
 import ca.nrc.datastructure.trie.StringSegmenter;
@@ -124,7 +122,7 @@ public abstract class MorphRelativesFinderTest {
 		String[] expExpansions = new String[] {"ᑕᑯᔪᖅ", "ᑕᑯᔪᒪᔪᖓ", "ᑕᑯᔪᒪᕙᓪᓕᐊᔭᖏᓐᓂᒃ"};
 		assertExpansionsAre(expExpansions, gotRelatives);
 	}
-	
+
 	/**********************************
 	 * HELPER METHODS
 	 **********************************/

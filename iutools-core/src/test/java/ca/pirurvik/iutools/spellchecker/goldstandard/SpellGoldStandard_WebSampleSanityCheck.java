@@ -37,7 +37,7 @@ public class SpellGoldStandard_WebSampleSanityCheck {
             } else {
                 System.out.println(
                     "\n\n" + String.format("%.1f", percMultipleCorr * 100) +
-                    "% of mispelled words had multiple corrections.\nSee liste below:");
+                    "% of mispelled words had multiple spellings.\nSee liste below:");
                 for (String word : wordsWithMultipleCorr.keySet()) {
                     System.out.println("   (" + word + ") --> \n      " +
                             StringUtils.join(wordsWithMultipleCorr.get(word).iterator(), "\n      "));
@@ -47,10 +47,10 @@ public class SpellGoldStandard_WebSampleSanityCheck {
             Set<Triple<String, String, String>> missed = gs.missedRevisions();
             if (missed.size() == 0) {
                 System.out.println(
-                    "\n\nNo word was missed by any of the revisors");
+                    "\n\nAll words were looked at by all revisors.\n");
             } else {
                 System.out.println(
-                    "\n\n"+missed.size()+" words were missed by at least one revisors.\n" +
+                    "\n\n"+missed.size()+" words seem like they were not looked at by at least one revisors.\n" +
                     "See list below:");
                 for (Iterator<Triple<String, String, String>> it = missed.iterator(); it.hasNext(); ) {
                     Triple<String, String, String> aMissed = it.next();
@@ -66,8 +66,8 @@ public class SpellGoldStandard_WebSampleSanityCheck {
             .totalDocsInDialectIs(0, Dialect.Name.NUNAVIK)
             .totalMisspelledWordsEquals(96)
             .totalCorrectlySpelledWordsEquals(146)
-            .totalWordsWithMultipleCorrectionsIs(38)
-            .percentWordsWithMultipleCorrectionsIs(0.40)
+            .totalWordsWithMultipleCorrectionsIs(33)
+            .percentWordsWithMultipleCorrectionsIs(0.34)
             .totalWordsMissedByAtLeastOneRevisorIs(6)
             ;
 

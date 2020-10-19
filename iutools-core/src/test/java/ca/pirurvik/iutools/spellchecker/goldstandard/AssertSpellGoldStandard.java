@@ -4,6 +4,7 @@ import ca.inuktitutcomputing.phonology.Dialect;
 import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.AssertSet;
 import ca.nrc.testing.Asserter;
+import ca.pirurvik.iutools.spellchecker.SpellCheckerException;
 import org.apache.commons.lang3.tuple.Triple;
 import org.junit.Assert;
 
@@ -80,7 +81,7 @@ public class AssertSpellGoldStandard extends Asserter<SpellGoldStandard> {
         return this;
     }
 
-    public AssertSpellGoldStandard misspelledWordsAre(String... expBadArr) {
+    public AssertSpellGoldStandard misspelledWordsAre(String... expBadArr) throws SpellCheckerException {
         Set<String> expBad = new HashSet<String>();
         Collections.addAll(expBad, expBadArr);
         Set<String> gotBad = goldStandard().misspelledWords();
@@ -106,7 +107,7 @@ public class AssertSpellGoldStandard extends Asserter<SpellGoldStandard> {
         return this;
     }
 
-    public AssertSpellGoldStandard totalMisspelledWordsEquals(int expTotalMisspelled) {
+    public AssertSpellGoldStandard totalMisspelledWordsEquals(int expTotalMisspelled) throws SpellCheckerException {
         int gotTotalMisspelled = goldStandard().totalMisspelledWords();
         Assert.assertEquals(
     "Total number of misspelled words was not as expected.",
@@ -114,7 +115,7 @@ public class AssertSpellGoldStandard extends Asserter<SpellGoldStandard> {
         return this;
     }
 
-    public AssertSpellGoldStandard totalCorrectlySpelledWordsEquals(int expTotal) {
+    public AssertSpellGoldStandard totalCorrectlySpelledWordsEquals(int expTotal) throws SpellCheckerException {
         int gotTotal = goldStandard().totalCorrectlySpelledWords();
         Assert.assertEquals(
             "Total number of correctly spelled words was not as expected.",
@@ -140,7 +141,7 @@ public class AssertSpellGoldStandard extends Asserter<SpellGoldStandard> {
     }
 
     public AssertSpellGoldStandard percentWordsWithMultipleCorrectionsIs(
-        double expPercent) {
+        double expPercent) throws SpellCheckerException {
 
         double gotPercent = goldStandard().percentWordsWithMultipleCorrections();
         Assert.assertEquals(

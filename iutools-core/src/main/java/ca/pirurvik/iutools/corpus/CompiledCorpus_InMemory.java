@@ -220,6 +220,7 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 	
 	protected void updateWordIndex(String word, String[][] sampleDecomps, 
 			Integer totalDecomps, long freqIncr) throws CompiledCorpusException {
+
     	wordDecomps.put(word, sampleDecomps);
     	updateWordInfo(word, sampleDecomps, totalDecomps, freqIncr);
 		

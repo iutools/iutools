@@ -49,7 +49,7 @@ public class SpellGoldStandard {
         }
     }
 
-    public Map<String, SpellGoldStandardCase> cases() {
+    public Map<String, SpellGoldStandardCase> cases() throws SpellCheckerException {
         if (_cases == null) {
             _cases = new HashMap<String, SpellGoldStandardCase>();
             for (String doc: docRevisions.keySet()) {
@@ -70,10 +70,8 @@ public class SpellGoldStandard {
                         }
                         SpellGoldStandardCase case4word = _cases.get(word);
 
-                        Set<String> spellings = revOneEvaluator.spellings4word(word);
-                        for (String aSpelling: spellings) {
-                            case4word.addCorrectSpelling(evaluator, aSpelling);
-                        }
+                        String spelling = revOneEvaluator.spelling4word(word);
+                        case4word.addCorrectSpelling(evaluator, spelling);
                     }
 
                 }
@@ -82,7 +80,7 @@ public class SpellGoldStandard {
         return _cases;
     }
 
-    public Map<String,Set<String>> wordsWithMultipleCorrections() {
+    public Map<String,Set<String>> wordsWithMultipleCorrections() throws SpellCheckerException {
         Map<String,Set<String>> anomalies = new HashMap<String,Set<String>>();
         cases().forEach((word, wordCase) -> {
             if (wordCase.correctSpellings.size() > 1) {
@@ -98,7 +96,7 @@ public class SpellGoldStandard {
         return anomalies;
     }
 
-    public Map<String,Set<String>> wordsWithMultipleCorrections__NEW() {
+    public Map<String,Set<String>> wordsWithMultipleCorrections__NEW() throws SpellCheckerException {
         Map<String,Set<String>> anomalies = new HashMap<String,Set<String>>();
         cases().forEach((word, wordCase) -> {
             if (wordCase.correctSpellings.size() > 1) {
@@ -109,7 +107,7 @@ public class SpellGoldStandard {
         return anomalies;
     }
 
-    public Set<String> correctlySpelledWords() {
+    public Set<String> correctlySpelledWords() throws SpellCheckerException {
         Set<String> correctlySpelled = new HashSet<String>();
         for (SpellGoldStandardCase aCase: cases().values()) {
             if (aCase.isCorrectlySpelled()) {
@@ -122,15 +120,15 @@ public class SpellGoldStandard {
     }
 
 
-    public Iterator<SpellGoldStandardCase> allWords() {
+    public Iterator<SpellGoldStandardCase> allWords() throws SpellCheckerException {
         return cases().values().iterator();
     }
 
-    public SpellGoldStandardCase case4word(String word) {
+    public SpellGoldStandardCase case4word(String word) throws SpellCheckerException {
         return cases().get(word);
     }
 
-    public Set<String> misspelledWords() {
+    public Set<String> misspelledWords() throws SpellCheckerException {
         Set<String> badWords = new HashSet<String>();
         Iterator<SpellGoldStandardCase> iter = allWords();
         while (iter.hasNext()) {
@@ -211,11 +209,11 @@ public class SpellGoldStandard {
         return allDocs().size();
     }
 
-    public int totalMisspelledWords() {
+    public int totalMisspelledWords() throws SpellCheckerException {
         return misspelledWords().size();
     }
 
-    public int totalCorrectlySpelledWords() {
+    public int totalCorrectlySpelledWords() throws SpellCheckerException {
         return correctlySpelledWords().size();
     }
 
@@ -234,7 +232,7 @@ public class SpellGoldStandard {
         return missedRevisions().size();
     }
 
-    public double percentWordsWithMultipleCorrections() {
+    public double percentWordsWithMultipleCorrections() throws SpellCheckerException {
         int mispelled = totalMisspelledWords();
         int withMultCorrections = wordsWithMultipleCorrections().size();
 

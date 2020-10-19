@@ -1,6 +1,6 @@
 package ca.pirurvik.iutools.spellchecker.goldstandard;
 
-import ca.nrc.json.PrettyPrinter;
+import ca.pirurvik.iutools.spellchecker.SpellCheckerException;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,7 +16,7 @@ public class SpellGoldStandardCase {
     public String inDoc = null;
     private String _id = null;
 
-    private final Pattern pattDoc = Pattern.compile(".*/([^/]+)");
+    private static final Pattern pattDoc = Pattern.compile(".*/([^/]+)");
 
     public SpellGoldStandardCase(String _orig, String _inDoc) {
         init_SpellGoldStandardCase(_orig, _inDoc);
@@ -27,7 +27,7 @@ public class SpellGoldStandardCase {
         this.inDoc = _inDoc;
     }
 
-    public void addCorrectSpelling(String evaluator, String correct) {
+    public void addCorrectSpelling(String evaluator, String correct) throws SpellCheckerException {
         spelling4evaluator.put(evaluator, correct);
         correctSpellings.add(correct);
     }

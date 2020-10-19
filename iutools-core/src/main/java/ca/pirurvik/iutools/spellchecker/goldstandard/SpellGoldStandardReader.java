@@ -140,13 +140,13 @@ public class SpellGoldStandardReader {
         }
 
     }
-    public static SpellGoldStandard read(File gsRootDir) throws IOException {
+    public static SpellGoldStandard read(File gsRootDir) throws IOException, SpellCheckerException {
         return read(gsRootDir, new GSReaderOption[0]);
     }
 
 
     public static SpellGoldStandard read(
-        File gsRootDir, GSReaderOption... options) throws IOException {
+        File gsRootDir, GSReaderOption... options) throws IOException, SpellCheckerException {
         SpellGoldStandard gs = new SpellGoldStandard();
 
         CSVConsumer consumer = new CSVConsumer(gs, options);
@@ -160,7 +160,7 @@ public class SpellGoldStandardReader {
         return gs;
     }
 
-    private static void validateGoldStandard(SpellGoldStandard gs) {
+    private static void validateGoldStandard(SpellGoldStandard gs) throws SpellCheckerException {
         if (gs.totalDocs() == 0) {
             error("No documents were read");
         }
