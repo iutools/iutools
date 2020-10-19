@@ -76,7 +76,7 @@ public class MorphRelativesFinder {
 	 * @throws Exception
 	 */
 	public MorphologicalRelative[] findRelatives(String word) throws MorphRelativesFinderException  {
-    	Logger logger = Logger.getLogger("MorphRelativesFinder.getRelatives");
+    	Logger logger = Logger.getLogger("ca.pirurvik.iutools.morphrelatives.MorphRelativesFinder.getRelatives");
 		logger.debug("word: "+word);
 		
 		String[] segments;
@@ -137,7 +137,7 @@ public class MorphRelativesFinder {
 		
 		if (tLogger.isTraceEnabled()) {
 			traceRelatives(tLogger, collectedSoFar, 
-				"Upon entry, morphemes="+String.join(", ", currentMorphemes)+
+				"Collecting for currentMorphemes="+String.join(", ", currentMorphemes)+
 				"collectedSoFar=\n"+collectedSoFar);
 		}
 		Boolean keepGoing = null;
@@ -157,12 +157,19 @@ public class MorphRelativesFinder {
 		if (keepGoing == null) {
 			keepGoing = true;
 		}
-						
+
+		tLogger.trace("Returning keepGoing="+keepGoing);
+
 		return keepGoing;	
 	}
 
 	protected Boolean collectDescendants(String origWord,
 	    String[] origWordMorphemes, String[] currentMorphemes, Set<MorphologicalRelative> collectedSoFar) throws MorphRelativesFinderException {
+
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.morphrelatives.MorphRelativesFinder.collectDescendants");
+		if (tLogger.isTraceEnabled()) {
+			traceRelatives(tLogger, collectedSoFar, "Invoked with origWord=" + origWord + ", currentMorphemes=" + String.join(", ", currentMorphemes));
+		}
 
 		Boolean keepGoing = null;
 		try {
@@ -193,6 +200,10 @@ public class MorphRelativesFinder {
 			}
 		} catch (TrieException | CompiledCorpusException e) {
 			throw new MorphRelativesFinderException(e);
+		}
+
+		if (tLogger.isTraceEnabled()) {
+			traceRelatives(tLogger, collectedSoFar, "Returning with  origWord=" + origWord);
 		}
 
 		return keepGoing;

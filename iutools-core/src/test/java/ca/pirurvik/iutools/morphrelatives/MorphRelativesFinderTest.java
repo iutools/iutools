@@ -4,6 +4,7 @@ package ca.pirurvik.iutools.morphrelatives;
 import java.io.IOException;
 
 import ca.pirurvik.iutools.corpus.CompiledCorpusException;
+import ca.pirurvik.iutools.corpus.WordInfo;
 import org.junit.Test;
 
 import ca.nrc.datastructure.trie.StringSegmenter;
@@ -49,8 +50,10 @@ public abstract class MorphRelativesFinderTest {
 				"iglu", "iglumut", "iglumut", "iglumut", "iglumik", "iglu",
 				"takujuq", "takujumajunga"
 		};
-		MorphRelativesFinder reformulator = makeFinder(words);
-        MorphologicalRelative[] expansions = reformulator.findRelatives("iglu");
+
+		MorphRelativesFinder finder = makeFinder(words);
+
+        MorphologicalRelative[] expansions = finder.findRelatives("iglu");
         String[] expected = new String[] {"iglumut", "iglumik"};
         
         new AssertMorphologicalRelativeArray(expansions, "")
@@ -65,9 +68,9 @@ public abstract class MorphRelativesFinderTest {
 				"iglu", "iglumut", "iglumut", "iglumut", "iglumik", "iglu", 
 				"iglumiutaq", "takujuq", "takujumajunga"
 		};
-		MorphRelativesFinder reformulator = makeFinder(words);
+		MorphRelativesFinder finder = makeFinder(words);
 
-        MorphologicalRelative[] expansions = reformulator.findRelatives("iglumiutaq");
+        MorphologicalRelative[] expansions = finder.findRelatives("iglumiutaq");
         String[] expected = new String[] {
         	"iglumut","iglu","iglumik"};
         new AssertMorphologicalRelativeArray(expansions, "")
@@ -81,9 +84,9 @@ public abstract class MorphRelativesFinderTest {
 				"takujuq", "takujumajunga", "takujumavalliajanginnik",
 				"iglumut"
 		};
-		MorphRelativesFinder reformulator = makeFinder(corpusWords);
+		MorphRelativesFinder finder = makeFinder(corpusWords);
 
-        MorphologicalRelative[] expansions = reformulator.findRelatives("takujumaguvit");
+        MorphologicalRelative[] expansions = finder.findRelatives("takujumaguvit");
         String[] expected = new String[] {
         	"takujumajunga","takujumavalliajanginnik","takujuq",};
         
