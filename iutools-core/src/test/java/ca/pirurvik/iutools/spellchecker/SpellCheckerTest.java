@@ -322,7 +322,7 @@ public abstract class SpellCheckerTest {
 		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
 		assertCorrectionOK(gotCorrection, word, true);
 	}
-	
+
 	@Test 
 	public void test__correctWord__syllabic__MispelledInput() throws Exception {
 		String[] correctWordsLatin = new String[] {"inuktut", "nunavummi", "inuk", "inuksut", "nunavuumi", "nunavut"};
@@ -666,7 +666,7 @@ public abstract class SpellCheckerTest {
 		
 		Pair<Boolean,Double>[] configurations = new Pair[] {
 				// Expected time when partial correction is disabled
-				Pair.of(false, new Double(14)),
+				Pair.of(false, new Double(15)),
 				// Expected time when partial correction is enabled
 				Pair.of(true, new Double(20.0))
 		};

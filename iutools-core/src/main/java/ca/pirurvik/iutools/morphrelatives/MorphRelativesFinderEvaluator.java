@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ca.inuktitutcomputing.utilities.StopWatch;
+import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.pirurvik.iutools.corpus.*;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -36,6 +38,9 @@ public class MorphRelativesFinderEvaluator {
 	public float precision = -1;
 	public float recall = -1;
 	public float fmeasure = -1;
+
+	int nbTotalCases = 0;
+	protected long elapsedTime = -1;
 	
 	
 	/*
@@ -99,6 +104,8 @@ public class MorphRelativesFinderEvaluator {
 	}
 	
 	public void run() {
+
+		long startTime = StopWatch.nowMSecs();
 		
 		// Set this to a word if you want to only run that one
 		// word. Leave it at null to run all words
@@ -108,18 +115,18 @@ public class MorphRelativesFinderEvaluator {
 		Logger logger = Logger.getLogger("QueryExpanderEvaluator");
 		
         try {
-    		MorphRelativesFinder relsFinder = new MorphRelativesFinder(compiledCorpus);
-//			CompiledCorpus_ES corpus = new CompiledCorpus_ES("hansard-1999-2002.v2020-10-06");
-//    		MorphRelativesFinder relsFinder = new MorphRelativesFinder_ES(corpus);
+//    		MorphRelativesFinder relsFinder = new MorphRelativesFinder(compiledCorpus);
+			CompiledCorpus_ES corpus = new CompiledCorpus_ES("hansard-1999-2002.v2020-10-06");
+			corpus.setSegmenterClassName(StringSegmenter_IUMorpheme.class);
+    		MorphRelativesFinder relsFinder = new MorphRelativesFinder_ES(corpus);
 
             Pattern patMotFreq = Pattern.compile("^(.+) \\((\\d+)\\).*$");
             
-            int nbTotalCases = 0;
+            nbTotalCases = 0;
             int nbTotalGoldStandardAlternatives = 0;
             int nbTotalExpansionsFromCorpus = 0;
             int nbTotalExpansionsNotInGSAlternatives = 0;
-            int nbTotalGSAlternativesNotInExpansions = 0;
-            int nbTotalCasesWithNoExpansion = 0;
+			int nbTotalCasesWithNoExpansion = 0;
             int nbTotalCasesCouldNotBeDecomposed = 0;
             
             ArrayList<String> listAllGsAlternatives = new ArrayList<String>();
@@ -174,7 +181,7 @@ public class MorphRelativesFinderEvaluator {
                     }
                     List<String> listgsalternativesmorphemes = Arrays.asList(gsalternativesMorphemes);
                     
-                    if (verbose) System.out.println("    Query Expander expansions (frequencies in compiled corpus):");
+                    if (verbose) System.out.println("    Morphological Relatives found (frequencies in compiled corpus):");
                     try {
                     	MorphologicalRelative[] expansions = relsFinder.findRelatives(mot);
                     	if ( expansions != null ) {
@@ -216,16 +223,15 @@ public class MorphRelativesFinderEvaluator {
                     		if (computeStatsOverSurfaceForms) {
                     			for (String gsalternative : gsalternatives)
                     				if ( !listexpansions.contains(gsalternative) )
-                    					nbTotalGSAlternativesNotInExpansions++;
+										;
                     		} else {
                     			for (String gsalternativeMorphemes : gsalternativesMorphemes)
                     				if ( !listexpansionsmorphemes.contains(gsalternativeMorphemes) )
-                    					nbTotalGSAlternativesNotInExpansions++;
+										;
                     		}
                     	} else {
                     		logger.debug(mot+" - expansions null");
-                    		nbTotalGSAlternativesNotInExpansions += gsalternatives.length;
-                    		nbTotalCasesWithNoExpansion++;
+							nbTotalCasesWithNoExpansion++;
                     		nbTotalCasesCouldNotBeDecomposed++;
                     		if (verbose) System.out.println("        the word could not be decomposed.");
                     	}
@@ -236,7 +242,8 @@ public class MorphRelativesFinderEvaluator {
                     }
             }
             csvParser.close();
-            
+			elapsedTime = StopWatch.elapsedMsecsSince(startTime);
+
             for (int igsa=0; igsa<listAllGsAlternatives.size(); igsa++) {
             	if (verbose) System.out.println((igsa+1)+". "+listAllGsAlternatives.get(igsa));
             }
@@ -245,7 +252,7 @@ public class MorphRelativesFinderEvaluator {
 	            System.out.println("\nTotal number of evaluated words: "+nbTotalCases);
 	            System.out.println("Total number of alternatives in Gold Standard: "+nbTotalGoldStandardAlternatives);
 	            System.out.println("Total number of expansions found in corpus: "+nbTotalExpansionsFromCorpus);
-	            
+				System.out.format("Average time per evaluated word: %.2f secs", secsPerCase());
 	            System.out.println("\nTotal number of cases with no expansion found in corpus: "+nbTotalCasesWithNoExpansion+", of which");
 	            System.out.println("Total number of cases that could not be decomposed: "+nbTotalCasesCouldNotBeDecomposed);
 	            
@@ -275,7 +282,8 @@ public class MorphRelativesFinderEvaluator {
 					if (verbose) System.err.println(e1.getMessage());
 				}
         }
-        
+
+
         if (focusOnWord != null) {
         	Assert.fail("TEST WAS RUN ON A SINGLE WORD!\nRemember to set focusOnWord = null to run the test on all words");
         }
@@ -283,17 +291,7 @@ public class MorphRelativesFinderEvaluator {
 
 	private long freqDansCorpus(String reformulation) 
 			throws MorphRelativesFinderException {
-		
-//		String[] keys = compiledCorpus.getSegmentsCache().get(reformulation);
-//		if (keys==null)
-//			return 0;				
-//		
-//		long freqDansCorpus;
-//		try {
-//			freqDansCorpus = compiledCorpus.trie.getFrequency(keys);
-//		} catch (TrieException e) {
-//			throw new QueryExpanderException(e);
-//		}
+
 		long freqDansCorpus = 0;
 		try {
 			WordInfo wInfo = compiledCorpus.info4word(reformulation);
@@ -320,5 +318,11 @@ public class MorphRelativesFinderEvaluator {
 				aRelative.setMorphemes(aDecomp);
 			}
 		}
+	}
+
+	public double secsPerCase() {
+		double mSecs = 1.0 * elapsedTime / nbTotalCases;
+		double secs = mSecs / 1000;
+		return secs;
 	}
 }

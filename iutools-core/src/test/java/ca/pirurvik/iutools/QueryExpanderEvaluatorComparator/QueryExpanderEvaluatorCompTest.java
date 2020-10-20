@@ -100,9 +100,9 @@ public class QueryExpanderEvaluatorCompTest {
 			}
 			if (!runtimeFine) {
 				if (runtimeDelta < 0) {
-					diagnostic += "\nRUNTIME: "+"<<< The runtime has gone ***DOWN*** by "+runtimeDeltaAbs+" secs. Was "+targetRuntimeSecs+"; now "+gotElapsedSecs;
+					diagnostic += "\nRUNTIME: "+"<<< The runtime has gone ***DOWN*** by "+runtimeDeltaAbs+" secs. Was "+targetRuntimeSecs+"; now "+evaluator.secsPerCase();
 				} else {
-					diagnostic += "\nRUNTIME: "+">>> The runtime has gone ***UP*** by "+runtimeDeltaAbs+" secs. Was "+targetRuntimeSecs+"; now "+gotElapsedSecs;
+					diagnostic += "\nRUNTIME: "+">>> The runtime has gone ***UP*** by "+runtimeDeltaAbs+" secs. Was "+targetRuntimeSecs+"; now "+evaluator.secsPerCase();
 				}	
 			}
 			assertFalse(diagnostic,true);

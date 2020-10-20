@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import ca.inuktitutcomputing.utilities.StopWatch;
 import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.datastructure.trie.StringSegmenterException;
@@ -19,6 +20,8 @@ public class SpellCheckerEvaluator {
 	int examplesCount = 0;
 	int totalWithCorrectTopSuggestion = 0;
 	int totalExamplesWithKnownCorrections = 0;
+
+	Long startTime = null;
 	
 	Set<SpellCheckerExample> truePos = new HashSet<SpellCheckerExample>();
 	Set<SpellCheckerExample> falsePos = new HashSet<SpellCheckerExample>();
@@ -55,6 +58,9 @@ public class SpellCheckerEvaluator {
 	
 	public void onNewExample(SpellCheckerExample example, 
 			Boolean assumesCorrectionsLoadeInDic) throws SpellCheckerException {
+		if (startTime == null) {
+			startTime = StopWatch.nowMSecs();
+		}
 		examplesCount++;
 		if (verbosity > 0) {
 			System.out.print("\nProcessing example #"+examplesCount+": "+example.toString()+"\n");
@@ -357,5 +363,55 @@ public class SpellCheckerEvaluator {
 			1.0 * totalWithCorrectTopSuggestion /
 					totalExamplesWithKnownCorrections;
 		return perc;
+	}
+
+	public void run(SpellCheckerExample[] examples, String focusOnExample,
+		Boolean loadCorrectWordInDict) throws SpellCheckerException {
+		if (loadCorrectWordInDict == null) {
+			loadCorrectWordInDict = false;
+		}
+
+		//
+		// For these tests, "pretend" that all the words from the
+		// examples were seen in the corpus used by the SpellChecker.
+		//
+		if (loadCorrectWordInDict) {
+			assumeCorrectionsAreInCheckerDict(examples);
+		}
+
+		for (SpellCheckerExample exampleData: examples) {
+			if (focusOnExample == null || focusOnExample.equals(exampleData.wordToCheck)) {
+				onNewExample(exampleData, loadCorrectWordInDict);
+			}
+		}
+	}
+
+	/**
+	 * The spell checker relies heavily on
+	 * of correct words that was compiled from a
+	 * corpus. Such dictionaries take a long
+	 * time to compile, and sometimes, they are
+	 * missing some words that are needed for
+	 * the tests (because of a bug in that was
+	 * in the corpus compiler at the time we
+	 * compiled the corpus used for spell
+	 * checking).
+	 *
+	 * Rather than wait for a new better version
+	 * of the corpus to be generated, we can use
+	 * this method to patch up the dictionary and
+	 * add words that are required by this a test
+	 *
+	 * @author desilets
+	 * @throws SpellCheckerException
+	 *
+	 */
+	private void assumeCorrectionsAreInCheckerDict(
+		SpellCheckerExample[] examples) throws SpellCheckerException {
+		for (SpellCheckerExample anExample: examples) {
+			for (String aCorrection: anExample.acceptableCorrections) {
+				checker.addExplicitlyCorrectWord(aCorrection);
+			}
+		}
 	}
 }

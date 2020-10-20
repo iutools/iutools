@@ -80,18 +80,4 @@ public class SpellChecker_ESTest extends SpellCheckerTest {
         corpus.deleteAll(true);
         return corpus;
     }
-
-
-    ////////////////////////////////////////////////////////////////////////////////
-    // Temporarily disable some failings tests that are inherited from parent test
-    ////////////////////////////////////////////////////////////////////////////////
-
-//    @Test
-//    @Ignore
-//    public void test__spellCheck__SpeedTest() throws Exception {}
-//
-//    @Test
-//    public void test__ngramFrequency__ExcludeMisspelled() throws Exception {
-//        SpellChecker corpus = largeDictChecker();
-//    }
 }

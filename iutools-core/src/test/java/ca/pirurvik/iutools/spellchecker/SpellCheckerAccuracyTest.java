@@ -427,7 +427,6 @@ public abstract class SpellCheckerAccuracyTest {
 //		focusOnExample = "piliriqatigiinik";
 		
 		int verbosity = 2;
-//		double expPercentFoundInTopN = 0.93;
 		double expPercentFoundInTopN = 1.0;
 		double tolerance = 0.01;
 		double expPercTopSuggestionOK = 0.90;
@@ -477,24 +476,11 @@ public abstract class SpellCheckerAccuracyTest {
 			Double expFNRate, Double toleranceFNRate)  throws Exception {
 		
 		if (verbosity == null) verbosity = 0;
-		if (loadCorrectWordInDict == null) loadCorrectWordInDict = false;
-		
-		//
-		// For these tests, "pretend" that all the words from the 
-		// examples were seen in the corpus used by the SpellChecker.
-		//
-		if (loadCorrectWordInDict) {
-			assumeCorrectionsAreInCheckerDict(examples, spellChecker);
-		}
 		SpellCheckerEvaluator evaluator = new SpellCheckerEvaluator(spellChecker);
 		evaluator.setVerbose(verbosity);
-				
-		for (SpellCheckerExample exampleData: examples) {
-			if (focusOnExample == null || focusOnExample.equals(exampleData.wordToCheck)) {
-				evaluator.onNewExample(exampleData, loadCorrectWordInDict);				
-			}
-		}
+		evaluator.run(examples, focusOnExample, loadCorrectWordInDict);
 
+				
 		int numExamples = evaluator.totalExamples();
 		Assert.assertTrue(
 	"No examples were evaluated!\nMaybe you set 'focusOnExample' to a word that is not in the list of examples?",
@@ -756,32 +742,5 @@ public abstract class SpellCheckerAccuracyTest {
 	//////////////////////
 	// TEST HELPERS
 	//////////////////////
-	
-	/**
-	 * The spell checker relies heavily on 
-	 * of correct words that was compiled from a
-	 * corpus. Such dictionaries take a long 
-	 * time to compile, and sometimes, they are 
-	 * missing some words that are needed for 
-	 * the tests (because of a bug in that was 
-	 * in the corpus compiler at the time we 
-	 * compiled the corpus used for spell 
-	 * checking).
-	 * 
-	 * Rather than wait for a new better version 
-	 * of the corpus to be generated, we can use 
-	 * this method to patch up the dictionary and 
-	 * add words that are required by this a test 
-	 * 
-	 * @author desilets
-	 * @throws SpellCheckerException 
-	 *
-	 */
-	private void assumeCorrectionsAreInCheckerDict(SpellCheckerExample[] examples, SpellChecker spellChecker) throws SpellCheckerException {
-		for (SpellCheckerExample anExample: examples) {
-			for (String aCorrection: anExample.acceptableCorrections) {
-				spellChecker.addExplicitlyCorrectWord(aCorrection);
-			}
-		}
-	}
+
 }

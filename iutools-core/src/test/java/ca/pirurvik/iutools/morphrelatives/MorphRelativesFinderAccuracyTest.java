@@ -13,16 +13,16 @@ import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 public class MorphRelativesFinderAccuracyTest {
 
 	@Test
-	public void test__QuickAccuracyTest() throws Exception {
+	public void test__findRelatives__QuickAccuracyTest() throws Exception {
 		PerformanceExpectations expectations =
-				new PerformanceExpectations()
-					// This test should run in 30 secs give or take 5 secs
-					.setTargetRuntimeSecs(20, 5)
+			new PerformanceExpectations()
+				// This test should run in 20 secs give or take 5 secs
+				.setTargetRuntimeSecs(3, 1)
 
-					.setTargetPrecision(0.57)
-					.setTargetRecall(0.47)
-					.setPrecRecTolerance(0.02)
-				;
+				.setTargetPrecision(0.60)
+				.setTargetRecall(0.50)
+				.setPrecRecTolerance(0.02)
+			;
 
 		evaluatePerformance(expectations, 10);
 	}
@@ -39,8 +39,8 @@ public class MorphRelativesFinderAccuracyTest {
 			.setTargetPrecision(0.6314)
 			.setTargetRecall(0.4707)
 			.setPrecRecTolerance(0.015)
-			// 5 minutes, giver or take 2
-			.setTargetRuntimeSecs(5 * 60, 2*60)
+			// Each word should take on average 5 secs, give or take 1 sec
+			.setTargetRuntimeSecs(2 , 1)
 			;
 
 		evaluatePerformance(expectations);
@@ -80,10 +80,10 @@ public class MorphRelativesFinderAccuracyTest {
 		evaluator.run();
 		long gotElapsedSecs = (System.currentTimeMillis() - startMSecs) / 1000;
 
-		long runtimeDelta = -9999; 	long runtimeDeltaAbs = 9999;
+		double runtimeDelta = -9999.0; 	double runtimeDeltaAbs = 9999.0;
 		// targetRuntimeSecs < 0 means we don't care about runtime
 		if (exp.targetRuntimeSecs > 0) {
-			runtimeDelta = gotElapsedSecs - exp.targetRuntimeSecs;
+			runtimeDelta = evaluator.secsPerCase() - exp.targetRuntimeSecs;
 			runtimeDeltaAbs = Math.abs(runtimeDelta);
 			if (runtimeDeltaAbs > exp.secsTolerance) {
 				runtimeFine = false;
@@ -130,9 +130,9 @@ public class MorphRelativesFinderAccuracyTest {
 			}
 			if (!runtimeFine) {
 				if (runtimeDelta < 0) {
-					diagnostic += "\nRUNTIME: "+"<<< The runtime has gone ***DOWN*** by "+runtimeDeltaAbs+" secs. Was "+exp.targetRuntimeSecs+"; now "+gotElapsedSecs;
+					diagnostic += "\nRUNTIME: "+"<<< The runtime has gone ***DOWN*** by "+runtimeDeltaAbs+" secs. Was "+exp.targetRuntimeSecs+"; now "+evaluator.secsPerCase();
 				} else {
-					diagnostic += "\nRUNTIME: "+">>> The runtime has gone ***UP*** by "+runtimeDeltaAbs+" secs. Was "+exp.targetRuntimeSecs+"; now "+gotElapsedSecs;
+					diagnostic += "\nRUNTIME: "+">>> The runtime has gone ***UP*** by "+runtimeDeltaAbs+" secs. Was "+exp.targetRuntimeSecs+"; now "+evaluator.secsPerCase();
 				}
 			}
 			assertFalse(diagnostic,true);
