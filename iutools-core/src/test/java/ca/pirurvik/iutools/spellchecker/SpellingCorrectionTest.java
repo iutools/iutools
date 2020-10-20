@@ -1,11 +1,6 @@
 package ca.pirurvik.iutools.spellchecker;
 
-import org.junit.Ignore;
 import org.junit.Test;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import ca.nrc.testing.AssertString;
 
 public class SpellingCorrectionTest {
 	
@@ -23,7 +18,7 @@ public class SpellingCorrectionTest {
 				.setCorrectTail("tut")
 			;
 		
-		SpellingCorrectionAsserter.assertThat(
+		AssertSpellingCorrection.assertThat(
 			gotCorr, 
 			"There should be no middle highlighting when tail and lead exactly cover the word")
 				.highlightsIncorrectMiddle("inu[qti]tut")
@@ -40,7 +35,7 @@ public class SpellingCorrectionTest {
 				.setCorrectTail("qtitut")
 			;
 		
-		SpellingCorrectionAsserter.assertThat(
+		AssertSpellingCorrection.assertThat(
 			gotCorr, 
 			"There should be no middle highlighting when tail and lead exactly cover the word")
 				.highlightsIncorrectMiddle("inu[qti]tut")
@@ -57,7 +52,7 @@ public class SpellingCorrectionTest {
 				.setCorrectTail("titut")
 			;
 		
-		SpellingCorrectionAsserter.assertThat(
+		AssertSpellingCorrection.assertThat(
 			gotCorr, 
 			"There should be no middle highlighting when tail and lead exactly cover the word")
 				.highlightsIncorrectMiddle(null)

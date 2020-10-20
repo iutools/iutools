@@ -286,7 +286,7 @@ public abstract class SpellCheckerTest {
 
 		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
 
-		SpellingCorrectionAsserter.assertThat(gotCorrection, 
+		AssertSpellingCorrection.assertThat(gotCorrection,
 				  "Correction for word 'inukshuk' was wrong")
 			.wasMisspelled()
 			.providesSuggestions(expSuggestions)
@@ -300,7 +300,7 @@ public abstract class SpellCheckerTest {
 		String word = "inuktigtut";
 		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
 		
-		SpellingCorrectionAsserter.assertThat(gotCorrection, 
+		AssertSpellingCorrection.assertThat(gotCorrection,
 				  "Correction for word 'inukshuk' was wrong")
 			.wasMisspelled()
 			.providesSuggestions(
@@ -713,7 +713,7 @@ public abstract class SpellCheckerTest {
 		SpellingCorrection correction = 
 				new SpellingCorrection(badWord, new String[0], true);
 		checker.computeCorrectPortions(badWord, correction);
-		SpellingCorrectionAsserter.assertThat(correction, "")			
+		AssertSpellingCorrection.assertThat(correction, "")
 			.highlightsIncorrectTail("inukti")
 			.highlightsIncorrectLead("tut")
 			.highlightsIncorrectMiddle("inukti[q]tut")
