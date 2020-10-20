@@ -39,7 +39,8 @@ public class SpellCheckerEvaluator {
 	private int totalExamplesWithKnownCorrection = 0;	
 
 	private Integer verbosity = 1;
-	
+	private long elapsedMSecs;
+
 	public SpellCheckerEvaluator() throws StringSegmenterException, FileNotFoundException, SpellCheckerException, ConfigException {
 		init_SpellCheckerEvaluator(null);
 	}
@@ -366,7 +367,7 @@ public class SpellCheckerEvaluator {
 	}
 
 	public void run(SpellCheckerExample[] examples, String focusOnExample,
-		Boolean loadCorrectWordInDict) throws SpellCheckerException {
+		Boolean loadCorrectWordInDict, Integer firstNOnly) throws SpellCheckerException {
 		if (loadCorrectWordInDict == null) {
 			loadCorrectWordInDict = false;
 		}
@@ -379,11 +380,17 @@ public class SpellCheckerEvaluator {
 			assumeCorrectionsAreInCheckerDict(examples);
 		}
 
+		startTime = StopWatch.nowMSecs();
 		for (SpellCheckerExample exampleData: examples) {
+			if (firstNOnly != null && examplesCount > firstNOnly) {
+				break;
+			}
 			if (focusOnExample == null || focusOnExample.equals(exampleData.wordToCheck)) {
 				onNewExample(exampleData, loadCorrectWordInDict);
 			}
 		}
+
+		elapsedMSecs = StopWatch.elapsedMsecsSince(startTime);
 	}
 
 	/**
@@ -413,5 +420,15 @@ public class SpellCheckerEvaluator {
 				checker.addExplicitlyCorrectWord(aCorrection);
 			}
 		}
+	}
+
+	public double averageSecsPerCase() {
+		double totalSecs = elapsedMSecs / 1000;
+
+		double avgSecs = 0.0;
+		if (examplesCount > 0) {
+			avgSecs = totalSecs / examplesCount;
+		}
+		return avgSecs;
 	}
 }

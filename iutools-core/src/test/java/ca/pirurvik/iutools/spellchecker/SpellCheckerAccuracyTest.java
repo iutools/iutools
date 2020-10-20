@@ -327,98 +327,92 @@ public abstract class SpellCheckerAccuracyTest {
     };
 
     @Test
-    public void test__DELETEME__WordThatFailsInSpellEndpoint()
-        throws Exception{
+    public void test__Evaluate__QuickEvaluator()
+            throws Exception {
 
-        // This word is an example that fails in
-        // test__SpellEndpoint__Syllabic__HappyPath.
+        // This test runs the evaluation on the first 10 examples
+        // of the examples_MostFrequenMisspelledWords data set
         //
-        // This failure started happening sometime during the refactoring
-        // of the SpellChecker so it could use an ES CompiledCorpus.
-        //
-        // As of 2020-10-19, I sent a message to Benoit to check if the
-        // new suggestions sent by the SpellChecker are OK, eventhough
-        // they are different from what they used to be
-        // (note: the top suggestion is still the same which I guess is
-        // what really counts).
-        //
-        String word = "ᐃᓄᑦᒧᑦ";
-        SpellChecker checker = makeLargeDictChecker();
-        SpellingCorrection gotCorrection = checker.correctWord(word);
+        EvaluationParameters parameters =
+            new EvaluationParameters()
+            .setVerbosity(1)
+            .setExamples(examples_MostFrequenMisspelledWords)
+            .setStopAfterNcases(10)
+            .setLoadCorrectWordInDict(true)
 
-        // These are the expectations provided in test
-        // test__SpellEndpoint__Syllabic__HappyPath.
-        //
-        String[] expCorrections = new String[] {
-                "ᐃᓄᒻᒧᑦ",
-                "ᐃᓄᑐᐊᒧᑦ",
-                "ᐃᓄᑐᐊᕐᒧᑦ",
-                "ᐃᓄᖕᒧᑦ",
-                "ᐃᓄᑐᖃᕐᒧᑦ",
-                "ᐃᓄᒻᒧᑦ",
-                "ᐃᓄᑐᐊᒧᑦ",
-                "ᐃᓄᑐᐊᕐᒧᑦ",
-                "ᐃᓄᖕᒧᑦ",
-                "ᐃᓄᑐᖃᕐᒧᑦ"
-        };
-        new AssertSpellingCorrection(gotCorrection, "")
-            .suggestsSpellings(true, expCorrections)
+            .setFPRate(0.0, 0.0)
+            .setFNRate(0.0, 0.0)
+
+            .setPercentFoundInTopN(0.91)
+            .setTolerance(0.02)
+                    
+            .setPercTopSuggestionOK(0.81)
+                    
+            .setAverageRank(5.2)
+            .setAvgRankTolerance(0.2)
+
+            .setAvgRuntime(4.0, 1.5)
             ;
+
+        SpellChecker checker = makeLargeDictChecker();
+
+        evaluateCheckerOnExamples(checker,parameters);
     }
 
     @Test
     public void test__Evaluate__MostFrequentMisspelledWords__AssumingWordIsInDict()
             throws Exception {
-        //
-        // Set this to a specific example if you only want
-        // to evaluate that one.
-        //
-        String focusOnExample = null;
-//		focusOnExample = "nunavungmi";
+        EvaluationParameters parameters =
+            new EvaluationParameters()
 
-        int verbosity = 1;
-        double expPercentFoundInTopN = 0.97;
-        double tolerance = 0.01;
-        double expPercTopSuggestionOK = 0.90;
-        double expAverageRank = 2.3;
-        double avgRankTolerance = 0.1;
-        Boolean loadCorrectWordInDict = true;
+            // use setFocusOnExample() to run just one word out of the
+            // data set.
+//          .setFocusOnExample("nunavungmi")
+
+            .setVerbosity(1)
+            .setExamples(examples_MostFrequenMisspelledWords)
+            .setLoadCorrectWordInDict(true)
+
+            .setPercentFoundInTopN(0.97)
+            .setTolerance(0.01)
+            .setPercTopSuggestionOK(0.85)
+            .setAverageRank(2.3)
+            .setAvgRankTolerance(0.1)
+
+            .setAvgRuntime(-1.0, 0.5)
+        ;
 
         SpellChecker checker = makeLargeDictChecker();
-
-        evaluateCheckerOnExamples(checker,
-                examples_MostFrequenMisspelledWords, focusOnExample,
-                expPercentFoundInTopN, tolerance,
-                expPercTopSuggestionOK, tolerance,
-                expAverageRank, avgRankTolerance,
-                loadCorrectWordInDict, verbosity);
+        evaluateCheckerOnExamples(checker, parameters);
     }
 
     @Test
     public void test__Evaluate__MostFrequentMisspelledWords__WIHOUT_AssumingWordIsInDict()
             throws Exception {
-        //
-        // Set this to a specific example if you only want
-        // to evaluate that one.
-        //
-        String focusOnExample = null;
-//		focusOnExample = "nunavuumik";
 
-        int verbosity = 1;
-        double tolerance = 0.01;
-        double expPercentFoundInTopN = 0.97;
-        double expPercTopSuggestionOK = 0.9;
-        double expAverageRank = 2.5;
-        double avgRankTolerance = 0.1;
-        Boolean loadCorrectWordInDict = false;
+        EvaluationParameters parameters =
+            new EvaluationParameters()
+            // Use setFocusOnExample to run just one word from the data set
+//            .setFocusOnExample("nunavungmi")
 
-        evaluateCheckerOnExamples(makeLargeDictChecker(),
-                examples_MostFrequenMisspelledWords, focusOnExample,
-                expPercentFoundInTopN, tolerance,
-                expPercTopSuggestionOK, tolerance,
-                expAverageRank, avgRankTolerance,
-                loadCorrectWordInDict, verbosity);
+            .setVerbosity(1)
+            .setExamples(examples_MostFrequenMisspelledWords)
+            .setLoadCorrectWordInDict(false)
+
+            .setPercentFoundInTopN(0.97)
+            .setTolerance(0.01)
+            .setPercTopSuggestionOK(0.83)
+            .setAverageRank(2.5)
+            .setAvgRankTolerance(0.1)
+
+            .setAvgRuntime(-1.0, 0.5)
+
+            ;
+
+        evaluateCheckerOnExamples(makeLargeDictChecker(), parameters);
+
     }
+
     @Ignore @Test
     public void test__Evaluate__DEBUG_MostFrequentWords__UsingSmallCustomDictionary() throws Exception {
         //
@@ -441,82 +435,55 @@ public abstract class SpellCheckerAccuracyTest {
 
         SpellChecker checker = makeEmptyDictChecker();
 
-        int verbosity = 1;
-        double expPercentFoundInTopN = 0.6;
-        double tolerance = 0.01;
-        double expPercTopSuggestionOK = 0.90;
-        double expAverageRank = 3.4;
-        double avgRankTolerance = 0.1;
-        Boolean loadCorrectWordInDict = true;
-        evaluateCheckerOnExamples(checker,
-                examples_MostFrequenMisspelledWords, focusOnExample,
-                expPercentFoundInTopN, tolerance,
-                expPercTopSuggestionOK, tolerance,
-                expAverageRank, avgRankTolerance,
-                loadCorrectWordInDict, verbosity);
+//        int verbosity = 1;
+//        double expPercentFoundInTopN = 0.6;
+//        double tolerance = 0.01;
+//        double expPercTopSuggestionOK = 0.90;
+//        double expAverageRank = 3.4;
+//        double avgRankTolerance = 0.1;
+//        Boolean loadCorrectWordInDict = true;
+//        evaluateCheckerOnExamples(checker,
+//                examples_MostFrequenMisspelledWords, focusOnExample,
+//                expPercentFoundInTopN, tolerance,
+//                expPercTopSuggestionOK, tolerance,
+//                expAverageRank, avgRankTolerance,
+//                loadCorrectWordInDict, verbosity);
     }
 
     @Test
     public void test__Evaluate__RandomPageSample__LargeDictionary() throws Exception {
-        // Set this to a specific example if you only want
-        // to evaluate that one.
-        //
-        String focusOnExample = null;
-//		focusOnExample = "piliriqatigiinik";
+        EvaluationParameters parameters =
+            new EvaluationParameters()
+            .setFocusOnExample("piliriqatigiinik")
 
-        int verbosity = 2;
-        double expPercentFoundInTopN = 1.0;
-        double tolerance = 0.01;
-        double expPercTopSuggestionOK = 0.90;
-        double expAverageRank = 1.23;
-        double avgRankTolerance = 0.93;
-        Boolean loadCorrectWordInDict = true;
-        Double expFPRate = 0.52;
-        Double toleranceFPRate = 0.01;
+            .setVerbosity(2)
+            .setExamples(examples_RandomPageSample)
+            .setLoadCorrectWordInDict(true)
 
-        // We should not get ANY False Negatives
-        Double expFNRate = 0.0;
-        Double toleranceFNRate = 0.01;
+            .setFPRate(0.52, 0.01)
+            .setFNRate(0.0, 0.0)
 
-        evaluateCheckerOnExamples(makeLargeDictChecker(),
-                examples_RandomPageSample, focusOnExample,
-                expPercentFoundInTopN, tolerance,
-                expPercTopSuggestionOK, tolerance,
-                expAverageRank, avgRankTolerance,
-                loadCorrectWordInDict, verbosity,
-                expFPRate, toleranceFPRate,
-                expFNRate, toleranceFNRate);
-    }
+            .setPercentFoundInTopN(1.0 + 1.0)
+            .setTolerance(0.01)
+            .setPercTopSuggestionOK(0.90 + 1.0)
+            .setAverageRank(-1.23)
+            .setAvgRankTolerance(0.1)
 
-    public void evaluateCheckerOnExamples(SpellChecker spellChecker,
-                                          SpellCheckerExample[] examples, String focusOnExample,
-                                          double expPercentFoundInTopN, double tolerance,
-                                          double expPercTopSuggestionOK, double percTopSuggestionOKTolerance,
-                                          double expAverageRank, double avgRankTolerance,
-                                          Boolean loadCorrectWordInDict, Integer verbosity) throws Exception {
+            .setAvgRuntime(-1.0, 0.5)
+            ;
 
-        evaluateCheckerOnExamples(spellChecker,
-                examples, focusOnExample,
-                expPercentFoundInTopN, tolerance,
-                expPercTopSuggestionOK, percTopSuggestionOKTolerance,
-                expAverageRank, avgRankTolerance,
-                loadCorrectWordInDict, verbosity,
-                null, null, null, null);
     }
 
     private void evaluateCheckerOnExamples(SpellChecker spellChecker,
-                                           SpellCheckerExample[] examples, String focusOnExample,
-                                           double expPercentFoundInTopN, double tolerance,
-                                           double expPercTopSuggestionOK, double percTopSuggestionOKTolerance,
-                                           double expAverageRank, double avgRankTolerance,
-                                           Boolean loadCorrectWordInDict, Integer verbosity,
-                                           Double expFPRate, Double toleranceFPRate,
-                                           Double expFNRate, Double toleranceFNRate)  throws Exception {
+        EvaluationParameters parameters) throws Exception {
 
-        if (verbosity == null) verbosity = 0;
-        SpellCheckerEvaluator evaluator = new SpellCheckerEvaluator(spellChecker);
-        evaluator.setVerbose(verbosity);
-        evaluator.run(examples, focusOnExample, loadCorrectWordInDict);
+
+        SpellCheckerEvaluator evaluator =
+            new SpellCheckerEvaluator(spellChecker);
+        evaluator.setVerbose(parameters.verbosity);
+        evaluator.run(
+            parameters.examples, parameters.focusOnExample,
+            parameters.loadCorrectWordInDict, parameters.stopAfterNcases);
 
 
         int numExamples = evaluator.totalExamples();
@@ -525,46 +492,52 @@ public abstract class SpellCheckerAccuracyTest {
                 numExamples > 0);
 
         int N = 5;
-        assertEvaluationAsExpected(evaluator, N,
-                expPercentFoundInTopN, tolerance,
-                expAverageRank, avgRankTolerance,
-                expFPRate, toleranceFPRate,
-                expFNRate, toleranceFNRate);
+        assertEvaluationAsExpected(evaluator, N, parameters);
 
-        if (focusOnExample != null) {
-            Assert.fail("The test was only carried out on word "+focusOnExample+".\n" +
+        if (parameters.focusOnExample != null) {
+            Assert.fail("The test was only carried out on word "+parameters.focusOnExample+".\n" +
                     "Don't forget to set focusOnExample=null to run the test on all words");
         }
     }
 
-    private void assertEvaluationAsExpected(SpellCheckerEvaluator evaluator,
-                                            int N, double expPercentFoundInTopN, double tolerance,
-                                            Double expAverageRank, Double avgRankTolerance) {
-
-        assertEvaluationAsExpected(evaluator,
-                N, expPercentFoundInTopN, tolerance,
-                expAverageRank, avgRankTolerance);
-    }
-
-    private void assertEvaluationAsExpected(SpellCheckerEvaluator evaluator,
-                                            int N, double expPercentFoundInTopN, double tolerance,
-                                            Double expAverageRank, Double avgRankTolerance,
-                                            Double expFPRate,Double toleranceFPRate,
-                                            Double expFNRate, Double toleranceFNRate) {
+    private void assertEvaluationAsExpected(
+        SpellCheckerEvaluator evaluator, Integer N, EvaluationParameters parameters)  {
 
         String errMess = "";
 
-        errMess += checkFalsePositiveRate(evaluator, expFPRate, toleranceFPRate);
-        errMess += checkFalseNegativeRate(evaluator, expFNRate, toleranceFNRate);
-        errMess += checkPercentInTopN(evaluator, N, expPercentFoundInTopN, tolerance);;
-        errMess += checkAverageRank(evaluator, expAverageRank, avgRankTolerance);
+        errMess += checkFalsePositiveRate(evaluator, parameters.FPRate, parameters.toleranceFPRate);
+        errMess += checkFalseNegativeRate(evaluator, parameters.FNRate, parameters.toleranceFNRate);
+        errMess += checkPercentInTopN(evaluator, N, parameters.percentFoundInTopN, parameters.tolerance);;
+        errMess += checkPercentWithTopSuggestionOK(evaluator, parameters);
+        errMess += checkAverageRank(evaluator, parameters.averageRank, parameters.avgRankTolerance);
         errMess += checkExamplesWithWorseRank(evaluator);
         errMess += checkExamplesWithBetterRank(evaluator);
+        errMess += checkAverageRuntime(evaluator, parameters);
 
-        if (!errMess.isEmpty()) {
+        if (!errMess.matches("^\\s*$")) {
             fail(errMess);
         }
     }
+
+    private String checkAverageRuntime(SpellCheckerEvaluator evaluator,
+       EvaluationParameters parameters) {
+        String errMess = "";
+        if (parameters.avgRuntime != null) {
+            double gotRuntime = evaluator.averageSecsPerCase();
+            try {
+                AssertNumber.performanceHasNotChanged(
+            "Average runtime (secs) per word",
+                    gotRuntime, parameters.avgRuntime,
+                    parameters.toleranceAvgRunTime,
+        false);
+            } catch (AssertionError e) {
+                errMess = e.getMessage();
+            }
+        }
+        return "\n"+errMess+"\n";
+
+    }
+
 
     private String checkFalsePositiveRate(SpellCheckerEvaluator evaluator,
                                           Double expFPRate, Double toleranceFPRate) {
@@ -580,7 +553,7 @@ public abstract class SpellCheckerAccuracyTest {
                 errMess = e.getMessage();
             }
         }
-        return errMess;
+        return "\n"+errMess+"\n";
     }
 
     private String checkFalseNegativeRate(SpellCheckerEvaluator evaluator,
@@ -601,7 +574,7 @@ public abstract class SpellCheckerAccuracyTest {
     }
 
     private String checkPercentInTopN(SpellCheckerEvaluator evaluator, int N,
-                                      double expPercentFoundInTopN, double tolerance) {
+        double expPercentFoundInTopN, double tolerance) {
 
         String errMess = "";
 
@@ -626,6 +599,37 @@ public abstract class SpellCheckerAccuracyTest {
                         "Significant INCREASE found for the percentage of words with an acceptable correction in the top "+N+
                                 "\n  Got: "+gotPercentFoundInTopN+"\n  Exp: "+expPercentFoundInTopN+"\n  Delta: "+delta+
                                 "\n\nYou should probably change the expectations for that test so we don't loose that improvement in the future."
+                ;
+            }
+        }
+
+        if (!errMess.isEmpty()) {
+            errMess += "\n\n---------------\n\n";
+            errMess = "\n"+errMess;
+        }
+
+        return errMess;
+    }
+
+    private String checkPercentWithTopSuggestionOK(
+        SpellCheckerEvaluator evaluator, EvaluationParameters parameters) {
+        String errMess = "";
+
+        double gotPercent = evaluator.percWithCorrectTopSuggestion();
+
+        double delta =
+            gotPercent - parameters.percTopSuggestionOK;
+        if (Math.abs(delta) > parameters.tolerance) {
+            if (delta < 0) {
+                errMess =
+                    "Significant DECREASE found for the percentage of words with a correct spelling in top first position.\n"+
+                    "\n  Got: "+gotPercent+"\n  Exp: "+parameters.percTopSuggestionOK+"\n  Delta: "+delta
+                ;
+            } else {
+                errMess =
+                    "Significant INCREASE found for the percentage of words with a correct spelling in top first position.\n"+
+                    "\n  Got: "+gotPercent+"\n  Exp: "+parameters.percTopSuggestionOK+"\n  Delta: "+delta+
+                    "\n\nYou should probably change the expectations for that test so we don't loose that improvement in the future."
                 ;
             }
         }
@@ -781,4 +785,97 @@ public abstract class SpellCheckerAccuracyTest {
     // TEST HELPERS
     //////////////////////
 
+    public static class EvaluationParameters {
+
+        public int verbosity = 1;
+
+        public Integer stopAfterNcases  = null;
+        public String focusOnExample = null;
+
+        public double FPRate = 0.0;
+        public Double toleranceFPRate = 0.0;
+        public Double FNRate = 0.0;
+        public Double toleranceFNRate = 0.0;
+
+        public Double percentFoundInTopN = 1.0;
+        public double tolerance = 0.0;
+        public double percTopSuggestionOK = 1.0;
+        public double averageRank = 1;
+        public double avgRankTolerance = 0;
+
+        public Double avgRuntime = null;
+        public Double toleranceAvgRunTime = 0.5;
+
+        public boolean loadCorrectWordInDict = false;
+        public SpellCheckerExample[] examples = null;
+
+
+        public EvaluationParameters setStopAfterNcases(Integer N) {
+            this.stopAfterNcases = N;
+            return this;
+        }
+
+        public EvaluationParameters setFocusOnExample(String focusOn) {
+            this.focusOnExample = focusOn;
+            return this;
+        }
+
+        public EvaluationParameters setVerbosity(int _verbosity) {
+            this.verbosity = _verbosity;
+            return this;
+        }
+
+        public EvaluationParameters setPercentFoundInTopN(double percent) {
+            this.percentFoundInTopN = percent;
+            return this;
+        }
+
+        public EvaluationParameters setTolerance(double _tolerance) {
+            this.tolerance = _tolerance;
+            return this;
+        }
+
+        public EvaluationParameters setPercTopSuggestionOK(double percent) {
+            this.percTopSuggestionOK = percent;
+            return this;
+        }
+
+        public EvaluationParameters setAverageRank(double rank) {
+            this.averageRank = rank;
+            return this;
+        }
+
+        public EvaluationParameters setAvgRankTolerance(double tolerance) {
+            this.avgRankTolerance = tolerance;
+            return this;
+        }
+
+        public EvaluationParameters setLoadCorrectWordInDict(boolean load) {
+            this.loadCorrectWordInDict = load;
+            return this;
+        }
+
+        public EvaluationParameters setExamples(SpellCheckerExample[] _examples) {
+            this.examples = _examples;
+            return this;
+        }
+
+        public EvaluationParameters setFPRate(Double rate, Double tolerance) {
+            this.FPRate = rate;
+            this.toleranceFPRate = tolerance;
+            return this;
+        }
+
+        public EvaluationParameters setFNRate(Double rate, Double tolerance) {
+            this.FNRate = rate;
+            this.toleranceFNRate = tolerance;
+            return this;
+        }
+
+        public EvaluationParameters setAvgRuntime(Double secs, Double tolerance) {
+            this.avgRuntime = secs;
+            this.toleranceAvgRunTime = tolerance;
+            return this;
+        }
+    }
 }
