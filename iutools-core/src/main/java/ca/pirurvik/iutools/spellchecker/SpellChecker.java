@@ -146,12 +146,8 @@ public class SpellChecker {
 					.build();
 
 	public SpellChecker() throws StringSegmenterException, SpellCheckerException {
-		try {
-			CompiledCorpus corpus = CompiledCorpusRegistry.getCorpus();
-			init_SpellChecker_CorpusObject(corpus);
-		} catch (CompiledCorpusRegistryException e) {
-			throw new SpellCheckerException(e);
-		}
+		CompiledCorpus nullCorpus = null;
+		init_SpellChecker_CorpusObject(nullCorpus);
 	}
 	
 	public SpellChecker(String corpusName) throws StringSegmenterException, SpellCheckerException {
@@ -176,7 +172,7 @@ public class SpellChecker {
 		}
 	}
 
-	private void init_SpellChecker_CorpusObject(CompiledCorpus _corpus)
+	void init_SpellChecker_CorpusObject(CompiledCorpus _corpus)
 		throws SpellCheckerException  {
 		try {
 			editDistanceCalculator = EditDistanceCalculatorFactory.getEditDistanceCalculator();
@@ -1044,7 +1040,8 @@ public class SpellChecker {
 			Double ngramIDF = idf[i].getSecond();
 
 			Iterator<String> iterCandsWithNgram =
-					wordsContainingNgram(ngram, amongWords, CompiledCorpus.SearchOption.EXCL_MISSPELLED);
+					wordsContainingNgram(ngram, amongWords,
+						CompiledCorpus.SearchOption.EXCL_MISSPELLED);
 
 			tLogger.trace("adding candidates that contain ngram=" + ngram + " (ngramIDF=" + ngramIDF + ")");
 			Set<String> candidatesWithNgram =

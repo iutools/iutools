@@ -379,7 +379,7 @@ public abstract class SpellCheckerAccuracyTest {
             .setAverageRank(2.3)
             .setAvgRankTolerance(0.1)
 
-            .setAvgRuntime(-1.0, 0.5)
+            .setAvgRuntime(2.6, 0.5)
         ;
 
         SpellChecker checker = makeLargeDictChecker();
@@ -405,7 +405,7 @@ public abstract class SpellCheckerAccuracyTest {
             .setAverageRank(2.5)
             .setAvgRankTolerance(0.1)
 
-            .setAvgRuntime(-1.0, 0.5)
+            .setAvgRuntime(2.2, 0.5)
 
             ;
 

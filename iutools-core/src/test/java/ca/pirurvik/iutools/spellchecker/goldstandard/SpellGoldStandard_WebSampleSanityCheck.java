@@ -37,10 +37,19 @@ public class SpellGoldStandard_WebSampleSanityCheck {
             } else {
                 System.out.println(
                     "\n\n" + String.format("%.1f", percMultipleCorr * 100) +
-                    "% of mispelled words had multiple spellings.\nSee liste below:");
+                    "% of mispelled words had multiple spellings.\nSee liste below:\n");
                 for (String word : wordsWithMultipleCorr.keySet()) {
-                    System.out.println("   (" + word + ") --> \n      " +
-                            StringUtils.join(wordsWithMultipleCorr.get(word).iterator(), "\n      "));
+                    System.out.print("   (" + word + ") -->");
+                    Iterator<String> iter = wordsWithMultipleCorr.get(word).iterator();
+                    while (iter.hasNext()) {
+                        String aSpelling = iter.next();
+                        String uncorrected = "";
+                        if (isSameSpelling(word, aSpelling)) {
+                            uncorrected = " -- [DEEMED CORRECT]";
+                        }
+                        System.out.print("\n      " + aSpelling + uncorrected);
+                    }
+                    System.out.println("\n");
                 }
             }
 
@@ -71,5 +80,12 @@ public class SpellGoldStandard_WebSampleSanityCheck {
             .totalWordsMissedByAtLeastOneRevisorIs(6)
             ;
 
+    }
+
+    private boolean isSameSpelling(String orig, String corrected) {
+        orig = orig.replaceAll("[a-zA-Z0-9\\s\\p{Punct}]*", "");
+        corrected = corrected.replaceAll("[a-zA-Z0-9\\s\\p{Punct}]*", "");
+        boolean answer = (orig.equals(corrected));
+        return answer;
     }
 }

@@ -64,42 +64,48 @@ public class SpellGoldStandardReader {
 
         protected void processCSVFile(Path csvFile) throws SpellCheckerException {
             Pair<String,String> fileID_andRevisor = idAndRevisorForFile(csvFile);
-            String docID = fileID_andRevisor.getLeft();
-            String revisor = fileID_andRevisor.getRight();
-            List<List<String>> lines = null;
-            try {
-                lines = new CSVReader().read(csvFile.toString());
-            } catch (IOException e) {
-                throw new SpellCheckerException("Unable to parse human revision file "+csvFile, e);
-            }
-            int lineCounter = 0;
-            for (List<String> aLine: lines) {
-                lineCounter++;
-                if (lineCounter == 1 || aLine.size() == 0) {
-                    // Skip the first line as well as empty lines
-                    continue;
+            // == null means this was not really a gold standard CSV file
+            //   (for example, it may be a backup file created automatically
+            //   by emacs)
+            //
+            if (fileID_andRevisor != null) {
+                String docID = fileID_andRevisor.getLeft();
+                String revisor = fileID_andRevisor.getRight();
+                List<List<String>> lines = null;
+                try {
+                    lines = new CSVReader().read(csvFile.toString());
+                } catch (IOException e) {
+                    throw new SpellCheckerException("Unable to parse human revision file " + csvFile, e);
                 }
+                int lineCounter = 0;
+                for (List<String> aLine : lines) {
+                    lineCounter++;
+                    if (lineCounter == 1 || aLine.size() == 0) {
+                        // Skip the first line as well as empty lines
+                        continue;
+                    }
 
-                if (aLine.size() < 3) {
-                    throw new SpellCheckerException(
-                        "Wrong number of fields in a CSV file line\n"+
-                        "  In file      : "+csvFile+"\n"+
-                        "  At Line      :"+lineCounter+"\n" +
-                        "  Got #fields  : "+aLine.size()+"\n" +
-                        "  Exp at least : 3\n" +
-                        "  Line fields were: \n    "+String.join("\n    ", aLine)
-                    );
-                }
+                    if (aLine.size() < 3) {
+                        throw new SpellCheckerException(
+                                "Wrong number of fields in a CSV file line\n" +
+                                        "  In file      : " + csvFile + "\n" +
+                                        "  At Line      :" + lineCounter + "\n" +
+                                        "  Got #fields  : " + aLine.size() + "\n" +
+                                        "  Exp at least : 3\n" +
+                                        "  Line fields were: \n    " + String.join("\n    ", aLine)
+                        );
+                    }
 
-                fillCSVOptionalFields(aLine);
-                String wordID = aLine.get(0);
-                String origWord = aLine.get(2).toLowerCase();
-                String correctedWord = aLine.get(3).toLowerCase();
-                String comment = null;
-                if (aLine.size() > 4) {
-                    comment = aLine.get(4);
+                    fillCSVOptionalFields(aLine);
+                    String wordID = aLine.get(0);
+                    String origWord = aLine.get(2).toLowerCase();
+                    String correctedWord = aLine.get(3).toLowerCase();
+                    String comment = null;
+                    if (aLine.size() > 4) {
+                        comment = aLine.get(4);
+                    }
+                    goldStandard.addCase(origWord, correctedWord, docID, revisor);
                 }
-                goldStandard.addCase(origWord, correctedWord, docID, revisor);
             }
         }
 

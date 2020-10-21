@@ -3,8 +3,10 @@ package ca.pirurvik.iutools.corpus;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.dtrc.elasticsearch.*;
 import ca.nrc.dtrc.elasticsearch.request.*;
+import ca.nrc.dtrc.elasticsearch.request._Source;
 import ca.nrc.ui.commandline.UserIO;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -242,7 +244,10 @@ public class CompiledCorpus_ES extends CompiledCorpus {
             "+wordCharsSpaceConcatenated:\"" +
             WordInfo_ES.insertSpaces(ngramArr) +
             "\"";
-        SearchResults<WordInfo_ES> results = esWinfoSearch(query, options);
+
+        options = (SearchOption[]) ArrayUtils.add(options, SearchOption.WORD_ONLY);
+        SearchResults<WordInfo_ES> results =
+            esWinfoSearch(query, options);
 
         return results;
     }
@@ -469,7 +474,11 @@ public class CompiledCorpus_ES extends CompiledCorpus {
         throws CompiledCorpusException {
         SearchResults<WordInfo_ES> results = null;
 
-        query = augmentRequestWithOptions(query, additionalReqBodies, options);
+        Pair<String,RequestBodyElement[]> augmentedRequest =
+            augmentRequestWithOptions(query, additionalReqBodies, options);
+        query = augmentedRequest.getLeft();
+        additionalReqBodies = augmentedRequest.getRight();
+
         new Size(searchBatchSize);
         additionalReqBodies =
             (RequestBodyElement[])
@@ -480,6 +489,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
                 esClient().search(
                     query, WORD_INFO_TYPE, new WordInfo_ES(),
                     additionalReqBodies);
+
         } catch (ElasticSearchException e) {
             throw new CompiledCorpusException(e);
         }
@@ -524,12 +534,19 @@ public class CompiledCorpus_ES extends CompiledCorpus {
         return query;
     }
 
-    private String augmentRequestWithOptions(String query, RequestBodyElement[] additionalReqBodies, SearchOption[] options) {
+    private Pair<String,RequestBodyElement[]> augmentRequestWithOptions(String query,
+        RequestBodyElement[] additionalReqBodies, SearchOption[] options) {
         if (ArrayUtils.contains(options, SearchOption.EXCL_MISSPELLED)) {
             query = augmentQueryToExcludeMisspelled(query);
         }
 
-        return query;
+        if (ArrayUtils.contains(options, SearchOption.WORD_ONLY)) {
+            additionalReqBodies =
+                    (RequestBodyElement[]) ArrayUtils.add(additionalReqBodies,
+                    new _Source("id"));
+        }
+
+        return Pair.of(query,additionalReqBodies);
     }
 
     private String augmentQueryToExcludeMisspelled(String query) {

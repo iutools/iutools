@@ -26,7 +26,7 @@ import ca.pirurvik.iutools.text.ngrams.NgramCompiler;
  */
 public abstract class CompiledCorpus {
 
-	public static enum SearchOption {EXCL_MISSPELLED};
+	public static enum SearchOption {EXCL_MISSPELLED, WORD_ONLY};
 
 	public abstract Iterator<String> allWords() throws CompiledCorpusException;
 
