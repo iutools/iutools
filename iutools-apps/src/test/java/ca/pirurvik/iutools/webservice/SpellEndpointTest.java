@@ -35,18 +35,18 @@ public class SpellEndpointTest {
 		SpellCheckerAssertion.assertThat(response, "")
 			.raisedNoError()
 			.nthCorrectionIs(0, true,
-					new String[] {
-						"ᐃᓄᒻᒧᑦ",
-						"ᐃᓄᑦᑐᑦ",
-						"ᐃᓄᒃᑐᑦ",
-						"ᐃᓄᑐᐊᒧᑦ",
-						"ᐃᓄᑐᐊᑦ",
-						"ᐃᓄᒻᒧᑦ",
-						"ᐃᓄᑦᑐᑦ",
-						"ᐃᓄᒃᑐᑦ",
-						"ᐃᓄᑐᐊᒧᑦ",
-						"ᐃᓄᑐᐊᑦ"
-					}
+				new String[] {
+					"ᐃᓄᒻᒧᑦ",
+					"ᐃᓄᑐᐊᒧᑦ",
+					"ᐃᓄᑐᐊᑦ",
+					"ᐃᓄᒃᑐᑦ",
+					"ᐃᓄᕗᑦ",
+					"ᐃᓄᒻᒧᑦ",
+					"ᐃᓄᑐᐊᒧᑦ",
+					"ᐃᓄᑐᐊᑦ",
+					"ᐃᓄᒃᑐᑦ",
+					"ᐃᓄᕗᑦ"
+				}
 			)
 			.nthCorrectionIs(1, false)
 			;

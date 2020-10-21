@@ -378,7 +378,7 @@ public abstract class SpellCheckerAccuracyTest {
             .setAverageRank(2.3)
             .setAvgRankTolerance(0.1)
 
-            .setAvgRuntime(2.6, 0.5)
+            .setAvgRuntime(2.0, 0.5)
         ;
 
         SpellChecker checker = makeLargeDictChecker();

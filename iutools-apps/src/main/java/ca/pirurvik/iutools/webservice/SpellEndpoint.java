@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import ca.pirurvik.iutools.spellchecker.SpellChecker_ES;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,16 +41,12 @@ public class SpellEndpoint extends HttpServlet {
 	private synchronized void ensureCheckerIsInstantiated() throws SpellCheckerException, FileNotFoundException, ConfigException {
 		if (checker == null) {
 			try {
-				checker = new SpellChecker().enablePartialCorrections();
+				checker =
+					new SpellChecker_ES("hansard-1999-2002.v2020-10-06")
+					.enablePartialCorrections();
 			} catch (StringSegmenterException e) {
 				throw new SpellCheckerException(e);
 			}
-			// Spell Checker service uses Hansard corpus
-			try {
-				checker.setDictionaryFromCorpus();
-			} catch (FileNotFoundException | ConfigException e) {
-				throw new SpellCheckerException("Could not load corpus dictionary", e);
-			} 
 		}
 	}
 	
