@@ -54,6 +54,10 @@ public class DocHumanRevision {
         return wordRevisions.keySet();
     }
 
+    public int totalWords() {
+        return allWords().size();
+    }
+
     public String spelling4word(String word) {
         return wordRevisions.get(word);
     }

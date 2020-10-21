@@ -441,7 +441,6 @@ public class CompiledCorpus_ES extends CompiledCorpus {
         return null;
     }
 
-    // TODO-2020-10: Take SearchOptions into account
     @Override
     public long totalWordsWithCharNgram(String ngram, SearchOption... options)
         throws CompiledCorpusException {
@@ -452,7 +451,9 @@ public class CompiledCorpus_ES extends CompiledCorpus {
             WordInfo_ES.insertSpaces(ngram)+
             "\"";
 
-        SearchResults<WordInfo_ES> results = esWinfoSearch(query, options);
+        boolean statsOnly = true;
+        SearchResults<WordInfo_ES> results =
+            esWinfoSearch(query, options, statsOnly, (RequestBodyElement[]) null);
 
         long freq = results.getTotalHits();
         tLogger.trace("Returning freq="+freq);
@@ -465,24 +466,24 @@ public class CompiledCorpus_ES extends CompiledCorpus {
         return withSpaces;
     }
 
+    private SearchResults<WordInfo_ES> esWinfoSearch(String query, SearchOption[] options) throws CompiledCorpusException {
+        return esWinfoSearch(query, options, (Boolean) null, new RequestBodyElement[0]);
+    }
+
     private SearchResults<WordInfo_ES> esWinfoSearch(String query) throws CompiledCorpusException {
-        return esWinfoSearch(query, new SearchOption[0], new RequestBodyElement[0]);
+        return esWinfoSearch(query, new SearchOption[0], (Boolean) null, new RequestBodyElement[0]);
     }
 
     private SearchResults<WordInfo_ES> esWinfoSearch(
-        String query, SearchOption[] options, RequestBodyElement... additionalReqBodies)
+        String query, SearchOption[] options, Boolean statsOnly,
+        RequestBodyElement... additionalReqBodies)
         throws CompiledCorpusException {
         SearchResults<WordInfo_ES> results = null;
 
         Pair<String,RequestBodyElement[]> augmentedRequest =
-            augmentRequestWithOptions(query, additionalReqBodies, options);
+            augmentRequestWithOptions(query, additionalReqBodies, options, statsOnly);
         query = augmentedRequest.getLeft();
         additionalReqBodies = augmentedRequest.getRight();
-
-        new Size(searchBatchSize);
-        additionalReqBodies =
-            (RequestBodyElement[])
-                ArrayUtils.add( additionalReqBodies, new Size(searchBatchSize));
 
         try {
             results =
@@ -500,17 +501,26 @@ public class CompiledCorpus_ES extends CompiledCorpus {
     private SearchResults<WordInfo_ES> esWinfoSearch(
             Query query, RequestBodyElement... additionalReqBodies) throws CompiledCorpusException {
 
-        return esWinfoSearch(query, new SearchOption[0], additionalReqBodies);
+        return esWinfoSearch(query, new SearchOption[0], (Boolean)null, additionalReqBodies);
     }
 
 
     private SearchResults<WordInfo_ES> esWinfoSearch(
-        Query query, SearchOption[] options, RequestBodyElement... additionalReqBodies) throws CompiledCorpusException {
+        Query query, SearchOption[] options,
+        Boolean statsOnly,
+        RequestBodyElement... additionalReqBodies) throws CompiledCorpusException {
+
         Set<SearchOption> optionsSet = new HashSet<SearchOption>();
         Collections.addAll(optionsSet, options);
         SearchResults<WordInfo_ES> results = null;
 
-        query = augmentRequestWithOptions(query, additionalReqBodies, options);
+        if (statsOnly == null) {
+            statsOnly = false;
+        }
+
+        query =
+            augmentRequestWithOptions(
+                query, additionalReqBodies, options, statsOnly);
         try {
             results =
                 esClient().search(
@@ -524,18 +534,37 @@ public class CompiledCorpus_ES extends CompiledCorpus {
 
     private Query augmentRequestWithOptions(
         Query query, RequestBodyElement[] additionalReqBodies,
-        SearchOption[] options) throws CompiledCorpusException {
+        SearchOption[] options, Boolean statsOnly)
+        throws CompiledCorpusException {
+
+        if (statsOnly == null) {
+            statsOnly = false;
+        }
+
         if (ArrayUtils.contains(options, SearchOption.EXCL_MISSPELLED)) {
             throw new CompiledCorpusException(
                 "Option "+SearchOption.EXCL_MISSPELLED+
                 " is currently not supported by this method");
         }
 
+        Size size = new Size(searchBatchSize);
+        if (statsOnly) {
+            size = new Size(1);
+        }
+        additionalReqBodies =
+            (RequestBodyElement[])
+            ArrayUtils.add(additionalReqBodies, size);
+
         return query;
     }
 
     private Pair<String,RequestBodyElement[]> augmentRequestWithOptions(String query,
-        RequestBodyElement[] additionalReqBodies, SearchOption[] options) {
+        RequestBodyElement[] additionalReqBodies, SearchOption[] options, Boolean statsOnly) {
+
+        if (statsOnly == null) {
+            statsOnly = false;
+        }
+
         if (ArrayUtils.contains(options, SearchOption.EXCL_MISSPELLED)) {
             query = augmentQueryToExcludeMisspelled(query);
         }
@@ -545,6 +574,14 @@ public class CompiledCorpus_ES extends CompiledCorpus {
                     (RequestBodyElement[]) ArrayUtils.add(additionalReqBodies,
                     new _Source("id"));
         }
+
+        Size size = new Size(searchBatchSize);
+        if (statsOnly) {
+            size = new Size(1);
+        }
+        additionalReqBodies =
+                (RequestBodyElement[])
+                        ArrayUtils.add(additionalReqBodies, size);
 
         return Pair.of(query,additionalReqBodies);
     }

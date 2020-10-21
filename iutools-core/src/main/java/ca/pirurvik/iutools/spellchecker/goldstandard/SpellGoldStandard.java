@@ -124,6 +124,10 @@ public class SpellGoldStandard {
         return cases().values().iterator();
     }
 
+    public int totalWords() throws SpellCheckerException {
+        return cases().values().size();
+    }
+
     public SpellGoldStandardCase case4word(String word) throws SpellCheckerException {
         return cases().get(word);
     }
@@ -212,6 +216,18 @@ public class SpellGoldStandard {
     public int totalMisspelledWords() throws SpellCheckerException {
         return misspelledWords().size();
     }
+
+    public double percentMisspelledWords() throws SpellCheckerException {
+        int mispelled = totalMisspelledWords();
+        int all = totalWords();
+        double perc = 0.0;
+        if (all != 0) {
+            perc = 1.0 * mispelled / all;
+        }
+        perc *= 100;
+        return perc;
+    }
+
 
     public int totalCorrectlySpelledWords() throws SpellCheckerException {
         return correctlySpelledWords().size();

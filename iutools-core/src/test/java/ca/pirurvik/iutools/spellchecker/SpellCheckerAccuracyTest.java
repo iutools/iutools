@@ -327,7 +327,7 @@ public abstract class SpellCheckerAccuracyTest {
     };
 
     @Test
-    public void test__Evaluate__QuickEvaluator()
+    public void test__Evaluate__QuickEvaluation()
             throws Exception {
 
         // This test runs the evaluation on the first 10 examples
@@ -351,11 +351,10 @@ public abstract class SpellCheckerAccuracyTest {
             .setAverageRank(5.2)
             .setAvgRankTolerance(0.2)
 
-            .setAvgRuntime(4.0, 1.5)
+            .setAvgRuntime(2.0, 1.5)
             ;
 
         SpellChecker checker = makeLargeDictChecker();
-
         evaluateCheckerOnExamples(checker,parameters);
     }
 
