@@ -46,7 +46,8 @@ public class MorphemeSearcher {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.morphemesearcher.MorphemeSearcher.wordsContainingMorpheme");
 		tLogger.trace("morpheme= "+morpheme);
 		
-		HashMap<String,List<WordWithMorpheme>> morphid2wordsFreqs = getMostFrequentWordsWithMorpheme(morpheme);
+		HashMap<String,List<WordWithMorpheme>> morphid2wordsFreqs =
+			getMostFrequentWordsWithMorpheme(morpheme);
 		Bin[] rootBins = separateWordsByRoot(morphid2wordsFreqs);
 
 		HashMap<String,List<ScoredExample>> morphids2scoredExamples = null;

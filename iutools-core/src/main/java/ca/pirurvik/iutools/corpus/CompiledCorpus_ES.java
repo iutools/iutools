@@ -178,6 +178,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
     }
 
     private String morphNgramQuery(String[] morphemes) {
+        morphemes = replaceCaretAndDollar(morphemes);
         String query =
             "morphemesSpaceConcatenated:\""+
             WordInfo_ES.insertSpaces(morphemes)+

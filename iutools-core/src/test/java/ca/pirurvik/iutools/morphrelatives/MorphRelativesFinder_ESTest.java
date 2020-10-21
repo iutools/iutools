@@ -2,7 +2,6 @@ package ca.pirurvik.iutools.morphrelatives;
 
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.pirurvik.iutools.corpus.*;
-import org.junit.Ignore;
 
 public class MorphRelativesFinder_ESTest extends MorphRelativesFinderTest {
 

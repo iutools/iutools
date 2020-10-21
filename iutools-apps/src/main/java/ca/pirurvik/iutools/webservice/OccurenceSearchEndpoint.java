@@ -12,20 +12,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import ca.pirurvik.iutools.corpus.*;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ca.inuktitutcomputing.data.LinguisticDataSingleton;
 import ca.inuktitutcomputing.data.Morpheme;
-import ca.inuktitutcomputing.morph.Gist;
-import ca.inuktitutcomputing.nunhansearch.ProcessQuery;
 import ca.nrc.config.ConfigException;
 import ca.nrc.json.PrettyPrinter;
-import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
-import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
-import ca.pirurvik.iutools.corpus.CompiledCorpusRegistryException;
-import ca.pirurvik.iutools.corpus.CompiledCorpus;
 import ca.pirurvik.iutools.morphemesearcher.MorphSearchResults;
 import ca.pirurvik.iutools.morphemesearcher.MorphemeSearcher;
 import ca.pirurvik.iutools.morphemesearcher.ScoredExample;
@@ -110,9 +104,9 @@ public class OccurenceSearchEndpoint extends HttpServlet {
 
 		tLogger.trace("Creating the MorphemeSearcher instance");		
 		MorphemeSearcher morphExtractor = new MorphemeSearcher();
-		
+
 		tLogger.trace("Loading the corpus");		
-		CompiledCorpus compiledCorpus = CompiledCorpusRegistry.getCorpus(corpusName);
+		CompiledCorpus compiledCorpus = new CompiledCorpus_ES("hansard-1999-2002.v2020-10-06");
 		morphExtractor.useCorpus(compiledCorpus);
 		int nbExamples = Integer.valueOf(inputs.nbExamples);
 		morphExtractor.setNbDisplayedWords(nbExamples);

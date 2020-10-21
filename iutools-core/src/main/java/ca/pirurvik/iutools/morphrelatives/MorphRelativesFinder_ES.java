@@ -2,6 +2,7 @@ package ca.pirurvik.iutools.morphrelatives;
 
 import ca.pirurvik.iutools.corpus.CompiledCorpus;
 import ca.pirurvik.iutools.corpus.CompiledCorpusException;
+import ca.pirurvik.iutools.corpus.CompiledCorpus_ES;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
 
@@ -9,12 +10,22 @@ import java.util.Iterator;
 import java.util.Set;
 
 public class MorphRelativesFinder_ES extends MorphRelativesFinder {
+
     public MorphRelativesFinder_ES() throws MorphRelativesFinderException {
+        CompiledCorpus corpus = null;
+        try {
+            corpus = new CompiledCorpus_ES("hansard-1999-2002.v2020-10-06");
+        } catch (CompiledCorpusException e) {
+            throw new MorphRelativesFinderException(e);
+        }
+        init_MorphRelativesFinder(corpus);
+        return;
     }
 
     public MorphRelativesFinder_ES(String corpusName) throws MorphRelativesFinderException {
         super(corpusName);
     }
+
 
     public MorphRelativesFinder_ES(CompiledCorpus _compiledCorpus) throws MorphRelativesFinderException {
         super(_compiledCorpus);

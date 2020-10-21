@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import ca.pirurvik.iutools.morphrelatives.MorphRelativesFinder_ES;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -162,8 +163,7 @@ public class SearchEndpoint extends HttpServlet {
 			MorphologicalRelative[] expansions = null;
 			expansionWords = new ArrayList<String>();			
 			if (expander == null) {
-				CompiledCorpus_InMemory compiledCorpus = CompiledCorpusRegistry.getCorpus();
-				expander = new MorphRelativesFinder(compiledCorpus);
+				expander = new MorphRelativesFinder_ES();
 			}
 			expansions = expander.findRelatives(query);
 						

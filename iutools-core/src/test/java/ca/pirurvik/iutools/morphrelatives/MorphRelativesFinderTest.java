@@ -127,7 +127,7 @@ public abstract class MorphRelativesFinderTest {
 	 * HELPER METHODS
 	 **********************************/
 
-	private void assertExpansionsAre(String[] expExpansions, MorphologicalRelative[] gotExpansionObjs) throws IOException {
+	protected static void assertExpansionsAre(String[] expExpansions, MorphologicalRelative[] gotExpansionObjs) throws IOException {
         String[] gotRelatives = new String[gotExpansionObjs.length];
         for (int i=0; i<gotExpansionObjs.length; i++)
         	gotRelatives[i] = gotExpansionObjs[i].getWord();

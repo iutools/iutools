@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import ca.inuktitutcomputing.script.TransCoder;
+import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
 import ca.pirurvik.iutools.corpus.WordInfo;
@@ -46,10 +47,10 @@ public class MorphRelativesFinder {
 
 	public MorphRelativesFinder(CompiledCorpus _compiledCorpus) throws MorphRelativesFinderException {
 		this.compiledCorpus = _compiledCorpus;
-		initialize(_compiledCorpus);
+		init_MorphRelativesFinder(_compiledCorpus);
 	}
 	
-	private void initialize(CompiledCorpus _compiledCorpus) throws MorphRelativesFinderException {
+	protected void init_MorphRelativesFinder(CompiledCorpus _compiledCorpus) throws MorphRelativesFinderException {
 		if (_compiledCorpus == null) {
 			try {
 				_compiledCorpus = CompiledCorpusRegistry.getCorpus();
@@ -57,7 +58,10 @@ public class MorphRelativesFinder {
 				throw new MorphRelativesFinderException("Problem creating a MorphRelativesFinder with default pre-compiled corpus", e);
 			}
 		}
+		_compiledCorpus.setSegmenterClassName(StringSegmenter_IUMorpheme.class);
 		compiledCorpus = _compiledCorpus;
+
+		return;
 	}
 	
 	private void initializeWithCorpusName(String corpusName) throws MorphRelativesFinderException {

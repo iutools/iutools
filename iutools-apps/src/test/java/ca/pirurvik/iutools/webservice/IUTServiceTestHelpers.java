@@ -2,10 +2,7 @@ package ca.pirurvik.iutools.webservice;
 
 import java.beans.IntrospectionException;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -203,18 +200,9 @@ public class IUTServiceTestHelpers {
 				IUTServiceTestHelpers.toOccurenceSearchResponse(response);
 		
 		Map<String,MorphemeSearchResult> got = occurenceSearchResponse.matchingWords;
-		Assert.assertEquals("The number of morphemes with the given canonical form is not as expected.", expected.size(), got.size());
-		String expMorphId = expected.keySet().toArray(new String[] {})[0];
-		String gotMorphId = got.keySet().toArray(new String[] {})[0];
-		Assert.assertEquals("The morpheme is not the one expected.", expMorphId, gotMorphId);
-		MorphemeSearchResult expectedResult = expected.get(expMorphId);
-		MorphemeSearchResult gotResult = got.get(expMorphId);
-		Assert.assertEquals("The number of words returned for the morpheme is not as expected.", expectedResult.words.size(), gotResult.words.size());
-		List<String> expectedWords = expectedResult.words;
-		List<String> gotWords = gotResult.words;
-		expectedWords.forEach ((expectedWord) -> {
-			Assert.assertTrue("The word "+expectedWord+" is not in the returned list of words.",gotWords.contains(expectedWord));
-		});	
+		AssertObject.assertDeepEquals(
+	"The list of morphemes was not as expected",
+			expected, got, new Integer(1));
 	}
 
 	public static void assertOccurenceExampleResponseIsOK(

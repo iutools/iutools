@@ -17,7 +17,7 @@ public class MorphRelativesFinderAccuracyTest {
 		PerformanceExpectations expectations =
 			new PerformanceExpectations()
 				// This test should run in 20 secs give or take 5 secs
-				.setTargetRuntimeSecs(3, 1)
+				.setTargetRuntimeSecs(1.5, 1)
 
 				.setTargetPrecision(0.60)
 				.setTargetRecall(0.50)
@@ -158,7 +158,7 @@ public class MorphRelativesFinderAccuracyTest {
 		public double targetPrecision = -1;
 		public double targetRecall = -1;
 		public double precRecTolerance;
-		public long targetRuntimeSecs = -1;
+		public double targetRuntimeSecs = -1;
 		public long secsTolerance;
 
 		public PerformanceExpectations setComputeStatsOverSurfaceForms(
@@ -184,7 +184,7 @@ public class MorphRelativesFinderAccuracyTest {
 		}
 
 		public PerformanceExpectations setTargetRuntimeSecs(
-			long _targetRuntimeSecs, long _secsTolerance) {
+			double _targetRuntimeSecs, long _secsTolerance) {
 			this.targetRuntimeSecs = _targetRuntimeSecs;
 			this.secsTolerance = _secsTolerance;
 			return this;

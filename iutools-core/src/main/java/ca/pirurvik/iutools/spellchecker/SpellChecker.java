@@ -15,13 +15,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ca.inuktitutcomputing.utilities.StopWatch;
-import ca.inuktitutcomputing.utilities.StopWatchException;
 import ca.pirurvik.iutools.corpus.*;
 import org.apache.commons.collections4.iterators.IteratorChain;
 import org.apache.log4j.Logger;

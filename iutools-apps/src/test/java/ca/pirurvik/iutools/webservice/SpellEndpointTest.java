@@ -34,19 +34,20 @@ public class SpellEndpointTest {
 		
 		SpellCheckerAssertion.assertThat(response, "")
 			.raisedNoError()
-			.nthCorrectionIs(0, true, 
+			.nthCorrectionIs(0, true,
 					new String[] {
-					  "ᐃᓄᒻᒧᑦ",
-					  "ᐃᓄᑐᐊᒧᑦ",
-					  "ᐃᓄᑐᐊᕐᒧᑦ",
-					  "ᐃᓄᖕᒧᑦ",
-					  "ᐃᓄᑐᖃᕐᒧᑦ",
-					  "ᐃᓄᒻᒧᑦ",
-					  "ᐃᓄᑐᐊᒧᑦ",
-					  "ᐃᓄᑐᐊᕐᒧᑦ",
-					  "ᐃᓄᖕᒧᑦ",
-					  "ᐃᓄᑐᖃᕐᒧᑦ"
-					})
+						"ᐃᓄᒻᒧᑦ",
+						"ᐃᓄᑦᑐᑦ",
+						"ᐃᓄᒃᑐᑦ",
+						"ᐃᓄᑐᐊᒧᑦ",
+						"ᐃᓄᑐᐊᑦ",
+						"ᐃᓄᒻᒧᑦ",
+						"ᐃᓄᑦᑐᑦ",
+						"ᐃᓄᒃᑐᑦ",
+						"ᐃᓄᑐᐊᒧᑦ",
+						"ᐃᓄᑐᐊᑦ"
+					}
+			)
 			.nthCorrectionIs(1, false)
 			;
 		

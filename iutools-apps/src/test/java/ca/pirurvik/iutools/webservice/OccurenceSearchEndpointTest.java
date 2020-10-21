@@ -52,8 +52,10 @@ public class OccurenceSearchEndpointTest {
 					IUTServiceTestHelpers.EndpointNames.MORPHEME,
 					occurenceInputs
 				);
-		List<String> expListOfWords = Arrays.asList(new String[] {"ujaraqsiurnirmik","tuktusiuqti"});
-		List<Double> expListOfScores = Arrays.asList(new Double[] {(double) 1,(double) 1});
+		List<String> expListOfWords =
+			Arrays.asList(new String[] {"ammuumajuqsiuqtutik","ittuqsiutitaaqpattut"});
+		List<Double> expListOfScores =
+			Arrays.asList(new Double[] {(double) 5004.0,(double) 2633.6});
 		Map<String,MorphemeSearchResult> expected = new HashMap<String,MorphemeSearchResult>();
 		expected.put("siuq/1nv", new MorphemeSearchResult(
 				"searching, looking for s.t. (trans.: of, for, about s.o.); travelling through space or time (spend); feasting, celebrating",
