@@ -24,7 +24,8 @@ import static ca.nrc.dtrc.elasticsearch.StreamlinedClient.ESOptions.UPDATES_WAIT
  */
 public class CompiledCorpus_ES extends CompiledCorpus {
 
-    String indexName = null;
+    private String indexName = null;
+        public String getIndexName() {return indexName;}
     StreamlinedClient _esClient = null;
     public final String WORD_INFO_TYPE = "WordInfo_ES";
     public final WordInfo_ES winfoPrototype = new WordInfo_ES("");

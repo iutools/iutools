@@ -155,7 +155,7 @@ public class SearchEndpoint extends HttpServlet {
 	}
 
 	protected void expandQuery(String query, SearchResponse results) throws SearchEndpointException, CompiledCorpusRegistryException, MorphRelativesFinderException {
-		
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.webservice.SearchEndpoint.expandQuery");
 		List<String> expansionWords = this.isExpandedQuery(query);
 		String expandedQuery = query;
 		if (expansionWords == null) {
@@ -164,6 +164,9 @@ public class SearchEndpoint extends HttpServlet {
 			expansionWords = new ArrayList<String>();			
 			if (expander == null) {
 				expander = new MorphRelativesFinder_ES();
+			}
+			if (tLogger.isTraceEnabled()) {
+				tLogger.trace("expanded is of type: " + expander.getClass() + "; its corpus is of type: " + expander.compiledCorpus.getClass() + "; corpusDetails = " + PrettyPrinter.print(expander.compiledCorpus));
 			}
 			expansions = expander.findRelatives(query);
 						

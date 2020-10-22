@@ -77,7 +77,7 @@ public class SpellEndpoint extends HttpServlet {
 	}
 
 	public SpellResponse executeEndPoint(SpellInputs inputs) throws ServiceException, SpellCheckerException  {
-		Logger tLogger = Logger.getLogger("SpellEndpoint.executeEndPoint");
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.webservice.SpellEndpoint.executeEndPoint");
 		SpellResponse response = new SpellResponse();
 		
 		if (inputs.text == null || inputs.text.isEmpty()) {
@@ -85,6 +85,9 @@ public class SpellEndpoint extends HttpServlet {
 		}
 		
 		checker.setPartialCorrectionEnabled(inputs.includePartiallyCorrect);
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("using spellcher = \n"+PrettyPrinter.print(checker));
+		}
 		List<SpellingCorrection> corrections = checker.correctText(inputs.text);
 		
 		tLogger.trace("inputs.text= "+inputs.text);

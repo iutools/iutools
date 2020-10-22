@@ -11,7 +11,7 @@ Syllabic text
     - It shows that it's clickable
     - Clicking on that IU word produces a Gist with:
       - Morphological analysis
-      - Parallel sentenecs
+      - Parallel sentences
   - Hover the mouse over a NON-word (ex: period, comma, space):
     - It does NOT show that it's clickable
     - Clicking on that NON-word does NOT produce a Gist

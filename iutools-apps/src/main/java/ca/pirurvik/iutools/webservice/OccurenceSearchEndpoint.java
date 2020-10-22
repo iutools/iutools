@@ -108,6 +108,8 @@ public class OccurenceSearchEndpoint extends HttpServlet {
 		tLogger.trace("Loading the corpus");		
 		CompiledCorpus compiledCorpus = new CompiledCorpus_ES("hansard-1999-2002.v2020-10-06");
 		morphExtractor.useCorpus(compiledCorpus);
+		tLogger.trace("Using corpus of type="+compiledCorpus.getClass());
+
 		int nbExamples = Integer.valueOf(inputs.nbExamples);
 		morphExtractor.setNbDisplayedWords(nbExamples);
 				

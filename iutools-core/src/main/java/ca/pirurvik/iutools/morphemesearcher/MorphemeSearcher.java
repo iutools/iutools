@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
+import ca.nrc.json.PrettyPrinter;
 import org.apache.log4j.Logger;
 
 import ca.inuktitutcomputing.data.LinguisticDataException;
@@ -186,6 +187,11 @@ public class MorphemeSearcher {
 	   }};	
 	   
 	private HashMap<String,List<WordWithMorpheme>> getMostFrequentWordsWithMorpheme(String morpheme) throws MorphemeSearcherException {
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.morphemesearcher.MorphemeSearcher.getMostFrequentWordsWithMorpheme");
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("Using corpus="+ PrettyPrinter.print(corpus));
+		}
+
 		List<WordWithMorpheme> wordsWithMorpheme;
 		try {
 			wordsWithMorpheme = this.corpus.wordsContainingMorpheme(morpheme);

@@ -83,7 +83,7 @@ public class SearchEndpointTest {
 		
 		String expExpandedQuery = "(ᓄᓇᕗ OR ᓄᓇᕗᒻᒥ OR ᓄᓇᕘᒥ OR ᓄᓇᕘᑉ OR ᓄᓇᕗᒻᒥᐅᑦ)";
 		String[] queryWords = new String[] {"ᓄᓇᕗ", "ᓄᓇᕗᒻᒥ", "ᓄᓇᕘᒥ", "ᓄᓇᕘᑉ", "ᓄᓇᕗᒻᒥᐅᑦ"};
-		double badHitsTolerance = 0.5;
+		double badHitsTolerance = 0.55;
 		long minTotalHits = 1000;
 		long minHitsRetrieved = 100;
 		IUTServiceTestHelpers.assertSearchResponseIsOK(response, expExpandedQuery, queryWords, badHitsTolerance, 
