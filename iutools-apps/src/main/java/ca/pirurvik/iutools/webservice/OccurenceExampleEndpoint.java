@@ -1,12 +1,8 @@
 package ca.pirurvik.iutools.webservice;
 
-
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -16,18 +12,10 @@ import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ca.inuktitutcomputing.data.LinguisticDataSingleton;
-import ca.inuktitutcomputing.data.Morpheme;
 import ca.inuktitutcomputing.morph.Gist;
 import ca.inuktitutcomputing.nunhansearch.ProcessQuery;
 import ca.inuktitutcomputing.utilities.Alignment;
-import ca.nrc.config.ConfigException;
 import ca.nrc.json.PrettyPrinter;
-import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
-import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
-import ca.pirurvik.iutools.corpus.CompiledCorpusRegistryException;
-import ca.pirurvik.iutools.morphemesearcher.MorphemeSearcher;
-import ca.pirurvik.iutools.morphemesearcher.ScoredExample;
 
 public class OccurenceExampleEndpoint extends HttpServlet {
 			

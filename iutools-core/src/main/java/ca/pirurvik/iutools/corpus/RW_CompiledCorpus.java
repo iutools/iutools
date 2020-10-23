@@ -76,14 +76,10 @@ public abstract class RW_CompiledCorpus {
 		}
 
 		RW_CompiledCorpus rw = null;
-		if (corpusClass == CompiledCorpus_v2FS.class) {
-			rw = new RW_CompiledCorpus_v2FS();
-		} else if (corpusClass == CompiledCorpus_v2Mem.class) {
-			rw = new RW_CompiledCorpus_v2Mem();
+		if (corpusClass == CompiledCorpus_ES.class) {
+			rw = new RW_CompiledCorpus_ES();
 		} else if (corpusClass == CompiledCorpus_InMemory.class) {
 			rw = new RW_CompiledCorpus_InMemory();
-		} else if (corpusClass == CompiledCorpus_ES.class) {
-			rw = new RW_CompiledCorpus_ES();
 		} else {
 			throw new CompiledCorpusException("No RW for corpus class "+corpusClass);
 		}

@@ -38,26 +38,26 @@ public class CompiledCorpusRegistryTest {
 		//
 		// For example, to get the "default" corpus, do this:
 		//
-		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpus();
+		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpusWithName_ES();
 		
 		//
 		// If you want to get a specific corpus, do this:
 		//
-		String corpusName = "Hansard1999-2002";
-		corpus = CompiledCorpusRegistry.getCorpus(corpusName);
+		String corpusName = CompiledCorpusRegistry.defaultESCorpusName;
+		corpus = CompiledCorpusRegistry.getCorpusWithName_ES(corpusName);
 		
 		//
 		// The registry comes with some pre-packaged corpora.
 		// You can however register your own corpora in it.
-		// 
-		// Assuming that file jsonFile contains a JSON serialization of 
-		// a CompiledCorpus object, then you can add a new corpus as 
+		//
+		// Assuming that file jsonFile contains a JSON serialization of
+		// a CompiledCorpus object, then you can add a new corpus as
 		// follows
 		//
 		corpusName = "myCorpus";
 		CompiledCorpusRegistry.registerCorpus(corpusName, jsonFile);
-		
-		// 
+
+		//
 		// Once you have registered your own corpus, you can get an
 		// instance of it as usual
 		//
@@ -71,21 +71,21 @@ public class CompiledCorpusRegistryTest {
 	@Test
 	public void test__getCorpus__No_argument__Returns_default_corpus() 
 			throws Exception {
-		CompiledCorpus_InMemory corpus = CompiledCorpusRegistry.getCorpus();
-		Trie trie = corpus.getTrie();
-		TrieNode[] ammaTerminals = trie.getTerminals(new String[] {"{amma/1c}"});
-		int got = ammaTerminals.length;
-		assertTrue("Incorrect number of terminals for amma/1c;\nexpected more than 0",got>0);
+		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpusWithName_ES();
+		String morpheme = "{amma/1c}";
+		long gotFreq = corpus.morphemeNgramFrequency(new String[] {"{amma/1c}"});
+		Assert.assertEquals("Incorrect number of words with morpheme "+morpheme,
+				23417, gotFreq);
 	}
 	
 	@Test
-	public void test__getCorpus__get_from_corpus_name_statically_initialized() 
+	public void test__getCorpus__RegisteredCorpus()
 			throws Exception {
-		CompiledCorpus_InMemory corpus = CompiledCorpusRegistry.getCorpus("Hansard1999-2002");
-		Trie trie = corpus.getTrie();
-		TrieNode[] ammaTerminals = trie.getTerminals(new String[] {"{amma/1c}"});
-		int got = ammaTerminals.length;
-		assertTrue("Incorrect number of terminals for amma/1c;\nexpected more than 0",got>0);
+		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpusWithName_ES(CompiledCorpusRegistry.defaultESCorpusName);
+		String morpheme = "{amma/1c}";
+		long gotFreq = corpus.morphemeNgramFrequency(new String[] {"{amma/1c}"});
+		Assert.assertEquals("Incorrect number of words with morpheme "+morpheme,
+				23417, gotFreq);
 	}
 	
 	@Test

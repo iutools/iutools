@@ -15,13 +15,11 @@ public class CmdEvaluateQueryExpansion extends ConsoleCommand {
 
 	@Override
 	public void execute() throws Exception {
-		String compilationFilePath = getCorpusSavePath();
 		String goldStandardCSVFilePath = getGoldStandardFile();
 		boolean statsOverMorphemes = getStatsOverMorphemes()==null? false : true;
 		
-		MorphRelativesFinderEvaluator evaluator = new MorphRelativesFinderEvaluator(
-				compilationFilePath, goldStandardCSVFilePath
-				);
+		MorphRelativesFinderEvaluator evaluator =
+			new MorphRelativesFinderEvaluator(goldStandardCSVFilePath);
 		evaluator.setOptionComputeStatsOverSurfaceForms(statsOverMorphemes);
 		
 		evaluator.run();		

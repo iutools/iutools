@@ -1,8 +1,7 @@
 package ca.pirurvik.iutools.morphrelatives;
 
-import ca.pirurvik.iutools.corpus.CompiledCorpus;
-import ca.pirurvik.iutools.corpus.CompiledCorpusException;
-import ca.pirurvik.iutools.corpus.CompiledCorpus_ES;
+import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
+import ca.pirurvik.iutools.corpus.*;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
 
@@ -14,21 +13,23 @@ public class MorphRelativesFinder_ES extends MorphRelativesFinder {
     public MorphRelativesFinder_ES() throws MorphRelativesFinderException {
         CompiledCorpus corpus = null;
         try {
-            corpus = new CompiledCorpus_ES("hansard-1999-2002.v2020-10-06");
-        } catch (CompiledCorpusException e) {
+            corpus = CompiledCorpusRegistry.getCorpusWithName_ES();
+        } catch (CompiledCorpusRegistryException e) {
             throw new MorphRelativesFinderException(e);
         }
-        init_MorphRelativesFinder(corpus);
+        init_MorphRelativeFinder_ES(corpus);
         return;
     }
 
-    public MorphRelativesFinder_ES(String corpusName) throws MorphRelativesFinderException {
-        super(corpusName);
+    public MorphRelativesFinder_ES(CompiledCorpus corpus) throws MorphRelativesFinderException {
+        init_MorphRelativeFinder_ES(corpus);
     }
 
+    public void init_MorphRelativeFinder_ES(CompiledCorpus corpus) throws MorphRelativesFinderException {
+        compiledCorpus = corpus;
+        compiledCorpus.setSegmenterClassName(StringSegmenter_IUMorpheme.class);
 
-    public MorphRelativesFinder_ES(CompiledCorpus _compiledCorpus) throws MorphRelativesFinderException {
-        super(_compiledCorpus);
+        return;
     }
 
     @Override

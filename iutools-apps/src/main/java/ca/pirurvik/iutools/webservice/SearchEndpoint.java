@@ -100,10 +100,9 @@ public class SearchEndpoint extends HttpServlet {
 			expandQuery(inputs.convertQueryToSyllabic(), results);
 			tLogger.trace("Expanded query is "+PrettyPrinter.print(results.expandedQueryWords));
 			queryWords = results.expandedQueryWords;
-		} catch (CompiledCorpusRegistryException | MorphRelativesFinderException e) {
+		} catch (MorphRelativesFinderException e) {
 			throw new SearchEndpointException("Unable to expand the query", e);
 		}
-		
 		
 		SearchResults searchResults = search(queryWords, inputs);;
 		results.totalHits = searchResults.estTotalHits;
@@ -154,7 +153,8 @@ public class SearchEndpoint extends HttpServlet {
 		return results;
 	}
 
-	protected void expandQuery(String query, SearchResponse results) throws SearchEndpointException, CompiledCorpusRegistryException, MorphRelativesFinderException {
+	protected void expandQuery(String query, SearchResponse results)
+		throws MorphRelativesFinderException {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.webservice.SearchEndpoint.expandQuery");
 		List<String> expansionWords = this.isExpandedQuery(query);
 		String expandedQuery = query;

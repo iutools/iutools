@@ -63,7 +63,6 @@ public abstract class CorpusSanityCheck {
 		String nuna = "nuna";
 
 		new AssertCompiledCorpus(corpus, "")
-//			.charNgramFrequencyEquals(nuna, expNgramFreq(nuna))
 			.totalWordsWithNgramEquals(nuna, expNgramTotalWords(nuna))
 			;
 	}

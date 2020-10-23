@@ -18,12 +18,18 @@ public class CompiledCorpusRegistry {
 	private static Map<String,CompiledCorpus_InMemory> corpusCache = new HashMap<String,CompiledCorpus_InMemory>();
 	private static Map<String,File> registry = new HashMap<String,File>();
 	public static final String defaultCorpusName = "Hansard1999-2002";
+	public static final String defaultESCorpusName = "HANSARD-1999-2002.v2020-10-06";
 	public static final String emptyCorpusName = "EMPTYCORPUS";
 	
 	static {
 		try {
 			String Hansard19992002_compilationFilePath = IUConfig.getIUDataPath("data/compiled-corpuses/compiled-corpus-HANSARD-1999-2002--withWordInfoMap.json");
 			registry.put("Hansard1999-2002", new File(Hansard19992002_compilationFilePath));
+			registry.put(
+				defaultESCorpusName,
+				new File(
+					IUConfig.getIUDataPath(
+					"data/compiled-corpuses/HANSARD-1999-2002.v2020-10-06.ES.json")));
 		} catch (ConfigException e) {
 			throw new ExceptionInInitializerError(e);
 		}
@@ -39,11 +45,31 @@ public class CompiledCorpusRegistry {
 			registry.put(corpusName, jsonFile);
 		}
 	}
-	
-	
+
+	@JsonIgnore
+	public static CompiledCorpus getCorpusWithName_ES() throws CompiledCorpusRegistryException {
+		return getCorpusWithName_ES(defaultESCorpusName);
+	}
+
 	@JsonIgnore
 	public static CompiledCorpus_InMemory getCorpusWithName() throws CompiledCorpusRegistryException {
 		return getCorpusWithName(defaultCorpusName);
+	}
+
+	@JsonIgnore
+	public static CompiledCorpus getCorpusWithName_ES(String corpusName) throws CompiledCorpusRegistryException {
+		Logger logger = Logger.getLogger("CompiledCorpusRegistry.getCorpusWithName");
+		logger.debug("corpusName= '"+corpusName+"'");
+		if (corpusName == null) {
+			corpusName = defaultESCorpusName;
+		}
+		CompiledCorpus_ES corpus = null;
+		try {
+			corpus = new CompiledCorpus_ES(corpusName);
+		} catch (CompiledCorpusException e) {
+			throw new CompiledCorpusRegistryException(e);
+		}
+		return corpus;
 	}
 
 	@JsonIgnore

@@ -65,10 +65,12 @@ public class MorphRelativesFinder {
 	}
 	
 	private void initializeWithCorpusName(String corpusName) throws MorphRelativesFinderException {
-		try {
-			compiledCorpus = CompiledCorpusRegistry.getCorpus(corpusName);
-		} catch (CompiledCorpusRegistryException e) {
-			throw new MorphRelativesFinderException("Problem creating a MorphRelativesFinder with default pre-compiled corpus", e);
+		if (!this.getClass().getSimpleName().contains("_ES")) {
+			try {
+				compiledCorpus = CompiledCorpusRegistry.getCorpus(corpusName);
+			} catch (CompiledCorpusRegistryException e) {
+				throw new MorphRelativesFinderException("Problem creating a MorphRelativesFinder with default pre-compiled corpus", e);
+			}
 		}
 	}
 		

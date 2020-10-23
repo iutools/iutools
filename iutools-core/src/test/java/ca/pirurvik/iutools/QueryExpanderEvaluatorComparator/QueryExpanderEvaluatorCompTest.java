@@ -42,16 +42,11 @@ public class QueryExpanderEvaluatorCompTest {
 		
 		String goldStandardCSVFilePath = IUConfig.getIUDataPath("/src/test/resources/ca/pirurvik/iutools/IU100Words-expansions-added-to-alternatives.csv");
 		
-		MorphRelativesFinderEvaluator evaluator = new MorphRelativesFinderEvaluator();
+		MorphRelativesFinderEvaluator evaluator =
+			new MorphRelativesFinderEvaluator();
 		// Set this to true if you want to see print statements.
 //		evaluator.verbose = false;
 		evaluator.verbose = true;
-
-		CompiledCorpus_InMemory compiledCorpus = CompiledCorpusRegistry.getCorpus();
-		evaluator.setCompiledCorpus(compiledCorpus);
-//		CompiledCorpus corpus = new CompiledCorpus_ES("HANSARD-1999-2002");
-//		corpus.setSegmenterClassName(StringSegmenter_IUMorpheme.class);
-//		evaluator.setCompiledCorpus(corpus);
 
 		evaluator.setGoldStandard(new File(goldStandardCSVFilePath));
 		// whether statistics are to be computed over words (default [true]) or morphemes [false]:

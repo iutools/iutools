@@ -7,8 +7,6 @@ import org.junit.Test;
 import static org.junit.Assert.assertFalse;
 
 import ca.inuktitutcomputing.config.IUConfig;
-import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
-import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 
 public class MorphRelativesFinderAccuracyTest {
 
@@ -57,8 +55,9 @@ public class MorphRelativesFinderAccuracyTest {
 		// Set this to true if you want to see print statements.
 		evaluator.verbose = true;
 
-		CompiledCorpus_InMemory compiledCorpus = CompiledCorpusRegistry.getCorpus();
-		evaluator.setCompiledCorpus(compiledCorpus);
+		MorphRelativesFinder finder = new MorphRelativesFinder_ES();
+		evaluator.setRelsFinder(finder);
+
 		evaluator.setGoldStandard(new File(goldStandardCSVFilePath));
 
 		// whether statistics are to be computed over words (default [true]) or morphemes [false]:

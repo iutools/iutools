@@ -7,8 +7,7 @@ public class CorpusSanityCheck_DefaultES extends CorpusSanityCheck {
     @Override
     protected CompiledCorpus corpusToCheck() throws Exception {
         CompiledCorpus corpus =
-                CompiledCorpusRegistry
-                        .getCorpus();
+            CompiledCorpusRegistry.getCorpusWithName_ES();
         return corpus;
     }
 
@@ -16,7 +15,7 @@ public class CorpusSanityCheck_DefaultES extends CorpusSanityCheck {
     protected Map<String, Object> expectations() {
         Map<String,Object> exp = new HashMap<String,Object>();
 
-        exp.put("totalWords", new Long(387303));
+        exp.put("totalWords", new Long(407221));
 
         exp.put("inuktut:freq", new Long(5));
         exp.put("inuktut:totDecomps", new Integer(1));
@@ -27,7 +26,7 @@ public class CorpusSanityCheck_DefaultES extends CorpusSanityCheck {
         );
 
         exp.put("nuna:freq", new Long(-1));
-        exp.put("nuna:totalWords", new Long(2823));
+        exp.put("nuna:totalWords", new Long(5011));
 
         return exp;
     }

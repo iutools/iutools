@@ -32,7 +32,6 @@ public class MorphRelativesFinderEvaluator {
 
 	public Integer stopAfterNWords = null;
 	
-	public CompiledCorpus compiledCorpus = null;
 	public CSVParser csvParser = null;
 	public boolean computeStatsOverSurfaceForms = true;
 	public float precision = -1;
@@ -41,7 +40,8 @@ public class MorphRelativesFinderEvaluator {
 
 	int nbTotalCases = 0;
 	protected long elapsedTime = -1;
-	
+
+	MorphRelativesFinder relsFinder = null;
 	
 	/*
 	 * 0. Mot original (fréquence Google du mot en syllabique),
@@ -54,28 +54,27 @@ public class MorphRelativesFinderEvaluator {
 	 * 7. Notes
 	 */
 	
-	public MorphRelativesFinderEvaluator() {
+	public MorphRelativesFinderEvaluator() throws MorphRelativesFinderException {
+		init__MorphRelativesFinderEvaluator(null, null);
 	}
 	
-	public MorphRelativesFinderEvaluator(String compiledCorpusTrieFilePath, String csvGoldStandardFilePath) throws IOException {
-		File compiledCorpusTrieFile = new File(compiledCorpusTrieFilePath);
-		setCompiledCorpus(compiledCorpusTrieFile);
+	public MorphRelativesFinderEvaluator(String csvGoldStandardFilePath)
+		throws MorphRelativesFinderException {
 		File goldStandardFile = new File(csvGoldStandardFilePath);
-		setGoldStandard(goldStandardFile);
+		init__MorphRelativesFinderEvaluator(null, goldStandardFile);
 	}
-		
-	public void setCompiledCorpus(String corpusName) throws CompiledCorpusRegistryException {
-		compiledCorpus = CompiledCorpusRegistry.getCorpus(corpusName);
-	}
-	
-	public void setCompiledCorpus(File compiledCorpusTrieFilePath) throws IOException {
-		FileReader fr = new FileReader(compiledCorpusTrieFilePath);
-		compiledCorpus = new Gson().fromJson(fr, CompiledCorpus_InMemory.class);    		
-		fr.close();
-	}
-	
-	public void setCompiledCorpus(CompiledCorpus _compiledCorpus) {
-		compiledCorpus = _compiledCorpus;
+
+	public void init__MorphRelativesFinderEvaluator(MorphRelativesFinder finder,
+		File csvGoldStandardFile) throws MorphRelativesFinderException {
+		if (finder == null) {
+			finder = new MorphRelativesFinder_ES();
+		}
+		setRelsFinder(finder);
+		try {
+			setGoldStandard(csvGoldStandardFile);
+		} catch (IOException e) {
+			throw new MorphRelativesFinderException(e);
+		}
 	}
 
 	public void setStopAfterNWords(Integer _stopAfterNWords) {
@@ -88,8 +87,10 @@ public class MorphRelativesFinderEvaluator {
 	}
 	
 	public void setGoldStandard(File csvGoldStandardFile) throws IOException {
-        BufferedReader reader = Files.newBufferedReader(Paths.get(csvGoldStandardFile.getAbsolutePath()));
-        csvParser = new CSVParser(reader, CSVFormat.DEFAULT);
+		if (csvGoldStandardFile != null) {
+			BufferedReader reader = Files.newBufferedReader(Paths.get(csvGoldStandardFile.getAbsolutePath()));
+			csvParser = new CSVParser(reader, CSVFormat.DEFAULT);
+		}
 	}
 	
 	public void setGoldStandard(String[] csvGoldStandardLines) throws IOException {
@@ -115,11 +116,6 @@ public class MorphRelativesFinderEvaluator {
 		Logger logger = Logger.getLogger("QueryExpanderEvaluator");
 		
         try {
-//    		MorphRelativesFinder relsFinder = new MorphRelativesFinder(compiledCorpus);
-			CompiledCorpus_ES corpus = new CompiledCorpus_ES("hansard-1999-2002.v2020-10-06");
-			corpus.setSegmenterClassName(StringSegmenter_IUMorpheme.class);
-    		MorphRelativesFinder relsFinder = new MorphRelativesFinder_ES(corpus);
-
             Pattern patMotFreq = Pattern.compile("^(.+) \\((\\d+)\\).*$");
             
             nbTotalCases = 0;
@@ -173,7 +169,7 @@ public class MorphRelativesFinderEvaluator {
                     	if (verbose) System.out.println("        "+gsalternative+" : "+freqGSAlternativeInCorpus);
                     	String altDecomp = null;
                     	try {
-                    		altDecomp = String.join(" ",compiledCorpus.decomposeWord(gsalternative));
+                    		altDecomp = String.join(" ",relsFinder.compiledCorpus.decomposeWord(gsalternative));
                         	gsalternativesMorphemes[igs] = altDecomp;
                     	} catch (Exception e) {
                     		altDecomp = "";
@@ -294,7 +290,7 @@ public class MorphRelativesFinderEvaluator {
 
 		long freqDansCorpus = 0;
 		try {
-			WordInfo wInfo = compiledCorpus.info4word(reformulation);
+			WordInfo wInfo = relsFinder.compiledCorpus.info4word(reformulation);
 			if (wInfo != null) {
 				freqDansCorpus = wInfo.frequency;
 			}
@@ -324,5 +320,9 @@ public class MorphRelativesFinderEvaluator {
 		double mSecs = 1.0 * elapsedTime / nbTotalCases;
 		double secs = mSecs / 1000;
 		return secs;
+	}
+
+	public void setRelsFinder(MorphRelativesFinder finder) {
+		this.relsFinder = finder;
 	}
 }
