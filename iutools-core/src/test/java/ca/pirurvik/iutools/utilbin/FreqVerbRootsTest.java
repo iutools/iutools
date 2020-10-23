@@ -1,28 +1,19 @@
 package ca.pirurvik.iutools.utilbin;
 
-import static org.junit.Assert.*;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-import ca.pirurvik.iutools.corpus.CompiledCorpus;
-import ca.pirurvik.iutools.corpus.CompiledCorpus_v2Mem;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
-import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieException;
-import ca.nrc.datastructure.trie.TrieNode;
-import ca.nrc.datastructure.trie.Trie_InMemory;
-import ca.nrc.testing.AssertHelpers;
 import ca.nrc.testing.AssertObject;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 import ca.pirurvik.iutools.corpus.CompiledCorpusException;

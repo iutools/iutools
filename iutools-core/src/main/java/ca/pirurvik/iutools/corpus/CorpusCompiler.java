@@ -154,31 +154,8 @@ public class CorpusCompiler {
 	 * @throws CompiledCorpusException 
 	 */
 	public void resumeCompilation(File corpusDirectory) throws CompiledCorpusException {
-		Class<? extends CompiledCorpus> corpusClass = CompiledCorpus_v2FS.class;
-		File jsonFilePath = new File(corpusDirectory, CompiledCorpus_InMemory.JSON_COMPILATION_FILE_NAME);
-		if (jsonFilePath.exists()) {
-			corpus = RW_CompiledCorpus.read(
-				jsonFilePath, CompiledCorpus_InMemory.class);
-		} else {
-			corpus = RW_CompiledCorpus.read(
-				corpusDirectory, CompiledCorpus_v2FS.class);
-		}
 	}
 
-//    public static CompiledCorpus_InMemory createFromJson(String jsonCompilationFilePathname) throws CompiledCorpusException {
-//    	try {
-//    		FileReader jsonFileReader = new FileReader(jsonCompilationFilePathname);
-//    		Gson gson = new Gson();
-//    		CompiledCorpus_InMemory compiledCorpus = gson.fromJson(jsonFileReader, CompiledCorpus_InMemory.class);
-//    		jsonFileReader.close();
-//    		return compiledCorpus;
-//    	} catch (FileNotFoundException e) {
-//    		throw new CompiledCorpusException("File "+jsonCompilationFilePathname+"does not exist. Could not create a compiled corpus.");
-//    	} catch (IOException e) {
-//    		throw new CompiledCorpusException(e);
-//    	}
-//    }
-    
 	private void deleteJSON(File corpusDirectory) {
 		File saveFile = new File(corpusDirectory, CompiledCorpus_InMemory.JSON_COMPILATION_FILE_NAME);
 		if (saveFile.exists())

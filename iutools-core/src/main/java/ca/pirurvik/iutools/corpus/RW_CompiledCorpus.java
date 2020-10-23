@@ -64,14 +64,10 @@ public abstract class RW_CompiledCorpus {
 
 		if (corpusClass == null) {
 			// Set the corpusClass based on the characteristics of the savePath
-			if (savePath.isDirectory()) {
-				corpusClass = CompiledCorpus_v2FS.class;
+			if (savePath.toString().matches("^.*\\.ES\\.json$")) {
+				corpusClass = CompiledCorpus_ES.class;
 			} else {
-				if (savePath.toString().matches("^.*\\.ES\\.json$")) {
-					corpusClass = CompiledCorpus_ES.class;
-				} else {
-					corpusClass = CompiledCorpus_InMemory.class;
-				}
+				corpusClass = CompiledCorpus_InMemory.class;
 			}
 		}
 

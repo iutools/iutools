@@ -652,7 +652,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
         }
     }
 
-    protected static String corpusName4File(File savePath) {
+    public static String corpusName4File(File savePath) {
         String corpusName = null;
         Matcher matcher = pattSavePath.matcher(savePath.toString());
         if (matcher.matches()) {

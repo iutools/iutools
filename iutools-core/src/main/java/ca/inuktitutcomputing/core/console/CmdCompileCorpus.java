@@ -2,12 +2,7 @@ package ca.inuktitutcomputing.core.console;
 
 import java.io.File;
 
-import ca.nrc.datastructure.trie.StringSegmenter_AlwaysNull;
-import ca.pirurvik.iutools.corpus.CompiledCorpus;
-import ca.pirurvik.iutools.corpus.CompiledCorpusException;
-import ca.pirurvik.iutools.corpus.CompiledCorpus_v2FS;
-import ca.pirurvik.iutools.corpus.CorpusCompiler;
-import ca.pirurvik.iutools.corpus.CorpusCompilerException;
+import ca.pirurvik.iutools.corpus.*;
 
 public class CmdCompileCorpus extends ConsoleCommand {
 
@@ -40,33 +35,14 @@ public class CmdCompileCorpus extends ConsoleCommand {
 				// 
 				updateWordDecompositions(decompsFile, corpusSavePath);
 			} else {
-				// No corpus nor decomposition files were provided. 
-				// Simply regenerate the morpheme ngrams index based on 
-				// the word info that is already contained in the CompiledCorpus
-				//
-				regenerateMorphemesNgramIndex(corpusSavePath);
+				this.usageBadOption(
+					ConsoleCommand.OPT_INPUT_DIR+"|"+ConsoleCommand.OPT_CORPUS_SAVE_PATH,
+					"You must provide at least one of those options");
 			}
-		}
-	}	
-
-	private void regenerateMorphemesNgramIndex(String corpusSavePath) 
-		throws CompiledCorpusException {
-		boolean regenerate = 
-			user_io.prompt_yes_or_no(
-				"No values provided for "+
-				ConsoleCommand.OPT_INPUT_DIR+" nor "+
-				ConsoleCommand.OPT_DECOMPOSITIONS_FILE+".\n"+
-				"Regenerate the morpheme ngrams index? ");
-		if (regenerate) {
-			CompiledCorpus compiledCorpus = 
-				new CompiledCorpus_v2FS(new File(corpusSavePath))
-				.setSegmenterClassName(StringSegmenter_AlwaysNull.class)
-				;
-			compiledCorpus.regenerateMorphNgramsIndex();
 		}
 	}
 
-	private void compileWordFrequencies(String corpusDirStr, String corpusSavePath) throws CorpusCompilerException {
+	private void compileWordFrequencies(String corpusDirStr, String corpusSavePath) throws CorpusCompilerException, ConsoleException {
 		boolean compileFreqs = 
 				user_io.prompt_yes_or_no(
 					"A value was provided for "+
@@ -89,20 +65,17 @@ public class CmdCompileCorpus extends ConsoleCommand {
 			}
 			
 			
-			CompiledCorpus compiledCorpus = 
-				new CompiledCorpus_v2FS(new File(corpusSavePath))
-					.setSegmenterClassName(StringSegmenter_AlwaysNull.class)
-					;
-			
-			CorpusCompiler compiler = new CorpusCompiler(compiledCorpus);
+			CompiledCorpus corpus = compiledCorpus(new File(corpusSavePath));
+
+			CorpusCompiler compiler = new CorpusCompiler(corpus);
 			File corpusDir = new File(corpusDirStr);
 			compiler.compileWordFrequencies(corpusDir);	
 		}
 	}
 	
 	private void updateWordDecompositions(
-		File decompsFile, String corpusSavePath) 
-		throws CompiledCorpusException {
+		File decompsFile, String corpusSavePath)
+			throws CompiledCorpusException, ConsoleException {
 		
 		boolean updateDecomps = 
 				user_io.prompt_yes_or_no(
@@ -129,13 +102,10 @@ public class CmdCompileCorpus extends ConsoleCommand {
 			usageBadOption(OPT_CORPUS_SAVE_PATH, "The provided path does not exist");
 		}
 		
-		
-		CompiledCorpus compiledCorpus = 
-			new CompiledCorpus_v2FS(new File(corpusSavePath))
-			.setSegmenterClassName(StringSegmenter_AlwaysNull.class)
-			;
-		
-		CorpusCompiler compiler = new CorpusCompiler(compiledCorpus);
+
+		CompiledCorpus corpus = compiledCorpus(new File(corpusSavePath));
+
+		CorpusCompiler compiler = new CorpusCompiler(corpus);
 		compiler.updateWordDecompositions(decompsFile);	
 	}
 	
@@ -146,5 +116,15 @@ public class CmdCompileCorpus extends ConsoleCommand {
 			return false;
 		}
 		return true;
+	}
+
+	protected CompiledCorpus compiledCorpus(File corpusJsonFile) throws ConsoleException {
+		try {
+			CompiledCorpus_ES corpus =
+				(CompiledCorpus_ES) RW_CompiledCorpus.read(corpusJsonFile);
+			return corpus;
+		} catch (CompiledCorpusException e) {
+			throw new ConsoleException(e);
+		}
 	}
 }
