@@ -27,7 +27,7 @@ public class CmdDumpCorpus extends ConsoleCommand {
     @Override
     public void execute() throws Exception {
         String corpusName = getCorpusName(false);
-        CompiledCorpus corpus = CompiledCorpusRegistry.getCorpus(corpusName);
+        CompiledCorpus corpus = CompiledCorpusRegistry.getCorpusWithName_ES(corpusName);
         boolean wordsOnly = getWordsOnlyOpt();
         File outputFile = getDataFile(true);
         dumpCorpus(corpus, wordsOnly, outputFile);
