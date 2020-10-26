@@ -37,11 +37,11 @@ public class MorphRelativesFinder {
 		} catch (CompiledCorpusRegistryException e) {
 			throw new MorphRelativesFinderException(e);
 		}
-		init_MorphRelativeFinder_ES(corpus);
+		init_MorphRelativeFinder(corpus);
 		return;
 	}
 
-	public void init_MorphRelativeFinder_ES(CompiledCorpus corpus) throws MorphRelativesFinderException {
+	public void init_MorphRelativeFinder(CompiledCorpus corpus) throws MorphRelativesFinderException {
 		compiledCorpus = corpus;
 		compiledCorpus.setSegmenterClassName(StringSegmenter_IUMorpheme.class);
 
@@ -49,7 +49,7 @@ public class MorphRelativesFinder {
 	}
 
 	public MorphRelativesFinder(CompiledCorpus corpus) throws MorphRelativesFinderException {
-		init_MorphRelativeFinder_ES(corpus);
+		init_MorphRelativeFinder(corpus);
 	}
 
 	/**
