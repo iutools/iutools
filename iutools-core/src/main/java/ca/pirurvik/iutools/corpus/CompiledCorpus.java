@@ -67,7 +67,10 @@ public abstract class CompiledCorpus {
 			String[] morphemes, Integer N) throws CompiledCorpusException;
 
 	public abstract void addWordOccurence(String word, String[][] sampleDecomps,
-										  Integer totalDecomps, long freqIncr) throws CompiledCorpusException;
+	  Integer totalDecomps, long freqIncr) throws CompiledCorpusException;
+
+	public abstract void deleteWord(String word)
+			throws CompiledCorpusException;
 
 	// TODO-June2020: Get rid of this method.
 	//   The trie is an internal detail of the Corpus

@@ -14,7 +14,7 @@ public class WordInfo extends Document {
 	 * Internal key for this word. May be left to null if we prefer to use strings
 	 * IDs to identify the word.
 	 */
-	Long key = null;
+	public Long key = null;
 	
 	/**
 	 * The list of top morphological decompositions for this word.

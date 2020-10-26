@@ -18,7 +18,7 @@ public class CompiledCorpusRegistry {
 	private static Map<String,CompiledCorpus_InMemory> corpusCache = new HashMap<String,CompiledCorpus_InMemory>();
 	private static Map<String,File> registry = new HashMap<String,File>();
 	public static final String defaultCorpusName = "Hansard1999-2002";
-	public static final String defaultESCorpusName = "HANSARD-1999-2002.v2020-10-06";
+	public static final String defaultESCorpusName = "HANSARD-1999-2002";
 	public static final String emptyCorpusName = "EMPTYCORPUS";
 	
 	static {

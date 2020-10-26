@@ -54,10 +54,10 @@ public abstract class SpellCheckerAccuracyTest {
                     .isMisspelled("nunavummik").setMaxRank(1),
 
             new SpellCheckerExample("nunavuumit")
-                    .isMisspelled("nunavummit").setMaxRank(3),
+                    .isMisspelled("nunavummit").setMaxRank(1),
 
             new SpellCheckerExample("ugaalautaa")
-                    .isMisspelled("uqaalautaa").setMaxRank(45),
+                    .isMisspelled("uqaalautaa").setMaxRank(1),
 
             // NEED-IMPROVEMENT: Examples with ranking > 5
             //   ONLY if we don't assume the correction is in dict
@@ -108,7 +108,7 @@ public abstract class SpellCheckerAccuracyTest {
                     .isMisspelled("kiinaujaqtigut").setMaxRank(1),
 
             new SpellCheckerExample("kiinaujat")
-                    .isMisspelled("kiinaujait").setMaxRank(2),
+                    .isMisspelled("kiinaujait").setMaxRank(1),
 
             new SpellCheckerExample("maligaliqtit")
                     .isMisspelled("maligaliqtiit").setMaxRank(1),
@@ -126,7 +126,7 @@ public abstract class SpellCheckerAccuracyTest {
                     .isMisspelled("nunavummi").setMaxRank(1),
 
             new SpellCheckerExample("nunavumiut")
-                    .isMisspelled("nunavummiut").setMaxRank(2),
+                    .isMisspelled("nunavummiut").setMaxRank(1),
 
             new SpellCheckerExample("nunavumut")
                     .isMisspelled("nunavummut").setMaxRank(1),
@@ -135,7 +135,7 @@ public abstract class SpellCheckerAccuracyTest {
                     .isMisspelled("nunavummi").setMaxRank(1),
 
             new SpellCheckerExample("pigiaqtitat")
-                    .isMisspelled("pigiaqtitait").setMaxRank(3),
+                    .isMisspelled("pigiaqtitait").setMaxRank(1),
 
             new SpellCheckerExample("sulikkanniiq")
                     .isMisspelled("sulikkanniq").setMaxRank(1),
@@ -156,7 +156,7 @@ public abstract class SpellCheckerAccuracyTest {
                     .isMisspelled("taanna").setMaxRank(1),
 
             new SpellCheckerExample("tavani")
-                    .isMisspelled("tavvani").setMaxRank(2),
+                    .isMisspelled("tavvani").setMaxRank(1),
 
             new SpellCheckerExample("uvalu")
                     .isMisspelled("uvvalu").setMaxRank(1),
@@ -343,12 +343,12 @@ public abstract class SpellCheckerAccuracyTest {
             .setFPRate(0.0, 0.0)
             .setFNRate(0.0, 0.0)
 
-            .setPercentFoundInTopN(0.91)
+            .setPercentFoundInTopN(1.0)
             .setTolerance(0.02)
                     
-            .setPercTopSuggestionOK(0.81)
+            .setPercTopSuggestionOK(1.0)
                     
-            .setAverageRank(5.2)
+            .setAverageRank(1.0)
             .setAvgRankTolerance(0.2)
 
             .setAvgRuntime(2.0, 1.5)
@@ -372,13 +372,13 @@ public abstract class SpellCheckerAccuracyTest {
             .setExamples(examples_MostFrequenMisspelledWords)
             .setLoadCorrectWordInDict(true)
 
-            .setPercentFoundInTopN(0.97)
+            .setPercentFoundInTopN(1.0)
             .setTolerance(0.01)
-            .setPercTopSuggestionOK(0.85)
-            .setAverageRank(2.3)
+            .setPercTopSuggestionOK(1.0)
+            .setAverageRank(1.0)
             .setAvgRankTolerance(0.1)
 
-            .setAvgRuntime(2.0, 0.5)
+            .setAvgRuntime(0.7, 0.2)
         ;
 
         SpellChecker checker = makeLargeDictChecker();
@@ -398,13 +398,13 @@ public abstract class SpellCheckerAccuracyTest {
             .setExamples(examples_MostFrequenMisspelledWords)
             .setLoadCorrectWordInDict(false)
 
-            .setPercentFoundInTopN(0.97)
+            .setPercentFoundInTopN(1.0)
             .setTolerance(0.01)
-            .setPercTopSuggestionOK(0.83)
-            .setAverageRank(2.5)
+            .setPercTopSuggestionOK(1.0)
+            .setAverageRank(1.0)
             .setAvgRankTolerance(0.1)
 
-            .setAvgRuntime(2.2, 0.5)
+            .setAvgRuntime(0.6, 0.2)
 
             ;
 

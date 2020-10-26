@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 public class WordInfo_ES extends WordInfo {
 
     @JsonIgnore // We don't store the key in ElasticSearch
-    Long key = null;
+    public Long key = null;
 
     // We don't store the array form of the top decomp in ES.
     // Instead, we store its concatenated form which is easier to

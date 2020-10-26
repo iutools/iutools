@@ -439,6 +439,16 @@ public class CompiledCorpus_ES extends CompiledCorpus {
     }
 
     @Override
+    public void deleteWord(String word) throws CompiledCorpusException {
+        try {
+            esClient().deleteDocumentWithID(word, WORD_INFO_TYPE);
+        } catch (ElasticSearchException e) {
+            throw new CompiledCorpusException(e);
+        }
+    }
+
+
+    @Override
     public Trie getMorphNgramsTrie() throws CompiledCorpusException {
         return null;
     }

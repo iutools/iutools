@@ -128,7 +128,7 @@ public class MorphRelativesFinderEvaluator {
             ArrayList<String> listAllGsAlternatives = new ArrayList<String>();
             
             boolean stop = false;
-           
+
             int wordCount = 0;
             for (CSVRecord csvRecord : csvParser) {
             		wordCount++;

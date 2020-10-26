@@ -26,6 +26,7 @@ public abstract class SpellCheckerTest {
 		"nunavut", "inuktitut"
 	};
 
+
 	protected SpellChecker largeDictCheckerWithTestWords() throws Exception {
 		SpellChecker checker = largeDictChecker();
 		checker.setVerbose(false);
@@ -168,7 +169,7 @@ public abstract class SpellCheckerTest {
 	}
 	
 	@Test 
-	public void test__wordsContainingSequ__Case_considering_extremities() throws Exception {
+	public void test__wordsContainingNgram__Case_considering_extremities() throws Exception {
 		SpellChecker checker = largeDictCheckerWithTestWords();
 		checker.setVerbose(false);
 		checker.addExplicitlyCorrectWord("inuktitut");

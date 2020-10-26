@@ -15,10 +15,10 @@ public class MorphRelativesFinderAccuracyTest {
 		PerformanceExpectations expectations =
 			new PerformanceExpectations()
 				// This test should run in 20 secs give or take 5 secs
-				.setTargetRuntimeSecs(1.5, 1)
+				.setTargetRuntimeSecs(1.8, 1)
 
-				.setTargetPrecision(0.60)
-				.setTargetRecall(0.50)
+				.setTargetPrecision(0.57)
+				.setTargetRecall(0.47)
 				.setPrecRecTolerance(0.02)
 			;
 
@@ -56,7 +56,6 @@ public class MorphRelativesFinderAccuracyTest {
 		evaluator.verbose = true;
 
 		MorphRelativesFinder finder = new MorphRelativesFinder_ES();
-		evaluator.setRelsFinder(finder);
 
 		evaluator.setGoldStandard(new File(goldStandardCSVFilePath));
 
@@ -158,7 +157,7 @@ public class MorphRelativesFinderAccuracyTest {
 		public double targetRecall = -1;
 		public double precRecTolerance;
 		public double targetRuntimeSecs = -1;
-		public long secsTolerance;
+		public double secsTolerance;
 
 		public PerformanceExpectations setComputeStatsOverSurfaceForms(
 				boolean _computeStatsOverSurfaceForms) {
@@ -183,7 +182,7 @@ public class MorphRelativesFinderAccuracyTest {
 		}
 
 		public PerformanceExpectations setTargetRuntimeSecs(
-			double _targetRuntimeSecs, long _secsTolerance) {
+			double _targetRuntimeSecs, double _secsTolerance) {
 			this.targetRuntimeSecs = _targetRuntimeSecs;
 			this.secsTolerance = _secsTolerance;
 			return this;

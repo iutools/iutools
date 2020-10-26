@@ -2,7 +2,10 @@ package ca.pirurvik.iutools.corpus;
 
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.dtrc.elasticsearch.StreamlinedClient;
+import ca.nrc.json.PrettyPrinter;
 import ca.nrc.testing.AssertString;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections.iterators.IteratorChain;
 import org.junit.After;
 import org.junit.Assert;

@@ -127,17 +127,6 @@ public class CompiledCorpusRegistryTest {
 		assertTrue("The exception 'is already associated' should have been thrown.",allreadydefined);
 	}
 	
-	@Test
-	public void test__getCorpus__with_name_part_of_compiled_corpus_filename_in_compiled_corpuses_directory() throws Exception {
-		String corpusName = "HANSARD-1999-2002";
-		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpus(corpusName);
-		assertTrue("Corpus "+corpusName+"could not be found",corpus != null);
-		// insensitive
-		corpusName = "Hansard-1999-2002"; 
-		corpus = CompiledCorpusRegistry.getCorpus(corpusName);
-		assertTrue("Corpus "+corpusName+"could not be found",corpus != null);
-	}
-	
 	// With this change, this test is identical to test__getCorpus__get_from_unknown_corpus_name()
 	@Test(expected=CompiledCorpusRegistryException.class)
 	public void test__getCorpus__UnknownCorpus__RaisesException() 

@@ -284,6 +284,14 @@ public class SpellChecker {
 		clearWordsWithNgramCache();
 		removeFromMisspelledCache(word);
 	}
+
+	public void deleteExplicitlyCorrectWord(String word) throws SpellCheckerException {
+		try {
+			explicitlyCorrectWords.deleteWord(word);
+		} catch (CompiledCorpusException e) {
+			throw new SpellCheckerException(e);
+		}
+	}
 	
 	private void __updateSequenceIDFForWord(String word, boolean wordIsNumericTerm) {
 		Set<String> seqSeenInWord = new HashSet<String>();

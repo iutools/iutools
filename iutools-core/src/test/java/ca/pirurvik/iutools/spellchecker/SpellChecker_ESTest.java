@@ -1,11 +1,10 @@
 package ca.pirurvik.iutools.spellchecker;
 
 import ca.inuktitutcomputing.config.IUConfig;
+import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_ES;
 import ca.pirurvik.iutools.corpus.RW_CompiledCorpus;
 import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
 
 import java.io.File;
 
@@ -17,20 +16,12 @@ public class SpellChecker_ESTest extends SpellCheckerTest {
     public void setUp() throws Exception {
         // Make sure the ES indices are empty for the empty corpus name
         clearESIndices(new SpellChecker_ES(emptyCorpusName));
-        removeCorrectWordsLatin("hansard-1999-2002.v2020-10-06");
-    }
-
-    private void removeCorrectWordsLatin(String corpusName) throws Exception {
-        SpellChecker checker = new SpellChecker_ES(corpusName);
-        for (String word: correctWordsLatin) {
-//            checker.removeExplicitlyCorrectWord(word);
-        }
     }
 
 
     @Override
     protected SpellChecker largeDictChecker() throws Exception {
-        SpellChecker checker = new SpellChecker_ES("hansard-1999-2002.v2020-10-06");
+        SpellChecker checker = new SpellChecker_ES(CompiledCorpusRegistry.defaultESCorpusName);
         return checker;
     }
 

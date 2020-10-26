@@ -15,7 +15,7 @@ public class CorpusSanityCheck_DefaultES extends CorpusSanityCheck {
     protected Map<String, Object> expectations() {
         Map<String,Object> exp = new HashMap<String,Object>();
 
-        exp.put("totalWords", new Long(407221));
+        exp.put("totalWords", new Long(407219));
 
         exp.put("inuktut:freq", new Long(5));
         exp.put("inuktut:totDecomps", new Integer(1));

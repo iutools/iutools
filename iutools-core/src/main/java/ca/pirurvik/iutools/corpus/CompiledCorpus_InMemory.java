@@ -152,7 +152,16 @@ public class CompiledCorpus_InMemory extends CompiledCorpus
 			};			
 		}
 	}
-	
+
+	@Override
+	public void deleteWord(String word) throws CompiledCorpusException {
+		// 2020-10-25
+		// Not implemented for now and it doesn't seem to matter for
+		// passing the tests.
+		// In any case, we will be getting rid of CompiledCorpus_InMemory soon.
+		//
+	}
+
 	private void updateSequenceNgramsForWord(String word) {
 		Set<String> seqsSeenInWord = new HashSet<String>();
 		seqsSeenInWord = getCharsNgramCompiler().compile(word);
