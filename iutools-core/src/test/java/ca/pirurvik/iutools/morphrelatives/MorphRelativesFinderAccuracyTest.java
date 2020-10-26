@@ -15,9 +15,9 @@ public class MorphRelativesFinderAccuracyTest {
 		PerformanceExpectations expectations =
 			new PerformanceExpectations()
 				// This test should run in 20 secs give or take 5 secs
-				.setTargetRuntimeSecs(1.8, 1)
+				.setTargetRuntimeSecs(4, 2)
 
-				.setTargetPrecision(0.57)
+				.setTargetPrecision(0.54)
 				.setTargetRecall(0.47)
 				.setPrecRecTolerance(0.02)
 			;
