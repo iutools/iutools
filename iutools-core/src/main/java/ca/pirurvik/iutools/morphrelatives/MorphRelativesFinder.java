@@ -1,23 +1,17 @@
 package ca.pirurvik.iutools.morphrelatives;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import ca.inuktitutcomputing.script.TransCoder;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
-import ca.nrc.datastructure.trie.TrieException;
-import ca.nrc.datastructure.trie.TrieNode;
 import ca.pirurvik.iutools.corpus.WordInfo;
 import ca.pirurvik.iutools.corpus.CompiledCorpus;
 import ca.pirurvik.iutools.corpus.CompiledCorpusException;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistryException;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -36,44 +30,28 @@ public class MorphRelativesFinder {
 	public int maxRelatives = 5;
 	protected boolean verbose = true;
 
-	
 	public MorphRelativesFinder() throws MorphRelativesFinderException {
-		initializeWithCorpusName(null);
-	}
-	
-	public MorphRelativesFinder(String corpusName) throws MorphRelativesFinderException {
-		initializeWithCorpusName(corpusName);
+		CompiledCorpus corpus = null;
+		try {
+			corpus = CompiledCorpusRegistry.getCorpusWithName_ES();
+		} catch (CompiledCorpusRegistryException e) {
+			throw new MorphRelativesFinderException(e);
+		}
+		init_MorphRelativeFinder_ES(corpus);
+		return;
 	}
 
-	public MorphRelativesFinder(CompiledCorpus _compiledCorpus) throws MorphRelativesFinderException {
-		this.compiledCorpus = _compiledCorpus;
-		init_MorphRelativesFinder(_compiledCorpus);
-	}
-	
-	protected void init_MorphRelativesFinder(CompiledCorpus _compiledCorpus) throws MorphRelativesFinderException {
-		if (_compiledCorpus == null) {
-			try {
-				_compiledCorpus = CompiledCorpusRegistry.getCorpus();
-			} catch (CompiledCorpusRegistryException e) {
-				throw new MorphRelativesFinderException("Problem creating a MorphRelativesFinder with default pre-compiled corpus", e);
-			}
-		}
-		_compiledCorpus.setSegmenterClassName(StringSegmenter_IUMorpheme.class);
-		compiledCorpus = _compiledCorpus;
+	public void init_MorphRelativeFinder_ES(CompiledCorpus corpus) throws MorphRelativesFinderException {
+		compiledCorpus = corpus;
+		compiledCorpus.setSegmenterClassName(StringSegmenter_IUMorpheme.class);
 
 		return;
 	}
-	
-	private void initializeWithCorpusName(String corpusName) throws MorphRelativesFinderException {
-		if (!this.getClass().getSimpleName().contains("_ES")) {
-			try {
-				compiledCorpus = CompiledCorpusRegistry.getCorpus(corpusName);
-			} catch (CompiledCorpusRegistryException e) {
-				throw new MorphRelativesFinderException("Problem creating a MorphRelativesFinder with default pre-compiled corpus", e);
-			}
-		}
+
+	public MorphRelativesFinder(CompiledCorpus corpus) throws MorphRelativesFinderException {
+		init_MorphRelativeFinder_ES(corpus);
 	}
-		
+
 	/**
 	 * 
 	 * @param word String - an inuktitut word
@@ -170,7 +148,8 @@ public class MorphRelativesFinder {
 	}
 
 	protected Boolean collectDescendants(String origWord,
-	    String[] origWordMorphemes, String[] currentMorphemes, Set<MorphologicalRelative> collectedSoFar) throws MorphRelativesFinderException {
+		 String[] origWordMorphemes, String[] currentMorphemes,
+		 Set<MorphologicalRelative> collectedSoFar) throws MorphRelativesFinderException {
 
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.morphrelatives.MorphRelativesFinder.collectDescendants");
 		if (tLogger.isTraceEnabled()) {
@@ -179,24 +158,16 @@ public class MorphRelativesFinder {
 
 		Boolean keepGoing = null;
 		try {
-			TrieNode[] wordNodes =
-					compiledCorpus.getMorphNgramsTrie()
-							.getTerminals(currentMorphemes);
-			for (TrieNode aWordNode: wordNodes) {
-				if (!aWordNode.surfaceForm.equals(origWord)) {
+			currentMorphemes = ArrayUtils.insert(0, currentMorphemes, "^");
+			Iterator<String> iterDescendants = compiledCorpus.wordsContainingMorphNgram(currentMorphemes);
+			while (iterDescendants.hasNext()) {
+				String descendant = iterDescendants.next();
+				if (!descendant.equals(origWord)) {
 					MorphologicalRelative neighbor =
-							word2neigbhor(origWord, origWordMorphemes,
-									aWordNode.surfaceForm);
+							neighbor =
+									word2neigbhor(origWord, origWordMorphemes,
+											descendant);
 					collectedSoFar.add(neighbor);
-				}
-				for (String aSurfaceForm:
-						aWordNode.getSurfaceForms().keySet()) {
-					MorphologicalRelative neighbor =
-							word2neigbhor(origWord, origWordMorphemes,
-									aSurfaceForm);
-					if (!aSurfaceForm.equals(origWord)) {
-						collectedSoFar.add(neighbor);
-					}
 				}
 			}
 			if (collectedSoFar.size() > maxRelatives) {
@@ -204,7 +175,7 @@ public class MorphRelativesFinder {
 				// No more searching to be done
 				keepGoing = false;
 			}
-		} catch (TrieException | CompiledCorpusException e) {
+		} catch (CompiledCorpusException e) {
 			throw new MorphRelativesFinderException(e);
 		}
 

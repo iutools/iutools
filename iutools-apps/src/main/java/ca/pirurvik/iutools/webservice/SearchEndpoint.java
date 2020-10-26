@@ -163,7 +163,7 @@ public class SearchEndpoint extends HttpServlet {
 			MorphologicalRelative[] expansions = null;
 			expansionWords = new ArrayList<String>();			
 			if (expander == null) {
-				expander = new MorphRelativesFinder_ES();
+				expander = new MorphRelativesFinder();
 			}
 			if (tLogger.isTraceEnabled()) {
 				tLogger.trace("expanded is of type: " + expander.getClass() + "; its corpus is of type: " + expander.compiledCorpus.getClass() + "; corpusDetails = " + PrettyPrinter.print(expander.compiledCorpus));

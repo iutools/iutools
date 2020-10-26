@@ -67,7 +67,7 @@ public class MorphRelativesFinderEvaluator {
 	public void init__MorphRelativesFinderEvaluator(MorphRelativesFinder finder,
 		File csvGoldStandardFile) throws MorphRelativesFinderException {
 		if (finder == null) {
-			finder = new MorphRelativesFinder_ES();
+			finder = new MorphRelativesFinder();
 		}
 		setRelsFinder(finder);
 		try {

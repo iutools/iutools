@@ -55,7 +55,7 @@ public class MorphRelativesFinderAccuracyTest {
 		// Set this to true if you want to see print statements.
 		evaluator.verbose = true;
 
-		MorphRelativesFinder finder = new MorphRelativesFinder_ES();
+		MorphRelativesFinder finder = new MorphRelativesFinder();
 
 		evaluator.setGoldStandard(new File(goldStandardCSVFilePath));
 
