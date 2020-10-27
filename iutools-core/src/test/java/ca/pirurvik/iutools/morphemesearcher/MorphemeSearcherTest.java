@@ -97,7 +97,7 @@ public class MorphemeSearcherTest {
 	 * @throws Exception 
 	 **********************************/
 
-	@Test @Ignore
+	@Test
 	public void test__wordsContainingMorpheme__SpeedTest() throws Exception {
 		MorphemeSearcher morphemeSearcher = new MorphemeSearcher();
 		String[] morphemes = new String[] {"inuk", "tut", "siuq"};
@@ -109,30 +109,7 @@ public class MorphemeSearcherTest {
 		double elapsedSecs = StopWatch.elapsedMsecsSince(start) / 1000.0;
 		double avgSecs = elapsedSecs / morphemes.length;
 		AssertNumber.performanceHasNotChanged(
-	"Average secs per morpheme", avgSecs, -1.0, 0.2, false);
-
-		String canonicalMorpheme = "nunami";
-		List<MorphSearchResults> wordsForMorphemes =
-				morphemeSearcher.wordsContainingMorpheme(canonicalMorpheme);
-
-		// You can then loop through the explicit morphemes found
-		//
-		for (MorphSearchResults aMorpheme: wordsForMorphemes) {
-			// This is the non-canonical ID of a morpheme that matches
-			// the canonical one.
-			String morphID = aMorpheme.morphemeWithId;
-
-			// This is sample of words that are "good" examples of
-			// use of the morpheme.
-			List<ScoredExample> scoredExamples = aMorpheme.words;
-			for (ScoredExample anExample: scoredExamples) {
-				// This is the word
-				String word = anExample.word;
-
-				// This is the word's frequency
-				long freq = anExample.frequency;
-			}
-		}
+	"Average secs per morpheme", avgSecs, 1.0, 1.0, false);
 	}
 
 	@Test
@@ -167,14 +144,15 @@ public class MorphemeSearcherTest {
 		MockCompiledCorpus mockCompiledCorpus = new MockCompiledCorpus();
 		mockCompiledCorpus.setDictionary(dictionary);
 		String[] wordsToAdd = new String[] {
-				"inuit", "nunami", "iglumik", "inuglu", "iglumut", "nunamut", "igluvimmut"
-				};
+			"inuit", "nunami", "iglumik", "inuglu", "iglumut", "nunamut", "igluvimmut"
+		};
 		mockCompiledCorpus.addWordOccurences(wordsToAdd);
 
 		morphemeSearcher.useCorpus(mockCompiledCorpus);
         
 		String morpheme = "mut";
-		List<MorphSearchResults> wordsForMorphemes = this.morphemeSearcher.wordsContainingMorpheme(morpheme);
+		List<MorphSearchResults> wordsForMorphemes =
+			this.morphemeSearcher.wordsContainingMorpheme(morpheme);
 		
 		new AssertMorphSearchResults(wordsForMorphemes, "")
 			.foundMorphemes("mut/tn-dat-s")
@@ -210,12 +188,24 @@ public class MorphemeSearcherTest {
     public void test__morphFreqInAnalyses__HappyPath() throws Exception {
         String morpheme = "gaq/2vv";
         String word = "makpigarni";
-        Double freq2vv = morphemeSearcher.morphFreqInAnalyses(morpheme, word, true);
+        String bestDecomp = "{makpi:makpiq/1v}{gar:gaq/1vn}{ni:ni/tn-loc-p}";
+        String[][] sampleDecomps = new String[][] {
+			new String[]{"makpiq/1v", "gaq/1vn", "tn-loc-p"},
+			new String[]{"makpiq/1v", "gaq/1vn", "tn-loc-s-2s"}
+		};
+        Long freq = new Long(10);
+		WordWithMorpheme morphExample =
+			new WordWithMorpheme(word, morpheme, bestDecomp, freq, sampleDecomps);
+        Double freq2vv = morphemeSearcher.morphFreqInAnalyses(morphExample, true);
 
         morpheme = "gaq/1vn";
-        Double freq1vn = morphemeSearcher.morphFreqInAnalyses(morpheme, word, true);
+		morphExample =
+			new WordWithMorpheme(word, morpheme, bestDecomp, freq, sampleDecomps);
+        Double freq1vn = morphemeSearcher.morphFreqInAnalyses(morphExample, true);
         
-        Assert.assertTrue("Frequency of gaq/1vn should have been much higher than frequency of gaq/2vv.", freq1vn > 1.5*freq2vv);
+        Assert.assertTrue(
+			"Frequency of gaq/1vn should have been much higher than frequency of gaq/2vv.",
+			freq1vn > 1.5 * freq2vv);
     }
 
 	@Test

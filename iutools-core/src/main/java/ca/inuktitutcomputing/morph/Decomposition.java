@@ -629,6 +629,19 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
         return surfaceForms;
     }
 
+    public static String[][] decomps2morphemes(Decomposition[] decompObjects) {
+		String[][] decomps = null;
+		if (decompObjects != null) {
+			decomps = new String[decompObjects.length][];
+			for (int ii=0; ii < decompObjects.length; ii++) {
+				String[] aDecomp =
+					decompstr2morphemes(decompObjects[ii].toString());
+				decomps[ii] = aDecomp;
+			}
+		}
+		return decomps;
+	}
+
 	public static String[][] decomps2morphemes(List<String> decompStrings) {
 		String[][] decompsMorphemes = new String[decompStrings.size()][];
 		int pos = 0;

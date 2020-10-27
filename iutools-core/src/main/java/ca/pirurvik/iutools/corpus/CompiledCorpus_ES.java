@@ -169,7 +169,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
             WordWithMorpheme aWord =
                 new WordWithMorpheme(
                     winfo.word, morphId, topDecomp,
-                    winfo.frequency);
+                    winfo.frequency, winfo.decompositionsSample);
             words.add(aWord);
         }
 

@@ -5,22 +5,29 @@ public class WordWithMorpheme {
 	public String morphemeId;
 	public String decomposition;
 	public Long frequency;
-	
-	public WordWithMorpheme(String _word, String _morphId, String _decomp, Long _freq) {
-		init_WordWithMorpheme(_word, _morphId, _decomp, _freq);
+	public String[][] decompsSample;
+
+	public WordWithMorpheme(String _word, String _morphId, String _decomp,
+		Long _freq) {
+		init_WordWithMorpheme(_word, _morphId, _decomp, _freq,
+			(String[][])null);
 	}
 
-	public WordWithMorpheme(String _word, String _morphId, String _decomp, long _freq) {
-		init_WordWithMorpheme(_word, _morphId, _decomp, new Long(_freq));
+	public WordWithMorpheme(String _word, String _morphId, String _decomp,
+		long _freq, String[][] _decompsSample) {
+		init_WordWithMorpheme(_word, _morphId, _decomp, new Long(_freq),
+			_decompsSample);
 	}
 	
-	private void init_WordWithMorpheme(String _word, String _morphId, String _decomp, Long _freq) {
+	private void init_WordWithMorpheme(String _word, String _morphId,
+		String _topDecomp, Long _freq, String[][] _decompsSample) {
 		this.word = _word;
 		if (_morphId != null) {
 			_morphId = _morphId.replaceAll("(^\\{|\\}$)", "");
 		}
 		this.morphemeId = _morphId;
-		this.decomposition = _decomp;
+		this.decomposition = _topDecomp;
 		this.frequency = _freq;
+		this.decompsSample = _decompsSample;
 	}
 }
