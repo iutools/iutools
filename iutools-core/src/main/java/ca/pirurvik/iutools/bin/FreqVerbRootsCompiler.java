@@ -1,4 +1,4 @@
-package ca.pirurvik.iutools.utilbin;
+package ca.pirurvik.iutools.bin;
 
 import java.io.File;
 import java.lang.invoke.MethodHandles;
@@ -19,7 +19,6 @@ import ca.nrc.datastructure.Pair;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.TrieNode;
-import ca.nrc.datastructure.trie.Trie_InMemory;
 import ca.nrc.json.PrettyPrinter;
 
 public class FreqVerbRootsCompiler {

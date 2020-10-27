@@ -1,4 +1,4 @@
-package ca.pirurvik.iutools.utilbin;
+package ca.pirurvik.iutools.bin;
 
 import java.io.File;
 import java.lang.invoke.MethodHandles;
@@ -6,14 +6,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 import org.apache.log4j.Logger;
 
 import ca.inuktitutcomputing.script.Orthography;
 import ca.inuktitutcomputing.script.Syllabics;
-import ca.nrc.datastructure.trie.StringSegmenterException;
-import ca.pirurvik.iutools.corpus.CompiledCorpusException;
 import ca.pirurvik.iutools.corpus.CorpusDocument_File;
 import ca.pirurvik.iutools.corpus.CorpusReader_Directory;
 import ca.pirurvik.iutools.text.segmentation.IUTokenizer;

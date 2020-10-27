@@ -1,4 +1,4 @@
-package ca.pirurvik.iutools.utilbin;
+package ca.pirurvik.iutools.bin;
 
 import java.io.BufferedWriter;
 import java.io.File;

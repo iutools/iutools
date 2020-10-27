@@ -1,4 +1,4 @@
-package ca.pirurvik.iutools.utilbin;
+package ca.pirurvik.iutools.bin;
 
 public class SystemEncoding {
 	
