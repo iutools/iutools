@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
 import ca.nrc.json.PrettyPrinter;
+import ca.pirurvik.iutools.corpus.*;
 import org.apache.log4j.Logger;
 
 import ca.inuktitutcomputing.data.LinguisticDataException;
@@ -21,10 +22,6 @@ import ca.inuktitutcomputing.morph.Decomposition.DecompositionExpression;
 import ca.inuktitutcomputing.morph.MorphInukException;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzerException;
-import ca.pirurvik.iutools.corpus.WordInfo;
-import ca.pirurvik.iutools.corpus.WordWithMorpheme;
-import ca.pirurvik.iutools.corpus.CompiledCorpusException;
-import ca.pirurvik.iutools.corpus.CompiledCorpus;
 
 public class MorphemeSearcher {
 	
@@ -32,7 +29,12 @@ public class MorphemeSearcher {
 	protected int nbWordsToBeDisplayed = 20;
 	protected int maxNbInitialCandidates = 100;
 	
-	public MorphemeSearcher() {
+	public MorphemeSearcher() throws MorphemeSearcherException {
+		try {
+			useCorpus(CompiledCorpusRegistry.getCorpusWithName_ES());
+		} catch (IOException |CompiledCorpusRegistryException e) {
+			throw new MorphemeSearcherException(e);
+		}
 	}
 	
 	public void useCorpus(CompiledCorpus _corpus) throws IOException {
@@ -166,7 +168,6 @@ public class MorphemeSearcher {
 					// scored example and continue with next word
 				}
 			}
-//			Collections.sort(scoredExamples);
 			Collections.sort(scoredExamples, ScoredExamplesComparator);
 				
 			morphids2scoredExamples.put(morphId, scoredExamples);

@@ -5,16 +5,15 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
 import ca.pirurvik.iutools.concordancer.DocAlignment.Problem;
-import ca.pirurvik.iutools.text.segmentation.IUTokenizer;
 import ca.nrc.data.harvesting.LanguageGuesser;
 import ca.nrc.data.harvesting.LanguageGuesserException;
-import ca.nrc.data.harvesting.PageHarvester;
 import ca.nrc.data.harvesting.PageHarvester_HtmlCleaner;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.string.StringUtils;
@@ -87,7 +86,27 @@ public class WebConcordancer {
 		
 		return alignment;
 	}
-	
+
+	protected DocAlignment fetchParallelPages(DocAlignment alignment) {
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.concordancer.fetchParallelPages");
+
+		Pair<String,String> langs = langAndOtherLang(alignment);
+
+		URL langURL = alignment.getPageURL(langs.getFirst());
+		harvestInputPage(langURL, alignment, alignment.getLanguages());
+
+		trace(tLogger, "After fetching input URL", alignment,
+				AlignmentPart.PROBLEMS, AlignmentPart.SENTENCES);
+
+		if (!alignment.encounteredSomeProblems()) {
+			harvestOtherLangPage(alignment);
+			trace(tLogger, "After fetching input URL", alignment,
+				AlignmentPart.PROBLEMS, AlignmentPart.SENTENCES);
+		}
+
+		return alignment;
+	}
+
 	private void trace(Logger tLogger, String mess, 
 		DocAlignment alignment, AlignmentPart... alignmentParts ) {
 		if (tLogger.isTraceEnabled()) {
@@ -243,7 +262,7 @@ public class WebConcordancer {
 		return result;
 	}
 
-	private void harvestOtherLangPage(DocAlignment alignment) {
+	protected void harvestOtherLangPage(DocAlignment alignment) {
 		if (alignment.encounteredSomeProblems()) {
 			return;
 		}
@@ -287,7 +306,7 @@ public class WebConcordancer {
 		int filledCount = 0;
 		
 		for (String lang: alignment.getLanguages()) {
-			if (alignment.getPageContent(lang) == null) {
+			if (alignment.getPageURL(lang) == null) {
 				unfilledLang = lang;
 			} else {
 				filledLang = lang;
@@ -381,6 +400,11 @@ public class WebConcordancer {
 		}
 		
 		return status;
+	}
+
+	private void harvestInputPage(URL url, DocAlignment alignment,
+		Set<String> languages) {
+		harvestInputPage(url, alignment, languages.toArray(new String[0]));
 	}
 
 	private void harvestInputPage(URL url, DocAlignment alignment, 
