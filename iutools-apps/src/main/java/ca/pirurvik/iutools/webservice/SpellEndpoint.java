@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.spellchecker.SpellChecker_ES;
 import org.apache.log4j.Logger;
 
@@ -42,7 +43,7 @@ public class SpellEndpoint extends HttpServlet {
 		if (checker == null) {
 			try {
 				checker =
-					new SpellChecker_ES("hansard-1999-2002.v2020-10-06")
+					new SpellChecker_ES(CompiledCorpusRegistry.defaultESCorpusName)
 					.enablePartialCorrections();
 			} catch (StringSegmenterException e) {
 				throw new SpellCheckerException(e);

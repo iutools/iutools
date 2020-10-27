@@ -36,8 +36,8 @@ public class OccurenceSearchEndpointTest {
 	@Test
 	public void test__OccurenceSearchEndpoint__HappyPath() throws Exception {
 		String[] corpusWords = new String[] {
-				"ujaraqsiurnirmik", "aanniasiuqtiit", "iglumik", "tuktusiuqti"
-				};
+			"ujaraqsiurnirmik", "aanniasiuqtiit", "iglumik", "tuktusiuqti"
+		};
         CompiledCorpus_InMemory compiledCorpus = new CompiledCorpus_InMemory(StringSegmenter_IUMorpheme.class.getName());
 		File tempFile = File.createTempFile("compiled_corpus", ".json");
 		compiledCorpus.addWordOccurences(corpusWords);
@@ -45,7 +45,7 @@ public class OccurenceSearchEndpointTest {
 		CompiledCorpusRegistry.registerCorpus("compiled_corpus", tempFile);
 
 		OccurenceSearchInputs occurenceInputs = 
-				new OccurenceSearchInputs("siuq","compiled_corpus","2");
+			new OccurenceSearchInputs("siuq","compiled_corpus","2");
 		
 		MockHttpServletResponse response = 
 				IUTServiceTestHelpers.postEndpointDirectly(

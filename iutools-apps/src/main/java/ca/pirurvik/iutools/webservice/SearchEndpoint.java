@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import ca.pirurvik.iutools.morphrelatives.MorphRelativesFinder_ES;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,17 +25,12 @@ import ca.nrc.json.PrettyPrinter;
 import ca.pirurvik.iutools.morphrelatives.MorphRelativesFinderException;
 import ca.pirurvik.iutools.morphrelatives.MorphRelativesFinder;
 import ca.pirurvik.iutools.morphrelatives.MorphologicalRelative;
-import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
-import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
-import ca.pirurvik.iutools.corpus.CompiledCorpusRegistryException;
 import ca.pirurvik.iutools.search.IUSearchEngine;
 import ca.pirurvik.iutools.search.SearchHit;
 
 
 public class SearchEndpoint extends HttpServlet {
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = -4670287970764735344L;
 	EndPointHelper helper = null;
 	

@@ -79,21 +79,12 @@ public class OccurenceSearchEndpoint extends HttpServlet {
 
 		// Retrieve all words that match the wordPattern
 		// and put the results in results.matchingWords
-//			List<Pair<String,List<String>>> wordsForMorphemes = getOccurrences(inputs);
-		HashMap<String, MorphemeSearchResult> wordsForMorphemes = getOccurrences(inputs, corpusName);
-//			Gson gson = new Gson();
-//			String str = gson.toJson(wordsForMorphemes, HashMap.class);
-//			logger.trace("results in json: "+str);
-//			results.matchingWords = str;
+		HashMap<String, MorphemeSearchResult> wordsForMorphemes =
+			getOccurrences(inputs, corpusName);
 		results.matchingWords = wordsForMorphemes;
 
 		return results;
 	}
-
-	/*private CompiledCorpus getCorpus(String corpusName) throws ConfigException, CompiledCorpusRegistryException {
-		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpus(corpusName);
-		return corpus;
-	}*/
 
 	private HashMap<String,MorphemeSearchResult> getOccurrences(
 			OccurenceSearchInputs inputs, String corpusName)
@@ -108,7 +99,8 @@ public class OccurenceSearchEndpoint extends HttpServlet {
 			MorphemeSearcher morphExtractor = new MorphemeSearcher();
 
 			tLogger.trace("Loading the corpus");
-			CompiledCorpus compiledCorpus = new CompiledCorpus_ES("hansard-1999-2002.v2020-10-06");
+			CompiledCorpus compiledCorpus =
+				new CompiledCorpus_ES(CompiledCorpusRegistry.defaultESCorpusName);
 			morphExtractor.useCorpus(compiledCorpus);
 			tLogger.trace("Using corpus of type="+compiledCorpus.getClass());
 
