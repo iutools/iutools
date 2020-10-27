@@ -82,7 +82,7 @@ public class AssertSpellingCorrection {
         return this;
     }
 
-    public AssertSpellingCorrection providesSuggestions(String[] expSugg)
+    public AssertSpellingCorrection providesSuggestions(String... expSugg)
             throws Exception {
         AssertObject.assertDeepEquals(
                 baseMessage+"\nSuggestions were not as expected for word "+

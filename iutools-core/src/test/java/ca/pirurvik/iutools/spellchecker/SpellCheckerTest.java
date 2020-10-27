@@ -6,16 +6,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import ca.inuktitutcomputing.config.IUConfig;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.testing.*;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 
+import ca.pirurvik.iutools.corpus.CompiledCorpus_ES;
+import ca.pirurvik.iutools.corpus.RW_CompiledCorpus;
 import org.junit.*;
 
-public abstract class SpellCheckerTest {
+public class SpellCheckerTest {
 
-	protected abstract SpellChecker largeDictChecker() throws Exception;
-	protected abstract SpellChecker smallDictChecker() throws Exception;
+	private static final String emptyCorpusName = "empty-corpus";
 
 	protected SpellChecker checkerSyll = null;
 	
@@ -26,6 +28,61 @@ public abstract class SpellCheckerTest {
 		"nunavut", "inuktitut"
 	};
 
+	@Before
+	public void setUp() throws Exception {
+		// Make sure the ES indices are empty for the empty corpus name
+		clearESIndices(new SpellChecker_ES(emptyCorpusName));
+	}
+
+	protected SpellChecker largeDictChecker() throws Exception {
+		SpellChecker checker = new SpellChecker_ES(CompiledCorpusRegistry.defaultESCorpusName);
+		return checker;
+	}
+
+	protected SpellChecker smallDictChecker() throws Exception {
+		SpellChecker checker = new SpellChecker_ES(emptyCorpusName);
+		return checker;
+	}
+
+	private void clearESIndices(SpellChecker_ES checker) throws Exception {
+		if (!checker.corpusIndexName().equals(emptyCorpusName)) {
+			throw new Exception(
+					"You are only allowed to clear the ES index that corresponds to a corpus that is meant to be initially empty!!");
+		}
+
+		CompiledCorpus_ES corpus = (CompiledCorpus_ES) checker.corpus;
+		corpus.deleteAll(true);
+
+		corpus = (CompiledCorpus_ES) checker.explicitlyCorrectWords;
+		corpus.deleteAll(true);
+
+		Thread.sleep(100);
+
+		return;
+	}
+
+	protected SpellChecker makeCheckerEmptyDict() throws Exception {
+		SpellChecker checker = new SpellChecker(emptyESCorpus());
+		checker.setVerbose(false);
+		return checker;
+	}
+
+	protected CompiledCorpus_ES largeESCorpus() throws Exception {
+		CompiledCorpus_ES corpus =
+				(CompiledCorpus_ES) RW_CompiledCorpus.read(largeESCorpusFile(), CompiledCorpus_ES.class);
+		return corpus;
+	}
+
+	protected File largeESCorpusFile() throws Exception {
+		File corpusFile = new File(IUConfig.getIUDataPath("data/compiled-corpuses/HANSARD-1999-2002.ES.json"));
+		return corpusFile;
+	}
+
+	protected CompiledCorpus_ES emptyESCorpus() throws Exception {
+		CompiledCorpus_ES corpus = new CompiledCorpus_ES("empty-corpus");
+		corpus.deleteAll(true);
+		return corpus;
+	}
 
 	protected SpellChecker largeDictCheckerWithTestWords() throws Exception {
 		SpellChecker checker = largeDictChecker();
@@ -41,12 +98,6 @@ public abstract class SpellCheckerTest {
 		return checker;
 	}
 
-	protected SpellChecker makeCheckerEmptyDict() throws Exception {
-		SpellChecker checker = new SpellChecker(CompiledCorpusRegistry.emptyCorpusName);
-		checker.setVerbose(false);
-		return checker;
-	}
-
 	private void addCorrectWordsLatin(SpellChecker checker) throws Exception {
 		for (String aWord: correctWordsLatin) {
 			checker.addExplicitlyCorrectWord(aWord);
@@ -58,7 +109,7 @@ public abstract class SpellCheckerTest {
 		}
 	}
 
-	@Test(expected=SpellCheckerException.class) 
+	@Test(expected=SpellCheckerException.class)
 	public void test__SpellChecker__Synopsis() throws Exception {
 		//
 		// Before you can use a spell checker, you must first build its

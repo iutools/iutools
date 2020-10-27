@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import ca.nrc.dtrc.elasticsearch.StreamlinedClient;
+import ca.pirurvik.iutools.corpus.CompiledCorpus_ES;
+import ca.pirurvik.iutools.corpus.CompiledCorpus_ESTest;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -16,17 +19,24 @@ import ca.nrc.string.StringUtils;
 import ca.nrc.testing.AssertHelpers;
 import ca.nrc.testing.AssertNumber;
 
-public abstract class SpellCheckerAccuracyTest {
-
-    protected abstract SpellChecker makeLargeDictChecker() throws Exception;
-    protected abstract SpellChecker makeEmptyDictChecker() throws Exception;
+public class SpellCheckerAccuracyTest {
 
     SpellChecker checkerLargeDict = null;
 
     private static DecimalFormat df2 = new DecimalFormat("#.##");
 
-    protected String usingCorpus() {
-        return "Hansard1999-2002";
+    protected SpellChecker makeLargeDictChecker() throws Exception {
+        SpellChecker_ES checker = new SpellChecker_ES();
+        return checker;
+    }
+
+    protected SpellChecker makeEmptyDictChecker() throws Exception {
+        String indexName = CompiledCorpus_ESTest.testIndex;
+        new StreamlinedClient(indexName).deleteIndex();
+        CompiledCorpus_ES corpus = new CompiledCorpus_ES(indexName);
+        SpellChecker_ES checker = new SpellChecker_ES(indexName);
+
+        return checker;
     }
 
     //

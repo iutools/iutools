@@ -144,6 +144,23 @@ public class WebConcordancerTest {
 	}
 
 	@Test
+	public void test__fetchParallelPages__HappyPath() throws Exception {
+		// The English URL for this IU url is:
+		//
+		//   https://www.gov.nu.ca/
+		//
+		URL url = new URL("https://www.gov.nu.ca/");
+		DocAlignment pageAligment =
+			new DocAlignment("en", "iu")
+			.setPageURL("en", url);
+
+		new WebConcordancer().fetchParallelPages(pageAligment);
+		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
+			.urlForLangEquals("iu", new URL("https://www.gov.nu.ca/iu"))
+			;
+	}
+
+	@Test
 	public void test__langPairUnfilledSecond__HappyPath() throws Exception {
 		DocAlignment alignment = 
 				new DocAlignment("en", "iu").setPageContent("en", "Hello");

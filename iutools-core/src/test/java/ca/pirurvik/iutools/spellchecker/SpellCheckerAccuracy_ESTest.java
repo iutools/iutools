@@ -6,11 +6,12 @@ import ca.pirurvik.iutools.corpus.CompiledCorpus_ESTest;
 import org.junit.Before;
 import org.junit.Ignore;
 
+@Ignore
 public class SpellCheckerAccuracy_ESTest extends SpellCheckerAccuracyTest {
 
     @Override
     protected SpellChecker makeLargeDictChecker() throws Exception {
-        SpellChecker_ES checker = new SpellChecker_ES("hansard-1999-2002.v2020-10-06");
+        SpellChecker_ES checker = new SpellChecker_ES();
         return checker;
     }
 
@@ -23,10 +24,4 @@ public class SpellCheckerAccuracy_ESTest extends SpellCheckerAccuracyTest {
 
         return checker;
     }
-
-    @Override
-    protected String usingCorpus() {
-        return "HANSARD-1999-2002.v2020-10-06.ES";
-    }
-
 }

@@ -9,21 +9,22 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import ca.inuktitutcomputing.utilities.StopWatch;
+import ca.nrc.datastructure.trie.MockStringSegmenter_IUMorpheme;
+import ca.nrc.dtrc.elasticsearch.StreamlinedClient;
+import ca.nrc.testing.AssertNumber;
 import ca.pirurvik.iutools.corpus.*;
 import org.junit.Test;
 
-import ca.pirurvik.iutools.morphemesearcher.MorphemeSearcher;
-import ca.pirurvik.iutools.morphemesearcher.ScoredExample;
 import ca.pirurvik.iutools.morphemesearcher.MorphemeSearcher.Bin;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.*;
 
-public abstract class MorphemeSearcherTest {
-	
-	protected abstract CompiledCorpus makeCorpus() throws CompiledCorpusException, Exception;
-	
-	private MorphemeSearcher morphemeSearcher = new MorphemeSearcher();
+public class MorphemeSearcherTest {
+
+
+	private MorphemeSearcher morphemeSearcher = null;
 	private CompiledCorpus smallCorpus;
 	
 	@Before
@@ -31,8 +32,18 @@ public abstract class MorphemeSearcherTest {
         smallCorpus = makeCorpus();
         smallCorpus.addWordOccurences(
         	new String[] {"inuit", "nunami", "iglumik", "inuglu"});
+		morphemeSearcher = new MorphemeSearcher();
         morphemeSearcher.useCorpus(smallCorpus);
 	}
+
+	protected CompiledCorpus makeCorpus() throws Exception {
+		String indexName = CompiledCorpus_ESTest.testIndex;
+		new StreamlinedClient(indexName).deleteIndex();
+		CompiledCorpus corpus = new CompiledCorpus_ES(indexName);
+		corpus.setSegmenterClassName(MockStringSegmenter_IUMorpheme.class.getName());
+		return corpus;
+	}
+
 	
 	@Test
 	public void test__MorphemeExtractor__Synopsis() throws Exception {
@@ -75,7 +86,6 @@ public abstract class MorphemeSearcherTest {
 		}
 	}
 	
-	@Test(expected=Exception.class)
 	public void test__MorphemeExtractor__Synopsis__No_corpus_defined() throws Exception {
 		MorphemeSearcher morphemeExtractor = new MorphemeSearcher();
 		String morpheme = "nunami";
@@ -86,7 +96,45 @@ public abstract class MorphemeSearcherTest {
 	 * VERIFICATION TESTS
 	 * @throws Exception 
 	 **********************************/
-	
+
+	@Test @Ignore
+	public void test__wordsContainingMorpheme__SpeedTest() throws Exception {
+		MorphemeSearcher morphemeSearcher = new MorphemeSearcher();
+		String[] morphemes = new String[] {"inuk", "tut", "siuq"};
+		long start = StopWatch.nowMSecs();
+		for (String morpheme: morphemes) {
+			List<MorphSearchResults> wordsForMorphemes =
+					morphemeSearcher.wordsContainingMorpheme(morpheme);
+		}
+		double elapsedSecs = StopWatch.elapsedMsecsSince(start) / 1000.0;
+		double avgSecs = elapsedSecs / morphemes.length;
+		AssertNumber.performanceHasNotChanged(
+	"Average secs per morpheme", avgSecs, -1.0, 0.2, false);
+
+		String canonicalMorpheme = "nunami";
+		List<MorphSearchResults> wordsForMorphemes =
+				morphemeSearcher.wordsContainingMorpheme(canonicalMorpheme);
+
+		// You can then loop through the explicit morphemes found
+		//
+		for (MorphSearchResults aMorpheme: wordsForMorphemes) {
+			// This is the non-canonical ID of a morpheme that matches
+			// the canonical one.
+			String morphID = aMorpheme.morphemeWithId;
+
+			// This is sample of words that are "good" examples of
+			// use of the morpheme.
+			List<ScoredExample> scoredExamples = aMorpheme.words;
+			for (ScoredExample anExample: scoredExamples) {
+				// This is the word
+				String word = anExample.word;
+
+				// This is the word's frequency
+				long freq = anExample.frequency;
+			}
+		}
+	}
+
 	@Test
 	public void test__wordsContainingMorpheme__root() throws Exception {
 		String morpheme = "inuk";

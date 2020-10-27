@@ -14,17 +14,16 @@ public class MorphRelativesFinderAccuracyTest {
 	public void test__findRelatives__QuickAccuracyTest() throws Exception {
 		PerformanceExpectations expectations =
 			new PerformanceExpectations()
-				// This test should run in 20 secs give or take 5 secs
-				.setTargetRuntimeSecs(4, 2)
+				// Each morpheme should run in about 1.5 secs, give or take 0.5
+				.setTargetRuntimeSecs(1.5, 0.5)
 
-				.setTargetPrecision(0.54)
+				.setTargetPrecision(0.57)
 				.setTargetRecall(0.47)
 				.setPrecRecTolerance(0.02)
 			;
 
 		evaluatePerformance(expectations, 10);
 	}
-
 
 	@Test
 	public void test__MorphRelativesFinderAccuracy() throws Exception {
@@ -37,7 +36,7 @@ public class MorphRelativesFinderAccuracyTest {
 			.setTargetPrecision(0.6314)
 			.setTargetRecall(0.4707)
 			.setPrecRecTolerance(0.015)
-			// Each word should take on average 5 secs, give or take 1 sec
+			// Each word should take on average 2 secs, give or take 1 sec
 			.setTargetRuntimeSecs(2 , 1)
 			;
 
