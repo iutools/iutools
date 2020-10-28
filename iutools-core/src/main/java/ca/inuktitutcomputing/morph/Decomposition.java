@@ -57,6 +57,8 @@ import ca.inuktitutcomputing.script.Orthography;
 
 public class Decomposition extends Object implements Comparable<Decomposition> {
 
+	public static enum MorphFormat {WITH_BRACES, NO_BRACES};
+
 	String word;
 	RootPartOfComposition stem;
 	public AffixPartOfComposition[] morphParts;
@@ -91,6 +93,46 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 		}
 		morphParts = parts;
 		//stem.terme = word.substring(0,nextPos);
+	}
+
+	public static String formatDecompStr(String decompStr) {
+		return formatDecompStr(decompStr, null);
+	}
+
+	public static String formatDecompStr(String decompStr, MorphFormat format) {
+		if (format == null) {
+			format = MorphFormat.WITH_BRACES;
+		}
+
+		// Remove leading and trailing spaces
+		decompStr = decompStr.replaceAll("(^\\s+|\\s+$)", "");
+		// Replace multiple spaces by a single one
+		decompStr = decompStr.replaceAll("\\s+", " ");
+		if (format == MorphFormat.NO_BRACES) {
+			// Remove braces
+			decompStr = decompStr.replaceAll("[\\{\\}]", "");
+		} else {
+			// Insert braces before and after single spaces
+			decompStr = decompStr.replaceAll(" ", "} {");
+			// Add a brace and the start and end, and make sure we didn't end up
+			// putting double braces
+			decompStr = "{"+decompStr+"}";
+			decompStr = decompStr.replaceAll("\\{\\{", "{");
+			decompStr = decompStr.replaceAll("\\}\\}", "}");
+
+			// Ensure there is a space between braces
+			decompStr = decompStr.replaceAll("\\}\\{", "} {");
+		}
+
+		return decompStr;
+	}
+
+	public static String decompStrWithBraces(String decompStr) {
+		decompStr = decompStr
+			.replaceAll("^\\{*?\\s*", "\\{");
+		decompStr = decompStr.replaceAll("^\\s*\\{\\s*", "");
+		decompStr = decompStr.replaceAll("\\s*\\}\\s*$", "");
+		return decompStr;
 	}
 
 	public RootPartOfComposition getRootMorphpart() {

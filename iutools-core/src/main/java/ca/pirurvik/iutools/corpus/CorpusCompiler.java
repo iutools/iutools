@@ -1,17 +1,14 @@
 package ca.pirurvik.iutools.corpus;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.nio.file.Files;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ca.nrc.ui.commandline.ProgressMonitor;
+import ca.nrc.ui.commandline.ProgressMonitor_Terminal;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -30,7 +27,6 @@ import ca.pirurvik.iutools.text.segmentation.IUTokenizer;
 
 public class CorpusCompiler {
 	
-//	public static enum CompilationOption {FROM_SCRATCH, FREQUENCIES_ONLY, LENIENT_DECOMPS};
 	public static enum CompileWhat {FREQUENCIES, DECOMPOSITIONS, ALL};
 
 	protected boolean verbose = true;
@@ -410,43 +406,104 @@ public class CorpusCompiler {
 		return words;
 	}
 
-	public void updateWordDecompositions(File decompsFile) throws CompiledCorpusException {
+	public void updateWordDecompositions(File decompsFile, File corpusOutputFile)
+			throws CorpusCompilerException {
 		ObjectStreamReader reader = null;
 		try {
 			reader = new ObjectStreamReader(decompsFile);
 			reader.setEndOfBodyMarker("NEW_LINE");
 		} catch (FileNotFoundException | ObjectStreamReaderException e) {
-			throw new CompiledCorpusException(
+			throw new CorpusCompilerException(
 				"Cannot open the decompositions file "+decompsFile, e);
 		}
-		
-		while (true) {
-			Map<String,Object> wordDecompInfo;
+
+		ProgressMonitor progMonitor =
+			makeLinesProgressMonitor(
+				decompsFile,
+				"Updating morphological decomp of words");
+
+		int lineCounter = 0;
+		FileWriter fileWriter = null;
+		try {
+			fileWriter = new FileWriter(corpusOutputFile);
+			writeJsonFileHeaders(fileWriter);
+			while (true) {
+				lineCounter++;
+				progMonitor.stepCompleted();
+				Map<String, Object> wordDecompInfo;
+				try {
+					wordDecompInfo = (Map<String, Object>) reader.readObject();
+				} catch (ClassNotFoundException | IOException | ObjectStreamReaderException e) {
+					throw new CorpusCompilerException(
+						"Error reading Map<Strin,Object> from decompositions file " +
+						decompsFile, e);
+				}
+				if (wordDecompInfo == null) {
+					break;
+				}
+
+				String word = (String) wordDecompInfo.get("word");
+				WordInfo winfo = corpus.info4word(word);
+				if (winfo == null) {
+					toConsole("Skipping word " + word);
+				} else {
+					toConsole("Updating decompositions for word " + word);
+					List<String> decompStrings = (List<String>) wordDecompInfo.get("decompositions");
+					String[][] decomps = Decomposition.decomps2morphemes(decompStrings);
+					Integer totalDecomps = new Integer(0);
+					if (decomps != null && decomps.length > 0) {
+						totalDecomps = new Integer(decomps.length);
+						int sampleSize = Math.min(decomps.length, 9);
+						decomps = Arrays.copyOfRange(decomps, 0, sampleSize);
+					}
+					winfo.setDecompositions(decomps, totalDecomps);
+					writeWinfo(winfo, fileWriter);
+				}
+			}
+
+			// This will force recreation of the morphemes ngram trie
+			toConsole("Regenerating the morpheme ngram trie. This could take a while...");
+			corpus.getMorphNgramsTrie();
+			toConsole("DONE regenerating the morpheme ngram trie.");
+		} catch (CompiledCorpusException | IOException e) {
+			throw new CorpusCompilerException(e);
+		} finally {
 			try {
-				wordDecompInfo = (Map<String, Object>) reader.readObject();
-			} catch (ClassNotFoundException | IOException | ObjectStreamReaderException e) {
-				throw new CompiledCorpusException(
-					"Error reading Map<Strin,Object> from decompositions file "+
-					decompsFile, e);
-			}
-			if (wordDecompInfo == null) {
-				break;
-			}
-			
-			String word = (String) wordDecompInfo.get("word");			
-			if (!corpus.containsWord(word)) {
-				toConsole("Skipping word "+word);
-			} else {
-				toConsole("Updating decompositions for word "+word);
-				List<String> decompStrings = (List<String>) wordDecompInfo.get("decompositions");
-				String[][] decomps = Decomposition.decomps2morphemes(decompStrings);
-				corpus.updateWordDecompositions(word, decomps);
+				fileWriter.close();
+			} catch (IOException e) {
+				throw new RuntimeException(e);
 			}
 		}
-		
-		// This will force recreation of the morphemes ngram trie
-		toConsole("Regenerating the morpheme ngram trie. This could take a while...");
-		corpus.getMorphNgramsTrie();
-		toConsole("DONE regenerating the morpheme ngram trie.");
+	}
+
+	private void writeJsonFileHeaders(FileWriter fileWriter) throws CorpusCompilerException {
+		try {
+			fileWriter.write("bodyEndMarker=BLANK_LINE\n" +
+					"class=ca.pirurvik.iutools.corpus.WordInfo_ES\n\n");
+		} catch (IOException e) {
+			throw new CorpusCompilerException(e);
+		}
+	}
+
+	private void writeWinfo(WordInfo winfo, FileWriter fileWriter) throws CorpusCompilerException {
+		String json = PrettyPrinter.print(winfo);
+		try {
+			fileWriter.write(json+"\n\n");
+		} catch (IOException e) {
+			throw new CorpusCompilerException(e);
+		}
+	}
+
+	private ProgressMonitor makeLinesProgressMonitor(File file, String mess) throws CorpusCompilerException {
+		ProgressMonitor_Terminal monitor = null;
+		try {
+			System.out.println("\nCounting lines in file:\n  "+file);
+			long lineCount = Files.lines(file.toPath()).count();
+			System.out.println("There are "+lineCount+" to be processed in Counting lines in file:\n  "+file);
+			monitor = new ProgressMonitor_Terminal(lineCount, mess, 30);
+		} catch (IOException e) {
+			throw new CorpusCompilerException(e);
+		}
+		return monitor;
 	}
 }

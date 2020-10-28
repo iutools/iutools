@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import ca.inuktitutcomputing.morph.Decomposition;
 import org.apache.commons.lang3.tuple.Triple;
 import org.junit.Assert;
 
@@ -140,13 +141,16 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 		String morpheme, Triple<String,String,String>... expWordsArr) throws Exception {
 		Set<Triple<String,String,String>> expWords = new HashSet<Triple<String,String,String>>();
 		Collections.addAll(expWords, expWordsArr);
-		List<WordWithMorpheme> gotWordWithMorph = corpus().wordsContainingMorpheme(morpheme);
+		List<WordWithMorpheme> gotWordWithMorph =
+			corpus().wordsContainingMorpheme(morpheme);
 		Set<Triple<String,String,String>> gotWords = new HashSet<Triple<String,String,String>>();
 		for (WordWithMorpheme wrdWithMorph: gotWordWithMorph) {
 			gotWords.add(
 				Triple.of(
-					wrdWithMorph.word, wrdWithMorph.morphemeId, 
-					wrdWithMorph.decomposition));
+					wrdWithMorph.word, wrdWithMorph.morphemeId,
+						Decomposition.formatDecompStr(
+							wrdWithMorph.decomposition,
+							Decomposition.MorphFormat.WITH_BRACES)));
 		}
 		AssertObject.assertDeepEquals(
 			baseMessage+"\nList of words containing morpheme '"+morpheme+"' was wrong", 

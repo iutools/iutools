@@ -1,15 +1,10 @@
 package ca.inuktitutcomputing.morph;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Test;
 
-
-import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.morph.Decomposition.DecompositionExpression;
+import static ca.inuktitutcomputing.morph.Decomposition.MorphFormat;
 
 public class DecompositionTest {
 
@@ -46,4 +41,60 @@ public class DecompositionTest {
 		Assert.assertEquals("",  "umiar;jua;liuq;ti", surfaceForms);
 	}
 
+	@Test
+	public void test__formatDecompStr__WITH_BRACES__InputAlreadyHasBraces()
+		throws Exception {
+		String origDecomp = "{inuk/1n} {tut/1a}";
+		new AssertDecomposition(null, "")
+			.assertFormattedDecompStrEquals(
+				origDecomp, origDecomp, MorphFormat.WITH_BRACES
+			);
+	}
+
+
+	@Test
+	public void test__formatDecompStr__WITH_BRACES__InputAlreadyHasBracesButWithoutSpaces()
+			throws Exception {
+		String origDecomp = "{inuk/1n}{tut/1a}";
+		String expDecomp = "{inuk/1n} {tut/1a}";
+		new AssertDecomposition(null, "")
+			.assertFormattedDecompStrEquals(
+				expDecomp, origDecomp, MorphFormat.WITH_BRACES
+			);
+	}
+
+	@Test
+	public void test__formatDecompStr__WITH_BRACES__InputDoesNotAlreadyHaveBraces()
+			throws Exception {
+		String origDecomp = "inuk/1n tut/1a";
+		String expFormatted = "{inuk/1n} {tut/1a}";
+
+		new AssertDecomposition(null, "")
+			.assertFormattedDecompStrEquals(
+				expFormatted, origDecomp, MorphFormat.WITH_BRACES
+			);
+	}
+
+	@Test
+	public void test__formatDecompStr__NO_BRACES__InputHasBraces()
+			throws Exception {
+		String origDecomp = "{inuk/1n} {tut/1a}";
+		String expDecomp = "inuk/1n tut/1a";
+		new AssertDecomposition(null, "")
+			.assertFormattedDecompStrEquals(
+				expDecomp, origDecomp, MorphFormat.NO_BRACES
+			);
+	}
+
+	@Test
+	public void test__formatDecompStr__NO_BRACES__InputDoesNotHaveBraces()
+			throws Exception {
+		String origDecomp = "inuk/1n tut/1a";
+		String expFormatted = "inuk/1n tut/1a";
+
+		new AssertDecomposition(null, "")
+			.assertFormattedDecompStrEquals(
+				expFormatted, origDecomp, MorphFormat.NO_BRACES
+			);
+	}
 }

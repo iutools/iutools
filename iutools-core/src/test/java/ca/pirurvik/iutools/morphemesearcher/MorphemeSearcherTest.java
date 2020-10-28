@@ -94,7 +94,6 @@ public class MorphemeSearcherTest {
 		
 	/**********************************
 	 * VERIFICATION TESTS
-	 * @throws Exception 
 	 **********************************/
 
 	@Test

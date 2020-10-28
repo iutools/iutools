@@ -1,5 +1,6 @@
 package ca.pirurvik.iutools.corpus;
 
+import ca.inuktitutcomputing.morph.Decomposition;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.dtrc.elasticsearch.*;
 import ca.nrc.dtrc.elasticsearch.request.*;
@@ -158,13 +159,16 @@ public class CompiledCorpus_ES extends CompiledCorpus {
             WordInfo_ES winfo = iter.next().getDocument();
 
             String morphId = null;
-            Matcher morphMatcher =morphPatt.matcher(winfo.topDecompositionStr);
+            Matcher morphMatcher =morphPatt.matcher(winfo.morphemesSpaceConcatenated);
+
             if (morphMatcher.find()) {
                 morphId = morphMatcher.group(2);
             }
 
             String topDecomp =
-                winfo.topDecompositionStr.replaceAll("\\s+", "");
+                Decomposition.formatDecompStr(
+                    winfo.topDecompositionStr,
+                    Decomposition.MorphFormat.WITH_BRACES);
 
             WordWithMorpheme aWord =
                 new WordWithMorpheme(
@@ -618,10 +622,10 @@ public class CompiledCorpus_ES extends CompiledCorpus {
     private SearchResults<WordInfo_ES> esListall() throws CompiledCorpusException {
         SearchResults<WordInfo_ES> allWinfos = null;
         Sort sort = new Sort();
-        sort.sortBy("word", Sort.Order.asc);
+        sort.sortBy("_uid", Sort.Order.asc);
         try {
             allWinfos =
-                esClient().listAll(WORD_INFO_TYPE, winfoPrototype);
+                esClient().listAll(WORD_INFO_TYPE, winfoPrototype, sort);
         } catch (ElasticSearchException e) {
             throw new CompiledCorpusException(e);
         }

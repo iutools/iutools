@@ -26,7 +26,9 @@ import net.loomchild.maligna.ui.console.command.ModifyCommand;
 import net.loomchild.maligna.ui.console.command.ParseCommand;
 
 public class Aligner_Maligna {
-	
+
+	boolean verbose = true;
+
 	int currOrigLine = 0;
 
 	public List<Pair<String,String>> align(List<String> l1Sents, 
@@ -133,6 +135,7 @@ public class Aligner_Maligna {
 		PrintStream output = new PrintStream(bOStream);
 		AbstractCommand command = new ParseCommand(output);
 		String[] args = new String[] {"-c", "txt", l1SentsFile, l2SentsFile};
+		echoCommand(args);
 		command.run(args);
 		
 		
@@ -141,6 +144,7 @@ public class Aligner_Maligna {
 		output = new PrintStream(bOStream);
 		command = new ModifyCommand(input, output);
 		args = new String[] {"-c", "split-sentence"};
+		echoCommand(args);
 		command.run(args);
 		
 		input = pipeToInputStream(bOStream);
@@ -148,6 +152,7 @@ public class Aligner_Maligna {
 		output = new PrintStream(bOStream);
 		command = new ModifyCommand(input, output);
 		args = new String[] {"-c", "trim"};
+		echoCommand(args);
 		command.run(args);
 		
 		input = pipeToInputStream(bOStream);
@@ -155,6 +160,7 @@ public class Aligner_Maligna {
 		output = new PrintStream(bOStream);
 		command = new AlignCommand(input, output);
 		args = new String[] {"-c", "viterbi", "-a", "poisson", "one-to-one", "-n", "word", "-s", "iterative-band"};
+		echoCommand(args);
 		command.run(args);
 		
 		input = pipeToInputStream(bOStream);
@@ -162,7 +168,8 @@ public class Aligner_Maligna {
 		output = new PrintStream(bOStream);
 		command = new FormatCommand(input, output);
 		args = new String[] {"-c", "txt", alignmentsFileFor(l1SentsFile), alignmentsFileFor(l2SentsFile)};
-		command.run(args);		
+		echoCommand(args);
+		command.run(args);
 		
 		computeSentenceNumbersFile(l1SentsFile);
 		computeSentenceNumbersFile(l2SentsFile);
@@ -270,5 +277,15 @@ public class Aligner_Maligna {
 	
 	protected File l2AlignmentFile(File tempDir) {
 		return new File(tempDir, "l2.al");
+	}
+
+	protected void echo(String mess) {
+		if (verbose) {
+			System.out.println(mess);
+		}
+	}
+
+	protected void echoCommand(String[] args) {
+		echo("Running Maligna command: "+String.join(" ", args));
 	}
 }

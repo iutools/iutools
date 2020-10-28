@@ -2,7 +2,6 @@ package ca.pirurvik.iutools.morphrelatives;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.nio.file.Files;
@@ -13,16 +12,14 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.utilities.StopWatch;
-import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.pirurvik.iutools.corpus.*;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
-
-import com.google.gson.Gson;
 
 import ca.nrc.debug.Debug;
 
@@ -62,6 +59,11 @@ public class MorphRelativesFinderEvaluator {
 		throws MorphRelativesFinderException {
 		File goldStandardFile = new File(csvGoldStandardFilePath);
 		init__MorphRelativesFinderEvaluator(null, goldStandardFile);
+	}
+
+	public MorphRelativesFinderEvaluator(MorphRelativesFinder finder,
+		File csvGoldStandardFile) throws MorphRelativesFinderException {
+		init__MorphRelativesFinderEvaluator(finder, csvGoldStandardFile);
 	}
 
 	public void init__MorphRelativesFinderEvaluator(MorphRelativesFinder finder,
@@ -151,12 +153,12 @@ public class MorphRelativesFinderEvaluator {
                     if (focusOnWord != null && !mot.equals(focusOnWord)) {
                     	continue;
                     }
-                    if (verbose) System.out.println("\nProcessing word #"+wordCount+": "+mot+" "+"("+freqMotGoogle+")");
+                    echo("\nProcessing word #"+wordCount+": "+mot+" "+"("+freqMotGoogle+")");
                     if (mot==null) continue;
                     
                     //String decMot = String.join(" ",compiledCorpus.getSegmenter().segment(mot))+" \\";
                     nbTotalCases++;
-                    if (verbose) System.out.println("    Gold Standard reformulations (frequencies in compiled corpus):");
+                    echo("    Gold Standard reformulations (frequencies in compiled corpus):");
                     String[] gsalternatives = (mot+"; "+csvRecord.get(4)).split(";\\s*");
                     String[] gsalternativesMorphemes = new String[gsalternatives.length];
                     List<String> listgsalternatives = Arrays.asList(gsalternatives);
@@ -166,10 +168,12 @@ public class MorphRelativesFinderEvaluator {
                     for (int igs=0; igs<gsalternatives.length; igs++) {	
                     	String gsalternative = gsalternatives[igs];
                     	long freqGSAlternativeInCorpus = freqDansCorpus(gsalternative);
-                    	if (verbose) System.out.println("        "+gsalternative+" : "+freqGSAlternativeInCorpus);
+                    	echo("        "+gsalternative+" : "+freqGSAlternativeInCorpus);
                     	String altDecomp = null;
                     	try {
-                    		altDecomp = String.join(" ",relsFinder.compiledCorpus.decomposeWord(gsalternative));
+                    		altDecomp = String.join(" ", relsFinder.compiledCorpus.decomposeWord(gsalternative));
+							altDecomp =
+								Decomposition.formatDecompStr(altDecomp);
                         	gsalternativesMorphemes[igs] = altDecomp;
                     	} catch (Exception e) {
                     		altDecomp = "";
@@ -177,7 +181,7 @@ public class MorphRelativesFinderEvaluator {
                     }
                     List<String> listgsalternativesmorphemes = Arrays.asList(gsalternativesMorphemes);
                     
-                    if (verbose) System.out.println("    Morphological Relatives found (frequencies in compiled corpus):");
+                    echo("    Morphological Relatives found (frequencies in compiled corpus):");
                     try {
                     	MorphologicalRelative[] expansions = relsFinder.findRelatives(mot);
                     	if ( expansions != null ) {
@@ -188,7 +192,7 @@ public class MorphRelativesFinderEvaluator {
                     		nbTotalExpansionsFromCorpus += expansions.length;
                     		if (expansions.length==0) {
                         		nbTotalCasesWithNoExpansion++;
-                        		if (verbose) System.out.println("        0 expansion");
+                        		echo("        0 expansion");
                     		}
                     		Arrays.sort(expansions, (MorphologicalRelative a, MorphologicalRelative b) ->
                     			{
@@ -201,18 +205,23 @@ public class MorphRelativesFinderEvaluator {
                     			long freqExpansion =expansion.getFrequency();
                     			boolean expansionInGSalternatives = true;
                     			String expansionMorphemes = String.join(" ", expansion.getMorphemes());
+                    			expansionMorphemes = Decomposition.formatDecompStr(expansionMorphemes);
                     			if (computeStatsOverSurfaceForms) {
+                    				String relative = expansion.getWord();
                     				if ( !listgsalternatives.contains(expansion.getWord()) ) {
                     					nbTotalExpansionsNotInGSAlternatives++;
                     					expansionInGSalternatives = false;
-                    				}
+                    					echo("  '"+relative+"' WAS NOT in GS alternatives");
+                    				} else {
+										echo("  '"+relative+"' was in GS alternatives");
+									}
                     			} else {
                     				if ( !listgsalternativesmorphemes.contains(expansionMorphemes) ) {
                     					nbTotalExpansionsNotInGSAlternatives++;
                     					expansionInGSalternatives = false;
                     				}
                     			}
-                    			if (verbose) System.out.println("        "+expansion.getWord()+" : "+freqExpansion+(expansionInGSalternatives? " ***":""));
+                    			echo("        "+expansion.getWord()+" : "+freqExpansion+(expansionInGSalternatives? " ***":""));
                     			listexpansionsmorphemes.add(expansionMorphemes);
                     			listexpansions.add(expansion.getWord());
                     		}
@@ -229,7 +238,7 @@ public class MorphRelativesFinderEvaluator {
                     		logger.debug(mot+" - expansions null");
 							nbTotalCasesWithNoExpansion++;
                     		nbTotalCasesCouldNotBeDecomposed++;
-                    		if (verbose) System.out.println("        the word could not be decomposed.");
+                    		echo("        the word could not be decomposed.");
                     	}
                     } catch(Exception e) {
                     	System.out.println(
@@ -241,7 +250,7 @@ public class MorphRelativesFinderEvaluator {
 			elapsedTime = StopWatch.elapsedMsecsSince(startTime);
 
             for (int igsa=0; igsa<listAllGsAlternatives.size(); igsa++) {
-            	if (verbose) System.out.println((igsa+1)+". "+listAllGsAlternatives.get(igsa));
+            	echo((igsa+1)+". "+listAllGsAlternatives.get(igsa));
             }
             
             if (verbose) {
@@ -259,15 +268,15 @@ public class MorphRelativesFinderEvaluator {
 	            System.out.println("\nTotal number of corpus expansions not in GS alternatives: "+nbTotalExpansionsNotInGSAlternatives);            
             }            
             int nbTotalGoodExpansions = nbTotalExpansionsFromCorpus - nbTotalExpansionsNotInGSAlternatives;
-            if (verbose) System.out.println("\tTotal number of GOOD corpus expansion: "+nbTotalGoodExpansions);
+            echo("\tTotal number of GOOD corpus expansion: "+nbTotalGoodExpansions);
             
             precision = (float)nbTotalGoodExpansions / (float)nbTotalExpansionsFromCorpus;
             recall = (float)nbTotalGoodExpansions / (float)nbTotalGoldStandardAlternatives;
             fmeasure = 2 * precision * recall / (precision + recall);
             
-            if (verbose) System.out.println("Precision = "+precision);
-            if (verbose) System.out.println("Recall = "+recall);
-            if (verbose) System.out.println("F-measure = "+fmeasure);
+            echo("Precision = "+precision);
+            echo("Recall = "+recall);
+            echo("F-measure = "+fmeasure);
             
         } catch(Exception e) {
         	if (verbose) System.err.println(e.getMessage());
@@ -324,5 +333,11 @@ public class MorphRelativesFinderEvaluator {
 
 	public void setRelsFinder(MorphRelativesFinder finder) {
 		this.relsFinder = finder;
+	}
+
+	protected void echo(String mess) {
+		if (verbose) {
+			System.out.println(mess);
+		}
 	}
 }

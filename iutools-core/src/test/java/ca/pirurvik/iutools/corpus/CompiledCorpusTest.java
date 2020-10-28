@@ -390,12 +390,12 @@ public abstract class CompiledCorpusTest {
 				};
 		CompiledCorpus compiledCorpus = makeCorpusUnderTest(StringSegmenter_IUMorpheme.class);
         compiledCorpus.addWordOccurences(stringsOfWords);
-        
+
         new AssertCompiledCorpus(compiledCorpus, "")
         		.wordsContainingMorphemeAre(
         			"lauq", 
-        			Triple.of("sinilauqtuq", "lauq/1vv", "{sinik/1v}{lauq/1vv}{juq/1vn}"),
-        			Triple.of("takulauqtunga","lauq/1vv","{taku/1v}{lauq/1vv}{junga/tv-ger-1s}")
+        			Triple.of("sinilauqtuq", "lauq/1vv", "{sinik/1v} {lauq/1vv} {juq/1vn}"),
+        			Triple.of("takulauqtunga","lauq/1vv","{taku/1v} {lauq/1vv} {junga/tv-ger-1s}")
         		);
 	}
 

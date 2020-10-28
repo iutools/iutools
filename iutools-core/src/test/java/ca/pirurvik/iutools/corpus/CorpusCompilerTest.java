@@ -101,9 +101,13 @@ public class CorpusCompilerTest {
 		// about the morphological decompositions of the various words.
 		//
 		// To add that information, you use updateWordDecompositions()
-		// method
-		
-		compiler.updateWordDecompositions(wordDecompsFile);
+		// method.
+		//
+		// This will create a JSON file with the records for each word, which
+		// can later on be loaded back into the corpus.
+		//
+		File tempFile = File.createTempFile("updated_corpus", ".json");
+		compiler.updateWordDecompositions(wordDecompsFile, tempFile);
 		
 		// At this point, information about the words will have been 
 		// put into the CompiledCorpus object you provided at construction 
@@ -131,8 +135,6 @@ public class CorpusCompilerTest {
 			.containsWord("iglumut", "{iglu/1n}", "{mut/tn-dat-s}")
 			.containsWord("sanalauqsimajuq", "{sana/1v}", "{lauqsima/1vv}", "{juq/1vn}")
 		;
-		
-		compiler.updateWordDecompositions(wordDecompsFile);	
     }
 
     @Test

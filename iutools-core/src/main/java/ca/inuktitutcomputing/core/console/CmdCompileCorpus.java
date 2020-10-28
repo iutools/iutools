@@ -17,28 +17,37 @@ public class CmdCompileCorpus extends ConsoleCommand {
 
 	@Override
 	public void execute() throws Exception {
-		File corpusDir = getInputDir();
-		String corpusSavePath = getCorpusSavePath();
-		File decompsFile = getDecompositionsFile();
+		String corpusName = getCorpusName(true);
+		if (corpusName == null) {
+			this.usageMissingOption(ConsoleCommand.OPT_CORPUS_NAME);
+		}
 
-		if (corpusDir != null) {
-			// We were give a directory of files that contains the text of 
-			// a corpus to be analyzed. Compute the word frequencies from those
-			// files. 
-			compileWordFrequencies(corpusDir.toString(), corpusSavePath);
-		} else {
-			if (decompsFile != null) {
-				// No corpus text files were provided, but a decompositions 
-				// file was provided. Compute the morpheme ngrams index based 
-				// on those decompositions and the word info already contained
-				// in the CompiledCorpus.
-				// 
-				updateWordDecompositions(decompsFile, corpusSavePath);
-			} else {
-				this.usageBadOption(
-					ConsoleCommand.OPT_INPUT_DIR+"|"+ConsoleCommand.OPT_CORPUS_SAVE_PATH,
-					"You must provide at least one of those options");
-			}
+		File corpusDir = getInputDir();
+		File decompsFile = getDecompositionsFile();
+		if (decompsFile == null && corpusDir == null) {
+			this.usageBadOption(
+				ConsoleCommand.OPT_INPUT_DIR+"|"+ConsoleCommand.OPT_DECOMPOSITIONS_FILE,
+				"You must provide at least one of those options");
+		}
+
+		if (decompsFile != null && corpusDir != null) {
+			this.usageBadOption(
+				ConsoleCommand.OPT_INPUT_DIR+"|"+ConsoleCommand.OPT_CORPUS_NAME,
+				"These options are mutually exclusive");
+		}
+
+		if (decompsFile != null) {
+			// Assume we want to update the decompositions of a corpus whose
+			// words and frequencies have already been compiled from a bunch
+			// of text files
+			//
+			File jsonFile = getDataFile(true);
+			updateWordDecompositions(decompsFile, corpusName, jsonFile);
+		} else if (corpusDir != null) {
+			// Assume we want to compile the frequency of words from a bunch of
+			// text files contained in a directory (recursively)
+			//
+			compileWordFrequencies(corpusDir.toString(), corpusName);
 		}
 	}
 
@@ -65,7 +74,7 @@ public class CmdCompileCorpus extends ConsoleCommand {
 			}
 			
 			
-			CompiledCorpus corpus = compiledCorpus(new File(corpusSavePath));
+			CompiledCorpus corpus = compiledCorpus(corpusSavePath);
 
 			CorpusCompiler compiler = new CorpusCompiler(corpus);
 			File corpusDir = new File(corpusDirStr);
@@ -74,39 +83,32 @@ public class CmdCompileCorpus extends ConsoleCommand {
 	}
 	
 	private void updateWordDecompositions(
-		File decompsFile, String corpusSavePath)
-			throws CompiledCorpusException, ConsoleException {
+		File decompsFile, String corpusName, File corpusJsonFile)
+			throws CompiledCorpusException, ConsoleException, CorpusCompilerException {
 		
 		boolean updateDecomps = 
 				user_io.prompt_yes_or_no(
 					"No value was provided for "+
 					ConsoleCommand.OPT_INPUT_DIR+" but a value was provided for "+
 					ConsoleCommand.OPT_DECOMPOSITIONS_FILE+".\n"+
-					"Would you like to generate the morpheme ngrams index based on decompositions listed in file "
-					+decompsFile+"  ?");
+					"Would you like to update corpus '"+corpusName+"' word morphological decompositions using decompositions listed in file:\n   "
+					+decompsFile+"?\n");
 		
 		
 		echo("Updating word morphological decompositions for corpus");
 		echo(1);
 		{
-			echo("corpus save directory         : "+corpusSavePath);
+			echo("corpus nam                    : "+corpusName);
 			echo("decompositions read from file : "+decompsFile);
+			echo("updated corpus output to file : "+corpusJsonFile);
 		}
 		echo(-1);
 		
-		boolean ok = true;
-		if ( corpusSavePath != null ) {
-			ok = checkFilePath(corpusSavePath);
-		}
-		if ( !ok ) {
-			usageBadOption(OPT_CORPUS_SAVE_PATH, "The provided path does not exist");
-		}
-		
 
-		CompiledCorpus corpus = compiledCorpus(new File(corpusSavePath));
+		CompiledCorpus corpus = compiledCorpus(corpusName);
 
 		CorpusCompiler compiler = new CorpusCompiler(corpus);
-		compiler.updateWordDecompositions(decompsFile);	
+		compiler.updateWordDecompositions(decompsFile, corpusJsonFile);
 	}
 	
 	private boolean checkFilePath(String _trieFilePath) {
@@ -118,10 +120,9 @@ public class CmdCompileCorpus extends ConsoleCommand {
 		return true;
 	}
 
-	protected CompiledCorpus compiledCorpus(File corpusJsonFile) throws ConsoleException {
+	protected CompiledCorpus compiledCorpus(String corpusName) throws ConsoleException {
 		try {
-			CompiledCorpus_ES corpus =
-				(CompiledCorpus_ES) RW_CompiledCorpus.read(corpusJsonFile);
+			CompiledCorpus_ES corpus = new CompiledCorpus_ES(corpusName);
 			return corpus;
 		} catch (CompiledCorpusException e) {
 			throw new ConsoleException(e);
