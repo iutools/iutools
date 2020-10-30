@@ -17,7 +17,7 @@ public class CompiledCorpusRegistry {
 	
 	private static Map<String,CompiledCorpus_InMemory> corpusCache = new HashMap<String,CompiledCorpus_InMemory>();
 	private static Map<String,File> registry = new HashMap<String,File>();
-	public static final String defaultCorpusName = "Hansard1999-2002";
+	public static final String defaultInMemCorpusName = "Hansard1999-2002";
 	public static final String defaultESCorpusName = "HANSARD-1999-2002";
 	public static final String emptyCorpusName = "EMPTYCORPUS";
 	
@@ -53,7 +53,7 @@ public class CompiledCorpusRegistry {
 
 	@JsonIgnore
 	public static CompiledCorpus_InMemory getCorpusWithName() throws CompiledCorpusRegistryException {
-		return getCorpusWithName(defaultCorpusName);
+		return getCorpusWithName(defaultInMemCorpusName);
 	}
 
 	@JsonIgnore
@@ -77,7 +77,7 @@ public class CompiledCorpusRegistry {
 		Logger logger = Logger.getLogger("CompiledCorpusRegistry.getCorpusWithName");
 		logger.debug("corpusName= '"+corpusName+"'");
 		if (corpusName == null) {
-			corpusName = defaultCorpusName;
+			corpusName = defaultInMemCorpusName;
 		}
 		CompiledCorpus_InMemory corpus = null;
 		if (corpusName == emptyCorpusName) {
@@ -139,7 +139,7 @@ public class CompiledCorpusRegistry {
 
 	@JsonIgnore
 	public static CompiledCorpus_InMemory getCorpus() throws CompiledCorpusRegistryException {
-		return getCorpus(defaultCorpusName);
+		return getCorpus(defaultInMemCorpusName);
 	}
 
 	@JsonIgnore
@@ -147,7 +147,7 @@ public class CompiledCorpusRegistry {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpusRegistry.getCorpus");
 		tLogger.trace("corpusName="+corpusName);
 		if (corpusName==null) {
-			corpusName = defaultCorpusName;
+			corpusName = defaultInMemCorpusName;
 		}
 		
 		CompiledCorpus_InMemory corpus = null;

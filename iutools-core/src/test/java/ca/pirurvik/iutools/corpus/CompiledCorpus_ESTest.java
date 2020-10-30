@@ -1,5 +1,6 @@
 package ca.pirurvik.iutools.corpus;
 
+import ca.inuktitutcomputing.config.IUConfig;
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.dtrc.elasticsearch.StreamlinedClient;
 import ca.nrc.json.PrettyPrinter;

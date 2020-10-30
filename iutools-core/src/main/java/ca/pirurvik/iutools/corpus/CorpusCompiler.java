@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 
 import ca.nrc.ui.commandline.ProgressMonitor;
 import ca.nrc.ui.commandline.ProgressMonitor_Terminal;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -41,9 +42,10 @@ public class CorpusCompiler {
 	
 	private transient StringSegmenter segmenter = null;
 	private File corpusDirectory;
+	private CorpusCompilationProgress progress = null;
+
 	private CorpusDocument_File fileBeingProcessed;
 	private int currentFileWordCounter;
-
 
 	public CorpusCompiler(CompiledCorpus _corpus) {
 		this.corpus = _corpus;
@@ -71,7 +73,7 @@ public class CorpusCompiler {
 		File corpusDirectory, boolean fromScratch, CompileWhat what) 
 		throws CompiledCorpusException, StringSegmenterException {
 		
-		toConsole("[INFO] *** Compiling trie for documents in "+corpusDirectory+"\n");
+		toConsole("[INFO] *** Compiling corpus for documents in "+corpusDirectory+"\n");
 		segmenter = getSegmenter(); //new StringSegmenter_IUMorpheme();
 		
 		if ( !fromScratch ) {
@@ -166,10 +168,49 @@ public class CorpusCompiler {
 		throws CompiledCorpusException, StringSegmenterException {
 		toConsole("[INFO] --- compiling directory "+corpDir+"\n");
 		this.corpusDirectory = corpDir;
+		this.progress = readProgressFile();
 		processDirectory(corpDir, what);
 	}
-	
-	
+
+	private CorpusCompilationProgress readProgressFile() throws CompiledCorpusException {
+		File progFile = progressFile();
+		CorpusCompilationProgress prog =
+			new CorpusCompilationProgress(corpusDirectory);
+		if (progFile.exists()) {
+			try {
+				new ObjectMapper().readValue(progFile, CorpusCompilationProgress.class);
+			} catch (IOException e) {
+				throw new CompiledCorpusException(
+					"Could not parse progress file "+progFile, e);
+			}
+		}
+		return prog;
+	}
+
+	private void writeProgressFile() throws CompiledCorpusException {
+		File progFile = progressFile();
+		if (!progFile.exists()) {
+			try {
+				progFile.createNewFile();
+			} catch (IOException e) {
+				throw new CompiledCorpusException(
+					"Unable to create progress file: "+progFile, e);
+			}
+		}
+		try {
+			new ObjectMapper().writeValue(progFile, progress);
+		} catch (IOException e) {
+			throw new CompiledCorpusException(
+				"Could write progress status to file "+progFile, e);
+		}
+	}
+
+	private File progressFile() {
+		File progF = new File(corpusDirectory.toString()+".progress.json");
+		return progF;
+	}
+
+
 	private void processDirectory(File directory, CompileWhat what) 
 		throws CompiledCorpusException, StringSegmenterException {
 		Logger logger = Logger.getLogger("CompiledCorpus.processDirectory");
@@ -195,8 +236,9 @@ public class CorpusCompiler {
 		fileBeingProcessed = file;
 		toConsole("[INFO] --- compiling document "+new File(fileAbsolutePath).getName()+"\n");
 		processDocumentContents(what);
-		if ( !this.filesCompiled.contains(fileAbsolutePath) )
+		if ( !this.filesCompiled.contains(fileAbsolutePath) ) {
 			filesCompiled.add(fileAbsolutePath);
+		}
 	}
 	
 	
@@ -280,8 +322,9 @@ public class CorpusCompiler {
 			String word = words[n];
 			String wordInRomanAlphabet = TransCoder.unicodeToRoman(word);
 			logger.debug("wordInRomanAlphabet: " + wordInRomanAlphabet);
-			if (!isInuktitutWord(wordInRomanAlphabet))
+			if (!isInuktitutWord(wordInRomanAlphabet)) {
 				continue;
+			}
 			++wordCounter;
 
 			if (fileBeingProcessed == null || !filesCompiled.contains(fileBeingProcessed.id)) {

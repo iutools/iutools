@@ -324,6 +324,13 @@ public class Console {
 				.addOption(optMorpheme)
 				;
 		mainCmd.addSubCommand(lookForMorpheme);
+
+		// Show information about a word found in a given corpus
+		SubCommand wordInfo =
+				new CmdWordInfo("word_info")
+					.addOption(optCorpusName)
+				;
+		mainCmd.addSubCommand(wordInfo);
 		
 		// Analyse failures of the morphological analyser
 		SubCommand morphFailureAnalysis = 

@@ -14,6 +14,8 @@ import ca.pirurvik.iutools.corpus.CompiledCorpusRegistryException;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
 
+import static ca.pirurvik.iutools.morphrelatives.MRelsTracer.traceRelatives;
+
 /**
  * Given an input word, this class finds a list of "good" Morphological 
  * Relatives. The relatives are chosen such that they:
@@ -82,6 +84,12 @@ public class MorphRelativesFinder {
 		
 		if (segments != null) {
 			String[] workingSegments = segments.clone();
+			if (workingSegments.length > 1) {
+				// Start from the parent of the input word to make sure
+				// we don't just collect descendants of the input word
+				//
+				workingSegments = Arrays.copyOfRange(workingSegments, 0, segments.length-1);
+			}
 			Set<MorphologicalRelative> candidateNeighbors = new HashSet<MorphologicalRelative>();
 			while (true) {
 				boolean keepGoing =
@@ -96,10 +104,14 @@ public class MorphRelativesFinder {
 					break;
 				}
 			}
+
+			traceRelatives(logger, candidateNeighbors,
+		"After collecting candidateNeighbors");
+
 			try {
 				bestNeighbors = bestRelatives(candidateNeighbors);
 				
-				traceRelatives(logger, bestNeighbors, 
+				traceRelatives(logger, bestNeighbors,
 					"bestNeighbors=");
 			} catch (Exception e) {
 				throw new MorphRelativesFinderException(e);
@@ -120,9 +132,9 @@ public class MorphRelativesFinder {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.MorphRelativesFinder.collectMorphologicalNeighbors");
 		
 		if (tLogger.isTraceEnabled()) {
-			traceRelatives(tLogger, collectedSoFar, 
+			traceRelatives(tLogger, collectedSoFar,
 				"Collecting for currentMorphemes="+String.join(", ", currentMorphemes)+
-				"collectedSoFar=\n"+collectedSoFar);
+				"\n   collectedSoFar=\n"+collectedSoFar);
 		}
 		Boolean keepGoing = null;
 		
@@ -164,8 +176,8 @@ public class MorphRelativesFinder {
 				String descendant = iterDescendants.next();
 				if (!descendant.equals(origWord)) {
 					MorphologicalRelative neighbor =
-							neighbor =
-									word2neigbhor(origWord, origWordMorphemes,
+						neighbor =
+							word2neigbhor(origWord, origWordMorphemes,
 											descendant);
 					collectedSoFar.add(neighbor);
 				}
@@ -222,7 +234,7 @@ public class MorphRelativesFinder {
 	}
 	
 	private List<MorphologicalRelative> sortRelatives(
-		Set<MorphologicalRelative> relatives) {
+		Set<MorphologicalRelative> relatives) throws MorphRelativesFinderException {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.MorphRelativesFinder.sortRelatives");
 		traceRelatives(tLogger, relatives, "Upon entry, relatives=");
 
@@ -294,51 +306,4 @@ public class MorphRelativesFinder {
 		}
 		return relatives;
 	}
-	
-	public void traceRelatives(Logger tLogger, MorphologicalRelative[] relatives, 
-		String message) {
-		if (tLogger.isTraceEnabled()) {
-			message += "\nThe relatives are: ";
-			for (MorphologicalRelative aRelative: relatives) {
-				message += aRelative.getWord();
-				long freq = aRelative.getFrequency();
-				if (freq >= 0) {
-					message += ":f="+freq;
-				}
-				
-				List<String> commonMorphemes = aRelative.morphemesInCommon();
-				if (commonMorphemes != null) {
-					message += ":c="+commonMorphemes.size();
-				}
-				message += ", ";
-			}
-			tLogger.trace(message);
-		}
-	}
-
-	public void traceRelatives(Logger tLogger, Set<MorphologicalRelative> relatiesSet, 
-			String message) {
-			if (tLogger.isTraceEnabled()) {
-				List<MorphologicalRelative> relatives = new ArrayList<MorphologicalRelative>();
-				relatives.addAll(relatiesSet);
-				relatives.sort(
-					(MorphologicalRelative e1, MorphologicalRelative e2) -> {
-						return e1.getWord().compareTo(e2.getWord());
-					}
-				);
-				MorphologicalRelative[] relativesArr = relatives.toArray(new MorphologicalRelative[0]);
-				traceRelatives(tLogger, relativesArr, message);
-			}
-		}
-		
-	private void traceRelatives(Logger logger, 
-		List<MorphologicalRelative> relatives, String message) {
-		if (logger.isTraceEnabled()) {
-			MorphologicalRelative[] relativesArr = null;
-			if (relatives != null) {
-				relativesArr = relatives.toArray(new MorphologicalRelative[0]);
-			}
-			traceRelatives(logger, relativesArr, message);
-		}
-	}	
 }

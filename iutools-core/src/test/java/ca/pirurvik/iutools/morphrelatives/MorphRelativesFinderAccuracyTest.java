@@ -4,6 +4,7 @@ import java.io.File;
 
 import ca.pirurvik.iutools.corpus.CompiledCorpus;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
+import org.junit.Assert;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
@@ -16,6 +17,13 @@ public class MorphRelativesFinderAccuracyTest {
 	public void test__findRelatives__QuickAccuracyTest() throws Exception {
 		PerformanceExpectations expectations =
 			new PerformanceExpectations()
+
+				.setVerbosity(true)
+
+				// Set this to a single word if you only want to run that one word
+				.setFocusOnWord("mikinniqsanut")
+
+
 				// Each morpheme should run in about 1.5 secs, give or take 0.5
 				.setTargetRuntimeSecs(1.5, 0.5)
 
@@ -39,6 +47,8 @@ public class MorphRelativesFinderAccuracyTest {
 			;
 
 		evaluatePerformance(expectations, 10);
+
+		Assert.fail("This test (and others in the test case) \"passes\" but only because we lowered expectations temporarily");
 	}
 
 	@Test
@@ -79,7 +89,8 @@ public class MorphRelativesFinderAccuracyTest {
 		evaluatePerformance(exp, null);
 	}
 
-	private void evaluatePerformance(PerformanceExpectations exp, Integer stopAfterNWords) throws Exception {
+	private void evaluatePerformance(PerformanceExpectations exp,
+		Integer stopAfterNWords) throws Exception {
 		String goldStandardCSVFilePath = IUConfig.getIUDataPath("/src/test/resources/ca/pirurvik/iutools/IU100Words-expansions-added-to-alternatives.csv");
 
 		// This is the NEW version of the corpus, which has some
@@ -108,13 +119,17 @@ public class MorphRelativesFinderAccuracyTest {
 		MorphRelativesFinderEvaluator evaluator =
 			new MorphRelativesFinderEvaluator(
 				finder, new File(goldStandardCSVFilePath));
-		// Set this to true if you want to see print statements.
-		evaluator.verbose = true;
+
+		// If focusOnWord != null, we run the evaluator verbosely
+		// Otherwise, use the verbosity level provided in the expectations
+		boolean verbose = (exp.verbose || exp.focusOnWord != null);
+		evaluator.setVerbose(verbose);
 
 		// whether statistics are to be computed over words (default [true]) or morphemes [false]:
 		evaluator
 			.setOptionComputeStatsOverSurfaceForms(exp.computeStatsOverSurfaceForms);
 		evaluator.setStopAfterNWords(stopAfterNWords);
+		evaluator.setFocusOnWord(exp.focusOnWord);
 
 		boolean precisionFine = true;
 		boolean recallFine = true;
@@ -187,6 +202,10 @@ public class MorphRelativesFinderAccuracyTest {
 			}
 			assertFalse(diagnostic,true);
 		}
+
+		if (exp.focusOnWord != null) {
+			Assert.fail("Finder was evaluated only on one word.\nSet focusOnWord to null to run it on all available words");
+		}
 	}
 
 
@@ -210,6 +229,8 @@ public class MorphRelativesFinderAccuracyTest {
 		public double precRecTolerance;
 		public double targetRuntimeSecs = -1;
 		public double secsTolerance;
+		private String focusOnWord;
+		private boolean verbose;
 
 		public PerformanceExpectations setComputeStatsOverSurfaceForms(
 				boolean _computeStatsOverSurfaceForms) {
@@ -237,6 +258,16 @@ public class MorphRelativesFinderAccuracyTest {
 			double _targetRuntimeSecs, double _secsTolerance) {
 			this.targetRuntimeSecs = _targetRuntimeSecs;
 			this.secsTolerance = _secsTolerance;
+			return this;
+		}
+
+		public PerformanceExpectations setFocusOnWord(String _word) {
+			this.focusOnWord = _word;
+			return this;
+		}
+
+		public PerformanceExpectations setVerbosity(boolean _verbose) {
+			this.verbose = _verbose;
 			return this;
 		}
 	}

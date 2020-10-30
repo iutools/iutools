@@ -39,7 +39,8 @@ public class MorphRelativesFinderEvaluator {
 	protected long elapsedTime = -1;
 
 	MorphRelativesFinder relsFinder = null;
-	
+	private String focusOnWord;
+
 	/*
 	 * 0. Mot original (fréquence Google du mot en syllabique),
 	 * 1. Mot original en syllabique,
@@ -82,8 +83,11 @@ public class MorphRelativesFinderEvaluator {
 	public void setStopAfterNWords(Integer _stopAfterNWords) {
 		this.stopAfterNWords = _stopAfterNWords;
 	}
-	
-	
+
+	public void setFocusOnWord(String _word) {
+		this.focusOnWord = _word;
+	}
+
 	public void setVerbose(boolean value) {
 		verbose = value;
 	}
@@ -109,12 +113,7 @@ public class MorphRelativesFinderEvaluator {
 	public void run() {
 
 		long startTime = StopWatch.nowMSecs();
-		
-		// Set this to a word if you want to only run that one
-		// word. Leave it at null to run all words
-		String focusOnWord = null;
-//		focusOnWord = "qarasaujakkut";
-		
+
 		Logger logger = Logger.getLogger("QueryExpanderEvaluator");
 		
         try {
@@ -148,7 +147,9 @@ public class MorphRelativesFinderEvaluator {
                     if ( m.matches() ) {
                     	mot = m.group(1);
                     	freqMotGoogle = Long.parseUnsignedLong(m.group(2));
-                    }
+                    } else {
+                    	continue;
+					}
                     
                     if (focusOnWord != null && !mot.equals(focusOnWord)) {
                     	continue;
@@ -279,7 +280,7 @@ public class MorphRelativesFinderEvaluator {
             echo("F-measure = "+fmeasure);
             
         } catch(Exception e) {
-        	if (verbose) System.err.println(e.getMessage());
+        	if (verbose) System.err.println("Exception raised: "+e.getClass()+"\n"+e.getMessage());
         	if (csvParser != null)
 				try {
 					csvParser.close();
