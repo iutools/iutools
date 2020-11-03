@@ -132,11 +132,6 @@ public class MorphRelativesFinderEvaluator {
 
             int wordCount = 0;
             for (CSVRecord csvRecord : csvParser) {
-            		wordCount++;
-            		if (stopAfterNWords != null &&
-						wordCount > stopAfterNWords) {
-            			break;
-					}
             		if (stop) break;
             		
                     // Accessing Values by Column Index
@@ -150,7 +145,13 @@ public class MorphRelativesFinderEvaluator {
                     } else {
                     	continue;
 					}
-                    
+
+					wordCount++;
+					if (stopAfterNWords != null &&
+							wordCount > stopAfterNWords) {
+						break;
+					}
+
                     if (focusOnWord != null && !mot.equals(focusOnWord)) {
                     	continue;
                     }

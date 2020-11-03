@@ -3,6 +3,7 @@ package ca.pirurvik.iutools.morphrelatives;
 import java.util.*;
 import java.util.regex.Pattern;
 
+import ca.inuktitutcomputing.data.Morpheme;
 import ca.inuktitutcomputing.script.TransCoder;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.pirurvik.iutools.corpus.WordInfo;
@@ -72,7 +73,9 @@ public class MorphRelativesFinder {
 		} catch (Exception e) {
 			segments = null;
 		}
-		
+
+		segments = Morpheme.format(segments, Morpheme.MorphFormat.NO_BRACES);
+
 		Set<MorphologicalRelative> relatives = new HashSet<MorphologicalRelative>();
 
 		String[] wordMorphemes = null;
@@ -247,13 +250,15 @@ public class MorphRelativesFinder {
 				// We favor relatives that have the most morphemes in 
 				// common with the original word
 				//
-				int e1Common = e1.morphemesInCommon().size(); 
-				int e2Common = e2.morphemesInCommon().size(); 
-				int comparison = Integer.compare(e2Common, e1Common);
-				
+				int comparison = 0;
+				try {
+					double e1Common = e1.percentMorphsInCommon();
+					double e2Common = e2.percentMorphsInCommon();
+					comparison = Double.compare(e2Common, e1Common);
+
 //				// AD-July2020: THIS SEEMS TO MAKE THINGS WORSE....
 //				//   So comment it out for now.
-//				// In case of futher tie, we favor relatives that are closest to 
+//				// In case of futher tie, we favor relatives that are closest to
 //				// the original word in the morphem Tree
 //				//
 //				if (comparison == 0) {
@@ -261,31 +266,34 @@ public class MorphRelativesFinder {
 //					int e2Dist = e2.morphologicalDistance();
 //					comparison = Integer.compare(e2Dist, e1Dist);
 //				}
-				
-				// In case of further tie, we favor relatives that have high frequency
-				//
-				if (comparison == 0) {
-					comparison = Long.compare(e2.getFrequency(), e1.getFrequency());
+
+					// In case of further tie, we favor relatives that have high frequency
+					//
+					if (comparison == 0) {
+						comparison = Long.compare(e2.getFrequency(), e1.getFrequency());
+					}
+
+					// In case of a further tie, we favor relatives whose lenght is
+					// closest to the lenght of the original word.
+					//
+					if (comparison == 0) {
+						int e1LengDiff =
+								Math.abs(e1.getWord().length() - e1.getOrigWord().length());
+						int e2LengDiff =
+								Math.abs(e2.getWord().length() - e2.getOrigWord().length());
+						comparison = Integer.compare(e1LengDiff, e2LengDiff);
+					}
+
+					// In case of further tie, we sort alphabetically to garantee
+					// a deterministic order
+					//
+					if (comparison == 0) {
+						comparison = e1.getWord().compareTo(e2.getWord());
+					}
+				} catch (Exception e) {
+					throw new RuntimeException(e);
 				}
-				
-				// In case of a further tie, we favor relatives whose lenght is 
-				// closest to the lenght of the original word.
-				//
-				if (comparison == 0) {
-					int e1LengDiff = 
-						Math.abs(e1.getWord().length() - e1.getOrigWord().length());
-					int e2LengDiff = 
-						Math.abs(e2.getWord().length() - e2.getOrigWord().length());
-					comparison = Integer.compare(e1LengDiff, e2LengDiff);
-				}
-				
-				// In case of further tie, we sort alphabetically to garantee 
-				// a deterministic order
-				//
-				if (comparison == 0) {
-					comparison = e1.getWord().compareTo(e2.getWord());
-				}				
-				
+
 				return comparison;
 			}
 		);

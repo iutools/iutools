@@ -42,6 +42,8 @@ import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.data.Morpheme;
 import ca.inuktitutcomputing.script.Orthography;
 
+import static ca.inuktitutcomputing.data.Morpheme.MorphFormat;
+
 // Decomposition:
 //    String word
 //    MorceauRacine stem:
@@ -56,8 +58,6 @@ import ca.inuktitutcomputing.script.Orthography;
 //            
 
 public class Decomposition extends Object implements Comparable<Decomposition> {
-
-	public static enum MorphFormat {WITH_BRACES, NO_BRACES};
 
 	String word;
 	RootPartOfComposition stem;
@@ -671,6 +671,16 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
         return surfaceForms;
     }
 
+	public static String[] decompstr2morphemes(String decompStr) {
+		String[] morphemes = decompStr.split("\\"+endDelimitor+"\\s*\\"+startDelimitor);
+		for (int ii=0; ii < morphemes.length; ii++) {
+			morphemes[ii] = morphemes[ii].replaceAll("(^\\s*\\"+startDelimitor+"\\s*|\\s*\\"+endDelimitor+"\\s*$)", "");
+			morphemes[ii] = morphemes[ii].replaceAll("^[^\\:]*:", "");
+		}
+
+		return morphemes;
+	}
+
     public static String[][] decomps2morphemes(Decomposition[] decompObjects) {
 		String[][] decomps = null;
 		if (decompObjects != null) {
@@ -694,15 +704,5 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 		}
 		
 		return decompsMorphemes;
-	}
-
-	private static String[] decompstr2morphemes(String decompStr) {
-		String[] morphemes = decompStr.split("\\"+endDelimitor+"\\s*\\"+startDelimitor);
-		for (int ii=0; ii < morphemes.length; ii++) {
-			morphemes[ii] = morphemes[ii].replaceAll("(^\\s*\\"+startDelimitor+"\\s*|\\s*\\"+endDelimitor+"\\s*$)", "");
-			morphemes[ii] = morphemes[ii].replaceAll("^[^\\:]*:", "");
-		}
-		
-		return morphemes;
 	}
 }

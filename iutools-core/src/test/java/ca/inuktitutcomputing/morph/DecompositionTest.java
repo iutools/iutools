@@ -4,7 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ca.inuktitutcomputing.morph.Decomposition.DecompositionExpression;
-import static ca.inuktitutcomputing.morph.Decomposition.MorphFormat;
+import static ca.inuktitutcomputing.data.Morpheme.MorphFormat;
 
 public class DecompositionTest {
 

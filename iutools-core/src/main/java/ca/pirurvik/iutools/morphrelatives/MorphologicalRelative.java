@@ -1,11 +1,9 @@
 package ca.pirurvik.iutools.morphrelatives;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import ca.nrc.datastructure.trie.TrieNode;
-import difflib.myers.Equalizer;
+import org.apache.log4j.Logger;
 
 
 /**
@@ -122,7 +120,17 @@ public class MorphologicalRelative {
 		
 		return toStringCached;
 	}
-	
+
+	public double percentMorphsInCommon() throws MorphRelativesFinderException {
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.morphrelatives.MorphologicalRelative");
+		double numInCommon = 1.0 * morphemesInCommon().size();
+		double denominator = Math.max(origMorphemes.length, morphemes.length);
+		double percentInCommon = numInCommon / denominator;
+
+		MRelsTracer.traceRelative(tLogger, this, "returning percentInCommon="+percentInCommon);
+		return percentInCommon;
+	}
+
 	public List<String> morphemesInCommon() {
 		List<String> inCommon = null;
 		

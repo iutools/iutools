@@ -18,10 +18,12 @@ public class MorphRelativesFinderAccuracyTest {
 		PerformanceExpectations expectations =
 			new PerformanceExpectations()
 
+				.setCorpusName("HANSARD-1999-2002.v2020-11-02")
+
 				.setVerbosity(true)
 
 				// Set this to a single word if you only want to run that one word
-				.setFocusOnWord("mikinniqsanut")
+//				.setFocusOnWord("mikinniqsanut")
 
 
 				// Each morpheme should run in about 1.5 secs, give or take 0.5
@@ -40,7 +42,7 @@ public class MorphRelativesFinderAccuracyTest {
 				//   fact that the Gold Standard underestimates the accuracy
 				//
 //				.setTargetPrecision(0.57)
-				.setTargetPrecision(0.47)
+				.setTargetPrecision(0.51)
 
 				.setTargetRecall(0.47)
 				.setPrecRecTolerance(0.02)
@@ -58,6 +60,9 @@ public class MorphRelativesFinderAccuracyTest {
 		
 		PerformanceExpectations expectations =
 			new PerformanceExpectations()
+
+			.setCorpusName("HANSARD-1999-2002.v2020-11-02")
+
 			.setComputeStatsOverSurfaceForms(true)
 
 			// 2020-10-28-AD:
@@ -98,21 +103,7 @@ public class MorphRelativesFinderAccuracyTest {
 		//
 		CompiledCorpus corpus =
 			CompiledCorpusRegistry
-				.getCorpusWithName_ES(CompiledCorpusRegistry.defaultESCorpusName);
-
-		// This is the OLD version of the ES corpus, which only has the top
-		// decomp and no decomps sample
-		//
-//		CompiledCorpus corpus = new CompiledCorpus_ES("HANSARD-1999-2002-OLD");
-//				CompiledCorpusRegistry
-//						.getCorpusWithName_ES(CompiledCorpusRegistry.defaultESCorpusName);
-
-
-		// This is the InMemory corpus
-		//
-//		CompiledCorpus_InMemory corpus =
-//				CompiledCorpusRegistry
-//						.getCorpus();
+				.getCorpusWithName_ES(exp.corpusName);
 
 		MorphRelativesFinder finder = new MorphRelativesFinder(corpus);
 
@@ -223,6 +214,7 @@ public class MorphRelativesFinderAccuracyTest {
 
 	public static class PerformanceExpectations {
 
+		public String corpusName = CompiledCorpusRegistry.defaultESCorpusName;
 		public boolean computeStatsOverSurfaceForms;
 		public double targetPrecision = -1;
 		public double targetRecall = -1;
@@ -268,6 +260,11 @@ public class MorphRelativesFinderAccuracyTest {
 
 		public PerformanceExpectations setVerbosity(boolean _verbose) {
 			this.verbose = _verbose;
+			return this;
+		}
+
+		public PerformanceExpectations setCorpusName(String _corpusName) {
+			this.corpusName = _corpusName;
 			return this;
 		}
 	}

@@ -39,7 +39,9 @@ import ca.inuktitutcomputing.data.LinguisticDataAbstract;
 import ca.inuktitutcomputing.data.Affix;
 
 public abstract class Morpheme implements Cloneable {
-	//
+
+    public static enum MorphFormat {WITH_BRACES, NO_BRACES};
+
 	public String id = null;
 	public String type = null;
 	public String morpheme;
@@ -345,6 +347,31 @@ public abstract class Morpheme implements Cloneable {
 		
 		return morph;
 	}
+
+	public static String[] format(String[] origMorphemes, MorphFormat format) {
+	    if (format == null) {
+	        format = MorphFormat.WITH_BRACES;
+        }
+	    String[] formatted = null;
+	    if (origMorphemes != null) {
+	        formatted = new String[origMorphemes.length];
+	        for (int ii=0; ii < origMorphemes.length; ii++) {
+	            String aFormatted = origMorphemes[ii];
+	            if (format == MorphFormat.NO_BRACES) {
+	                aFormatted = aFormatted.replaceAll("[\\{\\}]", "");
+                } else {
+	                if (!aFormatted.startsWith("{")) {
+	                    aFormatted = "{"+aFormatted;
+                    }
+	                if (!aFormatted.endsWith("}")) {
+	                    aFormatted = aFormatted+"}";
+                    }
+                }
+	            formatted[ii] = aFormatted;
+            }
+        }
+        return formatted;
+    }
 }
 
 

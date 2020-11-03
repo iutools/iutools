@@ -94,7 +94,7 @@ public class MorphRelativesFinderTest {
 
         MorphologicalRelative[] expansions = finder.findRelatives("takujumaguvit");
         String[] expected = new String[] {
-        	"takujumajunga","takujumavalliajanginnik","takujuq",};
+        	"takujumajunga", "takujuq", "takujumavalliajanginnik"};
         
         new AssertMorphologicalRelativeArray(expansions, "")
     		.wordsAre(expected);

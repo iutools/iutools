@@ -103,6 +103,9 @@ public class MRelsTracer {
                 "\n--   The list of relatives was missing the following:\n"+
                 "--      [" +
                 StringUtils.join(missingRels.iterator(), ", ")+"]";
+        } else {
+            printout +=
+                "\n--   NOTHING MISSING from the the list of list of relatives.";
         }
         return printout;
     }
@@ -136,4 +139,14 @@ public class MRelsTracer {
         return printout;
     }
 
+    public static void traceRelative(
+        Logger tLogger, MorphologicalRelative aRelative, String mess)
+        throws MorphRelativesFinderException {
+        if (tLogger.isTraceEnabled()) {
+            String word = aRelative.getWord();
+            if (ArrayUtils.contains(relsToTrack(), word)) {
+                tLogger.trace(mess+"\n--    word="+word);
+            }
+        }
+    }
 }
