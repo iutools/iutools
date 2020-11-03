@@ -20,15 +20,30 @@ public abstract class RW_CompiledCorpus {
 
 	UserIO userIO = null;
 	
-	protected abstract void writeCorpus(CompiledCorpus corpus, 
+	public abstract void writeCorpus(CompiledCorpus corpus,
 		File savePath) throws CompiledCorpusException;
 
-	protected abstract CompiledCorpus readCorpus(File savePath) 
+	public abstract CompiledCorpus readCorpus(File savePath)
 		throws CompiledCorpusException;
 
 	protected abstract CompiledCorpus newCorpus(File savePath) throws CompiledCorpusException;
 
 	protected Gson gson = new Gson();
+
+	public RW_CompiledCorpus() {
+		init_RW_CompiledCorpus((UserIO)null);
+	}
+
+	public RW_CompiledCorpus(UserIO io) {
+		init_RW_CompiledCorpus(io);
+	}
+
+	private void init_RW_CompiledCorpus(UserIO io) {
+		if (io == null) {
+			io = new UserIO();
+		}
+		this.userIO = io;
+	}
 
 	public static void write(CompiledCorpus corpus, File _savePath) 
 		throws CompiledCorpusException {

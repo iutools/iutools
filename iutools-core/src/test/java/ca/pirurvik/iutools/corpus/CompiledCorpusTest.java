@@ -58,7 +58,6 @@ public abstract class CompiledCorpusTest {
 	
 	@Test
 	public void test__CompiledCorpus__Synopsis() throws Exception {
-		//
 		// Use a CompiledCorpus to trie-compile a corpus and compute statistics.
 		//
 		//
@@ -416,19 +415,20 @@ public abstract class CompiledCorpusTest {
 	}
 	
 	public static File compileToFile(String[] words, String fileId) throws Exception {
-		CompiledCorpus_InMemory tempCorp = new CompiledCorpus_InMemory(StringSegmenter_IUMorpheme.class.getName());
-		CorpusCompiler compiler = new CorpusCompiler(tempCorp);
-		compiler.setVerbose(false);
-		InputStream iStream = IOUtils.toInputStream(String.join(" ", words), "utf-8");
-		InputStreamReader iSReader = new InputStreamReader(iStream);
-		BufferedReader br = new BufferedReader(iSReader);
-		compiler.processDocumentContents(br, "dummyFilePath", null);
-		String fileName = "compiled_corpus";
-		if (fileId != null)
-			fileName += "-"+fileId;
-		File tempFile = File.createTempFile(fileName, ".json");
-		RW_CompiledCorpus.write(tempCorp, tempFile);
-		return tempFile;
+//		CompiledCorpus_InMemory tempCorp = new CompiledCorpus_InMemory(StringSegmenter_IUMorpheme.class.getName());
+//		CorpusCompiler compiler = new CorpusCompiler(tempCorp);
+//		compiler.setVerbose(false);
+//		InputStream iStream = IOUtils.toInputStream(String.join(" ", words), "utf-8");
+//		InputStreamReader iSReader = new InputStreamReader(iStream);
+//		BufferedReader br = new BufferedReader(iSReader);
+//		compiler.tokenizeDocumentContents(br, "dummyFilePath", null);
+//		String fileName = "compiled_corpus";
+//		if (fileId != null)
+//			fileName += "-"+fileId;
+//		File tempFile = File.createTempFile(fileName, ".json");
+//		RW_CompiledCorpus.write(tempCorp, tempFile);
+//		return tempFile;
+        return null;
 	}
 	
 	@Test

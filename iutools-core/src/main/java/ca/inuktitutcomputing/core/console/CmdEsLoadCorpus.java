@@ -1,8 +1,5 @@
 package ca.inuktitutcomputing.core.console;
 
-import ca.nrc.dtrc.elasticsearch.Document;
-import ca.nrc.dtrc.elasticsearch.ElasticSearchException;
-import ca.nrc.dtrc.elasticsearch.StreamlinedClient;
 import ca.nrc.ui.commandline.UserIO;
 import ca.pirurvik.iutools.corpus.CompiledCorpus_ES;
 

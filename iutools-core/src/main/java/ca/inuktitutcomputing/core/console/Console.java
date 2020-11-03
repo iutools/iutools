@@ -19,20 +19,19 @@ public class Console {
 			    .argName("INPUT_DIR")
 			    .build();
 
+		Option optOutputDir = Option.builder(null)
+				.longOpt(ConsoleCommand.OPT_OUTPUT_DIR)
+				.desc("Directory where outputs will be written.")
+				.hasArg()
+				.argName("OUTPUT_DIR")
+				.build();
+
 		Option optCompFile = Option.builder(null)
 				.longOpt(ConsoleCommand.OPT_CORPUS_SAVE_PATH)
 			    .desc("Path where to save the compiled corpus")
 			    .hasArg()
 			    .argName("CORPUS_SAVE_PATH")
 			    .build();
-
-		
-		Option optDecompsFile = Option.builder(null)
-			.longOpt(ConsoleCommand.OPT_DECOMPOSITIONS_FILE)
-		    .desc("Path of json file containing decompositions of words")
-		    .hasArg()
-		    .argName("DECOMPOSITIONS_FILE")
-		    .build();
 
 		Option optDataFile = Option.builder(null)
 				.longOpt(ConsoleCommand.OPT_DATA_FILE)
@@ -207,11 +206,11 @@ public class Console {
 		// Compile a corpus and save it to file
 		SubCommand compileCorpus = 
 				new CmdCompileCorpus("compile_corpus")
-				.addOption(optInputDir)				
+				.addOption(optInputDir)
+				.addOption(optOutputDir)
 				.addOption(optCompFile)
 				.addOption(optFromScratch)
 				.addOption(optRedoFailed)
-				.addOption(optDecompsFile)
 				;
 		mainCmd.addSubCommand(compileCorpus);
 

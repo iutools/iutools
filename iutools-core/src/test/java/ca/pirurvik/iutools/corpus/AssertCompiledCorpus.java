@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import ca.inuktitutcomputing.morph.Decomposition;
+import static ca.inuktitutcomputing.data.Morpheme.MorphFormat;
 import org.apache.commons.lang3.tuple.Triple;
 import org.junit.Assert;
 
@@ -150,7 +151,7 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 					wrdWithMorph.word, wrdWithMorph.morphemeId,
 						Decomposition.formatDecompStr(
 							wrdWithMorph.decomposition,
-							Decomposition.MorphFormat.WITH_BRACES)));
+							MorphFormat.WITH_BRACES)));
 		}
 		AssertObject.assertDeepEquals(
 			baseMessage+"\nList of words containing morpheme '"+morpheme+"' was wrong", 

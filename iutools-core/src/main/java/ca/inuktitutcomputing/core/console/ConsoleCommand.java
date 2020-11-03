@@ -14,10 +14,10 @@ public abstract class ConsoleCommand extends SubCommand {
 	public static final String OPT_DATA_FILE = "data-file";
 	public static final String OPT_INPUT_FILE = "input-file";
 	public static final String OPT_INPUT_DIR = "input-dir";
+	public static final String OPT_OUTPUT_DIR = "output-dir";
 	public static final String OPT_CORPUS_NAME = "corpus-name";
 	public static final String OPT_CORPUS_SAVE_PATH = "corpus-save-path";
 	public static final String OPT_GS_FILE = "gs-file";
-	public static final String OPT_DECOMPOSITIONS_FILE = "decomps-file";
 
 	public static final String OPT_MORPHEMES = "morphemes";
 	public static final String OPT_MORPHEME = "morpheme";
@@ -52,15 +52,6 @@ public abstract class ConsoleCommand extends SubCommand {
 		return tFile;
 	}
 	
-	protected File getDecompositionsFile() {
-		String fileStr = getOptionValue(ConsoleCommand.OPT_DECOMPOSITIONS_FILE, false);
-		File file = null;
-		if (fileStr != null) {
-			file = new File(fileStr);
-		}
-		return file;
-	}
-
 	protected File getDataFile() {
 		return getDataFile(false);
 	}
@@ -88,6 +79,22 @@ public abstract class ConsoleCommand extends SubCommand {
 			failIfAbsent = false;
 		}
 		String dirStr = getOptionValue(ConsoleCommand.OPT_INPUT_DIR, failIfAbsent);
+		File dir = null;
+		if (dirStr != null) {
+			dir = new File(dirStr);
+		}
+		return dir;
+	}
+
+	protected File getOutputDir() {
+		return getOutputDir(null);
+	}
+
+	protected File getOutputDir(Boolean failIfAbsent) {
+		if (failIfAbsent == null) {
+			failIfAbsent = true;
+		}
+		String dirStr = getOptionValue(ConsoleCommand.OPT_OUTPUT_DIR, failIfAbsent);
 		File dir = null;
 		if (dirStr != null) {
 			dir = new File(dirStr);

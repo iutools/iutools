@@ -1,9 +1,8 @@
 package ca.inuktitutcomputing.morph;
 
+import static ca.inuktitutcomputing.data.Morpheme.MorphFormat;
 import ca.nrc.testing.AssertString;
 import ca.nrc.testing.Asserter;
-
-import static ca.inuktitutcomputing.morph.Decomposition.MorphFormat;
 
 public class AssertDecomposition extends Asserter {
 

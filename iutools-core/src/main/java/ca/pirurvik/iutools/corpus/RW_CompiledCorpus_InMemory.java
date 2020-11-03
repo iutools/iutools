@@ -5,10 +5,19 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import ca.nrc.ui.commandline.UserIO;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 
 public class RW_CompiledCorpus_InMemory extends RW_CompiledCorpus {
+
+    public RW_CompiledCorpus_InMemory(UserIO io) {
+        super(io);
+    }
+
+    public RW_CompiledCorpus_InMemory() {
+        super();
+    }
 
     @Override
     protected CompiledCorpus newCorpus(File savePath) {
@@ -16,7 +25,7 @@ public class RW_CompiledCorpus_InMemory extends RW_CompiledCorpus {
     }
 
     @Override
-    protected CompiledCorpus readCorpus(File savePath)
+    public CompiledCorpus readCorpus(File savePath)
             throws CompiledCorpusException {
 
         CompiledCorpus_InMemory corpus = null;
@@ -30,7 +39,7 @@ public class RW_CompiledCorpus_InMemory extends RW_CompiledCorpus {
     }
 
     @Override
-    protected void writeCorpus(CompiledCorpus corpus, File savePath)
+    public void writeCorpus(CompiledCorpus corpus, File savePath)
             throws CompiledCorpusException {
         try {
             FileWriter fw = new FileWriter(savePath);

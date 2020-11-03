@@ -26,14 +26,13 @@ public class CmdWordInfo extends ConsoleCommand {
 
         word = getWord();
 
-//        CompiledCorpus corpus = new CompiledCorpus_ES(corpusName);
-
         CompiledCorpus corpus = null;
         try {
-            corpus = CompiledCorpusRegistry.getCorpusWithName_ES(corpusName);
-        } catch (CompiledCorpusRegistryException e) {
             corpus = CompiledCorpusRegistry.getCorpusWithName(corpusName);
+        } catch (CompiledCorpusRegistryException e) {
+            corpus = CompiledCorpusRegistry.getCorpusWithName_ES(corpusName);
         }
+        echo("Corpus is of type: "+corpus.getClass().getSimpleName());
         WordInfo winfo = corpus.info4word(word);
         if (winfo == null) {
             echo("No occurence of word '"+word+"' found in corpus "+corpusName);

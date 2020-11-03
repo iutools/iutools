@@ -1,5 +1,6 @@
 package ca.pirurvik.iutools.corpus;
 
+import ca.inuktitutcomputing.data.Morpheme;
 import ca.inuktitutcomputing.morph.Decomposition;
 import ca.nrc.datastructure.trie.Trie;
 import ca.nrc.dtrc.elasticsearch.*;
@@ -84,35 +85,48 @@ public class CompiledCorpus_ES extends CompiledCorpus {
         if (verbose == null) {
             verbose = true;
         }
-        if (overwrite == null) {
-            overwrite = false;
-        }
-
         if (indexName == null) {
             indexName = corpusName4File(jsonFile);
         }
         setIndexName(indexName);
         setESClientVerbose(verbose);
 
-        if (esClient().indexExists()) {
-            if (overwrite) {
-                if (verbose) {
-                    System.out.println("Clearing index "+indexName);
-                }
-                esClearIndex();
-            }
-        }
-
-        if (!esClient().indexExists() || overwrite) {
-            boolean forceIndexCreation = true;
+        boolean okToLoad = possiblyClearESIndex(overwrite, verbose);
+        if (okToLoad) {
             try {
-                esClient().bulkIndex(jsonFile.toString(), WORD_INFO_TYPE, 100, verbose, forceIndexCreation);
+                esClient().bulkIndex(
+                    jsonFile.toString(), WORD_INFO_TYPE, 100,
+                    verbose, overwrite);
             } catch (ElasticSearchException e) {
                 throw new CompiledCorpusException(e);
             }
         }
 
         return;
+    }
+
+    protected boolean possiblyClearESIndex(Boolean clear, boolean verbose)
+        throws CompiledCorpusException {
+        boolean okToLoad = true;
+        UserIO userIO = new UserIO().setVerbosity(UserIO.Verbosity.Level0);
+        if (esClient().indexExists()) {
+            if (clear == null) {
+                clear =
+                    userIO.prompt_yes_or_no(
+                    "Corpus " + esClient().getIndexName() + " already exists." +
+                        "\nWould you like to overwrite it?\n");
+            }
+            if (clear) {
+                if (verbose) {
+                    System.out.println("Clearing index "+indexName);
+                }
+                esClearIndex();
+            } else {
+                okToLoad = false;
+            }
+        }
+
+        return okToLoad;
     }
 
     @Override
@@ -168,7 +182,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
             String topDecomp =
                 Decomposition.formatDecompStr(
                     winfo.topDecompositionStr,
-                    Decomposition.MorphFormat.WITH_BRACES);
+                    Morpheme.MorphFormat.WITH_BRACES);
 
             WordWithMorpheme aWord =
                 new WordWithMorpheme(
