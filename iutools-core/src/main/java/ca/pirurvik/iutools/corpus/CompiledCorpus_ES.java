@@ -72,7 +72,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
         return _esClient;
     }
 
-    public  void loadFromFile(File jsonFile, Boolean verbose) throws CompiledCorpusException {
+    public void loadFromFile(File jsonFile, Boolean verbose) throws CompiledCorpusException {
         loadFromFile(jsonFile, verbose, null, null);
     }
 
@@ -86,7 +86,11 @@ public class CompiledCorpus_ES extends CompiledCorpus {
             verbose = true;
         }
         if (indexName == null) {
-            indexName = corpusName4File(jsonFile);
+            if (this.indexName != null) {
+                indexName = this.indexName;
+            } else {
+                indexName = corpusName4File(jsonFile);
+            }
         }
         setIndexName(indexName);
         setESClientVerbose(verbose);
@@ -102,7 +106,31 @@ public class CompiledCorpus_ES extends CompiledCorpus {
             }
         }
 
+        changeLastUpdatedHistory();
+
         return;
+    }
+
+    private void changeLastUpdatedHistory() throws CompiledCorpusException {
+        Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpus.changeLastUpdatedHistory");
+        if (tLogger.isTraceEnabled()) {
+            tLogger.trace("indexName="+indexName+";Unpon entry, last loaded date = "+lastLoadedDate());
+        }
+
+        LastLoadedDate lastLoadedRecord = new LastLoadedDate();
+        lastLoadedRecord.timestamp = System.currentTimeMillis();
+        try {
+            esClient().putDocument(LastLoadedDate.esTypeName, lastLoadedRecord);
+        } catch (ElasticSearchException e) {
+            throw new CompiledCorpusException(e);
+        }
+
+        if (tLogger.isTraceEnabled()) {
+            tLogger.trace("indexName="+indexName+";Upon exit, last loaded date = "+lastLoadedDate());
+        }
+
+        return;
+
     }
 
     protected boolean possiblyClearESIndex(Boolean clear, boolean verbose)
@@ -692,6 +720,69 @@ public class CompiledCorpus_ES extends CompiledCorpus {
     @Override
     public long totalWordsWithNgram(String ngram) throws CompiledCorpusException {
         return searchWordsContainingNgram(ngram).getTotalHits();
+    }
+
+    public boolean isUpToDateWithFile(File corpusFile)
+        throws CompiledCorpusException {
+        Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpus.isUpToDateWithFile");
+        boolean uptodate = false;
+        long lastLoaded = lastLoadedDate();
+        long fileLastChanged = corpusFile.lastModified();
+        tLogger.trace("lastLoaded="+lastLoaded+", fileLastChanged="+fileLastChanged);
+        if (lastLoaded > fileLastChanged) {
+            uptodate = true;
+        }
+
+        tLogger.trace("returning uptodate="+uptodate);
+        return uptodate;
+    }
+
+    public long lastLoadedDate() throws CompiledCorpusException {
+        Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpus.lastLoadedDate");
+
+        long date = 0;
+        LastLoadedDate lastLoadedRecord = null;
+        try {
+            SearchResults<LastLoadedDate> results =
+                esClient()
+                    .listAll(LastLoadedDate.esTypeName, new LastLoadedDate());
+            tLogger.trace(
+                "indexName="+indexName+"; number of records in load history = "+
+                results.getTotalHits());
+            Iterator<Hit<LastLoadedDate>> iter = results.iterator();
+            while (iter.hasNext()) {
+                Hit<LastLoadedDate> aHit = iter.next();
+                long hitDate = aHit.getDocument().timestamp;
+                if (hitDate > date) {
+                    date = hitDate;
+                }
+            }
+//            lastLoadedRecord = (LastLoadedDate) esClient()
+//                .getDocumentWithID(
+//                "lastloaded", LastLoadedDate.class, LastLoadedDate.esTypeName);
+        } catch (ElasticSearchException e) {
+            throw new CompiledCorpusException(e);
+        }
+        tLogger.trace(
+            "indexName="+indexName+"; last loaded date = "+
+            ((lastLoadedRecord == null) ? null: lastLoadedRecord.timestamp));
+        if (lastLoadedRecord != null) {
+            date = lastLoadedRecord.timestamp;
+        }
+
+        return date;
+    }
+
+    public static class LastLoadedDate extends Document {
+        public static final String esTypeName = "LastLoadedDate";
+
+        public Long timestamp = null;
+
+        public LastLoadedDate() {
+            // There should ever be only one record of type LastLoadedDate
+            // and its ID should be the following:
+            this.id = "lastload";
+        }
     }
 }
 

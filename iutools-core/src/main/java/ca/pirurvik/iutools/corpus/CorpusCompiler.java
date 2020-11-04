@@ -50,7 +50,7 @@ public class CorpusCompiler {
 	protected long retrievedFileWordCounter = -1;
 
 
-	private CompiledCorpus _corpus = null;
+	private CompiledCorpus_ES _corpus = null;
 	private Map<String,Long> wordFreqs = new HashMap<String,Long>();
 
 	private long lastSaveMSecs = 0;
@@ -120,6 +120,18 @@ public class CorpusCompiler {
 	}
 
 	public void compile() throws CorpusCompilerException {
+		compile((String)null, (File)null);
+	}
+
+	public void compile(String _corpName, File txtDir) throws CorpusCompilerException {
+
+		if (txtDir != null) {
+			setCorpusDir(txtDir);
+		}
+		if (_corpName != null) {
+			setCorpusName(_corpName);
+		}
+
 		while (progress.currentPhase != Phase.DONE) {
 			boolean stop = performNextStep();
 			writeProgressFile();
@@ -286,7 +298,7 @@ public class CorpusCompiler {
 			"   Loading corpus "+progress.corpusName+" from file (no decomps): "+
 			"\n      "+corpusFile+"\n\n");
 		try {
-			CompiledCorpus corpus = new RW_CompiledCorpus_ES(corpusName, user_io).readCorpus(corpusFile);
+			corpus().loadFromFile(corpusFile, true);
 		} catch (CompiledCorpusException e) {
 			throw new CorpusCompilerException(
 				"Problem loading corpus "+corpusName+" from file "+corpusFile, e);
@@ -596,7 +608,7 @@ public class CorpusCompiler {
 		return this;
 	}
 
-	public CompiledCorpus corpus() throws CorpusCompilerException {
+	public CompiledCorpus_ES corpus() throws CorpusCompilerException {
 		if (_corpus == null) {
 			try {
 				_corpus = new CompiledCorpus_ES(corpusName);
@@ -782,21 +794,6 @@ public class CorpusCompiler {
 			oldFreq = new Long(0);
 		}
 		wordFreqs.put(word, oldFreq+1);
-	}
-
-
-
-	protected void compileExtras() {
-//		corpus.setNgramStats();
-	}
-
-	public void save(File corpusDirectory) throws CompiledCorpusException  {
-		if (_corpus instanceof CompiledCorpus_InMemory) {
-			File saveFilePathname = new File(corpusDirectory, CompiledCorpus_InMemory.JSON_COMPILATION_FILE_NAME);
-			RW_CompiledCorpus.write(_corpus, saveFilePathname);
-		} else {
-			RW_CompiledCorpus.write(_corpus, corpusDirectory);
-		}
 	}
 
 	private static String[] extractWordsFromLine(String line) {

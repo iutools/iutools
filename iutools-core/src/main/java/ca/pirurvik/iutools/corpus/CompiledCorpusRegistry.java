@@ -17,24 +17,27 @@ public class CompiledCorpusRegistry {
 	
 	private static Map<String,CompiledCorpus_InMemory> corpusCache = new HashMap<String,CompiledCorpus_InMemory>();
 	private static Map<String,File> registry = new HashMap<String,File>();
+	private static Map<String,File> registryES = new HashMap<String,File>();
 	public static final String defaultInMemCorpusName = "Hansard1999-2002";
-	public static final String defaultESCorpusName = "HANSARD-1999-2002";
+//	public static final String defaultESCorpusName = "HANSARD-1999-2002";
+	public static final String defaultESCorpusName = "HANSARD-1999-2002.v2020-11-02";
 	public static final String emptyCorpusName = "EMPTYCORPUS";
 	
 	static {
 		try {
 			String Hansard19992002_compilationFilePath = IUConfig.getIUDataPath("data/compiled-corpuses/compiled-corpus-HANSARD-1999-2002--withWordInfoMap.json");
 			registry.put("Hansard1999-2002", new File(Hansard19992002_compilationFilePath));
-			registry.put(
+			registerCorpus_ES(
 				defaultESCorpusName,
 				new File(
 					IUConfig.getIUDataPath(
-					"data/compiled-corpuses/HANSARD-1999-2002.v2020-10-06.ES.json")));
-		} catch (ConfigException e) {
+				"data/compiled-corpuses/HANSARD-1999-2002.v2020-10-06.ES.json")));
+
+		} catch (ConfigException | CompiledCorpusRegistryException e) {
 			throw new ExceptionInInitializerError(e);
 		}
 	}
-	
+
 	public static void registerCorpus(String corpusName, File jsonFile) throws CompiledCorpusRegistryException {
 		if (registry.containsKey(corpusName) 
 				&&  !registry.get(corpusName).equals(jsonFile) ) {
@@ -46,8 +49,31 @@ public class CompiledCorpusRegistry {
 		}
 	}
 
+	public static void registerCorpus_ES(
+		String corpusName, File jsonFile)
+		throws CompiledCorpusRegistryException {
+		if (registryES.containsKey(corpusName)
+			&&  !registryES.get(corpusName).equals(jsonFile) ) {
+			throw new CompiledCorpusRegistryException("The name '"+corpusName+"' is already associated with a different compilation file.");
+		} else if ( !jsonFile.exists() ) {
+			throw new CompiledCorpusRegistryException("The file "+jsonFile.getAbsolutePath()+" does not exist.");
+		} else {
+			registryES.put(corpusName, jsonFile);
+		}
+
+		try {
+			CompiledCorpus_ES corpus = new CompiledCorpus_ES(corpusName);
+			if (!corpus.isUpToDateWithFile(jsonFile)) {
+				corpus.loadFromFile(jsonFile, true);
+			}
+		} catch (CompiledCorpusException e) {
+			throw new CompiledCorpusRegistryException(e);
+		}
+	}
+
 	@JsonIgnore
-	public static CompiledCorpus getCorpusWithName_ES() throws CompiledCorpusRegistryException {
+	public static CompiledCorpus getCorpusWithName_ES()
+		throws CompiledCorpusRegistryException {
 		return getCorpusWithName_ES(defaultESCorpusName);
 	}
 
@@ -57,18 +83,34 @@ public class CompiledCorpusRegistry {
 	}
 
 	@JsonIgnore
-	public static CompiledCorpus getCorpusWithName_ES(String corpusName) throws CompiledCorpusRegistryException {
+	public static CompiledCorpus getCorpusWithName_ES(String corpusName)
+		throws CompiledCorpusRegistryException {
 		Logger logger = Logger.getLogger("CompiledCorpusRegistry.getCorpusWithName");
 		logger.debug("corpusName= '"+corpusName+"'");
 		if (corpusName == null) {
 			corpusName = defaultESCorpusName;
 		}
+		if (!registryES.containsKey(corpusName)) {
+			throw new CompiledCorpusRegistryException(
+				"There is no corpus by the name of "+corpusName);
+		}
+		File corpusFile = registryES.get(corpusName);
 		CompiledCorpus_ES corpus = null;
 		try {
 			corpus = new CompiledCorpus_ES(corpusName);
 		} catch (CompiledCorpusException e) {
 			throw new CompiledCorpusRegistryException(e);
 		}
+
+		try {
+			if (!corpus.isUpToDateWithFile(corpusFile)) {
+				// Should load the corpus
+				int x = 1;
+			}
+		} catch (CompiledCorpusException e) {
+			throw new CompiledCorpusRegistryException(e);
+		}
+
 		return corpus;
 	}
 

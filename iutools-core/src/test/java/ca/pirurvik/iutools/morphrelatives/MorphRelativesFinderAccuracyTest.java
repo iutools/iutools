@@ -44,7 +44,7 @@ public class MorphRelativesFinderAccuracyTest {
 //				.setTargetPrecision(0.57)
 				.setTargetPrecision(0.51)
 
-				.setTargetRecall(0.47)
+				.setTargetRecall(0.42)
 				.setPrecRecTolerance(0.02)
 			;
 

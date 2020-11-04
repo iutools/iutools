@@ -55,7 +55,7 @@ public class OccurenceSearchEndpointTest {
 		List<String> expListOfWords =
 			Arrays.asList(new String[] {"ammuumajuqsiuqtutik","ittuqsiutitaaqpattut"});
 		List<Double> expListOfScores =
-			Arrays.asList(new Double[] {(double) 10004.0,(double) 3335.3});
+			Arrays.asList(new Double[] {(double) 10004.0,(double) 10002});
 		Map<String,MorphemeSearchResult> expected = new HashMap<String,MorphemeSearchResult>();
 		expected.put("siuq/1nv", new MorphemeSearchResult(
 				"searching, looking for s.t. (trans.: of, for, about s.o.); travelling through space or time (spend); feasting, celebrating",

@@ -316,8 +316,8 @@ public class SpellCheckerTest {
 			"ujararniarvimmi",
 			"ujararniarvimmik",
 			"ujararniarvimmit",
-			"ujararniarvingmi",
-			"ujarattarniarvimmi"
+			"ujarattarniarvimmi",
+			"ujararniarvimmut"
 		};
 
 		if (!(checker instanceof SpellChecker_ES)) {

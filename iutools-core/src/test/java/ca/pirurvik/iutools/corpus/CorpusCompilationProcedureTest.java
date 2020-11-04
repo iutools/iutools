@@ -1,5 +1,6 @@
 package ca.pirurvik.iutools.corpus;
 
+import ca.nrc.dtrc.elasticsearch.StreamlinedClient;
 import ca.nrc.file.ResourceGetter;
 import org.apache.log4j.Logger;
 import org.junit.After;
@@ -12,13 +13,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Iterator;
 
 public class CorpusCompilationProcedureTest {
 
+    protected static final String testCorpusName = "test_corpus";
+
     File corporaDirectory = null;
     File singleFileCorpus = null;
-    File multiDirCorpus = null;
+    File txtFilesDir = null;
     File wordDecompsFile = null;
 
     @Before
@@ -50,9 +52,13 @@ public class CorpusCompilationProcedureTest {
                 { stringsOfWords21 }
         };
 
-        multiDirCorpus = createTemporaryCorpusDirectoryWithSubdirectories(subdirs);
+        txtFilesDir = createTemporaryCorpusDirectoryWithSubdirectories(subdirs);
 
         wordDecompsFile = ResourceGetter.copyResourceToTempLocation("ca/pirurvik/iutools/corpus/wordDecomps.json");
+
+        new StreamlinedClient(testCorpusName).deleteIndex();
+
+        return;
     }
 
     @After
@@ -68,33 +74,29 @@ public class CorpusCompilationProcedureTest {
     @Test
     public void test__CorpusCompiler__Synopsis() throws Exception {
         //
-        // Use a CorpusCompiler to generate a JSON file containing
+        // Use a CorpusCompiler to generate a corpus containing
         // information about all words found in a collection of TXT files.
         //
-        // This is done in 3 phases
+        // This is done in 2 phases
         //
         // Phase 1: Compile word frequencies
         // - Given a series of TXT files stored in a directory,
-        //   compile a JSON file listing all words and their frequencies.
+        //   generate a corpus that contain frequency info about
+        //   all of its words, but NO information about their
+        //   morphological decompositions.
         //
-        // Phase 2: Add morphological decompositions to the file
-        // - Run the 'add_decomps' console command in pipeline mode,
-        //   feeding it the word frequencies file generated above.
-        // - This will produce another JSON file that has the same word
-        //   information as the first file, but with the decompositions added.
-        //
-        // Phase 3 (OPTIONAL): Reformat the word info file
-        // - The file produced in Phase 2 has one JSON record per line.
-        // - If you want to store that file in a version management system
-        //   like DAGsHub, we recommend that you reformat the file so that
-        //   each JSON record is spread over several lines (one line per field
-        //   or element of a collection value). That way, if only one field
-        //   or value in the record changes, the version managment sysstem
-        //   can only update the delta for that one line.
+        // Phase 2: Add morphological decompositions to the corpus
         //
         // Below are the details of each step.
         //
-        CorpusCompiler compiler = new CorpusCompiler(multiDirCorpus);
+
+
+        // Create a compiler. You need to provide it with a
+        // working directory that will be used to store temp and output
+        // files.
+        //
+        Path workDir = Files.createTempDirectory("corpus-compiler");
+        CorpusCompiler compiler = new CorpusCompiler(workDir.toFile());
 
         // Set verbose to false if you don't want the compiler to print progress
         // messages on STDOUT
@@ -104,30 +106,62 @@ public class CorpusCompilationProcedureTest {
         // Phase 1: Compile word frequencies from a series of txt files
         //
         String corpusName = "test_corpus";
-        compiler.compileWordFrequencies(corpusName);
+        compiler.compile(corpusName, txtFilesDir);
+
+        // At this point:
+        // - The corpus called corpusName has been created and contains
+        //   the frequency info about all words in the TXT files
+        //
+        // - The working directory contains the following files:
+        //
+        //   - words.txt: A list of all words, one word per line
+        //
+        //   - corpus.nodecomps.json: A JSON file with the records
+        //     that are currently loaded in the corpus'
+        //     ElasticSearch index. Those records only include
+        //     frequency information (no morphological decomps).
+        //
+
+        // Before we can proceed with Phase 2, we must generate
+        // a JSON file that contains the decompositions for all
+        // words listed in the 'words.txt' file.
+        //
+        // Once you have generate this file, you must copy it to the
+        // working directory under the name 'decomps.json'.
+        //
+        ResourceGetter.copyResourceFilesToDir(
+            "ca/pirurvik/iutools/corpus/decomps.json", workDir);
 
         // Phase 2: Generate the word decompositions
         //
-        // wordsFile() provides a file containing all words that were seen in
-        // the TXT files.
+        // Recreate the compiler, feeding it the working directory
+        // used in Phase 1 and use it to resume compilation.
         //
-        // You must then generate a JSON file that contains the morphological
-        // decompositions of every word in that file.
-        // This is typcally done using a cluster of machines that run the
-        // Console command 'segment_iu' in pipeline mode.
+        // Note that you don't have to provide the name of the corpus
+        // as it will have been saved in the progress.json file. Also
+        // you don't need to provide the path of the TXT files, as
+        // the TXT files are not needed for Phase 2.
         //
-        File wordsFile = compiler.wordsFile();
+        compiler = new CorpusCompiler(workDir.toFile());
+        compiler.compile();
 
-        // Let's assume the JSON file containing the decomps has been generated
-        // and that it has been put under the appropriate name in the cor
+        // At this point:
         //
-        ResourceGetter.copyResourceFilesToDir(
-            "decompsFile.json", multiDirCorpus.toPath());
-
-        // You can then proceed with
-        // Phase 3: Update the decompositions
+        // - The corpus called corpusName all information about
+        //     in the corpus, including morphological decompositions
         //
-        compiler.updateWordDecompositions();
+        // - The working directory contains the following files:
+        //
+        //   - words.txt: A list of all words, one word per line
+        //
+        //   - <corpusName>.json: A JSON file with the records
+        //     that are currently loaded in the corpus'
+        //     ElasticSearch index. Those records  include
+        //     frequency information as well as morphological
+        //     decomps. The JSON file is formatted in a way
+        //     that is appropriate for storage in a version tracking
+        //     system like Git or DAGsHub.
+        //
 
     }
 

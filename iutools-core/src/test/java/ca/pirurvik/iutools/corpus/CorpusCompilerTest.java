@@ -24,6 +24,7 @@ public class CorpusCompilerTest {
 	
 	@Before
 	public void setUp() throws Exception {
+
 		corporaDirectory = Files.createTempDirectory("corpora").toFile();
 		
 		String[] stringsOfWords = new String[] {
