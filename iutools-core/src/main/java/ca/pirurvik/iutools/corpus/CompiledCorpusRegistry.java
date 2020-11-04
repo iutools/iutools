@@ -25,13 +25,11 @@ public class CompiledCorpusRegistry {
 	
 	static {
 		try {
-			String Hansard19992002_compilationFilePath = IUConfig.getIUDataPath("data/compiled-corpuses/compiled-corpus-HANSARD-1999-2002--withWordInfoMap.json");
-			registry.put("Hansard1999-2002", new File(Hansard19992002_compilationFilePath));
 			registerCorpus_ES(
 				defaultESCorpusName,
 				new File(
 					IUConfig.getIUDataPath(
-				"data/compiled-corpuses/HANSARD-1999-2002.v2020-10-06.ES.json")));
+				"data/compiled-corpuses/HANSARD-1999-2002.v2020-11-02.ES.json")));
 
 		} catch (ConfigException | CompiledCorpusRegistryException e) {
 			throw new ExceptionInInitializerError(e);
@@ -78,11 +76,6 @@ public class CompiledCorpusRegistry {
 	}
 
 	@JsonIgnore
-	public static CompiledCorpus_InMemory getCorpusWithName() throws CompiledCorpusRegistryException {
-		return getCorpusWithName(defaultInMemCorpusName);
-	}
-
-	@JsonIgnore
 	public static CompiledCorpus getCorpusWithName_ES(String corpusName)
 		throws CompiledCorpusRegistryException {
 		Logger logger = Logger.getLogger("CompiledCorpusRegistry.getCorpusWithName");
@@ -109,36 +102,6 @@ public class CompiledCorpusRegistry {
 			}
 		} catch (CompiledCorpusException e) {
 			throw new CompiledCorpusRegistryException(e);
-		}
-
-		return corpus;
-	}
-
-	@JsonIgnore
-	public static CompiledCorpus_InMemory getCorpusWithName(String corpusName) throws CompiledCorpusRegistryException {
-		Logger logger = Logger.getLogger("CompiledCorpusRegistry.getCorpusWithName");
-		logger.debug("corpusName= '"+corpusName+"'");
-		if (corpusName == null) {
-			corpusName = defaultInMemCorpusName;
-		}
-		CompiledCorpus_InMemory corpus = null;
-		if (corpusName == emptyCorpusName) {
-			corpus = new CompiledCorpus_InMemory();
-		} else {
-			String corpusFile = null;
-			if (registry.containsKey(corpusName)) {
-				corpusFile = registry.get(corpusName).toString();
-			}  else {
-				corpusFile = scanDataDirForCorpusFile(corpusName);
-			}
-			
-			if (corpusFile == null) {
-				throw new CompiledCorpusRegistryException(
-						"Could not find a corpus that matches name "+corpusName);
-			}
-			logger.debug("building corpus");
-			corpus = makeCorpus(corpusFile);
-			logger.debug("corpus built");
 		}
 
 		return corpus;
@@ -179,62 +142,6 @@ public class CompiledCorpusRegistry {
 		return corpusFile;
 	}
 
-	@JsonIgnore
-	public static CompiledCorpus_InMemory getCorpus() throws CompiledCorpusRegistryException {
-		return getCorpus(defaultInMemCorpusName);
-	}
-
-	@JsonIgnore
-	public static CompiledCorpus_InMemory getCorpus(String corpusName) throws CompiledCorpusRegistryException {
-		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpusRegistry.getCorpus");
-		tLogger.trace("corpusName="+corpusName);
-		if (corpusName==null) {
-			corpusName = defaultInMemCorpusName;
-		}
-		
-		CompiledCorpus_InMemory corpus = null;
-		if (corpusName.equals(emptyCorpusName)) {
-			corpus = new CompiledCorpus_InMemory();
-		} else {
-			if (corpusCache.containsKey(corpusName)) {
-				// We have already generated a corpus for that name
-				corpus = corpusCache.get(corpusName);
-			} else {
-				// We have NOT generated a corpus for that name.
-				// Check if the name corresponds to an actual corpus name
-				if (registry.containsKey(corpusName)) {
-					// The name is an actual corpus name.
-					// Get the file it corresponds to and load it
-					String jsonFilePath = registry.get(corpusName).toString();
-					tLogger.trace("This is an EXPLICITLY registered name; loading it from associated file: "+jsonFilePath);
-					corpus = makeCorpus(jsonFilePath);
-					corpusCache.put(corpusName, corpus);
-					corpusCache.put(jsonFilePath, corpus);
-				} else {
-					// The "name" does not correspond to the name of an actual 
-					// corpus. See if there is a corpus file or directory that
-					// contains that "name"
-					//
-					String corpusFile = scanDataDirForCorpusFile(corpusName);
-					if (corpusFile != null) {
-						// Found a file that matches corpusName
-						// Load it
-						if (corpusCache.containsKey(corpusFile)) {
-							corpus = corpusCache.get(corpusFile);
-						} else {
-							corpus = makeCorpus(corpusFile);
-							corpusCache.put(corpusFile, corpus);
-						}
-					} else {
-						throw new CompiledCorpusRegistryException("Unknown corpus name: "+corpusName);
-					}
-				}
-			}
-		}
-		
-		return corpus;
-	}
-	
 	private static CompiledCorpus_InMemory makeCorpus(String corpusJsonFPath) throws CompiledCorpusRegistryException  {
 		CompiledCorpus_InMemory corpus = null;
 		if (! new File(corpusJsonFPath).exists()) {

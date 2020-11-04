@@ -33,7 +33,7 @@ public class CmdMorphFailureAnalysis extends ConsoleCommand {
 	@Override
 	public void execute() throws Exception {
 
-		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpus();
+		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpusWithName_ES();
 		MorphFailureAnalyzer analyzer = makeAnalyzer();
 				
 		loadCorpusWords(corpus, analyzer);

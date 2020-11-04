@@ -27,7 +27,7 @@ public class MorphRelativesFinderAccuracyTest {
 
 
 				// Each morpheme should run in about 1.5 secs, give or take 0.5
-				.setTargetRuntimeSecs(1.5, 0.5)
+				.setTargetRuntimeSecs(2.5, 0.5)
 
 				// 2020-10-28-AD:
 				//   This was the accuracy before we moved to the new version
@@ -79,8 +79,8 @@ public class MorphRelativesFinderAccuracyTest {
 			//
 //			.setTargetPrecision(0.6314)
 //			.setTargetRecall(0.4707)
-			.setTargetPrecision(0.419)
-			.setTargetRecall(0.351)
+			.setTargetPrecision(0.45)
+			.setTargetRecall(0.33)
 
 			.setPrecRecTolerance(0.015)
 			// Each word should take on average 2 secs, give or take 1 sec

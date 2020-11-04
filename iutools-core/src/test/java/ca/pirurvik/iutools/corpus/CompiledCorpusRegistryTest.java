@@ -66,9 +66,9 @@ public class CompiledCorpusRegistryTest {
 	public void test__getCorpus__get_from_unknown_corpus_name() {
 		boolean errorCaught = false;
 		try {
-			CompiledCorpus corpus = CompiledCorpusRegistry.getCorpus("blah");
+			CompiledCorpus corpus = CompiledCorpusRegistry.getCorpusWithName_ES("blah");
 		} catch (CompiledCorpusRegistryException e) {
-			errorCaught = e.getMessage().contains("Unknown corpus name");
+			errorCaught = e.getMessage().contains("There is no corpus by the name of");
 		}
 		assertTrue("The exception 'Unknown corpus name' should have been thrown.",errorCaught);
 	}
@@ -77,6 +77,6 @@ public class CompiledCorpusRegistryTest {
 	public void test__getCorpus__UnknownCorpus__RaisesException() 
 			throws Exception {
 		String corpusName = "blabla";
-		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpus(corpusName);
+		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpusWithName_ES(corpusName);
 	}
 }

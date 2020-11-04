@@ -28,7 +28,7 @@ public class CmdWordInfo extends ConsoleCommand {
 
         CompiledCorpus corpus = null;
         try {
-            corpus = CompiledCorpusRegistry.getCorpusWithName(corpusName);
+            corpus = CompiledCorpusRegistry.getCorpusWithName_ES(corpusName);
         } catch (CompiledCorpusRegistryException e) {
             corpus = CompiledCorpusRegistry.getCorpusWithName_ES(corpusName);
         }

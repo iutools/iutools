@@ -43,7 +43,7 @@ public class CmdDescribeCorpus extends ConsoleCommand {
 		File compilationFile = new File(compilationFilePathname);
 		String corpusName = "this-corpus";
 		CompiledCorpusRegistry.registerCorpus(corpusName, compilationFile);
-		CompiledCorpus compiledCorpus = CompiledCorpusRegistry.getCorpus(corpusName);
+		CompiledCorpus compiledCorpus = CompiledCorpusRegistry.getCorpusWithName_ES(corpusName);
 		
 		long totalOccurences = compiledCorpus.totalOccurences();
 		long totalOccurencesNoDecomp = 

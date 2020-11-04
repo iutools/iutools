@@ -233,23 +233,12 @@ public class Console {
 		mainCmd.addSubCommand(esLoadCorpus);
 
 		// Describe a corpus
-//		SubCommand describeCorpus =
-//				new CmdDescribeCorpus("describe_corpus")
-//				.addOption(optCompFile)
-//				;
-//		mainCmd.addSubCommand(describeCorpus);
-
-		// Search a trie for a sequence of morphemes
-		SubCommand searchTrie = 
-				new CmdSearchTrie("search_trie")
-				.addOption(optCompFile)	
-				.addOption(optMorphemes)
-				.addOption(optWord)
-				.addOption(optPipelineMode)
-				.addOption(optTimeoutSecs)
+		SubCommand describeCorpus =
+				new CmdDescribeCorpus("describe_corpus")
+				.addOption(optCompFile)
 				;
-		mainCmd.addSubCommand(searchTrie);
-		
+		mainCmd.addSubCommand(describeCorpus);
+
 		
 		// Decompose an Inuktut word
 		SubCommand segmentIU = 

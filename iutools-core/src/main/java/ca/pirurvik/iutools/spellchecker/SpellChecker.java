@@ -150,7 +150,7 @@ public class SpellChecker {
 	
 	public SpellChecker(String corpusName) throws StringSegmenterException, SpellCheckerException {
 		try {
-			CompiledCorpus corpus = CompiledCorpusRegistry.getCorpus(corpusName);
+			CompiledCorpus corpus = CompiledCorpusRegistry.getCorpusWithName_ES(corpusName);
 			init_SpellChecker_CorpusObject(corpus);
 		} catch (CompiledCorpusRegistryException e) {
 			throw new SpellCheckerException(e);
@@ -183,7 +183,7 @@ public class SpellChecker {
 
 	public void setDictionaryFromCorpus() throws SpellCheckerException, ConfigException, FileNotFoundException {
 		try {
-			corpus = CompiledCorpusRegistry.getCorpus(null);
+			corpus = CompiledCorpusRegistry.getCorpusWithName_ES();
 			__processCorpus();
 		} catch (CompiledCorpusRegistryException e) {
 			throw new SpellCheckerException(e);
@@ -197,7 +197,7 @@ public class SpellChecker {
 
 	public void setDictionaryFromCorpus(String _corpusName) throws SpellCheckerException, ConfigException, FileNotFoundException {
 		try {
-			corpus = CompiledCorpusRegistry.getCorpus(_corpusName);
+			corpus = CompiledCorpusRegistry.getCorpusWithName_ES(_corpusName);
 			setDictionaryFromCorpus(corpus);
 		} catch (CompiledCorpusRegistryException e) {
 			throw new SpellCheckerException(e);
