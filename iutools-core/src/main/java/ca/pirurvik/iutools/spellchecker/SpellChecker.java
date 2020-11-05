@@ -76,10 +76,8 @@ public class SpellChecker {
 	 */
 	private final long MAX_DECOMP_MSECS = 5*1000;
 
-	protected CompiledCorpus explicitlyCorrectWords =
-		new CompiledCorpus_InMemory()
-		.setSegmenterClassName(StringSegmenter_AlwaysNull.class);
-	
+	protected CompiledCorpus explicitlyCorrectWords = null;
+
 	// TODO-June2020: Can we get rid of this and use the explicitlyCorrectWords
 	//   CompiledCorpus instance instead?
 	/** 
@@ -779,9 +777,11 @@ public class SpellChecker {
 	}
 
 	private boolean isExplicitlyCorrect(String word) throws SpellCheckerException {
-		boolean answer;
+		boolean answer = false;
 		try {
-			answer = explicitlyCorrectWords.containsWord(word);
+			if (explicitlyCorrectWords != null) {
+				answer = explicitlyCorrectWords.containsWord(word);
+			}
 		} catch (CompiledCorpusException e) {
 			throw new SpellCheckerException(e);
 		}
@@ -1241,51 +1241,20 @@ public class SpellChecker {
 
 		Set<String> wordsWithSeq = new HashSet<String>();
 
-		// TODO-Sept2020: Get rid of this 'if' once we don't use
-		//  CompiledCorpus_InMemory anymore
-		//
 		Iterator<String> wordsIter = null;
-		if (!(corpus instanceof CompiledCorpus_InMemory)) {
-			try {
+		try {
 
-				Iterator<String> wordsIter1 =
-					corpus.wordsContainingNgram(
-						seq, options);
+			Iterator<String> wordsIter1 =
+				corpus.wordsContainingNgram(
+					seq, options);
 
-				Iterator<String> wordsIter2 =
-					explicitlyCorrectWords.wordsContainingNgram(
-						seq, CompiledCorpus.SearchOption.EXCL_MISSPELLED);
+			Iterator<String> wordsIter2 =
+				explicitlyCorrectWords.wordsContainingNgram(
+					seq, CompiledCorpus.SearchOption.EXCL_MISSPELLED);
 
-				wordsIter = new IteratorChain<String>(wordsIter1, wordsIter2);
-			} catch (CompiledCorpusException e) {
-				throw new SpellCheckerException(e);
-			}
-		} else {
-			wordsWithSeq = uncacheWordsWithNgram(seq);
-			if (wordsWithSeq == null) {
-				Pattern p;
-				if (seq.charAt(0) == '^' && seq.charAt(seq.length() - 1) == '$') {
-					seq = seq.substring(1, seq.length() - 1);
-					p = Pattern.compile(",(" + seq + "),");
-				} else if (seq.charAt(0) == '^') {
-					seq = seq.substring(1);
-					p = Pattern.compile(",(" + seq + "[^,]*),");
-				} else if (seq.charAt(seq.length() - 1) == '$') {
-					logger.debug("seq= " + seq);
-					seq = seq.substring(0, seq.length() - 1);
-					logger.debug(">>> seq= " + seq);
-					p = Pattern.compile(",([^,]*" + seq + "),");
-				} else
-					p = Pattern.compile(",([^,]*" + seq + "[^,]*),");
-
-				Matcher m = p.matcher(amongWords); //p.matcher(allWords)
-				wordsWithSeq = new HashSet<String>();
-				while (m.find()) {
-					wordsWithSeq.add(m.group(1));
-				}
-				cacheWordsWithNgram(seq, wordsWithSeq);
-			}
-			wordsIter = wordsWithSeq.iterator();
+			wordsIter = new IteratorChain<String>(wordsIter1, wordsIter2);
+		} catch (CompiledCorpusException e) {
+			throw new SpellCheckerException(e);
 		}
 
 		long elapsed = StopWatch.elapsedMsecsSince(start);

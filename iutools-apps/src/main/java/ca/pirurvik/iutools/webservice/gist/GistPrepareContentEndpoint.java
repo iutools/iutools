@@ -4,33 +4,26 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import ca.pirurvik.iutools.concordancer.*;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ca.inuktitutcomputing.script.TransCoder;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.json.PrettyPrinter;
-import ca.nrc.string.SimpleTokenizer;
-import ca.pirurvik.iutools.concordancer.Alignment;
-import ca.pirurvik.iutools.concordancer.DocAlignment;
-import ca.pirurvik.iutools.concordancer.WebConcordancer;
-import ca.pirurvik.iutools.concordancer.WebConcordancerException;
 import ca.pirurvik.iutools.text.segmentation.IUTokenizer;
 import ca.pirurvik.iutools.text.segmentation.Segmenter;
 import ca.pirurvik.iutools.webservice.EndPointHelper;
 import ca.pirurvik.iutools.webservice.ServiceException;
 import ca.pirurvik.iutools.webservice.ServiceResponse;
 import ca.pirurvik.iutools.webservice.tokenize.GistPrepareContentInputs;
-import ca.pirurvik.iutools.webservice.tokenize.TokenizeResponse;
 
 /**
  * Endpoint used by the Gist application to prepare some text for 
@@ -105,11 +98,12 @@ public class GistPrepareContentEndpoint extends HttpServlet {
 		
 
 		response.wasActualText = false;
-		WebConcordancer concordancer = new WebConcordancer();
+		WebConcordancer concordancer = new WebConcordancer_HtmlUnit();
 		URL url;
 		try {
 			url = new URL(inputs.textOrUrl);
-			DocAlignment alignments = concordancer.alignPage(url, new String[] {"en", "iu"});
+			DocAlignment alignments =
+				concordancer.alignPage(url, new String[] {"en", "iu"});
 			response.fillFromDocAlignment(alignments);
 		} catch (MalformedURLException | WebConcordancerException e) {
 			throw new ServiceException(e);

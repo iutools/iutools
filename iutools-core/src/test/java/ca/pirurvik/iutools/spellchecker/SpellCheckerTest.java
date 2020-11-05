@@ -62,7 +62,9 @@ public class SpellCheckerTest {
 	}
 
 	protected SpellChecker makeCheckerEmptyDict() throws Exception {
-		SpellChecker checker = new SpellChecker(emptyESCorpus());
+		SpellChecker checker =
+			new SpellChecker_ES(
+				emptyESCorpus().getIndexName());
 		checker.setVerbose(false);
 		return checker;
 	}
