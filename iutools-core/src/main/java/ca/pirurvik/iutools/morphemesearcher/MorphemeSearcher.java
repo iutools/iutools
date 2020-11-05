@@ -31,7 +31,7 @@ public class MorphemeSearcher {
 	
 	public MorphemeSearcher() throws MorphemeSearcherException {
 		try {
-			useCorpus(CompiledCorpusRegistry.getCorpusWithName_ES());
+			useCorpus(CompiledCorpusRegistry.getCorpusWithName());
 		} catch (IOException |CompiledCorpusRegistryException e) {
 			throw new MorphemeSearcherException(e);
 		}

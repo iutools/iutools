@@ -36,7 +36,7 @@ public class MorphRelativesFinder {
 	public MorphRelativesFinder() throws MorphRelativesFinderException {
 		CompiledCorpus corpus = null;
 		try {
-			corpus = CompiledCorpusRegistry.getCorpusWithName_ES();
+			corpus = CompiledCorpusRegistry.getCorpusWithName();
 		} catch (CompiledCorpusRegistryException e) {
 			throw new MorphRelativesFinderException(e);
 		}

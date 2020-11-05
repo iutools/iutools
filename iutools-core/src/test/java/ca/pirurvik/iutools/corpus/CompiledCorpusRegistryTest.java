@@ -29,13 +29,13 @@ public class CompiledCorpusRegistryTest {
 		//
 		// For example, to get the "default" corpus, do this:
 		//
-		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpusWithName_ES();
+		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpusWithName();
 		
 		//
 		// If you want to get a specific corpus, do this:
 		//
-		String corpusName = CompiledCorpusRegistry.defaultESCorpusName;
-		corpus = CompiledCorpusRegistry.getCorpusWithName_ES(corpusName);
+		String corpusName = CompiledCorpusRegistry.defaultCorpusName;
+		corpus = CompiledCorpusRegistry.getCorpusWithName(corpusName);
 	}
 		
 	//////////////////////////////
@@ -45,7 +45,7 @@ public class CompiledCorpusRegistryTest {
 	@Test
 	public void test__getCorpus__No_argument__Returns_default_corpus() 
 			throws Exception {
-		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpusWithName_ES();
+		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpusWithName();
 		String morpheme = "{amma/1c}";
 		long gotFreq = corpus.morphemeNgramFrequency(new String[] {"{amma/1c}"});
 		Assert.assertEquals("Incorrect number of words with morpheme "+morpheme,
@@ -55,7 +55,7 @@ public class CompiledCorpusRegistryTest {
 	@Test
 	public void test__getCorpus__RegisteredCorpus()
 			throws Exception {
-		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpusWithName_ES(CompiledCorpusRegistry.defaultESCorpusName);
+		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpusWithName(CompiledCorpusRegistry.defaultCorpusName);
 		String morpheme = "{amma/1c}";
 		long gotFreq = corpus.morphemeNgramFrequency(new String[] {"{amma/1c}"});
 		Assert.assertEquals("Incorrect number of words with morpheme "+morpheme,
@@ -66,7 +66,7 @@ public class CompiledCorpusRegistryTest {
 	public void test__getCorpus__get_from_unknown_corpus_name() {
 		boolean errorCaught = false;
 		try {
-			CompiledCorpus corpus = CompiledCorpusRegistry.getCorpusWithName_ES("blah");
+			CompiledCorpus corpus = CompiledCorpusRegistry.getCorpusWithName("blah");
 		} catch (CompiledCorpusRegistryException e) {
 			errorCaught = e.getMessage().contains("There is no corpus by the name of");
 		}
@@ -77,6 +77,6 @@ public class CompiledCorpusRegistryTest {
 	public void test__getCorpus__UnknownCorpus__RaisesException() 
 			throws Exception {
 		String corpusName = "blabla";
-		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpusWithName_ES(corpusName);
+		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpusWithName(corpusName);
 	}
 }

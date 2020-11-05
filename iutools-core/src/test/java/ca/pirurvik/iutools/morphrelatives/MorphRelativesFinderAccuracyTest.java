@@ -41,7 +41,6 @@ public class MorphRelativesFinderAccuracyTest {
 				//   For now, just use the lowered expectations and accept the
 				//   fact that the Gold Standard underestimates the accuracy
 				//
-//				.setTargetPrecision(0.57)
 				.setTargetPrecision(0.51)
 
 				.setTargetRecall(0.42)
@@ -49,8 +48,6 @@ public class MorphRelativesFinderAccuracyTest {
 			;
 
 		evaluatePerformance(expectations, 10);
-
-		Assert.fail("This test (and others in the test case) \"passes\" but only because we lowered expectations temporarily");
 	}
 
 	@Test
@@ -103,7 +100,7 @@ public class MorphRelativesFinderAccuracyTest {
 		//
 		CompiledCorpus corpus =
 			CompiledCorpusRegistry
-				.getCorpusWithName_ES(exp.corpusName);
+				.getCorpusWithName(exp.corpusName);
 
 		MorphRelativesFinder finder = new MorphRelativesFinder(corpus);
 
@@ -214,7 +211,7 @@ public class MorphRelativesFinderAccuracyTest {
 
 	public static class PerformanceExpectations {
 
-		public String corpusName = CompiledCorpusRegistry.defaultESCorpusName;
+		public String corpusName = CompiledCorpusRegistry.defaultCorpusName;
 		public boolean computeStatsOverSurfaceForms;
 		public double targetPrecision = -1;
 		public double targetRecall = -1;

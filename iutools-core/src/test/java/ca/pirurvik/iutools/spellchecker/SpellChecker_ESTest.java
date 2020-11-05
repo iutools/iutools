@@ -21,7 +21,7 @@ public class SpellChecker_ESTest extends SpellCheckerTest {
 
     @Override
     protected SpellChecker largeDictChecker() throws Exception {
-        SpellChecker checker = new SpellChecker_ES(CompiledCorpusRegistry.defaultESCorpusName);
+        SpellChecker checker = new SpellChecker_ES(CompiledCorpusRegistry.defaultCorpusName);
         return checker;
     }
 

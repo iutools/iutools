@@ -18,15 +18,13 @@ public class CompiledCorpusRegistry {
 	private static Map<String,CompiledCorpus_InMemory> corpusCache = new HashMap<String,CompiledCorpus_InMemory>();
 	private static Map<String,File> registry = new HashMap<String,File>();
 	private static Map<String,File> registryES = new HashMap<String,File>();
-	public static final String defaultInMemCorpusName = "Hansard1999-2002";
-//	public static final String defaultESCorpusName = "HANSARD-1999-2002";
-	public static final String defaultESCorpusName = "HANSARD-1999-2002.v2020-11-02";
+	public static final String defaultCorpusName = "HANSARD-1999-2002.v2020-11-02";
 	public static final String emptyCorpusName = "EMPTYCORPUS";
 	
 	static {
 		try {
 			registerCorpus_ES(
-				defaultESCorpusName,
+					defaultCorpusName,
 				new File(
 					IUConfig.getIUDataPath(
 				"data/compiled-corpuses/HANSARD-1999-2002.v2020-11-02.ES.json")));
@@ -70,18 +68,18 @@ public class CompiledCorpusRegistry {
 	}
 
 	@JsonIgnore
-	public static CompiledCorpus getCorpusWithName_ES()
+	public static CompiledCorpus getCorpusWithName()
 		throws CompiledCorpusRegistryException {
-		return getCorpusWithName_ES(defaultESCorpusName);
+		return getCorpusWithName(defaultCorpusName);
 	}
 
 	@JsonIgnore
-	public static CompiledCorpus getCorpusWithName_ES(String corpusName)
+	public static CompiledCorpus getCorpusWithName(String corpusName)
 		throws CompiledCorpusRegistryException {
 		Logger logger = Logger.getLogger("CompiledCorpusRegistry.getCorpusWithName");
 		logger.debug("corpusName= '"+corpusName+"'");
 		if (corpusName == null) {
-			corpusName = defaultESCorpusName;
+			corpusName = defaultCorpusName;
 		}
 		if (!registryES.containsKey(corpusName)) {
 			throw new CompiledCorpusRegistryException(

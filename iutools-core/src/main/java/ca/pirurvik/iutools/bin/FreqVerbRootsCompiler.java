@@ -81,7 +81,7 @@ public class FreqVerbRootsCompiler {
 			File corpusJsonFile = new File(corpusDirectoryPathname+"/"+"trie_compilation.json");
 			String corpusName = "work-corpus";
 			CompiledCorpusRegistry.registerCorpus(corpusName,corpusJsonFile);
-			CompiledCorpus corpus = CompiledCorpusRegistry.getCorpusWithName_ES(corpusName);
+			CompiledCorpus corpus = CompiledCorpusRegistry.getCorpusWithName(corpusName);
 			HashMap<String,Long> freqsOfVerbRoots = freqCompiler.compileFreqs(corpus);
 			
 			if (sorting.equals("root")) {

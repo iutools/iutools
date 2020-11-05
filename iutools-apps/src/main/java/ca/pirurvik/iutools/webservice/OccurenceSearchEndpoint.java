@@ -18,7 +18,6 @@ import org.apache.log4j.Logger;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ca.inuktitutcomputing.data.Morpheme;
-import ca.nrc.config.ConfigException;
 import ca.nrc.json.PrettyPrinter;
 import ca.pirurvik.iutools.morphemesearcher.MorphSearchResults;
 import ca.pirurvik.iutools.morphemesearcher.MorphemeSearcher;
@@ -100,7 +99,7 @@ public class OccurenceSearchEndpoint extends HttpServlet {
 
 			tLogger.trace("Loading the corpus");
 			CompiledCorpus compiledCorpus =
-				new CompiledCorpus_ES(CompiledCorpusRegistry.defaultESCorpusName);
+				new CompiledCorpus_ES(CompiledCorpusRegistry.defaultCorpusName);
 			morphExtractor.useCorpus(compiledCorpus);
 			tLogger.trace("Using corpus of type="+compiledCorpus.getClass());
 

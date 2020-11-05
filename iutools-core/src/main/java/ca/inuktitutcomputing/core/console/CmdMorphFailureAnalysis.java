@@ -2,7 +2,6 @@ package ca.inuktitutcomputing.core.console;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import ca.inuktitutcomputing.morph.failureanalysis.MorphFailureAnalyzer;
 import ca.inuktitutcomputing.morph.failureanalysis.ProblematicNGram;
@@ -33,7 +32,7 @@ public class CmdMorphFailureAnalysis extends ConsoleCommand {
 	@Override
 	public void execute() throws Exception {
 
-		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpusWithName_ES();
+		CompiledCorpus corpus = CompiledCorpusRegistry.getCorpusWithName();
 		MorphFailureAnalyzer analyzer = makeAnalyzer();
 				
 		loadCorpusWords(corpus, analyzer);

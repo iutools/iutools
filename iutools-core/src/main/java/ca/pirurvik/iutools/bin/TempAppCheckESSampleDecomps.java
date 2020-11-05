@@ -9,7 +9,7 @@ import java.util.Iterator;
 public class TempAppCheckESSampleDecomps {
 
     public static void main(String[] args) throws Exception {
-        CompiledCorpus_ES corpus = (CompiledCorpus_ES) CompiledCorpusRegistry.getCorpusWithName_ES();
+        CompiledCorpus_ES corpus = (CompiledCorpus_ES) CompiledCorpusRegistry.getCorpusWithName();
         Iterator<String> iter = corpus.allWords();
         int wordCounter = 0;
         int wordsWithMoreThanOneDecomps = 0;

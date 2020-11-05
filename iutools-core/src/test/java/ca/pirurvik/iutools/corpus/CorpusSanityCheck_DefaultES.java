@@ -7,7 +7,7 @@ public class CorpusSanityCheck_DefaultES extends CorpusSanityCheck {
     @Override
     protected CompiledCorpus corpusToCheck() throws Exception {
         CompiledCorpus corpus =
-            CompiledCorpusRegistry.getCorpusWithName_ES();
+            CompiledCorpusRegistry.getCorpusWithName();
         return corpus;
     }
 

@@ -21,16 +21,16 @@ public class CmdWordInfo extends ConsoleCommand {
     public void execute() throws Exception {
         corpusName = getCorpusName(false);
         if (corpusName == null) {
-            corpusName = CompiledCorpusRegistry.defaultESCorpusName;
+            corpusName = CompiledCorpusRegistry.defaultCorpusName;
         }
 
         word = getWord();
 
         CompiledCorpus corpus = null;
         try {
-            corpus = CompiledCorpusRegistry.getCorpusWithName_ES(corpusName);
+            corpus = CompiledCorpusRegistry.getCorpusWithName(corpusName);
         } catch (CompiledCorpusRegistryException e) {
-            corpus = CompiledCorpusRegistry.getCorpusWithName_ES(corpusName);
+            corpus = CompiledCorpusRegistry.getCorpusWithName(corpusName);
         }
         echo("Corpus is of type: "+corpus.getClass().getSimpleName());
         WordInfo winfo = corpus.info4word(word);

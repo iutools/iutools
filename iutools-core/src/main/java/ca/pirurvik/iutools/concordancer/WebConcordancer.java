@@ -45,7 +45,7 @@ public class WebConcordancer {
 		return harvester;
 	}
 
-	public DocAlignment alignPage(URL url, String[] languages) {
+	public DocAlignment alignPage(URL url, String[] languages) throws WebConcordancerException {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.concordancer.alignPage");
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("invoked with url="+url+
@@ -87,7 +87,7 @@ public class WebConcordancer {
 		return alignment;
 	}
 
-	protected DocAlignment fetchParallelPages(DocAlignment alignment) {
+	protected DocAlignment fetchParallelPages(DocAlignment alignment) throws WebConcordancerException {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.concordancer.fetchParallelPages");
 
 		Pair<String,String> langs = langAndOtherLang(alignment);
@@ -262,7 +262,8 @@ public class WebConcordancer {
 		return result;
 	}
 
-	protected void harvestOtherLangPage(DocAlignment alignment) {
+	protected void harvestOtherLangPage(DocAlignment alignment)
+		throws WebConcordancerException {
 		if (alignment.encounteredSomeProblems()) {
 			return;
 		}
@@ -331,8 +332,9 @@ public class WebConcordancer {
 	 * @param lang 
 	 * @return
 	 */
-	private StepOutcome harvestOtherLangPage_UnknownSites(
-			DocAlignment alignment, String lang, String otherLang) {
+	protected StepOutcome harvestOtherLangPage_UnknownSites(
+		DocAlignment alignment, String lang, String otherLang)
+		throws WebConcordancerException {
 		// TODO Auto-generated method stub
 		return StepOutcome.FAILURE;
 	}

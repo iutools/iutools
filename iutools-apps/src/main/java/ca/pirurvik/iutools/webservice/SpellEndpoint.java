@@ -43,7 +43,7 @@ public class SpellEndpoint extends HttpServlet {
 		if (checker == null) {
 			try {
 				checker =
-					new SpellChecker_ES(CompiledCorpusRegistry.defaultESCorpusName)
+					new SpellChecker_ES(CompiledCorpusRegistry.defaultCorpusName)
 					.enablePartialCorrections();
 			} catch (StringSegmenterException e) {
 				throw new SpellCheckerException(e);

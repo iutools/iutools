@@ -111,7 +111,7 @@ public class GistPrepareContentEndpoint extends HttpServlet {
 			url = new URL(inputs.textOrUrl);
 			DocAlignment alignments = concordancer.alignPage(url, new String[] {"en", "iu"});
 			response.fillFromDocAlignment(alignments);
-		} catch (MalformedURLException e) {
+		} catch (MalformedURLException | WebConcordancerException e) {
 			throw new ServiceException(e);
 		}
 	}
