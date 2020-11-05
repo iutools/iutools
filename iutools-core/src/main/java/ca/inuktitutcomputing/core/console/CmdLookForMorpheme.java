@@ -1,17 +1,13 @@
 package ca.inuktitutcomputing.core.console;
 
-import java.io.File;
-import java.io.FileReader;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import com.google.gson.Gson;
+import ca.pirurvik.iutools.corpus.CompiledCorpus;
+import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 
-import ca.inuktitutcomputing.data.LinguisticDataSingleton;
 import ca.inuktitutcomputing.data.Morpheme;
-import ca.nrc.datastructure.Pair;
-import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 import ca.pirurvik.iutools.morphemesearcher.MorphSearchResults;
 import ca.pirurvik.iutools.morphemesearcher.MorphemeSearcher;
 import ca.pirurvik.iutools.morphemesearcher.ScoredExample;
@@ -30,13 +26,11 @@ public class CmdLookForMorpheme extends ConsoleCommand {
 	@Override
 	public void execute() throws Exception {
 		String morpheme = getMorpheme(false);
-		//String dictionaryFilePathname = getDictFile(true);
-		//File dictionaryFile = new File(dictionaryFilePathname);
-		String compiledCorpusFilePath = getCorpusSavePath();
-		FileReader fr = new FileReader(compiledCorpusFilePath);
-		CompiledCorpus_InMemory compiledCorpus = new Gson().fromJson(fr, CompiledCorpus_InMemory.class);
-		fr.close();
-		
+		String corpusName = getCorpusName(true);
+
+		CompiledCorpus compiledCorpus =
+			CompiledCorpusRegistry.getCorpusWithName(corpusName);
+
 		MorphemeSearcher morphExtr = new MorphemeSearcher();
 		morphExtr.useCorpus(compiledCorpus);
 		

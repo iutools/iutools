@@ -2,7 +2,8 @@ package ca.inuktitutcomputing.core.console;
 
 import java.io.FileReader;
 
-import com.google.gson.Gson;
+import ca.pirurvik.iutools.corpus.CompiledCorpus;
+import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 
 import ca.inuktitutcomputing.applications.Decompose;
 import ca.inuktitutcomputing.morph.Decomposition;
@@ -10,12 +11,11 @@ import ca.inuktitutcomputing.script.Roman;
 import ca.inuktitutcomputing.script.Syllabics;
 import ca.pirurvik.iutools.morphrelatives.MorphRelativesFinder;
 import ca.pirurvik.iutools.morphrelatives.MorphologicalRelative;
-import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
 
-public class CmdExpandQuery extends ConsoleCommand {
+public class CmdMorphNeighbours extends ConsoleCommand {
 
-	public CmdExpandQuery(String name) {
+	public CmdMorphNeighbours(String name) {
 		super(name);
 	}
 
@@ -27,13 +27,16 @@ public class CmdExpandQuery extends ConsoleCommand {
 	@Override
 	public void execute() throws Exception {
 		String word = getWord(false);
+		String corpusName = getCorpusName(true);
+
 		String latin = null;
 		String syll = null;
 		MorphologicalRelative[] reformulations = null;
 		
 		String compilationFilePath = getCorpusSavePath();
 		FileReader fr = new FileReader(compilationFilePath);
-		CompiledCorpus_InMemory compiledCorpus = new Gson().fromJson(fr, CompiledCorpus_InMemory.class);
+		CompiledCorpus compiledCorpus =
+			CompiledCorpusRegistry.getCorpusWithName(corpusName);
 		fr.close();
 		MorphRelativesFinder reformulator = new MorphRelativesFinder(compiledCorpus);
 		CmdConvertIUSegments convertCommand = new CmdConvertIUSegments("");

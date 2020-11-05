@@ -53,14 +53,17 @@ public class FreqVerbRootsCompiler {
 	}
 
 	public static void main(String[] args) throws TrieException {
+
 		FreqVerbRootsCompiler freqCompiler = new FreqVerbRootsCompiler();
+
+		String corpusName = null;
 		String corpusDirectoryPathname = null;
 		String sorting = null;
+
 		if (args.length==0) {
 			printHelp();
 			System.exit(0);
-		}
-		else if ( args[0].startsWith("-")) {
+		} 	else if ( args[0].startsWith("-")) {
 			if (args[0].equals("-h")) {
 				printHelp();
 				System.exit(0);
@@ -75,12 +78,10 @@ public class FreqVerbRootsCompiler {
 			corpusDirectoryPathname = args[1];
 		} else {
 			sorting = freqCompiler.defaultSorting;
-			corpusDirectoryPathname = args[0];
+			corpusName = args[0];
 		}
+
 		try {
-			File corpusJsonFile = new File(corpusDirectoryPathname+"/"+"trie_compilation.json");
-			String corpusName = "work-corpus";
-			CompiledCorpusRegistry.registerCorpus(corpusName,corpusJsonFile);
 			CompiledCorpus corpus = CompiledCorpusRegistry.getCorpusWithName(corpusName);
 			HashMap<String,Long> freqsOfVerbRoots = freqCompiler.compileFreqs(corpus);
 			
@@ -129,8 +130,7 @@ public class FreqVerbRootsCompiler {
 
 	private static void printHelp() {
 		System.out.println("Print the roots of the words in a given corpus and their frequencies.");
-		System.out.println("(The information is read in the file trie_compilation.json in the given corpus directory.)");
-		System.out.println(MethodHandles.lookup().lookupClass().getCanonicalName()+" options* corpus_directory_pathname");
+		System.out.println(MethodHandles.lookup().lookupClass().getCanonicalName()+" options* corpusName");
 		System.out.println("Options:");
 		System.out.println("-h : print this message");
 		System.out.println("-r : print in alphabetical order of roots");

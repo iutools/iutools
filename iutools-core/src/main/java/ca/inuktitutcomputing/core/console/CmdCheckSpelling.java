@@ -4,10 +4,6 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 
-import ca.inuktitutcomputing.data.LinguisticDataSingleton;
-import ca.inuktitutcomputing.morph.Decomposition;
-import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
-import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 import ca.pirurvik.iutools.edit_distance.EditDistanceCalculatorFactory;
 import ca.pirurvik.iutools.spellchecker.ScoredSpelling;
 import ca.pirurvik.iutools.spellchecker.SpellChecker;

@@ -1,7 +1,6 @@
 package ca.inuktitutcomputing.core.console;
 
 import org.apache.commons.cli.Option;
-import org.apache.log4j.helpers.OptionConverter;
 
 import ca.nrc.ui.commandline.CommandLineException;
 import ca.nrc.ui.commandline.MainCommand;
@@ -282,8 +281,8 @@ public class Console {
 				
 		// Find words related to an inuktitut query word
 		SubCommand expandIUQuery = 
-				new CmdExpandQuery("expand_query")
-				.addOption(optCompFile)	
+				new CmdMorphNeighbours("morph_neighbours")
+				.addOption(optCorpusName)
 				.addOption(optWord)
 				;
 		mainCmd.addSubCommand(expandIUQuery);
@@ -308,7 +307,7 @@ public class Console {
 
 		SubCommand lookForMorpheme = 
 				new CmdLookForMorpheme("look_for_morpheme")
-				.addOption(optCompFile)
+				.addOption(optCorpusName)
 				.addOption(optMorpheme)
 				;
 		mainCmd.addSubCommand(lookForMorpheme);

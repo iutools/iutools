@@ -73,9 +73,11 @@ public class DocAlignmentAsserter {
 
 
 	public DocAlignmentAsserter didNotEncounterProblems() {
-		Assert.assertFalse(
-				baseMessage+"\nSuccess status of alignments was not as expected.",
-				gotDocAlignment.encounteredSomeProblems());
+		String message =
+			baseMessage+"\n"+
+			"Alignment should NOT have encountered problems but it did.\n"+
+			"Problems were:\n  "+gotDocAlignment.problems2str("\n  ");
+		Assert.assertFalse(message, gotDocAlignment.encounteredSomeProblems());
 		return this;
 	}	
 	

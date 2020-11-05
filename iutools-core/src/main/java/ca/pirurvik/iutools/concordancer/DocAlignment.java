@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.apache.commons.lang3.StringUtils;
 
 public class DocAlignment {
 	
@@ -151,5 +152,15 @@ public class DocAlignment {
 		}
 		
 		return bothFetched;
+	}
+
+	public String problems2str() {
+		return problems2str("\n");
+	}
+
+	public String problems2str(String delimiter) {
+		String allprobs =
+			StringUtils.join(problemsEncountered.keySet().iterator(), delimiter);
+		return allprobs;
 	}
 }

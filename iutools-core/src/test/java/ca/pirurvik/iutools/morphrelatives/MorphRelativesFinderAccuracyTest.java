@@ -27,7 +27,7 @@ public class MorphRelativesFinderAccuracyTest {
 
 
 				// Each morpheme should run in about 1.5 secs, give or take 0.5
-				.setTargetRuntimeSecs(2.5, 0.5)
+				.setTargetRuntimeSecs(3.4, 0.5)
 
 				// 2020-10-28-AD:
 				//   This was the accuracy before we moved to the new version

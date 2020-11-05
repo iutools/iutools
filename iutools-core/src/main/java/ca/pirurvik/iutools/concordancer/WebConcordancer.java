@@ -2,10 +2,7 @@ package ca.pirurvik.iutools.concordancer;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,7 +24,8 @@ import ca.nrc.data.harvesting.PageHarvesterException;
  *
  */
 public class WebConcordancer {
-	
+
+	protected static enum AlignOptions {ONLY_FETCH_CONTENT}
 	protected static enum StepOutcome {SUCCESS, FAILURE, KEEP_TRYING};
 	
 	private static enum AlignmentPart {
@@ -45,8 +43,13 @@ public class WebConcordancer {
 		return harvester;
 	}
 
-	public DocAlignment alignPage(URL url, String[] languages) throws WebConcordancerException {
+	public DocAlignment alignPage(URL url, String[] languages,
+		AlignOptions... options) throws WebConcordancerException {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.concordancer.alignPage");
+
+		Set<AlignOptions> optionsSet = new HashSet<AlignOptions>();
+		Collections.addAll(optionsSet, options);
+
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("invoked with url="+url+
 			", languages="+String.join(", ", languages));
@@ -68,7 +71,8 @@ public class WebConcordancer {
 					AlignmentPart.PROBLEMS, AlignmentPart.SENTENCES);
 		}
 
-		if (!alignment.encounteredSomeProblems()) {
+		if (!alignment.encounteredSomeProblems() &&
+			!optionsSet.contains(AlignOptions.ONLY_FETCH_CONTENT)) {
 			alignContents(alignment);
 			trace(tLogger, "After fetching input URL", alignment, 
 					AlignmentPart.PROBLEMS, AlignmentPart.SENTENCES,
