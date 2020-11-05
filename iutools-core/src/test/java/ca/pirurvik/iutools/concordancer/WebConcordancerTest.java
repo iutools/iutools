@@ -16,13 +16,17 @@ import static ca.pirurvik.iutools.concordancer.WebConcordancer.AlignOptions;
 //  and I (Alain) don't have time to look at them
 //  So disable the tests for now.
 @Ignore
-public class WebConcordancerTest {
+public abstract class WebConcordancerTest {
 	
-	WebConcordancer concordancer = null;
+	protected static WebConcordancer concordancer = null;
+
+	protected abstract WebConcordancer makeConcordancer();
 	
 	@Before
 	public void setUp() {
-		concordancer = new WebConcordancer();
+		if (concordancer == null) {
+			concordancer = makeConcordancer();
+		}
 	}
 	
 	//////////////////////////////////
@@ -47,8 +51,7 @@ public class WebConcordancerTest {
 		// You want to get aligned sentences for the en-iu (Inuktut) language 
 		// pair. You do this as follows.
 		//
-		WebConcordancer concordancer = new WebConcordancer();
-		DocAlignment pageAligment = 
+		DocAlignment pageAligment =
 			concordancer.alignPage(url, new String[] {"en", "iu"});
 		
 		// You can then check if the alignment was successful or not
@@ -97,7 +100,8 @@ public class WebConcordancerTest {
 	public void test__alignPage__HappyPath() throws Exception {
 		URL url = new URL("https://www.gov.nu.ca/");
 		DocAlignment pageAligment = 
-			new WebConcordancer().alignPage(url, new String[] {"en", "iu"});
+			concordancer.alignPage(url, new String[] {"en", "iu"},
+				AlignOptions.ONLY_FETCH_CONTENT);
 
 		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
 			.didNotEncounterProblems()
@@ -116,7 +120,8 @@ public class WebConcordancerTest {
 		//
 		URL url = new URL("https://www.gov.nu.ca/doesnotexist/iu");
 		DocAlignment pageAligment = 
-					new WebConcordancer().alignPage(url, new String[] {"en", "iu"});
+			concordancer.alignPage(url, new String[] {"en", "iu"},
+				AlignOptions.ONLY_FETCH_CONTENT);
 
 		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
 			.encounteredProblems(Problem.FETCHING_INPUT_URL)
@@ -127,7 +132,8 @@ public class WebConcordancerTest {
 	public void test__alignPage__NonExistantServer() throws Exception {
 		URL url = new URL("https://nonexistantserver.nu.ca");
 		DocAlignment pageAligment = 
-					new WebConcordancer().alignPage(url, new String[] {"en", "iu"});
+			concordancer.alignPage(url, new String[] {"en", "iu"},
+					AlignOptions.ONLY_FETCH_CONTENT);
 
 		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
 			.encounteredProblems(Problem.FETCHING_INPUT_URL)
@@ -145,7 +151,8 @@ public class WebConcordancerTest {
 		//
 		URL url = new URL("https://www.gov.nu.ca/iu/cgs-iu");
 		DocAlignment pageAligment = 
-					new WebConcordancer().alignPage(url, new String[] {"en", "iu"});
+			concordancer.alignPage(url, new String[] {"en", "iu"},
+				AlignOptions.ONLY_FETCH_CONTENT);
 
 		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
 			.encounteredProblems(Problem.FETCHING_CONTENT_OF_OTHER_LANG_PAGE)
@@ -156,7 +163,7 @@ public class WebConcordancerTest {
 	public void test__alignPage__OnlyFetchParallelContent() throws Exception {
 		URL url = new URL("https://www.gov.nu.ca/");
 		DocAlignment pageAligment =
-			new WebConcordancer().alignPage(
+			concordancer.alignPage(
 				url, new String[] {"en", "iu"}, AlignOptions.ONLY_FETCH_CONTENT);
 
 		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
@@ -175,17 +182,22 @@ public class WebConcordancerTest {
 	public void test__alignPage__PageWhoseOtherPageCannotBeDeterminedThroughURLPatternRules() throws Exception {
 		URL url = new URL("https://www.gov.nu.ca/honourable-joe-savikataaq-4");
 		DocAlignment pageAligment =
-				new WebConcordancer().alignPage(
-						url, new String[] {"en", "iu"}, AlignOptions.ONLY_FETCH_CONTENT);
+			concordancer.alignPage(
+				url, new String[] {"en", "iu"}, AlignOptions.ONLY_FETCH_CONTENT);
 
-		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
+		if (concordancer.canFollowLanguageLink()) {
+			DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for " + url + " were not as expected.")
 				.didNotEncounterProblems()
 				.urlForLangEquals("en", new URL("https://www.gov.nu.ca/honourable-joe-savikataaq-4"))
 				.urlForLangEquals("iu", new URL("https://www.gov.nu.ca/iu/juu-savikataaq-4"))
 				.pageInLangContains("en", "Premier of Nunavut")
 				.pageInLangContains("iu", "ᓯᕗᓕᖅᑎ ᓄᓇᕗᒻᒥ")
-		;
-		;
+			;
+		} else {
+			DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for " + url + " were not as expected.")
+				.encounteredProblems(Problem.FETCHING_CONTENT_OF_OTHER_LANG_PAGE)
+			;
+		}
 	}
 
 	@Test
@@ -199,7 +211,7 @@ public class WebConcordancerTest {
 			new DocAlignment("en", "iu")
 			.setPageURL("en", url);
 
-		new WebConcordancer().fetchParallelPages(pageAligment);
+		concordancer.fetchParallelPages(pageAligment);
 		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
 			.urlForLangEquals("iu", new URL("https://www.gov.nu.ca/iu"))
 			;

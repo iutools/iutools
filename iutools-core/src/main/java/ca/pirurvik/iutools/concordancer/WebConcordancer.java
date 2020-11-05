@@ -23,14 +23,27 @@ import ca.nrc.data.harvesting.PageHarvesterException;
  * @author desilets
  *
  */
-public class WebConcordancer {
+public abstract class WebConcordancer {
 
 	protected static enum AlignOptions {ONLY_FETCH_CONTENT}
 	protected static enum StepOutcome {SUCCESS, FAILURE, KEEP_TRYING};
-	
 	private static enum AlignmentPart {
 		PAGES_CONTENT, PROBLEMS, SENTENCES, ALIGNMENTS};
-	
+
+	public abstract boolean canFollowLanguageLink();
+
+	/**
+	 * Harvest page in the other language, by following the language link
+	 * on that page.
+	 */
+	protected StepOutcome harvestOtherLangPage_ByFollowingLanguageLink(
+			DocAlignment alignment, String lang, String otherLang)
+			throws WebConcordancerException {
+		// TODO Auto-generated method stub
+		return StepOutcome.FAILURE;
+	}
+
+
 	PageHarvester_HtmlCleaner harvester = null;
 	LanguageGuesser langGuesser = new LanguageGuesser_IU();
 	Aligner_Maligna aligner = new Aligner_Maligna();
@@ -41,6 +54,11 @@ public class WebConcordancer {
 			harvester.setHarvestFullText(true);
 		}
 		return harvester;
+	}
+
+	public DocAlignment alignPage(URL url, String[] languages)
+		throws WebConcordancerException {
+		return alignPage(url, languages, new AlignOptions[0]);
 	}
 
 	public DocAlignment alignPage(URL url, String[] languages,
@@ -279,9 +297,9 @@ public class WebConcordancer {
 			String lang = langPair.getFirst();
 			String otherLang = langPair.getSecond();
 			
-			status = harvestOtherLangPage_KnownSites(alignment, lang, otherLang);
+			status = harvestOtherLangPage_UsingURLTransformation(alignment, lang, otherLang);
 			if (status == StepOutcome.KEEP_TRYING) {
-				status = harvestOtherLangPage_UnknownSites(alignment, 
+				status = harvestOtherLangPage_ByFollowingLanguageLink(alignment,
 							lang, otherLang);
 			}	
 			
@@ -328,33 +346,10 @@ public class WebConcordancer {
 	}
 
 	/** 
-	 * Harvest page in the other language, using strategies which are 
-	 * specific to that page's web site.
-	 * 
-	 * @param alignment
-	 * @param otherLang 
-	 * @param lang 
-	 * @return
+	 * Harvest page in the other language, using rules that transform the
+	 * original URL into the URL of the other page.
 	 */
-	protected StepOutcome harvestOtherLangPage_UnknownSites(
-		DocAlignment alignment, String lang, String otherLang)
-		throws WebConcordancerException {
-		// TODO Auto-generated method stub
-		return StepOutcome.FAILURE;
-	}
-
-	/** 
-	 * Harvest page in the other language, using strategies which are 
-	 * NOT specific to that page's web site.
-	 * 
-	 * @param alignment
-	 * @param otherLang 
-	 * @param lang 
-	 * @return
-	 * @throws WebConcordancerException 
-	 * @throws Exception 
-	 */
-	private StepOutcome harvestOtherLangPage_KnownSites(
+	private StepOutcome harvestOtherLangPage_UsingURLTransformation(
 			DocAlignment alignment, String lang, String otherLang) { 
 		
 		StepOutcome status = StepOutcome.KEEP_TRYING;

@@ -159,8 +159,12 @@ public class DocAlignment {
 	}
 
 	public String problems2str(String delimiter) {
-		String allprobs =
-			StringUtils.join(problemsEncountered.keySet().iterator(), delimiter);
+		String allprobs = "";
+		for (Map.Entry<Problem, Exception> aProblem:
+			problemsEncountered.entrySet()) {
+			allprobs += "\n   "+aProblem.getKey()+": "+
+				aProblem.getValue().getMessage();
+		}
 		return allprobs;
 	}
 }

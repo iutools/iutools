@@ -10,7 +10,12 @@ import java.net.URL;
 public class WebConcordancer_HtmlUnit extends WebConcordancer {
 
     @Override
-    protected StepOutcome harvestOtherLangPage_UnknownSites(
+    public boolean canFollowLanguageLink() {
+        return true;
+    }
+
+    @Override
+    protected StepOutcome harvestOtherLangPage_ByFollowingLanguageLink(
         DocAlignment alignment, String lang, String otherLang) throws WebConcordancerException {
         URL pageURL = alignment.getPageURL(lang);
 
