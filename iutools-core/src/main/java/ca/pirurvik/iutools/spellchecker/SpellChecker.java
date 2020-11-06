@@ -31,7 +31,6 @@ import com.google.gson.Gson;
 import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.datastructure.trie.StringSegmenterException;
-import ca.nrc.datastructure.trie.StringSegmenter_AlwaysNull;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.json.PrettyPrinter;
 import ca.pirurvik.iutools.NumericExpression;
@@ -94,9 +93,6 @@ public class SpellChecker {
 	 */
 	protected Set<String> explicitlyCorrect_Numeric = new HashSet<String>();
 
-	// TODO-June2020: Can we get rid of this attribute?
-	public String allNormalizedNumericTerms = ",,";
-	
 	/** If true, partial corrections are enabled. That measns the spell checker
 	 *  will identify the longest leading and tailing strings that seem 
 	 *  correctly spelled.*/
@@ -216,7 +212,6 @@ public class SpellChecker {
 		String dataPath = IUConfig.getIUDataPath();
 		FileReader fr = new FileReader(dataPath+"/data/numericTermsCorpus.json");
 		AnalyzeNumberExpressions numberExpressionsAnalysis = new Gson().fromJson(fr, AnalyzeNumberExpressions.class);
-		this.allNormalizedNumericTerms = getNormalizedNumericTerms(numberExpressionsAnalysis);
 
 		return;
 	}
@@ -230,12 +225,6 @@ public class SpellChecker {
 	private Map<String, Long> getNgramsStatsOfNumericTerms(AnalyzeNumberExpressions numberExpressionsAnalysis) {
 		return numberExpressionsAnalysis.getNgramStats();
 	}
-
-
-	private String getNormalizedNumericTerms(AnalyzeNumberExpressions numberExpressionsAnalysis) {
-		return numberExpressionsAnalysis.getDecomposedNormalizedNumericTermsSuite();
-	}
-
 
 	public void setEditDistanceAlgorithm(EditDistanceCalculatorFactory.DistanceMethod name) throws ClassNotFoundException, EditDistanceCalculatorFactoryException {
 		editDistanceCalculator = EditDistanceCalculatorFactory.getEditDistanceCalculator(name);
@@ -260,16 +249,6 @@ public class SpellChecker {
 			explicitlyCorrect_NonNumeric.add(word);
 		}
 		
-		// TODO-June2020: Is this still needed?
-		if (wordIsNumericTerm && allNormalizedNumericTerms.indexOf(","+"0000"+numericTermParts[1]+",") < 0) {
-			if (allNormalizedNumericTerms == null || allNormalizedNumericTerms.isEmpty()) {
-				allNormalizedNumericTerms = "";
-			}
-			allNormalizedNumericTerms += ",0000"+numericTermParts[1]+",";
-		}
-		removeFromMisspelledCache(word);
-	}
-
 	public void deleteExplicitlyCorrectWord(String word) throws SpellCheckerException {
 		try {
 			explicitlyCorrectWords.deleteWord(word);
