@@ -14,11 +14,7 @@ import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 
-import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.ui.web.testing.MockHttpServletResponse;
-import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
-import ca.pirurvik.iutools.corpus.RW_CompiledCorpus;
-import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 
 public class OccurenceSearchEndpointTest {
 

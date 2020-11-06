@@ -143,24 +143,7 @@ public class SpellCheckerTest {
 		//   SpellChecker to determine if they are or not.
 		//
 		checker.setDictionaryFromCorpus("a_corpus_name");
-		
-		//
-		// Once the dictionary has been built, you can save the 
-		// SpellChecker to file.
-		//
-		// Note: For the needs of this test, we use a temporary file that
-		// will be deleted upon exit. But in a real use case, you would
-		// save it to a permanent file.
-		//
-		File checkerFile = File.createTempFile("checker", "json");
-		checkerFile.deleteOnExit();
-		checker.saveToFile(checkerFile);
-		
-		//
-		// Later on, you can recreate the spell checker from file
-		//
-		checker = new SpellChecker().readFromFile(checkerFile);
-		
+
 		//
 		// You can then use the checker to see if a word is mis-spelled, and if so, 
 		// get a list of plausible corrections for that word
@@ -870,12 +853,12 @@ public class SpellCheckerTest {
 					"Longest Correctly tailing string was not as expected", 
 					expCorrLead, wordCorr.getCorrectTail());
 		}
-	
 	}
 
-	private void assertWordIsKnown(String word, SpellChecker checker) {
-		Assert.assertTrue("Spell checker dictionary did not know about word '"+word+"'", 
-				checker.allWords.contains(","+word+","));
+	private void assertWordIsKnown(String word, SpellChecker checker)
+		throws Exception {
+		Assert.assertTrue("Spell checker dictionary did not know about word '"+word+"'",
+			checker.knowsWord(word));
 	}
 
 	private void assertWordUnknown(String word, SpellChecker checker) {

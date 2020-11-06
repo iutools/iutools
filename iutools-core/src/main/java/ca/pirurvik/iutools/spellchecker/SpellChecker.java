@@ -215,9 +215,6 @@ public class SpellChecker {
 	}
 	
 	protected void __processCorpus() throws ConfigException, FileNotFoundException {
-		if (corpus instanceof CompiledCorpus_InMemory) {
-			this.allWords = ((CompiledCorpus_InMemory)corpus).decomposedWordsSuite;
-		}
 		// Ideally, these should be compiled along with allWords and ngramsStats during corpus compilation
 		String dataPath = IUConfig.getIUDataPath();
 		FileReader fr = new FileReader(dataPath+"/data/numericTermsCorpus.json");
@@ -272,11 +269,6 @@ public class SpellChecker {
 				allNormalizedNumericTerms = "";
 			}
 			allNormalizedNumericTerms += ",0000"+numericTermParts[1]+",";
-		} else {
-			if (allWords == null || allWords.isEmpty()) {
-				allWords = "";
-			}
-			allWords += ","+word+",";
 		}
 		__updateSequenceIDFForWord(word,wordIsNumericTerm);
 		clearWordsWithNgramCache();
@@ -312,21 +304,6 @@ public class SpellChecker {
 		saveFile.flush();
 		saveFile.close();
 		//System.out.println("saved in "+checkerFile.getAbsolutePath());
-	}
-
-	public SpellChecker readFromFile(File checkerFile) throws FileNotFoundException, IOException {
-		FileReader jsonFileReader = new FileReader(checkerFile);
-		Gson gson = new Gson();
-		SpellChecker checker = gson.fromJson(jsonFileReader, SpellChecker.class);
-		jsonFileReader.close();
-		this.MAX_SEQ_LEN = checker.getMaxSeqLen();
-		this.MAX_CANDIDATES = checker.getMaxCandidates();
-		this.allWords = checker.getAllWords();
-		return this;
-	}
-
-	private String getAllWords() {
-		return this.allWords;
 	}
 
 	private int getMaxCandidates() {
@@ -496,7 +473,8 @@ public class SpellChecker {
 			//   morpheme in W.
 			//
 			String lead = badWordRoman.substring(0, endPos-1);
-			Iterator<String> iterWords = wordsContainingNgram("^"+lead, amongWords);
+			Iterator<String> iterWords =
+				wordsContainingNgram("^"+lead, amongWords);
 			boolean wordWasFoundForLead = false;
 			
 			int wordCount = 0;
@@ -1202,6 +1180,22 @@ public class SpellChecker {
 		}
 		
 		return ngrams;
+	}
+
+	public boolean knowsWord(String word) throws SpellCheckerException {
+		WordInfo winfo = null;
+		try {
+			winfo = corpus.info4word(word);
+			if (winfo == null) {
+				winfo = explicitlyCorrectWords.info4word(word);
+			}
+		} catch (CompiledCorpusException e) {
+			throw new SpellCheckerException(e);
+		}
+
+		boolean answer = (winfo != null);
+
+		return answer;
 	}
 
 	public class IDFComparator implements Comparator<Pair<String,Double>> {

@@ -21,8 +21,6 @@ import ca.nrc.ui.web.testing.MockHttpServletRequest;
 import ca.nrc.ui.web.testing.MockHttpServletResponse;
 import ca.pirurvik.iutools.search.SearchHit;
 import ca.pirurvik.iutools.testing.IUTTestHelpers;
-import ca.pirurvik.iutools.webservice.SearchEndpoint;
-import ca.pirurvik.iutools.webservice.SearchResponse;
 import ca.pirurvik.iutools.webservice.gist.GistPrepareContentEndpoint;
 import ca.pirurvik.iutools.webservice.gist.GistPrepareContentResponse;
 import ca.pirurvik.iutools.webservice.gist.GistWordEndpoint;
