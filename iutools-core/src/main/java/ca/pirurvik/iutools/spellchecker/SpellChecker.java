@@ -95,9 +95,6 @@ public class SpellChecker {
 	protected Set<String> explicitlyCorrect_Numeric = new HashSet<String>();
 
 	// TODO-June2020: Can we get rid of this attribute?
-	public String allWords = ",,";
-	
-	// TODO-June2020: Can we get rid of this attribute?
 	public String allNormalizedNumericTerms = ",,";
 	
 	/** If true, partial corrections are enabled. That measns the spell checker
@@ -270,8 +267,6 @@ public class SpellChecker {
 			}
 			allNormalizedNumericTerms += ",0000"+numericTermParts[1]+",";
 		}
-		__updateSequenceIDFForWord(word,wordIsNumericTerm);
-		clearWordsWithNgramCache();
 		removeFromMisspelledCache(word);
 	}
 
@@ -457,9 +452,7 @@ public class SpellChecker {
 			SpellingCorrection corr) throws SpellCheckerException {
 		
 		final int MAX_WORDS_TO_TRY = 5;
-		
-		String amongWords = getAllWordsToBeUsedForCandidates(badWordRoman);
-		
+
 		String longestCorrectLead = null;
 		for (int endPos=badWordRoman.length()-1; endPos > 3; endPos--) {
 			//
@@ -474,7 +467,7 @@ public class SpellChecker {
 			//
 			String lead = badWordRoman.substring(0, endPos-1);
 			Iterator<String> iterWords =
-				wordsContainingNgram("^"+lead, amongWords);
+				wordsContainingNgram("^"+lead);
 			boolean wordWasFoundForLead = false;
 			
 			int wordCount = 0;
@@ -557,8 +550,6 @@ public class SpellChecker {
 		
 		final int MAX_WORDS_TO_TRY = 5;
 		
-		String amongWords = getAllWordsToBeUsedForCandidates(badWordRoman);
-		
 		String longestCorrectTail = null;
 		for (int startPos=0; startPos < badWordRoman.length()-2; startPos++) {
 			//
@@ -572,7 +563,7 @@ public class SpellChecker {
 			//   morpheme in W.
 			//
 			String tail = badWordRoman.substring(startPos);
-			Iterator<String> iterWords = wordsContainingNgram(tail+"$", amongWords);
+			Iterator<String> iterWords = wordsContainingNgram(tail+"$");
 			boolean wordWasFoundForTail = false;
 			int wordCount = 0;
 			while (iterWords.hasNext()) {
@@ -875,9 +866,6 @@ public class SpellChecker {
 		// 4. compute scores for each word and order words highest score first
 		//    compute edit distance, etc.
 		
-		String allWordsForCandidates = 
-			getAllWordsToBeUsedForCandidates(wordIsNumericTerm);
-
 		tLogger.trace("Computing the most significant NGrams for the mis-spelled words");
 		
 		NgramCompiler ngramCompiler = new NgramCompiler();
@@ -926,8 +914,7 @@ public class SpellChecker {
 //			candidates.addAll(nonExplicitCandidates);
 
 		Set<String> candidates =
-				candidatesWithBestNGramsMatch(ngramFreqs,
-						allWordsForCandidates);
+				candidatesWithBestNGramsMatch(ngramFreqs);
 
 		tLogger.trace("Scoring candidates in terms of similarity to the mis-spelled word");
 		
@@ -1009,8 +996,8 @@ public class SpellChecker {
 	}
 
 	private Set<String> candidatesWithBestNGramsMatch(
-			Pair<String, Double>[] idf,
-			String amongWords) throws SpellCheckerException {
+		Pair<String, Double>[] idf)
+		throws SpellCheckerException {
 
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.spellchecker.SpellChecker.candidatesWithBestNGramsMatch");
 
@@ -1024,8 +1011,8 @@ public class SpellChecker {
 			Double ngramIDF = idf[i].getSecond();
 
 			Iterator<String> iterCandsWithNgram =
-					wordsContainingNgram(ngram, amongWords,
-						CompiledCorpus.SearchOption.EXCL_MISSPELLED);
+				wordsContainingNgram(
+					ngram, CompiledCorpus.SearchOption.EXCL_MISSPELLED);
 
 			tLogger.trace("adding candidates that contain ngram=" + ngram + " (ngramIDF=" + ngramIDF + ")");
 			Set<String> candidatesWithNgram =
@@ -1223,12 +1210,12 @@ public class SpellChecker {
 	}
 
 	protected Iterator<String> wordsContainingNgram(
-		String seq, String amongWords) throws SpellCheckerException {
-		return wordsContainingNgram(seq, amongWords, new CompiledCorpus.SearchOption[0]);
+		String seq) throws SpellCheckerException {
+		return wordsContainingNgram(seq, new CompiledCorpus.SearchOption[0]);
 	}
 
 	protected Iterator<String> wordsContainingNgram(String seq,
-		String amongWords, CompiledCorpus.SearchOption... options) throws SpellCheckerException {
+		CompiledCorpus.SearchOption... options) throws SpellCheckerException {
 		Logger logger = Logger.getLogger("ca.pirurvik.iutools.spellchecker.SpellChecker.wordsContainingSequ");
 
 		long start = StopWatch.nowMSecs();
@@ -1309,21 +1296,7 @@ public class SpellChecker {
 		
 		return accepted;
 	}
-	
-	
-//	Map<String,Long> getNgramStatsToBeUsedForCandidates(boolean wordIsNumericTerm) {
-//		return wordIsNumericTerm? this.ngramStatsOfNumericTerms : this.ngramStats;
-//	}
 
-	String getAllWordsToBeUsedForCandidates(boolean wordIsNumericTerm) {
-		return wordIsNumericTerm? this.allNormalizedNumericTerms : this.allWords;
-	}
-	
-	String getAllWordsToBeUsedForCandidates(String word) {
-		boolean isNumericTerm = (null != splitNumericExpression(word));
-		return getAllWordsToBeUsedForCandidates(isNumericTerm);
-	}
-	
 	private void cacheWordsWithNgram(String ngram, Set<String> words) {
 		wordsWithNgramCache.put(ngram, words);
 	}

@@ -198,7 +198,7 @@ public class SpellCheckerTest {
 		
 		SpellChecker checker = largeDictCheckerWithTestWords();
 		
-		Iterator<String> wordsWithSeq = checker.wordsContainingNgram(seq, checker.allWords);
+		Iterator<String> wordsWithSeq = checker.wordsContainingNgram(seq);
 		String[] expected = new String[] {"inukshuk","inuk","inuktut"};
 		AssertIterator.assertContainsAll(
 			"The list of words containing sequence "+seq+" was not as expected",
@@ -223,14 +223,14 @@ public class SpellCheckerTest {
 		Iterator<String> wordsWithSeq;
 		
 		seq = "inukt";
-		wordsWithSeq = checker.wordsContainingNgram(seq, checker.allWords);
+		wordsWithSeq = checker.wordsContainingNgram(seq);
 		expected = new String[] {"inuktitut","inuktaluk","inuktigut"};
 		AssertIterator.assertContainsAll(
 		"The list of words containing sequence "+seq+" was not as expected",
 			expected, wordsWithSeq);
 
 		seq = "^inukt";
-		wordsWithSeq = checker.wordsContainingNgram(seq, checker.allWords);
+		wordsWithSeq = checker.wordsContainingNgram(seq);
 		expected = new String[] {"inuktitut","inuktaluk","inuktigut"};
 		AssertIterator.assertContainsAll(
 			"The list of words containing sequence "+seq+" was not as expected",
@@ -242,7 +242,7 @@ public class SpellCheckerTest {
 				unexpected, wordsWithSeq);
 
 		seq = "itut$";
-		wordsWithSeq = checker.wordsContainingNgram(seq, checker.allWords);
+		wordsWithSeq = checker.wordsContainingNgram(seq);
 		expected = new String[] {"inuktitut","inuttitut"};
 		AssertIterator.assertContainsAll(
 			"The list of words containing sequence "+seq+" was not as expected",
@@ -254,7 +254,7 @@ public class SpellCheckerTest {
 				unexpected, wordsWithSeq);
 
 		seq = "^taku$";
-		wordsWithSeq = checker.wordsContainingNgram(seq, checker.allWords);
+		wordsWithSeq = checker.wordsContainingNgram(seq);
 		expected = new String[] {"taku"};
 		AssertIterator.assertContainsAll(
 			"The list of words containing sequence "+seq+" was not as expected",
@@ -782,14 +782,6 @@ public class SpellCheckerTest {
 	 * TEST HELPERS
 	 **********************************/
 	
-	private boolean containsWord(String word, SpellChecker checker) {
-		boolean answer = false;
-		if (checker.allWords.indexOf(","+word+",") >= 0) {
-			answer = true;
-		}
-		return answer;
-	}
-
 	private boolean containsNumericTerm(String numericTerm, SpellChecker checker) {
 		String[] numericTermParts = checker.splitNumericExpression(numericTerm);
 		boolean answer = (numericTermParts != null);
@@ -861,8 +853,9 @@ public class SpellCheckerTest {
 			checker.knowsWord(word));
 	}
 
-	private void assertWordUnknown(String word, SpellChecker checker) {
+	private void assertWordUnknown(String word, SpellChecker checker)
+		throws SpellCheckerException {
 		Assert.assertFalse("Spell checker dictionary should NOT have known about word '"+word+"'", 
-				checker.allWords.contains(","+word+","));
+			checker.knowsWord(word));
 	}
 }
