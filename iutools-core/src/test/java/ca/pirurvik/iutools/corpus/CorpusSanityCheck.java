@@ -21,6 +21,7 @@ public abstract class CorpusSanityCheck {
 	@Before
 	public void setUp() throws Exception {
 		corpus = corpusToCheck();
+		return;
 	}
 	
 	@Test
@@ -37,8 +38,8 @@ public abstract class CorpusSanityCheck {
 			.totalOccurencesIs(1475992)
 			.totalWordsWithDecompIs(221088)
 			.totalOccurencesWithDecompIs(1098245)
-			.totalWordsWithoutDecompsIs(166215)
-			.totalOccurencesWithNoDecompIs(357831)
+			.totalWordsWithoutDecompsIs(186131)
+			.totalOccurencesWithNoDecompIs(377747)
 			;
 	}
 	

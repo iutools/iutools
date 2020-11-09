@@ -338,18 +338,18 @@ public class CompiledCorpus_ES extends CompiledCorpus {
 
     @Override
     public long totalOccurences() throws CompiledCorpusException {
-        SearchResults<WordInfo_ES> results = null;
-        long total = 0;
-        try {
-            results = esClient().listAll(WORD_INFO_TYPE, winfoPrototype);
-            Iterator<Hit<WordInfo_ES>> iter = results.iterator();
-            while (iter.hasNext()) {
-                Hit<WordInfo_ES> hit = iter.next();
-                total += hit.getDocument().frequency;
-            }
-        } catch (ElasticSearchException e) {
-            throw new CompiledCorpusException(e);
-        }
+        Query queryBody = new Query();
+        queryBody
+            .openAttr("match_all")
+            .setOpenedAttr(new HashMap<String,String>());
+        ;
+        Aggs aggsElt = new Aggs()
+            .aggregate("totalOccurences", "sum", "frequency");
+        SearchResults<WordInfo_ES> results =
+            esWinfoSearch(queryBody, aggsElt);
+        Double totalDbl = (Double) results.aggrResult("totalOccurences");
+        long total = Math.round(totalDbl);
+
         return total;
     }
 

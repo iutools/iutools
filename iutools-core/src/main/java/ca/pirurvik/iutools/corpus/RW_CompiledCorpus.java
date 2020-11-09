@@ -5,9 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.regex.Pattern;
 
 /*************************************
  * Class reading/writing CompiledCorpus objects from/to file.
@@ -16,44 +14,45 @@ import java.nio.file.Paths;
  *
  *************************************/
 
-public abstract class RW_CompiledCorpus {
+public class RW_CompiledCorpus {
 
 	UserIO userIO = null;
-	
-	public abstract void writeCorpus(CompiledCorpus corpus,
-		File savePath) throws CompiledCorpusException;
 
-	public abstract CompiledCorpus readCorpus(File savePath)
-		throws CompiledCorpusException;
+	static Pattern pattSavePath = Pattern.compile(".*?(^|[^/\\\\.]*)\\.ES\\.json$");
 
-	protected abstract CompiledCorpus newCorpus(File savePath) throws CompiledCorpusException;
-
-	protected Gson gson = new Gson();
+	private String _corpusName;
 
 	public RW_CompiledCorpus() {
-		init_RW_CompiledCorpus((UserIO)null);
+		init_RW_CompiledCorpus((String)null, (UserIO)null);
 	}
 
 	public RW_CompiledCorpus(UserIO io) {
-		init_RW_CompiledCorpus(io);
+		init_RW_CompiledCorpus((String)null, io);
 	}
 
-	private void init_RW_CompiledCorpus(UserIO io) {
+	public RW_CompiledCorpus(String _intoCorpusNamed) {
+		init_RW_CompiledCorpus(_intoCorpusNamed, (UserIO)null);
+	}
+
+	private void init_RW_CompiledCorpus(String _corpusName, UserIO io) {
 		if (io == null) {
 			io = new UserIO();
 		}
 		this.userIO = io;
+		this._corpusName = _corpusName;
 	}
+
+
 
 	public static void write(CompiledCorpus corpus, File _savePath) 
 		throws CompiledCorpusException {
-		RW_CompiledCorpus rw = makeRW(corpus.getClass());
+		RW_CompiledCorpus rw = new RW_CompiledCorpus();
 		rw.writeCorpus(corpus, _savePath);
 	}
 
 	public static CompiledCorpus read(File savePath)
 		throws CompiledCorpusException {
-		RW_CompiledCorpus rw = new RW_CompiledCorpus_ES();
+		RW_CompiledCorpus rw = new RW_CompiledCorpus();
 		CompiledCorpus corpus = rw.readCorpus(savePath);
 		
 		return corpus;
@@ -62,5 +61,36 @@ public abstract class RW_CompiledCorpus {
 		if (userIO != null) {
 			userIO.echo(mess, UserIO.Verbosity.Level1);
 		}
+	}
+
+	public void writeCorpus(CompiledCorpus corpus, File savePath)
+			throws CompiledCorpusException {
+	}
+
+	public CompiledCorpus readCorpus(File jsonFile) throws CompiledCorpusException {
+		String corpusName = corpusName(jsonFile);
+		CompiledCorpus_ES corpus =
+				new CompiledCorpus_ES(corpusName);
+		echo("Loading file "+jsonFile+
+				" into ElasticSearch corpus "+corpusName);
+		boolean verbose =
+				(userIO != null &&
+						userIO.verbosityLevelIsMet(UserIO.Verbosity.Level1));
+
+		corpus.loadFromFile(jsonFile, verbose, (Boolean)null, corpusName);
+
+		return corpus;
+	}
+
+	protected CompiledCorpus newCorpus(File savePath) throws CompiledCorpusException {
+		String corpusName = CompiledCorpus_ES.corpusName4File(savePath);
+		return new CompiledCorpus_ES(corpusName);
+	}
+
+	protected String corpusName(File jsonFile) {
+		if (_corpusName == null) {
+			_corpusName = CompiledCorpus_ES.corpusName4File(jsonFile);
+		}
+		return _corpusName;
 	}
 }
