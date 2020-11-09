@@ -57,7 +57,7 @@ public class SpellChecker_ESTest extends SpellCheckerTest {
 
     protected CompiledCorpus_ES largeESCorpus() throws Exception {
         CompiledCorpus_ES corpus =
-                (CompiledCorpus_ES) RW_CompiledCorpus.read(largeESCorpusFile(), CompiledCorpus_ES.class);
+                (CompiledCorpus_ES) RW_CompiledCorpus.read(largeESCorpusFile());
         return corpus;
     }
 
