@@ -240,14 +240,15 @@ public class SpellChecker {
 		} catch (CompiledCorpusException e) {
 			throw new SpellCheckerException(e);
 		}
-		
+
 		String[] numericTermParts = null;
-		boolean wordIsNumericTerm = (numericTermParts=splitNumericExpression(word)) != null;
+		boolean wordIsNumericTerm = (numericTermParts = splitNumericExpression(word)) != null;
 		if (wordIsNumericTerm) {
 			explicitlyCorrect_Numeric.add(word);
 		} else {
 			explicitlyCorrect_NonNumeric.add(word);
 		}
+	}
 		
 	public void deleteExplicitlyCorrectWord(String word) throws SpellCheckerException {
 		try {
@@ -651,7 +652,7 @@ public class SpellChecker {
 		Logger logger = Logger.getLogger("SpellChecker.isMispelled");
 		logger.debug("word: "+word);
 
-		Boolean wordIsMispelled = uncacheIsMisspelled(word);
+		Boolean wordIsMispelled = null;
 		if (wordIsMispelled == null) {
 
 			if (isExplicitlyCorrect(word)) {
