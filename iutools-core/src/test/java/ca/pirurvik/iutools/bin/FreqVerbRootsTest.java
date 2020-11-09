@@ -8,24 +8,26 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
+import ca.pirurvik.iutools.corpus.CompiledCorpus;
+import ca.pirurvik.iutools.corpus.CompiledCorpus_ES;
+import ca.pirurvik.iutools.corpus.TestCorpusBuilder;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
-import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
-import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.testing.AssertObject;
-import ca.pirurvik.iutools.corpus.CompiledCorpus_InMemory;
-import ca.pirurvik.iutools.corpus.CompiledCorpusException;
 
 public class FreqVerbRootsTest {
 
 	@Test
-	public void test__compileFreqs__HappyPath() throws IOException, CompiledCorpusException, StringSegmenterException, TrieException {
+	public void test__compileFreqs__HappyPath() throws Exception {
 		String[] corpusWords = new String[] {
 				"nunami", "takujuq", "iglumik", "siniktuq", "takujaujuq", "iijuq"
 				};
-        CompiledCorpus_InMemory compiledCorpus = new CompiledCorpus_InMemory(StringSegmenter_IUMorpheme.class.getName());
+
+        CompiledCorpus compiledCorpus = TestCorpusBuilder.makeEmptyCorpus();
+			new CompiledCorpus_ES("test-corpus")
+				.setSegmenterClassName(StringSegmenter_IUMorpheme.class);
         compiledCorpus.addWordOccurences(corpusWords);
         
 		FreqVerbRootsCompiler freqVerbRootsCompiler = new FreqVerbRootsCompiler();

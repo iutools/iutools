@@ -33,22 +33,29 @@ public class FreqVerbRootsCompiler {
 	public HashMap<String,Long> compileFreqs(CompiledCorpus corpus) throws TrieException, CompiledCorpusException {
 		Logger logger = Logger.getLogger("FreqVerbRootsCompiler.compileFreqs");
 		HashMap<String,Long> freqsOfVerbRoots = new HashMap<String,Long>();
-		Trie trie = corpus.getMorphNgramsTrie();
-		TrieNode[] wordRootNodes = trie.getRoot(true).childrenNodes();
-		Map<String,TrieNode> nodesOfRootsOfWords = trie.getRoot().getChildren();
-		String rootIds[] = nodesOfRootsOfWords.keySet().toArray(new String[] {});
-		logger.debug("rootIds: "+PrettyPrinter.print(rootIds));
-		Pattern pat = Pattern.compile("\\{(.+/\\d+v)\\}");
-		for (TrieNode aWordRootNode: wordRootNodes) {
-			Long freq = (long)0;
-			String rootId = aWordRootNode.keysAsString();
-			logger.debug("rootId: "+rootId);
-			Matcher mat = pat.matcher(rootId);
-			if (mat.matches()) {
-				freq = aWordRootNode.getFrequency();
-				freqsOfVerbRoots.put(mat.group(1), freq);
+		Iterator<String> wordsIter = corpus.allWords();
+		Pattern pattVerb = Pattern.compile("\\{(.+/\\d+v)\\}");
+
+		while (wordsIter.hasNext()) {
+			String word = wordsIter.next();
+			WordInfo winfo = corpus.info4word(word);
+			String[] topDecomp = winfo.topDecomposition();
+			if (topDecomp != null && topDecomp.length > 0) {
+				String wordRoot = topDecomp[0];
+				Long freq = winfo.frequency;
+
+				Matcher mat = pattVerb.matcher(wordRoot);
+				if (mat.matches()) {
+					String morpheme = mat.group(1);
+					if (!freqsOfVerbRoots.containsKey(morpheme)) {
+						freqsOfVerbRoots.put(morpheme, new Long(0));
+					}
+					long oldFreq = freqsOfVerbRoots.get(morpheme);
+					freqsOfVerbRoots.put(mat.group(1), oldFreq+freq);
+				}
 			}
 		}
+
 		return freqsOfVerbRoots;
 	}
 

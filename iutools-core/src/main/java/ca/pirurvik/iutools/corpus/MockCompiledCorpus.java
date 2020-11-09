@@ -1,24 +1,25 @@
 package ca.pirurvik.iutools.corpus;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
 import ca.inuktitutcomputing.data.LinguisticDataException;
-import ca.inuktitutcomputing.morph.Decomposition;
-import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
-import ca.inuktitutcomputing.morph.MorphologicalAnalyzerException;
 import ca.nrc.datastructure.trie.StringSegmenter;
 import ca.nrc.datastructure.trie.StringSegmenterException;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
+import ca.nrc.dtrc.elasticsearch.ElasticSearchException;
 
 
-public class MockCompiledCorpus extends CompiledCorpus_InMemory {
+public class MockCompiledCorpus extends CompiledCorpus_ES {
 	
-	
-	public MockCompiledCorpus() throws CompiledCorpusException {	
+	public MockCompiledCorpus() throws CompiledCorpusException {
+		super("mock_corpus");
+		try {
+			esClient().deleteIndex();
+		} catch (ElasticSearchException e) {
+			throw new CompiledCorpusException(e);
+		}
 		segmenterClassName = MockStringSegmenter_IUMorpheme.class.getName();
 		getSegmenter();
 	}

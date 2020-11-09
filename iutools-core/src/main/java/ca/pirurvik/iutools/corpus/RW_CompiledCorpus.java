@@ -34,6 +34,10 @@ public class RW_CompiledCorpus {
 		init_RW_CompiledCorpus(_intoCorpusNamed, (UserIO)null);
 	}
 
+	public RW_CompiledCorpus(String _corpusName, UserIO _io) {
+		init_RW_CompiledCorpus(_corpusName, _io);
+	}
+
 	private void init_RW_CompiledCorpus(String _corpusName, UserIO io) {
 		if (io == null) {
 			io = new UserIO();
@@ -41,8 +45,6 @@ public class RW_CompiledCorpus {
 		this.userIO = io;
 		this._corpusName = _corpusName;
 	}
-
-
 
 	public static void write(CompiledCorpus corpus, File _savePath) 
 		throws CompiledCorpusException {

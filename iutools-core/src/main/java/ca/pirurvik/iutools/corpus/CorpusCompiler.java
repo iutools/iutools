@@ -466,7 +466,7 @@ public class CorpusCompiler {
 			"   Loading FINALIZED corpus "+progress.corpusName+" from file (no decomps): "+
 			"\n      "+corpusFile+"\n\n");
 		try {
-			CompiledCorpus corpus = new RW_CompiledCorpus_ES(corpusName, user_io).readCorpus(corpusFile);
+			CompiledCorpus corpus = new RW_CompiledCorpus(corpusName, user_io).readCorpus(corpusFile);
 		} catch (CompiledCorpusException e) {
 			throw new CorpusCompilerException(
 				"Problem loading corpus "+corpusName+" from file "+corpusFile, e);
