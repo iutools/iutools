@@ -1,22 +1,23 @@
 package ca.pirurvik.iutools.corpus;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
+import ca.nrc.dtrc.elasticsearch.StreamlinedClient;
 import ca.nrc.testing.AssertIterator;
-import org.apache.commons.io.IOUtils;
+import ca.nrc.testing.AssertString;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import ca.nrc.datastructure.trie.StringSegmenter;
@@ -24,10 +25,35 @@ import ca.nrc.datastructure.trie.StringSegmenter_Char;
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.testing.AssertObject;
 
-public abstract class CompiledCorpusTest {
+public class CompiledCorpusTest {
 
-	protected abstract CompiledCorpus makeCorpusWithDefaultSegmenter()
-		throws Exception;
+	private Set<String> generatedIdices = new HashSet<String>();
+	public final static String testIndex = "iutools_corpus_test";
+	protected File corpusDirectory = null;
+
+
+	@Before
+	public void setUp() throws Exception {
+		new StreamlinedClient(testIndex).deleteIndex();
+	}
+
+	@After
+	public void tearDown() throws Exception {
+		new StreamlinedClient(testIndex).deleteIndex();
+
+		if (corpusDirectory != null) {
+			File[] listOfFiles = corpusDirectory.listFiles();
+			for (File file : listOfFiles)
+				file.delete();
+		}
+		corpusDirectory = null;
+	}
+
+	protected CompiledCorpus makeCorpusWithDefaultSegmenter() throws Exception {
+		CompiledCorpus_ES corpus = new CompiledCorpus_ES(testIndex);
+		return corpus;
+	}
+
 
 	protected  CompiledCorpus makeCorpusUnderTest()  throws Exception {
 		return makeCorpusUnderTest(StringSegmenter_Char.class);
@@ -39,18 +65,6 @@ public abstract class CompiledCorpusTest {
 		corpus.setSegmenterClassName(segmenterClass);
 		return corpus;
 	}
-
-	protected File corpusDirectory = null;
-	
-	@After
-    public void tearDown() throws Exception {
-        if (corpusDirectory != null) {
-        	File[] listOfFiles = corpusDirectory.listFiles();
-        	for (File file : listOfFiles)
-        		file.delete();
-        }
-        corpusDirectory = null;
-    }
 	
 	//////////////////////////
 	// DOCUMENTATION TESTS
@@ -565,5 +579,14 @@ public abstract class CompiledCorpusTest {
 		corpus.addWordOccurences(words);
 		new AssertCompiledCorpus(corpus, "")
 			.wordsWithNoDecompositionAre(new String[0]);
+	}
+
+	@Test
+	public void test__corpusName4File__HappyPath() {
+		File jsonFile = new File("/some/path/some-corpus.ES.json");
+		String gotName = CompiledCorpus_ES.corpusName4File(jsonFile);
+		AssertString.assertStringEquals(
+				"Corpus name was not as expected for file: "+jsonFile,
+				"some-corpus", gotName);
 	}
 }
