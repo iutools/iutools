@@ -1,8 +1,8 @@
 package ca.pirurvik.iutools.spellchecker;
 
 import ca.inuktitutcomputing.config.IUConfig;
+import ca.pirurvik.iutools.corpus.CompiledCorpus;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
-import ca.pirurvik.iutools.corpus.CompiledCorpus_ES;
 import ca.pirurvik.iutools.corpus.RW_CompiledCorpus;
 import org.junit.Before;
 
@@ -37,10 +37,10 @@ public class SpellChecker_ESTest extends SpellCheckerTest {
                     "You are only allowed to clear the ES index that corresponds to a corpus that is meant to be initially empty!!");
         }
 
-        CompiledCorpus_ES corpus = (CompiledCorpus_ES) checker.corpus;
+        CompiledCorpus corpus = checker.corpus;
         corpus.deleteAll(true);
 
-        corpus = (CompiledCorpus_ES) checker.explicitlyCorrectWords;
+        corpus = checker.explicitlyCorrectWords;
         corpus.deleteAll(true);
 
         Thread.sleep(100);
@@ -55,9 +55,9 @@ public class SpellChecker_ESTest extends SpellCheckerTest {
         return checker;
     }
 
-    protected CompiledCorpus_ES largeESCorpus() throws Exception {
-        CompiledCorpus_ES corpus =
-                (CompiledCorpus_ES) RW_CompiledCorpus.read(largeESCorpusFile());
+    protected CompiledCorpus largeESCorpus() throws Exception {
+        CompiledCorpus corpus =
+            RW_CompiledCorpus.read(largeESCorpusFile());
         return corpus;
     }
 
@@ -66,8 +66,8 @@ public class SpellChecker_ESTest extends SpellCheckerTest {
         return corpusFile;
     }
 
-    protected CompiledCorpus_ES emptyESCorpus() throws Exception {
-        CompiledCorpus_ES corpus = new CompiledCorpus_ES("empty-corpus");
+    protected CompiledCorpus emptyESCorpus() throws Exception {
+        CompiledCorpus corpus = new CompiledCorpus("empty-corpus");
         corpus.deleteAll(true);
         return corpus;
     }

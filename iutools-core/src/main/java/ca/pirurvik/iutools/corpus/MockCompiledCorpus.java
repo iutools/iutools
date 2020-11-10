@@ -11,7 +11,7 @@ import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.dtrc.elasticsearch.ElasticSearchException;
 
 
-public class MockCompiledCorpus extends CompiledCorpus_ES {
+public class MockCompiledCorpus extends CompiledCorpus {
 	
 	public MockCompiledCorpus() throws CompiledCorpusException {
 		super("mock_corpus");

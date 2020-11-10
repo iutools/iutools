@@ -45,7 +45,7 @@ public class CompiledCorpusRegistry {
 		}
 
 		try {
-			CompiledCorpus_ES corpus = new CompiledCorpus_ES(corpusName);
+			CompiledCorpus corpus = new CompiledCorpus(corpusName);
 			if (!corpus.isUpToDateWithFile(jsonFile)) {
 				corpus.loadFromFile(jsonFile, true);
 			}
@@ -73,12 +73,8 @@ public class CompiledCorpusRegistry {
 				"There is no corpus by the name of "+corpusName);
 		}
 		File corpusFile = registry.get(corpusName);
-		CompiledCorpus_ES corpus = null;
-		try {
-			corpus = new CompiledCorpus_ES(corpusName);
-		} catch (CompiledCorpusException e) {
-			throw new CompiledCorpusRegistryException(e);
-		}
+		CompiledCorpus corpus = null;
+		corpus = new CompiledCorpus(corpusName);
 
 		try {
 			if (!corpus.isUpToDateWithFile(corpusFile)) {

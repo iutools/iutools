@@ -99,7 +99,7 @@ public class OccurenceSearchEndpoint extends HttpServlet {
 
 			tLogger.trace("Loading the corpus");
 			CompiledCorpus compiledCorpus =
-				new CompiledCorpus_ES(CompiledCorpusRegistry.defaultCorpusName);
+				new CompiledCorpus(CompiledCorpusRegistry.defaultCorpusName);
 			morphExtractor.useCorpus(compiledCorpus);
 			tLogger.trace("Using corpus of type="+compiledCorpus.getClass());
 

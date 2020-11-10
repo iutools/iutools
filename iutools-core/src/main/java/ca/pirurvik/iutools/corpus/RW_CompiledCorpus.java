@@ -59,6 +59,7 @@ public class RW_CompiledCorpus {
 		
 		return corpus;
 	}
+
 	protected void echo(String mess) {
 		if (userIO != null) {
 			userIO.echo(mess, UserIO.Verbosity.Level1);
@@ -71,8 +72,8 @@ public class RW_CompiledCorpus {
 
 	public CompiledCorpus readCorpus(File jsonFile) throws CompiledCorpusException {
 		String corpusName = corpusName(jsonFile);
-		CompiledCorpus_ES corpus =
-				new CompiledCorpus_ES(corpusName);
+		CompiledCorpus corpus =
+				new CompiledCorpus(corpusName);
 		echo("Loading file "+jsonFile+
 				" into ElasticSearch corpus "+corpusName);
 		boolean verbose =
@@ -85,13 +86,13 @@ public class RW_CompiledCorpus {
 	}
 
 	protected CompiledCorpus newCorpus(File savePath) throws CompiledCorpusException {
-		String corpusName = CompiledCorpus_ES.corpusName4File(savePath);
-		return new CompiledCorpus_ES(corpusName);
+		String corpusName = CompiledCorpus.corpusName4File(savePath);
+		return new CompiledCorpus(corpusName);
 	}
 
 	protected String corpusName(File jsonFile) {
 		if (_corpusName == null) {
-			_corpusName = CompiledCorpus_ES.corpusName4File(jsonFile);
+			_corpusName = CompiledCorpus.corpusName4File(jsonFile);
 		}
 		return _corpusName;
 	}

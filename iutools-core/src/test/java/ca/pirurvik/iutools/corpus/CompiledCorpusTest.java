@@ -50,7 +50,7 @@ public class CompiledCorpusTest {
 	}
 
 	protected CompiledCorpus makeCorpusWithDefaultSegmenter() throws Exception {
-		CompiledCorpus_ES corpus = new CompiledCorpus_ES(testIndex);
+		CompiledCorpus corpus = new CompiledCorpus(testIndex);
 		return corpus;
 	}
 
@@ -584,7 +584,7 @@ public class CompiledCorpusTest {
 	@Test
 	public void test__corpusName4File__HappyPath() {
 		File jsonFile = new File("/some/path/some-corpus.ES.json");
-		String gotName = CompiledCorpus_ES.corpusName4File(jsonFile);
+		String gotName = CompiledCorpus.corpusName4File(jsonFile);
 		AssertString.assertStringEquals(
 				"Corpus name was not as expected for file: "+jsonFile,
 				"some-corpus", gotName);

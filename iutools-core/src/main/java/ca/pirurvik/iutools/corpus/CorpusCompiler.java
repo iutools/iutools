@@ -50,7 +50,7 @@ public class CorpusCompiler {
 	protected long retrievedFileWordCounter = -1;
 
 
-	private CompiledCorpus_ES _corpus = null;
+	private CompiledCorpus _corpus = null;
 	private Map<String,Long> wordFreqs = new HashMap<String,Long>();
 
 	private long lastSaveMSecs = 0;
@@ -608,13 +608,9 @@ public class CorpusCompiler {
 		return this;
 	}
 
-	public CompiledCorpus_ES corpus() throws CorpusCompilerException {
+	public CompiledCorpus corpus() throws CorpusCompilerException {
 		if (_corpus == null) {
-			try {
-				_corpus = new CompiledCorpus_ES(corpusName);
-			} catch (CompiledCorpusException e) {
-				throw new CorpusCompilerException(e);
-			}
+			_corpus = new CompiledCorpus(corpusName);
 		}
 		return this._corpus;
 	}

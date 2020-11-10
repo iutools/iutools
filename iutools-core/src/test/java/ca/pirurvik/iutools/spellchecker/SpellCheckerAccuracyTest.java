@@ -8,8 +8,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import ca.nrc.dtrc.elasticsearch.StreamlinedClient;
+import ca.pirurvik.iutools.corpus.CompiledCorpus;
 import ca.pirurvik.iutools.corpus.CompiledCorpusTest;
-import ca.pirurvik.iutools.corpus.CompiledCorpus_ES;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -33,7 +33,7 @@ public class SpellCheckerAccuracyTest {
     protected SpellChecker makeEmptyDictChecker() throws Exception {
         String indexName = CompiledCorpusTest.testIndex;
         new StreamlinedClient(indexName).deleteIndex();
-        CompiledCorpus_ES corpus = new CompiledCorpus_ES(indexName);
+        CompiledCorpus corpus = new CompiledCorpus(indexName);
         SpellChecker_ES checker = new SpellChecker_ES(indexName);
 
         return checker;

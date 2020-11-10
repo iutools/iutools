@@ -1,7 +1,7 @@
 package ca.inuktitutcomputing.core.console;
 
 import ca.nrc.ui.commandline.UserIO;
-import ca.pirurvik.iutools.corpus.CompiledCorpus_ES;
+import ca.pirurvik.iutools.corpus.CompiledCorpus;
 
 import java.io.File;
 
@@ -17,8 +17,8 @@ public class CmdEsLoadCorpus extends ConsoleCommand {
         String corpusName = getCorpusName();
         UserIO.Verbosity verbosity = getVerbosity();
         boolean verbose = verbosityLevelIsMet(UserIO.Verbosity.Level1);
-        CompiledCorpus_ES corpus =
-            new CompiledCorpus_ES(corpusName);
+        CompiledCorpus corpus =
+            new CompiledCorpus(corpusName);
         System.out.println("Loading file "+jsonFile+
             " into ElasticSearch corpus "+corpusName);
         System.out.println((verbose?"":"non-")+"verbose ");

@@ -39,7 +39,7 @@ public class MorphemeSearcherTest {
 	protected CompiledCorpus makeCorpus() throws Exception {
 		String indexName = CompiledCorpusTest.testIndex;
 		new StreamlinedClient(indexName).deleteIndex();
-		CompiledCorpus corpus = new CompiledCorpus_ES(indexName);
+		CompiledCorpus corpus = new CompiledCorpus(indexName);
 		corpus.setSegmenterClassName(MockStringSegmenter_IUMorpheme.class.getName());
 		return corpus;
 	}

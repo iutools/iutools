@@ -3,19 +3,18 @@ package ca.pirurvik.iutools.morphrelatives;
 
 import java.io.IOException;
 
-import ca.pirurvik.iutools.corpus.CompiledCorpus_ES;
+import ca.pirurvik.iutools.corpus.CompiledCorpus;
 import ca.pirurvik.iutools.corpus.CorpusTestHelpers;
 import org.junit.Test;
 
 import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.testing.AssertObject;
-import ca.pirurvik.iutools.corpus.CompiledCorpus;
 
 public class MorphRelativesFinderTest {
 
 	protected MorphRelativesFinder makeFinder() throws Exception {
 		CorpusTestHelpers.clearESTestIndex();
-		CompiledCorpus corpus = new CompiledCorpus_ES(CorpusTestHelpers.ES_TEST_INDEX);
+		CompiledCorpus corpus = new CompiledCorpus(CorpusTestHelpers.ES_TEST_INDEX);
 		corpus.setSegmenterClassName(StringSegmenter_IUMorpheme.class.getName());
 		MorphRelativesFinder finder = new MorphRelativesFinder(corpus);
 

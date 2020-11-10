@@ -1,8 +1,7 @@
 package ca.pirurvik.iutools.spellchecker;
 
 import ca.nrc.datastructure.trie.StringSegmenterException;
-import ca.pirurvik.iutools.corpus.CompiledCorpusException;
-import ca.pirurvik.iutools.corpus.CompiledCorpus_ES;
+import ca.pirurvik.iutools.corpus.CompiledCorpus;
 
 public class SpellChecker_ES extends SpellChecker {
 
@@ -31,14 +30,10 @@ public class SpellChecker_ES extends SpellChecker {
 
         esIndexNameRoot = _checkerIndexName;
 
-        try {
-            corpus = new CompiledCorpus_ES(corpusIndexName());
-            explicitlyCorrectWords =
-                new CompiledCorpus_ES(
-                    explicitlyCorrectWordsIndexName());
-        } catch (CompiledCorpusException e) {
-            throw new SpellCheckerException(e);
-        }
+        corpus = new CompiledCorpus(corpusIndexName());
+        explicitlyCorrectWords =
+            new CompiledCorpus(
+                explicitlyCorrectWordsIndexName());
 
         return;
     }

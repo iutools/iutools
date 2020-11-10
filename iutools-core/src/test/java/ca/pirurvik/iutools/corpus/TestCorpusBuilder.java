@@ -11,7 +11,7 @@ public class TestCorpusBuilder {
         throws Exception {
         new StreamlinedClient(emptyCorpusName).deleteIndex();
         CompiledCorpus corpus =
-            new CompiledCorpus_ES(emptyCorpusName)
+            new CompiledCorpus(emptyCorpusName)
             .setSegmenterClassName(StringSegmenter_IUMorpheme.class);
         ;
         return corpus;
