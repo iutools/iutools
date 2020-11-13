@@ -31,20 +31,21 @@ public class SpellCheckerTest {
 	@Before
 	public void setUp() throws Exception {
 		// Make sure the ES indices are empty for the empty corpus name
-		clearESIndices(new SpellChecker_ES(emptyCorpusName));
+		clearESIndices(new SpellChecker(emptyCorpusName, false));
+		return;
 	}
 
 	protected SpellChecker largeDictChecker() throws Exception {
-		SpellChecker checker = new SpellChecker_ES(CompiledCorpusRegistry.defaultCorpusName);
+		SpellChecker checker = new SpellChecker(CompiledCorpusRegistry.defaultCorpusName);
 		return checker;
 	}
 
 	protected SpellChecker smallDictChecker() throws Exception {
-		SpellChecker checker = new SpellChecker_ES(emptyCorpusName);
+		SpellChecker checker = new SpellChecker(emptyCorpusName, false);
 		return checker;
 	}
 
-	private void clearESIndices(SpellChecker_ES checker) throws Exception {
+	private void clearESIndices(SpellChecker checker) throws Exception {
 		if (!checker.corpusIndexName().equals(emptyCorpusName)) {
 			throw new Exception(
 					"You are only allowed to clear the ES index that corresponds to a corpus that is meant to be initially empty!!");
@@ -63,7 +64,7 @@ public class SpellCheckerTest {
 
 	protected SpellChecker makeCheckerEmptyDict() throws Exception {
 		SpellChecker checker =
-			new SpellChecker_ES(
+			new SpellChecker(
 				emptyESCorpus().getIndexName());
 		checker.setVerbose(false);
 		return checker;
@@ -105,7 +106,7 @@ public class SpellCheckerTest {
 			checker.addExplicitlyCorrectWord(aWord);
 		}
 
-		if (checker instanceof SpellChecker_ES) {
+		if (checker instanceof SpellChecker) {
 			// Sleep a bit to allow the ElasticSearch index to synchronize
 			Thread.sleep(100);
 		}
@@ -305,7 +306,7 @@ public class SpellCheckerTest {
 			"ujararniarvimmut"
 		};
 
-		if (!(checker instanceof SpellChecker_ES)) {
+		if (!(checker instanceof SpellChecker)) {
 			// For some reason, the list of suggestions is slightly different
 			// for ES vs InMemory
 			//
@@ -399,7 +400,7 @@ public class SpellCheckerTest {
 		String[] expCorrection = new String[] {
 			"1987-mut", "1987-muarluti", "1987-muttauq", "1987-kulummut",
 			"1987-tuinnaulluti"};
-		if (checker instanceof SpellChecker_ES) {
+		if (checker instanceof SpellChecker) {
 			// 2020-10-01-AD:
 			// For some reason, the ES spell checker only produces
 			// the one suggestion (which happens to be the correct one).

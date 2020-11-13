@@ -50,14 +50,6 @@ import ca.inuktitutcomputing.script.Syllabics;
 import ca.inuktitutcomputing.script.TransCoder;
 import ca.inuktitutcomputing.utilbin.AnalyzeNumberExpressions;
 
-// TODO-June2020: Handling of numeric vs non-numeric expressions is a bloody 
-//    mess!! Refactor code so we don't need to keep separate data structures 
-//    (ex: ngram stats) for numeric versus non-numeric expressions.
-//
-//    Better to spell check numeric and non-numeric expressions in the exact 
-//    same fashion, except that for numeric expressions, we run a final filter 
-//    at the end to only retain candidates which are numeric expressions.
-//
 
 public class SpellChecker {
 	
@@ -74,6 +66,8 @@ public class SpellChecker {
 	 *  spell checker
 	 */
 	private final long MAX_DECOMP_MSECS = 5*1000;
+
+	protected String esIndexNameRoot = null;
 
 	protected CompiledCorpus explicitlyCorrectWords = null;
 
@@ -135,41 +129,16 @@ public class SpellChecker {
 					.build();
 
 	public SpellChecker() throws StringSegmenterException, SpellCheckerException {
-		CompiledCorpus nullCorpus = null;
-		init_SpellChecker_CorpusObject(nullCorpus);
+		init_SpellChecker_ES((String)null, (Boolean)null);
 	}
-	
+
+	public SpellChecker(String corpusName, boolean mustBeRegistered)
+		throws StringSegmenterException, SpellCheckerException {
+		init_SpellChecker_ES(corpusName, mustBeRegistered);
+	}
+
 	public SpellChecker(String corpusName) throws StringSegmenterException, SpellCheckerException {
-		try {
-			CompiledCorpus corpus = CompiledCorpusRegistry.getCorpusWithName(corpusName);
-			init_SpellChecker_CorpusObject(corpus);
-		} catch (CompiledCorpusRegistryException e) {
-			throw new SpellCheckerException(e);
-		}
-	}
-
-	public SpellChecker(CompiledCorpus _corpus) throws SpellCheckerException {
-		init_SpellChecker_CorpusObject(_corpus);
-	}
-
-	public SpellChecker(File corpusFile) throws StringSegmenterException, SpellCheckerException {
-		try {
-			CompiledCorpus corpus = RW_CompiledCorpus.read(corpusFile);
-			init_SpellChecker_CorpusObject(corpus);
-		} catch (CompiledCorpusException e) {
-			throw new SpellCheckerException(e);
-		}
-	}
-
-	void init_SpellChecker_CorpusObject(CompiledCorpus _corpus)
-		throws SpellCheckerException  {
-		try {
-			editDistanceCalculator = EditDistanceCalculatorFactory.getEditDistanceCalculator();
-			segmenter = new StringSegmenter_IUMorpheme();
-			setDictionaryFromCorpus(_corpus);
-		} catch (StringSegmenterException | FileNotFoundException | SpellCheckerException | ConfigException e) {
-			throw new SpellCheckerException(e);
-		}
+		init_SpellChecker_ES(corpusName, (Boolean)null);
 	}
 
 	public void setDictionaryFromCorpus() throws SpellCheckerException, ConfigException, FileNotFoundException {
@@ -180,6 +149,43 @@ public class SpellChecker {
 			throw new SpellCheckerException(e);
 		}
 	}
+
+	private void init_SpellChecker_ES(
+		String _corpusName, Boolean mustBeRegistered) throws SpellCheckerException {
+
+		if (mustBeRegistered == null) {
+			mustBeRegistered = true;
+		}
+		if (_corpusName == null) {
+			_corpusName = CompiledCorpusRegistry.defaultCorpusName;
+		}
+
+		esIndexNameRoot = _corpusName;
+		if (!mustBeRegistered) {
+			corpus = new CompiledCorpus(_corpusName);
+		} else {
+			try {
+				corpus = CompiledCorpusRegistry.getCorpusWithName(_corpusName);
+			} catch (CompiledCorpusRegistryException e) {
+				throw new SpellCheckerException(
+						"No registered corpus by the name of "+_corpusName, e);
+			}
+		}
+		explicitlyCorrectWords =
+				new CompiledCorpus(
+						explicitlyCorrectWordsIndexName());
+
+		try {
+			editDistanceCalculator = EditDistanceCalculatorFactory.getEditDistanceCalculator();
+			segmenter = new StringSegmenter_IUMorpheme();
+			setDictionaryFromCorpus(corpus);
+		} catch (StringSegmenterException | FileNotFoundException | SpellCheckerException | ConfigException e) {
+			throw new SpellCheckerException(e);
+		}
+
+		return;
+	}
+
 
 	public void setDictionaryFromCorpus(CompiledCorpus _corpus) throws SpellCheckerException, ConfigException, FileNotFoundException {
 		this.corpus = _corpus;
@@ -295,7 +301,6 @@ public class SpellChecker {
 
 	public SpellingCorrection correctWord(String word, int maxCorrections) throws SpellCheckerException {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.spellchecker.SpellChecker.correctWord");
-
 		long start = StopWatch.nowMSecs();
 
 		SpellDebug.trace("SpellChecker.correctWord",
@@ -946,21 +951,6 @@ public class SpellChecker {
 		return ngramFreqs;
 	}
 
-//	private Pair<String, Double>[] removeNgramsWithNoOccurences(Pair<String, Double>[] ngramFreqs) {
-//		List<Pair<String, Double>> retainedNgrams = new ArrayList<Pair<String, Double>>();
-//		for (Pair<String, Double> aNgramFreq: ngramFreqs) {
-//			if (aNgramFreq.getSecond() > 0) {
-//				retainedNgrams.add(aNgramFreq);
-//			}
-//		}
-//
-//
-//		Pair<String, Double>[] retainedArr =
-//			retainedNgrams.toArray(new Pair[0]);
-//
-//		return retainedArr;
-//	}
-
 	public long ngramFrequency(String ngram) throws SpellCheckerException {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.spellchecker.SpellChecker.ngramFrequency");
 		long freq = 0;
@@ -1165,6 +1155,15 @@ public class SpellChecker {
 		return answer;
 	}
 
+	public String corpusIndexName() {
+		String name = corpus.getIndexName();
+		return name;
+	}
+
+	protected String explicitlyCorrectWordsIndexName() {
+		return esIndexNameRoot+"_EXPLICLTY_CORRECT";
+	}
+
 	public class IDFComparator implements Comparator<Pair<String,Double>> {
 	    @Override
 	    public int compare(Pair<String,Double> a, Pair<String,Double> b) {
@@ -1315,4 +1314,5 @@ public class SpellChecker {
 		double iFreq = 1.0 / (freq + 1);
 		return iFreq;
 	}
+
 }

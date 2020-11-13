@@ -42,7 +42,7 @@ public class SpellChecker_ES extends SpellChecker {
         return esIndexNameRoot+"_EXPLICLTY_CORRECT";
     }
 
-    protected String corpusIndexName() {
+    public String corpusIndexName() {
         return esIndexNameRoot;
     }
 

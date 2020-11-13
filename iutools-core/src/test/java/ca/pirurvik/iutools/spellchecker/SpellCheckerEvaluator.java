@@ -13,6 +13,7 @@ import ca.inuktitutcomputing.utilities.StopWatch;
 import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.datastructure.trie.StringSegmenterException;
+import org.apache.log4j.Logger;
 
 public class SpellCheckerEvaluator {
 	
@@ -77,7 +78,7 @@ public class SpellCheckerEvaluator {
 			//
 			if (!shouldHaveBeenCorrect) {
 				onTruePositive(example, gotCorrection, 
-						assumesCorrectionsLoadeInDic);
+					assumesCorrectionsLoadeInDic);
 			} else {
 				onFalsePositive(example);
 			}
@@ -93,7 +94,7 @@ public class SpellCheckerEvaluator {
 	
 	private void evaluateCheckerSuggestions(SpellCheckerExample example, 
 			SpellingCorrection gotCorrection, 
-			Boolean assumesCorrectionsLoadedInDict) {
+			Boolean assumesCorrectionsLoadedInDict) throws SpellCheckerException {
 		
 		if (!assumesCorrectionsLoadedInDict &&
 				example.maxRankNOTAssumingInDict != null &&
@@ -118,7 +119,7 @@ public class SpellCheckerEvaluator {
 			if (!suggestions.isEmpty()) {
 				totalExamplesWithKnownCorrections++;
 			}
-			
+
 			for (int ii=0; ii < suggestions.size(); ii++) {
 				if (example.acceptableCorrections.contains(suggestions.get(ii))) {
 					rank = ii + 1;
@@ -220,7 +221,7 @@ public class SpellCheckerEvaluator {
 
 	private void onTruePositive(SpellCheckerExample example, 
 			SpellingCorrection gotCorrection, 
-			Boolean assumesCorrectionsLoadeInDic) {
+			Boolean assumesCorrectionsLoadeInDic) throws SpellCheckerException {
 		
 		if (verbosity > 1) {
 			System.out.println("   True Positive: input word was deemed mis-spelled as it should have");
@@ -360,6 +361,8 @@ public class SpellCheckerEvaluator {
 	}
 
 	public double percWithCorrectTopSuggestion() {
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.spellchecker.SpellCheckerEvaluator.percWithCorrectTopSuggestion");
+		tLogger.trace("totalWithCorrectTopSuggestion="+totalWithCorrectTopSuggestion+", totalExamplesWithKnownCorrections="+totalExamplesWithKnownCorrections);
 		double perc =
 			1.0 * totalWithCorrectTopSuggestion /
 					totalExamplesWithKnownCorrections;

@@ -35,7 +35,11 @@ public class SpellDebug {
 		methodsToTrace.add("SpellChecker.firstPassCandidates_TFIDF");
 		methodsToTrace.add("SpellChecker.candidatesWithBestNGramsMatch");
 		methodsToTrace.add("CompiledCorpus_InMemory.updateSequenceNgramsForWord");
-//		methodsToTrace.add("SpellChecker.computeCandidateSimilarity");
+		methodsToTrace.add("SpellChecker.computeCandidateSimilarity");
+		methodsToTrace.add("SpellChecker.computeCandidateSimilarity");
+		methodsToTrace.add("IUDiffCosting.cost");
+		methodsToTrace.add("IUDiffCosting.costFirstMorphemeChange");
+		methodsToTrace.add("IUSpellingDistance.distance");
 	}
 
     // If this is not-null, then when a trace does not provide the word
@@ -56,10 +60,8 @@ public class SpellDebug {
 	static {
 		badWordsToTrace = new HashMap<String,String[]>();
 		badWordsToTrace
-			.put("nunavungmi",
-				new String[] {
-					"nunavummi", "nunavungmii"
-				});
+			.put("kiinaujat",
+				new String[] {"kiinaujait"});
 	}
 
 	// List of candidate spellings to be traced.
@@ -67,12 +69,12 @@ public class SpellDebug {
 	// If empty, trace none
 	//
 	private static Set<String> candidatesToTrace = null;
-//	static {
-//		candidatesToTrace = new HashSet<String>();
-//		candidatesToTrace.add("ujararniarvimmi");
-//		candidatesToTrace.add("ujararniarvimmik");
-//		candidatesToTrace.add("ujarattarniarvimmi");
-//	}
+	static {
+		candidatesToTrace = new HashSet<String>();
+		candidatesToTrace.add("kiinaujait");
+		candidatesToTrace.add("kiinaujaut");
+		candidatesToTrace.add("kiinaujaq");
+	}
 
 	// List of ngrams to be traced.
 	// If nulll, then trace all of them.
@@ -81,7 +83,7 @@ public class SpellDebug {
 	private static Set<String> ngramsToTrace = null;
 	static {
 		ngramsToTrace = new HashSet<String>();
-		ngramsToTrace.add("unavun");
+		ngramsToTrace.add("laut");
 	}
 
 	private static Map<String,String[]> badWordsToTraceNormalized = null;

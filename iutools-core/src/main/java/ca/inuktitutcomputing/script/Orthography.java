@@ -19,6 +19,9 @@ import ca.inuktitutcomputing.fonts.Font;
 
 public class Orthography {
 
+    private static Pattern pattTrailingConsonant =
+        Pattern.compile("(.*)[^aeiouy]$");
+
     static int doubleVowelsSyl[] = { 5131, 5124, 5126, 5265, 5260, 5262,
             5422, 5417, 5419, 5235, 5230, 5232, 5339, 5334, 5336, 5291, 5286,
             5288, 5320, 5315, 5317, 5177, 5170, 5172, 5508, 5504, 5506, 5452,
@@ -310,5 +313,15 @@ public class Orthography {
     	}
     	logger.debug("word: "+word+" --- "+result);
     	return result;
+    }
+
+    public static String trimTrailingConsonant(String word) {
+        String trimmed = word;
+        Matcher matcher = pattTrailingConsonant.matcher(word);
+        if (matcher.matches()) {
+            trimmed = matcher.group(1);
+        }
+
+        return trimmed;
     }
 }

@@ -24,12 +24,12 @@ import ca.pirurvik.iutools.spellchecker.SpellDebug;
 public class IUDiffCosting extends DiffCosting {
 
 	public double cost(DiffResult diff) {
-		SpellDebug.trace("SpellChecker.computeCandidateSimilarity", 
-				"Invoked", 
-				diff.origStr(), diff.revStr());
+		SpellDebug.trace("IUDiffCosting.cost",
+			"Invoked",
+			diff.origStr(), diff.revStr());
 		
 		Double _cost = costFirstMorphemeChange(diff);
-		SpellDebug.trace("cost", 
+		SpellDebug.trace("IUDiffCosting.cost",
 				"AFTER costAsLeadingCharChanges, _cost="+_cost,
 				diff.origStr(), diff.revStr());			
 		
@@ -37,9 +37,9 @@ public class IUDiffCosting extends DiffCosting {
 			_cost += costNthTransformation(nn, diff);
 		}
 		
-		SpellDebug.trace("SpellChecker.computeCandidateSimilarity", 
-				"returning _cost="+_cost, 
-				diff.origStr(), diff.revStr());
+		SpellDebug.trace("IUDiffCosting.cost",
+			"returning _cost="+_cost,
+			diff.origStr(), diff.revStr());
 		
 		return _cost.doubleValue();
 	}
@@ -133,11 +133,6 @@ public class IUDiffCosting extends DiffCosting {
 	/**
 	 * Cost of transformations for the first morpheme of words follow different 
 	 * rules than transformation affecting rest of the morphemes. 
-	 * 
-	 * @param chars1
-	 * @param chars2
-	 * @param diff
-	 * @return
 	 */
 	private Double costFirstMorphemeChange(DiffResult diff) {
 		Double _cost = 0.0;
@@ -341,7 +336,13 @@ public class IUDiffCosting extends DiffCosting {
 			// Any chars that still remaing are involved in a type of operation 
 			// other than doubling/de-doubling.
 			//
-			totalCharsOtherOps = origStr.length() + revStr.length();
+			if (origStr.length() == 1 && revStr.length() == 1) {
+				// If we substitute a single character for another, that
+				// counts as just one operation
+				totalCharsOtherOps = 1;
+			} else {
+				totalCharsOtherOps = origStr.length() + revStr.length();
+			}
 		}
 		
 		Pair<Integer,Integer> dblInfo = null;
