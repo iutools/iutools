@@ -379,11 +379,10 @@ public class SpellCheckerAccuracyTest {
             .setFPRate(0.0, 0.0)
             .setFNRate(0.0, 0.0)
 
-//            .setPercentFoundInTopN(1.0)
-            .setPercentFoundInTopN(0.91)
+            .setPercentFoundInTopN(1.0)
             .setTolerance(0.02)
                     
-            .setPercTopSuggestionOK(1.0)
+            .setPercTopSuggestionOK(0.91)
                     
             .setAverageRank(1.0)
             .setAvgRankTolerance(0.2)
@@ -438,10 +437,11 @@ public class SpellCheckerAccuracyTest {
             .setLoadCorrectWordInDict(false)
 
             .setPercentFoundInTopN(1.0)
-//            .setPercentFoundInTopN(0.82)
-
             .setTolerance(0.01)
-            .setPercTopSuggestionOK(1.0)
+
+//            .setPercTopSuggestionOK(1.0)
+            .setPercTopSuggestionOK(0.83)
+
 //            .setAverageRank(1.0)
             .setAverageRank(1.25)
             .setAvgRankTolerance(0.1)

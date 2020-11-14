@@ -69,18 +69,18 @@ public class SpellEndpointTest {
 		SpellCheckerAssertion.assertThat(response, "")
 			.raisedNoError()
 			.nthCorrectionIs(0, true,
-				new String[] {
-					"ᒐᕙᒪᒃᑎᒍᑦ",
-					"ᒐᕙᒪᒃᑯᑎᑐᑦ",
-					"ᒐᕙᒪᒃᑯᑎᓐᓄᑦ",
-					"ᒐᕙᒪᒃᑯᖏᑎᒍᑦ",
-					"ᒐᕙᒪᑎᒍᑦ",
-					"ᒐᕙᒪᒃᑎᒍᑦ",
-					"ᒐᕙᒪᒃᑯᑎᑐᑦ",
-					"ᒐᕙᒪᒃᑯᑎᓐᓄᑦ",
-					"ᒐᕙᒪᒃᑯᖏᑎᒍᑦ",
-					"ᒐᕙᒪᑎᒍᑦ"				})
-			;
+				new String[]{
+						"ᒐᕙᒪᒃᑯᑎᑐᑦ",
+						"ᒐᕙᒪᒃᑎᒍᑦ",
+						"ᒐᕙᒪᒃᑯᑎᓐᓄᑦ",
+						"ᒐᕙᒪᒃᑯᖏᑎᒍᑦ",
+						"ᒐᕙᒪᑎᒍᑦ",
+						"ᒐᕙᒪᒃᑯᑎᑐᑦ",
+						"ᒐᕙᒪᒃᑎᒍᑦ",
+						"ᒐᕙᒪᒃᑯᑎᓐᓄᑦ",
+						"ᒐᕙᒪᒃᑯᖏᑎᒍᑦ",
+						"ᒐᕙᒪᑎᒍᑦ"
+				});
 		
 		return;	
 	}

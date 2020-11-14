@@ -479,7 +479,11 @@ public class CompiledCorpus {
 
 	}
 
-	
+	public Iterator<WordInfo_ES> winfosContainingNgram(String ngram, SearchOption... options) throws CompiledCorpusException {
+		return searchWordsContainingNgram(ngram, options).docIterator();
+	}
+
+
 	public Iterator<String> wordsContainingNgram(String ngram, SearchOption... options) throws CompiledCorpusException {
 		return searchWordsContainingNgram(ngram, options).docIDIterator();
 	}

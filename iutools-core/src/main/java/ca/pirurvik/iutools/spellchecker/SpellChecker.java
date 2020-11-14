@@ -885,21 +885,8 @@ public class SpellChecker {
 
 		tLogger.trace("Finding candidates whose NGrams best matches those of the misspelled word");
 
-		// TODO-June2020: Use this approach instead, in order to 
-		//   determine the initial candidates...
-		//
-//			Set<String> explicitCandidates = 
-//					candidatesWithBestNGramsMatch(ngramsIDF, 
-//							explicitlyCorrectWords);
-//			Set<String> nonExplicitCandidates = 
-//					candidatesWithBestNGramsMatch(ngramsIDF, 
-//							explicitlyCorrectWords);
-//			Set<String> candidates = new HashSet<String>();
-//			candidates.addAll(explicitCandidates);
-//			candidates.addAll(nonExplicitCandidates);
-
 		Set<String> candidates =
-				candidatesWithBestNGramsMatch(ngramFreqs);
+			candidatesWithBestNGramsMatch(ngramFreqs);
 
 		tLogger.trace("Scoring candidates in terms of similarity to the mis-spelled word");
 		
@@ -980,13 +967,18 @@ public class SpellChecker {
 			String ngram = idf[i].getFirst();
 			Double ngramIDF = idf[i].getSecond();
 
-			Iterator<String> iterCandsWithNgram =
-				wordsContainingNgram(
-					ngram, CompiledCorpus.SearchOption.EXCL_MISSPELLED);
+			Set<String> candidatesWithNgram = null;
 
 			tLogger.trace("adding candidates that contain ngram=" + ngram + " (ngramIDF=" + ngramIDF + ")");
-			Set<String> candidatesWithNgram =
-					collectCandidatesWithNgram(iterCandsWithNgram);
+
+			candidatesWithNgram = new HashSet<String>();
+			Iterator<WordInfo_ES> iterWinfoCandaWithNgram =
+				winfosContainingNgram(
+					ngram, CompiledCorpus.SearchOption.EXCL_MISSPELLED);
+			while (iterWinfoCandaWithNgram.hasNext()) {
+				String word = iterWinfoCandaWithNgram.next().word;
+				candidatesWithNgram.add(word);
+			}
 
 			candidates.addAll(candidatesWithNgram);
 
@@ -1193,17 +1185,41 @@ public class SpellChecker {
 		return wordsContainingNgram(seq, new CompiledCorpus.SearchOption[0]);
 	}
 
+	protected Iterator<WordInfo_ES> winfosContainingNgram(String seq,
+													CompiledCorpus.SearchOption... options) throws SpellCheckerException {
+		Logger logger = Logger.getLogger("ca.pirurvik.iutools.spellchecker.SpellChecker.wordsContainingSequ");
+
+		long start = StopWatch.nowMSecs();
+
+		Iterator<WordInfo_ES> winfosIter = null;
+		try {
+			Iterator<WordInfo_ES> winfosIter1 =
+				corpus.winfosContainingNgram(
+					seq, options);
+
+			Iterator<WordInfo_ES> winfosIter2 =
+				explicitlyCorrectWords.winfosContainingNgram(
+					seq, CompiledCorpus.SearchOption.EXCL_MISSPELLED);
+
+			winfosIter =
+				new IteratorChain<WordInfo_ES>(winfosIter1, winfosIter2);
+		} catch (CompiledCorpusException e) {
+			throw new SpellCheckerException(e);
+		}
+
+		long elapsed = StopWatch.elapsedMsecsSince(start);
+		logger.trace("seq="+seq+" took "+elapsed+"msecs");
+		return winfosIter;
+	}
+
 	protected Iterator<String> wordsContainingNgram(String seq,
 		CompiledCorpus.SearchOption... options) throws SpellCheckerException {
 		Logger logger = Logger.getLogger("ca.pirurvik.iutools.spellchecker.SpellChecker.wordsContainingSequ");
 
 		long start = StopWatch.nowMSecs();
 
-		Set<String> wordsWithSeq = new HashSet<String>();
-
 		Iterator<String> wordsIter = null;
 		try {
-
 			Iterator<String> wordsIter1 =
 				corpus.wordsContainingNgram(
 					seq, options);
