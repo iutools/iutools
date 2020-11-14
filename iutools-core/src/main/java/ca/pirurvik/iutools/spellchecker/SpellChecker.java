@@ -885,7 +885,7 @@ public class SpellChecker {
 
 		tLogger.trace("Finding candidates whose NGrams best matches those of the misspelled word");
 
-		Set<String> candidates =
+		Set<ScoredSpelling> candidates =
 			candidatesWithBestNGramsMatch(ngramFreqs);
 
 		tLogger.trace("Scoring candidates in terms of similarity to the mis-spelled word");
@@ -952,7 +952,7 @@ public class SpellChecker {
 		return freq;
 	}
 
-	private Set<String> candidatesWithBestNGramsMatch(
+	private Set<ScoredSpelling> candidatesWithBestNGramsMatch(
 		Pair<String, Double>[] idf)
 		throws SpellCheckerException {
 
@@ -962,30 +962,35 @@ public class SpellChecker {
 		tLogger.trace("Started");
 
 		Set<String> candidates = new HashSet<String>();
+		Set<ScoredSpelling> candidateSpellings = new HashSet<ScoredSpelling>();
 		for (int i=0; i<idf.length; i++) {
 
 			String ngram = idf[i].getFirst();
 			Double ngramIDF = idf[i].getSecond();
 
-			Set<String> candidatesWithNgram = null;
+			Set<ScoredSpelling> candidateSpellingsWithNgram =
+					new HashSet<ScoredSpelling>();
+			Set<String> candidatesWithNgram = new HashSet<String>();;
 
 			tLogger.trace("adding candidates that contain ngram=" + ngram + " (ngramIDF=" + ngramIDF + ")");
 
-			candidatesWithNgram = new HashSet<String>();
 			Iterator<WordInfo_ES> iterWinfoCandaWithNgram =
 				winfosContainingNgram(
 					ngram, CompiledCorpus.SearchOption.EXCL_MISSPELLED);
 			while (iterWinfoCandaWithNgram.hasNext()) {
-				String word = iterWinfoCandaWithNgram.next().word;
-				candidatesWithNgram.add(word);
+				WordInfo_ES winfo = iterWinfoCandaWithNgram.next();
+				candidatesWithNgram.add(winfo.word);
+				candidateSpellingsWithNgram.add(
+					new ScoredSpelling(winfo.word));
 			}
 
 			candidates.addAll(candidatesWithNgram);
+			candidateSpellings.addAll(candidateSpellingsWithNgram);
 
 			SpellDebug.containsCorrection(
 					"SpellChecker.candidatesWithBestNGramsMatch",
 					"After adding words containing ngram=" + ngram,
-					null, candidates);
+					null, candidateSpellings);
 
 			tLogger.trace("DONE adding candidates that contain ngram=" + ngram + "; total added = " + candidatesWithNgram.size());
 
@@ -999,7 +1004,7 @@ public class SpellChecker {
 
 		tLogger.trace("Completed in "+elapsed+"msecs");
 		
-		return candidates;
+		return candidateSpellings;
 
 	}
 
@@ -1049,14 +1054,18 @@ public class SpellChecker {
 	}
 
 	private Pair<String, Double>[] scoreAndSortCandidates(
-			boolean onlyNumericTerms, Set<String> initialCands, 
-			String[] badWordNGrams, Pair<String, Double>[] badWordNgramFreqs,
-			NgramCompiler ngramCompiler) {
+		boolean onlyNumericTerms, Set<ScoredSpelling> initialCands,
+		String[] badWordNGrams, Pair<String, Double>[] badWordNgramFreqs,
+		NgramCompiler ngramCompiler) {
 
+		Set<String> initialWords = new HashSet<String>();
+		for (ScoredSpelling aSpelling: initialCands) {
+			initialWords.add(aSpelling.spelling);
+		}
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.spellchecker.SpellChecker.scoreAndSortCandidates");
 		tLogger.trace("invoked");
 
-		Set<String> candidates = initialCands;
+		Set<ScoredSpelling> candidates = initialCands;
 		if (onlyNumericTerms) {
 			candidates = keepOnlyNumericTerms(initialCands);
 		}
@@ -1074,9 +1083,10 @@ public class SpellChecker {
 		}
 		
 		List<Pair<String,Double>> scoreValues = new ArrayList<Pair<String,Double>>();
-		Iterator<String> it = candidates.iterator();
+		Iterator<ScoredSpelling> it = candidates.iterator();
 		while (it.hasNext()) {
-			String candidate = it.next();
+			ScoredSpelling candSpelling = it.next();
+			String candidate = candSpelling.spelling;
 			Set<String> ngramsOfCandidate = ngramCompiler.compile(candidate);
 			Set<String> all = new HashSet<String>();
 			for (String ngram: badWordNGrams) {
@@ -1106,10 +1116,10 @@ public class SpellChecker {
 	}
 	
 
-	private Set<String> keepOnlyNumericTerms(Set<String> initialCands) {
-		Set<String> filteredCands = new HashSet<String>();
-		for (String aCand: initialCands) {
-			String[] numericParts = splitNumericExpression(aCand);
+	private Set<ScoredSpelling> keepOnlyNumericTerms(Set<ScoredSpelling> initialCands) {
+		Set<ScoredSpelling> filteredCands = new HashSet<ScoredSpelling>();
+		for (ScoredSpelling aCand: initialCands) {
+			String[] numericParts = splitNumericExpression(aCand.spelling);
 			if (numericParts != null) {
 				filteredCands.add(aCand);
 			}
