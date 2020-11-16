@@ -24,8 +24,6 @@ import ca.pirurvik.iutools.corpus.*;
 import org.apache.commons.collections4.iterators.IteratorChain;
 import org.apache.log4j.Logger;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.gson.Gson;
 
 import ca.nrc.config.ConfigException;
@@ -117,16 +115,6 @@ public class SpellChecker {
 			latinSingleInuktitutCharacters.add(Syllabics.syllabicsToRomanICI[i][1]);
 		};
 	}
-	
-    public static Cache<String, Set<String>> 
-		wordsWithNgramCache = 
-			Caffeine.newBuilder().maximumSize(10000)
-			.build();
-
-	public static Cache<String, Boolean>
-			isMisspelledCache =
-			Caffeine.newBuilder().maximumSize(10000)
-					.build();
 
 	public SpellChecker() throws StringSegmenterException, SpellCheckerException {
 		init_SpellChecker_ES((String)null, (Boolean)null);
@@ -221,16 +209,6 @@ public class SpellChecker {
 
 		return;
 	}
-	
-
-	/*
-	 * Ideally those 2 values should have been compiled during the corpus compilation.
-	 * But for now, they are compiled externally and stored in a special corpus compilation (json) file.
-	 * (see AnalyseNumberExpressions.java in ca.inuktitutcomputing.utilbin)
-	 */
-	private Map<String, Long> getNgramsStatsOfNumericTerms(AnalyzeNumberExpressions numberExpressionsAnalysis) {
-		return numberExpressionsAnalysis.getNgramStats();
-	}
 
 	public void setEditDistanceAlgorithm(EditDistanceCalculatorFactory.DistanceMethod name) throws ClassNotFoundException, EditDistanceCalculatorFactoryException {
 		editDistanceCalculator = EditDistanceCalculatorFactory.getEditDistanceCalculator(name);
@@ -263,20 +241,6 @@ public class SpellChecker {
 			throw new SpellCheckerException(e);
 		}
 	}
-	
-	private void __updateSequenceIDFForWord(String word, boolean wordIsNumericTerm) {
-		Set<String> seqSeenInWord = new HashSet<String>();
-		try {
-			for (int seqLen = 1; seqLen <= MAX_SEQ_LEN; seqLen++) {
-				for (int  start=0; start <= word.length() - seqLen; start++) {
-					String charSeq = word.substring(start, start+seqLen);
-					seqSeenInWord.add(charSeq);
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 
 	public void saveToFile(File checkerFile) throws IOException {
 		FileWriter saveFile = new FileWriter(checkerFile);
@@ -285,10 +249,6 @@ public class SpellChecker {
 		saveFile.flush();
 		saveFile.close();
 		//System.out.println("saved in "+checkerFile.getAbsolutePath());
-	}
-
-	private int getMaxCandidates() {
-		return this.MAX_CANDIDATES;
 	}
 
 	private int getMaxSeqLen() {
@@ -342,7 +302,8 @@ public class SpellChecker {
 				"Computing 1st pass candidates",
 				word, null);
 
-			Set<String> candidates = candidatesWithSimilarNgrams(wordInLatin, wordIsNumericTerm);
+			Set<ScoredSpelling> candidates =
+				candidatesWithSimilarNgrams(wordInLatin, wordIsNumericTerm);
 
 			SpellDebug.trace("SpellChecker.correctWord",
 			"Number of 1st pass candidates="+(candidates.size()),
@@ -357,14 +318,16 @@ public class SpellChecker {
 				"Computing candidates similariy using "+editDistanceCalculator.getClass(),
 				word, null);
 
-			List<ScoredSpelling> scoredSpellings = computeCandidateSimilarities(wordInLatin, candidates);
+			Set<ScoredSpelling> scoredSpellings =
+				computeCandidateSimilarities(wordInLatin, candidates);
 
 			SpellDebug.containsCorrection(
 					"SpellChecker.correctWord",
 					"UNSORTED scored spellings",
 					word, scoredSpellings);
 
-			scoredSpellings = sortCandidatesBySimilarity(scoredSpellings);
+			List<ScoredSpelling> sortedSpellings =
+				sortCandidatesByOverallScore(scoredSpellings);
 
 			SpellDebug.containsCorrection(
 				"SpellChecker.correctWord",
@@ -373,13 +336,13 @@ public class SpellChecker {
 
 			if (wordIsNumericTerm) {
 				for (int ic=0; ic<scoredSpellings.size(); ic++) {
-					ScoredSpelling scoredCandidate = scoredSpellings.get(ic);
+					ScoredSpelling scoredCandidate = sortedSpellings.get(ic);
 					scoredCandidate.spelling = 
-							scoredCandidate.spelling.replaceAll("\\d+-*",numericTermParts[0]);
+						scoredCandidate.spelling.replaceAll("\\d+-*",numericTermParts[0]);
 				}
 			}
 
-			scoredSpellings = selectTopCandidates(maxCorrections, scoredSpellings);
+			sortedSpellings = selectTopCandidates(maxCorrections, sortedSpellings);
 
 			SpellDebug.containsCorrection(
 				"SpellChecker.correctWord",
@@ -392,7 +355,7 @@ public class SpellChecker {
 						word, null);
 			}
 			
-	 		corr.setPossibleSpellings(scoredSpellings);
+	 		corr.setPossibleSpellings(sortedSpellings);
 		}
 		
 		if (wordIsSyllabic) {
@@ -405,7 +368,8 @@ public class SpellChecker {
  		return corr;
 	}
 
-	private List<ScoredSpelling> selectTopCandidates(int maxCorrections, List<ScoredSpelling> sortedCandidates) throws SpellCheckerException {
+	private List<ScoredSpelling> selectTopCandidates(int maxCorrections,
+		List<ScoredSpelling> sortedCandidates) throws SpellCheckerException {
 		List<ScoredSpelling> topCandidates = sortedCandidates;
 		if (maxCorrections != -1) {
 			topCandidates = new ArrayList<ScoredSpelling>();
@@ -466,15 +430,11 @@ public class SpellChecker {
 					// Found a word with the right characteristics
 					wordWasFoundForLead = true;					
 					longestCorrectLead = lead;
-//					System.out.println("** SpellChecker.computeCorrectLead: setting longestCorrectLead="+
-//							longestCorrectLead);
 					break;
 				}
 			}
 			
 			if (wordWasFoundForLead) {
-//				System.out.println("** SpellChecker.computeCorrectLead: setting longestCorrectLead="+
-//						longestCorrectLead);
 				break;
 			}			
 		}
@@ -483,9 +443,7 @@ public class SpellChecker {
 	
 	protected boolean leadRespectsMorphemeBoundaries(String lead, String word) 
 			throws SpellCheckerException {
-//		System.out.println("** SpellChecker.leadRespectsMorphemeBoundaries: lead="+
-//				lead+", word=="+word);
-		
+
 		Boolean answer = null;
 		
 		Decomposition[] decomps = null;
@@ -504,9 +462,7 @@ public class SpellChecker {
 		if (decomps != null) {
 			for (Decomposition aDecomp: decomps) {
 				List<String> morphemes = aDecomp.morphemeSurfaceForms();
-//				System.out.println("** SpellChecker.leadRespectsMorphemeBoundaries:"+
-//						" looking at morphemes='"+String.join("', '", morphemes)+"'");
-				
+
 				String morphLead = "";
 				for (String morph: morphemes) {
 					morphLead += morph;
@@ -516,15 +472,10 @@ public class SpellChecker {
 					}
 				}
 				if (answer != null) { break; }
-//				System.out.println("** SpellChecker.leadRespectsMorphemeBoundaries:"+
-//						"    after looking at morphemes, answer="+answer);
 			}
 		}
 		
 		if (answer == null) { answer = false; }
-		
-//		System.out.println("** SpellChecker.leadRespectsMorphemeBoundaries: lead="+
-//				lead+", word="+word+", returns answer="+answer);
 		
 		return answer.booleanValue();
 	}
@@ -590,18 +541,10 @@ public class SpellChecker {
 			throw new SpellCheckerException(e);
 		}
 		
-//		if (decomps == null) { System.out.println("** SpellChecker.tailRespectsMorphemeBoundaries:"+
-//				" decomps is NULL"); }
-
-//		if (decomps.length == 0) { System.out.println("** SpellChecker.tailRespectsMorphemeBoundaries:"+
-//				" decomps is Empty"); }
-		
 		if (decomps != null) {
 			for (Decomposition aDecomp: decomps) {
 				List<String> morphemes = aDecomp.morphemeSurfaceForms();
-//				System.out.println("** SpellChecker.tailRespectsMorphemeBoundaries:"+
-//						" looking at morphemes='"+String.join("', '", morphemes)+"'");
-				
+
 				String morphTail = "";
 				for (int ii=morphemes.size()-1; ii > 0; ii--) {
 					String morph = morphemes.get(ii);
@@ -612,16 +555,10 @@ public class SpellChecker {
 					}
 				}
 				if (answer != null) { break; }
-//				System.out.println("** SpellChecker.tailRespectsMorphemeBoundaries:"+
-//						"    after looking at morphemes, answer="+answer);
-				
 			}
 		}
 		
 		if (answer == null) { answer = false; }
-		
-//		System.out.println("** SpellChecker.tailRespectsMorphemeBoundaries: tail="+
-//				tail+", word="+word+", returns answer="+answer);
 		
 		return answer.booleanValue();
 	}
@@ -723,8 +660,6 @@ public class SpellChecker {
 			if (wordIsMispelled == null) {
 				wordIsMispelled = false;
 			}
-
-			cacheIsMisspelled(word, wordIsMispelled);
 		}
 		
 		return wordIsMispelled;
@@ -788,35 +723,45 @@ public class SpellChecker {
 	}
 
 
-	private List<ScoredSpelling> sortCandidatesBySimilarity(List<ScoredSpelling> scoredSpellings) {
-		
-		Iterator<ScoredSpelling> iteratorCand = scoredSpellings.iterator();
-		Collections.sort(scoredSpellings, (ScoredSpelling p1, ScoredSpelling p2) -> {
-			return p1.score.compareTo(p2.score);
-		});
-		
-		return scoredSpellings;
+	private List<ScoredSpelling> sortCandidatesByOverallScore(
+		Set<ScoredSpelling> spellingsSet) {
+		List<ScoredSpelling> sortedSpellings = new ArrayList<ScoredSpelling>();
+		sortedSpellings.addAll(spellingsSet);
+
+		Collections.sort(sortedSpellings,
+			(ScoredSpelling p1, ScoredSpelling p2) -> {
+				int score = p1.ngramSim.compareTo(p2.ngramSim);
+				if (score == 0) {
+					// Use frequency to break ties in the value of ngram
+					// similarity
+					score = p1.frequency.compareTo(p2.frequency);
+				}
+				return score;
+			}
+		);
+
+		return sortedSpellings;
 	}
 
-	protected List<ScoredSpelling> computeCandidateSimilarities(String badWord, Set<String> candidates) throws SpellCheckerException {
+	protected Set<ScoredSpelling> computeCandidateSimilarities(
+		String badWord, Set<ScoredSpelling> candidates) throws SpellCheckerException {
 		SpellDebug.trace("SpellChecker.computeCandidateSimilarities",
 				"Invoked on word="+badWord+
 					", editDistanceCalculator=\n"+editDistanceCalculator.getClass()+
 					PrettyPrinter.print(editDistanceCalculator),
 				badWord, null);
 		List<ScoredSpelling> scoredCandidates = new ArrayList<ScoredSpelling>();
-		
-		Iterator<String> iterator = candidates.iterator();
-		while (iterator.hasNext()) {
-			String candidate = iterator.next();
-			double similarity = computeCandidateSimilarity(badWord,candidate);
-			scoredCandidates.add(new ScoredSpelling(candidate, new Double(similarity)));
+
+		for (ScoredSpelling aCandidate: candidates) {
+			double ngramSimilarity =
+				computeCandidateNgramSimilarity(badWord, aCandidate.spelling);
+			aCandidate.ngramSim = ngramSimilarity;
 		}
 		
-		return scoredCandidates;
+		return candidates;
 	}
 
-	private double computeCandidateSimilarity(String badWord, String candidate) throws SpellCheckerException {
+	private double computeCandidateNgramSimilarity(String badWord, String candidate) throws SpellCheckerException {
 
 		SpellDebug.trace("SpellChecker.computeCandidateSimilarity",
 			"Invoked, editDistanceCalculator="+editDistanceCalculator.getClass(),
@@ -836,7 +781,7 @@ public class SpellChecker {
 		return distance;
 	}
 
-	public Set<String> candidatesWithSimilarNgrams(String badWord,
+	public Set<ScoredSpelling> candidatesWithSimilarNgrams(String badWord,
 	   boolean wordIsNumericTerm) throws SpellCheckerException {
 
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.spellchecker.SpellChecker.candidatesWithSimilarNgrams");
@@ -893,13 +838,13 @@ public class SpellChecker {
 		// Step 4: compute scores for each word and sort them from highest to
 		//   lowest score.
 		//
-		Pair<String,Double>[] arrScoreValues =
-				scoreAndSortCandidates(wordIsNumericTerm, candidates, 
-					badWordNgrams, ngramFreqs, ngramCompiler);
+		ScoredSpelling[] sortedCandidate =
+			sortCandidatesByNgramSimilarity(wordIsNumericTerm, candidates,
+				badWordNgrams, ngramFreqs, ngramCompiler);
 
-		Set<String> allCandidates = new HashSet<String>();
-		for (int i=0; i<arrScoreValues.length; i++) {
-			allCandidates.add(arrScoreValues[i].getFirst());
+		Set<ScoredSpelling> allCandidates = new HashSet<ScoredSpelling>();
+		for (int i=0; i<sortedCandidate.length; i++) {
+			allCandidates.add(sortedCandidate[i]);
 		}
 		
 		SpellDebug.containsCorrection("SpellChecker.firstPassCandidates_TFIDF", 
@@ -928,8 +873,6 @@ public class SpellChecker {
 		}
 		IDFComparator dcomparator = new IDFComparator();
 		Arrays.sort(ngramFreqs,dcomparator);
-
-//		ngramFreqs = removeNgramsWithNoOccurences(ngramFreqs);
 
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("returning idf="+PrettyPrinter.print(ngramFreqs));
@@ -961,7 +904,6 @@ public class SpellChecker {
 		long start = StopWatch.nowMSecs();
 		tLogger.trace("Started");
 
-		Set<String> candidates = new HashSet<String>();
 		Set<ScoredSpelling> candidateSpellings = new HashSet<ScoredSpelling>();
 		for (int i=0; i<idf.length; i++) {
 
@@ -970,7 +912,6 @@ public class SpellChecker {
 
 			Set<ScoredSpelling> candidateSpellingsWithNgram =
 					new HashSet<ScoredSpelling>();
-			Set<String> candidatesWithNgram = new HashSet<String>();;
 
 			tLogger.trace("adding candidates that contain ngram=" + ngram + " (ngramIDF=" + ngramIDF + ")");
 
@@ -979,12 +920,11 @@ public class SpellChecker {
 					ngram, CompiledCorpus.SearchOption.EXCL_MISSPELLED);
 			while (iterWinfoCandaWithNgram.hasNext()) {
 				WordInfo_ES winfo = iterWinfoCandaWithNgram.next();
-				candidatesWithNgram.add(winfo.word);
-				candidateSpellingsWithNgram.add(
-					new ScoredSpelling(winfo.word));
+				ScoredSpelling candidate = new ScoredSpelling(winfo.word);
+				candidate.frequency = winfo.frequency;
+				candidateSpellingsWithNgram.add(candidate);
 			}
 
-			candidates.addAll(candidatesWithNgram);
 			candidateSpellings.addAll(candidateSpellingsWithNgram);
 
 			SpellDebug.containsCorrection(
@@ -992,9 +932,9 @@ public class SpellChecker {
 					"After adding words containing ngram=" + ngram,
 					null, candidateSpellings);
 
-			tLogger.trace("DONE adding candidates that contain ngram=" + ngram + "; total added = " + candidatesWithNgram.size());
+			tLogger.trace("DONE adding candidates that contain ngram=" + ngram + "; total added = " + candidateSpellings.size());
 
-			if (candidates.size() > MAX_CANDIDATES) {
+			if (candidateSpellings.size() > MAX_CANDIDATES) {
 				break;
 			}
 		}
@@ -1008,52 +948,7 @@ public class SpellChecker {
 
 	}
 
-	private Set<String> collectCandidatesWithNgram(
-		Iterator<String> iterCandsWithNgram) throws SpellCheckerException {
-		Set<String> candidatesWithNgram = new HashSet<String>();
-//		while (iterCandsWithNgram.hasNext()) {
-//			String aCandidate = iterCandsWithNgram.next();
-//			if (! isMispelled(aCandidate)) {
-//				candidatesWithNgram.add(aCandidate);
-//			}
-//		}
-
-		iterCandsWithNgram.forEachRemaining(candidatesWithNgram::add);
-
-		return candidatesWithNgram;
-	}
-
-	private Set<String> candidatesWithBestNGramsMatch(
-			Pair<String, Double>[] ngramsWithIDF, 
-			CompiledCorpus inCorpus) throws SpellCheckerException {
-		Set<String> candidates = new HashSet<String>();		
-		for (int i=0; i<ngramsWithIDF.length; i++) {
-			Set<String> candidatesWithNgram = new HashSet<String>();
-			try {
-				Iterator<String> iterCandidates = inCorpus.wordsContainingNgram(ngramsWithIDF[i].getFirst());
-				while (iterCandidates.hasNext()) {
-					candidatesWithNgram.add(iterCandidates.next());
-				}
-			} catch (CompiledCorpusException e) {
-				throw new SpellCheckerException(e);
-			}
-			
-			SpellDebug.containsCorrection("SpellChecker.firstPassCandidates_TFIDF", 
-					"Words that contain ngram="+ngramsWithIDF[i].getFirst(), 
-					"maliklugu","maligluglu", 
-					candidatesWithNgram);
-			
-			candidates.addAll(candidatesWithNgram);	
-			
-			if (candidates.size() > MAX_CANDIDATES) {
-				break;
-			}
-		}
-		
-		return candidates;
-	}
-
-	private Pair<String, Double>[] scoreAndSortCandidates(
+	private ScoredSpelling[] sortCandidatesByNgramSimilarity(
 		boolean onlyNumericTerms, Set<ScoredSpelling> initialCands,
 		String[] badWordNGrams, Pair<String, Double>[] badWordNgramFreqs,
 		NgramCompiler ngramCompiler) {
@@ -1062,7 +957,7 @@ public class SpellChecker {
 		for (ScoredSpelling aSpelling: initialCands) {
 			initialWords.add(aSpelling.spelling);
 		}
-		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.spellchecker.SpellChecker.scoreAndSortCandidates");
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.spellchecker.SpellChecker.sortCandidatesByNgramSimilarity");
 		tLogger.trace("invoked");
 
 		Set<ScoredSpelling> candidates = initialCands;
@@ -1110,9 +1005,16 @@ public class SpellChecker {
 		Pair<String,Double>[] arrScoreValues = scoreValues.toArray(new Pair[] {});
 		Arrays.sort(arrScoreValues, comparator);
 
+		ScoredSpelling[] sortedSpellings = new ScoredSpelling[arrScoreValues.length];
+		for (int ii=0; ii < arrScoreValues.length; ii++) {
+			Pair<String,Double> candPair = arrScoreValues[ii];
+			String word = candPair.getFirst();
+			Double ngramSim = candPair.getSecond();
+			sortedSpellings[ii] = new ScoredSpelling(word, ngramSim);
+		}
 		tLogger.trace("finished");
 
-		return arrScoreValues;
+		return sortedSpellings;
 	}
 	
 
@@ -1302,43 +1204,8 @@ public class SpellChecker {
 		return accepted;
 	}
 
-	private void cacheWordsWithNgram(String ngram, Set<String> words) {
-		wordsWithNgramCache.put(ngram, words);
-	}
-
-	private Set<String> uncacheWordsWithNgram(String ngram) {
-		Set<String> words = wordsWithNgramCache.getIfPresent(ngram);
-		return words;
-	}
-	
-	private void clearWordsWithNgramCache() {
-		wordsWithNgramCache = 
-				Caffeine.newBuilder().maximumSize(10000)
-				.build();
-	}
-
-	private void cacheIsMisspelled(String word, Boolean misspelled) {
-		isMisspelledCache.put(word, misspelled);
-	}
-
-	private Boolean uncacheIsMisspelled(String word) {
-		Boolean misspelled = isMisspelledCache.getIfPresent(word);
-		return misspelled;
-	}
-
-	private void clearIsMisspelledCache() {
-		isMisspelledCache =
-				Caffeine.newBuilder().maximumSize(10000)
-						.build();
-	}
-
-	private void removeFromMisspelledCache(String word) {
-		isMisspelledCache.invalidate(word);
-	}
-
 	protected double inverseFrequency(double freq) {
 		double iFreq = 1.0 / (freq + 1);
 		return iFreq;
 	}
-
 }
