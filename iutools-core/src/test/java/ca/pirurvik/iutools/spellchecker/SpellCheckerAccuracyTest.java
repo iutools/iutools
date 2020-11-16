@@ -851,7 +851,7 @@ public class SpellCheckerAccuracyTest {
             }
 
             String wordToCheck = anExample.wordToCheck;
-            Set<String> gotCandidates =
+            Set<ScoredSpelling> gotCandidates =
                     checker.candidatesWithSimilarNgrams(wordToCheck, false);
 
             Set<Object> gotCandidatesObj = (Set)gotCandidates;
