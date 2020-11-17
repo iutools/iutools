@@ -2,8 +2,9 @@ package ca.pirurvik.iutools.spellchecker;
 
 import java.util.*;
 
-import ca.nrc.config.ConfigException;
+
 import ca.nrc.datastructure.Pair;
+import ca.nrc.dtrc.stats.FrequencyHistogram;
 import ca.nrc.string.diff.DiffResult;
 
 import org.apache.log4j.Logger;
@@ -34,7 +35,6 @@ public class SpellDebug {
 		methodsToTrace.add("SpellChecker.correctWord");
 		methodsToTrace.add("SpellChecker.firstPassCandidates_TFIDF");
 		methodsToTrace.add("SpellChecker.candidatesWithBestNGramsMatch");
-		methodsToTrace.add("CompiledCorpus_InMemory.updateSequenceNgramsForWord");
 		methodsToTrace.add("SpellChecker.computeCandidateSimilarity");
 		methodsToTrace.add("SpellChecker.computeCandidateSimilarity");
 		methodsToTrace.add("IUDiffCosting.cost");
@@ -60,8 +60,8 @@ public class SpellDebug {
 	static {
 		badWordsToTrace = new HashMap<String,String[]>();
 		badWordsToTrace
-			.put("kiinaujat",
-				new String[] {"kiinaujait"});
+			.put("nunavuumit",
+				new String[] {"nunavummit"});
 	}
 
 	// List of candidate spellings to be traced.
@@ -71,9 +71,8 @@ public class SpellDebug {
 	private static Set<String> candidatesToTrace = null;
 	static {
 		candidatesToTrace = new HashSet<String>();
-		candidatesToTrace.add("kiinaujait");
-		candidatesToTrace.add("kiinaujaut");
-		candidatesToTrace.add("kiinaujaq");
+		candidatesToTrace.add("nunavuumit");
+		candidatesToTrace.add("nunavummit");
 	}
 
 	// List of ngrams to be traced.
@@ -351,7 +350,38 @@ public class SpellDebug {
 	}
 
 	protected static String normalizeNumerical(String orig) {
-		String normalized = orig.replaceAll("(\\d+-*)", "0000");
+
+		String normalized = null;
+		if (orig != null) {
+			normalized = orig.replaceAll("(\\d+-*)", "0000");
+		}
 		return normalized;
+	}
+
+	public static void containsDuplicates(
+		String who, String what, String badWord,
+		Collection<ScoredSpelling> candidates) {
+		Pair<Boolean, String> status =
+			traceStatus(who, badWord, (String) null, (String)null);
+		if (status.getFirst()) {
+			FrequencyHistogram<String> histogram =
+				new FrequencyHistogram<String>();
+			for (ScoredSpelling aCandidate: candidates) {
+				String word = aCandidate.spelling;
+				histogram.updateFreq(word);
+			}
+			int numDups = 0;
+			String mess = "The following duplicates were found in "+what+": ";
+			for (String word: histogram.allValues()) {
+				if (histogram.frequency(word) > 1) {
+					numDups++;
+					mess += word+", ";
+				}
+			}
+			if (numDups > 0) {
+				mess += "\nTotal dups = " + numDups;
+				System.out.println("-- " + who + "(" + status.getSecond() + "):\n   " + mess);
+			}
+		}
 	}
 }

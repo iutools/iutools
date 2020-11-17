@@ -108,7 +108,7 @@ public class IUSpellingDistanceTest {
 					.setDescr("Changing first morpheme should encur INFINITE cost if at least one of the words is multi-morpheme."),
 
 			new DistanceExample("tuna", "suna")
-					.setExpDist(1*DiffCosting.SMALL_COST)
+					.setExpDist(2*DiffCosting.SMALL_COST)
 					.setDescr("Changing first morpheme should encur SMALL cost if both words are single morphemes."),
 					
 			new DistanceExample("nigiani", "niggiani")
@@ -116,7 +116,7 @@ public class IUSpellingDistanceTest {
 					.setDescr("Doubling a consonant shoudl have TINY cost, even in first morpheme"),
 				
 			new DistanceExample("nakuqmi", "nakurmiik")
-					.setExpDist(DiffCosting.TINY_COST + 2*DiffCosting.SMALL_COST)
+					.setExpDist(DiffCosting.TINY_COST + 3*DiffCosting.SMALL_COST)
 					.setDescr("(a) Doubling a vowel, (b) substituting a char mid word and (c) appending a consonant at the end"),
 			
 			new DistanceExample("nniaq", "aanniaq")

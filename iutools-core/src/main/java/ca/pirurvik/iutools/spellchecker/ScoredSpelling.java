@@ -29,4 +29,24 @@ public class ScoredSpelling {
 		String str = spelling+" (dist="+ ngramSim +")";
 		return str;
 	}
+
+	public ScoredSpelling setFrequency(Long _freq) {
+		this.frequency = _freq;
+		return this;
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		boolean answer = false;
+		if (other instanceof ScoredSpelling) {
+			ScoredSpelling otherSpelling = (ScoredSpelling)other;
+			answer = this.spelling.equals(otherSpelling.spelling);
+		}
+		return answer;
+	}
+
+	@Override
+	public int hashCode() {
+		return this.spelling.hashCode();
+	}
 }

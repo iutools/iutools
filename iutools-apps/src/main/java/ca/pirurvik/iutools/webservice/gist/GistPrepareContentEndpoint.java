@@ -98,7 +98,7 @@ public class GistPrepareContentEndpoint extends HttpServlet {
 		
 
 		response.wasActualText = false;
-		WebConcordancer concordancer = new WebConcordancer_NoJS();
+		WebConcordancer concordancer = new WebConcordancer_HtmlCleaner();
 		URL url;
 		try {
 			url = new URL(inputs.textOrUrl);

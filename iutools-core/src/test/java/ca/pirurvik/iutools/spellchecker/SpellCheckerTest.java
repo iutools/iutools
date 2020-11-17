@@ -277,12 +277,12 @@ public class SpellCheckerTest {
 		Set<ScoredSpelling> candidates = checker.candidatesWithSimilarNgrams(badWord, false);
 	
 		String[] expected = new String[] {
-				"inuk", "inukshuk", "inuktitut", "inukttut", "inuktut",
-				"inukutt"};		
-		AssertObject.assertDeepEquals("The list of candidate corrections for word "+badWord+" was not as expected", 
-				expected, candidates);
+			"inuk", "inukshuk", "inuktitut", "inukttut", "inuktut",
+			"inukutt"};
+		AssertSpellingCorrection
+			.candidatesEqual(expected, candidates);
 	}
-	
+
 	@Test
 	public void test__correctWord__CorrectLeadAndTailOverlap() throws Exception {
 		SpellChecker checker = largeDictCheckerWithTestWords();

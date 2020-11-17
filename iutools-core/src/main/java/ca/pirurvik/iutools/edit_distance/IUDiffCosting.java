@@ -336,13 +336,7 @@ public class IUDiffCosting extends DiffCosting {
 			// Any chars that still remaing are involved in a type of operation 
 			// other than doubling/de-doubling.
 			//
-			if (origStr.length() == 1 && revStr.length() == 1) {
-				// If we substitute a single character for another, that
-				// counts as just one operation
-				totalCharsOtherOps = 1;
-			} else {
-				totalCharsOtherOps = origStr.length() + revStr.length();
-			}
+			totalCharsOtherOps = origStr.length() + revStr.length();
 		}
 		
 		Pair<Integer,Integer> dblInfo = null;

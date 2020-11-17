@@ -248,7 +248,6 @@ public class SpellChecker {
 		gson.toJson(this, saveFile);
 		saveFile.flush();
 		saveFile.close();
-		//System.out.println("saved in "+checkerFile.getAbsolutePath());
 	}
 
 	private int getMaxSeqLen() {
@@ -309,6 +308,9 @@ public class SpellChecker {
 			"Number of 1st pass candidates="+(candidates.size()),
 			word, null);
 
+			SpellDebug.containsDuplicates("SpellChecker.correctWord",
+				"1st pass candidates", word, candidates);
+
 			SpellDebug.containsCorrection(
 				"SpellChecker.correctWord",
 				"First pass candidates",
@@ -321,6 +323,10 @@ public class SpellChecker {
 			Set<ScoredSpelling> scoredSpellings =
 				computeCandidateSimilarities(wordInLatin, candidates);
 
+			SpellDebug.containsDuplicates(
+				"SpellChecker.correctWord",
+				"candidates with similarities", word, scoredSpellings);
+
 			SpellDebug.containsCorrection(
 					"SpellChecker.correctWord",
 					"UNSORTED scored spellings",
@@ -328,6 +334,10 @@ public class SpellChecker {
 
 			List<ScoredSpelling> sortedSpellings =
 				sortCandidatesByOverallScore(scoredSpellings);
+
+			SpellDebug.containsDuplicates(
+				"SpellChecker.correctWord",
+				"SORTED scored spellings", word, sortedSpellings);
 
 			SpellDebug.containsCorrection(
 				"SpellChecker.correctWord",
@@ -344,10 +354,15 @@ public class SpellChecker {
 
 			sortedSpellings = selectTopCandidates(maxCorrections, sortedSpellings);
 
+			SpellDebug.containsDuplicates(
+				"TOP PORTION of SORTED scored spellings",
+				"SORTED scored spellings", word, sortedSpellings);
+
 			SpellDebug.containsCorrection(
 				"SpellChecker.correctWord",
 				"TOP PORTION of SORTED scored spellings",
 				word, scoredSpellings);
+
 			if (SpellDebug.traceIsActive("SpellChecker.correctWord", word)) {
 				SpellDebug.trace("SpellChecker.correctWord",
 						"TOP PORTION of SORTED scored spellings is:\n"+
@@ -939,6 +954,11 @@ public class SpellChecker {
 			}
 		}
 
+		SpellDebug.containsDuplicates(
+			"SpellChecker.candidatesWithBestNGramsMatch",
+			"Candidates with best ngram match",
+			null, candidateSpellings);
+
 		long elapsed = 0;
 		elapsed = StopWatch.elapsedMsecsSince(start);
 
@@ -953,9 +973,11 @@ public class SpellChecker {
 		String[] badWordNGrams, Pair<String, Double>[] badWordNgramFreqs,
 		NgramCompiler ngramCompiler) {
 
+		Map<String,Long> wordFreqs = new HashMap<String,Long>();
 		Set<String> initialWords = new HashSet<String>();
 		for (ScoredSpelling aSpelling: initialCands) {
 			initialWords.add(aSpelling.spelling);
+			wordFreqs.put(aSpelling.spelling, aSpelling.frequency);
 		}
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.spellchecker.SpellChecker.sortCandidatesByNgramSimilarity");
 		tLogger.trace("invoked");
@@ -1010,7 +1032,10 @@ public class SpellChecker {
 			Pair<String,Double> candPair = arrScoreValues[ii];
 			String word = candPair.getFirst();
 			Double ngramSim = candPair.getSecond();
-			sortedSpellings[ii] = new ScoredSpelling(word, ngramSim);
+			ScoredSpelling scrSpelling =
+				new ScoredSpelling(word, ngramSim)
+				.setFrequency(wordFreqs.get(word));
+			sortedSpellings[ii] = scrSpelling;
 		}
 		tLogger.trace("finished");
 
