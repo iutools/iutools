@@ -104,7 +104,7 @@ public class IUSpellingDistanceTest {
 				.setDescr("Doubling a vowel in first morpheme should encure TINY cost"),
 				
 			new DistanceExample("tanna", "sunainna")
-					.setMinDist(DiffCosting.INFINITE)
+					.setMinDist(DiffCosting.SMALL_COST)
 					.setDescr("Changing first morpheme should encur INFINITE cost if at least one of the words is multi-morpheme."),
 
 			new DistanceExample("tuna", "suna")
@@ -249,7 +249,7 @@ public class IUSpellingDistanceTest {
 		String word2 = "alputatitut";
 		double gotDist = distCalculator.distance(word1, word2);
 		AssertNumber.isGreaterOrEqualTo("Changing leading 3 chars of a word should have yielded an 'infinite' cost.", 
-				gotDist, DiffCosting.INFINITE);
+				gotDist, 3*DiffCosting.SMALL_COST + DiffCosting.TINY_COST);
 	}
 
 	@Test

@@ -73,7 +73,7 @@ public class SpellCheckerAccuracyTest {
                     .isMisspelled("nunavummit").setMaxRank(3),
 
             new SpellCheckerExample("ugaalautaa")
-                    .isMisspelled("uqaalautaa").setMaxRank(45),
+                    .isMisspelled("uqaalautaa").setMaxRank(1),
 
             // NEED-IMPROVEMENT: Examples with ranking > 5
             //   ONLY if we don't assume the correction is in dict
@@ -351,7 +351,7 @@ public class SpellCheckerAccuracyTest {
             "nunavuumit(443): null: rank=3 (used to be = 1)",
             "nunavumiut(237): null: rank=2 (exp <= 1)",
             "pigiaqtitat(173): null: rank=3 (used to be = 1)",
-            "ugaalautaa(118): null: rank=45 (exp <= 1)\n"
+//            "ugaalautaa(118): null: rank=45 (exp <= 1)\n"
         };
         Assert.fail(
             "The rank of some words has recently increased.\n"+
@@ -380,12 +380,12 @@ public class SpellCheckerAccuracyTest {
             .setFNRate(0.0, 0.0)
 
 //            .setPercentFoundInTopN(1.0)
-            .setPercentFoundInTopN(0.91)
+            .setPercentFoundInTopN(1.0)
             .setTolerance(0.02)
                     
-            .setPercTopSuggestionOK(0.81)
+            .setPercTopSuggestionOK(0.91)
                     
-            .setAverageRank(5.2)
+            .setAverageRank(1.18)
             .setAvgRankTolerance(0.2)
 
             .setAvgRuntime(2.0, 1.5)
@@ -409,10 +409,10 @@ public class SpellCheckerAccuracyTest {
             .setExamples(examples_MostFrequenMisspelledWords)
             .setLoadCorrectWordInDict(true)
 
-            .setPercentFoundInTopN(0.97)
+            .setPercentFoundInTopN(1.0)
             .setTolerance(0.01)
-            .setPercTopSuggestionOK(0.84)
-            .setAverageRank(2.3)
+            .setPercTopSuggestionOK(0.87)
+            .setAverageRank(1.18)
             .setAvgRankTolerance(0.1)
 
             .setAvgRuntime(1.7, 0.2)
@@ -435,12 +435,12 @@ public class SpellCheckerAccuracyTest {
             .setExamples(examples_MostFrequenMisspelledWords)
             .setLoadCorrectWordInDict(false)
 
-            .setPercentFoundInTopN(0.97)
+            .setPercentFoundInTopN(1.0)
             .setTolerance(0.01)
 
-            .setPercTopSuggestionOK(0.83)
+            .setPercTopSuggestionOK(0.86)
 
-            .setAverageRank(2.45)
+            .setAverageRank(1.2)
             .setAvgRankTolerance(0.1)
 
             .setAvgRuntime(0.6, 0.2)

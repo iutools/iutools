@@ -67,7 +67,7 @@ public class IUDiffCosting extends DiffCosting {
 			// "infinite" cost, unless the word and its correction 
 			// are single morphme words
 			//
-			unitCost = INFINITE;
+			unitCost = 2*SMALL_COST;
 		}
 				
 		_cost = costAsCharacterDoubling(nn, diff, unitCost);			
