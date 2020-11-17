@@ -1,21 +1,19 @@
 package ca.pirurvik.iutools.concordancer;
 
+import java.beans.Transient;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ca.nrc.data.harvesting.*;
 import org.apache.log4j.Logger;
 
 import ca.pirurvik.iutools.concordancer.DocAlignment.Problem;
-import ca.nrc.data.harvesting.LanguageGuesser;
-import ca.nrc.data.harvesting.LanguageGuesserException;
-import ca.nrc.data.harvesting.PageHarvester_HtmlCleaner;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.string.StringUtils;
 import ca.pirurvik.iutools.text.segmentation.Segmenter;
-import ca.nrc.data.harvesting.PageHarvesterException;
 
 /**
  * Use this class to fetch aligned sentences from a multilingual web page. 
@@ -32,29 +30,23 @@ public abstract class WebConcordancer {
 
 	public abstract boolean canFollowLanguageLink();
 
-	/**
-	 * Harvest page in the other language, by following the language link
-	 * on that page.
-	 */
-	protected StepOutcome harvestOtherLangPage_ByFollowingLanguageLink(
-			DocAlignment alignment, String lang, String otherLang)
-			throws WebConcordancerException {
-		// TODO Auto-generated method stub
-		return StepOutcome.FAILURE;
+	private static Map<String,String[]> langNames = new HashMap<String,String[]>();
+	private static void setLangNames(String lang, String... names) {
+		langNames.put(lang, names);
+	}
+	static {
+		setLangNames("en", "english");
+		setLangNames("fr", "français");
+		setLangNames("iu", "ᐃᓄᒃᑎᑐᑦ", "ᐃᓄᒃᑐᑦ");
 	}
 
+	@Transient
+	protected abstract PageHarvester getHarvester();
 
-	PageHarvester_HtmlCleaner harvester = null;
+
+	PageHarvester harvester = null;
 	LanguageGuesser langGuesser = new LanguageGuesser_IU();
 	Aligner_Maligna aligner = new Aligner_Maligna();
-	
-	protected PageHarvester_HtmlCleaner getHarvester() {
-		if (harvester == null) {
-			harvester = new PageHarvester_HtmlCleaner();
-			harvester.setHarvestFullText(true);
-		}
-		return harvester;
-	}
 
 	public DocAlignment alignPage(URL url, String[] languages)
 		throws WebConcordancerException {
@@ -297,12 +289,9 @@ public abstract class WebConcordancer {
 			String lang = langPair.getFirst();
 			String otherLang = langPair.getSecond();
 			
-			status = harvestOtherLangPage_UsingURLTransformation(alignment, lang, otherLang);
-			if (status == StepOutcome.KEEP_TRYING) {
-				status = harvestOtherLangPage_ByFollowingLanguageLink(alignment,
-							lang, otherLang);
-			}	
-			
+			status = harvestOtherLangPage_ByFollowingLanguageLink(alignment,
+						lang, otherLang);
+
 			if (status == null || status == StepOutcome.FAILURE || 
 					status == StepOutcome.KEEP_TRYING) {
 				raiseProblem(Problem.FETCHING_CONTENT_OF_OTHER_LANG_PAGE, 
@@ -345,12 +334,49 @@ public abstract class WebConcordancer {
 		return langPair;
 	}
 
+	/**
+	 * Harvest page in the other language, by following the language link
+	 * on that page.
+	 */
+	protected StepOutcome harvestOtherLangPage_ByFollowingLanguageLink(
+			DocAlignment alignment, String lang, String otherLang)
+			throws WebConcordancerException {
+		StepOutcome outcome = StepOutcome.FAILURE;
+		try {
+			String[] linkAnchors = names4lang(otherLang);
+			// For now just follow the link for the first anchor
+			if (linkAnchors.length > 0) {
+				String anchor = linkAnchors[0];
+				harvester.harvestSingleLink(anchor);
+				URL otherLangURL = harvester.getCurrentURL();
+				String otherLangContent = harvester.getText();
+				alignment.setPageContent(otherLang, otherLangContent);
+				alignment.setPageURL(otherLang, otherLangURL);
+
+				outcome = StepOutcome.SUCCESS;
+			}
+		} catch (PageHarvesterException e) {
+			// If we weren't able to fetch the other language page, just
+			// leave the outcome at FAILURE and return that
+		}
+
+		return outcome;
+	}
+
+	private String[] names4lang(String lang) {
+		String[] names = new String[0];
+		if (langNames.containsKey(lang)) {
+			names = langNames.get(lang);
+		}
+		return names;
+	}
+
 	/** 
 	 * Harvest page in the other language, using rules that transform the
 	 * original URL into the URL of the other page.
 	 */
 	private StepOutcome harvestOtherLangPage_UsingURLTransformation(
-			DocAlignment alignment, String lang, String otherLang) { 
+			DocAlignment alignment, String lang, String otherLang) throws WebConcordancerException {
 		
 		StepOutcome status = StepOutcome.KEEP_TRYING;
 		
@@ -389,12 +415,16 @@ public abstract class WebConcordancer {
 					}
 					
 					if (!alignment.encounteredSomeProblems()) {
-						String otherLangContent = harvester.getText();
-								
-						URL otherLangURL = harvester.getCurrentURL();
-						alignment.setPageContent(otherLang, otherLangContent);
-						alignment.setPageURL(otherLang, otherLangURL);
-						status = StepOutcome.SUCCESS;
+						try {
+							String otherLangContent = harvester.getText();
+
+							URL otherLangURL = harvester.getCurrentURL();
+							alignment.setPageContent(otherLang, otherLangContent);
+							alignment.setPageURL(otherLang, otherLangURL);
+							status = StepOutcome.SUCCESS;
+						} catch (PageHarvesterException e) {
+							throw new WebConcordancerException(e);
+						}
 					}
 				}
 			}
