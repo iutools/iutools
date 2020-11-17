@@ -1099,18 +1099,6 @@ public class SpellChecker {
 	    }
 	}
 
-	public class WordScoreComparator implements Comparator<Pair<String,Double>> {
-	    @Override
-	    public int compare(Pair<String,Double> a, Pair<String,Double> b) {
-	    	if (a.getSecond() > b.getSecond())
-	    		return -1;
-	    	else if (a.getSecond() < b.getSecond())
-				return 1;
-	    	else 
-	    		return a.getFirst().compareToIgnoreCase(b.getFirst());
-	    }
-	}
-
 	protected Iterator<String> wordsContainingNgram(
 		String seq) throws SpellCheckerException {
 		return wordsContainingNgram(seq, new CompiledCorpus.SearchOption[0]);
