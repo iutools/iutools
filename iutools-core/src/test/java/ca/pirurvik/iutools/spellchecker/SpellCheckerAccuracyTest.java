@@ -124,7 +124,7 @@ public class SpellCheckerAccuracyTest {
                     .isMisspelled("kiinaujaqtigut").setMaxRank(1),
 
             new SpellCheckerExample("kiinaujat")
-                    .isMisspelled("kiinaujait").setMaxRank(2),
+                    .isMisspelled("kiinaujait").setMaxRank(1),
 
             new SpellCheckerExample("maligaliqtit")
                     .isMisspelled("maligaliqtiit").setMaxRank(1),
@@ -142,7 +142,7 @@ public class SpellCheckerAccuracyTest {
                     .isMisspelled("nunavummi").setMaxRank(1),
 
             new SpellCheckerExample("nunavumiut")
-                    .isMisspelled("nunavummiut").setMaxRank(2),
+                    .isMisspelled("nunavummiut").setMaxRank(1),
 
             new SpellCheckerExample("nunavumut")
                     .isMisspelled("nunavummut").setMaxRank(1),
@@ -151,7 +151,7 @@ public class SpellCheckerAccuracyTest {
                     .isMisspelled("nunavummi").setMaxRank(1),
 
             new SpellCheckerExample("pigiaqtitat")
-                    .isMisspelled("pigiaqtitait").setMaxRank(3),
+                    .isMisspelled("pigiaqtitait").setMaxRank(1),
 
             new SpellCheckerExample("sulikkanniiq")
                     .isMisspelled("sulikkanniq").setMaxRank(1),
@@ -411,8 +411,8 @@ public class SpellCheckerAccuracyTest {
 
             .setPercentFoundInTopN(1.0)
             .setTolerance(0.01)
-            .setPercTopSuggestionOK(0.87)
-            .setAverageRank(1.18)
+            .setPercTopSuggestionOK(0.95)
+            .setAverageRank(1.07)
             .setAvgRankTolerance(0.1)
 
             .setAvgRuntime(1.7, 0.2)
@@ -438,9 +438,9 @@ public class SpellCheckerAccuracyTest {
             .setPercentFoundInTopN(1.0)
             .setTolerance(0.01)
 
-            .setPercTopSuggestionOK(0.86)
+            .setPercTopSuggestionOK(0.94)
 
-            .setAverageRank(1.2)
+            .setAverageRank(1.08)
             .setAvgRankTolerance(0.1)
 
             .setAvgRuntime(0.6, 0.2)
@@ -848,7 +848,7 @@ public class SpellCheckerAccuracyTest {
             }
 
             String wordToCheck = anExample.wordToCheck;
-            Set<ScoredSpelling> gotCandidates =
+            List<ScoredSpelling> gotCandidates =
                 checker.candidatesWithSimilarNgrams(wordToCheck, false);
 
             Set<Object> gotCandidatesObj = (Set)gotCandidates;

@@ -165,21 +165,15 @@ public abstract class WebConcordancerTest {
 			concordancer.alignPage(
 				url, new String[] {"en", "iu"}, AlignOptions.ONLY_FETCH_CONTENT);
 
-		if (concordancer.canFollowLanguageLink()) {
-			DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for " + url + " were not as expected.")
-				.didNotEncounterProblems()
-				.urlForLangEquals("en", new URL("https://www.gov.nu.ca/honourable-joe-savikataaq-4"))
-				// This URL auto forwards to https://www.gov.nu.ca/iu/juu-savikataaq-4
-				.urlForLangEquals("iu", new URL("https://www.gov.nu.ca/iu/node/26649"))
+		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for " + url + " were not as expected.")
+			.didNotEncounterProblems()
+			.urlForLangEquals("en", new URL("https://www.gov.nu.ca/honourable-joe-savikataaq-4"))
+			// This URL auto forwards to https://www.gov.nu.ca/iu/juu-savikataaq-4
+			.urlForLangEquals("iu", new URL("https://www.gov.nu.ca/iu/node/26649"))
 
-				.pageInLangContains("en", "Premier of Nunavut")
-				.pageInLangContains("iu", "ᓯᕗᓕᖅᑎ ᓄᓇᕗᒻᒥ")
-			;
-		} else {
-			DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for " + url + " were not as expected.")
-				.encounteredProblems(Problem.FETCHING_CONTENT_OF_OTHER_LANG_PAGE)
-			;
-		}
+			.pageInLangContains("en", "Premier of Nunavut")
+			.pageInLangContains("iu", "ᓯᕗᓕᖅᑎ ᓄᓇᕗᒻᒥ")
+		;
 	}
 
 	@Test

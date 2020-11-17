@@ -274,7 +274,8 @@ public class SpellCheckerTest {
 		SpellChecker checker = smallDictCheckerWithTestWords();
 		
 		String badWord = "inukkshuk";
-		Set<ScoredSpelling> candidates = checker.candidatesWithSimilarNgrams(badWord, false);
+		List<ScoredSpelling> candidates =
+			checker.candidatesWithSimilarNgrams(badWord, false);
 	
 		String[] expected = new String[] {
 			"inuk", "inukshuk", "inuktitut", "inukttut", "inuktut",

@@ -301,7 +301,7 @@ public class SpellChecker {
 				"Computing 1st pass candidates",
 				word, null);
 
-			Set<ScoredSpelling> candidates =
+			List<ScoredSpelling> candidates =
 				candidatesWithSimilarNgrams(wordInLatin, wordIsNumericTerm);
 
 			SpellDebug.trace("SpellChecker.correctWord",
@@ -320,7 +320,7 @@ public class SpellChecker {
 				"Computing candidates similariy using "+editDistanceCalculator.getClass(),
 				word, null);
 
-			Set<ScoredSpelling> scoredSpellings =
+			List<ScoredSpelling> scoredSpellings =
 				computeCandidateSimilarities(wordInLatin, candidates);
 
 			SpellDebug.containsDuplicates(
@@ -739,11 +739,9 @@ public class SpellChecker {
 
 
 	private List<ScoredSpelling> sortCandidatesByOverallScore(
-		Set<ScoredSpelling> spellingsSet) {
-		List<ScoredSpelling> sortedSpellings = new ArrayList<ScoredSpelling>();
-		sortedSpellings.addAll(spellingsSet);
+		List<ScoredSpelling> spellings) {
 
-		Collections.sort(sortedSpellings,
+		Collections.sort(spellings,
 			(ScoredSpelling p1, ScoredSpelling p2) -> {
 				int score = p1.ngramSim.compareTo(p2.ngramSim);
 				if (score == 0) {
@@ -755,11 +753,11 @@ public class SpellChecker {
 			}
 		);
 
-		return sortedSpellings;
+		return spellings;
 	}
 
-	protected Set<ScoredSpelling> computeCandidateSimilarities(
-		String badWord, Set<ScoredSpelling> candidates) throws SpellCheckerException {
+	protected List<ScoredSpelling> computeCandidateSimilarities(
+		String badWord, List<ScoredSpelling> candidates) throws SpellCheckerException {
 		SpellDebug.trace("SpellChecker.computeCandidateSimilarities",
 				"Invoked on word="+badWord+
 					", editDistanceCalculator=\n"+editDistanceCalculator.getClass()+
@@ -796,7 +794,7 @@ public class SpellChecker {
 		return distance;
 	}
 
-	public Set<ScoredSpelling> candidatesWithSimilarNgrams(String badWord,
+	public List<ScoredSpelling> candidatesWithSimilarNgrams(String badWord,
 	   boolean wordIsNumericTerm) throws SpellCheckerException {
 
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.spellchecker.SpellChecker.candidatesWithSimilarNgrams");
@@ -845,7 +843,7 @@ public class SpellChecker {
 
 		tLogger.trace("Finding candidates whose NGrams best matches those of the misspelled word");
 
-		Set<ScoredSpelling> candidates =
+		List<ScoredSpelling> candidates =
 			candidatesWithBestNGramsMatch(ngramFreqs);
 
 		tLogger.trace("Scoring candidates in terms of similarity to the mis-spelled word");
@@ -853,25 +851,20 @@ public class SpellChecker {
 		// Step 4: compute scores for each word and sort them from highest to
 		//   lowest score.
 		//
-		ScoredSpelling[] sortedCandidate =
+		List<ScoredSpelling> sortedCandidates =
 			sortCandidatesByNgramSimilarity(wordIsNumericTerm, candidates,
 				badWordNgrams, ngramFreqs, ngramCompiler);
 
-		Set<ScoredSpelling> allCandidates = new HashSet<ScoredSpelling>();
-		for (int i=0; i<sortedCandidate.length; i++) {
-			allCandidates.add(sortedCandidate[i]);
-		}
-		
-		SpellDebug.containsCorrection("SpellChecker.firstPassCandidates_TFIDF", 
-				"Returned list allCandidates", badWord,
-				allCandidates);
+		SpellDebug.containsCorrection("SpellChecker.firstPassCandidates_TFIDF",
+				"Returned list sortedCandidates", badWord,
+				sortedCandidates);
 
-		tLogger.trace("Returning candidates list of size="+allCandidates.size());
+		tLogger.trace("Returning candidates list of size="+sortedCandidates.size());
 
 		long elapsed = StopWatch.elapsedMsecsSince(start);
 		tLogger.trace("word="+badWord+" took "+elapsed+"msecs");
 
-		return allCandidates;
+		return sortedCandidates;
 	}
 
 	private Pair<String,Double>[] computeNgramFrequencies(String[] ngrams) throws SpellCheckerException {
@@ -910,7 +903,7 @@ public class SpellChecker {
 		return freq;
 	}
 
-	private Set<ScoredSpelling> candidatesWithBestNGramsMatch(
+	private List<ScoredSpelling> candidatesWithBestNGramsMatch(
 		Pair<String, Double>[] idf)
 		throws SpellCheckerException {
 
@@ -919,7 +912,7 @@ public class SpellChecker {
 		long start = StopWatch.nowMSecs();
 		tLogger.trace("Started");
 
-		Set<ScoredSpelling> candidateSpellings = new HashSet<ScoredSpelling>();
+		Set<ScoredSpelling> candidateSpellingsSet = new HashSet<ScoredSpelling>();
 		for (int i=0; i<idf.length; i++) {
 
 			String ngram = idf[i].getFirst();
@@ -940,16 +933,16 @@ public class SpellChecker {
 				candidateSpellingsWithNgram.add(candidate);
 			}
 
-			candidateSpellings.addAll(candidateSpellingsWithNgram);
+			candidateSpellingsSet.addAll(candidateSpellingsWithNgram);
 
 			SpellDebug.containsCorrection(
 					"SpellChecker.candidatesWithBestNGramsMatch",
 					"After adding words containing ngram=" + ngram,
-					null, candidateSpellings);
+					null, candidateSpellingsSet);
 
-			tLogger.trace("DONE adding candidates that contain ngram=" + ngram + "; total added = " + candidateSpellings.size());
+			tLogger.trace("DONE adding candidates that contain ngram=" + ngram + "; total added = " + candidateSpellingsSet.size());
 
-			if (candidateSpellings.size() > MAX_CANDIDATES) {
+			if (candidateSpellingsSet.size() > MAX_CANDIDATES) {
 				break;
 			}
 		}
@@ -957,19 +950,22 @@ public class SpellChecker {
 		SpellDebug.containsDuplicates(
 			"SpellChecker.candidatesWithBestNGramsMatch",
 			"Candidates with best ngram match",
-			null, candidateSpellings);
+			null, candidateSpellingsSet);
 
 		long elapsed = 0;
 		elapsed = StopWatch.elapsedMsecsSince(start);
 
 		tLogger.trace("Completed in "+elapsed+"msecs");
-		
-		return candidateSpellings;
 
+		List<ScoredSpelling> candidateSpellingsList =
+			new ArrayList<ScoredSpelling>();
+		candidateSpellingsList.addAll(candidateSpellingsSet);
+		
+		return candidateSpellingsList;
 	}
 
-	private ScoredSpelling[] sortCandidatesByNgramSimilarity(
-		boolean onlyNumericTerms, Set<ScoredSpelling> initialCands,
+	private List<ScoredSpelling> sortCandidatesByNgramSimilarity(
+		boolean onlyNumericTerms, List<ScoredSpelling> initialCands,
 		String[] badWordNGrams, Pair<String, Double>[] badWordNgramFreqs,
 		NgramCompiler ngramCompiler) {
 
@@ -982,7 +978,8 @@ public class SpellChecker {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.spellchecker.SpellChecker.sortCandidatesByNgramSimilarity");
 		tLogger.trace("invoked");
 
-		Set<ScoredSpelling> candidates = initialCands;
+		List<ScoredSpelling> candidates = new ArrayList<ScoredSpelling>();
+		candidates.addAll(initialCands);
 		if (onlyNumericTerms) {
 			candidates = keepOnlyNumericTerms(initialCands);
 		}
@@ -1021,30 +1018,27 @@ public class SpellChecker {
 					}
 				}
 			}
+			candSpelling.ngramSim = totalScore;
 			scoreValues.add(new Pair<String,Double>(candidate,totalScore));
 		}
-		WordScoreComparator comparator = new WordScoreComparator();
-		Pair<String,Double>[] arrScoreValues = scoreValues.toArray(new Pair[] {});
-		Arrays.sort(arrScoreValues, comparator);
 
-		ScoredSpelling[] sortedSpellings = new ScoredSpelling[arrScoreValues.length];
-		for (int ii=0; ii < arrScoreValues.length; ii++) {
-			Pair<String,Double> candPair = arrScoreValues[ii];
-			String word = candPair.getFirst();
-			Double ngramSim = candPair.getSecond();
-			ScoredSpelling scrSpelling =
-				new ScoredSpelling(word, ngramSim)
-				.setFrequency(wordFreqs.get(word));
-			sortedSpellings[ii] = scrSpelling;
-		}
+		Collections.sort(candidates,
+			(ScoredSpelling p1, ScoredSpelling p2) -> {
+				int score = p2.ngramSim.compareTo(p1.ngramSim);
+				if (score == 0) {
+					score = p1.spelling.compareTo(p2.spelling);
+				}
+				return score;
+			});
+
 		tLogger.trace("finished");
 
-		return sortedSpellings;
+		return candidates;
 	}
 	
 
-	private Set<ScoredSpelling> keepOnlyNumericTerms(Set<ScoredSpelling> initialCands) {
-		Set<ScoredSpelling> filteredCands = new HashSet<ScoredSpelling>();
+	private List<ScoredSpelling> keepOnlyNumericTerms(List<ScoredSpelling> initialCands) {
+		List<ScoredSpelling> filteredCands = new ArrayList<ScoredSpelling>();
 		for (ScoredSpelling aCand: initialCands) {
 			String[] numericParts = splitNumericExpression(aCand.spelling);
 			if (numericParts != null) {
