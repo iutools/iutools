@@ -368,7 +368,7 @@ public class SpellCheckerTest {
 		String word = "ᓄᓇᕗᖕᒥ";
 		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
 		assertCorrectionOK(gotCorrection, word, false,
-			new String[] {"ᓄᓇᕘᒥ", "ᓄᓇᕗᒻᒥ", "ᓄᓇᕗᑦ" });
+			new String[] {"ᓄᓇᕗᒻᒥ", "ᓄᓇᕘᒥ", "ᓄᓇᕗᑦ" });
 	}
 	
 	@Test 
@@ -465,7 +465,6 @@ public class SpellCheckerTest {
 
 	@Test  
 	public void test__correctText__syllabic() throws Exception  {
-//		SpellChecker checker = makeCheckerLargeDict();		
 		SpellChecker checker = smallDictCheckerWithTestWords();
 		
 		String text = "ᐃᓄᑦᒧᑦ ᑕᑯᔪᖅ ᐃᒡᓗᑦᒥᒃ ᐊᕐᕌᒍᒥ";
@@ -481,11 +480,11 @@ public class SpellCheckerTest {
 				//   This test mostly aims at testing the mechanics of SpellText.
 				//  				
 				new String[] {
-						  "ᐃᓄᒃᑐᑦ",
-						  "ᐃᓄᑯᑦᑦ",
-						  "ᐃᓄᒃᑎᑐᑦ",						  
-						  "ᐃᓄᒃᑦᑐᑦ",
-						  "ᐃᓄᒃ"
+					"ᐃᓄᒃᑐᑦ",
+				  	"ᐃᓄᑯᑦᑦ",
+				  	"ᐃᓄᒃᑎᑐᑦ",
+				  	"ᐃᓄᒃ",
+					"ᐃᓄᒃᑦᑐᑦ"
 				});
 		
 		wordNum = 1;
@@ -540,7 +539,7 @@ public class SpellCheckerTest {
 	public void test__isMispelled__CorreclySpelledWordNumber() throws Exception  {
 		String word = "2018";
 		Assert.assertFalse("Word "+word+" should have been deemed correctly spelled", 
-				largeDictCheckerWithTestWords().isMispelled(word));
+			largeDictCheckerWithTestWords().isMispelled(word));
 	}
 
 	@Test 
