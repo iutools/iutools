@@ -923,11 +923,11 @@ public class SpellChecker {
 
 			tLogger.trace("adding candidates that contain ngram=" + ngram + " (ngramIDF=" + ngramIDF + ")");
 
-			Iterator<WordInfo_ES> iterWinfoCandaWithNgram =
+			Iterator<WordInfo> iterWinfoCandaWithNgram =
 				winfosContainingNgram(
 					ngram, CompiledCorpus.SearchOption.EXCL_MISSPELLED);
 			while (iterWinfoCandaWithNgram.hasNext()) {
-				WordInfo_ES winfo = iterWinfoCandaWithNgram.next();
+				WordInfo winfo = iterWinfoCandaWithNgram.next();
 				ScoredSpelling candidate = new ScoredSpelling(winfo.word);
 				candidate.frequency = winfo.frequency;
 				candidateSpellingsWithNgram.add(candidate);
@@ -1104,24 +1104,24 @@ public class SpellChecker {
 		return wordsContainingNgram(seq, new CompiledCorpus.SearchOption[0]);
 	}
 
-	protected Iterator<WordInfo_ES> winfosContainingNgram(String seq,
+	protected Iterator<WordInfo> winfosContainingNgram(String seq,
 													CompiledCorpus.SearchOption... options) throws SpellCheckerException {
 		Logger logger = Logger.getLogger("ca.pirurvik.iutools.spellchecker.SpellChecker.wordsContainingSequ");
 
 		long start = StopWatch.nowMSecs();
 
-		Iterator<WordInfo_ES> winfosIter = null;
+		Iterator<WordInfo> winfosIter = null;
 		try {
-			Iterator<WordInfo_ES> winfosIter1 =
+			Iterator<WordInfo> winfosIter1 =
 				corpus.winfosContainingNgram(
 					seq, options);
 
-			Iterator<WordInfo_ES> winfosIter2 =
+			Iterator<WordInfo> winfosIter2 =
 				explicitlyCorrectWords.winfosContainingNgram(
 					seq, CompiledCorpus.SearchOption.EXCL_MISSPELLED);
 
 			winfosIter =
-				new IteratorChain<WordInfo_ES>(winfosIter1, winfosIter2);
+				new IteratorChain<WordInfo>(winfosIter1, winfosIter2);
 		} catch (CompiledCorpusException e) {
 			throw new SpellCheckerException(e);
 		}

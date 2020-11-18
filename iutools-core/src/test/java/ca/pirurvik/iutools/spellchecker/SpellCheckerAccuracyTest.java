@@ -773,7 +773,7 @@ public class SpellCheckerAccuracyTest {
         long freq = 0;
         String decomp = null;
         try {
-            WordInfo_ES winfo = (WordInfo_ES) corpus.info4word(word);
+            WordInfo winfo = corpus.info4word(word);
             if (winfo != null) {
                 freq = winfo.frequency;;
                 decomp = winfo.topDecompositionStr;

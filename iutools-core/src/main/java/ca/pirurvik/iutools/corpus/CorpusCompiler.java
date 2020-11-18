@@ -263,7 +263,7 @@ public class CorpusCompiler {
 		try {
 			fw.write(
 				"bodyEndMarker=NEW_LINE\n"+
-				"class=ca.pirurvik.iutools.corpus.WordInfo_ES\n\n");
+				"class=ca.pirurvik.iutools.corpus.WordInfo\n\n");
 			ObjectMapper mapper = new ObjectMapper();
 			for (String word: wordFreqs.keySet()) {
 				Long freq = freqForWord(word);
@@ -403,7 +403,7 @@ public class CorpusCompiler {
 		try {
 			corpusFileWriter.write(
 				"bodyEndMarker=NEW_LINE\n" +
-					"class=ca.pirurvik.iutools.corpus.WordInfo_ES\n\n");
+					"class=ca.pirurvik.iutools.corpus.WordInfo\n\n");
 		} catch (IOException e) {
 			throw new CorpusCompilerException("Problem writing to corpus file.", e);
 		}
@@ -876,7 +876,7 @@ public class CorpusCompiler {
 	private void writeJsonFileHeaders(FileWriter fileWriter) throws CorpusCompilerException {
 		try {
 			fileWriter.write("bodyEndMarker=BLANK_LINE\n" +
-					"class=ca.pirurvik.iutools.corpus.WordInfo_ES\n\n");
+					"class=ca.pirurvik.iutools.corpus.WordInfo\n\n");
 		} catch (IOException e) {
 			throw new CorpusCompilerException(e);
 		}

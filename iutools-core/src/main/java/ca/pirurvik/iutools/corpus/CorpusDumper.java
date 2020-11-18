@@ -86,7 +86,7 @@ public class CorpusDumper {
             outputFileWriter.write(
 
             "bodyEndMarker=BLANK_LINE\n"+
-                "class=ca.pirurvik.iutools.corpus.WordInfo_ES\n\n");
+                "class=ca.pirurvik.iutools.corpus.WordInfo\n\n");
         } catch (IOException e) {
             throw new CompiledCorpusException("Could not print headers to JSON file.");
         }
