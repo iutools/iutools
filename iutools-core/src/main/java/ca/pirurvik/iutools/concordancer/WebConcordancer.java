@@ -28,8 +28,6 @@ public abstract class WebConcordancer {
 	private static enum AlignmentPart {
 		PAGES_CONTENT, PROBLEMS, SENTENCES, ALIGNMENTS};
 
-	public abstract boolean canFollowLanguageLink();
-
 	private static Map<String,String[]> langNames = new HashMap<String,String[]>();
 	private static void setLangNames(String lang, String... names) {
 		langNames.put(lang, names);

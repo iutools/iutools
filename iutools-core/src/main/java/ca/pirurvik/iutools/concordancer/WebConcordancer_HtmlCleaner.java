@@ -5,11 +5,6 @@ import ca.nrc.data.harvesting.PageHarvester_HtmlCleaner;
 
 public class WebConcordancer_HtmlCleaner extends WebConcordancer {
 
-    @Override
-    public boolean canFollowLanguageLink() {
-        return true;
-    }
-
     protected PageHarvester getHarvester() {
         if (harvester == null) {
             harvester = new PageHarvester_HtmlCleaner();
