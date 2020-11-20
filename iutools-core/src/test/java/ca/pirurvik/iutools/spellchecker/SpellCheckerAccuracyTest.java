@@ -45,6 +45,11 @@ public class SpellCheckerAccuracyTest {
         return checker;
     }
 
+    private static final SpellCheckerExample[]
+        correctlySpelledWords = new SpellCheckerExample[] {
+
+    };
+
     //
     // With a few exceptions, the examples below are a subset of the 200 most
     // frequent spelling mistakes in the Hansard.
@@ -59,7 +64,6 @@ public class SpellCheckerAccuracyTest {
             // NEED-IMPROVEMENT: Examples with ranking > 5,
             //   EVEN if we assume the correction is in the dict
             //
-
             new SpellCheckerExample("nakuqmi")
                     .isMisspelled("nakurmiik").setMaxRank(1),
 
@@ -415,7 +419,7 @@ public class SpellCheckerAccuracyTest {
             .setAverageRank(1.07)
             .setAvgRankTolerance(0.1)
 
-            .setAvgRuntime(1.7, 0.2)
+            .setAvgRuntime(3.0, 0.2)
         ;
 
         SpellChecker checker = makeLargeDictChecker();
@@ -443,7 +447,7 @@ public class SpellCheckerAccuracyTest {
             .setAverageRank(1.08)
             .setAvgRankTolerance(0.1)
 
-            .setAvgRuntime(0.6, 0.2)
+            .setAvgRuntime(3.0, 0.2)
 
             ;
 

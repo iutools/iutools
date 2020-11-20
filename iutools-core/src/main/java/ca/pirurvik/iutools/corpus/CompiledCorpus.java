@@ -480,7 +480,11 @@ public class CompiledCorpus {
 	}
 
 	public Iterator<WordInfo> winfosContainingNgram(String ngram, SearchOption... options) throws CompiledCorpusException {
-		return searchWordsContainingNgram(ngram, options).docIterator();
+		Set<String> winfoFields = new HashSet<String>();
+		winfoFields.add("frequency");
+		winfoFields.add("word");
+		winfoFields.add("id");
+		return searchWordsContainingNgram(ngram, winfoFields, options).docIterator();
 	}
 
 
@@ -489,6 +493,11 @@ public class CompiledCorpus {
 	}
 
 	public SearchResults<WordInfo> searchWordsContainingNgram(String ngram, SearchOption... options) throws CompiledCorpusException {
+		return searchWordsContainingNgram(ngram, (Set<String>)null, options);
+	}
+
+	public SearchResults<WordInfo> searchWordsContainingNgram(String ngram,
+		Set<String> winfoFields, SearchOption... options) throws CompiledCorpusException {
 		String[] ngramArr = ngram.split("");
 		ngramArr = replaceCaretAndDollar(ngramArr);
 		String query =
@@ -496,9 +505,16 @@ public class CompiledCorpus {
 				WordInfo.insertSpaces(ngramArr) +
 				"\"";
 
+		RequestBodyElement[] additionalRequestElts = new RequestBodyElement[0];
+		if (winfoFields != null) {
+			additionalRequestElts =
+				new RequestBodyElement[] {
+					new _Source(winfoFields.toArray(new String[0]))
+				};
+		}
 		options = (SearchOption[]) ArrayUtils.add(options, SearchOption.WORD_ONLY);
 		SearchResults<WordInfo> results =
-				esWinfoSearch(query, options);
+				esWinfoSearch(query, options, false, additionalRequestElts);
 
 		return results;
 	}
@@ -743,7 +759,7 @@ public class CompiledCorpus {
 		SearchResults<WordInfo> results = null;
 
 		Pair<String,RequestBodyElement[]> augmentedRequest =
-				augmentRequestWithOptions(query, additionalReqBodies, options, statsOnly);
+			augmentRequestWithOptions(query, additionalReqBodies, options, statsOnly);
 		query = augmentedRequest.getLeft();
 		additionalReqBodies = augmentedRequest.getRight();
 
@@ -782,7 +798,7 @@ public class CompiledCorpus {
 
 		query =
 				augmentRequestWithOptions(
-						query, additionalReqBodies, options, statsOnly);
+					query, additionalReqBodies, options, statsOnly);
 		try {
 			results =
 					esClient().search(
@@ -821,7 +837,8 @@ public class CompiledCorpus {
 	}
 
 	private Pair<String,RequestBodyElement[]> augmentRequestWithOptions(String query,
-																		RequestBodyElement[] additionalReqBodies, SearchOption[] options, Boolean statsOnly) {
+		RequestBodyElement[] additionalReqBodies, SearchOption[] options,
+  		Boolean statsOnly) {
 
 		if (statsOnly == null) {
 			statsOnly = false;
@@ -833,8 +850,8 @@ public class CompiledCorpus {
 
 		if (ArrayUtils.contains(options, SearchOption.WORD_ONLY)) {
 			additionalReqBodies =
-					(RequestBodyElement[]) ArrayUtils.add(additionalReqBodies,
-							new _Source("id"));
+				(RequestBodyElement[]) ArrayUtils.add(additionalReqBodies,
+						new _Source("id"));
 		}
 
 		Size size = new Size(searchBatchSize);
@@ -842,8 +859,8 @@ public class CompiledCorpus {
 			size = new Size(1);
 		}
 		additionalReqBodies =
-				(RequestBodyElement[])
-						ArrayUtils.add(additionalReqBodies, size);
+			(RequestBodyElement[])
+				ArrayUtils.add(additionalReqBodies, size);
 
 		return Pair.of(query,additionalReqBodies);
 	}

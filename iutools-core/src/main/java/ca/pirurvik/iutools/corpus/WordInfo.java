@@ -171,4 +171,20 @@ public class WordInfo extends Document {
 		String ngramWithSpaces = StringUtils.join(ngramArr, " ");
 		return ngramWithSpaces;
 	}
+
+	@Override
+	public boolean equals(Object other) {
+		boolean answer = false;
+		if (other instanceof WordInfo) {
+			String otherWord = ((WordInfo) other).word;
+			answer = (this.word.equals(otherWord));
+		}
+		return answer;
+	}
+
+	@Override
+	public int hashCode() {
+		int code = this.word.hashCode();
+		return code;
+	}
 }
