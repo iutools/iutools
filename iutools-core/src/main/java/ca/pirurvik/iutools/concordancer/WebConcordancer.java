@@ -23,7 +23,7 @@ import ca.pirurvik.iutools.text.segmentation.Segmenter;
  */
 public abstract class WebConcordancer {
 
-	protected static enum AlignOptions {ONLY_FETCH_CONTENT}
+	public static enum AlignOptions {ONLY_FETCH_CONTENT}
 	protected static enum StepOutcome {SUCCESS, FAILURE, KEEP_TRYING};
 	private static enum AlignmentPart {
 		PAGES_CONTENT, PROBLEMS, SENTENCES, ALIGNMENTS};

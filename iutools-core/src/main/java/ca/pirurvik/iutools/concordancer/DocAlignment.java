@@ -32,14 +32,13 @@ public class DocAlignment {
 	public Map<Problem,Exception> problemsEncountered = 
 		new HashMap<Problem,Exception>();
 	
-	private Map<String,List<String>> _pageSentences = 
+	Map<String,List<String>> _pageSentences =
 		new HashMap<String,List<String>>();
 	
-	List<Alignment> alignments = new ArrayList<Alignment>();
-	Map<String,String> pagesContent = new HashMap<String,String>();
-	Map<String,URL> pagesURL = new HashMap<String,URL>();
+	public List<Alignment> alignments = new ArrayList<Alignment>();
+	public Map<String,String> pagesContent = new HashMap<String,String>();
+	public Map<String,URL> pagesURL = new HashMap<String,URL>();
 
-	
 	public DocAlignment() {
 		init_DocAlignment(null, null);		
 	}
