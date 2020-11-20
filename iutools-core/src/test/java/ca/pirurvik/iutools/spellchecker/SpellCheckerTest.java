@@ -86,7 +86,7 @@ public class SpellCheckerTest {
 	protected SpellChecker makeCheckerEmptyDict() throws Exception {
 		SpellChecker checker =
 			new SpellChecker(
-				emptyESCorpus().getIndexName());
+				emptyESCorpus().getIndexName(), false);
 		checker.setVerbose(false);
 		return checker;
 	}
@@ -690,7 +690,7 @@ public class SpellCheckerTest {
 	
 	@Test 
 	public void test__addWord__HappyPath() throws Exception {
-		SpellChecker checker = largeDictCheckerWithTestWords();
+		SpellChecker checker = makeCheckerEmptyDict();
 		String word = "tamainni";
 		assertWordUnknown(word, checker);
 		
