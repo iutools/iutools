@@ -9,7 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import ca.inuktitutcomputing.config.IUConfig;
-import ca.nrc.datastructure.Pair;
+import ca.inuktitutcomputing.utilities.StopWatch;
 import ca.nrc.testing.*;
 import ca.pirurvik.iutools.corpus.CompiledCorpus;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
@@ -324,8 +324,8 @@ public class SpellCheckerTest {
 			"ujararniarvimmi",
 			"ujararniarvimmik",
 			"ujararniarvimmit",
-			"ujarattarniarvimmi",
-			"ujararniarvimmut"
+			"ujararniarvingmi",
+			"ujarattarniarvimmi"
 		};
 
 		if (!(checker instanceof SpellChecker)) {
@@ -734,6 +734,8 @@ public class SpellCheckerTest {
 		double expMaxAvgSecs, TestOption... options) throws Exception {
 		SpellChecker checker = largeDictCheckerWithTestWords();
 
+		long startAll = StopWatch.nowMSecs();
+
 		double totalSecs = 0;
 		int totalWords = words.length;
 		if (totalWords == 0) {
@@ -752,6 +754,9 @@ public class SpellCheckerTest {
 				totalSecs += elapsedSecsThisWord;
 				totalWords++;
 			}
+
+			long endAll = StopWatch.elapsedMsecsSince(startAll);
+			System.out.println("Test took "+endAll/1000+" seconds for "+words.length+" words");
 
 			String baseMess =
 				"With partial correction set to "+

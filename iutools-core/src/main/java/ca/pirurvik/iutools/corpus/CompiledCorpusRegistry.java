@@ -16,6 +16,7 @@ import ca.nrc.config.ConfigException;
 public class CompiledCorpusRegistry {
 	
 	private static Map<String,File> registry = new HashMap<String,File>();
+//	public static final String defaultCorpusName = "HANSARD-1999-2002";
 	public static final String defaultCorpusName = "HANSARD-1999-2002.v2020-11-02";
 	public static final String emptyCorpusName = "EMPTYCORPUS";
 	
@@ -25,7 +26,7 @@ public class CompiledCorpusRegistry {
 					defaultCorpusName,
 				new File(
 					IUConfig.getIUDataPath(
-				"data/compiled-corpuses/HANSARD-1999-2002.v2020-11-02.ES.json")));
+				"data/compiled-corpuses/HANSARD-1999-2002.json")));
 
 		} catch (ConfigException | CompiledCorpusRegistryException e) {
 			throw new ExceptionInInitializerError(e);
