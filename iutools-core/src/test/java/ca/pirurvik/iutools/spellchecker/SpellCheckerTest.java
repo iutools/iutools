@@ -324,22 +324,9 @@ public class SpellCheckerTest {
 			"ujararniarvimmi",
 			"ujararniarvimmik",
 			"ujararniarvimmit",
-			"ujararniarvingmi",
-			"ujarattarniarvimmi"
+			"ujarattarniarvimmi",
+			"ujararniarvimmut"
 		};
-
-		if (!(checker instanceof SpellChecker)) {
-			// For some reason, the list of suggestions is slightly different
-			// for ES vs InMemory
-			//
-			expSuggestions = new String[]{
-				"ujara[nni]arvimmi",
-				"ujararniarvimmi",
-				"ujararniarvimmik",
-				"ujararniarvimmit",
-				"ujararniarvingmi",
-				"ujarattarniarvimmi"			};
-			}
 
 		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
 

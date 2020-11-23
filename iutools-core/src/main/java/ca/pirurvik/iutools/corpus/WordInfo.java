@@ -11,12 +11,6 @@ public class WordInfo extends Document {
 	 */
 	public String word = null;
 	
-	/**
-	 * Internal key for this word. May be left to null if we prefer to use strings
-	 * IDs to identify the word.
-	 */
-	public Long key = null;
-	
 	/** Sample of the top decompositions for the word
 	 * 
 	 * A null value does NOT mean that the word has no decomposition.

@@ -18,8 +18,7 @@ public class MorphRelativesFinderAccuracyTest {
 		PerformanceExpectations expectations =
 			new PerformanceExpectations()
 
-//				.setCorpusName("HANSARD-1999-2002")
-			.setCorpusName("HANSARD-1999-2002.v2020-11-02")
+				.setCorpusName("HANSARD-1999-2002")
 
 				.setVerbosity(true)
 

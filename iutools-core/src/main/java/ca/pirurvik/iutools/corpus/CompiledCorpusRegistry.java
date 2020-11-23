@@ -16,8 +16,7 @@ import ca.nrc.config.ConfigException;
 public class CompiledCorpusRegistry {
 	
 	private static Map<String,File> registry = new HashMap<String,File>();
-//	public static final String defaultCorpusName = "HANSARD-1999-2002";
-	public static final String defaultCorpusName = "HANSARD-1999-2002.v2020-11-02";
+	public static final String defaultCorpusName = "HANSARD-1999-2002";
 	public static final String emptyCorpusName = "EMPTYCORPUS";
 	
 	static {
