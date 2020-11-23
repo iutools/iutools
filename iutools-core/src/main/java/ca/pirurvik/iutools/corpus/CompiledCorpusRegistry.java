@@ -25,7 +25,7 @@ public class CompiledCorpusRegistry {
 					defaultCorpusName,
 				new File(
 					IUConfig.getIUDataPath(
-				"data/compiled-corpuses/HANSARD-1999-2002.json")));
+				"data/compiled-corpora/HANSARD-1999-2002.json")));
 
 		} catch (ConfigException | CompiledCorpusRegistryException e) {
 			throw new ExceptionInInitializerError(e);

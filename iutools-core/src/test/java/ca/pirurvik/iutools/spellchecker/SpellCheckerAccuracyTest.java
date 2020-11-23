@@ -347,23 +347,6 @@ public class SpellCheckerAccuracyTest {
     };
 
     @Test
-    public void test__REMEMBER_TO_FIX_RECENTLY_WORSENED_WORDS() {
-        String[] wordsToFix = new String[] {
-            "kiinaujat(880): null: rank=2 (exp <= 1)",
-            "nunavutmi(189): null: rank=2 (used to be = 1)",
-            "tavani(117): null: rank=2 (used to be = 1)",
-            "nunavuumit(443): null: rank=3 (used to be = 1)",
-            "nunavumiut(237): null: rank=2 (exp <= 1)",
-            "pigiaqtitat(173): null: rank=3 (used to be = 1)",
-//            "ugaalautaa(118): null: rank=45 (exp <= 1)\n"
-        };
-        Assert.fail(
-            "The rank of some words has recently increased.\n"+
-            "We temporarily adjusted the expectations so that the accuracy test don't fail but we should try to get them to their old rank.\n"+
-            "List of affected words:\n"+StringUtils.join(wordsToFix, "\n   "));
-    }
-
-    @Test
     public void test__Evaluate__QuickEvaluation()
             throws Exception {
 

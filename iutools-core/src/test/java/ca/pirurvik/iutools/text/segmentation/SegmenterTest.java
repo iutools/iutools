@@ -4,12 +4,9 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
-import org.junit.Assert;
 import org.junit.Test;
 
-import ca.nrc.datastructure.Pair;
 import ca.nrc.testing.AssertObject;
-import ca.pirurvik.iutools.text.segmentation.Segmenter;
 
 public class SegmenterTest {
 

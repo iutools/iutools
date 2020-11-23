@@ -2,6 +2,7 @@ package ca.pirurvik.iutools.morphrelatives;
 
 import java.io.File;
 
+import ca.nrc.file.ResourceGetter;
 import ca.pirurvik.iutools.corpus.CompiledCorpus;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 import org.junit.Assert;
@@ -58,8 +59,7 @@ public class MorphRelativesFinderAccuracyTest {
 		PerformanceExpectations expectations =
 			new PerformanceExpectations()
 
-//			.setCorpusName("HANSARD-1999-2002")
-			.setCorpusName("HANSARD-1999-2002.v2020-11-02")
+			.setCorpusName("HANSARD-1999-2002")
 
 			.setComputeStatsOverSurfaceForms(true)
 
@@ -94,7 +94,8 @@ public class MorphRelativesFinderAccuracyTest {
 
 	private void evaluatePerformance(PerformanceExpectations exp,
 		Integer stopAfterNWords) throws Exception {
-		String goldStandardCSVFilePath = IUConfig.getIUDataPath("/src/test/resources/ca/pirurvik/iutools/IU100Words-expansions-added-to-alternatives.csv");
+		File goldStandardCSVFilePath =
+			ResourceGetter.copyResourceToTempLocation("ca/pirurvik/iutools/IU100Words-expansions-added-to-alternatives.csv");
 
 		// This is the NEW version of the corpus, which has some
 		// non-empty decomp samples
@@ -107,7 +108,7 @@ public class MorphRelativesFinderAccuracyTest {
 
 		MorphRelativesFinderEvaluator evaluator =
 			new MorphRelativesFinderEvaluator(
-				finder, new File(goldStandardCSVFilePath));
+				finder, goldStandardCSVFilePath);
 
 		// If focusOnWord != null, we run the evaluator verbosely
 		// Otherwise, use the verbosity level provided in the expectations
