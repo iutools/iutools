@@ -1,6 +1,8 @@
 package ca.inuktitutcomputing.core.console;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Scanner;
 import java.util.concurrent.TimeoutException;
 
@@ -18,6 +20,10 @@ public abstract class ConsoleCommand extends SubCommand {
 	public static final String OPT_CORPUS_NAME = "corpus-name";
 	public static final String OPT_CORPUS_SAVE_PATH = "corpus-save-path";
 	public static final String OPT_GS_FILE = "gs-file";
+
+	public static final String OPT_URL = "url";
+	public static final String OPT_LANGS = "langs";
+	public static final String OPT_SENTENCES_ALIGN = "align-sentences";
 
 	public static final String OPT_MORPHEMES = "morphemes";
 	public static final String OPT_MORPHEME = "morpheme";
@@ -105,6 +111,7 @@ public abstract class ConsoleCommand extends SubCommand {
 	protected String getCorpusName() {
 		return getCorpusName(false);
 	}
+
 	protected String getCorpusName(boolean failIfAbsent) {
 		String corpusName = getOptionValue(ConsoleCommand.OPT_CORPUS_NAME, failIfAbsent);
 		return corpusName;		
@@ -130,6 +137,40 @@ public abstract class ConsoleCommand extends SubCommand {
 
 	protected boolean getWordsOnlyOpt() {
 		return hasOption(OPT_WORDS_ONLY);
+	}
+
+	protected URL getURL() {
+		return getURL((Boolean)null);
+	}
+
+	protected URL getURL(Boolean failIfAbsent) {
+		URL url = null;
+		String urlStr = getOptionValue(ConsoleCommand.OPT_URL, failIfAbsent);
+		if (urlStr != null) {
+			try {
+				url = new URL(urlStr);
+			} catch (MalformedURLException e) {
+				usageBadOption(ConsoleCommand.OPT_URL, "This options must be a valid URL");
+			}
+		}
+		return url;
+	}
+
+	protected String[] getLangs() {
+		return getLangs((Boolean)null);
+	}
+
+	protected String[] getLangs(Boolean failIfAbsent) {
+		String[] langs = new String[0];
+		String langsStr = getOptionValue(ConsoleCommand.OPT_LANGS, failIfAbsent);
+		if (langsStr != null) {
+			langs = langsStr.split("\\s*,\\s*");
+ 		}
+		return langs;
+	}
+
+	protected boolean getAlignSentences() {
+		return hasOption(OPT_SENTENCES_ALIGN);
 	}
 
 	protected Long getMaxWords() {

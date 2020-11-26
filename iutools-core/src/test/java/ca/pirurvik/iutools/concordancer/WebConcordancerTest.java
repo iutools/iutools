@@ -20,12 +20,17 @@ public abstract class WebConcordancerTest {
 	
 	protected static WebConcordancer concordancer = null;
 
-	protected abstract WebConcordancer makeConcordancer();
-	
+	protected abstract WebConcordancer makeConcordancer(AlignOptions... options);
+
+	protected WebConcordancer makeConcordancer() {
+		return makeConcordancer(new AlignOptions[0]);
+	}
+
+
 	@Before
 	public void setUp() {
 		if (concordancer == null) {
-			concordancer = makeConcordancer();
+			concordancer = makeConcordancer(AlignOptions.FILTER_MAIN_CONTENT);
 		}
 	}
 	
@@ -110,7 +115,6 @@ public abstract class WebConcordancerTest {
 			.urlForLangEquals("iu", new URL("https://www.gov.nu.ca/iu"))
 			.pageInLangContains("en", "Premier of Nunavut")
 			.pageInLangContains("iu", "ᓯᕗᓕᖅᑎ ᓄᓇᕗᒻᒥ")
-			.containsAlignment(new Alignment("en", "Government of Nunavut |", "iu", "ᓄᓇᕗᑦ ᒐᕙᒪᖓ |"))
 			;
 	}
 	
@@ -137,25 +141,6 @@ public abstract class WebConcordancerTest {
 
 		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
 			.encounteredProblems(Problem.FETCHING_INPUT_URL)
-			;
-	}
-	
-	@Test
-	public void test__alignPage__PageWhoseTranslationCannotBeDeduced() throws Exception {
-		
-		// The English URL for this IU url is:
-		//
-		//   https://www.gov.nu.ca/community-and-government-services
-		//
-		// which currently cannot be deduced by the concordancer.
-		//
-		URL url = new URL("https://www.gov.nu.ca/iu/cgs-iu");
-		DocAlignment pageAligment = 
-			concordancer.alignPage(url, new String[] {"en", "iu"},
-				AlignOptions.ONLY_FETCH_CONTENT);
-
-		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
-			.encounteredProblems(Problem.FETCHING_CONTENT_OF_OTHER_LANG_PAGE)
 			;
 	}
 
@@ -185,19 +170,15 @@ public abstract class WebConcordancerTest {
 			concordancer.alignPage(
 				url, new String[] {"en", "iu"}, AlignOptions.ONLY_FETCH_CONTENT);
 
-		if (concordancer.canFollowLanguageLink()) {
-			DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for " + url + " were not as expected.")
-				.didNotEncounterProblems()
-				.urlForLangEquals("en", new URL("https://www.gov.nu.ca/honourable-joe-savikataaq-4"))
-				.urlForLangEquals("iu", new URL("https://www.gov.nu.ca/iu/juu-savikataaq-4"))
-				.pageInLangContains("en", "Premier of Nunavut")
-				.pageInLangContains("iu", "ᓯᕗᓕᖅᑎ ᓄᓇᕗᒻᒥ")
-			;
-		} else {
-			DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for " + url + " were not as expected.")
-				.encounteredProblems(Problem.FETCHING_CONTENT_OF_OTHER_LANG_PAGE)
-			;
-		}
+		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for " + url + " were not as expected.")
+			.didNotEncounterProblems()
+			.urlForLangEquals("en", new URL("https://www.gov.nu.ca/honourable-joe-savikataaq-4"))
+			// This URL auto forwards to https://www.gov.nu.ca/iu/juu-savikataaq-4
+			.urlForLangEquals("iu", new URL("https://www.gov.nu.ca/iu/node/26649"))
+
+			.pageInLangContains("en", "Premier of Nunavut")
+			.pageInLangContains("iu", "ᓯᕗᓕᖅᑎ ᓄᓇᕗᒻᒥ")
+		;
 	}
 
 	@Test

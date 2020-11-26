@@ -1,6 +1,6 @@
 package ca.pirurvik.iutools.spellchecker;
 
-import java.util.List;
+import java.util.*;
 
 import org.junit.Assert;
 
@@ -90,4 +90,17 @@ public class AssertSpellingCorrection {
                 expSugg, gotCorrection.getAllSuggestions());
         return this;
     }
+
+    public static void candidatesEqual(
+        String[] expWords, Collection<ScoredSpelling> candidates)
+        throws Exception {
+        Set<String> gotWords = new HashSet<String>();
+        for (ScoredSpelling aCandidate: candidates) {
+            gotWords.add(aCandidate.spelling);
+        }
+        AssertObject.assertDeepEquals(
+            "List of candidate spellings was not as expected",
+            expWords, gotWords);
+    }
+
 }

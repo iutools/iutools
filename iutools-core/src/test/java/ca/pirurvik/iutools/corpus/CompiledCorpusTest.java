@@ -146,7 +146,7 @@ public class CompiledCorpusTest {
 					// word.
 					//
 					Integer numDecomps = wInfo.totalDecompositions;
-					String[] sampleDecomps = wInfo.topDecompositions;
+					String[][] sampleDecomps = wInfo.decompositionsSample;
 				}			
 			}
 		}

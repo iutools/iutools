@@ -1,8 +1,5 @@
 package ca.pirurvik.iutools.webservice.gist;
 
-import java.net.URL;
-
-import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -110,8 +107,9 @@ public class GistPrepareContentEndpointTest {
 		GistPrepareContentAsserter.assertThat(response, 
 			"Content not prepared as expected")
 			.inputWasActualContent(false)
-			.hasNoContentForLang("en")
-			.hasNoAlignments()
+			.hasContentForLang("en")
+			.hasContentForLang("iu")
+			.hasSomeAlignments()
 			.containsIUSentenceStartingWith("nunalingni gavamakkunnillu pijittiraqtikkut")
 		;
 	}

@@ -130,6 +130,26 @@ public class Console {
 			    .argName("CONTENT")
 			    .build();
 
+		Option optURL = Option.builder(null)
+			.longOpt(ConsoleCommand.OPT_URL)
+			.desc("URL of the page to be processed")
+			.hasArg()
+			.argName("URL")
+			.build();
+
+		Option optLangs = Option.builder(null)
+			.longOpt(ConsoleCommand.OPT_LANGS)
+			.desc("Comma separated list of language codes (ex: 'en,fr,iu').")
+			.hasArg()
+			.argName("LANGUAGES")
+			.build();
+
+		Option optAlignSentences = Option.builder(null)
+			.longOpt(ConsoleCommand.OPT_SENTENCES_ALIGN)
+			.desc("Set to false if you want to download the parallel pages without aligning their sentences.")
+			.build();
+
+
 		Option optFont = Option.builder(null)
 				.longOpt(ConsoleCommand.OPT_FONT)
 			    .desc("Name of legacy font.")
@@ -318,15 +338,25 @@ public class Console {
 					.addOption(optCorpusName)
 				;
 		mainCmd.addSubCommand(wordInfo);
-		
-		// Analyse failures of the morphological analyser
-		SubCommand morphFailureAnalysis = 
+
+				// Analyse failures of the morphological analyser
+		SubCommand morphFailureAnalysis =
 				new CmdMorphFailureAnalysis("morph_failure_analysis")
 				.addOption(optMaxWords)
 				.addOption(optExclude)
 				.addOption(optMinNgramLen)
 				;
 		mainCmd.addSubCommand(morphFailureAnalysis);
+
+		
+		SubCommand align =
+			new CmdAlignContent("align")
+				.addOption(optURL)
+				.addOption(optLangs)
+				.addOption(optAlignSentences)
+				.addOption(optPipelineMode)
+			;
+		mainCmd.addSubCommand(align);
 				
 				
 		return mainCmd;

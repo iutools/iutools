@@ -45,6 +45,11 @@ public class SpellCheckerAccuracyTest {
         return checker;
     }
 
+    private static final SpellCheckerExample[]
+        correctlySpelledWords = new SpellCheckerExample[] {
+
+    };
+
     //
     // With a few exceptions, the examples below are a subset of the 200 most
     // frequent spelling mistakes in the Hansard.
@@ -59,7 +64,6 @@ public class SpellCheckerAccuracyTest {
             // NEED-IMPROVEMENT: Examples with ranking > 5,
             //   EVEN if we assume the correction is in the dict
             //
-
             new SpellCheckerExample("nakuqmi")
                     .isMisspelled("nakurmiik").setMaxRank(1),
 
@@ -124,7 +128,7 @@ public class SpellCheckerAccuracyTest {
                     .isMisspelled("kiinaujaqtigut").setMaxRank(1),
 
             new SpellCheckerExample("kiinaujat")
-                    .isMisspelled("kiinaujait").setMaxRank(3),
+                    .isMisspelled("kiinaujait").setMaxRank(1),
 
             new SpellCheckerExample("maligaliqtit")
                     .isMisspelled("maligaliqtiit").setMaxRank(1),
@@ -142,16 +146,16 @@ public class SpellCheckerAccuracyTest {
                     .isMisspelled("nunavummi").setMaxRank(1),
 
             new SpellCheckerExample("nunavumiut")
-                    .isMisspelled("nunavummiut").setMaxRank(2),
+                    .isMisspelled("nunavummiut").setMaxRank(1),
 
             new SpellCheckerExample("nunavumut")
                     .isMisspelled("nunavummut").setMaxRank(1),
 
             new SpellCheckerExample("nunavutmi")
-                    .isMisspelled("nunavummi").setMaxRank(2),
+                    .isMisspelled("nunavummi").setMaxRank(1),
 
             new SpellCheckerExample("pigiaqtitat")
-                    .isMisspelled("pigiaqtitait").setMaxRank(3),
+                    .isMisspelled("pigiaqtitait").setMaxRank(1),
 
             new SpellCheckerExample("sulikkanniiq")
                     .isMisspelled("sulikkanniq").setMaxRank(1),
@@ -343,23 +347,6 @@ public class SpellCheckerAccuracyTest {
     };
 
     @Test
-    public void test__REMEMBER_TO_FIX_RECENTLY_WORSENED_WORDS() {
-        String[] wordsToFix = new String[] {
-            "kiinaujat(880): null: rank=3 (used to be = 1)",
-            "nunavutmi(189): null: rank=2 (used to be = 1)",
-            "tavani(117): null: rank=2 (used to be = 1)",
-            "nunavuumit(443): null: rank=3 (used to be = 1)",
-            "nunavumiut(237): null: rank=2 (used to be = 1)",
-            "pigiaqtitat(173): null: rank=3 (used to be = 1)",
-            ""
-        };
-        Assert.fail(
-            "The rank of some words has recently increased.\n"+
-            "We temporarily adjusted the expectations so that the accuracy test don't fail but we should try to get them to their old rank.\n"+
-            "List of affected words:\n"+StringUtils.join(wordsToFix, "\n   "));
-    }
-
-    @Test
     public void test__Evaluate__QuickEvaluation()
             throws Exception {
 
@@ -369,7 +356,7 @@ public class SpellCheckerAccuracyTest {
         EvaluationParameters parameters =
             new EvaluationParameters()
 
-//            .setFocusOnExample("ugaalautaa")
+//            .setFocusOnExample("tavani")
 
             .setVerbosity(1)
             .setExamples(examples_MostFrequenMisspelledWords)
@@ -379,12 +366,13 @@ public class SpellCheckerAccuracyTest {
             .setFPRate(0.0, 0.0)
             .setFNRate(0.0, 0.0)
 
+//            .setPercentFoundInTopN(1.0)
             .setPercentFoundInTopN(1.0)
             .setTolerance(0.02)
                     
             .setPercTopSuggestionOK(0.91)
                     
-            .setAverageRank(1.0)
+            .setAverageRank(1.18)
             .setAvgRankTolerance(0.2)
 
             .setAvgRuntime(2.0, 1.5)
@@ -402,7 +390,7 @@ public class SpellCheckerAccuracyTest {
 
             // use setFocusOnExample() to run just one word out of the
             // data set.
-//            .setFocusOnExample("kiinaujat")
+//            .setFocusOnExample("nunavuumit")
 
             .setVerbosity(1)
             .setExamples(examples_MostFrequenMisspelledWords)
@@ -410,13 +398,11 @@ public class SpellCheckerAccuracyTest {
 
             .setPercentFoundInTopN(1.0)
             .setTolerance(0.01)
-//            .setPercTopSuggestionOK(1.0)
-            .setPercTopSuggestionOK(0.84)
-//            .setAverageRank(1.0)
-            .setAverageRank(1.23)
+            .setPercTopSuggestionOK(0.95)
+            .setAverageRank(1.07)
             .setAvgRankTolerance(0.1)
 
-            .setAvgRuntime(1.7, 0.2)
+            .setAvgRuntime(3.0, 0.2)
         ;
 
         SpellChecker checker = makeLargeDictChecker();
@@ -439,14 +425,12 @@ public class SpellCheckerAccuracyTest {
             .setPercentFoundInTopN(1.0)
             .setTolerance(0.01)
 
-//            .setPercTopSuggestionOK(1.0)
-            .setPercTopSuggestionOK(0.83)
+            .setPercTopSuggestionOK(0.94)
 
-//            .setAverageRank(1.0)
-            .setAverageRank(1.25)
+            .setAverageRank(1.08)
             .setAvgRankTolerance(0.1)
 
-            .setAvgRuntime(0.6, 0.2)
+            .setAvgRuntime(3.0, 0.2)
 
             ;
 
@@ -776,7 +760,7 @@ public class SpellCheckerAccuracyTest {
         long freq = 0;
         String decomp = null;
         try {
-            WordInfo_ES winfo = (WordInfo_ES) corpus.info4word(word);
+            WordInfo winfo = corpus.info4word(word);
             if (winfo != null) {
                 freq = winfo.frequency;;
                 decomp = winfo.topDecompositionStr;
@@ -851,8 +835,8 @@ public class SpellCheckerAccuracyTest {
             }
 
             String wordToCheck = anExample.wordToCheck;
-            Set<ScoredSpelling> gotCandidates =
-                    checker.candidatesWithSimilarNgrams(wordToCheck, false);
+            List<ScoredSpelling> gotCandidates =
+                checker.candidatesWithSimilarNgrams(wordToCheck, false);
 
             Set<Object> gotCandidatesObj = (Set)gotCandidates;
             Set<Object> expCandidatesObj = (Set)anExample.acceptableCorrections;

@@ -49,7 +49,7 @@ public class CompiledCorpusRegistryTest {
 		String morpheme = "{amma/1c}";
 		long gotFreq = corpus.morphemeNgramFrequency(new String[] {"{amma/1c}"});
 		Assert.assertEquals("Incorrect number of words with morpheme "+morpheme,
-				23417, gotFreq);
+		23417, gotFreq);
 	}
 	
 	@Test
@@ -59,7 +59,7 @@ public class CompiledCorpusRegistryTest {
 		String morpheme = "{amma/1c}";
 		long gotFreq = corpus.morphemeNgramFrequency(new String[] {"{amma/1c}"});
 		Assert.assertEquals("Incorrect number of words with morpheme "+morpheme,
-				23417, gotFreq);
+		23417, gotFreq);
 	}
 	
 	@Test

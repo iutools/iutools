@@ -150,27 +150,29 @@
 		<dependency>
 			<groupId>ca.nrc.java-utils</groupId>
 		    <artifactId>java-utils-core</artifactId>
-		    <version>1.0.25-SNAPSHOT</version>
+		    <version>1.0.26-SNAPSHOT</version>
 		</dependency>
 	 
 		<dependency>
 			<groupId>ca.nrc.java-utils</groupId>
 		    <artifactId>java-utils-data</artifactId>
-		    <version>1.0.25-SNAPSHOT</version>
+		    <version>1.0.26-SNAPSHOT</version>
 		</dependency>
 	 
 		<dependency>
 			<groupId>ca.nrc.java-utils</groupId>
 		    <artifactId>java-utils-ui</artifactId>
-		    <version>1.0.25-SNAPSHOT</version>
+		    <version>1.0.26-SNAPSHOT</version>
 		</dependency>
 
+<!--
 		<dependency>
 			<groupId>junit</groupId>
 		    <artifactId>junit</artifactId>
 		    <version>4.12</version>
 		    <scope>test</scope>
 		</dependency>
+-->
 	 
 		<dependency>
 		    <groupId>log4j</groupId>

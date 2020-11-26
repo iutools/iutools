@@ -2,31 +2,52 @@ package ca.pirurvik.iutools.spellchecker;
 
 
 import java.io.File;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import ca.inuktitutcomputing.config.IUConfig;
-import ca.nrc.datastructure.Pair;
+import ca.inuktitutcomputing.utilities.StopWatch;
 import ca.nrc.testing.*;
 import ca.pirurvik.iutools.corpus.CompiledCorpus;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 
 import ca.pirurvik.iutools.corpus.RW_CompiledCorpus;
+import ca.pirurvik.iutools.corpus.WordInfo;
+import ca.pirurvik.iutools.text.segmentation.IUTokenizer;
 import org.junit.*;
 
+import static ca.nrc.testing.AssertIterator.assertContainsAll;
+
 public class SpellCheckerTest {
+
+	private static enum TestOption {ENABLE_PARTIAL_CORRECTIONS};
 
 	private static final String emptyCorpusName = "empty-corpus";
 
 	protected SpellChecker checkerSyll = null;
 	
 	// Note: These are not "real" correct words in Inuktut.
-	//  Just pretending that they are.
-	protected static final String[] correctWordsLatin = new String[] {
+	//  Just pretending that they are by putting them in the
+	//  spell checker's explicitly correct dictionary
+	//
+	protected static final String[] explicitlyCorrectWordsLatin = new String[] {
 		"inuktut", "inukttut", "inuk", "inukutt", "inukshuk", 
 		"nunavut", "inuktitut"
 	};
+
+	protected static final String[] correctWordsNonExplicit = new String[] {
+		"maligaliuqti", "juu", "niruaqtaukkannilauqpuq", "niruavigjuarnautillugu",
+		"utupiri", "tallimanganni", "maligalirvingmit", "nunavummi"
+	};
+
+	String[] misspelledWords =
+		new String[] {
+			"nakuqmi", "nunavungmi", "nunavuumik", "nunavuumit",
+			"ugaalautaa"};
+
 
 	@Before
 	public void setUp() throws Exception {
@@ -65,7 +86,7 @@ public class SpellCheckerTest {
 	protected SpellChecker makeCheckerEmptyDict() throws Exception {
 		SpellChecker checker =
 			new SpellChecker(
-				emptyESCorpus().getIndexName());
+				emptyESCorpus().getIndexName(), false);
 		checker.setVerbose(false);
 		return checker;
 	}
@@ -102,7 +123,7 @@ public class SpellCheckerTest {
 	}
 
 	private void addCorrectWordsLatin(SpellChecker checker) throws Exception {
-		for (String aWord: correctWordsLatin) {
+		for (String aWord: explicitlyCorrectWordsLatin) {
 			checker.addExplicitlyCorrectWord(aWord);
 		}
 
@@ -201,7 +222,7 @@ public class SpellCheckerTest {
 		
 		Iterator<String> wordsWithSeq = checker.wordsContainingNgram(seq);
 		String[] expected = new String[] {"inukshuk","inuk","inuktut"};
-		AssertIterator.assertContainsAll(
+		assertContainsAll(
 			"The list of words containing sequence "+seq+" was not as expected",
 			expected, wordsWithSeq);
 	}
@@ -226,14 +247,14 @@ public class SpellCheckerTest {
 		seq = "inukt";
 		wordsWithSeq = checker.wordsContainingNgram(seq);
 		expected = new String[] {"inuktitut","inuktaluk","inuktigut"};
-		AssertIterator.assertContainsAll(
+		assertContainsAll(
 		"The list of words containing sequence "+seq+" was not as expected",
 			expected, wordsWithSeq);
 
 		seq = "^inukt";
 		wordsWithSeq = checker.wordsContainingNgram(seq);
 		expected = new String[] {"inuktitut","inuktaluk","inuktigut"};
-		AssertIterator.assertContainsAll(
+		assertContainsAll(
 			"The list of words containing sequence "+seq+" was not as expected",
 			expected, wordsWithSeq);
 		// This word contains inukt, but not at the start of the word
@@ -245,7 +266,7 @@ public class SpellCheckerTest {
 		seq = "itut$";
 		wordsWithSeq = checker.wordsContainingNgram(seq);
 		expected = new String[] {"inuktitut","inuttitut"};
-		AssertIterator.assertContainsAll(
+		assertContainsAll(
 			"The list of words containing sequence "+seq+" was not as expected",
 			expected, wordsWithSeq);
 		// This word contains itut, but not at the end
@@ -257,7 +278,7 @@ public class SpellCheckerTest {
 		seq = "^taku$";
 		wordsWithSeq = checker.wordsContainingNgram(seq);
 		expected = new String[] {"taku"};
-		AssertIterator.assertContainsAll(
+		assertContainsAll(
 			"The list of words containing sequence "+seq+" was not as expected",
 			expected, wordsWithSeq);
 
@@ -274,15 +295,16 @@ public class SpellCheckerTest {
 		SpellChecker checker = smallDictCheckerWithTestWords();
 		
 		String badWord = "inukkshuk";
-		Set<ScoredSpelling> candidates = checker.candidatesWithSimilarNgrams(badWord, false);
-	
+		List<ScoredSpelling> candidates =
+			checker.candidatesWithSimilarNgrams(badWord, false);
+
 		String[] expected = new String[] {
-				"inuk", "inukshuk", "inuktitut", "inukttut", "inuktut",
-				"inukutt"};		
-		AssertObject.assertDeepEquals("The list of candidate corrections for word "+badWord+" was not as expected", 
-				expected, candidates);
+			"inuk", "inukshuk", "inuktitut", "inukttut", "inuktut",
+			"inukutt"};
+		AssertSpellingCorrection
+			.candidatesEqual(expected, candidates);
 	}
-	
+
 	@Test
 	public void test__correctWord__CorrectLeadAndTailOverlap() throws Exception {
 		SpellChecker checker = largeDictCheckerWithTestWords();
@@ -305,19 +327,6 @@ public class SpellCheckerTest {
 			"ujarattarniarvimmi",
 			"ujararniarvimmut"
 		};
-
-		if (!(checker instanceof SpellChecker)) {
-			// For some reason, the list of suggestions is slightly different
-			// for ES vs InMemory
-			//
-			expSuggestions = new String[]{
-				"ujara[nni]arvimmi",
-				"ujararniarvimmi",
-				"ujararniarvimmik",
-				"ujararniarvimmit",
-				"ujararniarvingmi",
-				"ujarattarniarvimmi"			};
-			}
 
 		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
 
@@ -367,7 +376,7 @@ public class SpellCheckerTest {
 		String word = "ᓄᓇᕗᖕᒥ";
 		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
 		assertCorrectionOK(gotCorrection, word, false,
-			new String[] {"ᓄᓇᕘᒥ", "ᓄᓇᕗᒻᒥ", "ᓄᓇᕗᑦ" });
+			new String[] {"ᓄᓇᕗᒻᒥ", "ᓄᓇᕘᒥ", "ᓄᓇᕗᑦ" });
 	}
 	
 	@Test 
@@ -464,7 +473,6 @@ public class SpellCheckerTest {
 
 	@Test  
 	public void test__correctText__syllabic() throws Exception  {
-//		SpellChecker checker = makeCheckerLargeDict();		
 		SpellChecker checker = smallDictCheckerWithTestWords();
 		
 		String text = "ᐃᓄᑦᒧᑦ ᑕᑯᔪᖅ ᐃᒡᓗᑦᒥᒃ ᐊᕐᕌᒍᒥ";
@@ -480,11 +488,11 @@ public class SpellCheckerTest {
 				//   This test mostly aims at testing the mechanics of SpellText.
 				//  				
 				new String[] {
-						  "ᐃᓄᒃᑐᑦ",
-						  "ᐃᓄᑯᑦᑦ",
-						  "ᐃᓄᒃᑎᑐᑦ",						  
-						  "ᐃᓄᒃᑦᑐᑦ",
-						  "ᐃᓄᒃ"
+					"ᐃᓄᒃᑐᑦ",
+				  	"ᐃᓄᑯᑦᑦ",
+				  	"ᐃᓄᒃᑎᑐᑦ",
+				  	"ᐃᓄᒃ",
+					"ᐃᓄᒃᑦᑐᑦ"
 				});
 		
 		wordNum = 1;
@@ -539,7 +547,7 @@ public class SpellCheckerTest {
 	public void test__isMispelled__CorreclySpelledWordNumber() throws Exception  {
 		String word = "2018";
 		Assert.assertFalse("Word "+word+" should have been deemed correctly spelled", 
-				largeDictCheckerWithTestWords().isMispelled(word));
+			largeDictCheckerWithTestWords().isMispelled(word));
 	}
 
 	@Test 
@@ -669,7 +677,7 @@ public class SpellCheckerTest {
 	
 	@Test 
 	public void test__addWord__HappyPath() throws Exception {
-		SpellChecker checker = largeDictCheckerWithTestWords();
+		SpellChecker checker = makeCheckerEmptyDict();
 		String word = "tamainni";
 		assertWordUnknown(word, checker);
 		
@@ -677,61 +685,91 @@ public class SpellCheckerTest {
 		assertWordIsKnown(word, checker);
 	}	
 	
-	@Test 
-	public void test__spellCheck__SpeedTest() throws Exception {
-		String text = 
-				"matuvviksanga: mai 02, 2014 angajuqqaalik aulattijimik "+
-				"takunakkanniliraangata iqqaqtuqtaunikunik."
-						
-				// Comment out the rest except when profiling
-
-//				+"unikkaaqpak&unilu allavvilirinirmut pijjutiqarlunit "+
-//				"iqqaqtuivingmi pijittirautinut tukimuaktittijimu, sivuliqtinu "+
-//				"maligalirinirmut piliriji uqaujjuujiuqattaqpuq iqqaqtuijimu "+
-//				"maligalirinirmullu pilirijimmaringmu allavvinganut "+
-//				"iqqaqtuijiup nunavummi allavviullu-iluani "+
-//				"uqallaqatiqaqtiulluni maligani qaujisarnirmut "+
-//				"titiranngaqtaujunik tusaumaqatiqarnirmut maligarnik, "+
-//				"titiranngaliraangatalu atuagarnik pilirianut aktuutiju "+
-//				"aulattinirmut maligalirinirmik iqqaqtuijjutaujullu nunavut "+
-//				"iqqaqtuivingani. sivuliqtinu maligalirinirmut piliriji "+
-//				"inungnu tusagaksanu tusaumatittijiuvuq iqqaqtuivingmulu "+
-//				"titiqqanik tuqquqtuijiulluni ikajuqpak&unilu iqqaqtuijinik "
-		;
-		
-		Pair<Boolean,Double>[] configurations = new Pair[] {
-				// Expected time when partial correction is disabled
-				Pair.of(false, new Double(15)),
-				// Expected time when partial correction is enabled
-				Pair.of(true, new Double(20.0))
-		};
-
-		for (Pair<Boolean,Double> config: configurations) {
-			SpellChecker checker = largeDictCheckerWithTestWords();
-			checker.setPartialCorrectionEnabled(config.getFirst());
-			Long start = System.currentTimeMillis();
-			checker.correctText(text);
-			Double gotElapsed = (System.currentTimeMillis() - start)
-								/ (1.0 * 1000);
-
-			Double expMaxElapsed = config.getSecond();
-
-			String baseMess = "With partial correction set to "+
-								config.getFirst()+"...\n";
-			AssertNumber.isLessOrEqualTo(
-					baseMess+
-					"SpellChecker performance was MUCH lower than expected.\n"+
-					"Note: This test may fail on occasion depending on the speed "+
-					"and current load of your machine.",
-					gotElapsed, expMaxElapsed);
-
-			start = System.currentTimeMillis();
-			checker.correctText(text);
-			Double gotElapsedSecondTime = (System.currentTimeMillis() - start)
-					/ (1.0 * 1000);
-		}
+	@Test
+	public void test__SpeedTest__AllOKWords() throws Exception {
+		// Spell checking should be pretty fast for words that are
+		// correctly spelled
+		//
+		double expAvgSecs = 0.2;
+		speedTest(
+		"All correctly spelled words",
+			correctWordsNonExplicit, expAvgSecs);
 	}
-	
+
+
+	@Test
+	public void test__SpeedTest__AllMisspelledWords__DisablePartialCorrections() throws Exception {
+		// Spell checking is somewhat slow when dealing with words that are
+		// mis-spelled. This is even true if we do not enable computation of
+		// partial corrections.
+		//
+		double expAvgSecs = 1.7;
+		speedTest(
+			"All misspelled words",
+			misspelledWords, expAvgSecs);
+	}
+
+	@Test
+	public void test__SpeedTest__AllMisspelledWords__EnablePartialCorrections() throws Exception {
+		double expAvgSecs = 2.0;
+		speedTest(
+			"All misspelled words",
+			misspelledWords, expAvgSecs, TestOption.ENABLE_PARTIAL_CORRECTIONS);
+	}
+
+	private void speedTest(String dataSetName, String[] words,
+		double expMaxAvgSecs, TestOption... options) throws Exception {
+		SpellChecker checker = largeDictCheckerWithTestWords();
+
+		long startAll = StopWatch.nowMSecs();
+
+		double totalSecs = 0;
+		int totalWords = words.length;
+		if (totalWords == 0) {
+			throw new SpellCheckerException("Empty data set");
+		}
+		boolean enablePartialCorrections =
+			Arrays.stream(options)
+				.anyMatch(TestOption.ENABLE_PARTIAL_CORRECTIONS::equals);
+			checker.setPartialCorrectionEnabled(enablePartialCorrections);
+			for (String word: words) {
+				Long start = System.currentTimeMillis();
+				SpellingCorrection gotCorrection = checker.correctWord(word);
+				long end = System.currentTimeMillis();
+				double elapsedSecsThisWord =
+					1.0 * (end - start) 	/ 1000;
+				totalSecs += elapsedSecsThisWord;
+				totalWords++;
+			}
+
+			long endAll = StopWatch.elapsedMsecsSince(startAll);
+			System.out.println("Test took "+endAll/1000+" seconds for "+words.length+" words");
+
+			String baseMess =
+				"With partial correction set to "+
+				enablePartialCorrections+"...\n"+
+				"On dataset: "+dataSetName+"...\n";
+
+			Double gotAvgSecs= avgSecs(totalSecs, totalWords);
+			AssertNumber.isLessOrEqualTo(
+				baseMess +
+				"SpellChecker performance was MUCH lower than expected.\n" +
+				"Note: This test may fail on occasion depending on the speed " +
+				"and current load of your machine.",
+				gotAvgSecs, expMaxAvgSecs);
+		}
+
+	private Double avgSecs(double totalSecs, int totalWords) {
+		double avg = 0.0;
+		if (totalWords != 0) {
+			avg = totalSecs / totalWords;
+			BigDecimal bd = BigDecimal.valueOf(avg);
+			bd = bd.setScale(4, RoundingMode.HALF_UP);
+			avg = bd.doubleValue();
+		}
+		return avg;
+	}
+
 	@Test 
 	public void test__computeCorrectPortions__HappyPath() throws Exception {
 		SpellChecker checker = smallDictCheckerWithTestWords();
@@ -777,6 +815,19 @@ public class SpellCheckerTest {
 		Assert.assertFalse(
 				"Tail morphemes for word "+word+" should NOT have matched "+tailChars, 
 				checker.tailRespectsMorphemeBoundaries(tailChars, word));
+	}
+
+	@Test
+	public void test__winfosContainingNgram__HappyPath() throws Exception {
+		SpellChecker checker = largeDictCheckerWithTestWords();
+		String ngram = "^nuna";
+		WordInfo[] expWinfos = new WordInfo[] {
+			new WordInfo("nunavut")
+		};
+		Iterator<WordInfo> iter = checker.winfosContainingNgram(ngram);
+		AssertIterator.assertContainsAll(
+			"List of words containing ngram "+ngram+" did not contain expected words",
+			expWinfos, iter);
 	}
 
 	/**********************************
@@ -858,5 +909,11 @@ public class SpellCheckerTest {
 		throws SpellCheckerException {
 		Assert.assertFalse("Spell checker dictionary should NOT have known about word '"+word+"'", 
 			checker.knowsWord(word));
+	}
+
+	protected List<String> wordsInText(String text) {
+		IUTokenizer iutokenizer = new IUTokenizer();
+		List<String> words = iutokenizer.tokenize(text);
+		return words;
 	}
 }

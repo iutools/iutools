@@ -4,10 +4,13 @@ package ca.pirurvik.iutools.corpus;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Vector;
 
+import ca.nrc.file.ResourceGetter;
 import org.junit.Test;
 
 import ca.inuktitutcomputing.config.IUConfig;
@@ -26,11 +29,12 @@ public class CorpusReader_DirectoryTest
 	}
 
 	@Test
-    public void test__getFiles() throws Exception
-    {
+    public void test__getFiles() throws Exception {
+		File corpusDir = ResourceGetter.copyResourceToTempLocation("ca/pirurvik/iutools/corpus/CorpusReaderDirectory");
 		CorpusReader corpusReader = new CorpusReader_Directory();
-        String corpusDir = IUConfig.getIUDataPath()+"/src/test/CorpusReaderDirectory";
-		Iterator<CorpusDocument_File> files = (Iterator<CorpusDocument_File>) ((CorpusReader_Directory) corpusReader).getFiles(corpusDir);
+		Iterator<CorpusDocument_File> files =
+			(Iterator<CorpusDocument_File>) ((CorpusReader_Directory) corpusReader)
+			.getFiles(corpusDir.toString());
 		Vector<String> fileNamesV = new Vector<String>();
 		while (files.hasNext())
 			fileNamesV.add(files.next().id);

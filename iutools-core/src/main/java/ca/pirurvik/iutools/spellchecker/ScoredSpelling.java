@@ -4,6 +4,7 @@ public class ScoredSpelling {
 	public String spelling = null;
 	public Double ngramSim = null;
 	public Double editDist = null;
+	public Long frequency = null;
 
 	public ScoredSpelling() {
 		init_ScoredSpelling((String)null, (Double)null, (Double)null);
@@ -27,5 +28,25 @@ public class ScoredSpelling {
 	public String toString() {
 		String str = spelling+" (dist="+ ngramSim +")";
 		return str;
+	}
+
+	public ScoredSpelling setFrequency(Long _freq) {
+		this.frequency = _freq;
+		return this;
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		boolean answer = false;
+		if (other instanceof ScoredSpelling) {
+			ScoredSpelling otherSpelling = (ScoredSpelling)other;
+			answer = this.spelling.equals(otherSpelling.spelling);
+		}
+		return answer;
+	}
+
+	@Override
+	public int hashCode() {
+		return this.spelling.hashCode();
 	}
 }

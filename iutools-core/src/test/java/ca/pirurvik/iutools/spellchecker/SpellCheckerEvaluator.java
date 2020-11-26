@@ -380,7 +380,11 @@ public class SpellCheckerEvaluator {
 		// examples were seen in the corpus used by the SpellChecker.
 		//
 		if (loadCorrectWordInDict) {
-			assumeCorrectionsAreInCheckerDict(examples);
+			try {
+				assumeCorrectionsAreInCheckerDict(examples);
+			} catch (Exception e) {
+				throw new SpellCheckerException(e);
+			}
 		}
 
 		startTime = StopWatch.nowMSecs();
@@ -417,11 +421,28 @@ public class SpellCheckerEvaluator {
 	 *
 	 */
 	private void assumeCorrectionsAreInCheckerDict(
-		SpellCheckerExample[] examples) throws SpellCheckerException {
+		SpellCheckerExample[] examples) throws Exception {
 		for (SpellCheckerExample anExample: examples) {
 			for (String aCorrection: anExample.acceptableCorrections) {
-				checker.addExplicitlyCorrectWord(aCorrection);
+				addExplicitlyCorrectWord(aCorrection, checker);
 			}
+		}
+
+		return;
+	}
+
+	private static Map<String,Set<String>> explicitlyCorrectWordsIndexState
+			= new HashMap<String,Set<String>>();
+
+	protected void addExplicitlyCorrectWord(String word, SpellChecker checker)
+		throws Exception {
+		String indexName = checker.explicitlyCorrectWords.getIndexName();
+		if (!explicitlyCorrectWordsIndexState.containsKey(indexName)) {
+			explicitlyCorrectWordsIndexState.put(indexName, new HashSet<String>());
+		}
+		Set<String> wordsInIndex = explicitlyCorrectWordsIndexState.get(indexName);
+		if (!wordsInIndex.contains(word)) {
+			checker.addExplicitlyCorrectWord(word);
 		}
 	}
 

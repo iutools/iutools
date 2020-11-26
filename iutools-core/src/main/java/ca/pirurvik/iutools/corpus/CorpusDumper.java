@@ -56,7 +56,7 @@ public class CorpusDumper {
         long totalWords = corpus.totalWords();
         ProgressMonitor_Terminal progMonitor =
         new ProgressMonitor_Terminal(
-            totalWords, "Dumping words of corpus to file", 30);
+            totalWords, "Dumping words of corpus to file: "+outputFile, 30);
 
         try(FileWriter fw = new FileWriter(outputFile)) {
             outputFileWriter = fw;
@@ -86,7 +86,7 @@ public class CorpusDumper {
             outputFileWriter.write(
 
             "bodyEndMarker=BLANK_LINE\n"+
-                "class=ca.pirurvik.iutools.corpus.WordInfo_ES\n\n");
+                "class=ca.pirurvik.iutools.corpus.WordInfo\n\n");
         } catch (IOException e) {
             throw new CompiledCorpusException("Could not print headers to JSON file.");
         }

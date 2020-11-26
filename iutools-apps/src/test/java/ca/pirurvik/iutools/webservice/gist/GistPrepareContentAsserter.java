@@ -104,10 +104,31 @@ public class GistPrepareContentAsserter extends Asserter {
 		
 		return this;		
 	}
-	
+
+	public GistPrepareContentAsserter hasContentForLang(String lang) {
+		List<String[]> gotContent = null;
+		if (lang.equals("iu")) {
+			gotContent = gotResponse().iuSentences;
+		} else if (lang.equals("en")) {
+			gotContent = gotResponse().enSentences;
+		}
+
+		Assert.assertTrue(
+			"There should have been any content for language "+lang,
+			gotContent.size() > 0);
+
+		return this;
+	}
+
 	public GistPrepareContentAsserter hasNoAlignments() {
 		boolean gotAvailable = gotResponse().getAlignmentsAvailable();
 		Assert.assertFalse("Alignments should NOT have been available", gotAvailable);
+		return this;
+	}
+
+	public GistPrepareContentAsserter hasSomeAlignments() {
+		boolean gotAvailable = gotResponse().getAlignmentsAvailable();
+		Assert.assertTrue("Alignments SHOULD have been available", gotAvailable);
 		return this;
 	}
 
