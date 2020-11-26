@@ -8,6 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ca.nrc.data.harvesting.*;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 
 import ca.pirurvik.iutools.concordancer.DocAlignment.Problem;
@@ -23,10 +24,14 @@ import ca.pirurvik.iutools.text.segmentation.Segmenter;
  */
 public abstract class WebConcordancer {
 
-	public static enum AlignOptions {ONLY_FETCH_CONTENT}
+	public static enum AlignOptions {
+		KEEP_HTML, FILTER_MAIN_CONTENT, ONLY_FETCH_CONTENT}
 	protected static enum StepOutcome {SUCCESS, FAILURE, KEEP_TRYING};
 	private static enum AlignmentPart {
 		PAGES_CONTENT, PROBLEMS, SENTENCES, ALIGNMENTS};
+
+	boolean filterMainContent = false;
+	boolean keepHtml = false;
 
 	private static Map<String,String[]> langNames = new HashMap<String,String[]>();
 	private static void setLangNames(String lang, String... names) {
@@ -41,10 +46,26 @@ public abstract class WebConcordancer {
 	@Transient
 	protected abstract PageHarvester getHarvester();
 
-
 	PageHarvester harvester = null;
 	LanguageGuesser langGuesser = new LanguageGuesser_IU();
 	Aligner_Maligna aligner = new Aligner_Maligna();
+
+	public WebConcordancer() {
+		init_WebConcordancer(new AlignOptions[0]);
+	}
+
+	public WebConcordancer(AlignOptions... options) {
+		init_WebConcordancer(options);
+	}
+
+	private void init_WebConcordancer(AlignOptions[] options) {
+		if (ArrayUtils.contains(options, AlignOptions.FILTER_MAIN_CONTENT)) {
+			filterMainContent = true;
+		}
+		if (ArrayUtils.contains(options, AlignOptions.KEEP_HTML)) {
+			keepHtml = true;
+		}
+	}
 
 	public DocAlignment alignPage(URL url, String[] languages)
 		throws WebConcordancerException {
@@ -432,12 +453,12 @@ public abstract class WebConcordancer {
 	}
 
 	private void harvestInputPage(URL url, DocAlignment alignment,
-		Set<String> languages) {
+		Set<String> languages) throws WebConcordancerException {
 		harvestInputPage(url, alignment, languages.toArray(new String[0]));
 	}
 
 	private void harvestInputPage(URL url, DocAlignment alignment, 
-			String[] languages)  {
+			String[] languages) throws WebConcordancerException {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.concordancer.harvestInputPage");
 		tLogger.trace("invoked with url="+url);
 		String urlText = null;
@@ -477,6 +498,15 @@ public abstract class WebConcordancer {
 			alignment.setPageURL(urlLang, url);
 			List<String> sentences = segmentText(urlLang, urlText);
 			alignment.setPageSentences(urlLang, sentences);
+			String html = null;
+			if (keepHtml) {
+				try {
+					html = getHarvester().getHtml();
+				} catch (PageHarvesterException e) {
+					throw new WebConcordancerException(e);
+				}
+			}
+			alignment.setPageHtml(urlLang, html);
 		}
 		
 		return;

@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.StringUtils;
 
 public class DocAlignment {
-	
+
 	/** 
 	 * Signals specific problems encountered during alignment of the page.
 	 * @author desilets
@@ -38,6 +38,7 @@ public class DocAlignment {
 	public List<Alignment> alignments = new ArrayList<Alignment>();
 	public Map<String,String> pagesContent = new HashMap<String,String>();
 	public Map<String,URL> pagesURL = new HashMap<String,URL>();
+	public Map<String,String> pagesHtml = new HashMap<String,String>();
 
 	public DocAlignment() {
 		init_DocAlignment(null, null);		
@@ -104,6 +105,10 @@ public class DocAlignment {
 	public DocAlignment setPageSentences(String lang, List<String> sentences) {
 		_pageSentences.put(lang, sentences);
 		return this;
+	}
+
+	public void setPageHtml(String urlLang, String html) {
+		pagesHtml.put(urlLang, html);
 	}
 
 	public void raiseProblem(Problem problem, String mess) {

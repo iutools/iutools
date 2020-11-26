@@ -20,12 +20,17 @@ public abstract class WebConcordancerTest {
 	
 	protected static WebConcordancer concordancer = null;
 
-	protected abstract WebConcordancer makeConcordancer();
-	
+	protected abstract WebConcordancer makeConcordancer(AlignOptions... options);
+
+	protected WebConcordancer makeConcordancer() {
+		return makeConcordancer(new AlignOptions[0]);
+	}
+
+
 	@Before
 	public void setUp() {
 		if (concordancer == null) {
-			concordancer = makeConcordancer();
+			concordancer = makeConcordancer(AlignOptions.FILTER_MAIN_CONTENT);
 		}
 	}
 	
