@@ -1031,13 +1031,6 @@ public class SpellChecker {
 				return score;
 			});
 
-		ScoredSpelling[] sortedSpellings = new ScoredSpelling[arrScoreValues.length];
-		for (int ii=0; ii < arrScoreValues.length; ii++) {
-			Pair<String,Double> candPair = arrScoreValues[ii];
-			String word = candPair.getFirst();
-			Double ngramSim = candPair.getSecond();
-			sortedSpellings[ii] = new ScoredSpelling(word, ngramSim);
-		}
 		tLogger.trace("finished");
 
 		return candidates;
