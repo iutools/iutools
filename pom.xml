@@ -13,12 +13,12 @@
   		<maven.deploy.skip>true</maven.deploy.skip>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>    
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-		<!-- For deployment of artifacts on Nexus -->
-		<nexus.snapshot.url>https://nexus.dt.nrc.ca/repository/maven-snapshots/</nexus.snapshot.url>
-		<nexus.releases.url>https://nexus.dt.nrc.ca/repository/maven-releases/</nexus.releases.url>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.source>1.8</maven.compiler.source>
+
+		<junit.version>4.12</junit.version>
 	</properties>
     
 	 <modules>
@@ -42,22 +42,27 @@
 		</pluginRepository>
 	</pluginRepositories>
 
-
-	<!-- Pointers to DT Nexus Repositories for Distribution -->
-	<distributionManagement>
-		<repository>
-			<id>dt-nexus-releases</id>
-			<url>${nexus.releases.url}</url>
-		</repository>
-		<snapshotRepository>
-			<id>dt-nexus-snapshots</id>
-			<url>${nexus.snapshot.url}</url>
-		</snapshotRepository>
-	</distributionManagement>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.junit</groupId>
+				<artifactId>junit-bom</artifactId>
+				<version>5.7.0</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<build>
 		<pluginManagement>
 			<plugins>
+
+				<plugin>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>3.0.0-M5</version>
+				</plugin>
+
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>license-maven-plugin</artifactId>
@@ -96,7 +101,6 @@
 			<plugin>
 			   <groupId>org.apache.maven.plugins</groupId>
 			   <artifactId>maven-deploy-plugin</artifactId>
-			   <version>2.8.3</version>
 			   <configuration>
 			   		<skip>${maven.deploy.skip}</skip>
 			   </configuration>
@@ -146,7 +150,27 @@
  
 	<!--  Dependancies that are needed by all modules  -->
 	<dependencies>
-	 
+
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+		</dependency>
+		<!-- For old JUnit4 tests -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+		</dependency>
+
+		<!-- Not sure why this is also needed... apparently
+             it is required if you want to include JUnit4 tests
+             that will run from the maven command line
+        -->
+		<dependency>
+			<groupId>org.junit.vintage</groupId>
+			<artifactId>junit-vintage-engine</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>ca.nrc.java-utils</groupId>
 		    <artifactId>java-utils-core</artifactId>
