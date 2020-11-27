@@ -2,23 +2,21 @@ package ca.pirurvik.iutools.spellchecker;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import ca.nrc.dtrc.elasticsearch.StreamlinedClient;
+import ca.nrc.testing.AssertRuntime;
 import ca.pirurvik.iutools.corpus.*;
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.*;
 
 import ca.nrc.datastructure.Pair;
 import ca.nrc.string.StringUtils;
-import ca.nrc.testing.AssertHelpers;
 import ca.nrc.testing.AssertNumber;
 
 public class SpellCheckerAccuracyTest {
@@ -347,14 +345,14 @@ public class SpellCheckerAccuracyTest {
     };
 
     @Test
-    public void test__Evaluate__QuickEvaluation()
-            throws Exception {
+    public void test__Evaluate__QuickEvaluation(TestInfo testInfo)
+        throws Exception {
 
         // This test runs the evaluation on the first 10 examples
         // of the examples_MostFrequenMisspelledWords data set
         //
         EvaluationParameters parameters =
-            new EvaluationParameters()
+            new EvaluationParameters(testInfo)
 
 //            .setFocusOnExample("tavani")
 
@@ -374,19 +372,17 @@ public class SpellCheckerAccuracyTest {
                     
             .setAverageRank(1.18)
             .setAvgRankTolerance(0.2)
-
-            .setAvgRuntime(2.0, 1.5)
             ;
 
         SpellChecker checker = makeLargeDictChecker();
-        evaluateCheckerOnExamples(checker,parameters);
+        evaluateCheckerOnExamples(checker,  parameters);
     }
 
     @Test
-    public void test__Evaluate__MostFrequentMisspelledWords__AssumingWordIsInDict()
+    public void test__Evaluate__MostFrequentMisspelledWords__AssumingWordIsInDict(TestInfo testInfo)
             throws Exception {
         EvaluationParameters parameters =
-            new EvaluationParameters()
+            new EvaluationParameters(testInfo)
 
             // use setFocusOnExample() to run just one word out of the
             // data set.
@@ -401,8 +397,6 @@ public class SpellCheckerAccuracyTest {
             .setPercTopSuggestionOK(0.95)
             .setAverageRank(1.07)
             .setAvgRankTolerance(0.1)
-
-            .setAvgRuntime(3.0, 0.2)
         ;
 
         SpellChecker checker = makeLargeDictChecker();
@@ -410,11 +404,11 @@ public class SpellCheckerAccuracyTest {
     }
 
     @Test
-    public void test__Evaluate__MostFrequentMisspelledWords__WIHOUT_AssumingWordIsInDict()
-            throws Exception {
+    public void test__Evaluate__MostFrequentMisspelledWords__WIHOUT_AssumingWordIsInDict(
+        TestInfo testInfo) throws Exception {
 
         EvaluationParameters parameters =
-            new EvaluationParameters()
+            new EvaluationParameters(testInfo)
             // Use setFocusOnExample to run just one word from the data set
 //            .setFocusOnExample("nunavungmi")
 
@@ -429,56 +423,17 @@ public class SpellCheckerAccuracyTest {
 
             .setAverageRank(1.08)
             .setAvgRankTolerance(0.1)
-
-            .setAvgRuntime(3.0, 0.2)
-
             ;
 
         evaluateCheckerOnExamples(makeLargeDictChecker(), parameters);
 
     }
 
-    @Ignore @Test
-    public void test__Evaluate__DEBUG_MostFrequentWords__UsingSmallCustomDictionary() throws Exception {
-        //
-        // This test is used only for Debugging purposes and is usually left
-        // @Ignored.
-        //
-        // It does the same thing as test
-        //
-        //   test__EvaluateSugestions__LargeDictionary
-        //
-        // except that it does it with a small dictionary.
-        // As a result, it loads and runs much faster.
-        //
-
-        // Set this to a specific example if you only want
-        // to evaluate that one.
-        //
-        String focusOnExample = null;
-//		String focusOnExample = "tamaini";
-
-        SpellChecker checker = makeEmptyDictChecker();
-
-//        int verbosity = 1;
-//        double expPercentFoundInTopN = 0.6;
-//        double tolerance = 0.01;
-//        double expPercTopSuggestionOK = 0.90;
-//        double expAverageRank = 3.4;
-//        double avgRankTolerance = 0.1;
-//        Boolean loadCorrectWordInDict = true;
-//        evaluateCheckerOnExamples(checker,
-//                examples_MostFrequenMisspelledWords, focusOnExample,
-//                expPercentFoundInTopN, tolerance,
-//                expPercTopSuggestionOK, tolerance,
-//                expAverageRank, avgRankTolerance,
-//                loadCorrectWordInDict, verbosity);
-    }
-
     @Test
-    public void test__Evaluate__RandomPageSample__LargeDictionary() throws Exception {
+    public void test__Evaluate__RandomPageSample__LargeDictionary(
+        TestInfo testInfo) throws Exception {
         EvaluationParameters parameters =
-            new EvaluationParameters()
+            new EvaluationParameters(testInfo)
             .setFocusOnExample("piliriqatigiinik")
 
             .setVerbosity(2)
@@ -493,8 +448,6 @@ public class SpellCheckerAccuracyTest {
             .setPercTopSuggestionOK(0.90 + 1.0)
             .setAverageRank(-1.23)
             .setAvgRankTolerance(0.1)
-
-            .setAvgRuntime(-1.0, 0.5)
             ;
 
     }
@@ -512,16 +465,16 @@ public class SpellCheckerAccuracyTest {
 
 
         int numExamples = evaluator.totalExamples();
-        Assert.assertTrue(
-                "No examples were evaluated!\nMaybe you set 'focusOnExample' to a word that is not in the list of examples?",
-                numExamples > 0);
+        Assertions.assertTrue(
+            numExamples > 0,
+            "No examples were evaluated!\nMaybe you set 'focusOnExample' to a word that is not in the list of examples?");
 
         int N = 5;
         assertEvaluationAsExpected(evaluator, N, parameters);
 
         if (parameters.focusOnExample != null) {
-            Assert.fail("The test was only carried out on word "+parameters.focusOnExample+".\n" +
-                    "Don't forget to set focusOnExample=null to run the test on all words");
+            Assertions.fail("The test was only carried out on word "+parameters.focusOnExample+".\n" +
+                "Don't forget to set focusOnExample=null to run the test on all words");
         }
     }
 
@@ -545,22 +498,18 @@ public class SpellCheckerAccuracyTest {
     }
 
     private String checkAverageRuntime(SpellCheckerEvaluator evaluator,
-       EvaluationParameters parameters) {
+       EvaluationParameters parameters) throws SpellCheckerException {
         String errMess = "";
-        if (parameters.avgRuntime != null) {
-            double gotRuntime = evaluator.averageSecsPerCase();
-            try {
-                AssertNumber.performanceHasNotChanged(
-            "Average runtime (secs) per word",
-                    gotRuntime, parameters.avgRuntime,
-                    parameters.toleranceAvgRunTime,
-        false);
-            } catch (AssertionError e) {
-                errMess = e.getMessage();
-            }
+        try {
+            AssertRuntime.assertRuntimeHasNotChanged(
+                evaluator.averageSecsPerCase(), parameters.runtimePercTolerance,
+                "avg word spell checking time", parameters.testInfo);
+        } catch (AssertionError e) {
+            errMess = e.getMessage();
+        } catch (IOException e) {
+            throw new SpellCheckerException(e);
         }
         return "\n"+errMess+"\n";
-
     }
 
 
@@ -803,57 +752,6 @@ public class SpellCheckerAccuracyTest {
         return errMess;
     }
 
-    // TODO-2020-10: Either make this test pass or get rid of it
-    @Ignore @Test
-    public void test__candidatesWithSimilarNgrams__HandPickedExamples__WITHOUT_AssumingCorrectSpellingInDict()
-            throws Exception {
-        // Set this to a specific example if you only want
-        // to evaluate that one.
-        //
-        String focusOnExample = null;
-//		focusOnExample = "nunavuumik";
-
-        SpellChecker checker = makeLargeDictChecker();
-
-        for (SpellCheckerExample anExample: examples_RandomPageSample) {
-            if (focusOnExample != null &&
-                    !focusOnExample.equals(anExample.key())) {
-                continue;
-            }
-
-            if (!anExample.misspelled) {
-                // The candidatesWithSimilarNgrams() method is only ever used for
-                // words that are mis-spelled. So don't test it on words that
-                // are correctly spelled.
-                continue;
-            }
-
-            if (anExample.acceptableCorrections.isEmpty()) {
-                // No point in checking first pass candidates if we don't know
-                // what the acceptable spellings are for this word.
-                continue;
-            }
-
-            String wordToCheck = anExample.wordToCheck;
-            List<ScoredSpelling> gotCandidates =
-                checker.candidatesWithSimilarNgrams(wordToCheck, false);
-
-            Set<Object> gotCandidatesObj = (Set)gotCandidates;
-            Set<Object> expCandidatesObj = (Set)anExample.acceptableCorrections;
-            AssertHelpers.intersectionNotEmpty(
-                    "\nThe first pass candidates for mis-spelled word '"+
-                            wordToCheck+"' did not contain any of the acceptable corrections.\n"+
-                            "Acceptable corrections were: ['"+String.join("', '", anExample.acceptableCorrections)+"]",
-                    gotCandidatesObj, expCandidatesObj);
-        }
-
-        if (focusOnExample != null) {
-            Assert.fail(
-                    "Test was on ly run on word "+focusOnExample+"." +
-                            "Remember to set focusOnExample=null to run the test on all examples");
-        }
-    }
-
     //////////////////////
     // TEST HELPERS
     //////////////////////
@@ -876,12 +774,16 @@ public class SpellCheckerAccuracyTest {
         public double averageRank = 1;
         public double avgRankTolerance = 0;
 
-        public Double avgRuntime = null;
-        public Double toleranceAvgRunTime = 0.5;
+        // By default, we allow the rutime to change by at most 25%
+        public Double runtimePercTolerance = 0.25;
 
         public boolean loadCorrectWordInDict = false;
         public SpellCheckerExample[] examples = null;
+        private TestInfo testInfo = null;
 
+        public EvaluationParameters(TestInfo _tInfo) {
+            this.testInfo = _tInfo;
+        }
 
         public EvaluationParameters setStopAfterNcases(Integer N) {
             this.stopAfterNcases = N;
@@ -945,9 +847,8 @@ public class SpellCheckerAccuracyTest {
             return this;
         }
 
-        public EvaluationParameters setAvgRuntime(Double secs, Double tolerance) {
-            this.avgRuntime = secs;
-            this.toleranceAvgRunTime = tolerance;
+        public EvaluationParameters setFuntimePercTolerance(Double percTolerance) {
+            this.runtimePercTolerance = percTolerance;
             return this;
         }
     }

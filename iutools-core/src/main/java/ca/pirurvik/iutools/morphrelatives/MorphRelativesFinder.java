@@ -65,7 +65,7 @@ public class MorphRelativesFinder {
 	public MorphologicalRelative[] findRelatives(String word) throws MorphRelativesFinderException  {
     	Logger logger = Logger.getLogger("ca.pirurvik.iutools.morphrelatives.MorphRelativesFinder.getRelatives");
 		logger.debug("word: "+word);
-		
+
 		String[] segments;
 		
 		try {

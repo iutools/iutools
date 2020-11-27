@@ -3,19 +3,22 @@ package ca.pirurvik.iutools.morphrelatives;
 import java.io.File;
 
 import ca.nrc.file.ResourceGetter;
+import ca.nrc.testing.AssertRuntime;
 import ca.pirurvik.iutools.corpus.CompiledCorpus;
 import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.*;
 
 import static org.junit.Assert.assertFalse;
 
 import ca.inuktitutcomputing.config.IUConfig;
+import org.junit.jupiter.api.TestInfo;
 
 public class MorphRelativesFinderAccuracyTest {
 
 	@Test
-	public void test__findRelatives__QuickAccuracyTest() throws Exception {
+	public void test__findRelatives__QuickAccuracyTest(TestInfo testInfo)
+		throws Exception {
 		PerformanceExpectations expectations =
 			new PerformanceExpectations()
 
@@ -27,8 +30,8 @@ public class MorphRelativesFinderAccuracyTest {
 //				.setFocusOnWord("mikinniqsanut")
 
 
-				// Each morpheme should run in about 1.5 secs, give or take 0.5
-				.setTargetRuntimeSecs(2, 1)
+				// The avg runtime per morpheme should not change by more than 30%
+				.setRuntimePercTolerance(0.30)
 
 				// 2020-10-28-AD:
 				//   This was the accuracy before we moved to the new version
@@ -48,11 +51,11 @@ public class MorphRelativesFinderAccuracyTest {
 				.setPrecRecTolerance(0.02)
 			;
 
-		evaluatePerformance(expectations, 10);
+		evaluatePerformance(expectations, 10, testInfo);
 	}
 
 	@Test
-	public void test__MorphRelativesFinderAccuracy() throws Exception {
+	public void test__MorphRelativesFinderAccuracy(TestInfo testInfo) throws Exception {
 		
 		System.out.println("\n\n*** Running test__MorphRelativesFinderAccuracy. This test can take a few minutes to complete\n\n");;
 		
@@ -81,19 +84,20 @@ public class MorphRelativesFinderAccuracyTest {
 			.setTargetRecall(0.33)
 
 			.setPrecRecTolerance(0.015)
-			// Each word should take on average 2 secs, give or take 1 sec
-			.setTargetRuntimeSecs(2 , 1)
+			// Average runtime for morphemes should not change by more than 30%
+			.setRuntimePercTolerance(0.30)
 			;
 
-		evaluatePerformance(expectations);
+		evaluatePerformance(expectations, testInfo);
 	}
 
-	private void evaluatePerformance(PerformanceExpectations exp) throws Exception {
-		evaluatePerformance(exp, null);
+	private void evaluatePerformance(
+		PerformanceExpectations exp, TestInfo testInfo) throws Exception {
+		evaluatePerformance(exp, (Integer)null, testInfo);
 	}
 
 	private void evaluatePerformance(PerformanceExpectations exp,
-		Integer stopAfterNWords) throws Exception {
+		Integer stopAfterNWords, TestInfo testInfo) throws Exception {
 		File goldStandardCSVFilePath =
 			ResourceGetter.copyResourceToTempLocation("ca/pirurvik/iutools/IU100Words-expansions-added-to-alternatives.csv");
 
@@ -135,14 +139,15 @@ public class MorphRelativesFinderAccuracyTest {
 		evaluator.run();
 		long gotElapsedSecs = (System.currentTimeMillis() - startMSecs) / 1000;
 
-		double runtimeDelta = -9999.0; 	double runtimeDeltaAbs = 9999.0;
-		// targetRuntimeSecs < 0 means we don't care about runtime
-		if (exp.targetRuntimeSecs > 0) {
-			runtimeDelta = evaluator.secsPerCase() - exp.targetRuntimeSecs;
-			runtimeDeltaAbs = Math.abs(runtimeDelta);
-			if (runtimeDeltaAbs > exp.secsTolerance) {
-				runtimeFine = false;
-			}
+		Double secsPerCase = evaluator.secsPerCase();
+		AssertionError runtimeAssertionError = null;
+		try {
+			AssertRuntime.assertRuntimeHasNotChanged(
+				secsPerCase, exp.runtimePercTolerance,
+				"avg secs per case", testInfo);
+		} catch (AssertionError e) {
+			runtimeFine = false;
+			runtimeAssertionError = e;
 		}
 
 		// targetPrecision < 0 means we don't care about precision
@@ -184,11 +189,7 @@ public class MorphRelativesFinderAccuracyTest {
 				}
 			}
 			if (!runtimeFine) {
-				if (runtimeDelta < 0) {
-					diagnostic += "\nRUNTIME: "+"<<< The runtime has gone ***DOWN*** by "+runtimeDeltaAbs+" secs. Was "+exp.targetRuntimeSecs+"; now "+evaluator.secsPerCase();
-				} else {
-					diagnostic += "\nRUNTIME: "+">>> The runtime has gone ***UP*** by "+runtimeDeltaAbs+" secs. Was "+exp.targetRuntimeSecs+"; now "+evaluator.secsPerCase();
-				}
+				diagnostic += runtimeAssertionError.getMessage();
 			}
 			assertFalse(diagnostic,true);
 		}
@@ -218,8 +219,7 @@ public class MorphRelativesFinderAccuracyTest {
 		public double targetPrecision = -1;
 		public double targetRecall = -1;
 		public double precRecTolerance;
-		public double targetRuntimeSecs = -1;
-		public double secsTolerance;
+		public Double runtimePercTolerance = 0.10;
 		private String focusOnWord;
 		private boolean verbose;
 
@@ -245,10 +245,9 @@ public class MorphRelativesFinderAccuracyTest {
 			return this;
 		}
 
-		public PerformanceExpectations setTargetRuntimeSecs(
-			double _targetRuntimeSecs, double _secsTolerance) {
-			this.targetRuntimeSecs = _targetRuntimeSecs;
-			this.secsTolerance = _secsTolerance;
+		public PerformanceExpectations setRuntimePercTolerance(
+			double  _percTolerance) {
+			this.runtimePercTolerance = _percTolerance;
 			return this;
 		}
 
