@@ -1,7 +1,5 @@
 package ca.pirurvik.iutools.concordancer;
 
-import static org.junit.Assert.*;
-
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -12,18 +10,19 @@ public class DocAlignmentTest {
 	//////////////////////////////
 
 	@Test
-	public void test__hasContentForBothLanguages__HasContent() {
-		DocAlignment alignment = new DocAlignment()
-			.setPageContent("en", "Hello world")
-			.setPageContent("fr", "Bonjour le monde");
+	public void test__hasContentForBothLanguages__HasContent() throws Exception {
+		DocAlignment alignment = new DocAlignment("en", "fr")
+			.setPageText("en", "Hello world")
+			.setPageText("fr", "Bonjour le monde");
 		
 		Assert.assertTrue(alignment.hasContentForBothLanguages());
 	}
 
 	@Test
-	public void test__hasContentForBothLanguages__OnlyHasContentForOneLang() {
-		DocAlignment alignment = new DocAlignment()
-			.setPageContent("en", "Hello world");
+	public void test__hasContentForBothLanguages__OnlyHasContentForOneLang()
+	throws Exception {
+		DocAlignment alignment = new DocAlignment("en")
+			.setPageText("en", "Hello world");
 		
 		Assert.assertFalse(alignment.hasContentForBothLanguages());
 	}

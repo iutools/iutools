@@ -24,6 +24,8 @@ import ca.pirurvik.iutools.webservice.EndPointHelper;
 import ca.pirurvik.iutools.webservice.ServiceException;
 import ca.pirurvik.iutools.webservice.ServiceResponse;
 import ca.pirurvik.iutools.webservice.tokenize.GistPrepareContentInputs;
+import static ca.pirurvik.iutools.concordancer.WebConcordancer.AlignOptions;
+
 
 /**
  * Endpoint used by the Gist application to prepare some text for 
@@ -98,7 +100,10 @@ public class GistPrepareContentEndpoint extends HttpServlet {
 		
 
 		response.wasActualText = false;
-		WebConcordancer concordancer = new WebConcordancer_HtmlCleaner();
+		WebConcordancer concordancer =
+			new WebConcordancer_HtmlCleaner(
+				AlignOptions.COMPLETE_TEXT, AlignOptions.MAIN_TEXT,
+				AlignOptions.ALIGNED_SENTENCES);
 		URL url;
 		try {
 			url = new URL(inputs.textOrUrl);

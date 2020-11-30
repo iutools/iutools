@@ -103,7 +103,7 @@ public class SpellChecker {
 		}
 	
 	public transient EditDistanceCalculator editDistanceCalculator;
-	public transient boolean verbose = true;
+	public transient boolean verbose = false;
 	
 	public CompiledCorpus corpus = null;
 	

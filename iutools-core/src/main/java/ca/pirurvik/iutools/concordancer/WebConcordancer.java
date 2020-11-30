@@ -4,8 +4,6 @@ import java.beans.Transient;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import ca.nrc.data.harvesting.*;
 import org.apache.commons.lang.ArrayUtils;
@@ -25,13 +23,17 @@ import ca.pirurvik.iutools.text.segmentation.Segmenter;
 public abstract class WebConcordancer {
 
 	public static enum AlignOptions {
-		KEEP_HTML, FILTER_MAIN_CONTENT, ONLY_FETCH_CONTENT}
+		HTML, COMPLETE_TEXT, MAIN_TEXT, ALIGNED_SENTENCES}
 	protected static enum StepOutcome {SUCCESS, FAILURE, KEEP_TRYING};
 	private static enum AlignmentPart {
 		PAGES_CONTENT, PROBLEMS, SENTENCES, ALIGNMENTS};
 
 	boolean filterMainContent = false;
 	boolean keepHtml = false;
+	boolean includeMainText = false;
+	boolean includeAlignedSentences = false;
+	private boolean includeCompleteText = false;
+
 
 	private static Map<String,String[]> langNames = new HashMap<String,String[]>();
 	private static void setLangNames(String lang, String... names) {
@@ -59,36 +61,39 @@ public abstract class WebConcordancer {
 	}
 
 	private void init_WebConcordancer(AlignOptions[] options) {
-		if (ArrayUtils.contains(options, AlignOptions.FILTER_MAIN_CONTENT)) {
+		if (ArrayUtils.contains(options, AlignOptions.MAIN_TEXT)) {
 			filterMainContent = true;
 		}
-		if (ArrayUtils.contains(options, AlignOptions.KEEP_HTML)) {
+		if (ArrayUtils.contains(options, AlignOptions.HTML)) {
 			keepHtml = true;
+		}
+		if (ArrayUtils.contains(options, AlignOptions.COMPLETE_TEXT)) {
+			includeCompleteText = true;
+		}
+		if (ArrayUtils.contains(options, AlignOptions.MAIN_TEXT)) {
+			includeMainText = true;
+		}
+		if (ArrayUtils.contains(options, AlignOptions.ALIGNED_SENTENCES)) {
+			includeAlignedSentences = true;
+		}
+
+		if (!includeMainText && !includeCompleteText) {
+			includeCompleteText = true;
 		}
 	}
 
 	public DocAlignment alignPage(URL url, String[] languages)
 		throws WebConcordancerException {
-		return alignPage(url, languages, new AlignOptions[0]);
-	}
 
-	public DocAlignment alignPage(URL url, String[] languages,
-		AlignOptions... options) throws WebConcordancerException {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.concordancer.alignPage");
-
-		Set<AlignOptions> optionsSet = new HashSet<AlignOptions>();
-		Collections.addAll(optionsSet, options);
 
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("invoked with url="+url+
 			", languages="+String.join(", ", languages));
 		}
 
-		DocAlignment alignment = new DocAlignment();
-		for (String lang: languages) {
-			alignment.setPageContent(lang, null);
-		}
-		
+		DocAlignment alignment = new DocAlignment(languages);
+
 		harvestInputPage(url, alignment, languages);
 		
 		trace(tLogger, "After fetching input URL", alignment, 
@@ -100,8 +105,8 @@ public abstract class WebConcordancer {
 					AlignmentPart.PROBLEMS, AlignmentPart.SENTENCES);
 		}
 
-		if (!alignment.encounteredSomeProblems() &&
-			!optionsSet.contains(AlignOptions.ONLY_FETCH_CONTENT)) {
+		if (!alignment.encounteredSomeProblems()
+			&& this.includeAlignedSentences) {
 			alignContents(alignment);
 			trace(tLogger, "After fetching input URL", alignment, 
 					AlignmentPart.PROBLEMS, AlignmentPart.SENTENCES,
@@ -285,9 +290,13 @@ public abstract class WebConcordancer {
 			result.setPageURL("iu", new URL("http://mocksite.nu.ca/iu"));
 		} catch (MalformedURLException e) {
 		}
-		
-		result.setPageContent("en", enText);
-		result.setPageContent("iu", iuText);
+
+		try {
+			result.setPageText("en", enText);
+			result.setPageText("iu", iuText);
+		} catch (DocAlignmentException e) {
+			// SHOULD NEVER HAPPEN
+		}
 		
 		result.addAlignment(new Alignment("en", enSentences[0], "iu", iuSentences[0]));
 		result.addAlignment(new Alignment("en", enSentences[1], "iu", iuSentences[1]));
@@ -368,13 +377,18 @@ public abstract class WebConcordancer {
 				String anchor = linkAnchors[0];
 				harvester.harvestSingleLink(anchor);
 				URL otherLangURL = harvester.getCurrentURL();
-				String otherLangContent = harvester.getText();
-				alignment.setPageContent(otherLang, otherLangContent);
+
+				String otherLangText = harvester.getText();
+				alignment.setPageText(otherLang, otherLangText);
+
+				String otherLangMainText = harvester.getMainText();
+				alignment.setPageMainText(otherLang, otherLangMainText);
+
 				alignment.setPageURL(otherLang, otherLangURL);
 
 				outcome = StepOutcome.SUCCESS;
 			}
-		} catch (PageHarvesterException e) {
+		} catch (PageHarvesterException | DocAlignmentException e) {
 			// If we weren't able to fetch the other language page, just
 			// leave the outcome at FAILURE and return that
 		}
@@ -390,68 +404,6 @@ public abstract class WebConcordancer {
 		return names;
 	}
 
-	/** 
-	 * Harvest page in the other language, using rules that transform the
-	 * original URL into the URL of the other page.
-	 */
-	private StepOutcome harvestOtherLangPage_UsingURLTransformation(
-			DocAlignment alignment, String lang, String otherLang) throws WebConcordancerException {
-		
-		StepOutcome status = StepOutcome.KEEP_TRYING;
-		
-		// For now, hardcode rules for dealing with just the one site:
-		//    
-		//    gov.nu.ca
-		//
-		// 
-		URL langURL = alignment.getPageURL(lang);
-		String site = langURL.getHost();
-		if (site.endsWith("gov.nu.ca")) {
-			if (otherLang.equals("iu") || otherLang.equals("en")) {
-				String langURLstr = langURL.toString();
-				String otherLangURLstr = null;
-				Pattern patt = Pattern.compile("(.*?)/(iu|in|fr|en)?(/?)");
-				Matcher matcher = patt.matcher(langURLstr);
-				if (matcher.matches()) {
-					otherLangURLstr = 
-						matcher.group(1)+"/"+otherLang+
-						matcher.group(3);
-				}
-				
-				if (otherLangURLstr != null) {
-					// The English version of a page does not have /en at the 
-					// end
-					otherLangURLstr = otherLangURLstr.replaceAll("/en/?$", "");
-					
-					try {
-						harvester.harvestSinglePage(new URL(otherLangURLstr));
-					} catch (MalformedURLException | PageHarvesterException e) {
-						raiseProblem(
-							Problem.FETCHING_CONTENT_OF_OTHER_LANG_PAGE, 
-							alignment, 
-							"Could not fetch content of other langauge page: "+
-									otherLangURLstr);
-					}
-					
-					if (!alignment.encounteredSomeProblems()) {
-						try {
-							String otherLangContent = harvester.getText();
-
-							URL otherLangURL = harvester.getCurrentURL();
-							alignment.setPageContent(otherLang, otherLangContent);
-							alignment.setPageURL(otherLang, otherLangURL);
-							status = StepOutcome.SUCCESS;
-						} catch (PageHarvesterException e) {
-							throw new WebConcordancerException(e);
-						}
-					}
-				}
-			}
-		}
-		
-		return status;
-	}
-
 	private void harvestInputPage(URL url, DocAlignment alignment,
 		Set<String> languages) throws WebConcordancerException {
 		harvestInputPage(url, alignment, languages.toArray(new String[0]));
@@ -461,52 +413,52 @@ public abstract class WebConcordancer {
 			String[] languages) throws WebConcordancerException {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.concordancer.harvestInputPage");
 		tLogger.trace("invoked with url="+url);
-		String urlText = null;
 		String urlLang = null;
 		try {
-			getHarvester().harvestSinglePage(url);
-			urlText = getHarvester().getText();
-			if (urlText == null) {
- 				raiseProblem(Problem.FETCHING_INPUT_URL, alignment, 
-					"Could not fetch content of url: "+url);
-			} else {
-				tLogger.trace("retrieved urlText=\n"+urlText);
-				urlLang = guessLang(urlText);
-				if (urlLang != null && 
-						!urlLang.equals(languages[0]) && 
-						!urlLang.equals(languages[1])) {
-					alignment.raiseProblem(
-						Problem.GUESSING_LANGUAGE_OF_INPUT_URL,
-						"Langage of input page "+url+" was not as expected.\n"+
-						"   Got : "+urlLang+"; expected: ["+
-						String.join(",", languages)+"]");
-				}
+			try {
+				getHarvester().harvestSinglePage(url);
+			} catch (PageHarvesterException e) {
+				raiseProblem(Problem.FETCHING_INPUT_URL, alignment, e);
 			}
-				
-		} catch (PageHarvesterException e) {
-			raiseProblem(DocAlignment.Problem.FETCHING_INPUT_URL, alignment, e);
-		} catch (LanguageGuesserException e) {
-			alignment.raiseProblem(
-					Problem.GUESSING_LANGUAGE_OF_INPUT_URL,
-					"Langage of input page "+url+" was not as expected.\n"+
-					"   Got : "+urlLang+"; expected: ["+
-					String.join(",", languages)+"]");
-		}
-		
-		if (!alignment.encounteredSomeProblems()) {
-			alignment.setPageContent(urlLang, urlText);
-			alignment.setPageURL(urlLang, url);
-			List<String> sentences = segmentText(urlLang, urlText);
-			alignment.setPageSentences(urlLang, sentences);
-			String html = null;
-			if (keepHtml) {
+			if (!alignment.encounteredSomeProblems()
+					&& includeCompleteText) {
+				String urlWholeText = getHarvester().getText();
+				tLogger.trace("retrieved urlWholeText=\n"+urlWholeText);
+				if (urlWholeText == null) {
+					this.raiseProblem(Problem.FETCHING_INPUT_URL, alignment,
+						"Could not fetch COMPLETE plain text of url: "+url);
+				}
+				urlLang = guessLang(urlWholeText);
 				try {
-					html = getHarvester().getHtml();
-				} catch (PageHarvesterException e) {
-					throw new WebConcordancerException(e);
+					alignment.setPageText(urlLang, urlWholeText);
+				} catch (DocAlignmentException e) {
+					raiseProblem(Problem.FETCHING_INPUT_URL, alignment,
+					"Could not set COMPLETE text for url: "+url);
 				}
 			}
-			alignment.setPageHtml(urlLang, html);
+
+			if (includeMainText && !alignment.encounteredSomeProblems()) {
+				String urlMainText = getHarvester().getText();
+				tLogger.trace("retrieved urlMainText=\n"+urlMainText);
+				if (urlMainText == null) {
+					raiseProblem(Problem.FETCHING_INPUT_URL, alignment,
+					"Could not fetch MAIN plain text of url: "+url);
+				}
+				if (urlLang == null) {
+					urlLang = guessLang(urlMainText);
+				}
+				try {
+					alignment.setPageMainText(urlLang, urlMainText);
+				} catch (DocAlignmentException e) {
+					raiseProblem(Problem.FETCHING_INPUT_URL, alignment,
+					"Could not set MAIN text for url: "+url);
+				}
+			}
+			if (urlLang != null) {
+				alignment.pagesURL.put(urlLang, url);
+			}
+		} catch (PageHarvesterException | LanguageGuesserException e) {
+			throw new WebConcordancerException(e);
 		}
 		
 		return;

@@ -39,7 +39,6 @@ public class CmdAlignContent extends ConsoleCommand {
 		mode = getMode(ConsoleCommand.OPT_URL);
 		langs = getLangs(true);
 		alignSentences = getAlignSentences();
-		concordancer = new WebConcordancer_HtmlCleaner();
 
 		URL url = nextInputURL();
 		while (url != null) {
@@ -68,12 +67,13 @@ public class CmdAlignContent extends ConsoleCommand {
 
 	private DocAlignment align(URL url, String[] langs) throws ConsoleException {
 		AlignOptions[] options = new AlignOptions[0];
-		if (!alignSentences) {
-			options = new AlignOptions[] {AlignOptions.ONLY_FETCH_CONTENT};
+		if (alignSentences) {
+			options = new AlignOptions[] {AlignOptions.ALIGNED_SENTENCES};
 		}
+		concordancer = new WebConcordancer_HtmlCleaner(options);
 		DocAlignment alignment = null;
 		try {
-			alignment = concordancer.alignPage(url, langs, options);
+			alignment = concordancer.alignPage(url, langs);
 		} catch (WebConcordancerException e) {
 			throw new ConsoleException("Could align\n"+inputDetails(url, langs));
 		}

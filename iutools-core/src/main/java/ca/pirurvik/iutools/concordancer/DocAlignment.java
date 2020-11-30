@@ -1,7 +1,6 @@
 package ca.pirurvik.iutools.concordancer;
 
 import java.beans.Transient;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,7 +9,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.apache.commons.lang3.StringUtils;
 
 public class DocAlignment {
 
@@ -34,9 +32,14 @@ public class DocAlignment {
 	
 	Map<String,List<String>> _pageSentences =
 		new HashMap<String,List<String>>();
+
+	Map<String,List<String>> _pageMainSentences =
+		new HashMap<String,List<String>>();
+
 	
 	public List<Alignment> alignments = new ArrayList<Alignment>();
-	public Map<String,String> pagesContent = new HashMap<String,String>();
+	public Map<String,String> pagesWholeText = new HashMap<String,String>();
+	public Map<String,String> pagesMainText = new HashMap<String,String>();
 	public Map<String,URL> pagesURL = new HashMap<String,URL>();
 	public Map<String,String> pagesHtml = new HashMap<String,String>();
 
@@ -44,24 +47,23 @@ public class DocAlignment {
 		init_DocAlignment(null, null);		
 	}
 	
-	public DocAlignment(String lang1, String lang2) {
-		init_DocAlignment(lang1, lang2);
+	public DocAlignment(String... langs) {
+		init_DocAlignment(langs);
 	}
 
-	private void init_DocAlignment(String lang1, String lang2) {
-		if (lang1 != null) {
-			pagesContent.put(lang1, null);
-			pagesURL.put(lang1, null);
-		}
-		if (lang2 != null) {
-			pagesContent.put(lang2, null);
-			pagesURL.put(lang2, null);
+	private void init_DocAlignment(String... langs) {
+		for (String lang: langs) {
+			if (lang != null) {
+				pagesWholeText.put(lang, null);
+				pagesMainText.put(lang, null);
+				pagesURL.put(lang, null);
+			}
 		}
 	}
 	
 	@Transient
 	public Set<String> getLanguages() {
-		Set<String> langs = pagesContent.keySet();
+		Set<String> langs = pagesWholeText.keySet();
 		return langs;
 	}
 
@@ -74,15 +76,31 @@ public class DocAlignment {
 		return this;
 	}
 
-	public DocAlignment setPageContent(String lang, String text) {
-		pagesContent.put(lang, text);
-		
+	public DocAlignment setPageText(String lang, String text)
+		throws DocAlignmentException {
+		if (lang == null || !this.getLanguages().contains(lang)) {
+			throw new DocAlignmentException(
+			"Trying to set COMPLETE text for a page in unexpected language: "+lang);
+		}
+		pagesWholeText.put(lang, text);
+
 		return this;
 	}
-	
+
+	public DocAlignment setPageMainText(String lang, String text)
+		throws DocAlignmentException {
+		if (lang == null || !this.getLanguages().contains(lang)) {
+			throw new DocAlignmentException(
+			"Trying to set MAIN text for a page in unexpected language: "+lang);
+		}
+		pagesMainText.put(lang, text);
+
+		return this;
+	}
+
 	@JsonIgnore
 	public String getPageContent(String lang) {
-		String content = pagesContent.get(lang);
+		String content = pagesWholeText.get(lang);
 		return content;
 	}
 
@@ -104,6 +122,11 @@ public class DocAlignment {
 	
 	public DocAlignment setPageSentences(String lang, List<String> sentences) {
 		_pageSentences.put(lang, sentences);
+		return this;
+	}
+
+	public DocAlignment setPageMainSentences(String lang, List<String> sentences) {
+		_pageMainSentences.put(lang, sentences);
 		return this;
 	}
 
