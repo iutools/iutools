@@ -139,36 +139,19 @@ public class SpellCheckerTest {
 
 	@Test
 	public void test__SpellChecker__Synopsis() throws Exception {
+	 	//
+		// Use this class to spell check Inuktut words
 		//
-		// Before you can use a spell checker, you must first build its
-		// dictionary of known words. This can be done in 2 ways:
+		SpellChecker checker = new SpellChecker();
+
+		// SpellChecker requires a CompiledCorpus to do its work.
+		// If no specific corpus is provided, it uses the default
+		// corpus (as defined in the CompiledCorpusRegistry).
 		//
-		// - directly by adding correct words to the dictionary;
-		// - by specifying a corpus, the words of which will be added to the 
-		//   dictionary (Note: in this case, we assume that words are correctly
-		//   spelled if and only if they decompose)
+		// However, you can provide the checker with a specific
+		// corpus name:
 		//
-		
-		SpellChecker checker = largeDictCheckerWithTestWords();
-		checker.setVerbose(false);
-		
-		// 
-		// For example
-		//
-		checker.addExplicitlyCorrectWord("inuktut");
-		checker.addExplicitlyCorrectWord("inuk");
-		checker.addExplicitlyCorrectWord("inuksuk");
-		checker.addExplicitlyCorrectWord("nunavut");
-		checker.addExplicitlyCorrectWord("1988-mut");
-		// etc...
-		
-		// OR
-		//
-		// Note: In this case, we don't assume that all words contained 
-		//   in the corpus are correctly spelled. Instead, we use the 
-		//   SpellChecker to determine if they are or not.
-		//
-		checker.setDictionaryFromCorpus("a_corpus_name");
+		checker = new SpellChecker(CompiledCorpusRegistry.defaultCorpusName);
 
 		//
 		// You can then use the checker to see if a word is mis-spelled, and if so, 
@@ -192,6 +175,19 @@ public class SpellCheckerTest {
 		//
 		String text = "inuit inusuk nunnavut";
 		List<SpellingCorrection> corrections2 = checker.correctText(text, nCorrections);
+
+		//
+		// If the SpellChecker mistakenly labels a word as being
+		// mis-spelled, you can explicitly tell the checker that the
+		// word is OK.
+		//
+		// For example...
+		//
+		checker.addExplicitlyCorrectWord("inuktut");
+		checker.addExplicitlyCorrectWord("inuk");
+		checker.addExplicitlyCorrectWord("inuksuk");
+		checker.addExplicitlyCorrectWord("nunavut");
+		checker.addExplicitlyCorrectWord("1988-mut");
 	}
 	
 		
@@ -619,42 +615,42 @@ public class SpellCheckerTest {
 		String word = "34-mi";
 		String[] numericTermParts = checker.splitNumericExpression(word);
 		Assertions.assertTrue(numericTermParts != null, "Word "+word+" should have been acknowledged as a number-based word");
-		Assertions.assertEquals("The 'number' part is not as expected.", "34-", numericTermParts[0]);
-		Assertions.assertEquals("The 'ending' part is not as expected.", "mi", numericTermParts[1]);
+		AssertString.assertStringEquals("The 'number' part is not as expected.", "34-", numericTermParts[0]);
+		AssertString.assertStringEquals("The 'ending' part is not as expected.", "mi", numericTermParts[1]);
 		word = "$34,000-mi";
 		numericTermParts = checker.splitNumericExpression(word);
 		Assertions.assertTrue(numericTermParts != null, "Word "+word+" should have been acknowledged as a number-based word");
-		Assertions.assertEquals("The 'number' part is not as expected.", "$34,000-", numericTermParts[0]);
-		Assertions.assertEquals("The 'ending' part is not as expected.", "mi", numericTermParts[1]);
+		AssertString.assertStringEquals("The 'number' part is not as expected.", "$34,000-", numericTermParts[0]);
+		AssertString.assertStringEquals("The 'ending' part is not as expected.", "mi", numericTermParts[1]);
 		word = "4:30-mi";
 		numericTermParts = checker.splitNumericExpression(word);
 		Assertions.assertTrue(numericTermParts != null, "Word "+word+" should have been acknowledged as a number-based word");
-		Assertions.assertEquals("The 'number' part is not as expected.", "4:30-", numericTermParts[0]);
-		Assertions.assertEquals("The 'ending' part is not as expected.", "mi", numericTermParts[1]);
+		AssertString.assertStringEquals("The 'number' part is not as expected.", "4:30-", numericTermParts[0]);
+		AssertString.assertStringEquals("The 'ending' part is not as expected.", "mi", numericTermParts[1]);
 		word = "5.5-mi";
 		numericTermParts = checker.splitNumericExpression(word);
 		Assertions.assertTrue(numericTermParts != null, "Word "+word+" should have been acknowledged as a number-based word");
-		Assertions.assertEquals("The 'number' part is not as expected.", "5.5-", numericTermParts[0]);
-		Assertions.assertEquals("The 'ending' part is not as expected.", "mi", numericTermParts[1]);
+		AssertString.assertStringEquals("The 'number' part is not as expected.", "5.5-", numericTermParts[0]);
+		AssertString.assertStringEquals("The 'ending' part is not as expected.", "mi", numericTermParts[1]);
 		word = "5,500.33-mi";
 		numericTermParts = checker.splitNumericExpression(word);
 		Assertions.assertTrue(numericTermParts != null, "Word "+word+" should have been acknowledged as a number-based word");
-		Assertions.assertEquals("The 'number' part is not as expected.", "5,500.33-", numericTermParts[0]);
-		Assertions.assertEquals("The 'ending' part is not as expected.", "mi", numericTermParts[1]);
+		AssertString.assertStringEquals("The 'number' part is not as expected.", "5,500.33-", numericTermParts[0]);
+		AssertString.assertStringEquals("The 'ending' part is not as expected.", "mi", numericTermParts[1]);
 		word = "bla";
 		numericTermParts = checker.splitNumericExpression(word);
 		Assertions.assertTrue(numericTermParts == null, "Word "+word+" should have been acknowledged as a number-based word");
 		word = "34–mi";
 		numericTermParts = checker.splitNumericExpression(word);
 		Assertions.assertTrue(numericTermParts != null, "Word "+word+" should have been acknowledged as a number-based word");
-		Assertions.assertEquals("The 'number' part is not as expected.", "34–", numericTermParts[0]);
-		Assertions.assertEquals("The 'ending' part is not as expected.", "mi", numericTermParts[1]);
+		AssertString.assertStringEquals("The 'number' part is not as expected.", "34–", numericTermParts[0]);
+		AssertString.assertStringEquals("The 'ending' part is not as expected.", "mi", numericTermParts[1]);
 		word = "40−mi";
 		numericTermParts = checker.splitNumericExpression(word);
 		Assertions.assertTrue(numericTermParts != null, "Word "+word+" should have been acknowledged as a number-based word");
-		Assertions.assertEquals("The 'number' part is not as expected.", "40−", numericTermParts[0]);
-		Assertions.assertEquals("The 'ending' part is not as expected.", "mi", numericTermParts[1]);
-		}
+		AssertString.assertStringEquals("The 'number' part is not as expected.", "40−", numericTermParts[0]);
+		AssertString.assertStringEquals("The 'ending' part is not as expected.", "mi", numericTermParts[1]);
+	}
 	
 	@Test 
 	public void test__assessEndingWithIMA() throws Exception  {
