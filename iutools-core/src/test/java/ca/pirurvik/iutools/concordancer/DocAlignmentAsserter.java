@@ -1,20 +1,24 @@
 package ca.pirurvik.iutools.concordancer;
 
 import java.net.URL;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ca.nrc.json.PrettyPrinter;
 import org.junit.Assert;
 
 import ca.nrc.datastructure.Pair;
-import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.StringUtils;
 import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.AssertString;
 import ca.pirurvik.iutools.concordancer.DocAlignment.Problem;
+import org.junit.jupiter.api.Assertions;
+
+import static ca.pirurvik.iutools.concordancer.WebConcordancer.AlignOptions;
 
 public class DocAlignmentAsserter {
 	private static final DocAlignment pageAlignment = null;
@@ -113,31 +117,45 @@ public class DocAlignmentAsserter {
 		return this;
 	}
 
-	public DocAlignmentAsserter pageInLangContains(String lang, String expText) {
-		String gotText = gotDocAlignment.getPageContent(lang);
+	public DocAlignmentAsserter mainTextContains(String lang, String expText) {
+		String gotText = gotDocAlignment.getPageMainText(lang);
 		AssertString.assertStringContains(
-				baseMessage+"\nContent of the "+lang+" page was not as expected", 
+		baseMessage+"\nPlain text of the MAIN page content for lang="+lang+" was not as expected",
+		gotText, expText);
+		return this;
+	}
+
+	public DocAlignmentAsserter completeTextContains(String lang, String expText) {
+		String gotText = gotDocAlignment.getPageText(lang);
+		AssertString.assertStringContains(
+				baseMessage+"\nPlain text of the COMPLETE page content for lang="+lang+" was not as expected",
 				gotText, expText);	
 		return this;
 	}
 
-	public DocAlignmentAsserter contentIsPlainText(String... langs) {
-		
+	public DocAlignmentAsserter pageTextIsNotHtml(String... langs) {
+
+		Pattern pattHtmlTag = Pattern.compile("(</([^>])>)");
+
 		for (String aLang: langs) {
-			String langContent = gotDocAlignment.getPageContent(aLang);
-			
-			Matcher matcher = Pattern.compile("(</([^>])>)").matcher(langContent);
-			if (matcher.find() && matcher.group(0).length() < 20) {
-				Assert.fail(
-					"Content for language "+aLang+" contained HTML tags\n"+
-					"First tag found: "+matcher.group(0));
+			for (String text : new String[]{
+			gotDocAlignment.getPageText(aLang),
+			gotDocAlignment.getPageMainText(aLang)}) {
+				if (text != null) {
+					Matcher matcher = pattHtmlTag.matcher(text);
+					if (matcher.find() && matcher.group(0).length() < 20) {
+						Assert.fail(
+						"Text for language " + aLang + " contained HTML tags\n" +
+						"First tag found: " + matcher.group(0));
+					}
+				}
 			}
 		}
 		return this;
 	}
 
 	public DocAlignmentAsserter hasNoContentForLang(String lang) {
-		String content = gotDocAlignment.getPageContent(lang);
+		String content = gotDocAlignment.getPageText(lang);
 		Assert.assertEquals(
 			"Alignment should not have had content for language "+lang,
 			null, content);
@@ -145,14 +163,6 @@ public class DocAlignmentAsserter {
 		return this;
 	}
 
-	public DocAlignmentAsserter hasNoAlignments() {
-		List<Alignment> gotAlignments = gotDocAlignment.alignments;
-		Assert.assertEquals(
-			"Document alignment should not have contained any alignments", 
-			0, gotAlignments.size());
-		return this;
-	}
-	
 	public DocAlignmentAsserter containsSentenceStartingWith(String lang, String expSent) {
 		String errMess = 
 			"Could not find sentences for lang="+lang+": "+expSent+"\n"+
@@ -206,5 +216,93 @@ public class DocAlignmentAsserter {
 		}
 			
 		return problems;
+	}
+
+	public DocAlignmentAsserter providesValuesFor(AlignOptions... what) {
+		for (AlignOptions field: what) {
+			Object fieldValue = value4field(field);
+			Assertions.assertTrue(
+				null != fieldValue,
+			baseMessage+"\nThe "+field+" should NOT have been null");
+
+			if (fieldValue instanceof Collection) {
+				Assertions.assertFalse(
+					((Collection<?>) fieldValue).isEmpty(),
+					baseMessage+"\nThe "+field+" should NOT have been empty");
+			}
+
+			if (fieldValue instanceof Map) {
+				Map<?,?> fieldValueMap = (Map)fieldValue;
+				Assertions.assertFalse(
+					fieldValueMap.isEmpty(),
+					baseMessage+"\nThe "+field+" should NOT have been empty");
+			}
+
+			if (fieldValue instanceof Map) {
+				Map<String,Object> fieldLangsMap = (Map<String,Object>)fieldValue;
+				String mess = baseMessage+"\nThe "+field+" map should have non-null entries for all languages.\n";
+				for (String lang: fieldLangsMap.keySet()) {
+					mess +=
+						"Entry for language "+lang+" was null.\n"+
+						"Field value was:\n"+PrettyPrinter.print(fieldValue);
+					Assertions.assertTrue(
+						null != fieldLangsMap.get(lang),
+						mess
+					);
+				}
+			}
+		}
+
+		return this;
+	}
+
+	public DocAlignmentAsserter doesNotProvideValuesFor(AlignOptions... what) {
+		for (AlignOptions field: what) {
+			Object fieldValue = value4field(field);
+			if (fieldValue instanceof List) {
+				Assertions.assertTrue(
+					fieldValue == null ||
+						((List) fieldValue).isEmpty(),
+					baseMessage+"\nField "+field+" should have been empty but it was\n"+
+						PrettyPrinter.print(fieldValue)
+				);
+			} else if (fieldValue instanceof Map) {
+				Map<String,Object> fieldLangsMap = (Map<String,Object>)fieldValue;
+				String mess = baseMessage+"\nThe "+field+" map should have null entries for all languages.\n";
+				for (String lang: fieldLangsMap.keySet()) {
+					mess +=
+						"Entry for language "+lang+" was not not null.\n"+
+						"Field value was:\n"+PrettyPrinter.print(fieldValue);
+					Assertions.assertTrue(
+						null == fieldLangsMap.get(lang),
+						mess
+					);
+				}
+			} else {
+				throw new RuntimeException("Field "+field+" was of a type that could not be checked.\nType was: "+fieldValue.getClass());
+			}
+		}
+		return this;
+	}
+
+	private Object value4field(AlignOptions field) {
+		Object value = null;
+		if (field == AlignOptions.ALIGNED_SENTENCES) {
+			value = docAlignment().getAligments();
+		} else if (field == AlignOptions.COMPLETE_TEXT) {
+			value = docAlignment().pagesTextHash();
+		} else if (field == AlignOptions.MAIN_TEXT) {
+			value = docAlignment().pagesMainTextHash();
+		} else if (field == AlignOptions.HTML) {
+			value = docAlignment().pagesHtmlHash();
+		} else {
+			throw new RuntimeException("Cannot get value of field "+field);
+		}
+
+		return value;
+	}
+
+	DocAlignment docAlignment() {
+		return (DocAlignment) gotDocAlignment;
 	}
 }

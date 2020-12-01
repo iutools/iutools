@@ -76,6 +76,10 @@ public class DocAlignment {
 		return this;
 	}
 
+	public Map<String,String> pagesTextHash() {
+		return pagesWholeText;
+	}
+
 	public DocAlignment setPageText(String lang, String text)
 		throws DocAlignmentException {
 		if (lang == null || !this.getLanguages().contains(lang)) {
@@ -85,6 +89,17 @@ public class DocAlignment {
 		pagesWholeText.put(lang, text);
 
 		return this;
+	}
+
+	@JsonIgnore
+	public String getPageText(String lang) {
+		String content = pagesWholeText.get(lang);
+		return content;
+	}
+
+
+	public Map<String,String> pagesMainTextHash() {
+		return pagesMainText;
 	}
 
 	public DocAlignment setPageMainText(String lang, String text)
@@ -99,9 +114,8 @@ public class DocAlignment {
 	}
 
 	@JsonIgnore
-	public String getPageContent(String lang) {
-		String content = pagesWholeText.get(lang);
-		return content;
+	public String getPageMainText(String lang) {
+		return pagesMainText.get(lang);
 	}
 
 	@JsonIgnore
@@ -114,7 +128,11 @@ public class DocAlignment {
 		pagesURL.put(lang, url);
 		return this;
 	}
-	
+
+	protected Map<String,List<String>> pageSentencesMap() {
+		return _pageSentences;
+	}
+
 	public List<String> getPageSentences(String lang) {
 		List<String> sentences = _pageSentences.get(lang);
 		return sentences;
@@ -129,6 +147,11 @@ public class DocAlignment {
 		_pageMainSentences.put(lang, sentences);
 		return this;
 	}
+
+	public Map<String,String> pagesHtmlHash() {
+		return pagesHtml;
+	}
+
 
 	public void setPageHtml(String urlLang, String html) {
 		pagesHtml.put(urlLang, html);
@@ -149,10 +172,17 @@ public class DocAlignment {
 		return this;
 	}
 
-	public boolean hasContentForBothLanguages() {
+	public  boolean hasTextForBothLanguages(String whatText) {
 		int numWithContent = 0;
+
+		Map<String, String> text4Lang = null;
+		if (whatText.equals("MAIN_TEXT")) {
+			text4Lang = this.pagesMainTextHash();
+		} else {
+			text4Lang = this.pagesTextHash();
+		}
 		for (String lang: getLanguages()) {
-			if (getPageContent(lang) != null) {
+			if (text4Lang.get(lang) != null) {
 				numWithContent++;
 			}
 		}
@@ -172,7 +202,7 @@ public class DocAlignment {
 	public boolean bothLangsContentFetched() {
 		boolean bothFetched = true;
 		for (String lang: getLanguages()) {
-			if (getPageContent(lang) == null) {
+			if (getPageText(lang) == null) {
 				bothFetched = false;
 				break;
 			}

@@ -4,7 +4,6 @@ import java.net.URL;
 import java.util.Map;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import ca.nrc.datastructure.Pair;
@@ -12,10 +11,6 @@ import ca.nrc.testing.AssertObject;
 import ca.pirurvik.iutools.concordancer.DocAlignment.Problem;
 import static ca.pirurvik.iutools.concordancer.WebConcordancer.AlignOptions;
 
-// 2020-10-28: There are lots of problems with the concordancer at the moment
-//  and I (Alain) don't have time to look at them
-//  So disable the tests for now.
-@Ignore
 public abstract class WebConcordancerTest {
 	
 	protected static WebConcordancer concordancer = null;
@@ -103,16 +98,19 @@ public abstract class WebConcordancerTest {
 	@Test
 	public void test__alignPage__HappyPath() throws Exception {
 		URL url = new URL("https://www.gov.nu.ca/");
+		concordancer =
+			makeConcordancer(AlignOptions.MAIN_TEXT, AlignOptions.COMPLETE_TEXT);
+
 		DocAlignment pageAligment = 
 			concordancer.alignPage(url, new String[] {"en", "iu"});
 
 		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
 			.didNotEncounterProblems()
-			.contentIsPlainText("en", "iu")
+			.pageTextIsNotHtml("en", "iu")
 			.urlForLangEquals("en", new URL("https://www.gov.nu.ca/"))
 			.urlForLangEquals("iu", new URL("https://www.gov.nu.ca/iu"))
-			.pageInLangContains("en", "Premier of Nunavut")
-			.pageInLangContains("iu", "ᓯᕗᓕᖅᑎ ᓄᓇᕗᒻᒥ")
+			.completeTextContains("en", "Premier of Nunavut")
+			.completeTextContains("iu", "ᓯᕗᓕᖅᑎ ᓄᓇᕗᒻᒥ")
 			;
 	}
 	
@@ -141,23 +139,88 @@ public abstract class WebConcordancerTest {
 	}
 
 	@Test
-	public void test__alignPage__OnlyFetchParallelContent() throws Exception {
+	public void test__alignPage__MAIN_TEXT() throws Exception {
+		concordancer = makeConcordancer(AlignOptions.MAIN_TEXT);
+		URL url = new URL("https://www.gov.nu.ca/");
+		DocAlignment pageAligment =
+			concordancer.alignPage(url, new String[] {"en", "iu"});
+
+		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
+			.didNotEncounterProblems()
+			.providesValuesFor(AlignOptions.MAIN_TEXT)
+			.doesNotProvideValuesFor(
+				AlignOptions.COMPLETE_TEXT,
+				AlignOptions.HTML, AlignOptions.ALIGNED_SENTENCES)
+			.pageTextIsNotHtml()
+			;
+	}
+
+	@Test
+	public void test__alignPage__COMPLETE_TEXT() throws Exception {
 		concordancer = makeConcordancer(AlignOptions.COMPLETE_TEXT);
 		URL url = new URL("https://www.gov.nu.ca/");
 		DocAlignment pageAligment =
-			concordancer.alignPage(
-				url, new String[] {"en", "iu"});
+			concordancer.alignPage(url, new String[] {"en", "iu"});
 
 		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
-				.didNotEncounterProblems()
-				.hasNoAlignments()
-				.contentIsPlainText("en", "iu")
-				.urlForLangEquals("en", new URL("https://www.gov.nu.ca/"))
-				.urlForLangEquals("iu", new URL("https://www.gov.nu.ca/iu"))
-				.pageInLangContains("en", "Premier of Nunavut")
-				.pageInLangContains("iu", "ᓯᕗᓕᖅᑎ ᓄᓇᕗᒻᒥ")
-				;
-		;
+			.didNotEncounterProblems()
+			.providesValuesFor(AlignOptions.COMPLETE_TEXT)
+			.doesNotProvideValuesFor(
+				AlignOptions.MAIN_TEXT,
+				AlignOptions.HTML, AlignOptions.ALIGNED_SENTENCES)
+			.pageTextIsNotHtml()
+			;
+	}
+
+	@Test
+	public void test__alignPage__MAIN_TEXT_and_COMPLETE_TEXT() throws Exception {
+		concordancer =
+			makeConcordancer(AlignOptions.MAIN_TEXT, AlignOptions.COMPLETE_TEXT);
+		URL url = new URL("https://www.gov.nu.ca/");
+		DocAlignment pageAligment =
+			concordancer.alignPage(url, new String[] {"en", "iu"});
+
+		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
+			.didNotEncounterProblems()
+			.providesValuesFor(AlignOptions.MAIN_TEXT, AlignOptions.COMPLETE_TEXT)
+			.doesNotProvideValuesFor(
+				AlignOptions.HTML, AlignOptions.ALIGNED_SENTENCES)
+			.pageTextIsNotHtml()
+			;
+	}
+
+	@Test
+	public void test__alignPage__MAIN_TEXT_and_HTML() throws Exception {
+		concordancer =
+			makeConcordancer(AlignOptions.MAIN_TEXT, AlignOptions.HTML);
+		URL url = new URL("https://www.gov.nu.ca/");
+		DocAlignment pageAligment =
+			concordancer.alignPage(url, new String[] {"en", "iu"});
+
+		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
+			.didNotEncounterProblems()
+			.providesValuesFor(AlignOptions.MAIN_TEXT, AlignOptions.HTML)
+			.doesNotProvideValuesFor(
+				AlignOptions.ALIGNED_SENTENCES, AlignOptions.COMPLETE_TEXT)
+			.pageTextIsNotHtml()
+			;
+	}
+
+	@Test
+	public void test__alignPage__MAIN_TEXT_and_ALIGNED_SENTENCES() throws Exception {
+		concordancer =
+			makeConcordancer(AlignOptions.MAIN_TEXT, AlignOptions.ALIGNED_SENTENCES);
+		URL url = new URL("https://www.gov.nu.ca/");
+		DocAlignment pageAligment =
+			concordancer.alignPage(url, new String[] {"en", "iu"});
+
+		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
+			.didNotEncounterProblems()
+			.providesValuesFor(AlignOptions.MAIN_TEXT, AlignOptions.ALIGNED_SENTENCES)
+			.doesNotProvideValuesFor(
+				AlignOptions.HTML, AlignOptions.COMPLETE_TEXT)
+			.pageTextIsNotHtml()
+			;
 	}
 
 	@Test
@@ -174,8 +237,8 @@ public abstract class WebConcordancerTest {
 			// This URL auto forwards to https://www.gov.nu.ca/iu/juu-savikataaq-4
 			.urlForLangEquals("iu", new URL("https://www.gov.nu.ca/iu/node/26649"))
 
-			.pageInLangContains("en", "Premier of Nunavut")
-			.pageInLangContains("iu", "ᓯᕗᓕᖅᑎ ᓄᓇᕗᒻᒥ")
+			.completeTextContains("en", "Premier of Nunavut")
+			.completeTextContains("iu", "ᓯᕗᓕᖅᑎ ᓄᓇᕗᒻᒥ")
 		;
 	}
 

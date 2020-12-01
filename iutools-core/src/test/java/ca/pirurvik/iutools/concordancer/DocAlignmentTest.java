@@ -15,7 +15,7 @@ public class DocAlignmentTest {
 			.setPageText("en", "Hello world")
 			.setPageText("fr", "Bonjour le monde");
 		
-		Assert.assertTrue(alignment.hasContentForBothLanguages());
+		Assert.assertTrue(alignment.hasTextForBothLanguages("COMPLETE_TEXT"));
 	}
 
 	@Test
@@ -24,13 +24,13 @@ public class DocAlignmentTest {
 		DocAlignment alignment = new DocAlignment("en")
 			.setPageText("en", "Hello world");
 		
-		Assert.assertFalse(alignment.hasContentForBothLanguages());
+		Assert.assertFalse(alignment.hasTextForBothLanguages("MAIN_TEXT"));
 	}
 
 	@Test
 	public void test__hasContentForBothLanguages__HasNoContentAtAll() {
 		DocAlignment alignment = new DocAlignment();
 		
-		Assert.assertFalse(alignment.hasContentForBothLanguages());
+		Assert.assertFalse(alignment.hasTextForBothLanguages("MAIN_TEXT"));
 	}
 }

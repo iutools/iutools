@@ -3,11 +3,14 @@ package ca.inuktitutcomputing.core.console;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.TimeoutException;
 
 import ca.nrc.ui.commandline.SubCommand;
 import ca.pirurvik.iutools.edit_distance.EditDistanceCalculatorFactory;
+import static ca.pirurvik.iutools.concordancer.WebConcordancer.AlignOptions;
 
 public abstract class ConsoleCommand extends SubCommand {
 	
@@ -24,6 +27,7 @@ public abstract class ConsoleCommand extends SubCommand {
 	public static final String OPT_URL = "url";
 	public static final String OPT_LANGS = "langs";
 	public static final String OPT_SENTENCES_ALIGN = "align-sentences";
+	public static final String OPT_ALIGNER_OPTIONS = "aligner-opts";
 
 	public static final String OPT_MORPHEMES = "morphemes";
 	public static final String OPT_MORPHEME = "morpheme";
@@ -169,8 +173,32 @@ public abstract class ConsoleCommand extends SubCommand {
 		return langs;
 	}
 
-	protected boolean getAlignSentences() {
-		return hasOption(OPT_SENTENCES_ALIGN);
+	protected AlignOptions[] getAlignOptions() {
+		return getAlignOptions(false);
+	}
+
+	protected AlignOptions[] getAlignOptions(Boolean failIfAbsent) {
+		AlignOptions[] opts = null;
+		String optStr = getOptionValue(ConsoleCommand.OPT_ALIGNER_OPTIONS, failIfAbsent);
+		if (optStr == null) {
+			opts = new AlignOptions[] {
+				AlignOptions.MAIN_TEXT, AlignOptions.COMPLETE_TEXT
+			};
+		} else {
+			List<AlignOptions> optsLst = new ArrayList<AlignOptions>();
+			String[] optStrings = optStr.split("\\s*,\\s*");
+			for (String anOptString: optStrings) {
+				try {
+					optsLst.add(AlignOptions.valueOf(anOptString));
+				} catch (Exception e) {
+					usageBadOption(OPT_ALIGNER_OPTIONS,
+						"'"+anOptString+"' is not a valid aligner option");
+				}
+			}
+			opts = optsLst.toArray(new AlignOptions[0]);
+		}
+
+		return opts;
 	}
 
 	protected Long getMaxWords() {

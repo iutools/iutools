@@ -1,5 +1,7 @@
 package ca.inuktitutcomputing.core.console;
 
+import ca.nrc.string.StringUtils;
+import ca.pirurvik.iutools.concordancer.WebConcordancer;
 import org.apache.commons.cli.Option;
 
 import ca.nrc.ui.commandline.CommandLineException;
@@ -149,6 +151,16 @@ public class Console {
 			.desc("Set to false if you want to download the parallel pages without aligning their sentences.")
 			.build();
 
+		WebConcordancer.AlignOptions[] blah = WebConcordancer.AlignOptions.values();
+		StringUtils.join(WebConcordancer.AlignOptions.values(), ",");
+
+		Option optAlignerOptions = Option.builder(null)
+			.longOpt(ConsoleCommand.OPT_ALIGNER_OPTIONS)
+			.desc("Comma separated list of aligner options (valid options: " +
+				StringUtils.join(WebConcordancer.AlignOptions.values(), ",")+").")
+			.hasArg()
+			.argName("ALIGNER_OPTS")
+			.build();
 
 		Option optFont = Option.builder(null)
 				.longOpt(ConsoleCommand.OPT_FONT)
@@ -350,10 +362,11 @@ public class Console {
 
 		
 		SubCommand align =
-			new CmdAlignContent("align")
+			new CmdAlignPages("align")
 				.addOption(optURL)
 				.addOption(optLangs)
 				.addOption(optAlignSentences)
+				.addOption(optAlignerOptions)
 				.addOption(optPipelineMode)
 			;
 		mainCmd.addSubCommand(align);

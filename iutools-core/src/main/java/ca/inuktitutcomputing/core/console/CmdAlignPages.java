@@ -12,20 +12,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 
-public class CmdAlignContent extends ConsoleCommand {
+public class CmdAlignPages extends ConsoleCommand {
 
 	String[] langs = null;
 	protected Mode mode = Mode.INTERACTIVE;
-	boolean alignSentences = true;
+	AlignOptions[] alignOptions = null;
 
 	protected WebConcordancer concordancer = null;
 	protected ObjectMapper mapper = new ObjectMapper();
 	Scanner stdinScanner = new Scanner(System.in);
 	boolean singleInputAlreadyProcessed = false;
 
-	public CmdAlignContent(String name) {
+	public CmdAlignPages(String name) {
 		super(name);
 	}
 
@@ -38,7 +40,7 @@ public class CmdAlignContent extends ConsoleCommand {
 	public void execute() throws Exception {
 		mode = getMode(ConsoleCommand.OPT_URL);
 		langs = getLangs(true);
-		alignSentences = getAlignSentences();
+		alignOptions = getAlignOptions();
 
 		URL url = nextInputURL();
 		while (url != null) {
@@ -66,11 +68,7 @@ public class CmdAlignContent extends ConsoleCommand {
 	}
 
 	private DocAlignment align(URL url, String[] langs) throws ConsoleException {
-		AlignOptions[] options = new AlignOptions[0];
-		if (alignSentences) {
-			options = new AlignOptions[] {AlignOptions.ALIGNED_SENTENCES};
-		}
-		concordancer = new WebConcordancer_HtmlCleaner(options);
+		concordancer = new WebConcordancer_HtmlCleaner(alignOptions);
 		DocAlignment alignment = null;
 		try {
 			alignment = concordancer.alignPage(url, langs);
@@ -112,7 +110,10 @@ public class CmdAlignContent extends ConsoleCommand {
 			}
 			String json = null;
 			if (prettyPrint) {
-				json = PrettyPrinter.print(alignment);
+				Set<String> ignoreFields = new HashSet<String>();
+				ignoreFields.add("_pageMainSentences");
+				ignoreFields.add("_pageSentences");
+				json = PrettyPrinter.print(alignment, ignoreFields);
 			} else {
 				json = mapper.writeValueAsString(alignment);
 			}

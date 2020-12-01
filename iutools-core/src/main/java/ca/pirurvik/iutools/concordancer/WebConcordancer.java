@@ -29,9 +29,9 @@ public abstract class WebConcordancer {
 		PAGES_CONTENT, PROBLEMS, SENTENCES, ALIGNMENTS};
 
 	boolean filterMainContent = false;
-	boolean keepHtml = false;
 	boolean includeMainText = false;
 	boolean includeAlignedSentences = false;
+	boolean includeHtml = false;
 	private boolean includeCompleteText = false;
 
 
@@ -65,7 +65,7 @@ public abstract class WebConcordancer {
 			filterMainContent = true;
 		}
 		if (ArrayUtils.contains(options, AlignOptions.HTML)) {
-			keepHtml = true;
+			includeHtml = true;
 		}
 		if (ArrayUtils.contains(options, AlignOptions.COMPLETE_TEXT)) {
 			includeCompleteText = true;
@@ -107,7 +107,7 @@ public abstract class WebConcordancer {
 
 		if (!alignment.encounteredSomeProblems()
 			&& this.includeAlignedSentences) {
-			alignContents(alignment);
+			alignTexts(alignment);
 			trace(tLogger, "After fetching input URL", alignment, 
 					AlignmentPart.PROBLEMS, AlignmentPart.SENTENCES,
 					AlignmentPart.ALIGNMENTS);
@@ -204,7 +204,7 @@ public abstract class WebConcordancer {
 		if (tLogger.isTraceEnabled()) {
 			mess += "\nContent of pages is:\n\n";
 			for (String lang: alignment.getLanguages()) {
-				mess += "   "+lang+": "+alignment.getPageContent(lang)+"\n\n";
+				mess += "   "+lang+": "+alignment.getPageText(lang)+"\n\n";
 			}
 		}
 		return mess;
@@ -223,39 +223,54 @@ public abstract class WebConcordancer {
 	}
 	
 
-	private void alignContents(DocAlignment docAlignment)  {
-		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.concordancer.alignContents");
-		
-		if (docAlignment.hasContentForBothLanguages()) {
+	private void alignTexts(DocAlignment docAlignment) throws WebConcordancerException {
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.concordancer.alignTexts");
+
+		alignOneText(AlignOptions.COMPLETE_TEXT, docAlignment);
+		alignOneText(AlignOptions.MAIN_TEXT, docAlignment);
+	}
+
+	private void alignOneText(AlignOptions whatText, DocAlignment docAlignment) throws WebConcordancerException {
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.concordancer.alignOneText");
+
+		if (docAlignment.hasTextForBothLanguages(whatText.name())) {
+			Map<String,String> text4lang = null;
+			if (whatText == AlignOptions.COMPLETE_TEXT) {
+				text4lang = docAlignment.pagesTextHash();
+			} else if (whatText == AlignOptions.MAIN_TEXT) {
+				text4lang = docAlignment.pagesMainTextHash();
+			} else {
+				throw new WebConcordancerException("Option "+whatText+" does not correspond to a field of type TEXT");
+			}
 			List<List<String>> langSents = new ArrayList<List<String>>();
 			List<String> langs = new ArrayList<String>();
-			for (String lang: docAlignment.getLanguages()) {
+			for (String lang: text4lang.keySet()) {
 				langs.add(lang);
-				
+				String text = text4lang.get(lang);
+
 				Segmenter segmenter = Segmenter.makeSegmenter(lang);
 				if (tLogger.isTraceEnabled()) {
-					tLogger.trace("segmenting content for lang="+lang+": "+docAlignment.getPageContent(lang));
+					tLogger.trace("segmenting content for lang="+lang+": "+text);
 				}
-				
-				List<String >sents = 
-						segmentText(lang, docAlignment.getPageContent(lang));
-				docAlignment.setPageSentences(lang, sents);
+
+				List<String> sents =
+					segmentText(lang, text4lang.get(lang));
 				langSents.add(sents);
 			}
-			
+
 			List<Pair<String, String>> alignedPairs = null;
 			try {
 				alignedPairs = aligner.align(langSents.get(0), langSents.get(1));
 			} catch (AlignerException e) {
 				raiseProblem(Problem.ALIGNING_SENTENCES, docAlignment, e);
 			}
-			
+
 			docAlignment.alignments = new ArrayList<Alignment>();
 			for (Pair<String,String> aPair: alignedPairs) {
-				Alignment anAlignment = 
-					new Alignment(
-							langs.get(0), aPair.getFirst(),
-							langs.get(1), aPair.getSecond());
+				Alignment anAlignment =
+				new Alignment(
+				langs.get(0), aPair.getFirst(),
+				langs.get(1), aPair.getSecond());
 				docAlignment.addAlignment(anAlignment);
 			}
 		}
@@ -317,7 +332,8 @@ public abstract class WebConcordancer {
 			String lang = langPair.getFirst();
 			String otherLang = langPair.getSecond();
 			
-			status = harvestOtherLangPage_ByFollowingLanguageLink(alignment,
+			status =
+				harvestOtherLangPage_ByFollowingLanguageLink(alignment,
 						lang, otherLang);
 
 			if (status == null || status == StepOutcome.FAILURE || 
@@ -330,7 +346,7 @@ public abstract class WebConcordancer {
 				List<String> sentences = null;
 				if (status == StepOutcome.SUCCESS) {
 					sentences = 
-						segmentText(otherLang, alignment.getPageContent(otherLang));
+						segmentText(otherLang, alignment.getPageText(otherLang));
 				}
 				alignment.setPageSentences(otherLang, sentences);
 			}
@@ -378,11 +394,20 @@ public abstract class WebConcordancer {
 				harvester.harvestSingleLink(anchor);
 				URL otherLangURL = harvester.getCurrentURL();
 
-				String otherLangText = harvester.getText();
-				alignment.setPageText(otherLang, otherLangText);
+				if  (includeCompleteText) {
+					String otherLangText = harvester.getText();
+					alignment.setPageText(otherLang, otherLangText);
+				}
 
-				String otherLangMainText = harvester.getMainText();
-				alignment.setPageMainText(otherLang, otherLangMainText);
+				if (includeMainText) {
+					String otherLangMainText = harvester.getMainText();
+					alignment.setPageMainText(otherLang, otherLangMainText);
+				}
+
+				if (includeHtml && !alignment.encounteredSomeProblems()) {
+					alignment.setPageHtml(otherLang, getHarvester().getHtml());
+				}
+
 
 				alignment.setPageURL(otherLang, otherLangURL);
 
@@ -438,7 +463,7 @@ public abstract class WebConcordancer {
 			}
 
 			if (includeMainText && !alignment.encounteredSomeProblems()) {
-				String urlMainText = getHarvester().getText();
+				String urlMainText = getHarvester().getMainText();
 				tLogger.trace("retrieved urlMainText=\n"+urlMainText);
 				if (urlMainText == null) {
 					raiseProblem(Problem.FETCHING_INPUT_URL, alignment,
@@ -454,6 +479,11 @@ public abstract class WebConcordancer {
 					"Could not set MAIN text for url: "+url);
 				}
 			}
+
+			if (includeHtml && !alignment.encounteredSomeProblems()) {
+				alignment.setPageHtml(urlLang, getHarvester().getHtml());
+			}
+
 			if (urlLang != null) {
 				alignment.pagesURL.put(urlLang, url);
 			}
