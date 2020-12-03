@@ -59,15 +59,19 @@ class SpellController extends WidgetController {
 		if (isValid) {
 			this.clearResults();
 			this.setBusy(true);
-			// this.invokeSpellService(this.getSpellRequestData(),
-			// this.successCallback, this.failureCallback)
 			this.tokenizeAndSpellCheck();
 		}
 	}
 
 	tokenizeAndSpellCheck() {
-		this.invokeSpellService(this.getSpellRequestData(),
-		this.successCallback, this.failureCallback)
+		// this.invokeTokenizeService(
+		// 	this.getTokenizeRequestData(),
+		// 	???
+		// );
+
+		this.invokeSpellService(
+			this.getSpellRequestData(),
+			this.cbkSpellSuccess, this.cbkSpellFailure)
 	}
 
 	clearResults() {
@@ -172,9 +176,9 @@ class SpellController extends WidgetController {
 			});
 	}
 
-	successCallback(resp) {
+	cbkSpellSuccess(resp) {
 		if (resp.errorMessage != null) {
-			this.failureCallback(resp);
+			this.cbkSpellFailure(resp);
 		} else {
 			var divChecked = this.elementForProp('divChecked');
 			var divCheckedResults = divChecked.find('div#div-results');
@@ -183,7 +187,6 @@ class SpellController extends WidgetController {
 			divCheckedResults.empty();
 			divCheckedTitle.css('display','block');
 			divCheckedResults.css('display','block');
-//			divChecked.append("<h2>Spell-checked content</h2>")
 			for (var ii=0; ii < resp.correction.length; ii++) {
 				var corrResult = resp.correction[ii];
 				var wordOutput = ""
@@ -203,7 +206,7 @@ class SpellController extends WidgetController {
 		this.setBusy(false);
 	}
 
-	failureCallback(resp) {
+	cbkSpellFailure(resp) {
 		if (! resp.hasOwnProperty("errorMessage")) {
 			// Error condition comes from tomcat itself, not from our servlet
 			resp.errorMessage = 
