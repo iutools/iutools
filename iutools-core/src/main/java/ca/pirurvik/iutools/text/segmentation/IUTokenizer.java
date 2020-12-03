@@ -102,7 +102,7 @@ public class IUTokenizer {
 		while (mpunct.find()) {
 			String punctuationMark = mpunct.group(1);
 			logger.debug("found punctuation pattern in " + token + " at position " + mpunct.start(1));
-			if (punctuationMark.equals("&") && mpunct.start(1) != 0)
+			if (punctuationMark.matches("&+") && mpunct.start(1) != 0)
 				continue;
 			if (pos != mpunct.start(1))
 				allTokensPunctuation.add(new Pair<>(token.substring(pos, mpunct.start(1)), true));

@@ -84,7 +84,7 @@ public class IUTokenizerTest {
 		expectedWords.add("ᑲᖏᖅᖠᓂᐅᑉ");
 		expectedWords.add("ᐅᐊᓐᓇᖓ");
 		expectedWords.add("ᐃᒡᓗᓕᒑᕐᔪᒃ");
-		AssertHelpers.assertDeepEquals("", expectedWords, words);
+		AssertObject.assertDeepEquals("", expectedWords, words);
 		
 		text = "ᐅᖃᖅᑎ: ᒥᔅᑕ ᔫ ᐃᓄᒃ, ᒪᓕᒐᓕᐅᖅᑎ ᓄᓇᕗᑦ ᒪᓕᒐᓕᐅᕐᕕᖓ";
 		words = tokenizer.tokenize(text);
@@ -96,9 +96,20 @@ public class IUTokenizerTest {
 		expectedWords.add("ᒪᓕᒐᓕᐅᖅᑎ");
 		expectedWords.add("ᓄᓇᕗᑦ");
 		expectedWords.add("ᒪᓕᒐᓕᐅᕐᕕᖓ");
-		AssertHelpers.assertDeepEquals("", expectedWords, words);
+		AssertObject.assertDeepEquals("", expectedWords, words);
 	}
-	
+
+	@Test
+	public void test__tokenize__WordWhoseTranslietrationContainsADoubleAmpersand() throws IOException {
+		IUTokenizer tokenizer = new IUTokenizer();
+		String text = "arviarmii&&utik";
+		List<String> gotWords = tokenizer.tokenize(text);
+		String[] expWords = new String[] {"arviarmii&&utik"};
+		AssertObject.assertDeepEquals("",
+			expWords, gotWords);
+	}
+
+
 	@Test
 	public void test_run__Cas_1() throws IOException {
 		IUTokenizer tokenizer = new IUTokenizer();
@@ -118,7 +129,7 @@ public class IUTokenizerTest {
 		expectedWords.add("ᐃᐊᓪ");
 		expectedWords.add("ᑲᓇᔪᖅ");
 		expectedWords.add("159");
-		AssertHelpers.assertDeepEquals("", expectedWords, words);
+		AssertObject.assertDeepEquals("", expectedWords, words);
 		
 		expectedTokens = new ArrayList<Pair<String,Boolean>>();
 		expectedTokens.add(new Pair<>("009",true));
@@ -164,7 +175,7 @@ public class IUTokenizerTest {
 		expectedWords.add("ᑐᑦᑐᓕᕆᓂᖅ");
 		expectedWords.add("Hᐃᒃᔅ");
 		expectedWords.add("179");
-		AssertHelpers.assertDeepEquals("", expectedWords, words);
+		AssertObject.assertDeepEquals("", expectedWords, words);
 	}
 
 
@@ -180,7 +191,7 @@ public class IUTokenizerTest {
 		expectedWords.add("ᑖᓐᓇ");
 		expectedWords.add("G.R.E.A.T.");
 		expectedWords.add("ᐱᓕᕆᐊᖅ");
-		AssertHelpers.assertDeepEquals("", expectedWords, words);
+		AssertObject.assertDeepEquals("", expectedWords, words);
 		
 		text = "ᐅᖃᖅᑎ: ᖁᔭᓐᓇᒦᒃ. ᒥᓂᔅᑕᐃ ᐅᖃᐅᓯᒃᓴᖏᑦ. ᒥᓂᔅᑐ ᒪᐃᒃ.";
 		words = tokenizer.tokenize(text);
@@ -191,7 +202,7 @@ public class IUTokenizerTest {
 		expectedWords.add("ᐅᖃᐅᓯᒃᓴᖏᑦ");
 		expectedWords.add("ᒥᓂᔅᑐ");
 		expectedWords.add("ᒪᐃᒃ");
-		AssertHelpers.assertDeepEquals("", expectedWords, words);
+		AssertObject.assertDeepEquals("", expectedWords, words);
 	}
 
 	@Test
@@ -221,7 +232,7 @@ public class IUTokenizerTest {
 		List<String>words = tokenizer.tokenize(text);
 		List<String>expectedWords = new ArrayList<String>();
 		expectedWords.add("2015−mit");
-		AssertHelpers.assertDeepEquals("", expectedWords, words);
+		AssertObject.assertDeepEquals("", expectedWords, words);
 	}
 	
 	@Test
@@ -233,7 +244,7 @@ public class IUTokenizerTest {
 		List<Pair<String,Boolean>>expectedTokens = new ArrayList<Pair<String,Boolean>>();
 		expectedTokens.add(new Pair<>("2015−mit",true));
 		expectedTokens.add(new Pair<>(".",false));
-		AssertHelpers.assertDeepEquals("", expectedTokens, tokenizer.getTokens());
+		AssertObject.assertDeepEquals("", expectedTokens, tokenizer.getTokens());
 	}
 	
 	@Test
@@ -248,7 +259,7 @@ public class IUTokenizerTest {
 		expectedTokens.add(new Pair<>("0.08%−mit",true));
 		expectedTokens.add(new Pair<>(" ",false));
 		expectedTokens.add(new Pair<>("c",true));
-		AssertHelpers.assertDeepEquals("", expectedTokens, tokenizer.getTokens());
+		AssertObject.assertDeepEquals("", expectedTokens, tokenizer.getTokens());
 	}
 	
 	@Test
@@ -267,7 +278,7 @@ public class IUTokenizerTest {
 		expectedTokens.add(new Pair<>(" ",false));
 		expectedTokens.add(new Pair<>("bla",true));
 		expectedTokens.add(new Pair<>("\".",false));
-		AssertHelpers.assertDeepEquals("", expectedTokens, tokenizer.getTokens());
+		AssertObject.assertDeepEquals("", expectedTokens, tokenizer.getTokens());
 	}
 	
 	@Test
@@ -298,7 +309,7 @@ public class IUTokenizerTest {
 		expectedTokens.add(new Pair<>(" ",false));
 		expectedTokens.add(new Pair<>("no",true));
 		expectedTokens.add(new Pair<>(".",false));
-		AssertHelpers.assertDeepEquals("", expectedTokens, tokenizer.getTokens());
+		AssertObject.assertDeepEquals("", expectedTokens, tokenizer.getTokens());
 	}
 	
 	@Test

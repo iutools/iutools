@@ -126,7 +126,14 @@ public class TransCoderTest {
 		String gotRomanText = TransCoder.ensureScript(Script.SYLLABIC, syllText);
 		AssertString.assertStringEquals("ᐃᓄᒃᑐᑦ-1, ᐃᓄᒃᑐᑦ-2", gotRomanText);
 	}
-	
+
+	@Test
+	public void test__ensureScript__WordsThatContainADoubleAmpersand() throws Exception{
+		String syllText = "ᐊᕐᕕᐊᕐᒦᖦᖢᑎᒃ";
+		String gotRomanText = TransCoder.ensureScript(Script.ROMAN, syllText);
+		AssertString.assertStringEquals("arviarmii&&utik", gotRomanText);
+	}
+
 	@Test
 	public void test__textScript__Roman() {
 		String text = "inuktut, 2020";

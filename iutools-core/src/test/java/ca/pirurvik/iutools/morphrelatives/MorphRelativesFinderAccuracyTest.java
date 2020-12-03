@@ -142,7 +142,7 @@ public class MorphRelativesFinderAccuracyTest {
 		Double secsPerCase = evaluator.secsPerCase();
 		AssertionError runtimeAssertionError = null;
 		try {
-			AssertRuntime.assertRuntimeHasNotChanged(
+			AssertRuntime.runtimeHasNotChanged(
 				secsPerCase, exp.runtimePercTolerance,
 				"avg secs per case", testInfo);
 		} catch (AssertionError e) {
