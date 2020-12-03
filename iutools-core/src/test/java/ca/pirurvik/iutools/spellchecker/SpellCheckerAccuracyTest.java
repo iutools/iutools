@@ -501,7 +501,7 @@ public class SpellCheckerAccuracyTest {
        EvaluationParameters parameters) throws SpellCheckerException {
         String errMess = "";
         try {
-            AssertRuntime.assertRuntimeHasNotChanged(
+            AssertRuntime.runtimeHasNotChanged(
                 evaluator.averageSecsPerCase(), parameters.runtimePercTolerance,
                 "avg word spell checking time", parameters.testInfo);
         } catch (AssertionError e) {

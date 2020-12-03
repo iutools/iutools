@@ -692,10 +692,8 @@ public class SpellCheckerTest {
 		// Spell checking should be pretty fast for words that are
 		// correctly spelled
 		//
-		double expAvgSecs = 0.3;
-		speedTest(
-		"All correctly spelled words",
-			correctWordsNonExplicit, expAvgSecs);
+		speedTest("All correctly spelled words",
+			correctWordsNonExplicit);
 	}
 
 	@Test
@@ -704,22 +702,20 @@ public class SpellCheckerTest {
 		// mis-spelled. This is even true if we do not enable computation of
 		// partial corrections.
 		//
-		double expAvgSecs = 1.7;
 		speedTest(
 			"All misspelled words",
-			misspelledWords, expAvgSecs);
+			misspelledWords);
 	}
 
 	@Test
 	public void test__SpeedTest__AllMisspelledWords__EnablePartialCorrections() throws Exception {
-		double expAvgSecs = 2.0;
 		speedTest(
 			"All misspelled words",
-			misspelledWords, expAvgSecs, TestOption.ENABLE_PARTIAL_CORRECTIONS);
+			misspelledWords, TestOption.ENABLE_PARTIAL_CORRECTIONS);
 	}
 
 	private void speedTest(String dataSetName, String[] words,
-		double expMaxAvgSecs, TestOption... options) throws Exception {
+		TestOption... options) throws Exception {
 		SpellChecker checker = largeDictCheckerWithTestWords();
 
 		long startAll = StopWatch.nowMSecs();
@@ -753,10 +749,9 @@ public class SpellCheckerTest {
 
 			Double gotAvgSecs= avgSecs(totalSecs, totalWords);
 
-			Double percTolerance = 0.25;
-			AssertRuntime.assertRuntimeHasNotChanged(
+			Double percTolerance = 0.50;
+			AssertRuntime.runtimeHasNotChanged(
 				gotAvgSecs, percTolerance, "avg spell check time", testInfo);
-
 		}
 
 	private Double avgSecs(double totalSecs, int totalWords) {
