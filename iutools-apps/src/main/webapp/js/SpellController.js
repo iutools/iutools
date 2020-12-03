@@ -65,7 +65,7 @@ class SpellController extends WidgetController {
 			this.cbkTokenizeSuccess, this.cbkTokenizeFailure
 		);
 
-		// this.invokeSpellService(
+		// this.invokeSpellServiceOnWholeText(
 		// 	this.getSpellRequestData(),
 		// 	this.cbkSpellSuccess, this.cbkSpellFailure)
 	}
@@ -75,7 +75,7 @@ class SpellController extends WidgetController {
 		this.elementForProp('divResults').empty();
 	}
 
-	invokeSpellService(jsonRequestData, _successCbk, _failureCbk) {
+	invokeSpellServiceOnWholeText(jsonRequestData, _successCbk, _failureCbk) {
 		var controller = this;
 		var fctSuccess =
 			function (resp) {
@@ -211,25 +211,23 @@ class SpellController extends WidgetController {
 			// Display the original words
 			this.displayTokens(tokens);
 
-			// For now, we recreate the text from the tokens and invoke
-			// the spell service on the complete text
+			// For now, we invoke the call the "old" invokeSpellServiceOnWholeText() 
+			// method which spell checks the complete text before displaying 
+			// anything
 			//
+			this.invokeSpellServiceOnWholeText(
+				this.getSpellRequestData(),
+				this.cbkSpellSuccess, this.cbkSpellFailure)
+			
 			// Eventually, we will call the spell service on each token
 			// individually.
 			//
-			var text = "";
-			for (ii=0; ii < tokens.length; ii++) {
-				text += tokens[ii].token;
-			}
 
 			// for (ii=0; ii < tokens.length; ii++) {
 			// 	invokeSpellCheckWordService(tokens[ii]);
 			// }
 
 
-			this.invokeSpellService(
-				this.getSpellRequestData(),
-				this.cbkSpellSuccess, this.cbkSpellFailure)
 
 		}
 	}
