@@ -11,7 +11,6 @@ class SpellController extends WidgetController {
 	// Setup handler methods for different HTML elements specified in the config.
 	attachHtmlElements() {
 		this.setEventHandler("btnSpell", "click", this.spellCheck);
-//		this.setEventHandler("btnCopy", "click", this.copyToClipboard);
 	}
 	
 	copyToClipboard() {
@@ -56,16 +55,21 @@ class SpellController extends WidgetController {
 	}
 
 	spellCheck() {
-			var isValid = this.validateInputs();
-			if (isValid) {
-				this.clearResults();
-				this.setBusy(true);
-				this.elementForProp('btnCopy').hide();
-				this.invokeSpellService(this.getSpellRequestData(), 
-						this.successCallback, this.failureCallback)
-			}
+		var isValid = this.validateInputs();
+		if (isValid) {
+			this.clearResults();
+			this.setBusy(true);
+			// this.invokeSpellService(this.getSpellRequestData(),
+			// this.successCallback, this.failureCallback)
+			this.tokenizeAndSpellCheck();
+		}
 	}
-	
+
+	tokenizeAndSpellCheck() {
+		this.invokeSpellService(this.getSpellRequestData(),
+		this.successCallback, this.failureCallback)
+	}
+
 	clearResults() {
 		this.elementForProp('divError').empty();
 		this.elementForProp('divResults').empty();
@@ -242,12 +246,13 @@ class SpellController extends WidgetController {
 			this.disableSpellButton();	
 			this.showSpinningWheel('divMessage', "Checking");
 			this.error("");
+			this.elementForProp('btnCopy').hide();
 		} else {
 			this.enableSpellButton();
 			this.hideSpinningWheel('divMessage');
+			this.elementForProp('btnCopy').show();
 		}		
 	}
-	
 	
 	getSpellRequestData() {
 		

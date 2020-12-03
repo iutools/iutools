@@ -31,12 +31,12 @@ public class TokenizeEndpointTest {
 	@Test
 	public void test__TokenizeEndpoint__HappyPath() throws Exception {
 		
-		GistPrepareContentInputs searchInputs = new GistPrepareContentInputs("nunavut, inuktut");
+		GistPrepareContentInputs tokenizeInputs = new GistPrepareContentInputs("nunavut, inuktut");
 				
 		MockHttpServletResponse response = 
 				IUTServiceTestHelpers.postEndpointDirectly(
 					IUTServiceTestHelpers.EndpointNames.TOKENIZE,
-					searchInputs
+					tokenizeInputs
 				);
 		
 		Pair<String,Boolean>[] expTokens = new Pair[] {
