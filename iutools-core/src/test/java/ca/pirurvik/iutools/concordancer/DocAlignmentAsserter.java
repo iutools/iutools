@@ -1,10 +1,7 @@
 package ca.pirurvik.iutools.concordancer;
 
 import java.net.URL;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -64,7 +61,7 @@ public class DocAlignmentAsserter {
 			"Expected: "+expAlignment.toString()+"\n"+
 			"Got:\n";
 				
-		for (Alignment anAlignment: gotDocAlignment.alignments) {
+		for (Alignment anAlignment: gotDocAlignment.alignmentsAll) {
 			errMess += "  "+anAlignment.toString()+"\n";
 			if (anAlignment.toString().equals(expAlignment.toString())) {
 				found = true;
@@ -288,8 +285,14 @@ public class DocAlignmentAsserter {
 	private Object value4field(AlignOptions field) {
 		Object value = null;
 		if (field == AlignOptions.ALIGNED_SENTENCES) {
-			value = docAlignment().getAligments();
-		} else if (field == AlignOptions.COMPLETE_TEXT) {
+			value = new ArrayList<Alignment>();
+			List<Alignment> alignedSentences =
+				docAlignment().getAligments(DocAlignment.PageSection.ALL);
+			((List<Alignment>)value).addAll(alignedSentences);
+			alignedSentences =
+				docAlignment().getAligments(DocAlignment.PageSection.MAIN);
+			((List<Alignment>)value).addAll(alignedSentences);
+		} else if (field == AlignOptions.ALL_TEXT) {
 			value = docAlignment().pagesTextHash();
 		} else if (field == AlignOptions.MAIN_TEXT) {
 			value = docAlignment().pagesMainTextHash();

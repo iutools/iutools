@@ -12,9 +12,6 @@ public class WebConcordancer_HtmlCleaner extends WebConcordancer {
     protected PageHarvester getHarvester() {
         if (harvester == null) {
             harvester = new PageHarvester_HtmlCleaner();
-            if (filterMainContent) {
-                harvester.setHarvestFullText(true);
-            }
         }
         return harvester;
     }

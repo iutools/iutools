@@ -12,6 +12,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class DocAlignment {
 
+	/**
+	 * Indicates if we are interested in the complete page or its
+	 * main part (excluding things like banners, menus, advertisement).
+	 */
+	public static enum PageSection {ALL, MAIN}
+
 	/** 
 	 * Signals specific problems encountered during alignment of the page.
 	 * @author desilets
@@ -37,8 +43,9 @@ public class DocAlignment {
 		new HashMap<String,List<String>>();
 
 	
-	public List<Alignment> alignments = new ArrayList<Alignment>();
-	public Map<String,String> pagesWholeText = new HashMap<String,String>();
+	public List<Alignment> alignmentsAll = new ArrayList<Alignment>();
+	public List<Alignment> alignmentsMain = new ArrayList<Alignment>();
+	public Map<String,String> pagesAllText = new HashMap<String,String>();
 	public Map<String,String> pagesMainText = new HashMap<String,String>();
 	public Map<String,URL> pagesURL = new HashMap<String,URL>();
 	public Map<String,String> pagesHtml = new HashMap<String,String>();
@@ -54,7 +61,7 @@ public class DocAlignment {
 	private void init_DocAlignment(String... langs) {
 		for (String lang: langs) {
 			if (lang != null) {
-				pagesWholeText.put(lang, null);
+				pagesAllText.put(lang, null);
 				pagesMainText.put(lang, null);
 				pagesURL.put(lang, null);
 			}
@@ -63,21 +70,40 @@ public class DocAlignment {
 	
 	@Transient
 	public Set<String> getLanguages() {
-		Set<String> langs = pagesWholeText.keySet();
+		Set<String> langs = pagesAllText.keySet();
 		return langs;
 	}
 
+	@JsonIgnore
 	public List<Alignment> getAligments() {
+		return getAligments((PageSection)null);
+	}
+
+	@JsonIgnore
+	public List<Alignment> getAligments(PageSection pageSection) {
+		if (pageSection == null) {
+			pageSection = PageSection.ALL;
+		}
+		List<Alignment> alignments = null;
+		if (pageSection == PageSection.ALL) {
+			alignments = alignmentsAll;
+		} else {
+			alignments = alignmentsMain;
+		}
 		return alignments;
 	}
-	
+
 	public DocAlignment addAlignment(Alignment alignment) {
-		alignments.add(alignment);
+		return addAlignment((PageSection)null, alignment);
+	}
+
+	public DocAlignment addAlignment(PageSection pageSection, Alignment alignment) {
+		getAligments(pageSection).add(alignment);
 		return this;
 	}
 
 	public Map<String,String> pagesTextHash() {
-		return pagesWholeText;
+		return pagesAllText;
 	}
 
 	public DocAlignment setPageText(String lang, String text)
@@ -86,14 +112,14 @@ public class DocAlignment {
 			throw new DocAlignmentException(
 			"Trying to set COMPLETE text for a page in unexpected language: "+lang);
 		}
-		pagesWholeText.put(lang, text);
+		pagesAllText.put(lang, text);
 
 		return this;
 	}
 
 	@JsonIgnore
 	public String getPageText(String lang) {
-		String content = pagesWholeText.get(lang);
+		String content = pagesAllText.get(lang);
 		return content;
 	}
 
@@ -172,11 +198,11 @@ public class DocAlignment {
 		return this;
 	}
 
-	public  boolean hasTextForBothLanguages(String whatText) {
+	public  boolean hasTextForBothLanguages(PageSection pageSection) {
 		int numWithContent = 0;
 
 		Map<String, String> text4Lang = null;
-		if (whatText.equals("MAIN_TEXT")) {
+		if (pageSection == PageSection.MAIN) {
 			text4Lang = this.pagesMainTextHash();
 		} else {
 			text4Lang = this.pagesTextHash();

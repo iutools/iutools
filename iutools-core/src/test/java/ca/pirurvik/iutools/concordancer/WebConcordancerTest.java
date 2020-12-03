@@ -99,7 +99,7 @@ public abstract class WebConcordancerTest {
 	public void test__alignPage__HappyPath() throws Exception {
 		URL url = new URL("https://www.gov.nu.ca/");
 		concordancer =
-			makeConcordancer(AlignOptions.MAIN_TEXT, AlignOptions.COMPLETE_TEXT);
+			makeConcordancer(AlignOptions.MAIN_TEXT, AlignOptions.ALL_TEXT);
 
 		DocAlignment pageAligment = 
 			concordancer.alignPage(url, new String[] {"en", "iu"});
@@ -149,7 +149,7 @@ public abstract class WebConcordancerTest {
 			.didNotEncounterProblems()
 			.providesValuesFor(AlignOptions.MAIN_TEXT)
 			.doesNotProvideValuesFor(
-				AlignOptions.COMPLETE_TEXT,
+				AlignOptions.ALL_TEXT,
 				AlignOptions.HTML, AlignOptions.ALIGNED_SENTENCES)
 			.pageTextIsNotHtml()
 			;
@@ -157,14 +157,14 @@ public abstract class WebConcordancerTest {
 
 	@Test
 	public void test__alignPage__COMPLETE_TEXT() throws Exception {
-		concordancer = makeConcordancer(AlignOptions.COMPLETE_TEXT);
+		concordancer = makeConcordancer(AlignOptions.ALL_TEXT);
 		URL url = new URL("https://www.gov.nu.ca/");
 		DocAlignment pageAligment =
 			concordancer.alignPage(url, new String[] {"en", "iu"});
 
 		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
 			.didNotEncounterProblems()
-			.providesValuesFor(AlignOptions.COMPLETE_TEXT)
+			.providesValuesFor(AlignOptions.ALL_TEXT)
 			.doesNotProvideValuesFor(
 				AlignOptions.MAIN_TEXT,
 				AlignOptions.HTML, AlignOptions.ALIGNED_SENTENCES)
@@ -175,14 +175,14 @@ public abstract class WebConcordancerTest {
 	@Test
 	public void test__alignPage__MAIN_TEXT_and_COMPLETE_TEXT() throws Exception {
 		concordancer =
-			makeConcordancer(AlignOptions.MAIN_TEXT, AlignOptions.COMPLETE_TEXT);
+			makeConcordancer(AlignOptions.MAIN_TEXT, AlignOptions.ALL_TEXT);
 		URL url = new URL("https://www.gov.nu.ca/");
 		DocAlignment pageAligment =
 			concordancer.alignPage(url, new String[] {"en", "iu"});
 
 		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
 			.didNotEncounterProblems()
-			.providesValuesFor(AlignOptions.MAIN_TEXT, AlignOptions.COMPLETE_TEXT)
+			.providesValuesFor(AlignOptions.MAIN_TEXT, AlignOptions.ALL_TEXT)
 			.doesNotProvideValuesFor(
 				AlignOptions.HTML, AlignOptions.ALIGNED_SENTENCES)
 			.pageTextIsNotHtml()
@@ -201,7 +201,7 @@ public abstract class WebConcordancerTest {
 			.didNotEncounterProblems()
 			.providesValuesFor(AlignOptions.MAIN_TEXT, AlignOptions.HTML)
 			.doesNotProvideValuesFor(
-				AlignOptions.ALIGNED_SENTENCES, AlignOptions.COMPLETE_TEXT)
+				AlignOptions.ALIGNED_SENTENCES, AlignOptions.ALL_TEXT)
 			.pageTextIsNotHtml()
 			;
 	}
@@ -218,7 +218,7 @@ public abstract class WebConcordancerTest {
 			.didNotEncounterProblems()
 			.providesValuesFor(AlignOptions.MAIN_TEXT, AlignOptions.ALIGNED_SENTENCES)
 			.doesNotProvideValuesFor(
-				AlignOptions.HTML, AlignOptions.COMPLETE_TEXT)
+				AlignOptions.HTML, AlignOptions.ALL_TEXT)
 			.pageTextIsNotHtml()
 			;
 	}
@@ -226,7 +226,7 @@ public abstract class WebConcordancerTest {
 	@Test
 	public void test__alignPage__PageWhoseOtherPageCannotBeDeterminedThroughURLPatternRules() throws Exception {
 		URL url = new URL("https://www.gov.nu.ca/honourable-joe-savikataaq-4");
-		concordancer = makeConcordancer(AlignOptions.COMPLETE_TEXT);
+		concordancer = makeConcordancer(AlignOptions.ALL_TEXT);
 		DocAlignment pageAligment =
 			concordancer.alignPage(
 				url, new String[] {"en", "iu"});

@@ -182,7 +182,7 @@ public abstract class ConsoleCommand extends SubCommand {
 		String optStr = getOptionValue(ConsoleCommand.OPT_ALIGNER_OPTIONS, failIfAbsent);
 		if (optStr == null) {
 			opts = new AlignOptions[] {
-				AlignOptions.MAIN_TEXT, AlignOptions.COMPLETE_TEXT
+				AlignOptions.MAIN_TEXT, AlignOptions.ALL_TEXT
 			};
 		} else {
 			List<AlignOptions> optsLst = new ArrayList<AlignOptions>();

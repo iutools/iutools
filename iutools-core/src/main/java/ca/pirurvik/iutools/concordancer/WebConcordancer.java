@@ -10,6 +10,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 
 import ca.pirurvik.iutools.concordancer.DocAlignment.Problem;
+import static ca.pirurvik.iutools.concordancer.DocAlignment.PageSection;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.string.StringUtils;
 import ca.pirurvik.iutools.text.segmentation.Segmenter;
@@ -23,17 +24,15 @@ import ca.pirurvik.iutools.text.segmentation.Segmenter;
 public abstract class WebConcordancer {
 
 	public static enum AlignOptions {
-		HTML, COMPLETE_TEXT, MAIN_TEXT, ALIGNED_SENTENCES}
+		HTML, ALL_TEXT, MAIN_TEXT, ALIGNED_SENTENCES}
 	protected static enum StepOutcome {SUCCESS, FAILURE, KEEP_TRYING};
 	private static enum AlignmentPart {
 		PAGES_CONTENT, PROBLEMS, SENTENCES, ALIGNMENTS};
 
-	boolean filterMainContent = false;
+	boolean includeAllText = false;
 	boolean includeMainText = false;
 	boolean includeAlignedSentences = false;
 	boolean includeHtml = false;
-	private boolean includeCompleteText = false;
-
 
 	private static Map<String,String[]> langNames = new HashMap<String,String[]>();
 	private static void setLangNames(String lang, String... names) {
@@ -61,14 +60,11 @@ public abstract class WebConcordancer {
 	}
 
 	private void init_WebConcordancer(AlignOptions[] options) {
-		if (ArrayUtils.contains(options, AlignOptions.MAIN_TEXT)) {
-			filterMainContent = true;
-		}
 		if (ArrayUtils.contains(options, AlignOptions.HTML)) {
 			includeHtml = true;
 		}
-		if (ArrayUtils.contains(options, AlignOptions.COMPLETE_TEXT)) {
-			includeCompleteText = true;
+		if (ArrayUtils.contains(options, AlignOptions.ALL_TEXT)) {
+			includeAllText = true;
 		}
 		if (ArrayUtils.contains(options, AlignOptions.MAIN_TEXT)) {
 			includeMainText = true;
@@ -77,8 +73,8 @@ public abstract class WebConcordancer {
 			includeAlignedSentences = true;
 		}
 
-		if (!includeMainText && !includeCompleteText) {
-			includeCompleteText = true;
+		if (!includeMainText && !includeAllText) {
+			includeAllText = true;
 		}
 	}
 
@@ -226,21 +222,19 @@ public abstract class WebConcordancer {
 	private void alignTexts(DocAlignment docAlignment) throws WebConcordancerException {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.concordancer.alignTexts");
 
-		alignOneText(AlignOptions.COMPLETE_TEXT, docAlignment);
-		alignOneText(AlignOptions.MAIN_TEXT, docAlignment);
+		alignOneText(PageSection.ALL, docAlignment);
+		alignOneText(PageSection.MAIN, docAlignment);
 	}
 
-	private void alignOneText(AlignOptions whatText, DocAlignment docAlignment) throws WebConcordancerException {
+	private void alignOneText(PageSection pageSection, DocAlignment docAlignment) throws WebConcordancerException {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.concordancer.alignOneText");
 
-		if (docAlignment.hasTextForBothLanguages(whatText.name())) {
+		if (docAlignment.hasTextForBothLanguages(pageSection)) {
 			Map<String,String> text4lang = null;
-			if (whatText == AlignOptions.COMPLETE_TEXT) {
+			if (pageSection == PageSection.ALL) {
 				text4lang = docAlignment.pagesTextHash();
-			} else if (whatText == AlignOptions.MAIN_TEXT) {
-				text4lang = docAlignment.pagesMainTextHash();
 			} else {
-				throw new WebConcordancerException("Option "+whatText+" does not correspond to a field of type TEXT");
+				text4lang = docAlignment.pagesMainTextHash();
 			}
 			List<List<String>> langSents = new ArrayList<List<String>>();
 			List<String> langs = new ArrayList<String>();
@@ -265,13 +259,15 @@ public abstract class WebConcordancer {
 				raiseProblem(Problem.ALIGNING_SENTENCES, docAlignment, e);
 			}
 
-			docAlignment.alignments = new ArrayList<Alignment>();
+			List<Alignment> alignments = docAlignment.getAligments(pageSection);
+
+			alignments = new ArrayList<Alignment>();
 			for (Pair<String,String> aPair: alignedPairs) {
 				Alignment anAlignment =
-				new Alignment(
-				langs.get(0), aPair.getFirst(),
-				langs.get(1), aPair.getSecond());
-				docAlignment.addAlignment(anAlignment);
+					new Alignment(
+						langs.get(0), aPair.getFirst(),
+						langs.get(1), aPair.getSecond());
+				docAlignment.addAlignment(pageSection, anAlignment);
 			}
 		}
 	}
@@ -394,7 +390,7 @@ public abstract class WebConcordancer {
 				harvester.harvestSingleLink(anchor);
 				URL otherLangURL = harvester.getCurrentURL();
 
-				if  (includeCompleteText) {
+				if  (includeAllText) {
 					String otherLangText = harvester.getText();
 					alignment.setPageText(otherLang, otherLangText);
 				}
@@ -446,7 +442,7 @@ public abstract class WebConcordancer {
 				raiseProblem(Problem.FETCHING_INPUT_URL, alignment, e);
 			}
 			if (!alignment.encounteredSomeProblems()
-					&& includeCompleteText) {
+					&& includeAllText) {
 				String urlWholeText = getHarvester().getText();
 				tLogger.trace("retrieved urlWholeText=\n"+urlWholeText);
 				if (urlWholeText == null) {

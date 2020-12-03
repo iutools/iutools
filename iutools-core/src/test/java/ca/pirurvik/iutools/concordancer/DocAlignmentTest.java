@@ -3,6 +3,8 @@ package ca.pirurvik.iutools.concordancer;
 import org.junit.Assert;
 import org.junit.Test;
 
+import static ca.pirurvik.iutools.concordancer.DocAlignment.PageSection;
+
 public class DocAlignmentTest {
 
 	//////////////////////////////
@@ -15,7 +17,7 @@ public class DocAlignmentTest {
 			.setPageText("en", "Hello world")
 			.setPageText("fr", "Bonjour le monde");
 		
-		Assert.assertTrue(alignment.hasTextForBothLanguages("COMPLETE_TEXT"));
+		Assert.assertTrue(alignment.hasTextForBothLanguages(PageSection.ALL));
 	}
 
 	@Test
@@ -24,13 +26,13 @@ public class DocAlignmentTest {
 		DocAlignment alignment = new DocAlignment("en")
 			.setPageText("en", "Hello world");
 		
-		Assert.assertFalse(alignment.hasTextForBothLanguages("MAIN_TEXT"));
+		Assert.assertFalse(alignment.hasTextForBothLanguages(PageSection.MAIN));
 	}
 
 	@Test
 	public void test__hasContentForBothLanguages__HasNoContentAtAll() {
 		DocAlignment alignment = new DocAlignment();
 		
-		Assert.assertFalse(alignment.hasTextForBothLanguages("MAIN_TEXT"));
+		Assert.assertFalse(alignment.hasTextForBothLanguages(PageSection.MAIN));
 	}
 }
