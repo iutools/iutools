@@ -205,8 +205,10 @@ class SpellController extends WidgetController {
 			var tokens = [];
 			for (var ii=0; ii > resp.tokens.length; ii++) {
 				var respToken = resp.tokens[ii];
-				tokens.push({token: respToken.first, isWord:respToken.second})
+				tokens.push({text: respToken.first, isWord:respToken.second})
 			}
+
+			this.displayTokens(tokens);
 
 			// For now, we recreate the text from the tokens and invoke
 			// the spell service on the complete text
@@ -218,6 +220,7 @@ class SpellController extends WidgetController {
 			for (var ii=0; ii < tokens.length; ii++) {
 				text += tokens[ii].token;
 			}
+
 
 			this.invokeSpellService(
 				this.getSpellRequestData(),
@@ -362,6 +365,24 @@ class SpellController extends WidgetController {
 		var divChecked = this.elementForProp('divChecked');
 		var text = divChecked.text();
 		return text;
+	}
+
+	displayTokens(tokens) {
+		var divChecked = this.elementForProp('divChecked');
+		var divCheckedResults = divChecked.find('div#div-results');
+		var divCheckedTitle = divChecked.find('div#title-and-copy');
+		var btnCopy = this.elementForProp('btnCopy');
+		divCheckedResults.empty();
+		divCheckedTitle.css('display','block');
+		divCheckedResults.css('display','block');
+		for (var ii=0; ii < tokens.length; ii++) {
+			var corrResult = tokens[ii];
+			var wordOutput = this.htmlify(corrResult.text)
+			divCheckedResults.append(wordOutput);
+		}
+		spellController.setCorrectionsHandlers();
+
+		return;
 	}
 }
 
