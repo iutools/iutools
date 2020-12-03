@@ -66,7 +66,7 @@ class SpellController extends WidgetController {
 		);
 
 		// this.invokeSpellServiceOnWholeText(
-		// 	this.getSpellRequestData(),
+		// 	this.getSpellWholeTextRequestData(),
 		// 	this.cbkSpellSuccess, this.cbkSpellFailure)
 	}
 
@@ -95,6 +95,29 @@ class SpellController extends WidgetController {
 			success: fctSuccess,
 			error: fctFailure
 		});
+	}
+
+	invokeSpellCheckWordService(jsonRequestData, _successCbk, _failureCbk) {
+		var controller = this;
+		var fctSuccess =
+			function (resp) {
+				_successCbk.call(controller, resp);
+			};
+		var fctFailure =
+			function (resp) {
+				_failureCbk.call(controller, resp);
+			};
+
+		$.ajax({
+			type: 'POST',
+			url: 'srv/spell',
+			data: jsonRequestData,
+			dataType: 'json',
+			async: true,
+			success: fctSuccess,
+			error: fctFailure
+		});
+
 	}
 
 	invokeTokenizeService(jsonRequestData, _successCbk, _failureCbk) {
@@ -216,19 +239,18 @@ class SpellController extends WidgetController {
 			// anything
 			//
 			this.invokeSpellServiceOnWholeText(
-				this.getSpellRequestData(),
+				this.getSpellWholeTextRequestData(),
 				this.cbkSpellSuccess, this.cbkSpellFailure)
 			
 			// Eventually, we will call the spell service on each token
 			// individually.
 			//
 
-			// for (ii=0; ii < tokens.length; ii++) {
-			// 	invokeSpellCheckWordService(tokens[ii]);
-			// }
-
-
-
+			for (ii=0; ii < tokens.length; ii++) {
+				this.invokeSpellCheckWordService(
+					this.getSpellWordRequestData(tokens[ii]),
+					this.cbkSpellWordSuccess, this.cbkSpellWorFailure);
+			}
 		}
 	}
 
@@ -283,7 +305,48 @@ class SpellController extends WidgetController {
 		this.error(resp.errorMessage);
 		this.setBusy(false);
 	}
-	
+
+	cbkSpellWordSuccess(resp) {
+		if (resp.errorMessage != null) {
+			this.cbkSpellFailure(resp);
+		} else {
+		// 	var divChecked = this.elementForProp('divChecked');
+		// 	var divCheckedResults = divChecked.find('div#div-results');
+		// 	var divCheckedTitle = divChecked.find('div#title-and-copy');
+		// 	var btnCopy = this.elementForProp('btnCopy');
+		// 	divCheckedResults.empty();
+		// 	divCheckedTitle.css('display', 'block');
+		// 	divCheckedResults.css('display', 'block');
+		// 	for (var ii = 0; ii < resp.correction.length; ii++) {
+		// 		var corrResult = resp.correction[ii];
+		// 		var wordOutput = ""
+		// 		if (!corrResult.wasMispelled) {
+		// 			wordOutput = this.htmlify(corrResult.orig)
+		// 		} else {
+		// 			wordOutput = this.picklistFor(corrResult);
+		// 		}
+		// 		divCheckedResults.append(wordOutput);
+		// 	}
+		// 	spellController.setCorrectionsHandlers();
+		}
+
+		// btnCopy.show();
+		// this.setEventHandler("btnCopy", "click", this.copyToClipboard);
+		//
+		// this.setBusy(false);
+	}
+
+	cbkSpellWordFailure(resp) {
+		if (! resp.hasOwnProperty("errorMessage")) {
+			// Error condition comes from tomcat itself, not from our servlet
+			resp.errorMessage =
+				"Server generated a "+resp.status+" error:\n\n" +
+				resp.responseText;
+		}
+		this.error(resp.errorMessage);
+		this.setBusy(false);
+	}
+
 	htmlify(text) {
 		return '<span>'+text+'</span>';
 
@@ -323,7 +386,7 @@ class SpellController extends WidgetController {
 		}		
 	}
 	
-	getSpellRequestData() {
+	getSpellWholeTextRequestData() {
 		
 		var includePartials = 
 			this.elementForProp("chkIncludePartials").is(':checked')
@@ -333,6 +396,18 @@ class SpellController extends WidgetController {
 				includePartiallyCorrect: includePartials
 		};
 		
+		return JSON.stringify(request);
+	}
+
+	getSpellWordRequestData(token) {
+		var includePartials =
+			this.elementForProp("chkIncludePartials").is(':checked')
+
+		var request = {
+			text: token.text,
+			includePartiallyCorrect: includePartials
+		};
+
 		return JSON.stringify(request);
 	}
 
