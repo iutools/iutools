@@ -66,9 +66,9 @@ class SpellController extends WidgetController {
 			this.cbkTokenizeSuccess, this.cbkTokenizeFailure
 		);
 
-		this.invokeSpellService(
-			this.getSpellRequestData(),
-			this.cbkSpellSuccess, this.cbkSpellFailure)
+		// this.invokeSpellService(
+		// 	this.getSpellRequestData(),
+		// 	this.cbkSpellSuccess, this.cbkSpellFailure)
 	}
 
 	clearResults() {
@@ -218,6 +218,11 @@ class SpellController extends WidgetController {
 			for (var ii=0; ii < tokens.length; ii++) {
 				text += tokens[ii].token;
 			}
+
+			this.invokeSpellService(
+				this.getSpellRequestData(),
+				this.cbkSpellSuccess, this.cbkSpellFailure)
+
 		}
 	}
 
