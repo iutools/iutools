@@ -102,7 +102,7 @@ public class GistPrepareContentEndpoint extends HttpServlet {
 		response.wasActualText = false;
 		WebConcordancer concordancer =
 			new WebConcordancer_HtmlCleaner(
-				AlignOptions.COMPLETE_TEXT, AlignOptions.MAIN_TEXT,
+				AlignOptions.ALL_TEXT,
 				AlignOptions.ALIGNED_SENTENCES);
 		URL url;
 		try {
