@@ -201,9 +201,10 @@ class SpellController extends WidgetController {
 			this.cbkTokenizeFailure(resp);
 		} else {
 			// Retrive the tokens from the tokenize response
+			var respTokens = resp['tokens'];
 			var tokens = [];
-			for (var ii=0; ii > resp.tokens.length; ii++) {
-				var respToken = resp.tokens[ii];
+			for (var ii=0; ii < respTokens.length; ii++) {
+				var respToken = respTokens[ii];
 				tokens.push({text: respToken.first, isWord:respToken.second})
 			}
 
@@ -221,9 +222,9 @@ class SpellController extends WidgetController {
 				text += tokens[ii].token;
 			}
 
-			for (ii=0; ii < tokens.length; ii++) {
-				invokeSpellCheckWordService(tokens[ii]);
-			}
+			// for (ii=0; ii < tokens.length; ii++) {
+			// 	invokeSpellCheckWordService(tokens[ii]);
+			// }
 
 
 			this.invokeSpellService(
@@ -367,24 +368,35 @@ class SpellController extends WidgetController {
 	}
 
 	displayTokens(tokens) {
-		var divChecked = this.elementForProp('divChecked');
-		var divCheckedResults = divChecked.find('div#div-results');
-		var divCheckedTitle = divChecked.find('div#title-and-copy');
+		var divChecked = this.elementForProp('divCheckedNew');
+		var divCheckedResults = divChecked.find('div#div-results-new');
+		// var divCheckedTitle = divChecked.find('div#title-and-copy');
 		// var btnCopy = this.elementForProp('btnCopy');
 		divCheckedResults.empty();
-		divCheckedTitle.css('display','block');
+		// divCheckedTitle.css('display','block');
 		divCheckedResults.css('display','block');
 		for (var ii=0; ii < tokens.length; ii++) {
 			var aToken = tokens[ii];
-			var wordOutput =
-				"<div \"class\"=\"spellcheckedWord\">"+
-				this.htmlify(aToken.text)+
-				"</div>"
-				;
+
+			var wordOutput = this.span4token(aToken);
 			divCheckedResults.append(wordOutput);
 		}
+		divCheckedResults.show();
 		spellController.setCorrectionsHandlers();
+	}
 
+	span4token(token) {
+		var text = this.htmlify(token.text);
+		var span =
+			"<span \"class\"=\"token\" \"isWord\"=\"";
+		if (token.isWord) {
+			span += "true";
+		} else {
+			span += "false";
+		}
+		span += "\">"+text+"</span>";
+
+		return span;
 	}
 }
 
