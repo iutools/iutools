@@ -60,7 +60,6 @@ class SpellController extends WidgetController {
 
 	tokenizeAndSpellCheck() {
 
-		var request = this.getTokenizeRequestData();
 		this.invokeTokenizeService(
 			this.getTokenizeRequestData(),
 			this.cbkTokenizeSuccess, this.cbkTokenizeFailure
@@ -208,6 +207,7 @@ class SpellController extends WidgetController {
 				tokens.push({text: respToken.first, isWord:respToken.second})
 			}
 
+			// Display the original words
 			this.displayTokens(tokens);
 
 			// For now, we recreate the text from the tokens and invoke
@@ -217,8 +217,12 @@ class SpellController extends WidgetController {
 			// individually.
 			//
 			var text = "";
-			for (var ii=0; ii < tokens.length; ii++) {
+			for (ii=0; ii < tokens.length; ii++) {
 				text += tokens[ii].token;
+			}
+
+			for (ii=0; ii < tokens.length; ii++) {
+				invokeSpellCheckWordService(tokens[ii]);
 			}
 
 
@@ -282,9 +286,8 @@ class SpellController extends WidgetController {
 	}
 	
 	htmlify(text) {
-//		text = text.replace(/\n/g, "<br/>\n");
-		var html = '<span>'+text+'</span>';
-		return html;
+		return '<span>'+text+'</span>';
+
 	}
 	
 	picklistFor(corrResult) {
@@ -331,9 +334,7 @@ class SpellController extends WidgetController {
 				includePartiallyCorrect: includePartials
 		};
 		
-		var jsonInputs = JSON.stringify(request);
-		
-		return jsonInputs;
+		return JSON.stringify(request);
 	}
 
 	getTokenizeRequestData() {
@@ -342,9 +343,7 @@ class SpellController extends WidgetController {
 			textOrUrl: this.elementForProp("txtToCheck").val(),
 		};
 
-		var jsonInputs = JSON.stringify(request);
-
-		return jsonInputs;
+		return JSON.stringify(request);
 	}
 	
 	disableSpellButton() {
@@ -363,26 +362,29 @@ class SpellController extends WidgetController {
 	
 	getCheckedText() {
 		var divChecked = this.elementForProp('divChecked');
-		var text = divChecked.text();
-		return text;
+
+		return divChecked.text();
 	}
 
 	displayTokens(tokens) {
 		var divChecked = this.elementForProp('divChecked');
 		var divCheckedResults = divChecked.find('div#div-results');
 		var divCheckedTitle = divChecked.find('div#title-and-copy');
-		var btnCopy = this.elementForProp('btnCopy');
+		// var btnCopy = this.elementForProp('btnCopy');
 		divCheckedResults.empty();
 		divCheckedTitle.css('display','block');
 		divCheckedResults.css('display','block');
 		for (var ii=0; ii < tokens.length; ii++) {
-			var corrResult = tokens[ii];
-			var wordOutput = this.htmlify(corrResult.text)
+			var aToken = tokens[ii];
+			var wordOutput =
+				"<div \"class\"=\"spellcheckedWord\">"+
+				this.htmlify(aToken.text)+
+				"</div>"
+				;
 			divCheckedResults.append(wordOutput);
 		}
 		spellController.setCorrectionsHandlers();
 
-		return;
 	}
 }
 
