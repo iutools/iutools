@@ -6,50 +6,45 @@ class SpellController extends WidgetController {
 
 	constructor(config) {
 		super(config);
-	} 
-	
+	}
+
 	// Setup handler methods for different HTML elements specified in the config.
 	attachHtmlElements() {
 		this.setEventHandler("btnSpell", "click", this.spellCheck);
 	}
-	
+
 	copyToClipboard() {
-		   // Create new element
-		   var el = document.createElement('textarea');
-		   // Set value (string to be copied)
-		   el.value = this.getSpellCheckedText();
-		   // Set non-editable to avoid focus and move outside of view
-		   el.setAttribute('readonly', '');
-		   el.style = {position: 'absolute', left: '-9999px'};
-		   document.body.appendChild(el);
-		   // Select text inside element
-		   el.select();
-		   // Copy text to clipboard
-		   document.execCommand('copy');
-		   // Remove temporary element
-		   document.body.removeChild(el);
-		   window.getSelection().removeAllRanges();
+		// Create new element
+		var el = document.createElement('textarea');
+		// Set value (string to be copied)
+		el.value = this.getSpellCheckedText();
+		// Set non-editable to avoid focus and move outside of view
+		el.setAttribute('readonly', '');
+		el.style = {position: 'absolute', left: '-9999px'};
+		document.body.appendChild(el);
+		// Select text inside element
+		el.select();
+		// Copy text to clipboard
+		document.execCommand('copy');
+		// Remove temporary element
+		document.body.removeChild(el);
+		window.getSelection().removeAllRanges();
 	}
-	
+
 	getSpellCheckedText() {
 		var wholeTextElements = $('div#div-results').contents();
 		var allText = '';
-		wholeTextElements.each(function(index,item) {
+		wholeTextElements.each(function (index, item) {
 			var text = "";
 			if ($(item).is('.corrections')) {
 				text = $(item).find('.selected').text();
-//				if (text || 0 !== text.length) {
-//					// Remove the \n at the end of the selected text
-//					text = text.substring(0, text.length - 1);
-//				}
-			console.log('item.select text= "'+text+'"');
-			}
-			else if ($(item).is('span')) {
+				console.log('item.select text= "' + text + '"');
+			} else if ($(item).is('span')) {
 				text = $(item).text();
-				console.log('item text= "'+text+'"');
+				console.log('item text= "' + text + '"');
 			}
 			allText += text;
-			console.log('allText= "'+allText+'"');
+			console.log('allText= "' + allText + '"');
 		});
 		return allText;
 	}
@@ -64,10 +59,12 @@ class SpellController extends WidgetController {
 	}
 
 	tokenizeAndSpellCheck() {
-		// this.invokeTokenizeService(
-		// 	this.getTokenizeRequestData(),
-		// 	???
-		// );
+
+		var request = this.getTokenizeRequestData();
+		this.invokeTokenizeService(
+			this.getTokenizeRequestData(),
+			this.cbkTokenizeSuccess, this.cbkTokenizeFailure
+		);
 
 		this.invokeSpellService(
 			this.getSpellRequestData(),
@@ -80,25 +77,47 @@ class SpellController extends WidgetController {
 	}
 
 	invokeSpellService(jsonRequestData, _successCbk, _failureCbk) {
-			var controller = this;
-			var fctSuccess = 
-					function(resp) {
-						_successCbk.call(controller, resp);
-					};
-			var fctFailure = 
-					function(resp) {
-						_failureCbk.call(controller, resp);
-					};
-		
-			$.ajax({
-				type: 'POST',
-				url: 'srv/spell',
-				data: jsonRequestData,
-				dataType: 'json',
-				async: true,
-		        success: fctSuccess,
-		        error: fctFailure
-			});
+		var controller = this;
+		var fctSuccess =
+			function (resp) {
+				_successCbk.call(controller, resp);
+			};
+		var fctFailure =
+			function (resp) {
+				_failureCbk.call(controller, resp);
+			};
+
+		$.ajax({
+			type: 'POST',
+			url: 'srv/spell',
+			data: jsonRequestData,
+			dataType: 'json',
+			async: true,
+			success: fctSuccess,
+			error: fctFailure
+		});
+	}
+
+	invokeTokenizeService(jsonRequestData, _successCbk, _failureCbk) {
+		var controller = this;
+		var fctSuccess =
+			function(resp) {
+				_successCbk.call(controller, resp);
+			};
+		var fctFailure =
+			function(resp) {
+				_failureCbk.call(controller, resp);
+			};
+
+		$.ajax({
+			type: 'POST',
+			url: 'srv/tokenize',
+			data: jsonRequestData,
+			dataType: 'json',
+			async: true,
+			success: fctSuccess,
+			error: fctFailure
+		});
 	}
 
 	validateInputs() {
@@ -176,6 +195,43 @@ class SpellController extends WidgetController {
 			});
 	}
 
+	cbkTokenizeSuccess(resp) {
+		console.log("-- SpellController.cbkTokenizeSuccess: got resp="+
+			JSON.stringify(resp));
+		if (resp.errorMessage != null) {
+			this.cbkTokenizeFailure(resp);
+		} else {
+			// Retrive the tokens from the tokenize response
+			var tokens = [];
+			for (var ii=0; ii > resp.tokens.length; ii++) {
+				var respToken = resp.tokens[ii];
+				tokens.push({token: respToken.first, isWord:respToken.second})
+			}
+
+			// For now, we recreate the text from the tokens and invoke
+			// the spell service on the complete text
+			//
+			// Eventually, we will call the spell service on each token
+			// individually.
+			//
+			var text = "";
+			for (var ii=0; ii < tokens.length; ii++) {
+				text += tokens[ii].token;
+			}
+		}
+	}
+
+	cbkTokenizeFailure(resp) {
+		if (! resp.hasOwnProperty("errorMessage")) {
+			// Error condition comes from tomcat itself, not from our servlet
+			resp.errorMessage =
+				"Server generated a "+resp.status+" error:\n\n" +
+				resp.responseText;
+		}
+		this.error(resp.errorMessage);
+		this.setBusy(false);
+	}
+
 	cbkSpellSuccess(resp) {
 		if (resp.errorMessage != null) {
 			this.cbkSpellFailure(resp);
@@ -199,7 +255,7 @@ class SpellController extends WidgetController {
 			}
 			spellController.setCorrectionsHandlers();
 		}
-		
+
 		btnCopy.show();
 		this.setEventHandler("btnCopy", "click", this.copyToClipboard);
 
@@ -269,6 +325,17 @@ class SpellController extends WidgetController {
 		
 		var jsonInputs = JSON.stringify(request);
 		
+		return jsonInputs;
+	}
+
+	getTokenizeRequestData() {
+
+		var request = {
+			textOrUrl: this.elementForProp("txtToCheck").val(),
+		};
+
+		var jsonInputs = JSON.stringify(request);
+
 		return jsonInputs;
 	}
 	
