@@ -16,6 +16,7 @@ public class ServiceResponse {
 	public String status = null;
 	public String errorMessage = null;
 	public String stackTrace = null;
+	public ServiceInputs failingInputs = null;
 
 	public ServiceResponse() {}
 

@@ -10,4 +10,7 @@ public class SpellResponse extends ServiceResponse {
 
 	public List<SpellingCorrection> correction;
 
+	public SpellResponse() {
+		super();
+	}
 }

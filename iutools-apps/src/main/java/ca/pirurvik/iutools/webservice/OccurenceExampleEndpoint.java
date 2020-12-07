@@ -42,7 +42,9 @@ public class OccurenceExampleEndpoint extends HttpServlet {
 			ServiceResponse results = executeEndPoint(inputs);
 			jsonResponse = new ObjectMapper().writeValueAsString(results);
 		} catch (Exception exc) {
-			jsonResponse = EndPointHelper.emitServiceExceptionResponse("General exception was raised\n", exc);
+			jsonResponse =
+				EndPointHelper.emitServiceExceptionResponse(
+					"General exception was raised\n", exc);
 		}
 		writeJsonResponse(response, jsonResponse);
 	}

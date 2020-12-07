@@ -5,6 +5,7 @@ import java.net.MalformedURLException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.ws.Service;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -42,13 +43,20 @@ public class EndPointHelper {
 	public static String jsonBody(HttpServletRequest request) throws IOException {
 		String body = IOUtils.toString(request.getReader());
 		return body;
-	}		
+	}
+
+
+	public static String emitServiceExceptionResponse(
+		String message, Exception exc) {
+		return emitServiceExceptionResponse(message, exc, (ServiceInputs)null);
+	}
 	
-	
-	public static String emitServiceExceptionResponse(String message, Exception exc) {
+	public static String emitServiceExceptionResponse(
+		String message, Exception exc, ServiceInputs failingInputs) {
 		ServiceResponse results = new ServiceResponse();
 		message += "\n"+exc.getMessage()+"\n"+ExceptionUtils.getFullStackTrace(exc);
 		results.errorMessage = message;
+		results.failingInputs = failingInputs;
 		String jsonResponse = "null";
 		try {
 			jsonResponse = new ObjectMapper().writeValueAsString(results);

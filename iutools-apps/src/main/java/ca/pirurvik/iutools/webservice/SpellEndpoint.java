@@ -25,12 +25,15 @@ import ca.pirurvik.iutools.spellchecker.SpellingCorrection;
 public class SpellEndpoint extends HttpServlet {
 	
 	EndPointHelper helper = null;
-	
-    static SpellChecker checker = null;    
+
+	SpellChecker checker = null;
     
 
 	public SpellEndpoint() throws SpellCheckerException, FileNotFoundException, ConfigException {
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.webservice.SpellEndpoint.new");
+		tLogger.trace("invoked");
 		initialize();
+		tLogger.trace("exiting");
 	};
 	
 	
@@ -62,7 +65,10 @@ public class SpellEndpoint extends HttpServlet {
 			SpellResponse results = executeEndPoint(inputs);
 			jsonResponse = new ObjectMapper().writeValueAsString(results);
 		} catch (Exception exc) {
-			jsonResponse = EndPointHelper.emitServiceExceptionResponse("General exception was raised\n", exc);
+			jsonResponse =
+				EndPointHelper.emitServiceExceptionResponse(
+					"General exception was raised\n",
+					exc, inputs);
 		}
 		
 		writeJsonResponse(response, jsonResponse);
@@ -78,6 +84,10 @@ public class SpellEndpoint extends HttpServlet {
 
 	public SpellResponse executeEndPoint(SpellInputs inputs) throws ServiceException, SpellCheckerException  {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.webservice.SpellEndpoint.executeEndPoint");
+
+		tLogger.trace("inputs.text= "+inputs.text);
+		tLogger.trace("Spell checker has base ES index name = \n"+checker.corpusIndexName());
+
 		SpellResponse response = new SpellResponse();
 		
 		if (inputs.text == null || inputs.text.isEmpty()) {
@@ -85,15 +95,13 @@ public class SpellEndpoint extends HttpServlet {
 		}
 		
 		checker.setPartialCorrectionEnabled(inputs.includePartiallyCorrect);
-		if (tLogger.isTraceEnabled()) {
-			tLogger.trace("using spellcher = \n"+PrettyPrinter.print(checker));
-		}
 		List<SpellingCorrection> corrections = checker.correctText(inputs.text);
 		
-		tLogger.trace("inputs.text= "+inputs.text);
 		tLogger.trace("corrections= "+PrettyPrinter.print(corrections));
 		
 		response.correction = corrections;
+
+		tLogger.trace("Returning");
 
 		return response;
 	}

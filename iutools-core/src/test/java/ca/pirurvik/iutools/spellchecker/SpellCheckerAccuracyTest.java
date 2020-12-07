@@ -27,6 +27,7 @@ public class SpellCheckerAccuracyTest {
 
     private static final Pattern pattWordDescr =
         Pattern.compile("(^[^\\s\\(]+)");
+    private TestInfo testInfo;
 
 
     protected SpellChecker makeLargeDictChecker() throws Exception {
@@ -343,6 +344,19 @@ public class SpellCheckerAccuracyTest {
                     .setMaxRank(1)
                     .isMisspelled("uqaujjigiarutiniglu"),
     };
+
+    static TestInfo prevTestInfo;
+
+    @BeforeEach
+    public void setUp(TestInfo testInfo) {
+        this.testInfo = testInfo;
+    }
+
+    @AfterEach
+    public void tearDown() {
+
+        prevTestInfo = this.testInfo;
+    }
 
     @Test
     public void test__Evaluate__QuickEvaluation(TestInfo testInfo)

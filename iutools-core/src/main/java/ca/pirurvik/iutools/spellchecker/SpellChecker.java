@@ -275,7 +275,7 @@ public class SpellChecker {
 		
 		SpellingCorrection corr = new SpellingCorrection(word);
 		corr.wasMispelled = isMispelled(wordInLatin);		
-		tLogger.debug("wasMispelled= "+corr.wasMispelled);
+		tLogger.trace("wasMispelled= "+corr.wasMispelled);
 
 		SpellDebug.trace("SpellChecker.correctWord",
 				"corr.wasMispelled="+corr.wasMispelled,
@@ -605,15 +605,15 @@ public class SpellChecker {
 	 *   - it is recorded as UNsuccessfully decomposed by the IMA during the compilation of the Nunavut corpus, or
 	 *   - it cannot be decomposed by the IMA (if never encountered in the Hansard corpus)
 	 */
-	protected Boolean isMispelled(String word) throws SpellCheckerException {
-		Logger logger = Logger.getLogger("SpellChecker.isMispelled");
-		logger.debug("word: "+word);
+	public Boolean isMispelled(String word) throws SpellCheckerException {
+		Logger logger = Logger.getLogger("ca.pirurvik.iutools.spellchecker.SpellChecker.isMispelled");
+		logger.trace("word: "+word);
 
 		Boolean wordIsMispelled = null;
 		if (wordIsMispelled == null) {
 
 			if (isExplicitlyCorrect(word)) {
-				logger.debug("word is was explicity tagged as being correct");
+				logger.trace("word is was explicity tagged as being correct");
 				wordIsMispelled = false;
 			}
 
@@ -622,7 +622,7 @@ public class SpellChecker {
 					WordInfo wInfo = corpus.info4word(word);
 					if (wInfo != null && wInfo.totalDecompositions > 0) {
 						wordIsMispelled = false;
-						logger.debug("Corpus contains some decompositions for this word");
+						logger.trace("Corpus contains some decompositions for this word");
 					}
 				} catch (CompiledCorpusException e) {
 					throw new SpellCheckerException(e);
@@ -630,37 +630,37 @@ public class SpellChecker {
 			}
 
 			if (wordIsMispelled == null && word.matches("^[0-9]+$")) {
-				logger.debug("word is all digits");
+				logger.trace("word is all digits");
 				wordIsMispelled = false;
 			}
 
 			if (wordIsMispelled == null && latinSingleInuktitutCharacters.contains(word)) {
-				logger.debug("single inuktitut character");
+				logger.trace("single inuktitut character");
 				wordIsMispelled = false;
 			}
 
 			if (wordIsMispelled == null && wordContainsMoreThanTwoConsecutiveConsonants(word)) {
-				logger.debug("more than 2 consecutive consonants in the word");
+				logger.trace("more than 2 consecutive consonants in the word");
 				wordIsMispelled = true;
 			}
 
 			String[] numericTermParts = null;
 			if (wordIsMispelled == null && (numericTermParts = splitNumericExpression(word)) != null) {
-				logger.debug("numeric expression: " + word + " (" + numericTermParts[1] + ")");
+				logger.trace("numeric expression: " + word + " (" + numericTermParts[1] + ")");
 				boolean pseudoWordWithSuffixAnalysesWithSuccess = assessEndingWithIMA(numericTermParts[1]);
 				wordIsMispelled = !pseudoWordWithSuffixAnalysesWithSuccess;
-				logger.debug("numeric expression - wordIsMispelled: " + wordIsMispelled);
+				logger.trace("numeric expression - wordIsMispelled: " + wordIsMispelled);
 			}
 
 			if (wordIsMispelled == null && wordIsPunctuation(word)) {
-				logger.debug("word is punctuation");
+				logger.trace("word is punctuation");
 				wordIsMispelled = false;
 			}
 
 			if (wordIsMispelled == null) {
 				try {
 					String[] segments = segmenter.segment(word);
-					logger.debug("word submitted to IMA: " + word);
+					logger.trace("word submitted to IMA: " + word);
 					if (segments == null || segments.length == 0) {
 						wordIsMispelled = true;
 					}
@@ -669,26 +669,33 @@ public class SpellChecker {
 				} catch (StringSegmenterException | LinguisticDataException e) {
 					throw new SpellCheckerException(e);
 				}
-				logger.debug("word submitted to IMA - mispelled: " + wordIsMispelled);
+				logger.trace("word submitted to IMA - mispelled: " + wordIsMispelled);
 			}
 
 			if (wordIsMispelled == null) {
 				wordIsMispelled = false;
 			}
 		}
-		
+
+		logger.trace("Exiting");
+
 		return wordIsMispelled;
 	}
 
-	private boolean isExplicitlyCorrect(String word) throws SpellCheckerException {
+	public boolean isExplicitlyCorrect(String word) throws SpellCheckerException {
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.spellchecker.SpellChecker.isExplicitlyCorrect");
+		tLogger.trace("[word="+word+"] entered");
 		boolean answer = false;
 		try {
 			if (explicitlyCorrectWords != null) {
 				answer = explicitlyCorrectWords.containsWord(word);
 			}
 		} catch (CompiledCorpusException e) {
+			tLogger.trace("[word="+word+"] !!! RAISES EXCEPTION");
 			throw new SpellCheckerException(e);
 		}
+
+		tLogger.trace("[word="+word+"] exited");
 		return answer;
 	}
 	
@@ -726,11 +733,11 @@ public class SpellChecker {
 		Logger logger = Logger.getLogger("SpellChecker.wordContainsMoreThanTwoConsecutiveConsonants");
 		boolean result = false;
 		String wordInSimplifiedOrthography = Orthography.simplifiedOrthography(word, false);
-		logger.debug("wordInSimplifiedOrthography= "+wordInSimplifiedOrthography+" ("+word+")");
+		logger.trace("wordInSimplifiedOrthography= "+wordInSimplifiedOrthography+" ("+word+")");
 		Pattern p = Pattern.compile("[gjklmnprstvN]{3,}");
 		Matcher mp = p.matcher(wordInSimplifiedOrthography);
 		if (mp.find()) {
-			logger.debug("match= "+mp.group());
+			logger.trace("match= "+mp.group());
 			result = true;
 		} 
 		
@@ -1195,13 +1202,13 @@ public class SpellChecker {
 		for (int i=0; i<makeUpWords.length; i++) {
 			accepted = false;
 			String term = makeUpWords[i]+ending;
-			logger.debug("term= "+term);
+			logger.trace("term= "+term);
 			Decomposition[] decs = null;
 			try {
 				decs = morphAnalyzer.decomposeWord(term);
 			} catch (TimeoutException | MorphologicalAnalyzerException e) {
 			}
-			logger.debug("decs: "+(decs==null?"null":decs.length));
+			logger.trace("decs: "+(decs==null?"null":decs.length));
 			if (decs!=null && decs.length!=0) {
 				accepted = true;
 				break;
