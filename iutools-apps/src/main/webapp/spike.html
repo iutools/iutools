@@ -1,0 +1,54 @@
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <title>Spike file for trying stuff</title>
+    <link rel="stylesheet" href="css/styles.css?v2">
+
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/scripts.js?v1"></script>
+</head>
+
+<body>
+
+<b>Results below</b>
+
+<div id="results">
+    <h1>These ones are MANUALLY inserted</h1>
+    <span class="token" data-is-word=true data-word="hello">hello</span>
+    <span class="token" data-is-word=false>, </span>
+    <br/>Again<br/>
+    <span class="token" data-is-word=true data-word="hello">hello</span>
+    <span class="token" data-is-word=false>, </span>
+    <span "class"="token" "data-is-word"="true" "data-word"="ᖑᕗᑦ">ᖑᕗᑦ</span>
+    <p/>
+    <h1>These ones are programmatically inserted</h1>
+</div>
+
+<br/>
+<b>END OF Results</b>
+
+<script>
+    console.log("hello again");
+    $("#results").append('<span class="token" data-is-word=true data-word="greetings">greetings</span>');
+    $("#results").append('<span class="token" data-is-word=false>, </span>');
+    $("#results").append('<span class="token" data-is-word=true data-word="universe">universe</span>');
+
+
+    var hello = $('[class="token"][data-word="hello"]');
+    hello.append("***")
+    var universe = $('[class="token"][data-word="universe"]');
+    universe.append("***");
+
+    for (var ii=0; ii < 10; ii++) {
+        var fct = function() {
+            console.log("ii="+ii);
+        }
+        fct();
+    }
+</script>
+
+
+</body>
+
+</html>

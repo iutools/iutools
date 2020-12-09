@@ -75,27 +75,27 @@ class SpellController extends WidgetController {
 		this.elementForProp('divResults').empty();
 	}
 
-	invokeSpellServiceOnWholeText(jsonRequestData, _successCbk, _failureCbk) {
-		var controller = this;
-		var fctSuccess =
-			function (resp) {
-				_successCbk.call(controller, resp);
-			};
-		var fctFailure =
-			function (resp) {
-				_failureCbk.call(controller, resp);
-			};
-
-		$.ajax({
-			type: 'POST',
-			url: 'srv/spell',
-			data: jsonRequestData,
-			dataType: 'json',
-			async: true,
-			success: fctSuccess,
-			error: fctFailure
-		});
-	}
+	// invokeSpellServiceOnWholeText(jsonRequestData, _successCbk, _failureCbk) {
+	// 	var controller = this;
+	// 	var fctSuccess =
+	// 		function (resp) {
+	// 			_successCbk.call(controller, resp);
+	// 		};
+	// 	var fctFailure =
+	// 		function (resp) {
+	// 			_failureCbk.call(controller, resp);
+	// 		};
+	//
+	// 	$.ajax({
+	// 		type: 'POST',
+	// 		url: 'srv/spell',
+	// 		data: jsonRequestData,
+	// 		dataType: 'json',
+	// 		async: true,
+	// 		success: fctSuccess,
+	// 		error: fctFailure
+	// 	});
+	// }
 
 	invokeSpellCheckWordService(jsonRequestData, _successCbk, _failureCbk) {
 		var controller = this;
@@ -113,7 +113,11 @@ class SpellController extends WidgetController {
 			url: 'srv/spell',
 			data: jsonRequestData,
 			dataType: 'json',
-			async: true,
+			// We run each word synchronously, otherwise the server
+			// may receive thouasands of concurrent requests for a
+			// very long document.
+			//
+			async: false,
 			success: fctSuccess,
 			error: fctFailure
 		});
@@ -158,7 +162,7 @@ class SpellController extends WidgetController {
 			console.log('divParent: '+divParent.length+"; word= "+divParent.attr('word'));
 			$('span',divParent).css('display','block');
 	}
-	
+
 	setCorrectionsHandlers() {
 		$(document).find('div.corrections').on('mouseleave',function(ev){
 			var target = $(ev.target);
@@ -204,7 +208,7 @@ class SpellController extends WidgetController {
 					if (newSuggestionValue != '') {
 						$('span',divParent).css('display','none');
 						$('span.selected',divParent).removeClass('selected');
-						var newSuggestionElement = $('<span class="suggestion selected">'+newSuggestionValue+'</span>');
+						var newSuggestionElement = $('<span class="suggestion selected">'+newSuggestionValue+'error(</span>');
 						newSuggestionElement.insertBefore($('.original',divParent));
 						spellController.setCorrectionsHandlers();
 						$('.additional input',divParent).val('');
@@ -223,7 +227,7 @@ class SpellController extends WidgetController {
 		if (resp.errorMessage != null) {
 			this.cbkTokenizeFailure(resp);
 		} else {
-			// Retrive the tokens from the tokenize response
+			// Retrieve the tokens from the tokenize response
 			var respTokens = resp['tokens'];
 			var tokens = [];
 			for (var ii=0; ii < respTokens.length; ii++) {
@@ -231,26 +235,23 @@ class SpellController extends WidgetController {
 				tokens.push({text: respToken.first, isWord:respToken.second})
 			}
 
-			// Display the original words
-			this.displayTokens(tokens);
-
-			// For now, we invoke the call the "old" invokeSpellServiceOnWholeText() 
-			// method which spell checks the complete text before displaying 
-			// anything
+			// Invoke the Spell service on each word
 			//
-			this.invokeSpellServiceOnWholeText(
-				this.getSpellWholeTextRequestData(),
-				this.cbkSpellSuccess, this.cbkSpellFailure)
-			
-			// Eventually, we will call the spell service on each token
-			// individually.
-			//
-
 			for (ii=0; ii < tokens.length; ii++) {
-				this.invokeSpellCheckWordService(
-					this.getSpellWordRequestData(tokens[ii]),
-					this.cbkSpellWordSuccess, this.cbkSpellWorFailure);
+				var aToken = tokens[ii];
+				var word = aToken.text;
+				if (!aToken.isWord) {
+					this.displayToken(aToken);
+				} else {
+					this.invokeSpellCheckWordService(
+						this.getSpellWordRequestData(word),
+						this.cbkSpellWordSuccess, this.cbkSpellWordFailure);
+				}
 			}
+
+			// this.setCorrectionsHandlers();
+
+			this.setBusy(false);
 		}
 	}
 
@@ -261,39 +262,38 @@ class SpellController extends WidgetController {
 				"Server generated a "+resp.status+" error:\n\n" +
 				resp.responseText;
 		}
-		this.error(resp.errorMessage);
+		this.error(resp);
 		this.setBusy(false);
 	}
 
-	cbkSpellSuccess(resp) {
-		if (resp.errorMessage != null) {
-			this.cbkSpellFailure(resp);
-		} else {
-			var divChecked = this.elementForProp('divChecked');
-			var divCheckedResults = divChecked.find('div#div-results');
-			var divCheckedTitle = divChecked.find('div#title-and-copy');
-			var btnCopy = this.elementForProp('btnCopy');
-			divCheckedResults.empty();
-			divCheckedTitle.css('display','block');
-			divCheckedResults.css('display','block');
-			for (var ii=0; ii < resp.correction.length; ii++) {
-				var corrResult = resp.correction[ii];
-				var wordOutput = ""
-				if (! corrResult.wasMispelled) {
-					wordOutput = this.htmlify(corrResult.orig)
-				} else {
-					wordOutput = this.picklistFor(corrResult);
-				}
-				divCheckedResults.append(wordOutput);
-			}
-			spellController.setCorrectionsHandlers();
-		}
-
-		btnCopy.show();
-		this.setEventHandler("btnCopy", "click", this.copyToClipboard);
-
-		this.setBusy(false);
-	}
+	// cbkSpellSuccess(resp) {
+	// 	if (resp.errorMessage != null) {
+	// 		this.cbkSpellFailure(resp);
+	// 	} else {
+	// 		var divChecked = this.elementForProp('divChecked');
+	// 		var divCheckedResults = divChecked.find('div#div-results');
+	// 		var divCheckedTitle = divChecked.find('div#title-and-copy');
+	// 		// var btnCopy = this.elementForProp('btnCopy');
+	// 		divCheckedTitle.css('display','block');
+	// 		divCheckedResults.css('display','block');
+	// 		for (var ii=0; ii < resp.correction.length; ii++) {
+	// 			var corrResult = resp.correction[ii];
+	// 			var wordOutput = ""
+	// 			if (! corrResult.wasMispelled) {
+	// 				wordOutput = this.spanify(corrResult.orig)
+	// 			} else {
+	// 				wordOutput = this.picklistFor(corrResult);
+	// 			}
+	// 			divCheckedResults.append(wordOutput);
+	// 		}
+	// 		spellController.setCorrectionsHandlers();
+	// 	}
+	//
+	// 	// btnCopy.show();
+	// 	// this.setEventHandler("btnCopy", "click", this.copyToClipboard);
+	//
+	// 	this.setBusy(false);
+	// }
 
 	cbkSpellFailure(resp) {
 		if (! resp.hasOwnProperty("errorMessage")) {
@@ -302,38 +302,58 @@ class SpellController extends WidgetController {
 				"Server generated a "+resp.status+" error:\n\n" +
 				resp.responseText;
 		}				
-		this.error(resp.errorMessage);
+		this.error(resp);
 		this.setBusy(false);
 	}
 
 	cbkSpellWordSuccess(resp) {
 		if (resp.errorMessage != null) {
-			this.cbkSpellFailure(resp);
+			this.cbkSpellWordFailure(resp);
 		} else {
-		// 	var divChecked = this.elementForProp('divChecked');
-		// 	var divCheckedResults = divChecked.find('div#div-results');
-		// 	var divCheckedTitle = divChecked.find('div#title-and-copy');
-		// 	var btnCopy = this.elementForProp('btnCopy');
-		// 	divCheckedResults.empty();
-		// 	divCheckedTitle.css('display', 'block');
-		// 	divCheckedResults.css('display', 'block');
-		// 	for (var ii = 0; ii < resp.correction.length; ii++) {
-		// 		var corrResult = resp.correction[ii];
-		// 		var wordOutput = ""
-		// 		if (!corrResult.wasMispelled) {
-		// 			wordOutput = this.htmlify(corrResult.orig)
-		// 		} else {
-		// 			wordOutput = this.picklistFor(corrResult);
-		// 		}
-		// 		divCheckedResults.append(wordOutput);
-		// 	}
-		// 	spellController.setCorrectionsHandlers();
+			// var divChecked = this.elementForProp("divCheckedNew");
+			// var divCheckedResults = divChecked.find("div#div-results-new");
+			var corrections = resp.correction;
+			for (var ii=0; ii < corrections.length; ii++) {
+				var aCorr = corrections[ii];
+				// // console.log("-- cbkSpellWordSuccess: aCorr=" + JSON.stringify(aCorr));
+				// var html = this.htmlWordToCheck(aCorr.orig, aCorr);
+				// var eltPattern = '[class="token"][data-word="' + aCorr.orig + '"]';
+				// var matchingTokens = $(eltPattern);
+				// if (aCorr.wasMispelled) {
+				// 	matchingTokens.empty();
+				// 	// matchingTokens.append(this.picklistFor(aCorr));
+				// 	matchingTokens.append(" >>"+aCorr.orig+"<< ");
+				// }
+				// this.labelWordsAsSpellChecked(aCorr.orig);
+				var divSpellCheckedWords = this.divSpellCheckResults();
+				if (!aCorr.wasMispelled) {
+					var appended = divSpellCheckedWords.append(aCorr.orig);
+				} else {
+					this.appendSuggestionsPicklist(aCorr)
+				}
+			}
 		}
+	}
 
-		// btnCopy.show();
-		// this.setEventHandler("btnCopy", "click", this.copyToClipboard);
+	appendSuggestionsPicklist(correction) {
+		var divSpellCheckedWords = this.divSpellCheckResults();
+		var html = this.picklistFor(correction);
+		var appended = divSpellCheckedWords.append(html);
+
+		// TODO-2020-12-09: This will set the handlers on ALL the picklists
+		//   that have been created so far, including some for which the handlers
+		//   have already been set.
 		//
-		// this.setBusy(false);
+		// It would be more efficient to just set the handlers on the last
+		//   picklist that was added
+		//
+		this.setCorrectionsHandlers();
+		return;
+	}
+
+	eltsForWordToCheck(word) {
+		var eltPattern = '[class="token"][data-word="' + word + '"]';
+		return $(eltPattern);
 	}
 
 	cbkSpellWordFailure(resp) {
@@ -343,15 +363,19 @@ class SpellController extends WidgetController {
 				"Server generated a "+resp.status+" error:\n\n" +
 				resp.responseText;
 		}
-		this.error(resp.errorMessage);
+		this.error(resp);
 		this.setBusy(false);
 	}
 
-	htmlify(text) {
+	spanify(text) {
 		return '<span>'+text+'</span>';
-
 	}
-	
+
+	labelWordsAsSpellChecked(word) {
+		var wordSpans = this.eltsForWordToCheck(word);
+		wordSpans.removeAttr("style");
+	}
+
 	picklistFor(corrResult) {
 		console.log("corrResult= "+JSON.stringify(corrResult));
 		var origWord = corrResult.orig;
@@ -382,7 +406,9 @@ class SpellController extends WidgetController {
 		} else {
 			this.enableSpellButton();
 			this.hideSpinningWheel('divMessage');
-			this.elementForProp('btnCopy').show();
+			var btnCopy = this.elementForProp('btnCopy');
+			btnCopy.show();
+			this.setEventHandler("btnCopy", "click", this.copyToClipboard);
 		}		
 	}
 	
@@ -399,12 +425,12 @@ class SpellController extends WidgetController {
 		return JSON.stringify(request);
 	}
 
-	getSpellWordRequestData(token) {
+	getSpellWordRequestData(word) {
 		var includePartials =
 			this.elementForProp("chkIncludePartials").is(':checked')
 
 		var request = {
-			text: token.text,
+			text: word,
 			includePartiallyCorrect: includePartials
 		};
 
@@ -426,12 +452,18 @@ class SpellController extends WidgetController {
 	
 	enableSpellButton() {
 		this.elementForProp('btnSpell').attr("disabled", false);
-
 	}
-	
-	error(err) {
-		this.elementForProp('divError').html(err);
-		this.elementForProp('divError').show();	 
+
+	displayError(errMess) {
+		if (errMess != null && !(errMess === "")) {
+			errMess = "SpellController raised an error:\n" + errMess;
+			console.log(errMess);
+			this.elementForProp('divError').html(errMess);
+			this.elementForProp('divError').show();
+		} else {
+			this.elementForProp('divError').empty();
+		}
+
 	}
 	
 	getCheckedText() {
@@ -440,36 +472,81 @@ class SpellController extends WidgetController {
 		return divChecked.text();
 	}
 
-	displayTokens(tokens) {
+	// clearResults() {
+	// 	var divCheckedResults = this.divSpellCheckResults();
+	// 	divCheckedResults.empty();
+	// 	divCheckedResults.css('display','block');
+	// }
+
+	divSpellCheckResults() {
 		var divChecked = this.elementForProp('divCheckedNew');
 		var divCheckedResults = divChecked.find('div#div-results-new');
-		// var divCheckedTitle = divChecked.find('div#title-and-copy');
-		// var btnCopy = this.elementForProp('btnCopy');
-		divCheckedResults.empty();
-		// divCheckedTitle.css('display','block');
-		divCheckedResults.css('display','block');
-		for (var ii=0; ii < tokens.length; ii++) {
-			var aToken = tokens[ii];
-
-			var wordOutput = this.span4token(aToken);
-			divCheckedResults.append(wordOutput);
-		}
-		divCheckedResults.show();
-		spellController.setCorrectionsHandlers();
+		return divCheckedResults;
 	}
 
-	span4token(token) {
-		var text = this.htmlify(token.text);
-		var span =
-			"<span \"class\"=\"token\" \"isWord\"=\"";
-		if (token.isWord) {
-			span += "true";
+	displayToken(token, correction) {
+		var divCheckedResults = this.divSpellCheckResults();
+		var html;
+		var word = token.text;
+		if (!token.isWord || !correction.wasMisspelled) {
+			// This token is either punctuation or a word that was correctly
+			// spelled.
+			html = word;
 		} else {
-			span += "false";
+			html = this.picklistFor(correction);
 		}
-		span += "\">"+text+"</span>";
+		divCheckedResults.append(html);
 
-		return span;
+		// TODO-2020-12-09: Should only set the handler on the last
+		//   element in divCheckedResults.
+		//   Note: We want to set the handler NOW because we want the user
+		//   to be able to manipulate the suggestions picklist right away.
+		// spellController.setCorrectionsHandlers();
+	}
+
+
+	// displayTokens(tokens) {
+	// 	var divChecked = this.elementForProp('divCheckedNew');
+	// 	var divCheckedResults = divChecked.find('div#div-results-new');
+	// 	// var divCheckedTitle = divChecked.find('div#title-and-copy');
+	// 	// var btnCopy = this.elementForProp('btnCopy');
+	// 	divCheckedResults.empty();
+	// 	// divCheckedTitle.css('display','block');
+	// 	divCheckedResults.css('display','block');
+	// 	var words = [];
+	// 	for (var ii=0; ii < tokens.length; ii++) {
+	// 		var aToken = tokens[ii];
+	// 		var aTokenText = aToken.text;
+	// 		var wordOutput = null;
+	// 		if (aToken.isWord) {
+	// 			words.push(aTokenText);
+	// 			wordOutput = this.htmlWordToCheck(aTokenText);
+	// 		} else {
+	// 			wordOutput = aTokenText;
+	// 		}
+	// 		divCheckedResults.append(wordOutput);
+	// 	}
+	// 	divCheckedResults.show();
+	// 	spellController.setCorrectionsHandlers();
+	//
+	// 	return words;
+	// }
+
+	htmlWordToCheck(text, correction) {
+		var html = null;
+		// For words, render them as a <span>
+		html = "<span class=\"token\" data-is-word=true";
+		html +=" data-word=\""+text+"\"";
+		if (correction == null) {
+			// If we haven't received a correction, it means we are just
+			// displaying the words that will be eventually be spell checked.
+			// Make they be greyed out so we know they have not yet been process
+			//
+			html += " style=\"color:grey\"";
+		}
+		html += ">"+text+"</span>";
+
+		return html;
 	}
 }
 

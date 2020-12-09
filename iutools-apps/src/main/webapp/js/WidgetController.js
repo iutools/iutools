@@ -113,4 +113,16 @@ class WidgetController {
 	        error: fctFailure
 		});
 	}
+
+	error(err) {
+		var errMess = JSON.stringify(err, null, 2);
+		this.displayError(errMess);
+	}
+
+	// Override this method if you want a controller to dislay errors
+	// in a different way.
+	//
+	displayError(errMess) {
+		console.log(errMess);
+	}
 }

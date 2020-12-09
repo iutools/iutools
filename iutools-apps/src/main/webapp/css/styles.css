@@ -192,15 +192,18 @@ table.alignments th {
 main#spell-checker {
 	font-size: 20px;
 }
+
 textarea#txt-to-check {
 	font-family: Verdana, Geneva, sans-serif;
 	font-size: 16px;
 	height:200px;
 	width:650px;
 }
+
 div.corrections span.selected {
 	cursor: pointer;
 }
+
 div#div-checked div#title-and-copy,
 div#div-checked div#results {
 	display: none;
