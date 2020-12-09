@@ -479,8 +479,8 @@ class SpellController extends WidgetController {
 	// }
 
 	divSpellCheckResults() {
-		var divChecked = this.elementForProp('divCheckedNew');
-		var divCheckedResults = divChecked.find('div#div-results-new');
+		var divChecked = this.elementForProp('divChecked');
+		var divCheckedResults = divChecked.find('div#div-results');
 		return divCheckedResults;
 	}
 
