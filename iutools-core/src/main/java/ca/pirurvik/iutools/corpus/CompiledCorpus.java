@@ -9,6 +9,8 @@ import java.util.regex.Pattern;
 
 import ca.inuktitutcomputing.data.Morpheme;
 import ca.inuktitutcomputing.morph.Decomposition;
+import ca.nrc.config.Config;
+import ca.nrc.config.ConfigException;
 import ca.nrc.dtrc.elasticsearch.*;
 import ca.nrc.dtrc.elasticsearch.request.*;
 import ca.nrc.ui.commandline.UserIO;
@@ -55,6 +57,8 @@ public class CompiledCorpus {
 	protected transient StringSegmenter segmenter = null;
 
 	private int decompsSampleSize = 10;
+
+	private boolean debug = true;
 
 	@JsonIgnore
 	public transient String name;
@@ -265,13 +269,37 @@ public class CompiledCorpus {
 			} catch (ElasticSearchException e) {
 				throw new CompiledCorpusException(e);
 			}
+
+			if (debugMode()) {
+				_esClient.attachObserver(new ObsEnsureAllRecordsAreWordInfo());
+			}
 		}
+
 		if (!esClientVerbose) {
 			_esClient.setUserIO(null);
 		} else  {
 			_esClient.setUserIO(new UserIO(UserIO.Verbosity.Level1));
 		}
+
+		if (debug) {
+			_esClient.attachObserver(new ObsEnsureAllRecordsAreWordInfo());
+		}
 		return _esClient;
+	}
+
+	private boolean debugMode() throws CompiledCorpusException {
+		Boolean debug = null;
+		try {
+			debug = Config.getConfigProperty(
+			"ca.pirurvik.iutools.corpus.CompiledCorpus.debug",
+			false, Boolean.class);
+			if (debug == null) {
+				debug = false;
+			}
+		} catch (ConfigException e) {
+			throw new CompiledCorpusException(e);
+		}
+		return debug;
 	}
 
 	public void loadFromFile(File jsonFile, Boolean verbose) throws CompiledCorpusException {
@@ -533,16 +561,21 @@ public class CompiledCorpus {
 
 	
 	public boolean containsWord(String word) throws CompiledCorpusException {
+		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpus.containsWord");
+		tLogger.trace("[word="+word+"]: entered");
 		WordInfo winfo = null;
 		try {
 			winfo =
 				(WordInfo) esClient().getDocumentWithID(
 					word, WordInfo.class, WORD_INFO_TYPE);
 		} catch (ElasticSearchException e) {
+			tLogger.trace("[word="+word+"]: raised exception e="+e.getMessage());
 			throw new CompiledCorpusException(e);
 		}
 
 		boolean answer = (winfo != null);
+
+		tLogger.trace("[word="+word+"]: exited");
 
 		return answer;
 	}

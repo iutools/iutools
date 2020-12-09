@@ -607,7 +607,7 @@ public class SpellChecker {
 	 */
 	public Boolean isMispelled(String word) throws SpellCheckerException {
 		Logger logger = Logger.getLogger("ca.pirurvik.iutools.spellchecker.SpellChecker.isMispelled");
-		logger.trace("word: "+word);
+		logger.trace("[word="+word+"]: invoked");
 
 		Boolean wordIsMispelled = null;
 		if (wordIsMispelled == null) {
@@ -625,6 +625,9 @@ public class SpellChecker {
 						logger.trace("Corpus contains some decompositions for this word");
 					}
 				} catch (CompiledCorpusException e) {
+					logger.trace(
+						"[word="+word+"]: throws exception e="+e.getMessage()+
+						"\ncorpus index name was: "+corpus.getIndexName());
 					throw new SpellCheckerException(e);
 				}
 			}
@@ -691,7 +694,7 @@ public class SpellChecker {
 				answer = explicitlyCorrectWords.containsWord(word);
 			}
 		} catch (CompiledCorpusException e) {
-			tLogger.trace("[word="+word+"] !!! RAISES EXCEPTION");
+			tLogger.trace("[word="+word+"] !!! RAISES EXCEPTION e="+e.getCause());
 			throw new SpellCheckerException(e);
 		}
 

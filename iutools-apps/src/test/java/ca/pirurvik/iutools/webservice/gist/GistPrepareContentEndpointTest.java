@@ -84,8 +84,6 @@ public class GistPrepareContentEndpointTest {
 		;
 	}
 	
-//	@Test
-
 	@Test
 	public void test__GistPrepareContentEndpoint__InputIsURL_WhoseTranslationCannotBeDeduced() throws Exception {
 		// The English URL for this IU url is:

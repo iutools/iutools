@@ -29,11 +29,12 @@ public class MorphemeSearcherTest {
 	
 	@Before
 	public void setUp() throws Exception {
-        smallCorpus = makeCorpus();
-        smallCorpus.addWordOccurences(
+		smallCorpus = makeCorpus();
+		smallCorpus.addWordOccurences(
         	new String[] {"inuit", "nunami", "iglumik", "inuglu"});
 		morphemeSearcher = new MorphemeSearcher();
-        morphemeSearcher.useCorpus(smallCorpus);
+		morphemeSearcher.useCorpus(smallCorpus);
+		return;
 	}
 
 	protected CompiledCorpus makeCorpus() throws Exception {
@@ -131,7 +132,7 @@ public class MorphemeSearcherTest {
 	
 	@Test
 	public void test__wordsContainingMorpheme__ending() throws Exception {
-		HashMap<String,String> dictionary = new HashMap<String,String>();		
+		HashMap<String,String> dictionary = new HashMap<String,String>();
 		dictionary.put("inuit", "{inuk/1n} {it/tn-nom-p}");
 		dictionary.put("nunami", "{nuna/1n} {mi/tn-loc-s}");
 		dictionary.put("iglumik", "{iglu/1n} {mik/tn-acc-s}");
@@ -148,7 +149,7 @@ public class MorphemeSearcherTest {
 		mockCompiledCorpus.addWordOccurences(wordsToAdd);
 
 		morphemeSearcher.useCorpus(mockCompiledCorpus);
-        
+
 		String morpheme = "mut";
 		List<MorphSearchResults> wordsForMorphemes =
 			this.morphemeSearcher.wordsContainingMorpheme(morpheme);
