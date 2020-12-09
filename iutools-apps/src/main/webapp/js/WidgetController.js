@@ -115,7 +115,12 @@ class WidgetController {
 	}
 
 	error(err) {
-		var errMess = JSON.stringify(err, null, 2);
+		var errMess;
+		if (typeof err === 'string' || err instanceof String) {
+			errMess = err;
+		} else {
+			errMess = JSON.stringify(err, null, 2);
+		}
 		this.displayError(errMess);
 	}
 
