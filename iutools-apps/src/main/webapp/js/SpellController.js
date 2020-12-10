@@ -50,13 +50,10 @@ class SpellController extends WidgetController {
 			var text = "";
 			if ($(item).is('.corrections')) {
 				text = $(item).find('.selected').text();
-				console.log('item.select text= "' + text + '"');
 			} else if ($(item).is('span')) {
 				text = $(item).text();
-				console.log('item text= "' + text + '"');
 			}
 			allText += text;
-			console.log('allText= "' + allText + '"');
 		});
 		return allText;
 	}
@@ -163,7 +160,6 @@ class SpellController extends WidgetController {
 	onClickOnCorrections(ev) {
 			var target = $(ev.target);
 			var divParent = target.closest('div');
-			console.log('divParent: '+divParent.length+"; word= "+divParent.attr('word'));
 			$('span',divParent).css('display','block');
 	}
 
@@ -190,7 +186,6 @@ class SpellController extends WidgetController {
 				$(ev.target).css('color','black')
 			})
 			.on('click',function(ev){
-				console.log('click');
 				var target = $(ev.target);
 				var divParent = target.closest('div');
 				$('span',divParent).css('display','none');
@@ -198,7 +193,6 @@ class SpellController extends WidgetController {
 				target.addClass('selected');
 				$('.additional input',divParent).val('');
 				$('.selected',divParent).css('display','block');
-				console.log('out of click');
 				spellController.attachAllCorrectionsHandlers();
 			});
 		divSingleWordCorrection.find('span.additional input')
@@ -210,9 +204,7 @@ class SpellController extends WidgetController {
 				$('.additional input',divParent).val('');
 			})
 			.on('keyup',function(ev){
-				console.log("-- attachSingleWordCorrectionHandlers: keyup on correction text input");
 				if(ev.keyCode == 13) {
-					console.log("-- attachSingleWordCorrectionHandlers: ENTER key was just typed");
 					var target = $(ev.target);
 					var divParent = target.closest('div');
 					var newSuggestionValue = target.val().trim();
@@ -221,9 +213,7 @@ class SpellController extends WidgetController {
 						$('span.selected',divParent).removeClass('selected');
 						var newSuggestionElement = $('<span class="suggestion selected">'+newSuggestionValue+'</span>');
 						newSuggestionElement.insertBefore($('.original',divParent));
-						console.log("-- attachSingleWordCorrectionHandlers: invoking attachAllCorrectionsHandlers");
 						spellController.attachAllCorrectionsHandlers();
-						console.log("-- attachSingleWordCorrectionHandlers: DONE invoking attachAllCorrectionsHandlers");
 						$('.additional input',divParent).val('');
 						$('.selected',divParent).css('display','block');
 					}
@@ -231,10 +221,7 @@ class SpellController extends WidgetController {
 
 					}
 				} else {
-					console.log("-- attachSingleWordCorrectionHandlers: NON-ENTER key was just typed");
 				}
-				console.log("-- attachSingleWordCorrectionHandlers: EXITING");
-
 			});
 	}
 
@@ -261,7 +248,6 @@ class SpellController extends WidgetController {
 				$(ev.target).css('color','black')
 				})
 			.on('click',function(ev){
-				console.log('click');
 				var target = $(ev.target);
 				var divParent = target.closest('div');
 				$('span',divParent).css('display','none');
@@ -269,7 +255,6 @@ class SpellController extends WidgetController {
 				target.addClass('selected');
 				$('.additional input',divParent).val('');
 				$('.selected',divParent).css('display','block');
-				console.log('out of click');
 				spellController.attachAllCorrectionsHandlers();
 				});
 		$(document).find('span.additional input')
@@ -319,8 +304,6 @@ class SpellController extends WidgetController {
 	 * web server.
 	 */
 	cbkTokenizeSuccess(resp) {
-		// console.log("-- SpellController.cbkTokenizeSuccess: got resp="+
-		// 	  JSON.stringify(resp));
 		if (resp.errorMessage != null) {
 			this.cbkTokenizeFailure(resp);
 		} else {
@@ -343,17 +326,12 @@ class SpellController extends WidgetController {
 	 * web server.
 	 */
 	spellCheckRemainingTokens() {
-		console.log("-- spellCheckRemainingTokens: "+
-			this.tokensRemaining.length+" tokens left");
 		if (this.tokensRemaining.length == 0) {
-			console.log("-- spellCheckRemainingTokens: No more tokens left. EXITING");
 			this.setBusy(false);
 			return;
 		}
 
 		this.tokenBeingChecked = this.tokensRemaining.shift();
-		console.log("-- spellCheckRemainingTokens: checking token '"+
-			JSON.stringify(this.tokenBeingChecked)+"'");
 		this.spellCheckToken(this.tokenBeingChecked);
 		var spellController = this;
 
@@ -361,10 +339,8 @@ class SpellController extends WidgetController {
 		var readyForNextToken = function() {
 			var ready = false;
 			if (spellController.tokenBeingChecked == null) {
-				console.log("-- spellCheckRemainingTokens.readyForNextToken: IS ready to check next token");
 				ready = true;
 			} else {
-				console.log("-- spellCheckRemainingTokens.readyForNextToken: NOT ready to check next token");
 				ready = false;
 			}
 			return ready;
@@ -458,7 +434,6 @@ class SpellController extends WidgetController {
 	 * a misspelled word.
 	 */
 	picklistFor(corrResult) {
-		console.log("corrResult= "+JSON.stringify(corrResult));
 		var origWord = corrResult.orig;
 		var alternatives = corrResult.allSuggestions;
 		var picklistHtml = "<div class='corrections' word='"+corrResult.orig+"'>\n";
@@ -477,7 +452,6 @@ class SpellController extends WidgetController {
 	}
 	
 	setBusy(flag) {
-		console.log('setBusy: '+flag);
 		this.busy = flag;
 		if (flag) {
 			this.disableSpellButton();	
@@ -535,7 +509,6 @@ class SpellController extends WidgetController {
 	displayError(errMess) {
 		if (errMess != null && !(errMess === "")) {
 			errMess = "SpellController raised an error:\n" + errMess;
-			console.log(errMess);
 			this.elementForProp('divError').html(errMess);
 			this.elementForProp('divError').show();
 		} else {
@@ -561,9 +534,6 @@ class SpellController extends WidgetController {
 	 *   that the token was not a word and should be displayed as is.
 	 */
 	displayToken(token, correction) {
-		console.log("-- displayToken: displaying token '"+
-			JSON.stringify(token)+"'");
-
 		var divCheckedResults = this.divSpellCheckResults();
 		var html;
 		var word = token.text;
@@ -582,8 +552,6 @@ class SpellController extends WidgetController {
 	 * @param token
 	 */
 	spellCheckToken(token) {
-		console.log("-- spellCheckToken: checking token '"+
-			JSON.stringify(token)+"'");
 		if (!token.isWord) {
 			this.displayToken(token);
 			this.tokenBeingChecked = null;
