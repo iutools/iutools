@@ -193,7 +193,8 @@ class SpellController extends WidgetController {
 				target.addClass('selected');
 				$('.additional input',divParent).val('');
 				$('.selected',divParent).css('display','block');
-				spellController.attachAllCorrectionsHandlers();
+				spellController.attachSingleWordCorrectionHandlers(divParent);
+				return;
 			});
 		divSingleWordCorrection.find('span.additional input')
 			.on('mouseleave',function(ev){
@@ -213,7 +214,7 @@ class SpellController extends WidgetController {
 						$('span.selected',divParent).removeClass('selected');
 						var newSuggestionElement = $('<span class="suggestion selected">'+newSuggestionValue+'</span>');
 						newSuggestionElement.insertBefore($('.original',divParent));
-						spellController.attachAllCorrectionsHandlers();
+						spellController.attachSingleWordCorrectionHandlers(divParent);
 						$('.additional input',divParent).val('');
 						$('.selected',divParent).css('display','block');
 					}
@@ -221,67 +222,6 @@ class SpellController extends WidgetController {
 
 					}
 				} else {
-				}
-			});
-	}
-
-	/**
-	 * Sets handlers on the picklists that provide suggested corrections for
-	 * the misspelled words.
-	 */
-	attachAllCorrectionsHandlers() {
-		var spellController = this;
-		$(document).find('div.corrections').on('mouseleave',function(ev){
-			var target = $(ev.target);
-			var divParent = target.closest('div');
-			$('span',divParent).css('display','none');
-			$('.selected',divParent).css('display','block');
-			$('.additional input',divParent).val('');
-			});
-		$(document).find('span.suggestion.selected')
-			.on('click',this.onClickOnCorrections);
-		$(document).find('span.suggestion:not(.selected)')
-			.on('mouseover',function(ev){
-				$(ev.target).css({'color':'red'});
-				})
-			.on('mouseleave',function(ev){
-				$(ev.target).css('color','black')
-				})
-			.on('click',function(ev){
-				var target = $(ev.target);
-				var divParent = target.closest('div');
-				$('span',divParent).css('display','none');
-				$('span.selected',divParent).removeClass('selected');
-				target.addClass('selected');
-				$('.additional input',divParent).val('');
-				$('.selected',divParent).css('display','block');
-				spellController.attachAllCorrectionsHandlers();
-				});
-		$(document).find('span.additional input')
-			.on('mouseleave',function(ev){
-				var target = $(ev.target);
-				var divParent = target.closest('div');
-				//$('span',divParent).css('display','none');
-				$('.selected',divParent).css('display','block');
-				$('.additional input',divParent).val('');
-				})
-			.on('keyup',function(ev){
-				if(ev.keyCode == 13) {
-					var target = $(ev.target);
-					var divParent = target.closest('div');
-					var newSuggestionValue = target.val().trim();
-					if (newSuggestionValue != '') {
-						$('span',divParent).css('display','none');
-						$('span.selected',divParent).removeClass('selected');
-						var newSuggestionElement = $('<span class="suggestion selected">'+newSuggestionValue+'error(</span>');
-						newSuggestionElement.insertBefore($('.original',divParent));
-						spellController.attachAllCorrectionsHandlers();
-						$('.additional input',divParent).val('');
-						$('.selected',divParent).css('display','block');
-					}
-					else {
-						
-					}
 				}
 			});
 	}
@@ -402,14 +342,6 @@ class SpellController extends WidgetController {
 		var appended = divSpellCheckedWords.append(html);
 		appended.css("display", "block")
 
-		// TODO-2020-12-09: This will set the handlers on ALL the picklists
-		//   that have been created so far, including some for which the handlers
-		//   have already been set.
-		//
-		// It would be more efficient to just set the handlers on the last
-		//   picklist that was added
-		//
-		// this.attachAllCorrectionsHandlers();
 		this.attachSingleWordCorrectionHandlers(appended)
 		return;
 	}
