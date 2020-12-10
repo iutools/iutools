@@ -169,9 +169,81 @@ class SpellController extends WidgetController {
 
 	/**
 	 * Sets handlers on the picklists that provide suggested corrections for
+	 * a single misspelled words.
+	 */
+	attachSingleWordCorrectionHandlers(divSingleWordCorrection) {
+		var spellController = this;
+		divSingleWordCorrection.on('mouseleave',function(ev){
+			var target = $(ev.target);
+			var divParent = target.closest('div');
+			$('span',divParent).css('display','none');
+			$('.selected',divParent).css('display','block');
+			$('.additional input',divParent).val('');
+		});
+		divSingleWordCorrection.find('span.suggestion.selected')
+			.on('click',this.onClickOnCorrections);
+		divSingleWordCorrection.find('span.suggestion:not(.selected)')
+			.on('mouseover',function(ev){
+				$(ev.target).css({'color':'red'});
+			})
+			.on('mouseleave',function(ev){
+				$(ev.target).css('color','black')
+			})
+			.on('click',function(ev){
+				console.log('click');
+				var target = $(ev.target);
+				var divParent = target.closest('div');
+				$('span',divParent).css('display','none');
+				$('span.selected',divParent).removeClass('selected');
+				target.addClass('selected');
+				$('.additional input',divParent).val('');
+				$('.selected',divParent).css('display','block');
+				console.log('out of click');
+				spellController.attachAllCorrectionsHandlers();
+			});
+		divSingleWordCorrection.find('span.additional input')
+			.on('mouseleave',function(ev){
+				var target = $(ev.target);
+				var divParent = target.closest('div');
+				//$('span',divParent).css('display','none');
+				$('.selected',divParent).css('display','block');
+				$('.additional input',divParent).val('');
+			})
+			.on('keyup',function(ev){
+				console.log("-- attachSingleWordCorrectionHandlers: keyup on correction text input");
+				if(ev.keyCode == 13) {
+					console.log("-- attachSingleWordCorrectionHandlers: ENTER key was just typed");
+					var target = $(ev.target);
+					var divParent = target.closest('div');
+					var newSuggestionValue = target.val().trim();
+					if (newSuggestionValue != '') {
+						$('span',divParent).css('display','none');
+						$('span.selected',divParent).removeClass('selected');
+						var newSuggestionElement = $('<span class="suggestion selected">'+newSuggestionValue+'</span>');
+						newSuggestionElement.insertBefore($('.original',divParent));
+						console.log("-- attachSingleWordCorrectionHandlers: invoking attachAllCorrectionsHandlers");
+						spellController.attachAllCorrectionsHandlers();
+						console.log("-- attachSingleWordCorrectionHandlers: DONE invoking attachAllCorrectionsHandlers");
+						$('.additional input',divParent).val('');
+						$('.selected',divParent).css('display','block');
+					}
+					else {
+
+					}
+				} else {
+					console.log("-- attachSingleWordCorrectionHandlers: NON-ENTER key was just typed");
+				}
+				console.log("-- attachSingleWordCorrectionHandlers: EXITING");
+
+			});
+	}
+
+	/**
+	 * Sets handlers on the picklists that provide suggested corrections for
 	 * the misspelled words.
 	 */
-	setCorrectionsHandlers() {
+	attachAllCorrectionsHandlers() {
+		var spellController = this;
 		$(document).find('div.corrections').on('mouseleave',function(ev){
 			var target = $(ev.target);
 			var divParent = target.closest('div');
@@ -198,7 +270,7 @@ class SpellController extends WidgetController {
 				$('.additional input',divParent).val('');
 				$('.selected',divParent).css('display','block');
 				console.log('out of click');
-				spellController.setCorrectionsHandlers();
+				spellController.attachAllCorrectionsHandlers();
 				});
 		$(document).find('span.additional input')
 			.on('mouseleave',function(ev){
@@ -218,7 +290,7 @@ class SpellController extends WidgetController {
 						$('span.selected',divParent).removeClass('selected');
 						var newSuggestionElement = $('<span class="suggestion selected">'+newSuggestionValue+'error(</span>');
 						newSuggestionElement.insertBefore($('.original',divParent));
-						spellController.setCorrectionsHandlers();
+						spellController.attachAllCorrectionsHandlers();
 						$('.additional input',divParent).val('');
 						$('.selected',divParent).css('display','block');
 					}
@@ -283,12 +355,12 @@ class SpellController extends WidgetController {
 		console.log("-- spellCheckRemainingTokens: checking token '"+
 			JSON.stringify(this.tokenBeingChecked)+"'");
 		this.spellCheckToken(this.tokenBeingChecked);
-		var spellChecker = this;
+		var spellController = this;
 
 		// Don't spell check next token until we are done with the current one
 		var readyForNextToken = function() {
 			var ready = false;
-			if (spellChecker.tokenBeingChecked == null) {
+			if (spellController.tokenBeingChecked == null) {
 				console.log("-- spellCheckRemainingTokens.readyForNextToken: IS ready to check next token");
 				ready = true;
 			} else {
@@ -299,7 +371,7 @@ class SpellController extends WidgetController {
 		}
 
 		var doRemaining = function() {
-			spellChecker.spellCheckRemainingTokens();
+			spellController.spellCheckRemainingTokens();
 		}
 		new RunWhen().conditionMet(readyForNextToken, doRemaining, null, 100);
 	}
@@ -361,7 +433,8 @@ class SpellController extends WidgetController {
 		// It would be more efficient to just set the handlers on the last
 		//   picklist that was added
 		//
-		this.setCorrectionsHandlers();
+		// this.attachAllCorrectionsHandlers();
+		this.attachSingleWordCorrectionHandlers(appended)
 		return;
 	}
 
@@ -502,12 +575,6 @@ class SpellController extends WidgetController {
 			html = this.picklistFor(correction);
 		}
 		divCheckedResults.append(html);
-
-		// TODO-2020-12-09: Should only set the handler on the last
-		//   element in divCheckedResults.
-		//   Note: We want to set the handler NOW because we want the user
-		//   to be able to manipulate the suggestions picklist right away.
-		// spellController.setCorrectionsHandlers();
 	}
 
 	/**
@@ -522,14 +589,14 @@ class SpellController extends WidgetController {
 			this.tokenBeingChecked = null;
 		} else {
 			var word = token.text;
-			var spellChecker = this;
+			var spellController = this;
 			var cbkSuccess = function(resp) {
-				spellChecker.cbkSpellWordSuccess(resp);
-				spellChecker.tokenBeingChecked = null;
+				spellController.cbkSpellWordSuccess(resp);
+				spellController.tokenBeingChecked = null;
 			}
 			var cbkFailure = function(resp) {
-				spellChecker.cbkSpellWordFailure(resp);
-				spellChecker.tokenBeingChecked = null;
+				spellController.cbkSpellWordFailure(resp);
+				spellController.tokenBeingChecked = null;
 			}
 			this.invokeSpellCheckWordService(
 				this.spellWordRequestData(word),
