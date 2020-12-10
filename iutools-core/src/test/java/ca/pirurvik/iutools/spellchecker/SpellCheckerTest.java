@@ -137,6 +137,10 @@ public class SpellCheckerTest {
 		}
 	}
 
+	//////////////////////////////////////////////////
+	// DOCUMENTATION TESTS
+	//////////////////////////////////////////////////
+
 	@Test
 	public void test__SpellChecker__Synopsis() throws Exception {
 	 	//
@@ -203,15 +207,15 @@ public class SpellCheckerTest {
 		
 		String word = "inukkkutttt";
 		Assertions.assertTrue(
-		checker.isMispelled(word),
-		"Initially, word "+word+" should have been deemed mis-spelled");
+			checker.isMispelled(word),
+			"Initially, word "+word+" should have been deemed mis-spelled");
 		
 		checker.addExplicitlyCorrectWord(word);
 		Thread.sleep(1000);
 		Assertions.assertFalse(
-		checker.isMispelled(word),
-		"After being explicitly labelled as correct, word "+word+
-					" should NOT have been deemed mis-spelled");
+			checker.isMispelled(word),
+			"After being explicitly labelled as correct, word "+word+
+						" should NOT have been deemed mis-spelled");
 	}
 	
 	@Test 

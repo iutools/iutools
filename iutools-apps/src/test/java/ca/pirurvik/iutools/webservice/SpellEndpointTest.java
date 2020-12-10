@@ -46,7 +46,7 @@ public class SpellEndpointTest {
 	/***********************
 	 * VERIFICATION TESTS
 	 ***********************/	
-	
+
 	@Test
 	public void test__SpellEndpoint__Syllabic__HappyPath() throws Exception {
 		

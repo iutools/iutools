@@ -374,6 +374,8 @@ class SpellController extends WidgetController {
 		for (var ii=0; ii < alternatives.length; ii++) {
 			var anAlternative = alternatives[ii];
 			picklistHtml += "<span class=\"suggestion";
+			anAlternative = anAlternative.replaceAll("[", '<b>(');
+			anAlternative = anAlternative.replaceAll("]", ')</b>');
 			picklistHtml += "\">"+anAlternative+"</span>\n";
 			if (anAlternative.length > inputLength)
 				inputLength = anAlternative.length;
