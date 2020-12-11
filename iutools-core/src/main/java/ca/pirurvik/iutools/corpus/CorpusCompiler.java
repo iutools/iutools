@@ -610,7 +610,11 @@ public class CorpusCompiler {
 
 	public CompiledCorpus corpus() throws CorpusCompilerException {
 		if (_corpus == null) {
-			_corpus = new CompiledCorpus(corpusName);
+			try {
+				_corpus = new CompiledCorpus(corpusName);
+			} catch (CompiledCorpusException e) {
+				throw new CorpusCompilerException(e);
+			}
 		}
 		return this._corpus;
 	}

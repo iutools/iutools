@@ -58,7 +58,9 @@ public class CompiledCorpus {
 
 	private int decompsSampleSize = 10;
 
-	private boolean debug = true;
+	// If boolean is set to true, then this will contain the 'address' of the
+	// SpellChecker.
+	private Integer address = null;
 
 	@JsonIgnore
 	public transient String name;
@@ -66,12 +68,15 @@ public class CompiledCorpus {
 	protected transient NgramCompiler charsNgramCompiler = null;
 	protected transient NgramCompiler morphsNgramCompiler = null;
 
-	public CompiledCorpus(String _indexName) {
+	public CompiledCorpus(String _indexName) throws CompiledCorpusException {
 		init_CompiledCorpus(_indexName);
 	}
 
-	public void init_CompiledCorpus(String _indexName) {
+	public void init_CompiledCorpus(String _indexName) throws CompiledCorpusException {
 		this.indexName = _indexName;
+		if (debugMode()) {
+			this.address = System.identityHashCode(this);
+		}
 	}
 
 	public CompiledCorpus setName(String _name) {
@@ -281,7 +286,7 @@ public class CompiledCorpus {
 			_esClient.setUserIO(new UserIO(UserIO.Verbosity.Level1));
 		}
 
-		if (debug) {
+		if (debugMode()) {
 			_esClient.attachObserver(new ObsEnsureAllRecordsAreWordInfo());
 		}
 		return _esClient;
@@ -562,24 +567,39 @@ public class CompiledCorpus {
 	
 	public boolean containsWord(String word) throws CompiledCorpusException {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.corpus.CompiledCorpus.containsWord");
-		tLogger.trace("[word="+word+"]: entered");
+		String traceLabel = this.traceLabel("word="+word);
+		tLogger.trace(traceLabel+"invoked");
 		WordInfo winfo = null;
 		try {
 			winfo =
 				(WordInfo) esClient().getDocumentWithID(
 					word, WordInfo.class, WORD_INFO_TYPE);
 		} catch (ElasticSearchException e) {
-			tLogger.trace("[word="+word+"]: raised exception e="+e.getMessage());
+			tLogger.trace(traceLabel+"raised exception e="+e.getMessage());
 			throw new CompiledCorpusException(e);
 		}
 
 		boolean answer = (winfo != null);
 
-		tLogger.trace("[word="+word+"]: exited");
+		tLogger.trace(traceLabel+"exited");
 
 		return answer;
 	}
 
+	private String traceLabel(String label) throws CompiledCorpusException {
+		StringBuilder sBuilder = new StringBuilder();
+		sBuilder
+			.append("[")
+			.append(label);
+		if (debugMode()) {
+			sBuilder
+				.append(", address=")
+				.append(this.address);
+		}
+		sBuilder.append("]: ");
+
+		return sBuilder.toString();
+	}
 	
 	public Iterator<String> wordsContainingMorphNgram(String[] morphemes) throws CompiledCorpusException {
 		Set<String> words = new HashSet<String>();

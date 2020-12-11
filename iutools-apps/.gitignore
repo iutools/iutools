@@ -1,3 +1,4 @@
 /footest.txt
 /target/
 /iutools-apps.iml
+/src/test/resources/ca/pirurvik/iutools/webservice/jmeter.log

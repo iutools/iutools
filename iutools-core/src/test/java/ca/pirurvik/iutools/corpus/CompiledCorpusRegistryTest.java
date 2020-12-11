@@ -63,7 +63,7 @@ public class CompiledCorpusRegistryTest {
 	}
 	
 	@Test
-	public void test__getCorpus__get_from_unknown_corpus_name() {
+	public void test__getCorpus__get_from_unknown_corpus_name() throws Exception {
 		boolean errorCaught = false;
 		try {
 			CompiledCorpus corpus = CompiledCorpusRegistry.getCorpusWithName("blah");

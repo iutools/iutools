@@ -150,18 +150,26 @@ public class SpellChecker {
 
 		esIndexNameRoot = _corpusName;
 		if (!mustBeRegistered) {
-			corpus = new CompiledCorpus(_corpusName);
+			try {
+				corpus = new CompiledCorpus(_corpusName);
+			} catch (CompiledCorpusException e) {
+				throw new SpellCheckerException(e);
+			}
 		} else {
 			try {
 				corpus = CompiledCorpusRegistry.getCorpusWithName(_corpusName);
-			} catch (CompiledCorpusRegistryException e) {
+			} catch (CompiledCorpusRegistryException | CompiledCorpusException e) {
 				throw new SpellCheckerException(
 						"No registered corpus by the name of "+_corpusName, e);
 			}
 		}
-		explicitlyCorrectWords =
-				new CompiledCorpus(
-						explicitlyCorrectWordsIndexName());
+		try {
+			explicitlyCorrectWords =
+					new CompiledCorpus(
+							explicitlyCorrectWordsIndexName());
+		} catch (CompiledCorpusException e) {
+			throw new SpellCheckerException(e);
+		}
 
 		try {
 			editDistanceCalculator = EditDistanceCalculatorFactory.getEditDistanceCalculator();
@@ -184,7 +192,7 @@ public class SpellChecker {
 		try {
 			corpus = CompiledCorpusRegistry.getCorpusWithName(_corpusName);
 			setDictionaryFromCorpus(corpus);
-		} catch (CompiledCorpusRegistryException e) {
+		} catch (CompiledCorpusException | CompiledCorpusRegistryException e) {
 			throw new SpellCheckerException(e);
 		}
 	}
