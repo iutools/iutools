@@ -1,5 +1,6 @@
 var spellControllerConfig = {
 		btnSpell: "btn-spell",
+		btnCancelSpell: "btn-cancel-spell",
 		txtToCheck: "txt-to-check",
 		divChecked:  "div-checked",
 		divError: "div-error",
@@ -80,7 +81,8 @@ QUnit.module("SpellController Tests", {
 		// Add HTML elements that are used by this spellController
         var formHTML =
             "<button id=\""+spellControllerConfig.btnSpell+"\"><br/>\n"
-          + "<textarea id=\""+spellControllerConfig.txtToCheck+"\" name=\""+spellControllerConfig.txtToCheck+"\" rows=5 cols=40></textarea><p/>" 
+			"<button id=\""+spellControllerConfig.btnCancelSpell+"\"><br/>\n"
+          + "<textarea id=\""+spellControllerConfig.txtToCheck+"\" name=\""+spellControllerConfig.txtToCheck+"\" rows=5 cols=40></textarea><p/>"
           + "<div id=\""+spellControllerConfig.divMessage+"\" class=\""+spellControllerConfig.divMessage+"\"></div><br/>\n"
           + "<div id=\""+spellControllerConfig.divError+"\" class=\""+spellControllerConfig.divError+"\"></div><br/>\n"
           + "<div id=\""+spellControllerConfig.divChecked+"\" class=\""+spellControllerConfig.divChecked+"\"></div>\n"

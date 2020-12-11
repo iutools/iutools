@@ -13,6 +13,10 @@ class SpellController extends WidgetController {
 		// Token currently being spell checked. If null, means we are
 		// not currently processing a token.
 		this.tokenBeingChecked = null;
+
+		// Set to false if we want to abort the current spell checking
+		// task.
+		this.abortCheck = false;
 	}
 
 	/**
@@ -20,6 +24,7 @@ class SpellController extends WidgetController {
 	 */
 	attachHtmlElements() {
 		this.setEventHandler("btnSpell", "click", this.spellCheck);
+		this.setEventHandler("btnCancelSpell", "click", this.abortSpellCheck);
 	}
 
 	/**
@@ -68,6 +73,10 @@ class SpellController extends WidgetController {
 			this.setBusy(true);
 			this.tokenizeAndSpellCheck();
 		}
+	}
+
+	abortSpellCheck() {
+		this.abortCheck = true;
 	}
 
 	/**
@@ -266,7 +275,12 @@ class SpellController extends WidgetController {
 	 * web server.
 	 */
 	spellCheckRemainingTokens() {
-		if (this.tokensRemaining.length == 0) {
+		if (this.abortCheck) {
+			this.clearRemainingWords();
+		}
+
+		if (this.tokensRemaining == null ||
+			this.tokensRemaining.length == 0) {
 			this.setBusy(false);
 			return;
 		}
@@ -388,12 +402,14 @@ class SpellController extends WidgetController {
 	setBusy(flag) {
 		this.busy = flag;
 		if (flag) {
-			this.disableSpellButton();	
+			this.disableSpellButton();
+			this.enableCancelButton();
 			this.showSpinningWheel('divMessage', "Checking");
 			this.error("");
 			this.elementForProp('btnCopy').hide();
 		} else {
 			this.enableSpellButton();
+			this.disableCancelButton();
 			this.hideSpinningWheel('divMessage');
 			var btnCopy = this.elementForProp('btnCopy');
 			btnCopy.show();
@@ -438,6 +454,18 @@ class SpellController extends WidgetController {
 	
 	enableSpellButton() {
 		this.elementForProp('btnSpell').attr("disabled", false);
+	}
+
+	disableCancelButton() {
+		var button = this.elementForProp('btnCancelSpell');
+		button.attr("disabled", true);
+		button.css('display', 'none')
+	}
+
+	enableCancelButton() {
+		var button = this.elementForProp('btnCancelSpell');
+		button.attr("disabled", false);
+		button.css('display', 'block')
 	}
 
 	displayError(errMess) {
@@ -492,11 +520,11 @@ class SpellController extends WidgetController {
 		} else {
 			var word = token.text;
 			var spellController = this;
-			var cbkSuccess = function(resp) {
+			var cbkSuccess = function (resp) {
 				spellController.cbkSpellWordSuccess(resp);
 				spellController.tokenBeingChecked = null;
 			}
-			var cbkFailure = function(resp) {
+			var cbkFailure = function (resp) {
 				spellController.cbkSpellWordFailure(resp);
 				spellController.tokenBeingChecked = null;
 			}
@@ -504,6 +532,12 @@ class SpellController extends WidgetController {
 				this.spellWordRequestData(word),
 				cbkSuccess, cbkFailure);
 		}
+	}
+
+	clearRemainingWords() {
+		this.tokensRemaining = null;
+		this.tokenBeingChecked;
+		this.abortCheck = false;
 	}
 }
 
