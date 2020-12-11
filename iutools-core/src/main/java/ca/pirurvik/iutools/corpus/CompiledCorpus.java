@@ -11,6 +11,7 @@ import ca.inuktitutcomputing.data.Morpheme;
 import ca.inuktitutcomputing.morph.Decomposition;
 import ca.nrc.config.Config;
 import ca.nrc.config.ConfigException;
+import ca.nrc.debug.Debug;
 import ca.nrc.dtrc.elasticsearch.*;
 import ca.nrc.dtrc.elasticsearch.request.*;
 import ca.nrc.ui.commandline.UserIO;
@@ -574,8 +575,10 @@ public class CompiledCorpus {
 			winfo =
 				(WordInfo) esClient().getDocumentWithID(
 					word, WordInfo.class, WORD_INFO_TYPE);
-		} catch (ElasticSearchException e) {
-			tLogger.trace(traceLabel+"raised exception e="+e.getMessage());
+		} catch (RuntimeException | ElasticSearchException e) {
+			tLogger.trace(traceLabel+"raised exception e="+e);
+			tLogger.trace(traceLabel+"call stack was:"+Debug.printCallStack(e));
+
 			throw new CompiledCorpusException(e);
 		}
 

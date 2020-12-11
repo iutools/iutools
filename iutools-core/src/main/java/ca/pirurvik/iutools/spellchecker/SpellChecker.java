@@ -5,16 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -1175,7 +1166,11 @@ public class SpellChecker {
 		return wordsIter;
 	}
 
-	public List<SpellingCorrection> correctText(String text) throws SpellCheckerException {
+	// For some reason, jMeter load testing for the SpellChecker
+	//   causes some ConcurrentModificationException.
+	//   Hoping to solve that problem by making the correctText be synchronized.
+	//
+	public synchronized List<SpellingCorrection> correctText(String text) throws SpellCheckerException {
 		return correctText(text, null);
 	}
 
