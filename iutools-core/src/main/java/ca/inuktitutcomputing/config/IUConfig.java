@@ -1,7 +1,5 @@
 package ca.inuktitutcomputing.config;
 
-import java.io.File;
-import java.util.HashSet;
 import java.util.Set;
 
 import ca.nrc.config.Config;
@@ -17,7 +15,7 @@ public class IUConfig extends Config {
 	}
 
 	public static String getIUDataPath(String file) throws ConfigException {
-		String iuDataPath = getConfigProperty("ca.nrc.iutools.datapath", true);	
+		String iuDataPath = getConfigProperty("org.iutools.datapath", true);
 		
 		if (file != null) {
 			iuDataPath.replaceAll("[\\/]$", "");
@@ -28,11 +26,11 @@ public class IUConfig extends Config {
 	}
 
 	public String nodesToTraceRegex() throws ConfigException {
-		String regex = 
+		String regex =
 			getConfigProperty(
-				"ca.nrc.datastructure.trie.nodesToTraceRegex", 
+				"ca.nrc.datastructure.trie.nodesToTraceRegex",
 				false);
-		
+
 		return regex;
 	}
 	

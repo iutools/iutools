@@ -18,8 +18,8 @@ well as commands for other tasks currently not supported by web apps.
 
 ## Installing _iutools_
 
-For more information about installing _iutools_, see the _README-INSTALL.MD_ 
-FILE.
+For more information about installing _iutools_, see the 
+[_README-install.MD_](README-install.MD) file. 
 
 ##Using _iutools_
 

@@ -40,8 +40,8 @@ public class ObsEnsureAllRecordsAreWordInfo extends StreamlinedClientObserver {
 				"", typeWinfo, winfoProto, queryNonWinfoRecords);
 			if (badRecords.getTotalHits() > 0) {
 				throw new ElasticSearchException(
-				when + ": There were some bad records in type '" + typeWinfo + "' of index '" +
-				indexName + "'.\n   URL was  : " + url + "\n   Json was : " + json);
+					when + ": There were some bad records in type '" + typeWinfo + "' of index '" +
+					indexName + "'.\n   URL was  : " + url + "\n   Json was : " + json);
 			}
 		}
 	}

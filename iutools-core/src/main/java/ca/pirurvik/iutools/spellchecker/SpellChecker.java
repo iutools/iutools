@@ -11,6 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ca.inuktitutcomputing.utilities.StopWatch;
+import ca.nrc.debug.Debug;
 import ca.pirurvik.iutools.corpus.*;
 import org.apache.commons.collections4.iterators.IteratorChain;
 import org.apache.log4j.Logger;
@@ -259,127 +260,138 @@ public class SpellChecker {
 
 	public SpellingCorrection correctWord(String word, int maxCorrections) throws SpellCheckerException {
 		Logger tLogger = Logger.getLogger("ca.pirurvik.iutools.spellchecker.SpellChecker.correctWord");
-		long start = StopWatch.nowMSecs();
+		Logger excLogger = Logger.getLogger("ca.pirurvik.iutools.spellchecker.SpellChecker.correctWord.exc");
 
-		SpellDebug.trace("SpellChecker.correctWord",
-				"Invoked on word="+word,
-				word, null);
-		
-		boolean wordIsSyllabic = Syllabics.allInuktitut(word);
-		
-		String wordInLatin = word;
-		if (wordIsSyllabic) {
-			wordInLatin = TransCoder.unicodeToRoman(word);
-		}
-		
-		SpellingCorrection corr = new SpellingCorrection(word);
-		corr.wasMispelled = isMispelled(wordInLatin);		
-		tLogger.trace("wasMispelled= "+corr.wasMispelled);
-
-		SpellDebug.trace("SpellChecker.correctWord",
-				"corr.wasMispelled="+corr.wasMispelled,
-				word, null);
-		
-		if (corr.wasMispelled) {
-			// set ngramStats and suite of words for candidates according to type of word (normal word or numeric expression)
-			String[] numericTermParts = splitNumericExpression(wordInLatin);
-			boolean wordIsNumericTerm = numericTermParts != null;
+		try {
+			long start = StopWatch.nowMSecs();
 
 			SpellDebug.trace("SpellChecker.correctWord",
-				"wordIsNumericTerm="+wordIsNumericTerm,
-				word, null);
+			"Invoked on word=" + word,
+			word, null);
 
-			if (partialCorrectionEnabled) {
-				SpellDebug.trace("SpellChecker.correctWord",
-						"Computing longest correct head and tail of the word",
-						word, null);
-				computeCorrectPortions(wordInLatin, corr);
+			boolean wordIsSyllabic = Syllabics.allInuktitut(word);
+
+			String wordInLatin = word;
+			if (wordIsSyllabic) {
+				wordInLatin = TransCoder.unicodeToRoman(word);
 			}
 
+			SpellingCorrection corr = new SpellingCorrection(word);
+			corr.wasMispelled = isMispelled(wordInLatin);
+			tLogger.trace("wasMispelled= " + corr.wasMispelled);
+
 			SpellDebug.trace("SpellChecker.correctWord",
+			"corr.wasMispelled=" + corr.wasMispelled,
+			word, null);
+
+			if (corr.wasMispelled) {
+				// set ngramStats and suite of words for candidates according to type of word (normal word or numeric expression)
+				String[] numericTermParts = splitNumericExpression(wordInLatin);
+				boolean wordIsNumericTerm = numericTermParts != null;
+
+				SpellDebug.trace("SpellChecker.correctWord",
+				"wordIsNumericTerm=" + wordIsNumericTerm,
+				word, null);
+
+				if (partialCorrectionEnabled) {
+					SpellDebug.trace("SpellChecker.correctWord",
+					"Computing longest correct head and tail of the word",
+					word, null);
+					computeCorrectPortions(wordInLatin, corr);
+				}
+
+				SpellDebug.trace("SpellChecker.correctWord",
 				"Computing 1st pass candidates",
 				word, null);
 
-			List<ScoredSpelling> candidates =
+				List<ScoredSpelling> candidates =
 				candidatesWithSimilarNgrams(wordInLatin, wordIsNumericTerm);
 
-			SpellDebug.trace("SpellChecker.correctWord",
-			"Number of 1st pass candidates="+(candidates.size()),
-			word, null);
+				SpellDebug.trace("SpellChecker.correctWord",
+				"Number of 1st pass candidates=" + (candidates.size()),
+				word, null);
 
-			SpellDebug.containsDuplicates("SpellChecker.correctWord",
+				SpellDebug.containsDuplicates("SpellChecker.correctWord",
 				"1st pass candidates", word, candidates);
 
-			SpellDebug.containsCorrection(
+				SpellDebug.containsCorrection(
 				"SpellChecker.correctWord",
 				"First pass candidates",
 				word, "nunavut", candidates);
 
-			SpellDebug.trace("SpellChecker.correctWord",
-				"Computing candidates similariy using "+editDistanceCalculator.getClass(),
+				SpellDebug.trace("SpellChecker.correctWord",
+				"Computing candidates similariy using " + editDistanceCalculator.getClass(),
 				word, null);
 
-			List<ScoredSpelling> scoredSpellings =
+				List<ScoredSpelling> scoredSpellings =
 				computeCandidateSimilarities(wordInLatin, candidates);
 
-			SpellDebug.containsDuplicates(
+				SpellDebug.containsDuplicates(
 				"SpellChecker.correctWord",
 				"candidates with similarities", word, scoredSpellings);
 
-			SpellDebug.containsCorrection(
-					"SpellChecker.correctWord",
-					"UNSORTED scored spellings",
-					word, scoredSpellings);
+				SpellDebug.containsCorrection(
+				"SpellChecker.correctWord",
+				"UNSORTED scored spellings",
+				word, scoredSpellings);
 
-			List<ScoredSpelling> sortedSpellings =
+				List<ScoredSpelling> sortedSpellings =
 				sortCandidatesByOverallScore(scoredSpellings);
 
-			SpellDebug.containsDuplicates(
+				SpellDebug.containsDuplicates(
 				"SpellChecker.correctWord",
 				"SORTED scored spellings", word, sortedSpellings);
 
-			SpellDebug.containsCorrection(
+				SpellDebug.containsCorrection(
 				"SpellChecker.correctWord",
 				"SORTED scored spellings",
 				word, scoredSpellings);
 
-			if (wordIsNumericTerm) {
-				for (int ic=0; ic<scoredSpellings.size(); ic++) {
-					ScoredSpelling scoredCandidate = sortedSpellings.get(ic);
-					scoredCandidate.spelling = 
-						scoredCandidate.spelling.replaceAll("\\d+-*",numericTermParts[0]);
+				if (wordIsNumericTerm) {
+					for (int ic = 0; ic < scoredSpellings.size(); ic++) {
+						ScoredSpelling scoredCandidate = sortedSpellings.get(ic);
+						scoredCandidate.spelling =
+						scoredCandidate.spelling.replaceAll("\\d+-*", numericTermParts[0]);
+					}
 				}
-			}
 
-			sortedSpellings = selectTopCandidates(maxCorrections, sortedSpellings);
+				sortedSpellings = selectTopCandidates(maxCorrections, sortedSpellings);
 
-			SpellDebug.containsDuplicates(
+				SpellDebug.containsDuplicates(
 				"TOP PORTION of SORTED scored spellings",
 				"SORTED scored spellings", word, sortedSpellings);
 
-			SpellDebug.containsCorrection(
+				SpellDebug.containsCorrection(
 				"SpellChecker.correctWord",
 				"TOP PORTION of SORTED scored spellings",
 				word, scoredSpellings);
 
-			if (SpellDebug.traceIsActive("SpellChecker.correctWord", word)) {
-				SpellDebug.trace("SpellChecker.correctWord",
-						"TOP PORTION of SORTED scored spellings is:\n"+
-							PrettyPrinter.print(scoredSpellings),
-						word, null);
-			}
-			
-	 		corr.setPossibleSpellings(sortedSpellings);
-		}
-		
-		if (wordIsSyllabic) {
-			transcodeCandidatesToSyllabic(corr);
-		}
+				if (SpellDebug.traceIsActive("SpellChecker.correctWord", word)) {
+					SpellDebug.trace("SpellChecker.correctWord",
+					"TOP PORTION of SORTED scored spellings is:\n" +
+					PrettyPrinter.print(scoredSpellings),
+					word, null);
+				}
 
-		long elapsed = StopWatch.elapsedMsecsSince(start);
-		tLogger.trace("word="+word+" took "+elapsed+"msecs");
-	
- 		return corr;
+				corr.setPossibleSpellings(sortedSpellings);
+			}
+
+			if (wordIsSyllabic) {
+				transcodeCandidatesToSyllabic(corr);
+			}
+
+			long elapsed = StopWatch.elapsedMsecsSince(start);
+			tLogger.trace("word=" + word + " took " + elapsed + "msecs");
+
+			return corr;
+		} catch (Exception e) {
+			excLogger.trace("word="+word+" raised exception e="+e+"\nCall stack was:\n"+ Debug.printCallStack(e));
+			if (e instanceof SpellCheckerException) {
+				throw e;
+			} else {
+				throw new SpellCheckerException(e);
+			}
+		}
 	}
 
 	private List<ScoredSpelling> selectTopCandidates(int maxCorrections,

@@ -297,7 +297,7 @@ public class CompiledCorpus {
 		Boolean debug = null;
 		try {
 			debug = Config.getConfigProperty(
-			"ca.pirurvik.iutools.corpus.CompiledCorpus.debug",
+			"org.iutools.corpus.CompiledCorpus.debug",
 			false, Boolean.class);
 			if (debug == null) {
 				debug = false;

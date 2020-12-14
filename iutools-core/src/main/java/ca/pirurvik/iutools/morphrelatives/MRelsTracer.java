@@ -16,7 +16,7 @@ public class MRelsTracer {
 
     protected static String[] relsToTrack() throws MorphRelativesFinderException {
         if (_relsToTrack == null) {
-            String propName = "ca.pirurvik.iutools.morphrelatives.relsToTrack";
+            String propName = "org.iutools.morphrelatives.relsToTrack";
             String[] defVal = new String[0];
             try {
                 _relsToTrack = Config.getConfigProperty(propName, defVal);
