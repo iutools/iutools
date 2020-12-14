@@ -1,4 +1,4 @@
-package ca.inuktitutcomputing.core.console;
+package org.iutools.cli;
 
 public class ConsoleException extends Exception {
 	

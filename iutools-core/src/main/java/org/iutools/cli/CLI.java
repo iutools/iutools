@@ -1,4 +1,4 @@
-package ca.inuktitutcomputing.core.console;
+package org.iutools.cli;
 
 import ca.nrc.string.StringUtils;
 import ca.pirurvik.iutools.concordancer.WebConcordancer;
@@ -8,7 +8,10 @@ import ca.nrc.ui.commandline.CommandLineException;
 import ca.nrc.ui.commandline.MainCommand;
 import ca.nrc.ui.commandline.SubCommand;;
 
-public class Console { 
+/**
+ * Command Line Interface for iutools
+ */
+public class CLI {
 	
 	protected static MainCommand defineMainCommand() throws CommandLineException {
 		MainCommand mainCmd = new MainCommand("Command line console for iutools.");

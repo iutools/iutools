@@ -1,4 +1,4 @@
-package ca.inuktitutcomputing.core.console;
+package org.iutools.cli;
 
 import ca.nrc.json.PrettyPrinter;
 import ca.pirurvik.iutools.concordancer.DocAlignment;
@@ -38,7 +38,7 @@ public class CmdAlignPages extends ConsoleCommand {
 
 	@Override
 	public void execute() throws Exception {
-		mode = getMode(ConsoleCommand.OPT_URL);
+		mode = getMode(OPT_URL);
 		langs = getLangs(true);
 		alignOptions = getAlignOptions();
 

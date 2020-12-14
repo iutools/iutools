@@ -1,4 +1,4 @@
-package ca.inuktitutcomputing.core.console;
+package org.iutools.cli;
 
 import java.util.Iterator;
 import java.util.List;

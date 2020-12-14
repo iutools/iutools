@@ -1,4 +1,4 @@
-package ca.inuktitutcomputing.core.console;
+package org.iutools.cli;
 
 import ca.nrc.data.harvesting.PageHarvester_HtmlCleaner;
 import ca.nrc.data.harvesting.PageHarvesterException;

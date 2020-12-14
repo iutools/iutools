@@ -1,4 +1,4 @@
-package ca.inuktitutcomputing.core.console;
+package org.iutools.cli;
 
 import java.util.Vector;
 import java.util.regex.Matcher;

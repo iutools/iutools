@@ -1,4 +1,4 @@
-package ca.inuktitutcomputing.core.console;
+package org.iutools.cli;
 
 import java.io.File;
 
@@ -20,7 +20,7 @@ public class CmdCompileCorpus extends ConsoleCommand {
 	public void execute() throws Exception {
 		String corpusName = getCorpusName(true);
 		if (corpusName == null) {
-			this.usageMissingOption(ConsoleCommand.OPT_CORPUS_NAME);
+			this.usageMissingOption(OPT_CORPUS_NAME);
 		}
 
 		boolean verbose = (getVerbosity() != UserIO.Verbosity.Level0);
@@ -48,7 +48,7 @@ public class CmdCompileCorpus extends ConsoleCommand {
 		boolean compileFreqs =
 			user_io.prompt_yes_or_no(
 				"A value was provided for "+
-				ConsoleCommand.OPT_INPUT_DIR+"\n"+
+				OPT_INPUT_DIR +"\n"+
 				"Would you like to compile word frequencies from corpus text files: "+
 				corpusDir);
 

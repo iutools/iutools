@@ -1,4 +1,4 @@
-package ca.inuktitutcomputing.core.console;
+package org.iutools.cli;
 
 import ca.nrc.ui.commandline.UserIO;
 import ca.pirurvik.iutools.corpus.CompiledCorpus;

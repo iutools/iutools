@@ -40,7 +40,7 @@ where _iutools_cli_ is an alias for:
 
     java -Xmx6g \
       iutools-core-0.0.3-SNAPSHOT-jar-with-dependencies.jar \
-      ca.inuktitutcomputing.core.console.Console
+      Console
       
 To get an overview of all the supported commands, simply type:
 

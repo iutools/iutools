@@ -1,4 +1,4 @@
-package ca.inuktitutcomputing.core.console;
+package org.iutools.cli;
 
 import ca.nrc.json.PrettyPrinter;
 import ca.pirurvik.iutools.corpus.*;

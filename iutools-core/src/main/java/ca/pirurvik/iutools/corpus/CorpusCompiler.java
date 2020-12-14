@@ -326,7 +326,7 @@ public class CorpusCompiler {
 				"\nPlease compute the decomps file and put it under the above name.\n"+
 				"You can compute the decomps file with the following command:\n\n" +
 				"   cat \""+wordsFile()+ "\" | \\\n"+"" +
-				"     java iutools-core.jar ca.inuktitutcomputing.core.console.Console \\\n"+
+				"     java iutools-core.jar org.iutools.cli.CLI \\\n"+
 				"       segment_iu --pipeline > \\\n"+"" +
 				"       \""+ decompsFile+"\"\n\n"+
 				"NOTE: This may take a very long time so we recommend that you split the words file into small chunks and process each chunk with the above command on a cluster of machines."
