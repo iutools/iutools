@@ -7,10 +7,10 @@ import ca.inuktitutcomputing.morph.failureanalysis.MorphFailureAnalyzer;
 import ca.inuktitutcomputing.morph.failureanalysis.ProblematicNGram;
 import ca.inuktitutcomputing.morph.failureanalysis.ProblematicNGram.SortBy;
 import ca.nrc.ui.commandline.UserIO.Verbosity;
-import ca.pirurvik.iutools.corpus.CompiledCorpus;
-import ca.pirurvik.iutools.corpus.CompiledCorpusException;
-import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
-import ca.pirurvik.iutools.corpus.WordInfo;
+import org.iutools.corpus.CompiledCorpus;
+import org.iutools.corpus.CompiledCorpusException;
+import org.iutools.corpus.CompiledCorpusRegistry;
+import org.iutools.corpus.WordInfo;
 
 public class CmdMorphFailureAnalysis extends ConsoleCommand {
 	

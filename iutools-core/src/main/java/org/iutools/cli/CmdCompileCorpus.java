@@ -3,7 +3,8 @@ package org.iutools.cli;
 import java.io.File;
 
 import ca.nrc.ui.commandline.UserIO;
-import ca.pirurvik.iutools.corpus.*;
+import org.iutools.corpus.CorpusCompiler;
+import org.iutools.corpus.CorpusCompilerException;
 
 public class CmdCompileCorpus extends ConsoleCommand {
 

@@ -2,15 +2,15 @@ package org.iutools.cli;
 
 import java.io.FileReader;
 
-import ca.pirurvik.iutools.corpus.CompiledCorpus;
-import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
+import org.iutools.corpus.CompiledCorpus;
+import org.iutools.corpus.CompiledCorpusRegistry;
 
 import ca.inuktitutcomputing.applications.Decompose;
 import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.script.Roman;
 import ca.inuktitutcomputing.script.Syllabics;
-import ca.pirurvik.iutools.morphrelatives.MorphRelativesFinder;
-import ca.pirurvik.iutools.morphrelatives.MorphologicalRelative;
+import org.iutools.morphrelatives.MorphRelativesFinder;
+import org.iutools.morphrelatives.MorphologicalRelative;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
 
 public class CmdMorphNeighbours extends ConsoleCommand {

@@ -1,12 +1,10 @@
 package ca.inuktitutcomputing.morph.expAlain;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.junit.Assert;
 
-import ca.nrc.json.PrettyPrinter;
-import ca.pirurvik.iutools.testing.Asserter;
+import org.iutools.testing.Asserter;
 
 public class DecompositionStateAsserter extends Asserter {
 

@@ -1,6 +1,7 @@
 package org.iutools.cli;
 
-import ca.pirurvik.iutools.corpus.*;
+import org.iutools.corpus.CompiledCorpus;
+import org.iutools.corpus.CorpusDumper;
 
 import java.io.File;
 

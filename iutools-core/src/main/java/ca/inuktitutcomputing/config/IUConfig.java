@@ -35,7 +35,7 @@ public class IUConfig extends Config {
 	}
 	
 //	public static String getTrieFilePath() throws ConfigException {
-//		String trieFPath = getIUDataPath("src/test/resources/ca/pirurvik/iutools/trie_compilation-HANSARD-1999-2002---single-form-in-terminals.json");
+//		String trieFPath = getIUDataPath("src/test/resources/org/utoolstrie_compilation-HANSARD-1999-2002---single-form-in-terminals.json");
 //		if (! new File(trieFPath).exists()) {
 //			throw new ConfigException("Did not find the large corpus compilation file. Please download it and place it in "+
 //					trieFPath+". You can download the file from "+

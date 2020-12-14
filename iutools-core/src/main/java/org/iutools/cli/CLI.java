@@ -1,7 +1,7 @@
 package org.iutools.cli;
 
 import ca.nrc.string.StringUtils;
-import ca.pirurvik.iutools.concordancer.WebConcordancer;
+import org.iutools.concordancer.WebConcordancer;
 import org.apache.commons.cli.Option;
 
 import ca.nrc.ui.commandline.CommandLineException;

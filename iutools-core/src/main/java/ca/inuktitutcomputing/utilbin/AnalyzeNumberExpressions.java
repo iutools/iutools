@@ -1,7 +1,6 @@
 package ca.inuktitutcomputing.utilbin;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -11,7 +10,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
@@ -26,12 +24,10 @@ import com.google.gson.Gson;
 import ca.inuktitutcomputing.config.IUConfig;
 import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.morph.Decomposition;
-import ca.inuktitutcomputing.morph.MorphInukException;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzerException;
 import ca.nrc.config.ConfigException;
-import ca.nrc.file.ResourceGetter;
-import ca.pirurvik.iutools.text.ngrams.NgramCompiler;
+import org.iutools.text.ngrams.NgramCompiler;
 
 public class AnalyzeNumberExpressions {
 	

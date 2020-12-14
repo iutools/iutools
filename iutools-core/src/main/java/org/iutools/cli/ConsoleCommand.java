@@ -9,8 +9,8 @@ import java.util.Scanner;
 import java.util.concurrent.TimeoutException;
 
 import ca.nrc.ui.commandline.SubCommand;
-import ca.pirurvik.iutools.edit_distance.EditDistanceCalculatorFactory;
-import static ca.pirurvik.iutools.concordancer.WebConcordancer.AlignOptions;
+import org.iutools.edit_distance.EditDistanceCalculatorFactory;
+import static org.iutools.concordancer.WebConcordancer.AlignOptions;
 
 public abstract class ConsoleCommand extends SubCommand {
 	

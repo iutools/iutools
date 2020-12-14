@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.junit.*;
 
 import ca.nrc.testing.AssertHelpers;
-import ca.pirurvik.iutools.text.ngrams.NgramCompiler;
+import org.iutools.text.ngrams.NgramCompiler;
 
 public class NgramCompilerTest {
 	

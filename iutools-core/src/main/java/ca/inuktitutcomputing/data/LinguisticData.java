@@ -17,7 +17,7 @@ import ca.inuktitutcomputing.dataCSV.LinguisticDataCSV;
 import ca.inuktitutcomputing.phonology.Dialect;
 import ca.inuktitutcomputing.script.Orthography;
 import ca.inuktitutcomputing.script.Roman;
-import ca.pirurvik.iutools.text.segmentation.MyStringTokenizer;
+import org.iutools.text.segmentation.MyStringTokenizer;
 
 public class LinguisticData {
 	

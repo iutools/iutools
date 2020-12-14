@@ -4,10 +4,10 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 
-import ca.pirurvik.iutools.edit_distance.EditDistanceCalculatorFactory;
-import ca.pirurvik.iutools.spellchecker.ScoredSpelling;
-import ca.pirurvik.iutools.spellchecker.SpellChecker;
-import ca.pirurvik.iutools.spellchecker.SpellingCorrection;
+import org.iutools.edit_distance.EditDistanceCalculatorFactory;
+import org.iutools.spellchecker.ScoredSpelling;
+import org.iutools.spellchecker.SpellChecker;
+import org.iutools.spellchecker.SpellingCorrection;
 
 public class CmdCheckSpelling extends ConsoleCommand {
 

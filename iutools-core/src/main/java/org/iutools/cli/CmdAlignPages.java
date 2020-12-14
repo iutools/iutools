@@ -1,12 +1,12 @@
 package org.iutools.cli;
 
 import ca.nrc.json.PrettyPrinter;
-import ca.pirurvik.iutools.concordancer.DocAlignment;
-import ca.pirurvik.iutools.concordancer.WebConcordancer;
-import static ca.pirurvik.iutools.concordancer.WebConcordancer.AlignOptions;
+import org.iutools.concordancer.DocAlignment;
+import org.iutools.concordancer.WebConcordancer;
+import static org.iutools.concordancer.WebConcordancer.AlignOptions;
 
-import ca.pirurvik.iutools.concordancer.WebConcordancerException;
-import ca.pirurvik.iutools.concordancer.WebConcordancer_HtmlCleaner;
+import org.iutools.concordancer.WebConcordancerException;
+import org.iutools.concordancer.WebConcordancer_HtmlCleaner;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

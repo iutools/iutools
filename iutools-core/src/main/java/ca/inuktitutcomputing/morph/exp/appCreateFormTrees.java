@@ -3,20 +3,17 @@ package ca.inuktitutcomputing.morph.exp;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 
 import ca.inuktitutcomputing.data.LinguisticData;
-import ca.inuktitutcomputing.data.LinguisticDataAbstract;
 import ca.inuktitutcomputing.data.LinguisticDataException;
-import ca.inuktitutcomputing.data.LinguisticDataSingleton;
 import ca.inuktitutcomputing.data.SurfaceFormInContext;
 import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.datastructure.trie.Trie_InMemory;
-import ca.pirurvik.iutools.corpus.CompiledCorpusException;
+import org.iutools.corpus.CompiledCorpusException;
 
 public class appCreateFormTrees {
 

@@ -5,8 +5,7 @@ import java.util.List;
 
 import org.junit.Assert;
 
-import ca.inuktitutcomputing.morph.expAlain.WrittenMorpheme;
-import ca.pirurvik.iutools.testing.Asserter;
+import org.iutools.testing.Asserter;
 
 public class WrittenMorphemeCollectionAsserter extends Asserter {
 

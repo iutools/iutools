@@ -1,10 +1,8 @@
 # IUtools Installation Manual
 
-THIS DOCUMENTATION IS A WORK IN PROGRESS
-
 This document provides instructions on how to install _iutools_. 
 
-At the moment, the installation procedure is somewhat involved. In the future, 
+At the moment, the procedure is somewhat involved. In the future, 
 we hope to automate most of the steps using something like _Ansible_ or _Docker_. 
 
 ##Build the JAR and WAR files
@@ -32,7 +30,7 @@ Then build _iutools_:
  builds for both of those projects:
  
      /path/to/your/.m2/repository/ca/nrc/java-utils
-     /path/to/your/.m2/repository/ca/pirurvik/iutools
+     /path/to/your/.m2/repository/org/iutools
 
 ##Create an _iutools_cli_ alias
 
@@ -45,14 +43,14 @@ you create an alias for it:
     alias iutools_cli='iutools_console='java -Xmx6g 
        -Dca_nrc=/path/to/your/ca_nrc.properties 
        -Dorg_iutools=/Users/desilets/Documents/conf/org_iutools.properties 
-       -cp /path/to/your/.m2/repository/ca/pirurvik/iutools/iutools-core/N.N.N-SNAPSHOT/iutools-core-N.N.N-SNAPSHOT-jar-with-dependencies.jar
-       org.iutools.core.console.Console'
+       -cp /path/to/your/.m2/repository/org/iutools/iutools-core/N.N.N-SNAPSHOT/iutools-core-N.N.N-SNAPSHOT-jar-with-dependencies.jar
+       org.iutools.cli.CLI'
        
-Where _ca_nrc.properties_ and _org_iutools.properties_ are configuration files 
-are initially empty configuration files that you should create (more details 
-will be provided about the use of those files later in the present document).
+Where _ca_nrc.properties_ and _org_iutools.properties_ are initially empty 
+configuration files that you should create (more details will be provided about 
+the use of those files later in the present document).
 
-At this point, you can invoke you should be able to invoke the help info for the 
+At this point, you should be able to invoke the help info for the 
 CLI by typing
 
     iutools_cli
@@ -74,7 +72,7 @@ The information stored about each word includes things like:
 - Frequency in the corpus
 - Top N decompositions of the word into morphemes
 
-To install the corpora, you need to do things:
+To install the corpora, you need to carry out two steps:
 - Ensure that ElasticSearch is running on your local machine
 - Install the _iutools-data_ project
 
@@ -83,8 +81,7 @@ Below are details about each of those steps.
 ###Installing ElasticSearch for use by _iutools_
 
 Follow the standard installation instructions for _ElasticSearch_ and make sure 
-that there is an instance of ElasticSearch running as a local service on port 
-9200. 
+that there is an instance of ElasticSearch running as a local service on port 9200.
 
 To ensure that this was done properly, open the following URL in a browser and 
 make sure that it runs (i.e. no errors like "URL not found")
@@ -123,6 +120,7 @@ If you do plan to use the web apps, then there are more steps involved.
 - Install Tomcat and configure Tomcat
 - Set file permissions
 - Deploy the _iutools_ web apps
+- OPTIONAL: Enable the Inuktut Web Search app
 
 ###Install and configure Tomcat
 
@@ -157,4 +155,31 @@ These are:
 
 To deploy (or redeploy) the _iutools_ web apps, issue the following commands:
 
-???
+    # Delete the old WAR file and iutools directories on Tomcat
+    rm $CATALINA_HOME/webapps/iutools.war
+    
+    # Copy new version of the WAR file to tomcat
+    rm -r $CATALINA_HOME/Tomcat/webapps/iutools
+      cp /path/to/your/.m2/repository/org/iutools/iutools-apps/0.0.3-SNAPSHOT/iutools-apps-0.0.3-SNAPSHOT.war \
+          $CATALINA_HOME/webapps/iutools.war
+    
+    # Restart Tomcat
+    sh $CATALINA_HOME/bin/shutdown.sh
+    sleep 2
+    sh $CATALINA_HOME/bin/catalina.sh jpda start
+
+###OPTIONAL: Enable the Inuktut Web Search app
+
+One of the _iutools_ web app is a web search engine developed specifically for 
+Inuktut. This particular app is not enabled by default because it requires a 
+subscription to the Microsoft Bing Web Search API (which you have to pay for):
+
+https://www.microsoft.com/en-us/bing/apis/bing-web-search-api
+
+If you want your installation to include the Inuktut web search app, you must:
+
+- Obtain a Bing API key from the Microsoft Azure web site
+- Specify that key by entering it in the _ca_nrc.properties_ file:
+
+     ca.nrc.javautils.bingKey=yourBingAPIKey
+  

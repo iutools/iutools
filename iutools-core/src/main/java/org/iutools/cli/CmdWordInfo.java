@@ -1,7 +1,10 @@
 package org.iutools.cli;
 
 import ca.nrc.json.PrettyPrinter;
-import ca.pirurvik.iutools.corpus.*;
+import org.iutools.corpus.CompiledCorpus;
+import org.iutools.corpus.CompiledCorpusRegistry;
+import org.iutools.corpus.CompiledCorpusRegistryException;
+import org.iutools.corpus.WordInfo;
 
 public class CmdWordInfo extends ConsoleCommand {
 

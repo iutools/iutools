@@ -8,8 +8,8 @@
 	<!--  Search Endpoint -->
 	<servlet>
 	   <servlet-name>SearchEndpoint</servlet-name>
-	   <servlet-class>  
-	     ca.pirurvik.iutools.webservice.SearchEndpoint
+	   <servlet-class>
+		   org.iutools.webservice.SearchEndpoint
 	   </servlet-class>
 	</servlet> 
 	<servlet-mapping>
@@ -20,8 +20,8 @@
 	<!--  Spell Endpoint -->
 	<servlet>
 	   <servlet-name>SpellEndpoint</servlet-name>
-	   <servlet-class>  
-	     ca.pirurvik.iutools.webservice.SpellEndpoint
+	   <servlet-class>
+		   org.iutools.webservice.SpellEndpoint
 	   </servlet-class>
 	</servlet> 
 	<servlet-mapping>
@@ -32,8 +32,8 @@
 	<!--  Tokenize Endpoint -->
 	<servlet>
 	   <servlet-name>TokenizeEndpoint</servlet-name>
-	   <servlet-class>  
-	     ca.pirurvik.iutools.webservice.tokenize.TokenizeEndpoint
+	   <servlet-class>
+		   org.iutools.webservice.tokenize.TokenizeEndpoint
 	   </servlet-class>
 	</servlet> 
 	<servlet-mapping>
@@ -44,8 +44,8 @@
 	<!-- Occurrence Search Endpoint -->
 	<servlet>
 	   <servlet-name>OccurenceSearchEndpoint</servlet-name>
-	   <servlet-class>  
-	     ca.pirurvik.iutools.webservice.OccurenceSearchEndpoint
+	   <servlet-class>
+		   org.iutools.webservice.OccurenceSearchEndpoint
 	   </servlet-class>
 	</servlet> 
 	<servlet-mapping>
@@ -56,8 +56,8 @@
 	<!-- GistPrepareContent Endpoint -->
 	<servlet>
 	   <servlet-name>GistPrepareContentEndpoint</servlet-name>
-	   <servlet-class>  
-	     ca.pirurvik.iutools.webservice.gist.GistPrepareContentEndpoint
+	   <servlet-class>
+		   org.iutools.webservice.gist.GistPrepareContentEndpoint
 	   </servlet-class>
 	</servlet> 
 	<servlet-mapping>
@@ -69,8 +69,8 @@
 	<!-- GistWord Endpoint -->
 	<servlet>
 	   <servlet-name>GistWordEndpoint</servlet-name>
-	   <servlet-class>  
-	     ca.pirurvik.iutools.webservice.gist.GistWordEndpoint
+	   <servlet-class>
+		   org.iutools.webservice.gist.GistWordEndpoint
 	   </servlet-class>
 	</servlet> 
 	<servlet-mapping>
@@ -83,7 +83,7 @@
 	<servlet>
 	   <servlet-name>GistEndpoint</servlet-name>
 	   <servlet-class>  
-	     ca.pirurvik.iutools.webservice.GistEndpoint
+	     org.iutools.webservice.GistEndpoint
 	   </servlet-class>
 	</servlet> 
 	<servlet-mapping>
@@ -109,7 +109,7 @@
 	<servlet>
 	   <servlet-name>GistTextEndpoint</servlet-name>
 	   <servlet-class>  
-	     ca.pirurvik.iutools.webservice.GistTextEndpoint
+	     org.iutools.webservice.GistTextEndpoint
 	   </servlet-class>
 	</servlet> 
 	<servlet-mapping>
@@ -122,7 +122,7 @@
 	<servlet>
 	   <servlet-name>HelloWorld</servlet-name>
 	   <servlet-class>  
-	     ca.pirurvik.iutools.webservice.HelloWorld
+	     org.iutools.webservice.HelloWorld
 	   </servlet-class>
 	</servlet> 
 	<servlet-mapping>

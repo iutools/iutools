@@ -4,13 +4,13 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import ca.pirurvik.iutools.corpus.CompiledCorpus;
-import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
+import org.iutools.corpus.CompiledCorpus;
+import org.iutools.corpus.CompiledCorpusRegistry;
 
 import ca.inuktitutcomputing.data.Morpheme;
-import ca.pirurvik.iutools.morphemesearcher.MorphSearchResults;
-import ca.pirurvik.iutools.morphemesearcher.MorphemeSearcher;
-import ca.pirurvik.iutools.morphemesearcher.ScoredExample;
+import org.iutools.morphemesearcher.MorphSearchResults;
+import org.iutools.morphemesearcher.MorphemeSearcher;
+import org.iutools.morphemesearcher.ScoredExample;
 
 public class CmdLookForMorpheme extends ConsoleCommand {
 

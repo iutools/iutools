@@ -6,8 +6,6 @@
  */
 package ca.inuktitutcomputing.data;
 
-import java.io.*;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -17,8 +15,6 @@ import ca.inuktitutcomputing.phonology.Dialect;
 import ca.inuktitutcomputing.dataCSV.LinguisticDataCSV;
 //import ca.inuktitutcomputing.dataCompiled.LinguisticDataCompiled;
 import ca.inuktitutcomputing.script.Orthography;
-import ca.inuktitutcomputing.script.Roman;
-import ca.pirurvik.iutools.text.segmentation.MyStringTokenizer;
 
 public abstract class LinguisticDataAbstract {
 

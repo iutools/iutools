@@ -1,7 +1,7 @@
 package org.iutools.cli;
 
 import ca.nrc.ui.commandline.UserIO;
-import ca.pirurvik.iutools.corpus.CompiledCorpus;
+import org.iutools.corpus.CompiledCorpus;
 
 import java.io.File;
 

@@ -6,8 +6,8 @@ import java.util.Random;
 
 import ca.inuktitutcomputing.script.Orthography;
 import ca.inuktitutcomputing.script.Syllabics;
-import ca.pirurvik.iutools.corpus.CorpusDocument_File;
-import ca.pirurvik.iutools.corpus.CorpusReader_Directory;
+import org.iutools.corpus.CorpusDocument_File;
+import org.iutools.corpus.CorpusReader_Directory;
 
 public class IUTextExtractor {
 	

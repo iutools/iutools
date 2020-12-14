@@ -1,6 +1,6 @@
 package org.iutools.cli;
 
-import ca.pirurvik.iutools.morphrelatives.MorphRelativesFinderEvaluator;
+import org.iutools.morphrelatives.MorphRelativesFinderEvaluator;
 
 public class CmdEvaluateQueryExpansion extends ConsoleCommand {
 

@@ -2,9 +2,9 @@ package org.iutools.cli;
 
 import java.io.File;
 
-import ca.pirurvik.iutools.corpus.CompiledCorpus;
-import ca.pirurvik.iutools.corpus.CompiledCorpusRegistry;
-import ca.pirurvik.iutools.corpus.CompiledCorpusRegistryException;
+import org.iutools.corpus.CompiledCorpus;
+import org.iutools.corpus.CompiledCorpusRegistry;
+import org.iutools.corpus.CompiledCorpusRegistryException;
 
 public class CmdDescribeCorpus extends ConsoleCommand {
 

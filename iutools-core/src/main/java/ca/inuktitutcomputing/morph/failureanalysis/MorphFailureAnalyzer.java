@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import ca.inuktitutcomputing.morph.failureanalysis.ProblematicNGram.SortBy;
-import ca.pirurvik.iutools.text.ngrams.NgramCompiler;
+import org.iutools.text.ngrams.NgramCompiler;
 
 /**
  * Use this class to identify ngrams that seem to cause words to not be 
