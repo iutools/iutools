@@ -1,6 +1,6 @@
 package org.iutools.spellchecker.goldstandard;
 
-import ca.inuktitutcomputing.config.IUConfig;
+import org.iutools.config.IUConfig;
 import ca.inuktitutcomputing.phonology.Dialect;
 import org.iutools.spellchecker.SpellCheckerException;
 import org.apache.commons.lang3.tuple.Triple;

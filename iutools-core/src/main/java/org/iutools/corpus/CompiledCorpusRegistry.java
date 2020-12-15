@@ -10,7 +10,7 @@ import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import ca.inuktitutcomputing.config.IUConfig;
+import org.iutools.config.IUConfig;
 import ca.nrc.config.ConfigException;
 
 public class CompiledCorpusRegistry {

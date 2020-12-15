@@ -30,7 +30,7 @@ import org.iutools.edit_distance.EditDistanceCalculatorFactory;
 import org.iutools.edit_distance.EditDistanceCalculatorFactoryException;
 import org.iutools.text.ngrams.NgramCompiler;
 import org.iutools.text.segmentation.IUTokenizer;
-import ca.inuktitutcomputing.config.IUConfig;
+import org.iutools.config.IUConfig;
 import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;

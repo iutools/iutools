@@ -21,7 +21,7 @@ import org.apache.log4j.Logger;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.gson.Gson;
 
-import ca.inuktitutcomputing.config.IUConfig;
+import org.iutools.config.IUConfig;
 import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;

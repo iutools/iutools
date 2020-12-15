@@ -1,4 +1,4 @@
-package ca.inuktitutcomputing.config;
+package org.iutools.config;
 
 import java.util.Set;
 

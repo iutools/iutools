@@ -12,7 +12,7 @@ import java.util.Vector;
 import ca.nrc.file.ResourceGetter;
 import org.junit.Test;
 
-import ca.inuktitutcomputing.config.IUConfig;
+import org.iutools.config.IUConfig;
 
 /**
  * Unit test for simple App.

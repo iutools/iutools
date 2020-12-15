@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import ca.inuktitutcomputing.config.IUConfig;
+import org.iutools.config.IUConfig;
 import ca.inuktitutcomputing.utilities.StopWatch;
 import ca.nrc.testing.*;
 import org.iutools.corpus.CompiledCorpus;

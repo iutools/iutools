@@ -11,7 +11,7 @@ import org.junit.jupiter.api.*;
 
 import static org.junit.Assert.assertFalse;
 
-import ca.inuktitutcomputing.config.IUConfig;
+import org.iutools.config.IUConfig;
 import org.junit.jupiter.api.TestInfo;
 
 public class MorphRelativesFinderAccuracyTest {

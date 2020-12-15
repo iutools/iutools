@@ -2,12 +2,10 @@ package ca.inuktitutcomputing.documents;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import ca.inuktitutcomputing.config.IUConfig;
-import ca.inuktitutcomputing.documents.NRC_PDFDocument;
+import org.iutools.config.IUConfig;
 import ca.nrc.config.ConfigException;
 import junit.framework.TestCase;
 

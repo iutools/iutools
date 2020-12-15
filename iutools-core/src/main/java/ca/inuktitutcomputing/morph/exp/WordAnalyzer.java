@@ -21,7 +21,7 @@ import org.apache.log4j.Logger;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 
-import ca.inuktitutcomputing.config.IUConfig;
+import org.iutools.config.IUConfig;
 import ca.inuktitutcomputing.data.LinguisticData;
 import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.data.Morpheme;
