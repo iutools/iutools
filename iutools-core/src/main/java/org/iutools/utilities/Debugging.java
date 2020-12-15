@@ -22,7 +22,7 @@
 //
 // -----------------------------------------------------------------------
 
-package ca.inuktitutcomputing.utilities;
+package org.iutools.utilities;
 
 import java.awt.BorderLayout;
 import java.awt.Container;

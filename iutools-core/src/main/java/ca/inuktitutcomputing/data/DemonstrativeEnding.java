@@ -10,7 +10,7 @@ package ca.inuktitutcomputing.data;
 import java.util.HashMap;
 import java.util.Hashtable;
 
-import ca.inuktitutcomputing.utilities.Debugging;
+import org.iutools.utilities.Debugging;
 
 public class DemonstrativeEnding extends Affix {
 	//

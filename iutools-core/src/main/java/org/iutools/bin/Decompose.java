@@ -13,8 +13,8 @@ import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.script.TransCoder;
 import org.iutools.morph.Decomposition;
 import org.iutools.morph.MorphologicalAnalyzer;
-import ca.inuktitutcomputing.utilities.MonURLDecoder;
-import ca.inuktitutcomputing.utilities.Text;
+import org.iutools.utilities.MonURLDecoder;
+import org.iutools.utilities.Text;
 
 // Décomposition d'un mot Inuktitut.
 // arguments:

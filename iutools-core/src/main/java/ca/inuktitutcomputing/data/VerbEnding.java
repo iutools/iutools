@@ -27,7 +27,7 @@ import java.util.*;
 import ca.inuktitutcomputing.data.constraints.Conditions;
 import ca.inuktitutcomputing.data.constraints.Imacond;
 import ca.inuktitutcomputing.data.constraints.ParseException;
-import ca.inuktitutcomputing.utilities.Debugging;
+import org.iutools.utilities.Debugging;
 
 public class VerbEnding extends Affix {
 	//

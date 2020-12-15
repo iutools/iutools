@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import ca.inuktitutcomputing.utilities.StopWatch;
+import org.iutools.utilities.StopWatch;
 
 public class Trie_InFileSystem extends Trie {
 

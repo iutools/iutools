@@ -8,8 +8,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import ca.inuktitutcomputing.utilities.StopWatch;
-import ca.inuktitutcomputing.utilities.StopWatchException;
+import org.iutools.utilities.StopWatch;
+import org.iutools.utilities.StopWatchException;
 import ca.nrc.ui.commandline.ProgressMonitor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.log4j.Logger;

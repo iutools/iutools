@@ -1,6 +1,6 @@
 package org.iutools.webservice;
 
-import ca.inuktitutcomputing.utilities.StopWatch;
+import org.iutools.utilities.StopWatch;
 import ca.nrc.testing.AssertRuntime;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;

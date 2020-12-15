@@ -1,4 +1,4 @@
-package ca.inuktitutcomputing.utilities;
+package org.iutools.utilities;
 
 import java.util.concurrent.TimeoutException;
 

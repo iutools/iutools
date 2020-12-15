@@ -13,7 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.iutools.morph.Decomposition;
-import ca.inuktitutcomputing.utilities.StopWatch;
+import org.iutools.utilities.StopWatch;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;

@@ -44,7 +44,7 @@ import ca.inuktitutcomputing.script.Syllabics;
 import ca.inuktitutcomputing.data.*;
 import org.iutools.morph.Graph.State;
 import ca.inuktitutcomputing.phonology.Dialect;
-import ca.inuktitutcomputing.utilities.StopWatch;
+import org.iutools.utilities.StopWatch;
 import org.iutools.utilities1.Util;
 
 //-------------------------------------------------

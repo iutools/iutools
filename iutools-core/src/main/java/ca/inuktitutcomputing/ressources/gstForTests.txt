@@ -1,3 +1,0 @@
-aippaanik aippaanik {aippa:aippaq/1n}{anik:nganik/tn-acc-s-4s}
-aippaanit aippaanit {aippa:aippaq/1n}{anit:nganit/tn-abl-s-4s}
-aippanga aippanga {aippa:aippaq/1n}{nga:nga/tn-nom-s-4s}

@@ -1,4 +1,4 @@
-package ca.inuktitutcomputing.utilities;
+package org.iutools.utilities;
 
 public class StopWatchException extends Exception {
 	public StopWatchException(String mess, Exception e) {

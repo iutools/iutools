@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import ca.inuktitutcomputing.utilities.StopWatch;
+import org.iutools.utilities.StopWatch;
 import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.Pair;
 import org.iutools.datastructure.trie.StringSegmenterException;

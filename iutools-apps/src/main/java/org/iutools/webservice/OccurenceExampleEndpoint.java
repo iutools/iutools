@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.iutools.morph.Gist;
 import ca.inuktitutcomputing.nunhansearch.ProcessQuery;
-import ca.inuktitutcomputing.utilities.Alignment;
+import org.iutools.utilities.Alignment;
 import ca.nrc.json.PrettyPrinter;
 
 public class OccurenceExampleEndpoint extends HttpServlet {

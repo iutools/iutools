@@ -86,7 +86,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import ca.inuktitutcomputing.script.TransCoder;
-import ca.inuktitutcomputing.utilities.Counter;
+import org.iutools.utilities.Counter;
 
 // Remplacement de codes d'une police donn�e 
 // en codes unicode �quivalents repr�sentant

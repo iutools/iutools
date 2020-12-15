@@ -1,7 +1,7 @@
 package org.iutools.webservice;
 
 import org.iutools.morph.Gist;
-import ca.inuktitutcomputing.utilities.Alignment;
+import org.iutools.utilities.Alignment;
 
 
 class ExampleWordWithMorpheme {

@@ -6,7 +6,7 @@ import java.util.List;
 import org.junit.Assert;
 
 import org.iutools.morph.Gist;
-import ca.inuktitutcomputing.utilities.Alignment;
+import org.iutools.utilities.Alignment;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.testing.AssertObject;

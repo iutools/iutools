@@ -5,7 +5,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.apache.log4j.Logger;
 
-import ca.inuktitutcomputing.utilities.StopWatch;
+import org.iutools.utilities.StopWatch;
 
 /**
  * Class for calling the morphological analyzer in a way that supports 

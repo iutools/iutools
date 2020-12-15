@@ -6,7 +6,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import ca.inuktitutcomputing.utilities.StopWatch;
+import org.iutools.utilities.StopWatch;
 import ca.nrc.ui.commandline.ProgressMonitor;
 import ca.nrc.ui.commandline.ProgressMonitor_Terminal;
 import ca.nrc.ui.commandline.UserIO;

@@ -17,9 +17,8 @@ import java.util.regex.Pattern;
 
 import ca.inuktitutcomputing.data.LinguisticData;
 import ca.inuktitutcomputing.data.LinguisticDataException;
-import ca.inuktitutcomputing.fonts.FontAipainunavik;
 import ca.inuktitutcomputing.script.*;
-import ca.inuktitutcomputing.utilities.StopWatch;
+import org.iutools.utilities.StopWatch;
 
 public class Dialect {
 

@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import org.iutools.morph.Gist;
-import ca.inuktitutcomputing.utilities.Alignment;
+import org.iutools.utilities.Alignment;
 import ca.nrc.ui.web.testing.MockHttpServletResponse;
 
 public class OccurenceExampleEndpointTest {

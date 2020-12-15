@@ -2,7 +2,7 @@ package org.iutools.webservice.gist;
 
 import org.iutools.morph.Gist;
 import ca.inuktitutcomputing.script.TransCoder;
-import ca.inuktitutcomputing.utilities.Alignment;
+import org.iutools.utilities.Alignment;
 import org.iutools.webservice.ServiceResponse;
 
 public class GistWordResponse extends ServiceResponse {

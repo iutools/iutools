@@ -9,7 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.iutools.config.IUConfig;
-import ca.inuktitutcomputing.utilities.StopWatch;
+import org.iutools.utilities.StopWatch;
 import ca.nrc.testing.*;
 import org.iutools.corpus.CompiledCorpus;
 import org.iutools.corpus.CompiledCorpusRegistry;

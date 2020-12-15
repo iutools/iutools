@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import ca.inuktitutcomputing.utilities.StopWatch;
+import org.iutools.utilities.StopWatch;
 import org.iutools.datastructure.trie.MockStringSegmenter_IUMorpheme;
 import ca.nrc.dtrc.elasticsearch.StreamlinedClient;
 import ca.nrc.testing.AssertNumber;
