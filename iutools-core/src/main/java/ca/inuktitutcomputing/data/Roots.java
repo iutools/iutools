@@ -8,7 +8,7 @@ import java.util.Hashtable;
 import org.apache.log4j.Logger;
 
 import ca.inuktitutcomputing.utilities.MonURLDecoder;
-import ca.inuktitutcomputing.utilities1.Util;
+import org.iutools.utilities1.Util;
 import ca.inuktitutcomputing.script.TransCoder;
 import ca.inuktitutcomputing.lib.html;
 

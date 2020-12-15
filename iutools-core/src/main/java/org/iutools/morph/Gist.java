@@ -3,7 +3,7 @@ package org.iutools.morph;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import ca.inuktitutcomputing.applications.Decompose;
+import org.iutools.bin.Decompose;
 import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.script.Syllabics;
 import ca.nrc.datastructure.Pair;

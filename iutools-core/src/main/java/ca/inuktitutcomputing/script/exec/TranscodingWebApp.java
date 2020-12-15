@@ -17,10 +17,10 @@ package ca.inuktitutcomputing.script.exec;
 
 import org.apache.log4j.Logger;
 
-import ca.inuktitutcomputing.html.HtmlEntities;
+import org.iutools.html.HtmlEntities;
 import ca.inuktitutcomputing.script.Syllabics;
 import ca.inuktitutcomputing.script.TransCoder;
-import ca.inuktitutcomputing.utilities1.Util;
+import org.iutools.utilities1.Util;
 
 public class TranscodingWebApp {
 

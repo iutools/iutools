@@ -38,7 +38,7 @@ import org.iutools.morph.MorphologicalAnalyzerException;
 import ca.inuktitutcomputing.script.Orthography;
 import ca.inuktitutcomputing.script.Syllabics;
 import ca.inuktitutcomputing.script.TransCoder;
-import ca.inuktitutcomputing.utilbin.AnalyzeNumberExpressions;
+import org.iutools.utilbin.AnalyzeNumberExpressions;
 
 
 public class SpellChecker {

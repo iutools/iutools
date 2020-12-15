@@ -21,7 +21,7 @@ import java.util.regex.PatternSyntaxException;
 
 //import org.apache.log4j.Logger;
 
-import ca.inuktitutcomputing.html.HtmlEntities;
+import org.iutools.html.HtmlEntities;
 import ca.inuktitutcomputing.fonts.Font;
 
 public class TransCoder {

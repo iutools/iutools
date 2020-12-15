@@ -50,7 +50,7 @@ import ca.inuktitutcomputing.documents.pdfboxAddition.NRC_PDFFonttedTextStripper
 import ca.inuktitutcomputing.fonts.Font;
 
 //import fonts.ngrammes.Ngramme;
-import ca.inuktitutcomputing.utilities1.Util;
+import org.iutools.utilities1.Util;
 
 
 public class NRC_PDFDocument implements NRC_Document {

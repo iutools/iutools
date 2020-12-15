@@ -27,10 +27,8 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import org.apache.commons.io.FileUtils;
-
 import ca.inuktitutcomputing.fonts.ngrams.Ngram;
-import ca.inuktitutcomputing.utilities1.Util;
+import org.iutools.utilities1.Util;
 import ca.inuktitutcomputing.script.TransCoder;
 
 

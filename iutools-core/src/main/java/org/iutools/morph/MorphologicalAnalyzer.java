@@ -45,7 +45,7 @@ import ca.inuktitutcomputing.data.*;
 import org.iutools.morph.Graph.State;
 import ca.inuktitutcomputing.phonology.Dialect;
 import ca.inuktitutcomputing.utilities.StopWatch;
-import ca.inuktitutcomputing.utilities1.Util;
+import org.iutools.utilities1.Util;
 
 //-------------------------------------------------
 // Cette version fonctionne avec le graphe d'états.

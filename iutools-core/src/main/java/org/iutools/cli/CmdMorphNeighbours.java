@@ -5,7 +5,7 @@ import java.io.FileReader;
 import org.iutools.corpus.CompiledCorpus;
 import org.iutools.corpus.CompiledCorpusRegistry;
 
-import ca.inuktitutcomputing.applications.Decompose;
+import org.iutools.bin.Decompose;
 import org.iutools.morph.Decomposition;
 import ca.inuktitutcomputing.script.Roman;
 import ca.inuktitutcomputing.script.Syllabics;

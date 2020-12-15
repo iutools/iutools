@@ -3,7 +3,7 @@ package ca.inuktitutcomputing.data;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 
-import ca.inuktitutcomputing.utilities1.Util;
+import org.iutools.utilities1.Util;
 
 public class Items {
 

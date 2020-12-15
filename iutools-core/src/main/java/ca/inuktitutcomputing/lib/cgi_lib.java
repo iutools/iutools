@@ -13,7 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.io.*;
 
-import ca.inuktitutcomputing.utilities1.Util;
+import org.iutools.utilities1.Util;
 
 /**
  * cgi_lib.java<p>

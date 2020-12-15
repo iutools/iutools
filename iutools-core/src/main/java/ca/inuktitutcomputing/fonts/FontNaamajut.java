@@ -90,10 +90,8 @@ package ca.inuktitutcomputing.fonts;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import ca.inuktitutcomputing.utilities1.Util;
+import org.iutools.utilities1.Util;
 import ca.inuktitutcomputing.script.TransCoder;
 
 

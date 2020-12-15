@@ -30,11 +30,10 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import ca.inuktitutcomputing.utilities1.Util;
+import org.iutools.utilities1.Util;
 import ca.inuktitutcomputing.data.constraints.Conditions;
 import ca.inuktitutcomputing.data.constraints.Imacond;
 import ca.inuktitutcomputing.data.constraints.ParseException;
-import ca.inuktitutcomputing.data.VerbWord;
 
 public class Base extends Morpheme {
 	//

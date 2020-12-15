@@ -93,7 +93,7 @@ package ca.inuktitutcomputing.fonts;
 import java.util.HashSet;
 import java.util.Set;
 
-import ca.inuktitutcomputing.utilities1.Util;
+import org.iutools.utilities1.Util;
 import ca.inuktitutcomputing.script.TransCoder;
 
 // Remplacement de codes d'une police donn�e

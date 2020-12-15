@@ -25,11 +25,7 @@ import org.junit.Test;
 
 import ca.inuktitutcomputing.fonts.ngrams.Ngram;
 import ca.inuktitutcomputing.fonts.ngrams.Ngram.FontNgram;
-import ca.inuktitutcomputing.fonts.Font;
-import ca.inuktitutcomputing.utilities1.Util;
-import ca.inuktitutcomputing.script.Syllabics;
-import ca.inuktitutcomputing.script.TransCoder;
-import junit.framework.TestCase;
+import org.iutools.utilities1.Util;
 
 public class FontTest {
 
