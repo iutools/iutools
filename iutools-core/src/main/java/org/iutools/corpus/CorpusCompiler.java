@@ -20,7 +20,7 @@ import ca.inuktitutcomputing.morph.Decomposition;
 import ca.inuktitutcomputing.script.TransCoder;
 import ca.nrc.data.file.ObjectStreamReader;
 import ca.nrc.data.file.ObjectStreamReaderException;
-import ca.nrc.datastructure.trie.StringSegmenterException;
+import org.iutools.datastructure.trie.StringSegmenterException;
 import ca.nrc.json.PrettyPrinter;
 import org.iutools.text.segmentation.IUTokenizer;
 

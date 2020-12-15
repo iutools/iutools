@@ -20,11 +20,10 @@ import com.google.gson.Gson;
 
 import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.Pair;
-import ca.nrc.datastructure.trie.StringSegmenterException;
-import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
+import org.iutools.datastructure.trie.StringSegmenterException;
+import org.iutools.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.json.PrettyPrinter;
 import org.iutools.NumericExpression;
-import org.iutools.corpus.*;
 import org.iutools.edit_distance.EditDistanceCalculator;
 import org.iutools.edit_distance.EditDistanceCalculatorException;
 import org.iutools.edit_distance.EditDistanceCalculatorFactory;

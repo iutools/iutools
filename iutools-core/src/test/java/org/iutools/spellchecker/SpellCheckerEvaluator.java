@@ -12,7 +12,7 @@ import java.util.Set;
 import ca.inuktitutcomputing.utilities.StopWatch;
 import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.Pair;
-import ca.nrc.datastructure.trie.StringSegmenterException;
+import org.iutools.datastructure.trie.StringSegmenterException;
 import org.apache.log4j.Logger;
 
 public class SpellCheckerEvaluator {

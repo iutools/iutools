@@ -20,9 +20,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import ca.nrc.datastructure.trie.StringSegmenter;
-import ca.nrc.datastructure.trie.StringSegmenter_Char;
-import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
+import org.iutools.datastructure.trie.StringSegmenter;
+import org.iutools.datastructure.trie.StringSegmenter_Char;
+import org.iutools.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.testing.AssertObject;
 
 public class CompiledCorpusTest {

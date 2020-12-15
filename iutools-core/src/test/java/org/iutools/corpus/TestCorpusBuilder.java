@@ -1,6 +1,6 @@
 package org.iutools.corpus;
 
-import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
+import org.iutools.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.dtrc.elasticsearch.StreamlinedClient;
 
 import java.util.HashMap;

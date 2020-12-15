@@ -10,10 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 
 import ca.inuktitutcomputing.utilities.StopWatch;
-import ca.nrc.datastructure.trie.MockStringSegmenter_IUMorpheme;
+import org.iutools.datastructure.trie.MockStringSegmenter_IUMorpheme;
 import ca.nrc.dtrc.elasticsearch.StreamlinedClient;
 import ca.nrc.testing.AssertNumber;
-import org.iutools.corpus.*;
 import org.iutools.corpus.CompiledCorpus;
 import org.iutools.corpus.CompiledCorpusTest;
 import org.iutools.corpus.MockCompiledCorpus;

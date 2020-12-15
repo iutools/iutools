@@ -1,8 +1,8 @@
 package org.iutools.corpus;
 
-import ca.nrc.datastructure.trie.TrieException;
-import ca.nrc.datastructure.trie.TrieNode;
-import ca.nrc.datastructure.trie.visitors.TrieNodeVisitor;
+import org.iutools.datastructure.trie.TrieException;
+import org.iutools.datastructure.trie.TrieNode;
+import org.iutools.datastructure.trie.visitors.TrieNodeVisitor;
 
 /**
  * Given the node for a word in a CompiledCorpus_InFileSystem, this visitor 

@@ -13,7 +13,7 @@ import org.iutools.corpus.TestCorpusBuilder;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
-import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
+import org.iutools.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.testing.AssertObject;
 
 public class FreqVerbRootsTest {

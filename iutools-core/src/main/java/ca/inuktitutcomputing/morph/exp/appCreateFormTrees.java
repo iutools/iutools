@@ -11,8 +11,8 @@ import com.google.gson.JsonIOException;
 import ca.inuktitutcomputing.data.LinguisticData;
 import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.data.SurfaceFormInContext;
-import ca.nrc.datastructure.trie.TrieException;
-import ca.nrc.datastructure.trie.Trie_InMemory;
+import org.iutools.datastructure.trie.TrieException;
+import org.iutools.datastructure.trie.Trie_InMemory;
 import org.iutools.corpus.CompiledCorpusException;
 
 public class appCreateFormTrees {

@@ -7,7 +7,7 @@ import org.iutools.corpus.CompiledCorpus;
 import org.iutools.corpus.CorpusTestHelpers;
 import org.junit.Test;
 
-import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
+import org.iutools.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.testing.AssertObject;
 
 public class MorphRelativesFinderTest {

@@ -2,14 +2,11 @@ package ca.inuktitutcomputing.morph.exp;
 
 import static org.junit.Assert.*;
 
-import java.io.FileNotFoundException;
 import java.util.List;
 
 import org.junit.Ignore;
 import org.junit.Test;
 
-import ca.inuktitutcomputing.data.LinguisticDataSingleton;
-import ca.nrc.datastructure.trie.TrieException;
 import ca.nrc.json.PrettyPrinter;
 
 @Ignore

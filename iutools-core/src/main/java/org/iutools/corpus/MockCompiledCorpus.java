@@ -5,9 +5,9 @@ import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 import ca.inuktitutcomputing.data.LinguisticDataException;
-import ca.nrc.datastructure.trie.StringSegmenter;
-import ca.nrc.datastructure.trie.StringSegmenterException;
-import ca.nrc.datastructure.trie.StringSegmenter_IUMorpheme;
+import org.iutools.datastructure.trie.StringSegmenter;
+import org.iutools.datastructure.trie.StringSegmenterException;
+import org.iutools.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.dtrc.elasticsearch.ElasticSearchException;
 
 

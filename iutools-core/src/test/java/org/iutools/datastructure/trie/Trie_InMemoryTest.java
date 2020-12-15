@@ -1,0 +1,33 @@
+package org.iutools.datastructure.trie;
+
+import static org.junit.Assert.fail;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+import com.google.gson.Gson;
+
+public class Trie_InMemoryTest extends TrieTest {
+
+	@Override
+	public Trie_InMemory makeTrieToTest() {
+		Trie_InMemory trie = new Trie_InMemory();
+		return trie;
+	}
+
+	@Test
+	public void test_toJSON__Char() throws Exception {
+		Trie_InMemory charTrie = makeTrieToTest();
+		charTrie.add("he".split(""),"he");
+		charTrie.add("hit".split(""),"hit");
+		charTrie.add("ok".split(""),"ok");
+		String json = charTrie.toJSON();
+		Gson gson = new Gson();
+		Trie retrievedCharTrie = (Trie) gson.fromJson(json, charTrie.getClass());
+		TrieNode node = retrievedCharTrie.node4keys(new String[] {"h","i","t"}, Trie.NodeOption.TERMINAL);
+		Assert.assertTrue("The node should be terminal.",node.isTerminal());
+
+		new AssertTrieNode(node, "")
+				.hasMostFrequentForm("hit");
+	}	
+}

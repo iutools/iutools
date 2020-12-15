@@ -14,7 +14,7 @@ import org.iutools.corpus.*;
 import org.apache.log4j.Logger;
 
 import ca.nrc.datastructure.Pair;
-import ca.nrc.datastructure.trie.TrieException;
+import org.iutools.datastructure.trie.TrieException;
 
 public class FreqVerbRootsCompiler {
 	

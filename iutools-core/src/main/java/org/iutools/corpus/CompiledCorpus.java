@@ -18,10 +18,10 @@ import ca.nrc.ui.commandline.UserIO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import ca.inuktitutcomputing.data.LinguisticDataException;
-import ca.nrc.datastructure.trie.StringSegmenter;
-import ca.nrc.datastructure.trie.StringSegmenterException;
-import ca.nrc.datastructure.trie.StringSegmenter_Char;
-import ca.nrc.datastructure.trie.Trie;
+import org.iutools.datastructure.trie.StringSegmenter;
+import org.iutools.datastructure.trie.StringSegmenterException;
+import org.iutools.datastructure.trie.StringSegmenter_Char;
+import org.iutools.datastructure.trie.Trie;
 import org.iutools.text.ngrams.NgramCompiler;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
