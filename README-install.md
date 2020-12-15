@@ -22,7 +22,7 @@ First build _java-utils_:
 
 Then build _iutools_:
 
-     git clone https://github.com/alaindesilets/iutools.git
+     git clone https://github.com/iutools/iutools.git
      cd iutools
      mvn clean install -DskipTests=true
      

@@ -24,17 +24,11 @@
 
 package org.iutools.bin;
 
-import java.io.BufferedReader;
-import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.net.MalformedURLException;
 import java.util.Arrays;
 
-import ca.inuktitutcomputing.documents.NRC_DOCDocument;
-import ca.inuktitutcomputing.script.TransCoder;
+import org.iutools.documents.NRC_DOCDocument;
 
 
 public class TranslitDOCFile {

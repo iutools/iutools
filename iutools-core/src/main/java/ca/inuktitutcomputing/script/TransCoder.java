@@ -22,7 +22,7 @@ import java.util.regex.PatternSyntaxException;
 //import org.apache.log4j.Logger;
 
 import org.iutools.html.HtmlEntities;
-import ca.inuktitutcomputing.fonts.Font;
+import org.iutools.fonts.Font;
 
 public class TransCoder {
 	/**

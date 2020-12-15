@@ -10,7 +10,7 @@ import org.apache.log4j.Logger;
 import org.iutools.utilities.MonURLDecoder;
 import org.iutools.utilities1.Util;
 import ca.inuktitutcomputing.script.TransCoder;
-import ca.inuktitutcomputing.lib.html;
+import org.iutools.lib.html;
 
 public class Roots {
 

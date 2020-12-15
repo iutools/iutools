@@ -8,7 +8,10 @@ import java.nio.file.Files;
 
 import org.apache.commons.io.FilenameUtils;
 
-import ca.inuktitutcomputing.documents.*;
+import org.iutools.documents.NRC_DOCDocument;
+import org.iutools.documents.NRC_DOCXDocument;
+import org.iutools.documents.NRC_DOCXDocumentException;
+import org.iutools.documents.NRC_PDFDocument;
 
 public class CorpusDocument_File extends CorpusDocument {
 	
@@ -63,7 +66,7 @@ public class CorpusDocument_File extends CorpusDocument {
 		return contents;
 	}
 
-	private String getDOCXContent() throws NRC_DOCXDocumentException  {
+	private String getDOCXContent() throws NRC_DOCXDocumentException {
 		NRC_DOCXDocument doc = new NRC_DOCXDocument("file://"+id);
 		String contents = doc.getContents();
 		doc.close();

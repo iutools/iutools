@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.iutools.morph.Gist;
-import ca.inuktitutcomputing.nunhansearch.ProcessQuery;
+import org.iutools.concordancer.nunhansearch.ProcessQuery;
 import org.iutools.utilities.Alignment;
 import ca.nrc.json.PrettyPrinter;
 import org.iutools.webservice.EndPointHelper;

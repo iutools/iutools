@@ -22,7 +22,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import ca.inuktitutcomputing.documents.WebPageReader;
+import org.iutools.documents.WebPageReader;
 
 
 public class HtmlDocu {

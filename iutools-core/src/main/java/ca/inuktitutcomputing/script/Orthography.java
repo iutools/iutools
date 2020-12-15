@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
-import ca.inuktitutcomputing.fonts.Font;
+import org.iutools.fonts.Font;
 
 
 public class Orthography {
