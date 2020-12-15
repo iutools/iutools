@@ -8,10 +8,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ca.inuktitutcomputing.data.LinguisticDataException;
-import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
-import ca.inuktitutcomputing.morph.MorphologicalAnalyzerException;
+import org.iutools.morph.MorphologicalAnalyzer;
+import org.iutools.morph.MorphologicalAnalyzerException;
 import ca.inuktitutcomputing.script.Syllabics;
-import ca.inuktitutcomputing.morph.Decomposition;
+import org.iutools.morph.Decomposition;
 
 
 public class StringSegmenter_IUMorpheme extends StringSegmenter {

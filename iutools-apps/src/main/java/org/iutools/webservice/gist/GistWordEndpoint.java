@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ca.inuktitutcomputing.morph.Gist;
+import org.iutools.morph.Gist;
 import ca.inuktitutcomputing.nunhansearch.ProcessQuery;
 import ca.inuktitutcomputing.utilities.Alignment;
 import ca.nrc.json.PrettyPrinter;

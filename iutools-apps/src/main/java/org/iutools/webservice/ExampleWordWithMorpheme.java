@@ -1,8 +1,6 @@
 package org.iutools.webservice;
 
-import java.util.List;
-
-import ca.inuktitutcomputing.morph.Gist;
+import org.iutools.morph.Gist;
 import ca.inuktitutcomputing.utilities.Alignment;
 
 

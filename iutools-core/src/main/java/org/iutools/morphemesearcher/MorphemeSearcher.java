@@ -17,12 +17,11 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import ca.inuktitutcomputing.data.LinguisticDataException;
-import ca.inuktitutcomputing.morph.Decomposition;
-import ca.inuktitutcomputing.morph.Decomposition.DecompositionExpression;
-import ca.inuktitutcomputing.morph.MorphInukException;
-import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
-import ca.inuktitutcomputing.morph.MorphologicalAnalyzerException;
-import org.iutools.corpus.*;
+import org.iutools.morph.Decomposition;
+import org.iutools.morph.Decomposition.DecompositionExpression;
+import org.iutools.morph.MorphInukException;
+import org.iutools.morph.MorphologicalAnalyzer;
+import org.iutools.morph.MorphologicalAnalyzerException;
 
 public class MorphemeSearcher {
 	

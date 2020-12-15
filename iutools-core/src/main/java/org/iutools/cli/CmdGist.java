@@ -8,8 +8,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ca.inuktitutcomputing.applications.Decompose;
-import ca.inuktitutcomputing.morph.Decomposition;
-import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
+import org.iutools.morph.Decomposition;
+import org.iutools.morph.MorphologicalAnalyzer;
 import ca.inuktitutcomputing.script.Syllabics;
 import ca.nrc.ui.commandline.UserIO.Verbosity;
 

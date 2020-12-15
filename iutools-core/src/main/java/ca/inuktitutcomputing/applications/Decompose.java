@@ -11,8 +11,8 @@ import java.util.Calendar;
 import ca.inuktitutcomputing.data.LinguisticData;
 import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.script.TransCoder;
-import ca.inuktitutcomputing.morph.Decomposition;
-import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
+import org.iutools.morph.Decomposition;
+import org.iutools.morph.MorphologicalAnalyzer;
 import ca.inuktitutcomputing.utilities.MonURLDecoder;
 import ca.inuktitutcomputing.utilities.Text;
 

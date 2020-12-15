@@ -6,12 +6,12 @@ import org.iutools.corpus.CompiledCorpus;
 import org.iutools.corpus.CompiledCorpusRegistry;
 
 import ca.inuktitutcomputing.applications.Decompose;
-import ca.inuktitutcomputing.morph.Decomposition;
+import org.iutools.morph.Decomposition;
 import ca.inuktitutcomputing.script.Roman;
 import ca.inuktitutcomputing.script.Syllabics;
 import org.iutools.morphrelatives.MorphRelativesFinder;
 import org.iutools.morphrelatives.MorphologicalRelative;
-import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
+import org.iutools.morph.MorphologicalAnalyzer;
 
 public class CmdMorphNeighbours extends ConsoleCommand {
 

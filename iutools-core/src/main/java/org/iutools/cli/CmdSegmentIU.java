@@ -9,9 +9,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ca.inuktitutcomputing.data.LinguisticDataException;
-import ca.inuktitutcomputing.morph.Decomposition;
-import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
-import ca.inuktitutcomputing.morph.MorphologicalAnalyzerAbstract;
+import org.iutools.morph.Decomposition;
+import org.iutools.morph.MorphologicalAnalyzer;
+import org.iutools.morph.MorphologicalAnalyzerAbstract;
 import ca.nrc.debug.Debug;
 
 public class CmdSegmentIU extends ConsoleCommand {

@@ -11,7 +11,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ca.inuktitutcomputing.morph.Gist;
+import org.iutools.morph.Gist;
 import ca.inuktitutcomputing.utilities.Alignment;
 import ca.nrc.testing.AssertHelpers;
 import ca.nrc.testing.AssertNumber;

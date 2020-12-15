@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.junit.Assert;
 
-import ca.inuktitutcomputing.morph.Gist;
+import org.iutools.morph.Gist;
 import ca.inuktitutcomputing.utilities.Alignment;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.json.PrettyPrinter;

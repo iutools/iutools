@@ -3,9 +3,9 @@ package org.iutools.cli;
 import java.util.Iterator;
 import java.util.List;
 
-import ca.inuktitutcomputing.morph.failureanalysis.MorphFailureAnalyzer;
-import ca.inuktitutcomputing.morph.failureanalysis.ProblematicNGram;
-import ca.inuktitutcomputing.morph.failureanalysis.ProblematicNGram.SortBy;
+import org.iutools.morph.failureanalysis.MorphFailureAnalyzer;
+import org.iutools.morph.failureanalysis.ProblematicNGram;
+import org.iutools.morph.failureanalysis.ProblematicNGram.SortBy;
 import ca.nrc.ui.commandline.UserIO.Verbosity;
 import org.iutools.corpus.CompiledCorpus;
 import org.iutools.corpus.CompiledCorpusException;

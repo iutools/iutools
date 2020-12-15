@@ -8,7 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ca.inuktitutcomputing.data.Morpheme;
-import ca.inuktitutcomputing.morph.Decomposition;
+import org.iutools.morph.Decomposition;
 import ca.nrc.config.Config;
 import ca.nrc.config.ConfigException;
 import ca.nrc.debug.Debug;

@@ -32,11 +32,8 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
-import ca.inuktitutcomputing.morph.AffixPartOfComposition;
-import ca.nrc.json.PrettyPrinter;
+import org.iutools.morph.AffixPartOfComposition;
 import ca.inuktitutcomputing.data.constraints.Conditions;
-import ca.inuktitutcomputing.data.LinguisticDataAbstract;
-import ca.inuktitutcomputing.data.Affix;
 
 public abstract class Morpheme implements Cloneable {
 

@@ -1,6 +1,6 @@
 package org.iutools.webservice.gist;
 
-import ca.inuktitutcomputing.morph.Gist;
+import org.iutools.morph.Gist;
 import ca.inuktitutcomputing.script.TransCoder;
 import ca.inuktitutcomputing.utilities.Alignment;
 import org.iutools.webservice.ServiceResponse;

@@ -23,9 +23,9 @@ import com.google.gson.Gson;
 
 import org.iutools.config.IUConfig;
 import ca.inuktitutcomputing.data.LinguisticDataException;
-import ca.inuktitutcomputing.morph.Decomposition;
-import ca.inuktitutcomputing.morph.MorphologicalAnalyzer;
-import ca.inuktitutcomputing.morph.MorphologicalAnalyzerException;
+import org.iutools.morph.Decomposition;
+import org.iutools.morph.MorphologicalAnalyzer;
+import org.iutools.morph.MorphologicalAnalyzerException;
 import ca.nrc.config.ConfigException;
 import org.iutools.text.ngrams.NgramCompiler;
 

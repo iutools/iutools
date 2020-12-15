@@ -3,7 +3,7 @@ package org.iutools.webservice;
 import org.junit.Before;
 import org.junit.Test;
 
-import ca.inuktitutcomputing.morph.Gist;
+import org.iutools.morph.Gist;
 import ca.inuktitutcomputing.utilities.Alignment;
 import ca.nrc.ui.web.testing.MockHttpServletResponse;
 
