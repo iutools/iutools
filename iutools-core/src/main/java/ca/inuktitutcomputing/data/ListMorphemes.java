@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.Vector;
 import java.util.concurrent.TimeoutException;
 
-import ca.inuktitutcomputing.script.Orthography;
+import org.iutools.script.Orthography;
 
 public class ListMorphemes {
 

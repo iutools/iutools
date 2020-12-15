@@ -1,8 +1,8 @@
 package org.iutools.edit_distance;
 
-import ca.inuktitutcomputing.script.Roman;
-import ca.inuktitutcomputing.script.Syllabics;
-import ca.inuktitutcomputing.script.TransCoder;
+import org.iutools.script.Roman;
+import org.iutools.script.Syllabics;
+import org.iutools.script.TransCoder;
 import ca.nrc.string.diff.DiffResult;
 import ca.nrc.string.diff.StringDiffException;
 import ca.nrc.string.diff.TextualDiff;

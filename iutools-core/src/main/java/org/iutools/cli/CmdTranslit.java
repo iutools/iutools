@@ -3,7 +3,7 @@ package org.iutools.cli;
 import java.io.File;
 
 import org.iutools.bin.TranslitDOCFileParagraphs;
-import ca.inuktitutcomputing.script.TransCoder;
+import org.iutools.script.TransCoder;
 
 public class CmdTranslit extends ConsoleCommand {
 

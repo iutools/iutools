@@ -16,7 +16,7 @@ import org.apache.poi.hwpf.usermodel.Section;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
 import org.iutools.fonts.Font;
-import ca.inuktitutcomputing.script.TransCoder;
+import org.iutools.script.TransCoder;
 
 public class TranslitDOCFileParagraphs {
 

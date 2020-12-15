@@ -1,6 +1,6 @@
 package org.iutools.concordancer;
 
-import ca.inuktitutcomputing.script.Syllabics;
+import org.iutools.script.Syllabics;
 import ca.nrc.data.harvesting.LanguageGuesser;
 import ca.nrc.data.harvesting.LanguageGuesserException;
 

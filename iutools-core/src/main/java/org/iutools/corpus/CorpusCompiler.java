@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
 
 import ca.inuktitutcomputing.data.LinguisticDataException;
 import org.iutools.morph.Decomposition;
-import ca.inuktitutcomputing.script.TransCoder;
+import org.iutools.script.TransCoder;
 import ca.nrc.data.file.ObjectStreamReader;
 import ca.nrc.data.file.ObjectStreamReaderException;
 import org.iutools.datastructure.trie.StringSegmenterException;

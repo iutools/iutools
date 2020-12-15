@@ -9,8 +9,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import ca.inuktitutcomputing.script.Orthography;
-import ca.inuktitutcomputing.script.Syllabics;
+import org.iutools.script.Orthography;
+import org.iutools.script.Syllabics;
 import org.iutools.corpus.CorpusDocument_File;
 import org.iutools.corpus.CorpusReader_Directory;
 import org.iutools.text.segmentation.IUTokenizer;

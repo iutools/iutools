@@ -35,9 +35,9 @@ import ca.inuktitutcomputing.data.LinguisticDataException;
 import org.iutools.morph.Decomposition;
 import org.iutools.morph.MorphologicalAnalyzer;
 import org.iutools.morph.MorphologicalAnalyzerException;
-import ca.inuktitutcomputing.script.Orthography;
-import ca.inuktitutcomputing.script.Syllabics;
-import ca.inuktitutcomputing.script.TransCoder;
+import org.iutools.script.Orthography;
+import org.iutools.script.Syllabics;
+import org.iutools.script.TransCoder;
 import org.iutools.utilbin.AnalyzeNumberExpressions;
 
 

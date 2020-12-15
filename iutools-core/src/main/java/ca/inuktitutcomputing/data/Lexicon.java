@@ -26,7 +26,7 @@ package ca.inuktitutcomputing.data;
 
 import java.util.*;
 
-import ca.inuktitutcomputing.script.Syllabics;
+import org.iutools.script.Syllabics;
 
 public class Lexicon {
 

@@ -8,7 +8,7 @@
  */
 package org.iutools.bin;
 
-import ca.inuktitutcomputing.script.TransCoder;
+import org.iutools.script.TransCoder;
 
 public class TranslitText {
 

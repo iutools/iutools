@@ -14,9 +14,9 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 
 import ca.inuktitutcomputing.dataCSV.LinguisticDataCSV;
-import ca.inuktitutcomputing.phonology.Dialect;
-import ca.inuktitutcomputing.script.Orthography;
-import ca.inuktitutcomputing.script.Roman;
+import org.iutools.phonology.Dialect;
+import org.iutools.script.Orthography;
+import org.iutools.script.Roman;
 import org.iutools.text.segmentation.MyStringTokenizer;
 
 public class LinguisticData {

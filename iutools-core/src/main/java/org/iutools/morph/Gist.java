@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 
 import org.iutools.bin.Decompose;
 import ca.inuktitutcomputing.data.LinguisticDataException;
-import ca.inuktitutcomputing.script.Syllabics;
+import org.iutools.script.Syllabics;
 import ca.nrc.datastructure.Pair;
 
 public class Gist {

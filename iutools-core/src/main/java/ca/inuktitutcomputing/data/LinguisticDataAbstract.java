@@ -11,10 +11,10 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
-import ca.inuktitutcomputing.phonology.Dialect;
+import org.iutools.phonology.Dialect;
 import ca.inuktitutcomputing.dataCSV.LinguisticDataCSV;
 //import ca.inuktitutcomputing.dataCompiled.LinguisticDataCompiled;
-import ca.inuktitutcomputing.script.Orthography;
+import org.iutools.script.Orthography;
 
 public abstract class LinguisticDataAbstract {
 

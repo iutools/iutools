@@ -9,7 +9,7 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import ca.inuktitutcomputing.phonology.research.PhonologicalChange;
+import org.iutools.phonology.research.PhonologicalChange;
 import ca.nrc.testing.AssertHelpers;
 
 public class PhonologicalChangeTest {

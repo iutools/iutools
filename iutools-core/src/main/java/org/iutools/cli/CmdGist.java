@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 import org.iutools.bin.Decompose;
 import org.iutools.morph.Decomposition;
 import org.iutools.morph.MorphologicalAnalyzer;
-import ca.inuktitutcomputing.script.Syllabics;
+import org.iutools.script.Syllabics;
 import ca.nrc.ui.commandline.UserIO.Verbosity;
 
 public class CmdGist extends ConsoleCommand {

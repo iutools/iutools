@@ -38,12 +38,12 @@ import ca.inuktitutcomputing.data.constraints.Condition;
 import ca.inuktitutcomputing.data.constraints.Conditions;
 import ca.inuktitutcomputing.data.constraints.Imacond;
 import ca.inuktitutcomputing.data.constraints.ParseException;
-import ca.inuktitutcomputing.script.Orthography;
-import ca.inuktitutcomputing.script.Roman;
-import ca.inuktitutcomputing.script.Syllabics;
+import org.iutools.script.Orthography;
+import org.iutools.script.Roman;
+import org.iutools.script.Syllabics;
 import ca.inuktitutcomputing.data.*;
 import org.iutools.morph.Graph.State;
-import ca.inuktitutcomputing.phonology.Dialect;
+import org.iutools.phonology.Dialect;
 import org.iutools.utilities.StopWatch;
 import org.iutools.utilities1.Util;
 

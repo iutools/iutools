@@ -7,8 +7,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import ca.inuktitutcomputing.script.TransCoder;
-import ca.inuktitutcomputing.script.TransCoderException;
+import org.iutools.script.TransCoder;
+import org.iutools.script.TransCoderException;
 
 public class SpellingCorrection {
 	public String orig;

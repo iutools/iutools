@@ -13,20 +13,10 @@ import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
 
-import ca.inuktitutcomputing.script.Orthography;
+import org.iutools.script.Orthography;
 import ca.nrc.debug.Debug;
 //import ca.inuktitutcomputing.data.LinguisticDataAbstract;
-import ca.inuktitutcomputing.data.Action;
-import ca.inuktitutcomputing.data.Affix;
-import ca.inuktitutcomputing.data.Base;
-import ca.inuktitutcomputing.data.Demonstrative;
-import ca.inuktitutcomputing.data.SurfaceFormOfAffix;
-import ca.inuktitutcomputing.data.Pronoun;
-import ca.inuktitutcomputing.data.Suffix;
-import ca.inuktitutcomputing.data.DemonstrativeEnding;
-import ca.inuktitutcomputing.data.NounEnding;
-import ca.inuktitutcomputing.data.VerbEnding;
-import ca.inuktitutcomputing.data.VerbWord;
+
 
 public abstract class Data {
     

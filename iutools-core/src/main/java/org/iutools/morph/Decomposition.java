@@ -40,7 +40,7 @@ import org.apache.log4j.Logger;
 import ca.inuktitutcomputing.data.Base;
 import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.data.Morpheme;
-import ca.inuktitutcomputing.script.Orthography;
+import org.iutools.script.Orthography;
 
 import static ca.inuktitutcomputing.data.Morpheme.MorphFormat;
 

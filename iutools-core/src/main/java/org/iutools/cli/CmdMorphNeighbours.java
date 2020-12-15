@@ -7,8 +7,8 @@ import org.iutools.corpus.CompiledCorpusRegistry;
 
 import org.iutools.bin.Decompose;
 import org.iutools.morph.Decomposition;
-import ca.inuktitutcomputing.script.Roman;
-import ca.inuktitutcomputing.script.Syllabics;
+import org.iutools.script.Roman;
+import org.iutools.script.Syllabics;
 import org.iutools.morphrelatives.MorphRelativesFinder;
 import org.iutools.morphrelatives.MorphologicalRelative;
 import org.iutools.morph.MorphologicalAnalyzer;

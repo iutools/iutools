@@ -77,7 +77,7 @@ import org.iutools.documents.NRC_PDFDocument;
 import org.iutools.fonts.Font;
 
 
-import ca.inuktitutcomputing.script.TransCoder;
+import org.iutools.script.TransCoder;
 
 
 /**

@@ -9,7 +9,7 @@ import ca.inuktitutcomputing.data.constraints.Conditions;
 import ca.inuktitutcomputing.data.Action;
 import ca.inuktitutcomputing.data.Affix;
 import ca.inuktitutcomputing.data.LinguisticData;
-import ca.inuktitutcomputing.script.Roman;
+import org.iutools.script.Roman;
 
 public class WordAnalysisMorpheme {
 	

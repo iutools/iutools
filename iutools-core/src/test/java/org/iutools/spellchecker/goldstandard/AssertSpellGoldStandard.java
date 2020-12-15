@@ -1,6 +1,6 @@
 package org.iutools.spellchecker.goldstandard;
 
-import ca.inuktitutcomputing.phonology.Dialect;
+import org.iutools.phonology.Dialect;
 import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.AssertSet;
 import ca.nrc.testing.Asserter;

@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import ca.inuktitutcomputing.script.Roman;
+import org.iutools.script.Roman;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.string.diff.DiffCosting;
 import ca.nrc.string.diff.DiffResult;

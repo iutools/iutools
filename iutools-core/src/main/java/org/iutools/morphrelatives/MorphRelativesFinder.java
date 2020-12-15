@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 import ca.inuktitutcomputing.data.Morpheme;
-import ca.inuktitutcomputing.script.TransCoder;
+import org.iutools.script.TransCoder;
 import org.iutools.datastructure.trie.StringSegmenter_IUMorpheme;
 import org.iutools.corpus.WordInfo;
 import org.iutools.corpus.CompiledCorpus;

@@ -3,9 +3,9 @@ package org.iutools.webservice.gist;
 import java.util.ArrayList;
 import java.util.List;
 
-import ca.inuktitutcomputing.script.TransCoder;
-import ca.inuktitutcomputing.script.TransCoder.Script;
-import ca.inuktitutcomputing.script.TransCoderException;
+import org.iutools.script.TransCoder;
+import org.iutools.script.TransCoder.Script;
+import org.iutools.script.TransCoderException;
 import ca.nrc.string.SimpleTokenizer;
 import org.iutools.concordancer.Alignment;
 import org.iutools.concordancer.DocAlignment;

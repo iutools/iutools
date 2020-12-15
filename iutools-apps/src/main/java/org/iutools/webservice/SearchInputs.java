@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import ca.inuktitutcomputing.script.TransCoder;
+import org.iutools.script.TransCoder;
 import ca.nrc.datastructure.Pair;
 
 public class SearchInputs extends ServiceInputs {

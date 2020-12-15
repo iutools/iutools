@@ -27,8 +27,8 @@ package ca.inuktitutcomputing.data;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import ca.inuktitutcomputing.script.Orthography;
-import ca.inuktitutcomputing.script.Roman;
+import org.iutools.script.Orthography;
+import org.iutools.script.Roman;
 
 public abstract class Action {
 	static public int NULLACTION = 0;

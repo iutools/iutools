@@ -10,7 +10,7 @@ import java.util.Calendar;
 
 import ca.inuktitutcomputing.data.LinguisticData;
 import ca.inuktitutcomputing.data.LinguisticDataException;
-import ca.inuktitutcomputing.script.TransCoder;
+import org.iutools.script.TransCoder;
 import org.iutools.morph.Decomposition;
 import org.iutools.morph.MorphologicalAnalyzer;
 import org.iutools.utilities.MonURLDecoder;

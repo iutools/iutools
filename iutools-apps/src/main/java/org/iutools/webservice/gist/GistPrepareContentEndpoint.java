@@ -15,7 +15,7 @@ import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ca.inuktitutcomputing.script.TransCoder;
+import org.iutools.script.TransCoder;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.json.PrettyPrinter;
 import org.iutools.text.segmentation.IUTokenizer;
@@ -24,7 +24,6 @@ import org.iutools.webservice.EndPointHelper;
 import org.iutools.webservice.ServiceException;
 import org.iutools.webservice.ServiceResponse;
 import org.iutools.webservice.tokenize.GistPrepareContentInputs;
-import org.iutools.concordancer.*;
 
 
 /**

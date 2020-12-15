@@ -1,7 +1,7 @@
 package org.iutools.spellchecker.goldstandard;
 
-import ca.inuktitutcomputing.phonology.Dialect;
-import ca.inuktitutcomputing.phonology.DialectException;
+import org.iutools.phonology.Dialect;
+import org.iutools.phonology.DialectException;
 import org.iutools.spellchecker.SpellCheckerException;
 import org.apache.commons.lang3.tuple.Triple;
 

@@ -13,7 +13,7 @@ import ca.inuktitutcomputing.data.Affix;
 import ca.inuktitutcomputing.data.LinguisticData;
 import ca.inuktitutcomputing.data.LinguisticDataException;
 import ca.inuktitutcomputing.data.SurfaceFormInContext;
-import ca.inuktitutcomputing.phonology.research.PhonologicalChange;
+import org.iutools.phonology.research.PhonologicalChange;
 import ca.nrc.json.PrettyPrinter;
 
 public class FormGenerator {

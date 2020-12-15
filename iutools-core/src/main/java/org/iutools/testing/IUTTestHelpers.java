@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 
 import org.junit.Assert;
 
-import ca.inuktitutcomputing.script.Syllabics;
+import org.iutools.script.Syllabics;
 import ca.nrc.data.harvesting.SearchResults;
 import ca.nrc.json.PrettyPrinter;
 import org.iutools.search.SearchHit;

@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 import ca.inuktitutcomputing.data.LinguisticDataException;
 import org.iutools.morph.MorphologicalAnalyzer;
 import org.iutools.morph.MorphologicalAnalyzerException;
-import ca.inuktitutcomputing.script.Syllabics;
+import org.iutools.script.Syllabics;
 import org.iutools.morph.Decomposition;
 
 

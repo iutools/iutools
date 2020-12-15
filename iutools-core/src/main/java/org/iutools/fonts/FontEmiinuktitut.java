@@ -94,7 +94,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.iutools.utilities1.Util;
-import ca.inuktitutcomputing.script.TransCoder;
+import org.iutools.script.TransCoder;
 
 // Remplacement de codes d'une police donn�e
 // en codes unicode �quivalents repr�sentant

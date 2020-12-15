@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
 
-import ca.inuktitutcomputing.script.Orthography;
-import ca.inuktitutcomputing.script.Syllabics;
+import org.iutools.script.Orthography;
+import org.iutools.script.Syllabics;
 import org.iutools.corpus.CorpusDocument_File;
 import org.iutools.corpus.CorpusReader_Directory;
 

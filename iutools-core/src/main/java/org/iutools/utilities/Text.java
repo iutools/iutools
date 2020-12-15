@@ -60,7 +60,7 @@
 
 package org.iutools.utilities;
 
-import ca.inuktitutcomputing.script.Roman;
+import org.iutools.script.Roman;
 
 public class Text {
 

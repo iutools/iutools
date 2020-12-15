@@ -32,8 +32,8 @@ import org.apache.log4j.Logger;
 
 import org.iutools.utilities1.Util;
 import ca.inuktitutcomputing.data.constraints.Conditions;
-import ca.inuktitutcomputing.script.Roman;
-import ca.inuktitutcomputing.script.TransCoder;
+import org.iutools.script.Roman;
+import org.iutools.script.TransCoder;
 
 public class Suffixes {
 

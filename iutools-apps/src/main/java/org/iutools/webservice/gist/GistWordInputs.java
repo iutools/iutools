@@ -1,6 +1,6 @@
 package org.iutools.webservice.gist;
 
-import ca.inuktitutcomputing.script.TransCoder;
+import org.iutools.script.TransCoder;
 import org.iutools.webservice.ServiceInputs;
 
 public class GistWordInputs extends ServiceInputs {

@@ -33,8 +33,8 @@ import org.apache.poi.hwpf.usermodel.Range;
 
 import org.iutools.fonts.Font;
 
-import ca.inuktitutcomputing.script.Syllabics;
-import ca.inuktitutcomputing.script.TransCoder;
+import org.iutools.script.Syllabics;
+import org.iutools.script.TransCoder;
 
 
 public class NRC_DOCDocument implements NRC_Document {

@@ -30,7 +30,7 @@ import java.io.FileReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 
-import ca.inuktitutcomputing.script.TransCoder;
+import org.iutools.script.TransCoder;
 
 
 public class TranslitTextFile {

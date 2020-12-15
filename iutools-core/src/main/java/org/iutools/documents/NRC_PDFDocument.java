@@ -44,8 +44,8 @@ import org.pdfbox.pdmodel.font.PDFont;
 //import org.pdfbox.util.PDFFonttedTextStripper;
 
 
-import ca.inuktitutcomputing.script.Syllabics;
-import ca.inuktitutcomputing.script.TransCoder;
+import org.iutools.script.Syllabics;
+import org.iutools.script.TransCoder;
 import org.iutools.fonts.Font;
 
 //import fonts.ngrammes.Ngramme;

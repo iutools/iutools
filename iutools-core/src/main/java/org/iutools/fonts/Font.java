@@ -29,7 +29,7 @@ import java.util.Vector;
 
 import org.iutools.fonts.ngrams.Ngram;
 import org.iutools.utilities1.Util;
-import ca.inuktitutcomputing.script.TransCoder;
+import org.iutools.script.TransCoder;
 
 
 public class Font {

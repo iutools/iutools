@@ -79,7 +79,7 @@ package org.iutools.fonts;
 import java.util.HashSet;
 import java.util.Set;
 
-import ca.inuktitutcomputing.script.TransCoder;
+import org.iutools.script.TransCoder;
 
 // Remplacement de codes d'une police donn�e 
 // en codes unicode �quivalents repr�sentant
