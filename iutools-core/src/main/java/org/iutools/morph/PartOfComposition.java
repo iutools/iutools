@@ -24,8 +24,8 @@
 
 package org.iutools.morph;
 
-import ca.inuktitutcomputing.data.LinguisticDataException;
-import ca.inuktitutcomputing.data.Morpheme;
+import org.iutools.linguisticdata.LinguisticDataException;
+import org.iutools.linguisticdata.Morpheme;
 
 // Morceau:	String terme
 // 			int    position

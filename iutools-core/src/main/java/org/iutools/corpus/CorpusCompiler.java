@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Logger;
 
-import ca.inuktitutcomputing.data.LinguisticDataException;
+import org.iutools.linguisticdata.LinguisticDataException;
 import org.iutools.morph.Decomposition;
 import org.iutools.script.TransCoder;
 import ca.nrc.data.file.ObjectStreamReader;

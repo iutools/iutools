@@ -37,12 +37,12 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
-import ca.inuktitutcomputing.data.Base;
-import ca.inuktitutcomputing.data.LinguisticDataException;
-import ca.inuktitutcomputing.data.Morpheme;
+import org.iutools.linguisticdata.Base;
+import org.iutools.linguisticdata.LinguisticDataException;
+import org.iutools.linguisticdata.Morpheme;
 import org.iutools.script.Orthography;
 
-import static ca.inuktitutcomputing.data.Morpheme.MorphFormat;
+import static org.iutools.linguisticdata.Morpheme.MorphFormat;
 
 // Decomposition:
 //    String word

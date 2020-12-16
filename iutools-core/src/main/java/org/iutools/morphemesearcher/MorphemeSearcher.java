@@ -16,7 +16,7 @@ import org.iutools.corpus.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import ca.inuktitutcomputing.data.LinguisticDataException;
+import org.iutools.linguisticdata.LinguisticDataException;
 import org.iutools.morph.Decomposition;
 import org.iutools.morph.Decomposition.DecompositionExpression;
 import org.iutools.morph.MorphInukException;

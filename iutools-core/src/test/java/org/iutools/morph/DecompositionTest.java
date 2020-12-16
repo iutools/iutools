@@ -3,7 +3,7 @@ package org.iutools.morph;
 import org.junit.Assert;
 import org.junit.Test;
 
-import static ca.inuktitutcomputing.data.Morpheme.MorphFormat;
+import static org.iutools.linguisticdata.Morpheme.MorphFormat;
 
 public class DecompositionTest {
 

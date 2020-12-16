@@ -1,7 +1,5 @@
 package org.iutools.morph.exp;
 
-import ca.inuktitutcomputing.data.LinguisticDataException;
-
 @SuppressWarnings("serial")
 public class WordAnalyzerException extends Exception {
 	

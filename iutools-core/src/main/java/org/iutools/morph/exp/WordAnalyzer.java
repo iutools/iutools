@@ -22,10 +22,10 @@ import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 
 import org.iutools.config.IUConfig;
-import ca.inuktitutcomputing.data.LinguisticData;
-import ca.inuktitutcomputing.data.LinguisticDataException;
-import ca.inuktitutcomputing.data.Morpheme;
-import ca.inuktitutcomputing.data.SurfaceFormInContext;
+import org.iutools.linguisticdata.LinguisticData;
+import org.iutools.linguisticdata.LinguisticDataException;
+import org.iutools.linguisticdata.Morpheme;
+import org.iutools.linguisticdata.SurfaceFormInContext;
 import org.iutools.morph.MorphologicalAnalyzerException;
 import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.Pair;

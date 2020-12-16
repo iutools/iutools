@@ -13,7 +13,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.apache.log4j.Logger;
 
-import ca.inuktitutcomputing.data.LinguisticDataException;
+import org.iutools.linguisticdata.LinguisticDataException;
 import org.iutools.utilities.StopWatch;
 import ca.nrc.debug.Debug;
 import ca.nrc.string.StringUtils;

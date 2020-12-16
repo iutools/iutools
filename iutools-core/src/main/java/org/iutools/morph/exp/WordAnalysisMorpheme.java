@@ -3,12 +3,12 @@ package org.iutools.morph.exp;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import ca.inuktitutcomputing.data.LinguisticDataException;
-import ca.inuktitutcomputing.data.Morpheme;
-import ca.inuktitutcomputing.data.constraints.Conditions;
-import ca.inuktitutcomputing.data.Action;
-import ca.inuktitutcomputing.data.Affix;
-import ca.inuktitutcomputing.data.LinguisticData;
+import org.iutools.linguisticdata.LinguisticDataException;
+import org.iutools.linguisticdata.Morpheme;
+import org.iutools.linguisticdata.constraints.Conditions;
+import org.iutools.linguisticdata.Action;
+import org.iutools.linguisticdata.Affix;
+import org.iutools.linguisticdata.LinguisticData;
 import org.iutools.script.Roman;
 
 public class WordAnalysisMorpheme {

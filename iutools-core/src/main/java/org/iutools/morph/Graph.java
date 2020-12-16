@@ -10,11 +10,11 @@ package org.iutools.morph;
 
 import java.util.Vector;
 
-import ca.inuktitutcomputing.data.LinguisticDataException;
-import ca.inuktitutcomputing.data.Morpheme;
-import ca.inuktitutcomputing.data.constraints.Conditions;
-import ca.inuktitutcomputing.data.constraints.Imacond;
-import ca.inuktitutcomputing.data.constraints.ParseException;
+import org.iutools.linguisticdata.LinguisticDataException;
+import org.iutools.linguisticdata.Morpheme;
+import org.iutools.linguisticdata.constraints.Conditions;
+import org.iutools.linguisticdata.constraints.Imacond;
+import org.iutools.linguisticdata.constraints.ParseException;
 
 
 public class Graph {

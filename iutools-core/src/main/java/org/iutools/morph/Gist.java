@@ -4,7 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.iutools.bin.Decompose;
-import ca.inuktitutcomputing.data.LinguisticDataException;
+import org.iutools.linguisticdata.LinguisticDataException;
 import org.iutools.script.Syllabics;
 import ca.nrc.datastructure.Pair;
 

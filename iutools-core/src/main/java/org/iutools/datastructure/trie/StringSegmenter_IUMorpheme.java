@@ -7,7 +7,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import ca.inuktitutcomputing.data.LinguisticDataException;
+import org.iutools.linguisticdata.LinguisticDataException;
 import org.iutools.morph.MorphologicalAnalyzer;
 import org.iutools.morph.MorphologicalAnalyzerException;
 import org.iutools.script.Syllabics;

@@ -11,8 +11,8 @@ import java.util.List;
 import org.junit.Test;
 import org.junit.Ignore;
 
-import ca.inuktitutcomputing.data.LinguisticDataException;
-import ca.inuktitutcomputing.data.SurfaceFormInContext;
+import org.iutools.linguisticdata.LinguisticDataException;
+import org.iutools.linguisticdata.SurfaceFormInContext;
 import ca.nrc.json.PrettyPrinter;
 
 @Ignore

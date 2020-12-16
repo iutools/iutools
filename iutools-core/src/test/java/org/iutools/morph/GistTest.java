@@ -2,7 +2,7 @@ package org.iutools.morph;
 
 import org.junit.Test;
 
-import ca.inuktitutcomputing.data.LinguisticDataException;
+import org.iutools.linguisticdata.LinguisticDataException;
 import ca.nrc.datastructure.Pair;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.testing.AssertHelpers;

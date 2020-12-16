@@ -3,7 +3,7 @@ package org.iutools.morph.exp;
 import java.util.ArrayList;
 import java.util.List;
 
-import ca.inuktitutcomputing.data.SurfaceFormInContext;
+import org.iutools.linguisticdata.SurfaceFormInContext;
 
 public class DecompositionTree {
 	

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.iutools.morph.Decomposition;
-import static ca.inuktitutcomputing.data.Morpheme.MorphFormat;
+import static org.iutools.linguisticdata.Morpheme.MorphFormat;
 import org.apache.commons.lang3.tuple.Triple;
 import org.junit.Assert;
 

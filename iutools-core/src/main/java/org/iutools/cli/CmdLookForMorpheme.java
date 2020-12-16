@@ -7,7 +7,7 @@ import java.util.List;
 import org.iutools.corpus.CompiledCorpus;
 import org.iutools.corpus.CompiledCorpusRegistry;
 
-import ca.inuktitutcomputing.data.Morpheme;
+import org.iutools.linguisticdata.Morpheme;
 import org.iutools.morphemesearcher.MorphSearchResults;
 import org.iutools.morphemesearcher.MorphemeSearcher;
 import org.iutools.morphemesearcher.ScoredExample;

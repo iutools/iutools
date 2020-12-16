@@ -27,9 +27,9 @@ package org.iutools.bin;
 
 import java.io.*;
 
-import ca.inuktitutcomputing.data.LinguisticData;
-import ca.inuktitutcomputing.data.LinguisticDataException;
-import ca.inuktitutcomputing.data.Suffixes;
+import org.iutools.linguisticdata.LinguisticData;
+import org.iutools.linguisticdata.LinguisticDataException;
+import org.iutools.linguisticdata.Suffixes;
 
 
 public class DescriptionOfSuffix {

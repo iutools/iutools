@@ -15,8 +15,8 @@ import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import ca.inuktitutcomputing.data.LinguisticData;
-import ca.inuktitutcomputing.data.LinguisticDataException;
+import org.iutools.linguisticdata.LinguisticData;
+import org.iutools.linguisticdata.LinguisticDataException;
 import org.iutools.script.*;
 import org.iutools.utilities.StopWatch;
 

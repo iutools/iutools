@@ -7,7 +7,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import ca.inuktitutcomputing.data.Morpheme;
+import org.iutools.linguisticdata.Morpheme;
 import org.iutools.morph.Decomposition;
 import ca.nrc.config.Config;
 import ca.nrc.config.ConfigException;
@@ -17,7 +17,7 @@ import ca.nrc.dtrc.elasticsearch.request.*;
 import ca.nrc.ui.commandline.UserIO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import ca.inuktitutcomputing.data.LinguisticDataException;
+import org.iutools.linguisticdata.LinguisticDataException;
 import org.iutools.datastructure.trie.StringSegmenter;
 import org.iutools.datastructure.trie.StringSegmenterException;
 import org.iutools.datastructure.trie.StringSegmenter_Char;

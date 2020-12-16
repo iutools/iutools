@@ -24,8 +24,8 @@
 
 package org.iutools.morph;
 
-import ca.inuktitutcomputing.data.Base;
-import ca.inuktitutcomputing.data.Morpheme;
+import org.iutools.linguisticdata.Base;
+import org.iutools.linguisticdata.Morpheme;
 
 public class RootPartOfComposition extends PartOfComposition {
 

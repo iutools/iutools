@@ -2,7 +2,7 @@ package org.iutools.datastructure.trie;
 
 import java.util.concurrent.TimeoutException;
 
-import ca.inuktitutcomputing.data.LinguisticDataException;
+import org.iutools.linguisticdata.LinguisticDataException;
 
 public abstract class StringSegmenter {
 	

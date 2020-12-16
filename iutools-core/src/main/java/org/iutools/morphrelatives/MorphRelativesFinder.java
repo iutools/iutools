@@ -3,7 +3,7 @@ package org.iutools.morphrelatives;
 import java.util.*;
 import java.util.regex.Pattern;
 
-import ca.inuktitutcomputing.data.Morpheme;
+import org.iutools.linguisticdata.Morpheme;
 import org.iutools.script.TransCoder;
 import org.iutools.datastructure.trie.StringSegmenter_IUMorpheme;
 import org.iutools.corpus.WordInfo;

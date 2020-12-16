@@ -34,14 +34,14 @@ import org.apache.log4j.Logger;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 
-import ca.inuktitutcomputing.data.constraints.Condition;
-import ca.inuktitutcomputing.data.constraints.Conditions;
-import ca.inuktitutcomputing.data.constraints.Imacond;
-import ca.inuktitutcomputing.data.constraints.ParseException;
+import org.iutools.linguisticdata.*;
+import org.iutools.linguisticdata.constraints.Condition;
+import org.iutools.linguisticdata.constraints.Conditions;
+import org.iutools.linguisticdata.constraints.Imacond;
+import org.iutools.linguisticdata.constraints.ParseException;
 import org.iutools.script.Orthography;
 import org.iutools.script.Roman;
 import org.iutools.script.Syllabics;
-import ca.inuktitutcomputing.data.*;
 import org.iutools.morph.Graph.State;
 import org.iutools.phonology.Dialect;
 import org.iutools.utilities.StopWatch;
@@ -666,10 +666,10 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 	//----------------------------------------------------------------------
 
     private Object[][] validateContextActions(String context,
-            Action action1, Action action2, String stem, int posAffix,
-            Affix affix, SurfaceFormOfAffix form, boolean isSyllabic,
-            boolean checkPossibleDialectalChanges,
-            String affixCandidate) throws TimeoutException, MorphInukException, LinguisticDataException {
+															 Action action1, Action action2, String stem, int posAffix,
+															 Affix affix, SurfaceFormOfAffix form, boolean isSyllabic,
+															 boolean checkPossibleDialectalChanges,
+															 String affixCandidate) throws TimeoutException, MorphInukException, LinguisticDataException {
 
         int action1Type = action1.getType();
         int action2Type = action2.getType();
@@ -902,7 +902,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
      * @param transitivity
      * @return
      * @throws TimeoutException
-     * @throws LinguisticDataException 
+     * @throws LinguisticDataException
      */
 	private Vector<Decomposition> checkRoots(Vector<Morpheme> lexs, String word, String termOrigICI,
             Vector<AffixPartOfComposition> morphParts, Graph.State states[], Conditions preConds,

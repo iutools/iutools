@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ca.inuktitutcomputing.data.LinguisticDataException;
+import org.iutools.linguisticdata.LinguisticDataException;
 import org.iutools.morph.Decomposition;
 import org.iutools.morph.MorphologicalAnalyzer;
 import org.iutools.morph.MorphologicalAnalyzerAbstract;

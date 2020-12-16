@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.gson.Gson;
 
 import org.iutools.config.IUConfig;
-import ca.inuktitutcomputing.data.LinguisticDataException;
+import org.iutools.linguisticdata.LinguisticDataException;
 import org.iutools.morph.Decomposition;
 import org.iutools.morph.MorphologicalAnalyzer;
 import org.iutools.morph.MorphologicalAnalyzerException;

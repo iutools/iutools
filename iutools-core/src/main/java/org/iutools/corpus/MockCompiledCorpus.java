@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
-import ca.inuktitutcomputing.data.LinguisticDataException;
+import org.iutools.linguisticdata.LinguisticDataException;
 import org.iutools.datastructure.trie.StringSegmenter;
 import org.iutools.datastructure.trie.StringSegmenterException;
 import org.iutools.datastructure.trie.StringSegmenter_IUMorpheme;

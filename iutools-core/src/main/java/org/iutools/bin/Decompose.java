@@ -8,8 +8,8 @@ package org.iutools.bin;
 
 import java.util.Calendar;
 
-import ca.inuktitutcomputing.data.LinguisticData;
-import ca.inuktitutcomputing.data.LinguisticDataException;
+import org.iutools.linguisticdata.LinguisticData;
+import org.iutools.linguisticdata.LinguisticDataException;
 import org.iutools.script.TransCoder;
 import org.iutools.morph.Decomposition;
 import org.iutools.morph.MorphologicalAnalyzer;

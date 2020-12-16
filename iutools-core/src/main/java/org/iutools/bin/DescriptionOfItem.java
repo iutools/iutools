@@ -26,10 +26,9 @@
 package org.iutools.bin;
 
 
-import ca.inuktitutcomputing.data.Items;
-import ca.inuktitutcomputing.data.LinguisticData;
-import ca.inuktitutcomputing.data.LinguisticDataAbstract;
-import ca.inuktitutcomputing.data.LinguisticDataException;
+import org.iutools.linguisticdata.Items;
+import org.iutools.linguisticdata.LinguisticData;
+import org.iutools.linguisticdata.LinguisticDataException;
 
 
 public class DescriptionOfItem {

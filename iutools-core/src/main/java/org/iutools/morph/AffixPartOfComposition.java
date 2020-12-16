@@ -25,11 +25,11 @@ package org.iutools.morph;
 
 import java.util.Vector;
 
-import ca.inuktitutcomputing.data.Affix;
-import ca.inuktitutcomputing.data.LinguisticDataException;
-import ca.inuktitutcomputing.data.SurfaceFormOfAffix;
-import ca.inuktitutcomputing.data.Morpheme;
-import ca.inuktitutcomputing.data.VerbEnding;
+import org.iutools.linguisticdata.Affix;
+import org.iutools.linguisticdata.LinguisticDataException;
+import org.iutools.linguisticdata.SurfaceFormOfAffix;
+import org.iutools.linguisticdata.Morpheme;
+import org.iutools.linguisticdata.VerbEnding;
 
 
 public class AffixPartOfComposition extends PartOfComposition {

@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import ca.inuktitutcomputing.data.Base;
-import ca.inuktitutcomputing.data.LinguisticData;
+import org.iutools.linguisticdata.Base;
+import org.iutools.linguisticdata.LinguisticData;
 
 public class RootsWithSameNeutralForm {
 	

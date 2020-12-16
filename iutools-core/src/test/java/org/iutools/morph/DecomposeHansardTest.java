@@ -12,8 +12,8 @@ import org.junit.Test;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
 
-import ca.inuktitutcomputing.data.LinguisticData;
-import ca.inuktitutcomputing.data.LinguisticDataException;
+import org.iutools.linguisticdata.LinguisticData;
+import org.iutools.linguisticdata.LinguisticDataException;
 import ca.nrc.dtrc.stats.FrequencyHistogram;
 
 /**

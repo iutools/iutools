@@ -1,6 +1,6 @@
 package org.iutools.morph;
 
-import static ca.inuktitutcomputing.data.Morpheme.MorphFormat;
+import static org.iutools.linguisticdata.Morpheme.MorphFormat;
 import ca.nrc.testing.AssertString;
 import ca.nrc.testing.Asserter;
 
