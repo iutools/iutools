@@ -81,65 +81,57 @@ public final class LinguisticDataCSV { //extends LinguisticDataAbstract {
 	}
 	
 
-    public static int readLinguisticDataCSV(String [] data) throws LinguisticDataException {
-//    	System.out.println("--- Start reading linguistic data for data= "+String.join("; ", data));    	
-    	Logger logger = Logger.getLogger("LinguisticDataCSV.readLinguisticDataCSV");
-    	String type = data[0];
-    	String dbName = data[1];
-    	String tableName = data[2]; 
-    	logger.trace("Reading CSV data with type="+type+", dbName="+dbName+", tableName="+tableName);
-    	BufferedReader f;
-        try {
-        	String fileName = tableName+".csv";
-        	logger.trace("fileName="+fileName);
-        	InputStream is = ResourceGetter.getResourceAsStream("ca/inuktitutcomputing/dataCSV/"+fileName);
-            f =  new BufferedReader(new InputStreamReader(is));
-        	String line;
-            
-            String firstLine = f.readLine();
-            String [] fieldNames = firstLine.split(",");
-        	while ( (line=f.readLine()) != null) {
-                    HashMap nextRow = getNextRow(line,fieldNames);
-                    // ajouter le nom de la base de donn�es et le nom de la table
-                    nextRow.put("dbName", dbName);
-                    nextRow.put("tableName", tableName);
-                    if (type.equals("Base")) {
-//                    	logger.debug("nextRow: "+PrettyPrinter.print(nextRow));
-                        Data.makeBase(nextRow);
-                    } else if (type.equals("Suffix")) {
-                        Data.makeSuffix(nextRow);
-                    } else if (type.equals("NounEnding")) {
-                        Data.makeNounEnding(nextRow);
-                    } else if (type.equals("VerbEnding")) {
-                        Data.makeVerbEnding(nextRow);
-                    } else if (type.equals("Demonstrative")) {
-                        Data.makeDemonstrative(nextRow);
-                    } else if (type.equals("DemonstrativeEnding")) {
-                        Data.makeDemonstrativeEnding(nextRow);
-                    } else if (type.equals("Pronoun")) {
-                        Data.makePronoun(nextRow);
-                    } else if (type.equals("VerbWord")) {
-                        Data.makeVerbWord(nextRow);
-                    } else if (type.equals("Source")) {
-                        Data.makeSource(nextRow);
-                    }
-                }
-        } catch (FileNotFoundException e) {
-//			e.printStackTrace();
-//        	System.out.println("--- End after FileNotFoundExcerption reading linguistic data for data= "+String.join("; ", data));
-        	return FILE_NOT_FOUND;
+	public static void readLinguisticDataCSV(String [] data)
+		throws LinguisticDataException {
+		Logger logger = Logger.getLogger("LinguisticDataCSV.readLinguisticDataCSV");
+		String type = data[0];
+		String dbName = data[1];
+		String tableName = data[2];
+		logger.trace("Reading CSV data with type="+type+", dbName="+dbName+", tableName="+tableName);
+		BufferedReader f;
+		String fileName = tableName+".csv";
+		logger.trace("fileName="+fileName);
+		String tablePath = "ca/inuktitutcomputing/dataCSV/"+fileName;
+		try {
+			InputStream is =
+				ResourceGetter.getResourceAsStream(tablePath);
+			f =  new BufferedReader(new InputStreamReader(is));
+			String line;
+
+			String firstLine = f.readLine();
+			String [] fieldNames = firstLine.split(",");
+			while ( (line=f.readLine()) != null) {
+				HashMap nextRow = getNextRow(line,fieldNames);
+				// ajouter le nom de la base de donn�es et le nom de la table
+				nextRow.put("dbName", dbName);
+				nextRow.put("tableName", tableName);
+				if (type.equals("Base")) {
+					Data.makeBase(nextRow);
+				} else if (type.equals("Suffix")) {
+					Data.makeSuffix(nextRow);
+				} else if (type.equals("NounEnding")) {
+					Data.makeNounEnding(nextRow);
+				} else if (type.equals("VerbEnding")) {
+					Data.makeVerbEnding(nextRow);
+				} else if (type.equals("Demonstrative")) {
+					Data.makeDemonstrative(nextRow);
+				} else if (type.equals("DemonstrativeEnding")) {
+					Data.makeDemonstrativeEnding(nextRow);
+				} else if (type.equals("Pronoun")) {
+					Data.makePronoun(nextRow);
+				} else if (type.equals("VerbWord")) {
+					Data.makeVerbWord(nextRow);
+				} else if (type.equals("Source")) {
+					Data.makeSource(nextRow);
+				}
+			}
 		} catch (IOException e) {
-//			e.printStackTrace();
-//	    	System.out.println("--- End after IOException reading linguistic data for data= "+String.join("; ", data));
-			return IOEXCEPTION;
+			throw new LinguisticDataException(
+				"Could not read linguistic data file "+tablePath);
 		}
-//    	System.out.println("--- End reading linguistic data for data= "+String.join("; ", data));
 
     	logger.trace("Done reading the CSV file");
-        
-        
-        return OK;
-    }
+	}
 
     public static HashMap getNextRow(String line, String [] fieldNames) {
         HashMap currentRow = new HashMap();
