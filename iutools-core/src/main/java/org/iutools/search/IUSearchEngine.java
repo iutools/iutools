@@ -1,12 +1,9 @@
 package org.iutools.search;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import ca.nrc.data.harvesting.BingSearchEngine;
-import ca.nrc.data.harvesting.SearchEngine;
 import ca.nrc.data.harvesting.SearchEngine.Query;
 import ca.nrc.data.harvesting.SearchEngine.SearchEngineException;
 import ca.nrc.data.harvesting.SearchEngineMultiQuery;
@@ -21,8 +18,8 @@ import ca.nrc.data.harvesting.SearchResults;
  */
 public class IUSearchEngine extends SearchEngineMultiQuery {
 
-	public IUSearchEngine() throws IOException, SearchEngineException {
-		super();
+	public IUSearchEngine(String _bingKey) throws IOException, SearchEngineException {
+		super(_bingKey);
 	}
 	
 	
