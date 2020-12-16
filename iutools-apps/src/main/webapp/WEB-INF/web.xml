@@ -91,20 +91,6 @@
 		<url-pattern>/srv/gist/gist/*</url-pattern>
 	</servlet-mapping>	
 	
-
-	<!-- GisterPrep Endpoint -->
-	<!--<servlet>
-	   <servlet-name>GisterPrepEndpoint</servlet-name>
-	   <servlet-class>  
-	     ca.pirurvik.iutools.webservice.GisterPrepEndpoint
-	   </servlet-class>
-	</servlet> 
-	<servlet-mapping>
-		<servlet-name>GisterPrepEndpoint</servlet-name>
-		<url-pattern>/srv/gistprep/*</url-pattern>
-	</servlet-mapping>	
-	-->
-
 	<!-- GistText Endpoint -->
 	<servlet>
 	   <servlet-name>GistTextEndpoint</servlet-name>

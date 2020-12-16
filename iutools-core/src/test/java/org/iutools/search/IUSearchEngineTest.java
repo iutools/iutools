@@ -2,7 +2,7 @@ package org.iutools.search;
 
 
 
-import ca.nrc.config.Config;
+import org.iutools.config.IUConfig;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,11 +46,11 @@ public class IUSearchEngineTest {
 	////////////////////////////////
 
 	protected static String assumeTestBingKeyIsDefined() throws Exception {
-		String bingTestKeyPropName = 	"org.iutools.search.testBingKey";
-		String key = Config.getConfigProperty(bingTestKeyPropName, false);
+		String key = IUConfig.getBingSearchKey();
 		Assume.assumeTrue(
 		"No bing key defined. Skipping all tests in SearchEngine_BingTest." +
-		"To run those tests, obtain a Bing key from Microsoft Azure and setup a config property "+bingTestKeyPropName+" with that value.",
+			"To run those tests, obtain a Bing key from Microsoft Azure and setup a config property "+
+			IUConfig.propName_BingSearchKey+" with that value.",
 		key != null);
 
 		return key;

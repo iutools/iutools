@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import ca.nrc.config.ConfigException;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,6 +23,7 @@ import ca.nrc.data.harvesting.SearchEngine.Hit;
 import ca.nrc.data.harvesting.SearchEngine.SearchEngineException;
 import ca.nrc.data.harvesting.SearchResults;
 import ca.nrc.json.PrettyPrinter;
+import org.iutools.config.IUConfig;
 import org.iutools.morphrelatives.MorphRelativesFinderException;
 import org.iutools.morphrelatives.MorphRelativesFinder;
 import org.iutools.morphrelatives.MorphologicalRelative;
@@ -121,12 +123,12 @@ public class SearchEndpoint extends HttpServlet {
 		
 		IUSearchEngine engine;
 		try {
-			engine = new IUSearchEngine();
-		} catch (IOException | SearchEngineException e) {
+			engine = new IUSearchEngine(IUConfig.getBingSearchKey());
+		} catch (ConfigException | IOException | SearchEngineException e) {
 			throw new SearchEndpointException("Unable to create the search engine.", e);
 		}
-		
-		
+
+
 		Query query = new Query();
 		{
 			// We collect 10 pages worth of hits

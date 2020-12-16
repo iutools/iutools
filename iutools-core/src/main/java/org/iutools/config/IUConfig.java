@@ -6,6 +6,9 @@ import ca.nrc.config.Config;
 import ca.nrc.config.ConfigException;
 
 public class IUConfig extends Config {
+
+	public static final String propName_BingSearchKey =
+		"org.iutools.search.bingKey";
 	
 	private static Set<String> nodesToTrace = null;
 	
@@ -23,6 +26,11 @@ public class IUConfig extends Config {
 			iuDataPath += "/" + file;
 		}
 		return iuDataPath;
+	}
+
+	public static String getBingSearchKey() throws ConfigException {
+		String bingKey = getConfigProperty(propName_BingSearchKey, false);
+		return bingKey;
 	}
 
 	public String nodesToTraceRegex() throws ConfigException {
