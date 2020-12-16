@@ -41,14 +41,15 @@ you create an alias for it:
     #   in this file, but the alias should be on a single line
     #
     alias iutools_cli='iutools_console='java -Xmx6g 
-       -Dca_nrc=/path/to/your/ca_nrc.properties 
-       -Dorg_iutools=/Users/desilets/Documents/conf/org_iutools.properties 
-       -cp /path/to/your/.m2/repository/org/iutools/iutools-core/N.N.N-SNAPSHOT/iutools-core-N.N.N-SNAPSHOT-jar-with-dependencies.jar
+       -Dorg_iutools=/path/to/your/org_iutools.properties 
+       -cp /path/to/your/.m2/repository/org/iutools/iutools-core/N.N.N/iutools-core-N.N.N-jar-with-dependencies.jar
        org.iutools.cli.CLI'
        
-Where _ca_nrc.properties_ and _org_iutools.properties_ are initially empty 
-configuration files that you should create (more details will be provided about 
-the use of those files later in the present document).
+Where:
+- _N.N.N_ is the version number of your _iutools_ installation
+- _org_iutools.properties_ is an initially empty 
+configuration file that you create (more details will be provided about 
+the use of that file later in the present document).
 
 At this point, you should be able to invoke the help info for the 
 CLI by typing
@@ -65,7 +66,7 @@ But at this point, you should be able to use the following commands:
 
 ##Installing the Compiled Corpora
 Most of the _iutols_ components require a _Compiled Corpus_. You can think of 
-this as a kind of small database that provides information about all the 
+this as a kind of dictionary that provides information about all the 
 Inuktut words contained in a series of documents.
 
 The information stored about each word includes things like:
@@ -117,7 +118,7 @@ If you don't plan to use the _iutools_ web apps, then you are done.
 
 If you do plan to use the web apps, then there are more steps involved.
 
-- Install Tomcat and configure Tomcat
+- Install and configure Tomcat
 - Set file permissions
 - Deploy the _iutools_ web apps
 - OPTIONAL: Enable the Inuktut Web Search app
@@ -135,7 +136,7 @@ Next, you must edit the file:
 and edit (or create) the value of CATALINA_OPTS to include the _-Dca_nrc_ and 
 _-Dorg_iutools_ JRE variables
 
-    CATALINA_OPTS=" -Dca_nrc=/path/to/your/ca_nrc.properties -Dorg_iutools=/path/to/your/org_iutools.properties"
+    CATALINA_OPTS=" -Dorg_iutools=/path/to/your/org_iutools.properties"
     
 Note: If there is already a line that sets CATALINA_OPTS, just append to 
 properties to the existing value.
@@ -149,7 +150,7 @@ that they are accessible (read-only) to the user under which Tomcat runs.
 These are:
 
 - The _iutools_data_ directory and all its descendants
-- The _ca_nrc.properties_ and _org_iutools.properties_ files.  
+- The _org_iutools.properties_ file.  
 
 ###Deploy the _iutools_ web apps
 
@@ -158,7 +159,7 @@ To deploy (or redeploy) the _iutools_ web apps, issue the following commands:
     # Delete the old WAR file and iutools directories on Tomcat
     rm $CATALINA_HOME/webapps/iutools.war
     
-    # Copy new version of the WAR file to tomcat
+    # Copy new N.N.N version of the WAR file to tomcat
     rm -r $CATALINA_HOME/Tomcat/webapps/iutools
       cp /path/to/your/.m2/repository/org/iutools/iutools-apps/0.0.3-SNAPSHOT/iutools-apps-0.0.3-SNAPSHOT.war \
           $CATALINA_HOME/webapps/iutools.war
@@ -172,7 +173,7 @@ To deploy (or redeploy) the _iutools_ web apps, issue the following commands:
 
 One of the _iutools_ web app is a web search engine developed specifically for 
 Inuktut. This particular app is not enabled by default because it requires a 
-subscription to the Microsoft Bing Web Search API (which you have to pay for):
+paying subscription to the Microsoft Bing Web Search API:
 
 https://www.microsoft.com/en-us/bing/apis/bing-web-search-api
 
@@ -181,5 +182,5 @@ If you want your installation to include the Inuktut web search app, you must:
 - Obtain a Bing API key from the Microsoft Azure web site
 - Specify that key by entering it in the _ca_nrc.properties_ file:
 
-     ca.nrc.javautils.bingKey=yourBingAPIKey
+     org.iutools.search.bingKey=yourBingAPIKey
   

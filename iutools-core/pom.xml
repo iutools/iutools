@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.iutools</groupId>
 		<artifactId>iutools-parent</artifactId>
-		<version>0.0.3-SNAPSHOT</version>
+		<version>0.0.3</version>
 	</parent>
 
   <artifactId>iutools-core</artifactId>  
@@ -76,25 +76,25 @@
 		<dependency>
 			<groupId>ca.nrc.java-utils</groupId>
 			<artifactId>java-utils-core</artifactId>
-			<version>1.0.26-SNAPSHOT</version>
+			<version>1.0.26</version>
 		</dependency>
 
 	  <dependency>
 		  <groupId>ca.nrc.java-utils</groupId>
 		  <artifactId>java-utils-elasticsearch</artifactId>
-		  <version>1.0.26-SNAPSHOT</version>
+		  <version>1.0.26</version>
 	  </dependency>
 
 	  <dependency>
 			<groupId>ca.nrc.java-utils</groupId>
 			<artifactId>java-utils-string</artifactId>
-			<version>1.0.26-SNAPSHOT</version>
+			<version>1.0.26</version>
 		</dependency>
 
 		<dependency>
 			<groupId>ca.nrc.java-utils</groupId>
 			<artifactId>java-utils-data</artifactId>
-			<version>1.0.26-SNAPSHOT</version>
+			<version>1.0.26</version>
 		</dependency>
 		
 		<dependency>
