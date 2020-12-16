@@ -91,7 +91,8 @@ public final class LinguisticDataCSV { //extends LinguisticDataAbstract {
 		BufferedReader f;
 		String fileName = tableName+".csv";
 		logger.trace("fileName="+fileName);
-		String tablePath = "ca/inuktitutcomputing/dataCSV/"+fileName;
+//		String tablePath = "ca/inuktitutcomputing/dataCSV/"+fileName;
+		String tablePath = "org/iutools/linguisticdata/dataCSV/"+fileName;
 		try {
 			InputStream is =
 				ResourceGetter.getResourceAsStream(tablePath);
