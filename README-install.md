@@ -5,7 +5,7 @@ This document provides instructions on how to install _iutools_.
 At the moment, the procedure is somewhat involved. In the future, 
 we hope to automate most of the steps using something like _Ansible_ or _Docker_. 
 
-##Build the JAR and WAR files
+## Build the JAR and WAR files
 As of this writing, there are no precompiled Maven artifacts for _iutools_. You 
 therefore have to build the WAR and JAR files from sources.
 
@@ -32,7 +32,7 @@ Then build _iutools_:
      /path/to/your/.m2/repository/ca/nrc/java-utils
      /path/to/your/.m2/repository/org/iutools
 
-##Create an _iutools_cli_ alias
+## Create an _iutools_cli_ alias
 
 If you would like to use the Command Line Interface (CLI) we recommend that you 
 you create an alias for it:
@@ -64,7 +64,7 @@ But at this point, you should be able to use the following commands:
 - _segment_iu_: Decompose an Inuktut word into its morphemes.
 - _transliterate_: Transliterate Legacy inuktitut to Unicode.
 
-##Installing the Compiled Corpora
+## Installing the Compiled Corpora
 
 Most of the _iutols_ components require a _Compiled Corpus_. You can think of 
 this as a kind of dictionary that provides information about all the 
@@ -80,7 +80,7 @@ To install the corpora, you need to carry out two steps:
 
 Below are details about each of those steps.
 
-###Installing ElasticSearch for use by _iutools_
+### Installing ElasticSearch for use by _iutools_
 
 Follow the standard installation instructions for _ElasticSearch_ and make sure 
 that there is an instance of ElasticSearch running as a local service on port 9200.
@@ -102,7 +102,7 @@ and make sure the output looks something like this:
     etc...
 
     
-###Load the corpus data into ElasticSearch
+### Load the corpus data into ElasticSearch
 
 First you must download the corpus data from its repository on DAGsHub:
 
@@ -125,7 +125,7 @@ overhead will only be encurred once. Likewise, if you ever issue a command that
 uses a different corpus than the default one, a loading overhead will be encurred 
 the first time you use that specific corpus.
 
-###Install and Configure the web apps
+### Install and Configure the web apps
 
 If you don't plan to use the _iutools_ web apps, then you are done. 
 
@@ -136,7 +136,7 @@ If you do plan to use the web apps, then there are more steps involved.
 - Deploy the _iutools_ web apps
 - OPTIONAL: Enable the Inuktut Web Search app
 
-###Install and configure Tomcat
+### Install and configure Tomcat
 
 Just follow the standard Tomcat installation procedure.
 
@@ -152,7 +152,7 @@ _-Dorg_iutools_ JRE variables
     CATALINA_OPTS="$CATALINA_OPTS -Dorg_iutools=/path/to/your/org_iutools.properties"
     
 
-###Set file permissions
+### Set file permissions
 
 At this point, you must set the permission of various files and directories so 
 that they are accessible (read-only) to the user under which Tomcat runs.
@@ -162,7 +162,7 @@ These are:
 - The _iutools_data_ directory and all its descendants
 - The _org_iutools.properties_ file.  
 
-###Deploy the _iutools_ web apps
+### Deploy the _iutools_ web apps
 
 To deploy (or redeploy) the _iutools_ web apps, issue the following commands:
 
@@ -179,7 +179,7 @@ To deploy (or redeploy) the _iutools_ web apps, issue the following commands:
     sleep 2
     sh $CATALINA_HOME/bin/catalina.sh jpda start
 
-###OPTIONAL: Enable the Inuktut Web Search app
+### OPTIONAL: Enable the Inuktut Web Search app
 
 One of the _iutools_ web app is a web search engine developed specifically for 
 Inuktut. This particular app is not enabled by default because it requires a 
