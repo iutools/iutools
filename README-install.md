@@ -65,6 +65,7 @@ But at this point, you should be able to use the following commands:
 - _transliterate_: Transliterate Legacy inuktitut to Unicode.
 
 ##Installing the Compiled Corpora
+
 Most of the _iutols_ components require a _Compiled Corpus_. You can think of 
 this as a kind of dictionary that provides information about all the 
 Inuktut words contained in a series of documents.
@@ -84,10 +85,22 @@ Below are details about each of those steps.
 Follow the standard installation instructions for _ElasticSearch_ and make sure 
 that there is an instance of ElasticSearch running as a local service on port 9200.
 
-To ensure that this was done properly, open the following URL in a browser and 
-make sure that it runs (i.e. no errors like "URL not found")
+To ensure that this was done properly, issue the following command:
 
-    http://localhost:9200/_cat/indices?v 
+   wget -O - http://localhost:9200/_cat/indices?v
+
+and make sure the output looks something like this:
+
+    --2020-12-17 07:37:51--  http://localhost:9200/_cat/indices?v
+    Resolving localhost (localhost)... ::1, 127.0.0.1
+    Connecting to localhost (localhost)|::1|:9200... connected.
+    HTTP request sent, awaiting response... 200 OK
+    Length: 83 [text/plain]
+    Saving to: ‘indices?v.3’
+
+         0K                                                       100% 19.1M=0s
+    etc...
+
     
 ###Load the corpus data into ElasticSearch
 
@@ -136,11 +149,8 @@ Next, you must edit the file:
 and edit (or create) the value of CATALINA_OPTS to include the _-Dca_nrc_ and 
 _-Dorg_iutools_ JRE variables
 
-    CATALINA_OPTS=" -Dorg_iutools=/path/to/your/org_iutools.properties"
+    CATALINA_OPTS="$CATALINA_OPTS -Dorg_iutools=/path/to/your/org_iutools.properties"
     
-Note: If there is already a line that sets CATALINA_OPTS, just append to 
-properties to the existing value.
-
 
 ###Set file permissions
 
