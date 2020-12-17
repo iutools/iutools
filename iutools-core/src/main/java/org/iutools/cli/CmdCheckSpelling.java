@@ -66,11 +66,18 @@ public class CmdCheckSpelling extends ConsoleCommand {
 			
 			List<ScoredSpelling> suggestions = corr.getScoredPossibleSpellings();
 			if (suggestions != null && suggestions.size() > 0) {
-				Iterator<ScoredSpelling> itSugg = suggestions.iterator();
-				int nIt = 1;
-				while (itSugg.hasNext()) {
-					echo((nIt++)+". "+itSugg.next());
+				echo("Word is misspelled.\nPossible corrections are:");
+				echo(+1);
+				{
+					Iterator<ScoredSpelling> itSugg = suggestions.iterator();
+					int nIt = 1;
+					while (itSugg.hasNext()) {
+						echo((nIt++) + ". " + itSugg.next());
+					}
 				}
+				echo(-1);
+			} else {
+				echo("Word is correctly spelled.");
 			}
 			
 			if (!interactive) break;				
