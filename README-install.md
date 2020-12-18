@@ -119,7 +119,7 @@ and make sure the output looks something like this:
 
 First you must download the corpus data from its repository on DAGsHub:
 
-     git clone https://dagshub.com/alain_desilets/iutools-data.git
+     git clone https://dagshub.com/iutools/iutools-data.git
      
  Then you must point _iutools_ to this directory. Simply add the following line 
  to your _org_iutools.properties_ file: 
