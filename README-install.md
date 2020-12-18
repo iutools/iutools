@@ -3,7 +3,20 @@
 This document provides instructions on how to install _iutools_. 
 
 At the moment, the procedure is somewhat involved. In the future, 
-we hope to automate most of the steps using something like _Ansible_ or _Docker_. 
+we hope to automate most of the steps using something like _Ansible_ or _Docker_.
+
+## Requirements
+
+## Requirements
+
+At the minimum, _iutools_ require 
+- Java JDK 1.8
+- Elastic Search 5.6 or higher
+
+This will be sufficient if you only plan to use the _Command Line Interface_.
+
+If you want to use the web apps, you also need:
+- Tomcat
 
 ## Build the JAR and WAR files
 As of this writing, there are no precompiled Maven artifacts for _iutools_. You 

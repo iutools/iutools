@@ -113,25 +113,45 @@ Search for a word that produces less than 10 pages of hits
 
 ##Spell Checker
 
-Spell check LATIN -- Happy Path
-- Enter some text in LATIN, some of which are badly spelled, others not. 
-- Make sure that the corrected text, as well as all the suggested spellings
-    are  displayed in LATIN
-- Make sure that all the words that are mis-spelled are labeled as such and that
-    the first suggested spelling is the right one 
-- Click on a mis-spelled word and choose an alternate spelling
-  - Make sure that the chosen spelling is now displayed
-    
 Spell check SYLLABIC -- Happy Path
-- Enter some text in SYLLABIC, some of which are badly spelled, others not. 
+- Enter some text in SYLLABIC, some of which are badly spelled, others not.
+- Hit _Spell Check_ button
+- Words from input text should be displayed one at a time, with misspelled 
+  words underlined. 
 - Make sure that  the corrected text, as well as all the suggested spellings
     are  displayed in SYLLABIC
 - Make sure that all the words that are mis-spelled are labeled as such and that
     the first suggested spelling is the right one     
 - Click on a mis-spelled word and choose an alternate spelling
   - Make sure that the chosen spelling is now displayed
-    
-    
+
+Spell check LATIN -- Happy Path
+- Enter some text in LATIN, some of which are badly spelled, others not. 
+- Hit _Spell Check_ button
+- Words from input text should be displayed one at a time, with misspelled 
+  words underlined. 
+- Make sure that the corrected text, as well as all the suggested spellings
+    are  displayed in LATIN
+- Make sure that all the words that are mis-spelled are labeled as such and that
+    the first suggested spelling is the right one 
+- Click on a mis-spelled word and choose an alternate spelling
+  - Make sure that the chosen spelling is now displayed
+
+Concurency testing
+- When you hit _Spell Check_
+  - Check that the Progress Wheel is displayed until the very last word has been 
+    displayed.
+  - While the checker is still working on some of the words, try click on a 
+    misspelled word and doing each of the followgin:
+    - select one of the suggested spellings
+    - type your own spelling
+  - While the is still working on some of the words:
+    - Hit the cancel button
+      - Make sure progress wheel has disappeared and that the app has stopped 
+        checking words
+    - Copy paste some new text to be spelled and hit _Spell Check_
+       - Make sure the new spell checking task is started correctly
+
 Progress Wheel
 - When you hit Spell button, make sure that the progress wheel is displayed
     
@@ -155,6 +175,13 @@ Progress Wheel
   - Click on copy to clipboard and paste into a text editor
   - Copy text to text editor, and make sure that the selected spelling is the one that
     appears in the editor
+    
+Check with and without _Include partial corrections_
+- Try it both ways
+  - Make sure that the partial correction is included or not 
+  - Note: Even when _Include partial corrections_ is checked, SOME words may 
+    not have partial corrections. So if you click on a word and don't see one, 
+    try other words.   
     
 ##Morpheme Search
 
