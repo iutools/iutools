@@ -69,6 +69,8 @@ public class CompiledCorpus {
 	protected transient NgramCompiler charsNgramCompiler = null;
 	protected transient NgramCompiler morphsNgramCompiler = null;
 
+	private static Boolean debug = null;
+
 	public CompiledCorpus(String _indexName) throws CompiledCorpusException {
 		init_CompiledCorpus(_indexName);
 	}
@@ -267,6 +269,7 @@ public class CompiledCorpus {
 	}
 
 	protected StreamlinedClient esClient() throws CompiledCorpusException {
+		Logger tLogger = Logger.getLogger("org.iutools.corpus.esClient");
 		if (_esClient == null) {
 			try {
 				_esClient =
@@ -277,6 +280,7 @@ public class CompiledCorpus {
 			}
 
 			if (debugMode()) {
+				tLogger.trace("Attaching observer to the ES index");
 				_esClient.attachObserver(new ObsEnsureAllRecordsAreWordInfo());
 			}
 		}
@@ -294,17 +298,34 @@ public class CompiledCorpus {
 	}
 
 	private boolean debugMode() throws CompiledCorpusException {
-		Boolean debug = null;
-		try {
-			debug = Config.getConfigProperty(
-			"org.iutools.corpus.CompiledCorpus.debug",
-			false, Boolean.class);
-			if (debug == null) {
-				debug = false;
+		Logger tLogger = Logger.getLogger("org.iutools.corpus.CompiledCorpus.debugMode");
+		if (debug == null) {
+			try {
+				debug = Config.getConfigProperty(
+				"org.iutools.corpus.CompiledCorpus.debug",
+				false, Boolean.class);
+			} catch (ConfigException e) {
+				throw new CompiledCorpusException(e);
 			}
-		} catch (ConfigException e) {
-			throw new CompiledCorpusException(e);
+			if (debug == null) {
+				List<String> loggerNames = new ArrayList<String>();
+				for (String reqType : new String[]{"POST", "PUT", "DELETE", "GET"}) {
+					for (String when : new String[]{"before", "after"}) {
+						loggerNames.add(when + reqType);
+					}
+				}
+				for (String aName: loggerNames) {
+					if (true) {
+						debug = true;
+						break;
+					}
+				}
+				if (debug == null) {
+					debug = false;
+				}
+			}
 		}
+		tLogger.trace("returning debug="+debug);
 		return debug;
 	}
 
