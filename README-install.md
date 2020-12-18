@@ -100,20 +100,23 @@ that there is an instance of ElasticSearch running as a local service on port 92
 
 To ensure that this was done properly, issue the following command:
 
-   wget -O - http://localhost:9200/_cat/indices?v
+    curl http://localhost:9200
+   
+This should output something like this:
 
-and make sure the output looks something like this:
-
-    --2020-12-17 07:37:51--  http://localhost:9200/_cat/indices?v
-    Resolving localhost (localhost)... ::1, 127.0.0.1
-    Connecting to localhost (localhost)|::1|:9200... connected.
-    HTTP request sent, awaiting response... 200 OK
-    Length: 83 [text/plain]
-    Saving to: ‘indices?v.3’
-
-         0K                                                       100% 19.1M=0s
-    etc...
-
+    {
+      "name" : "abmAGwG",
+      "cluster_name" : "elasticsearch",
+      "cluster_uuid" : "InLdbP8_T5-Mmc48CJdWWQ",
+      "version" : {
+        "number" : "5.6.2",
+        "build_hash" : "57e20f3",
+        "build_date" : "2017-09-23T13:16:45.703Z",
+        "build_snapshot" : false,
+        "lucene_version" : "6.6.1"
+      },
+      "tagline" : "You Know, for Search"
+    }   
     
 ### Load the corpus data into ElasticSearch
 
