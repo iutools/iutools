@@ -7,11 +7,9 @@ we hope to automate most of the steps using something like _Ansible_ or _Docker_
 
 ## Requirements
 
-## Requirements
-
 At the minimum, _iutools_ require 
 - Java JDK 1.8
-- Elastic Search 5.6 or higher
+- Elastic Search 5.6
 
 This will be sufficient if you only plan to use the _Command Line Interface_.
 
@@ -53,7 +51,7 @@ you create an alias for it:
     # Note: we split the alias on different lines so it will display nicely 
     #   in this file, but the alias should be on a single line
     #
-    alias iutools_cli='iutools_console='java -Xmx6g 
+    alias iutools_cli='java -Xmx6g 
        -Dorg_iutools=/path/to/your/org_iutools.properties 
        -cp /path/to/your/.m2/repository/org/iutools/iutools-core/N.N.N/iutools-core-N.N.N-jar-with-dependencies.jar
        org.iutools.cli.CLI'
