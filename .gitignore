@@ -37,3 +37,4 @@ iutools-data/data/tries
 **/foo*.txt
 **/*.java.NEW
 /TODOs.txt
+/jmeter.log
