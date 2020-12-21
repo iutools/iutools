@@ -25,7 +25,6 @@
 	   <!-- Note: Order of modules is important.
 		Make sure any modulte A that is required by module B
 		apperas before B in the list -->
-	 	<module>iutools-data</module>
 	 	<module>iutools-core</module>
 	 	<module>iutools-apps</module>
 	 </modules>
