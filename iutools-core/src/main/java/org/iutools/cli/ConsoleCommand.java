@@ -13,8 +13,10 @@ import org.iutools.edit_distance.EditDistanceCalculatorFactory;
 import static org.iutools.concordancer.WebConcordancer.AlignOptions;
 
 public abstract class ConsoleCommand extends SubCommand {
-	
+
 	public static enum Mode {SINGLE_INPUT, INTERACTIVE, PIPELINE}
+
+	public static final String OPT_FORCE = "force";
 
 	public static final String OPT_DATA_FILE = "data-file";
 	public static final String OPT_INPUT_FILE = "input-file";

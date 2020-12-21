@@ -124,7 +124,7 @@ public class MorphRelativesFinderEvaluator {
             int nbTotalGoldStandardAlternatives = 0;
             int nbTotalExpansionsFromCorpus = 0;
             int nbTotalExpansionsNotInGSAlternatives = 0;
-			int nbTotalCasesWithNoExpansion = 0;
+				int nbTotalCasesWithNoExpansion = 0;
             int nbTotalCasesCouldNotBeDecomposed = 0;
             
             ArrayList<String> listAllGsAlternatives = new ArrayList<String>();

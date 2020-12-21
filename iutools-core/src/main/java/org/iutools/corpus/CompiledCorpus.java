@@ -300,29 +300,20 @@ public class CompiledCorpus {
 	private boolean debugMode() throws CompiledCorpusException {
 		Logger tLogger = Logger.getLogger("org.iutools.corpus.CompiledCorpus.debugMode");
 		if (debug == null) {
-			try {
-				debug = Config.getConfigProperty(
-				"org.iutools.corpus.CompiledCorpus.debug",
-				false, Boolean.class);
-			} catch (ConfigException e) {
-				throw new CompiledCorpusException(e);
+			List<String> loggerNames = new ArrayList<String>();
+			for (String reqType : new String[]{"POST", "PUT", "DELETE", "GET"}) {
+				for (String when : new String[]{"before", "after"}) {
+					loggerNames.add(when + reqType);
+				}
+			}
+			for (String aName: loggerNames) {
+				if (Logger.getLogger(aName).isTraceEnabled()) {
+					debug = true;
+					break;
+				}
 			}
 			if (debug == null) {
-				List<String> loggerNames = new ArrayList<String>();
-				for (String reqType : new String[]{"POST", "PUT", "DELETE", "GET"}) {
-					for (String when : new String[]{"before", "after"}) {
-						loggerNames.add(when + reqType);
-					}
-				}
-				for (String aName: loggerNames) {
-					if (true) {
-						debug = true;
-						break;
-					}
-				}
-				if (debug == null) {
-					debug = false;
-				}
+				debug = false;
 			}
 		}
 		tLogger.trace("returning debug="+debug);
