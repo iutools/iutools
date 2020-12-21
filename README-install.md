@@ -93,10 +93,22 @@ Below are details about each of those steps.
 
 ### Installing ElasticSearch for use by _iutools_
 
-Follow the standard installation instructions for _ElasticSearch_ and make sure 
-that there is an instance of ElasticSearch running as a local service on port 9200.
+At the moment, _iutools_ only works with version 5.6 of _ElasticSearch_.
 
-To ensure that this was done properly, issue the following command:
+Follow the standard installation instructions for _ElasticSearch_.
+ 
+We recommend that you install it as a _service_ that will start automatically 
+when the machine starts up. If you choose not to install ElasticSearch as a 
+service then you will have to start it manually by typing the following in a 
+terminal windows
+
+    elasticsearch-N.N.N/bin/elasticsearch 
+ 
+ __IMPORTANT:__ Do NOT start ElasticSearch in background (i.e. do not append 
+ the & to the above command).
+ 
+To ensure that _ElasticSearch_ was installed and started properly, issue the 
+following command:
 
     curl http://localhost:9200
    
