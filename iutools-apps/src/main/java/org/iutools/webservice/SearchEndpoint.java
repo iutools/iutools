@@ -93,12 +93,11 @@ public class SearchEndpoint extends HttpServlet {
 		
 		List<String> queryWords = null;
 		try {
-			String querySyllabic = inputs.convertQueryToSyllabic();
-			expandQuery(querySyllabic, results);
+			expandQuery(inputs.convertQueryToSyllabic(), results);
 			tLogger.trace("Expanded query is "+PrettyPrinter.print(results.expandedQueryWords));
 			queryWords = results.expandedQueryWords;
 		} catch (MorphRelativesFinderException e) {
-			throw new SearchEndpointException("Unable to expand the query '"+inputs.query+"'", e);
+			throw new SearchEndpointException("Unable to expand the query", e);
 		}
 		
 		SearchResults searchResults = search(queryWords, inputs);;

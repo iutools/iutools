@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.iutools.corpus.CompiledCorpusRegistry;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -28,7 +29,7 @@ public class OccurenceSearchEndpointTest {
 	/***********************
 	 * VERIFICATION TESTS
 	 ***********************/	
-	
+
 	@Test
 	public void test__OccurenceSearchEndpoint__HappyPath() throws Exception {
 		String[] corpusWords = new String[] {

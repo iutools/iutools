@@ -56,8 +56,6 @@ public class IUTServiceTestHelpers {
 			new GistPrepareContentEndpoint().doPost(request, response);
 		} else if (eptName == EndpointNames.MORPHEME) {
 			new OccurenceSearchEndpoint().doPost(request, response);
-		} else if (eptName == EndpointNames.MORPHEMEEXAMPLE) {
-			new OccurenceExampleEndpoint().doPost(request, response);
 		} else if (eptName == EndpointNames.SEARCH) {
 			new SearchEndpoint().doPost(request, response);
 		} else if (eptName == EndpointNames.SPELL) {
