@@ -100,12 +100,15 @@ Follow the standard installation instructions for _ElasticSearch_.
 We recommend that you install it as a _service_ that will start automatically 
 when the machine starts up. If you choose not to install ElasticSearch as a 
 service then you will have to start it manually by typing the following in a 
-terminal windows
+dedicated terminal windows
 
     elasticsearch-N.N.N/bin/elasticsearch 
  
- __IMPORTANT:__ Do NOT start ElasticSearch in background (i.e. do not append 
- the & to the above command).
+ The above command will monopolise the terminal window and you 
+ will not be able to issue other commands in it. Leave that window open with the 
+ _elasticsearch_ command running.
+ - __IMPORTANT:__ Do NOT kill that window and Do NOT start ElasticSearch in 
+ background (i.e. do not append & to the above command).
  
 To ensure that _ElasticSearch_ was installed and started properly, issue the 
 following command:
