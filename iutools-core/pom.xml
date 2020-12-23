@@ -76,25 +76,25 @@
 		<dependency>
 			<groupId>ca.nrc.java-utils</groupId>
 			<artifactId>java-utils-core</artifactId>
-			<version>1.0.26</version>
+			<version>1.0.27</version>
 		</dependency>
 
 	  <dependency>
 		  <groupId>ca.nrc.java-utils</groupId>
 		  <artifactId>java-utils-elasticsearch</artifactId>
-		  <version>1.0.26</version>
+		  <version>1.0.27</version>
 	  </dependency>
 
 	  <dependency>
 			<groupId>ca.nrc.java-utils</groupId>
 			<artifactId>java-utils-string</artifactId>
-			<version>1.0.26</version>
+			<version>1.0.27</version>
 		</dependency>
 
 		<dependency>
 			<groupId>ca.nrc.java-utils</groupId>
 			<artifactId>java-utils-data</artifactId>
-			<version>1.0.26</version>
+			<version>1.0.27</version>
 		</dependency>
 		
 		<dependency>
