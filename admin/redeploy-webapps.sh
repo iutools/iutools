@@ -62,7 +62,7 @@ echo ===
 echo === Sleeping for a bit...
 echo ===
 sleep 2
-ehcho
+echo
 echo ===
 echo === Restarting Tomcat
 echo ===

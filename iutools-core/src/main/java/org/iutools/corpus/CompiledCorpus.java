@@ -419,15 +419,19 @@ public class CompiledCorpus {
 	}
 
 	public long totalOccurencesOf(String word) throws CompiledCorpusException {
+		long frequency = 0;
 		WordInfo winfo =null;
 		try {
 			winfo =
 				(WordInfo) esClient()
 					.getDocumentWithID(word, WordInfo.class, WORD_INFO_TYPE);
+			if (winfo != null) {
+				frequency = winfo.frequency;;
+			}
 		} catch (ElasticSearchException e) {
 			throw new CompiledCorpusException(e);
 		}
-		return winfo.frequency;
+		return frequency;
 	}
 
 	public List<WordWithMorpheme> wordsContainingMorpheme(String morpheme) throws CompiledCorpusException {
@@ -441,9 +445,12 @@ public class CompiledCorpus {
 
 		SearchResults<WordInfo> results = esWinfoSearch(query);
 		Iterator<Hit<WordInfo>> iter = results.iterator();
+		tLogger.trace("# words found "+results.getTotalHits());
+
 		Pattern morphPatt = Pattern.compile("(^|\\s)([^\\s]*"+morpheme+"[^\\s]*)(\\s|$)");
 		while (iter.hasNext()) {
 			WordInfo winfo = iter.next().getDocument();
+			tLogger.trace("Looking at word "+winfo.word);
 
 			String morphId = null;
 			Matcher morphMatcher =morphPatt.matcher(winfo.morphemesSpaceConcatenated);
@@ -1017,11 +1024,16 @@ public class CompiledCorpus {
 			throws CompiledCorpusException {
 		Logger tLogger = Logger.getLogger("org.iutools.corpus.CompiledCorpus.isUpToDateWithFile");
 		boolean uptodate = false;
-		long lastLoaded = lastLoadedDate();
-		long fileLastChanged = corpusFile.lastModified();
-		tLogger.trace("lastLoaded="+lastLoaded+", fileLastChanged="+fileLastChanged);
-		if (lastLoaded > fileLastChanged) {
-			uptodate = true;
+		try {
+			long lastLoaded = lastLoadedDate();
+			long fileLastChanged = corpusFile.lastModified();
+			tLogger.trace("lastLoaded=" + lastLoaded + ", fileLastChanged=" + fileLastChanged);
+			if (lastLoaded > fileLastChanged) {
+				uptodate = true;
+			}
+		} catch (Exception e) {
+			tLogger.trace("** Raised an exception: "+e.getMessage()+"\nCall stack was:"+Debug.printCallStack(e));
+			throw e;
 		}
 
 		tLogger.trace("returning uptodate="+uptodate);
@@ -1052,6 +1064,8 @@ public class CompiledCorpus {
 //                .getDocumentWithID(
 //                "lastloaded", LastLoadedDate.class, LastLoadedDate.esTypeName);
 		} catch (ElasticSearchException e) {
+			tLogger.trace(
+				"Caught exception e="+e+"\nCall stack: "+Debug.printCallStack(e));
 			throw new CompiledCorpusException(e);
 		}
 		tLogger.trace(

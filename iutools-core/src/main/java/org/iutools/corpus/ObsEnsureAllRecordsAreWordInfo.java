@@ -26,10 +26,10 @@ public class ObsEnsureAllRecordsAreWordInfo extends StreamlinedClientObserver {
 
 	static {
 		queryNonWinfoRecords = new Query();
-		queryNonWinfoRecords
-		.openAttr("exists")
-		.openAttr("field")
-		.setOpenedAttr("highlight")
+			queryNonWinfoRecords
+			.openAttr("exists")
+			.openAttr("field")
+			.setOpenedAttr("scroll")
 		;
 	}
 

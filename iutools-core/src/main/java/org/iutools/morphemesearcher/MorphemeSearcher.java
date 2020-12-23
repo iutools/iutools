@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
+import ca.nrc.debug.Debug;
 import ca.nrc.json.PrettyPrinter;
 import org.iutools.corpus.*;
 import org.apache.commons.lang.StringUtils;
@@ -48,10 +49,13 @@ public class MorphemeSearcher {
 	public List<MorphSearchResults> wordsContainingMorpheme(String morpheme) throws Exception {
 		Logger tLogger = Logger.getLogger("org.iutools.morphemesearcher.MorphemeSearcher.wordsContainingMorpheme");
 		tLogger.trace("morpheme= "+morpheme);
-		
+
 		HashMap<String,List<WordWithMorpheme>> morphid2wordsFreqs =
 			mostFrequentWordsWithMorpheme(morpheme);
+		tLogger.trace("After mostFrequentWordsWithMorpheme()");
+
 		Bin[] rootBins = separateWordsByRoot(morphid2wordsFreqs);
+		tLogger.trace("After separateWordsByRoot()");
 
 		HashMap<String,List<ScoredExample>> morphids2scoredExamples = null;
 		try {
@@ -260,10 +264,14 @@ public class MorphemeSearcher {
 	}
 
 	private Long wordFreqInCorpus(String word, boolean allowAnalysisWithAdditionalFinalConsonant) throws MorphemeSearcherException {
+		Logger tLogger = Logger.getLogger("org.iutools.morphemesearcher.MorphemeSearcher.wordFreqInCorpus");
 		long nbOccurrencesOfWord;
 		try {
 			nbOccurrencesOfWord = this.corpus.totalOccurencesOf(word);
 		} catch (CompiledCorpusException e) {
+			if (tLogger.isTraceEnabled()) {
+				tLogger.trace("Exception was raised: "+ Debug.printCallStack(e));
+			}
 			throw new MorphemeSearcherException(e);
 		}
 		return nbOccurrencesOfWord;
