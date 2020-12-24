@@ -1,6 +1,7 @@
 # The iutools project
 
 THIS DOCUMENTATION IS A WORK IN PROGRESS
+[link to source file](iutools-core/src/main/java/org/iutools/spellchecker/SpellChecker.java)
 
 ## Description
 
