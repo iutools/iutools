@@ -33,6 +33,8 @@ import static ca.nrc.dtrc.elasticsearch.StreamlinedClient.ESOptions.UPDATES_WAIT
  * 
  * - frequency of words and ngrams
  * - word morphological decompositions
+ *
+ * For details on how to use this class, look at the synopsis test: @see org.iutools.corpus.CompiledCorpusTest#test__CompiledCorpus__Synopsis()
  * 
  * @author desilets
  *
