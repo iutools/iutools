@@ -7,7 +7,16 @@ we hope to automate most of the steps using something like _Ansible_ or _Docker_
 
 ## Requirements
 
-At the minimum, _iutools_ require 
+_iutools_ should work on most flavours of Unix, and in particular:
+- Mac OSX
+- CentOS
+
+Because most of the components are written in Java, it should work also on 
+Windows. However:
+- The _iutools/admin_ script may not work and you may have to carry 
+  out their operations manually
+
+At the minimum, _iutools_ also requires the following components: 
 - Java JDK 1.8
 - Elastic Search 5.6
 
@@ -142,17 +151,18 @@ First you must download the corpus data from its repository on DAGsHub:
 
      org.iutools.datapath=/path/to/root/of/your/iutools-data
  
-At this point, you should be able to use the full range of Command Line 
-Interface commands. Before you start using the CLI, we recommend that you issue 
-a CLI command that will force loading of the default corpus file into 
-ElasticSearch. For example:
+ Then issue a _load_corpus_ command to load the default corpus from the 
+ _iutools-data_ files:
+ 
+     iutools_cli load_corpus -force
 
-    iutools_cli check_spelling
-    
 Note that it may take a few minutes for the corpus to loaded, but this 
 overhead will only be encurred once. Likewise, if you ever issue a command that 
 uses a different corpus than the default one, a loading overhead will be encurred 
 the first time you use that specific corpus.
+
+At this point, you should be able to use the full range of Command Line 
+Interface commands. 
 
 ### Install and Configure the web apps
 

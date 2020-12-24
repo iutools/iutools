@@ -9,8 +9,6 @@ import java.util.regex.Pattern;
 
 import org.iutools.linguisticdata.Morpheme;
 import org.iutools.morph.Decomposition;
-import ca.nrc.config.Config;
-import ca.nrc.config.ConfigException;
 import ca.nrc.debug.Debug;
 import ca.nrc.dtrc.elasticsearch.*;
 import ca.nrc.dtrc.elasticsearch.request.*;
@@ -329,7 +327,7 @@ public class CompiledCorpus {
 	}
 
 	public  void loadFromFile(File jsonFile, Boolean verbose,
-							  Boolean overwrite, String indexName) throws CompiledCorpusException {
+		Boolean overwrite, String indexName) throws CompiledCorpusException {
 		if (verbose == null) {
 			verbose = true;
 		}

@@ -10,18 +10,10 @@ public class CmdEsLoadCorpus extends ConsoleCommand {
 
     @Override
     public void execute() throws Exception {
-//        File jsonFile = new File(getInputFile());
         String corpusName = getCorpusName();
         this.user_io.setVerbosity(getVerbosity());
-//        boolean verbose = verbosityLevelIsMet(UserIO.Verbosity.Level1);
-//        CompiledCorpus corpus =
-//            new CompiledCorpus(corpusName);
-//        System.out.println("Loading file "+jsonFile+
-//            " into ElasticSearch corpus "+corpusName);
-//        System.out.println((verbose?"":"non-")+"verbose ");
-//        corpus.loadFromFile(jsonFile, verbose, true, corpusName);
-
-        new CompiledCorpusRegistry().getCorpus(corpusName);
+        boolean force = getForce();
+        new CompiledCorpusRegistry().getCorpus(corpusName, force);
     }
 
     @Override

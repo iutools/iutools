@@ -55,7 +55,12 @@ public abstract class ConsoleCommand extends SubCommand {
 	public ConsoleCommand(String name) {
 		super(name);
 	}
-	
+
+	protected boolean getForce() {
+		Boolean force = hasOption(OPT_FORCE);
+		return force;
+	}
+
 	protected String getCorpusSavePath() {
 		return getCorpusSavePath(true);
 	}

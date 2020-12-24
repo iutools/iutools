@@ -67,10 +67,19 @@ public class CompiledCorpusRegistry {
 	@JsonIgnore
 	public CompiledCorpus getCorpus(String corpusName)
 		throws CompiledCorpusRegistryException, CompiledCorpusException {
+		return getCorpus(corpusName, (Boolean)null);
+	}
+
+	@JsonIgnore
+	public CompiledCorpus getCorpus(String corpusName, Boolean reloadFromJson)
+		throws CompiledCorpusRegistryException, CompiledCorpusException {
 		Logger logger = Logger.getLogger("CompiledCorpusRegistry.getCorpusWithName");
 		logger.debug("corpusName= '"+corpusName+"'");
 		if (corpusName == null) {
 			corpusName = defaultCorpusName;
+		}
+		if (reloadFromJson == null) {
+			reloadFromJson = false;
 		}
 		if (!registry.containsKey(corpusName)) {
 			throw new CompiledCorpusRegistryException(
@@ -81,9 +90,10 @@ public class CompiledCorpusRegistry {
 		corpus = new CompiledCorpus(corpusName);
 
 		try {
-			if (!corpus.isUpToDateWithFile(corpusFile)) {
+			if (reloadFromJson || !corpus.isUpToDateWithFile(corpusFile)) {
 				// Should load the corpus
-				int x = 1;
+				File jsonFile = registry.get(corpusName);
+				corpus.loadFromFile(jsonFile, true, reloadFromJson);
 			}
 		} catch (CompiledCorpusException e) {
 			throw new CompiledCorpusRegistryException(e);
