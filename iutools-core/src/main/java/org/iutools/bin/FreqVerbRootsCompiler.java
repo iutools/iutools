@@ -84,7 +84,8 @@ public class FreqVerbRootsCompiler {
 		}
 
 		try {
-			CompiledCorpus corpus = CompiledCorpusRegistry.getCorpusWithName(corpusName);
+			CompiledCorpus corpus =
+				new CompiledCorpusRegistry().getCorpus(corpusName);
 			HashMap<String,Long> freqsOfVerbRoots = freqCompiler.compileFreqs(corpus);
 			
 			if (sorting.equals("root")) {

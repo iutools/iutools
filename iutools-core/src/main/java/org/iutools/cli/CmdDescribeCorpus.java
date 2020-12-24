@@ -27,7 +27,7 @@ public class CmdDescribeCorpus extends ConsoleCommand {
 
 		CompiledCorpus compiledCorpus = null;
 		try {
-			CompiledCorpusRegistry.getCorpusWithName(corpusName);
+			new CompiledCorpusRegistry().getCorpus(corpusName);
 		} catch (CompiledCorpusRegistryException e) {
 		}
 

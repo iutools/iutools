@@ -1,9 +1,6 @@
 package org.iutools.cli;
 
-import ca.nrc.ui.commandline.UserIO;
-import org.iutools.corpus.CompiledCorpus;
-
-import java.io.File;
+import org.iutools.corpus.CompiledCorpusRegistry;
 
 public class CmdEsLoadCorpus extends ConsoleCommand {
 
@@ -13,16 +10,18 @@ public class CmdEsLoadCorpus extends ConsoleCommand {
 
     @Override
     public void execute() throws Exception {
-        File jsonFile = new File(getInputFile());
+//        File jsonFile = new File(getInputFile());
         String corpusName = getCorpusName();
-        UserIO.Verbosity verbosity = getVerbosity();
-        boolean verbose = verbosityLevelIsMet(UserIO.Verbosity.Level1);
-        CompiledCorpus corpus =
-            new CompiledCorpus(corpusName);
-        System.out.println("Loading file "+jsonFile+
-            " into ElasticSearch corpus "+corpusName);
-        System.out.println((verbose?"":"non-")+"verbose ");
-        corpus.loadFromFile(jsonFile, verbose, true, corpusName);
+        this.user_io.setVerbosity(getVerbosity());
+//        boolean verbose = verbosityLevelIsMet(UserIO.Verbosity.Level1);
+//        CompiledCorpus corpus =
+//            new CompiledCorpus(corpusName);
+//        System.out.println("Loading file "+jsonFile+
+//            " into ElasticSearch corpus "+corpusName);
+//        System.out.println((verbose?"":"non-")+"verbose ");
+//        corpus.loadFromFile(jsonFile, verbose, true, corpusName);
+
+        new CompiledCorpusRegistry().getCorpus(corpusName);
     }
 
     @Override

@@ -29,7 +29,7 @@ public class CmdLookForMorpheme extends ConsoleCommand {
 		String corpusName = getCorpusName(true);
 
 		CompiledCorpus compiledCorpus =
-			CompiledCorpusRegistry.getCorpusWithName(corpusName);
+			new CompiledCorpusRegistry().getCorpus(corpusName);
 
 		MorphemeSearcher morphExtr = new MorphemeSearcher();
 		morphExtr.useCorpus(compiledCorpus);

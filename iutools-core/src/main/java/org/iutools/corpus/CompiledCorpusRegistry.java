@@ -55,18 +55,18 @@ public class CompiledCorpusRegistry {
 	}
 
 	@JsonIgnore
-	public static CompiledCorpus getCorpusWithName()
+	public CompiledCorpus getCorpus()
 		throws CompiledCorpusRegistryException {
 		try {
-			return getCorpusWithName(defaultCorpusName);
+			return getCorpus(defaultCorpusName);
 		} catch (CompiledCorpusException e) {
 			throw new CompiledCorpusRegistryException(e);
 		}
 	}
 
 	@JsonIgnore
-	public static CompiledCorpus getCorpusWithName(String corpusName)
-	throws CompiledCorpusRegistryException, CompiledCorpusException {
+	public CompiledCorpus getCorpus(String corpusName)
+		throws CompiledCorpusRegistryException, CompiledCorpusException {
 		Logger logger = Logger.getLogger("CompiledCorpusRegistry.getCorpusWithName");
 		logger.debug("corpusName= '"+corpusName+"'");
 		if (corpusName == null) {

@@ -123,7 +123,7 @@ public class SpellChecker {
 
 	public void setDictionaryFromCorpus() throws SpellCheckerException, ConfigException, FileNotFoundException {
 		try {
-			corpus = CompiledCorpusRegistry.getCorpusWithName();
+			corpus = new CompiledCorpusRegistry().getCorpus();
 			__processCorpus();
 		} catch (CompiledCorpusRegistryException e) {
 			throw new SpellCheckerException(e);
@@ -149,7 +149,7 @@ public class SpellChecker {
 			}
 		} else {
 			try {
-				corpus = CompiledCorpusRegistry.getCorpusWithName(_corpusName);
+				corpus = new CompiledCorpusRegistry().getCorpus(_corpusName);
 			} catch (CompiledCorpusRegistryException | CompiledCorpusException e) {
 				throw new SpellCheckerException(
 						"No registered corpus by the name of "+_corpusName, e);
@@ -182,7 +182,7 @@ public class SpellChecker {
 
 	public void setDictionaryFromCorpus(String _corpusName) throws SpellCheckerException, ConfigException, FileNotFoundException {
 		try {
-			corpus = CompiledCorpusRegistry.getCorpusWithName(_corpusName);
+			corpus = new CompiledCorpusRegistry().getCorpus(_corpusName);
 			setDictionaryFromCorpus(corpus);
 		} catch (CompiledCorpusException | CompiledCorpusRegistryException e) {
 			throw new SpellCheckerException(e);

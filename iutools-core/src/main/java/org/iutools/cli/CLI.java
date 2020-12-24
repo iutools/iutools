@@ -16,6 +16,11 @@ public class CLI {
 	protected static MainCommand defineMainCommand() throws CommandLineException {
 		MainCommand mainCmd = new MainCommand("Command line console for iutools.");
 
+		Option optForce = Option.builder(null)
+			.longOpt(ConsoleCommand.OPT_FORCE)
+			.desc("Force operation without prompting user for confirmation.")
+			.build();
+
 		Option optInputDir = Option.builder(null)
 				.longOpt(ConsoleCommand.OPT_INPUT_DIR)
 			    .desc("Input directory to be processed.")
@@ -154,8 +159,8 @@ public class CLI {
 			.desc("Set to false if you want to download the parallel pages without aligning their sentences.")
 			.build();
 
-		WebConcordancer.AlignOptions[] blah = WebConcordancer.AlignOptions.values();
-		StringUtils.join(WebConcordancer.AlignOptions.values(), ",");
+//		WebConcordancer.AlignOptions[] blah = WebConcordancer.AlignOptions.values();
+//		StringUtils.join(WebConcordancer.AlignOptions.values(), ",");
 
 		Option optAlignerOptions = Option.builder(null)
 			.longOpt(ConsoleCommand.OPT_ALIGNER_OPTIONS)
@@ -259,9 +264,9 @@ public class CLI {
 
 		// Load a corpus into ElasticSearch
 		SubCommand esLoadCorpus =
-			new CmdEsLoadCorpus("es_load_corpus")
+			new CmdEsLoadCorpus("load_corpus")
 				.addOption(optCorpusName)
-				.addOption(optInputFile)
+				.addOption(optForce)
 				.addOption(optVerbosity)
 			;
 		mainCmd.addSubCommand(esLoadCorpus);

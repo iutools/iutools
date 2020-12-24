@@ -31,9 +31,9 @@ public class CmdWordInfo extends ConsoleCommand {
 
         CompiledCorpus corpus = null;
         try {
-            corpus = CompiledCorpusRegistry.getCorpusWithName(corpusName);
+            corpus = new CompiledCorpusRegistry().getCorpus(corpusName);
         } catch (CompiledCorpusRegistryException e) {
-            corpus = CompiledCorpusRegistry.getCorpusWithName(corpusName);
+            corpus = new CompiledCorpusRegistry().getCorpus(corpusName);
         }
         echo("Corpus is of type: "+corpus.getClass().getSimpleName());
         WordInfo winfo = corpus.info4word(word);

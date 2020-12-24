@@ -36,7 +36,7 @@ public class CmdMorphNeighbours extends ConsoleCommand {
 		String compilationFilePath = getCorpusSavePath();
 		FileReader fr = new FileReader(compilationFilePath);
 		CompiledCorpus compiledCorpus =
-			CompiledCorpusRegistry.getCorpusWithName(corpusName);
+			new CompiledCorpusRegistry().getCorpus(corpusName);
 		fr.close();
 		MorphRelativesFinder reformulator = new MorphRelativesFinder(compiledCorpus);
 		CmdConvertIUSegments convertCommand = new CmdConvertIUSegments("");

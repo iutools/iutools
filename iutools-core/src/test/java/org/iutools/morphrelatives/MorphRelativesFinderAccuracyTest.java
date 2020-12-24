@@ -105,8 +105,8 @@ public class MorphRelativesFinderAccuracyTest {
 		// non-empty decomp samples
 		//
 		CompiledCorpus corpus =
-			CompiledCorpusRegistry
-				.getCorpusWithName(exp.corpusName);
+			new CompiledCorpusRegistry()
+				.getCorpus(exp.corpusName);
 
 		MorphRelativesFinder finder = new MorphRelativesFinder(corpus);
 
