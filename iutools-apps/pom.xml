@@ -95,5 +95,11 @@
 			<version>3.1.0</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.apache.jmeter</groupId>
+			<artifactId>ApacheJMeter_core</artifactId>
+			<version>5.4</version>
+		</dependency>
+
 	</dependencies>
 </project>
