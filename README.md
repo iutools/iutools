@@ -3,19 +3,26 @@
 THIS DOCUMENTATION IS A WORK IN PROGRESS
 [link to source file](iutools-core/src/main/java/org/iutools/spellchecker/SpellChecker.java)
 
-## Description
+_iutools_ is an Open Source project that aims at developing basic language tools for Inuktut, the language of the Inuit people.
 
-_iutools_ is a suite of Java classes, webapps, command line interfaces  and web 
-services that provides basic tools for the Inuktut languages (Inuktut is a family of languages that are 
-spoken by the Inuit people of areas like Northern Canada, Alaska and Greenland).
+It includes user-facing web applications for _learning_ the language as well as _writing_, _translating_ and _searching_ in that language.
+_Learning:_
+- _Morpheme Search_: Given an Inuktut morpheme, provides examples of words that use that morpheme. English "gists" are also provided for the morpheme and each of the example.
+- _Gister:_ Given some Inuktut text, provides an english "gist" for each word. Each gist consists of: (a) The english meaning of each morpheme in the word and (b) a list of inuktut sentences that use the word, along with its equivalent sentence in english.
+__Writing and Translating__
+- _Spell Checker:_ Inuktut spell checker.
+- _Inuktut multilingual concordancer:_ Find pairs of sentences where one sentence is in Inuktut and the other is in a different language. Sentences may come from any web site that has bilingual content.
+__Searching__
+- _Web Search engine:_ Special search engine for Inuktut which searches not only for the word you typed, but also closely related words. This is something that mainstream search engines like Google and Bing are not able to do for Inuktut.
 
-In particular, _iutools_ provides the following web apps:
-- _Spell Checking_: 
-- _Gisting_:  
-
-The _Command Line Interface_ provides some CLI-equivalents for those webapps, as 
+_iutools_also provides a _Command Line Interface (CLI)_ for those webapps, as 
 well as commands for other tasks currently not supported by web apps. 
- 
+
+Finally, it includes includes several _components_ that can be used by software developers who are building applications that need to process Inuktut text. Examples of components are:
+- Morphological decomposer
+- Transliterator
+- Tokenizer
+- and much more
 
 ## Installing _iutools_
 
@@ -59,7 +66,11 @@ The _iutools_ webapps can be accessed through the url:
     
 where _host_ is the name of your host (may be _localhost_ for a local server).
 
-This home page provides links to the various webapps with a short description 
+If you do not wish to install the web apps on your own server, you can use them on the "official" _iutools_ server:
+
+    http://cyclosa.web.net:8080/iutools/
+
+The home page of the webapps server provides links to the various apps with a short description 
 for each of them.
 
 #Using the _iutools_ classes
