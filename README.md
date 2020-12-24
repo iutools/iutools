@@ -1,19 +1,15 @@
 # The iutools project
 
-THIS DOCUMENTATION IS A WORK IN PROGRESS
-[link to source file](iutools-core/src/main/java/org/iutools/spellchecker/SpellChecker.java)
-
 _iutools_ is an Open Source project that aims at developing basic language tools for Inuktut, the language of the Inuit people.
 
 It includes user-facing web applications for _learning_ the language as well as _writing_, _translating_ and _searching_ in that language.
 _Learning:_
-- _Morpheme Search_: Given an Inuktut morpheme, provides examples of words that use that morpheme. English "gists" are also provided for the morpheme and each of the example.
-- _Gister:_ Given some Inuktut text, provides an english "gist" for each word. Each gist consists of: (a) The english meaning of each morpheme in the word and (b) a list of inuktut sentences that use the word, along with its equivalent sentence in english.
+- _[Morpheme Search](http://cyclosa.web.net:8080/iutools/occurrences.html)_: Given an Inuktut morpheme, provides examples of words that use that morpheme. English "gists" are also provided for the morpheme and each of the example.
+- _[Gister](http://cyclosa.web.net:8080/iutools/gisttext.html):_ Given some Inuktut text, provides an english "gist" for each word. Each gist consists of: (a) The english meaning of each morpheme in the word and (b) a list of inuktut sentences that use the word, along with its equivalent sentence in english.
 __Writing and Translating__
-- _Spell Checker:_ Inuktut spell checker.
-- _Inuktut multilingual concordancer:_ Find pairs of sentences where one sentence is in Inuktut and the other is in a different language. Sentences may come from any web site that has bilingual content.
+- _[Spell Checker](http://cyclosa.web.net:8080/iutools/spell.html):_ Inuktut spell checker.
 __Searching__
-- _Web Search engine:_ Special search engine for Inuktut which searches not only for the word you typed, but also closely related words. This is something that mainstream search engines like Google and Bing are not able to do for Inuktut.
+- _[Web Search engine](http://cyclosa.web.net:8080/iutools/search.html):_ Special search engine for Inuktut which searches not only for the word you typed, but also closely related words. This is something that mainstream search engines like Google and Bing are not able to do for Inuktut.
 
 _iutools_also provides a _Command Line Interface (CLI)_ for those webapps, as 
 well as commands for other tasks currently not supported by web apps. 
@@ -29,7 +25,7 @@ Finally, it includes includes several _components_ that can be used by software 
 For more information about installing _iutools_, see the 
 [_README-install.MD_](README-install.MD) file. 
 
-##Using _iutools_
+## Using _iutools_
 
 There are three ways to use the tools contained in _iutools_:
 - Through a _Command Line Interface (CLI)_
@@ -58,7 +54,7 @@ To get a more detailed description of a given command, type:
 
     iutools_cli command
     
-##The _iutools_ webapps
+## The _iutools_ webapps
 
 The _iutools_ webapps can be accessed through the url:
 
@@ -73,7 +69,9 @@ If you do not wish to install the web apps on your own server, you can use them 
 The home page of the webapps server provides links to the various apps with a short description 
 for each of them.
 
-#Using the _iutools_ classes
+# Using the _iutools_ classes
+More information to come.
+
 
 
 
