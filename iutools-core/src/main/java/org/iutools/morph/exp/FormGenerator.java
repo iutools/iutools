@@ -1,9 +1,6 @@
 package org.iutools.morph.exp;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,45 +17,32 @@ public class FormGenerator {
 	
 	private String baseForm, morphId;
 	
-	public List<SurfaceFormInContext> run(String morpheme) throws FormGeneratorException, LinguisticDataException {
+	public List<SurfaceFormInContext> run(String morphemeId) throws FormGeneratorException, LinguisticDataException {
 		Logger logger = Logger.getLogger("FormGenerator.run");
 		HashSet<SurfaceFormInContext> surfaceForms = new HashSet<SurfaceFormInContext>();
-		String[] morphemeParts = morpheme.split("/");
+		String[] morphemeParts = morphemeId.split("/");
 		baseForm = morphemeParts[0];
 		morphId = morphemeParts[1];
-		Pattern pType = Pattern.compile("^([0-9])?(.+)$");
-		Matcher mType = pType.matcher(morphId);
-		boolean morphemeIsRoot = false;
-		boolean morphemeIsAffix = false;
-		if (mType.matches()) {
-			if (mType.group(2).equals("n") || mType.group(2).equals("v") ||
-					mType.group(2).equals("a") || mType.group(2).equals("c") || 
-					mType.group(2).equals("p") || mType.group(2).equals("pr") ||
-					mType.group(2).startsWith("rp") || mType.group(2).startsWith("ra") || 
-					mType.group(2).equals("e") ||
-					mType.group(2).startsWith("pd") || mType.group(2).startsWith("ad")
-					)
-				morphemeIsRoot = true;	
-			else
-				morphemeIsAffix = true;
-		}
-		
-		if ( !morphemeIsRoot && !morphemeIsAffix)
-			throw new FormGeneratorException("The morpheme "+morpheme+" could not be recognized as a root or affix.");
+
+		String typeOfMorpheme = determineTypeOfMorpheme(morphId);
+		if ( typeOfMorpheme==null )
+			throw new FormGeneratorException("The morpheme "+morphemeId+" could not be recognized as a root or affix.");
 	
 		/*
 		 * The surface form of a root can change only at its end through actions of
 		 * the affix that follows it (voicing; deletion; etc.). There may also
 		 * be variants due to dialectal assimilation of consonants.
 		 */
-		else if (morphemeIsRoot) {
+		else if (typeOfMorpheme=="root") {
 			// see if possible geminate consonant clusters possible and add them (ex. iglu > illu)
-			HashSet<String> formsWithGeminate = formsWithGeminate(morpheme);
-			HashSet<String> forms = formsWithEnds(morpheme);
-			Iterator<String> itForms = forms.iterator();
-			while (itForms.hasNext()) {
-				String form = itForms.next();
-				surfaceForms.add(new SurfaceFormInContext(form,"",null,morpheme));
+			HashSet<String> formsWithGeminate = formsWithGeminate(baseForm);
+			// generate SurfaceFormInContext forms with alternative endings
+			Iterator<String> itfwg = formsWithGeminate.iterator();
+			while (itfwg.hasNext()) {
+				String form = itfwg.next();
+				logger.debug("form= "+form);
+				HashSet<SurfaceFormInContext> surfaceFormsWithAlternateEndings = objectFormsWithEnds(form,morphemeId,null,null);
+				surfaceForms.addAll(surfaceFormsWithAlternateEndings);
 			}
 		} 
 		/*
@@ -67,7 +51,7 @@ public class FormGenerator {
 		 * through its own actions (insertion; self-decapitation; etc.) 
 		 */
 		else {
-			HashSet<SurfaceFormInContext> formsWithBeginnings = formsWithBeginnings(morpheme);
+			Set<SurfaceFormInContext> formsWithBeginnings = formsWithBeginnings(morphemeId);
 			logger.debug("formsWithBeginnings= "+formsWithBeginnings.size());
 			Iterator<SurfaceFormInContext> iter = formsWithBeginnings.iterator();
 			while (iter.hasNext()) {
@@ -81,8 +65,8 @@ public class FormGenerator {
 					SurfaceFormInContext surfaceForInContextForFormWithBeginning = 
 							new SurfaceFormInContext(
 									form,
-									formWithBeginning.constraintOnEndOfStem,
-									formWithBeginning.endOfCanonicalFormOfReceivingMorpheme,morpheme);
+									formWithBeginning.endOfStem,
+									formWithBeginning.context,morphemeId);
 					logger.debug(surfaceForInContextForFormWithBeginning);
 					surfaceForms.add(surfaceForInContextForFormWithBeginning);
 					logger.debug("surfaceForms: "+surfaceForms.size());
@@ -96,52 +80,72 @@ public class FormGenerator {
 		return listOfForms;
 	}
 	
+	private String determineTypeOfMorpheme(String morphId) {
+		String typeOfMorpheme = null;
+		Pattern pType = Pattern.compile("^([0-9])?(.+)$");
+		Matcher mType = pType.matcher(morphId);
+		if (mType.matches()) {
+			if (mType.group(2).equals("n") || mType.group(2).equals("v") ||
+					mType.group(2).equals("a") || mType.group(2).equals("c") || 
+					mType.group(2).equals("p") || mType.group(2).equals("pr") ||
+					mType.group(2).startsWith("rp") || mType.group(2).startsWith("ra") || 
+					mType.group(2).equals("e") ||
+					mType.group(2).startsWith("pd") || mType.group(2).startsWith("ad")
+					)
+				typeOfMorpheme = "root";	
+			else
+				typeOfMorpheme = "affix";
+		}
+		
+		return typeOfMorpheme;
+	}
 	
-	private HashSet<String> formsWithGeminate(String morpheme) {
+	
+	protected HashSet<String> formsWithGeminate(String morpheme) {
 //		return DialectalGeminate.formsWithGeminate(morpheme);
 		return (HashSet<String>) PhonologicalChange.formsInAllDialects(morpheme);
 	}
+	
 
-
-	public HashSet<SurfaceFormInContext> formsWithBeginnings(String morphemeId) {
+	public Set<SurfaceFormInContext> formsWithBeginnings(String morphemeId) {
 		Logger logger = Logger.getLogger("FormGenerator.formsWithBeginnings");
 		logger.debug("morphemeId: "+morphemeId);
-		HashSet<SurfaceFormInContext> allSurfaceFormsInContext = new HashSet<SurfaceFormInContext>();
+		Set<SurfaceFormInContext> allSurfaceFormsInContext = new HashSet<SurfaceFormInContext>();
 		Affix affix = LinguisticData.getInstance().getAffixWithId(morphemeId);
 		char[] contexts = new char[] {'V','t','k','q'};
 		for (int iCtxt=0; iCtxt<contexts.length; iCtxt++) {
 			logger.debug("context: "+contexts[iCtxt]);
-			HashSet<SurfaceFormInContext> surfaceFormsInContext = null; //affix.getSurfaceFormsInContext(contexts[iCtxt],morphemeId);
-			logger.debug("surfaceFormsInContext: "+PrettyPrinter.print(surfaceFormsInContext));
+			Set<SurfaceFormInContext> surfaceFormsInContext = affix.getFormsInContext(contexts[iCtxt]);
+			logger.debug("surfaceFormsInContext: "+surfaceFormsInContext);
 			allSurfaceFormsInContext.addAll(surfaceFormsInContext);
 			logger.debug("allSurfaceFormsInContext: "+allSurfaceFormsInContext.size());
 		}
-		
+
 		return allSurfaceFormsInContext;
 	}
 
 
-	protected HashSet<String> formsWithEnds(String morpheme) throws FormGeneratorException {
+	protected HashSet<String> formsWithEnds(String morphemeCanonicalForm) throws FormGeneratorException {
 		HashSet<String> forms = new HashSet<String>();			
-		String[] morphemeParts = morpheme.split("/");
-		String baseForm = morphemeParts[0];
-		forms.add(baseForm);
-		if ( !baseForm.endsWith("i") && !baseForm.endsWith("u") && !baseForm.endsWith("a")) {
-			String finalConsonant = baseForm.substring(baseForm.length()-1);
-			String baseFormWithoutFinalConsonant = baseForm.substring(0,baseForm.length()-1);
+		forms.add(morphemeCanonicalForm);
+		if ( !morphemeCanonicalForm.endsWith("i") && !morphemeCanonicalForm.endsWith("u") && !morphemeCanonicalForm.endsWith("a")) {
+			String finalConsonant = morphemeCanonicalForm.substring(morphemeCanonicalForm.length()-1);
+			String baseFormWithoutFinalConsonant = morphemeCanonicalForm.substring(0,morphemeCanonicalForm.length()-1);
 			forms.add(baseFormWithoutFinalConsonant);
 			if (finalConsonant.equals("t")) {
-				// t can be assimilated by p: tikit+puq -> tikippuq
+				// tp>pp : t can be assimilated by p: tikit+puq -> tikippuq
 				// t is voiced to l: uvannut+li -> uvannulli
+				// l can be assimilated by v,j and g: tikit+vik+u+lauq+gama -> tikilviulaurama -> tikivviulaurama
 				// t is nasalized to n: tikit+niaq-tuq -> tikinniaqtuq
-				// l can be assimilated by v: tikit+vik+u+lauq+gama -> tikilviulaurama -> tikivviulaurama
 				// n can me assimilated by m: tikit+mat -> tikinmat -> tikimmat
 				forms.add(baseFormWithoutFinalConsonant+"p");
 				forms.add(baseFormWithoutFinalConsonant+"l");
-				forms.add(baseFormWithoutFinalConsonant+"n");
-				forms.add(baseFormWithoutFinalConsonant+"l");
 				forms.add(baseFormWithoutFinalConsonant+"v");
+				forms.add(baseFormWithoutFinalConsonant+"j");
+				forms.add(baseFormWithoutFinalConsonant+"g");
+				forms.add(baseFormWithoutFinalConsonant+"n");
 				forms.add(baseFormWithoutFinalConsonant+"m");
+				forms.add(baseFormWithoutFinalConsonant+"ng");
 			} else if (finalConsonant.equals("k")) {
 				// k can be assimilated by p: pisuk+pak+lauq+mata -> pisuppalaurmata
 				// k can be assimilated by t: pisuk+ji+it -> pisuttiit
@@ -152,31 +156,42 @@ public class FormGenerator {
 				// g can be assimilated by v: allak+vik+mi -> allagvimmi -> allavvimmi
 				forms.add(baseFormWithoutFinalConsonant+"p");
 				forms.add(baseFormWithoutFinalConsonant+"t");
+				forms.add(baseFormWithoutFinalConsonant+"s");
 				forms.add(baseFormWithoutFinalConsonant+"g");
-				forms.add(baseFormWithoutFinalConsonant+"ng");
-				forms.add(baseFormWithoutFinalConsonant+"j");
-				forms.add(baseFormWithoutFinalConsonant+"l");
 				forms.add(baseFormWithoutFinalConsonant+"v");
-				// k is voiced to g and nasalized to ng
+				forms.add(baseFormWithoutFinalConsonant+"l");
+				forms.add(baseFormWithoutFinalConsonant+"j");
+				forms.add(baseFormWithoutFinalConsonant+"ng");
+				forms.add(baseFormWithoutFinalConsonant+"m");
+				forms.add(baseFormWithoutFinalConsonant+"n");
 			} else if (finalConsonant.equals("q")) {
 				// q is voiced and nasalized to r
-				// r can be assimilated by ng: pi+taqaq+ngat -> pitaqarngat -> pitaqanngat
-				// r can be assimilated by n: atuq+niaq+guma -> aturniaruma -> atunniaruma
-				// r can be assimilated by m: kimmiruq+miut -> kimmirurmiut -> kimmirummiut
-				// r can be assimilated by j: no example found
-				// r can be assimilated by l: katimaji+u+juq+lu -> katimajiujurlu -> katimajiujullu
-				// r can be assimilated by v: no example found
+				// no assimilation of q by any consonant
 				forms.add(baseFormWithoutFinalConsonant+"r");
-				forms.add(baseFormWithoutFinalConsonant+"n"); // for ng and n
-				forms.add(baseFormWithoutFinalConsonant+"m");
-				forms.add(baseFormWithoutFinalConsonant+"l");
 			} else {
-//				throw new FormGeneratorException("The base form of the morpheme ends with a consonant different than t, k, q.");
+				throw new FormGeneratorException("The base form of the morpheme ends with a consonant different than t, k, q.");
 			}
 		}
 		
-		return forms;
-			
+		return forms;	
+	}
+	
+	protected HashSet<SurfaceFormInContext> objectFormsWithEnds(String morphemeCanonicalForm, String morphemeID, String endOfStem, String context) throws FormGeneratorException {
+		Logger logger = Logger.getLogger("FormGenerator.objectFormsWithEnds");
+		logger.debug("morphemeID= "+morphemeID);
+		Character contextC = context==null? null : context.charAt(0);
+		HashSet<SurfaceFormInContext> surfaceForms = new HashSet<SurfaceFormInContext>();
+		HashSet<String> forms = formsWithEnds(morphemeCanonicalForm);
+		Iterator<String> itForms = forms.iterator();
+		while (itForms.hasNext()) {
+			String formWithAlternateEnding = itForms.next();
+			logger.debug("formWithAlternateEnding= '"+formWithAlternateEnding+"'");
+			SurfaceFormInContext sfic = new SurfaceFormInContext(formWithAlternateEnding,endOfStem,contextC,morphemeID);
+			logger.debug("sfic= "+sfic);
+			surfaceForms.add(sfic);
+		}
+		
+		return surfaceForms;
 	}
 
 }
