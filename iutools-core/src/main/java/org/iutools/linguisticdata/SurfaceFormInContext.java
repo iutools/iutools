@@ -75,33 +75,33 @@ import org.iutools.linguisticdata.constraints.Conditions;
 public class SurfaceFormInContext extends Object {
 
     public String surfaceForm;
-    public String constraintOnEndOfStem;
-    public Character endOfCanonicalFormOfReceivingMorpheme;
+    public String endOfStem;
+    public Character context;
     public String morphemeId;
-    public String basicForm;
+	private String canonicalForm;
     
-    public SurfaceFormInContext(String form, String _constraintOnStem, Character _endOfCanonicalFormOfReceivingMorpheme, String _morphemeId) {
+    public SurfaceFormInContext(String _surfaceForm, String _endOfStem, Character _context, String _morphemeId) {
     	Logger logger = Logger.getLogger("SurfaceFormInContext.constructor");
     	if (_morphemeId.equals("tikiq/1n") || _morphemeId.equals("patiq/1v") || _morphemeId.equals("jarniq/1vv"))
-    		logger.debug(_morphemeId+"; "+form+"; "+_constraintOnStem+"; "+String.valueOf(_endOfCanonicalFormOfReceivingMorpheme)); 
-        this.surfaceForm = form;
-        this.constraintOnEndOfStem = _constraintOnStem;
-        this.endOfCanonicalFormOfReceivingMorpheme = _endOfCanonicalFormOfReceivingMorpheme;
+    		logger.debug(_morphemeId+"; "+_surfaceForm+"; "+_endOfStem+"; "+String.valueOf(_context));
+        this.surfaceForm = _surfaceForm;
+        this.endOfStem = _endOfStem;
+        this.context = _context;
         this.morphemeId = _morphemeId;
         String[] partsOfMorphemeId = this.morphemeId.split("/");
-        this.basicForm = partsOfMorphemeId[0];
+        this.canonicalForm = partsOfMorphemeId[0];
     }
     
     public boolean isValidForStem(String stem) {
 		String lastChar = stem.substring(stem.length()-1);
-		if (constraintOnEndOfStem==null) {
+		if (endOfStem ==null) {
 			return true;
-		} else if (constraintOnEndOfStem.equals("V")) {
+		} else if (endOfStem.equals("V")) {
     		if (lastChar.equals("i") || lastChar.equals("u") || lastChar.equals("a"))
     			return true;
     		else
     			return false;
-    	} else if (constraintOnEndOfStem.equals("VV")) {
+    	} else if (endOfStem.equals("VV")) {
     		String penultChar = stem.substring(stem.length()-2,stem.length()-1);
     		if ( (lastChar.equals("i") || lastChar.equals("u") || lastChar.equals("a")) &&
     				(penultChar.equals("i") || penultChar.equals("u") || penultChar.equals("a")) )
@@ -129,12 +129,18 @@ public class SurfaceFormInContext extends Object {
     		if ( !oo.morphemeId.equals(this.morphemeId) ) {
     			return false;
     		}
-    		logger.debug(oo.constraintOnEndOfStem+" vs "+this.constraintOnEndOfStem);
-    		if ( !oo.constraintOnEndOfStem.equals(this.constraintOnEndOfStem) )
+    		logger.debug(oo.endOfStem +" vs "+this.endOfStem);
+    		if ( !oo.endOfStem.equals(this.endOfStem) )
     			return false;
-    		logger.debug(oo.endOfCanonicalFormOfReceivingMorpheme+" vs "+this.endOfCanonicalFormOfReceivingMorpheme);
-    		if ( !oo.endOfCanonicalFormOfReceivingMorpheme.equals(this.endOfCanonicalFormOfReceivingMorpheme) )
-    			return false;
+    		logger.debug(oo.context +" vs "+this.context);
+//    		if ( !oo.context.equals(this.context) )
+//    			return false;
+			if ( oo.context==null && this.context==null )
+				return true;
+			if ( (oo.context==null && this.context!=null)
+					|| (oo.context!=null && this.context==null)
+					|| !oo.context.equals(this.context) )
+				return false;
     		return true;
     	}
     	return false;
@@ -148,20 +154,20 @@ public class SurfaceFormInContext extends Object {
 	public boolean validateWithStem(SurfaceFormInContext precedingMorpheme) {
     	Logger logger = Logger.getLogger("SurfaceFormInContext.validateWithStem");
 		char finalOfPrecedingMorpheme =
-			precedingMorpheme.basicForm.substring(precedingMorpheme.basicForm.length()-1).charAt(0);
-		if (this.endOfCanonicalFormOfReceivingMorpheme.equals("V")) {
+			precedingMorpheme.canonicalForm.substring(precedingMorpheme.canonicalForm.length()-1).charAt(0);
+		if (this.context.equals("V")) {
 			if (finalOfPrecedingMorpheme!='i' && finalOfPrecedingMorpheme!='u' && finalOfPrecedingMorpheme!='a')
 				return false;
-		} else if (finalOfPrecedingMorpheme!=this.endOfCanonicalFormOfReceivingMorpheme)
+		} else if (finalOfPrecedingMorpheme!=this.context)
 			return false;
 		String stem = precedingMorpheme.surfaceForm;
 		String lastCharOfStem = stem.substring(stem.length()-1);
-		if (constraintOnEndOfStem.equals("V"))
+		if (endOfStem.equals("V"))
 			if (lastCharOfStem.equals("i") || lastCharOfStem.equals("u") || lastCharOfStem.equals("a"))
 				return true;
 			else
 				return false;
-		else if (constraintOnEndOfStem.equals("C"))
+		else if (endOfStem.equals("C"))
 			if (lastCharOfStem.equals("i") || lastCharOfStem.equals("u") || lastCharOfStem.equals("a"))
 				return false;
 			else
@@ -261,7 +267,7 @@ public class SurfaceFormInContext extends Object {
 	@Override
 	public String toString() {
 		return "SurfaceFormInContext["+
-				surfaceForm+"; "+morphemeId+"; "+basicForm+"; "+constraintOnEndOfStem+"; "+endOfCanonicalFormOfReceivingMorpheme+"]";
+				surfaceForm+"; "+endOfStem+"; "+context+"; "+morphemeId+"]";
 	}
 
 
