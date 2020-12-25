@@ -15,12 +15,25 @@
 // Organisation/Organization:	Conseil national de recherches du Canada/
 //				National Research Council Canada
 //
-// Date de cr�ation/Date of creation:	
+// Date de création/Date of creation:
 //
-// Description: classe pour les actions des suffixes et terminaisons.
+// Description: Class for actions of affixes (suffixes and endings).
 //
 // -----------------------------------------------------------------------
 
+/*
+    Affixes may take different forms and act in different ways on the stems
+    in different contexts (end of the stem: Vowel, t, k, q. This information
+    about contextual forms and actions is contained in the database. For each
+    context, 3 fields: form, action1, action2. 'form' is the basic surface form
+    of the affix in that context; 'action1' is the primary action of the affix
+    on the stem in that context; 'action2' is the secondary action of the affix
+    on the stem when that stem, after 'action1' has been applied, ends in 2 vowels.
+
+    Because the database was initially implemented as a CSV file, and because more
+    than 1 set of form/action1/action2 are possible for a given affix in a given context,
+    it was necessary to use a special symbol (-) to represent "no action".
+ */
 
 package org.iutools.linguisticdata;
 
@@ -73,7 +86,7 @@ public abstract class Action {
 		if (strng == null || strng.equals("-") || strng.equals("0")) //*** 0 not found in csv files
 			action = new NullAction();
 		else if (strng.equals("?")) //***
-			action = new Unknow();
+			action = new Unknown();
 		else if (strng.startsWith("i(") || strng.startsWith("ins(")) //***
 		    action = new Insertion(strng);
         else if (strng.equals("s") || strng.equals("suppr")) //***
@@ -136,7 +149,8 @@ public abstract class Action {
     abstract public String getConstraintOnEndOfStemAfterAction(char context, int rankOfAction);
     abstract public String apply(String form);
     abstract public SurfaceFormInContext[] resultingFormInContext(String form, Character context, int rankOfAction, String AffixId);
-    
+    abstract public String[] formAndEndOfStemInContext(String form, Character context, int rankOfAction);
+
 	public String getInsert() {
 		return null;
 	}
@@ -194,14 +208,16 @@ public abstract class Action {
         }
         return null;        
     }
-    
 
 
 
 
-	
+
+    //---------------------NEUTRAL----------------------//
 	/*
-	 * NEUTRAL
+	 * This means in fact that there is no action (no effect)
+	 * on the stem. Pretty much equivalent to NULLACTION. This
+	 * NEUTRAL was adopted from Mick Mallon's work.
 	 */
 	static class Neutral extends Action implements Cloneable {
 
@@ -306,7 +322,14 @@ public abstract class Action {
 				};
 		}
 
-        
+        @Override
+        // NEUTRAL
+        public String[] formAndEndOfStemInContext(String form, Character context, int rankOfAction) {
+            String endOfStem = context=='V' ? "V" : "C";
+            return new String[] {form,endOfStem};
+        }
+
+
 //        public String[] finalRadInitAff(String context, String form) {
 //            String initAff = form.substring(0,1);
 //            if (context.equals("V")) {
@@ -323,9 +346,9 @@ public abstract class Action {
 //        }	    
 	}
 
-    
+    //---------------------DELETION-----------------------//
     /*
-     * DELETION
+     *
      */
     static class Suppression extends Action implements Cloneable {
 
@@ -449,6 +472,13 @@ public abstract class Action {
 				};
 		}
 
+        @Override
+        // DELETION
+        public String[] formAndEndOfStemInContext(String form, Character context, int rankOfAction) {
+            String endOfStem = rankOfAction==1 ? "V" : "2V";
+            return new String[] {form,endOfStem};
+        }
+
 //        public String[] finalRadInitAff(String context, String form) {
 //            String initAff = form.substring(0,1);
 //            return new String[]{"a"+initAff,"i"+initAff,"u"+initAff};
@@ -456,9 +486,13 @@ public abstract class Action {
     }
 
 
-
+    //---------------------NULL ACTION----------------------//
 	/*
-	 * NULLACTION
+	 * This is necessary to account for "no action" in contexts
+	 * where there are more than 1 possible form/actions in the
+	 * database for a given affix. It is represented in the database
+	 * by -. When there are only 1 such form/actions set, there is no
+	 * need for - and its absence means "no action".
 	 */
 	static class NullAction extends Action implements Cloneable {
 
@@ -503,7 +537,18 @@ public abstract class Action {
 				String affixId) {
 			return null; 
 		}
-        
+
+        @Override
+        // NULL
+        public String[] formAndEndOfStemInContext(String form, Character context, int rankOfAction) {
+            String endOfStem = null;
+            if (rankOfAction==1)
+                endOfStem = context=='V' ? "V" : "C";
+            else
+                endOfStem = "2V";
+            return new String[] {form,endOfStem};
+        }
+
 
 //        public String[] finalRadInitAff(String context, String form) {
 //            return new String[]{};
@@ -511,14 +556,20 @@ public abstract class Action {
 	}
 
 
-	/*
-	 * UNKNOWN
+    //---------------------UNKNOWN-------------------//
+    /*
+	 * This is to cover that the action(s) for certain affixes
+	 * could not be determined:
+	 *   k&i/1nv
+	 *   liqui/1nv
+	 *   siri/1nv
+	 *   ujjuaq/1vv
 	 */
-	static class Unknow extends Action implements Cloneable {
+	static class Unknown extends Action implements Cloneable {
 
         static public final int type = UNKNOWN;
         
-        public Unknow() {
+        public Unknown() {
         }
 
         public String surfaceForm(String form) {
@@ -526,7 +577,7 @@ public abstract class Action {
         }
 
         public Object clone() {
-            Unknow cl = new Unknow();
+            Unknown cl = new Unknown();
             cl.strng = new String(this.strng);
             return cl;
         }
@@ -554,25 +605,28 @@ public abstract class Action {
 				String affixId) {
 			return null;
 		}
-        
+
+        @Override
+        // UNKNOWN
+        public String[] formAndEndOfStemInContext(String form, Character context, int rankOfAction) {
+            return null;
+        }
+
 
 //        public String[] finalRadInitAff(String context, String form) {
 //            return new String[]{};
 //        }	    
 	}
 
-	/*
-	 * ASSIMILATION
-	 */
-    
+    //---------------------ASSIMILATION-----------------------//
     /*
-     * Note: Cette action ne devrait pas en �tre une.  Cette action
-     * provient d'une m�prise.  En effet, l'assimilation est en fait un
-     * ph�nom�ne phonologique qui survient dans certains dialectes, le plus 
-     * souvent le premier T d'un groupe de consonnes assimil� � la seconde
-     * consonne.  On remarquera que l'assimilation est une action uniquement
-     * dans le context T.  Par exemple, la form pagiq de vagiq dans le context
-     * T donne une action 1 d'assimilation.  L'action devrait en fait �tre nulle,
+     * Note: Cette action ne devrait pas en être une.  Cette action
+     * provient d'une méprise.  En effet, l'assimilation est en fait un
+     * phénomène phonologique qui survient dans certains dialectes, le plus
+     * souvent le premier T d'un groupe de consonnes assimilé à la seconde
+     * consonne. (On remarquera que l'assimilation est une action uniquement
+     * dans le contexte T.)  Par exemple, la forme pagiq de vagiq dans le contexte
+     * T donne une action 1 d'assimilation.  L'action devrait en fait être nulle,
      * comme dans les deux autres contexts K et Q, l'assimilation survenant dans
      * certains dialectes seulement: _tpagiq > _ppagiq
      */
@@ -627,6 +681,13 @@ public abstract class Action {
 			};
 		}
 
+        @Override
+        // ASSIMILATION
+        public String[] formAndEndOfStemInContext(String form, Character context, int rankOfAction) {
+            String endOfStem = "C"; // since only in 't' context
+            return new String[] {form,endOfStem};
+        }
+
 //        public String[] finalRadInitAff(String context, String form) {
 //            String initAff = form.substring(0,1);
 //            return new String[]{initAff+initAff};
@@ -637,11 +698,10 @@ public abstract class Action {
 	/*
 	 * ASSIMILATION SP�CIFIQUE
 	 */
-    
+    //---------------------SPECIFIC ASSIMILATION----------------------//
     /*
-     * Note:
      * L'assimilation sp�cifique n'est d�finie que pour 3 terminaisons verbales,
-     * toutes commen�ant par -pa: -pat, -patik, -pata, et toutes dans le contexte T.
+     * toutes commençant par -pa: -pat, -patik, -pata, et toutes dans le contexte T : a(k).
      * Et elle est une alternative � une autre action d'assimilation r�guli�re.  L'action
      * d'assimilation r�guli�re est � mettre sur le compte du ph�nom�ne
      * phonologique dialectal qui change kp en pp.  Le ph�nom�ne r�el ici est
@@ -713,14 +773,22 @@ public abstract class Action {
 					new SurfaceFormInContext(form,assimileA,context,affixId)	
 			};
 		}
-        
 
-	}
+        @Override
+        // SPECIFIC ASSIMILATION
+        public String[] formAndEndOfStemInContext(String form, Character context, int rankOfAction) {
+            String endOfStem = "C";
+            return new String[] {form,endOfStem};
+        }
+
+
+    }
 	
 	
-	/*
-	 * FUSION
-	 */
+    //---------------------FUSION---------------------//
+    /*
+        Fusion should be replaced in the database by 'suppression' (deletion).
+     */
 	static class Fusion extends Action implements Cloneable {
 
         static final public int type = FUSION;
@@ -772,14 +840,22 @@ public abstract class Action {
 			};
 		}
 
+        @Override
+        // FUSION (equivalent to DELETION)
+        public String[] formAndEndOfStemInContext(String form, Character context, int rankOfAction) {
+            String endOfStem = rankOfAction==1 ? "V" : "2V";
+            return new String[] {form,endOfStem};
+        }
+
 //        public String[] finalRadInitAff(String context, String form) {
 //            String initAff = form.substring(0,1);
 //            return new String[]{"a"+initAff, "i"+initAff, "u"+initAff};
 //        }	    
 	}
 
+    //---------------------VOICING------------------------//
 	/*
-	 * VOICING
+	 *
 	 */
 	static public class Voicing extends Action implements Cloneable {
 
@@ -856,7 +932,14 @@ public abstract class Action {
 					new SurfaceFormInContext(form,"C",context,affixId)	
 			};
 		}
-        
+
+        @Override
+        // VOICING
+        public String[] formAndEndOfStemInContext(String form, Character context, int rankOfAction) {
+            String endOfStem = "C";
+            return new String[] {form,endOfStem};
+        }
+
 
 //        public String[] finalRadInitAff(String context, String form) {
 //            String initAff = form.substring(0,1);
@@ -865,8 +948,9 @@ public abstract class Action {
 	}
 
 
+    //---------------------NASALIZATION-------------------------//
 	/*
-	 * NASALIZATION
+	 *
 	 */
 	static public class Nasalization extends Action implements Cloneable {
 
@@ -940,7 +1024,14 @@ public abstract class Action {
 					new SurfaceFormInContext(form,"C",context,affixId)	
 			};
 		}
-        
+
+        @Override
+        // NASALIZATION
+        public String[] formAndEndOfStemInContext(String form, Character context, int rankOfAction) {
+            String endOfStem = "C";
+            return new String[] {form,endOfStem};
+        }
+
 
 //        public String[] finalRadInitAff(String context, String form) {
 //            String initAff = form.substring(0,1);
@@ -948,9 +1039,8 @@ public abstract class Action {
 //        }	    
 	}
 
+    //---------------------CONDITIONAL NASALIZATION-----------------------//
 	/*
-	 * CONDITIONAL NASALIZATION
-	 * 
 	 * (see conditions if(cond,actYes,actNo) in .csv data files; "if" conditions
 	 * generate action objects for actYes and actNo)
 	 */
@@ -1020,13 +1110,18 @@ public abstract class Action {
 				String AffixId) {
 			// does not appear in any csv file
 			return null;
-		} 
-	}
-	
+		}
 
+        @Override
+        // CONDITIONAL NASALIZATION
+        public String[] formAndEndOfStemInContext(String form, Character context, int rankOfAction) {
+            String endOfStem = "C";
+            return new String[] {form,endOfStem};
+        }
+    }
+
+    //---------------------SPECIFIC DELETION------------------------//
 	/*
-	 * SPECIFIC DELETION
-	 * 
 	 * Happens only in the Q context for a couple of infixes as a second action
 	 * when the first action deleted the 'q' final: the last of the two remaining
 	 * vowels is deleted if it is the specified vowel.
@@ -1105,14 +1200,18 @@ public abstract class Action {
 			}
 			return null;
 		}
-        
 
-	}
+        @Override
+        // SPECIFIC DELETION
+        public String[] formAndEndOfStemInContext(String form, Character context, int rankOfAction) {
+            String endOfStem = rankOfAction==1 ? "V" : "2V";
+            return new String[] {form,endOfStem};
+        }
 
-	/*
-	 * CONDITIONAL DELETION
-	 */
-    
+
+    }
+
+    //---------------------CONDITIONAL DELETION--------------------//
     /*
      * L'action conditionnelle est cr��e lors de la lecture d'actions de form if()
      * dans les champs d'actions des tables de la base de donn�es.  Pour les 
@@ -1185,14 +1284,21 @@ public abstract class Action {
 			// TODO Auto-generated method stub
 			return null;
 		}
-       
 
-	}
+        @Override
+        // CONDITIONAL DELETION
+        public String[] formAndEndOfStemInContext(String form, Character context, int rankOfAction) {
+            String endOfStem = rankOfAction==1 ? "V" : "2V";
+            return new String[] {form,endOfStem};
+        }
 
 
+    }
 
+
+    //---------------------INSERTION---------------------//
 	/*
-	 * INSERTION
+	 *
 	 */
 	static class Insertion extends Action implements Cloneable {
 
@@ -1268,18 +1374,22 @@ public abstract class Action {
 			// TODO Auto-generated method stub
 			return null;
 		}
-        
 
-	}
+        @Override
+        // INSERTION
+        public String[] formAndEndOfStemInContext(String form, Character context, int rankOfAction) {
+            String endOfStem = rankOfAction==1 ? context.toString() : "2V";
+            return new String[] {inserted+form,endOfStem};
+        }
+
+
+    }
 
 
 
-	/*
-	 * DELETION AND INSERTION
-	 */
-    
+    //---------------------DELETION AND INSERTION-----------------------//
     /*
-     * Tr�s peu fr�quente.  Seulement en action1.
+     * Très peu fréquente.  Seulement en action1.
      */
 	static class SuppressionAndInsertion extends Action implements Cloneable {
 
@@ -1354,14 +1464,23 @@ public abstract class Action {
 			// TODO Auto-generated method stub
 			return null;
 		}
-        
 
-	}
+        @Override
+        // DELETION AND INSERTION
+        public String[] formAndEndOfStemInContext(String form, Character context, int rankOfAction) {
+            String endOfStem = rankOfAction==1 ? "V" : "2V";
+            return new String[] {inserted+form,endOfStem};
+        }
 
+
+    }
+
+    //---------------------VOWEL LENGTHENING-----------------------//
 	/*
-	 * VOWEL LENGHTENING
-	 * 
-	 * can happen only as a first action in V context
+	 * This action happens only as a first action in V context in noun endings.
+	 * Before being applied, one should check whether the stem already ends in
+	 * two vowels, in which case this action should not be applied. And this
+	 * would make that one could get rid of the Cancellation action.
 	 */
 	static class VowelLengthening extends Action implements Cloneable {
 
@@ -1382,11 +1501,6 @@ public abstract class Action {
             return cl;
         }
         
-        /*
-         * AllongementVoyelle n'arrive que comme action1 dans le context de
-         * voyelle, et toujours avec une action2 nulle.  Pour les terminaisons
-         * nominales seulement.
-         */
         public String expressionResult(String context, String form, Action act2) {
             // Ex.: _i + k > _iik
             return "_"+context+"+"+form+" &rarr; "+"_"+context+context+form;
@@ -1415,6 +1529,13 @@ public abstract class Action {
 			return null;
 		}
 
+        @Override
+        // VOWEL LENGTHENING
+        public String[] formAndEndOfStemInContext(String form, Character context, int rankOfAction) {
+            String endOfStem = "V";
+            return new String[] {form,endOfStem};
+        }
+
 //        public String[] finalRadInitAff(String context, String form) {
 //            String initAff = form.substring(0,1);
 //            return new String[]{"a"+initAff, "i"+initAff, "u"+initAff};
@@ -1422,9 +1543,13 @@ public abstract class Action {
 	}
 
 
-	/*
-	 * CANCELLATION
-	 */
+    //---------------------CANCELLATION------------------------//
+    /*
+       This action happens only as action2 with action1 = allV and sallV.
+       And allV and sallV happen only as action1 in (dual) noun endings.
+       By treating allV and sallV differently, one could get rid of this
+       Cancellation action.
+     */
 	static class Cancellation extends Action implements Cloneable {
 
         static public final int type = CANCELLATION;
@@ -1468,6 +1593,15 @@ public abstract class Action {
 			return null;
 		}
 
+        @Override
+        // CANCELLATION
+        public String[] formAndEndOfStemInContext(String form, Character context, int rankOfAction) {
+            // TODO:
+//            String endOfStem = rankOfAction==1 ? "V" : "2V";
+//            return new String[] {formm,endOfStem};
+            return null;
+        }
+
 //        public String[] finalRadInitAff(String context, String form) {
 //            String initAff = form.substring(0,1);
 //            return new String[]{};
@@ -1475,10 +1609,9 @@ public abstract class Action {
 	}
 
 
+    //---------------------SELF-DECAPITATION----------------------//
 	/*
-	 * SELF-DECAPITATION
-	 * 
-	 * happens only as second action after suppression a consonant when the 
+	 * happens only as second action after deleting a consonant when the
 	 * resultant stem ends in 2 vowels
 	 */
 	static class Selfdecapitation extends Action implements Cloneable {
@@ -1526,6 +1659,13 @@ public abstract class Action {
 			return null;
 		}
 
+        @Override
+        // SELF-DECAPITATION
+        public String[] formAndEndOfStemInContext(String form, Character context, int rankOfAction) {
+            String endOfStem = "V";
+            return new String[] {form.substring(1),endOfStem};
+        }
+
 //        public String[] finalRadInitAff(String context, String form) {
 //            String secondAff = form.substring(1,2);
 //            return new String[]{"a"+secondAff, "i"+secondAff, "u"+secondAff};
@@ -1533,10 +1673,11 @@ public abstract class Action {
 	}
 
 
-	/*
-	 * INSERTION AND VOWEL LENGTHNENING
-	 * 
-	 * happens only in T context as first action
+    //---------------------INSERTION AND VOWEL LENGTHNENING-------------------//
+    /*
+	 * This action happens only in T context as first action in (dual) noun endings.
+	 * The same vowel is always inserted, so the action could be replaced with
+	 * a simple insertion of that vowel doubled. iallV(i) -> i(ii)
 	 */
 	static class InsertionAndVowelLengthening extends Action implements Cloneable {
 
@@ -1608,14 +1749,19 @@ public abstract class Action {
 			// TODO Auto-generated method stub
 			return null;
 		}
-        
 
-	}
+        @Override
+        // INSERTION AND VOWEL LENGTHENING
+        public String[] formAndEndOfStemInContext(String form, Character context, int rankOfAction) {
+            String endOfStem = "t"; // because only in 't' context: insertion of 'i' after 't'
+            return new String[] {form.substring(1),endOfStem};
+        }
 
 
-	/*
-	 * DELETION AND VOWEL LENGTHNENING
-	 */
+    }
+
+    //--------------------DELETION AND VOWEL LENGTHNENING--------------------------//
+
 	static class SuppressionAndVowelLengthening extends Action implements Cloneable {
 
         static public final int type = DELETIONVOWELLENGTHENING;
@@ -1669,6 +1815,13 @@ public abstract class Action {
 			// TODO Auto-generated method stub
 			return null;
 		}
+
+        @Override
+        // DELETION AND VOWEL LENGTHENING
+        public String[] formAndEndOfStemInContext(String form, Character context, int rankOfAction) {
+            String endOfStem = "2V";
+            return new String[] {form,endOfStem};
+        }
 
 
 //        public String[] finalRadInitAff(String context, String form) {
