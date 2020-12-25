@@ -86,11 +86,24 @@ public abstract class Affix extends Morpheme {
     }
     
     public Set<SurfaceFormInContext> getFormsInContext(Character context) {
+		Set<SurfaceFormInContext> formsInContext = new HashSet<SurfaceFormInContext>();
     	ContextualBehaviour[] behaviours = contextualBehaviours.get(context);
     	for ( ContextualBehaviour behaviour : behaviours) {
-    		Set<SurfaceFormInContext> formsInContext = behaviour.formsInContext(this);
-    	}
-    	return null;
+    		List<String[]> formsAndEndsOfFormInContextFromBehaviour = behaviour.formsInContext();
+    		for (int ilist=0; ilist<formsAndEndsOfFormInContextFromBehaviour.size(); ilist++) {
+    			String[] formAndEndOfFormInContextFromBehaviour = formsAndEndsOfFormInContextFromBehaviour.get(ilist);
+				if (formAndEndOfFormInContextFromBehaviour != null) {
+					SurfaceFormInContext surfaceFormInContextForBehaviour =
+							new SurfaceFormInContext(
+									formAndEndOfFormInContextFromBehaviour[0],
+									formAndEndOfFormInContextFromBehaviour[1],
+									context,
+									this.id);
+					formsInContext.add(surfaceFormInContextForBehaviour);
+				}
+			}
+		}
+    	return formsInContext;
     }
     
 	//---------------------------------------------------------------------------------------------------------
@@ -420,6 +433,5 @@ public abstract class Affix extends Morpheme {
 
 		return sb.toString();
 	}
-	
 
 }
