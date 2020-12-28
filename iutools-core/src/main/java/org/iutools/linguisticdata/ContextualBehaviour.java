@@ -7,7 +7,7 @@ public class ContextualBehaviour {
 	
 	/*
 	 * context: last character of stem: V (any vowel), t, k, q
-	 * form: surface of the affix for in this context
+	 * basicForm: surface of the affix for this context
 	 * action1: action of the affix on (last character of) stem in this context;
 	 *          in the vowel context, it must be only one vowel, not two
 	 * action2: action of the affix in this context in case the stem (after
@@ -15,13 +15,13 @@ public class ContextualBehaviour {
 	 */
 	
 	Character context;
-	String form;
+	String basicForm;
 	Action action1;
 	Action action2;
 
-	public ContextualBehaviour(Character _context, String _form, Action _action1, Action _action2) {
+	public ContextualBehaviour(Character _context, String _basicForm, Action _action1, Action _action2) {
 		this.context = _context;
-		this.form = _form;
+		this.basicForm = _basicForm;
 		this.action1 = _action1;
 		this.action2 = _action2;
 	}
@@ -42,7 +42,7 @@ public class ContextualBehaviour {
 		//   2. apply action 1 (may modify the default surface form, like insertion): allak
 		//   3. apply action 2 (may modify the form resulting of action1 for cases of VV stems)
 		List<String[]> formAndEndOfStemInContext = new ArrayList<String[]>();
-		String[] formAndEndOfStemInContextAfterAction1 = this.action1.formAndEndOfStemInContext(this.form,this.context,1);
+		String[] formAndEndOfStemInContextAfterAction1 = this.action1.formAndEndOfStemInContext(this.basicForm,this.context,1);
 		if (formAndEndOfStemInContextAfterAction1!=null)
 			formAndEndOfStemInContext.add(formAndEndOfStemInContextAfterAction1);
 		if (this.action2 != null && this.action2.type != Action.NULLACTION) {
