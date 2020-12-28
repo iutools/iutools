@@ -31,10 +31,9 @@ import org.iutools.linguisticdata.constraints.Conditions;
  * gaarjuk.
  * 
  * 
- *  form – string that represents the surface form of the morpheme as a result 
- *         of what is describe above
- *  constraintOnEndOfStem – string that represents the end of the stems to which
- *                          this form may attach:
+ *  surfaceForm – string that represents the surface form of the morpheme as a result
+ *                of what is described above
+ *  endOfStem – string that represents the end of the stems to which this form may attach:
  *                          - null: no condition on the end of the stem
  *                          - a: the stem must end with a single 'a'
  *                          - i: the stem must end with a single 'i'
@@ -45,10 +44,9 @@ import org.iutools.linguisticdata.constraints.Conditions;
  *                          - C: the stem must end with a consonant
  *                          - lower-case consonant: the stem must end with a specific consonant
  *
- *  endOfCanonicalFormOfReceivingMorpheme – string that represents the final
- *                                          character of the basic form of the
- *                                          morphemes to which this form may attach
- *                                          - V, t, k, q
+ *  context – string that represents the final of the stem to which this form may attach
+ *            (last character of the canonical form of the morphemes):
+ *                          - V, t, k, q
  *  morphemeId – id of the morpheme in the data base
  *  
  * The context hence
