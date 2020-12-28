@@ -925,7 +925,7 @@ public class Roots {
 			output
 					.append("\n<p><span style=\"font-weight:bold\">Sources</span><br>");
 			for (int n = 0; n < sources.length; n++) {
-				Source src = (Source) LinguisticDataAbstract
+				Source src = (Source) LinguisticData.getInstance()
 						.getSource(sources[n]);
 				output.append(src.authorSurName + ", " + src.authorFirstName);
 				if (src.authorMidName != null)
