@@ -41,6 +41,8 @@ public class LinguisticData {
     	singleton = null;
     }
     public static synchronized LinguisticData getInstance() {
+        Logger logger = Logger.getLogger("LinguisticData.getInstance");
+        logger.debug("singleton == null ? " + (singleton==null));
     	if (singleton == null) {
     		singleton = new LinguisticData();
     		try {
