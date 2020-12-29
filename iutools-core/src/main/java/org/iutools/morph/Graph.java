@@ -24,265 +24,67 @@ public class Graph {
 	static public State verbState;
 
     
-	public static class State implements Cloneable {
-		public String id;
-		Arc[] arcs;
-
-		public State(String id) {
-			this.id = id;
-		}
-        
-        private State() {
-        }
-
-		public String getId() {
-			return id;
-		}
-
-		public Arc[] getArcs() {
-			return arcs;
-		}
-
-		private void setArcs(Arc [] arcs) {
-		    this.arcs = arcs;
-		    for (int i=0; i<arcs.length; i++)
-		        arcs[i].setStartState(this);
-		}
-
-		public Vector<Graph.Arc> verify(Morpheme affixe) throws LinguisticDataException {
-			Vector<Graph.Arc> possibleArcs = new Vector<Graph.Arc>();
-			for (int i = 0; i < arcs.length; i++) {
-				Graph.Arc arc = arcs[i];
-				Conditions conds = arc.getCondition();
-			    if (conds!=null) {
-			    	if (conds.isMetByFullMorphem(affixe))
-			    		possibleArcs.add(arc);
-			    } else {
-			        Vector<Graph.Arc> possibles1 = arc.destState.verify(affixe);
-			        possibleArcs.addAll(possibles1);
-			    }
-			}
-			return possibleArcs;
-		}
-
-	
-//		public State copy()  {
-//		    State etat = (State)this.clone();
-//		    return etat;
-//		}
-//        
-        public Object clone() {
-            State cl = new State();
-            cl.id = new String(this.id);
-            cl.arcs = (Graph.Arc [])arcs.clone();
-            return cl;
-        }
-
-
-}
-
-	public static class Arc implements Cloneable {
-        Conditions cond;
-		State startState;
-		State destState;
-		
-        public Arc(Conditions cond, State destState) {
-            this.cond = cond;
-            this.destState = destState;
-        }
-        
- 		public State getDestinationState() {
-			return destState;
-		}
-
-        public Conditions getCondition() {
-            return cond;
-        }
-
-		public String getDestinationStateStr() {
-			return destState.id;
-		}
-		
-		public void setStartState(State ss) {
-		    startState = ss;
-		}
-		
-	    public Arc copy()  {
-	        Arc arc = null;
-            try {
-                arc = (Arc)this.clone();
-            } catch (CloneNotSupportedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            return arc;
-	        }
-
-		
-	}
-
-//	public static class Condition {
-//		String id;
-//		String type;
-//		String fonction;
-//		String element;
-//
-//		public Condition(String id, String type, String fct, String element) {
-//			this.id = id;
-//			this.type = type;
-//			fonction = fct;
-//			this.element = element;
-//		}
-//
-////		public String getId() {
-////			return id;
-////		}
-//
-////		public String getType() {
-////			return type;
-////		}
-//
-////		public String getFonction() {
-////			return fonction;
-////		}
-//
-////		public String getElement() {
-////			return element;
-////		}
-//
-//		public String toString() {
-//			StringBuffer sb = new StringBuffer();
-//			sb.append("[condition: ");
-//			sb.append(id);
-//			sb.append(",");
-//			sb.append(type);
-//			sb.append(",");
-//			sb.append((fonction == null) ? "null" : fonction);
-//			sb.append(",");
-//			sb.append((element == null) ? "null" : element);
-//			sb.append("]");
-//			return sb.toString();
-//		}
-//
-//		// V�rifier si un morph�me respecte la condition.
-//		public boolean estRespectee(Morpheme aff) {
-//		    String nomClasse = aff.getClass().getName();
-//		    if (nomClasse.endsWith("Suffix"))
-//				return estRespectee((Suffix) aff);
-//			else if (nomClasse.endsWith("TerminaisonNominale"))
-//				return estRespectee((TerminaisonNominale) aff);
-//			else if (nomClasse.endsWith("TerminaisonVerbale"))
-//				return estRespectee((TerminaisonVerbale) aff);
-//			else if (nomClasse.endsWith("TerminaisonDemonstrative"))
-//				return estRespectee((TerminaisonDemonstrative) aff);
-//			else if (nomClasse.endsWith("Base") || nomClasse.endsWith("Demonstrative"))
-//				return estRespectee((Base) aff);
-//			else
-//				return false;
-//		}
-//
-//		public boolean estRespectee(Suffix suff) {
-//			if (suff.type.equals(type)
-//				&& (fonction == null || suff.function.equals(fonction))
-//				&& (element == null || suff.morpheme.equals(element)))
-//				return true;
-//			else
-//				return false;
-//		}
-//
-//		public boolean estRespectee(TerminaisonVerbale tv) {
-//			if (tv.type.equals(type))
-//				return true;
-//			else
-//				return false;
-//
-//		}
-//
-//		public boolean estRespectee(TerminaisonNominale tn) {
-//			if (tn.type.equals(type))
-//				return true;
-//			else
-//				return false;
-//		}
-//
-//		public boolean estRespectee(Base b) {
-//			if (b.type.equals(type))
-//				return true;
-//			else
-//				return false;
-//		}
-//
-//		public boolean estRespectee(TerminaisonDemonstrative td) {
-//			if (td.type.equals(type)
-//				&& (fonction == null || td.number.equals(fonction)))
-//				return true;
-//			else
-//				return false;
-//		}
-//
-//	}
 
 	static {
-		State mq, mqi, m, n, v, a, e, c, rn, rnc, rv, ad, pds, pdp, d, pp = null;
+		State word, wordWithLiLuTail, wordWithoutTail, noun, verb, adverb, expression, conjunction, nominalStem, nominalCompositeStem, verbalStem, demonstrativeAdverb, demonstrativePronounSingular, demonstrativePronounPlural, demonstrative, personalPronoun = null;
 //		State pr = null;
-		State pp1, pp2, radpp1, radpp2, racpp1, racpp2, zero = null;
+		State personalPronounUvaIli, pp2, personalPronounStemUvaIli, personalPronounStemOther, personalPronounRootUva, personalPronounRootIli, zero = null;
 		
-		mq = new State("mq");	// mot avec queue
-		mqi = new State("mqi");	// mot avec queue - interm�diaire
-		m = new State("m");		// mot sans queue
-		n = new State("n");		// racine nominale
-		v = new State("v");		// racine verbale
-		verbState = v;
-		a = new State("a");		// adverbe
-		e = new State("e");		// expression
-		c = new State("c");		// conjonction
-		rn = new State("rn");	// radical nominal
-		rnc = new State("rnc");	// radical nominal de composition
-		rv = new State("rv");	// radical verbal
-		ad = new State("ad");	// adverbe d�monstratif
-		pds = new State("pds");	// pronom d�monstratif singulier
-		pdp = new State("pdp");	// pronom d�monstratif pluriel
-		d = new State("d");		// d�monstratif
-//		pr = new State("pr");		// pronom
-		pp = new State("pp");		// pronom personnel
-		pp1 = new State("pp1");
-		pp2 = new State("pp2");
-		radpp1 = new State("radpp1");
-		radpp2 = new State("radpp2");
-		racpp1 = new State("racpp1");
-		racpp2 = new State("racpp2");
-		zero = new State("0");	// d�but du mot
+		word = new State("w");	// word with a tail element
+		wordWithLiLuTail = new State("wt");	// word with an intermediate 'li' or 'lu' tail element
+		wordWithoutTail = new State("wnt");		// word without a tail element
+		noun = new State("n");		// nominal word
+		verb = new State("v");		// verbal word
+		verbState = verb;
+		adverb = new State("a");		// adverb
+		expression = new State("e");		// expression
+		conjunction = new State("c");		// conjunction
+		nominalStem = new State("ns");	// nominal stem
+		nominalCompositeStem = new State("nsc");	// composite nominal stem
+		verbalStem = new State("rv");	// verbal stem
+		demonstrativeAdverb = new State("ad");	// demonstrative adverb
+		demonstrativePronounSingular = new State("pds");	// singular demonstrative pronoun
+		demonstrativePronounPlural = new State("pdp");	// plural demonstrative pronoun
+		demonstrative = new State("d");		// demonstrative
+		personalPronoun = new State("pp");	// personal pronoun
+		personalPronounUvaIli = new State("pp12");  // personal pronoun based on uva (1st person) or ili (2nd person)
+//		pp2 = new State("pp2");
+		personalPronounStemUvaIli = new State("pps12"); // personal pronoun stem based on uva or ili
+		personalPronounStemOther = new State("pps"); // personal pronoun other than uva and ili
+		personalPronounRootUva = new State("ppr1"); // personal pronoun root 'uva'
+		personalPronounRootIli = new State("ppr2"); // personal pronoun root 'ili'
+		zero = new State("0");	// beginning of the word
 		
-		mq.setArcs(	new Arc[] {
-		        new Arc(makeCond("id:guuq/1q"), mqi),
-		        new Arc(makeCond("id:kia/1q"), mqi),
-		        new Arc(makeCond("id:ttauq/1q"), mqi),
-		        new Arc(makeCond("id:qai/1q"), mqi),
-		        new Arc(makeCond("type:q"), m),
-		        new Arc(null, m)
+		word.setArcs(	new Arc[] {
+		        new Arc(makeCond("id:guuq/1q"), wordWithLiLuTail),
+		        new Arc(makeCond("id:kia/1q"), wordWithLiLuTail),
+		        new Arc(makeCond("id:ttauq/1q"), wordWithLiLuTail),
+		        new Arc(makeCond("id:qai/1q"), wordWithLiLuTail),
+		        new Arc(makeCond("type:q"), wordWithoutTail),
+		        new Arc(null, wordWithoutTail)
 		});
 	
-		mqi.setArcs(new Arc[] { 
-		        new Arc(makeCond("id:li/1q"), m), 
-		        new Arc(makeCond("id:lu/1q"), m)
+		wordWithLiLuTail.setArcs(new Arc[] {
+		        new Arc(makeCond("id:li/1q"), wordWithoutTail),
+		        new Arc(makeCond("id:lu/1q"), wordWithoutTail)
 		});
 		
-		m.setArcs(new Arc[] {
-		        new Arc(null, n),
-		        new Arc(null, v),
-		        new Arc(null, e),
-		        new Arc(null, a),
-		        new Arc(null, c),
+		wordWithoutTail.setArcs(new Arc[] {
+		        new Arc(null, noun),
+		        new Arc(null, verb),
+		        new Arc(null, expression),
+		        new Arc(null, adverb),
+		        new Arc(null, conjunction),
 //		        new Arc(null, pr),
-		        new Arc(null, pp),
-		        new Arc(null, d),
+		        new Arc(null, personalPronoun),
+		        new Arc(null, demonstrative),
 		        // addition of the next arc: see comment below
-		        new Arc(null, rn),
+		        new Arc(null, nominalStem),
 		});
 	
-		n.setArcs(new Arc[] {
-		        new Arc(makeCond("type:tn"), rn),
-		        new Arc(makeCond("type:tn"), rnc),
+		noun.setArcs(new Arc[] {
+		        new Arc(makeCond("type:tn"), nominalStem),
+		        new Arc(makeCond("type:tn"), nominalCompositeStem),
 		        new Arc(makeCond("type:n,number:d"), zero),
 		        new Arc(makeCond("type:n,number:p"), zero),
 		        /*
@@ -293,86 +95,81 @@ public class Graph {
                  * to Rn
                  */
 //		        new Arc(null, rn)
-		        new Arc(makeCond("type:tn,number:s,possPers:null"), a),
+		        new Arc(makeCond("type:tn,number:s,possPers:null"), adverb),
 		});
 		
-		v.setArcs(new Arc[] {
-		        new Arc(makeCond("type:tv"), rv)
+		verb.setArcs(new Arc[] {
+		        new Arc(makeCond("type:tv"), verbalStem)
 		});
 		
-		a.setArcs(new Arc[] {
+		adverb.setArcs(new Arc[] {
 		        new Arc(makeCond("type:a"), zero)
 		});
 		
-		e.setArcs(new Arc[] {
+		expression.setArcs(new Arc[] {
 		        new Arc(makeCond("type:e"), zero)
 		});
 		
-		c.setArcs(new Arc[] {
+		conjunction.setArcs(new Arc[] {
 		        new Arc(makeCond("type:c"), zero)
 		});
 		
-		rn.setArcs(new Arc[] {
-		        new Arc(makeCond("function:nn"), rn),
-		        new Arc(makeCond("function:nn"), rnc),
-		        new Arc(makeCond("function:nn"), a),
-		        new Arc(makeCond("function:vn"), a),
-		        new Arc(makeCond("function:vn"), rv),
+		nominalStem.setArcs(new Arc[] {
+		        new Arc(makeCond("function:nn"), nominalStem),
+		        new Arc(makeCond("function:nn"), nominalCompositeStem),
+		        new Arc(makeCond("function:nn"), adverb),
+		        new Arc(makeCond("function:vn"), adverb),
+		        new Arc(makeCond("function:vn"), verbalStem),
 		        new Arc(makeCond("type:n,number:s"), zero),
 		        new Arc(makeCond("type:p,!nature:per"), zero),
 		});
 		
-		rnc.setArcs(new Arc[] {
+		nominalCompositeStem.setArcs(new Arc[] {
 		        new Arc(makeCond("type:n,subtype:nc"), zero),
 		});
 		
-		rv.setArcs(new Arc[] {
-		        new Arc(makeCond("function:vv"), rv),
-		        new Arc(makeCond("function:nv"), n),
-		        new Arc(makeCond("function:nv"), rn),
-		        new Arc(makeCond("function:nv"), rnc),
-		        new Arc(makeCond("function:nv"), a),
-		        new Arc(makeCond("function:nv"), d),
+		verbalStem.setArcs(new Arc[] {
+		        new Arc(makeCond("function:vv"), verbalStem),
+		        new Arc(makeCond("function:nv"), noun),
+		        new Arc(makeCond("function:nv"), nominalStem),
+		        new Arc(makeCond("function:nv"), nominalCompositeStem),
+		        new Arc(makeCond("function:nv"), adverb),
+		        new Arc(makeCond("function:nv"), demonstrative),
 		        new Arc(makeCond("type:v"), zero)
 		});
 		
 		// Demonstratives
-		d.setArcs(new Arc[] {
+		demonstrative.setArcs(new Arc[] {
 		        new Arc(makeCond("type:ad"), zero),
 		        new Arc(makeCond("type:pd"), zero),
-		        new Arc(makeCond("type:tad"), ad),
-		        new Arc(makeCond("type:tpd,number:s"), pds),
-		        new Arc(makeCond("type:tpd,number:p"), pdp)
+		        new Arc(makeCond("type:tad"), demonstrativeAdverb),
+		        new Arc(makeCond("type:tpd,number:s"), demonstrativePronounSingular),
+		        new Arc(makeCond("type:tpd,number:p"), demonstrativePronounPlural)
 		});
 		
-		ad.setArcs(new Arc[] { 
+		demonstrativeAdverb.setArcs(new Arc[] {
 		        new Arc(makeCond("type:rad"), zero)
 		});
 		
-		pds.setArcs(new Arc[] { 
+		demonstrativePronounSingular.setArcs(new Arc[] {
 		        new Arc(makeCond("type:rpd,number:s"), zero)
 		});
 		
-		pdp.setArcs(new Arc[] { 
+		demonstrativePronounPlural.setArcs(new Arc[] {
 		        new Arc(makeCond("type:rpd,number:p"), zero)
 		});
 		
 		// Personal pronouns
-		pp.setArcs(new Arc[] { 
-		        new Arc(null, pp1),
-		        new Arc(null, radpp1),
-		        new Arc(null, radpp2),
-		        new Arc(makeCond("type:tn,possPers:null"), radpp2),
-//		        new Arc(null, pp2),
-		        new Arc(makeCond("type:tn,possPers:null"), radpp2),
-//		        new Arc(makeCond("type:tn,cas:nom,number:p,possPers:null"), pp2),
-//		        new Arc(makeCond("type:tn,cas:gen,number:s,possPers:null"), pp2),
-//		        new Arc(makeCond("type:tn,cas:gen,number:p,possPers:null"), pp2),
+		personalPronoun.setArcs(new Arc[] {
+		        new Arc(null, personalPronounUvaIli),
+		        new Arc(null, personalPronounStemUvaIli),
+		        new Arc(null, personalPronounStemOther),
+		        new Arc(makeCond("type:tn,possPers:null"), personalPronounStemOther),
 		});
 		
-		pp1.setArcs(new Arc[] {
-		        new Arc(makeCond("function:nn"), radpp1),
-		        new Arc(makeCond("function:nn"), pp1)
+		personalPronounUvaIli.setArcs(new Arc[] {
+		        new Arc(makeCond("function:nn"), personalPronounStemUvaIli),
+		        new Arc(makeCond("function:nn"), personalPronounUvaIli)
 		});
 		
 //		pp2.setArcs(new Arc[] {
@@ -380,47 +177,44 @@ public class Graph {
 //		        new Arc(makeCond("function:nn"), pp2)
 //		});
 		
-		radpp1.setArcs(new Arc[]{
-		        new Arc(makeCond("type:tn,possPers:1,possNumber:Xnumber"), racpp1),
-		        new Arc(makeCond("type:tn,possPers:2,possNumber:Xnumber"), racpp2)
+		personalPronounStemUvaIli.setArcs(new Arc[]{
+		        new Arc(makeCond("type:tn,possPers:1,possNumber:Xnumber"), personalPronounRootUva),
+		        new Arc(makeCond("type:tn,possPers:2,possNumber:Xnumber"), personalPronounRootIli)
 		});
 		
-//		radpp2.setArcs(new Arc[]{
-////		        new Arc(makeCond("type:p,nature:per"), zero),
-//		        new Arc(makeCond("type:pr"), zero)
-//		});
-		
-		radpp2.setArcs(new Arc[]{
+		personalPronounStemOther.setArcs(new Arc[]{
 		        new Arc(makeCond("type:p"), zero),   // pr to p
-		        new Arc(makeCond("function:nn"), radpp2)
+		        new Arc(makeCond("function:nn"), personalPronounStemOther)
 		});
 
-		racpp1.setArcs(new Arc[]{
+		personalPronounRootUva.setArcs(new Arc[]{
 		        new Arc(makeCond("id:uva/1rpr"), zero)
 		});
 		
-		racpp2.setArcs(new Arc[]{
+		personalPronounRootIli.setArcs(new Arc[]{
 		        new Arc(makeCond("id:ili/1rp"), zero)
 		});
 		
 		
-		// Les arcs de l'�tat 'zero' sont null puisque c'est l'�tat final
+		// Arcs of state 'zero' are null since this is the final state
 
-		initialState = mq;
+		initialState = word;
 		finalState = zero;
 		
 		states =
-			new State[] {mq, mqi, m, n, v, a, e, c, rn, rv, ad, pds, pdp, d, pp, 
-		        pp1, pp2, radpp1, radpp2, racpp1, racpp2, zero };
+			new State[] {word, wordWithLiLuTail, wordWithoutTail, noun, verb, adverb, expression, conjunction, nominalStem, verbalStem, demonstrativeAdverb, demonstrativePronounSingular, demonstrativePronounPlural, demonstrative, personalPronoun,
+		        personalPronounUvaIli, personalPronounStemUvaIli, personalPronounStemOther, personalPronounRootUva, personalPronounRootIli, zero,
+					// pp2
+			};
 
 	}
 
-	public static State getEtat(String str) {
-		for (int i = 0; i < states.length; i++)
-			if (states[i].getId().equals(str))
-				return states[i];
-		return null;
-	}
+//	public static State getState(String str) { // *** not used
+//		for (int i = 0; i < states.length; i++)
+//			if (states[i].getId().equals(str))
+//				return states[i];
+//		return null;
+//	}
     
     static private Conditions makeCond(String str) {
         try {
@@ -430,5 +224,96 @@ public class Graph {
             return null;
         }
     }
+
+    // ------------------------------ Internal Classes ------------------------------
+	public static class State implements Cloneable {
+		public String id;
+		Arc[] arcs;
+
+		public State(String id) {
+			this.id = id;
+		}
+
+		private State() {
+		}
+
+//		public String getId() { *** not used
+//			return id;
+//		}
+
+		public Arc[] getArcs() {
+			return arcs;
+		}
+
+		private void setArcs(Arc [] arcs) {
+			this.arcs = arcs;
+			for (int i=0; i<arcs.length; i++)
+				arcs[i].setStartState(this);
+		}
+
+		public Vector<Graph.Arc> verify(Morpheme affixe) throws LinguisticDataException {
+			Vector<Graph.Arc> possibleArcs = new Vector<Graph.Arc>();
+			for (int i = 0; i < arcs.length; i++) {
+				Graph.Arc arc = arcs[i];
+				Conditions conds = arc.getCondition();
+				if (conds!=null) {
+					if (conds.isMetByFullMorphem(affixe))
+						possibleArcs.add(arc);
+				} else {
+					Vector<Graph.Arc> possibles1 = arc.destState.verify(affixe);
+					possibleArcs.addAll(possibles1);
+				}
+			}
+			return possibleArcs;
+		}
+
+
+		public Object clone() {
+			State cl = new State();
+			cl.id = new String(this.id);
+			cl.arcs = (Graph.Arc [])arcs.clone();
+			return cl;
+		}
+	}
+
+	public static class Arc implements Cloneable {
+		Conditions cond;
+		State startState;
+		State destState;
+
+		public Arc(Conditions cond, State destState) {
+			this.cond = cond;
+			this.destState = destState;
+		}
+
+		public State getDestinationState() {
+			return destState;
+		}
+
+		public Conditions getCondition() {
+			return cond;
+		}
+
+		public String getDestinationStateStr() {
+			return destState.id;
+		}
+
+		public void setStartState(State ss) {
+			startState = ss;
+		}
+
+		public Arc copy()  {
+			Arc arc = null;
+			try {
+				arc = (Arc)this.clone();
+			} catch (CloneNotSupportedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return arc;
+		}
+
+
+	}
 
 }
