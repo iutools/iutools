@@ -43,7 +43,8 @@ public abstract class Data {
 				HashMap<String,String> v2 = (HashMap<String,String>) v.clone();
                 v2.put("morpheme", st.nextToken());
                 v2.put("variant", null);
-                v2.put("nb", "-" + x.getNb());
+//				v2.put("nb", "-" + x.getNb());
+				v2.put("nb", x.getNb());
                 v2.put("originalMorpheme",x.id);
                 Base x2 = new Base(v2);
                 addToHash(x2,"base - variant");
@@ -57,7 +58,8 @@ public abstract class Data {
                 HashMap<String,String> v2 = (HashMap<String,String>) v.clone();
                 v2.put("morpheme", st.nextToken());
                 v2.put("variant", null);
-                v2.put("nb", "-" + x.getNb());
+//				v2.put("nb", "-" + x.getNb());
+				v2.put("nb", x.getNb());
                 v2.put("originalMorpheme",x.id);
                 v2.put("compositionRoot",null);
                 v2.put("subtype","nc");
@@ -109,7 +111,8 @@ public abstract class Data {
                 HashMap<String,String> v2 = (HashMap<String,String>) v.clone();
                 v2.put("morpheme", st.nextToken());
                 v2.put("variant", null);
-                v2.put("nb", "-" + x.getNb());
+//				v2.put("nb", "-" + x.getNb());
+				v2.put("nb", x.getNb());
                 v2.put("originalMorpheme",x.id);
                 Pronoun x2 = new Pronoun(v2);
                 addToHash(x2);
