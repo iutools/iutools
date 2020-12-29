@@ -38,6 +38,7 @@ public class DemonstrativeEnding extends Affix {
 		dbName = (String) v.get("dbName");
 		tableName = (String) v.get("tableName");
 		setAttrs();
+		makeContextualBehaviours();
 	}
 	
 	//--------------------------------------------------------------------------------------------------------
@@ -51,6 +52,23 @@ public class DemonstrativeEnding extends Affix {
 	
 	public String[] getCombiningParts() {
 	    return null;
+	}
+
+	/*
+		Demonstrative endings are a special type of affix in that
+		they do not have different forms and actions in different
+		contexts, like noun endings, verb endings and suffixes.
+		They can be considered as having a neutral action in all
+		possible contexts. IMPORTANT: adverbial demonstrative radicals
+		may also end in 'v', 'n' and 'g', so an additional context
+		should be created: 'C' for "any consonant".
+	 */
+	public void makeContextualBehaviours() {
+		String[] forms = new String[] { morpheme };
+		Action[] actions1 = new Action[] { new Action.Neutral() };
+		Action[] actions2 = new Action[] { null };
+		ContextualBehaviour contextualBehaviour = new ContextualBehaviour('C',morpheme,new Action.Neutral(),null);
+		contextualBehaviours.put('C', new ContextualBehaviour[] {contextualBehaviour});
 	}
 
 	public String getSignature() {
