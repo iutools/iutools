@@ -228,8 +228,12 @@ public abstract class Morpheme implements Cloneable {
     }
     
     void setId() {
-        idObj = new Morpheme.Id(getOriginalMorpheme(),getSignature());
+	    Logger logger = Logger.getLogger("Morpheme.setId");
+	    String canonicalForm = getOriginalMorpheme();
+	    String signature = getSignature();
+        idObj = new Morpheme.Id(canonicalForm,signature);
         id = idObj.id;
+        logger.debug(id+" -- "+canonicalForm+"; "+signature+" -> "+id);
 		attributes.put("id",id);
     }
     
