@@ -88,6 +88,7 @@ public abstract class Affix extends Morpheme {
     public Set<SurfaceFormInContext> getFormsInContext(Character context) {
 		Set<SurfaceFormInContext> formsInContext = new HashSet<SurfaceFormInContext>();
     	ContextualBehaviour[] behaviours = contextualBehaviours.get(context);
+    	if ( behaviours != null )
     	for ( ContextualBehaviour behaviour : behaviours) {
     		List<String[]> formsAndEndsOfFormInContextFromBehaviour = behaviour.formsInContext();
     		for (int ilist=0; ilist<formsAndEndsOfFormInContextFromBehaviour.size(); ilist++) {
@@ -364,11 +365,16 @@ public abstract class Affix extends Morpheme {
 			qaction1 = a1;
 			qaction2 = a2;
 		}
+
+		makeContextualBehaviours(contextChar,forms,a1,a2);
+	}
+
+	void makeContextualBehaviours(Character contextCharacter, String[] forms, Action[] actions1, Action[] actions2) {
 		ContextualBehaviour[] behaviours = new ContextualBehaviour[forms.length];
 		for (int ifo=0; ifo<forms.length; ifo++) {
-			behaviours[ifo] = new ContextualBehaviour(contextChar,forms[ifo],a1[ifo],a2[ifo]);
+			behaviours[ifo] = new ContextualBehaviour(contextCharacter,forms[ifo],actions1[ifo],actions2[ifo]);
 		}
-		contextualBehaviours.put(contextChar, behaviours);
+		contextualBehaviours.put(contextCharacter, behaviours);
 	}
 	
 //	void fillFinalRadInitAffHashSet(String context, String form, Action a1, Action a2) {
