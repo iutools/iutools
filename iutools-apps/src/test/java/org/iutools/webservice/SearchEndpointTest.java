@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import org.iutools.morphrelatives.MorphologicalRelative;
@@ -41,7 +42,7 @@ public class SearchEndpointTest {
 		
 		String expExpandedQuery = "(ᓄᓇᕗ OR ᓄᓇᕗᒻᒥ OR ᓄᓇᕘᒥ OR ᓄᓇᕘᑉ OR ᓄᓇᕗᒻᒥᐅᑦ OR ᓄᓇᕗᑦ)";		
 		String[] queryWords = new String[] {"ᓄᓇᕗ", "ᓄᓇᕗᒻᒥ", "ᓄᓇᕘᒥ", "ᓄᓇᕘᑉ", "ᓄᓇᕗᒻᒥᐅᑦ", "ᓄᓇᕗᑦ"};
-		double badHitsTolerance = 0.5;
+		double badHitsTolerance = 0.55;
 		long minTotalHits = 7500;
 		long minHitsRetrieved = 100;
 		IUTServiceTestHelpers.assertSearchResponseIsOK(response, expExpandedQuery, queryWords, badHitsTolerance, 
