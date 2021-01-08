@@ -233,7 +233,7 @@ public abstract class WebConcordancerTest {
 			.didNotEncounterProblems()
 			.urlForLangEquals("en", new URL("https://www.gov.nu.ca/honourable-joe-savikataaq-4"))
 			// This URL auto forwards to https://www.gov.nu.ca/iu/juu-savikataaq-4
-			.urlForLangEquals("iu", new URL("https://www.gov.nu.ca/iu/node/26649"))
+			.urlForLangEquals("iu", new URL("https://www.gov.nu.ca/iu/juu-savikataaq-4"))
 
 			.completeTextContains("en", "Premier of Nunavut")
 			.completeTextContains("iu", "ᓯᕗᓕᖅᑎ ᓄᓇᕗᒻᒥ")
