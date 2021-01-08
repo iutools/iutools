@@ -69,7 +69,7 @@ public class CompiledCorpusTest {
 	//////////////////////////
 	// DOCUMENTATION TESTS
 	//////////////////////////
-	
+
 	@Test
 	public void test__CompiledCorpus__Synopsis() throws Exception {
 		// Use a CompiledCorpus to trie-compile a corpus and compute statistics.

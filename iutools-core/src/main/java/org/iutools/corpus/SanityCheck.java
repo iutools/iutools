@@ -35,11 +35,14 @@ public class SanityCheck {
 	private Map<String, Set<String>> alreadyLogged =
 		new HashMap<String,Set<String>>();
 
+	private Set<String> indicesWithCorruptedLastLoadeDate =
+		new HashSet<String>();
+
 	public SanityCheck(String[] corporaNames) throws CompiledCorpusException {
 		for (String name: corporaNames) {
 			try {
 				CompiledCorpus corpus =
-					new CompiledCorpusRegistry().getCorpus(name);
+					new CompiledCorpusRegistry().getCorpus(name, false, true);
 				corpora.put(name, corpus);
 				alreadyLogged.put(corpus.getIndexName(), new HashSet<String>());
 			} catch (CompiledCorpusRegistryException   e) {
@@ -51,7 +54,7 @@ public class SanityCheck {
 	}
 
 	public static void main(String[] args) throws Exception {
-		if (args.length != 1) {
+		if (args.length == 0) {
 			usage();
 		}
 
@@ -98,12 +101,30 @@ public class SanityCheck {
 					} else {
 //						tLogger.trace(callInfo + "Index is fine");
 					}
+					try {
+						corpus.lastLoadedDate();
+					} catch (Exception e) {
+						logCorruptedLastLoadeDate(tLogger, e, esClient);
+					}
 				} else {
 					tLogger.trace(callInfo + "Index does not yet exist. Nothing to check.");
 				}
 			} catch (ElasticSearchException e) {
 				throw new CompiledCorpusException(e);
 			}
+	}
+
+	private void logCorruptedLastLoadeDate(Logger tLogger, Exception exc,
+		StreamlinedClient esClient) {
+		String indexName = esClient.getIndexName();
+		if (!indicesWithCorruptedLastLoadeDate.contains(indexName)) {
+			indicesWithCorruptedLastLoadeDate.add(indexName);
+			if (tLogger.isTraceEnabled()) {
+				tLogger.trace("The last loaded date type was corrupted for index: " +
+				indexName + "\n" +
+				"Exception: " + exc.getCause().toString());
+			}
+		}
 	}
 
 	private void logNewBadRecord(
@@ -136,7 +157,7 @@ public class SanityCheck {
 	}
 
 	public static void usage() {
-		System.out.println("Usage: SanityCheck corpus");
+		System.out.println("Usage: SanityCheck corpus...");
 		System.exit(1);
 	}
 

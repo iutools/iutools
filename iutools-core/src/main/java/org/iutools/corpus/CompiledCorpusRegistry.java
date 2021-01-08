@@ -18,6 +18,8 @@ public class CompiledCorpusRegistry {
 	private static Map<String,File> registry = new HashMap<String,File>();
 	public static final String defaultCorpusName = "HANSARD-1999-2002";
 	public static final String emptyCorpusName = "EMPTYCORPUS";
+
+	public static enum Option {ALLOW_UNREGISTERED};
 	
 	static {
 		try {
@@ -67,11 +69,17 @@ public class CompiledCorpusRegistry {
 	@JsonIgnore
 	public CompiledCorpus getCorpus(String corpusName)
 		throws CompiledCorpusRegistryException, CompiledCorpusException {
-		return getCorpus(corpusName, (Boolean)null);
+		return getCorpus(corpusName, (Boolean)null, (Boolean)null);
 	}
 
 	@JsonIgnore
 	public CompiledCorpus getCorpus(String corpusName, Boolean reloadFromJson)
+		throws CompiledCorpusRegistryException, CompiledCorpusException {
+		return getCorpus(corpusName, reloadFromJson, (Boolean)null);
+	}
+											  @JsonIgnore
+	public CompiledCorpus getCorpus(String corpusName, Boolean reloadFromJson,
+		Boolean allowNonRegistered)
 		throws CompiledCorpusRegistryException, CompiledCorpusException {
 		Logger logger = Logger.getLogger("CompiledCorpusRegistry.getCorpusWithName");
 		logger.debug("corpusName= '"+corpusName+"'");
@@ -81,7 +89,10 @@ public class CompiledCorpusRegistry {
 		if (reloadFromJson == null) {
 			reloadFromJson = false;
 		}
-		if (!registry.containsKey(corpusName)) {
+		if (allowNonRegistered == null) {
+			allowNonRegistered = new Boolean(false);
+		}
+		if (!allowNonRegistered && !registry.containsKey(corpusName)) {
 			throw new CompiledCorpusRegistryException(
 				"There is no corpus by the name of "+corpusName);
 		}
@@ -90,7 +101,8 @@ public class CompiledCorpusRegistry {
 		corpus = new CompiledCorpus(corpusName);
 
 		try {
-			if (reloadFromJson || !corpus.isUpToDateWithFile(corpusFile)) {
+			if (corpusFile != null &&
+			(reloadFromJson || !corpus.isUpToDateWithFile(corpusFile))) {
 				// Should load the corpus
 				File jsonFile = registry.get(corpusName);
 				corpus.loadFromFile(jsonFile, true, reloadFromJson);

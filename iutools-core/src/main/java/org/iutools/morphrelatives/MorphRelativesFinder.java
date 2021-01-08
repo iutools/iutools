@@ -15,8 +15,6 @@ import org.iutools.corpus.CompiledCorpusRegistryException;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
 
-import static org.iutools.morphrelatives.MRelsTracer.traceRelatives;
-
 /**
  * Given an input word, this class finds a list of "good" Morphological 
  * Relatives. The relatives are chosen such that they:

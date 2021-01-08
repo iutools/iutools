@@ -17,7 +17,7 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">2</stringProp>
+        <stringProp name="ThreadGroup.num_threads">5</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
         <stringProp name="ThreadGroup.duration"></stringProp>
@@ -64,7 +64,7 @@
             <boolProp name="ISREGEX">true</boolProp>
           </JSONPathAssertion>
           <hashTree/>
-          <DurationAssertion guiclass="DurationAssertionGui" testclass="DurationAssertion" testname="Is fast: Morpheme Search" enabled="false">
+          <DurationAssertion guiclass="DurationAssertionGui" testclass="DurationAssertion" testname="Is fast: Morpheme Search" enabled="true">
             <stringProp name="DurationAssertion.duration">10000</stringProp>
           </DurationAssertion>
           <hashTree/>
@@ -107,7 +107,7 @@
             <boolProp name="ISREGEX">true</boolProp>
           </JSONPathAssertion>
           <hashTree/>
-          <DurationAssertion guiclass="DurationAssertionGui" testclass="DurationAssertion" testname="Is fast: Gist Prepare Content" enabled="false">
+          <DurationAssertion guiclass="DurationAssertionGui" testclass="DurationAssertion" testname="Is fast: Gist Prepare Content" enabled="true">
             <stringProp name="DurationAssertion.duration">10000</stringProp>
           </DurationAssertion>
           <hashTree/>
@@ -150,8 +150,8 @@
             <boolProp name="ISREGEX">true</boolProp>
           </JSONPathAssertion>
           <hashTree/>
-          <DurationAssertion guiclass="DurationAssertionGui" testclass="DurationAssertion" testname="Is fast: Gist Word" enabled="false">
-            <stringProp name="DurationAssertion.duration">10000</stringProp>
+          <DurationAssertion guiclass="DurationAssertionGui" testclass="DurationAssertion" testname="Is fast: Gist Word" enabled="true">
+            <stringProp name="DurationAssertion.duration">11000</stringProp>
           </DurationAssertion>
           <hashTree/>
         </hashTree>
@@ -192,8 +192,8 @@
             <boolProp name="ISREGEX">true</boolProp>
           </JSONPathAssertion>
           <hashTree/>
-          <DurationAssertion guiclass="DurationAssertionGui" testclass="DurationAssertion" testname="Is fast: Spell" enabled="false">
-            <stringProp name="DurationAssertion.duration">10000</stringProp>
+          <DurationAssertion guiclass="DurationAssertionGui" testclass="DurationAssertion" testname="Is fast: Spell" enabled="true">
+            <stringProp name="DurationAssertion.duration">15000</stringProp>
           </DurationAssertion>
           <hashTree/>
         </hashTree>
