@@ -178,7 +178,7 @@ public class WordInfo extends Document {
 
 	@Override
 	public int hashCode() {
-		int code = this.word.hashCode();
+		int code = this.id.hashCode();
 		return code;
 	}
 }

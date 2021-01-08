@@ -76,7 +76,7 @@ public class CompiledCorpus {
 	}
 
 	public void init_CompiledCorpus(String _indexName) throws CompiledCorpusException {
-		this.indexName = _indexName;
+		this.indexName = StreamlinedClient.canonicalIndexName(_indexName);
 		if (debugMode()) {
 			this.address = System.identityHashCode(this);
 		}
@@ -385,21 +385,26 @@ public class CompiledCorpus {
 			throws CompiledCorpusException {
 		boolean okToLoad = true;
 		UserIO userIO = new UserIO().setVerbosity(UserIO.Verbosity.Level0);
-		if (esClient().indexExists()) {
-			if (clear == null) {
-				clear =
+		try {
+			Index index = esClient().getIndex();
+			if (index.exists() && !index.isEmpty()) {
+				if (clear == null) {
+					clear =
 						userIO.prompt_yes_or_no(
 								"Corpus " + esClient().getIndexName() + " already exists." +
-										"\nWould you like to overwrite it?\n");
-			}
-			if (clear) {
-				if (verbose) {
-					System.out.println("Clearing index "+indexName);
+								"\nWould you like to overwrite it?\n");
 				}
-				esClearIndex();
-			} else {
-				okToLoad = false;
+				if (clear) {
+					if (verbose) {
+						System.out.println("Clearing index "+indexName);
+					}
+					esClearIndex();
+				} else {
+					okToLoad = false;
+				}
 			}
+		} catch (ElasticSearchException e) {
+			throw new CompiledCorpusException(e);
 		}
 
 		return okToLoad;

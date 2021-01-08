@@ -108,4 +108,14 @@ public class ObsEnsureAllRecordsAreWordInfo extends StreamlinedClientObserver {
 
 	@Override
 	protected void afterDELETE(URL url, String json) {}
+
+	@Override
+	public void observeBeforeHEAD(URL url, String json) throws ElasticSearchException {
+
+	}
+
+	@Override
+	public void observeAfterHEAD(URL url, String json) throws ElasticSearchException {
+
+	}
 }
