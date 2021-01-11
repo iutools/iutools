@@ -275,6 +275,10 @@ public class CompiledCorpus {
 				_esClient =
 					new StreamlinedClient(indexName, CREATE_IF_NOT_EXISTS, UPDATES_WAIT_FOR_REFRESH)
 						.setSleepSecs(0.0);
+				// 2021-01-10: Setting this to false should speed things up, but it may corrupt
+				// the ES index.
+//				_esClient.synchedHttpCalls = false;
+				_esClient.synchedHttpCalls = true;
 			} catch (ElasticSearchException e) {
 				throw new CompiledCorpusException(e);
 			}
