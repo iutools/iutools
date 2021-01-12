@@ -1,10 +1,10 @@
 admin_lib_path=$(dirname "$0")/lib
 
 echo Running with
-sh $admin_lib_path/validate_IUTOOLS_VERSION.sh
-sh $admin_lib_path/validate_CATALINA_HOME.sh
-sh $admin_lib_path/validate_TOMCAT_WEBAPPS.sh
-sh $admin_lib_path/validate_IUTOOLS_M2.sh
+source $admin_lib_path/validate_IUTOOLS_VERSION.bash
+source $admin_lib_path/validate_CATALINA_HOME.bash
+source $admin_lib_path/validate_TOMCAT_WEBAPPS.bash
+source $admin_lib_path/validate_IUTOOLS_M2.bash
 echo
 
 # Makes the bash script to print out every command before it is executed except echo

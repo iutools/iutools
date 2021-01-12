@@ -205,18 +205,11 @@ These are:
 
 To deploy (or redeploy) the _iutools_ web apps, issue the following commands:
 
-    # Delete the old WAR file and iutools directories on Tomcat
-    rm $CATALINA_HOME/webapps/iutools.war
+    cd iutools/admin
+    bash redeploy-webapps.bash
     
-    # Copy new N.N.N version of the WAR file to tomcat
-    rm -r $CATALINA_HOME/Tomcat/webapps/iutools
-      cp /path/to/your/.m2/repository/org/iutools/iutools-apps/0.0.3-SNAPSHOT/iutools-apps-0.0.3-SNAPSHOT.war \
-          $CATALINA_HOME/webapps/iutools.war
-    
-    # Restart Tomcat
-    sh $CATALINA_HOME/bin/shutdown.sh
-    sleep 2
-    sh $CATALINA_HOME/bin/catalina.sh jpda start
+Note that this script requires that you define certain environment variables. If 
+they are not defined, the script will notify you of the missing ones.    
 
 ### OPTIONAL: Enable the Inuktut Web Search app
 
