@@ -20,6 +20,8 @@ IUTOOLS_WORKSPACE=/Users/desilets/Temp/iutools/workspace
 PORTAGE_HOST=132.246.128.43
 PORTAGE_WORKSPACE=/home/desiletsa/iutools/workspace/job0001
 PORTAGE_USER=desiletsa
+PORTAGE_WORD_ALIGNER_ROOT=/home/desiletsa/portage-word-aligner/tok-bpe
+ALIGNMENT_FORMAT=ugly
 
 echo "IUTOOLS_WORKSPACE=$IUTOOLS_WORKSPACE"
 echo "EN_SENTS=$EN_SENTS"
@@ -35,5 +37,12 @@ echo $IU_SENTS > $IUTOOLS_WORKSPACE/iu.sents
 # SCP the sentence files from loacl IUTOOLS workspace to remote
 # PORTAGE workspace
 #
-#scp $IUTOOLS_WORKSPACE/*.sents $PORTAGE_USER@PORTAGE_HOST:$PORTAGE_WORKSPACE
 scp $IUTOOLS_WORKSPACE/*.sents $PORTAGE_USER@$PORTAGE_HOST:$PORTAGE_WORKSPACE
+
+# Run the word aligner on the PORTAGE server
+#
+ssh $PORTAGE_USER@$PORTAGE_HOST bash $PORTAGE_WORD_ALIGNER_ROOT/tokenize-align.sh $PORTAGE_WORKSPACE $ALIGNMENT_FORMAT
+
+# Copy the output files back from the remote PORTAGE works space to the local IUTOOLS workspace
+#
+scp $PORTAGE_USER@$PORTAGE_HOST:$PORTAGE_WORKSPACE/* $IUTOOLS_WORKSPACE/
