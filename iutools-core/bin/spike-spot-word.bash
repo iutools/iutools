@@ -21,7 +21,7 @@ PORTAGE_HOST=132.246.128.43
 PORTAGE_WORKSPACE=/home/desiletsa/iutools/workspace/job0001
 PORTAGE_USER=desiletsa
 PORTAGE_WORD_ALIGNER_ROOT=/home/desiletsa/portage-word-aligner/tok-bpe
-ALIGNMENT_FORMAT=ugly
+ALIGNMENT_FORMAT=gale
 
 echo "IUTOOLS_WORKSPACE=$IUTOOLS_WORKSPACE"
 echo "EN_SENTS=$EN_SENTS"

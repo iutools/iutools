@@ -3,7 +3,9 @@
 # iutools Git project. This is faster than redeploy-webapps.sh because it does
 # not require re-starting Tomcat.
 #
-admin_lib_path=$(dirname "$0")/lib
+#admin_lib_path=$(dirname "$0")/lib
+admin_lib_path=`realpath $(dirname "$0")/lib`
+
 
 echo Running with
 source $admin_lib_path/validate_CATALINA_HOME.bash

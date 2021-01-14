@@ -9,7 +9,10 @@ public class IUConfig extends Config {
 
 	public static final String propName_BingSearchKey =
 		"org.iutools.search.bingKey";
-	
+
+	public static final String propName_wordSpotting =
+		"org.iutools.concordancer.wordSpotting";
+
 	private static Set<String> nodesToTrace = null;
 	
 	
@@ -40,6 +43,13 @@ public class IUConfig extends Config {
 				false);
 
 		return regex;
+	}
+
+	public static boolean wordSpottingEnabled() throws ConfigException {
+		Boolean enabled =
+			getConfigProperty(propName_wordSpotting,
+				new Boolean(false), Boolean.class);
+		return enabled;
 	}
 	
 //	public static String getTrieFilePath() throws ConfigException {
