@@ -125,18 +125,16 @@ public class DocAlignmentTest {
 		// For example, here is how you provide the alignments for the "main"
 		// sentence of the en-iu pair, at the sentence AND token level
 		//
-		docAl
-			.addAlignment(
-	"en", "iu", DocAlignment.PageSection.MAIN,
-			// This alignment matches the first two en sentences aligns with
-			// first iu sentence
-			"0-1:0",
-			// Tokenization of the en and iu sides respectively
-			new String[] {"hello", "world", ".", "Good", "morning", "."},
-			new String[] {"ai", "nunavut", "ulaakut", "."},
-			// Alignment of the tokens
-			"0:0 1-2:1 3-4:2 5:3")
-		;
+		docAl.addAlignment(
+			DocAlignment.PageSection.MAIN,
+			new AlignmentSpec("en", "iu", "0-1:0")
+				.setTokenAlignment(
+					// Tokenization in each language
+					new String[] {"hello", "world", ".", "Good", "morning", "."},
+					new String[] {"ai", "nunavut", "ulaakut", "."},
+					// Alignment of the tokens
+					"0:0 1-2:1 3-4:2 5:3")
+			);
 
 		// If you don't care about word-level alignment, you can omit it.
 		// For example, here is how you would provide sentence-level ONLY
@@ -144,20 +142,20 @@ public class DocAlignmentTest {
 		//
 		docAl
 			.addAlignment(
-			"en", "fr", DocAlignment.PageSection.MAIN,
-				"0:0")
+				DocAlignment.PageSection.MAIN,
+				new AlignmentSpec("en", "fr", "0:0"))
 			.addAlignment(
-				"en", "fr", DocAlignment.PageSection.MAIN,
-				"1:1-2")
+				DocAlignment.PageSection.MAIN,
+				new AlignmentSpec("en", "fr", "1:1-2"))
 			.addAlignment(
-				"en", "fr", DocAlignment.PageSection.MAIN,
-				"2:3")
+				DocAlignment.PageSection.MAIN,
+				new AlignmentSpec("en", "fr", "2:3"))
 			.addAlignment(
-			"en", "fr", DocAlignment.PageSection.MAIN,
-				"3-4:4")
+				DocAlignment.PageSection.MAIN,
+				new AlignmentSpec("en", "fr", "3-4:4"))
 			.addAlignment(
-				"en", "fr", DocAlignment.PageSection.MAIN,
-				"5:5")
+				DocAlignment.PageSection.MAIN,
+				new AlignmentSpec("en", "fr", "5:5"))
 			;
 
 		// At this point, you can obtain sentence-level aligned pairs for

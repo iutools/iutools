@@ -106,18 +106,14 @@ public class DocAlignment {
 		return alignments;
 	}
 
-	public DocAlignment addAlignment(String lang1, String lang2, PageSection section,
-		String sentAlignmentSpec) {
-		return addAlignment(lang1, lang2, section, sentAlignmentSpec,
-			(String[])null, (String[])null, (String[])null);
+	public DocAlignment addAlignment(AlignmentSpec alignment) {
+		return addAlignment((PageSection)null, alignment);
 	}
 
-	public DocAlignment addAlignment(String lang1, String lang2, PageSection section,
-		String sentAlignmentSpec,
-		String[] l1Tokens, String[] l2Tokens, String... tokenAlignmentSpecs) {
+	public DocAlignment addAlignment(PageSection pageSection, AlignmentSpec alignment) {
+		// TODO: Implement this
 		return this;
 	}
-
 
 	public DocAlignment addAlignment(Alignment alignment) {
 		return addAlignment((PageSection)null, alignment);
