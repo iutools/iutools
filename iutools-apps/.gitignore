@@ -3,3 +3,4 @@
 /iutools-apps.iml
 /src/test/resources/ca/pirurvik/iutools/webservice/jmeter.log
 /src/test/resources/org/iutools/webservice/jmeter.log
+/src/test/jmeter/reports/
