@@ -38,4 +38,5 @@ iutools-data/data/tries
 **/*.java.NEW
 /TODOs.txt
 /jmeter.log
-/iutools-apps/src/test/jmeter/reports/**
+/iutools-apps/src/test/jmeter/reports/*
+/iutools-apps/src/test/jmeter/reports/
