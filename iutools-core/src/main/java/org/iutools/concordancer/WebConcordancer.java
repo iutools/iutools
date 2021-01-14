@@ -132,7 +132,7 @@ public abstract class WebConcordancer {
 			throw new WebConcordancerException(
 				"Could not get URL of page in lang: "+langs.getFirst(), e);
 		}
-		harvestInputPage(langURL, alignment, alignment.getLanguages());
+		harvestInputPage(langURL, alignment, alignment.languages());
 
 		trace(tLogger, "After fetching input URL", alignment,
 				AlignmentPart.PROBLEMS, AlignmentPart.SENTENCES);
@@ -204,7 +204,7 @@ public abstract class WebConcordancer {
 		String mess, DocAlignment alignment) {
 		if (tLogger.isTraceEnabled()) {
 			mess += "\nContent of pages is:\n\n";
-			for (String lang: alignment.getLanguages()) {
+			for (String lang: alignment.languages()) {
 				mess += "   "+lang+": "+alignment.getPageText(lang)+"\n\n";
 			}
 		}
@@ -215,7 +215,7 @@ public abstract class WebConcordancer {
 			String mess, DocAlignment alignment) {
 		if (tLogger.isTraceEnabled()) {
 			mess += "\nSentences are:\n\n";
-			for (String lang: alignment.getLanguages()) {
+			for (String lang: alignment.languages()) {
 				mess += "   "+lang+": "+alignment.getPageSentences(lang)+"\n\n";
 			}
 		}
@@ -366,7 +366,7 @@ public abstract class WebConcordancer {
 		String unfilledLang = null;
 		int filledCount = 0;
 		
-		for (String lang: alignment.getLanguages()) {
+		for (String lang: alignment.languages()) {
 			try {
 				if (alignment.getPageURL(lang) == null) {
 					unfilledLang = lang;
@@ -414,7 +414,7 @@ public abstract class WebConcordancer {
 				}
 
 				if (includeHtml && !alignment.encounteredSomeProblems()) {
-					alignment.setPageHtml(otherLang, getHarvester().getHtml());
+					alignment.setPageRawContent(otherLang, getHarvester().getHtml());
 				}
 
 
@@ -490,7 +490,7 @@ public abstract class WebConcordancer {
 			}
 
 			if (includeHtml && !alignment.encounteredSomeProblems()) {
-				alignment.setPageHtml(urlLang, getHarvester().getHtml());
+				alignment.setPageRawContent(urlLang, getHarvester().getHtml());
 			}
 
 			if (urlLang != null) {

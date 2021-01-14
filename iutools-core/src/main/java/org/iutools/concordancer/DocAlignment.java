@@ -6,7 +6,6 @@ import java.net.URL;
 import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.apache.commons.collections.ListUtils;
 
 /**
  * This class is used to store information about the different language
@@ -14,12 +13,6 @@ import org.apache.commons.collections.ListUtils;
  */
 public class DocAlignment {
 
-	public DocAlignment setAlignments(
-		String lang1, String lang2, String[] sentAlSpecs) {
-
-
-		return this;
-	}
 
 	/**
 	 * Indicates if we are interested in the complete page or its
@@ -56,9 +49,8 @@ public class DocAlignment {
 	public List<Alignment> alignmentsMain = new ArrayList<Alignment>();
 	public Map<String,String> pagesAllText = new HashMap<String,String>();
 	public Map<String,String> pagesMainText = new HashMap<String,String>();
-//	public Map<String,URL> pagesURL = new HashMap<String,URL>();
 	public Map<String,String> pagesID = new HashMap<String,String>();
-	public Map<String,String> pagesHtml = new HashMap<String,String>();
+	public Map<String,String> pagesRawContent = new HashMap<String,String>();
 
 	public DocAlignment() {
 		init_DocAlignment(null, null);		
@@ -80,18 +72,28 @@ public class DocAlignment {
 	}
 	
 	@Transient
-	public Set<String> getLanguages() {
+	public Set<String> languages() {
 		Set<String> langs = pagesAllText.keySet();
 		return langs;
 	}
 
 	@JsonIgnore
 	public List<Alignment> getAligments() {
-		return getAligments((PageSection)null);
+		return getAligments((String)null, (String)null, (PageSection)null);
+	}
+
+	@JsonIgnore
+	public List<Alignment> getAligments(String lang1, String lang2) {
+		return getAligments(lang1, lang2, (PageSection)null);
 	}
 
 	@JsonIgnore
 	public List<Alignment> getAligments(PageSection pageSection) {
+		return getAligments((String)null, (String)null, pageSection);
+	}
+
+	@JsonIgnore
+	public List<Alignment> getAligments(String lang1, String lang2, PageSection pageSection) {
 		if (pageSection == null) {
 			pageSection = PageSection.ALL;
 		}
@@ -103,6 +105,19 @@ public class DocAlignment {
 		}
 		return alignments;
 	}
+
+	public DocAlignment addAlignment(String lang1, String lang2, PageSection section,
+		String sentAlignmentSpec) {
+		return addAlignment(lang1, lang2, section, sentAlignmentSpec,
+			(String[])null, (String[])null, (String[])null);
+	}
+
+	public DocAlignment addAlignment(String lang1, String lang2, PageSection section,
+		String sentAlignmentSpec,
+		String[] l1Tokens, String[] l2Tokens, String... tokenAlignmentSpecs) {
+		return this;
+	}
+
 
 	public DocAlignment addAlignment(Alignment alignment) {
 		return addAlignment((PageSection)null, alignment);
@@ -119,7 +134,7 @@ public class DocAlignment {
 
 	public DocAlignment setPageText(String lang, String text)
 		throws DocAlignmentException {
-		if (lang == null || !this.getLanguages().contains(lang)) {
+		if (lang == null || !this.languages().contains(lang)) {
 			throw new DocAlignmentException(
 			"Trying to set COMPLETE text for a page in unexpected language: "+lang);
 		}
@@ -141,7 +156,7 @@ public class DocAlignment {
 
 	public DocAlignment setPageMainText(String lang, String text)
 		throws DocAlignmentException {
-		if (lang == null || !this.getLanguages().contains(lang)) {
+		if (lang == null || !this.languages().contains(lang)) {
 			throw new DocAlignmentException(
 			"Trying to set MAIN text for a page in unexpected language: "+lang);
 		}
@@ -155,6 +170,24 @@ public class DocAlignment {
 		return pagesMainText.get(lang);
 	}
 
+	public DocAlignment setPageID(String lang, String id) {
+		pagesID.put(lang, id);
+		return this;
+	}
+
+	public String getPageID(String lang) {
+		return pagesID.get(lang);
+	}
+
+	public DocAlignment setPageURL(String lang, String url) {
+		return setPageID(lang, url.toString());
+	}
+
+	public DocAlignment setPageURL(String lang, URL url) {
+		pagesID.put(lang, url.toString());
+		return this;
+	}
+
 	@JsonIgnore
 	public URL getPageURL(String lang) throws DocAlignmentException {
 		String urlStr = null;
@@ -166,26 +199,9 @@ public class DocAlignment {
 			}
 		} catch (MalformedURLException e) {
 			throw new DocAlignmentException(
-				"ID for lang: "+lang+" is not a URL: "+urlStr, e);
+			"ID for lang: "+lang+" is not a URL: "+urlStr, e);
 		}
 		return url;
-	}
-
-	public DocAlignment setPageID(String lang, String id) {
-		pagesID.put(lang, id);
-		return this;
-	}
-
-	public DocAlignment setPageURL(String lang, String url) {
-//		pagesURL.put(lang, url);
-//		pagesID.put(lang, url.toString());
-		return setPageID(lang, url.toString());
-	}
-
-	public DocAlignment setPageURL(String lang, URL url) {
-//		pagesURL.put(lang, url);
-		pagesID.put(lang, url.toString());
-		return this;
 	}
 
 	protected Map<String,List<String>> pageSentencesMap() {
@@ -216,7 +232,6 @@ public class DocAlignment {
 		return this;
 	}
 
-
 	public DocAlignment setPageMainSentences(String lang, List<String> sentences) {
 		_pageMainSentences.put(lang, sentences);
 		return this;
@@ -228,17 +243,21 @@ public class DocAlignment {
 	}
 
 	public Map<String,String> pagesHtmlHash() {
-		return pagesHtml;
+		return pagesRawContent;
 	}
 
 
-	public void setPageHtml(String urlLang, String html) {
-		pagesHtml.put(urlLang, html);
+	public DocAlignment setPageRawContent(String urlLang, String html) {
+		pagesRawContent.put(urlLang, html);
+		return this;
+	}
+
+	public String getPageRawContent(String lang) {
+		return pagesRawContent.get(lang);
 	}
 
 	public void raiseProblem(Problem problem, String mess) {
 		raiseProblem(problem, new Exception(mess));
-		
 	}
 	
 	public DocAlignment raiseProblem(Problem descr, Exception e) {
@@ -260,7 +279,7 @@ public class DocAlignment {
 		} else {
 			text4Lang = this.pagesTextHash();
 		}
-		for (String lang: getLanguages()) {
+		for (String lang: languages()) {
 			if (text4Lang.get(lang) != null) {
 				numWithContent++;
 			}
@@ -280,7 +299,7 @@ public class DocAlignment {
 	
 	public boolean bothLangsContentFetched() {
 		boolean bothFetched = true;
-		for (String lang: getLanguages()) {
+		for (String lang: languages()) {
 			if (getPageText(lang) == null) {
 				bothFetched = false;
 				break;
