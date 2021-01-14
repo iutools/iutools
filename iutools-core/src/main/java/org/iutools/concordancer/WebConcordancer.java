@@ -119,12 +119,19 @@ public abstract class WebConcordancer {
 		return alignment;
 	}
 
-	protected DocAlignment fetchParallelPages(DocAlignment alignment) throws WebConcordancerException {
+	protected DocAlignment fetchParallelPages(DocAlignment alignment)
+		throws WebConcordancerException {
 		Logger tLogger = Logger.getLogger("org.iutools.concordancer.fetchParallelPages");
 
 		Pair<String,String> langs = langAndOtherLang(alignment);
 
-		URL langURL = alignment.getPageURL(langs.getFirst());
+		URL langURL = null;
+		try {
+			langURL = alignment.getPageURL(langs.getFirst());
+		} catch (DocAlignmentException e) {
+			throw new WebConcordancerException(
+				"Could not get URL of page in lang: "+langs.getFirst(), e);
+		}
 		harvestInputPage(langURL, alignment, alignment.getLanguages());
 
 		trace(tLogger, "After fetching input URL", alignment,
@@ -332,9 +339,13 @@ public abstract class WebConcordancer {
 
 			if (status == null || status == StepOutcome.FAILURE || 
 					status == StepOutcome.KEEP_TRYING) {
-				raiseProblem(DocAlignment.Problem.FETCHING_CONTENT_OF_OTHER_LANG_PAGE,
-					alignment, "Could not identify "+otherLang+
-					" version of "+lang+" page "+alignment.getPageURL(lang));
+				try {
+					raiseProblem(DocAlignment.Problem.FETCHING_CONTENT_OF_OTHER_LANG_PAGE,
+						alignment, "Could not identify "+otherLang+
+						" version of "+lang+" page "+alignment.getPageURL(lang));
+				} catch (DocAlignmentException e) {
+					throw new WebConcordancerException(e);
+				}
 			} else {
 			
 				List<String> sentences = null;
@@ -350,17 +361,21 @@ public abstract class WebConcordancer {
 	}
 
 	protected Pair<String, String> langAndOtherLang(
-			DocAlignment alignment) {
+			DocAlignment alignment) throws WebConcordancerException {
 		String filledLang = null;
 		String unfilledLang = null;
 		int filledCount = 0;
 		
 		for (String lang: alignment.getLanguages()) {
-			if (alignment.getPageURL(lang) == null) {
-				unfilledLang = lang;
-			} else {
-				filledLang = lang;
-				filledCount++;
+			try {
+				if (alignment.getPageURL(lang) == null) {
+					unfilledLang = lang;
+				} else {
+					filledLang = lang;
+					filledCount++;
+				}
+			} catch (DocAlignmentException e) {
+				throw new WebConcordancerException(e);
 			}
 		}
 		
@@ -479,7 +494,8 @@ public abstract class WebConcordancer {
 			}
 
 			if (urlLang != null) {
-				alignment.pagesURL.put(urlLang, url);
+//				alignment.pagesURL.put(urlLang, url);
+				alignment.pagesID.put(urlLang, url.toString());
 			}
 		} catch (PageHarvesterException | LanguageGuesserException e) {
 			throw new WebConcordancerException(e);

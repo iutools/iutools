@@ -1,16 +1,25 @@
 package org.iutools.concordancer;
 
 import java.beans.Transient;
+import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.apache.commons.collections.ListUtils;
 
+/**
+ * This class is used to store information about the different language
+ * versions of a same document.
+ */
 public class DocAlignment {
+
+	public DocAlignment setAlignments(
+		String lang1, String lang2, String[] sentAlSpecs) {
+
+
+		return this;
+	}
 
 	/**
 	 * Indicates if we are interested in the complete page or its
@@ -47,7 +56,8 @@ public class DocAlignment {
 	public List<Alignment> alignmentsMain = new ArrayList<Alignment>();
 	public Map<String,String> pagesAllText = new HashMap<String,String>();
 	public Map<String,String> pagesMainText = new HashMap<String,String>();
-	public Map<String,URL> pagesURL = new HashMap<String,URL>();
+//	public Map<String,URL> pagesURL = new HashMap<String,URL>();
+	public Map<String,String> pagesID = new HashMap<String,String>();
 	public Map<String,String> pagesHtml = new HashMap<String,String>();
 
 	public DocAlignment() {
@@ -63,7 +73,8 @@ public class DocAlignment {
 			if (lang != null) {
 				pagesAllText.put(lang, null);
 				pagesMainText.put(lang, null);
-				pagesURL.put(lang, null);
+				pagesID.put(lang,null);
+//				pagesURL.put(lang, null);
 			}
 		}
 	}
@@ -145,13 +156,35 @@ public class DocAlignment {
 	}
 
 	@JsonIgnore
-	public URL getPageURL(String lang)  {
-		URL url = pagesURL.get(lang);
+	public URL getPageURL(String lang) throws DocAlignmentException {
+		String urlStr = null;
+		URL url = null;
+		try {
+			urlStr = pagesID.get(lang);
+			if (urlStr != null) {
+				url = new URL(urlStr);
+			}
+		} catch (MalformedURLException e) {
+			throw new DocAlignmentException(
+				"ID for lang: "+lang+" is not a URL: "+urlStr, e);
+		}
 		return url;
 	}
 
+	public DocAlignment setPageID(String lang, String id) {
+		pagesID.put(lang, id);
+		return this;
+	}
+
+	public DocAlignment setPageURL(String lang, String url) {
+//		pagesURL.put(lang, url);
+//		pagesID.put(lang, url.toString());
+		return setPageID(lang, url.toString());
+	}
+
 	public DocAlignment setPageURL(String lang, URL url) {
-		pagesURL.put(lang, url);
+//		pagesURL.put(lang, url);
+		pagesID.put(lang, url.toString());
 		return this;
 	}
 
@@ -163,15 +196,35 @@ public class DocAlignment {
 		List<String> sentences = _pageSentences.get(lang);
 		return sentences;
 	}
-	
+
+	public DocAlignment setPageSentences(String lang, String... sentences) {
+		List<String> sentsList = new ArrayList<String>();
+		Collections.addAll(sentsList, sentences);
+		setPageSentences(lang, sentsList);
+		return this;
+	}
+
 	public DocAlignment setPageSentences(String lang, List<String> sentences) {
 		_pageSentences.put(lang, sentences);
 		return this;
 	}
 
+	public DocAlignment setPageMainSentences(String lang, String... sentences) {
+		List<String> sentsList = new ArrayList<String>();
+		Collections.addAll(sentsList, sentences);
+		setPageMainSentences(lang, sentsList);
+		return this;
+	}
+
+
 	public DocAlignment setPageMainSentences(String lang, List<String> sentences) {
 		_pageMainSentences.put(lang, sentences);
 		return this;
+	}
+
+	public List<String> getPageMainSentences(String lang) {
+		List<String> mainSentences = _pageMainSentences.get(lang);
+		return mainSentences;
 	}
 
 	public Map<String,String> pagesHtmlHash() {
