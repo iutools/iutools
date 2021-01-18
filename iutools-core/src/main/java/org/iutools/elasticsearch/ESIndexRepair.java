@@ -1,18 +1,19 @@
 package org.iutools.elasticsearch;
 
+import ca.nrc.data.file.ObjectStreamReader;
+import ca.nrc.data.file.ObjectStreamReaderException;
 import ca.nrc.dtrc.elasticsearch.*;
 import ca.nrc.dtrc.elasticsearch.request.Query;
 import ca.nrc.dtrc.elasticsearch.request._Source;
+import ca.nrc.introspection.Introspection;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.iutools.corpus.*;
 
+import java.io.IOException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
+import java.nio.file.Path;
+import java.util.*;
 
 /**
  * As of 2020-10 or so, we noticed that concurrent invocations of the iutools
@@ -26,8 +27,11 @@ public class ESIndexRepair {
 
 	private static final WordInfo winfoProto = new WordInfo();
 	private static final String typeWinfo = "WordInfo_ES";
+	private String indexName = null;
 	private _Source idFieldOnly = new _Source("id");
 	private static Query queryNonWinfoRecords = null;
+
+	private StreamlinedClient _esClient = null;
 
 	static {
 		queryNonWinfoRecords = new Query();
@@ -47,6 +51,10 @@ public class ESIndexRepair {
 
 	private Set<String> indicesWithCorruptedLastLoadeDate =
 		new HashSet<String>();
+	
+	public ESIndexRepair(String _indexName) {
+		this.indexName = _indexName;
+	}
 
 	public ESIndexRepair(String[] corporaNames) throws CompiledCorpusException {
 		for (String name: corporaNames) {
@@ -61,6 +69,13 @@ public class ESIndexRepair {
 		}
 
 		return;
+	}
+
+	private StreamlinedClient  esClient() throws ElasticSearchException {
+		if (_esClient == null) {
+			_esClient = new StreamlinedClient(indexName);
+		}
+		return _esClient;
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -171,4 +186,49 @@ public class ESIndexRepair {
 		System.exit(1);
 	}
 
+	public Iterator<String> corruptedDocIDs(
+		String esType, Document goodDocPrototype) throws ElasticSearchException {
+		Iterator<String> iter = null;
+
+		Query query = new Query();
+		query
+			.openAttr("exists")
+			.openAttr("field")
+			.setOpenedAttr("scroll_id")
+		;
+		_Source source = new _Source("id");
+		SearchResults<Document> results =
+			esClient().search(query, esType, goodDocPrototype, source);
+
+		return results.docIDIterator();
+	}
+
+	public void repairCorruptedDocs(
+		Iterator<String> corruptedIDsIter, String esTypeName, Document goodDocProto, Path jsonFile) throws ElasticSearchException {
+		Set<String> corruptedIDs = new HashSet<String>();
+		while (corruptedIDsIter.hasNext()) {
+			corruptedIDs.add(corruptedIDsIter.next());
+		}
+		String errMess = "Could not repair corrupted ES docs from json file: "+jsonFile;
+		ObjectStreamReader reader = null;
+		try {
+			reader = new ObjectStreamReader(jsonFile.toFile());
+			Object obj = reader.readObject();
+			while (obj != null) {
+				if (obj instanceof Document) {
+					Document doc =
+					Introspection.downcastTo(goodDocProto.getClass(), obj);
+					if (corruptedIDs.contains(doc.getId())) {
+						esClient().putDocument(esTypeName, doc);
+					}
+				}
+				obj = reader.readObject();
+			}
+			// Sleep a bit to allow the changes to propagate to all ES nodes
+			Thread.sleep(1000);
+		} catch (IOException | ClassNotFoundException | ObjectStreamReaderException
+				| InterruptedException e) {
+			throw new ElasticSearchException(errMess, e);
+		}
+	}
 }
