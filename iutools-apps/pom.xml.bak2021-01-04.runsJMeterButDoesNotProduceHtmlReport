@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+	  	<groupId>org.iutools</groupId>
+        <artifactId>iutools-parent</artifactId>
+        <version>0.0.3</version>
+    </parent>
+
+  <artifactId>iutools-apps</artifactId>
+
+  <packaging>war</packaging>
+  
+  <name>iutools-apps</name>
+  
+  <!-- FIXME change it to the project's website -->
+  <url>http://www.example.com</url>
+
+	<build>
+		<plugins>
+		
+			<plugin>
+			  <artifactId>maven-war-plugin</artifactId>
+			  <version>2.6</version>
+			  <configuration>
+			    <warSourceDirectory>src/main/webapp</warSourceDirectory>
+			  </configuration>
+			</plugin>
+		
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>3.0.0</version>
+				<configuration>
+					<excludes>
+						<exclude>**/log4j.properties</exclude>
+					</excludes>
+				</configuration>				
+			</plugin>
+			
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+			
+			<plugin>
+			  <groupId>org.apache.maven.plugins</groupId>
+			  <artifactId>maven-assembly-plugin</artifactId>
+			  <version>2.4</version> 			  
+			  <configuration>
+			    <descriptorRefs>
+  			      <descriptorRef>jar-with-dependencies</descriptorRef>
+			    </descriptorRefs>
+			  </configuration>
+			  <executions>
+			    <execution>
+			      <phase>package</phase>
+			      <goals>
+			        <goal>single</goal>
+			      </goals>
+			    </execution>
+			  </executions>
+			</plugin>
+
+			<plugin>
+				<groupId>com.lazerycode.jmeter</groupId>
+				<artifactId>jmeter-maven-plugin</artifactId>
+				<version>3.2.0</version>
+				<!-- Works, but does not report failures....
+                           <executions>
+                               <execution>
+                                   <id>configuration</id>
+                                   <goals>
+                                       <goal>configure</goal>
+                                   </goals>
+                               </execution>
+                               <execution>
+                                   <id>jmeter-tests</id>
+                                   <goals>
+                                       <goal>jmeter</goal>
+                                   </goals>
+                               </execution>
+                           </executions>
+               -->
+
+
+				<executions>
+					<execution>
+						<id>performance test</id>
+						<goals><goal>jmeter</goal></goals>
+					</execution>
+					<execution>
+						<id>verify</id>
+						<goals><goal>results</goal></goals>
+					</execution>
+				</executions>
+
+			</plugin>
+
+		</plugins>
+	</build>		
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<!-- Official Apache Maven repo -->
+	<repositories>
+		<repository>
+			<id>snapshots</id>
+			<url>https://repository.apache.org/content/repositories/snapshots</url>
+		</repository>
+	</repositories>
+
+	<dependencies>		
+	
+	<dependency>
+    	<groupId>org.iutools</groupId>
+    	<artifactId>iutools-core</artifactId>
+    	<version>0.0.3</version>
+  	</dependency>
+					
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.1.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.jmeter</groupId>
+			<artifactId>ApacheJMeter_core</artifactId>
+			<version>5.4</version>
+		</dependency>
+
+	</dependencies>
+</project>

@@ -268,7 +268,7 @@ public class CompiledCorpus {
 		return this;
 	}
 
-	protected StreamlinedClient esClient() throws CompiledCorpusException {
+	public StreamlinedClient esClient() throws CompiledCorpusException {
 		Logger tLogger = Logger.getLogger("org.iutools.corpus.esClient");
 		if (_esClient == null) {
 			try {

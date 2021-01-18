@@ -1,0 +1,181 @@
+bodyEndMarker=BLANK_LINE
+class=org.iutools.concordancer.Alignment_ES
+
+{
+  "from_doc": "nrc-nunavut-hansard",
+  "web_domain": "gov.nu.ca",
+  "topics": ["government", "hansard"],
+  "pair_num": 0,
+  "sentences": {
+    "en": "legislative assembly of nunavut",
+    "iu": "ᓄᓇᕗᑦ ᒪᓕᒐᓕᐅᕐᕕ@@ ᐊ"
+  }
+}
+
+{
+  "from_doc": "nrc-nunavut-hansard",
+  "web_domain": "gov.nu.ca",
+  "topics": ["government", "hansard"],
+  "pair_num": 1,
+  "sentences": {
+    "en": "",
+    "iu": ""
+  }
+}
+{
+  "from_doc": "nrc-nunavut-hansard",
+  "web_domain": "gov.nu.ca",
+  "topics": ["government", "hansard"],
+  "pair_num": 2,
+  "sentences": {
+    "en": "1st session",
+    "iu": "ᓯᕗᓕ@@ ᖅᐹᑦ ᑲᑎᒪᓂᖅ"
+  }
+}
+
+{
+  "from_doc": "nrc-nunavut-hansard",
+  "web_domain": "gov.nu.ca",
+  "topics": ["government", "hansard"],
+  "pair_num": 3,
+  "sentences": {
+    "en": "",
+    "iu": ""
+  }
+}
+
+{
+  "from_doc": "nrc-nunavut-hansard",
+  "web_domain": "gov.nu.ca",
+  "topics": ["government", "hansard"],
+  "pair_num": 4,
+  "sentences": {
+    "en": "1st assembly",
+    "iu": "ᓯᕗᓕ@@ ᖅᐹᑦ ᒪᓕᒐᓕᐅᕐᕕᒃ"
+  }
+}
+
+{
+  "from_doc": "nrc-nunavut-hansard",
+  "web_domain": "gov.nu.ca",
+  "topics": ["government", "hansard"],
+  "pair_num": 5,
+  "sentences": {
+    "en": "",
+    "iu": ""
+  }
+}
+
+{
+  "from_doc": "nrc-nunavut-hansard",
+  "web_domain": "gov.nu.ca",
+  "topics": ["government", "hansard"],
+  "pair_num": 6,
+  "sentences": {
+    "en": "hansard",
+    "iu": "ᒪᓕᒐᓕᐅᖅᑏᑦ ᑲᑎᒪ@@ ᐅᑎᒋ@@ ᓯᒪᔭ@@ ᖏᑦᑕ"
+  }
+}
+
+
+{
+  "from_doc": "nrc-nunavut-hansard",
+  "web_domain": "gov.nu.ca",
+  "topics": ["government", "hansard"],
+  "pair_num": 7,
+  "sentences": {
+    "en": "",
+    "iu": ""
+  }
+}
+
+{
+  "from_doc": "nrc-nunavut-hansard",
+  "web_domain": "gov.nu.ca",
+  "topics": ["government", "hansard"],
+  "pair_num": 8,
+  "sentences": {
+    "en": "official report",
+    "iu": "ᑎᑎᕋᖅᓯᒪᓂᖏᑦ"
+  }
+}
+
+{
+  "from_doc": "nrc-nunavut-hansard",
+  "web_domain": "gov.nu.ca",
+  "topics": ["government", "hansard"],
+  "pair_num": 9,
+  "sentences": {
+    "en": "thursday , april 1 , 1999",
+    "iu": "ᓯ@@ ᑕ@@ ᒥ@@ ᖅ , ᐃ@@ ᐳᕈ 1 , 1999"
+  }
+}
+
+{
+  "from_doc": "nrc-nunavut-hansard",
+  "web_domain": "gov.nu.ca",
+  "topics": ["government", "hansard"],
+  "pair_num": 10,
+  "sentences": {
+    "en": "",
+    "iu": ""
+  }
+}
+
+
+{
+  "from_doc": "nrc-nunavut-hansard",
+  "web_domain": "gov.nu.ca",
+  "topics": ["government", "hansard"],
+  "pair_num": 11,
+  "sentences": {
+    "en": "legislative assembly of nunavut",
+    "iu": "ᓄᓇᕗᑦ ᒪᓕᒐᓕᐅᕐᕕ@@ ᐊ"
+  }
+}
+
+{
+  "from_doc": "nrc-nunavut-hansard",
+  "web_domain": "gov.nu.ca",
+  "topics": ["government", "hansard"],
+  "pair_num": 19,
+  "sentences": {
+    "en": "",
+    "iu": ""
+  }
+}
+
+{
+  "from_doc": "nrc-nunavut-hansard",
+  "web_domain": "gov.nu.ca",
+  "topics": ["government", "hansard"],
+  "pair_num": 12,
+  "sentences": {
+    "en": "members of the legislative assembly",
+    "iu": "ᒪᓕᒐᓕᐅᕐ@@ ᑏᑦ"
+  }
+}
+
+{
+  "from_doc": "nrc-nunavut-hansard",
+  "web_domain": "gov.nu.ca",
+  "topics": ["government", "hansard"],
+  "pair_num": 13,
+  "sentences": {
+    "en": "",
+    "iu": ""
+  }
+}
+
+{
+  "from_doc": "nrc-nunavut-hansard",
+  "web_domain": "gov.nu.ca",
+  "topics": ["government", "hansard"],
+  "pair_num": 14,
+  "sentences": {
+    "en": "mr. o@@ vi@@ de alakannuark",
+    "iu": "ᐆ@@ ᕕ@@ ᖅ ᐊᓚᒃᑲᓐᓄᐊᖅ"
+  }
+}
+
+
