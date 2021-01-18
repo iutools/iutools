@@ -3,6 +3,8 @@ package org.iutools.cli;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -10,6 +12,7 @@ import java.util.concurrent.TimeoutException;
 
 import ca.nrc.ui.commandline.SubCommand;
 import org.iutools.edit_distance.EditDistanceCalculatorFactory;
+
 import static org.iutools.concordancer.WebConcordancer.AlignOptions;
 
 public abstract class ConsoleCommand extends SubCommand {
@@ -345,11 +348,20 @@ public abstract class ConsoleCommand extends SubCommand {
 		return getOptionValue(ConsoleCommand.OPT_FONT, failIfAbsent);
 	}
 	
-	protected String getInputFile() {
+	protected Path getInputFile() {
 		return getInputFile(true);
 	}
-	protected String getInputFile(boolean failIfAbsent) {
-		return getOptionValue(ConsoleCommand.OPT_INPUT_FILE, failIfAbsent);
+	protected Path getInputFile(boolean failIfAbsent) {
+		Path filePath = null;
+		String pathStr = getOptionValue(ConsoleCommand.OPT_INPUT_FILE, failIfAbsent);
+		if (pathStr != null) {
+			try {
+				filePath = Paths.get(pathStr);
+			} catch (Exception e) {
+				usageBadOption(ConsoleCommand.OPT_INPUT_FILE, "Value was not a valid path");
+			}
+		}
+		return filePath;
 	}
 	
 	protected String getGoldStandardFile() {

@@ -27,7 +27,7 @@ public class CmdGist extends ConsoleCommand {
 	@Override
 	public void execute() throws Exception {
 		String content = getContent(false);
-		String inputFile = getInputFile(false);
+		String inputFile = getInputFile(false).toString();
 		Verbosity verbose = getVerbosity(); // 0: dense layout  1: pretty-print
 		if (verbose==Verbosity.Level0)
 			verbose = Verbosity.Level2;

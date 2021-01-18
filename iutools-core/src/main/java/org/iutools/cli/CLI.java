@@ -271,6 +271,14 @@ public class CLI {
 			;
 		mainCmd.addSubCommand(esLoadCorpus);
 
+		// Load a translation memory into ElasticSearch
+		SubCommand loadTranslationMemory =
+			new CmdLoadTranslationMemory("load_translation_memory")
+				.addOption(optInputFile)
+				.addOption(optVerbosity)
+			;
+		mainCmd.addSubCommand(loadTranslationMemory);
+
 		// Describe a corpus
 		SubCommand describeCorpus =
 				new CmdDescribeCorpus("describe_corpus")

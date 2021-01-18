@@ -18,7 +18,7 @@ public class CmdTranslit extends ConsoleCommand {
 
 	@Override
 	public void execute() throws Exception {
-		String inputFile = getInputFile(false);
+		String inputFile = getInputFile(false).toString();
 		String content = getContent(false);
 		String font = getFont(false);
 				
