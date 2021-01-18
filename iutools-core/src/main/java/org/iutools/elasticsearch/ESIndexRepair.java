@@ -1,10 +1,11 @@
-package org.iutools.corpus;
+package org.iutools.elasticsearch;
 
 import ca.nrc.dtrc.elasticsearch.*;
 import ca.nrc.dtrc.elasticsearch.request.Query;
 import ca.nrc.dtrc.elasticsearch.request._Source;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.iutools.corpus.*;
 
 import java.net.URL;
 import java.util.HashMap;
@@ -12,7 +13,16 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class SanityCheck {
+
+/**
+ * As of 2020-10 or so, we noticed that concurrent invocations of the iutools
+ * web services sometimes end up corrupting some of the documents in the ES
+ * indices (most notably, the indices related to the CompiledCorpus).
+ *
+ * The ESIndexRepair class is designed to inspect an index for such faulty
+ * documents and possibly repair them.
+ */
+public class ESIndexRepair {
 
 	private static final WordInfo winfoProto = new WordInfo();
 	private static final String typeWinfo = "WordInfo_ES";
@@ -29,7 +39,7 @@ public class SanityCheck {
 	}
 
 
-	private Map<String,CompiledCorpus> corpora =
+	private Map<String, CompiledCorpus> corpora =
 		new HashMap<String,CompiledCorpus>();
 
 	private Map<String, Set<String>> alreadyLogged =
@@ -38,14 +48,14 @@ public class SanityCheck {
 	private Set<String> indicesWithCorruptedLastLoadeDate =
 		new HashSet<String>();
 
-	public SanityCheck(String[] corporaNames) throws CompiledCorpusException {
+	public ESIndexRepair(String[] corporaNames) throws CompiledCorpusException {
 		for (String name: corporaNames) {
 			try {
 				CompiledCorpus corpus =
 					new CompiledCorpusRegistry().getCorpus(name, false, true);
 				corpora.put(name, corpus);
 				alreadyLogged.put(corpus.getIndexName(), new HashSet<String>());
-			} catch (CompiledCorpusRegistryException   e) {
+			} catch (CompiledCorpusRegistryException e) {
 				throw new CompiledCorpusException(e);
 			}
 		}
@@ -58,7 +68,7 @@ public class SanityCheck {
 			usage();
 		}
 
-		SanityCheck checker = new SanityCheck(args);
+		ESIndexRepair checker = new ESIndexRepair(args);
 		checker.keepChecking();
 	}
 
@@ -77,7 +87,7 @@ public class SanityCheck {
 	}
 
 		private void check(CompiledCorpus corpus) throws CompiledCorpusException {
-			Logger tLogger = Logger.getLogger("org.iutools.corpus.SanityCheck.check");
+			Logger tLogger = Logger.getLogger("org.iutools.corpus.ESIndexRepair.check");
 			tLogger.setLevel(Level.ALL);
 			check(corpus, tLogger, (String)null, (URL)null, (String)null);
 		}
@@ -157,7 +167,7 @@ public class SanityCheck {
 	}
 
 	public static void usage() {
-		System.out.println("Usage: SanityCheck corpus...");
+		System.out.println("Usage: ESIndexRepair corpus...");
 		System.exit(1);
 	}
 
