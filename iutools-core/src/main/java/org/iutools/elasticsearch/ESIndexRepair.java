@@ -6,6 +6,7 @@ import ca.nrc.dtrc.elasticsearch.*;
 import ca.nrc.dtrc.elasticsearch.request.Query;
 import ca.nrc.dtrc.elasticsearch.request._Source;
 import ca.nrc.introspection.Introspection;
+import ca.nrc.introspection.IntrospectionException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.iutools.corpus.*;
@@ -230,5 +231,27 @@ public class ESIndexRepair {
 				| InterruptedException e) {
 			throw new ElasticSearchException(errMess, e);
 		}
+	}
+
+	public String[] badFieldNames(String esTypeName, Document goodDocPrototype) throws ElasticSearchException {
+		Set<String> existingFields =
+			new Index(indexName).getFieldTypes(esTypeName).keySet();
+
+		Set<String> validFields = null;
+		try {
+			validFields = Introspection.publicFields(goodDocPrototype).keySet();
+		} catch (IntrospectionException e) {
+			throw new ElasticSearchException(e);
+		}
+
+		Set<String> badFields = new HashSet<String>();
+		for (String field: existingFields) {
+			if (!validFields.contains(field)) {
+				badFields.add(field);
+			}
+		}
+
+
+		return badFields.toArray(new String[0]);
 	}
 }

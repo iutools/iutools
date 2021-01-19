@@ -1,0 +1,245 @@
+bodyEndMarker=BLANK_LINE
+class=org.iutools.corpus.WordInfo
+
+{
+  "decompositionsSample": [],
+  "frequency": 1,
+  "id": "Haajsan",
+  "morphemesSpaceConcatenated": null,
+  "topDecompositionStr": null,
+  "totalDecompositions": 0,
+  "word": "Haajsan",
+  "wordCharsSpaceConcatenated": "BEGIN H a a j s a n END"
+}
+
+{
+  "decompositionsSample":[],
+  "frequency": 2,
+  "id": "Haaki",
+  "morphemesSpaceConcatenated": null,
+  "topDecompositionStr": null,
+  "totalDecompositions": 0,
+  "word": "Haaki",
+  "wordCharsSpaceConcatenated": "BEGIN H a a k i END"
+}
+
+{
+  "decompositionsSample":
+    [
+      [
+        "Haakiq/1v",
+        "kkanniq/1vv",
+        "giaq/2vn",
+        "qaq/1nv",
+        "laaq/2vv",
+        "vugut/tv-dec-1p"
+      ],
+      [
+        "Haakiq/1v",
+        "kkanniq/1vv",
+        "giaq/3vn",
+        "qaq/1nv",
+        "laaq/2vv",
+        "vugut/tv-dec-1p"
+      ],
+      [
+        "Haakiq/1v",
+        "kkanniq/1vv",
+        "jariaq/1vn",
+        "qaq/1nv",
+        "laaq/2vv",
+        "vugut/tv-dec-1p"
+      ]
+    ],
+  "frequency": 1,
+  "id": "Haakikkanniriaqalaaqpugut",
+  "morphemesSpaceConcatenated":
+    "BEGIN Haakiq/1v kkanniq/1vv giaq/2vn qaq/1nv laaq/2vv vugut/tv-dec-1p END",
+  "topDecompositionStr":
+    "Haakiq/1v kkanniq/1vv giaq/2vn qaq/1nv laaq/2vv vugut/tv-dec-1p",
+  "totalDecompositions": 3,
+  "word": "Haakikkanniriaqalaaqpugut",
+  "wordCharsSpaceConcatenated":
+    "BEGIN H a a k i k k a n n i r i a q a l a a q p u g u t END"
+}
+
+{
+  "decompositionsSample":
+    [
+      [
+        "Haakiq/1v",
+        "liq/1vv",
+        "uti/1vv",
+        "niq/2vn",
+        "mik/tn-acc-s"
+      ],
+      [
+        "Haakiq/1v",
+        "liq/1vv",
+        "uti/1vv",
+        "niq/2vn",
+        "mik/tn-gen-s-3d"
+      ],
+      [
+        "Haakiq/1v",
+        "liq/1vv",
+        "uti/1vv",
+        "niq/2vn",
+        "mik/tn-gen-p-3d"
+      ],
+      [
+        "Haakiq/1v",
+        "liq/1vv",
+        "uti/1vv",
+        "niq/2vn",
+        "mik/tn-gen-s-3p"
+      ],
+      [
+        "Haakiq/1v",
+        "liq/1vv",
+        "uti/1vv",
+        "niq/2vn",
+        "mik/tn-gen-p-3p"
+      ]
+    ],
+  "frequency": 1,
+  "id": "Haakiliutinirmik",
+  "morphemesSpaceConcatenated": "BEGIN Haakiq/1v liq/1vv uti/1vv niq/2vn mik/tn-acc-s END",
+  "topDecompositionStr":
+    "Haakiq/1v liq/1vv uti/1vv niq/2vn mik/tn-acc-s",
+  "totalDecompositions": 5,
+  "word": "Haakiliutinirmik",
+  "wordCharsSpaceConcatenated":
+    "BEGIN H a a k i l i u t i n i r m i k END"
+}
+
+{
+  "decompositionsSample":
+    [
+      [
+        "Haakiq/1v",
+        "liq/1vv",
+        "uti/1vv",
+        "tillugit/tv-part-3p"
+      ]
+    ],
+  "frequency": 1,
+  "id": "Haakiliutitillugit",
+  "morphemesSpaceConcatenated":
+    "BEGIN Haakiq/1v liq/1vv uti/1vv tillugit/tv-part-3p END",
+  "topDecompositionStr":
+    "Haakiq/1v liq/1vv uti/1vv tillugit/tv-part-3p",
+  "totalDecompositions": 1,
+  "word": "Haakiliutitillugit",
+  "wordCharsSpaceConcatenated":
+    "BEGIN H a a k i l i u t i t i l l u g i t END"
+}
+
+{
+  "decompositionsSample": [],
+  "frequency": 1,
+  "id": "Haakimik",
+  "morphemesSpaceConcatenated": null,
+  "topDecompositionStr": null,
+  "totalDecompositions": 0,
+  "word": "Haakimik",
+  "wordCharsSpaceConcatenated":
+    "BEGIN H a a k i m i k END"
+}
+
+{
+  "decompositionsSample": [],
+  "frequency": 1,
+  "id":
+    "Haakinningatauq",
+  "morphemesSpaceConcatenated": null,
+  "topDecompositionStr": null,
+  "totalDecompositions":0,
+  "word":
+    "Haakinningatauq",
+  "wordCharsSpaceConcatenated":
+    "BEGIN H a a k i n n i n g a t a u q END"
+}
+
+{
+  "decompositionsSample":  [ ],
+  "frequency": 1,
+  "id": "Haakinniqalaurata",
+  "morphemesSpaceConcatenated": null,
+  "topDecompositionStr": null,
+  "totalDecompositions": 0,
+  "word": "Haakinniqalaurata",
+  "wordCharsSpaceConcatenated":
+    "BEGIN H a a k i n n i q a l a u r a t a END"
+}
+
+{
+  "decompositionsSample":
+    [
+      [
+        "Haakiq/1v",
+        "qatau/1vv",
+        "rataaq/1vv",
+        "lauq/1vv",
+        "mata/tv-caus-4p"
+      ]
+    ],
+  "frequency": 1,
+  "id": "Haakiqataurataalaurmata",
+  "morphemesSpaceConcatenated":
+    "BEGIN Haakiq/1v qatau/1vv rataaq/1vv lauq/1vv mata/tv-caus-4p END",
+  "topDecompositionStr":
+    "Haakiq/1v qatau/1vv rataaq/1vv lauq/1vv mata/tv-caus-4p",
+  "totalDecompositions": 1,
+  "word": "Haakiqataurataalaurmata",
+  "wordCharsSpaceConcatenated":
+    "BEGIN H a a k i q a t a u r a t a a l a u r m a t a END"
+}
+
+{
+  "decompositionsSample":
+    [
+      [
+        "Haakiq/1v",
+        "qati/1vn",
+        "qaq/1nv",
+        "niaq/2vv",
+        "gatta/tv-caus-1p"
+      ],
+      [
+        "Haakiq/1v",
+        "qati/1vn",
+        "qaq/1nv",
+        "niaq/2vv",
+        "raq/1vv",
+        "ta/tv-imp-1p"
+      ],
+      [
+        "Haakiq/1v",
+        "qati/1vn",
+        "qaq/1nv",
+        "niq/2vn",
+        "aq/2nv",
+        "gatta/tv-caus-1p"
+      ],
+      [
+        "Haakiq/1v",
+        "qati/1vn",
+        "qaq/1nv",
+        "niq/2vn",
+        "aq/2nv",
+        "raq/1vv",
+        "ta/tv-imp-1p"
+      ]
+    ],
+  "frequency": 1,
+  "id": "Haakiqatiqarniaratta",
+  "morphemesSpaceConcatenated":
+    "BEGIN Haakiq/1v qati/1vn qaq/1nv niaq/2vv gatta/tv-caus-1p END",
+  "topDecompositionStr":
+    "Haakiq/1v qati/1vn qaq/1nv niaq/2vv gatta/tv-caus-1p",
+  "totalDecompositions": 4,
+  "word": "Haakiqatiqarniaratta",
+  "wordCharsSpaceConcatenated":
+    "BEGIN H a a k i q a t i q a r n i a r a t t a END"
+}

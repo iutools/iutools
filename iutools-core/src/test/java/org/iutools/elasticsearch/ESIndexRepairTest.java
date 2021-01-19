@@ -3,7 +3,6 @@ package org.iutools.elasticsearch;
 import ca.nrc.dtrc.elasticsearch.Document;
 import ca.nrc.dtrc.elasticsearch.StreamlinedClient;
 import ca.nrc.file.ResourceGetter;
-import ca.nrc.testing.AssertIterator;
 import ca.nrc.testing.TestDirs;
 import org.iutools.corpus.WordInfo;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,9 +11,7 @@ import org.junit.jupiter.api.TestInfo;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 public class ESIndexRepairTest {
 
@@ -22,19 +19,28 @@ public class ESIndexRepairTest {
 	private static final String winfoType = "winfo";
 	StreamlinedClient esClient = null;
 	Path jsonFile = null;
+	ESIndexRepair repair = new ESIndexRepair(testIndexName);
+	WordInfo goodDocPrototype = new WordInfo();
+
 
 	class NotWordInfo extends Document {
+		class NotWordNestedField {
+			public int level2field = 1;
+		}
+
 		public String scroll_id = null;
-		public NotWordInfo(String _id, String _scroll_id) {
+		public NotWordNestedField nestedField = new NotWordNestedField();
+
+		public NotWordInfo(String _id) {
 			this.id = _id;
-			this.scroll_id = _scroll_id;
+			this.scroll_id = "somevalue";
 		}
 	}
 
 	@BeforeEach
 	public void setUp(TestInfo testInfo) throws Exception {
 		esClient = new StreamlinedClient(testIndexName);
-//		esClient.clearIndex();
+		esClient.deleteIndex();
 		Path testDir = new TestDirs(testInfo).inputsDir();
 		ResourceGetter.copyResourceFilesToDir("org/iutools/corpus/testdata", testDir);
 		jsonFile = Paths.get(testDir.toString(), "smallCorpus.json");
@@ -90,22 +96,11 @@ public class ESIndexRepairTest {
 		// "Haaki" by replacing it with documents whose fields do not correspond
 		// to those of the WordInfo class.
 		//
-		esClient.putDocument(
-			winfoType,
-			new NotWordInfo("Haajsan", "asgmbvfgtertjert"));
-		esClient.putDocument(
-			winfoType,
-			new NotWordInfo("Haaki", "klttutyhdfryretfdw"));
-		Thread.sleep(1000);
+		corruptSomeDocuments("Haajsan", "Haaki");
 		asserter.assertCorruptedDocsAre(
 		"At this point, the index should have contained some corrupted records",
 		new String[] {"Haajsan", "Haaki"}, winfoType, goodDocPrototype
 		);
-//		corruptedDocIDs =
-//			repair.corruptedDocIDs("winfo", goodDocPrototype);
-//		AssertIterator.assertElementsEquals(
-//		"At this point, the index should have contained some corrupted records",
-//			new String[] {"Haajsan", "Haaki"}, corruptedDocIDs);
 
 		// Let's repair those records by reloading them from the JSON file
 		Iterator<String> corruptedDocIDs =
@@ -118,6 +113,48 @@ public class ESIndexRepairTest {
 		);
 
 		return;
+	}
+
+
+	@Test
+	public void test__corruptedDocIDs__HappyPath() throws Exception {
+		AssertESIndexRepair asserter = new AssertESIndexRepair(repair);
+		asserter.assertCorruptedDocsAre(
+		"Initially, the index should NOT have contained any corrupted documents",
+		new String[0], winfoType, goodDocPrototype
+		);
+
+		String[] docsToCorrupt = {"Haajsan", "Haaki"};
+		corruptSomeDocuments(docsToCorrupt);
+		asserter.assertCorruptedDocsAre(
+			"List of corrupted IDs was not as expected",
+			docsToCorrupt, winfoType, goodDocPrototype);
+	}
+
+	@Test
+	public void test__badFieldNames__HappyPath() throws Exception {
+		AssertESIndexRepair asserter = new AssertESIndexRepair(repair);
+		asserter.assertBadFieldNamesAre(
+			"Initially, the index should NOT have contained any bad field names",
+			new String[0], winfoType, goodDocPrototype
+		);
+
+		corruptSomeDocuments(new String[] {"Haajsan"});
+		asserter.assertBadFieldNamesAre(
+			"List of bad field names not as expected after introducing corrupted documents into the index",
+			new String[] {"nestedField","scroll_id"}, winfoType, goodDocPrototype
+		);
+	}
+
+	///////////////////////////////
+	// TEST HELPERS
+	///////////////////////////////
+
+	private void corruptSomeDocuments(String... docIDs) throws Exception {
+		for (String id: docIDs) {
+			esClient.putDocument(winfoType, new NotWordInfo(id));
+		}
+		Thread.sleep(1000);
 	}
 
 }
