@@ -10,11 +10,14 @@ import ca.nrc.introspection.IntrospectionException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.iutools.corpus.*;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * As of 2020-10 or so, we noticed that concurrent invocations of the iutools
@@ -202,6 +205,28 @@ public class ESIndexRepair {
 			esClient().search(query, esType, goodDocPrototype, source);
 
 		return results.docIDIterator();
+	}
+
+	JSONObject queryCorruptedDocs(Set<String> badFields) {
+		"hello".compareTo("world");
+		List<String> badFieldsSorted =
+			badFields.stream().collect(Collectors.toList());
+		Collections.sort(badFieldsSorted, (f1, f2) -> {
+			return f1.compareTo(f2);
+		});
+
+		JSONArray existFieldsArray = new JSONArray();
+		for (String badField: badFieldsSorted) {
+			existFieldsArray.put(new JSONObject().put("exist", badField));
+		}
+		JSONObject query = new JSONObject()
+			.put("query", new JSONObject()
+				.put("bool", new JSONObject()
+					.put("should", existFieldsArray)
+				)
+			);
+
+		return query;
 	}
 
 	public void repairCorruptedDocs(

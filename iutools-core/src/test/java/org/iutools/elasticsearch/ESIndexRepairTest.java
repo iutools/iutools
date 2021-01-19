@@ -3,15 +3,20 @@ package org.iutools.elasticsearch;
 import ca.nrc.dtrc.elasticsearch.Document;
 import ca.nrc.dtrc.elasticsearch.StreamlinedClient;
 import ca.nrc.file.ResourceGetter;
+import ca.nrc.testing.AssertString;
 import ca.nrc.testing.TestDirs;
 import org.iutools.corpus.WordInfo;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 public class ESIndexRepairTest {
 
@@ -144,6 +149,30 @@ public class ESIndexRepairTest {
 			"List of bad field names not as expected after introducing corrupted documents into the index",
 			new String[] {"nestedField","scroll_id"}, winfoType, goodDocPrototype
 		);
+	}
+
+	@Test
+	public void test__queryCorruptedDocs__HappyPath() throws Exception {
+		Set<String> badFields = new HashSet<String>();
+		Collections.addAll(badFields, new String[] {"badFld1", "badFld2"});
+		JSONObject gotQuery = repair.queryCorruptedDocs(badFields);
+		String expQueryStr =
+			"{"+
+			"  \"query\": {"+
+			"    \"bool\": {"+
+			"      \"should\":  ["+
+			"        {\"exist\": \"badFld1\"},"+
+			"        {\"exist\": \"badFld2\"}"+
+			"      ]"+
+			"    }"+
+			"  }"+
+			"}"
+			;
+		expQueryStr = expQueryStr.replaceAll("\\s+", "");
+		String gotQueryStr = gotQuery.toString();
+		AssertString.assertStringEquals(
+			"Query was not as expected",
+			expQueryStr, gotQueryStr);
 	}
 
 	///////////////////////////////
