@@ -6,6 +6,7 @@ import ca.nrc.dtrc.elasticsearch.StreamlinedClientObserver;
 import ca.nrc.dtrc.elasticsearch.request.Query;
 import ca.nrc.json.PrettyPrinter;
 import org.apache.log4j.Logger;
+import org.json.JSONObject;
 
 import java.net.URL;
 
@@ -25,15 +26,13 @@ public class ObsEnsureAllRecordsAreWordInfo extends StreamlinedClientObserver {
 	private static Query queryNonWinfoRecords = null;
 
 	static {
-		queryNonWinfoRecords = new Query();
-			queryNonWinfoRecords
-			.openAttr("exists")
-			.openAttr("field")
-			.setOpenedAttr("scroll")
-		;
+		queryNonWinfoRecords = new Query(
+			new JSONObject()
+			.put("exists", new JSONObject()
+				.put("field", "scroll")
+			)
+		);
 	}
-
-	;
 
 	protected void checkForBadRecords(Logger tLogger, URL url)
 		throws ElasticSearchException {

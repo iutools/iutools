@@ -24,6 +24,7 @@ import org.iutools.text.ngrams.NgramCompiler;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
+import org.json.JSONObject;
 
 import static ca.nrc.dtrc.elasticsearch.StreamlinedClient.ESOptions.CREATE_IF_NOT_EXISTS;
 import static ca.nrc.dtrc.elasticsearch.StreamlinedClient.ESOptions.UPDATES_WAIT_FOR_REFRESH;
@@ -46,8 +47,8 @@ public class CompiledCorpus {
 	private String indexName = null;
 	public String getIndexName() {return indexName;}
 	StreamlinedClient _esClient = null;
-	public final String WORD_INFO_TYPE = "WordInfo_ES";
-	public final WordInfo winfoPrototype = new WordInfo("");
+	public final static String WORD_INFO_TYPE = "WordInfo_ES";
+	public final static WordInfo winfoPrototype = new WordInfo("");
 
 	public int searchBatchSize = 100;
 
@@ -642,11 +643,9 @@ public class CompiledCorpus {
 
 	
 	public long totalOccurences() throws CompiledCorpusException {
-		Query queryBody = new Query();
-		queryBody
-				.openAttr("match_all")
-				.setOpenedAttr(new HashMap<String,String>());
-		;
+		Query queryBody = new Query(
+			new JSONObject().put("match_all", new HashMap<String,String>())
+		);
 		Aggs aggsElt = new Aggs()
 				.aggregate("totalOccurences", "sum", "frequency");
 		SearchResults<WordInfo> results =
@@ -667,14 +666,17 @@ public class CompiledCorpus {
 
 	
 	public long totalWordsWithDecomps() throws CompiledCorpusException {
-		Query query = new Query();
-		query
-				.openAttr("bool")
-				.openAttr("must")
-				.openAttr("exists")
-				.openAttr("field")
-				.setOpenedAttr("topDecompositionStr")
-		;
+		Query query = new Query(
+			new JSONObject()
+			.put("bool", new JSONObject()
+				.put("must", new JSONObject()
+					.put("exists", new JSONObject()
+						.put("field", "topDecompositionStr")
+					)
+				)
+			)
+		);
+
 		SearchResults<WordInfo> results = esWinfoSearch(query);
 
 		return results.getTotalHits();
@@ -682,14 +684,16 @@ public class CompiledCorpus {
 
 	
 	public long totalOccurencesWithNoDecomp() throws CompiledCorpusException {
-		Query query = new Query();
-		query
-				.openAttr("bool")
-				.openAttr("must_not")
-				.openAttr("exists")
-				.openAttr( "field")
-				.setOpenedAttr("topDecompositionStr")
-		;
+		Query query = new Query(
+			new JSONObject()
+			.put("bool", new JSONObject()
+				.put("must_not", new JSONObject()
+					.put("exists", new JSONObject()
+						.put("field", "topDecompositionStr")
+					)
+				)
+			)
+		);
 
 		Aggs aggs = new Aggs();
 		aggs.aggregate("totalOccurences", "sum", "frequency");
@@ -704,22 +708,19 @@ public class CompiledCorpus {
 
 	
 	public Long totalOccurencesWithDecomps() throws CompiledCorpusException {
-		Query query = new Query();
-		query
-				.openAttr("bool")
-				.openAttr("must")
-				.openAttr("exists")
-				.openAttr( "field")
-				.setOpenedAttr("topDecompositionStr")
-		;
+		Query query = new Query(
+			new JSONObject()
+			.put("bool", new JSONObject()
+				.put("must", new JSONObject()
+					.put("exists", new JSONObject()
+						.put( "field", "topDecompositionStr")
+					)
+				)
+			)
+		);
 
-		Aggs aggs = new Aggs();
-		aggs
-				.openAttr("totalOccurences")
-				.openAttr("sum")
-				.openAttr("field")
-				.setOpenedAttr("frequency")
-		;
+		Aggs aggs =
+			new Aggs().aggregate("totalOccurences", "sum", "frequency");
 
 		SearchResults<WordInfo> results = esWinfoSearch(query, aggs);
 		Double totalDbl =

@@ -1,8 +1,11 @@
 package org.iutools.corpus;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -54,6 +57,19 @@ public class CompiledCorpusRegistry {
 		} catch (CompiledCorpusException e) {
 			throw new CompiledCorpusRegistryException(e);
 		}
+	}
+
+	public static Set<String> availableCorpora() {
+		return registry.keySet();
+	}
+
+	public static Path jsonFile4corpus(String corpusName) {
+		File jsonFile = registry.get(corpusName);
+		Path jsonFilePath = null;
+		if (jsonFile != null) {
+			jsonFilePath = Paths.get(jsonFile.toString());
+		}
+		return jsonFilePath;
 	}
 
 	@JsonIgnore

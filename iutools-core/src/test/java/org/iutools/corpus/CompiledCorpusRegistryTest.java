@@ -3,7 +3,9 @@ package org.iutools.corpus;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.Set;
 
+import ca.nrc.testing.AssertObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,6 +38,11 @@ public class CompiledCorpusRegistryTest {
 		//
 		String corpusName = CompiledCorpusRegistry.defaultCorpusName;
 		corpus = new CompiledCorpusRegistry().getCorpus(corpusName);
+
+		//
+		// You can get the names of all available corpora
+		//
+		Set<String> corpora = CompiledCorpusRegistry.availableCorpora();
 	}
 		
 	//////////////////////////////
@@ -78,5 +85,13 @@ public class CompiledCorpusRegistryTest {
 			throws Exception {
 		String corpusName = "blabla";
 		CompiledCorpus corpus = new CompiledCorpusRegistry().getCorpus(corpusName);
+	}
+
+	@Test
+	public void test__availableCorpora__HappyPath() throws Exception {
+		Set<String> gotCorpora = CompiledCorpusRegistry.availableCorpora();
+		AssertObject.assertDeepEquals(
+			"Available corpora not as expected",
+			new String[] {"HANSARD-1999-2002"}, gotCorpora);
 	}
 }
