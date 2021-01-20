@@ -1,8 +1,5 @@
 admin_lib_path=`realpath $(dirname "$0")/lib`
 
-echo "admin_lib_path=$admin_lib_path";
-exit 1
-
 echo Running with
 source $admin_lib_path/validate_IUTOOLS_VERSION.bash
 source $admin_lib_path/validate_CATALINA_HOME.bash

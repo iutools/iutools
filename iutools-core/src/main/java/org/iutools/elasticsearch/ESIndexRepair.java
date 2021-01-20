@@ -37,13 +37,15 @@ public class ESIndexRepair {
 
 	private StreamlinedClient _esClient = null;
 
+	private Logger logger = null;
+
 	static {
-		queryNonWinfoRecords = new Query();
-			queryNonWinfoRecords
-			.openAttr("exists")
-			.openAttr("field")
-			.setOpenedAttr("scroll")
-			;
+		queryNonWinfoRecords = new Query(
+			new JSONObject()
+			.put("exists", new JSONObject()
+				.put("field", "scroll")
+			)
+		);
 	}
 
 
@@ -55,9 +57,31 @@ public class ESIndexRepair {
 
 	private Set<String> indicesWithCorruptedLastLoadeDate =
 		new HashSet<String>();
-	
+
+	public ESIndexRepair(String _indexName, Logger _logger) {
+		init_ESIndexRepair(_indexName, _logger);
+	}
+
 	public ESIndexRepair(String _indexName) {
+		init_ESIndexRepair(_indexName, null);
+	}
+
+	private void init_ESIndexRepair(String _indexName, Logger _logger) {
 		this.indexName = _indexName;
+		this.setLogger(_logger);
+	}
+
+	private void setLogger(Logger _logger) {
+		if (_logger != null) {
+			logger = _logger;
+		} else {
+			logger = Logger.getLogger(this.getClass());
+		}
+		Level level = logger.getLevel();
+		if (level == null) {
+			logger.setLevel(Level.INFO);
+		}
+		return;
 	}
 
 	public ESIndexRepair(String[] corporaNames) throws CompiledCorpusException {
@@ -106,12 +130,10 @@ public class ESIndexRepair {
 	}
 
 		private void check(CompiledCorpus corpus) throws CompiledCorpusException {
-			Logger tLogger = Logger.getLogger("org.iutools.corpus.ESIndexRepair.check");
-			tLogger.setLevel(Level.ALL);
-			check(corpus, tLogger, (String)null, (URL)null, (String)null);
+			check(corpus, (String)null, (URL)null, (String)null);
 		}
 
-		private void check(CompiledCorpus corpus, Logger tLogger, String callInfo,
+		private void check(CompiledCorpus corpus, String callInfo,
  			URL url, String json) throws CompiledCorpusException {
 			if (callInfo == null) {
 				callInfo = "";
@@ -125,31 +147,31 @@ public class ESIndexRepair {
 							"", typeWinfo, winfoProto, queryNonWinfoRecords, idFieldOnly);
 					long numBad = badRecords.getTotalHits();
 					if (badRecords.getTotalHits() > 0) {
-						logNewBadRecord(tLogger, badRecords, callInfo, corpus.esClient(),
+						logNewBadRecord(badRecords, callInfo, corpus.esClient(),
 							typeWinfo, url, json);
 					} else {
-//						tLogger.trace(callInfo + "Index is fine");
+//						logger.trace(callInfo + "Index is fine");
 					}
 					try {
 						corpus.lastLoadedDate();
 					} catch (Exception e) {
-						logCorruptedLastLoadeDate(tLogger, e, esClient);
+						logCorruptedLastLoadeDate(e, esClient);
 					}
 				} else {
-					tLogger.trace(callInfo + "Index does not yet exist. Nothing to check.");
+					logger.trace(callInfo + "Index does not yet exist. Nothing to check.");
 				}
 			} catch (ElasticSearchException e) {
 				throw new CompiledCorpusException(e);
 			}
 	}
 
-	private void logCorruptedLastLoadeDate(Logger tLogger, Exception exc,
+	private void logCorruptedLastLoadeDate(Exception exc,
 		StreamlinedClient esClient) {
 		String indexName = esClient.getIndexName();
 		if (!indicesWithCorruptedLastLoadeDate.contains(indexName)) {
 			indicesWithCorruptedLastLoadeDate.add(indexName);
-			if (tLogger.isTraceEnabled()) {
-				tLogger.trace("The last loaded date type was corrupted for index: " +
+			if (logger.isTraceEnabled()) {
+				logger.trace("The last loaded date type was corrupted for index: " +
 				indexName + "\n" +
 				"Exception: " + exc.getCause().toString());
 			}
@@ -157,9 +179,9 @@ public class ESIndexRepair {
 	}
 
 	private void logNewBadRecord(
-		Logger tLogger, SearchResults<WordInfo> badRecords,
+		SearchResults<WordInfo> badRecords,
 		String callInfo, StreamlinedClient esClient, String typeWinfo, URL url, String json) {
-		if (tLogger.isTraceEnabled()) {
+		if (logger.isTraceEnabled()) {
 			String indexName = esClient.getIndexName();
 			DocIterator iter = badRecords.docIterator();
 			Set<String> alreadyLoggedIDs = alreadyLogged.get(indexName);
@@ -179,7 +201,7 @@ public class ESIndexRepair {
 							mess += "   json: "+json+"\n";
 						}
 					}
-					tLogger.trace(mess);
+					logger.trace(mess);
 				}
 			}
 		}
@@ -194,12 +216,12 @@ public class ESIndexRepair {
 		String esType, Document goodDocPrototype) throws ElasticSearchException {
 		Iterator<String> iter = null;
 
-		Query query = new Query();
-		query
-			.openAttr("exists")
-			.openAttr("field")
-			.setOpenedAttr("scroll_id")
-		;
+		Query query = new Query(
+			new JSONObject()
+				.put("exists", new JSONObject()
+					.put("field", "scroll_id")
+				)
+		);
 		_Source source = new _Source("id");
 		SearchResults<Document> results =
 			esClient().search(query, esType, goodDocPrototype, source);
@@ -230,7 +252,8 @@ public class ESIndexRepair {
 	}
 
 	public void repairCorruptedDocs(
-		Iterator<String> corruptedIDsIter, String esTypeName, Document goodDocProto, Path jsonFile) throws ElasticSearchException {
+		Iterator<String> corruptedIDsIter, String esTypeName, Document goodDocProto,
+		Path jsonFile) throws ElasticSearchException {
 		Set<String> corruptedIDs = new HashSet<String>();
 		while (corruptedIDsIter.hasNext()) {
 			corruptedIDs.add(corruptedIDsIter.next());
@@ -278,5 +301,15 @@ public class ESIndexRepair {
 
 
 		return badFields.toArray(new String[0]);
+	}
+
+	public void deleteCorruptedDocs(Iterator<String> corruptedIDs, String esType)
+		throws ElasticSearchException {
+
+		while (corruptedIDs.hasNext()) {
+			String id = corruptedIDs.next();
+			esClient().deleteDocumentWithID(id, esType);
+		}
+		System.out.println("IMPLEMENT AND TEST THIS METHOD");
 	}
 }
