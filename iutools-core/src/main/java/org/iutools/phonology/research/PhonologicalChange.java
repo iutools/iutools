@@ -95,12 +95,16 @@ public class PhonologicalChange {
                 new Transformation("tk", "kk", "apr"),
                 new Transformation("tq", "qq", "apr"),
                 new Transformation("tl", "ll", "apr"),
+//				new Transformation("t&", "&&", "apr"), //*** see below specific transformation t&.&&
                 new Transformation("tj", "jj", "apr"),
                 new Transformation("lv", "vv", "apr"),
-                new Transformation("nm", "mm", "apr"),
                 new Transformation("lg", "gg", "apr"),
                 new Transformation("lr", "rr", "apr"),
-                new Transformation("jg", "gg", "apr") });
+                new Transformation("jg", "gg", "apr"),
+				new Transformation("nm", "mm", "apr")
+				// double ng (ng+ng) is written nng in the Roman alphabet, which cannot be distinguished from n+ng
+//				,new Transformation("nng", "nng", "apr")
+		});
         transfs.put("labC.CC", new Transformation[] {
                 new Transformation("pt", "tt", "apr"),
                 new Transformation("pk", "kk", "apr"),
@@ -356,6 +360,9 @@ public class PhonologicalChange {
      * starting with the original string. If a change is optional, there are
      * 2 results: the string before the change and the string after the change.
      * Processing must continue with both results instead of the one.
+     *
+     * This goes only 1 way. For example, it will return allak from aglak,
+     * but it will not return aglak from allak.
      */
 
 	private static List<String> applyChanges(String morpheme, List<DialectalChange> listOfChanges) {
@@ -400,9 +407,15 @@ public class PhonologicalChange {
             this.to = to;
             this.method = method;
         }
-        
-        public String applyTo(String string) {
-        	String transformedString = string.replaceAll(from, to);
+
+		/**
+		 * Apply the transformation of the regex 'from' to the string
+		 *
+		 * @param string
+		 * @return
+		 */
+		public String applyTo(String string) {
+			String transformedString = string.replaceAll(from, to);
 
         	return transformedString;
         }

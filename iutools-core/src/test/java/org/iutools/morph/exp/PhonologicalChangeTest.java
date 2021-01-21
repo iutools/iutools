@@ -7,6 +7,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import ca.nrc.testing.AssertObject;
+import org.junit.Assert;
 import org.junit.Test;
 
 import org.iutools.phonology.research.PhonologicalChange;
@@ -20,42 +22,46 @@ public class PhonologicalChangeTest {
 		String word = "iksivautaq";
 		List<String> expectedForms = new ArrayList<>(Arrays.asList("iksivautaq", "issivautaq"));
 		List<String> dialectalForms = PhonologicalChange.formsInDialect(word, dialect);
-		AssertHelpers.assertContainsAll("",expectedForms.toArray(new String[] {}),dialectalForms.toArray(new String[] {}));
+		AssertHelpers.assertUnOrderedSameElements("",expectedForms.toArray(new String[] {}),dialectalForms.toArray(new String[] {}));
 		
 		dialect = "nunavik-northlabrador";
 		word = "iksivautaq";
-		expectedForms = new ArrayList<>(Arrays.asList("iksivautaq", "itsivautaq"));
+		expectedForms = new ArrayList<>(Arrays.asList("itsivautaq"));
 		dialectalForms = PhonologicalChange.formsInDialect(word, dialect);
-		AssertHelpers.assertContainsAll("",expectedForms.toArray(new String[] {}),dialectalForms.toArray(new String[] {}));
+		AssertHelpers.assertUnOrderedSameElements("",expectedForms.toArray(new String[] {}),dialectalForms.toArray(new String[] {}));
 		
 		dialect = "nunavik-northlabrador";
 		word = "sitamangannik";
-		expectedForms = new ArrayList<>(Arrays.asList("tisamangannik","sitamangannik", "tisamanganning", "sitamanganning"));
+		expectedForms = new ArrayList<>(Arrays.asList("tisamangannik","sitamangannik"));
 		dialectalForms = PhonologicalChange.formsInDialect(word, dialect);
-		AssertHelpers.assertContainsAll("",expectedForms.toArray(new String[] {}),dialectalForms.toArray(new String[] {}));
+		AssertHelpers.assertUnOrderedSameElements("",expectedForms.toArray(new String[] {}),dialectalForms.toArray(new String[] {}));
 		
 		dialect = "nunavik-northlabrador";
 		word = "pinngi&&uni";
 		expectedForms = new ArrayList<>(Arrays.asList("pinngitsuni"));
 		dialectalForms = PhonologicalChange.formsInDialect(word, dialect);
-		AssertHelpers.assertContainsAll("",expectedForms.toArray(new String[] {}),dialectalForms.toArray(new String[] {}));		
+		AssertHelpers.assertUnOrderedSameElements("",expectedForms.toArray(new String[] {}),dialectalForms.toArray(new String[] {}));
 	}
 
-	
+
 	@Test
 	public void test_formsInAllDialects() throws FormGeneratorException, IOException {
 		String word = "ikpaksaq";
-		Set<String> expected = new HashSet<String>(Arrays.asList("ikpaksaq","ikpatsaq","ippassaq","ippatsaq"));
-		Set<String> allForms = PhonologicalChange.formsInAllDialects(word);
-		AssertHelpers.assertContainsAll("", expected.toArray(new String[] {}), allForms.toArray(new String[] {}));
+		Set<String> expectedForms = new HashSet<String>(Arrays.asList("ikpaksaq","ippassaq","ippatsaq"));
+		Set<String> dialectalForms = PhonologicalChange.formsInAllDialects(word);
+		AssertHelpers.assertUnOrderedSameElements("", expectedForms.toArray(new String[] {}), dialectalForms.toArray(new String[] {}));
+
+		word = "aglak";
+		expectedForms = new HashSet<String>(Arrays.asList("aglak","allak"));
+		dialectalForms = PhonologicalChange.formsInAllDialects(word);
+		AssertHelpers.assertUnOrderedSameElements("", expectedForms.toArray(new String[] {}), dialectalForms.toArray(new String[] {}));
+
+		word = "allak";
+		expectedForms = new HashSet<String>(Arrays.asList("aglak","allak"));
+		dialectalForms = PhonologicalChange.formsInAllDialects(word);
+		AssertHelpers.assertUnOrderedSameElements("", expectedForms.toArray(new String[] {}), dialectalForms.toArray(new String[] {}));
 	}
-	
-//	@Test
-//	public void test_formsInAllDialects__Case_ktik() throws FormGeneratorException, IOException {
-//		String word = "ptik";
-//		Set<String> expected = new HashSet<String>(Arrays.asList("ikpaksaq","ikpatsaq","ippassaq","ippatsaq"));
-//		Set<String> allForms = PhonologicalChange.formsInAllDialects(word);
-//		AssertHelpers.assertContainsAll("", expected.toArray(new String[] {}), allForms.toArray(new String[] {}));
-//	}
-	
+
+
+
 }
