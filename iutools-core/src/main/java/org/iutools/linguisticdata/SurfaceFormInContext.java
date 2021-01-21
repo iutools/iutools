@@ -10,6 +10,7 @@ package org.iutools.linguisticdata;
 import org.apache.log4j.Logger;
 
 import org.iutools.linguisticdata.constraints.Conditions;
+import org.iutools.morph.exp.StateGraph;
 
 /*
  * This class represents a surface form of a morpheme, which will constiture
@@ -21,15 +22,16 @@ import org.iutools.linguisticdata.constraints.Conditions;
  * forms malik, mali (deletion), malig (voicing), maling (nasalization). To those
  * will be added forms where the end consonant sees itself assimilated by the
  * consonant of the next affix. So for example, malik will produce malit; malig
- * will produce maliv; maling will produce malin, malim... For roots, the attributes
- * constraintOnEndOfStem and endOfCanonicalFormOfReceivingMorpheme have null
- * values since a root cannot be preceded by a stem, obviously.
+ * will produce maliv; maling will produce malin, malim...
+ *
+ * For roots, the attributes endOfStem and context have null values since a root
+ * cannot be preceded by a stem, obviously.
  * 
  * For affixes, we have the same as for roots, but additionally, for each of those
  * forms with a different ending, we will also have variations due to some actions
  * of the affix. For example, the NN suffix arjuk will have the variants raarjuk and
  * gaarjuk.
- * 
+ *
  * 
  *  surfaceForm – string that represents the surface form of the morpheme as a result
  *                of what is described above
@@ -47,7 +49,7 @@ import org.iutools.linguisticdata.constraints.Conditions;
  *  context – string that represents the final of the stem to which this form may attach
  *            (last character of the canonical form of the morphemes):
  *                          - V, t, k, q
- *  morphemeId – id of the morpheme in the data base
+ *  morphemeId – id of the morpheme in the data base for this form
  *  
  * The context hence
  * becomes a constraint (a condition) to be met by the stem.
@@ -76,19 +78,53 @@ public class SurfaceFormInContext extends Object {
     public String endOfStem;
     public Character context;
     public String morphemeId;
-	private String canonicalForm;
-    
+
+    private String canonicalForm = null;
+    private Boolean surfaceFinalIsDifferentThanCanonical = null;
+
     public SurfaceFormInContext(String _surfaceForm, String _endOfStem, Character _context, String _morphemeId) {
     	Logger logger = Logger.getLogger("SurfaceFormInContext.constructor");
-    	if (_morphemeId.equals("tikiq/1n") || _morphemeId.equals("patiq/1v") || _morphemeId.equals("jarniq/1vv"))
-    		logger.debug(_morphemeId+"; "+_surfaceForm+"; "+_endOfStem+"; "+String.valueOf(_context));
+//    	if (_morphemeId.equals("tikiq/1n") || _morphemeId.equals("patiq/1v") || _morphemeId.equals("jarniq/1vv"))
+//    		logger.debug(_morphemeId+"; "+_surfaceForm+"; "+_endOfStem+"; "+String.valueOf(_context));
         this.surfaceForm = _surfaceForm;
         this.endOfStem = _endOfStem;
         this.context = _context;
         this.morphemeId = _morphemeId;
-        String[] partsOfMorphemeId = this.morphemeId.split("/");
-        this.canonicalForm = partsOfMorphemeId[0];
     }
+
+    public String canonicalForm() {
+    	if (this.canonicalForm != null)
+    		return this.canonicalForm;
+    	if (morphemeId != "") {
+			String[] partsOfMorphemeId = this.morphemeId.split("/");
+			this.canonicalForm = partsOfMorphemeId[0];
+			return this.canonicalForm;
+		} else {
+    		return "";
+		}
+	}
+
+	/*
+	 	For both roots and affixes, for forms with a final different than the final of
+	 	the canonical form, one needs a special attribute to indicate that there has to be
+	 	something following, because any form with a different final means it is a final
+	 	due to the action of a following affix.
+	 */
+	public boolean finalIsDifferentThanCanonical() {
+		Logger logger = Logger.getLogger("SurfaceFormInContext.finalIsDifferentThanCanonical");
+		logger.debug("this.surfaceFinalIsDifferentThanCanonical = "+this.surfaceFinalIsDifferentThanCanonical);
+    	if (this.surfaceFinalIsDifferentThanCanonical == null) {
+			char finalOfSurfaceForm = surfaceForm.charAt(surfaceForm.length() - 1);
+			logger.debug("finalOfSurfaceForm of "+surfaceForm+"= "+finalOfSurfaceForm);
+			String canonicalForm = canonicalForm();
+			char finalOfCanonicalForm = canonicalForm.charAt(canonicalForm.length() - 1);
+			logger.debug("finalOfCanonicalForm of "+canonicalForm+"= "+finalOfCanonicalForm);
+			this.surfaceFinalIsDifferentThanCanonical = finalOfSurfaceForm != finalOfCanonicalForm;
+		}
+		logger.debug("this.surfaceFinalIsDifferentThanCanonical = "+this.surfaceFinalIsDifferentThanCanonical);
+
+		return this.surfaceFinalIsDifferentThanCanonical;
+	}
     
     public boolean isValidForStem(String stem) {
 		String lastChar = stem.substring(stem.length()-1);
@@ -149,12 +185,73 @@ public class SurfaceFormInContext extends Object {
         return 1;
     }
 
+	/**
+	 * Check whether this type of morpheme may follow the preceding morpheme.
+	 *
+	 * @param precedingMorpheme The SurfaceFormInContext representation of the morpheme that precedes this one.
+	 * @return a boolean
+	 */
+	public boolean validateAssociativityWithPrecedingMorpheme(SurfaceFormInContext precedingMorpheme) {
+		boolean res = false;
+		Logger logger = Logger.getLogger("SurfaceFormInContext.validateAssociativityWithPrecedingMorpheme");
+		return res;
+	}
+
+//	public boolean validateAssociativityWithPrecedingMorpheme(SurfaceFormInContext precedingMorpheme) {
+//		boolean res;
+//		Logger logger = Logger.getLogger("SurfaceFormInContext.validateAssociativityWithPrecedingMorpheme");
+//		String morphemeIdPrecedingMorpheme = precedingMorpheme.morphemeId;
+//		String[] morphemeIdPrecedingMorphemeParts = morphemeIdPrecedingMorpheme.split("/");
+//		String idPrecedingMorpheme = morphemeIdPrecedingMorphemeParts[1];
+//		String morphemeIdThis = morphemeId;
+//		String[] morphemeIdThisParts = morphemeIdThis.split("/");
+//		String idThis = morphemeIdThisParts[1];
+//		logger.debug("prec: "+idPrecedingMorpheme+"; this: "+idThis);
+//		if (idThis.matches("^\\d+q$")) {
+//			// queue
+//			res = true;
+//			logger.debug("queue");
+//		} else if (idThis.matches("^\\d+n.+") ||               // NN or NV suffix
+//				idThis.matches("^tn.+")) {                     // noun ending
+//			// noun suffix or noun ending
+//			logger.debug("this: nX suffix or noun ending");
+//			if (idPrecedingMorpheme.matches("^\\d+n$") ||       // noun root
+//					idPrecedingMorpheme.matches("^\\d+.n$") ||  // NN or VN suffix
+//					idPrecedingMorpheme.matches("^\\d+pr?$")    // pronoun
+//			) {
+//				res = true;
+//				logger.debug("prec: Xn suffix or noun root");
+//			} else {
+//				res = false;
+//			}
+//		} else if (idThis.matches("^\\d+v.+") ||
+//				idThis.matches("^tv.+")) {
+//			// verb suffix or verb ending
+//			logger.debug("this: vX suffix or verb ending");
+//			if (idPrecedingMorpheme.matches("^\\d+v$") ||
+//					idPrecedingMorpheme.matches("^\\d+.v$")) {
+//				res = true;
+//				logger.debug("prec: Xv suffix or verb root");
+//			} else {
+//				res = false;
+//			}
+//		} else
+//			res = false;
+//
+//		logger.debug("res= "+res);
+//		return res;
+//	}
+
+
 	public boolean validateWithStem(SurfaceFormInContext precedingMorpheme) {
     	Logger logger = Logger.getLogger("SurfaceFormInContext.validateWithStem");
 		char finalOfPrecedingMorpheme =
-			precedingMorpheme.canonicalForm.substring(precedingMorpheme.canonicalForm.length()-1).charAt(0);
-		if (this.context.equals("V")) {
+			precedingMorpheme.canonicalForm().substring(precedingMorpheme.canonicalForm().length()-1).charAt(0);
+		if (this.context=='V') {
 			if (finalOfPrecedingMorpheme!='i' && finalOfPrecedingMorpheme!='u' && finalOfPrecedingMorpheme!='a')
+				return false;
+		} else if (this.context=='C') {
+			if (finalOfPrecedingMorpheme == 'i' || finalOfPrecedingMorpheme == 'u' || finalOfPrecedingMorpheme == 'a')
 				return false;
 		} else if (finalOfPrecedingMorpheme!=this.context)
 			return false;
@@ -182,62 +279,30 @@ public class SurfaceFormInContext extends Object {
 		}
 	}
 
-	public boolean validateWithPrecedingMorpheme(SurfaceFormInContext precedingMorpheme) {
-		boolean res;
-		Logger logger = Logger.getLogger("SurfaceFormInContext.validateWithPrecedingMorpheme");
-		String morphemeIdPrecedingMorpheme = precedingMorpheme.morphemeId;
-		String[] morphemeIdPrecedingMorphemeParts = morphemeIdPrecedingMorpheme.split("/");
-		String idPrecedingMorpheme = morphemeIdPrecedingMorphemeParts[1];
-		String morphemeIdThis = morphemeId;
-		String[] morphemeIdThisParts = morphemeIdThis.split("/");
-		String idThis = morphemeIdThisParts[1];
-		logger.debug("prec: "+idPrecedingMorpheme+"; this: "+idThis);
-		if (idThis.matches("^\\d+q$")) {
-			// queue
-			res = true;
-			logger.debug("queue");
-		} else if (idThis.matches("^\\d+n.+") || 
-				idThis.matches("^tn.+")) {
-			// noun suffix or noun ending
-			logger.debug("this: nX suffix or noun ending");
-			if (idPrecedingMorpheme.matches("^\\d+n$") ||
-					idPrecedingMorpheme.matches("^\\d+.n$") ||
-					idPrecedingMorpheme.matches("^\\d+pr?$")
-					) {
-				res = true;
-				logger.debug("prec: Xn suffix or noun root");
-			} else {
-				res = false;
-			}
-		} else if (idThis.matches("^\\d+v.+") || 
-				idThis.matches("^tv.+")) {
-			logger.debug("this: vX suffix or verb ending");
-			if (idPrecedingMorpheme.matches("^\\d+v$") ||
-					idPrecedingMorpheme.matches("^\\d+.v$")) {
-				res = true;
-				logger.debug("prec: Xv suffix or verb root");
-			} else {
-				res = false;
-			}
-		} else	
-			res = false;
-		
-		logger.debug("res= "+res);
-		return res;
-	}
 
+	/**
+	 * Check whether the constraining conditions imposed by this morpheme and the preceding morpheme are met.
+	 *
+	 * @param precedingMorpheme - The SurfaceFormInContext representation of the morpheme that precedes this one.
+	 * @return a boolean
+	 * @throws LinguisticDataException
+	 */
 	public boolean validateConstraints(SurfaceFormInContext precedingMorpheme) throws LinguisticDataException {
 		Logger logger = Logger.getLogger("SurfaceFormInContext.validateConstraints");
 		logger.debug("precedingMorpheme.morphemeId: "+precedingMorpheme.morphemeId);
 		Morpheme prec = LinguisticData.getInstance().getMorpheme(precedingMorpheme.morphemeId);
 		Morpheme cur = LinguisticData.getInstance().getMorpheme(this.morphemeId);
-		Conditions conds = null;
+		Conditions condsOnPrecedingMorpheme = null;
+		Conditions condsOnCurrentMorpheme = null;
 		try {
-			conds = cur.getPrecCond();
+			condsOnPrecedingMorpheme = cur.getPrecCond();
+			condsOnCurrentMorpheme = prec.getNextCond();
 		} catch (NullPointerException e) {
 			System.err.println("NullPointerException for "+this.morphemeId);
 		}
-		boolean res = prec.meetsConditions(conds);
+		boolean res = prec.meetsConditions(condsOnPrecedingMorpheme);
+		if (res)
+			res = cur.meetsConditions(condsOnCurrentMorpheme);
 		return res;
 	}
 
@@ -268,7 +333,9 @@ public class SurfaceFormInContext extends Object {
 				surfaceForm+"; "+endOfStem+"; "+context+"; "+morphemeId+"]";
 	}
 
+	public boolean isZeroLength() {
+		return false;
+	}
 
-
-    
 }
+
