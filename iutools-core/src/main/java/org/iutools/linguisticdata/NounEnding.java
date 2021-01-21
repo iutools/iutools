@@ -71,28 +71,30 @@ public class NounEnding extends Affix {
 		// voyelle, t, k et q et à leurs actions.
 
 		// Après Voyelle
-		String form = v.get("V-form");
-		String act1 = v.get("V-action1");
-		String act2 = v.get("V-action2");
-		makeFormsAndActions("V", morpheme, form, act1, act2);
+		String vform = v.get("V-form");
+		String vact1 = v.get("V-action1");
+		String vact2 = v.get("V-action2");
 
 		// Après 't'
-		form = v.get("t-form");
-		act1 = v.get("t-action1");
-		act2 = v.get("t-action2");
-		makeFormsAndActions("t", morpheme, form, act1, act2);
+		String tform = v.get("t-form");
+		String tact1 = v.get("t-action1");
+		String tact2 = v.get("t-action2");
 
 		// Après 'k'
-		form = v.get("k-form");
-		act1 = v.get("k-action1");
-		act2 = v.get("k-action2");
-		makeFormsAndActions("k", morpheme, form, act1, act2);
+		String kform = v.get("k-form");
+		String kact1 = v.get("k-action1");
+		String kact2 = v.get("k-action2");
 
 		// Après 'q'
-		form = v.get("q-form");
-		act1 = v.get("q-action1");
-		act2 = v.get("q-action2");
-		makeFormsAndActions("q", morpheme, form, act1, act2);
+		String qform = v.get("q-form");
+		String qact1 = v.get("q-action1");
+		String qact2 = v.get("q-action2");
+
+		makeFormsAndActions("V", morpheme, vform, vact1, vact2);
+		makeFormsAndActions("t", morpheme, tform, tact1, tact2);
+		makeFormsAndActions("k", morpheme, kform, kact1, kact2);
+		makeFormsAndActions("q", morpheme, qform, qact1, qact2);
+		makeContextualBehaviours();
 
 		String cs = v.get("condPrec");
 		if (cs != null) {
