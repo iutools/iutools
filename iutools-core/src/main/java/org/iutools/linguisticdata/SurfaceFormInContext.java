@@ -10,7 +10,6 @@ package org.iutools.linguisticdata;
 import org.apache.log4j.Logger;
 
 import org.iutools.linguisticdata.constraints.Conditions;
-import org.iutools.morph.exp.StateGraph;
 
 /*
  * This class represents a surface form of a morpheme, which will constiture
