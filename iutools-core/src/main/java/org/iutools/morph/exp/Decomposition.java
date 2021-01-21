@@ -1,6 +1,7 @@
 package org.iutools.morph.exp;
 
 import org.apache.log4j.Logger;
+import org.iutools.morph.StateGraphForward;
 
 public class Decomposition {
 	
@@ -28,7 +29,7 @@ public class Decomposition {
 		logger.debug("basicForm: "+basicForm);
 		String id = morphemeIdParts[1];
 		logger.debug("id: "+id);
-		res = StateGraph.morphemeCanBeAtEndOfWord(morphemeId);
+		res = StateGraphForward.morphemeCanBeAtEndOfWord(morphemeId);
 		logger.debug("res= "+res);
 		return res;
 	}
