@@ -94,6 +94,8 @@ public class Suffix extends Affix {
 		act2 = v.get("q-action2");
 		makeFormsAndActions("q", morpheme, form, act1, act2);
 
+		makeContextualBehaviours();
+
 		englishMeaning = v.get("engMean");
 		frenchMeaning = v.get("freMean");
 		dbName = v.get("dbName");
