@@ -25,6 +25,7 @@ import org.iutools.datastructure.trie.TrieException;
 import org.iutools.datastructure.trie.TrieNode;
 import org.iutools.datastructure.trie.Trie_InMemory;
 import ca.nrc.json.PrettyPrinter;
+import org.iutools.morph.StateGraphForward;
 
 /*
  * Idée générale : à l'aide de structures Trie pour les formes de surface
@@ -69,7 +70,7 @@ public class WordAnalyzer {
 	public List<DecompositionTree> decomposeWord(String word) throws MorphologicalAnalyzerException, LinguisticDataException {
 		Logger logger = Logger.getLogger("WordAnalyzer.decomposeWord");
 		List<DecompositionTree> decompositionTrees = new ArrayList<DecompositionTree>();
-		StateGraph.State initialStateOfAnalysis = StateGraph.initialState;
+		StateGraphForward.State initialStateOfAnalysis = StateGraphForward.initialState;
 		List<String> possibleRoots = findRoot(word);
 		logger.debug("possibleRoots = "+possibleRoots);
 		Gson gson = new Gson();
@@ -79,7 +80,7 @@ public class WordAnalyzer {
 			String rootComponentInJson = iterRoot.next();
 			SurfaceFormInContext rootComponent = gson.fromJson(rootComponentInJson, SurfaceFormInContext.class);
 			Morpheme morpheme = LinguisticData.getInstance().getMorpheme(rootComponent.morphemeId);
-			StateGraph.State stateOfAnalysisAfterRoot = initialStateOfAnalysis.nextState(morpheme);
+			StateGraphForward.State stateOfAnalysisAfterRoot = initialStateOfAnalysis.nextState(morpheme);
 			String remainingPartOfWord = word.substring(rootComponent.surfaceForm.length());
 			if (remainingPartOfWord.length()==0
 					&& rootComponent.finalIsDifferentThanCanonical()) {
@@ -218,7 +219,7 @@ public class WordAnalyzer {
 			String stem,
 			String remainingPartOfWord,
 			SurfaceFormInContext precedingMorpheme,
-			StateGraph.State stateOfAnalysisAfterPrecedingMorpheme) throws LinguisticDataException, MorphologicalAnalyzerException {
+			StateGraphForward.State stateOfAnalysisAfterPrecedingMorpheme) throws LinguisticDataException, MorphologicalAnalyzerException {
 		Logger logger = Logger.getLogger("WordAnalyzer.analyzeRemainingForAffixes");
 		logger.debug("precedingMorpheme: "+precedingMorpheme.morphemeId);
 		logger.debug("remainingPartOfWord: "+remainingPartOfWord);
@@ -271,7 +272,7 @@ public class WordAnalyzer {
 			String stem,
 			String remainingPartOfWord,
 			SurfaceFormInContext precedingMorpheme,
-			StateGraph.State stateOfAnalysisAfterPrecedingMorpheme) throws LinguisticDataException, MorphologicalAnalyzerException {
+			StateGraphForward.State stateOfAnalysisAfterPrecedingMorpheme) throws LinguisticDataException, MorphologicalAnalyzerException {
 		Logger logger = Logger.getLogger("WordAnalyzer.processPossibleAffix");
 		logger.debug("\n-------\naffix: "+affixComponent);
 		logger.debug("remainingPartOfWord= '"+remainingPartOfWord+"'");
@@ -284,7 +285,7 @@ public class WordAnalyzer {
 		}
 
 		Morpheme morpheme = LinguisticData.getInstance().getMorpheme(affixComponent.morphemeId);
-		StateGraph.State nextStateAfterMorpheme = stateOfAnalysisAfterPrecedingMorpheme.nextState(morpheme);
+		StateGraphForward.State nextStateAfterMorpheme = stateOfAnalysisAfterPrecedingMorpheme.nextState(morpheme);
 //		boolean morphemeAcceptedInThisState = morphemeComponent.validateAssociativityWithPrecedingMorpheme(stateOfAnalysisAfterPrecedingMorpheme);
 		boolean morphemeAcceptedInThisState = nextStateAfterMorpheme != null;
 		if ( !morphemeAcceptedInThisState ) {
