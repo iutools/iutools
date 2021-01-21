@@ -2,8 +2,7 @@ package org.iutools.linguisticdata;
 
 import static org.junit.Assert.*;
 
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -11,6 +10,121 @@ import org.junit.Test;
 import ca.nrc.json.PrettyPrinter;
 
 public class AffixTest {
+
+    @Test
+    public void test__makeContextualBehavioursForConsonantalContext_withCommonBehaviours() throws Exception {
+        Affix suffix = new Suffix();
+        suffix.makeFormsAndActions("t", "aluk",
+                "aluk aluk aaluk",
+                "s i(i) s",
+                "i(ra) - i(ra)" );
+        suffix.makeFormsAndActions("k", "aluk",
+                "aluk aaluk",
+                "s s",
+                "i(ra) i(ra)" );
+        suffix.makeFormsAndActions("q", "aluk",
+                "aluk aaluk",
+                "s s",
+                "i(ra) i(ra)" );
+        suffix._makeContextualBehavioursForConsonantalContext();
+        Map<Character,List<ContextualBehaviour>> contextualBehaviours = suffix.contextualBehaviours;
+        List<String> expectedBehaviours = new ArrayList<String>();
+        expectedBehaviours.add("C,aluk,s,i(ra)");
+        expectedBehaviours.add("C,aaluk,s,i(ra)");
+        expectedBehaviours.add("t,aluk,i(i),s");
+        Set<Character> keys = contextualBehaviours.keySet();
+        int nbGotBehaviours = 0;
+        Iterator<Character> ikeys = keys.iterator();
+        while (ikeys.hasNext()) {
+            List<ContextualBehaviour> listOfBehaviours = contextualBehaviours.get(ikeys.next());
+            nbGotBehaviours += listOfBehaviours.size();
+        }
+        assertEquals("The number of behaviours returned is incorrect.",expectedBehaviours.size(),nbGotBehaviours);
+        while (ikeys.hasNext()) {
+            List<ContextualBehaviour> listOfBehaviours = contextualBehaviours.get(ikeys.next());
+            for (int i=0; i<listOfBehaviours.size(); i++) {
+                ContextualBehaviour behaviour = listOfBehaviours.get(i);
+                String representation = behaviour.context.toString()+","+behaviour.basicForm+","+behaviour.action1.strng+","+behaviour.action2.strng;
+                assertTrue(representation+": not in expectations",expectedBehaviours.contains(representation));
+            }
+        }
+    }
+
+    @Test
+    public void test__makeContextualBehavioursForConsonantalContext_withNoCommonBehaviours() throws Exception {
+        Affix suffix = new Suffix();
+        suffix.makeFormsAndActions("t", "guq",
+                "guq",
+                "s",
+                "" );
+        suffix.makeFormsAndActions("k", "guq",
+                "guq",
+                "s",
+                "" );
+        suffix.makeFormsAndActions("q", "guq",
+                "ruq",
+                "s",
+                "" );
+        suffix._makeContextualBehavioursForConsonantalContext();
+        Map<Character,List<ContextualBehaviour>> contextualBehaviours = suffix.contextualBehaviours;
+        List<String> expectedBehaviours = new ArrayList<String>();
+        expectedBehaviours.add("t,guq,s,");
+        expectedBehaviours.add("k,guq,s,");
+        expectedBehaviours.add("q,ruq,s,");
+        Set<Character> keys = contextualBehaviours.keySet();
+        int nbGotBehaviours = 0;
+        Iterator<Character> ikeys = keys.iterator();
+        while (ikeys.hasNext()) {
+            List<ContextualBehaviour> listOfBehaviours = contextualBehaviours.get(ikeys.next());
+            nbGotBehaviours += listOfBehaviours.size();
+        }
+        assertEquals("The number of behaviours returned is incorrect.",expectedBehaviours.size(),nbGotBehaviours);
+        while (ikeys.hasNext()) {
+            List<ContextualBehaviour> listOfBehaviours = contextualBehaviours.get(ikeys.next());
+            for (int i=0; i<listOfBehaviours.size(); i++) {
+                ContextualBehaviour behaviour = listOfBehaviours.get(i);
+                String representation = behaviour.context.toString()+","+behaviour.basicForm+","+behaviour.action1.strng+","+behaviour.action2.strng;
+                assertTrue(representation+": not in expectations",expectedBehaviours.contains(representation));
+            }
+        }
+    }
+
+    @Test
+    public void test__makeContextualBehavioursForConsonantalContext_withAllCommonBehaviours() throws Exception {
+        Affix suffix = new Suffix();
+        suffix.makeFormsAndActions("t", "&&aq",
+                "&&aq",
+                "s",
+                "" );
+        suffix.makeFormsAndActions("k", "&&aq",
+                "&&aq",
+                "s",
+                "" );
+        suffix.makeFormsAndActions("q", "&&aq",
+                "&&aq",
+                "s",
+                "" );
+        suffix._makeContextualBehavioursForConsonantalContext();
+        Map<Character,List<ContextualBehaviour>> contextualBehaviours = suffix.contextualBehaviours;
+        List<String> expectedBehaviours = new ArrayList<String>();
+        expectedBehaviours.add("C,&&aq,s,");
+        Set<Character> keys = contextualBehaviours.keySet();
+        int nbGotBehaviours = 0;
+        Iterator<Character> ikeys = keys.iterator();
+        while (ikeys.hasNext()) {
+            List<ContextualBehaviour> listOfBehaviours = contextualBehaviours.get(ikeys.next());
+            nbGotBehaviours += listOfBehaviours.size();
+        }
+        assertEquals("The number of behaviours returned is incorrect.",expectedBehaviours.size(),nbGotBehaviours);
+        while (ikeys.hasNext()) {
+            List<ContextualBehaviour> listOfBehaviours = contextualBehaviours.get(ikeys.next());
+            for (int i=0; i<listOfBehaviours.size(); i++) {
+                ContextualBehaviour behaviour = listOfBehaviours.get(i);
+                String representation = behaviour.context.toString()+","+behaviour.basicForm+","+behaviour.action1.strng+","+behaviour.action2.strng;
+                assertTrue(representation+": not in expectations",expectedBehaviours.contains(representation));
+            }
+        }
+    }
 
 //	@Test
 //	public void test_getFormsInContext__Case_ijaq() throws Exception {

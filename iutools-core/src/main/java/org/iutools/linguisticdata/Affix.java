@@ -50,7 +50,7 @@ public abstract class Affix extends Morpheme {
 	String[] qform = null;
 	Action[] qaction1 = null;
 	Action[] qaction2 = null;
-	public Map<Character,ContextualBehaviour[]> contextualBehaviours = new HashMap<Character,ContextualBehaviour[]>();
+	public Map<Character,List<ContextualBehaviour>> contextualBehaviours = new HashMap<Character,List<ContextualBehaviour>>();
 	//
 	
 	//---------------------------------------------------------------------------------------------------------
@@ -87,20 +87,22 @@ public abstract class Affix extends Morpheme {
     
     public Set<SurfaceFormInContext> getFormsInContext(Character context) {
 		Set<SurfaceFormInContext> formsInContext = new HashSet<SurfaceFormInContext>();
-    	ContextualBehaviour[] behaviours = contextualBehaviours.get(context);
-    	if ( behaviours != null )
-    	for ( ContextualBehaviour behaviour : behaviours) {
-    		List<String[]> formsAndEndsOfFormInContextFromBehaviour = behaviour.formsInContext();
-    		for (int ilist=0; ilist<formsAndEndsOfFormInContextFromBehaviour.size(); ilist++) {
-    			String[] formAndEndOfFormInContextFromBehaviour = formsAndEndsOfFormInContextFromBehaviour.get(ilist);
-				if (formAndEndOfFormInContextFromBehaviour != null) {
-					SurfaceFormInContext surfaceFormInContextForBehaviour =
-							new SurfaceFormInContext(
-									formAndEndOfFormInContextFromBehaviour[0],
-									formAndEndOfFormInContextFromBehaviour[1],
-									context,
-									this.id);
-					formsInContext.add(surfaceFormInContextForBehaviour);
+    	List<ContextualBehaviour> listOfBehaviours = contextualBehaviours.get(context);
+    	if ( listOfBehaviours != null ) {
+			ContextualBehaviour[] behaviours = listOfBehaviours.toArray(new ContextualBehaviour[]{});
+			for (ContextualBehaviour behaviour : behaviours) {
+				List<String[]> formsAndEndsOfFormInContextFromBehaviour = behaviour.formsInContext();
+				for (int ilist = 0; ilist < formsAndEndsOfFormInContextFromBehaviour.size(); ilist++) {
+					String[] formAndEndOfFormInContextFromBehaviour = formsAndEndsOfFormInContextFromBehaviour.get(ilist);
+					if (formAndEndOfFormInContextFromBehaviour != null) {
+						SurfaceFormInContext surfaceFormInContextForBehaviour =
+								new SurfaceFormInContext(
+										formAndEndOfFormInContextFromBehaviour[0],
+										formAndEndOfFormInContextFromBehaviour[1],
+										context,
+										this.id);
+						formsInContext.add(surfaceFormInContextForBehaviour);
+					}
 				}
 			}
 		}
@@ -206,9 +208,9 @@ public abstract class Affix extends Morpheme {
 	    
 		Logger logger = Logger.getLogger("Affix.makeFormsAndActions");
 		logger.debug("morpheme= "+morpheme+"; context= "+context+"; alternateForms= "+alternateForms+"");
-        String[] forms;
-        Action[] a1;
-        Action[] a2;
+        String[] arrayOfForms;
+        Action[] arrayOfActions1;
+        Action[] arrayOfActions2;
 
 	    String allForms = null;
         
@@ -286,13 +288,13 @@ public abstract class Affix extends Morpheme {
 		// En principe, ici, allForms, action1 et action2 devraient
 		// �tre en phase et contenir un nombre �gal d'�l�ments.
 
-		Vector<String> VForms = new Vector<String>();
-		Vector<Action> a1V = new Vector<Action>();
-		Vector<Action> a2V = new Vector<Action>();
+		Vector<String> listOfForms = new Vector<String>();
+		Vector<Action> listOfActions1 = new Vector<Action>();
+		Vector<Action> listOfActions2 = new Vector<Action>();
 
 		while (stf.hasMoreTokens()) {
 		    String f = stf.nextToken();
-			VForms.add(f);
+			listOfForms.add(f);
 			// La premi�re fois, st1.hasMoreTokens() est vrai, puisque
 			// action1 doit absolument avoir une valeur dans la base de
 			// donn�es: act1 y trouve sa valeur...
@@ -308,75 +310,186 @@ public abstract class Affix extends Morpheme {
                 String actPos = mif1.group(2);
                 String actNeg = null;
                 actNeg = mif1.group(3);
-                a1V.add(Action.makeAction(actPos+"si("+condition+")"));
+                listOfActions1.add(Action.makeAction(actPos+"si("+condition+")"));
                 if (actNeg != null) {
-                    VForms.add(f);
-                    a1V.add(Action.makeAction(actNeg+"si(!("+condition+"))"));
+                    listOfForms.add(f);
+                    listOfActions1.add(Action.makeAction(actNeg+"si(!("+condition+"))"));
                 }
                 if (!action2.equals("")) {
                     String ac2 = st2.nextToken();
-                    a2V.add(Action.makeAction(ac2));
-                    a2V.add(Action.makeAction(ac2));
+                    listOfActions2.add(Action.makeAction(ac2));
+                    listOfActions2.add(Action.makeAction(ac2));
                 } else {
-                    a2V.add(Action.makeAction(null));
-                    a2V.add(Action.makeAction(null));
+                    listOfActions2.add(Action.makeAction(null));
+                    listOfActions2.add(Action.makeAction(null));
                 }
             } else if (mif2.matches()) {
                 String condition = mif2.group(1).replaceAll("\\x7c"," "); // '|'
                 String actPos = mif2.group(2);
-                a1V.add(Action.makeAction(actPos+"si("+condition+")"));
+                listOfActions1.add(Action.makeAction(actPos+"si("+condition+")"));
                 if (!action2.equals("")) {
                     String ac2 = st2.nextToken();
-                    a2V.add(Action.makeAction(ac2));
-                    a2V.add(Action.makeAction(ac2));
+                    listOfActions2.add(Action.makeAction(ac2));
+                    listOfActions2.add(Action.makeAction(ac2));
                 } else {
-                    a2V.add(Action.makeAction(null));
-                    a2V.add(Action.makeAction(null));
+                    listOfActions2.add(Action.makeAction(null));
+                    listOfActions2.add(Action.makeAction(null));
                 }
             } else {
-			    a1V.add(Action.makeAction(act1));
+			    listOfActions1.add(Action.makeAction(act1));
 			    if (!action2.equals(""))
-			        a2V.add(Action.makeAction(st2.nextToken()));
+			        listOfActions2.add(Action.makeAction(st2.nextToken()));
 			    else
-			        a2V.add(Action.makeAction(null));
+			        listOfActions2.add(Action.makeAction(null));
 			}
 		}
 		
-		forms = (String[])VForms.toArray(new String []{});
-		a1 = (Action[])a1V.toArray(new Action[]{Action.makeAction()});
-		a2 = (Action[])a2V.toArray(new Action[]{Action.makeAction()});
+		arrayOfForms = (String[])listOfForms.toArray(new String []{});
+		arrayOfActions1 = (Action[])listOfActions1.toArray(new Action[]{Action.makeAction()});
+		arrayOfActions2 = (Action[])listOfActions2.toArray(new Action[]{Action.makeAction()});
 
 		// Enregistrer dans l'object affixe
 		Character contextChar = context.charAt(0);
 		if (contextChar=='V') {
-			vform = forms;
-			vaction1 = a1;
-			vaction2 = a2;
+			vform = arrayOfForms;
+			vaction1 = arrayOfActions1;
+			vaction2 = arrayOfActions2;
 		} else if (contextChar=='t') {
-			tform = forms;
-			taction1 = a1;
-			taction2 = a2;
+			tform = arrayOfForms;
+			taction1 = arrayOfActions1;
+			taction2 = arrayOfActions2;
 		} else if (contextChar=='k') {
-			kform = forms;
-			kaction1 = a1;
-			kaction2 = a2;
+			kform = arrayOfForms;
+			kaction1 = arrayOfActions1;
+			kaction2 = arrayOfActions2;
 		} else if (contextChar=='q') {
-			qform = forms;
-			qaction1 = a1;
-			qaction2 = a2;
+			qform = arrayOfForms;
+			qaction1 = arrayOfActions1;
+			qaction2 = arrayOfActions2;
 		}
-
-		makeContextualBehaviours(contextChar,forms,a1,a2);
 	}
 
-	void makeContextualBehaviours(Character contextCharacter, String[] forms, Action[] actions1, Action[] actions2) {
-		ContextualBehaviour[] behaviours = new ContextualBehaviour[forms.length];
-		for (int ifo=0; ifo<forms.length; ifo++) {
-			behaviours[ifo] = new ContextualBehaviour(contextCharacter,forms[ifo],actions1[ifo],actions2[ifo]);
-		}
-		contextualBehaviours.put(contextCharacter, behaviours);
+
+	/**
+	 * Affixes (except demonstrative endings) have sets of form and actions for each of
+	 * the 4 contexts Vowel, t, k, q ("context" relates to the final character of the
+	 * stem the affixe attaches to). The combination of a form and of its related actions
+	 * may affect the end of the stem and also the form of the affix itself. The objects
+	 * ContextualBehaviour represent those sets of form and actions.
+	 *
+	 * Normally, a ContextualBehaviour object is created for each set of form and actions
+	 * for each context. But certain affixes have the same form and the same actions for the 3
+	 * consonantal contexts (what Mick Mallon calls "consonant alternators". There is no need
+	 * then for 3 distinct ContextBehaviour objects; 1 general one will suffice.
+	 */
+	public void makeContextualBehaviours() {
+		Logger logger = Logger.getLogger("Affix.makeContextualBehaviours");
+		logger.debug(morpheme+": "+vform.length+"; "+tform.length+"; "+kform.length+"; "+qform.length);
+		_makeContextualBehavioursForVowelContext();
+		_makeContextualBehavioursForConsonantalContext();
 	}
-	
+
+	protected void _makeContextualBehavioursForVowelContext() {
+		for (int i=0; i<vform.length; i++) {
+			ContextualBehaviour behaviourV = new ContextualBehaviour('V', vform[i], vaction1[i], vaction2[i]);
+			addToContextualBehaviours('V', behaviourV);
+		}
+	}
+
+	protected void _makeContextualBehavioursForConsonantalContext() {
+		Map<String,ContextualBehaviour> behavioursInContextT = _mapBehaviourContexts('t');
+		Map<String,ContextualBehaviour> behavioursInContextK = _mapBehaviourContexts('k');
+		Map<String,ContextualBehaviour> behavioursInContextQ = _mapBehaviourContexts('q');
+
+		Map<String,ContextualBehaviour> contextualBehavioursToCheckFrom = behavioursInContextT;
+		Map[] listOfContextualBehavioursToCheckInto = new Map[]{behavioursInContextK,behavioursInContextQ};
+		int maxLength = tform.length;
+		if (kform.length > maxLength) {
+			maxLength = kform.length;
+			contextualBehavioursToCheckFrom = behavioursInContextK;
+			listOfContextualBehavioursToCheckInto = new Map[]{behavioursInContextT,behavioursInContextQ};
+		}
+		if (qform.length > maxLength) {
+			maxLength = qform.length;
+			contextualBehavioursToCheckFrom = behavioursInContextQ;
+			listOfContextualBehavioursToCheckInto = new Map[]{behavioursInContextT,behavioursInContextK};
+		}
+
+		_makeContextualBehavioursForSameBehaviourIn3Contexts(contextualBehavioursToCheckFrom,listOfContextualBehavioursToCheckInto);
+		_makeContextualBehavioursForDifferentBehavioursIn3Contexts(contextualBehavioursToCheckFrom,listOfContextualBehavioursToCheckInto);
+	}
+
+	protected Map<String,ContextualBehaviour> _mapBehaviourContexts(Character context) {
+		Map<String,ContextualBehaviour> map = new HashMap<String,ContextualBehaviour>();
+		String[] forms = null;
+		Action[] actions1 = null;
+		Action[] actions2 = null;
+		if (context=='t') {forms = tform; actions1 = taction1; actions2 = taction2; }
+		else if (context=='k') {forms = kform; actions1 = kaction1; actions2 = kaction2; }
+		else {forms = qform; actions1 = qaction1; actions2 = qaction2; }
+		for (int i=0; i<forms.length; i++) {
+			String key = forms[i]+","+(actions1[i]!=null?actions1[i].strng:"")+","+(actions2[i]!=null?actions2[i].strng:"");
+			map.put(key,new ContextualBehaviour(context,forms[i],actions1[i],actions2[i]));
+		}
+		return map;
+	}
+
+	protected void _makeContextualBehavioursForSameBehaviourIn3Contexts(
+			Map<String,ContextualBehaviour> contextualBehavioursToCheckFrom,
+			Map[] listOfContextualBehavioursToCheckInto) {
+		Set<String> setOfFormActionsToCheckFrom = contextualBehavioursToCheckFrom.keySet();
+		Iterator<String> formActionsIterator = setOfFormActionsToCheckFrom.iterator();
+		while (formActionsIterator.hasNext()) {
+			String formActionsToCheck = formActionsIterator.next();
+			Set<String> setOfFormActionsToCheckIntoOtherContext1 = listOfContextualBehavioursToCheckInto[0].keySet();
+			Set<String> setOfFormActionsToCheckIntoOtherContext2 = listOfContextualBehavioursToCheckInto[1].keySet();
+			if (setOfFormActionsToCheckIntoOtherContext1.contains(formActionsToCheck)
+					&& setOfFormActionsToCheckIntoOtherContext2.contains(formActionsToCheck)) {
+				ContextualBehaviour behaviour = contextualBehavioursToCheckFrom.get(formActionsToCheck);
+				behaviour.context = 'C';
+				addToContextualBehaviours('C', behaviour);
+				listOfContextualBehavioursToCheckInto[0].remove(formActionsToCheck);
+				listOfContextualBehavioursToCheckInto[1].remove(formActionsToCheck);
+				contextualBehavioursToCheckFrom.remove(formActionsToCheck);
+				formActionsIterator = contextualBehavioursToCheckFrom.keySet().iterator();
+			}
+		}
+	}
+	protected void _makeContextualBehavioursForDifferentBehavioursIn3Contexts(
+			Map<String,ContextualBehaviour> contextualBehavioursToCheckFrom,
+			Map[] listOfContextualBehavioursToCheckInto) {
+		Iterator<String> iterator = contextualBehavioursToCheckFrom.keySet().iterator();
+		while (iterator.hasNext()) {
+			String key = iterator.next();
+			ContextualBehaviour behaviour = contextualBehavioursToCheckFrom.get(key);
+			Character context = behaviour.context;
+			addToContextualBehaviours(context, behaviour);
+		}
+		iterator = listOfContextualBehavioursToCheckInto[0].keySet().iterator();
+		while (iterator.hasNext()) {
+			String key = iterator.next();
+			ContextualBehaviour behaviour = (ContextualBehaviour)listOfContextualBehavioursToCheckInto[0].get(key);
+			Character context = behaviour.context;
+			addToContextualBehaviours(context, behaviour);
+		}
+		iterator = listOfContextualBehavioursToCheckInto[1].keySet().iterator();
+		while (iterator.hasNext()) {
+			String key = iterator.next();
+			ContextualBehaviour behaviour = (ContextualBehaviour)listOfContextualBehavioursToCheckInto[1].get(key);
+			Character context = behaviour.context;
+			addToContextualBehaviours(context, behaviour);
+		}
+	}
+
+	void addToContextualBehaviours(Character context, ContextualBehaviour contextualBehaviour) {
+		List<ContextualBehaviour> behavioursForContext = contextualBehaviours.get(context);
+		if (behavioursForContext==null)
+			behavioursForContext = new ArrayList<ContextualBehaviour>();
+		behavioursForContext.add(contextualBehaviour);
+		contextualBehaviours.put(context,behavioursForContext);
+	}
+
+
 //	void fillFinalRadInitAffHashSet(String context, String form, Action a1, Action a2) {
 //	    String f = Orthography.simplifiedOrthographyLat(form);
 //	    String finalRadInitAff[] = a1.finalRadInitAff(context,f);
