@@ -110,17 +110,9 @@ public class FormGeneratorTest {
 						new SurfaceFormInContext("ga","V",'V',morphemeId),
 						new SurfaceFormInContext("gar","V",'V',morphemeId),
 						
-						new SurfaceFormInContext("gaq","V",'t',morphemeId),
-						new SurfaceFormInContext("ga","V",'t',morphemeId),
-						new SurfaceFormInContext("gar","V",'t',morphemeId),
-						
-						new SurfaceFormInContext("gaq","V",'k',morphemeId),
-						new SurfaceFormInContext("ga","V",'k',morphemeId),
-						new SurfaceFormInContext("gar","V",'k',morphemeId),
-						
-						new SurfaceFormInContext("gaq","V",'q',morphemeId),
-						new SurfaceFormInContext("ga","V",'q',morphemeId),
-						new SurfaceFormInContext("gar","V",'q',morphemeId)
+						new SurfaceFormInContext("gaq","V",'C',morphemeId),
+						new SurfaceFormInContext("ga","V",'C',morphemeId),
+						new SurfaceFormInContext("gar","V",'C',morphemeId)
 						)
 						);
 				
@@ -142,17 +134,9 @@ public class FormGeneratorTest {
 						new SurfaceFormInContext("ju","V",'V',morphemeId),
 						new SurfaceFormInContext("jur","V",'V',morphemeId),
 
-						new SurfaceFormInContext("tuq","C",'t',morphemeId),
-						new SurfaceFormInContext("tu","C",'t',morphemeId),
-						new SurfaceFormInContext("tur","C",'t',morphemeId),
-
-						new SurfaceFormInContext("tuq","C",'k',morphemeId),
-						new SurfaceFormInContext("tu","C",'k',morphemeId),
-						new SurfaceFormInContext("tur","C",'k',morphemeId),
-
-						new SurfaceFormInContext("tuq","C",'q',morphemeId),
-						new SurfaceFormInContext("tu","C",'q',morphemeId),
-						new SurfaceFormInContext("tur","C",'q',morphemeId)
+						new SurfaceFormInContext("tuq","C",'C',morphemeId),
+						new SurfaceFormInContext("tu","C",'C',morphemeId),
+						new SurfaceFormInContext("tur","C",'C',morphemeId)
 						)
 						);
 		
@@ -174,17 +158,9 @@ public class FormGeneratorTest {
 						new SurfaceFormInContext("liu","V",'V',morphemeId),
 						new SurfaceFormInContext("liur","V",'V',morphemeId),
 
-						new SurfaceFormInContext("liuq","V",'t',morphemeId),
-						new SurfaceFormInContext("liu","V",'t',morphemeId),
-						new SurfaceFormInContext("liur","V",'t',morphemeId),
-
-						new SurfaceFormInContext("liuq","V",'k',morphemeId),
-						new SurfaceFormInContext("liu","V",'k',morphemeId),
-						new SurfaceFormInContext("liur","V",'k',morphemeId),
-
-						new SurfaceFormInContext("liuq","V",'q',morphemeId),
-						new SurfaceFormInContext("liu","V",'q',morphemeId),
-						new SurfaceFormInContext("liur","V",'q',morphemeId),
+						new SurfaceFormInContext("liuq","V",'C',morphemeId),
+						new SurfaceFormInContext("liu","V",'C',morphemeId),
+						new SurfaceFormInContext("liur","V",'C',morphemeId),
 
 						new SurfaceFormInContext("tiuq","C",'t',morphemeId),
 						new SurfaceFormInContext("tiu","C",'t',morphemeId),
@@ -253,8 +229,35 @@ public class FormGeneratorTest {
 					" is not contained in the returned forms.",forms.contains(expectedForms.get(i)));
 		}
 	}
-	
-	
+
+
+	@Test
+	public void test_run__Case_infix_it_tn_nom_p() throws FormGeneratorException, IOException, LinguisticDataException {
+		FormGenerator formGenerator = new FormGenerator();
+		String morphemeId = "it/tn-nom-p";
+		List<SurfaceFormInContext> forms = formGenerator.run(morphemeId);
+		List<SurfaceFormInContext> expectedForms =
+				new ArrayList<SurfaceFormInContext>(
+						Arrays.asList(
+								new SurfaceFormInContext("it","1V",'V',morphemeId),
+								new SurfaceFormInContext("t","2V",'V',morphemeId),
+
+								new SurfaceFormInContext("it","t",'t',morphemeId),
+
+								new SurfaceFormInContext("it","1V",'k',morphemeId),
+								new SurfaceFormInContext("t","2V",'k',morphemeId),
+
+								new SurfaceFormInContext("it","1V",'q',morphemeId),
+								new SurfaceFormInContext("siu","2V",'1',morphemeId)
+
+						)
+				);
+
+		assertEquals("The number of forms returned is not correct.",expectedForms.size(),forms.size());
+		for (int i =0; i<expectedForms.size(); i++) {
+			assertTrue("The element "+expectedForms.get(i).surfaceForm+" is not contained in the returned forms.",forms.contains(expectedForms.get(i)));
+		}
+	}
 
 	
 	

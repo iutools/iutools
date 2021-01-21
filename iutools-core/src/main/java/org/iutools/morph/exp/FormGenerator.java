@@ -66,7 +66,8 @@ public class FormGenerator {
 							new SurfaceFormInContext(
 									form,
 									formWithBeginning.endOfStem,
-									formWithBeginning.context,morphemeId);
+									formWithBeginning.context,
+									morphemeId);
 					logger.debug(surfaceForInContextForFormWithBeginning);
 					surfaceForms.add(surfaceForInContextForFormWithBeginning);
 					logger.debug("surfaceForms: "+surfaceForms.size());
@@ -112,7 +113,7 @@ public class FormGenerator {
 		logger.debug("morphemeId: "+morphemeId);
 		Set<SurfaceFormInContext> allSurfaceFormsInContext = new HashSet<SurfaceFormInContext>();
 		Affix affix = LinguisticData.getInstance().getAffixWithId(morphemeId);
-		char[] contexts = new char[] {'V','t','k','q'};
+		char[] contexts = new char[] {'V','t','k','q','C'};
 		for (int iCtxt=0; iCtxt<contexts.length; iCtxt++) {
 			logger.debug("context: "+contexts[iCtxt]);
 			Set<SurfaceFormInContext> surfaceFormsInContext = affix.getFormsInContext(contexts[iCtxt]);
@@ -126,41 +127,56 @@ public class FormGenerator {
 
 
 	protected HashSet<String> formsWithEnds(String morphemeCanonicalForm) throws FormGeneratorException {
-		HashSet<String> forms = new HashSet<String>();			
+		HashSet<String> forms = new HashSet<String>();
+		if (morphemeCanonicalForm.length()==0)
+			return forms;
 		forms.add(morphemeCanonicalForm);
 		if ( !morphemeCanonicalForm.endsWith("i") && !morphemeCanonicalForm.endsWith("u") && !morphemeCanonicalForm.endsWith("a")) {
 			String finalConsonant = morphemeCanonicalForm.substring(morphemeCanonicalForm.length()-1);
 			String baseFormWithoutFinalConsonant = morphemeCanonicalForm.substring(0,morphemeCanonicalForm.length()-1);
 			forms.add(baseFormWithoutFinalConsonant);
 			if (finalConsonant.equals("t")) {
-				// tp>pp : t can be assimilated by p: tikit+puq -> tikippuq
+				// tp>pp: t can be assimilated by p: tikit+puq -> tikippuq
+				// tk>kk: t can be assimilated by k: taatkua -> taakkua
+				// ts>ss: t can be assimilated by s: taatsuma -> taassuma
+				// ts>tt: t can be assimilated by t: natsilik -> nattilik
 				// t is voiced to l: uvannut+li -> uvannulli
 				// l can be assimilated by v,j and g: tikit+vik+u+lauq+gama -> tikilviulaurama -> tikivviulaurama
 				// t is nasalized to n: tikit+niaq-tuq -> tikinniaqtuq
-				// n can me assimilated by m: tikit+mat -> tikinmat -> tikimmat
+				// n can be assimilated by m: tikit+mat -> tikinmat -> tikimmat
+				// n can be assimilated by ng:
 				forms.add(baseFormWithoutFinalConsonant+"p");
+				forms.add(baseFormWithoutFinalConsonant+"k");
+				forms.add(baseFormWithoutFinalConsonant+"s");
+//				forms.add(baseFormWithoutFinalConsonant+"t");
+				// voicing
 				forms.add(baseFormWithoutFinalConsonant+"l");
 				forms.add(baseFormWithoutFinalConsonant+"v");
-				forms.add(baseFormWithoutFinalConsonant+"j");
-				forms.add(baseFormWithoutFinalConsonant+"g");
+				// nasalization
 				forms.add(baseFormWithoutFinalConsonant+"n");
 				forms.add(baseFormWithoutFinalConsonant+"m");
 				forms.add(baseFormWithoutFinalConsonant+"ng");
 			} else if (finalConsonant.equals("k")) {
 				// k can be assimilated by p: pisuk+pak+lauq+mata -> pisuppalaurmata
-				// k can be assimilated by t: pisuk+ji+it -> pisuttiit
+				// k can be assimilated by t: pisuk+ti+it -> pisuttiit
+				// k can be assimilated by s: iksivautaq -> issivautaq
+				// k can be assimilated to t by s: iksivautaq -> itsivautaq
 				// k is voiced to g: pisuk+vik+ksaq+u+juq+nik -> pisugviksaujunik
 				// k is nalasized to ng: iqaluk+ni -> iqalungni
 				// g can be assimilated by j: ilinniaq+vik+juaq -> ilinniarvigjuaq -> ilinniarvijjuaq
 				// g can be assimilated by l: malik+lugit -> maliglugit -> malillugit
 				// g can be assimilated by v: allak+vik+mi -> allagvimmi -> allavvimmi
+				// ng can be assimilated by m:
+				// ng can be assimilated by n:
 				forms.add(baseFormWithoutFinalConsonant+"p");
 				forms.add(baseFormWithoutFinalConsonant+"t");
 				forms.add(baseFormWithoutFinalConsonant+"s");
+				// voicing
 				forms.add(baseFormWithoutFinalConsonant+"g");
 				forms.add(baseFormWithoutFinalConsonant+"v");
 				forms.add(baseFormWithoutFinalConsonant+"l");
 				forms.add(baseFormWithoutFinalConsonant+"j");
+				// nasalization
 				forms.add(baseFormWithoutFinalConsonant+"ng");
 				forms.add(baseFormWithoutFinalConsonant+"m");
 				forms.add(baseFormWithoutFinalConsonant+"n");
@@ -169,7 +185,9 @@ public class FormGenerator {
 				// no assimilation of q by any consonant
 				forms.add(baseFormWithoutFinalConsonant+"r");
 			} else {
-				throw new FormGeneratorException("The base form of the morpheme ends with a consonant different than t, k, q.");
+				// Some entries may have a final other than V, t, k, q.
+				// For example, demonstrative radicals (uv; tauv)
+//				throw new FormGeneratorException("The base form of the morpheme ends with a consonant different than t, k, q.");
 			}
 		}
 		
