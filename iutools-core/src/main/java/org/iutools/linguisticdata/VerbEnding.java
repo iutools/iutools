@@ -105,6 +105,8 @@ public class VerbEnding extends Affix {
 		act2 = v.get("q-action2");
 		makeFormsAndActions("q", morpheme, form, act1, act2);
 
+		makeContextualBehaviours();
+
 		String cs = v.get("condPrecSpecific");
 		if (cs != null) {
             try {
