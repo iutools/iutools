@@ -1,12 +1,8 @@
 package org.iutools.morph.exp;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -19,13 +15,9 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 
 import com.google.gson.Gson;
-import com.google.gson.stream.JsonReader;
 
-import org.iutools.config.IUConfig;
-import org.iutools.linguisticdata.LinguisticData;
-import org.iutools.linguisticdata.LinguisticDataException;
-import org.iutools.linguisticdata.Morpheme;
-import org.iutools.linguisticdata.SurfaceFormInContext;
+import org.iutools.datastructure.trie.Trie;
+import org.iutools.linguisticdata.*;
 import org.iutools.morph.MorphologicalAnalyzerException;
 import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.Pair;
@@ -44,55 +36,59 @@ public class WordAnalyzer {
 	private Trie_InMemory root_trie = null;
 	private Trie_InMemory affix_trie = null;	
 	
-	public WordAnalyzer() throws IOException, ConfigException {
-		prepareTries();
+	public WordAnalyzer() throws TrieException, IOException, ConfigException {
+		Trie_InMemory[] tries = SurfaceFormsHandler.loadSurfaceFormsTries();
+		root_trie = tries[0];
+		affix_trie = tries[1];
 	}
-	
-	private void prepareTries() throws ConfigException, FileNotFoundException {
-		String affixFullPathname = getMorphemeTrieFilePath("iuFormTrie-affix.json");
-		String rootFullPathname = getMorphemeTrieFilePath("iuFormTrie-root.json");
-		JsonReader affixReader;
-		affixReader = new JsonReader(new FileReader(affixFullPathname));
-		JsonReader rootReader;
-		rootReader = new JsonReader(new FileReader(rootFullPathname));
-		Gson gson = new Gson();
-		affix_trie = (Trie_InMemory)gson.fromJson(affixReader, Trie_InMemory.class);
-		root_trie = (Trie_InMemory)gson.fromJson(rootReader, Trie_InMemory.class);
-	}
-	
 
-	public List<Decomposition> analyze(String word) throws LinguisticDataException, MorphologicalAnalyzerException {
-		
-		List<Decomposition> decompositions = findAllPossibleDecompositions(word);
-				
-		return decompositions;		
-	}
-	
 	/**
-	 * This method takes care of the morphophonological aspect of the word.
-	 * Forms and actions of affixes in the context of the stem's final are dealt with.
+	 * Decomposition of an Inuktitut word into ints morphemic components.
+	 *
 	 * @param word String
 	 * @return a List of DecompositionTree objects
 	 * @throws LinguisticDataException 
 	 * @throws MorphologicalAnalyzerException 
 	 */
-
-	List<Decomposition> findAllPossibleDecompositions(String word) throws LinguisticDataException, MorphologicalAnalyzerException {
+	List<Decomposition> analyze(String word) throws LinguisticDataException, MorphologicalAnalyzerException {
+		/*
+			For each root:
+				for each affix:
+					check if affix acceptable
+					if affix is acceptable
+						continue with next affix
+		 */
 		Logger logger = Logger.getLogger("WordAnalyzer.findAllPossibleSequencesOfMorphemes");
+
+		List<DecompositionTree> decompositionTrees = decomposeWord(word);
+		List<Decomposition> prunedDecompositions = combineMorphemes(decompositionTrees);
+
+		return prunedDecompositions;
+	}
+
+	public List<DecompositionTree> decomposeWord(String word) throws MorphologicalAnalyzerException, LinguisticDataException {
+		Logger logger = Logger.getLogger("WordAnalyzer.decomposeWord");
 		List<DecompositionTree> decompositionTrees = new ArrayList<DecompositionTree>();
-		
-		List<String> possibleRoots = findRoot(word);	
-		
+		StateGraph.State initialStateOfAnalysis = StateGraph.initialState;
+		List<String> possibleRoots = findRoot(word);
+		logger.debug("possibleRoots = "+possibleRoots);
 		Gson gson = new Gson();
 		Iterator<String> iterRoot = possibleRoots.iterator();
 		int i = 1;
 		while (iterRoot.hasNext()) {
 			String rootComponentInJson = iterRoot.next();
 			SurfaceFormInContext rootComponent = gson.fromJson(rootComponentInJson, SurfaceFormInContext.class);
+			Morpheme morpheme = LinguisticData.getInstance().getMorpheme(rootComponent.morphemeId);
+			StateGraph.State stateOfAnalysisAfterRoot = initialStateOfAnalysis.nextState(morpheme);
 			String remainingPartOfWord = word.substring(rootComponent.surfaceForm.length());
+			if (remainingPartOfWord.length()==0
+					&& rootComponent.finalIsDifferentThanCanonical()) {
+				logger.debug(rootComponent.morphemeId+" > rejeté – cause : no more chars and ending is not canonical");
+				continue;
+			}
 			String stem = rootComponent.surfaceForm;
 			logger.debug("-------------\nroot "+(i++)+". "+rootComponent.surfaceForm);
-			List<DecompositionTree> list = analyzeRemainingForAffixes(stem,remainingPartOfWord,rootComponent);
+			List<DecompositionTree> list = analyzeRemainingForAffixes(stem,remainingPartOfWord,rootComponent,stateOfAnalysisAfterRoot);
 			if (list != null) {
 //				logger.debug("branches: "+PrettyPrinter.print(list));
 				DecompositionTree decTree = new DecompositionTree(rootComponent);
@@ -100,11 +96,24 @@ public class WordAnalyzer {
 				decompositionTrees.add(decTree);
 			}
 		}
+
+		return decompositionTrees;
+	}
+
+	/**
+	 * Convert a list of DecompositionTree objects into a list of Decomposition objects.
+	 *
+	 * @param decompositionTrees A List of DecompositionTree objects
+	 * @return A List of Decomposition objects
+	 */
+	List<Decomposition> combineMorphemes(List<DecompositionTree> decompositionTrees) {
+		Logger logger = Logger.getLogger("WordAnalyzer.combineMorphemes");
 		HashMap<String,String[]> combinedMorphemesInDecompositions = new HashMap<String,String[]>();
 		List<Decomposition> allDecomps = new ArrayList<Decomposition>();
 		for (int id=0; id<decompositionTrees.size(); id++) {
 			DecompositionTree decompTree = decompositionTrees.get(id);
 			List<Decomposition> decomps = decompTree.toDecomposition();
+
 			for (int idd=0; idd<decomps.size(); idd++) {
 				Decomposition decomp = decomps.get(idd);
 				logger.debug("------- decomp= "+decomp.toStr());
@@ -113,7 +122,7 @@ public class WordAnalyzer {
 					String[] morphemeIds = decomp.getMorphemes();
 					for (int imid=0; imid<morphemeIds.length; imid++) {
 						String morphemeId = morphemeIds[imid];
-						logger.debug("morphemeId: "+morphemeId);
+						//logger.debug("morphemeId: "+morphemeId);
 						Morpheme morpheme = LinguisticData.getInstance().getMorpheme(morphemeId);
 						String[] morphemeCombinationElements = morpheme.getCombiningParts();
 						if (morphemeCombinationElements!=null && morphemeCombinationElements.length!=0) {
@@ -122,15 +131,14 @@ public class WordAnalyzer {
 					}
 				}
 			}
+
 		}
-		
 		List<Decomposition> prunedDecomps = checkForCombinedElements(allDecomps,combinedMorphemesInDecompositions);
-		
 		prunedDecomps.sort(new DecompositionComparator());
-		
+
 		return prunedDecomps;
 	}
-	
+
 	List<Decomposition> checkForCombinedElements(
 			List<Decomposition> decompositions,
 			HashMap<String, String[]> combinedMorphemesInDecompositions) {
@@ -207,12 +215,12 @@ public class WordAnalyzer {
 
 	
 	private List<DecompositionTree> analyzeRemainingForAffixes(
-			String stem, 
-			String remainingPartOfWord, 
-			SurfaceFormInContext precedingMorpheme
-			) throws LinguisticDataException, MorphologicalAnalyzerException {
+			String stem,
+			String remainingPartOfWord,
+			SurfaceFormInContext precedingMorpheme,
+			StateGraph.State stateOfAnalysisAfterPrecedingMorpheme) throws LinguisticDataException, MorphologicalAnalyzerException {
 		Logger logger = Logger.getLogger("WordAnalyzer.analyzeRemainingForAffixes");
-		logger.debug("precedingMorpheme: "+precedingMorpheme.surfaceForm);
+		logger.debug("precedingMorpheme: "+precedingMorpheme.morphemeId);
 		logger.debug("remainingPartOfWord: "+remainingPartOfWord);
 		Gson gson = new Gson();
 		List<DecompositionTree> fullList = null;
@@ -221,16 +229,32 @@ public class WordAnalyzer {
 			fullList = new ArrayList<DecompositionTree>();
 		}
 
+//		List<String> possibleAffixes;
+//		if (remainingPartOfWord.length()==0) {
+//			possibleAffixes = new ArrayList<String>();
+//			possibleAffixes.add("0");
+//		} else {
+//			possibleAffixes = findAffix(remainingPartOfWord);
+//		}
 		List<String> possibleAffixes = findAffix(remainingPartOfWord);
+		logger.debug("Nb. possibleAffixes= "+possibleAffixes.size());
 		
 		Iterator<String> iterAffix = possibleAffixes.iterator();
 		
 		while (iterAffix.hasNext()) {
-			String affixComponentInJson = iterAffix.next();
-			SurfaceFormInContext affixComponent = gson.fromJson(affixComponentInJson, SurfaceFormInContext.class);
-			List<DecompositionTree> list = processPossibleAffix(affixComponent,stem,remainingPartOfWord,precedingMorpheme);
+			String affixSurfaceForm = iterAffix.next();
+			logger.debug("affixSurfaceForm= "+affixSurfaceForm);
+			SurfaceFormInContext affixComponent;
+//			if (affixSurfaceForm=="0") {
+//				affixComponent = new ZeroLengthSurfaceFormInContext();
+//			}
+//			else {
+				affixComponent = gson.fromJson(affixSurfaceForm, SurfaceFormInContext.class);
+//			}
+			List<DecompositionTree> list = processPossibleAffix(affixComponent,stem,remainingPartOfWord,precedingMorpheme,stateOfAnalysisAfterPrecedingMorpheme);
 			if (list != null) {
 				DecompositionTree decTree = new DecompositionTree(affixComponent);
+				logger.debug("decTree: "+decTree.toStr());
 				decTree.addAllBranches(list);
 				if (fullList==null)
 					fullList = new ArrayList<DecompositionTree>();
@@ -243,34 +267,44 @@ public class WordAnalyzer {
 	
 
 	private List<DecompositionTree> processPossibleAffix(
-			SurfaceFormInContext morphemeComponent, 
+			SurfaceFormInContext affixComponent,
 			String stem,
 			String remainingPartOfWord,
-			SurfaceFormInContext precedingMorpheme
-			) throws LinguisticDataException, MorphologicalAnalyzerException {
-		Logger logger = Logger.getLogger("WordAnalyzer.processPossibleAffix");		
-		logger.debug("\naffix: "+morphemeComponent.surfaceForm+"; "+morphemeComponent.morphemeId);
-		
-		boolean componentContextIsValidated = morphemeComponent.validateWithStem(precedingMorpheme);
-		if (!componentContextIsValidated) {
-			logger.debug("rejeté – cause : validateWithStem a échoué");
-			return null;
-		}
-		boolean associativityWithStemIsValidated = morphemeComponent.validateWithPrecedingMorpheme(precedingMorpheme);
-		if (!associativityWithStemIsValidated) {
-			logger.debug("rejeté – cause : validateWithPrecedingMorpheme a échoué");
-			return null;
-		}
-		boolean constraintsAreValidated = morphemeComponent.validateConstraints(precedingMorpheme);
-		if (!constraintsAreValidated) {
-			logger.debug("rejeté – cause : valideConstraints a échoué");
-			return null;
-		}
-		logger.debug("*** accepté");
-		String localRemainingPartOfWord = remainingPartOfWord.substring(morphemeComponent.surfaceForm.length());
-		String localStem = remainingPartOfWord.substring(0,morphemeComponent.surfaceForm.length());
+			SurfaceFormInContext precedingMorpheme,
+			StateGraph.State stateOfAnalysisAfterPrecedingMorpheme) throws LinguisticDataException, MorphologicalAnalyzerException {
+		Logger logger = Logger.getLogger("WordAnalyzer.processPossibleAffix");
+		logger.debug("\n-------\naffix: "+affixComponent);
+		logger.debug("remainingPartOfWord= '"+remainingPartOfWord+"'");
 
-		List<DecompositionTree> list = analyzeRemainingForAffixes(localStem,localRemainingPartOfWord,morphemeComponent);
+		String localRemainingPartOfWord = remainingPartOfWord.substring(affixComponent.surfaceForm.length());
+		if (localRemainingPartOfWord.length()==0
+				&& affixComponent.finalIsDifferentThanCanonical()) {
+			logger.debug(affixComponent.morphemeId+" après "+stem+" > rejeté – cause : no more chars and ending is not canonical");
+			return null;
+		}
+
+		Morpheme morpheme = LinguisticData.getInstance().getMorpheme(affixComponent.morphemeId);
+		StateGraph.State nextStateAfterMorpheme = stateOfAnalysisAfterPrecedingMorpheme.nextState(morpheme);
+//		boolean morphemeAcceptedInThisState = morphemeComponent.validateAssociativityWithPrecedingMorpheme(stateOfAnalysisAfterPrecedingMorpheme);
+		boolean morphemeAcceptedInThisState = nextStateAfterMorpheme != null;
+		if ( !morphemeAcceptedInThisState ) {
+			logger.debug(affixComponent.morphemeId+" après "+stem+" > rejeté – cause : validateAssociativityWithPrecedingMorpheme a échoué");
+			return null;
+		}
+		boolean componentContextIsValidated = affixComponent.validateWithStem(precedingMorpheme);
+		if (!componentContextIsValidated) {
+			logger.debug(affixComponent.morphemeId+" après "+stem+" > rejeté – cause : validateWithStem a échoué");
+			return null;
+		}
+		boolean constraintsAreValidated = affixComponent.validateConstraints(precedingMorpheme);
+		if (!constraintsAreValidated) {
+			logger.debug(affixComponent.morphemeId+" après "+stem+" > rejeté – cause : valideConstraints a échoué");
+			return null;
+		}
+		logger.debug(affixComponent.morphemeId+" après "+stem+" > *** accepté");
+		String localStem = remainingPartOfWord.substring(0,affixComponent.surfaceForm.length());
+
+		List<DecompositionTree> list = analyzeRemainingForAffixes(localStem,localRemainingPartOfWord,affixComponent, nextStateAfterMorpheme);
 		logger.debug("\n>>>"+PrettyPrinter.print(list)+"\n\n");
 		return list;
 	}
@@ -309,47 +343,34 @@ public class WordAnalyzer {
 
 	@SuppressWarnings("unchecked")
 	private List<String> findMorpheme(String[] chars, Trie_InMemory trie) throws MorphologicalAnalyzerException {
-		
+		Logger logger = Logger.getLogger("WordAnalyzer.findMorpheme");
 		List<Pair<String,String>> pairsOfRoots = new ArrayList<Pair<String,String>>();
 		List<String> morphemeSurfaceFormsInContextInJsonFormat = new ArrayList<String>();
-		ArrayList<String> currentKeys = new ArrayList<String>();
+		ArrayList<String> currentKey = new ArrayList<String>();
 		String currentChar = null;
 		int charCounter;
 		// Parse the morpheme
 		for (charCounter = 0; charCounter < chars.length; charCounter++) {
-			TrieNode nodeForCurrentKeys = null;
+			TrieNode terminalNodeForCurrentKeys = null;
 			currentChar = chars[charCounter];
-			currentKeys.add(currentChar);
-			String currentKeysAsString = String.join("", currentKeys.toArray(new String[] {}));
+			currentKey.add(currentChar);
+			logger.debug("currentKey: "+currentKey);
 			try {
-				nodeForCurrentKeys = trie.node4keys(currentKeys.toArray(new String[] {}));
-				nodeForCurrentKeys = trie.node4keys(currentKeys.toArray(new String[] {}));
+				terminalNodeForCurrentKeys = trie.node4keys(currentKey.toArray(new String[]{}), Trie.NodeOption.TERMINAL, Trie.NodeOption.NO_CREATE);
 			} catch (TrieException e) {
 				throw new MorphologicalAnalyzerException(e);
 			}
-			if (nodeForCurrentKeys == null) {
-				// no morpheme 'currentKeys'
-				break;
-			} else {
-				// there is a morpheme 'currentKeys'
-				ArrayList<String> searchForSlashNodeKeys = (ArrayList<String>) currentKeys.clone();
-				searchForSlashNodeKeys.add("\\");
-				TrieNode terminalNode;
-				try {
-					terminalNode = trie.node4keys(searchForSlashNodeKeys.toArray(new String[] {}));
-				} catch (TrieException e) {
-					throw new MorphologicalAnalyzerException(e);
-				}
-				if (terminalNode != null) {
+			if (terminalNodeForCurrentKeys != null) {
 				// this is a complete morpheme
-					Set<String> surfaceForms = terminalNode.getSurfaceForms().keySet();
-					Iterator<String> itsf = surfaceForms.iterator();
-					while (itsf.hasNext()) {
-						String surfaceForm = itsf.next();
-						pairsOfRoots.add(new Pair<String,String>(currentKeysAsString,surfaceForm));
-						morphemeSurfaceFormsInContextInJsonFormat.add(surfaceForm);
-					}
-				} 
+				logger.debug("*** Found terminal node: "+terminalNodeForCurrentKeys.surfaceForm);
+				Set<String> surfaceForms = terminalNodeForCurrentKeys.getSurfaceForms().keySet();
+				Iterator<String> itsf = surfaceForms.iterator();
+				String currentKeyAsString = currentKey.toString();
+				while (itsf.hasNext()) {
+					String surfaceForm = itsf.next();
+					pairsOfRoots.add(new Pair<String,String>(currentKeyAsString,surfaceForm));
+					morphemeSurfaceFormsInContextInJsonFormat.add(surfaceForm);
+				}
 			}
 		}
 		
@@ -364,35 +385,34 @@ public class WordAnalyzer {
 	 * @throws Exception 
 	 */
 	public static void main(String[] args) throws Exception {
-		
 		WordAnalyzer analyzer = new WordAnalyzer();
+		System.out.println("Nb. roots in trie = "+analyzer.root_trie.totalTerminals());
+		System.out.println("Nb. affixes in trie = "+analyzer.affix_trie.totalTerminals());
 
-		System.out.print("Enter a word: ");
-		BufferedReader reader = new BufferedReader(new InputStreamReader(
-				System.in));
 		String word;
-		
-		
-		try {
-			word = reader.readLine();
-			List<Decomposition> decompositions = analyzer.analyze(word);
-			if (decompositions.size()==0)
-				System.out.println("Aucune décomposition");
-			else for (int id=0; id<decompositions.size(); id++)
-				System.out.println(">>> "+decompositions.get(id).toStr());
-			
-		} catch (IOException e) {
-			e.printStackTrace();
+		while ( true ) {
+			System.out.print("\nEnter a word (or $ to quit): ");
+			BufferedReader reader = new BufferedReader(new InputStreamReader(
+					System.in));
+
+
+			try {
+				word = reader.readLine();
+				if (word.equals("$")) {
+					break;
+				}
+				List<Decomposition> decompositions = analyzer.analyze(word);
+				if (decompositions.size() == 0)
+					System.out.println("Aucune décomposition");
+				else for (int id = 0; id < decompositions.size(); id++)
+					System.out.println(">>> " + decompositions.get(id).toStr());
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
-	private String getMorphemeTrieFilePath(String fName) throws ConfigException  {
-		String dirPath = IUConfig.getIUDataPath("data/LanguageData");
-		Path trieFPath = Paths.get(dirPath, fName);
-		
-		return trieFPath.toString();
-	}
-	
-	
+
 
 }
