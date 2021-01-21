@@ -7,6 +7,8 @@
  */
 package org.iutools.linguisticdata;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Hashtable;
 
@@ -68,7 +70,7 @@ public class DemonstrativeEnding extends Affix {
 		Action[] actions1 = new Action[] { new Action.Neutral() };
 		Action[] actions2 = new Action[] { null };
 		ContextualBehaviour contextualBehaviour = new ContextualBehaviour('C',morpheme,new Action.Neutral(),null);
-		contextualBehaviours.put('C', new ContextualBehaviour[] {contextualBehaviour});
+		contextualBehaviours.put('C', new ArrayList<>(Arrays.asList(contextualBehaviour)));
 	}
 
 	public String getSignature() {
