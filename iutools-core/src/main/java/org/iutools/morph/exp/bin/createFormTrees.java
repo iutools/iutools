@@ -1,7 +1,7 @@
 package org.iutools.morph.exp.bin;
 
 import org.iutools.datastructure.trie.Trie_InMemory;
-import org.iutools.linguisticdata.SurfaceFormsHandler;
+import org.iutools.morph.exp.SurfaceFormsHandler;
 
 public class createFormTrees {
 
