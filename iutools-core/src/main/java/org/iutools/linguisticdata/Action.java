@@ -1662,7 +1662,7 @@ public abstract class Action {
         @Override
         // SELF-DECAPITATION
         public String[] formAndEndOfStemInContext(String form, Character context, int rankOfAction) {
-            String endOfStem = "V";
+            String endOfStem = rankOfAction==1 ? "1V":"2V";
             return new String[] {form.substring(1),endOfStem};
         }
 
