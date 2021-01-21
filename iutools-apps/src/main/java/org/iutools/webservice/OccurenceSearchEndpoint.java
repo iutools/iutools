@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.iutools.elasticsearch.ESRepairDaemon;
 import org.iutools.linguisticdata.Morpheme;
 import ca.nrc.json.PrettyPrinter;
 import org.iutools.corpus.CompiledCorpus;
@@ -33,7 +34,12 @@ public class OccurenceSearchEndpoint extends HttpServlet {
 	protected void initialize() {
 	}
 	
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	protected void doPost(
+		HttpServletRequest request, HttpServletResponse response)
+		throws IOException {
+
+//		ESRepairDaemon.start(false);
+
 		EndPointHelper.log4jReload();		
 		Logger tLogger = Logger.getLogger("org.iutools.webservice.OccurenceSearchEndpoint.doPost");
 		tLogger.trace("invoked");

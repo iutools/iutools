@@ -2,27 +2,94 @@ package org.iutools.elasticsearch;
 
 import ca.nrc.debug.Debug;
 import ca.nrc.dtrc.elasticsearch.ElasticSearchException;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.iutools.corpus.CompiledCorpus;
 import org.iutools.corpus.CompiledCorpusRegistry;
+
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 
 import java.nio.file.Path;
 import java.util.*;
 
 /**
- * Run this main() as a background process to monitor and repair
- * the various ElasticSearch indices used by iutools
+ * Use this class to run a process that monitor and repair
+ * the various ElasticSearch indices used by iutools.
+ *
+ * There are two ways to launch the process.
+ *
+ * As a Main()
+ * -----------
+ *
+ * Just invoke the class as a terminal app
+ *
+ * As a Tomcat app listener
+ * ------------------------
+ *
+ * Add the following lines in the <web-app> section of your web.xml file:
+ *
+ *		<listener>
+ * 		<listener-class>org.iutools.elasticsearch.ESRepairDaemon</listener-class>
+ * 	</listener>
+ *
+ * When Tomcat starts, it will then automatically start the daemon in a separate
+ * thread.
  */
-public class ESRepairDaemon {
+public class ESRepairDaemon implements ServletContextListener, Runnable {
 
-	Logger daemonLogger = Logger.getLogger("org.iutools");
+	Logger daemonLogger = null;
+	private static Thread thr = null;
+	public static final String thrName = "ESRepairDaemon thread";
 
 	public static void main(String[] args) {
-		ESRepairDaemon daemon = new ESRepairDaemon();
-		daemon.run();
+		boolean inSeparateThread = false;
+		if (args.length > 1) {
+			usage();
+		}
+		if (args.length > 0 ) {
+			inSeparateThread = Boolean.parseBoolean(args[0]);
+		}
+		start(inSeparateThread);
 	}
 
-	private void run() {
+	private static void usage() {
+		System.err.println(
+			"Usage: ESRepairDaemon blcking?\n\n"+
+			"ARGUMENTS\n"+
+			"   blocking(OPTIONAL): If \"false\", starts the daemon in a non-blocking thread."
+		);
+		System.exit(1);
+	}
+
+	public static void start() {
+		start(null);
+	}
+
+	public static void start(Boolean blocking) {
+		if (blocking == null) {
+			blocking = true;
+		}
+		ESRepairDaemon daemon = new ESRepairDaemon();
+		if (!blocking) {
+			ensureDaemonThreadIsRunning(daemon);
+		} else {
+			daemon.run();
+		}
+	}
+
+	private static synchronized void ensureDaemonThreadIsRunning(ESRepairDaemon daemon) {
+		boolean started = false;
+		if (thr == null) {
+				thr = new Thread(daemon, thrName);
+				System.out.println("Starting the thread");
+				thr.start();
+				System.out.println("DONE Starting the thread");
+		}
+	}
+
+	public void run() {
+		configureLogger();
 		String daemonName = "iutools ElasticSearch index repair daemon";
 		daemonLogger.info(daemonName + " STARTED");
 
@@ -43,6 +110,13 @@ public class ESRepairDaemon {
 			daemonLogger.error(
 				daemonName + " CRASHED!!!\n"+
 				"Exception details:\n"+ Debug.printCallStack(e));
+		}
+	}
+
+	private void configureLogger() {
+		daemonLogger = Logger.getLogger("org.iutools");
+		if (daemonLogger.getLevel() == null) {
+			daemonLogger.setLevel(Level.INFO);
 		}
 	}
 
@@ -77,5 +151,16 @@ public class ESRepairDaemon {
 		}
 
 		repairMan.deleteCorruptedDocs(corruptedIDs, CompiledCorpus.WORD_INFO_TYPE);
+	}
+
+	@Override
+	public void contextInitialized(ServletContextEvent sce) {
+		ESRepairDaemon daemon = new ESRepairDaemon();
+		daemon.run();
+	}
+
+	@Override
+	public void contextDestroyed(ServletContextEvent sce) {
+		// Nothing to do upon destruction...
 	}
 }

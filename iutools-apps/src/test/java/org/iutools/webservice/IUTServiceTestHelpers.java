@@ -33,7 +33,7 @@ public class IUTServiceTestHelpers {
 	public static final long SHORT_WAIT = 2*1000;
 	public static final long MEDIUM_WAIT = 2*SHORT_WAIT;
 	public static final long LONG_WAIT = 2*MEDIUM_WAIT;
-	
+
 	public enum EndpointNames {
 		GIST, GIST_PREPARE_CONTENT, GIST_WORD, MORPHEME, MORPHEMEEXAMPLE, 
 		SEARCH, TOKENIZE, SPELL};
@@ -137,6 +137,14 @@ public class IUTServiceTestHelpers {
 		AssertHelpers.assertStringEquals("Expanded query was not as expected.", expQuery.trim(), gotResult.expandedQuery.trim());
 	}
 
+	public static void assertTotalHitsLessThan(String mess,
+		MockHttpServletResponse gotResponse, int expMaxHits) throws Exception {
+		SearchResponse gotResult =
+			new ObjectMapper()
+				.readValue(gotResponse.getOutput(), SearchResponse.class);
+		AssertNumber.isLessOrEqualTo(
+			mess, gotResult.totalHits, expMaxHits);
+	}
 
 	public static void assertMostHitsMatchWords(String[] queryWords, MockHttpServletResponse gotResponse,
 								double tolerance) throws JsonParseException, JsonMappingException, IOException {

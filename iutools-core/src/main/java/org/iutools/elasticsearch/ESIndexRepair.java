@@ -122,7 +122,7 @@ public class ESIndexRepair {
 				check(corpus);
 			}
 			try {
-				Thread.sleep(1*1000);
+				Thread.sleep(60*1000);
 			} catch (InterruptedException e) {
 				break;
 			}
@@ -310,6 +310,5 @@ public class ESIndexRepair {
 			String id = corruptedIDs.next();
 			esClient().deleteDocumentWithID(id, esType);
 		}
-		System.out.println("IMPLEMENT AND TEST THIS METHOD");
 	}
 }
