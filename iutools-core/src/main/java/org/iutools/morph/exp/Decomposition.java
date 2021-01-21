@@ -11,30 +11,25 @@ public class Decomposition {
 		expression = _expression;
 		components = _expression.split(" ");
 	}
+
 	
 	public boolean validateForFinalComponent() {
 		Logger logger = Logger.getLogger("Decomposition.validateForFinalComponent");
 		boolean res;
 		String lastComponent = components[components.length-1];
-		logger.debug("last component: "+lastComponent);
 		lastComponent = lastComponent.substring(1,lastComponent.length()-1);
 		logger.debug("last component: "+lastComponent);
 		String[] parts = lastComponent.split(":");
 		String surfaceForm = parts[0];
-		String[] morphemeIdParts = parts[1].split("/");
+		String morphemeId = parts[1];
+		logger.debug("surfaceForm: "+surfaceForm);
+		String[] morphemeIdParts = morphemeId.split("/");
 		String basicForm = morphemeIdParts[0];
+		logger.debug("basicForm: "+basicForm);
 		String id = morphemeIdParts[1];
 		logger.debug("id: "+id);
-		if (!surfaceForm.substring(surfaceForm.length()-1).equals(basicForm.substring(basicForm.length()-1)))
-				res = false;
-		else if (id.matches("^\\d+q$")) {
-			res = true;
-		} else if (id.matches("^\\d+.n$") || id.matches("^tn.+") || id.matches("^tv.+") ||
-				   id.matches("^\\d+.n$")) {
-			res = true;
-		} else	
-			res = false;
-		
+		res = StateGraph.morphemeCanBeAtEndOfWord(morphemeId);
+		logger.debug("res= "+res);
 		return res;
 	}
 	
