@@ -1,6 +1,7 @@
 package org.iutools.webservice;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.iutools.morph.Gist;
 import org.iutools.utilities.Alignment;
+import ca.nrc.web.Http;
 import ca.nrc.testing.AssertHelpers;
 import ca.nrc.testing.AssertNumber;
 import ca.nrc.testing.AssertObject;
@@ -41,6 +43,13 @@ public class IUTServiceTestHelpers {
 
 	public static MockHttpServletResponse postEndpointDirectly(EndpointNames eptName, Object inputs) throws Exception {
 		return postEndpointDirectly(eptName, inputs, false);
+	}
+
+	public static void invokeEndpointThroughServer(
+		Http.Method method, String endpointPath, ServiceInputs inputs) {
+		String jsonBody = inputs.toString();
+//		URL url = new URL("http://localhost:8080/iutools/srv/"+endpointPath);
+//		Http.do(method, url, jsonBody);
 	}
 
 	public static MockHttpServletResponse postEndpointDirectly(EndpointNames eptName, Object inputs, boolean expectServiceError) throws Exception {
