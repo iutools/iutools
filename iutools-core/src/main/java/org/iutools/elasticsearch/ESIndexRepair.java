@@ -7,6 +7,7 @@ import ca.nrc.dtrc.elasticsearch.request.Query;
 import ca.nrc.dtrc.elasticsearch.request._Source;
 import ca.nrc.introspection.Introspection;
 import ca.nrc.introspection.IntrospectionException;
+import ca.nrc.json.PrettyPrinter;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.iutools.corpus.*;
@@ -254,30 +255,61 @@ public class ESIndexRepair {
 	public void repairCorruptedDocs(
 		Iterator<String> corruptedIDsIter, String esTypeName, Document goodDocProto,
 		Path jsonFile) throws ElasticSearchException {
+		Logger tLogger = Logger.getLogger("org.iutools.elasticsearch.ESIndexRepair.repairCorruptedDocs");
 		Set<String> corruptedIDs = new HashSet<String>();
+
+		// Collect the non-null corrupted IDs
 		while (corruptedIDsIter.hasNext()) {
-			corruptedIDs.add(corruptedIDsIter.next());
-		}
-		String errMess = "Could not repair corrupted ES docs from json file: "+jsonFile;
-		ObjectStreamReader reader = null;
-		try {
-			reader = new ObjectStreamReader(jsonFile.toFile());
-			Object obj = reader.readObject();
-			while (obj != null) {
-				if (obj instanceof Document) {
-					Document doc =
-					Introspection.downcastTo(goodDocProto.getClass(), obj);
-					if (corruptedIDs.contains(doc.getId())) {
-						esClient().putDocument(esTypeName, doc);
-					}
-				}
-				obj = reader.readObject();
+			String id = corruptedIDsIter.next();
+			if (id != null) {
+				corruptedIDs.add(corruptedIDsIter.next());
 			}
-			// Sleep a bit to allow the changes to propagate to all ES nodes
-			Thread.sleep(1000);
-		} catch (IOException | ClassNotFoundException | ObjectStreamReaderException
-				| InterruptedException e) {
-			throw new ElasticSearchException(errMess, e);
+		}
+
+		if (!corruptedIDs.isEmpty()) {
+			if (tLogger.isTraceEnabled()) {
+				tLogger.trace("corruptedIDs(size="+corruptedIDs.size()+")=" + PrettyPrinter.print(corruptedIDs));
+			}
+			String errMess = "Could not repair corrupted ES docs from json file: " + jsonFile;
+			ObjectStreamReader reader = null;
+			try {
+				reader = new ObjectStreamReader(jsonFile.toFile());
+				Object obj = reader.readObject();
+				// Repair corrupted objects that appear in the JSON file
+				while (obj != null) {
+					if (obj instanceof Document) {
+						Document doc =
+						Introspection.downcastTo(goodDocProto.getClass(), obj);
+						if (corruptedIDs.contains(doc.getId())) {
+							logger.info("Reloading corrupted document " + doc.getId() +
+							" in type " + esTypeName + " of index " + indexName);
+							esClient().putDocument(esTypeName, doc);
+							corruptedIDs.remove(doc.getId());
+						}
+					}
+					obj = reader.readObject();
+				}
+
+				// Delete the corrupted documents that are left. Those are corrupted
+				// docs that DO NOT appear in the json file
+				//
+				for (String id : corruptedIDs) {
+					if (id == null) {
+						continue;
+					}
+					logger.info("Corrupted document " + id +
+					" in type " + esTypeName + " of index " + indexName +
+					" did not appear in json file.\nDeleting it.");
+					esClient().deleteDocumentWithID(id, esTypeName);
+				}
+				corruptedIDs = new HashSet<String>();
+
+				// Sleep a bit to allow the changes to propagate to all ES nodes
+				Thread.sleep(1000);
+			} catch (IOException | ClassNotFoundException | ObjectStreamReaderException
+			| InterruptedException e) {
+				throw new ElasticSearchException(errMess, e);
+			}
 		}
 	}
 
@@ -308,6 +340,10 @@ public class ESIndexRepair {
 
 		while (corruptedIDs.hasNext()) {
 			String id = corruptedIDs.next();
+			if (id == null) continue;;
+			logger.info("Deleting corrupted document " + id +
+				" in type "+esType+" of index "+indexName + ".");
+
 			esClient().deleteDocumentWithID(id, esType);
 		}
 	}

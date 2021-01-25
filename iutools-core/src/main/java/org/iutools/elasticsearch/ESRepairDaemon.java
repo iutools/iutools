@@ -140,10 +140,9 @@ public class ESRepairDaemon implements ServletContextListener, Runnable {
 	private void repairSpellCheckerIndexForCorpus(String index) throws ElasticSearchException {
 		String spellIndex = index+"_expliclty_correct";
 
-		ESIndexRepair repairMan = new ESIndexRepair(index);
+		ESIndexRepair repairMan = new ESIndexRepair(spellIndex);
 
-		Iterator<String> corruptedIDs =
-		null;
+		Iterator<String> corruptedIDs = null;
 		try {
 			corruptedIDs = repairMan.corruptedDocIDs(
 				CompiledCorpus.WORD_INFO_TYPE, CompiledCorpus.winfoPrototype);
