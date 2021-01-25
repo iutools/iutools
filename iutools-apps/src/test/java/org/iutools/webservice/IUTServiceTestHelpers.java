@@ -46,10 +46,12 @@ public class IUTServiceTestHelpers {
 	}
 
 	public static void invokeEndpointThroughServer(
-		Http.Method method, String endpointPath, ServiceInputs inputs) {
+		Http.Method method, String endpointPath, ServiceInputs inputs)
+		throws Exception {
+
 		String jsonBody = inputs.toString();
-//		URL url = new URL("http://localhost:8080/iutools/srv/"+endpointPath);
-//		Http.do(method, url, jsonBody);
+		URL url = new URL("http://localhost:8080/iutools/srv/"+endpointPath);
+		Http.doRequest(method, url, jsonBody);
 	}
 
 	public static MockHttpServletResponse postEndpointDirectly(EndpointNames eptName, Object inputs, boolean expectServiceError) throws Exception {

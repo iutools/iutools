@@ -103,7 +103,7 @@
 		<servlet-name>GistEndpoint</servlet-name>
 		<url-pattern>/srv/gist/gist/*</url-pattern>
 	</servlet-mapping>	
-	
+
 	<!-- GistText Endpoint -->
 	<servlet>
 	   <servlet-name>GistTextEndpoint</servlet-name>
@@ -115,7 +115,7 @@
 		<servlet-name>GistTextEndpoint</servlet-name>
 		<url-pattern>/srv/gisttext/*</url-pattern>
 	</servlet-mapping>	
-	
+
 
 	<!--  Test UTF8 chars -->
 	<servlet>

@@ -1,6 +1,6 @@
 package org.iutools.webservice;
 
-import org.apache.commons.lang3.tuple.Pair;
+import ca.nrc.web.Http;
 import org.iutools.webservice.gist.GistWordInputs;
 import org.iutools.webservice.tokenize.GistPrepareContentInputs;
 import org.junit.Test;
@@ -23,7 +23,7 @@ import java.util.Map;
 public class InvokeAllEndpointsThroughServerTest {
 
 	@Test
-	public void invokeAllEndpoints() throws InterruptedException {
+	public void invokeAllEndpoints() throws Exception {
 		Map<String, ServiceInputs> callsToMake =
 		new HashMap<String, ServiceInputs>();
 		{
@@ -38,6 +38,8 @@ public class InvokeAllEndpointsThroughServerTest {
 		for (int ii = 0; ii < 10; ii++) {
 			for (String srvPath : callsToMake.keySet()) {
 				ServiceInputs inputs = callsToMake.get(srvPath);
+				IUTServiceTestHelpers.invokeEndpointThroughServer(
+					Http.Method.POST, srvPath, callsToMake.get(srvPath));
 			}
 			Thread.sleep(1*1000);
 		}
