@@ -13,11 +13,10 @@
 	some corrupted WordInfo records when too many concurrent web requests are
 	made to iutools services.
 	-->
-<!--
 	<listener>
 		<listener-class>org.iutools.elasticsearch.ESRepairDaemon</listener-class>
 	</listener>
--->
+
 	<!--  Search Endpoint -->
 	<servlet>
 	   <servlet-name>SearchEndpoint</servlet-name>

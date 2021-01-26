@@ -7,11 +7,15 @@ import org.apache.log4j.Logger;
 import org.iutools.corpus.CompiledCorpus;
 import org.iutools.corpus.CompiledCorpusRegistry;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 /**
  * Use this class to run a process that monitor and repair
@@ -38,9 +42,10 @@ import java.util.*;
  */
 public class ESRepairDaemon implements ServletContextListener, Runnable {
 
-	Logger daemonLogger = null;
+	Logger _daemonLogger = null;
 	private static Thread thr = null;
 	public static final String thrName = "ESRepairDaemon thread";
+	ExecutorService executor = null;
 
 	public static void main(String[] args) {
 		boolean inSeparateThread = false;
@@ -89,35 +94,39 @@ public class ESRepairDaemon implements ServletContextListener, Runnable {
 	}
 
 	public void run() {
-		configureLogger();
 		String daemonName = "iutools ElasticSearch index repair daemon";
-		daemonLogger.info(daemonName + " STARTED");
+		daemonLogger().info(daemonName + " STARTED");
 
 		try {
 			Set<String> corpora = CompiledCorpusRegistry.availableCorpora();
+			int counter = 0;
 			while (true) {
+				counter++;
+				daemonLogger().trace(daemonName + " checking indices for the "+counter+"th time");
+
 				try {
 					for (String corpusName : corpora) {
 						checkIndices4Corpus(corpusName);
 					}
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
-					daemonLogger.info(daemonName + " STOPPED NORMALLY");
+					daemonLogger().info(daemonName + " STOPPED NORMALLY");
 					break;
 				}
 			}
 		} catch (Exception e) {
-			daemonLogger.error(
+			daemonLogger().error(
 				daemonName + " CRASHED!!!\n"+
 				"Exception details:\n"+ Debug.printCallStack(e));
 		}
 	}
 
-	private void configureLogger() {
-		daemonLogger = Logger.getLogger("org.iutools");
-		if (daemonLogger.getLevel() == null) {
-			daemonLogger.setLevel(Level.INFO);
+	private Logger daemonLogger() {
+		_daemonLogger = Logger.getLogger("org.iutools.elasticsearch.ESRepairDaemon");
+		if (_daemonLogger.getLevel() == null) {
+			_daemonLogger.setLevel(Level.INFO);
 		}
+		return _daemonLogger;
 	}
 
 	private void checkIndices4Corpus(String index) throws ElasticSearchException {
@@ -126,7 +135,7 @@ public class ESRepairDaemon implements ServletContextListener, Runnable {
 	}
 
 	private void repairCorpusIndex(String index) throws ElasticSearchException {
-		ESIndexRepair repairMan = new ESIndexRepair(index, daemonLogger);
+		ESIndexRepair repairMan = new ESIndexRepair(index, _daemonLogger);
 		Path jsonFile = CompiledCorpusRegistry.jsonFile4corpus(index);
 
 		Iterator<String> corruptedIDs =
@@ -154,12 +163,25 @@ public class ESRepairDaemon implements ServletContextListener, Runnable {
 
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
-		ESRepairDaemon daemon = new ESRepairDaemon();
-		daemon.run();
+		daemonLogger().info("contextInitialized invoked");
+		int counter = 0;
+
+		// Based on this page:
+		//   https://stackoverflow.com/questions/4907502/running-a-background-java-program-in-tomcat
+		ServletContext context = sce.getServletContext();
+		int nr_executors = 1;
+		ThreadFactory daemonFactory = new DaemonThreadFactory();
+
+		ExecutorService executor;
+		executor = Executors.newSingleThreadExecutor(daemonFactory);
+		executor.submit(new ESRepairDaemon());
+		context.setAttribute("MY_EXECUTOR", executor);
 	}
+
 
 	@Override
 	public void contextDestroyed(ServletContextEvent sce) {
-		// Nothing to do upon destruction...
+		ServletContext context = sce.getServletContext();
+		executor.shutdownNow(); // or process/wait until all pending jobs are done
 	}
 }
