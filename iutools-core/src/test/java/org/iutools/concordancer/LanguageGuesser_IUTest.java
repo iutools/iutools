@@ -5,9 +5,14 @@ import org.junit.Test;
 
 public class LanguageGuesser_IUTest {
 
+	public LanguageGuesser_IU makeGuesser() {
+		LanguageGuesser_IU guesser = new LanguageGuesser_IU();
+		return guesser;
+	}
+
 	@Test
 	public void test__detect__HappyPath() throws Exception {
-		LanguageGuesser_IU guesser = new LanguageGuesser_IU();
+		LanguageGuesser_IU guesser = makeGuesser();
 		
 		String text = "Hello world. Take me to your leader.";
 		String gotLang = guesser.detect(text);

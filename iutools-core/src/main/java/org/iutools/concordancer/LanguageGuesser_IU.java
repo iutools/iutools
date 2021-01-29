@@ -9,7 +9,7 @@ public class LanguageGuesser_IU extends LanguageGuesser {
 	@Override
 	public String detect(String text) throws LanguageGuesserException {
 		String lang = null;
-		if (Syllabics.syllabicCharsRatio(text) > 0.5) {
+		if (isInuktitut(text)) {
 			lang = "iu";
 		}
 		if (lang == null) {
@@ -19,4 +19,11 @@ public class LanguageGuesser_IU extends LanguageGuesser {
 		return lang;
 	}
 
+	public boolean isInuktitut(String text) {
+		boolean isIU = false;
+		if (Syllabics.syllabicCharsRatio(text) > 0.5) {
+			isIU = true;
+		}
+		return isIU;
+	}
 }
