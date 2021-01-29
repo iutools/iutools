@@ -122,8 +122,10 @@ Spell check SYLLABIC -- Happy Path
     are  displayed in SYLLABIC
 - Make sure that all the words that are mis-spelled are labeled as such and that
     the first suggested spelling is the right one     
-- Click on a mis-spelled word and choose an alternate spelling
+- Click on a mis-spelled word and CHOOSE an alternate spelling
   - Make sure that the chosen spelling is now displayed
+- Click on a mis-spelled word and TYPE an alternate spelling
+  - Make sure that the typed spelling is now displayed
 
 Spell check LATIN -- Happy Path
 - Enter some text in LATIN, some of which are badly spelled, others not. 
@@ -134,18 +136,22 @@ Spell check LATIN -- Happy Path
     are  displayed in LATIN
 - Make sure that all the words that are mis-spelled are labeled as such and that
     the first suggested spelling is the right one 
-- Click on a mis-spelled word and choose an alternate spelling
+- Click on a mis-spelled word and CHOOSE an alternate spelling
   - Make sure that the chosen spelling is now displayed
+- Click on a mis-spelled word and TYPE an alternate spelling
+  - Make sure that the typed spelling is now displayed
 
-Concurency testing
+Concurency testing and Interruption
 - When you hit _Spell Check_
   - Check that the Progress Wheel is displayed until the very last word has been 
     displayed.
   - While the checker is still working on some of the words, try click on a 
     misspelled word and doing each of the followgin:
-    - select one of the suggested spellings
-    - type your own spelling
-  - While the is still working on some of the words:
+    - Click on a mis-spelled word and CHOOSE an alternate spelling
+        - Make sure that the chosen spelling is now displayed
+    - Click on a mis-spelled word and TYPE an alternate spelling
+        - Make sure that the typed spelling is now displayed
+  - While the checker is still working on some of the words:
     - Hit the cancel button
       - Make sure progress wheel has disappeared and that the app has stopped 
         checking words
@@ -171,10 +177,11 @@ Progress Wheel
      text to be spelled
    - No extra spaces were inserted between words
    - No extra newlines were 
-- Click on one of the mis-spelled words, and change its spelling
+- Click on two of the mis-spelled words, and change their spellings
+  - One by selecting from the sugggestions, the other by typing a new correction
   - Click on copy to clipboard and paste into a text editor
-  - Copy text to text editor, and make sure that the selected spelling is the one that
-    appears in the editor
+  - Copy text to text editor, and make sure that the changed spellings are the 
+    ones that appear in the editor
     
 Check with and without _Include partial corrections_
 - Try it both ways
