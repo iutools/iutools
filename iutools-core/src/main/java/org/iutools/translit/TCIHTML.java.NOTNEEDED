@@ -28,13 +28,13 @@ import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.apache.log4j.Logger;
+import org.apache.log4j.Debug;
 
 import documents.NRC_HTMLDocumentByCobra;
 
 public class TCIHTML {
 
-    private static Logger LOG = Logger.getLogger(TCIHTML.class);
+    private static Debug LOG = Debug.getLogger(TCIHTML.class);
 
     public static void main(String[] args) {
     	String font = "pigiarniq";
