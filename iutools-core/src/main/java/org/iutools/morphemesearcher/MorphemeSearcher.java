@@ -31,9 +31,10 @@ public class MorphemeSearcher {
 	protected int maxNbInitialCandidates = 100;
 	
 	public MorphemeSearcher() throws MorphemeSearcherException {
+		Logger tLogger = Logger.getLogger("org.iutools.morphemesearcher.MorphemeSearcher.constructor");
 		try {
 			useCorpus(new CompiledCorpusRegistry().getCorpus());
-		} catch (IOException | CompiledCorpusRegistryException e) {
+		} catch (IOException | CompiledCorpusRegistryException | CompiledCorpusException e) {
 			throw new MorphemeSearcherException(e);
 		}
 	}

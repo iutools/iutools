@@ -125,7 +125,7 @@ public class SpellChecker {
 		try {
 			corpus = new CompiledCorpusRegistry().getCorpus();
 			__processCorpus();
-		} catch (CompiledCorpusRegistryException e) {
+		} catch (CompiledCorpusRegistryException | CompiledCorpusException e) {
 			throw new SpellCheckerException(e);
 		}
 	}

@@ -4,11 +4,13 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ca.nrc.debug.Debug;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -18,22 +20,41 @@ import ca.nrc.config.ConfigException;
 
 public class CompiledCorpusRegistry {
 	
-	private static Map<String,File> registry = new HashMap<String,File>();
+	private static Map<String,File> registry = null;
 	public static final String defaultCorpusName = "HANSARD-1999-2002";
 	public static final String emptyCorpusName = "EMPTYCORPUS";
 
 	public static enum Option {ALLOW_UNREGISTERED};
-	
-	static {
-		try {
-			registerCorpus_ES(
-					defaultCorpusName,
-				new File(
-					IUConfig.getIUDataPath(
-				"data/compiled-corpora/HANSARD-1999-2002.json")));
 
-		} catch (ConfigException | CompiledCorpusRegistryException e) {
-			throw new ExceptionInInitializerError(e);
+	public CompiledCorpusRegistry() throws CompiledCorpusException {
+		Logger tLogger = Logger.getLogger("org.iutools.corpus.CompiledCorpusRegistry.constructor");
+		tLogger.trace("** invoked");
+		init_CompiledCorpusRegistry();
+		tLogger.trace("** after init_CompiledCorpusRegistry");
+	}
+
+	private void init_CompiledCorpusRegistry() throws CompiledCorpusException {
+		Logger tLogger = Logger.getLogger("org.iutools.corpus.CompiledCorpusRegistry.init_CompiledCorpusRegistry");
+		tLogger.trace("** initializing the static registry map");
+		// Initialize the static registry map
+		if (registry == null) {
+			try {
+				registry = new HashMap<String,File>();
+				registerCorpus_ES(
+					defaultCorpusName,
+					new File(
+						IUConfig.getIUDataPath(
+						"data/compiled-corpora/HANSARD-1999-2002.json")));
+				tLogger.trace("** DONE initializing the static registry map");
+			} catch (ConfigException | CompiledCorpusRegistryException e) {
+				// Reset registry to null if we weren't able to initialize it.
+				// That way, the error will not be "swept under the carpet" for
+				// future calls to the class (ex: in the context of a Tomcat app)
+				//
+				tLogger.trace("** EXCEPTION RAISED while initializing the static registry map.\ne="+ Debug.printCallStack(e));
+				registry = null;
+				throw new CompiledCorpusException("Could not initialize the static registry map", e);
+			}
 		}
 	}
 
@@ -60,7 +81,11 @@ public class CompiledCorpusRegistry {
 	}
 
 	public static Set<String> availableCorpora() {
-		return registry.keySet();
+		Set<String> corpNames = new HashSet<String>();
+		if (registry != null) {
+			corpNames = registry.keySet();
+		}
+		return corpNames;
 	}
 
 	public static Path jsonFile4corpus(String corpusName) {
