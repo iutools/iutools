@@ -73,8 +73,6 @@ class OccurrenceController extends WidgetController {
 	
 	
 	findExamplesSuccessCallback(resp) {
-		var tracer = new Tracer('OccurenceController.findExamplesSuccessCallback', true);
-		
 		if (resp.errorMessage != null) {
 			this.findExamplesFailureCallback(resp);
 		} else {
@@ -107,7 +105,6 @@ class OccurrenceController extends WidgetController {
 	}
 	
 	getSearchRequestData() {
-		var tracer = new Tracer('OccurenceController.getSearchRequestData');
 		var wordPattern = this.elementForProp("inpMorpheme").val().trim();
 		if (wordPattern=='')
 			wordPattern = null;
