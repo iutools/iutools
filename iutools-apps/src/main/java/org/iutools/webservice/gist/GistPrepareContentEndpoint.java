@@ -74,6 +74,10 @@ public class GistPrepareContentEndpoint extends HttpServlet {
 
 	private ServiceResponse executeEndPoint(org.iutools.webservice.tokenize.GistPrepareContentInputs inputs)
 			throws ServiceException {
+		Logger tLogger = Logger.getLogger("org.iutools.webservice.gist.GistPrepareContentEndpoint.executeEndPoint");
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("invoked with inputs="+PrettyPrinter.print(inputs));
+		}
 		GistPrepareContentResponse response = new GistPrepareContentResponse();
 		
 		if (inputs.isURL()) {
@@ -81,7 +85,11 @@ public class GistPrepareContentEndpoint extends HttpServlet {
 		} else {
 			doPrepareActualText(inputs, response);
 		}
-		
+
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("returning response="+PrettyPrinter.print(response));
+		}
+
 		return response;
 	}
 	

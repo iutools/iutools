@@ -34,11 +34,12 @@ class GistTextController extends WidgetController {
 	}
 	
 	prepareContentSuccessCallback(resp) {
-		console.log('resp= '+JSON.stringify(resp));
+		var tracer = Debug.getTraceLogger("GistTextController.prepareContentSuccessCallback")
+		tracer.trace('resp= '+JSON.stringify(resp));
 		if (resp.errorMessage != null) {
 			this.prepareContentFailureCallback(resp);
 		} else {
-			console.log("** GistTextNEWController.prepareContentSuccessCallback: successfully prepared text to: "+
+			tracer.trace("GistTextNEWController.prepareContentSuccessCallback: successfully prepared text to: "+
 				JSON.stringify(resp));
 			this.setBusy(false);
 			this.displayTextGist(resp);
@@ -81,16 +82,16 @@ class GistTextController extends WidgetController {
 			}
 		}
 		this.displayTextWithClickableWords(html);
-	}	
-	
+	}
+
 	displayBilingualGist(iuSentences, enSentences) {
 		var html = "";
 		var maxSents = Math.max(iuSentences.length, enSentences.length);
 		if (maxSents > 0) {
-			html += 	
-				"<table id=\"tbl-alignments\" class=\"alignments\" style=\"table-layout: fixed; width: 100%\">\n"+
+			html +=
+				"<htmlAddAlignmentOneSidetable id=\"tbl-alignments\" class=\"alignments\" style=\"table-layout: fixed; width: 100%\">\n"+
 				"<tr><th>Inuktitut</th><th>English</th></tr>\n";
-			
+
 			for (var sentNum=0; sentNum < maxSents; sentNum++) {
 				// Create new row for an alignment
 				html += "<tr>\n"
@@ -101,25 +102,32 @@ class GistTextController extends WidgetController {
 			}
 			html += "</table>";
 			this.displayTextWithClickableWords(html);
-		}		
+		}
 	}
-	
+
 	htmlAddAlignmentOneSide(html, sentNum, sentences) {
+		var tracer = Debug.getTraceLogger("GistTextController.htmlAddAlignmentOneSide");
 		html += "<td>"
 		var sent = [];
 		if (sentences.length > sentNum) {
 			sent = sentences[sentNum];
 		}
-		for (var ii=0; ii < sent.length; ii++) {
-			var token = sent[ii];
-			if (IUUtils.isInuktut(token)) {
-				html += '<a class="iu-word">'+token+"</a>";
-			} else {
-				html += token;
+		tracer.trace("sent="+JSON.stringify(sent));
+
+		// Not sure why, but we sometimes get null sentences
+		//
+		if (sent != null) {
+			for (var ii = 0; ii < sent.length; ii++) {
+				var token = sent[ii];
+				if (IUUtils.isInuktut(token)) {
+					html += '<a class="iu-word">' + token + "</a>";
+				} else {
+					html += token;
+				}
 			}
 		}
 		html += "</td>"
-			
+
 		return html;
 	}
 	
