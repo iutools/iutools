@@ -49,16 +49,33 @@ class SpellController extends WidgetController {
 	}
 
 	getSpellCheckedText() {
+		var tracer = Debug.getTraceLogger("SpellController.getSpellCheckedText")
 		var wholeTextElements = $('div#div-results').contents();
 		var allText = '';
+		var prevEltWasCorrection = false;
 		wholeTextElements.each(function (index, item) {
+			tracer.trace("item.textContent='"+item.textContent+"'");
 			var text = "";
 			if ($(item).is('.corrections')) {
+				tracer.trace("Item IS a correction");
 				text = $(item).find('.selected').text();
-			} else if ($(item).is('span')) {
+				prevEltWasCorrection = true;
+			} else  {
+				tracer.trace("Item is NOT a correction");
 				text = $(item).text();
 			}
+
+
+			if (prevEltWasCorrection && text === "\n") {
+				// For some reason, we get a "\n" string after
+				// each correction element. Skip those
+				tracer.trace("Item is a spurious newline that follows a correction div. Skipping it.");
+				return;
+			}
+			tracer.trace("Appending text for this item:'"+text+"'");
 			allText += text;
+			tracer.trace("allText="+allText);
+
 		});
 		return allText;
 	}
@@ -67,6 +84,7 @@ class SpellController extends WidgetController {
 	 * Spell check the text entered by the user.
 	 */
 	spellCheck() {
+		var tracer = Debug.getTraceLogger("SpellController.spellCheck")
 		var isValid = this.validateInputs();
 		if (isValid) {
 			this.clearResults();
@@ -125,6 +143,8 @@ class SpellController extends WidgetController {
 			success: fctSuccess,
 			error: fctFailure
 		});
+
+		return;
 	}
 
 	/**
