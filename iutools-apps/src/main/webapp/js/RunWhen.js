@@ -23,12 +23,12 @@ class RunWhen {
 
 	
 	conditionMet(condition, toRun, maxMSecs, interval) {
-		var tracer = new Tracer("RunWhen.conditionMet", true);
+		var tracer = Debug.getTraceLogger("RunWhen.conditionMet");
 		tracer.trace("Invoked");
 		if (maxMSecs == null) maxMSecs = 9999 * 1000;
 		if (interval == null) interval = 1000;
 		var timeSoFar = 0;
-		
+
 		tracer.trace("interval="+interval);
 		tracer.trace("condition="+condition);
 		tracer.trace("toRun="+toRun);
@@ -36,7 +36,8 @@ class RunWhen {
 		var that = this;
 		
 		var runner = function() {
-			tracer.trace("condition function="+condition);			
+			var tracer = Debug.getTraceLogger("RunWhen.conditionMet");
+			tracer.trace("condition function="+condition);
 			timeSoFar += interval;
 			if (timeSoFar > maxMSecs) {
 				tracer.trace("max time of "+maxMSecs+" exceeded. Stopping timer and throwing error.");
@@ -72,9 +73,9 @@ class RunWhen {
 	}
 	
 	domReady(toRun, maxMSecs, interval, timeSoFar) {
-		var tracer = new Tracer("-- RunWhen.domReady", true);
-		
+
 		var isReady = function() {
+			var tracer = Debug.getTraceLogger("RunWhen.domReady");
 			var ready = false;
 			var state = document.readyState;
 			ready = (state != null && state === 'complete');

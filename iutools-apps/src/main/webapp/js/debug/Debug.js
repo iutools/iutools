@@ -6,24 +6,18 @@
 class Debug {
 
 	static trace(name, mess) {
-		if (Debug.activeTraces.includes(name) &&
-			Debug.browserDevtoolsActive()) {
-			this.getLogger(name).trace(mess);
-		}
+		this.getTraceLogger(name).trace(mess);
 	}
 
-	static browserDevtoolsActive() {
-		var active = false;
-
-		var minimalUserResponseInMiliseconds = 100;
-		var before = new Date().getTime();
-		debugger;
-		var after = new Date().getTime();
-		if (after - before > minimalUserResponseInMiliseconds) { // user had to resume the script manually via opened dev tools
-			active = true;
+	static debugModeIsOn() {
+		if (Debug.debugMode == null) {
+			Debug.debugMode = false;
+			const params = new URLSearchParams(window.location.search)
+			if (params.has("debug")) {
+				Debug.debugMode = true;
+			}
 		}
-
-		return active;
+		return Debug.debugMode;
 	}
 
 	static traceElements(name, mess, wait = null) {
@@ -31,7 +25,7 @@ class Debug {
 			if (mess == null) {
 				mess = "";
 			}
-			var logger = this.getLogger(name);
+			var logger = this.getTraceLogger(name);
 			for (var ii=0; ii < Debug.elementsToTrack.length; ii++) {
 				var eltSelector = Debug.elementsToTrack[ii];
 				var elt = $(eltSelector);
@@ -56,17 +50,27 @@ class Debug {
 		}
 	}
 
-	static getLogger(name) {
+	static getTraceLogger(name) {
+		Debug.initTraceAppenders();
 		var logger = log4javascript.getLogger(name);
-		logger.setLevel(log4javascript.Level.TRACE);
+		var logLevel = log4javascript.Level.ERROR;
+		if (Debug.activeTraces.includes(name)) {
+			logLevel = log4javascript.Level.TRACE;
+		}
+		logger.setLevel(logLevel);
+		if (this.debugModeIsOn()) {
+			logger.addAppender(Debug.popUpAppender)
+		}
 
+		return logger;
+	}
+
+	static initTraceAppenders() {
 		if (Debug.popUpAppender == null){
 			Debug.popUpAppender = new log4javascript.PopUpAppender();
+			// Debug.popUpAppender = new log4javascript.InPageAppender();
 			var popUpLayout = new log4javascript.PatternLayout("%d{HH:mm:ss} %-5p - %m%n");
 			Debug.popUpAppender.setLayout(popUpLayout);
 		}
-		logger.addAppender(Debug.popUpAppender)
-
-		return logger;
 	}
 }
