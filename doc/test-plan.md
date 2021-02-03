@@ -1,6 +1,6 @@
-#Manual test plan for Inuktut apps
+# Manual test plan for Inuktut apps
 
-##Gister
+## Gister
 
 Syllabic text
 - Copy and paste some Syllabic text from https://www.gov.nu.ca/iu
@@ -60,7 +60,7 @@ URL on a server that does not exist
 URL on existing server that returns page not found
 
 
-##Search Engine
+## Search Engine
 
 Search for word in SYLLABIC -- Happy Path
 - Enter ᐅᒃᐱᕐᓂᖅ (= religion) in the query text box, then click [Search] 
@@ -111,7 +111,7 @@ Search for a word that produces less than 10 pages of hits
 - Search for  ᐅᖃᖅᑐᖅ
 -- There should only be one page of hits
 
-##Spell Checker
+## Spell Checker
 
 Spell check SYLLABIC -- Happy Path
 - Enter some text in SYLLABIC, some of which are badly spelled, others not.
@@ -190,7 +190,7 @@ Check with and without _Include partial corrections_
     not have partial corrections. So if you click on a word and don't see one, 
     try other words.   
     
-##Morpheme Search
+## Morpheme Search
 
 Happy path
 - Enter morpheme 'tut', then click on Search
