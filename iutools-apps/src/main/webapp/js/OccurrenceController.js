@@ -44,7 +44,7 @@ class OccurrenceController extends WidgetController {
 	
 	
 	invokeService(jsonRequestData, _successCbk, _failureCbk, _url) {
-			var tracer = new Tracer('OccurenceController.invokeService', true);
+			var tracer = Debug.getTraceLogger('OccurenceController.invokeService');
 			this.busy = true;
 			var controller = this;
 			var fctSuccess = 
