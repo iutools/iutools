@@ -173,7 +173,7 @@ QUnit.module("OccurenceController Tests", {
 
 QUnit.test("OccurenceController.Acceptance -- HappyPath", function( assert ) 
 {
-	var tracer = new Tracer('OccurenceController.Acceptance');
+	var tracer = Debug.getTraceLogger('OccurenceController.Acceptance');
 	var done = assert.async();
 	
 	var caseDescr = "OccurenceController.Acceptance -- HappyPath";

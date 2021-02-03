@@ -105,7 +105,7 @@ QUnit.module("SpellController Tests", {
 			]
 		};	 
 	    
-		var tracer = new Tracer("SpellControllerTest.beforeEach", true);
+		var tracer = Debug.getTraceLogger("SpellControllerTest.beforeEach");
 		tracer.trace("Launching the method that will wait for the DOM to be ready before setting the controller")
 		
 		new RunWhen().domReady(function () {

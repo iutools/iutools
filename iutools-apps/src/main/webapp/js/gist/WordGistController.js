@@ -37,7 +37,8 @@ class WordGistController extends WidgetController {
 	}
 
 	successExampleWordCallback(resp) {
-		var tracer = new Tracer('OccurenceController.successExampleWordCallback', true);
+		var tracer = Debug.getTraceLogger('OccurenceController.successExampleWordCallback');
+		);
 		if (resp.errorMessage != null) {
 			this.failureExampleWordCallback(resp);
 		} else {
@@ -80,7 +81,7 @@ class WordGistController extends WidgetController {
 	}
 	
 	displayWordGist(results) {
-		var tracer = new Tracer('WordGistController.displayWordGist', true);
+		var tracer = Debug.getTraceLogger('WordGistController.displayWordGist');
 		var divGist = this.elementForProp("divGist");
 		this.hideSpinningWheel("divGist_message");
 		
