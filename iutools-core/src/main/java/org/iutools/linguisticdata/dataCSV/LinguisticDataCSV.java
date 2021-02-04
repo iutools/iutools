@@ -1,17 +1,17 @@
 package org.iutools.linguisticdata.dataCSV;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import org.iutools.linguisticdata.Data;
+import org.iutools.linguisticdata.LinguisticData;
 import org.iutools.linguisticdata.LinguisticDataException;
+import org.iutools.csv.CSVReader;
 import ca.nrc.file.ResourceGetter;
 
 public final class LinguisticDataCSV { //extends LinguisticDataAbstract {
@@ -21,6 +21,8 @@ public final class LinguisticDataCSV { //extends LinguisticDataAbstract {
 	static public int IOEXCEPTION = 2;
 	
 	public static String[][] dataTables = {
+			// The value of the field 'type' in the linguistic data files
+			// is used to create the linguistic data objects.
 		{"Base","Inuktitut","RootsSpalding"},
 		{"Base","Inuktitut","RootsSchneider"},
 		{"Base","Inuktitut","WordsRelatedToRoots"},
@@ -35,9 +37,12 @@ public final class LinguisticDataCSV { //extends LinguisticDataAbstract {
 		{"Demonstrative","Inuktitut","Demonstratives"},
 		{"DemonstrativeEnding","Inuktitut","Endings_demonstrative"},
 		{"Pronoun","Inuktitut","Pronouns"},
-		{"VerbWord","Inuktitut","Passives_French"},
-		{"VerbWord","Inuktitut","Passives_English"},
-		{"Source","Inuktitut","Sources"}
+			// These files do not have a field 'type'; provide it as the fourth element
+			// so that the objects can be created.
+			// vw: verb-word objects; src: source objects
+		{"VerbWord","Inuktitut","Passives_French","vw"},
+		{"VerbWord","Inuktitut","Passives_English","vw"},
+		{"Source","Inuktitut","Sources","src"}
 	};
 	static Class thisClass;
 
@@ -52,78 +57,42 @@ public final class LinguisticDataCSV { //extends LinguisticDataAbstract {
 //	}
 	
 	/*
-	 * 'type' peut �tre 'r' ou 's' ou null
+	 * Read all the linguistic data files into linguistic objects.
 	 */
-	public static void createLinguisticDataCSV(String type) throws LinguisticDataException {
-		if (type==null) {
-//			bases = new Hashtable();
-//			idToBaseTable = new Hashtable();
-//			words = new Hashtable();
-//			surfaceFormsOfAffixes = new Hashtable();
-//			affixesId = new Hashtable();		
-		}
-		else if (type.equals("r")) {
-        	type = "Base";
-//			bases = new Hashtable();
-//			idToBaseTable = new Hashtable();
-//			words = new Hashtable();
-        }
-        else if (type.equals("s")) {
-        	type = "Suffix";
-//			surfaceFormsOfAffixes = new Hashtable();
-//			affixesId = new Hashtable();
-        }
+	public static void createLinguisticDataCSV() throws LinguisticDataException {
 		for (int i=0; i < dataTables.length; i++) {
-			if (type==null || dataTables[i][0].equals(type) ||
-					dataTables[i][0].equals("Source"))
-				readLinguisticDataCSV(dataTables[i]);
+				_readLinguisticDataCSV(dataTables[i]);
 		}
 	}
-	
 
-	public static void readLinguisticDataCSV(String [] data)
+	protected static void _readLinguisticDataCSV(String [] data)
 		throws LinguisticDataException {
 		Logger logger = Logger.getLogger("LinguisticDataCSV.readLinguisticDataCSV");
-		String type = data[0];
+		String classOfObject = data[0];
 		String dbName = data[1];
 		String tableName = data[2];
-		logger.trace("Reading CSV data with type="+type+", dbName="+dbName+", tableName="+tableName);
-		BufferedReader f;
+		String typeOfObject = data.length==4 ? data[3] : null;
+		logger.trace("Reading CSV data with type="+classOfObject+", dbName="+dbName+", tableName="+tableName);
 		String fileName = tableName+".csv";
 		logger.trace("fileName="+fileName);
-//		String tablePath = "ca/inuktitutcomputing/dataCSV/"+fileName;
 		String tablePath = "org/iutools/linguisticdata/dataCSV/"+fileName;
 		try {
-			InputStream is =
-				ResourceGetter.getResourceAsStream(tablePath);
-			f =  new BufferedReader(new InputStreamReader(is));
-			String line;
-
-			String firstLine = f.readLine();
-			String [] fieldNames = firstLine.split(",");
-			while ( (line=f.readLine()) != null) {
-				HashMap nextRow = getNextRow(line,fieldNames);
-				// ajouter le nom de la base de donn�es et le nom de la table
-				nextRow.put("dbName", dbName);
-				nextRow.put("tableName", tableName);
-				if (type.equals("Base")) {
-					Data.makeBase(nextRow);
-				} else if (type.equals("Suffix")) {
-					Data.makeSuffix(nextRow);
-				} else if (type.equals("NounEnding")) {
-					Data.makeNounEnding(nextRow);
-				} else if (type.equals("VerbEnding")) {
-					Data.makeVerbEnding(nextRow);
-				} else if (type.equals("Demonstrative")) {
-					Data.makeDemonstrative(nextRow);
-				} else if (type.equals("DemonstrativeEnding")) {
-					Data.makeDemonstrativeEnding(nextRow);
-				} else if (type.equals("Pronoun")) {
-					Data.makePronoun(nextRow);
-				} else if (type.equals("VerbWord")) {
-					Data.makeVerbWord(nextRow);
-				} else if (type.equals("Source")) {
-					Data.makeSource(nextRow);
+			InputStream is = ResourceGetter.getResourceAsStream(tablePath);
+			BufferedReader f =  new BufferedReader(new InputStreamReader(is));
+			CSVReader csvReader = new CSVReader(f);
+			boolean endOfFile = false;
+			while ( !endOfFile ) {
+				Map<String,String> linguisticDataAttributeValuePairs = csvReader.readNext();
+				if (linguisticDataAttributeValuePairs==null)
+					endOfFile = true;
+				else {
+					linguisticDataAttributeValuePairs.put("dbName", dbName);
+					linguisticDataAttributeValuePairs.put("tableName", tableName);
+					if (typeOfObject!=null) {
+						// non-linguistic objects must be added a field "type"
+						linguisticDataAttributeValuePairs.put("type",typeOfObject);
+					}
+					LinguisticData.makeLinguisticObject((HashMap) linguisticDataAttributeValuePairs);
 				}
 			}
 		} catch (IOException e) {
@@ -134,56 +103,5 @@ public final class LinguisticDataCSV { //extends LinguisticDataAbstract {
     	logger.trace("Done reading the CSV file");
 	}
 
-    public static HashMap getNextRow(String line, String [] fieldNames) {
-        HashMap currentRow = new HashMap();
-        Vector values = new Vector();
-        boolean inString = false;
-        int pos = 0;
-        char c = 0;
-        for (int i=0; i<line.length(); i++) {
-        	c=line.charAt(i);
-        	if (c=='"')
-        		if (inString)
-        			if (i<line.length()-1)
-        				if (line.charAt(i+1)!='"')
-        					inString = false;
-        				else
-        					++i;
-        			else
-        				;
-        		else
-        			inString = true;
-        	else if (c==',')
-        		if (!inString) {
-        			values.add(line.substring(pos, i));
-        			pos = i+1;
-        		}
-        }
-        if (c==',')
-        	values.add("");
-        else
-        	values.add(line.substring(pos));
-        String [] valuesStr = (String[])values.toArray(new String[0]);
-        for (int i = 0; i < valuesStr.length; i++) {
-        	try {
-            currentRow.put(fieldNames[i], removeQuotesAndNull(valuesStr[i]));
-        	} catch (ArrayIndexOutOfBoundsException e) {
-        		System.err.println("line: "+line);
-        	}
-        }
-        return currentRow;
-    }
-
-static String removeQuotesAndNull(String str) {
-	if (str.equals(""))
-		return null;
-	else if (str.charAt(0)=='"') {
-		String s = str.replaceFirst("^\"", "");
-		String newStr = s.replaceFirst("\"$", "");
-		newStr = newStr.replaceAll("\"\"", "\"");
-		return newStr;		
-	} else
-		return str;
-}
 
 }

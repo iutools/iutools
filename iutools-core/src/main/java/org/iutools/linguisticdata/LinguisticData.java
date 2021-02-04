@@ -22,19 +22,48 @@ import org.iutools.text.segmentation.MyStringTokenizer;
 public class LinguisticData {
 	
 	private static LinguisticData singleton = null;
+
+	public static Map<String,String> type2class = new HashMap<>();
+	static {
+        type2class.put("n","Base");
+        type2class.put("v","Base");
+        type2class.put("a","Base");
+        type2class.put("c","Base");
+        type2class.put("e","Base");
+        type2class.put("sv","Suffix");
+        type2class.put("sn","Suffix");
+        type2class.put("q","Suffix");
+        type2class.put("tn","NounEnding");
+        type2class.put("tv","VerbEnding");
+        type2class.put("ad","Demonstrative");
+        type2class.put("pd","Demonstrative");
+        type2class.put("tad","DemonstrativeEnding");
+        type2class.put("tpd","DemonstrativeEnding");
+        type2class.put("p","Pronoun");
+        // TODO: only 3 occurrences in RootsSpalding.csv; must be changed to "p"
+        type2class.put("pr","Pronoun");
+        type2class.put("rp","Pronoun");
+        type2class.put("rpr","Pronoun");
+        type2class.put("vw","VerbWord");
+        type2class.put("src","Source");
+    }
 	
-	// Note: We keep info as both Vector<Base> and Vector<Morpheme> because for
-	//  some unknown reason, we cannot cast from Vector<Base> to Vector<Morpheme>
-	//  and some clients expect to receive the info in the later type.
+	// For bases:
+    // We keep info as both Vector<Base> and Vector<Morpheme>
+    // because for some unknown reason, we cannot cast from Vector<Base> to Vector<Morpheme>
+	// and some clients expect to receive the info in the later type.
+    // SURFACE FORMS TO OBJECTS
     protected Map<String,Vector<Base>> basesForCanonicalForm = new HashMap<String,Vector<Base>>();
     protected Hashtable<String,Vector<Morpheme>> morphemesForCanonicalForm = new Hashtable<String,Vector<Morpheme>>();
+    protected Hashtable<String,Vector<SurfaceFormOfAffix>> surfaceFormsOfAffixes = new Hashtable<String,Vector<SurfaceFormOfAffix>>();
+    // MORPHEME IDS TO MORPHEMES
     protected Hashtable<String,Base> idToBaseTable = new Hashtable<String,Base>();
     protected Hashtable<String,Affix> idToAffixTable = new Hashtable<String,Affix>();
+    // OTHERS
     protected Hashtable<String,VerbWord> words = new Hashtable<String,VerbWord>();
     protected Hashtable<String,Source> sources = new Hashtable<String,Source>();
     protected Hashtable<String,Vector<Example>> examples = new Hashtable<String,Vector<Example>>();
     protected Hashtable<String,String[]> textualRenderings = new Hashtable<String,String[]>();
-    protected Hashtable<String,Vector<SurfaceFormOfAffix>> surfaceFormsOfAffixes = new Hashtable<String,Vector<SurfaceFormOfAffix>>();
     protected Hashtable<Character,Vector<String>> groupsOfConsonants = new Hashtable<Character,Vector<String>>();
 
     static public void init() {
@@ -46,7 +75,7 @@ public class LinguisticData {
     	if (singleton == null) {
     		singleton = new LinguisticData();
     		try {
-				LinguisticDataCSV.createLinguisticDataCSV(null);
+				LinguisticDataCSV.createLinguisticDataCSV();
 		        singleton.makeGroupsOfConsonants();
 			} catch (LinguisticDataException e) {
 				e.printStackTrace();
@@ -64,7 +93,7 @@ public class LinguisticData {
     
     
     //--------------------------------------------------------------------------
-    public void addBaseForCanonicalForm(String canonicalForm, Base base) throws LinguisticDataException {
+    public void add2basesForCanonicalForm(String canonicalForm, Base base) throws LinguisticDataException {
     	if (!basesForCanonicalForm.containsKey(canonicalForm)) {
     		basesForCanonicalForm.put(canonicalForm, new Vector<Base>());
     		morphemesForCanonicalForm.put(canonicalForm, new Vector<Morpheme>());
@@ -519,5 +548,34 @@ public class LinguisticData {
         return reader;
 	}
 
-	
+    //----- MAKE OBJECTS FOR THE MORPHEMES ------------------------------
+
+    public static void makeLinguisticObject(HashMap<String,String> linguisticDataMap) throws LinguisticDataException {
+        Logger logger = Logger.getLogger("LinguisticDataCSV.makeLinguisticObject");
+        String morphemeTypeInLinguisticData = linguisticDataMap.get("type");
+        logger.debug("morphemeTypeInLinguisticData: "+morphemeTypeInLinguisticData);
+        String classOfMorpheme = LinguisticData.type2class.get(morphemeTypeInLinguisticData);
+        // original 'originalClassOfMorpheme' variable in the if-statements below has been replaced by 'classOfMorpheme'
+        if (classOfMorpheme.equals("Base")) {
+            LinguisticObjectFactory.makeBase(linguisticDataMap);
+        } else if (classOfMorpheme.equals("Suffix")) {
+            LinguisticObjectFactory.makeSuffix(linguisticDataMap);
+        } else if (classOfMorpheme.equals("NounEnding")) {
+            LinguisticObjectFactory.makeNounEnding(linguisticDataMap);
+        } else if (classOfMorpheme.equals("VerbEnding")) {
+            LinguisticObjectFactory.makeVerbEnding(linguisticDataMap);
+        } else if (classOfMorpheme.equals("Demonstrative")) {
+            LinguisticObjectFactory.makeDemonstrative(linguisticDataMap);
+        } else if (classOfMorpheme.equals("DemonstrativeEnding")) {
+            LinguisticObjectFactory.makeDemonstrativeEnding(linguisticDataMap);
+        } else if (classOfMorpheme.equals("Pronoun")) {
+            LinguisticObjectFactory.makePronoun(linguisticDataMap);
+        } else if (classOfMorpheme.equals("VerbWord")) {
+            LinguisticObjectFactory.makeVerbWord(linguisticDataMap);
+        } else if (classOfMorpheme.equals("Source")) {
+            LinguisticObjectFactory.makeSource(linguisticDataMap);
+        }
+    }
+
+
 }

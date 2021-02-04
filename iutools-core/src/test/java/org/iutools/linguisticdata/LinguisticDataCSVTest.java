@@ -1,5 +1,6 @@
 package org.iutools.linguisticdata;
 
+import ca.nrc.json.PrettyPrinter;
 import org.junit.Test;
 
 import java.util.Hashtable;
@@ -62,6 +63,15 @@ public class LinguisticDataCSVTest {
 		Hashtable<String,Demonstrative> gotTable = LinguisticData.getInstance().getIdToDemonstrativeTable();
 		Demonstrative demBase = gotTable.get("makua/pd-ml-p");
 		Assert.assertEquals("The demonstrative [base] 'makua/pd-ml-p' was not found in the demonstrative table.", "makua", demBase.morpheme);
+	}
+
+	@Test
+	public void test_check_compositionRoot() {
+		LinguisticData.init();
+		Hashtable<String,Base> idToBaseTable = LinguisticData.getInstance().idToBaseTable;
+		Base arviat = idToBaseTable.get("arviat/1n");
+//		System.out.println("ARVIAT/1N:\n"+PrettyPrinter.print(arviat));
+		Assert.assertEquals("'morpheme' of original base is incorrect.","arviat",arviat.morpheme);
 	}
 
 }
