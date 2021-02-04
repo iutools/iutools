@@ -40,7 +40,9 @@ public class Base extends Morpheme {
     String variant = null;
     // originalMorpheme:
     //  If a morpheme has various spellings, these are contained in
-    //  the field 'variante' of the database table.
+    //  the field 'variante' of the database table. For reach variant,
+	//  another object will be created with that variant for its 'morpheme',
+	//  'originalMorpheme' will be set to the original (this) morpheme.
     String originalMorpheme = null;
     String nature = null;
     Boolean known = new Boolean(true);
@@ -73,6 +75,7 @@ public class Base extends Morpheme {
 		
 	public Base() {
 	}
+
 
 	//-----------------------------------------------------------------------------------------------
 	private void makeRoot(HashMap<String,String> v) throws LinguisticDataException {
