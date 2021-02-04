@@ -38,7 +38,6 @@ class WordGistController extends WidgetController {
 
 	successExampleWordCallback(resp) {
 		var tracer = Debug.getTraceLogger('OccurenceController.successExampleWordCallback');
-		);
 		if (resp.errorMessage != null) {
 			this.failureExampleWordCallback(resp);
 		} else {
