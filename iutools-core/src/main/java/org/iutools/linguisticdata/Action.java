@@ -1135,14 +1135,13 @@ public abstract class Action {
         String condition = null;
 	    
         public SpecificSuppression(String str) {
-        	suppressed = str;
+            suppressed = str;
         }
-        
         public SpecificSuppression(String cond, String str) {
         	suppressed = str;
             condition = cond;
         }
-        
+
         private SpecificSuppression() {
         }
         
