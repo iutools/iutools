@@ -8,7 +8,9 @@
  */
 package org.iutools.linguisticdata;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
@@ -18,58 +20,85 @@ import ca.nrc.debug.Debug;
 //import ca.inuktitutcomputing.data.LinguisticDataAbstract;
 
 
-public abstract class Data {
-    
-	//-----Faire les objets des morph�mes------------------------------
-	
+public abstract class LinguisticObjectFactory {
+
+
+	/**
+	 * Make an object of class Base with the passed attribute-value pairs and
+	 * add an entry to a mapped set of canonical forms.
+	 *
+	 * @param linguisticDataMap a HashMap of attribute to value
+	 */
 	@SuppressWarnings("unchecked")
-	public static synchronized void makeBase(HashMap<String,String> v) throws LinguisticDataException {
+	public static synchronized void makeBase(HashMap<String,String> linguisticDataMap) throws LinguisticDataException {
 		Logger logger = Logger.getLogger("ca.inuktitutcomputing.data.makeBase");
-        Base x = new Base(v);
-        addToHash(x,"base - original");
-        if (LinguisticData.getInstance().getIdToBaseTable().containsKey(x.id)) {
+        Base base = new Base(linguisticDataMap);
+        add2basesForCanonicalForm(base,"base - original");
+        if (LinguisticData.getInstance().getIdToBaseTable().containsKey(base.id)) {
         	String callStack = Debug.printCallStack();
         	throw new RuntimeException(
-        		"Bases ID already contains a key "+x.id+". This one is defined in "+
-        		x.tableName+"."+". Check your .csv files in the linguistics data\n"+
+        		"Bases ID already contains a key "+base.id+". This one is defined in "+
+        		base.tableName+"."+". Check your .csv files in the linguistics data\n"+
         		"\nCall stack was:\n"+callStack);
-        }
-		LinguisticData.getInstance().addEntryToIdToBaseTable(x.id, x);
+        } else {
+			LinguisticData.getInstance().addEntryToIdToBaseTable(base.id, base);
+		}
         // If the root has variant forms, create a root object for each
         // one and link it to the original root.
-        if (x.getVariant() != null) {
-            StringTokenizer st = new StringTokenizer(x.getVariant());
-            while (st.hasMoreTokens()) {
-				HashMap<String,String> v2 = (HashMap<String,String>) v.clone();
-                v2.put("morpheme", st.nextToken());
-                v2.put("variant", null);
-//				v2.put("nb", "-" + x.getNb());
-				v2.put("nb", x.getNb());
-                v2.put("originalMorpheme",x.id);
-                Base x2 = new Base(v2);
-                addToHash(x2,"base - variant");
-            }
+        if (base.getVariant() != null) {
+			List<String> variants = tokenize(base.getVariant());
+			for (String variant : variants) {
+				Base baseVariant = _makeBaseVariant(base,linguisticDataMap,variant);
+				add2basesForCanonicalForm(baseVariant, "base - variant");
+				LinguisticData.getInstance().addEntryToIdToBaseTable(baseVariant.id, baseVariant);
+			}
         }
         // If the root has a special root for composition, create such a
         // composition object and link it to the original root.
-        if (x.getCompositionRoot() != null) {
-            StringTokenizer st = new StringTokenizer(x.getCompositionRoot());
-            while (st.hasMoreTokens()) {
-                HashMap<String,String> v2 = (HashMap<String,String>) v.clone();
-                v2.put("morpheme", st.nextToken());
-                v2.put("variant", null);
-//				v2.put("nb", "-" + x.getNb());
-				v2.put("nb", x.getNb());
-                v2.put("originalMorpheme",x.id);
-                v2.put("compositionRoot",null);
-                v2.put("subtype","nc");
-                Base x2 = new Base(v2);
-                addToHash(x2,"base - composition");
-            }
-        }
+        if (base.getCompositionRoot() != null) {
+        	String compositionRoot = base.getCompositionRoot();
+//        	List<String> compositionRoots = tokenize(base.getCompositionRoot());
+//        	for (String compositionRoot : compositionRoots) {
+				Base baseComp = _makeBaseCompositionRoot(base,linguisticDataMap,compositionRoot);
+				add2basesForCanonicalForm(baseComp, "base - composition");
+				// Since this object has the same morphemeid, it would replace the right object in the hash, so we don't do it
+//				LinguisticData.getInstance().addEntryToIdToBaseTable(baseComp.id, baseComp);
+//			}
+       }
 	}
-	
-	
+
+	private static List<String> tokenize(String string) {
+		List<String> tokens = new ArrayList<String>();
+		StringTokenizer st = new StringTokenizer(string);
+		while (st.hasMoreTokens()) {
+			tokens.add(st.nextToken());
+		}
+
+		return tokens;
+	}
+
+	protected static Base _makeBaseCompositionRoot(Base base, HashMap<String,String> linguisticDataMap, String compositionRoot) throws LinguisticDataException {
+			HashMap<String,String> linguisticDataMap_clone = (HashMap<String,String>) linguisticDataMap.clone();
+			linguisticDataMap_clone.put("morpheme",compositionRoot);
+			linguisticDataMap_clone.put("variant",null);
+			linguisticDataMap_clone.put("originalMorpheme",base.id);
+			linguisticDataMap_clone.put("compositionRoot",null);
+			linguisticDataMap_clone.put("subtype","nc");
+			linguisticDataMap_clone.put("nb",base.nb);
+			Base baseComp = new Base(linguisticDataMap_clone);
+			return baseComp;
+	}
+
+	private static Base _makeBaseVariant(Base base, HashMap<String,String> linguisticDataMap, String variant) throws LinguisticDataException {
+		HashMap<String,String> linguisticDataMap_clone = (HashMap<String,String>) linguisticDataMap.clone();
+		linguisticDataMap_clone.put("morpheme",variant);
+		linguisticDataMap_clone.put("variant",null);
+		linguisticDataMap_clone.put("originalMorpheme",base.id);
+		Base baseVariant = new Base(linguisticDataMap_clone);
+		return baseVariant;
+	}
+
+
 	/*
      * Les démonstratifs ont en fait deux surfaceFormsOfAffixes de racine: la première
      * forme est utilisée seule; la seconde forme est utilisée avec des
@@ -83,7 +112,7 @@ public abstract class Data {
 	public static synchronized void makeDemonstrative(HashMap<String,String> v) throws LinguisticDataException {
 	    // 1ère forme
         Demonstrative x = new Demonstrative(v);
-        addToHash(x);
+        add2basesForCanonicalForm(x);
         if (LinguisticData.getInstance().getIdToBaseTable().containsKey(x.id)) throw new RuntimeException("Key '"+x.id+"' already exists in linguistic data hash");
 
 		LinguisticData.getInstance().addEntryToIdToBaseTable(x.id, x);
@@ -94,7 +123,7 @@ public abstract class Data {
             v2.put("morpheme", roots[i]);
             v2.put("root", roots[i]);
             Demonstrative x2 = new Demonstrative(v2, "r");
-            addToHash(x2);
+            add2basesForCanonicalForm(x2);
             LinguisticData.getInstance().addEntryToIdToBaseTable(x2.id,x2);
         }
 }
@@ -102,7 +131,7 @@ public abstract class Data {
 	@SuppressWarnings("unchecked")
 	public static synchronized void makePronoun(HashMap<String,String> v) throws LinguisticDataException {
 	    Pronoun x = new Pronoun(v);
-	    addToHash(x);
+	    add2basesForCanonicalForm(x);
         if (LinguisticData.getInstance().getIdToBaseTable().containsKey(x.id)) throw new RuntimeException("Key '"+x.id+"' already exists in linguistic data hash");	    
 		LinguisticData.getInstance().addEntryToIdToBaseTable(x.id, x);
         if (x.getVariant() != null) {
@@ -115,7 +144,7 @@ public abstract class Data {
 				v2.put("nb", x.getNb());
                 v2.put("originalMorpheme",x.id);
                 Pronoun x2 = new Pronoun(v2);
-                addToHash(x2);
+                add2basesForCanonicalForm(x2);
         		LinguisticData.getInstance().addEntryToIdToBaseTable(x2.id, x2);
             }
         }
@@ -294,16 +323,16 @@ public abstract class Data {
 		}
 	}
 
-	public static void addToHash(Base x) throws LinguisticDataException {
-		addToHash(x,null);
+	public static void add2basesForCanonicalForm(Base x) throws LinguisticDataException {
+		add2basesForCanonicalForm(x,null);
 	}
 	
-	public static void addToHash(Base x, String caller) throws LinguisticDataException {
-		Logger logger = Logger.getLogger("Data.addToHash");
-		if (x.morpheme.equals("iglu")) {
-			logger.debug("--- addToHash(iglu)");
+	public static void add2basesForCanonicalForm(Base x, String caller) throws LinguisticDataException {
+		Logger logger = Logger.getLogger("Data.add2basesForCanonicalForm");
+		if ( x.id.equals("salliit/1n") ) {
+			logger.debug("--- add2basesForCanonicalForm("+x.morpheme+") --- "+x.id);
 			if (caller != null) logger.debug("    from: "+caller);
 		}
-		LinguisticData.getInstance().addBaseForCanonicalForm(x.morpheme, x);
+		LinguisticData.getInstance().add2basesForCanonicalForm(x.morpheme, x);
     }
 }
