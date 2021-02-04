@@ -15,22 +15,23 @@ import org.iutools.linguisticdata.Morpheme;
 
 public class Condition {
 
+    // TODO: This syntax seems to be obsolete. See Imacond.
     /*
      * Syntaxe:
      * 
-     * <condPrec> ::= <condPrec1> | <condPrec2>
-     * <condPrec1> ::= <condMorph> ["+" <condPrec1>]?
-     * <condPrec2> ::= "!" ["cp" | "cs"] "(" <idMorph> ")" ["," <condPrec2>]?
-     * <condMorph> ::= <cond> [" " <condMorph>]?
-     * <cond> ::= <C> ["," <cond>]?
-     * <cond> ::= "!" "(" <C> ["," <cond>]? ")"
-     * <C> ::= "!"? <attr> ":" <val> 
-     *      "!" indique que la valeur de l'attribut n'est pas �gale � 'val'.
-     * <idMorph> ::= "id" ":" <idVal>
-     * <idVal> ::= <nom de morph�me> "/" <id de morph�me>
-     * <id de morph�me> ::= <nombre> <lettre> [<lettre> | <chiffre> | <tiret>]+?
+     *  1. <condPrec> ::= <condPrec1> | <condPrec2>
+     *  2. <condPrec1> ::= <condMorph> ["+" <condPrec1>]?
+     *  3. <condPrec2> ::= "!" ["cp" | "cs"] "(" <idMorph> ")" ["," <condPrec2>]?
+     *  4. <condMorph> ::= <cond> [" " <condMorph>]?
+     *  5. <cond> ::= <C> ["," <cond>]?
+     *  6. <cond> ::= "!" "(" <C> ["," <cond>]? ")"
+     *  7. <C> ::= "!"? <attr> ":" <val>
+     *      "!" indique que la valeur de l'attribut n'est pas égale à 'val'.
+     *  8. <idMorph> ::= "id" ":" <idVal>
+     *  9. <idVal> ::= <nom de morphème> "/" <id de morphème>
+     * 10. <id de morphème> ::= <nombre> <lettre> [<lettre> | <chiffre> | <tiret>]+?
      * 
-     * <condPrec2> pour les cas o� l'on a A,B,C et D=!A && !B && !C
+     * <condPrec2> pour les cas où l'on a A,B,C et D=!A && !B && !C
      * cp pour "condition sur le morph�me pr�c�dent"
      * cs pour "condition sur le morph�me suivant"
      * 
