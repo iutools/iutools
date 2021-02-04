@@ -17,15 +17,18 @@ import java.util.Vector;
            }
 
     /*
-     * Syntaxe:
+     * Syntax:
      * 
-     * <condMorphMult> ::= <condMorph> ("+" <condMorphMult>)*
-     * <condMorph> ::= <condset> (" " <condMorph>)*
-     * <condset> ::= <cond> ("," <condset>)*
-     * <cond> ::= "!"? ( "(" <condMorph> ")" | <attrvalpair> | <condid> )
-     * <attrvalpair> ::= <attr> ":" <val> 
-     *      "!" indique que la valeur de l'attribut n'est pas �gale � 'val'.
-     * <condid> ::= ["cp" | "cf"] "(" <morphid> ")"
+     * 1. <condMorphMult> ::= <condMorph> ("+" <condMorphMult>)*
+     * 2. <condMorph> ::= <condset> (" " <condMorph>)*
+     * 3. <condset> ::= <cond> ("," <condset>)*
+     * 4. <cond> ::= "!"? ( "(" <condMorph> ")" | <attrvalpair> | <condid> )
+     * 5. <attrvalpair> ::= <attr> ":" <val>
+     *      "!" = NOT
+     * 6. <condid> ::= ["cp" | "cf"] "(" <morphid> ")"
+     *
+     * cp: condition on preceding morpheme
+     * cf: condition on following morpheme
      *
     */
   final public Condition ParseCondition() throws ParseException {
