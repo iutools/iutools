@@ -44,7 +44,7 @@ public abstract class Morpheme implements Cloneable {
 	public String morpheme;
 	public String englishMeaning = null;
 	public String frenchMeaning = null;
-	String nb = null;
+	public String nb = null;
 	String [] sources = null;
 	Integer num = null;
 	String dbName = null;
@@ -83,7 +83,7 @@ public abstract class Morpheme implements Cloneable {
     public Morpheme copyOf() throws CloneNotSupportedException  {
         return (Morpheme)this.clone();
     }
-    
+
     public Conditions getPrecCond() {
         return preCondition;
     }
