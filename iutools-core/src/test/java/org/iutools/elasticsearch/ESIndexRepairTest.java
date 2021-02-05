@@ -126,7 +126,7 @@ public class ESIndexRepairTest {
 		AssertESIndexRepair asserter = new AssertESIndexRepair(repair);
 		asserter.assertCorruptedDocsAre(
 		"Initially, the index should NOT have contained any corrupted documents",
-		new String[0], winfoType, goodDocPrototype
+			new String[0], winfoType, goodDocPrototype
 		);
 
 		String[] docsToCorrupt = {"Haajsan", "Haaki"};
@@ -155,16 +155,14 @@ public class ESIndexRepairTest {
 	public void test__queryCorruptedDocs__HappyPath() throws Exception {
 		Set<String> badFields = new HashSet<String>();
 		Collections.addAll(badFields, new String[] {"badFld1", "badFld2"});
-		JSONObject gotQuery = repair.queryCorruptedDocs(badFields);
+		JSONObject gotQuery = repair.corruptedDocsQuery(badFields);
 		String expQueryStr =
 			"{"+
-			"  \"query\": {"+
-			"    \"bool\": {"+
-			"      \"should\":  ["+
-			"        {\"exist\": \"badFld1\"},"+
-			"        {\"exist\": \"badFld2\"}"+
-			"      ]"+
-			"    }"+
+			"  \"bool\": {"+
+			"    \"should\":  ["+
+			"      {\"exists\": {\"field\": \"badFld1\"}},"+
+			"      {\"exists\": {\"field\": \"badFld2\"}}"+
+			"    ]"+
 			"  }"+
 			"}"
 			;

@@ -7,6 +7,7 @@ import ca.nrc.testing.Asserter;
 import org.iutools.corpus.WordInfo;
 
 import java.util.Iterator;
+import java.util.Set;
 
 public class AssertESIndexRepair extends Asserter<ESIndexRepair> {
 	public AssertESIndexRepair(ESIndexRepair _gotObject) {
@@ -33,7 +34,7 @@ public class AssertESIndexRepair extends Asserter<ESIndexRepair> {
 	public AssertESIndexRepair assertBadFieldNamesAre(
 		String mess, String[] expFields,
 		String winfoType, WordInfo goodDocPrototype) throws Exception {
-		String[] gotFields = repair().badFieldNames(winfoType, goodDocPrototype);
+		Set<String> gotFields = repair().badFieldNames(winfoType, goodDocPrototype);
 		AssertObject.assertDeepEquals(
 			baseMessage+"\n"+mess+
 			"\nList of bad fields was not as expected.",

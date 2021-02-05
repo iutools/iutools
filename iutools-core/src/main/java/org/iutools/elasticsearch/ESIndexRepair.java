@@ -215,23 +215,28 @@ public class ESIndexRepair {
 
 	public Iterator<String> corruptedDocIDs(
 		String esType, Document goodDocPrototype) throws ElasticSearchException {
-		Iterator<String> iter = null;
 
-		Query query = new Query(
-			new JSONObject()
-				.put("exists", new JSONObject()
-					.put("field", "scroll_id")
-				)
-		);
-		_Source source = new _Source("id");
-		SearchResults<Document> results =
-			esClient().search(query, esType, goodDocPrototype, source);
+		// Initialize iterator to an empty one.
+		Iterator<String> iter = new ArrayList<String>().iterator();
 
-		return results.docIDIterator();
+		Set<String> badFields = badFieldNames(esType, goodDocPrototype);
+		JSONObject queryJsonObject = corruptedDocsQuery(badFields);
+		if (queryJsonObject != null) {
+			// There are some bad fields in the ES type.
+			// Repair all documents that have such bad fields.
+			//
+			Query query = new Query(queryJsonObject);
+			_Source source = new _Source("id");
+			SearchResults<Document> results =
+				esClient().search(query, esType, goodDocPrototype, source);
+			iter = results.docIDIterator();
+		}
+
+		return iter;
 	}
 
-	JSONObject queryCorruptedDocs(Set<String> badFields) {
-		"hello".compareTo("world");
+	JSONObject corruptedDocsQuery(Set<String> badFields) {
+		JSONObject query = null;
 		List<String> badFieldsSorted =
 			badFields.stream().collect(Collectors.toList());
 		Collections.sort(badFieldsSorted, (f1, f2) -> {
@@ -240,14 +245,19 @@ public class ESIndexRepair {
 
 		JSONArray existFieldsArray = new JSONArray();
 		for (String badField: badFieldsSorted) {
-			existFieldsArray.put(new JSONObject().put("exist", badField));
-		}
-		JSONObject query = new JSONObject()
-			.put("query", new JSONObject()
-				.put("bool", new JSONObject()
-					.put("should", existFieldsArray)
+			existFieldsArray.put(
+				new JSONObject().put("exists", new JSONObject()
+					.put("field", badField)
 				)
 			);
+		}
+
+		if (existFieldsArray.length() > 0) {
+			query = new JSONObject()
+			.put("bool", new JSONObject()
+			.put("should", existFieldsArray)
+			);
+		}
 
 		return query;
 	}
@@ -262,7 +272,7 @@ public class ESIndexRepair {
 		while (corruptedIDsIter.hasNext()) {
 			String id = corruptedIDsIter.next();
 			if (id != null) {
-				corruptedIDs.add(corruptedIDsIter.next());
+				corruptedIDs.add(id);
 			}
 		}
 
@@ -313,7 +323,7 @@ public class ESIndexRepair {
 		}
 	}
 
-	public String[] badFieldNames(String esTypeName, Document goodDocPrototype) throws ElasticSearchException {
+	public Set<String> badFieldNames(String esTypeName, Document goodDocPrototype) throws ElasticSearchException {
 		Set<String> existingFields =
 			new Index(indexName).getFieldTypes(esTypeName).keySet();
 
@@ -332,7 +342,7 @@ public class ESIndexRepair {
 		}
 
 
-		return badFields.toArray(new String[0]);
+		return badFields;
 	}
 
 	public void deleteCorruptedDocs(Iterator<String> corruptedIDs, String esType)

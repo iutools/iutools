@@ -139,8 +139,8 @@ public class ESRepairDaemon implements ServletContextListener, Runnable {
 		Path jsonFile = CompiledCorpusRegistry.jsonFile4corpus(index);
 
 		Iterator<String> corruptedIDs =
-		repairMan.corruptedDocIDs(
-			CompiledCorpus.WORD_INFO_TYPE, CompiledCorpus.winfoPrototype);
+			repairMan.corruptedDocIDs(
+				CompiledCorpus.WORD_INFO_TYPE, CompiledCorpus.winfoPrototype);
 		repairMan.repairCorruptedDocs(corruptedIDs,
 			CompiledCorpus.WORD_INFO_TYPE, CompiledCorpus.winfoPrototype,
 			jsonFile);
