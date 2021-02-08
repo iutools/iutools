@@ -15,7 +15,7 @@ import java.util.Set;
  * This test reads the Spell Checker gold standard created from a small sample
  * inuktut web pages, and does a bunch of sanity checks on its content
  */
-public class SpellGoldStandard_WebSampleSanityCheck {
+public class SpellGoldStandard_WebSampleSanityCheckTest {
 
     @Test
     public void test__sanityCheck() throws Exception {

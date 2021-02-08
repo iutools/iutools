@@ -11,7 +11,7 @@ import org.junit.Test;
  * @author desilets
  *
  */
-public abstract class CorpusSanityCheck {
+public abstract class CorpusSanityCheckTest {
 
 	protected abstract CompiledCorpus corpusToCheck() throws Exception;
 	protected abstract Map<String,Object> expectations();

@@ -3,7 +3,7 @@ package org.iutools.corpus;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CorpusSanityCheck_DefaultES extends CorpusSanityCheck {
+public class CorpusSanityCheck_DefaultES extends CorpusSanityCheckTest {
     @Override
     protected CompiledCorpus corpusToCheck() throws Exception {
         CompiledCorpus corpus =
