@@ -9,4 +9,7 @@ echo
 bash $admin_path/recompile.bash
 echo
 echo
+bash $admin_path/backup-webapps.bash
+echo
+echo
 bash $admin_path/redeploy-webapps.bash
