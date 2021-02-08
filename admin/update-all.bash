@@ -1,6 +1,8 @@
 admin_lib_path=`realpath $(dirname "$0")/lib`
 
-echo Running with
+echo
+echo "*** update-all.bash ***"
+echo "Running with"
 source $admin_lib_path/validate_IUTOOLS_SOURCES.bash
 source $admin_lib_path/validate_JAVAUTILS_SOURCES.bash
 echo

@@ -1,6 +1,7 @@
 admin_lib_path=`realpath $(dirname "$0")/lib`
 
-echo Running with
+echo "*** update-all.bash ***"
+echo "Running with"
 source $admin_lib_path/validate_IUTOOLS_VERSION.bash
 source $admin_lib_path/validate_CATALINA_HOME.bash
 source $admin_lib_path/validate_TOMCAT_WEBAPPS.bash

@@ -4,4 +4,6 @@ admin_path=`realpath $(dirname "$0")`
 trap '[[ $BASH_COMMAND != echo* ]] && echo $BASH_COMMAND' DEBUG
 
 bash $admin_path/update-all.bash
+echo
+echo
 bash $admin_path/redeploy-webapps.bash
