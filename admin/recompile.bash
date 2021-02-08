@@ -17,7 +17,7 @@ echo "===    $IUTOOLS_SOURCES"
 echo "==="
 echo
 cd $IUTOOLS_SOURCES
-sudo mvn install -skipTests=true
+sudo mvn install -DskipTests=true
 
 echo
 echo "==="
@@ -26,6 +26,6 @@ echo "===    $JAVAUTILS_SOURCES"
 echo "==="
 echo
 cd $JAVAUTILS_SOURCES
-sudo mvn install -skipTests=true
+sudo mvn install -DskipTests=true
 
 
