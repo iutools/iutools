@@ -16,6 +16,7 @@ class OccurrenceController extends WidgetController {
 	}
 	
 	onFindExamples() {
+		Debug.getTraceLogger("OccurenceController.onFindExamples").trace("invoked");
 		this.elementForProp("divGist_contents").html('').parent().hide();
 		this.elementForProp('inpExampleWord').val('');
 		this.elementForProp("divGist").hide();

@@ -1,6 +1,5 @@
 package org.iutools.webservice.relatedwords;
 
-import ca.nrc.datastructure.Pair;
 import ca.nrc.json.PrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Logger;
@@ -15,15 +14,16 @@ import org.iutools.webservice.EndPointHelper;
 import org.iutools.webservice.ServiceResponse;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.ws.WebServiceException;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-public class RelatedWordsEndpoint {
+public class RelatedWordsEndpoint extends HttpServlet {
 
-	protected void doGet(HttpServletRequest request,
+protected void doGet(HttpServletRequest request,
 								HttpServletResponse response) throws ServletException, IOException {
 		Logger logger = Logger.getLogger("org.iutools.webservice.RelatedWordsEndpoint.doGet");
 		logger.debug("doGet()");
@@ -34,7 +34,9 @@ public class RelatedWordsEndpoint {
 		EndPointHelper.log4jReload();
 		Logger tLogger = Logger.getLogger("org.iutools.webservice.RelatedWordsEndpoint.doPost");
 
-		tLogger.trace("invoked with request=\n"+request);
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("invoked with request=\n" + PrettyPrinter.print(request));
+		}
 
 		String jsonResponse = null;
 

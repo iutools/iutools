@@ -1,0 +1,13 @@
+<div id="header" class="header">
+  <a href="index.html">
+    <div nrcLogo></div><img src="imgs/NRC-banner.png"/></div>
+  </a>
+
+  <p>
+
+  <div id="feedback_link"><a href="mailto:alain.desilets@nrc-cnrc.gc.ca;contact@inuktitutcomputing.ca?subject=Inuktitut Tools Feedback">Send Feedback</a></div>
+  <div id="other_tools"><a href="index.html">Other Inuktut Tools</a>
+</div>
+
+<p/>
+

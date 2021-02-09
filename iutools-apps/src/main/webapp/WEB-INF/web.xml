@@ -27,7 +27,19 @@
 	<servlet-mapping>
 		<servlet-name>SearchEndpoint</servlet-name>
 		<url-pattern>/srv/search/*</url-pattern>
-	</servlet-mapping>	
+	</servlet-mapping>
+
+	<!-- RelatedWords endpoint -->
+	<servlet>
+		<servlet-name>RelatedWordsEndpoint</servlet-name>
+		<servlet-class>
+			org.iutools.webservice.relatedwords.RelatedWordsEndpoint
+		</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>RelatedWordsEndpoint</servlet-name>
+		<url-pattern>/srv/relatedwords/*</url-pattern>
+	</servlet-mapping>
 
 	<!--  Spell Endpoint -->
 	<servlet>
