@@ -11,9 +11,9 @@ import org.openqa.selenium.WebDriver;
  */
 public class RunJSTests {
 
-	@Test @Ignore
-	public void test__RunJSTests() throws Exception  {
-		WebDriver driver = WebDriverFactory.getDriver();
-		driver.get("http://localhost:8080/iutools/allJSTests.html");
-	}
+//	@Test @Ignore
+//	public void test__RunJSTests() throws Exception  {
+//		WebDriver driver = WebDriverFactory.getDriver();
+//		driver.get("http://localhost:8080/iutools/allJSTests.html");
+//	}
 }

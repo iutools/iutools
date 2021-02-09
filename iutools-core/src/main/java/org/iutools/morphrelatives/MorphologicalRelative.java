@@ -35,7 +35,9 @@ public class MorphologicalRelative {
 	
 	private String toStringCached = null;
 
-	public MorphologicalRelative(String _word, String[] _morphemes, 
+	public MorphologicalRelative() {};
+
+	public MorphologicalRelative(String _word, String[] _morphemes,
 			long _frequency, String[] _origMorphemes) {
 		init_MorphologicalRelative(_word, _morphemes, _frequency, null, 
 				origMorphemes);

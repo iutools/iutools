@@ -16,5 +16,4 @@ public class TokenizeResponse extends ServiceResponse {
 	public TokenizeResponse(List<Pair<String, Boolean>> _tokens) {
 		this.tokens = _tokens;
 	}
-
 }

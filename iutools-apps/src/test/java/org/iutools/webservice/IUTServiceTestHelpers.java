@@ -26,6 +26,8 @@ import org.iutools.webservice.gist.GistPrepareContentEndpoint;
 import org.iutools.webservice.gist.GistPrepareContentResponse;
 import org.iutools.webservice.gist.GistWordEndpoint;
 import org.iutools.webservice.gist.GistWordResponse;
+import org.iutools.webservice.relatedwords.RelatedWordsEndpoint;
+import org.iutools.webservice.relatedwords.RelatedWordsResponse;
 import org.iutools.webservice.tokenize.TokenizeEndpoint;
 import org.iutools.webservice.tokenize.TokenizeResponse;
 
@@ -36,9 +38,10 @@ public class IUTServiceTestHelpers {
 	public static final long MEDIUM_WAIT = 2*SHORT_WAIT;
 	public static final long LONG_WAIT = 2*MEDIUM_WAIT;
 
+
 	public enum EndpointNames {
 		GIST, GIST_PREPARE_CONTENT, GIST_WORD, MORPHEME, MORPHEMEEXAMPLE, 
-		SEARCH, TOKENIZE, SPELL};
+		RELATED_WORDS, SEARCH, TOKENIZE, SPELL};
 	
 
 	public static MockHttpServletResponse postEndpointDirectly(EndpointNames eptName, Object inputs) throws Exception {
@@ -67,6 +70,8 @@ public class IUTServiceTestHelpers {
 			new GistPrepareContentEndpoint().doPost(request, response);
 		} else if (eptName == EndpointNames.MORPHEME) {
 			new OccurenceSearchEndpoint().doPost(request, response);
+		} else if (eptName == EndpointNames.RELATED_WORDS) {
+			new RelatedWordsEndpoint().doPost(request, response);
 		} else if (eptName == EndpointNames.SEARCH) {
 			new SearchEndpoint().doPost(request, response);
 		} else if (eptName == EndpointNames.SPELL) {
@@ -117,6 +122,15 @@ public class IUTServiceTestHelpers {
 		SearchResponse response = new ObjectMapper().readValue(responseStr, SearchResponse.class);
 		return response;
 	}
+
+	public static RelatedWordsResponse toRelatedWordsResponse(
+		MockHttpServletResponse servletResp) throws IOException {
+		String responseStr = servletResp.getOutputStream().toString();
+		RelatedWordsResponse response =
+			new ObjectMapper().readValue(responseStr, RelatedWordsResponse.class);
+		return response;
+	}
+
 	
 	public static TokenizeResponse toTokenizeResponse(
 			MockHttpServletResponse servletResp) throws IOException {
