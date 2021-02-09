@@ -5,6 +5,8 @@
  */
 class Debug {
 
+    static activeTraces = [];
+    
 	static trace(name, mess) {
 		this.getTraceLogger(name).trace(mess);
 	}
