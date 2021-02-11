@@ -1,6 +1,6 @@
 <% String IUTOOLS_JS_VERSION = request.getParameter("IUTOOLS_JS_VERSION"); %>
 
-START OF: Controller setup: IUTOOLS_JS_VERSION=<%= IUTOOLS_JS_VERSION %>
+(09h20)START OF: Controller setup: IUTOOLS_JS_VERSION=<%= IUTOOLS_JS_VERSION %>
 
 <script src="js/search/SearchController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 
