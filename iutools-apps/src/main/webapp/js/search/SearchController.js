@@ -156,7 +156,7 @@ class SearchController extends WidgetController {
         } else {
             var expandedQuery = resp.expandedQuery;
             this.setQuery(expandedQuery);
-            this.launchGoogleSearch(expandedQuery);
+            this.launchGoogleSearch(resp.expandedQuerySyll);
             // this.setTotalHits(resp.totalHits);
             // this.totalHits = resp.totalHits;
             // this.allHits = resp.hits;

@@ -1,7 +1,3 @@
-
-    Today's date: <%= (new java.util.Date()).toLocaleString()%>
-    </p>
-
     Enter your request:
     <input id="txt-query-words" name="query-words" type="text" value="" />
     <button id="btn-search" type="button" name="btn-search" value="Search">Search</button>
@@ -29,4 +25,3 @@
         <div id="nb-hits"><span id="nb-hits"></span> result<span id="plural">s</span><hr></div>
         <div id="page-hits"></div>
     </div>
-
