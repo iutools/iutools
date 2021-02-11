@@ -33,7 +33,7 @@ class SearchController extends WidgetController {
 
     onSearch() {
         Debug.getTraceLogger("SearchController.onSearch").trace("Invoked");
-        // this.expandQueryThenSearch();
+        this.expandQueryThenSearch();
     }
 
     showHitsPage(pageNum) {
@@ -112,6 +112,8 @@ class SearchController extends WidgetController {
     }
 
     invokeExpandQueryService(jsonRequestData, _successCbk, _failureCbk) {
+        var tracer = Debug.getTraceLogger("SearchController.invokeExpandQueryService");
+        tracer.trace("invoked with jsonRequestData="+JSON.stringify(jsonRequestData));
         var controller = this;
         var fctSuccess =
             function(resp) {
@@ -152,7 +154,9 @@ class SearchController extends WidgetController {
         if (resp.errorMessage != null) {
             this.expandQueryFailureCallback(resp);
         } else {
-            this.setQuery(resp.expandedQuery);
+            var expandedQuery = this.relatedWordsResp2ExpandedQuery(resp);
+            this.setQuery(expandedQuery);
+            this.launchGoogleSearch(expandedQuery);
             // this.setTotalHits(resp.totalHits);
             // this.totalHits = resp.totalHits;
             // this.allHits = resp.hits;
@@ -172,6 +176,21 @@ class SearchController extends WidgetController {
         this.setBusy(false);
     }
 
+    relatedWordsResp2ExpandedQuery(resp) {
+        var words = [];
+        var relatedWordsInfo = resp.relatedWords;
+        for (var ii=0; ii < relatedWordsInfo.length; ii++) {
+            words.push(relatedWordsInfo[ii].word)
+        }
+        var query = '('+words.join(' OR ')+')';
+
+        return query;
+    }
+
+    launchGoogleSearch(query) {
+        var url = "https://www.google.com/search?q="+query;
+        window.open(url, "_self");
+    }
 
     setBusy(flag) {
         this.busy = flag;

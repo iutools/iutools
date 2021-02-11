@@ -29,6 +29,7 @@
 		<url-pattern>/srv/search/*</url-pattern>
 	</servlet-mapping>
 
+
 	<!-- RelatedWords endpoint -->
 	<servlet>
 		<servlet-name>RelatedWordsEndpoint</servlet-name>

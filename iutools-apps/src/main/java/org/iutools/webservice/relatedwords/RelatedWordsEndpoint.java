@@ -34,10 +34,6 @@ protected void doGet(HttpServletRequest request,
 		EndPointHelper.log4jReload();
 		Logger tLogger = Logger.getLogger("org.iutools.webservice.RelatedWordsEndpoint.doPost");
 
-		if (tLogger.isTraceEnabled()) {
-			tLogger.trace("invoked with request=\n" + PrettyPrinter.print(request));
-		}
-
 		String jsonResponse = null;
 
 		EndPointHelper.setContenTypeAndEncoding(response);
@@ -46,7 +42,9 @@ protected void doGet(HttpServletRequest request,
 		try {
 			EndPointHelper.setContenTypeAndEncoding(response);
 			inputs = EndPointHelper.jsonInputs(request, RelatedWordsInputs.class);
-			tLogger.trace("inputs="+ PrettyPrinter.print(inputs));
+			if (tLogger.isTraceEnabled()) {
+				tLogger.trace("inputs="+ PrettyPrinter.print(inputs));
+			}
 			ServiceResponse results = executeEndPoint(inputs);
 			jsonResponse = new ObjectMapper().writeValueAsString(results);
 		} catch (Exception exc) {
