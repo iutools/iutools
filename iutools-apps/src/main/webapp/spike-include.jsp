@@ -3,14 +3,15 @@
 
 <h1>pageContext.include(pageName+".jsp") with setAttribute</h1>
 <%
-  pageContext.setAttribute("VERSION", VERSION);
+  pageContext.setAttribute("VERSION", VERSION, pageContext.REQUEST_SCOPE);
   pageContext.include(pageName+".jsp");
 %>
 
-<h1>&lt;jsp:include page="spike-somepage.jsp"&gt;, hardcoded VERSION</h1>
-<jsp:include page="spike-somepage.jsp">
-    <jsp:param name="VERSION" value="2.0"/>
-</jsp:include>
+<%
+        if (pageName.equals("spike-somepage")){
+            %><%@include file="spike-somepage .jsp"%><%
+        } else if ("layout2".equalsIgnoreCase(viewletLayout)){
+            %><%@include file="layout2.jsp"%><%
+        }
+    %>
 
-<h1>pageContext.include(pageName+".jsp")</h1>
-<% pageContext.include(pageName+".jsp"); %>

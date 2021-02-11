@@ -1,2 +1,3 @@
-<h3>This is somepage.jsp</h3>
-<% String VERSION = pageContext.getAttribute("VERSION") %>
+<h3>START OF: somepage.jsp</h3>
+
+<h3>END OF: somepage.jsp</h3>
