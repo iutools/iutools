@@ -28,6 +28,8 @@ import org.iutools.webservice.gist.GistWordEndpoint;
 import org.iutools.webservice.gist.GistWordResponse;
 import org.iutools.webservice.relatedwords.RelatedWordsEndpoint;
 import org.iutools.webservice.relatedwords.RelatedWordsResponse;
+import org.iutools.webservice.search.ExpandQueryEndpoint;
+import org.iutools.webservice.search.ExpandQueryResponse;
 import org.iutools.webservice.tokenize.TokenizeEndpoint;
 import org.iutools.webservice.tokenize.TokenizeResponse;
 
@@ -38,11 +40,9 @@ public class IUTServiceTestHelpers {
 	public static final long MEDIUM_WAIT = 2*SHORT_WAIT;
 	public static final long LONG_WAIT = 2*MEDIUM_WAIT;
 
-
 	public enum EndpointNames {
-		GIST, GIST_PREPARE_CONTENT, GIST_WORD, MORPHEME, MORPHEMEEXAMPLE, 
+		GIST, GIST_PREPARE_CONTENT, EXPAND_QUERY, GIST_WORD, MORPHEME, MORPHEMEEXAMPLE,
 		RELATED_WORDS, SEARCH, TOKENIZE, SPELL};
-	
 
 	public static MockHttpServletResponse postEndpointDirectly(EndpointNames eptName, Object inputs) throws Exception {
 		return postEndpointDirectly(eptName, inputs, false);
@@ -66,6 +66,8 @@ public class IUTServiceTestHelpers {
 		
 		if (eptName == EndpointNames.GIST_WORD) {
 			new GistWordEndpoint().doPost(request, response);
+		} else if (eptName == EndpointNames.EXPAND_QUERY) {
+			new ExpandQueryEndpoint().doPost(request, response);
 		} else if (eptName == EndpointNames.GIST_PREPARE_CONTENT) {
 			new GistPrepareContentEndpoint().doPost(request, response);
 		} else if (eptName == EndpointNames.MORPHEME) {
@@ -131,7 +133,14 @@ public class IUTServiceTestHelpers {
 		return response;
 	}
 
-	
+	public static ExpandQueryResponse toExpandQueryResponse(
+		MockHttpServletResponse servletResp) throws Exception {
+		String responseStr = servletResp.getOutputStream().toString();
+		ExpandQueryResponse response =
+			new ObjectMapper().readValue(responseStr, ExpandQueryResponse.class);
+		return response;
+	}
+
 	public static TokenizeResponse toTokenizeResponse(
 			MockHttpServletResponse servletResp) throws IOException {
 		String responseStr = servletResp.getOutputStream().toString();

@@ -129,7 +129,7 @@ class SearchController extends WidgetController {
 
         $.ajax({
             method: 'POST',
-            url: 'srv/relatedwords',
+            url: 'srv/expandquery',
             data: jsonRequestData,
             dataType: 'json',
             async: true,
@@ -154,7 +154,7 @@ class SearchController extends WidgetController {
         if (resp.errorMessage != null) {
             this.expandQueryFailureCallback(resp);
         } else {
-            var expandedQuery = this.relatedWordsResp2ExpandedQuery(resp);
+            var expandedQuery = resp.expandedQuery;
             this.setQuery(expandedQuery);
             this.launchGoogleSearch(expandedQuery);
             // this.setTotalHits(resp.totalHits);
@@ -207,7 +207,7 @@ class SearchController extends WidgetController {
 
     getSearchRequestData() {
         var request = {
-            word: this.elementForProp("txtQuery").val()
+            origQuery: this.elementForProp("txtQuery").val()
         };
 
         var jsonInputs = JSON.stringify(request);

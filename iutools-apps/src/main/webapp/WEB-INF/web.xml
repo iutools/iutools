@@ -30,6 +30,19 @@
 	</servlet-mapping>
 
 
+	<!-- ExpandQuery endpoint -->
+	<servlet>
+		<servlet-name>ExpandQueryEndpoint</servlet-name>
+		<servlet-class>
+			org.iutools.webservice.search.ExpandQueryEndpoint
+		</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ExpandQueryEndpoint</servlet-name>
+		<url-pattern>/srv/expandquery/*</url-pattern>
+	</servlet-mapping>
+
+
 	<!-- RelatedWords endpoint -->
 	<servlet>
 		<servlet-name>RelatedWordsEndpoint</servlet-name>

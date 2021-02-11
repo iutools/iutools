@@ -1,18 +1,13 @@
-package org.iutools.webservice.relatedwords;
+package org.iutools.webservice.search;
 
 import ca.nrc.json.PrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Logger;
-import org.iutools.corpus.CompiledCorpus;
-import org.iutools.corpus.CompiledCorpusException;
-import org.iutools.corpus.CompiledCorpusRegistry;
-import org.iutools.corpus.CompiledCorpusRegistryException;
 import org.iutools.morphrelatives.MorphRelativesFinder;
 import org.iutools.morphrelatives.MorphRelativesFinderException;
 import org.iutools.morphrelatives.MorphologicalRelative;
 import org.iutools.webservice.EndPointHelper;
 import org.iutools.webservice.ServiceResponse;
-import org.iutools.webservice.search.ExpandQueryResponse;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -22,63 +17,70 @@ import javax.xml.ws.WebServiceException;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-public class RelatedWordsEndpoint extends HttpServlet {
+public class ExpandQueryEndpoint extends HttpServlet {
 
-protected void doGet(HttpServletRequest request,
+	protected void doGet(HttpServletRequest request,
 								HttpServletResponse response) throws ServletException, IOException {
-		Logger logger = Logger.getLogger("org.iutools.webservice.RelatedWordsEndpoint.doGet");
+		Logger logger = Logger.getLogger("org.iutools.webservice.search.ExpandQueryEndpoint.doGet");
 		logger.debug("doGet()");
 	}
 
 	public void doPost(HttpServletRequest request,
 							 HttpServletResponse response) throws IOException {
 		EndPointHelper.log4jReload();
-		Logger tLogger = Logger.getLogger("org.iutools.webservice.RelatedWordsEndpoint.doPost");
+		Logger tLogger = Logger.getLogger("org.iutools.webservice.search.ExpandQueryEndpoint.doPost");
 
 		String jsonResponse = null;
 
 		EndPointHelper.setContenTypeAndEncoding(response);
 
-		RelatedWordsInputs inputs = null;
+		ExpandQueryInputs inputs = null;
+		ExpandQueryResponse results = null;
 		try {
 			EndPointHelper.setContenTypeAndEncoding(response);
-			inputs = EndPointHelper.jsonInputs(request, RelatedWordsInputs.class);
+			inputs = EndPointHelper.jsonInputs(request, ExpandQueryInputs.class);
 			if (tLogger.isTraceEnabled()) {
 				tLogger.trace("inputs="+ PrettyPrinter.print(inputs));
 			}
-			ServiceResponse results = executeEndPoint(inputs);
+			results = executeEndPoint(inputs);
 			jsonResponse = new ObjectMapper().writeValueAsString(results);
 		} catch (Exception exc) {
 			jsonResponse = EndPointHelper.emitServiceExceptionResponse("General exception was raised\n", exc);
 		}
 
+//		tLogger.trace("returning results.expandedQuery"+results.expandedQuery);
+
 		writeJsonResponse(response, jsonResponse);
 	}
 
-	private ServiceResponse executeEndPoint(RelatedWordsInputs inputs) {
+	private ExpandQueryResponse executeEndPoint(ExpandQueryInputs inputs) {
 		MorphRelativesFinder relsFinder = null;
 		try {
-			CompiledCorpus corpus =
-				new CompiledCorpusRegistry().getCorpus(inputs.useCorpus);
 			relsFinder = new MorphRelativesFinder();
-		} catch (MorphRelativesFinderException | CompiledCorpusException | CompiledCorpusRegistryException e) {
+		} catch (MorphRelativesFinderException e) {
 			throw new WebServiceException(
-				"Could not instantiate the related words finder", e);
+			"Could not instantiate the related words finder", e);
 		}
 
 		MorphologicalRelative[] relatedWords = null;
-		try {
-			relatedWords = relsFinder.findRelatives(inputs.word);
-		} catch (MorphRelativesFinderException e) {
-			throw new WebServiceException(
+		if (!queryAlreadyExpanded(inputs.origQuery)) {
+			try {
+				relatedWords = relsFinder.findRelatives(inputs.origQuery);
+			} catch (MorphRelativesFinderException e) {
+				throw new WebServiceException(
 				"Exception raised while searching for related words", e);
+			}
 		}
 
 		ExpandQueryResponse response =
-			new ExpandQueryResponse();
+			new ExpandQueryResponse(inputs.origQuery, relatedWords);
 
 		return response;
+	}
 
+	private boolean queryAlreadyExpanded(String query) {
+		boolean alreadyExpanded = (query.matches("^\\s*\\(.*\\)\\s*$"));
+		return alreadyExpanded;
 	}
 
 	private void writeJsonResponse(HttpServletResponse response, String json) throws IOException {
@@ -89,5 +91,5 @@ protected void doGet(HttpServletRequest request,
 
 		writer.write(json);
 		writer.close();
-	}	
+	}
 }
