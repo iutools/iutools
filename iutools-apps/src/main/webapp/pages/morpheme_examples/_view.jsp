@@ -1,6 +1,3 @@
-    <h1 style="text-align:left;">Find examples of a morpheme's use
-    </h1>
-
 	<b>In corpus: </b>
     <select id="corpus">
    		<option value="Hansard-1999-2002" selected>Nunavut Hansard 1999-2002</option>

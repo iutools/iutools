@@ -1,5 +1,3 @@
-    <h1>Inuktut Spell Checker</h1>
-
     <p>Enter some Inuktut text:</p>
     <textarea id="txt-to-check" name="txt-to-check" rows=20 cols=80></textarea>
     <br/>

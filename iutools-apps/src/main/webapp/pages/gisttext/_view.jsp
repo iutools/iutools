@@ -1,6 +1,3 @@
-    <h1 style="text-align:left;">Gist text
-    </h1>
-
     <!--<form id="form-query" method="post" action="">-->
 
     <!-- Form for submitting text or url to gist -->
