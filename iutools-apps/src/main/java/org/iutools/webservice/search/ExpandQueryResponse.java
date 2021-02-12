@@ -36,6 +36,10 @@ public class ExpandQueryResponse extends ServiceResponse {
 			for (MorphologicalRelative aRelatedWord : _relatedWords) {
 				expandedTerms.add(aRelatedWord.getWord());
 			}
+			if (!expandedTerms.contains(origQuery)) {
+				expandedTerms.add(0, origQuery);
+			}
+
 			expandedQuery =
 				"(" + StringUtils.join(expandedTerms.iterator(), " OR ") + ")";
 		}

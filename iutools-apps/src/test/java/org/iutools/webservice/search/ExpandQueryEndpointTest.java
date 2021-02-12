@@ -29,7 +29,7 @@ public class ExpandQueryEndpointTest {
 			IUTServiceTestHelpers.EndpointNames.EXPAND_QUERY,
 			expandInputs);
 
-		String expQuery = "(inussummik OR inuksunnguat OR inuksui OR inuksuup OR inuksummi)";
+		String expQuery = "(inuksuk OR inussummik OR inuksunnguat OR inuksui OR inuksuup OR inuksummi)";
 		new AssertExpandQueryResponse(response)
 			.expandedQueryIs(expQuery);
 	}
