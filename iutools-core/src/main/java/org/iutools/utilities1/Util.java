@@ -86,9 +86,10 @@ public class Util {
 		sb.append("]");
 		return sb.toString();
 	}
-	// En Inuktitut �crit en caract�res latins, le H est toujours
-	// en majuscule.  Il nous faut donc une m�thode sp�ciale pour
-	// cela.
+	/*
+	 * In Roman-alphabet Inuktitut, the letter 'H' is always uppercase.
+	 * Hence this special method.
+	 */
 	public static String enMinuscule(String chaine) {
 		String s = chaine.toLowerCase();
 		String s2 = s.replace('h','H');
