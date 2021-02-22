@@ -46,14 +46,14 @@ import static org.iutools.linguisticdata.Morpheme.MorphFormat;
 
 // Decomposition:
 //    String word
-//    MorceauRacine stem:
+//    RootPartOfComposition stem:
 //        Base racine:
 //           ...
 //        String terme
 //        int position
 //        String niveau
-//    Object [] morphParts:
-//        MorceauAffixe morceau:
+//    AffixPartOfComposition[] morphParts:
+//        AffixPartOfComposition morceau:
 //            SurfaceFormOfAffix form
 //            
 
@@ -63,11 +63,6 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 	RootPartOfComposition stem;
 	public AffixPartOfComposition[] morphParts;
 
-	// Au moment de la cr�ation d'un objet Decomposition, on d�termine
-	// la cha�ne de caract�res � l'int�rieur du mot pour chaque morceau,
-	// � partir de la position sauvegard�e dans l'objet MorceauAffixe
-	// lors de la d�composition.
-
 	public Decomposition(String word, RootPartOfComposition r, AffixPartOfComposition[] parts) {
 		this.word = word;
 		stem = r;
@@ -76,8 +71,9 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 		for (int i = parts.length - 1; i >= 0; i--) {
 			AffixPartOfComposition m = parts[i];
 			int pos = m.getPosition();
-			m.setTerme(
-				Orthography.orthographyICI(word.substring(pos, nextPos), false) );
+			// Desimplify, because morphological analysis is done on simplified orthography.
+			String deSimplifiedTerm = Orthography.orthographyICI(word.substring(pos, nextPos), false);
+			m.setTerme(deSimplifiedTerm);
 			nextPos = pos;
 		}
 		for (int i=0; i<parts.length; i++) {
