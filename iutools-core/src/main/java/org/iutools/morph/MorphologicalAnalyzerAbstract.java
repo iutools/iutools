@@ -34,8 +34,8 @@ public abstract class MorphologicalAnalyzerAbstract implements AutoCloseable {
 	public static enum TimeoutStrategy {
 		EXECUTOR, STOPWATCH, BOTH}
 	
-//	protected TimeoutStrategy timeoutStrategy = TimeoutStrategy.STOPWATCH;
-	protected TimeoutStrategy timeoutStrategy = TimeoutStrategy.BOTH;
+	protected TimeoutStrategy timeoutStrategy = TimeoutStrategy.STOPWATCH;
+//	protected TimeoutStrategy timeoutStrategy = TimeoutStrategy.BOTH;
 //	protected TimeoutStrategy timeoutStrategy = TimeoutStrategy.EXECUTOR;
     protected Long millisTimeout = new Long(10*1000);
     protected boolean timeoutActive = true;
@@ -116,7 +116,8 @@ public abstract class MorphologicalAnalyzerAbstract implements AutoCloseable {
 		}
 	}
 
-	/** 
+	/**
+	 * Decomposition of an Inuktitut word.
      * DÉCOMPOSITION DU MOT.
      * Les décompositions résultantes sont ordonnées selon certaines règles.
      * L'analyse tient compte de certaines habitudes : l'omission de la consonne finale,
@@ -135,7 +136,7 @@ public abstract class MorphologicalAnalyzerAbstract implements AutoCloseable {
      * DÉCOMPOSITION DU MOT.
      * Les décompositions résultantes sont ordonnées selon certaines règles.
      * @param word String word to be decomposed, in syllabics or roman alphabet
-     * @param extendedAnalysis boolean if true, check also for possible missing consonant at the end of the word
+     * @param lenient boolean if true, check also for possible missing consonant at the end of the word
      * @return Decomposition[] array of decompositions
      * @throws LinguisticDataException 
      * @throws MorphologicalAnalyzerException 
@@ -147,7 +148,7 @@ public abstract class MorphologicalAnalyzerAbstract implements AutoCloseable {
     	}
     	
     	long start = System.currentTimeMillis();
-    	if (timeoutStrategy != TimeoutStrategy.EXECUTOR) {
+    	if (timeoutStrategy != TimeoutStrategy.EXECUTOR && timeoutActive) {
     		this.stpw = new StopWatch(millisTimeout, "Decomposing word="+word);
     	}
     	
