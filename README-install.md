@@ -210,19 +210,3 @@ To deploy (or redeploy) the _iutools_ web apps, issue the following commands:
     
 Note that this script requires that you define certain environment variables. If 
 they are not defined, the script will notify you of the missing ones.    
-
-### OPTIONAL: Enable the Inuktut Web Search app
-
-One of the _iutools_ web app is a web search engine developed specifically for 
-Inuktut. This particular app is not enabled by default because it requires a 
-paying subscription to the Microsoft Bing Web Search API:
-
-https://www.microsoft.com/en-us/bing/apis/bing-web-search-api
-
-If you want your installation to include the Inuktut web search app, you must:
-
-- Obtain a Bing API key from the Microsoft Azure web site
-- Specify that key by entering it in the _ca_nrc.properties_ file:
-
-     org.iutools.search.bingKey=yourBingAPIKey
-  

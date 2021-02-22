@@ -523,6 +523,8 @@ class SpellController extends WidgetController {
 			// This token is either punctuation or a word that was correctly
 			// spelled.
 			html = word;
+			html = html.replace(/\n/g, "<br/>\n");
+			html = html.replace(/ /g, "&nbsp;");
 		} else {
 			html = this.picklistFor(correction);
 		}

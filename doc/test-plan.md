@@ -73,12 +73,7 @@ Search for word in SYLLABIC -- Happy Path
 
      (ᐅᑉᐱᕐᓂᕐᒥᒃ OR ᐅᑉᐱᕐᓂᖅ OR ᐅᑉᐱᕐᓂᖏᑦ OR ᐅᑉᐱᕐᓂᐅᕗᖅ OR ᐅᑉᐱᓂᕐᒧᓪᓗ OR ᐅᒃᐱᕐᓂᖅ)
 
-  and that we get some hits.
-- Check that all hits on the first page contain at least one of those words. 
-- Click on the second page of hits and check that:
-  - They are different from the first page
-  - They all contain one of the query terms
-  
+  and that a Google search page is opened with that query
 
 Search for word in LATIN - Happy Path
 - Enter ukpirniq (= religion) in the search box, then click [Search] button
@@ -86,35 +81,12 @@ Search for word in LATIN - Happy Path
 
      (ᐅᑉᐱᕐᓂᕐᒥᒃ OR ᐅᑉᐱᕐᓂᖅ OR ᐅᑉᐱᕐᓂᖏᑦ OR ᐅᑉᐱᕐᓂᐅᕗᖅ OR ᐅᑉᐱᓂᕐᒧᓪᓗ OR ᐅᒃᐱᕐᓂᖅ)
 
-  and that we get some hits.
-- Check that all hits contain at least one of those words 
-- Click on the second page of hits and check that:
-  - They are different from the first page
-  - They all contain one of the query terms
-
+  and that a Google search page is opened with that query
   
 Search by pressing Enter key
 - Enter a search word in the text box, then instead of clicking 
   [Search] button, press Enter key.
   
-Use the page of hits navigation buttons
-- Search for word nunavut
-- Check the hits navigation buttons at the bottom
-  - Page [0] is the one selected
-  - [Previous]: NOT there; [Next] IS THERE
-- Click on [Next] button and check that
-  - Page [1] is the one selected
-  - [Previous] and [Next]: BOTH THERE
-- Click on [9] and check that:
-  - [Previous]: IS there; [Next]
-- Click on [4], then do a different search for inuktitut. 
-  - Check that page [0] is the one selected.
-
-  
-Search for a word that produces less than 10 pages of hits
-- Search for  ᐅᖃᖅᑐᖅ
--- There should only be one page of hits
-
 ## Spell Checker
 
 Spell check SYLLABIC -- Happy Path
