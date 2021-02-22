@@ -4,3 +4,5 @@
 /src/test/resources/ca/pirurvik/iutools/webservice/jmeter.log
 /src/test/resources/org/iutools/webservice/jmeter.log
 /src/test/jmeter/reports/
+/src/test/jmeter/jmeter.log
+/src/test/jmeter/Test.jtl
