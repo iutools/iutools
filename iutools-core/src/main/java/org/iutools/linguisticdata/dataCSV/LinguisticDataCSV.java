@@ -23,6 +23,11 @@ public final class LinguisticDataCSV { //extends LinguisticDataAbstract {
 	public static String[][] dataTables = {
 			// The value of the field 'type' in the linguistic data files
 			// is used to create the linguistic data objects.
+			// 0: class of the objects created from data in data file
+			// 1: name of the database
+			// 2: name of the CSV data file (without the extension)
+			// 3: if present, 'type' to be used when creating the objects
+			//    only for non-linguistic data
 		{"Base","Inuktitut","RootsSpalding"},
 		{"Base","Inuktitut","RootsSchneider"},
 		{"Base","Inuktitut","WordsRelatedToRoots"},
@@ -42,7 +47,10 @@ public final class LinguisticDataCSV { //extends LinguisticDataAbstract {
 			// vw: verb-word objects; src: source objects
 		{"VerbWord","Inuktitut","Passives_French","vw"},
 		{"VerbWord","Inuktitut","Passives_English","vw"},
-		{"Source","Inuktitut","Sources","src"}
+		{"Source","Inuktitut","Sources","src"},
+			// The next files contain additional morphemes not in the original database
+		{"Suffix","Inuktitut","Suffixes_additional"},
+
 	};
 	static Class thisClass;
 
