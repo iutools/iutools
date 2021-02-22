@@ -74,8 +74,8 @@ protected void doGet(HttpServletRequest request,
 				"Exception raised while searching for related words", e);
 		}
 
-		ExpandQueryResponse response =
-			new ExpandQueryResponse();
+		RelatedWordsResponse response =
+			new RelatedWordsResponse(inputs.word, relatedWords);
 
 		return response;
 
