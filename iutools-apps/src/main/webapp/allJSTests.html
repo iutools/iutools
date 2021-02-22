@@ -5,12 +5,12 @@
         
  		<link rel="stylesheet" href="css/styles.css?version=0.00001"/> <!-- update the version number each time the css file is modified - ensures browsers use the new css file instead of a cached version -->
         
-		<script src = "js/jquery-3.3.1.min.js"></script>        
+		<script src = "js/vendors/jquery/jquery-3.3.1.min.js"></script>
         
         <link rel="stylesheet" type="text/css" href="css/qunit-2.1.1.css" />
         <script src="js/test/qunit-2.1.1.js"></script>
         
-        <script src="js/DebugUtils.js"></script>
+        <script src="js/debug/DebugUtils.js"></script>
                 
     </head>
     
@@ -27,14 +27,14 @@
         <div id="testMainDiv"></div>
     </body>
     
-  <script           src="js/vendors/jquery.mockjax.js"></script>
+  <script           src="js/vendors/jquery/jquery.mockjax.js"></script>
 
-  <script  src="js/jquery.safeselector.js?version=00000"></script>          
+  <script  src="js/vendors/jquery/jquery.safeselector.js?version=00000"></script>
   <script  src="js/test/TestHelpers.js?version=0.00007"></script>          
-  <script src="js/log4javascript.js"></script>
+  <script src="js/vendors/log4javascript.js"></script>
   <script src="js/debug/Debug.js?version=0.00012"></script>
-  <script src="js/RunWhen.js?version=0.000003"></script>
-  <script src="js/WidgetController.js"></script>
+  <script src="js/common/RunWhen.js?version=0.000003"></script>
+  <script src="js/controller/WidgetController.js"></script>
 
 
   <script>if (typeof activeTraces !== 'undefined' && !Array.isArray(activeTraces)) {
@@ -45,14 +45,14 @@
 
   <!-- BEGIN: UNIT TESTS -->
       
-  <script          src="js/SearchController.js?version=0.00032"></script>              
+  <script          src="js/search/SearchController.js?version=0.00032"></script>
   <script src="js/test/SearchControllerTest.js?version=0.00032"></script>          
   
   <!-- For some strange reason, if we put that tests AFTER SearchControllerTest, it crashes -->
-  <script          src="js/SpellController.js?version=0.00032"></script>
+  <script          src="js/spell/SpellController.js?version=0.00032"></script>
   <script src="js/test/SpellControllerTest.js?version=0.00032"></script>
 
-  <script            src="js/OccurrenceController.js?version=0.00001"></script>              
+  <script            src="js/morpheme_examples/OccurrenceController.js?version=0.00001"></script>
   <script src="js/test/OccurrencesControllerTest.js?version=0.00001"></script>                       
 
   <script src="js/test/InheritanceTest.js?version=0.00001"></script>          

@@ -5,8 +5,8 @@
 <head>
   <meta charset="utf-8">
   <% out.println("<title>iutools: "+pageTitle+"</title>\n"); %>
-  <link rel="stylesheet" href="css/styles.css?v2">
-  <script src="js/jquery-3.3.1.min.js"></script>
+  <link rel="stylesheet" href="css/styles.css?v1.0.4">
+  <script src="js/vendors/jquery/jquery-3.3.1.min.js"></script>
   <script src="js/scripts.js?v1"></script>
 </head>
 
@@ -44,11 +44,12 @@
 <!--
    Load scripts that are common to all page types
 -->
-<script src="js/log4javascript.js"></script>
+<script src="js/vendors/log4javascript.js"></script>
 <script src="js/debug/Debug.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 <script src="js/debug/DebugConfig.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
-<script src="js/RunWhen.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
-<script src="js/WidgetController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
+<script src="js/controller/RunWhen.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
+<script src="js/controller/WidgetController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
+<script src="js/controller/IUToolsController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 <script src="js/gist/WordGistController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 
 <!-- Include the code that creates and configures the controller for this page -->

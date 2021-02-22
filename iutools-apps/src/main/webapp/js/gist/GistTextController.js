@@ -2,7 +2,7 @@
  * Controller for the gisttext.html page.
  */
 
-class GistTextController extends WidgetController {
+class GistTextController extends IUToolsController {
 
 	constructor(config) {
 		super(config);
@@ -156,10 +156,10 @@ class GistTextController extends WidgetController {
 		this.wordGistController.gistWord(iuWord);				
 	}
 
-	error(err) {
-		this.elementForProp('divError').html(err);
-		this.elementForProp('divError').show();	 
-	}
+	// error(err) {
+	// 	this.elementForProp('divError').html(err);
+	// 	this.elementForProp('divError').show();
+	// }
 	
 	setBusy(flag) {
 		this.busy = flag;
