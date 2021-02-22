@@ -1,6 +1,7 @@
 package org.iutools.morph;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.concurrent.TimeoutException;
@@ -286,6 +287,95 @@ public class MorphologicalAnalyzerTest {
 			throw e;
 		}
 	}
+
+	@Test @Ignore
+	public void test__decomposeWord__noun_root_alone() throws Exception  {
+		MorphologicalAnalyzer analyzer = new MorphologicalAnalyzer();
+		String word = "angut";
+
+		try {
+			analyzer.disactivateTimeout();;
+			Decomposition[] decs = analyzer.decomposeWord(word, false);
+			for (int i=0; i<decs.length; i++) {
+				System.out.println(decs[i].toStr2());
+			}
+		} catch(Exception e) {
+			throw e;
+		}
+	}
+
+	@Test @Ignore
+	public void test__decomposeWord__inungmut() throws Exception  {
+		MorphologicalAnalyzer analyzer = new MorphologicalAnalyzer();
+		String word = "inungmut";
+
+		try {
+			analyzer.disactivateTimeout();;
+			Decomposition[] decs = analyzer.decomposeWord(word, false);
+			for (int i=0; i<decs.length; i++) {
+				System.out.println(decs[i].toStr2());
+			}
+		} catch(Exception e) {
+			throw e;
+		}
+	}
+
+	@Test @Ignore
+	public void test__decomposeWord__siniktitsijuq() throws Exception  {
+		MorphologicalAnalyzer analyzer = new MorphologicalAnalyzer();
+		String word = "siniktitsijuq";
+
+		try {
+			analyzer.disactivateTimeout();;
+			Decomposition[] decs = analyzer.decomposeWord(word, false);
+			for (int i=0; i<decs.length; i++) {
+				System.out.println(decs[i].toStr2());
+			}
+		} catch(Exception e) {
+			throw e;
+		}
+	}
+
+	@Test @Ignore
+	public void test__decomposeWord__siniktittijuq() throws Exception  {
+		MorphologicalAnalyzer analyzer = new MorphologicalAnalyzer();
+		String word = "siniktittijuq";
+
+		try {
+			analyzer.disactivateTimeout();;
+			Decomposition[] decs = analyzer.decomposeWord(word, false);
+			for (int i=0; i<decs.length; i++) {
+				System.out.println(decs[i].toStr2());
+			}
+		} catch(Exception e) {
+			throw e;
+		}
+	}
+
+
+	@Test @Ignore
+	public void test__decomposeWord__pivalliatittinirmut() throws Exception  {
+		MorphologicalAnalyzer analyzer = new MorphologicalAnalyzer();
+		String word = "pivalliatittinirmut";
+
+		try {
+			analyzer.disactivateTimeout();;
+			Decomposition[] decs = analyzer.decomposeWord(word, false);
+			for (int i=0; i<decs.length; i++) {
+				System.out.println(decs[i].toStr2());
+			}
+			System.out.println("-------------");
+			word = "siniktittiniq";
+			decs = analyzer.decomposeWord(word, false);
+			for (int i=0; i<decs.length; i++) {
+				System.out.println(decs[i].toStr2());
+			}
+		} catch(Exception e) {
+			throw e;
+		}
+	}
+
+
 
 //	@Test
 //	public void test_validate_neutral_deletion__() {
