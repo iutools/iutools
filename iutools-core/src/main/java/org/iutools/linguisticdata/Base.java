@@ -222,30 +222,33 @@ public class Base extends Morpheme {
      * i: intransitive 
      *   If the value of 'transinfix' is "nil", the root may also be transitive
      */
-	boolean agreeWithTransitivity(String trans) {
-	    if (trans==null)
-	        return true;
-	    else if (transitivity==null)
-	        return false;
-	    else if (transitivity.equals("t") && trans.equals("t"))
-	        return true;
+	boolean agreeWithTransitivity(String currentStateOfTransitivityDuringAnalysis) {
+	    if (currentStateOfTransitivityDuringAnalysis==null) {
+			return true;
+		} else if (transitivity==null) {
+			return false;
+		} else if (transitivity.equals("t") && currentStateOfTransitivityDuringAnalysis.equals("t")) {
+			return true;
+		}
         /*
          * Certains verbes intransitifs peuvent �tre utilis�s transitivement sans
          * infixe de transitivit�.  Ceux-ci ont suffixe-trans=nil.
          */
 	    else if (transitivity.equals("i") &&
-	            (trans.equals("i") || 
-	                    (trans.equals("t") && transinfix!=null && transinfix.equals("nil"))))
-	        return true;
+	            (currentStateOfTransitivityDuringAnalysis.equals("i") ||
+	                    (currentStateOfTransitivityDuringAnalysis.equals("t") && transinfix!=null && transinfix.equals("nil")))) {
+			return true;
+		}
         /*
          * Les verbes transitifs avec un antipassif non-nul peuvent �tre utilis�s
          * intransitivement; ils sont alors interpr�t�s passivement ou r�flexivement.
          */
 	    else if (transitivity.equals("t") && antipassive!=null &&
-	            trans.equals("i") )
-	        return true;
-	    else
-	        return false;
+	            currentStateOfTransitivityDuringAnalysis.equals("i") ) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
     String[] getVariants() {

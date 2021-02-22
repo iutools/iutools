@@ -119,56 +119,42 @@ public class Dialect {
      * 
      * The results of each check are joined.
      */
-    public static Vector<String> newCandidates(String stem, String candidateMorpheme, 
-    		String followingMorpheme) throws TimeoutException, 
+    public static Vector<String> dialectalSpellingVariations(String candidateMorpheme, String stem) throws TimeoutException,
     		LinguisticDataException {
     	
-    	stpw.check("newCandidates -- upon entry, stem="+stem+
-    		", candidateMorpheme="+candidateMorpheme+", followingMorpheme="+
-    			followingMorpheme);
+    	stpw.check("dialectalSpellingVariations -- upon entry, stem="+stem+
+    		", candidateMorpheme="+candidateMorpheme);
         Vector<String> cands = new Vector<String>(); // to hold the new candidates
-        ArrayList<Object[]> candsAndChanges = new ArrayList<Object[]>();
-        
-        if (stem != null) {
-            /*
-             * Look after the initial consonant of the candidate morpheme. It might
-             * form with the final consonant of the stem a consonant cluster that is
-             * realized differently in other dialects, and new candidates with a
-             * different initial consonant might occur.
-             */ 
-            char finalStem = stem.charAt(stem.length() - 1);
-            char initialFollowingMorpheme = candidateMorpheme.charAt(0);
-            if (Roman.typeOfLetterLat(initialFollowingMorpheme) == Roman.C) {
-                String groupOrig = new String(new char[]{finalStem,initialFollowingMorpheme});
-                Vector<String> grps = Dialect.equivalentGroups(
-                        groupOrig.charAt(0), groupOrig.charAt(1));
-                if (grps != null) {
-                    for (int j = 0; j < grps.size(); j++) {
-                    	stpw.check("Dialect.newCandidates::136 -- j: "+j);
-                        String groupj = grps.elementAt(j);
-                        char c = groupj.charAt(1);
-                        /*
-                         * Replace the initial consonant of the candidate
-                         * with the final consonant of the equivalent
-                         * cluster, for each possible equivalent
-                         * cluster.
-                         */
-                        String candStr = c + candidateMorpheme.substring(1);
-                        if (!cands.contains(candStr)) {
-                            cands.add(candStr);
-                            ArrayList<PhonologicalTransformation> l = new ArrayList<PhonologicalTransformation>();
-                            l.add(new PhonologicalTransformation(groupOrig,groupj,0));
-                            candsAndChanges.add(new Object[]{candStr,l});
-                        }
-                    }
-                }
-            }
+        ArrayList<Object[]> candsAndChanges = new ArrayList<Object[]>(); // for future use?
+
+        // 1. Get all possible variants of the candidate morpheme with initial consonant resulting
+        //    from a possible assimilation of place with the final consonant of the stem
+        getVariantsOfCandidateWithDifferentFirstConsonant(candidateMorpheme, stem, cands, candsAndChanges);
+
+        // 2. For the original candidate and each variant of the candidate with a different first consonant
+        //    found in the above part, check for internal equivalent clusters.
+        getVariantsWithDifferentInternalConsonantClusters(candidateMorpheme,cands,candsAndChanges);
+
+        // 3. Schneider's Law: there cannot be 2 consecutive clusters of 2 consonants.
+        //    When there would be such a second group of 2 consonants, the first consonant is dropped.
+        //    Check on the original morpheme and then on all variants found in the steps above.
+        getVariantsForSchneidersLaw(candidateMorpheme,stem,cands,candsAndChanges);
+
+        return cands;
+    }
+
+    private static void getVariantsForSchneidersLaw(String candidateMorpheme, String stem, Vector<String> cands, ArrayList<Object[]> candsAndChanges) throws TimeoutException, LinguisticDataException {
+        Vector<String> schCands = _schneiderCandidates(stem, candidateMorpheme);
+        schCands.removeElement(candidateMorpheme);
+        for (int i=0; i<cands.size(); i++) {
+            stpw.check("Dialect.getVariantsForSchneidersLaw::157 -- i: "+i);
+            schCands.addAll(_schneiderCandidates(stem,cands.elementAt(i)));
+            schCands.removeElement(cands.elementAt(i));
         }
-        
-        /* 
-         * For each candidate found in the above part, check for internal equivalent 
-         * clusters.  The initial morpheme is also checked.
-         */
+        cands.addAll(schCands);
+    }
+
+    private static void getVariantsWithDifferentInternalConsonantClusters(String candidateMorpheme, Vector<String> cands, ArrayList<Object[]> candsAndChanges) throws TimeoutException {
         Vector<String> cands2 = new Vector<String>();
         cands2.add(candidateMorpheme);
         cands2.addAll(cands);
@@ -176,11 +162,11 @@ public class Dialect {
         candsAndChanges2.add(new Object[]{candidateMorpheme,null});
         candsAndChanges2.addAll(candsAndChanges);
         for (int m = 0; m < cands2.size(); m++) {
-        	stpw.check("Dialect.newCandidates::168 -- m: "+m);
+            stpw.check("Dialect.getVariantsWithDifferentInternalConsonantClusters::172 -- m: "+m);
             String candStr = cands2.elementAt(m);
             Vector correspondingTerms = correspondingTermsEquivalentGroups(candStr);
             ArrayList<Object[]> correspTermsAndChanges =
-                correspondingTermsEquivalentGroups(candStr,0);
+                    correspondingTermsEquivalentGroups(candStr,0);
             if (correspondingTerms != null) {
                 /*
                  * For each term, add the change to the initial consonant, if any.
@@ -188,15 +174,15 @@ public class Dialect {
                 ArrayList ltf = (ArrayList)candsAndChanges2.get(m)[1];
                 if (ltf != null) {
                     PhonologicalTransformation tf =
-                        (PhonologicalTransformation) ltf.get(0);
+                            (PhonologicalTransformation) ltf.get(0);
                     for (int i=0; i<correspTermsAndChanges.size(); i++) {
-                    	stpw.check("Dialect.newCandidates::182 -- i: "+i);
+                        stpw.check("Dialect.getVariantsWithDifferentInternalConsonantClusters::186 -- i: "+i);
                         ArrayList<PhonologicalTransformation> l = (ArrayList<PhonologicalTransformation>)correspTermsAndChanges.get(i)[1];
                         l.add(tf);
                     }
                 }
                 for (int n = 0; n < correspondingTerms.size(); n++) {
-                	stpw.check("Dialect.newCandidates::188 -- n: "+n);
+                    stpw.check("Dialect.getVariantsWithDifferentInternalConsonantClusters::192 -- n: "+n);
                     String candN = (String) correspondingTerms.elementAt(n);
                     if (!cands.contains(candN)) {
                         cands.add(candN);
@@ -205,39 +191,47 @@ public class Dialect {
                 }
             }
         }
-        if (cands.size() == 0)
-            return null;
-        else {
-            for (int i=0; i<cands.size(); i++) {
-            	stpw.check("Dialect.newCandidates::201 -- i: "+i);
-                if (cands.elementAt(i).equals(candidateMorpheme)) {
-                    cands.remove(i);
-                    candsAndChanges.remove(i--);
+        removeCandidateMorphemeFromLists(candidateMorpheme,cands,candsAndChanges);
+    }
+
+    private static void getVariantsOfCandidateWithDifferentFirstConsonant(String candidateMorpheme, String stem, Vector<String> cands, ArrayList<Object[]> candsAndChanges) throws TimeoutException {
+        char finalOfStem = stem.charAt(stem.length() - 1);
+        char initialOfMorpheme = candidateMorpheme.charAt(0);
+        String afterInitialOfMorpheme = candidateMorpheme.substring(1);
+        if (Roman.typeOfLetterLat(initialOfMorpheme) == Roman.C) {
+            String groupOrig = new String(new char[]{finalOfStem, initialOfMorpheme});
+            Vector<String> grps = Dialect.equivalentGroups(
+                    groupOrig.charAt(0), groupOrig.charAt(1));
+            if (grps != null) {
+                for (int j = 0; j < grps.size(); j++) {
+                    stpw.check("Dialect.getVariantsOfCandidateWithDifferentFirstConsonant::213 -- j: " + j);
+                    String groupj = grps.elementAt(j);
+                    char c = groupj.charAt(1);
+                    // Replace the initial consonant of the candidate with the final consonant of the equivalent
+                    // cluster, for each possible equivalent cluster.
+                    String candStr = c + afterInitialOfMorpheme;
+                    if (!cands.contains(candStr)) {
+                        cands.add(candStr);
+                        ArrayList<PhonologicalTransformation> l = new ArrayList<PhonologicalTransformation>();
+                        l.add(new PhonologicalTransformation(groupOrig, groupj, 0));
+                        candsAndChanges.add(new Object[]{candStr, l});
+                    }
                 }
             }
-//            while (cands.removeElement(candidateMorpheme))
-//                ;
         }
-
-        // Schneider's Law
-        Vector<String> schCands = _schneiderCandidates(stem, candidateMorpheme);
-        for (int i=0; i<cands.size(); i++) {
-        	stpw.check("Dialect.newCandidates::214 -- i: "+i);
-            schCands.addAll(_schneiderCandidates(stem,cands.elementAt(i)));
-            //while(schCands.removeElement(cands.elementAt(i)));
-            schCands.removeElement(cands.elementAt(i));
-        }
-        cands.addAll(schCands);
-        if (cands.size() == 0)
-            return null;
-        else
-            //while (cands.removeElement(candidateMorpheme));
-        	cands.removeElement(candidateMorpheme);
-        
-        return cands;
     }
-    
-	public static Vector<String> newRootCandidates(String rootICI) throws TimeoutException, LinguisticDataException {
+
+    private static void removeCandidateMorphemeFromLists(String candidateMorpheme, Vector<String> cands, ArrayList<Object[]> candsAndChanges) throws TimeoutException {
+        for (int i=0; i<cands.size(); i++) {
+            stpw.check("Dialect.removeCandidateMorphemeFromList::223 -- i: "+i);
+            if (cands.elementAt(i).equals(candidateMorpheme)) {
+                cands.remove(i);
+                candsAndChanges.remove(i--);
+            }
+        }
+    }
+
+    public static Vector<String> newRootCandidates(String rootICI) throws TimeoutException, LinguisticDataException {
 		Vector<String> cands = new Vector<String>(); // to hold the new candidates
 
 		/*
@@ -485,7 +479,6 @@ public class Dialect {
     }
     
     public static String schneiderCandidatesToString(String stem, String candidate, char mark) throws TimeoutException {
-//      String candSimp = Orthography.simplifiedOrthographyLat(candidate);
         String candSimp = candidate;
         boolean doubleConsonants = false;
         int vcState;

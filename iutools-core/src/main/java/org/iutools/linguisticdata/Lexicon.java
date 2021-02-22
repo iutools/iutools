@@ -41,6 +41,8 @@ public class Lexicon {
     // Recherche d'un terme dans le lexique.
     static public Vector<SurfaceFormOfAffix> lookForForms(String term, boolean syllabic) throws LinguisticDataException {
         Vector<SurfaceFormOfAffix> formsFound = LinguisticData.getInstance().getSurfaceForms(term);
+        if (formsFound==null)
+            formsFound = new Vector<SurfaceFormOfAffix>();
         return formsFound;
     }
 
