@@ -20,31 +20,54 @@ import ca.nrc.dtrc.stats.FrequencyHistogram;
  * @author Marta
  *
  */
-public class DecomposeHansardTest {
+public class MorphologicalAnalyzer_AccuracyTest {
 	
 	boolean verbose = true;
 	
 	MorphologicalAnalyzer morphAnalyzer = null;
-	
-	FrequencyHistogram<MorphAnalCurrentExpectations.OutcomeType> gotOutcomeHist = new FrequencyHistogram<MorphAnalCurrentExpectations.OutcomeType>();
-	FrequencyHistogram<MorphAnalCurrentExpectations.OutcomeType> expOutcomeHist = new FrequencyHistogram<MorphAnalCurrentExpectations.OutcomeType>();
+
+	MorphAnalGoldStandardAbstract goldStandard = null;
+	MorphAnalCurrentExpectationsAbstract expectations = null;
+
+	FrequencyHistogram<MorphAnalCurrentExpectationsAbstract.OutcomeType> gotOutcomeHist = new FrequencyHistogram<MorphAnalCurrentExpectationsAbstract.OutcomeType>();
+	FrequencyHistogram<MorphAnalCurrentExpectationsAbstract.OutcomeType> expOutcomeHist = new FrequencyHistogram<MorphAnalCurrentExpectationsAbstract.OutcomeType>();
 	
 	/*
 	 * @see TestCase#setUp()
 	 */
 	@Before
 	public void setUp() throws Exception {
-		morphAnalyzer = new MorphologicalAnalyzer();
-		LinguisticData.init();
-		gotOutcomeHist = new FrequencyHistogram<MorphAnalCurrentExpectations.OutcomeType>();
-		expOutcomeHist = new FrequencyHistogram<MorphAnalCurrentExpectations.OutcomeType>();
+		if (morphAnalyzer==null) {
+			morphAnalyzer = new MorphologicalAnalyzer();
+		}
+		morphAnalyzer.activateTimeout();
+		gotOutcomeHist = new FrequencyHistogram<MorphAnalCurrentExpectationsAbstract.OutcomeType>();
+		expOutcomeHist = new FrequencyHistogram<MorphAnalCurrentExpectationsAbstract.OutcomeType>();
 	}
-	
+
 	@Test
-	public void testDecomposer() throws Exception {
-				
-		System.out.println("Running testDecomposer. This test can take a few minutes to complete.");
-		
+	public void test_accuracy_with_GoldStandard_Hansard() throws Exception {
+
+		System.out.println("Running test_accuracy_with_GoldStandard_Hansard. This test can take a few minutes to complete.");
+
+		goldStandard = new MorphAnalGoldStandard_Hansard();
+		expectations = new MorphAnalCurrentExpectations_Hansard();
+
+		test_accuracy();
+	}
+
+	@Test
+	public void test_accuracy_with_GoldStandard_WordsThatFailedBefore() throws Exception {
+
+		System.out.println("Running test_accuracy_with_GoldStandard_WordsThatFailedBefore. This test can take a few minutes to complete.");
+
+		goldStandard = new MorphAnalGoldStandard_WordsThatFailedBefore();
+		expectations = new MorphAnalCurrentExpectations_WordsThatFailedBefore();
+
+		test_accuracy();
+	}
+
+	private void test_accuracy() throws Exception {
 		//
 		// Leave this at null to run on all words
 		// Set it to a word if you want to run the tests just on that one word.
@@ -52,13 +75,12 @@ public class DecomposeHansardTest {
 		String focusOnWord = null;
 //		focusOnWord = "ajjigiinngittunut";
 		
-		morphAnalyzer = new MorphologicalAnalyzer();
-		MorphAnalCurrentExpectations expectations = new MorphAnalCurrentExpectations();
-		
+		// Uncomment for debugging.
+		morphAnalyzer.disactivateTimeout();
+
 		Calendar startCalendar = Calendar.getInstance();
 		
-		MorphAnalGoldStandard goldStandard = new MorphAnalGoldStandard();
-        Map<String,String> outcomeDifferences = new HashMap<String,String>();
+        Map<String,String> outcomeDifferences = new HashMap<>();
         
 		for (String wordToBeAnalyzed: goldStandard.allWords()) {
 		    AnalyzerCase caseData = goldStandard.caseData(wordToBeAnalyzed);
@@ -100,23 +122,23 @@ public class DecomposeHansardTest {
 	}
 
 	private void printOutcomeHistogram(String title, 
-			FrequencyHistogram<MorphAnalCurrentExpectations.OutcomeType> outcomeHist) {
+			FrequencyHistogram<MorphAnalCurrentExpectationsAbstract.OutcomeType> outcomeHist) {
 		echo("\n== "+title+" ==\n");
 		
 		echo("Cases with:");
 		{		
 			echo("  First decomposition is correct            : "+
-					outcomeHist.frequency(MorphAnalCurrentExpectations.OutcomeType.SUCCESS)+" ("+
-					outcomeHist.relativeFrequency(MorphAnalCurrentExpectations.OutcomeType.SUCCESS, 1)+")");
+					outcomeHist.frequency(MorphAnalCurrentExpectationsAbstract.OutcomeType.SUCCESS)+" ("+
+					outcomeHist.relativeFrequency(MorphAnalCurrentExpectationsAbstract.OutcomeType.SUCCESS, 1)+")");
 			echo("  Corr. decomp. not in 1st place            : "+
-					outcomeHist.frequency(MorphAnalCurrentExpectations.OutcomeType.CORRECT_NOT_FIRST)+" ("+
-					outcomeHist.relativeFrequency(MorphAnalCurrentExpectations.OutcomeType.CORRECT_NOT_FIRST, 1)+")");
+					outcomeHist.frequency(MorphAnalCurrentExpectationsAbstract.OutcomeType.CORRECT_NOT_FIRST)+" ("+
+					outcomeHist.relativeFrequency(MorphAnalCurrentExpectationsAbstract.OutcomeType.CORRECT_NOT_FIRST, 1)+")");
 			echo("  Some decomps produced but not correct one : "+
-					outcomeHist.frequency(MorphAnalCurrentExpectations.OutcomeType.CORRECT_NOT_PRESENT)+" ("+
-					outcomeHist.relativeFrequency(MorphAnalCurrentExpectations.OutcomeType.CORRECT_NOT_PRESENT, 1)+")");
+					outcomeHist.frequency(MorphAnalCurrentExpectationsAbstract.OutcomeType.CORRECT_NOT_PRESENT)+" ("+
+					outcomeHist.relativeFrequency(MorphAnalCurrentExpectationsAbstract.OutcomeType.CORRECT_NOT_PRESENT, 1)+")");
 			echo("  No decomps produced at all                : "+
-					outcomeHist.frequency(MorphAnalCurrentExpectations.OutcomeType.NO_DECOMPS)+" ("+
-					outcomeHist.relativeFrequency(MorphAnalCurrentExpectations.OutcomeType.NO_DECOMPS, 1)+")");
+					outcomeHist.frequency(MorphAnalCurrentExpectationsAbstract.OutcomeType.NO_DECOMPS)+" ("+
+					outcomeHist.relativeFrequency(MorphAnalCurrentExpectationsAbstract.OutcomeType.NO_DECOMPS, 1)+")");
 		}
 	}
 
@@ -145,15 +167,15 @@ public class DecomposeHansardTest {
 	}
 
 	private void checkOutcome(String word, AnalysisOutcome gotOutcome, 
-		MorphAnalCurrentExpectations expectations, 
-		MorphAnalGoldStandard goldStandard, 
+		MorphAnalCurrentExpectationsAbstract expectations,
+		MorphAnalGoldStandardAbstract goldStandard,
 		Map<String, String> outcomeDiffs) {
 		
-		MorphAnalCurrentExpectations.OutcomeType expOutcomeType = expectations.expectedOutcome(word);
+		MorphAnalCurrentExpectationsAbstract.OutcomeType expOutcomeType = expectations.expectedOutcome(word);
 		expOutcomeHist.updateFreq(expOutcomeType);
 		
 		String correctDecomp = goldStandard.correctDecomp(word);
-		MorphAnalCurrentExpectations.OutcomeType gotOutcomeType =
+		MorphAnalCurrentExpectationsAbstract.OutcomeType gotOutcomeType =
 			expectations.type4outcome(gotOutcome, correctDecomp);
 		gotOutcomeHist.updateFreq(gotOutcomeType);
 		
@@ -165,9 +187,9 @@ public class DecomposeHansardTest {
 		}
 	}
 	
-	private String diffMessage(MorphAnalCurrentExpectations.OutcomeType expOutcomeType,
-										MorphAnalCurrentExpectations.OutcomeType gotOutcomeType, AnalysisOutcome gotOutcome,
-										String correctDecomp) {
+	private String diffMessage(MorphAnalCurrentExpectationsAbstract.OutcomeType expOutcomeType,
+							   MorphAnalCurrentExpectationsAbstract.OutcomeType gotOutcomeType, AnalysisOutcome gotOutcome,
+							   String correctDecomp) {
 		String mess = "";
 		int comp = gotOutcomeType.compareTo(expOutcomeType);
 		boolean improved = false;
@@ -195,19 +217,19 @@ public class DecomposeHansardTest {
 		return mess;
 	}
 
-	private String worseningMessage(MorphAnalCurrentExpectations.OutcomeType expOutcomeType) {
+	private String worseningMessage(MorphAnalCurrentExpectationsAbstract.OutcomeType expOutcomeType) {
 		String mess = null;
-		if (expOutcomeType == MorphAnalCurrentExpectations.OutcomeType.SUCCESS) {
+		if (expOutcomeType == MorphAnalCurrentExpectationsAbstract.OutcomeType.SUCCESS) {
 			mess = "Correct decomposition used to be first in the list";
-		} else if (expOutcomeType == MorphAnalCurrentExpectations.OutcomeType.CORRECT_NOT_FIRST) {
+		} else if (expOutcomeType == MorphAnalCurrentExpectationsAbstract.OutcomeType.CORRECT_NOT_FIRST) {
 			mess = "Correct decompositions used to be somewhere in the list";
 		}
 		return mess;
 	}
 
-	private String improvementMessage(MorphAnalCurrentExpectations.OutcomeType expOutcomeType) {
+	private String improvementMessage(MorphAnalCurrentExpectationsAbstract.OutcomeType expOutcomeType) {
 		String mess = null;
-		if (expOutcomeType == MorphAnalCurrentExpectations.OutcomeType.CORRECT_NOT_FIRST) {
+		if (expOutcomeType == MorphAnalCurrentExpectationsAbstract.OutcomeType.CORRECT_NOT_FIRST) {
 			mess = "Correct decomposition is now first in the list.";
 		}
 		
@@ -248,7 +270,9 @@ public class DecomposeHansardTest {
 		try {
 			// AD-2020-05-13: Does this help ensure that timeout works?
 			//
-			morphAnalyzer = new MorphologicalAnalyzer();
+			if (morphAnalyzer==null) {
+				morphAnalyzer = new MorphologicalAnalyzer();
+			}
 			outcome.decompositions = morphAnalyzer.decomposeWord(word);
 		} catch (TimeoutException | MorphologicalAnalyzerException e) {
 			outcome.timedOut = true;
