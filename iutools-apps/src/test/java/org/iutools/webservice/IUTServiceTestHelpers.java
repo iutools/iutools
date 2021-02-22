@@ -57,7 +57,8 @@ public class IUTServiceTestHelpers {
 		Http.doRequest(method, url, jsonBody);
 	}
 
-	public static MockHttpServletResponse postEndpointDirectly(EndpointNames eptName, Object inputs, boolean expectServiceError) throws Exception {
+	public static MockHttpServletResponse postEndpointDirectly(
+		EndpointNames eptName, Object inputs, boolean expectServiceError) throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		String jsonBody = new ObjectMapper().writeValueAsString(inputs);
 		request.setReaderContent(jsonBody);

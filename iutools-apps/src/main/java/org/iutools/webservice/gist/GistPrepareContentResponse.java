@@ -38,23 +38,32 @@ public class GistPrepareContentResponse extends ServiceResponse {
 	}
 
 	public void fillFromDocAlignment(DocAlignment docAlignment) throws ServiceException {
-		if (docAlignment.encounteredProblem(DocAlignment.Problem.ALIGNING_SENTENCES) ||
-				docAlignment.encounteredProblem(DocAlignment.Problem.FETCHING_CONTENT_OF_OTHER_LANG_PAGE)) {
-			fillFromUnsuccessfulAlignment(docAlignment);
+		if (docAlignment.encounteredProblem(DocAlignment.Problem.FETCHING_INPUT_URL)) {
+			// We weren't even able to download the input page from its URL
+			fillFromUnsuccessfulInputPage(docAlignment);
 		} else {
-			fillFromSuccessfulAlignment(docAlignment);
+			// We were able to download the input page. But were we able to fetch
+			// and align its other language version?
+			//
+			if (docAlignment.encounteredProblem(DocAlignment.Problem.ALIGNING_SENTENCES) ||
+			docAlignment.encounteredProblem(DocAlignment.Problem.FETCHING_CONTENT_OF_OTHER_LANG_PAGE)) {
+				fillFromUnsuccessfulAlignment(docAlignment);
+			} else {
+				fillFromSuccessfulAlignment(docAlignment);
+			}
 		}
-		
 		return;
+	}
+
+	private void fillFromUnsuccessfulInputPage(DocAlignment docAlignment) throws ServiceException {
+		fillFromUnsuccessfulAlignment(docAlignment);
+		this.errorMessage = "Unable to download the input page";
 	}
 
 	/** 
 	 * Use this to fill the response when the DocAlignment was not completely
 	 * successful (ex: was not able to fetch the page in one of the two languages 
 	 * to be aligned).
-	 * 
-	 * @param docAlignment
-	 * @throws ServiceException 
 	 */
 	private void fillFromUnsuccessfulAlignment(DocAlignment docAlignment) throws ServiceException {
 		if (docAlignment != null) {

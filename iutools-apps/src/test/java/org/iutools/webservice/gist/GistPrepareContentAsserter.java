@@ -3,6 +3,7 @@ package org.iutools.webservice.gist;
 import java.util.ArrayList;
 import java.util.List;
 
+import ca.nrc.testing.AssertString;
 import org.junit.Assert;
 
 import ca.nrc.testing.AssertObject;
@@ -160,5 +161,15 @@ public class GistPrepareContentAsserter extends Asserter {
 		return this;
 	}
 
-	
+	protected GistPrepareContentAsserter raisesError(String expError) {
+		return raisesError("", expError);
+	}
+
+	protected GistPrepareContentAsserter raisesError(String mess, String expError) {
+		AssertString.assertStringEquals(
+			baseMessage+"\n"+mess,
+			expError, gotResponse().errorMessage);
+		return this;
+	}
+
 }

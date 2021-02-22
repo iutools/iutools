@@ -122,12 +122,13 @@ public class GistPrepareContentEndpointTest {
 		MockHttpServletResponse response = 
 				IUTServiceTestHelpers.postEndpointDirectly(
 					IUTServiceTestHelpers.EndpointNames.GIST_PREPARE_CONTENT,
-					prepareInputs
+					prepareInputs, true
 				);
 		
 		GistPrepareContentAsserter.assertThat(response, 
 			"Content not prepared as expected")
 			.inputWasActualContent(false)
+			.raisesError("Unable to download the input page")
 			.couldNotFetchIUContent()
 			.couldNotFetchEnContent()
 		;
