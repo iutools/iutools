@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.iutools.concordancer.Alignment_ES;
 
 import java.nio.file.Path;
+import java.util.List;
 
 
 /**
@@ -76,5 +77,10 @@ public class TranslationMemory {
 		} catch (ElasticSearchException e) {
 			throw new TranslationMemoryException(e);
 		}
+	}
+
+	public List<Alignment_ES> search(String sourceLang, String sourceExpr,
+		String... targetLangs) {
+		return null;
 	}
 }

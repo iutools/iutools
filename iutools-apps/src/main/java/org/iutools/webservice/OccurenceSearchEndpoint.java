@@ -71,7 +71,7 @@ public class OccurenceSearchEndpoint extends HttpServlet {
 		OccurenceSearchResponse results = new OccurenceSearchResponse();
 
 		if (inputs.wordPattern == null || inputs.wordPattern.isEmpty()) {
-			throw new SearchEndpointException("Word pattern was empty or null");
+			throw new OccurenceSearchEndpointException("Word pattern was empty or null");
 		}
 
 		String corpusName = inputs.corpusName;

@@ -181,7 +181,7 @@ public class ESIndexRepairTest {
 		for (String id: docIDs) {
 			esClient.putDocument(winfoType, new NotWordInfo(id));
 		}
-		Thread.sleep(1000);
+		Thread.sleep(2000);
 	}
 
 }

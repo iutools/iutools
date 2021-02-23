@@ -1,16 +1,29 @@
 package org.iutools.concordancer.tm;
 
 import ca.nrc.file.ResourceGetter;
-import org.iutools.concordancer.Alignment;
-import org.iutools.concordancer.Alignment_ES;
-import org.iutools.concordancer.DocAlignment;
+import org.iutools.concordancer.*;
 import org.iutools.concordancer.tm.TranslationMemory;
+import org.junit.Before;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 public class TranslationMemoryTest {
+
+	protected static final String esIndexName = "test_tm";
+
+	protected TranslationMemory tm = null;
+
+	@Before
+	public void setUp() throws Exception {
+		tm = new TranslationMemory(esIndexName);
+		Path tmFile = Paths.get(
+			ResourceGetter.getResourcePath(
+				"org/iutools/concordancer/small_tm.tm.json"));
+		tm.loadFile(tmFile);
+	}
 
 	////////////////////////////////////////
 	// DOCUMENTATION TESTS
@@ -30,14 +43,34 @@ public class TranslationMemoryTest {
 		Path tmFile = Paths.get(ResourceGetter.getResourcePath("org/iutools/concordancer/small_tm.tm.json"));
 		tm.loadFile(tmFile);
 
-		// Assume that this alignment is the 1st sentence pair in a document
-		// called "Simple lexicon.txt"
+		// Assuming that a TM has been populated with some alignments, you can
+		// then search for alignments that contain a particular expression
 		//
-		Alignment_ES alignment =
-			new Alignment_ES("Simple lexicon.txt", 1)
-			.setSentence("en", "Hello world.")
-			.setSentence("fr", "Bonjour le monde.")
+		String sourceLang = "en";
+		String sourceExpr = "legislative";
+		String[] targetLangs = {"iu", "fr"};
+		List<Alignment_ES> alignments =
+			tm.search(sourceLang, sourceExpr, targetLangs);
+
+		// Note that the list of target langauges is optional
+		//
+		alignments = tm.search(sourceLang, sourceExpr);
+	}
+
+	////////////////////////////////////////
+	// VERIFICATION TESTS
+	////////////////////////////////////////
+
+
+	@Test
+	public void test__search__HappyPath() {
+		String sourceLang = "en";
+		String sourceExpr = "legislative";
+		String[] targetLangs = {"iu", "fr"};
+		List<Alignment_ES> alignments =
+			tm.search(sourceLang, sourceExpr, targetLangs);
+		new AssertAlignment_ESList(alignments)
+			.allHitsMatchQuery(sourceLang, sourceExpr)
 			;
-		tm.addAlignment(alignment);
 	}
 }

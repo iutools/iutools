@@ -8,7 +8,8 @@ class=org.iutools.concordancer.Alignment_ES
   "pair_num": 0,
   "sentences": {
     "en": "legislative assembly of nunavut",
-    "iu": "ᓄᓇᕗᑦ ᒪᓕᒐᓕᐅᕐᕕ@@ ᐊ"
+    "iu": "ᓄᓇᕗᑦ ᒪᓕᒐᓕᐅᕐᕕ@@ ᐊ",
+    "fr": "assemblée législative du nunavut"
   }
 }
 
@@ -19,7 +20,8 @@ class=org.iutools.concordancer.Alignment_ES
   "pair_num": 1,
   "sentences": {
     "en": "",
-    "iu": ""
+    "iu": "",
+    "fr": ""
   }
 }
 {
@@ -29,7 +31,8 @@ class=org.iutools.concordancer.Alignment_ES
   "pair_num": 2,
   "sentences": {
     "en": "1st session",
-    "iu": "ᓯᕗᓕ@@ ᖅᐹᑦ ᑲᑎᒪᓂᖅ"
+    "iu": "ᓯᕗᓕ@@ ᖅᐹᑦ ᑲᑎᒪᓂᖅ",
+    "fr": "1ère session"
   }
 }
 
@@ -40,7 +43,8 @@ class=org.iutools.concordancer.Alignment_ES
   "pair_num": 3,
   "sentences": {
     "en": "",
-    "iu": ""
+    "iu": "",
+    "fr": ""
   }
 }
 
@@ -51,7 +55,8 @@ class=org.iutools.concordancer.Alignment_ES
   "pair_num": 4,
   "sentences": {
     "en": "1st assembly",
-    "iu": "ᓯᕗᓕ@@ ᖅᐹᑦ ᒪᓕᒐᓕᐅᕐᕕᒃ"
+    "iu": "ᓯᕗᓕ@@ ᖅᐹᑦ ᒪᓕᒐᓕᐅᕐᕕᒃ",
+    "fr": "1ère assemblée"
   }
 }
 
@@ -62,7 +67,8 @@ class=org.iutools.concordancer.Alignment_ES
   "pair_num": 5,
   "sentences": {
     "en": "",
-    "iu": ""
+    "iu": "",
+    "fr": ""
   }
 }
 
@@ -73,7 +79,8 @@ class=org.iutools.concordancer.Alignment_ES
   "pair_num": 6,
   "sentences": {
     "en": "hansard",
-    "iu": "ᒪᓕᒐᓕᐅᖅᑏᑦ ᑲᑎᒪ@@ ᐅᑎᒋ@@ ᓯᒪᔭ@@ ᖏᑦᑕ"
+    "iu": "ᒪᓕᒐᓕᐅᖅᑏᑦ ᑲᑎᒪ@@ ᐅᑎᒋ@@ ᓯᒪᔭ@@ ᖏᑦᑕ",
+    "fr": "hansard"
   }
 }
 
@@ -85,7 +92,8 @@ class=org.iutools.concordancer.Alignment_ES
   "pair_num": 7,
   "sentences": {
     "en": "",
-    "iu": ""
+    "iu": "",
+    "fr": ""
   }
 }
 
@@ -96,7 +104,8 @@ class=org.iutools.concordancer.Alignment_ES
   "pair_num": 8,
   "sentences": {
     "en": "official report",
-    "iu": "ᑎᑎᕋᖅᓯᒪᓂᖏᑦ"
+    "iu": "ᑎᑎᕋᖅᓯᒪᓂᖏᑦ",
+    "fr": "rapport officiel"
   }
 }
 
@@ -107,7 +116,8 @@ class=org.iutools.concordancer.Alignment_ES
   "pair_num": 9,
   "sentences": {
     "en": "thursday , april 1 , 1999",
-    "iu": "ᓯ@@ ᑕ@@ ᒥ@@ ᖅ , ᐃ@@ ᐳᕈ 1 , 1999"
+    "iu": "ᓯ@@ ᑕ@@ ᒥ@@ ᖅ , ᐃ@@ ᐳᕈ 1 , 1999",
+    "fr": "jeudi , 1er avril 1999"
   }
 }
 
@@ -118,7 +128,8 @@ class=org.iutools.concordancer.Alignment_ES
   "pair_num": 10,
   "sentences": {
     "en": "",
-    "iu": ""
+    "iu": "",
+    "fr": ""
   }
 }
 
@@ -130,7 +141,8 @@ class=org.iutools.concordancer.Alignment_ES
   "pair_num": 11,
   "sentences": {
     "en": "legislative assembly of nunavut",
-    "iu": "ᓄᓇᕗᑦ ᒪᓕᒐᓕᐅᕐᕕ@@ ᐊ"
+    "iu": "ᓄᓇᕗᑦ ᒪᓕᒐᓕᐅᕐᕕ@@ ᐊ",
+    "fr": "assemblée législative du nunavut"
   }
 }
 
@@ -141,7 +153,8 @@ class=org.iutools.concordancer.Alignment_ES
   "pair_num": 19,
   "sentences": {
     "en": "",
-    "iu": ""
+    "iu": "",
+    "fr": ""
   }
 }
 
@@ -152,29 +165,8 @@ class=org.iutools.concordancer.Alignment_ES
   "pair_num": 12,
   "sentences": {
     "en": "members of the legislative assembly",
-    "iu": "ᒪᓕᒐᓕᐅᕐ@@ ᑏᑦ"
-  }
-}
-
-{
-  "from_doc": "nrc-nunavut-hansard",
-  "web_domain": "gov.nu.ca",
-  "topics": ["government", "hansard"],
-  "pair_num": 13,
-  "sentences": {
-    "en": "",
-    "iu": ""
-  }
-}
-
-{
-  "from_doc": "nrc-nunavut-hansard",
-  "web_domain": "gov.nu.ca",
-  "topics": ["government", "hansard"],
-  "pair_num": 14,
-  "sentences": {
-    "en": "mr. o@@ vi@@ de alakannuark",
-    "iu": "ᐆ@@ ᕕ@@ ᖅ ᐊᓚᒃᑲᓐᓄᐊᖅ"
+    "iu": "ᒪᓕᒐᓕᐅᕐ@@ ᑏᑦ",
+    "fr": "membres de l'assemblée législative"
   }
 }
 
