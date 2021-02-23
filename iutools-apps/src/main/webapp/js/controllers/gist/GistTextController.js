@@ -74,6 +74,23 @@ class GistTextController extends IUToolsController {
 			for (var tokenNum=0; tokenNum < sent.length; tokenNum++) {
 				var rawToken = sent[tokenNum];
 				var token = HtmlUtils.escapeHtmlEntities(rawToken);
+
+				// Reformat the token so as to preserve the original spacing
+				// and line wrapping.
+				//
+
+				// Firstly, replace multiple spaces with &nbsp;.
+				//
+				// Note: We leave the initial space as is because otherwise the
+				// browser cannot do automatic line wrapping (&nbsp; entities
+				// prevent automatic line wrapping).
+				//
+				token = token.replace(/  /g, " &nbsp;");
+				token = token.replace(/&nbsp; /g, "&nbsp;&nbsp;");
+
+				// Secondly, replace newlines by <br/> tags;
+				token = token.replace(/\n/g, "<br/>\n");
+
 				if (IUUtils.isInuktut(token)) {
 					html += "<a class=\"iu-word\">"+token+"</a>";
 				} else {

@@ -47,10 +47,10 @@
 <script src="js/vendors/log4javascript.js"></script>
 <script src="js/debug/Debug.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 <script src="js/debug/DebugConfig.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
-<script src="js/controller/RunWhen.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
-<script src="js/controller/WidgetController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
-<script src="js/controller/IUToolsController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
-<script src="js/gist/WordGistController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
+<script src="js/controllers/RunWhen.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
+<script src="js/controllers/WidgetController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
+<script src="js/controllers/IUToolsController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
+<script src="js/controllers/gist/WordGistController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 
 <!-- Include the code that creates and configures the controller for this page -->
 <% pageContext.include("pages/" + pageName + "/_controller.jsp"); %>

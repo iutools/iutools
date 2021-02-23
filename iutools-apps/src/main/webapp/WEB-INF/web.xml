@@ -17,19 +17,6 @@
 		<listener-class>org.iutools.elasticsearch.ESRepairDaemon</listener-class>
 	</listener>
 
-	<!--  Search Endpoint -->
-	<servlet>
-	   <servlet-name>SearchEndpoint</servlet-name>
-	   <servlet-class>
-		   org.iutools.webservice.SearchEndpoint
-	   </servlet-class>
-	</servlet> 
-	<servlet-mapping>
-		<servlet-name>SearchEndpoint</servlet-name>
-		<url-pattern>/srv/search/*</url-pattern>
-	</servlet-mapping>
-
-
 	<!-- ExpandQuery endpoint -->
 	<servlet>
 		<servlet-name>ExpandQueryEndpoint</servlet-name>

@@ -1,6 +1,6 @@
 <% String IUTOOLS_JS_VERSION=(new java.util.Date()).toLocaleString(); %>
 
-<script src="js/morpheme_examples/OccurrenceController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
+<script src="js/controllers/morpheme_examples/OccurrenceController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 
 <script>
 
