@@ -42,7 +42,7 @@ public class IUTServiceTestHelpers {
 
 	public enum EndpointNames {
 		GIST, GIST_PREPARE_CONTENT, EXPAND_QUERY, GIST_WORD, MORPHEME, MORPHEMEEXAMPLE,
-		RELATED_WORDS, SEARCH, TOKENIZE, SPELL};
+		RELATED_WORDS, TOKENIZE, SPELL};
 
 	public static MockHttpServletResponse postEndpointDirectly(EndpointNames eptName, Object inputs) throws Exception {
 		return postEndpointDirectly(eptName, inputs, false);
@@ -75,8 +75,6 @@ public class IUTServiceTestHelpers {
 			new OccurenceSearchEndpoint().doPost(request, response);
 		} else if (eptName == EndpointNames.RELATED_WORDS) {
 			new RelatedWordsEndpoint().doPost(request, response);
-		} else if (eptName == EndpointNames.SEARCH) {
-			new SearchEndpoint().doPost(request, response);
 		} else if (eptName == EndpointNames.SPELL) {
 			new SpellEndpoint().doPost(request, response);	
 		} else if (eptName == EndpointNames.TOKENIZE) {
@@ -118,14 +116,6 @@ public class IUTServiceTestHelpers {
 		return response;
 	}
 
-	
-	public static SearchResponse toSearchResponse(
-			HttpServletResponse servletResp) throws IOException {
-		String responseStr = servletResp.getOutputStream().toString();
-		SearchResponse response = new ObjectMapper().readValue(responseStr, SearchResponse.class);
-		return response;
-	}
-
 	public static RelatedWordsResponse toRelatedWordsResponse(
 		MockHttpServletResponse servletResp) throws IOException {
 		String responseStr = servletResp.getOutputStream().toString();
@@ -163,72 +153,6 @@ public class IUTServiceTestHelpers {
 		OccurenceExampleResponse response = 
 				new ObjectMapper().readValue(responseStr, OccurenceExampleResponse.class);
 		return response;
-	}
-	
-
-
-	public static void assertExpandedQueryEquals(String expQuery, MockHttpServletResponse gotResponse) throws JsonParseException, JsonMappingException, IOException {
-		SearchResponse gotResult = new ObjectMapper().readValue(gotResponse.getOutput(), SearchResponse.class);
-		AssertHelpers.assertStringEquals("Expanded query was not as expected.", expQuery.trim(), gotResult.expandedQuery.trim());
-	}
-
-	public static void assertTotalHitsLessThan(String mess,
-		MockHttpServletResponse gotResponse, int expMaxHits) throws Exception {
-		SearchResponse gotResult =
-			new ObjectMapper()
-				.readValue(gotResponse.getOutput(), SearchResponse.class);
-		AssertNumber.isLessOrEqualTo(
-			mess, gotResult.totalHits, expMaxHits);
-	}
-
-	public static void assertMostHitsMatchWords(String[] queryWords, MockHttpServletResponse gotResponse,
-								double tolerance) throws JsonParseException, JsonMappingException, IOException {
-		SearchResponse gotResult = new ObjectMapper().readValue(gotResponse.getOutput(), SearchResponse.class);
-		List<SearchHit> gotHits = gotResult.hits;
-		
-		IUTTestHelpers.assertMostHitsMatchWords(queryWords, gotHits, tolerance);
-		
-		
-		String regex = "(We would like to show you a description here but the site won’t allow us";
-		for (String aWord: queryWords) {
-			if (regex == null) {
-				regex = "(";
-			} else {
-				regex += "|";
-			}
-			regex += aWord.toLowerCase();
-		}
-		regex += ")";
-		
-		Pattern patt = Pattern.compile(regex);
-		int  hitNum = 1;
-		Set<String> unmatchedURLs = new HashSet<String>();
-		for (SearchHit aHit: gotHits) {
-			Matcher matcher = patt.matcher(aHit.snippet);
-			if (!matcher.find()) {
-				unmatchedURLs.add(aHit.url);
-			}
-			hitNum++;
-		}
-		
-		double unmatchedRatio = 1.0 * unmatchedURLs.size() / hitNum;
-		Assert.assertTrue(
-				"There were too many urls that did not match the  query words '"+regex+".\n"
-			  + "Unmatched URLs were:\n  "
-			  + String.join("\n  ", unmatchedURLs),
-			  unmatchedRatio <= tolerance
-			);
-	}
-
-	public static void assertSearchResponseIsOK(MockHttpServletResponse response, String expExpandedQuery,
-			String[] queryWords, double badHitsTolerance, long minTotalHits, long minHitsRetrieved) 
-			throws Exception {
-		IUTServiceTestHelpers.assertExpandedQueryEquals(expExpandedQuery, response);
-		
-		SearchResponse srchResponse = IUTServiceTestHelpers.toSearchResponse(response);
-		IUTServiceTestHelpers.assertMostHitsMatchWords(queryWords, response, badHitsTolerance);
-		AssertNumber.isGreaterOrEqualTo("The total number of potential hits was too low", srchResponse.totalHits, minTotalHits);
-		AssertNumber.isGreaterOrEqualTo("The number of hits actually retrieved was too low", new Long(srchResponse.hits.size()), minHitsRetrieved);
 	}
 
 	public static void assertOccurenceSearchResponseIsOK(

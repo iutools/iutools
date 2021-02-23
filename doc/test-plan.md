@@ -15,7 +15,22 @@ Syllabic text
   - Hover the mouse over a NON-word (ex: period, comma, space):
     - It does NOT show that it's clickable
     - Clicking on that NON-word does NOT produce a Gist
-    
+
+Romanized text
+- Copy and paste some syllabics text from https://www.gov.nu.ca/iu
+- Translitarate it to roman and paste it into the Gister form
+- Hit [Gist Text]
+- Check that 
+  - Text _stayed_ Romanized
+  - Hover the mouse over a word:
+    - It shows that it's clickable
+    - Clicking on that IU word produces a Gist with:
+      - Morphological analysis
+      - Parallel sentences
+  - Hover the mouse over a NON-word (ex: period, comma, space):
+    - It does NOT show that it's clickable
+    - Clicking on that NON-word does NOT produce a Gist
+
 Word that does not decompose
 - Enter text: 'ᓴᕕᑲᑖᖅ' (This is a proper noun)
 - Click on the romanized word: 'savikataaq'
@@ -23,6 +38,12 @@ Word that does not decompose
   - Word could not be decomposed
   - No sentences found for this word
   
+Text that contains spaces and newlines
+- Gist text that contains some newlines and extra spaces
+- Make sure that the extra spaces and newlines are preserved in the gist checke output  
+  - AND that the browser is still able to do automatic line wrapping
+    i.e. you don't have very long lines that correspond to each paragraph.
+     
 IU url (Happy Path)
 - Enter url https://www.gov.nu.ca/iu
 - Check that
@@ -83,9 +104,23 @@ Search for word in LATIN - Happy Path
 
   and that a Google search page is opened with that query
   
-Search by pressing Enter key
-- Enter a search word in the text box, then instead of clicking 
-  [Search] button, press Enter key.
+Search using an already expanded query
+ Enter ᐅᒃᐱᕐᓂᖅ (= religion) in the query text box, then click [Search] 
+  button.
+- Check that the search term is replaced by this:
+
+     (ᐅᑉᐱᕐᓂᕐᒥᒃ OR ᐅᑉᐱᕐᓂᖅ OR ᐅᑉᐱᕐᓂᖏᑦ OR ᐅᑉᐱᕐᓂᐅᕗᖅ OR ᐅᑉᐱᓂᕐᒧᓪᓗ OR ᐅᒃᐱᕐᓂᖅ)
+
+  and that a Google search page is opened with that query
+- Click on the browser's back button to return to the iutools search page
+- Click on Search again and make sure that
+  - The expanded query remained exactly the same
+  - This is the query that is opened in the Google page.  
+  
+Search by pressing Enter key vs clicking Search
+- Enter a search word in the text box, then press Enter key.
+  - Make sure the search is launched as expected
+- Do the same but this time launch the search by pressing the _Search_ button  
   
 ## Spell Checker
 
@@ -158,6 +193,12 @@ Progress Wheel
   - Click on copy to clipboard and paste into a text editor
   - Copy text to text editor, and make sure that the changed spellings are the 
     ones that appear in the editor
+ 
+Spell check text that contains spaces and newlines
+- Spell Check text that contains some newlines and extra spaces
+- Make sure that:
+  - Extra spaces and newlines are preserved in the spell checke output
+  - They are also preserved when you do Copy to clipboard     
     
 Check with and without _Include partial corrections_
 - Try it both ways

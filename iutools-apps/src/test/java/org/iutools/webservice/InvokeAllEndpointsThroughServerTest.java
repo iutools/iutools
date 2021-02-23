@@ -27,7 +27,6 @@ public class InvokeAllEndpointsThroughServerTest {
 		Map<String, ServiceInputs> callsToMake =
 		new HashMap<String, ServiceInputs>();
 		{
-			callsToMake.put("search", new SearchInputs("nunavut"));
 			callsToMake.put("spell", new SpellInputs("inukttttut"));
 			callsToMake.put("tokenize", new GistPrepareContentInputs("nunavut"));
 			callsToMake.put("occurrences", new OccurenceSearchInputs("nunavut", null, "20"));
