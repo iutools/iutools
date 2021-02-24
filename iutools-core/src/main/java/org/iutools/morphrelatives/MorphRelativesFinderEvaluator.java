@@ -212,6 +212,7 @@ public class MorphRelativesFinderEvaluator {
                     			if (computeStatsOverSurfaceForms) {
                     				String relative = expansion.getWord();
                     				if ( !listgsalternatives.contains(expansion.getWord()) ) {
+                    					logger.debug("****** word: "+expansion.getWord()+" not in gsalternatives "+gsalternatives.toString());
                     					nbTotalExpansionsNotInGSAlternatives++;
                     					expansionInGSalternatives = false;
                     					echo("  '"+relative+"' WAS NOT in GS alternatives");
