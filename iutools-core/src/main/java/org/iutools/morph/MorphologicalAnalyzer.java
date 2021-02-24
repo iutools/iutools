@@ -53,15 +53,15 @@ import org.iutools.utilities1.Util;
 
 
 public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
-	
+
     private Hashtable<String,Graph.Arc[]> arcsByMorpheme = new Hashtable<>();
     private final static boolean USE_SYLLABICS = false;
-    
+
     private static Cache<String, Decomposition[]>
-    	decompsCache = 
+    	decompsCache =
     		Caffeine.newBuilder().maximumSize(10000)
     		  .build();
-    
+
     public MorphologicalAnalyzer() throws LinguisticDataException {
     	super();
 		LinguisticData.getInstance();
@@ -78,18 +78,18 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 	 * @throws TimeoutException
 	 */
 	@Override
-	protected Decomposition[] doDecompose(String word, Boolean extendedAnalysis) 
+	protected Decomposition[] doDecompose(String word, Boolean extendedAnalysis)
 			throws MorphologicalAnalyzerException, TimeoutException {
-		
+
 		if (extendedAnalysis == null) {
 			extendedAnalysis = true;
 		}
-		
+
 		Decomposition[] cachedDecomps = uncache(word, extendedAnalysis);
 		if (cachedDecomps != null) {
 			return cachedDecomps;
 		}
-		
+
 		boolean decomposeCompositeRoot = false; // do not decompose composite root
 
 		try {
@@ -102,16 +102,16 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 			// that corresponds to a composite suffix, in order to keep only
 			// the decompositions with the composite suffix.
 			Decomposition[] decsC = Decomposition.removeCombinedSuffixes(decomps.toArray(new Decomposition[] {}));
-			
+
 			// B. Eliminate duplicate decompositions.
 			Decomposition[] decs = Decomposition.removeMultiples(decsC);
-			
+
 			// C.
 			// Sort the decompositions according to the following rules:
 			// 1. longest roots first
 			// 2. minimum number of affixes
 			Arrays.sort(decs);
-			
+
 			cache(decs, word, extendedAnalysis);
 
 			return decs;
@@ -129,7 +129,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 	private List<Decomposition> decomposeUntilTimeoutOrCompletion(
 		String wordToBeAnalyzed, Boolean extendedAnalysis, boolean decomposeCompositeRoot)
 			throws TimeoutException, MorphInukException, LinguisticDataException {
-		
+
 		List<Decomposition> decomps;
 		List<Decomposition> decompsSoFar = new ArrayList<Decomposition>();
 		if (Syllabics.containsInuktitut(wordToBeAnalyzed))
@@ -153,7 +153,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 			decomps = _decomposeForFinalN(wordToBeAnalyzed, decomposeCompositeRoot);
 			decompsSoFar.addAll(decomps);
 		}
-				
+
 		return decompsSoFar;
 	}
 
@@ -176,7 +176,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 	 */
 	private List<Decomposition> _decomposeForFinalN(String aWord, boolean decomposeCompositeRoot)
 			throws TimeoutException, MorphInukException, LinguisticDataException {
-		
+
 		String wordWithNReplaced = aWord.substring(0, aWord.length() - 1) + "t";
 		List<Decomposition> newDecomps = _decompose(wordWithNReplaced, decomposeCompositeRoot);
 		if (newDecomps != null)
@@ -220,7 +220,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 	private List<Decomposition> _decompose(String word,
 			boolean decomposeCompositeRoot, List<Decomposition> decompsSoFar)
 			throws TimeoutException, MorphInukException, LinguisticDataException {
-		
+
 		Vector<AffixPartOfComposition> morphPartsInit = new Vector<AffixPartOfComposition>();
 		Graph.State state = Graph.initialState;
 		List<Decomposition> decompositions = null;
@@ -243,14 +243,14 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 			decompositions = __decompose_simplified_term__(simplifiedTerm, simplifiedTerm, simplifiedTerm,
 					morphPartsInit, new Graph.State[] { state }, preCond, transitivity);
 		}
-		
+
 		if (decompsSoFar != null) {
 			decompsSoFar.addAll(decompositions);
 		}
-		
+
 		return decompositions;
 	}
-	
+
 	private List<Decomposition> _decompose(String word,
 			boolean decomposeCompositeRoot)
 			throws TimeoutException, MorphInukException, LinguisticDataException {
@@ -296,11 +296,8 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 
     	stpw.check("__decompose_simplified_term__ -- Upon entry");
 
-		// This flag should be passed as an argument to this method or be set as a class attribute. For the time being, set it to true here.
-		boolean decomposeCompositeRoot = true;
-
 		List<Decomposition> completeAnalysis = new ArrayList<Decomposition>();
-        
+
         // 1. Check if the term to be analyzed could be a root (simple or composite) in the database.
         //    If that is the case, add the resulting decomposition(s) to the list of all the resulting decompositions.
         List<Decomposition> analysesAsRoot = analyzeAsRoot(term,termOrig,
@@ -392,14 +389,14 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
                         affixCandidate, states, preCond, transitivity,
                         positionAffix, morphParts, word, true);
             completeAnalysis.addAll(analysesOfOriginal);
-                
+
             // 2. Do the analysis on the basis of the candidates from the dialectal differences.
 			List<Decomposition> analysesOfDialectal = analyzeWithCandidateAffixes(
                 		otherFormsOfAffixResultingFromAssimilationOfPlace,
                         remainingStem, affixCandidate, states, preCond,
                         transitivity, positionAffix, morphParts, word, false);
             completeAnalysis.addAll(analysesOfDialectal);
-            
+
             // Continue the analysis of the term by eating up another character backwards.
         }
 
@@ -430,12 +427,12 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
         } else {
         	formsFound = Lexicon.lookForForms(term,syllabic);
         }
-        
+
         return formsFound;
     }
-	
 
- 
+
+
     /**
      * Validate each possible form of affix and continue analyzing the remaining stem.
      *
@@ -457,7 +454,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
     	Logger logger = Logger.getLogger("MorphologicalAnalyzer.analyzeWithCandidateAffixes");
     	logger.debug("***stem= "+stem);
         List<Decomposition> completeAnalysis = new ArrayList<Decomposition>();
-        
+
         String keyStateIDs = computeStateIDs(states);
 
         List<SurfaceFormOfAffix> contextualForms = new ArrayList<>(formsOfAffixFound);
@@ -520,7 +517,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 					completeAnalysis.addAll(analyses);
 				}
             } // if (validation)
-            
+
         } // for
 
         return completeAnalysis;
@@ -532,13 +529,13 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 	private String computeStateIDs(State[] states) {
         String keyStateIDs = "0";
 		for (State state : states) keyStateIDs += "+" + state.id;
-        
+
         return keyStateIDs;
 	}
 
 
 
-    
+
     /*
 	 * ===================== ANALYZE AS A ROOT ===========================
      */
@@ -560,15 +557,15 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
          */
         if (termOrigICI.endsWith("*"))
             termOrigICI = termOrigICI.substring(0,termOrigICI.length()-1);
-        
+
         /*
          * À ce point-ci, nous sommes au début du terme. À cause de la
          * récursivité au point de branchement, le terme en question sera ce qui
          * précède tout affixe trouvé. Cela ira donc du mot entier à la racine
          * réelle, en passant par plusieurs termes intermédiaires.
-         * 
+         *
          * On vérifie si cette partie initiale du mot est une racine connue.
-         * 
+         *
          * Chercher le TERME dans les racines.
          */
         Vector<Morpheme> lexs = null;
@@ -580,11 +577,11 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
          * Il faut vérifier si le suffixe trouvé précédemment commence par une
          * consonne et si le candidat racine finit par une consonne et si ce
          * groupe de deux consonnes correspond à un autre groupe de consonnes.
-         * 
+         *
          * On cherche aussi des groupes de consonnes équivalents à l'intérieur
          * de la racine candidate. Toutes les possibilités sont retenues.
          */
-        newRootCandidates = Dialect.newRootCandidates(termICI); 
+        newRootCandidates = Dialect.newRootCandidates(termICI);
         if (newRootCandidates != null)
             for (int k = 0; k < newRootCandidates.size(); k++) {
 //                stpw.check("analyzeAsRoot -- newRootCandidate: "+((Base)newRootCandidates.elementAt(k)).morpheme);
@@ -598,12 +595,12 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
             }
         Vector<Decomposition> rootAnalyses = checkRoots(lexs,word,termOrigICI,morphParts,states,
                 preConds,transitivity);
-        
+
         allAnalyses.addAll(rootAnalyses);
-        
+
         return allAnalyses;
     }
-    
+
     public Vector<Morpheme> lookForBase(String termICI, boolean isSyllabic) throws LinguisticDataException {
     	Vector<Morpheme> basesFound = null;
     	if (termICI.endsWith("*")) {
@@ -623,10 +620,10 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
     	} else {
             basesFound = Lexicon.lookForBase(termICI, isSyllabic);
     	}
-    	
+
     	return basesFound;
     }
-    
+
     /**
      * Compute the root morphemes corresponding to the given lexemes.
      * @param lexs Vector<Object>
@@ -645,7 +642,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 											 String transitivity) throws TimeoutException, LinguisticDataException {
 
         Vector<Decomposition> rootAnalyses = new Vector<Decomposition>();
-        
+
         char typeBase = 0;
 
         if (lexs == null) {
@@ -653,12 +650,12 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
             // Pour le moment, on ne fait rien. On ne fait que
             // créer un vecteur vide.
             lexs = new Vector<Morpheme>();
-        } 
+        }
 
         //-------------------------------------------
         // Pour chaque base possible du vecteur lexs:----------------
         //-------------------------------------------
-        
+
         for (int ib = 0; ib < lexs.size(); ib++) {
             // Chaque élément de lexs est un ensemble Object []
             // {Integer,Base}.
@@ -667,7 +664,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
             stpw.check("checkRoots -- morpheme: "+root.morpheme);
 
             typeBase = root.type.charAt(0);
-            
+
             if (typeBase == '?') {
                 /*
                  * Si la racine est inconnue, on ajoute simplement une nouvelle
@@ -684,7 +681,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
                  * Si la racine est connue : vérifier la validité du candidat.
                  */
             	Graph.Arc arcFollowed = checkValidityOfRoot(root,states,morphParts,preConds,transitivity);
-                
+
                  if (arcFollowed != null) {
                     /*
                      * Toutes les conditions ont été respectées. Créer une
@@ -700,10 +697,10 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
                 }
             }
         } // FOR
-        
+
         return rootAnalyses;
     }
-	
+
 	private Graph.Arc checkValidityOfRoot(Morpheme root, Graph.State[] states,
 										  Vector<AffixPartOfComposition> morphParts, Conditions preConds,
 										  String transitivity) throws TimeoutException, LinguisticDataException {
@@ -714,7 +711,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
          * arc accepté puisqu'on est rendu à la racine et qu'une racine
          * ne peut prendre qu'un seul arc.
          */
-        
+
         /*
          * Il faut aussi vérifier que la finale de la base est une
          * lettre valide: une voyelle, un k, un q, un t.
@@ -729,11 +726,11 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
         //                                							|| dernierChar == 't'
         //                                							|| dernierChar == 'k'
         //                               							|| dernierChar == 'q') {
-        
+
         /*
          * Il faut aussi que les conditions spécifiques soient
          * rencontrées. Il y a les conditions sur ce qui précède,
-         * et les conditions sur ce qui peut suivre. Par exemple, si le suffixe 
+         * et les conditions sur ce qui peut suivre. Par exemple, si le suffixe
          * trouvé précédemment
          * exige de suivre immédiatement un nom au cas datif, le suffixe
          * ou la terminaison actuelle doit rencontrer cette contrainte.
@@ -774,12 +771,12 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 				}
 			}
         }
-         
+
         return accepted?arcFollowed:null;
 	}
 
 	//-----------------------------------------------
-	
+
 	private Graph.Arc arcToZero(Graph.Arc[] arcsFollowed) throws TimeoutException {
 		for (Graph.Arc arc : arcsFollowed) {
 			stpw.check("arcToZero -- arc: " + arc.toString());
@@ -789,8 +786,8 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 		}
         return null;
     }
-    
-    
+
+
     /*
      * Vérifier si ce suffixe est le même que le dernier suffixe trouvé
      * précédemment. Cela permet d'éliminer certaines analyses, entre autres,
@@ -806,7 +803,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
         }
         return isSameAsNext;
     }
-    
+
     /*
      * Vérifier si ce suffixe est à la même position dans le mot que le
      * suffixe trouvé précédemment (celui qui le suit dans le mot dans l'analyse
@@ -816,24 +813,24 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
      * interprétés comme suffixe. Or un suffixe ne peut logiquement supprimer un
      * autre suffixe.
      */
-    private boolean samePosition(int positionAffixInWord, 
+    private boolean samePosition(int positionAffixInWord,
             Vector<AffixPartOfComposition> partsAlreadyAnalyzed) {
         boolean isAtSamePosition = false;
         if (partsAlreadyAnalyzed.size() != 0) {
             AffixPartOfComposition nextMorphpart = (AffixPartOfComposition) partsAlreadyAnalyzed
                 .elementAt(0);
-            if (nextMorphpart.getPosition() == positionAffixInWord) 
-                isAtSamePosition = true;       
+            if (nextMorphpart.getPosition() == positionAffixInWord)
+                isAtSamePosition = true;
         }
         return isAtSamePosition;
     }
 
-    
+
     /*
      * Vérifier si ce suffixe est permis en ce moment. Il doit
      * correspondre à un des arcs partant de l'état actuel.
      */
-        
+
     private Graph.Arc[] arcsSuivis(Morpheme morpheme, Graph.State[] states,
 								   String keyStateIDs) throws TimeoutException, LinguisticDataException {
 		Graph.Arc[] arcsFollowed = null;
@@ -852,14 +849,14 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 				arcsFollowed = (Graph.Arc[]) arcsFollowedV
 						.toArray(new Graph.Arc[] {});
 				arcsByMorpheme.put(keyMorphemeStateIDs, arcsFollowed);
-			} 
+			}
 		} else {
 			arcsFollowed = arcsFollowedByHash;
 		}
 		return arcsFollowed;
 	}
-    
-    
+
+
 
     /*
      * Vérifier si le contexte est respecté. La forme candidate
@@ -867,7 +864,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
      * On vérifie si le radical et la forme de l'affixe correspondent à
      * ce contexte et à ces actions. Si c'est le cas, on retourne les
      * résultats possibles:
-     * 
+     *
      * a. radical sans les changements morphologiques causés par
      * l'affixe; b. un objet de classe MorceauAffixe contenant: 1. la
      * position de l'affixe dans le mot (la valeur de i); 2. un objet de
@@ -875,9 +872,9 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
      */
     private MorphAnalyzerValidation.ContextualResult[] agreeWithContextAndActions(
     		String affixCandidateOrig,
-            Affix affix, 
-            String stem, 
-            int positionAffixInWord, 
+            Affix affix,
+            String stem,
+            int positionAffixInWord,
             SurfaceFormOfAffix form,
             boolean notResultingFromDialectalPhonologicalTransformation) throws TimeoutException, MorphInukException, LinguisticDataException {
         MorphAnalyzerValidation.ContextualResult[] stemAffs = null;
@@ -912,15 +909,15 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 		if (extendedAnalyses == null) {
 			extendedAnalyses = false;
 		}
-		
+
 		String key = cacheKeyFor(word, extendedAnalyses);
-		
+
 		decompsCache.invalidate(key);
 	}
 
 
 	private static String cacheKeyFor(String word, boolean extendedAnalyses) {
-		String key = word; 
+		String key = word;
 		if (extendedAnalyses) {
 			key += "/extended";
 		}

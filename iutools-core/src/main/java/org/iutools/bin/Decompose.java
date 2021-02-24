@@ -39,7 +39,8 @@ public class Decompose {
     		System.err.println("\nusage: java -jar Uqailaut.jar [-h[elp]] [-a[ide]] [-t] [-l [en|fr]] <word>");
     		System.err.println("\n-h[elp] : print this in English");
     		System.err.println("-a[ide] : print this in French");
-    		System.err.println("-e : extended analysis: try with added consonant after end vowel");
+			System.err.println("-e : extended analysis: try with added consonant after end vowel");
+			System.err.println("-c : DO NOT decompose composite roots");
     		System.err.println("-t : display initialization time and decomposition time");
     		System.err.println("-l [en|fr] : user's language - en: english   fr: french (default: en)");
     		System.err.println("\n<word>: in latin alphabet or in URI-encoded syllabics");
@@ -49,6 +50,7 @@ public class Decompose {
     		System.err.println("\n-h[elp] : imprimer ceci en anglais");
     		System.err.println("-a[ide] : imprimer ceci en français");
     		System.err.println("-e : analyse supplémentaire : ajouter les consonnes possibles après une finale en voyelle");
+			System.err.println("-c : NE PAS décomposer les racines composites");
     		System.err.println("-t : imprimer le temps d'initialisation et le temps de décomposition");
     		System.err.println("-l [en|fr] : langue de l'utilisateur - en: anglais   fr: français (défaut: en)");
     		System.err.println("\n<mot>: en alphabet latin ou en syllabique encodé à URI");
@@ -66,6 +68,8 @@ public class Decompose {
         boolean printHelp = false;
         boolean printUsage = false;
         boolean extended = false;
+        boolean decomposeComposite = true;
+
         long startInitTime, endInitTime, startTime, endTime;
         for (int i=0; i<args.length; i++)
         	if (args[i].equals("-t"))
@@ -78,9 +82,12 @@ public class Decompose {
         		lang = "fr";
         		printHelp = true;
         	}
-        	else if (args[i].equals("-e")) {
-        		extended = true;
-        	}
+			else if (args[i].equals("-e")) {
+				extended = true;
+			}
+			else if (args[i].equals("-c")) {
+				decomposeComposite = false;
+			}
         	else if (args[i].equals("-l"))
         		if (i+1 < args.length
         				&& (args[i+1].equals("en") || args[i+1].equals("fr")))
@@ -108,7 +115,7 @@ public class Decompose {
         startTime = Calendar.getInstance().getTimeInMillis();
         
         //**********************************************
-        String decsS = decomposeToMultilineString(word,extended);
+        String decsS = decomposeToMultilineString(word,extended,decomposeComposite);
         //**********************************************
         
         endTime = Calendar.getInstance().getTimeInMillis();
@@ -119,8 +126,8 @@ public class Decompose {
         }
     }
     
-    public static String decomposeToMultilineString(String word, boolean extendedAnalysis) {
-    	String decExprs[] = decomposeToArrayOfStrings(word,extendedAnalysis);
+    public static String decomposeToMultilineString(String word, boolean extendedAnalysis, boolean decomposeComposite) {
+    	String decExprs[] = decomposeToArrayOfStrings(word,extendedAnalysis,decomposeComposite);
         // Préparation de l'affichage des résultats.
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < decExprs.length; i++) {
@@ -130,7 +137,7 @@ public class Decompose {
     	
     }
     
-    public static String[] decomposeToArrayOfStrings(String word, boolean extendedAnalysis) {
+    public static String[] decomposeToArrayOfStrings(String word, boolean extendedAnalysis, boolean decomposeComposite) {
         // Décodage URL du mot, au cas où il a été codé avant d'être transmis
         // par l'application.
         word = MonURLDecoder.decode(word).trim();
@@ -145,6 +152,7 @@ public class Decompose {
         try {
             LinguisticData.init(); // make sure the LinguisticData instance is null
             MorphologicalAnalyzer morphAnalyzer = new MorphologicalAnalyzer();
+            morphAnalyzer.setDecomposeCompositeRoot(decomposeComposite);
         	morphAnalyzer.disactivateTimeout();
         	
 			decs = morphAnalyzer.decomposeWord(word,extendedAnalysis);

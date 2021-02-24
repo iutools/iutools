@@ -40,11 +40,16 @@ public abstract class MorphologicalAnalyzerAbstract implements AutoCloseable {
     protected Long millisTimeout = new Long(10*1000);
     protected boolean timeoutActive = true;
     protected StopWatch stpw;
-    
-    protected static ExecutorService executor = null;
+    protected boolean decomposeCompositeRoot = true;
+
+
+	protected static ExecutorService executor = null;
     public static Map<String,Future<Decomposition[]>> taskFutures = 
     	new HashMap<String,Future<Decomposition[]>>();
-    
+
+    public void setDecomposeCompositeRoot(boolean value) {
+		decomposeCompositeRoot = value;
+	}
     
     public void close() throws Exception {
     	System.out.println("--** MorphologicalAnalyzerAbstract.close: INVOKED");
