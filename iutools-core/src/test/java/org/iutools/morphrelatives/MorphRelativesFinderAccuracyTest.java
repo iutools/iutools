@@ -57,7 +57,7 @@ public class MorphRelativesFinderAccuracyTest {
 	@Test
 	public void test__MorphRelativesFinderAccuracy(TestInfo testInfo) throws Exception {
 		
-		System.out.println("\n\n*** Running test__MorphRelativesFinderAccuracy. This test can take a few minutes to complete\n\n");;
+		System.out.println("\n\n*** Running test__MorphRelativesFinderAccuracy.\nThis test can take a few minutes to complete\n\n");;
 		
 		PerformanceExpectations expectations =
 			new PerformanceExpectations()

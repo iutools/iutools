@@ -37,8 +37,21 @@ public abstract class MorphAnalCurrentExpectationsAbstract {
 	//
 	public static enum OutcomeType {
 		NO_DECOMPS, CORRECT_NOT_PRESENT, CORRECT_NOT_FIRST, SUCCESS};
-	
-	
+
+	// We want to know about ANY change in the number of cases where the correct
+	// decomp is NOT included in the analyser results (either because no decomps
+	// were produced, or the decomps produce did not contain the correct one)
+	//
+	public Double tolerance_NO_DECOMPS = 0.00;
+	public Double tolerance_CORRECT_NOT_PRESENT = 0.0;
+
+	// For other performance criteria, we don't signal changes unless they are
+	// "significant"
+	//
+	public Double tolerance_CORRECT_NOT_FIRST = 0.05;
+
+	public String focusOnWord = null;
+
 	Map<String,OutcomeType> expFailures = 
 		new HashMap<String,OutcomeType>();
 	

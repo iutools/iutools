@@ -5,6 +5,7 @@
  */
 package org.iutools.morph;
 
+import ca.nrc.testing.AssertNumber;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,26 +13,29 @@ import org.junit.Test;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
 
-import org.iutools.linguisticdata.LinguisticData;
 import org.iutools.linguisticdata.LinguisticDataException;
 import ca.nrc.dtrc.stats.FrequencyHistogram;
+
+import org.iutools.morph.MorphAnalCurrentExpectationsAbstract.OutcomeType;
 
 /**
  * @author Marta
  *
  */
 public class MorphologicalAnalyzer_AccuracyTest {
-	
-	boolean verbose = true;
+
+	boolean verbose = false;
 	
 	MorphologicalAnalyzer morphAnalyzer = null;
 
 	MorphAnalGoldStandardAbstract goldStandard = null;
 	MorphAnalCurrentExpectationsAbstract expectations = null;
 
-	FrequencyHistogram<MorphAnalCurrentExpectationsAbstract.OutcomeType> gotOutcomeHist = new FrequencyHistogram<MorphAnalCurrentExpectationsAbstract.OutcomeType>();
-	FrequencyHistogram<MorphAnalCurrentExpectationsAbstract.OutcomeType> expOutcomeHist = new FrequencyHistogram<MorphAnalCurrentExpectationsAbstract.OutcomeType>();
-	
+	FrequencyHistogram<OutcomeType> gotOutcomeHist =
+		new FrequencyHistogram<OutcomeType>();
+	FrequencyHistogram<OutcomeType> expOutcomeHist =
+		new FrequencyHistogram<OutcomeType>();
+
 	/*
 	 * @see TestCase#setUp()
 	 */
@@ -41,8 +45,8 @@ public class MorphologicalAnalyzer_AccuracyTest {
 			morphAnalyzer = new MorphologicalAnalyzer();
 		}
 		morphAnalyzer.activateTimeout();
-		gotOutcomeHist = new FrequencyHistogram<MorphAnalCurrentExpectationsAbstract.OutcomeType>();
-		expOutcomeHist = new FrequencyHistogram<MorphAnalCurrentExpectationsAbstract.OutcomeType>();
+		gotOutcomeHist = new FrequencyHistogram<OutcomeType>();
+		expOutcomeHist = new FrequencyHistogram<OutcomeType>();
 	}
 
 	@Test
@@ -53,7 +57,11 @@ public class MorphologicalAnalyzer_AccuracyTest {
 		goldStandard = new MorphAnalGoldStandard_Hansard();
 		expectations = new MorphAnalCurrentExpectations_Hansard();
 
-		test_accuracy();
+		// If you want to only evaluate one word, comment out and modify the
+		// next line.
+//		expectations.focusOnWord = "someword";
+
+		evaluateAccuracy();
 	}
 
 	@Test
@@ -64,33 +72,37 @@ public class MorphologicalAnalyzer_AccuracyTest {
 		goldStandard = new MorphAnalGoldStandard_WordsThatFailedBefore();
 		expectations = new MorphAnalCurrentExpectations_WordsThatFailedBefore();
 
-		test_accuracy();
+		evaluateAccuracy();
 	}
 
-	private void test_accuracy() throws Exception {
-		//
-		// Leave this at null to run on all words
-		// Set it to a word if you want to run the tests just on that one word.
-		//
-		String focusOnWord = null;
-//		focusOnWord = "ajjigiinngittunut";
-		
+	private void evaluateAccuracy() throws Exception {
+
 		// Uncomment for debugging.
 		morphAnalyzer.disactivateTimeout();
 
 		Calendar startCalendar = Calendar.getInstance();
-		
-        Map<String,String> outcomeDifferences = new HashMap<>();
-        
+
+		Map<String,String> outcomeDifferences = new HashMap<>();
+
+		int column = 0;
 		for (String wordToBeAnalyzed: goldStandard.allWords()) {
+			 column++;
 		    AnalyzerCase caseData = goldStandard.caseData(wordToBeAnalyzed);
 
-		    if (skipCase(caseData, focusOnWord)) {
+			if (verbose) {
+				System.out.print("> :"+wordToBeAnalyzed+":");
+			} else {
+				System.out.print(".");
+				if (column == 80) {
+					System.out.print("\n");
+					column = 0;
+				}
+			}
+
+		    if (skipCase(caseData, expectations.focusOnWord)) {
 		    	continue;
 		    }
 
-			if (verbose) System.out.print("> :"+wordToBeAnalyzed+":");
-			
 		    AnalysisOutcome outcome = decompose(wordToBeAnalyzed);
 		    
             if (verbose) System.out.println(" []");
@@ -108,21 +120,41 @@ public class MorphologicalAnalyzer_AccuracyTest {
         
         printPerformanceStats();
         
-        assertOutcomesHaveNotChanged(outcomeDifferences);
+        assertOutcomesHaveNotChangedSignificantly(outcomeDifferences);
         
-        if (focusOnWord != null) {
-        	Assert.fail("Test was only run on single word "+focusOnWord+
+        if (expectations.focusOnWord != null) {
+        	Assert.fail("Test was only run on single word "+expectations.focusOnWord+
         		"\nDon't forget to reset focusOnWord=null before committing!");
         }
 	}
 	
 	private void printPerformanceStats() {
-        printOutcomeHistogram("Histogram of EXPECTED outcome types", expOutcomeHist);
-        printOutcomeHistogram("Histogram of ACTUAL outcome types", gotOutcomeHist);
+		System.out.println();
+		printCorrectFoundStats();
+		printOutcomeHistogram("Histogram of EXPECTED outcome types", expOutcomeHist);
+		printOutcomeHistogram("Histogram of ACTUAL outcome types", gotOutcomeHist);
 	}
 
-	private void printOutcomeHistogram(String title, 
-			FrequencyHistogram<MorphAnalCurrentExpectationsAbstract.OutcomeType> outcomeHist) {
+	private void printCorrectFoundStats() {
+		long totalWords = gotOutcomeHist.totalOccurences();
+
+		// Words where decomps were produced, but they were all incorrect
+		long totalNotPresent = gotOutcomeHist.frequency(OutcomeType.CORRECT_NOT_PRESENT);
+
+		// Words where no decomps were produced at all
+		long totalNoDecomps = gotOutcomeHist.frequency(OutcomeType.NO_DECOMPS);
+
+		// Words where decomps were produced, and one of them was correct
+		long totalCorrectPresent = totalWords - (totalNoDecomps + totalNotPresent);
+		Double correctRate = 1.0 * totalCorrectPresent / totalWords;
+
+
+		System.out.println("\nWords with correct decomp found: "+
+			totalCorrectPresent+"/"+totalWords+" (rate: "+correctRate+")");
+	}
+
+	private void printOutcomeHistogram(String title,
+		FrequencyHistogram<MorphAnalCurrentExpectationsAbstract.OutcomeType> outcomeHist) {
 		echo("\n== "+title+" ==\n");
 		
 		echo("Cases with:");
@@ -142,28 +174,75 @@ public class MorphologicalAnalyzer_AccuracyTest {
 		}
 	}
 
-	private void assertOutcomesHaveNotChanged(Map<String, String> outcomeDifferences) {
-		if (!outcomeDifferences.isEmpty()) {
+	private void assertOutcomesHaveNotChangedSignificantly(
+		Map<String, String> outcomeDifferences) {
+
+		String failMess = significantChangesMessage();
+
+		if (!failMess.isEmpty() && !outcomeDifferences.isEmpty()) {
 			int nDiff = outcomeDifferences.keySet().size();
-			
+
 			List<String> failingWords = new ArrayList<String>();
 			failingWords.addAll(outcomeDifferences.keySet());
 			Collections.sort(failingWords);
-			
-			String failMess = 
-				"There were "+nDiff+" differences in the analysis outcomes of some words.\n"+
-				"Differences are listed below\n";
-			for (String word: failingWords) {
-				failMess += 
-					"\n---------------------------------------\n\n"+
-					"Word: "+word+"\n"+
-					"    "+
-					outcomeDifferences.get(word).replaceAll("\n", "\n    ")
-					;
-			}
 
+			failMess +=
+				"Below are the " + nDiff + " words for which there were differences between the expected and achieved outcome.\n";
+			for (String word : failingWords) {
+				failMess +=
+				"\n---------------------------------------\n\n" +
+				"Word: " + word + "\n" +
+				"    " +
+				outcomeDifferences.get(word).replaceAll("\n", "\n    ")
+				;
+			}
+		}
+		if (!failMess.isEmpty()) {
 			Assert.fail(failMess);
 		}
+	}
+
+	private String significantChangesMessage() {
+		String mess = "";
+
+		Double gotValue = null;
+		Double expValue = null;
+		Double tolerance = null;
+
+		try {
+			gotValue = 1.0 * gotOutcomeHist.frequency(OutcomeType.NO_DECOMPS);
+			expValue = 1.0 * expOutcomeHist.frequency(OutcomeType.NO_DECOMPS);
+			tolerance = expValue * expectations.tolerance_NO_DECOMPS;
+			AssertNumber.performanceHasNotChanged(
+				"Words that do not produce any decomps",
+				gotValue, expValue, tolerance, false);
+		} catch (AssertionError e) {
+			mess += "\n"+e.getMessage();
+		}
+
+		try {
+			gotValue = 1.0 * gotOutcomeHist.frequency(OutcomeType.CORRECT_NOT_PRESENT);
+			expValue = 1.0 * expOutcomeHist.frequency(OutcomeType.CORRECT_NOT_PRESENT);
+			tolerance = expValue * expectations.tolerance_CORRECT_NOT_PRESENT;
+			AssertNumber.performanceHasNotChanged(
+				"Words that do not produce any decomps",
+				gotValue, expValue, tolerance, false);
+		} catch (AssertionError e) {
+			mess += "\n"+e.getMessage();
+		}
+
+		try {
+			gotValue = 1.0 * gotOutcomeHist.frequency(OutcomeType.CORRECT_NOT_FIRST);
+			expValue = 1.0 * expOutcomeHist.frequency(OutcomeType.CORRECT_NOT_FIRST);
+			tolerance = expValue * expectations.tolerance_CORRECT_NOT_FIRST;
+			AssertNumber.performanceHasNotChanged(
+				"Words where the first decomp is not correct",
+				gotValue, expValue, tolerance, false);
+		} catch (AssertionError e) {
+			mess += "\n"+e.getMessage();
+		}
+
+		return mess;
 	}
 
 	private void checkOutcome(String word, AnalysisOutcome gotOutcome, 
@@ -171,14 +250,13 @@ public class MorphologicalAnalyzer_AccuracyTest {
 		MorphAnalGoldStandardAbstract goldStandard,
 		Map<String, String> outcomeDiffs) {
 		
-		MorphAnalCurrentExpectationsAbstract.OutcomeType expOutcomeType = expectations.expectedOutcome(word);
+		OutcomeType expOutcomeType = expectations.expectedOutcome(word);
 		expOutcomeHist.updateFreq(expOutcomeType);
-		
+
 		String correctDecomp = goldStandard.correctDecomp(word);
-		MorphAnalCurrentExpectationsAbstract.OutcomeType gotOutcomeType =
-			expectations.type4outcome(gotOutcome, correctDecomp);
+		OutcomeType gotOutcomeType = expectations.type4outcome(gotOutcome, correctDecomp);
 		gotOutcomeHist.updateFreq(gotOutcomeType);
-		
+
 		if (gotOutcomeType != expOutcomeType) {
 			String diffMess = 
 				diffMessage(expOutcomeType, gotOutcomeType, gotOutcome, 
@@ -186,10 +264,10 @@ public class MorphologicalAnalyzer_AccuracyTest {
 			logOutcomeDifference(word, diffMess, outcomeDiffs);
 		}
 	}
-	
+
 	private String diffMessage(MorphAnalCurrentExpectationsAbstract.OutcomeType expOutcomeType,
-							   MorphAnalCurrentExpectationsAbstract.OutcomeType gotOutcomeType, AnalysisOutcome gotOutcome,
-							   String correctDecomp) {
+		MorphAnalCurrentExpectationsAbstract.OutcomeType gotOutcomeType, AnalysisOutcome gotOutcome,
+		String correctDecomp) {
 		String mess = "";
 		int comp = gotOutcomeType.compareTo(expOutcomeType);
 		boolean improved = false;
