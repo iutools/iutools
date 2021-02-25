@@ -30,9 +30,9 @@ public abstract class MorphAnalGoldStandardAbstract {
 		return case4word.keySet();
 	}
 
-	public String correctDecomp(String word) {
+	public String[] correctDecomps(String word) {
 		AnalyzerCase anlCase = case4word.get(word);
-		return anlCase.correctDecomp;
+		return anlCase.correctDecomps;
 	}
 		
 	public AnalyzerCase caseData(String word) {

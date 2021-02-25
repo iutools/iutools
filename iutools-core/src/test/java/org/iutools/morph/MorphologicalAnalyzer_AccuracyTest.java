@@ -52,7 +52,7 @@ public class MorphologicalAnalyzer_AccuracyTest {
 	@Test
 	public void test_accuracy_with_GoldStandard_Hansard() throws Exception {
 
-		System.out.println("Running test_accuracy_with_GoldStandard_Hansard. This test can take a few minutes to complete.");
+		System.out.println("Running test_accuracy_with_GoldStandard_Hansard.");
 
 		goldStandard = new MorphAnalGoldStandard_Hansard();
 		expectations = new MorphAnalCurrentExpectations_Hansard();
@@ -67,7 +67,7 @@ public class MorphologicalAnalyzer_AccuracyTest {
 	@Test
 	public void test_accuracy_with_GoldStandard_WordsThatFailedBefore() throws Exception {
 
-		System.out.println("Running test_accuracy_with_GoldStandard_WordsThatFailedBefore. This test can take a few minutes to complete.");
+		System.out.println("Running test_accuracy_with_GoldStandard_WordsThatFailedBefore.");
 
 		goldStandard = new MorphAnalGoldStandard_WordsThatFailedBefore();
 		expectations = new MorphAnalCurrentExpectations_WordsThatFailedBefore();
@@ -76,6 +76,9 @@ public class MorphologicalAnalyzer_AccuracyTest {
 	}
 
 	private void evaluateAccuracy() throws Exception {
+
+
+		System.out.println("This test can take a few minutes to complete.");
 
 		// Uncomment for debugging.
 		morphAnalyzer.disactivateTimeout();
@@ -248,26 +251,27 @@ public class MorphologicalAnalyzer_AccuracyTest {
 	private void checkOutcome(String word, AnalysisOutcome gotOutcome, 
 		MorphAnalCurrentExpectationsAbstract expectations,
 		MorphAnalGoldStandardAbstract goldStandard,
-		Map<String, String> outcomeDiffs) {
+		Map<String, String> outcomeDiffs) throws Exception {
 		
 		OutcomeType expOutcomeType = expectations.expectedOutcome(word);
 		expOutcomeHist.updateFreq(expOutcomeType);
 
-		String correctDecomp = goldStandard.correctDecomp(word);
-		OutcomeType gotOutcomeType = expectations.type4outcome(gotOutcome, correctDecomp);
+		String[] correctDecomps = goldStandard.correctDecomps(word);
+		OutcomeType gotOutcomeType =
+			expectations.type4outcome(gotOutcome, correctDecomps);
 		gotOutcomeHist.updateFreq(gotOutcomeType);
 
 		if (gotOutcomeType != expOutcomeType) {
 			String diffMess = 
 				diffMessage(expOutcomeType, gotOutcomeType, gotOutcome, 
-						correctDecomp);
+						correctDecomps);
 			logOutcomeDifference(word, diffMess, outcomeDiffs);
 		}
 	}
 
-	private String diffMessage(MorphAnalCurrentExpectationsAbstract.OutcomeType expOutcomeType,
-		MorphAnalCurrentExpectationsAbstract.OutcomeType gotOutcomeType, AnalysisOutcome gotOutcome,
-		String correctDecomp) {
+	private String diffMessage(OutcomeType expOutcomeType,
+		OutcomeType gotOutcomeType, AnalysisOutcome gotOutcome,
+		String[] correctDecomps) {
 		String mess = "";
 		int comp = gotOutcomeType.compareTo(expOutcomeType);
 		boolean improved = false;
@@ -281,16 +285,17 @@ public class MorphologicalAnalyzer_AccuracyTest {
 		} else {
 			mess += "BAD NEWS\n";
 			mess += worseningMessage(expOutcomeType);
-			mess += currentStateMessage(gotOutcome, correctDecomp);
+			mess += currentStateMessage(gotOutcome, correctDecomps);
 		}
 		
 		return mess;
 	}
 
-	private String currentStateMessage(AnalysisOutcome gotOutcome, String correctDecomp) {
+	private String currentStateMessage(AnalysisOutcome gotOutcome,
+		String[] correctDecomps) {
 		String mess = 
 			"\n" +
-			"Correct decomp : "+correctDecomp+"\n"+
+			"Correct decomps :\n  "+String.join("\n  ", correctDecomps)+"\n"+
 			"Got decomps:\n"+gotOutcome.joinDecomps();
 		return mess;
 	}
@@ -298,7 +303,7 @@ public class MorphologicalAnalyzer_AccuracyTest {
 	private String worseningMessage(MorphAnalCurrentExpectationsAbstract.OutcomeType expOutcomeType) {
 		String mess = null;
 		if (expOutcomeType == MorphAnalCurrentExpectationsAbstract.OutcomeType.SUCCESS) {
-			mess = "Correct decomposition used to be first in the list";
+			mess = "First decomposition used to be correct";
 		} else if (expOutcomeType == MorphAnalCurrentExpectationsAbstract.OutcomeType.CORRECT_NOT_FIRST) {
 			mess = "Correct decompositions used to be somewhere in the list";
 		}

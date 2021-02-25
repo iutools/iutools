@@ -163,7 +163,9 @@ public class MorphAnalGoldStandard_Hansard extends MorphAnalGoldStandardAbstract
         addCase(new AnalyzerCase("atuagaq", "{atu:atuq/1v}{a:a/1vv}{gaq:gaq/1vn}"));
         addCase(new AnalyzerCase("atuagarmik", "{atu:atuq/1v}{a:a/1vv}{gar:gaq/1vn}{mik:mik/tn-acc-s}"));
         addCase(new AnalyzerCase("atuagarnik", "{atu:atuq/1v}{a:a/1vv}{gar:gaq/1vn}{nik:nik/tn-acc-p}"));
-        addCase(new AnalyzerCase("atuliqujaujuq", "{atu:atuq/1v}{li:li/2vv}{qu:qu/2vv}{ja:jaq/1vn}{u:u/1nv}{juq:juq/1vn}"));
+        addCase(new AnalyzerCase("atuliqujaujuq",
+            "{atu:atuq/1v}{li:li/2vv}{qu:qu/2vv}{ja:jaq/1vn}{u:u/1nv}{juq:juq/1vn}",
+            "{atu:atuq/2v}{li:li/2vv}{qu:qu/2vv}{ja:jaq/1vn}{u:u/1nv}{juq:juq/1vn}"));
         addCase(new AnalyzerCase("atuni", "{atuni:atunit/1n}"));
         addCase(new AnalyzerCase("atunit", "{atunit:atunit/1n}"));
         addCase(new AnalyzerCase("atuqtuksait", "{atuq:atuq/1v}{tuksa:juksaq/1vn}{it:it/tn-nom-p}"));

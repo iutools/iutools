@@ -8,7 +8,7 @@ package org.iutools.morph;
  */
 public class AnalyzerCase {
 	public String word;
-	public String correctDecomp = null;
+	public String[] correctDecomps = null;
 	public boolean isMisspelled = false;
 	public boolean possiblyMisspelled = false;
 	public boolean isBorrowed = false;
@@ -20,14 +20,14 @@ public class AnalyzerCase {
 		initAnalyzerCase(_word, null);
 	}
 	
-	public AnalyzerCase(String _word, String _correctDecomp) throws Exception {
-		initAnalyzerCase(_word, _correctDecomp);
+	public AnalyzerCase(String _word, String... _correctDecomps) throws Exception {
+		initAnalyzerCase(_word, _correctDecomps);
 	}
 	
-	private void initAnalyzerCase(String _word, String _correctDecomp) 
+	private void initAnalyzerCase(String _word, String... _correctDecomps)
 			throws Exception {
 		word = _word;
-		correctDecomp = _correctDecomp;
+		correctDecomps = _correctDecomps;
 	}
 	
 	private void throwIncompatibleID(String _word, String prefix, String id, 

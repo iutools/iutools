@@ -68,7 +68,7 @@ public abstract class MorphAnalCurrentExpectationsAbstract {
 	}
 
 	public OutcomeType type4outcome(AnalysisOutcome outcome, 
-			String correctDecomp) {
+			String[] correctDecomps) throws Exception {
 		
 		OutcomeType type = null;
 		
@@ -81,7 +81,7 @@ public abstract class MorphAnalCurrentExpectationsAbstract {
 			// The Decomp produces some decompositions. 
 			// What is the position of the correct one in that list?
 			//
-			Integer rank = outcome.decompRank(correctDecomp);
+			Integer rank = outcome.decompRank(correctDecomps);
 			if (rank == null) {
 				type = OutcomeType.CORRECT_NOT_PRESENT;
 			} else if (rank > 0) {

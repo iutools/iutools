@@ -1,5 +1,10 @@
 package org.iutools.morph;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.iutools.linguisticdata.LinguisticDataException;
+
+import java.util.Collections;
+
 /**
  * Outcome of calling decomposeWord() on a test word.
  * 
@@ -10,15 +15,16 @@ public class AnalysisOutcome {
 	public boolean timedOut = false;
 	public Decomposition[] decompositions = new Decomposition[0];
 	
-	public boolean includesDecomp(String decomp) {
-		boolean includes = (null != decompRank(decomp));		
+	public boolean includesAtLeastOneOfDecomps(String[] decomps) throws LinguisticDataException {
+		boolean includes = (null != decompRank(decomps));
 		return includes;
 	}
 	
-	public Integer decompRank(String decomp) {
+	public Integer decompRank(String[] correctDecomps) throws LinguisticDataException {
 		Integer rank = null;
 		for (int ii = 0; ii < decompositions.length; ii++) {
-			if (decompositions[ii].toString().equals(decomp)) {
+			String itthDecomp = decompositions[ii].toStr2();
+			if (ArrayUtils.contains(correctDecomps, itthDecomp)) {
 				rank = ii;
 				break;
 			}
