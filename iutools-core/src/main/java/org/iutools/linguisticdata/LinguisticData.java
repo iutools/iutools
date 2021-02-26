@@ -104,7 +104,12 @@ public class LinguisticData {
     }
     
     public Vector<Morpheme> getBasesForCanonicalForm(String canonicalForm) {
+        Logger logger = Logger.getLogger("LingisticData.getBasesForCanonicalForm");
+        logger.debug("morphemesForCanonicalForm: "+morphemesForCanonicalForm.size());
+//        logger.debug("morphemesForCanonicalForm keys: "+Arrays.toString(morphemesForCanonicalForm.keySet().toArray()));
+        logger.debug("canonicalForm: "+canonicalForm);
     	Vector<Morpheme> bases = morphemesForCanonicalForm.get(canonicalForm);
+    	logger.debug("bases: "+(bases==null?"null":bases.size()));
     	return bases;
     }
     
