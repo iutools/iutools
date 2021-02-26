@@ -29,6 +29,7 @@ import java.util.*;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.*;
 
+import ca.nrc.json.PrettyPrinter;
 import org.apache.log4j.Logger;
 
 import com.github.benmanes.caffeine.cache.Cache;
@@ -80,7 +81,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 	@Override
 	protected Decomposition[] doDecompose(String word, Boolean extendedAnalysis)
 			throws MorphologicalAnalyzerException, TimeoutException {
-
+		Logger logger = Logger.getLogger("MorphoplogicalAnalyzer.doDecompose");
 		if (extendedAnalysis == null) {
 			extendedAnalysis = true;
 		}
@@ -294,6 +295,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 			String transitivity
             ) throws TimeoutException, MorphInukException, LinguisticDataException {
 
+    	Logger logger = Logger.getLogger("MorphologicalAnalyzer.__decompose_simplified_term__");
     	stpw.check("__decompose_simplified_term__ -- Upon entry");
 
 		List<Decomposition> completeAnalysis = new ArrayList<Decomposition>();
@@ -304,6 +306,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
                 word,morphParts,states, preConds, transitivity
                 );
         completeAnalysis.addAll(analysesAsRoot);
+        logger.debug("analysesAsRoot: "+analysesAsRoot.size());
 
         // 2. If the term could not be analyzed as a root, or if it could be analyzed as a root and the flag is set
 		//    to further decompose a composite root into its parts, analyze the term as a sequence of morphemes.
@@ -452,7 +455,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
             ) throws TimeoutException, MorphInukException, LinguisticDataException {
 
     	Logger logger = Logger.getLogger("MorphologicalAnalyzer.analyzeWithCandidateAffixes");
-    	logger.debug("***stem= "+stem);
+//    	logger.debug("***stem= "+stem);
         List<Decomposition> completeAnalysis = new ArrayList<Decomposition>();
 
         String keyStateIDs = computeStateIDs(states);
@@ -498,8 +501,18 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 
                 // TODO: this is not done properly; has to be modified.
 				String affixTransitivity = affix.getTransitivityConstraint();
-				String newTransitivity = transitivityMet? null :
-						affixTransitivity!=null ? affixTransitivity : transitivity;
+				String newTransitivity;
+				if (transitivity==null || transitivity.equals("n") ) {
+					newTransitivity = null;
+				} else if (affixTransitivity==null || affixTransitivity.equals("n") ) {
+					newTransitivity = transitivity;
+				} else {
+					newTransitivity = null;
+				}
+//				logger.debug("*** affix: "+affix.morpheme+" ("+affix.id+")");
+//				logger.debug("    transitivity: "+transitivity);
+//				logger.debug("    affixTransitivity: "+affixTransitivity);
+//				logger.debug("    newTransitivity: "+newTransitivity);
 
 				for (MorphAnalyzerValidation.ContextualResult validStemAffixCombinationInContext : validStemAffixCombinationsInContext) {
 					stpw.check("decomposeByAffixes -- affixes respecting context and actions: " + validStemAffixCombinationInContext.stemBeforeAffixAction);
@@ -545,6 +558,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 												Conditions preConds,
 												String transitivity) throws TimeoutException, LinguisticDataException {
 
+    	Logger logger = Logger.getLogger("MorphologicalAnalyzer.analyzeAsRoot");
         Vector<Decomposition> allAnalyses = new Vector<Decomposition>();
 
         String termICI = Orthography.orthographyICI(term, USE_SYLLABICS); // de-simplify the term (re: NN>nng; N>ng); needed to search the database
