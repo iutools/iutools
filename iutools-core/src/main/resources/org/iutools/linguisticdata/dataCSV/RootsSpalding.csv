@@ -1,8 +1,8 @@
 morpheme,variant,nb,type,transitivity,nature,number,compositionRoot,plural,intransSuffix,transSuffix,antipassive,engMean,freMean,source,dialect,cf,END
-a-aaq,,1,v,i,,,,,,,,to hurt,,,,,
 a-aaq,,1,e,,,,,,,,,exclamation of pain: 'Ouch',exclamation de douleur: 'Aïe',,,,.
-aa,,1,v,i,,,,,,,,"to choke from emotional cause, like crying or laughing","s'étouffer par émotion, par exemple en pleurant ou en riant",,,,.
+a-aaq,,1,v,i,,,,,,,,to hurt,,,,,
 aa,,1,a,,,,,,,,,"yes, in S. Baffin, Ungava and ECHB","oui (Terre de Baffin sud, Ungava et côte est de la Baie d'Hudson)",,,,.
+aa,,1,v,i,,,,,,,,"to choke from emotional cause, like crying or laughing","s'étouffer par émotion, par exemple en pleurant ou en riant",,,,.
 aajuq,,1,v,i,a,,,,,,,to be moist,"être humide, moite",,,,.
 aak,,1,v,t,,,,,,,si/1vv,"[-R](1) to /offer, /give, /bring s.t. to someone (-mut)",,,,,
 aakka,aagga,1,a,,,,,,,,,no (aakka: in N. Baffin and WCHB),non (aakka: Terre de Baffin nord et côte ouest de la Baie d'Hudson),,,,.
@@ -19,8 +19,8 @@ aarluk,,1,n,,zoo,,,,,,,killer whale,orque,,,,.
 aarnga,,1,e,,,,,,,,,exclamation of distaste: 'Phew!' ,,,,,
 aasit,,1,e,,,,,,,,,expression of disparagement: 'As usual!',"expression de dénigrement, dépréciation: 'Comme d'habitude!'",,,,.
 aasivak,,1,n,,zoo,,,,,,,earth spider,mygale,,,,.
-aatajaq,,1,v,i,,,,,,,,to play traditional game of catch,jouer au jeu de balle traditionnel,,,,.
 aatajaq,,1,n,,,,,,,,,small bag of sand or fine stones used in game of catch,petit sac de sable ou de petits cailloux utilisé dans un jeu de balle,,,,.
+aatajaq,,1,v,i,,,,,,,,to play traditional game of catch,jouer au jeu de balle traditionnel,,,,.
 aattaq,,1,v,i,e,,,,gusuk/1vv,gi/4vv,,to be afraid of what others will say about s.t.,,,,,
 abguq,,1,v,t,,,,,,,si/1vv i/1vv,[-R]to /cut s.t. up in small pieces,[-R]/couper qqch. en petits morceaux,,,,.
 ablaaq,ablaak,1,v,i,,,,,,nil,,to open one's legs in stride position (trans.: over s.t.),,,,,
@@ -28,54 +28,54 @@ abluq,,1,v,i,,,,,,nil,,to step or stride forward (trans.: over s.t.),faire un pa
 abvaq,,1,n,,,,,,,,,(1) part,,,,,
 aggak,,1,n,,ana,,,,,,,hand,main,,,,.
 aggak,,2,n,,,,,,,,,(1) glove (2) saw-handle of hand-saw,(1) gant (2) poignée d'une scie à main,,,,.
+aggiq,,1,n,,,,,,,,,meat cooked on open fire or spit,viande cuite au-dessus d'un feu ou sur une broche,,,,.
 aggiq,,1,v,i,,,,,,,,to come home,,,,,
 aggiq,,2,v,t,res,,,,,,si/1vv,to /cook s.t. over open flame or on spit,/cuire qqch. au-dessus d'un feu ou sur un broche,,,,.
-aggiq,,1,n,,,,,,,,,meat cooked on open fire or spit,viande cuite au-dessus d'un feu ou sur une broche,,,,.
 agguaq,,1,v,t,,,,,,,si/1vv,[-R]to /patch s.t. (a garment) in overlap fashion,[-R]/rapiécer qqch. (un vêtement) par chevauchement,,,,.
-agguq,,1,v,i,,,,,,,,to face or travel into the wind,faire face au vent,,,,
 agguq,,1,n,,,,,,,,,windward side of prevailing wind,côté dans la direction des vents prédominants,,,,.
-agiaq,,1,v,i,,,,,,nil,,to file s.t. or use a file on s.t.,limer qqch.,,,,
+agguq,,1,v,i,,,,,,,,to face or travel into the wind,faire face au vent,,,,
 agiaq,,1,n,,,,,,,,,metal file or rasp,lime ou râpe à métal,,,,.
+agiaq,,1,v,i,,,,,,nil,,to file s.t. or use a file on s.t.,limer qqch.,,,,
 agli,,1,v,i,,,,,,,,to grow or get bigger,"grandir, devenir plus grand, plus gros",,,,.
 agliruk,,1,n,,,,,,,,,jaw,mâchoire,,,,.
 aglu,,1,n,,,,,,,,,seal's breathing hole,trou dans la glace par où les phoques viennent respirer,,,,.
 agvaiq,,1,v,t,,,,,,,si/1vv,[-R]to /take s.t. out of the way,,,,,
 agviaq,,1,v,i,a,,,,,,,to be in the way,être dans le chemin (tel un obstacle),,,,.
 agvik,,1,n,,,,,,,,,platform for scraping wet skins,plateforme pour râcler les peaux humides,,,,.
-ai,,1,v,i,,,,,,,,to go,,,,,
-ai,,1,n,,,,,,,,,man's sister-in-law,,,,,
 ai,,1,e,,,,,,,,,exclamation: 'Look!' ,,,,,
-aijuraq,,1,v,i,,,,,,,,"to develop long cracks, speaking of the sea ice",développer de longues fissures ou crevasse (la glace de mer),,,,.
+ai,,1,n,,,,,,,,,man's sister-in-law,,,,,
+ai,,1,v,i,,,,,,,,to go,,,,,
 aijuraq,,1,n,,,,,,,,,long-distance sea-ice crack,crevasse dans la glace de mer sur une longue distance,,,,.
+aijuraq,,1,v,i,,,,,,,,"to develop long cracks, speaking of the sea ice",développer de longues fissures ou crevasse (la glace de mer),,,,.
 aik&iq,,1,v,i,,,,,,nil,,to fetch s.t.,aller chercher qqch.,,,,.
-ailaq,,1,v,i,a,,,,,,,"to be damp with moisture, wet with dew, etc.","être mouillé par l'humidité, la rosée, etc.",,,,.
 ailaq,,1,n,,,,,,,,,moisture,,,,,
+ailaq,,1,v,i,a,,,,,,,"to be damp with moisture, wet with dew, etc.","être mouillé par l'humidité, la rosée, etc.",,,,.
 aillii,,1,v,i,,,,,,,,to have one's feet perspire,avoir les pieds qui transpirent,,,,.
 aimangnaq,,1,n,,zoo,,,,,,,caribou without horns or calf,"caribou sans cornes, veau",,,,.
-aipa,,1,v,i,a,,,,,,,to be raw or uncooked,"être cru, non cuit",,,,.
 aipa,,1,n,,,,,,,,,another one,,,,,
+aipa,,1,v,i,a,,,,,,,to be raw or uncooked,"être cru, non cuit",,,,.
 aipaq,,1,n,,,,,,,,,wife-swapping partner,partenaire qui change de femme dans un échange [Natt.],,,,.
 aippaq,,1,n,,,,,,,,,"second, companion, spouse","deuxième, compagnion, époux",,,,.
-aiq,,1,v,i,,,,,,,,"to have sleeves, speaking of a garment",avoir des manches (un vêtement),,,,.
 aiq,,1,n,,,,,,,,,sleeve,manche,,,,.
+aiq,,1,v,i,,,,,,,,"to have sleeves, speaking of a garment",avoir des manches (un vêtement),,,,.
 aiqqujaq,,1,n,,zoo,,,,,,,small red squirmer,petit ver rouge,,,,.
 airaq,,1,n,,,,,,,,,small plant with white edible roots,petite plante avec des racines blanches comestibles,,,,.
 aittaaq,,1,v,i,e,,,,gusuk/1vv,gi/4vv,,to regret politely about s.t.,regretter poliment par rapport à qqch.,,,,.
 aittaq,,1,v,i,,,,,,,,to open one's mouth,ouvrir la bouche,,,,.
 aiva,,1,v,i,,,,,,,,"to argue, to have an altercation with one another","discuter, avoir une altercation avec qqn",,,,.
 aiviq,,1,n,,zoo,,,,,,,walrus,morse,,,,.
-ajagaq,,1,v,i,,,,,,,,to play traditional game of 'cup-and-ball',jouer au jeu traditionnel 'cup-and-ball',,,,.
 ajagaq,,1,n,,,,,,,,,bone with holes used as target in 'cup-and-ball' game,os avec des trous utilisé comme cible au jeu de 'cup-and-ball',,,,.
+ajagaq,,1,v,i,,,,,,,,to play traditional game of 'cup-and-ball',jouer au jeu traditionnel 'cup-and-ball',,,,.
 ajait,,1,e,,,,,,,,,exclamation : 'Almost!',,,,,
-ajak,,1,v,i,,,,,,nil,,"to push, to shove (trans.: s.t.)","pousser, pelleter (trans.: qqch.)",,,,.
 ajak,aja,1,n,,,,,,,,,maternal aunt,tante maternelle,,,,.
+ajak,,1,v,i,,,,,,nil,,"to push, to shove (trans.: s.t.)","pousser, pelleter (trans.: qqch.)",,,,.
 ajaniq,,1,n,,,,,,,,,space between the two sled runners,espace entre les deux patins d'un traîneau,,,,.
-ajaraaq,,1,v,i,,,,,,,,to make string figures,faire des figures avec des cordes,,,,.
 ajaraaq,,1,n,,,,,,,,,string used in forming string figures,ficelle utilisée pour former des figures,,,,.
+ajaraaq,,1,v,i,,,,,,,,to make string figures,faire des figures avec des cordes,,,,.
 ajjaa,,1,e,,,,,,,,,exclamation of pleasure: 'Grand!',,,,,
 ajji,,1,n,,,,,,,,,(1) likeness (2) synonym,(1) ressemblance (2) synonyme,,,,.
-ajuaq,,1,v,i,,,,,,,,to abscess,"avoir un abcès, un furoncle",,,,.
 ajuaq,,1,n,,,,,,,,,abcess,,,,,
+ajuaq,,1,v,i,,,,,,,,to abscess,"avoir un abcès, un furoncle",,,,.
 ajuq,,1,v,i,,,,,,nil,,"(1) to be unable to or incapable of doing s.t. (2) to not work, to be out of order",(1) ne pas être capable de faire qqchose,,,,
 ajuqiq,ajugiq,1,v,t,,,,,,,i/1vv,[-R]to /teach or /instruct s.o. one thing one time,"[-R]/instruire qqn, /enseigner-à qqn une chose une fois",,,,.
 ak&a,,2,n,,,,,,,,,Cree Indian,indian Cri,,,,.
@@ -83,8 +83,8 @@ ak&a,,1,n,,zoo,,,,,,,brown bear,ours brun,,,,.
 ak&u,,1,v,i,a,,,,,,,to be poor,être pauvre,,,,.
 ak&unaaq,,1,n,,,,,,,,,sealskin line,,,,,
 akau,,1,v,i,a,,,,,,,to be good,être bon,,,,.
-aki,,1,v,i,,,,,,nil,,to answer back,,,,,
 aki,,1,n,,,,,,,,,(1) exchange value,,,,,
+aki,,1,v,i,,,,,,nil,,to answer back,,,,,
 akinnaq,,1,n,,,,,,,,,the south-west,,,,,
 akiruq,,1,n,,,,,,,,,wood knot,noeud dans le bois,,,,.
 akisiq,,1,n,,,,,,,,,pillow,oreiller,,,,.
@@ -96,15 +96,15 @@ aksuq,,1,n,,,,,,,,,effort,,,,,
 aktaq,,1,v,i,,,,,,,,to throw out the garbage,jeter les ordures dehors,,,,.
 akti,,1,v,i,a,,,,,,,to be large in size,être de grande taille,,,,.
 aktit,,1,v,i,,,,,,,,"to break up the ice at one's mouth by flowing in the spring, speaking of a river",briser la glace à son embouchure en recommençant à couler au printemps (une rivière),,,,.
-aktuq,,1,v,t,,,,,,,i/1vv,to /touch s.t.,/toucher qqch.,,,,.
 aktuq,,1,n,,,,,,,,,sea animal large of its kind,animal marin de grande taille par rapport à la moyenne de son espèce,,,,.
+aktuq,,1,v,t,,,,,,,i/1vv,to /touch s.t.,/toucher qqch.,,,,.
 aku,,1,n,,,,,,,,,that in the middle of s.t.,"ce qui est dans le milieu, le centre de qqch.",,,,.
 akui,,1,v,i,,,,,,,,to fetch caribou from cache,récupérer un caribou de la cache,,,,.
 akuk,,1,v,t,,,,,,,si/1vv,[-R]to /mix or /stir s.t. up,"[-R]/tourner, /remuer qqch. pour le mélanger",,,,.
 akunat,,1,v,i,,,,,,,,"to be blowing hard at sea, speaking of the wind",souffler fort sur la mer (vent),,,,.
-akuq,,1,v,t,,,,,,,si/1vv i/1vv,[-R]to /catch s.t.,[-R]/attraper qqch.,,,,.
 akuq,,2,n,,ana,,,,,,,seal's thigh,cuisse de phoque,,,,.
 akuq,,1,n,,,,,,,,,back flap of Eskimo tunic,pan arrière d'une tunique eskimaude,,,,.
+akuq,,1,v,t,,,,,,,si/1vv i/1vv,[-R]to /catch s.t.,[-R]/attraper qqch.,,,,.
 ala,,1,n,,,,,,,,,boot over-sole,semelle de botte,,,,.
 alaniq,,1,n,,,,,,,,,shade side or side away from the sun,partie à l'ombre ou éloignée du soleil,,,,.
 alaq,,1,v,i,,,,,,nil,,to turn one's eyes away (trans.: from s.t.),détourner les yeux (trans.: de qqch.),,,,.
@@ -130,8 +130,8 @@ amaulik,,1,n,,zoo,,,,,,,male of common eider duck,m�le de l'eider commun,,,,.
 amauq,,1,n,,,,,,,,,great grandfather,arrière-grand-père,,,,.
 amiakku,,1,n,,,,,,,,,remainder,,,,,
 amiliraq,,1,n,,ana,,,,,,,radius or narrowest forearm bone,radius - os le plus mince de l'avant-bras,,,,.
-amiq,,1,v,t,,,,,,,i/1vv,to /cover s.t. with skin,/couvrir qqch. avec une peau,,,,.
 amiq,,1,n,,ana,,,,,,,skin (human or animal),peau (humaine ou animale),,,,.
+amiq,,1,v,t,,,,,,,i/1vv,to /cover s.t. with skin,/couvrir qqch. avec une peau,,,,.
 amiqqaaq,,1,v,i,,,,,,,,to take turns at using the same article or thing,se servir à son tour d'un même article,,,,.
 amirlak,,1,n,,zoo,,,,,,,lemming in white winter coat,lemming avec son pelage blanc d'hiver,,,,.
 amisu,,1,n,,nb,,,,,,,"concept of plural: many things, persons...","concept de pluriel: plusieurs choses, personnes, ...",,,,.
@@ -139,8 +139,8 @@ amit,,1,v,i,a,,,,,,,to be narrow,être étroit,,,,.
 amma,,1,c,,,,,,,,,and,et,,,,.
 ammut,,1,a,,dat,,,,,,,downward,vers le bas,,,,.
 anaana,,1,n,,,,,,,,,mother,mère,,,,.
-anaq,,1,v,i,,,,,,,,to shit,chier,,,,.
 anaq,,1,n,,,,,,,,,shit,,,,,
+anaq,,1,v,i,,,,,,,,to shit,chier,,,,.
 anau,anauk,1,v,t,,,,,,,si/1vv,to /hit or /beat s.t. with a stick,/frapper qqch. avec un bâton,,,,.
 angaju,,1,n,,,,,,,,,elder brother of a man,,,,,
 angakkuq,,1,n,,,,,,,,,shaman,shaman,,,,.
@@ -148,8 +148,8 @@ angaluk,,1,n,,,,,,,,,shaman's belt,ceinture du shaman,,,,.
 angasaq,,1,n,,zoo,,,,,,,cross fox,renard roux à bande noire,,,,.
 angi,,1,v,i,a,,,,,,,to be big,être gros,,,,.
 angiq,,1,v,i,,,,,,nil,,to say yes,,,,,
-angiqqaq,,1,v,i,,,,,,,,to arrive home,arriver à la maison,,,,.
-angiqqaq,,1,n,,,,,,,,,home,maison (dans le sens de foyer),,,,.
+angiqqaq,angirraq angiqraq,1,n,,,,,,,,,home,maison (dans le sens de foyer),,,,.
+angiqqaq,angirraq angiqraq,1,v,i,,,,,,,,to arrive home,arriver à la maison,,,,.
 angmaak,,1,n,,,,,,,,,flint,,,,,
 angmaluq,,1,v,i,a,,,,,,,"to be round, circular, oval","être rond, circulaire, ovale",,,,.
 angmaq,,1,v,i,a,,,,,,,to be punctured or ripped,,,,,
@@ -161,8 +161,8 @@ anguq,,1,v,i,,,,,,,,to pronounce a word,prononcer un mot,,,,.
 angut,,1,n,,,,,,,,,man,,,,,
 angutiri,,1,v,i,,,,,,,,to object,,,,,
 anguuq,,1,v,i,,,,,,,,to relieve oneself in one's pants,se soulager dans ses pantalons,,,,.
-ani,,1,v,i,,,,,,,,to go out,sortir,,,,.
 ani,,1,n,,,,,,,,,brother of a woman,frère d'une femme,,,,.
+ani,,1,v,i,,,,,,,,to go out,sortir,,,,.
 aniq,,1,v,i,,,,,,,,to breath,,,,,
 anirta,anirsa,1,e,,,,,,,,,exclamation of relief: 'Thank goodness!',exclamation de soulagement: 'Merci Seigneur!',,,,.
 aniuk,,1,n,,,,,,,,,snow used for drinking water,neige utilisée pour boire de l'eau,,,,.
@@ -171,12 +171,12 @@ anngak,,1,n,,,,,,,,,maternal uncle,oncle maternel,,,,.
 anngik,,1,v,i,,,,,,,,"to deceive, to keep in the dark","tromper, duper",,,,
 anngiujaq,,1,n,,,,,,,,,"head of a nail, bolt, or screw","tête d'un clou, d'un boulon, d'une vis",,,,.
 anniq,,1,v,i,e,,,,ksaq/1vv gusuk/1vv,gi/4vv,,to treasure s.t.,,,,,
-annuraaq,,1,v,t,,,,,,,si/1vv,to /dress s.o.,,,,,
 annuraaq,,1,n,,,,,,,,,piece of clothing,morceau d'habit,,,,.
-anuk,anu,1,v,t,,,,,,,si/1vv,[-R]to harness s.t. (an animal),[-R]/harnacher qqch. (un animal),,,,.
+annuraaq,,1,v,t,,,,,,,si/1vv,to /dress s.o.,,,,,
 anuk,,1,n,,,,,,,,,dog harness,harnais de chien,,,,.
-anuri,,1,v,i,,,,,,,,"to blow, speaking of the wind",souffler (vent),,,,.
+anuk,anu,1,v,t,,,,,,,si/1vv,[-R]to harness s.t. (an animal),[-R]/harnacher qqch. (un animal),,,,.
 anuri,,1,n,,,,,,,,,wind,vent,,,,.
+anuri,,1,v,i,,,,,,,,"to blow, speaking of the wind",souffler (vent),,,,.
 anut,,1,v,i,a,,,,,,,to be solemn,,,,,
 apa,,1,n,,zoo,,,,,,,hooded seal,phoque à capuchon,,,,.
 apaapa,,1,n,,,,,,,,,food,nourriture,,,,.
@@ -199,8 +199,8 @@ aqqaq,,1,v,t,,,,,,,i/1vv,[-R]to /take s.t. down out of sight,,,,,
 aqu,,1,n,,,,,,,,,stern of boat,"arrière, poupe d'un bateau",,,,.
 aqut,,1,v,i,,,,,,nil,,to steer s.t. (a boat),,,,,
 ariu,,1,v,i,a,,,,,,,to be rejected by a loved one,être rejeté par une personne aimée,,,,.
-arjaq,ajjaq,1,v,t,,,,,,,si/1vv,[-R]to /carry s.t. in the arms,[-R]/porter qqch. dans les bras,,,,.
 arjaq,ajjaq,1,n,,,,,,,,,gunpowder,poudre à canon,,,,.
+arjaq,ajjaq,1,v,t,,,,,,,si/1vv,[-R]to /carry s.t. in the arms,[-R]/porter qqch. dans les bras,,,,.
 arnaq,,1,n,,,,,,,,,woman,,,,,
 arngili,,1,v,i,a,,,,,,,to be hit in the midriff,,,,,
 arnguaq,,1,n,,,,,,,,,amulet,,,,,
@@ -210,8 +210,8 @@ arraagu,,1,n,,,,,,,,,the next year,l'année prochaine,,,,
 arraani,,1,n,,,,,,,,,the past year,l'année précédente,,,,
 arraaq,,1,n,,,,,,,,,afterbirth,placenta,,,,.
 arsaaq,,1,v,t,,,,,,,si/1vv,[-R]to /snatch s.t.,,,,,
-arsaq,,1,v,i,,,,,,,,to play football,jouer au ballon avec les pieds,,,,.
 arsaq,,1,n,,,,,,,,,football,football,,,,.
+arsaq,,1,v,i,,,,,,,,to play football,jouer au ballon avec les pieds,,,,.
 arsi,,1,v,i,a,,,,,,,to be prosperous,,,,,
 artuq,,1,n,,,,,,,,,bird too fat to fly,oiseau trop gras pour voler,,,,.
 arvakkut,,1,a,,via,,,,,,,to the right side,sur le côté droit,,,,.
@@ -239,8 +239,8 @@ atausiq,,1,n,,nb,,,,,,,one,,,,,
 ati,,1,v,i,,,,,,nil,,to put a garment on (trans.: a garment),"s'habiller, mettre un vêtement (trans.: /mettre qqch. - un vêtement)",,,,.
 atigi,,1,n,,,,,,,,,inside caribou tunic (with fur inside),,,,,
 atii,,1,e,,,,,,,,,exhortation to start: 'Come on! Let's go!',exhortation à partir: 'Allons! Partons!',,,,.
-atiq,,1,v,i,,,,,,,,"to leave for the coast, speaking of the caribou","partir pour la côte, en parlant du caribou",,,,.
 atiq,,1,n,,,,,,,,,name,nom,,,,.
+atiq,,1,v,i,,,,,,,,"to leave for the coast, speaking of the caribou","partir pour la côte, en parlant du caribou",,,,.
 atiraq,,1,v,i,,,,,,nil,,"to jump over  or across (trans.: s.t., river, pond, etc.)","sauter, traverser (trans.: par-dessus qqch., rivière, mare, etc.)",,,,.
 atirtaq,,1,n,,,,,,,,,polar-bear cub,petit de l'ours polaire,,,,.
 attatit,,1,n,,,p,,,,,,hinge,gond,,,,
@@ -251,8 +251,8 @@ atunit,,1,n,,,p,atuni,,,,,each,chaque,,,,.
 atuq,,2,v,i,a,,,,,,,to be useful,être utile,,,,.
 atuq,,1,v,t,,,,,,,si/1vv,[-R]to /use s.t.,,,,,
 aujaq,auja,1,n,,,,,,,,,summer,été,,,,.
-auk,,1,v,i,,,,,,,,(1) to melt or thaw (2) to bleed at the nose,(1) fondre (2) saigner du nez,,,,.
 auk,,1,n,,,,,,,,,blood,sang,,,,.
+auk,,1,v,i,,,,,,,,(1) to melt or thaw (2) to bleed at the nose,(1) fondre (2) saigner du nez,,,,.
 aukataak,,1,e,,,,,,,,,exclamation of delight or pleasure on seing s.t. grand or imposing: 'Grand! Magnificient!',exclamation de plaisir ou de ravissement en voyant qqch. de grand ou d'imposant: 'Super!',,,,
 aukkanniq,,1,v,i,,,,,,,,to sweat,,,,,
 aula,,1,v,t,,,,,,,si/1vv,to /move s.t.,/déplacer qqch.,,,,.
@@ -278,16 +278,16 @@ aviu,,1,v,i,,,,,,,,to hoot or shout with joy,"siffler, pousser des cris de joie"
 avu,,1,v,i,,,,,,,,"to call to a mate, speaking of the bull seal",appeler une femelle (le phoque mâle),,,,.
 ibjaq,,1,v,i,,,,,,,,to need air,,,,,
 ibju,,1,v,i,a,,,,,,,to be thick,être épais,,,,.
-ibjuq,,1,v,i,a,,,,,,,"to be mudded, speaking of a sled runner",être couvert de boue (patin de traîneau),,,,.
-ibjuq,,2,v,i,e,,,,gusuk/1vv,gi/4vv,,to be fussy about s.t. or squeamish over s.t.,être pointilleux à propos de qqch.,,,,
 ibjuq,,1,n,,,,,,,,,mud,,,,,
+ibjuq,,2,v,i,e,,,,gusuk/1vv,gi/4vv,,to be fussy about s.t. or squeamish over s.t.,être pointilleux à propos de qqch.,,,,
+ibjuq,,1,v,i,a,,,,,,,"to be mudded, speaking of a sled runner",être couvert de boue (patin de traîneau),,,,.
 ibjurnait,,1,v,i,a,,,,,,,to be a saint (of the Roman Catholic Church),être un saint (de l'église catholique romaine),,,,.
 iblauq,,1,n,,,,,,,,,animal foetus or embryo,foetus ou embryon animal,,,,.
-ibluk,,2,v,i,a,,,,,,,to be with slump body or arced legs,,,,,
 ibluk,,1,v,i,,,,,,nil,,"to make face, to grimace (trans.: at s.o.)",faire la grimace (trans.: à qqn),,,,.
+ibluk,,2,v,i,a,,,,,,,to be with slump body or arced legs,,,,,
 ibvuq,,1,n,,,,,,,,,broken floe ice,glace de banquise qui s'est brisée,,,,
-iga,,1,v,i,,,,,,nil,,to cook (trans.: s.t.),cuire (trans.: qqch.),,,,.
 iga,,1,n,,,,,,,,,cook-stove,,,,,
+iga,,1,v,i,,,,,,nil,,to cook (trans.: s.t.),cuire (trans.: qqch.),,,,.
 igalaaq,,1,n,,,,,,,,,window,fenêtre,,,,.
 igaq,,1,v,i,,,,,,,,to lean one's body on or against s.t.,être accoté sur ou contre qqch.,,,,.
 iggak,,1,n,,,,,,,,,eye-glass,,,,,
@@ -302,11 +302,11 @@ igliq,,1,n,,,,,,,,,bed,,,,,
 iglu,,1,n,,,,,,,,,(1) house,,,,,
 igubjaq,,1,n,,,,,,,,,wool,laine,,,,.
 igumit,,1,v,t,,,,,,,si/1vv i/1vv,to /take s.t. apart,,,,,
-igunaq,,1,v,i,a,,,,,,,to be rotten or high,être pourri ou haut,,,,.
 igunaq,,1,n,,,,,,,,,rotten thing,chose pourrie,,,,.
+igunaq,,1,v,i,a,,,,,,,to be rotten or high,être pourri ou haut,,,,.
 igupsaq,,1,n,,zoo,,,,,,,bee,,,,,
-ii,,1,v,t,,,,,,,si/1vv,[-R]to /swallow s.t.,[-R]/avaler qqch.,,,,.
 ii,,1,a,,,,,,,,,"yes in  North Baffin, WCHB and Natt.",oui [Terre de Baffin nord,,,,
+ii,,1,v,t,,,,,,,si/1vv,[-R]to /swallow s.t.,[-R]/avaler qqch.,,,,.
 iiq,,1,e,,,,,,,,,exclamation of distaste or annoyance: 'Yukk!',exclamation de dégoût ou de contrariété: 'Beurk!' ,,,,
 iitit,,1,v,i,a,,,,,,,to be stifled or asphyxiated from gas or fumes,être asphyxié par des gaz ou des vapeurs,,,,.
 ija,,1,n,,,,,,,,,grooving,rainure,,,,.
@@ -322,14 +322,14 @@ iju,,1,v,i,,,,,,,,to be dusk or twilight,être le crépuscule,,,,.
 ijukkaq,,1,v,i,,,,,,,,to fall off or tumble off some raised position,tomber d'une position debout,,,,.
 ijuq,,1,v,i,,,,,,gi/4vv,,"to scoff, jeer, laugh at s.o.","se moquer, rire de qqn",,,,.
 ik&i,,1,v,i,e,,,,gusuk/1vv,gi/4vv,,to crave for s.t.,avoir un grand besoin de qqch.,,,,.
-ikaaq,,1,v,i,,,,,,nil,,to cross s.t. over,traverser qqch.,,,,.
+ikaaq,,1,v,i,,,,,,nil,,"to cross s.t. over (trans. : a river, lake, fjord, street, etc.)","traverser qqch. (trans. : un rivière, un lac, un fjord, une rue, etc.)",,,,.
 ikajuq,,1,v,i,,,,,,nil,,to help s.o.,aider qqn,,,,.
 ikak&ak,,1,n,,,,,,,,,large-tooth rasp file,râpe à larges dents,,,,.
-iki,,1,v,i,,,,,,,,to get on board a vehicle,monter à bord d'un véhicule,,,,.
 iki,,1,n,,,,,,,,,wound,blessure,,,,.
+iki,,1,v,i,,,,,,,,to get on board a vehicle,monter à bord d'un véhicule,,,,.
 ikiaq,,1,n,,,,,,,,,in-between layer,couche intermédiaire,,,,.
-ikiq,,1,v,i,,,,,,,,"to form cracks, speaking of the ice","former des fissures, en parlant de la glace",,,,.
 ikiq,,1,n,,,,,,,,,strait,détroit,,,,.
+ikiq,,1,v,i,,,,,,,,"to form cracks, speaking of the ice","former des fissures, en parlant de la glace",,,,.
 ikit,,1,v,t,res,,,,,,si/1vv,"(1) to /burn s.t. (2) to /turn s.t. on (a light, a fire)","(1)/brûler qqch. (2)/allumer qqch. (une lumière, un feu)",,,,.
 ikkat,,1,v,i,a,,,,,,,to be shallow,être peu profond,,,,.
 ikkii,,1,n,,,,,,,,,the cold,le froid,,,,.
@@ -338,22 +338,22 @@ ikkiq,,1,n,,,,,,,,,gums of the mouth,gencive,,,,.
 ikkit,ikkitik,1,n,,,,,,,,,match (for fire or lighting),allumette,,,,.
 ikpaksaq,,1,a,,,,,,,,,yesterday,hier,,,,.
 ikpat,,1,n,,,,,,,,,platform for oil lamp,plateforme pour lampe à huile,,,,.
-ikpik,,1,v,i,e,,,,gusuk/1vv,gi/4vv,,(1) to feel s.t.,,,,,
 ikpik,,2,n,,,,,,,,,long rock bluff,long promontoire rocheux,,,,.
+ikpik,,1,v,i,e,,,,gusuk/1vv,gi/4vv,,(1) to feel s.t.,,,,,
 iksik,,1,v,i,,,,,,,,to protrude or stick out one's rear end (as in sitting or bending),"faire dépasser, faire sortir son derrière (comme en s'asseyant ou en se penchant)",,,,.
 iksiq,,1,v,t,,,,,,,i/1vv,[-R]to /leave s.t. behing,,,,,
 iksutit,,1,n,,bot,,,,,,,cassiope (resinous plant used in making fire),plante résineuse utilisée pour faire du feu,,,,.
 ikuallaq,,1,v,t,res,,,,,,si/1vv,to /burn s.t. with flame,/brûler qqch. avec une flamme,,,,.
 ikuliaq,,1,v,i,a,,,,,,,"to be calm or still, speaking of the water or the sea","être calme, en parlant de l'eau, de la mer",,,,.
 ikullaq,,1,v,i,a,,,,,,,"(1) to be better, improved in health (2) to be good weather","(1) se porter mieux, par rapport à la santé (2) faire beau temps",,,,.
-ikuma,,1,v,i,,,,,,,,to burn with flame,,,,,
 ikuma,,1,n,,,,,,,,,(1) flame,,,,,
+ikuma,,1,v,i,,,,,,,,to burn with flame,,,,,
 ikupik,,1,v,i,,,,,,nil,,to cut a small piece off s.t.,découper un petit morceau de quelque chose,,,,.
-ikuqqaq,,1,v,t,,,,,,,si/1vv,"to /put s.t. on a raised platform, pedestal, dais","/mettre qqch. sur un piédestal, sur une plateforme surélevée",,,,.
 ikuqqaq,,1,n,,,,,,,,,raised platform,,,,,
+ikuqqaq,,1,v,t,,,,,,,si/1vv,"to /put s.t. on a raised platform, pedestal, dais","/mettre qqch. sur un piédestal, sur une plateforme surélevée",,,,.
 ikusik,,1,n,,ana,,,,,,,elbow,coude,,,,.
-ila,,1,v,t,,,,,,,ji/1vv,to /mix s.t. with something,,,,,
 ila,,1,n,,,,,,,,,(1) relative or relation (2) companion or partner (3) part,,,,,
+ila,,1,v,t,,,,,,,ji/1vv,to /mix s.t. with something,,,,,
 ilaak,,1,e,,,,,,,,,"marker word for clarification: 'I mean,' ",,,,,
 ilaaniq,,1,v,i,,,,,,gi/4vv,,to do s.t. purposefully or with intent,"faire qqch. intentionnellement, dans un but précis",,,,.
 ilaanni,,1,a,,,,,,,,,sometimes,quelquefois,,,,.
@@ -364,8 +364,8 @@ iliqi,,1,v,i,,,,,,,,to shake one's head,"secouer, hocher la tête",,,,.
 ilira,,1,v,i,e,,,,gusuk/1vv,gi/4vv,,to be ashamed of s.t.,avoir honte de qqch.,,,,.
 ilit,,1,v,i,,,,,,nil,,to learn (trans.: s.t.),apprendre (trans.: qqch.),,,,.
 ilitaq,ilitaaq,1,v,i,,,,,si/3vv,gi/4vv,,to recognize s.o.,reconnaître qqn,,,,.
-illa,,1,v,i,a,,,,,,,"to be tangled, matted, twisted","être entortillé, tressé",,,,.
 illa,,1,n,,,,,,,,,tangled thing,chose enchevêtrée,,,,.
+illa,,1,v,i,a,,,,,,,"to be tangled, matted, twisted","être entortillé, tressé",,,,.
 illiq,,1,n,,,,,,,,,taboo,,,,,
 illiri,,1,v,i,,,,,,nil,,"to join, mix (trans.: s.t.) to s.t.","joindre, mélanger (trans.: qqch.) à quelque chose",,,,.
 illuuk,illuuq,1,n,,,,,,,,,sling-shot,fronde,,,,.
@@ -373,16 +373,16 @@ ilu,,1,n,,,,,,,,,"inside, interior of s.t.",,,,,
 ilusiq,,1,n,,,,,,,,,custom,,,,,
 imaak,,1,a,,,,,,,,,like this,,,,,
 imannak,imanna,1,a,,,,,,,,,like this,,,,,
-imaq,,1,v,i,,,,,,,,to bet,,,,,
 imaq,,2,n,,,,,,,,,ante or stakes in gambling game,"mise, enjeu dans un jeu de hasard",,,,.
 imaq,,1,n,,,,,,,,,water,,,,,
+imaq,,1,v,i,,,,,,,,to bet,,,,,
 imia,imiaq,1,v,i,,,,,,,,to echo,faire écho,,,,.
 imiggiq,,1,v,t,,,,,,,si/1vv,[-R]to /dent s.t.,,,,,
 imigluaq,,1,v,i,,,,,,,,to buzz or hum,bourdonner,,,,
 imik,,1,v,t,res,,,,,,si/1vv,to /cave s.t. in,,,,,
 imingnak,,1,v,i,a,,,,,,,"to be clear, speaking of the weather",être clair (le temps),,,,.
-imiq,,1,v,i,,,,,,,,to drink s.t.,boire,,,,.
 imiq,,1,n,,,,,,,,,drinking water,eau à boire,,,,.
+imiq,,1,v,i,,,,,,,,to drink s.t.,boire,,,,.
 imiqqutailaq,,1,n,,zoo,,,,,,,stern,hirondelle de mer,,,,
 imiqutak,,1,n,,ana,,,,,,,groin,,,,,
 imma,,1,a,,,,,,,,,a long time ago,il y a longtemps,,,,.
@@ -396,15 +396,15 @@ inak,,1,v,i,,,,,,,,to lie on one's side,,,,,
 inaluaq,,1,n,,ana,,,,,,,small intestine,petit intestin,,,,.
 inaq,,1,v,i,,,,,,,,"to lift one's hind leg, speaking of an animal",lever une patte de derrière (animal),,,,.
 ingiaq,,1,v,i,,,,,,nil,,to do s.t. first,faire qqch. en premier,,,,.
-ingiq,,1,v,i,,,,,,,,to push one's lower abdomen forward (copulating movement),pousser son bas-ventre vers l'avant (mouvement de copulation),,,,.
 ingiq,,1,n,,ana,,,,,,,lower abdomen (immediately above genital organs),bas du ventre (immédiatement au-dessus des parties génitales),,,,.
+ingiq,,1,v,i,,,,,,,,to push one's lower abdomen forward (copulating movement),pousser son bas-ventre vers l'avant (mouvement de copulation),,,,.
 ingirra,,1,v,i,,,,,,,,to travel,voyager,,,,.
 ingit,,1,v,i,,,,,,,,to sit down,s'asseoir,,,,.
 ingiulliq,,1,v,i,,,,,,,,"to rise and fall in swells, speaking of the sea",être houleuse (la mer),,,,.
-ingnaq,,1,v,t,res,,,,,,si/1vv,[T]to strike the flint against the firestone causing sparks [P]to be made to spark by being struck with flint or flintstone [R]to spark,[T]faire faire des étincelles à une pierre à feu[P]être fait qu'on fait des étincelles[R]faire des étincelles,,,,.
 ingnaq,,1,n,,,,,,,,,cigarette lighter,allume-cigarette,,,,.
-ingniq,,1,v,i,,,,,,,,"to slip underneath the sled runners, speaking of the line or tongue",glisser sous les patins du traîneau (la corde du traîneau),,,,.
+ingnaq,,1,v,t,res,,,,,,si/1vv,[T]to strike the flint against the firestone causing sparks [P]to be made to spark by being struck with flint or flintstone [R]to spark,[T]faire faire des étincelles à une pierre à feu[P]être fait qu'on fait des étincelles[R]faire des étincelles,,,,.
 ingniq,,1,n,,,,,,,,,(1) cigarette lighter (2) spark (3) spark plug (4) straight or wick side of a stone lamp,(1) allume-cigarette (2) étincelle (3) bougie d'allumage (4) côté d'une lampe en pierre où se trouve la mèche,,,,.
+ingniq,,1,v,i,,,,,,,,"to slip underneath the sled runners, speaking of the line or tongue",glisser sous les patins du traîneau (la corde du traîneau),,,,.
 ingulak,,1,v,t,,,,,,,si/1vv,[-R]to /stir or /mix s.t.,"[-R]/brasser, /mélanger qqch.",,,,.
 inguriq,,1,n,,,,,,,,,deerskin or other skin placed on the sled as a seat,,,,,
 ini,,1,n,,,,,,,,,(1) place,,,,,
@@ -416,8 +416,8 @@ innguq,,1,v,t,res,,,,,,i/1vv,to /cave s.t. in,,,,,
 innia,,1,v,i,,,,,,,,to go to visit the Inuit,aller visiter les Inuit,,,,.
 innit,,1,v,i,,,,,,,,to come across people in travels,,,,,
 inuk,,1,n,,,,,,,,,(1) human being,,,,,
-ipak,,1,v,i,a,,,,,,,to be grimy,,,,,
 ipak,,1,n,,,,,,,,,grain of wood,,,,,
+ipak,,1,v,i,a,,,,,,,to be grimy,,,,,
 ipgut,,1,n,,,,,,,,,hand wipe or hand wiper,quelque chose pour s'essuyer les mains,,,,.
 ipi,,1,v,i,,,,,,,,to choke for air,manquer d'air,,,,.
 ipigluk,,1,n,,,,,,,,,"leg-bone of caribou, of deer","os de la patte du caribou, du cerf",,,,.
@@ -443,15 +443,15 @@ iqia,,1,v,i,e,,,,gusuk/1vv,gi/4vv,,to be lazy or apathetic about s.t.,,,,,
 iqik,,1,v,t,,,,,,,si/1vv,[-R]to /circle s.t. with arms or hands,,,,,
 iqirraq,,1,n,,,,,,,,,corner,,,,,
 iqqanaiq,,1,v,i,,,,,,,,to be finished doing something,avoir fini de faire qqch.,,,,.
-iqqaq,iqaq,1,v,t,,,,,,,i/1vv,"[-R]to /remember, /recollect s.t.","[T]se rappeler, se souvenir de quelque chose [P]être qqch. ou qqn dans l'état que qqn s'est souvenu",,,,.
 iqqaq,,1,n,,,,,,,,,bottom of a body of water,fond d'un plan d'eau,,,,.
+iqqaq,iqaq,1,v,t,,,,,,,i/1vv,"[-R]to /remember, /recollect s.t.","[T]se rappeler, se souvenir de quelque chose [P]être qqch. ou qqn dans l'état que qqn s'est souvenu",,,,.
 iqqik,,1,v,i,,,,,,,,to swallow involuntarily,avaler involontairement,,,,.
 iqqiq,,1,n,,,,,,,,,louse egg,oeuf de pou,,,,.
 iqquq,,1,n,,ana,,,,,,,the behind,,,,,
 iqu,,1,v,i,,,,,,,,to twist one's nose sideways in a grimace or a 'face',se tordre le nez pour faire une grimace,,,,.
 iquma,,1,v,i,a,,,,,,,to be wide awake,,,,,
-iquq,,1,v,i,,,,,,,,to wipe one's behind,s'essuyer les fesses,,,,.
 iquq,,1,n,,,,,,,,,shit or dung adhering to anus or to perianal hairs,merde ou crotte adhérant à l'anus ou aux poils autour de l'anus,,,,.
+iquq,,1,v,i,,,,,,,,to wipe one's behind,s'essuyer les fesses,,,,.
 iqursu,,1,v,i,a,,,,,,,"to be a good shot (with a riffle, etc.)","être un bon tir (avec une carabine, etc.)",,,,.
 ir&irpak,,1,n,,ana,,,,,,,molar tooth,dent molaire,,,,.
 ir&u,,1,n,,ana,,,,,,,bowel,,,,,
@@ -475,8 +475,8 @@ irsi,,1,v,i,a,,,,,gi/4vv,,to be afraid of sharp objects,avoir peur des objets tr
 irsuk,,1,v,i,,,,,,nil,,to carry s.t. over or across one's shoulder,porter qqch. sur l'épaule,,,,.
 is&uaq,isuaq,1,v,i,a,,,,,,,to be good or benificial,,,,,
 is&uuraq,,1,n,,zoo,,,,,,,black lake fish with white meat,poisson de lac noir à chair blanche,,,,.
-isa,,1,v,i,e,,,,gusuk/1vv,gi/4vv,,to hurt s.o. a little to make him behave,"heurter qqn, lui faire de la peine un peu pour qu'il se comporte comme il faut",,,,.
 isa,,1,n,,,,,,,,,moulting bird,oiseau qui mue,,,,.
+isa,,1,v,i,e,,,,gusuk/1vv,gi/4vv,,to hurt s.o. a little to make him behave,"heurter qqn, lui faire de la peine un peu pour qu'il se comporte comme il faut",,,,.
 isak,,1,v,i,,,,,,nil,,to spread one's arms out,,,,,
 isaqqaq,,1,n,,zoo,,,,,,,baby walrus,bébé morse,,,,.
 isi,,1,n,,,,,,,,,boot instep,cambrure d'une botte,,,,.
@@ -485,8 +485,8 @@ isiq,,1,n,,,,,,,,,(1) fire smoke (2) drum skin,(1) fumée d'un feu (2) peau de t
 isiqiksaq,,1,v,t,,,,,,,i/1vv,[-R]to /iron or /press s.t.,[-R]/repasser qqch. au fer,,,,
 isivit,,1,v,t,res,,,,,,si/1vv,"to /uncoil, /unroll s.t.",[-R]/dérouler qqch. [R]se dérouler,,,,.
 isu,isuk,1,n,,,,,,,,,(1) end,,,,,
-isuma,,1,v,i,,,,,,,,to think,penser,,,,.
 isuma,,1,n,,,,,,,,,thought,,,,,
+isuma,,1,v,i,,,,,,,,to think,penser,,,,.
 isunngaq,,1,n,,zoo,,,,,,,jaeger,labbe (oiseau),,,,.
 isuqqi,,1,v,i,,,,,,gi/4vv,,to comfort s.o.,réconforter qqn,,,,.
 isuuq,,1,v,i,a,,,,,,,for the water to be dirty or muggy,,,,,
@@ -495,8 +495,8 @@ itibli,,1,v,i,,,,,,,,to walk or talk in one's sleep,,,,,
 itibliq,,1,n,,,,,,,,,"portage, land crossing between areas of sea ice",portage sur terre entre des surfaces de glace de mer,,,,.
 itigak,,1,n,,ana,,,,,,,foot,pied,,,,.
 itimak,,1,n,,ana,,,,,,,palm of the hand,,,,,
-itiq,,1,v,t,res,,,,,,si/1vv,[-R]to /put s.t. in,,,,,
 itiq,,1,n,,ana,,,,,,,anus,,,,,
+itiq,,1,v,t,res,,,,,,si/1vv,[-R]to /put s.t. in,,,,,
 itiruq,,1,n,,,,,,,,,urine,,,,,
 itivik,,1,n,,,,,,,,,"the far unseen side of large inaccessible things like continents, seas, mountains, etc.","le côté éloigné invisible de choses larges et inaccessibles comme les continents, les océans, les montagnes, etc.",,,,.
 ittaq,,1,a,,,,,,,,,a long time ago,,,,,
@@ -518,8 +518,8 @@ jaahahuuq,,1,n,,,,,,,,,pitcher,,,,,
 japaq,,1,n,,,,,,,,,parka of European materials made in Inuit style,parka fait de matériaux européens dans un style inuit,,,,.
 kaajuq,,1,v,i,a,,,,,,,to be stiff with cold,être rigide à cause du froid,,,,.
 kaajuuq,,1,n,,zoo,,,,,,,rough-legged hawk,buse pattue,,,,.
-kaak,,1,v,i,a,,,,,,,to be hungry,avoir faim,,,,.
 kaak,,1,n,,,,,,,,,hunger,faim,,,,.
+kaak,,1,v,i,a,,,,,,,to be hungry,avoir faim,,,,.
 kaatilik,,1,n,,,,,,,,,harpoon for walrus hunting,harpon pour la chasse au morse,,,,.
 kabjiq,,1,n,,ana,,,,,,,crown of the head,"couronne, dessus de la tête",,,,.
 kagguaq,,1,v,t,,,,,,,si/1vv,[-R]to /knock s.o. or s.t. down,,,,,
@@ -527,8 +527,8 @@ kagli,,1,v,t,res,,,,,,si/1vv,[-R]to /draw near to s.t.,,,,,
 kaipit,,1,v,i,,,,,,,,to put one's hands inside the sleeves of opposite arms,mettre ses mains à l'intérieur des manches opposées,,,,.
 kaipkataq,,1,n,,,,,,,,,wire device for detecting presence of seal,dispositif utilisant un fil pour détecter la présence d'un phoque,,,,.
 kaivit,kaiva kaivat,2,v,t,res,,,,,,si/1vv,"to /spin, /rotate, /revolve s.t.","[T]faire tourner, tournoyer qqch.[P]être fait qu'on tourne, qu'on tournoye[R]tourner, tournoyer",,,,.
-kajjaq,,1,v,i,a,,,,,gi/4vv,,to be homesick,,,,,
 kajjaq,,1,n,,,,,,,,,member of a wolf or weasel pack,membre d'une meute de loups ou de belettes,,,,.
+kajjaq,,1,v,i,a,,,,,gi/4vv,,to be homesick,,,,,
 kajumik,,2,v,i,a,,,,,,,to be eager to go hunting,avoir hâte d'aller à la chasse,,,,.
 kajumik,,1,v,i,,,,,,,,"to blow, speaking of the wind",souffler (le vent),,,,.
 kajungiq,,1,v,i,a,,,,,,,to be determined to do s.t.,être déterminé à faire qqch.,,,,.
@@ -544,12 +544,12 @@ kalaq,,1,v,t,,,,,,,si/1vv,to /draw on s.o.'s stomach,[T]dessiner sur l'estomac d
 kalartuq,,1,v,i,,,,,,,,"to snort, speaking of a caribou","grogner, en parlant du caribou",,,,.
 kalik,,1,v,t,,,,,,,si/1vv,"[-R]to /haul, /tow, /draw s.t.","[-R]/tirer, /haler, /remorquer qqch.",,,,.
 kalik,,2,v,t,,,,,,,si/1vv,[T]to brush or rub lightly against s.t.,,,,,
-kalliq,,1,v,i,,,,,,,,to thunder,tonner,,,,.
 kalliq,,1,n,,,,,,,,,thunder,tonnerre,,,,.
+kalliq,,1,v,i,,,,,,,,to thunder,tonner,,,,.
 kallupi&&uk,,1,n,,,,,,,,,little mythical green man,petit homme vert mythique,,,,.
 kama,,1,v,i,e,,,,gusuk/1vv,gi/4vv,,to pay attention,,,,,
-kamik,,1,v,i,,,,,,,,to put one's boots on,mettre ses bottes,,,,.
 kamik,,1,n,,,,,,,,,boot,,,,,
+kamik,,1,v,i,,,,,,,,to put one's boots on,mettre ses bottes,,,,.
 kanaaq,,1,n,,ana,,,,,,,(1) shank of leg,,,,,
 kanajuq,,1,n,,zoo,,,,,,,sea scorpion,scorpion de mer,,,,.
 kanangnaq,kanangniq,1,n,,,,,,,,,the north-east,le nord-est,,,,.
@@ -572,16 +572,16 @@ kappia,,1,v,i,e,,,,gusuk/1vv,gi/4vv,,to be afraid of s.t.,avoir peur de qqch.,,,
 karualuk,,1,n,,,,,,,,,rolled oats,flocons d'avoine,,,,.
 kasak,,1,v,t,,,,,,,si/1vv,"[-R]to /hit s.t. (a target), speaking of a marksman","[-R]/atteindre qqch. (une cible), en parlant d'un tireur",,,,.
 kassiugaq,,1,n,,,,,,,,,rolled oats,flocons d'avoine,,,,.
-kasuk,,1,v,t,,,,,,,si/1vv,to /hit or /knock s.o. on the head or elbow,,,,,
 kasuk,,1,n,,,,,,,,,cigarette lighter,allume-cigarette,,,,.
-katak,,2,v,t,res,,,,,,si/1vv,"[-R]to /drop s.t. [R]to drop, to fall",[-R]/échapper qqch. [R]tomber,,,,.
+kasuk,,1,v,t,,,,,,,si/1vv,to /hit or /knock s.o. on the head or elbow,,,,,
 katak,,1,n,,,,,,,,,doorway,,,,,
+katak,,2,v,t,res,,,,,,si/1vv,"[-R]to /drop s.t. [R]to drop, to fall",[-R]/échapper qqch. [R]tomber,,,,.
 kati,,1,v,t,res,,,,,,si/1vv i/1vv,[-R]to /gather s.t. together,,,,,
 kattunga,,1,v,i,,,,,,,,to move slowly,,,,,
 katu,,1,v,i,,,,,,,,to gang up to do s.t.,se rassembler pour faire qqch.,,,,.
 kau,,1,v,i,,,,,,,,"to feel, look for s.t. in one's pockets","sentir, chercher qqch. dans ses poches",,,,.
-kauk,,1,v,t,,,,,,,si/1vv,[-R]to /hammer s.t. or to /over-top s.t.,[-R]/battre qqch. au marteau,,,,
 kauk,,1,n,,ana,,,,,,,(1) callus (2) walrus hide (3) egg white,(1) durillon (2) peau de phoque (3) blanc d'oeuf,,,,.
+kauk,,1,v,t,,,,,,,si/1vv,[-R]to /hammer s.t. or to /over-top s.t.,[-R]/battre qqch. au marteau,,,,
 kaunnaq,,1,n,,,,,,,,,chewing gum,gomme à mâcher,,,,.
 kavaq,,1,v,i,a,,,,,,,to be bored,,,,,
 kavinnguaq,,1,n,,ana,,,,,,,ear-drum,tympan,,,,.
@@ -595,8 +595,8 @@ kiggavik,kiggaviarjuk,1,n,,zoo,,,,,,,peregrine falcon,faucon pèlerin,,,,.
 kiglaq,,1,v,i,,,,,,,,"to have broken right at the edge of the land or coast, speaking of the ice",s'être brisée juste sur le bord du rivage ou de la côte (la glace),,,,.
 kigliq,,1,n,,,,,,,,,(1) edge,,,,,
 kigut,,1,n,,ana,,,,,,,tooth,dent,,,,.
-kii,,2,v,i,,,,,,,,to clamp one's teeth together,serrer les dents,,,,.
 kii,,1,v,i,,,,,,nil,,to clamp one's teeth down (trans.: on s.t.),,,,,
+kii,,2,v,i,,,,,,,,to clamp one's teeth together,serrer les dents,,,,.
 kiibjaq,,1,v,i,a,,,,,,,to be rough and abrasive,,,,,
 kiinaq,,2,n,,,,,,,,,cutting edge of knife,bord coupant d'un couteau,,,,.
 kiinaq,,1,n,,ana,,,,,,,face,figure,,,,.
@@ -618,21 +618,21 @@ kimmik,,1,n,,ana,,,,,,,heel,talon,,,,.
 kingaaq,,1,v,i,,,,,,,,to hurt one's shin,se blesser le tibia,,,,.
 kingaq,,1,n,,,,,,,,,hill,,,,,
 kingit,,1,v,i,a,,,,,,,"to be high, in relative position",être en position élevée relativement à autre chose,,,,.
+kingu,,1,n,,,,,,,,,rear,,,,,
 kingu,,2,v,i,,,,,,,,to fall into the water because the boat or canoe capsized,tomber à l'eau parce que l'embarcation a chaviré,,,,.
 kingu,,1,v,i,,,,,,,,"to capsize, speaking of a boat or canoe",chavirer (embarcation),,,,.
-kingu,,1,n,,,,,,,,,rear,,,,,
 kinguq,,1,n,,zoo,,,,,,,sea louse,,,,,
 kini,,1,v,i,,,,,,nil,,to make a baby urinate or help a baby urinate,faire uriner un bébé,,,,
 kiniliq,,1,n,,,,,,,,,seal-hole full of water,trou de phoque rempli d'eau,,,,.
-kiniq,,1,v,i,a,,,,,,,to be slow or sluggish in one's movement due to friction,avoir un mouvement lent à cause de la friction,,,,.
 kiniq,,1,n,,,,,,,,,"front flap, lap of a tunic","pan de devant d'un habit, d'une tunique",,,,.
+kiniq,,1,v,i,a,,,,,,,to be slow or sluggish in one's movement due to friction,avoir un mouvement lent à cause de la friction,,,,.
 kinirsit,,1,n,,ana,,,,,,,tonsil,amygdale,,,,.
 kinngiq,,1,n,,,,,,,,,space left by a removed tooth,espace laissant vacant après avoir enlevé une dent,,,,.
 kipi,,1,v,t,,,,,,,si/1vv,to /cut or /sever s.t.,"/couper, /trancher qqch.",,,,.
 kipiktat,,1,n,,,p,,,,,,one hundred (S. Baffin),cent (Baffin sud),,,,.
 kipingu,,1,v,i,a,,,,,,,"to be lonesome, bored, frustrated","être seul, frustré",,,,
-kipkaq,,1,v,i,,,,,,,,to gnaw at meatless bone,ronger un os sans viande,,,,.
 kipkaq,,1,n,,,,,,,,,bone with little or no meat,os avec peu ou pas de viande,,,,.
+kipkaq,,1,v,i,,,,,,,,to gnaw at meatless bone,ronger un os sans viande,,,,.
 kippaq,,1,n,,,,,,,,,(1) part sawn off (2) square stern,(1) partie qu'on a sciée (2) arrière d'embarcation carré,,,,.
 kipuk,,1,v,i,,,,,,,,(1) to be cross each other's path,,,,,
 kisaq,,1,v,t,,,,,,,i/1vv,to /anchor s.t.,/ancrer qqch.,,,,.
@@ -650,15 +650,15 @@ kublu,,1,n,,ana,,,,,,,thumb,pouce,,,,.
 kubviri,,1,v,i,,,,,,nil,,"to pour water, liquid over s.o. or s.t.","verser de l'eau, du liquide (trans.: sur qqn ou qqch.)",,,,.
 kubvit,,1,n,,,,,,,,,jug,,,,,
 kugluk,,1,v,t,,,,,,,si/1vv,to /double or /fold s.t. lengthwise,/doubler ou /plier qqch. sur la longueur,,,,.
-kujak,,1,v,i,,,,,,,,to copulate,,,,,
 kujak,,1,n,,,,,,,,,copulation,copulation,,,,.
+kujak,,1,v,i,,,,,,,,to copulate,,,,,
 kujjak,,1,v,t,res,,,,,,si/1vv,to /crack or /snap s.t.,/craquer ou /casser qqch. net,,,,.
 kujjaq,,1,v,t,res,,,,,,si/1vv,to /turn s.t. upside-down,/retourner qqch. sens dessus-dessous,,,,.
 kujjiniq,,1,n,,,,,,,,,hole melted about sea-weed on sea-ice,trou fondu autour d'une algue dans la glace de mer,,,,.
 kukaq,,1,v,i,,,,,,,,to eat,manger,,,,.
 kukik,,1,n,,ana,,,,,,,finger nail or toe nail,,,,,
-kukki,,1,v,i,,,,,,,,to have s.t. caught between one's teeth,avoir qqch. pris entre les dents,,,,.
 kukki,,1,n,,,,,,,,,food particle in teeth,particule de nourriture entre les dents,,,,.
+kukki,,1,v,i,,,,,,,,to have s.t. caught between one's teeth,avoir qqch. pris entre les dents,,,,.
 kuku,,1,n,,,,,,,,,cocoa or chocolate,,,,,
 kukukpaq,,1,n,,,,,,,,,apex or top of parka hood or of hat,pointe du capuchon d'un parka ou d'un chapeau,,,,.
 kukuvalaaq,,1,v,i,a,,,,,,,to be dotted or spotted,être tacheté,,,,.
@@ -668,11 +668,11 @@ kumik,,1,v,t,,,,,,,si/1vv i/1vv,to /scratch s.o. (to relieve itch),"/gratter qqc
 kunigu,,1,n,,,,,,,,,down hair of a bird,duvet d'oiseau,,,,.
 kunik,,1,v,t,,,,,,,si/1vv,to /kiss s.o.,/embrasser qqn,,,,.
 kusii,,1,e,,,,,,,,,exclamation to chase the dogs away,exclamation pour faire fuir les chiens,,,,.
-kusiq,,1,v,i,,,,,,,,to drip a drop of liquid or water,laisser tomber une goutte d'eau ou de liquide,,,,.
 kusiq,,1,n,,,,,,,,,drip or droplet of water or liquid,goutte d'eau ou de liquide,,,,.
+kusiq,,1,v,i,,,,,,,,to drip a drop of liquid or water,laisser tomber une goutte d'eau ou de liquide,,,,.
 kutak,,1,v,i,,,,,,,,to speak babyishly,,,,,
-kuuk,,1,v,i,,,,,,,,"to run or course, speaking of the water of a river, stream, etc","courir (eau d'une rivière, d'un ruisseau, etc.)",,,,.
 kuuk,,1,n,,,,,,,,,river,rivière,,,,.
+kuuk,,1,v,i,,,,,,,,"to run or course, speaking of the water of a river, stream, etc","courir (eau d'une rivière, d'un ruisseau, etc.)",,,,.
 kuukuusi,,1,n,,zoo,,,,,,,pig,,,,,
 kuussiq,,1,n,,ana,,,,,,,hip-bone,hanche,,,,.
 kuut,,1,v,i,,,,,,,,to turn one's toes inward,,,,,
@@ -701,19 +701,19 @@ malatu,,1,n,,zoo,,,,,,,midget species of jar seal,espèce naine de phoque annel�
 malik,,1,v,i,,,,,,nil,,(1) to follow (trans. [-mik]: s.o. or s.t.) (2) to obey (trans. [-mik]: s.o.),,,,,
 mallaaq,,1,v,i,a,,,,,,,to have hang-nails,avoir de petites peaux aux ongles (appelées 'envies'),,,,.
 malliaq,,1,v,i,,,,,,nil,,to patch the hole in s.t.,rappiécer un trou dans qqch.,,,,.
-malliq,,1,v,i,a,,,,,,,"to be choppy or rough with waves, speaking of a plan of water","être clapoteux, agité par les vagues, en parlant d'un plan d'eau",,,,.
 malliq,,1,n,,,,,,,,,wave,vague,,,,.
-mamaaq,,1,v,i,a,,,,,,,to have dandruff or falling hair,avoir des pellicules ou des cheveux qui tombent,,,,.
+malliq,,1,v,i,a,,,,,,,"to be choppy or rough with waves, speaking of a plan of water","être clapoteux, agité par les vagues, en parlant d'un plan d'eau",,,,.
 mamaaq,,1,n,,,,,,,,,dandruff,pellicule,,,,.
+mamaaq,,1,v,i,a,,,,,,,to have dandruff or falling hair,avoir des pellicules ou des cheveux qui tombent,,,,.
 mamaq,,1,v,i,a,,,,,,,to be gratifying to the senses,être gratifiant pour les sens,,,,.
 mamaut,,1,n,,ana,,,,,,,animal teat,tétine d'un animal,,,,.
 mamiak,mamia,1,v,i,e,,,,gusuk/1vv,gi/4vv,,to regret s.t.,,,,,
-mamik,,1,v,i,,,,,,nil,,to sew up the tear or rent in a garment,coudre une déchirure ou un accroc dans un vêtement,,,,.
 mamik,,1,n,,,,,,,,,leather side of animal skin,côté cuir d'une peau d'animal,,,,.
+mamik,,1,v,i,,,,,,nil,,to sew up the tear or rent in a garment,coudre une déchirure ou un accroc dans un vêtement,,,,.
 mamit,,2,v,i,a,,,,,,,"to have healed, speaking of a wound or cut","être guérie (blessure, coupure)",,,,.
 mammit,,1,v,i,,,,,,,,to draw down the corners of one's mouth,baisser les coins de la bouche,,,,.
-manaq,,1,v,i,,,,,,,,"to catch a fish, speaking of a dormant line","attraper un poisson, en parlant d'une ligne dormante",,,,.
 manaq,,1,n,,,,,,,,,baited fish-line left in a fish-hole,ligne à pêche appêtée laissée dans le trou,,,,.
+manaq,,1,v,i,,,,,,,,"to catch a fish, speaking of a dormant line","attraper un poisson, en parlant d'une ligne dormante",,,,.
 mangat,,1,v,t,,,,,,,si/1vv,[-R]to /mislead s.o. playfully or /deceive s.o.,[-R]induire qqn en erreur pour jouer,,,,
 mangik,,1,v,t,,,,,,,si/1vv,[-R]to /bite at or to /gnaw s.t. (a hard or frozen thing),[-R]/mordre-dans qqch.,,,,
 mangitaq,,1,n,,,,,,,,,table,table,,,,.
@@ -722,10 +722,10 @@ maniq,,1,n,,,,,,,,,moss used for wick of stone lamp,mousse utilisée comme mèch
 maniraq,maniqqaq,1,n,,,,,,,,,the ground,,,,,
 mannak,,1,v,i,,,,,,,,to settle one's head down upon his shoulders (to shrink one's neck),rentrer sa tête dans les épaules (se rétrécir le cou),,,,.
 manngiq,,1,n,,,,,,,,,rust,,,,,
-mannguq,,1,v,t,,,,,,,si/1vv,to /embed or /plant or /root s.t. in something,/enfoncer ou /planter qqch. dans quelque chose,,,,.
 mannguq,,1,n,,ana,,,,,,,"root of hair, tooth, plant, etc.","racine des cheveux, d'une dent, d'une plante, etc.",,,,.
-mannik,,1,v,i,a,,,,,,,to be smooth-surfaced,,,,,
+mannguq,,1,v,t,,,,,,,si/1vv,to /embed or /plant or /root s.t. in something,/enfoncer ou /planter qqch. dans quelque chose,,,,.
 mannik,,1,n,,,,,,,,,egg,oeuf,,,,.
+mannik,,1,v,i,a,,,,,,,to be smooth-surfaced,,,,,
 manu,,1,n,,,,,,,,,part of garment under chin,,,,,
 manuaq,,1,n,,,,,,,,,door sill,seuil de porte,,,,.
 mapkik,,1,v,i,a,,,,,,,to have clean garments or clothes,avoir des vêtements propres,,,,.
@@ -735,16 +735,16 @@ mapsuk,,1,v,t,res,,,,,,si/1vv,to /turn up or /tilt up s.t. (the tip of something
 maqait,,1,v,i,a,,,,,,,to be away hunting,être parti à la chasse,,,,.
 maqi,,1,v,i,,,,,,,,"to ooze or exude liquid, paste","suinter, exsuder (liquide, pus, résine, etc.)",,,,.
 maqi,,2,v,i,,,,,,,,to flow,,,,,
-maquk,,1,v,i,,,,,,,,to be raining,être en train de pleuvoir,,,,.
 maquk,,1,n,,,,,,,,,rain,pluie,,,,.
+maquk,,1,v,i,,,,,,,,to be raining,être en train de pleuvoir,,,,.
 maraq,marraq,1,n,,,,,,,,,clay,argile,,,,.
 marniq,,1,n,,,,,,,,,pus,pus,,,,.
 marralaaq,,1,v,i,,,,,,,,to yelp in pain,crier de douleur,,,,.
 marri,,1,v,i,,,,,,,,to give birth to twins,donner naissance à des jumeaux,,,,.
 marru,,1,n,,nb,,,,,,,"root conveying the idea of ""two""",racine véhiculant l'idée de 'deux',,,,.
+masak,,1,n,,,,,,,,,saturated thing,chose saturée,,,,.
 masak,,2,v,i,,,,,,,,"to fall, speaking of soft, wet snow","tomber, en parlant de neige molle, mouillée",,,,.
 masak,,1,v,i,a,,,,,,,to be saturated with water,être saturé en eau,,,,.
-masak,,1,n,,,,,,,,,saturated thing,chose saturée,,,,.
 masigirniq,,1,n,,,,,,,,,glare ice,glace éblouissante,,,,.
 masik,,1,n,,,,,,,,,fish gill,"ouïe, branchie de poisson",,,,.
 matna,,1,e,,,,,,,,,thank you [Padl.],merci [Padl.],,,,.
@@ -782,11 +782,11 @@ minngiq,,1,v,t,,,,,,,i/1vv,[-R](1) to /charge at s.o.(harmful intention) (2) to 
 minnguq,,1,n,,zoo,,,,,,,land beetle,scarabée terrestre,,,,.
 mipku,,1,n,,,,,,,,,dried meat,viande séchée,,,,.
 miqit,,1,v,t,,,,,,,si/1vv,to /double or /fold s.t. over laterally or cross-wise,/doubler ou /plier qqch. latéralement ou diagonalement,,,,.
-miqquq,,1,v,i,,,,,,,,"to get new coat of hair (animal, but not dog)","avoir une nouvelle couche de fourrure (animal, mais pas le chien)",,,,.
 miqquq,,1,n,,,,,,,,,hair (not on the head),,,,,
+miqquq,,1,v,i,,,,,,,,"to get new coat of hair (animal, but not dog)","avoir une nouvelle couche de fourrure (animal, mais pas le chien)",,,,.
 miqqut,,1,n,,,,,,,,,sewing needle,,,,,
-miriaq,,1,v,i,,,,,,gi/4vv,,to vomit (trans.: s.t.),vomir (trans.: qqch.),,,,.
 miriaq,,1,n,,,,,,,,,vomit,vomissement,,,,
+miriaq,,1,v,i,,,,,,gi/4vv,,to vomit (trans.: s.t.),vomir (trans.: qqch.),,,,.
 mirpiaq,,1,v,t,,,,,,,si/1vv,[T]to scrape the hair of s.t. off by means of a sharp instrument [P]to be scraped of one's hair by means of a sharp instrument,[T]gratter le poil de qqch. à l'aide d'un instrument aiguisé[P]avoir son poil gratté à l'aide d'un instrument aiguisé,,,,.
 mirpik,,1,n,,ana,,,,,,,fleshy section of waist just below ribs and just above hip-bones [WCHB],partie charnue de la taille entre les côtes et les hanches [côte ouest de Baie d'Hudson],,,,.
 mirsuq,,1,v,i,,,,,,nil,,to sew (trans.: s.t.),coudre (trans.: qqch.),,,,.
@@ -815,22 +815,22 @@ naasaq,,1,v,t,,,,,,,si/1vv,"[-R]to /count, to /tally s.t.","[-R]/compter, /déno
 naat,,1,v,i,,,,,,,,to trip or stumble over s.t.,trébucher contre qqch.,,,,.
 naavik,,1,v,t,res,,,,,,si/1vv,to /spill s.t.,,,,,
 nabgi,,1,v,t,,,,,,,i/1vv,to /break s.o.'s or s.t.'s leg,/briser-de qqn la jambe ou la patte,,,,.
-nabguaq,,1,v,i,,,,,,,,to dislocate one's joint,se disloquer une articulation,,,,.
 nabguaq,,2,n,,,,,,,,,finger ring,anneau (qu'on porte au doigt),,,,.
+nabguaq,,1,v,i,,,,,,,,to dislocate one's joint,se disloquer une articulation,,,,.
 nabluk,,1,n,,ana,,,,,,,knee joint,articulation du genou,,,,.
 nagajjauq,nakkajjau naggajjau,1,n,,,,,,,,,Monday,lundi,,,,.
 naggai,,1,a,,,,,,,,,no [Ungava],non [Ungava],,,,.
 nagjuk,,1,n,,,,,,,,,animal horn,corne d'animal,,,,.
 naglik,,1,v,i,e,,,,gusuk/1vv,gi/4vv,,to love s.o.,aimer qqn,,,,.
-nagvaaq,,1,v,i,,,,,,nil,,to find s.t. accidentally,trouver qqch. accidentellement,,,,.
 nagvaaq,,1,n,,,,,,,,,a find,,,,,
+nagvaaq,,1,v,i,,,,,,nil,,to find s.t. accidentally,trouver qqch. accidentellement,,,,.
 nai,,1,v,i,,,,,,nil,,to begin to smell or taste s.t.,commencer à sentir ou à goûter qqch.,,,,.
 naiq,,1,v,i,,,,,,,,to tilt or slant to one side,pencher sur un côté,,,,.
 nait,,1,v,i,a,,,,,,,to be short,être court,,,,.
 najak,,1,n,,,,,,,,,(1) sister of a man (2) nun,,,,,
 najalaq,,1,v,i,,,,,,,,to vibrate,,,,,
-najangaq,,1,v,i,,,,,,,,to nod in drowsiness or sleepiness,"avoir la tête inclinée, par fatigue ou par sommeil",,,,.
 najangaq,,1,n,,,,,,,,,midget species of jar seal,espèce naine de phoque annelé,,,,.
+najangaq,,1,v,i,,,,,,,,to nod in drowsiness or sleepiness,"avoir la tête inclinée, par fatigue ou par sommeil",,,,.
 najuq,,1,v,t,,,,,,,i/1vv nit/1vv,[-R]to /watch over or /guard s.t.,,,,,
 nakasuk,,1,n,,ana,,,,,,,bladder,vessie,,,,.
 nakat,,2,v,i,a,,,,,,,to be cut off from the land on the moving ice [Ungava],"être coupé, isolé de la terre sur une plaque de glace flottante [Ungava]",,,,.
@@ -877,18 +877,18 @@ naqit,,2,v,i,a,,,,,,,to be low,être bas,,,,.
 naqit,,1,v,t,,,,,,,si/1vv,[-R]to /press s.t. down,"[-R]/pousser, /presser qqch. vers le bas",,,,.
 naqquq,,1,n,,,,,,,,,arrow head,tête de flèche,,,,.
 naqut,,1,n,,,,,,,,,lashing,,,,,
-nariaq,,1,v,i,,,,,,nil,,"to pursue s.t. that one scents, speaking of an animal",poursuivre qqch. que l'on sent (animal),,,,.
 nariaq,,1,n,,,,,,,,,bait for animal trap,appât pour une trappe à animal,,,,.
+nariaq,,1,v,i,,,,,,nil,,"to pursue s.t. that one scents, speaking of an animal",poursuivre qqch. que l'on sent (animal),,,,.
 narru,,1,v,i,,,,,,gi/4vv,,to find s.t. not to one's liking,,,,,
 narsaq,,1,n,,,,,,,,,valley,vallée,,,,.
 narsik,,1,v,i,,,,,,,,to turn up one's nose in distaste or rejection of s.t.,,,,,
-nasaq,,1,v,t,,,,,,,i/1vv,[T]to put his hat to s.o.,,,,,
 nasaq,,3,n,,,,,,,,,hood,,,,,
+nasaq,,1,v,t,,,,,,,i/1vv,[T]to put his hat to s.o.,,,,,
 nasit,,1,v,i,,,,,,,,to arrive at a vantage-point to observe or scan surroundings,"arriver à un point d'observation, pour observer ou scruter les environs",,,,.
 nataaq,,1,n,,,,,,,,,tray,,,,,
 nataqquq,nataqqulaaq,1,n,,ana,,,,,,,cartilage,,,,,
-nataqurnak,,1,v,i,,,,,,,,to hail,grêler,,,,.
 nataqurnak,,1,n,,,,,,,,,hailstone,grêlon,,,,.
+nataqurnak,,1,v,i,,,,,,,,to hail,grêler,,,,.
 natiq,,1,n,,,,,,,,,floor,plancher,,,,.
 nattiq,,1,n,,zoo,,,,,,,jar or harbour seal,phoque annelé ou phoque commun,,,,.
 nauguti,,1,v,i,,,,,,,,to fall in headlong flight after being mortally wounded,tomber en plongeant de la tête après avoir été mortellement blessé,,,,.
@@ -899,11 +899,11 @@ nauttiq,,1,v,i,,,,,,nil,,"to keep watch over or stand sentry for s.t., staying h
 niangaak,,1,e,,,,,,,,,"exclamation: ""I'm jealous!"" [S. Baffin]","exclamation: ""Je suis jaloux!"" [Terre de Baffin sud]",,,,.
 niaquq,,2,n,,,,,,,,,primus-stove burner,brûleur de réchaud de camping,,,,.
 niaquq,,1,n,,ana,,,,,,,head,tête,,,,.
-nigaq,,1,v,t,,,,,,,si/1vv,[-R]to /snare s.t.,[-R]/prendre qqch. au piège,,,,.
 nigaq,,1,n,,,,,,,,,snare,,,,,
+nigaq,,1,v,t,,,,,,,si/1vv,[-R]to /snare s.t.,[-R]/prendre qqch. au piège,,,,.
 nigavit,,1,v,i,a,,,,,,,to be tangled,,,,,
-niggiq,,1,v,i,,,,,,,,to be blowing due south-east - speaking of the wind,souffler franc sud-est (le vent),,,,.
 niggiq,,1,n,,,,,,,,,the south-east,,,,,
+niggiq,,1,v,i,,,,,,,,to be blowing due south-east - speaking of the wind,souffler franc sud-est (le vent),,,,.
 nigjak,,1,n,,,,,,,,,fringe,,,,,
 nigjuk,,1,n,,zoo,,,,,,,small red-brown earth spider of barren lands,petite araignée terrestre brun-rouge de la toundra,,,,.
 niglaq,,1,v,i,,,,,,,,"to turn cold, to become chilly, speaking of the weather","se refroidir, en parlant de la température",,,,.
@@ -914,19 +914,19 @@ nijja,,1,v,i,,,,,,nil,,to make a characteristic noise or sound repeatedly (trans
 nika,,1,v,i,e,,,,gusuk/1vv,gi/4vv,,to feel compassion for s.o.,ressentir de la compassion pour qqn,,,,.
 nikit,,1,v,i,,,,,,,,to move very slowly across one's line of vision,bouger très lentement dans son champ de vision,,,,.
 nikku,,1,n,,,,,,,,,dried meat,viande séchée,,,,.
-nikpaaq,nikpaq,1,v,i,,,,,,nil,,to wait or watch at the seal-hole or breathing-hole for a seal to come up,attendre près d'un trou qu'un phoque se présente,,,,.
 nikpaaq,,1,n,,,,,,,,,seal-hole or breathing-hole which is hunted at,trou de phoque ou autre animal où l'on chasse,,,,.
+nikpaaq,nikpaq,1,v,i,,,,,,nil,,to wait or watch at the seal-hole or breathing-hole for a seal to come up,attendre près d'un trou qu'un phoque se présente,,,,.
 niksaaq,,1,v,i,,,,,,,,to burp or belch,"roter, éructer, faire un renvoi",,,,.
-niksik,,2,v,t,,,,,,,i/1vv,to /hook s.t.,/accrocher qqch.,,,,.
 niksik,,1,n,,,,,,,,,(1) hook (2) harness snap [Padl.],(1) crochet (2) bouton de harnais [Padl.],,,,.
+niksik,,2,v,t,,,,,,,i/1vv,to /hook s.t.,/accrocher qqch.,,,,.
 niktaq,,1,v,t,,,,,,,si/1vv,to /lower s.t. down by means of a rope or ladder,/descendre qqch. à l'aide d'une corde ou d'une échelle,,,,.
 nikubjaq,,1,v,i,,,,,,,,to stand on tip-toes,se tenir sur la pointe des pieds,,,,.
 nikuvik,,1,v,i,,,,,,,,to stand up,se tenir debout,,,,.
 nilak,,1,n,,,,,,,,,fresh-water ice,,,,,
 nilamak,nilamik,1,v,i,,,,,,nil,,to lay flat back against a solid object,,,,,
 niliq,,1,v,i,,,,,,,,to fart,péter,,,,.
-nimiq,,1,v,t,,,,,,,si/1vv,"to /wind or /coil something (rope, line, bandage) around s.t.","[T]enrouler quelque chose (corde, ligne, bandage) autour de qqch.[P]être enroulé de quelque chose(corde, ligne, bandage)[R]s'enrouler de quelque chose (corde, ligne, bandage)",,,,.
 nimiq,,1,n,,,,,,,,,rope or line for binding or coiling around s.t.,corde ou ligne pour lier ou enrouler autour de qqch.,,,,.
+nimiq,,1,v,t,,,,,,,si/1vv,"to /wind or /coil something (rope, line, bandage) around s.t.","[T]enrouler quelque chose (corde, ligne, bandage) autour de qqch.[P]être enroulé de quelque chose(corde, ligne, bandage)[R]s'enrouler de quelque chose (corde, ligne, bandage)",,,,.
 ningau,,1,n,,,,,,,,,(1) son-in-law,,,,,
 ningiq,,1,v,i,,,,,,,,to get a share of the game on the trail,obtenir une part d'un gibier,,,,.
 ningit,,1,v,t,,,,,,,si/1vv,to /lower s.t. down by means of a rope or ladder,/descendre qqch. à l'aide d'une corde ou d'une échelle,,,,.
@@ -935,9 +935,9 @@ ningu,ningi,1,v,i,a,,,,,,,to be solid or firm,,,,,
 ninngaq,,1,v,i,a,,,,,,,to be annoyed or mad about s.t. or s.o.,"être embêté, ennuyé ou fâché par qqch. ou qqn",,,,.
 nipaluk,,1,v,i,,,,,,,,to rain [Padl.],pleuvoir [Padl.],,,,.
 nipaq,,1,v,i,a,,,,,,,(1) to be away for a long time (2) to have moved out of sight,"(1) être parti pendant, depuis longtemps (2) avoir disparu de la vue",,,,.
+nipi,nipa,1,n,,,,,,,,,(1) sound,,,,,
 nipi,,1,v,i,,,,,,,,"to have set (speaking of the sun, the moon, the stars...)","s'être levé (soleil, lune, étoiles...)",,,,.
 nipi,,2,v,i,,,,,,,,to stick or adhere to something,"coller, adhérer à qqch.",,,,.
-nipi,nipa,1,n,,,,,,,,,(1) sound,,,,,
 nipjaaq,,1,v,i,,,,,,,,to make a characteristic repetitious noise (WCHB),faire un bruit caractéristique à répétition (côte ouest de la Baie d'Hudson),,,,.
 nipliq,,1,v,i,,,,,,,,to make a single characteristic noise,faire un bruit caractéristique une fois,,,,.
 nipta,,1,v,i,a,,,,,,,"(1) to be clear and bright, speaking of the weather (2) to be visible",(1) être clair (le temps) (2) être visible,,,,.
@@ -958,8 +958,8 @@ niru,,1,n,,,,,,,,,"entrance, opening of s.t.",entrée,,,,
 niruaq,,1,v,t,,,,,,,si/1vv,to /choose or /elect s.o.,/choisir ou /élire qqn,,,,.
 nirumak,nirumik,1,v,i,a,,,,,,,to be cushioned or billowy or light and buoyant to the touch,"être coussiné, léger, moelleux au toucher",,,,.
 niruqaq,,1,n,,,,,,,,,contents of a caribou stomach,contenu de l'estomac d'un caribou,,,,.
-niu,,1,v,t,,,,,,,ji/1vv,[-R]to /unload s.t.,,,,,
 niu,niuk,1,n,,ana,,,,,,,leg,jambe,,,,
+niu,,1,v,t,,,,,,,ji/1vv,[-R]to /unload s.t.,,,,,
 niubviuq,,1,v,i,,,,,,nil,,to go out and meet s.o. who is arriving,sortir rencontrer qqn qui arrive,,,,.
 niugaq,,1,v,t,,,,,,,si/1vv,to /rub s.t. up against something,/frotter qqch. contre quelque chose,,,,.
 niuk,,1,v,i,a,,,,,,,to be bent,être plié,,,,.
@@ -984,14 +984,14 @@ nujuit,,1,v,i,a,,,,,,,to be tame,être apprivoisé,,,,.
 nukaq,,1,n,,,,,,,,,younger brother of a man,,,,,
 nukik,,2,n,,,,,,,,,bodily strength,force physique,,,,.
 nukik,,1,n,,ana,,,,,,,sinew,,,,,
-nuktaq,,1,v,i,,,,,,,,to veer repeatedly from one direction to another,changer de direction de façon répétée,,,,.
 nuktaq,,1,n,,,,,,,,,crack made in brittle material by sudden force,"fissure faite dans un matériau fragile, cassant par une force soudaine",,,,.
+nuktaq,,1,v,i,,,,,,,,to veer repeatedly from one direction to another,changer de direction de façon répétée,,,,.
 nuktiq,,1,v,i,,,,,,,,to change one's abode or camping site,changer de campement,,,,.
 nulataq,,1,n,,,,,,,,,seal-hole which has no snow around it and which sticks out above the surface,trou de phoque sans neige autour et qui dépasse de la surface,,,,.
 nuliaq,,1,n,,,,,,,,,wife,épouse,,,,.
 nulluaq,,1,v,i,,,,,,nil,,to wave s.o. away by moving arm up and down at one's side,"écarter, éloigner qqn d'un geste en bougeant le bras de haut en bas sur le côté",,,,.
-nuluaq,,1,v,t,,,,,,,ri/1vv,to /catch or /snare s.t. in a net,/attraper qqch. dans un filet,,,,.
 nuluaq,,1,n,,,,,,,,,fish net,filet de pêche,,,,.
+nuluaq,,1,v,t,,,,,,,ri/1vv,to /catch or /snare s.t. in a net,/attraper qqch. dans un filet,,,,.
 nuluq,,1,n,,ana,,,,,,,rump,,,,,
 nuluraq,,1,v,i,,,,,,nil,,to beckon s.o. to come by waving hand [WCHB],faire signe à qqn de venir en envoyant la main [WCHB],,,,.
 numaa,,1,v,i,e,,,,gusuk/1vv,gi/4vv,,to be bored or frustrated,s'ennuyer,,,,
@@ -1003,8 +1003,8 @@ nunniq,,1,n,,,,,,,,,new ice which forms onto solid ice,nouvelle glace qui se for
 nuqqaq,,1,v,i,,,,,,,,to stop doing s.t.,arrêter de faire qqch.,,,,.
 nuqqit,,1,v,i,,,,,,,,to hold onto the line to prevent s.t. getting away,tenir la ligne pour empêcher qqch. de se sauver,,,,.
 nurlu,,1,n,,,,,,,,,loop,boucle,,,,.
-nurraq,,1,v,i,,,,,,,,to bag a fawn or calf,tuer un faon ou un veau,,,,.
 nurraq,,1,n,,zoo,,,,,,,fawn,faon,,,,.
+nurraq,,1,v,i,,,,,,,,to bag a fawn or calf,tuer un faon ou un veau,,,,.
 nursaq,,1,n,,,,,,,,,harpoon- or spear-throwing board,qqch. pour lancer un harpon ou une lance,,,,.
 nussuk,,1,v,t,,,,,,,si/1vv i/1vv,[-R]to /pull or /tug s.t. repeatedly,[-R]/tirer ou /touer qqch. de façon répétée,,,,.
 nusuk,,1,v,t,,,,,,,si/1vv i/1vv,[-R]to /pull or /tug s.t.,[-R]/tirer ou /touer qqch.,,,,.
@@ -1018,11 +1018,11 @@ nuut,,1,v,i,,,,,,,,to move to another place,se déplacer à un autre endroit,,,,
 nuvak,,1,n,,ana,,,,,,,spit,,,,,
 nuvi,,1,v,t,,,,,,,ji/1vv,[-R]to /thread s.t.,[-R]/enfiler qqch.,,,,.
 nuvirsaq,,1,v,i,,,,,,nil,,to knit (trans.: s.t.),tricoter (trans.: qqch.),,,,.
-nuvuja,,1,v,i,,,,,,,,"to be overcast, cloudy","être couvert, nuageux",,,,.
 nuvuja,,1,n,,,,,,,,,cloud,nuage,,,,.
+nuvuja,,1,v,i,,,,,,,,"to be overcast, cloudy","être couvert, nuageux",,,,.
 nuvuk,,2,n,,,,,,,,,point,,,,,
-paa,,1,v,i,,,,,,nil,,to fight,,,,,
 paa,,1,n,,,,,,,,,opening,,,,,
+paa,,1,v,i,,,,,,nil,,to fight,,,,,
 paallak,,1,v,i,,,,,,,,to fall down,tomber,,,,.
 paaq,,1,v,i,,,,,,nil,,to meet (trans.: s.o.),rencontrer (trans.: qqn),,,,.
 paarnguq,,1,v,i,,,,,,,,to crawl (trans.: after s.t.),ramper (trans.: après qqch.),,,,.
@@ -1037,14 +1037,14 @@ pajaq,,1,n,,,,,,,,,spirit,,,,,
 pajuk,,1,v,i,,,,,,nil,,to give part of one's kill to s.o.,,,,,
 pakallak,,1,v,i,,,,,,,,to run about from one thing to another in a heedless or incoherent manner,courir d'une chose à une autre de manière incohérente,,,,.
 pakinik,,1,v,i,,,,,,nil,,to draw s.t. in towards oneself,,,,,
-paktak,,1,v,i,,,,,,,,to play cards [WCHB],,,,,
 paktak,,1,n,,,,,,,,,playing card [WCHB],carte à jouer [côte ouest de la Baie d'Hudson],,,,.
-paktiq,,1,v,i,a,,,,,,,"to have bad skin, acne, impetago","avoir une mauvaise peau, de l'acné, de l'impétigo",,,,.
+paktak,,1,v,i,,,,,,,,to play cards [WCHB],,,,,
 paktiq,,1,n,,,,,,,,,skin eruption,éruption cutanée,,,,.
+paktiq,,1,v,i,a,,,,,,,"to have bad skin, acne, impetago","avoir une mauvaise peau, de l'acné, de l'impétigo",,,,.
 palaq,,1,v,i,,,,,,,,"to get better, to improve","aller mieux, s'améliorer",,,,.
 palaugaaq,,1,n,,,,,,,,,cooked flour,,,,,
-paliaq,,1,v,i,,,,,,,,to toast or dry over flame or fire,rôtir ou sécher au-dessus d'une flamme ou d'un feu,,,,.
 paliaq,,1,n,,,,,,,,,plate or platter [N. Baffin],"assiette ou plat, plateau [Terre de Baffin nord]",,,,.
+paliaq,,1,v,i,,,,,,,,to toast or dry over flame or fire,rôtir ou sécher au-dessus d'une flamme ou d'un feu,,,,.
 paliq,,1,v,i,,,,,,,,"to die out, speaking of a flame",s'éteindre (une flamme),,,,.
 palliq,,1,n,,,,,,,,,dead plant,,,,,
 palluq,,1,v,i,,,,,,,,to lie on the belly,être étendu sur le ventre,,,,.
@@ -1075,22 +1075,22 @@ patanga,,1,v,i,,,,,,,,to feel the cold easily,,,,,
 pati,patiq,1,n,,,,,,,,,putty,mastic,,,,.
 patik,,2,v,i,,,,,,,,to freeze completely,geler complètement,,,,.
 patik,,1,v,t,,,,,,,i/1vv,to /slap s.o.,/frapper qqn de la main,,,,.
-patiq,,1,v,i,,,,,,,,to eat marrow from the bone,manger la moëlle des os,,,,.
 patiq,,1,n,,ana,,,,,,,bone marrow,moëlle d'os,,,,.
-patuk,,1,v,i,a,,,,,,,to be covered with hoarfrost,ëtre couvert de givre,,,,.
+patiq,,1,v,i,,,,,,,,to eat marrow from the bone,manger la moëlle des os,,,,.
 patuk,,1,n,,,,,,,,,hoarfrost [WCHB,,,,,
+patuk,,1,v,i,a,,,,,,,to be covered with hoarfrost,ëtre couvert de givre,,,,.
 paugaarjuk,,1,n,,,,,,,,,canoe paddle,pagaie de canoë,,,,.
-paugguaq,,1,v,t,,,,,,,si/1vv,[-R]to /support s.t.,,,,,
 paugguaq,,1,n,,,,,,,,,peg,,,,,
-pauk,,1,v,i,a,,,,,,,"to be sooty, dusty","être couvert de poussière, de suie",,,,.
+paugguaq,,1,v,t,,,,,,,si/1vv,[-R]to /support s.t.,,,,,
 pauk,,1,n,,,,,,,,,soot,,,,,
+pauk,,1,v,i,a,,,,,,,"to be sooty, dusty","être couvert de poussière, de suie",,,,.
 pauktuq,,1,v,t,,,,,,,i/1vv,to /stretch or /peg s.t. out in a drying rack or stretcher,/étirer ou /fixer qqch. sur un séchoir ou sur un cadre,,,,.
 paumit,,1,v,i,,,,,,,,to itch lightly,,,,,
 paunnat,,1,n,,,,,,,,,purple saxifrage in its non-blossoming state,saxifrage pourpre hors-floraison,,,,.
 paupsuaq,,1,v,i,,,,,,nil,,to tickle (trans.: s.o.) lightly,chatouiller légèrement (trans.: qqn),,,,.
 paurngag,,1,n,,,,,,,,,fruit,,,,,
-pi,,1,v,i,,,,,,nil,,to do s.t.,,,,,
 pi,,1,n,,,,,,,,,thing,chose,,,,.
+pi,,1,v,i,,,,,,nil,,to do s.t.,,,,,
 piak,,1,v,i,a,,,,,,,to be smooth and frictionless,être lisse et sans adhérence,,,,.
 piala,,1,v,i,a,,,,,,,"to be quick, light, deft in one's movement",être rapide dans ses mouvements,,,,.
 pialaaq,,1,n,,zoo,,,,,,,birdling,,,,,
@@ -1140,24 +1140,24 @@ pirpaluk,,1,v,i,,,,,,,,to make a noise with the movement of objects,faire un bru
 pirraaq,,1,n,,,,,,,,,(1) sled-runner shoe (2) braided or plaited line or rope,(1) patin de traîneau (2) ligne ou corde tressée,,,,.
 pirraq,,1,v,i,,,,,,nil,,"to make braids, plaits",,,,,
 pirruaqi,,1,v,i,,,,,,,,to do s.t. by accident,,,,,
-pirsiq,,1,v,i,,,,,,,,to blizzard,,,,,
 pirsiq,pirtuq,1,n,,,,,,,,,drifting snow,neige poudrante,,,,.
+pirsiq,,1,v,i,,,,,,,,to blizzard,,,,,
 pirtarniq,,1,n,,ana,,,,,,,back of the knee,derrière du genou,,,,.
 pirturaq,,1,v,t,,,,,,,si/1vv,[-R]to /graze s.t. (animal or game) with a shot,"[-R]/effleurer, /frôler qqn (animal, gibier) avec un projectile",,,,.
 pirtursiraq,,1,n,,zoo,,,,,,,lynx,lynx,,,,.
-piru,,1,v,t,,,,,,,i/1vv,to /put a weight on top of s.t. such that it is held down,,,,,
 piru,,1,n,,,,,,,,,weight to hold s.t. down,poids pour retenir qqch.,,,,.
+piru,,1,v,t,,,,,,,i/1vv,to /put a weight on top of s.t. such that it is held down,,,,,
 piruq,,1,v,i,,,,,,,,to grow,grandir,,,,
 pisimi,,1,v,t,,,,,,,,"[-R]to /hold s.t. steady or in place, or from falling or moving","[-R]/tenir qqch. droit ou en place, ou /tenir qqch. pour qu'il ne tombe pas ou ne bouge pas",,,,.
 pisiq,,1,n,,,,,,,,,song,chanson,,,,.
 pisiti,,1,n,,,,,,,,,adept,,,,,
 pisuk,,1,v,i,,,,,,nil,,to walk (trans.: on s.t.),marcher (trans.: sur qqch.),,,,.
-pitaq,,1,v,i,a,,,,,,,to be punctured,,,,,
 pitaq,,1,n,,,,,,,,,(1) hole,,,,,
+pitaq,,1,v,i,a,,,,,,,to be punctured,,,,,
 pittiq,,1,v,i,a,,,,,,,to be furnished with a heavy cord or tongue,être équipé d'une corde épaisse,,,,.
 pittiulaaq,,1,n,,zoo,,,,,,,arctic guillemot,,,,,
-pituk,,1,v,t,,,,,,,,[-R](1) to /hitch s.t. (animal) to the sled (2) to /attach s.t. to the end of a cord,[-R](1)/attacher qqch. (un animal) à un traîneau (2)/attacher qqch. au bout d'une corde,,,,.
 pituk,,1,n,,,,,,,,,sled tongue,attache de traîneau,,,,.
+pituk,,1,v,t,,,,,,,,[-R](1) to /hitch s.t. (animal) to the sled (2) to /attach s.t. to the end of a cord,[-R](1)/attacher qqch. (un animal) à un traîneau (2)/attacher qqch. au bout d'une corde,,,,.
 pituqqut,,1,n,,,,,,,,,charm or amulet,"charme, amulette",,,,
 pituraq,,1,v,i,,,,,,,,"to swim to the open water of the floe edge, speaking of a sea mammal",nager vers le côté de la banquise tourné vers le large (mammifère marin),,,,.
 piturniq,,1,v,i,,,,,,,,"to be flood time, time of  high tides",être le temps des grandes marées,,,,.
@@ -1167,13 +1167,13 @@ pivik,,1,v,i,,,,,,,,to trie hard to do or to get s.t.,essayer fort de faire ou d
 pua,,1,v,i,,,,,,,,"to make bubbles due to breathing or motion, speaking of a marine creature",faire des bulles en respirant ou en se déplaçant (créature marine),,,,.
 pualuk,,1,n,,,,,,,,,mitt,mitaine,,,,.
 puarrit,puarritik,1,n,,,,,,,,,shovel,pelle,,,,.
-publaq,,1,v,i,a,,,,,,,to be inflated,être gonflé,,,,.
 publaq,,1,n,,,,,,,,,air bubble,bulle d'air,,,,.
+publaq,,1,v,i,a,,,,,,,to be inflated,être gonflé,,,,.
 pui,,1,v,i,,,,,,,,"to come up to breathe, speaking of a marine creature",remonter pour respirer (créature marine),,,,.
 puiguq,,1,v,i,,,,,,nil,,to forget (trans.: s.t.),oublier (trans.: qqch.),,,,.
 puja,,1,n,,,,,,,,,rancid congealed oil or grease,huile ou graisse rance congelée,,,,.
-pujjuk,,1,v,t,,,,,,,i/1vv,to /pinch s.t.,/pincer qqch.,,,,.
 pujjuk,,1,n,,ana,,,,,,,finger-tip,bout des doigts,,,,.
+pujjuk,,1,v,t,,,,,,,i/1vv,to /pinch s.t.,/pincer qqch.,,,,.
 pujjuq,,1,v,i,a,,,,,,,to have just got a hole in the sole of the boot,venir tout juste d'avoir un trou dans la semelle de sa botte,,,,.
 pujuq,,1,n,,,,,,,,,(1) steam,,,,,
 pukak,pukajaq,1,n,,,,,,,,,dry sandy snow,neige sèche sablonneuse,,,,.
@@ -1193,11 +1193,11 @@ pusi,,1,n,,zoo,,,,,,,cat,chat,,,,.
 pusikkaq,,1,v,i,,,,,,,,to fall forward hitting one's face,tomber par devant en se heurtant le visage,,,,.
 pusit,,1,v,t,res,,,,,,i/1vv si/1vv,to /turn s.t. over,,,,,
 puttuq,,1,n,,,,,,,,,hole in boot sole,trou dans une semelle de botte,,,,.
-putu,,1,v,t,,,,,,,i/1vv ji/1vv,to /pierce s.t.,"/percer, /transpercer qqch.",,,,.
 putu,,1,n,,,,,,,,,drilled or bored hole,,,,,
+putu,,1,v,t,,,,,,,i/1vv ji/1vv,to /pierce s.t.,"/percer, /transpercer qqch.",,,,.
 puukaq,,1,v,i,,,,,,,,"to bump as going over rough ground, speaking of a sled or vehicle","rebondir en se déplaçant sur un terrain rude (un traîneau, un véhicule)",,,,.
-puuq,,1,v,t,,,,,,,i/1vv,"to /box, to /bag s.t.",,,,,
 puuq,,1,n,,,,,,,,,container,,,,,
+puuq,,1,v,t,,,,,,,i/1vv,"to /box, to /bag s.t.",,,,,
 puut,,1,v,i,,,,,,,,to fall down limp,tomber le corps mou,,,,.
 puvak,,1,n,,ana,,,,,,,lung,poumon,,,,.
 puviq,,1,v,t,,,,,,,i/1vv si/1vv,to /blow or /inflate s.t.,/souffler ou /gonfler qqch.,,,,.
@@ -1209,8 +1209,8 @@ qaat,,1,v,i,,,,,,,,"to move out, speaking of the sea ice",s'éloigner (glace de 
 qagaaq,,1,v,i,,,,,,,,to have white-caps,,,,,
 qagarraq,,1,n,,,,,,,,,protuberance of whale's forehead,protubérance sur la tête d'une baleine,,,,.
 qagaura,,1,v,i,,,,,,,,to die from burst lungs,mourir à bout de souffle,,,,.
-qaggi,,1,v,i,,,,,,,,to celebrate,,,,,
 qaggi,,1,n,,,,,,,,,feast house,maison de festivité,,,,.
+qaggi,,1,v,i,,,,,,,,to celebrate,,,,,
 qaglulik,,1,n,,zoo,,,,,,,arctic loon,huart plongeon arctique,,,,.
 qagvik,,1,n,,zoo,,,,,,,wolverine,carcajou,,,,.
 qai,,1,v,i,,,,,,,,(1) to come (2) to be brought,(1) venir (2) être apporté,,,,.
@@ -1230,8 +1230,8 @@ qakkugu,,1,a,,,,,,,,,when (in the future),quand (dans l'avenir),,,,.
 qakkutikkut,,1,a,,,,,,,,,from time to time,,,,,
 qakuaq,qakulaaq,1,v,i,,,,,,,,to make chomping noise with jaws and teeth,mâcher bruyamment,,,,.
 qakuq,,1,v,i,a,,,,,,,to be white,,,,,
-qalaaq,,1,v,i,,,,,,,,to boil or bubble by being heated,bouillir ou faire des bulles en étant chauffé,,,,.
 qalaaq,,1,n,,,,,,,,,bubble in boiling or heated liquid,bulle dans un liquide bouillant ou chauffé,,,,.
+qalaaq,,1,v,i,,,,,,,,to boil or bubble by being heated,bouillir ou faire des bulles en étant chauffé,,,,.
 qalaasiq,,1,n,,ana,,,,,,,belly button,nombril,,,,.
 qaliraq,,1,n,,,,,,,,,footstep,,,,,
 qalu,,1,v,t,,,,,,,si/1vv,[-R]to /dipper s.t.,,,,,
@@ -1242,11 +1242,11 @@ qamit,,1,v,t,res,,,,,,si/1vv,[-R]to /put or /turn s.t. (a light) out,,,,,
 qamngui,,1,v,i,,,,,,,,to snore,ronfler,,,,.
 qamuraji,,1,n,,ana,,,,,,,wisdom tooth,dent de sagesse,,,,.
 qamut,,1,n,,,,,,,,,"(1) sled runner (2) ""six"" in pack of playing cards","(1) patin de traîneau (2) le ""six"" dans un paquet de cartes à jouer",,,,.
-qanak,,1,v,t,,,,,,,si/1vv i/1vv,[-R]to /raise s.t. (a tent) with an upright or pole,[-R]/lever qqch. (une tente) avec un montant ou une perche,,,,.
 qanak,,1,n,,,,,,,,,tent upright or tent-pole,poteau de tente,,,,.
+qanak,,1,v,t,,,,,,,si/1vv i/1vv,[-R]to /raise s.t. (a tent) with an upright or pole,[-R]/lever qqch. (une tente) avec un montant ou une perche,,,,.
 qanga,,1,a,,,,,,,,,when (in the past),quand (dans le passé),,,,.
-qangaaluk,,1,v,i,,,,,,,,"to fall from the ceiling, speaking of the frost",tomber du plafond (le givre),,,,.
 qangaaluk,,1,n,,,,,,,,,fine snow or frost which falls from ceiling of igloo,neige fine ou frimat qui tombe du plafond d'un iglou,,,,.
+qangaaluk,,1,v,i,,,,,,,,"to fall from the ceiling, speaking of the frost",tomber du plafond (le givre),,,,.
 qangalik,,1,v,i,,,,,,,,to fall from the sifter,,,,,
 qangata,qangataq,1,v,i,a,,,,,,,"to lift, to raise in the air",,,,,
 qangiaq,,1,n,,,,,,,,,man's brother's child,,,,,
@@ -1258,8 +1258,8 @@ qanima,,1,v,i,a,,,,,,,to be sick [N. Baffin],être malade [Terre de Baffin nord]
 qaniq,,1,n,,ana,,,,,,,mouth,bouche,,,,.
 qanit,,1,v,i,a,,,,,,,"to be near, close",être près,,,,.
 qannga,,1,v,i,,,,,,,,"to have backed up against the solid ice, speaking of the moving ice",s'être recollé à la glace solide (la glace flottante),,,,.
-qanniq,,1,v,i,,,,,,,,to be snowing,neiger,,,,.
 qanniq,,1,n,,,,,,,,,falling snow,neige qui tombe,,,,.
+qanniq,,1,v,i,,,,,,,,to be snowing,neiger,,,,.
 qanuit,,1,v,i,a,,,,,,,"to have s.t. wrong (problem, malfunction, etc.)","avoir qqch. qui ne marche pas (un problème, un mauvais fonctionnement, etc.)",,,,.
 qanunga,,1,v,i,,,,,,,,to bully or torment s.o.,"tyranniser, tourmenter qqn",,,,.
 qanuq,,1,a,,,,,,,,,how,comment,,,,.
@@ -1273,8 +1273,8 @@ qapuk,qapuaq,1,n,,,,,,,,,foam,,,,,
 qaqaqaala,,1,v,i,,,,,,,,"to cry, speaking of the loon",crier (le canard huard),,,,.
 qaqqa,,1,n,,,,,,,,,hill,,,,,
 qar&u,,1,n,,ana,,,,,,,lower lip,,,,,
-qaritaq,,1,n,,ana,,,,,,,brain,cerveau,,,,.
 qarasaq,,1,n,,ana,,,,,,,brain,cerveau,,,,.
+qaritaq,,1,n,,ana,,,,,,,brain,cerveau,,,,.
 qarjiq,,1,v,i,,,,,,nil,,to be loaded with bullets,,,,,
 qarjuk,,1,n,,,,,,,,,arrow,,,,,
 qarlik,,1,n,,,,,,,,,pant,,,,,
@@ -1294,14 +1294,14 @@ qattaq,,1,n,,ana,,,,,,,bird's breast,poitrine d'un oiseau,,,,.
 qattaq,,2,n,,,,,,,,,swing-handled pot,marmite avec une poignée flottante,,,,.
 qattik,,1,v,i,a,,,,,,,to protrude,,,,,
 qatut,,1,v,i,,,,,,,,to play the drum,jouer du tambour,,,,.
-qau,,1,v,i,a,,,,,,,"(1) to rise, speaking of the sun (2) to be light, bright","(1) se lever (le soleil) (2) être lumineux, brillant",,,,.
 qau,,1,n,,,,,,,,,"day, daylight","jour, lumière du jour",,,,.
+qau,,1,v,i,a,,,,,,,"(1) to rise, speaking of the sun (2) to be light, bright","(1) se lever (le soleil) (2) être lumineux, brillant",,,,.
 qauji,,1,v,i,,,,,,nil,,to know s.t.,,,,,
 qaulluk,,1,v,i,a,,,,,,,"to be white, light in colour","être de couleur blanche, de couleur pâle",,,,.
-qauq,,1,v,t,res,,,,,,,"to /force, to /break s.t apart (stuck or frozen surfaces)",/détacher qqch. par la force (surfaces gelées ou coincées),,,,.
 qauq,,1,n,,ana,,,,,,,forehead,front,,,,.
-qausiq,,1,v,i,a,,,,,,,to be wet,être humide,,,,.
+qauq,,1,v,t,res,,,,,,,"to /force, to /break s.t apart (stuck or frozen surfaces)",/détacher qqch. par la force (surfaces gelées ou coincées),,,,.
 qausiq,,1,n,,,,,,,,,wet,,,,,
+qausiq,,1,v,i,a,,,,,,,to be wet,être humide,,,,.
 qaviinga,,1,v,i,,,,,,,,to squint the eyes,plisser les yeux,,,,.
 qaviq,,1,n,,zoo,,,,,,,blue goose,petite oie des neiges,,,,.
 qavirpiut,,1,n,,,,,,,,,red stripe over the eye of the willow ptarmigan,bande rouge au-dessus de l'oeil du lagopède des saules,,,,.
@@ -1315,8 +1315,8 @@ qigluk,,1,v,i,,,,,,,,to try to revenge oneself or retaliate against s.o.,tenter 
 qiiq,,1,n,,ana,,,,,,,grey hair,cheveux gris,,,,.
 qijuk,,1,n,,,,,,,,,wood,,,,,
 qika,,1,v,i,,,,,,,,to stay put,,,,,
-qikiqqaq,,1,v,i,,,,,,,,"to make the sound of footsteps, of sled runners, of hoofbeats","faire le bruit des pas, des patins de traîneau, des sabots, etc.",,,,.
 qikiqqaq,,1,n,,,,,,,,,"sound of footsteps, of sled runners, of hoofbeats","son produit par les pas, par le pas des animaux, par les traîneaux, etc.",,,,.
+qikiqqaq,,1,v,i,,,,,,,,"to make the sound of footsteps, of sled runners, of hoofbeats","faire le bruit des pas, des patins de traîneau, des sabots, etc.",,,,.
 qikirtaq,,1,n,,,,,,,,,island,île,,,,.
 qikkut,,1,n,,,,,,,,,plaything,,,,,
 qiksaaq,,1,v,i,a,,,,,,,to be deeply sad or melancholy,,,,,
@@ -1324,11 +1324,11 @@ qiksimik,,1,v,i,,,,,,,,to glance sidewards without turning the head,regarder de 
 qiksulik,,1,v,i,,,,,,,,"to protrude due to having gotten wet, speaking of the inside of a cut in meat",faire saillie parce qu'ell a été mouillée (intérieur d'une coupure dans de la viande),,,,.
 qikturaaq,,1,v,t,res,,,,,,si/1vv,to /snap s.t. in two,/casser qqch. net en deux,,,,.
 qikturiaq,,1,n,,zoo,,,,,,,mosquito,moustique,,,,.
-qikuq,,1,v,t,,,,,,,si/1vv i/1vv,[-R]to /stick s.t. in place or /plaster s.t. in place,[T]coller ou plâtrer qqch. pour le tenir en place[P]être collé ou plâtré pour être tenu en place,,,,.
 qikuq,,1,n,,,,,,,,,stone-work or masonry,,,,,
+qikuq,,1,v,t,,,,,,,si/1vv i/1vv,[-R]to /stick s.t. in place or /plaster s.t. in place,[T]coller ou plâtrer qqch. pour le tenir en place[P]être collé ou plâtré pour être tenu en place,,,,.
 qilaa,,1,v,i,,,,,,,,to commune with spirits,communiquer avec les esprits,,,,.
-qilak,qillak,1,v,t,,,,,,,si/1vv,to /tie s.t. up,,,,,
 qilak,qillak,1,n,,ana,,,,,,,(1) dome of the sky (2) heaven (3) roof of the mouth,(1) voûte du ciel (2) ciel (3) palais de la bouche,,,,.
+qilak,qillak,1,v,t,,,,,,,si/1vv,to /tie s.t. up,,,,,
 qilalugaq,,1,n,,zoo,,,,,,,white whale or beluga [N. Baffin,,,,,
 qilammik,,1,a,,,,,,,,,quickly,,,,,
 qilanaaq,,1,v,i,,,,,,gi/4vv,,"to want s.t. badly, desperately",vouloir qqch. désespérément,,,,.
@@ -1338,8 +1338,8 @@ qilirsinaq,,1,n,,ana,,,,,,,gland,,,,,
 qiliruq,,1,n,,,,,,,,,scar,cicatrice,,,,.
 qilu,,1,v,t,,,,,,,i/1vv,to /spread s.t. out,,,,,
 qilua,,1,v,i,,,,,,,,to twitch or jump or flip in death,avoir un spasme (en mourant),,,,
-qiluaq,,1,v,t,,,,,,,si/1vv,[-R]to /capture s.t. in a lasso,[-R]/capturer qqch. au lasso,,,,.
 qiluaq,,2,n,,,,,,,,,drawstring,,,,,
+qiluaq,,1,v,t,,,,,,,si/1vv,[-R]to /capture s.t. in a lasso,[-R]/capturer qqch. au lasso,,,,.
 qiluk,,1,v,i,,,,,,nil,,to bark,,,,,
 qiluriaq,,1,n,,,,,,,,,help,,,,,
 qimaa,,1,v,i,,,,,,nil,,"to run away, to escape (trans.: from s.o.)","se sauver, s'échapper (trans.: de qqn)",,,,.
@@ -1363,12 +1363,12 @@ qinu,,1,v,i,,,,,,,,to plead or beg for s.t. which is refused,supplier pour qqch.
 qinuk,,1,n,,,,,,,,,small particles of snow or ice on the water,petites particules de neige ou de glace dans l'eau,,,,.
 qipa,qipat,1,v,i,e,,,,gusuk/1vv,gi/4vv,,to hate s.o.,haïr qqn,,,,.
 qipaluaq,,1,n,,ana,,,,,,,inside corner of the eye,coin interne de l'oeil,,,,.
-qipik,,1,v,t,,,,,,,i/1vv,to /cover s.o. with a blanket,/couvrir qqn avec une couverture,,,,.
 qipik,,1,n,,,,,,,,,blanket,,,,,
+qipik,,1,v,t,,,,,,,i/1vv,to /cover s.o. with a blanket,/couvrir qqn avec une couverture,,,,.
 qipiluk,,1,v,i,,,,,,nil,,to refuse (trans.: s.o.),,,,,
 qipit,,1,v,t,,,,,,,si/1vv,to /twist s.t. around and around,/enrouler qqch. autour de quelque chose,,,,.
-qipjaaq,,1,v,t,,,,,,,si/1vv,to /screw s.t. on or tight,,,,,
 qipjaaq,,1,n,,,,,,,,,threading,filetage,,,,.
+qipjaaq,,1,v,t,,,,,,,si/1vv,to /screw s.t. on or tight,,,,,
 qipsi,,1,v,i,a,,,,,,,"to be unable to sleep because of the noise, the talking, etc.","être incapable de dormir à cause du bruit, de la conversation, etc.",,,,.
 qiptaiq,,1,v,i,a,,,,,,,to be awake,,,,,
 qipuqqa,,1,v,i,a,,,,,,,to be or get scratched in many places or extensively,être égratigné ou se faire égratigner à plusieurs endroits,,,,.
@@ -1383,16 +1383,16 @@ qirngaq,,1,v,i,,,,,,,,to pray to spirits,prier les esprits,,,,.
 qirngumik,qirngumigaq,1,v,i,,,,,,,,to look at s.t. through telescope or binoculars,regarder à travers un télescope ou des jumelles,,,,.
 qirniq,,1,v,i,a,,,,,,,to be black,,,,,
 qirpak,,1,n,,,,,,,,,cutaway or slit at sides of Inuit tunic,fente sur les côtés de la tunique inuit,,,,.
-qirsuq,,1,v,i,a,,,,,,,to have an epileptic fit,avoir une crise d'épilepsie,,,,.
 qirsuq,,2,v,i,,,,,,nil,,to harden the snow or other substance around s.t. by tamping or trampling,,,,,
+qirsuq,,1,v,i,a,,,,,,,to have an epileptic fit,avoir une crise d'épilepsie,,,,.
 qirti,,1,v,i,,,,,,,,to push up or roll up one's sleeves in order to wash or cut s.t.,remonter ses manches pour laver ou couper qqch.,,,,.
 qirtutaq,,1,v,i,,,,,,nil,,to strengthen or support s.t. by binding or banding it,,,,,
 qisarruaq,,1,n,,ana,,,,,,,caribou's first stomach,premier estomac du caribou,,,,.
 qisik,,1,n,,,,,,,,,seal skin,,,,,
 qissiq,,1,v,i,,,,,,,,to spit,cracher,,,,.
 qissuk,,1,v,t,,,,,,,nnik/1vv,to /scratch s.o. intentionally and repeatedly or in several places,/égratigner ou /gratter qqn intentionellement et de façon répétée ou à plusieurs endroits,,,,.
-qisuk,,1,v,t,,,,,,,nnik/1vv,to /scratch s.o. intentionally,/égratigner ou /gratter qqn intentionellement,,,,.
 qisuk,,1,n,,,,,,,,,(1) harness snap [WCHB,,,,,
+qisuk,,1,v,t,,,,,,,nnik/1vv,to /scratch s.o. intentionally,/égratigner ou /gratter qqn intentionellement,,,,.
 qitik,,1,v,i,,,,,,,,to play as a child,jouer comme un enfant,,,,.
 qitiq,,1,n,,ana,,,,,,,middle of something,,,,,
 qitirulliq,,1,n,,zoo,,,,,,,maggot,asticot,,,,.
@@ -1407,8 +1407,8 @@ qivik,,1,v,t,,,,,,,si/1vv,to /lift s.t.,,,,,
 qiviu,,1,n,,,,,,,,,fine hair or down hair of a bird,"poils fins, duvet d'oiseau",,,,.
 quajaq,,1,v,i,,,,,,,,to slip on a slippery surface,glisser sur une surface glissante,,,,.
 quaniq,,1,n,,bot,,,,,,,(edible) marine plant,plante marine comestible,,,,.
-quaq,,1,v,i,a,,,,,,,"to be frozen, speaking of meat or soft or liquid substance","être gelé, en parlant de viande ou d'une substance molle ou liquide",,,,.
 quaq,,1,n,,,,,,,,,soft or liquid substance solidly frozen,substance molle ou liquide gelée solidement,,,,.
+quaq,,1,v,i,a,,,,,,,"to be frozen, speaking of meat or soft or liquid substance","être gelé, en parlant de viande ou d'une substance molle ou liquide",,,,.
 quarjuk,,1,n,,,,,,,,,ridge,,,,,
 quartaq,,1,n,,zoo,,,,,,,intestinal worm,vers intestinal,,,,.
 qublaniq,,1,n,,,,,,,,,"crack, split in wood",fissure dans le bois,,,,.
@@ -1428,8 +1428,8 @@ qukaq,,1,v,i,a,,,,,,,to be seen no more,,,,,
 qukiq,,1,v,t,,,,,,,si/1vv,/to shoot s.o. or s.t. with a gun,/tirer qqch. ou qqn avec une arme à feu,,,,.
 quksa,,1,v,i,a,,,,,,,to react nervously,réagir nerveusement,,,,.
 quksik,quksiq,1,n,,zoo,,,,,,,herring gull,goéland argenté,,,,.
-qula,,1,v,i,,,,,,gi/4vv,,to doubt someone,douter de qqn,,,,.
 qula,,1,n,,,,,,,,,the space above something,l'espace au-dessus de qqch.,,,,.
+qula,,1,v,i,,,,,,gi/4vv,,to doubt someone,douter de qqn,,,,.
 qulit,,1,n,,,p,,,,,,ten,dix,,,,.
 qulliquliarjuk,qulliqulliarjuk,1,n,,zoo,,,,,,,kildeer,pluvier kildir,,,,.
 quluaq,,1,v,i,a,,,,,,,"to have one's stomach rumble, make noises",avoir l'estomac qui gargouille,,,,.
@@ -1476,16 +1476,16 @@ sagliq,,1,n,,,,,,,,,thin or melting spot on ice,endroit sur la glace où la glac
 saglu,,1,v,i,,,,,,,,to lie,,,,,
 sagvaq,,1,v,t,,,,,,,i/1vv,[-R]to /put s.t. down in front,,,,,
 saima,saimaq,1,v,i,a,,,,,,,"to be calm, contented, at peace with oneself","être calme, satisfait, en paix avec soi-même",,,,.
-saitaq,,1,v,i,,,,,,,,to play cards,jouer aux cartes,,,,.
 saitaq,,1,n,,,,,,,,,playing card,carte à jouer,,,,.
+saitaq,,1,v,i,,,,,,,,to play cards,jouer aux cartes,,,,.
 sajuk,,1,v,i,,,,,,,,to tremble,,,,,
 saka,,1,v,i,,,,,,,,to invoke the spirits,invoquer les esprits,,,,.
 saki,,1,n,,,,,,,,,father-in-law,,,,,
 sakiaq,,1,n,,,,,,,,,(1) man's wife's brother,,,,,
 sakku,,1,n,,,,,,,,,(1) double-edged point of harpoon or spear (2) cartridge,,,,,
 saksiq,,1,v,i,a,,,,,,,"to be foggy, speaking of the weather",être brumeux (le temps),,,,.
-sakuk,sakuuk,1,v,i,,,,,,,,to scrape off the inner skin from a pelt,gratter la peau intérieure d'une fourrure,,,,.
 sakuk,,1,n,,,,,,,,,inner layer of a pelt or skin,couche interne d'une peau,,,,.
+sakuk,sakuuk,1,v,i,,,,,,,,to scrape off the inner skin from a pelt,gratter la peau intérieure d'une fourrure,,,,.
 saliaq,,1,v,i,,,,,,,,to travel along the edge or border of some body of land or water,voyager sur le bord d'une pièce d'eau ou de terre,,,,.
 salik,,1,v,i,,,,,,nil,,to wipe away,,,,,
 sallaq,,1,v,i,a,,,,,,,"to be void of water, speaking of the sea ice in the spring",être vide d'eau (la glace de mer au printemps),,,,.
@@ -1497,10 +1497,10 @@ salumma,salummaq,1,v,i,a,,,,,,,to be clean,,,,,
 sana,,1,v,i,,,,,,nil,,to work at something,,,,,
 sangu,,1,v,i,,,,,,,,"(1) to veer, to change direction (2) to change one's mind or to do s.t. not as usual",(1) changer de direction (2) changer d'idée ou faire qqch. d'inhabituel,,,,.
 sani,,1,n,,,,,,,,,"side, flank of something",,,,,
-saniq,,1,v,i,,,,,,nil,,to sweep something off its dirt,balayer la poussière (trans.: de qqch.),,,,.
 saniq,,1,n,,,,,,,,,dirt accumulation on the floor,accumulation de saleté sur le plancher,,,,.
-sanirarmik,,1,v,i,,,,,,nil,,to smooth s.t. with a plane,"égaliser, lisser qqch. avec un rabot",,,,.
+saniq,,1,v,i,,,,,,nil,,to sweep something off its dirt,balayer la poussière (trans.: de qqch.),,,,.
 sanirarmik,,1,n,,,,,,,,,wood plane,rabot à bois,,,,.
+sanirarmik,,1,v,i,,,,,,nil,,to smooth s.t. with a plane,"égaliser, lisser qqch. avec un rabot",,,,.
 sannalik,,1,n,,,,,,,,,coarse-cut or pipe tobacco,tabac à pipe,,,,.
 sanngi,,1,v,i,a,,,,,,,to be physically strong [WCHB,,,,,
 sanniq,,1,v,t,res,,,,,,i/1vv,to /turn s.o. or s.t. on the side,/tourner qqn ou qqch. sur le côté,,,,.
@@ -1515,25 +1515,25 @@ saqqaq,,1,n,,ana,,,,,,,hollow or depression at the base of the sternum,creux ou 
 saqqik,,1,v,t,res,,,,,,i/1vv si/1vv,to /make s.t. appear or show to view,[T]faire apparaître qqch.[P]être fait qu'on apparaît[R]apparaître,,,,.
 sarat,,1,v,i,a,,,,,,,to be damp or clammily moist,être humide ou moite,,,,.
 sarima,,1,v,i,e,,,,gusuk/1vv,gi/4vv,,to be delighted or happy over some new acquisition,être ravi ou heureux d'une nouvelle acquisition,,,,.
-sarliaq,,1,v,i,,,,,,,,to be nestling or lying over something,être assis ou étendu sur qqch.,,,,.
 sarliaq,,1,n,,,,,,,,,whelp,,,,,
-sarpik,,1,v,i,,,,,,,,to point one's feet outwards,,,,,
+sarliaq,,1,v,i,,,,,,,,to be nestling or lying over something,être assis ou étendu sur qqch.,,,,.
 sarpik,,1,n,,,,,,,,,tail of a whale,queue d'une baleine,,,,.
-sarvaq,,1,v,i,,,,,,,,"to run down, to flow swiftly, speaking of a water course","descendre, courir (cours d'eau)",,,,.
+sarpik,,1,v,i,,,,,,,,to point one's feet outwards,,,,,
 sarvaq,,1,n,,,,,,,,,rapid,,,,,
+sarvaq,,1,v,i,,,,,,,,"to run down, to flow swiftly, speaking of a water course","descendre, courir (cours d'eau)",,,,.
 satuq,,1,v,t,res,,,,,,i/1vv,[-R]to /give away and then /take s.t. back,,,,,
-sau,,1,v,i,,,,,,,,to insulate an igloo by covering it with snow,isoler un iglou en le couvrant de neige,,,,.
 sau,,1,n,,,,,,,,,snow thrown over igloo as insulation,neige jetée sur un iglou en guise d'isolation,,,,.
+sau,,1,v,i,,,,,,,,to insulate an igloo by covering it with snow,isoler un iglou en le couvrant de neige,,,,.
 saugaq,,1,n,,,,,,,,,sheep or lamb skin,peau d'agneau ou de mouton,,,,.
 saulluut,,1,n,,,,,,,,,bone-pick for removing marrow from leg bones,pic en os pour enlever la moëlle des os de patte,,,,.
 saumik,,1,n,,,,,,,,,left-handed person,,,,,
-sauniq,,1,v,i,,,,,,nil,,to hit bone (trans.: with s.t.),se frapper un os (trans.: avec qqch.),,,,.
 sauniq,,1,n,,ana,,,,,,,(1) bone,,,,,
+sauniq,,1,v,i,,,,,,nil,,to hit bone (trans.: with s.t.),se frapper un os (trans.: avec qqch.),,,,.
 saurraq,,1,n,,zoo,,,,,,,red phalarope,phalarope à bec large,,,,.
 savak,,1,v,i,,,,,,,,to squelch,faire un bruit de succion,,,,
 saviaq,,1,v,i,,,,,,nil,,to scrape (trans.: s.t.) clear of dirt or debris,,,,,
-savik,,1,v,i,a,,,,,,,"to be fitted with a metal point, speaking of a harpoon or spear",avoir une pointe de métal fixée à son extrémité (un harpon ou une lance),,,,.
 savik,,1,n,,,,,,,,,(1) metal,,,,,
+savik,,1,v,i,a,,,,,,,"to be fitted with a metal point, speaking of a harpoon or spear",avoir une pointe de métal fixée à son extrémité (un harpon ou une lance),,,,.
 sia,,1,n,,,,,,,,,loose deer hair,poils de cerf perdus par l'animal,,,,.
 siak,,1,e,,,,,,,,,"ejaculation: ""What? what did you say?""",exclamation: 'Quoi? qu'as-tu dit?',,,,.
 siaka,,1,v,i,,,,,,gi/4vv,,to worry about s.t.,s'inquiéter de qqch.,,,,.
@@ -1552,16 +1552,16 @@ sigjaq,,1,n,,,,,,,,,shore,,,,,
 siik,,1,v,t,res,,,,,,si/1vv,to /slit s.t. open,"[-R]/inciser, /fendre qqch.[R]se fendre",,,,.
 siimik,,1,v,t,,,,,,,si/1vv,"to /catch, /squash, /squeeze s.t. between or under heavy objects","/attraper, /écraser, /coincer qqch. entre ou sous des objets lourds",,,,.
 siiqquq,,1,n,,ana,,,,,,,knee,genou,,,,.
-siirnak,,1,v,i,a,,,,,,,"to be acidic in taste, tart, piquant, sickly sweet","être acide au goût, piquant",,,,.
 siirnak,,1,n,,,,,,,,,sorrel,oseille,,,,.
+siirnak,,1,v,i,a,,,,,,,"to be acidic in taste, tart, piquant, sickly sweet","être acide au goût, piquant",,,,.
 siirtit,,1,v,i,,,,,,,,"to well up from the edge of lake in winter, speaking of the water","remonter du bord du lac en hiver, en parlant de l'eau",,,,.
 sijjaq,,1,n,,,,,,,,,(1) fox den or lair [WCHB] (2) shore-line [N. Baffin] (3) passage-way to nest of a baby seal [N. Baffin],(1) tanière de renard [côte ouest de la Baie d'Hudson] (2) ligne du rivage [Terre de Baffin nord] (3) chemin vers le nid du bébé phoque [Terre de Baffin nord],,,,.
 sikanga,,1,v,i,a,,,,,,,to act the fool,,,,,
 siki,,1,v,i,,,,,,,,to look down at something,baisser le regard sur qqch.,,,,.
 sikkik,,1,v,i,a,,,,,,,to be clear,,,,,
 siksik,,1,n,,zoo,,,,,,,arctic marmot,marmotte polaire,,,,.
-siku,,1,v,i,,,,,,,,"to have become ice, speaking of the water",avoir tourné en glace (eau),,,,.
 siku,,1,n,,,,,,,,,ice,glace,,,,.
+siku,,1,v,i,,,,,,,,"to have become ice, speaking of the water",avoir tourné en glace (eau),,,,.
 sikumngiq,,1,v,i,,,,,,,,to close one's eyes,fermer les yeux,,,,.
 sila,,1,n,,,,,,,,,(1) air,,,,,
 silata,silati,1,n,,,,,,,,,"the outside, the exterior of something",l'extérieur de qqch.,,,,.
@@ -1569,47 +1569,47 @@ silik,,1,v,i,a,,,,,,,to be wide or broad,être large,,,,.
 sillinguji,,1,v,i,a,,,,,,,to have indigestion or gas pains,avoir une indigestion ou des douleurs causées par des gaz,,,,.
 silu,,1,n,,,,,,,,,dead sea animal,animal marin mort,,,,.
 siluk,,1,v,i,,,,,,nil,,"to raise one's arm, to be about, ready to strike (trans.: s.o. or s.t.)","lever la bras, être prêt à frapper (trans.: qqch. ou qqn)",,,,.
-simik,,1,v,t,,,,,,,si/1vv,"to /stopper, /plug or /cork s.t.",/boucher qqch. (avec un bouchon),,,,.
 simik,,1,n,,,,,,,,,stopper,,,,,
+simik,,1,v,t,,,,,,,si/1vv,"to /stopper, /plug or /cork s.t.",/boucher qqch. (avec un bouchon),,,,.
 sinaa,sini,1,n,,,,,,,,,floe edge,bord de la banquise,,,,.
 sinakjuk,,1,n,,,,,,,,,edge of an angled or sharp object,bord d'un objet aiguisé,,,,.
 singai,,1,n,,ana,,,,,,,human foetus,foetus humain,,,,.
-singiq,,1,v,i,,,,,,nil,,to tie shoe-laces (trans.: of s.o.),attacher les lacets (trans.: de qqn),,,,.
 singiq,,1,n,,,,,,,,,ankle lace for shoe or boot,lacet à la cheville pour chaussure ou botte,,,,.
+singiq,,1,v,i,,,,,,nil,,to tie shoe-laces (trans.: of s.o.),attacher les lacets (trans.: de qqn),,,,.
 singnaa,,1,v,i,a,,,,,,,to be jealous of someone due to infidelity,être jaloux de qqn pour cause d'infidélité,,,,.
 singuk,,1,v,i,,,,,,,,to exert a pressure,exercer une pression,,,,.
-sinik,sinak,1,v,i,,,,,,,,to sleep,dormir,,,,.
 sinik,,1,n,,,,,,,,,sleep,sommeil,,,,.
+sinik,sinak,1,v,i,,,,,,,,to sleep,dormir,,,,.
 sinngaq,,1,v,t,,,,,,,,[-R]to /flatten s.t. or /spread s.t. out by pounding or hammering,[-R]/aplatir qqch. ou /étendre qqch. en martelant,,,,.
 sipi,,1,v,t,,,,,,,si/1vv,to /rip s.t. clear through or right in half,/déchirer qqch. en deux proprement,,,,.
 sipiksaq,,1,n,,,,,,,,,keel of a boat,"quille d'un bateau, d'une embarcation",,,,.
 sipkiq,,1,v,i,,,,,,,,to fall out of joint (as bone from socket) or off its precarious balance,,,,,
 siqalli,siqali,1,v,t,res,,,,,,i/1vv,to /pulverize s.t.,,,,,
-siqiniq,,1,v,i,,,,,,,,to shine - said of the sun,"briller, en parlant du soleil",,,,.
 siqiniq,,1,n,,,,,,,,,the sun,le soleil,,,,.
+siqiniq,,1,v,i,,,,,,,,to shine - said of the sun,"briller, en parlant du soleil",,,,.
 siqiq,,1,v,t,,,,,,,si/1vv,to /splash s.o.,/éclabousser qqn,,,,.
 siqqit,,1,v,i,,,,,,,,"to cross over from land to sea, from solid ice to moving ice, from less to more dangerous terrain","passer d'un endroit à un autre: de la terre à la mer, de la glace solide à la glace mouvante, d'un terrain moin dangereux à un terrain plus dangereux",,,,.
 siqquaq,,1,n,,,,,,,,,hind flipper of walrus,nageoire arrière du morse,,,,.
+siqquq,,1,n,,,,,,,,,hind flipper of seal or square-flipper,nageoire arrière du phoque,,,,.
 siqquq,,2,v,i,,,,,,,,to make a cracking or exploding sound,faire un bruit de craquement ou d'explosion,,,,.
 siqquq,,1,v,t,,,,,,,si/1vv,to /shoot s.t. with a gun or rifle,[T]tirer sur qqch. avec un fusil ou une carabine [P]être tiré dessus avec un fusil ou une carabine [R] se tirer avec un fusil ou une carabine,,,,.
-siqquq,,1,n,,,,,,,,,hind flipper of seal or square-flipper,nageoire arrière du phoque,,,,.
 siqumik,,1,v,t,res,,,,,,si/1vv,[-R]to /shatter s.t. [R]to break or shatter,[-R]/briser qqch. en miettes [R]se briser en miettes,,,,.
 siqupsiraq,,1,n,,,,,,,,,foetus of bird,,,,,
 siquptir,,1,v,t,res,,,,,,i/1vv,"to /shatter, /break s.t. in fragments",[-R]/fracasser qqch. [R]voler en éclats,,,,.
 siriaq,,1,v,i,a,,,,,,,to be partly dry or getting dry,être partiellement sec ou être en train de sécher,,,,.
 sirlak,,1,a,,,,,,,,,a little bit,un peu,,,,.
-sirliq,,1,v,i,a,,,,,,,to be dry or finished drying - said of a deerskin,"être sec ou finir de sécher, en parlant d'une peau de cerf",,,,.
 sirliq,,1,n,,,,,,,,,noise (or noise similar to that) made in softening deerskin,bruit fait en amolissant une peau de cerf (ou bruit qui y ressemble),,,,.
+sirliq,,1,v,i,a,,,,,,,to be dry or finished drying - said of a deerskin,"être sec ou finir de sécher, en parlant d'une peau de cerf",,,,.
 sirluaq,,1,n,,,,,,,,,food depot,dépôt de nourriture,,,,.
-sirmiq,,1,v,t,res,,,,,,si/1vv,[-R]to /give s.t. an ice coating by hand [R]to ice up,[-R]/recouvrir qqch. d'une couche de glace à la main [R]se couvrir de glace,,,,.
 sirmiq,,1,n,,,,,,,,,(1) ice coating (2) glacier,(1) couche de glace (2) glacier,,,,.
+sirmiq,,1,v,t,res,,,,,,si/1vv,[-R]to /give s.t. an ice coating by hand [R]to ice up,[-R]/recouvrir qqch. d'une couche de glace à la main [R]se couvrir de glace,,,,.
 sirpik,,1,n,,,,,,,,,sand in the corner of the eye after sleep,grains dans le coin de l'oeil après avoir dormi,,,,.
 sisangiq,,1,v,i,a,,,,,,,to just start to feel warm - said of liquid after being put to heat,"commencer à tiédir, en parlant d'un liquide qu'on vient de mettre à chauffer",,,,.
 sitak,,1,v,i,a,,,,,,,"to be stumped, stucked while playing solitaire or patience","être bloqué, alors qu'on joue au solitaire ou à la patience",,,,.
 sitamat,,1,n,,nb,p,sitama,,,,,four [WCHB],quatre,,,,
 sitartaq,,1,n,,,,,,,,,hardwood,bois dur,,,,
-siti,,1,v,i,a,,,,,,,to be hard - said of a physical substance,"être dur, en parlant d'une substance physique",,,,.
 siti,,1,n,,,,,,,,,animal hole,,,,,
+siti,,1,v,i,a,,,,,,,to be hard - said of a physical substance,"être dur, en parlant d'une substance physique",,,,.
 sitsiq,,1,v,i,a,,,,,,,to be saturated,être saturé,,,,.
 situ,,1,v,i,,,,,,,,to slide down,,,,,
 situ,,2,v,i,,,,,,,,to stretch one's legs out straight,s'étirer les jambes,,,,.
@@ -1638,8 +1638,8 @@ sukku,,1,n,,,,,,,,,someone poor,une personne pauvre,,,,.
 sukuiq,,1,v,t,,,,,,,si/1vv,[-R]to /understand s.o.,[-R]/comprendre qqn,,,suqquiq/1v,.
 sukuttiq,,1,pr,,,,,,,,,cover-all interrogative pronoun for unknown thing,pronom interrogatif fourre-tout pour quelque chose d'inconnu,,,,.
 sukuuq,,1,v,i,,,,,,nil,,"to scold, reprimand (trans.: s.o.)",,,,,
-suli,,1,v,i,,,,,,nil,,to speak truthfully,,,,,
 suli,,1,a,,,,,,,,,yet,,,,,
+suli,,1,v,i,,,,,,nil,,to speak truthfully,,,,,
 sulubvaut,,1,n,,,,,,,,,small outward-curved portion of caribou's horn,petite partie externe recourbée du bois de caribou,,,,.
 suluk,,1,n,,,,,,,,,(1) wing (2) arrow feathering,(1) aile (2) plume de flèche,,,,.
 sulukpaugaq,,1,n,,zoo,,,,,,,arctic grayling,ombre arctique,,,,.
@@ -1662,17 +1662,17 @@ suugami,,1,e,,,,,,,,,"disclaimer: ""I don't know! (I don't want to say)"" [Pang.
 suuq,,1,a,,,,,,,,,why?,pourquoi?,,,,.
 suurlu,,1,a,,,,,,,,,like,,,,,
 suvak,,1,n,,,,,,,,,fish roe,,,,,
-suvalikiaq,,1,v,i,e,,,,gusuk/1vv,gi/4vv,,"to be considered lightly, a waste of time or energy","être considéré légèrement, comme une perte de temps ou d'énergie",,,,.
 suvalikiaq,,1,e,,,,,,,,,"exclamation of futility: ""It's no use!"" ""Why bother!""",exclamation de futilité: 'Ça ne sert à rien!',,,,.
+suvalikiaq,,1,v,i,e,,,,gusuk/1vv,gi/4vv,,"to be considered lightly, a waste of time or energy","être considéré légèrement, comme une perte de temps ou d'énergie",,,,.
 suvaunniit,,1,e,,,,,,,,,"exclamation of acceptance: ""It could be better, but never mind!"" [Padl.]","exclamation d'acceptation: ""Ça pourrait être mieux, mais ça va aller!"" [Padl.]",,,,.
 suviq,,1,v,i,,,,,,nil,,to penetrate s.t. - said of the wind or draught,,,,,
 taak,,1,v,i,,,,,,nil,,to remove an outer garment [Natt.] (trans.: a garment),enlever un vêtement extérieur [Natt.],,,,.
-taaq,,1,v,i,a,,,,,,,to be dark,,,,,
 taaq,,1,n,,,,,,,,,darkness,noirceur,,,,
+taaq,,1,v,i,a,,,,,,,to be dark,,,,,
 tablu,,1,n,,ana,,,,,,,chin,menton,,,,.
 taga-taga,,1,a,,,,,,,,,now [ECHB,,,,,
-taggiuk,,1,v,i,,,,,,,,to sneeze,éternuer,,,,.
 taggiuk,,1,n,,,,,,,,,worm infesting nostrils of caribou,ver qui infeste les narines des caribous,,,,.
+taggiuk,,1,v,i,,,,,,,,to sneeze,éternuer,,,,.
 taggut,,1,n,,,,,,,,,harpoon-line catch [N. Baffin],pièce d'ivoire d'un harpon pour empêcher la main du chasseur de glisser lorsque le gibier est touché [Terre de Baffin nord],,,,.
 tagguuk,,1,e,,,,,,,,,expression when one realizes he has been cheated or joshed,expression lorsqu'on réalise qu'on a été trompé,,,,.
 tagliq,,1,v,i,,,,,,nil,,"to convey, carry, transport s.t. [Natt.]","transporter, porter qqch. [Natt.]",,,,.
@@ -1687,8 +1687,8 @@ tajarniq,,1,n,,ana,,,,,,,forearm,avant-bras,,,,.
 tajjuit,,1,v,i,,,,,,,,(1) to tread the sides of one's boots over or crooked (2) to cut or break his skin his skin with a dull instrument,(1) écraser les côtés de ses bottes en marchant,,,,
 taki,,1,v,i,a,,,,,,,to be long,,,,,
 takpik,,1,v,i,,,,,,,,"to see distances well, clearly","bien voir les distances, clairement",,,,.
-taksiq,,1,v,i,a,,,,,,,"to be foggy, misty - said of the weather",être brumeux (le temps),,,,.
 taksiq,,1,n,,,,,,,,,fog,,,,,
+taksiq,,1,v,i,a,,,,,,,"to be foggy, misty - said of the weather",être brumeux (le temps),,,,.
 taktuk,,1,n,,,,,,,,,fog,,,,,
 taku,,1,v,i,,,,,,nil,,to see (trans.: s.t.),voir (trans.: qqch.),,,,.
 talik,,1,v,t,,,,,,,si/1vv,to /hide or /mask s.t. from view,/cacher qqch. de la vue,,,,.
@@ -1697,8 +1697,8 @@ talirpik,,1,n,,,,,,,,,"(1) the right side: right hand, arm, etc. (2) right-hande
 tallik,,1,v,t,,,,,,,i/1vv si/1vv,to /scratch or /scrape s.o. accidentally,/égratigner ou /érafler qqch. accidentellement,,,,.
 tallima,,1,n,,nb,,,,,,,numeral root: five,,,,,
 talu,,1,v,t,,,,,,,i/1vv,to /hide or /block s.o. off from view,/cacher ou /bloquer qqn de la vue,,,,.
-tammaq,,1,v,i,a,,,,,,,(1) to have gone lost (2) to have made a mistake,,,,,
 tammaq,,1,n,,,,,,,,,(1) wrong turning (2) mistake,,,,,
+tammaq,,1,v,i,a,,,,,,,(1) to have gone lost (2) to have made a mistake,,,,,
 tamua,,1,v,i,,,,,,nil,,to chew or masticate (trans.: s.t.),"mâcher, mastiquer (trans.:  qqch.)",,,,.
 tangiq,,1,n,,,,,,,,,indissoluble remains of blubber chunks,restes indissolubles de morceaux de blanc de baleine,,,,.
 tangmaaq,,1,v,i,,,,,,,,to stop to camp for the night,arrêter camper pour la nuit,,,,.
@@ -1707,15 +1707,15 @@ tapa,,1,v,i,a,,,,,,,to be persistent,être persistent,,,,.
 tapaaki,,1,n,,,,,,,,,tobacco [ECHB],tabac [côte est de la Baie d'Hudson],,,,.
 tapinguq,,1,v,i,a,,,,,,,to have a hole in one's boot [Natt.],avoir un trou dans sa botte [Natt.],,,,.
 tapiq,,1,n,,,,,,,,,a partner,un partenaire,,,,.
-tapsi,,1,v,t,,,,,,,i/1vv,[T]to put his outer belt or sash to s.o. [P]to be put on one's outer belt or sash by s.o. [R]to put on one's own outer belt or sash,[T]mettre sa ceinture à qqn[P]se faire mettre sa ceinture[R]mettre sa ceinture,,,,.
 tapsi,,1,n,,,,,,,,,outer belt or sash,ceinture ou écharpe externe,,,,.
+tapsi,,1,v,t,,,,,,,i/1vv,[T]to put his outer belt or sash to s.o. [P]to be put on one's outer belt or sash by s.o. [R]to put on one's own outer belt or sash,[T]mettre sa ceinture à qqn[P]se faire mettre sa ceinture[R]mettre sa ceinture,,,,.
 tapsik,,1,v,t,,,,,,,si/1vv i/1vv,[-R]to /touch s.t. or /grope at s.t. in the dark,"[-R]/toucher ou /tripoter, /tâter qqch. dans l'obscurité",,,,.
 taqa,,1,v,i,a,,,,,,,"to be tired, fatigued",être fatigué,,,,.
 taqak,,1,n,,ana,,,,,,,blood vessel,vaisseau sanguin,,,,.
 taqqiq,,1,n,,,,,,,,,(1) moon (2) month,(1) lune (2) mois,,,,.
 taqqirsuq,,1,v,i,,,,,,nil,,to tend the oil lamp,s'occuper de la lampe à huile,,,,.
-taquaq,,1,v,i,a,,,,,,,to be provisioned for one's journey,être approvisionné pour un voyage,,,,.
 taquaq,,1,n,,,,,,,,,grub or food for the trail,nourriture pour le voyage,,,,.
+taquaq,,1,v,i,a,,,,,,,to be provisioned for one's journey,être approvisionné pour un voyage,,,,.
 tariuq,,1,n,,,,,,,,,(1) sea,,,,,
 tarjaaraq,,1,v,i,,,,,,,,to pound and break upon the shore or rocks - said of the sea or surf,"battre et se briser contre le rivage ou les rochers (la mer, le ressac)",,,,.
 tarjaq,,1,v,i,,,,,,,,to walk up into the land to hunt caribou,marcher à l'intérieur des terres pour chasser le caribou,,,,.
@@ -1725,12 +1725,12 @@ tarpak,,1,n,,ana,,,,,,,(1) bulge or flare of the nostril (2) flare of garment,(1
 tarpaq,,1,v,i,,,,,,,,to dilate one's nostrils,,,,,
 tarraq,,1,n,,,,,,,,,(1) shadow,,,,,
 tarrumaaq,,1,v,i,a,,,,,,,to be without one's outer garment,être sans ses vêtements extérieurs,,,,.
-tarsaq,,1,v,i,a,,,,,,,(1) to be figured or patterned (2) to be coloured,(1) être représenté ou modélisé (2) être coloré,,,,.
 tarsaq,,1,n,,,,,,,,,(1) design,,,,,
+tarsaq,,1,v,i,a,,,,,,,(1) to be figured or patterned (2) to be coloured,(1) être représenté ou modélisé (2) être coloré,,,,.
 tartitaq,,1,v,i,a,,,,,,,to have dark moving patches playing over oneself - said of the sea,avoir des plaques foncées qui se déplacent à sa surface (la mer),,,,.
 tartu,,1,n,,ana,,,,,,,kidney,rein,,,,.
-tasikkuaq,,1,v,i,,,,,,,,(1) to look for seal-holes with dogs on leash (2) to lead dogs by the leash,(1) chercher des trous de phoques avec des chiens en laisse (2) conduire des chiens en laisse,,,,.
 tasikkuaq,,1,n,,,,,,,,,"dog, expert at smelling out seal-holes under the snow","chien, expert à sentir les trous de phoque sous la neige",,,,.
+tasikkuaq,,1,v,i,,,,,,,,(1) to look for seal-holes with dogs on leash (2) to lead dogs by the leash,(1) chercher des trous de phoques avec des chiens en laisse (2) conduire des chiens en laisse,,,,.
 tasiq,,1,n,,,,,,,,,lake,lac,,,,.
 tasit,,1,v,t,res,,,,,,si/1vv,to /stretch s.t.,/étirer qqch.,,,,.
 tasiuq,,1,v,i,,,,,,nil,,"to take, to lead s.o. by the hand or the arm","prendre, diriger (trans.: qqn) par la main ou le bras",,,,.
@@ -1743,8 +1743,8 @@ tattui,,1,v,i,a,,,,,,,to be constipated,être constipé,,,,.
 tattuq,,1,v,t,res,,,,,,si/1vv,"to /stick, /wedge, /jam s.t. or s.o.","/coller, /coincer, /bloquer qqch. ou qqn",,,,.
 taursi,,1,v,i,,,,,,,,to return in payment the same thing as borrowed,retourner en paiement la même chose qu'on a emprunté,,,,.
 tautuk,,1,v,i,,,,,,nil,,to look or gaze (trans.: at something),regarder (trans.: qqch.),,,,.
-tavvaaki,,1,v,i,,,,,,,,to smoke or chew tobacco,fumer ou mâcher du tabac,,,,.
 tavvaaki,,1,n,,,,,,,,,tobacco [N. Baffin],tabac [Terre de Baffin nord],,,,.
+tavvaaki,,1,v,i,,,,,,,,to smoke or chew tobacco,fumer ou mâcher du tabac,,,,.
 tibjaq,,1,n,,,,,,,,,(1) flotsam and jetsam,,,,,
 tibli,,1,n,,,,,,,,,food particle adhering to the sides of the mouth after eating,particules de nourriture aux coins de la bouche après avoir mangé,,,,.
 tiblirtirut,,1,n,,,,,,,,,old-fashioned carrot of tobacco,carotte de tabac à l'ancienne mode,,,,.
@@ -1780,8 +1780,8 @@ tingmi,,1,v,i,,,,,,,,to fly,voler dans les airs,,,,.
 tinguk,,1,n,,ana,,,,,,,(1) liver (2) smallest lobe of the liver,(1) foie (2) plus petit lobe du foie,,,,.
 tinit,,1,v,i,a,,,,,,,to be low,,,,,
 tipaak,,1,n,,,,,,,,,tobacco,tabac,,,,.
-tipi,,1,v,i,,,,,,,,to drift into shore or landward by wind or tide,être poussé sur le rivage ou à l'intérieur des terres par le vent ou la marée,,,,.
 tipi,tipa,1,n,,,,,,,,,flavour,,,,,
+tipi,,1,v,i,,,,,,,,to drift into shore or landward by wind or tide,être poussé sur le rivage ou à l'intérieur des terres par le vent ou la marée,,,,.
 tipsi,,1,v,i,e,,,,gusuk/1vv,gi/4vv,,"to be amusing, funny, comic, laughable","être amusant, drôle, comique, risible",,,,.
 tipsik,,1,v,i,a,,,,,,,to be far up in the land,être loin à l'intérieur des terres,,,,.
 tiqiaq,,1,n,,,,,,,,,peak of cap,,,,,
@@ -1817,8 +1817,8 @@ tujjaq,,2,v,i,,,,,,,,to hurt one's feet on rough terrain - said of dog,se blesse
 tujuq,,1,v,t,,,,,,,i/1vv,"[-R]to send, to bring s.o. something","[-R]envoyer, apporter quelque chose à qqn",,,,.
 tujurmi,,1,v,i,,,,,,,,to lodge at another's house temporarily or at a hotel,loger temporairement chez qqn ou à l'hôtel,,,,.
 tukaillaa,,1,v,i,,,,,,,,to stretch one's hind legs suddenly or backward - said of quadruped animal,étirer les pattes de derrière soudainement vers l'arrière (un animal à quatre pattes),,,,.
-tukatuk,,1,v,i,,,,,,,,to putt or purr - said of internal combustion engine,ronronner (moteur à combustion interne),,,,.
 tukatuk,,1,n,,,,,,,,,purr or putt of engine,ronronnement d'un moteur,,,,.
+tukatuk,,1,v,i,,,,,,,,to putt or purr - said of internal combustion engine,ronronner (moteur à combustion interne),,,,.
 tuki,,1,n,,,,,,,,,(1) meaning (2) order,,,,,
 tukiq,,2,v,i,,,,,,,,to break its shell by kicking with one's feet - said of a bird,"briser sa coquille en poussant avec les pieds, en parlant d'un oiseau",,,,.
 tukiq,,1,v,t,,,,,,,si/1vv,"[-R]to stamp, stomp, tread, tramp upon s.t., to push s.t., with the sole or bottom of the foot, one time",,,,,
@@ -1834,59 +1834,59 @@ tulugaq,,1,n,,zoo,,,,,,,raven,corbeau,,,,.
 tuluq,,1,v,t,,,,,,,si/1vv,"[-R]to /bump, /knock, /hit s.t. with one's body","[-R]/cogner, /frapper qqch. avec le corps",,,,.
 tuluriaq,,1,n,,ana,,,,,,,eye tooth,dent canine chez l'être humain,,,,.
 tumi,,1,n,,,,,,,,,track,,,,,
-tummaq,,1,v,i,,,,,,,,to have grown together,,,,,
 tummaq,,1,n,,,,,,,,,(1) knit bone (2) person with a knit bone,(1) maladie: knit-bone (2) personne avec cette maladie,,,,.
+tummaq,,1,v,i,,,,,,,,to have grown together,,,,,
 tumniq,,1,n,,,,,,,,,tattoo,tatou,,,,.
 tunga,tungi,1,n,,,,,,,,,the near side of something,le côté rapproché de qqch.,,,,.
 tunguniq,,1,n,,,,,,,,,dark blue-black or purplish fog,brume foncée bleu-noir ou violacée,,,,.
 tunguq,,1,v,i,a,,,,,,,to be purple,être de couleur pourpre,,,,.
 tungut,,1,v,i,a,,,,,,,to be exhausted,être exténué,,,,.
 tuni,,1,v,t,,,,,,,si/1vv,[-R]to /give s.t. to someone,[-R]/donner qqch. à quelqu'un,,,,.
-tuniq,,1,v,t,,,,,,,si/1vv,to /keep promise to s.o.,[T]tenir sa promesse envers qqn [P]être dans l'état où qqn a tenu sa promesse envers soi,,,,.
 tuniq,,1,n,,,,,,,,,race of bestial or beast-like men before the Inuit,race d'hommes-bêtes avant les Inuit,,,,.
+tuniq,,1,v,t,,,,,,,si/1vv,to /keep promise to s.o.,[T]tenir sa promesse envers qqn [P]être dans l'état où qqn a tenu sa promesse envers soi,,,,.
 tunirjuk,,1,n,,ana,,,,,,,sternum,sternum,,,,.
 tunnga,tunga,1,v,i,e,,,,suk/1vv,,,"to be at home, at ease with one's surroundings","se sentir chez soi, être à l'aise avec ses alentours",,,,.
 tunnuq,,1,n,,,,,,,,,back fat,gras du dos,,,,.
 tunu,,1,n,,ana,,,,,,,the back or rear of something,la partie arrière de qqch.,,,,.
 tununiq,,1,n,,,,,,,,,shadow side,,,,,
 tupaq,,1,v,t,,,,,,,si/1vv,[-R]to /awaken s.o. [R]to wake up,/réveiller qqn,,,,.
-tupiq,,1,v,t,,,,,,,si/1vv,[T]to put s.o.'s tent up [P]to have one's tent put up [R]to put one's own tent up,[T]monter la tente de qqn[P]avoir sa tente montée par quelqu'un[R]monter sa tente,,,,.
 tupiq,,1,n,,,,,,,,,tent,tente,,,,.
+tupiq,,1,v,t,,,,,,,si/1vv,[T]to put s.o.'s tent up [P]to have one's tent put up [R]to put one's own tent up,[T]monter la tente de qqn[P]avoir sa tente montée par quelqu'un[R]monter sa tente,,,,.
 tupit,,1,v,i,,,,,,,,to choke from food in the throat,s'étouffer avec de la nourriture,,,,.
 tupkujaq,,1,n,,ana,,,,,,,exterior throat,gorge extérieure,,,,.
 tuputaq,,1,n,,,,,,,,,wound plug,tampon pour blessure,,,,.
-tuqaluk,,1,v,i,,,,,,,,"to be coming down and hitting the ground, like rain, snow, sleet, etc.","tomber, toucher le sol (pluie, neige, etc.)",,,,.
 tuqaluk,,1,n,,,,,,,,,rain,,,,,
+tuqaluk,,1,v,i,,,,,,,,"to be coming down and hitting the ground, like rain, snow, sleet, etc.","tomber, toucher le sol (pluie, neige, etc.)",,,,.
 tuqqik,,1,v,i,a,,,,,,,to lie firmly or flat upon one's base,reposer fermement ou à plat sur sa base,,,,.
 tuqquq,,1,v,t,,,,,,,si/1vv,to /put or /stow s.t. away out of sight,"/mettre, /ranger qqch. hors de vue",,,,.
-tuqu,,1,v,i,,,,,,,,to die,mourir,,,,.
 tuqu,,1,n,,,,,,,,,death,mort,,,,.
-tur&uk,,1,v,i,,,,,,nil,,to call someone by his name of blood-relationship,appeler qqn par son nom de lien de parenté,,,,.
+tuqu,,1,v,i,,,,,,,,to die,mourir,,,,.
 tur&uk,,1,n,,ana,,,,,,,trachea,trachée,,,,.
+tur&uk,,1,v,i,,,,,,nil,,to call someone by his name of blood-relationship,appeler qqn par son nom de lien de parenté,,,,.
 turaaq,,1,v,t,,,,,,,si/1vv,[-R]to /aim at s.t. in a straight line,,,,,
 turiat,,1,v,i,,,,,,,,to hurt one's big toe,,,,,
 turru,,1,v,i,a,,,,,,,to be long-haired or thick-haired or thick-napped,avoir les cheveux longs ou épais,,,,.
 tursuuk,,1,n,,,,,,,,,place of entry or exit,,,,,
 tusaq,,1,v,i,,,,,,nil,,to hear (trans.: something),entendre (trans.: qqch.),,,,.
 tusiat,,1,v,i,,,,,,,,to limp,boiter,,,,.
-tusuu,,1,v,i,,,,,,gi/4vv,,to be jealous or envious of someone about something,envier qqn de qqch.,,,,.
 tusuu,tusuuk,1,e,,,,,,,,,exclamation of jealousy or covetousness,exclamation de jalousie ou de convoitise,,,,.
+tusuu,,1,v,i,,,,,,gi/4vv,,to be jealous or envious of someone about something,envier qqn de qqch.,,,,.
 tut,,1,v,i,,,,,,,,to hit or land on something,,,,,
 tutaq,,1,n,,,,,,,,,(1) side of the jaw (2) seam on either side of the neck of a skin garment,(1) intérieur de la machoire (2) couture chaque côté de l'encolure d'un vêtement de peau,,,,.
 tuti,,1,v,i,,,,,,nil,,to step on something,marcher sur qqch.,,,,.
 tutik,,1,v,i,,,,,,,,"to lie together, not necessarily for sexual relations (used in the dual or plural)","être couchés ensemble, pas nécessairement pour une relation sexuelle (utilisé au duel et au pluriel)",,,,.
 tuukkaq,,1,n,,,,,,,,,harpoon head for walrus with double blade,tête de harpon à morse à double lame,,,,.
 tuullik,,1,n,,zoo,,,,,,,great northern diver or common loon,canard huart,,,,.
-tuuq,,1,v,t,,,,,,,si/1vv,to /poke s.t. head-on with a rigid object,/donner-à qqch. un coup direct avec un objet rigide,,,,.
 tuuq,,1,n,,,,,,,,,long-handled ice chisel,ciseau à glace à long manche,,,,.
+tuuq,,1,v,t,,,,,,,si/1vv,to /poke s.t. head-on with a rigid object,/donner-à qqch. un coup direct avec un objet rigide,,,,.
 tuurngi,,1,v,i,,,,,,,,to invoke spirits,invoquer les esprits,,,,.
-tuvaq,,1,v,i,,,,,,,,to break off in part - said of the solid sea ice,se briser en morceaux (glace de mer),,,,.
 tuvaq,,1,n,,,,,,,,,solid sea ice touching up against the land,glace de mer solide touchant au rivage,,,,.
+tuvaq,,1,v,i,,,,,,,,to break off in part - said of the solid sea ice,se briser en morceaux (glace de mer),,,,.
 ua,,1,v,i,,,,,,,,to move [Padl.],bouger [Padl.],,,,.
-uangnaq,uangniq,1,v,i,,,,,,,,to blow due north-west - said of the wind,souffler franc nord-ouest (vent),,,,.
 uangnaq,uangniq,1,n,,,,,,,,,the north-west,le nord-ouest,,,,.
-uaq,,1,v,i,e,,,,gusuk/1vv,gi/4vv,,"to be amazed, astonished by something",être étonné par qqch.,,,,.
+uangnaq,uangniq,1,v,i,,,,,,,,to blow due north-west - said of the wind,souffler franc nord-ouest (vent),,,,.
 uaq,,1,e,,,,,,,,,"expression of amazement: ""My!"" ""My goodness!"" [WCHB",,,,,
+uaq,,1,v,i,e,,,,gusuk/1vv,gi/4vv,,"to be amazed, astonished by something",être étonné par qqch.,,,,.
 uasaq,,1,v,i,,,,,,nil,,to wash (trans.: something),laver (trans.: qqch.),,,,.
 uattiaq,,1,a,,,,,,,,,a little while ago,il y a quelque temps,,,,.
 uattiaruk,,1,a,,,,,,,,,in a little while,dans quelque temps,,,,.
@@ -1913,8 +1913,8 @@ uivaq,,1,v,i,,,,,,nil,,to take the long way to get (trans.: something),prendre u
 uiviri,,1,v,t,,,,,,,tsi/1vv,to /deceive or /dupe s.o.,/tromper ou /duper qqn,,,,.
 uja,,1,n,,,,,,,,,collar portion of sealskin,partie près du cou d'une peau de phoque,,,,.
 ujak,,1,v,i,,,,,,,,to come into view,apparaître,,,,.
-ujaraq,,1,v,i,,,,,,,,to hit or run over rocks with one's sled runners,frapper ou passer sur des rochers avec les patins de son traîneau,,,,.
 ujaraq,,1,n,,,,,,,,,rock,,,,,
+ujaraq,,1,v,i,,,,,,,,to hit or run over rocks with one's sled runners,frapper ou passer sur des rochers avec les patins de son traîneau,,,,.
 ujattiut,,1,n,,,,,,,,,suspender or brace for trousers,bretelles pour pantalons,,,,.
 ujaujaaq,,1,v,i,a,,,,,,,to be green,être de couleur verte,,,,.
 ujjiq,,1,v,i,e,,,,gusuk/1vv,gi/4vv,,"(1) to notice, to be aware of s.t.",,,,,
@@ -1927,11 +1927,11 @@ ukiaq,,1,n,,,,,,,,,autumn (October roughly),"automne (en gros, le mois d'octobre
 ukiji,,1,v,i,,,,,,nil,,to gaze fixedly at someone,regarder fixement (trans.: qqn),,,,.
 ukiliriaq,,1,v,i,a,,,,,,,"to be mottled, dappled, splotched - said of furred or haired animal","être marbré, moucheté, tacheté (un animal à fourrure ou à poils)",,,,.
 ukit,,1,v,t,,,,,,,si/1vv,to /chip s.t.,/ébrécher qqch.,,,,.
-ukiuq,,1,v,i,,,,,,,,to have turned winterish,,,,,
 ukiuq,,1,n,,,,,,,,,"(1) winter (2) year, as a unit of time",(1) hiver (2) année (unité de temps),,,,.
+ukiuq,,1,v,i,,,,,,,,to have turned winterish,,,,,
 ukkaq,,1,n,,,,,,,,,entrance end of an igloo,partie de l'iglou où l'on entre,,,,.
-ukkuaq,,1,v,t,res,,,,,,si/1vv,to /shut s.t. (a door),"[-R]fermer qqch. (une porte, une fenêtre) [R]se refermer",,,,.
 ukkuaq,,1,n,,,,,,,,,(1) door (2) rifle bolt,(1) porte (2) culasse d'une carabine,,,,.
+ukkuaq,,1,v,t,res,,,,,,si/1vv,to /shut s.t. (a door),"[-R]fermer qqch. (une porte, une fenêtre) [R]se refermer",,,,.
 ukpat,,1,n,,ana,,,,,,,hind quarter,,,,,
 ukpik,,1,n,,zoo,,,,,,,snowy owl,harfang des neiges,,,,.
 ukpikaq,,1,v,i,,,,,,,,to fall forward on hands or face,,,,,
@@ -1942,8 +1942,8 @@ ukusik,,1,n,,,,,,,,,big soapstone kettle used for cooking,,,,,
 ukuttiq,,1,pr,,,,,,,,,used in reply to 'sukuttiq?' when one does not know the correct name to answer,donné en réponse à 'sukuttiq?' lorsqu'on ne connaît pas la réponse,,,,.
 ulamiq,,1,v,i,a,,,,,,,to be cubically round or cylindrical,être cylindrique,,,,.
 ulaqi,,1,v,i,,,,,,,,to play as a child,jouer comme un enfant,,,,.
-ulik,,1,v,t,,,,,,,si/1vv,to /cover or /blanket s.o. with something,/couvrir qqn avec quelque chose,,,,.
 ulik,,1,n,,,,,,,,,blanket,,,,,
+ulik,,1,v,t,,,,,,,si/1vv,to /cover or /blanket s.o. with something,/couvrir qqn avec quelque chose,,,,.
 ulimak,,1,v,i,,,,,,nil,,to chop something with an axe,couper (trans.: qqch.) avec une hache,,,,.
 uliq,,1,v,t,,,,,,,si/1vv,to /chip s.t.,/ébrécher qqch.,,,,.
 ulit,,1,v,i,a,,,,,,,to have risen - said of the tide,avoir monté (la marée),,,,.
@@ -1959,8 +1959,8 @@ uluriaq,,1,v,i,e,,,,gusuk/1vv,gi/4vv,,to back away from fear of a flying object,
 ulurniq,,1,n,,,,,,,,,back site of a rifle,partie arrière d'une carabine,,,,.
 umaq,,1,n,,,,,,,,,boot seam,couture de botte,,,,.
 umiaq,,1,n,,,,,,,,,boat,bateau,,,,
-umik,,1,v,t,,,,,,,si/1vv,[-R]to /plug s.t.,,,,,
 umik,,1,n,,,,,,,,,beard,barbe,,,,.
+umik,,1,v,t,,,,,,,si/1vv,[-R]to /plug s.t.,,,,,
 uminak,,1,n,,,,,,,,,tent [Padl.],tente [Padl.],,,,.
 ummak,,1,n,,,,,,,,,ripe fruit [N. Baffin],fruit mûr [Terre de Baffin nord],,,,.
 ummik,,1,n,,,,,,,,,metal rim or clamp fastening blade to handle,bande de métal pour attacher la lame au manche,,,,.
@@ -1969,8 +1969,8 @@ unaaq,,1,n,,,,,,,,,harpoon,,,,,
 unaliq,,1,n,,,,,,,,,Cree Indian,indien Cri,,,,.
 unarmi,,1,v,i,,,,,,nil,,to think one can get away with something with impunity,penser qu'on peut s'en tirer (trans.: de qqch.) avec impunité,,,,.
 unataq,,1,v,i,,,,,,nil,,"to fight, combat (trans.: someone or something)","se battre, combattre (trans.: qqch. ou qqn)",,,,.
-unga,,1,v,i,,,,,,gi/4vv,,to long or yearn for a person or a living thing,languir après une personne ou un être vivant,,,,.
 unga,,1,n,,,,,,,,,"the far side, the beyond of something",le côté éloigné de qqch.,,,,.
+unga,,1,v,i,,,,,,gi/4vv,,to long or yearn for a person or a living thing,languir après une personne ou un être vivant,,,,.
 ungat,ungatik,1,n,,,,,,,,,place on the sleeping bench,place sur la couchette,,,,.
 ungata,ungati,1,n,,,,,,,,,"the far side, the beyond of something",le côté éloigné de qqch.,,,,.
 ungilaq,,1,v,i,,,,,,,,to itch or irritate the skin,démanger ou irriter la peau,,,,.
@@ -1983,16 +1983,16 @@ unguuq,,1,v,i,,,,,,nil,,to head or chase animal into an enclosure,pousser ou cha
 uni,,1,v,i,,,,,,nil,,"to go or dash for food, refuse, etc. - said of a dog or carnivore","se précipiter vers la nourriture, les déchets, etc (un chien ou autre animal carnivore)",,,,.
 uniaq,,1,v,i,,,,,,nil,,to haul something along the ground with a rope,tirer (trans.: qqch.) sur le sol avec une corde,,,,.
 unik,,1,v,i,,,,,,,,to stop due to inertia,arrêter par inertie,,,,.
-unipkaaq,,1,v,i,,,,,,nil,,to tell a story (trans.: to someone),raconter une histoire (trans.: à qqn),,,,.
 unipkaaq,,1,n,,,,,,,,,story,,,,,
+unipkaaq,,1,v,i,,,,,,nil,,to tell a story (trans.: to someone),raconter une histoire (trans.: à qqn),,,,.
 uniq,,1,n,,ana,,,,,,,arm pit,aisselle,,,,.
 uniuq,,1,v,t,,,,,,,si/1vv,[-R]to /miss s.t. after it has been aimed at,[T]rater qqch. après l'avoir visé[P]être raté après avoir été visé,,,,.
 uniut,,1,n,,,,,,,,,skin used as a substitute sled,peau utilisée comme traîneau de remplacement,,,,.
 unnguq,,1,n,,,,,,,,,wart,verrue,,,,.
 unniit,,1,e,,,,,,,,,expression of acceptance of a non ideal solution,expression signifiant l'acceptation d'une solution considérée non idéale,,,,.
 unniq,,1,v,i,,,,,,nil,,to tell someone an indisputable fact,dire à qqn un fait indiscutable,,,,.
-unnuk,,1,v,i,,,,,,,,"to be, to have become evening",être le soir ou être devenu le soir,,,,.
 unnuk,,1,n,,,,,,,,,evening,,,,,
+unnuk,,1,v,i,,,,,,,,"to be, to have become evening",être le soir ou être devenu le soir,,,,.
 unuq,,1,v,i,a,,,,,,,to be numerous or many,"être nombreux, plusieurs",,,,.
 upak,,1,v,i,,,,,,nil,,to approach (trans.: something),s'approcher (trans.: de qqch.),,,,.
 upalungiq,,1,v,i,a,,,,,,,to be determined to do something,être déterminé à faire qqch.,,,,.
@@ -2001,16 +2001,16 @@ upik,,1,v,i,e,,,,gusuk/1vv,gi/4vv,,to be amazed or astonished at something,être
 upirngaaq,,1,n,,,,,,,,,arctic spring,printemps arctique,,,,.
 upsik,,1,v,i,a,,,,,,,to be densely textured or woven,,,,,
 upsiri,,1,v,i,,,,,,nil,,to chink or caulk (trans.: something),,,,,
-uqaq,,1,v,i,,,,,,nil,,to speak,,,,,
 uqaq,,1,n,,ana,,,,,,,(1) tongue (2) bait pan of animal trap,(1) langue (2) languette où l'on met l'appât dans une trappe d'animal,,,,.
+uqaq,,1,v,i,,,,,,nil,,to speak,,,,,
 uqit,,1,v,i,a,,,,,,,to be light in weight,être léger,,,,.
 uqquu,,1,n,,,,,,,,,(1) heat,,,,,
 uqsuq,,1,n,,,,,,,,,fat,,,,,
 uquk,,1,n,,,,,,,,,(1) rust of metal (2) mould of food,,,,,
 uqumait,,1,v,i,a,,,,,,,to be heavy in weight,être lourd,,,,.
 uqummiq,,1,v,t,,,,,,,i/1vv,[-R]to /hold s.t. in the mouth,[-R]/tenir qqch. dans la bouche,,,,.
-uriaq,,1,v,i,,,,,,nil,,to spit (trans.: something out),cracher (trans.: qqch.),,,,.
 uriaq,,1,n,,,,,,,,,spit,crachat,,,,.
+uriaq,,1,v,i,,,,,,nil,,to spit (trans.: something out),cracher (trans.: qqch.),,,,.
 uriiq,,1,e,,,,,,,,,exclamation: call to the sled dogs to follow a sledge track,exclamation: appel aux chiens de traîneau pour qu'ils suivent les traces de traîneaux,,,,.
 urjuq,,1,n,,bot,,,,,,,spaghnum moss,mousse de sphaigne,,,,.
 urliq,,1,v,t,,,,,,,si/1vv i/1vv,[T]to raise one's spear to spear s.t. or thrust at s.t. [P]to be aimed at,[T]lever son harpon pour percer ou transpercer qqch.[P]être visé par un harpon,,,,.
@@ -2019,11 +2019,11 @@ urpik,,1,n,,bot,,,,,,,arctic willow,saule arctique,,,,.
 urru,,1,v,i,,,,,,,,"to fall over, to topple","tomber, trébucher",,,,.
 urrulu,,1,v,i,,,,,,gi/4vv,,to hate (trans.: someone),haïr (trans.: qqn),,,,.
 urruraq,,1,v,i,,,,,,,,to bend in from being too thin or sharp - said of the edge of a blade,plier parce que trop mince ou trop aiguisée (le bord de la lame d'une couteau),,,,.
-ursiq,,1,v,t,,,,,,,si/1vv,[-R](1) to /oil or /grease s.t.  (2) to /puncture s.t.,"[-R](1) /huiler ou /graisser qqch. (2) /crever, /percer, /trouer, /piquer qqch.",,,,.
 ursiq,,1,n,,,,,,,,,dog-trace ring [WCHB],anneau [c�ôte ouest de la Baie d'Hudson],,,,.
+ursiq,,1,v,t,,,,,,,si/1vv,[-R](1) to /oil or /grease s.t.  (2) to /puncture s.t.,"[-R](1) /huiler ou /graisser qqch. (2) /crever, /percer, /trouer, /piquer qqch.",,,,.
 uruniq,,1,n,,,,,,,,,(1) intestine of arctic grouse (2) liquidy soft excretion of arctic grouse,(1) intestin de la grouse arctique (2) excrétion liquide de la grouse arctique,,,,.
-usi,,1,v,i,,,,,,,,to have a load or cargo aboard,avoir une charge à son bord,,,,.
 usi,,1,n,,,,,,,,,cargo,,,,,
+usi,,1,v,i,,,,,,,,to have a load or cargo aboard,avoir une charge à son bord,,,,.
 usiit,,1,e,,,,,,,,,expression of sudden remembrance,expression signifiant qu'on vient soudainement de se souvenir de qqch.,,,,.
 usiq,,1,v,i,a,,,,,,,to have one's clothes removed,,,,,
 usiraq,,1,v,i,,,,,,,,to spill over the top of the container - said of a liquid,se renverser par-dessus le couvercle du contenant (un liquide),,,,.
