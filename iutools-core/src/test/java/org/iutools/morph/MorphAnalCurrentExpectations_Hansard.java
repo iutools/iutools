@@ -287,7 +287,6 @@ public class MorphAnalCurrentExpectations_Hansard extends MorphAnalCurrentExpect
         expectFailure("sulijuq", OutcomeType.CORRECT_NOT_FIRST);
         expectFailure("asingi", OutcomeType.CORRECT_NOT_FIRST);
         expectFailure("illuni", OutcomeType.CORRECT_NOT_FIRST);
-        expectFailure("ilitaqsiniq", OutcomeType.CORRECT_NOT_FIRST);
         expectFailure("taanna", OutcomeType.CORRECT_NOT_FIRST);
         expectFailure("nunaliujunut", OutcomeType.CORRECT_NOT_FIRST);
 
@@ -299,6 +298,7 @@ public class MorphAnalCurrentExpectations_Hansard extends MorphAnalCurrentExpect
         expectFailure("pilirivinga", OutcomeType.CORRECT_NOT_FIRST);
         expectFailure("pillugu", OutcomeType.CORRECT_NOT_FIRST);
         expectFailure("uqalimaaqtauqullugu", OutcomeType.CORRECT_NOT_FIRST);
+        expectFailure("aanniaviliaqtunut", OutcomeType.CORRECT_NOT_FIRST);
 
         //
         // Words that produce some analyses, but none of them is the correct
