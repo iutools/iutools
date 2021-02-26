@@ -7,9 +7,13 @@
 package org.iutools.bin;
 
 import java.util.Calendar;
+import java.util.Vector;
 
+import ca.nrc.json.PrettyPrinter;
+import org.apache.log4j.Logger;
 import org.iutools.linguisticdata.LinguisticData;
 import org.iutools.linguisticdata.LinguisticDataException;
+import org.iutools.linguisticdata.Morpheme;
 import org.iutools.script.TransCoder;
 import org.iutools.morph.Decomposition;
 import org.iutools.morph.MorphologicalAnalyzer;
@@ -98,8 +102,9 @@ public class Decompose {
         		noTimeout = true;
         	else if (args[i].startsWith("-"))
         		printUsage = true;
-        	else
-        		word = args[i];
+        	else {
+				word = args[i];
+			}
         if (printHelp)
         	usage();
         else if (printUsage)
@@ -140,6 +145,7 @@ public class Decompose {
     public static String[] decomposeToArrayOfStrings(String word, boolean extendedAnalysis, boolean decomposeComposite) {
         // Décodage URL du mot, au cas où il a été codé avant d'être transmis
         // par l'application.
+		Logger logger = Logger.getLogger("Decompose.decomposeToArrayOfStrings");
         word = MonURLDecoder.decode(word).trim();
 
         // Si le mot est en UNICODE inuktitut, le translittérer en caractères latins.
@@ -154,7 +160,7 @@ public class Decompose {
             MorphologicalAnalyzer morphAnalyzer = new MorphologicalAnalyzer();
             morphAnalyzer.setDecomposeCompositeRoot(decomposeComposite);
         	morphAnalyzer.disactivateTimeout();
-        	
+
 			decs = morphAnalyzer.decomposeWord(word,extendedAnalysis);
 			
 	        String[] decExprs = new String[decs.length];
