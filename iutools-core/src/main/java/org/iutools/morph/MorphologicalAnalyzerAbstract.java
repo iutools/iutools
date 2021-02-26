@@ -166,11 +166,14 @@ public abstract class MorphologicalAnalyzerAbstract implements AutoCloseable {
     	
 		String mess = "Decomp of word="+word+"; STARTS at "+start+"msecs";
 		tLogger.trace(mess);
-    	
+
+		tLogger.trace("timeoutStrategy: "+timeoutStrategy);
     	if (timeoutStrategy == TimeoutStrategy.STOPWATCH) {
+    		tLogger.trace("invoke directly");
     		decomps = invokeDirectly(word, lenient);
     	} else {
     		try {
+    			tLogger.trace("invoke through task");
 				decomps = invokeThroughExecutor(task);
 			} catch (InterruptedException e) {
 				tLogger.trace("InterruptedException caught: "+e.getMessage());				
@@ -178,7 +181,7 @@ public abstract class MorphologicalAnalyzerAbstract implements AutoCloseable {
     	}
     	
 		long elapsed = System.currentTimeMillis() - start;
-		mess = "Decompositio of word="+word+"; ENDS with elapsed="+elapsed+"msecs";
+		mess = "Decomposition of word="+word+"; ENDS with elapsed="+elapsed+"msecs";
 		tLogger.trace(mess);
 		
     	return decomps;
@@ -255,6 +258,7 @@ public abstract class MorphologicalAnalyzerAbstract implements AutoCloseable {
 		try {
 			decomps = doDecompose(word, lenient);
 		} catch (TimeoutException e) {
+			tLogger.trace("TimeoutException");
 			throw(e);
 		} catch (Exception e) {
 			tLogger.trace("Caught Exception e.getClass()="+e.getClass()+", e.getCause()="+e.getCause()+", e="+Debug.printCallStack(e));
