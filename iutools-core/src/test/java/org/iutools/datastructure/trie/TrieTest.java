@@ -243,7 +243,7 @@ public abstract class TrieTest {
 		iumorphemeTrie.add(iuSegmenter.segment("nalunaiqsivut"),"nalunaiqsivut");
 		
 		String[] segments = new String[] {
-			"{nalunaq/1n}", "{iq/1nv}", "{si/2vv}", "{vut/tv-dec-3p}"
+			"{nalunaq/1n}", "{iq/1nv}", "{si/1vv}", "{vut/tv-dec-3p}"
 		};
 		TrieNode terminalNode = iumorphemeTrie.node4keys(segments, Trie.NodeOption.TERMINAL);
 		new AssertTrieNode(terminalNode, "Node for segments="+String.join(", ", segments))
@@ -256,7 +256,7 @@ public abstract class TrieTest {
 			;
 		
 		HashMap<String,Long> surfaceForms = terminalNode.getSurfaceForms();
-		assertEquals("The number of surface forms for {nalunaq/1n} {iq/1nv} {si/2vv} {vut/tv-dec-3p} is wrong.",2,surfaceForms.size());
+		assertEquals("The number of surface forms for {nalunaq/1n} {iq/1nv} {si/1vv} {vut/tv-dec-3p} is wrong.",2,surfaceForms.size());
 		ArrayList<String> keys = new ArrayList<String>(Arrays.asList(surfaceForms.keySet().toArray(new String[] {})));
 		assertTrue("The surface forms should contain 'nalunaiqsivut'",keys.contains("nalunaiqsivut"));
 		assertTrue("The surface forms should contain 'nalunairsivut'",keys.contains("nalunairsivut"));
