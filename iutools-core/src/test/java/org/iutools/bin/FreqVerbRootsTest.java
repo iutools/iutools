@@ -8,9 +8,11 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
+import ca.nrc.json.PrettyPrinter;
 import org.iutools.corpus.CompiledCorpus;
 import org.iutools.corpus.TestCorpusBuilder;
 import org.apache.log4j.Logger;
+import org.junit.Assert;
 import org.junit.Test;
 
 import org.iutools.datastructure.trie.StringSegmenter_IUMorpheme;
@@ -21,7 +23,7 @@ public class FreqVerbRootsTest {
 	@Test
 	public void test__compileFreqs__HappyPath() throws Exception {
 		String[] corpusWords = new String[] {
-				"nunami", "takujuq", "iglumik", "siniktuq", "takujaujuq", "iijuq"
+				"nunami", "takujuq", "iglumik", "siniktuq", "takujaujuq", "angijuq"
 				};
 
         CompiledCorpus compiledCorpus = TestCorpusBuilder.makeEmptyCorpus();
@@ -36,8 +38,9 @@ public class FreqVerbRootsTest {
 		{
 			expVerbRoots.put("taku/1v", new Long(2));
 			expVerbRoots.put("sinik/1v", new Long(1));
-			expVerbRoots.put("ii/1v", new Long(1));
+			expVerbRoots.put("angi/1v", new Long(1));
 		}
+
 		AssertObject.assertDeepEquals("", expVerbRoots, freqsVerbRoots);
 	}
 	
