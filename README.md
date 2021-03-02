@@ -18,7 +18,7 @@ Finally, it includes includes several _components_ that can be used by software 
 - Morphological decomposer
 - Transliterator
 - Tokenizer
-- and much more 
+- and much more
 
 ## Installing _iutools_
 
