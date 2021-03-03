@@ -17,8 +17,8 @@ public class MorphRelativesFinderAccuracyTest {
 	public void test__findRelatives__QuickPerformanceTest(TestInfo testInfo)
 		throws Exception {
 
-		PerformanceExpectations expectations =
-			new PerformanceExpectations()
+		RelatedWordsExperiment experiment =
+			new RelatedWordsExperiment()
 				.setCorpusName("HANSARD-1999-2002")
 
 				// Set this to a single word if you only want to run that one word
@@ -29,25 +29,24 @@ public class MorphRelativesFinderAccuracyTest {
 				.setVerbosity(false)
 				;
 
-		evaluatePerformance(expectations, 10, testInfo);
+		evaluatePerformance(experiment, 10, testInfo);
 	}
 
 	@Test
 	public void test__findRelatives__PerformanceTest(TestInfo testInfo)
 	throws Exception {
-		PerformanceExpectations expectations =
-		new PerformanceExpectations()
-		.setCorpusName("HANSARD-1999-2002")
-		.setVerbosity(false)
+		RelatedWordsExperiment experiment = new RelatedWordsExperiment()
+			.setCorpusName("HANSARD-1999-2002")
+			.setVerbosity(false)
 
-		// Set this to a single word if you only want to run that one word
-//				.setFocusOnWord("mikinniqsanut")
+			// Set this to a single word if you only want to run that one word
+	//				.setFocusOnWord("mikinniqsanut")
 
-		// Set this to true if you want to see more details about the
-		// words being evaluated and their results.
-		.setVerbosity(false)
-		;
-		evaluatePerformance(expectations, testInfo);
+			// Set this to true if you want to see more details about the
+			// words being evaluated and their results.
+			.setVerbosity(false)
+			;
+		evaluatePerformance(experiment, testInfo);
 	}
 
 	@Test
@@ -60,12 +59,12 @@ public class MorphRelativesFinderAccuracyTest {
 		Assertions.fail("Make sure that recompile_corpus command will recompute the decomps of all words in the corpus, and dump the new version of the corpus to ituools-data\n");
 	}
 
-	private void evaluatePerformance(PerformanceExpectations exp,
+	private void evaluatePerformance(RelatedWordsExperiment exp,
 		TestInfo testInfo) throws Exception {
 		evaluatePerformance(exp, (Integer)null, testInfo);
 	}
 
-	private void evaluatePerformance(PerformanceExpectations exp,
+	private void evaluatePerformance(RelatedWordsExperiment exp,
 		Integer stopAfterNWords, TestInfo testInfo) throws Exception {
 
 		File goldStandardCSVFilePath =
@@ -89,13 +88,8 @@ public class MorphRelativesFinderAccuracyTest {
 		boolean verbose = (exp.verbose || exp.focusOnWord != null);
 		evaluator.setVerbose(verbose);
 
-		// whether statistics are to be computed over words (default [true]) or morphemes [false]:
-		evaluator
-			.setOptionComputeStatsOverSurfaceForms(exp.computeStatsOverSurfaceForms);
 		evaluator.setStopAfterNWords(stopAfterNWords);
-//		evaluator.setFocusOnWord(exp.focusOnWord);
 
 		evaluator.run(exp, testInfo);
-
 	}
 }

@@ -30,21 +30,10 @@ import org.junit.jupiter.api.TestInfo;
 public class MorphRelativesFinderEvaluator {
 
 	private UserIO userIO = new UserIO();
-	private PerformanceExpectations expectations = null;
-
-	public List<Object[]> wordOutcomes = new ArrayList<Object[]>();
+	private RelatedWordsExperiment experiment = null;
 
 	public Integer stopAfterNWords = null;
-	
 	public CSVParser csvParser = null;
-	public boolean computeStatsOverSurfaceForms = true;
-	public float precision = -1;
-	public float recall = -1;
-	public float fmeasure = -1;
-
-	int nbTotalCases = 0;
-	protected long elapsedTime = -1;
-
 	MorphRelativesFinder relsFinder = null;
 
 	/*
@@ -90,10 +79,6 @@ public class MorphRelativesFinderEvaluator {
 		this.stopAfterNWords = _stopAfterNWords;
 	}
 
-//	public void setFocusOnWord(String _word) {
-//		this.focusOnWord = _word;
-//	}
-
 	public void setVerbose(boolean value) {
 		if (value) {
 			userIO.setVerbosity(UserIO.Verbosity.Level0);
@@ -116,13 +101,9 @@ public class MorphRelativesFinderEvaluator {
 		csvParser = new CSVParser(reader, CSVFormat.DEFAULT);
 	}
 	
-	public void setOptionComputeStatsOverSurfaceForms(boolean value) {
-		computeStatsOverSurfaceForms = value;
-	}
-	
-	public void run(PerformanceExpectations _exp, TestInfo testInfo)
+	public void run(RelatedWordsExperiment _exp, TestInfo testInfo)
 		throws MorphRelativesFinderException, IOException {
-		this.expectations = _exp;
+		this.experiment = _exp;
 		TestDirs testDirs = new TestDirs(testInfo);
 		Map<String,String[]> goldStandard = readGoldStandard();
 
@@ -300,7 +281,7 @@ public class MorphRelativesFinderEvaluator {
 		String precDiff = "";
 		Double expPrecision = computePrecision(expOutcomes, goldStandard);
 		Double actualPrecision = computePrecision(actualOutcomes, goldStandard);
-		Double tolerance = expectations.precRecTolerance * expPrecision;
+		Double tolerance = experiment.precRecTolerance * expPrecision;
 		try {
 			AssertNumber.performanceHasNotChanged(
 				"Precision",
@@ -361,7 +342,7 @@ public class MorphRelativesFinderEvaluator {
 		String recallDiff = "";
 		Double expRecall = computeRecall(expOutcomes, goldStandard);
 		Double actualRecall = computeRecall(actualOutcomes, goldStandard);
-		Double tolerance = expectations.precRecTolerance * expRecall;
+		Double tolerance = experiment.precRecTolerance * expRecall;
 		try {
 			AssertNumber.performanceHasNotChanged(
 				"Recall",
@@ -522,8 +503,6 @@ public class MorphRelativesFinderEvaluator {
 		{
 			Pattern patMotFreq = Pattern.compile("^(.+) \\((\\d+)\\).*$");
 
-			nbTotalCases = 0;
-
 			ArrayList<String> listAllGsAlternatives = new ArrayList<String>();
 
 			boolean stop = false;
@@ -550,14 +529,13 @@ public class MorphRelativesFinderEvaluator {
 					break;
 				}
 
-				if (expectations.focusOnWord != null && !mot.equals(expectations.focusOnWord)) {
+				if (experiment.focusOnWord != null && !mot.equals(experiment.focusOnWord)) {
 					continue;
 				}
 				echo("\nReading Gold Standard for word #" + wordCount + ": " + mot + " " + "(" + freqMotGoogle + ")");
 				if (mot == null) {continue;}
 
 				//String decMot = String.join(" ",compiledCorpus.getSegmenter().segment(mot))+" \\";
-				nbTotalCases++;
 				echo("    Gold Standard reformulations (frequencies in compiled corpus):");
 				String[] gsalternatives = (mot + "; " + csvRecord.get(4)).split(";\\s*");
 				String[] gsalternativesMorphemes = new String[gsalternatives.length];

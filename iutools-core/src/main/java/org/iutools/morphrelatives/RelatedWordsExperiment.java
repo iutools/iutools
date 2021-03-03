@@ -7,7 +7,7 @@ import org.iutools.corpus.CompiledCorpusRegistry;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PerformanceExpectations {
+public class RelatedWordsExperiment {
 
 	public String corpusName = CompiledCorpusRegistry.defaultCorpusName;
 	public boolean computeStatsOverSurfaceForms;
@@ -20,7 +20,7 @@ public class PerformanceExpectations {
 
 	public List<Object[]> wordOutcomes = new ArrayList<Object[]>();
 
-	public PerformanceExpectations() {
+	public RelatedWordsExperiment() {
 		init_PerformanceExpectations();
 	}
 
@@ -69,31 +69,29 @@ public class PerformanceExpectations {
 		return Pair.of(word, wordStats);
 	}
 
-	public PerformanceExpectations setComputeStatsOverSurfaceForms(
+	public RelatedWordsExperiment setComputeStatsOverSurfaceForms(
 	boolean _computeStatsOverSurfaceForms) {
 		this.computeStatsOverSurfaceForms = _computeStatsOverSurfaceForms;
 		return this;
 	}
 
-	public PerformanceExpectations setTargetPrecision(
+	public RelatedWordsExperiment setTargetPrecision(
 	double _targetPrecision) {
 		this.targetPrecision = _targetPrecision;
 		return this;
 	}
 
-	public PerformanceExpectations setTargetRecall(double _targetRecall) {
+	public RelatedWordsExperiment setTargetRecall(double _targetRecall) {
 		this.targetRecall = _targetRecall;
 		return this;
 	}
 
 	public Pair<Double, Double> targetPrecRecall() {
 
-		int totalWords = wordOutcomes.size();
 		int totalGoodRelsProduced = 0;
 		int totalRelsProduced = 0;
 		int totalRelsGS = 0;
 		for (Object[] outcome : wordOutcomes) {
-			String word = (String) outcome[0];
 			totalGoodRelsProduced += (Integer) outcome[1];
 			totalRelsProduced += (Integer) outcome[2];
 			totalRelsGS += (Integer) outcome[3];
@@ -112,33 +110,33 @@ public class PerformanceExpectations {
 		return Pair.of(targetPrec, targetRecall);
 	}
 
-	public PerformanceExpectations setPrecRecTolerance(double _precRecallTolerance) {
+	public RelatedWordsExperiment setPrecRecTolerance(double _precRecallTolerance) {
 		this.precRecTolerance = _precRecallTolerance;
 		return this;
 	}
 
-	public PerformanceExpectations setRuntimePercTolerance(
+	public RelatedWordsExperiment setRuntimePercTolerance(
 	double _percTolerance) {
 		this.runtimePercTolerance = _percTolerance;
 		return this;
 	}
 
-	public PerformanceExpectations setFocusOnWord(String _word) {
+	public RelatedWordsExperiment setFocusOnWord(String _word) {
 		this.focusOnWord = _word;
 		return this;
 	}
 
-	public PerformanceExpectations setVerbosity(boolean _verbose) {
+	public RelatedWordsExperiment setVerbosity(boolean _verbose) {
 		this.verbose = _verbose;
 		return this;
 	}
 
-	public PerformanceExpectations setCorpusName(String _corpusName) {
+	public RelatedWordsExperiment setCorpusName(String _corpusName) {
 		this.corpusName = _corpusName;
 		return this;
 	}
 
-	private PerformanceExpectations defineWordOutcomes() {
+	private RelatedWordsExperiment defineWordOutcomes() {
 		// Define what we currently expect to happen for each word in the
 		// GS.
 		defineOutcome("takujumaguvit", 4, 5, 7);
