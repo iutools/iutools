@@ -55,7 +55,7 @@ public class WordOutcomeTest {
 		double recall = outcome.recall(goldStandardRelatives);
 
 		// You can also get a text summary of the outcome
-		String outcomeSummary = outcome.diffsWithGoldStandard(goldStandardRelatives);
+		String outcomeSummary = outcome.fitnessToGoldStandard(goldStandardRelatives);
 	}
 
 	////////////////////////////////
@@ -85,7 +85,7 @@ public class WordOutcomeTest {
 			.prettyPrintIs(goldStandardRelatives,
 				"  Word: takujumaguvit\n" +
 				"  Precision: 0.8\n" +
-				"  Recal: 0.5714285714285714\n" +
+				"  Recall: 0.5714285714285714\n" +
 				"  Relatives produced (** = correct): \n" +
 				"    takugumajunga**\n" +
 				"    takugumavugut**\n" +

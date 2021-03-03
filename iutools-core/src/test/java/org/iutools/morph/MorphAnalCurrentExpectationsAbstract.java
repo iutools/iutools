@@ -48,7 +48,7 @@ public abstract class MorphAnalCurrentExpectationsAbstract {
 	// For other performance criteria, we don't signal changes unless they are
 	// "significant"
 	//
-	public Double tolerance_CORRECT_NOT_FIRST = 0.05;
+	public Double tolerance_CORRECT_NOT_FIRST = -0.05;
 
 	public String focusOnWord = null;
 

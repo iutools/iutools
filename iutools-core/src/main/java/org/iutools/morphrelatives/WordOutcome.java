@@ -12,8 +12,21 @@ public class WordOutcome {
 	public String word = null;
 	public String[] relsProduced = new String[0];
 
+	public WordOutcome() {};
+
 	public WordOutcome(String _word, String[] _relsProduced) {
 		init_WordOutcome(_word, _relsProduced);
+	}
+
+	public WordOutcome(String _word, MorphologicalRelative[] _relObjs) {
+		String[] _rels = null;
+		if (_relObjs != null) {
+			_rels = new String[_relObjs.length];
+			for (int ii=0; ii < _relObjs.length; ii++) {
+				_rels[ii] = _relObjs[ii].getWord();
+			}
+		}
+		init_WordOutcome(_word, _rels);
 	}
 
 	private void init_WordOutcome(String _word, String[] _relsProduced) {
@@ -42,16 +55,16 @@ public class WordOutcome {
 		return incorrect;
 	}
 
-	public String diffsWithGoldStandard(String[] goldStandardRelatives) {
-		return diffsWithGoldStandard(goldStandardRelatives, "  ");
+	public String fitnessToGoldStandard(String[] goldStandardRelatives) {
+		return fitnessToGoldStandard(goldStandardRelatives, "  ");
 	}
 
-	public String diffsWithGoldStandard(String[] goldStandardRelatives, String padding) {
+	public String fitnessToGoldStandard(String[] goldStandardRelatives, String padding) {
 		String toS = "";
 		toS += padding+"Word: "+word+"\n";
 
 		toS += padding+"Precision: "+precision(goldStandardRelatives)+"\n";
-		toS += padding+"Recal: "+recall(goldStandardRelatives)+"\n";
+		toS += padding+"Recall: "+recall(goldStandardRelatives)+"\n";
 
 		toS += padding+"Relatives produced (** = correct): "+"\n";
 

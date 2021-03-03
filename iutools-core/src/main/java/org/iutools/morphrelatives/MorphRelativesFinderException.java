@@ -10,4 +10,7 @@ public class MorphRelativesFinderException extends Exception {
 		super(e);
 	}
 
+	public MorphRelativesFinderException(String mess) {
+		super(mess);
+	}
 }
