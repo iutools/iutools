@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.iutools.concordancer.Alignment_ES;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -81,6 +82,7 @@ public class TranslationMemory {
 
 	public List<Alignment_ES> search(String sourceLang, String sourceExpr,
 		String... targetLangs) {
-		return null;
+		List<Alignment_ES> alignments = new ArrayList<Alignment_ES>();
+		return alignments;
 	}
 }

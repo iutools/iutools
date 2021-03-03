@@ -2,9 +2,8 @@ package org.iutools.concordancer.tm;
 
 import ca.nrc.file.ResourceGetter;
 import org.iutools.concordancer.*;
-import org.iutools.concordancer.tm.TranslationMemory;
-import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
@@ -17,7 +16,7 @@ public class TranslationMemoryTest {
 
 	protected TranslationMemory tm = null;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		tm = new TranslationMemory(esIndexName);
 		Path tmFile = Paths.get(
