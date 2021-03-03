@@ -154,8 +154,8 @@ public class CompiledCorpus {
 		return;
 	}
 
-	private void addWordOccurence(String word, String[][] sampleDecomps,
-								  Integer totalDecomps) throws CompiledCorpusException {
+	public void addWordOccurence(String word, String[][] sampleDecomps,
+	  	Integer totalDecomps) throws CompiledCorpusException {
 		addWordOccurence(word, sampleDecomps, totalDecomps, 1);
 	}
 
@@ -170,7 +170,7 @@ public class CompiledCorpus {
 	}
 
 	@JsonIgnore
-	protected StringSegmenter getSegmenter() throws CompiledCorpusException {
+	public StringSegmenter getSegmenter() throws CompiledCorpusException {
 		if (segmenter == null) {
 			Class cls;
 			try {
