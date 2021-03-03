@@ -351,17 +351,6 @@ public class CLI {
 				;
 		mainCmd.addSubCommand(expandIUQuery);
 		
-				
-		// Find words related to an inuktitut query word
-		SubCommand evaluateQueryExpansion = 
-				new CmdEvaluateQueryExpansion("evaluate_query_expansion")
-				.addOption(optCompFile)	
-				.addOption(optGoldStandardFile)
-				.addOption(optStatsOverMorphemes)
-				;
-		mainCmd.addSubCommand(evaluateQueryExpansion);
-		
-				
 		// Convert a Inuktitut segmentation into Trie-compatible segments
 		SubCommand convertIU = 
 				new CmdConvertIUSegments("convert_iu_segments")

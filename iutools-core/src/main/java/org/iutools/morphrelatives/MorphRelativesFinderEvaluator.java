@@ -1,7 +1,6 @@
 package org.iutools.morphrelatives;
 
 import java.io.*;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -14,20 +13,17 @@ import ca.nrc.data.file.ObjectStreamReaderException;
 import ca.nrc.file.ResourceGetter;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.testing.AssertNumber;
+import ca.nrc.testing.AssertRuntime;
 import ca.nrc.testing.TestDirs;
 import ca.nrc.ui.commandline.UserIO;
-import org.apache.commons.io.FileUtils;
 import org.iutools.morph.Decomposition;
-import org.iutools.utilities.StopWatch;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-import org.apache.log4j.Logger;
 import org.iutools.corpus.CompiledCorpusException;
 import org.iutools.corpus.WordInfo;
-import org.junit.Assert;
 
-import ca.nrc.debug.Debug;
+import org.iutools.utilities.StopWatch;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.TestInfo;
 
@@ -37,7 +33,6 @@ public class MorphRelativesFinderEvaluator {
 	private PerformanceExpectations expectations = null;
 
 	public List<Object[]> wordOutcomes = new ArrayList<Object[]>();
-
 
 	public Integer stopAfterNWords = null;
 	
@@ -51,7 +46,6 @@ public class MorphRelativesFinderEvaluator {
 	protected long elapsedTime = -1;
 
 	MorphRelativesFinder relsFinder = null;
-	private String focusOnWord;
 
 	/*
 	 * 0. Mot original (fréquence Google du mot en syllabique),
@@ -96,9 +90,9 @@ public class MorphRelativesFinderEvaluator {
 		this.stopAfterNWords = _stopAfterNWords;
 	}
 
-	public void setFocusOnWord(String _word) {
-		this.focusOnWord = _word;
-	}
+//	public void setFocusOnWord(String _word) {
+//		this.focusOnWord = _word;
+//	}
 
 	public void setVerbose(boolean value) {
 		if (value) {
@@ -126,228 +120,27 @@ public class MorphRelativesFinderEvaluator {
 		computeStatsOverSurfaceForms = value;
 	}
 	
-	public void run() {
-
-		long startTime = StopWatch.nowMSecs();
-
-		Logger logger = Logger.getLogger("QueryExpanderEvaluator");
-		
-        try {
-            Pattern patMotFreq = Pattern.compile("^(.+) \\((\\d+)\\).*$");
-            
-            nbTotalCases = 0;
-            int nbTotalGoldStandardAlternatives = 0;
-            int nbTotalExpansionsFromCorpus = 0;
-            int nbTotalExpansionsNotInGSAlternatives = 0;
-				int nbTotalCasesWithNoExpansion = 0;
-            int nbTotalCasesCouldNotBeDecomposed = 0;
-            
-            ArrayList<String> listAllGsAlternatives = new ArrayList<String>();
-            
-            boolean stop = false;
-
-            int wordCount = 0;
-            for (CSVRecord csvRecord : csvParser) {
-            		if (stop) break;
-            		
-                    // Accessing Values by Column Index
-                    String motLatinEtFreq = csvRecord.get(0);
-                    Matcher m = patMotFreq.matcher(motLatinEtFreq);
-                    String mot = null;
-                    long freqMotGoogle = -1;
-                    if ( m.matches() ) {
-                    	mot = m.group(1);
-                    	freqMotGoogle = Long.parseUnsignedLong(m.group(2));
-                    } else {
-                    	continue;
-					}
-
-					wordCount++;
-					if (stopAfterNWords != null &&
-							wordCount > stopAfterNWords) {
-						break;
-					}
-
-                    if (focusOnWord != null && !mot.equals(focusOnWord)) {
-                    	continue;
-                    }
-                    echo("\nReading Gold Standard for word #"+wordCount+": "+mot+" "+"("+freqMotGoogle+")");
-                    if (mot==null) continue;
-                    
-                    //String decMot = String.join(" ",compiledCorpus.getSegmenter().segment(mot))+" \\";
-                    nbTotalCases++;
-						echo("    Gold Standard reformulations (frequencies in compiled corpus):");
-                    String[] gsalternatives = (mot+"; "+csvRecord.get(4)).split(";\\s*");
-                    String[] gsalternativesMorphemes = new String[gsalternatives.length];
-                    List<String> listgsalternatives = Arrays.asList(gsalternatives);
-                    nbTotalGoldStandardAlternatives += gsalternatives.length;
-                    listAllGsAlternatives.addAll(listgsalternatives);
-                    
-                    for (int igs=0; igs<gsalternatives.length; igs++) {	
-                    	String gsalternative = gsalternatives[igs];
-                    	long freqGSAlternativeInCorpus = freqDansCorpus(gsalternative);
-						   echo("        "+gsalternative+" : "+freqGSAlternativeInCorpus);
-                    	String altDecomp = null;
-                    	try {
-                    		altDecomp = String.join(" ", relsFinder.compiledCorpus.decomposeWord(gsalternative));
-							altDecomp =
-								Decomposition.formatDecompStr(altDecomp);
-                        	gsalternativesMorphemes[igs] = altDecomp;
-                    	} catch (Exception e) {
-                    		altDecomp = "";
-                    	}
-                    }
-                    List<String> listgsalternativesmorphemes = Arrays.asList(gsalternativesMorphemes);
-
-                    echo("    Morphological Relatives found (frequencies in compiled corpus):");
-                    try {
-                    	MorphologicalRelative[] expansions = relsFinder.findRelatives(mot);
-                    	if ( expansions != null ) {
-                        	logger.debug(mot+" - expansions: "+expansions.length);
-                        	removeTailingBackslashFromDecomps(expansions);
-                    		ArrayList<String> listexpansionsmorphemes = new ArrayList<String>();
-                    		ArrayList<String> listexpansions = new ArrayList<String>();
-                    		nbTotalExpansionsFromCorpus += expansions.length;
-                    		if (expansions.length==0) {
-                        		nbTotalCasesWithNoExpansion++;
-										echo("        0 expansion");
-                    		}
-                    		Arrays.sort(expansions, (MorphologicalRelative a, MorphologicalRelative b) ->
-                    			{
-                    				if (a.getFrequency() == b.getFrequency())
-                    					return 0;
-                    				else
-                    					return a.getFrequency() < b.getFrequency()? 1 : -1;
-                    			});
-
-                    		int currWordGoodExpansions = 0;
-                    		for (MorphologicalRelative expansion : expansions) {
-                    			long freqExpansion =expansion.getFrequency();
-                    			boolean expansionInGSalternatives = true;
-                    			String expansionMorphemes = String.join(" ", expansion.getMorphemes());
-                    			expansionMorphemes = Decomposition.formatDecompStr(expansionMorphemes);
-                    			if (computeStatsOverSurfaceForms) {
-                    				String relative = expansion.getWord();
-                    				if ( !listgsalternatives.contains(expansion.getWord()) ) {
-                    					logger.debug("****** word: "+expansion.getWord()+" not in gsalternatives "+gsalternatives.toString());
-                    					nbTotalExpansionsNotInGSAlternatives++;
-                    					expansionInGSalternatives = false;
-											echo("  '"+relative+"' WAS NOT in GS alternatives");
-                    				} else {
-											currWordGoodExpansions++;
-											echo("  '"+relative+"' was in GS alternatives");
-										}
-                    			} else {
-                    				if ( !listgsalternativesmorphemes.contains(expansionMorphemes) ) {
-                    					nbTotalExpansionsNotInGSAlternatives++;
-                    					expansionInGSalternatives = false;
-                    				} else {
-											currWordGoodExpansions++;
-										}
-                    			}
-									echo("        "+expansion.getWord()+" : "+freqExpansion+(expansionInGSalternatives? " ***":""));
-                    			listexpansionsmorphemes.add(expansionMorphemes);
-                    			listexpansions.add(expansion.getWord());
-                    		}
-
-								wordOutcomes.add(
-									new Object[] {
-										mot, currWordGoodExpansions,
-										expansions.length,gsalternatives.length});
-
-                    		if (computeStatsOverSurfaceForms) {
-                    			for (String gsalternative : gsalternatives)
-                    				if ( !listexpansions.contains(gsalternative) )
-										;
-                    		} else {
-                    			for (String gsalternativeMorphemes : gsalternativesMorphemes)
-                    				if ( !listexpansionsmorphemes.contains(gsalternativeMorphemes) )
-										;
-                    		}
-                    	} else {
-                    		logger.debug(mot+" - expansions null");
-							nbTotalCasesWithNoExpansion++;
-                    		nbTotalCasesCouldNotBeDecomposed++;
-								echo("        the word could not be decomposed.");
-                    	}
-                    } catch(Exception e) {
-                    	echo(
-                    		"Error getting the expansions for word: "+mot+"\n"+
-                    		Debug.printCallStack(e));
-                    }
-            }
-            csvParser.close();
-				elapsedTime = StopWatch.elapsedMsecsSince(startTime);
-
-            for (int igsa=0; igsa<listAllGsAlternatives.size(); igsa++) {
-					echo((igsa+1)+". "+listAllGsAlternatives.get(igsa));
-            }
-            
-	            echo("\nTotal number of evaluated words: "+nbTotalCases);
-	            echo("Total number of alternatives in Gold Standard: "+nbTotalGoldStandardAlternatives);
-	            echo("Total number of expansions found in corpus: "+nbTotalExpansionsFromCorpus);
-					echo(String.format("Average time per evaluated word: %.2f secs", secsPerCase()));
-	            echo("\nTotal number of cases with no expansion found in corpus: "+nbTotalCasesWithNoExpansion+", of which");
-	            echo("Total number of cases that could not be decomposed: "+nbTotalCasesCouldNotBeDecomposed);
-	            
-	            echo("\n\tNo expansion: either the word could not be decomposed"+
-	            					"\n\tor the decomposition process timed out,"+
-	            					"\n\tor the corpus contains nothing with the word's root.");
-	            
-	            echo("\nTotal number of corpus expansions not in GS alternatives: "+nbTotalExpansionsNotInGSAlternatives);            
-            int nbTotalGoodExpansions = nbTotalExpansionsFromCorpus - nbTotalExpansionsNotInGSAlternatives;
-			  	echo("\tTotal number of GOOD corpus expansion: "+nbTotalGoodExpansions);
-            
-            precision = (float)nbTotalGoodExpansions / (float)nbTotalExpansionsFromCorpus;
-            recall = (float)nbTotalGoodExpansions / (float)nbTotalGoldStandardAlternatives;
-            fmeasure = 2 * precision * recall / (precision + recall);
-
-			  	echo("Precision = "+precision);
-            echo("Recall = "+recall);
-            echo("F-measure = "+fmeasure);
-            
-        } catch(Exception e) {
-        	echo("Exception raised: "+e.getClass()+"\n"+e.getMessage());
-        	if (csvParser != null)
-				try {
-					csvParser.close();
-				} catch (IOException e1) {
-					echo(e1.getMessage());
-				}
-        }
-
-        echo("\n\n== Word outcomes:\n");
-        echo("Total words: "+wordOutcomes.size());
-        for (Object[] outcome: wordOutcomes) {
-        		String word = (String)outcome[0];
-        		Integer goodRels = (Integer)outcome[1];
-        		Integer relsProduced = (Integer)outcome[2];
-        		Integer gsRels = (Integer)outcome[3];
-        		echo("\t\t\tdefineOutcome(\""+word+"\", "+
-					goodRels+", "+relsProduced+", "+gsRels+");");
-		  }
-
-        if (focusOnWord != null) {
-        	Assert.fail("TEST WAS RUN ON A SINGLE WORD!\nRemember to set focusOnWord = null to run the test on all words");
-        }
-	}
-
-	public void runNew(PerformanceExpectations _exp, TestInfo testInfo)
+	public void run(PerformanceExpectations _exp, TestInfo testInfo)
 		throws MorphRelativesFinderException, IOException {
 		this.expectations = _exp;
 		TestDirs testDirs = new TestDirs(testInfo);
 		Map<String,String[]> goldStandard = readGoldStandard();
 
+		long startMSecs = StopWatch.nowMSecs();
 		Map<String,WordOutcome> actualOutcomes =
 			generateActualOutcomes(goldStandard);
 		writeActualOutcomes(actualOutcomes, testDirs);
+		long elapsedMSecs = StopWatch.elapsedMsecsSince(startMSecs);
+
+		double secsPerWord =
+			elapsedMSecs / (1000*actualOutcomes.keySet().size());
 
 		Map<String,WordOutcome> expOutcomes = readExpectedOutcomes(testInfo);
 
 		writeListOfAffectedWords(expOutcomes, actualOutcomes, goldStandard,
 			testInfo);
 
-		compareActualAndExpectedOutcomes(expOutcomes, actualOutcomes,
+		compareActualAndExpectedOutcomes(expOutcomes, actualOutcomes, secsPerWord,
 			goldStandard, testInfo);
 	}
 
@@ -402,18 +195,31 @@ public class MorphRelativesFinderEvaluator {
 	private void compareActualAndExpectedOutcomes(
 		Map<String, WordOutcome> expOutcomes,
 		Map<String, WordOutcome> actualOutcomes,
-		Map<String, String[]> goldStandard, TestInfo testInfo)
+		double gotSecsPerWord, Map<String, String[]> goldStandard,
+		TestInfo testInfo)
 		throws MorphRelativesFinderException, IOException {
 
 		String diffText = "";
 
 		diffText += comparePrecision(expOutcomes, actualOutcomes, goldStandard);
 		diffText += compareRecall(expOutcomes, actualOutcomes, goldStandard);
+		diffText += compareSecsPerWord(gotSecsPerWord, testInfo);
 
 		if (!diffText.isEmpty()) {
 			diffText = howToAddressDifferences(testInfo) + diffText;
 			Assertions.fail(diffText);
 		}
+	}
+
+	private String compareSecsPerWord(double gotSecsPerWord, TestInfo testInfo) throws IOException {
+		String errMess = "";
+		try {
+			AssertRuntime.runtimeHasNotChanged(
+				gotSecsPerWord, 0.1, "Secs per word", testInfo);
+		} catch (AssertionError e) {
+			errMess += e.getMessage();
+		}
+		return errMess;
 	}
 
 	private String howToAddressDifferences(TestInfo testInfo) throws IOException {
@@ -744,7 +550,7 @@ public class MorphRelativesFinderEvaluator {
 					break;
 				}
 
-				if (focusOnWord != null && !mot.equals(focusOnWord)) {
+				if (expectations.focusOnWord != null && !mot.equals(expectations.focusOnWord)) {
 					continue;
 				}
 				echo("\nReading Gold Standard for word #" + wordCount + ": " + mot + " " + "(" + freqMotGoogle + ")");
@@ -799,27 +605,6 @@ public class MorphRelativesFinderEvaluator {
 	
 		return freqDansCorpus;
 	}
-	
-	private void removeTailingBackslashFromDecomps(
-		MorphologicalRelative[] morphologicalRelatives) {
-		MorphologicalRelative[] morphRelativesTrimmed =
-			new MorphologicalRelative[morphologicalRelatives.length];
-		for (int ii=0; ii < morphologicalRelatives.length; ii++) {
-			MorphologicalRelative aRelative = morphologicalRelatives[ii];
-			String[] aDecomp = aRelative.getMorphemes();
-			if (aDecomp != null && aDecomp.length > 0 &&
-				aDecomp[aDecomp.length-1].equals("\\")) {
-				aDecomp = Arrays.copyOfRange(aDecomp, 0, aDecomp.length-1);
-				aRelative.setMorphemes(aDecomp);
-			}
-		}
-	}
-
-	public double secsPerCase() {
-		double mSecs = 1.0 * elapsedTime / nbTotalCases;
-		double secs = mSecs / 1000;
-		return secs;
-	}
 
 	public void setRelsFinder(MorphRelativesFinder finder) {
 		this.relsFinder = finder;
@@ -832,5 +617,4 @@ public class MorphRelativesFinderEvaluator {
 	protected void echo(int level) {
 		userIO.echo(level);
 	}
-
 }
