@@ -1,5 +1,6 @@
 package org.iutools.cli;
 
+import ca.nrc.ui.commandline.CommandLineException;
 import org.iutools.corpus.CompiledCorpus;
 import org.iutools.corpus.CorpusDumper;
 
@@ -7,7 +8,7 @@ import java.io.File;
 
 public class CmdDumpCorpus extends ConsoleCommand {
 
-    public CmdDumpCorpus(String name) {
+    public CmdDumpCorpus(String name) throws CommandLineException {
         super(name);
     }
 

@@ -3,6 +3,7 @@ package org.iutools.cli;
 import java.util.Scanner;
 import java.util.concurrent.TimeoutException;
 
+import ca.nrc.ui.commandline.CommandLineException;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -20,7 +21,7 @@ public class CmdSegmentIU extends ConsoleCommand {
 	Mode mode = null;
 	boolean lenient = false;
 	
-	public CmdSegmentIU(String name) {
+	public CmdSegmentIU(String name) throws CommandLineException {
 		super(name);
 	}
 

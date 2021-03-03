@@ -1,10 +1,11 @@
 package org.iutools.cli;
 
+import ca.nrc.ui.commandline.CommandLineException;
 import org.iutools.morphrelatives.MorphRelativesFinderEvaluator;
 
 public class CmdEvaluateQueryExpansion extends ConsoleCommand {
 
-	public CmdEvaluateQueryExpansion(String name) {
+	public CmdEvaluateQueryExpansion(String name) throws CommandLineException {
 		super(name);
 	}
 

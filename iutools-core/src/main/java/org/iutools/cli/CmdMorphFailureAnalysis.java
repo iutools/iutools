@@ -3,6 +3,7 @@ package org.iutools.cli;
 import java.util.Iterator;
 import java.util.List;
 
+import ca.nrc.ui.commandline.CommandLineException;
 import org.iutools.morph.failureanalysis.MorphFailureAnalyzer;
 import org.iutools.morph.failureanalysis.ProblematicNGram;
 import org.iutools.morph.failureanalysis.ProblematicNGram.SortBy;
@@ -16,7 +17,7 @@ public class CmdMorphFailureAnalysis extends ConsoleCommand {
 	
 	Verbosity verbosity = getVerbosity();
 	
-	public CmdMorphFailureAnalysis(String name) {
+	public CmdMorphFailureAnalysis(String name) throws CommandLineException {
 		super(name);
 	}
 

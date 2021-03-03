@@ -2,6 +2,7 @@ package org.iutools.cli;
 
 import java.io.FileReader;
 
+import ca.nrc.ui.commandline.CommandLineException;
 import org.iutools.corpus.CompiledCorpus;
 import org.iutools.corpus.CompiledCorpusRegistry;
 
@@ -13,9 +14,9 @@ import org.iutools.morphrelatives.MorphRelativesFinder;
 import org.iutools.morphrelatives.MorphologicalRelative;
 import org.iutools.morph.MorphologicalAnalyzer;
 
-public class CmdMorphNeighbours extends ConsoleCommand {
+public class CmdRelatedWords extends ConsoleCommand {
 
-	public CmdMorphNeighbours(String name) {
+	public CmdRelatedWords(String name) throws CommandLineException {
 		super(name);
 	}
 

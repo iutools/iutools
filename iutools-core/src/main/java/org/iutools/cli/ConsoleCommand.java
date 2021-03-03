@@ -10,7 +10,12 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.TimeoutException;
 
+import ca.nrc.ui.commandline.CommandLineException;
 import ca.nrc.ui.commandline.SubCommand;
+import org.iutools.corpus.CompiledCorpus;
+import org.iutools.corpus.CompiledCorpusException;
+import org.iutools.corpus.CompiledCorpusRegistry;
+import org.iutools.corpus.CompiledCorpusRegistryException;
 import org.iutools.edit_distance.EditDistanceCalculatorFactory;
 
 import static org.iutools.concordancer.WebConcordancer.AlignOptions;
@@ -28,6 +33,8 @@ public abstract class ConsoleCommand extends SubCommand {
 	public static final String OPT_CORPUS_NAME = "corpus-name";
 	public static final String OPT_CORPUS_SAVE_PATH = "corpus-save-path";
 	public static final String OPT_GS_FILE = "gs-file";
+
+	public static final String OPT_COMMENT = "comment";
 
 	public static final String OPT_URL = "url";
 	public static final String OPT_LANGS = "langs";
@@ -55,7 +62,7 @@ public abstract class ConsoleCommand extends SubCommand {
 	public static final String OPT_PIPELINE = "pipeline";
 	public static final String OPT_TIMEOUT_SECS = "timeout-secs";
 
-	public ConsoleCommand(String name) {
+	public ConsoleCommand(String name) throws CommandLineException {
 		super(name);
 	}
 
@@ -130,6 +137,17 @@ public abstract class ConsoleCommand extends SubCommand {
 		String corpusName = getOptionValue(ConsoleCommand.OPT_CORPUS_NAME, failIfAbsent);
 		return corpusName;		
 	}
+
+	protected CompiledCorpus getCorpus() throws ConsoleException {
+		String corpusName = getCorpusName();
+		CompiledCorpus corpus = null;
+		try {
+			corpus = new CompiledCorpusRegistry().getCorpus(corpusName);
+		} catch (CompiledCorpusRegistryException | CompiledCorpusException e) {
+			throw new ConsoleException(e);
+		}
+		return corpus;
+	}
 	
 	protected String[] getMorphemes() {
 		return getMorphemes(true);
@@ -151,6 +169,11 @@ public abstract class ConsoleCommand extends SubCommand {
 
 	protected boolean getWordsOnlyOpt() {
 		return hasOption(OPT_WORDS_ONLY);
+	}
+
+	protected String getComment() {
+		String comment = getOptionValue(ConsoleCommand.OPT_COMMENT, false);
+		return comment;
 	}
 
 	protected URL getURL() {

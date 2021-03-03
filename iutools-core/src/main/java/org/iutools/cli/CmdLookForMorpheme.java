@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import ca.nrc.ui.commandline.CommandLineException;
 import org.iutools.corpus.CompiledCorpus;
 import org.iutools.corpus.CompiledCorpusRegistry;
 
@@ -14,7 +15,7 @@ import org.iutools.morphemesearcher.ScoredExample;
 
 public class CmdLookForMorpheme extends ConsoleCommand {
 
-	public CmdLookForMorpheme(String name) {
+	public CmdLookForMorpheme(String name) throws CommandLineException {
 		super(name);
 	}
 

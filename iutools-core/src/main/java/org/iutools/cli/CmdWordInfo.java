@@ -1,6 +1,7 @@
 package org.iutools.cli;
 
 import ca.nrc.json.PrettyPrinter;
+import ca.nrc.ui.commandline.CommandLineException;
 import org.iutools.corpus.CompiledCorpus;
 import org.iutools.corpus.CompiledCorpusRegistry;
 import org.iutools.corpus.CompiledCorpusRegistryException;
@@ -16,7 +17,7 @@ public class CmdWordInfo extends ConsoleCommand {
         return "Print information about a word found in a given corpus";
     }
 
-    public CmdWordInfo(String name) {
+    public CmdWordInfo(String name) throws CommandLineException {
         super(name);
     }
 

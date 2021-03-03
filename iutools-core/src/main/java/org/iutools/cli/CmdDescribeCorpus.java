@@ -2,6 +2,7 @@ package org.iutools.cli;
 
 import java.io.File;
 
+import ca.nrc.ui.commandline.CommandLineException;
 import org.iutools.corpus.CompiledCorpus;
 import org.iutools.corpus.CompiledCorpusRegistry;
 import org.iutools.corpus.CompiledCorpusRegistryException;
@@ -13,7 +14,7 @@ public class CmdDescribeCorpus extends ConsoleCommand {
 		return "Compile a corpus from a series of corpus files.";
 	}
 
-	public CmdDescribeCorpus(String name) {
+	public CmdDescribeCorpus(String name) throws CommandLineException {
 		super(name);
 	}
 

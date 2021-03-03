@@ -2,6 +2,7 @@ package org.iutools.cli;
 
 import java.io.File;
 
+import ca.nrc.ui.commandline.CommandLineException;
 import ca.nrc.ui.commandline.UserIO;
 import org.iutools.corpus.CorpusCompiler;
 import org.iutools.corpus.CorpusCompilerException;
@@ -13,25 +14,21 @@ public class CmdCompileCorpus extends ConsoleCommand {
 		return "Compile a corpus from a series of corpus files.";
 	}
 
-	public CmdCompileCorpus(String name) {
+	public CmdCompileCorpus(String name) throws CommandLineException {
 		super(name);
 	}
 
 	@Override
 	public void execute() throws Exception {
-		String corpusName = getCorpusName(true);
-		if (corpusName == null) {
-			this.usageMissingOption(OPT_CORPUS_NAME);
-		}
+		String corpusName = getCorpusName(false);
 
 		boolean verbose = (getVerbosity() != UserIO.Verbosity.Level0);
 		File corpusDir = getInputDir();
 		File outputDir = getOutputDir();
-		File inputDir = getInputDir();
 		CorpusCompiler compiler = new CorpusCompiler(outputDir);
-		compiler
-			.setCorpusDir(corpusDir)
-			.setCorpusName(corpusName);
+			compiler
+				.setCorpusDir(corpusDir)
+				.setCorpusName(corpusName);
 
 		if (compiler.progress.corpusTextsRoot == null &&
 			compiler.progress == null) {
@@ -42,7 +39,7 @@ public class CmdCompileCorpus extends ConsoleCommand {
 		compiler.setCorpusDir(corpusDir);
 		compiler.setOutputDir(outputDir);
 
-		compiler.compile();
+		compiler.compile(corpusName, corpusDir);
 	}
 
 	private void compileWordFrequencies(File corpusDir, String corpusSavePath, boolean verbose) throws CorpusCompilerException, ConsoleException {

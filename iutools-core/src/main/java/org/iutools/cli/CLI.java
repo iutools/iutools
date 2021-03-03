@@ -239,6 +239,12 @@ public class CLI {
 			    .argName("EXCLUDE_PATTERN")
 			    .build();
 
+		Option optComment = Option.builder(null)
+				.longOpt(ConsoleCommand.OPT_COMMENT)
+			    .desc("Comment describing the action taken by the command.")
+			    .hasArg()
+			    .argName("COMMENT")
+			    .build();
 		
 		// --- COMMANDS
 
@@ -252,6 +258,16 @@ public class CLI {
 				.addOption(optRedoFailed)
 				;
 		mainCmd.addSubCommand(compileCorpus);
+
+		// Recompute the decomposition of certain words in
+		// a compiled Corpus
+		SubCommand recomputeDecomps =
+				new CmdRecompileDecomps("recompute_decomps")
+				.addOption(optInputFile)
+				.addOption(optComment)
+				;
+		mainCmd.addSubCommand(recomputeDecomps);
+
 
 		// Dump a corpus to file
 		SubCommand dumpCorpus =
@@ -329,7 +345,7 @@ public class CLI {
 				
 		// Find words related to an inuktitut query word
 		SubCommand expandIUQuery = 
-				new CmdMorphNeighbours("morph_neighbours")
+				new CmdRelatedWords("related_words")
 				.addOption(optCorpusName)
 				.addOption(optWord)
 				;

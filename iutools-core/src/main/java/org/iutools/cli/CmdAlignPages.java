@@ -1,6 +1,7 @@
 package org.iutools.cli;
 
 import ca.nrc.json.PrettyPrinter;
+import ca.nrc.ui.commandline.CommandLineException;
 import org.iutools.concordancer.DocAlignment;
 import org.iutools.concordancer.WebConcordancer;
 import static org.iutools.concordancer.WebConcordancer.AlignOptions;
@@ -27,7 +28,7 @@ public class CmdAlignPages extends ConsoleCommand {
 	Scanner stdinScanner = new Scanner(System.in);
 	boolean singleInputAlreadyProcessed = false;
 
-	public CmdAlignPages(String name) {
+	public CmdAlignPages(String name) throws CommandLineException {
 		super(name);
 	}
 

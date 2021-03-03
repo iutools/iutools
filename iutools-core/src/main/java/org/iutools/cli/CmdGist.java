@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ca.nrc.ui.commandline.CommandLineException;
 import org.iutools.bin.Decompose;
 import org.iutools.morph.Decomposition;
 import org.iutools.morph.MorphologicalAnalyzer;
@@ -15,7 +16,7 @@ import ca.nrc.ui.commandline.UserIO.Verbosity;
 
 public class CmdGist extends ConsoleCommand {
 
-	public CmdGist(String name) {
+	public CmdGist(String name) throws CommandLineException {
 		super(name);
 	}
 

@@ -1,10 +1,11 @@
 package org.iutools.cli;
 
+import ca.nrc.ui.commandline.CommandLineException;
 import org.iutools.corpus.CompiledCorpusRegistry;
 
 public class CmdEsLoadCorpus extends ConsoleCommand {
 
-    public CmdEsLoadCorpus(String cmdName) {
+    public CmdEsLoadCorpus(String cmdName) throws CommandLineException {
         super(cmdName);
     }
 

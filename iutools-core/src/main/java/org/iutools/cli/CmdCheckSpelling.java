@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 
+import ca.nrc.ui.commandline.CommandLineException;
 import org.iutools.edit_distance.EditDistanceCalculatorFactory;
 import org.iutools.spellchecker.ScoredSpelling;
 import org.iutools.spellchecker.SpellChecker;
@@ -11,7 +12,7 @@ import org.iutools.spellchecker.SpellingCorrection;
 
 public class CmdCheckSpelling extends ConsoleCommand {
 
-	public CmdCheckSpelling(String name) {
+	public CmdCheckSpelling(String name) throws CommandLineException {
 		super(name);
 	}
 

@@ -1,5 +1,6 @@
 package org.iutools.cli;
 
+import ca.nrc.ui.commandline.CommandLineException;
 import ca.nrc.ui.commandline.UserIO;
 import org.iutools.concordancer.tm.TranslationMemory;
 import org.iutools.config.IUConfig;
@@ -8,7 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class CmdLoadTranslationMemory extends ConsoleCommand {
-	public CmdLoadTranslationMemory(String name) {
+	public CmdLoadTranslationMemory(String name) throws CommandLineException {
 		super(name);
 	}
 

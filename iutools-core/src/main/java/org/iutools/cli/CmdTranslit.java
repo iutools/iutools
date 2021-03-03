@@ -2,6 +2,7 @@ package org.iutools.cli;
 
 import java.io.File;
 
+import ca.nrc.ui.commandline.CommandLineException;
 import org.iutools.bin.TranslitDOCFileParagraphs;
 import org.iutools.script.TransCoder;
 
@@ -12,7 +13,7 @@ public class CmdTranslit extends ConsoleCommand {
 		return "Transliterate Legacy inuktitut to Unicode.";
 	}
 
-	public CmdTranslit(String name) {
+	public CmdTranslit(String name) throws CommandLineException {
 		super(name);
 	}
 

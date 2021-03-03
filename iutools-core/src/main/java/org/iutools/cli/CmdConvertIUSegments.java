@@ -1,12 +1,14 @@
 package org.iutools.cli;
 
+import ca.nrc.ui.commandline.CommandLineException;
+
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CmdConvertIUSegments extends ConsoleCommand {
 
-	public CmdConvertIUSegments(String name) {
+	public CmdConvertIUSegments(String name) throws CommandLineException {
 		super(name);
 	} 
 
