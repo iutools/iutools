@@ -53,6 +53,10 @@ public class CorpusDumper {
             wordsOnly = false;
         }
 
+        if (outputFile == null) {
+            outputFile = CompiledCorpusRegistry.jsonFile4corpus(corpus).toFile();
+        }
+
         long totalWords = corpus.totalWords();
         ProgressMonitor_Terminal progMonitor =
         new ProgressMonitor_Terminal(

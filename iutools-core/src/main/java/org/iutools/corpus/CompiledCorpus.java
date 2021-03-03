@@ -1099,4 +1099,16 @@ public class CompiledCorpus {
 			this.id = "lastload";
 		}
 	}
+
+	public static String canonizeCorpusName(String corpusName) {
+		String canonical = corpusName;
+		if (canonical != null) {
+			canonical = canonical.toLowerCase();
+		}
+		return canonical;
+	}
+
+	public String canonicalName() {
+		return canonizeCorpusName(indexName);
+	}
 }

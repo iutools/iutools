@@ -21,8 +21,8 @@ import ca.nrc.config.ConfigException;
 public class CompiledCorpusRegistry {
 	
 	private static Map<String,File> registry = null;
-	public static final String defaultCorpusName = "HANSARD-1999-2002";
-	public static final String emptyCorpusName = "EMPTYCORPUS";
+	public static final String defaultCorpusName = "hansard-1999-2002";
+	public static final String emptyCorpusName = "emptycorpus";
 
 	public static enum Option {ALLOW_UNREGISTERED};
 
@@ -80,7 +80,12 @@ public class CompiledCorpusRegistry {
 		}
 	}
 
-	public static Set<String> availableCorpora() {
+	public static Set<String> availableCorpora() throws CompiledCorpusException {
+		try {
+			new CompiledCorpusRegistry();
+		} catch (CompiledCorpusException e) {
+			throw new CompiledCorpusException(e);
+		}
 		Set<String> corpNames = new HashSet<String>();
 		if (registry != null) {
 			corpNames = registry.keySet();
@@ -88,7 +93,13 @@ public class CompiledCorpusRegistry {
 		return corpNames;
 	}
 
+	public static Path jsonFile4corpus(CompiledCorpus corpus) {
+		String corpusName = corpus.canonicalName();
+		return jsonFile4corpus(corpusName);
+	}
+
 	public static Path jsonFile4corpus(String corpusName) {
+		corpusName = CompiledCorpus.canonizeCorpusName(corpusName);
 		File jsonFile = registry.get(corpusName);
 		Path jsonFilePath = null;
 		if (jsonFile != null) {
@@ -126,6 +137,8 @@ public class CompiledCorpusRegistry {
 		logger.debug("corpusName= '"+corpusName+"'");
 		if (corpusName == null) {
 			corpusName = defaultCorpusName;
+		} else {
+			corpusName = CompiledCorpus.canonizeCorpusName(corpusName);
 		}
 		if (reloadFromJson == null) {
 			reloadFromJson = false;

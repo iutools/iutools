@@ -92,6 +92,6 @@ public class CompiledCorpusRegistryTest {
 		Set<String> gotCorpora = CompiledCorpusRegistry.availableCorpora();
 		AssertObject.assertDeepEquals(
 			"Available corpora not as expected",
-			new String[] {"HANSARD-1999-2002"}, gotCorpora);
+			new String[] {"hansard-1999-2002"}, gotCorpora);
 	}
 }

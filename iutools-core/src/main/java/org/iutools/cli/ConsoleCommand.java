@@ -84,9 +84,13 @@ public abstract class ConsoleCommand extends SubCommand {
 	}
 	
 	protected File getDataFile(boolean failIfAbsent) {
+		File dataFile = null;
 		String fileStr = 
 			getOptionValue(ConsoleCommand.OPT_DATA_FILE, failIfAbsent);
-		return new File(fileStr);
+		if (fileStr != null) {
+			dataFile = new File(fileStr);
+		}
+		return dataFile;
 	}
 	
 	protected String getDictFile() {
