@@ -4,6 +4,7 @@ import ca.nrc.json.PrettyPrinter;
 import ca.nrc.ui.commandline.ProgressMonitor_Terminal;
 import ca.nrc.ui.commandline.UserIO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.apache.log4j.Logger;
 
 import static ca.nrc.ui.commandline.UserIO.Verbosity;
 
@@ -48,6 +49,7 @@ public class CorpusDumper {
 
     public void dump(File outputFile, Boolean wordsOnly)
         throws CompiledCorpusException {
+        Logger tLogger = Logger.getLogger("org.iutools.corpus.CorpusDumper.dump");
 
         if (wordsOnly == null) {
             wordsOnly = false;
@@ -55,6 +57,16 @@ public class CorpusDumper {
 
         if (outputFile == null) {
             outputFile = CompiledCorpusRegistry.jsonFile4corpus(corpus).toFile();
+        }
+
+        System.out.println("Dumping corpus "+corpus.canonicalName()+" to file: "+outputFile);
+
+        if (outputFile.exists()) {
+            boolean overwrite = userIO.prompt_yes_or_no("The file "+outputFile+" already exists.\nOverwrite it?");
+            if (!overwrite) {
+                System.out.println("Aborting the command");
+                return;
+            }
         }
 
         long totalWords = corpus.totalWords();

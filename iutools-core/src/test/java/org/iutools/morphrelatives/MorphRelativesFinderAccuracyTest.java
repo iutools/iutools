@@ -50,11 +50,6 @@ public class MorphRelativesFinderAccuracyTest {
 	}
 
 	@Test
-	public void test_TODO1() {
-		Assertions.fail("Make sure that dump_corpus without arguments will dump the default corpus to the iutools-data location\n");
-	}
-
-	@Test
 	public void test_TODO2() {
 		Assertions.fail("Make sure that recompile_corpus command will recompute the decomps of all words in the corpus, and dump the new version of the corpus to ituools-data\n");
 	}
