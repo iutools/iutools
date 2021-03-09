@@ -569,13 +569,19 @@ public class CompiledCorpus {
 				"\"";
 
 		RequestBodyElement[] additionalRequestElts = new RequestBodyElement[0];
-		if (winfoFields != null) {
+		if (winfoFields == null) {
+			// If no fields are provided, just include the doc id
+			additionalRequestElts =
+				new RequestBodyElement[]{
+				new _Source("id")
+				};
+		} else {
+			// Only return the requested fields
 			additionalRequestElts =
 				new RequestBodyElement[] {
 					new _Source(winfoFields.toArray(new String[0]))
 				};
 		}
-		options = (SearchOption[]) ArrayUtils.add(options, SearchOption.WORD_ONLY);
 		SearchResults<WordInfo> results =
 				esWinfoSearch(query, options, false, additionalRequestElts);
 
@@ -741,8 +747,21 @@ public class CompiledCorpus {
 	}
 
 	
-	public String[] bestDecomposition(String word) throws CompiledCorpusException {
-		return new String[0];
+	public String[] topDecomposition(String word) throws CompiledCorpusException {
+		String[] decomp = null;
+		WordInfo winfo = info4word(word);
+		if (winfo != null && winfo.topDecomposition() != null) {
+			decomp = winfo.topDecomposition();
+		} else {
+			try {
+				decomp = getSegmenter().segment(word);
+			} catch (StringSegmenterException | LinguisticDataException e) {
+				throw new CompiledCorpusException(e);
+			} catch (TimeoutException e) {
+				// If we timeout, just leave the decomp at null
+			}
+		}
+		return decomp;
 	}
 
 	

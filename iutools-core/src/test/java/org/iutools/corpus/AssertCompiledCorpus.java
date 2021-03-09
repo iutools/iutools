@@ -107,7 +107,7 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 
 	public AssertCompiledCorpus bestDecompositionIs(
 			String word, String expTopSegmentation) throws Exception {
-		String[] gotTopSegmentation = corpus().bestDecomposition(word);
+		String[] gotTopSegmentation = corpus().topDecomposition(word);
 		
 		return this;
 	}
