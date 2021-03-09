@@ -10,6 +10,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.iutools.utilities.StopWatch;
 import ca.nrc.debug.Debug;
 import org.iutools.corpus.*;
@@ -305,7 +306,7 @@ public class SpellChecker {
 				word, null);
 
 				List<ScoredSpelling> candidates =
-				candidatesWithSimilarNgrams(wordInLatin, wordIsNumericTerm);
+					candidatesWithSimilarNgrams(wordInLatin, wordIsNumericTerm);
 
 				SpellDebug.trace("SpellChecker.correctWord",
 				"Number of 1st pass candidates=" + (candidates.size()),
@@ -317,14 +318,14 @@ public class SpellChecker {
 				SpellDebug.containsCorrection(
 				"SpellChecker.correctWord",
 				"First pass candidates",
-				word, "nunavut", candidates);
+					word, "nunavut", candidates);
 
 				SpellDebug.trace("SpellChecker.correctWord",
-				"Computing candidates similariy using " + editDistanceCalculator.getClass(),
-				word, null);
+					"Computing candidates similariy using " + editDistanceCalculator.getClass(),
+					word, null);
 
 				List<ScoredSpelling> scoredSpellings =
-				computeCandidateSimilarities(wordInLatin, candidates);
+					computeCandidateDistances(wordInLatin, candidates);
 
 				SpellDebug.containsDuplicates(
 				"SpellChecker.correctWord",
@@ -333,10 +334,10 @@ public class SpellChecker {
 				SpellDebug.containsCorrection(
 				"SpellChecker.correctWord",
 				"UNSORTED scored spellings",
-				word, scoredSpellings);
+					word, scoredSpellings);
 
 				List<ScoredSpelling> sortedSpellings =
-				sortCandidatesByOverallScore(scoredSpellings);
+					sortCandidatesByOverallScore(scoredSpellings);
 
 				SpellDebug.containsDuplicates(
 				"SpellChecker.correctWord",
@@ -762,22 +763,19 @@ public class SpellChecker {
 	private List<ScoredSpelling> sortCandidatesByOverallScore(
 		List<ScoredSpelling> spellings) {
 
+		SpellDebug.traceTrackedCandidates("SpellChecker.sortCandidatesByOverallScore",
+			spellings);
+
 		Collections.sort(spellings,
 			(ScoredSpelling p1, ScoredSpelling p2) -> {
-				int score = p1.ngramSim.compareTo(p2.ngramSim);
-				if (score == 0) {
-					// Use frequency to break ties in the value of ngram
-					// similarity
-					score = p1.frequency.compareTo(p2.frequency);
-				}
-				return score;
+				return ScoredSpelling.compareSpellings(p1, p2);
 			}
 		);
 
 		return spellings;
 	}
 
-	protected List<ScoredSpelling> computeCandidateSimilarities(
+	protected List<ScoredSpelling> computeCandidateDistances(
 		String badWord, List<ScoredSpelling> candidates) throws SpellCheckerException {
 		SpellDebug.trace("SpellChecker.computeCandidateSimilarities",
 				"Invoked on word="+badWord+
@@ -787,17 +785,17 @@ public class SpellChecker {
 		List<ScoredSpelling> scoredCandidates = new ArrayList<ScoredSpelling>();
 
 		for (ScoredSpelling aCandidate: candidates) {
-			double ngramSimilarity =
-				computeCandidateNgramSimilarity(badWord, aCandidate.spelling);
-			aCandidate.ngramSim = ngramSimilarity;
+			double editDistance =
+				computeCandidateEditDistance(badWord, aCandidate.spelling);
+			aCandidate.editDist = editDistance;
 		}
 		
 		return candidates;
 	}
 
-	private double computeCandidateNgramSimilarity(String badWord, String candidate) throws SpellCheckerException {
+	private double computeCandidateEditDistance(String badWord, String candidate) throws SpellCheckerException {
 
-		SpellDebug.trace("SpellChecker.computeCandidateSimilarity",
+		SpellDebug.trace("SpellChecker.computeCandidateNgramSimilarity",
 			"Invoked, editDistanceCalculator="+editDistanceCalculator.getClass(),
 			badWord, candidate);
 		
@@ -808,7 +806,7 @@ public class SpellChecker {
 			throw new SpellCheckerException(e);
 		}
 
-		SpellDebug.trace("SpellChecker.computeCandidateSimilarity",
+		SpellDebug.trace("SpellChecker.computeCandidateNgramSimilarity",
 				"returning distance="+distance,
 				badWord, candidate);
 
@@ -1134,15 +1132,19 @@ public class SpellChecker {
 		Iterator<WordInfo> winfosIter = null;
 		try {
 			Iterator<WordInfo> winfosIter1 =
-				corpus.winfosContainingNgram(
-					seq, options);
+				corpus.winfosContainingNgram(seq, options);
+
+			// When looking in the corpus of explicitly correct words, don't worry
+			// about making sure that it's correctly spelled according to the
+			// analyzer
+			//
+			options = ArrayUtils.removeElement(
+				options, CompiledCorpus.SearchOption.EXCL_MISSPELLED);
 
 			Iterator<WordInfo> winfosIter2 =
-				explicitlyCorrectWords.winfosContainingNgram(
-					seq, CompiledCorpus.SearchOption.EXCL_MISSPELLED);
+				explicitlyCorrectWords.winfosContainingNgram(seq, options);
 
-			winfosIter =
-				new IteratorChain<WordInfo>(winfosIter1, winfosIter2);
+			winfosIter = new IteratorChain<WordInfo>(winfosIter1, winfosIter2);
 		} catch (CompiledCorpusException e) {
 			throw new SpellCheckerException(e);
 		}

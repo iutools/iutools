@@ -5,13 +5,15 @@ import java.util.*;
 
 import ca.nrc.datastructure.Pair;
 import ca.nrc.dtrc.stats.FrequencyHistogram;
+import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.diff.DiffResult;
 
 import org.apache.log4j.Logger;
 
 public class SpellDebug {
 
-	// Set to true to deactivate all traces
+	// To activate traces, set the log4j logger org.iutools.spellchecker.SpellDebug
+	// to level =TRACE
 	private static final boolean debugActive;
 
 	static {
@@ -32,14 +34,15 @@ public class SpellDebug {
 	static {
 //		methodsToTrace = null;
 //		methodsToTrace = new HashSet<String>();
-		methodsToTrace.add("SpellChecker.correctWord");
-		methodsToTrace.add("SpellChecker.firstPassCandidates_TFIDF");
-		methodsToTrace.add("SpellChecker.candidatesWithBestNGramsMatch");
-		methodsToTrace.add("SpellChecker.computeCandidateSimilarity");
-		methodsToTrace.add("SpellChecker.computeCandidateSimilarity");
-		methodsToTrace.add("IUDiffCosting.cost");
-		methodsToTrace.add("IUDiffCosting.costFirstMorphemeChange");
-		methodsToTrace.add("IUSpellingDistance.distance");
+//		methodsToTrace.add("SpellChecker.correctWord");
+//		methodsToTrace.add("SpellChecker.firstPassCandidates_TFIDF");
+//		methodsToTrace.add("SpellChecker.candidatesWithBestNGramsMatch");
+//		methodsToTrace.add("SpellChecker.computeCandidateSimilarities");
+//		methodsToTrace.add("ScoredSpelling.compareSpellings");
+//		methodsToTrace.add("SpellChecker.sortCandidatesByOverallScore");
+//		methodsToTrace.add("IUDiffCosting.cost");
+//		methodsToTrace.add("IUDiffCosting.costFirstMorphemeChange");
+//		methodsToTrace.add("IUSpellingDistance.distance");
 	}
 
     // If this is not-null, then when a trace does not provide the word
@@ -60,8 +63,8 @@ public class SpellDebug {
 	static {
 		badWordsToTrace = new HashMap<String,String[]>();
 		badWordsToTrace
-			.put("nunavuumit",
-				new String[] {"nunavummit"});
+			.put("pigiaqtitat",
+				new String[] {"pigiaqtitait"});
 	}
 
 	// List of candidate spellings to be traced.
@@ -71,8 +74,10 @@ public class SpellDebug {
 	private static Set<String> candidatesToTrace = null;
 	static {
 		candidatesToTrace = new HashSet<String>();
-		candidatesToTrace.add("nunavuumit");
-		candidatesToTrace.add("nunavummit");
+		candidatesToTrace.add("pigiaqtitait");
+		candidatesToTrace.add("pigiaqtita");
+		candidatesToTrace.add("pigiaqtitaut");
+		candidatesToTrace.add("pigiaqtatinirnit");
 	}
 
 	// List of ngrams to be traced.
@@ -123,7 +128,7 @@ public class SpellDebug {
 		//
 		boolean badWordShouldBeTraced = true;
 		String badWordTraceID = "*";
-		if (badWord != null) {
+		if (badWord != null && !badWord.equals("*")) {
 			badWordShouldBeTraced =
 				(getBadWordsToTrace() == null ||
 					getBadWordsToTrace().containsKey(badWord));
@@ -145,7 +150,7 @@ public class SpellDebug {
 		//
 		boolean ngramShouldBeTraced = true;
 		String ngramTraceID = "*";
-		if (ngram != null) {
+		if (ngram != null && !ngram.equals("*")) {
 			ngramShouldBeTraced =
 				(ngramsToTrace == null ||
 					ngramsToTrace.contains(ngram));
@@ -166,7 +171,7 @@ public class SpellDebug {
 	}
 
 	public static void trace(String who, String mess, String badWord,
-		 String candidate, String ngram) {
+ 		String candidate, String ngram) {
 		Pair<Boolean,String> status = traceStatus(who, badWord, candidate, ngram);
 		if (status.getFirst()) {
 			System.out.println("-- "+who+"("+status.getSecond()+"):\n   "+mess);
@@ -382,6 +387,36 @@ public class SpellDebug {
 				mess += "\nTotal dups = " + numDups;
 				System.out.println("-- " + who + "(" + status.getSecond() + "):\n   " + mess);
 			}
+		}
+	}
+
+	public static void traceTrackedCandidates(String who, Collection<ScoredSpelling> candidates) {
+		if (SpellDebug.traceIsActive(who, (String)null)) {
+			for (ScoredSpelling aCandidate: candidates) {
+				SpellDebug.trace(
+					who,
+					"candidate=\n"+ PrettyPrinter.print(aCandidate),
+					"*", aCandidate.spelling, "*");
+			}
+		}
+	}
+
+	public static void traceCandidateScoreComparison(
+		String who, ScoredSpelling cand1, ScoredSpelling cand2, int score,
+		String mess) {
+
+		if (mess == null) {
+			mess = "";
+		}
+		boolean traceCand1 =
+			traceStatus(who, "*", cand1.spelling, "*").getFirst();
+		boolean traceCand2 =
+			 traceStatus(who, "*", cand2.spelling, "*").getFirst();
+		if (traceCand1 && traceCand2) {
+			mess = "["+cand1.spelling+","+
+				cand2.spelling+"]: "+mess+" => score="+score
+				;
+			System.out.println("-- "+who+":\n   "+mess);
 		}
 	}
 }
