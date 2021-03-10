@@ -328,8 +328,8 @@ public class SpellCheckerTest {
 			"ujararniarvimmi",
 			"ujararniarvimmik",
 			"ujararniarvimmit",
-			"ujarattarniarvimmi",
-			"ujararniarvimmut"
+			"ujararniarvimmut",
+			"ujarattarniarvimmi"
 		};
 
 		SpellingCorrection gotCorrection = checker.correctWord(word, 5);

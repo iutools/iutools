@@ -179,7 +179,7 @@ public class SpellCheckerAccuracyTest {
                     .isMisspelled("taanna").setMaxRank(1),
 
             new SpellCheckerExample("tavani")
-                    .isMisspelled("tavvani").setMaxRank(2),
+                    .isMisspelled("tavvani").setMaxRank(1),
 
             new SpellCheckerExample("uvalu")
                     .isMisspelled("uvvalu").setMaxRank(1),
@@ -404,15 +404,15 @@ public class SpellCheckerAccuracyTest {
 
             // use setFocusOnExample() to run just one word out of the
             // data set.
-//            .setFocusOnExample("nunavuumit")
+//            .setFocusOnExample("pigiaqtitat")
 
-            .setVerbosity(1)
+            .setVerbosity(0)
             .setExamples(examples_MostFrequenMisspelledWords)
             .setLoadCorrectWordInDict(true)
 
             .setPercentFoundInTopN(1.0)
             .setTolerance(0.01)
-            .setPercTopSuggestionOK(0.95)
+            .setPercTopSuggestionOK(0.97)
             .setAverageRank(1.07)
             .setAvgRankTolerance(0.1)
         ;
@@ -437,7 +437,7 @@ public class SpellCheckerAccuracyTest {
             .setPercentFoundInTopN(1.0)
             .setTolerance(0.01)
 
-            .setPercTopSuggestionOK(0.94)
+            .setPercTopSuggestionOK(0.97)
 
             .setAverageRank(1.08)
             .setAvgRankTolerance(0.1)
