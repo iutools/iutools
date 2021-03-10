@@ -302,7 +302,7 @@ public class MorphRelativesFinder {
 		);
 		
 		MRelsTracer.traceRelatives(tLogger, relativesLst, "Returning relativesLst=");
-		
+
 		return relativesLst;
 	}
 	

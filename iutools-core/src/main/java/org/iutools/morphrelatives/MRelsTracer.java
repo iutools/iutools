@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.iutools.corpus.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -48,11 +49,11 @@ public class MRelsTracer {
         }
     }
 
-    public static void traceRelatives(Logger tLogger, Set<MorphologicalRelative> relatiesSet,
+    public static void traceRelatives(Logger tLogger, Set<MorphologicalRelative> relativesSet,
         String message) throws MorphRelativesFinderException {
         if (tLogger.isTraceEnabled()) {
             List<MorphologicalRelative> relatives = new ArrayList<MorphologicalRelative>();
-            relatives.addAll(relatiesSet);
+            relatives.addAll(relativesSet);
             relatives.sort(
                     (MorphologicalRelative e1, MorphologicalRelative e2) -> {
                         return e1.getWord().compareTo(e2.getWord());
@@ -65,10 +66,18 @@ public class MRelsTracer {
 
     protected static void traceRelatives(Logger logger,
         List<MorphologicalRelative> relatives, String message) throws MorphRelativesFinderException {
+        traceRelatives(logger, relatives, message, (Integer)null);
+    }
+
+    protected static void traceRelatives(Logger logger,
+        List<MorphologicalRelative> relatives, String message, Integer topN) throws MorphRelativesFinderException {
         if (logger.isTraceEnabled()) {
             MorphologicalRelative[] relativesArr = null;
             if (relatives != null) {
                 relativesArr = relatives.toArray(new MorphologicalRelative[0]);
+                if (topN != null) {
+                    relativesArr = Arrays.copyOfRange(relativesArr, 0, topN);
+                }
             }
             traceRelatives(logger, relativesArr, message);
         }
@@ -177,7 +186,7 @@ public class MRelsTracer {
             for (String aWord: words) {
                 try {
                     WordInfo winfo = corpus().info4word(aWord);
-                    String winfoStr = "\n"+PrettyPrinter.print(winfo);
+                    String winfoStr = "\n"+winfo.word+":\n"+PrettyPrinter.print(winfo);
                     winfoStr =
                         winfoStr.replaceAll("\n", "\n--        ");
                     mess += winfoStr;

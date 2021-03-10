@@ -41,7 +41,7 @@ public class MorphRelativesFinderAccuracyTest {
 			.setVerbosity(false)
 
 			// Set this to a single word if you only want to run that one word
-//			.setFocusOnWord("atuqtauniarput")
+//			.setFocusOnWord("attarnaqtumi")
 
 			// Set this to true if you want to see more details about the
 			// words being evaluated and their results.

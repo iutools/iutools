@@ -571,7 +571,6 @@ public class MorphRelativesFinderEvaluator {
 					String gsalternative = gsalternatives[igs];
 					long freqGSAlternativeInCorpus = wordFrequency(gsalternative);
 					echo("        " + gsalternative + " : " + freqGSAlternativeInCorpus);
-					echo("        " + gsalternative);
 					String altDecomp = null;
 					try {
 						altDecomp = String.join(

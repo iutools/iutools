@@ -1,0 +1,123 @@
+bodyEndMarker=BLANK_LINE
+class=org.iutools.morphrelatives.WordOutcome
+
+{
+  "relsProduced":
+    [
+      "akigijangit",
+      "akigijaujut",
+      "akigijanginnit",
+      "akigijanga",
+      "akigijanginnut"
+    ],
+  "word":
+    "akigiliutinajaqtuq"
+}
+
+{
+  "relsProduced":
+    [
+      "ilinniaqtuliriniq",
+      "ilinniaqtulirinirmut",
+      "ilinniaqtulirijikkut",
+      "ilinniartulirijiit",
+      "ilinniaqtulirijikkunnut"
+    ],
+  "word":
+    "ilinniaqtumut"
+}
+
+{
+  "relsProduced":
+    [
+      "mikiniqsanut",
+      "mikinniqsanulluunniit",
+      "mikinniqsanulli",
+      "mikinirsait",
+      "mikinniqsani"
+    ],
+  "word":
+    "mikinniqsanut"
+}
+
+{
+  "relsProduced":
+    [
+      "nalunaiqsivut",
+      "nalunairsimajuq",
+      "nalunaiqsimajuq",
+      "nalunaiqsijumavunga",
+      "nalunaiqsijunnarmangaaq"
+    ],
+  "word":
+    "nalunairsivut"
+}
+
+{
+  "relsProduced":
+    [
+      "pivallianirmut",
+      "pivalliajutigut",
+      "pivalliatittinirmut",
+      "pivalliajulirinirmut",
+      "pivalliajainirmut"
+    ],
+  "word":
+    "pivalliajut"
+}
+
+{
+  "relsProduced":
+    [
+    ],
+  "word":
+    "qakugukkanniq"
+}
+
+{
+  "relsProduced":
+    [
+    ],
+  "word":
+    "qarasaujakkut"
+}
+
+{
+  "relsProduced":
+    [
+      "qaujisaqtiit",
+      "qaujisaqtinu",
+      "qaujisaqti",
+      "qaujisaqtinik",
+      "qaujisaqtiujut"
+    ],
+  "word":
+    "qaujisaqtikkut"
+}
+
+{
+  "relsProduced":
+    [
+      "silattusarvimmiluunniit",
+      "silattusarvimmilu",
+      "silattusarvik",
+      "silattusarvimmut",
+      "silattusarvikkut"
+    ],
+  "word":
+    "silattusarvimmi"
+}
+
+{
+  "relsProduced":
+    [
+      "takugumajunga",
+      "takugumavugut",
+      "takujumagatta",
+      "takujumavunga",
+      "takujumalluta"
+    ],
+  "word":
+    "takujumaguvit"
+}
+
