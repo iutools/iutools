@@ -13,7 +13,7 @@ public class RelatedWordsExperiment {
 	public boolean computeStatsOverSurfaceForms;
 	public double targetPrecision = -1;
 	public double targetRecall = -1;
-	public double precRecTolerance;
+	public double precRecTolerance = 0.01;
 	public Double runtimePercTolerance = 0.10;
 	public String focusOnWord;
 	public boolean verbose;
@@ -21,10 +21,10 @@ public class RelatedWordsExperiment {
 	public List<Object[]> wordOutcomes = new ArrayList<Object[]>();
 
 	public RelatedWordsExperiment() {
-		init_PerformanceExpectations();
+		init_RelatedWordsExperiment();
 	}
 
-	private void init_PerformanceExpectations() {
+	private void init_RelatedWordsExperiment() {
 		defineWordOutcomes();
 	}
 

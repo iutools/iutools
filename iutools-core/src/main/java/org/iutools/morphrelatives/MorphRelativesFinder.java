@@ -61,8 +61,8 @@ public class MorphRelativesFinder {
 	 * @throws Exception
 	 */
 	public MorphologicalRelative[] findRelatives(String word) throws MorphRelativesFinderException  {
-    	Logger logger = Logger.getLogger("org.iutools.morphrelatives.MorphRelativesFinder.getRelatives");
-		logger.debug("word: "+word);
+    	Logger logger = Logger.getLogger("org.iutools.morphrelatives.MorphRelativesFinder.findRelatives");
+		logger.trace("word: "+word);
 
 		String[] segments;
 		
@@ -73,6 +73,11 @@ public class MorphRelativesFinder {
 		}
 
 		segments = Morpheme.format(segments, Morpheme.MorphFormat.NO_BRACES);
+		if (logger.isTraceEnabled()) {
+			logger.trace("input word segments, segments="+String.join(", ", segments));
+		}
+
+		new MRelsTracer().traceTrackedRels(logger);
 
 		Set<MorphologicalRelative> relatives = new HashSet<MorphologicalRelative>();
 

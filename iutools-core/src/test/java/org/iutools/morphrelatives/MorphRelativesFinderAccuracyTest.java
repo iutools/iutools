@@ -35,12 +35,13 @@ public class MorphRelativesFinderAccuracyTest {
 	@Test
 	public void test__findRelatives__PerformanceTest(TestInfo testInfo)
 	throws Exception {
+
 		RelatedWordsExperiment experiment = new RelatedWordsExperiment()
 			.setCorpusName("HANSARD-1999-2002")
 			.setVerbosity(false)
 
 			// Set this to a single word if you only want to run that one word
-	//				.setFocusOnWord("mikinniqsanut")
+//			.setFocusOnWord("atuqtauniarput")
 
 			// Set this to true if you want to see more details about the
 			// words being evaluated and their results.

@@ -16,6 +16,7 @@ import ca.nrc.testing.AssertNumber;
 import ca.nrc.testing.AssertRuntime;
 import ca.nrc.testing.TestDirs;
 import ca.nrc.ui.commandline.UserIO;
+import org.apache.log4j.Logger;
 import org.iutools.morph.Decomposition;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -103,9 +104,12 @@ public class MorphRelativesFinderEvaluator {
 	
 	public void run(RelatedWordsExperiment _exp, TestInfo testInfo)
 		throws MorphRelativesFinderException, IOException {
+
 		this.experiment = _exp;
 		TestDirs testDirs = new TestDirs(testInfo);
 		Map<String,String[]> goldStandard = readGoldStandard();
+
+		Map<String,WordOutcome> expOutcomes = readExpectedOutcomes(testInfo);
 
 		long startMSecs = StopWatch.nowMSecs();
 		Map<String,WordOutcome> actualOutcomes =
@@ -114,9 +118,7 @@ public class MorphRelativesFinderEvaluator {
 		long elapsedMSecs = StopWatch.elapsedMsecsSince(startMSecs);
 
 		double secsPerWord =
-			elapsedMSecs / (1000*actualOutcomes.keySet().size());
-
-		Map<String,WordOutcome> expOutcomes = readExpectedOutcomes(testInfo);
+			1.0 * elapsedMSecs / (1000*actualOutcomes.keySet().size());
 
 		writeListOfAffectedWords(expOutcomes, actualOutcomes, goldStandard,
 			testInfo);
@@ -130,6 +132,7 @@ public class MorphRelativesFinderEvaluator {
 		Map<String, WordOutcome> actualOutcomes,
 		Map<String, String[]> goldStandard, TestInfo testInfo) throws IOException {
 
+		Logger tLogger = Logger.getLogger("org.iutools.morphrelatives.MorphRelativesFinderEvaluator.writeListOfAffectedWords");
 		Set<String> affectedWords = new HashSet<String>();
 		for (Map<?, ?> outcomes:
 			new Map<?,?>[] {expOutcomes, actualOutcomes}) {
@@ -147,6 +150,7 @@ public class MorphRelativesFinderEvaluator {
 		}
 
 		Path wordsFile = affectWordsFile(testInfo);
+		tLogger.trace("Writing list of affected words to file: "+wordsFile);
 		FileWriter writer = null;
 		try {
 			writer = new FileWriter(wordsFile.toFile());
@@ -318,9 +322,18 @@ public class MorphRelativesFinderEvaluator {
 
 	private Double computePrecision(Map<String, WordOutcome> wordOutcomes,
 		Map<String,String[]> goldStandard) {
+		return computePrecision(wordOutcomes, goldStandard, (Set<String>)null);
+	}
+
+	private Double computePrecision(Map<String, WordOutcome> wordOutcomes,
+		Map<String,String[]> goldStandard, Set<String> onlyForWords) {
+
 		int totalRelsProduced = 0;
 		int totalGoodRels = 0;
-		for (String word: wordOutcomes.keySet()) {
+		if (onlyForWords == null) {
+			onlyForWords = wordOutcomes.keySet();
+		}
+		for (String word: onlyForWords) {
 			String[] wordGS = goldStandard.get(word);
 			WordOutcome outcome = wordOutcomes.get(word);
 			totalGoodRels += outcome.correctRelatives(wordGS).size();
@@ -340,7 +353,7 @@ public class MorphRelativesFinderEvaluator {
 		Map<String, String[]> goldStandard) throws MorphRelativesFinderException {
 
 		String recallDiff = "";
-		Double expRecall = computeRecall(expOutcomes, goldStandard);
+		Double expRecall = computeRecall(expOutcomes, goldStandard, actualOutcomes.keySet());
 		Double actualRecall = computeRecall(actualOutcomes, goldStandard);
 		Double tolerance = experiment.precRecTolerance * expRecall;
 		try {
@@ -379,9 +392,19 @@ public class MorphRelativesFinderEvaluator {
 
 	private Double computeRecall(Map<String, WordOutcome> wordOutcomes,
 		Map<String,String[]> goldStandard) throws MorphRelativesFinderException {
+		return computeRecall(wordOutcomes, goldStandard, (Set<String>)null);
+	}
+
+	private Double computeRecall(Map<String, WordOutcome> wordOutcomes,
+		Map<String,String[]> goldStandard, Set<String> onlyForWords)
+		throws MorphRelativesFinderException {
+
 		int totalGoodRels = 0;
 		int totalGSRels = 0;
-		for (String word: wordOutcomes.keySet()) {
+		if (onlyForWords == null) {
+			onlyForWords = wordOutcomes.keySet();
+		}
+		for (String word: onlyForWords) {
 			String[] wordGS = goldStandard.get(word);
 			if (wordGS == null) {
 				throw new MorphRelativesFinderException(
@@ -485,7 +508,9 @@ public class MorphRelativesFinderEvaluator {
 		return expOutcomes;
 	}
 
+
 	private Path expOutcomesFile(TestInfo testInfo) throws IOException {
+
 		String testMethod = testInfo.getTestMethod().get().getName();
 		Path filePath = Paths.get(ResourceGetter.getResourcePath(
 		"org/iutools/relatedwords/" + testMethod+"/expOutcomes.json"));
@@ -544,13 +569,15 @@ public class MorphRelativesFinderEvaluator {
 
 				for (int igs = 0; igs < gsalternatives.length; igs++) {
 					String gsalternative = gsalternatives[igs];
-					long freqGSAlternativeInCorpus = freqDansCorpus(gsalternative);
+					long freqGSAlternativeInCorpus = wordFrequency(gsalternative);
 					echo("        " + gsalternative + " : " + freqGSAlternativeInCorpus);
+					echo("        " + gsalternative);
 					String altDecomp = null;
 					try {
-						altDecomp = String.join(" ", relsFinder.compiledCorpus.decomposeWord(gsalternative));
-						altDecomp =
-						Decomposition.formatDecompStr(altDecomp);
+						altDecomp = String.join(
+							" ",
+							relsFinder.compiledCorpus.topDecomposition(gsalternative));
+						altDecomp =  Decomposition.formatDecompStr(altDecomp);
 						gsalternativesMorphemes[igs] = altDecomp;
 					} catch (Exception e) {
 						altDecomp = "";
@@ -568,19 +595,19 @@ public class MorphRelativesFinderEvaluator {
 	}
 
 
-	private long freqDansCorpus(String reformulation) 
+	private long wordFrequency(String word)
 			throws MorphRelativesFinderException {
 
 		long freqDansCorpus = 0;
 		try {
-			WordInfo wInfo = relsFinder.compiledCorpus.info4word(reformulation);
+			WordInfo wInfo = relsFinder.compiledCorpus.info4word(word);
 			if (wInfo != null) {
 				freqDansCorpus = wInfo.frequency;
 			}
 		} catch (CompiledCorpusException e) {
 			throw new MorphRelativesFinderException(e);
 		}
-	
+
 		return freqDansCorpus;
 	}
 

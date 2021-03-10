@@ -2,9 +2,11 @@ package org.iutools.morphrelatives;
 
 import ca.nrc.config.Config;
 import ca.nrc.config.ConfigException;
+import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.StringUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
+import org.iutools.corpus.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +15,7 @@ import java.util.Set;
 public class MRelsTracer {
 
     protected static String[] _relsToTrack =  null;
+    static CompiledCorpus _corpus = null;
 
     protected static String[] relsToTrack() throws MorphRelativesFinderException {
         if (_relsToTrack == null) {
@@ -147,6 +150,42 @@ public class MRelsTracer {
             if (ArrayUtils.contains(relsToTrack(), word)) {
                 tLogger.trace(mess+"\n--    word="+word);
             }
+        }
+    }
+
+    protected static CompiledCorpus corpus() throws MorphRelativesFinderException {
+        if (_corpus == null) {
+            try {
+                _corpus = new CompiledCorpusRegistry().getCorpus();
+            } catch (CompiledCorpusRegistryException |CompiledCorpusException e) {
+                throw new MorphRelativesFinderException(e);
+            }
+        }
+        return _corpus;
+    }
+
+    public static void traceTrackedRels(Logger logger) throws MorphRelativesFinderException {
+        traceTrackedRels(logger, "");
+    }
+
+    public static void traceTrackedRels(Logger logger, String mess)
+        throws MorphRelativesFinderException {
+        if (logger.isTraceEnabled()) {
+            mess += "\n--    Relatives being tracked are:";
+            // Print the Winfo of all words being tracked.
+            String[] words = relsToTrack();
+            for (String aWord: words) {
+                try {
+                    WordInfo winfo = corpus().info4word(aWord);
+                    String winfoStr = "\n"+PrettyPrinter.print(winfo);
+                    winfoStr =
+                        winfoStr.replaceAll("\n", "\n--        ");
+                    mess += winfoStr;
+                } catch (CompiledCorpusException e) {
+                    throw new MorphRelativesFinderException(e);
+                }
+            }
+            logger.trace(mess);
         }
     }
 }
