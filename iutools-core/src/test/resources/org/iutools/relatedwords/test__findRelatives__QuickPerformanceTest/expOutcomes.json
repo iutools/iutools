@@ -44,10 +44,10 @@ class=org.iutools.morphrelatives.WordOutcome
   "relsProduced":
     [
       "nalunaiqsivut",
-      "nalunairsimajuq",
-      "nalunaiqsimajuq",
       "nalunaiqsijumavunga",
-      "nalunaiqsijunnarmangaaq"
+      "nalunaiqsijunnarmangaaq",
+      "nalunaiqsigianga",
+      "nalunaiqsijunnaqpaa"
     ],
   "word":
     "nalunairsivut"

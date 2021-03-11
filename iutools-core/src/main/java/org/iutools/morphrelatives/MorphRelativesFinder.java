@@ -3,6 +3,7 @@ package org.iutools.morphrelatives;
 import java.util.*;
 import java.util.regex.Pattern;
 
+import ca.nrc.json.PrettyPrinter;
 import org.iutools.linguisticdata.Morpheme;
 import org.iutools.script.TransCoder;
 import org.iutools.datastructure.trie.StringSegmenter_IUMorpheme;
@@ -64,14 +65,8 @@ public class MorphRelativesFinder {
     	Logger logger = Logger.getLogger("org.iutools.morphrelatives.MorphRelativesFinder.findRelatives");
 		logger.trace("word: "+word);
 
-		String[] segments;
+		String[] segments = decomposeWord(word);
 		
-		try {
-			segments = this.compiledCorpus.decomposeWord(word);
-		} catch (Exception e) {
-			segments = null;
-		}
-
 		segments = Morpheme.format(segments, Morpheme.MorphFormat.NO_BRACES);
 		if (logger.isTraceEnabled()) {
 			logger.trace("input word segments, segments="+String.join(", ", segments));
@@ -128,6 +123,34 @@ public class MorphRelativesFinder {
 		MRelsTracer.traceRelatives(logger, bestNeighbors, "Returning bestNeighbors=");
 		
 		return bestNeighbors.toArray(new MorphologicalRelative[0]);
+	}
+
+	private String[] decomposeWord(String word) {
+		Logger logger = Logger.getLogger("org.iutools.morphrelatives.MorphRelativesFinder.decomposeWord");
+
+		String[] segments = null;
+
+		try {
+			// First, try to get the analysi from the word info in the
+			// corpus
+			WordInfo winfo = this.compiledCorpus.info4word(word);
+			if (winfo != null) {
+				segments = winfo.topDecomposition();
+			} else {
+				// The corpus does not know about this word. Use the corpus'
+				// morphological analyzer to get the words decomposition.
+				//
+				segments = this.compiledCorpus.decomposeWord(word);
+			}
+		} catch (Exception e) {
+			segments = null;
+		}
+
+		if (logger.isTraceEnabled()) {
+			logger.trace(" for word=" + word + ", returning segments=\n" + PrettyPrinter.print(segments));
+		}
+
+		return segments;
 	}
 	
 	private boolean collectMorphologicalNeighbors(

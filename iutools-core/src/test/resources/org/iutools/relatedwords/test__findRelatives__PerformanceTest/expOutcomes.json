@@ -69,11 +69,11 @@ class=org.iutools.morphrelatives.WordOutcome
 {
   "relsProduced":
     [
-      "attanaqtut",
-      "attarnaqtut",
-      "attanaiqsiniq",
-      "attanajjaiqsimaningit",
-      "attanajjaiqsisimaniq"
+      "attanaqtumi",
+      "aktarnaqtumipput",
+      "attanaqtumiippat",
+      "attarnaqtumiittailinirmut",
+      "attarnaqtumiittailinirmit"
     ],
   "word":
     "attarnaqtumi"
@@ -134,9 +134,9 @@ class=org.iutools.morphrelatives.WordOutcome
 {
   "relsProduced":
     [
+      "avatilirinirmuungajuq",
       "avatilirinirmut",
       "avatilirinirmullu",
-      "avatilirinirmuungajuq",
       "avatiliriniq",
       "avatilirinirmik"
     ],
@@ -449,10 +449,10 @@ class=org.iutools.morphrelatives.WordOutcome
   "relsProduced":
     [
       "nalunaiqsivut",
-      "nalunairsimajuq",
-      "nalunaiqsimajuq",
       "nalunaiqsijumavunga",
-      "nalunaiqsijunnarmangaaq"
+      "nalunaiqsijunnarmangaaq",
+      "nalunaiqsigianga",
+      "nalunaiqsijunnaqpaa"
     ],
   "word":
     "nalunairsivut"
@@ -698,11 +698,11 @@ class=org.iutools.morphrelatives.WordOutcome
 {
   "relsProduced":
     [
-      "piliriqataujut",
-      "piliriqataulauqtut",
-      "piliriqataujunik",
-      "piliriqataulutik",
-      "piliriqatauningit"
+      "piviqaqtittisuuq",
+      "piviqaqtittivuq",
+      "piviqaqtittilutik",
+      "piviqaqtittimmat",
+      "piviqaqtittiniaqtut"
     ],
   "word":
     "piviqaqtittisuunguvuq"
@@ -1058,11 +1058,11 @@ class=org.iutools.morphrelatives.WordOutcome
 {
   "relsProduced":
     [
-      "ujarait",
-      "ujarannik",
-      "ujarattanirmut",
-      "ujaraqsiurnirmik",
-      "ujararnianirmi"
+      "ujararniarvimmik",
+      "ujararniarvik",
+      "ujararniarvimmi",
+      "ujararniarviu",
+      "ujararniarvimmut"
     ],
   "word":
     "ujararniarvinu"
@@ -1160,9 +1160,9 @@ class=org.iutools.morphrelatives.WordOutcome
 {
   "relsProduced":
     [
-      "uqsualummut",
       "uqsualungmuuqtuq",
       "uqsualummuuqtuq",
+      "uqsualummut",
       "uqsualuk",
       "uqsualuit"
     ],
