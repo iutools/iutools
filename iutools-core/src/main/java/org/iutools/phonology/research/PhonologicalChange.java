@@ -90,6 +90,7 @@ public class PhonologicalChange {
      */
 
     static {
+    	// Note: ts is not in this list
         transfs.put("alvC.CC", new Transformation[] {
                 new Transformation("tp", "pp", "apr"),
                 new Transformation("tk", "kk", "apr"),
@@ -105,21 +106,25 @@ public class PhonologicalChange {
 				// double ng (ng+ng) is written nng in the Roman alphabet, which cannot be distinguished from n+ng
 //				,new Transformation("nng", "nng", "apr")
 		});
+
+        // Note: ps is not in this list
         transfs.put("labC.CC", new Transformation[] {
                 new Transformation("pt", "tt", "apr"),
                 new Transformation("pk", "kk", "apr"),
                 new Transformation("pq", "qq", "apr"),
-                new Transformation("bv", "vv", "apr"),
+                new Transformation("bv", "vv", "apr"), // should not be here: no 'b' in syllabics
                 new Transformation("pv", "vv", "apr"),
-                new Transformation("bl", "ll", "apr"),
+                new Transformation("bl", "ll", "apr"), // should not be here: no 'b' in syllabics
                 new Transformation("pl", "ll", "apr"),
-                new Transformation("bj", "jj", "apr"),
+                new Transformation("bj", "jj", "apr"), // should not be here: no 'b' in syllabics
                 new Transformation("pj", "jj", "apr"),
-                new Transformation("bg", "gg", "apr"),
+                new Transformation("bg", "gg", "apr"), // should not be here: no 'b' in syllabics
                 new Transformation("pg", "gg", "apr"),
                 new Transformation("mn", "nn", "apr"),
                 new Transformation("mng", "nng", "apr"),
                 new Transformation("vg", "gg", "apr") });
+
+
         transfs.put("velC.CC", new Transformation[] {
                 new Transformation("kp", "pp", "apr"),
                 new Transformation("kt", "tt", "apr"),
@@ -130,18 +135,29 @@ public class PhonologicalChange {
                 new Transformation("ngm", "mm", "apr"),
                 new Transformation("ngn", "nn", "apr"),
                 });
+
+		transfs.put("ps.ss", new Transformation[] { new Transformation("ps", "ss",
+				"apr+afr") });
+		transfs.put("ps.ts", new Transformation[] { new Transformation("ps", "ts",
+				"apr") });
         transfs.put("ts.tt", new Transformation[] { new Transformation("ts", "tt",
                 "afp") });
+		transfs.put("ks.ts", new Transformation[] { new Transformation("ks", "ts",
+				"apr") });
+
         transfs.put("t&.&&", new Transformation[] { new Transformation("t&", "&&",
                 "afp") });
-        transfs.put("&&.ts", new Transformation[] { new Transformation("&&", "ts",
-                "afp") });
-        transfs.put("&.s", new Transformation[] { new Transformation("&", "s",
+		transfs.put("&&.ts", new Transformation[] { new Transformation("&&", "ts",
+				"afp") });
+		transfs.put("&&.tt", new Transformation[] { new Transformation("&&", "tt",
+				"afp") });
+		transfs.put("&.s", new Transformation[] { new Transformation("&", "s",
                 "afp") });
         transfs.put("nr.rng", new Transformation[] { new Transformation("nr", "rN",
                 "") });
         transfs.put("mr.rng", new Transformation[] { new Transformation("mr", "rN",
                 "") });
+
         transfs.put("itV.isV", new Transformation[] {
                 new Transformation("^(?!iti)iti", "isi", "pal"),
                 new Transformation("^(?!itu)itu", "isu", "pal"),
@@ -150,10 +166,8 @@ public class PhonologicalChange {
                 new Transformation("^siti", "tisi", "pal"),
                 new Transformation("^situ", "tisu", "pal"),
                 new Transformation("^sita", "tisa", "pal") });
-        transfs.put("ps.ss", new Transformation[] { new Transformation("ps", "ss",
-                "apr+afr") });
-        transfs.put("ps.ts", new Transformation[] { new Transformation("ps", "ts",
-                "apr") });
+
+
         transfs.put("vg.gg", new Transformation[] { new Transformation("vg", "gg",
                 "apr") });
         transfs.put("vr.rr", new Transformation[] { new Transformation("vr", "rr",
@@ -218,8 +232,7 @@ public class PhonologicalChange {
                 new Transformation("a&i", "ali", "am"),
                 new Transformation("a&u", "alu", "am"),
                 new Transformation("a&a", "ala", "am") });
-        transfs.put("ks.ts", new Transformation[] { new Transformation("ks", "ts",
-                "apr") });
+
 
         // A 'true' as second argument to DialectalChange indicates that the
         // change may or may not take place in the dialect.
@@ -236,7 +249,7 @@ public class PhonologicalChange {
                 		},
                         new DialectalChange[] {
                         	new DialectalChange("ts.tt", true),
-                        	new DialectalChange("t&.&&"), 
+                        	new DialectalChange("t&.&&"), // should not be necessary because alvC.CC does it
                         	new DialectalChange("nr.rng"),
                         	new DialectalChange("alvC.CC"),
                         	new DialectalChange("ps.ss",true),
@@ -254,14 +267,14 @@ public class PhonologicalChange {
                         	// both possibilities.
                         	new DialectalChange("^sitV.tisV", true),
                         	new DialectalChange("itV.isV", true),
-//                        	new DialectalChange("nasal$", true) // leave this for analyzer when failure
+//                        	new DialectalChange("nasal$", true) // leave this for analyzer when failure, because obsolete now
                         	}, 
                 		new DialectalChange[] {
                         	new DialectalChange("ts.tt"), 
                         	new DialectalChange("t&.&&"), // ??? à vérifier car = alvC.CC
                         	new DialectalChange("nr.rng"), 
                         	new DialectalChange("alvC.CC"),
-                        	new DialectalChange("ps.ss"),
+                        	new DialectalChange("ps.ss"), // ??? to be checked because labC.CC takes care of it
                         	new DialectalChange("mr.rng"), 
                         	new DialectalChange("labC.CC"),
                         	new DialectalChange("velC.CC",true)
@@ -269,10 +282,11 @@ public class PhonologicalChange {
         dialects.put("southeastbaffin",
                 new DialectalChangesSet("southeastbaffin",
                         new DialectalChange[] {
-                        	new DialectalChange("^tVs.sVs",true),
+                        	new DialectalChange("^tVs.sVs",true), // should be ^t_s.s_s, _ standing for syllable
                         	new DialectalChange("itV.isV", true),
-                        	new DialectalChange("C&.Ct"), 
-                        	new DialectalChange("V&V.VslV"),
+							new DialectalChange("&&.tt"),
+							new DialectalChange("C&.Ct"),
+							new DialectalChange("V&V.VslV"),
 //                        	new DialectalChange("nasal$", true)
                         	},
                         new DialectalChange[] { 
@@ -286,7 +300,8 @@ public class PhonologicalChange {
         dialects.put("southwestbaffin",
                 new DialectalChangesSet("southwestbaffin",
                         new DialectalChange[] {
-                        	new DialectalChange("C&.Cs"),
+							new DialectalChange("&&.ts"),
+							new DialectalChange("C&.Cs"),
                         	new DialectalChange("V&V.VsV") },
                         new DialectalChange[] {
                         	new DialectalChange("nr.rng"), 
@@ -299,8 +314,8 @@ public class PhonologicalChange {
         dialects.put("nunavik-northlabrador",
                 new DialectalChangesSet("nunavik-northlabrador",
                         new DialectalChange[] {
-                        	new DialectalChange("^sitV.tisV", true),
-                        	new DialectalChange("itV.isV", true),
+                        	new DialectalChange("^sitV.tisV", true),  // should be removed
+                        	new DialectalChange("itV.isV", true), // should be removed
                         	new DialectalChange("&&.ts"), 
                         	new DialectalChange("&.s"), 
 //                        	new DialectalChange("nasal$", true)
@@ -373,6 +388,7 @@ public class PhonologicalChange {
 			DialectalChange change = listOfChanges.get(ichange);
 	    	logger.debug("change: "+change.name);
 			Transformation transformations[] = change.getTransformations();
+			if (transformations==null) logger.debug("transformations = null");
 			List<String> resultsOfChange = new ArrayList<String>();
 			for (int inextform = 0; inextform < formsToProcessWithNextChange.size(); inextform++) {
 				String formToProcess = formsToProcessWithNextChange.get(inextform);
