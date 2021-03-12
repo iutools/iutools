@@ -1,6 +1,8 @@
 morpheme,nb,type,function,position,transitivity,nature,plural,antipassive,V-form,V-action1,V-action2,t-form,t-action1,t-action2,k-form,k-action1,k-action2,q-form,q-action1,q-action2,engMean,freMean,condPrec,condPrecTrans,condOnNext,sources,combination,dialect,mobility
-llik,1,sv,vv,m,n,,,,,n,,llik,s,,llik,s,,llik,s,,to begin to become; to start to,commencer à devenir; commencer à,,,,S3,,Nunavik,
-qsuq,1,sv,nv,n,n,,,,,s,,qsuq tsuq,s,,qsuq tsuq,s,,qsuq tsuq,s,,to look like or to act like or according to,avoir l'air de ou agir comme ou selon,,,,S3,,Nunavik,
-uq,3,sn,nv,m,i,,,,-,-,,,s,,-,-,,-,-,,to go through,"aller, passer à travers",cas:dat,,,S3,,Nunavik,
-gianngaq,1,sv,vv,m,n,,,,,n,,,s,,,fus,,rianngaq,fus,,to do something for (almost) the first time,faire quelque chose pour (presque) la première fois,,,,S3,giaq/1vv+nngaq/1vv,,m
-nngaq,1,sv,vv,m,n,,,,,n,,,s,,,s,,,s,,to begin to be in this state,commencer à se trouver dans cet état,,,,S3,,,
+llik,1,sv,vv,m,n,,,,llik,n,,llik,s,,llik,s,,llik,s,,to begin to become; to start to,commencer à devenir; commencer à,,,,S3,,Nunavik,
+qsuq,1,sv,nv,n,n,,,,qsuq,s,,qsuq tsuq,s s,,qsuq tsuq,s s,,qsuq tsuq,s s,,to look like or to act like or according to,avoir l'air de ou agir comme ou selon,,,,S3,,Nunavik,
+uq,3,sn,nv,m,i,,,,-,-,,uq,s,,-,-,,-,-,,to go through,"aller, passer à travers",cas:dat,,,S3,,Nunavik,
+gianngaq,1,sv,vv,m,n,,,,gianngaq,n,,gianngaq,s,,gianngaq,fus,,rianngaq,fus,,to do something for (almost) the first time,faire quelque chose pour (presque) la première fois,,,,S3,giaq/1vv+nngaq/1vv,,m
+nngaq,1,sv,vv,m,n,,,,nngaq,n,,nngaq,s,,nngaq,s,,nngaq,s,,to begin to be in this state,commencer à se trouver dans cet état,,,,S3,,,
+ruq,1,sn,nv,m,n,,,,ruq,s,,nngaq,s,,nngaq,s,,nngaq,s,,to have become,être devenu,,,,S3,,,
+ksaq,1,sv,vn,t,,,,,ksaq,n,,ksaq,s,,ksaq,s,,ksaq,s,,what can be done,ce qui peut être fait,,,,S3,,,
