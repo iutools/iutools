@@ -118,7 +118,7 @@ public class MorphAnalGoldStandard_Hansard extends MorphAnalGoldStandardAbstract
         addCase(new AnalyzerCase("arraagunit", "{arraagu:arraagu/1n}{nit:nit/tn-abl-p}"));
         addCase(new AnalyzerCase("arraagunut", "{arraagu:arraagu/1n}{nut:nut/tn-dat-p}"));
         addCase(new AnalyzerCase("arraagutamaat", "{arraagu:arraagu/1n}{tamaa:tamaaq/1nn}{t:it/tn-nom-p}"));
-        addCase(new AnalyzerCase("arraaguttinni", "{arraagu:arraagu/1n}{ttinni:ttinni/tn-loc-s-1d}"));
+        addCase(new AnalyzerCase("arraaguttinni", "{arraagu:arraagu/1n}{ttinni:ptingni/tn-loc-s-1d}"));
         addCase(new AnalyzerCase("arraaguup", "{arraagu:arraagu/1n}{up:up/tn-gen-s}"));
         addCase(new AnalyzerCase("arraani", "{arraani:arraani/1n}"));
         addCase(new AnalyzerCase("arragumi", "{arragu:arraagu/1n}{mi:mi/tn-loc-s}")
@@ -475,7 +475,7 @@ public class MorphAnalGoldStandard_Hansard extends MorphAnalGoldStandardAbstract
         addCase(new AnalyzerCase("katimaji", "{kati:kati/1v}{ma:ma/1vv}{ji:ji/1vn}"));
         addCase(new AnalyzerCase("katimajiit", "{kati:kati/1v}{ma:ma/1vv}{ji:ji/1vn}{it:it/tn-nom-p}"));
         addCase(new AnalyzerCase("katimajilimaat", "{kati:kati/1v}{ma:ma/1vv}{ji:ji/1vn}{limaa:limaaq/1nn}{t:it/tn-nom-p}"));
-        addCase(new AnalyzerCase("katimajingannit", "{kati:kati/1v}{ma:ma/1vv}{ji:ji/1vn}{ngannit:ngannit/tn-abl-s-4d}"));
+        addCase(new AnalyzerCase("katimajingannit", "{kati:kati/1v}{ma:ma/1vv}{ji:ji/1vn}{ngannit:ngangnit/tn-abl-s-4d}"));
         addCase(new AnalyzerCase("katimajinginnik", "{kati:kati/1v}{ma:ma/1vv}{ji:ji/1vn}{nginnik:nginnik/tn-acc-p-4s}"));
         addCase(new AnalyzerCase("katimajinginnit", "{kati:kati/1v}{ma:ma/1vv}{ji:ji/1vn}{nginnit:nginnit/tn-abl-p-4s}"));
         addCase(new AnalyzerCase("katimajinginnut", "{kati:kati/1v}{ma:ma/1vv}{ji:ji/1vn}{nginnut:nginnut/tn-dat-p-4s}"));
@@ -578,7 +578,7 @@ public class MorphAnalGoldStandard_Hansard extends MorphAnalGoldStandardAbstract
         addCase(new AnalyzerCase("kingulliqpaaq", "{kingu:kingu/1n}{lliq:&iq/1nn}{paaq:paaq/1nn}"));
         addCase(new AnalyzerCase("kingullirmi", "{kingu:kingu/1n}{llir:&iq/1nn}{mi:mi/tn-loc-s}"));
         addCase(new AnalyzerCase("kinguniagut", "{kinguni:kinguni/1n}{agut:ngagut/tn-via-s-4s}"));
-        addCase(new AnalyzerCase("kingunittinni", "{kinguni:kinguni/1n}{ttinni:ttinni/tn-loc-s-1d}"));
+        addCase(new AnalyzerCase("kingunittinni", "{kinguni:kinguni/1n}{ttinni:ptingni/tn-loc-s-1d}"));
         addCase(new AnalyzerCase("kinngarni", "{kinngar:kinngait/1n}{ni:ni/tn-loc-p}"));
         addCase(new AnalyzerCase("kisiani", "{kisiani:kisiani/1c}"));
         addCase(new AnalyzerCase("kisianili", "{kisiani:kisiani/1c}{li:li/1q}"));
@@ -735,7 +735,7 @@ public class MorphAnalGoldStandard_Hansard extends MorphAnalGoldStandardAbstract
         addCase(new AnalyzerCase("ministamik", "{minista:minista/1n}{mik:mik/tn-acc-s}"));
         addCase(new AnalyzerCase("ministamut", "{minista:minista/1n}{mut:mut/tn-dat-s}"));
         addCase(new AnalyzerCase("ministanga", "{minista:minista/1n}{nga:nga/tn-nom-s-4s}"));
-        addCase(new AnalyzerCase("ministangannut", "{minista:minista/1n}{ngannut:ngannut/tn-dat-s-4d}"));
+        addCase(new AnalyzerCase("ministangannut", "{minista:minista/1n}{ngannut:ngangnut/tn-dat-s-4d}"));
         addCase(new AnalyzerCase("ministangat", "{minista:minista/1n}{ngat:ngat/tn-nom-s-4p}"));
         addCase(new AnalyzerCase("ministanut", "{minista:minista/1n}{nut:nut/tn-dat-p}"));
         addCase(new AnalyzerCase("ministau", "{minista:minista/1n}{u:up/tn-gen-s}"));
@@ -822,7 +822,7 @@ public class MorphAnalGoldStandard_Hansard extends MorphAnalGoldStandardAbstract
         addCase(new AnalyzerCase("nunalinnit", "{nuna:nuna/1n}{lin:lik/1nn}{nit:nit/tn-abl-p}"));
         addCase(new AnalyzerCase("nunalinnu", "{nuna:nuna/1n}{lin:lik/1nn}{nu:nut/tn-dat-p}"));
         addCase(new AnalyzerCase("nunalinnut", "{nuna:nuna/1n}{lin:lik/1nn}{nut:nut/tn-dat-p}"));
-        addCase(new AnalyzerCase("nunalittinni", "{nuna:nuna/1n}{li:lik/1nn}{ttinni:ttinni/tn-loc-s-1d}"));
+        addCase(new AnalyzerCase("nunalittinni", "{nuna:nuna/1n}{li:lik/1nn}{ttinni:ptingni/tn-loc-s-1d}"));
         addCase(new AnalyzerCase("nunaliujuni", "{nuna:nuna/1n}{li:lik/1nn}{u:u/1nv}{ju:juq/1vn}{ni:ni/tn-loc-p}"));
         addCase(new AnalyzerCase("nunaliujunik", "{nuna:nuna/1n}{li:lik/1nn}{u:u/1nv}{ju:juq/1vn}{nik:nik/tn-acc-p}"));
         addCase(new AnalyzerCase("nunaliujunit", "{nuna:nuna/1n}{li:lik/1nn}{u:u/1nv}{ju:juq/1vn}{nit:nit/tn-abl-p}"));
@@ -830,12 +830,12 @@ public class MorphAnalGoldStandard_Hansard extends MorphAnalGoldStandardAbstract
         addCase(new AnalyzerCase("nunaliujuq", "{nuna:nuna/1n}{li:lik/1nn}{u:u/1nv}{juq:juq/1vn}"));
         addCase(new AnalyzerCase("nunaliujut", "{nuna:nuna/1n}{li:lik/1nn}{u:u/1nv}{jut:jut/tv-ger-3p}"));
         addCase(new AnalyzerCase("nunami", "{nuna:nuna/1n}{mi:mi/tn-loc-s}"));
-        addCase(new AnalyzerCase("nunanganni", "{nuna:nuna/1n}{nganni:nganni/tn-loc-s-4d}"));
-        addCase(new AnalyzerCase("nunangannut", "{nuna:nuna/1n}{ngannut:ngannut/tn-dat-s-4d}"));
+        addCase(new AnalyzerCase("nunanganni", "{nuna:nuna/1n}{nganni:nganni/tn-loc-s-4p}"));
+        addCase(new AnalyzerCase("nunangannut", "{nuna:nuna/1n}{ngannut:ngannut/tn-dat-s-4p}"));
         addCase(new AnalyzerCase("nunatsiap", "{nunatsia:nunatsiaq/1n}{p:up/tn-gen-s}"));
         addCase(new AnalyzerCase("nunatsiarmi", "{nunatsiar:nunatsiaq/1n}{mi:mi/tn-loc-s}"));
         addCase(new AnalyzerCase("nunattiap", "{nunattia:nunatsiaq/1n}{p:up/tn-gen-s}"));
-        addCase(new AnalyzerCase("nunattinni", "{nuna:nuna/1n}{ttinni:ttinni/tn-loc-s-1d}"));
+        addCase(new AnalyzerCase("nunattinni", "{nuna:nuna/1n}{ttinni:ptingni/tn-loc-s-1d}"));
         addCase(new AnalyzerCase("nunavu", "{nunavu:nunavut/1n}"));
         addCase(new AnalyzerCase("nunavulimaami", "{nunavu:nunavut/1n}{limaa:limaaq/1nn}{mi:mi/tn-loc-s}"));
         addCase(new AnalyzerCase("nunavumi", "{nunavu:nunavut/1n}{mi:mi/tn-loc-s}")
@@ -1043,13 +1043,13 @@ public class MorphAnalGoldStandard_Hansard extends MorphAnalGoldStandardAbstract
         addCase(new AnalyzerCase("qaujijumatuinnaqtunga", "{qauji:qauji/1v}{juma:juma/1vv}{tuinnaq:tuinnaq/1vv}{tunga:junga/tv-ger-1s}"));
         addCase(new AnalyzerCase("qaujijumavunga", "{qauji:qauji/1v}{juma:juma/1vv}{vunga:vunga/tv-dec-1s}"));
         addCase(new AnalyzerCase("qaujimagama", "{qaujima:qaujima/1v}{gama:gama/tv-caus-1s}"));
-        addCase(new AnalyzerCase("qaujimagatta", "{qaujima:qaujima/1v}{gatta:gatta/tv-caus-1p}"));
+        addCase(new AnalyzerCase("qaujimagatta", "{qaujima:qaujima/1v}{gatta:gapta/tv-caus-1p}"));
         addCase(new AnalyzerCase("qaujimagavit", "{qaujima:qaujima/1v}{gavit:gavit/tv-caus-2s}"));
         addCase(new AnalyzerCase("qaujimajatuqanginnik", "{qaujima:qaujima/1v}{ja:jaq/1vn}{tuqa:tuqaq/1nn}{nginnik:nginnik/tn-acc-p-4s}"));
         addCase(new AnalyzerCase("qaujimajatuqanginnit", "{qaujima:qaujima/1v}{ja:jaq/1vn}{tuqa:tuqaq/1nn}{nginnit:nginnit/tn-abl-p-4s}"));
         addCase(new AnalyzerCase("qaujimajatuqanginnut", "{qaujima:qaujima/1v}{ja:jaq/1vn}{tuqa:tuqaq/1nn}{nginnut:nginnut/tn-dat-p-4s}"));
         addCase(new AnalyzerCase("qaujimajatuqangit", "{qaujima:qaujima/1v}{ja:jaq/1vn}{tuqa:tuqaq/1nn}{ngit:ngit/tn-nom-p-4s}"));
-        addCase(new AnalyzerCase("qaujimajuinnaugatta", "{qaujima:qaujima/1v}{ju:juq/1vn}{inna:innaq/1nn}{u:u/1nv}{gatta:gatta/tv-caus-1p}"));
+        addCase(new AnalyzerCase("qaujimajuinnaugatta", "{qaujima:qaujima/1v}{ju:juq/1vn}{inna:innaq/1nn}{u:u/1nv}{gatta:gapta/tv-caus-1p}"));
         addCase(new AnalyzerCase("qaujimajunga", "{qaujima:qaujima/1v}{junga:junga/tv-ger-1s}"));
         addCase(new AnalyzerCase("qaujimallunga", "{qaujima:qaujima/1v}{llunga:lunga/tv-part-1s-prespas}"));
         addCase(new AnalyzerCase("qaujimammata", "{qaujima:qaujima/1v}{mmata:mata/tv-caus-4p}"));
@@ -1126,7 +1126,7 @@ public class MorphAnalGoldStandard_Hansard extends MorphAnalGoldStandardAbstract
         addCase(new AnalyzerCase("sivuniani", "{sivuni:sivuni/1n}{ani:ngani/tn-loc-s-4s}"));
         addCase(new AnalyzerCase("sivuniksami", "{sivuni:sivuni/1n}{ksa:ksaq/1nn}{mi:mi/tn-loc-s}"));
         addCase(new AnalyzerCase("sivuningani", "{sivuni:sivuni/1n}{ngani:ngani/tn-loc-s-4s}"));
-        addCase(new AnalyzerCase("sivunittinni", "{sivuni:sivuni/1n}{ttinni:ttinni/tn-loc-s-1d}"));
+        addCase(new AnalyzerCase("sivunittinni", "{sivuni:sivuni/1n}{ttinni:ptingni/tn-loc-s-1d}"));
         addCase(new AnalyzerCase("suli", "{suli:suli/1a}"));
         addCase(new AnalyzerCase("sulijuq", "{suli:suli/1v}{juq:juq/1vn}"));
         addCase(new AnalyzerCase("sulikkanniiq", "{suli:suli/1a}{kkanniiq:kkanniq/1nn}")
@@ -1457,11 +1457,11 @@ public class MorphAnalGoldStandard_Hansard extends MorphAnalGoldStandardAbstract
                 .isMisspelled());
         addCase(new AnalyzerCase("uvanga", "{uvanga:uvanga/1p}"));
         addCase(new AnalyzerCase("uvani", "{uv:uv/rad-sc}{ani:ani/tad-loc}"));
-        addCase(new AnalyzerCase("uvannik", "{uva:uva/1rpr}{nnik:nnik/tn-acc-s-1s}"));
-        addCase(new AnalyzerCase("uvannut", "{uva:uva/1rpr}{nnut:nnut/tn-dat-s-1s}"));
-        addCase(new AnalyzerCase("uvattinni", "{uva:uva/1rpr}{ttinni:ttinni/tn-loc-p-1p}"));
-        addCase(new AnalyzerCase("uvattinnik", "{uva:uva/1rpr}{ttinnik:ttinnik/tn-acc-p-1p}"));
-        addCase(new AnalyzerCase("uvattinnut", "{uva:uva/1rpr}{ttinnut:ttinnut/tn-dat-p-1p}"));
+        addCase(new AnalyzerCase("uvannik", "{uva:uva/1rpr}{nnik:mnik/tn-acc-s-1s}"));
+        addCase(new AnalyzerCase("uvannut", "{uva:uva/1rpr}{nnut:mnut/tn-dat-s-1s}"));
+        addCase(new AnalyzerCase("uvattinni", "{uva:uva/1rpr}{ttinni:ptingni/tn-loc-p-1p}"));
+        addCase(new AnalyzerCase("uvattinnik", "{uva:uva/1rpr}{ttinnik:ptingnik/tn-acc-p-1p}"));
+        addCase(new AnalyzerCase("uvattinnut", "{uva:uva/1rpr}{ttinnut:ptingnut/tn-dat-p-1p}"));
         addCase(new AnalyzerCase("uvunga", "{uv:uv/rad-sc}{unga:unga/tad-dat}"));
         addCase(new AnalyzerCase("uvva", "{uvva:ubva/ad-sc}"));
         addCase(new AnalyzerCase("uvvalu", "{uvvalu:uvvalu/1c}"));
