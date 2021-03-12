@@ -21,13 +21,11 @@ public final class LinguisticDataCSV { //extends LinguisticDataAbstract {
 	static public int IOEXCEPTION = 2;
 	
 	public static String[][] dataTables = {
-			// The value of the field 'type' in the linguistic data files
-			// is used to create the linguistic data objects.
-			// 0: class of the objects created from data in data file
-			// 1: name of the database
-			// 2: name of the CSV data file (without the extension)
-			// 3: if present, 'type' to be used when creating the objects
-			//    only for non-linguistic data
+			// element 0: class of the objects created from data in data file
+			// element 1: name of the database
+			// element 2: name of the CSV data file (without the extension)
+			// element 3: if present, 'type' to be used when creating the objects
+			//            only for non-linguistic data
 		{"Base","Inuktitut","RootsSpalding"},
 		{"Base","Inuktitut","RootsSchneider"},
 		{"Base","Inuktitut","WordsRelatedToRoots"},
@@ -42,7 +40,7 @@ public final class LinguisticDataCSV { //extends LinguisticDataAbstract {
 		{"Demonstrative","Inuktitut","Demonstratives"},
 		{"DemonstrativeEnding","Inuktitut","Endings_demonstrative"},
 		{"Pronoun","Inuktitut","Pronouns"},
-			// These files do not have a field 'type'; provide it as the fourth element
+			// The following files do not describe linguistic objects. They do not contain a field 'type'; it is provided here as the fourth element
 			// so that the objects can be created.
 			// vw: verb-word objects; src: source objects
 		{"VerbWord","Inuktitut","Passives_French","vw"},
@@ -54,26 +52,20 @@ public final class LinguisticDataCSV { //extends LinguisticDataAbstract {
 	};
 	static Class thisClass;
 
-//	public LinguisticDataCSV() throws LinguisticDataException {
-//		createLinguisticDataCSV(null);
-//	}
-//	/*
-//	 * 'type' peut �tre 'r' ou 's' ou null
-//	 */
-//	public LinguisticDataCSV(String type) throws LinguisticDataException {
-//		createLinguisticDataCSV(type);
-//	}
-	
+	public LinguisticDataCSV() {
+	}
+
 	/*
-	 * Read all the linguistic data files into linguistic objects.
+	 * Read all the linguistic data files into linguistic objects and register them in
+	 * the LinguisticData singleton passed in the argument linguisticDataRegister.
 	 */
-	public static void createLinguisticDataCSV() throws LinguisticDataException {
+	public void createLinguisticDataCSV(LinguisticData linguisticDataRegister) throws LinguisticDataException {
 		for (int i=0; i < dataTables.length; i++) {
-				_readLinguisticDataCSV(dataTables[i]);
+				_readLinguisticDataCSV(dataTables[i],linguisticDataRegister);
 		}
 	}
 
-	protected static void _readLinguisticDataCSV(String [] data)
+	protected void _readLinguisticDataCSV(String [] data,LinguisticData linguisticDataRegister)
 		throws LinguisticDataException {
 		Logger logger = Logger.getLogger("LinguisticDataCSV.readLinguisticDataCSV");
 		String classOfObject = data[0];
@@ -86,23 +78,7 @@ public final class LinguisticDataCSV { //extends LinguisticDataAbstract {
 		String tablePath = "org/iutools/linguisticdata/dataCSV/"+fileName;
 		try {
 			InputStream is = ResourceGetter.getResourceAsStream(tablePath);
-			BufferedReader f =  new BufferedReader(new InputStreamReader(is));
-			CSVReader csvReader = new CSVReader(f);
-			boolean endOfFile = false;
-			while ( !endOfFile ) {
-				Map<String,String> linguisticDataAttributeValuePairs = csvReader.readNext();
-				if (linguisticDataAttributeValuePairs==null)
-					endOfFile = true;
-				else {
-					linguisticDataAttributeValuePairs.put("dbName", dbName);
-					linguisticDataAttributeValuePairs.put("tableName", tableName);
-					if (typeOfObject!=null) {
-						// non-linguistic objects must be added a field "type"
-						linguisticDataAttributeValuePairs.put("type",typeOfObject);
-					}
-					LinguisticData.makeLinguisticObject((HashMap) linguisticDataAttributeValuePairs);
-				}
-			}
+			readLinguisticDataCSV(is,dbName,tableName,typeOfObject,linguisticDataRegister);
 		} catch (IOException e) {
 			throw new LinguisticDataException(
 				"Could not read linguistic data file "+tablePath);
@@ -111,5 +87,23 @@ public final class LinguisticDataCSV { //extends LinguisticDataAbstract {
     	logger.trace("Done reading the CSV file");
 	}
 
-
+	public void readLinguisticDataCSV(InputStream is,String dbName,String tableName,String typeOfObject,LinguisticData linguisticDataRegister) throws IOException, LinguisticDataException {
+		BufferedReader f =  new BufferedReader(new InputStreamReader(is));
+		CSVReader csvReader = new CSVReader(f);
+		boolean endOfFile = false;
+		while ( !endOfFile ) {
+			Map<String,String> linguisticDataAttributeValuePairs = csvReader.readNext();
+			if (linguisticDataAttributeValuePairs==null)
+				endOfFile = true;
+			else {
+				linguisticDataAttributeValuePairs.put("dbName", dbName);
+				linguisticDataAttributeValuePairs.put("tableName", tableName);
+				if (typeOfObject!=null) {
+					// non-linguistic objects must be added a field "type"
+					linguisticDataAttributeValuePairs.put("type",typeOfObject);
+				}
+				linguisticDataRegister.makeAndRegisterLinguisticObject((HashMap) linguisticDataAttributeValuePairs);
+			}
+		}
+	}
 }

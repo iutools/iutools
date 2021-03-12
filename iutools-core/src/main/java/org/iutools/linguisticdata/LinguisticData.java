@@ -4,13 +4,9 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 
+import ca.nrc.debug.Debug;
 import org.apache.log4j.Logger;
 
 import org.iutools.linguisticdata.dataCSV.LinguisticDataCSV;
@@ -69,14 +65,15 @@ public class LinguisticData {
     static public void init() {
     	singleton = null;
     }
+
     public static synchronized LinguisticData getInstance() {
         Logger logger = Logger.getLogger("LinguisticData.getInstance");
         logger.debug("singleton == null ? " + (singleton==null));
     	if (singleton == null) {
     		singleton = new LinguisticData();
     		try {
-				LinguisticDataCSV.createLinguisticDataCSV();
-		        singleton.makeGroupsOfConsonants();
+                singleton.readLinguisticDataCSV();
+		        singleton.makeGroupsOfConsonants(); // used in Dialect.java
 			} catch (LinguisticDataException e) {
 				e.printStackTrace();
 				System.exit(1);
@@ -87,9 +84,19 @@ public class LinguisticData {
     
     public LinguisticData() {
     	reinitializeData();
+    	// These 2 tables are not used by the morphological analyzer. They are used only by
+        // applications that display information and examples about morphemes. This should
+        // be left to those applications to create the tables.
     	makeHashtableOfExamples();
     	makeHashtableOfTextualRenderings();
     }
+
+    protected void readLinguisticDataCSV() throws LinguisticDataException {
+        LinguisticDataCSV ldcsv = new LinguisticDataCSV();
+        ldcsv.createLinguisticDataCSV(this);
+    }
+
+
     
     
     //--------------------------------------------------------------------------
@@ -102,17 +109,138 @@ public class LinguisticData {
     	basesForCanonicalForm.get(canonicalForm).add(base);
     	morphemesForCanonicalForm.get(canonicalForm).add((Morpheme)base);
     }
-    
+
+    //-----------------------------------------------------------------
+
+    /*
+     * These methods create SurfaceFormOfAffix objects that represent forms and actions
+     * of the affixes: suffixes and endings. Those objects are registered in a hash table.
+     */
+    public void addToForms(
+            DemonstrativeEnding ending,
+            String key) throws LinguisticDataException {
+
+        addToForms1(
+                new String[] { ending.morpheme },
+                key,
+                ending.type,
+                ending.id,
+                null,
+                new Action[] {Action.makeAction("neutre")},
+                new Action[] {Action.makeAction(null)});
+    }
+
+
+    public void addToForms(
+            Affix affix,
+            String key) throws LinguisticDataException {
+
+        addToForms1(
+                affix.vform,
+                key,
+                affix.type,
+                affix.id,
+                "V",
+                affix.vaction1,
+                affix.vaction2);
+        addToForms1(
+                affix.tform,
+                key,
+                affix.type,
+                affix.id,
+                "t",
+                affix.taction1,
+                affix.taction2);
+        addToForms1(
+                affix.kform,
+                key,
+                affix.type,
+                affix.id,
+                "k",
+                affix.kaction1,
+                affix.kaction2);
+        addToForms1(
+                affix.qform,
+                key,
+                affix.type,
+                affix.id,
+                "q",
+                affix.qaction1,
+                affix.qaction2);
+    }
+
+    /*
+     * Si l'une des surfaceFormsOfAffixes ou des actions est inconnue, on ne
+     * place pas de forme dans la table de hachage des surfaceFormsOfAffixes.
+     */
+    private void addToForms1(
+            String[] altForms,
+            String key,
+            String type,
+            String id,
+            String context,
+            Action[] actions1,
+            Action[] actions2) throws LinguisticDataException {
+
+        if (altForms != null)
+            for (int i = 0; i < altForms.length; i++) {
+                String form;
+                if (!altForms[i].equals("?")
+                        && actions1[i].getType() != Action.UNKNOWN
+                        && actions2[i].getType() != Action.UNKNOWN) {
+
+                    if (altForms[i].equals("*"))
+                        form = key;
+                    else
+                        form = altForms[i];
+                    // Simplification of the form (ng > N ; nng > NN).
+                    // Because the method looking for an affix is passed a simplified inuktitut text.
+                    form = Orthography.simplifiedOrthographyLat(form);
+                    String form1 = actions1[i].surfaceForm(form);
+                    if (form1 != null) {
+                        form1 = Orthography.simplifiedOrthographyLat(form1);
+                        SurfaceFormOfAffix newForm =
+                                new SurfaceFormOfAffix(
+                                        form1,
+                                        key,
+                                        id,
+                                        type,
+                                        context,
+                                        actions1[i],
+                                        actions2[i]);
+                        addToSurfaceFormsOfAffixes(form1, newForm);
+                    }
+
+                    /*
+                     * Certain action2 may also produce a special form, like self-decapitation for example.
+                     */
+                    String form2 = actions2[i].surfaceForm(form);
+                    if (form2 != null) {
+                        form2 = Orthography.simplifiedOrthographyLat(form2);
+                        SurfaceFormOfAffix otherForm =
+                                new SurfaceFormOfAffix(
+                                        form2,
+                                        key,
+                                        id,
+                                        type,
+                                        context,
+                                        actions1[i],
+                                        actions2[i]);
+                        addToSurfaceFormsOfAffixes(form2, otherForm);
+                    }
+                }
+            }
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    public void addEntryToIdToBaseTable(String baseId, Base baseObject) {
+        idToBaseTable.put(baseId, baseObject);
+    }
+
     public Vector<Morpheme> getBasesForCanonicalForm(String canonicalForm) {
-        Logger logger = Logger.getLogger("LingisticData.getBasesForCanonicalForm");
-        logger.debug("morphemesForCanonicalForm: "+morphemesForCanonicalForm.size());
-//        logger.debug("morphemesForCanonicalForm keys: "+Arrays.toString(morphemesForCanonicalForm.keySet().toArray()));
-        logger.debug("canonicalForm: "+canonicalForm);
     	Vector<Morpheme> bases = morphemesForCanonicalForm.get(canonicalForm);
-    	logger.debug("bases: "+(bases==null?"null":bases.size()));
     	return bases;
     }
-    
 
 	public String[] getCanonicalFormsForAllBases() {
 		String[] forms = basesForCanonicalForm.keySet().toArray(new String[0]);;
@@ -122,25 +250,20 @@ public class LinguisticData {
     public Hashtable<String, Vector<Morpheme>> getBasesForAllCanonicalForms_hashtable() {
     	return morphemesForCanonicalForm;
     }
-    
+
+    /*
+     * Look for the morpheme identified by its id.
+     * First check in the roots; if not found, check in the affixes.
+     */
     public Morpheme getMorpheme(String morphId) {
-    	Logger logger = Logger.getLogger("LinguisticData.getMorpheme");
         Morpheme morph;
         morph = getBaseWithId(morphId);
         if (morph==null) {
             morph = getAffixWithId(morphId);
-            if (morph==null) logger.debug("null affix: "+morphId);
         }
         return morph;
     }
-    
- 
 
-    //--------------------------------------------------------------------------
-	public void addEntryToIdToBaseTable(String baseId, Base baseObject) {
-		idToBaseTable.put(baseId, baseObject);
-	}
-	
     public Base getBaseWithId(String morphId) {
     	Base b = null;
     	if (idToBaseTable != null)
@@ -209,9 +332,6 @@ public class LinguisticData {
 		if (v == null)
 			v = new Vector<SurfaceFormOfAffix>();
 		v.add(form);
-		// OK... 
-//		if (surfaceFormsOfAffixes.containsKey(simplifiedForm)) 
-//			throw new RuntimeException("Key already exists in linguistic data hash");
 		surfaceFormsOfAffixes.put(simplifiedForm, v);
     }
 
@@ -244,18 +364,6 @@ public class LinguisticData {
 		}
 		return table;
 	}
-
-// APPELÉE NULLE PART
-//    public String[] getAllSuffixesIds() {
-//    	Hashtable<String,Morpheme> suffixes = getId2SuffixTable();
-//    	String [] suffixesIds = new String[suffixes.size()];
-//    	int i=0;
-//    	for (Enumeration<String> keys = suffixes.keys(); keys.hasMoreElements();) {
-//    		Suffix suf = (Suffix)suffixes.get(keys.nextElement());
-//    		suffixesIds[i++] = suf.id;
-//    	}
-//    	return suffixesIds;
-//    }
 
 
     //--------------------------------------------------------------------------
@@ -421,7 +529,8 @@ public class LinguisticData {
 	    sources = new Hashtable<String,Source>();
 	    groupsOfConsonants = new Hashtable<Character,Vector<String>>();
 	}
-	
+    //--------------------------------------------------------------------------
+
     private void makeGroupsOfConsonants() {
     	if (getBasesForAllCanonicalForms_hashtable() != null) {
     		String [] keys = getCanonicalFormsForAllBases();
@@ -450,7 +559,7 @@ public class LinguisticData {
 
 	//--------------------------------------------------------------------------
     // EXAMPLES
-    private  void makeHashtableOfExamples() {
+    private void makeHashtableOfExamples() {
         try {
             String line;
             boolean eof;
@@ -555,31 +664,115 @@ public class LinguisticData {
 
     //----- MAKE OBJECTS FOR THE MORPHEMES ------------------------------
 
-    public static void makeLinguisticObject(HashMap<String,String> linguisticDataMap) throws LinguisticDataException {
+    public void makeAndRegisterLinguisticObject(HashMap<String,String> linguisticDataMap) throws LinguisticDataException {
         Logger logger = Logger.getLogger("LinguisticDataCSV.makeLinguisticObject");
         String morphemeTypeInLinguisticData = linguisticDataMap.get("type");
         logger.debug("morphemeTypeInLinguisticData: "+morphemeTypeInLinguisticData);
         String classOfMorpheme = LinguisticData.type2class.get(morphemeTypeInLinguisticData);
         // original 'originalClassOfMorpheme' variable in the if-statements below has been replaced by 'classOfMorpheme'
         if (classOfMorpheme.equals("Base")) {
-            LinguisticObjectFactory.makeBase(linguisticDataMap);
+            makeAndRegisterBase(linguisticDataMap);
         } else if (classOfMorpheme.equals("Suffix")) {
-            LinguisticObjectFactory.makeSuffix(linguisticDataMap);
+            makeAndRegisterSuffix(linguisticDataMap);
         } else if (classOfMorpheme.equals("NounEnding")) {
-            LinguisticObjectFactory.makeNounEnding(linguisticDataMap);
+            makeAndRegisterNounEnding(linguisticDataMap);
         } else if (classOfMorpheme.equals("VerbEnding")) {
-            LinguisticObjectFactory.makeVerbEnding(linguisticDataMap);
+            makeAndRegisterVerbEnding(linguisticDataMap);
         } else if (classOfMorpheme.equals("Demonstrative")) {
-            LinguisticObjectFactory.makeDemonstrative(linguisticDataMap);
+            makeAndRegisterDemonstrative(linguisticDataMap);
         } else if (classOfMorpheme.equals("DemonstrativeEnding")) {
-            LinguisticObjectFactory.makeDemonstrativeEnding(linguisticDataMap);
+            makeAndRegisterDemonstrativeEnding(linguisticDataMap);
         } else if (classOfMorpheme.equals("Pronoun")) {
-            LinguisticObjectFactory.makePronoun(linguisticDataMap);
+            makeAndRegisterPronoun(linguisticDataMap);
         } else if (classOfMorpheme.equals("VerbWord")) {
-            LinguisticObjectFactory.makeVerbWord(linguisticDataMap);
+            makeAndRegisterVerbWord(linguisticDataMap);
         } else if (classOfMorpheme.equals("Source")) {
-            LinguisticObjectFactory.makeSource(linguisticDataMap);
+            makeAndRegisterSource(linguisticDataMap);
         }
+    }
+
+
+    public void makeAndRegisterBase(HashMap<String,String> linguisticData) throws LinguisticDataException {
+        List<Base> bases = LinguisticObjectFactory.makeBase(linguisticData);
+        for (Base base : bases) {
+            if (base.originalMorpheme==null // not a variant
+                    && getIdToBaseTable().containsKey(base.id)) {
+                String callStack = Debug.printCallStack();
+                throw new RuntimeException(
+                        "Bases ID already contains a key "+base.id+". This one is defined in "+
+                                base.tableName+"."+". Check your .csv files in the linguistics data\n"+
+                                "\nCall stack was:\n"+callStack);
+            } else {
+                add2basesForCanonicalForm(base.morpheme, base);
+                if (base.subtype==null) { // not equal to "nc" (noun composite)
+                    addEntryToIdToBaseTable(base.id, base);
+                }
+            }
+        }
+    }
+
+    public void makeAndRegisterSuffix(HashMap<String,String> linguisticData) throws LinguisticDataException {
+        Suffix suffix = LinguisticObjectFactory.makeSuffix(linguisticData);
+        if (getIdToAffixTable().containsKey(suffix.id))
+            throw new RuntimeException("Key '"+suffix.id+"' already exists in linguistic data hash");
+        addEntryToIdToAffixTable(suffix.id,suffix);
+        addToForms(suffix, suffix.morpheme);
+    }
+
+    public void makeAndRegisterNounEnding(HashMap<String,String> linguisticData) throws LinguisticDataException {
+        NounEnding ending = LinguisticObjectFactory.makeNounEnding(linguisticData);
+        if (getIdToAffixTable().containsKey(ending.id))
+            throw new RuntimeException("Key '"+ending.id+"' already exists in linguistic data hash");
+        addEntryToIdToAffixTable(ending.id,ending);
+        addToForms(ending, ending.morpheme);
+    }
+
+    public void makeAndRegisterVerbEnding(HashMap<String,String> linguisticData) throws LinguisticDataException {
+        VerbEnding ending = LinguisticObjectFactory.makeVerbEnding(linguisticData);
+        // This test with a throw is commented out to allow the execution of scripts using the linguistic database.
+        // This matter will be attended to shortly (Benoît Farley, 2019-09-17)
+//      if (getIdToAffixTable().containsKey(ending.id))
+//        	throw new RuntimeException("Key '"+ending.id+"' already exists in linguistic data hash");
+        addEntryToIdToAffixTable(ending.id,ending);
+        addToForms(ending, ending.morpheme);
+    }
+
+    public void makeAndRegisterDemonstrative(HashMap<String,String> linguisticData) throws LinguisticDataException {
+        List<Demonstrative> demonstratives = LinguisticObjectFactory.makeDemonstrative(linguisticData);
+        for (Demonstrative demonstrative : demonstratives) {
+            if (getIdToBaseTable().containsKey(demonstrative.id))
+                throw new RuntimeException("Key '" + demonstrative.id + "' already exists in linguistic data hash");
+            add2basesForCanonicalForm(demonstrative.morpheme,demonstrative);
+            addEntryToIdToBaseTable(demonstrative.id, demonstrative);
+        }
+    }
+
+    public void makeAndRegisterDemonstrativeEnding(HashMap<String,String> linguisticData) throws LinguisticDataException {
+        DemonstrativeEnding ending = LinguisticObjectFactory.makeDemonstrativeEnding(linguisticData);
+        if (getIdToAffixTable().containsKey(ending.id))
+            throw new RuntimeException("Key '" + ending.id + "' already exists in linguistic data hash");
+        addEntryToIdToAffixTable(ending.id,ending);
+        addToForms(ending, ending.morpheme);
+    }
+
+    public void makeAndRegisterPronoun(HashMap<String,String> linguisticData) throws LinguisticDataException {
+        List<Pronoun> pronouns = LinguisticObjectFactory.makePronoun(linguisticData);
+        for (Pronoun pronoun : pronouns) {
+            if (getIdToBaseTable().containsKey(pronoun.id))
+                throw new RuntimeException("Key '" + pronoun.id + "' already exists in linguistic data hash");
+            add2basesForCanonicalForm(pronoun.morpheme,pronoun);
+            addEntryToIdToBaseTable(pronoun.id, pronoun);
+        }
+    }
+
+    public void makeAndRegisterVerbWord(HashMap<String,String> linguisticData) throws LinguisticDataException {
+        VerbWord verbWord = LinguisticObjectFactory.makeVerbWord(linguisticData);
+        addVerbWord(verbWord.verb,verbWord);
+    }
+
+    public void makeAndRegisterSource(HashMap<String,String> linguisticData) throws LinguisticDataException {
+        Source source = LinguisticObjectFactory.makeSource(linguisticData);
+        addSource(source.id,source);
     }
 
 
