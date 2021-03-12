@@ -33,7 +33,7 @@ public class FormGenerator {
 		 * the affix that follows it (voicing; deletion; etc.). There may also
 		 * be variants due to dialectal assimilation of consonants.
 		 */
-		else if (typeOfMorpheme=="root") {
+		else if (typeOfMorpheme.equals("root")) {
 			// see if possible geminate consonant clusters possible and add them (ex. iglu > illu)
 			HashSet<String> formsWithGeminate = formsWithGeminate(baseForm);
 			// generate SurfaceFormInContext forms with alternative endings
