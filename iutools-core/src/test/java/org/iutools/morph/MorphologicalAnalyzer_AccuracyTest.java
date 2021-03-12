@@ -42,7 +42,15 @@ public class MorphologicalAnalyzer_AccuracyTest {
 	@Before
 	public void setUp() throws Exception {
 		if (morphAnalyzer==null) {
+			// check how much time it takes for the analyzer to be created (in fact, this is the time for loading the database)
+			Calendar startCalendar = Calendar.getInstance();
 			morphAnalyzer = new MorphologicalAnalyzer();
+			Calendar endCalendar = Calendar.getInstance();
+
+			long time = endCalendar.getTimeInMillis() - startCalendar.getTimeInMillis();
+
+			System.out.println("");
+			System.out.println("creating new MorphologicalAnalyzer: Time in milliseconds: "+time);
 		}
 		morphAnalyzer.activateTimeout();
 		gotOutcomeHist = new FrequencyHistogram<OutcomeType>();
@@ -118,8 +126,10 @@ public class MorphologicalAnalyzer_AccuracyTest {
 		
 		long time = endCalendar.getTimeInMillis() - startCalendar.getTimeInMillis();
 		
-        if (verbose) System.out.println("");
-        if (verbose) System.out.println("Time in milliseconds: "+time);
+//        if (verbose)
+        	System.out.println("");
+//        if (verbose)
+        	System.out.println("Analysis of all words: Time in milliseconds: "+time);
         
         printPerformanceStats();
         
