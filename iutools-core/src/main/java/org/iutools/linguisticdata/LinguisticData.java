@@ -84,11 +84,6 @@ public class LinguisticData {
     
     public LinguisticData() {
     	reinitializeData();
-    	// These 2 tables are not used by the morphological analyzer. They are used only by
-        // applications that display information and examples about morphemes. This should
-        // be left to those applications to create the tables.
-    	makeHashtableOfExamples();
-    	makeHashtableOfTextualRenderings();
     }
 
     protected void readLinguisticDataCSV() throws LinguisticDataException {
@@ -444,17 +439,34 @@ public class LinguisticData {
 
     //--------------------------------------------------------------------------
 
+    // These 2 tables are not used by the morphological analyzer. They are used only by
+    // applications that display information and examples about morphemes. This should
+    // be left to those applications to create the tables.
+    public void prepareNaturalLanguageElements() {
+        makeHashtableOfExamples();
+        makeHashtableOfTextualRenderings();
+    }
+
+
+    //--------------------------------------------------------------------------
+
     public Vector<Example> getExample(String key) {
+        if (examples==null)
+            makeHashtableOfExamples();
         return examples.get(key);
     }
 
     public String[] getAllExamplesIds() {
+        if (examples==null)
+            makeHashtableOfExamples();
     	return (String[])examples.keySet().toArray(new String[0]);
     }
     
     //--------------------------------------------------------------------------
 
     public String getTextualRendering(String key, String lang) {
+        if (textualRenderings==null)
+            makeHashtableOfTextualRenderings();
         return _getTextualRendering(key,lang);
     }
     
