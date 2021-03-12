@@ -23,7 +23,7 @@ public class CmdRecompileDecomps extends ConsoleCommand {
 		try {
 			analyzer = new MorphologicalAnalyzer();
 		} catch (LinguisticDataException e) {
-			throw new CommandLineException(e);
+			throw new CommandLineException(e.getMessage());
 		}
 	}
 
