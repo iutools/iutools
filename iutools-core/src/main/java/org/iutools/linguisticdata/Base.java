@@ -117,28 +117,8 @@ public class Base extends Morpheme {
 		if (comb != null && !comb.equals("")) {
 			combinedMorphemes = comb.split("[+]");
 			if (combinedMorphemes.length < 2) {
-//				System.out.println("combinaison avec problème: '" + comb + "' [" + morpheme + "]");
 				combinedMorphemes = null;
-			} else
-				try {
-					{
-						String rootId = combinedMorphemes[0];
-						// Attention!!!
-						// This root should already have been created. Let's get its
-						// list of idsOfCompositeWithThisRoot.
-						Base b = LinguisticData.getInstance().getBaseWithId(rootId);
-						if (b != null) {
-							Vector<String> vids = b.idsOfCompositesWithThisRoot;
-							if (vids == null)
-								vids = new Vector<String>();
-							vids.add(comb);
-							b.setIdsOfCompositesWithThisRoot(vids);
-						}
-					}
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+			}
 		}
 		setAttrs();
 	}
