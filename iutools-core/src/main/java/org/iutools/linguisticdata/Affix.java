@@ -202,12 +202,12 @@ public abstract class Affix extends Morpheme {
 	void makeFormsAndActions(
 		String context,
 		String morpheme,
-		String alternateForms,
+		String forms,
 		String action1,
 		String action2) {
 	    
 		Logger logger = Logger.getLogger("Affix.makeFormsAndActions");
-		logger.debug("morpheme= "+morpheme+"; context= "+context+"; alternateForms= "+alternateForms+"");
+		logger.debug("morpheme= "+morpheme+"; context= "+context+"; forms= "+forms+"");
         String[] arrayOfForms;
         Action[] arrayOfActions1;
         Action[] arrayOfActions2;
@@ -220,21 +220,9 @@ public abstract class Affix extends Morpheme {
                 allForms = "";
                 action1 = "";
                 action2 = "";
-        } else if (alternateForms==null)
-                // Si le champ 'X-form' est vide,
-                // cela signifie que la forme est celle du champ 'morpheme'.
-                allForms = new String(morpheme);
+        }
         else {
-    	    // Transformer les * en la valeur de 'morpheme'
-    	    alternateForms = alternateForms.replaceAll("\\x2a",morpheme);
-            if (context.equals("V"))
-                // Dans la table des suffixes, nous avons adopt� la convention selon
-                // laquelle la valeur du champ 'morpheme' est la forme du suffixe dans
-                // le context de voyelle, et donc, le champ 'V-form' ne le contient pas:
-                // il faut l'ajouter ici dans la liste.
-                allForms = morpheme + " " + alternateForms;
-            else
-                allForms = new String(alternateForms);
+                allForms = new String(forms);
         }
         
         StringTokenizer stf = new StringTokenizer(allForms);
