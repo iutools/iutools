@@ -1,6 +1,7 @@
 package org.iutools.webservice;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.MalformedURLException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -78,5 +79,14 @@ public class EndPointHelper {
 		if (log4jprops != null) {
 			PropertyConfigurator.configure(log4jprops);
 		}
+	}
+
+	public static void writeJsonResponse(
+	HttpServletResponse response, String json) throws IOException {
+		Logger tLogger = Logger.getLogger("org.iutools.webservice.IUTServiceTestHelpers.writeJsonResponse");
+		PrintWriter writer = response.getWriter();
+		writer.write(json);
+		writer.close();
+		tLogger.trace("Returning json="+json);
 	}
 }

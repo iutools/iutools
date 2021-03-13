@@ -1,31 +1,26 @@
 package org.iutools.webservice;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletResponse;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.apache.log4j.Logger;
 import org.iutools.morph.Gist;
 import org.iutools.utilities.Alignment;
 import ca.nrc.web.Http;
-import ca.nrc.testing.AssertHelpers;
-import ca.nrc.testing.AssertNumber;
 import ca.nrc.testing.AssertObject;
 import ca.nrc.ui.web.testing.MockHttpServletRequest;
 import ca.nrc.ui.web.testing.MockHttpServletResponse;
-import org.iutools.search.SearchHit;
-import org.iutools.testing.IUTTestHelpers;
 import org.iutools.webservice.gist.GistPrepareContentEndpoint;
 import org.iutools.webservice.gist.GistPrepareContentResponse;
 import org.iutools.webservice.gist.GistWordEndpoint;
 import org.iutools.webservice.gist.GistWordResponse;
+import org.iutools.webservice.log.LogUITaskEndpoint;
 import org.iutools.webservice.relatedwords.RelatedWordsEndpoint;
 import org.iutools.webservice.relatedwords.RelatedWordsResponse;
 import org.iutools.webservice.search.ExpandQueryEndpoint;
@@ -41,7 +36,7 @@ public class IUTServiceTestHelpers {
 	public static final long LONG_WAIT = 2*MEDIUM_WAIT;
 
 	public enum EndpointNames {
-		GIST, GIST_PREPARE_CONTENT, EXPAND_QUERY, GIST_WORD, MORPHEME, MORPHEMEEXAMPLE,
+		GIST_PREPARE_CONTENT, EXPAND_QUERY, GIST_WORD, LOG, MORPHEME,
 		RELATED_WORDS, TOKENIZE, SPELL};
 
 	public static MockHttpServletResponse postEndpointDirectly(EndpointNames eptName, Object inputs) throws Exception {
@@ -71,6 +66,8 @@ public class IUTServiceTestHelpers {
 			new ExpandQueryEndpoint().doPost(request, response);
 		} else if (eptName == EndpointNames.GIST_PREPARE_CONTENT) {
 			new GistPrepareContentEndpoint().doPost(request, response);
+		} else if (eptName == EndpointNames.LOG) {
+			new LogUITaskEndpoint().doPost(request, response);
 		} else if (eptName == EndpointNames.MORPHEME) {
 			new OccurenceSearchEndpoint().doPost(request, response);
 		} else if (eptName == EndpointNames.RELATED_WORDS) {
