@@ -59,7 +59,7 @@ public final class LinguisticDataCSV { //extends LinguisticDataAbstract {
 	 * Read all the linguistic data files into linguistic objects and register them in
 	 * the LinguisticData singleton passed in the argument linguisticDataRegister.
 	 */
-	public void createLinguisticDataCSV(LinguisticData linguisticDataRegister) throws LinguisticDataException {
+	public void readAndRegisterLinguisticDataCSV(LinguisticData linguisticDataRegister) throws LinguisticDataException {
 		for (int i=0; i < dataTables.length; i++) {
 				_readLinguisticDataCSV(dataTables[i],linguisticDataRegister);
 		}

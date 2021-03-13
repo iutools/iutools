@@ -86,9 +86,12 @@ public class LinguisticData {
     	reinitializeData();
     }
 
+    /*
+     * Read the data stored in the CSV files into linguistic objects and register them in the singleton (this).
+     */
     protected void readLinguisticDataCSV() throws LinguisticDataException {
         LinguisticDataCSV ldcsv = new LinguisticDataCSV();
-        ldcsv.createLinguisticDataCSV(this);
+        ldcsv.readAndRegisterLinguisticDataCSV(this);
     }
 
 
