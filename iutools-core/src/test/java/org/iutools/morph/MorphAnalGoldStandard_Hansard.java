@@ -735,7 +735,7 @@ public class MorphAnalGoldStandard_Hansard extends MorphAnalGoldStandardAbstract
         addCase(new AnalyzerCase("ministamik", "{minista:minista/1n}{mik:mik/tn-acc-s}"));
         addCase(new AnalyzerCase("ministamut", "{minista:minista/1n}{mut:mut/tn-dat-s}"));
         addCase(new AnalyzerCase("ministanga", "{minista:minista/1n}{nga:nga/tn-nom-s-4s}"));
-        addCase(new AnalyzerCase("ministangannut", "{minista:minista/1n}{ngannut:ngangnut/tn-dat-s-4d}"));
+        addCase(new AnalyzerCase("ministangannut", "{minista:minista/1n}{ngannut:ngannut/tn-dat-s-4p}"));
         addCase(new AnalyzerCase("ministangat", "{minista:minista/1n}{ngat:ngat/tn-nom-s-4p}"));
         addCase(new AnalyzerCase("ministanut", "{minista:minista/1n}{nut:nut/tn-dat-p}"));
         addCase(new AnalyzerCase("ministau", "{minista:minista/1n}{u:up/tn-gen-s}"));
