@@ -32,9 +32,9 @@ public class GistPrepareContentEndpointTest {
 				"maligaliuqti", " ",  "juu",  " ",  "savikataaq",  " ",
 				"niruaqtaukkannilauqpuq"}		
 		};
-		
-		GistPrepareContentAsserter.assertThat(response, 
-			"Content not prepared as expecte")
+
+		new AssertGistPrepareContentResponse(response,
+		"Content not prepared as expected")
 			.inputWasActualContent(true)
 			.iuSentencesEquals(expIUSentences)
 			.enSentencesEquals(null)
@@ -53,8 +53,8 @@ public class GistPrepareContentEndpointTest {
 					IUTServiceTestHelpers.EndpointNames.GIST_PREPARE_CONTENT,
 					prepareInputs
 				);
-		
-		GistPrepareContentAsserter.assertThat(response, 
+
+		new AssertGistPrepareContentResponse(response,
 			"Content not prepared as expected")
 			.inputWasActualContent(false)
 			.containsAlignment(
@@ -75,8 +75,8 @@ public class GistPrepareContentEndpointTest {
 					IUTServiceTestHelpers.EndpointNames.GIST_PREPARE_CONTENT,
 					prepareInputs
 				);
-		
-		GistPrepareContentAsserter.assertThat(response, 
+
+		new AssertGistPrepareContentResponse(response,
 			"Content not prepared as expected")
 			.inputWasActualContent(false)
 			.containsAlignment(
@@ -101,8 +101,8 @@ public class GistPrepareContentEndpointTest {
 					IUTServiceTestHelpers.EndpointNames.GIST_PREPARE_CONTENT,
 					prepareInputs
 				);
-		
-		GistPrepareContentAsserter.assertThat(response, 
+
+		new AssertGistPrepareContentResponse(response,
 			"Content not prepared as expected")
 			.inputWasActualContent(false)
 			.hasContentForLang("en")
@@ -124,13 +124,13 @@ public class GistPrepareContentEndpointTest {
 					IUTServiceTestHelpers.EndpointNames.GIST_PREPARE_CONTENT,
 					prepareInputs, true
 				);
-		
-		GistPrepareContentAsserter.assertThat(response, 
+
+		new AssertGistPrepareContentResponse(response,
 			"Content not prepared as expected")
 			.inputWasActualContent(false)
 			.raisesError("Unable to download the input page")
 			.couldNotFetchIUContent()
 			.couldNotFetchEnContent()
 		;
-	}	
+	}
 }
