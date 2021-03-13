@@ -290,7 +290,6 @@ public class MorphAnalCurrentExpectations_Hansard extends MorphAnalCurrentExpect
         expectFailure("taanna", OutcomeType.CORRECT_NOT_FIRST);
         expectFailure("nunaliujunut", OutcomeType.CORRECT_NOT_FIRST);
 
-        expectFailure("atuliqujaujuq", OutcomeType.CORRECT_NOT_FIRST);
         expectFailure("isumagillugu", OutcomeType.CORRECT_NOT_FIRST);
         expectFailure("matuiqtauninga", OutcomeType.CORRECT_NOT_FIRST);
         expectFailure("pijjutigillugit", OutcomeType.CORRECT_NOT_FIRST);
