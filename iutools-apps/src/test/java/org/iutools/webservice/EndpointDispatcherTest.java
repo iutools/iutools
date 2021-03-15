@@ -35,7 +35,7 @@ public class EndpointDispatcherTest {
 		MockHttpServletResponse response  = doPost(uri, json);
 
 		new AssertServletResponse(response, MorphemeExamplesResponse.class)
-			.reportsException("No known endpoint for URI iutools/srv2/unknown_endpiont")
+			.reportsException("No known endpoint for URI iutools/srv2/unkown_point")
 			;
 		return;
 	}

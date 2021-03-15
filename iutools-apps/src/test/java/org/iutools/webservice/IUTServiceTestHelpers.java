@@ -68,8 +68,6 @@ public class IUTServiceTestHelpers {
 			new GistPrepareContentEndpoint().doPost(request, response);
 		} else if (eptName == EndpointNames.LOG) {
 			new LogUITaskEndpoint().doPost(request, response);
-		} else if (eptName == EndpointNames.MORPHEME) {
-			new OccurenceSearchEndpoint().doPost(request, response);
 		} else if (eptName == EndpointNames.RELATED_WORDS) {
 			new RelatedWordsEndpoint().doPost(request, response);
 		} else if (eptName == EndpointNames.SPELL) {
@@ -135,53 +133,5 @@ public class IUTServiceTestHelpers {
 		TokenizeResponse response = 
 				new ObjectMapper().readValue(responseStr, TokenizeResponse.class);
 		return response;
-	}
-	
-	private static OccurenceSearchResponse toOccurenceSearchResponse(
-			MockHttpServletResponse servletResp) throws IOException {
-		String responseStr = servletResp.getOutputStream().toString();
-		OccurenceSearchResponse response = 
-				new ObjectMapper().readValue(responseStr, OccurenceSearchResponse.class);
-		return response;
-	}
-	private static OccurenceExampleResponse toOccurenceExampleResponse(
-			MockHttpServletResponse servletResp) throws IOException {
-		String responseStr = servletResp.getOutputStream().toString();
-		OccurenceExampleResponse response = 
-				new ObjectMapper().readValue(responseStr, OccurenceExampleResponse.class);
-		return response;
-	}
-
-	public static void assertOccurenceSearchResponseIsOK(
-			MockHttpServletResponse response, Map<String,MorphemeSearchResult> expected) throws Exception {
-		
-		OccurenceSearchResponse occurenceSearchResponse = 
-				IUTServiceTestHelpers.toOccurenceSearchResponse(response);
-		
-		Map<String,MorphemeSearchResult> got = occurenceSearchResponse.matchingWords;
-		AssertObject.assertDeepEquals(
-	"The list of morphemes was not as expected",
-			expected, got, new Integer(1));
-	}
-
-	public static void assertOccurenceExampleResponseIsOK(
-			MockHttpServletResponse response, ExampleWordWithMorpheme expected) throws Exception {
-		
-		OccurenceExampleResponse occurenceExampleResponse = 
-				IUTServiceTestHelpers.toOccurenceExampleResponse(response);
-		
-		ExampleWordWithMorpheme gotExampleWord = occurenceExampleResponse.exampleWord;
-		Gist gotGist = gotExampleWord.gist;
-		Gist expectedGist = expected.gist;
-		AssertObject.assertDeepEquals("The gists are not equal.",expectedGist, gotGist);
-		Assert.assertEquals("The word of the gist is not as expected.",  expectedGist.word, gotGist.word);
-		Alignment[] gotAlignments = gotExampleWord.alignments;
-		Alignment[] expectedAlignments = expected.alignments;
-		Assert.assertEquals("The alignments are not equal.",
-				expectedAlignments[0].get("iu").substring(0,100), 
-				gotAlignments[0].get("iu").substring(0,100));
-		Assert.assertEquals("The alignments are not equal.",
-				expectedAlignments[0].get("en").substring(0,100), 
-				gotAlignments[0].get("en").substring(0,100));
 	}
 }

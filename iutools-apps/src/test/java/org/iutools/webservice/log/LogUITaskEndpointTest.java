@@ -19,11 +19,5 @@ public class LogUITaskEndpointTest {
 		LogUITaskInputs logInputs =
 			new LogUITaskInputs(Action.SPELL, taskInputs);
 
-		MockHttpServletResponse response =
-				IUTServiceTestHelpers.postEndpointDirectly(
-					IUTServiceTestHelpers.EndpointNames.LOG,
-					logInputs
-				);
-//		new AssertLogUITaskResponse(logInputs, response);
 	}
 }

@@ -43,10 +43,10 @@ public class LogUITaskEndpoint {
 	private ServiceResponse executeEndPoint(LogUITaskInputs inputs) {
 		Logger logger = Logger.getLogger("org.iutools.webservice.log.LogUITaskEndpoint.executeEndPoint");
 		logger.trace("inputs= " + PrettyPrinter.print(inputs));
-		OccurenceSearchResponse results = new OccurenceSearchResponse();
+//		OccurenceSearchResponse results = new OccurenceSearchResponse();
 
 
 
-		return results;
+		return null;
 	}
 }
