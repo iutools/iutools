@@ -3,7 +3,7 @@ package org.iutools.webservice;
 import ca.nrc.testing.AssertString;
 import ca.nrc.ui.web.testing.MockHttpServletRequest;
 import ca.nrc.ui.web.testing.MockHttpServletResponse;
-import org.iutools.webservice.morphexamples.MorphemeExamplesResponse;
+import org.iutools.webservice.morphexamples.MorphemeExamplesResult;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -21,7 +21,7 @@ public class EndpointDispatcherTest {
 		String uri = "iutools/srv2/morpheme_examples";
 		MockHttpServletResponse response  = doPost(uri, json);
 
-		new AssertServletResponse(response, MorphemeExamplesResponse.class)
+		new AssertServletResponse(response, MorphemeExamplesResult.class)
 			.reportsNoException()
 			;
 		return;
@@ -34,7 +34,7 @@ public class EndpointDispatcherTest {
 		String uri = "iutools/srv2/unkown_point";
 		MockHttpServletResponse response  = doPost(uri, json);
 
-		new AssertServletResponse(response, MorphemeExamplesResponse.class)
+		new AssertServletResponse(response, MorphemeExamplesResult.class)
 			.reportsException("No known endpoint for URI iutools/srv2/unkown_point")
 			;
 		return;
@@ -48,7 +48,7 @@ public class EndpointDispatcherTest {
 		String uri = "iutools/srv2/morpheme_examples";
 		MockHttpServletResponse response  = doPost(uri, json);
 
-		new AssertServletResponse(response, MorphemeExamplesResponse.class)
+		new AssertServletResponse(response, MorphemeExamplesResult.class)
 			.reportsException(
 				"JSON inputs did not have the structure of class org.iutools.webservice.morphexamples.MorphemeExamplesInputs")
 			;

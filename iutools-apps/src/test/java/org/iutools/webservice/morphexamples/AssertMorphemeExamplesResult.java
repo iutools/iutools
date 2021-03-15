@@ -2,20 +2,20 @@ package org.iutools.webservice.morphexamples;
 
 import ca.nrc.testing.AssertObject;
 import org.apache.commons.lang3.tuple.Pair;
-import org.iutools.webservice.AssertEndpointResponse;
+import org.iutools.webservice.AssertEndpointResult;
 import org.iutools.webservice.EndpointResult;
 import org.iutools.webservice.MorphemeSearchResult;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class AssertMorphemeExamplesResponse extends AssertEndpointResponse {
+public class AssertMorphemeExamplesResult extends AssertEndpointResult {
 
-	public AssertMorphemeExamplesResponse(EndpointResult _gotObject) {
+	public AssertMorphemeExamplesResult(EndpointResult _gotObject) {
 		super(_gotObject);
 	}
 
-	public AssertMorphemeExamplesResponse(EndpointResult _gotObject, String mess) {
+	public AssertMorphemeExamplesResult(EndpointResult _gotObject, String mess) {
 		super(_gotObject, mess);
 	}
 
@@ -39,7 +39,7 @@ public class AssertMorphemeExamplesResponse extends AssertEndpointResponse {
 			expScoresMap, gotScoresMap);
 	}
 
-	private MorphemeExamplesResponse response() {
-		return (MorphemeExamplesResponse)gotObject;
+	private MorphemeExamplesResult response() {
+		return (MorphemeExamplesResult)gotObject;
 	}
 }

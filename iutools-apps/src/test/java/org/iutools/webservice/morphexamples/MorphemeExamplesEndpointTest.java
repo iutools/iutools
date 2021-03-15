@@ -27,7 +27,7 @@ public class MorphemeExamplesEndpointTest extends EndpointTest {
 			new MorphemeExamplesInputs("siuq","compiled_corpus","2");
 
 		EndpointResult epResponse = endPoint.execute(examplesInputs);
-		new AssertMorphemeExamplesResponse(epResponse)
+		new AssertMorphemeExamplesResult(epResponse)
 			.exampleScoredExamplesAre(
 				new Pair[] {
 					Pair.of("ammuumajuqsiuqtutik", 10004.0),
