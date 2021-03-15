@@ -136,7 +136,7 @@ QUnit.module("OccurenceController Tests", {
 		$("#testMainDiv").html(formHTML);
 		
 		
-		occController = new OccurrenceController(occControllerConfig);
+		occController = new MorphemeExamplesController(occControllerConfig);
 		occurrenceController = occController;
 
 		$.mockjax([

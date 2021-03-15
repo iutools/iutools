@@ -2,7 +2,7 @@
  * Controller for the search.html page.
  */
 
-class OccurrenceController extends WidgetController {
+class MorphemeExamplesController extends WidgetController {
 	
 	constructor(config) {
 		super(config);

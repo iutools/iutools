@@ -1,6 +1,6 @@
 <% String IUTOOLS_JS_VERSION=(new java.util.Date()).toLocaleString(); %>
 
-<script src="js/controllers/morpheme_examples/OccurrenceController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
+<script src="js/controllers/morpheme_examples/MorphemeExamplesController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 
 <script>
 
@@ -37,5 +37,5 @@
     		divGist_message: "div-gist-message",
     		divGist_word: "div-gist-word",
         };
-    var occurrenceController = new OccurrenceController(config);
+    var occurrenceController = new MorphemeExamplesController(config);
 </script>
