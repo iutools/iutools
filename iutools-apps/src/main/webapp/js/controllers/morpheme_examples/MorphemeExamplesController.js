@@ -40,7 +40,7 @@ class MorphemeExamplesController extends WidgetController {
 
 	invokeFindExampleService(jsonRequestData, _successCbk, _failureCbk) {
 		this.invokeService(jsonRequestData, _successCbk, _failureCbk, 
-				'srv/occurrences');
+				'srv2/morpheme_examples');
 	}
 	
 	
@@ -225,28 +225,6 @@ class MorphemeExamplesController extends WidgetController {
 				this.testSuccessCallback, this.testFailureCallback);
 	}
 
-	invokeTestService(jsonRequestData, _successCbk, _failureCbk) {
-			var controller = this;
-			var fctSuccess = 
-					function(resp) {
-						_successCbk.call(controller, resp);
-					};
-			var fctFailure = 
-					function(resp) {
-						_failureCbk.call(controller, resp);
-					};
-		
-			$.ajax({
-				method: 'POST',
-				url: 'srv/hello',
-				data: jsonRequestData,
-				dataType: 'json',
-				async: true,
-		        success: fctSuccess,
-		        error: fctFailure
-			});
-	}
-	
 	testSuccessCallback(resp) {
 		var element = this.elementForProp("divTestResponse");
 		element.empty();
