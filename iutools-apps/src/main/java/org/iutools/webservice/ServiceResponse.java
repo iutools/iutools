@@ -10,6 +10,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 import ca.nrc.json.JSONUtils;
 
+import javax.servlet.http.HttpServletResponseWrapper;
+
 public class ServiceResponse {
 
 	public String status = null;

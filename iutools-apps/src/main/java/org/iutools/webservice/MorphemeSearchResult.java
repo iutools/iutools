@@ -3,7 +3,7 @@ package org.iutools.webservice;
 import java.util.List;
 
 
-class MorphemeSearchResult {
+public class MorphemeSearchResult {
 	public String  meaning;
 	public List<String> words;
 	public List<Double> wordScores;

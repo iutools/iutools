@@ -17,6 +17,18 @@
 		<listener-class>org.iutools.elasticsearch.ESRepairDaemon</listener-class>
 	</listener>
 
+	<!-- Main entry point for all servives -->
+	<servlet>
+		<servlet-name>EndpointDispatcher</servlet-name>
+		<servlet-class>
+			org.iutools.webservice.EndpointDispatcher
+		</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>EndpointDispatcher</servlet-name>
+		<url-pattern>/srv2/*</url-pattern>
+	</servlet-mapping>
+
 	<!-- ExpandQuery endpoint -->
 	<servlet>
 		<servlet-name>ExpandQueryEndpoint</servlet-name>
