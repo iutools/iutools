@@ -29,8 +29,8 @@ public class AssertServletResponse extends Asserter<HttpServletResponse> {
 		this.responseClass = _responseClass;
 	}
 
-	public HttpServletResponse servletResponse() {
-		return (HttpServletResponse) gotObject;
+	public MockHttpServletResponse servletResponse() {
+		return (MockHttpServletResponse) gotObject;
 	}
 
 	protected EndpointResult endpointResult() throws Exception {
@@ -53,6 +53,15 @@ public class AssertServletResponse extends Asserter<HttpServletResponse> {
 		AssertString.assertStringContains(
 		baseMessage + "\nException was not as expected",
 			result.errorMessage, expMess);
+		return this;
+	}
+
+	public AssertServletResponse jsonContains(String expSubstring) throws Exception {
+		String gotJson = servletResponse().getOutput();
+		AssertString.assertStringContains(
+			baseMessage+"\nResponse output did not contain the expected substring",
+			gotJson, expSubstring
+		);
 		return this;
 	}
 }

@@ -26,8 +26,6 @@ class SearchController extends WidgetController {
     // Setup handler methods for different HTML elements specified in the config.
     attachHtmlElements() {
         this.setEventHandler("btnSearch", "click", this.onSearch);
-        this.setEventHandler("prevPage", "click", this.onSearchPrev);
-        this.setEventHandler("nextPage", "click", this.onSearchNext);
         this.onReturnKey("txtQuery", this.onSearch);
     }
 
@@ -73,22 +71,6 @@ class SearchController extends WidgetController {
         return hits;
     }
 
-    onSearchPrev() {
-        if (this.currHitsPageNum > 0) {
-            this.currHitsPageNum--;
-        }
-        this.showHitsPage(this.currHitsPageNum);
-    }
-
-    onSearchNext() {
-        var nbPages = Math.ceil(this.totalHits / this.hitsPerPage);
-        if (this.currHitsPageNum < nbPages - 1) {
-            this.currHitsPageNum++;
-        }
-        this.showHitsPage(this.currHitsPageNum);
-    }
-
-
     expandQueryThenSearch() {
         this.currHitsPageNum = 0;
         var isValid = this.validateQueryInput();
@@ -114,6 +96,7 @@ class SearchController extends WidgetController {
     invokeExpandQueryService(jsonRequestData, _successCbk, _failureCbk) {
         var tracer = Debug.getTraceLogger("SearchController.invokeExpandQueryService");
         tracer.trace("invoked with jsonRequestData="+JSON.stringify(jsonRequestData));
+
         var controller = this;
         var fctSuccess =
             function(resp) {
@@ -129,7 +112,7 @@ class SearchController extends WidgetController {
 
         $.ajax({
             method: 'POST',
-            url: 'srv/expandquery',
+            url: 'srv2/search/expandquery',
             data: jsonRequestData,
             dataType: 'json',
             async: true,

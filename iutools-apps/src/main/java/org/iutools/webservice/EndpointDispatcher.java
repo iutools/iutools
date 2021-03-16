@@ -1,6 +1,7 @@
 package org.iutools.webservice;
 
 import org.iutools.webservice.morphexamples.MorphemeExamplesEndpoint;
+import org.iutools.webservice.search.ExpandQuery2Endpoint;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -14,6 +15,8 @@ public class EndpointDispatcher extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 		throws IOException {
 
+		EndPointHelper.setContenTypeAndEncoding(response);
+
 		String jsonResponse = null;
 		String epName = null;
 		try {
@@ -21,8 +24,10 @@ public class EndpointDispatcher extends HttpServlet {
 			Endpoint endPoint = null;
 			if (epName.equals("morpheme_examples")) {
 				endPoint = new MorphemeExamplesEndpoint();
+			} else if (epName.equals("search/expandquery")) {
+				endPoint = new ExpandQuery2Endpoint();
 			} else {
-				throw new ServiceException("Unknown endpoint name: "+epName);
+				throw new ServiceException("No handler for endpoint name: "+epName);
 			}
 			endPoint.doPost(request, response);
 		} catch (Exception exc) {
@@ -36,7 +41,7 @@ public class EndpointDispatcher extends HttpServlet {
 	String endpointName(String requestURI) throws ServiceException {
 		Pattern patt =
 			Pattern.compile(
-				"iutools/srv2/(expandquery|(gist)/(gistword|preparecontent)|morpheme_examples|"+
+				"iutools/srv2/(search/expandquery|gist/(gistword|preparecontent)|morpheme_examples|"+
 				"relatedwords|spell|tokenize)")
 				;
 		Matcher matcher = patt.matcher(requestURI);

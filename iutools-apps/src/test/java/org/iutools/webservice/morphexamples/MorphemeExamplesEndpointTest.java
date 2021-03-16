@@ -4,6 +4,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.webservice.Endpoint;
 import org.iutools.webservice.EndpointResult;
 import org.iutools.webservice.EndpointTest;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
 public class MorphemeExamplesEndpointTest extends EndpointTest {
@@ -11,6 +12,19 @@ public class MorphemeExamplesEndpointTest extends EndpointTest {
 	@Override
 	public Endpoint makeEndpoint() {
 		return new MorphemeExamplesEndpoint();
+	}
+
+	@Override @Test
+	public void test__logEntry() throws Exception {
+		MorphemeExamplesInputs inputs =
+			new MorphemeExamplesInputs("siuq", null, null);
+		JSONObject expEntry = new JSONObject()
+			.put("wordPattern", "siuq")
+			.put("corpusName", JSONObject.NULL)
+			.put("nbExamples", JSONObject.NULL);
+		;
+		assertLogEntryEquals(inputs, expEntry);
+		;
 	}
 
 	/***********************

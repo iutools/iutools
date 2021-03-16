@@ -50,5 +50,7 @@ public class ExpandQuery2Result extends EndpointResult {
 		} catch (TransCoderException e) {
 			throw new ServiceException(e);
 		}
+
+		return;
 	}
 }

@@ -4,6 +4,7 @@ import ca.nrc.testing.AssertString;
 import ca.nrc.ui.web.testing.MockHttpServletRequest;
 import ca.nrc.ui.web.testing.MockHttpServletResponse;
 import org.iutools.webservice.morphexamples.MorphemeExamplesResult;
+import org.iutools.webservice.search.ExpandQuery2Result;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -56,9 +57,48 @@ public class EndpointDispatcherTest {
 	}
 
 	@Test
+	public void test__doPost__OutputContainsSomeSyllabicChars() throws Exception {
+		JSONObject json = new JSONObject()
+			.put("origQuery", "inuksuk");
+		String uri = "iutools/srv2/search/expandquery";
+		MockHttpServletResponse response  = doPost(uri, json);
+
+		new AssertServletResponse(response, ExpandQuery2Result.class)
+			.jsonContains("(ᐃᓄᒃᓱᒃ OR ᐃᓄᔅᓱᒻᒥᒃ OR ᐃᓄᒃᓱᙳᐊᑦ OR ᐃᓄᒃᓱᐃ OR ᐃᓄᒃᓲᑉ OR ᐃᓄᒃᓱᒻᒥ)")
+		;
+		return;
+	}
+
+	@Test
+	public void test__doPost__expandquery__HappyPath() throws Exception {
+		JSONObject json = new JSONObject()
+			.put("origQuery", "inuksuk");
+		String uri = "iutools/srv2/search/expandquery";
+		MockHttpServletResponse response  = doPost(uri, json);
+
+		new AssertServletResponse(response, ExpandQuery2Result.class)
+			.reportsNoException()
+			;
+		return;
+	}
+
+	@Test
+	public void test__doPost__morpheme_examples__HappyPath() throws Exception {
+		JSONObject json = new JSONObject()
+			.put("wordPattern", "siuq");
+		String uri = "iutools/srv2/morpheme_examples";
+		MockHttpServletResponse response  = doPost(uri, json);
+
+		new AssertServletResponse(response, MorphemeExamplesResult.class)
+			.reportsNoException()
+			;
+		return;
+	}
+
+	@Test
 	public void test__endpointName__HappyPaht() throws Exception {
 		for (String endpoint: new String[] {
-			"expandquery", "gist/gistword", "gist/gistword",
+			"search/expandquery", "gist/gistword", "gist/gistword",
 			"gist/preparecontent", "morpheme_examples", "relatedwords", "spell",
 			"tokenize"}) {
 			String uri = "iutools/srv2/"+endpoint;

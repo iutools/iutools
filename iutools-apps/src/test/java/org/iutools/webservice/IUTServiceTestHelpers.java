@@ -1,34 +1,26 @@
 package org.iutools.webservice;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.URL;
-import java.util.*;
 
 import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.apache.log4j.Logger;
-import org.iutools.morph.Gist;
-import org.iutools.utilities.Alignment;
 import ca.nrc.web.Http;
-import ca.nrc.testing.AssertObject;
 import ca.nrc.ui.web.testing.MockHttpServletRequest;
 import ca.nrc.ui.web.testing.MockHttpServletResponse;
 import org.iutools.webservice.gist.GistPrepareContentEndpoint;
 import org.iutools.webservice.gist.GistPrepareContentResponse;
 import org.iutools.webservice.gist.GistWordEndpoint;
 import org.iutools.webservice.gist.GistWordResponse;
-import org.iutools.webservice.log.LogUITaskEndpoint;
+import org.iutools.webservice.log.LogEndpoint;
 import org.iutools.webservice.relatedwords.RelatedWordsEndpoint;
 import org.iutools.webservice.relatedwords.RelatedWordsResponse;
 import org.iutools.webservice.search.ExpandQueryEndpoint;
 import org.iutools.webservice.search.ExpandQueryResponse;
 import org.iutools.webservice.tokenize.TokenizeEndpoint;
 import org.iutools.webservice.tokenize.TokenizeResponse;
-
-import org.junit.*;
 
 public class IUTServiceTestHelpers {
 	public static final long SHORT_WAIT = 2*1000;
@@ -67,7 +59,7 @@ public class IUTServiceTestHelpers {
 		} else if (eptName == EndpointNames.GIST_PREPARE_CONTENT) {
 			new GistPrepareContentEndpoint().doPost(request, response);
 		} else if (eptName == EndpointNames.LOG) {
-			new LogUITaskEndpoint().doPost(request, response);
+			new LogEndpoint().doPost(request, response);
 		} else if (eptName == EndpointNames.RELATED_WORDS) {
 			new RelatedWordsEndpoint().doPost(request, response);
 		} else if (eptName == EndpointNames.SPELL) {

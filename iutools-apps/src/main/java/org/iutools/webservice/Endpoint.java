@@ -1,9 +1,12 @@
 package org.iutools.webservice;
 
 import ca.nrc.json.PrettyPrinter;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.json.JSONObject;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,16 +24,40 @@ public abstract class Endpoint
 	public abstract EndpointResult execute(I inputs)
 		throws ServiceException;
 
+	public JSONObject logEntry(I inputs) throws ServiceException {
+		String json = null;
+		try {
+			json = mapper.writeValueAsString(inputs);
+		} catch (JsonProcessingException e) {
+			throw new ServiceException(e);
+		}
+		JSONObject entry = new JSONObject(json);
+		entry.remove("taskID");
+		return entry;
+	}
+
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 		throws ServiceException {
 
+		EndPointHelper.log4jReload();
+
 		I inputs = requestInputs(request);
+		logRequest(request, inputs);
 		EndpointResult epResponse = execute(inputs);
 		try {
 			writeJsonResponse(epResponse, response);
 		} catch (IOException e) {
 			throw new ServiceException(e);
 		}
+	}
+
+	private void logRequest(HttpServletRequest request, I inputs) throws ServiceException {
+		JSONObject logEntry = logEntry(inputs);
+		logEntry.put("uri", request.getRequestURI());
+		logEntry.put("taskID", inputs.taskID);
+		String entryJson = logEntry.toString();
+		logger().info(entryJson);
+		return;
 	}
 
 	private void writeJsonResponse(
@@ -65,5 +92,11 @@ public abstract class Endpoint
 		tLogger.trace("returning inputs="+ PrettyPrinter.print(inputs));
 
 		return inputs;
+	}
+
+	public static Logger logger() {
+		Logger logger = Logger.getLogger("org.iutools.webservice.log");
+		logger.setLevel(Level.INFO);
+		return logger;
 	}
 }

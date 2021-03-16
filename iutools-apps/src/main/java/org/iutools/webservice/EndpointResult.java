@@ -2,6 +2,7 @@ package org.iutools.webservice;
 
 public class EndpointResult {
 
+	public String taskID = null;
 	public String status = null;
 	public String errorMessage = null;
 	public String stackTrace = null;

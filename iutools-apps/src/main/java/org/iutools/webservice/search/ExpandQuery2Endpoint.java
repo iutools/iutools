@@ -6,6 +6,8 @@ import org.iutools.morphrelatives.MorphologicalRelative;
 import org.iutools.webservice.Endpoint;
 import org.iutools.webservice.EndpointResult;
 import org.iutools.webservice.ServiceException;
+import org.iutools.webservice.morphexamples.MorphemeExamplesInputs;
+import org.json.JSONObject;
 
 import javax.servlet.http.HttpServletRequest;
 

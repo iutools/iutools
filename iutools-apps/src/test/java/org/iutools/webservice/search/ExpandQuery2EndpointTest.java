@@ -1,10 +1,9 @@
 package org.iutools.webservice.search;
 
-import ca.nrc.ui.web.testing.MockHttpServletResponse;
 import org.iutools.webservice.Endpoint;
 import org.iutools.webservice.EndpointResult;
 import org.iutools.webservice.EndpointTest;
-import org.iutools.webservice.morphexamples.MorphemeExamplesInputs;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
 public class ExpandQuery2EndpointTest extends EndpointTest {
@@ -13,7 +12,15 @@ public class ExpandQuery2EndpointTest extends EndpointTest {
 		return new ExpandQuery2Endpoint();
 	}
 
-		/***********************
+	@Override @Test
+	public void test__logEntry() throws Exception {
+		ExpandQuery2Inputs inputs = new ExpandQuery2Inputs("inuksuk");
+		assertLogEntryEquals(
+			inputs,
+			new JSONObject().put("origQuery", "inuksuk"));
+	}
+
+	/***********************
 	 * VERIFICATION TESTS
 	 ***********************/
 
