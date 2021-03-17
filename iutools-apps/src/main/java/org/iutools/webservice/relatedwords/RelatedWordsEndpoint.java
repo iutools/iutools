@@ -12,7 +12,6 @@ import org.iutools.morphrelatives.MorphRelativesFinderException;
 import org.iutools.morphrelatives.MorphologicalRelative;
 import org.iutools.webservice.EndPointHelper;
 import org.iutools.webservice.ServiceResponse;
-import org.iutools.webservice.search.ExpandQueryResponse;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

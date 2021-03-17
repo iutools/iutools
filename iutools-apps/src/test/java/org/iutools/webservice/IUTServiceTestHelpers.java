@@ -17,8 +17,6 @@ import org.iutools.webservice.gist.GistWordResponse;
 import org.iutools.webservice.logaction.LogActionEndpoint;
 import org.iutools.webservice.relatedwords.RelatedWordsEndpoint;
 import org.iutools.webservice.relatedwords.RelatedWordsResponse;
-import org.iutools.webservice.search.ExpandQueryEndpoint;
-import org.iutools.webservice.search.ExpandQueryResponse;
 import org.iutools.webservice.tokenize.TokenizeEndpoint;
 import org.iutools.webservice.tokenize.TokenizeResponse;
 
@@ -28,7 +26,7 @@ public class IUTServiceTestHelpers {
 	public static final long LONG_WAIT = 2*MEDIUM_WAIT;
 
 	public enum EndpointNames {
-		GIST_PREPARE_CONTENT, EXPAND_QUERY, GIST_WORD, LOG, MORPHEME,
+		GIST_PREPARE_CONTENT, GIST_WORD, LOG, MORPHEME,
 		RELATED_WORDS, TOKENIZE, SPELL};
 
 	public static MockHttpServletResponse postEndpointDirectly(EndpointNames eptName, Object inputs) throws Exception {
@@ -54,8 +52,6 @@ public class IUTServiceTestHelpers {
 		
 		if (eptName == EndpointNames.GIST_WORD) {
 			new GistWordEndpoint().doPost(request, response);
-		} else if (eptName == EndpointNames.EXPAND_QUERY) {
-			new ExpandQueryEndpoint().doPost(request, response);
 		} else if (eptName == EndpointNames.GIST_PREPARE_CONTENT) {
 			new GistPrepareContentEndpoint().doPost(request, response);
 		} else if (eptName == EndpointNames.LOG) {
@@ -108,14 +104,6 @@ public class IUTServiceTestHelpers {
 		String responseStr = servletResp.getOutputStream().toString();
 		RelatedWordsResponse response =
 			new ObjectMapper().readValue(responseStr, RelatedWordsResponse.class);
-		return response;
-	}
-
-	public static ExpandQueryResponse toExpandQueryResponse(
-		MockHttpServletResponse servletResp) throws Exception {
-		String responseStr = servletResp.getOutputStream().toString();
-		ExpandQueryResponse response =
-			new ObjectMapper().readValue(responseStr, ExpandQueryResponse.class);
 		return response;
 	}
 
