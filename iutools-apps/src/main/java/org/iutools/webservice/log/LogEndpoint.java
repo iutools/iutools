@@ -30,7 +30,12 @@ public class LogEndpoint extends Endpoint {
 
 	@Override
 	public JSONObject logEntry(ServiceInputs inputs) {
-		JSONObject entry = new JSONObject();
+		LogInputs logInputs = (LogInputs)inputs;
+		JSONObject entry = new JSONObject()
+			.put("action", logInputs.action)
+			.put("taskID", logInputs.taskID)
+			.put("taskData", logInputs.taskData)
+		;
 		return entry;
 	}
 

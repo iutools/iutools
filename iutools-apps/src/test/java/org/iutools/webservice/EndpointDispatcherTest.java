@@ -3,6 +3,7 @@ package org.iutools.webservice;
 import ca.nrc.testing.AssertString;
 import ca.nrc.ui.web.testing.MockHttpServletRequest;
 import ca.nrc.ui.web.testing.MockHttpServletResponse;
+import org.iutools.webservice.log.LogInputs;
 import org.iutools.webservice.morphexamples.MorphemeExamplesResult;
 import org.iutools.webservice.search.ExpandQuery2Result;
 import org.json.JSONObject;
@@ -74,6 +75,24 @@ public class EndpointDispatcherTest {
 		JSONObject json = new JSONObject()
 			.put("origQuery", "inuksuk");
 		String uri = "iutools/srv2/search/expandquery";
+		MockHttpServletResponse response  = doPost(uri, json);
+
+		new AssertServletResponse(response, ExpandQuery2Result.class)
+			.reportsNoException()
+			;
+		return;
+	}
+
+	@Test
+	public void test__doPost__log__HappyPath() throws Exception {
+
+		JSONObject json = new JSONObject()
+			.put("action", LogInputs.Action.SEARCH_WEB)
+			.put("taskID", JSONObject.NULL)
+			.put("taskData", new JSONObject()
+				.put("origQuery", "inuksuk")
+			);
+		String uri = "iutools/srv2/log";
 		MockHttpServletResponse response  = doPost(uri, json);
 
 		new AssertServletResponse(response, ExpandQuery2Result.class)

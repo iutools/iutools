@@ -42,6 +42,8 @@ public abstract class Endpoint
 		EndPointHelper.log4jReload();
 
 		I inputs = requestInputs(request);
+		ensureTaskIDIsDefined(inputs);
+
 		logRequest(request, inputs);
 		EndpointResult epResponse = execute(inputs);
 		try {
@@ -49,6 +51,9 @@ public abstract class Endpoint
 		} catch (IOException e) {
 			throw new ServiceException(e);
 		}
+	}
+
+	private void ensureTaskIDIsDefined(I inputs) {
 	}
 
 	private void logRequest(HttpServletRequest request, I inputs) throws ServiceException {

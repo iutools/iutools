@@ -1,5 +1,6 @@
 package org.iutools.webservice;
 
+import org.iutools.webservice.log.LogEndpoint;
 import org.iutools.webservice.morphexamples.MorphemeExamplesEndpoint;
 import org.iutools.webservice.search.ExpandQuery2Endpoint;
 
@@ -22,7 +23,9 @@ public class EndpointDispatcher extends HttpServlet {
 		try {
 			epName = endpointName(request.getRequestURI());
 			Endpoint endPoint = null;
-			if (epName.equals("morpheme_examples")) {
+			if (epName.equals("log")) {
+				endPoint = new LogEndpoint();
+			} else if (epName.equals("morpheme_examples")) {
 				endPoint = new MorphemeExamplesEndpoint();
 			} else if (epName.equals("search/expandquery")) {
 				endPoint = new ExpandQuery2Endpoint();
@@ -41,8 +44,8 @@ public class EndpointDispatcher extends HttpServlet {
 	String endpointName(String requestURI) throws ServiceException {
 		Pattern patt =
 			Pattern.compile(
-				"iutools/srv2/(search/expandquery|gist/(gistword|preparecontent)|morpheme_examples|"+
-				"relatedwords|spell|tokenize)")
+				"iutools/srv2/(log|gist/(gistword|preparecontent)|morpheme_examples|"+
+				"relatedwords|search/expandquery|spell|tokenize)")
 				;
 		Matcher matcher = patt.matcher(requestURI);
 		String epName = null;

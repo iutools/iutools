@@ -29,7 +29,6 @@ public class InvokeAllEndpointsThroughServerTest {
 		{
 			callsToMake.put("spell", new SpellInputs("inukttttut"));
 			callsToMake.put("tokenize", new GistPrepareContentInputs("nunavut"));
-//			callsToMake.put("occurrences", new OccurenceSearchInputs("nunavut", null, "20"));
 			callsToMake.put("gist/preparecontent", new GistPrepareContentInputs("nunavut"));
 			callsToMake.put("gist/gistword", new GistWordInputs("nunavut"));
 		}
