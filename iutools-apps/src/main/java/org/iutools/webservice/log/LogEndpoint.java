@@ -5,7 +5,6 @@ import org.iutools.webservice.*;
 import org.json.JSONObject;
 
 import javax.servlet.http.HttpServletRequest;
-import java.time.Instant;
 
 public class LogEndpoint extends Endpoint {
 
@@ -21,10 +20,7 @@ public class LogEndpoint extends Endpoint {
 
 		LogInputs logInputs = (LogInputs)inputs;
 		LogResult result = new LogResult();
-		result.taskID = logInputs.taskID;
-		if (result.taskID == null) {
-			result.taskID = generateTaskID();
-		}
+
 		return result;
 	}
 
@@ -37,10 +33,5 @@ public class LogEndpoint extends Endpoint {
 			.put("taskData", logInputs.taskData)
 		;
 		return entry;
-	}
-
-	private String generateTaskID() {
-		String id = Instant.now().toString();
-		return id;
 	}
 }

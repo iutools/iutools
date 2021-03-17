@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.Instant;
 
 public abstract class Endpoint
 	<I extends ServiceInputs, R extends EndpointResult>  {
@@ -46,6 +47,7 @@ public abstract class Endpoint
 
 		logRequest(request, inputs);
 		EndpointResult epResponse = execute(inputs);
+		epResponse.taskID = inputs.taskID;
 		try {
 			writeJsonResponse(epResponse, response);
 		} catch (IOException e) {
@@ -54,7 +56,16 @@ public abstract class Endpoint
 	}
 
 	private void ensureTaskIDIsDefined(I inputs) {
+		if (inputs.taskID == null) {
+			inputs.taskID = generateTaskID();
+		}
 	}
+
+	private String generateTaskID() {
+		String id = Instant.now().toString();
+		return id;
+	}
+
 
 	private void logRequest(HttpServletRequest request, I inputs) throws ServiceException {
 		JSONObject logEntry = logEntry(inputs);

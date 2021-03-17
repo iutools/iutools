@@ -15,18 +15,37 @@ public class AssertServletResponse extends Asserter<HttpServletResponse> {
 
 	private ObjectMapper mapper = new ObjectMapper();
 
-	public AssertServletResponse(HttpServletResponse _gotObject) {
+	public AssertServletResponse(HttpServletResponse _gotObject) throws Exception {
 		super(_gotObject);
+		init_AssertServletResponse((Class)null);
 	}
 
-	public AssertServletResponse(HttpServletResponse _gotObject, String mess) {
+	public AssertServletResponse(HttpServletResponse _gotObject, String mess) throws Exception {
 		super(_gotObject, mess);
+		init_AssertServletResponse((Class)null);
 	}
 
 	public AssertServletResponse(MockHttpServletResponse _gotResponse,
-		Class<? extends EndpointResult> _responseClass) {
+		Class<? extends EndpointResult> _responseClass) throws Exception {
 		super(_gotResponse);
+		init_AssertServletResponse(_responseClass);
+	}
+
+	private void init_AssertServletResponse(
+		Class<? extends EndpointResult> _responseClass) throws Exception {
 		this.responseClass = _responseClass;
+		assertSanityCheck();
+	}
+
+	private void assertSanityCheck() throws Exception {
+		EndpointResult result = endpointResult();
+		if (result.errorMessage == null) {
+			// Note: If an error message is reported, then it may be that we
+			// stopped execution before we were done setting fields of the
+			// EnpointResult. So don't do a sanity check on the result in that case.
+			Assertions.assertNotNull(result.taskID,
+			baseMessage + "\nTask ID of response was not set");
+		}
 	}
 
 	public MockHttpServletResponse servletResponse() {
@@ -44,6 +63,14 @@ public class AssertServletResponse extends Asserter<HttpServletResponse> {
 		Assertions.assertNull(result.errorMessage,
 			baseMessage+"\nUnexpected exception: "+result.errorMessage);
 		return this;
+	}
+
+	public void taskIDequals(String expID) throws Exception {
+		String gotID = endpointResult().taskID;
+		AssertString.assertStringEquals(
+			baseMessage+"\nTask ID was not as expected",
+			expID, gotID
+		);
 	}
 
 	public AssertServletResponse reportsException(String expMess)

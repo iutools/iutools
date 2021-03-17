@@ -24,7 +24,6 @@ public class MorphemeExamplesEndpointTest extends EndpointTest {
 			.put("nbExamples", JSONObject.NULL);
 		;
 		assertLogEntryEquals(inputs, expEntry);
-		;
 	}
 
 	/***********************

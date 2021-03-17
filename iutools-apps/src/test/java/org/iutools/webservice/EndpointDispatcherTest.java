@@ -30,6 +30,23 @@ public class EndpointDispatcherTest {
 	}
 
 	@Test
+	public void test__doPost__InputAlreadyHasTaskID__ResultUsesSameID() throws Exception {
+		String id = "someid";
+		JSONObject json = new JSONObject()
+			.put("wordPattern", "siuq")
+			.put("taskID", id);
+		String uri = "iutools/srv2/morpheme_examples";
+		MockHttpServletResponse response  = doPost(uri, json);
+
+		new AssertServletResponse(response, MorphemeExamplesResult.class)
+			.reportsNoException()
+			.taskIDequals(id)
+		;
+		return;
+	}
+
+
+	@Test
 	public void test__doPost__UnknownEndpoint__ReportsException() throws Exception {
 		JSONObject json = new JSONObject()
 			.put("wordPattern", "siuq");
