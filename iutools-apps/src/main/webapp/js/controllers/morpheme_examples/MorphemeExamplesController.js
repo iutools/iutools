@@ -2,7 +2,7 @@
  * Controller for the search.html page.
  */
 
-class MorphemeExamplesController extends WidgetController {
+class MorphemeExamplesController extends IUToolsController {
 	
 	constructor(config) {
 		super(config);
@@ -25,6 +25,7 @@ class MorphemeExamplesController extends WidgetController {
 			this.clearResults();
 			this.setGetBusy(true);
 			var requestData = this.getSearchRequestData();
+			this.logOnServer("MORPHEME_EXAMPLES", requestData)
 			this.invokeFindExampleService(requestData, 
 					this.findExamplesSuccessCallback, this.findExamplesFailureCallback);
 		}

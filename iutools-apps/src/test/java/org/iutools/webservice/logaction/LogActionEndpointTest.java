@@ -1,16 +1,15 @@
-package org.iutools.webservice.log;
+package org.iutools.webservice.logaction;
 
 import org.iutools.webservice.Endpoint;
 import org.iutools.webservice.EndpointTest;
 import org.json.JSONObject;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class LogEndpointTest extends EndpointTest  {
+public class LogActionEndpointTest extends EndpointTest  {
 
 	@Override
 	public Endpoint makeEndpoint() {
-		return new LogEndpoint();
+		return new LogActionEndpoint();
 	}
 
 	@Override @Test
@@ -18,13 +17,11 @@ public class LogEndpointTest extends EndpointTest  {
 		JSONObject taskData =
 			new JSONObject()
 				.put("someField", "someValue");
-		LogInputs inputs =
-			new LogInputs(LogInputs.Action.SEARCH_WEB, taskData);
+		LogActionInputs inputs =
+			new LogActionInputs(LogActionInputs.Action.SEARCH_WEB, taskData);
 		JSONObject expEntry = new JSONObject()
 			.put("taskData", taskData)
 		;
 		assertLogEntryEquals(inputs, expEntry);
-		;
-
 	}
 }

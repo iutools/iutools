@@ -2,25 +2,10 @@
  * Controller for the search.html page.
  */
 
-class SearchController extends WidgetController {
+class SearchController extends IUToolsController {
 
     constructor(config) {
         super(config);
-        this.hitsPerPage = 10;
-        this.totalHits = 0;
-        this.currHitsPageNum = 0;
-        var prevPage = this.initialPage();
-        this.query = prevPage.query;
-        this.allHits = [];
-    }
-
-    initialPage(query) {
-        var initialPage = {
-            'query': query,
-            'pageNum': 0,
-            'hasNext': true
-        };
-        return initialPage;
     }
 
     // Setup handler methods for different HTML elements specified in the config.
@@ -34,51 +19,14 @@ class SearchController extends WidgetController {
         this.expandQueryThenSearch();
     }
 
-    showHitsPage(pageNum) {
-        var divResults = this.elementForProp("divResults");
-        divResults.empty();
-
-        var results = this.hitsForPage(pageNum);
-
-        for (var ii = 0; ii < results.length; ii++) {
-            var aHit = results[ii];
-            console.log('aHit.title= '+aHit.title);
-            var hitHtml =
-                "<div id=\"hit"+ii+"\" class=\"hitDiv\">\n" +
-                "  <div id=\"hitTitle\" class=\"hitTitle\">"+
-                "    <a href=\""+aHit.url+"\" target=\"_blank\">"+aHit.title+"</a>"+"</div>\n" +
-                "  <div id=\"hitURL\" class=\"hitURL\">"+
-                "    <a href=\""+aHit.url+"\" target=\"_blank\">"+aHit.url+"</a>"+"</div>\n" +
-                "  <div id=\"hitSnippet\" class=\"hitSnippet\">"+aHit.snippet+"</div>\n" +
-                "<div>"
-            ;
-            var aHitDiv = $.parseHTML(hitHtml);
-            divResults.append(aHitDiv);
-
-            this.generatePagesButtons(this.totalHits);
-        }
-
-    }
-
-    hitsForPage(pageNum) {
-        var startIndex = pageNum * this.hitsPerPage;
-        var endIndex = startIndex + this.hitsPerPage - 1;
-        var hits = this.allHits.slice(startIndex, endIndex+1);
-
-        console.log("** SearchController.hitsForPage: pageNum="+pageNum+", startIndex="+startIndex+", endIndex="+endIndex)
-        console.log("** SearchController.hitsForPage: return #hits="+hits.length);
-
-        return hits;
-    }
-
     expandQueryThenSearch() {
-        this.currHitsPageNum = 0;
         var isValid = this.validateQueryInput();
         if (isValid) {
             var divMessage = this.elementForProp("divMessage"); divMessage.html("retrieveAllHitsFromService---");
             this.setBusy(true);
             this.clearResults();
             var data = this.getSearchRequestData();
+            this.logOnServer("SEARCH_WEB", data);
             this.invokeExpandQueryService(data,
                 this.expandQuerySuccessCallback, this.expandQueryFailureCallback)
         }
@@ -86,11 +34,7 @@ class SearchController extends WidgetController {
 
     clearResults() {
         this.elementForProp('divError').empty();
-        this.elementForProp('divTotalHits').empty();
         this.elementForProp('divResults').empty();
-        this.elementForProp('divPageNumbers').empty();
-        this.elementForProp("prevPage").css("visibility", "hidden");
-        this.elementForProp("nextPage").css("visibility", "hidden");
     }
 
     invokeExpandQueryService(jsonRequestData, _successCbk, _failureCbk) {
@@ -140,10 +84,6 @@ class SearchController extends WidgetController {
             var expandedQuery = resp.expandedQuery;
             this.setQuery(expandedQuery);
             this.launchGoogleSearch(resp.expandedQuerySyll);
-            // this.setTotalHits(resp.totalHits);
-            // this.totalHits = resp.totalHits;
-            // this.allHits = resp.hits;
-            // this.showHitsPage(0);
         }
         this.setBusy(false);
     }
@@ -178,7 +118,6 @@ class SearchController extends WidgetController {
     setBusy(flag) {
         this.busy = flag;
         if (flag) {
-            this.setTotalHits(null);
             this.disableSearchButton();
             this.showSpinningWheel('divMessage', "Searching");
             this.error("");
@@ -211,82 +150,9 @@ class SearchController extends WidgetController {
     error(err) {
         this.elementForProp('divError').html(err);
         this.elementForProp('divError').show();
-        this.setTotalHits(0);
     }
 
     setQuery(query) {
         this.elementForProp("txtQuery").val(query);
-    }
-
-    setTotalHits(totalHits) {
-        var totalHitsText = "";
-        if (totalHits > 0) {
-            totalHitsText = "Found approximately "+totalHits+" hits";
-        } else if (totalHits == 0) {
-            totalHitsText = "No hits found";
-        }
-        this.elementForProp('divTotalHits').text(totalHitsText);
-    }
-
-    showOrHidePrevNextButtons(nbHits) {
-        if (this.currHitsPageNum == 0) {
-            this.elementForProp("prevPage").css("visibility", "hidden");
-        } else {
-            this.elementForProp("prevPage").css("visibility", "visible");
-        }
-        if (this.currHitsPageNum == 9) {
-            this.elementForProp("nextPage").css("visibility", "hidden");
-        } else {
-            this.elementForProp("nextPage").css("visibility", "visible");
-        }
-    }
-
-    generatePagesButtons(nbHits) {
-        var divPageNumbers = this.elementForProp('divPageNumbers');
-        divPageNumbers.empty();
-        var nbPages = Math.ceil(nbHits / this.hitsPerPage);
-        var more = false;
-        if (nbPages > 10) {
-            nbPages = 10;
-            more = true;
-        }
-        for (var ip=0; ip<nbPages; ip++) {
-            var pageLink = '<input class="page-number"' +
-                ' type="button" '+
-                ' name="'+'page-number'+(ip+1)+'" '+
-                ' value="'+(ip)+'"/>';
-            divPageNumbers.append(pageLink);
-            if (ip != nbPages-1)
-                divPageNumbers.append('&nbsp;&nbsp;');
-        }
-        if (more) divPageNumbers.append(" and more...");
-
-        divPageNumbers.css('display','inline');
-        $("#links-to-pages").css("display", "block");
-
-        divPageNumbers.show();
-
-        var thisSearchController = this;
-        var inputsPageNumber = document.querySelectorAll('.page-number');
-        for (var ipn=0; ipn<inputsPageNumber.length; ipn++) {
-            inputsPageNumber[ipn].addEventListener(
-                'click', function(ev) {
-                    var el = ev.target;
-                    var pageNumberOfButton = el.value;
-                    thisSearchController.currHitsPageNum = pageNumberOfButton;
-                    thisSearchController.showHitsPage(pageNumberOfButton);
-                });
-        }
-
-        // Disable/enable the Previous and Next buttons depending on whether
-        // we are on first/middle/last page of hits
-        //
-        this.showOrHidePrevNextButtons(nbHits);
-
-        // Highlight the page button that corresponds to the current page of
-        // hits.
-        //
-        $(".page-number").removeClass('current-page');
-        $(".page-number[value='"+this.currHitsPageNum+"']").addClass('current-page');
     }
 }

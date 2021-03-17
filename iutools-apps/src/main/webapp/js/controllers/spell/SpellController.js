@@ -2,7 +2,7 @@
  * Controller for the spell.html page.
  */
 
-class SpellController extends WidgetController {
+class SpellController extends IUToolsController {
 
 	constructor(config) {
 		super(config);

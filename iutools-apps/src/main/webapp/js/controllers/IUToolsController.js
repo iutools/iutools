@@ -13,21 +13,44 @@ class IUToolsController extends WidgetController {
         this.elementForProp('divError').show();
     }
 
-    logOnServer(action, data) {
-        var logEntry = {
+    logOnServer(action, taskData) {
+        if (typeof taskData === 'string' || taskData instanceof String) {
+            taskData = JSON.parse(taskData);
+        }
+        var data = {
             action: action,
-            taskData: data,
-            taskID: data.taskID
+            taskData: taskData,
+            taskID: taskData.taskID
         }
         this.invokeLogService(data,
-            this.expandQuerySuccessCallback, this.expandQueryFailureCallback)
+            this.logSuccessCallback, this.logFailureCallback)
     }
 
+    logSuccessCallback(resp) {
+		if (resp.errorMessage != null) {
+			this.logFailureCallback(resp);
+		} else {
+		    // Nothing to do if the log service call succeeded
+        }
+	}
+
+    logFailureCallback(resp) {
+		if (! resp.hasOwnProperty("errorMessage")) {
+			// Error condition comes from tomcat itself, not from our servlet
+			resp.errorMessage =
+				"Server generated a "+resp.status+" error:\n\n" +
+				resp.responseText;
+		}
+		this.error(resp.errorMessage);
+	}
+
+
     invokeLogService(data, cbkSuccess, cbkFailure) {
+        var dataJson = JSON.stringify(data);
         $.ajax({
             method: 'POST',
-            url: 'srv2/loh',
-            data: data,
+            url: 'srv2/log_action',
+            data: dataJson,
             dataType: 'json',
             async: false,
             success: cbkSuccess,

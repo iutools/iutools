@@ -1,4 +1,4 @@
-package org.iutools.webservice.log;
+package org.iutools.webservice.logaction;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,23 +12,24 @@ import java.util.Map;
 /**
  * Specifies the details of a UI task to be logged.
  */
-public class LogInputs extends ServiceInputs {
+public class LogActionInputs extends ServiceInputs {
 
-	public static enum Action {SPELL, GIST_TEXT, GIST_WORD, SEARCH_WEB;
+	public static enum Action {SPELL, GIST_TEXT, GIST_WORD, MORPHEME_EXAMPLES,
+		SEARCH_WEB;
 	}
 
 	public Action action = null;
 	public Map<String,Object> taskData = null;
 
-	public LogInputs() throws ServiceException {
+	public LogActionInputs() throws ServiceException {
 		init_LogInputs((Action)null, (JSONObject)null);
 	}
 
-	public LogInputs(Action _action, JSONObject _taskData) throws ServiceException {
+	public LogActionInputs(Action _action, JSONObject _taskData) throws ServiceException {
 		init_LogInputs(_action, _taskData);
 	}
 
-	public LogInputs(Action _action, Map<String,Object> _taskData) throws ServiceException {
+	public LogActionInputs(Action _action, Map<String,Object> _taskData) throws ServiceException {
 		init_LogInputs(_action, _taskData);
 	}
 

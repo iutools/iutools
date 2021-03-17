@@ -2,7 +2,9 @@ package org.iutools.webservice;
 
 import ca.nrc.json.PrettyPrinter;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -13,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.Instant;
+import java.util.Map;
 
 public abstract class Endpoint
 	<I extends ServiceInputs, R extends EndpointResult>  {
@@ -21,6 +24,10 @@ public abstract class Endpoint
 		throws ServiceException;
 
 	ObjectMapper mapper = new ObjectMapper();
+	{
+		mapper.enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY);
+		mapper.enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
+	}
 
 	public abstract EndpointResult execute(I inputs)
 		throws ServiceException;
@@ -68,12 +75,31 @@ public abstract class Endpoint
 
 
 	private void logRequest(HttpServletRequest request, I inputs) throws ServiceException {
-		JSONObject logEntry = logEntry(inputs);
-		logEntry.put("uri", request.getRequestURI());
-		logEntry.put("taskID", inputs.taskID);
-		String entryJson = logEntry.toString();
-		logger().info(entryJson);
+		JSONObject logEntry =
+			logEntry(inputs)
+			// Note: We prefix those fields with _ so that they will come out first
+			// in the JSON serialization of the log entry
+			.put("_uri", request.getRequestURI())
+			.put("_taskID", inputs.taskID)
+			;
+		String json = jsonifyLogEntry(logEntry);
+		logger().info(json);
 		return;
+	}
+
+	private String jsonifyLogEntry(JSONObject logEntry) throws ServiceException {
+		// Jsonify the JSONObject;
+		String json = logEntry.toString();
+
+		// Re-jsonify the result, sorting the field names alphabetically
+		try {
+			Map<String,Object> entryMap = mapper.readValue(json, Map.class);
+			json = mapper.writeValueAsString(entryMap);
+		} catch (JsonProcessingException e) {
+			throw new ServiceException(e);
+		}
+
+		return json;
 	}
 
 	private void writeJsonResponse(
@@ -111,7 +137,7 @@ public abstract class Endpoint
 	}
 
 	public static Logger logger() {
-		Logger logger = Logger.getLogger("org.iutools.webservice.log");
+		Logger logger = Logger.getLogger("org.iutools.webservice.user_action");
 		logger.setLevel(Level.INFO);
 		return logger;
 	}

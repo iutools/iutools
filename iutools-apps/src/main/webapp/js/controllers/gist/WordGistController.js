@@ -2,7 +2,7 @@
  * Controller for a div that displays the Gist of an Inuktut word.
  */
 
-class WordGistController extends WidgetController {
+class WordGistController extends IUToolsController {
 	
 	constructor(config) {
 		super(config);

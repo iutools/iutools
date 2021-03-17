@@ -14,7 +14,7 @@ import org.iutools.webservice.gist.GistPrepareContentEndpoint;
 import org.iutools.webservice.gist.GistPrepareContentResponse;
 import org.iutools.webservice.gist.GistWordEndpoint;
 import org.iutools.webservice.gist.GistWordResponse;
-import org.iutools.webservice.log.LogEndpoint;
+import org.iutools.webservice.logaction.LogActionEndpoint;
 import org.iutools.webservice.relatedwords.RelatedWordsEndpoint;
 import org.iutools.webservice.relatedwords.RelatedWordsResponse;
 import org.iutools.webservice.search.ExpandQueryEndpoint;
@@ -59,7 +59,7 @@ public class IUTServiceTestHelpers {
 		} else if (eptName == EndpointNames.GIST_PREPARE_CONTENT) {
 			new GistPrepareContentEndpoint().doPost(request, response);
 		} else if (eptName == EndpointNames.LOG) {
-			new LogEndpoint().doPost(request, response);
+			new LogActionEndpoint().doPost(request, response);
 		} else if (eptName == EndpointNames.RELATED_WORDS) {
 			new RelatedWordsEndpoint().doPost(request, response);
 		} else if (eptName == EndpointNames.SPELL) {

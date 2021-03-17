@@ -3,12 +3,18 @@ package org.iutools.webservice;
 import ca.nrc.testing.AssertString;
 import ca.nrc.ui.web.testing.MockHttpServletRequest;
 import ca.nrc.ui.web.testing.MockHttpServletResponse;
-import org.iutools.webservice.log.LogInputs;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import org.iutools.webservice.logaction.LogActionInputs;
 import org.iutools.webservice.morphexamples.MorphemeExamplesResult;
 import org.iutools.webservice.search.ExpandQuery2Result;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class EndpointDispatcherTest {
 
@@ -101,15 +107,33 @@ public class EndpointDispatcherTest {
 	}
 
 	@Test
-	public void test__doPost__log__HappyPath() throws Exception {
+	public void test__doPost__log_action__SEARCH_WEB() throws Exception {
 
 		JSONObject json = new JSONObject()
-			.put("action", LogInputs.Action.SEARCH_WEB)
+			.put("action", LogActionInputs.Action.SEARCH_WEB)
 			.put("taskID", JSONObject.NULL)
 			.put("taskData", new JSONObject()
 				.put("origQuery", "inuksuk")
 			);
-		String uri = "iutools/srv2/log";
+		String uri = "iutools/srv2/log_action";
+		MockHttpServletResponse response  = doPost(uri, json);
+
+		new AssertServletResponse(response, ExpandQuery2Result.class)
+			.reportsNoException()
+			;
+		return;
+	}
+
+	@Test
+	public void test__doPost__log_action__MORPHEME_EXAMPLES() throws Exception {
+
+		JSONObject json = new JSONObject()
+			.put("action", LogActionInputs.Action.MORPHEME_EXAMPLES)
+			.put("taskID", JSONObject.NULL)
+			.put("taskData", new JSONObject()
+				.put("wordPattern", "gaq")
+			);
+		String uri = "iutools/srv2/log_action";
 		MockHttpServletResponse response  = doPost(uri, json);
 
 		new AssertServletResponse(response, ExpandQuery2Result.class)
