@@ -4,16 +4,16 @@ import ca.nrc.testing.AssertString;
 import org.iutools.webservice.AssertEndpointResult;
 import org.iutools.webservice.EndpointResult;
 
-public class AssertExpandQuery2Result extends AssertEndpointResult  {
-	public AssertExpandQuery2Result(EndpointResult _gotObject) {
+public class AssertExpandQueryResult extends AssertEndpointResult  {
+	public AssertExpandQueryResult(EndpointResult _gotObject) {
 		super(_gotObject);
 	}
 
-	public AssertExpandQuery2Result(EndpointResult _gotObject, String mess) {
+	public AssertExpandQueryResult(EndpointResult _gotObject, String mess) {
 		super(_gotObject, mess);
 	}
 
-	public AssertExpandQuery2Result expandedQueryIs(String expQuery) throws Exception {
+	public AssertExpandQueryResult expandedQueryIs(String expQuery) throws Exception {
 		AssertString.assertStringEquals(
 			baseMessage+"\nExpanded query not as expected for orig query:'"+result().origQuery+"'",
 			expQuery, result().expandedQuery);
@@ -21,7 +21,7 @@ public class AssertExpandQuery2Result extends AssertEndpointResult  {
 		return this;
 	}
 
-	private ExpandQuery2Result result() {
-		return (ExpandQuery2Result)gotObject;
+	private ExpandQueryResult result() {
+		return (ExpandQueryResult)gotObject;
 	}
 }

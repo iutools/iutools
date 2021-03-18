@@ -25,9 +25,11 @@ class MorphemeExamplesController extends IUToolsController {
 			this.clearResults();
 			this.setGetBusy(true);
 			var requestData = this.getSearchRequestData();
-			this.logOnServer("MORPHEME_EXAMPLES", requestData)
-			this.invokeFindExampleService(requestData, 
+			if (!this.isDuplicateEvent("onFindExamples", requestData)) {
+				this.logOnServer("MORPHEME_EXAMPLES", requestData)
+				this.invokeFindExampleService(requestData,
 					this.findExamplesSuccessCallback, this.findExamplesFailureCallback);
+			}
 		}
 	}
 	

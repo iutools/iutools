@@ -4,6 +4,8 @@ class WidgetController {
 		this.config = _config;
 		this.busy = false;
 		this.isReady = false;
+		this.recentEvents = [];
+		this.recentEventTimes = {};
 		
 		this.attachHtmlElements();
 		{
@@ -67,13 +69,13 @@ class WidgetController {
 		var controller = this;
 		
 		var keypressHandler = 
-				function(event) {
-//					console.log("-- onReturnKey.keypressHandler: event="+JSON.stringify(event));
-					var keycode = (event.keyCode ? event.keyCode : event.which);
-					if(keycode == '13'){
-						method.call(controller);
-					}
-				};		
+			function(event) {
+				// event.preventDefault();
+				var keycode = (event.keyCode ? event.keyCode : event.which);
+				if(keycode == '13'){
+					method.call(controller);
+				}
+			};
 		element.keypress(keypressHandler);
 
 		return;
@@ -129,5 +131,49 @@ class WidgetController {
 	//
 	displayError(errMess) {
 		console.log(errMess);
+	}
+
+	// Sometimes, two "equivalent" events are generated for a single user action
+	// For example, when user types Enter in a text field, it may end up
+	// generating two keypress 13 events. Not sure why.
+	//
+	// To prevent this from happening, invoke isDuplicateEvent().
+	// This method will check if the event is the same as another event that
+	// was recently processed.
+	//
+	isDuplicateEvent(method, data, maxMsecs) {
+		var tracer = Debug.getTraceLogger("WidgetController.isDuplicateEvent");
+		if (!maxMsecs) {
+			maxMsecs = 1000;
+		}
+		var isDup = false;
+		var eventDescr = this.evenDescription(method, data);
+		tracer.trace("eventDescr="+eventDescr+", this.recentEvents="+JSON.stringify(this.recentEvents));
+		var nowMsecs = new Date().getMilliseconds();
+		var ind = this.recentEvents.indexOf(eventDescr);
+		var elapsed = -1;
+		if (ind >= 0) {
+			var lastIssued = this.recentEventTimes[eventDescr];
+			elapsed = nowMsecs - lastIssued;
+			if (elapsed <= maxMsecs) {
+				isDup = true;
+			}
+		}
+		tracer.trace("isDup="+isDup+", ind="+ind+", elapsed="+elapsed+", maxMsecs="+maxMsecs);
+		this.recentEventTimes[eventDescr] = nowMsecs;
+		this.recentEvents.push(eventDescr);
+		if (this.recentEvents.length > 10) {
+			this.recentEvents.pop();
+		}
+
+		return isDup;
+	}
+
+	evenDescription(method, data) {
+		if (typeof data !== 'string' && ! (data instanceof String)) {
+			data = JSON.stringify(data);
+		}
+		var descr = method+"("+data+")";
+		return descr;
 	}
 }

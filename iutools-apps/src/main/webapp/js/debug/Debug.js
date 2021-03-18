@@ -68,11 +68,10 @@ class Debug {
 	}
 
 	static initTraceAppenders() {
+		var messageLayout = new log4javascript.PatternLayout("-- %c: [%d{HH:mm:ss}] %m%n");
 		if (Debug.popUpAppender == null){
 			Debug.popUpAppender = new log4javascript.PopUpAppender();
-			// Debug.popUpAppender = new log4javascript.InPageAppender();
-			var popUpLayout = new log4javascript.PatternLayout("%d{HH:mm:ss} %-5p - %m%n");
-			// Debug.popUpAppender.setLayout(popUpLayout);
+			Debug.popUpAppender.setLayout(messageLayout);
 		}
 	}
 }

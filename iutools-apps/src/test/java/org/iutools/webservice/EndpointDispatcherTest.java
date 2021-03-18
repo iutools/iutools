@@ -3,18 +3,14 @@ package org.iutools.webservice;
 import ca.nrc.testing.AssertString;
 import ca.nrc.ui.web.testing.MockHttpServletRequest;
 import ca.nrc.ui.web.testing.MockHttpServletResponse;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import org.iutools.webservice.gist.GistPrepareContent2Result;
 import org.iutools.webservice.logaction.LogActionInputs;
 import org.iutools.webservice.morphexamples.MorphemeExamplesResult;
-import org.iutools.webservice.search.ExpandQuery2Result;
+import org.iutools.webservice.search.ExpandQueryResult;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class EndpointDispatcherTest {
 
@@ -87,7 +83,7 @@ public class EndpointDispatcherTest {
 		String uri = "iutools/srv2/search/expandquery";
 		MockHttpServletResponse response  = doPost(uri, json);
 
-		new AssertServletResponse(response, ExpandQuery2Result.class)
+		new AssertServletResponse(response, ExpandQueryResult.class)
 			.jsonContains("(ᐃᓄᒃᓱᒃ OR ᐃᓄᔅᓱᒻᒥᒃ OR ᐃᓄᒃᓱᙳᐊᑦ OR ᐃᓄᒃᓱᐃ OR ᐃᓄᒃᓲᑉ OR ᐃᓄᒃᓱᒻᒥ)")
 		;
 		return;
@@ -100,7 +96,7 @@ public class EndpointDispatcherTest {
 		String uri = "iutools/srv2/search/expandquery";
 		MockHttpServletResponse response  = doPost(uri, json);
 
-		new AssertServletResponse(response, ExpandQuery2Result.class)
+		new AssertServletResponse(response, ExpandQueryResult.class)
 			.reportsNoException()
 			;
 		return;
@@ -118,7 +114,7 @@ public class EndpointDispatcherTest {
 		String uri = "iutools/srv2/log_action";
 		MockHttpServletResponse response  = doPost(uri, json);
 
-		new AssertServletResponse(response, ExpandQuery2Result.class)
+		new AssertServletResponse(response, ExpandQueryResult.class)
 			.reportsNoException()
 			;
 		return;
@@ -136,7 +132,7 @@ public class EndpointDispatcherTest {
 		String uri = "iutools/srv2/log_action";
 		MockHttpServletResponse response  = doPost(uri, json);
 
-		new AssertServletResponse(response, ExpandQuery2Result.class)
+		new AssertServletResponse(response, ExpandQueryResult.class)
 			.reportsNoException()
 			;
 		return;
@@ -155,12 +151,27 @@ public class EndpointDispatcherTest {
 		return;
 	}
 
+	@Test @Disabled
+	public void test__doPost__preparecontent__HappyPath() throws Exception {
+		JSONObject json = new JSONObject()
+			.put("textOrURL", "inuksuk");
+		String uri = "iutools/srv2/gist/preparecontent";
+		MockHttpServletResponse response  = doPost(uri, json);
+
+		new AssertServletResponse(response, GistPrepareContent2Result.class)
+			.reportsNoException()
+			;
+		return;
+	}
+
 	@Test
 	public void test__endpointName__HappyPaht() throws Exception {
 		for (String endpoint: new String[] {
-			"search/expandquery", "gist/gistword", "gist/gistword",
-			"gist/preparecontent", "morpheme_examples", "relatedwords", "spell",
-			"tokenize"}) {
+			"search/expandquery",
+//			"gist/gistword",
+			"gist/preparecontent", "morpheme_examples",
+//			"relatedwords", "spell", "tokenize"
+			}) {
 			String uri = "iutools/srv2/"+endpoint;
 			String gotName = new EndpointDispatcher().endpointName(uri);
 			AssertString.assertStringEquals(

@@ -2,13 +2,13 @@ package org.iutools.webservice.search;
 
 import org.iutools.webservice.ServiceInputs;
 
-public class ExpandQuery2Inputs extends ServiceInputs {
+public class ExpandQueryInputs extends ServiceInputs {
 
 	public String origQuery = null;
 
-	public ExpandQuery2Inputs() {}
+	public ExpandQueryInputs() {}
 
-	public ExpandQuery2Inputs(String _query) {
+	public ExpandQueryInputs(String _query) {
 		this.origQuery = _query;
 	}
 }

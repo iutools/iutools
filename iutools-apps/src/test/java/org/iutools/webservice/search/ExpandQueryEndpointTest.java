@@ -6,15 +6,15 @@ import org.iutools.webservice.EndpointTest;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
-public class ExpandQuery2EndpointTest extends EndpointTest {
+public class ExpandQueryEndpointTest extends EndpointTest {
 	@Override
 	public Endpoint makeEndpoint() {
-		return new ExpandQuery2Endpoint();
+		return new ExpandQueryEndpoint();
 	}
 
 	@Override @Test
 	public void test__logEntry() throws Exception {
-		ExpandQuery2Inputs inputs = new ExpandQuery2Inputs("inuksuk");
+		ExpandQueryInputs inputs = new ExpandQueryInputs("inuksuk");
 		assertLogEntryEquals(
 			inputs,
 			new JSONObject().put("origQuery", "inuksuk"));
@@ -29,7 +29,7 @@ public class ExpandQuery2EndpointTest extends EndpointTest {
 
 		EndpointResult epResult = execute("inuksuk");
 		String expQuery = "(inuksuk OR inussummik OR inuksunnguat OR inuksui OR inuksuup OR inuksummi)";
-		new AssertExpandQuery2Result(epResult)
+		new AssertExpandQueryResult(epResult)
 			.expandedQueryIs(expQuery);
 	}
 
@@ -41,7 +41,7 @@ public class ExpandQuery2EndpointTest extends EndpointTest {
 
 		// If the original query is already expanded, don't re-expand it.
 		String expQuery = origQuery;
-		new AssertExpandQuery2Result(epResult)
+		new AssertExpandQueryResult(epResult)
 			.expandedQueryIs(expQuery);
 	}
 
@@ -50,7 +50,7 @@ public class ExpandQuery2EndpointTest extends EndpointTest {
 
 		EndpointResult epResult = execute("ᐃᓄᒃᓱᒃ");
 		String expQuery = "(ᐃᓄᒃᓱᒃ OR ᐃᓄᔅᓱᒻᒥᒃ OR ᐃᓄᒃᓱᙳᐊᑦ OR ᐃᓄᒃᓱᐃ OR ᐃᓄᒃᓲᑉ)";
-		new AssertExpandQuery2Result(epResult)
+		new AssertExpandQueryResult(epResult)
 			.expandedQueryIs(expQuery);
 	}
 
@@ -63,7 +63,7 @@ public class ExpandQuery2EndpointTest extends EndpointTest {
 
 		// If the original query is already expanded, don't re-expand it.
 		String expQuery = origQuery;
-		new AssertExpandQuery2Result(epResult)
+		new AssertExpandQueryResult(epResult)
 			.expandedQueryIs(expQuery);
 	}
 
@@ -72,7 +72,7 @@ public class ExpandQuery2EndpointTest extends EndpointTest {
 	///////////////////////////////////
 
 	protected EndpointResult execute(String query) throws Exception {
-		ExpandQuery2Inputs expandInputs = new ExpandQuery2Inputs(query);
+		ExpandQueryInputs expandInputs = new ExpandQueryInputs(query);
 		EndpointResult result = endPoint.execute(expandInputs);
 		return result;
 	}

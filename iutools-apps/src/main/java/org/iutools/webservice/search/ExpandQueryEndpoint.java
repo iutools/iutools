@@ -6,20 +6,18 @@ import org.iutools.morphrelatives.MorphologicalRelative;
 import org.iutools.webservice.Endpoint;
 import org.iutools.webservice.EndpointResult;
 import org.iutools.webservice.ServiceException;
-import org.iutools.webservice.morphexamples.MorphemeExamplesInputs;
-import org.json.JSONObject;
 
 import javax.servlet.http.HttpServletRequest;
 
-public class ExpandQuery2Endpoint
-	extends Endpoint<ExpandQuery2Inputs, ExpandQuery2Result> {
+public class ExpandQueryEndpoint
+	extends Endpoint<ExpandQueryInputs, ExpandQueryResult> {
 	@Override
-	protected ExpandQuery2Inputs requestInputs(HttpServletRequest request) throws ServiceException {
-		return jsonInputs(request, ExpandQuery2Inputs.class);
+	protected ExpandQueryInputs requestInputs(HttpServletRequest request) throws ServiceException {
+		return jsonInputs(request, ExpandQueryInputs.class);
 	}
 
 	@Override
-	public EndpointResult execute(ExpandQuery2Inputs inputs) throws ServiceException {
+	public EndpointResult execute(ExpandQueryInputs inputs) throws ServiceException {
 		MorphRelativesFinder relsFinder = null;
 		try {
 			relsFinder = new MorphRelativesFinder();
@@ -38,8 +36,8 @@ public class ExpandQuery2Endpoint
 			}
 		}
 
-		ExpandQuery2Result response =
-			new ExpandQuery2Result(inputs.origQuery, relatedWords);
+		ExpandQueryResult response =
+			new ExpandQueryResult(inputs.origQuery, relatedWords);
 
 		return response;
 	}

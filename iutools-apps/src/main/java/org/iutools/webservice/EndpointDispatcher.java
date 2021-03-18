@@ -1,17 +1,29 @@
 package org.iutools.webservice;
 
+import org.iutools.webservice.gist.GistPrepareContent2Endpoint;
 import org.iutools.webservice.logaction.LogActionEndpoint;
 import org.iutools.webservice.morphexamples.MorphemeExamplesEndpoint;
-import org.iutools.webservice.search.ExpandQuery2Endpoint;
+import org.iutools.webservice.search.ExpandQueryEndpoint;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class EndpointDispatcher extends HttpServlet {
+
+	private static Pattern _endpointURIsPattern = null;
+
+	private Map<String,Endpoint> endpoints = new HashMap<String,Endpoint>();
+	{
+		endpoints.put("log_action", new LogActionEndpoint());
+		endpoints.put("morpheme_examples", new MorphemeExamplesEndpoint());
+		endpoints.put("search/expandquery", new ExpandQueryEndpoint());
+		endpoints.put("gist/preparecontent", new GistPrepareContent2Endpoint());
+	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 		throws IOException {
@@ -22,16 +34,7 @@ public class EndpointDispatcher extends HttpServlet {
 		String epName = null;
 		try {
 			epName = endpointName(request.getRequestURI());
-			Endpoint endPoint = null;
-			if (epName.equals("log_action")) {
-				endPoint = new LogActionEndpoint();
-			} else if (epName.equals("morpheme_examples")) {
-				endPoint = new MorphemeExamplesEndpoint();
-			} else if (epName.equals("search/expandquery")) {
-				endPoint = new ExpandQuery2Endpoint();
-			} else {
-				throw new ServiceException("No handler for endpoint name: "+epName);
-			}
+			Endpoint endPoint = endpointWithName(epName);
 			endPoint.doPost(request, response);
 		} catch (Exception exc) {
 			jsonResponse =
@@ -43,12 +46,13 @@ public class EndpointDispatcher extends HttpServlet {
 		return;
 	}
 
+	private synchronized Endpoint endpointWithName(String epName) {
+		return endpoints.get(epName);
+	}
+
 	String endpointName(String requestURI) throws ServiceException {
-		Pattern patt =
-			Pattern.compile(
-				"iutools/srv2/(log_action|gist/(gistword|preparecontent)|morpheme_examples|"+
-				"relatedwords|search/expandquery|spell|tokenize)")
-				;
+
+		Pattern patt = endpointURIsPattern();
 		Matcher matcher = patt.matcher(requestURI);
 		String epName = null;
 		if (matcher.find()) {
@@ -57,5 +61,21 @@ public class EndpointDispatcher extends HttpServlet {
 			throw new ServiceException("No known endpoint for URI "+requestURI);
 		}
 		return epName;
+	}
+
+	private synchronized Pattern endpointURIsPattern() {
+		if (_endpointURIsPattern == null) {
+			List<String> urisList = new ArrayList<String>();
+			urisList.addAll(endpoints.keySet());
+			Collections.sort(urisList);
+
+			String regexp =
+				"iutools/srv2/("+
+				String.join("|", urisList)+
+				")";
+
+			_endpointURIsPattern = Pattern.compile(regexp);
+		}
+		return _endpointURIsPattern;
 	}
 }

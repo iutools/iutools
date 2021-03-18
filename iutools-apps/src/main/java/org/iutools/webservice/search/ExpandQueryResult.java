@@ -10,19 +10,19 @@ import org.iutools.webservice.ServiceException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ExpandQuery2Result extends EndpointResult {
+public class ExpandQueryResult extends EndpointResult {
 
 	public String origQuery = null;
 	public String expandedQuery = null;
 	public String expandedQuerySyll = null;
 
-	public ExpandQuery2Result() {}
+	public ExpandQueryResult() {}
 
-	public ExpandQuery2Result(String _origQuery) throws ServiceException {
+	public ExpandQueryResult(String _origQuery) throws ServiceException {
 		init_ExpandQueryResponse(_origQuery, (MorphologicalRelative[])null);
 	}
 
-	public ExpandQuery2Result(
+	public ExpandQueryResult(
 		String _origQuery, MorphologicalRelative[] _relatedWords) throws ServiceException {
 		init_ExpandQueryResponse(_origQuery, _relatedWords);
 	}
