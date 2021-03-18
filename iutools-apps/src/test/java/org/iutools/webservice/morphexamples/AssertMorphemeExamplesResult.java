@@ -25,7 +25,7 @@ public class AssertMorphemeExamplesResult extends AssertEndpointResult {
 			expScoresMap.put(anExpExample.getLeft(), anExpExample.getRight());
 		}
 		Map<String, MorphemeSearchResult> gotExampleObjects =
-			response().matchingWords;
+			result().matchingWords;
 		HashMap<String,Double> gotScoresMap = new HashMap<String,Double>();
 		for (String morpheme: gotExampleObjects.keySet()) {
 			MorphemeSearchResult morphResult = gotExampleObjects.get(morpheme);
@@ -39,7 +39,7 @@ public class AssertMorphemeExamplesResult extends AssertEndpointResult {
 			expScoresMap, gotScoresMap);
 	}
 
-	private MorphemeExamplesResult response() {
+	private MorphemeExamplesResult result() {
 		return (MorphemeExamplesResult)gotObject;
 	}
 }

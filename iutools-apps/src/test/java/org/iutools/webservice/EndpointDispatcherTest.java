@@ -151,10 +151,10 @@ public class EndpointDispatcherTest {
 		return;
 	}
 
-	@Test @Disabled
+	@Test
 	public void test__doPost__preparecontent__HappyPath() throws Exception {
 		JSONObject json = new JSONObject()
-			.put("textOrURL", "inuksuk");
+			.put("textOrUrl", "inuksuk");
 		String uri = "iutools/srv2/gist/preparecontent";
 		MockHttpServletResponse response  = doPost(uri, json);
 

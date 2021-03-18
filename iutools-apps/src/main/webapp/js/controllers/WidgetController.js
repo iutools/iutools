@@ -142,11 +142,11 @@ class WidgetController {
 	// was recently processed.
 	//
 	isDuplicateEvent(method, data, maxMsecs) {
+		var isDup = false;
 		var tracer = Debug.getTraceLogger("WidgetController.isDuplicateEvent");
 		if (!maxMsecs) {
 			maxMsecs = 1000;
 		}
-		var isDup = false;
 		var eventDescr = this.evenDescription(method, data);
 		tracer.trace("eventDescr="+eventDescr+", this.recentEvents="+JSON.stringify(this.recentEvents));
 		var nowMsecs = new Date().getMilliseconds();
