@@ -10,8 +10,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ca.nrc.web.Http;
 import ca.nrc.ui.web.testing.MockHttpServletRequest;
 import ca.nrc.ui.web.testing.MockHttpServletResponse;
-import org.iutools.webservice.gist.GistPrepareContentEndpoint;
-import org.iutools.webservice.gist.GistPrepareContentResponse;
 import org.iutools.webservice.gist.GistWordEndpoint;
 import org.iutools.webservice.gist.GistWordResponse;
 import org.iutools.webservice.logaction.LogActionEndpoint;
@@ -52,8 +50,6 @@ public class IUTServiceTestHelpers {
 		
 		if (eptName == EndpointNames.GIST_WORD) {
 			new GistWordEndpoint().doPost(request, response);
-		} else if (eptName == EndpointNames.GIST_PREPARE_CONTENT) {
-			new GistPrepareContentEndpoint().doPost(request, response);
 		} else if (eptName == EndpointNames.LOG) {
 			new LogActionEndpoint().doPost(request, response);
 		} else if (eptName == EndpointNames.RELATED_WORDS) {
@@ -73,23 +69,15 @@ public class IUTServiceTestHelpers {
 		
 		return response;
 	}
-	
-	public static GistPrepareContentResponse toGistPrepareContentResponse(
-			MockHttpServletResponse gotResponse) throws IOException {
-		String responseStr = gotResponse.getOutputStream().toString();
-		GistPrepareContentResponse response = 
-				new ObjectMapper().readValue(responseStr, 
-						GistPrepareContentResponse.class);
-		return response;
-	}
-	
+
 	public static GistWordResponse toGistWordResponse(
-			MockHttpServletResponse gotResponse) throws IOException {
+		MockHttpServletResponse gotResponse) throws IOException {
 		String responseStr = gotResponse.getOutputStream().toString();
-		GistWordResponse response = 
-				new ObjectMapper().readValue(responseStr, GistWordResponse.class);
+		GistWordResponse response =
+			new ObjectMapper().readValue(responseStr, GistWordResponse.class);
 		return response;
 	}
+
 
 	public static SpellResponse toSpellResponse(
 			HttpServletResponse servletResp) throws IOException {

@@ -28,7 +28,7 @@ class GistTextController extends IUToolsController {
 		
 		this.clearResults();
 		this.setBusy(true);
-		this.invokeWebService('srv/gist/preparecontent/', json_inputs, 
+		this.invokeWebService('srv2/gist/preparecontent/', json_inputs,
 				this.prepareContentSuccessCallback, 
 				this.prepareContentFailureCallback);
 	}

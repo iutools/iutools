@@ -84,7 +84,9 @@ public class GistPrepareContent2Endpoint
 		}
 	}
 
-	private void addAlignment(Alignment anAlignment, GistPrepareContentResponse response) {
+	private void addAlignment(Alignment anAlignment,
+  		GistPrepareContent2Result result) {
+
 		Logger tLogger = Logger.getLogger("org.iutools.webservice.GistPrepareContentEndpoint.addAlignment");
 
 		IUTokenizer tokenizer = new IUTokenizer();
@@ -97,7 +99,7 @@ public class GistPrepareContent2Endpoint
 				String origToken = iuTokensLst.get(ii).getFirst();
 				iuTokens[ii] = TransCoder.ensureRoman(origToken);
 			}
-			response.iuSentences.add(iuTokens);
+			result.iuSentences.add(iuTokens);
 		}
 
 		{
@@ -108,7 +110,7 @@ public class GistPrepareContent2Endpoint
 			for (int ii=0; ii < enTokens.length; ii++) {
 				enTokens[ii] = enTokensLst.get(ii).getFirst();
 			}
-			response.enSentences.add(enTokens);
+			result.enSentences.add(enTokens);
 		}
 	}
 
