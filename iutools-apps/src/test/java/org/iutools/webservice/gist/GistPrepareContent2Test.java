@@ -16,32 +16,6 @@ public class GistPrepareContent2Test extends EndpointTest {
 	/***********************
 	 * VERIFICATION TESTS
 	 ***********************/
-	
-	@Override @Test
-	public void test__logEntry() throws Exception {
-
-		// Case where input is text
-		{
-			GistPrepareContent2Inputs inputs =
-			new GistPrepareContent2Inputs("inuksuk");
-			assertLogEntryEquals(
-			inputs,
-			new JSONObject()
-			.put("inputType", "text")
-			.put("totalWords", 1));
-		}
-
-		// Case where input is url
-		{
-			GistPrepareContent2Inputs inputs =
-			new GistPrepareContent2Inputs("http://www.somewhere.ca/");
-			assertLogEntryEquals(
-				inputs,
-				new JSONObject()
-					.put("inputType", "url")
-					.put("address", "http://www.somewhere.ca/"));
-		}
-	}
 
 	@Test
 	public void test__GistPrepareContentEndpoint__InputIsContent() throws Exception {

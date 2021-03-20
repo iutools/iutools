@@ -32,18 +32,6 @@ public abstract class Endpoint
 	public abstract EndpointResult execute(I inputs)
 		throws ServiceException;
 
-	public JSONObject logEntry(I inputs) throws ServiceException {
-		String json = null;
-		try {
-			json = mapper.writeValueAsString(inputs);
-		} catch (JsonProcessingException e) {
-			throw new ServiceException(e);
-		}
-		JSONObject entry = new JSONObject(json);
-		entry.remove("taskID");
-		return entry;
-	}
-
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 		throws ServiceException {
 
@@ -75,12 +63,13 @@ public abstract class Endpoint
 
 
 	private void logRequest(HttpServletRequest request, I inputs) throws ServiceException {
-		JSONObject logEntry =
-			logEntry(inputs)
-			// Note: We prefix those fields with _ so that they will come out first
-			// in the JSON serialization of the log entry
+
+		Map<String,Object> inputSummary = inputs.summarizeForLogging();
+
+		JSONObject logEntry = new JSONObject()
 			.put("_uri", request.getRequestURI())
 			.put("_taskID", inputs.taskID)
+			.put("taskData", inputSummary)
 			;
 		String json = jsonifyLogEntry(logEntry);
 		logger().info(json);

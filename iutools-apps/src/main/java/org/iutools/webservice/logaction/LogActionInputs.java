@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.iutools.webservice.ServiceException;
 import org.iutools.webservice.ServiceInputs;
+import org.iutools.webservice.gist.GistPrepareContent2Inputs;
 import org.json.JSONObject;
 
 import java.util.Map;
@@ -41,7 +42,7 @@ public class LogActionInputs extends ServiceInputs {
 			try {
 				Map<String,Object> taskDataMap =
 					new ObjectMapper().readValue(json, Map.class);
-				init_LogInputs(action, taskDataMap);
+				init_LogInputs(_action, taskDataMap);
 			} catch (JsonProcessingException e) {
 				throw new ServiceException(e);
 			}
@@ -57,5 +58,25 @@ public class LogActionInputs extends ServiceInputs {
 		this.taskData = _taskData;
 
 		return;
+	}
+
+	@Override
+	public Map<String, Object> summarizeForLogging() throws ServiceException {
+		Map<String,Object> data = taskData;
+
+		ServiceInputs inputsToSummarize = null;
+		if (action == Action.GIST_TEXT) {
+			inputsToSummarize =
+				GistPrepareContent2Inputs.instantiateFromMap(
+					taskData,
+					GistPrepareContent2Inputs.class);
+		}
+		if (inputsToSummarize != null) {
+			data = inputsToSummarize.summarizeForLogging();
+		}
+		// Note: We prefix action with an underscore so it will come first
+		// in the list of fields when we JSONifiy the map
+		data.put("_action", action.name());
+		return data;
 	}
 }

@@ -125,20 +125,4 @@ public class GistPrepareContent2Endpoint
 		writer.write(json);
 		writer.close();
 	}
-
-	@Override
-	public JSONObject logEntry(GistPrepareContent2Inputs inputs) throws ServiceException {
-		JSONObject entry = new JSONObject();
-		String type = "text";
-		if (inputs.isURL()) {
-			type = "url";
-			entry.put("address", inputs.textOrUrl);
-		} else {
-			entry.put("totalWords",
-				tokenizer.tokenize(inputs.textOrUrl).size());
-		}
-		entry.put("inputType", type);
-		return entry;
-	}
-
-	}
+}

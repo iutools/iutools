@@ -14,18 +14,6 @@ public class MorphemeExamplesEndpointTest extends EndpointTest {
 		return new MorphemeExamplesEndpoint();
 	}
 
-	@Override @Test
-	public void test__logEntry() throws Exception {
-		MorphemeExamplesInputs inputs =
-			new MorphemeExamplesInputs("siuq", null, null);
-		JSONObject expEntry = new JSONObject()
-			.put("wordPattern", "siuq")
-			.put("corpusName", JSONObject.NULL)
-			.put("nbExamples", JSONObject.NULL);
-		;
-		assertLogEntryEquals(inputs, expEntry);
-	}
-
 	/***********************
 	 * VERIFICATION TESTS
 	 ***********************/

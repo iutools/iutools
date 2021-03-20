@@ -11,17 +11,4 @@ public class LogActionEndpointTest extends EndpointTest  {
 	public Endpoint makeEndpoint() {
 		return new LogActionEndpoint();
 	}
-
-	@Override @Test
-	public void test__logEntry() throws Exception {
-		JSONObject taskData =
-			new JSONObject()
-				.put("someField", "someValue");
-		LogActionInputs inputs =
-			new LogActionInputs(LogActionInputs.Action.SEARCH_WEB, taskData);
-		JSONObject expEntry = new JSONObject()
-			.put("taskData", taskData)
-		;
-		assertLogEntryEquals(inputs, expEntry);
-	}
 }

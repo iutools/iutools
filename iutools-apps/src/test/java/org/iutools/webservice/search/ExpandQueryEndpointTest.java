@@ -12,14 +12,6 @@ public class ExpandQueryEndpointTest extends EndpointTest {
 		return new ExpandQueryEndpoint();
 	}
 
-	@Override @Test
-	public void test__logEntry() throws Exception {
-		ExpandQueryInputs inputs = new ExpandQueryInputs("inuksuk");
-		assertLogEntryEquals(
-			inputs,
-			new JSONObject().put("origQuery", "inuksuk"));
-	}
-
 	/***********************
 	 * VERIFICATION TESTS
 	 ***********************/

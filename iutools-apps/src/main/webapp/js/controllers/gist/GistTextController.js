@@ -25,12 +25,13 @@ class GistTextController extends IUToolsController {
 			textOrUrl: textOrUrl
 		};
 		var json_inputs = JSON.stringify(inputs);
+		this.logOnServer("GIST_TEXT", inputs);
 		
 		this.clearResults();
 		this.setBusy(true);
 		this.invokeWebService('srv2/gist/preparecontent/', json_inputs,
-				this.prepareContentSuccessCallback, 
-				this.prepareContentFailureCallback);
+			this.prepareContentSuccessCallback,
+			this.prepareContentFailureCallback);
 	}
 	
 	prepareContentSuccessCallback(resp) {

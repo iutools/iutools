@@ -7,7 +7,6 @@
   <% out.println("<title>iutools: "+pageTitle+"</title>\n"); %>
   <link rel="stylesheet" href="css/styles.css?v1.0.4">
   <script src="js/vendors/jquery/jquery-3.3.1.min.js"></script>
-  <script src="js/scripts.js?v1"></script>
 </head>
 
 <body>
