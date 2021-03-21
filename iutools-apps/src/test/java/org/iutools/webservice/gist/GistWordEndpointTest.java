@@ -1,57 +1,44 @@
 package org.iutools.webservice.gist;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.iutools.webservice.Endpoint;
+import org.iutools.webservice.EndpointResult;
+import org.iutools.webservice.EndpointTest;
+import org.junit.jupiter.api.Test;
 
-import ca.nrc.ui.web.testing.MockHttpServletResponse;
-import org.iutools.webservice.IUTServiceTestHelpers;
+public class GistWordEndpointTest extends EndpointTest {
 
-public class GistWordEndpointTest {
-
-	GistWordEndpoint endPoint = null;
-	
-	@Before
-	public void setUp() throws Exception {
-		endPoint = new GistWordEndpoint();
+	@Override
+	public Endpoint makeEndpoint() {
+		return new GistWordEndpoint();
 	}
 
-	/***********************
-	 * VERIFICATION TESTS
-	 ***********************/	
-	
 	@Test
 	public void test__GistWordEndpoint__RomanWord() throws Exception {
-		
-		GistWordInputs spellInputs = new GistWordInputs("inuktitut");
-				
-		MockHttpServletResponse response = 
-				IUTServiceTestHelpers.postEndpointDirectly(
-					IUTServiceTestHelpers.EndpointNames.GIST_WORD,
-					spellInputs
-				);
-		
-		GistWordAsserter.assertThat(response, "")
+
+		GistWordInputs inputs = new GistWordInputs("inuktitut");
+		EndpointResult epResult = endPoint.execute(inputs);
+
+		new AssertGistWordResult(epResult)
 			.gistMorphemesEqual(new String[] {"inuk", "titut"})
-			.nthAlignmentIs(1, "en", "Inuktitut Documentation", "iu", "inuktitut titiraqtauniq")
+			.nthAlignmentIs(1,
+				"en", "Inuktitut Documentation",
+			"iu", "inuktitut titiraqtauniq")
 			;
-		return;	
+
+		return;
 	}
 
 	@Test
 	public void test__GistWordEndpoint__SyllabicWord() throws Exception {
-		
-		GistWordInputs spellInputs = new GistWordInputs("ᐃᓄᒃᑎᑐᑦ");
-				
-		MockHttpServletResponse response = 
-				IUTServiceTestHelpers.postEndpointDirectly(
-					IUTServiceTestHelpers.EndpointNames.GIST_WORD,
-					spellInputs
-				);
-		
-		GistWordAsserter.assertThat(response, "")
+		GistWordInputs inputs = new GistWordInputs("ᐃᓄᒃᑎᑐᑦ");
+		EndpointResult epResult = endPoint.execute(inputs);
+
+		new AssertGistWordResult(epResult)
 			.gistMorphemesEqual(new String[] {"inuk", "titut"})
-			.nthAlignmentIs(1, "en", "Inuktitut Documentation", "iu", "inuktitut titiraqtauniq")
+			.nthAlignmentIs(1,
+				"en", "Inuktitut Documentation",
+			"iu", "inuktitut titiraqtauniq")
 			;
-		return;	
+		return;
 	}
 }

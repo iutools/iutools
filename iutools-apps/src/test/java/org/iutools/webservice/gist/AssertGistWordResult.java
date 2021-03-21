@@ -13,20 +13,20 @@ import org.junit.jupiter.api.Assertions;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AssertGistWord2Result extends AssertEndpointResult  {
-	public AssertGistWord2Result(EndpointResult _gotObject) {
+public class AssertGistWordResult extends AssertEndpointResult  {
+	public AssertGistWordResult(EndpointResult _gotObject) {
 		super(_gotObject);
 	}
 
-	public AssertGistWord2Result(EndpointResult _gotObject, String mess) {
+	public AssertGistWordResult(EndpointResult _gotObject, String mess) {
 		super(_gotObject, mess);
 	}
 
-	protected GistWord2Result result() {
-		return (GistWord2Result)gotObject;
+	protected GistWordResult result() {
+		return (GistWordResult)gotObject;
 	}
 
-	public AssertGistWord2Result gistMorphemesEqual(String[] expMorphemes) throws Exception {
+	public AssertGistWordResult gistMorphemesEqual(String[] expMorphemes) throws Exception {
 		Gist gotGist = getGist();
 		List<String> gotMorphemes = new ArrayList<String>();
 

@@ -3,24 +3,23 @@ package org.iutools.webservice.gist;
 import org.iutools.morph.Gist;
 import org.iutools.script.TransCoder;
 import org.iutools.utilities.Alignment;
-import org.iutools.webservice.ServiceResponse;
+import org.iutools.webservice.EndpointResult;
 
-public class GistWordResponse extends ServiceResponse {
-	
+public class GistWordResult extends EndpointResult {
 	public String inputWord = null;
 	public String wordRomanized = null;
 	public Gist wordGist = null;
 	public Alignment[] alignments = null;
-	
-	public GistWordResponse() {
-		init_GistWordResponse(null);
+
+	public GistWordResult() {
+		init_GistWord2Result(null);
 	}
 
-	public GistWordResponse(String _word) {
-		init_GistWordResponse(_word);
+	public GistWordResult(String _word) {
+		init_GistWord2Result(_word);
 	}
 
-	private void init_GistWordResponse(String _word) {
+	private void init_GistWord2Result(String _word) {
 		this.inputWord = _word;
 		if (_word != null) {
 			this.wordRomanized = TransCoder.ensureRoman(_word);

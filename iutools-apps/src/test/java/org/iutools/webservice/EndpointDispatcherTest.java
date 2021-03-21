@@ -4,7 +4,7 @@ import ca.nrc.testing.AssertString;
 import ca.nrc.ui.web.testing.MockHttpServletRequest;
 import ca.nrc.ui.web.testing.MockHttpServletResponse;
 import org.iutools.webservice.gist.GistPrepareContentResult;
-import org.iutools.webservice.gist.GistWord2Result;
+import org.iutools.webservice.gist.GistWordResult;
 import org.iutools.webservice.logaction.LogActionInputs;
 import org.iutools.webservice.morphexamples.MorphemeExamplesResult;
 import org.iutools.webservice.search.ExpandQueryResult;
@@ -171,7 +171,7 @@ public class EndpointDispatcherTest {
 		String uri = "iutools/srv2/gist/gistword";
 		MockHttpServletResponse response  = doPost(uri, json);
 
-		new AssertServletResponse(response, GistWord2Result.class)
+		new AssertServletResponse(response, GistWordResult.class)
 			.reportsNoException()
 			;
 		return;
@@ -182,8 +182,10 @@ public class EndpointDispatcherTest {
 	public void test__endpointName__HappyPaht() throws Exception {
 		for (String endpoint: new String[] {
 			"search/expandquery",
-//			"gist/gistword",
-			"gist/preparecontent", "morpheme_examples",
+			"gist/gistword",
+			"gist/preparecontent",
+			"log_action",
+			"morpheme_examples",
 //			"relatedwords", "spell", "tokenize"
 			}) {
 			String uri = "iutools/srv2/"+endpoint;
