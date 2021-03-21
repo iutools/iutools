@@ -1,6 +1,7 @@
 package org.iutools.webservice;
 
-import org.iutools.webservice.gist.GistPrepareContent2Endpoint;
+import org.iutools.webservice.gist.GistPrepareContentEndpoint;
+import org.iutools.webservice.gist.GistWord2Endpoint;
 import org.iutools.webservice.logaction.LogActionEndpoint;
 import org.iutools.webservice.morphexamples.MorphemeExamplesEndpoint;
 import org.iutools.webservice.search.ExpandQueryEndpoint;
@@ -22,7 +23,8 @@ public class EndpointDispatcher extends HttpServlet {
 		endpoints.put("log_action", new LogActionEndpoint());
 		endpoints.put("morpheme_examples", new MorphemeExamplesEndpoint());
 		endpoints.put("search/expandquery", new ExpandQueryEndpoint());
-		endpoints.put("gist/preparecontent", new GistPrepareContent2Endpoint());
+		endpoints.put("gist/preparecontent", new GistPrepareContentEndpoint());
+		endpoints.put("gist/gistword", new GistWord2Endpoint());
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)

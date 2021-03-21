@@ -3,7 +3,8 @@ package org.iutools.webservice;
 import ca.nrc.testing.AssertString;
 import ca.nrc.ui.web.testing.MockHttpServletRequest;
 import ca.nrc.ui.web.testing.MockHttpServletResponse;
-import org.iutools.webservice.gist.GistPrepareContent2Result;
+import org.iutools.webservice.gist.GistPrepareContentResult;
+import org.iutools.webservice.gist.GistWord2Result;
 import org.iutools.webservice.logaction.LogActionInputs;
 import org.iutools.webservice.morphexamples.MorphemeExamplesResult;
 import org.iutools.webservice.search.ExpandQueryResult;
@@ -157,11 +158,25 @@ public class EndpointDispatcherTest {
 		String uri = "iutools/srv2/gist/preparecontent";
 		MockHttpServletResponse response  = doPost(uri, json);
 
-		new AssertServletResponse(response, GistPrepareContent2Result.class)
+		new AssertServletResponse(response, GistPrepareContentResult.class)
 			.reportsNoException()
 			;
 		return;
 	}
+
+	@Test
+	public void test__doPost__gistword__HappyPath() throws Exception {
+		JSONObject json = new JSONObject()
+			.put("word", "inuksuk");
+		String uri = "iutools/srv2/gist/gistword";
+		MockHttpServletResponse response  = doPost(uri, json);
+
+		new AssertServletResponse(response, GistWord2Result.class)
+			.reportsNoException()
+			;
+		return;
+	}
+
 
 	@Test
 	public void test__endpointName__HappyPaht() throws Exception {

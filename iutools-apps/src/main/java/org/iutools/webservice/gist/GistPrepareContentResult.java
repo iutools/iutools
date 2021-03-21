@@ -12,13 +12,13 @@ import org.iutools.webservice.ServiceException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GistPrepareContent2Result extends EndpointResult {
+public class GistPrepareContentResult extends EndpointResult {
 
 	public List<String[]> iuSentences = new ArrayList<String[]>();
 	public List<String[]> enSentences = null;
 	public boolean wasActualText = true;
 
-	public GistPrepareContent2Result() {}
+	public GistPrepareContentResult() {}
 
 	public boolean getAlignmentsAvailable() {
 		boolean available =

@@ -5,7 +5,7 @@ import org.iutools.webservice.ServiceInputs;
 import org.iutools.webservice.ServiceInputsTest;
 import org.junit.jupiter.api.Test;
 
-public class GistPrepareContent2InputsTest extends ServiceInputsTest {
+public class GistPrepareContentInputsTest extends ServiceInputsTest {
 
 	@Override
 	protected ServiceInputs makeInputs() {
@@ -15,16 +15,14 @@ public class GistPrepareContent2InputsTest extends ServiceInputsTest {
 	@Test
 	public void test__summarizeForLogging() throws Exception {
 		ServiceInputs inputs =
-			new GistPrepareContent2Inputs("inuksuk, nunavut");
+			new GistPrepareContentInputs("inuksuk, nunavut");
 		new AssertServiceInputs(inputs)
 			.logSummaryIs("{\"taskID\":null,\"totalWords\":2,\"type\":\"text\"}");
 			;
 
 		inputs =
-			new GistPrepareContent2Inputs("http://www.somewhere.com/hello.html");
+			new GistPrepareContentInputs("http://www.somewhere.com/hello.html");
 		new AssertServiceInputs(inputs)
 			.logSummaryIs("{\"address\":\"http://www.somewhere.com/hello.html\",\"host\":\"www.somewhere.com\",\"taskID\":null,\"type\":\"url\"}");
-		;
-
 	}
 }

@@ -9,15 +9,15 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
-public class GistPrepareContent2Inputs extends ServiceInputs {
+public class GistPrepareContentInputs extends ServiceInputs {
 
 	public String textOrUrl = null;
 
 	private IUTokenizer tokenizer = new IUTokenizer();
 
-	public GistPrepareContent2Inputs() {}
+	public GistPrepareContentInputs() {}
 
-	public GistPrepareContent2Inputs(String _text) {
+	public GistPrepareContentInputs(String _text) {
 		this.textOrUrl = _text;
 	}
 

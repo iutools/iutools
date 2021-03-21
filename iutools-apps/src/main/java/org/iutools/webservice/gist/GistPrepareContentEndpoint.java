@@ -12,7 +12,6 @@ import org.iutools.text.segmentation.Segmenter;
 import org.iutools.webservice.Endpoint;
 import org.iutools.webservice.EndpointResult;
 import org.iutools.webservice.ServiceException;
-import org.json.JSONObject;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,25 +21,25 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
-public class GistPrepareContent2Endpoint
-	extends Endpoint<GistPrepareContent2Inputs, GistPrepareContent2Result> {
+public class GistPrepareContentEndpoint
+	extends Endpoint<GistPrepareContentInputs, GistPrepareContentResult> {
 
 	IUTokenizer tokenizer = new IUTokenizer();
 
 	@Override
-	protected GistPrepareContent2Inputs requestInputs(HttpServletRequest request)
+	protected GistPrepareContentInputs requestInputs(HttpServletRequest request)
 		throws ServiceException {
-		return jsonInputs(request, GistPrepareContent2Inputs.class);
+		return jsonInputs(request, GistPrepareContentInputs.class);
 	}
 
 	@Override
-	public EndpointResult execute(GistPrepareContent2Inputs inputs) throws ServiceException {
+	public EndpointResult execute(GistPrepareContentInputs inputs) throws ServiceException {
 
 		Logger tLogger = Logger.getLogger("org.iutools.webservice.gist.GistPrepareContentEndpoint.execute");
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("invoked with inputs="+ PrettyPrinter.print(inputs));
 		}
-		GistPrepareContent2Result result = new GistPrepareContent2Result();
+		GistPrepareContentResult result = new GistPrepareContentResult();
 
 		if (inputs.isURL()) {
 			doPrepareURL(inputs, result);
@@ -55,8 +54,8 @@ public class GistPrepareContent2Endpoint
 		return result;
 	}
 
-	private void doPrepareActualText(GistPrepareContent2Inputs inputs,
-		GistPrepareContent2Result result) {
+	private void doPrepareActualText(GistPrepareContentInputs inputs,
+												GistPrepareContentResult result) {
 
 		String text = inputs.textOrUrl;
 		text = TransCoder.ensureRoman(text);
@@ -65,8 +64,8 @@ public class GistPrepareContent2Endpoint
 		result.iuSentences = sentences;
 	}
 
-	private void doPrepareURL(GistPrepareContent2Inputs inputs,
-		GistPrepareContent2Result response) throws ServiceException {
+	private void doPrepareURL(GistPrepareContentInputs inputs,
+									  GistPrepareContentResult response) throws ServiceException {
 
 		response.wasActualText = false;
 		WebConcordancer concordancer =
@@ -85,7 +84,7 @@ public class GistPrepareContent2Endpoint
 	}
 
 	private void addAlignment(Alignment anAlignment,
-  		GistPrepareContent2Result result) {
+  		GistPrepareContentResult result) {
 
 		Logger tLogger = Logger.getLogger("org.iutools.webservice.GistPrepareContentEndpoint.addAlignment");
 

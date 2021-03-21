@@ -4,13 +4,12 @@ import org.iutools.concordancer.Alignment;
 import org.iutools.webservice.Endpoint;
 import org.iutools.webservice.EndpointResult;
 import org.iutools.webservice.EndpointTest;
-import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
-public class GistPrepareContent2Test extends EndpointTest {
+public class GistPrepareContentTest extends EndpointTest {
 	@Override
 	public Endpoint makeEndpoint() {
-		return new GistPrepareContent2Endpoint();
+		return new GistPrepareContentEndpoint();
 	}
 	
 	/***********************
@@ -21,8 +20,8 @@ public class GistPrepareContent2Test extends EndpointTest {
 	public void test__GistPrepareContentEndpoint__InputIsContent() throws Exception {
 		
 		String text = "ᒪᓕᒐᓕᐅᖅᑎ ᔫ ᓴᕕᑲᑖᖅ ᓂᕈᐊᖅᑕᐅᒃᑲᓐᓂᓚᐅᖅᐳᖅ";
-		GistPrepareContent2Inputs inputs =
-				new GistPrepareContent2Inputs(text);
+		GistPrepareContentInputs inputs =
+				new GistPrepareContentInputs(text);
 
 		EndpointResult epResult = endPoint.execute(inputs);
 
@@ -45,8 +44,8 @@ public class GistPrepareContent2Test extends EndpointTest {
 
 		String url = "https://www.gov.nu.ca/";
 
-		GistPrepareContent2Inputs inputs =
-				new GistPrepareContent2Inputs(url);
+		GistPrepareContentInputs inputs =
+				new GistPrepareContentInputs(url);
 
 		EndpointResult epResult = endPoint.execute(inputs);
 
@@ -65,8 +64,8 @@ public class GistPrepareContent2Test extends EndpointTest {
 
 		String url = "https://www.gov.nu.ca/iu/";
 
-		GistPrepareContent2Inputs inputs =
-			new GistPrepareContent2Inputs(url);
+		GistPrepareContentInputs inputs =
+			new GistPrepareContentInputs(url);
 
 		EndpointResult epResult = endPoint.execute(inputs);
 
@@ -90,8 +89,8 @@ public class GistPrepareContent2Test extends EndpointTest {
 		//
 		String url = "https://www.gov.nu.ca/iu/cgs-iu";
 
-		GistPrepareContent2Inputs inputs =
-			new GistPrepareContent2Inputs(url);
+		GistPrepareContentInputs inputs =
+			new GistPrepareContentInputs(url);
 
 		EndpointResult epResult = endPoint.execute(inputs);
 
@@ -110,8 +109,8 @@ public class GistPrepareContent2Test extends EndpointTest {
 
 		String url = "https://www.gov.nu.ca/doesnotexist/iu";
 
-		GistPrepareContent2Inputs inputs =
-			new GistPrepareContent2Inputs(url);
+		GistPrepareContentInputs inputs =
+			new GistPrepareContentInputs(url);
 
 		EndpointResult epResult = endPoint.execute(inputs);
 

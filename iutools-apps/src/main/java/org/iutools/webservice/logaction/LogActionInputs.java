@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.iutools.webservice.ServiceException;
 import org.iutools.webservice.ServiceInputs;
-import org.iutools.webservice.gist.GistPrepareContent2Inputs;
+import org.iutools.webservice.gist.GistPrepareContentInputs;
 import org.json.JSONObject;
 
 import java.util.Map;
@@ -67,9 +67,9 @@ public class LogActionInputs extends ServiceInputs {
 		ServiceInputs inputsToSummarize = null;
 		if (action == Action.GIST_TEXT) {
 			inputsToSummarize =
-				GistPrepareContent2Inputs.instantiateFromMap(
+				GistPrepareContentInputs.instantiateFromMap(
 					taskData,
-					GistPrepareContent2Inputs.class);
+					GistPrepareContentInputs.class);
 		}
 		if (inputsToSummarize != null) {
 			data = inputsToSummarize.summarizeForLogging();

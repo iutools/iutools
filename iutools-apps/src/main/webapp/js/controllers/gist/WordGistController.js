@@ -19,9 +19,11 @@ class WordGistController extends IUToolsController {
 		this.clearGist();
 		this.displayWordBeingGisted(word);
 		this.showSpinningWheel("divGist_message","Gisting word");
-		
+
+		var data = this.getExampleWordRequestData(word);
+		this.logOnServer("GIST_WORD", data);
 		this.invokeGistWordService(
-				this.getExampleWordRequestData(word),
+				data,
 				this.successExampleWordCallback, 
 				this.failureExampleWordCallback);
 	}
@@ -32,7 +34,7 @@ class WordGistController extends IUToolsController {
 	}
 	
 	invokeGistWordService(jsonRequestData, _successCbk, _failureCbk) {
-		this.invokeWebService('srv/gist/gistword', jsonRequestData,
+		this.invokeWebService('srv2/gist/gistword', jsonRequestData,
 				_successCbk, _failureCbk);
 	}
 

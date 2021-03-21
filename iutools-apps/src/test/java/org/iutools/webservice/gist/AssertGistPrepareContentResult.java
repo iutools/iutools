@@ -163,7 +163,7 @@ public class AssertGistPrepareContentResult extends AssertEndpointResult {
 		return this;
 	}
 
-	private GistPrepareContent2Result result() {
-		return (GistPrepareContent2Result)gotObject;
+	private GistPrepareContentResult result() {
+		return (GistPrepareContentResult)gotObject;
 	}
 }
