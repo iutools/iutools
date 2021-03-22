@@ -7,6 +7,7 @@ import org.iutools.webservice.Endpoint;
 import org.iutools.webservice.EndpointResult;
 import org.iutools.webservice.EndpointTest;
 import org.iutools.webservice.ServiceException;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.FileNotFoundException;
@@ -22,7 +23,7 @@ public class TokenizeEndpointTest extends EndpointTest {
 	 * VERIFICATION TESTS
 	 ***********************/
 
-	@Test
+	@Test @Disabled
 	public void test__TokenizeEndpoint__HappyPath() throws Exception {
 
 		TokenizeInputs inputs = new TokenizeInputs("nunavut, inuktut");
