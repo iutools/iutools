@@ -182,6 +182,7 @@ public class EndpointDispatcherTest {
 	public void test__endpointName__HappyPaht() throws Exception {
 		for (String endpoint: new String[] {
 			"search/expandquery",
+			"spell",
 			"gist/gistword",
 			"gist/preparecontent",
 			"log_action",

@@ -163,7 +163,7 @@ class SpellController extends IUToolsController {
 
 		$.ajax({
 			type: 'POST',
-			url: 'srv/spell',
+			url: 'srv2/spell',
 			data: jsonRequestData,
 			dataType: 'json',
 			async: true,

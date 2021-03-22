@@ -5,6 +5,7 @@ import org.iutools.webservice.gist.GistWordEndpoint;
 import org.iutools.webservice.logaction.LogActionEndpoint;
 import org.iutools.webservice.morphexamples.MorphemeExamplesEndpoint;
 import org.iutools.webservice.search.ExpandQueryEndpoint;
+import org.iutools.webservice.spell.Spell2Endpoint;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -23,6 +24,11 @@ public class EndpointDispatcher extends HttpServlet {
 		endpoints.put("log_action", new LogActionEndpoint());
 		endpoints.put("morpheme_examples", new MorphemeExamplesEndpoint());
 		endpoints.put("search/expandquery", new ExpandQueryEndpoint());
+		try {
+			endpoints.put("spell", new Spell2Endpoint());
+		} catch (ServiceException e) {
+			// Just ignore the exception and setup the remaining endpoints
+		}
 		endpoints.put("gist/preparecontent", new GistPrepareContentEndpoint());
 		endpoints.put("gist/gistword", new GistWordEndpoint());
 	}

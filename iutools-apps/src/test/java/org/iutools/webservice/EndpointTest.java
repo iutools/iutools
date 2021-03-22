@@ -1,14 +1,15 @@
 package org.iutools.webservice;
 
-import ca.nrc.testing.AssertString;
+import ca.nrc.config.ConfigException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.json.JSONObject;
+import org.iutools.spellchecker.SpellCheckerException;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+
+import java.io.FileNotFoundException;
 
 public abstract class EndpointTest {
 
-	public abstract Endpoint makeEndpoint();
+	public abstract Endpoint makeEndpoint() throws SpellCheckerException, FileNotFoundException, ConfigException, ServiceException;
 
 	private ObjectMapper mapper = new ObjectMapper();
 
