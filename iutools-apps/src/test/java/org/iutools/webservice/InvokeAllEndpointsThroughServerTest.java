@@ -1,8 +1,13 @@
 package org.iutools.webservice;
 
 import ca.nrc.web.Http;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
+import org.iutools.webservice.gist.GistPrepareContentInputs;
 import org.iutools.webservice.gist.GistWordInputs;
+import org.iutools.webservice.morphexamples.MorphemeExamplesInputs;
+import org.iutools.webservice.search.ExpandQueryInputs;
+import org.iutools.webservice.spell.SpellInputs;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -69,28 +74,38 @@ public class InvokeAllEndpointsThroughServerTest {
 
 	@Test
 	public void invokeAllEndpoints() throws Exception {
-		Map<String, ServiceInputs> callsToMake =
-		new HashMap<String, ServiceInputs>();
+		Map<String, Pair<ServiceInputs,Integer>> callsToMake =
+		new HashMap<String, Pair<ServiceInputs,Integer>>();
 		{
-//			callsToMake.put("spell", new SpellInputs("inukttttut"));
-//			callsToMake.put("tokenize", new GistPrepareContentInputs("nunavut"));
-//			callsToMake.put("gist/preparecontent", new GistPrepareContentInputs("nunavut"));
-
-			// This call forces the thread to load the linguistic database, which
-			// the largest overhead for the system
-			callsToMake.put("gist/gistword", new GistWordInputs("nunavutttt"));
+			callsToMake.put("gist/gistword",
+				// Note: We input a word that does not exist in the compiled corpus
+				// to force the gister to decompose it. This in turns forces the
+				// loading of the linguistic database which encurs a significant
+				// overhead
+				Pair.of(new GistWordInputs("nunavutttt"), 10));
+			callsToMake.put("gist/preparecontent",
+				Pair.of(new GistPrepareContentInputs("inuksuk"), 2));
+			callsToMake.put("morpheme_examples",
+				Pair.of(new MorphemeExamplesInputs("siuq"), 2));
+			callsToMake.put("search/expandquery",
+				Pair.of(new ExpandQueryInputs("inuksuk"), 5));
+			callsToMake.put("spell",
+				Pair.of(new SpellInputs("inuktttitut"), 30));
 		}
 
 		ExecutorService executor = Executors.newFixedThreadPool(50);
 
 		List<HttpWorker> workers = new ArrayList<HttpWorker>();
-		for (int ii = 0; ii < 100; ii++) {
-			for (String srvPath : callsToMake.keySet()) {
-				ServiceInputs inputs = callsToMake.get(srvPath);
-				HttpWorker worker = new HttpWorker(srvPath, callsToMake.get(srvPath));
+		for (String srvPath : callsToMake.keySet()) {
+			Pair<ServiceInputs,Integer> callDetails = callsToMake.get(srvPath);
+			ServiceInputs inputs = callDetails.getLeft();
+			Integer sleepSecs = callDetails.getRight();
+			for (int ii = 0; ii < 100; ii++) {
+				HttpWorker worker = new HttpWorker(srvPath, inputs);
 				executor.execute(worker);
 				workers.add(worker);
 			}
+			Thread.sleep(sleepSecs*1000);
 		}
 		Thread.sleep(30*1000);
 		System.out.println("--invokeAllEndpoints: "+HttpWorker.getRaisedException().size()+" exceptions raised");

@@ -136,7 +136,7 @@ class SpellController extends IUToolsController {
 
 		$.ajax({
 			type: 'POST',
-			url: 'srv/tokenize',
+			url: 'srv2/tokenize',
 			data: jsonRequestData,
 			dataType: 'json',
 			async: true,
@@ -462,7 +462,7 @@ class SpellController extends IUToolsController {
 	 */
 	tokenizeRequestData() {
 		var request = {
-			textOrUrl: this.elementForProp("txtToCheck").val(),
+			text: this.elementForProp("txtToCheck").val(),
 		};
 
 		return JSON.stringify(request);

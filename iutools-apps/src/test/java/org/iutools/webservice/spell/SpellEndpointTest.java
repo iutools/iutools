@@ -1,16 +1,19 @@
-package org.iutools.webservice;
+package org.iutools.webservice.spell;
 
-import org.iutools.utilities.StopWatch;
 import ca.nrc.testing.AssertRuntime;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.jupiter.api.*;
+import org.iutools.utilities.StopWatch;
+import org.iutools.webservice.Endpoint;
+import org.iutools.webservice.EndpointResult;
+import org.iutools.webservice.EndpointTest;
+import org.iutools.webservice.ServiceException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 
-import ca.nrc.ui.web.testing.MockHttpServletResponse;
+public class SpellEndpointTest extends EndpointTest {
 
-public class SpellEndpointTest {
-
-	SpellEndpoint endPoint = null;
 	TestInfo testInfo = null;
 
 	private static String[] allMisspelledWords = {
@@ -36,78 +39,59 @@ public class SpellEndpointTest {
 		"ᐱᔨᑦᑎᕋᖁᔭᐅᓪᓗᓂᑦ", ",ᓯᕗᓕᖅᑏᑦ", ",ᑲᑎᒪᔨᖏᓐᓄᑦ", "ᓄᕕᐱᕆ"
 	 };
 
+	@Override
+	public Endpoint makeEndpoint() throws ServiceException {
+		return new SpellEndpoint();
+	}
 
 	@BeforeEach
 	public void setUp(TestInfo info) throws Exception {
+		super.setUp();
 		this.testInfo = info;
-		endPoint = new SpellEndpoint();
 	}
-	
+
 	/***********************
 	 * VERIFICATION TESTS
-	 ***********************/	
+	 ***********************/
 
 	@Test
 	public void test__SpellEndpoint__Syllabic__HappyPath() throws Exception {
-		
-		SpellInputs spellInputs = new SpellInputs("ᐃᓄᑦᒧᑦ ᑕᑯᔪᖅ");
-				
-		MockHttpServletResponse response = 
-				IUTServiceTestHelpers.postEndpointDirectly(
-					IUTServiceTestHelpers.EndpointNames.SPELL,
-					spellInputs
-				);
-		
-		SpellCheckerAssertion.assertThat(response, "")
-			.raisedNoError()
+
+		SpellInputs inputs = new SpellInputs("ᐃᓄᑦᒧᑦ ᑕᑯᔪᖅ");
+		EndpointResult epResult = endPoint.execute(inputs);
+
+		new AssertSpellResult(epResult)
 			.nthCorrectionIs(0, true,
-				new String[] {
+				new String[]{
 					"ᐃᓄᒻᒧᑦ",
 					"ᐃᓄᑐᐊᒧᑦ",
 					"ᐃᓄᒃᑐᑦ",
 					"ᐃᓄᑐᐊᑦ",
-					"ᐃᓄᕗᑦ",
-					"ᐃᓄᒻᒧᑦ",
-					"ᐃᓄᑐᐊᒧᑦ",
-					"ᐃᓄᒃᑐᑦ",
-					"ᐃᓄᑐᐊᑦ",
-					"ᐃᓄᕗᑦ"				}
+					"ᐃᓄᕗᑦ"
+				}
 			)
 			.nthCorrectionIs(1, false)
 			;
-		
-		return;	
+
+		return;
 	}
 
 	@Test
-	public void test__SpellEndpoint__WordWithSyllCharsThatAreExpressedAsTwoRomanChars() 
+	public void test__SpellEndpoint__WordWithSyllCharsThatAreExpressedAsTwoRomanChars()
 			throws Exception {
-		
-		SpellInputs spellInputs = new SpellInputs("ᒐᕙᒪᒃᑯᑎᒍᑦ");
-				
-		MockHttpServletResponse response = 
-				IUTServiceTestHelpers.postEndpointDirectly(
-					IUTServiceTestHelpers.EndpointNames.SPELL,
-					spellInputs
-				);
-		
-		SpellCheckerAssertion.assertThat(response, "")
-			.raisedNoError()
+
+		SpellInputs inputs = new SpellInputs("ᒐᕙᒪᒃᑯᑎᒍᑦ");
+		EndpointResult epResult = endPoint.execute(inputs);
+
+		new AssertSpellResult(epResult)
 			.nthCorrectionIs(0, true,
 				new String[]{
 					"ᒐᕙᒪᒃᑎᒍᑦ",
 					"ᒐᕙᒪᒃᑯᑎᑐᑦ",
 					"ᒐᕙᒪᑎᒍᑦ",
 					"ᒐᕙᒪᒃᑯᖏᑎᒍᑦ",
-					"ᒐᕙᒪᒃᑯᑎᓐᓄᑦ",
-					"ᒐᕙᒪᒃᑎᒍᑦ",
-					"ᒐᕙᒪᒃᑯᑎᑐᑦ",
-					"ᒐᕙᒪᑎᒍᑦ",
-					"ᒐᕙᒪᒃᑯᖏᑎᒍᑦ",
 					"ᒐᕙᒪᒃᑯᑎᓐᓄᑦ"
 				});
-		
-		return;	
 	}
 
 	@Test
@@ -133,14 +117,11 @@ public class SpellEndpointTest {
 		int numWords = words.length;
 		String text = String.join(" ", words);
 
-		SpellInputs spellInputs = new SpellInputs(text);
+		SpellInputs inputs = new SpellInputs(text);
 
 		long startMSecs = StopWatch.nowMSecs();
-		MockHttpServletResponse response =
-				IUTServiceTestHelpers.postEndpointDirectly(
-						IUTServiceTestHelpers.EndpointNames.SPELL,
-						spellInputs
-				);
+		EndpointResult epResult = endPoint.execute(inputs);
+
 
 		double elapsedSecs = StopWatch.elapsedMsecsSince(startMSecs) / 1000.0;
 		double gotAvgSecs = elapsedSecs / numWords;

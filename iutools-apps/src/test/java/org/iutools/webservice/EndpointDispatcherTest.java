@@ -181,13 +181,13 @@ public class EndpointDispatcherTest {
 	@Test
 	public void test__endpointName__HappyPaht() throws Exception {
 		for (String endpoint: new String[] {
-			"search/expandquery",
-			"spell",
 			"gist/gistword",
 			"gist/preparecontent",
 			"log_action",
 			"morpheme_examples",
-//			"relatedwords", "spell", "tokenize"
+			"search/expandquery",
+			"spell",
+			"tokenize"
 			}) {
 			String uri = "iutools/srv2/"+endpoint;
 			String gotName = new EndpointDispatcher().endpointName(uri);

@@ -15,11 +15,11 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.FileNotFoundException;
 import java.util.List;
 
-public class Spell2Endpoint extends Endpoint<Spell2Inputs, Spell2Result> {
+public class SpellEndpoint extends Endpoint<SpellInputs, SpellResult> {
 
 	SpellChecker checker = null;
 
-	public Spell2Endpoint() throws ServiceException {
+	public SpellEndpoint() throws ServiceException {
 		try {
 			init_SpellEndpoint();
 		} catch (SpellCheckerException  | FileNotFoundException  |
@@ -45,18 +45,18 @@ public class Spell2Endpoint extends Endpoint<Spell2Inputs, Spell2Result> {
 	}
 
 	@Override
-	protected Spell2Inputs requestInputs(HttpServletRequest request) throws ServiceException {
-		return jsonInputs(request, Spell2Inputs.class);
+	protected SpellInputs requestInputs(HttpServletRequest request) throws ServiceException {
+		return jsonInputs(request, SpellInputs.class);
 	}
 
 	@Override
-	public EndpointResult execute(Spell2Inputs inputs) throws ServiceException {
+	public EndpointResult execute(SpellInputs inputs) throws ServiceException {
 		Logger tLogger = Logger.getLogger("org.iutools.webservice.spell.SpellEndpoint.execute");
 
 		tLogger.trace("inputs.text= "+inputs.text);
 		tLogger.trace("Spell checker has base ES index name = \n"+checker.corpusIndexName());
 
-		Spell2Result result = new Spell2Result();
+		SpellResult result = new SpellResult();
 
 		if (inputs.text == null || inputs.text.isEmpty()) {
 			throw new ServiceException("Query was empty or null");

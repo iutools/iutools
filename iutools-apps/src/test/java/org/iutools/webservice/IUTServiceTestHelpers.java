@@ -50,8 +50,6 @@ public class IUTServiceTestHelpers {
 			new LogActionEndpoint().doPost(request, response);
 		} else if (eptName == EndpointNames.RELATED_WORDS) {
 			new RelatedWordsEndpoint().doPost(request, response);
-		} else if (eptName == EndpointNames.SPELL) {
-			new SpellEndpoint().doPost(request, response);	
 		} else if (eptName == EndpointNames.TOKENIZE) {
 			new TokenizeEndpoint().doPost(request, response);	
 		}
@@ -63,14 +61,6 @@ public class IUTServiceTestHelpers {
 			throw new Exception("Expected the service to return an error message but it did not.");
 		}
 		
-		return response;
-	}
-
-	public static SpellResponse toSpellResponse(
-			HttpServletResponse servletResp) throws IOException {
-		String responseStr = servletResp.getOutputStream().toString();
-		SpellResponse response = 
-				new ObjectMapper().readValue(responseStr, SpellResponse.class);
 		return response;
 	}
 
