@@ -6,7 +6,7 @@ import org.iutools.webservice.logaction.LogActionEndpoint;
 import org.iutools.webservice.morphexamples.MorphemeExamplesEndpoint;
 import org.iutools.webservice.search.ExpandQueryEndpoint;
 import org.iutools.webservice.spell.SpellEndpoint;
-import org.iutools.webservice.tokenize.Tokenize2Endpoint;
+import org.iutools.webservice.tokenize.TokenizeEndpoint;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -30,7 +30,7 @@ public class EndpointDispatcher extends HttpServlet {
 		} catch (ServiceException e) {
 			// Just ignore the exception and setup the remaining endpoints
 		}
-		endpoints.put("tokenize", new Tokenize2Endpoint());
+		endpoints.put("tokenize", new TokenizeEndpoint());
 		endpoints.put("gist/preparecontent", new GistPrepareContentEndpoint());
 		endpoints.put("gist/gistword", new GistWordEndpoint());
 	}

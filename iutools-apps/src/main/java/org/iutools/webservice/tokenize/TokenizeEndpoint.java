@@ -1,76 +1,30 @@
 package org.iutools.webservice.tokenize;
 
-import java.io.IOException;
-import java.io.PrintWriter;
+import ca.nrc.datastructure.Pair;
+import org.iutools.text.segmentation.IUTokenizer;
+import org.iutools.webservice.Endpoint;
+import org.iutools.webservice.EndpointResult;
+import org.iutools.webservice.ServiceException;
+
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.Logger;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import ca.nrc.datastructure.Pair;
-import ca.nrc.json.PrettyPrinter;
-import org.iutools.text.segmentation.IUTokenizer;
-import org.iutools.webservice.EndPointHelper;
-import org.iutools.webservice.ServiceResponse;
-
-public class TokenizeEndpoint extends HttpServlet {
-	
-	protected void doGet(HttpServletRequest request, 
-			HttpServletResponse response) throws ServletException, IOException {
-		Logger logger = Logger.getLogger("TokenizeEndpoint.doGet");
-		logger.debug("doGet()");
-	}
-	
-	public void doPost(HttpServletRequest request, 
-			HttpServletResponse response) throws IOException {
-		EndPointHelper.log4jReload();
-		Logger tLogger = Logger.getLogger("org.iutools.webservice.TokenizeEndpoint.doPost");
-		
-		tLogger.trace("invoked with request=\n"+request);
-				
-		String jsonResponse = null;
-
-		EndPointHelper.setContenTypeAndEncoding(response);
-
-		GistPrepareContentInputs inputs = null;
-		try {
-			EndPointHelper.setContenTypeAndEncoding(response);
-			inputs = EndPointHelper.jsonInputs(request, GistPrepareContentInputs.class);
-			tLogger.trace("inputs="+PrettyPrinter.print(inputs));
-			ServiceResponse results = executeEndPoint(inputs);
-			jsonResponse = new ObjectMapper().writeValueAsString(results);
-		} catch (Exception exc) {
-			jsonResponse = EndPointHelper.emitServiceExceptionResponse("General exception was raised\n", exc);
-		}
-		
-		writeJsonResponse(response, jsonResponse);
+public class TokenizeEndpoint extends Endpoint<TokenizeInputs, TokenizeResult> {
+	@Override
+	protected TokenizeInputs requestInputs(HttpServletRequest request) throws ServiceException {
+		return jsonInputs(request, TokenizeInputs.class);
 	}
 
-	private ServiceResponse executeEndPoint(GistPrepareContentInputs inputs) {
+	@Override
+	public EndpointResult execute(TokenizeInputs inputs) throws ServiceException {
 		IUTokenizer tokenizer = new IUTokenizer();
-		
-		tokenizer.tokenize(inputs.textOrUrl);
-		List<Pair<String,Boolean>> tokens = tokenizer.getAllTokens();
-		
-		TokenizeResponse response = new TokenizeResponse(tokens);		
-		
-		return response;
+
+		tokenizer.tokenize(inputs.text);
+		List<Pair<String, Boolean>> tokens = tokenizer.getAllTokens();
+
+		TokenizeResult result = new TokenizeResult(tokens);
+
+		return result;
+
 	}
-	
-	private void writeJsonResponse(HttpServletResponse response, String json) throws IOException {
-		Logger tLogger = Logger.getLogger("org.iutools.webservice.writeJsonResponse");
-		
-		tLogger.debug("json="+json);
-		PrintWriter writer = response.getWriter();
-		
-		writer.write(json);
-		writer.close();
-	}
-	
 }

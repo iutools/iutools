@@ -2,13 +2,13 @@ package org.iutools.webservice.tokenize;
 
 import org.iutools.webservice.ServiceInputs;
 
-public class Tokenize2Inputs extends ServiceInputs {
+public class TokenizeInputs extends ServiceInputs {
 
 	public String text = null;
 
-	public Tokenize2Inputs() {}
+	public TokenizeInputs() {}
 
-	public Tokenize2Inputs(String _text) {
+	public TokenizeInputs(String _text) {
 		this.text = _text;
 	}
 }

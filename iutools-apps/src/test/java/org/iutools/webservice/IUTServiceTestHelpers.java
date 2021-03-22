@@ -3,8 +3,6 @@ package org.iutools.webservice;
 import java.io.IOException;
 import java.net.URL;
 
-import javax.servlet.http.HttpServletResponse;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ca.nrc.web.Http;
@@ -13,8 +11,6 @@ import ca.nrc.ui.web.testing.MockHttpServletResponse;
 import org.iutools.webservice.logaction.LogActionEndpoint;
 import org.iutools.webservice.relatedwords.RelatedWordsEndpoint;
 import org.iutools.webservice.relatedwords.RelatedWordsResponse;
-import org.iutools.webservice.tokenize.TokenizeEndpoint;
-import org.iutools.webservice.tokenize.TokenizeResponse;
 
 public class IUTServiceTestHelpers {
 	public static final long SHORT_WAIT = 2*1000;
@@ -50,8 +46,6 @@ public class IUTServiceTestHelpers {
 			new LogActionEndpoint().doPost(request, response);
 		} else if (eptName == EndpointNames.RELATED_WORDS) {
 			new RelatedWordsEndpoint().doPost(request, response);
-		} else if (eptName == EndpointNames.TOKENIZE) {
-			new TokenizeEndpoint().doPost(request, response);	
 		}
 		
 		String srvErr = ServiceResponse.jsonErrorMessage(response.getOutput());
@@ -69,14 +63,6 @@ public class IUTServiceTestHelpers {
 		String responseStr = servletResp.getOutputStream().toString();
 		RelatedWordsResponse response =
 			new ObjectMapper().readValue(responseStr, RelatedWordsResponse.class);
-		return response;
-	}
-
-	public static TokenizeResponse toTokenizeResponse(
-			MockHttpServletResponse servletResp) throws IOException {
-		String responseStr = servletResp.getOutputStream().toString();
-		TokenizeResponse response = 
-				new ObjectMapper().readValue(responseStr, TokenizeResponse.class);
 		return response;
 	}
 }

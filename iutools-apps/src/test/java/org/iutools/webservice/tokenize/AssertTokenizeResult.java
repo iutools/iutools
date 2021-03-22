@@ -6,27 +6,27 @@ import org.iutools.webservice.AssertEndpointResult;
 import org.iutools.webservice.EndpointResult;
 import org.junit.jupiter.api.Assertions;
 
-public class AssertTokenize2Result extends AssertEndpointResult {
-	public AssertTokenize2Result(EndpointResult _gotObject) {
+public class AssertTokenizeResult extends AssertEndpointResult {
+	public AssertTokenizeResult(EndpointResult _gotObject) {
 		super(_gotObject);
 	}
 
-	public AssertTokenize2Result(EndpointResult _gotObject, String mess) {
+	public AssertTokenizeResult(EndpointResult _gotObject, String mess) {
 		super(_gotObject, mess);
 	}
 
-	Tokenize2Result result() {
-		return (Tokenize2Result) gotObject;
+	TokenizeResult result() {
+		return (TokenizeResult) gotObject;
 	}
 
-	public AssertTokenize2Result raisesNoError() {
+	public AssertTokenizeResult raisesNoError() {
 		Assertions.assertEquals(
 			null, result().errorMessage,
 			baseMessage+"\nResponse raised error");
 		return this;
 	}
 
-	public AssertTokenize2Result producesTokens(
+	public AssertTokenizeResult producesTokens(
 		Pair<String, Boolean>[] expTokens) throws Exception {
 
 		AssertObject.assertDeepEquals(

@@ -1,45 +1,41 @@
 package org.iutools.webservice.tokenize;
 
-import org.junit.Before;
-import org.junit.Test;
-
+import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.Pair;
-import ca.nrc.ui.web.testing.MockHttpServletResponse;
-import org.iutools.webservice.IUTServiceTestHelpers;
+import org.iutools.spellchecker.SpellCheckerException;
+import org.iutools.webservice.Endpoint;
+import org.iutools.webservice.EndpointResult;
+import org.iutools.webservice.EndpointTest;
+import org.iutools.webservice.ServiceException;
+import org.junit.jupiter.api.Test;
 
-public class TokenizeEndpointTest {
+import java.io.FileNotFoundException;
 
-	TokenizeEndpoint endPoint = null;
-	
-	@Before
-	public void setUp() throws Exception {
-		endPoint = new TokenizeEndpoint();
+public class TokenizeEndpointTest extends EndpointTest {
+
+	@Override
+	public Endpoint makeEndpoint() throws SpellCheckerException, FileNotFoundException, ConfigException, ServiceException {
+		return new TokenizeEndpoint();
 	}
 
-	
 	/***********************
 	 * VERIFICATION TESTS
 	 ***********************/
-	
+
 	@Test
 	public void test__TokenizeEndpoint__HappyPath() throws Exception {
-		
-		GistPrepareContentInputs tokenizeInputs = new GistPrepareContentInputs("nunavut, inuktut");
-				
-		MockHttpServletResponse response = 
-				IUTServiceTestHelpers.postEndpointDirectly(
-					IUTServiceTestHelpers.EndpointNames.TOKENIZE,
-					tokenizeInputs
-				);
-		
+
+		TokenizeInputs inputs = new TokenizeInputs("nunavut, inuktut");
+		EndpointResult epResult = endPoint.execute(inputs);
+
 		Pair<String,Boolean>[] expTokens = new Pair[] {
-			Pair.of("nunavut", true), 
-			Pair.of(",", false), 
-			Pair.of(" ", false), 
-			Pair.of("inuktut", true) 			
+			Pair.of("nunavut", true),
+			Pair.of(",", false),
+			Pair.of(" ", false),
+			Pair.of("inuktut", true)
 		};
-		
-		TokenizeResponseAssertion.assertThat(response, "")
+
+		new AssertTokenizeResult(epResult)
 			.raisesNoError()
 			.producesTokens(expTokens)
 		;

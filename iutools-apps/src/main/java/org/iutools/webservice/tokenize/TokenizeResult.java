@@ -5,13 +5,13 @@ import org.iutools.webservice.EndpointResult;
 
 import java.util.List;
 
-public class Tokenize2Result extends EndpointResult {
+public class TokenizeResult extends EndpointResult {
 
 	public List<Pair<String, Boolean>> tokens;
 
-	public Tokenize2Result() {}
+	public TokenizeResult() {}
 
-	public Tokenize2Result(List<Pair<String, Boolean>> _tokens) {
+	public TokenizeResult(List<Pair<String, Boolean>> _tokens) {
 		this.tokens = _tokens;
 	}
 }
