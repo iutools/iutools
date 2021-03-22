@@ -11,6 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.utilities.StopWatch;
 import ca.nrc.debug.Debug;
 import org.iutools.corpus.*;
@@ -20,7 +21,6 @@ import org.apache.log4j.Logger;
 import com.google.gson.Gson;
 
 import ca.nrc.config.ConfigException;
-import ca.nrc.datastructure.Pair;
 import org.iutools.datastructure.trie.StringSegmenterException;
 import org.iutools.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.json.PrettyPrinter;
@@ -896,7 +896,7 @@ public class SpellChecker {
 		for (int i=0; i<ngrams.length; i++) {
 			Long ngramFreq = ngramFrequency(ngrams[i]);
 			tLogger.trace("for ngram="+ngrams[i]+", ngramFreq="+ngramFreq);
-			ngramFreqs[i] = new Pair<String,Double>(ngrams[i],1.0*ngramFreq);
+			ngramFreqs[i] = Pair.of(ngrams[i],1.0*ngramFreq);
 		}
 		IDFComparator dcomparator = new IDFComparator();
 		Arrays.sort(ngramFreqs,dcomparator);
@@ -934,8 +934,8 @@ public class SpellChecker {
 		Set<ScoredSpelling> candidateSpellingsSet = new HashSet<ScoredSpelling>();
 		for (int i=0; i<idf.length; i++) {
 
-			String ngram = idf[i].getFirst();
-			Double ngramIDF = idf[i].getSecond();
+			String ngram = idf[i].getLeft();
+			Double ngramIDF = idf[i].getRight();
 
 			Set<ScoredSpelling> candidateSpellingsWithNgram =
 					new HashSet<ScoredSpelling>();
@@ -1006,8 +1006,8 @@ public class SpellChecker {
 		Map<String,Double> badWordNgramInvFreqHash = new HashMap<String,Double>();
 		for (Pair<String,Double> ngramInfo: badWordNgramFreqs) {
 			badWordNgramInvFreqHash.put(
-				ngramInfo.getFirst(),
-				inverseFrequency(ngramInfo.getSecond()));
+				ngramInfo.getLeft(),
+				inverseFrequency(ngramInfo.getRight()));
 		}
 		
 		Set<String> ngramsOfBadWord_Set = new HashSet<String>();
@@ -1038,7 +1038,7 @@ public class SpellChecker {
 				}
 			}
 			candSpelling.ngramSim = totalScore;
-			scoreValues.add(new Pair<String,Double>(candidate,totalScore));
+			scoreValues.add(Pair.of(candidate,totalScore));
 		}
 
 		Collections.sort(candidates,
@@ -1109,9 +1109,9 @@ public class SpellChecker {
 	public class IDFComparator implements Comparator<Pair<String,Double>> {
 	    @Override
 	    public int compare(Pair<String,Double> a, Pair<String,Double> b) {
-	    	if (a.getSecond() > b.getSecond())
+	    	if (a.getRight() > b.getRight())
 	    		return 1;
-	    	else if (a.getSecond() < b.getSecond())
+	    	else if (a.getRight() < b.getRight())
 	    		return -1;
 	    	else 
 	    		return 0;
@@ -1200,8 +1200,8 @@ public class SpellChecker {
 		if (tLogger.isTraceEnabled()) tLogger.trace("tokens= "+PrettyPrinter.print(tokens));
 		
 		for (Pair<String,Boolean> aToken: tokens) {
-			String tokString = aToken.getFirst();
-			Boolean isDelimiter = !aToken.getSecond(); // IUTokenizer returns TRUE for words and FALSE for non-words.
+			String tokString = aToken.getLeft();
+			Boolean isDelimiter = !aToken.getRight(); // IUTokenizer returns TRUE for words and FALSE for non-words.
 			SpellingCorrection correction = null;
 			if (isDelimiter) {
 				correction = new SpellingCorrection(tokString);

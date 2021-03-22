@@ -3,11 +3,11 @@ package org.iutools.spellchecker;
 import java.util.*;
 
 
-import ca.nrc.datastructure.Pair;
 import ca.nrc.dtrc.stats.FrequencyHistogram;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.diff.DiffResult;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 
 public class SpellDebug {
@@ -109,7 +109,7 @@ public class SpellDebug {
 	}
 
 	private static Pair<Boolean,String> traceStatus(String method, String badWord,
-			String candidate, String ngram) {
+																	String candidate, String ngram) {
 
 		if (!debugActive) {
 			return Pair.of(false, "None");
@@ -173,15 +173,15 @@ public class SpellDebug {
 	public static void trace(String who, String mess, String badWord,
  		String candidate, String ngram) {
 		Pair<Boolean,String> status = traceStatus(who, badWord, candidate, ngram);
-		if (status.getFirst()) {
-			System.out.println("-- "+who+"("+status.getSecond()+"):\n   "+mess);
+		if (status.getLeft()) {
+			System.out.println("-- "+who+"("+status.getRight()+"):\n   "+mess);
 		}
 	}
 
 	public static void trace(String who, String mess, DiffResult diff) {
 		Pair<Boolean,String> status = traceStatus(who, diff.origStr(), diff.revStr(), null);
-		if (status.getFirst()) {
-			System.out.println("-- "+who+"("+status.getSecond()+"):\n   "+mess);			
+		if (status.getLeft()) {
+			System.out.println("-- "+who+"("+status.getRight()+"):\n   "+mess);			
 		}
 	}
 
@@ -197,7 +197,7 @@ public class SpellDebug {
 			String badWord, String ngram,
 			Set<String> possibleSpellings) {
 		Pair<Boolean,String> status = traceStatus(who, badWord, (String) null, ngram);
-		if (status.getFirst()) {
+		if (status.getLeft()) {
 			String[] correctSpellings =
                 correctSpellingsFor(badWord);
 
@@ -224,7 +224,7 @@ public class SpellDebug {
 				}
 
 				System.out.println("-- " + who +
-						"(" + status.getSecond() +
+						"(" + status.getRight() +
 						"): \n   " + what + missing_or_not + ".");
 			}
 		}
@@ -240,7 +240,7 @@ public class SpellDebug {
 		  Collection<ScoredSpelling> possibleSpellings) {
 		String normalizedBadWord = normalizeNumerical(badWord);
 		Pair<Boolean,String> status = traceStatus(who, badWord, (String) null, ngram);
-		if (status.getFirst()) {
+		if (status.getLeft()) {
 			String[] correctSpellings =
                 correctSpellingsFor(badWord);
 
@@ -266,7 +266,7 @@ public class SpellDebug {
 				}
 
 				System.out.println("-- " + who +
-						"(" + status.getSecond() +
+						"(" + status.getRight() +
 						"): \n   " + what + missing_or_not + ".");
 			}
 		}
@@ -290,13 +290,13 @@ public class SpellDebug {
 
         if (ngramsToTrace != null) {
             Pair<Boolean, String> status = traceStatus(who, badWord, (String) null, ngram);
-            if (status.getFirst()) {
+            if (status.getLeft()) {
                 Set<String> missingNgrams = new HashSet<String>();
                 missingNgrams.addAll(ngramsToTrace);
 
                 Set<String> gotNgrams = new HashSet<String>();
                 for (Pair<String,Double> aNgramFreq: ngramFreqs) {
-                    gotNgrams.add(aNgramFreq.getFirst());
+                    gotNgrams.add(aNgramFreq.getLeft());
                 }
 
                 for (String aNgram : ngramsToTrace) {
@@ -317,7 +317,7 @@ public class SpellDebug {
                 }
 
                 System.out.println("-- " + who +
-                        "(" + status.getSecond() +
+                        "(" + status.getRight() +
                         "): \n   " + what + missing_or_not + ".");
             }
         }
@@ -333,7 +333,7 @@ public class SpellDebug {
                 if (!ngrams.equals("")) {
 					ngrams += "\n      ";
 				}
-                ngrams += aNgramIDF.getFirst()+": "+aNgramIDF.getSecond();
+                ngrams += aNgramIDF.getLeft()+": "+aNgramIDF.getRight();
             }
 
             trace(who,
@@ -349,7 +349,7 @@ public class SpellDebug {
 	}
 
 	public static boolean traceIsActive(String who, String badWord, String candidate) {
-		boolean isActive = traceStatus(who, badWord, candidate, null).getFirst();
+		boolean isActive = traceStatus(who, badWord, candidate, null).getLeft();
 		
 		return isActive;
 	}
@@ -368,7 +368,7 @@ public class SpellDebug {
 		Collection<ScoredSpelling> candidates) {
 		Pair<Boolean, String> status =
 			traceStatus(who, badWord, (String) null, (String)null);
-		if (status.getFirst()) {
+		if (status.getLeft()) {
 			FrequencyHistogram<String> histogram =
 				new FrequencyHistogram<String>();
 			for (ScoredSpelling aCandidate: candidates) {
@@ -385,7 +385,7 @@ public class SpellDebug {
 			}
 			if (numDups > 0) {
 				mess += "\nTotal dups = " + numDups;
-				System.out.println("-- " + who + "(" + status.getSecond() + "):\n   " + mess);
+				System.out.println("-- " + who + "(" + status.getRight() + "):\n   " + mess);
 			}
 		}
 	}
@@ -409,9 +409,9 @@ public class SpellDebug {
 			mess = "";
 		}
 		boolean traceCand1 =
-			traceStatus(who, "*", cand1.spelling, "*").getFirst();
+			traceStatus(who, "*", cand1.spelling, "*").getLeft();
 		boolean traceCand2 =
-			 traceStatus(who, "*", cand2.spelling, "*").getFirst();
+			 traceStatus(who, "*", cand2.spelling, "*").getLeft();
 		if (traceCand1 && traceCand2) {
 			mess = "["+cand1.spelling+","+
 				cand2.spelling+"]: "+mess+" => score="+score

@@ -1,8 +1,8 @@
 package org.iutools.webservice.gist;
 
 import ca.nrc.json.PrettyPrinter;
-import ca.nrc.datastructure.Pair;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 
 import org.iutools.concordancer.*;
@@ -95,7 +95,7 @@ public class GistPrepareContentEndpoint
 			List<Pair<String,Boolean>> iuTokensLst = tokenizer.getAllTokens();
 			String[] iuTokens = new String[iuTokensLst.size()];
 			for (int ii=0; ii < iuTokens.length; ii++) {
-				String origToken = iuTokensLst.get(ii).getFirst();
+				String origToken = iuTokensLst.get(ii).getLeft();
 				iuTokens[ii] = TransCoder.ensureRoman(origToken);
 			}
 			result.iuSentences.add(iuTokens);
@@ -107,7 +107,7 @@ public class GistPrepareContentEndpoint
 			List<Pair<String,Boolean>> enTokensLst = tokenizer.getAllTokens();
 			String[] enTokens = new String[enTokensLst.size()];
 			for (int ii=0; ii < enTokens.length; ii++) {
-				enTokens[ii] = enTokensLst.get(ii).getFirst();
+				enTokens[ii] = enTokensLst.get(ii).getLeft();
 			}
 			result.enSentences.add(enTokens);
 		}

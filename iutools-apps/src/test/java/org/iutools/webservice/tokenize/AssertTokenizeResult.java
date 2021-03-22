@@ -1,7 +1,7 @@
 package org.iutools.webservice.tokenize;
 
-import ca.nrc.datastructure.Pair;
 import ca.nrc.testing.AssertObject;
+import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.webservice.AssertEndpointResult;
 import org.iutools.webservice.EndpointResult;
 import org.junit.jupiter.api.Assertions;

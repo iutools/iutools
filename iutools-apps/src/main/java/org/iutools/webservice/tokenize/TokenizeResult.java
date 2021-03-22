@@ -1,6 +1,6 @@
 package org.iutools.webservice.tokenize;
 
-import ca.nrc.datastructure.Pair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.webservice.EndpointResult;
 
 import java.util.List;

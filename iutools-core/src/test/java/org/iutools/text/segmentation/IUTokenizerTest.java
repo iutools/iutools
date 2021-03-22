@@ -4,11 +4,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import ca.nrc.datastructure.Pair;
 import ca.nrc.testing.AssertObject;
 
 public class IUTokenizerTest {
@@ -40,8 +40,8 @@ public class IUTokenizerTest {
 		//
 		List<Pair<String,Boolean>> tokens = tokenizer.getAllTokens();
 		for (Pair<String,Boolean> aToken: tokens) {
-			String tokString = aToken.getFirst();
-			if (aToken.getSecond()) {
+			String tokString = aToken.getLeft();
+			if (aToken.getRight()) {
 				// Token is an actual word
 			} else {
 				// Token is NOT a word
@@ -69,7 +69,7 @@ public class IUTokenizerTest {
 		Assert.assertTrue("",tokenizer.tokens.size()==1);
 		Assert.assertEquals("", "\"", tokenizer.tokens.get(0));
 		Assert.assertTrue("",tokenizer.allTokensPunctuation.size()==1);
-		Assert.assertEquals("", "\"", tokenizer.allTokensPunctuation.get(0).getFirst());
+		Assert.assertEquals("", "\"", tokenizer.allTokensPunctuation.get(0).getLeft());
 	}
 
 	@Test
@@ -130,30 +130,30 @@ public class IUTokenizerTest {
 		AssertObject.assertDeepEquals("", expectedWords, words);
 		
 		expectedTokens = new ArrayList<Pair<String,Boolean>>();
-		expectedTokens.add(new Pair<>("009",true));
-		expectedTokens.add(new Pair<>(" ",false));
-		expectedTokens.add(new Pair<>("-",false));
-		expectedTokens.add(new Pair<>(" ",false));
-		expectedTokens.add(new Pair<>("4",true));
-		expectedTokens.add(new Pair<>("(",false));
-		expectedTokens.add(new Pair<>("3",true));
-		expectedTokens.add(new Pair<>("):",false));
-		expectedTokens.add(new Pair<>(" ",false));
-		expectedTokens.add(new Pair<>("ᐃᖏᕐᕋᖃᑦᑕᕐᓂᕐᒧᑦ",true));
-		expectedTokens.add(new Pair<>(" ",false));
-		expectedTokens.add(new Pair<>("ᐳᓚᕋᖅᑐᓕᕆᓂᕐᒧᓪᓗ",true));
-		expectedTokens.add(new Pair<>(" ",false));
-		expectedTokens.add(new Pair<>("ᒪᓕᒐᐅᑉ",true));
-		expectedTokens.add(new Pair<>(" ",false));
-		expectedTokens.add(new Pair<>("ᓄᑖᖑᕆᐊᖅᑕᐅᓂᖓ",true));
-		expectedTokens.add(new Pair<>(" ",false));
-		expectedTokens.add(new Pair<>("(",false));
-		expectedTokens.add(new Pair<>("ᐃᐊᓪ",true));
-		expectedTokens.add(new Pair<>("-",false));
-		expectedTokens.add(new Pair<>("ᑲᓇᔪᖅ",true));
-		expectedTokens.add(new Pair<>(")",false));
-		expectedTokens.add(new Pair<>(" ",false));
-		expectedTokens.add(new Pair<>("159",true));
+		expectedTokens.add(Pair.of("009",true));
+		expectedTokens.add(Pair.of(" ",false));
+		expectedTokens.add(Pair.of("-",false));
+		expectedTokens.add(Pair.of(" ",false));
+		expectedTokens.add(Pair.of("4",true));
+		expectedTokens.add(Pair.of("(",false));
+		expectedTokens.add(Pair.of("3",true));
+		expectedTokens.add(Pair.of("):",false));
+		expectedTokens.add(Pair.of(" ",false));
+		expectedTokens.add(Pair.of("ᐃᖏᕐᕋᖃᑦᑕᕐᓂᕐᒧᑦ",true));
+		expectedTokens.add(Pair.of(" ",false));
+		expectedTokens.add(Pair.of("ᐳᓚᕋᖅᑐᓕᕆᓂᕐᒧᓪᓗ",true));
+		expectedTokens.add(Pair.of(" ",false));
+		expectedTokens.add(Pair.of("ᒪᓕᒐᐅᑉ",true));
+		expectedTokens.add(Pair.of(" ",false));
+		expectedTokens.add(Pair.of("ᓄᑖᖑᕆᐊᖅᑕᐅᓂᖓ",true));
+		expectedTokens.add(Pair.of(" ",false));
+		expectedTokens.add(Pair.of("(",false));
+		expectedTokens.add(Pair.of("ᐃᐊᓪ",true));
+		expectedTokens.add(Pair.of("-",false));
+		expectedTokens.add(Pair.of("ᑲᓇᔪᖅ",true));
+		expectedTokens.add(Pair.of(")",false));
+		expectedTokens.add(Pair.of(" ",false));
+		expectedTokens.add(Pair.of("159",true));
 		AssertObject.assertDeepEquals("", expectedTokens, tokenizer.getTokens());
 	}
 
@@ -240,8 +240,8 @@ public class IUTokenizerTest {
 		text = "2015−mit.";
 		tokenizer.tokenize(text);
 		List<Pair<String,Boolean>>expectedTokens = new ArrayList<Pair<String,Boolean>>();
-		expectedTokens.add(new Pair<>("2015−mit",true));
-		expectedTokens.add(new Pair<>(".",false));
+		expectedTokens.add(Pair.of("2015−mit",true));
+		expectedTokens.add(Pair.of(".",false));
 		AssertObject.assertDeepEquals("", expectedTokens, tokenizer.getTokens());
 	}
 	
@@ -252,11 +252,11 @@ public class IUTokenizerTest {
 		text = "a 0.08%−mit c";
 		tokenizer.tokenize(text);
 		List<Pair<String,Boolean>>expectedTokens = new ArrayList<Pair<String,Boolean>>();
-		expectedTokens.add(new Pair<>("a",true));
-		expectedTokens.add(new Pair<>(" ",false));
-		expectedTokens.add(new Pair<>("0.08%−mit",true));
-		expectedTokens.add(new Pair<>(" ",false));
-		expectedTokens.add(new Pair<>("c",true));
+		expectedTokens.add(Pair.of("a",true));
+		expectedTokens.add(Pair.of(" ",false));
+		expectedTokens.add(Pair.of("0.08%−mit",true));
+		expectedTokens.add(Pair.of(" ",false));
+		expectedTokens.add(Pair.of("c",true));
 		AssertObject.assertDeepEquals("", expectedTokens, tokenizer.getTokens());
 	}
 	
@@ -267,15 +267,15 @@ public class IUTokenizerTest {
 		text = "he said \"bla bla\".";
 		tokenizer.tokenize(text);
 		List<Pair<String,Boolean>>expectedTokens = new ArrayList<Pair<String,Boolean>>();
-		expectedTokens.add(new Pair<>("he",true));
-		expectedTokens.add(new Pair<>(" ",false));
-		expectedTokens.add(new Pair<>("said",true));
-		expectedTokens.add(new Pair<>(" ",false));
-		expectedTokens.add(new Pair<>("\"",false));
-		expectedTokens.add(new Pair<>("bla",true));
-		expectedTokens.add(new Pair<>(" ",false));
-		expectedTokens.add(new Pair<>("bla",true));
-		expectedTokens.add(new Pair<>("\".",false));
+		expectedTokens.add(Pair.of("he",true));
+		expectedTokens.add(Pair.of(" ",false));
+		expectedTokens.add(Pair.of("said",true));
+		expectedTokens.add(Pair.of(" ",false));
+		expectedTokens.add(Pair.of("\"",false));
+		expectedTokens.add(Pair.of("bla",true));
+		expectedTokens.add(Pair.of(" ",false));
+		expectedTokens.add(Pair.of("bla",true));
+		expectedTokens.add(Pair.of("\".",false));
 		AssertObject.assertDeepEquals("", expectedTokens, tokenizer.getTokens());
 	}
 	
@@ -286,27 +286,27 @@ public class IUTokenizerTest {
 		text = "he said 1. ok 2. fine ... 10. no.";
 		tokenizer.tokenize(text);
 		List<Pair<String,Boolean>>expectedTokens = new ArrayList<Pair<String,Boolean>>();
-		expectedTokens.add(new Pair<>("he",true));
-		expectedTokens.add(new Pair<>(" ",false));
-		expectedTokens.add(new Pair<>("said",true));
-		expectedTokens.add(new Pair<>(" ",false));
-		expectedTokens.add(new Pair<>("1",true));
-		expectedTokens.add(new Pair<>(".",false));
-		expectedTokens.add(new Pair<>(" ",false));
-		expectedTokens.add(new Pair<>("ok",true));
-		expectedTokens.add(new Pair<>(" ",false));
-		expectedTokens.add(new Pair<>("2",true));
-		expectedTokens.add(new Pair<>(".",false));
-		expectedTokens.add(new Pair<>(" ",false));
-		expectedTokens.add(new Pair<>("fine",true));
-		expectedTokens.add(new Pair<>(" ",false));
-		expectedTokens.add(new Pair<>("...",false));
-		expectedTokens.add(new Pair<>(" ",false));
-		expectedTokens.add(new Pair<>("10",true));
-		expectedTokens.add(new Pair<>(".",false));
-		expectedTokens.add(new Pair<>(" ",false));
-		expectedTokens.add(new Pair<>("no",true));
-		expectedTokens.add(new Pair<>(".",false));
+		expectedTokens.add(Pair.of("he",true));
+		expectedTokens.add(Pair.of(" ",false));
+		expectedTokens.add(Pair.of("said",true));
+		expectedTokens.add(Pair.of(" ",false));
+		expectedTokens.add(Pair.of("1",true));
+		expectedTokens.add(Pair.of(".",false));
+		expectedTokens.add(Pair.of(" ",false));
+		expectedTokens.add(Pair.of("ok",true));
+		expectedTokens.add(Pair.of(" ",false));
+		expectedTokens.add(Pair.of("2",true));
+		expectedTokens.add(Pair.of(".",false));
+		expectedTokens.add(Pair.of(" ",false));
+		expectedTokens.add(Pair.of("fine",true));
+		expectedTokens.add(Pair.of(" ",false));
+		expectedTokens.add(Pair.of("...",false));
+		expectedTokens.add(Pair.of(" ",false));
+		expectedTokens.add(Pair.of("10",true));
+		expectedTokens.add(Pair.of(".",false));
+		expectedTokens.add(Pair.of(" ",false));
+		expectedTokens.add(Pair.of("no",true));
+		expectedTokens.add(Pair.of(".",false));
 		AssertObject.assertDeepEquals("", expectedTokens, tokenizer.getTokens());
 	}
 	

@@ -1,7 +1,7 @@
 package org.iutools.webservice.tokenize;
 
 import ca.nrc.config.ConfigException;
-import ca.nrc.datastructure.Pair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.spellchecker.SpellCheckerException;
 import org.iutools.webservice.Endpoint;
 import org.iutools.webservice.EndpointResult;

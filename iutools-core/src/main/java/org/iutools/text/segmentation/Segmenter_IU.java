@@ -1,8 +1,8 @@
 package org.iutools.text.segmentation;
 
-import java.util.List;
+import org.apache.commons.lang3.tuple.Pair;
 
-import ca.nrc.datastructure.Pair;
+import java.util.List;
 
 public class Segmenter_IU extends Segmenter {
 
@@ -18,7 +18,7 @@ public class Segmenter_IU extends Segmenter {
 		List<Pair<String, Boolean>> allTokens = tokenizer.getAllTokens();
 		String[] tokens = new String[allTokens.size()];
 		for (int ii=0; ii < allTokens.size(); ii++) {
-			tokens[ii] = allTokens.get(ii).getFirst();
+			tokens[ii] = allTokens.get(ii).getLeft();
 		}
 
 		return tokens;
