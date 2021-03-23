@@ -26,9 +26,11 @@ class SearchController extends IUToolsController {
             this.setBusy(true);
             this.clearResults();
             var data = this.getSearchRequestData();
-            this.logOnServer("SEARCH_WEB", data);
-            this.invokeExpandQueryService(data,
-                this.expandQuerySuccessCallback, this.expandQueryFailureCallback)
+            if (!this.isDuplicateEvent("expandQueryThenSearch", data)) {
+                this.logOnServer("SEARCH_WEB", data);
+                this.invokeExpandQueryService(data,
+                    this.expandQuerySuccessCallback, this.expandQueryFailureCallback)
+            }
         }
     }
 

@@ -47,15 +47,35 @@ public class AssertGistPrepareContentResult extends AssertEndpointResult {
 		
 		return gotIUSentences;
 	}
-	
-	public AssertGistPrepareContentResult containsAlignment(Alignment expAlignment) {
-		
+
+	public AssertGistPrepareContentResult containsAlignment(
+		Alignment expAlignment) {
+		containsAlignment(expAlignment, (Integer)null);
+		return this;
+	}
+
+	public AssertGistPrepareContentResult containsAlignment(
+		Alignment expAlignment, Integer misalignmentTolerance) {
+
+		if (misalignmentTolerance == null) {
+			misalignmentTolerance = 5;
+		}
+
 		Assert.assertEquals(
 			"IU and EN alignments did not contain the same number of sentences", 
 			result().iuSentences.size(), result().enSentences.size());
 		
 		String alignments = "Alignments were:\n";
 		boolean found = false;
+		String expIuText = expAlignment.getText("iu");
+		String expEnText = expAlignment.getText("en");
+		Integer iuSeenAt = null;
+		Integer enSeenAt = null;
+
+		// Check to see if the IU and En sentences appear in alignments that
+		// are within misalignmentTolerance positions of each other
+		// (in other words, we tolerate if the alignment is off by say, 5
+		// positions)
 		for (int ii=0; ii < result().iuSentences.size(); ii++) {
 			String[] gotIuSentence = result().iuSentences.get(ii);
 			String gotIuText = String.join("", gotIuSentence);
@@ -63,8 +83,15 @@ public class AssertGistPrepareContentResult extends AssertEndpointResult {
 			String gotEnText = String.join("", gotEnSentence);
 			Alignment gotAlignment =
 				new Alignment("iu", gotIuText, "en", gotEnText);
-			System.out.println("** containsAlignment: Looking at gotAlignment="+gotAlignment);
-			if (gotAlignment.toString().equals(expAlignment.toString())) {
+
+			if (gotIuText.equals(expIuText)) {
+				iuSeenAt = ii;
+			}
+			if (gotEnText.equals(expEnText)) {
+				enSeenAt = ii;
+			}
+			if (iuSeenAt != null && enSeenAt != null &&
+				Math.abs(iuSeenAt-enSeenAt) < misalignmentTolerance) {
 				found = true;
 				break;
 			}

@@ -23,7 +23,7 @@ import org.iutools.text.ngrams.NgramCompiler;
  */
 public class MorphFailureAnalyzer {
 
-	private Integer minNgramLen = 3;
+	private Integer minNgramLen = 2;
 	private Integer maxNgramLen = 10;
 	private Pattern pattNgramExclusion = null;
 	
@@ -147,7 +147,7 @@ public class MorphFailureAnalyzer {
 						.compareTo(p1.getFailSucceedRatio());
 					if (comp == 0) {
 						comp = 	p2.getNumFailures()
-						.compareTo(p1.getNumFailures());
+							.compareTo(p1.getNumFailures());
 					}
 					return comp;
 				};

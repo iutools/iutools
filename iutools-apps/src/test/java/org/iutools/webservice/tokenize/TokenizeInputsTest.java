@@ -17,8 +17,7 @@ public class TokenizeInputsTest extends ServiceInputsTest {
 		TokenizeInputs inputs =
 			new TokenizeInputs("inukkksuk nunavut");
 		new AssertServiceInputs(inputs)
-			.logSummaryIs("{\"taskID\":null,\"text\":\"inukkksuk nunavut\"}");
+			.logSummaryIs("{\"taskID\":null,\"totalWords\":2}");
 			;
 	}
-
 }

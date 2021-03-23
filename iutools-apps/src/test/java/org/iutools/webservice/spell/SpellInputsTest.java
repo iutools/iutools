@@ -17,7 +17,7 @@ public class SpellInputsTest extends ServiceInputsTest {
 		ServiceInputs inputs =
 			new SpellInputs("inukkksuk");
 		new AssertServiceInputs(inputs)
-			.logSummaryIs("{\"includePartiallyCorrect\":false,\"taskID\":null,\"text\":\"inukkksuk\"}");
+			.logSummaryIs(null);
 			;
 	}
 }

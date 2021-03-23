@@ -5,10 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.iutools.webservice.ServiceException;
 import org.iutools.webservice.ServiceInputs;
 import org.iutools.webservice.gist.GistPrepareContentInputs;
+import org.iutools.webservice.tokenize.TokenizeInputs;
 import org.json.JSONObject;
 
 import java.util.Map;
-
 
 /**
  * Specifies the details of a UI task to be logged.
@@ -70,6 +70,11 @@ public class LogActionInputs extends ServiceInputs {
 				GistPrepareContentInputs.instantiateFromMap(
 					taskData,
 					GistPrepareContentInputs.class);
+		} else if (action == Action.SPELL) {
+			inputsToSummarize =
+				TokenizeInputs.instantiateFromMap(
+					taskData,
+				TokenizeInputs.class);
 		}
 		if (inputsToSummarize != null) {
 			data = inputsToSummarize.summarizeForLogging();

@@ -222,3 +222,25 @@ Submit form with Enter key
 - Enter morpheme 'tut', then PRESS ENTER
   - Form should be submitted 
  
+ ## Action logging
+ 
+ - For each of the actions mentioned below, make sure that the action is logged 
+   properly in the tomcat log, i.e.
+   - The action is logged once and only once
+   - The action is properly "summarized" in the case of 
+     - SPELL
+     - GIST_TEXT
+     
+ - Action to test
+   - Morpheme Examples
+     - Do a search for a morpheme (_action=MORPHEME_EXAMPLES)
+       - By typin ENTER and by clicking button
+   - Gister
+     - Gist some text (_action=GIST_TEXT)
+     - Click on a word to display its gist (_action=GIST_WORD)
+   - Spell Checker
+     - Spellcheck some text (_action=SPELL)
+   - Web Search
+     - Search for a word (_action=SEARCH_WEB)
+     - By typin ENTER and by clicking button
+     

@@ -65,14 +65,15 @@ public abstract class Endpoint
 	private void logRequest(HttpServletRequest request, I inputs) throws ServiceException {
 
 		Map<String,Object> inputSummary = inputs.summarizeForLogging();
+		if (inputSummary != null) {
 
-		JSONObject logEntry = new JSONObject()
+			JSONObject logEntry = new JSONObject()
 			.put("_uri", request.getRequestURI())
 			.put("_taskID", inputs.taskID)
-			.put("taskData", inputSummary)
-			;
-		String json = jsonifyLogEntry(logEntry);
-		logger().info(json);
+			.put("taskData", inputSummary);
+			String json = jsonifyLogEntry(logEntry);
+			logger().info(json);
+		}
 		return;
 	}
 

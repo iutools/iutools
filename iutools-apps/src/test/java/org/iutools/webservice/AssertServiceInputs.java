@@ -5,6 +5,7 @@ import ca.nrc.testing.Asserter;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import org.junit.jupiter.api.Assertions;
 
 import java.util.Map;
 
@@ -31,9 +32,23 @@ public class AssertServiceInputs extends Asserter<ServiceInputs> {
 	public AssertServiceInputs logSummaryIs(String expSummary) throws Exception {
 		Map<String, Object> gotSummaryMap = inputs().summarizeForLogging();
 		String gotSummary = mapper.writeValueAsString(gotSummaryMap);
-		AssertString.assertStringEquals(
-			baseMessage+"\nLog summary was not as expected.",
+
+		String mess =
+			baseMessage+"\nLog summary was not as expected.\n"+
+			"Expected : "+expSummary+"\n"+
+			"Actual   : "+gotSummary;
+		if (gotSummaryMap == null || expSummary == null) {
+			int nullsCount = 0;
+			if (gotSummaryMap == null) {nullsCount++;}
+			if (expSummary == null) {nullsCount++;}
+			if (nullsCount != 2) {
+				Assertions.fail(mess);
+			}
+		} else {
+			AssertString.assertStringEquals(
+			baseMessage + "\nLog summary was not as expected.",
 			expSummary, gotSummary);
+		}
 
 		return this;
 	}

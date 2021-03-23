@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 
 import ca.nrc.datastructure.Pair;
 import ca.nrc.string.StringUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ProblematicNGram {
 	
@@ -29,7 +30,12 @@ public class ProblematicNGram {
 			Pair.of("", new Long(-2)); 
 	
 	private Double failureSuccessRatio = null;
-	
+
+	ObjectMapper mapper = new ObjectMapper();
+	{
+
+	}
+
 	public ProblematicNGram(String _ngram) {
 		initProblematicNGram(_ngram);
 	}
@@ -117,6 +123,22 @@ public class ProblematicNGram {
 			StringUtils.join(successExamples().iterator(), "; ")
 			;
 		return csv;
+	}
+
+	public String toJSON() {
+		Map<String,Object> jsonMap = new HashMap<String,Object>();
+		jsonMap.put("1_ngram", this.ngram);
+		jsonMap.put("2_fs-ratio", this.getFailSucceedRatio());
+		jsonMap.put("3_total-failures", failureMass);
+		jsonMap.put("4_total-successes", numSuccesses);
+		jsonMap.put("5_failure-examples", failureExamples());
+		jsonMap.put("6_success-examples", failureExamples());
+
+		String json = null;
+//			MapperFactory.mapper(MapperFactory.Options.SORT_FIELDS)
+//			.writeValueAsString(jsonMap);
+
+		return json;
 	}
 
 	public static String csvHeaders() {

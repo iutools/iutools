@@ -16,6 +16,10 @@ public class ServiceInputs {
 	 * Create a "summary" of these outputs, to make its log entry shorter.
 	 * By default, the summary contains every field of the input.
 	 * Subclasses can override the method to provide a more concise summary.
+	 *
+	 * If the method returns null, it means this particular endpoint input
+	 * is not to be logged.
+	 *
 	 * @return
 	 */
 	public Map<String, Object> summarizeForLogging() throws ServiceException {

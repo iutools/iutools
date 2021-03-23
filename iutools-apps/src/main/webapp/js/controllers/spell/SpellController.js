@@ -74,7 +74,7 @@ class SpellController extends IUToolsController {
 			}
 			tracer.trace("Appending text for this item:'"+text+"'");
 			allText += text;
-			tracer.trace("allText="+allText);
+			tracer.trace("allText='"+allText+"'");
 
 		});
 		return allText;
@@ -103,8 +103,10 @@ class SpellController extends IUToolsController {
 	 * soon as it becomes available.
 	 */
 	tokenizeAndSpellCheck() {
+		var data = this.tokenizeRequestData();
+		this.logOnServer("SPELL", data);
 		this.invokeTokenizeService(
-			this.tokenizeRequestData(),
+			data,
 			this.cbkTokenizeSuccess, this.cbkTokenizeFailure
 		);
 	}
@@ -273,15 +275,20 @@ class SpellController extends IUToolsController {
 	 * web server.
 	 */
 	cbkTokenizeSuccess(resp) {
+		var tracer = Debug.getTraceLogger("SpellChecker.cbkTokenizeSuccess");
+		tracer.trace("resp="+JSON.stringify(resp));
 		if (resp.errorMessage != null) {
 			this.cbkTokenizeFailure(resp);
 		} else {
 			// Retrieve the tokens from the tokenize response
 			var respTokens = resp['tokens'];
+			tracer.trace("respTokens="+JSON.stringify(respTokens));
 			this.tokensRemaining = [];
 			for (var ii=0; ii < respTokens.length; ii++) {
 				var respToken = respTokens[ii];
-				this.tokensRemaining.push({text: respToken.first, isWord:respToken.second})
+				for (const [text, isWord] of Object.entries(respToken)) {
+					this.tokensRemaining.push({text: text, isWord: isWord})
+				}
 			}
 
 			// Spell check the tokens
@@ -295,6 +302,8 @@ class SpellController extends IUToolsController {
 	 * web server.
 	 */
 	spellCheckRemainingTokens() {
+		var tracer = Debug.getTraceLogger("SpellController.spellCheckRemainingTokens")
+		tracer.trace("this.tokensRemaining="+JSON.stringify(this.tokensRemaining));
 		if (this.abortCheck) {
 			this.clearRemainingWords();
 		}
@@ -306,6 +315,7 @@ class SpellController extends IUToolsController {
 		}
 
 		this.tokenBeingChecked = this.tokensRemaining.shift();
+		tracer.trace("this.tokenBeingChecked="+JSON.stringify(this.tokenBeingChecked));
 		this.spellCheckToken(this.tokenBeingChecked);
 		var spellController = this;
 
@@ -381,6 +391,8 @@ class SpellController extends IUToolsController {
 	}
 
 	cbkSpellWordFailure(resp) {
+		var tracer = Debug.getTraceLogger("SpellController.cbkSpellWordFailure")
+		tracer.trace("resp="+JSON.stringify(resp));
 		if (! resp.hasOwnProperty("errorMessage")) {
 			// Error condition comes from tomcat itself, not from our servlet
 			resp.errorMessage =
@@ -536,6 +548,8 @@ class SpellController extends IUToolsController {
 	 * @param token
 	 */
 	spellCheckToken(token) {
+		var tracer = Debug.getTraceLogger("SpellController.spellCheckToken")
+		tracer.trace("token="+JSON.stringify(token));
 		if (!token.isWord) {
 			this.displayToken(token);
 			this.tokenBeingChecked = null;
