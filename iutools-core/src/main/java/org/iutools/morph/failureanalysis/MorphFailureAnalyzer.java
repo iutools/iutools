@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import ca.nrc.ui.commandline.UserIO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import org.iutools.text.ngrams.NgramCompiler;
@@ -24,11 +25,13 @@ import org.iutools.text.ngrams.NgramCompiler;
 public class MorphFailureAnalyzer {
 
 	private Integer minNgramLen = 2;
-	private Integer maxNgramLen = 10;
+	private Integer maxNgramLen = 5;
 	private Pattern pattNgramExclusion = null;
 	
 	private long totalSuccesses = 0;
 	private long totalFailures = 0;
+
+	public UserIO userIO = new UserIO();
 	
 	Map<String,ProblematicNGram> ngramStats = 
 		new HashMap<String,ProblematicNGram>();
@@ -47,7 +50,9 @@ public class MorphFailureAnalyzer {
 
 	public void addWord(String word, boolean analyzesSuccessfully,
 			Long freq) {
-		if (!ignoreWord(word)) {		
+		if (ignoreWord(word)) {
+			echoWord(word, "IGNORED");
+		} else {
 			Set<String> ngrams = 
 				new NgramCompiler()
 					.setMin(minNgramLen)
@@ -55,13 +60,19 @@ public class MorphFailureAnalyzer {
 					.compile(word);
 		
 			if (analyzesSuccessfully) {
+				echoWord(word, "SUCCESS");
 				onSuccesfulWord(word, ngrams, freq);
 			} else {
+				echoWord(word, "FAILURE");
 				onFailingWord(word, ngrams, freq);
 			}
 		}
 	}
-	
+
+	private long totalWords() {
+		return totalFailures + totalSuccesses;
+	}
+
 	private boolean ignoreWord(String word) {
 		boolean ignore = false;
 		if (pattNgramExclusion != null &&
@@ -72,7 +83,7 @@ public class MorphFailureAnalyzer {
 	}
 
 	private void onFailingWord(String word, Set<String> ngrams, Long freq) {
-		totalFailures++;		
+		totalFailures++;
 		for (String aNgram: ngrams) {
 			ProblematicNGram stats = statsForNGram(aNgram);
 			
@@ -84,9 +95,13 @@ public class MorphFailureAnalyzer {
 				}
 				stats.failureMass += freq;
 			}
-			
+
 			stats.addFailureExample(word);
 		}
+	}
+
+	private void echoWord(String word, String outcome) {
+		userIO.echo(totalWords()+". "+word+" = "+outcome, UserIO.Verbosity.Level1);
 	}
 
 	private void onSuccesfulWord(String word, Set<String> ngrams, Long freq) {
@@ -140,13 +155,29 @@ public class MorphFailureAnalyzer {
 	private Comparator<ProblematicNGram> getProblemComparator(ProblematicNGram.SortBy sortBy) {
 		Comparator<ProblematicNGram> comparator  = null;
 		
-		if (sortBy == ProblematicNGram.SortBy.FS_RATIO) {
-			comparator = 
+		if (sortBy == ProblematicNGram.SortBy.FS_RATIO_THEN_FAILURES) {
+			comparator =
+			(ProblematicNGram p1, ProblematicNGram p2) -> {
+				int comp = p2.getFailSucceedRatio()
+				.compareTo(p1.getFailSucceedRatio());
+				if (comp == 0) {
+					comp = p2.getNumFailures()
+					.compareTo(p1.getNumFailures());
+				}
+				return comp;
+			};
+		} else if (sortBy == ProblematicNGram.SortBy.FS_RATIO_THEN_LENGTH_THEN_N_FAILURES) {
+			comparator =
 				(ProblematicNGram p1, ProblematicNGram p2) -> {
 					int comp = p2.getFailSucceedRatio()
 						.compareTo(p1.getFailSucceedRatio());
 					if (comp == 0) {
-						comp = 	p2.getNumFailures()
+						comp = Integer.compare(
+							p1.ngram.length(),
+							p2.ngram.length());
+					}
+					if (comp == 0) {
+						comp = p2.getNumFailures()
 							.compareTo(p1.getNumFailures());
 					}
 					return comp;

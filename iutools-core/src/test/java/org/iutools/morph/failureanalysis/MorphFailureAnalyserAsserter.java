@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 
 import ca.nrc.string.StringUtils;
@@ -54,10 +56,7 @@ public class MorphFailureAnalyserAsserter
 			Double expFSRatio, int expNumFail, Long expFailureMass,
 			String[] expFailures, String[] expSuccesse) {
 		
-		Double exp = null;
-		Double got = null;
-		AssertNumber.assertEquals("Nevermind ",exp, got, 0.01);
-		
+
 		if (expFailureMass == null) {
 			expFailureMass = new Long(-1);
 		}
@@ -69,7 +68,7 @@ public class MorphFailureAnalyserAsserter
 		if (expSuccesse == null) {
 			expSuccesse = new String[0];
 		}
-		
+
 		ProblematicNGram ngramStats = analyzer().statsForNGram(ngram);
 		
 		Double gotFSRatio = ngramStats.getFailSucceedRatio();
@@ -89,17 +88,20 @@ public class MorphFailureAnalyserAsserter
 				baseMessage+"\nFailure mass not as expected for ngram "+
 					ngram, 
 					expFailureMass, gotFailureMass);
-		
+
+		List<String> expFailedWords = new ArrayList<String>();
+		for (Pair<String,Long> aFailure: ngramStats.failureExamples)
+
 		for (String expExample: expFailures) {
 			String mess = 
 				baseMessage+
 				"\nExamples of failure for ngram "+ngram+
 				" were not as expected.\nShould have contained word: "+
 				expExample+"\nGot examples: "+
-				StringUtils.join(ngramStats.failureExamples().iterator(), ", ");
+				StringUtils.join(ngramStats.failureExamples.iterator(), ", ");
 			
 			Assert.assertTrue(mess, 
-				ngramStats.failureExamples().contains(expExample));
+				ngramStats.failedWords().contains(expExample));
 		}
 
 		for (String expExample: expSuccesse) {
@@ -108,10 +110,10 @@ public class MorphFailureAnalyserAsserter
 				"\nExamples of successes for ngram "+ngram+
 				" were not as expected.\nShould have contained word: "+
 				expExample+"\nGot examples: "+
-				StringUtils.join(ngramStats.successExamples().iterator(), ", ");
+				StringUtils.join(ngramStats.successExamples.iterator(), ", ");
 			
 			Assert.assertTrue(mess, 
-				ngramStats.successExamples().contains(expExample));
+				ngramStats.successfulWords().contains(expExample));
 		}
 
 		return this;

@@ -1,40 +1,41 @@
 package org.iutools.morph.failureanalysis;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.*;
 
-import ca.nrc.datastructure.Pair;
+import org.apache.commons.lang3.tuple.Pair;
+
+import ca.nrc.dtrc.elasticsearch.DocIterator;
 import ca.nrc.string.StringUtils;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.iutools.corpus.CompiledCorpus;
+import org.iutools.corpus.CompiledCorpusException;
+import org.iutools.corpus.WordInfo;
 
 public class ProblematicNGram {
 	
 	public static final int MAX_EXAMPLES = 20;
-	public static enum SortBy {FS_RATIO, N_FAILURES};
+
+	public static enum SortBy {
+		FS_RATIO_THEN_FAILURES, FS_RATIO_THEN_LENGTH_THEN_N_FAILURES, N_FAILURES};
 	
 	public String ngram = null;
 	public long numFailures = 0;
 	public long numSuccesses = 0;
 	public long failureMass = -1;
-	
-	private Map<String,Long> failureExampleFreq = new HashMap<String,Long>();
-	private Pair<String,Long> failureExampleWithSmallestFreq = 
-			Pair.of("", new Long(-2)); 
-	
-	private Map<String,Long> successExampleFreq = new HashMap<String,Long>();
-	private Pair<String,Long> successExampleWithSmallestFreq = 
-			Pair.of("", new Long(-2)); 
-	
+
+	public List<Pair<String,Long>> failureExamples =
+		new ArrayList<Pair<String,Long>>();
+	Pair<String,Long> failureWithSmallestFreq =
+		Pair.of("", new Long(-1));
+
+	public List<Pair<String,Long>> successExamples =
+		new ArrayList<Pair<String,Long>>();
+	Pair<String,Long> successWithSmallestFreq =
+		Pair.of("", new Long(-1));
+
+
+	private String examplesComputedForCorpus = null;
+
 	private Double failureSuccessRatio = null;
-
-	ObjectMapper mapper = new ObjectMapper();
-	{
-
-	}
 
 	public ProblematicNGram(String _ngram) {
 		initProblematicNGram(_ngram);
@@ -47,62 +48,72 @@ public class ProblematicNGram {
 	public void addFailureExample(String word) {
 		addFailureExample(word, null);
 	}
-	
+
 	public void addFailureExample(String word, Long freq) {
 		if (freq == null) {
 			freq = new Long(-1);
 		}
-		if (failureExampleFreq.keySet().size() < MAX_EXAMPLES) {
-			failureExampleFreq.put(word, freq);
+		Pair<String,Long> currFailure = Pair.of(word, freq);
+		boolean currHasLowestFreq =
+			(failureWithSmallestFreq == null ||
+				freq < failureWithSmallestFreq.getRight());
+
+ 		if (failureExamples.size() < MAX_EXAMPLES) {
+			failureExamples.add(currFailure);
 		} else {
-			// Too many examples. Insert this one if its frequency 
+			// Too many examples. Insert this one if its frequency
 			// is higher than the lowes-frequency example
 			//
-			if (freq > failureExampleWithSmallestFreq.getSecond()) {
-				failureExampleFreq.remove(
-					failureExampleWithSmallestFreq.getFirst());
-				failureExampleFreq.put(word, freq);
-				failureExampleWithSmallestFreq = 
-					exampleWithSmallestFreq(failureExampleFreq);
+			if (!currHasLowestFreq) {
+				failureExamples.remove(failureWithSmallestFreq);
+				failureExamples.add(currFailure);
 			}
 		}
-	}
+		failureWithSmallestFreq =
+			exampleWithSmallestFreq(failureExamples);
 
-	private Pair<String, Long> exampleWithSmallestFreq(Map<String, Long> examples) {
-		Pair<String,Long> example = null;
-		for (Entry<String, Long> entry: examples.entrySet()) {
-			if (example == null || entry.getValue() < example.getSecond()) {
-				example = Pair.of(entry.getKey(), entry.getValue());
-			}
-		}
-		return example;
 	}
 
 	public void addSuccessExample(String word) {
 		addSuccessExample(word, null);
 	}
-	
+
 	public void addSuccessExample(String word, Long freq) {
 		if (freq == null) {
 			freq = new Long(-1);
 		}
-		if (successExampleFreq.keySet().size() < MAX_EXAMPLES) {
-			successExampleFreq.put(word, freq);
+		Pair<String,Long> currSuccess = Pair.of(word, freq);
+		boolean currHasLowestFreq =
+			(successWithSmallestFreq == null ||
+				freq < successWithSmallestFreq.getRight());
+
+		if (successExamples.size() < MAX_EXAMPLES) {
+			successExamples.add(currSuccess);
 		} else {
-			// Too many examples. Insert this one if its frequency 
-			// is higher than the lowest-frequency example
+			// Too many examples. Insert this one if its frequency
+			// is higher than the lowes-frequency example
 			//
-			if (freq > successExampleWithSmallestFreq.getSecond()) {
-				successExampleFreq.remove(
-					successExampleWithSmallestFreq.getFirst());
-				successExampleFreq.put(word, freq);
-				successExampleWithSmallestFreq = 
-					exampleWithSmallestFreq(successExampleFreq);
+			if (!currHasLowestFreq) {
+				successExamples.remove(successWithSmallestFreq);
+				successExamples.add(currSuccess);
 			}
 		}
-		
+		successWithSmallestFreq =
+			exampleWithSmallestFreq(failureExamples);
 	}
-	
+
+	private Pair<String, Long> exampleWithSmallestFreq(
+		List<Pair<String,Long>> examples) {
+		Pair<String,Long> lowestFreqExample = null;
+		for (Pair<String, Long> anExample: examples) {
+			if (lowestFreqExample == null ||
+				anExample.getRight() < lowestFreqExample.getRight()) {
+				lowestFreqExample = anExample;
+			}
+		}
+		return lowestFreqExample;
+	}
+
 	public Long getNumFailures() {
 		return numFailures;
 	}
@@ -116,29 +127,19 @@ public class ProblematicNGram {
 	}	
 
 	public String toCSV() {
-		String csv = 
+
+		String strFailures =
+			StringUtils.join(failureExamples.iterator(), "; ")
+			.replaceAll(",", "=");
+		String strSuccesses =
+			StringUtils.join(successExamples.iterator(), "; ")
+			.replaceAll(",", "=");
+
+		String csv =
 			ngram+","+
 			getFailSucceedRatio()+","+getNumFailures()+","+failureMass+","+
-			StringUtils.join(failureExamples().iterator(), "; ")+","+
-			StringUtils.join(successExamples().iterator(), "; ")
-			;
+			strFailures+","+strSuccesses;
 		return csv;
-	}
-
-	public String toJSON() {
-		Map<String,Object> jsonMap = new HashMap<String,Object>();
-		jsonMap.put("1_ngram", this.ngram);
-		jsonMap.put("2_fs-ratio", this.getFailSucceedRatio());
-		jsonMap.put("3_total-failures", failureMass);
-		jsonMap.put("4_total-successes", numSuccesses);
-		jsonMap.put("5_failure-examples", failureExamples());
-		jsonMap.put("6_success-examples", failureExamples());
-
-		String json = null;
-//			MapperFactory.mapper(MapperFactory.Options.SORT_FIELDS)
-//			.writeValueAsString(jsonMap);
-
-		return json;
 	}
 
 	public static String csvHeaders() {
@@ -147,62 +148,68 @@ public class ProblematicNGram {
 		return headers;
 	}
 
-	public List<String> failureExamples() {
-		List<Pair<String,Long>> examplesWithFreq = 
-				failureExamplesWithFreq();
-		List<String> examples = new ArrayList<String>();
-		for (Pair<String,Long> anExample: examplesWithFreq) {
-			examples.add(anExample.getFirst());
-		}
-		return examples;
-	}
-	
-	public List<Pair<String, Long>> failureExamplesWithFreq() {
-		List<Pair<String,Long>> examples = 
-			new ArrayList<Pair<String,Long>>();
-		for (String word: failureExampleFreq.keySet()) {
-			examples.add(Pair.of(word, failureExampleFreq.get(word)));
-		}
-		
-		sortExamplesByFreq(examples);
-				
-		return examples;
-	}
-	
+	public void computeExamples(CompiledCorpus corpus) throws MorphFailureAnalyzerException {
+		try {
+			String corpusName = corpus.getIndexName();
+			if (examplesComputedForCorpus == null ||
+				!examplesComputedForCorpus.equals(corpusName)) {
+				Set<String> fields = new HashSet<String>();
+				Collections.addAll(fields, new String[] {"word", "frequency"});
 
-	private void sortExamplesByFreq(List<Pair<String, Long>> examples) {
-		Collections.sort(examples, 
-			(Pair<String,Long> e1, Pair<String,Long> e2) -> {
-				Long e1Freq = e1.getSecond();
-				Long e2Freq = e2.getSecond();
-				int compare = 0;
-				if (e1Freq != null && e2Freq != null) {
-					compare = e1.getSecond().compareTo(e2.getSecond());
+				DocIterator<WordInfo> iter =
+					corpus.searchWordsContainingNgram(this.ngram, fields)
+					.docIterator();
+				final int MAX_TO_LOOK_AT = 1000;
+				int wordCounter = 0;
+				while (iter.hasNext() && wordCounter < MAX_TO_LOOK_AT) {
+					wordCounter++;
+					WordInfo winfo = iter.next();
+					String word = winfo.word;
+					long freq = winfo.frequency;
+					if (winfo.decompositionsSample != null &&
+						winfo.decompositionsSample.length > 0) {
+						successExamples.add(Pair.of(word, freq));
+					} else {
+						failureExamples.add(Pair.of(word, freq));
+					}
 				}
-				return compare;
-			});
-	}
-
-	public List<String> successExamples() {
-		List<Pair<String,Long>> examplesWithFreq = 
-				successExamplesWithFreq();
-		List<String> examples = new ArrayList<String>();
-		for (Pair<String,Long> anExample: examplesWithFreq) {
-			examples.add(anExample.getFirst());
-		}
-		return examples;
-	}
-
-
-	public List<Pair<String, Long>> successExamplesWithFreq() {
-		List<Pair<String,Long>> examples = 
-				new ArrayList<Pair<String,Long>>();
-			for (String word: successExampleFreq.keySet()) {
-				examples.add(Pair.of(word, failureExampleFreq.get(word)));
+				this.successExamples = pickMostFrequentExamples(this.successExamples);
+				this.failureExamples = pickMostFrequentExamples(this.failureExamples);
 			}
-			
-			sortExamplesByFreq(examples);
-					
-			return examples;
+		} catch (CompiledCorpusException e) {
+			throw new MorphFailureAnalyzerException(e);
+		}
+	}
+
+	private List<Pair<String, Long>> pickMostFrequentExamples(
+		List<Pair<String, Long>> examplesWithFreq) {
+		List<String> picked = new ArrayList<String>();
+
+		examplesWithFreq.sort((a, b) -> {
+			int comp = b.getRight().compareTo(a.getRight());
+			return comp;
+		});
+
+		examplesWithFreq = examplesWithFreq.subList(
+			0, Math.min(examplesWithFreq.size(), MAX_EXAMPLES));
+
+
+		return examplesWithFreq;
+	}
+
+	List<String> failedWords() {
+		List<String> words = new ArrayList<String>();
+		for (Pair<String,Long> anExample:failureExamples) {
+			words.add(anExample.getLeft());
+		}
+		return words;
+	}
+
+	List<String> successfulWords() {
+		List<String> words = new ArrayList<String>();
+		for (Pair<String,Long> anExample:successExamples) {
+			words.add(anExample.getLeft());
+		}
+		return words;
 	}
 }

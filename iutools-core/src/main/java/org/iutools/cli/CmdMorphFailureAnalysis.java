@@ -5,6 +5,7 @@ import java.util.List;
 
 import ca.nrc.ui.commandline.CommandLineException;
 import org.iutools.morph.failureanalysis.MorphFailureAnalyzer;
+import org.iutools.morph.failureanalysis.MorphFailureAnalyzerException;
 import org.iutools.morph.failureanalysis.ProblematicNGram;
 import org.iutools.morph.failureanalysis.ProblematicNGram.SortBy;
 import ca.nrc.ui.commandline.UserIO.Verbosity;
@@ -16,6 +17,7 @@ import org.iutools.corpus.WordInfo;
 public class CmdMorphFailureAnalysis extends ConsoleCommand {
 	
 	Verbosity verbosity = getVerbosity();
+	CompiledCorpus corpus = null;
 	
 	public CmdMorphFailureAnalysis(String name) throws CommandLineException {
 		super(name);
@@ -29,11 +31,12 @@ public class CmdMorphFailureAnalysis extends ConsoleCommand {
 			;
 	}
 	
-	
 	@Override
 	public void execute() throws Exception {
 
-		CompiledCorpus corpus = new CompiledCorpusRegistry().getCorpus();
+		corpus = new CompiledCorpusRegistry().getCorpus();
+
+		this.user_io.setVerbosity(getVerbosity());
 		MorphFailureAnalyzer analyzer = makeAnalyzer();
 				
 		loadCorpusWords(corpus, analyzer);
@@ -42,11 +45,14 @@ public class CmdMorphFailureAnalysis extends ConsoleCommand {
 		if (numProblems == null) {
 			numProblems = new Long(200);
 		}
-		
-		printMostProblematicNgrams(analyzer, SortBy.FS_RATIO, 
+
+
+		printMostProblematicNgrams(analyzer, SortBy.FS_RATIO_THEN_FAILURES,
 				numProblems);
 		printMostProblematicNgrams(analyzer, SortBy.N_FAILURES, 
 				numProblems);
+		printMostProblematicNgrams(analyzer, SortBy.FS_RATIO_THEN_LENGTH_THEN_N_FAILURES,
+			numProblems);
 	}
 
 	private MorphFailureAnalyzer makeAnalyzer() {
@@ -59,22 +65,20 @@ public class CmdMorphFailureAnalysis extends ConsoleCommand {
 		
 		String excludePatt = getExcludePattern();
 		analyzer.setExclude(excludePatt);
+		analyzer.userIO = this.user_io;
 
 		return analyzer;
 	}
 
 	private void loadCorpusWords(CompiledCorpus corpus, 
 			MorphFailureAnalyzer analyzer) throws CompiledCorpusException {
-		
+
 		Long countdown = getMaxWords();
 		Iterator<String> iter = corpus.allWords();
 		while (iter.hasNext()) {
 			String word = iter.next();
 			WordInfo wInfo = corpus.info4word(word);
 			Boolean decomposes = wInfo.decomposesSuccessfully();
-			if (verbosityLevelIsMet(Verbosity.Level1)) {
-				echo("loading word: "+word+" (decomposes: "+decomposes+")");
-			}
 			analyzer.addWord(word, decomposes, wInfo.frequency);
 			countdown--;
 			if (countdown == 0) {
@@ -86,7 +90,7 @@ public class CmdMorphFailureAnalysis extends ConsoleCommand {
 	}
 	
 	private void printMostProblematicNgrams(MorphFailureAnalyzer analyzer, 
-			SortBy sortBy, Long maxProblems) {
+			SortBy sortBy, Long maxProblems) throws CommandLineException {
 		
 		echo("List of "+maxProblems+" most problematic ngrams");
 		echo("  sorted by "+sortBy);
@@ -98,6 +102,11 @@ public class CmdMorphFailureAnalysis extends ConsoleCommand {
 			List<ProblematicNGram> problems = analyzer.getProblems(sortBy);
 			for (int ii=0; ii < problems.size(); ii++) {
 				ProblematicNGram aProblem = problems.get(ii);
+				try {
+					aProblem.computeExamples(this.corpus);
+				} catch (MorphFailureAnalyzerException e) {
+					throw new CommandLineException(e);
+				}
 				echo(aProblem.toCSV());
 				if (problemCount == maxProblems) {
 					break;

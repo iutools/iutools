@@ -47,7 +47,7 @@ public class MorphFailureAnalyzerTest {
 		// - the Fail/Success ratio first
 		//
 		List<ProblematicNGram> problems = 
-				analyzer.getProblems(ProblematicNGram.SortBy.FS_RATIO);
+				analyzer.getProblems(ProblematicNGram.SortBy.FS_RATIO_THEN_FAILURES);
 		for (ProblematicNGram problem: problems) {
 			//
 			// Each ngram provides information that can be used to prioritize 
@@ -82,19 +82,19 @@ public class MorphFailureAnalyzerTest {
 				//
 				long failureMass = problem.failureMass;
 				
-				// Most frequent failing words that contain the ngram
-				// You can get just the words, or the words with their 
-				// frequency
-				List<String> failureExamples = problem.failureExamples();
-				List<Pair<String,Long>> failureExamplesWithFreqs =
-						problem.failureExamplesWithFreq();
-
-				// Most frequent succeding words that contain the ngram
-				// You can get just the words, or the words with their 
-				// frequency
-				List<String> successExamples = problem.successExamples();
-				List<Pair<String,Long>> successExamplesWithFreqs =
-						problem.successExamplesWithFreq();
+//				// Most frequent failing words that contain the ngram
+//				// You can get just the words, or the words with their
+//				// frequency
+//				List<String> failureExamples = problem.failureExamples;
+//				List<Pair<String,Long>> failureExamplesWithFreqs =
+//						problem.failureExamplesWithFreq();
+//
+//				// Most frequent succeding words that contain the ngram
+//				// You can get just the words, or the words with their
+//				// frequency
+//				List<String> successExamples = problem.successExamples;
+//				List<Pair<String,Long>> successExamplesWithFreqs =
+//						problem.successExamplesWithFreq();
 			}
 		}
 	}
@@ -115,7 +115,7 @@ public class MorphFailureAnalyzerTest {
 		new MorphFailureAnalyserAsserter(analyzer, "")
 		
 			// Sort the problems by Fail/Success ratio
-			.mostProblematicNgramEqual(ProblematicNGram.SortBy.FS_RATIO,
+			.mostProblematicNgramEqual(ProblematicNGram.SortBy.FS_RATIO_THEN_FAILURES,
 					new String[] {"inn", "iga", "ssi"})
 			
 			// Sort the problems by Num failures
@@ -179,7 +179,7 @@ public class MorphFailureAnalyzerTest {
 		new MorphFailureAnalyserAsserter(analyzer, "")
 		
 			// Sort the problems by Fail/Success ratio
-			.mostProblematicNgramEqual(ProblematicNGram.SortBy.FS_RATIO,
+			.mostProblematicNgramEqual(ProblematicNGram.SortBy.FS_RATIO_THEN_FAILURES,
 					new String[] {"juk", "iga", "aku"})
 			
 			.statsForNgramEqual("juk", 
