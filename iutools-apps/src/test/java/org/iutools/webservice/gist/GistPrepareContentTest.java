@@ -17,7 +17,7 @@ public class GistPrepareContentTest extends EndpointTest {
 	 ***********************/
 
 	@Test
-	public void test__GistPrepareContentEndpoint__InputIsContent() throws Exception {
+	public void test__GistPrepareContentEndpoint__InputIsSyllabicContent() throws Exception {
 		
 		String text = "ᒪᓕᒐᓕᐅᖅᑎ ᔫ ᓴᕕᑲᑖᖅ ᓂᕈᐊᖅᑕᐅᒃᑲᓐᓂᓚᐅᖅᐳᖅ";
 		GistPrepareContentInputs inputs =

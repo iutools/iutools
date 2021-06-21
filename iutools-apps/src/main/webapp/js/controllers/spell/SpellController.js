@@ -55,11 +55,13 @@ class SpellController extends IUToolsController {
 		var prevEltWasCorrection = false;
 		wholeTextElements.each(function (index, item) {
 			tracer.trace("item.textContent='"+item.textContent+"'");
+            tracer.trace("prevEltWasCorrection="+prevEltWasCorrection);
 			var text = "";
+			var curr_elt_is_correction = false
 			if ($(item).is('.corrections')) {
 				tracer.trace("Item IS a correction");
 				text = $(item).find('.selected').text();
-				prevEltWasCorrection = true;
+                curr_elt_is_correction = true;
 			} else  {
 				tracer.trace("Item is NOT a correction");
 				text = $(item).text();
@@ -70,11 +72,13 @@ class SpellController extends IUToolsController {
 				// For some reason, we get a "\n" string after
 				// each correction element. Skip those
 				tracer.trace("Item is a spurious newline that follows a correction div. Skipping it.");
-				return;
-			}
-			tracer.trace("Appending text for this item:'"+text+"'");
-			allText += text;
-			tracer.trace("allText='"+allText+"'");
+			} else {
+                tracer.trace("Appending text for this item:'" + text + "'");
+                allText += text;
+                tracer.trace("allText='" + allText + "'");
+
+                prevEltWasCorrection = curr_elt_is_correction
+            }
 
 		});
 		return allText;
@@ -531,7 +535,7 @@ class SpellController extends IUToolsController {
 		var divCheckedResults = this.divSpellCheckResults();
 		var html;
 		var word = token.text;
-		if (!token.isWord || !correction.wasMisspelled) {
+		if (!token.isWord || correction == null || !correction.wasMisspelled) {
 			// This token is either punctuation or a word that was correctly
 			// spelled.
 			html = word;

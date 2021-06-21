@@ -23,7 +23,7 @@ public class TokenizeEndpointTest extends EndpointTest {
 	 * VERIFICATION TESTS
 	 ***********************/
 
-	@Test @Disabled
+	@Test
 	public void test__TokenizeEndpoint__HappyPath() throws Exception {
 
 		TokenizeInputs inputs = new TokenizeInputs("nunavut, inuktut");
