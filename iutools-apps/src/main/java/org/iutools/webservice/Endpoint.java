@@ -34,20 +34,32 @@ public abstract class Endpoint
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 		throws ServiceException {
-
-		EndPointHelper.log4jReload();
-
-		I inputs = requestInputs(request);
-		ensureTaskIDIsDefined(inputs);
-
-		logRequest(request, inputs);
-		EndpointResult epResponse = execute(inputs);
-		epResponse.taskID = inputs.taskID;
+		I inputs = null;
 		try {
+
+			EndPointHelper.log4jReload();
+
+			inputs = requestInputs(request);
+			ensureTaskIDIsDefined(inputs);
+
+			logRequest(request, inputs);
+			EndpointResult epResponse = execute(inputs);
+			epResponse.taskID = inputs.taskID;
 			writeJsonResponse(epResponse, response);
 		} catch (IOException e) {
+			logError(e, inputs);
 			throw new ServiceException(e);
 		}
+	}
+
+	private void logError(Exception e, I inputs) throws ServiceException {
+		String epClass = this.getClass().getName();
+		try {
+			String inputsJson = mapper.writeValueAsString(inputs);
+		} catch (JsonProcessingException e2) {
+			throw new ServiceException(e2);
+		}
+		errorLogger().error("", e);
 	}
 
 	private void ensureTaskIDIsDefined(I inputs) {
@@ -72,7 +84,7 @@ public abstract class Endpoint
 			.put("_taskID", inputs.taskID)
 			.put("taskData", inputSummary);
 			String json = jsonifyLogEntry(logEntry);
-			logger().info(json);
+			actionLogger().info(json);
 		}
 		return;
 	}
@@ -126,9 +138,15 @@ public abstract class Endpoint
 		return inputs;
 	}
 
-	public static Logger logger() {
+	public static Logger actionLogger() {
 		Logger logger = Logger.getLogger("org.iutools.webservice.user_action");
 		logger.setLevel(Level.INFO);
+		return logger;
+	}
+
+	public static Logger errorLogger() {
+		Logger logger = Logger.getLogger("org.iutools.webservice.endpoint");
+		logger.setLevel(Level.ERROR);
 		return logger;
 	}
 }
