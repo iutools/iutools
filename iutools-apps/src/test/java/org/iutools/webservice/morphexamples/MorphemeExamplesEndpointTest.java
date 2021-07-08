@@ -19,7 +19,7 @@ public class MorphemeExamplesEndpointTest extends EndpointTest {
 	 ***********************/
 
 	@Test
-	public void test__MorphemeExamplesEndpoint__HappyPath() throws Exception {
+	public void test__MorphemeExamplesEndpoint__JustOneMatchingMorpheme() throws Exception {
 		String[] corpusWords = new String[] {
 			"ujaraqsiurnirmik", "aanniasiuqtiit", "iglumik", "tuktusiuqti"
 		};
@@ -29,9 +29,43 @@ public class MorphemeExamplesEndpointTest extends EndpointTest {
 
 		EndpointResult epResponse = endPoint.execute(examplesInputs);
 		new AssertMorphemeExamplesResult(epResponse)
+			.matchingMorphemesAre("siuq/1nv")
+			.matchingMorphemesDescriptionsAre("siuq (noun-to-verb)")
 			.exampleScoredExamplesAre(
 				new Pair[] {
 					Pair.of("ammuumajuqsiuqtutik", 10004.0),
 					Pair.of("ittuqsiutitaaqpattut", 10002.0)});
+	}
+
+	@Test
+	public void test__MorphemeExamplesEndpoint__SeveralMatchingMorphemes() throws Exception {
+		String[] corpusWords = new String[] {
+			"ujaraqsiurnirmik", "aanniasiuqtiit", "iglumik", "tuktusiuqti"
+		};
+
+		MorphemeExamplesInputs examplesInputs =
+			new MorphemeExamplesInputs("tit","compiled_corpus","2");
+
+		EndpointResult epResponse = endPoint.execute(examplesInputs);
+		new AssertMorphemeExamplesResult(epResponse)
+			.matchingMorphemesAre(
+				"ilinniaqtit/1v",
+				"katit/1v",
+				"tit/1vv",
+				"tit/tn-nom-p-2s",
+				"titaq/1v",
+				"titiq/1v",
+				"titiraq/1v"
+			)
+			.matchingMorphemesDescriptionsAre(
+				"ilinniaqtit (verb)",
+				"katit (verb)",
+				"tit (tn-noun-p-2s)",
+				"tit (verb-to-verb)",
+				"titaq (verb)",
+				"titiq (verb)",
+				"titiraq (verb)"
+			)
+		;
 	}
 }

@@ -520,7 +520,7 @@ public class TransCoder {
     	String romanText = null;
     	if (text != null) {
 	    	romanText = text;
-	    	if (Syllabics.syllabicCharsRatio(text) > 0.8) {
+	    	if (Syllabics.syllabicCharsRatio(text) > 0.7) {
 	    		romanText = unicodeToRoman(text);
 	    	}
     	}

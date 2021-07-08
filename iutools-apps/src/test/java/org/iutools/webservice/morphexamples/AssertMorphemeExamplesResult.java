@@ -1,13 +1,14 @@
 package org.iutools.webservice.morphexamples;
 
 import ca.nrc.testing.AssertObject;
+import ca.nrc.testing.AssertSet;
 import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.webservice.AssertEndpointResult;
 import org.iutools.webservice.EndpointResult;
 import org.iutools.webservice.MorphemeSearchResult;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
+import java.util.*;
 
 public class AssertMorphemeExamplesResult extends AssertEndpointResult {
 
@@ -41,5 +42,24 @@ public class AssertMorphemeExamplesResult extends AssertEndpointResult {
 
 	private MorphemeExamplesResult result() {
 		return (MorphemeExamplesResult)gotObject;
+	}
+
+	public AssertMorphemeExamplesResult matchingMorphemesAre(
+		String... expMorphIDs) throws IOException {
+		Set<String> gotMorphIDs = result().matchingMorphemes();
+		AssertSet.assertEquals("", expMorphIDs, gotMorphIDs);
+
+		return this;
+	}
+
+	public AssertMorphemeExamplesResult matchingMorphemesDescriptionsAre(
+		String... expDescriptions) throws IOException {
+		Set<String> expDescrSet = new HashSet<String>();
+		Collections.addAll(expDescrSet, expDescriptions);
+		Set<String> gotDescrSet = result().matchingMorphemesDescr();
+		AssertSet.assertEquals(
+			"Descriptions of matching morphemes were wrong.", expDescrSet, gotDescrSet);
+
+		return this;
 	}
 }
