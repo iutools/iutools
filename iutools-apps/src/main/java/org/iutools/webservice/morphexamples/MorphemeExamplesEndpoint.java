@@ -99,8 +99,10 @@ public class MorphemeExamplesEndpoint
 					words.add(example.word);
 					wordScores.add(example.score);
 				}
-				MorphemeSearchResult morpheSearchResult = new MorphemeSearchResult(meaningOfMorpheme,words,wordScores);
-				results.put(w.morphemeWithId, morpheSearchResult);
+				MorphemeSearchResult morphemeSearchResult =
+					new MorphemeSearchResult(
+						w.morphemeWithId, meaningOfMorpheme, words, wordScores);
+				results.put(w.morphemeWithId, morphemeSearchResult);
 			}
 
 			tLogger.trace("end of method");

@@ -21,12 +21,24 @@
   </div>
 </div>
 
-<div id="top_links">
-  <div id="top_links_inner">
-    <div id="feedback_link"><a href="mailto:alain.desilets@nrc-cnrc.gc.ca;contact@inuktitutcomputing.ca?subject=Inuktitut Tools Feedback">Send Feedback</a></div>
-    <div id="other_tools"><a href="index.html">Other Inuktut Tools</a></div>
-  </div>
-</div>
+<nav id="main_nav">
+  <button class="menu-toggle"><span></span><span></span><span></span></button>
+  <ul id="main_nav_menu">
+    <li id="home_link"><a href="index.html">Home</a></li>
+    <li id="feedback_link"><a href="mailto:alain.desilets@nrc-cnrc.gc.ca;contact@inuktitutcomputing.ca?subject=Inuktitut Tools Feedback">Send Feedback</a></li>
+    <li id="other_tools">
+      <button class="drop-menu-toggle">Other Inuktut Tools</button>
+      <ul class="drop-menu">
+        <li><a href="morpheme_examples.jsp">Morpheme Examples</a></li>
+        <li><a href="gisttext.jsp">Gister</a></li>
+        <li><a href="spell.jsp">Spell Checker</a></li>
+        <li><a href="concordancer.jsp">Inuktut Multilingual Concordancer</a></li>
+        <li><a href="search.jsp">Web Search Engine</a></li>
+        <li><a href="http://inuktitutcomputing.ca/Transcoder/index.php">Inuktitut Computing Transcoder</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
 
 <div id="page_title">
 <h1><%= pageTitle %></h1>
@@ -50,6 +62,7 @@
 <!--
    Load scripts that are common to all page types
 -->
+<script src="js/navscript.js"></script>
 <script src="js/vendors/log4javascript.js"></script>
 <script src="js/debug/Debug.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 <script src="js/debug/DebugConfig.js?version=<%= IUTOOLS_JS_VERSION %>"></script>

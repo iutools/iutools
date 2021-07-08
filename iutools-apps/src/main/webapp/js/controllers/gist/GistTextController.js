@@ -154,8 +154,9 @@ class GistTextController extends IUToolsController {
 		var div_results = this.elementForProp("divGistTextResults");
 		div_results.html(html);
 		this.attachListenersToIUWords(this)
-        const y = div_results[0].getBoundingClientRect().top + window.pageYOffset - 200;
-        window.scrollTo({top: y, behavior: 'smooth'});
+        // const y = div_results[0].getBoundingClientRect().top + window.pageYOffset - 200;
+        // window.scrollTo({top: y, behavior: 'smooth'});
+        this.scrollIntoView(div_results)
 	}
 
 	attachListenersToIUWords(controller) {

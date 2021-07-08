@@ -39,7 +39,7 @@ class IUUtils {
 			}
 		return res;
 	}
-} 
+}
 
 IUUtils.syllabicChars = [
 	'\u1403', '\u1431', '\u144E', '\u146D', '\u148B', '\u14A5', '\u14C2', 

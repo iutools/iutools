@@ -149,21 +149,24 @@ class MorphemeExamplesController extends IUToolsController {
 	
 
 	setGetResults(results) {
-		var jsonResults = JSON.stringify(results);
+        var tracer = Debug.getTraceLogger("MorphemeExamplesController.setGetResults")
+        var jsonResults = JSON.stringify(results);
+        tracer.trace("jsonResults="+jsonResults)
 		var divResults = this.elementForProp("divResults");
 		
 		divResults.empty();
 		
 		var morphemesMap = results.matchingWords;
 		var morphemes = Object.keys(morphemesMap);
-		var html = 'The input is the canonical form of '+morphemes.length+' morpheme'+
+		var html = morphemes.length+' matching morpheme'+
 			(morphemes.length==1?'':'s')+': ';
 		html += '<div id="list-of-morphemes">';
 		html += '<ul>';
 		for (var imorph=0; imorph<morphemes.length; imorph++) {
-			var key = morphemes[imorph];
-			var meaning = morphemesMap[key].meaning;
-			html += '<li><a href="#'+key+'">'+key+'</a>&nbsp;&nbsp;&nbsp;&ndash;&nbsp;&nbsp;&nbsp;'+meaning+'</li>'
+			var morphID = morphemes[imorph];
+			var morphDescr = morphemesMap[morphID].morphDescr;
+			var meaning = morphemesMap[morphID].meaning;
+			html += '<li><a href="#'+morphID+'">'+morphDescr+'</a>&nbsp;&nbsp;&nbsp;&ndash;&nbsp;&nbsp;&nbsp;'+meaning+'</li>'
 		}
 		html += '</ul>';
 		html += '</div>';
@@ -196,7 +199,8 @@ class MorphemeExamplesController extends IUToolsController {
 				divResults.show();
 		});
 	}
-	
+
+
 	attachListenersToExampleWords() {		
 		var anchorsWords = $(document).find('.word-example');
 	    for (var ipn=0; ipn<anchorsWords.length; ipn++) {

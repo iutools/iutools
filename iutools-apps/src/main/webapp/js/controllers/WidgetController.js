@@ -176,4 +176,14 @@ class WidgetController {
 		var descr = method+"("+data+")";
 		return descr;
 	}
+
+	// Scrolls window so that jquery DOM element jqElt is visible
+	scrollIntoView(jqElt) {
+	    const bufferSpace = 200;
+        const y = jqElt[0].getBoundingClientRect().top
+            + window.pageYOffset
+            - bufferSpace;
+        window.scrollTo({top: y, behavior: 'smooth'});
+
+    }
 }
