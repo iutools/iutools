@@ -532,7 +532,17 @@ public class SpellCheckerTest {
 			3,gotCorrections.size(),
 		"The number of corrections is not as expected.");
 	}
-	
+
+	@Test
+	public void test__isMispelled__WordContainsAnAbsoluteSpellingMistake() throws Exception  {
+		// This word contains an 'absolute' spelling mistake: 'qj' can NEVER
+		// happen in a correctly spelled world.
+		String word = "inuqjuq";
+		Assertions.assertTrue(largeDictCheckerWithTestWords().isMispelled(word),
+		"Word "+word+" should NOT have been deemed correctly spelled");
+	}
+
+
 	@Test 
 	public void test__isMispelled__CorreclySpelledWordFromCompiledCorpus() throws Exception  {
 		String word = "inuktitut";

@@ -624,7 +624,7 @@ public class SpellChecker {
 		Boolean wordIsMispelled = null;
 		if (wordIsMispelled == null) {
 
-			if (isExplicitlyCorrect(word)) {
+			if (wordIsMispelled == null &&isExplicitlyCorrect(word)) {
 				logger.trace("word is was explicity tagged as being correct");
 				wordIsMispelled = false;
 			}

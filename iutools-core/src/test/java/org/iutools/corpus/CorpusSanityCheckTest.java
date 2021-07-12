@@ -35,11 +35,11 @@ public abstract class CorpusSanityCheckTest {
 //		System.out.println("totalOccurencesWithNoDecomp="+corpus.totalOccurencesWithNoDecomp());
 		new AssertCompiledCorpus(corpus, "")
 			.totalWordsIs(expTotalWords())
-			.totalOccurencesIs(1475992)
-			.totalWordsWithDecompIs(221088)
-			.totalOccurencesWithDecompIs(1098245)
-			.totalWordsWithoutDecompsIs(186131)
-			.totalOccurencesWithNoDecompIs(377747)
+			.totalOccurencesIs(1475616)
+			.totalWordsWithDecompIs(221207)
+			.totalOccurencesWithDecompIs(1098121)
+			.totalWordsWithoutDecompsIs(186122)
+			.totalOccurencesWithNoDecompIs(377495)
 			;
 	}
 	
