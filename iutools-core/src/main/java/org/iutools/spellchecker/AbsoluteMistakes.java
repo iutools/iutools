@@ -1,9 +1,5 @@
 package org.iutools.spellchecker;
 
-
-import org.junit.Ignore;
-
-@Ignore
 public class AbsoluteMistakes {
 	private static AbsoluteMistake_Regex[] _allMistakes = null;
 

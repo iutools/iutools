@@ -278,12 +278,12 @@ public class SpellChecker {
 			}
 
 			SpellingCorrection corr = new SpellingCorrection(word);
-			corr.wasMispelled = isMispelled(wordInLatin);
-			tLogger.trace("wasMispelled= " + corr.wasMispelled);
+				corr.wasMispelled = isMispelled(wordInLatin);
+				tLogger.trace("wasMispelled= " + corr.wasMispelled);
 
 			SpellDebug.trace("SpellChecker.correctWord",
-			"corr.wasMispelled=" + corr.wasMispelled,
-			word, null);
+				"corr.wasMispelled=" + corr.wasMispelled,
+				word, null);
 
 			if (corr.wasMispelled) {
 				// set ngramStats and suite of words for candidates according to type of word (normal word or numeric expression)
@@ -291,90 +291,95 @@ public class SpellChecker {
 				boolean wordIsNumericTerm = numericTermParts != null;
 
 				SpellDebug.trace("SpellChecker.correctWord",
-				"wordIsNumericTerm=" + wordIsNumericTerm,
-				word, null);
-
-				if (partialCorrectionEnabled) {
-					SpellDebug.trace("SpellChecker.correctWord",
-					"Computing longest correct head and tail of the word",
+					"wordIsNumericTerm=" + wordIsNumericTerm,
 					word, null);
-					computeCorrectPortions(wordInLatin, corr);
-				}
 
-				SpellDebug.trace("SpellChecker.correctWord",
-				"Computing 1st pass candidates",
-				word, null);
+				boolean completelyFixed = applyAbsoluteMistakeCorrections(corr);
+				if (!completelyFixed) {
+					// The Absolute Mistake corrections have not resolved all
+					// problems the word. So keep going.
+					if (partialCorrectionEnabled) {
+						SpellDebug.trace("SpellChecker.correctWord",
+							"Computing longest correct head and tail of the word",
+							word, null);
+						computeCorrectPortions(corr);
+					}
 
-				List<ScoredSpelling> candidates =
+					SpellDebug.trace("SpellChecker.correctWord",
+						"Computing 1st pass candidates",
+						word, null);
+
+					List<ScoredSpelling> candidates =
 					candidatesWithSimilarNgrams(wordInLatin, wordIsNumericTerm);
 
-				SpellDebug.trace("SpellChecker.correctWord",
-				"Number of 1st pass candidates=" + (candidates.size()),
-				word, null);
+					SpellDebug.trace("SpellChecker.correctWord",
+						"Number of 1st pass candidates=" + (candidates.size()),
+						word, null);
 
-				SpellDebug.containsDuplicates("SpellChecker.correctWord",
-				"1st pass candidates", word, candidates);
+					SpellDebug.containsDuplicates("SpellChecker.correctWord",
+						"1st pass candidates", word, candidates);
 
-				SpellDebug.containsCorrection(
-				"SpellChecker.correctWord",
-				"First pass candidates",
-					word, "nunavut", candidates);
+					SpellDebug.containsCorrection(
+						"SpellChecker.correctWord",
+						"First pass candidates",
+						word, "nunavut", candidates);
 
-				SpellDebug.trace("SpellChecker.correctWord",
-					"Computing candidates similariy using " + editDistanceCalculator.getClass(),
-					word, null);
+					SpellDebug.trace("SpellChecker.correctWord",
+						"Computing candidates similariy using " + editDistanceCalculator.getClass(),
+						word, null);
 
-				List<ScoredSpelling> scoredSpellings =
+					List<ScoredSpelling> scoredSpellings =
 					computeCandidateDistances(wordInLatin, candidates);
 
-				SpellDebug.containsDuplicates(
-				"SpellChecker.correctWord",
-				"candidates with similarities", word, scoredSpellings);
+					SpellDebug.containsDuplicates(
+						"SpellChecker.correctWord",
+						"candidates with similarities", word, scoredSpellings);
 
-				SpellDebug.containsCorrection(
-				"SpellChecker.correctWord",
-				"UNSORTED scored spellings",
-					word, scoredSpellings);
+					SpellDebug.containsCorrection(
+						"SpellChecker.correctWord",
+						"UNSORTED scored spellings",
+						word, scoredSpellings);
 
-				List<ScoredSpelling> sortedSpellings =
+					List<ScoredSpelling> sortedSpellings =
 					sortCandidatesByOverallScore(scoredSpellings);
 
-				SpellDebug.containsDuplicates(
-				"SpellChecker.correctWord",
-				"SORTED scored spellings", word, sortedSpellings);
+					SpellDebug.containsDuplicates(
+						"SpellChecker.correctWord",
+						"SORTED scored spellings", word, sortedSpellings);
 
-				SpellDebug.containsCorrection(
-				"SpellChecker.correctWord",
-				"SORTED scored spellings",
-				word, scoredSpellings);
+					SpellDebug.containsCorrection(
+						"SpellChecker.correctWord",
+						"SORTED scored spellings",
+						word, scoredSpellings);
 
-				if (wordIsNumericTerm) {
-					for (int ic = 0; ic < scoredSpellings.size(); ic++) {
-						ScoredSpelling scoredCandidate = sortedSpellings.get(ic);
-						scoredCandidate.spelling =
-						scoredCandidate.spelling.replaceAll("\\d+-*", numericTermParts[0]);
+					if (wordIsNumericTerm) {
+						for (int ic = 0; ic < scoredSpellings.size(); ic++) {
+							ScoredSpelling scoredCandidate = sortedSpellings.get(ic);
+							scoredCandidate.spelling =
+							scoredCandidate.spelling.replaceAll("\\d+-*", numericTermParts[0]);
+						}
 					}
+
+					sortedSpellings = selectTopCandidates(maxCorrections, sortedSpellings);
+
+					SpellDebug.containsDuplicates(
+						"TOP PORTION of SORTED scored spellings",
+						"SORTED scored spellings", word, sortedSpellings);
+
+					SpellDebug.containsCorrection(
+						"SpellChecker.correctWord",
+						"TOP PORTION of SORTED scored spellings",
+						word, scoredSpellings);
+
+					if (SpellDebug.traceIsActive("SpellChecker.correctWord", word)) {
+						SpellDebug.trace("SpellChecker.correctWord",
+							"TOP PORTION of SORTED scored spellings is:\n" +
+							PrettyPrinter.print(scoredSpellings),
+							word, null);
+					}
+
+					corr.setPossibleSpellings(sortedSpellings);
 				}
-
-				sortedSpellings = selectTopCandidates(maxCorrections, sortedSpellings);
-
-				SpellDebug.containsDuplicates(
-				"TOP PORTION of SORTED scored spellings",
-				"SORTED scored spellings", word, sortedSpellings);
-
-				SpellDebug.containsCorrection(
-				"SpellChecker.correctWord",
-				"TOP PORTION of SORTED scored spellings",
-				word, scoredSpellings);
-
-				if (SpellDebug.traceIsActive("SpellChecker.correctWord", word)) {
-					SpellDebug.trace("SpellChecker.correctWord",
-					"TOP PORTION of SORTED scored spellings is:\n" +
-					PrettyPrinter.print(scoredSpellings),
-					word, null);
-				}
-
-				corr.setPossibleSpellings(sortedSpellings);
 			}
 
 			if (wordIsSyllabic) {
@@ -393,6 +398,25 @@ public class SpellChecker {
 				throw new SpellCheckerException(e);
 			}
 		}
+	}
+
+	private boolean applyAbsoluteMistakeCorrections(
+		SpellingCorrection corr) throws SpellCheckerException {
+		Boolean wasRepaired = false;
+		corr.partialFixRoman = new AbsoluteMistakes().fixWord(corr.orig);
+		if (!corr.partialFixRoman.equals(corr.orig)) {
+			// Check if the absolute mistake corrections have fixed all problems
+			// with the word
+			if (!isMispelled(corr.partialFixRoman)) {
+				wasRepaired = true;
+				List<ScoredSpelling> finalSuggestions =
+					new ArrayList<ScoredSpelling>();
+				finalSuggestions.add(new ScoredSpelling(corr.partialFixRoman, 1.0));
+				corr.setPossibleSpellings(finalSuggestions);
+			}
+		}
+
+		return wasRepaired;
 	}
 
 	private List<ScoredSpelling> selectTopCandidates(int maxCorrections,
@@ -418,19 +442,17 @@ public class SpellChecker {
 		return topCandidates;
 	}
 
-	protected void computeCorrectPortions(String badWordRoman, 
-			SpellingCorrection corr) throws SpellCheckerException {
-		computeCorrectLead(badWordRoman, corr);
-		computeCorrectTail(badWordRoman, corr);
+	protected void computeCorrectPortions(SpellingCorrection corr) throws SpellCheckerException {
+		computeCorrectLead(corr);
+		computeCorrectTail(corr);
 	}
 
-	private void computeCorrectLead(String badWordRoman, 
-			SpellingCorrection corr) throws SpellCheckerException {
+	private void computeCorrectLead(SpellingCorrection corr) throws SpellCheckerException {
 		
 		final int MAX_WORDS_TO_TRY = 5;
 
 		String longestCorrectLead = null;
-		for (int endPos=badWordRoman.length()-1; endPos > 3; endPos--) {
+		for (int endPos=corr.partialFixRoman.length()-1; endPos > 3; endPos--) {
 			//
 			// Loop through all the leading strings L of the bad word, starting 
 			// the complete bad word and removing one tailing character at a time, 
@@ -441,7 +463,7 @@ public class SpellChecker {
 			//   the last character L corresponds to the end of a 
 			//   morpheme in W.
 			//
-			String lead = badWordRoman.substring(0, endPos-1);
+			String lead = corr.partialFixRoman.substring(0, endPos-1);
 			Iterator<String> iterWords =
 				wordsContainingNgram("^"+lead);
 			boolean wordWasFoundForLead = false;
@@ -508,13 +530,12 @@ public class SpellChecker {
 	}
 	
 
-	private void computeCorrectTail(String badWordRoman, 
-			SpellingCorrection corr) throws SpellCheckerException {
+	private void computeCorrectTail(SpellingCorrection corr) throws SpellCheckerException {
 		
 		final int MAX_WORDS_TO_TRY = 5;
 		
 		String longestCorrectTail = null;
-		for (int startPos=0; startPos < badWordRoman.length()-2; startPos++) {
+		for (int startPos=0; startPos < corr.partialFixRoman.length()-2; startPos++) {
 			//
 			// Loop through all the tailing strings L of the bad word, starting 
 			// the complete bad word and removing one leading character at a time, 
@@ -525,7 +546,7 @@ public class SpellChecker {
 			//   the last character L corresponds to the end of a 
 			//   morpheme in W.
 			//
-			String tail = badWordRoman.substring(startPos);
+			String tail = corr.partialFixRoman.substring(startPos);
 			Iterator<String> iterWords = wordsContainingNgram(tail+"$");
 			boolean wordWasFoundForTail = false;
 			int wordCount = 0;
@@ -622,79 +643,92 @@ public class SpellChecker {
 		logger.trace("[word="+word+"]: invoked");
 
 		Boolean wordIsMispelled = null;
+
+		// First check if word is in the dictionary of explicitly correct
+		// words.
+		if (wordIsMispelled == null &&isExplicitlyCorrect(word)) {
+			logger.trace("word is was explicity tagged as being correct");
+			wordIsMispelled = false;
+		}
+
+		// Then check if the word is in the pre-compiled corpus. If it is, check
+		// its decomposition in the word's WordInfo.
+		//
+		if (wordIsMispelled == null && corpus != null) {
+			try {
+				WordInfo wInfo = corpus.info4word(word);
+				if (wInfo != null && wInfo.totalDecompositions > 0) {
+					wordIsMispelled = false;
+					logger.trace("Corpus contains some decompositions for this word");
+				}
+			} catch (CompiledCorpusException e) {
+				logger.trace(
+					"[word="+word+"]: throws exception e="+e.getMessage()+
+					"\ncorpus index name was: "+corpus.getIndexName());
+				throw new SpellCheckerException(e);
+			}
+		}
+
+		if (wordIsMispelled == null && word.matches("^[0-9]+$")) {
+			logger.trace("word is all digits");
+			wordIsMispelled = false;
+		}
+
+		if (wordIsMispelled == null && latinSingleInuktitutCharacters.contains(word)) {
+			logger.trace("single inuktitut character");
+			wordIsMispelled = false;
+		}
+
+		if (wordIsMispelled == null && wordContainsMoreThanTwoConsecutiveConsonants(word)) {
+			logger.trace("more than 2 consecutive consonants in the word");
+			wordIsMispelled = true;
+		}
+
+		if (wordIsMispelled == null && containsAbsoluteMistake(word)) {
+			logger.trace("word contains an absolute mistake");
+			wordIsMispelled = true;
+		}
+
+		String[] numericTermParts = null;
+		if (wordIsMispelled == null && (numericTermParts = splitNumericExpression(word)) != null) {
+			logger.trace("numeric expression: " + word + " (" + numericTermParts[1] + ")");
+			boolean pseudoWordWithSuffixAnalysesWithSuccess = assessEndingWithIMA(numericTermParts[1]);
+			wordIsMispelled = !pseudoWordWithSuffixAnalysesWithSuccess;
+			logger.trace("numeric expression - wordIsMispelled: " + wordIsMispelled);
+		}
+
+		if (wordIsMispelled == null && wordIsPunctuation(word)) {
+			logger.trace("word is punctuation");
+			wordIsMispelled = false;
+		}
+
 		if (wordIsMispelled == null) {
-
-			if (wordIsMispelled == null &&isExplicitlyCorrect(word)) {
-				logger.trace("word is was explicity tagged as being correct");
-				wordIsMispelled = false;
-			}
-
-			if (wordIsMispelled == null && corpus != null) {
-				try {
-					WordInfo wInfo = corpus.info4word(word);
-					if (wInfo != null && wInfo.totalDecompositions > 0) {
-						wordIsMispelled = false;
-						logger.trace("Corpus contains some decompositions for this word");
-					}
-				} catch (CompiledCorpusException e) {
-					logger.trace(
-						"[word="+word+"]: throws exception e="+e.getMessage()+
-						"\ncorpus index name was: "+corpus.getIndexName());
-					throw new SpellCheckerException(e);
-				}
-			}
-
-			if (wordIsMispelled == null && word.matches("^[0-9]+$")) {
-				logger.trace("word is all digits");
-				wordIsMispelled = false;
-			}
-
-			if (wordIsMispelled == null && latinSingleInuktitutCharacters.contains(word)) {
-				logger.trace("single inuktitut character");
-				wordIsMispelled = false;
-			}
-
-			if (wordIsMispelled == null && wordContainsMoreThanTwoConsecutiveConsonants(word)) {
-				logger.trace("more than 2 consecutive consonants in the word");
-				wordIsMispelled = true;
-			}
-
-			String[] numericTermParts = null;
-			if (wordIsMispelled == null && (numericTermParts = splitNumericExpression(word)) != null) {
-				logger.trace("numeric expression: " + word + " (" + numericTermParts[1] + ")");
-				boolean pseudoWordWithSuffixAnalysesWithSuccess = assessEndingWithIMA(numericTermParts[1]);
-				wordIsMispelled = !pseudoWordWithSuffixAnalysesWithSuccess;
-				logger.trace("numeric expression - wordIsMispelled: " + wordIsMispelled);
-			}
-
-			if (wordIsMispelled == null && wordIsPunctuation(word)) {
-				logger.trace("word is punctuation");
-				wordIsMispelled = false;
-			}
-
-			if (wordIsMispelled == null) {
-				try {
-					String[] segments = segmenter.segment(word);
-					logger.trace("word submitted to IMA: " + word);
-					if (segments == null || segments.length == 0) {
-						wordIsMispelled = true;
-					}
-				} catch (TimeoutException e) {
+			try {
+				String[] segments = segmenter.segment(word);
+				logger.trace("word submitted to IMA: " + word);
+				if (segments == null || segments.length == 0) {
 					wordIsMispelled = true;
-				} catch (StringSegmenterException | LinguisticDataException e) {
-					throw new SpellCheckerException(e);
 				}
-				logger.trace("word submitted to IMA - mispelled: " + wordIsMispelled);
+			} catch (TimeoutException e) {
+				wordIsMispelled = true;
+			} catch (StringSegmenterException | LinguisticDataException e) {
+				throw new SpellCheckerException(e);
 			}
+			logger.trace("word submitted to IMA - mispelled: " + wordIsMispelled);
+		}
 
-			if (wordIsMispelled == null) {
-				wordIsMispelled = false;
-			}
+		if (wordIsMispelled == null) {
+			wordIsMispelled = false;
 		}
 
 		logger.trace("Exiting");
 
 		return wordIsMispelled;
+	}
+
+	private boolean containsAbsoluteMistake(String word) {
+		String fixedWord = new AbsoluteMistakes().fixWord(word);
+		return (!fixedWord.equals(word));
 	}
 
 	public boolean isExplicitlyCorrect(String word) throws SpellCheckerException {

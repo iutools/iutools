@@ -566,6 +566,13 @@ public class SpellCheckerTest {
 		"Word "+word+" should have been deemed correctly spelled");
 	}
 
+	@Test
+	public void test__isMispelled__WordThatContainsAnAbsoluteMistake() throws Exception  {
+		String word = "titiqkaq";
+		Assertions.assertTrue(largeDictCheckerWithTestWords().isMispelled(word),
+		"Word "+word+" should have been deemed misspelled");
+	}
+
 	@Test 
 	public void test__isMispelled__MispelledWordFromCompiledCorpus() throws Exception  {
 		SpellChecker checker = largeDictCheckerWithTestWords();
@@ -786,7 +793,7 @@ public class SpellCheckerTest {
 		String badWord = "inuktiqtut";
 		SpellingCorrection correction = 
 				new SpellingCorrection(badWord, new String[0], true);
-		checker.computeCorrectPortions(badWord, correction);
+		checker.computeCorrectPortions(correction);
 		AssertSpellingCorrection.assertThat(correction, "")
 			.highlightsIncorrectTail("inukti")
 			.highlightsIncorrectLead("tut")

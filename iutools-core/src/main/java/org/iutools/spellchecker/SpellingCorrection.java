@@ -20,6 +20,12 @@ public class SpellingCorrection {
 	public Boolean wasMispelled = false;
 	public List<ScoredSpelling> scoredCandidates = 
 				new ArrayList<ScoredSpelling>();
+
+	/**
+	 * Partial fix of the word obtained by applying simple rules for common
+	 * "absolute" mistakes.
+	 */
+	public String partialFixRoman = null;
 	
 	private String correctLead;
 		public SpellingCorrection setCorrectLead(String _correctLead) throws SpellCheckerException {
@@ -79,6 +85,7 @@ public class SpellingCorrection {
 	private void initialize(String _orig, List<String> _corrections, 
 			List<Double> _scores, Boolean _wasMispelled) {
 		this.setOrig(_orig);
+		this.partialFixRoman = _orig;
 		if (_wasMispelled != null) this.wasMispelled = _wasMispelled;
 		if (_corrections != null && _scores != null) {
 			for (int ii=0; ii < _corrections.size(); ii++) {

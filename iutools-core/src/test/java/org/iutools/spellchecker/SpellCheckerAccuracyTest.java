@@ -68,7 +68,7 @@ public class SpellCheckerAccuracyTest {
             //   EVEN if we assume the correction is in the dict
             //
             new SpellCheckerExample("nakuqmi")
-                    .isMisspelled("nakurmiik").setMaxRank(1),
+                    .isMisspelled("nakurmi").setMaxRank(1),
 
             new SpellCheckerExample("nunavungmi")
                     .isMisspelled("nunavummi").setMaxRank(1),
@@ -692,7 +692,7 @@ public class SpellCheckerAccuracyTest {
 
     private String exampleWithBadRankDetails(
         CompiledCorpus corpus, SpellCheckerExample example,
-        List<String> topCandidates, int gotRank) throws SpellCheckerException {
+        List<String> topCandidates, Integer gotRank) throws SpellCheckerException {
         String errMess =
             "  "+wordDetails(example.wordToCheck, corpus)+
             ": rank="+gotRank+

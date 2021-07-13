@@ -127,7 +127,7 @@ public class SpellCheckerEvaluator {
 				}
 			}
 
-			if (rank == 1) {
+			if (rank != null && rank == 1) {
 				totalWithCorrectTopSuggestion++;
 			}
 
