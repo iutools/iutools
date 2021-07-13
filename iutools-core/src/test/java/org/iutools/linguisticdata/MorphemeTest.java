@@ -41,7 +41,11 @@ public class MorphemeTest {
 //			Pair.of("vugut/tv-dec-1p", "???"),
 //			Pair.of("vugut/tv-dec-1p", "???"),
 
-		Pair.of("lu/1q", "lu (tail element)")
+
+//			Pair.of("tn-nom-s-ps", "noun ending s-ps"),
+//			Pair.of("tv-nom-s-ps", "verb ending s-ps"),
+
+			Pair.of("lu/1q", "lu (tail element)")
 
 		};
 
