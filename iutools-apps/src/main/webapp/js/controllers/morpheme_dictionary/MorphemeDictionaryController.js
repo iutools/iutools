@@ -2,7 +2,7 @@
  * Controller for the search.html page.
  */
 
-class MorphemeExamplesController extends IUToolsController {
+class MorphemeDictionaryController extends IUToolsController {
 	
 	constructor(config) {
 		super(config);
@@ -43,7 +43,7 @@ class MorphemeExamplesController extends IUToolsController {
 
 	invokeFindExampleService(jsonRequestData, _successCbk, _failureCbk) {
 		this.invokeService(jsonRequestData, _successCbk, _failureCbk, 
-				'srv2/morpheme_examples');
+				'srv2/morpheme_dictionary');
 	}
 	
 	
@@ -158,8 +158,12 @@ class MorphemeExamplesController extends IUToolsController {
 		
 		var morphemesMap = results.matchingWords;
 		var morphemes = Object.keys(morphemesMap);
-		var html = morphemes.length+' matching morpheme'+
-			(morphemes.length==1?'':'s')+': ';
+
+		// Display number of hits
+		var html = morphemes.length+' morpheme'+
+			(morphemes.length==1?'':'s')+' found.<br/><i>Click on morpheme to see examples of use.</i>';
+
+		// Display "index" of matching morphemes
 		html += '<div id="list-of-morphemes">';
 		html += '<ul>';
 		for (var imorph=0; imorph<morphemes.length; imorph++) {
@@ -171,12 +175,13 @@ class MorphemeExamplesController extends IUToolsController {
 		html += '</ul>';
 		html += '</div>';
 		
-		
+		// Display details for each matching morpheme
 		for (var imorph=0; imorph<morphemes.length; imorph++) {
-			var morpheme = morphemes[imorph];
-			var meaning = morphemesMap[morpheme].meaning;
-			var words = morphemesMap[morpheme].words;
-			var wordFreqs = morphemesMap[morpheme].wordScores;
+			var morphid = morphemes[imorph];
+            var morphDescr = morphemesMap[morphid].morphDescr;
+			var meaning = morphemesMap[morphid].meaning;
+			var words = morphemesMap[morphid].words;
+			var wordFreqs = morphemesMap[morphid].wordScores;
 			var wordsFreqsArray = new Array(wordFreqs.length);
 			for (var iwf=0; iwf<wordFreqs.length; iwf++) {
 				wordsFreqsArray[iwf] = 
@@ -185,9 +190,9 @@ class MorphemeExamplesController extends IUToolsController {
 					;
 			}
 			html += '<div class="morpheme-details">';
-			html += '<a name="'+morpheme+'"></a>'+'<strong>'+morpheme+
+			html += '<a name="'+morphid+'"></a>'+'<strong>'+morphDescr+
 			'</strong>&nbsp;&nbsp;&nbsp;&ndash;&nbsp;&nbsp;&nbsp;'+meaning+
-				'<div style="margin:5px 80px 15px 15px;">'+
+				'<div style="margin:5px 80px 15px 15px;"><b>Examples:</b> '+
 				wordsFreqsArray.join(';&nbsp;&nbsp;&nbsp; ')+'</div>';
 			html += '</div>';
 		}

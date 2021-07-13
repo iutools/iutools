@@ -30,7 +30,7 @@ public class MorphemeExamplesEndpointTest extends EndpointTest {
 		EndpointResult epResponse = endPoint.execute(examplesInputs);
 		new AssertMorphemeExamplesResult(epResponse)
 			.matchingMorphemesAre("siuq/1nv")
-			.matchingMorphemesDescriptionsAre("siuq (noun-to-verb)")
+			.matchingMorphemesDescriptionsAre("siuq (noun-to-verb suffix)")
 			.exampleScoredExamplesAre(
 				new Pair[] {
 					Pair.of("ammuumajuqsiuqtutik", 10004.0),
@@ -58,13 +58,13 @@ public class MorphemeExamplesEndpointTest extends EndpointTest {
 				"titiraq/1v"
 			)
 			.matchingMorphemesDescriptionsAre(
-				"ilinniaqtit (verb)",
-				"katit (verb)",
+				"ilinniaqtit (verb root)",
+				"katit (verb root)",
 				"tit (tn-noun-p-2s)",
-				"tit (verb-to-verb)",
-				"titaq (verb)",
-				"titiq (verb)",
-				"titiraq (verb)"
+				"tit (verb-to-verb suffix)",
+				"titaq (verb root)",
+				"titiq (verb root)",
+				"titiraq (verb root)"
 			)
 		;
 	}

@@ -22,7 +22,7 @@ public class EndpointDispatcherTest {
 	public void test__doPost__HappyPath() throws Exception {
 		JSONObject json = new JSONObject()
 			.put("wordPattern", "siuq");
-		String uri = "iutools/srv2/morpheme_examples";
+		String uri = "iutools/srv2/morpheme_dictionary";
 		MockHttpServletResponse response  = doPost(uri, json);
 
 		new AssertServletResponse(response, MorphemeExamplesResult.class)
@@ -37,7 +37,7 @@ public class EndpointDispatcherTest {
 		JSONObject json = new JSONObject()
 			.put("wordPattern", "siuq")
 			.put("taskID", id);
-		String uri = "iutools/srv2/morpheme_examples";
+		String uri = "iutools/srv2/morpheme_dictionary";
 		MockHttpServletResponse response  = doPost(uri, json);
 
 		new AssertServletResponse(response, MorphemeExamplesResult.class)
@@ -66,7 +66,7 @@ public class EndpointDispatcherTest {
 		JSONObject json = new JSONObject()
 			.put("wordPattern", "siuq")
 			.put("unknownField", "blah");
-		String uri = "iutools/srv2/morpheme_examples";
+		String uri = "iutools/srv2/morpheme_dictionary";
 		MockHttpServletResponse response  = doPost(uri, json);
 
 		new AssertServletResponse(response, MorphemeExamplesResult.class)
@@ -139,10 +139,10 @@ public class EndpointDispatcherTest {
 	}
 
 	@Test
-	public void test__doPost__morpheme_examples__HappyPath() throws Exception {
+	public void test__doPost__morpheme_dictionary__HappyPath() throws Exception {
 		JSONObject json = new JSONObject()
 			.put("wordPattern", "siuq");
-		String uri = "iutools/srv2/morpheme_examples";
+		String uri = "iutools/srv2/morpheme_dictionary";
 		MockHttpServletResponse response  = doPost(uri, json);
 
 		new AssertServletResponse(response, MorphemeExamplesResult.class)
@@ -184,7 +184,7 @@ public class EndpointDispatcherTest {
 			"gist/gistword",
 			"gist/preparecontent",
 			"log_action",
-			"morpheme_examples",
+			"morpheme_dictionary",
 			"search/expandquery",
 			"spell",
 			"tokenize"

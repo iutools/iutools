@@ -28,7 +28,12 @@ public class EndpointDispatcher extends HttpServlet {
 	private Map<String,Endpoint> endpoints = new HashMap<String,Endpoint>();
 	{
 		endpoints.put("log_action", new LogActionEndpoint());
+
+		endpoints.put("morpheme_dictionary", new MorphemeExamplesEndpoint());
+
+		// WHY DO WE STILL NEED THIS?
 		endpoints.put("morpheme_examples", new MorphemeExamplesEndpoint());
+
 		endpoints.put("search/expandquery", new ExpandQueryEndpoint());
 		try {
 			endpoints.put("spell", new SpellEndpoint());

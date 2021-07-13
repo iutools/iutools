@@ -15,7 +15,7 @@
     Morpheme(e.g. gaq):
     <input id="morpheme" name="morpheme" style="width:20em;">
     </div>
-    <button id="btn-occ" type="button" name="btn-occ" value="Occurrences">Find examples</button>
+    <button id="btn-occ" type="button" name="btn-occ" value="Occurrences">Search</button>
     <input type="hidden" id="example-word" name="example-word" value="">
     <input type="hidden" id="corpus-name" name="corpus-name" value="">
     <p></p>
