@@ -1,25 +1,30 @@
 <!doctype html>
 
-<html lang="en">
+
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IUTools: Apps and Tools for Inuktitut</title>
 
-  <title>NRC's InuktutiTools</title>
-  <link rel="stylesheet" href="css/styles.css?v1">
 
+  <link rel="stylesheet" href="css/styles.css?v2">
+  <link rel="stylesheet" href="css/design-styles.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&display=swap" rel="stylesheet">
   <script src="js/vendors/jquery/jquery-3.3.1.min.js"></script>
 </head>
 
 <body>
 
-<header>
-     <div data-HTML="pages/_HeaderPartial.html"></div>
-</header>
+<div id="header" class="header">
+  <div id="header_inner">
+    <a href="index.html">IUTools: Apps and Tools for Inuktitut</a>
+  </div>
+</div>
 
 <main>
-
-	<h1>NRC InuktiTools</h1>
-	
+    <div id="apps_descr">
+    <p/>
 	This site provides a series of web services and applications for 
 	processing Inuktut text.
 		
@@ -65,12 +70,17 @@
 	
 	<dt><b><a href="http://inuktitutcomputing.ca/Transcoder/index.php">Inuktitut Computing Transcoder</a></b></dt>
 	<dd>Transcode text from syllabic to roman or vice versa.</dd>
-	
+    </div>
 </main>
 
-<footer>
-    <div data-includeHTML="pages/_FooterPartial.html"></div>
-</footer>
+
+<div id="footer" class="footer">
+    Copyright, National Research Council of Canada, 2017
+</div>
+<div id="sponsors">
+    <a href="https://nrc.canada.ca/en" target="_blank"><img src="imgs/NRC-ID_138x138.jpg" alt="logo of National Research Council Canada - Conseil national de recherches Canada"></a>
+    <a href="https://www.pirurvik.ca/" target="_blank"><img src="imgs/Pirurvik_logo_2.jpg" alt="logo of pirurvik"></a>
+</div>
 
 <!-- Load the header, footer etc... -->
 <script>
