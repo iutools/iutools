@@ -62,7 +62,7 @@ public class TranslationMemoryTest {
 	////////////////////////////////////////
 
 
-	@Test @Ignore
+	@Test
 	public void test__search__HappyPath() {
 		String sourceLang = "en";
 		String sourceExpr = "legislative";

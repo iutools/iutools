@@ -36,26 +36,47 @@ public class GistWordEndpoint
 			gistOfWord = new Gist(inputs.word);
 			tLogger.trace("gist= " + PrettyPrinter.print(gistOfWord));
 
-			// Retrieve aligned sentences that contain the word
-			//
-			ProcessQuery processQuery = new ProcessQuery();
-			String query = inputs.getWordRomanized();
-			tLogger.trace("query= " + query);
-			tLogger.trace("calling run() on processQuery=" + processQuery);
-			String[] alignments = processQuery.run(query);
-			Alignment[] aligns = new Alignment[alignments.length];
-			for (int ial=0; ial<alignments.length; ial++)
-				aligns[ial] = computeSentencePair(alignments[ial]);
-			tLogger.trace("alignments= " + PrettyPrinter.print(alignments));
-
 
 			response.wordGist = gistOfWord;
-			response.alignments = aligns;
-		} catch (LinguisticDataException | ConfigException | IOException e) {
+//			response.alignments = aligns;
+			response.alignments = alignments4Word(inputs.getWordRomanized());
+		} catch (LinguisticDataException e) {
 			throw new ServiceException(e);
 		}
 
 		return response;
+	}
+
+	/**
+	 * Retrieve aligned sentences that contain the word
+	 *
+	 * @param wordRomanized
+	 * @return
+	 */
+	private Alignment[] alignments4Word(String wordRomanized) throws ServiceException {
+		Logger tLogger = Logger.getLogger("org.iutools.webservice.gist.GistWordEndpoint.alignments4Word");
+		ProcessQuery processQuery = null;
+		try {
+			processQuery = new ProcessQuery();
+		} catch (ConfigException e) {
+			throw new ServiceException(e);
+		}
+		tLogger.trace("wordRomanized= " + wordRomanized);
+		tLogger.trace("calling run() on processQuery=" + processQuery);
+		String[] alignments = new String[0];
+		try {
+			alignments = processQuery.run(wordRomanized);
+		} catch (ConfigException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			throw new ServiceException(e);
+		}
+		Alignment[] aligns = new Alignment[alignments.length];
+		for (int ial=0; ial<alignments.length; ial++)
+			aligns[ial] = computeSentencePair(alignments[ial]);
+		tLogger.trace("alignments= " + PrettyPrinter.print(alignments));
+
+		return aligns;
 	}
 
 	protected Alignment computeSentencePair(String alignmentString) {
