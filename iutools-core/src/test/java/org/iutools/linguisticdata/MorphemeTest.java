@@ -25,9 +25,24 @@ public class MorphemeTest {
 //		focusOnCase = "tit/tn-nom-p-2s";
 
 		Pair<String,String>[] cases = new Pair[] {
-			Pair.of("ilinniaqtit/1v", "ilinniaqtit (verb)"),
-			Pair.of("tit/1vv", "tit (verb-to-verb)"),
-			Pair.of("tit/tn-nom-p-2s", "tit (tn-noun-p-2s)"),
+			Pair.of("umiaq/1n", "umiaq (noun root)"),
+			Pair.of("pisuk/1v", "pisuk (verb root)"),
+			Pair.of("amma/1c", "amma (conjunction)"),
+			Pair.of("aakka/1a", "aakka (adverb)"),
+			Pair.of("aamai/1e", "aamai (expression/disclaimer)"),
+			Pair.of("uvanga/1p", "uvanga (pronoun)"),
+			Pair.of("quti/1nn", "quti (noun-to-noun suffix)"),
+			Pair.of("liuq/1nv", "liuq (noun-to-verb suffix)"),
+			Pair.of("ji/1vn", "ji (verb-to-noun suffix)"),
+			Pair.of("nasuk/1vv", "nasuk (verb-to-verb suffix)"),
+
+//			Pair.of("mi/tn-loc-s", "???"),
+//			Pair.of("mni/tn-loc-s-1s", "???"),
+//			Pair.of("vugut/tv-dec-1p", "???"),
+//			Pair.of("vugut/tv-dec-1p", "???"),
+
+		Pair.of("lu/1q", "lu (tail element)")
+
 		};
 
 		for (Pair<String,String> aCase: cases) {

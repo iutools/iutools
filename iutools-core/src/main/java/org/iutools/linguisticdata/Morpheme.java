@@ -385,6 +385,7 @@ public abstract class Morpheme implements Cloneable {
 			String morphName = matcher.group(1);
 			String rolesAbbrev = matcher.group(2);
 			String rolesDescr = rolesAbbrev;
+
 			if (!rolesAbbrev.contains("-") && rolesAbbrev.length() < 3) {
 				rolesDescr = "";
 				for (int ii=0; ii < rolesAbbrev.length(); ii++) {
@@ -394,6 +395,10 @@ public abstract class Morpheme implements Cloneable {
 					char roleChar = rolesAbbrev.charAt(ii);
 					rolesDescr += partofSpeechName(roleChar);
 				}
+				rolesDescr += rootSuffixOrNothing(rolesAbbrev);
+				if (1 == rolesAbbrev.length()) {
+					// This is a root morpheme
+				}
 			}
 
 			rolesDescr = substituteFrenchPOSNames(rolesDescr);
@@ -401,6 +406,19 @@ public abstract class Morpheme implements Cloneable {
 			descr = morphName+" ("+rolesDescr+")";
 		}
 		return descr;
+	}
+
+	private static String rootSuffixOrNothing(String rolesAbbrev) {
+		String answer = "";
+		if (rolesAbbrev.length() == 1) {
+			if (rolesAbbrev.matches("[nv]")) {
+				answer = " root";
+			}
+		} else if (rolesAbbrev.length() == 2) {
+			answer = " suffix";
+		}
+
+		return answer;
 	}
 
 	private static String substituteFrenchPOSNames(String rolesDescr) {
@@ -418,6 +436,14 @@ public abstract class Morpheme implements Cloneable {
 			posName = "verb";
 		} else if (roleChar == 'p') {
 			posName = "pronoun";
+		} else if (roleChar == 'c') {
+			posName = "conjunction";
+		} else if (roleChar == 'a') {
+			posName = "adverb";
+		} else if (roleChar == 'e') {
+			posName = "expression/disclaimer";
+		} else if (roleChar == 'q') {
+			posName = "tail element";
 		}
 		return posName;
 	}
