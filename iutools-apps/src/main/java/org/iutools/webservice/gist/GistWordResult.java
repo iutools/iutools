@@ -4,6 +4,7 @@ import org.iutools.morph.Gist;
 import org.iutools.script.TransCoder;
 import org.iutools.utilities.Alignment;
 import org.iutools.webservice.EndpointResult;
+import org.json.JSONObject;
 
 public class GistWordResult extends EndpointResult {
 	public String inputWord = null;
@@ -13,6 +14,11 @@ public class GistWordResult extends EndpointResult {
 
 	public GistWordResult() {
 		init_GistWord2Result(null);
+	}
+
+	@Override
+	public JSONObject resultLogEntry() {
+		return null;
 	}
 
 	public GistWordResult(String _word) {

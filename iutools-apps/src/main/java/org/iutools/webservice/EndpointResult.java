@@ -1,6 +1,8 @@
 package org.iutools.webservice;
 
-public class EndpointResult {
+import org.json.JSONObject;
+
+public abstract class EndpointResult {
 
 	public String taskID = null;
 	public String status = null;
@@ -9,4 +11,7 @@ public class EndpointResult {
 	public ServiceInputs failingInputs = null;
 
 	public EndpointResult() {}
+
+	public abstract JSONObject resultLogEntry();
+
 }

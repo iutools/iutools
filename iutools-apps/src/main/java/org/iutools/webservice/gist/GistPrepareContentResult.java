@@ -8,6 +8,7 @@ import org.iutools.script.TransCoderException;
 import org.iutools.text.segmentation.IUTokenizer;
 import org.iutools.webservice.EndpointResult;
 import org.iutools.webservice.ServiceException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,11 @@ public class GistPrepareContentResult extends EndpointResult {
 	public boolean wasActualText = true;
 
 	public GistPrepareContentResult() {}
+
+	@Override
+	public JSONObject resultLogEntry() {
+		return null;
+	}
 
 	public boolean getAlignmentsAvailable() {
 		boolean available =

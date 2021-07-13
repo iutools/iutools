@@ -8,6 +8,7 @@ import org.iutools.webservice.gist.GistWordResult;
 import org.iutools.webservice.logaction.LogActionInputs;
 import org.iutools.webservice.morphexamples.MorphemeExamplesResult;
 import org.iutools.webservice.search.ExpandQueryResult;
+import org.iutools.webservice.spell.SpellResult;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -172,6 +173,19 @@ public class EndpointDispatcherTest {
 		MockHttpServletResponse response  = doPost(uri, json);
 
 		new AssertServletResponse(response, GistWordResult.class)
+			.reportsNoException()
+			;
+		return;
+	}
+
+	@Test
+	public void test__doPost__spell__HappyPath() throws Exception {
+		JSONObject json = new JSONObject()
+			.put("text", "inukkksuk");
+		String uri = "iutools/srv2/spell";
+		MockHttpServletResponse response  = doPost(uri, json);
+
+		new AssertServletResponse(response, SpellResult.class)
 			.reportsNoException()
 			;
 		return;

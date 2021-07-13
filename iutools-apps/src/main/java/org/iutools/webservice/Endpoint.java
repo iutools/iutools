@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Category;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
@@ -45,11 +46,26 @@ public abstract class Endpoint
 			logRequest(request, inputs);
 			EndpointResult epResponse = execute(inputs);
 			epResponse.taskID = inputs.taskID;
+			logResult(request, epResponse, inputs);
 			writeJsonResponse(epResponse, response);
 		} catch (IOException e) {
 			logError(e, inputs);
 			throw new ServiceException(e);
 		}
+	}
+
+	private void logResult(HttpServletRequest request, EndpointResult epResponse, I inputs) throws ServiceException {
+		JSONObject json = epResponse.resultLogEntry();
+		if (json != null) {
+			json.put("_uri", request.getRequestURI());
+			resultLogger().info(json.toString());
+		}
+	}
+
+	private Category resultLogger() {
+		Logger logger = Logger.getLogger("org.iutools.webservice.endpoint_results");
+		logger.setLevel(Level.INFO);
+		return logger;
 	}
 
 	private void logError(Exception e, I inputs) throws ServiceException {
@@ -80,9 +96,9 @@ public abstract class Endpoint
 		if (inputSummary != null) {
 
 			JSONObject logEntry = new JSONObject()
-			.put("_uri", request.getRequestURI())
-			.put("_taskID", inputs.taskID)
-			.put("taskData", inputSummary);
+				.put("_uri", request.getRequestURI())
+				.put("_taskID", inputs.taskID)
+				.put("taskData", inputSummary);
 			String json = jsonifyLogEntry(logEntry);
 			actionLogger().info(json);
 		}
@@ -105,7 +121,7 @@ public abstract class Endpoint
 	}
 
 	private void writeJsonResponse(
-	EndpointResult epResponse, HttpServletResponse httpResponse) throws IOException {
+		EndpointResult epResponse, HttpServletResponse httpResponse) throws IOException {
 
 		Logger tLogger = Logger.getLogger("org.iutools.webservice.EndpointDispatcher.writeJsonResponse");
 

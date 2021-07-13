@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.iutools.webservice.MorphemeSearchResult;
+import org.json.JSONObject;
 
 public class MorphemeExamplesResult extends EndpointResult {
 
@@ -23,5 +24,10 @@ public class MorphemeExamplesResult extends EndpointResult {
 			matchingDescrs.add(matchingWords.get(morph).morphDescr);
 		}
 		return matchingDescrs;
+	}
+
+	@Override
+	public JSONObject resultLogEntry() {
+		return null;
 	}
 }

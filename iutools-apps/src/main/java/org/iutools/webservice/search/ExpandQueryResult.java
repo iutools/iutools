@@ -6,6 +6,7 @@ import org.iutools.script.TransCoder;
 import org.iutools.script.TransCoderException;
 import org.iutools.webservice.EndpointResult;
 import org.iutools.webservice.ServiceException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,11 @@ public class ExpandQueryResult extends EndpointResult {
 	public String expandedQuerySyll = null;
 
 	public ExpandQueryResult() {}
+
+	@Override
+	public JSONObject resultLogEntry() {
+		return null;
+	}
 
 	public ExpandQueryResult(String _origQuery) throws ServiceException {
 		init_ExpandQueryResponse(_origQuery, (MorphologicalRelative[])null);
