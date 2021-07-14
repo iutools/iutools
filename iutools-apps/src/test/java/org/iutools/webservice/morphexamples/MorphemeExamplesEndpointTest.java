@@ -60,7 +60,7 @@ public class MorphemeExamplesEndpointTest extends EndpointTest {
 			.matchingMorphemesDescriptionsAre(
 				"ilinniaqtit (verb root)",
 				"katit (verb root)",
-				"tit (tn-noun-p-2s)",
+				"tit (noun ending)",
 				"tit (verb-to-verb suffix)",
 				"titaq (verb root)",
 				"titiq (verb root)",
