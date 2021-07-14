@@ -116,12 +116,9 @@ class WordGistController extends IUToolsController {
 		if (alignments != null && alignments.length > 0) {
 			html += '<table id="tbl-alignments" class="alignments"><th>Inuktitut</th><th>English</th></tr>';
 			for (var ial=0; ial<Math.min(30,alignments.length); ial++) {
-				var alignment = alignments[ial];
-				console.log('alignment: '+JSON.stringify(alignment));
-				console.log('iu: '+alignment.sentences['iu']);
-				console.log('en: '+alignment.sentences['en']);
-				var inuktitutSentence = alignment.sentences['iu'].replace(gist.word,'<strong>'+gist.word+'</strong>').replace(/\.{5,}/,'...');
-				var englishSentence = alignment.sentences['en'].replace(/\.{5,}/,'...').trim();
+				var alignment = new Alignment(alignments[ial]);
+				var inuktitutSentence = alignment.text4lang('iu').replace(gist.word,'<strong>'+gist.word+'</strong>').replace(/\.{5,}/,'...');
+				var englishSentence = alignment.text4lang('en').replace(/\.{5,}/,'...').trim();
 				html += '<tr><td>'+inuktitutSentence+'</td><td>'+englishSentence+'</td></tr>';
 			}
 			html += '</table>';

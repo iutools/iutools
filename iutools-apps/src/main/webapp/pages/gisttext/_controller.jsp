@@ -3,6 +3,7 @@
 <script src="js/utils/IUUtils.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 <script src="js/utils/HtmlUtils.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 <script src="js/controllers/gist/GistTextController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
+<script src="js/controllers/concordancer/Alignment.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 
 <script>
 	// Setup and configure the controller for this page
