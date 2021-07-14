@@ -790,5 +790,10 @@ public class LinguisticData {
         addSource(source.id,source);
     }
 
-
+	public String[] allMorphemeIDs() {
+    	List<String> idsList = new ArrayList<String>();
+    	Collections.addAll(idsList, getAllAffixesIds());
+    	Collections.addAll(idsList, getAllBasesIds());
+    	return idsList.toArray(new String[0]);
+	}
 }

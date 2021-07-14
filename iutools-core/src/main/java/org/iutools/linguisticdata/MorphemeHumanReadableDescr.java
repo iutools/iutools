@@ -1,5 +1,7 @@
 package org.iutools.linguisticdata;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -8,6 +10,14 @@ import java.util.regex.Pattern;
  * what that morpheme is about.
  */
 public class MorphemeHumanReadableDescr {
+
+	private static Map<String,String> caseAbbrevs = new HashMap<String,String>();
+	static {
+		caseAbbrevs.put("loc", "locative");
+		caseAbbrevs.put("dec", "declarative");
+		caseAbbrevs.put("caus", "causative");
+	}
+
 
 	private static Pattern pattSeparateNameFromRoles =
 		Pattern.compile("^([^/]*)/\\d?(.*)$");
@@ -28,17 +38,19 @@ public class MorphemeHumanReadableDescr {
 			String primaryPersAndNumber = primaryPersonAndNumber(attributesString);
 			String secondaryPersAndNumber = secondaryPersonAndNumber(attributesString);
 
-			String attrsDescr =
-				transitivityOrPosessivity + partOfSpeechDescr + positionDescr;
-			if (caseDescr != null) {
-				attrsDescr += "; " + caseDescr;
+			String attrsDescr = "";
+			attrsDescr = expandDescr(attrsDescr, transitivityOrPosessivity);
+			attrsDescr = expandDescr(attrsDescr, partOfSpeechDescr);
+			attrsDescr = expandDescr(attrsDescr, positionDescr);
+			if (caseDescr != null || primaryPersAndNumber != null) {
+				attrsDescr += ";";
 			}
-			if (primaryPersAndNumber != null) {
-				attrsDescr += "; " + primaryPersAndNumber;
-			}
+			attrsDescr = expandDescr(attrsDescr, caseDescr);
+			attrsDescr = expandDescr(attrsDescr, primaryPersAndNumber);
 			if (secondaryPersAndNumber != null) {
-				attrsDescr += "; " + secondaryPersAndNumber;
+				attrsDescr += ";";
 			}
+			attrsDescr = expandDescr(attrsDescr, secondaryPersAndNumber);
 
 			descr = morphName+" ("+attrsDescr+")";
 		}
@@ -46,38 +58,113 @@ public class MorphemeHumanReadableDescr {
 		return descr;
 	}
 
+	private static String expandDescr(String attrsDescr, String toAppend) {
+		if (toAppend != null) {
+			if (attrsDescr != null && attrsDescr.length() > 0) {
+				attrsDescr += " ";
+			}
+			attrsDescr += toAppend;
+		}
+		return attrsDescr;
+	}
+
 	private static String secondaryPersonAndNumber(String attributesString) {
 		String persNum = null;
+		if (attributesString.startsWith("t")) {
+			String[] attributes = attributesString.split("-");
+			if (attributes.length > 3) {
+				persNum = personAndNumber4abbrev(attributes[3]);
+			}
+		}
+		if (persNum != null) {
+			if (attributesString.startsWith("tn")) {
+				persNum += " posessor";
+			} else if (attributesString.startsWith("tv")) {
+				persNum += " object";
+			}
+		}
 		return persNum;
 	}
 
 	private static String primaryPersonAndNumber(String attributesString) {
 		String persNum = null;
+		if (attributesString.startsWith("t")) {
+			String[] attributes = attributesString.split("-");
+			if (attributes.length > 2) {
+				persNum = personAndNumber4abbrev(attributes[2]);
+			}
+		}
 		return persNum;
 	}
 
+
 	private static String transitivityOrPosessivity(String attributesString) {
-		String transitivity = "";
-		return transitivity;
+		String transOrPosess = null;
+		if (attributesString.startsWith("t")) {
+			boolean has4thAttribute = (attributesString.split("-").length == 4);
+			if (attributesString.startsWith("tn")) {
+				// This is a noun morpheme. Is it posessive or not?
+				if (has4thAttribute) {
+					transOrPosess = "posessive";
+				}
+			} else if (attributesString.startsWith("tv")) {
+				// This is a verb morpheme. Is it transitive or intransitive?
+				if (has4thAttribute) {
+					transOrPosess = "transitive";
+				} else {
+					transOrPosess = "intransitive";
+				}
+			}
+		}
+		return transOrPosess;
 	}
 
 	private static String caseFor(String attributesString) {
 		String caseDescr = null;
+		String caseAbbr = null;
+		if (attributesString.startsWith("t")) {
+			caseAbbr = attributesString.split("-")[1];
+		}
+		if (caseAbbr != null) {
+			caseDescr = caseAbbrevs.get(caseAbbr);
+		}
 		return caseDescr;
 	}
 
 	private static String personAndNumber4abbrev(String abbrev) {
 		String persNum = null;
-		if (abbrev.length() > 1) {
-			char persChar = abbrev.charAt(0);
-			if (persChar == '1') {
-				persNum = "1st";
-			} else if (persChar == '2') {
-				persNum = "2nd";
-			} else if (persChar == '3') {
-				persNum = "3rd";
-			} else if (persChar == '4') {
-				persNum = "4th";
+
+		String pers = null;
+		if (abbrev.startsWith("1")) {
+			pers = "1st";
+		} else if (abbrev.startsWith("2")) {
+			pers = "2nd";
+		} else if (abbrev.startsWith("3")) {
+			pers = "3rd";
+		} else if (abbrev.startsWith("4")) {
+			pers = "4th";
+		}
+		if (pers != null) {
+			pers += " person";
+		}
+
+		String num = null;
+		if (abbrev.contains("s")) {
+			num = "singular";
+		} else if (abbrev.contains("p")) {
+			num = "plural";
+		}
+
+		if (num != null || pers != null) {
+			persNum = "";
+			if (pers != null) {
+				persNum += pers;
+			}
+			if (num != null) {
+				if (persNum.length() > 0) {
+					persNum += " ";
+				}
+				persNum += num;
 			}
 		}
 
@@ -121,17 +208,17 @@ public class MorphemeHumanReadableDescr {
 	}
 
 	private static String position(String attributesString) {
-		String location = "";
+		String location = null;
 		if (attributesString.length() == 1) {
 			if (attributesString.matches("[nv]")) {
-				location = " root";
+				location = "root";
 			}
 		} else if (attributesString.length() == 2) {
-			location = " suffix";
+			location = "suffix";
 		} else if (attributesString.startsWith("s")) {
 			location = " suffix";
 		} else if (attributesString.startsWith("t")) {
-			location = " ending";
+			location = "ending";
 		}
 
 		return location;
