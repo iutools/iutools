@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
  * Given a Morpheme ID, this class generates a human-readable description of
  * what that morpheme is about.
  */
-public class MorphemeDescriptionGenerator {
+public class MorphemeHumanReadableDescr {
 
 	private static Pattern pattSeparateNameFromRoles =
 		Pattern.compile("^([^/]*)/\\d?(.*)$");

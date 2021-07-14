@@ -5,7 +5,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class MorphemeDescriptionGeneratorTest {
+public class MorphemeHumanReadableDescrTest {
 
 	@Test
 	public void test__description4id__SeveralCases() throws Exception {
@@ -38,7 +38,7 @@ public class MorphemeDescriptionGeneratorTest {
 			if (focusOnCase != null && !focusOnCase.equals(id)) {
 				continue;
 			}
-			String gotDescr = MorphemeDescriptionGenerator.humanReadableDescription(id);
+			String gotDescr = MorphemeHumanReadableDescr.humanReadableDescription(id);
 			AssertString.assertStringEquals(
 				"Bad description for morpheme id "+id, expDescr, gotDescr);
 		}
