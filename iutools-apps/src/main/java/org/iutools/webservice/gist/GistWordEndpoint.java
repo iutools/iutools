@@ -74,13 +74,7 @@ public class GistWordEndpoint extends Endpoint<GistWordInputs, GistWordResult> {
 			aligns = new Alignment[numToKeep];
 			for (int ii=0; ii < numToKeep; ii++) {
 				Alignment_ES algES = alignmentResults.get(ii);
-				aligns[ii] =
-					new Alignment(
-						"en",
-						algES.sentence4lang("en"),
-						"iu",
-						algES.sentence4lang("iu")
-					);
+				aligns[ii] = esResult2alignment(algES);
 			}
 
 		} catch (TranslationMemoryException | TransCoderException e) {
@@ -91,21 +85,14 @@ public class GistWordEndpoint extends Endpoint<GistWordInputs, GistWordResult> {
 		return aligns;
 	}
 
+	private Alignment esResult2alignment(Alignment_ES esAlignment) {
 
+		Alignment alignment = new Alignment(
+			"en",
+			esAlignment.sentence4lang("en"),
+			"iu",
+			TransCoder.ensureRoman(esAlignment.sentence4lang("iu")));
 
-	protected Alignment computeSentencePair(String alignmentString) {
-		Logger logger = Logger.getLogger("GistEndpoint.computeSentencePair");
-		String[] alignmentParts = alignmentString.split("::");
-		if (alignmentParts.length != 2)
-			logger.debug("alignment string without ':: ' --- "+alignmentString);
-		String[] sentences = alignmentParts[1].split("@----@");
-		String inuktitutSentence =
-				sentences[0].replace("/\\.{5,}/","...").trim();
-		String englishSentence = "";
-		if (sentences.length > 1 && sentences[1] != null)
-			englishSentence = sentences[1].replace("/\\.{5,}/","...").trim();
-		Alignment sentencePair = new Alignment("iu",inuktitutSentence,"en",englishSentence);
-
-		return sentencePair;
+		return alignment;
 	}
 }
