@@ -1,6 +1,8 @@
 package org.iutools.concordancer.tm;
 
+import ca.nrc.dtrc.elasticsearch.DocIterator;
 import ca.nrc.dtrc.elasticsearch.ElasticSearchException;
+import ca.nrc.dtrc.elasticsearch.SearchResults;
 import ca.nrc.dtrc.elasticsearch.StreamlinedClient;
 import ca.nrc.ui.commandline.UserIO;
 import org.apache.log4j.Logger;
@@ -81,8 +83,23 @@ public class TranslationMemory {
 	}
 
 	public List<Alignment_ES> search(String sourceLang, String sourceExpr,
-		String... targetLangs) {
+		String... targetLangs) throws TranslationMemoryException {
+
 		List<Alignment_ES> alignments = new ArrayList<Alignment_ES>();
+
+		String freeformQuery = "sentences."+sourceLang+":\""+sourceExpr+"\"";
+		SearchResults<Alignment_ES> searchResult = null;
+		try {
+			searchResult = esClient().search(freeformQuery, ES_ALIGNMENT_TYPE, new Alignment_ES());
+			for (
+				DocIterator<Alignment_ES> it = searchResult.docIterator(); it.hasNext(); ) {
+				Alignment_ES aHit = it.next();
+				alignments.add(aHit);
+			}
+		} catch (ElasticSearchException e) {
+			throw new TranslationMemoryException(e);
+		}
+
 		return alignments;
 	}
 }

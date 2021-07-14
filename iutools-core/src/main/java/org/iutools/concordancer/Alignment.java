@@ -10,12 +10,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class Alignment {
 
 	public boolean misaligned = false;
-	Map<String,String> langText = new HashMap<String,String>();
-	Map<String,String[]> tokens4lang = new HashMap<String,String[]>();
-	int[][] tokenAlignments = null;
+	public Map<String,String> langText = new HashMap<String,String>();
+	public Map<String,String[]> tokens4lang = new HashMap<String,String[]>();
+	public int[][] tokenAlignments = null;
 
 	public Alignment() {
-
 		init_Alignment(null, null, null, null,
 			null, null, null, null);
 	}

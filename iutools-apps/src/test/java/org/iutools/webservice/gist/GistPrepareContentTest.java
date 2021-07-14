@@ -55,7 +55,7 @@ public class GistPrepareContentTest extends EndpointTest {
 			.containsAlignment(
 				new Alignment(
 					"iu", "nunavut gavamanga",
-				"en", "Government of Nunavut"))
+					"en", "Government of Nunavut"))
 		;
 	}
 

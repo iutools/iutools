@@ -2,7 +2,7 @@ package org.iutools.webservice.gist;
 
 import org.iutools.morph.Gist;
 import org.iutools.script.TransCoder;
-import org.iutools.utilities.Alignment;
+import org.iutools.concordancer.Alignment;
 import org.iutools.webservice.EndpointResult;
 import org.json.JSONObject;
 

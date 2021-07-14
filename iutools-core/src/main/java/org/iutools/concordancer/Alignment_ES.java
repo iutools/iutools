@@ -42,4 +42,11 @@ public class Alignment_ES extends Document {
 		return from_doc+": p"+pair_num;
 	}
 
+	public String sentence4lang(String lang) {
+			String sent = null;
+			if (sentences.containsKey(lang)) {
+				sent = sentences.get(lang);
+			}
+			return sent;
+	}
 }

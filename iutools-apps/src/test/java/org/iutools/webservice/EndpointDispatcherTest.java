@@ -3,6 +3,8 @@ package org.iutools.webservice;
 import ca.nrc.testing.AssertString;
 import ca.nrc.ui.web.testing.MockHttpServletRequest;
 import ca.nrc.ui.web.testing.MockHttpServletResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.iutools.concordancer.Alignment;
 import org.iutools.webservice.gist.GistPrepareContentResult;
 import org.iutools.webservice.gist.GistWordResult;
 import org.iutools.webservice.logaction.LogActionInputs;
@@ -167,6 +169,9 @@ public class EndpointDispatcherTest {
 
 	@Test
 	public void test__doPost__gistword__HappyPath() throws Exception {
+		Alignment align = new ObjectMapper().readValue("{}", Alignment.class);
+
+
 		JSONObject json = new JSONObject()
 			.put("word", "inuksuk");
 		String uri = "iutools/srv2/gist/gistword";

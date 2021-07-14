@@ -63,13 +63,14 @@ public class TranslationMemoryTest {
 
 
 	@Test
-	public void test__search__HappyPath() {
+	public void test__search__HappyPath() throws Exception {
 		String sourceLang = "en";
 		String sourceExpr = "legislative";
 		String[] targetLangs = {"iu", "fr"};
 		List<Alignment_ES> alignments =
 			tm.search(sourceLang, sourceExpr, targetLangs);
 		new AssertAlignment_ESList(alignments)
+			.atLeastNHits(1)
 			.allHitsMatchQuery(sourceLang, sourceExpr)
 			;
 	}

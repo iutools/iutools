@@ -1,14 +1,14 @@
 package org.iutools.webservice.gist;
 
 import ca.nrc.json.PrettyPrinter;
+import ca.nrc.testing.AssertNumber;
 import ca.nrc.testing.AssertObject;
-import org.iutools.utilities.Alignment;
+import org.iutools.concordancer.Alignment;
 import org.iutools.morph.Gist;
 import org.iutools.webservice.AssertEndpointResult;
 import org.iutools.webservice.EndpointResult;
 
 import ca.nrc.datastructure.Pair;
-import org.junit.jupiter.api.Assertions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,28 +49,46 @@ public class AssertGistWordResult extends AssertEndpointResult  {
 		return gist;
 	}
 
-
-	public void nthAlignmentIs(int nn, String lang1, String text1,
-			String lang2, String text2) throws Exception {
-		if (getAlignments().length < nn+1) {
-			Assertions.fail(
-				baseMessage+"\nAlignment results contained less than "+
-						nn+" alignments.\n"+"Alignments were: \n"+
-						PrettyPrinter.print(getAlignments()));
-		}
-		Alignment nthAlignment = getAlignments()[nn-1];
-		String[] gotAlignment = new String[] {
-			nthAlignment.sentences.get(lang1),
-			nthAlignment.sentences.get(lang2)
-		};
-		String[] expAlignment = new String[] {text1, text2};
-		AssertObject.assertDeepEquals(
-				baseMessage+"\nAlignment #"+nn+" was not as expected.",
-				expAlignment, gotAlignment);
-	}
-
 	private Alignment[] getAlignments() {
 		Alignment[] alignments = result().alignments;
 		return alignments;
+	}
+
+	public AssertGistWordResult mostAlignmentsContains(String lang, String... expressions) {
+		return mostAlignmentsContains(lang, 0.0, expressions);
+	}
+
+	public AssertGistWordResult mostAlignmentsContains(String lang, double tolerance,
+																		String... expressions) {
+		Alignment[] alignments = result().alignments;
+		int totalAlignments = alignments.length;
+		List<Alignment> faultyAlignments = new ArrayList<Alignment>();
+		for (Alignment anAlignment: alignments) {
+			String sentence = anAlignment.getText(lang).toLowerCase();
+			boolean found = false;
+			for (String expr: expressions) {
+				expr = expr.toLowerCase();
+				if (sentence.contains(expr)) {
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				faultyAlignments.add(anAlignment);
+			}
+		}
+
+		double faultyRatio = 0.0;
+		if (totalAlignments > 0) {
+			faultyRatio = 1.0 * faultyAlignments.size() / totalAlignments;
+		}
+		String mess =
+			"Too many alignments (ratio="+faultyRatio+") were missing an expected expression on the '"+lang+"' side.\n"+
+			"Exp expression: "+String.join(", ", expressions)+"\n"+
+			"Faulty alignments:\n"+PrettyPrinter.print(faultyAlignments)+"\n"
+			;
+		AssertNumber.isLessOrEqualTo(mess, faultyRatio, tolerance);
+
+		return this;
 	}
 }
