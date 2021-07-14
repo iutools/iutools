@@ -17,7 +17,7 @@ public class MorphemeSearchResult {
 	
 	public MorphemeSearchResult(String _morphID, String _meaning, List<String> _words, List<Double> _wordScores) {
 		this.morphID = _morphID;
-		this.morphDescr = Morpheme.description4id(morphID);
+		this.morphDescr = Morpheme.humanReadableDescription(morphID);
 		this.meaning = _meaning;
 		this.words = _words;
 		this.wordScores = _wordScores;

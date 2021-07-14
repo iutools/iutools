@@ -29,8 +29,6 @@ package org.iutools.linguisticdata;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 import java.util.Vector;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
@@ -54,7 +52,7 @@ public abstract class Morpheme implements Cloneable {
 	Morpheme.Id idObj = null;
 	String dialect = null;
 	String combinedMorphemes[] = null;
-    
+
     String cf = null; // référence à d'autres morphèmes
     String[] cfs = null; // tableau de références à d'autres morphèmes
 
@@ -62,9 +60,6 @@ public abstract class Morpheme implements Cloneable {
     Conditions nextCondition = null;
 
     private HashMap<String,Object> attributes = null;
-
-    private static Pattern pattSeparateNameFromRoles =
-	 	Pattern.compile("^([^/]*)/\\d?(.*)$");
 
 	//------------------------------------------------------------------------------------------------------------
 	abstract boolean agreeWithTransitivity(String trans); //
@@ -178,7 +173,7 @@ public abstract class Morpheme implements Cloneable {
     	    Morpheme morph = (Morpheme)LinguisticData.getInstance().getAffixWithId(morphemeId);
     	    // If not found, look for the morpheme in the roots
     	    if (morph == null)
-    	        morph = (Morpheme)LinguisticData.getInstance().getBaseWithId(morphemeId);
+				 morph = (Morpheme) LinguisticData.getInstance().getBaseWithId(morphemeId);
             return morph;
         }
     
@@ -378,74 +373,8 @@ public abstract class Morpheme implements Cloneable {
         return formatted;
     }
 
-	public static String description4id(String morphID) {
-		String descr = morphID;
-		Matcher matcher = pattSeparateNameFromRoles.matcher(morphID);
-		if (matcher.matches()) {
-			String morphName = matcher.group(1);
-			String rolesAbbrev = matcher.group(2);
-			String rolesDescr = rolesAbbrev;
-
-			if (!rolesAbbrev.contains("-") && rolesAbbrev.length() < 3) {
-				rolesDescr = "";
-				for (int ii=0; ii < rolesAbbrev.length(); ii++) {
-					if (ii > 0) {
-						rolesDescr += "-to-";
-					}
-					char roleChar = rolesAbbrev.charAt(ii);
-					rolesDescr += partofSpeechName(roleChar);
-				}
-				rolesDescr += rootSuffixOrNothing(rolesAbbrev);
-				if (1 == rolesAbbrev.length()) {
-					// This is a root morpheme
-				}
-			}
-
-			rolesDescr = substituteFrenchPOSNames(rolesDescr);
-
-			descr = morphName+" ("+rolesDescr+")";
-		}
-		return descr;
-	}
-
-	private static String rootSuffixOrNothing(String rolesAbbrev) {
-		String answer = "";
-		if (rolesAbbrev.length() == 1) {
-			if (rolesAbbrev.matches("[nv]")) {
-				answer = " root";
-			}
-		} else if (rolesAbbrev.length() == 2) {
-			answer = " suffix";
-		}
-
-		return answer;
-	}
-
-	private static String substituteFrenchPOSNames(String rolesDescr) {
-		rolesDescr = rolesDescr.replaceAll("nom", "noun");
-		rolesDescr = rolesDescr.replaceAll("verbe", "verb");
-		rolesDescr = rolesDescr.replaceAll("pronom", "pronoun");
-		return rolesDescr;
-	}
-
-	private static String partofSpeechName(char roleChar) {
-		String posName = new String(new char[] {roleChar});
-		if (roleChar == 'n') {
-			posName = "noun";
-		} else if (roleChar == 'v') {
-			posName = "verb";
-		} else if (roleChar == 'p') {
-			posName = "pronoun";
-		} else if (roleChar == 'c') {
-			posName = "conjunction";
-		} else if (roleChar == 'a') {
-			posName = "adverb";
-		} else if (roleChar == 'e') {
-			posName = "expression/disclaimer";
-		} else if (roleChar == 'q') {
-			posName = "tail element";
-		}
-		return posName;
+	public static String humanReadableDescription(String morphID) {
+		return MorphemeDescriptionGenerator.humanReadableDescription(morphID);
 	}
 }
 
