@@ -60,7 +60,7 @@ public class MorphemeHumanReadableDescrTest {
 	@Test
 	public void test__MorphemeHumanReadableDescr__SeveralCases() throws Exception {
 		String focusOnCase = null;
-//		focusOnCase = "umiaq/1n";
+//		focusOnCase = "mi/tn-loc-s";
 
 		Triple<String,String,String>[] cases = new Triple[] {
 			Triple.of("umiaq/1n", "umiaq", "noun root"),

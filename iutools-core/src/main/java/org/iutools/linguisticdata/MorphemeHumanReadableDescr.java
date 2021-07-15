@@ -37,10 +37,10 @@ public class MorphemeHumanReadableDescr {
 	}
 
 	private Pair<String, String> parseMorphID(String morphID) throws MorphemeException {
-		String canonical = null;
+		Pair<String, String[]> splitID = splitMorphID(morphID);
+		String canonical = splitID.getLeft();
+		String[] attributes = splitID.getRight();
 		String gramm = null;
-
-		String descr = morphID;
 
 		Matcher matcher = pattSeparateCanonicalFromRoles.matcher(morphID);
 
@@ -48,12 +48,12 @@ public class MorphemeHumanReadableDescr {
 			canonical = matcher.group(1);
 			String attributesString = matcher.group(2);
 
-			String transitivityOrPosessivity = transitivityOrPosessivity(attributesString);
-			String partOfSpeechDescr = partOfSpeech(attributesString);
-			String positionDescr = position(attributesString);
-			String caseDescr = caseFor(attributesString);
-			String primaryPersAndNumber = primaryPersonAndNumber(attributesString);
-			String secondaryPersAndNumber = secondaryPersonAndNumber(attributesString);
+			String transitivityOrPosessivity = transitivityOrPosessivity(attributes);
+			String partOfSpeechDescr = partOfSpeech(attributes);
+			String positionDescr = position(attributes);
+			String caseDescr = caseFor(attributes);
+			String primaryPersAndNumber = primaryPersonAndNumber(attributes);
+			String secondaryPersAndNumber = secondaryPersonAndNumber(attributes);
 
 			gramm = "";
 			gramm = expandDescr(gramm, transitivityOrPosessivity);
@@ -68,8 +68,6 @@ public class MorphemeHumanReadableDescr {
 				gramm += ";";
 			}
 			gramm = expandDescr(gramm, secondaryPersAndNumber);
-
-			descr = canonical+" ("+gramm+")";
 		}
 
 		return Pair.of(canonical, gramm);
@@ -107,10 +105,10 @@ public class MorphemeHumanReadableDescr {
 		return attrsDescr;
 	}
 
-	private static String secondaryPersonAndNumber(String attributesString) throws MorphemeException {
+	private static String secondaryPersonAndNumber(String[] attributes) throws MorphemeException {
 		String persNum = null;
-		if (attributesString.startsWith("t")) {
-			String[] attributes = attributesString.split("-");
+		String firstAttr = attributes[0];
+		if (firstAttr.startsWith("t")) {
 			if (attributes.length > 3) {
 				persNum = personAndNumber4abbrev(attributes[3]);
 //				if (persNum == null) {
@@ -119,9 +117,9 @@ public class MorphemeHumanReadableDescr {
 			}
 		}
 		if (persNum != null) {
-			if (attributesString.startsWith("tn")) {
+			if (firstAttr.equals("tn")) {
 				persNum += " posessor";
-			} else if (attributesString.startsWith("tv")) {
+			} else if (firstAttr.equals("tv")) {
 				persNum += " object";
 			}
 		}
@@ -129,10 +127,10 @@ public class MorphemeHumanReadableDescr {
 		return persNum;
 	}
 
-	private static String primaryPersonAndNumber(String attributesString) {
+	private static String primaryPersonAndNumber(String[] attributes) {
 		String persNum = null;
-		if (attributesString.startsWith("t")) {
-			String[] attributes = attributesString.split("-");
+		String firstAttr = attributes[0];
+		if (firstAttr.startsWith("t")) {
 			if (attributes.length > 2) {
 				persNum = personAndNumber4abbrev(attributes[2]);
 			}
@@ -140,17 +138,17 @@ public class MorphemeHumanReadableDescr {
 		return persNum;
 	}
 
-
-	private static String transitivityOrPosessivity(String attributesString) {
+	private static String transitivityOrPosessivity(String[] attributes) {
 		String transOrPosess = null;
-		if (attributesString.startsWith("t")) {
-			boolean has4thAttribute = (attributesString.split("-").length == 4);
-			if (attributesString.startsWith("tn")) {
+		String firstAttr = attributes[0];
+		if (firstAttr.startsWith("t")) {
+			boolean has4thAttribute = (attributes.length == 4);
+			if (firstAttr.equals("tn")) {
 				// This is a noun morpheme. Is it posessive or not?
 				if (has4thAttribute) {
 					transOrPosess = "posessive";
 				}
-			} else if (attributesString.startsWith("tv")) {
+			} else if (firstAttr.equals("tv")) {
 				// This is a verb morpheme. Is it transitive or intransitive?
 				if (has4thAttribute) {
 					transOrPosess = "transitive";
@@ -162,11 +160,12 @@ public class MorphemeHumanReadableDescr {
 		return transOrPosess;
 	}
 
-	private static String caseFor(String attributesString) throws MorphemeException {
+	private static String caseFor(String[] attributes) throws MorphemeException {
 		String caseDescr = null;
 		String caseAbbr = null;
-		if (attributesString.startsWith("t")) {
-			caseAbbr = attributesString.split("-")[1];
+		String firstAttr = attributes[0];
+		if (firstAttr.startsWith("t")) {
+			caseAbbr = attributes[1];
 		}
 		if (caseAbbr != null) {
 			caseDescr = caseAbbrevs.get(caseAbbr);
@@ -233,36 +232,38 @@ public class MorphemeHumanReadableDescr {
 		return name;
 	}
 
-	private static String partOfSpeech(String attributesString) {
+	private static String partOfSpeech(String[] attributes) {
 		String posDescr = "";
-		if (attributesString.startsWith("tn")) {
+		String firstAttr = attributes[0];
+		if (firstAttr.startsWith("tn")) {
 			posDescr = "noun";
-		} else if (attributesString.startsWith("tv")) {
+		} else if (firstAttr.equals("tv")) {
 			posDescr = "verb";
-		} else if (!attributesString.contains("-") && attributesString.length() < 3) {
-			for (int ii=0; ii < attributesString.length(); ii++) {
+		} else if (attributes.length == 1 && attributes[0].length() < 3) {
+			for (int ii=0; ii < firstAttr.length(); ii++) {
 				if (ii > 0) {
 					posDescr += "-to-";
 				}
-				char roleChar = attributesString.charAt(ii);
+				char roleChar = firstAttr.charAt(ii);
 				posDescr += partofSpeechName(roleChar);
 			}
 		}
 		return posDescr;
 	}
 
-	private static String position(String attributesString) {
+	private static String position(String[] attributes) {
 		String location = null;
-		if (attributesString.length() == 1) {
-			if (attributesString.matches("[nv]")) {
+		String firstAttr = attributes[0];
+		if (firstAttr.length() == 1) {
+			if (firstAttr.matches("[nv]")) {
 				location = "root";
 			}
-		} else if (attributesString.length() == 2) {
+		} else if (firstAttr.startsWith("s")) {
 			location = "suffix";
-		} else if (attributesString.startsWith("s")) {
-			location = " suffix";
-		} else if (attributesString.startsWith("t")) {
+		} else if (firstAttr.startsWith("t")) {
 			location = "ending";
+		} else if (firstAttr.length() == 2) {
+			location = "suffix";
 		}
 
 		return location;
