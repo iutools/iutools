@@ -373,8 +373,8 @@ public abstract class Morpheme implements Cloneable {
         return formatted;
     }
 
-	public static String humanReadableDescription(String morphID) {
-		return MorphemeHumanReadableDescr.humanReadableDescription(morphID);
+	public static String humanReadableDescription(String morphID) throws MorphemeException {
+		return MorphemeHumanReadableDescr.descriptiveText(morphID);
 	}
 }
 

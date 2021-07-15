@@ -1,5 +1,7 @@
 package org.iutools.linguisticdata;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -11,6 +13,10 @@ import java.util.regex.Pattern;
  */
 public class MorphemeHumanReadableDescr {
 
+	public String id = null;
+	public String canonicalForm = null;
+	public String grammar = null;
+
 	private static Map<String,String> caseAbbrevs = new HashMap<String,String>();
 	static {
 		caseAbbrevs.put("loc", "locative");
@@ -19,16 +25,27 @@ public class MorphemeHumanReadableDescr {
 	}
 
 
-	private static Pattern pattSeparateNameFromRoles =
+	private static Pattern pattSeparateCanonicalFromRoles =
 		Pattern.compile("^([^/]*)/\\d?(.*)$");
 
 
-	public static String humanReadableDescription(String morphID) {
+	MorphemeHumanReadableDescr(String morphID) throws MorphemeException {
+		Pair<String,String> parsed = parseMorphID(morphID);
+		this.id = morphID;
+		this.canonicalForm = parsed.getLeft();
+		this.grammar = parsed.getRight();
+	}
+
+	private Pair<String, String> parseMorphID(String morphID) throws MorphemeException {
+		String canonical = null;
+		String gramm = null;
+
 		String descr = morphID;
-		Matcher matcher = pattSeparateNameFromRoles.matcher(morphID);
+
+		Matcher matcher = pattSeparateCanonicalFromRoles.matcher(morphID);
 
 		if (matcher.matches()) {
-			String morphName = matcher.group(1);
+			canonical = matcher.group(1);
 			String attributesString = matcher.group(2);
 
 			String transitivityOrPosessivity = transitivityOrPosessivity(attributesString);
@@ -38,24 +55,46 @@ public class MorphemeHumanReadableDescr {
 			String primaryPersAndNumber = primaryPersonAndNumber(attributesString);
 			String secondaryPersAndNumber = secondaryPersonAndNumber(attributesString);
 
-			String attrsDescr = "";
-			attrsDescr = expandDescr(attrsDescr, transitivityOrPosessivity);
-			attrsDescr = expandDescr(attrsDescr, partOfSpeechDescr);
-			attrsDescr = expandDescr(attrsDescr, positionDescr);
+			gramm = "";
+			gramm = expandDescr(gramm, transitivityOrPosessivity);
+			gramm = expandDescr(gramm, partOfSpeechDescr);
+			gramm = expandDescr(gramm, positionDescr);
 			if (caseDescr != null || primaryPersAndNumber != null) {
-				attrsDescr += ";";
+				gramm += ";";
 			}
-			attrsDescr = expandDescr(attrsDescr, caseDescr);
-			attrsDescr = expandDescr(attrsDescr, primaryPersAndNumber);
+			gramm = expandDescr(gramm, caseDescr);
+			gramm = expandDescr(gramm, primaryPersAndNumber);
 			if (secondaryPersAndNumber != null) {
-				attrsDescr += ";";
+				gramm += ";";
 			}
-			attrsDescr = expandDescr(attrsDescr, secondaryPersAndNumber);
+			gramm = expandDescr(gramm, secondaryPersAndNumber);
 
-			descr = morphName+" ("+attrsDescr+")";
+			descr = canonical+" ("+gramm+")";
 		}
 
-		return descr;
+		return Pair.of(canonical, gramm);
+	}
+
+	public static String descriptiveText(String morphID) throws MorphemeException {
+		MorphemeHumanReadableDescr descr =
+			new MorphemeHumanReadableDescr(morphID);
+		String descrTxt = descr.canonicalForm + " (" + descr.grammar + ")";
+		return descrTxt;
+	}
+
+	protected static Pair<String,String[]> splitMorphID(String morphID) {
+		Pair<String, String[]> splitID = null;
+		Matcher matcher = pattSeparateCanonicalFromRoles.matcher(morphID);
+
+
+		if (matcher.matches()) {
+			String canonicalForm = matcher.group(1);
+			String attributesString = matcher.group(2);
+			String[] attributes = attributesString.split("-");
+			splitID = Pair.of(canonicalForm, attributes);
+		}
+
+		return splitID;
 	}
 
 	private static String expandDescr(String attrsDescr, String toAppend) {
@@ -68,12 +107,15 @@ public class MorphemeHumanReadableDescr {
 		return attrsDescr;
 	}
 
-	private static String secondaryPersonAndNumber(String attributesString) {
+	private static String secondaryPersonAndNumber(String attributesString) throws MorphemeException {
 		String persNum = null;
 		if (attributesString.startsWith("t")) {
 			String[] attributes = attributesString.split("-");
 			if (attributes.length > 3) {
 				persNum = personAndNumber4abbrev(attributes[3]);
+//				if (persNum == null) {
+//					throw new MorphemeException("4th attribute was neither person nor number: "+attributesString);
+//				}
 			}
 		}
 		if (persNum != null) {
@@ -83,6 +125,7 @@ public class MorphemeHumanReadableDescr {
 				persNum += " object";
 			}
 		}
+
 		return persNum;
 	}
 
@@ -119,7 +162,7 @@ public class MorphemeHumanReadableDescr {
 		return transOrPosess;
 	}
 
-	private static String caseFor(String attributesString) {
+	private static String caseFor(String attributesString) throws MorphemeException {
 		String caseDescr = null;
 		String caseAbbr = null;
 		if (attributesString.startsWith("t")) {
@@ -128,6 +171,7 @@ public class MorphemeHumanReadableDescr {
 		if (caseAbbr != null) {
 			caseDescr = caseAbbrevs.get(caseAbbr);
 		}
+
 		return caseDescr;
 	}
 
