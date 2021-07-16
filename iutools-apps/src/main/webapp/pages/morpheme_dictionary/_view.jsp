@@ -12,8 +12,8 @@
     <input id="nb-examples" name="nb-examples" value="20" style="width:5em;">
     </div><br>
     <div>
-    Morpheme(e.g. gaq):
-    <input id="morpheme" name="morpheme" style="width:20em;">
+    Morpheme (may be partial):
+    <input id="morpheme" name="morpheme" style="width:20em;" placeholder="ex: gaq">
     </div>
     <button id="btn-occ" type="button" name="btn-occ" value="Occurrences">Search</button>
     <input type="hidden" id="example-word" name="example-word" value="">

@@ -84,6 +84,8 @@ public class MorphemeHumanReadableDescrTest {
 			Triple.of("lu/1q", "lu", "tail element")
 		};
 
+		Set<String> ignoreFields = new HashSet<String>();
+		ignoreFields.add("definition");
 		for (Triple<String,String,String> aCase: cases) {
 			String id = aCase.getLeft();
 			String expCanonical = aCase.getMiddle();
@@ -100,7 +102,7 @@ public class MorphemeHumanReadableDescrTest {
 			}
 			AssertObject.assertDeepEquals(
 				"Bad description for morpheme id "+id,
-				expDescr, gotDescr);
+				expDescr, gotDescr, ignoreFields, 1);
 		}
 
 		if (focusOnCase != null) {

@@ -1,6 +1,8 @@
 <% String IUTOOLS_JS_VERSION=(new java.util.Date()).toLocaleString(); %>
 
 <script src="js/controllers/morpheme_dictionary/MorphemeDictionaryController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
+<script src="js/controllers/concordancer/Alignment.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
+<script src="js/utils/Morpheme.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 <script src="js/utils/IUUtils.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 
 <script>

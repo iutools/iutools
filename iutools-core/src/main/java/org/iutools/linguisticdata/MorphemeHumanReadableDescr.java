@@ -1,6 +1,7 @@
 package org.iutools.linguisticdata;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,11 +12,12 @@ import java.util.regex.Pattern;
  * Given a Morpheme ID, this class generates a human-readable description of
  * what that morpheme is about.
  */
-public class MorphemeHumanReadableDescr {
+public class MorphemeHumanReadableDescr implements Comparable<MorphemeHumanReadableDescr> {
 
 	public String id = null;
 	public String canonicalForm = null;
 	public String grammar = null;
+	public String meaning = null;
 
 	private static Map<String,String> caseAbbrevs = new HashMap<String,String>();
 	static {
@@ -28,10 +30,24 @@ public class MorphemeHumanReadableDescr {
 	private static Pattern pattSeparateCanonicalFromRoles =
 		Pattern.compile("^([^/]*)/\\d?(.*)$");
 
+	public MorphemeHumanReadableDescr() throws MorphemeException {
+	}
 
-	MorphemeHumanReadableDescr(String morphID) throws MorphemeException {
-		Pair<String,String> parsed = parseMorphID(morphID);
+
+	public MorphemeHumanReadableDescr(String morphID) throws MorphemeException {
+		init__MorphemeHumanReadableDescr(morphID, (String)null);
+	}
+
+	public MorphemeHumanReadableDescr(String morphID, String _definition)
+		throws MorphemeException {
+		init__MorphemeHumanReadableDescr(morphID, _definition);
+	}
+
+	private void init__MorphemeHumanReadableDescr(
+		String morphID, String _definition) throws MorphemeException {
+		this.meaning = _definition;
 		this.id = morphID;
+		Pair<String,String> parsed = parseMorphID(morphID);
 		this.canonicalForm = parsed.getLeft();
 		this.grammar = parsed.getRight();
 	}
@@ -287,5 +303,10 @@ public class MorphemeHumanReadableDescr {
 			posName = "tail element";
 		}
 		return posName;
+	}
+
+	@Override
+	public int compareTo(@NotNull MorphemeHumanReadableDescr o) {
+		return this.id.compareTo(o.id);
 	}
 }

@@ -16,7 +16,7 @@ class MorphemeDictionaryController extends IUToolsController {
 	}
 	
 	onFindExamples() {
-		Debug.getTraceLogger("OccurenceController.onFindExamples").trace("invoked");
+		Debug.getTraceLogger("MorphemeDictionaryController.onFindExamples").trace("invoked");
 		this.elementForProp("divGist_contents").html('').parent().hide();
 		this.elementForProp('inpExampleWord').val('');
 		this.elementForProp("divGist").hide();
@@ -77,10 +77,12 @@ class MorphemeDictionaryController extends IUToolsController {
 	
 	
 	findExamplesSuccessCallback(resp) {
-		if (resp.errorMessage != null) {
+        Debug.getTraceLogger("MorphemeDictionaryController.findExamplesSuccessCallback").trace("resp="+JSON.stringify(resp));
+
+        if (resp.errorMessage != null) {
 			this.findExamplesFailureCallback(resp);
 		} else {
-			this.setGetResults(resp);	
+			this.setResults(resp);
 		}
 		this.setGetBusy(false);
 	}
@@ -148,12 +150,11 @@ class MorphemeDictionaryController extends IUToolsController {
 	}
 	
 
-	setGetResults(results) {
-        var tracer = Debug.getTraceLogger("MorphemeExamplesController.setGetResults")
-        var jsonResults = JSON.stringify(results);
-        tracer.trace("jsonResults="+jsonResults)
+	setResults(results) {
+        var tracer = Debug.getTraceLogger("MorphemeDictionaryController.setResults")
+        tracer.trace("results="+JSON.stringify(results));
 		var divResults = this.elementForProp("divResults");
-		
+
 		divResults.empty();
 		
 		var morphemesMap = results.matchingWords;
@@ -161,41 +162,22 @@ class MorphemeDictionaryController extends IUToolsController {
 
 		// Display number of hits
 		var html = morphemes.length+' morpheme'+
-			(morphemes.length==1?'':'s')+' found.<br/><i>Click on morpheme to see examples of use.</i>';
+			(morphemes.length==1?'':'s')+' found.<br/>';
 
-		// Display "index" of matching morphemes
-		html += '<div id="list-of-morphemes">';
-		html += '<ul>';
+		// Display table of matching morphekmes
+		html += '<div id="list-of-morphemes">\n';
+		html += '<table id="tbl-matching-morphs" class="gist">\n';
 		for (var imorph=0; imorph<morphemes.length; imorph++) {
 			var morphID = morphemes[imorph];
 			var morphDescr = morphemesMap[morphID].morphDescr;
-			var meaning = morphemesMap[morphID].meaning;
-			html += '<li><a href="#'+morphID+'">'+morphDescr+'</a>&nbsp;&nbsp;&nbsp;&ndash;&nbsp;&nbsp;&nbsp;'+meaning+'</li>'
+			var morphExampleWords = morphemesMap[morphID].words;
+            var morphMeaning = morphemesMap[morphID].meaning;
+            html +=
+                this.htmlMorphemeRow(morphDescr, morphMeaning, morphExampleWords);
 		}
-		html += '</ul>';
-		html += '</div>';
+        html += "</table><br/>\n";
+		html += '</div><br/>&nbsp;';
 		
-		// Display details for each matching morpheme
-		for (var imorph=0; imorph<morphemes.length; imorph++) {
-			var morphid = morphemes[imorph];
-            var morphDescr = morphemesMap[morphid].morphDescr;
-			var meaning = morphemesMap[morphid].meaning;
-			var words = morphemesMap[morphid].words;
-			var wordFreqs = morphemesMap[morphid].wordScores;
-			var wordsFreqsArray = new Array(wordFreqs.length);
-			for (var iwf=0; iwf<wordFreqs.length; iwf++) {
-				wordsFreqsArray[iwf] = 
-					'<a class="word-example" id="word-example-'+words[iwf]+'"'
-					+ '>'+words[iwf]+'</a>'
-					;
-			}
-			html += '<div class="morpheme-details">';
-			html += '<a name="'+morphid+'"></a>'+'<strong>'+morphDescr+
-			'</strong>&nbsp;&nbsp;&nbsp;&ndash;&nbsp;&nbsp;&nbsp;'+meaning+
-				'<div style="margin:5px 80px 15px 15px;"><b>Examples:</b> '+
-				wordsFreqsArray.join(';&nbsp;&nbsp;&nbsp; ')+'</div>';
-			html += '</div>';
-		}
 		divResults.append(html);
 		
 		this.attachListenersToExampleWords();
@@ -204,6 +186,35 @@ class MorphemeDictionaryController extends IUToolsController {
 				divResults.show();
 		});
 	}
+
+    htmlMorphemeRow(morphDescr, morphMeaning, morphWords) {
+        var tracer = Debug.getTraceLogger("MorphemeDictionaryController.htmlMorphemeRow")
+        tracer.trace("morphDescr="+JSON.stringify(morphDescr)+", morphWords="+JSON.stringify(morphWords));
+
+        var html =
+            '<tr>\n' +
+            '  <td>'+morphDescr.canonicalForm+'</td>\n'+
+            '  <td><i>'+morphDescr.grammar+'</i><br/>\n'+
+            '      '+morphMeaning+'<br/>\n'+
+            '      <b>Examples:</b> '
+            ;
+
+        for (var ii=0; ii < morphWords.length; ii++) {
+            var aWord = morphWords[ii];
+            html +=
+                '<a class="word-example" id="word-example-'+aWord+'"'
+                + '>'+aWord+'</a>&nbsp;&nbsp;&nbsp;'
+            ;
+        }
+
+        html +=
+            '\n' +
+            '  </td>\n'+
+            '</tr>\n'
+        ;
+
+        return html;
+    }
 
 
 	attachListenersToExampleWords() {		

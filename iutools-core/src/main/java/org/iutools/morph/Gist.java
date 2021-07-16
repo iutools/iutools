@@ -1,10 +1,13 @@
 package org.iutools.morph;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.iutools.bin.Decompose;
 import org.iutools.linguisticdata.LinguisticDataException;
+import org.iutools.linguisticdata.MorphemeHumanReadableDescr;
 import org.iutools.script.Syllabics;
 import ca.nrc.datastructure.Pair;
 
@@ -12,7 +15,9 @@ public class Gist {
 	
 	public String word = null;
 	public Pair<String,String>[] wordComponents = null;
-	
+	public Map<String,MorphemeHumanReadableDescr>
+		morphemesDefAndGrammar = new HashMap<String,MorphemeHumanReadableDescr>();
+
 	public Gist() {}
 
 	public Gist(String word) throws LinguisticDataException {
@@ -20,7 +25,8 @@ public class Gist {
 		boolean syllabic = false;
 		String latin;
 		Decomposition[] decs;
-		
+		MorphemeHumanReadableDescr[] morphDescriptions = null;
+
 		MorphologicalAnalyzer morphAnalyzer = new MorphologicalAnalyzer();
 		
 		Pattern pattern = Pattern.compile("^(.+?)---(.+)$");

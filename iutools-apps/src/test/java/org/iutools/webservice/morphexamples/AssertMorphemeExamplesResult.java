@@ -3,6 +3,7 @@ package org.iutools.webservice.morphexamples;
 import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.AssertSet;
 import org.apache.commons.lang3.tuple.Pair;
+import org.iutools.linguisticdata.MorphemeHumanReadableDescr;
 import org.iutools.webservice.AssertEndpointResult;
 import org.iutools.webservice.EndpointResult;
 import org.iutools.webservice.MorphemeSearchResult;
@@ -45,20 +46,23 @@ public class AssertMorphemeExamplesResult extends AssertEndpointResult {
 	}
 
 	public AssertMorphemeExamplesResult matchingMorphemesAre(
-		String... expMorphIDs) throws IOException {
-		Set<String> gotMorphIDs = result().matchingMorphemes();
+		String... expMorphIDs) throws Exception {
+
+		// First check the IDs of the matching morphemes
+		Set<String> gotMorphIDs = result().matchingMorphemeIDs();
 		AssertSet.assertEquals("", expMorphIDs, gotMorphIDs);
 
-		return this;
-	}
-
-	public AssertMorphemeExamplesResult matchingMorphemesDescriptionsAre(
-		String... expDescriptions) throws IOException {
-		Set<String> expDescrSet = new HashSet<String>();
-		Collections.addAll(expDescrSet, expDescriptions);
-		Set<String> gotDescrSet = result().matchingMorphemesDescr();
+		// Then check the human-readable descriptions of the matching morphemes
+		Set<MorphemeHumanReadableDescr> gotDescrSet = result().matchingMorphemesDescr();
+		Set<MorphemeHumanReadableDescr> expDescrSet = new HashSet<MorphemeHumanReadableDescr>();
+		for (String morphID: expMorphIDs) {
+			expDescrSet.add(new MorphemeHumanReadableDescr(morphID));
+		}
 		AssertSet.assertEquals(
-			"Descriptions of matching morphemes were wrong.", expDescrSet, gotDescrSet);
+			"Descriptions of matching morphemes were wrong.",
+			expDescrSet, gotDescrSet);
+
+
 
 		return this;
 	}

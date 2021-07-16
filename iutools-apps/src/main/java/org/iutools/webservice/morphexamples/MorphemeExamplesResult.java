@@ -1,5 +1,6 @@
 package org.iutools.webservice.morphexamples;
 
+import org.iutools.linguisticdata.MorphemeHumanReadableDescr;
 import org.iutools.webservice.EndpointResult;
 
 import java.util.HashMap;
@@ -14,13 +15,14 @@ public class MorphemeExamplesResult extends EndpointResult {
 
 	public Map<String, MorphemeSearchResult> matchingWords = new HashMap<String, MorphemeSearchResult>();
 
-	public Set<String> matchingMorphemes() {
+	public Set<String> matchingMorphemeIDs() {
 		return matchingWords.keySet();
 	}
 
-	public Set<String> matchingMorphemesDescr() {
-		Set<String> matchingDescrs = new HashSet<String>();
-		for (String morph: matchingMorphemes()) {
+	public Set<MorphemeHumanReadableDescr> matchingMorphemesDescr() {
+		Set<MorphemeHumanReadableDescr> matchingDescrs =
+			new HashSet<MorphemeHumanReadableDescr>();
+		for (String morph: matchingMorphemeIDs()) {
 			matchingDescrs.add(matchingWords.get(morph).morphDescr);
 		}
 		return matchingDescrs;
