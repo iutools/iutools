@@ -376,6 +376,16 @@ public abstract class Morpheme implements Cloneable {
 	public static String humanReadableDescription(String morphID) throws MorphemeException {
 		return MorphemeHumanReadableDescr.descriptiveText(morphID);
 	}
+
+	/**
+	 * Indicates if this morpheme is a composite (i.e. made up of two smaller
+	 * morphemes).
+	 * @return
+	 */
+	public boolean isComposite() {
+		return false;
+	}
+
 }
 
 

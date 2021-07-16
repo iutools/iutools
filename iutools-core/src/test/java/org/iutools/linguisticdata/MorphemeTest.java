@@ -2,6 +2,7 @@ package org.iutools.linguisticdata;
 
 import ca.nrc.testing.AssertString;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class MorphemeTest {
@@ -24,5 +25,14 @@ public class MorphemeTest {
 		String gotDescr = Morpheme.humanReadableDescription(morphID);
 		AssertString.assertStringEquals(
 			"Bad description for morpheme id "+morphID, expDescr, gotDescr);
+	}
+
+	@Test @Ignore
+	public void test__isComposite() {
+		LinguisticData lingData = LinguisticData.getInstance();
+		Morpheme morph = lingData.getMorpheme("tit/1vv");
+		Assert.assertFalse(morph.isComposite());
+		morph = lingData.getMorpheme("ilinniaqtit/1v");
+		Assert.assertTrue(morph.isComposite());
 	}
 }
