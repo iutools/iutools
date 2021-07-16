@@ -28,13 +28,16 @@ public class MorphemeExamplesEndpointTest extends EndpointTest {
 
 		EndpointResult epResponse = endPoint.execute(examplesInputs);
 		new AssertMorphemeExamplesResult(epResponse)
-			.matchingMorphemesAre("siuq/1nv")
-			.exampleScoredExamplesAre(
-				new Pair[] {
-					Pair.of("ammuumajuqsiuqtutik", 10004.0),
-					Pair.of("ittuqsiutitaaqpattut", 10002.0)
-				}
-			);
+			.matchingMorphemesAre(
+				Pair.of("siuq/1nv",
+					"searching, looking for s.t. (trans.: of, for, about s.o.); travelling through space or time (spend); feasting, celebrating")
+			)
+			.examplesForMorphemeAre("siuq/1nv",
+				new String[] {
+					"ammuumajuqsiuqtutik",
+					"ittuqsiutitaaqpattut"
+				});
+		;
 	}
 
 	@Test
@@ -49,14 +52,26 @@ public class MorphemeExamplesEndpointTest extends EndpointTest {
 		EndpointResult epResponse = endPoint.execute(examplesInputs);
 		new AssertMorphemeExamplesResult(epResponse)
 			.matchingMorphemesAre(
-				"ilinniaqtit/1v",
-				"katit/1v",
-				"tit/1vv",
-				"tit/tn-nom-p-2s",
-				"titaq/1v",
-				"titiq/1v",
-				"titiraq/1v"
+				Pair.of("ilinniaqtit/1v",
+					"to make oneself learn"),
+				Pair.of("katit/1v",
+					"[-R]to /put s.t. together; to /assemble s.t. [R]to come together to form one"),
+				Pair.of("tit/1vv",
+					"to cause s.o. (refl.: oneself) to do s.t."),
+				Pair.of("tit/tn-nom-p-2s",
+					"nominative: your (many things to one person) "),
+				Pair.of("titaq/1v",
+					"to make music, esp. on the accordion"),
+				Pair.of("titiq/1v",
+					"to mark something with a stroke, a sign, etc. with an instrument"),
+				Pair.of("titiraq/1v",
+					"write")
 			)
+			.examplesForMorphemeAre("tit/tn-nom-p-2s",
+				new String[] {
+					"ilinniagatit",
+					"maligatit"
+				});
 		;
 	}
 }

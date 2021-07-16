@@ -21,24 +21,12 @@ public class AssertMorphemeExamplesResult extends AssertEndpointResult {
 		super(_gotObject, mess);
 	}
 
-	public void exampleScoredExamplesAre(Pair[] expExamples) throws Exception {
-		Map<String,Double> expScoresMap = new HashMap<String,Double>();
-		for (Pair<String,Double> anExpExample: expExamples) {
-			expScoresMap.put(anExpExample.getLeft(), anExpExample.getRight());
-		}
-		Map<String, MorphemeSearchResult> gotExampleObjects =
-			result().matchingWords;
-		HashMap<String,Double> gotScoresMap = new HashMap<String,Double>();
-		for (String morpheme: gotExampleObjects.keySet()) {
-			MorphemeSearchResult morphResult = gotExampleObjects.get(morpheme);
-			for (int ii=0; ii < morphResult.words.size(); ii++) {
-				gotScoresMap.put(morphResult.words.get(ii), morphResult.wordScores.get(ii));
-			}
-		}
-
+	public void examplesForMorphemeAre(String morphID, String... expExamples)
+		throws Exception {
+		String[] gotExamples = result().examplesForMorpheme.get(morphID);
 		AssertObject.assertDeepEquals(
-			baseMessage+"\nScored examples not as expected.",
-			expScoresMap, gotScoresMap);
+			baseMessage+"\nWord examples not as expected for morpheme "+morphID,
+			expExamples, gotExamples);
 	}
 
 	private MorphemeExamplesResult result() {
@@ -46,23 +34,19 @@ public class AssertMorphemeExamplesResult extends AssertEndpointResult {
 	}
 
 	public AssertMorphemeExamplesResult matchingMorphemesAre(
-		String... expMorphIDs) throws Exception {
-
-		// First check the IDs of the matching morphemes
-		Set<String> gotMorphIDs = result().matchingMorphemeIDs();
-		AssertSet.assertEquals("", expMorphIDs, gotMorphIDs);
+		Pair<String,String>... expIDsAndDefs) throws Exception {
 
 		// Then check the human-readable descriptions of the matching morphemes
-		Set<MorphemeHumanReadableDescr> gotDescrSet = result().matchingMorphemesDescr();
-		Set<MorphemeHumanReadableDescr> expDescrSet = new HashSet<MorphemeHumanReadableDescr>();
-		for (String morphID: expMorphIDs) {
-			expDescrSet.add(new MorphemeHumanReadableDescr(morphID));
+		Set<MorphemeHumanReadableDescr> gotMorphemes = result().matchingMorphemesDescr();
+		Set<MorphemeHumanReadableDescr> expMorphemes = new HashSet<MorphemeHumanReadableDescr>();
+		for (Pair<String,String> idAndDef: expIDsAndDefs) {
+			expMorphemes.add(
+				new MorphemeHumanReadableDescr(
+					idAndDef.getLeft(), idAndDef.getRight()));
 		}
 		AssertSet.assertEquals(
 			"Descriptions of matching morphemes were wrong.",
-			expDescrSet, gotDescrSet);
-
-
+			expMorphemes, gotMorphemes);
 
 		return this;
 	}

@@ -156,24 +156,25 @@ class MorphemeDictionaryController extends IUToolsController {
 		var divResults = this.elementForProp("divResults");
 
 		divResults.empty();
-		
-		var morphemesMap = results.matchingWords;
-		var morphemes = Object.keys(morphemesMap);
+
+		var matchingMorphs = results.matchingMorphemes;
+		var examplesForMorph = results.examplesForMorpheme;
+		// var morphemesMap = results.matchingWords;
+		// var morphemes = Object.keys(morphemesMap);
 
 		// Display number of hits
-		var html = morphemes.length+' morpheme'+
-			(morphemes.length==1?'':'s')+' found.<br/>';
+		var html = matchingMorphs.length+' morpheme'+
+			(matchingMorphs.length==1?'':'s')+' found.<br/>';
 
 		// Display table of matching morphekmes
 		html += '<div id="list-of-morphemes">\n';
 		html += '<table id="tbl-matching-morphs" class="gist">\n';
-		for (var imorph=0; imorph<morphemes.length; imorph++) {
-			var morphID = morphemes[imorph];
-			var morphDescr = morphemesMap[morphID].morphDescr;
-			var morphExampleWords = morphemesMap[morphID].words;
-            var morphMeaning = morphemesMap[morphID].meaning;
+		for (var imorph=0; imorph < matchingMorphs.length; imorph++) {
+		    var morpheme = matchingMorphs[imorph];
+			var morphID = morpheme.id;
+			var morphExampleWords = examplesForMorph[morphID];
             html +=
-                this.htmlMorphemeRow(morphDescr, morphMeaning, morphExampleWords);
+                this.htmlMorphemeRow(morpheme, morphExampleWords);
 		}
         html += "</table><br/>\n";
 		html += '</div><br/>&nbsp;';
@@ -187,15 +188,15 @@ class MorphemeDictionaryController extends IUToolsController {
 		});
 	}
 
-    htmlMorphemeRow(morphDescr, morphMeaning, morphWords) {
+    htmlMorphemeRow(morpheme, morphWords) {
         var tracer = Debug.getTraceLogger("MorphemeDictionaryController.htmlMorphemeRow")
-        tracer.trace("morphDescr="+JSON.stringify(morphDescr)+", morphWords="+JSON.stringify(morphWords));
+        tracer.trace("morpheme="+JSON.stringify(morpheme)+", morphWords="+JSON.stringify(morphWords));
 
         var html =
             '<tr>\n' +
-            '  <td>'+morphDescr.canonicalForm+'</td>\n'+
-            '  <td><i>'+morphDescr.grammar+'</i><br/>\n'+
-            '      '+morphMeaning+'<br/>\n'+
+            '  <td>'+morpheme.canonicalForm+'</td>\n'+
+            '  <td><i>'+morpheme.grammar+'</i><br/>\n'+
+            '      '+morpheme.meaning+'<br/>\n'+
             '      <b>Examples:</b> '
             ;
 

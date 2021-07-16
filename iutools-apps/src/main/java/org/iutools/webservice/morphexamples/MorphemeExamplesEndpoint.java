@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import org.iutools.corpus.CompiledCorpus;
 import org.iutools.corpus.CompiledCorpusRegistry;
 import org.iutools.linguisticdata.Morpheme;
+import org.iutools.linguisticdata.MorphemeHumanReadableDescr;
 import org.iutools.morphemesearcher.MorphSearchResults;
 import org.iutools.morphemesearcher.MorphemeSearcher;
 import org.iutools.morphemesearcher.ScoredExample;
@@ -12,7 +13,6 @@ import org.iutools.webservice.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -42,18 +42,15 @@ public class MorphemeExamplesEndpoint
 			corpusName = null; // will use default corpus = Hansard2002
 		}
 
-		MorphemeExamplesResult results = new MorphemeExamplesResult();
-
 		// Retrieve all words that match the wordPattern
 		// and put the results in results.matchingWords
-		HashMap<String, MorphemeSearchResult> wordsForMorphemes =
+		MorphemeExamplesResult results =
 			findExamples(inputs, corpusName);
-		results.matchingWords = wordsForMorphemes;
 
 		return results;
 	}
 
-	private HashMap<String,MorphemeSearchResult> findExamples(
+	private MorphemeExamplesResult findExamples(
 		MorphemeExamplesInputs inputs, String corpusName)
 			throws MorphemeExamplesException {
 		Logger tLogger = Logger.getLogger("org.iutools.webservice.OccurenceSearchEndpoint.getOccurrences");
@@ -61,6 +58,7 @@ public class MorphemeExamplesEndpoint
 		tLogger.trace("invoked with inputs.wordPattern="+inputs.wordPattern+", inputs.nbExamples="+inputs.nbExamples);
 
 		tLogger.trace("Creating the MorphemeSearcher instance");
+		MorphemeExamplesResult results = new MorphemeExamplesResult();
 		try {
 
 			MorphemeSearcher morphExtractor = new MorphemeSearcher();
@@ -80,36 +78,32 @@ public class MorphemeExamplesEndpoint
 			tLogger.trace("Finding words that contain the morpheme");
 			List<MorphSearchResults> wordsForMorphemes =
 				morphExtractor.wordsContainingMorpheme(inputs.wordPattern);
+
 			tLogger.trace("wordsForMorphemes: "+wordsForMorphemes.size());
-			HashMap<String,MorphemeSearchResult> results = new HashMap<String,MorphemeSearchResult>();
-			MorphemeSearcher.WordFreqComparator comparator = morphExtractor.new WordFreqComparator();
 			Iterator<MorphSearchResults> itWFM = wordsForMorphemes.iterator();
 			while (itWFM.hasNext()) {
 				MorphSearchResults w = itWFM.next();
-				tLogger.trace("morphemeWithId: "+w.morphemeWithId);
-				String meaningOfMorpheme = Morpheme.getMorpheme(w.morphemeWithId).englishMeaning;
-				tLogger.trace("meaningOfMorpheme: "+meaningOfMorpheme);
+				String morphID = w.morphemeWithId;
+				String morphMeaning = Morpheme.getMorpheme(morphID).englishMeaning;
+				tLogger.trace("morphID: "+morphID+", morphMeaning: "+morphMeaning);
+				MorphemeHumanReadableDescr morphDescr =
+					new MorphemeHumanReadableDescr(morphID, morphMeaning);
+				results.matchingMorphemes.add(morphDescr);
+
 				List<ScoredExample> wordsAndFreqs = w.words;
 				tLogger.trace("wordsAndFreqs: "+wordsAndFreqs.size());
-				ScoredExample[] wordsFreqsArray = wordsAndFreqs.toArray(new ScoredExample[] {});
 				List<String> words = new ArrayList<String>();
-				List<Double> wordScores = new ArrayList<Double>();
-				for (ScoredExample example : wordsFreqsArray) {
+				for (ScoredExample example : wordsAndFreqs) {
 					tLogger.trace("example.word: "+example.word);
 					words.add(example.word);
-					wordScores.add(example.score);
 				}
-				MorphemeSearchResult morphemeSearchResult =
-					new MorphemeSearchResult(
-						w.morphemeWithId, meaningOfMorpheme, words, wordScores);
-				results.put(w.morphemeWithId, morphemeSearchResult);
+				results.examplesForMorpheme.put(
+					w.morphemeWithId, words.toArray(new String[0]));
 			}
-
-			tLogger.trace("end of method");
-
-			return results;
 		} catch (Exception e) {
 			throw new MorphemeExamplesException(e);
 		}
+		tLogger.trace("end of method");
+		return results;
 	}
 }
