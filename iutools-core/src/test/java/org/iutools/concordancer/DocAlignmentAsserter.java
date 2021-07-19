@@ -50,7 +50,7 @@ public class DocAlignmentAsserter {
 		this.gotDocAlignment = _pageAligment;
 	}
 
-	public void containsAlignment(Alignment expAlignment) {
+	public void containsAlignment(SentencePair expAlignment) {
 		
 		boolean found = false;
 		String errMess =
@@ -58,7 +58,7 @@ public class DocAlignmentAsserter {
 			"Expected: "+expAlignment.toString()+"\n"+
 			"Got:\n";
 				
-		for (Alignment anAlignment: gotDocAlignment.alignmentsAll) {
+		for (SentencePair anAlignment: gotDocAlignment.alignmentsAll) {
 			errMess += "  "+anAlignment.toString()+"\n";
 			if (anAlignment.toString().equals(expAlignment.toString())) {
 				found = true;
@@ -73,7 +73,7 @@ public class DocAlignmentAsserter {
 	public DocAlignmentAsserter didNotEncounterProblems() {
 		String message =
 			baseMessage+"\n"+
-			"Alignment should NOT have encountered problems but it did.\n"+
+			"SentencePair should NOT have encountered problems but it did.\n"+
 			"Problems were:\n  "+gotDocAlignment.problems2str("\n  ");
 		Assert.assertFalse(message, gotDocAlignment.encounteredSomeProblems());
 		return this;
@@ -91,7 +91,7 @@ public class DocAlignmentAsserter {
 					lang2 + ":" + expAlPairs[ii].getSecond() + 
 					")";
 		}
-		List<Alignment> gotAlList = this.gotDocAlignment.getAligments();
+		List<SentencePair> gotAlList = this.gotDocAlignment.getAligments();
 		String[] gotAlStrs = new String[gotAlList.size()];
 		for (int ii=0; ii < gotAlList.size(); ii++) {
 			gotAlStrs[ii] = gotAlList.get(ii).toString();
@@ -151,7 +151,7 @@ public class DocAlignmentAsserter {
 	public DocAlignmentAsserter hasNoContentForLang(String lang) {
 		String content = gotDocAlignment.getPageText(lang);
 		Assert.assertEquals(
-			"Alignment should not have had content for language "+lang,
+			"SentencePair should not have had content for language "+lang,
 			null, content);
 		
 		return this;
@@ -282,13 +282,13 @@ public class DocAlignmentAsserter {
 	private Object value4field(WebConcordancer.AlignOptions field) {
 		Object value = null;
 		if (field == WebConcordancer.AlignOptions.ALIGNED_SENTENCES) {
-			value = new ArrayList<Alignment>();
-			List<Alignment> alignedSentences =
+			value = new ArrayList<SentencePair>();
+			List<SentencePair> alignedSentences =
 				docAlignment().getAligments(DocAlignment.PageSection.ALL);
-			((List<Alignment>)value).addAll(alignedSentences);
+			((List<SentencePair>)value).addAll(alignedSentences);
 			alignedSentences =
 				docAlignment().getAligments(DocAlignment.PageSection.MAIN);
-			((List<Alignment>)value).addAll(alignedSentences);
+			((List<SentencePair>)value).addAll(alignedSentences);
 		} else if (field == WebConcordancer.AlignOptions.ALL_TEXT) {
 			value = docAlignment().pagesTextHash();
 		} else if (field == WebConcordancer.AlignOptions.MAIN_TEXT) {

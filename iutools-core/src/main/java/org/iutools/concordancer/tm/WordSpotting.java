@@ -1,27 +1,28 @@
-package org.iutools.concordancer;
+package org.iutools.concordancer.tm;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.iutools.concordancer.SentencePair;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class WordSpotting {
 
-	Alignment sentPair = null;
+	SentencePair sentPair = null;
 
 	public WordSpotting() {
-		init_WordSpotting((Alignment)null, (String)null, (String)null);
+		init_WordSpotting((SentencePair)null, (String)null, (String)null);
 	}
-	public WordSpotting(Alignment _sentPair) {
+	public WordSpotting(SentencePair _sentPair) {
 		init_WordSpotting(_sentPair, (String)null, (String)null);
 	}
 
-	private void init_WordSpotting(Alignment _sentPair,
- 		String _sourceLang, String _sourceWord) {
+	private void init_WordSpotting(SentencePair _sentPair,
+											 String _sourceLang, String _sourceWord) {
 		this.sentPair = _sentPair;
 	}
 
-	public Alignment sentencePair() {
+	public SentencePair sentencePair() {
 		return sentPair;
 	}
 

@@ -107,7 +107,7 @@ public abstract class WebConcordancer {
 					AlignmentPart.ALIGNMENTS);
 			if (tLogger.isTraceEnabled()) {
 				String mess = "After aligning content of the two pages, alignments are:";
-				for (Alignment anAlignment: alignment.getAligments()) {
+				for (SentencePair anAlignment: alignment.getAligments()) {
 					mess += "   "+anAlignment+"\n";
 				}
 				tLogger.trace(mess);
@@ -177,7 +177,7 @@ public abstract class WebConcordancer {
 	private String traceAlignments(Logger tLogger, String mess, DocAlignment alignment) {
 		if (tLogger.isTraceEnabled()) {
 			mess += "Alignments are:\n";
-			for (Alignment anAlignment: alignment.getAligments()) {
+			for (SentencePair anAlignment: alignment.getAligments()) {
 				mess += "   "+anAlignment+"\n";
 			}
 		}
@@ -264,12 +264,12 @@ public abstract class WebConcordancer {
 				raiseProblem(DocAlignment.Problem.ALIGNING_SENTENCES, docAlignment, e);
 			}
 
-			List<Alignment> alignments = docAlignment.getAligments(pageSection);
+			List<SentencePair> alignments = docAlignment.getAligments(pageSection);
 
-			alignments = new ArrayList<Alignment>();
+			alignments = new ArrayList<SentencePair>();
 			for (Pair<String,String> aPair: alignedPairs) {
-				Alignment anAlignment =
-					new Alignment(
+				SentencePair anAlignment =
+					new SentencePair(
 						langs.get(0), aPair.getFirst(),
 						langs.get(1), aPair.getSecond());
 				docAlignment.addAlignment(pageSection, anAlignment);
@@ -314,8 +314,8 @@ public abstract class WebConcordancer {
 			// SHOULD NEVER HAPPEN
 		}
 		
-		result.addAlignment(new Alignment("en", enSentences[0], "iu", iuSentences[0]));
-		result.addAlignment(new Alignment("en", enSentences[1], "iu", iuSentences[1]));
+		result.addAlignment(new SentencePair("en", enSentences[0], "iu", iuSentences[0]));
+		result.addAlignment(new SentencePair("en", enSentences[1], "iu", iuSentences[1]));
 		
 		return result;
 	}

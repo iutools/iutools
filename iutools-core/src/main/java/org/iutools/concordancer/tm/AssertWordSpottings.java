@@ -1,7 +1,8 @@
-package org.iutools.concordancer;
+package org.iutools.concordancer.tm;
 
 import ca.nrc.string.StringUtils;
 import ca.nrc.testing.Asserter;
+import org.iutools.concordancer.tm.WordSpotting;
 import org.junit.jupiter.api.Assertions;
 
 import java.util.*;

@@ -45,8 +45,8 @@ public class DocAlignment {
 		new HashMap<String,List<String>>();
 
 	
-	public List<Alignment> alignmentsAll = new ArrayList<Alignment>();
-	public List<Alignment> alignmentsMain = new ArrayList<Alignment>();
+	public List<SentencePair> alignmentsAll = new ArrayList<SentencePair>();
+	public List<SentencePair> alignmentsMain = new ArrayList<SentencePair>();
 	public Map<String,String> pagesAllText = new HashMap<String,String>();
 	public Map<String,String> pagesMainText = new HashMap<String,String>();
 	public Map<String,String> pagesID = new HashMap<String,String>();
@@ -78,26 +78,26 @@ public class DocAlignment {
 	}
 
 	@JsonIgnore
-	public List<Alignment> getAligments() {
+	public List<SentencePair> getAligments() {
 		return getAligments((String)null, (String)null, (PageSection)null);
 	}
 
 	@JsonIgnore
-	public List<Alignment> getAligments(String lang1, String lang2) {
+	public List<SentencePair> getAligments(String lang1, String lang2) {
 		return getAligments(lang1, lang2, (PageSection)null);
 	}
 
 	@JsonIgnore
-	public List<Alignment> getAligments(PageSection pageSection) {
+	public List<SentencePair> getAligments(PageSection pageSection) {
 		return getAligments((String)null, (String)null, pageSection);
 	}
 
 	@JsonIgnore
-	public List<Alignment> getAligments(String lang1, String lang2, PageSection pageSection) {
+	public List<SentencePair> getAligments(String lang1, String lang2, PageSection pageSection) {
 		if (pageSection == null) {
 			pageSection = PageSection.ALL;
 		}
-		List<Alignment> alignments = null;
+		List<SentencePair> alignments = null;
 		if (pageSection == PageSection.ALL) {
 			alignments = alignmentsAll;
 		} else {
@@ -115,11 +115,11 @@ public class DocAlignment {
 		return this;
 	}
 
-	public DocAlignment addAlignment(Alignment alignment) {
+	public DocAlignment addAlignment(SentencePair alignment) {
 		return addAlignment((PageSection)null, alignment);
 	}
 
-	public DocAlignment addAlignment(PageSection pageSection, Alignment alignment) {
+	public DocAlignment addAlignment(PageSection pageSection, SentencePair alignment) {
 		getAligments(pageSection).add(alignment);
 		return this;
 	}

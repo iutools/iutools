@@ -58,13 +58,13 @@ public abstract class WebConcordancerTest {
 			Map<DocAlignment.Problem, Exception> problems = 
 				pageAligment.problemsEncountered;
 		} else {
-			// Alignment was successful.
+			// SentencePair was successful.
 			// Loop the aligned bit of text.
 			//
 			// Note: getAligments() provides the alignments in the exact order in 
 			//   which they appeared in the two pages.
 			//
-			for (Alignment alignment: pageAligment.getAligments()) {
+			for (SentencePair alignment: pageAligment.getAligments()) {
 				// This is the text for each of the two languages
 				//
 				String iuText = alignment.getText("iu");
@@ -102,7 +102,7 @@ public abstract class WebConcordancerTest {
 		DocAlignment pageAligment = 
 			concordancer.alignPage(url, new String[] {"en", "iu"});
 
-		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
+		DocAlignmentAsserter.assertThat(pageAligment, "SentencePair results for "+url+" were not as expected.")
 			.didNotEncounterProblems()
 			.pageTextIsNotHtml("en", "iu")
 			.urlForLangEquals("en", new URL("https://www.gov.nu.ca/"))
@@ -120,7 +120,7 @@ public abstract class WebConcordancerTest {
 		DocAlignment pageAligment = 
 			concordancer.alignPage(url, new String[] {"en", "iu"});
 
-		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
+		DocAlignmentAsserter.assertThat(pageAligment, "SentencePair results for "+url+" were not as expected.")
 			.encounteredProblems(DocAlignment.Problem.FETCHING_INPUT_URL)
 			;
 	}
@@ -131,7 +131,7 @@ public abstract class WebConcordancerTest {
 		DocAlignment pageAligment = 
 			concordancer.alignPage(url, new String[] {"en", "iu"});
 
-		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
+		DocAlignmentAsserter.assertThat(pageAligment, "SentencePair results for "+url+" were not as expected.")
 			.encounteredProblems(DocAlignment.Problem.FETCHING_INPUT_URL)
 			;
 	}
@@ -143,7 +143,7 @@ public abstract class WebConcordancerTest {
 		DocAlignment pageAligment =
 			concordancer.alignPage(url, new String[] {"en", "iu"});
 
-		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
+		DocAlignmentAsserter.assertThat(pageAligment, "SentencePair results for "+url+" were not as expected.")
 			.didNotEncounterProblems()
 			.providesValuesFor(WebConcordancer.AlignOptions.MAIN_TEXT)
 			.doesNotProvideValuesFor(
@@ -160,7 +160,7 @@ public abstract class WebConcordancerTest {
 		DocAlignment pageAligment =
 			concordancer.alignPage(url, new String[] {"en", "iu"});
 
-		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
+		DocAlignmentAsserter.assertThat(pageAligment, "SentencePair results for "+url+" were not as expected.")
 			.didNotEncounterProblems()
 			.providesValuesFor(WebConcordancer.AlignOptions.ALL_TEXT)
 			.doesNotProvideValuesFor(
@@ -178,7 +178,7 @@ public abstract class WebConcordancerTest {
 		DocAlignment pageAligment =
 			concordancer.alignPage(url, new String[] {"en", "iu"});
 
-		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
+		DocAlignmentAsserter.assertThat(pageAligment, "SentencePair results for "+url+" were not as expected.")
 			.didNotEncounterProblems()
 			.providesValuesFor(WebConcordancer.AlignOptions.MAIN_TEXT, WebConcordancer.AlignOptions.ALL_TEXT)
 			.doesNotProvideValuesFor(
@@ -195,7 +195,7 @@ public abstract class WebConcordancerTest {
 		DocAlignment pageAligment =
 			concordancer.alignPage(url, new String[] {"en", "iu"});
 
-		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
+		DocAlignmentAsserter.assertThat(pageAligment, "SentencePair results for "+url+" were not as expected.")
 			.didNotEncounterProblems()
 			.providesValuesFor(WebConcordancer.AlignOptions.MAIN_TEXT, WebConcordancer.AlignOptions.HTML)
 			.doesNotProvideValuesFor(
@@ -212,7 +212,7 @@ public abstract class WebConcordancerTest {
 		DocAlignment pageAligment =
 			concordancer.alignPage(url, new String[] {"en", "iu"});
 
-		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
+		DocAlignmentAsserter.assertThat(pageAligment, "SentencePair results for "+url+" were not as expected.")
 			.didNotEncounterProblems()
 			.providesValuesFor(WebConcordancer.AlignOptions.MAIN_TEXT, WebConcordancer.AlignOptions.ALIGNED_SENTENCES)
 			.doesNotProvideValuesFor(
@@ -229,7 +229,7 @@ public abstract class WebConcordancerTest {
 			concordancer.alignPage(
 				url, new String[] {"en", "iu"});
 
-		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for " + url + " were not as expected.")
+		DocAlignmentAsserter.assertThat(pageAligment, "SentencePair results for " + url + " were not as expected.")
 			.didNotEncounterProblems()
 			.urlForLangEquals("en", new URL("https://www.gov.nu.ca/honourable-joe-savikataaq-4"))
 			// This URL auto forwards to https://www.gov.nu.ca/iu/juu-savikataaq-4
@@ -252,7 +252,7 @@ public abstract class WebConcordancerTest {
 			.setPageURL("en", url);
 
 		concordancer.fetchParallelPages(pageAligment);
-		DocAlignmentAsserter.assertThat(pageAligment, "Alignment results for "+url+" were not as expected.")
+		DocAlignmentAsserter.assertThat(pageAligment, "SentencePair results for "+url+" were not as expected.")
 			.urlForLangEquals("iu", new URL("https://www.gov.nu.ca/iu"))
 			;
 	}

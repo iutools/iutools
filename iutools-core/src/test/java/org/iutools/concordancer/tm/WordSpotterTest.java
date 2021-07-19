@@ -1,6 +1,7 @@
-package org.iutools.concordancer;
+package org.iutools.concordancer.tm;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.iutools.concordancer.SentencePair;
 import org.iutools.config.IUConfig;
 import org.junit.Assume;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,13 +30,13 @@ public class WordSpotterTest {
 		//
 		// For example, say you have a list of aligned sentences
 		//
-		Alignment[] sentenceAlignments = {
-			new Alignment(
+		SentencePair[] sentenceAlignments = {
+			new SentencePair(
 				"en", "Premier Joe Savikataaq was selected by his colleagues in the 5th Legislative Ass embly of Nunavut to lead Nunavut on June 14, 2018.",
 				"iu", "ᓯᕗᓕᖅᑎ ᔫ ᓴᕕᑲᑖᖅ ᓂᕈᐊᖅᑕᐅᓚᐅᖕᒪᑦ ᒪᓕᒐᓕᐅᖅᑎᐅᖃᑎᖏᓐᓄᑦ ᑕᓪᓕᒪᒋᓕᖅᑕᖓᓐᓂᑦ ᒪᓕᕆᓕᐅᕐᕕᖕᒥᑦ ᓄᓇᕗᒻᒥᑦ ᓯᕗᓕᖅᑎᐅᓂᐊ ᓕᖅᖢᓂ ᓄᓇᕗᒻᒧᑦ ᔫᓐ 14, 2018−ᖑᑎᓪᓗᒍ."
 			),
 
-			new Alignment(
+			new SentencePair(
 				"en", "Prior to that, Premier Savikataaq was first elected in the general election held on October 28, 2013, to represent the constituency of Arviat South in the 4th L egislative Assembly of Nunavut.",
 				"iu", "ᓯᕗᙵᓂᑦ, ᓯᕗᓕᖅᑎ ᓴᕕᑲᑖᖅ ᓯᕗᓪᓕᖅᐹᒥᑦ ᓂᕈᐊᖅᑕᐅᓚᐅᖅᓯᒪᔪᖅ ᓂᕈᐊᖕᓇᐅᑎᓪᓗᒍ ᐅᑐᐱᕆ 28, 2013−ᒥᑦ, ᑭᒡᒐᖅᑐᐃᓂᐊᖅ ᖢᓂ ᐊᕐᕕᐊᑦ ᓂᒋᐊᓂᑦ ᑎᓴᒪᒋᓕᖅᑕᖓᓐᓂᑦ ᒪᓕᒐᓕᐅᕐᕕᖕᒥᑦ ᓄᓇᕗᒻᒥᑦ"
 			)
@@ -44,7 +45,7 @@ public class WordSpotterTest {
 		// You want to spot the iu equivalent of en word "Premier" in these sentences
 		//
 		String enWord = "premier";
-		WordSpotter spotter = new org.iutools.concordancer.WordSpotter();
+		WordSpotter spotter = new WordSpotter();
 		WordSpotting[] spottings = spotter.spot("en", enWord, sentenceAlignments);
 
 		// For each aligned sentence, the spottings tell you where to find the
@@ -52,7 +53,7 @@ public class WordSpotterTest {
 		//
 		for (WordSpotting aSpotting: spottings) {
 			// The aligned sentence in which the words were spotted
-			Alignment sentencePair = aSpotting.sentencePair();
+			SentencePair sentencePair = aSpotting.sentencePair();
 
 			// The offsets of the english word and its equivalent
 			List<Pair<Integer,Integer>> enOffsets = aSpotting.offsets("en");
@@ -70,27 +71,27 @@ public class WordSpotterTest {
 
 	@Test
 	public void test__WordSpotter__HappyPath() {
-		Alignment[] sentenceAlignments = {
-			new Alignment(
+		SentencePair[] sentenceAlignments = {
+			new SentencePair(
 				"en", "Premier Joe Savikataaq was selected by his colleagues in the 5th Legislative Ass embly of Nunavut to lead Nunavut on June 14, 2018.",
 				"iu", "ᓯᕗᓕᖅᑎ ᔫ ᓴᕕᑲᑖᖅ ᓂᕈᐊᖅᑕᐅᓚᐅᖕᒪᑦ ᒪᓕᒐᓕᐅᖅᑎᐅᖃᑎᖏᓐᓄᑦ ᑕᓪᓕᒪᒋᓕᖅᑕᖓᓐᓂᑦ ᒪᓕᕆᓕᐅᕐᕕᖕᒥᑦ ᓄᓇᕗᒻᒥᑦ ᓯᕗᓕᖅᑎᐅᓂᐊ ᓕᖅᖢᓂ ᓄᓇᕗᒻᒧᑦ ᔫᓐ 14, 2018−ᖑᑎᓪᓗᒍ."
 			),
 
-			new Alignment(
+			new SentencePair(
 				"en", "Prior to that, Premier Savikataaq was first elected in the general election held on October 28, 2013, to represent the constituency of Arviat South in the 4th L egislative Assembly of Nunavut.",
 				"iu", "ᓯᕗᙵᓂᑦ, ᓯᕗᓕᖅᑎ ᓴᕕᑲᑖᖅ ᓯᕗᓪᓕᖅᐹᒥᑦ ᓂᕈᐊᖅᑕᐅᓚᐅᖅᓯᒪᔪᖅ ᓂᕈᐊᖕᓇᐅᑎᓪᓗᒍ ᐅᑐᐱᕆ 28, 2013−ᒥᑦ, ᑭᒡᒐᖅᑐᐃᓂᐊᖅ ᖢᓂ ᐊᕐᕕᐊᑦ ᓂᒋᐊᓂᑦ ᑎᓴᒪᒋᓕᖅᑕᖓᓐᓂᑦ ᒪᓕᒐᓕᐅᕐᕕᖕᒥᑦ ᓄᓇᕗᒻᒥᑦ"
 			)
 		};
 
 		String enWord = "premier";
-		WordSpotter spotter = new org.iutools.concordancer.WordSpotter();
+		WordSpotter spotter = new WordSpotter();
 		WordSpotting[] spottings = spotter.spot("en", enWord, sentenceAlignments);
 //		new AssertWordSpottings(spottings, "")
 //			.wasSpottedInAllSentences();
 
 		for (WordSpotting aSpotting: spottings) {
 			// The aligned sentence in which the words were spotted
-			Alignment sentencePair = aSpotting.sentencePair();
+			SentencePair sentencePair = aSpotting.sentencePair();
 
 			// The offsets of the english word and its equivalent
 			List<Pair<Integer,Integer>> enOffsets = aSpotting.offsets("en");

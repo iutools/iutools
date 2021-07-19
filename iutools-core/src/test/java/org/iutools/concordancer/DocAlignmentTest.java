@@ -132,7 +132,7 @@ public class DocAlignmentTest {
 					// Tokenization in each language
 					new String[] {"hello", "world", ".", "Good", "morning", "."},
 					new String[] {"ai", "nunavut", "ulaakut", "."},
-					// Alignment of the tokens
+					// SentencePair of the tokens
 					"0:0 1-2:1 3-4:2 5:3")
 			);
 
@@ -162,8 +162,8 @@ public class DocAlignmentTest {
 		// pairs of languages
 		for (String lang: docAl.languages()) {
 			if (lang.equals("en")) continue;
-			List<Alignment> sentAlign = docAl.getAligments("en", lang);
-			List<Alignment> sentAlignMain =
+			List<SentencePair> sentAlign = docAl.getAligments("en", lang);
+			List<SentencePair> sentAlignMain =
 				docAl.getAligments("en", lang, DocAlignment.PageSection.MAIN);
 		}
 	}
