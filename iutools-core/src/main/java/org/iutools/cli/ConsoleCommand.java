@@ -22,12 +22,14 @@ import static org.iutools.concordancer.WebConcordancer.AlignOptions;
 
 public abstract class ConsoleCommand extends SubCommand {
 
+
 	public static enum Mode {SINGLE_INPUT, INTERACTIVE, PIPELINE}
 
 	public static final String OPT_FORCE = "force";
 
 	public static final String OPT_DATA_FILE = "data-file";
 	public static final String OPT_INPUT_FILE = "input-file";
+	public static final String OPT_OUTPUT_FILE = "output-file";
 	public static final String OPT_INPUT_DIR = "input-dir";
 	public static final String OPT_OUTPUT_DIR = "output-dir";
 	public static final String OPT_CORPUS_NAME = "corpus-name";
@@ -378,6 +380,7 @@ public abstract class ConsoleCommand extends SubCommand {
 	protected Path getInputFile() {
 		return getInputFile(true);
 	}
+
 	protected Path getInputFile(boolean failIfAbsent) {
 		Path filePath = null;
 		String pathStr = getOptionValue(ConsoleCommand.OPT_INPUT_FILE, failIfAbsent);
@@ -390,7 +393,20 @@ public abstract class ConsoleCommand extends SubCommand {
 		}
 		return filePath;
 	}
-	
+
+	protected Path getOutputFile() {
+		Path filePath = null;
+		String pathStr = getOptionValue(ConsoleCommand.OPT_OUTPUT_FILE, true);
+		if (pathStr != null) {
+			try {
+				filePath = Paths.get(pathStr);
+			} catch (Exception e) {
+				usageBadOption(ConsoleCommand.OPT_OUTPUT_FILE, "Value was not a valid path");
+			}
+		}
+		return filePath;
+	}
+
 	protected String getGoldStandardFile() {
 		return getGoldStandardFile(true);
 	}

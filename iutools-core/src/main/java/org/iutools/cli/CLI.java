@@ -184,6 +184,13 @@ public class CLI {
 			    .argName("INPUT_FILE")
 			    .build();
 
+			Option optOutputFile = Option.builder(null)
+				.longOpt(ConsoleCommand.OPT_OUTPUT_FILE)
+			    .desc("The full path of the output file.")
+			    .hasArg()
+			    .argName("OUTPUT_FILE")
+			    .build();
+
 		Option optDictFile = Option.builder(null)
 				.longOpt(ConsoleCommand.OPT_DICT_FILE)
 			    .desc("The full path of a file containing the compiled dictionary for the spell checker.")
@@ -381,7 +388,6 @@ public class CLI {
 				;
 		mainCmd.addSubCommand(morphFailureAnalysis);
 
-		
 		SubCommand align =
 			new CmdAlignPages("align")
 				.addOption(optURL)
@@ -391,8 +397,15 @@ public class CLI {
 				.addOption(optPipelineMode)
 			;
 		mainCmd.addSubCommand(align);
-				
-				
+
+		SubCommand tmx2iutoolstm =
+			new CmdTMX2iutoolstm("tmx2iutoolstm")
+				.addOption(optInputDir)
+				.addOption(optOutputFile)
+			;
+		mainCmd.addSubCommand(align);
+
+
 		return mainCmd;
 	}
 
