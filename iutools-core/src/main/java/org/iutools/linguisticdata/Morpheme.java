@@ -383,7 +383,8 @@ public abstract class Morpheme implements Cloneable {
 	 * @return
 	 */
 	public boolean isComposite() {
-		return false;
+		boolean answer = (this.tableName.matches("(CommonCompositeWords|UndecomposableCompositeWords|WordsRelatedToRoots)"));
+		return answer;
 	}
 
 }

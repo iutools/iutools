@@ -2,7 +2,7 @@ package org.iutools.webservice.gist;
 
 import ca.nrc.string.SimpleTokenizer;
 import org.iutools.concordancer.DocAlignment;
-import org.iutools.concordancer.Alignment;
+import org.iutools.concordancer.SentencePair;
 import org.iutools.script.TransCoder;
 import org.iutools.script.TransCoderException;
 import org.iutools.text.segmentation.IUTokenizer;
@@ -121,7 +121,7 @@ public class GistPrepareContentResult extends EndpointResult {
 		enSentences = new ArrayList<String[]>();
 		IUTokenizer iuTokenizer = new IUTokenizer();
 		SimpleTokenizer enTokenizer = new SimpleTokenizer();
-		for (Alignment anAlignment: docAlignment.getAligments()) {
+		for (SentencePair anAlignment: docAlignment.getAligments()) {
 			String iuSent = TransCoder.ensureRoman(anAlignment.getText("iu"));
 			iuTokenizer.tokenize(iuSent);
 			List<String> iuWords = iuTokenizer.wordsAndAll();

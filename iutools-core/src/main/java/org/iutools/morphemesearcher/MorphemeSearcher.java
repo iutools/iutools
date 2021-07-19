@@ -1,15 +1,10 @@
 package org.iutools.morphemesearcher;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeoutException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import ca.nrc.debug.Debug;
 import ca.nrc.json.PrettyPrinter;
@@ -17,6 +12,7 @@ import org.iutools.corpus.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import org.iutools.linguisticdata.LinguisticData;
 import org.iutools.linguisticdata.LinguisticDataException;
 import org.iutools.morph.Decomposition;
 import org.iutools.morph.Decomposition.DecompositionExpression;
@@ -29,6 +25,7 @@ public class MorphemeSearcher {
 	protected CompiledCorpus corpus = null;
 	protected int nbWordsToBeDisplayed = 20;
 	protected int maxNbInitialCandidates = 100;
+	static LinguisticData _linguisticData = null;
 	
 	public MorphemeSearcher() throws MorphemeSearcherException {
 		Logger tLogger = Logger.getLogger("org.iutools.morphemesearcher.MorphemeSearcher.constructor");
@@ -38,7 +35,14 @@ public class MorphemeSearcher {
 			throw new MorphemeSearcherException(e);
 		}
 	}
-	
+
+	protected LinguisticData linguisticData() {
+		if (_linguisticData == null) {
+			_linguisticData = LinguisticData.getInstance();
+		}
+		return _linguisticData;
+	}
+
 	public void useCorpus(CompiledCorpus _corpus) throws IOException {
 		corpus = _corpus;
 	}
@@ -47,39 +51,57 @@ public class MorphemeSearcher {
 		this.nbWordsToBeDisplayed = n;
 	}
 	
-	public List<MorphSearchResults> wordsContainingMorpheme(String morpheme) throws Exception {
+	public List<MorphSearchResults> wordsContainingMorpheme(String partialMorpheme) throws Exception {
 		Logger tLogger = Logger.getLogger("org.iutools.morphemesearcher.MorphemeSearcher.wordsContainingMorpheme");
-		tLogger.trace("morpheme= "+morpheme);
+		tLogger.trace("partialMorpheme= "+partialMorpheme);
 
-		HashMap<String,List<WordWithMorpheme>> morphid2wordsFreqs =
-			mostFrequentWordsWithMorpheme(morpheme);
-		tLogger.trace("After mostFrequentWordsWithMorpheme()");
-
-		Bin[] rootBins = separateWordsByRoot(morphid2wordsFreqs);
-		tLogger.trace("After separateWordsByRoot()");
-
-		HashMap<String,List<ScoredExample>> morphids2scoredExamples = null;
-		try {
-			morphids2scoredExamples = computeWordsWithScoreFromBins(rootBins);
-		} catch (Exception e) {
-			throw new MorphemeSearcherException(e);
-		}
-		tLogger.trace("morphids2scoredExamples: "+morphids2scoredExamples.size());
 		List<MorphSearchResults> words = new ArrayList<MorphSearchResults>();
-		Set<String> keys = morphids2scoredExamples.keySet();
-		Iterator<String> iter = keys.iterator();
-		while ( iter.hasNext()) {
-			String morphId = iter.next();
-			tLogger.trace("iteration for generation of Words - morphId: "+morphId);
-			List<ScoredExample> scoredExamples = morphids2scoredExamples.get(morphId);
-			MorphSearchResults wordsObject = new MorphSearchResults(morphId,scoredExamples);
-			words.add(wordsObject);
+
+		Set<String> canonicalMorphemes = canonicalMorphemesContaining(partialMorpheme);
+
+		for (String morpheme: canonicalMorphemes) {
+
+			HashMap<String, List<WordWithMorpheme>> morphid2wordsFreqs =
+			mostFrequentWordsWithMorpheme(morpheme);
+			tLogger.trace("After mostFrequentWordsWithMorpheme()");
+
+			Bin[] rootBins = separateWordsByRoot(morphid2wordsFreqs);
+			tLogger.trace("After separateWordsByRoot()");
+
+			HashMap<String, List<ScoredExample>> morphids2scoredExamples = null;
+			try {
+				morphids2scoredExamples = computeWordsWithScoreFromBins(rootBins);
+			} catch (Exception e) {
+				throw new MorphemeSearcherException(e);
+			}
+			tLogger.trace("morphids2scoredExamples: " + morphids2scoredExamples.size());
+			Set<String> keys = morphids2scoredExamples.keySet();
+			Iterator<String> iter = keys.iterator();
+			while (iter.hasNext()) {
+				String morphId = iter.next();
+				tLogger.trace("iteration for generation of Words - morphId: " + morphId);
+				List<ScoredExample> scoredExamples = morphids2scoredExamples.get(morphId);
+				MorphSearchResults wordsObject = new MorphSearchResults(morphId, scoredExamples);
+				words.add(wordsObject);
+			}
+			tLogger.trace("words: " + words.size());
 		}
-		tLogger.trace("words: "+words.size());
 		return words;
 	}
-	
-	
+
+	private Set<String> canonicalMorphemesContaining(String partialMorpheme) {
+		Pattern pattMorph = Pattern.compile("^("+partialMorpheme+"[^\\/]*\\/)");
+		Set<String> canonicals = new HashSet<String>();
+		for (String morphID: linguisticData().allMorphemeIDs()) {
+			Matcher matcher = pattMorph.matcher(morphID);
+			if (matcher.find()) {
+				canonicals.add(matcher.group(1));
+			}
+		}
+		return canonicals;
+	}
+
+
 	protected HashMap<String, List<ScoredExample>> computeWordsWithScoreFromBins(
 			Bin[] rootBins) throws MorphemeSearcherException {
 		Logger tLogger = Logger.getLogger("org.iutools.morphemesearcher.MorphemeSearcher.computeWordsWithScoreFromBins");

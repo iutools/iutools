@@ -463,7 +463,7 @@ public class CompiledCorpus {
 			tLogger.trace("Looking at word "+winfo.word);
 
 			String morphId = null;
-			Matcher morphMatcher =morphPatt.matcher(winfo.morphemesSpaceConcatenated);
+			Matcher morphMatcher = morphPatt.matcher("\\{"+winfo.morphemesSpaceConcatenated+"\\/");
 
 			if (morphMatcher.find()) {
 				morphId = morphMatcher.group(2);

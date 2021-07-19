@@ -159,8 +159,6 @@ class MorphemeDictionaryController extends IUToolsController {
 
 		var matchingMorphs = results.matchingMorphemes;
 		var examplesForMorph = results.examplesForMorpheme;
-		// var morphemesMap = results.matchingWords;
-		// var morphemes = Object.keys(morphemesMap);
 
 		// Display number of hits
 		var html = matchingMorphs.length+' morpheme'+

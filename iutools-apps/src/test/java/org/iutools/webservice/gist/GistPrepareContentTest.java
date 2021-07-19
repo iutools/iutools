@@ -1,6 +1,6 @@
 package org.iutools.webservice.gist;
 
-import org.iutools.concordancer.Alignment;
+import org.iutools.concordancer.SentencePair;
 import org.iutools.webservice.Endpoint;
 import org.iutools.webservice.EndpointResult;
 import org.iutools.webservice.EndpointTest;
@@ -53,7 +53,7 @@ public class GistPrepareContentTest extends EndpointTest {
 			"Content not prepared as expected")
 			.inputWasActualContent(false)
 			.containsAlignment(
-				new Alignment(
+				new SentencePair(
 					"iu", "nunavut gavamanga",
 					"en", "Government of Nunavut"))
 		;
@@ -73,7 +73,7 @@ public class GistPrepareContentTest extends EndpointTest {
 			"Content not prepared as expected")
 			.inputWasActualContent(false)
 			.containsAlignment(
-				new Alignment(
+				new SentencePair(
 					"iu", "nunavut gavamanga",
 				"en", "Government of Nunavut"))
 		;

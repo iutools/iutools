@@ -52,10 +52,6 @@ public class MorphemeExamplesEndpointTest extends EndpointTest {
 		EndpointResult epResponse = endPoint.execute(examplesInputs);
 		new AssertMorphemeExamplesResult(epResponse)
 			.matchingMorphemesAre(
-				Pair.of("ilinniaqtit/1v",
-					"to make oneself learn"),
-				Pair.of("katit/1v",
-					"[-R]to /put s.t. together; to /assemble s.t. [R]to come together to form one"),
 				Pair.of("tit/1vv",
 					"to cause s.o. (refl.: oneself) to do s.t."),
 				Pair.of("tit/tn-nom-p-2s",
@@ -64,13 +60,15 @@ public class MorphemeExamplesEndpointTest extends EndpointTest {
 					"to make music, esp. on the accordion"),
 				Pair.of("titiq/1v",
 					"to mark something with a stroke, a sign, etc. with an instrument"),
-				Pair.of("titiraq/1v",
-					"write")
+				Pair.of("titunaq/tpd-sim-p",
+					"like"),
+				Pair.of("titut/tn-sim-p",
+					"similaris: like many; the (many)")
 			)
 			.examplesForMorphemeAre("tit/tn-nom-p-2s",
 				new String[] {
 					"ilinniagatit",
-					"maligatit"
+					"qaiqujilutit"
 				});
 		;
 	}

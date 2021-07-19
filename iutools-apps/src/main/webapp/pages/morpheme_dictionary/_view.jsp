@@ -12,7 +12,7 @@
     <input id="nb-examples" name="nb-examples" value="20" style="width:5em;">
     </div><br>
     <div>
-    Morpheme (may be partial):
+    Morpheme (or start of it):
     <input id="morpheme" name="morpheme" style="width:20em;" placeholder="ex: gaq">
     </div>
     <button id="btn-occ" type="button" name="btn-occ" value="Occurrences">Search</button>

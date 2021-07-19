@@ -3,7 +3,7 @@ package org.iutools.webservice.gist;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.testing.AssertNumber;
 import ca.nrc.testing.AssertObject;
-import org.iutools.concordancer.Alignment;
+import org.iutools.concordancer.SentencePair;
 import org.iutools.morph.Gist;
 import org.iutools.webservice.AssertEndpointResult;
 import org.iutools.webservice.EndpointResult;
@@ -49,8 +49,8 @@ public class AssertGistWordResult extends AssertEndpointResult  {
 		return gist;
 	}
 
-	private Alignment[] getAlignments() {
-		Alignment[] alignments = result().alignments;
+	private SentencePair[] getAlignments() {
+		SentencePair[] alignments = result().alignments;
 		return alignments;
 	}
 
@@ -60,10 +60,10 @@ public class AssertGistWordResult extends AssertEndpointResult  {
 
 	public AssertGistWordResult mostAlignmentsContains(String lang, double tolerance,
 																		String... expressions) {
-		Alignment[] alignments = result().alignments;
+		SentencePair[] alignments = result().alignments;
 		int totalAlignments = alignments.length;
-		List<Alignment> faultyAlignments = new ArrayList<Alignment>();
-		for (Alignment anAlignment: alignments) {
+		List<SentencePair> faultyAlignments = new ArrayList<SentencePair>();
+		for (SentencePair anAlignment: alignments) {
 			String sentence = anAlignment.getText(lang).toLowerCase();
 			boolean found = false;
 			for (String expr: expressions) {

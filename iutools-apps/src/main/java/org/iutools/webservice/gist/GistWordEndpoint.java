@@ -2,7 +2,7 @@ package org.iutools.webservice.gist;
 
 import ca.nrc.json.PrettyPrinter;
 import org.apache.log4j.Logger;
-import org.iutools.concordancer.Alignment;
+import org.iutools.concordancer.SentencePair;
 import org.iutools.concordancer.Alignment_ES;
 import org.iutools.concordancer.tm.TranslationMemory;
 import org.iutools.concordancer.tm.TranslationMemoryException;
@@ -15,7 +15,6 @@ import org.iutools.webservice.EndpointResult;
 import org.iutools.webservice.ServiceException;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.util.List;
 
 public class GistWordEndpoint extends Endpoint<GistWordInputs, GistWordResult> {
@@ -60,10 +59,10 @@ public class GistWordEndpoint extends Endpoint<GistWordInputs, GistWordResult> {
 	 * @param word
 	 * @return
 	 */
-	private Alignment[] alignments4Word(String word)
+	private SentencePair[] alignments4Word(String word)
 		throws ServiceException {
 		Logger tLogger = Logger.getLogger("org.iutools.webservice.gist.GistWordEndpoint.alignments4Word__TM");
-		Alignment[] aligns = new Alignment[0];
+		SentencePair[] aligns = new SentencePair[0];
 		try {
 			word = TransCoder.ensureScript(TransCoder.Script.SYLLABIC, word);
 
@@ -71,7 +70,7 @@ public class GistWordEndpoint extends Endpoint<GistWordInputs, GistWordResult> {
 			List<Alignment_ES> alignmentResults = tm.search("iu", word);
 
 			int numToKeep = Math.min(maxAlignments, alignmentResults.size());
-			aligns = new Alignment[numToKeep];
+			aligns = new SentencePair[numToKeep];
 			for (int ii=0; ii < numToKeep; ii++) {
 				Alignment_ES algES = alignmentResults.get(ii);
 				aligns[ii] = esResult2alignment(algES);
@@ -85,9 +84,9 @@ public class GistWordEndpoint extends Endpoint<GistWordInputs, GistWordResult> {
 		return aligns;
 	}
 
-	private Alignment esResult2alignment(Alignment_ES esAlignment) {
+	private SentencePair esResult2alignment(Alignment_ES esAlignment) {
 
-		Alignment alignment = new Alignment(
+		SentencePair alignment = new SentencePair(
 			"en",
 			esAlignment.sentence4lang("en"),
 			"iu",

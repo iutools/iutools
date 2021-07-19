@@ -9,14 +9,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.iutools.corpus.*;
 import org.iutools.utilities.StopWatch;
 import org.iutools.datastructure.trie.MockStringSegmenter_IUMorpheme;
 import ca.nrc.dtrc.elasticsearch.StreamlinedClient;
 import ca.nrc.testing.AssertNumber;
-import org.iutools.corpus.CompiledCorpus;
-import org.iutools.corpus.CompiledCorpusTest;
-import org.iutools.corpus.MockCompiledCorpus;
-import org.iutools.corpus.WordWithMorpheme;
 import org.junit.Test;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -48,7 +45,7 @@ public class MorphemeSearcherTest {
 
 	
 	@Test
-	public void test__MorphemeExtractor__Synopsis() throws Exception {
+	public void test__MorphemeSearcher__Synopsis() throws Exception {
 		//
 		MorphemeSearcher morphemeSearcher = new MorphemeSearcher();
 
@@ -184,7 +181,8 @@ public class MorphemeSearcherTest {
 			.examplesForMorphemeAre("gaq/1vn", Pair.of("makpigarni", new Long(1)))
 			;
 	}
-	
+
+
     @Test
     public void test__morphFreqInAnalyses__HappyPath() throws Exception {
         String morpheme = "gaq/2vv";
@@ -208,6 +206,26 @@ public class MorphemeSearcherTest {
 			"Frequency of gaq/1vn should have been much higher than frequency of gaq/2vv.",
 			freq1vn > 1.5 * freq2vv);
     }
+
+	@Test
+	public void test__wordsContainingMorpheme__QueryIsPartialMorpheme__FindsAllMorphemesThatStartWithQuery() throws Exception {
+		morphemeSearcher.useCorpus(new CompiledCorpusRegistry().getCorpus());
+
+		String morpheme = "siu";
+		List<MorphSearchResults> wordsForMorphemes =
+			this.morphemeSearcher.wordsContainingMorpheme(morpheme);
+
+		new AssertMorphSearchResults(wordsForMorphemes, "")
+			.foundMorphemes(
+				"siuraq/1n",
+				"siuk/tv-imp-2p-3s",
+				"siuk/1n",
+				"siuq/1nv",
+				"siut/1nn",
+				"siut/1n"
+			)
+		;
+	}
 
 	@Test
 	public void test__separateWordsByRoot() throws Exception {

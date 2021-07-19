@@ -4,6 +4,7 @@ import ca.nrc.json.PrettyPrinter;
 import org.apache.log4j.Logger;
 import org.iutools.corpus.CompiledCorpus;
 import org.iutools.corpus.CompiledCorpusRegistry;
+import org.iutools.linguisticdata.LinguisticData;
 import org.iutools.linguisticdata.Morpheme;
 import org.iutools.linguisticdata.MorphemeHumanReadableDescr;
 import org.iutools.morphemesearcher.MorphSearchResults;
@@ -79,11 +80,16 @@ public class MorphemeExamplesEndpoint
 			List<MorphSearchResults> wordsForMorphemes =
 				morphExtractor.wordsContainingMorpheme(inputs.wordPattern);
 
+			LinguisticData linguisticData = LinguisticData.getInstance();
 			tLogger.trace("wordsForMorphemes: "+wordsForMorphemes.size());
 			Iterator<MorphSearchResults> itWFM = wordsForMorphemes.iterator();
 			while (itWFM.hasNext()) {
 				MorphSearchResults w = itWFM.next();
 				String morphID = w.morphemeWithId;
+				if (linguisticData.getMorpheme(morphID).isComposite()) {
+					// We only list the non-composite morphemes
+					continue;
+				}
 				String morphMeaning = Morpheme.getMorpheme(morphID).englishMeaning;
 				tLogger.trace("morphID: "+morphID+", morphMeaning: "+morphMeaning);
 				MorphemeHumanReadableDescr morphDescr =

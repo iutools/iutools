@@ -83,8 +83,8 @@ public class GistPrepareContentEndpoint
 		}
 	}
 
-	private void addAlignment(Alignment anAlignment,
-  		GistPrepareContentResult result) {
+	private void addAlignment(SentencePair anAlignment,
+									  GistPrepareContentResult result) {
 
 		Logger tLogger = Logger.getLogger("org.iutools.webservice.GistPrepareContentEndpoint.addAlignment");
 

@@ -27,7 +27,7 @@ public class MorphemeTest {
 			"Bad description for morpheme id "+morphID, expDescr, gotDescr);
 	}
 
-	@Test @Ignore
+	@Test
 	public void test__isComposite() {
 		LinguisticData lingData = LinguisticData.getInstance();
 		Morpheme morph = lingData.getMorpheme("tit/1vv");

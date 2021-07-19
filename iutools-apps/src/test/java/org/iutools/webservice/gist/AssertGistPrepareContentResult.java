@@ -2,7 +2,7 @@ package org.iutools.webservice.gist;
 
 import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.AssertString;
-import org.iutools.concordancer.Alignment;
+import org.iutools.concordancer.SentencePair;
 import org.iutools.webservice.AssertEndpointResult;
 import org.iutools.webservice.EndpointResult;
 import org.junit.Assert;
@@ -49,13 +49,13 @@ public class AssertGistPrepareContentResult extends AssertEndpointResult {
 	}
 
 	public AssertGistPrepareContentResult containsAlignment(
-		Alignment expAlignment) {
+		SentencePair expAlignment) {
 		containsAlignment(expAlignment, (Integer)null);
 		return this;
 	}
 
 	public AssertGistPrepareContentResult containsAlignment(
-		Alignment expAlignment, Integer misalignmentTolerance) {
+	SentencePair expAlignment, Integer misalignmentTolerance) {
 
 		if (misalignmentTolerance == null) {
 			misalignmentTolerance = 5;
@@ -81,8 +81,8 @@ public class AssertGistPrepareContentResult extends AssertEndpointResult {
 			String gotIuText = String.join("", gotIuSentence);
 			String[] gotEnSentence = result().enSentences.get(ii);
 			String gotEnText = String.join("", gotEnSentence);
-			Alignment gotAlignment =
-				new Alignment("iu", gotIuText, "en", gotEnText);
+			SentencePair gotAlignment =
+				new SentencePair("iu", gotIuText, "en", gotEnText);
 
 			if (gotIuText.equals(expIuText)) {
 				iuSeenAt = ii;
@@ -99,7 +99,7 @@ public class AssertGistPrepareContentResult extends AssertEndpointResult {
 		}
 		
 		Assert.assertTrue(
-			"Alignment not found: "+expAlignment+"\n"+alignments, 
+			"SentencePair not found: "+expAlignment+"\n"+alignments,
 			found);
 		
 		return this;
@@ -163,7 +163,7 @@ public class AssertGistPrepareContentResult extends AssertEndpointResult {
 
 	public AssertGistPrepareContentResult containsIUSentenceStartingWith(String expSentence) {
 		boolean found = false;
-		String mess = baseMessage+"Alignment did not contain IU sentence that starts with: "+
+		String mess = baseMessage+"SentencePair did not contain IU sentence that starts with: "+
 				expSentence+"\nIU sentence were:\n";
 		for (String[] aSentTokens: result().iuSentences) {
 			String gotSent = String.join("", aSentTokens);

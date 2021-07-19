@@ -104,7 +104,7 @@ public class MorphemeHumanReadableDescrTest {
 				expDescr.put("id", id);
 				expDescr.put("canonicalForm", expCanonical);
 				expDescr.put("grammar", expGrammar);
-				expDescr.put("meaning",null);
+				expDescr.put("meaning", null);
 			}
 			AssertObject.assertDeepEquals(
 				"Bad description for morpheme id "+id,
