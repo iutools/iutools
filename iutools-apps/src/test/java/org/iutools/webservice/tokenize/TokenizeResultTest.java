@@ -19,7 +19,7 @@ public class TokenizeResultTest {
 		tokens.add(Pair.of(", ", false));
 		result.tokens = tokens;
 
-		new AssertEndpointResult(result)
+		new AssertTokenizeResult(result)
 			.jsonEquals("{\"errorMessage\":null,\"failingInputs\":null,\"stackTrace\":null,\"status\":null,\"taskID\":null,\"tokens\":[{\"inuksuk\":true},{\", \":false}]}");
 	}
 }

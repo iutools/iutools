@@ -7,11 +7,17 @@ import org.iutools.linguisticdata.MorphemeHumanReadableDescr;
 import org.iutools.webservice.AssertEndpointResult;
 import org.iutools.webservice.EndpointResult;
 import org.iutools.webservice.MorphemeSearchResult;
+import org.iutools.webservice.spell.SpellResult;
 
 import java.io.IOException;
 import java.util.*;
 
 public class AssertMorphemeExamplesResult extends AssertEndpointResult {
+
+	@Override
+	protected MorphemeExamplesResult result() {
+		return (MorphemeExamplesResult)gotObject;
+	}
 
 	public AssertMorphemeExamplesResult(EndpointResult _gotObject) {
 		super(_gotObject);
@@ -27,10 +33,6 @@ public class AssertMorphemeExamplesResult extends AssertEndpointResult {
 		AssertObject.assertDeepEquals(
 			baseMessage+"\nWord examples not as expected for morpheme "+morphID,
 			expExamples, gotExamples);
-	}
-
-	private MorphemeExamplesResult result() {
-		return (MorphemeExamplesResult)gotObject;
 	}
 
 	public AssertMorphemeExamplesResult matchingMorphemesAre(

@@ -36,9 +36,10 @@ public class TokenizeEndpointTest extends EndpointTest {
 			Pair.of("inuktut", true)
 		};
 
-		new AssertTokenizeResult(epResult)
-			.raisesNoError()
-			.producesTokens(expTokens)
-		;
+		AssertTokenizeResult asserter =
+			new AssertTokenizeResult(epResult)
+				.producesTokens(expTokens);
+
+		asserter.raisesNoError();
 	}
 }

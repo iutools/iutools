@@ -4,9 +4,16 @@ import ca.nrc.testing.AssertObject;
 import org.iutools.spellchecker.SpellingCorrection;
 import org.iutools.webservice.AssertEndpointResult;
 import org.iutools.webservice.EndpointResult;
+import org.iutools.webservice.search.ExpandQueryResult;
 import org.junit.jupiter.api.Assertions;
 
 public class AssertSpellResult extends AssertEndpointResult {
+
+	@Override
+	protected SpellResult result() {
+		return (SpellResult)gotObject;
+	}
+
 	public AssertSpellResult(EndpointResult _gotObject) {
 		super(_gotObject);
 	}
@@ -39,9 +46,5 @@ public class AssertSpellResult extends AssertEndpointResult {
 		}
 		
 		return this;
-	}
-	
-	SpellResult result() {
-		return (SpellResult)gotObject;
 	}
 }

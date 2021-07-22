@@ -5,12 +5,19 @@ import ca.nrc.testing.AssertString;
 import org.iutools.concordancer.SentencePair;
 import org.iutools.webservice.AssertEndpointResult;
 import org.iutools.webservice.EndpointResult;
+import org.iutools.webservice.worddict.WordDictResult;
 import org.junit.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class AssertGistPrepareContentResult extends AssertEndpointResult {
+
+	@Override
+	protected GistPrepareContentResult result() {
+		return (GistPrepareContentResult) gotObject;
+	}
+
 	public AssertGistPrepareContentResult(EndpointResult _gotObject) {
 		super(_gotObject);
 	}
@@ -42,8 +49,8 @@ public class AssertGistPrepareContentResult extends AssertEndpointResult {
 	}
 
 	private List<String[]> responseIUSentences() {
-		List<String[]> gotIUSentences = 
-			result().iuSentences;
+		List<String[]> gotIUSentences =
+		result().iuSentences;
 		
 		return gotIUSentences;
 	}
@@ -62,7 +69,7 @@ public class AssertGistPrepareContentResult extends AssertEndpointResult {
 		}
 
 		Assert.assertEquals(
-			"IU and EN alignments did not contain the same number of sentences", 
+			"IU and EN alignments did not contain the same number of sentences",
 			result().iuSentences.size(), result().enSentences.size());
 		
 		String alignments = "Alignments were:\n";
@@ -188,9 +195,5 @@ public class AssertGistPrepareContentResult extends AssertEndpointResult {
 			baseMessage+"\n"+mess,
 			expError, result().errorMessage);
 		return this;
-	}
-
-	private GistPrepareContentResult result() {
-		return (GistPrepareContentResult)gotObject;
 	}
 }

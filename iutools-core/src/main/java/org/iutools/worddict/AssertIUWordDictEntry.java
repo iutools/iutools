@@ -24,6 +24,22 @@ public class AssertIUWordDictEntry extends Asserter<IUWordDictEntry> {
 		return (IUWordDictEntry)gotObject;
 	}
 
+	public AssertIUWordDictEntry romanWordIs(String expWord) {
+		AssertString.assertStringEquals(
+			baseMessage+"\nRoman form of word was not as expected",
+			entry().wordRoman, expWord);
+		return this;
+	}
+
+	public AssertIUWordDictEntry syllabicWordIs(String expWord) {
+		AssertString.assertStringEquals(
+			baseMessage+"\nRoman form of word was not as expected",
+		entry().wordSyllabic, expWord);
+		return this;
+
+	}
+
+
 	public AssertIUWordDictEntry definitionEquals(String expDef) {
 		AssertString.assertStringEquals(expDef, entry().definition);
 		return this;

@@ -1,11 +1,13 @@
 package org.iutools.webservice;
 
 import ca.nrc.json.MapperFactory;
-import ca.nrc.json.PrettyPrinter;
 import ca.nrc.testing.AssertString;
 import ca.nrc.testing.Asserter;
+import org.junit.jupiter.api.Assertions;
 
-public class AssertEndpointResult extends Asserter<EndpointResult> {
+public abstract class AssertEndpointResult extends Asserter<EndpointResult> {
+	protected abstract EndpointResult result();
+
 	public AssertEndpointResult(EndpointResult _gotObject) {
 		super(_gotObject);
 	}
@@ -23,6 +25,13 @@ public class AssertEndpointResult extends Asserter<EndpointResult> {
 			baseMessage+"\nJSON not as expected",
 			expJson, gotJson
 		);
+		return this;
+	}
+
+	public AssertEndpointResult raisesNoError() {
+		Assertions.assertEquals(
+			null, result().errorMessage,
+			baseMessage+"\nResponse raised error");
 		return this;
 	}
 }

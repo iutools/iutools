@@ -3,8 +3,15 @@ package org.iutools.webservice.search;
 import ca.nrc.testing.AssertString;
 import org.iutools.webservice.AssertEndpointResult;
 import org.iutools.webservice.EndpointResult;
+import org.iutools.webservice.logaction.LogActionResult;
 
 public class AssertExpandQueryResult extends AssertEndpointResult  {
+
+	@Override
+	protected ExpandQueryResult result() {
+		return (ExpandQueryResult)gotObject;
+	}
+
 	public AssertExpandQueryResult(EndpointResult _gotObject) {
 		super(_gotObject);
 	}
@@ -19,9 +26,5 @@ public class AssertExpandQueryResult extends AssertEndpointResult  {
 			expQuery, result().expandedQuery);
 
 		return this;
-	}
-
-	private ExpandQueryResult result() {
-		return (ExpandQueryResult)gotObject;
 	}
 }
