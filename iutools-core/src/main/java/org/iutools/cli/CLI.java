@@ -49,6 +49,14 @@ public class CLI {
 				.argName("DATA_FILE")
 				.build();
 
+		Option optFileRegexp = Option.builder(null)
+				.longOpt(ConsoleCommand.OPT_FILE_REGEXP)
+				.desc("Only files whose names match that regexp will be processed.")
+				.hasArg()
+				.argName("REGEXP")
+				.build();
+
+
 		Option optCorpusName = Option.builder(null)
 				.longOpt(ConsoleCommand.OPT_CORPUS_NAME)
 			    .desc("Name of the corpus to be processed or used.")
@@ -146,6 +154,14 @@ public class CLI {
 			.hasArg()
 			.argName("URL")
 			.build();
+
+		Option optTopics = Option.builder(null)
+			.longOpt(ConsoleCommand.OPT_TOPICS)
+			.desc("Comma separated list of topics (ex: 'government,medical')")
+			.hasArg()
+			.argName("TOPICS")
+			.build();
+
 
 		Option optLangs = Option.builder(null)
 			.longOpt(ConsoleCommand.OPT_LANGS)
@@ -297,7 +313,7 @@ public class CLI {
 		// Load a translation memory into ElasticSearch
 		SubCommand loadTranslationMemory =
 			new CmdLoadTranslationMemory("load_translation_memory")
-				.addOption(optInputFile)
+				.addOption(optInputDir)
 				.addOption(optVerbosity)
 			;
 		mainCmd.addSubCommand(loadTranslationMemory);
@@ -398,13 +414,22 @@ public class CLI {
 			;
 		mainCmd.addSubCommand(align);
 
-		SubCommand tmx2iutoolstm =
-			new CmdTMX2iutoolstm("tmx2iutoolstm")
+		SubCommand tmx2tmjson =
+			new Cmd_tmx2tmjson("tmx2tmjson")
 				.addOption(optInputDir)
 				.addOption(optOutputFile)
+				.addOption(optFileRegexp)
+				.addOption(optTopics)
 			;
-		mainCmd.addSubCommand(align);
+		mainCmd.addSubCommand(tmx2tmjson);
 
+		SubCommand portage2tmjon =
+			new Cmd_portage2tmjson("portage2tmjson")
+				.addOption(optInputDir)
+				.addOption(optOutputFile)
+				.addOption(optTopics)
+			;
+		mainCmd.addSubCommand(portage2tmjon);
 
 		return mainCmd;
 	}

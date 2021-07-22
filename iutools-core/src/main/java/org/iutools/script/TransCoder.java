@@ -37,8 +37,8 @@ public class TransCoder {
     int maxLatLength;
     Hashtable conversionHash;
     String dotCodes = null;
-    
-    public static enum Script {SYLLABIC, ROMAN, MIXED};
+
+	public static enum Script {SYLLABIC, ROMAN, MIXED};
     
     /* 
      * conversionTable: { {<code unicode>,<code de la police>}, {}, ... }

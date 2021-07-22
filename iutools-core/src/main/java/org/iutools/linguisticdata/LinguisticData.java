@@ -254,12 +254,13 @@ public class LinguisticData {
      * First check in the roots; if not found, check in the affixes.
      */
     public Morpheme getMorpheme(String morphId) {
-        Morpheme morph;
-        morph = getBaseWithId(morphId);
-        if (morph==null) {
-            morph = getAffixWithId(morphId);
-        }
-        return morph;
+    	morphId = Morpheme.removeIDBraces(morphId);
+		Morpheme morph;
+		morph = getBaseWithId(morphId);
+		if (morph==null) {
+			morph = getAffixWithId(morphId);
+		}
+		return morph;
     }
 
     public Base getBaseWithId(String morphId) {

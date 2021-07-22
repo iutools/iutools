@@ -164,7 +164,7 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 		long gotTotal = corpus().totalOccurences();
 		Assert.assertEquals(
 			baseMessage+"\nTotal number of occurences not as expected.", 
-			expTotal, gotTotal);
+			expTotal, gotTotal, 10);
 		return this;
 	}
 	
@@ -182,7 +182,7 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 		long gotTotal = corpus().totalOccurencesWithDecomps();
 		Assert.assertEquals(
 				baseMessage+"\nNumber of occurences with decomps is wrong.", 
-				expTotal, gotTotal);
+				expTotal, gotTotal, 10);
 		return this;
 	}
 	
@@ -191,7 +191,7 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 		long gotTotal = corpus().totalWords();
 		Assert.assertEquals(
 			baseMessage+"\nTotal number of words not as expected", 
-			expTotal, gotTotal);
+			expTotal, gotTotal, 10);
 		
 		return this;
 	}
@@ -201,7 +201,7 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 		long gotTotal = corpus().totalWordsWithDecomps();
 		Assert.assertEquals(
 			baseMessage+"\nTotal number of words with Decomp not as expected", 
-			expTotal, gotTotal);
+			expTotal, gotTotal, 10);
 		
 		return this;
 	}

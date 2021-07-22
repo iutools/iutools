@@ -73,15 +73,24 @@ public class SentencePairTest {
 					// 2nd en token aligns with 2nd and 3rd fr tokens
 					new Integer[]{1,1}, new Integer[]{1,2}});
 
-		// If token alignment has been provided, then given some text in one
-		// language, you can ask for the corresponding text in the other language
+		// If token alignment has been provided, then given expression in one
+		// language, you can ask for the corresponding expression in the other language
 		//
-		// For example, this asks for the 'fr' text that aligns with 'en' text
-		// "world".
 		//
-		String frText =
-			alignment.otherLangText("en", "world");
+		String enExpr = "world";
+		String frExpr =
+			alignment.otherLangText("en", enExpr);
 
+		// You can also request that the expression and its equivalent in the
+		// other language be marked up with some html-ish tags
+		//
+		// In the example below, the en expression and its iu equivalent will
+		// be marked up with <equiv></equiv> tags.
+		//
+		String tagName = "equiv";
+		Pair<String,String> markedUpPair = alignment.markupPair("en", enExpr, tagName);
+		String enMarkedUp = markedUpPair.getLeft();
+		String iuMarkedUp = markedUpPair.getRight();
 	}
 
 	/////////////////////////////

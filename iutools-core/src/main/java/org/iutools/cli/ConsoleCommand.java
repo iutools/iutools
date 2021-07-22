@@ -6,9 +6,11 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.TimeoutException;
+import java.util.regex.Pattern;
 
 import ca.nrc.ui.commandline.CommandLineException;
 import ca.nrc.ui.commandline.SubCommand;
@@ -22,13 +24,13 @@ import static org.iutools.concordancer.WebConcordancer.AlignOptions;
 
 public abstract class ConsoleCommand extends SubCommand {
 
-
 	public static enum Mode {SINGLE_INPUT, INTERACTIVE, PIPELINE}
 
 	public static final String OPT_FORCE = "force";
 
 	public static final String OPT_DATA_FILE = "data-file";
 	public static final String OPT_INPUT_FILE = "input-file";
+	public static final String OPT_FILE_REGEXP = "file-regexp";
 	public static final String OPT_OUTPUT_FILE = "output-file";
 	public static final String OPT_INPUT_DIR = "input-dir";
 	public static final String OPT_OUTPUT_DIR = "output-dir";
@@ -39,6 +41,7 @@ public abstract class ConsoleCommand extends SubCommand {
 	public static final String OPT_COMMENT = "comment";
 
 	public static final String OPT_URL = "url";
+	public static final String OPT_TOPICS = "topics";
 	public static final String OPT_LANGS = "langs";
 	public static final String OPT_SENTENCES_ALIGN = "align-sentences";
 	public static final String OPT_ALIGNER_OPTIONS = "aligner-opts";
@@ -119,6 +122,15 @@ public abstract class ConsoleCommand extends SubCommand {
 		return dir;
 	}
 
+	protected Pattern getFileRegexp() {
+		Pattern patt = null;
+		String regexp = getOptionValue(ConsoleCommand.OPT_FILE_REGEXP, false);
+		if (regexp != null) {
+			patt = Pattern.compile(regexp);
+		}
+		return patt;
+	}
+
 	protected File getOutputDir() {
 		return getOutputDir(null);
 	}
@@ -154,7 +166,18 @@ public abstract class ConsoleCommand extends SubCommand {
 		}
 		return corpus;
 	}
-	
+
+	protected List<String> getTopics(Boolean failIfAbsent) {
+		List<String> topics = new ArrayList<String>();
+		String topicsStr = getOptionValue(ConsoleCommand.OPT_TOPICS, failIfAbsent);
+		if (topicsStr != null) {
+			String[] topicsArr = topicsStr.split(",");
+			Collections.addAll(topics, topicsArr);
+		}
+		return topics;
+	}
+
+
 	protected String[] getMorphemes() {
 		return getMorphemes(true);
 	}

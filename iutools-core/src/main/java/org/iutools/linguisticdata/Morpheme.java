@@ -37,6 +37,7 @@ import org.iutools.linguisticdata.constraints.Conditions;
 
 public abstract class Morpheme implements Cloneable {
 
+
 	public static enum MorphFormat {WITH_BRACES, NO_BRACES};
 
 	public String id = null;
@@ -327,7 +328,13 @@ public abstract class Morpheme implements Cloneable {
 			morpheme.matches("^\\{?"+canonicalForm+"/.*$");
 		return answer;
 	}
-	
+
+	public static String removeIDBraces(String morphId) {
+		morphId = morphId.replaceAll("\\{", "");
+		morphId = morphId.replaceAll("\\}", "");
+		return morphId;
+	}
+
 	public static String[] withBraces(String[] morphemes) {
 		String[] morphsWithBraces = new String[morphemes.length];
 		for (int ii=0; ii < morphemes.length; ii++) {

@@ -27,12 +27,6 @@ public abstract class CorpusSanityCheckTest {
 	@Test
 	public void test__BasicStats() throws Exception {
 		
-//		System.out.println("totalWords="+corpus.totalWords());
-//		System.out.println("totaltotalOccurences="+corpus.totalOccurences());
-//		System.out.println("totalWordsWithDecomps="+corpus.totalWordsWithDecomps());
-//		System.out.println("totalOccurencesWithDecomps="+corpus.totalOccurencesWithDecomps());
-//		System.out.println("totalWordsWithNoDecomp="+corpus.totalWordsWithNoDecomp());
-//		System.out.println("totalOccurencesWithNoDecomp="+corpus.totalOccurencesWithNoDecomp());
 		new AssertCompiledCorpus(corpus, "")
 			.totalWordsIs(expTotalWords())
 			.totalOccurencesIs(1475616)

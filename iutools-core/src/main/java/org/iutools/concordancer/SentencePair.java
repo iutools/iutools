@@ -14,30 +14,31 @@ public class SentencePair {
 	public Integer[][] tokenAlignments = null;
 	public Integer[][] _invertedTokenAlignments = null;
 	private Pair<String, String> tokenAlignmentsDir = null;
+	public WordAlignment walign = null;
 
 	public SentencePair() {
-		init_Alignment(null, null, null, null,
+		init_SentencePair(null, null, null, null,
 			null, null, null, null);
 	}
 
 	public SentencePair(String lang1, String textLang1,
 		String lang2, String textLang2) {
-		init_Alignment(lang1, textLang1, lang2, textLang2, (Boolean)null,
+		init_SentencePair(lang1, textLang1, lang2, textLang2, (Boolean)null,
 		(String[])null, (String[])null, null);
 	}
 	
 	public SentencePair(String lang1, String textLang1,
-							  String lang2, String textLang2, boolean _misaligned,
-							  String[] _lang1Tokens, String[] _lang2Tokens,
-							  List<Pair<Integer,Integer>> _tokensAlignment) {
-		init_Alignment(lang1, textLang1, lang2, textLang2, _misaligned,
+		String lang2, String textLang2, boolean _misaligned,
+		String[] _lang1Tokens, String[] _lang2Tokens,
+		List<Pair<Integer,Integer>> _tokensAlignment) {
+		init_SentencePair(lang1, textLang1, lang2, textLang2, _misaligned,
 			_lang1Tokens, _lang2Tokens, _tokensAlignment);
 	}
 
-	protected void init_Alignment(String lang1, String textLang1, 
+	protected void init_SentencePair(String lang1, String textLang1,
 		String lang2, String textLang2, Boolean _misaligned,
-		String[] _lang1Tokens, String[] _lang2Tokensa,
-		List<Pair<Integer,Integer>> tokensAlignment) {
+		String[] _lang1Tokens, String[] _lang2Tokens,
+		List<Pair<Integer,Integer>> tokenMatchings) {
 		if (_misaligned == null) {
 			_misaligned = false;
 		}
@@ -276,5 +277,29 @@ public class SentencePair {
 			_invertedTokenAlignments = inverted.toArray(new Integer[0][]);
 		}
 		return _invertedTokenAlignments;
+	}
+
+	public Pair<String,String> textPair(String l1, String l2) {
+		return Pair.of(getText(l1), getText(l2));
+	}
+
+	public Pair<String, String> markupPair(
+		String l1, String l1Expr, String tagName) {
+		String l1Text = getText(l1);
+		l1Text = highlightExpression(l1Expr, l1Text, tagName);
+
+		String l2Text = getText(otherLangThan(l1));
+		String l2Expr = otherLangText(l1, l1Expr);
+		l2Text = highlightExpression(l2Expr, l2Text, tagName);
+
+		Pair<String,String> markedUp = Pair.of(l1Text, l2Text);
+		return markedUp;
+	}
+
+	private String highlightExpression(String exp, String text, String tagName) {
+		String startTag = "<"+tagName+">";
+		String endTag = "<"+tagName+"/>";
+		text.replaceAll("("+exp+")", startTag+"$1"+endTag);
+		return text;
 	}
 }

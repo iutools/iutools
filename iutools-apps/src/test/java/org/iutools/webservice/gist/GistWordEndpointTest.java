@@ -17,13 +17,13 @@ public class GistWordEndpointTest extends EndpointTest {
 	@Test
 	public void test__GistWordEndpoint__RomanWord() throws Exception {
 
-		GistWordInputs inputs = new GistWordInputs("inuktitut");
+		GistWordInputs inputs = new GistWordInputs("inuksuk");
 		EndpointResult epResult = endPoint.execute(inputs);
 
 		new AssertGistWordResult(epResult)
-			.gistMorphemesEqual(new String[] {"inuk", "titut"})
-			.mostAlignmentsContains("iu", 0.02, "inuktitut")
-			.mostAlignmentsContains("en", 0.1, "inu", "language")
+			.gistMorphemesEqual(new String[] {"inuksuk"})
+			.mostAlignmentsContains("iu", 0.02, "inuksuk")
+			.mostAlignmentsContains("en", 0.02, "innusuk", "Innuksuk")
 			;
 
 		return;
@@ -31,12 +31,13 @@ public class GistWordEndpointTest extends EndpointTest {
 
 	@Test
 	public void test__GistWordEndpoint__SyllabicWord() throws Exception {
-		GistWordInputs inputs = new GistWordInputs("ᐃᓄᒃᑎᑐᑦ");
+		GistWordInputs inputs = new GistWordInputs("ᐃᓄᒃᓱᒃ");
 		EndpointResult epResult = endPoint.execute(inputs);
 
 		new AssertGistWordResult(epResult)
-			.gistMorphemesEqual(new String[] {"inuk", "titut"})
-			.mostAlignmentsContains("iu", 0.02, "inuktitut")
+			.gistMorphemesEqual(new String[] {"inuksuk"})
+			.mostAlignmentsContains("iu", 0.02, "inuksuk")
+			.mostAlignmentsContains("en", 0.02, "innuksuk", "Innuksuk")
 			;
 
 		return;

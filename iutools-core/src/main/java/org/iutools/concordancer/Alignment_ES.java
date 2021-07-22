@@ -2,12 +2,10 @@ package org.iutools.concordancer;
 
 import ca.nrc.dtrc.elasticsearch.Document;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Alignment_ES extends Document {
+
 	public String from_doc = null;
 	public Long pair_num = null;
 
@@ -29,6 +27,19 @@ public class Alignment_ES extends Document {
 			return this;
 		}
 
+	private Map<String,WordAlignment> walign4langpair = new HashMap<String,WordAlignment>();
+
+	public Alignment_ES setWordAlignment(String l1, String l1Tokens, String l2,
+		String l2Tokens, String l1_l2_wordpairs) {
+		String[] l1TokensArr = l1Tokens.split("\\s+");
+		String[] l2TokensArr = l2Tokens.split("\\s+");
+		String[] matchedTokens = l1_l2_wordpairs.split("\\s");
+		WordAlignment walign =
+			new WordAlignment(l1, l1TokensArr, l2, l2TokensArr, matchedTokens);
+		walign4langpair.put(walign.langPair, walign);
+		return this;
+	}
+
 	public Alignment_ES() {
 	}
 
@@ -48,5 +59,26 @@ public class Alignment_ES extends Document {
 				sent = sentences.get(lang);
 			}
 			return sent;
+	}
+
+	public SentencePair sentencePair(String l1, String l2) throws WordAlignmentException {
+		SentencePair pair =
+			new SentencePair(
+				l1, sentence4lang(l1),
+				l2, sentence4lang(l2)
+			);
+
+		WordAlignment walign = null;
+		String langPair = l1+"-"+l2;
+		if (walign4langpair.containsKey(langPair)) {
+			walign = walign4langpair.get(langPair);
+		} else {
+			langPair = l2+"_"+l1;
+			if (walign4langpair.containsKey(langPair)) {
+				walign = walign4langpair.get(langPair).reverseDirection();
+			}
+		}
+
+		return pair;
 	}
 }

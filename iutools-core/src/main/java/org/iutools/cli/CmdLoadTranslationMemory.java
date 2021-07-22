@@ -1,12 +1,12 @@
 package org.iutools.cli;
 
+import ca.nrc.data.file.FileGlob;
 import ca.nrc.ui.commandline.CommandLineException;
 import ca.nrc.ui.commandline.UserIO;
 import org.iutools.concordancer.tm.TranslationMemory;
 import org.iutools.config.IUConfig;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.File;
 
 public class CmdLoadTranslationMemory extends ConsoleCommand {
 	public CmdLoadTranslationMemory(String name) throws CommandLineException {
@@ -15,20 +15,23 @@ public class CmdLoadTranslationMemory extends ConsoleCommand {
 
 	@Override
 	public void execute() throws Exception {
-		Path tmFile = getInputFile(false);
-
-		if (tmFile == null) {
-			String tmFileStr = IUConfig.getIUDataPath("data/translation-memories/nrc-nunavut-hansard.tm.json");
-			tmFile = Paths.get(tmFileStr);
+		File tmFilesDir = getInputDir();
+		if (tmFilesDir == null) {
+			tmFilesDir = new File(IUConfig.getIUDataPath("data/translation-memories/"));
 		}
 
 		UserIO userIO = getUserIO();
 		if (!userIO.verbosityLevelIsMet(UserIO.Verbosity.Level1)) {
 			userIO.setVerbosity(UserIO.Verbosity.Level1);
 		}
-		new TranslationMemory()
-			.setUserIO(userIO)
-			.loadFile(tmFile);
+		TranslationMemory tm =
+			new TranslationMemory()
+				.setUserIO(userIO);
+
+
+		for (File tmFile: FileGlob.listFiles(tmFilesDir.toString()+"/*.tm.json")) {
+			tm.loadFile(tmFile.toPath());
+		}
 
 		return;
 	}

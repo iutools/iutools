@@ -7,6 +7,7 @@ import ca.nrc.dtrc.elasticsearch.StreamlinedClient;
 import ca.nrc.ui.commandline.UserIO;
 import org.apache.log4j.Logger;
 import org.iutools.concordancer.Alignment_ES;
+import org.iutools.script.TransCoder;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -86,17 +87,33 @@ public class TranslationMemory {
 		String... targetLangs) throws TranslationMemoryException {
 
 		List<Alignment_ES> alignments = new ArrayList<Alignment_ES>();
-
-		String freeformQuery = "sentences."+sourceLang+":\""+sourceExpr+"\"";
-		SearchResults<Alignment_ES> searchResult = null;
 		try {
-			searchResult = esClient().search(freeformQuery, ES_ALIGNMENT_TYPE, new Alignment_ES());
-			for (
-				DocIterator<Alignment_ES> it = searchResult.docIterator(); it.hasNext(); ) {
-				Alignment_ES aHit = it.next();
-				alignments.add(aHit);
+			String[] sourceExprVariants = new String[]{sourceExpr};
+			if (sourceLang.equals("iu")) {
+				// For iu, try the search with both scripts.
+				// Some of the TMs use roman while others use syllabic
+				sourceExprVariants = new String[]{
+				TransCoder.ensureScript(TransCoder.Script.SYLLABIC, sourceExpr),
+				TransCoder.ensureScript(TransCoder.Script.ROMAN, sourceExpr),
+				};
 			}
-		} catch (ElasticSearchException e) {
+
+			for (String expr: sourceExprVariants) {
+				String freeformQuery = "sentences."+sourceLang+":\""+expr+"\"";
+				SearchResults<Alignment_ES> searchResult = null;
+				try {
+					searchResult = esClient()
+						.search(freeformQuery, ES_ALIGNMENT_TYPE, new Alignment_ES());
+					for (
+						DocIterator<Alignment_ES> it = searchResult.docIterator(); it.hasNext(); ) {
+						Alignment_ES aHit = it.next();
+						alignments.add(aHit);
+					}
+				} catch (ElasticSearchException e) {
+					throw new TranslationMemoryException(e);
+				}
+			}
+		} catch (Exception e) {
 			throw new TranslationMemoryException(e);
 		}
 
