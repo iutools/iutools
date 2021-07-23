@@ -18,9 +18,9 @@ class MorphemeDictionaryController extends IUToolsController {
 	
 	onFindExamples() {
 		Debug.getTraceLogger("MorphemeDictionaryController.onFindExamples").trace("invoked");
-		this.elementForProp("divGist_contents").html('').parent().hide();
+		this.elementForProp("divWordEntry_contents").html('').parent().hide();
 		this.elementForProp('inpExampleWord').val('');
-		this.elementForProp("divGist").hide();
+		this.elementForProp("divWordEntry").hide();
 		var isValid = this.validateQueryInput();
 		if (isValid) {
 			this.clearResults();
@@ -37,9 +37,8 @@ class MorphemeDictionaryController extends IUToolsController {
 	onExampleSelect(ev) {
 		var element = ev.target;
 		var exampleWord = $(element).text();
-		occurrenceController.elementForProp("divGist_contents").html('');
-		occurrenceController.elementForProp("divGist_word").html('');
-		// this.wordGistController.gistWord(exampleWord);
+		occurrenceController.elementForProp("divWordEntry_contents").html('');
+		occurrenceController.elementForProp("divWordEntry_word").html('');
         this.wordDictController.dictionaryLookup(exampleWord);
 	}
 

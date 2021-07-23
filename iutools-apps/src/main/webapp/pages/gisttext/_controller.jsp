@@ -28,6 +28,7 @@
        		divGist_message: "div-gist-message",
        		divGist_word: "div-gist-word",
 
+       		divWordEntry_contents: "div-gist-contents",
             divWordEntry: "div-gist",
        		divWordEntry_iconizer: "div-gist-iconizer",
        		divWordEntry_iconized: "div-gist-iconized",

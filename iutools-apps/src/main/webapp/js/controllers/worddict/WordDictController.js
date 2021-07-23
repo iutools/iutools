@@ -3,19 +3,10 @@
  */
 
 class WordDictController extends IUToolsController {
-    constructor(gistConfig) {
+    constructor(wdConfig) {
         var tracer = Debug.getTraceLogger('WordDictController.constructor');
-        tracer.trace("gistConfig="+JSON.stringify(gistConfig));
-        var wdConfig = {};
-
-        wdConfig['divWordEntry'] = gistConfig['divGist'];
-        wdConfig['divWordEntry_message'] = gistConfig['divGist_message'];
-        wdConfig['divWordEntry_word'] = gistConfig['divGist_word'];
-        wdConfig['divWordEntry_contents'] = gistConfig['divGist_contents'];
-        wdConfig['divWordEntry_iconized'] = gistConfig['divGist_iconized'];
-        wdConfig['divWordEntry_iconizer'] = gistConfig['divGist_iconizer'];
+        tracer.trace("wdConfig="+JSON.stringify(wdConfig));
         super(wdConfig);
-
         tracer.trace("upon exit, this="+JSON.stringify(this));
     }
 

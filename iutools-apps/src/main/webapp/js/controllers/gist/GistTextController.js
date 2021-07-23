@@ -8,7 +8,6 @@ class GistTextController extends IUToolsController {
         var tracer = Debug.getTraceLogger('GistTextController.dictionaryLookup');
 		super(config);
 		this.busy = false;
-		this.wordGistController = new WordGistController(config);
 		this.wordDictController = new WordDictController(config);
         tracer.trace("upon exit, this="+JSON.stringify(this));
 	} 
