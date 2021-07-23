@@ -21,13 +21,6 @@
        		// Floating div where we display the "gist" of a word
        		// (after the user clicks on the example word)
        		//
-       		divGist: "div-gist",
-       		divGist_contents: "div-gist-contents",
-       		divGist_iconizer: "div-gist-iconizer",
-       		divGist_iconized: "div-gist-iconized",
-       		divGist_message: "div-gist-message",
-       		divGist_word: "div-gist-word",
-
        		divWordEntry_contents: "div-gist-contents",
             divWordEntry: "div-gist",
        		divWordEntry_iconizer: "div-gist-iconizer",
