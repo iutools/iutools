@@ -184,7 +184,7 @@ public class SentencePair {
 		return otherText;
 	}
 
-	private String otherLangThan(String lang) {
+	public String otherLangThan(String lang) {
 
 		Pair<String,String> langPair = langs();
 		String otherLang = langPair.getLeft();
