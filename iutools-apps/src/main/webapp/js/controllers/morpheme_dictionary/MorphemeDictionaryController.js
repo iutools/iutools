@@ -6,7 +6,6 @@ class MorphemeDictionaryController extends IUToolsController {
 	
 	constructor(config) {
 		super(config);
-		// this.wordGistController = new WordGistController(config);
 		this.wordDictController = new WordDictController(config);
 	} 
 	
