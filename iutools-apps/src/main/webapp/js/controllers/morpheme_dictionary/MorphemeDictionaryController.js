@@ -6,7 +6,8 @@ class MorphemeDictionaryController extends IUToolsController {
 	
 	constructor(config) {
 		super(config);
-		this.wordGistController = new WordGistController(config);
+		// this.wordGistController = new WordGistController(config);
+		this.wordDictController = new WordDictController(config);
 	} 
 	
 	// Setup handler methods for different HTML elements specified in the config.
@@ -38,7 +39,8 @@ class MorphemeDictionaryController extends IUToolsController {
 		var exampleWord = $(element).text();
 		occurrenceController.elementForProp("divGist_contents").html('');
 		occurrenceController.elementForProp("divGist_word").html('');
-		this.wordGistController.gistWord(exampleWord);				
+		// this.wordGistController.gistWord(exampleWord);
+        this.wordDictController.dictionaryLookup(exampleWord);
 	}
 
 	invokeFindExampleService(jsonRequestData, _successCbk, _failureCbk) {

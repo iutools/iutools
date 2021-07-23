@@ -84,24 +84,46 @@ public class IUWordDict {
 	}
 
 	private int onNewSentencePair(IUWordDictEntry entry, SentencePair bilingualAlignment, Set<String> alreadySeenPair, int totalPairs, TransCoder.Script script) throws IUWordDictException {
+		String[] highlightedPair = higlightPair(entry, bilingualAlignment, script);
+		String bothText = String.join(" <--> ", highlightedPair);
+		if (!alreadySeenPair.contains(bothText)) {
+			alreadySeenPair.add(bothText);
+			entry.addBilingualExample("MISC", highlightedPair);
+			entry.addBilingualExample("ALL", highlightedPair);
+			totalPairs++;
+		}
+		return totalPairs;
+	}
+
+	private String[] higlightPair(
+		IUWordDictEntry wordToHighlight, SentencePair bilingualAlignment, TransCoder.Script script) throws IUWordDictException {
 		String iuText = null;
+
+		// Get IU sentence in the appropriate script
 		try {
 			iuText = TransCoder.ensureScript(
 				script, bilingualAlignment.getText("iu"));
 		} catch (TransCoderException e) {
 			throw new IUWordDictException(e);
 		}
-		String enText = bilingualAlignment.getText("en");
-		String bothText = iuText+" ||\n"+enText;
-		if (!alreadySeenPair.contains(bothText)) {
-			alreadySeenPair.add(bothText);
-			String[] asPair =
-				new String[] {iuText, bilingualAlignment.getText("en")};
 
-			entry.addBilingualExample("MISC", asPair);
-			entry.addBilingualExample("ALL", asPair);
-			totalPairs++;
+		// Highlight the IU word in the IU sentence
+		String iuToHighlight = wordToHighlight.wordRoman;
+		if (script == TransCoder.Script.SYLLABIC) {
+			iuToHighlight = wordToHighlight.wordSyllabic;
 		}
-		return totalPairs;
+		iuText = highlightWord(iuToHighlight, iuText);
+
+
+		String enText = bilingualAlignment.getText("en");
+		String[] highlighted =
+			new String[] {iuText, enText};
+
+		return highlighted;
+	}
+
+	private String highlightWord(String word, String text) {
+		text = text.replaceAll("("+word+")", "<strong>$1</strong>");
+		return text;
 	}
 }

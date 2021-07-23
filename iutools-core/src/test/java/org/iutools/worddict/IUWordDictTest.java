@@ -58,9 +58,9 @@ public class IUWordDictTest {
 			.definitionEquals(null)
 			.decompositionIs("inuksuk/1n")
 			.bilingualExamplesStartWith(
-				new String[] {"sitiivan inuksuk","Stephen Innuksuk"},
-				new String[] {"lui inuksuk","Louis Inukshuk"},
-				new String[] {"sitipirin inuksuk","Stephen Innuksuk"})
+				new String[] {"sitiivan <strong>inuksuk</strong>","Stephen Innuksuk"},
+				new String[] {"lui <strong>inuksuk</strong>","Louis Inukshuk"},
+				new String[] {"sitipirin <strong>inuksuk</strong>","Stephen Innuksuk"})
 //			.possibleTranslationsAre("blah", "blob")
 		;
 	}
@@ -72,9 +72,9 @@ public class IUWordDictTest {
 			.definitionEquals(null)
 			.decompositionIs("inuksuk/1n")
 			.bilingualExamplesStartWith(
-				new String[] {"ᓯᑏᕙᓐ ᐃᓄᒃᓱᒃ","Stephen Innuksuk"},
-				new String[] {"ᓗᐃ ᐃᓄᒃᓱᒃ","Louis Inukshuk"},
-				new String[] {"ᓯᑎᐱᕆᓐ ᐃᓄᒃᓱᒃ","Stephen Innuksuk"})
+				new String[] {"ᓯᑏᕙᓐ <strong>ᐃᓄᒃᓱᒃ</strong>","Stephen Innuksuk"},
+				new String[] {"ᓗᐃ <strong>ᐃᓄᒃᓱᒃ</strong>","Louis Inukshuk"},
+				new String[] {"ᓯᑎᐱᕆᓐ <strong>ᐃᓄᒃᓱᒃ</strong>","Stephen Innuksuk"})
 //			.possibleTranslationsAre("blah", "blob")
 		;
 	}

@@ -39,6 +39,12 @@
     		divGist_iconized: "div-gist-iconized",
     		divGist_message: "div-gist-message",
     		divGist_word: "div-gist-word",
+
+            divWordEntry: "div-gist",
+       		divWordEntry_iconizer: "div-gist-iconizer",
+       		divWordEntry_iconized: "div-gist-iconized",
+       		divWordEntry_message: "div-gist-message",
+       		divWordEntry_word: "div-gist-word",
         };
     var occurrenceController = new MorphemeDictionaryController(config);
 </script>

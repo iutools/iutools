@@ -13,10 +13,18 @@ class WordDictController extends IUToolsController {
         wdConfig['divWordEntry_word'] = gistConfig['divGist_word'];
         wdConfig['divWordEntry_contents'] = gistConfig['divGist_contents'];
         wdConfig['divWordEntry_iconized'] = gistConfig['divGist_iconized'];
+        wdConfig['divWordEntry_iconizer'] = gistConfig['divGist_iconizer'];
         super(wdConfig);
 
         tracer.trace("upon exit, this="+JSON.stringify(this));
     }
+
+    // Setup handler methods for different HTML elements specified in the config.
+    attachHtmlElements() {
+        this.setEventHandler("divWordEntry_iconizer", "click", this.iconizeDivExampleWord);
+        this.setEventHandler("divWordEntry_iconized", "click", this.deiconizeDivExampleWord);
+    }
+
 
     dictionaryLookup(word) {
         var tracer = Debug.getTraceLogger('WordDictController.dictionaryLookup');
@@ -89,7 +97,7 @@ class WordDictController extends IUToolsController {
 	}
 	
 	displayWordEntry(results) {
-		var tracer = Debug.getTraceLogger('WordGistController.displayWordGist');
+		var tracer = Debug.getTraceLogger('WordDictController.displayWordEntry');
 		var divWordEntry = this.elementForProp("divWordEntry");
 		this.hideSpinningWheel("divWordEntry_message");
 		
@@ -99,7 +107,7 @@ class WordDictController extends IUToolsController {
 	}
 	
 	htmlMorphologicalAnalyses(results, html) {
-        var tracer = Debug.getTraceLogger('WordGistController.htmlMorphologicalAnalyses');
+        var tracer = Debug.getTraceLogger('WordDictController.htmlMorphologicalAnalyses');
         tracer.trace("results="+JSON.stringify(results));
 		var html = "<h3>Morphological decomposition<h3>\n";
 		var wordComponents = results.entry.morphDecomp;
