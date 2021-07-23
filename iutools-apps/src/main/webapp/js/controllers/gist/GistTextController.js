@@ -5,9 +5,12 @@
 class GistTextController extends IUToolsController {
 
 	constructor(config) {
+        var tracer = Debug.getTraceLogger('GistTextController.dictionaryLookup');
 		super(config);
 		this.busy = false;
 		this.wordGistController = new WordGistController(config);
+		this.wordDictController = new WordDictController(config);
+        tracer.trace("upon exit, this="+JSON.stringify(this));
 	} 
 	
 	// Setup handler methods for different HTML elements specified in the config.
@@ -174,14 +177,10 @@ class GistTextController extends IUToolsController {
 	onCLickIUWord(evt) {
 		var element = evt.target;
 		var iuWord = $(element).text();
-		this.wordGistController.gistWord(iuWord);				
+		// this.wordGistController.gistWord(iuWord);
+        this.wordDictController.dictionaryLookup(iuWord);
 	}
 
-	// error(err) {
-	// 	this.elementForProp('divError').html(err);
-	// 	this.elementForProp('divError').show();
-	// }
-	
 	setBusy(flag) {
 		this.busy = flag;
 		if (flag) {

@@ -11,6 +11,7 @@ import org.iutools.webservice.morphexamples.MorphemeExamplesEndpoint;
 import org.iutools.webservice.search.ExpandQueryEndpoint;
 import org.iutools.webservice.spell.SpellEndpoint;
 import org.iutools.webservice.tokenize.TokenizeEndpoint;
+import org.iutools.webservice.worddict.WordDictEndpoint;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -28,7 +29,6 @@ public class EndpointDispatcher extends HttpServlet {
 	private Map<String,Endpoint> endpoints = new HashMap<String,Endpoint>();
 	{
 		endpoints.put("log_action", new LogActionEndpoint());
-
 		endpoints.put("morpheme_dictionary", new MorphemeExamplesEndpoint());
 
 		// WHY DO WE STILL NEED THIS?
@@ -43,6 +43,7 @@ public class EndpointDispatcher extends HttpServlet {
 		endpoints.put("tokenize", new TokenizeEndpoint());
 		endpoints.put("gist/preparecontent", new GistPrepareContentEndpoint());
 		endpoints.put("gist/gistword", new GistWordEndpoint());
+		endpoints.put("worddict", new WordDictEndpoint());
 	}
 
 	public EndpointDispatcher() {

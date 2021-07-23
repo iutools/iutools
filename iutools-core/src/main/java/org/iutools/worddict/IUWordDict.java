@@ -52,8 +52,10 @@ public class IUWordDict {
 		TransCoder.Script script = TransCoder.textScript(word);
 		try {
 			WordInfo winfo = corpus.info4word(entry.wordRoman);
-			entry.setDecomp(winfo.topDecomposition());
-			computeTranslationsAndExamples(entry, script);
+			if (winfo != null) {
+				entry.setDecomp(winfo.topDecomposition());
+				computeTranslationsAndExamples(entry, script);
+			}
 		} catch (CompiledCorpusException e) {
 			throw new IUWordDictException(e);
 		}

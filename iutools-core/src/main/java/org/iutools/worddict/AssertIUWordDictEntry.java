@@ -47,9 +47,12 @@ public class AssertIUWordDictEntry extends Asserter<IUWordDictEntry> {
 
 	public AssertIUWordDictEntry decompositionIs(String... expMorphemes)
 		throws Exception {
-		List<String> gotMorphemes = new ArrayList<String>();
-		for (MorphemeHumanReadableDescr morphDescr: entry ().morphDecomp) {
-			gotMorphemes.add(morphDescr.id);
+		List<String> gotMorphemes = null;
+		if (null != entry().morphDecomp) {
+			gotMorphemes = new ArrayList<String>();
+			for (MorphemeHumanReadableDescr morphDescr : entry().morphDecomp) {
+				gotMorphemes.add(morphDescr.id);
+			}
 		}
 		AssertObject.assertDeepEquals(
 			baseMessage+"\nDecomposition not as expected",

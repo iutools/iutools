@@ -30,6 +30,10 @@ public class IUWordDictEntry {
 		return _enTranslations;
 	}
 
+	public IUWordDictEntry() throws IUWordDictException {
+		init_IUWordDictEntry((String)null);
+	}
+
 	public IUWordDictEntry(String _word) throws IUWordDictException {
 		init_IUWordDictEntry(_word);
 	}

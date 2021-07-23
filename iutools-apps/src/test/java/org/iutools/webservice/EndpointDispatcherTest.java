@@ -11,6 +11,7 @@ import org.iutools.webservice.logaction.LogActionInputs;
 import org.iutools.webservice.morphexamples.MorphemeExamplesResult;
 import org.iutools.webservice.search.ExpandQueryResult;
 import org.iutools.webservice.spell.SpellResult;
+import org.iutools.webservice.worddict.WordDictResult;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -196,6 +197,19 @@ public class EndpointDispatcherTest {
 		return;
 	}
 
+	@Test
+	public void test__doPost__worddict__HappyPath() throws Exception {
+		JSONObject json = new JSONObject()
+			.put("word", "inuksuk");
+		String uri = "iutools/srv2/worddict";
+		MockHttpServletResponse response  = doPost(uri, json);
+
+		new AssertServletResponse(response, WordDictResult.class)
+			.reportsNoException()
+			;
+		return;
+	}
+
 
 	@Test
 	public void test__endpointName__HappyPaht() throws Exception {
@@ -206,7 +220,8 @@ public class EndpointDispatcherTest {
 			"morpheme_dictionary",
 			"search/expandquery",
 			"spell",
-			"tokenize"
+			"tokenize",
+			"worddict"
 			}) {
 			String uri = "iutools/srv2/"+endpoint;
 			String gotName = new EndpointDispatcher().endpointName(uri);

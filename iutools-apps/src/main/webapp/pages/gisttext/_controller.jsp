@@ -27,6 +27,11 @@
        		divGist_iconized: "div-gist-iconized",
        		divGist_message: "div-gist-message",
        		divGist_word: "div-gist-word",
+
+       		divWordEntry_iconizer: "div-gist-iconizer",
+       		divWordEntry_iconized: "div-gist-iconized",
+       		divWordEntry_message: "div-gist-message",
+       		divWordEntry_word: "div-gist-word",
         };
     var gistTextController = new GistTextController(config);
 </script>

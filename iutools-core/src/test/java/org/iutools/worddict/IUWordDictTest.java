@@ -79,5 +79,16 @@ public class IUWordDictTest {
 		;
 	}
 
+	@Test
+	public void test__entry4word__OutOfCorpusWord() throws Exception {
+		String misspelledWord = "inuksssuk";
+		IUWordDictEntry entry = IUWordDict.getInstance().entry4word(misspelledWord);
+		new AssertIUWordDictEntry(entry)
+			.definitionEquals(null)
+			.decompositionIs(null)
+			.bilingualExamplesStartWith()
+			.possibleTranslationsAre()
+		;
+	}
 
 }

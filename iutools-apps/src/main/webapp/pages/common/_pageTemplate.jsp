@@ -70,6 +70,7 @@
 <script src="js/controllers/WidgetController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 <script src="js/controllers/IUToolsController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 <script src="js/controllers/gist/WordGistController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
+<script src="js/controllers/worddict/WordDictController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 
 <!-- Include the code that creates and configures the controller for this page -->
 <% pageContext.include("pages/" + pageName + "/_controller.jsp"); %>
