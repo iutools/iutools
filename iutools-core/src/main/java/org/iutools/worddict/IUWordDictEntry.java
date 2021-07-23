@@ -18,8 +18,16 @@ public class IUWordDictEntry {
 	public String wordRoman;
 	public String definition;
 	public List<MorphemeHumanReadableDescr> morphDecomp;
-	private Map<String,List<Pair<String,String>>> examplesForTranslation
-		= new HashMap<String,List<Pair<String,String>>>();
+	// Note: We store sentence pairs as String[] instead of Pair<String,String>
+	//   because the latter is jsonified as a dictionary where
+	//
+	//     - key is the first sentence
+	//     - value is the second sentence
+	//
+	//   and this turns out to be awkward to use on the client-side JavaScript
+	//   code.
+	public Map<String,List<String[]>> examplesForTranslation
+		= new HashMap<String,List<String[]>>();
 
 	private List<Pair<String, Double>> _enTranslations = null;
 
@@ -67,21 +75,21 @@ public class IUWordDictEntry {
 	}
 
 	public IUWordDictEntry addBilingualExample(
-		String translation, Pair<String,String> example) {
+		String translation, String[] example) {
 		if (!examplesForTranslation.containsKey(translation)) {
 			examplesForTranslation.put(
-				translation, new ArrayList<Pair<String,String>>());
+				translation, new ArrayList<String[]>());
 		}
 		examplesForTranslation.get(translation).add(example);
 		return this;
 	}
 
-	public List<Pair<String, String>> bilingualExamplesOfUse() {
+	public List<String[]> bilingualExamplesOfUse() {
 		return bilingualExamplesOfUse("ALL");
 	}
 
-	public List<Pair<String, String>> bilingualExamplesOfUse(String translation) {
-		List<Pair<String, String>> examples = new ArrayList<Pair<String, String>>();
+	public List<String[]> bilingualExamplesOfUse(String translation) {
+		List<String[]> examples = new ArrayList<String[]>();
 		if (examplesForTranslation.containsKey(translation)) {
 			examples = examplesForTranslation.get(translation);
 		}

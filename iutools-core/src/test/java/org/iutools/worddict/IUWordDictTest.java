@@ -38,12 +38,12 @@ public class IUWordDictTest {
 
 			// For each possible translation, you can get a list of bilingual
 			// sentences that use that particular translation
-			List<Pair<String,String>> examples = entry.bilingualExamplesOfUse(translation);
+			List<String[]> examples = entry.bilingualExamplesOfUse(translation);
 		}
 
 		// You can also get bilingual examples of use for all of the possible
 		// translations
-		List<Pair<String,String>> examples = entry.bilingualExamplesOfUse();
+		List<String[]> examples = entry.bilingualExamplesOfUse();
 	}
 
 
@@ -58,9 +58,9 @@ public class IUWordDictTest {
 			.definitionEquals(null)
 			.decompositionIs("inuksuk/1n")
 			.bilingualExamplesStartWith(
-				Pair.of("sitiivan inuksuk","Stephen Innuksuk"),
-				Pair.of("lui inuksuk","Louis Inukshuk"),
-				Pair.of("sitipirin inuksuk","Stephen Innuksuk"))
+				new String[] {"sitiivan inuksuk","Stephen Innuksuk"},
+				new String[] {"lui inuksuk","Louis Inukshuk"},
+				new String[] {"sitipirin inuksuk","Stephen Innuksuk"})
 //			.possibleTranslationsAre("blah", "blob")
 		;
 	}
@@ -72,9 +72,9 @@ public class IUWordDictTest {
 			.definitionEquals(null)
 			.decompositionIs("inuksuk/1n")
 			.bilingualExamplesStartWith(
-				Pair.of("ᓯᑏᕙᓐ ᐃᓄᒃᓱᒃ","Stephen Innuksuk"),
-				Pair.of("ᓗᐃ ᐃᓄᒃᓱᒃ","Louis Inukshuk"),
-				Pair.of("ᓯᑎᐱᕆᓐ ᐃᓄᒃᓱᒃ","Stephen Innuksuk"))
+				new String[] {"ᓯᑏᕙᓐ ᐃᓄᒃᓱᒃ","Stephen Innuksuk"},
+				new String[] {"ᓗᐃ ᐃᓄᒃᓱᒃ","Louis Inukshuk"},
+				new String[] {"ᓯᑎᐱᕆᓐ ᐃᓄᒃᓱᒃ","Stephen Innuksuk"})
 //			.possibleTranslationsAre("blah", "blob")
 		;
 	}

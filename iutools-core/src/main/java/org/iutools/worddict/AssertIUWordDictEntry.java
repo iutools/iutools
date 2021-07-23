@@ -76,10 +76,10 @@ public class AssertIUWordDictEntry extends Asserter<IUWordDictEntry> {
 	}
 
 	public AssertIUWordDictEntry bilingualExamplesStartWith(
-		Pair<String, String>... expExamples) throws Exception {
-		List<Pair<String,String>> gotExamples = entry().bilingualExamplesOfUse();
-		Pair<String,String>[] gotExamplesArr =
-			gotExamples.toArray(new Pair[0]);
+		String[]... expExamples) throws Exception {
+		List<String[]> gotExamples = entry().bilingualExamplesOfUse();
+		String[][] gotExamplesArr =
+			gotExamples.toArray(new String[0][]);
 		new AssertSequence(gotExamplesArr)
 			.startsWith(expExamples);
 		return this;

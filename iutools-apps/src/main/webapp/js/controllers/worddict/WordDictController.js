@@ -122,15 +122,14 @@ class WordDictController extends IUToolsController {
 	
 	htmlAlignments(results, html) {
 		var gist = results.wordGist
-		var alignments = results.alignments;
+		var alignments = results.entry.examplesForTranslation['ALL'];
+
 		html += "<h3>Examples</h3>\n";
 		if (alignments != null && alignments.length > 0) {
 			html += '<table id="tbl-alignments" class="alignments"><th>Inuktitut</th><th>English</th></tr>';
-			for (var ial=0; ial<Math.min(30,alignments.length); ial++) {
-				var alignment = new Alignment(alignments[ial]);
-				var inuktitutSentence = alignment.text4lang('iu').replace(gist.word,'<strong>'+gist.word+'</strong>').replace(/\.{5,}/,'...');
-				var englishSentence = alignment.text4lang('en').replace(/\.{5,}/,'...').trim();
-				html += '<tr><td>'+inuktitutSentence+'</td><td>'+englishSentence+'</td></tr>';
+            for (var ii=0; ii < alignments.length; ii++) {
+                var anAlignment = alignments[ii];
+				html += '<tr><td>'+anAlignment[0]+'</td><td>'+anAlignment[1]+'</td></tr>';
 			}
 			html += '</table>';
 		} else {

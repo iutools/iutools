@@ -95,8 +95,8 @@ public class IUWordDict {
 		String bothText = iuText+" ||\n"+enText;
 		if (!alreadySeenPair.contains(bothText)) {
 			alreadySeenPair.add(bothText);
-			Pair<String,String> asPair =
-			Pair.of(iuText, bilingualAlignment.getText("en"));
+			String[] asPair =
+				new String[] {iuText, bilingualAlignment.getText("en")};
 
 			entry.addBilingualExample("MISC", asPair);
 			entry.addBilingualExample("ALL", asPair);

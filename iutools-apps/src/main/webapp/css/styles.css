@@ -318,3 +318,7 @@ div#gist-alignments span.highlighted { font-weight:bold; color:red; }
 	vertical-align:middle;
 }
 
+strong{
+    font-weight:bold;
+    color:#03a5fc
+}
