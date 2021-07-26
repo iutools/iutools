@@ -73,24 +73,11 @@ public class SentencePairTest {
 					// 2nd en token aligns with 2nd and 3rd fr tokens
 					new Integer[]{1,1}, new Integer[]{1,2}});
 
-		// If token alignment has been provided, then given expression in one
-		// language, you can ask for the corresponding expression in the other language
+		// If token alignment has been provided, then given a list of tokens in
+		// one language, you can get the corresponding tokens in the other language
 		//
-		//
-		String enExpr = "world";
-		String frExpr =
-			alignment.otherLangText("en", enExpr);
-
-		// You can also request that the expression and its equivalent in the
-		// other language be marked up with some html-ish tags
-		//
-		// In the example below, the en expression and its iu equivalent will
-		// be marked up with <equiv></equiv> tags.
-		//
-		String tagName = "equiv";
-		Pair<String,String> markedUpPair = alignment.markupPair("en", enExpr, tagName);
-		String enMarkedUp = markedUpPair.getLeft();
-		String iuMarkedUp = markedUpPair.getRight();
+		int[] frTokens = new int[] {1, 2};
+		int[] enTokens = pair.otherLangTokens("fr", frTokens);
 	}
 
 	/////////////////////////////
@@ -106,22 +93,7 @@ public class SentencePairTest {
 			.textForLangIs("fr", "Bonjour le monde")
 			.tokensForLangAre("en", new String[] {"Hello", "world"})
 			.tokensForLangAre("fr", new String[] {"Bonjour", "le", "monde"})
-			.otherLangTextIs("en", "hello", "Bonjour")
-			.otherLangTextIs("en", "world", "le monde")
-			;
-	}
-
-	@Test
-	public void test__tokens4text__HappyPath() throws Exception {
-
-		new AssertSentencePair(pair)
-			.tokensForTextAre("en", "hello", 0)
-			.tokensForTextAre("en", "world", 1)
-			.tokensForTextAre("en", "hello world", 0, 1)
-			.tokensForTextAre("fr", "bonjour", 0)
-			.tokensForTextAre("fr", "le", 1)
-			.tokensForTextAre("fr", "monde", 2)
-			.tokensForTextAre("fr", "le monde", 1, 2)
+			.otherLangTokensAre("en", new int[] {1}, 1, 2)
 			;
 	}
 }

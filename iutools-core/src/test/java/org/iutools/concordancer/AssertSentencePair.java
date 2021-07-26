@@ -78,21 +78,12 @@ public class AssertSentencePair extends Asserter<SentencePair> {
 		return this;
 	}
 
-	public AssertSentencePair otherLangTextIs(String lang, String langText,
-		String expOtherLangText) {
-		String gotOtherLangText = pair().otherLangText(lang, langText);
-		AssertString.assertStringEquals(
-			baseMessage+"\nOther language text was not as expected for "+lang+" text "+langText,
-			expOtherLangText, gotOtherLangText);
-		return this;
-	}
-
-	public AssertSentencePair tokensForTextAre(
-		String lang, String langText, int... expTokens) throws Exception {
-		Integer[] gotTokens = pair().tokens4text(lang, langText);
+	public void otherLangTokensAre(
+		String lang, int[] langTokens, int... expOtherLangTokens)
+		throws Exception {
+		int[] gotOtherLangTokens = pair().otherLangTokens(lang, langTokens);
 		AssertObject.assertDeepEquals(
-			baseMessage+"\nTokens not expected for "+lang+" text "+langText,
-			expTokens, gotTokens);
-		return this;
+			baseMessage+"\nOther language tokens not as expected",
+			expOtherLangTokens, gotOtherLangTokens);
 	}
 }

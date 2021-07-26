@@ -6,12 +6,15 @@ import org.iutools.concordancer.SentencePair;
 import org.iutools.concordancer.WordAlignmentException;
 import org.iutools.concordancer.tm.TranslationMemory;
 import org.iutools.concordancer.tm.TranslationMemoryException;
+import org.iutools.concordancer.tm.WordSpotter;
+import org.iutools.concordancer.tm.WordSpotterException;
 import org.iutools.corpus.*;
 import org.iutools.script.TransCoder;
 import org.iutools.script.TransCoderException;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -96,7 +99,8 @@ public class IUWordDict {
 	}
 
 	private String[] higlightPair(
-		IUWordDictEntry wordToHighlight, SentencePair bilingualAlignment, TransCoder.Script script) throws IUWordDictException {
+		IUWordDictEntry wordToHighlight, SentencePair bilingualAlignment,
+		TransCoder.Script script) throws IUWordDictException {
 		String iuText = null;
 
 		// Get IU sentence in the appropriate script
@@ -116,6 +120,15 @@ public class IUWordDict {
 
 
 		String enText = bilingualAlignment.getText("en");
+		if (bilingualAlignment.hasWordLevel()) {
+			try {
+				Map<String, String> highlights = new WordSpotter(bilingualAlignment).higlight("iu", iuToHighlight, "strong");
+				//			enText = highlights.get("en");
+			} catch (WordSpotterException e) {
+				throw new IUWordDictException(e);
+			}
+		}
+
 		String[] highlighted =
 			new String[] {iuText, enText};
 

@@ -36,8 +36,8 @@ public class WordDictEndpointTest extends EndpointTest {
 			.definitionEquals(null)
 			.decompositionIs("inuksuk/1n")
 			.bilingualExamplesStartWith(
-				new String[] {"sitiivan inuksuk", "Stephen Innuksuk"},
-				new String[] {"lui inuksuk", "Louis Inukshuk"})
+				new String[] {"sitiivan <strong>inuksuk</strong>", "Stephen Innuksuk"},
+				new String[] {"lui <strong>inuksuk</strong>", "Louis Inukshuk"})
 //			.possibleTranslationsAre("BLAH")
 		;
 	}
