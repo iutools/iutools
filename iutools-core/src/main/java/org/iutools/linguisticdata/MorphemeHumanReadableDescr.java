@@ -3,8 +3,10 @@ package org.iutools.linguisticdata;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,13 +21,59 @@ public class MorphemeHumanReadableDescr implements Comparable<MorphemeHumanReada
 	public String grammar = null;
 	public String meaning = null;
 
-	private static Map<String,String> caseAbbrevs = new HashMap<String,String>();
+	private static Map<String,String> typesOfMorphemes = new HashMap<String,String>();
 	static {
-		caseAbbrevs.put("loc", "locative");
-		caseAbbrevs.put("dec", "declarative");
-		caseAbbrevs.put("caus", "causative");
+		// roots
+		typesOfMorphemes.put("n", "noun root");
+		typesOfMorphemes.put("v", "verb root");
+		typesOfMorphemes.put("a", "adverb");
+		typesOfMorphemes.put("c", "conjunction");
+		typesOfMorphemes.put("e", "exclamation/disclaimer");
+		typesOfMorphemes.put("q", "tail suffix");
+		typesOfMorphemes.put("nn", "noun-to-noun suffix");
+		typesOfMorphemes.put("nv", "noun-to-verb suffix");
+		typesOfMorphemes.put("vn", "verb-to-noun suffix");
+		typesOfMorphemes.put("vv", "verb-to-verb suffix");
+		typesOfMorphemes.put("q", "tail suffix");
+		typesOfMorphemes.put("pr", "pronoun");
+		typesOfMorphemes.put("p", "pronoun");
+		typesOfMorphemes.put("rpr", "pronoun root");
+		typesOfMorphemes.put("rp", "pronoun root");
+		typesOfMorphemes.put("ad", "demonstrative adverb");
+		typesOfMorphemes.put("rad", "demonstrative adverb root");
+		typesOfMorphemes.put("tad", "demonstrative adverb ending");
+		typesOfMorphemes.put("pd", "demonstrative pronoun");
+		typesOfMorphemes.put("rpd", "demonstrative pronoun root");
+		typesOfMorphemes.put("tpd", "demonstrative prnoun ending");
+		typesOfMorphemes.put("tn", "noun ending");
+		typesOfMorphemes.put("tv", "verb ending");
 	}
 
+	private static Map<String,String> caseMoodAbbrevs = new HashMap<String,String>();
+	static {
+		// noun cases
+		caseMoodAbbrevs.put("nom", "nominative");
+		caseMoodAbbrevs.put("gen", "genitive");
+		caseMoodAbbrevs.put("loc", "locative");
+		caseMoodAbbrevs.put("acc", "accusative");
+		caseMoodAbbrevs.put("abl", "ablative");
+		caseMoodAbbrevs.put("dat", "dative");
+		caseMoodAbbrevs.put("sim", "similaris");
+		caseMoodAbbrevs.put("via", "vialis");
+		// verb moods
+		caseMoodAbbrevs.put("dec", "declarative");
+		caseMoodAbbrevs.put("caus", "causative");
+		caseMoodAbbrevs.put("part", "participial");
+		caseMoodAbbrevs.put("int", "interrogative");
+		caseMoodAbbrevs.put("imp", "imperative");
+		caseMoodAbbrevs.put("dub", "dubitative");
+		caseMoodAbbrevs.put("freq", "frequentative");
+		caseMoodAbbrevs.put("ger", "gerundive");
+		caseMoodAbbrevs.put("cond", "conditional");
+		// demonstrative properties
+		caseMoodAbbrevs.put("sc", "static/short referent");
+		caseMoodAbbrevs.put("ml", "moving/long referent");
+	}
 
 	private static Pattern pattSeparateCanonicalFromRoles =
 		Pattern.compile("^([^/]*)/\\d?(.*)$");
@@ -64,21 +112,21 @@ public class MorphemeHumanReadableDescr implements Comparable<MorphemeHumanReada
 			canonical = matcher.group(1);
 			String attributesString = matcher.group(2);
 
-			String transitivityOrPosessivity = transitivityOrPosessivity(attributes);
+			String transitivityOrPossessivity = transitivityOrPossessivity(attributes);
 			String partOfSpeechDescr = partOfSpeech(attributes);
-			String positionDescr = position(attributes);
-			String caseDescr = caseFor(attributes);
+//			String positionDescr = position(attributes);
+			String caseOrMoodDescr = caseOrMoodFor(attributes);
 			String primaryPersAndNumber = primaryPersonAndNumber(attributes);
 			String secondaryPersAndNumber = secondaryPersonAndNumber(attributes);
 
 			gramm = "";
-			gramm = expandDescr(gramm, transitivityOrPosessivity);
+			gramm = expandDescr(gramm, transitivityOrPossessivity);
 			gramm = expandDescr(gramm, partOfSpeechDescr);
-			gramm = expandDescr(gramm, positionDescr);
-			if (caseDescr != null || primaryPersAndNumber != null) {
+//			gramm = expandDescr(gramm, positionDescr);
+			if (caseOrMoodDescr != null || primaryPersAndNumber != null) {
 				gramm += ";";
 			}
-			gramm = expandDescr(gramm, caseDescr);
+			gramm = expandDescr(gramm, caseOrMoodDescr);
 			gramm = expandDescr(gramm, primaryPersAndNumber);
 			if (secondaryPersAndNumber != null) {
 				gramm += ";";
@@ -134,7 +182,7 @@ public class MorphemeHumanReadableDescr implements Comparable<MorphemeHumanReada
 		}
 		if (persNum != null) {
 			if (firstAttr.equals("tn")) {
-				persNum += " posessor";
+				persNum += " possessor";
 			} else if (firstAttr.equals("tv")) {
 				persNum += " object";
 			}
@@ -146,7 +194,7 @@ public class MorphemeHumanReadableDescr implements Comparable<MorphemeHumanReada
 	private static String primaryPersonAndNumber(String[] attributes) {
 		String persNum = null;
 		String firstAttr = attributes[0];
-		if (firstAttr.startsWith("t")) {
+		if (Arrays.stream(new String[]{"tn", "tv", "ad", "rad", "pd", "rpd"}).anyMatch(firstAttr::equals)) { //(firstAttr.startsWith("t")) {
 			if (attributes.length > 2) {
 				persNum = personAndNumber4abbrev(attributes[2]);
 			}
@@ -154,40 +202,52 @@ public class MorphemeHumanReadableDescr implements Comparable<MorphemeHumanReada
 		return persNum;
 	}
 
-	private static String transitivityOrPosessivity(String[] attributes) {
-		String transOrPosess = null;
+	private static String transitivityOrPossessivity(String[] attributes) {
+		String transOrPossess = null;
 		String firstAttr = attributes[0];
 		if (firstAttr.startsWith("t")) {
-			boolean has4thAttribute = (attributes.length == 4);
+			boolean has4thAttribute = (attributes.length > 3);
 			if (firstAttr.equals("tn")) {
-				// This is a noun morpheme. Is it posessive or not?
+				// This is a noun morpheme. Is it possessive or not?
 				if (has4thAttribute) {
-					transOrPosess = "posessive";
+					transOrPossess = "possessive";
 				}
 			} else if (firstAttr.equals("tv")) {
 				// This is a verb morpheme. Is it transitive or intransitive?
+				String secondAttr = attributes[1];
 				if (has4thAttribute) {
-					transOrPosess = "transitive";
+					transOrPossess = "transitive";
 				} else {
-					transOrPosess = "intransitive";
+					transOrPossess = "intransitive";
 				}
 			}
 		}
-		return transOrPosess;
+		return transOrPossess;
 	}
 
-	private static String caseFor(String[] attributes) throws MorphemeException {
-		String caseDescr = null;
+	private static String caseOrMoodFor(String[] attributes) throws MorphemeException {
+		String caseOrMoodDescr = null;
 		String caseAbbr = null;
 		String firstAttr = attributes[0];
-		if (firstAttr.startsWith("t")) {
+		if (Arrays.stream(new String[]{"tn", "tv", "ad", "rad", "pd", "rpd"}).anyMatch(firstAttr::equals)) { //(firstAttr.startsWith("t")) {
 			caseAbbr = attributes[1];
+			if (caseAbbr.equals("?")) {
+				caseAbbr = null;
+			}
 		}
 		if (caseAbbr != null) {
-			caseDescr = caseAbbrevs.get(caseAbbr);
+			caseOrMoodDescr = caseMoodAbbrevs.get(caseAbbr);
+			if (caseOrMoodDescr.equals("participial")) {
+				String lastAttribute = attributes[attributes.length-1];
+				if (lastAttribute.equals("fut")) {
+					caseOrMoodDescr = "future " + caseOrMoodDescr;
+				} else if (lastAttribute.equals("prespas")) {
+					caseOrMoodDescr = "past/present " + caseOrMoodDescr;
+				}
+			}
 		}
 
-		return caseDescr;
+		return caseOrMoodDescr;
 	}
 
 	private static String personAndNumber4abbrev(String abbrev) {
@@ -210,6 +270,8 @@ public class MorphemeHumanReadableDescr implements Comparable<MorphemeHumanReada
 		String num = null;
 		if (abbrev.contains("s")) {
 			num = "singular";
+		} else if (abbrev.contains("d")) {
+			num = "dual";
 		} else if (abbrev.contains("p")) {
 			num = "plural";
 		}
@@ -234,6 +296,8 @@ public class MorphemeHumanReadableDescr implements Comparable<MorphemeHumanReada
 		String number = null;
 		if (abbrev.equals("s")) {
 			number = "singular";
+		} else if (abbrev.equals("d")) {
+			number = "dual";
 		} else if (abbrev.equals("p")) {
 			number = "plural";
 		}
@@ -249,23 +313,30 @@ public class MorphemeHumanReadableDescr implements Comparable<MorphemeHumanReada
 	}
 
 	private static String partOfSpeech(String[] attributes) {
-		String posDescr = "";
 		String firstAttr = attributes[0];
-		if (firstAttr.startsWith("tn")) {
-			posDescr = "noun";
-		} else if (firstAttr.equals("tv")) {
-			posDescr = "verb";
-		} else if (attributes.length == 1 && attributes[0].length() < 3) {
-			for (int ii=0; ii < firstAttr.length(); ii++) {
-				if (ii > 0) {
-					posDescr += "-to-";
-				}
-				char roleChar = firstAttr.charAt(ii);
-				posDescr += partofSpeechName(roleChar);
-			}
-		}
+		String posDescr = typesOfMorphemes.get(firstAttr);
 		return posDescr;
 	}
+
+
+//	private static String partOfSpeech(String[] attributes) {
+//		String posDescr = "";
+//		String firstAttr = attributes[0];
+//		if (firstAttr.equals("tn")) {
+//			posDescr = "noun";
+//		} else if (firstAttr.equals("tv")) {
+//			posDescr = "verb";
+//		} else if (Arrays.stream(new String[]{"nn", "nv", "vn", "vv"}).anyMatch(firstAttr::equals)) { //(attributes.length == 1 && attributes[0].length() < 3) {
+//			for (int ii=0; ii < firstAttr.length(); ii++) {
+//				if (ii > 0) {
+//					posDescr += "-to-";
+//				}
+//				char roleChar = firstAttr.charAt(ii);
+//				posDescr += partofSpeechName(roleChar);
+//			}
+//		}
+//		return posDescr;
+//	}
 
 	private static String position(String[] attributes) {
 		String location = null;
