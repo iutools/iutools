@@ -67,21 +67,26 @@ public class MorphemeHumanReadableDescrTest {
 			Triple.of("pisuk/1v", "pisuk", "verb root"),
 			Triple.of("amma/1c", "amma", "conjunction"),
 			Triple.of("aakka/1a", "aakka", "adverb"),
-			Triple.of("aamai/1e", "aamai", "expression/disclaimer"),
+			Triple.of("aamai/1e", "aamai", "exclamation/disclaimer"),
 			Triple.of("uvanga/1p", "uvanga", "pronoun"),
+
 			Triple.of("quti/1nn", "quti", "noun-to-noun suffix"),
 			Triple.of("liuq/1nv", "liuq", "noun-to-verb suffix"),
 			Triple.of("ji/1vn", "ji", "verb-to-noun suffix"),
 			Triple.of("nasuk/1vv", "nasuk", "verb-to-verb suffix"),
+			Triple.of("lu/1q", "lu", "tail suffix"),
 
 			Triple.of("mi/tn-loc-s", "mi", "noun ending; locative singular"),
-			Triple.of("mni/tn-loc-s-1s", "mni", "posessive noun ending; locative singular; 1st person singular posessor"),
+			Triple.of("mni/tn-loc-s-1s", "mni", "possessive noun ending; locative singular; 1st person singular possessor"),
+
 			Triple.of("vugut/tv-dec-1p", "vugut", "intransitive verb ending; declarative 1st person plural"),
 			Triple.of("gakku/tv-caus-1s-3s", "gakku", "transitive verb ending; causative 1st person singular; 3rd person singular object"),
+			Triple.of("lunikku/tv-part-3d-3s-fut", "lunikku", "transitive verb ending; future participial 3rd person dual; 3rd person singular object"),
 
-//			Triple.of("lunikku/tv-part-3d-3s-fut", "lunikku", "intransitive verb ending; MODE??? 3rd "),
-
-			Triple.of("lu/1q", "lu", "tail element")
+			Triple.of("taava/ad-ml", "taava", "demonstrative adverb; moving/long referent"),
+			Triple.of("qaksu/rpd-?-s", "qaksu", "demonstrative pronoun root; singular"),
+			Triple.of("tagg/rad-sc", "tagg", "demonstrative adverb root; static/short referent"),
+			Triple.of("taaksu/rpd-ml-s", "taaksu", "demonstrative pronoun root; moving/long referent singular"),
 		};
 
 		Set<String> ignoreFields = new HashSet<String>();
@@ -99,6 +104,7 @@ public class MorphemeHumanReadableDescrTest {
 				expDescr.put("id", id);
 				expDescr.put("canonicalForm", expCanonical);
 				expDescr.put("grammar", expGrammar);
+				expDescr.put("meaning",null);
 			}
 			AssertObject.assertDeepEquals(
 				"Bad description for morpheme id "+id,
@@ -138,7 +144,7 @@ public class MorphemeHumanReadableDescrTest {
 		}
 
 		String[] expDescriptions = new String[] {
-			"(posessive noun ending; locative plural; 2nd person posessor)",
+			"(possessive noun ending; locative plural; 2nd person possessor)",
 			"(intransitive verb ending; 2nd person; 1st person singular object)",
 			"(verb-to-noun suffix)",
 		};
