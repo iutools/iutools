@@ -96,4 +96,10 @@ public class SentencePairTest {
 			.otherLangTokensAre("en", new int[] {1}, 1, 2)
 			;
 	}
+
+	@Test
+	public void test__stemmedTokensPattern__TextThatContainsParens() {
+		String token = "hell (world";
+		SentencePair.stemmedTokensPattern(token);
+	}
 }

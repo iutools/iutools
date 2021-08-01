@@ -1,6 +1,5 @@
 package org.iutools.worddict;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.concordancer.Alignment_ES;
 import org.iutools.concordancer.SentencePair;
 import org.iutools.concordancer.WordAlignmentException;
@@ -9,13 +8,12 @@ import org.iutools.concordancer.tm.TranslationMemoryException;
 import org.iutools.concordancer.tm.WordSpotter;
 import org.iutools.concordancer.tm.WordSpotterException;
 import org.iutools.corpus.*;
+import org.iutools.morphrelatives.MorphRelativesFinder;
+import org.iutools.morphrelatives.MorphRelativesFinderException;
+import org.iutools.morphrelatives.MorphologicalRelative;
 import org.iutools.script.TransCoder;
-import org.iutools.script.TransCoderException;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Dictionary of Inuktitut words.
@@ -26,6 +24,7 @@ import java.util.Set;
  */
 public class IUWordDict {
 
+	private static final long MAX_WORDS = 20;
 	private static IUWordDict _singleton = null;
 
 	public static int MAX_SENT_PAIRS = 10;
@@ -51,18 +50,87 @@ public class IUWordDict {
 	}
 
 	public IUWordDictEntry entry4word(String word) throws IUWordDictException {
+		return entry4word(word, (Boolean)null);
+	}
+
+	public IUWordDictEntry entry4word(String word, Boolean sortRelatedWords)
+		throws IUWordDictException {
 		IUWordDictEntry entry = new IUWordDictEntry(word);
 		TransCoder.Script script = TransCoder.textScript(word);
 		try {
 			WordInfo winfo = corpus.info4word(entry.wordRoman);
 			if (winfo != null) {
 				entry.setDecomp(winfo.topDecomposition());
-				computeTranslationsAndExamples(entry, script);
 			}
+			computeTranslationsAndExamples(entry, script);
+			computeRelatedWords(entry, sortRelatedWords);
 		} catch (CompiledCorpusException e) {
 			throw new IUWordDictException(e);
 		}
+
+		entry.ensureIUScript(TransCoder.textScript(word));
 		return entry;
+	}
+
+	private void computeRelatedWords(IUWordDictEntry entry,
+		Boolean sortRelatedWords) throws IUWordDictException {
+		if (sortRelatedWords == null) {
+			sortRelatedWords = true;
+		}
+		try {
+			MorphologicalRelative[] rels =
+				new MorphRelativesFinder(corpus).findRelatives(entry.wordRoman);
+			List<String> relatedWords = new ArrayList<String>();
+			for (MorphologicalRelative aRel: rels) {
+				relatedWords.add(aRel.getWord());
+			}
+
+			if (sortRelatedWords) {
+				sortWordsByEntryComprehensiveness(relatedWords);
+			}
+
+			entry.relatedWords = relatedWords.toArray(new String[0]);
+		} catch (MorphRelativesFinderException e) {
+			throw new IUWordDictException(e);
+		}
+
+	}
+
+	/**
+	 * Sort the list of words so that those that have a more detailed dictionary
+	 * entry come first. For example, words that have non-empty list of bilingual
+	 * examples of use will come first.
+	 * @param words
+	 * @return
+	 */
+	private void sortWordsByEntryComprehensiveness(List<String> words) throws IUWordDictException {
+		List<IUWordDictEntry> wordEntries = new ArrayList<IUWordDictEntry>();
+		for (String aWord: words) {
+			wordEntries.add(this.entry4word(aWord, false));
+		}
+		int x = 0;
+		Collections.sort(wordEntries,
+			(w1, w2) -> {
+				int answer = 0;
+
+				int w1examples = w1.bilingualExamplesOfUse().size();
+				int w2examples = w2.bilingualExamplesOfUse().size();
+				answer = - Integer.compare(w1examples, w2examples);
+
+				if (answer == 0) {
+					boolean w1HasDecomp = (w1.morphDecomp.size() > 0);
+					boolean w2HasDecomp = (w2.morphDecomp.size() > 0);
+					if (w1HasDecomp && !w1HasDecomp) {
+						answer = -1;
+					} else if (!w1HasDecomp && w1HasDecomp) {
+						answer = 1;
+					}
+				}
+
+				return answer;
+			});
+
+		return;
 	}
 
 	private void computeTranslationsAndExamples(IUWordDictEntry entry, TransCoder.Script script) throws IUWordDictException {
@@ -70,9 +138,14 @@ public class IUWordDict {
 			Set<String> alreadySeenPair = new HashSet<String>();
 			List<Alignment_ES> tmResults =
 				new TranslationMemory().search("iu", entry.wordSyllabic);
+			sortTMResults(tmResults);
 			int totalPairs = 1;
 			for (Alignment_ES hit: tmResults) {
 				SentencePair bilingualAlignment = hit.sentencePair("iu", "en");
+				if (bilingualAlignment.hasWordLevel()) {
+					new WordSpotter(bilingualAlignment)
+						.highlight("iu", entry.wordSyllabic, "strong", true);
+				}
 				totalPairs =
 					onNewSentencePair(entry, bilingualAlignment, alreadySeenPair,
 						totalPairs, script);
@@ -80,14 +153,36 @@ public class IUWordDict {
 					break;
 				}
 			}
-		} catch (TranslationMemoryException | WordAlignmentException e) {
+		} catch (TranslationMemoryException | WordAlignmentException | WordSpotterException e) {
 			throw new IUWordDictException(e);
 		}
+	}
+
+	private void sortTMResults(List<Alignment_ES> tmResults) {
+		Collections.sort(tmResults, new Comparator<Alignment_ES>(){
+			public int compare(Alignment_ES a1, Alignment_ES a2){
+				int answer = 0;
+				if (a1.hasWordAlignmentForLangPair("iu", "en") &&
+					!a2.hasWordAlignmentForLangPair("iu", "en")) {
+					answer = 11;
+				} else if (a2.hasWordAlignmentForLangPair("iu", "en") &&
+					!a1.hasWordAlignmentForLangPair("iu", "en")) {
+					answer = 1;
+				}
+				return answer;
+			}
+		});
 
 	}
 
-	private int onNewSentencePair(IUWordDictEntry entry, SentencePair bilingualAlignment, Set<String> alreadySeenPair, int totalPairs, TransCoder.Script script) throws IUWordDictException {
-		String[] highlightedPair = higlightPair(entry, bilingualAlignment, script);
+	private int onNewSentencePair(IUWordDictEntry entry,
+		SentencePair bilingualAlignment, Set<String> alreadySeenPair,
+		int totalPairs, TransCoder.Script script) throws IUWordDictException {
+
+		String[] highlightedPair = new String[] {
+			bilingualAlignment.getText("iu"),
+			bilingualAlignment.getText("en"),
+		};
 		String bothText = String.join(" <--> ", highlightedPair);
 		if (!alreadySeenPair.contains(bothText)) {
 			alreadySeenPair.add(bothText);
@@ -95,48 +190,29 @@ public class IUWordDict {
 			entry.addBilingualExample("ALL", highlightedPair);
 			totalPairs++;
 		}
-		return totalPairs;
+ 		return totalPairs;
 	}
 
-	private String[] higlightPair(
-		IUWordDictEntry wordToHighlight, SentencePair bilingualAlignment,
-		TransCoder.Script script) throws IUWordDictException {
-		String iuText = null;
-
-		// Get IU sentence in the appropriate script
+	public List<String> search(String partialWord) throws IUWordDictException {
+		List<String> words = new ArrayList<String>();
 		try {
-			iuText = TransCoder.ensureScript(
-				script, bilingualAlignment.getText("iu"));
-		} catch (TransCoderException e) {
+			CompiledCorpus.SearchOption[] options =
+				new CompiledCorpus.SearchOption[] {
+					CompiledCorpus.SearchOption.EXCL_MISSPELLED,
+					CompiledCorpus.SearchOption.WORD_ONLY
+				};
+			long totalWords = corpus.totalWordsWithCharNgram(partialWord, options);
+			if (totalWords > MAX_WORDS) {
+				throw new TooManyWordsException(totalWords);
+			}
+			Iterator<String> wordsIter = corpus.wordsContainingNgram(
+				partialWord, options);
+			while (wordsIter.hasNext()) {
+				words.add(wordsIter.next());
+			}
+		} catch (CompiledCorpusException e) {
 			throw new IUWordDictException(e);
 		}
-
-		// Highlight the IU word in the IU sentence
-		String iuToHighlight = wordToHighlight.wordRoman;
-		if (script == TransCoder.Script.SYLLABIC) {
-			iuToHighlight = wordToHighlight.wordSyllabic;
-		}
-		iuText = highlightWord(iuToHighlight, iuText);
-
-
-		String enText = bilingualAlignment.getText("en");
-		if (bilingualAlignment.hasWordLevel()) {
-			try {
-				Map<String, String> highlights = new WordSpotter(bilingualAlignment).higlight("iu", iuToHighlight, "strong");
-				//			enText = highlights.get("en");
-			} catch (WordSpotterException e) {
-				throw new IUWordDictException(e);
-			}
-		}
-
-		String[] highlighted =
-			new String[] {iuText, enText};
-
-		return highlighted;
-	}
-
-	private String highlightWord(String word, String text) {
-		text = text.replaceAll("("+word+")", "<strong>$1</strong>");
-		return text;
+		return words;
 	}
 }

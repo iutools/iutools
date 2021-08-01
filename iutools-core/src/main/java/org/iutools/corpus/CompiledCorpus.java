@@ -935,7 +935,7 @@ public class CompiledCorpus {
 		}
 		additionalReqBodies =
 				(RequestBodyElement[])
-						ArrayUtils.add(additionalReqBodies, size);
+						ArrayUtils.add(additionalReqBodies, (RequestBodyElement)size);
 
 		return query;
 	}
@@ -943,6 +943,10 @@ public class CompiledCorpus {
 	private Pair<String,RequestBodyElement[]> augmentRequestWithOptions(String query,
 		RequestBodyElement[] additionalReqBodies, SearchOption[] options,
   		Boolean statsOnly) {
+
+		if (additionalReqBodies == null) {
+			additionalReqBodies = new RequestBodyElement[0];
+		}
 
 		if (statsOnly == null) {
 			statsOnly = false;
@@ -955,7 +959,7 @@ public class CompiledCorpus {
 		if (ArrayUtils.contains(options, SearchOption.WORD_ONLY)) {
 			additionalReqBodies =
 				(RequestBodyElement[]) ArrayUtils.add(additionalReqBodies,
-						new _Source("id"));
+				(RequestBodyElement)new _Source("id"));
 		}
 
 		Size size = new Size(searchBatchSize);
@@ -964,7 +968,7 @@ public class CompiledCorpus {
 		}
 		additionalReqBodies =
 			(RequestBodyElement[])
-				ArrayUtils.add(additionalReqBodies, size);
+				ArrayUtils.add((RequestBodyElement[])additionalReqBodies, (RequestBodyElement)size);
 
 		return Pair.of(query,additionalReqBodies);
 	}

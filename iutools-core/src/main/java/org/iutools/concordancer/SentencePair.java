@@ -1,9 +1,12 @@
 package org.iutools.concordancer;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.tuple.Pair;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.apache.log4j.Logger;
 
 public class SentencePair {
 
@@ -42,9 +45,26 @@ public class SentencePair {
 			if (!joined.isEmpty()) {
 				joined += " ";
 			}
-			joined += allTokens[tokens[ii]];
+			joined += tokenText(lang, tokens[ii]);
 		}
 		return joined;
+	}
+
+	private String tokenText(String lang, int tokenNum) {
+		String tokText = null;
+		String[] tokens = tokens4lang.get(lang);
+		String langText = getText(lang);
+		String token = tokens[tokenNum].toLowerCase();
+		Matcher matcher =
+			stemmedTokensPattern(token)
+			.matcher(langText);
+		while (matcher.find()) {
+			String thisMatch = matcher.group(1);
+			if (tokText == null || tokText.length() < thisMatch.length()) {
+				tokText = thisMatch;
+			}
+		}
+		return tokText;
 	}
 
 	protected void init_SentencePair(String lang1, String textLang1,
@@ -65,11 +85,26 @@ public class SentencePair {
 		return this;
 	}
 
-//	@JsonIgnore
-//	public SentencePair setTokens(String lang, String... tokens) {
-//		tokens4lang.put(lang, tokens);
-//		return this;
-//	}
+	@JsonIgnore
+	public SentencePair setTokenAlignments(WordAlignment walign) {
+		Pair<String,String> langs = walign.langs();
+		String l1 = langs.getLeft();
+		String l2 = langs.getRight();
+		String[] tokPairingStrs = walign.tokensPairing;
+		Integer[][] tokPairings = new Integer[tokPairingStrs.length][];
+		for (int ii=0; ii < tokPairingStrs.length; ii++) {
+			String[] toksStr = tokPairingStrs[ii].split("-");
+			Integer[] toks = new Integer[2];
+			for (int jj=0; jj < 2; jj++) {
+				toks[jj] = Integer.parseInt(toksStr[jj]);
+			}
+			tokPairings[ii] = toks;
+		}
+		return setTokenAlignments(
+			l1, walign.tokens4lang.get(l1),
+			l2, walign.tokens4lang.get(l2),
+			tokPairings);
+	}
 
 	@JsonIgnore
 	public SentencePair setTokenAlignments(
@@ -279,5 +314,35 @@ public class SentencePair {
 
 	public boolean hasWordLevel() {
 		return (tokenAlignments != null && tokenAlignments.length > 0);
+	}
+
+	public static Pattern stemmedTokensPattern(String tokens) {
+		return stemmedTokensPattern(tokens, (Boolean)null);
+	}
+
+	public static Pattern stemmedTokensPattern(
+		String token, Boolean matchWholeText) {
+		Logger tLogger = Logger.getLogger("org.iutools.concordancer.SentencePair.stemmedTokensPattern");
+		tLogger.trace("token='"+token+"', matchWholeText="+matchWholeText);
+		if (matchWholeText == null) {
+			matchWholeText = false;
+		}
+		token = escapeRegexpSpecialChars(token);
+		String tokenRegex =
+			"("+token.replaceAll("@@$", "[\\\\s\\\\S]*?")+
+			")($|\\s|\\p{Punct})";
+		if (matchWholeText) {
+			tokenRegex = "^\\s*"+tokenRegex+"\\s*$";
+		}
+		Pattern patt =
+			Pattern.compile(tokenRegex, Pattern.CASE_INSENSITIVE);
+		tLogger.trace("Did not crash");
+
+		return patt;
+	}
+
+	public static String escapeRegexpSpecialChars(String text) {
+		text = text.replaceAll("([\\(\\)\\[\\]\\.\\*\\?\\<\\\\>=])", "\\$1");
+		return text;
 	}
 }

@@ -527,11 +527,16 @@ public class TransCoder {
     	
     	return romanText;
     }
-    
-	public static String ensureScript(Script script, String text) throws TransCoderException {		
+
+		public static String ensureScript(Script script, String text) throws TransCoderException {
+			return ensureScript(script, text, (Boolean)null);
+		}
+
+		public static String ensureScript(Script script, String text,
+			Boolean mixedMeansSyll) throws TransCoderException {
 		String textInScript = null;
 		if (text != null) {
-			Script currScript = textScript(text);
+			Script currScript = textScript(text, mixedMeansSyll);
 			if (script == currScript) {
 				textInScript = text;
 			} else {
@@ -550,6 +555,13 @@ public class TransCoder {
 	}
 
 	public static Script textScript(String text) {
+    	return textScript(text, (Boolean)null);
+	}
+
+	public static Script textScript(String text, Boolean mixedMeansSyll) {
+    	if (mixedMeansSyll == null) {
+    		mixedMeansSyll = false;
+		}
 		Script script = null;
 		if (text != null) {
 			String textNoPunctNorDigits = text.replaceAll("[\\s0-9\\p{Punct}]", "");
@@ -558,15 +570,27 @@ public class TransCoder {
 				script = Script.SYLLABIC;
 			} else if (Roman.allInuktitut(textNoPunctNorDigits)) {
 				script = Script.ROMAN;
+			} else if (mixedMeansSyll){
+				// Text contains a mix of syllabic and roman characters, but
+				// mixedMeansSyll=true, so go with syllatics
+				script = Script.SYLLABIC;
 			}
 		}
 		return script;
 	}
 
-	public static String ensureSameScriptAsSecond(String text, String otherText) 
+	public static String ensureSameScriptAsSecond(
+		String text, String otherText) throws TransCoderException {
+    	return ensureSameScriptAsSecond(text, otherText, (Boolean)null);
+	}
+
+
+	public static String ensureSameScriptAsSecond(
+		String text, String otherText, Boolean mixedMeansSyll)
 			throws TransCoderException {
-		Script otherTextScript = textScript(otherText);
-		String textInOthersScript = ensureScript(otherTextScript, text);
+		Script otherTextScript = textScript(otherText, mixedMeansSyll);
+		String textInOthersScript =
+			ensureScript(otherTextScript, text, mixedMeansSyll);
 		return textInOthersScript;
 	}
 }

@@ -7,15 +7,22 @@ import org.iutools.concordancer.tm.TranslationMemory;
 import org.iutools.config.IUConfig;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
 
 public class CmdLoadTranslationMemory extends ConsoleCommand {
+	private Pattern fileRegex;
+	private File tmFilesDir;
+
 	public CmdLoadTranslationMemory(String name) throws CommandLineException {
 		super(name);
 	}
 
 	@Override
 	public void execute() throws Exception {
-		File tmFilesDir = getInputDir();
+		tmFilesDir = getInputDir();
+		fileRegex = getFileRegexp();
 		if (tmFilesDir == null) {
 			tmFilesDir = new File(IUConfig.getIUDataPath("data/translation-memories/"));
 		}
@@ -27,13 +34,40 @@ public class CmdLoadTranslationMemory extends ConsoleCommand {
 		TranslationMemory tm =
 			new TranslationMemory()
 				.setUserIO(userIO);
-
-
-		for (File tmFile: FileGlob.listFiles(tmFilesDir.toString()+"/*.tm.json")) {
+		
+		List<File> files = tmFilesToLoad();
+		if (files.size() > 0) {
+			tm.deleteIndex();
+		}
+		for (File tmFile: files) {
 			tm.loadFile(tmFile.toPath());
 		}
 
 		return;
+	}
+
+	private List<File> tmFilesToLoad() {
+		List<File> toLoad = new ArrayList<File>();
+		echo("TM files to load:");
+		boolean atLeastOne = false;
+		echo(1);
+		try {
+			File[] files = FileGlob.listFiles(tmFilesDir.toString()+"/*.tm.json");
+			for (File aFile: files) {
+				if (this.fileRegex == null ||
+					this.fileRegex.matcher(aFile.toString()).find()) {
+					toLoad.add(aFile);
+					atLeastOne = true;
+					echo(aFile.toString());
+				}
+			}
+		} finally {
+			if (! atLeastOne) {
+				echo("None");
+			}
+			echo(-1);
+		}
+		return toLoad;
 	}
 
 	@Override

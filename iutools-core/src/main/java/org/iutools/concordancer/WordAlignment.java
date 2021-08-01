@@ -19,12 +19,19 @@ public class WordAlignment {
 
 	private Pair<Integer,Integer>[] _matchedTokenPairs = null;
 
+	public WordAlignment() {}
+
 	public WordAlignment(String l1, String[] l1Tokens,
 		String l2, String[] l2Tokens, String[] l1_l2_wordpairs) {
 		this.langPair = l1+"-"+l2;
 		tokens4lang.put(l1, l1Tokens);
 		tokens4lang.put(l2, l2Tokens);
 		setTokensPairing(l1_l2_wordpairs);
+	}
+
+	public Pair<String,String> langs() {
+		String[] langsArr = langPair.split("-");
+		return Pair.of(langsArr[0], langsArr[1]);
 	}
 
 	private void setTokensPairing(String[] l1_l2_wordpairs) {

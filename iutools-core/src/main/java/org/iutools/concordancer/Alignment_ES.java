@@ -27,7 +27,7 @@ public class Alignment_ES extends Document {
 			return this;
 		}
 
-	private Map<String,WordAlignment> walign4langpair = new HashMap<String,WordAlignment>();
+	public Map<String,WordAlignment> walign4langpair = new HashMap<String,WordAlignment>();
 
 	public Alignment_ES setWordAlignment(String l1, String l1Tokens, String l2,
 		String l2Tokens, String l1_l2_wordpairs) {
@@ -53,6 +53,10 @@ public class Alignment_ES extends Document {
 		return from_doc+": p"+pair_num;
 	}
 
+	public Set<String> languages() {
+		return sentences.keySet();
+	}
+
 	public String sentence4lang(String lang) {
 			String sent = null;
 			if (sentences.containsKey(lang)) {
@@ -73,12 +77,22 @@ public class Alignment_ES extends Document {
 		if (walign4langpair.containsKey(langPair)) {
 			walign = walign4langpair.get(langPair);
 		} else {
-			langPair = l2+"_"+l1;
+			langPair = l2+"-"+l1;
 			if (walign4langpair.containsKey(langPair)) {
 				walign = walign4langpair.get(langPair).reverseDirection();
 			}
 		}
 
+		if (walign != null) {
+			pair.setTokenAlignments(walign);
+		}
+
 		return pair;
+	}
+
+	public boolean hasWordAlignmentForLangPair(String l1, String l2) {
+		return (
+			this.walign4langpair.containsKey(l1+"-"+l2) ||
+			this.walign4langpair.containsKey(l2+"-"+l1));
 	}
 }

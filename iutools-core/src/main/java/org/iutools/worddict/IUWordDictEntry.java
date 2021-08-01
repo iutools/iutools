@@ -29,6 +29,8 @@ public class IUWordDictEntry {
 	public Map<String,List<String[]>> examplesForTranslation
 		= new HashMap<String,List<String[]>>();
 
+	public String[] relatedWords = new String[0];
+
 	private List<Pair<String, Double>> _enTranslations = null;
 
 	public List<Pair<String, Double>> enTranslations() {
@@ -97,4 +99,27 @@ public class IUWordDictEntry {
 		return examples;
 	}
 
+	public void ensureIUScript(TransCoder.Script script) throws IUWordDictException {
+		try {
+			for (int ii = 0; ii < relatedWords.length; ii++) {
+				relatedWords[ii] = TransCoder.ensureScript(script, relatedWords[ii]);
+			}
+
+			for (String translation : this.examplesForTranslation.keySet()) {
+				List<String[]> examples = this.examplesForTranslation.get(translation);
+				for (int ii = 0; ii < examples.size(); ii++) {
+					String[] example_ii = examples.get(ii);
+					example_ii[0] = TransCoder.ensureScript(script, example_ii[0]);
+					if (script == TransCoder.Script.SYLLABIC) {
+						// Restore the <strong> tags to Roman
+						example_ii[0] = example_ii[0].replaceAll("ᔅᑦᕐoᖕ>", "strong>");
+					}
+					examples.set(ii, example_ii);
+				}
+			}
+		} catch (TransCoderException e) {
+			throw new IUWordDictException(e);
+		}
+		return;
+	}
 }

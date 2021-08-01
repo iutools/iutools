@@ -1,12 +1,52 @@
 package org.iutools.worddict;
 
+import ca.nrc.testing.AssertSequence;
 import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.linguisticdata.MorphemeHumanReadableDescr;
+import org.iutools.script.TransCoder;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 public class IUWordDictTest {
+
+	IUWordDictCase[] cases = null;
+
+	@BeforeEach
+	public void setUp() {
+		cases = new IUWordDictCase[] {
+			new IUWordDictCase("ammuumajuqsiuqtutik")
+				.setDecomp(
+					"ammut/1a", "u/1nv", "ma/1vv", "juq/1vn", "siuq/1nv",
+					"jusik/tv-ger-2d")
+				.setTranslations("clam", "clams")
+				.setMinExamples(5)
+				.setRelatedWords(
+					"ammuumajurniartiit", "ammuumajuqtarnirmut",
+					"ammuumajurniarnirmut", "ammuumajuqtaqtiit",
+					"ammuumajuqtaqtutik"),
+
+			new IUWordDictCase("ᐊᒻᒨᒪᔪᖅᓯᐅᖅᑐᑎᒃ")
+				.setDecomp(
+					"ammut/1a", "u/1nv", "ma/1vv", "juq/1vn", "siuq/1nv",
+					"jusik/tv-ger-2d")
+				.setTranslations("clam", "clams")
+				.setMinExamples(5)
+				.setRelatedWords(
+					"ᐊᒻᒨᒪᔪᕐᓂᐊᕐᑏᑦ", "ᐊᒻᒨᒪᔪᖅᑕᕐᓂᕐᒧᑦ",
+					"ᐊᒻᒨᒪᔪᕐᓂᐊᕐᓂᕐᒧᑦ", "ᐊᒻᒨᒪᔪᖅᑕᖅᑏᑦ",
+					"ᐊᒻᒨᒪᔪᖅᑕᖅᑐᑎᒃ"),
+
+			// This is an out of vocabulary word
+			new IUWordDictCase("inuksssuk")
+				.setOutOfVocab(true)
+				.setTranslations(new String[] {})
+				.setMinExamples(0)
+				.setRelatedWords(new String[] {})
+		};
+	}
 
 	//////////////////////////////////
 	// DOCUMENTATION TESTS
@@ -44,6 +84,10 @@ public class IUWordDictTest {
 		// You can also get bilingual examples of use for all of the possible
 		// translations
 		List<String[]> examples = entry.bilingualExamplesOfUse();
+
+		// You can search for a word
+		String partialWord = "inuksh";
+		List<String> words = dict.search(partialWord);
 	}
 
 
@@ -52,43 +96,111 @@ public class IUWordDictTest {
 	//////////////////////////////////
 
 	@Test
-	public void test__entry4word__Roman() throws Exception {
-		IUWordDictEntry entry = IUWordDict.getInstance().entry4word("inuksuk");
-		new AssertIUWordDictEntry(entry)
-			.definitionEquals(null)
-			.decompositionIs("inuksuk/1n")
-			.bilingualExamplesStartWith(
-				new String[] {"sitiivan <strong>inuksuk</strong>","Stephen Innuksuk"},
-				new String[] {"lui <strong>inuksuk</strong>","Louis Inukshuk"},
-				new String[] {"sitipirin <strong>inuksuk</strong>","Stephen Innuksuk"})
-//			.possibleTranslationsAre("blah", "blob")
-		;
+	public void test__entry4word__IUIsInScriptOfInputWord() throws Exception {
+		for (Pair<String, TransCoder.Script> aCase:
+			new Pair[] {
+				Pair.of("inuksuk", TransCoder.Script.ROMAN),
+				Pair.of("ᐃᓄᒃᓱᒃ", TransCoder.Script.SYLLABIC),
+			}) {
+
+			IUWordDictEntry entry =
+				IUWordDict.getInstance().entry4word(aCase.getLeft());
+			new AssertIUWordDictEntry(entry)
+				.iuIsInScript(aCase.getRight())
+			;
+
+		}
 	}
 
 	@Test
-	public void test__entry4word__Syllabics() throws Exception {
-		IUWordDictEntry entry = IUWordDict.getInstance().entry4word("ᐃᓄᒃᓱᒃ");
-		new AssertIUWordDictEntry(entry)
-			.definitionEquals(null)
-			.decompositionIs("inuksuk/1n")
-			.bilingualExamplesStartWith(
-				new String[] {"ᓯᑏᕙᓐ <strong>ᐃᓄᒃᓱᒃ</strong>","Stephen Innuksuk"},
-				new String[] {"ᓗᐃ <strong>ᐃᓄᒃᓱᒃ</strong>","Louis Inukshuk"},
-				new String[] {"ᓯᑎᐱᕆᓐ <strong>ᐃᓄᒃᓱᒃ</strong>","Stephen Innuksuk"})
-//			.possibleTranslationsAre("blah", "blob")
-		;
+	public void test__entry4word__VariousCases()
+		throws Exception {
+
+		for (IUWordDictCase aCase: cases) {
+			IUWordDictEntry entry =
+				IUWordDict.getInstance().entry4word(aCase.word);
+
+			String[] expIUHighlights = new String[0];
+			if (!aCase.outOfVocab) {
+				expIUHighlights = new String[] {aCase.word};
+			}
+
+			AssertIUWordDictEntry asserter = new AssertIUWordDictEntry(entry);
+
+			asserter
+				.definitionEquals(aCase.expDefinition)
+				.relatedWordsAre(aCase.expRelatedWords)
+				.atLeastNExamples(aCase.expMinExamples)
+				.highlightsAre("iu", expIUHighlights)
+				.highlightsAre("en", aCase.expTranslations);
+
+			if (aCase.expDecomp != null) {
+				asserter.decompositionIs(aCase.expDecomp);
+			}
+		}
 	}
 
 	@Test
-	public void test__entry4word__OutOfCorpusWord() throws Exception {
-		String misspelledWord = "inuksssuk";
-		IUWordDictEntry entry = IUWordDict.getInstance().entry4word(misspelledWord);
-		new AssertIUWordDictEntry(entry)
-			.definitionEquals(null)
-			.decompositionIs(null)
-			.bilingualExamplesStartWith()
-			.possibleTranslationsAre()
-		;
+	public void test__search__HappyPath() throws Exception {
+		String partialWord = "inuksu";
+		List<String> words = IUWordDict.getInstance().search(partialWord);
+		new AssertSequence<String>(words.toArray(new String[0]))
+			.startsWith("inuksuk", "inuksuup", "inuksui");
 	}
 
+	@Test
+	public void test__search__TooManyMatchingWords__RaisesException() throws Exception {
+		String partialWord = "inu";
+		Assertions.assertThrows(TooManyWordsException.class, () -> {
+			IUWordDict.getInstance().search("inu");;
+		});
+	}
+
+	//////////////////////////////////
+	// TEST HELPERS
+	//////////////////////////////////
+
+	public static class IUWordDictCase {
+		String word = null;
+		String expDefinition = null;
+		String[] expDecomp = null;
+		String[] expRelatedWords = null;
+		String[] expTranslations = null;
+		Integer expMinExamples = null;
+		private boolean outOfVocab = false;
+
+		public IUWordDictCase(String _word) {
+			this.word = _word;
+		}
+
+		public IUWordDictCase setDefinition(String _expDefinition) {
+			expDefinition = _expDefinition;
+			return this;
+		}
+
+		public IUWordDictCase setDecomp(String... _expDecomp) {
+			expDecomp = _expDecomp;
+			return this;
+		}
+
+		public IUWordDictCase setRelatedWords(String... _expRelatedWords) {
+			expRelatedWords = _expRelatedWords;
+			return this;
+		}
+
+		public IUWordDictCase setTranslations(String... _expTranslations) {
+			expTranslations = _expTranslations;
+			return this;
+		}
+
+		public IUWordDictCase setMinExamples(Integer _expMinExamples) {
+			expMinExamples = _expMinExamples;
+			return this;
+		}
+
+		public IUWordDictCase setOutOfVocab(boolean _outOfVocab) {
+			this.outOfVocab = true;
+			return this;
+		}
+	}
 }

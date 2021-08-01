@@ -1,5 +1,6 @@
 <% String IUTOOLS_JS_VERSION=(new java.util.Date()).toLocaleString(); %>
 
+<script src="js/controllers/worddict/WordDictController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 <script src="js/utils/IUUtils.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 <script src="js/utils/HtmlUtils.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 <script src="js/controllers/gist/GistTextController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>

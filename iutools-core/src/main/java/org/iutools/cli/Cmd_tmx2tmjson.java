@@ -48,6 +48,7 @@ public class Cmd_tmx2tmjson extends ConsoleCommand {
 		topics = getTopics(true);
 		File urlListFile = new File(tmxDir, "../../clean_gov_nu_ca.urls.txt");
 		try (FileWriter tmjsonFileWriter = init_tmjsonFile(getOutputFile())) {
+			printHeader(tmjsonFileWriter);
 			readURLsFile(urlListFile);
 			Path tmJsonFPath = getOutputFile();
 			File[] files = FileGlob.listFiles(tmxDir.toString() + "/*.tmx");
@@ -57,6 +58,18 @@ public class Cmd_tmx2tmjson extends ConsoleCommand {
 				}
 				convertTMXFile(tmxFile, tmjsonFileWriter);
 			}
+		}
+	}
+
+	private void printHeader(FileWriter tmjsonFileWriter) throws ConsoleException {
+		try {
+			tmjsonFileWriter.write(
+				"bodyEndMarker=BLANK_LINE\n" +
+				"class=org.iutools.concordancer.Alignment_ES\n" +
+				"\n"
+			);
+		} catch (IOException e) {
+			throw new ConsoleException(e);
 		}
 	}
 

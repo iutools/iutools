@@ -1,14 +1,19 @@
 package org.iutools.worddict;
 
+import ca.nrc.string.StringUtils;
 import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.AssertSequence;
 import ca.nrc.testing.AssertString;
 import ca.nrc.testing.Asserter;
 import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.linguisticdata.MorphemeHumanReadableDescr;
+import org.iutools.script.TransCoder;
+import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class AssertIUWordDictEntry extends Asserter<IUWordDictEntry> {
 
@@ -75,13 +80,66 @@ public class AssertIUWordDictEntry extends Asserter<IUWordDictEntry> {
 		return this;
 	}
 
-	public AssertIUWordDictEntry bilingualExamplesStartWith(
-		String[]... expExamples) throws Exception {
-		List<String[]> gotExamples = entry().bilingualExamplesOfUse();
-		String[][] gotExamplesArr =
-			gotExamples.toArray(new String[0][]);
-		new AssertSequence(gotExamplesArr)
-			.startsWith(expExamples);
+	public AssertIUWordDictEntry relatedWordsAre(String... expRelatedWords)
+		throws Exception {
+		AssertObject.assertDeepEquals(
+			baseMessage+"\nRelated words not as expected.",
+			expRelatedWords, entry().relatedWords
+		);
+		return this;
+	}
+
+	public void iuIsInScript(TransCoder.Script expScript) {
+		IUWordDictEntry entry = this.entry();
+		String relatedWords = String.join(", ", entry.relatedWords);
+		TransCoder.Script gotScript = TransCoder.textScript(relatedWords);
+		Assert.assertEquals(
+			baseMessage+"Related words were in the wrong script.\nWords: "+relatedWords,
+			expScript, gotScript
+			);
+
+		String examples = "";
+		if (entry.examplesForTranslation != null) {
+			List<String[]> iuExamples = entry.examplesForTranslation.get("iu");
+			if (iuExamples != null) {
+				String txtIUExamples = StringUtils.join(iuExamples.iterator(), "\n");
+				gotScript = TransCoder.textScript(txtIUExamples);
+			Assert.assertEquals(
+				baseMessage+"IU examples were in the wrong script.\nWords: "+txtIUExamples,
+				expScript, gotScript
+				);
+			}
+		}
+	}
+
+	public AssertIUWordDictEntry highlightsAre(
+		String lang, String... expHighlights) throws Exception {
+		Set<String> gotHighlights = new HashSet<String>();
+		List<String[]> bilingExamples = entry().bilingualExamplesOfUse();
+		List<String> langExamples = new ArrayList<String>();
+		Pattern pattHighlight = Pattern.compile("<strong>([^<]*)</strong>");
+		for (String[] aBilEx: bilingExamples) {
+			String text = aBilEx[0];
+			if (!lang.equals("iu")) {
+				text = aBilEx[1];
+			}
+			Matcher matcher = pattHighlight.matcher(text);
+			while (matcher.find()) {
+				gotHighlights.add(matcher.group(1).toLowerCase());
+			}
+		}
+		AssertObject.assertDeepEquals(
+			baseMessage+"\nHighglights were not as expected for language "+lang,
+			expHighlights, gotHighlights
+		);
+		return this;
+	}
+
+	public AssertIUWordDictEntry atLeastNExamples(Integer expMinExamples) {
+		int gotHits = entry().bilingualExamplesOfUse().size();
+		Assertions.assertTrue(
+			gotHits >= expMinExamples,
+			baseMessage+"\nNumber of hits was too low ("+gotHits+" < "+expMinExamples+")");
 		return this;
 	}
 }

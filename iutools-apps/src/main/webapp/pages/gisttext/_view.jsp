@@ -1,5 +1,3 @@
-    <!--<form id="form-query" method="post" action="">-->
-
     <!-- Form for submitting text or url to gist -->
     <div>
 	<b>Text to gist:</b>

@@ -3,7 +3,6 @@ package org.iutools.concordancer.tm;
 import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.AssertString;
 import ca.nrc.testing.Asserter;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -30,7 +29,7 @@ public class AssertWordSpotter extends Asserter<WordSpotter> {
 		String caseDescr = "l1="+l1+", l1Expr="+l1Expr;
 		String startTag = "<strong>";
 		String endTag = "</strong>";
-		Map<String, String> highlights = spotter().higlight(l1, l1Expr, "strong");
+		Map<String, String> highlights = spotter().highlight(l1, l1Expr, "strong");
 
 		Pattern pattHighlight = Pattern.compile(startTag+"([\\s\\S]*?)"+endTag);
 

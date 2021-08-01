@@ -72,6 +72,7 @@ public class TranslationMemoryTest {
 		new AssertAlignment_ESList(alignments)
 			.atLeastNHits(1)
 			.allHitsMatchQuery(sourceLang, sourceExpr)
+//			.includesTranslation("en", sourceExpr, "iu", "BLAH")
 			;
 	}
 }

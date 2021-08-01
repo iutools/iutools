@@ -315,6 +315,7 @@ public class CLI {
 			new CmdLoadTranslationMemory("load_translation_memory")
 				.addOption(optInputDir)
 				.addOption(optVerbosity)
+				.addOption(optFileRegexp)
 			;
 		mainCmd.addSubCommand(loadTranslationMemory);
 
@@ -423,13 +424,21 @@ public class CLI {
 			;
 		mainCmd.addSubCommand(tmx2tmjson);
 
-		SubCommand portage2tmjon =
+		SubCommand portage2tmjson =
 			new Cmd_portage2tmjson("portage2tmjson")
 				.addOption(optInputDir)
 				.addOption(optOutputFile)
 				.addOption(optTopics)
 			;
-		mainCmd.addSubCommand(portage2tmjon);
+		mainCmd.addSubCommand(portage2tmjson);
+
+		SubCommand tmjon2portage =
+			new Cmd_tmjson2iu_en_portage("tmjson2en_iu_portage")
+				.addOption(optInputFile)
+				.addOption(optOutputDir)
+			;
+		mainCmd.addSubCommand(tmjon2portage);
+
 
 		return mainCmd;
 	}

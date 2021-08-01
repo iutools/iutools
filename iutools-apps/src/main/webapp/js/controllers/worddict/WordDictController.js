@@ -7,6 +7,7 @@ class WordDictController extends IUToolsController {
         var tracer = Debug.getTraceLogger('WordDictController.constructor');
         tracer.trace("wdConfig="+JSON.stringify(wdConfig));
         super(wdConfig);
+        this.hideIconisationControls();
         tracer.trace("upon exit, this="+JSON.stringify(this));
     }
 
@@ -16,6 +17,11 @@ class WordDictController extends IUToolsController {
         this.setEventHandler("divWordEntry_iconized", "click", this.deiconizeDivExampleWord);
     }
 
+    onDictionaryLookupEvent(ev) {
+        var element = ev.target;
+        var exampleWord = $(element).text();
+        this.dictionaryLookup(exampleWord);
+    }
 
     dictionaryLookup(word) {
         var tracer = Debug.getTraceLogger('WordDictController.dictionaryLookup');
@@ -34,6 +40,7 @@ class WordDictController extends IUToolsController {
 	}
 
 	displayWordBeingLookedUp(word) {
+        this.maximize()
 		var divWord = this.elementForProp("divWordEntry_word");
 		divWord.html("<h2>"+word+"</h2>\n");
 	}
@@ -92,15 +99,36 @@ class WordDictController extends IUToolsController {
 		var divWordEntry = this.elementForProp("divWordEntry");
 		this.hideSpinningWheel("divWordEntry_message");
 		
-		var html = this.htmlMorphologicalAnalyses(results, html);
+		var html = "";
+		html += this.htmlRelatedWords(results);
+        html = this.htmlMorphologicalAnalyses(results, html);
 		html = this.htmlAlignments(results, html);
 		this.elementForProp("divWordEntry_contents").html(html);
-	}
-	
+		this.attachWordLookupListeners();
+    }
+
+    htmlRelatedWords(results) {
+        var tracer = Debug.getTraceLogger('WordDictController.htmlRelatedWords');
+        tracer.trace("results.entry="+JSON.stringify(results.entry));
+        var html = "<h3>Related Words</h3>\n";
+        var relatedWords = results.entry.relatedWords;
+        for (var ii=0; ii < relatedWords.length; ii++) {
+            var word = relatedWords[ii];
+            if (ii > 0) {
+                html += ", ";
+            }
+            // html += word;
+            html += this.htmlClickableWordLookup(word);
+        }
+        html += "<br/>\n";
+
+        return html;
+    }
+
 	htmlMorphologicalAnalyses(results, html) {
         var tracer = Debug.getTraceLogger('WordDictController.htmlMorphologicalAnalyses');
         tracer.trace("results="+JSON.stringify(results));
-		var html = "<h3>Morphological decomposition<h3>\n";
+		html += "<h3>Morphological decomposition<h3>\n";
 		var wordComponents = results.entry.morphDecomp;
 		if (wordComponents != null) {
 			html += '<table id="tbl-gist" class="gist"><tr><th>Morpheme</th><th>Meaning</th></tr>';
@@ -137,7 +165,17 @@ class WordDictController extends IUToolsController {
 		
 		return html;
 	}
-	
+
+    attachWordLookupListeners() {
+        var anchorsWords = $(document).find('.clickable-word-lookup');
+        for (var ipn=0; ipn<anchorsWords.length; ipn++) {
+            this.setEventHandler(
+                anchorsWords.eq(ipn), "click",
+                this.onDictionaryLookupEvent);
+        }
+    }
+
+
 	iconizeDivExampleWord() {
 		var divWordEntry = this.elementForProp("divWordEntry");
 		divWordEntry.hide();
@@ -151,4 +189,23 @@ class WordDictController extends IUToolsController {
 		var divIconizedWordExample = this.elementForProp("divWordEntry_iconized");
 		divIconizedWordExample.hide();
 	}
+
+    htmlClickableWordLookup(word) {
+        var html = '<a class="clickable-word-lookup">'+word+'</a>';
+        return html;
+    }
+
+    hideIconisationControls() {
+        this.elementForProp("divWordEntry_iconizer").hide();
+        this.elementForProp("divWordEntry_iconized").hide();
+    }
+
+    maximize() {
+        this.elementForProp("divWordEntry_iconized").hide();
+        this.elementForProp("divWordEntry_iconizer").show();
+    }
+    minimize() {
+        this.elementForProp("divWordEntry_iconized").show();
+        this.elementForProp("divWordEntry_iconizer").hide();
+    }
 }

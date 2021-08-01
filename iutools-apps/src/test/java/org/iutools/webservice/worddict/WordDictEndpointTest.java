@@ -35,10 +35,12 @@ public class WordDictEndpointTest extends EndpointTest {
 			.syllabicWordIs("ᐃᓄᒃᓱᒃ")
 			.definitionEquals(null)
 			.decompositionIs("inuksuk/1n")
-			.bilingualExamplesStartWith(
-				new String[] {"sitiivan <strong>inuksuk</strong>", "Stephen Innuksuk"},
-				new String[] {"lui <strong>inuksuk</strong>", "Louis Inukshuk"})
-//			.possibleTranslationsAre("BLAH")
+			.atLeastNExamples(10)
+			.highlightsAre("en",
+				// Why is this considered a translation of "inuksuk"?
+				"from",
+				"innuksuk", "inukshuk", "inuksuk")
+			.highlightsAre("iu", "inuksuk")
 		;
 	}
 

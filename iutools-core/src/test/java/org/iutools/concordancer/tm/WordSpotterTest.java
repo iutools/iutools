@@ -1,24 +1,30 @@
 package org.iutools.concordancer.tm;
 
 import ca.nrc.testing.AssertObject;
+import ca.nrc.testing.AssertString;
+import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.concordancer.SentencePair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class WordSpotterTest {
 
-	SentencePair pairHello = null;
+	SentencePair pair = null;
+	SentencePair pair_stemmedTokens = null;
+	SentencePair pair_stemmedTokensIU = null;
 
 	Object[][] cases = null;
 
 
 	@BeforeEach
 	public void setUp() {
-		pairHello =
+		pair =
 			new SentencePair(
 				"en", "Hello, beautiful world!",
 				"fr", "Bonjour à ce monde magnifique!")
@@ -29,11 +35,36 @@ public class WordSpotterTest {
 					new Integer[]{0,0}, new Integer[]{2,4}, new Integer[]{3,3},
 					new Integer[]{4,5}});
 
+		pair_stemmedTokens =
+			new SentencePair(
+				"en", "Hello, beautiful world!",
+				"fr", "Bonjour à ce monde magnifique!")
+			.setTokenAlignments(
+				"en", new String[] {"Hello", ",", "beautiful", "world", "!"},
+				"fr", new String[] {"Bonj@@", "à", "ce", "mond@@", "magn@@", "!"},
+				new Integer[][] {
+					new Integer[]{0,0}, new Integer[]{2,4}, new Integer[]{3,3},
+					new Integer[]{4,5}});
+
+		pair_stemmedTokensIU =
+			new SentencePair(
+				"en", "Stephen Inukshuk",
+				"iu", "ᓯᑏᕙᓐ ᐃᓄᒃᓱᒃ")
+			.setTokenAlignments(
+				"en", new String[] {"Hello", ",", "beautiful", "world", "!"},
+				"iu", new String[] {"ᓯᑏ@@", "ᕙᓐ", "ᐃᓄ@@", "ᒃᓱᒃ"},
+				new Integer[][] {
+					new Integer[]{0,0}, new Integer[]{1,0}, new Integer[]{1,1},
+					new Integer[]{2,1}, new Integer[] {3,3}, new Integer[] {4,3},
+					new Integer[] {5,2}, new Integer[] {5,3}});
+
 
 		cases = new Object[][] {
-			new Object[] {pairHello, "en", "hello", "Hello", "Bonjour"},
-			new Object[] {pairHello, "fr", "bonjour", "Bonjour", "Hello"},
-			new Object[] {pairHello, "fr", "monde magnifique", "monde magnifique", "beautiful world"},
+			new Object[] {pair, "en", "hello", "Hello", "Bonjour"},
+			new Object[] {pair, "fr", "bonjour", "Bonjour", "Hello"},
+			new Object[] {pair, "fr", "monde magnifique", "monde magnifique", "beautiful world"},
+			new Object[] {pair_stemmedTokens, "en", "hello", "Hello", "Bonjour"},
+			new Object[] {pair_stemmedTokens, "fr", "bonjour", "Bonjour", "Hello"},
 			};
 	}
 
@@ -78,7 +109,7 @@ public class WordSpotterTest {
 		//
 		String tagName = "equiv";
 		Map<String,String> highlighted  =
-			spotter.higlight("en", enWord, tagName);
+			spotter.highlight("en", enWord, tagName);
 		for (String lang: new String[] {"en", "fr"}) {
 			// This returns the text in one language, with the word or its
 			// equivalent highlighted with html-ish tags <equiv></equiv>
@@ -92,16 +123,18 @@ public class WordSpotterTest {
 
 	@Test
 	public void test__spot__SeveralCases() throws Exception {
-		String focusOnCase = null;
-//		focusOnCase = "fr-monde magnifique";
+		Integer focusOnCase = null;
+//		focusOnCase = 2;
 
+		int caseNum = -1;
 		for (Object[] aCase: cases) {
+			caseNum++;
 			SentencePair pair = (SentencePair) aCase[0];
 			String l1 = (String) aCase[1];
 			String l1Expr = (String) aCase[2];
 			String l2 = pair.otherLangThan(l1);
-			String caseID = l1 + "-" + l1Expr;
-			if (focusOnCase != null && !focusOnCase.equals(caseID)) {
+			String caseID = "#"+caseNum+": "+l1 + "-" + l1Expr;
+			if (focusOnCase != null && !focusOnCase.equals(caseNum)) {
 				continue;
 			}
 			String expL1Highlights = (String) aCase[3];
@@ -128,7 +161,7 @@ public class WordSpotterTest {
 	@Test
 	public void test__higlight__SeveralCases() throws Exception {
 		String focusOnCase = null;
-//		focusOnCase = "fr-monde magnifique";
+//		focusOnCase = "fr-bonjour";
 
 		for (Object[] aCase: cases) {
 			SentencePair pair = (SentencePair) aCase[0];
@@ -154,7 +187,7 @@ public class WordSpotterTest {
 	@Test
 	public void test__tokensMatching__VariousCases() throws Exception {
 		String focusOnCase = null;
-//		focusOnCase = "monde magnifique";
+//		focusOnCase = "beautiful world";
 
 		Object[][] cases = new Object[][] {
 			new Object[] {
@@ -183,7 +216,7 @@ public class WordSpotterTest {
 				continue;
 			}
 			int[] expTokens = (int[])aCase[2];
-			WordSpotter spotter = new WordSpotter(pairHello);
+			WordSpotter spotter = new WordSpotter(pair);
 			int[] gotTokens = spotter.tokensMatchingText(lang, text);
 			AssertObject.assertDeepEquals(
 				"Tokens not as expected for lang="+lang+", text="+text,
@@ -192,6 +225,39 @@ public class WordSpotterTest {
 
 		if (focusOnCase != null) {
 			Assertions.fail("Test only run on one case. Make sure you set focusOnCase=null to run on all tests");
+		}
+	}
+
+	@Test
+	public void test__ensureTagsAreNotInMiddleOfWord__SeveralCases() {
+		Integer focusOnCaseNum = 1;
+		List<Pair<String,String>> cases = new ArrayList<Pair<String,String>>();
+		{
+			cases.add(
+				Pair.of(
+					"H<strong>el</strong>lo, beautiful  <strong>world</strong>",
+					"<strong>Hello</strong> beautiful <strong>world</strong>"
+				)
+			);
+			cases.add(
+				Pair.of(
+					"<strong>Hello</strong>, beautiful world!",
+					"<strong>Hello</strong>, beautiful world!"
+				)
+			);
+		}
+
+		int caseNum = -1;
+		for (Pair<String,String> aCase: cases) {
+			caseNum++;
+			if (focusOnCaseNum != null && focusOnCaseNum != caseNum) {
+				continue;
+			}
+			String gotText =
+				WordSpotter.ensureTagsAreNotInMiddleOfWord(aCase.getLeft(), "strong");
+		AssertString.assertStringEquals(
+			"Fixed tags not as expected for case #"+caseNum,
+			aCase.getRight(), gotText);
 		}
 	}
 

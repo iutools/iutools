@@ -18,7 +18,7 @@ import java.util.List;
  * A basic Translation Memory that uses ElasticSearch
  */
 public class TranslationMemory {
-	public static final String ES_ALIGNMENT_TYPE = "SentencePair";
+	public static final String ES_ALIGNMENT_TYPE = "Alignment";
 
 	public static final String DEFAULT_TM_NAME = "iutools_tm";
 
@@ -118,5 +118,13 @@ public class TranslationMemory {
 		}
 
 		return alignments;
+	}
+
+	public void deleteIndex() throws TranslationMemoryException {
+		try {
+			esClient().deleteIndex();
+		} catch (Exception e) {
+			throw new TranslationMemoryException(e);
+		}
 	}
 }

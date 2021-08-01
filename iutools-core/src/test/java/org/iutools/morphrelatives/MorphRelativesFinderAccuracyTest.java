@@ -50,11 +50,6 @@ public class MorphRelativesFinderAccuracyTest {
 		evaluatePerformance(experiment, testInfo);
 	}
 
-	@Test
-	public void test_TODO2() {
-		Assertions.fail("Make sure that recompile_corpus command will recompute the decomps of all words in the corpus, and dump the new version of the corpus to ituools-data\n");
-	}
-
 	private void evaluatePerformance(RelatedWordsExperiment exp,
 		TestInfo testInfo) throws Exception {
 		evaluatePerformance(exp, (Integer)null, testInfo);
