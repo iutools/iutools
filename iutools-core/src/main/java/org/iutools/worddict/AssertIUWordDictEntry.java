@@ -1,11 +1,7 @@
 package org.iutools.worddict;
 
 import ca.nrc.string.StringUtils;
-import ca.nrc.testing.AssertObject;
-import ca.nrc.testing.AssertSequence;
-import ca.nrc.testing.AssertString;
-import ca.nrc.testing.Asserter;
-import org.apache.commons.lang3.tuple.Pair;
+import ca.nrc.testing.*;
 import org.iutools.linguisticdata.MorphemeHumanReadableDescr;
 import org.iutools.script.TransCoder;
 import org.junit.Assert;
@@ -65,18 +61,15 @@ public class AssertIUWordDictEntry extends Asserter<IUWordDictEntry> {
 		return this;
 	}
 
-	public AssertIUWordDictEntry possibleTranslationsAre(String... expTranslations)
+	public AssertIUWordDictEntry possibleTranslationsAreIn(
+		String lang, String... expTranslationsArr)
 		throws Exception {
-		String[] gotTranslations = new String[entry().enTranslations().size()];
-		int ii = 0;
-		for (Pair<String,Double> scoredTranslation: entry().enTranslations()) {
-			gotTranslations[ii] = scoredTranslation.getLeft();
-			ii++;
-		}
-		AssertObject.assertDeepEquals(
-			baseMessage+"\nList of possible translations was not as expected",
-			expTranslations, gotTranslations
-		);
+		Set<String> gotTranslations = entry().possibleTranslationsIn(lang);
+		Set<String> expTranslations = new HashSet<String>();
+		Collections.addAll(expTranslations, expTranslationsArr);
+		AssertSet.isSubsetOf(
+			baseMessage+"\nList of translations was not a subset of the expected translations",
+			expTranslations, gotTranslations, false);
 		return this;
 	}
 

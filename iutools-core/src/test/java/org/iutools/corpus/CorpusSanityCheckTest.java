@@ -29,9 +29,9 @@ public abstract class CorpusSanityCheckTest {
 		
 		new AssertCompiledCorpus(corpus, "")
 			.totalWordsIs(expTotalWords())
-			.totalOccurencesIs(1475616)
-			.totalWordsWithDecompIs(221207)
-			.totalOccurencesWithDecompIs(1098121)
+			.totalOccurencesIs(1475839)
+			.totalWordsWithDecompIs(221225)
+			.totalOccurencesWithDecompIs(1098344)
 			.totalWordsWithoutDecompsIs(186122)
 			.totalOccurencesWithNoDecompIs(377495)
 			;

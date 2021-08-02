@@ -1,8 +1,8 @@
 package org.iutools.worddict;
 
+import org.apache.log4j.Logger;
 import org.iutools.concordancer.Alignment_ES;
 import org.iutools.concordancer.SentencePair;
-import org.iutools.concordancer.WordAlignmentException;
 import org.iutools.concordancer.tm.TranslationMemory;
 import org.iutools.concordancer.tm.TranslationMemoryException;
 import org.iutools.concordancer.tm.WordSpotter;
@@ -30,6 +30,8 @@ public class IUWordDict {
 	public static int MAX_SENT_PAIRS = 10;
 
 	private CompiledCorpus corpus = null;
+
+	private static final String TAG = "strong";
 
 	// Private constructor.
 	// There should only be one instance of IUWordDict and you should get it
@@ -134,6 +136,7 @@ public class IUWordDict {
 	}
 
 	private void computeTranslationsAndExamples(IUWordDictEntry entry, TransCoder.Script script) throws IUWordDictException {
+		Logger tLogger = Logger.getLogger("org.iutools.worddict.IUWordDict.computeTranslationsAndExamples");
 		try {
 			Set<String> alreadySeenPair = new HashSet<String>();
 			List<Alignment_ES> tmResults =
@@ -141,11 +144,13 @@ public class IUWordDict {
 			sortTMResults(tmResults);
 			int totalPairs = 1;
 			for (Alignment_ES hit: tmResults) {
-				SentencePair bilingualAlignment = hit.sentencePair("iu", "en");
+				SentencePair bilingualAlignment = null;
+				bilingualAlignment = hit.sentencePair("iu", "en");
 				if (bilingualAlignment.hasWordLevel()) {
 					new WordSpotter(bilingualAlignment)
-						.highlight("iu", entry.wordSyllabic, "strong", true);
+						.highlight("iu", entry.wordSyllabic, TAG, true);
 				}
+				tLogger.trace("Processing word="+entry.wordRoman+", pair #"+totalPairs);
 				totalPairs =
 					onNewSentencePair(entry, bilingualAlignment, alreadySeenPair,
 						totalPairs, script);
@@ -153,7 +158,7 @@ public class IUWordDict {
 					break;
 				}
 			}
-		} catch (TranslationMemoryException | WordAlignmentException | WordSpotterException e) {
+		} catch (TranslationMemoryException | WordSpotterException e) {
 			throw new IUWordDictException(e);
 		}
 	}
@@ -179,6 +184,7 @@ public class IUWordDict {
 		SentencePair bilingualAlignment, Set<String> alreadySeenPair,
 		int totalPairs, TransCoder.Script script) throws IUWordDictException {
 
+		Logger tLogger = Logger.getLogger("org.iutools.worddict.IUWordDict.onNewSentencePair");
 		String[] highlightedPair = new String[] {
 			bilingualAlignment.getText("iu"),
 			bilingualAlignment.getText("en"),
@@ -186,7 +192,12 @@ public class IUWordDict {
 		String bothText = String.join(" <--> ", highlightedPair);
 		if (!alreadySeenPair.contains(bothText)) {
 			alreadySeenPair.add(bothText);
-			entry.addBilingualExample("MISC", highlightedPair);
+			String enTranslation = bilingualAlignment.highlightedText("en", TAG);
+			if (enTranslation == null) {
+				entry.addBilingualExample("MISC", highlightedPair);
+			} else {
+				entry.addBilingualExample(enTranslation, highlightedPair);
+			}
 			entry.addBilingualExample("ALL", highlightedPair);
 			totalPairs++;
 		}

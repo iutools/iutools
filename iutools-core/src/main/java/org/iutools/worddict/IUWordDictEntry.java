@@ -8,16 +8,14 @@ import org.iutools.linguisticdata.MorphemeHumanReadableDescr;
 import org.iutools.script.TransCoder;
 import org.iutools.script.TransCoderException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class IUWordDictEntry {
 	public String wordSyllabic;
 	public String wordRoman;
 	public String definition;
 	public List<MorphemeHumanReadableDescr> morphDecomp;
+
 	// Note: We store sentence pairs as String[] instead of Pair<String,String>
 	//   because the latter is jsonified as a dictionary where
 	//
@@ -121,5 +119,18 @@ public class IUWordDictEntry {
 			throw new IUWordDictException(e);
 		}
 		return;
+	}
+
+	public Set<String> possibleTranslationsIn(String lang) throws IUWordDictException {
+		if (!lang.equals("en")) {
+			throw new IUWordDictException(
+				"Translations are currently only available for 'en'");
+		}
+		new HashMap<String,String>();
+		Set<String> translations = examplesForTranslation.keySet();
+		translations.remove("ALL");
+		translations.remove("MISC");
+
+		return translations;
 	}
 }

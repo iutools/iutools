@@ -65,7 +65,7 @@ public class Alignment_ES extends Document {
 			return sent;
 	}
 
-	public SentencePair sentencePair(String l1, String l2) throws WordAlignmentException {
+	public SentencePair sentencePair(String l1, String l2) {
 		SentencePair pair =
 			new SentencePair(
 				l1, sentence4lang(l1),
@@ -79,7 +79,12 @@ public class Alignment_ES extends Document {
 		} else {
 			langPair = l2+"-"+l1;
 			if (walign4langpair.containsKey(langPair)) {
-				walign = walign4langpair.get(langPair).reverseDirection();
+				try {
+					walign = walign4langpair.get(langPair).reverseDirection();
+				} catch (WordAlignmentException e) {
+					// If there is something wrong with the word alignments, just
+					// don't set it.
+				}
 			}
 		}
 

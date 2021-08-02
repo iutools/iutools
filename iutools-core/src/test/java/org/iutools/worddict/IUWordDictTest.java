@@ -17,16 +17,17 @@ public class IUWordDictTest {
 	@BeforeEach
 	public void setUp() {
 		cases = new IUWordDictCase[] {
+
 			new IUWordDictCase("ammuumajuqsiuqtutik")
-				.setDecomp(
-					"ammut/1a", "u/1nv", "ma/1vv", "juq/1vn", "siuq/1nv",
-					"jusik/tv-ger-2d")
-				.setTranslations("clam", "clams")
-				.setMinExamples(5)
-				.setRelatedWords(
-					"ammuumajurniartiit", "ammuumajuqtarnirmut",
-					"ammuumajurniarnirmut", "ammuumajuqtaqtiit",
-					"ammuumajuqtaqtutik"),
+					.setDecomp(
+						"ammut/1a", "u/1nv", "ma/1vv", "juq/1vn", "siuq/1nv",
+						"jusik/tv-ger-2d")
+					.setTranslations("clam", "clams")
+					.setMinExamples(5)
+					.setRelatedWords(
+						"ammuumajurniartiit", "ammuumajuqtarnirmut",
+						"ammuumajurniarnirmut", "ammuumajuqtaqtiit",
+						"ammuumajuqtaqtutik"),
 
 			new IUWordDictCase("ᐊᒻᒨᒪᔪᖅᓯᐅᖅᑐᑎᒃ")
 				.setDecomp(
@@ -44,7 +45,18 @@ public class IUWordDictTest {
 				.setOutOfVocab(true)
 				.setTranslations(new String[] {})
 				.setMinExamples(0)
-				.setRelatedWords(new String[] {})
+				.setRelatedWords(new String[] {}),
+
+			// This word has a sentence pair whose word alignments are
+			// faulty. Make sure it does not crash.
+			new IUWordDictCase("umiarjuakkut")
+				.setRelatedWords(
+					"umiarjuat", "umiarjuaq", "umiarjuarmut", "umiarjuanut",
+					"umiarjualirijikkut")
+				.setMinExamples(10)
+				.setTranslations(new String[] {
+					"sea", "sealift", "ship", "shipping", "shipping season"})
+
 		};
 	}
 
@@ -116,27 +128,42 @@ public class IUWordDictTest {
 	public void test__entry4word__VariousCases()
 		throws Exception {
 
+		String focusOnCase = null;
+//		focusOnCase = "umiarjuakkut";
+
 		for (IUWordDictCase aCase: cases) {
+			if (focusOnCase != null && !focusOnCase.equals(aCase.id())) {
+				continue;
+			}
 			IUWordDictEntry entry =
 				IUWordDict.getInstance().entry4word(aCase.word);
 
 			String[] expIUHighlights = new String[0];
+			String[] expTranslations = new String[0];
+
 			if (!aCase.outOfVocab) {
 				expIUHighlights = new String[] {aCase.word};
+				expTranslations = aCase.expTranslations;
 			}
 
-			AssertIUWordDictEntry asserter = new AssertIUWordDictEntry(entry);
+			AssertIUWordDictEntry asserter =
+				new AssertIUWordDictEntry(entry, "Case: "+aCase.id());
 
 			asserter
 				.definitionEquals(aCase.expDefinition)
 				.relatedWordsAre(aCase.expRelatedWords)
 				.atLeastNExamples(aCase.expMinExamples)
 				.highlightsAre("iu", expIUHighlights)
-				.highlightsAre("en", aCase.expTranslations);
+				.highlightsAre("en", expTranslations)
+				.possibleTranslationsAreIn("en", expTranslations);
 
 			if (aCase.expDecomp != null) {
 				asserter.decompositionIs(aCase.expDecomp);
 			}
+		}
+
+		if (focusOnCase != null) {
+			Assertions.fail("Test run on only one case. Make sure you set focusOnCase=null to run all tests");
 		}
 	}
 
@@ -166,7 +193,7 @@ public class IUWordDictTest {
 		String[] expDecomp = null;
 		String[] expRelatedWords = null;
 		String[] expTranslations = null;
-		Integer expMinExamples = null;
+		Integer expMinExamples = 0;
 		private boolean outOfVocab = false;
 
 		public IUWordDictCase(String _word) {
@@ -201,6 +228,10 @@ public class IUWordDictTest {
 		public IUWordDictCase setOutOfVocab(boolean _outOfVocab) {
 			this.outOfVocab = true;
 			return this;
+		}
+
+		public Object id() {
+			return this.word;
 		}
 	}
 }
