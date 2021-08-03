@@ -2,14 +2,13 @@ package org.iutools.worddict;
 
 import ca.nrc.string.StringUtils;
 import ca.nrc.testing.*;
+import org.iutools.concordancer.tm.WordSpotter;
 import org.iutools.linguisticdata.MorphemeHumanReadableDescr;
 import org.iutools.script.TransCoder;
 import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class AssertIUWordDictEntry extends Asserter<IUWordDictEntry> {
 
@@ -61,15 +60,18 @@ public class AssertIUWordDictEntry extends Asserter<IUWordDictEntry> {
 		return this;
 	}
 
-	public AssertIUWordDictEntry possibleTranslationsAreIn(
+	public AssertIUWordDictEntry possibleTranslationsSubsetOf(
 		String lang, String... expTranslationsArr)
 		throws Exception {
-		Set<String> gotTranslations = entry().possibleTranslationsIn(lang);
-		Set<String> expTranslations = new HashSet<String>();
-		Collections.addAll(expTranslations, expTranslationsArr);
-		AssertSet.isSubsetOf(
-			baseMessage+"\nList of translations was not a subset of the expected translations",
-			expTranslations, gotTranslations, false);
+		if (expTranslationsArr != null) {
+			Set<String> gotTranslations = entry().possibleTranslationsIn(lang);
+			Set<String> expTranslations = new HashSet<String>();
+			Collections.addAll(expTranslations, expTranslationsArr);
+			AssertSet.isSubsetOf(
+			baseMessage + "\nList of translations was not a subset of the expected translations",
+			lowerCaseStringsSet(expTranslations), lowerCaseStringsSet(gotTranslations),
+			false);
+		}
 		return this;
 	}
 
@@ -105,26 +107,34 @@ public class AssertIUWordDictEntry extends Asserter<IUWordDictEntry> {
 		}
 	}
 
-	public AssertIUWordDictEntry highlightsAre(
-		String lang, String... expHighlights) throws Exception {
-		Set<String> gotHighlights = new HashSet<String>();
-		List<String[]> bilingExamples = entry().bilingualExamplesOfUse();
-		List<String> langExamples = new ArrayList<String>();
-		Pattern pattHighlight = Pattern.compile("<strong>([^<]*)</strong>");
-		for (String[] aBilEx: bilingExamples) {
-			String text = aBilEx[0];
-			if (!lang.equals("iu")) {
-				text = aBilEx[1];
+	public AssertIUWordDictEntry highlightsAreSubsetOf(
+		String lang, String... expHighlightsArr) throws Exception {
+		return highlightsAreSubsetOf(lang, (Boolean)null, expHighlightsArr);
+	}
+
+	public AssertIUWordDictEntry highlightsAreSubsetOf(
+		String lang, Boolean ignoreRepetitions, String... expHighlightsArr)
+		throws Exception {
+
+		if (expHighlightsArr != null) {
+			Set<String> expHighlights = new HashSet<String>();
+			Collections.addAll(expHighlights, expHighlightsArr);
+			Set<String> gotHighlights = new HashSet<String>();
+			List<String[]> bilingExamples = entry().bilingualExamplesOfUse();
+			List<String> langExamples = new ArrayList<String>();
+			for (String[] aBilEx : bilingExamples) {
+				String text = aBilEx[0];
+				if (!lang.equals("iu")) {
+					text = aBilEx[1];
+				}
+				String highlighted = WordSpotter.spotHighlight("strong", text, ignoreRepetitions);
+				gotHighlights.add(highlighted);
 			}
-			Matcher matcher = pattHighlight.matcher(text);
-			while (matcher.find()) {
-				gotHighlights.add(matcher.group(1).toLowerCase());
-			}
+			AssertSet.isSubsetOf(
+			baseMessage + "\nList of highlights was not a subset of the expected highlights",
+			lowerCaseStringsSet(expHighlights), lowerCaseStringsSet(gotHighlights),
+				false);
 		}
-		AssertObject.assertDeepEquals(
-			baseMessage+"\nHighglights were not as expected for language "+lang,
-			expHighlights, gotHighlights
-		);
 		return this;
 	}
 
@@ -134,5 +144,13 @@ public class AssertIUWordDictEntry extends Asserter<IUWordDictEntry> {
 			gotHits >= expMinExamples,
 			baseMessage+"\nNumber of hits was too low ("+gotHits+" < "+expMinExamples+")");
 		return this;
+	}
+
+	protected Set<String> lowerCaseStringsSet(Set<String> orig) {
+		Set<String> lowercased = new HashSet<String>();
+		for (String anOrig: orig) {
+			lowercased.add(anOrig.toLowerCase());
+		}
+		return lowercased;
 	}
 }

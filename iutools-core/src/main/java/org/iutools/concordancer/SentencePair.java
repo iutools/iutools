@@ -342,27 +342,7 @@ public class SentencePair {
 	}
 
 	public static String escapeRegexpSpecialChars(String text) {
-		text = text.replaceAll("([\\(\\)\\[\\]\\.\\*\\?\\<\\\\>=])", "\\$1");
+		text = text.replaceAll("([\\(\\)\\[\\]\\.\\*\\?\\<\\\\>=\\+])", "\\$1");
 		return text;
-	}
-
-	public String highlightedText(String lang, String tag) {
-		return highlightedText(lang, tag, (Boolean)null);
-	}
-
-	public String highlightedText(String lang, String tag, Boolean lowercase) {
-		if (lowercase == null) {
-			lowercase = true;
-		}
-		Pattern patt = Pattern.compile("<"+tag+">([^<]*)</"+tag+">");
-		Matcher matcher = patt.matcher(langText.get(lang));
-		String highlighted = null;
-		if (matcher.find()) {
-			highlighted = matcher.group(1);
-		}
-		if (lowercase && highlighted != null) {
-			highlighted = highlighted.toLowerCase();
-		}
-		return highlighted;
 	}
 }

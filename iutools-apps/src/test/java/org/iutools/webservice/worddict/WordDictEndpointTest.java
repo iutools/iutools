@@ -1,12 +1,10 @@
 package org.iutools.webservice.worddict;
 
 import ca.nrc.config.ConfigException;
-import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.spellchecker.SpellCheckerException;
 import org.iutools.webservice.EndpointTest;
 import org.iutools.webservice.ServiceException;
 import org.iutools.worddict.AssertIUWordDictEntry;
-import org.iutools.worddict.IUWordDictEntry;
 import org.junit.jupiter.api.Test;
 
 import java.io.FileNotFoundException;
@@ -36,11 +34,11 @@ public class WordDictEndpointTest extends EndpointTest {
 			.definitionEquals(null)
 			.decompositionIs("inuksuk/1n")
 			.atLeastNExamples(10)
-			.highlightsAre("en",
+			.highlightsAreSubsetOf("en",
 				// Why is this considered a translation of "inuksuk"?
 				"from",
 				"innuksuk", "inukshuk", "inuksuk")
-			.highlightsAre("iu", "inuksuk")
+			.highlightsAreSubsetOf("iu", "inuksuk")
 		;
 	}
 

@@ -16,47 +16,59 @@ public class IUWordDictTest {
 
 	@BeforeEach
 	public void setUp() {
-		cases = new IUWordDictCase[] {
+		cases = new IUWordDictCase[]{
 
-			new IUWordDictCase("ammuumajuqsiuqtutik")
-					.setDecomp(
-						"ammut/1a", "u/1nv", "ma/1vv", "juq/1vn", "siuq/1nv",
-						"jusik/tv-ger-2d")
-					.setTranslations("clam", "clams")
-					.setMinExamples(5)
-					.setRelatedWords(
-						"ammuumajurniartiit", "ammuumajuqtarnirmut",
-						"ammuumajurniarnirmut", "ammuumajuqtaqtiit",
-						"ammuumajuqtaqtutik"),
+		new IUWordDictCase("ammuumajuqsiuqtutik")
+			.setDecomp(
+				"ammut/1a", "u/1nv", "ma/1vv", "juq/1vn", "siuq/1nv",
+				"jusik/tv-ger-2d")
+			.setTranslations("clam", "clams", "clam ... clams")
+			.setMinExamples(3)
+			.setRelatedWords(
+				"ammuumajurniartiit", "ammuumajuqtarnirmut",
+				"ammuumajurniarnirmut", "ammuumajuqtaqtiit",
+				"ammuumajuqtaqtutik"),
 
-			new IUWordDictCase("ᐊᒻᒨᒪᔪᖅᓯᐅᖅᑐᑎᒃ")
-				.setDecomp(
-					"ammut/1a", "u/1nv", "ma/1vv", "juq/1vn", "siuq/1nv",
-					"jusik/tv-ger-2d")
-				.setTranslations("clam", "clams")
-				.setMinExamples(5)
-				.setRelatedWords(
-					"ᐊᒻᒨᒪᔪᕐᓂᐊᕐᑏᑦ", "ᐊᒻᒨᒪᔪᖅᑕᕐᓂᕐᒧᑦ",
-					"ᐊᒻᒨᒪᔪᕐᓂᐊᕐᓂᕐᒧᑦ", "ᐊᒻᒨᒪᔪᖅᑕᖅᑏᑦ",
-					"ᐊᒻᒨᒪᔪᖅᑕᖅᑐᑎᒃ"),
+		new IUWordDictCase("ᐊᒻᒨᒪᔪᖅᓯᐅᖅᑐᑎᒃ")
+			.setDecomp(
+				"ammut/1a", "u/1nv", "ma/1vv", "juq/1vn", "siuq/1nv",
+				"jusik/tv-ger-2d")
+			.setTranslations("clam", "clams", "clam ... clams")
+			.setMinExamples(3)
+			.setRelatedWords(
+				"ᐊᒻᒨᒪᔪᕐᓂᐊᕐᑏᑦ", "ᐊᒻᒨᒪᔪᖅᑕᕐᓂᕐᒧᑦ",
+				"ᐊᒻᒨᒪᔪᕐᓂᐊᕐᓂᕐᒧᑦ", "ᐊᒻᒨᒪᔪᖅᑕᖅᑏᑦ",
+				"ᐊᒻᒨᒪᔪᖅᑕᖅᑐᑎᒃ"),
 
-			// This is an out of vocabulary word
-			new IUWordDictCase("inuksssuk")
-				.setOutOfVocab(true)
-				.setTranslations(new String[] {})
-				.setMinExamples(0)
-				.setRelatedWords(new String[] {}),
+		// This is an out of vocabulary word
+		new IUWordDictCase("inuksssuk")
+			.setOutOfVocab(true)
+			.setTranslations(new String[]{})
+			.setMinExamples(0)
+			.setRelatedWords(new String[]{}),
 
-			// This word has a sentence pair whose word alignments are
-			// faulty. Make sure it does not crash.
-			new IUWordDictCase("umiarjuakkut")
-				.setRelatedWords(
-					"umiarjuat", "umiarjuaq", "umiarjuarmut", "umiarjuanut",
-					"umiarjualirijikkut")
-				.setMinExamples(10)
-				.setTranslations(new String[] {
-					"sea", "sealift", "ship", "shipping", "shipping season"})
+		// This word has a sentence pair whose word alignments are
+		// faulty. Make sure it does not crash.
+		new IUWordDictCase("umiarjuakkut")
+			.setRelatedWords(
+				"umiarjuat", "umiarjuaq", "umiarjuarmut", "umiarjuanut",
+				"umiarjualirijikkut")
+			.setMinExamples(5)
+			.setTranslations(new String[]{
+				"sea", "sealift", "ship", "shipping", "shipping season"}),
 
+			new IUWordDictCase("kiugavinnga")
+			.setRelatedWords(
+				"kiujjutit", "kiujjutik", "kiuvan", "kiujjutinga", "kiulugu")
+			.setTranslations(new String[]{
+				"I ... minister", "for answer", "I ... response", "for ... response",
+				"for that answer", "for that response", "for the answer",
+				"for your answer", "I ... minister for answer"}),
+
+		new IUWordDictCase("najugaq")
+			.setRelatedWords(
+				"najugangani", "najugaujumi", "najugaujunut", "najugauvattunut",
+				"najuganga")
 		};
 	}
 
@@ -129,9 +141,14 @@ public class IUWordDictTest {
 		throws Exception {
 
 		String focusOnCase = null;
-//		focusOnCase = "umiarjuakkut";
+//		focusOnCase = "najugaq";
+
+		boolean verbose = false;
 
 		for (IUWordDictCase aCase: cases) {
+			if (verbose) {
+				System.out.println("test__entry4word__VariousCases: case="+aCase.id());
+			}
 			if (focusOnCase != null && !focusOnCase.equals(aCase.id())) {
 				continue;
 			}
@@ -152,10 +169,11 @@ public class IUWordDictTest {
 			asserter
 				.definitionEquals(aCase.expDefinition)
 				.relatedWordsAre(aCase.expRelatedWords)
+				.possibleTranslationsSubsetOf("en", expTranslations)
 				.atLeastNExamples(aCase.expMinExamples)
-				.highlightsAre("iu", expIUHighlights)
-				.highlightsAre("en", expTranslations)
-				.possibleTranslationsAreIn("en", expTranslations);
+				.highlightsAreSubsetOf("iu", true, expIUHighlights)
+				.highlightsAreSubsetOf("en", expTranslations)
+				;
 
 			if (aCase.expDecomp != null) {
 				asserter.decompositionIs(aCase.expDecomp);

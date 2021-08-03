@@ -18,9 +18,9 @@ public class WordSpotterTest {
 	SentencePair pair = null;
 	SentencePair pair_stemmedTokens = null;
 	SentencePair pair_stemmedTokensIU = null;
+	SentencePair pair_tokensContainRegexpSpecialChars = null;
 
 	Object[][] cases = null;
-
 
 	@BeforeEach
 	public void setUp() {
@@ -58,6 +58,16 @@ public class WordSpotterTest {
 					new Integer[]{2,1}, new Integer[] {3,3}, new Integer[] {4,3},
 					new Integer[] {5,2}, new Integer[] {5,3}});
 
+		pair_tokensContainRegexpSpecialChars =
+			new SentencePair(
+				"en", "Hello + world",
+				"fr", "Bonjour + le monde?")
+			.setTokenAlignments(
+				"en", new String[] {"Hello", "+", "world", "?"},
+				"fr", new String[] {"Bonjour", "+", "le", "monde", "?"},
+				new Integer[][] {
+					new Integer[]{0,0}, new Integer[]{1,1}, new Integer[]{2,2},
+					new Integer[]{2,3}, new Integer[] {3,4}});
 
 		cases = new Object[][] {
 			new Object[] {pair, "en", "hello", "Hello", "Bonjour"},
@@ -65,6 +75,7 @@ public class WordSpotterTest {
 			new Object[] {pair, "fr", "monde magnifique", "monde magnifique", "beautiful world"},
 			new Object[] {pair_stemmedTokens, "en", "hello", "Hello", "Bonjour"},
 			new Object[] {pair_stemmedTokens, "fr", "bonjour", "Bonjour", "Hello"},
+			new Object[] {pair_tokensContainRegexpSpecialChars, "en", "hello", "Hello", "Bonjour"}
 			};
 	}
 
@@ -124,7 +135,7 @@ public class WordSpotterTest {
 	@Test
 	public void test__spot__SeveralCases() throws Exception {
 		Integer focusOnCase = null;
-//		focusOnCase = 2;
+//		focusOnCase = 5;
 
 		int caseNum = -1;
 		for (Object[] aCase: cases) {
@@ -207,6 +218,50 @@ public class WordSpotterTest {
 			},
 			new Object[] {
 				"en", "", new int[] {}
+			},
+		};
+		for (Object[] aCase: cases) {
+			String lang = (String)aCase[0];
+			String text = (String)aCase[1];
+			if (focusOnCase != null && !focusOnCase.equals(text)) {
+				continue;
+			}
+			int[] expTokens = (int[])aCase[2];
+			WordSpotter spotter = new WordSpotter(pair);
+			int[] gotTokens = spotter.tokensMatchingText(lang, text);
+			AssertObject.assertDeepEquals(
+				"Tokens not as expected for lang="+lang+", text="+text,
+				expTokens, gotTokens);
+		}
+
+		if (focusOnCase != null) {
+			Assertions.fail("Test only run on one case. Make sure you set focusOnCase=null to run on all tests");
+		}
+	}
+
+	@Test
+	public void test__tokensMatching__PairHasEmptyToken() throws Exception {
+		String focusOnCase = null;
+//		focusOnCase = "beautiful world";
+
+		Object[][] cases = new Object[][] {
+			new Object[] {
+				"en", "beautiful world", new int[] {2, 3}
+			},
+			new Object[] {
+				"en", "hello", new int[] {0}
+			},
+			new Object[] {
+				"en", "should not be found", new int[] {}
+			},
+			new Object[] {
+				"fr", "monde magnifique", new int[] {3, 4}
+			},
+			new Object[] {
+				"en", null, new int[] {}
+			},
+			new Object[] {
+				"en", "", new int[] {}
 			}
 		};
 		for (Object[] aCase: cases) {
@@ -261,9 +316,56 @@ public class WordSpotterTest {
 		}
 	}
 
+	@Test
+	public void test__spotHighlight__SeveralCases() throws Exception {
+		Integer focusOnCase = null;
+//		focusOnCase = 2;
+
+		Object[][] cases = new Object[][] {
+			new Object[] {
+				"<strong>for</strong> the <strong>response</strong>",
+				"for ... response"
+			},
+			new Object[] {
+				"<strong>hello</strong>. I said <strong>hello</strong>",
+				"hello ... hello"
+			},
+			new Object[] {
+				"<strong>hello</strong>. I said <strong>hello</strong>",
+				"hello",
+				true
+			}
+
+		};
+
+		int caseNum = 0;
+		for (Object[] aCase: cases) {
+			if (focusOnCase != null && focusOnCase != caseNum) {
+				continue;
+			}
+			caseNum++;
+			String highlightedText = (String)aCase[0];
+			String expSpotting = (String)aCase[1];
+			Boolean onlyFirstTag = false;
+			if (aCase.length > 2) {
+				onlyFirstTag = (Boolean)aCase[2];
+			}
+			String gotSpotting =
+				WordSpotter.spotHighlight("strong", highlightedText, onlyFirstTag);
+			AssertString.assertStringEquals(
+				"Spotting was not as expected for case #"+caseNum+": "+highlightedText,
+				expSpotting, gotSpotting
+			);
+
+		}
+
+		if (focusOnCase != null) {
+			Assertions.fail("Test run only on one case. Set focusOnCase=null and rerun the tests on all cases");
+		}
+	}
+
 	//////////////////////////////////
 	// TEST HELPERS
 	//////////////////////////////////
-
 
 }

@@ -192,10 +192,13 @@ public class IUWordDict {
 		String bothText = String.join(" <--> ", highlightedPair);
 		if (!alreadySeenPair.contains(bothText)) {
 			alreadySeenPair.add(bothText);
-			String enTranslation = bilingualAlignment.highlightedText("en", TAG);
+			String enTranslation = WordSpotter.spotHighlight(
+				TAG, bilingualAlignment.langText.get("en"));
 			if (enTranslation == null) {
 				entry.addBilingualExample("MISC", highlightedPair);
 			} else {
+				tLogger.trace("Adding example for translation of word='"+entry.wordRoman+"''" +
+				", translation='"+enTranslation+"'");
 				entry.addBilingualExample(enTranslation, highlightedPair);
 			}
 			entry.addBilingualExample("ALL", highlightedPair);

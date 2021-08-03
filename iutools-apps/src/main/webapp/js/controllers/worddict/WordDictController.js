@@ -100,12 +100,41 @@ class WordDictController extends IUToolsController {
 		this.hideSpinningWheel("divWordEntry_message");
 		
 		var html = "";
+		html += this.htmlTranslations(results);
 		html += this.htmlRelatedWords(results);
         html = this.htmlMorphologicalAnalyses(results, html);
 		html = this.htmlAlignments(results, html);
 		this.elementForProp("divWordEntry_contents").html(html);
 		this.attachWordLookupListeners();
     }
+
+    htmlTranslations(results) {
+        var tracer = Debug.getTraceLogger('WordDictController.htmlTranslations');
+        tracer.trace("results.entry="+JSON.stringify(results.entry));
+        var html = "<h3>English Translations</h3>\n";
+        var translations = Object.keys(results.entry.examplesForTranslation);
+        tracer.trace("--** translations="+JSON.stringify(translations));
+
+        var totalDisplayed = 0;
+        for (var ii=0; ii < translations.length; ii++) {
+            var word = translations[ii];
+            if (word === "ALL" || word === "MISC") {
+                continue;
+            }
+            if (totalDisplayed > 0) {
+                html += ", ";
+            }
+            html += word;
+            totalDisplayed++;
+        }
+        if (totalDisplayed == 0) {
+            html += "none";
+        }
+        html += "<br/>\n";
+
+        return html;
+    }
+
 
     htmlRelatedWords(results) {
         var tracer = Debug.getTraceLogger('WordDictController.htmlRelatedWords');

@@ -46,14 +46,38 @@ public class WordSpotter {
 		return spottings;
 	}
 
-	private String spotHighlight(String tagName, String text) {
+	public static String spotHighlight(String tagName, String text) {
+		return spotHighlight(tagName, text, (Boolean)null);
+	}
+
+	public static String spotHighlight(String tagName, 
+		String text, Boolean ignoreRepetitions) {
+		
+		if (ignoreRepetitions == null) {
+			ignoreRepetitions = false;
+		}
+		Logger tLogger = Logger.getLogger("org.iutools.concordancer.tm.WordSpotter.spotHighlight");
+		tLogger.trace("text="+text);
 		Matcher matcher =
 			Pattern.compile("<"+tagName+">([^<]*)"+"</"+tagName+">")
 				.matcher(text);
 		String spotted = null;
-		if (matcher.find()) {
-			spotted = matcher.group(1);
+		Set<String> alreadySeen = new HashSet<String>();
+		while (matcher.find()) {
+			String aHighglight = matcher.group(1);
+			if (ignoreRepetitions && alreadySeen.contains(aHighglight)) {
+				continue;
+			}
+			alreadySeen.add(aHighglight);
+			if (spotted != null) {
+				spotted += " ... ";
+			} else {
+				spotted = "";
+			}
+			spotted += aHighglight;
 		}
+
+		tLogger.trace("returning spotted='"+spotted+"'");
 
 		return spotted;
 	}
@@ -76,6 +100,7 @@ public class WordSpotter {
 
 	public Map<String, String> highlight(String l1, String l1Expr,
 		String tagName, Boolean higlightInPlace) throws WordSpotterException {
+		Logger tLogger = Logger.getLogger("org.iutools.concordancer.tm.WordSpotter.highlight");
 		Map<String,String> highglighted = new HashMap<String,String>();
 		if (higlightInPlace == null) {
 			higlightInPlace = false;
@@ -106,6 +131,10 @@ public class WordSpotter {
 				}
 			}
 		}
+
+		tLogger.trace("Highlighted text"+
+			"\n   "+l1+": "+highglighted.get(l1)+
+			"\n   "+l2+": "+highglighted.get(l2));
 
 		if (higlightInPlace) {
 			String l1HighlightedText = highglighted.get(l1);
@@ -202,7 +231,11 @@ public class WordSpotter {
 
 	public int[] tokensMatchingText(String sourceLang, String text) {
 		Logger tLogger = Logger.getLogger("org.iutools.concordancer.tm.WordSpotter.tokensMatchingText");
-		tLogger.trace("sourceLang="+sourceLang+", text="+text);
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("sourceLang="+sourceLang+", text="+text);
+			tLogger.trace("this.pair="+PrettyPrinter.print(this.pair));
+		}
+
 		int[] tokens = new int[0];
 		if (sourceLang != null && text != null) {
 			text = SentencePair.canonizeText(text);

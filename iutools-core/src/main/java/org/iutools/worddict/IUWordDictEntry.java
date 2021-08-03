@@ -1,6 +1,7 @@
 package org.iutools.worddict;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.Logger;
 import org.iutools.linguisticdata.LinguisticData;
 import org.iutools.linguisticdata.Morpheme;
 import org.iutools.linguisticdata.MorphemeException;
@@ -76,6 +77,8 @@ public class IUWordDictEntry {
 
 	public IUWordDictEntry addBilingualExample(
 		String translation, String[] example) {
+		Logger tLogger = Logger.getLogger("org.iutools.worddict.IUWordDictEntry.addBilingualExample");
+		tLogger.trace("translation='"+translation+"'");
 		if (!examplesForTranslation.containsKey(translation)) {
 			examplesForTranslation.put(
 				translation, new ArrayList<String[]>());
@@ -85,7 +88,11 @@ public class IUWordDictEntry {
 	}
 
 	public List<String[]> bilingualExamplesOfUse() {
-		return bilingualExamplesOfUse("ALL");
+		List<String[]> allExamples = new ArrayList<String[]>();
+		for (String translation: examplesForTranslation.keySet()) {
+			allExamples.addAll(examplesForTranslation.get(translation));
+		}
+		return allExamples;
 	}
 
 	public List<String[]> bilingualExamplesOfUse(String translation) {
