@@ -38,6 +38,20 @@ public class TransCoder {
     Hashtable conversionHash;
     String dotCodes = null;
 
+	public static String inOtherScript(String text) throws TransCoderException {
+		Script script = textScript(text);
+		Script otherScript = otherScriptThan(script);
+		return ensureScript(otherScript, text);
+	}
+
+	private static Script otherScriptThan(Script script) {
+		Script otherScript = Script.SYLLABIC;
+		if (script == Script.SYLLABIC) {
+			otherScript = Script.ROMAN;
+		}
+		return otherScript;
+	}
+
 	public static enum Script {SYLLABIC, ROMAN, MIXED};
     
     /* 

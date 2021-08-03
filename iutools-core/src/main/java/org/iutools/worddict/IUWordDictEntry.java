@@ -16,6 +16,9 @@ public class IUWordDictEntry {
 		DEFINITION, BILINGUAL_EXAMPLES, TRANSLATIONS, DECOMP, RELATED_WORDS
 	}
 
+	public String word = null;
+	public String wordInOtherScript = null;
+
 	public String wordSyllabic;
 	public String wordRoman;
 	public String definition;
@@ -53,8 +56,10 @@ public class IUWordDictEntry {
 
 	private void init_IUWordDictEntry(String _word) throws IUWordDictException {
 		try {
+			this.word = _word;
+			this.wordInOtherScript = TransCoder.inOtherScript(_word);
 			this.wordSyllabic =
-			TransCoder.ensureScript(TransCoder.Script.SYLLABIC, _word);
+				TransCoder.ensureScript(TransCoder.Script.SYLLABIC, _word);
 		} catch (TransCoderException e) {
 			throw new IUWordDictException(e);
 		}

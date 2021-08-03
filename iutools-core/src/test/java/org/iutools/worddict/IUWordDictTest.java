@@ -167,6 +167,7 @@ public class IUWordDictTest {
 				new AssertIUWordDictEntry(entry, "Case: "+aCase.id());
 
 			asserter
+				.isForWord(aCase.word)
 				.definitionEquals(aCase.expDefinition)
 				.relatedWordsAre(aCase.expRelatedWords)
 				.possibleTranslationsSubsetOf("en", expTranslations)

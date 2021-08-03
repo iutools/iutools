@@ -39,10 +39,14 @@ class WordDictController extends IUToolsController {
             this.failureWordDictCallback);
 	}
 
-	displayWordBeingLookedUp(word) {
+	displayWordBeingLookedUp(word, wordInOtherScript) {
         this.maximize()
 		var divWord = this.elementForProp("divWordEntry_word");
-		divWord.html("<h2>"+word+"</h2>\n");
+        var wordText = word;
+        if (wordInOtherScript) {
+            wordText += "/"+wordInOtherScript
+        }
+		divWord.html("<h2>"+wordText+"</h2>\n");
 	}
 	
 	invokeWordDictService(jsonRequestData, _successCbk, _failureCbk) {
@@ -98,8 +102,14 @@ class WordDictController extends IUToolsController {
 		var tracer = Debug.getTraceLogger('WordDictController.displayWordEntry');
 		var divWordEntry = this.elementForProp("divWordEntry");
 		this.hideSpinningWheel("divWordEntry_message");
-		
-		var html = "";
+
+		// Change the word being looked up in order to add its
+        // transcoding in the other script
+        // this.displayWordBeingLookedUp()
+		this.displayWordBeingLookedUp(
+		    results.entry.word, results.entry.wordInOtherScript);
+
+        var html = "";
 		html += this.htmlTranslations(results);
 		html += this.htmlRelatedWords(results);
         html = this.htmlMorphologicalAnalyses(results, html);

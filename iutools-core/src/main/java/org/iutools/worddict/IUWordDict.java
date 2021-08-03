@@ -136,7 +136,7 @@ public class IUWordDict {
 				this.entry4word(aWord, false,
 					// For the purpose of sorting, we don't need the
 				   // RELATED_WORDS (which take time because they
-				   // require that we decompose the words)
+				   // require that we decompose a bunch of words
 					Field.DEFINITION, Field.TRANSLATIONS));
 		}
 		Collections.sort(wordEntries,

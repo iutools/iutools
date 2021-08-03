@@ -29,8 +29,7 @@ public class WordDictEndpointTest extends EndpointTest {
 			.raisesNoError();
 
 		new AssertIUWordDictEntry(epResult.entry)
-			.romanWordIs("inuksuk")
-			.syllabicWordIs("ᐃᓄᒃᓱᒃ")
+			.isForWord("inuksuk")
 			.definitionEquals(null)
 			.decompositionIs("inuksuk/1n")
 			.atLeastNExamples(10)
