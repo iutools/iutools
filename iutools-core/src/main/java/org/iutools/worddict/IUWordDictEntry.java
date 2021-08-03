@@ -12,6 +12,10 @@ import org.iutools.script.TransCoderException;
 import java.util.*;
 
 public class IUWordDictEntry {
+	public static enum Field {
+		DEFINITION, BILINGUAL_EXAMPLES, TRANSLATIONS, DECOMP, RELATED_WORDS
+	}
+
 	public String wordSyllabic;
 	public String wordRoman;
 	public String definition;

@@ -29,7 +29,7 @@ class WordDictController extends IUToolsController {
 		this.elementForProp("divWordEntry").show();
 		this.clearWordEntry();
 		this.displayWordBeingLookedUp(word);
-		this.showSpinningWheel("divWordEntry_message","Gisting word");
+		this.showSpinningWheel("divWordEntry_message","Looking up word");
 
 		var data = this.getWordDictRequestData(word);
 		this.logOnServer("GIST_WORD", data);

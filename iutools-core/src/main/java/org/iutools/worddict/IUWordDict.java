@@ -1,5 +1,6 @@
 package org.iutools.worddict;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
 import org.iutools.concordancer.Alignment_ES;
 import org.iutools.concordancer.SentencePair;
@@ -12,6 +13,7 @@ import org.iutools.morphrelatives.MorphRelativesFinder;
 import org.iutools.morphrelatives.MorphRelativesFinderException;
 import org.iutools.morphrelatives.MorphologicalRelative;
 import org.iutools.script.TransCoder;
+import org.iutools.worddict.IUWordDictEntry.*;
 
 import java.util.*;
 
@@ -52,11 +54,28 @@ public class IUWordDict {
 	}
 
 	public IUWordDictEntry entry4word(String word) throws IUWordDictException {
-		return entry4word(word, (Boolean)null);
+		return entry4word(word, (Boolean)null, (Field[])null);
 	}
 
 	public IUWordDictEntry entry4word(String word, Boolean sortRelatedWords)
 		throws IUWordDictException {
+		return entry4word(word, sortRelatedWords, (Field[])null);
+	}
+
+	public IUWordDictEntry entry4word(
+		String word, Field... fieldsToPpulate)
+		throws IUWordDictException {
+		return entry4word(word, (Boolean)null, fieldsToPpulate);
+	}
+
+	public IUWordDictEntry entry4word(String word, Boolean sortRelatedWords,
+		Field... fieldsToPopulate)
+		throws IUWordDictException {
+
+		if (fieldsToPopulate == null) {
+			fieldsToPopulate = Field.values();
+		}
+
 		IUWordDictEntry entry = new IUWordDictEntry(word);
 		TransCoder.Script script = TransCoder.textScript(word);
 		try {
@@ -64,8 +83,13 @@ public class IUWordDict {
 			if (winfo != null) {
 				entry.setDecomp(winfo.topDecomposition());
 			}
-			computeTranslationsAndExamples(entry, script);
-			computeRelatedWords(entry, sortRelatedWords);
+			if (ArrayUtils.contains(fieldsToPopulate, Field.BILINGUAL_EXAMPLES) ||
+				ArrayUtils.contains(fieldsToPopulate, Field.TRANSLATIONS)) {
+				computeTranslationsAndExamples(entry, script);
+			}
+			if (ArrayUtils.contains(fieldsToPopulate, Field.RELATED_WORDS)) {
+				computeRelatedWords(entry, sortRelatedWords);
+			}
 		} catch (CompiledCorpusException e) {
 			throw new IUWordDictException(e);
 		}
@@ -108,9 +132,13 @@ public class IUWordDict {
 	private void sortWordsByEntryComprehensiveness(List<String> words) throws IUWordDictException {
 		List<IUWordDictEntry> wordEntries = new ArrayList<IUWordDictEntry>();
 		for (String aWord: words) {
-			wordEntries.add(this.entry4word(aWord, false));
+			wordEntries.add(
+				this.entry4word(aWord, false,
+					// For the purpose of sorting, we don't need the
+				   // RELATED_WORDS (which take time because they
+				   // require that we decompose the words)
+					Field.DEFINITION, Field.TRANSLATIONS));
 		}
-		int x = 0;
 		Collections.sort(wordEntries,
 			(w1, w2) -> {
 				int answer = 0;
