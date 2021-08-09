@@ -12,6 +12,7 @@ import org.iutools.script.TransCoderException;
 import java.util.*;
 
 public class IUWordDictEntry {
+
 	public static enum Field {
 		DEFINITION, BILINGUAL_EXAMPLES, TRANSLATIONS, DECOMP, RELATED_WORDS
 	}
@@ -149,4 +150,10 @@ public class IUWordDictEntry {
 
 		return translations;
 	}
+
+	public int totalBilingualExamples() {
+		int total = bilingualExamplesOfUse("ALL").size();
+		return total;
+	}
+
 }

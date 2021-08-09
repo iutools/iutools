@@ -182,13 +182,18 @@ public class IUWordDict {
 				totalPairs =
 					onNewSentencePair(entry, bilingualAlignment, alreadySeenPair,
 						totalPairs, script);
-				if (totalPairs > MAX_SENT_PAIRS) {
+				if (enoughBilingualExamples(entry)) {
 					break;
 				}
 			}
 		} catch (TranslationMemoryException | WordSpotterException e) {
 			throw new IUWordDictException(e);
 		}
+	}
+
+	private boolean enoughBilingualExamples(IUWordDictEntry entry) {
+		boolean enough = (entry.totalBilingualExamples() >= MAX_SENT_PAIRS);
+		return enough;
 	}
 
 	private int onNewSentencePair(IUWordDictEntry entry,
