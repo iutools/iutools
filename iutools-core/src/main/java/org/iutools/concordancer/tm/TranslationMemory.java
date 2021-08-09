@@ -112,7 +112,8 @@ public class TranslationMemory {
 		return alignments;
 	}
 
-	private Iterator<Alignment_ES> searchIter(String sourceLang, String sourceExpr, String[] targetLangs) throws TranslationMemoryException {
+	public Iterator<Alignment_ES> searchIter(
+	String sourceLang, String sourceExpr, String... targetLangs) throws TranslationMemoryException {
 		List<Iterator<Alignment_ES>> iterators =
 			new ArrayList<Iterator<Alignment_ES>>();
 		try {

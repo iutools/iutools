@@ -167,13 +167,13 @@ public class IUWordDict {
 		Logger tLogger = Logger.getLogger("org.iutools.worddict.IUWordDict.computeTranslationsAndExamples");
 		try {
 			Set<String> alreadySeenPair = new HashSet<String>();
-			List<Alignment_ES> tmResults =
-				new TranslationMemory().search("iu", entry.wordSyllabic);
-			sortTMResults(tmResults);
+			Iterator<Alignment_ES> alignmentIter =
+				new TranslationMemory().searchIter("iu", entry.wordSyllabic, "en");
 			int totalPairs = 1;
-			for (Alignment_ES hit: tmResults) {
+			while (alignmentIter.hasNext()) {
+				Alignment_ES alignment = alignmentIter.next();
 				SentencePair bilingualAlignment = null;
-				bilingualAlignment = hit.sentencePair("iu", "en");
+				bilingualAlignment = alignment.sentencePair("iu", "en");
 				if (bilingualAlignment.hasWordLevel()) {
 					new WordSpotter(bilingualAlignment)
 						.highlight("iu", entry.wordSyllabic, TAG, true);
@@ -189,23 +189,6 @@ public class IUWordDict {
 		} catch (TranslationMemoryException | WordSpotterException e) {
 			throw new IUWordDictException(e);
 		}
-	}
-
-	private void sortTMResults(List<Alignment_ES> tmResults) {
-		Collections.sort(tmResults, new Comparator<Alignment_ES>(){
-			public int compare(Alignment_ES a1, Alignment_ES a2){
-				int answer = 0;
-				if (a1.hasWordAlignmentForLangPair("iu", "en") &&
-					!a2.hasWordAlignmentForLangPair("iu", "en")) {
-					answer = 11;
-				} else if (a2.hasWordAlignmentForLangPair("iu", "en") &&
-					!a1.hasWordAlignmentForLangPair("iu", "en")) {
-					answer = 1;
-				}
-				return answer;
-			}
-		});
-
 	}
 
 	private int onNewSentencePair(IUWordDictEntry entry,
