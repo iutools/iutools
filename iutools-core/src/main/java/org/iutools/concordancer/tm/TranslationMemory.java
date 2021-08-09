@@ -1,14 +1,16 @@
 package org.iutools.concordancer.tm;
 
-import ca.nrc.dtrc.elasticsearch.DocIterator;
 import ca.nrc.dtrc.elasticsearch.ElasticSearchException;
 import ca.nrc.dtrc.elasticsearch.SearchResults;
 import ca.nrc.dtrc.elasticsearch.StreamlinedClient;
+import ca.nrc.dtrc.elasticsearch.request.Query;
 import ca.nrc.ui.commandline.UserIO;
 import org.apache.commons.collections4.iterators.IteratorChain;
 import org.apache.log4j.Logger;
 import org.iutools.concordancer.Alignment_ES;
 import org.iutools.script.TransCoder;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -87,11 +89,21 @@ public class TranslationMemory {
 
 	public List<Alignment_ES> search(String sourceLang, String sourceExpr,
 		String... targetLangs) throws TranslationMemoryException {
+		Logger tLogger = Logger.getLogger("org.iutools.concordancer.tm.TranslationMemory.search");
 		List<Alignment_ES> alignments = new ArrayList<Alignment_ES>();
 		try {
 			Iterator<Alignment_ES> iter = searchIter(sourceLang,sourceExpr, targetLangs);
 			while (iter.hasNext()) {
-				alignments.add(iter.next());
+				Alignment_ES alignment = iter.next();
+				if (tLogger.isTraceEnabled()) {
+					String hasOrNot = "HAS";
+					if (alignment.walign4langpair == null ||
+						alignment.walign4langpair.isEmpty()) {
+						hasOrNot = "HAS NO";
+					}
+					tLogger.trace("Alignment "+hasOrNot+" word level alignments");
+				}
+				alignments.add(alignment);
 			}
 		} catch (Exception e) {
 			throw new TranslationMemoryException(e);
@@ -114,15 +126,19 @@ public class TranslationMemory {
 				};
 			}
 
-			for (String expr: sourceExprVariants) {
-				String freeformQuery = "sentences."+sourceLang+":\""+expr+"\"";
-				SearchResults<Alignment_ES> searchResult = null;
-				try {
-					searchResult = esClient()
-						.search(freeformQuery, ES_ALIGNMENT_TYPE, new Alignment_ES());
-					iterators.add(searchResult.docIterator());
-				} catch (ElasticSearchException e) {
-					throw new TranslationMemoryException(e);
+			for (boolean withAlignment: new boolean[] {true, false}) {
+				// First look for alignments that have word-level alignments
+				for (String expr: sourceExprVariants) {
+					// Then possibly search for syllabics and roman variants
+					Query query = esQuery(sourceLang, expr, withAlignment);
+					SearchResults<Alignment_ES> searchResult = null;
+					try {
+						searchResult = esClient()
+							.search(query, ES_ALIGNMENT_TYPE, new Alignment_ES());
+						iterators.add(searchResult.docIterator());
+					} catch (ElasticSearchException e) {
+						throw new TranslationMemoryException(e);
+					}
 				}
 			}
 		} catch (Exception e) {
@@ -138,6 +154,33 @@ public class TranslationMemory {
 		}
 
 		return iterator;
+	}
+
+	private Query esQuery(
+		String sourceLang, String expr, boolean withAlignment) {
+
+		String freeformQuery = "sentences." + sourceLang + ":\"" + expr + "\"";
+		JSONArray must = new JSONArray();
+		must.put(
+			new JSONObject().put("query_string",
+				new JSONObject().put("query", freeformQuery))
+		);
+
+		if (withAlignment) {
+			must.put(new JSONObject()
+				.put("exists", new JSONObject()
+					.put("field", "walign4langpair"))
+			);
+		}
+
+		JSONObject jObj = new JSONObject()
+			.put("bool", new JSONObject()
+				.put("must", must)
+			);
+
+		Query query = new Query(jObj);
+
+		return query;
 	}
 
 	public void deleteIndex() throws TranslationMemoryException {
