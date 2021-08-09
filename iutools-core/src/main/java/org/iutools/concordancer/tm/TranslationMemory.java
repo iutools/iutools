@@ -93,31 +93,6 @@ public class TranslationMemory {
 			while (iter.hasNext()) {
 				alignments.add(iter.next());
 			}
-//			String[] sourceExprVariants = new String[]{sourceExpr};
-//			if (sourceLang.equals("iu")) {
-//				// For iu, try the search with both scripts.
-//				// Some of the TMs use roman while others use syllabic
-//				sourceExprVariants = new String[]{
-//				TransCoder.ensureScript(TransCoder.Script.SYLLABIC, sourceExpr),
-//				TransCoder.ensureScript(TransCoder.Script.ROMAN, sourceExpr),
-//				};
-//			}
-//
-//			for (String expr: sourceExprVariants) {
-//				String freeformQuery = "sentences."+sourceLang+":\""+expr+"\"";
-//				SearchResults<Alignment_ES> searchResult = null;
-//				try {
-//					searchResult = esClient()
-//						.search(freeformQuery, ES_ALIGNMENT_TYPE, new Alignment_ES());
-//					for (
-//						DocIterator<Alignment_ES> it = searchResult.docIterator(); it.hasNext(); ) {
-//						Alignment_ES aHit = it.next();
-//						alignments.add(aHit);
-//					}
-//				} catch (ElasticSearchException e) {
-//					throw new TranslationMemoryException(e);
-//				}
-//			}
 		} catch (Exception e) {
 			throw new TranslationMemoryException(e);
 		}
