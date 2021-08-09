@@ -29,7 +29,9 @@ public class IUWordDict {
 	private static final long MAX_WORDS = 20;
 	private static IUWordDict _singleton = null;
 
+	public static int MAX_TRANSLATIONS = 5;
 	public static int MAX_SENT_PAIRS = 10;
+
 
 	private CompiledCorpus corpus = null;
 
@@ -191,8 +193,12 @@ public class IUWordDict {
 		}
 	}
 
-	private boolean enoughBilingualExamples(IUWordDictEntry entry) {
-		boolean enough = (entry.totalBilingualExamples() >= MAX_SENT_PAIRS);
+	private boolean enoughBilingualExamples(IUWordDictEntry entry) throws IUWordDictException {
+		boolean enough =
+			(
+				entry.possibleTranslationsIn("en").size() >= MAX_TRANSLATIONS ||
+				entry.totalBilingualExamples() >= MAX_SENT_PAIRS
+			);
 		return enough;
 	}
 

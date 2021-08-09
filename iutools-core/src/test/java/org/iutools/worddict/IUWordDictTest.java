@@ -141,7 +141,7 @@ public class IUWordDictTest {
 		throws Exception {
 
 		String focusOnCase = null;
-//		focusOnCase = "najugaq";
+//		focusOnCase = "umiarjuakkut";
 
 		boolean verbose = false;
 
