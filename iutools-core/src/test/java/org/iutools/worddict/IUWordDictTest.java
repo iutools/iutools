@@ -25,9 +25,9 @@ public class IUWordDictTest {
 			.setTranslations("clam", "clams", "clam ... clams")
 			.setMinExamples(3)
 			.setRelatedWords(
-				"ammuumajurniartiit", "ammuumajuqtarnirmut",
-				"ammuumajurniarnirmut", "ammuumajuqtaqtiit",
-				"ammuumajuqtaqtutik"),
+				"ammuumajurniartiit", "ammuumajuqtaqtiit",
+				"ammuumajuqtarnirmut", "ammuumajuqtaqtutik",
+				"ammuumajurniarnirmut"),
 
 		new IUWordDictCase("ᐊᒻᒨᒪᔪᖅᓯᐅᖅᑐᑎᒃ")
 			.setDecomp(
@@ -36,9 +36,8 @@ public class IUWordDictTest {
 			.setTranslations("clam", "clams", "clam ... clams")
 			.setMinExamples(3)
 			.setRelatedWords(
-				"ᐊᒻᒨᒪᔪᕐᓂᐊᕐᑏᑦ", "ᐊᒻᒨᒪᔪᖅᑕᕐᓂᕐᒧᑦ",
-				"ᐊᒻᒨᒪᔪᕐᓂᐊᕐᓂᕐᒧᑦ", "ᐊᒻᒨᒪᔪᖅᑕᖅᑏᑦ",
-				"ᐊᒻᒨᒪᔪᖅᑕᖅᑐᑎᒃ"),
+				"ᐊᒻᒨᒪᔪᕐᓂᐊᕐᑏᑦ", "ᐊᒻᒨᒪᔪᖅᑕᖅᑏᑦ", "ᐊᒻᒨᒪᔪᖅᑕᕐᓂᕐᒧᑦ",
+				"ᐊᒻᒨᒪᔪᖅᑕᖅᑐᑎᒃ", "ᐊᒻᒨᒪᔪᕐᓂᐊᕐᓂᕐᒧᑦ"),
 
 		// This is an out of vocabulary word
 		new IUWordDictCase("inuksssuk")
@@ -59,7 +58,7 @@ public class IUWordDictTest {
 
 			new IUWordDictCase("kiugavinnga")
 			.setRelatedWords(
-				"kiujjutit", "kiujjutik", "kiuvan", "kiujjutinga", "kiulugu")
+				"kiuvan", "kiulugu", "kiujjutit", "kiujjutik", "kiujjutinga")
 			.setTranslations(new String[]{
 				"I ... minister", "for answer", "I ... response", "for ... response",
 				"for that answer", "for that response", "for the answer",
@@ -67,8 +66,8 @@ public class IUWordDictTest {
 
 		new IUWordDictCase("najugaq")
 			.setRelatedWords(
-				"najugangani", "najugaujumi", "najugaujunut", "najugauvattunut",
-				"najuganga")
+				"najugangani", "najugaujunut", "najuganga", "najugaujumi",
+				"najugauvattunut")
 		};
 	}
 
@@ -141,7 +140,7 @@ public class IUWordDictTest {
 		throws Exception {
 
 		String focusOnCase = null;
-//		focusOnCase = "umiarjuakkut";
+//		focusOnCase = "ammuumajuqsiuqtutik";
 
 		boolean verbose = false;
 

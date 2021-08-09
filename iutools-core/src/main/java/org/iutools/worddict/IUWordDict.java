@@ -70,7 +70,7 @@ public class IUWordDict {
 		return entry4word(word, (Boolean)null, fieldsToPpulate);
 	}
 
-	public IUWordDictEntry entry4word(String word, Boolean sortRelatedWords,
+	public IUWordDictEntry entry4word(String word, Boolean fullRelatedWordEntries,
 		Field... fieldsToPopulate)
 		throws IUWordDictException {
 
@@ -90,7 +90,7 @@ public class IUWordDict {
 				computeOrigWordTranslationsAndExamples(entry, script);
 			}
 			if (ArrayUtils.contains(fieldsToPopulate, Field.RELATED_WORDS)) {
-				computeRelatedWords(entry, sortRelatedWords);
+				computeRelatedWords(entry, fullRelatedWordEntries);
 			}
 		} catch (CompiledCorpusException e) {
 			throw new IUWordDictException(e);
@@ -101,9 +101,9 @@ public class IUWordDict {
 	}
 
 	private void computeRelatedWords(IUWordDictEntry entry,
-		Boolean sortRelatedWords) throws IUWordDictException {
-		if (sortRelatedWords == null) {
-			sortRelatedWords = true;
+		Boolean fullRelatedWordEntries) throws IUWordDictException {
+		if (fullRelatedWordEntries == null) {
+			fullRelatedWordEntries = true;
 		}
 		try {
 			MorphologicalRelative[] rels =
@@ -113,15 +113,33 @@ public class IUWordDict {
 				relatedWords.add(aRel.getWord());
 			}
 
-			if (sortRelatedWords) {
-				sortWordsByEntryComprehensiveness(relatedWords);
+			if (fullRelatedWordEntries) {
+				List<IUWordDictEntry> relWordEntries = retrieveRelatedWordEntries(relatedWords);
+				relatedWords = sortWordsByEntryComprehensiveness(relWordEntries);
 			}
 
 			entry.relatedWords = relatedWords.toArray(new String[0]);
+
 		} catch (MorphRelativesFinderException e) {
 			throw new IUWordDictException(e);
 		}
 
+	}
+
+	private List<IUWordDictEntry> retrieveRelatedWordEntries(List<String> relatedWords)
+		throws IUWordDictException {
+
+		List<IUWordDictEntry> wordEntries = new ArrayList<IUWordDictEntry>();
+		for (String aWord: relatedWords) {
+			wordEntries.add(
+				this.entry4word(aWord, false,
+					// For the purpose of sorting, we don't need the
+				   // RELATED_WORDS (which take time because they
+				   // require that we decompose a bunch of words
+					Field.DEFINITION, Field.TRANSLATIONS));
+		}
+
+		return wordEntries;
 	}
 
 	/**
@@ -131,23 +149,27 @@ public class IUWordDict {
 	 * @param words
 	 * @return
 	 */
-	private void sortWordsByEntryComprehensiveness(List<String> words) throws IUWordDictException {
-		List<IUWordDictEntry> wordEntries = new ArrayList<IUWordDictEntry>();
-		for (String aWord: words) {
-			wordEntries.add(
-				this.entry4word(aWord, false,
-					// For the purpose of sorting, we don't need the
-				   // RELATED_WORDS (which take time because they
-				   // require that we decompose a bunch of words
-					Field.DEFINITION, Field.TRANSLATIONS));
-		}
+	private List<String> sortWordsByEntryComprehensiveness(
+		List<IUWordDictEntry> wordEntries) throws IUWordDictException {
 		Collections.sort(wordEntries,
 			(w1, w2) -> {
 				int answer = 0;
 
-				int w1examples = w1.bilingualExamplesOfUse().size();
-				int w2examples = w2.bilingualExamplesOfUse().size();
-				answer = - Integer.compare(w1examples, w2examples);
+				if (answer == 0) {
+					boolean w1HasTranslations = w1.origWordTranslations.size() > 0;
+					boolean w2HasTranslations = w2.origWordTranslations.size() > 0;
+					if (w1HasTranslations && ! w2HasTranslations) {
+						answer = -1;
+					} else if (!w1HasTranslations && w2HasTranslations) {
+						answer = 1;
+					}
+				}
+
+				if (answer == 0) {
+					int w1examples = w1.bilingualExamplesOfUse().size();
+					int w2examples = w2.bilingualExamplesOfUse().size();
+					answer = -Integer.compare(w1examples, w2examples);
+				}
 
 				if (answer == 0) {
 					boolean w1HasDecomp = (w1.morphDecomp.size() > 0);
@@ -162,7 +184,12 @@ public class IUWordDict {
 				return answer;
 			});
 
-		return;
+		List<String> sortedWords = new ArrayList<String>();
+		for (IUWordDictEntry anEntry: wordEntries) {
+			sortedWords.add(anEntry.word);
+		}
+
+		return sortedWords;
 	}
 
 	private void computeOrigWordTranslationsAndExamples(
