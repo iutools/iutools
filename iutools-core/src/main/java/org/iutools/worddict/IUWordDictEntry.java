@@ -25,6 +25,9 @@ public class IUWordDictEntry {
 	public String definition;
 	public List<MorphemeHumanReadableDescr> morphDecomp;
 
+	public Set<String> origWordTranslations = new HashSet<String>();
+	public Set<String> relatedWordTranslations = new HashSet<String>();
+
 	// Note: We store sentence pairs as String[] instead of Pair<String,String>
 	//   because the latter is jsonified as a dictionary where
 	//
@@ -86,8 +89,13 @@ public class IUWordDictEntry {
 	}
 
 	public IUWordDictEntry addBilingualExample(
-		String translation, String[] example) {
+		String translation, String[] example, boolean forRelatedWord) {
 		Logger tLogger = Logger.getLogger("org.iutools.worddict.IUWordDictEntry.addBilingualExample");
+		if (forRelatedWord) {
+			this.relatedWordTranslations.add(translation);
+		} else {
+			this.origWordTranslations.add(translation);
+		}
 		tLogger.trace("translation='"+translation+"'");
 		if (!examplesForTranslation.containsKey(translation)) {
 			examplesForTranslation.put(

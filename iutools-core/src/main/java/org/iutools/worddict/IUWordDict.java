@@ -87,7 +87,7 @@ public class IUWordDict {
 			}
 			if (ArrayUtils.contains(fieldsToPopulate, Field.BILINGUAL_EXAMPLES) ||
 				ArrayUtils.contains(fieldsToPopulate, Field.TRANSLATIONS)) {
-				computeTranslationsAndExamples(entry, script);
+				computeOrigWordTranslationsAndExamples(entry, script);
 			}
 			if (ArrayUtils.contains(fieldsToPopulate, Field.RELATED_WORDS)) {
 				computeRelatedWords(entry, sortRelatedWords);
@@ -165,8 +165,26 @@ public class IUWordDict {
 		return;
 	}
 
-	private void computeTranslationsAndExamples(IUWordDictEntry entry, TransCoder.Script script) throws IUWordDictException {
+	private void computeOrigWordTranslationsAndExamples(
+		IUWordDictEntry entry, TransCoder.Script script) throws IUWordDictException {
 		Logger tLogger = Logger.getLogger("org.iutools.worddict.IUWordDict.computeTranslationsAndExamples");
+		List<String> justOneWord = new ArrayList<String>();
+		justOneWord.add(entry.word);
+		retrieveTranslationsAndExamples(entry, justOneWord, script);
+	}
+
+	private void retrieveTranslationsAndExamples(
+	IUWordDictEntry entry, List<String> iuWordGroup, TransCoder.Script script) throws IUWordDictException {
+		Logger tLogger = Logger.getLogger("org.iutools.worddict.IUWordDict.retrieveTranslationsAndExamples");
+		boolean isForRelatedWords = true;
+		if (iuWordGroup.size() == 1) {
+			String singleWord = iuWordGroup.get(0);
+			if (singleWord.equals(entry.word) ||
+				singleWord.equals(entry.wordInOtherScript)) {
+				isForRelatedWords = false;
+			}
+		}
+
 		try {
 			Set<String> alreadySeenPair = new HashSet<String>();
 			Iterator<Alignment_ES> alignmentIter =
@@ -183,12 +201,12 @@ public class IUWordDict {
 				tLogger.trace("Processing word="+entry.wordRoman+", pair #"+totalPairs);
 				totalPairs =
 					onNewSentencePair(entry, bilingualAlignment, alreadySeenPair,
-						totalPairs, script);
+						totalPairs, script, isForRelatedWords);
 				if (enoughBilingualExamples(entry)) {
 					break;
 				}
 			}
-		} catch (TranslationMemoryException | WordSpotterException e) {
+		} catch (TranslationMemoryException | WordSpotterException | IUWordDictException e) {
 			throw new IUWordDictException(e);
 		}
 	}
@@ -204,7 +222,7 @@ public class IUWordDict {
 
 	private int onNewSentencePair(IUWordDictEntry entry,
 		SentencePair bilingualAlignment, Set<String> alreadySeenPair,
-		int totalPairs, TransCoder.Script script) throws IUWordDictException {
+		int totalPairs, TransCoder.Script script, boolean forRelatedWord) throws IUWordDictException {
 
 		Logger tLogger = Logger.getLogger("org.iutools.worddict.IUWordDict.onNewSentencePair");
 		String[] highlightedPair = new String[] {
@@ -217,13 +235,13 @@ public class IUWordDict {
 			String enTranslation = WordSpotter.spotHighlight(
 				TAG, bilingualAlignment.langText.get("en"));
 			if (enTranslation == null) {
-				entry.addBilingualExample("MISC", highlightedPair);
+				entry.addBilingualExample("MISC", highlightedPair, forRelatedWord);
 			} else {
 				tLogger.trace("Adding example for translation of word='"+entry.wordRoman+"''" +
 				", translation='"+enTranslation+"'");
-				entry.addBilingualExample(enTranslation, highlightedPair);
+				entry.addBilingualExample(enTranslation, highlightedPair, forRelatedWord);
 			}
-			entry.addBilingualExample("ALL", highlightedPair);
+			entry.addBilingualExample("ALL", highlightedPair, forRelatedWord);
 			totalPairs++;
 		}
  		return totalPairs;
