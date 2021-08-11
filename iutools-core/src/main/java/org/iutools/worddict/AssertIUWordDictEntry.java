@@ -90,8 +90,8 @@ public class AssertIUWordDictEntry extends Asserter<IUWordDictEntry> {
 			);
 
 		String examples = "";
-		if (entry.examplesForTranslation != null) {
-			List<String[]> iuExamples = entry.examplesForTranslation.get("iu");
+		if (entry.examplesForOrigWordTranslation != null) {
+			List<String[]> iuExamples = entry.examplesForOrigWordTranslation.get("iu");
 			if (iuExamples != null) {
 				String txtIUExamples = StringUtils.join(iuExamples.iterator(), "\n");
 				gotScript = TransCoder.textScript(txtIUExamples);
@@ -124,11 +124,13 @@ public class AssertIUWordDictEntry extends Asserter<IUWordDictEntry> {
 					text = aBilEx[1];
 				}
 				String highlighted = WordSpotter.spotHighlight("strong", text, ignoreRepetitions);
-				gotHighlights.add(highlighted);
+				if (highlighted != null) {
+					gotHighlights.add(highlighted);
+				}
 			}
 			AssertSet.isSubsetOf(
-			baseMessage + "\nList of highlights was not a subset of the expected highlights",
-			lowerCaseStringsSet(expHighlights), lowerCaseStringsSet(gotHighlights),
+				baseMessage + "\nList of highlights was not a subset of the expected highlights",
+				lowerCaseStringsSet(expHighlights), lowerCaseStringsSet(gotHighlights),
 				false);
 		}
 		return this;

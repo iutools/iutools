@@ -50,8 +50,9 @@ public class IUWordDictTest {
 		// faulty. Make sure it does not crash.
 		new IUWordDictCase("umiarjuakkut")
 			.setRelatedWords(
-				"umiarjuat", "umiarjuaq", "umiarjuarmut", "umiarjuanut",
-				"umiarjualirijikkut")
+				"umiarjuat", "umiarjualirijikkut",
+				"umiarjuaq", "umiarjuanut",
+				"umiarjuarmut")
 			.setMinExamples(5)
 			.setOrigWordTranslations(new String[]{
 				"sea", "sealift", "ship", "shipping", "shipping season"}),

@@ -1,5 +1,6 @@
 package org.iutools.worddict;
 
+import ca.nrc.string.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
 import org.iutools.concordancer.Alignment_ES;
@@ -130,8 +131,10 @@ public class IUWordDict {
 	private void collectRelatedWordTranslations(
 		IUWordDictEntry origWordEntry, List<IUWordDictEntry> relWordEntries) throws IUWordDictException {
 
+		Logger tLogger = Logger.getLogger("org.iutools.worddict.IUWordDict.collectRelatedWordTranslations");
+		tLogger.trace("\n\n\ninvoked");
 		for (IUWordDictEntry entry: relWordEntries) {
-			entry.addRelatedWordTranslations(entry);
+			origWordEntry.addRelatedWordTranslations(entry);
 		}
 		return;
 	}
@@ -211,8 +214,11 @@ public class IUWordDict {
 	}
 
 	private void retrieveTranslationsAndExamples(
-	IUWordDictEntry entry, List<String> iuWordGroup, TransCoder.Script script) throws IUWordDictException {
+		IUWordDictEntry entry, List<String> iuWordGroup, TransCoder.Script script) throws IUWordDictException {
 		Logger tLogger = Logger.getLogger("org.iutools.worddict.IUWordDict.retrieveTranslationsAndExamples");
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("word="+entry.word+"/"+entry.wordInOtherScript+", iuWordGroup="+ StringUtils.join(iuWordGroup.iterator(), ", "));
+		}
 		boolean isForRelatedWords = true;
 		if (iuWordGroup.size() == 1) {
 			String singleWord = iuWordGroup.get(0);
@@ -235,7 +241,10 @@ public class IUWordDict {
 					new WordSpotter(bilingualAlignment)
 						.highlight("iu", entry.wordSyllabic, TAG, true);
 				}
-				tLogger.trace("Processing word="+entry.wordRoman+", pair #"+totalPairs);
+				tLogger.trace(
+					"Processing word="+entry.wordRoman+", pair #"+totalPairs+
+					"=\niu: "+bilingualAlignment.getText("iu")+
+					"\nen: "+bilingualAlignment.getText("en"));
 				totalPairs =
 					onNewSentencePair(entry, bilingualAlignment, alreadySeenPair,
 						totalPairs, script, isForRelatedWords);
