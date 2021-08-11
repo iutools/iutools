@@ -22,7 +22,7 @@ public class IUWordDictTest {
 			.setDecomp(
 				"ammut/1a", "u/1nv", "ma/1vv", "juq/1vn", "siuq/1nv",
 				"jusik/tv-ger-2d")
-			.setTranslations("clam", "clams", "clam ... clams")
+			.setOrigWordTranslations("clam", "clams", "clam ... clams")
 			.setMinExamples(3)
 			.setRelatedWords(
 				"ammuumajurniartiit", "ammuumajuqtaqtiit",
@@ -33,7 +33,7 @@ public class IUWordDictTest {
 			.setDecomp(
 				"ammut/1a", "u/1nv", "ma/1vv", "juq/1vn", "siuq/1nv",
 				"jusik/tv-ger-2d")
-			.setTranslations("clam", "clams", "clam ... clams")
+			.setOrigWordTranslations("clam", "clams", "clam ... clams")
 			.setMinExamples(3)
 			.setRelatedWords(
 				"ᐊᒻᒨᒪᔪᕐᓂᐊᕐᑏᑦ", "ᐊᒻᒨᒪᔪᖅᑕᖅᑏᑦ", "ᐊᒻᒨᒪᔪᖅᑕᕐᓂᕐᒧᑦ",
@@ -42,7 +42,7 @@ public class IUWordDictTest {
 		// This is an out of vocabulary word
 		new IUWordDictCase("inuksssuk")
 			.setOutOfVocab(true)
-			.setTranslations(new String[]{})
+			.setOrigWordTranslations(new String[]{})
 			.setMinExamples(0)
 			.setRelatedWords(new String[]{}),
 
@@ -53,13 +53,13 @@ public class IUWordDictTest {
 				"umiarjuat", "umiarjuaq", "umiarjuarmut", "umiarjuanut",
 				"umiarjualirijikkut")
 			.setMinExamples(5)
-			.setTranslations(new String[]{
+			.setOrigWordTranslations(new String[]{
 				"sea", "sealift", "ship", "shipping", "shipping season"}),
 
 			new IUWordDictCase("kiugavinnga")
 			.setRelatedWords(
 				"kiuvan", "kiulugu", "kiujjutit", "kiujjutik", "kiujjutinga")
-			.setTranslations(new String[]{
+			.setOrigWordTranslations(new String[]{
 				"I ... minister", "for answer", "I ... response", "for ... response",
 				"for that answer", "for that response", "for the answer",
 				"for your answer", "I ... minister for answer"}),
@@ -68,6 +68,13 @@ public class IUWordDictTest {
 			.setRelatedWords(
 				"najugangani", "najugaujunut", "najuganga", "najugaujumi",
 				"najugauvattunut")
+			.setRelWordTranslationsStartWith(new String[][] {
+				new String[] {"Group Home", "najugangani"},
+				new String[] {"If", "najugaujumi"},
+				new String[] {"accommodations", "najugaujumi"},
+				new String[] {"area", "najugaujumi"},
+
+			})
 		};
 	}
 
@@ -142,7 +149,7 @@ public class IUWordDictTest {
 		String focusOnCase = null;
 //		focusOnCase = "ammuumajuqsiuqtutik";
 
-		boolean verbose = false;
+		boolean verbose = true;
 
 		for (IUWordDictCase aCase: cases) {
 			if (verbose) {
@@ -175,6 +182,13 @@ public class IUWordDictTest {
 				.highlightsAreSubsetOf("en", expTranslations)
 				;
 
+			if (
+				(expTranslations == null || expTranslations.length == 0) &&
+				aCase.expRelatedTranslations != null) {
+				asserter.assertRelatedTranslationsAre(aCase.expRelatedTranslations);
+
+			}
+
 			if (aCase.expDecomp != null) {
 				asserter.decompositionIs(aCase.expDecomp);
 			}
@@ -206,13 +220,14 @@ public class IUWordDictTest {
 	//////////////////////////////////
 
 	public static class IUWordDictCase {
-		String word = null;
-		String expDefinition = null;
-		String[] expDecomp = null;
-		String[] expRelatedWords = null;
-		String[] expTranslations = null;
-		Integer expMinExamples = 0;
-		private boolean outOfVocab = false;
+		public String word = null;
+		public String expDefinition = null;
+		public String[] expDecomp = null;
+		public String[] expRelatedWords = null;
+		public String[] expTranslations = null;
+		public Integer expMinExamples = 0;
+		public boolean outOfVocab = false;
+		public String[][] expRelatedTranslations = null;
 
 		public IUWordDictCase(String _word) {
 			this.word = _word;
@@ -233,7 +248,7 @@ public class IUWordDictTest {
 			return this;
 		}
 
-		public IUWordDictCase setTranslations(String... _expTranslations) {
+		public IUWordDictCase setOrigWordTranslations(String... _expTranslations) {
 			expTranslations = _expTranslations;
 			return this;
 		}
@@ -250,6 +265,12 @@ public class IUWordDictTest {
 
 		public Object id() {
 			return this.word;
+		}
+
+		public IUWordDictCase setRelWordTranslationsStartWith(
+			String[][] _expRelatedTranslations) {
+			this.expRelatedTranslations = _expRelatedTranslations;
+			return this;
 		}
 	}
 }

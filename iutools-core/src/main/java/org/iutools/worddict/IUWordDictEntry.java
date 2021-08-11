@@ -1,5 +1,6 @@
 package org.iutools.worddict;
 
+import ca.nrc.datastructure.Cloner;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 import org.iutools.linguisticdata.LinguisticData;
@@ -26,7 +27,8 @@ public class IUWordDictEntry {
 	public List<MorphemeHumanReadableDescr> morphDecomp;
 
 	public Set<String> origWordTranslations = new HashSet<String>();
-	public Set<String> relatedWordTranslations = new HashSet<String>();
+	private Map<String, List<String>> relatedWordTranslationsMap =
+		new HashMap<String,List<String>>();
 
 	// Note: We store sentence pairs as String[] instead of Pair<String,String>
 	//   because the latter is jsonified as a dictionary where
@@ -91,19 +93,30 @@ public class IUWordDictEntry {
 	public IUWordDictEntry addBilingualExample(
 		String translation, String[] example, boolean forRelatedWord) {
 		Logger tLogger = Logger.getLogger("org.iutools.worddict.IUWordDictEntry.addBilingualExample");
+		tLogger.trace("translation="+translation);
 		if (forRelatedWord) {
-			this.relatedWordTranslations.add(translation);
+//			this.relatedWordTranslations.put(translation);
 		} else {
 			this.origWordTranslations.add(translation);
 		}
-		tLogger.trace("translation='"+translation+"'");
-		if (!examplesForTranslation.containsKey(translation)) {
-			examplesForTranslation.put(
-				translation, new ArrayList<String[]>());
+		List<String[]> currentExamples = examplesForTranslation.get(translation);
+		if (currentExamples == null) {
+			currentExamples = new ArrayList<String[]>();
 		}
-		examplesForTranslation.get(translation).add(example);
+		currentExamples.add(example);
+		examplesForTranslation.put(translation, currentExamples);
+		tLogger.trace("returning");
+
 		return this;
 	}
+
+	private void addBilingualExamples(
+		String translation, List<String[]> examples, Boolean forRelatedWord) {
+		for (String[] anExample: examples) {
+			addBilingualExample(translation, anExample, forRelatedWord);
+		}
+	}
+
 
 	public List<String[]> bilingualExamplesOfUse() {
 		List<String[]> allExamples = new ArrayList<String[]>();
@@ -159,9 +172,38 @@ public class IUWordDictEntry {
 		return translations;
 	}
 
+	public void addRelatedWordTranslations(IUWordDictEntry entry) throws IUWordDictException {
+		String relatedWord = entry.word;
+		Set<String> relatedWordTranslations = entry.possibleTranslationsIn("en");
+		for (String translation: relatedWordTranslations) {
+			List<String[]> examplesOfUse = entry.bilingualExamplesOfUse(translation);
+//			this.addBilingualExamples(translation, examplesOfUse, true);
+		}
+	}
+
+	public List<List<String>> relatedWordTranslations() throws IUWordDictException {
+		List<List<String>> translationsInfo = new ArrayList<List<String>>();
+		for (String aTranslation: relatedWordTranslationsMap.keySet()) {
+			List<String> relWordTranslInfo = null;
+			try {
+				relWordTranslInfo = Cloner.clone(relatedWordTranslationsMap.get(aTranslation));
+			} catch (Cloner.ClonerException e) {
+				throw new IUWordDictException(e);
+			}
+			relWordTranslInfo.add(0, aTranslation);
+			translationsInfo.add(relWordTranslInfo);
+		}
+
+		// Sort the related word translations by the number of bilingual examples
+		// they apply to
+
+
+		return translationsInfo;
+	}
+
+
 	public int totalBilingualExamples() {
 		int total = bilingualExamplesOfUse("ALL").size();
 		return total;
 	}
-
 }

@@ -116,6 +116,7 @@ public class IUWordDict {
 			if (fullRelatedWordEntries) {
 				List<IUWordDictEntry> relWordEntries = retrieveRelatedWordEntries(relatedWords);
 				relatedWords = sortWordsByEntryComprehensiveness(relWordEntries);
+				collectRelatedWordTranslations(entry, relWordEntries);
 			}
 
 			entry.relatedWords = relatedWords.toArray(new String[0]);
@@ -124,6 +125,15 @@ public class IUWordDict {
 			throw new IUWordDictException(e);
 		}
 
+	}
+
+	private void collectRelatedWordTranslations(
+		IUWordDictEntry origWordEntry, List<IUWordDictEntry> relWordEntries) throws IUWordDictException {
+
+		for (IUWordDictEntry entry: relWordEntries) {
+			entry.addRelatedWordTranslations(entry);
+		}
+		return;
 	}
 
 	private List<IUWordDictEntry> retrieveRelatedWordEntries(List<String> relatedWords)
