@@ -56,7 +56,7 @@ public class AssertIUWordDictEntry extends Asserter<IUWordDictEntry> {
 		return this;
 	}
 
-	public AssertIUWordDictEntry possibleTranslationsSubsetOf(
+	public AssertIUWordDictEntry possibleTranslationsStartWith(
 		String lang, String... expTranslationsArr)
 		throws Exception {
 		if (expTranslationsArr != null) {

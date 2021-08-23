@@ -174,7 +174,7 @@ public class IUWordDictTest {
 				.isForWord(aCase.word)
 				.definitionEquals(aCase.expDefinition)
 				.relatedWordsAre(aCase.expRelatedWords)
-				.possibleTranslationsSubsetOf("en", expTranslations)
+				.possibleTranslationsStartWith("en", expTranslations)
 				.atLeastNExamples(aCase.expMinExamples)
 				.highlightsAreSubsetOf("iu", true, expIUHighlights)
 				.highlightsAreSubsetOf("en", expTranslations)

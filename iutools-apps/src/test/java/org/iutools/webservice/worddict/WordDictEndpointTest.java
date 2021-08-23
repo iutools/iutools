@@ -34,9 +34,10 @@ public class WordDictEndpointTest extends EndpointTest {
 			.decompositionIs("inuksuk/1n")
 			.atLeastNExamples(10)
 			.highlightsAreSubsetOf("en",
-				// Why is this considered a translation of "inuksuk"?
-				"from",
-				"innuksuk", "inukshuk", "inuksuk")
+				"innuksuk", "inukshuk", "inuksuk",
+				// Why are these considered a translations of "inuksuk"?
+				"from", "at ... at", "held at"
+			)
 			.highlightsAreSubsetOf("iu", "inuksuk")
 		;
 	}
