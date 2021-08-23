@@ -19,6 +19,7 @@ public class WordSpotterTest {
 	SentencePair pair_stemmedTokens = null;
 	SentencePair pair_stemmedTokensIU = null;
 	SentencePair pair_tokensContainRegexpSpecialChars = null;
+	SentencePair pair_enTokenSplitInTwo = null;
 
 	Object[][] cases = null;
 
@@ -60,7 +61,7 @@ public class WordSpotterTest {
 
 		pair_tokensContainRegexpSpecialChars =
 			new SentencePair(
-				"en", "Hello + world",
+				"en", "Hello + world?",
 				"fr", "Bonjour + le monde?")
 			.setTokenAlignments(
 				"en", new String[] {"Hello", "+", "world", "?"},
@@ -69,13 +70,42 @@ public class WordSpotterTest {
 					new Integer[]{0,0}, new Integer[]{1,1}, new Integer[]{2,2},
 					new Integer[]{2,3}, new Integer[] {3,4}});
 
+		pair_enTokenSplitInTwo = new SentencePair(
+			"en", "At this point in time I do not know of any person that has a commercial licence for clam diving.",
+			"iu", "ᒫᓐᓇᐅᔪᖅ ᖃᐅᔨᒪᙱᓚᖓ ᑮᓇᐅᔭᓕᐅᕋᓱᐊᕐᓂᕐᒧᑦ ᓚᐃᓴᖃᕐᒪᖔᖅ ᐊᖅᑲᐅᒪᖃᑦᑕᖅᑐᓄᑦ ᐊᒻᒨᒪᔪᖅᓯᐅᖅᑐᑎᒃ.")
+			.setTokenAlignments(
+				"en", new String[] {
+					"at", "this", "point", "in", "time", "i", "do", "not", "know",
+					"of", "any", "person", "that", "has", "a", "commercial",
+					"licen@@", "ce", "for", "cl@@", "am", "di@@", "ving", "."},
+				"iu", new String[] {
+					"ᒫᓐᓇᐅᔪᖅ", "ᖃᐅᔨᒪ@@", "ᙱᓚᖓ", "ᑮᓇᐅᔭᓕᐅ@@", "ᕋᓱᐊᕐᓂᕐᒧᑦ", "ᓚᐃᓴ@@",
+					"ᖃ@@", "ᕐᒪᖔᖅ", "ᐊ@@", "ᖅᑲ@@", "ᐅᒪ@@", "ᖃᑦᑕᖅᑐᓄᑦ", "ᐊᒻ@@", "ᒨ@@",
+					"ᒪ@@", "ᔪ@@", "ᖅᓯᐅ@@", "ᖅᑐᑎᒃ", "."},
+				new Integer[][] {
+					new Integer[] {0,0}, new Integer[] {1,0}, new Integer[] {2,0},
+					new Integer[] {3,0}, new Integer[] {4,0}, new Integer[] {5,1},
+					new Integer[] {6,2}, new Integer[] {7,2}, new Integer[] {8,1},
+					new Integer[] {9,1}, new Integer[] {10,2}, new Integer[] {11,6},
+					new Integer[] {12,6}, new Integer[] {13,6}, new Integer[] {14,6},
+					new Integer[] {15,3}, new Integer[] {15,4}, new Integer[] {16,5},
+					new Integer[] {17,5}, new Integer[] {17,6}, new Integer[] {18,7},
+					new Integer[] {18,11}, new Integer[] {19,12}, new Integer[] {19,13},
+					new Integer[] {20,12}, new Integer[] {20,14}, new Integer[] {21,8},
+					new Integer[] {21,12}, new Integer[] {21,15}, new Integer[] {21,16},
+					new Integer[] {22,9}, new Integer[] {22,10}, new Integer[] {22,11},
+					new Integer[] {22,17}, new Integer[] {23,18}
+				});
+
+
 		cases = new Object[][] {
 			new Object[] {pair, "en", "hello", "Hello", "Bonjour"},
 			new Object[] {pair, "fr", "bonjour", "Bonjour", "Hello"},
 			new Object[] {pair, "fr", "monde magnifique", "monde magnifique", "beautiful world"},
 			new Object[] {pair_stemmedTokens, "en", "hello", "Hello", "Bonjour"},
 			new Object[] {pair_stemmedTokens, "fr", "bonjour", "Bonjour", "Hello"},
-			new Object[] {pair_tokensContainRegexpSpecialChars, "en", "hello", "Hello", "Bonjour"}
+			new Object[] {pair_tokensContainRegexpSpecialChars, "en", "hello", "Hello", "Bonjour"},
+			new Object[] {pair_enTokenSplitInTwo, "en", "clam", "clam", "ᐊᒻᒨᒪᔪᖅᓯᐅᖅᑐᑎᒃ"}
 			};
 	}
 
@@ -171,22 +201,28 @@ public class WordSpotterTest {
 
 	@Test
 	public void test__higlight__SeveralCases() throws Exception {
-		String focusOnCase = null;
-//		focusOnCase = "fr-bonjour";
+		Integer focusOnCase = null;
+//		focusOnCase = 6;
 
+		boolean verbose = true;
+
+		int caseNum = -1;
 		for (Object[] aCase: cases) {
+			caseNum++;
 			SentencePair pair = (SentencePair) aCase[0];
 			String l1 = (String) aCase[1];
 			String l1Expr = (String) aCase[2];
 			String caseID = l1+"-"+l1Expr;
-			if (focusOnCase != null && !focusOnCase.equals(caseID)) {
+			if (focusOnCase != null && focusOnCase != caseNum) {
 				continue;
+			}
+			if (verbose) {
+				System.out.println("Processing case #"+caseNum+": "+caseID);
 			}
 			String expL1Highlights = (String) aCase[3];
 			String expL2Highlights = (String) aCase[4];
-			String enWord = "hello";
 			WordSpotter spotter = new WordSpotter(pair);
-			new AssertWordSpotter(spotter)
+			new AssertWordSpotter(spotter, "Case #"+caseNum+": "+caseID)
 				.producesHighlights(l1, l1Expr, expL1Highlights, expL2Highlights);
 		}
 
@@ -362,6 +398,48 @@ public class WordSpotterTest {
 		if (focusOnCase != null) {
 			Assertions.fail("Test run only on one case. Set focusOnCase=null and rerun the tests on all cases");
 		}
+	}
+
+	@Test
+	public void test__splitText_SeveralCases() throws Exception {
+		boolean verbose = false;
+
+		Object[][] splitCases = new Object[][] {
+
+			// This sentence contains some chars (+, ?) which have special
+			// meaning in the context of a regexp
+			new Object[] {
+				"Hello + world?",
+				new String[] {"Hello", "+", "world", "?"},
+				new String[] {
+					"Hello", " ", "+", " ", "world", "?"}
+			},
+			new Object[] {
+				"Greetings, old universe",
+				new String[] {"greet@@", "old", "uni@@", "@@rse"},
+				new String[] {"Greet", "ings, ", "old", " ", "uni", "verse"}
+			},
+		};
+
+		int caseNum = -1;
+		for (Object[] aCase: splitCases) {
+			caseNum++;
+			if (verbose) {
+				System.out.println("Processing case#"+caseNum);
+			}
+			String text = (String)aCase[0];
+			String[] tokens = (String[])aCase[1];
+			String[] expElts = (String[])aCase[2];
+
+			List<String> gotElts = WordSpotter.splitText(text, tokens);
+			AssertObject.assertDeepEquals(
+				"Split text was not as expected for case #"+caseNum,
+				expElts, gotElts
+			);
+
+			caseNum++;
+		}
+
 	}
 
 	//////////////////////////////////

@@ -27,12 +27,13 @@ public class IUWordDictEntry {
 	public String definition;
 	public List<MorphemeHumanReadableDescr> morphDecomp;
 
-	public Set<String> origWordTranslations = new HashSet<String>();
-	private Set<String> relatedWordTranslations = new HashSet<String>();
+	public List<String> origWordTranslations = new ArrayList<String>();
+	private List<String> relatedWordTranslations = new ArrayList<String>();
 
 	private Map<String, List<String>> relatedWordTranslationsMap =
 		new HashMap<String,List<String>>();
 
+	private boolean _translationsNeedSorting = true;
 
 	// Note: We store sentence pairs as String[] instead of Pair<String,String>
 	//   because the latter is jsonified as a dictionary where
@@ -103,7 +104,7 @@ public class IUWordDictEntry {
 			tLogger.trace("translation=" + translation + ", forRelatedWord=" + forRelatedWord + ", example=" + String.join(", ", example));
 		}
 
-		Set<String> translations = this.origWordTranslations;
+		List<String> translations = this.origWordTranslations;
 		Map<String, List<String[]>> examplesForTranslation =
 			this.examplesForOrigWordTranslation;
 		if (forRelatedWord) {
@@ -111,7 +112,8 @@ public class IUWordDictEntry {
 			examplesForTranslation = this.examplesForRelWordsTranslation;
 		}
 
-		if (!translation.matches("^(ALL|MISC)$")) {
+		if (!translation.matches("^(ALL|MISC)$") &&
+			!translations.contains(translation)) {
 			translations.add(translation);
 		}
 		List<String[]> currentExamples = examplesForTranslation.get(translation);
@@ -125,6 +127,8 @@ public class IUWordDictEntry {
 			tLogger.trace("upon exit, possible translations="+
 				StringUtils.join(possibleTranslationsIn("en").iterator(), ","));
 		}
+
+		_translationsNeedSorting = true;
 
 		return this;
 	}
@@ -179,11 +183,11 @@ public class IUWordDictEntry {
 		return;
 	}
 
-	public Set<String> possibleTranslationsIn(String lang) throws IUWordDictException {
+	public List<String> possibleTranslationsIn(String lang) throws IUWordDictException {
 		return  possibleTranslationsIn(lang, (Boolean)null);
 	}
 
-	public Set<String> possibleTranslationsIn(String lang, Boolean forRelatedWords) throws IUWordDictException {
+	public List<String> possibleTranslationsIn(String lang, Boolean forRelatedWords) throws IUWordDictException {
 		if (!lang.equals("en")) {
 			throw new IUWordDictException(
 				"Translations are currently only available for 'en'");
@@ -192,7 +196,11 @@ public class IUWordDictEntry {
 			forRelatedWords = false;
 		}
 
-		Set<String> translations = origWordTranslations;
+		if (_translationsNeedSorting) {
+			sortTranslations();
+		}
+
+		List<String> translations = origWordTranslations;
 		if (forRelatedWords) {
 			translations = relatedWordTranslations;
 		}
@@ -200,8 +208,17 @@ public class IUWordDictEntry {
 		return translations;
 	}
 
+	public void sortTranslations() {
+		TranslationComparator comparator =
+			new TranslationComparator(this.examplesForOrigWordTranslation);
+		Collections.sort(this.origWordTranslations, comparator);
+		comparator =
+			new TranslationComparator(this.examplesForRelWordsTranslation);
+		Collections.sort(this.relatedWordTranslations, comparator);
+	}
+
 	public void addRelatedWordTranslations(IUWordDictEntry entry) throws IUWordDictException {
-		Set<String> relatedWordTranslations = entry.possibleTranslationsIn("en");
+		List<String> relatedWordTranslations = entry.possibleTranslationsIn("en");
 		for (String translation: relatedWordTranslations) {
 			List<String[]> examplesOfUse = entry.bilingualExamplesOfUse(translation);
 			this.addBilingualExamples(translation, examplesOfUse, true);
@@ -232,5 +249,58 @@ public class IUWordDictEntry {
 	public int totalBilingualExamples() throws IUWordDictException {
 		int total = bilingualExamplesOfUse("ALL").size();
 		return total;
+	}
+
+	public static class TranslationComparator implements java.util.Comparator<String> {
+
+		private final Map<String, List<String[]>> _examplesForTranslation;
+
+		public TranslationComparator(
+			Map<String, List<String[]>> _examplesForTranslation) {
+			this._examplesForTranslation = _examplesForTranslation;
+		}
+
+		@Override
+		public int compare(String t1, String t2) {
+			Logger tLogger = Logger.getLogger("org.iutools.worddict.IUWordDictEntry.TranslationComparator.compare");
+			tLogger.trace("t1="+t1+", t2="+t2);
+			List<String[]> t1Examples = _examplesForTranslation.get(t1);
+			int t1NumEx = 0;
+			if (t1Examples != null) {
+				t1NumEx = t1Examples.size();
+			}
+			List<String[]> t2Examples = _examplesForTranslation.get(t2);
+			int t2NumEx = 0;
+			if (t2Examples != null) {
+				t2NumEx = t2Examples.size();
+			}
+			int comp = Integer.compare(t1NumEx, t2NumEx);
+			tLogger.trace("t1NumEx="+t1NumEx+", t2NumEx="+t2NumEx+": comp="+comp);
+			if (comp == 0) {
+				// If there are the same number of examples for both
+				// translations, prefer translations that do not have a "gap"
+				tLogger.trace("Same number of examples; Looking at number of gaps");
+				float t1Gap = Math.signum(t1.indexOf("..."));
+				float t2Gap = Math.signum(t2.indexOf("..."));
+				comp = Float.compare(t1Gap, t2Gap);
+				tLogger.trace("t1Gap="+t1Gap+", t2Gap="+t2Gap+": comp="+comp);
+			}
+
+			if (comp == 0) {
+				// If translations are equivalent in terms of gaps, prefer shorter ones
+				tLogger.trace("Equivalent in terms of gaps; Looking at length");
+				comp = Integer.compare(t1.length(), t2.length());
+			}
+
+			if (comp == 0) {
+				// If all else fails, sort alphabetically
+				tLogger.trace("Same length; Sorting alphabetically");
+				comp = (t1.compareTo(t2));
+				tLogger.trace("t1="+t1+", t2="+t2+": comp="+comp);
+			}
+
+			tLogger.trace("For t1="+t1+", t2="+t2+", returning comp="+comp);
+			return comp;
+		}
 	}
 }

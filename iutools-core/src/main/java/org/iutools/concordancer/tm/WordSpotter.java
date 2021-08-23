@@ -22,6 +22,7 @@ import java.util.regex.Pattern;
 public class WordSpotter {
 
 	SentencePair pair = null;
+	Map<String,List<String>> tokpunct4lang = new HashMap<String,List<String>>();
 
 	// The WordSpotter is still experimental and there may be many error
 	// conditions that have not been tested.
@@ -31,8 +32,55 @@ public class WordSpotter {
 	//
 	protected final static boolean neverRaiseException = true;
 
-	public WordSpotter(SentencePair _pair) {
+	public WordSpotter(SentencePair _pair) throws WordSpotterException {
 		pair = _pair;
+		for (String lang: pair.langs()) {
+			tokpunct4lang.put(lang, splitText(lang));
+		}
+	}
+
+	private List<String> splitText(String lang) throws WordSpotterException {
+		String text = pair.langText.get(lang);
+		String[] tokens = pair.tokens4langLowercased.get(lang);
+		List<String> splitElts = splitText(text, tokens);
+		return splitElts;
+	}
+
+	static List<String> splitText(String text, String[] tokens) throws WordSpotterException {
+		Logger tLogger = Logger.getLogger("org.iutools.concordancer.tm.WordSpotter.splitText");
+
+		List<String> splitElts = new ArrayList<String>();
+		String remainingText = text;
+		for (String token: tokens) {
+			Pattern patt = tokenPattern(token);
+			Matcher matcher = patt.matcher(remainingText);
+			if (!matcher.find()) {
+				String errMess = "Could not find token='"+token+"' in text '"+text+"'";
+				tLogger.trace(errMess);
+				throw new WordSpotterException(errMess);
+			} else {
+				if (matcher.start() > 0) {
+					splitElts.add(remainingText.substring(0, matcher.start()));
+				}
+				splitElts.add(remainingText.substring(matcher.start(), matcher.end()));
+				remainingText = remainingText.substring(matcher.end(), remainingText.length());
+			}
+		}
+
+		return splitElts;
+	}
+
+	private static Pattern tokenPattern(String token) {
+		Logger tLogger = Logger.getLogger("org.iutools.concordancer.SentencePair.tokenPattern");
+		tLogger.trace("token='"+token+"'");
+		token = SentencePair.escapeRegexpSpecialChars(token);
+		String tokenRegex =
+			token.replaceAll("^@@", "[^\\p{Punct}\\s]*?");
+		tokenRegex = tokenRegex.replaceAll("@@$", "");
+		Pattern patt =
+			Pattern.compile(tokenRegex, Pattern.CASE_INSENSITIVE);
+
+		return patt;
 	}
 
 	public Map<String,String> spot(String l1, String l1Word) throws WordSpotterException {
@@ -101,6 +149,9 @@ public class WordSpotter {
 	public Map<String, String> highlight(String l1, String l1Expr,
 		String tagName, Boolean higlightInPlace) throws WordSpotterException {
 		Logger tLogger = Logger.getLogger("org.iutools.concordancer.tm.WordSpotter.highlight");
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("l1=" + l1 + ", l1Expr=" + l1Expr + "pair=, =" + PrettyPrinter.print(pair));
+		}
 		Map<String,String> highglighted = new HashMap<String,String>();
 		if (higlightInPlace == null) {
 			higlightInPlace = false;
@@ -183,10 +234,61 @@ public class WordSpotter {
 		return inText;
 	}
 
+	private String highlightTokens__NEW(String lang,
+	 	int[] tokensToHighlight, String tagName) throws WordSpotterException {
+
+		Logger tLogger = Logger.getLogger("org.iutools.concordancer.tm.WordSpotter.highlightTokens");
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("lang="+lang+", tokensToHighlight="+ PrettyPrinter.print(tokensToHighlight));
+		}
+		String[] allTokens = pair.tokens4lang.get(lang);
+		Pattern pattToHighlight = pattTokensToHighlight(tokensToHighlight, allTokens);
+		String startTag = "<"+tagName+">";
+		String endTag = "</"+tagName+">";
+		List<String> textTokens = this.tokpunct4lang.get(lang);
+		String highlightedText = "";
+		for (String token: textTokens) {
+			String highlightedTok = token;
+			if (pattToHighlight.matcher(token).matches()) {
+				highlightedTok = startTag+highlightedTok+endTag;
+			}
+			highlightedText += highlightedTok;
+		}
+
+		highlightedText = expandHighlights(highlightedText, tagName);
+
+		tLogger.trace("Returning highlightedText="+highlightedText);
+		return highlightedText;
+	}
+
+	private String expandHighlights(String highlightedText, String tagName) {
+		String startTag = "<"+tagName+">";
+		String endTag = "</"+tagName+">";
+		String regex = endTag+"([\\s\\p{Punct}]*)"+startTag;
+		highlightedText = highlightedText.replaceAll(regex, "$1");
+		return highlightedText;
+	}
+
+	private Pattern pattTokensToHighlight(
+		int[] tokensToHighlight, String[] allTokens) {
+		String regex = "";
+		for (int tokenNum: tokensToHighlight) {
+			if (!regex.isEmpty()) {
+				regex += "|";
+			}
+//			regex += SentencePair.escapeRegexpSpecialChars(allTokens[tokenNum]);
+			regex += tokenPattern(allTokens[tokenNum]);
+		}
+		regex = "("+regex+")";
+		return Pattern.compile(regex);
+	}
+
 	private String highlightTokens(String lang,
 	 	int[] tokensToHighlight, String tagName) throws WordSpotterException {
 
 		Logger tLogger = Logger.getLogger("org.iutools.concordancer.tm.WordSpotter.highlightTokens");
+
+		if (1+1 == 2) return highlightTokens__NEW(lang, tokensToHighlight, tagName);
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("lang="+lang+", tokensToHighlight="+ PrettyPrinter.print(tokensToHighlight));
 		}
@@ -200,14 +302,15 @@ public class WordSpotter {
 			tLogger.trace("allTokens="+ PrettyPrinter.print(allTokens));
 		}
 		for (int tokenNum: tokensToHighlight) {
-			tLogger.trace("highlighting token #"+tokenNum);
 			String token = allTokens[tokenNum];
+			tLogger.trace("highlighting token #"+tokenNum+"="+token);
 			Pattern pattToken = SentencePair.stemmedTokensPattern(token);
 			Matcher matcher = pattToken.matcher(remainingText);
 			if (tLogger.isTraceEnabled()) {
 				tLogger.trace("matcher="+matcher.pattern());
 			}
 			if (!matcher.find()) {
+				tLogger.trace("Could not find token '"+token+"' in text: \'"+wholeText);
 				throw new WordSpotterException(
 					"Could not find token '"+token+"' in text: \'"+wholeText );
 			} else {

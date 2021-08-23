@@ -22,22 +22,24 @@ public class IUWordDictTest {
 			.setDecomp(
 				"ammut/1a", "u/1nv", "ma/1vv", "juq/1vn", "siuq/1nv",
 				"jusik/tv-ger-2d")
-			.setOrigWordTranslations("clam", "clams", "clam ... clams")
+			.setOrigWordTranslations(
+				"clam diving", "clam ... clams", "diving ... clams")
 			.setMinExamples(3)
 			.setRelatedWords(
-				"ammuumajurniartiit", "ammuumajuqtaqtiit",
-				"ammuumajuqtarnirmut", "ammuumajuqtaqtutik",
+				"ammuumajurniartiit", "ammuumajuqtarnirmut",
+				"ammuumajuqtaqtiit", "ammuumajuqtaqtutik",
 				"ammuumajurniarnirmut"),
 
 		new IUWordDictCase("ᐊᒻᒨᒪᔪᖅᓯᐅᖅᑐᑎᒃ")
 			.setDecomp(
 				"ammut/1a", "u/1nv", "ma/1vv", "juq/1vn", "siuq/1nv",
 				"jusik/tv-ger-2d")
-			.setOrigWordTranslations("clam", "clams", "clam ... clams")
+			.setOrigWordTranslations(
+				"clam diving", "clam ... clams", "diving ... clams")
 			.setMinExamples(3)
 			.setRelatedWords(
-				"ᐊᒻᒨᒪᔪᕐᓂᐊᕐᑏᑦ", "ᐊᒻᒨᒪᔪᖅᑕᖅᑏᑦ", "ᐊᒻᒨᒪᔪᖅᑕᕐᓂᕐᒧᑦ",
-				"ᐊᒻᒨᒪᔪᖅᑕᖅᑐᑎᒃ", "ᐊᒻᒨᒪᔪᕐᓂᐊᕐᓂᕐᒧᑦ"),
+				"ᐊᒻᒨᒪᔪᕐᓂᐊᕐᑏᑦ", "ᐊᒻᒨᒪᔪᖅᑕᕐᓂᕐᒧᑦ", "ᐊᒻᒨᒪᔪᖅᑕᖅᑏᑦ", "ᐊᒻᒨᒪᔪᖅᑕᖅᑐᑎᒃ",
+				"ᐊᒻᒨᒪᔪᕐᓂᐊᕐᓂᕐᒧᑦ"),
 
 		// This is an out of vocabulary word
 		new IUWordDictCase("inuksssuk")
@@ -50,20 +52,19 @@ public class IUWordDictTest {
 		// faulty. Make sure it does not crash.
 		new IUWordDictCase("umiarjuakkut")
 			.setRelatedWords(
-				"umiarjuat", "umiarjualirijikkut",
-				"umiarjuaq", "umiarjuanut",
-				"umiarjuarmut")
+				"umiarjuanut", "umiarjuat", "umiarjuaq", "umiarjuarmut",
+				"umiarjualirijikkut")
 			.setMinExamples(5)
 			.setOrigWordTranslations(new String[]{
-				"sea", "sealift", "ship", "shipping", "shipping season"}),
+				"sea", "ship", "shipping", "resupply ... dry ... cargo",
+				"sealift arrives ... sealift",}),
 
-			new IUWordDictCase("kiugavinnga")
+		new IUWordDictCase("kiugavinnga")
 			.setRelatedWords(
-				"kiuvan", "kiulugu", "kiujjutit", "kiujjutik", "kiujjutinga")
+				"kiujjutit", "kiujjutik", "kiuvan", "kiujjutinga", "kiulugu")
 			.setOrigWordTranslations(new String[]{
-				"I ... minister", "for answer", "I ... response", "for ... response",
-				"for that answer", "for that response", "for the answer",
-				"for your answer", "I ... minister for answer"}),
+				"response", "for that answer", "for your answer",
+				"for that response", "for ... response"}),
 
 		new IUWordDictCase("najugaq")
 			.setRelatedWords(
@@ -147,16 +148,18 @@ public class IUWordDictTest {
 	public void test__entry4word__VariousCases()
 		throws Exception {
 
-		String focusOnCase = null;
-//		focusOnCase = "ammuumajuqsiuqtutik";
+		Integer focusOnCase = null;
+//		focusOnCase = 5;
 
-		boolean verbose = true;
+		boolean verbose = false;
 
+		int caseNum = -1;
 		for (IUWordDictCase aCase: cases) {
+			caseNum++;
 			if (verbose) {
-				System.out.println("test__entry4word__VariousCases: case="+aCase.id());
+				System.out.println("test__entry4word__VariousCases: case #"+caseNum+": "+aCase.id());
 			}
-			if (focusOnCase != null && !focusOnCase.equals(aCase.id())) {
+			if (focusOnCase != null && focusOnCase != caseNum) {
 				continue;
 			}
 			IUWordDictEntry entry =
@@ -171,7 +174,7 @@ public class IUWordDictTest {
 			}
 
 			AssertIUWordDictEntry asserter =
-				new AssertIUWordDictEntry(entry, "Case: "+aCase.id());
+				new AssertIUWordDictEntry(entry, "Case #"+caseNum+": "+aCase.id());
 
 			asserter
 				.isForWord(aCase.word)

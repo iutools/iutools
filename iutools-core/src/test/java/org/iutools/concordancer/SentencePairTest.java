@@ -1,5 +1,6 @@
 package org.iutools.concordancer;
 
+import ca.nrc.testing.AssertString;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,7 +56,7 @@ public class SentencePairTest {
 		alignment.setMisaligned(false);
 
 		// You can query an alignment for its list of languages
-		Pair<String, String> langs = alignment.langs();
+		Pair<String, String> langs = alignment.langPair();
 
 		// You can get the text of the sentence in a given language
 		String enSent = alignment.getText("en");
@@ -101,5 +102,26 @@ public class SentencePairTest {
 	public void test__stemmedTokensPattern__TextThatContainsParens() {
 		String token = "hell (world";
 		SentencePair.stemmedTokensPattern(token);
+	}
+
+	@Test
+	public void test__escapeRegexpSpecialChars__SeveralCases() {
+		Integer focusOnCase = null;
+
+		String[][] escCases = new String[][] {
+			new String[] {"hello", "hello"},
+			new String[] {"hello+world", "hello\\+world"},
+		};
+
+		int caseNum = -1;
+		for (String[] aCase: escCases) {
+			String orig = aCase[0];
+			String expEscaped = aCase[1];
+			String gotEscaped = SentencePair.escapeRegexpSpecialChars(orig);
+			AssertString.assertStringEquals(
+				"Escaped string not as expected for case#"+caseNum,
+				expEscaped, gotEscaped
+			);
+		}
 	}
 }

@@ -31,7 +31,7 @@ public class IUWordDict {
 	private static IUWordDict _singleton = null;
 
 	public static int MAX_TRANSLATIONS = 5;
-	public static int MAX_SENT_PAIRS = 10;
+	public static int MAX_SENT_PAIRS = 20;
 
 
 	private CompiledCorpus corpus = null;
@@ -97,9 +97,13 @@ public class IUWordDict {
 			throw new IUWordDictException(e);
 		}
 
+		entry.sortTranslations();
+
 		entry.ensureIUScript(TransCoder.textScript(word));
+
 		return entry;
 	}
+
 
 	private void computeRelatedWords(IUWordDictEntry entry,
 		Boolean fullRelatedWordEntries) throws IUWordDictException {
@@ -255,6 +259,8 @@ public class IUWordDict {
 		} catch (TranslationMemoryException | WordSpotterException | IUWordDictException e) {
 			throw new IUWordDictException(e);
 		}
+
+		return;
 	}
 
 	private boolean enoughBilingualExamples(IUWordDictEntry entry) throws IUWordDictException {
@@ -280,6 +286,7 @@ public class IUWordDict {
 			alreadySeenPair.add(bothText);
 			String enTranslation = WordSpotter.spotHighlight(
 				TAG, bilingualAlignment.langText.get("en"));
+			tLogger.trace("enTranslation="+enTranslation);
 			if (enTranslation == null) {
 				entry.addBilingualExample("MISC", highlightedPair, forRelatedWord);
 			} else {

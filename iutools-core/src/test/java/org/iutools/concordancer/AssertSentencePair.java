@@ -1,10 +1,8 @@
 package org.iutools.concordancer;
 
-import ca.nrc.testing.AssertString;
 import org.apache.commons.lang3.tuple.Pair;
 import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.Asserter;
-import org.junit.jupiter.api.Assertions;
 
 public class AssertSentencePair extends Asserter<SentencePair> {
 	public AssertSentencePair(SentencePair _gotObject) {
@@ -16,7 +14,7 @@ public class AssertSentencePair extends Asserter<SentencePair> {
 	}
 
 	public AssertSentencePair langsAre(String lang1, String lang2) throws Exception {
-		Pair<String,String> gotLangs = pair().langs();
+		Pair<String,String> gotLangs = pair().langPair();
 		Pair<String,String> expLangs = Pair.of(lang1,lang2);
 		AssertObject.assertDeepEquals(
 			baseMessage+"\nlanguage pair was not as expected.",

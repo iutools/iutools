@@ -60,13 +60,13 @@ public class AssertIUWordDictEntry extends Asserter<IUWordDictEntry> {
 		String lang, String... expTranslationsArr)
 		throws Exception {
 		if (expTranslationsArr != null) {
-			Set<String> gotTranslations = entry().possibleTranslationsIn(lang);
-			Set<String> expTranslations = new HashSet<String>();
-			Collections.addAll(expTranslations, expTranslationsArr);
-			AssertSet.isSubsetOf(
-			baseMessage + "\nList of translations was not a subset of the expected translations",
-			lowerCaseStringsSet(expTranslations), lowerCaseStringsSet(gotTranslations),
-			false);
+			String[] gotTranslationsArr =
+				entry().possibleTranslationsIn(lang).toArray(new String[0]);
+			gotTranslationsArr = lowerCaseStrings(gotTranslationsArr);
+			expTranslationsArr = lowerCaseStrings(expTranslationsArr);
+			new AssertSequence(gotTranslationsArr,
+				baseMessage+ "\nList of translations was not a subset of the expected translations")
+				.startsWith(expTranslationsArr);
 		}
 		return this;
 	}
@@ -130,7 +130,7 @@ public class AssertIUWordDictEntry extends Asserter<IUWordDictEntry> {
 			}
 			AssertSet.isSubsetOf(
 				baseMessage + "\nList of highlights was not a subset of the expected highlights",
-				lowerCaseStringsSet(expHighlights), lowerCaseStringsSet(gotHighlights),
+				lowerCaseStrings(expHighlights), lowerCaseStrings(gotHighlights),
 				false);
 		}
 		return this;
@@ -144,13 +144,25 @@ public class AssertIUWordDictEntry extends Asserter<IUWordDictEntry> {
 		return this;
 	}
 
-	protected Set<String> lowerCaseStringsSet(Set<String> orig) {
+
+	protected Set<String> lowerCaseStrings(Set<String> orig) {
 		Set<String> lowercased = new HashSet<String>();
 		for (String anOrig: orig) {
 			lowercased.add(anOrig.toLowerCase());
 		}
 		return lowercased;
 	}
+
+	protected String[] lowerCaseStrings(String[] orig) {
+		String[] lowercased = new String[orig.length];
+		int ii=0;
+		for (String anOrig: orig) {
+			lowercased[ii] = anOrig.toLowerCase();
+			ii++;
+		}
+		return lowercased;
+	}
+
 
 	public AssertIUWordDictEntry assertRelatedTranslationsAre(
 		String[][] expRelatedTranslationsArr) throws Exception {
@@ -164,8 +176,9 @@ public class AssertIUWordDictEntry extends Asserter<IUWordDictEntry> {
 		}
 
 //		AssertObject.assertDeepEquals(
-//			baseMessage+"\nrelated word translations were not as expected",
+//			baseMessage+"\nRelated words translations were not as expected",
 //			expRelatedtranslationsMap, entry().relatedWordTranslations());
+
 		return this;
 	}
 }

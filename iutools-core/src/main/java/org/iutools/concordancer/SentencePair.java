@@ -151,7 +151,7 @@ public class SentencePair {
 		return alignments.toArray(new Integer[0][]);
 	}
 
-	public Pair<String,String> langs() {
+	public Pair<String,String> langPair() {
 		String[] langsArr = langText.keySet().toArray(new String[langText.keySet().size()]);
 
 		Pair<String,String> langPair = null;
@@ -162,6 +162,11 @@ public class SentencePair {
 		}
 
 		return langPair;
+	}
+
+	public String[] langs() {
+		String[] langsArr = langText.keySet().toArray(new String[langText.keySet().size()]);
+		return langsArr;
 	}
 
 	@JsonIgnore
@@ -206,7 +211,7 @@ public class SentencePair {
 
 
 	public String toString() {
-		Pair<String,String> langPair = langs();
+		Pair<String,String> langPair = langPair();
 		
 		String toStr = 
 				"(" + 
@@ -221,7 +226,7 @@ public class SentencePair {
 
 	public String otherLangThan(String lang) {
 
-		Pair<String,String> langPair = langs();
+		Pair<String,String> langPair = langPair();
 		String otherLang = langPair.getLeft();
 		if (otherLang.equals(lang)) {
 			otherLang = langPair.getRight();
@@ -342,7 +347,7 @@ public class SentencePair {
 	}
 
 	public static String escapeRegexpSpecialChars(String text) {
-		text = text.replaceAll("([\\(\\)\\[\\]\\.\\*\\?\\<\\\\>=\\+])", "\\$1");
+		text = text.replaceAll("([\\$\\(\\)\\[\\]\\.\\*\\?\\<\\\\>=\\+])", "\\\\$1");
 		return text;
 	}
 }
