@@ -234,7 +234,7 @@ public class WordSpotter {
 		return inText;
 	}
 
-	private String highlightTokens__NEW(String lang,
+	private String highlightTokens(String lang,
 	 	int[] tokensToHighlight, String tagName) throws WordSpotterException {
 
 		Logger tLogger = Logger.getLogger("org.iutools.concordancer.tm.WordSpotter.highlightTokens");
@@ -281,55 +281,6 @@ public class WordSpotter {
 		}
 		regex = "("+regex+")";
 		return Pattern.compile(regex);
-	}
-
-	private String highlightTokens(String lang,
-	 	int[] tokensToHighlight, String tagName) throws WordSpotterException {
-
-		Logger tLogger = Logger.getLogger("org.iutools.concordancer.tm.WordSpotter.highlightTokens");
-
-		if (1+1 == 2) return highlightTokens__NEW(lang, tokensToHighlight, tagName);
-		if (tLogger.isTraceEnabled()) {
-			tLogger.trace("lang="+lang+", tokensToHighlight="+ PrettyPrinter.print(tokensToHighlight));
-		}
-		String highlighted = "";
-		String startTag = "<"+tagName+">";
-		String endTag = "</"+tagName+">";
-		String remainingText = pair.langText.get(lang);
-		String wholeText = remainingText;
-		String[] allTokens = pair.tokens4lang.get(lang);
-		if (tLogger.isTraceEnabled()) {
-			tLogger.trace("allTokens="+ PrettyPrinter.print(allTokens));
-		}
-		for (int tokenNum: tokensToHighlight) {
-			String token = allTokens[tokenNum];
-			tLogger.trace("highlighting token #"+tokenNum+"="+token);
-			Pattern pattToken = SentencePair.stemmedTokensPattern(token);
-			Matcher matcher = pattToken.matcher(remainingText);
-			if (tLogger.isTraceEnabled()) {
-				tLogger.trace("matcher="+matcher.pattern());
-			}
-			if (!matcher.find()) {
-				tLogger.trace("Could not find token '"+token+"' in text: \'"+wholeText);
-				throw new WordSpotterException(
-					"Could not find token '"+token+"' in text: \'"+wholeText );
-			} else {
-				highlighted += remainingText.substring(0, matcher.start());
-				highlighted += startTag;
-				highlighted += matcher.group(1);
-				highlighted += endTag;
-				highlighted += matcher.group(2);
-				remainingText = remainingText.substring(matcher.end());
-			}
-			tLogger.trace("at this point, highlighted="+highlighted);
-		}
-
-		highlighted += remainingText;
-		highlighted = highlighted.replaceAll(endTag+"(\\s*)"+startTag, "$1");
-
-		tLogger.trace("Returning highlighted="+highlighted);
-
-		return highlighted;
 	}
 
 	public int[] tokensMatchingText(String sourceLang, String text) {
