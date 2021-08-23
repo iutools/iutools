@@ -28,10 +28,7 @@ public class IUWordDictEntry {
 	public List<MorphemeHumanReadableDescr> morphDecomp;
 
 	public List<String> origWordTranslations = new ArrayList<String>();
-	private List<String> relatedWordTranslations = new ArrayList<String>();
-
-	private Map<String, List<String>> relatedWordTranslationsMap =
-		new HashMap<String,List<String>>();
+	public List<String> relatedWordTranslations = new ArrayList<String>();
 
 	private boolean _translationsNeedSorting = true;
 
@@ -223,26 +220,6 @@ public class IUWordDictEntry {
 			List<String[]> examplesOfUse = entry.bilingualExamplesOfUse(translation);
 			this.addBilingualExamples(translation, examplesOfUse, true);
 		}
-	}
-
-	public List<List<String>> relatedWordTranslations() throws IUWordDictException {
-		List<List<String>> translationsInfo = new ArrayList<List<String>>();
-		for (String aTranslation: relatedWordTranslationsMap.keySet()) {
-			List<String> relWordTranslInfo = null;
-			try {
-				relWordTranslInfo = Cloner.clone(relatedWordTranslationsMap.get(aTranslation));
-			} catch (Cloner.ClonerException e) {
-				throw new IUWordDictException(e);
-			}
-			relWordTranslInfo.add(0, aTranslation);
-			translationsInfo.add(relWordTranslInfo);
-		}
-
-		// Sort the related word translations by the number of bilingual examples
-		// they apply to
-
-
-		return translationsInfo;
 	}
 
 

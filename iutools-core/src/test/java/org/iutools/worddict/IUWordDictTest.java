@@ -70,13 +70,7 @@ public class IUWordDictTest {
 			.setRelatedWords(
 				"najugangani", "najugaujunut", "najuganga", "najugaujumi",
 				"najugauvattunut")
-			.setRelWordTranslationsStartWith(new String[][] {
-				new String[] {"Group Home", "najugangani"},
-				new String[] {"If", "najugaujumi"},
-				new String[] {"accommodations", "najugaujumi"},
-				new String[] {"area", "najugaujumi"},
-
-			})
+			.setRelWordTranslationsStartWith(new String[] {"site", "homes", "centre"})
 		};
 	}
 
@@ -189,7 +183,7 @@ public class IUWordDictTest {
 			if (
 				(expTranslations == null || expTranslations.length == 0) &&
 				aCase.expRelatedTranslations != null) {
-				asserter.assertRelatedTranslationsAre(aCase.expRelatedTranslations);
+				asserter.relatedTranslationsStartWith(aCase.expRelatedTranslations);
 
 			}
 
@@ -231,7 +225,7 @@ public class IUWordDictTest {
 		public String[] expTranslations = null;
 		public Integer expMinExamples = 0;
 		public boolean outOfVocab = false;
-		public String[][] expRelatedTranslations = null;
+		public String[] expRelatedTranslations = null;
 
 		public IUWordDictCase(String _word) {
 			this.word = _word;
@@ -272,7 +266,7 @@ public class IUWordDictTest {
 		}
 
 		public IUWordDictCase setRelWordTranslationsStartWith(
-			String[][] _expRelatedTranslations) {
+			String[] _expRelatedTranslations) {
 			this.expRelatedTranslations = _expRelatedTranslations;
 			return this;
 		}

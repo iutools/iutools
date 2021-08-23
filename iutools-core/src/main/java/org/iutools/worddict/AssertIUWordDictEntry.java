@@ -164,20 +164,13 @@ public class AssertIUWordDictEntry extends Asserter<IUWordDictEntry> {
 	}
 
 
-	public AssertIUWordDictEntry assertRelatedTranslationsAre(
-		String[][] expRelatedTranslationsArr) throws Exception {
+	public AssertIUWordDictEntry relatedTranslationsStartWith(
+		String[] expRelatedTranslationsArr) throws Exception {
 
-		Map<String,String[]> expRelatedtranslationsMap =
-			new HashMap<String,String[]>();
-		for (String[] item: expRelatedTranslationsArr) {
-			String translation = item[0];
-			String[] relWords = Arrays.copyOfRange(item, 1, item.length);
-			expRelatedtranslationsMap.put(translation, relWords);
-		}
-
-//		AssertObject.assertDeepEquals(
-//			baseMessage+"\nRelated words translations were not as expected",
-//			expRelatedtranslationsMap, entry().relatedWordTranslations());
+		new AssertSequence<String>(
+			this.entry().relatedWordTranslations.toArray(new String[0]),
+			baseMessage+"\nRelated words translations were not as expected")
+		.startsWith(expRelatedTranslationsArr);
 
 		return this;
 	}
