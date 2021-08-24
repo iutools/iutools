@@ -143,7 +143,7 @@ public class IUWordDictTest {
 		throws Exception {
 
 		Integer focusOnCase = null;
-//		focusOnCase = 5;
+//		focusOnCase = 0;
 
 		boolean verbose = false;
 

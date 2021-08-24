@@ -193,10 +193,6 @@ public class IUWordDictEntry {
 			forRelatedWords = false;
 		}
 
-		if (_translationsNeedSorting) {
-			sortTranslations();
-		}
-
 		List<String> translations = origWordTranslations;
 		if (forRelatedWords) {
 			translations = relatedWordTranslations;
@@ -206,12 +202,14 @@ public class IUWordDictEntry {
 	}
 
 	public void sortTranslations() {
-		TranslationComparator comparator =
-			new TranslationComparator(this.examplesForOrigWordTranslation);
-		Collections.sort(this.origWordTranslations, comparator);
-		comparator =
-			new TranslationComparator(this.examplesForRelWordsTranslation);
-		Collections.sort(this.relatedWordTranslations, comparator);
+		if (_translationsNeedSorting) {
+			TranslationComparator comparator =
+				new TranslationComparator(this.examplesForOrigWordTranslation);
+			Collections.sort(this.origWordTranslations, comparator);
+			comparator =
+				new TranslationComparator(this.examplesForRelWordsTranslation);
+			Collections.sort(this.relatedWordTranslations, comparator);
+		}
 	}
 
 	public void addRelatedWordTranslations(IUWordDictEntry entry) throws IUWordDictException {
