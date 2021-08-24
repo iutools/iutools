@@ -6,7 +6,7 @@ class MorphemeDictionaryController extends IUToolsController {
 	
 	constructor(config) {
 		super(config);
-		this.wordDictController = new WordDictController(config);
+		this.wordDictController = new WordEntryController(config);
 	} 
 	
 	// Setup handler methods for different HTML elements specified in the config.

@@ -2,9 +2,9 @@
  * Controller for IU Word Dictionary dialog.
  */
 
-class WordDictController extends IUToolsController {
+class WordEntryController extends IUToolsController {
     constructor(wdConfig) {
-        var tracer = Debug.getTraceLogger('WordDictController.constructor');
+        var tracer = Debug.getTraceLogger('WordEntryController.constructor');
         tracer.trace("wdConfig="+JSON.stringify(wdConfig));
         super(wdConfig);
         this.hideIconisationControls();
@@ -24,7 +24,7 @@ class WordDictController extends IUToolsController {
     }
 
     dictionaryLookup(word) {
-        var tracer = Debug.getTraceLogger('WordDictController.dictionaryLookup');
+        var tracer = Debug.getTraceLogger('WordEntryController.dictionaryLookup');
         tracer.trace("word="+word)
 		this.elementForProp("divWordEntry").show();
 		this.clearWordEntry();
@@ -55,7 +55,7 @@ class WordDictController extends IUToolsController {
 	}
 
 	successWordDictCallback(resp) {
-		var tracer = Debug.getTraceLogger('WordDictController.successWordDictCallback');
+		var tracer = Debug.getTraceLogger('WordEntryController.successWordDictCallback');
 		tracer.trace("resp="+JSON.stringify(resp));
 		if (resp.errorMessage != null) {
 			this.failureWordDictCallback(resp);
@@ -99,7 +99,7 @@ class WordDictController extends IUToolsController {
 	}
 	
 	displayWordEntry(results) {
-		var tracer = Debug.getTraceLogger('WordDictController.displayWordEntry');
+		var tracer = Debug.getTraceLogger('WordEntryController.displayWordEntry');
 		var divWordEntry = this.elementForProp("divWordEntry");
 		this.hideSpinningWheel("divWordEntry_message");
 
@@ -119,7 +119,7 @@ class WordDictController extends IUToolsController {
     }
 
     htmlTranslations(results) {
-        var tracer = Debug.getTraceLogger('WordDictController.htmlTranslations');
+        var tracer = Debug.getTraceLogger('WordEntryController.htmlTranslations');
         tracer.trace("results.entry="+JSON.stringify(results.entry));
         var heading = "English Translations"
 
@@ -174,7 +174,7 @@ class WordDictController extends IUToolsController {
     }
 
     htmlRelatedWords(results) {
-        var tracer = Debug.getTraceLogger('WordDictController.htmlRelatedWords');
+        var tracer = Debug.getTraceLogger('WordEntryController.htmlRelatedWords');
         tracer.trace("results.entry="+JSON.stringify(results.entry));
         var html = "<h3>Related Words</h3>\n";
         var relatedWords = results.entry.relatedWords;
@@ -192,7 +192,7 @@ class WordDictController extends IUToolsController {
     }
 
 	htmlMorphologicalAnalyses(results, html) {
-        var tracer = Debug.getTraceLogger('WordDictController.htmlMorphologicalAnalyses');
+        var tracer = Debug.getTraceLogger('WordEntryController.htmlMorphologicalAnalyses');
         tracer.trace("results="+JSON.stringify(results));
 		html += "<h3>Morphological decomposition<h3>\n";
 		var wordComponents = results.entry.morphDecomp;

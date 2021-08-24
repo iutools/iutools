@@ -1,6 +1,6 @@
 <% String IUTOOLS_JS_VERSION=(new java.util.Date()).toLocaleString(); %>
 
-<script src="js/controllers/worddict/WordDictController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
+<script src="js/controllers/worddict/WordEntryController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 
 <script>
 	// Setup and configure the controller for this page
@@ -19,7 +19,7 @@
         divWordEntry_word: "div-wordentry-word",
     };
 
-    var wordDictController = new WordDictController(config);
+    var wordEntryController = new WordEntryController(config);
 </script>
 
 
