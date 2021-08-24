@@ -121,9 +121,17 @@ class WordDictController extends IUToolsController {
     htmlTranslations(results) {
         var tracer = Debug.getTraceLogger('WordDictController.htmlTranslations');
         tracer.trace("results.entry="+JSON.stringify(results.entry));
-        var html = "<h3>English Translations</h3>\n";
-        var translations = Object.keys(results.entry.examplesForTranslation);
-        tracer.trace("--** translations="+JSON.stringify(translations));
+        var heading = "English Translations"
+
+        var info = this.translationsInfo(results);
+        var disclaimer = null;
+        if (info.areRelatedTranslations) {
+            heading = heading+" (Related words only)"
+        }
+        var html = "<h3>"+heading+"</h3>\n";
+
+        var examples = info.examples;
+        var translations = Object.keys(examples);
 
         var totalDisplayed = 0;
         for (var ii=0; ii < translations.length; ii++) {
@@ -145,6 +153,25 @@ class WordDictController extends IUToolsController {
         return html;
     }
 
+    translationsInfo(results) {
+        var wordEntry = results.entry;
+        var translations = wordEntry.origWordTranslations;
+        var examples = wordEntry.examplesForOrigWordTranslation;
+        var areRelatedTranslations = false;
+        if (examples == null || Object.keys(examples).length == 0) {
+            translations = wordEntry.relatedWordTranslations;
+            examples = wordEntry.examplesForRelWordsTranslation;
+            areRelatedTranslations = true;
+        }
+
+        var info =
+            {
+                'translations': translations,
+                'examples': examples,
+                'areRelatedTranslations': areRelatedTranslations
+            };
+        return info;
+    }
 
     htmlRelatedWords(results) {
         var tracer = Debug.getTraceLogger('WordDictController.htmlRelatedWords');
@@ -188,14 +215,26 @@ class WordDictController extends IUToolsController {
 	
 	htmlAlignments(results, html) {
 		var gist = results.wordGist
-		var alignments = results.entry.examplesForTranslation['ALL'];
+        var trInfo = this.translationsInfo(results);
+		var translations = trInfo.translations;
+        var alignments = trInfo.examples;
 
-		html += "<h3>Examples</h3>\n";
-		if (alignments != null && alignments.length > 0) {
+        var heading = "Examples";
+        if (trInfo.areRelatedTranslations) {
+            heading += " (for related words)";
+        }
+		html += "<h3>"+heading+"</h3>\n";
+		if (translations != null && translations.length > 0) {
 			html += '<table id="tbl-alignments" class="alignments"><th>Inuktitut</th><th>English</th></tr>';
-            for (var ii=0; ii < alignments.length; ii++) {
-                var anAlignment = alignments[ii];
-				html += '<tr><td>'+anAlignment[0]+'</td><td>'+anAlignment[1]+'</td></tr>';
+            for (var ii=0; ii < translations.length; ii++) {
+                var aTranslation = translations[ii];
+                var aTransAlignments = alignments[aTranslation];
+                if (aTransAlignments != null && aTransAlignments.length > 0) {
+                    for (var jj=0; jj < aTransAlignments.length; jj++) {
+                        var anAlignment = aTransAlignments[jj];
+                        html += '<tr><td>'+anAlignment[0]+'</td><td>'+anAlignment[1]+'</td></tr>';
+                    }
+                }
 			}
 			html += '</table>';
 		} else {

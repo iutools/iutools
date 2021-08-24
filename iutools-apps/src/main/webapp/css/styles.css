@@ -128,6 +128,19 @@ span#plural {
 	text-decoration:underline;
 }
 
+/* Word Dictionary */
+
+.clickable-word-lookup {
+    cursor:pointer;
+    font-family:serif;
+    font-size:20px;
+}
+.clickable-word-lookup:hover {
+    color:red;
+    text-decoration:underline;
+}
+
+
 /* OCCURRENCES */
 .word-example {
 	cursor:pointer;
