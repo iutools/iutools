@@ -2,6 +2,7 @@ package org.iutools.worddict;
 
 import ca.nrc.string.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 import org.iutools.concordancer.Alignment_ES;
 import org.iutools.concordancer.SentencePair;
@@ -163,8 +164,6 @@ public class IUWordDict {
 	 * Sort the list of words so that those that have a more detailed dictionary
 	 * entry come first. For example, words that have non-empty list of bilingual
 	 * examples of use will come first.
-	 * @param words
-	 * @return
 	 */
 	private List<String> sortWordsByEntryComprehensiveness(
 		List<IUWordDictEntry> wordEntries) throws IUWordDictException {
@@ -300,26 +299,20 @@ public class IUWordDict {
  		return totalPairs;
 	}
 
-	public List<String> search(String partialWord) throws IUWordDictException {
-		List<String> words = new ArrayList<String>();
+	public Pair<Iterator<String>,Long> search(String partialWord) throws IUWordDictException {
+		Iterator<String> wordsIter = null;
+		Long totalWords = null;
 		try {
 			CompiledCorpus.SearchOption[] options =
 				new CompiledCorpus.SearchOption[] {
 					CompiledCorpus.SearchOption.EXCL_MISSPELLED,
 					CompiledCorpus.SearchOption.WORD_ONLY
 				};
-			long totalWords = corpus.totalWordsWithCharNgram(partialWord, options);
-			if (totalWords > MAX_WORDS) {
-				throw new TooManyWordsException(totalWords);
-			}
-			Iterator<String> wordsIter = corpus.wordsContainingNgram(
-				partialWord, options);
-			while (wordsIter.hasNext()) {
-				words.add(wordsIter.next());
-			}
+			totalWords = corpus.totalWordsWithCharNgram(partialWord, options);
+			wordsIter = corpus.wordsContainingNgram(partialWord, options);
 		} catch (CompiledCorpusException e) {
 			throw new IUWordDictException(e);
 		}
-		return words;
+		return Pair.of(wordsIter,totalWords);
 	}
 }

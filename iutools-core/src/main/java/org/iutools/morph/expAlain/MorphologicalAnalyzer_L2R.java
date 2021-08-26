@@ -5,7 +5,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import org.iutools.linguisticdata.LinguisticDataException;
-import org.iutools.morph.Decomposition;
 import org.iutools.morph.MorphInukException;
 import org.iutools.morph.MorphologicalAnalyzerAbstract;
 import org.iutools.morph.MorphologicalAnalyzerException;
@@ -22,9 +21,9 @@ public class MorphologicalAnalyzer_L2R
 //	public Decomposition[] decomposeWord(String word)
 //			throws TimeoutException, MorphInukException, 
 //			LinguisticDataException {
-//		DecompositionState finalState = decompose(word);
+//		Decomposition finalState = decompose(word);
 //		List<Decomposition> decompsLst = finalState.allDecompositions;
-//		Decomposition[] decomps = 
+//		Decomposition[] decomps =
 //			decompsLst.toArray(new Decomposition[decompsLst.size()]);
 //		
 //		return decomps;
@@ -32,28 +31,28 @@ public class MorphologicalAnalyzer_L2R
 
 		
 	@Override
-	public Decomposition[] doDecompose(String word, Boolean extendedAnalysis) 
+	public org.iutools.morph.Decomposition[] doDecompose(String word, Boolean extendedAnalysis)
 		throws MorphologicalAnalyzerException {
 		if (extendedAnalysis == null) {
 			extendedAnalysis = true;
 		}
-		
+
 		DecompositionState finalState;
 		try {
 			finalState = decompose(word);
 		} catch (MorphInukException e) {
 			throw new MorphologicalAnalyzerException(e);
 		}
-		List<Decomposition> decompsLst = finalState.allDecompositions;
-		Decomposition[] decomps = 
-			decompsLst.toArray(new Decomposition[decompsLst.size()]);
+		List<org.iutools.morph.Decomposition> decompsLst = finalState.allDecompositions;
+		org.iutools.morph.Decomposition[] decomps =
+			decompsLst.toArray(new org.iutools.morph.Decomposition[decompsLst.size()]);
 		
 		return decomps;
 	}
 	
-	DecompositionState decompose(String word) 
+	DecompositionState decompose(String word)
 			throws MorphInukException {
-		
+
 		DecompositionState state = initState(word);
 		while (state.nextStep != Step.DONE) {
 			doStep(state);
@@ -68,7 +67,7 @@ public class MorphologicalAnalyzer_L2R
 		return state;
 	}
 	
-	private void doStep(DecompositionState state) 
+	private void doStep(DecompositionState state)
 			throws MorphInukException {
 		Logger tLogger = Logger.getLogger("ca.inukitutcomputing.morph.expAlain.MorphologicalAnalyzer_L2R.doStep");
 		
@@ -102,7 +101,7 @@ public class MorphologicalAnalyzer_L2R
 	 * @param state
 	 * @return
 	 */
-	private boolean doProcessPartialDecomp(DecompositionState state) {		
+	private boolean doProcessPartialDecomp(DecompositionState state) {
 		Logger tLogger = Logger.getLogger("ca.inukitutcomputing.morph.expAlain.MorphologicalAnalyzer_L2R.doProcessPartialDecomp");
 		
 		if (tLogger.isTraceEnabled()) {
@@ -221,7 +220,7 @@ public class MorphologicalAnalyzer_L2R
 	 * @param state
 	 * @throws MorphInukException 
 	 */
-	private void doExtendChoiceTree(DecompositionState state) 
+	private void doExtendChoiceTree(DecompositionState state)
 			throws MorphInukException {
 		Logger tLogger = Logger.getLogger("ca.inukitutcomputing.morph.expAlain.MorphologicalAnalyzer_L2R.doExtendChoiceTree");
 		
@@ -240,7 +239,7 @@ public class MorphologicalAnalyzer_L2R
 	 * @return
 	 * @throws MorphInukException 
 	 */
-	private List<WrittenMorpheme> nextLevelChoices(DecompositionState state) 
+	private List<WrittenMorpheme> nextLevelChoices(DecompositionState state)
 			throws MorphInukException {
 		
 		Logger tLogger = Logger.getLogger("ca.inukitutcomputing.morph.expAlain.MorphologicalAnalyzer_L2R.nextLevelChoices");

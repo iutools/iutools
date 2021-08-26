@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class IUWordDictTest {
@@ -113,7 +115,14 @@ public class IUWordDictTest {
 
 		// You can search for a word
 		String partialWord = "inuksh";
-		List<String> words = dict.search(partialWord);
+		Pair<Iterator<String>, Long> result = dict.search(partialWord);
+		// Total number of matching words
+		Long totalWords = result.getRight();
+		Iterator<String> wordsIter = result.getLeft();
+		// Iterate through the matching words...
+		while (wordsIter.hasNext()) {
+			String matchingWord = wordsIter.next();
+		}
 	}
 
 
@@ -200,17 +209,9 @@ public class IUWordDictTest {
 	@Test
 	public void test__search__HappyPath() throws Exception {
 		String partialWord = "inuksu";
-		List<String> words = IUWordDict.getInstance().search(partialWord);
-		new AssertSequence<String>(words.toArray(new String[0]))
-			.startsWith("inuksuk", "inuksuup", "inuksui");
-	}
-
-	@Test
-	public void test__search__TooManyMatchingWords__RaisesException() throws Exception {
-		String partialWord = "inu";
-		Assertions.assertThrows(TooManyWordsException.class, () -> {
-			IUWordDict.getInstance().search("inu");;
-		});
+		Pair<Iterator<String>, Long> results = IUWordDict.getInstance().search(partialWord);
+		assertSearchResultsStartWith(
+			results.getLeft(), "inuksuk", "inuksuup", "inuksui");
 	}
 
 	//////////////////////////////////
@@ -271,4 +272,25 @@ public class IUWordDictTest {
 			return this;
 		}
 	}
+
+	////////////////////////////////////////
+	// TEST HELPERS
+	////////////////////////////////////////
+
+	private void assertSearchResultsStartWith(
+		Iterator<String> wordsIter, String... expTopWords) throws Exception {
+		final int MAX_WORDS = 100;
+		List<String> gotWordsLst = new ArrayList<String>();
+		while (wordsIter.hasNext()) {
+			gotWordsLst.add(wordsIter.next());
+		}
+		String[] gotWords = new String[gotWordsLst.size()];
+		for (int ii=0; ii < gotWords.length; ii++) {
+			gotWords[ii] = gotWordsLst.get(ii);
+		}
+
+		new AssertSequence<String>(gotWords)
+			.startsWith(expTopWords);
+	}
+
 }

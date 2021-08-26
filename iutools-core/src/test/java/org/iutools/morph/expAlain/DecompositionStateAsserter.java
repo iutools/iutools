@@ -10,13 +10,13 @@ public class DecompositionStateAsserter extends Asserter {
 
 	public static DecompositionStateAsserter assertThat(
 			DecompositionState gotState, String mess) throws Exception {
-		return new DecompositionStateAsserter(gotState, mess, 
+		return new DecompositionStateAsserter(gotState, mess,
 			gotState.getClass());
 		
 	}	
 	
 	public DecompositionStateAsserter(
-			DecompositionState _gotState, 
+		DecompositionState _gotState,
 			String mess, Class<?> gotStateClass) throws Exception {
 		super(_gotState, mess, gotStateClass);
 	}

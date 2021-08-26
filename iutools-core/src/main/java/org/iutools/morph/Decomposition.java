@@ -106,7 +106,9 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 		decompStr = decompStr.replaceAll("\\s+", " ");
 		if (format == MorphFormat.NO_BRACES) {
 			// Remove braces
-			decompStr = decompStr.replaceAll("[\\{\\}]", "");
+//			decompStr = decompStr.replaceAll("[\\{\\}]", "");
+			decompStr = decompStr.replaceAll("\\}\\s*\\{", " ");
+			decompStr = decompStr.replaceAll("(^\\s*\\{\\s*|\\s*\\}\\s*$)", "");
 		} else {
 			// Insert braces before and after single spaces
 			decompStr = decompStr.replaceAll(" ", "} {");
@@ -296,9 +298,9 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 	
 	
 	protected static void removeDecsWithCombinationAsSeparateElements(
-			Decomposition dec, Vector<AffixPartOfComposition> vParts, int indexOfProcessedVPart,
-			String[] cs,
-			Object[][] decsAndKeepstatus) throws LinguisticDataException {
+	Decomposition dec, Vector<AffixPartOfComposition> vParts, int indexOfProcessedVPart,
+	String[] cs,
+	Object[][] decsAndKeepstatus) throws LinguisticDataException {
         // Trouver les décompositions qui ont les éléments du
         // suffixe combiné flanqués de part et d'autre par les
         // mêmes morphèmes, et les enlever de la liste.
@@ -520,7 +522,13 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 		
 		return surfaceForms;
 	}
-	
+
+	public org.iutools.morph.exp.Decomposition toSimpleDecomposition() throws DecompositionExcepion {
+		String decompStr = org.iutools.morph.Decomposition.formatDecompStr(toString(), MorphFormat.NO_BRACES);
+		org.iutools.morph.exp.Decomposition simple = new org.iutools.morph.exp.Decomposition(decompStr);
+		return simple;
+	}
+
 	//----------------------------------------------------------------------------------------------
 	/*
      * {<forme de surface>:<signature du morphème>}{...}...

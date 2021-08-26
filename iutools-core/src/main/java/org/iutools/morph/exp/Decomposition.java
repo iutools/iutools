@@ -7,12 +7,12 @@ public class Decomposition {
 	
 	String[] components;
 	String expression;
-	
+
 	public Decomposition(String _expression) {
 		expression = _expression;
-		components = _expression.split(" ");
+		components = _expression.split("\\s+");
+		return;
 	}
-
 	
 	public boolean validateForFinalComponent() {
 		Logger logger = Logger.getLogger("Decomposition.validateForFinalComponent");
@@ -60,5 +60,4 @@ public class Decomposition {
 		String[] parts = componentStr.split(":");
 		return parts[1];
 	}
-
 }

@@ -24,22 +24,16 @@
 
 package org.iutools.morph;
 
-import java.io.*;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
-import java.util.regex.*;
 
-import ca.nrc.json.PrettyPrinter;
 import org.apache.log4j.Logger;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 
 import org.iutools.linguisticdata.*;
-import org.iutools.linguisticdata.constraints.Condition;
 import org.iutools.linguisticdata.constraints.Conditions;
-import org.iutools.linguisticdata.constraints.Imacond;
-import org.iutools.linguisticdata.constraints.ParseException;
 import org.iutools.script.Orthography;
 import org.iutools.script.Roman;
 import org.iutools.script.Syllabics;
@@ -102,10 +96,10 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 			// Eliminate decompositions that contain a sequence of suffixes
 			// that corresponds to a composite suffix, in order to keep only
 			// the decompositions with the composite suffix.
-			Decomposition[] decsC = Decomposition.removeCombinedSuffixes(decomps.toArray(new Decomposition[] {}));
+			Decomposition[] decsC = org.iutools.morph.Decomposition.removeCombinedSuffixes(decomps.toArray(new Decomposition[] {}));
 
 			// B. Eliminate duplicate decompositions.
-			Decomposition[] decs = Decomposition.removeMultiples(decsC);
+			Decomposition[] decs = org.iutools.morph.Decomposition.removeMultiples(decsC);
 
 			// C.
 			// Sort the decompositions according to the following rules:
@@ -219,7 +213,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 	 * @return a list of Decomposition objects or null
 	 */
 	private List<Decomposition> _decompose(String word,
-			boolean decomposeCompositeRoot, List<Decomposition> decompsSoFar)
+														boolean decomposeCompositeRoot, List<Decomposition> decompsSoFar)
 			throws TimeoutException, MorphInukException, LinguisticDataException {
 
 		Vector<AffixPartOfComposition> morphPartsInit = new Vector<AffixPartOfComposition>();
@@ -253,7 +247,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 	}
 
 	private List<Decomposition> _decompose(String word,
-			boolean decomposeCompositeRoot)
+														boolean decomposeCompositeRoot)
 			throws TimeoutException, MorphInukException, LinguisticDataException {
 		return _decompose(word, decomposeCompositeRoot, null);
 	}
@@ -554,9 +548,9 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
      */
     @SuppressWarnings("unchecked")
 	private Vector<Decomposition> analyzeAsRoot(String term, String termOrig,
-												String word, Vector<AffixPartOfComposition> morphParts, Graph.State[] states,
-												Conditions preConds,
-												String transitivity) throws TimeoutException, LinguisticDataException {
+															  String word, Vector<AffixPartOfComposition> morphParts, Graph.State[] states,
+															  Conditions preConds,
+															  String transitivity) throws TimeoutException, LinguisticDataException {
 
     	Logger logger = Logger.getLogger("MorphologicalAnalyzer.analyzeAsRoot");
         Vector<Decomposition> allAnalyses = new Vector<Decomposition>();
@@ -652,8 +646,8 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
      * @throws LinguisticDataException
      */
 	private Vector<Decomposition> checkRoots(Vector<Morpheme> lexs, String word, String termOrigICI,
-											 Vector<AffixPartOfComposition> morphParts, Graph.State[] states, Conditions preConds,
-											 String transitivity) throws TimeoutException, LinguisticDataException {
+														  Vector<AffixPartOfComposition> morphParts, Graph.State[] states, Conditions preConds,
+														  String transitivity) throws TimeoutException, LinguisticDataException {
 
         Vector<Decomposition> rootAnalyses = new Vector<Decomposition>();
 
