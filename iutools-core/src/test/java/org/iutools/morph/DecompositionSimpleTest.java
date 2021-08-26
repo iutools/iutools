@@ -1,8 +1,8 @@
-package org.iutools.morph.exp;
+package org.iutools.morph;
 
 import org.iutools.morph.Decomposition;
 import org.junit.Test;
 
-public class DecompositionTest {
+public class DecompositionSimpleTest {
 
 }

@@ -51,7 +51,7 @@ public class AssertIUWordDictEntry extends Asserter<IUWordDictEntry> {
 			}
 		}
 		AssertObject.assertDeepEquals(
-			baseMessage+"\nDecomposition not as expected",
+			baseMessage+"\nDecompositionSimple not as expected",
 			expMorphemes, gotMorphemes);
 		return this;
 	}

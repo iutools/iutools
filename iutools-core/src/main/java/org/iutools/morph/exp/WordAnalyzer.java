@@ -18,6 +18,7 @@ import com.google.gson.Gson;
 
 import org.iutools.datastructure.trie.Trie;
 import org.iutools.linguisticdata.*;
+import org.iutools.morph.DecompositionSimple;
 import org.iutools.morph.MorphologicalAnalyzerException;
 import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.Pair;
@@ -44,14 +45,14 @@ public class WordAnalyzer {
 	}
 
 	/**
-	 * Decomposition of an Inuktitut word into ints morphemic components.
+	 * DecompositionSimple of an Inuktitut word into ints morphemic components.
 	 *
 	 * @param word String
 	 * @return a List of DecompositionTree objects
 	 * @throws LinguisticDataException 
 	 * @throws MorphologicalAnalyzerException 
 	 */
-	List<Decomposition> analyze(String word) throws LinguisticDataException, MorphologicalAnalyzerException {
+	List<DecompositionSimple> analyze(String word) throws LinguisticDataException, MorphologicalAnalyzerException {
 		/*
 			For each root:
 				for each affix:
@@ -62,7 +63,7 @@ public class WordAnalyzer {
 		Logger logger = Logger.getLogger("WordAnalyzer.findAllPossibleSequencesOfMorphemes");
 
 		List<DecompositionTree> decompositionTrees = decomposeWord(word);
-		List<Decomposition> prunedDecompositions = combineMorphemes(decompositionTrees);
+		List<DecompositionSimple> prunedDecompositions = combineMorphemes(decompositionTrees);
 
 		return prunedDecompositions;
 	}
@@ -102,21 +103,21 @@ public class WordAnalyzer {
 	}
 
 	/**
-	 * Convert a list of DecompositionTree objects into a list of Decomposition objects.
+	 * Convert a list of DecompositionTree objects into a list of DecompositionSimple objects.
 	 *
 	 * @param decompositionTrees A List of DecompositionTree objects
-	 * @return A List of Decomposition objects
+	 * @return A List of DecompositionSimple objects
 	 */
-	List<Decomposition> combineMorphemes(List<DecompositionTree> decompositionTrees) {
+	List<DecompositionSimple> combineMorphemes(List<DecompositionTree> decompositionTrees) {
 		Logger logger = Logger.getLogger("WordAnalyzer.combineMorphemes");
 		HashMap<String,String[]> combinedMorphemesInDecompositions = new HashMap<String,String[]>();
-		List<Decomposition> allDecomps = new ArrayList<Decomposition>();
+		List<DecompositionSimple> allDecomps = new ArrayList<DecompositionSimple>();
 		for (int id=0; id<decompositionTrees.size(); id++) {
 			DecompositionTree decompTree = decompositionTrees.get(id);
-			List<Decomposition> decomps = decompTree.toDecomposition();
+			List<DecompositionSimple> decomps = decompTree.toDecomposition();
 
 			for (int idd=0; idd<decomps.size(); idd++) {
-				Decomposition decomp = decomps.get(idd);
+				DecompositionSimple decomp = decomps.get(idd);
 				logger.debug("------- decomp= "+decomp.toStr());
 				if (decomp.validateForFinalComponent()) {
 					allDecomps.add(decomp);
@@ -134,16 +135,16 @@ public class WordAnalyzer {
 			}
 
 		}
-		List<Decomposition> prunedDecomps = checkForCombinedElements(allDecomps,combinedMorphemesInDecompositions);
+		List<DecompositionSimple> prunedDecomps = checkForCombinedElements(allDecomps,combinedMorphemesInDecompositions);
 		prunedDecomps.sort(new DecompositionComparator());
 
 		return prunedDecomps;
 	}
 
-	List<Decomposition> checkForCombinedElements(
-			List<Decomposition> decompositions,
+	List<DecompositionSimple> checkForCombinedElements(
+			List<DecompositionSimple> decompositions,
 			HashMap<String, String[]> combinedMorphemesInDecompositions) {
-		List<Decomposition> prunedDecompositions = new ArrayList<Decomposition>();
+		List<DecompositionSimple> prunedDecompositions = new ArrayList<DecompositionSimple>();
 		String[] regexps = new String[combinedMorphemesInDecompositions.size()];
 		Set<String> keys = combinedMorphemesInDecompositions.keySet();
 		int iregxp = 0;
@@ -184,9 +185,9 @@ public class WordAnalyzer {
 		return String.join(" ", regexps);
 	}
 
-	class DecompositionComparator  implements Comparator<Decomposition> {
+	class DecompositionComparator  implements Comparator<DecompositionSimple> {
 	    @Override
-	    public int compare(Decomposition a, Decomposition b) {
+	    public int compare(DecompositionSimple a, DecompositionSimple b) {
 	    	Logger logger = Logger.getLogger("WordAnalyzer.DecompositionComparator.compare");
 	    	logger.debug(a.expression+" VS "+b.expression);
 	    	logger.debug(a.components.length+" VS "+b.components.length);
@@ -402,7 +403,7 @@ public class WordAnalyzer {
 				if (word.equals("$")) {
 					break;
 				}
-				List<Decomposition> decompositions = analyzer.analyze(word);
+				List<DecompositionSimple> decompositions = analyzer.analyze(word);
 				if (decompositions.size() == 0)
 					System.out.println("Aucune décomposition");
 				else for (int id = 0; id < decompositions.size(); id++)

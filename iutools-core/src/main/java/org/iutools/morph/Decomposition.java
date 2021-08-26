@@ -6,7 +6,7 @@
 // -----------------------------------------------------------------------
 
 // -----------------------------------------------------------------------
-// Document/File:		Decomposition.java
+// Document/File:		DecompositionSimple.java
 //
 // Type/File type:		code Java / Java code
 // 
@@ -44,7 +44,7 @@ import org.iutools.script.Orthography;
 
 import static org.iutools.linguisticdata.Morpheme.MorphFormat;
 
-// Decomposition:
+// DecompositionSimple:
 //    String word
 //    RootPartOfComposition stem:
 //        Base racine:
@@ -161,7 +161,7 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 	//	// - Les racines connues en premier
 	//	public int compareTo(Object a) {
 	//		int valeurRetour = 0;
-	//		Decomposition otherDec = (Decomposition) a;
+	//		DecompositionSimple otherDec = (DecompositionSimple) a;
 	//		boolean known = ((Base) stem.getRoot()).known;
 	//		boolean otherDecConnue = ((Base) otherDec.stem.getRoot()).known;
 	//		if ((known && otherDecConnue) || (!known && !otherDecConnue))
@@ -252,7 +252,7 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 	// a decomposition with -juksaq but will also find a decomposition with
 	// juq+ksaq ; this is to remove the latter.
 	static public Decomposition[] removeCombinedSuffixes(Decomposition decs[]) throws LinguisticDataException {
-		Logger logger = Logger.getLogger("Decomposition.removeCombinedSuffixes");
+		Logger logger = Logger.getLogger("DecompositionSimple.removeCombinedSuffixes");
         Object[][] decsAndKeepstatus = new Object[decs.length][2];
         for (int i = 0; i < decs.length; i++) {
         	logger.debug("decs["+i+"] = "+decs[i].toStr2());
@@ -523,9 +523,9 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 		return surfaceForms;
 	}
 
-	public org.iutools.morph.exp.Decomposition toSimpleDecomposition() throws DecompositionExcepion {
+	public DecompositionSimple toSimpleDecomposition() throws DecompositionExcepion {
 		String decompStr = org.iutools.morph.Decomposition.formatDecompStr(toString(), MorphFormat.NO_BRACES);
-		org.iutools.morph.exp.Decomposition simple = new org.iutools.morph.exp.Decomposition(decompStr);
+		DecompositionSimple simple = new DecompositionSimple(decompStr);
 		return simple;
 	}
 

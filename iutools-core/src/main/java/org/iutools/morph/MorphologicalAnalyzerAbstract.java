@@ -121,19 +121,34 @@ public abstract class MorphologicalAnalyzerAbstract implements AutoCloseable {
 		}
 	}
 
+	  public DecompositionSimple[] decomposeWord__NEW(String word)
+	  throws TimeoutException, MorphologicalAnalyzerException, DecompositionExcepion {
+    	 return decomposeWord__NEW(word, (Boolean)null);
+     }
+
+	public DecompositionSimple[] decomposeWord__NEW(String word, Boolean lenient)
+	throws TimeoutException, MorphologicalAnalyzerException, DecompositionExcepion {
+    	Decomposition[] decompStates = decomposeWord(word, lenient);
+    	DecompositionSimple[] decomps = new DecompositionSimple[decompStates.length];
+    	for (int ii=0; ii < decompStates.length; ii++) {
+    		decomps[ii] = decompStates[ii].toSimpleDecomposition();
+		}
+		return decomps;
+	}
+
 	/**
-	 * Decomposition of an Inuktitut word.
+	 * DecompositionSimple of an Inuktitut word.
      * DÉCOMPOSITION DU MOT.
      * Les décompositions résultantes sont ordonnées selon certaines règles.
      * L'analyse tient compte de certaines habitudes : l'omission de la consonne finale,
      * et l'usage de 'n' au lieu de 't' en finale.
      * @param word String word to be decomposed, in syllabics or roman alphabet
-     * @return Decomposition[] array of decompositions
+     * @return DecompositionSimple[] array of decompositions
      * @throws LinguisticDataException 
      * @throws MorphologicalAnalyzerException 
      */
      public Decomposition[] decomposeWord(String word)
-    	throws TimeoutException, MorphologicalAnalyzerException {
+			throws TimeoutException, MorphologicalAnalyzerException {
     	 return decomposeWord(word, null);
      }
      
@@ -142,7 +157,7 @@ public abstract class MorphologicalAnalyzerAbstract implements AutoCloseable {
      * Les décompositions résultantes sont ordonnées selon certaines règles.
      * @param word String word to be decomposed, in syllabics or roman alphabet
      * @param lenient boolean if true, check also for possible missing consonant at the end of the word
-     * @return Decomposition[] array of decompositions
+     * @return DecompositionSimple[] array of decompositions
      * @throws LinguisticDataException 
      * @throws MorphologicalAnalyzerException 
      */
@@ -181,7 +196,7 @@ public abstract class MorphologicalAnalyzerAbstract implements AutoCloseable {
     	}
     	
 		long elapsed = System.currentTimeMillis() - start;
-		mess = "Decomposition of word="+word+"; ENDS with elapsed="+elapsed+"msecs";
+		mess = "DecompositionSimple of word="+word+"; ENDS with elapsed="+elapsed+"msecs";
 		tLogger.trace(mess);
 		
     	return decomps;

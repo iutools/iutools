@@ -1,21 +1,21 @@
-package org.iutools.morph.exp;
+package org.iutools.morph;
 
 import org.apache.log4j.Logger;
 import org.iutools.morph.StateGraphForward;
 
-public class Decomposition {
+public class DecompositionSimple {
 	
-	String[] components;
-	String expression;
+	public String[] components;
+	public String expression;
 
-	public Decomposition(String _expression) {
+	public DecompositionSimple(String _expression) {
 		expression = _expression;
 		components = _expression.split("\\s+");
 		return;
 	}
 	
 	public boolean validateForFinalComponent() {
-		Logger logger = Logger.getLogger("Decomposition.validateForFinalComponent");
+		Logger logger = Logger.getLogger("DecompositionSimple.validateForFinalComponent");
 		boolean res;
 		String lastComponent = components[components.length-1];
 		lastComponent = lastComponent.substring(1,lastComponent.length()-1);

@@ -66,16 +66,16 @@ public class MorphologicalAnalyzerTest {
 	public void test__decomposeWord__uqaqtiup() throws Exception  {
 		MorphologicalAnalyzer analyzer = new MorphologicalAnalyzer();
 		String word = "uqaqtiup";
-		try {
-			analyzer.disactivateTimeout();;
-			Decomposition[] decs = analyzer.decomposeWord(word);
-			Assert.assertTrue(decs.length!=0);
-			for (int i=0; i<decs.length; i++) {
-				System.out.println(decs[i].toStr2());
-			}
-		} catch(Exception e) {
-			throw e;
+		analyzer.disactivateTimeout();;
+		Decomposition[] decs = analyzer.decomposeWord(word);
+		Assert.assertTrue(decs.length!=0);
+		for (int i=0; i<decs.length; i++) {
+			System.out.println(decs[i].toStr2());
 		}
+
+//		DecompositionSimple[] decSimple = analyzer.decomposeWord__NEW(word);
+//		new AssertDecompositionList(decSimple)
+//			.decompIs("BLAH");
 	}
 
 	@Test

@@ -18,13 +18,13 @@ public class MorphologicalAnalyzer_L2R
 	}
 
 //	@Override
-//	public Decomposition[] decomposeWord(String word)
+//	public DecompositionSimple[] decomposeWord(String word)
 //			throws TimeoutException, MorphInukException, 
 //			LinguisticDataException {
-//		Decomposition finalState = decompose(word);
-//		List<Decomposition> decompsLst = finalState.allDecompositions;
-//		Decomposition[] decomps =
-//			decompsLst.toArray(new Decomposition[decompsLst.size()]);
+//		DecompositionSimple finalState = decompose(word);
+//		List<DecompositionSimple> decompsLst = finalState.allDecompositions;
+//		DecompositionSimple[] decomps =
+//			decompsLst.toArray(new DecompositionSimple[decompsLst.size()]);
 //		
 //		return decomps;
 //	}
@@ -264,14 +264,14 @@ public class MorphologicalAnalyzer_L2R
 	}
 
 //	@Override
-//	public Decomposition[] decomposeWord(String word)
+//	public DecompositionSimple[] decomposeWord(String word)
 //			throws TimeoutException, MorphologicalAnalyzerException {
 //		// TODO Auto-generated method stub
 //		return null;
 //	}
 
 //	@Override
-//	public Decomposition[] decomposeWord(String word, Boolean extendedAnalysis)
+//	public DecompositionSimple[] decomposeWord(String word, Boolean extendedAnalysis)
 //			throws TimeoutException, MorphologicalAnalyzerException {
 //		// TODO Auto-generated method stub
 //		return null;

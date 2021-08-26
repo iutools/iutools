@@ -68,7 +68,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 	 * @param word             String  word to be analyzed
 	 * @param extendedAnalysis Boolean when true, and if the word ends in a vowel, analyze also the words
 	 *                                 word+'t', word+'k', word+'q'
-	 * @return Decomposition[]         an array of Decomposition objects
+	 * @return DecompositionSimple[]         an array of DecompositionSimple objects
 	 * @throws MorphologicalAnalyzerException
 	 * @throws TimeoutException
 	 */
@@ -209,8 +209,8 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 	 *
 	 * @param word String an Inuktitut word in the Roman alphabet
 	 * @param decomposeCompositeRoot boolean if true, decompose composite roots into their components
-	 * @param decompsSoFar List a list of Decomposition objects, possible null
-	 * @return a list of Decomposition objects or null
+	 * @param decompsSoFar List a list of DecompositionSimple objects, possible null
+	 * @return a list of DecompositionSimple objects or null
 	 */
 	private List<Decomposition> _decompose(String word,
 														boolean decomposeCompositeRoot, List<Decomposition> decompsSoFar)
@@ -257,7 +257,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
     //=============================================================================================
 
 	/**
-	 * Decomposition of an Inuktitut term.
+	 * DecompositionSimple of an Inuktitut term.
 	 *
 	 * This method is called recursively with the remaining stem every time
 	 * a candidate affix has been validated. The first time it is called, 'term' is the original word,
@@ -641,7 +641,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
      * @param states Graph.State[]
      * @param preConds Conditions
      * @param transitivity String
-     * @return Vector<Decomposition>
+     * @return Vector<DecompositionSimple>
      * @throws TimeoutException
      * @throws LinguisticDataException
      */

@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
+import org.iutools.morph.DecompositionSimple;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -48,7 +49,7 @@ public class WordAnalyzerTest {
 	public void test_analyze__Case_inullu() throws Exception {
 		WordAnalyzer wordAnalyzer = new WordAnalyzer();
 		String string = "inullu";
-		List<Decomposition> decompositions = wordAnalyzer.analyze(string);
+		List<DecompositionSimple> decompositions = wordAnalyzer.analyze(string);
 		for (int i=0; i<decompositions.size(); i++) System.out.println((i+1)+". "+decompositions.get(i).toStr());
 		assertEquals("",1,decompositions.size());
 	}
@@ -57,7 +58,7 @@ public class WordAnalyzerTest {
 	public void test_analyse__Case_tikittuq() throws Exception {
 		WordAnalyzer wordAnalyzer = new WordAnalyzer();
 		String string = "tikittuq";
-		List<Decomposition> decompositions = wordAnalyzer.analyze(string);
+		List<DecompositionSimple> decompositions = wordAnalyzer.analyze(string);
 //		for (int i=0; i<decompositions.size(); i++) System.out.println((i+1)+". "+decompositions.get(i).toStr());
 		assertEquals("",2,decompositions.size());
 	}
@@ -66,7 +67,7 @@ public class WordAnalyzerTest {
 	public void test_analyze__Case_tikinniaqtuq() throws Exception {
 		WordAnalyzer wordAnalyzer = new WordAnalyzer();
 		String string = "tikinniaqtuq";
-		List<Decomposition> analyses = wordAnalyzer.analyze(string);
+		List<DecompositionSimple> analyses = wordAnalyzer.analyze(string);
 		assertEquals("",6,analyses.size());
 	}
 
@@ -74,7 +75,7 @@ public class WordAnalyzerTest {
 	public void test_analyze__Case_umiarjualiuqti() throws Exception {
 		WordAnalyzer wordAnalyzer = new WordAnalyzer();
 		String string = "umiarjualiuqti";
-		List<Decomposition> decompositions = wordAnalyzer.analyze(string);
+		List<DecompositionSimple> decompositions = wordAnalyzer.analyze(string);
 		for (int i=0; i<decompositions.size(); i++) System.out.println((i+1)+". "+decompositions.get(i).toStr());
 		assertEquals("",9,decompositions.size());
 	}
@@ -83,7 +84,7 @@ public class WordAnalyzerTest {
 	public void test_analyze__Case_maligaliuqti() throws Exception {
 		WordAnalyzer wordAnalyzer = new WordAnalyzer();
 		String string = "maligaliuqti";
-		List<Decomposition> analyses = wordAnalyzer.analyze(string);
+		List<DecompositionSimple> analyses = wordAnalyzer.analyze(string);
 		for (int i=0; i<analyses.size(); i++) System.out.println((i+1)+". "+analyses.get(i).toStr());
 		assertEquals("",7,analyses.size());
 	}
@@ -92,7 +93,7 @@ public class WordAnalyzerTest {
 	public void test_analyze__Case_niruarut() throws Exception {
 		WordAnalyzer wordAnalyzer = new WordAnalyzer();
 		String string = "niruarut";
-		List<Decomposition> analyses = wordAnalyzer.analyze(string);
+		List<DecompositionSimple> analyses = wordAnalyzer.analyze(string);
 //		for (int i=0; i<analyses.size(); i++) System.out.println((i+1)+". "+analyses.get(i).toStr());
 		assertEquals("",2,analyses.size());
 	}
@@ -101,7 +102,7 @@ public class WordAnalyzerTest {
 	public void test_analyze__Case_umiarut() throws Exception {
 		WordAnalyzer wordAnalyzer = new WordAnalyzer();
 		String string = "umiarut";
-		List<Decomposition> analyses = wordAnalyzer.analyze(string);
+		List<DecompositionSimple> analyses = wordAnalyzer.analyze(string);
 		assertEquals("",1,analyses.size());
 	}
 
