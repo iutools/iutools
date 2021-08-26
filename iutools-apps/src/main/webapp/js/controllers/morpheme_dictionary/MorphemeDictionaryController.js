@@ -130,7 +130,7 @@ class MorphemeDictionaryController extends IUToolsController {
 				nbExamples: nbExamples
 		};
 		
-		var jsonInputs = JSON.stringify(request);;
+		var jsonInputs = JSON.stringify(request);
 		
 		return jsonInputs;
 	}

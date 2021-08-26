@@ -1,5 +1,5 @@
 /*
- * Controller for IU Word Dictionary dialog.
+ * Controller for Dictionary Entry dialog.
  */
 
 class WordEntryController extends IUToolsController {

@@ -145,7 +145,6 @@ class SearchController extends IUToolsController {
 
     enableSearchButton() {
         this.elementForProp('btnSearch').attr("disabled", false);
-
     }
 
 

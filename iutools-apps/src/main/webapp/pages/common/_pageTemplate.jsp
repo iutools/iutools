@@ -59,6 +59,10 @@
   <a href="https://www.pirurvik.ca/" target="_blank"><img src="imgs/Pirurvik_logo_2.jpg" alt="logo of pirurvik"></a>
 </div>
 
+<!-- To ensure that the browser remembers the old breakpoints after page
+reloading -->
+<script>debugger;</script>
+
 <!--
    Load scripts that are common to all page types
 -->

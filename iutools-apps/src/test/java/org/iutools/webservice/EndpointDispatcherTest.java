@@ -75,7 +75,11 @@ public class EndpointDispatcherTest {
 
 		new AssertServletResponse(response, MorphemeExamplesResult.class)
 			.reportsException(
-				"JSON inputs did not have the structure of class org.iutools.webservice.morphexamples.MorphemeExamplesInputs")
+				"Service raised exception\n\n" +
+				"JSON inputs did not have the structure of class 'org.iutools.webservice.morphexamples.MorphemeExamplesInputs'.\n" +
+				"JSON was: '{\"wordPattern\":\"siuq\",\"unknownField\":\"blah\"}'\n" +
+				"org.iutools.webservice.ServiceException: JSON inputs did not have the structure of class 'org.iutools.webservice.morphexamples.MorphemeExamplesInputs'.\n" +
+				"JSON was: '{\"wordPattern\":\"siuq\",\"unknownField\":\"blah\"}")
 			;
 		return;
 	}
@@ -98,6 +102,24 @@ public class EndpointDispatcherTest {
 		JSONObject json = new JSONObject()
 			.put("origQuery", "inuksuk");
 		String uri = "iutools/srv2/search/expandquery";
+		MockHttpServletResponse response  = doPost(uri, json);
+
+		new AssertServletResponse(response, ExpandQueryResult.class)
+			.reportsNoException()
+			;
+		return;
+	}
+
+	@Test
+	public void test__doPost__log_action__DICTIONARY_LOOKUP() throws Exception {
+
+		JSONObject json = new JSONObject()
+			.put("action", LogActionInputs.Action.DICTIONARY_LOOKUP)
+			.put("taskID", JSONObject.NULL)
+			.put("taskData", new JSONObject()
+				.put("word", "inuk")
+			);
+		String uri = "iutools/srv2/log_action";
 		MockHttpServletResponse response  = doPost(uri, json);
 
 		new AssertServletResponse(response, ExpandQueryResult.class)

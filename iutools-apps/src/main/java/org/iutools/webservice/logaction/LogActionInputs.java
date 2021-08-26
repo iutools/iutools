@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public class LogActionInputs extends ServiceInputs {
 
-	public static enum Action {SPELL, GIST_TEXT, GIST_WORD, MORPHEME_EXAMPLES,
+	public static enum Action {DICTIONARY_LOOKUP, SPELL, GIST_TEXT, GIST_WORD, MORPHEME_EXAMPLES,
 		SEARCH_WEB;
 	}
 

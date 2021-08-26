@@ -35,6 +35,14 @@ public abstract class Endpoint
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 		throws ServiceException {
+		Logger tLogger = Logger.getLogger("org.iutools.webservice.Endpoint.doPost");
+//		if (tLogger.isTraceEnabled()) {
+//			try {
+//				tLogger.trace("request json="+PrettyPrinter.print(IOUtils.toString(request.getReader())));
+//			} catch (IOException e) {
+//				throw new ServiceException("Could not trace request JSON");
+//			}
+//		}
 		I inputs = null;
 		try {
 
@@ -134,19 +142,26 @@ public abstract class Endpoint
 
 	public I jsonInputs(
 		HttpServletRequest request, Class<I> inputClass) throws ServiceException {
-		Logger tLogger = Logger.getLogger("org.iutools.webservice.EndpointDispatcher..jsonInputs");
+		Logger tLogger = Logger.getLogger("org.iutools.webservice.EndpointDispatcher.jsonInputs");
 
 		I inputs = null;
+		String jsonRequestBody = null;
 		try {
-			String jsonRequestBody = IOUtils.toString(request.getReader());
-			tLogger.trace("jsonRequestBody=" + jsonRequestBody);
+			jsonRequestBody = IOUtils.toString(request.getReader());
+		} catch (IOException e) {
+			throw new ServiceException("Could not read inputs from request object", e);
+		}
 
+		tLogger.trace("jsonRequestBody=" + jsonRequestBody);
+
+		try {
 			if (jsonRequestBody != null) {
 				inputs = mapper.readValue(jsonRequestBody, inputClass);
 			}
 		} catch (IOException e) {
 			throw new ServiceException(
-				"JSON inputs did not have the structure of class "+inputClass.getName(), e);
+				"JSON inputs did not have the structure of class '"+inputClass.getName()+
+				"'.\nJSON was: '"+jsonRequestBody+"'", e);
 		}
 
 		tLogger.trace("returning inputs="+ PrettyPrinter.print(inputs));
