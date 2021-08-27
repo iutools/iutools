@@ -24,7 +24,7 @@ public class Gist {
 		this.word = word;
 		boolean syllabic = false;
 		String latin;
-		Decomposition[] decs;
+		DecompositionSimple[] decs;
 		MorphemeHumanReadableDescr[] morphDescriptions = null;
 
 		MorphologicalAnalyzer morphAnalyzer = new MorphologicalAnalyzer();
@@ -38,10 +38,10 @@ public class Gist {
 			}
 			else
 				latin = word;
-			decs = morphAnalyzer.decomposeWord(latin);
+			decs = morphAnalyzer.decomposeWord_NEW(latin);
 			if (decs != null && decs.length > 0) {
-				Decomposition dec = decs[0];
-				String[] meaningsOfParts = Decompose.getMeaningsInArrayOfStrings(dec.toStr2(),"en",true,false);
+				DecompositionSimple dec = decs[0];
+				String[] meaningsOfParts = Decompose.getMeaningsInArrayOfStrings(dec.toString(),"en",true,false);
 				wordComponents = new Pair[meaningsOfParts.length];
 				for (int i=0; i<meaningsOfParts.length; i++) {
 					Matcher matcher = pattern.matcher(meaningsOfParts[i]);

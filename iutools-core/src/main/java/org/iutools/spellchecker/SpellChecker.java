@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.iutools.morph.*;
 import org.iutools.utilities.StopWatch;
 import ca.nrc.debug.Debug;
 import org.iutools.corpus.*;
@@ -33,9 +34,6 @@ import org.iutools.text.ngrams.NgramCompiler;
 import org.iutools.text.segmentation.IUTokenizer;
 import org.iutools.config.IUConfig;
 import org.iutools.linguisticdata.LinguisticDataException;
-import org.iutools.morph.Decomposition;
-import org.iutools.morph.MorphologicalAnalyzer;
-import org.iutools.morph.MorphologicalAnalyzerException;
 import org.iutools.script.Orthography;
 import org.iutools.script.Syllabics;
 import org.iutools.script.TransCoder;
@@ -495,22 +493,27 @@ public class SpellChecker {
 
 		Boolean answer = null;
 		
-		Decomposition[] decomps = null;
+		DecompositionSimple[] decomps = null;
 		try {
 			 decomps = 
 				new MorphologicalAnalyzer()
 						.setTimeout(MAX_DECOMP_MSECS)
 						.activateTimeout()
-						.decomposeWord(word);
+						.decomposeWord_NEW(word);
 		} catch(TimeoutException e) {
 			answer = false;
 		} catch(MorphologicalAnalyzerException e) {
 			throw new SpellCheckerException(e);
 		}
-		
+
 		if (decomps != null) {
-			for (Decomposition aDecomp: decomps) {
-				List<String> morphemes = aDecomp.morphemeSurfaceForms();
+			for (DecompositionSimple aDecomp: decomps) {
+				List<String> morphemes = null;
+				try {
+					morphemes = aDecomp.surfaceForms();
+				} catch (DecompositionExcepion decompositionExcepion) {
+					throw new SpellCheckerException(decompositionExcepion);
+				}
 
 				String morphLead = "";
 				for (String morph: morphemes) {
@@ -523,9 +526,9 @@ public class SpellChecker {
 				if (answer != null) { break; }
 			}
 		}
-		
+
 		if (answer == null) { answer = false; }
-		
+
 		return answer.booleanValue();
 	}
 	
@@ -576,13 +579,13 @@ public class SpellChecker {
 		
 		Boolean answer = null;
 		
-		Decomposition[] decomps = null;
+		DecompositionSimple[] decomps = null;
 		try {
 			 decomps = 
 				new MorphologicalAnalyzer()
 						.setTimeout(MAX_DECOMP_MSECS)
 						.activateTimeout()
-						.decomposeWord(word);
+						.decomposeWord_NEW(word);
 		} catch(TimeoutException e) {
 			answer = false;
 		} catch(MorphologicalAnalyzerException e) {
@@ -590,8 +593,13 @@ public class SpellChecker {
 		}
 		
 		if (decomps != null) {
-			for (Decomposition aDecomp: decomps) {
-				List<String> morphemes = aDecomp.morphemeSurfaceForms();
+			for (DecompositionSimple aDecomp: decomps) {
+				List<String> morphemes = null;
+				try {
+					morphemes = aDecomp.surfaceForms();
+				} catch (DecompositionExcepion decompositionExcepion) {
+					throw new SpellCheckerException(decompositionExcepion);
+				}
 
 				String morphTail = "";
 				for (int ii=morphemes.size()-1; ii > 0; ii--) {
@@ -1257,9 +1265,9 @@ public class SpellChecker {
 			accepted = false;
 			String term = makeUpWords[i]+ending;
 			logger.trace("term= "+term);
-			Decomposition[] decs = null;
+			DecompositionSimple[] decs = null;
 			try {
-				decs = morphAnalyzer.decomposeWord(term);
+				decs = morphAnalyzer.decomposeWord_NEW(term);
 			} catch (TimeoutException | MorphologicalAnalyzerException e) {
 			}
 			logger.trace("decs: "+(decs==null?"null":decs.length));

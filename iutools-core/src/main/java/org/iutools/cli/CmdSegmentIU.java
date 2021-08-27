@@ -9,8 +9,7 @@ import org.apache.log4j.Logger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.iutools.linguisticdata.LinguisticDataException;
-import org.iutools.morph.Decomposition;
+import org.iutools.morph.DecompositionSimple;
 import org.iutools.morph.MorphologicalAnalyzer;
 import org.iutools.morph.MorphologicalAnalyzerAbstract;
 import ca.nrc.debug.Debug;
@@ -53,8 +52,8 @@ public class CmdSegmentIU extends ConsoleCommand {
 				long start = System.currentTimeMillis();	
 				mLogger.trace("Working on word="+word+"(@"+start+" msecs)");
 
-				Decomposition[] decs = 
-					morphAnalyzer.decomposeWord(word,lenient);
+				DecompositionSimple[] decs =
+					morphAnalyzer.decomposeWord_NEW(word,lenient);
 				long elapsed = System.currentTimeMillis() - start;
 				printDecompositions(word, decs, elapsed);
 				mLogger.trace("DONE Working on word="+word+"(@"+start+" msecs)");
@@ -101,7 +100,7 @@ public class CmdSegmentIU extends ConsoleCommand {
 		printWordResult(result);
 	}
 
-	private void printDecompositions(String word, Decomposition[] decs, 
+	private void printDecompositions(String word, DecompositionSimple[] decs,
 			long elapsedMSecs) throws ConsoleException {
 		if (mode == Mode.PIPELINE) {
 			printDecompositionsPipeline(word, decs, elapsedMSecs);
@@ -110,24 +109,20 @@ public class CmdSegmentIU extends ConsoleCommand {
 		}
 	}
 
-	private void printDecompositionsUserModes(Decomposition[] decs, 
+	private void printDecompositionsUserModes(DecompositionSimple[] decs,
 			long elapsedMSecs) throws ConsoleException {
 		if (decs == null) {
 			echo("Morphological analyzer failed");
 		} else if (decs.length == 0) {
 			echo("No decompositions found");
 		} else {
-			for (Decomposition aDec: decs) {
-				try {
-					echo(aDec.toStr2());
-				} catch (LinguisticDataException e) {
-					throw new ConsoleException(e);
-				}
+			for (DecompositionSimple aDec: decs) {
+				echo(aDec.toString());
 			}
 		}
 	}
 
-	private void printDecompositionsPipeline(String _word, Decomposition[] decs, 
+	private void printDecompositionsPipeline(String _word, DecompositionSimple[] decs,
 			long elapsed) throws ConsoleException {
 		try {
 			WordResult result = new WordResult(_word, decs, lenient, elapsed);
@@ -180,12 +175,12 @@ public class CmdSegmentIU extends ConsoleCommand {
 			initializeWordResult(_word, null, null, null, exc);
 		}
 
-		public WordResult(String _word, Decomposition[] decomps, 
+		public WordResult(String _word, DecompositionSimple[] decomps,
 				Boolean _lenient, Long elapsed) throws ConsoleException {
 			initializeWordResult(_word, decomps, elapsed, _lenient, null);
 		}
 
-		public WordResult(String _word, Decomposition[] decomps, 
+		public WordResult(String _word, DecompositionSimple[] decomps,
 				Long elapsed, Exception exc) throws ConsoleException {
 			initializeWordResult(_word, decomps, elapsed, null, exc);
 		}
@@ -202,7 +197,7 @@ public class CmdSegmentIU extends ConsoleCommand {
 			return this;
 		}
 
-		private void initializeWordResult(String _word, Decomposition[] decomps, 
+		private void initializeWordResult(String _word, DecompositionSimple[] decomps,
 			Long elapsed, Boolean _lenient, Exception exc) throws ConsoleException {
 			this.word = _word;
 			this.elapsedMSecs = elapsed;			
@@ -212,11 +207,7 @@ public class CmdSegmentIU extends ConsoleCommand {
 			if (decomps != null) {
 				this.decompositions = new String[decomps.length];
 				for (int ii=0; ii < decomps.length; ii++) {
-					try {
-						this.decompositions[ii] = decomps[ii].toStr2();
-					} catch (LinguisticDataException e) {
-						throw new ConsoleException(e);
-					}
+					this.decompositions[ii] = decomps[ii].toString();
 				}
 			}
 			setException(exc);

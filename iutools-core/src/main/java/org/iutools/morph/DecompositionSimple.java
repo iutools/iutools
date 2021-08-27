@@ -3,6 +3,9 @@ package org.iutools.morph;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DecompositionSimple {
 	
 	private String[] _components;
@@ -18,13 +21,13 @@ public class DecompositionSimple {
 		String[][] morphemes = new String[decompObjs.length][];
 		int ii=0;
 		for (DecompositionSimple aDecomp: decompObjs) {
-			morphemes[ii] = aDecomp.toMorphemes();
+			morphemes[ii] = aDecomp.morphemeIDs();
 			ii++;
 		}
 		return morphemes;
 	}
 
-	private String[] toMorphemes() throws DecompositionExcepion {
+	private String[] morphemeIDs() throws DecompositionExcepion {
 		String[] morphemes = new String[components().length];
 		int ii=0;
 		for (String aComponent: components()) {
@@ -34,6 +37,16 @@ public class DecompositionSimple {
 		}
 		return morphemes;
 	}
+
+	public List<String> surfaceForms() throws DecompositionExcepion {
+		List<String> surfaceForms = new ArrayList<String>();
+		for (String aComponent: components()) {
+			Pair<String,String> parsedcomp = DecompositionSimple.parseComponent(aComponent);
+			surfaceForms.add(parsedcomp.getLeft());
+		}
+		return surfaceForms;
+	}
+
 
 	public static Pair<String,String> parseComponent(String comp) throws DecompositionExcepion {
 		String[] parsed = comp.split(":");

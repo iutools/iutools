@@ -7,13 +7,11 @@
 package org.iutools.bin;
 
 import java.util.Calendar;
-import java.util.Vector;
 
-import ca.nrc.json.PrettyPrinter;
 import org.apache.log4j.Logger;
 import org.iutools.linguisticdata.LinguisticData;
 import org.iutools.linguisticdata.LinguisticDataException;
-import org.iutools.linguisticdata.Morpheme;
+import org.iutools.morph.DecompositionSimple;
 import org.iutools.script.TransCoder;
 import org.iutools.morph.Decomposition;
 import org.iutools.morph.MorphologicalAnalyzer;
@@ -154,19 +152,19 @@ public class Decompose {
             word = TransCoder.unicodeToRoman(word);
         }
         // Décomposition du mot.
-        Decomposition[] decs;
+        DecompositionSimple[] decs;
         try {
             LinguisticData.init(); // make sure the LinguisticData instance is null
             MorphologicalAnalyzer morphAnalyzer = new MorphologicalAnalyzer();
             morphAnalyzer.setDecomposeCompositeRoot(decomposeComposite);
         	morphAnalyzer.disactivateTimeout();
 
-			decs = morphAnalyzer.decomposeWord(word,extendedAnalysis);
+			decs = morphAnalyzer.decomposeWord_NEW(word,extendedAnalysis);
 			
 	        String[] decExprs = new String[decs.length];
 	        // Préparation de l'affichage des résultats.
 			for (int i = 0; i < decs.length; i++) {
-				decExprs[i] = decs[i].toStr2();
+				decExprs[i] = decs[i].toString();
 			}
 	        return decExprs;
 		} catch (Exception e) {
