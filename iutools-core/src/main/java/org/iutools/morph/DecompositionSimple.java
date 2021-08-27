@@ -1,5 +1,6 @@
 package org.iutools.morph;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 
 public class DecompositionSimple {
@@ -11,6 +12,35 @@ public class DecompositionSimple {
 		decompSpecs = _expression;
 
 		return;
+	}
+
+	public static String[][] decomps2morphemes(DecompositionSimple[] decompObjs) throws DecompositionExcepion {
+		String[][] morphemes = new String[decompObjs.length][];
+		int ii=0;
+		for (DecompositionSimple aDecomp: decompObjs) {
+			morphemes[ii] = aDecomp.toMorphemes();
+			ii++;
+		}
+		return morphemes;
+	}
+
+	private String[] toMorphemes() throws DecompositionExcepion {
+		String[] morphemes = new String[components().length];
+		int ii=0;
+		for (String aComponent: components()) {
+			Pair<String,String> parsedcomp = DecompositionSimple.parseComponent(aComponent);
+			morphemes[ii] = parsedcomp.getRight();
+			ii++;
+		}
+		return morphemes;
+	}
+
+	public static Pair<String,String> parseComponent(String comp) throws DecompositionExcepion {
+		String[] parsed = comp.split(":");
+		if (parsed.length != 2) {
+			throw new DecompositionExcepion("Could not parse component '"+comp+"'");
+		}
+		return Pair.of(parsed[0], parsed[1]);
 	}
 
 	public String[] components() {

@@ -5,9 +5,7 @@ import ca.nrc.ui.commandline.CommandLineException;
 import org.iutools.corpus.CompiledCorpus;
 import org.iutools.corpus.CompiledCorpusException;
 import org.iutools.linguisticdata.LinguisticDataException;
-import org.iutools.morph.Decomposition;
-import org.iutools.morph.MorphologicalAnalyzer;
-import org.iutools.morph.MorphologicalAnalyzerException;
+import org.iutools.morph.*;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -50,12 +48,12 @@ public class CmdRecompileDecomps extends ConsoleCommand {
 	private void redecomposeWord(String word, CompiledCorpus corpus,
 		String comment)  {
 		try {
-			Decomposition[] decompObjs = analyzer.decomposeWord(word);
-			String[][] decomps = Decomposition.decomps2morphemes(decompObjs);
+			DecompositionSimple[] decompObjs = analyzer.decomposeWord_NEW(word);
+			String[][] decomps = DecompositionSimple.decomps2morphemes(decompObjs);
 			corpus.addWordOccurence(word, decomps, new Integer(decomps.length), 0);
 		} catch (TimeoutException e) {
 			echo("   Analyzer timed out!");
-		} catch (MorphologicalAnalyzerException| CompiledCorpusException e) {
+		} catch (MorphologicalAnalyzerException | CompiledCorpusException | DecompositionExcepion e) {
 			echo(1);
 			{
 				echo("   Analyzer raised exception: " + Debug.printCallStack(e));
