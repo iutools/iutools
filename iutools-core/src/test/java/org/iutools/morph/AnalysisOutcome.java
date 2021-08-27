@@ -13,7 +13,7 @@ import java.util.Collections;
  */
 public class AnalysisOutcome {
 	public boolean timedOut = false;
-	public Decomposition[] decompositions = new Decomposition[0];
+	public DecompositionSimple[] decompositions = new DecompositionSimple[0];
 	
 	public boolean includesAtLeastOneOfDecomps(String[] decomps) throws LinguisticDataException {
 		boolean includes = (null != decompRank(decomps));
@@ -23,7 +23,7 @@ public class AnalysisOutcome {
 	public Integer decompRank(String[] correctDecomps) throws LinguisticDataException {
 		Integer rank = null;
 		for (int ii = 0; ii < decompositions.length; ii++) {
-			String itthDecomp = decompositions[ii].toStr2();
+			String itthDecomp = decompositions[ii].toString();
 			if (ArrayUtils.contains(correctDecomps, itthDecomp)) {
 				rank = ii;
 				break;
@@ -36,7 +36,7 @@ public class AnalysisOutcome {
 	
 	public String joinDecomps() {
 		String joined = "";
-		for (Decomposition aDecomp: decompositions) {
+		for (DecompositionSimple aDecomp: decompositions) {
 			joined += "  "+aDecomp.toString()+"\n";
 		}
 		return joined;

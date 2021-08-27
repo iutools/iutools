@@ -60,4 +60,16 @@ public class DecompositionSimple {
 		String[] parts = componentStr.split(":");
 		return parts[1];
 	}
+
+	public String toString() {
+		String toS = "{";
+		for (int ii=0; ii < components.length; ii++) {
+			if (ii > 0) {
+				toS += "}{";
+			}
+			toS += components[ii];
+		}
+		toS += "}";
+		return toS;
+	}
 }

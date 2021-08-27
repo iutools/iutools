@@ -85,7 +85,6 @@ public class MorphologicalAnalyzer_AccuracyTest {
 
 	private void evaluateAccuracy() throws Exception {
 
-
 		System.out.println("This test can take a few minutes to complete.");
 
 		// Uncomment for debugging.
@@ -366,8 +365,8 @@ public class MorphologicalAnalyzer_AccuracyTest {
 			if (morphAnalyzer==null) {
 				morphAnalyzer = new MorphologicalAnalyzer();
 			}
-			outcome.decompositions = morphAnalyzer.decomposeWord(word);
-		} catch (TimeoutException | MorphologicalAnalyzerException e) {
+			outcome.decompositions = morphAnalyzer.decomposeWord_NEW(word);
+		} catch (TimeoutException | MorphologicalAnalyzerException | DecompositionExcepion e) {
 			outcome.timedOut = true;
 		}
 		
