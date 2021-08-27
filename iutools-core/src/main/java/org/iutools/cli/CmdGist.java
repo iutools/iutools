@@ -3,6 +3,7 @@ package org.iutools.cli;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -10,6 +11,7 @@ import java.util.regex.Pattern;
 import ca.nrc.ui.commandline.CommandLineException;
 import org.iutools.bin.Decompose;
 import org.iutools.morph.Decomposition;
+import org.iutools.morph.DecompositionSimple;
 import org.iutools.morph.MorphologicalAnalyzer;
 import org.iutools.script.Syllabics;
 import ca.nrc.ui.commandline.UserIO.Verbosity;
@@ -28,14 +30,14 @@ public class CmdGist extends ConsoleCommand {
 	@Override
 	public void execute() throws Exception {
 		String content = getContent(false);
-		String inputFile = getInputFile(false).toString();
+		Path inputFile = getInputFile(false);
 		Verbosity verbose = getVerbosity(); // 0: dense layout  1: pretty-print
 		if (verbose==Verbosity.Level0)
 			verbose = Verbosity.Level2;
 		String[] words = null;
 		String[] lines = null;
 		String latin = null;
-		Decomposition[] decs = null;
+		DecompositionSimple[] decs = null;
 		
 		MorphologicalAnalyzer morphAnalyzer = new MorphologicalAnalyzer();
 
@@ -46,13 +48,12 @@ public class CmdGist extends ConsoleCommand {
 //			words = content.split("\\s+");
 			lines = content.split("\n");
 		} else {
-			File file = new File(inputFile);
-			if ( !file.exists() ) {
+			if ( !inputFile.toFile().exists() ) {
 				echo("The file '"+inputFile+"' does not exist.");
 				return;
 			} else {
 				ArrayList<String> arrayLines = new ArrayList<String>();
-				BufferedReader br = new BufferedReader(new FileReader(file));
+				BufferedReader br = new BufferedReader(new FileReader(inputFile.toFile()));
 				content = "";
 				String line;
 				while ( (line = br.readLine()) != null ) {
@@ -61,12 +62,9 @@ public class CmdGist extends ConsoleCommand {
 				}
 				br.close();
 				lines = arrayLines.toArray(new String[] {});
-//				lines = content.split("\n");
-//				words = content.split("\\s+");
 			}
 		}
-//		System.out.println("Nb. lines = "+lines.length);
-		
+
 		Pattern pattern = Pattern.compile("^(.+?)---(.+)$");
 		
 		while (true) {
@@ -74,9 +72,7 @@ public class CmdGist extends ConsoleCommand {
 				content = prompt("Enter Inuktut words");
 				if (content == null) break;
 				lines = content.split("\n");
-//				words = content.split("\\s+");
 			} else {
-				//echo("Processing: "+String.join(" ", words));
 			}
 			
 			for (int iLine=0; iLine<lines.length; iLine++) {	
@@ -93,10 +89,10 @@ public class CmdGist extends ConsoleCommand {
 					}
 					else
 						latin = word;
-					decs = morphAnalyzer.decomposeWord(latin);
+					decs = morphAnalyzer.decomposeWord_NEW(latin);
 					if (decs != null && decs.length > 0) {
-						Decomposition dec = decs[0];
-						String[] meaningsOfParts = Decompose.getMeaningsInArrayOfStrings(dec.toStr2(),"en",true,false);
+						DecompositionSimple dec = decs[0];
+						String[] meaningsOfParts = Decompose.getMeaningsInArrayOfStrings(dec.toString(),"en",true,false);
 						ArrayList<String> wordGistParts = new ArrayList<String>();
 						for (int i=0; i<meaningsOfParts.length; i++) {
 							Matcher matcher = pattern.matcher(meaningsOfParts[i]);
