@@ -189,23 +189,23 @@ public class WordAnalyzer {
 	    @Override
 	    public int compare(DecompositionSimple a, DecompositionSimple b) {
 	    	Logger logger = Logger.getLogger("WordAnalyzer.DecompositionComparator.compare");
-	    	logger.debug(a.expression+" VS "+b.expression);
-	    	logger.debug(a.components.length+" VS "+b.components.length);
-	    	if (a.components.length < b.components.length)
+	    	logger.debug(a.decompSpecs +" VS "+b.decompSpecs);
+	    	logger.debug(a.components().length+" VS "+b.components().length);
+	    	if (a.components().length < b.components().length)
 	    		return -1;
-	    	else if (a.components.length > b.components.length)
+	    	else if (a.components().length > b.components().length)
 				return 1;
 	    	else {
-		    	logger.debug(a.getSurfaceForm(a.components[0])+" VS "+b.getSurfaceForm(b.components[0]));
-	    		if (a.getSurfaceForm(a.components[0]).length() < b.getSurfaceForm(b.components[0]).length())
+		    	logger.debug(a.getSurfaceForm(a.components()[0])+" VS "+b.getSurfaceForm(b.components()[0]));
+	    		if (a.getSurfaceForm(a.components()[0]).length() < b.getSurfaceForm(b.components()[0]).length())
 	    			return 1;
-	    		else if (a.getSurfaceForm(a.components[0]).length() > b.getSurfaceForm(b.components[0]).length())
+	    		else if (a.getSurfaceForm(a.components()[0]).length() > b.getSurfaceForm(b.components()[0]).length())
 	    			return -1;
 	    		else {
-	    			int lastComponentIndex = a.components.length-1;
-		    		if (a.getMorphemeId(a.components[lastComponentIndex]).length() < b.getMorphemeId(b.components[lastComponentIndex]).length())
+	    			int lastComponentIndex = a.components().length-1;
+		    		if (a.getMorphemeId(a.components()[lastComponentIndex]).length() < b.getMorphemeId(b.components()[lastComponentIndex]).length())
 		    			return -1;
-		    		else if (a.getMorphemeId(a.components[lastComponentIndex]).length() > b.getMorphemeId(b.components[lastComponentIndex]).length())
+		    		else if (a.getMorphemeId(a.components()[lastComponentIndex]).length() > b.getMorphemeId(b.components()[lastComponentIndex]).length())
 		    			return 1;
 		    		else {
 		    			return 0;

@@ -1,23 +1,29 @@
 package org.iutools.morph;
 
 import org.apache.log4j.Logger;
-import org.iutools.morph.StateGraphForward;
 
 public class DecompositionSimple {
 	
-	public String[] components;
-	public String expression;
+	private String[] _components;
+	public String decompSpecs;
 
 	public DecompositionSimple(String _expression) {
-		expression = _expression;
-		components = _expression.split("\\s+");
+		decompSpecs = _expression;
+
 		return;
+	}
+
+	public String[] components() {
+		if (_components == null) {
+			_components = decompSpecs.split("\\s+");
+		}
+		return _components;
 	}
 	
 	public boolean validateForFinalComponent() {
 		Logger logger = Logger.getLogger("DecompositionSimple.validateForFinalComponent");
 		boolean res;
-		String lastComponent = components[components.length-1];
+		String lastComponent = components()[components().length-1];
 		lastComponent = lastComponent.substring(1,lastComponent.length()-1);
 		logger.debug("last component: "+lastComponent);
 		String[] parts = lastComponent.split(":");
@@ -35,13 +41,13 @@ public class DecompositionSimple {
 	}
 	
 	public String toStr() {
-		return expression;
+		return decompSpecs;
 	}
 	
 	public String[] getMorphemes() {
-		String[] morphemes = new String[components.length];
-		for (int im=0; im<components.length; im++) {
-			String component = components[im].substring(1,components[im].length()-1);
+		String[] morphemes = new String[components().length];
+		for (int im=0; im<components().length; im++) {
+			String component = components()[im].substring(1,components()[im].length()-1);
 			String[] parts = component.split(":");
 			morphemes[im] = parts[1];
 		}
@@ -63,11 +69,11 @@ public class DecompositionSimple {
 
 	public String toString() {
 		String toS = "{";
-		for (int ii=0; ii < components.length; ii++) {
+		for (int ii=0; ii < components().length; ii++) {
 			if (ii > 0) {
 				toS += "}{";
 			}
-			toS += components[ii];
+			toS += components()[ii];
 		}
 		toS += "}";
 		return toS;

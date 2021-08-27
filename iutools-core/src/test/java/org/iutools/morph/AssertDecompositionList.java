@@ -30,7 +30,7 @@ public class AssertDecompositionList extends Asserter<DecompositionSimple[]> {
 
 		String[] gotMorphemes = new String[0];
 		if (topDecomposition() != null) {
-			gotMorphemes = topDecomposition().components;
+			gotMorphemes = topDecomposition().components();
 		}
 
 		AssertObject.assertDeepEquals(
