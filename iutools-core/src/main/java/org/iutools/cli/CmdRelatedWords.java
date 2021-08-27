@@ -7,7 +7,7 @@ import org.iutools.corpus.CompiledCorpus;
 import org.iutools.corpus.CompiledCorpusRegistry;
 
 import org.iutools.bin.Decompose;
-import org.iutools.morph.Decomposition;
+import org.iutools.morph.DecompositionSimple;
 import org.iutools.script.Roman;
 import org.iutools.script.Syllabics;
 import org.iutools.morphrelatives.MorphRelativesFinder;
@@ -28,17 +28,14 @@ public class CmdRelatedWords extends ConsoleCommand {
 	@Override
 	public void execute() throws Exception {
 		String word = getWord(false);
-		String corpusName = getCorpusName(true);
+		String corpusName = getCorpusName(false);
 
 		String latin = null;
 		String syll = null;
 		MorphologicalRelative[] reformulations = null;
 		
-		String compilationFilePath = getCorpusSavePath();
-		FileReader fr = new FileReader(compilationFilePath);
 		CompiledCorpus compiledCorpus =
 			new CompiledCorpusRegistry().getCorpus(corpusName);
-		fr.close();
 		MorphRelativesFinder reformulator = new MorphRelativesFinder(compiledCorpus);
 		CmdConvertIUSegments convertCommand = new CmdConvertIUSegments("");
 		
@@ -100,15 +97,15 @@ public class CmdRelatedWords extends ConsoleCommand {
 				expansions = "\n    No expansion could be found in the corpus.\n";
 			}
 
-			Decomposition[] decs = morphAnalyzer.decomposeWord(latin);
-			Decomposition dec = null;
+			DecompositionSimple[] decs = morphAnalyzer.decomposeWord_NEW(latin);
+			DecompositionSimple dec = null;
 			if (decs.length != 0)
 				dec = decs[0];
 			echo("\nWord:\n\n  "+latin+" ("+syll+") : "+freqWord);
 			if (dec==null)
 				echo("\n    The word could not be decomposed by the inuktitut morphological analyzer.\n");
 			else {
-				String converted = convertCommand.convert(dec.toStr2());
+				String converted = convertCommand.convert(dec.toString());
 				echo("\n    "+String.join("\n    ", Decompose.getMeaningsInArrayOfStrings(converted,"en",false,true)));
 			}
 

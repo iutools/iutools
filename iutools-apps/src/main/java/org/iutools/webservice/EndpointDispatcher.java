@@ -73,8 +73,7 @@ public class EndpointDispatcher extends HttpServlet {
 		try {
 			// Decomposing a word will force loading of the data
 			new MorphologicalAnalyzer().decomposeWord("inuksuk");
-		} catch (TimeoutException | MorphologicalAnalyzerException |
-			LinguisticDataException e) {
+		} catch (TimeoutException | MorphologicalAnalyzerException e) {
 			throw new ServiceException(e);
 		}
 	}
