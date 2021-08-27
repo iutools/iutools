@@ -20,11 +20,7 @@ public class CmdRecompileDecomps extends ConsoleCommand {
 
 	public CmdRecompileDecomps(String name) throws CommandLineException {
 		super(name);
-		try {
-			analyzer = new MorphologicalAnalyzer();
-		} catch (LinguisticDataException e) {
-			throw new CommandLineException(e.getMessage());
-		}
+		analyzer = new MorphologicalAnalyzer();
 	}
 
 	@Override

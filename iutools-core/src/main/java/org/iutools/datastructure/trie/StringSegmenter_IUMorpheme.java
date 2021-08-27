@@ -18,12 +18,8 @@ public class StringSegmenter_IUMorpheme extends StringSegmenter {
 	
 	private MorphologicalAnalyzer morphAnalyzer;
 	
-	public StringSegmenter_IUMorpheme() throws StringSegmenterException {
-		try {
-			morphAnalyzer = new MorphologicalAnalyzer();
-		} catch (LinguisticDataException e) {
-			throw new StringSegmenterException(e);
-		}
+	public StringSegmenter_IUMorpheme() {
+		morphAnalyzer = new MorphologicalAnalyzer();
 	}
 	
 	public String[] segment(String string) throws TimeoutException, StringSegmenterException, LinguisticDataException {

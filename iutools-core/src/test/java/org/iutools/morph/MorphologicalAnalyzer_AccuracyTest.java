@@ -356,7 +356,7 @@ public class MorphologicalAnalyzer_AccuracyTest {
 		return skip;
 	}
 
-	private AnalysisOutcome decompose(String word) throws MorphInukException, LinguisticDataException {
+	private AnalysisOutcome decompose(String word) throws MorphologicalAnalyzerException, LinguisticDataException {
 		AnalysisOutcome outcome = new AnalysisOutcome();
 		
 		try {

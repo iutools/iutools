@@ -5,7 +5,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import org.iutools.linguisticdata.LinguisticDataException;
-import org.iutools.morph.MorphInukException;
+import org.iutools.morph.MorphologicalAnalyzerException;
 import org.iutools.morph.MorphologicalAnalyzerAbstract;
 import org.iutools.morph.MorphologicalAnalyzerException;
 import org.iutools.morph.expAlain.DecompositionState.Step;
@@ -19,7 +19,7 @@ public class MorphologicalAnalyzer_L2R
 
 //	@Override
 //	public DecompositionSimple[] decomposeWord(String word)
-//			throws TimeoutException, MorphInukException, 
+//			throws TimeoutException, MorphologicalAnalyzerException,
 //			LinguisticDataException {
 //		DecompositionSimple finalState = decompose(word);
 //		List<DecompositionSimple> decompsLst = finalState.allDecompositions;
@@ -40,7 +40,7 @@ public class MorphologicalAnalyzer_L2R
 		DecompositionState finalState;
 		try {
 			finalState = decompose(word);
-		} catch (MorphInukException e) {
+		} catch (MorphologicalAnalyzerException e) {
 			throw new MorphologicalAnalyzerException(e);
 		}
 		List<org.iutools.morph.Decomposition> decompsLst = finalState.allDecompositions;
@@ -51,7 +51,7 @@ public class MorphologicalAnalyzer_L2R
 	}
 	
 	DecompositionState decompose(String word)
-			throws MorphInukException {
+			throws MorphologicalAnalyzerException {
 
 		DecompositionState state = initState(word);
 		while (state.nextStep != Step.DONE) {
@@ -68,7 +68,7 @@ public class MorphologicalAnalyzer_L2R
 	}
 	
 	private void doStep(DecompositionState state)
-			throws MorphInukException {
+			throws MorphologicalAnalyzerException {
 		Logger tLogger = Logger.getLogger("ca.inukitutcomputing.morph.expAlain.MorphologicalAnalyzer_L2R.doStep");
 		
 		Step step = state.nextStep;
@@ -218,10 +218,10 @@ public class MorphologicalAnalyzer_L2R
 	 * Add a new level in the choice tree.
 	 * 
 	 * @param state
-	 * @throws MorphInukException 
+	 * @throws MorphologicalAnalyzerException
 	 */
 	private void doExtendChoiceTree(DecompositionState state)
-			throws MorphInukException {
+			throws MorphologicalAnalyzerException {
 		Logger tLogger = Logger.getLogger("ca.inukitutcomputing.morph.expAlain.MorphologicalAnalyzer_L2R.doExtendChoiceTree");
 		
 		if (tLogger.isTraceEnabled()) {
@@ -237,10 +237,10 @@ public class MorphologicalAnalyzer_L2R
 	 * 
 	 * @param state
 	 * @return
-	 * @throws MorphInukException 
+	 * @throws MorphologicalAnalyzerException
 	 */
 	private List<WrittenMorpheme> nextLevelChoices(DecompositionState state)
-			throws MorphInukException {
+			throws MorphologicalAnalyzerException {
 		
 		Logger tLogger = Logger.getLogger("ca.inukitutcomputing.morph.expAlain.MorphologicalAnalyzer_L2R.nextLevelChoices");
 		

@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
-import org.iutools.morph.MorphInukException;
+import org.iutools.morph.MorphologicalAnalyzerException;
 
 public class MorphemeWrittenForms {
 	
@@ -25,7 +25,7 @@ public class MorphemeWrittenForms {
 	Map<String,Set<WrittenMorpheme>> surf2MatchedMorpheme = 
 			new HashMap<String,Set<WrittenMorpheme>>();
 	
-	private MorphemeWrittenForms() throws MorphInukException {
+	private MorphemeWrittenForms() throws MorphologicalAnalyzerException {
 		
 		// TODO: For now, we hard code a small set of forms.
 		//   Eventually, those should be computed from the linguistic DB
@@ -49,7 +49,7 @@ public class MorphemeWrittenForms {
 	}
 
 	public static synchronized MorphemeWrittenForms getInstance() 
-			throws MorphInukException {
+			throws MorphologicalAnalyzerException {
 		if (_singleton == null) {
 			generateSingleton();
 		}
@@ -63,10 +63,10 @@ public class MorphemeWrittenForms {
 	 * threads will try to instantiate it at the same time.
 	 * 
 	 * @return
-	 * @throws MorphInukException
+	 * @throws MorphologicalAnalyzerException
 	 */
 	private synchronized static void generateSingleton() 
-			throws MorphInukException {
+			throws MorphologicalAnalyzerException {
 		Logger tLogger = 
 			Logger.getLogger("ca.inukitutcomputing.morph.expAlain.MorphemeWrittenForms.generateSingleton");
 		
@@ -84,14 +84,14 @@ public class MorphemeWrittenForms {
 	}
 
 	private void addForm(WrittenMorpheme aForm) 
-			throws MorphInukException {
+			throws MorphologicalAnalyzerException {
 		String morphID = aForm.morphID;
 		String morphAttachesTo = aForm.atachesTo();
 		updateAllSurfFormsRegex(aForm);
 		updateSurf2MatchedMorphemeMap(aForm);
 	}
 
-	private void updateAllSurfFormsRegex(WrittenMorpheme aForm) throws MorphInukException {
+	private void updateAllSurfFormsRegex(WrittenMorpheme aForm) throws MorphologicalAnalyzerException {
 		allSurfRegexps.add(aForm.regex());
 	}
 	
@@ -111,11 +111,11 @@ public class MorphemeWrittenForms {
 	 * @param attachTo
 	 * @param matchSurfForm
 	 * @return
-	 * @throws MorphInukException 
+	 * @throws MorphologicalAnalyzerException
 	 */
 	public List<WrittenMorpheme> morphemesThatCanFollow(
 			WrittenMorpheme attachTo, 
-			String matchSurfForm) throws MorphInukException {
+			String matchSurfForm) throws MorphologicalAnalyzerException {
 		
 		String matchSurfFormExtended = attachTo.type() + matchSurfForm;		
 		

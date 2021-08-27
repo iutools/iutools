@@ -16,7 +16,7 @@ import org.iutools.linguisticdata.LinguisticData;
 import org.iutools.linguisticdata.LinguisticDataException;
 import org.iutools.morph.Decomposition;
 import org.iutools.morph.Decomposition.DecompositionExpression;
-import org.iutools.morph.MorphInukException;
+import org.iutools.morph.MorphologicalAnalyzerException;
 import org.iutools.morph.MorphologicalAnalyzer;
 import org.iutools.morph.MorphologicalAnalyzerException;
 
@@ -280,7 +280,7 @@ public class MorphemeSearcher {
 			Double score = 10000*morphemeFreq + wordFreq;
 			scoredEx = new ScoredExample(morphemeExample.word, score, wordFreq);
 			logger.trace("    generateScoredExample --- finished");
-		} catch (LinguisticDataException | TimeoutException | MorphInukException e) {
+		} catch (LinguisticDataException | TimeoutException | MorphologicalAnalyzerException e) {
 			throw new MorphemeSearcherException(e);
 		}
 		return scoredEx;
@@ -302,7 +302,7 @@ public class MorphemeSearcher {
 
 	public Double morphFreqInAnalyses(
 		WordWithMorpheme morphemeExample,
-		boolean allowAnalysisWithAdditionalFinalConsonant) throws LinguisticDataException, TimeoutException, MorphInukException, MorphemeSearcherException {
+		boolean allowAnalysisWithAdditionalFinalConsonant) throws LinguisticDataException, TimeoutException, MorphologicalAnalyzerException, MorphemeSearcherException {
 		MorphologicalAnalyzer analyzer = new MorphologicalAnalyzer();
 		String morpheme = morphemeExample.morphemeId;
 		String[][] decompositions = morphemeExample.decompsSample;

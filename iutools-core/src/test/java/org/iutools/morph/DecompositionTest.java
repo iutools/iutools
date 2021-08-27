@@ -24,7 +24,7 @@ public class DecompositionTest {
 			MorphologicalAnalyzer analyzer = new MorphologicalAnalyzer();
 			org.iutools.morph.Decomposition[] decompositions = analyzer.decomposeWord(word,false);
 			decomp = decompositions[0];
-		} catch (LinguisticDataException | TimeoutException | MorphologicalAnalyzerException e) {
+		} catch (TimeoutException | MorphologicalAnalyzerException e) {
 			throw new RuntimeException(e);
 		}
 	}

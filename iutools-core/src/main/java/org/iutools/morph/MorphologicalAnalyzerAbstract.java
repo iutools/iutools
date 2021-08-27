@@ -327,9 +327,7 @@ public abstract class MorphologicalAnalyzerAbstract implements AutoCloseable {
 	protected abstract Decomposition[] doDecompose(String word, Boolean lenient)
 		throws MorphologicalAnalyzerException, TimeoutException;
     
-    public MorphologicalAnalyzerAbstract() throws LinguisticDataException {
-    	
-    }
+    public MorphologicalAnalyzerAbstract() {}
     
     public MorphologicalAnalyzerAbstract setTimeout(long val) {
     	return setTimeout(new Long(val));

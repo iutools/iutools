@@ -39,6 +39,7 @@ import org.iutools.script.Roman;
 import org.iutools.script.Syllabics;
 import org.iutools.morph.Graph.State;
 import org.iutools.phonology.Dialect;
+import org.iutools.utilities.MorphTimeoutException;
 import org.iutools.utilities.StopWatch;
 import org.iutools.utilities1.Util;
 
@@ -57,7 +58,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
     		Caffeine.newBuilder().maximumSize(10000)
     		  .build();
 
-    public MorphologicalAnalyzer() throws LinguisticDataException {
+    public MorphologicalAnalyzer() {
     	super();
 		LinguisticData.getInstance();
     }
@@ -111,7 +112,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 
 			return decs;
 
-		} catch (LinguisticDataException | MorphInukException e) {
+		} catch (LinguisticDataException | MorphologicalAnalyzerException e) {
 			throw new MorphologicalAnalyzerException(e);
 		}
 
@@ -123,7 +124,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 	 */
 	private List<Decomposition> decomposeUntilTimeoutOrCompletion(
 		String wordToBeAnalyzed, Boolean extendedAnalysis, boolean decomposeCompositeRoot)
-			throws TimeoutException, MorphInukException, LinguisticDataException {
+			throws TimeoutException, MorphologicalAnalyzerException {
 
 		List<Decomposition> decomps;
 		List<Decomposition> decompsSoFar = new ArrayList<Decomposition>();
@@ -170,7 +171,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 	 * Analyze the word with its final 'n' replaced by 't'.
 	 */
 	private List<Decomposition> _decomposeForFinalN(String aWord, boolean decomposeCompositeRoot)
-			throws TimeoutException, MorphInukException, LinguisticDataException {
+			throws TimeoutException, MorphologicalAnalyzerException {
 
 		String wordWithNReplaced = aWord.substring(0, aWord.length() - 1) + "t";
 		List<Decomposition> newDecomps = _decompose(wordWithNReplaced, decomposeCompositeRoot);
@@ -194,7 +195,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
      * Add '*' at the end of the word in place of a missing consonant and analyze the word.
      */
     private List<Decomposition> _decomposeForFinalConsonantPossiblyMissing(
-    		String aWord, boolean decomposeCompositeRoot) throws TimeoutException, MorphInukException, LinguisticDataException {
+    		String aWord, boolean decomposeCompositeRoot) throws TimeoutException, MorphologicalAnalyzerException {
     	stpw.check(
     		"_decomposeForFinalConsonantPossiblyMissing -- upon entry, word="+
     		aWord+", decomposeCompositeRoot="+decomposeCompositeRoot);
@@ -214,7 +215,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 	 */
 	private List<Decomposition> _decompose(String word,
 														boolean decomposeCompositeRoot, List<Decomposition> decompsSoFar)
-			throws TimeoutException, MorphInukException, LinguisticDataException {
+			throws TimeoutException, MorphologicalAnalyzerException {
 
 		Vector<AffixPartOfComposition> morphPartsInit = new Vector<AffixPartOfComposition>();
 		Graph.State state = Graph.initialState;
@@ -248,7 +249,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 
 	private List<Decomposition> _decompose(String word,
 														boolean decomposeCompositeRoot)
-			throws TimeoutException, MorphInukException, LinguisticDataException {
+			throws TimeoutException, MorphologicalAnalyzerException {
 		return _decompose(word, decomposeCompositeRoot, null);
 	}
 
@@ -286,8 +287,8 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 			Vector<AffixPartOfComposition> morphParts,
 			Graph.State[] states,
 			Conditions preConds,
-			String transitivity
-            ) throws TimeoutException, MorphInukException, LinguisticDataException {
+			String transitivity)
+	 		throws TimeoutException, MorphologicalAnalyzerException {
 
     	Logger logger = Logger.getLogger("MorphologicalAnalyzer.__decompose_simplified_term__");
     	stpw.check("__decompose_simplified_term__ -- Upon entry");
@@ -341,7 +342,7 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 			String simplifiedTerm,
 			String word,
 			Vector<AffixPartOfComposition> morphParts, State[] states,
-			Conditions preCond, String transitivity) throws TimeoutException, MorphInukException, LinguisticDataException {
+			Conditions preCond, String transitivity) throws TimeoutException, MorphologicalAnalyzerException {
 
     	stpw.check("analyzeAsSequenceOfMorphemes -- Upon entry");
     	Logger logger = Logger.getLogger("MorphologicalAnalyzer.analyzeAsSequenceOfMorphemes");
@@ -367,8 +368,13 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 			// that some dialectal changes happen inside the candidate affix. All possibilities are considered, including
 			// Schneider's law.
 			Vector<SurfaceFormOfAffix> otherFormsOfAffixResultingFromAssimilationOfPlace = new Vector<SurfaceFormOfAffix>();
-			Vector<String> dialectalSpellingVariationsOfAffix = Dialect.dialectalSpellingVariations(affixCandidate, remainingStem);
-			for (int k = 0; k < dialectalSpellingVariationsOfAffix.size(); k++) {
+			  Vector<String> dialectalSpellingVariationsOfAffix = null;
+			  try {
+				  dialectalSpellingVariationsOfAffix = Dialect.dialectalSpellingVariations(affixCandidate, remainingStem);
+			  } catch (LinguisticDataException e) {
+				  throw new MorphologicalAnalyzerException(e);
+			  }
+			  for (int k = 0; k < dialectalSpellingVariationsOfAffix.size(); k++) {
 				Vector<SurfaceFormOfAffix> formsOfAffixForAVariationSpelling = lookForForms(dialectalSpellingVariationsOfAffix.elementAt(k), USE_SYLLABICS);
 				otherFormsOfAffixResultingFromAssimilationOfPlace.addAll(formsOfAffixForAVariationSpelling);
 			}
@@ -407,9 +413,8 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 	 * @param term String the string to be looked up in the database
 	 * @param syllabic boolean indicates whether the term is in syllabics (true) or roman alphabet (false)
 	 * @return a Vector<SurfaceFormOfAffix> possibly empty of SurfaceFormOfAffix objects
-	 * @throws LinguisticDataException
 	 */
-    public Vector<SurfaceFormOfAffix> lookForForms(String term, boolean syllabic) throws LinguisticDataException {
+    public Vector<SurfaceFormOfAffix> lookForForms(String term, boolean syllabic) throws MorphologicalAnalyzerException {
     	String[] cons = syllabic ? Lexicon.consonantsSyl : Lexicon.consonants;
     	Vector<SurfaceFormOfAffix> formsFound = new Vector<SurfaceFormOfAffix>();
         if (term.endsWith("*")) {
@@ -418,12 +423,20 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
             termWithoutStar = term.substring(0, term.length() - 1);
 			for (String con : cons) {
 				termWithConsonant = termWithoutStar + con;
-				formsFoundForTermWithAddedConsonant = Lexicon.lookForForms(termWithConsonant, syllabic);
+				try {
+					formsFoundForTermWithAddedConsonant = Lexicon.lookForForms(termWithConsonant, syllabic);
+				} catch (LinguisticDataException e) {
+					throw new MorphologicalAnalyzerException(e);
+				}
 				formsFound.addAll(formsFoundForTermWithAddedConsonant);
 			}
         } else {
-        	formsFound = Lexicon.lookForForms(term,syllabic);
-        }
+			  try {
+				  formsFound = Lexicon.lookForForms(term,syllabic);
+			  } catch (LinguisticDataException e) {
+				  throw new MorphologicalAnalyzerException(e);
+			  }
+		  }
 
         return formsFound;
     }
@@ -434,100 +447,105 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
      * Validate each possible form of affix and continue analyzing the remaining stem.
      *
      */
-    @SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked")
 	private List<Decomposition> analyzeWithCandidateAffixes(
-			Vector<SurfaceFormOfAffix> formsOfAffixFound,
-			String stem,
-			String affixCandidateOrig,
-			Graph.State[] states,
-			Conditions preConds,
-			String transitivity,
-			int positionAffix,
-			Vector<AffixPartOfComposition> morphParts,
-			String word,
-			boolean notResultingFromDialectalPhonologicalTransformation
-            ) throws TimeoutException, MorphInukException, LinguisticDataException {
+		Vector<SurfaceFormOfAffix> formsOfAffixFound,
+		String stem,
+		String affixCandidateOrig,
+		Graph.State[] states,
+		Conditions preConds,
+		String transitivity,
+		int positionAffix,
+		Vector<AffixPartOfComposition> morphParts,
+		String word,
+		boolean notResultingFromDialectalPhonologicalTransformation)
+	throws TimeoutException, MorphologicalAnalyzerException {
 
-    	Logger logger = Logger.getLogger("MorphologicalAnalyzer.analyzeWithCandidateAffixes");
-//    	logger.debug("***stem= "+stem);
-        List<Decomposition> completeAnalysis = new ArrayList<Decomposition>();
+		Logger logger = Logger.getLogger("MorphologicalAnalyzer.analyzeWithCandidateAffixes");
+		List<Decomposition> completeAnalysis = new ArrayList<Decomposition>();
 
-        String keyStateIDs = computeStateIDs(states);
+		String keyStateIDs = computeStateIDs(states);
 
-        List<SurfaceFormOfAffix> contextualForms = new ArrayList<>(formsOfAffixFound);
+		List<SurfaceFormOfAffix> contextualForms = new ArrayList<>(formsOfAffixFound);
 
 		//---------------------------------------
-        // For each contextual form of affix submitted:
-        //---------------------------------------
+		// For each contextual form of affix submitted:
+		//---------------------------------------
 		for (SurfaceFormOfAffix contextualForm : contextualForms) {
 
-            stpw.check("analyzeWithCandidateAffixes -- contextualForm: "+contextualForm.form);
+			stpw.check("analyzeWithCandidateAffixes -- contextualForm: "+contextualForm.form);
 
-            Affix affix = null;
-            try {
-                affix = (Affix) contextualForm.getAffix().copyOf();
-            } catch (CloneNotSupportedException e1) {
-            	throw new MorphInukException(e1);
-            }
-            Graph.Arc[] arcsFollowed = null;
-            MorphAnalyzerValidation.ContextualResult[] validStemAffixCombinationsInContext = null;
-            boolean conditionsMet, transitivityMet, sameAffixAsNext, samePosition;
+			Affix affix = null;
+			try {
+				 affix = (Affix) contextualForm.getAffix().copyOf();
+			} catch (CloneNotSupportedException | LinguisticDataException e1) {
+				throw new MorphologicalAnalyzerException(e1);
+			}
+			Graph.Arc[] arcsFollowed = null;
+			MorphAnalyzerValidation.ContextualResult[] validStemAffixCombinationsInContext = null;
+			boolean conditionsMet, transitivityMet, sameAffixAsNext, samePosition;
 
-            if ( //--------------------- validation -------------------------------------------------------
-            		(arcsFollowed = arcsSuivis(affix, states, keyStateIDs)) != null && // type of affix is accepted at this point
-                    (conditionsMet = affix.meetsConditions(preConds, morphParts)) && // relayed specific conditions are met
-					(validStemAffixCombinationsInContext = agreeWithContextAndActions(affixCandidateOrig, affix, stem, // affix accepted in the context
-							positionAffix, contextualForm,
-							notResultingFromDialectalPhonologicalTransformation)) != null &&
-                    (transitivityMet = affix.meetsTransitivityCondition(transitivity)) && // transitivity is fine
-                    (sameAffixAsNext = !sameAsNext(affix, morphParts)) && // not the same affix as the previous one
-                    (samePosition = !samePosition(positionAffix, morphParts))  // affix not found at the same position as previous one
-				//--------------------- validation -------------------------------------------------------
-                    ) {
+			boolean validate =
+			false  // affix not found at the same position as previous one
+					;
+			try {
+				validate = (arcsFollowed = arcsSuivis(affix, states, keyStateIDs)) != null && // type of affix is accepted at this point
+					  (conditionsMet = affix.meetsConditions(preConds, morphParts)) && // relayed specific conditions are met
+				(validStemAffixCombinationsInContext = agreeWithContextAndActions(affixCandidateOrig, affix, stem, // affix accepted in the context
+						positionAffix, contextualForm,
+						notResultingFromDialectalPhonologicalTransformation)) != null &&
+					  (transitivityMet = affix.meetsTransitivityCondition(transitivity)) && // transitivity is fine
+					  (sameAffixAsNext = !sameAsNext(affix, morphParts)) && // not the same affix as the previous one
+					  (samePosition = !samePosition(positionAffix, morphParts));
+			} catch (LinguisticDataException  e) {
+				throw new MorphologicalAnalyzerException(e);
+			}
+			//--------------------- validation -------------------------------------------------------
+			if (validate) {
 
-				Graph.State[] nextPossibleStates = new Graph.State[arcsFollowed.length];
-                for (int i=0; i<arcsFollowed.length; i++) {
-                    Graph.State dest =  ((Graph.Arc)arcsFollowed[i]).getDestinationState();
-                    nextPossibleStates[i] = (Graph.State)dest.clone();
-                }
+			Graph.State[] nextPossibleStates = new Graph.State[arcsFollowed.length];
+				 for (int i=0; i<arcsFollowed.length; i++) {
+					  Graph.State dest =  ((Graph.Arc)arcsFollowed[i]).getDestinationState();
+					  nextPossibleStates[i] = (Graph.State)dest.clone();
+				 }
 
-                Conditions newConditionsToBeMetByNextMorpheme = affix.getPrecCond();
+				 Conditions newConditionsToBeMetByNextMorpheme = affix.getPrecCond();
 
-                // TODO: this is not done properly; has to be modified.
-				String affixTransitivity = affix.getTransitivityConstraint();
-				String newTransitivity;
-				if (transitivity==null || transitivity.equals("n") ) {
-					newTransitivity = null;
-				} else if (affixTransitivity==null || affixTransitivity.equals("n") ) {
-					newTransitivity = transitivity;
-				} else {
-					newTransitivity = null;
-				}
-//				logger.debug("*** affix: "+affix.morpheme+" ("+affix.id+")");
-//				logger.debug("    transitivity: "+transitivity);
-//				logger.debug("    affixTransitivity: "+affixTransitivity);
-//				logger.debug("    newTransitivity: "+newTransitivity);
+				 // TODO: this is not done properly; has to be modified.
+			String affixTransitivity = affix.getTransitivityConstraint();
+			String newTransitivity;
+			if (transitivity==null || transitivity.equals("n") ) {
+				newTransitivity = null;
+			} else if (affixTransitivity==null || affixTransitivity.equals("n") ) {
+				newTransitivity = transitivity;
+			} else {
+				newTransitivity = null;
+			}
+		//				logger.debug("*** affix: "+affix.morpheme+" ("+affix.id+")");
+		//				logger.debug("    transitivity: "+transitivity);
+		//				logger.debug("    affixTransitivity: "+affixTransitivity);
+		//				logger.debug("    newTransitivity: "+newTransitivity);
 
-				for (MorphAnalyzerValidation.ContextualResult validStemAffixCombinationInContext : validStemAffixCombinationsInContext) {
-					stpw.check("decomposeByAffixes -- affixes respecting context and actions: " + validStemAffixCombinationInContext.stemBeforeAffixAction);
-					Vector<AffixPartOfComposition> newMorphparts = (Vector<AffixPartOfComposition>) morphParts.clone();
-					AffixPartOfComposition partIro = (AffixPartOfComposition) validStemAffixCombinationInContext.affixPartOfComposition;
-					partIro.arcs = arcsFollowed;
-					newMorphparts.add(0, partIro); // morceau ajouté
-					List<Decomposition> analyses = __decompose_simplified_term__((String) validStemAffixCombinationInContext.stemBeforeAffixAction,
-							(String) validStemAffixCombinationInContext.stemAfterAffixAction, word,
-							newMorphparts,
-							nextPossibleStates,
-							newConditionsToBeMetByNextMorpheme,
-							newTransitivity
-					);
-					completeAnalysis.addAll(analyses);
-				}
-            } // if (validation)
+			for (MorphAnalyzerValidation.ContextualResult validStemAffixCombinationInContext : validStemAffixCombinationsInContext) {
+				stpw.check("decomposeByAffixes -- affixes respecting context and actions: " + validStemAffixCombinationInContext.stemBeforeAffixAction);
+				Vector<AffixPartOfComposition> newMorphparts = (Vector<AffixPartOfComposition>) morphParts.clone();
+				AffixPartOfComposition partIro = (AffixPartOfComposition) validStemAffixCombinationInContext.affixPartOfComposition;
+				partIro.arcs = arcsFollowed;
+				newMorphparts.add(0, partIro); // morceau ajouté
+				List<Decomposition> analyses = __decompose_simplified_term__((String) validStemAffixCombinationInContext.stemBeforeAffixAction,
+						(String) validStemAffixCombinationInContext.stemAfterAffixAction, word,
+						newMorphparts,
+						nextPossibleStates,
+						newConditionsToBeMetByNextMorpheme,
+						newTransitivity
+				);
+				completeAnalysis.addAll(analyses);
+			}
+			} // if (validation)
 
-        } // for
+		} // for
 
-        return completeAnalysis;
+		return completeAnalysis;
     }
 
 
@@ -548,9 +566,9 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
      */
     @SuppressWarnings("unchecked")
 	private Vector<Decomposition> analyzeAsRoot(String term, String termOrig,
-															  String word, Vector<AffixPartOfComposition> morphParts, Graph.State[] states,
-															  Conditions preConds,
-															  String transitivity) throws TimeoutException, LinguisticDataException {
+		String word, Vector<AffixPartOfComposition> morphParts, Graph.State[] states,
+		Conditions preConds,
+		String transitivity) throws TimeoutException, MorphologicalAnalyzerException {
 
     	Logger logger = Logger.getLogger("MorphologicalAnalyzer.analyzeAsRoot");
         Vector<Decomposition> allAnalyses = new Vector<Decomposition>();
@@ -589,8 +607,12 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
          * On cherche aussi des groupes de consonnes équivalents à l'intérieur
          * de la racine candidate. Toutes les possibilités sont retenues.
          */
-        newRootCandidates = Dialect.newRootCandidates(termICI);
-        if (newRootCandidates != null)
+		 try {
+			 newRootCandidates = Dialect.newRootCandidates(termICI);
+		 } catch (LinguisticDataException e) {
+			 throw new MorphologicalAnalyzerException(e);
+		 }
+		 if (newRootCandidates != null)
             for (int k = 0; k < newRootCandidates.size(); k++) {
 //                stpw.check("analyzeAsRoot -- newRootCandidate: "+((Base)newRootCandidates.elementAt(k)).morpheme);
                 Vector<Morpheme> tr = lookForBase((String) newRootCandidates.elementAt(k), USE_SYLLABICS);
@@ -609,25 +631,29 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
         return allAnalyses;
     }
 
-    public Vector<Morpheme> lookForBase(String termICI, boolean isSyllabic) throws LinguisticDataException {
+    public Vector<Morpheme> lookForBase(String termICI, boolean isSyllabic) throws MorphologicalAnalyzerException {
     	Vector<Morpheme> basesFound = null;
-    	if (termICI.endsWith("*")) {
-    		String[] cons = isSyllabic ? Lexicon.consonantsSyl : Lexicon.consonants;
+    	try {
+			if (termICI.endsWith("*")) {
+				String[] cons = isSyllabic ? Lexicon.consonantsSyl : Lexicon.consonants;
 
-    		basesFound = new Vector<Morpheme>();
-            String termICIWithoutStar = termICI.substring(0, termICI.length() - 1);
-			for (String con : cons) {
-				String termICIWithConsonant = termICIWithoutStar + con;
-				Vector<Morpheme> morphemesFoundForWordWithAddedConsonant = Lexicon.lookForBase(termICIWithConsonant, isSyllabic);
-				if (morphemesFoundForWordWithAddedConsonant != null) {
-					basesFound.addAll(morphemesFoundForWordWithAddedConsonant);
+				basesFound = new Vector<Morpheme>();
+				String termICIWithoutStar = termICI.substring(0, termICI.length() - 1);
+				for (String con : cons) {
+					String termICIWithConsonant = termICIWithoutStar + con;
+					Vector<Morpheme> morphemesFoundForWordWithAddedConsonant = Lexicon.lookForBase(termICIWithConsonant, isSyllabic);
+					if (morphemesFoundForWordWithAddedConsonant != null) {
+						basesFound.addAll(morphemesFoundForWordWithAddedConsonant);
+					}
 				}
+				if (basesFound.size() == 0)
+					basesFound = null;
+			} else {
+				basesFound = Lexicon.lookForBase(termICI, isSyllabic);
 			}
-            if (basesFound.size() == 0)
-                basesFound = null;
-    	} else {
-            basesFound = Lexicon.lookForBase(termICI, isSyllabic);
-    	}
+		} catch (LinguisticDataException e) {
+    		throw new MorphologicalAnalyzerException(e);
+		}
 
     	return basesFound;
     }
@@ -643,11 +669,10 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
      * @param transitivity String
      * @return Vector<DecompositionSimple>
      * @throws TimeoutException
-     * @throws LinguisticDataException
      */
 	private Vector<Decomposition> checkRoots(Vector<Morpheme> lexs, String word, String termOrigICI,
-														  Vector<AffixPartOfComposition> morphParts, Graph.State[] states, Conditions preConds,
-														  String transitivity) throws TimeoutException, LinguisticDataException {
+		  Vector<AffixPartOfComposition> morphParts, Graph.State[] states, Conditions preConds,
+		  String transitivity) throws TimeoutException, MorphologicalAnalyzerException {
 
         Vector<Decomposition> rootAnalyses = new Vector<Decomposition>();
 
@@ -710,8 +735,8 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
     }
 
 	private Graph.Arc checkValidityOfRoot(Morpheme root, Graph.State[] states,
-										  Vector<AffixPartOfComposition> morphParts, Conditions preConds,
-										  String transitivity) throws TimeoutException, LinguisticDataException {
+		Vector<AffixPartOfComposition> morphParts, Conditions preConds,
+		String transitivity) throws TimeoutException, MorphologicalAnalyzerException {
        	/* il faut vérifier si le type de la
          * racine correspond à un arc à partir de l'état actuel, et cet
          * arc doit conduire à l'état final (aucun arc partant de cet
@@ -760,12 +785,21 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
 		if (arcsFollowed != null) {
 			arcFollowed = arcToZero(arcsFollowed);
 			if (arcFollowed != null) {
-				boolean preConditionsMet = root.meetsConditions(preConds, morphParts);
+				boolean preConditionsMet = false;
+				try {
+					preConditionsMet = root.meetsConditions(preConds, morphParts);
+				} catch (LinguisticDataException e) {
+					throw new MorphologicalAnalyzerException(e);
+				}
 				if (preConditionsMet) {
 					Conditions postConds = root.getNextCond();
 					boolean postConditionsMet = true;
 					if (morphParts.size()!=0) {
-						postConditionsMet = morphParts.firstElement().getAffix().meetsConditions(postConds);
+						try {
+							postConditionsMet = morphParts.firstElement().getAffix().meetsConditions(postConds);
+						} catch (LinguisticDataException e) {
+							throw new MorphologicalAnalyzerException(e);
+						}
 					}
 					if (postConditionsMet) {
 						if (root.type.equals("v")) {
@@ -802,13 +836,17 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
      * celles qui retournent le suffixe "a" d'action de groupe deux fois
      * lorsqu'on a un double "a" dans le mot.
      */
-    private boolean sameAsNext(Morpheme morpheme, Vector<AffixPartOfComposition> partsAlreadyAnalyzed) throws LinguisticDataException {
+    private boolean sameAsNext(Morpheme morpheme, Vector<AffixPartOfComposition> partsAlreadyAnalyzed) throws MorphologicalAnalyzerException {
         boolean isSameAsNext = false;
-        if (partsAlreadyAnalyzed.size() != 0) {
-            Affix affPrec = ((AffixPartOfComposition) partsAlreadyAnalyzed.elementAt(0)).getAffix();
-            if (morpheme.id.equals(affPrec.id))
-                isSameAsNext = true;
-        }
+        try {
+			  if (partsAlreadyAnalyzed.size() != 0) {
+				  Affix affPrec = ((AffixPartOfComposition) partsAlreadyAnalyzed.elementAt(0)).getAffix();
+				  if (morpheme.id.equals(affPrec.id))
+					  isSameAsNext = true;
+			  }
+		  } catch (LinguisticDataException e) {
+        	throw new MorphologicalAnalyzerException(e);
+		  }
         return isSameAsNext;
     }
 
@@ -840,73 +878,78 @@ public class MorphologicalAnalyzer extends MorphologicalAnalyzerAbstract {
      */
 
     private Graph.Arc[] arcsSuivis(Morpheme morpheme, Graph.State[] states,
-								   String keyStateIDs) throws TimeoutException, LinguisticDataException {
+		String keyStateIDs) throws TimeoutException, MorphologicalAnalyzerException {
 		Graph.Arc[] arcsFollowed = null;
-		String keyMorphemeStateIDs = morpheme.id + ":" + keyStateIDs;
-		Graph.Arc[] arcsFollowedByHash = (Graph.Arc[]) arcsByMorpheme
-				.get(keyMorphemeStateIDs);
-		if (arcsFollowedByHash == null) {
-			Vector<Graph.Arc> arcs = null;
-			Vector<Graph.Arc> arcsFollowedV = new Vector<Graph.Arc>();
-			for (State state : states) {
-				stpw.check("arcsSuivis --- morpheme: " + morpheme.morpheme);
-				arcs = state.verify(morpheme);
-				arcsFollowedV.addAll(arcs);
+		try {
+			String keyMorphemeStateIDs = morpheme.id + ":" + keyStateIDs;
+			Graph.Arc[] arcsFollowedByHash = (Graph.Arc[]) arcsByMorpheme
+			.get(keyMorphemeStateIDs);
+			if (arcsFollowedByHash == null) {
+				Vector<Graph.Arc> arcs = null;
+				Vector<Graph.Arc> arcsFollowedV = new Vector<Graph.Arc>();
+				for (State state : states) {
+					stpw.check("arcsSuivis --- morpheme: " + morpheme.morpheme);
+					arcs = state.verify(morpheme);
+					arcsFollowedV.addAll(arcs);
+				}
+				if (arcsFollowedV.size() != 0) {
+					arcsFollowed = (Graph.Arc[]) arcsFollowedV
+					.toArray(new Graph.Arc[]{});
+					arcsByMorpheme.put(keyMorphemeStateIDs, arcsFollowed);
+				}
+			} else {
+				arcsFollowed = arcsFollowedByHash;
 			}
-			if (arcsFollowedV.size() != 0) {
-				arcsFollowed = (Graph.Arc[]) arcsFollowedV
-						.toArray(new Graph.Arc[] {});
-				arcsByMorpheme.put(keyMorphemeStateIDs, arcsFollowed);
-			}
-		} else {
-			arcsFollowed = arcsFollowedByHash;
+		} catch (LinguisticDataException e) {
+			throw new MorphologicalAnalyzerException(e);
 		}
 		return arcsFollowed;
 	}
 
 
 
-    /*
-     * Vérifier si le contexte est respecté. La forme candidate
-     * trouvée est associée à un contexte de radical et à des actions.
-     * On vérifie si le radical et la forme de l'affixe correspondent à
-     * ce contexte et à ces actions. Si c'est le cas, on retourne les
-     * résultats possibles:
-     *
-     * a. radical sans les changements morphologiques causés par
-     * l'affixe; b. un objet de classe MorceauAffixe contenant: 1. la
-     * position de l'affixe dans le mot (la valeur de i); 2. un objet de
-     * classe SurfaceFormOfAffix décrivant totalement l'affixe.
-     */
-    private MorphAnalyzerValidation.ContextualResult[] agreeWithContextAndActions(
-    		String affixCandidateOrig,
-            Affix affix,
-            String stem,
-            int positionAffixInWord,
-            SurfaceFormOfAffix form,
-            boolean notResultingFromDialectalPhonologicalTransformation) throws TimeoutException, MorphInukException, LinguisticDataException {
-        MorphAnalyzerValidation.ContextualResult[] stemAffs = null;
-        boolean checkStartOfConsonantsGroup = true;
-        /*
-         * Si la forme du candidat affixe est le résultat de changements
-         * phonologiques, et si ces changements impliquent la consonne initiale,
-         * on ne vérifiera pas la possibilité de changements phonologiques parce
-         * qu'on ne veut pas que le groupe de consonne soit vérifié à nouveau.
-         */
-        if (!notResultingFromDialectalPhonologicalTransformation) {
-            if (Roman.isConsonant(form.form.charAt(0)) &&
-                    Roman.isConsonant(affixCandidateOrig.charAt(0)) &&
-                    form.form.charAt(0) != affixCandidateOrig.charAt(0) )
-                checkStartOfConsonantsGroup = false;
-        }
-        String context = (String) form.context;
-        Action action1 = form.action1;
-        Action action2 = form.action2;
-        stemAffs = MorphAnalyzerValidation.validateContextActions(context, action1, action2,
-                stem, positionAffixInWord, affix, form, false,
-                checkStartOfConsonantsGroup,affixCandidateOrig);
-        return stemAffs;
-    }
+	/*
+	* Vérifier si le contexte est respecté. La forme candidate
+	* trouvée est associée à un contexte de radical et à des actions.
+	* On vérifie si le radical et la forme de l'affixe correspondent à
+	* ce contexte et à ces actions. Si c'est le cas, on retourne les
+	* résultats possibles:
+	*
+	* a. radical sans les changements morphologiques causés par
+	* l'affixe; b. un objet de classe MorceauAffixe contenant: 1. la
+	* position de l'affixe dans le mot (la valeur de i); 2. un objet de
+	* classe SurfaceFormOfAffix décrivant totalement l'affixe.
+	*/
+	private MorphAnalyzerValidation.ContextualResult[] agreeWithContextAndActions(
+		String affixCandidateOrig,
+		Affix affix,
+		String stem,
+		int positionAffixInWord,
+		SurfaceFormOfAffix form,
+		boolean notResultingFromDialectalPhonologicalTransformation)
+	throws TimeoutException, MorphologicalAnalyzerException {
+		MorphAnalyzerValidation.ContextualResult[] stemAffs = null;
+		boolean checkStartOfConsonantsGroup = true;
+		/*
+		* Si la forme du candidat affixe est le résultat de changements
+		* phonologiques, et si ces changements impliquent la consonne initiale,
+		* on ne vérifiera pas la possibilité de changements phonologiques parce
+		* qu'on ne veut pas que le groupe de consonne soit vérifié à nouveau.
+		*/
+		if (!notResultingFromDialectalPhonologicalTransformation) {
+			if (Roman.isConsonant(form.form.charAt(0)) &&
+					  Roman.isConsonant(affixCandidateOrig.charAt(0)) &&
+					  form.form.charAt(0) != affixCandidateOrig.charAt(0) )
+				 checkStartOfConsonantsGroup = false;
+		}
+		String context = (String) form.context;
+		Action action1 = form.action1;
+		Action action2 = form.action2;
+		stemAffs = MorphAnalyzerValidation.validateContextActions(context, action1, action2,
+				 stem, positionAffixInWord, affix, form, false,
+				 checkStartOfConsonantsGroup,affixCandidateOrig);
+		return stemAffs;
+	}
 
 
 	public static void removeFromCache(String word) {

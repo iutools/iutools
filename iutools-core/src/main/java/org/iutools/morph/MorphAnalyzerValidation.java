@@ -27,10 +27,10 @@ public class MorphAnalyzerValidation {
     }
 
     public static ContextualResult[] validateContextActions(String context,
-                                                                            Action action1, Action action2, String stem, int posAffix,
-                                                                            Affix affix, SurfaceFormOfAffix form, boolean isSyllabic,
-                                                                            boolean checkPossibleDialectalChanges,
-                                                                            String affixCandidate) throws TimeoutException, MorphInukException, LinguisticDataException {
+		Action action1, Action action2, String stem, int posAffix,
+		Affix affix, SurfaceFormOfAffix form, boolean isSyllabic,
+		boolean checkPossibleDialectalChanges,
+		String affixCandidate) throws TimeoutException, MorphologicalAnalyzerException {
 
         int action1Type = action1.getType();
         int action2Type = action2.getType();
@@ -51,96 +51,79 @@ public class MorphAnalyzerValidation {
             affix.addPrecConstraint(avc);
         }
 
+        try {
+			  if (action1Type == Action.NEUTRAL && action2Type == Action.NULLACTION) {
+				  res = validate_neutral_null(context, action1, action2, stem, affixCandidate,
+				  form, affix, posAffix, partOfComp);
+			  } else if (action1Type == Action.NEUTRAL && action2Type == Action.DELETION) {
+				  res = validate_neutral_deletion(context, action1, action2, stem, affixCandidate,
+				  form, affix, posAffix, partOfComp);
+			  } else if (action1Type == Action.NEUTRAL && action2Type == Action.INSERTION) {
+				  res = validate_neutral_insertion(context, action1, action2, stem, affixCandidate,
+				  form, affix, posAffix, partOfComp);
+			  } else if (action1Type == Action.DELETION && action2Type == Action.NULLACTION) {
+				  res = validate_deletion_null(context, action1, action2, stem, affixCandidate,
+				  form, affix, posAffix, partOfComp);
+			  } else if (action1Type == Action.DELETIONINSERTION && action2Type == Action.NULLACTION) {
+				  res = validate_deletion_insertion(context, action1, action2, stem, affixCandidate,
+				  form, affix, posAffix, partOfComp);
+			  } else if (action1Type == Action.CONDITIONALDELETION && action2Type == Action.NULLACTION) {
+				  res = validate_conditionaldeletion_null(context, action1, action2, stem, affixCandidate,
+				  form, affix, posAffix, partOfComp, checkPossibleDialectalChanges);
+			  } else if (action1Type == Action.VOICING && action2Type == Action.NULLACTION) {
+				  res = validate_voicing_null(context, action1, action2, stem, affixCandidate,
+				  form, affix, posAffix, partOfComp, checkPossibleDialectalChanges);
+			  } else if (action1Type == Action.NASALIZATION) {
+				  res = validate_nasalization_null(context, action1, action2, stem, affixCandidate,
+				  form, affix, posAffix, partOfComp, checkPossibleDialectalChanges);
+			  } else if (action1Type == Action.CONDITIONALNASALIZATION) {
+				  res = validate_conditionalnasalization_null(context, action1, action2, stem, affixCandidate,
+				  form, affix, posAffix, partOfComp, checkPossibleDialectalChanges);
+			  } else if (action1Type == Action.INSERTION && action2Type == Action.NULLACTION) {
+				  res = validate_insertion_null(context, action1, action2, stem, affixCandidate,
+				  form, affix, posAffix, partOfComp, checkPossibleDialectalChanges);
+			  } else if (action1Type == Action.FUSION && action2Type == Action.NULLACTION) {
+				  res = validate_fusion_null(context, action1, action2, stem, affixCandidate,
+				  form, affix, posAffix, partOfComp, checkPossibleDialectalChanges);
+			  } else if (action1Type == Action.ASSIMILATION && action2Type == Action.NULLACTION) {
+				  res = validate_assimilation_null(context, action1, action2, stem, affixCandidate,
+				  form, affix, posAffix, partOfComp, checkPossibleDialectalChanges);
+			  } else if (action1Type == Action.SPECIFICASSIMILATION && action2Type == Action.NULLACTION) {
+				  res = validate_specificassimilation_null(context, action1, action2, stem, affixCandidate,
+				  form, affix, posAffix, partOfComp, checkPossibleDialectalChanges);
+			  } else if (action1Type == Action.DELETION && action2Type == Action.SPECIFICDELETION) {
+				  res = validate_deletion_specificdeletion(context, action1, action2, stem, affixCandidate,
+				  form, affix, posAffix, partOfComp, checkPossibleDialectalChanges);
+			  } else if (action1Type == Action.DELETION && action2Type == Action.INSERTION) {
+				  res = validate_deletion_insertion(context, action1, action2, stem, affixCandidate,
+				  form, affix, posAffix, partOfComp, checkPossibleDialectalChanges);
+			  } else if (action1Type == Action.VOWELLENGTHENING && action2Type == Action.CANCELLATION) {
+				  res = validate_vowellengthening_cancellation(context, action1, action2, stem, affixCandidate,
+				  form, affix, posAffix, partOfComp, checkPossibleDialectalChanges);
+			  } else if (action1Type == Action.DELETIONVOWELLENGTHENING && action2Type == Action.CANCELLATION) {
+				  res = validate_deletionvowellengthening_cancellation(context, action1, action2, stem, affixCandidate,
+				  form, affix, posAffix, partOfComp, checkPossibleDialectalChanges);
+			  } else if (action1Type == Action.INSERTIONVOWELLENGTHENING && action2Type == Action.NULLACTION) {
+				  res = validate_insertionvowellengthening_null(context, action1, action2, stem, affixCandidate,
+				  form, affix, posAffix, partOfComp, checkPossibleDialectalChanges);
+			  } else if (action1Type == Action.NEUTRAL && action2Type == Action.SELFDECAPITATION) {
+				  res = validate_neutral_selfdecapitation(context, action1, action2, stem, affixCandidate,
+				  form, affix, posAffix, partOfComp, checkPossibleDialectalChanges);
+			  } else if (action1Type == Action.DELETION && action2Type == Action.SELFDECAPITATION) {
+				  res = validate_deletion_selfdecapitation(context, action1, action2, stem, affixCandidate,
+				  form, affix, posAffix, partOfComp, checkPossibleDialectalChanges);
+			  } else if (action1Type == Action.DELETION && action2Type == Action.DELETION) {
+				  res = validate_deletion_deletion(context, action1, action2, stem, affixCandidate,
+				  form, affix, posAffix, partOfComp, checkPossibleDialectalChanges);
+			  }
+		  } catch (LinguisticDataException e) {
+        	throw new MorphologicalAnalyzerException(e);
+		  }
 
-        if (action1Type == Action.NEUTRAL && action2Type == Action.NULLACTION ) {
-            res = validate_neutral_null(context, action1, action2, stem, affixCandidate,
-                    form, affix, posAffix, partOfComp);
-        }
-        else if (action1Type == Action.NEUTRAL && action2Type == Action.DELETION) {
-            res = validate_neutral_deletion(context, action1, action2, stem, affixCandidate,
-                    form, affix, posAffix, partOfComp);
-        }
-        else if (action1Type == Action.NEUTRAL && action2Type == Action.INSERTION) {
-            res = validate_neutral_insertion(context, action1, action2, stem, affixCandidate,
-                    form, affix, posAffix, partOfComp);
-        }
-        else if (action1Type == Action.DELETION && action2Type == Action.NULLACTION) {
-            res = validate_deletion_null(context, action1, action2, stem, affixCandidate,
-                    form, affix, posAffix, partOfComp);
-        }
-        else if (action1Type == Action.DELETIONINSERTION && action2Type == Action.NULLACTION) {
-            res = validate_deletion_insertion(context, action1, action2, stem, affixCandidate,
-                    form, affix, posAffix, partOfComp);
-        }
-        else if (action1Type == Action.CONDITIONALDELETION && action2Type == Action.NULLACTION) {
-            res = validate_conditionaldeletion_null(context, action1, action2, stem, affixCandidate,
-                    form, affix, posAffix, partOfComp, checkPossibleDialectalChanges);
-        }
-        else if (action1Type == Action.VOICING && action2Type == Action.NULLACTION) {
-            res = validate_voicing_null(context, action1, action2, stem, affixCandidate,
-                    form, affix, posAffix, partOfComp, checkPossibleDialectalChanges);
-        }
-        else if (action1Type == Action.NASALIZATION) {
-            res = validate_nasalization_null(context, action1, action2, stem, affixCandidate,
-                    form, affix, posAffix, partOfComp, checkPossibleDialectalChanges);
-        }
-        else if (action1Type == Action.CONDITIONALNASALIZATION) {
-            res = validate_conditionalnasalization_null(context, action1, action2, stem, affixCandidate,
-                    form, affix, posAffix, partOfComp, checkPossibleDialectalChanges);
-        }
-        else if (action1Type == Action.INSERTION && action2Type == Action.NULLACTION) {
-            res = validate_insertion_null(context, action1, action2, stem, affixCandidate,
-                    form, affix, posAffix, partOfComp, checkPossibleDialectalChanges);
-        }
-        else if (action1Type == Action.FUSION && action2Type == Action.NULLACTION) {
-            res = validate_fusion_null(context, action1, action2, stem, affixCandidate,
-                    form, affix, posAffix, partOfComp, checkPossibleDialectalChanges);
-        }
-        else if (action1Type == Action.ASSIMILATION && action2Type == Action.NULLACTION) {
-            res = validate_assimilation_null(context, action1, action2, stem, affixCandidate,
-                    form, affix, posAffix, partOfComp, checkPossibleDialectalChanges);
-        }
-        else if (action1Type == Action.SPECIFICASSIMILATION && action2Type == Action.NULLACTION) {
-            res = validate_specificassimilation_null(context, action1, action2, stem, affixCandidate,
-                    form, affix, posAffix, partOfComp, checkPossibleDialectalChanges);
-        }
-        else if (action1Type == Action.DELETION && action2Type == Action.SPECIFICDELETION) {
-            res = validate_deletion_specificdeletion(context, action1, action2, stem, affixCandidate,
-                    form, affix, posAffix, partOfComp, checkPossibleDialectalChanges);
-        }
-        else if (action1Type == Action.DELETION && action2Type == Action.INSERTION) {
-            res = validate_deletion_insertion(context, action1, action2, stem, affixCandidate,
-                    form, affix, posAffix, partOfComp, checkPossibleDialectalChanges);
-        }
-        else if (action1Type == Action.VOWELLENGTHENING && action2Type == Action.CANCELLATION) {
-            res = validate_vowellengthening_cancellation(context, action1, action2, stem, affixCandidate,
-                    form, affix, posAffix, partOfComp, checkPossibleDialectalChanges);
-        }
-        else if (action1Type == Action.DELETIONVOWELLENGTHENING && action2Type == Action.CANCELLATION) {
-            res = validate_deletionvowellengthening_cancellation(context, action1, action2, stem, affixCandidate,
-                    form, affix, posAffix, partOfComp, checkPossibleDialectalChanges);
-        }
-        else if (action1Type == Action.INSERTIONVOWELLENGTHENING && action2Type == Action.NULLACTION) {
-            res = validate_insertionvowellengthening_null(context, action1, action2, stem, affixCandidate,
-                    form, affix, posAffix, partOfComp, checkPossibleDialectalChanges);
-        }
-        else if (action1Type == Action.NEUTRAL && action2Type == Action.SELFDECAPITATION) {
-            res = validate_neutral_selfdecapitation(context, action1, action2, stem, affixCandidate,
-                    form, affix, posAffix, partOfComp, checkPossibleDialectalChanges);
-        }
-        else if (action1Type == Action.DELETION && action2Type == Action.SELFDECAPITATION) {
-            res = validate_deletion_selfdecapitation(context, action1, action2, stem, affixCandidate,
-                    form, affix, posAffix, partOfComp, checkPossibleDialectalChanges);
-        }
-        else if (action1Type == Action.DELETION && action2Type == Action.DELETION) {
-            res = validate_deletion_deletion(context, action1, action2, stem, affixCandidate,
-                    form, affix, posAffix, partOfComp, checkPossibleDialectalChanges);
-        }
 
         // Avant de retourner 'res', on vérifie certaines choses, entre autres:
         // a. le radical ne peut pas se terminer par 2 consonnes
         //    (Sauf pour les racines démonstratives!!! exemple: tavv-ani)
-
         if (!affix.type.equals("tad"))
             for (int i = 0; i < res.size(); i++) {
                 stpw.check("validateContextActions -- checking stem with 2 consonants");
@@ -182,9 +165,9 @@ public class MorphAnalyzerValidation {
      * démonstratives. On accepte tout simplement.
      */
     protected static Vector<Object[]> validate_neutral_null(
-            String context, Action action1, Action action2, String stem, String affixCandidate,
-            SurfaceFormOfAffix form, Affix affix, int posAffix, AffixPartOfComposition partOfComp
-    ) throws TimeoutException, MorphInukException {
+		String context, Action action1, Action action2, String stem, String affixCandidate,
+		SurfaceFormOfAffix form, Affix affix, int posAffix, AffixPartOfComposition partOfComp
+    ) throws TimeoutException, MorphologicalAnalyzerException {
 
         Vector<Object[]> res = new Vector<Object[]>();
         // Caractère final du radical.
@@ -297,7 +280,7 @@ public class MorphAnalyzerValidation {
                         new ByteArrayInputStream(cond.getBytes())).ParseCondition();
                 affix.addPrecConstraint(avc);
             } catch (ParseException e) {
-                throw new MorphInukException(e);
+                throw new MorphologicalAnalyzerException(e);
             }
         }
         // else: Aucun suffixe ne mêne ici.
@@ -327,7 +310,7 @@ public class MorphAnalyzerValidation {
     protected static Vector<Object[]> validate_neutral_deletion(
             String context, Action action1, Action action2, String stem, String affixCandidate,
             SurfaceFormOfAffix form, Affix affix, int posAffix, AffixPartOfComposition partOfComp
-    ) throws TimeoutException, MorphInukException {
+    ) throws TimeoutException, MorphologicalAnalyzerException {
 
         Vector<Object[]> res = new Vector<Object[]>();
         // Last character of the stem
@@ -397,7 +380,7 @@ public class MorphAnalyzerValidation {
     protected static Vector<Object[]> validate_neutral_insertion(
             String context, Action action1, Action action2, String stem, String affixCandidate,
             SurfaceFormOfAffix form, Affix affix, int posAffix, AffixPartOfComposition partOfComp
-    ) throws TimeoutException, MorphInukException {
+    ) throws TimeoutException, MorphologicalAnalyzerException {
 
         Vector<Object[]> res = new Vector<Object[]>();
         // Caractère final du radical.
@@ -455,7 +438,7 @@ public class MorphAnalyzerValidation {
     protected static Vector<Object[]> validate_deletion_null(
             String context, Action action1, Action action2, String stem, String affixCandidate,
             SurfaceFormOfAffix form, Affix affix, int posAffix, AffixPartOfComposition partOfComp
-    ) throws TimeoutException, MorphInukException {
+    ) throws TimeoutException, MorphologicalAnalyzerException {
 
         Vector<Object[]> res = new Vector<Object[]>();
         // Caractère final du radical.
@@ -492,7 +475,7 @@ public class MorphAnalyzerValidation {
     protected static Vector<Object[]> validate_deletion_insertion(
             String context, Action action1, Action action2, String stem, String affixCandidate,
             SurfaceFormOfAffix form, Affix affix, int posAffix, AffixPartOfComposition partOfComp
-    ) throws TimeoutException, MorphInukException {
+    ) throws TimeoutException, MorphologicalAnalyzerException {
 
         Vector<Object[]> res = new Vector<Object[]>();
 
@@ -533,7 +516,7 @@ public class MorphAnalyzerValidation {
             String context, Action action1, Action action2, String stem, String affixCandidate,
             SurfaceFormOfAffix form, Affix affix, int posAffix, AffixPartOfComposition partOfComp,
             boolean checkPossibleDialectalChanges
-    ) throws TimeoutException, MorphInukException {
+    ) throws TimeoutException, MorphologicalAnalyzerException {
 
         Vector<Object[]> res = new Vector<Object[]>();
         // Caractère final du radical.
@@ -556,7 +539,7 @@ public class MorphAnalyzerValidation {
                     Condition avc = new Imacond(new ByteArrayInputStream(cond.getBytes())).ParseCondition();
                     affix.addPrecConstraint(avc);
                 } catch (ParseException e) {
-                    throw new MorphInukException(e);
+                    throw new MorphologicalAnalyzerException(e);
                 }
                 if (!context.equals("V"))
                     // Suppression de consonne
@@ -619,7 +602,7 @@ public class MorphAnalyzerValidation {
             String context, Action action1, Action action2, String stem, String affixCandidate,
             SurfaceFormOfAffix form, Affix affix, int posAffix, AffixPartOfComposition partOfComp,
             boolean checkPossibleDialectalChanges
-    ) throws TimeoutException, MorphInukException {
+    ) throws TimeoutException, MorphologicalAnalyzerException {
 
         Vector<Object[]> res = new Vector<Object[]>();
         // Caractère final du radical.
@@ -701,7 +684,7 @@ public class MorphAnalyzerValidation {
             String context, Action action1, Action action2, String stem, String affixCandidate,
             SurfaceFormOfAffix form, Affix affix, int posAffix, AffixPartOfComposition partOfComp,
             boolean checkPossibleDialectalChanges
-    ) throws TimeoutException, MorphInukException {
+    ) throws TimeoutException, MorphologicalAnalyzerException {
 
         Vector<Object[]> res = new Vector<Object[]>();
         // Caractère final du radical.
@@ -769,7 +752,7 @@ public class MorphAnalyzerValidation {
             String context, Action action1, Action action2, String stem, String affixCandidate,
             SurfaceFormOfAffix form, Affix affix, int posAffix, AffixPartOfComposition partOfComp,
             boolean checkPossibleDialectalChanges
-    ) throws TimeoutException, MorphInukException {
+    ) throws TimeoutException, MorphologicalAnalyzerException {
 
         Vector<Object[]> res = new Vector<Object[]>();
         // Caractère final du radical.
@@ -792,7 +775,7 @@ public class MorphAnalyzerValidation {
                         new ByteArrayInputStream(cond.getBytes())).ParseCondition();
                 affix.addPrecConstraint(avc);
             } catch (ParseException e) {
-                throw new MorphInukException(e);
+                throw new MorphologicalAnalyzerException(e);
             }
             res.add(new Object[] {
                     stem.substring(0, stem.length() - 1) + context, stem,
@@ -813,7 +796,7 @@ public class MorphAnalyzerValidation {
                                 new ByteArrayInputStream(cond.getBytes())).ParseCondition();
                         affix.addPrecConstraint(avc);
                     } catch (ParseException e) {
-                        throw new MorphInukException(e);
+                        throw new MorphologicalAnalyzerException(e);
                     }
                     /*
                      * The stem ends with a vowel and there are 2
@@ -839,7 +822,7 @@ public class MorphAnalyzerValidation {
                                     new ByteArrayInputStream(cond.getBytes())).ParseCondition();
                             affix.addPrecConstraint(avc);
                         } catch (ParseException e) {
-                            throw new MorphInukException(e);
+                            throw new MorphologicalAnalyzerException(e);
                         }
                         res.add(new Object[] {
                                 stem.substring(0, stem.length() - 1)
@@ -865,7 +848,7 @@ public class MorphAnalyzerValidation {
             String context, Action action1, Action action2, String stem, String affixCandidate,
             SurfaceFormOfAffix form, Affix affix, int posAffix, AffixPartOfComposition partOfComp,
             boolean checkPossibleDialectalChanges
-    ) throws TimeoutException, MorphInukException {
+    ) throws TimeoutException, MorphologicalAnalyzerException {
 
         Vector<Object[]> res = new Vector<Object[]>();
 
@@ -924,7 +907,7 @@ public class MorphAnalyzerValidation {
     protected static Vector<Object[]> validate_assimilation_null(String context, Action action1, Action action2, String stem,
                                                                  String affixCandidate, SurfaceFormOfAffix form, Affix affix, int posAffix,
                                                                  AffixPartOfComposition partOfComp, boolean checkPossibleDialectalChanges)
-            throws TimeoutException, MorphInukException {
+            throws TimeoutException, MorphologicalAnalyzerException {
 
         Vector<Object[]> res = new Vector<Object[]>();
         // Caractère final du radical.
@@ -979,7 +962,7 @@ public class MorphAnalyzerValidation {
     protected static Vector<Object[]> validate_specificassimilation_null(String context, Action action1, Action action2, String stem,
                                                                          String affixCandidate, SurfaceFormOfAffix form, Affix affix, int posAffix,
                                                                          AffixPartOfComposition partOfComp, boolean checkPossibleDialectalChanges)
-            throws TimeoutException, MorphInukException {
+            throws TimeoutException, MorphologicalAnalyzerException {
 
         Vector<Object[]> res = new Vector<Object[]>();
         // Caractère final du radical.
@@ -1016,7 +999,7 @@ public class MorphAnalyzerValidation {
     protected static Vector<Object[]> validate_deletion_specificdeletion(String context, Action action1, Action action2, String stem,
                                                                          String affixCandidate, SurfaceFormOfAffix form, Affix affix, int posAffix,
                                                                          AffixPartOfComposition partOfComp, boolean checkPossibleDialectalChanges)
-            throws TimeoutException, MorphInukException {
+            throws TimeoutException, MorphologicalAnalyzerException {
 
         Vector<Object[]> res = new Vector<Object[]>();
         // Caractère final du radical.
@@ -1075,7 +1058,7 @@ public class MorphAnalyzerValidation {
     protected static Vector<Object[]> validate_deletion_insertion(String context, Action action1, Action action2, String stem,
                                                                   String affixCandidate, SurfaceFormOfAffix form, Affix affix, int posAffix,
                                                                   AffixPartOfComposition partOfComp, boolean checkPossibleDialectalChanges)
-            throws TimeoutException, MorphInukException {
+            throws TimeoutException, MorphologicalAnalyzerException {
 
         Vector<Object[]> res = new Vector<Object[]>();
 
@@ -1147,7 +1130,7 @@ public class MorphAnalyzerValidation {
     protected static Vector<Object[]> validate_vowellengthening_cancellation(String context, Action action1, Action action2, String stem,
                                                                              String affixCandidate, SurfaceFormOfAffix form, Affix affix, int posAffix,
                                                                              AffixPartOfComposition partOfComp, boolean checkPossibleDialectalChanges)
-            throws TimeoutException, MorphInukException {
+            throws TimeoutException, MorphologicalAnalyzerException {
 
         Vector<Object[]> res = new Vector<Object[]>();
         // Caractère final du radical.
@@ -1189,7 +1172,7 @@ public class MorphAnalyzerValidation {
     protected static Vector<Object[]> validate_deletionvowellengthening_cancellation(String context, Action action1, Action action2, String stem,
                                                                                      String affixCandidate, SurfaceFormOfAffix form, Affix affix, int posAffix,
                                                                                      AffixPartOfComposition partOfComp, boolean checkPossibleDialectalChanges)
-            throws TimeoutException, MorphInukException {
+            throws TimeoutException, MorphologicalAnalyzerException {
 
         Vector<Object[]> res = new Vector<Object[]>();
         // Caractère final du radical.
@@ -1230,7 +1213,7 @@ public class MorphAnalyzerValidation {
     protected static Vector<Object[]> validate_insertionvowellengthening_null(String context, Action action1, Action action2, String stem,
                                                                               String affixCandidate, SurfaceFormOfAffix form, Affix affix, int posAffix,
                                                                               AffixPartOfComposition partOfComp, boolean checkPossibleDialectalChanges)
-            throws TimeoutException, MorphInukException {
+            throws TimeoutException, MorphologicalAnalyzerException {
 
         Vector<Object[]> res = new Vector<Object[]>();
         // Caractère final du radical.
@@ -1261,7 +1244,7 @@ public class MorphAnalyzerValidation {
     protected static Vector<Object[]> validate_neutral_selfdecapitation(String context, Action action1, Action action2, String stem,
                                                                         String affixCandidate, SurfaceFormOfAffix form, Affix affix, int posAffix,
                                                                         AffixPartOfComposition partOfComp, boolean checkPossibleDialectalChanges)
-            throws TimeoutException, MorphInukException, LinguisticDataException {
+            throws TimeoutException, MorphologicalAnalyzerException, LinguisticDataException {
 
         Vector<Object[]> res = new Vector<Object[]>();
         // Caractère final du radical.
@@ -1300,7 +1283,7 @@ public class MorphAnalyzerValidation {
     protected static Vector<Object[]> validate_deletion_selfdecapitation(String context, Action action1, Action action2, String stem,
                                                                          String affixCandidate, SurfaceFormOfAffix form, Affix affix, int posAffix,
                                                                          AffixPartOfComposition partOfComp, boolean checkPossibleDialectalChanges)
-            throws TimeoutException, MorphInukException, LinguisticDataException {
+            throws TimeoutException, MorphologicalAnalyzerException, LinguisticDataException {
 
         Vector<Object[]> res = new Vector<Object[]>();
         // Caractère final du radical.
@@ -1337,7 +1320,7 @@ public class MorphAnalyzerValidation {
     protected static Vector<Object[]> validate_deletion_deletion(String context, Action action1, Action action2, String stem,
                                                                  String affixCandidate, SurfaceFormOfAffix form, Affix affix, int posAffix,
                                                                  AffixPartOfComposition partOfComp, boolean checkPossibleDialectalChanges)
-            throws TimeoutException, MorphInukException {
+            throws TimeoutException, MorphologicalAnalyzerException {
 
         Vector<Object[]> res = new Vector<Object[]>();
         // Caractère final du radical.

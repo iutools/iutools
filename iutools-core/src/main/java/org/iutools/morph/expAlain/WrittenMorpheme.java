@@ -3,7 +3,7 @@ package org.iutools.morph.expAlain;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.iutools.morph.MorphInukException;
+import org.iutools.morph.MorphologicalAnalyzerException;
 
 public class WrittenMorpheme {
 	public static final WrittenMorpheme head = new WrittenMorpheme(null, "");
@@ -22,21 +22,21 @@ public class WrittenMorpheme {
 		this.writtenForm = surface;
 	}
 	
-	public String atachesTo() throws MorphInukException {
+	public String atachesTo() throws MorphologicalAnalyzerException {
 		if (_attachesTo == null) {
 			parseID();
 		}
 		return _attachesTo;
 	}
 
-	public String type() throws MorphInukException {
+	public String type() throws MorphologicalAnalyzerException {
 		if (_type == null) {
 			parseID();
 		}
 		return _type;
 	}
 	
-	public String canonicalForm() throws MorphInukException {
+	public String canonicalForm() throws MorphologicalAnalyzerException {
 		if (_canonicalForm == null) {
 			parseID();
 		}
@@ -44,7 +44,7 @@ public class WrittenMorpheme {
 		
 	}
 	
-	private void parseID() throws MorphInukException {
+	private void parseID() throws MorphologicalAnalyzerException {
 		if (morphID == null) {
 			_attachesTo = null;
 			_type = "S";
@@ -58,11 +58,11 @@ public class WrittenMorpheme {
 				}
 				_type = matcher.group(4).toUpperCase();
 			} else {
-				throw new MorphInukException(
+				throw new MorphologicalAnalyzerException(
 					"Morpheme ID was invalid: "+morphID);
 			}
 		} catch (Exception e) {
-			throw new MorphInukException(
+			throw new MorphologicalAnalyzerException(
 					"Morpheme ID was invalid: "+morphID);			
 		}
 	}
@@ -78,7 +78,7 @@ public class WrittenMorpheme {
 		return builder.toString();
 	}
 
-	public String regex() throws MorphInukException {
+	public String regex() throws MorphologicalAnalyzerException {
 		if (_regex == null) {
 			_regex = atachesTo()+writtenForm;
 		}

@@ -168,7 +168,7 @@ public class SpellChecker {
 			editDistanceCalculator = EditDistanceCalculatorFactory.getEditDistanceCalculator();
 			segmenter = new StringSegmenter_IUMorpheme();
 			setDictionaryFromCorpus(corpus);
-		} catch (StringSegmenterException | FileNotFoundException | SpellCheckerException | ConfigException e) {
+		} catch (FileNotFoundException | SpellCheckerException | ConfigException e) {
 			throw new SpellCheckerException(e);
 		}
 
@@ -504,7 +504,7 @@ public class SpellChecker {
 						.decomposeWord(word);
 		} catch(TimeoutException e) {
 			answer = false;
-		} catch(MorphologicalAnalyzerException | LinguisticDataException e) {
+		} catch(MorphologicalAnalyzerException e) {
 			throw new SpellCheckerException(e);
 		}
 		
@@ -585,7 +585,7 @@ public class SpellChecker {
 						.decomposeWord(word);
 		} catch(TimeoutException e) {
 			answer = false;
-		} catch(MorphologicalAnalyzerException | LinguisticDataException e) {
+		} catch(MorphologicalAnalyzerException e) {
 			throw new SpellCheckerException(e);
 		}
 		
