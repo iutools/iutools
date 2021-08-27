@@ -122,16 +122,21 @@ public abstract class MorphologicalAnalyzerAbstract implements AutoCloseable {
 	}
 
 	  public DecompositionSimple[] decomposeWord_NEW(String word)
-	  throws TimeoutException, MorphologicalAnalyzerException, DecompositionExcepion {
+	  throws TimeoutException, MorphologicalAnalyzerException {
     	 return decomposeWord_NEW(word, (Boolean)null);
      }
 
 	public DecompositionSimple[] decomposeWord_NEW(String word, Boolean lenient)
-	throws TimeoutException, MorphologicalAnalyzerException, DecompositionExcepion {
-    	Decomposition[] decompStates = decomposeWord(word, lenient);
-    	DecompositionSimple[] decomps = new DecompositionSimple[decompStates.length];
-    	for (int ii=0; ii < decompStates.length; ii++) {
-    		decomps[ii] = decompStates[ii].toSimpleDecomposition();
+	throws TimeoutException, MorphologicalAnalyzerException {
+		DecompositionSimple[] decomps = null;
+		try {
+			Decomposition[] decompStates = decomposeWord(word, lenient);
+			decomps = new DecompositionSimple[decompStates.length];
+			for (int ii = 0; ii < decompStates.length; ii++) {
+				decomps[ii] = decompStates[ii].toSimpleDecomposition();
+			}
+		} catch (DecompositionExcepion e) {
+			throw new MorphologicalAnalyzerException(e);
 		}
 		return decomps;
 	}

@@ -23,9 +23,7 @@ import com.google.gson.Gson;
 
 import org.iutools.config.IUConfig;
 import org.iutools.linguisticdata.LinguisticDataException;
-import org.iutools.morph.Decomposition;
-import org.iutools.morph.MorphologicalAnalyzer;
-import org.iutools.morph.MorphologicalAnalyzerException;
+import org.iutools.morph.*;
 import ca.nrc.config.ConfigException;
 import org.iutools.text.ngrams.NgramCompiler;
 
@@ -130,9 +128,9 @@ public class AnalyzeNumberExpressions {
 		for (int i=0; i<makeUpWords.length; i++) {
 			String makeUpWord = makeUpWords[i];
 			String term = makeUpWord+ending;
-			Decomposition[] decs = null;
+			DecompositionSimple[] decs = null;
 			try {
-				decs = morphAnalyzer.decomposeWord(term);
+				decs = morphAnalyzer.decomposeWord_NEW(term);
 			} catch (TimeoutException | MorphologicalAnalyzerException e) {
 			}
 			logger.debug("decs: "+(decs==null?"null":decs.length));
@@ -141,7 +139,7 @@ public class AnalyzeNumberExpressions {
 				logger.debug("regexp= "+regexp);
 				Pattern p = Pattern.compile(regexp);
 				for (int j=0; j<decs.length; j++) {
-					String dec = decs[j].toStr2();
+					String dec = decs[j].toString();
 					logger.debug("dec= "+dec);
 					Matcher mp = p.matcher(dec);
 					if (mp.find()) {

@@ -366,7 +366,7 @@ public class MorphologicalAnalyzer_AccuracyTest {
 				morphAnalyzer = new MorphologicalAnalyzer();
 			}
 			outcome.decompositions = morphAnalyzer.decomposeWord_NEW(word);
-		} catch (TimeoutException | MorphologicalAnalyzerException | DecompositionExcepion e) {
+		} catch (TimeoutException | MorphologicalAnalyzerException e) {
 			outcome.timedOut = true;
 		}
 		

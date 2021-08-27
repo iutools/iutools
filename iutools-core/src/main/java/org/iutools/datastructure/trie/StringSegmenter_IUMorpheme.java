@@ -8,10 +8,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.iutools.linguisticdata.LinguisticDataException;
-import org.iutools.morph.MorphologicalAnalyzer;
-import org.iutools.morph.MorphologicalAnalyzerException;
+import org.iutools.morph.*;
 import org.iutools.script.Syllabics;
-import org.iutools.morph.Decomposition;
 
 
 public class StringSegmenter_IUMorpheme extends StringSegmenter {
@@ -54,22 +52,18 @@ public class StringSegmenter_IUMorpheme extends StringSegmenter {
 			word = Syllabics.transcodeToRoman(string); 
 		}
 		
-		Decomposition[] decs = null;
+		DecompositionSimple[] decs = null;
 		try {
-			decs = morphAnalyzer.decomposeWord(word);
+			decs = morphAnalyzer.decomposeWord_NEW(word);
 		} catch (MorphologicalAnalyzerException e) {
 			throw new StringSegmenterException(e);
 		}
 		
         if (decs != null && decs.length > 0) {
-        	for (Decomposition dec: decs) {
+        	for (DecompositionSimple dec: decs) {
 	        	Pattern p = Pattern.compile("(\\{[^:]+\\:(.+?)\\})") ;      
 	        	Matcher m;
-				try {
-					m = p.matcher(dec.toStr2());
-				} catch (LinguisticDataException e) {
-					throw new StringSegmenterException(e);
-				}
+				m = p.matcher(dec.toString());
 	        	Vector<String> v = new Vector<String>();
 	        	while (m.find()) {
 	        		if (fullAnalysis) {
