@@ -128,17 +128,52 @@ public abstract class MorphologicalAnalyzerAbstract implements AutoCloseable {
 
 	public DecompositionSimple[] decomposeWord_NEW(String word, Boolean lenient)
 	throws TimeoutException, MorphologicalAnalyzerException {
-		DecompositionSimple[] decomps = null;
+		DecompositionSimple[] decompsSimple = null;
 		try {
-			Decomposition[] decompStates = decomposeWord(word, lenient);
-			decomps = new DecompositionSimple[decompStates.length];
+			if (lenient == null) {
+				lenient = true;
+			}
+
+			long start = System.currentTimeMillis();
+			if (timeoutStrategy != TimeoutStrategy.EXECUTOR && timeoutActive) {
+				this.stpw = new StopWatch(millisTimeout, "Decomposing word="+word);
+			}
+
+			Logger tLogger = Logger.getLogger("ca.inuktitutcomputing.morph.decomposeWord");
+			tLogger.trace("word="+word+", lenient="+lenient);
+
+			Decomposition[] decompStates = null;
+
+			MorphAnalyzerTask task = new MorphAnalyzerTask(word, lenient, this);
+
+			String mess = "Decomp of word="+word+"; STARTS at "+start+"msecs";
+			tLogger.trace(mess);
+
+			tLogger.trace("timeoutStrategy: "+timeoutStrategy);
+			if (timeoutStrategy == TimeoutStrategy.STOPWATCH) {
+				tLogger.trace("invoke directly");
+				decompStates = invokeDirectly(word, lenient);
+			} else {
+				try {
+					tLogger.trace("invoke through task");
+					decompStates = invokeThroughExecutor(task);
+				} catch (InterruptedException e) {
+					tLogger.trace("InterruptedException caught: "+e.getMessage());
+				}
+			}
+
+			long elapsed = System.currentTimeMillis() - start;
+			mess = "DecompositionSimple of word="+word+"; ENDS with elapsed="+elapsed+"msecs";
+			tLogger.trace(mess);
+
+			decompsSimple = new DecompositionSimple[decompStates.length];
 			for (int ii = 0; ii < decompStates.length; ii++) {
-				decomps[ii] = decompStates[ii].toSimpleDecomposition();
+				decompsSimple[ii] = decompStates[ii].toSimpleDecomposition();
 			}
 		} catch (DecompositionExcepion e) {
 			throw new MorphologicalAnalyzerException(e);
 		}
-		return decomps;
+		return decompsSimple;
 	}
 
 	/**

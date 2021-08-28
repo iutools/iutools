@@ -14,10 +14,8 @@ import org.apache.log4j.Logger;
 
 import org.iutools.linguisticdata.LinguisticData;
 import org.iutools.linguisticdata.LinguisticDataException;
-import org.iutools.morph.Decomposition;
+import org.iutools.morph.*;
 import org.iutools.morph.Decomposition.DecompositionExpression;
-import org.iutools.morph.MorphologicalAnalyzerException;
-import org.iutools.morph.MorphologicalAnalyzer;
 import org.iutools.morph.MorphologicalAnalyzerException;
 
 public class MorphemeSearcher {
@@ -308,11 +306,11 @@ public class MorphemeSearcher {
 		String[][] decompositions = morphemeExample.decompsSample;
 		if (decompositions == null) {
 			try {
-				Decomposition[] decompObjects =
-					analyzer.decomposeWord(morphemeExample.word,
+				DecompositionSimple[] decompObjects =
+					analyzer.decomposeWord_NEW(morphemeExample.word,
 						allowAnalysisWithAdditionalFinalConsonant);
-				decompositions = Decomposition.decomps2morphemes(decompObjects);
-			} catch (MorphologicalAnalyzerException e) {
+				decompositions = DecompositionSimple.decomps2morphemes(decompObjects);
+			} catch (MorphologicalAnalyzerException | DecompositionExcepion e) {
 				throw new MorphemeSearcherException(e);
 			}
 		}

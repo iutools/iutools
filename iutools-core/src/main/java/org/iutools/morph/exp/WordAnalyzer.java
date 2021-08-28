@@ -62,13 +62,13 @@ public class WordAnalyzer {
 		 */
 		Logger logger = Logger.getLogger("WordAnalyzer.findAllPossibleSequencesOfMorphemes");
 
-		List<DecompositionTree> decompositionTrees = decomposeWord(word);
+		List<DecompositionTree> decompositionTrees = decomposeWord_Tree(word);
 		List<DecompositionSimple> prunedDecompositions = combineMorphemes(decompositionTrees);
 
 		return prunedDecompositions;
 	}
 
-	public List<DecompositionTree> decomposeWord(String word) throws MorphologicalAnalyzerException, LinguisticDataException {
+	public List<DecompositionTree> decomposeWord_Tree(String word) throws MorphologicalAnalyzerException, LinguisticDataException {
 		Logger logger = Logger.getLogger("WordAnalyzer.decomposeWord");
 		List<DecompositionTree> decompositionTrees = new ArrayList<DecompositionTree>();
 		StateGraphForward.State initialStateOfAnalysis = StateGraphForward.initialState;
