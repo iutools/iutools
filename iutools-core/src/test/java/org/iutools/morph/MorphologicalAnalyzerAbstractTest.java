@@ -1,11 +1,20 @@
 package org.iutools.morph;
 
-import org.iutools.morph.r2l.MorphologicalAnalyzer__L2R;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.concurrent.TimeoutException;
 
-public class MorphologicalAnalyzerTest {
+public abstract class MorphologicalAnalyzerAbstractTest {
+
+	private MorphologicalAnalyzerAbstract analyzer;
+
+	public abstract MorphologicalAnalyzerAbstract makeAnalyzer();
+
+	@Before
+	public void setUp() {
+		this.analyzer = makeAnalyzer();
+	}
 
 	////////////////////////////////////
 	// DOCUMENTATION TESTS
@@ -13,9 +22,6 @@ public class MorphologicalAnalyzerTest {
 
 	@Test
 	public void test__MorphologicalAnalyzer_Synopsis() throws Exception {
-		// By default, the analyzer uses the linguistic database in the CSV format
-		MorphologicalAnalyzer__L2R analyzer = new MorphologicalAnalyzer__L2R();
-
 		// By default, the analysis times out after 10 seconds; time ou can be set different
 		analyzer.setTimeout(15000); // in milliseconds
 
@@ -40,7 +46,6 @@ public class MorphologicalAnalyzerTest {
 	
 	@Test(expected=TimeoutException.class)
 	public void test__decomposeWord__timeout_2s() throws Exception  {
-		MorphologicalAnalyzer__L2R analyzer = new MorphologicalAnalyzer__L2R();
 		analyzer.setTimeout(2000);
 		String word = "ilisaqsitittijunnaqsisimannginnama";
 		analyzer.decomposeWord(word);
@@ -48,14 +53,12 @@ public class MorphologicalAnalyzerTest {
 
 	@Test(expected=TimeoutException.class)
 	public void test__decomposeWord__timeout_10s() throws Exception  {
-		MorphologicalAnalyzer__L2R analyzer = new MorphologicalAnalyzer__L2R();
 		String word = "ilisaqsitittijunnaqsisimannginnama";
 		analyzer.decomposeWord(word);
 	}
 
 	@Test
 	public void test__decomposeWord__maligatigut() throws Exception  {
-		MorphologicalAnalyzer__L2R analyzer = new MorphologicalAnalyzer__L2R();
 		String word = "maligatigut";
 		analyzer.disactivateTimeout();
 		DecompositionSimple[] decs = analyzer.decomposeWord(word);
@@ -66,7 +69,6 @@ public class MorphologicalAnalyzerTest {
 
 	@Test
 	public void test__decomposeWord__uqaqtiup() throws Exception  {
-		MorphologicalAnalyzer__L2R analyzer = new MorphologicalAnalyzer__L2R();
 		String word = "uqaqtiup";
 		analyzer.disactivateTimeout();;
 
@@ -77,7 +79,6 @@ public class MorphologicalAnalyzerTest {
 
 	@Test
 	public void test__decomposeWord__sivuliuqtii() throws Exception  {
-		MorphologicalAnalyzer__L2R analyzer = new MorphologicalAnalyzer__L2R();
 		String word = "sivuliuqtii";
 		analyzer.disactivateTimeout();;
 
@@ -88,7 +89,6 @@ public class MorphologicalAnalyzerTest {
 
 	@Test
 	public void test__decomposeWord__ammalu() throws Exception  {
-		MorphologicalAnalyzer__L2R analyzer = new MorphologicalAnalyzer__L2R();
 		String word = "ammalu";
 		analyzer.disactivateTimeout();;
 		DecompositionSimple[] decSimple = analyzer.decomposeWord(word);
@@ -107,7 +107,6 @@ public class MorphologicalAnalyzerTest {
 	 */
 	@Test
 	public void test__decomposeWord__apiqsuqtaujuksaq() throws Exception  {
-		MorphologicalAnalyzer__L2R analyzer = new MorphologicalAnalyzer__L2R();
 		String word = "apiqsuqtaujuksaq";
 
 		analyzer.disactivateTimeout();;
@@ -129,7 +128,6 @@ public class MorphologicalAnalyzerTest {
 
 	@Test
 	public void test__decomposeWord__immagaa() throws Exception  {
-		MorphologicalAnalyzer__L2R analyzer = new MorphologicalAnalyzer__L2R();
 		String word = "immagaa";
 
 		analyzer.disactivateTimeout();;
@@ -141,7 +139,6 @@ public class MorphologicalAnalyzerTest {
 
 	@Test
 	public void test__decomposeWord__avunnga_Extensions() throws Exception  {
-		MorphologicalAnalyzer__L2R analyzer = new MorphologicalAnalyzer__L2R();
 		String word = "avunngaqtuq";
 
 		analyzer.disactivateTimeout();;
@@ -164,7 +161,6 @@ public class MorphologicalAnalyzerTest {
 
 	@Test
 	public void test__decomposeWord__atuagaq() throws Exception  {
-		MorphologicalAnalyzer__L2R analyzer = new MorphologicalAnalyzer__L2R();
 		String word = "atuagaq";
 
 		analyzer.disactivateTimeout();;
@@ -176,7 +172,6 @@ public class MorphologicalAnalyzerTest {
 
 	@Test
 	public void test__decomposeWord__maligaliuqtinik() throws Exception  {
-		MorphologicalAnalyzer__L2R analyzer = new MorphologicalAnalyzer__L2R();
 		String word = "maligaliuqtinik";
 
 		analyzer.disactivateTimeout();
@@ -188,7 +183,6 @@ public class MorphologicalAnalyzerTest {
 
 	@Test
 	public void test__decomposeWord__sivungujuq() throws Exception  {
-		MorphologicalAnalyzer__L2R analyzer = new MorphologicalAnalyzer__L2R();
 		String word = "sivungujuq";
 
 		analyzer.disactivateTimeout();;
@@ -199,7 +193,6 @@ public class MorphologicalAnalyzerTest {
 
 	@Test
 	public void test__decomposeWord__with_extendedAnalysis() throws Exception  {
-		MorphologicalAnalyzer__L2R analyzer = new MorphologicalAnalyzer__L2R();
 		String word = "makpiga";
 
 		analyzer.disactivateTimeout();;
@@ -210,7 +203,6 @@ public class MorphologicalAnalyzerTest {
 
 	@Test
 	public void test__decomposeWord__without_extendedAnalysis() throws Exception  {
-		MorphologicalAnalyzer__L2R analyzer = new MorphologicalAnalyzer__L2R();
 		String word = "makpiga";
 
 		analyzer.disactivateTimeout();;
@@ -221,7 +213,6 @@ public class MorphologicalAnalyzerTest {
 
 	@Test
 	public void test__decomposeWord__noun_root_alone() throws Exception  {
-		MorphologicalAnalyzer__L2R analyzer = new MorphologicalAnalyzer__L2R();
 		String word = "angut";
 
 		analyzer.disactivateTimeout();;
@@ -232,7 +223,6 @@ public class MorphologicalAnalyzerTest {
 
 	@Test
 	public void test__decomposeWord__inungmut() throws Exception  {
-		MorphologicalAnalyzer__L2R analyzer = new MorphologicalAnalyzer__L2R();
 		String word = "inungmut";
 
 		analyzer.disactivateTimeout();;
@@ -243,7 +233,6 @@ public class MorphologicalAnalyzerTest {
 
 	@Test
 	public void test__decomposeWord__siniktitsijuq() throws Exception  {
-		MorphologicalAnalyzer__L2R analyzer = new MorphologicalAnalyzer__L2R();
 		String word = "siniktitsijuq";
 
 		analyzer.disactivateTimeout();;
@@ -254,7 +243,6 @@ public class MorphologicalAnalyzerTest {
 
 	@Test
 	public void test__decomposeWord__siniktittijuq() throws Exception  {
-		MorphologicalAnalyzer__L2R analyzer = new MorphologicalAnalyzer__L2R();
 		String word = "siniktittijuq";
 
 		analyzer.disactivateTimeout();;
@@ -266,7 +254,6 @@ public class MorphologicalAnalyzerTest {
 
 	@Test
 	public void test__decomposeWord__pivalliatittinirmut() throws Exception {
-		MorphologicalAnalyzer__L2R analyzer = new MorphologicalAnalyzer__L2R();
 		String word = "pivalliatittinirmut";
 
 		analyzer.disactivateTimeout();
@@ -279,7 +266,6 @@ public class MorphologicalAnalyzerTest {
 
 	@Test
 	public void test__decomposeWord__siniktittiniq() throws Exception {
-		MorphologicalAnalyzer__L2R analyzer = new MorphologicalAnalyzer__L2R();
 		String word = "siniktittiniq";
 
 		analyzer.disactivateTimeout();
