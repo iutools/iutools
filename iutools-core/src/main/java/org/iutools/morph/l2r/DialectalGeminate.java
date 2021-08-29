@@ -1,4 +1,4 @@
-package org.iutools.morph.exp;
+package org.iutools.morph.l2r;
 
 import java.util.Arrays;
 import java.util.HashSet;

@@ -7,12 +7,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import ca.nrc.testing.AssertObject;
-import org.iutools.morph.exp.FormGeneratorException;
-import org.junit.Assert;
+import org.iutools.morph.l2r.FormGeneratorException;
 import org.junit.Test;
 
-import org.iutools.phonology.research.PhonologicalChange;
 import ca.nrc.testing.AssertHelpers;
 
 public class PhonologicalChangeTest {

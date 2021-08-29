@@ -1,4 +1,4 @@
-package org.iutools.morph.exp;
+package org.iutools.morph.l2r;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -11,7 +11,6 @@ import org.iutools.linguisticdata.LinguisticData;
 import org.iutools.linguisticdata.LinguisticDataException;
 import org.iutools.linguisticdata.SurfaceFormInContext;
 import org.iutools.phonology.research.PhonologicalChange;
-import ca.nrc.json.PrettyPrinter;
 
 public class FormGenerator {
 	

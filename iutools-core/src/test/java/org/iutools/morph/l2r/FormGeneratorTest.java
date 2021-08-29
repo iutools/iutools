@@ -1,4 +1,4 @@
-package org.iutools.morph.exp;
+package org.iutools.morph.l2r;
 
 import static org.junit.Assert.*;
 
@@ -10,7 +10,6 @@ import org.junit.Ignore;
 
 import org.iutools.linguisticdata.LinguisticDataException;
 import org.iutools.linguisticdata.SurfaceFormInContext;
-import ca.nrc.json.PrettyPrinter;
 
 public class FormGeneratorTest {
 

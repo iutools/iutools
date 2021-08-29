@@ -1,11 +1,11 @@
-package org.iutools.morph.exp.bin;
+package org.iutools.morph.l2r.bin;
 
 import ca.nrc.config.ConfigException;
 import org.iutools.datastructure.trie.Trie;
 import org.iutools.datastructure.trie.TrieException;
 import org.iutools.datastructure.trie.TrieNode;
 import org.iutools.datastructure.trie.Trie_InMemory;
-import org.iutools.morph.exp.SurfaceFormsHandler;
+import org.iutools.morph.l2r.SurfaceFormsHandler;
 
 import java.io.BufferedReader;
 import java.io.IOException;

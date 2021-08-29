@@ -1,4 +1,4 @@
-package org.iutools.morph.exp;
+package org.iutools.morph.l2r;
 
 import ca.nrc.config.ConfigException;
 import ca.nrc.file.ResourceGetter;
@@ -6,19 +6,14 @@ import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.stream.JsonReader;
 import org.apache.log4j.Logger;
-import org.iutools.config.IUConfig;
 import org.iutools.corpus.CompiledCorpusException;
 import org.iutools.datastructure.trie.TrieException;
 import org.iutools.datastructure.trie.Trie_InMemory;
 import org.iutools.linguisticdata.LinguisticData;
 import org.iutools.linguisticdata.LinguisticDataException;
 import org.iutools.linguisticdata.SurfaceFormInContext;
-import org.iutools.morph.exp.FormGenerator;
-import org.iutools.morph.exp.FormGeneratorException;
 
 import java.io.*;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 public class SurfaceFormsHandler {

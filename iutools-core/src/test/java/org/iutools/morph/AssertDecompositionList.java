@@ -1,8 +1,10 @@
 package org.iutools.morph;
 
+import ca.nrc.testing.AssertNumber;
 import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.AssertString;
 import ca.nrc.testing.Asserter;
+import org.junit.jupiter.api.Assertions;
 
 public class AssertDecompositionList extends Asserter<DecompositionSimple[]> {
 	public AssertDecompositionList(DecompositionSimple[] _gotObject) {
@@ -15,6 +17,25 @@ public class AssertDecompositionList extends Asserter<DecompositionSimple[]> {
 
 	public DecompositionSimple[] decompositions() {
 		return (DecompositionSimple[])gotObject;
+	}
+
+	public AssertDecompositionList includesDecomps(String... expDecomps) {
+		String gotDecomps = "";
+		for (int ii=0; ii < decompositions().length; ii++) {
+			if (ii > 0) {
+				gotDecomps += "\n";
+			};
+			gotDecomps += decompositions()[ii].toString();
+		}
+
+		for (String anExpDecomp: expDecomps) {
+			if (!gotDecomps.contains(anExpDecomp)) {
+				Assertions.fail(
+					baseMessage+"\nDecomposition '"+anExpDecomp+"' was missing.\n"+
+					"Decompositions were:\n"+gotDecomps);
+			}
+		}
+		return this;
 	}
 
 	public AssertDecompositionList decompIs(String... morphStrings)
@@ -73,6 +94,15 @@ public class AssertDecompositionList extends Asserter<DecompositionSimple[]> {
 		AssertString.assertStringContains(
 			baseMessage+"\nNone of the decompositions contained '"+expMorphSequ+"'",
 			allDecomps, expMorphSequ
+		);
+		return this;
+	}
+
+	public AssertDecompositionList producesAtLeastNDecomps(int minDecomps) {
+		int gotDecomps = decompositions().length;
+		AssertNumber.isGreaterOrEqualTo(
+			baseMessage+"Number of decompositions produced was too low",
+			gotDecomps, minDecomps
 		);
 		return this;
 	}

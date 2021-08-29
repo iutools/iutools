@@ -1,4 +1,4 @@
-package org.iutools.morph.exp;
+package org.iutools.morph.l2r;
 
 @SuppressWarnings("serial")
 public class WordAnalyzerException extends Exception {
