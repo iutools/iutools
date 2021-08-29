@@ -22,7 +22,7 @@
 //
 // -----------------------------------------------------------------------
 
-package org.iutools.morph;
+package org.iutools.morph.r2l;
 
 import org.iutools.linguisticdata.LinguisticDataException;
 import org.iutools.linguisticdata.Morpheme;

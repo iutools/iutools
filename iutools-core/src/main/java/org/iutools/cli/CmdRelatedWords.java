@@ -1,18 +1,16 @@
 package org.iutools.cli;
 
-import java.io.FileReader;
-
 import ca.nrc.ui.commandline.CommandLineException;
 import org.iutools.corpus.CompiledCorpus;
 import org.iutools.corpus.CompiledCorpusRegistry;
 
 import org.iutools.bin.Decompose;
 import org.iutools.morph.DecompositionSimple;
+import org.iutools.morph.r2l.MorphologicalAnalyzer__L2R;
 import org.iutools.script.Roman;
 import org.iutools.script.Syllabics;
 import org.iutools.morphrelatives.MorphRelativesFinder;
 import org.iutools.morphrelatives.MorphologicalRelative;
-import org.iutools.morph.MorphologicalAnalyzer;
 
 public class CmdRelatedWords extends ConsoleCommand {
 
@@ -39,7 +37,7 @@ public class CmdRelatedWords extends ConsoleCommand {
 		MorphRelativesFinder reformulator = new MorphRelativesFinder(compiledCorpus);
 		CmdConvertIUSegments convertCommand = new CmdConvertIUSegments("");
 		
-		MorphologicalAnalyzer morphAnalyzer = new MorphologicalAnalyzer();
+		MorphologicalAnalyzer__L2R morphAnalyzer = new MorphologicalAnalyzer__L2R();
 
 		boolean interactive = false;
 		if (word == null) {
@@ -97,7 +95,7 @@ public class CmdRelatedWords extends ConsoleCommand {
 				expansions = "\n    No expansion could be found in the corpus.\n";
 			}
 
-			DecompositionSimple[] decs = morphAnalyzer.decomposeWord_NEW(latin);
+			DecompositionSimple[] decs = morphAnalyzer.decomposeWord(latin);
 			DecompositionSimple dec = null;
 			if (decs.length != 0)
 				dec = decs[0];

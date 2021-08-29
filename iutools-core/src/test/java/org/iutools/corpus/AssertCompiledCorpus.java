@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.iutools.morph.Decomposition;
+import org.iutools.morph.r2l.DecompositionState;
 import static org.iutools.linguisticdata.Morpheme.MorphFormat;
 import org.apache.commons.lang3.tuple.Triple;
 import org.junit.Assert;
@@ -149,7 +149,7 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 			gotWords.add(
 				Triple.of(
 					wrdWithMorph.word, wrdWithMorph.morphemeId,
-						Decomposition.formatDecompStr(
+						DecompositionState.formatDecompStr(
 							wrdWithMorph.decomposition,
 							MorphFormat.WITH_BRACES)));
 		}

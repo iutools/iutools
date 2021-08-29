@@ -4,8 +4,8 @@ import ca.nrc.debug.Debug;
 import ca.nrc.ui.commandline.CommandLineException;
 import org.iutools.corpus.CompiledCorpus;
 import org.iutools.corpus.CompiledCorpusException;
-import org.iutools.linguisticdata.LinguisticDataException;
 import org.iutools.morph.*;
+import org.iutools.morph.r2l.MorphologicalAnalyzer__L2R;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -14,11 +14,11 @@ import java.util.concurrent.TimeoutException;
 
 public class CmdRecompileDecomps extends ConsoleCommand {
 
-	MorphologicalAnalyzer analyzer = null;
+	MorphologicalAnalyzer__L2R analyzer = null;
 
 	public CmdRecompileDecomps(String name) throws CommandLineException {
 		super(name);
-		analyzer = new MorphologicalAnalyzer();
+		analyzer = new MorphologicalAnalyzer__L2R();
 	}
 
 	@Override
@@ -48,12 +48,12 @@ public class CmdRecompileDecomps extends ConsoleCommand {
 	private void redecomposeWord(String word, CompiledCorpus corpus,
 		String comment)  {
 		try {
-			DecompositionSimple[] decompObjs = analyzer.decomposeWord_NEW(word);
+			DecompositionSimple[] decompObjs = analyzer.decomposeWord(word);
 			String[][] decomps = DecompositionSimple.decomps2morphemes(decompObjs);
 			corpus.addWordOccurence(word, decomps, new Integer(decomps.length), 0);
 		} catch (TimeoutException e) {
 			echo("   Analyzer timed out!");
-		} catch (MorphologicalAnalyzerException | CompiledCorpusException | DecompositionExcepion e) {
+		} catch (MorphologicalAnalyzerException | CompiledCorpusException | DecompositionException e) {
 			echo(1);
 			{
 				echo("   Analyzer raised exception: " + Debug.printCallStack(e));

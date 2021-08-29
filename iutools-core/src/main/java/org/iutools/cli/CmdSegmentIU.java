@@ -10,7 +10,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.iutools.morph.DecompositionSimple;
-import org.iutools.morph.MorphologicalAnalyzer;
+import org.iutools.morph.r2l.MorphologicalAnalyzer__L2R;
 import org.iutools.morph.MorphologicalAnalyzerAbstract;
 import ca.nrc.debug.Debug;
 
@@ -35,7 +35,7 @@ public class CmdSegmentIU extends ConsoleCommand {
 		mode = getMode(ConsoleCommand.OPT_WORD);
 		lenient = getExtendedAnalysis();
 		Long timeoutMSecs = getTimeoutMSecs();
-		MorphologicalAnalyzer morphAnalyzer = new MorphologicalAnalyzer();
+		MorphologicalAnalyzer__L2R morphAnalyzer = new MorphologicalAnalyzer__L2R();
 		morphAnalyzer.setTimeout(timeoutMSecs);
 		
 		mLogger.trace("invoked with mode="+mode+", lenient="+lenient+
@@ -53,7 +53,7 @@ public class CmdSegmentIU extends ConsoleCommand {
 				mLogger.trace("Working on word="+word+"(@"+start+" msecs)");
 
 				DecompositionSimple[] decs =
-					morphAnalyzer.decomposeWord_NEW(word,lenient);
+					morphAnalyzer.decomposeWord(word,lenient);
 				long elapsed = System.currentTimeMillis() - start;
 				printDecompositions(word, decs, elapsed);
 				mLogger.trace("DONE Working on word="+word+"(@"+start+" msecs)");

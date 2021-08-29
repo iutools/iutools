@@ -17,7 +17,7 @@ import ca.nrc.testing.AssertRuntime;
 import ca.nrc.testing.TestDirs;
 import ca.nrc.ui.commandline.UserIO;
 import org.apache.log4j.Logger;
-import org.iutools.morph.Decomposition;
+import org.iutools.morph.r2l.DecompositionState;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -576,7 +576,7 @@ public class MorphRelativesFinderEvaluator {
 						altDecomp = String.join(
 							" ",
 							relsFinder.compiledCorpus.topDecomposition(gsalternative));
-						altDecomp =  Decomposition.formatDecompStr(altDecomp);
+						altDecomp =  DecompositionState.formatDecompStr(altDecomp);
 						gsalternativesMorphemes[igs] = altDecomp;
 					} catch (Exception e) {
 						altDecomp = "";

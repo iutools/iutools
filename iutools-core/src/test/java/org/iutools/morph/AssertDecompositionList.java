@@ -34,7 +34,7 @@ public class AssertDecompositionList extends Asserter<DecompositionSimple[]> {
 		}
 
 		AssertObject.assertDeepEquals(
-			baseMessage+"\nDecomposition #"+nth+" was not as expected",
+			baseMessage+"\nDecompositionState #"+nth+" was not as expected",
 			expMorphemes, gotMorphemes
 		);
 

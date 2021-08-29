@@ -6,7 +6,7 @@
  * 
  */
 
-package org.iutools.morph;
+package org.iutools.morph.r2l;
 
 import java.util.Vector;
 

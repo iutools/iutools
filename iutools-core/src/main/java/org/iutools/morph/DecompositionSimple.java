@@ -2,6 +2,7 @@ package org.iutools.morph;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
+import org.iutools.morph.r2l.StateGraphForward;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,7 @@ public class DecompositionSimple {
 		return;
 	}
 
-	public static String[][] decomps2morphemes(DecompositionSimple[] decompObjs) throws DecompositionExcepion {
+	public static String[][] decomps2morphemes(DecompositionSimple[] decompObjs) throws DecompositionException {
 		String[][] morphemes = new String[decompObjs.length][];
 		int ii=0;
 		for (DecompositionSimple aDecomp: decompObjs) {
@@ -27,7 +28,7 @@ public class DecompositionSimple {
 		return morphemes;
 	}
 
-	private String[] morphemeIDs() throws DecompositionExcepion {
+	private String[] morphemeIDs() throws DecompositionException {
 		String[] morphemes = new String[components().length];
 		int ii=0;
 		for (String aComponent: components()) {
@@ -38,7 +39,7 @@ public class DecompositionSimple {
 		return morphemes;
 	}
 
-	public List<String> surfaceForms() throws DecompositionExcepion {
+	public List<String> surfaceForms() throws DecompositionException {
 		List<String> surfaceForms = new ArrayList<String>();
 		for (String aComponent: components()) {
 			Pair<String,String> parsedcomp = DecompositionSimple.parseComponent(aComponent);
@@ -48,10 +49,10 @@ public class DecompositionSimple {
 	}
 
 
-	public static Pair<String,String> parseComponent(String comp) throws DecompositionExcepion {
+	public static Pair<String,String> parseComponent(String comp) throws DecompositionException {
 		String[] parsed = comp.split(":");
 		if (parsed.length != 2) {
-			throw new DecompositionExcepion("Could not parse component '"+comp+"'");
+			throw new DecompositionException("Could not parse component '"+comp+"'");
 		}
 		return Pair.of(parsed[0], parsed[1]);
 	}

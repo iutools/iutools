@@ -22,7 +22,7 @@
 // -----------------------------------------------------------------------
 
 
-package org.iutools.morph;
+package org.iutools.morph.r2l;
 
 import org.iutools.linguisticdata.Base;
 import org.iutools.linguisticdata.Morpheme;
@@ -74,6 +74,6 @@ public class RootPartOfComposition extends PartOfComposition {
 
     
 	public String toStr() {
-		return new Decomposition.DecompositionExpression.DecPart(term,root.id).str;
+		return new DecompositionState.DecompositionExpression.DecPart(term,root.id).str;
 	}
 }

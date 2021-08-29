@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.morph.*;
+import org.iutools.morph.r2l.MorphologicalAnalyzer__L2R;
 import org.iutools.utilities.StopWatch;
 import ca.nrc.debug.Debug;
 import org.iutools.corpus.*;
@@ -496,10 +497,10 @@ public class SpellChecker {
 		DecompositionSimple[] decomps = null;
 		try {
 			 decomps = 
-				new MorphologicalAnalyzer()
+				new MorphologicalAnalyzer__L2R()
 						.setTimeout(MAX_DECOMP_MSECS)
 						.activateTimeout()
-						.decomposeWord_NEW(word);
+						.decomposeWord(word);
 		} catch(TimeoutException e) {
 			answer = false;
 		} catch(MorphologicalAnalyzerException e) {
@@ -511,7 +512,7 @@ public class SpellChecker {
 				List<String> morphemes = null;
 				try {
 					morphemes = aDecomp.surfaceForms();
-				} catch (DecompositionExcepion decompositionExcepion) {
+				} catch (DecompositionException decompositionExcepion) {
 					throw new SpellCheckerException(decompositionExcepion);
 				}
 
@@ -582,10 +583,10 @@ public class SpellChecker {
 		DecompositionSimple[] decomps = null;
 		try {
 			 decomps = 
-				new MorphologicalAnalyzer()
+				new MorphologicalAnalyzer__L2R()
 						.setTimeout(MAX_DECOMP_MSECS)
 						.activateTimeout()
-						.decomposeWord_NEW(word);
+						.decomposeWord(word);
 		} catch(TimeoutException e) {
 			answer = false;
 		} catch(MorphologicalAnalyzerException e) {
@@ -597,7 +598,7 @@ public class SpellChecker {
 				List<String> morphemes = null;
 				try {
 					morphemes = aDecomp.surfaceForms();
-				} catch (DecompositionExcepion decompositionExcepion) {
+				} catch (DecompositionException decompositionExcepion) {
 					throw new SpellCheckerException(decompositionExcepion);
 				}
 
@@ -1260,14 +1261,14 @@ public class SpellChecker {
 	protected boolean assessEndingWithIMA(String ending) {
 		Logger logger = Logger.getLogger("SpellChecker.assessEndingWithIMA");
 		boolean accepted = false;
-		MorphologicalAnalyzer morphAnalyzer = segmenter.getAnalyzer();
+		MorphologicalAnalyzer__L2R morphAnalyzer = segmenter.getAnalyzer();
 		for (int i=0; i<makeUpWords.length; i++) {
 			accepted = false;
 			String term = makeUpWords[i]+ending;
 			logger.trace("term= "+term);
 			DecompositionSimple[] decs = null;
 			try {
-				decs = morphAnalyzer.decomposeWord_NEW(term);
+				decs = morphAnalyzer.decomposeWord(term);
 			} catch (TimeoutException | MorphologicalAnalyzerException e) {
 			}
 			logger.trace("decs: "+(decs==null?"null":decs.length));

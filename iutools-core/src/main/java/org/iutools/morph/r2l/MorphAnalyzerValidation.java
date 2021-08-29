@@ -1,4 +1,4 @@
-package org.iutools.morph;
+package org.iutools.morph.r2l;
 
 import org.iutools.linguisticdata.Action;
 import org.iutools.linguisticdata.Affix;
@@ -7,6 +7,7 @@ import org.iutools.linguisticdata.SurfaceFormOfAffix;
 import org.iutools.linguisticdata.constraints.Condition;
 import org.iutools.linguisticdata.constraints.Imacond;
 import org.iutools.linguisticdata.constraints.ParseException;
+import org.iutools.morph.MorphologicalAnalyzerException;
 import org.iutools.phonology.Dialect;
 import org.iutools.script.Orthography;
 import org.iutools.script.Roman;

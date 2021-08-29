@@ -21,7 +21,7 @@
 //
 // -----------------------------------------------------------------------
 
-package org.iutools.morph;
+package org.iutools.morph.r2l;
 
 import java.util.Vector;
 
@@ -108,7 +108,7 @@ public class AffixPartOfComposition extends PartOfComposition {
 			trm = term.substring(0,term.length()-1);
 		else
 			trm = term;
-		return new Decomposition.DecompositionExpression.DecPart(trm,aff.id).str;
+		return new DecompositionState.DecompositionExpression.DecPart(trm,aff.id).str;
 	}
     
     /*

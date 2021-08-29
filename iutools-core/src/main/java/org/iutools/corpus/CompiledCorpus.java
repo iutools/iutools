@@ -8,7 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.iutools.linguisticdata.Morpheme;
-import org.iutools.morph.Decomposition;
+import org.iutools.morph.r2l.DecompositionState;
 import ca.nrc.debug.Debug;
 import ca.nrc.dtrc.elasticsearch.*;
 import ca.nrc.dtrc.elasticsearch.request.*;
@@ -470,7 +470,7 @@ public class CompiledCorpus {
 			}
 
 			String topDecomp =
-					Decomposition.formatDecompStr(
+					DecompositionState.formatDecompStr(
 							winfo.topDecompositionStr,
 							Morpheme.MorphFormat.WITH_BRACES);
 

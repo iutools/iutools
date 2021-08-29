@@ -7,7 +7,6 @@ import org.apache.log4j.Logger;
 import org.iutools.linguisticdata.LinguisticDataException;
 import org.iutools.morph.MorphologicalAnalyzerException;
 import org.iutools.morph.MorphologicalAnalyzerAbstract;
-import org.iutools.morph.MorphologicalAnalyzerException;
 import org.iutools.morph.expAlain.DecompositionState.Step;
 
 public class MorphologicalAnalyzer_L2R 
@@ -31,7 +30,7 @@ public class MorphologicalAnalyzer_L2R
 
 		
 	@Override
-	public org.iutools.morph.Decomposition[] doDecompose(String word, Boolean extendedAnalysis)
+	public org.iutools.morph.r2l.DecompositionState[] doDecompose(String word, Boolean extendedAnalysis)
 		throws MorphologicalAnalyzerException {
 		if (extendedAnalysis == null) {
 			extendedAnalysis = true;
@@ -43,9 +42,9 @@ public class MorphologicalAnalyzer_L2R
 		} catch (MorphologicalAnalyzerException e) {
 			throw new MorphologicalAnalyzerException(e);
 		}
-		List<org.iutools.morph.Decomposition> decompsLst = finalState.allDecompositions;
-		org.iutools.morph.Decomposition[] decomps =
-			decompsLst.toArray(new org.iutools.morph.Decomposition[decompsLst.size()]);
+		List<org.iutools.morph.r2l.DecompositionState> decompsLst = finalState.allDecompositions;
+		org.iutools.morph.r2l.DecompositionState[] decomps =
+			decompsLst.toArray(new org.iutools.morph.r2l.DecompositionState[decompsLst.size()]);
 		
 		return decomps;
 	}

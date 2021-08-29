@@ -32,7 +32,7 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
-import org.iutools.morph.AffixPartOfComposition;
+import org.iutools.morph.r2l.AffixPartOfComposition;
 import org.iutools.linguisticdata.constraints.Conditions;
 
 public abstract class Morpheme implements Cloneable {

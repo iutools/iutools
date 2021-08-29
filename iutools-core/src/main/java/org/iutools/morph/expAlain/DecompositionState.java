@@ -3,8 +3,6 @@ package org.iutools.morph.expAlain;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.iutools.morph.Decomposition;
-
 public class DecompositionState {
 	
 	public static enum Step {
@@ -21,7 +19,7 @@ public class DecompositionState {
 	/** Position of the cursor at each level of the choice tree */
 	List<Integer> cursors = new ArrayList<Integer>();
 	
-	List<Decomposition> allDecompositions = new ArrayList<Decomposition>();
+	List<org.iutools.morph.r2l.DecompositionState> allDecompositions = new ArrayList<org.iutools.morph.r2l.DecompositionState>();
 	
 	List<List<WrittenMorpheme>> _allDecomposition_asWrittenMorphemes =
 		new ArrayList<List<WrittenMorpheme>>();
@@ -38,7 +36,7 @@ public class DecompositionState {
 		return this;
 	}
 
-	public List<Decomposition> getAllDecompositions() {
+	public List<org.iutools.morph.r2l.DecompositionState> getAllDecompositions() {
 		return null;
 	}
 

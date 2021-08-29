@@ -12,9 +12,9 @@ import org.apache.log4j.Logger;
 import org.iutools.linguisticdata.LinguisticData;
 import org.iutools.linguisticdata.LinguisticDataException;
 import org.iutools.morph.DecompositionSimple;
+import org.iutools.morph.r2l.MorphologicalAnalyzer__L2R;
 import org.iutools.script.TransCoder;
-import org.iutools.morph.Decomposition;
-import org.iutools.morph.MorphologicalAnalyzer;
+import org.iutools.morph.r2l.DecompositionState;
 import org.iutools.utilities.MonURLDecoder;
 import org.iutools.utilities.Text;
 
@@ -155,11 +155,11 @@ public class Decompose {
         DecompositionSimple[] decs;
         try {
             LinguisticData.init(); // make sure the LinguisticData instance is null
-            MorphologicalAnalyzer morphAnalyzer = new MorphologicalAnalyzer();
+            MorphologicalAnalyzer__L2R morphAnalyzer = new MorphologicalAnalyzer__L2R();
             morphAnalyzer.setDecomposeCompositeRoot(decomposeComposite);
         	morphAnalyzer.disactivateTimeout();
 
-			decs = morphAnalyzer.decomposeWord_NEW(word,extendedAnalysis);
+			decs = morphAnalyzer.decomposeWord(word,extendedAnalysis);
 			
 	        String[] decExprs = new String[decs.length];
 	        // Préparation de l'affichage des résultats.
@@ -175,12 +175,12 @@ public class Decompose {
     
 	static public String getMeaningsInString (String decstr, String lang, 
 			boolean includeSurface, boolean includeId) throws LinguisticDataException {
-		return Decomposition.getMeaningsInString (decstr, lang, includeSurface, includeId);
+		return DecompositionState.getMeaningsInString (decstr, lang, includeSurface, includeId);
 	}
 	
 	static public String[] getMeaningsInArrayOfStrings (String decstr, String lang, 
 			boolean includeSurface, boolean includeId) throws LinguisticDataException {
-		return Decomposition.getMeaningsInArrayOfStrings (decstr, lang, includeSurface, includeId);
+		return DecompositionState.getMeaningsInArrayOfStrings (decstr, lang, includeSurface, includeId);
 	}
 	
 //	protected static boolean validInuktitutWord (String word) {

@@ -16,7 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Logger;
 
 import org.iutools.linguisticdata.LinguisticDataException;
-import org.iutools.morph.Decomposition;
+import org.iutools.morph.r2l.DecompositionState;
 import org.iutools.script.TransCoder;
 import ca.nrc.data.file.ObjectStreamReader;
 import ca.nrc.data.file.ObjectStreamReaderException;
@@ -434,7 +434,7 @@ public class CorpusCompiler {
 				sampleDecomps = new String[totalDecomps][];
 				for (int ii = 0; ii < totalDecomps; ii++) {
 					sampleDecomps[ii] =
-							Decomposition.decompstr2morphemes(decompStrings.get(ii));
+							DecompositionState.decompstr2morphemes(decompStrings.get(ii));
 				}
 			}
 
@@ -854,7 +854,7 @@ public class CorpusCompiler {
 				} else {
 					toConsole("Updating decompositions for word " + word);
 					List<String> decompStrings = (List<String>) wordDecompInfo.get("decompositions");
-					String[][] decomps = Decomposition.decomps2morphemes(decompStrings);
+					String[][] decomps = DecompositionState.decomps2morphemes(decompStrings);
 					Integer totalDecomps = new Integer(0);
 					if (decomps != null && decomps.length > 0) {
 						totalDecomps = new Integer(decomps.length);

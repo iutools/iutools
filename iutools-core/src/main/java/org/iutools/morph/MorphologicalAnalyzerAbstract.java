@@ -13,7 +13,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.apache.log4j.Logger;
 
-import org.iutools.linguisticdata.LinguisticDataException;
+import org.iutools.morph.r2l.DecompositionState;
 import org.iutools.utilities.StopWatch;
 import ca.nrc.debug.Debug;
 import ca.nrc.string.StringUtils;
@@ -44,8 +44,8 @@ public abstract class MorphologicalAnalyzerAbstract implements AutoCloseable {
 
 
 	protected static ExecutorService executor = null;
-    public static Map<String,Future<Decomposition[]>> taskFutures =
-    	new HashMap<String,Future<Decomposition[]>>();
+    public static Map<String,Future<DecompositionState[]>> taskFutures =
+    	new HashMap<String,Future<DecompositionState[]>>();
 
     public void setDecomposeCompositeRoot(boolean value) {
 		decomposeCompositeRoot = value;
@@ -93,7 +93,7 @@ public abstract class MorphologicalAnalyzerAbstract implements AutoCloseable {
 			Set<String> pendingWords = new HashSet<String>();
 			Set<String> cancelledWords = new HashSet<String>();
 			for (String word: taskFutures.keySet()) {
-				Future<Decomposition[]> aFuture = taskFutures.get(word);
+				Future<DecompositionState[]> aFuture = taskFutures.get(word);
 				if (aFuture.isCancelled()) {
 					cancelledWords.add(word);
 					numCancelled++;
@@ -121,12 +121,12 @@ public abstract class MorphologicalAnalyzerAbstract implements AutoCloseable {
 		}
 	}
 
-	  public DecompositionSimple[] decomposeWord_NEW(String word)
+	  public DecompositionSimple[] decomposeWord(String word)
 	  throws TimeoutException, MorphologicalAnalyzerException {
-    	 return decomposeWord_NEW(word, (Boolean)null);
+    	 return decomposeWord(word, (Boolean)null);
      }
 
-	public DecompositionSimple[] decomposeWord_NEW(String word, Boolean lenient)
+	public DecompositionSimple[] decomposeWord(String word, Boolean lenient)
 	throws TimeoutException, MorphologicalAnalyzerException {
 		DecompositionSimple[] decompsSimple = null;
 		try {
@@ -142,7 +142,7 @@ public abstract class MorphologicalAnalyzerAbstract implements AutoCloseable {
 			Logger tLogger = Logger.getLogger("ca.inuktitutcomputing.morph.decomposeWord");
 			tLogger.trace("word="+word+", lenient="+lenient);
 
-			Decomposition[] decompStates = null;
+			DecompositionState[] decompStates = null;
 
 			MorphAnalyzerTask task = new MorphAnalyzerTask(word, lenient, this);
 
@@ -170,79 +170,13 @@ public abstract class MorphologicalAnalyzerAbstract implements AutoCloseable {
 			for (int ii = 0; ii < decompStates.length; ii++) {
 				decompsSimple[ii] = decompStates[ii].toSimpleDecomposition();
 			}
-		} catch (DecompositionExcepion e) {
+		} catch (DecompositionException e) {
 			throw new MorphologicalAnalyzerException(e);
 		}
 		return decompsSimple;
 	}
 
-	/**
-	 * DecompositionSimple of an Inuktitut word.
-     * DÉCOMPOSITION DU MOT.
-     * Les décompositions résultantes sont ordonnées selon certaines règles.
-     * L'analyse tient compte de certaines habitudes : l'omission de la consonne finale,
-     * et l'usage de 'n' au lieu de 't' en finale.
-     * @param word String word to be decomposed, in syllabics or roman alphabet
-     * @return DecompositionSimple[] array of decompositions
-     * @throws LinguisticDataException 
-     * @throws MorphologicalAnalyzerException 
-     */
-     public Decomposition[] decomposeWord(String word)
-			throws TimeoutException, MorphologicalAnalyzerException {
-    	 return decomposeWord(word, null);
-     }
-     
-    /** 
-     * DÉCOMPOSITION DU MOT.
-     * Les décompositions résultantes sont ordonnées selon certaines règles.
-     * @param word String word to be decomposed, in syllabics or roman alphabet
-     * @param lenient boolean if true, check also for possible missing consonant at the end of the word
-     * @return DecompositionSimple[] array of decompositions
-     * @throws LinguisticDataException 
-     * @throws MorphologicalAnalyzerException 
-     */
-    public Decomposition[] decomposeWord(String word, Boolean lenient)
-    		throws TimeoutException, MorphologicalAnalyzerException {
-    	if (lenient == null) {
-    		lenient = true;
-    	}
-    	
-    	long start = System.currentTimeMillis();
-    	if (timeoutStrategy != TimeoutStrategy.EXECUTOR && timeoutActive) {
-    		this.stpw = new StopWatch(millisTimeout, "Decomposing word="+word);
-    	}
-    	
-    	Logger tLogger = Logger.getLogger("ca.inuktitutcomputing.morph.decomposeWord");
-    	tLogger.trace("word="+word+", lenient="+lenient);
-    	
-    	Decomposition[] decomps = null;
-    	
-    	MorphAnalyzerTask task = new MorphAnalyzerTask(word, lenient, this);
-    	
-		String mess = "Decomp of word="+word+"; STARTS at "+start+"msecs";
-		tLogger.trace(mess);
-
-		tLogger.trace("timeoutStrategy: "+timeoutStrategy);
-    	if (timeoutStrategy == TimeoutStrategy.STOPWATCH) {
-    		tLogger.trace("invoke directly");
-    		decomps = invokeDirectly(word, lenient);
-    	} else {
-    		try {
-    			tLogger.trace("invoke through task");
-				decomps = invokeThroughExecutor(task);
-			} catch (InterruptedException e) {
-				tLogger.trace("InterruptedException caught: "+e.getMessage());				
-			}
-    	}
-    	
-		long elapsed = System.currentTimeMillis() - start;
-		mess = "DecompositionSimple of word="+word+"; ENDS with elapsed="+elapsed+"msecs";
-		tLogger.trace(mess);
-		
-    	return decomps;
-    }
-
-    private Decomposition[] invokeThroughExecutor(MorphAnalyzerTask task)
+    private DecompositionState[] invokeThroughExecutor(MorphAnalyzerTask task)
     		throws TimeoutException, MorphologicalAnalyzerException, InterruptedException {
     	Logger tLogger = Logger.getLogger("ca.inuktitutcomputing.morph.invokeThroughExecutor");
     	
@@ -262,18 +196,18 @@ public abstract class MorphologicalAnalyzerAbstract implements AutoCloseable {
 
 		
     	traceTasks(tLogger, "Before submitting the future for word="+word+", #threads="+Thread.activeCount());
-		Future<Decomposition[]> future = executor.submit(task);
+		Future<DecompositionState[]> future = executor.submit(task);
 		taskFutures.put(word, future);
 		traceTasks(tLogger, "After submitting the future for word="+word+", #threads="+Thread.activeCount());
-		Decomposition[] decomps = null;
+		DecompositionState[] decomps = null;
     	long start = System.currentTimeMillis();
 		
     	traceTasks(tLogger, "Before getting the future for word="+word+", #threads="+Thread.activeCount());
 		try {
 			if (timeoutActive) {
-				decomps = (Decomposition[])future.get(millisTimeout, TimeUnit.MILLISECONDS);
+				decomps = (DecompositionState[])future.get(millisTimeout, TimeUnit.MILLISECONDS);
 			} else {
-				decomps = (Decomposition[])future.get();
+				decomps = (DecompositionState[])future.get();
 			}
 			traceTasks(tLogger, "Future for word="+word+" has completed normally, #threads="+Thread.activeCount());
 		} catch (InterruptedException e) {
@@ -304,12 +238,12 @@ public abstract class MorphologicalAnalyzerAbstract implements AutoCloseable {
 		return decomps;
 	}
 
-	private Decomposition[] invokeDirectly(String word, boolean lenient)
+	private DecompositionState[] invokeDirectly(String word, boolean lenient)
 			throws TimeoutException, MorphologicalAnalyzerException {
     	Logger tLogger = Logger.getLogger("ca.inuktitutcomputing.morph.invokeDirectly");
     	
     	long start = System.currentTimeMillis();
-    	Decomposition[] decomps = null;
+    	DecompositionState[] decomps = null;
 		try {
 			decomps = doDecompose(word, lenient);
 		} catch (TimeoutException e) {
@@ -359,12 +293,12 @@ public abstract class MorphologicalAnalyzerAbstract implements AutoCloseable {
     	}
 	}
 
-	protected Decomposition[] doDecompose(String word)
+	protected DecompositionState[] doDecompose(String word)
 			throws MorphologicalAnalyzerException, TimeoutException {
 		return doDecompose(word, null);
 	}
     
-	protected abstract Decomposition[] doDecompose(String word, Boolean lenient)
+	protected abstract DecompositionState[] doDecompose(String word, Boolean lenient)
 		throws MorphologicalAnalyzerException, TimeoutException;
     
     public MorphologicalAnalyzerAbstract() {}

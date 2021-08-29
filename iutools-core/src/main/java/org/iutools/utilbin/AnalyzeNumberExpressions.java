@@ -25,6 +25,7 @@ import org.iutools.config.IUConfig;
 import org.iutools.linguisticdata.LinguisticDataException;
 import org.iutools.morph.*;
 import ca.nrc.config.ConfigException;
+import org.iutools.morph.r2l.MorphologicalAnalyzer__L2R;
 import org.iutools.text.ngrams.NgramCompiler;
 
 public class AnalyzeNumberExpressions {
@@ -123,14 +124,14 @@ public class AnalyzeNumberExpressions {
 	protected void assessEndingWithIMA(String ending) throws LinguisticDataException {
 		Logger logger = Logger.getLogger("AnalyseNumberExpressions.assessEndignWithIMA");
 		logger.debug("ending: "+ending);
-		MorphologicalAnalyzer morphAnalyzer = new MorphologicalAnalyzer();
+		MorphologicalAnalyzer__L2R morphAnalyzer = new MorphologicalAnalyzer__L2R();
 		boolean accepted = false;
 		for (int i=0; i<makeUpWords.length; i++) {
 			String makeUpWord = makeUpWords[i];
 			String term = makeUpWord+ending;
 			DecompositionSimple[] decs = null;
 			try {
-				decs = morphAnalyzer.decomposeWord_NEW(term);
+				decs = morphAnalyzer.decomposeWord(term);
 			} catch (TimeoutException | MorphologicalAnalyzerException e) {
 			}
 			logger.debug("decs: "+(decs==null?"null":decs.length));

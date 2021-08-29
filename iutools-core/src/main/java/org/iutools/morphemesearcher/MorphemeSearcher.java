@@ -15,8 +15,9 @@ import org.apache.log4j.Logger;
 import org.iutools.linguisticdata.LinguisticData;
 import org.iutools.linguisticdata.LinguisticDataException;
 import org.iutools.morph.*;
-import org.iutools.morph.Decomposition.DecompositionExpression;
+import org.iutools.morph.r2l.DecompositionState.DecompositionExpression;
 import org.iutools.morph.MorphologicalAnalyzerException;
+import org.iutools.morph.r2l.MorphologicalAnalyzer__L2R;
 
 public class MorphemeSearcher {
 	
@@ -301,16 +302,16 @@ public class MorphemeSearcher {
 	public Double morphFreqInAnalyses(
 		WordWithMorpheme morphemeExample,
 		boolean allowAnalysisWithAdditionalFinalConsonant) throws LinguisticDataException, TimeoutException, MorphologicalAnalyzerException, MorphemeSearcherException {
-		MorphologicalAnalyzer analyzer = new MorphologicalAnalyzer();
+		MorphologicalAnalyzer__L2R analyzer = new MorphologicalAnalyzer__L2R();
 		String morpheme = morphemeExample.morphemeId;
 		String[][] decompositions = morphemeExample.decompsSample;
 		if (decompositions == null) {
 			try {
 				DecompositionSimple[] decompObjects =
-					analyzer.decomposeWord_NEW(morphemeExample.word,
+					analyzer.decomposeWord(morphemeExample.word,
 						allowAnalysisWithAdditionalFinalConsonant);
 				decompositions = DecompositionSimple.decomps2morphemes(decompObjects);
-			} catch (MorphologicalAnalyzerException | DecompositionExcepion e) {
+			} catch (MorphologicalAnalyzerException | DecompositionException e) {
 				throw new MorphemeSearcherException(e);
 			}
 		}

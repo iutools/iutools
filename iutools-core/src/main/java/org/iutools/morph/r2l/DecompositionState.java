@@ -22,7 +22,7 @@
 //
 // -----------------------------------------------------------------------
 
-package org.iutools.morph;
+package org.iutools.morph.r2l;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -40,6 +40,7 @@ import org.apache.log4j.Logger;
 import org.iutools.linguisticdata.Base;
 import org.iutools.linguisticdata.LinguisticDataException;
 import org.iutools.linguisticdata.Morpheme;
+import org.iutools.morph.*;
 import org.iutools.script.Orthography;
 
 import static org.iutools.linguisticdata.Morpheme.MorphFormat;
@@ -57,13 +58,13 @@ import static org.iutools.linguisticdata.Morpheme.MorphFormat;
 //            SurfaceFormOfAffix form
 //            
 
-public class Decomposition extends Object implements Comparable<Decomposition> {
+public class DecompositionState extends Object implements Comparable<DecompositionState> {
 
 	String word;
 	RootPartOfComposition stem;
 	public AffixPartOfComposition[] morphParts;
 
-	public Decomposition(String word, RootPartOfComposition r, AffixPartOfComposition[] parts) {
+	public DecompositionState(String word, RootPartOfComposition r, AffixPartOfComposition[] parts) {
 		this.word = word;
 		stem = r;
 		String origState = stem.arc.startState.id;
@@ -190,9 +191,9 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 //	 - Les racines connues en premier
 	// - Les racines les plus longues
 	// - Le nombre mininum de morphParts en premier
-	public int compareTo(Decomposition obj) {
+	public int compareTo(DecompositionState obj) {
 		int returnValue = 0;
-		Decomposition otherDec = (Decomposition) obj;
+		DecompositionState otherDec = (DecompositionState) obj;
 //		boolean known = ((Base) stem.getRoot()).known;
 //		boolean otherDecConnue = ((Base) otherDec.stem.getRoot()).known;
 //		if ((known && otherDecConnue) || (!known && !otherDecConnue))
@@ -217,7 +218,7 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 		return returnValue;
 	}
 
-	public boolean isEqualDecomposition(Decomposition dec) throws LinguisticDataException {
+	public boolean isEqualDecomposition(DecompositionState dec) throws LinguisticDataException {
 		if (this.toStr2().equals(dec.toStr2()))
 			return true;
 		else
@@ -225,10 +226,10 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 	}
 
 	// Note: � faire avec des HashSet: plus rapide probablement.
-	static public Decomposition[] removeMultiples(Decomposition[] decs) throws LinguisticDataException {
+	static public DecompositionState[] removeMultiples(DecompositionState[] decs) throws LinguisticDataException {
 		if (decs == null || decs.length == 0)
 			return decs;
-		Vector<Decomposition> v = new Vector<Decomposition>();
+		Vector<DecompositionState> v = new Vector<DecompositionState>();
 		Vector<String> vc = new Vector<String>();
 		v.add(decs[0]);
 		vc.add(decs[0].toStr2());
@@ -239,7 +240,7 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 				vc.add(c);
 			}
 		}
-		return (Decomposition[]) v.toArray(new Decomposition[] {
+		return (DecompositionState[]) v.toArray(new DecompositionState[] {
 		});
 	}
 	
@@ -251,7 +252,7 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 	// is the combination of -juq/vn and -ksaq/nn. The analyzer will find
 	// a decomposition with -juksaq but will also find a decomposition with
 	// juq+ksaq ; this is to remove the latter.
-	static public Decomposition[] removeCombinedSuffixes(Decomposition decs[]) throws LinguisticDataException {
+	static public DecompositionState[] removeCombinedSuffixes(DecompositionState decs[]) throws LinguisticDataException {
 		Logger logger = Logger.getLogger("DecompositionSimple.removeCombinedSuffixes");
         Object[][] decsAndKeepstatus = new Object[decs.length][2];
         for (int i = 0; i < decs.length; i++) {
@@ -265,7 +266,7 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
         	// plus loin dans la liste et pas encore traitées peuvent avoir été rejetées ;
             // on ne considère que les décompositions qui n'ont pas encore été rejetées.
             if (((Boolean) decsAndKeepstatus[i][1]).booleanValue()) { 
-                Decomposition dec = (Decomposition) decsAndKeepstatus[i][0];
+                DecompositionState dec = (DecompositionState) decsAndKeepstatus[i][0];
                 Vector<AffixPartOfComposition> affixesOfDecompisition = new Vector<AffixPartOfComposition>(Arrays.asList(dec.morphParts));
 //                vParts.add(0,dec.stem); // je ne comprends pas pouquoi j'ai ajouté la racine aux parties
                 
@@ -291,14 +292,14 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
         for (int i = 0; i < decsAndKeepstatus.length; i++)
             if (((Boolean) decsAndKeepstatus[i][1]).booleanValue())
                 v.add(decsAndKeepstatus[i][0]);
-        Decomposition ndecs[] = (Decomposition[]) v
-                .toArray(new Decomposition[] {});
+        DecompositionState ndecs[] = (DecompositionState[]) v
+                .toArray(new DecompositionState[] {});
         return ndecs;
     }
 	
 	
 	protected static void removeDecsWithCombinationAsSeparateElements(
-	Decomposition dec, Vector<AffixPartOfComposition> vParts, int indexOfProcessedVPart,
+	DecompositionState dec, Vector<AffixPartOfComposition> vParts, int indexOfProcessedVPart,
 	String[] cs,
 	Object[][] decsAndKeepstatus) throws LinguisticDataException {
         // Trouver les décompositions qui ont les éléments du
@@ -322,7 +323,7 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
         while (k < decsAndKeepstatus.length) {
             // Décompositions retenues seulement.
             if (((Boolean) decsAndKeepstatus[k][1]).booleanValue()) {
-                Decomposition deck = (Decomposition) decsAndKeepstatus[k][0];
+                DecompositionState deck = (DecompositionState) decsAndKeepstatus[k][0];
                 Vector<Object> vPartsk = new Vector<Object>(Arrays.asList(deck.morphParts));
                 vPartsk.add(0,deck.stem);
                 int l = 0;
@@ -452,10 +453,10 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 		return toStr;
 	}
 	
-	public static String toString(Collection<Decomposition> decomps) {
+	public static String toString(Collection<DecompositionState> decomps) {
 		StringBuilder sb = new StringBuilder();
 		boolean first = true;
-		for (Decomposition aDecomp: decomps) {
+		for (DecompositionState aDecomp: decomps) {
 			if (!first) {
 				sb.append("\n");
 			}
@@ -466,10 +467,10 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 		return sb.toString();
 	}
 
-	public static String toString(Decomposition[] decomps) {
+	public static String toString(DecompositionState[] decomps) {
 		StringBuilder sb = new StringBuilder();
 		boolean first = true;
-		for (Decomposition aDecomp: decomps) {
+		for (DecompositionState aDecomp: decomps) {
 			if (!first) {
 				sb.append("\n");
 			}
@@ -523,8 +524,8 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 		return surfaceForms;
 	}
 
-	public DecompositionSimple toSimpleDecomposition() throws DecompositionExcepion {
-		String decompStr = org.iutools.morph.Decomposition.formatDecompStr(toString(), MorphFormat.NO_BRACES);
+	public DecompositionSimple toSimpleDecomposition() throws DecompositionException {
+		String decompStr = DecompositionState.formatDecompStr(toString(), MorphFormat.NO_BRACES);
 		DecompositionSimple simple = new DecompositionSimple(decompStr);
 		return simple;
 	}
@@ -685,7 +686,7 @@ public class Decomposition extends Object implements Comparable<Decomposition> {
 		return morphemes;
 	}
 
-    public static String[][] decomps2morphemes(Decomposition[] decompObjects) {
+    public static String[][] decomps2morphemes(DecompositionState[] decompObjects) {
 		String[][] decomps = null;
 		if (decompObjects != null) {
 			decomps = new String[decompObjects.length][];

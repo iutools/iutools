@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 import org.iutools.bin.Decompose;
 import org.iutools.linguisticdata.LinguisticDataException;
 import org.iutools.linguisticdata.MorphemeHumanReadableDescr;
+import org.iutools.morph.r2l.MorphologicalAnalyzer__L2R;
 import org.iutools.script.Syllabics;
 import ca.nrc.datastructure.Pair;
 
@@ -27,7 +28,7 @@ public class Gist {
 		DecompositionSimple[] decs;
 		MorphemeHumanReadableDescr[] morphDescriptions = null;
 
-		MorphologicalAnalyzer morphAnalyzer = new MorphologicalAnalyzer();
+		MorphologicalAnalyzer__L2R morphAnalyzer = new MorphologicalAnalyzer__L2R();
 		
 		Pattern pattern = Pattern.compile("^(.+?)---(.+)$");
 
@@ -38,7 +39,7 @@ public class Gist {
 			}
 			else
 				latin = word;
-			decs = morphAnalyzer.decomposeWord_NEW(latin);
+			decs = morphAnalyzer.decomposeWord(latin);
 			if (decs != null && decs.length > 0) {
 				DecompositionSimple dec = decs[0];
 				String[] meaningsOfParts = Decompose.getMeaningsInArrayOfStrings(dec.toString(),"en",true,false);

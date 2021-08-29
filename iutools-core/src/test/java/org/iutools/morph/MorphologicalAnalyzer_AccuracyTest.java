@@ -6,6 +6,7 @@
 package org.iutools.morph;
 
 import ca.nrc.testing.AssertNumber;
+import org.iutools.morph.r2l.MorphologicalAnalyzer__L2R;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,7 +27,7 @@ public class MorphologicalAnalyzer_AccuracyTest {
 
 	boolean verbose = false;
 	
-	MorphologicalAnalyzer morphAnalyzer = null;
+	MorphologicalAnalyzer__L2R morphAnalyzer = null;
 
 	MorphAnalGoldStandardAbstract goldStandard = null;
 	MorphAnalCurrentExpectationsAbstract expectations = null;
@@ -44,13 +45,13 @@ public class MorphologicalAnalyzer_AccuracyTest {
 		if (morphAnalyzer==null) {
 			// check how much time it takes for the analyzer to be created (in fact, this is the time for loading the database)
 			Calendar startCalendar = Calendar.getInstance();
-			morphAnalyzer = new MorphologicalAnalyzer();
+			morphAnalyzer = new MorphologicalAnalyzer__L2R();
 			Calendar endCalendar = Calendar.getInstance();
 
 			long time = endCalendar.getTimeInMillis() - startCalendar.getTimeInMillis();
 
 			System.out.println("");
-			System.out.println("creating new MorphologicalAnalyzer: Time in milliseconds: "+time);
+			System.out.println("creating new MorphologicalAnalyzer__L2R: Time in milliseconds: "+time);
 		}
 		morphAnalyzer.activateTimeout();
 		gotOutcomeHist = new FrequencyHistogram<OutcomeType>();
@@ -363,9 +364,9 @@ public class MorphologicalAnalyzer_AccuracyTest {
 			// AD-2020-05-13: Does this help ensure that timeout works?
 			//
 			if (morphAnalyzer==null) {
-				morphAnalyzer = new MorphologicalAnalyzer();
+				morphAnalyzer = new MorphologicalAnalyzer__L2R();
 			}
-			outcome.decompositions = morphAnalyzer.decomposeWord_NEW(word);
+			outcome.decompositions = morphAnalyzer.decomposeWord(word);
 		} catch (TimeoutException | MorphologicalAnalyzerException e) {
 			outcome.timedOut = true;
 		}

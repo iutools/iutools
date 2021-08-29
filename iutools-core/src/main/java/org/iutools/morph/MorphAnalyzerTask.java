@@ -5,6 +5,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.apache.log4j.Logger;
 
+import org.iutools.morph.r2l.DecompositionState;
 import org.iutools.utilities.StopWatch;
 
 /**
@@ -14,7 +15,7 @@ import org.iutools.utilities.StopWatch;
  * @author desilets
  *
  */
-public class MorphAnalyzerTask implements Callable<Decomposition[]> {
+public class MorphAnalyzerTask implements Callable<DecompositionState[]> {
 
 	StopWatch stopWatch = null;
 	String word = null;
@@ -31,11 +32,11 @@ public class MorphAnalyzerTask implements Callable<Decomposition[]> {
 	}
 	
 	@Override
-	public Decomposition[] call() throws Exception {
+	public DecompositionState[] call() throws Exception {
 		Logger mLogger = Logger.getLogger("ca.inuktitutcomputing.morph.MorphAnalyzerTask.call");
 		mLogger.trace("Calling on word="+word);
 		long start = System.currentTimeMillis();
-		Decomposition[] decomps = new Decomposition[0];
+		DecompositionState[] decomps = new DecompositionState[0];
 		try {
 			decomps = analyzer.doDecompose(word, lenient);
 		} catch (TimeoutException e) {

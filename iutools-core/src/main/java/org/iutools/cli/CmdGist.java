@@ -1,7 +1,6 @@
 package org.iutools.cli;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -10,9 +9,8 @@ import java.util.regex.Pattern;
 
 import ca.nrc.ui.commandline.CommandLineException;
 import org.iutools.bin.Decompose;
-import org.iutools.morph.Decomposition;
 import org.iutools.morph.DecompositionSimple;
-import org.iutools.morph.MorphologicalAnalyzer;
+import org.iutools.morph.r2l.MorphologicalAnalyzer__L2R;
 import org.iutools.script.Syllabics;
 import ca.nrc.ui.commandline.UserIO.Verbosity;
 
@@ -39,7 +37,7 @@ public class CmdGist extends ConsoleCommand {
 		String latin = null;
 		DecompositionSimple[] decs = null;
 		
-		MorphologicalAnalyzer morphAnalyzer = new MorphologicalAnalyzer();
+		MorphologicalAnalyzer__L2R morphAnalyzer = new MorphologicalAnalyzer__L2R();
 
 		boolean interactive = false;
 		if (content == null && inputFile == null) {
@@ -89,7 +87,7 @@ public class CmdGist extends ConsoleCommand {
 					}
 					else
 						latin = word;
-					decs = morphAnalyzer.decomposeWord_NEW(latin);
+					decs = morphAnalyzer.decomposeWord(latin);
 					if (decs != null && decs.length > 0) {
 						DecompositionSimple dec = decs[0];
 						String[] meaningsOfParts = Decompose.getMeaningsInArrayOfStrings(dec.toString(),"en",true,false);

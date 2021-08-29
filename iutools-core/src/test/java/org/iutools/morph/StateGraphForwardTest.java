@@ -2,7 +2,7 @@ package org.iutools.morph;
 
 import org.iutools.linguisticdata.LinguisticData;
 import org.iutools.linguisticdata.Morpheme;
-import org.iutools.morph.StateGraphForward;
+import org.iutools.morph.r2l.StateGraphForward;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

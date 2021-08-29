@@ -3,17 +3,18 @@ package org.iutools.morph;
 import java.util.Collection;
 
 import org.apache.log4j.Logger;
+import org.iutools.morph.r2l.DecompositionState;
 
 public class MorphDebug {
 	
-	public static void traceDecomps(Logger tLogger, 
-			Collection<Decomposition> decomps, String mess) {
+	public static void traceDecomps(Logger tLogger,
+											  Collection<DecompositionState> decomps, String mess) {
 		traceDecomps(tLogger, decomps, mess, null);
 	}
 
-		public static void traceDecomps(Logger tLogger, 
-			Collection<Decomposition> decomps, String mess,
-			Boolean onlyPrintSize) {
+		public static void traceDecomps(Logger tLogger,
+												  Collection<DecompositionState> decomps, String mess,
+												  Boolean onlyPrintSize) {
 		
 			if (onlyPrintSize == null) {
 				onlyPrintSize = false;
@@ -23,16 +24,16 @@ public class MorphDebug {
 			if (onlyPrintSize) {
 				mess += "\nsize is "+decomps.size();
 			} else {
-				mess += "\nDecompositions are:\n"+Decomposition.toString(decomps);
+				mess += "\nDecompositions are:\n"+ DecompositionState.toString(decomps);
 			}
 			tLogger.trace(mess);
 		}
 	}
 
-	public static void traceDecomps(Logger tLogger, 
-			Decomposition[] decomps, String mess) {
+	public static void traceDecomps(Logger tLogger,
+											  DecompositionState[] decomps, String mess) {
 		if (tLogger.isTraceEnabled()) {
-			mess += Decomposition.toString(decomps);
+			mess += DecompositionState.toString(decomps);
 			tLogger.trace(mess);
 		}
 	}

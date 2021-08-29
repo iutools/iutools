@@ -26,7 +26,7 @@ import org.iutools.datastructure.trie.TrieException;
 import org.iutools.datastructure.trie.TrieNode;
 import org.iutools.datastructure.trie.Trie_InMemory;
 import ca.nrc.json.PrettyPrinter;
-import org.iutools.morph.StateGraphForward;
+import org.iutools.morph.r2l.StateGraphForward;
 
 /*
  * Idée générale : à l'aide de structures Trie pour les formes de surface
