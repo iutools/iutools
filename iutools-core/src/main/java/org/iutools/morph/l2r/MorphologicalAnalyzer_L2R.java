@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,6 +20,7 @@ import com.google.gson.Gson;
 import org.iutools.datastructure.trie.Trie;
 import org.iutools.linguisticdata.*;
 import org.iutools.morph.Decomposition;
+import org.iutools.morph.MorphologicalAnalyzerAbstract;
 import org.iutools.morph.MorphologicalAnalyzerException;
 import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.Pair;
@@ -33,15 +35,27 @@ import org.iutools.morph.r2l.StateGraphForward;
  * des morphèmes
  */
 
-public class MorphologicalAnalyzer_L2R {
+public class MorphologicalAnalyzer_L2R extends MorphologicalAnalyzerAbstract {
 
 	private Trie_InMemory root_trie = null;
-	private Trie_InMemory affix_trie = null;	
-	
+	private Trie_InMemory affix_trie = null;
+
 	public MorphologicalAnalyzer_L2R() throws TrieException, IOException, ConfigException {
 		Trie_InMemory[] tries = SurfaceFormsHandler.loadSurfaceFormsTries();
 		root_trie = tries[0];
 		affix_trie = tries[1];
+	}
+
+	@Override
+	protected Decomposition[] doDecompose(String word, Boolean lenient) throws MorphologicalAnalyzerException, TimeoutException {
+		List<Decomposition> decomps = null;
+		try {
+			decomps = analyze(word);
+		} catch (LinguisticDataException e) {
+			throw new MorphologicalAnalyzerException(e);
+		}
+
+		return decomps.toArray(new Decomposition[0]);
 	}
 
 	/**
@@ -49,8 +63,8 @@ public class MorphologicalAnalyzer_L2R {
 	 *
 	 * @param word String
 	 * @return a List of DecompositionTree objects
-	 * @throws LinguisticDataException 
-	 * @throws MorphologicalAnalyzerException 
+	 * @throws LinguisticDataException
+	 * @throws MorphologicalAnalyzerException
 	 */
 	List<Decomposition> analyze(String word) throws LinguisticDataException, MorphologicalAnalyzerException {
 		/*
@@ -69,35 +83,36 @@ public class MorphologicalAnalyzer_L2R {
 	}
 
 	public List<DecompositionTree> decomposeWord_Tree(String word) throws MorphologicalAnalyzerException, LinguisticDataException {
-		Logger logger = Logger.getLogger("MorphologicalAnalyzer_L2R.decomposeWord");
+		Logger tLogger = Logger.getLogger("org.iutools.morph.l2r.MorphologicalAnalyzer_L2R.decomposeWord");
 		List<DecompositionTree> decompositionTrees = new ArrayList<DecompositionTree>();
 		StateGraphForward.State initialStateOfAnalysis = StateGraphForward.initialState;
 		List<String> possibleRoots = findRoot(word);
-		logger.debug("possibleRoots = "+possibleRoots);
+		tLogger.trace("possibleRoots = "+possibleRoots);
 		Gson gson = new Gson();
 		Iterator<String> iterRoot = possibleRoots.iterator();
 		int i = 1;
 		while (iterRoot.hasNext()) {
 			String rootComponentInJson = iterRoot.next();
+			tLogger.trace("Looking at Looking at rootComponentInJson="+rootComponentInJson);
 			SurfaceFormInContext rootComponent = gson.fromJson(rootComponentInJson, SurfaceFormInContext.class);
 			Morpheme morpheme = LinguisticData.getInstance().getMorpheme(rootComponent.morphemeId);
 			StateGraphForward.State stateOfAnalysisAfterRoot = initialStateOfAnalysis.nextState(morpheme);
 			String remainingPartOfWord = word.substring(rootComponent.surfaceForm.length());
 			if (remainingPartOfWord.length()==0
 					&& rootComponent.finalIsDifferentThanCanonical()) {
-				logger.debug(rootComponent.morphemeId+" > rejeté – cause : no more chars and ending is not canonical");
+				tLogger.debug(rootComponent.morphemeId+" > rejeté – cause : no more chars and ending is not canonical");
 				continue;
 			}
 			String stem = rootComponent.surfaceForm;
-			logger.debug("-------------\nroot "+(i++)+". "+rootComponent.surfaceForm);
+			tLogger.debug("-------------\nroot "+(i++)+". "+rootComponent.surfaceForm);
 			List<DecompositionTree> list = analyzeRemainingForAffixes(stem,remainingPartOfWord,rootComponent,stateOfAnalysisAfterRoot);
 			if (list != null) {
-//				logger.debug("branches: "+PrettyPrinter.print(list));
 				DecompositionTree decTree = new DecompositionTree(rootComponent);
 				decTree.addAllBranches(list);
 				decompositionTrees.add(decTree);
 			}
 		}
+		tLogger.trace("exiting");
 
 		return decompositionTrees;
 	}
@@ -221,9 +236,9 @@ public class MorphologicalAnalyzer_L2R {
 			String remainingPartOfWord,
 			SurfaceFormInContext precedingMorpheme,
 			StateGraphForward.State stateOfAnalysisAfterPrecedingMorpheme) throws LinguisticDataException, MorphologicalAnalyzerException {
-		Logger logger = Logger.getLogger("MorphologicalAnalyzer_L2R.analyzeRemainingForAffixes");
-		logger.debug("precedingMorpheme: "+precedingMorpheme.morphemeId);
-		logger.debug("remainingPartOfWord: "+remainingPartOfWord);
+		Logger tLogger = Logger.getLogger("org.iutools.morph.l2r.MorphologicalAnalyzer_L2R.analyzeRemainingForAffixes");
+		tLogger.trace("precedingMorpheme: "+precedingMorpheme.morphemeId);
+		tLogger.trace("remainingPartOfWord: "+remainingPartOfWord);
 		Gson gson = new Gson();
 		List<DecompositionTree> fullList = null;
 		
@@ -231,32 +246,20 @@ public class MorphologicalAnalyzer_L2R {
 			fullList = new ArrayList<DecompositionTree>();
 		}
 
-//		List<String> possibleAffixes;
-//		if (remainingPartOfWord.length()==0) {
-//			possibleAffixes = new ArrayList<String>();
-//			possibleAffixes.add("0");
-//		} else {
-//			possibleAffixes = findAffix(remainingPartOfWord);
-//		}
 		List<String> possibleAffixes = findAffix(remainingPartOfWord);
-		logger.debug("Nb. possibleAffixes= "+possibleAffixes.size());
+		tLogger.trace("Nb. possibleAffixes= "+possibleAffixes.size());
 		
 		Iterator<String> iterAffix = possibleAffixes.iterator();
 		
 		while (iterAffix.hasNext()) {
 			String affixSurfaceForm = iterAffix.next();
-			logger.debug("affixSurfaceForm= "+affixSurfaceForm);
+			tLogger.trace("affixSurfaceForm= "+affixSurfaceForm);
 			SurfaceFormInContext affixComponent;
-//			if (affixSurfaceForm=="0") {
-//				affixComponent = new ZeroLengthSurfaceFormInContext();
-//			}
-//			else {
-				affixComponent = gson.fromJson(affixSurfaceForm, SurfaceFormInContext.class);
-//			}
+			affixComponent = gson.fromJson(affixSurfaceForm, SurfaceFormInContext.class);
 			List<DecompositionTree> list = processPossibleAffix(affixComponent,stem,remainingPartOfWord,precedingMorpheme,stateOfAnalysisAfterPrecedingMorpheme);
 			if (list != null) {
 				DecompositionTree decTree = new DecompositionTree(affixComponent);
-				logger.debug("decTree: "+decTree.toStr());
+				tLogger.trace("decTree: "+decTree.toStr());
 				decTree.addAllBranches(list);
 				if (fullList==null)
 					fullList = new ArrayList<DecompositionTree>();
@@ -274,14 +277,14 @@ public class MorphologicalAnalyzer_L2R {
 			String remainingPartOfWord,
 			SurfaceFormInContext precedingMorpheme,
 			StateGraphForward.State stateOfAnalysisAfterPrecedingMorpheme) throws LinguisticDataException, MorphologicalAnalyzerException {
-		Logger logger = Logger.getLogger("MorphologicalAnalyzer_L2R.processPossibleAffix");
-		logger.debug("\n-------\naffix: "+affixComponent);
-		logger.debug("remainingPartOfWord= '"+remainingPartOfWord+"'");
+		Logger tLogger = Logger.getLogger("org.iutools.morph.l2r.MorphologicalAnalyzer_L2R.processPossibleAffix");
+		tLogger.trace("\n-------\naffix: "+affixComponent);
+		tLogger.trace("remainingPartOfWord= '"+remainingPartOfWord+"'");
 
 		String localRemainingPartOfWord = remainingPartOfWord.substring(affixComponent.surfaceForm.length());
 		if (localRemainingPartOfWord.length()==0
 				&& affixComponent.finalIsDifferentThanCanonical()) {
-			logger.debug(affixComponent.morphemeId+" après "+stem+" > rejeté – cause : no more chars and ending is not canonical");
+			tLogger.trace(affixComponent.morphemeId+" après "+stem+" > rejeté – cause : no more chars and ending is not canonical");
 			return null;
 		}
 
@@ -290,29 +293,26 @@ public class MorphologicalAnalyzer_L2R {
 //		boolean morphemeAcceptedInThisState = morphemeComponent.validateAssociativityWithPrecedingMorpheme(stateOfAnalysisAfterPrecedingMorpheme);
 		boolean morphemeAcceptedInThisState = nextStateAfterMorpheme != null;
 		if ( !morphemeAcceptedInThisState ) {
-			logger.debug(affixComponent.morphemeId+" après "+stem+" > rejeté – cause : validateAssociativityWithPrecedingMorpheme a échoué");
+			tLogger.trace(affixComponent.morphemeId+" après "+stem+" > rejeté – cause : validateAssociativityWithPrecedingMorpheme a échoué");
 			return null;
 		}
 		boolean componentContextIsValidated = affixComponent.validateWithStem(precedingMorpheme);
 		if (!componentContextIsValidated) {
-			logger.debug(affixComponent.morphemeId+" après "+stem+" > rejeté – cause : validateWithStem a échoué");
+			tLogger.trace(affixComponent.morphemeId+" après "+stem+" > rejeté – cause : validateWithStem a échoué");
 			return null;
 		}
 		boolean constraintsAreValidated = affixComponent.validateConstraints(precedingMorpheme);
 		if (!constraintsAreValidated) {
-			logger.debug(affixComponent.morphemeId+" après "+stem+" > rejeté – cause : valideConstraints a échoué");
+			tLogger.trace(affixComponent.morphemeId+" après "+stem+" > rejeté – cause : valideConstraints a échoué");
 			return null;
 		}
-		logger.debug(affixComponent.morphemeId+" après "+stem+" > *** accepté");
+		tLogger.trace(affixComponent.morphemeId+" après "+stem+" > *** accepté");
 		String localStem = remainingPartOfWord.substring(0,affixComponent.surfaceForm.length());
 
 		List<DecompositionTree> list = analyzeRemainingForAffixes(localStem,localRemainingPartOfWord,affixComponent, nextStateAfterMorpheme);
-		logger.debug("\n>>>"+PrettyPrinter.print(list)+"\n\n");
+		tLogger.trace("\n>>>"+PrettyPrinter.print(list)+"\n\n");
 		return list;
 	}
-	
-	
-
 
 	protected List<String> findRoot(String string) throws MorphologicalAnalyzerException {
 		String[] chars = string.split("");
@@ -356,7 +356,7 @@ public class MorphologicalAnalyzer_L2R {
 			TrieNode terminalNodeForCurrentKeys = null;
 			currentChar = chars[charCounter];
 			currentKey.add(currentChar);
-			logger.debug("currentKey: "+currentKey);
+			logger.trace("currentKey: "+currentKey);
 			try {
 				terminalNodeForCurrentKeys = trie.node4keys(currentKey.toArray(new String[]{}), Trie.NodeOption.TERMINAL, Trie.NodeOption.NO_CREATE);
 			} catch (TrieException e) {
@@ -364,7 +364,7 @@ public class MorphologicalAnalyzer_L2R {
 			}
 			if (terminalNodeForCurrentKeys != null) {
 				// this is a complete morpheme
-				logger.debug("*** Found terminal node: "+terminalNodeForCurrentKeys.surfaceForm);
+				logger.trace("*** Found terminal node: "+terminalNodeForCurrentKeys.surfaceForm);
 				Set<String> surfaceForms = terminalNodeForCurrentKeys.getSurfaceForms().keySet();
 				Iterator<String> itsf = surfaceForms.iterator();
 				String currentKeyAsString = currentKey.toString();

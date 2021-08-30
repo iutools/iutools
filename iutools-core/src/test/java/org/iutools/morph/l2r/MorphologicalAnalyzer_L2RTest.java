@@ -7,12 +7,25 @@ import java.util.List;
 import ca.nrc.string.StringUtils;
 import ca.nrc.testing.AssertNumber;
 import ca.nrc.testing.AssertString;
-import org.iutools.morph.AssertDecompositionList;
 import org.iutools.morph.Decomposition;
+import org.iutools.morph.MorphologicalAnalyzerAbstract;
+import org.iutools.morph.MorphologicalAnalyzerAbstractTest;
 import org.junit.Ignore;
 import org.junit.Test;
 
-public class MorphologicalAnalyzer_L2RTest {
+@Ignore
+public class MorphologicalAnalyzer_L2RTest extends MorphologicalAnalyzerAbstractTest {
+
+	@Override
+	public MorphologicalAnalyzerAbstract makeAnalyzer() {
+		MorphologicalAnalyzer_L2R analyzer = null;
+		try {
+			analyzer = new MorphologicalAnalyzer_L2R();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		return analyzer;
+	}
 
 	@Test
 	public void test_findRoot__Case_1() throws Exception {
@@ -69,7 +82,7 @@ public class MorphologicalAnalyzer_L2RTest {
 
 	// Produces null pointer exception
 	@Test @Ignore
-	public void test_analyze__Case_inullu() throws Exception {
+	public void test_decomposeWord__Case_inullu() throws Exception {
 		MorphologicalAnalyzer_L2R wordAnalyzer = new MorphologicalAnalyzer_L2R();
 		String string = "inullu";
 		List<Decomposition> decompositions = wordAnalyzer.analyze(string);
@@ -82,59 +95,37 @@ public class MorphologicalAnalyzer_L2RTest {
 	public void test_analyse__Case_tikittuq() throws Exception {
 		MorphologicalAnalyzer_L2R wordAnalyzer = new MorphologicalAnalyzer_L2R();
 		String string = "tikittuq";
-		List<Decomposition> decompositions = wordAnalyzer.analyze(string);
+		Decomposition[] decompositions = wordAnalyzer.decomposeWord(string);
 //		for (int i=0; i<decompositions.size(); i++) System.out.println((i+1)+". "+decompositions.get(i).toStr());
-		assertEquals("",2,decompositions.size());
+		assertEquals("",2,decompositions.length);
 	}
 
 	// Produces null pointer exception
 	@Test @Ignore
-	public void test_analyze__Case_tikinniaqtuq() throws Exception {
+	public void test_decomposeWord__Case_tikinniaqtuq() throws Exception {
 		MorphologicalAnalyzer_L2R wordAnalyzer = new MorphologicalAnalyzer_L2R();
 		String string = "tikinniaqtuq";
-		List<Decomposition> analyses = wordAnalyzer.analyze(string);
-		assertEquals("",6,analyses.size());
+		Decomposition[] analyses = wordAnalyzer.decomposeWord(string);
+		assertEquals("",6,analyses.length);
 	}
 
 	// Produces null pointer exception
 	@Test @Ignore
-	public void test_analyze__Case_umiarjualiuqti() throws Exception {
+	public void test_decomposeWord__Case_umiarjualiuqti() throws Exception {
 		MorphologicalAnalyzer_L2R wordAnalyzer = new MorphologicalAnalyzer_L2R();
 		String string = "umiarjualiuqti";
-		List<Decomposition> decompositions = wordAnalyzer.analyze(string);
-		for (int i=0; i<decompositions.size(); i++) System.out.println((i+1)+". "+decompositions.get(i).toStr());
-		assertEquals("",9,decompositions.size());
-	}
-
-	@Test
-	public void test_analyze__Case_maligaliuqti() throws Exception {
-		MorphologicalAnalyzer_L2R wordAnalyzer = new MorphologicalAnalyzer_L2R();
-		String string = "maligaliuqti";
-		List<Decomposition> analyses = wordAnalyzer.analyze(string);
-		new AssertDecompositionList(
-			analyses.toArray(new Decomposition[0]),
-			"Decompositions for word "+string)
-			.producesAtLeastNDecomps(7)
-			.includesDecomps("{{maliga:maligaq/1n}}{{liuq:liuq/1nv}}{{ti:ji/1vn}}");
-	}
-
-	@Test
-	public void test_analyze__Case_niruarut() throws Exception {
-		MorphologicalAnalyzer_L2R wordAnalyzer = new MorphologicalAnalyzer_L2R();
-		String string = "niruarut";
-		List<Decomposition> analyses = wordAnalyzer.analyze(string);
-		new AssertDecompositionList(analyses.toArray(new Decomposition[0]))
-			.includesDecomps("{{nirua:niruaq/1v}}{{rut:ut/1vn}}")
-			.producesAtLeastNDecomps(4);
+		Decomposition[] decompositions = wordAnalyzer.decomposeWord(string);
+		for (int i=0; i<decompositions.length; i++) System.out.println((i+1)+". "+decompositions[i].toStr());
+		assertEquals("",9,decompositions.length);
 	}
 
 	// Produces null pointer exception
 	@Test @Ignore
-	public void test_analyze__Case_umiarut() throws Exception {
+	public void test_decomposeWord__Case_umiarut() throws Exception {
 		MorphologicalAnalyzer_L2R wordAnalyzer = new MorphologicalAnalyzer_L2R();
 		String string = "umiarut";
-		List<Decomposition> analyses = wordAnalyzer.analyze(string);
-		assertEquals("",1,analyses.size());
+		Decomposition[] analyses = wordAnalyzer.decomposeWord(string);
+		assertEquals("",1,analyses.length);
 	}
 
 	/////////////////////////////////
@@ -161,5 +152,4 @@ public class MorphologicalAnalyzer_L2RTest {
 		}
 
 	}
-
 }

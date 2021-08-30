@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
 import org.iutools.linguisticdata.LinguisticData;
 import org.iutools.linguisticdata.LinguisticDataException;
 import org.iutools.morph.Decomposition;
-import org.iutools.morph.r2l.MorphologicalAnalyzer__L2R;
+import org.iutools.morph.r2l.MorphologicalAnalyzer__R2L;
 import org.iutools.script.TransCoder;
 import org.iutools.morph.r2l.DecompositionState;
 import org.iutools.utilities.MonURLDecoder;
@@ -155,7 +155,7 @@ public class Decompose {
         Decomposition[] decs;
         try {
             LinguisticData.init(); // make sure the LinguisticData instance is null
-            MorphologicalAnalyzer__L2R morphAnalyzer = new MorphologicalAnalyzer__L2R();
+            MorphologicalAnalyzer__R2L morphAnalyzer = new MorphologicalAnalyzer__R2L();
             morphAnalyzer.setDecomposeCompositeRoot(decomposeComposite);
         	morphAnalyzer.disactivateTimeout();
 

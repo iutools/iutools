@@ -1,5 +1,6 @@
 package org.iutools.morph;
 
+import org.iutools.morph.l2r.MorphologicalAnalyzer_L2R;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -169,6 +170,16 @@ public abstract class MorphologicalAnalyzerAbstractTest {
 			.decompIs("atua:atuaq/1v", "gaq:gaq/1vn");
 	}
 
+	@Test
+	public void test_decomposeWord__maligaliuqti() throws Exception {
+		String string = "maligaliuqti";
+		Decomposition[] analyses = analyzer.decomposeWord(string);
+		new AssertDecompositionList(
+			analyses,
+			"Decompositions for word "+string)
+			.producesAtLeastNDecomps(7)
+			.includesDecomps("{maliga:maligaq/1n}{liuq:liuq/1nv}{ti:ji/1vn}");
+	}
 
 	@Test
 	public void test__decomposeWord__maligaliuqtinik() throws Exception  {
@@ -273,5 +284,14 @@ public abstract class MorphologicalAnalyzerAbstractTest {
 		Decomposition[] decSimple = analyzer.decomposeWord(word);
 		new AssertDecompositionList(decSimple, "word=" + word)
 			.decompIs("sinik:sinik/1v", "tit:tiq/1vn", "ti:si/4nv", "niq:niq/2vn");
+	}
+
+	@Test
+	public void test_decomposeWord__niruarut() throws Exception {
+		String string = "niruarut";
+		Decomposition[] analyses = analyzer.decomposeWord(string);
+		new AssertDecompositionList(analyses)
+			.includesDecomps("{nirua:niruaq/1v}{rut:ut/1vn}")
+			.producesAtLeastNDecomps(4);
 	}
 }

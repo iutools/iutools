@@ -9,16 +9,16 @@ import java.util.regex.Pattern;
 
 import org.iutools.linguisticdata.LinguisticDataException;
 import org.iutools.morph.*;
-import org.iutools.morph.r2l.MorphologicalAnalyzer__L2R;
+import org.iutools.morph.r2l.MorphologicalAnalyzer__R2L;
 import org.iutools.script.Syllabics;
 
 
 public class StringSegmenter_IUMorpheme extends StringSegmenter {
 	
-	private MorphologicalAnalyzer__L2R morphAnalyzer;
+	private MorphologicalAnalyzer__R2L morphAnalyzer;
 	
 	public StringSegmenter_IUMorpheme() {
-		morphAnalyzer = new MorphologicalAnalyzer__L2R();
+		morphAnalyzer = new MorphologicalAnalyzer__R2L();
 	}
 	
 	public String[] segment(String string) throws TimeoutException, StringSegmenterException, LinguisticDataException {
@@ -35,7 +35,7 @@ public class StringSegmenter_IUMorpheme extends StringSegmenter {
 		return bestSegmentation;
 	}
 	
-	public MorphologicalAnalyzer__L2R getAnalyzer() {
+	public MorphologicalAnalyzer__R2L getAnalyzer() {
 		return morphAnalyzer;
 	}
 

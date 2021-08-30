@@ -6,7 +6,7 @@ import org.iutools.corpus.CompiledCorpusRegistry;
 
 import org.iutools.bin.Decompose;
 import org.iutools.morph.Decomposition;
-import org.iutools.morph.r2l.MorphologicalAnalyzer__L2R;
+import org.iutools.morph.r2l.MorphologicalAnalyzer__R2L;
 import org.iutools.script.Roman;
 import org.iutools.script.Syllabics;
 import org.iutools.morphrelatives.MorphRelativesFinder;
@@ -37,7 +37,7 @@ public class CmdRelatedWords extends ConsoleCommand {
 		MorphRelativesFinder reformulator = new MorphRelativesFinder(compiledCorpus);
 		CmdConvertIUSegments convertCommand = new CmdConvertIUSegments("");
 		
-		MorphologicalAnalyzer__L2R morphAnalyzer = new MorphologicalAnalyzer__L2R();
+		MorphologicalAnalyzer__R2L morphAnalyzer = new MorphologicalAnalyzer__R2L();
 
 		boolean interactive = false;
 		if (word == null) {

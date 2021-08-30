@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 import ca.nrc.ui.commandline.CommandLineException;
 import org.iutools.bin.Decompose;
 import org.iutools.morph.Decomposition;
-import org.iutools.morph.r2l.MorphologicalAnalyzer__L2R;
+import org.iutools.morph.r2l.MorphologicalAnalyzer__R2L;
 import org.iutools.script.Syllabics;
 import ca.nrc.ui.commandline.UserIO.Verbosity;
 
@@ -37,7 +37,7 @@ public class CmdGist extends ConsoleCommand {
 		String latin = null;
 		Decomposition[] decs = null;
 		
-		MorphologicalAnalyzer__L2R morphAnalyzer = new MorphologicalAnalyzer__L2R();
+		MorphologicalAnalyzer__R2L morphAnalyzer = new MorphologicalAnalyzer__R2L();
 
 		boolean interactive = false;
 		if (content == null && inputFile == null) {
