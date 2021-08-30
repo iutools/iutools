@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 import org.iutools.bin.Decompose;
 import org.iutools.linguisticdata.LinguisticDataException;
 import org.iutools.linguisticdata.MorphemeHumanReadableDescr;
-import org.iutools.morph.r2l.MorphologicalAnalyzer__R2L;
+import org.iutools.morph.r2l.MorphologicalAnalyzer_R2L;
 import org.iutools.script.Syllabics;
 import ca.nrc.datastructure.Pair;
 
@@ -28,7 +28,7 @@ public class Gist {
 		Decomposition[] decs;
 		MorphemeHumanReadableDescr[] morphDescriptions = null;
 
-		MorphologicalAnalyzer__R2L morphAnalyzer = new MorphologicalAnalyzer__R2L();
+		MorphologicalAnalyzer_R2L morphAnalyzer = new MorphologicalAnalyzer_R2L();
 		
 		Pattern pattern = Pattern.compile("^(.+?)---(.+)$");
 

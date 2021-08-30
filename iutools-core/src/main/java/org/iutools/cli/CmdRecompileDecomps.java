@@ -5,7 +5,7 @@ import ca.nrc.ui.commandline.CommandLineException;
 import org.iutools.corpus.CompiledCorpus;
 import org.iutools.corpus.CompiledCorpusException;
 import org.iutools.morph.*;
-import org.iutools.morph.r2l.MorphologicalAnalyzer__R2L;
+import org.iutools.morph.r2l.MorphologicalAnalyzer_R2L;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -14,11 +14,11 @@ import java.util.concurrent.TimeoutException;
 
 public class CmdRecompileDecomps extends ConsoleCommand {
 
-	MorphologicalAnalyzer__R2L analyzer = null;
+	MorphologicalAnalyzer_R2L analyzer = null;
 
 	public CmdRecompileDecomps(String name) throws CommandLineException {
 		super(name);
-		analyzer = new MorphologicalAnalyzer__R2L();
+		analyzer = new MorphologicalAnalyzer_R2L();
 	}
 
 	@Override

@@ -25,7 +25,7 @@ import org.iutools.config.IUConfig;
 import org.iutools.linguisticdata.LinguisticDataException;
 import org.iutools.morph.*;
 import ca.nrc.config.ConfigException;
-import org.iutools.morph.r2l.MorphologicalAnalyzer__R2L;
+import org.iutools.morph.r2l.MorphologicalAnalyzer_R2L;
 import org.iutools.text.ngrams.NgramCompiler;
 
 public class AnalyzeNumberExpressions {
@@ -124,7 +124,7 @@ public class AnalyzeNumberExpressions {
 	protected void assessEndingWithIMA(String ending) throws LinguisticDataException {
 		Logger logger = Logger.getLogger("AnalyseNumberExpressions.assessEndignWithIMA");
 		logger.debug("ending: "+ending);
-		MorphologicalAnalyzer__R2L morphAnalyzer = new MorphologicalAnalyzer__R2L();
+		MorphologicalAnalyzer_R2L morphAnalyzer = new MorphologicalAnalyzer_R2L();
 		boolean accepted = false;
 		for (int i=0; i<makeUpWords.length; i++) {
 			String makeUpWord = makeUpWords[i];

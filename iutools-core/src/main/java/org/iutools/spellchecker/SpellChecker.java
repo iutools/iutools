@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.morph.*;
-import org.iutools.morph.r2l.MorphologicalAnalyzer__R2L;
+import org.iutools.morph.r2l.MorphologicalAnalyzer_R2L;
 import org.iutools.utilities.StopWatch;
 import ca.nrc.debug.Debug;
 import org.iutools.corpus.*;
@@ -497,7 +497,7 @@ public class SpellChecker {
 		Decomposition[] decomps = null;
 		try {
 			 decomps = 
-				new MorphologicalAnalyzer__R2L()
+				new MorphologicalAnalyzer_R2L()
 						.setTimeout(MAX_DECOMP_MSECS)
 						.activateTimeout()
 						.decomposeWord(word);
@@ -583,7 +583,7 @@ public class SpellChecker {
 		Decomposition[] decomps = null;
 		try {
 			 decomps = 
-				new MorphologicalAnalyzer__R2L()
+				new MorphologicalAnalyzer_R2L()
 						.setTimeout(MAX_DECOMP_MSECS)
 						.activateTimeout()
 						.decomposeWord(word);
@@ -1261,7 +1261,7 @@ public class SpellChecker {
 	protected boolean assessEndingWithIMA(String ending) {
 		Logger logger = Logger.getLogger("SpellChecker.assessEndingWithIMA");
 		boolean accepted = false;
-		MorphologicalAnalyzer__R2L morphAnalyzer = segmenter.getAnalyzer();
+		MorphologicalAnalyzer_R2L morphAnalyzer = segmenter.getAnalyzer();
 		for (int i=0; i<makeUpWords.length; i++) {
 			accepted = false;
 			String term = makeUpWords[i]+ending;

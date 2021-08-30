@@ -10,7 +10,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.iutools.morph.Decomposition;
-import org.iutools.morph.r2l.MorphologicalAnalyzer__R2L;
+import org.iutools.morph.r2l.MorphologicalAnalyzer_R2L;
 import org.iutools.morph.MorphologicalAnalyzerAbstract;
 import ca.nrc.debug.Debug;
 
@@ -35,7 +35,7 @@ public class CmdSegmentIU extends ConsoleCommand {
 		mode = getMode(ConsoleCommand.OPT_WORD);
 		lenient = getExtendedAnalysis();
 		Long timeoutMSecs = getTimeoutMSecs();
-		MorphologicalAnalyzer__R2L morphAnalyzer = new MorphologicalAnalyzer__R2L();
+		MorphologicalAnalyzer_R2L morphAnalyzer = new MorphologicalAnalyzer_R2L();
 		morphAnalyzer.setTimeout(timeoutMSecs);
 		
 		mLogger.trace("invoked with mode="+mode+", lenient="+lenient+

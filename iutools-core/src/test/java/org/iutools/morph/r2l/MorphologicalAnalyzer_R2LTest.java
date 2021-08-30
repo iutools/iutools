@@ -8,6 +8,6 @@ public class MorphologicalAnalyzer_R2LTest
 
 	@Override
 	public MorphologicalAnalyzerAbstract makeAnalyzer() {
-		return new MorphologicalAnalyzer__R2L();
+		return new MorphologicalAnalyzer_R2L();
 	}
 }
