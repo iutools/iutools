@@ -1,16 +1,15 @@
 package org.iutools.morph;
 
-import org.iutools.morph.l2r.MorphologicalAnalyzer_L2R;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.concurrent.TimeoutException;
 
-public abstract class MorphologicalAnalyzerAbstractTest {
+public abstract class MorphologicalAnalyzerTest {
 
-	private MorphologicalAnalyzerAbstract analyzer;
+	private MorphologicalAnalyzer analyzer;
 
-	public abstract MorphologicalAnalyzerAbstract makeAnalyzer();
+	public abstract MorphologicalAnalyzer makeAnalyzer();
 
 	@Before
 	public void setUp() {

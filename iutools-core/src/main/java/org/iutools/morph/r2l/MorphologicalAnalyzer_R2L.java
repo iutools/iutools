@@ -31,7 +31,7 @@ import org.iutools.utilities1.Util;
 //-------------------------------------------------
 
 
-public class MorphologicalAnalyzer_R2L extends MorphologicalAnalyzerAbstract {
+public class MorphologicalAnalyzer_R2L extends MorphologicalAnalyzer {
 
     private Hashtable<String, Graph.Arc[]> arcsByMorpheme = new Hashtable<>();
     private final static boolean USE_SYLLABICS = false;

@@ -6,7 +6,6 @@ import org.apache.log4j.Logger;
 
 import org.iutools.linguisticdata.LinguisticDataException;
 import org.iutools.morph.MorphologicalAnalyzerException;
-import org.iutools.morph.MorphologicalAnalyzerAbstract;
 import org.iutools.morph.expAlain.DecompositionState.Step;
 
 public class MorphologicalAnalyzer_L2R {

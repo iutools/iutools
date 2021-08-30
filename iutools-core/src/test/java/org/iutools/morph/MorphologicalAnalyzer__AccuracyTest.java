@@ -18,11 +18,11 @@ import ca.nrc.dtrc.stats.FrequencyHistogram;
 
 import org.iutools.morph.MorphAnalCurrentExpectationsAbstract.OutcomeType;
 
-public abstract class MorphologicalAnalyzerAbstract__AccuracyTest {
+public abstract class MorphologicalAnalyzer__AccuracyTest {
 
 	boolean verbose = false;
 	
-	MorphologicalAnalyzerAbstract morphAnalyzer = null;
+	MorphologicalAnalyzer morphAnalyzer = null;
 
 	MorphAnalGoldStandardAbstract goldStandard = null;
 	MorphAnalCurrentExpectationsAbstract expectations = null;
@@ -32,7 +32,7 @@ public abstract class MorphologicalAnalyzerAbstract__AccuracyTest {
 	FrequencyHistogram<OutcomeType> expOutcomeHist =
 		new FrequencyHistogram<OutcomeType>();
 
-	protected abstract MorphologicalAnalyzerAbstract makeAnalyzer();
+	protected abstract MorphologicalAnalyzer makeAnalyzer();
 
 	@Before
 	public void setUp() throws Exception {

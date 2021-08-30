@@ -13,12 +13,11 @@ import java.util.concurrent.TimeoutException;
 
 import org.apache.log4j.Logger;
 
-import org.iutools.morph.r2l.DecompositionState;
 import org.iutools.utilities.StopWatch;
 import ca.nrc.debug.Debug;
 import ca.nrc.string.StringUtils;
 
-public abstract class MorphologicalAnalyzerAbstract implements AutoCloseable {
+public abstract class MorphologicalAnalyzer implements AutoCloseable {
 	
 	/**
 	 * Strategy used to monitor execution of the analyzer and timing it out 
@@ -52,12 +51,12 @@ public abstract class MorphologicalAnalyzerAbstract implements AutoCloseable {
 	}
     
     public void close() throws Exception {
-    	System.out.println("--** MorphologicalAnalyzerAbstract.close: INVOKED");
+    	System.out.println("--** MorphologicalAnalyzer.close: INVOKED");
     }
     
     // TODO: Make that synchronized?
     public static void shutdownExecutorPool() {
-    	Logger mLogger = Logger.getLogger("ca.inuktitutcomputing.morph.MorphologicalAnalyzerAbstract.shutdownExecutorPool");
+    	Logger mLogger = Logger.getLogger("ca.inuktitutcomputing.morph.MorphologicalAnalyzer.shutdownExecutorPool");
     	
     	traceTasks(mLogger, "Before shutting down executor pool");
     	
@@ -256,7 +255,7 @@ public abstract class MorphologicalAnalyzerAbstract implements AutoCloseable {
 	}
 
 	private void checkElapsedTime(String word, long start) {
-    	Logger tLogger = Logger.getLogger("ca.inuktitutcomputing.morph.MorphologicalAnalyzerAbstract.checkElapsedTime");
+    	Logger tLogger = Logger.getLogger("ca.inuktitutcomputing.morph.MorphologicalAnalyzer.checkElapsedTime");
     	
     	if (timeoutActive) {
 	    	long elapsedMSecs = System.currentTimeMillis() - start;
@@ -292,30 +291,30 @@ public abstract class MorphologicalAnalyzerAbstract implements AutoCloseable {
 	protected abstract Decomposition[] doDecompose(String word, Boolean lenient)
 		throws MorphologicalAnalyzerException, TimeoutException;
     
-    public MorphologicalAnalyzerAbstract() {}
+    public MorphologicalAnalyzer() {}
     
-    public MorphologicalAnalyzerAbstract setTimeout(long val) {
+    public MorphologicalAnalyzer setTimeout(long val) {
     	return setTimeout(new Long(val));
     }
 
-    public MorphologicalAnalyzerAbstract setTimeout(Long val) {
+    public MorphologicalAnalyzer setTimeout(Long val) {
     	if (val != null) {
     		millisTimeout = val;
     	}
     	return this;
     }
     
-    public MorphologicalAnalyzerAbstract disactivateTimeout() {
+    public MorphologicalAnalyzer disactivateTimeout() {
     	timeoutActive = false;
     	return this;
     }
     
-    public MorphologicalAnalyzerAbstract activateTimeout() {
+    public MorphologicalAnalyzer activateTimeout() {
     	timeoutActive = true;
     	return this;
     }
     
-    public MorphologicalAnalyzerAbstract setTimeoutStrategy(TimeoutStrategy _strat) {
+    public MorphologicalAnalyzer setTimeoutStrategy(TimeoutStrategy _strat) {
     	this.timeoutStrategy = _strat;
     	return this;
     }

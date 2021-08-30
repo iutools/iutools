@@ -20,7 +20,7 @@ import com.google.gson.Gson;
 import org.iutools.datastructure.trie.Trie;
 import org.iutools.linguisticdata.*;
 import org.iutools.morph.Decomposition;
-import org.iutools.morph.MorphologicalAnalyzerAbstract;
+import org.iutools.morph.MorphologicalAnalyzer;
 import org.iutools.morph.MorphologicalAnalyzerException;
 import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.Pair;
@@ -35,7 +35,7 @@ import org.iutools.morph.r2l.StateGraphForward;
  * des morphèmes
  */
 
-public class MorphologicalAnalyzer_L2R extends MorphologicalAnalyzerAbstract {
+public class MorphologicalAnalyzer_L2R extends MorphologicalAnalyzer {
 
 	private Trie_InMemory root_trie = null;
 	private Trie_InMemory affix_trie = null;

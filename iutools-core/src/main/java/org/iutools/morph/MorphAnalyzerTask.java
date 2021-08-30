@@ -5,7 +5,6 @@ import java.util.concurrent.TimeoutException;
 
 import org.apache.log4j.Logger;
 
-import org.iutools.morph.r2l.DecompositionState;
 import org.iutools.utilities.StopWatch;
 
 /**
@@ -20,10 +19,10 @@ public class MorphAnalyzerTask implements Callable<Decomposition[]> {
 	StopWatch stopWatch = null;
 	String word = null;
 	boolean lenient = true;
-	MorphologicalAnalyzerAbstract analyzer = null;
+	MorphologicalAnalyzer analyzer = null;
 	
 	public MorphAnalyzerTask(String _word, Boolean _lenient, 
-			MorphologicalAnalyzerAbstract morphologicalAnalyzerAbstract) {
+			MorphologicalAnalyzer morphologicalAnalyzerAbstract) {
 		this.word = _word;
 		if (_lenient != null) {
 			this.lenient = _lenient;

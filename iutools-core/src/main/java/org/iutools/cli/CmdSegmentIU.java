@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.iutools.morph.Decomposition;
 import org.iutools.morph.r2l.MorphologicalAnalyzer_R2L;
-import org.iutools.morph.MorphologicalAnalyzerAbstract;
+import org.iutools.morph.MorphologicalAnalyzer;
 import ca.nrc.debug.Debug;
 
 public class CmdSegmentIU extends ConsoleCommand {
@@ -82,7 +82,7 @@ public class CmdSegmentIU extends ConsoleCommand {
 			}
 		}
 		
-		MorphologicalAnalyzerAbstract.shutdownExecutorPool();
+		MorphologicalAnalyzer.shutdownExecutorPool();
 		
 		mLogger.trace("Done!");	
 	}

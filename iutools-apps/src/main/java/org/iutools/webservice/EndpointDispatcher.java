@@ -1,7 +1,7 @@
 package org.iutools.webservice;
 
 import org.apache.log4j.Logger;
-import org.iutools.morph.r2l.MorphologicalAnalyzer__R2L;
+import org.iutools.morph.r2l.MorphologicalAnalyzer_R2L;
 import org.iutools.morph.MorphologicalAnalyzerException;
 import org.iutools.webservice.gist.GistPrepareContentEndpoint;
 import org.iutools.webservice.gist.GistWordEndpoint;
@@ -71,7 +71,7 @@ public class EndpointDispatcher extends HttpServlet {
 	private void ensureLinguisticDataIsLoaded() throws ServiceException {
 		try {
 			// Decomposing a word will force loading of the data
-			new MorphologicalAnalyzer__R2L().decomposeWord("inuksuk");
+			new MorphologicalAnalyzer_R2L().decomposeWord("inuksuk");
 		} catch (TimeoutException | MorphologicalAnalyzerException e) {
 			throw new ServiceException(e);
 		}

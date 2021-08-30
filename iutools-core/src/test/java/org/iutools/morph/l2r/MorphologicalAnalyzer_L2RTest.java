@@ -8,16 +8,16 @@ import ca.nrc.string.StringUtils;
 import ca.nrc.testing.AssertNumber;
 import ca.nrc.testing.AssertString;
 import org.iutools.morph.Decomposition;
-import org.iutools.morph.MorphologicalAnalyzerAbstract;
-import org.iutools.morph.MorphologicalAnalyzerAbstractTest;
+import org.iutools.morph.MorphologicalAnalyzer;
+import org.iutools.morph.MorphologicalAnalyzerTest;
 import org.junit.Ignore;
 import org.junit.Test;
 
 @Ignore
-public class MorphologicalAnalyzer_L2RTest extends MorphologicalAnalyzerAbstractTest {
+public class MorphologicalAnalyzer_L2RTest extends MorphologicalAnalyzerTest {
 
 	@Override
-	public MorphologicalAnalyzerAbstract makeAnalyzer() {
+	public MorphologicalAnalyzer makeAnalyzer() {
 		MorphologicalAnalyzer_L2R analyzer = null;
 		try {
 			analyzer = new MorphologicalAnalyzer_L2R();
