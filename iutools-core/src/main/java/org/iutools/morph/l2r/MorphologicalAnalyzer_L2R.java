@@ -18,7 +18,7 @@ import com.google.gson.Gson;
 
 import org.iutools.datastructure.trie.Trie;
 import org.iutools.linguisticdata.*;
-import org.iutools.morph.DecompositionSimple;
+import org.iutools.morph.Decomposition;
 import org.iutools.morph.MorphologicalAnalyzerException;
 import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.Pair;
@@ -45,14 +45,14 @@ public class MorphologicalAnalyzer_L2R {
 	}
 
 	/**
-	 * DecompositionSimple of an Inuktitut word into ints morphemic components.
+	 * Decomposition of an Inuktitut word into ints morphemic components.
 	 *
 	 * @param word String
 	 * @return a List of DecompositionTree objects
 	 * @throws LinguisticDataException 
 	 * @throws MorphologicalAnalyzerException 
 	 */
-	List<DecompositionSimple> analyze(String word) throws LinguisticDataException, MorphologicalAnalyzerException {
+	List<Decomposition> analyze(String word) throws LinguisticDataException, MorphologicalAnalyzerException {
 		/*
 			For each root:
 				for each affix:
@@ -63,7 +63,7 @@ public class MorphologicalAnalyzer_L2R {
 		Logger logger = Logger.getLogger("MorphologicalAnalyzer_L2R.findAllPossibleSequencesOfMorphemes");
 
 		List<DecompositionTree> decompositionTrees = decomposeWord_Tree(word);
-		List<DecompositionSimple> prunedDecompositions = combineMorphemes(decompositionTrees);
+		List<Decomposition> prunedDecompositions = combineMorphemes(decompositionTrees);
 
 		return prunedDecompositions;
 	}
@@ -103,21 +103,21 @@ public class MorphologicalAnalyzer_L2R {
 	}
 
 	/**
-	 * Convert a list of DecompositionTree objects into a list of DecompositionSimple objects.
+	 * Convert a list of DecompositionTree objects into a list of Decomposition objects.
 	 *
 	 * @param decompositionTrees A List of DecompositionTree objects
-	 * @return A List of DecompositionSimple objects
+	 * @return A List of Decomposition objects
 	 */
-	List<DecompositionSimple> combineMorphemes(List<DecompositionTree> decompositionTrees) {
+	List<Decomposition> combineMorphemes(List<DecompositionTree> decompositionTrees) {
 		Logger logger = Logger.getLogger("MorphologicalAnalyzer_L2R.combineMorphemes");
 		HashMap<String,String[]> combinedMorphemesInDecompositions = new HashMap<String,String[]>();
-		List<DecompositionSimple> allDecomps = new ArrayList<DecompositionSimple>();
+		List<Decomposition> allDecomps = new ArrayList<Decomposition>();
 		for (int id=0; id<decompositionTrees.size(); id++) {
 			DecompositionTree decompTree = decompositionTrees.get(id);
-			List<DecompositionSimple> decomps = decompTree.toDecomposition();
+			List<Decomposition> decomps = decompTree.toDecomposition();
 
 			for (int idd=0; idd<decomps.size(); idd++) {
-				DecompositionSimple decomp = decomps.get(idd);
+				Decomposition decomp = decomps.get(idd);
 				logger.debug("------- decomp= "+decomp.toStr());
 				if (decomp.validateForFinalComponent()) {
 					allDecomps.add(decomp);
@@ -135,16 +135,16 @@ public class MorphologicalAnalyzer_L2R {
 			}
 
 		}
-		List<DecompositionSimple> prunedDecomps = checkForCombinedElements(allDecomps,combinedMorphemesInDecompositions);
+		List<Decomposition> prunedDecomps = checkForCombinedElements(allDecomps,combinedMorphemesInDecompositions);
 		prunedDecomps.sort(new DecompositionComparator());
 
 		return prunedDecomps;
 	}
 
-	List<DecompositionSimple> checkForCombinedElements(
-			List<DecompositionSimple> decompositions,
+	List<Decomposition> checkForCombinedElements(
+			List<Decomposition> decompositions,
 			HashMap<String, String[]> combinedMorphemesInDecompositions) {
-		List<DecompositionSimple> prunedDecompositions = new ArrayList<DecompositionSimple>();
+		List<Decomposition> prunedDecompositions = new ArrayList<Decomposition>();
 		String[] regexps = new String[combinedMorphemesInDecompositions.size()];
 		Set<String> keys = combinedMorphemesInDecompositions.keySet();
 		int iregxp = 0;
@@ -185,9 +185,9 @@ public class MorphologicalAnalyzer_L2R {
 		return String.join(" ", regexps);
 	}
 
-	class DecompositionComparator  implements Comparator<DecompositionSimple> {
+	class DecompositionComparator  implements Comparator<Decomposition> {
 	    @Override
-	    public int compare(DecompositionSimple a, DecompositionSimple b) {
+	    public int compare(Decomposition a, Decomposition b) {
 	    	Logger logger = Logger.getLogger("MorphologicalAnalyzer_L2R.DecompositionComparator.compare");
 	    	logger.debug(a.decompSpecs +" VS "+b.decompSpecs);
 	    	logger.debug(a.components().length+" VS "+b.components().length);
@@ -403,7 +403,7 @@ public class MorphologicalAnalyzer_L2R {
 				if (word.equals("$")) {
 					break;
 				}
-				List<DecompositionSimple> decompositions = analyzer.analyze(word);
+				List<Decomposition> decompositions = analyzer.analyze(word);
 				if (decompositions.size() == 0)
 					System.out.println("Aucune décomposition");
 				else for (int id = 0; id < decompositions.size(); id++)

@@ -4,35 +4,54 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 import org.iutools.morph.r2l.StateGraphForward;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-public class DecompositionSimple {
+public class Decomposition {
 	
 	private String[] _components;
 	public String decompSpecs;
 
-	public DecompositionSimple(String _expression) {
+	public Decomposition(String _expression) {
 		decompSpecs = _expression;
 
 		return;
 	}
 
-	public static String[][] decomps2morphemes(DecompositionSimple[] decompObjs) throws DecompositionException {
+	public static String[][] decomps2morphemes(Decomposition[] decompObjs) throws DecompositionException {
 		String[][] morphemes = new String[decompObjs.length][];
 		int ii=0;
-		for (DecompositionSimple aDecomp: decompObjs) {
+		for (Decomposition aDecomp: decompObjs) {
 			morphemes[ii] = aDecomp.morphemeIDs();
 			ii++;
 		}
 		return morphemes;
 	}
 
+	static public Decomposition[] removeMultiples(Decomposition[] decs)  {
+		Decomposition[] removed = decs;
+		if (decs != null && decs.length > 0) {
+			List<Decomposition> v = new ArrayList<Decomposition>();
+			List<String> vc = new ArrayList<String>();
+			v.add(decs[0]);
+			vc.add(decs[0].toString());
+			for (int i = 1; i < decs.length; i++) {
+				String c = decs[i].toString();
+				if (!vc.contains(c)) {
+					v.add(decs[i]);
+					vc.add(c);
+				}
+			}
+			removed = v.toArray(new Decomposition[0]);
+		}
+
+		return removed;
+	}
+
 	private String[] morphemeIDs() throws DecompositionException {
 		String[] morphemes = new String[components().length];
 		int ii=0;
 		for (String aComponent: components()) {
-			Pair<String,String> parsedcomp = DecompositionSimple.parseComponent(aComponent);
+			Pair<String,String> parsedcomp = Decomposition.parseComponent(aComponent);
 			morphemes[ii] = parsedcomp.getRight();
 			ii++;
 		}
@@ -42,7 +61,7 @@ public class DecompositionSimple {
 	public List<String> surfaceForms() throws DecompositionException {
 		List<String> surfaceForms = new ArrayList<String>();
 		for (String aComponent: components()) {
-			Pair<String,String> parsedcomp = DecompositionSimple.parseComponent(aComponent);
+			Pair<String,String> parsedcomp = Decomposition.parseComponent(aComponent);
 			surfaceForms.add(parsedcomp.getLeft());
 		}
 		return surfaceForms;
@@ -65,7 +84,7 @@ public class DecompositionSimple {
 	}
 	
 	public boolean validateForFinalComponent() {
-		Logger logger = Logger.getLogger("DecompositionSimple.validateForFinalComponent");
+		Logger logger = Logger.getLogger("Decomposition.validateForFinalComponent");
 		boolean res;
 		String lastComponent = components()[components().length-1];
 		lastComponent = lastComponent.substring(1,lastComponent.length()-1);

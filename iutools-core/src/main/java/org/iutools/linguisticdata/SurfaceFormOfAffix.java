@@ -18,7 +18,7 @@
 // Date de cr�ation/Date of creation:	
 //
 // Description: SurfaceFormOfAffix est la classe des objets qui sont enregistr�s
-//              dans les MorceauAffixe d'une DecompositionSimple.
+//              dans les MorceauAffixe d'une DecompositionState.
 //
 // -----------------------------------------------------------------------
 

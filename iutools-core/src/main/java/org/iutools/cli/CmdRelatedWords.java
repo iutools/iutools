@@ -5,7 +5,7 @@ import org.iutools.corpus.CompiledCorpus;
 import org.iutools.corpus.CompiledCorpusRegistry;
 
 import org.iutools.bin.Decompose;
-import org.iutools.morph.DecompositionSimple;
+import org.iutools.morph.Decomposition;
 import org.iutools.morph.r2l.MorphologicalAnalyzer__L2R;
 import org.iutools.script.Roman;
 import org.iutools.script.Syllabics;
@@ -95,8 +95,8 @@ public class CmdRelatedWords extends ConsoleCommand {
 				expansions = "\n    No expansion could be found in the corpus.\n";
 			}
 
-			DecompositionSimple[] decs = morphAnalyzer.decomposeWord(latin);
-			DecompositionSimple dec = null;
+			Decomposition[] decs = morphAnalyzer.decomposeWord(latin);
+			Decomposition dec = null;
 			if (decs.length != 0)
 				dec = decs[0];
 			echo("\nWord:\n\n  "+latin+" ("+syll+") : "+freqWord);

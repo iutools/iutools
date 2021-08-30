@@ -3,8 +3,6 @@ package org.iutools.morph;
 import org.apache.commons.lang3.ArrayUtils;
 import org.iutools.linguisticdata.LinguisticDataException;
 
-import java.util.Collections;
-
 /**
  * Outcome of calling decomposeWord() on a test word.
  * 
@@ -13,7 +11,7 @@ import java.util.Collections;
  */
 public class AnalysisOutcome {
 	public boolean timedOut = false;
-	public DecompositionSimple[] decompositions = new DecompositionSimple[0];
+	public Decomposition[] decompositions = new Decomposition[0];
 	
 	public boolean includesAtLeastOneOfDecomps(String[] decomps) throws LinguisticDataException {
 		boolean includes = (null != decompRank(decomps));
@@ -36,7 +34,7 @@ public class AnalysisOutcome {
 	
 	public String joinDecomps() {
 		String joined = "";
-		for (DecompositionSimple aDecomp: decompositions) {
+		for (Decomposition aDecomp: decompositions) {
 			joined += "  "+aDecomp.toString()+"\n";
 		}
 		return joined;

@@ -494,7 +494,7 @@ public class SpellChecker {
 
 		Boolean answer = null;
 		
-		DecompositionSimple[] decomps = null;
+		Decomposition[] decomps = null;
 		try {
 			 decomps = 
 				new MorphologicalAnalyzer__L2R()
@@ -508,7 +508,7 @@ public class SpellChecker {
 		}
 
 		if (decomps != null) {
-			for (DecompositionSimple aDecomp: decomps) {
+			for (Decomposition aDecomp: decomps) {
 				List<String> morphemes = null;
 				try {
 					morphemes = aDecomp.surfaceForms();
@@ -580,7 +580,7 @@ public class SpellChecker {
 		
 		Boolean answer = null;
 		
-		DecompositionSimple[] decomps = null;
+		Decomposition[] decomps = null;
 		try {
 			 decomps = 
 				new MorphologicalAnalyzer__L2R()
@@ -594,7 +594,7 @@ public class SpellChecker {
 		}
 		
 		if (decomps != null) {
-			for (DecompositionSimple aDecomp: decomps) {
+			for (Decomposition aDecomp: decomps) {
 				List<String> morphemes = null;
 				try {
 					morphemes = aDecomp.surfaceForms();
@@ -1266,7 +1266,7 @@ public class SpellChecker {
 			accepted = false;
 			String term = makeUpWords[i]+ending;
 			logger.trace("term= "+term);
-			DecompositionSimple[] decs = null;
+			Decomposition[] decs = null;
 			try {
 				decs = morphAnalyzer.decomposeWord(term);
 			} catch (TimeoutException | MorphologicalAnalyzerException e) {

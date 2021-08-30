@@ -15,7 +15,7 @@ import org.iutools.utilities.StopWatch;
  * @author desilets
  *
  */
-public class MorphAnalyzerTask implements Callable<DecompositionState[]> {
+public class MorphAnalyzerTask implements Callable<Decomposition[]> {
 
 	StopWatch stopWatch = null;
 	String word = null;
@@ -32,11 +32,11 @@ public class MorphAnalyzerTask implements Callable<DecompositionState[]> {
 	}
 	
 	@Override
-	public DecompositionState[] call() throws Exception {
+	public Decomposition[] call() throws Exception {
 		Logger mLogger = Logger.getLogger("ca.inuktitutcomputing.morph.MorphAnalyzerTask.call");
 		mLogger.trace("Calling on word="+word);
 		long start = System.currentTimeMillis();
-		DecompositionState[] decomps = new DecompositionState[0];
+		Decomposition[] decomps = new Decomposition[0];
 		try {
 			decomps = analyzer.doDecompose(word, lenient);
 		} catch (TimeoutException e) {

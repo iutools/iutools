@@ -48,11 +48,11 @@ public class CmdRecompileDecomps extends ConsoleCommand {
 	private void redecomposeWord(String word, CompiledCorpus corpus,
 		String comment)  {
 		try {
-			DecompositionSimple[] decompObjs = analyzer.decomposeWord(word);
-			String[][] decomps = DecompositionSimple.decomps2morphemes(decompObjs);
+			Decomposition[] decompObjs = analyzer.decomposeWord(word);
+			String[][] decomps = Decomposition.decomps2morphemes(decompObjs);
 			corpus.addWordOccurence(word, decomps, new Integer(decomps.length), 0);
 		} catch (TimeoutException e) {
-			echo("   Analyzer timed out!");
+			echo("   Analyzer timed out (or was interrupted)!");
 		} catch (MorphologicalAnalyzerException | CompiledCorpusException | DecompositionException e) {
 			echo(1);
 			{

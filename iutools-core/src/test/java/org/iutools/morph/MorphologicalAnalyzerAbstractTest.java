@@ -32,7 +32,7 @@ public abstract class MorphologicalAnalyzerAbstractTest {
 		// The purpose of the analyzer is to decompose an inuktitut word into its morphemes
 		String word = "iglumik";
 		try {
-			 DecompositionSimple[] analyses = analyzer.decomposeWord(word);
+			 Decomposition[] analyses = analyzer.decomposeWord(word);
 		} catch (TimeoutException e) {
 			// This happens if the decomposer timed out before it could complete
 			// the analysis.
@@ -61,7 +61,7 @@ public abstract class MorphologicalAnalyzerAbstractTest {
 	public void test__decomposeWord__maligatigut() throws Exception  {
 		String word = "maligatigut";
 		analyzer.disactivateTimeout();
-		DecompositionSimple[] decs = analyzer.decomposeWord(word);
+		Decomposition[] decs = analyzer.decomposeWord(word);
 		new AssertDecompositionList(decs)
 			// No decomposition produced for this word
 			.decompIs();
@@ -72,7 +72,7 @@ public abstract class MorphologicalAnalyzerAbstractTest {
 		String word = "uqaqtiup";
 		analyzer.disactivateTimeout();;
 
-		DecompositionSimple[] decSimple = analyzer.decomposeWord(word);
+		Decomposition[] decSimple = analyzer.decomposeWord(word);
 		new AssertDecompositionList(decSimple)
 			.decompIs("uqaq:uqaq/1v", "ti:ji/1vn", "up:up/tn-gen-s");
 	}
@@ -82,7 +82,7 @@ public abstract class MorphologicalAnalyzerAbstractTest {
 		String word = "sivuliuqtii";
 		analyzer.disactivateTimeout();;
 
-		DecompositionSimple[] decSimple = analyzer.decomposeWord(word);
+		Decomposition[] decSimple = analyzer.decomposeWord(word);
 		new AssertDecompositionList(decSimple)
 			.decompIs("sivuliuqti:sivuliuqti/1n", "i:k/tn-nom-d");
 	}
@@ -91,7 +91,7 @@ public abstract class MorphologicalAnalyzerAbstractTest {
 	public void test__decomposeWord__ammalu() throws Exception  {
 		String word = "ammalu";
 		analyzer.disactivateTimeout();;
-		DecompositionSimple[] decSimple = analyzer.decomposeWord(word);
+		Decomposition[] decSimple = analyzer.decomposeWord(word);
 		new AssertDecompositionList(decSimple)
 			.decompIs("ammalu:ammalu/1c");
 	}
@@ -118,9 +118,9 @@ public abstract class MorphologicalAnalyzerAbstractTest {
 //			Assert.assertTrue(!decs[i].toStr2().contains("{ju:juq/1vn}{ksaq:ksaq/1nn}"));
 //		}
 
-		// AD: This is how Alain now tests this, but the new DecompositionSimple class does not seem to
+		// AD: This is how Alain now tests this, but the new Decomposition class does not seem to
 		// pass this test
-		DecompositionSimple[] decSimple = analyzer.decomposeWord(word);
+		Decomposition[] decSimple = analyzer.decomposeWord(word);
 		new AssertDecompositionList(decSimple)
 			.allDecompsContain("ju:juq/1vn ksaq:ksaq/1nn");
 	}
@@ -131,7 +131,7 @@ public abstract class MorphologicalAnalyzerAbstractTest {
 		String word = "immagaa";
 
 		analyzer.disactivateTimeout();;
-		DecompositionSimple[] decSimple = analyzer.decomposeWord(word);
+		Decomposition[] decSimple = analyzer.decomposeWord(word);
 		new AssertDecompositionList(decSimple)
 			// No decomp for this word
 			.decompIs();
@@ -142,7 +142,7 @@ public abstract class MorphologicalAnalyzerAbstractTest {
 		String word = "avunngaqtuq";
 
 		analyzer.disactivateTimeout();;
-		DecompositionSimple[] decSimple = analyzer.decomposeWord(word);
+		Decomposition[] decSimple = analyzer.decomposeWord(word);
 		new AssertDecompositionList(decSimple, "word="+word)
 			.decompIs("avunngaq:avunngaq/1v", "tuq:juq/1vn");
 
@@ -164,7 +164,7 @@ public abstract class MorphologicalAnalyzerAbstractTest {
 		String word = "atuagaq";
 
 		analyzer.disactivateTimeout();;
-		DecompositionSimple[] decSimple = analyzer.decomposeWord(word);
+		Decomposition[] decSimple = analyzer.decomposeWord(word);
 		new AssertDecompositionList(decSimple, "word="+word)
 			.decompIs("atua:atuaq/1v", "gaq:gaq/1vn");
 	}
@@ -175,7 +175,7 @@ public abstract class MorphologicalAnalyzerAbstractTest {
 		String word = "maligaliuqtinik";
 
 		analyzer.disactivateTimeout();
-		DecompositionSimple[] decSimple = analyzer.decomposeWord(word);
+		Decomposition[] decSimple = analyzer.decomposeWord(word);
 		new AssertDecompositionList(decSimple, "word="+word)
 			.decompIs("maliga:maligaq/1n", "liuq:liuq/1nv", "ti:ji/1vn",
 				"nik:nik/tn-acc-p");
@@ -186,7 +186,7 @@ public abstract class MorphologicalAnalyzerAbstractTest {
 		String word = "sivungujuq";
 
 		analyzer.disactivateTimeout();;
-		DecompositionSimple[] decSimple = analyzer.decomposeWord(word);
+		Decomposition[] decSimple = analyzer.decomposeWord(word);
 		new AssertDecompositionList(decSimple, "word="+word)
 			.atLeastOneDecompContains("sivu:sivu/1n ngu:u/1nv");
 	}
@@ -196,7 +196,7 @@ public abstract class MorphologicalAnalyzerAbstractTest {
 		String word = "makpiga";
 
 		analyzer.disactivateTimeout();;
-		DecompositionSimple[] decSimple = analyzer.decomposeWord(word);
+		Decomposition[] decSimple = analyzer.decomposeWord(word);
 		new AssertDecompositionList(decSimple, "word="+word)
 			.atLeastOneDecompContains("ga:gaq/1vn");
 	}
@@ -206,7 +206,7 @@ public abstract class MorphologicalAnalyzerAbstractTest {
 		String word = "makpiga";
 
 		analyzer.disactivateTimeout();;
-		DecompositionSimple[] decSimple = analyzer.decomposeWord(word, false);
+		Decomposition[] decSimple = analyzer.decomposeWord(word, false);
 		new AssertDecompositionList(decSimple, "word="+word+", NO extended analysis")
 			.decompIs();
 	}
@@ -216,7 +216,7 @@ public abstract class MorphologicalAnalyzerAbstractTest {
 		String word = "angut";
 
 		analyzer.disactivateTimeout();;
-		DecompositionSimple[] decSimple = analyzer.decomposeWord(word);
+		Decomposition[] decSimple = analyzer.decomposeWord(word);
 		new AssertDecompositionList(decSimple, "word="+word)
 			.decompIs("angut:angut/1n");
 	}
@@ -226,7 +226,7 @@ public abstract class MorphologicalAnalyzerAbstractTest {
 		String word = "inungmut";
 
 		analyzer.disactivateTimeout();;
-		DecompositionSimple[] decSimple = analyzer.decomposeWord(word);
+		Decomposition[] decSimple = analyzer.decomposeWord(word);
 		new AssertDecompositionList(decSimple, "word="+word)
 			.decompIs("inung:inuk/1n", "mut:mut/tn-dat-s");
 	}
@@ -236,7 +236,7 @@ public abstract class MorphologicalAnalyzerAbstractTest {
 		String word = "siniktitsijuq";
 
 		analyzer.disactivateTimeout();;
-		DecompositionSimple[] decSimple = analyzer.decomposeWord(word);
+		Decomposition[] decSimple = analyzer.decomposeWord(word);
 		new AssertDecompositionList(decSimple, "word="+word)
 			.decompIs("sinik:sinik/1v", "tit:tit/1vv", "si:si/1vv", "juq:juq/1vn");
 	}
@@ -246,7 +246,7 @@ public abstract class MorphologicalAnalyzerAbstractTest {
 		String word = "siniktittijuq";
 
 		analyzer.disactivateTimeout();;
-		DecompositionSimple[] decSimple = analyzer.decomposeWord(word);
+		Decomposition[] decSimple = analyzer.decomposeWord(word);
 		new AssertDecompositionList(decSimple, "word="+word)
 			.decompIs("sinik:sinik/1v", "tit:tiq/1vn", "ti:si/4nv", "juq:juq/1vn");
 	}
@@ -258,7 +258,7 @@ public abstract class MorphologicalAnalyzerAbstractTest {
 
 		analyzer.disactivateTimeout();
 		;
-		DecompositionSimple[] decSimple = analyzer.decomposeWord(word);
+		Decomposition[] decSimple = analyzer.decomposeWord(word);
 		new AssertDecompositionList(decSimple, "word=" + word)
 			.decompIs("pi:pi/1v", "vallia:vallia/1vv", "tit:tiq/1vn", "ti:si/4nv",
 				"nir:niq/2vn", "mut:mut/tn-dat-s");
@@ -270,7 +270,7 @@ public abstract class MorphologicalAnalyzerAbstractTest {
 
 		analyzer.disactivateTimeout();
 		;
-		DecompositionSimple[] decSimple = analyzer.decomposeWord(word);
+		Decomposition[] decSimple = analyzer.decomposeWord(word);
 		new AssertDecompositionList(decSimple, "word=" + word)
 			.decompIs("sinik:sinik/1v", "tit:tiq/1vn", "ti:si/4nv", "niq:niq/2vn");
 	}

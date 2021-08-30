@@ -6,17 +6,17 @@ import ca.nrc.testing.AssertString;
 import ca.nrc.testing.Asserter;
 import org.junit.jupiter.api.Assertions;
 
-public class AssertDecompositionList extends Asserter<DecompositionSimple[]> {
-	public AssertDecompositionList(DecompositionSimple[] _gotObject) {
+public class AssertDecompositionList extends Asserter<Decomposition[]> {
+	public AssertDecompositionList(Decomposition[] _gotObject) {
 		super(_gotObject);
 	}
 
-	public AssertDecompositionList(DecompositionSimple[] _gotObject, String mess) {
+	public AssertDecompositionList(Decomposition[] _gotObject, String mess) {
 		super(_gotObject, mess);
 	}
 
-	public DecompositionSimple[] decompositions() {
-		return (DecompositionSimple[])gotObject;
+	public Decomposition[] decompositions() {
+		return (Decomposition[])gotObject;
 	}
 
 	public AssertDecompositionList includesDecomps(String... expDecomps) {
@@ -62,8 +62,8 @@ public class AssertDecompositionList extends Asserter<DecompositionSimple[]> {
 		return this;
 	}
 
-	private DecompositionSimple topDecomposition() {
-		DecompositionSimple top = null;
+	private Decomposition topDecomposition() {
+		Decomposition top = null;
 		if (decompositions() != null && decompositions().length > 0) {
 			top = decompositions()[0];
 		}

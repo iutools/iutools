@@ -53,7 +53,7 @@ public class StringSegmenter_IUMorpheme extends StringSegmenter {
 			word = Syllabics.transcodeToRoman(string); 
 		}
 		
-		DecompositionSimple[] decs = null;
+		Decomposition[] decs = null;
 		try {
 			decs = morphAnalyzer.decomposeWord(word);
 		} catch (MorphologicalAnalyzerException e) {
@@ -61,7 +61,7 @@ public class StringSegmenter_IUMorpheme extends StringSegmenter {
 		}
 		
         if (decs != null && decs.length > 0) {
-        	for (DecompositionSimple dec: decs) {
+        	for (Decomposition dec: decs) {
 	        	Pattern p = Pattern.compile("(\\{[^:]+\\:(.+?)\\})") ;      
 	        	Matcher m;
 				m = p.matcher(dec.toString());

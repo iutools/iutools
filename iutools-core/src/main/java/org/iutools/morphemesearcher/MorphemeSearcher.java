@@ -307,10 +307,10 @@ public class MorphemeSearcher {
 		String[][] decompositions = morphemeExample.decompsSample;
 		if (decompositions == null) {
 			try {
-				DecompositionSimple[] decompObjects =
+				Decomposition[] decompObjects =
 					analyzer.decomposeWord(morphemeExample.word,
 						allowAnalysisWithAdditionalFinalConsonant);
-				decompositions = DecompositionSimple.decomps2morphemes(decompObjects);
+				decompositions = Decomposition.decomps2morphemes(decompObjects);
 			} catch (MorphologicalAnalyzerException | DecompositionException e) {
 				throw new MorphemeSearcherException(e);
 			}

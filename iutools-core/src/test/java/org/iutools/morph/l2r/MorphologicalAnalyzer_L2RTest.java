@@ -2,22 +2,15 @@ package org.iutools.morph.l2r;
 
 import static org.junit.Assert.*;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import ca.nrc.string.StringUtils;
 import ca.nrc.testing.AssertNumber;
-import ca.nrc.testing.AssertSet;
 import ca.nrc.testing.AssertString;
 import org.iutools.morph.AssertDecompositionList;
-import org.iutools.morph.DecompositionSimple;
+import org.iutools.morph.Decomposition;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import ca.nrc.json.PrettyPrinter;
-
 
 public class MorphologicalAnalyzer_L2RTest {
 
@@ -79,7 +72,7 @@ public class MorphologicalAnalyzer_L2RTest {
 	public void test_analyze__Case_inullu() throws Exception {
 		MorphologicalAnalyzer_L2R wordAnalyzer = new MorphologicalAnalyzer_L2R();
 		String string = "inullu";
-		List<DecompositionSimple> decompositions = wordAnalyzer.analyze(string);
+		List<Decomposition> decompositions = wordAnalyzer.analyze(string);
 		for (int i=0; i<decompositions.size(); i++) System.out.println((i+1)+". "+decompositions.get(i).toStr());
 		assertEquals("",1,decompositions.size());
 	}
@@ -89,7 +82,7 @@ public class MorphologicalAnalyzer_L2RTest {
 	public void test_analyse__Case_tikittuq() throws Exception {
 		MorphologicalAnalyzer_L2R wordAnalyzer = new MorphologicalAnalyzer_L2R();
 		String string = "tikittuq";
-		List<DecompositionSimple> decompositions = wordAnalyzer.analyze(string);
+		List<Decomposition> decompositions = wordAnalyzer.analyze(string);
 //		for (int i=0; i<decompositions.size(); i++) System.out.println((i+1)+". "+decompositions.get(i).toStr());
 		assertEquals("",2,decompositions.size());
 	}
@@ -99,7 +92,7 @@ public class MorphologicalAnalyzer_L2RTest {
 	public void test_analyze__Case_tikinniaqtuq() throws Exception {
 		MorphologicalAnalyzer_L2R wordAnalyzer = new MorphologicalAnalyzer_L2R();
 		String string = "tikinniaqtuq";
-		List<DecompositionSimple> analyses = wordAnalyzer.analyze(string);
+		List<Decomposition> analyses = wordAnalyzer.analyze(string);
 		assertEquals("",6,analyses.size());
 	}
 
@@ -108,7 +101,7 @@ public class MorphologicalAnalyzer_L2RTest {
 	public void test_analyze__Case_umiarjualiuqti() throws Exception {
 		MorphologicalAnalyzer_L2R wordAnalyzer = new MorphologicalAnalyzer_L2R();
 		String string = "umiarjualiuqti";
-		List<DecompositionSimple> decompositions = wordAnalyzer.analyze(string);
+		List<Decomposition> decompositions = wordAnalyzer.analyze(string);
 		for (int i=0; i<decompositions.size(); i++) System.out.println((i+1)+". "+decompositions.get(i).toStr());
 		assertEquals("",9,decompositions.size());
 	}
@@ -117,9 +110,9 @@ public class MorphologicalAnalyzer_L2RTest {
 	public void test_analyze__Case_maligaliuqti() throws Exception {
 		MorphologicalAnalyzer_L2R wordAnalyzer = new MorphologicalAnalyzer_L2R();
 		String string = "maligaliuqti";
-		List<DecompositionSimple> analyses = wordAnalyzer.analyze(string);
+		List<Decomposition> analyses = wordAnalyzer.analyze(string);
 		new AssertDecompositionList(
-			analyses.toArray(new DecompositionSimple[0]),
+			analyses.toArray(new Decomposition[0]),
 			"Decompositions for word "+string)
 			.producesAtLeastNDecomps(7)
 			.includesDecomps("{{maliga:maligaq/1n}}{{liuq:liuq/1nv}}{{ti:ji/1vn}}");
@@ -129,8 +122,8 @@ public class MorphologicalAnalyzer_L2RTest {
 	public void test_analyze__Case_niruarut() throws Exception {
 		MorphologicalAnalyzer_L2R wordAnalyzer = new MorphologicalAnalyzer_L2R();
 		String string = "niruarut";
-		List<DecompositionSimple> analyses = wordAnalyzer.analyze(string);
-		new AssertDecompositionList(analyses.toArray(new DecompositionSimple[0]))
+		List<Decomposition> analyses = wordAnalyzer.analyze(string);
+		new AssertDecompositionList(analyses.toArray(new Decomposition[0]))
 			.includesDecomps("{{nirua:niruaq/1v}}{{rut:ut/1vn}}")
 			.producesAtLeastNDecomps(4);
 	}
@@ -140,7 +133,7 @@ public class MorphologicalAnalyzer_L2RTest {
 	public void test_analyze__Case_umiarut() throws Exception {
 		MorphologicalAnalyzer_L2R wordAnalyzer = new MorphologicalAnalyzer_L2R();
 		String string = "umiarut";
-		List<DecompositionSimple> analyses = wordAnalyzer.analyze(string);
+		List<Decomposition> analyses = wordAnalyzer.analyze(string);
 		assertEquals("",1,analyses.size());
 	}
 

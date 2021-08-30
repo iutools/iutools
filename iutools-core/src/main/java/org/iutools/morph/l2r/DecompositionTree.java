@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.iutools.linguisticdata.SurfaceFormInContext;
-import org.iutools.morph.DecompositionSimple;
+import org.iutools.morph.Decomposition;
 
 public class DecompositionTree {
 	
@@ -71,8 +71,8 @@ public class DecompositionTree {
 		return list;
 	}
 
-	public List<DecompositionSimple> toDecomposition() {
-		List<DecompositionSimple> decompositions = new ArrayList<DecompositionSimple>();
+	public List<Decomposition> toDecomposition() {
+		List<Decomposition> decompositions = new ArrayList<Decomposition>();
 		List<String> list = new ArrayList<String>();
 		String str = "{"+root.surfaceForm+":"+root.morphemeId+"}";
 		if (branches.size()==0)
@@ -90,7 +90,7 @@ public class DecompositionTree {
 			}
 		}
 		for (int i=0; i<list.size(); i++) {
-			decompositions.add(new DecompositionSimple(list.get(i)));
+			decompositions.add(new Decomposition(list.get(i)));
 		}
 		
 		return decompositions;

@@ -6,7 +6,7 @@
 // -----------------------------------------------------------------------
 
 // -----------------------------------------------------------------------
-// Document/File:		DecompositionSimple.java
+// Document/File:		Decomposition.java
 //
 // Type/File type:		code Java / Java code
 // 
@@ -45,7 +45,7 @@ import org.iutools.script.Orthography;
 
 import static org.iutools.linguisticdata.Morpheme.MorphFormat;
 
-// DecompositionSimple:
+// Decomposition:
 //    String word
 //    RootPartOfComposition stem:
 //        Base racine:
@@ -134,6 +134,15 @@ public class DecompositionState extends Object implements Comparable<Decompositi
 		return decompStr;
 	}
 
+	public static Decomposition[] toDecompositionArray(DecompositionState[] decStates)
+		throws DecompositionException {
+		Decomposition[] decs = new Decomposition[decStates.length];
+		for (int ii=0; ii < decStates.length; ii++) {
+			decs[ii] = decStates[ii].toDecomposition();
+		}
+		return decs;
+	}
+
 	public RootPartOfComposition getRootMorphpart() {
 		return stem;
 	}
@@ -162,7 +171,7 @@ public class DecompositionState extends Object implements Comparable<Decompositi
 	//	// - Les racines connues en premier
 	//	public int compareTo(Object a) {
 	//		int valeurRetour = 0;
-	//		DecompositionSimple otherDec = (DecompositionSimple) a;
+	//		Decomposition otherDec = (Decomposition) a;
 	//		boolean known = ((Base) stem.getRoot()).known;
 	//		boolean otherDecConnue = ((Base) otherDec.stem.getRoot()).known;
 	//		if ((known && otherDecConnue) || (!known && !otherDecConnue))
@@ -194,14 +203,6 @@ public class DecompositionState extends Object implements Comparable<Decompositi
 	public int compareTo(DecompositionState obj) {
 		int returnValue = 0;
 		DecompositionState otherDec = (DecompositionState) obj;
-//		boolean known = ((Base) stem.getRoot()).known;
-//		boolean otherDecConnue = ((Base) otherDec.stem.getRoot()).known;
-//		if ((known && otherDecConnue) || (!known && !otherDecConnue))
-//			returnValue = 0;
-//		else if (known && !otherDecConnue)
-//			returnValue = -1;
-//		else if (!known && otherDecConnue)
-//			returnValue = 1;
 		if (returnValue == 0) {
 			Integer lengthOfRoot =
 				new Integer(((Base) stem.getRoot()).morpheme.length());
@@ -253,7 +254,7 @@ public class DecompositionState extends Object implements Comparable<Decompositi
 	// a decomposition with -juksaq but will also find a decomposition with
 	// juq+ksaq ; this is to remove the latter.
 	static public DecompositionState[] removeCombinedSuffixes(DecompositionState decs[]) throws LinguisticDataException {
-		Logger logger = Logger.getLogger("DecompositionSimple.removeCombinedSuffixes");
+		Logger logger = Logger.getLogger("Decomposition.removeCombinedSuffixes");
         Object[][] decsAndKeepstatus = new Object[decs.length][2];
         for (int i = 0; i < decs.length; i++) {
         	logger.debug("decs["+i+"] = "+decs[i].toStr2());
@@ -262,14 +263,14 @@ public class DecompositionState extends Object implements Comparable<Decompositi
         }
 
         for (int i = 0; i < decsAndKeepstatus.length; i++) {
-        	// Pendant l'exécution de cette boucle, certaines décompositions 
+        	// Pendant l'exécution de cette boucle, certaines décompositions
         	// plus loin dans la liste et pas encore traitées peuvent avoir été rejetées ;
             // on ne considère que les décompositions qui n'ont pas encore été rejetées.
-            if (((Boolean) decsAndKeepstatus[i][1]).booleanValue()) { 
+            if (((Boolean) decsAndKeepstatus[i][1]).booleanValue()) {
                 DecompositionState dec = (DecompositionState) decsAndKeepstatus[i][0];
                 Vector<AffixPartOfComposition> affixesOfDecompisition = new Vector<AffixPartOfComposition>(Arrays.asList(dec.morphParts));
 //                vParts.add(0,dec.stem); // je ne comprends pas pouquoi j'ai ajouté la racine aux parties
-                
+
                 // Pour chaque affixe combiné, trouver celui qui le précède et
                 // celui qui le suit, et vérifier dans les autres
                 // décompositions retenues si ces deux affixes limites
@@ -366,10 +367,10 @@ public class DecompositionState extends Object implements Comparable<Decompositi
                                             .getMorpheme().id;
                                 if ( (follow==null && followk==null) ||
                                         (follow!=null && followk!=null && followk.equals(follow)) )
-                                	
+
                                     // *** REJETER CETTE DÉCOMPOSITION ***
                                     decsAndKeepstatus[k][1] = new Boolean(false);
-                                
+
                                 cont = false;
                             }
                         } else {
@@ -403,7 +404,7 @@ public class DecompositionState extends Object implements Comparable<Decompositi
                             else
                                 preck = ((PartOfComposition) vPartsk.elementAt(l - 1))
                                         .getMorpheme().id;
-                            if ( (preck == null && prec != null) || 
+                            if ( (preck == null && prec != null) ||
                                     (preck != null && prec == null) ||
                                     (preck != null && prec != null && !preck.equals(prec)))
                                 cont = false;
@@ -524,9 +525,9 @@ public class DecompositionState extends Object implements Comparable<Decompositi
 		return surfaceForms;
 	}
 
-	public DecompositionSimple toSimpleDecomposition() throws DecompositionException {
+	public Decomposition toDecomposition() throws DecompositionException {
 		String decompStr = DecompositionState.formatDecompStr(toString(), MorphFormat.NO_BRACES);
-		DecompositionSimple simple = new DecompositionSimple(decompStr);
+		Decomposition simple = new Decomposition(decompStr);
 		return simple;
 	}
 

@@ -9,46 +9,12 @@ import org.iutools.morph.MorphologicalAnalyzerException;
 import org.iutools.morph.MorphologicalAnalyzerAbstract;
 import org.iutools.morph.expAlain.DecompositionState.Step;
 
-public class MorphologicalAnalyzer_L2R 
-				extends MorphologicalAnalyzerAbstract {
+public class MorphologicalAnalyzer_L2R {
 
 	public MorphologicalAnalyzer_L2R() throws LinguisticDataException {
 		super();
 	}
 
-//	@Override
-//	public DecompositionSimple[] decomposeWord(String word)
-//			throws TimeoutException, MorphologicalAnalyzerException,
-//			LinguisticDataException {
-//		DecompositionSimple finalState = decompose(word);
-//		List<DecompositionSimple> decompsLst = finalState.allDecompositions;
-//		DecompositionSimple[] decomps =
-//			decompsLst.toArray(new DecompositionSimple[decompsLst.size()]);
-//		
-//		return decomps;
-//	}
-
-		
-	@Override
-	public org.iutools.morph.r2l.DecompositionState[] doDecompose(String word, Boolean extendedAnalysis)
-		throws MorphologicalAnalyzerException {
-		if (extendedAnalysis == null) {
-			extendedAnalysis = true;
-		}
-
-		DecompositionState finalState;
-		try {
-			finalState = decompose(word);
-		} catch (MorphologicalAnalyzerException e) {
-			throw new MorphologicalAnalyzerException(e);
-		}
-		List<org.iutools.morph.r2l.DecompositionState> decompsLst = finalState.allDecompositions;
-		org.iutools.morph.r2l.DecompositionState[] decomps =
-			decompsLst.toArray(new org.iutools.morph.r2l.DecompositionState[decompsLst.size()]);
-		
-		return decomps;
-	}
-	
 	DecompositionState decompose(String word)
 			throws MorphologicalAnalyzerException {
 
@@ -261,18 +227,4 @@ public class MorphologicalAnalyzer_L2R
 		
 		return nextChoices;
 	}
-
-//	@Override
-//	public DecompositionSimple[] decomposeWord(String word)
-//			throws TimeoutException, MorphologicalAnalyzerException {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-
-//	@Override
-//	public DecompositionSimple[] decomposeWord(String word, Boolean extendedAnalysis)
-//			throws TimeoutException, MorphologicalAnalyzerException {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
 }

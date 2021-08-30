@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 
 import ca.nrc.ui.commandline.CommandLineException;
 import org.iutools.bin.Decompose;
-import org.iutools.morph.DecompositionSimple;
+import org.iutools.morph.Decomposition;
 import org.iutools.morph.r2l.MorphologicalAnalyzer__L2R;
 import org.iutools.script.Syllabics;
 import ca.nrc.ui.commandline.UserIO.Verbosity;
@@ -35,7 +35,7 @@ public class CmdGist extends ConsoleCommand {
 		String[] words = null;
 		String[] lines = null;
 		String latin = null;
-		DecompositionSimple[] decs = null;
+		Decomposition[] decs = null;
 		
 		MorphologicalAnalyzer__L2R morphAnalyzer = new MorphologicalAnalyzer__L2R();
 
@@ -89,7 +89,7 @@ public class CmdGist extends ConsoleCommand {
 						latin = word;
 					decs = morphAnalyzer.decomposeWord(latin);
 					if (decs != null && decs.length > 0) {
-						DecompositionSimple dec = decs[0];
+						Decomposition dec = decs[0];
 						String[] meaningsOfParts = Decompose.getMeaningsInArrayOfStrings(dec.toString(),"en",true,false);
 						ArrayList<String> wordGistParts = new ArrayList<String>();
 						for (int i=0; i<meaningsOfParts.length; i++) {

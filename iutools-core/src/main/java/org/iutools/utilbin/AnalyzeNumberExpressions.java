@@ -129,7 +129,7 @@ public class AnalyzeNumberExpressions {
 		for (int i=0; i<makeUpWords.length; i++) {
 			String makeUpWord = makeUpWords[i];
 			String term = makeUpWord+ending;
-			DecompositionSimple[] decs = null;
+			Decomposition[] decs = null;
 			try {
 				decs = morphAnalyzer.decomposeWord(term);
 			} catch (TimeoutException | MorphologicalAnalyzerException e) {
