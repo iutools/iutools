@@ -1,4 +1,4 @@
-package org.iutools.morph.expAlain;
+package org.iutools.morph.l2rAlain;
 
 import org.junit.Test;
 
@@ -9,7 +9,7 @@ public class MorphoPhonoRulesTest {
 	////////////////////////////
 	
 	@Test
-	public void test__MorphoPhonoRules__Synopsis() {
+	public void test__MorphoPhonoRules__Synopsis() throws Exception {
 		//
 		// This class defines the morpho-phonolical rules that transform the 
 		// characters at the edges of two consecutive morphemes.

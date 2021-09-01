@@ -242,6 +242,9 @@ public abstract class MorphologicalAnalyzer implements AutoCloseable {
 		} catch (Exception e) {
 			tLogger.trace("Caught Exception e.getClass()="+e.getClass()+", e.getCause()="+e.getCause()+", e="+Debug.printCallStack(e));
 			Exception cause = (Exception) e.getCause();
+			if (cause == null) {
+				cause = e;
+			}
 			if (cause instanceof TimeoutException) {
 				throw (TimeoutException) cause;
 			} else {

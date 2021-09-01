@@ -1,10 +1,14 @@
-package org.iutools.morph.expAlain;
+package org.iutools.morph.l2rAlain;
+
+import ca.nrc.json.PrettyPrinter;
+import org.apache.log4j.Logger;
+import org.iutools.morph.Decomposition;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class DecompositionState {
-	
+
 	public static enum Step {
 		EXTEND_CHOICE_TREE, BACKTRACK, MOVE_DEEPEST_CURSOR, DONE, PROCESS_PARTIAL_DECOMP}
 	
@@ -19,7 +23,7 @@ public class DecompositionState {
 	/** Position of the cursor at each level of the choice tree */
 	List<Integer> cursors = new ArrayList<Integer>();
 	
-	List<org.iutools.morph.r2l.DecompositionState> allDecompositions = new ArrayList<org.iutools.morph.r2l.DecompositionState>();
+	List<Decomposition> _allDecompositions = new ArrayList<Decomposition>();
 	
 	List<List<WrittenMorpheme>> _allDecomposition_asWrittenMorphemes =
 		new ArrayList<List<WrittenMorpheme>>();
@@ -36,13 +40,29 @@ public class DecompositionState {
 		return this;
 	}
 
-	public List<org.iutools.morph.r2l.DecompositionState> getAllDecompositions() {
-		return null;
+	public List<Decomposition> allDecompositions() {
+		if (_allDecompositions == null) {
+			_allDecompositions = new ArrayList<Decomposition>();
+			for (List<WrittenMorpheme> aDecompMorphemes : _allDecomposition_asWrittenMorphemes) {
+				String decompExp = "";
+				for (int ii=0; ii < aDecompMorphemes.size(); ii++) {
+					decompExp += aDecompMorphemes.get(ii).toString();
+				}
+				Decomposition aDecomp = new Decomposition(decompExp);
+				_allDecompositions.add(aDecomp);
+			}
+		}
+		return _allDecompositions;
 	}
 
 	public void onNewCompleteDecomposition() {
+		Logger tLogger = Logger.getLogger("org.iutools.morph.l2rAlain.DecompositionState.onNewCompleteDecomposition");
 		List<WrittenMorpheme> decomp = currentDecomposition();
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("Got new decomp:\n"+ PrettyPrinter.print(decomp));
+		}
 		_allDecomposition_asWrittenMorphemes.add(decomp);
+		_allDecompositions = null;
 	}
 
 	private List<WrittenMorpheme> currentDecomposition() {
@@ -219,5 +239,9 @@ public class DecompositionState {
 
 	public List<List<WrittenMorpheme>> allDecompsAsWrittenMorphemes() {
 		return _allDecomposition_asWrittenMorphemes;
+	}
+
+	public int totalDecompositions() {
+		return _allDecomposition_asWrittenMorphemes.size();
 	}
 }

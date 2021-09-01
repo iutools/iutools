@@ -1,7 +1,10 @@
-package org.iutools.morph.expAlain;
+package org.iutools.morph.l2rAlain;
 
 import java.util.List;
 
+import ca.nrc.string.StringUtils;
+import org.iutools.linguisticdata.LinguisticData;
+import org.iutools.linguisticdata.Morpheme;
 import org.junit.Test;
 
 public class MorphemeWrittenFormsTest {
@@ -34,13 +37,14 @@ public class MorphemeWrittenFormsTest {
 	public void test__morphemesThatCanFollow__PrevMorphemeIsHead__ReturnsOnlyRoots() 
 			throws Exception {
 		WrittenMorpheme prevMorpheme = WrittenMorpheme.head;
-		String remainingChars  = "Sinuktitut";
+		String remainingChars  = "inuktitut";
 		List<WrittenMorpheme> gotMorphemes = 
 			MorphemeWrittenForms.getInstance()
 			.morphemesThatCanFollow(prevMorpheme, remainingChars);
 		
 		WrittenMorphemeCollectionAsserter.assertThat(gotMorphemes, "")
 			.containsMorpheme("inuk/1n", "inuk")
+			.containsMorpheme("inuk/1n", "inu")
 			;
 	}
 
@@ -49,13 +53,14 @@ public class MorphemeWrittenFormsTest {
 			throws Exception {
 		WrittenMorpheme prevMorpheme = new WrittenMorpheme("inuk/1n", "inuk");
 		String remainingChars  = "titut";
-		List<WrittenMorpheme> gotMorphemes = 
+		List<String> forms = MorphemeWrittenForms.getInstance().surfaceForms();
+		String formsConcat = StringUtils.join(forms.iterator(), "\n");
+		List<WrittenMorpheme> gotMorphemes =
 			MorphemeWrittenForms.getInstance()
 			.morphemesThatCanFollow(prevMorpheme, remainingChars);
 		
 		WrittenMorphemeCollectionAsserter.assertThat(gotMorphemes, "")
-			.containsMorpheme("titut/nn", "titut")
+			.containsMorpheme("titut/tn-sim-p", "titut")
 			;
 	}
-
 }

@@ -1,4 +1,4 @@
-package org.iutools.morph.expAlain;
+package org.iutools.morph.l2rAlain;
 
 import org.junit.Test;
 
@@ -44,10 +44,10 @@ public class WrittenMorphemeTest {
 		AssertString.assertStringEquals("Writen form not as expected", 
 				"inu", gotForm.writtenForm);
 		AssertString.assertStringEquals("Morpheme type not as expected", 
-				"N", gotForm.type());
+				"N", gotForm.resultsIn);
 		AssertString.assertStringEquals(
 				"Type that morpheme attaches to was not as expected", 
-				"S", gotForm.atachesTo());
+				"%", gotForm.attachesTo);
 	}
 	
 	@Test
@@ -58,11 +58,9 @@ public class WrittenMorphemeTest {
 		AssertString.assertStringEquals("Writen form not as expected", 
 				"titu", gotForm.writtenForm);
 		AssertString.assertStringEquals("Morpheme type not as expected", 
-				"N", gotForm.type());
+				"N", gotForm.resultsIn);
 		AssertString.assertStringEquals(
 				"Type that morpheme attaches to was not as expected", 
-				"N", gotForm.atachesTo());
+				"N", gotForm.attachesTo);
 	}
-
-
 }

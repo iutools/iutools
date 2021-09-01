@@ -1,4 +1,4 @@
-package org.iutools.morph.expAlain;
+package org.iutools.morph.l2rAlain;
 
 import java.util.Collection;
 import java.util.List;
@@ -22,7 +22,7 @@ public class WrittenMorphemeCollectionAsserter extends Asserter {
 		super(_gotMorphemes, mess, gotObjectClass);
 	}
 
-	public void containsMorpheme(String id, String surfForm) {
+	public WrittenMorphemeCollectionAsserter containsMorpheme(String id, String surfForm) throws Exception {
 		WrittenMorpheme expMorpheme = new WrittenMorpheme(id, surfForm);
 		boolean found = false;
 		String errMess = "Colection did not contain the expected morpheme: "
@@ -36,6 +36,8 @@ public class WrittenMorphemeCollectionAsserter extends Asserter {
 		}
 		
 		Assert.assertTrue(errMess, found);
+
+		return this;
 	}
 
 	private Collection<WrittenMorpheme> gotMorphemes() {

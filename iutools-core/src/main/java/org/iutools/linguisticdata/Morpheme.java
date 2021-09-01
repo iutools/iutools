@@ -29,7 +29,10 @@ package org.iutools.linguisticdata;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 
 import org.iutools.morph.r2l.AffixPartOfComposition;
@@ -59,6 +62,9 @@ public abstract class Morpheme implements Cloneable {
 
     Conditions preCondition = null;
     Conditions nextCondition = null;
+
+    private static final Pattern pattMorphID =
+	 	Pattern.compile("^([^/]+)/\\d*(.*)$");
 
     private HashMap<String,Object> attributes = null;
 
@@ -323,10 +329,59 @@ public abstract class Morpheme implements Cloneable {
         }
 	}
 
-	public static boolean hasCanonicalForm(String morpheme, String canonicalForm) {
-		boolean answer = 
-			morpheme.matches("^\\{?"+canonicalForm+"/.*$");
+	public static Pair<String,String> splitMorphID(String morphID) throws MorphemeException {
+		String canonicalForm = "";
+		String specs = "";
+		if (morphID != null && !morphID.isEmpty()) {
+			String noBrackets = morphID.replaceAll("[\\{\\}]", "");
+			Matcher matcher = pattMorphID.matcher(noBrackets);
+			if (!matcher.matches()) {
+				throw new MorphemeException("Invalid morpheme ID '" + morphID + "'");
+			} else {
+				canonicalForm = matcher.group(1);
+				specs = matcher.group(2);
+
+			}
+		}
+		return Pair.of(canonicalForm, specs);
+	}
+
+	public static boolean hasCanonicalForm(String morpID, String canonicalForm) throws MorphemeException {
+		boolean answer = (canonicalForm.equals(canonicalForm(morpID)));
 		return answer;
+	}
+
+	public static String canonicalForm(String morphID) throws MorphemeException {
+		Pair<String,String> split = splitMorphID(morphID);
+		return split.getLeft();
+	}
+
+	public static Pair<String,String> typeConstraints(String morphID) throws MorphemeException {
+		String attachesTo = "X";
+		String resultsIn = "%";
+		if (morphID != null) {
+			String specs = morphemeSpecs(morphID);
+
+			if (specs.length() == 1) {
+				attachesTo = "%";
+				resultsIn = specs;
+			} else {
+				if (specs.startsWith("t")) {
+					// X means any type
+					attachesTo = "X";
+					resultsIn = "%";
+				} else {
+					attachesTo = specs.substring(0, 1);
+					resultsIn = specs.substring(1, 2);
+				}
+			}
+		}
+
+		return Pair.of(attachesTo, resultsIn);
+	}
+
+	private static String morphemeSpecs(String morphID) throws MorphemeException {
+		return splitMorphID(morphID).getRight();
 	}
 
 	public static String removeIDBraces(String morphId) {

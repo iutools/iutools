@@ -1,4 +1,4 @@
-package org.iutools.morph.expAlain;
+package org.iutools.morph.l2rAlain;
 
 /**
  * This class defines the morpho-phonolical rules that transform the characters 

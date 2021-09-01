@@ -74,7 +74,7 @@ public class MorphologicalAnalyzer_L2R extends MorphologicalAnalyzer {
 					if affix is acceptable
 						continue with next affix
 		 */
-		Logger logger = Logger.getLogger("MorphologicalAnalyzer_L2R.findAllPossibleSequencesOfMorphemes");
+		Logger logger = Logger.getLogger("MorphologicalAnalyzer_L2RAlain.findAllPossibleSequencesOfMorphemes");
 
 		List<DecompositionTree> decompositionTrees = decomposeWord_Tree(word);
 		List<Decomposition> prunedDecompositions = combineMorphemes(decompositionTrees);
@@ -83,7 +83,7 @@ public class MorphologicalAnalyzer_L2R extends MorphologicalAnalyzer {
 	}
 
 	public List<DecompositionTree> decomposeWord_Tree(String word) throws MorphologicalAnalyzerException, LinguisticDataException {
-		Logger tLogger = Logger.getLogger("org.iutools.morph.l2r.MorphologicalAnalyzer_L2R.decomposeWord");
+		Logger tLogger = Logger.getLogger("org.iutools.morph.l2r.MorphologicalAnalyzer_L2RAlain.decomposeWord");
 		List<DecompositionTree> decompositionTrees = new ArrayList<DecompositionTree>();
 		StateGraphForward.State initialStateOfAnalysis = StateGraphForward.initialState;
 		List<String> possibleRoots = findRoot(word);
@@ -124,7 +124,7 @@ public class MorphologicalAnalyzer_L2R extends MorphologicalAnalyzer {
 	 * @return A List of Decomposition objects
 	 */
 	List<Decomposition> combineMorphemes(List<DecompositionTree> decompositionTrees) {
-		Logger logger = Logger.getLogger("MorphologicalAnalyzer_L2R.combineMorphemes");
+		Logger logger = Logger.getLogger("MorphologicalAnalyzer_L2RAlain.combineMorphemes");
 		HashMap<String,String[]> combinedMorphemesInDecompositions = new HashMap<String,String[]>();
 		List<Decomposition> allDecomps = new ArrayList<Decomposition>();
 		for (int id=0; id<decompositionTrees.size(); id++) {
@@ -188,7 +188,7 @@ public class MorphologicalAnalyzer_L2R extends MorphologicalAnalyzer {
 	}
 
 	private String makeRegexp(String[] combinedElements) {
-		Logger logger = Logger.getLogger("MorphologicalAnalyzer_L2R.makeRegexp");
+		Logger logger = Logger.getLogger("MorphologicalAnalyzer_L2RAlain.makeRegexp");
 		String[] regexps = new String[combinedElements.length];
 		for (int i=0; i<combinedElements.length; i++) {
 			String element = combinedElements[i];
@@ -203,7 +203,7 @@ public class MorphologicalAnalyzer_L2R extends MorphologicalAnalyzer {
 	class DecompositionComparator  implements Comparator<Decomposition> {
 	    @Override
 	    public int compare(Decomposition a, Decomposition b) {
-	    	Logger logger = Logger.getLogger("MorphologicalAnalyzer_L2R.DecompositionComparator.compare");
+	    	Logger logger = Logger.getLogger("MorphologicalAnalyzer_L2RAlain.DecompositionComparator.compare");
 	    	logger.debug(a.decompSpecs +" VS "+b.decompSpecs);
 	    	logger.debug(a.components().length+" VS "+b.components().length);
 	    	if (a.components().length < b.components().length)
@@ -236,7 +236,7 @@ public class MorphologicalAnalyzer_L2R extends MorphologicalAnalyzer {
 			String remainingPartOfWord,
 			SurfaceFormInContext precedingMorpheme,
 			StateGraphForward.State stateOfAnalysisAfterPrecedingMorpheme) throws LinguisticDataException, MorphologicalAnalyzerException {
-		Logger tLogger = Logger.getLogger("org.iutools.morph.l2r.MorphologicalAnalyzer_L2R.analyzeRemainingForAffixes");
+		Logger tLogger = Logger.getLogger("org.iutools.morph.l2r.MorphologicalAnalyzer_L2RAlain.analyzeRemainingForAffixes");
 		tLogger.trace("precedingMorpheme: "+precedingMorpheme.morphemeId);
 		tLogger.trace("remainingPartOfWord: "+remainingPartOfWord);
 		Gson gson = new Gson();
@@ -277,7 +277,7 @@ public class MorphologicalAnalyzer_L2R extends MorphologicalAnalyzer {
 			String remainingPartOfWord,
 			SurfaceFormInContext precedingMorpheme,
 			StateGraphForward.State stateOfAnalysisAfterPrecedingMorpheme) throws LinguisticDataException, MorphologicalAnalyzerException {
-		Logger tLogger = Logger.getLogger("org.iutools.morph.l2r.MorphologicalAnalyzer_L2R.processPossibleAffix");
+		Logger tLogger = Logger.getLogger("org.iutools.morph.l2r.MorphologicalAnalyzer_L2RAlain.processPossibleAffix");
 		tLogger.trace("\n-------\naffix: "+affixComponent);
 		tLogger.trace("remainingPartOfWord= '"+remainingPartOfWord+"'");
 
@@ -344,8 +344,8 @@ public class MorphologicalAnalyzer_L2R extends MorphologicalAnalyzer {
 	 */
 
 	@SuppressWarnings("unchecked")
-	private List<String> findMorpheme(String[] chars, Trie_InMemory trie) throws MorphologicalAnalyzerException {
-		Logger logger = Logger.getLogger("MorphologicalAnalyzer_L2R.findMorpheme");
+	public static List<String> findMorpheme(String[] chars, Trie_InMemory trie) throws MorphologicalAnalyzerException {
+		Logger logger = Logger.getLogger("MorphologicalAnalyzer_L2RAlain.findMorpheme");
 		List<Pair<String,String>> pairsOfRoots = new ArrayList<Pair<String,String>>();
 		List<String> morphemeSurfaceFormsInContextInJsonFormat = new ArrayList<String>();
 		ArrayList<String> currentKey = new ArrayList<String>();

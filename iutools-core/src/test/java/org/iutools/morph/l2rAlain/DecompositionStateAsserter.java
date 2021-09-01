@@ -1,4 +1,4 @@
-package org.iutools.morph.expAlain;
+package org.iutools.morph.l2rAlain;
 
 import java.util.List;
 

@@ -1,9 +1,7 @@
 package org.iutools.morph;
 
-import ca.nrc.testing.AssertNumber;
-import ca.nrc.testing.AssertObject;
-import ca.nrc.testing.AssertString;
-import ca.nrc.testing.Asserter;
+import ca.nrc.string.StringUtils;
+import ca.nrc.testing.*;
 import org.junit.jupiter.api.Assertions;
 
 public class AssertDecompositionList extends Asserter<Decomposition[]> {
@@ -17,6 +15,17 @@ public class AssertDecompositionList extends Asserter<Decomposition[]> {
 
 	public Decomposition[] decompositions() {
 		return (Decomposition[])gotObject;
+	}
+
+	public String decompositionStrings() {
+		String decStrings = "";
+		for (Decomposition aDecomp: decompositions()) {
+			if (!decStrings.isEmpty()) {
+				decStrings += "\n";
+			}
+			decStrings += aDecomp.toString();
+		}
+		return decStrings;
 	}
 
 	public AssertDecompositionList includesDecomps(String... expDecomps) {
@@ -38,26 +47,31 @@ public class AssertDecompositionList extends Asserter<Decomposition[]> {
 		return this;
 	}
 
-	public AssertDecompositionList decompIs(String... morphStrings)
+	public AssertDecompositionList includesAtLeastOneOfDecomps(
+		String... expDecompStrings)
 		throws Exception {
-		return decompIs((Integer)null, morphStrings);
-	}
 
-	public AssertDecompositionList decompIs(Integer nth, String... expMorphemes)
-		throws Exception {
-		if (nth == null) {
-			nth = 0;
+		String gotDecompStrings = decompositionStrings();
+		if (expDecompStrings.length == 0) {
+			Assertions.assertTrue(
+				gotDecompStrings.isEmpty(),
+				baseMessage+"Decompositions should have been empty, but were:\n"+
+				gotDecompStrings+"\n"
+			);
+		} else {
+			boolean found = false;
+			for (String anExpDecomp : expDecompStrings) {
+				if (gotDecompStrings.indexOf(anExpDecomp) >= 0) {
+					found = true;
+					break;
+				}
+			}
+			Assertions.assertTrue(
+			found,
+			baseMessage + "\nDecompositions did not include any of the expected possibilities.\n" +
+			"Expected one of :\n   " + String.join("\n   ", expDecompStrings) + "\n" +
+			"Got             :\n   " + gotDecompStrings + "\n");
 		}
-
-		String[] gotMorphemes = new String[0];
-		if (topDecomposition() != null) {
-			gotMorphemes = topDecomposition().components();
-		}
-
-		AssertObject.assertDeepEquals(
-			baseMessage+"\nDecompositionState #"+nth+" was not as expected",
-			expMorphemes, gotMorphemes
-		);
 
 		return this;
 	}
