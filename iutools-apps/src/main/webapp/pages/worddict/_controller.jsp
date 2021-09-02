@@ -18,7 +18,7 @@
         // Floating div where we display the dictionary entry of a word
         // (after the user clicks on that word)
         //
-        divWordEntry: "div-gist",
+        divWordEntry: "div-wordentry",
         divWordEntry_contents: "div-wordentry-contents",
         divWordEntry_iconizer: "div-wordentry-iconizer",
         divWordEntry_iconized: "div-wordentry-iconized",

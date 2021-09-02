@@ -16,13 +16,13 @@
     		divError: "div-error",
 
     		// Area where to put the clickable gist of the whole text
-    		divGistTextResults: "div-gist-text-results",
+    		divGistTextResults: "div-wordentry-text-results",
 
        		// Floating div where we display the "gist" of a word
        		// (after the user clicks on the example word)
        		//
        		divWordEntry_contents: "div-wordentry-contents",
-            divWordEntry: "div-gist",
+            divWordEntry: "div-wordentry",
        		divWordEntry_iconizer: "div-wordentry-iconizer",
        		divWordEntry_iconized: "div-wordentry-iconized",
        		divWordEntry_message: "div-wordentry-message",

@@ -4,7 +4,7 @@ var occControllerConfig = {
 		inpExampleWord: "example-word",
 		divResults:  "div-results",
 		divMessage: "div-message",
-		divGist: "div-gist",
+		divGist: "div-wordentry",
 		divError: "div-error",
 		divGist_iconizer: "div-wordentry-iconizer",
 		divGist_iconized: "div-wordentry-iconized",
@@ -128,7 +128,7 @@ QUnit.module("OccurenceController Tests", {
         	"<div id=\""+occControllerConfig.divMessage+"\" class=\"div-message\"></div>\n"+
         	"<div id=\""+occControllerConfig.divError+"\" class=\"div-error\"></div>\n"+
         	"<div id=\""+occControllerConfig.divResults+"\" class=\"div-results\"></div>\n"+
-        	"<div id=\""+occControllerConfig.divGist+"\" class=\"div-gist\">"+
+        	"<div id=\""+occControllerConfig.divGist+"\" class=\"div-wordentry\">"+
         		"<div id=\""+occControllerConfig.divGist_message+"\"></div><div id=\""+occControllerConfig.divGist_word+"\"></div><div id=\""+occControllerConfig.divGist_iconizer+"\" title=\"Minimize\"><img src=\"imgs/minimize.png\" ></div><div id=\"contents\"></div></div>\n"+
 
         	"<div id=\""+occControllerConfig.divGist_iconized+"\" title=\"Maximize\"><img src=\"imgs/maximize.png\" height=24 ></div>"
@@ -207,7 +207,7 @@ QUnit.test("OccurenceController.Acceptance -- HappyPath", function( assert )
 		
 		// Check that the details about that word are correctly displayed
 		new RunWhen().conditionMet(occControllerNotBusy, function () {
-			assertElementIsVisible(assert,"div-gist",caseDescr+" (word-example-nanusiuqti)");
+			assertElementIsVisible(assert,"div-wordentry",caseDescr+" (word-example-nanusiuqti)");
 			assertWordInExampleEquals(assert,"Example word: nanusiuqti", caseDescr);
 			assertTableContentsEquals(assert,"tbl-gist","MorphemeMeaningnanusealsiuqto hunttione who...", caseDescr);
 			var expectedAlignmentsText = "InuktitutEnglish"+

@@ -280,7 +280,7 @@ main ul ::marker {
   margin: 10px 0 30px 0 !important;
 }
 
-#div-gist {
+#div-wordentry {
   right: 5vw;
   max-width: 90vw;
   max-height: calc(100vh - 60px);
@@ -309,14 +309,14 @@ main ul ::marker {
   line-height: 80px;
 }
 
-#div-gist #div-wordentry-contents {
+#div-wordentry #div-wordentry-contents {
   height: 510px;
   max-height: calc(100vh - 140px);
   margin-top: 0;
   padding: 5px;
 }
 
-#div-gist:after {
+#div-wordentry:after {
 	width: 100%;
 	height: 9px;
 	position: absolute;
@@ -330,24 +330,24 @@ main ul ::marker {
 	border: none;
 }
 
-#div-gist #div-wordentry-contents > * {
+#div-wordentry #div-wordentry-contents > * {
 	padding-left: 5px;
 }
 
-#div-gist #div-wordentry-contents > table {
+#div-wordentry #div-wordentry-contents > table {
 	padding-left: 0;
 	margin-bottom: 20px;
 }
 
-#div-gist #div-wordentry-contents > h3 > table {
+#div-wordentry #div-wordentry-contents > h3 > table {
 	margin-left: -5px;
 }
 
-#div-gist #div-wordentry-contents h3 {
+#div-wordentry #div-wordentry-contents h3 {
 	font-weight: 600;
 }
 
-#div-gist #div-wordentry-contents h4 {
+#div-wordentry #div-wordentry-contents h4 {
 	font-weight: 400;
 }
 
@@ -371,7 +371,7 @@ table.gist td, table.alignments td {
   font-weight: 400;
 }
 
-table.gist tr:nth-child(odd) td, table.alignments tr:nth-child(odd) td, #div-gist-text-results table.alignments tr:nth-child(4n+4) td {
+table.gist tr:nth-child(odd) td, table.alignments tr:nth-child(odd) td, #div-wordentry-text-results table.alignments tr:nth-child(4n+4) td {
   background: #e4f6ff;
 }
 
@@ -383,7 +383,7 @@ table.gist tr td:first-child {
 	font-weight: 500;
 }
 
-#div-gist #div-wordentry-iconizer, div#div-wordentry-iconized {
+#div-wordentry #div-wordentry-iconizer, div#div-wordentry-iconized {
   width: 20px;
   height: 20px;
 	top: 8px;
@@ -392,7 +392,7 @@ table.gist tr td:first-child {
 	z-index: 20;
 }
 
-#div-gist #div-wordentry-iconizer img, div#div-wordentry-iconized img {
+#div-wordentry #div-wordentry-iconizer img, div#div-wordentry-iconized img {
   margin-left: -2px;
   margin-top: -2px;
   opacity: .7;
@@ -512,7 +512,7 @@ div#div-wordentry-iconized {
 
 @media screen and (min-width: 860px) { 
 
-  #div-gist {
+  #div-wordentry {
     right: calc(50% - 400px);
   }
   
@@ -520,7 +520,7 @@ div#div-wordentry-iconized {
 
 @media screen and (min-width: 1260px) {
 
-  #div-gist {
+  #div-wordentry {
     right: calc(50% - 600px);
   }
   

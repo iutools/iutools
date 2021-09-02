@@ -13,10 +13,10 @@
     <p/>
     <div id="div-error" class="div-error"></div>
     <div id="div-results" class="div-results"></div>
-    <div id="div-gist-text-results" class="div-gist-text-results"></div>
+    <div id="div-wordentry-text-results" class="div-wordentry-text-results"></div>
 
     <!-- Floating div where we put the dictionary entry for an example word -->
-    <div id="div-gist" class="div-gist">
+    <div id="div-wordentry" class="div-wordentry">
     	<div id="div-wordentry-message"></div>
     	<div id="div-wordentry-word"></div>
     	<div id="div-wordentry-iconizer" title="Minimize"><img src="imgs/minimize.png" ></div>

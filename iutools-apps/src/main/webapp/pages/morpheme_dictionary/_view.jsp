@@ -26,7 +26,7 @@
     <div id="div-results" class="div-results"></div>
 
     <!-- Floating div where we put the gist of the example word -->
-    <div id="div-gist" class="div-gist">
+    <div id="div-wordentry" class="div-wordentry">
     	<div id="div-wordentry-message"></div>
     	<div id="div-wordentry-word"></div>
     	<div id="div-wordentry-iconizer" title="Minimize"><img src="imgs/minimize.png" ></div>

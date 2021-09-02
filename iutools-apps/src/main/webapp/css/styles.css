@@ -151,7 +151,7 @@ span#plural {
 	color:red;
 	text-decoration:underline;
 }
-#div-gist {
+#div-wordentry {
 	position:fixed;
 	top:40px;
 	width:600px;
@@ -163,7 +163,7 @@ span#plural {
 	background-color:#ccccff;
 	padding:5px;
 }
-#div-gist #div-wordentry-iconizer {
+#div-wordentry #div-wordentry-iconizer {
 	background-color:white;
 	position:absolute;
 	top:0;
@@ -171,17 +171,17 @@ span#plural {
 	cursor:pointer;
 	vertical-align:middle;
 }
-#div-gist #div-wordentry-iconizer img {
+#div-wordentry #div-wordentry-iconizer img {
 	vertical-align:middle;
 }
-#div-gist #div-wordentry-contents {
+#div-wordentry #div-wordentry-contents {
 	overflow-y: scroll;
 	height:577px;
 	margin-top:5px;
 }
-#div-gist #div-wordentry-word {
+#div-wordentry #div-wordentry-word {
 }
-#div-gist #div-wordentry-message {
+#div-wordentry #div-wordentry-message {
 	display:none;
 }
 div#div-wordentry-iconized {
@@ -285,7 +285,7 @@ div#gist-alignments span.highlighted { font-weight:bold; color:red; }
 
 /* GISTTEXT */
 
-#div-gist {
+#div-wordentry {
 	position:fixed;
 	top:40px;
 	width:600px;
@@ -297,8 +297,8 @@ div#gist-alignments span.highlighted { font-weight:bold; color:red; }
 	background-color:#ccccff;
 	padding:5px;
 }
-#div-gist-holder { font-weight:bold; color:white; background-color:green; padding-left:6px; }
-#div-gist #div-wordentry-iconizer {
+#div-wordentry-holder { font-weight:bold; color:white; background-color:green; padding-left:6px; }
+#div-wordentry #div-wordentry-iconizer {
 	background-color:white;
 	position:absolute;
 	top:0;
@@ -306,10 +306,10 @@ div#gist-alignments span.highlighted { font-weight:bold; color:red; }
 	cursor:pointer;
 	vertical-align:middle;
 }
-#div-gist #div-wordentry-iconizer img {
+#div-wordentry #div-wordentry-iconizer img {
 	vertical-align:middle;
 }
-#div-gist #div-wordentry-contents {
+#div-wordentry #div-wordentry-contents {
 	overflow-y: scroll;
 	height:577px;
 	margin-top:5px;

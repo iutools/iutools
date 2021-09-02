@@ -32,7 +32,7 @@
     		// (after the user clicks on the example word)
     		//
             divWordEntry_contents: "div-wordentry-contents",
-            divWordEntry: "div-gist",
+            divWordEntry: "div-wordentry",
        		divWordEntry_iconizer: "div-wordentry-iconizer",
        		divWordEntry_iconized: "div-wordentry-iconized",
        		divWordEntry_message: "div-wordentry-message",

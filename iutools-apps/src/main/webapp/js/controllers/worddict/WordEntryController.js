@@ -10,7 +10,7 @@ class WordEntryController extends IUToolsController {
         this.hideIconisationControls();
 
         // this.elementForProp("divWordEntry").draggable();
-        $("#div-gist").draggable()
+        $("#div-wordentry").draggable()
         tracer.trace("upon exit, this="+JSON.stringify(this));
     }
 
