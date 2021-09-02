@@ -8,6 +8,9 @@ class WordEntryController extends IUToolsController {
         tracer.trace("wdConfig="+JSON.stringify(wdConfig));
         super(wdConfig);
         this.hideIconisationControls();
+
+        // this.elementForProp("divWordEntry").draggable();
+        $("#div-gist").draggable()
         tracer.trace("upon exit, this="+JSON.stringify(this));
     }
 
