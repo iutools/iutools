@@ -174,7 +174,7 @@ span#plural {
 #div-gist #div-gist-iconizer img {
 	vertical-align:middle;
 }
-#div-gist #div-gist-contents {
+#div-gist #div-wordentry-contents {
 	overflow-y: scroll;
 	height:577px;
 	margin-top:5px;
@@ -309,7 +309,7 @@ div#gist-alignments span.highlighted { font-weight:bold; color:red; }
 #div-gist #div-gist-iconizer img {
 	vertical-align:middle;
 }
-#div-gist #div-gist-contents {
+#div-gist #div-wordentry-contents {
 	overflow-y: scroll;
 	height:577px;
 	margin-top:5px;

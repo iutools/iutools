@@ -305,7 +305,7 @@ main ul ::marker {
   line-height: 80px;
 }
 
-#div-gist #div-gist-contents {
+#div-gist #div-wordentry-contents {
   height: 510px;
   max-height: calc(100vh - 140px);
   margin-top: 0;
@@ -326,24 +326,24 @@ main ul ::marker {
 	border: none;
 }
 
-#div-gist #div-gist-contents > * {
+#div-gist #div-wordentry-contents > * {
 	padding-left: 5px;
 }
 
-#div-gist #div-gist-contents > table {
+#div-gist #div-wordentry-contents > table {
 	padding-left: 0;
 	margin-bottom: 20px;
 }
 
-#div-gist #div-gist-contents > h3 > table {
+#div-gist #div-wordentry-contents > h3 > table {
 	margin-left: -5px;
 }
 
-#div-gist #div-gist-contents h3 {
+#div-gist #div-wordentry-contents h3 {
 	font-weight: 600;
 }
 
-#div-gist #div-gist-contents h4 {
+#div-gist #div-wordentry-contents h4 {
 	font-weight: 400;
 }
 
