@@ -2,12 +2,10 @@ package org.iutools.webservice.worddict;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.webservice.Endpoint;
-import org.iutools.webservice.EndpointResult;
 import org.iutools.webservice.ServiceException;
-import org.iutools.webservice.tokenize.TokenizeInputs;
-import org.iutools.worddict.IUWordDict;
-import org.iutools.worddict.IUWordDictEntry;
-import org.iutools.worddict.IUWordDictException;
+import org.iutools.worddict.MultilingualDict;
+import org.iutools.worddict.MultilingualDictEntry;
+import org.iutools.worddict.MultilingualDictException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -24,10 +22,11 @@ public class WordDictEndpoint extends Endpoint<WordDictInputs,WordDictResult> {
 	public WordDictResult execute(WordDictInputs inputs) throws ServiceException {
 		Long totalWords = null;
 		List<String> topWords = null;
-		IUWordDictEntry firstWordEntry = null;
+		MultilingualDictEntry firstWordEntry = null;
 		try {
-			IUWordDict dict = IUWordDict.getInstance();
-			Pair<Iterator<String>, Long> searchResults = dict.search(inputs.word);
+			MultilingualDict dict = MultilingualDict.getInstance();
+			Pair<Iterator<String>, Long> searchResults =
+				dict.search(inputs.word, inputs.wordIsEnglish);
 			totalWords = searchResults.getRight();
 			Iterator<String> wordsIter = searchResults.getLeft();
 			topWords = new ArrayList<String>();
@@ -37,7 +36,7 @@ public class WordDictEndpoint extends Endpoint<WordDictInputs,WordDictResult> {
 			if (!topWords.isEmpty()) {
 				firstWordEntry = dict.entry4word(topWords.get(0));
 			}
-		} catch (IUWordDictException e) {
+		} catch (MultilingualDictException e) {
 			throw new ServiceException(e);
 		}
 

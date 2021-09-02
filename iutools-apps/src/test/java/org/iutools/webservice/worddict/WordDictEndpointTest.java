@@ -4,8 +4,9 @@ import ca.nrc.config.ConfigException;
 import org.iutools.spellchecker.SpellCheckerException;
 import org.iutools.webservice.EndpointTest;
 import org.iutools.webservice.ServiceException;
-import org.iutools.worddict.AssertIUWordDictEntry;
-import org.iutools.worddict.IUWordDictEntry;
+import org.iutools.worddict.AssertMultilingualDictEntry;
+import org.iutools.worddict.MultilingualDictEntry;
+import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 
 import java.io.FileNotFoundException;
@@ -39,7 +40,21 @@ public class WordDictEndpointTest extends EndpointTest {
 		// dictionary entry.
 		// Note that the entry will be available even if the query pattern matched
 		// other words as well.
-		IUWordDictEntry wordEntry = epResult.queryWordEntry;
+		MultilingualDictEntry wordEntry = epResult.queryWordEntry;
+
+		// By default, the dictionary assumes the word is in Inuktitut.
+		// But you can also specify that the word is in English.
+		// At that point, information will be displayed about that English word,
+		// Including list of Inuktitut translations and bilingual examples of
+		// use.
+		//
+		// This can be useful for finding the different ways in which an English
+		// word can be rendered into Inuktitut.
+		{
+			inputs.word = "housing";
+			inputs.wordIsEnglish = true;
+			epResult = (WordDictResult) endPoint.execute(inputs);
+		}
 	}
 
 	/***********************
@@ -60,7 +75,7 @@ public class WordDictEndpointTest extends EndpointTest {
 			.raisesNoError()
 			.foundWords("inuksuk");
 
-		new AssertIUWordDictEntry(epResult.queryWordEntry)
+		new AssertMultilingualDictEntry(epResult.queryWordEntry)
 			.isForWord("inuksuk")
 			.definitionEquals(null)
 			.decompositionIs("inuksuk/1n")
@@ -87,7 +102,7 @@ public class WordDictEndpointTest extends EndpointTest {
 			.raisesNoError()
 			.foundWords("inuksuk", "inukku", "inuktut");
 
-		new AssertIUWordDictEntry(epResult.queryWordEntry)
+		new AssertMultilingualDictEntry(epResult.queryWordEntry)
 			.isForWord("inuksuk")
 			.definitionEquals(null)
 			.decompositionIs("inuksuk/1n")
@@ -101,4 +116,27 @@ public class WordDictEndpointTest extends EndpointTest {
 		;
 	}
 
+	@Test @Ignore
+	public void test__WordDictEndpoint__EnglishInputWord() throws Exception {
+		String query = "housing";
+		WordDictInputs inputs = new WordDictInputs(query, true);
+		WordDictResult epResult = (WordDictResult) endPoint.execute(inputs);
+
+		new AssertWordDictResult(epResult)
+			.raisesNoError()
+			.foundWords("BLAH");
+
+		new AssertMultilingualDictEntry(epResult.queryWordEntry)
+			.isForWord("inuksuk")
+			.definitionEquals(null)
+			.decompositionIs("inuksuk/1n")
+			.atLeastNExamples(10)
+			.highlightsAreSubsetOf("en",
+				"innuksuk", "inukshuk", "inuksuk",
+				// Why are these considered a translations of "inuksuk"?
+				"from", "at ... at", "held at"
+			)
+			.highlightsAreSubsetOf("iu", "inuksuk")
+		;
+	}
 }
