@@ -30,6 +30,7 @@
     <li id="other_tools">
       <button class="drop-menu-toggle">Other Inuktut Tools</button>
       <ul class="drop-menu">
+        <li><a href="worddict.jsp">Word Dictionary</a></li>
         <li><a href="morpheme_dictionary.jsp">Morpheme Dictionary</a></li>
         <li><a href="gisttext.jsp">Gister</a></li>
         <li><a href="spell.jsp">Spell Checker</a></li>
