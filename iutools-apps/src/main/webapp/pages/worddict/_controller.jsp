@@ -15,14 +15,15 @@
         // Div where search results will be displayed
         divSearchResults: "div-results",
 
-        // Floating div where we display the "gist" of a word
-        // (after the user clicks on the example word)
+        // Floating div where we display the dictionary entry of a word
+        // (after the user clicks on that word)
         //
-        divWordEntry: "div-wordentry",
-        divWordEntry_iconizer: "div-wordentry-iconizer",
-        divWordEntry_iconized: "div-wordentry-iconized",
-        divWordEntry_message: "div-wordentry-message",
-        divWordEntry_word: "div-wordentry-word",
+        divWordEntry: "div-gist",
+        divWordEntry_contents: "div-gist-contents",
+        divWordEntry_iconizer: "div-gist-iconizer",
+        divWordEntry_iconized: "div-gist-iconized",
+        divWordEntry_message: "div-gist-message",
+        divWordEntry_word: "div-gist-word",
     };
 
     var wordEntryController = new WordEntryController(config);

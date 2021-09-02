@@ -106,24 +106,25 @@ class WordEntryController extends IUToolsController {
 		// Change the word being looked up in order to add its
         // transcoding in the other script
         // this.displayWordBeingLookedUp()
+        var wordEntry = results.queryWordEntry;
 		this.displayWordBeingLookedUp(
-		    results.entry.word, results.entry.wordInOtherScript);
+            wordEntry.word, wordEntry.wordInOtherScript);
 
         var html = "";
-		html += this.htmlTranslations(results);
-		html += this.htmlRelatedWords(results);
-        html = this.htmlMorphologicalAnalyses(results, html);
-		html = this.htmlAlignments(results, html);
+		html += this.htmlTranslations(wordEntry);
+		html += this.htmlRelatedWords(wordEntry);
+        html = this.htmlMorphologicalAnalyses(wordEntry, html);
+		html = this.htmlAlignments(wordEntry, html);
 		this.elementForProp("divWordEntry_contents").html(html);
 		this.attachWordLookupListeners();
     }
 
-    htmlTranslations(results) {
+    htmlTranslations(wordEntry) {
         var tracer = Debug.getTraceLogger('WordEntryController.htmlTranslations');
-        tracer.trace("results.entry="+JSON.stringify(results.entry));
+        tracer.trace("wordEntry="+JSON.stringify(wordEntry));
         var heading = "English Translations"
 
-        var info = this.translationsInfo(results);
+        var info = this.translationsInfo(wordEntry);
         var disclaimer = null;
         if (info.areRelatedTranslations) {
             heading = heading+" (Related words only)"
@@ -153,8 +154,9 @@ class WordEntryController extends IUToolsController {
         return html;
     }
 
-    translationsInfo(results) {
-        var wordEntry = results.entry;
+    translationsInfo(wordEntry) {
+        var tracer = Debug.getTraceLogger('WordEntryController.translationsInfo');
+        tracer.trace("wordEntry="+JSON.stringify(wordEntry));
         var translations = wordEntry.origWordTranslations;
         var examples = wordEntry.examplesForOrigWordTranslation;
         var areRelatedTranslations = false;
@@ -173,11 +175,11 @@ class WordEntryController extends IUToolsController {
         return info;
     }
 
-    htmlRelatedWords(results) {
+    htmlRelatedWords(wordEntry) {
         var tracer = Debug.getTraceLogger('WordEntryController.htmlRelatedWords');
-        tracer.trace("results.entry="+JSON.stringify(results.entry));
+        tracer.trace("wordEntry="+JSON.stringify(wordEntry));
         var html = "<h3>Related Words</h3>\n";
-        var relatedWords = results.entry.relatedWords;
+        var relatedWords = wordEntry.relatedWords;
         for (var ii=0; ii < relatedWords.length; ii++) {
             var word = relatedWords[ii];
             if (ii > 0) {
@@ -191,11 +193,11 @@ class WordEntryController extends IUToolsController {
         return html;
     }
 
-	htmlMorphologicalAnalyses(results, html) {
+	htmlMorphologicalAnalyses(wordEntry, html) {
         var tracer = Debug.getTraceLogger('WordEntryController.htmlMorphologicalAnalyses');
-        tracer.trace("results="+JSON.stringify(results));
+        tracer.trace("wordEntry="+JSON.stringify(wordEntry));
 		html += "<h3>Morphological decomposition<h3>\n";
-		var wordComponents = results.entry.morphDecomp;
+		var wordComponents = wordEntry.morphDecomp;
 		if (wordComponents != null) {
 			html += '<table id="tbl-gist" class="gist"><tr><th>Morpheme</th><th>Meaning</th></tr>';
 			for (var iwc=0; iwc<wordComponents.length; iwc++) {
@@ -212,10 +214,8 @@ class WordEntryController extends IUToolsController {
 		return html;
 	}
 	
-	
-	htmlAlignments(results, html) {
-		var gist = results.wordGist
-        var trInfo = this.translationsInfo(results);
+	htmlAlignments(wordEntry, html) {
+        var trInfo = this.translationsInfo(wordEntry);
 		var translations = trInfo.translations;
         var alignments = trInfo.examples;
 

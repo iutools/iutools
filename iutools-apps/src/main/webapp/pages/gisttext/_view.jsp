@@ -15,7 +15,7 @@
     <div id="div-results" class="div-results"></div>
     <div id="div-gist-text-results" class="div-gist-text-results"></div>
 
-    <!-- Floating div where we put the gist of the example word -->
+    <!-- Floating div where we put the dictionary entry for an example word -->
     <div id="div-gist" class="div-gist">
     	<div id="div-gist-message"></div>
     	<div id="div-gist-word"></div>

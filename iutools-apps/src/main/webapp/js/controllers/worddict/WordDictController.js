@@ -146,18 +146,23 @@ class WordDictController extends IUToolsController {
     }
 
     attachListenersToIUWords() {
-        var anchorsWords = $(document).find('.iu-words');
-        for (var ipn = 0; ipn < anchorsWords.length; ipn++) {
-            this.setEventHandler(anchorsWords.eq(ipn), "click", this.onClickWord);
+        var tracer = Debug.getTraceLogger('WordDicController.attachListenersToIUWords');
+        var anchorWords = $(document).find('.iu-word');
+        for (var ipn = 0; ipn < anchorWords.length; ipn++) {
+            tracer.trace("Attaching lister to word: "+JSON.stringify(anchorWords[ipn]));
+            this.setEventHandler(anchorWords.eq(ipn), "click", this.onClickWord);
         }
     }
 
-    onClickWord() {
+    onClickWord(evt) {
         var tracer = Debug.getTraceLogger('WordDicController.onClickWord');
-        tracer.trace("invoked");
+        tracer.trace("invoked, evt="+JSON.stringify(evt));
+        tracer.trace("this="+JSON.stringify(this));
+        tracer.trace("this.wordDictController="+JSON.stringify(this.wordDictController));
+        tracer.trace("this.wordEntryController="+JSON.stringify(this.wordEntryController));
 
         var element = evt.target;
         var iuWord = $(element).text();
-        this.wordDictController.wordEntryController.dictionaryLookup(iuWord);
+        this.wordEntryController.dictionaryLookup(iuWord);
     }
 }

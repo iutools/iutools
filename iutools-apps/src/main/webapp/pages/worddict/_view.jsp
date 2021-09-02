@@ -10,11 +10,11 @@
     <div id="div-error" class="div-error"></div>
     <div id="div-results" class="div-results"></div>
 
-    <!-- Floating div where we put the gist of the example word -->
-    <div id="div-wordentry" class="div-wordentry">
-    	<div id="div-wordentry-message"></div>
-    	<div id="div-wordentry-word"></div>
-    	<div id="div-wordentry-iconizer" title="Minimize"><img src="imgs/minimize.png" ></div>
-    	<div id="div-wordentry-contents"></div>
+    <!-- Floating div where we put the dictionary entry for a word -->
+    <div id="div-gist" class="div-gist">
+    	<div id="div-gist-message"></div>
+    	<div id="div-gist-word"></div>
+    	<div id="div-gist-iconizer" title="Minimize"><img src="imgs/minimize.png" ></div>
+    	<div id="div-gist-contents"></div>
     </div>
-    <div id="div-wordentry-iconized" title="Maximize"><img src="imgs/maximize.png" height=24 ></div>
+    <div id="div-gist-iconized" title="Maximize"><img src="imgs/maximize.png" height=24 ></div>
