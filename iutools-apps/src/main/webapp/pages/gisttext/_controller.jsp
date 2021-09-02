@@ -26,7 +26,7 @@
        		divWordEntry_iconizer: "div-gist-iconizer",
        		divWordEntry_iconized: "div-gist-iconized",
        		divWordEntry_message: "div-gist-message",
-       		divWordEntry_word: "div-gist-word",
+       		divWordEntry_word: "div-wordentry-word",
         };
 
     var gistTextController = new GistTextController(config);

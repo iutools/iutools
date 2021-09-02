@@ -9,7 +9,7 @@ var occControllerConfig = {
 		divGist_iconizer: "div-gist-iconizer",
 		divGist_iconized: "div-gist-iconized",
 		divGist_message: "div-gist-message",
-		divGist_word: "div-gist-word",
+		divGist_word: "div-wordentry-word",
 	};
 
 var occController = null;

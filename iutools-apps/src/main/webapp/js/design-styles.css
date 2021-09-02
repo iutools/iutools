@@ -291,7 +291,7 @@ main ul ::marker {
   overflow: hidden;
 }
 
-#div-gist-word {
+#div-wordentry-word {
 	position: relative;
   height: 80px;
   padding: 5px 10px;
@@ -300,7 +300,7 @@ main ul ::marker {
   z-index: 10;
 }
 
-#div-gist-word h2 {
+#div-wordentry-word h2 {
   margin: 0;
   line-height: 80px;
 }
