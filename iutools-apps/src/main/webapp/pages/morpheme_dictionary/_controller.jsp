@@ -35,7 +35,7 @@
             divWordEntry: "div-gist",
        		divWordEntry_iconizer: "div-gist-iconizer",
        		divWordEntry_iconized: "div-gist-iconized",
-       		divWordEntry_message: "div-gist-message",
+       		divWordEntry_message: "div-wordentry-message",
        		divWordEntry_word: "div-wordentry-word",
         };
     var occurrenceController = new MorphemeDictionaryController(config);

@@ -17,7 +17,7 @@
 
     <!-- Floating div where we put the dictionary entry for an example word -->
     <div id="div-gist" class="div-gist">
-    	<div id="div-gist-message"></div>
+    	<div id="div-wordentry-message"></div>
     	<div id="div-wordentry-word"></div>
     	<div id="div-gist-iconizer" title="Minimize"><img src="imgs/minimize.png" ></div>
     	<div id="div-wordentry-contents"></div>

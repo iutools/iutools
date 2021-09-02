@@ -8,7 +8,7 @@ var occControllerConfig = {
 		divError: "div-error",
 		divGist_iconizer: "div-gist-iconizer",
 		divGist_iconized: "div-gist-iconized",
-		divGist_message: "div-gist-message",
+		divGist_message: "div-wordentry-message",
 		divGist_word: "div-wordentry-word",
 	};
 
