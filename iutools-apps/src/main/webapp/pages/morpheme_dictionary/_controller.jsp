@@ -31,7 +31,7 @@
     		// Floating div where we display the "gist" of an example word
     		// (after the user clicks on the example word)
     		//
-            divWordEntry_contents: "div-gist-contents",
+            divWordEntry_contents: "div-wordentry-contents",
             divWordEntry: "div-gist",
        		divWordEntry_iconizer: "div-gist-iconizer",
        		divWordEntry_iconized: "div-gist-iconized",

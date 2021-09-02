@@ -19,7 +19,7 @@
         // (after the user clicks on that word)
         //
         divWordEntry: "div-gist",
-        divWordEntry_contents: "div-gist-contents",
+        divWordEntry_contents: "div-wordentry-contents",
         divWordEntry_iconizer: "div-gist-iconizer",
         divWordEntry_iconized: "div-gist-iconized",
         divWordEntry_message: "div-gist-message",
