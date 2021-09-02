@@ -184,7 +184,7 @@ span#plural {
 #div-gist #div-wordentry-message {
 	display:none;
 }
-div#div-gist-iconized {
+div#div-wordentry-iconized {
 	position:fixed;
 	text-align:center;
 	right:0;
@@ -197,7 +197,7 @@ div#div-gist-iconized {
 	display:none;
 	cursor:pointer;
 }
-div#div-gist-iconized img {
+div#div-wordentry-iconized img {
 	vertical-align:middle;
 }
 table.gist, table.alignments {
@@ -314,7 +314,7 @@ div#gist-alignments span.highlighted { font-weight:bold; color:red; }
 	height:577px;
 	margin-top:5px;
 }
-#div-gist-iconized {
+#div-wordentry-iconized {
 	position:fixed;
 	text-align:center;
 	right:0;
@@ -327,7 +327,7 @@ div#gist-alignments span.highlighted { font-weight:bold; color:red; }
 	display:none;
 	cursor:pointer;
 }
-#div-gist-iconized img {
+#div-wordentry-iconized img {
 	vertical-align:middle;
 }
 

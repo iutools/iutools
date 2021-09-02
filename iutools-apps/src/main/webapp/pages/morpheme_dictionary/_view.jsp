@@ -32,7 +32,7 @@
     	<div id="div-wordentry-iconizer" title="Minimize"><img src="imgs/minimize.png" ></div>
     	<div id="div-wordentry-contents"></div>
     </div>
-    <div id="div-gist-iconized" title="Maximize"><img src="imgs/maximize.png" height=24 ></div>
+    <div id="div-wordentry-iconized" title="Maximize"><img src="imgs/maximize.png" height=24 ></div>
 
 
     </form>

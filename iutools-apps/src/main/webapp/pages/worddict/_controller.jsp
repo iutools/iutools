@@ -21,7 +21,7 @@
         divWordEntry: "div-gist",
         divWordEntry_contents: "div-wordentry-contents",
         divWordEntry_iconizer: "div-wordentry-iconizer",
-        divWordEntry_iconized: "div-gist-iconized",
+        divWordEntry_iconized: "div-wordentry-iconized",
         divWordEntry_message: "div-wordentry-message",
         divWordEntry_word: "div-wordentry-word",
     };
