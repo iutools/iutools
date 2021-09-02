@@ -163,7 +163,7 @@ span#plural {
 	background-color:#ccccff;
 	padding:5px;
 }
-#div-gist #div-gist-iconizer {
+#div-gist #div-wordentry-iconizer {
 	background-color:white;
 	position:absolute;
 	top:0;
@@ -171,7 +171,7 @@ span#plural {
 	cursor:pointer;
 	vertical-align:middle;
 }
-#div-gist #div-gist-iconizer img {
+#div-gist #div-wordentry-iconizer img {
 	vertical-align:middle;
 }
 #div-gist #div-wordentry-contents {
@@ -298,7 +298,7 @@ div#gist-alignments span.highlighted { font-weight:bold; color:red; }
 	padding:5px;
 }
 #div-gist-holder { font-weight:bold; color:white; background-color:green; padding-left:6px; }
-#div-gist #div-gist-iconizer {
+#div-gist #div-wordentry-iconizer {
 	background-color:white;
 	position:absolute;
 	top:0;
@@ -306,7 +306,7 @@ div#gist-alignments span.highlighted { font-weight:bold; color:red; }
 	cursor:pointer;
 	vertical-align:middle;
 }
-#div-gist #div-gist-iconizer img {
+#div-gist #div-wordentry-iconizer img {
 	vertical-align:middle;
 }
 #div-gist #div-wordentry-contents {

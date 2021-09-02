@@ -6,7 +6,7 @@ var occControllerConfig = {
 		divMessage: "div-message",
 		divGist: "div-gist",
 		divError: "div-error",
-		divGist_iconizer: "div-gist-iconizer",
+		divGist_iconizer: "div-wordentry-iconizer",
 		divGist_iconized: "div-gist-iconized",
 		divGist_message: "div-wordentry-message",
 		divGist_word: "div-wordentry-word",
