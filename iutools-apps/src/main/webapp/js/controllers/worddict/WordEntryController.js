@@ -26,7 +26,7 @@ class WordEntryController extends IUToolsController {
         this.dictionaryLookup(exampleWord);
     }
 
-    dictionaryLookup(word) {
+    dictionaryLookup(word, lang) {
         var tracer = Debug.getTraceLogger('WordEntryController.dictionaryLookup');
         tracer.trace("word="+word)
 		this.elementForProp("divWordEntry").show();
@@ -34,7 +34,7 @@ class WordEntryController extends IUToolsController {
 		this.displayWordBeingLookedUp(word);
 		this.showSpinningWheel("divWordEntry_message","Looking up word");
 
-		var data = this.getWordDictRequestData(word);
+		var data = this.getWordDictRequestData(word, lang);
 		this.logOnServer("GIST_WORD", data);
 		this.invokeWordDictService(
             data,
@@ -88,10 +88,11 @@ class WordEntryController extends IUToolsController {
 		}
 	}	
 	
-	getWordDictRequestData(_word) {
+	getWordDictRequestData(_word, _lang) {
 		var request = { 
-			word: _word
-			};
+			word: _word,
+            lang: _lang
+        };
 		var jsonInputs = JSON.stringify(request);;
 		return jsonInputs;
 	}
@@ -110,22 +111,24 @@ class WordEntryController extends IUToolsController {
         // transcoding in the other script
         // this.displayWordBeingLookedUp()
         var wordEntry = results.queryWordEntry;
+        var lang = results.lang;
+        var otherLang = results.otherLang;
 		this.displayWordBeingLookedUp(
             wordEntry.word, wordEntry.wordInOtherScript);
 
         var html = "";
-		html += this.htmlTranslations(wordEntry);
-		html += this.htmlRelatedWords(wordEntry);
-        html = this.htmlMorphologicalAnalyses(wordEntry, html);
+		html += this.htmlTranslations(wordEntry, otherLang);
+		html += this.htmlRelatedWords(wordEntry, lang);
+        html = this.htmlMorphologicalAnalyses(wordEntry, lang, html);
 		html = this.htmlAlignments(wordEntry, html);
 		this.elementForProp("divWordEntry_contents").html(html);
 		this.attachWordLookupListeners();
     }
 
-    htmlTranslations(wordEntry) {
+    htmlTranslations(wordEntry, otherLang) {
         var tracer = Debug.getTraceLogger('WordEntryController.htmlTranslations');
         tracer.trace("wordEntry="+JSON.stringify(wordEntry));
-        var heading = "English Translations"
+        var heading = this.langName(otherLang)+" Translations"
 
         var info = this.translationsInfo(wordEntry);
         var disclaimer = null;
@@ -144,7 +147,7 @@ class WordEntryController extends IUToolsController {
                 continue;
             }
             if (totalDisplayed > 0) {
-                html += ", ";
+                html += "<br/>\n";
             }
             html += word;
             totalDisplayed++;
@@ -178,41 +181,58 @@ class WordEntryController extends IUToolsController {
         return info;
     }
 
-    htmlRelatedWords(wordEntry) {
+    langName(langCode) {
+        var name = langCode;
+        if (langCode === "iu") {
+            name = "Inuktitut";
+        } else if (langCode === "en") {
+            name = "English";
+        }
+        return name;
+    }
+
+    htmlRelatedWords(wordEntry, lang) {
         var tracer = Debug.getTraceLogger('WordEntryController.htmlRelatedWords');
         tracer.trace("wordEntry="+JSON.stringify(wordEntry));
-        var html = "<h3>Related Words</h3>\n";
-        var relatedWords = wordEntry.relatedWords;
-        for (var ii=0; ii < relatedWords.length; ii++) {
-            var word = relatedWords[ii];
-            if (ii > 0) {
-                html += ", ";
+        var html = "";
+        if (lang === "iu") {
+            // We don't display related words for an English word
+            html = "<h3>Related Words</h3>\n";
+            var relatedWords = wordEntry.relatedWords;
+            for (var ii = 0; ii < relatedWords.length; ii++) {
+                var word = relatedWords[ii];
+                if (ii > 0) {
+                    html += ", ";
+                }
+                // html += word;
+                html += this.htmlClickableWordLookup(word);
             }
-            // html += word;
-            html += this.htmlClickableWordLookup(word);
+            html += "<br/>\n";
         }
-        html += "<br/>\n";
 
         return html;
     }
 
-	htmlMorphologicalAnalyses(wordEntry, html) {
+	htmlMorphologicalAnalyses(wordEntry, lang, html) {
         var tracer = Debug.getTraceLogger('WordEntryController.htmlMorphologicalAnalyses');
         tracer.trace("wordEntry="+JSON.stringify(wordEntry));
-		html += "<h3>Morphological decomposition<h3>\n";
-		var wordComponents = wordEntry.morphDecomp;
-		if (wordComponents != null) {
-			html += '<table id="tbl-gist" class="gist"><tr><th>Morpheme</th><th>Meaning</th></tr>';
-			for (var iwc=0; iwc<wordComponents.length; iwc++) {
-				var component = wordComponents[iwc];
-				html +=
-                    '<tr><td>'+component.canonicalForm+'</td>'+
-                    '<td><em>'+component.grammar+'</em><br/><b>'+component.meaning+'</b></td></tr>'
-			}
-			html += '</table>';
-		} else {
-			html += "<h4>Word could not be decomposed into morphemes</h4>"
-		}
+        if (lang === "iu") {
+            // We only display decompositions for an inuktitut word
+            html += "<h3>Morphological decomposition<h3>\n";
+            var wordComponents = wordEntry.morphDecomp;
+            if (wordComponents != null) {
+                html += '<table id="tbl-gist" class="gist"><tr><th>Morpheme</th><th>Meaning</th></tr>';
+                for (var iwc = 0; iwc < wordComponents.length; iwc++) {
+                    var component = wordComponents[iwc];
+                    html +=
+                        '<tr><td>' + component.canonicalForm + '</td>' +
+                        '<td><em>' + component.grammar + '</em><br/><b>' + component.meaning + '</b></td></tr>'
+                }
+                html += '</table>';
+            } else {
+                html += "<h4>Word could not be decomposed into morphemes</h4>"
+            }
+        }
 	
 		return html;
 	}

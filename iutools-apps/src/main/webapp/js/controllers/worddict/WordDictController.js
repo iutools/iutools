@@ -23,7 +23,8 @@ class WordDictController extends IUToolsController {
         var tracer = Debug.getTraceLogger("WordDictController.onSearch")
         var inputs = this.acquireInputs();
         tracer.trace("Searching inputs="+JSON.stringify(inputs));
-
+        this.clearHits();
+        this.setBusy(true);
         if (!this.isDuplicateEvent("onSearch", inputs)) {
             this.logOnServer("DICTIONARY_LOOKUP", inputs);
             this.invokeDictionaryService(inputs,
@@ -32,10 +33,12 @@ class WordDictController extends IUToolsController {
     }
 
     acquireInputs() {
-        var query = this.elementForProp("txtQuery").val();
+        var query = this.queryWord();
+        var lang = this.queryLang();
         var inputs =
             {
-                "word": query
+                "word": query,
+                "lang": lang,
             };
 
         var inputsJson = JSON.stringify(inputs);
@@ -69,7 +72,6 @@ class WordDictController extends IUToolsController {
             error: fctFailure
         });
     }
-
 
     searchSuccessCallback(resp) {
         var tracer = Debug.getTraceLogger("WordDictController.searchSuccessCallback");
@@ -119,6 +121,17 @@ class WordDictController extends IUToolsController {
         tracer.trace('resp= '+JSON.stringify(resp));
         var html = this.htmlHits(resp);
 
+        tracer.trace("resp.queryWordEntry.word="+resp.queryWordEntry.word+", this.queryWord()="+this.queryWord());
+
+        if (resp.queryWordEntry.word === this.queryWord()) {
+            // There is a word that matched the query exactly.
+            // Display its entry.
+            tracer.trace("Displaying the exact match entry");
+            this.wordEntryController.dictionaryLookup(
+                    resp.queryWordEntry.word, this.queryLang());
+
+        }
+
         var divHits = this.elementForProp("divSearchResults");
         divHits.empty();
         divHits.append(html);
@@ -142,6 +155,8 @@ class WordDictController extends IUToolsController {
                 '<a class="iu-word">'+
                 word+"</a>";
         }
+
+
         return html;
     }
 
@@ -163,6 +178,20 @@ class WordDictController extends IUToolsController {
 
         var element = evt.target;
         var iuWord = $(element).text();
-        this.wordEntryController.dictionaryLookup(iuWord);
+        var lang = this.queryLang();
+        this.wordEntryController.dictionaryLookup(iuWord, lang);
+    }
+
+    queryLang() {
+        var lang = this.elementForProp("selLanguage").val();
+        return lang;
+    }
+
+    queryWord() {
+        return this.elementForProp("txtQuery").val();
+    }
+
+    clearHits() {
+        this.elementForProp("divSearchResults").empty();
     }
 }

@@ -16,6 +16,8 @@ public class WordDictResult extends EndpointResult {
 	// dictionary entry for that single word
 	public MultilingualDictEntry queryWordEntry;
 	public Long totalWords = new Long(0);
+	public String lang = null;
+	public String otherLang = null;
 
 	public WordDictResult() {
 		init_WordDictResult(
@@ -47,4 +49,15 @@ public class WordDictResult extends EndpointResult {
 	public JSONObject resultLogEntry() {
 		return null;
 	}
+
+	public WordDictResult setLang(String _lang) {
+		this.lang = _lang;
+		return this;
+	}
+
+	public WordDictResult setOtherLang(String _lang) {
+		this.otherLang = _lang;
+		return this;
+	}
+
 }

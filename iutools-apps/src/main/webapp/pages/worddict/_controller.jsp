@@ -10,6 +10,7 @@
 
         // Search form
         txtQuery: "txt-word-query",
+        selLanguage: "sel-language",
         btnSearch: "btn-search-word",
 
         // Div where search results will be displayed

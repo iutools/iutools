@@ -40,8 +40,15 @@ public class WordDictEndpoint extends Endpoint<WordDictInputs,WordDictResult> {
 			throw new ServiceException(e);
 		}
 
-		WordDictResult result =
-			new WordDictResult(firstWordEntry, topWords, totalWords);
+		WordDictResult result = null;
+		try {
+			result =
+				new WordDictResult(firstWordEntry, topWords, totalWords)
+					.setLang(firstWordEntry.lang)
+					.setOtherLang(firstWordEntry.otherLang());
+		} catch (MultilingualDictException e) {
+			throw new ServiceException(e);
+		}
 
 		return result;
 	}
