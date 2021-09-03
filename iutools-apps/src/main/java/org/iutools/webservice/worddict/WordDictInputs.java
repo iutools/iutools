@@ -4,24 +4,22 @@ import org.iutools.webservice.ServiceInputs;
 
 public class WordDictInputs extends ServiceInputs {
 	public String word = null;
-	public boolean wordIsEnglish = false;
+	public String lang = null;
 
 	public WordDictInputs() {
-		init_WordDictInputs((String)null, (Boolean)null);
+		init_WordDictInputs((String)null, (String)null);
 	}
 
-	public WordDictInputs(String _word, Boolean _wordIsEnglish) {
-		init_WordDictInputs(_word, _wordIsEnglish);
+	public WordDictInputs(String _word, String _lang) {
+		init_WordDictInputs(_word, _lang);
 	}
 
 	public WordDictInputs(String _word) {
-		init_WordDictInputs(_word, (Boolean)null);
+		init_WordDictInputs(_word, (String)null);
 	}
 
-	private void init_WordDictInputs(String _word, Boolean _wordIsEnglish) {
+	private void init_WordDictInputs(String _word, String _lang) {
 		this.word = _word;
-		if (_wordIsEnglish != null) {
-			wordIsEnglish = _wordIsEnglish;
-		}
+		this.lang = _lang;
 	}
 }

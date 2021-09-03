@@ -1,6 +1,5 @@
 package org.iutools.worddict;
 
-import ca.nrc.datastructure.Cloner;
 import ca.nrc.string.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
@@ -13,13 +12,19 @@ import org.iutools.script.TransCoderException;
 
 import java.util.*;
 
-public class IUWordDictEntry {
+public class MultilingualDictEntry {
+
+
+	public String otherLang() throws MultilingualDictException {
+		return otherLang(lang);
+	}
 
 	public static enum Field {
 		DEFINITION, BILINGUAL_EXAMPLES, TRANSLATIONS, DECOMP, RELATED_WORDS
 	}
 
 	public String word = null;
+	public String lang = "iu";
 	public String wordInOtherScript = null;
 
 	public String wordSyllabic;
@@ -47,37 +52,67 @@ public class IUWordDictEntry {
 
 	public String[] relatedWords = new String[0];
 
-	private List<Pair<String, Double>> _enTranslations = null;
-
-	public List<Pair<String, Double>> enTranslations() {
-		if (_enTranslations == null) {
-			_enTranslations = new ArrayList<Pair<String, Double>>();
+	public static void assertIsSupportedLanguage(String lang) throws MultilingualDictException {
+		if (!lang.matches("^(en|iu)$")) {
+			throw new MultilingualDictException("Unsupported language '"+lang+"'");
 		}
-		return _enTranslations;
 	}
 
-	public IUWordDictEntry() throws IUWordDictException {
-		init_IUWordDictEntry((String)null);
+	public static String otherLang(String lang) throws MultilingualDictException {
+		assertIsSupportedLanguage(lang);
+		String other = null;
+		if (lang.equals("iu")) {
+			other = "en";
+		} else if (lang.equals("en")) {
+			other = "iu";
+		}
+		return other;
+
 	}
 
-	public IUWordDictEntry(String _word) throws IUWordDictException {
-		init_IUWordDictEntry(_word);
+
+	private List<Pair<String, Double>> _otherLangTranslations = null;
+
+	public List<Pair<String, Double>> otherLangTranslations() {
+		if (_otherLangTranslations == null) {
+			_otherLangTranslations = new ArrayList<Pair<String, Double>>();
+		}
+		return _otherLangTranslations;
 	}
 
-	private void init_IUWordDictEntry(String _word) throws IUWordDictException {
+	public MultilingualDictEntry() throws MultilingualDictException {
+		init_IUWordDictEntry((String)null, (String)null);
+	}
+
+	public MultilingualDictEntry(String _word) throws MultilingualDictException {
+		init_IUWordDictEntry(_word, (String)null);
+	}
+
+	public MultilingualDictEntry(String _word, String _lang) throws MultilingualDictException {
+		init_IUWordDictEntry(_word, _lang);
+	}
+
+	private void init_IUWordDictEntry(String _word, String _lang) throws MultilingualDictException {
 		try {
+			if (_lang == null) {
+				_lang = "iu";
+			}
+			assertIsSupportedLanguage(lang);
+			this.lang = _lang;
 			this.word = _word;
-			this.wordInOtherScript = TransCoder.inOtherScript(_word);
-			this.wordSyllabic =
+			if (lang.equals("iu")) {
+				this.wordInOtherScript = TransCoder.inOtherScript(_word);
+				this.wordSyllabic =
 				TransCoder.ensureScript(TransCoder.Script.SYLLABIC, _word);
+			}
 		} catch (TransCoderException e) {
-			throw new IUWordDictException(e);
+			throw new MultilingualDictException(e);
 		}
 		this.wordRoman =
 		TransCoder.ensureRoman(_word);
 	}
 
-	public void setDecomp(String[] morphemes) throws IUWordDictException {
+	public void setDecomp(String[] morphemes) throws MultilingualDictException {
 		morphDecomp = new ArrayList<MorphemeHumanReadableDescr>();
 		for (String morpheme: morphemes) {
 			Morpheme morphInfo = LinguisticData.getInstance().getMorpheme(morpheme);
@@ -89,14 +124,14 @@ public class IUWordDictEntry {
 					new MorphemeHumanReadableDescr(
 						morphInfo.id, morphInfo.englishMeaning));
 			} catch (MorphemeException e) {
-				throw new IUWordDictException(e);
+				throw new MultilingualDictException(e);
 			}
 		}
 	}
 
-	public IUWordDictEntry addBilingualExample(
-		String translation, String[] example, boolean forRelatedWord) throws IUWordDictException {
-		Logger tLogger = Logger.getLogger("org.iutools.worddict.IUWordDictEntry.addBilingualExample");
+	public MultilingualDictEntry addBilingualExample(
+		String translation, String[] example, boolean forRelatedWord) throws MultilingualDictException {
+		Logger tLogger = Logger.getLogger("org.iutools.worddict.MultilingualDictEntry.addBilingualExample");
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("translation=" + translation + ", forRelatedWord=" + forRelatedWord + ", example=" + String.join(", ", example));
 		}
@@ -132,7 +167,7 @@ public class IUWordDictEntry {
 
 	private void addBilingualExamples(
 		String translation, List<String[]> examples, Boolean forRelatedWord)
-		throws IUWordDictException {
+		throws MultilingualDictException {
 		for (String[] anExample: examples) {
 			addBilingualExample(translation, anExample, forRelatedWord);
 		}
@@ -147,7 +182,7 @@ public class IUWordDictEntry {
 		return allExamples;
 	}
 
-	public List<String[]> bilingualExamplesOfUse(String translation) throws IUWordDictException {
+	public List<String[]> bilingualExamplesOfUse(String translation) throws MultilingualDictException {
 		List<String[]> examples = new ArrayList<String[]>();
 		if (examplesForOrigWordTranslation.containsKey(translation)) {
 			examples = examplesForOrigWordTranslation.get(translation);
@@ -156,7 +191,7 @@ public class IUWordDictEntry {
 		return examples;
 	}
 
-	public void ensureIUScript(TransCoder.Script script) throws IUWordDictException {
+	public void ensureIUScript(TransCoder.Script script) throws MultilingualDictException {
 		try {
 			for (int ii = 0; ii < relatedWords.length; ii++) {
 				relatedWords[ii] = TransCoder.ensureScript(script, relatedWords[ii]);
@@ -175,20 +210,17 @@ public class IUWordDictEntry {
 				}
 			}
 		} catch (TransCoderException e) {
-			throw new IUWordDictException(e);
+			throw new MultilingualDictException(e);
 		}
 		return;
 	}
 
-	public List<String> possibleTranslationsIn(String lang) throws IUWordDictException {
+	public List<String> possibleTranslationsIn(String lang) throws MultilingualDictException {
 		return  possibleTranslationsIn(lang, (Boolean)null);
 	}
 
-	public List<String> possibleTranslationsIn(String lang, Boolean forRelatedWords) throws IUWordDictException {
-		if (!lang.equals("en")) {
-			throw new IUWordDictException(
-				"Translations are currently only available for 'en'");
-		}
+	public List<String> possibleTranslationsIn(String lang, Boolean forRelatedWords) throws MultilingualDictException {
+		assertIsSupportedLanguage(lang);
 		if (forRelatedWords == null) {
 			forRelatedWords = false;
 		}
@@ -201,18 +233,23 @@ public class IUWordDictEntry {
 		return translations;
 	}
 
-	public void sortTranslations() {
-		if (_translationsNeedSorting) {
-			TranslationComparator comparator =
-				new TranslationComparator(this.examplesForOrigWordTranslation);
-			Collections.sort(this.origWordTranslations, comparator);
-			comparator =
-				new TranslationComparator(this.examplesForRelWordsTranslation);
-			Collections.sort(this.relatedWordTranslations, comparator);
+	public void sortTranslations() throws MultilingualDictException {
+		try {
+			if (_translationsNeedSorting) {
+				TranslationComparator comparator =
+				new TranslationComparator(otherLang(), this.examplesForOrigWordTranslation);
+				Collections.sort(this.origWordTranslations, comparator);
+				comparator =
+				new TranslationComparator(otherLang(), this.examplesForRelWordsTranslation);
+				Collections.sort(this.relatedWordTranslations, comparator);
+			}
+		} catch (RuntimeException e) {
+			throw new MultilingualDictException(e);
 		}
+		return;
 	}
 
-	public void addRelatedWordTranslations(IUWordDictEntry entry) throws IUWordDictException {
+	public void addRelatedWordTranslations(MultilingualDictEntry entry) throws MultilingualDictException {
 		List<String> relatedWordTranslations = entry.possibleTranslationsIn("en");
 		for (String translation: relatedWordTranslations) {
 			List<String[]> examplesOfUse = entry.bilingualExamplesOfUse(translation);
@@ -221,7 +258,7 @@ public class IUWordDictEntry {
 	}
 
 
-	public int totalBilingualExamples() throws IUWordDictException {
+	public int totalBilingualExamples() throws MultilingualDictException {
 		int total = bilingualExamplesOfUse("ALL").size();
 		return total;
 	}
@@ -229,15 +266,17 @@ public class IUWordDictEntry {
 	public static class TranslationComparator implements java.util.Comparator<String> {
 
 		private final Map<String, List<String[]>> _examplesForTranslation;
+		private final Object lang;
 
 		public TranslationComparator(
-			Map<String, List<String[]>> _examplesForTranslation) {
+			String _lang, Map<String, List<String[]>> _examplesForTranslation) {
 			this._examplesForTranslation = _examplesForTranslation;
+			this.lang = _lang;
 		}
 
 		@Override
 		public int compare(String t1, String t2) {
-			Logger tLogger = Logger.getLogger("org.iutools.worddict.IUWordDictEntry.TranslationComparator.compare");
+			Logger tLogger = Logger.getLogger("org.iutools.worddict.MultilingualDictEntry.TranslationComparator.compare");
 			tLogger.trace("t1="+t1+", t2="+t2);
 			List<String[]> t1Examples = _examplesForTranslation.get(t1);
 			int t1NumEx = 0;
@@ -270,11 +309,26 @@ public class IUWordDictEntry {
 			if (comp == 0) {
 				// If all else fails, sort alphabetically
 				tLogger.trace("Same length; Sorting alphabetically");
-				comp = (t1.compareTo(t2));
+				comp = this.compareAlphabetically(t1, t2);
 				tLogger.trace("t1="+t1+", t2="+t2+": comp="+comp);
 			}
 
 			tLogger.trace("For t1="+t1+", t2="+t2+", returning comp="+comp);
+			return comp;
+		}
+
+		private int compareAlphabetically(String t1, String t2) {
+			int comp = 0;
+			if (lang.equals("iu")) {
+				try {
+					t1 = TransCoder.ensureScript(TransCoder.Script.ROMAN, t1);
+					t2 = TransCoder.ensureScript(TransCoder.Script.ROMAN, t2);
+					comp = t1.compareToIgnoreCase(t2);
+				} catch (TransCoderException e) {
+					throw new RuntimeException(e);
+				}
+			}
+
 			return comp;
 		}
 	}

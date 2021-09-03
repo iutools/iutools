@@ -52,7 +52,7 @@ public class WordDictEndpointTest extends EndpointTest {
 		// word can be rendered into Inuktitut.
 		{
 			inputs.word = "housing";
-			inputs.wordIsEnglish = true;
+			inputs.lang = "en";
 			epResult = (WordDictResult) endPoint.execute(inputs);
 		}
 	}
@@ -116,27 +116,25 @@ public class WordDictEndpointTest extends EndpointTest {
 		;
 	}
 
-	@Test @Ignore
+	@Test
 	public void test__WordDictEndpoint__EnglishInputWord() throws Exception {
 		String query = "housing";
-		WordDictInputs inputs = new WordDictInputs(query, true);
+		WordDictInputs inputs = new WordDictInputs(query, "en");
 		WordDictResult epResult = (WordDictResult) endPoint.execute(inputs);
 
 		new AssertWordDictResult(epResult)
 			.raisesNoError()
-			.foundWords("BLAH");
+			.foundWords("housing");
 
 		new AssertMultilingualDictEntry(epResult.queryWordEntry)
-			.isForWord("inuksuk")
+			.isForWord("housing")
 			.definitionEquals(null)
-			.decompositionIs("inuksuk/1n")
+			.decompositionIs(null)
 			.atLeastNExamples(10)
-			.highlightsAreSubsetOf("en",
-				"innuksuk", "inukshuk", "inuksuk",
-				// Why are these considered a translations of "inuksuk"?
-				"from", "at ... at", "held at"
-			)
-			.highlightsAreSubsetOf("iu", "inuksuk")
+			.highlightsAreSubsetOf("en", true, "housing")
+			.highlightsAreSubsetOf("iu", true,
+				"ᐃᒡᓗᒋᔭᐅᕙᒃᑐᓂᒃ", "ᐃᒡᓗᓕᕆᓂᕐᒥ", "ᐃᒡᓗᓕᕆᓂᕐᓕ ... ᐃᒡᓗᓕᕆᓂᕐᒧᑐᐃᓐᓈᕋᔭᖅᑐᖅ",
+				"ᐃᒡᓗᖏᓐᓄᑦ", "ᐃᓪᓗᓕᕆᓂᕐᒧᑦ")
 		;
 	}
 }

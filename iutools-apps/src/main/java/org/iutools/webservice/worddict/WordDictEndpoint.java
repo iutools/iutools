@@ -26,7 +26,7 @@ public class WordDictEndpoint extends Endpoint<WordDictInputs,WordDictResult> {
 		try {
 			MultilingualDict dict = MultilingualDict.getInstance();
 			Pair<Iterator<String>, Long> searchResults =
-				dict.search(inputs.word, inputs.wordIsEnglish);
+				dict.search(inputs.word, inputs.lang);
 			totalWords = searchResults.getRight();
 			Iterator<String> wordsIter = searchResults.getLeft();
 			topWords = new ArrayList<String>();
@@ -34,7 +34,7 @@ public class WordDictEndpoint extends Endpoint<WordDictInputs,WordDictResult> {
 				topWords.add(wordsIter.next());
 			}
 			if (!topWords.isEmpty()) {
-				firstWordEntry = dict.entry4word(topWords.get(0));
+				firstWordEntry = dict.entry4word(topWords.get(0), inputs.lang);
 			}
 		} catch (MultilingualDictException e) {
 			throw new ServiceException(e);

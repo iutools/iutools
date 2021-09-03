@@ -113,10 +113,10 @@ public class WordSpotter {
 		Set<String> alreadySeen = new HashSet<String>();
 		while (matcher.find()) {
 			String aHighglight = matcher.group(1);
-			if (ignoreRepetitions && alreadySeen.contains(aHighglight)) {
+			if (ignoreRepetitions && alreadySeen.contains(aHighglight.toLowerCase())) {
 				continue;
 			}
-			alreadySeen.add(aHighglight);
+			alreadySeen.add(aHighglight.toLowerCase());
 			if (spotted != null) {
 				spotted += " ... ";
 			} else {

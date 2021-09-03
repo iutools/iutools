@@ -1,5 +1,6 @@
 package org.iutools.worddict;
 
+import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.StringUtils;
 import ca.nrc.testing.*;
 import org.iutools.concordancer.tm.WordSpotter;
@@ -10,38 +11,34 @@ import org.junit.jupiter.api.Assertions;
 
 import java.util.*;
 
-public class AssertIUWordDictEntry extends Asserter<IUWordDictEntry> {
+public class AssertMultilingualDictEntry extends Asserter<MultilingualDictEntry> {
 
-	public AssertIUWordDictEntry(IUWordDictEntry _gotObject) {
+	public AssertMultilingualDictEntry(MultilingualDictEntry _gotObject) {
 		super(_gotObject);
 	}
 
-	public AssertIUWordDictEntry(IUWordDictEntry _gotObject, String mess) {
+	public AssertMultilingualDictEntry(MultilingualDictEntry _gotObject, String mess) {
 		super(_gotObject, mess);
 	}
 
-	IUWordDictEntry entry() {
-		return (IUWordDictEntry)gotObject;
+	MultilingualDictEntry entry() {
+		return (MultilingualDictEntry)gotObject;
 	}
 
-	public AssertIUWordDictEntry isForWord(String expWord) throws Exception {
+	public AssertMultilingualDictEntry isForWord(String expWord) throws Exception {
 		AssertString.assertStringEquals(
 			baseMessage+"\nWord was not as expected",
 			expWord, entry().word);
-		String expWordOtherScript = TransCoder.inOtherScript(expWord);
-		AssertString.assertStringEquals(
-			baseMessage+"\nWord in other script was not as expected",
-			expWordOtherScript, entry().wordInOtherScript);
 
 		return this;
 	}
 
-	public AssertIUWordDictEntry definitionEquals(String expDef) {
+	public AssertMultilingualDictEntry definitionEquals(String expDef) {
 		AssertString.assertStringEquals(expDef, entry().definition);
 		return this;
 	}
 
-	public AssertIUWordDictEntry decompositionIs(String... expMorphemes)
+	public AssertMultilingualDictEntry decompositionIs(String... expMorphemes)
 		throws Exception {
 		List<String> gotMorphemes = null;
 		if (null != entry().morphDecomp) {
@@ -56,12 +53,12 @@ public class AssertIUWordDictEntry extends Asserter<IUWordDictEntry> {
 		return this;
 	}
 
-	public AssertIUWordDictEntry possibleTranslationsStartWith(
-		String lang, String... expTranslationsArr)
-		throws Exception {
+	public AssertMultilingualDictEntry possibleTranslationsStartWith(
+		String... expTranslationsArr) throws Exception {
 		if (expTranslationsArr != null) {
+			String otherLang = entry().otherLang();
 			String[] gotTranslationsArr =
-				entry().possibleTranslationsIn(lang).toArray(new String[0]);
+				entry().possibleTranslationsIn(otherLang).toArray(new String[0]);
 			gotTranslationsArr = lowerCaseStrings(gotTranslationsArr);
 			expTranslationsArr = lowerCaseStrings(expTranslationsArr);
 			new AssertSequence(gotTranslationsArr,
@@ -71,7 +68,7 @@ public class AssertIUWordDictEntry extends Asserter<IUWordDictEntry> {
 		return this;
 	}
 
-	public AssertIUWordDictEntry relatedWordsAre(String... expRelatedWords)
+	public AssertMultilingualDictEntry relatedWordsAre(String... expRelatedWords)
 		throws Exception {
 		AssertObject.assertDeepEquals(
 			baseMessage+"\nRelated words not as expected.",
@@ -81,7 +78,8 @@ public class AssertIUWordDictEntry extends Asserter<IUWordDictEntry> {
 	}
 
 	public void iuIsInScript(TransCoder.Script expScript) {
-		IUWordDictEntry entry = this.entry();
+		MultilingualDictEntry entry = this.entry();
+		String l1 = entry.lang;
 		String relatedWords = String.join(", ", entry.relatedWords);
 		TransCoder.Script gotScript = TransCoder.textScript(relatedWords);
 		Assert.assertEquals(
@@ -91,7 +89,7 @@ public class AssertIUWordDictEntry extends Asserter<IUWordDictEntry> {
 
 		String examples = "";
 		if (entry.examplesForOrigWordTranslation != null) {
-			List<String[]> iuExamples = entry.examplesForOrigWordTranslation.get("iu");
+			List<String[]> iuExamples = entry.examplesForOrigWordTranslation.get(l1);
 			if (iuExamples != null) {
 				String txtIUExamples = StringUtils.join(iuExamples.iterator(), "\n");
 				gotScript = TransCoder.textScript(txtIUExamples);
@@ -103,16 +101,17 @@ public class AssertIUWordDictEntry extends Asserter<IUWordDictEntry> {
 		}
 	}
 
-	public AssertIUWordDictEntry highlightsAreSubsetOf(
+	public AssertMultilingualDictEntry highlightsAreSubsetOf(
 		String lang, String... expHighlightsArr) throws Exception {
 		return highlightsAreSubsetOf(lang, (Boolean)null, expHighlightsArr);
 	}
 
-	public AssertIUWordDictEntry highlightsAreSubsetOf(
+	public AssertMultilingualDictEntry highlightsAreSubsetOf(
 		String lang, Boolean ignoreRepetitions, String... expHighlightsArr)
 		throws Exception {
 
 		if (expHighlightsArr != null) {
+			String l1 = entry().lang;
 			Set<String> expHighlights = new HashSet<String>();
 			Collections.addAll(expHighlights, expHighlightsArr);
 			Set<String> gotHighlights = new HashSet<String>();
@@ -120,7 +119,7 @@ public class AssertIUWordDictEntry extends Asserter<IUWordDictEntry> {
 			List<String> langExamples = new ArrayList<String>();
 			for (String[] aBilEx : bilingExamples) {
 				String text = aBilEx[0];
-				if (!lang.equals("iu")) {
+				if (!lang.equals(l1)) {
 					text = aBilEx[1];
 				}
 				String highlighted = WordSpotter.spotHighlight("strong", text, ignoreRepetitions);
@@ -128,6 +127,7 @@ public class AssertIUWordDictEntry extends Asserter<IUWordDictEntry> {
 					gotHighlights.add(highlighted);
 				}
 			}
+			String temp = PrettyPrinter.print(gotHighlights);
 			AssertSet.isSubsetOf(
 				baseMessage + "\nList of highlights was not a subset of the expected highlights",
 				lowerCaseStrings(expHighlights), lowerCaseStrings(gotHighlights),
@@ -136,7 +136,7 @@ public class AssertIUWordDictEntry extends Asserter<IUWordDictEntry> {
 		return this;
 	}
 
-	public AssertIUWordDictEntry atLeastNExamples(Integer expMinExamples) {
+	public AssertMultilingualDictEntry atLeastNExamples(Integer expMinExamples) {
 		int gotHits = entry().bilingualExamplesOfUse().size();
 		Assertions.assertTrue(
 			gotHits >= expMinExamples,
@@ -164,13 +164,31 @@ public class AssertIUWordDictEntry extends Asserter<IUWordDictEntry> {
 	}
 
 
-	public AssertIUWordDictEntry relatedTranslationsStartWith(
+	public AssertMultilingualDictEntry relatedTranslationsStartWith(
 		String[] expRelatedTranslationsArr) throws Exception {
 
 		new AssertSequence<String>(
 			this.entry().relatedWordTranslations.toArray(new String[0]),
 			baseMessage+"\nRelated words translations were not as expected")
 		.startsWith(expRelatedTranslationsArr);
+
+		return this;
+	}
+
+	public AssertMultilingualDictEntry langIs(String expLang) {
+		AssertString.assertStringEquals(
+			baseMessage+"\nLanguage of entry not as expected",
+			expLang, entry().lang
+		);
+		return this;
+	}
+
+	public AssertMultilingualDictEntry checkWordInOtherScript(String origWord)
+		throws Exception {
+		String expWordOtherScript = TransCoder.inOtherScript(origWord);
+		AssertString.assertStringEquals(
+			baseMessage+"\nWord in other script was not as expected",
+			expWordOtherScript, entry().wordInOtherScript);
 
 		return this;
 	}
