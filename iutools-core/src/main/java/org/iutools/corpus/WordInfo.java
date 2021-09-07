@@ -1,7 +1,8 @@
 package org.iutools.corpus;
 
 import ca.nrc.dtrc.elasticsearch.Document;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.StringUtils;import org.iutools.script.TransCoder;
+import org.iutools.script.TransCoderException;
 
 public class WordInfo extends Document {
 	
@@ -10,7 +11,22 @@ public class WordInfo extends Document {
 	 * IDs to identify the word.
 	 */
 	public String word = null;
-	
+
+	/**
+	 * Word transcoded to the other script than 'word' attribute
+	 */
+	private String _wordInOtherScript = null;
+
+	/**
+	 * Word in Roman script
+	 */
+	private String _wordRoman = null;
+
+	/**
+	 * Word in Roman script
+	 */
+	private String _wordSyllabic = null;
+
 	/** Sample of the top decompositions for the word
 	 * 
 	 * A null value does NOT mean that the word has no decomposition.
@@ -83,8 +99,50 @@ public class WordInfo extends Document {
 		return this.word;
 	}
 
+	public void setWordInOtherScript(String _word) throws CompiledCorpusException {
+		this._wordInOtherScript = _word;
+	}
 
-	public void setDecompositions(String[][] sampleDecomps, Integer totalDecomps) {
+	public String getWordInOtherScript() throws CompiledCorpusException {
+		if (_wordInOtherScript == null) {
+			try {
+				_wordInOtherScript = TransCoder.inOtherScript(word);
+			} catch (TransCoderException e) {
+				throw new CompiledCorpusException(e);
+			}
+		}
+		return _wordInOtherScript;
+	}
+
+
+	public void setWordRoman(String _word) throws CompiledCorpusException {
+		this._wordRoman = _word;
+	}
+
+	public String getWordRoman() {
+		if (_wordRoman == null) {
+			_wordRoman = TransCoder.ensureRoman(word);
+		}
+		return _wordRoman;
+	}
+
+	public void setWordSyllabic(String _word) throws CompiledCorpusException {
+		this._wordSyllabic = _word;
+	}
+
+
+	public String getWordSyllabic() {
+		if (_wordSyllabic == null) {
+			_wordSyllabic = TransCoder.ensureSyllabic(word);
+		}
+		return _wordSyllabic;
+	}
+
+	public WordInfo setDecompositions(String[][] sampleDecomps, int totalDecomps) {
+		return setDecompositions(sampleDecomps, new Integer(totalDecomps));
+	}
+
+	public WordInfo setDecompositions(String[][] sampleDecomps, Integer totalDecomps) {
 
 		if (sampleDecomps == null) {
 			totalDecompositions = null;
@@ -98,6 +156,7 @@ public class WordInfo extends Document {
 		if (topDecomp != null) {
 			topDecompositionStr = StringUtils.join(topDecomp, " ");
 		}
+		return this;
 	}
 
 	public Boolean decomposesSuccessfully() {

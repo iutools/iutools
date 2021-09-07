@@ -20,6 +20,8 @@ import org.iutools.datastructure.trie.StringSegmenter;
 import org.iutools.datastructure.trie.StringSegmenterException;
 import org.iutools.datastructure.trie.StringSegmenter_Char;
 import org.iutools.datastructure.trie.Trie;
+import org.iutools.script.TransCoder;
+import org.iutools.script.TransCoderException;
 import org.iutools.text.ngrams.NgramCompiler;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -561,6 +563,14 @@ public class CompiledCorpus {
 
 	public SearchResults<WordInfo> searchWordsContainingNgram(String ngram,
 		Set<String> winfoFields, SearchOption... options) throws CompiledCorpusException {
+
+		TransCoder.Script queryScript = TransCoder.textScript(ngram);
+		try {
+			ngram = TransCoder.ensureScript(TransCoder.Script.ROMAN, ngram);
+		} catch (TransCoderException e) {
+			throw new CompiledCorpusException(e);
+		}
+
 		String[] ngramArr = ngram.split("");
 		ngramArr = replaceCaretAndDollar(ngramArr);
 		String query =
@@ -826,8 +836,13 @@ public class CompiledCorpus {
 	
 	public long totalWordsWithCharNgram(String ngram, SearchOption... options)
 			throws CompiledCorpusException {
-		Logger tLogger = Logger.getLogger("org.iutools.corpus.CompiledCorpus.charNgramFrequency");
+		Logger tLogger = Logger.getLogger("org.iutools.corpus.CompiledCorpus.totalWordsWithCharNgram");
 		tLogger.trace("invoked with ngram="+ngram);
+		try {
+			ngram = TransCoder.ensureScript(TransCoder.Script.ROMAN, ngram);
+		} catch (TransCoderException e) {
+			throw new CompiledCorpusException(e);
+		}
 		String query =
 				"+wordCharsSpaceConcatenated:\""+
 						WordInfo.insertSpaces(ngram)+

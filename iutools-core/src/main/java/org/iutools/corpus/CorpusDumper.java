@@ -113,8 +113,13 @@ public class CorpusDumper {
 
         String infoStr = word;
         if (!wordsOnly) {
-            WordInfo wInfo = corpus.info4word(word);
-            infoStr = PrettyPrinter.print(wInfo)+"\n";
+				WordInfo wInfo = corpus.info4word(word);
+			  	String[] fieldsToIgnore = new String[] {
+					"additionalFields", "creationDate", "lang", "_detect_language",
+					"shortDescription", "_wordInOtherScript", "_wordRoman",
+					"_wordSyllabic"
+				};
+			  	infoStr = wInfo.toJson(fieldsToIgnore);
         }
         try {
             outputFileWriter.write(infoStr+"\n");

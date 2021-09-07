@@ -1,6 +1,9 @@
 package org.iutools.webservice.worddict;
 
 
+import ca.nrc.json.PrettyPrinter;
+import org.apache.log4j.Logger;
+import org.iutools.script.TransCoder;
 import org.iutools.webservice.EndpointResult;
 import org.iutools.worddict.MultilingualDictEntry;
 import org.json.JSONObject;
@@ -33,16 +36,23 @@ public class WordDictResult extends EndpointResult {
 	}
 
 	public WordDictResult(
-	MultilingualDictEntry _entry, List<String> _foundWords, Long _totalWords) {
+		MultilingualDictEntry _entry, List<String> _foundWords, Long _totalWords) {
 		init_WordDictResult(_entry, _foundWords, _totalWords);
 	}
 
 
 	private void init_WordDictResult(
-	MultilingualDictEntry _qWordEntry, List<String> _foundWords, Long _totalWords) {
+		MultilingualDictEntry _qWordEntry, List<String> _foundWords, Long _totalWords) {
+		Logger tLogger = Logger.getLogger("org.iutools.webservice.worddict.WordDictResult.init_WordDictResult");
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("_qWordEntry="+ PrettyPrinter.print(_qWordEntry));
+			tLogger.trace("_foundWords="+ PrettyPrinter.print(_foundWords));
+			tLogger.trace("_totalWords="+ _totalWords);
+		}
 		this.matchingWords = _foundWords;
 		this.queryWordEntry = _qWordEntry;
 		this.totalWords = _totalWords;
+		tLogger.trace("exited");
 	}
 
 	@Override

@@ -1,6 +1,8 @@
 package org.iutools.webservice.worddict;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.iutools.script.TransCoder;
+import org.iutools.script.TransCoderException;
 import org.iutools.webservice.Endpoint;
 import org.iutools.webservice.ServiceException;
 import org.iutools.worddict.MultilingualDict;
@@ -33,6 +35,9 @@ public class WordDictEndpoint extends Endpoint<WordDictInputs,WordDictResult> {
 			while (wordsIter.hasNext() && topWords.size() < 10) {
 				topWords.add(wordsIter.next());
 			}
+
+			topWords = fixScriptOfWordEntries(inputs, topWords);
+
 			if (!topWords.isEmpty()) {
 				firstWordEntry = dict.entry4word(topWords.get(0), inputs.lang);
 			}
@@ -43,13 +48,31 @@ public class WordDictEndpoint extends Endpoint<WordDictInputs,WordDictResult> {
 		WordDictResult result = null;
 		try {
 			result =
-				new WordDictResult(firstWordEntry, topWords, totalWords)
-					.setLang(firstWordEntry.lang)
-					.setOtherLang(firstWordEntry.otherLang());
+				new WordDictResult(firstWordEntry, topWords, totalWords);
+			if (firstWordEntry != null) {
+				result
+				.setLang(firstWordEntry.lang)
+				.setOtherLang(firstWordEntry.otherLang());
+			}
 		} catch (MultilingualDictException e) {
 			throw new ServiceException(e);
 		}
 
 		return result;
+	}
+
+	/** Ensure that the matching words use the same script as the input query.
+	 */
+	private List<String> fixScriptOfWordEntries(
+		WordDictInputs inputs, List<String> words) throws ServiceException {
+		List<String> fixedWords = new ArrayList<String>();
+		for (String aWord: words) {
+			try {
+				fixedWords.add(TransCoder.ensureSameScriptAsSecond(aWord, inputs.word));
+			} catch (TransCoderException e) {
+				throw new ServiceException(e);
+			}
+		}
+		return fixedWords;
 	}
 }

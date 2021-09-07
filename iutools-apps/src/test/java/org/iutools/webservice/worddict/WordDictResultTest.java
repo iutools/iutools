@@ -1,6 +1,5 @@
 package org.iutools.webservice.worddict;
 
-import org.iutools.webservice.AssertEndpointResult;
 import org.junit.jupiter.api.Test;
 
 public class WordDictResultTest {

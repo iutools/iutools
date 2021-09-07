@@ -1,5 +1,6 @@
 package org.iutools.worddict;
 
+import ca.nrc.testing.AssertNumber;
 import ca.nrc.testing.AssertSequence;
 import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.linguisticdata.MorphemeHumanReadableDescr;
@@ -14,11 +15,22 @@ import java.util.List;
 
 public class MultilingualDictTest {
 
-	MultilingualDictCase[] cases = null;
+	MultilingualDictCase[] cases_entry4word = null;
+	Object[][] cases_search = null;
 
 	@BeforeEach
-	public void setUp() {
-		cases = new MultilingualDictCase[] {
+	public void setUp() throws Exception {
+		// Cases for search() function
+		cases_search = new Object[][] {
+			new Object[] {"iu", "inuk", 200,
+				new String[] {"inuksuk", "inukku", "inuktut"}},
+			new Object[] {"iu",
+				TransCoder.ensureScript(TransCoder.Script.SYLLABIC, "inuk"),
+				200, new String[] {"inuksuk", "inukku", "inuktut"}},
+		};
+
+		// Cases for entry4word function
+		cases_entry4word = new MultilingualDictCase[] {
 
 			new MultilingualDictCase("ammuumajuqsiuqtutik")
 				.setDecomp(
@@ -171,12 +183,12 @@ public class MultilingualDictTest {
 		throws Exception {
 
 		Integer focusOnCase = null;
-//		focusOnCase = 6;
+//		focusOnCase = 1;
 
 		boolean verbose = false;
 
 		int caseNum = -1;
-		for (MultilingualDictCase aCase: cases) {
+		for (MultilingualDictCase aCase: cases_entry4word) {
 			caseNum++;
 			if (verbose) {
 				System.out.println("test__entry4word__VariousCases: case #"+caseNum+": "+aCase.id());
@@ -246,6 +258,37 @@ public class MultilingualDictTest {
 			MultilingualDict.getInstance().search(partialWord, "en");
 		assertSearchResultsStartWith(
 			results.getLeft(), "housing");
+	}
+
+	@Test
+	public void test__search__VariousCases() throws Exception {
+		Integer focusOnCase = null;
+//		focusOnCase = 1;
+
+		int caseNum = -1;
+		for (Object[] aCase: cases_search) {
+			caseNum++;
+			if (focusOnCase != null && focusOnCase != caseNum) {
+				continue;
+			}
+			String lang = (String)aCase[0];
+			String query = (String)aCase[1];
+			Integer expTotalWords = (Integer)aCase[2];
+			String[] expTopMatches = (String[])aCase[3];
+			String caseDescr = "Case #"+caseNum+": "+lang+"-"+query;
+			Pair<Iterator<String>, Long> results =
+				MultilingualDict.getInstance().search(query, lang);
+			assertSearchResultsStartWith(
+				caseDescr, results.getLeft(), expTopMatches);
+			AssertNumber.isGreaterOrEqualTo(
+				caseDescr+"\nTotal number of words is too low",
+				results.getRight(), expTotalWords
+			);
+		}
+
+		if (focusOnCase != null) {
+			Assertions.fail("Test run only on one case. Remember to set focusOnCase=null");
+		}
 	}
 
 	//////////////////////////////////
@@ -327,7 +370,15 @@ public class MultilingualDictTest {
 
 	private void assertSearchResultsStartWith(
 		Iterator<String> wordsIter, String... expTopWords) throws Exception {
+		assertSearchResultsStartWith((String)null, wordsIter, expTopWords);
+	}
+
+	private void assertSearchResultsStartWith(
+		String mess, Iterator<String> wordsIter, String... expTopWords) throws Exception {
 		final int MAX_WORDS = 100;
+		if (mess == null) {
+			mess = "";
+		}
 		List<String> gotWordsLst = new ArrayList<String>();
 		while (wordsIter.hasNext()) {
 			gotWordsLst.add(wordsIter.next());
@@ -337,7 +388,7 @@ public class MultilingualDictTest {
 			gotWords[ii] = gotWordsLst.get(ii);
 		}
 
-		new AssertSequence<String>(gotWords)
+		new AssertSequence<String>(gotWords, mess)
 			.startsWith(expTopWords);
 	}
 }

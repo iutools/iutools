@@ -15,6 +15,7 @@ import ca.nrc.testing.AssertIterator;
 import ca.nrc.testing.AssertString;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.log4j.Logger;
+import org.iutools.script.TransCoder;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -424,6 +425,22 @@ public class CompiledCorpusTest {
 			.totalWordsWithNgramEquals("lauq", 2);
 	}
 
+	@Test
+	public void test__totalWordsWithNgram__SyllabicsQuery() throws Exception {
+		String[] stringsOfWords = new String[] {
+				"nunavut", "inuit", "takujuq", "sinilauqtuq", "uvlimik", "takulauqtunga"
+		};
+		CompiledCorpus compiledCorpus = makeCorpusUnderTest(StringSegmenter_IUMorpheme.class);
+
+		String ngram = TransCoder.inOtherScript("lauq");
+		compiledCorpus.addWordOccurences(stringsOfWords);
+
+
+		new AssertCompiledCorpus(compiledCorpus, "")
+			.totalWordsWithNgramEquals(ngram, 2);
+	}
+
+
 	public static File compileToFile(String[] words) throws Exception {
 		return compileToFile(words,null);
 	}
@@ -501,6 +518,13 @@ public class CompiledCorpusTest {
 		wordsWithSeq = corpus.wordsContainingNgram(seq);
 		expected = new String[] {"taku"};
 		AssertIterator.assertContainsAll("The list of words containing sequence "+seq+" was not as expected",
+			expected, wordsWithSeq);
+
+		seq = TransCoder.inOtherScript("inuk");
+		wordsWithSeq = corpus.wordsContainingNgram(seq);
+		expected = new String[] {"inuksuk", "inuktitut"};
+		AssertIterator.assertContainsAll(
+			"The list of words containing sequence "+seq+" was not as expected",
 			expected, wordsWithSeq);
 	}	
 	

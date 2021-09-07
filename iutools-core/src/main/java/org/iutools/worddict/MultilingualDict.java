@@ -15,6 +15,7 @@ import org.iutools.morphrelatives.MorphRelativesFinder;
 import org.iutools.morphrelatives.MorphRelativesFinderException;
 import org.iutools.morphrelatives.MorphologicalRelative;
 import org.iutools.script.TransCoder;
+import org.iutools.script.TransCoderException;
 import org.iutools.worddict.MultilingualDictEntry.*;
 
 import java.util.*;
@@ -392,6 +393,7 @@ public class MultilingualDict {
 				Iterator<String> wordsIter = null;
 		Long totalWords = null;
 		try {
+			partialWord = TransCoder.ensureScript(TransCoder.Script.ROMAN, partialWord);
 			CompiledCorpus.SearchOption[] options =
 				new CompiledCorpus.SearchOption[] {
 					CompiledCorpus.SearchOption.EXCL_MISSPELLED,
@@ -399,7 +401,7 @@ public class MultilingualDict {
 				};
 			totalWords = corpus.totalWordsWithCharNgram(partialWord, options);
 			wordsIter = corpus.wordsContainingNgram(partialWord, options);
-		} catch (CompiledCorpusException e) {
+		} catch (CompiledCorpusException | TransCoderException e) {
 			throw new MultilingualDictException(e);
 		}
 

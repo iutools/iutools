@@ -542,6 +542,19 @@ public class TransCoder {
     	return romanText;
     }
 
+    public static String ensureSyllabic(String text) {
+    	String syllabicText = null;
+    	if (text != null) {
+	    	syllabicText = text;
+	    	if (Syllabics.syllabicCharsRatio(text) < 0.7) {
+	    		syllabicText = romanToUnicode(text);
+	    	}
+    	}
+
+    	return syllabicText;
+    }
+
+
 		public static String ensureScript(Script script, String text) throws TransCoderException {
 			return ensureScript(script, text, (Boolean)null);
 		}
