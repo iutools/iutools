@@ -1,6 +1,7 @@
 package org.iutools.webservice.worddict;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.iutools.corpus.CompiledCorpusException;
 import org.iutools.script.TransCoder;
 import org.iutools.script.TransCoderException;
 import org.iutools.webservice.Endpoint;
@@ -28,7 +29,7 @@ public class WordDictEndpoint extends Endpoint<WordDictInputs,WordDictResult> {
 		try {
 			MultilingualDict dict = MultilingualDict.getInstance();
 			Pair<Iterator<String>, Long> searchResults =
-				dict.search(inputs.word, inputs.lang);
+				dict.searchIter(inputs.word, inputs.lang);
 			totalWords = searchResults.getRight();
 			Iterator<String> wordsIter = searchResults.getLeft();
 			topWords = new ArrayList<String>();
@@ -36,12 +37,20 @@ public class WordDictEndpoint extends Endpoint<WordDictInputs,WordDictResult> {
 				topWords.add(wordsIter.next());
 			}
 
+			if (!topWords.contains(inputs.word)) {
+				// The query word was not included in the top words.
+				// See if the word is in the dictionary.
+				if (null != dict.corpus.info4word(TransCoder.ensureRoman(inputs.word))) {
+					topWords.add(0, inputs.word);
+				}
+			}
+
 			topWords = fixScriptOfWordEntries(inputs, topWords);
 
 			if (!topWords.isEmpty()) {
 				firstWordEntry = dict.entry4word(topWords.get(0), inputs.lang);
 			}
-		} catch (MultilingualDictException e) {
+		} catch (MultilingualDictException | CompiledCorpusException e) {
 			throw new ServiceException(e);
 		}
 

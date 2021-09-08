@@ -83,7 +83,7 @@ public class WordDictEndpointTest extends EndpointTest {
 			.highlightsAreSubsetOf("en",
 				"innuksuk", "inukshuk", "inuksuk",
 				// Why are these considered a translations of "inuksuk"?
-				"from", "at ... at", "held at"
+				"from", "at", "held at"
 			)
 			.highlightsAreSubsetOf("iu", "inuksuk")
 		;
@@ -100,19 +100,20 @@ public class WordDictEndpointTest extends EndpointTest {
 
 		new AssertWordDictResult(epResult)
 			.raisesNoError()
-			.foundWords("inuksuk", "inukku", "inuktut");
+			.foundWords("inuk", "inuksuk", "inukku", "inuktut");
 
 		new AssertMultilingualDictEntry(epResult.queryWordEntry)
-			.isForWord("inuksuk")
+			.isForWord("inuk")
 			.definitionEquals(null)
-			.decompositionIs("inuksuk/1n")
+			.decompositionIs()
 			.atLeastNExamples(10)
 			.highlightsAreSubsetOf("en",
 				"innuksuk", "inukshuk", "inuksuk",
 				// Why are these considered a translations of "inuksuk"?
-				"from", "at ... at", "held at"
+				"from", "at ... at", "held at", "(interpretation",
+				"name"
 			)
-			.highlightsAreSubsetOf("iu", "inuksuk")
+			.highlightsAreSubsetOf("iu", "inuksuk", "inuk", "inuk ... inuk")
 		;
 	}
 
@@ -129,7 +130,7 @@ public class WordDictEndpointTest extends EndpointTest {
 		new AssertMultilingualDictEntry(epResult.queryWordEntry)
 			.isForWord("housing")
 			.definitionEquals(null)
-			.decompositionIs(null)
+			.decompositionIs()
 			.atLeastNExamples(10)
 			.highlightsAreSubsetOf("en", true, "housing")
 			.highlightsAreSubsetOf("iu", true,

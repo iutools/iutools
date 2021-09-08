@@ -1,6 +1,8 @@
 package org.iutools.concordancer.tm;
 
+import ca.nrc.dtrc.stats.FrequencyHistogram;
 import ca.nrc.json.PrettyPrinter;
+import ca.nrc.string.StringUtils;
 import org.apache.log4j.Logger;
 import org.iutools.concordancer.SentencePair;
 import org.iutools.script.TransCoder;
@@ -88,7 +90,7 @@ public class WordSpotter {
 		String tagName = "strong";
 		Map<String, String> highlighted = highlight(l1, l1Word, tagName);
 		for (String lang: new String[] {l1, pair.otherLangThan(l1)}) {
-			spottings.put(lang, spotHighlight(tagName, highlighted.get(lang)));
+			spottings.put(lang, spotHighlight(tagName, highlighted.get(lang), true));
 		}
 
 		return spottings;
@@ -102,32 +104,79 @@ public class WordSpotter {
 		String text, Boolean ignoreRepetitions) {
 		
 		if (ignoreRepetitions == null) {
-			ignoreRepetitions = false;
+			ignoreRepetitions = true;
 		}
 		Logger tLogger = Logger.getLogger("org.iutools.concordancer.tm.WordSpotter.spotHighlight");
 		tLogger.trace("text="+text);
 		Matcher matcher =
 			Pattern.compile("<"+tagName+">([^<]*)"+"</"+tagName+">")
 				.matcher(text);
-		String spotted = null;
-		Set<String> alreadySeen = new HashSet<String>();
+		List<String> highlights = new ArrayList<String>();
 		while (matcher.find()) {
-			String aHighglight = matcher.group(1);
-			if (ignoreRepetitions && alreadySeen.contains(aHighglight.toLowerCase())) {
-				continue;
-			}
-			alreadySeen.add(aHighglight.toLowerCase());
-			if (spotted != null) {
-				spotted += " ... ";
-			} else {
-				spotted = "";
-			}
-			spotted += aHighglight;
+			highlights.add(matcher.group(1));
+		}
+		if (ignoreRepetitions) {
+			highlights = removeRepetitions(highlights);
+		}
+		String spotted = null;
+		if (!highlights.isEmpty()) {
+			spotted = StringUtils.join(highlights.iterator(), " ... ");
 		}
 
 		tLogger.trace("returning spotted='"+spotted+"'");
 
 		return spotted;
+	}
+
+	protected static List<String> removeRepetitions(String[] highlights) {
+		List<String> highlightsArray = new ArrayList<String>();
+		Collections.addAll(highlightsArray, highlights);
+		return removeRepetitions(highlightsArray);
+	}
+
+	protected static List<String> removeRepetitions(List<String> highlights) {
+		// Lowercase all highlights
+		for (int ii=0; ii < highlights.size(); ii++) {
+			String lowercased = highlights.get(ii).toLowerCase();
+			highlights.set(ii, lowercased);
+		}
+		FrequencyHistogram<String> hist = new FrequencyHistogram<String>();
+		Set<String> exactDuplicates = new HashSet<String>();
+		Set<String> subsstrings = new HashSet<String>();
+		Set<String> allHighlights = new HashSet<String>();
+		for (int ii=0; ii < highlights.size(); ii++) {
+			String h1 = highlights.get(ii);
+			hist.updateFreq(h1);
+			allHighlights.add(h1);
+			if (ii < highlights.size()-1) {
+				for (int jj = ii + 1; jj < highlights.size(); jj++) {
+					String h2 = highlights.get(jj);
+					if (h1.equals(h2)) {
+						exactDuplicates.add(h2);
+					} else if (h1.indexOf(h2) >= 0) {
+						subsstrings.add(h2);
+					}
+				}
+			}
+		}
+		for (String aHighlight: allHighlights) {
+			long totalRemove = 0;
+			if  (subsstrings.contains(aHighlight)) {
+				// If the highlight is a substring of another highlight,
+				// remove it altogether as it is redundant with the superstring
+				totalRemove = hist.frequency(aHighlight);
+			} else if (exactDuplicates.contains(aHighlight)) {
+				// If the highlight is an exact duplicate of another one, remove all
+				// but one of the occurences.
+				totalRemove = hist.frequency(aHighlight) - 1;
+			}
+			while (totalRemove > 0) {
+				highlights.remove(aHighlight);
+				totalRemove--;
+			}
+		}
+
+		return highlights;
 	}
 
 	private WordSpotterException wrapException(Exception e) {

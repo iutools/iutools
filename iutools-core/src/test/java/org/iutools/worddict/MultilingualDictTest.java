@@ -23,10 +23,11 @@ public class MultilingualDictTest {
 		// Cases for search() function
 		cases_search = new Object[][] {
 			new Object[] {"iu", "inuk", 200,
-				new String[] {"inuksuk", "inukku", "inuktut"}},
+				new String[] {"inuk", "inuksuk", "inukku", "inuktut"}},
 			new Object[] {"iu",
-				TransCoder.ensureScript(TransCoder.Script.SYLLABIC, "inuk"),
-				200, new String[] {"inuksuk", "inukku", "inuktut"}},
+				// 'inuk'
+				"ᐃᓄᒃ", 200,
+				new String[] {"ᐃᓄᒃ", "ᐃᓄᒃᓱᒃ", "ᐃᓄᒃᑯ"}},
 		};
 
 		// Cases for entry4word function
@@ -70,8 +71,9 @@ public class MultilingualDictTest {
 					"umiarjualirijikkut")
 				.setMinExamples(5)
 				.setOrigWordTranslations(new String[]{
-					"sea", "ship", "shipping", "resupply ... dry ... cargo",
-					"sealift arrives ... sealift",}),
+					"sea", "ship", "shipping",
+					"sealift arrives", "resupply ... dry ... cargo",
+				}),
 
 			new MultilingualDictCase("kiugavinnga")
 				.setRelatedWords(
@@ -84,14 +86,18 @@ public class MultilingualDictTest {
 				.setRelatedWords(
 					"najugangani", "najugaujunut", "najuganga", "najugaujumi",
 					"najugauvattunut")
-				.setRelWordTranslationsStartWith(new String[] {"site", "homes", "centre"}),
+				.setRelWordTranslationsStartWith(new String[] {
+					"site",
+					// Why is this considered a translation?
+					"they",
+					"area", "homes", "centre"}),
 
 			new MultilingualDictCase("housing")
 				.setL1("en")
 				.setDecomp(null)
 				.setOrigWordTranslations(
 					"ᐃᒡᓗᖏᓐᓄᑦ", "ᐃᒡᓗᓕᕆᓂᕐᒥ", "ᐃᓪᓗᓕᕆᓂᕐᒧᑦ",
-					"ᐃᒡᓗᒋᔭᐅᕙᒃᑐᓂᒃ ... ᐃᒡᓗᒋᔭᐅᕙᒃᑐᓂᒃ",
+					"ᐃᒡᓗᒋᔭᐅᕙᒃᑐᓂᒃ",
 					"ᐃᒡᓗᓕᕆᓂᕐᓕ ... ᐃᒡᓗᓕᕆᓂᕐᒧᑐᐃᓐᓈᕋᔭᖅᑐᖅ")
 				.setMinExamples(10)
 				.setRelatedWords(),
@@ -137,7 +143,7 @@ public class MultilingualDictTest {
 
 		// You can search for a word
 		String partialWord = "inuksh";
-		Pair<Iterator<String>, Long> result = dict.search(partialWord);
+		Pair<Iterator<String>, Long> result = dict.searchIter(partialWord);
 		// Total number of matching words
 		Long totalWords = result.getRight();
 		Iterator<String> wordsIter = result.getLeft();
@@ -149,7 +155,7 @@ public class MultilingualDictTest {
 		// By default the dictionary assumes that the input word is in
 		// Inuktitut. But you can also search for English words
 		partialWord = "housing";
-		result = dict.search(partialWord, "en");
+		result = dict.searchIter(partialWord, "en");
 		while (wordsIter.hasNext()) {
 			String matchingWord = wordsIter.next();
 			dict.entry4word(matchingWord, "en");
@@ -183,7 +189,7 @@ public class MultilingualDictTest {
 		throws Exception {
 
 		Integer focusOnCase = null;
-//		focusOnCase = 1;
+//		focusOnCase = 6;
 
 		boolean verbose = false;
 
@@ -246,7 +252,7 @@ public class MultilingualDictTest {
 	@Test
 	public void test__search__HappyPath() throws Exception {
 		String partialWord = "inuksu";
-		Pair<Iterator<String>, Long> results = MultilingualDict.getInstance().search(partialWord);
+		Pair<Iterator<String>, Long> results = MultilingualDict.getInstance().searchIter(partialWord);
 		assertSearchResultsStartWith(
 			results.getLeft(), "inuksuk", "inuksuup", "inuksui");
 	}
@@ -255,7 +261,7 @@ public class MultilingualDictTest {
 	public void test__search__ENword() throws Exception {
 		String partialWord = "housing";
 		Pair<Iterator<String>, Long> results =
-			MultilingualDict.getInstance().search(partialWord, "en");
+			MultilingualDict.getInstance().searchIter(partialWord, "en");
 		assertSearchResultsStartWith(
 			results.getLeft(), "housing");
 	}
@@ -263,9 +269,9 @@ public class MultilingualDictTest {
 	@Test
 	public void test__search__VariousCases() throws Exception {
 		Integer focusOnCase = null;
-//		focusOnCase = 1;
+//		focusOnCase = 2;
 
-		int caseNum = -1;
+		int caseNum = 0;
 		for (Object[] aCase: cases_search) {
 			caseNum++;
 			if (focusOnCase != null && focusOnCase != caseNum) {
@@ -276,14 +282,30 @@ public class MultilingualDictTest {
 			Integer expTotalWords = (Integer)aCase[2];
 			String[] expTopMatches = (String[])aCase[3];
 			String caseDescr = "Case #"+caseNum+": "+lang+"-"+query;
-			Pair<Iterator<String>, Long> results =
-				MultilingualDict.getInstance().search(query, lang);
-			assertSearchResultsStartWith(
-				caseDescr, results.getLeft(), expTopMatches);
+
+
+			Pair<List<String>,Long> results2 =
+				MultilingualDict.getInstance().search(query, lang, (Integer)null);
 			AssertNumber.isGreaterOrEqualTo(
 				caseDescr+"\nTotal number of words is too low",
-				results.getRight(), expTotalWords
+				results2.getRight(), expTotalWords
 			);
+			new AssertSequence<String>(
+				results2.getLeft().toArray(new String[0]), caseDescr)
+				.startsWith(expTopMatches);
+				;
+
+//
+//
+//
+//			Pair<Iterator<String>, Long> results =
+//				MultilingualDict.getInstance().searchIter(query, lang);
+//			assertSearchResultsStartWith(
+//				caseDescr, results.getLeft(), expTopMatches);
+//			AssertNumber.isGreaterOrEqualTo(
+//				caseDescr+"\nTotal number of words is too low",
+//				results.getRight(), expTotalWords
+//			);
 		}
 
 		if (focusOnCase != null) {

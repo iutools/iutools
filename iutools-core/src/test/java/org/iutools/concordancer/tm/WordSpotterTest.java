@@ -8,10 +8,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class WordSpotterTest {
 
@@ -355,7 +352,7 @@ public class WordSpotterTest {
 	@Test
 	public void test__spotHighlight__SeveralCases() throws Exception {
 		Integer focusOnCase = null;
-//		focusOnCase = 2;
+//		focusOnCase = 3;
 
 		Object[][] cases = new Object[][] {
 			new Object[] {
@@ -363,26 +360,33 @@ public class WordSpotterTest {
 				"for ... response"
 			},
 			new Object[] {
-				"<strong>hello</strong>. I said <strong>hello</strong>",
-				"hello ... hello"
+				"<strong>hello</strong>. I said <strong>hello</strong>.",
+				"hello ... hello",
+				false
 			},
 			new Object[] {
-				"<strong>hello</strong>. I said <strong>hello</strong>",
-				"hello",
-				true
-			}
-
+				"<strong>hello</strong>. I said <strong>hello</strong>... yeah, <strong>hello</strong>",
+				"hello"
+			},
+			new Object[] {
+				"When the <strong>sealift arrives</strong> we will do a <strong>sealift</strong>",
+				"sealift arrives"
+			},
+			new Object[] {
+				"Nothing to see here!",
+				null
+			},
 		};
 
 		int caseNum = 0;
 		for (Object[] aCase: cases) {
+			caseNum++;
 			if (focusOnCase != null && focusOnCase != caseNum) {
 				continue;
 			}
-			caseNum++;
 			String highlightedText = (String)aCase[0];
 			String expSpotting = (String)aCase[1];
-			Boolean onlyFirstTag = false;
+			Boolean onlyFirstTag = null;
 			if (aCase.length > 2) {
 				onlyFirstTag = (Boolean)aCase[2];
 			}
@@ -439,7 +443,48 @@ public class WordSpotterTest {
 
 			caseNum++;
 		}
+	}
 
+	@Test
+	public void test__removeRepetitions__SeveralCases() throws Exception {
+		Integer focusOnCase = null;
+//		focusOnCase = 3;
+
+		String[][][] cases = new String[][][] {
+			new String[][] {
+				new String[] {"hello", "world"},
+				new String[] {"hello", "world"}
+			},
+
+			new String[][] {
+				new String[] {"hello", "hello", "hello"},
+				new String[] {"hello"}
+			},
+
+			new String[][] {
+				new String[] {"hello", "Hello"},
+				new String[] {"hello"}
+			},
+
+		};
+
+		int caseNum = 0;
+		for (String[][] aCase: cases) {
+			caseNum++;
+			if (focusOnCase != null && focusOnCase != caseNum) {
+				continue;
+			}
+			String caseDescr = "Case #"+caseNum;
+			List<String> gotHighlights = WordSpotter.removeRepetitions(aCase[0]);
+			String[] expHighlights = aCase[1];
+			AssertObject.assertDeepEquals(
+				caseDescr, expHighlights, gotHighlights
+			);
+		}
+
+		if (focusOnCase != null) {
+			Assertions.fail("Test run only for one case. Remember to set fousOnCase = null");
+		}
 	}
 
 	//////////////////////////////////

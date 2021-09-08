@@ -36,7 +36,7 @@ public class MultilingualDict {
 	public static int MAX_SENT_PAIRS = 20;
 
 
-	private CompiledCorpus corpus = null;
+	public CompiledCorpus corpus = null;
 
 	private static final String TAG = "strong";
 
@@ -370,11 +370,49 @@ public class MultilingualDict {
  		return totalPairs;
 	}
 
-	public Pair<Iterator<String>,Long> search(String partialWord) throws MultilingualDictException {
-		return search(partialWord, (String)null);
+	public Pair<Iterator<String>,Long> searchIter(String partialWord) throws MultilingualDictException {
+		return searchIter(partialWord, (String)null);
 	}
 
-	public Pair<Iterator<String>,Long> search(
+	public Pair<List<String>,Long> search(String partialWord, String lang, Integer maxHits)
+	throws MultilingualDictException, TranslationMemoryException {
+		List<String> hits = new ArrayList<String>();
+
+		Pair<Iterator<String>,Long> results = searchIter(partialWord, lang);
+		Long totalHits = results.getRight();
+		Iterator<String> hitsIter = results.getLeft();
+		int count = 0;
+		while (hitsIter.hasNext()) {
+			count++;
+			String hit = hitsIter.next();
+			try {
+				hit = TransCoder.ensureSameScriptAsSecond(hit, partialWord);
+			} catch (TransCoderException e) {
+				throw new MultilingualDictException(e);
+			}
+			hits.add(hit);
+			if (maxHits != null && hits.size() == maxHits) {
+				break;
+			}
+		}
+
+		if (hits.contains(partialWord)) {
+			// If we found an exact match, make sure it comes first.
+			hits.remove(partialWord);
+			hits.add(0, partialWord);
+		} else {
+			// The top list of hits did not contain an exact match.
+			// Check to see if the exact match COULD have been found if
+			// we had gone further
+			if (wordExists(partialWord, lang)) {
+				hits.add(0, partialWord);
+			}
+		}
+
+		return Pair.of(hits, totalHits);
+	}
+
+	public Pair<Iterator<String>,Long> searchIter(
 		String partialWord, String lang) throws MultilingualDictException {
 		if (lang == null) {
 			lang = "iu";
@@ -406,6 +444,33 @@ public class MultilingualDict {
 		}
 
 		return Pair.of(wordsIter,totalWords);
+	}
+
+	private boolean wordExists(String partialWord, String lang) throws MultilingualDictException, TranslationMemoryException {
+		assertIsSupportedLanguage(lang);
+		Boolean exists = null;
+		if (lang.equals("iu")) {
+			exists = wordExists_IU(partialWord);
+		} else {
+			exists = wordExists_EN(partialWord);
+		}
+		return exists;
+	}
+
+	private Boolean wordExists_EN(String word) throws TranslationMemoryException {
+		Iterator<Alignment_ES> tmIter = new TranslationMemory().searchIter("en", word);
+		return tmIter.hasNext();
+	}
+
+	private Boolean wordExists_IU(String word) throws MultilingualDictException {
+		word = TransCoder.ensureRoman(word);
+		WordInfo winfo = null;
+		try {
+			winfo = corpus.info4word(word);
+		} catch (CompiledCorpusException e) {
+			throw new MultilingualDictException(e);
+		}
+		return winfo != null;
 	}
 
 	private Pair<Iterator<String>, Long> search_EN(String partialWord) throws MultilingualDictException {

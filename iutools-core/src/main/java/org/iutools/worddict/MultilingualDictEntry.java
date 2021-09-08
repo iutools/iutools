@@ -14,7 +14,6 @@ import java.util.*;
 
 public class MultilingualDictEntry {
 
-
 	public String otherLang() throws MultilingualDictException {
 		return otherLang(lang);
 	}
@@ -30,7 +29,7 @@ public class MultilingualDictEntry {
 	public String wordSyllabic;
 	public String wordRoman;
 	public String definition;
-	public List<MorphemeHumanReadableDescr> morphDecomp;
+	public List<MorphemeHumanReadableDescr> morphDecomp = new ArrayList<MorphemeHumanReadableDescr>();
 
 	public List<String> origWordTranslations = new ArrayList<String>();
 	public List<String> relatedWordTranslations = new ArrayList<String>();
@@ -113,18 +112,20 @@ public class MultilingualDictEntry {
 	}
 
 	public void setDecomp(String[] morphemes) throws MultilingualDictException {
-		morphDecomp = new ArrayList<MorphemeHumanReadableDescr>();
-		for (String morpheme: morphemes) {
-			Morpheme morphInfo = LinguisticData.getInstance().getMorpheme(morpheme);
-			if (morphInfo == null) {
-				continue;
-			}
-			try {
-				morphDecomp.add(
+		if (morphemes != null) {
+			morphDecomp = new ArrayList<MorphemeHumanReadableDescr>();
+			for (String morpheme : morphemes) {
+				Morpheme morphInfo = LinguisticData.getInstance().getMorpheme(morpheme);
+				if (morphInfo == null) {
+					continue;
+				}
+				try {
+					morphDecomp.add(
 					new MorphemeHumanReadableDescr(
-						morphInfo.id, morphInfo.englishMeaning));
-			} catch (MorphemeException e) {
-				throw new MultilingualDictException(e);
+					morphInfo.id, morphInfo.englishMeaning));
+				} catch (MorphemeException e) {
+					throw new MultilingualDictException(e);
+				}
 			}
 		}
 	}

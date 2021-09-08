@@ -70,10 +70,13 @@ public class AssertMultilingualDictEntry extends Asserter<MultilingualDictEntry>
 
 	public AssertMultilingualDictEntry relatedWordsAre(String... expRelatedWords)
 		throws Exception {
-		AssertObject.assertDeepEquals(
+		Set<String> gotRelatedWordsSet = new HashSet<String>();
+		Collections.addAll(gotRelatedWordsSet, entry().relatedWords);
+		Set<String> expRelatedWordsSet = new HashSet<String>();
+		Collections.addAll(expRelatedWordsSet, expRelatedWords);
+		AssertSet.assertEquals(
 			baseMessage+"\nRelated words not as expected.",
-			expRelatedWords, entry().relatedWords
-		);
+			expRelatedWordsSet, gotRelatedWordsSet);
 		return this;
 	}
 
