@@ -2,38 +2,39 @@ package org.iutools.worddict;
 
 import ca.nrc.testing.AssertNumber;
 import ca.nrc.testing.AssertSequence;
+import ca.nrc.testing.RunOnCases;
+import ca.nrc.testing.RunOnCases.Case;
 import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.linguisticdata.MorphemeHumanReadableDescr;
 import org.iutools.script.TransCoder;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class MultilingualDictTest {
 
 	MultilingualDictCase[] cases_entry4word = null;
-	Object[][] cases_search = null;
+	Case[] cases_search = null;
 
 	@BeforeEach
 	public void setUp() throws Exception {
 		// Cases for search() function
-		cases_search = new Object[][] {
-			new Object[] {"iu", "inuk", 200,
-				new String[] {"inuk", "inuksuk", "inukku", "inuktut"}},
-			new Object[] {"iu",
-				// 'inuk'
-				"ᐃᓄᒃ", 200,
-				new String[] {"ᐃᓄᒃ", "ᐃᓄᒃᓱᒃ", "ᐃᓄᒃᑯ"}},
+		cases_search = new Case[] {
+			new Case("iu-inuk-roman", "iu", "inuk", 200,
+				new String[] {"inuk", "inuksuk", "inukku", "inuktut"}),
+		new Case("iu-inuk-syll", "iu", "ᐃᓄᒃ", 200,
+				new String[] {"ᐃᓄᒃ", "ᐃᓄᒃᓱᒃ", "ᐃᓄᒃᑯ"}),
 		};
 
 		// Cases for entry4word function
 		cases_entry4word = new MultilingualDictCase[] {
 
-			new MultilingualDictCase("ammuumajuqsiuqtutik")
+			new MultilingualDictCase("iu-ammuumajuqsiuqtutik", "ammuumajuqsiuqtutik")
 				.setDecomp(
 					"ammut/1a", "u/1nv", "ma/1vv", "juq/1vn", "siuq/1nv",
 					"jusik/tv-ger-2d")
@@ -45,7 +46,7 @@ public class MultilingualDictTest {
 					"ammuumajuqtaqtiit", "ammuumajuqtaqtutik",
 					"ammuumajurniarnirmut"),
 
-			new MultilingualDictCase("ᐊᒻᒨᒪᔪᖅᓯᐅᖅᑐᑎᒃ")
+			new MultilingualDictCase("iu-ᐊᒻᒨᒪᔪᖅᓯᐅᖅᑐᑎᒃ", "ᐊᒻᒨᒪᔪᖅᓯᐅᖅᑐᑎᒃ")
 				.setDecomp(
 					"ammut/1a", "u/1nv", "ma/1vv", "juq/1vn", "siuq/1nv",
 					"jusik/tv-ger-2d")
@@ -57,7 +58,7 @@ public class MultilingualDictTest {
 					"ᐊᒻᒨᒪᔪᕐᓂᐊᕐᓂᕐᒧᑦ"),
 
 			// This is an out of vocabulary word
-			new MultilingualDictCase("inuksssuk")
+			new MultilingualDictCase("iu-inuksssuk", "inuksssuk")
 				.setOutOfVocab(true)
 				.setOrigWordTranslations(new String[]{})
 				.setMinExamples(0)
@@ -65,7 +66,7 @@ public class MultilingualDictTest {
 
 			// This word has a sentence pair whose word alignments are
 			// faulty. Make sure it does not crash.
-			new MultilingualDictCase("umiarjuakkut")
+			new MultilingualDictCase("iu-umiarjuakkut", "umiarjuakkut")
 				.setRelatedWords(
 					"umiarjuanut", "umiarjuat", "umiarjuaq", "umiarjuarmut",
 					"umiarjualirijikkut")
@@ -75,14 +76,14 @@ public class MultilingualDictTest {
 					"sealift arrives", "resupply ... dry ... cargo",
 				}),
 
-			new MultilingualDictCase("kiugavinnga")
+			new MultilingualDictCase("iu-kiugavinnga", "kiugavinnga")
 				.setRelatedWords(
 					"kiujjutit", "kiujjutik", "kiuvan", "kiujjutinga", "kiulugu")
 				.setOrigWordTranslations(new String[]{
 					"response", "for that answer", "for your answer",
 					"for that response", "for ... response"}),
 
-			new MultilingualDictCase("najugaq")
+			new MultilingualDictCase("iu-najugaq", "najugaq")
 				.setRelatedWords(
 					"najugangani", "najugaujunut", "najuganga", "najugaujumi",
 					"najugauvattunut")
@@ -92,7 +93,7 @@ public class MultilingualDictTest {
 					"they",
 					"area", "homes", "centre"}),
 
-			new MultilingualDictCase("housing")
+			new MultilingualDictCase("en-housing", "housing")
 				.setL1("en")
 				.setDecomp(null)
 				.setOrigWordTranslations(
@@ -188,65 +189,57 @@ public class MultilingualDictTest {
 	public void test__entry4word__VariousCases()
 		throws Exception {
 
-		Integer focusOnCase = null;
-//		focusOnCase = 6;
-
-		boolean verbose = false;
-
-		int caseNum = -1;
-		for (MultilingualDictCase aCase: cases_entry4word) {
-			caseNum++;
-			if (verbose) {
-				System.out.println("test__entry4word__VariousCases: case #"+caseNum+": "+aCase.id());
-			}
-			if (focusOnCase != null && focusOnCase != caseNum) {
-				continue;
-			}
-			MultilingualDictEntry entry =
+		Consumer<Case> runner = (uncastCase) -> {
+			try {
+				MultilingualDictCase aCase = (MultilingualDictCase)uncastCase;
+				MultilingualDictEntry entry =
 				MultilingualDict.getInstance()
-				.entry4word(aCase.word, aCase.l1);
+					.entry4word(aCase.word, aCase.l1);
 
-			String[] expL1Highlights = new String[0];
-			String[] expTranslations = new String[0];
+				String[] expL1Highlights = new String[0];
+				String[] expTranslations = new String[0];
 
-			if (!aCase.outOfVocab) {
-				expL1Highlights = new String[] {aCase.word};
-				expTranslations = aCase.expTranslations;
-			}
+				if (!aCase.outOfVocab) {
+					expL1Highlights = new String[]{aCase.word};
+					expTranslations = aCase.expTranslations;
+				}
 
-			AssertMultilingualDictEntry asserter =
-				new AssertMultilingualDictEntry(entry, "Case #"+caseNum+": "+aCase.id());
+				AssertMultilingualDictEntry asserter =
+					new AssertMultilingualDictEntry(entry, aCase.descr);
 
-			asserter
-				.isForWord(aCase.word)
-				.langIs(aCase.l1)
-				.definitionEquals(aCase.expDefinition)
-				.relatedWordsAre(aCase.expRelatedWords)
-				.possibleTranslationsStartWith(expTranslations)
-				.atLeastNExamples(aCase.expMinExamples)
-				.highlightsAreSubsetOf(aCase.l1, true, expL1Highlights)
-				.highlightsAreSubsetOf(aCase.l2, expTranslations)
-				;
+				asserter
+					.isForWord(aCase.word)
+					.langIs(aCase.l1)
+					.definitionEquals(aCase.expDefinition)
+					.relatedWordsAre(aCase.expRelatedWords)
+					.possibleTranslationsStartWith(expTranslations)
+					.atLeastNExamples(aCase.expMinExamples)
+					.highlightsAreSubsetOf(aCase.l1, true, expL1Highlights)
+					.highlightsAreSubsetOf(aCase.l2, expTranslations)
+					;
 
-			if (aCase.l1.equals("iu")) {
-				asserter.checkWordInOtherScript(aCase.word);
-			}
+				if (aCase.l1.equals("iu")) {
+					asserter.checkWordInOtherScript(aCase.word);
+				}
 
-			if (
+				if (
 				(expTranslations == null || expTranslations.length == 0) &&
 				aCase.expRelatedTranslations != null) {
-				asserter.relatedTranslationsStartWith(aCase.expRelatedTranslations);
+					asserter.relatedTranslationsStartWith(aCase.expRelatedTranslations);
 
+				}
+
+				if (aCase.expDecomp != null) {
+					asserter.decompositionIs(aCase.expDecomp);
+				}
+			} catch (Exception e) {
+				throw new RuntimeException(e);
 			}
+		};
 
-			if (aCase.expDecomp != null) {
-				asserter.decompositionIs(aCase.expDecomp);
-			}
-		}
-
-		if (focusOnCase != null) {
-			Assertions.fail("Test run on only one case. Make sure you set focusOnCase=null to run all tests");
-		}
+		new RunOnCases(cases_entry4word, runner)
+//			.onlyCaseNums(1)
+			.run();
 	}
 
 	@Test
@@ -265,59 +258,39 @@ public class MultilingualDictTest {
 		assertSearchResultsStartWith(
 			results.getLeft(), "housing");
 	}
-
 	@Test
 	public void test__search__VariousCases() throws Exception {
-		Integer focusOnCase = null;
-//		focusOnCase = 2;
-
-		int caseNum = 0;
-		for (Object[] aCase: cases_search) {
-			caseNum++;
-			if (focusOnCase != null && focusOnCase != caseNum) {
-				continue;
-			}
-			String lang = (String)aCase[0];
-			String query = (String)aCase[1];
-			Integer expTotalWords = (Integer)aCase[2];
-			String[] expTopMatches = (String[])aCase[3];
-			String caseDescr = "Case #"+caseNum+": "+lang+"-"+query;
-
-
-			Pair<List<String>,Long> results2 =
-				MultilingualDict.getInstance().search(query, lang, (Integer)null);
-			AssertNumber.isGreaterOrEqualTo(
-				caseDescr+"\nTotal number of words is too low",
-				results2.getRight(), expTotalWords
-			);
-			new AssertSequence<String>(
-				results2.getLeft().toArray(new String[0]), caseDescr)
+		Consumer<Case> runner =
+		(aCase) -> {
+			try {
+				String lang = (String) aCase.data[0];
+				String query = (String) aCase.data[1];
+				Integer expTotalWords = (Integer) aCase.data[2];
+				String[] expTopMatches = (String[]) aCase.data[3];
+				Pair<List<String>, Long> results2 =
+				MultilingualDict.getInstance().search(query, lang, (Integer) null);
+				AssertNumber.isGreaterOrEqualTo(
+					aCase.descr,
+					results2.getRight(), expTotalWords);
+				new AssertSequence<String>(
+					results2.getLeft().toArray(new String[0]),
+					aCase.descr)
 				.startsWith(expTopMatches);
-				;
-
-//
-//
-//
-//			Pair<Iterator<String>, Long> results =
-//				MultilingualDict.getInstance().searchIter(query, lang);
-//			assertSearchResultsStartWith(
-//				caseDescr, results.getLeft(), expTopMatches);
-//			AssertNumber.isGreaterOrEqualTo(
-//				caseDescr+"\nTotal number of words is too low",
-//				results.getRight(), expTotalWords
-//			);
-		}
-
-		if (focusOnCase != null) {
-			Assertions.fail("Test run only on one case. Remember to set focusOnCase=null");
-		}
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		};
+		new RunOnCases(cases_search, runner)
+			.run();
 	}
+
+
 
 	//////////////////////////////////
 	// TEST HELPERS
 	//////////////////////////////////
 
-	public static class MultilingualDictCase {
+	public static class MultilingualDictCase extends Case {
 		public String word = null;
 		public String l1 = "iu";
 		public String l2 = "en";
@@ -330,7 +303,8 @@ public class MultilingualDictTest {
 		public String[] expRelatedTranslations = null;
 		private String[] expOrigHighlights;
 
-		public MultilingualDictCase(String _word) {
+		public MultilingualDictCase(String _descr, String _word) {
+			super(_descr, null);
 			this.word = _word;
 			this.expOrigHighlights = new String[] {_word};
 		}

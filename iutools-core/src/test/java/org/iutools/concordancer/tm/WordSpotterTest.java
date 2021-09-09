@@ -96,12 +96,12 @@ public class WordSpotterTest {
 
 
 		cases = new Object[][] {
-			new Object[] {pair, "en", "hello", "Hello", "Bonjour"},
-			new Object[] {pair, "fr", "bonjour", "Bonjour", "Hello"},
+			new Object[] {pair, "en", "hello", "hello", "bonjour"},
+			new Object[] {pair, "fr", "bonjour", "bonjour", "hello"},
 			new Object[] {pair, "fr", "monde magnifique", "monde magnifique", "beautiful world"},
-			new Object[] {pair_stemmedTokens, "en", "hello", "Hello", "Bonjour"},
-			new Object[] {pair_stemmedTokens, "fr", "bonjour", "Bonjour", "Hello"},
-			new Object[] {pair_tokensContainRegexpSpecialChars, "en", "hello", "Hello", "Bonjour"},
+			new Object[] {pair_stemmedTokens, "en", "hello", "hello", "bonjour"},
+			new Object[] {pair_stemmedTokens, "fr", "bonjour", "bonjour", "hello"},
+			new Object[] {pair_tokensContainRegexpSpecialChars, "en", "hello", "hello", "bonjour"},
 			new Object[] {pair_enTokenSplitInTwo, "en", "clam", "clam", "ᐊᒻᒨᒪᔪᖅᓯᐅᖅᑐᑎᒃ"}
 			};
 	}
