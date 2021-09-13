@@ -1,16 +1,19 @@
 package org.iutools.webservice.worddict;
 
 import ca.nrc.config.ConfigException;
+import ca.nrc.testing.RunOnCases;
+import ca.nrc.testing.RunOnCases.*;
 import org.iutools.spellchecker.SpellCheckerException;
+import org.iutools.webservice.AssertEndpointResult;
 import org.iutools.webservice.EndpointTest;
 import org.iutools.webservice.ServiceException;
 import org.iutools.worddict.AssertMultilingualDictEntry;
 import org.iutools.worddict.MultilingualDictEntry;
-import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 
 import java.io.FileNotFoundException;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class WordDictEndpointTest extends EndpointTest {
 	@Override
@@ -137,5 +140,83 @@ public class WordDictEndpointTest extends EndpointTest {
 				"ᐃᒡᓗᒋᔭᐅᕙᒃᑐᓂᒃ", "ᐃᒡᓗᓕᕆᓂᕐᒥ", "ᐃᒡᓗᓕᕆᓂᕐᓕ ... ᐃᒡᓗᓕᕆᓂᕐᒧᑐᐃᓐᓈᕋᔭᖅᑐᖅ",
 				"ᐃᒡᓗᖏᓐᓄᑦ", "ᐃᓪᓗᓕᕆᓂᕐᒧᑦ")
 		;
+	}
+
+	@Test
+	public void test__WordDictEndpoint__VariousCases() throws Exception {
+
+		Case[] cases = new Case[]{
+			new Case("en-housing",
+				// Query language
+				"en",
+				// Query word
+				"housing",
+				// Expected min matching words
+				10,
+				// Expected Decomposition for query word.
+				// In this case it's empty because English words are never
+				// decomposed.
+				new String[0],
+				// Expected translations
+				new String[]{"ᐃᒡᓗᒋᔭᐅᕙᒃᑐᓂᒃ", "ᐃᒡᓗᓕᕆᓂᕐᒥ",
+					"ᐃᒡᓗᓕᕆᓂᕐᓕ ... ᐃᒡᓗᓕᕆᓂᕐᒧᑐᐃᓐᓈᕋᔭᖅᑐᖅ", "ᐃᒡᓗᖏᓐᓄᑦ", "ᐃᓪᓗᓕᕆᓂᕐᒧᑦ"}
+			),
+
+			// This IU word is not found in the hansard, but it DOES decompose.
+			// So, we ARE able to show any meaningful information about it
+			new Case("iu-iqqanaijaqtulirijikkut",
+				"iu", "iqqanaijaqtulirijikkut", 20,
+				new String[] {"iqqanaijaq/1v", "juq/1vn", "liri/1nv", "ji/1vn",
+					"kkut/1nn"},
+				new String[]{"branch summary", "of", "of ... does", "resources"}
+			),
+
+			// This IU word is not found in the hansard, AND it DOES NOT decompose.
+			// So no hits should be found.
+			new Case("iu-iqqanakkk", "iu", "iqqanakkk", 0),
+		};
+
+		Consumer<Case> runner =
+			(aCase) ->
+			{
+				try {
+					String lang = (String) aCase.data[0];
+					String otherLang = MultilingualDictEntry.otherLang(lang);
+					String query = (String) aCase.data[1];
+					Integer expMinHits = (Integer) aCase.data[2];
+
+					String[] expDecomp = null;
+					String[] expTranslations = null;
+					if (aCase.data.length > 3) {
+						expDecomp = (String[]) aCase.data[3];
+						expTranslations = (String[]) aCase.data[4];
+					}
+					WordDictInputs inputs = new WordDictInputs(query, lang);
+					WordDictResult epResult =
+						(WordDictResult) endPoint.execute(inputs);
+
+					AssertEndpointResult hitsAsserter =
+						new AssertWordDictResult(epResult, aCase.descr)
+						.raisesNoError()
+						.foundAtLeastNWords(expMinHits);
+
+					if (expMinHits > 0) {
+						new AssertMultilingualDictEntry(epResult.queryWordEntry, aCase.descr)
+							.isForWord(query)
+							.definitionEquals(null)
+							.decompositionIs(expDecomp)
+							.atLeastNExamples(expMinHits)
+							.highlightsAreSubsetOf(lang, true, query)
+							.highlightsAreSubsetOf(otherLang, true, expTranslations)
+							;
+					}
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			};
+
+		new RunOnCases(cases, runner)
+//			.onlyCaseNums(2)
+			.run();
 	}
 }

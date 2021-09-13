@@ -16,11 +16,7 @@
 
 <body>
 
-<div id="header" class="header">
-  <div id="header_inner">
-    <a href="index.html">Computer Resources for Inuktut</a> 
-  </div>
-</div>
+<a href="index.html"><img src="imgs/iutools-banner.svg" class="img_responsive"></a>
 
 <nav id="main_nav">
   <button class="menu-toggle"><span></span><span></span><span></span></button>
@@ -30,7 +26,7 @@
     <li id="other_tools">
       <button class="drop-menu-toggle">Other Inuktut Tools</button>
       <ul class="drop-menu">
-        <li><a href="worddict.jsp">Word Dictionary</a></li>
+        <li><a href="worddict.jsp">Inuktitut-English Dictionary</a></li>
         <li><a href="morpheme_dictionary.jsp">Morpheme Dictionary</a></li>
         <li><a href="gisttext.jsp">Gister</a></li>
         <li><a href="spell.jsp">Spell Checker</a></li>

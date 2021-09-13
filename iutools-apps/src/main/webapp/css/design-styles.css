@@ -30,14 +30,26 @@ main {
 	flex: 1;
 }
 
-#header_inner, #main_nav_menu, #page_title, main {
+#main_nav_menu, #page_title, main {
   width: 100%;
   max-width: 1000px;
   padding: 0 14px;
   margin: 0 auto;
 }
 
-#header_inner { 
+#header_inner {
+    width: 100%;
+    max-width: 1000px;
+    padding: 0 14px;
+    margin: 0 auto;
+}
+
+.img_responsive {
+    max-width: 100%;
+    height: auto;
+}
+
+#header_inner {
   position: relative;
   padding: 20px;
 }

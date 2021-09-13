@@ -36,13 +36,13 @@ public abstract class Endpoint
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 		throws ServiceException {
 		Logger tLogger = Logger.getLogger("org.iutools.webservice.Endpoint.doPost");
-//		if (tLogger.isTraceEnabled()) {
-//			try {
-//				tLogger.trace("request json="+PrettyPrinter.print(IOUtils.toString(request.getReader())));
-//			} catch (IOException e) {
-//				throw new ServiceException("Could not trace request JSON");
-//			}
-//		}
+		if (tLogger.isTraceEnabled()) {
+			try {
+				tLogger.trace("request json="+PrettyPrinter.print(IOUtils.toString(request.getReader())));
+			} catch (IOException e) {
+				// If we can't trace the request, just keep going
+			}
+		}
 		I inputs = null;
 		try {
 
@@ -60,6 +60,7 @@ public abstract class Endpoint
 			logError(e, inputs);
 			throw new ServiceException(e);
 		}
+		tLogger.trace("POST completed");
 	}
 
 	private void logResult(HttpServletRequest request, EndpointResult epResponse, I inputs) throws ServiceException {

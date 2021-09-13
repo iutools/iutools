@@ -121,15 +121,15 @@ class WordDictController extends IUToolsController {
         tracer.trace('resp= '+JSON.stringify(resp));
         var html = this.htmlHits(resp);
 
-        tracer.trace("resp.queryWordEntry.word="+resp.queryWordEntry.word+", this.queryWord()="+this.queryWord());
-
-        if (resp.queryWordEntry.word === this.queryWord()) {
-            // There is a word that matched the query exactly.
-            // Display its entry.
-            tracer.trace("Displaying the exact match entry");
-            this.wordEntryController.dictionaryLookup(
+        var queryWordEntry = resp.queryWordEntry.word;
+        if (queryWordEntry != null) {
+            if (queryWordEntry === this.queryWord()) {
+                // There is a word that matched the query exactly.
+                // Display its entry.
+                tracer.trace("Displaying the exact match entry");
+                this.wordEntryController.dictionaryLookup(
                     resp.queryWordEntry.word, this.queryLang());
-
+            }
         }
 
         var divHits = this.elementForProp("divSearchResults");

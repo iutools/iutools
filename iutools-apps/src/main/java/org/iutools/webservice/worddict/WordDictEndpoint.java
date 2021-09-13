@@ -1,7 +1,12 @@
 package org.iutools.webservice.worddict;
 
+import ca.nrc.json.PrettyPrinter;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.Logger;
 import org.iutools.corpus.CompiledCorpusException;
+import org.iutools.morph.Decomposition;
+import org.iutools.morph.MorphologicalAnalyzerException;
+import org.iutools.morph.r2l.MorphologicalAnalyzer_R2L;
 import org.iutools.script.TransCoder;
 import org.iutools.script.TransCoderException;
 import org.iutools.webservice.Endpoint;
@@ -14,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 public class WordDictEndpoint extends Endpoint<WordDictInputs,WordDictResult> {
 	@Override
@@ -23,6 +29,10 @@ public class WordDictEndpoint extends Endpoint<WordDictInputs,WordDictResult> {
 
 	@Override
 	public WordDictResult execute(WordDictInputs inputs) throws ServiceException {
+		Logger tLogger = Logger.getLogger("org.iutools.webservice.worddict.WordDictEndpoint.execute");
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("invoked with inputs="+ PrettyPrinter.print(inputs));
+		}
 		Long totalWords = null;
 		List<String> topWords = null;
 		MultilingualDictEntry firstWordEntry = null;
@@ -38,9 +48,25 @@ public class WordDictEndpoint extends Endpoint<WordDictInputs,WordDictResult> {
 			}
 
 			if (!topWords.contains(inputs.word)) {
+				boolean addQueryWord = false;
 				// The query word was not included in the top words.
 				// See if the word is in the dictionary.
-				if (null != dict.corpus.info4word(TransCoder.ensureRoman(inputs.word))) {
+				String wordRoman = TransCoder.ensureRoman(inputs.word);
+				if (null != dict.corpus.info4word(wordRoman)) {
+					addQueryWord = true;
+				} else {
+					// Word is not in the corpus. See if it at least it
+					// decomposes
+					try {
+						Decomposition[] decompositions = new MorphologicalAnalyzer_R2L().decomposeWord(wordRoman);
+						if (decompositions != null && decompositions.length > 0) {
+							addQueryWord = true;
+						}
+					} catch (TimeoutException e) {
+						// Nothing to do if the word could not be decomposed in time
+					}
+				}
+				if (addQueryWord) {
 					topWords.add(0, inputs.word);
 				}
 			}
@@ -50,7 +76,8 @@ public class WordDictEndpoint extends Endpoint<WordDictInputs,WordDictResult> {
 			if (!topWords.isEmpty()) {
 				firstWordEntry = dict.entry4word(topWords.get(0), inputs.lang);
 			}
-		} catch (MultilingualDictException | CompiledCorpusException e) {
+		} catch (MultilingualDictException | CompiledCorpusException
+			| MorphologicalAnalyzerException  e) {
 			throw new ServiceException(e);
 		}
 
@@ -67,6 +94,7 @@ public class WordDictEndpoint extends Endpoint<WordDictInputs,WordDictResult> {
 			throw new ServiceException(e);
 		}
 
+		tLogger.trace("Completed");
 		return result;
 	}
 

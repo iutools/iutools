@@ -1,10 +1,7 @@
 package org.iutools.webservice;
 
 import ca.nrc.json.MapperFactory;
-import ca.nrc.testing.AssertObject;
-import ca.nrc.testing.AssertSequence;
-import ca.nrc.testing.AssertString;
-import ca.nrc.testing.Asserter;
+import ca.nrc.testing.*;
 import org.iutools.webservice.worddict.WordDictResult;
 import org.junit.jupiter.api.Assertions;
 
@@ -57,7 +54,24 @@ public abstract class AssertEndpointResult extends Asserter<EndpointResult> {
 		return this;
 	}
 
+	public AssertEndpointResult foundAtLeastNWords(Integer expMinHits) {
+		Integer gotTotalHits = wordDictResult().matchingWords.size();
+		if (expMinHits == 0) {
+			AssertNumber.assertEquals(
+				baseMessage+"\nSearch should NOT have produced any hits",
+				0, gotTotalHits, 0.0);
+		} else {
+			AssertNumber.isGreaterOrEqualTo(
+			baseMessage + "Total number of words found was too small",
+			expMinHits, gotTotalHits
+			);
+		}
+
+		return this;
+	}
+
 	public WordDictResult wordDictResult() {
 		return (WordDictResult)gotObject;
 	}
+
 }
