@@ -69,7 +69,7 @@ public class MorphRelativesFinder {
 		
 		segments = Morpheme.format(segments, Morpheme.MorphFormat.NO_BRACES);
 		if (logger.isTraceEnabled()) {
-			logger.trace("input word segments, segments="+String.join(", ", segments));
+			logger.trace("input word segments, segments="+(segments == null?"null":String.join(", ", segments)));
 		}
 
 		new MRelsTracer().traceTrackedRels(logger);

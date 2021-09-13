@@ -1,5 +1,64 @@
 # Manual test plan for Inuktut apps
 
+
+## Word Dict
+
+Basic scenario
+- Search for 'nunavut'
+- Check that the entry for 'nunavut' is displayed autoamtically
+- Check that other words are listed in the hits list 
+  - Typically 25 of them
+- Inspect the entry for 'inuk'
+  - Word displayed in latin first, syll second
+  - Everything else displayed in roman
+    - Translations, Related words, Examples
+  - There is a decomp displayed
+  - There are some translations displyayed, including 'Nunavut'
+  - There are some related words
+     _BUG: There does not seem to be related words for now_
+  - There are some Examples
+    - The Inuktitut is on the left, English on the right
+    - Highlighting is ok on both sides
+- Click on one of the other words in the hit list
+  - Check its word entry
+- Click on one of the Related words and make sure the content of 
+  the Word Entry window changes accordingly 
+- Minimimize the word entry window
+- Maximize the word entry window
+  - Make sure word displayed is like before
+- Move the word entry window around
+
+Syllabic query
+- Search for ᐊᒻᒨᒪᔪᖅᓯᐅᖅᑐᑎᒃ
+- Make sure that the entry for that word is automatically opened
+- Check the entry
+  - Do the same checks as for the basic scenario
+
+English query
+- search for housing, with 'English' for the language picklist
+- Make sure that the entry for that word is automatically opened
+- Note: At the moment, it's 'normal' that the list of hits only shows the
+  word 'housing'
+- Check the entry
+  - Do the same checks as for the basic scenario
+
+Search with Enter vs Button
+- Submit search by either
+  - Typing Enter
+  - Clicking the Search button
+
+Progress wheel etc.
+- Submit a search and check that
+  - progress wheel is displayed
+  - search button is disabled
+  - when search is done, wheel disappears and butto is re-enabled
+  
+Min-max-Drag word entry window
+- Make sure you can minimimize, maximize and drag the word entry window
+- Minimize the word entry, then:
+  - Click on on a word and make sure it maximises itself and the correct word is 
+    displayed 
+     
 ## Gister
 
 Syllabic text
@@ -72,17 +131,15 @@ En url (Happy Path)
     - It does NOT show that it's clickable
     - Clicking on that NON-word does NOT produce a Gist
 
-IU page whose En page cannot be determined
-
-EN page whose IU page cannot be determined
-
-URL on a server that does not exist
-- Enter https://www.gov.nu.ca/blahblah
-- Check that
-  - System says the page cannot be found
-  - ACTUALLY, THIS MESSAGE IS NOT YET IMPLEMENTED
-
-URL on existing server that returns page not found
+Undownloadable pages
+- For each of the following situations, make sure the system does not crash and 
+  displays a message saying the page could not be downloaded
+  - IU page whose En page cannot be determined
+  - EN page whose IU page cannot be determined
+  - URL on a server that does not exist
+    - https://www.gov.nu.ca/blahblah
+  - URL on existing server that returns page not found
+    - https://www.pipsnacks.com/404
 
 
 ## Search Engine
@@ -98,11 +155,15 @@ Search for word in SYLLABIC -- Happy Path
 
 Search for word in LATIN - Happy Path
 - Enter ukpirniq (= religion) in the search box, then click [Search] button
-- Check that the search term is replaced by this:
+- Check that the search term is replaced by this in the Google window:
 
      (ᐅᑉᐱᕐᓂᕐᒥᒃ OR ᐅᑉᐱᕐᓂᖅ OR ᐅᑉᐱᕐᓂᖏᑦ OR ᐅᑉᐱᕐᓂᐅᕗᖅ OR ᐅᑉᐱᓂᕐᒧᓪᓗ OR ᐅᒃᐱᕐᓂᖅ)
 
   and that a Google search page is opened with that query
+- Click the back button and check that the query has been replaced by this in 
+  IUTools search engine window:
+  
+     (ukpirniq OR uppirusuppunga OR uppirusuttunga OR uppirusukkama OR uppirijara OR ukpirusukpugut)
   
 Search using an already expanded query
  Enter ᐅᒃᐱᕐᓂᖅ (= religion) in the query text box, then click [Search] 
@@ -207,16 +268,16 @@ Check with and without _Include partial corrections_
     not have partial corrections. So if you click on a word and don't see one, 
     try other words.   
     
-## Morpheme Search
+## Morpheme Dictionary
 
 Happy path
 - Enter morpheme 'tut', then click on Search
-  - Should see two  morphemes that match 'tut'
-  - Click on each of the morphemes and inspect the list of hits for it
-    - Words should be sorted in DECREASING order of frequency
-    - Clicking on a word should show:
-      - Description of the word
-      - A list of parallel English-Inuktut sentences using that word
+  - Should see 4  morphemes that match 'tut'
+  - For each morpheme, check that we display
+    - human-readable description (ex: verb to verb suffix)
+    - Definition (ex: "To hit or land on something")
+    - List of example words sorted in DECREASING order of frequency
+      - Click on an example word and make sure its dictionary entry is displayed
   
 Submit form with Enter key
 - Enter morpheme 'tut', then PRESS ENTER
@@ -227,20 +288,22 @@ Submit form with Enter key
  - For each of the actions mentioned below, make sure that the action is logged 
    properly in the tomcat log, i.e.
    - The action is logged once and only once
-   - The action is properly "summarized" in the case of 
-     - SPELL
-     - GIST_TEXT
+   - The action data provided by the log line is accurate
      
- - Action to test
+ - Actions to test:
+   - Word Dictionary
+     - Search for a word (_action=WORD_SEARCH, data=lang,word_)
+     - Click on a word (_action=WORD_ENTRY, data=lang,word_)
    - Morpheme Examples
-     - Do a search for a morpheme (_action=MORPHEME_EXAMPLES)
-       - By typin ENTER and by clicking button
+     - Do a search for a morpheme (_action=MORPHEME_DICT, data=corpusName,nbExamples,wordPattern_)
+       - By typing ENTER and by clicking button
+     - Click on an example word (_action=WORD_ENTRY, data=lang,word__)
    - Gister
-     - Gist some text (_action=GIST_TEXT)
-     - Click on a word to display its gist (_action=GIST_WORD)
+     - Gist some text (_action=GIST_TEXT, data:type=text,totalWords)
+     - Gist a URL (_action=GIST_TEXT, data:type=url)
+     - Click on a word to display its word entry (_action=WORD_ENTRY, data=lang,word_)
    - Spell Checker
-     - Spellcheck some text (_action=SPELL)
+     - Spellcheck some text (_action=SPELL, data=totalWords)
    - Web Search
-     - Search for a word (_action=SEARCH_WEB)
-     - By typin ENTER and by clicking button
+     - Search for a word (_action=SEARCH_WEB, data=origQuery)
      

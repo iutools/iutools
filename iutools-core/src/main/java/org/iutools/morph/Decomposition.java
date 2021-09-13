@@ -107,12 +107,13 @@ public class Decomposition {
 		return decompSpecs;
 	}
 	
-	public String[] getMorphemes() {
+	public String[] getMorphemes() throws DecompositionException {
 		String[] morphemes = new String[components().length];
-		for (int im=0; im<components().length; im++) {
-			String component = components()[im].substring(1,components()[im].length()-1);
-			String[] parts = component.split(":");
-			morphemes[im] = parts[1];
+		int ii=0;
+		for (String component: components()) {
+			String morphID = Decomposition.parseComponent(component).getRight();
+			morphemes[ii] = morphID;
+			ii++;
 		}
 		
 		return morphemes;

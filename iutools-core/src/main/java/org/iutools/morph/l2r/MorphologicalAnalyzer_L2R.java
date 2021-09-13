@@ -20,6 +20,7 @@ import com.google.gson.Gson;
 import org.iutools.datastructure.trie.Trie;
 import org.iutools.linguisticdata.*;
 import org.iutools.morph.Decomposition;
+import org.iutools.morph.DecompositionException;
 import org.iutools.morph.MorphologicalAnalyzer;
 import org.iutools.morph.MorphologicalAnalyzerException;
 import ca.nrc.config.ConfigException;
@@ -123,7 +124,7 @@ public class MorphologicalAnalyzer_L2R extends MorphologicalAnalyzer {
 	 * @param decompositionTrees A List of DecompositionTree objects
 	 * @return A List of Decomposition objects
 	 */
-	List<Decomposition> combineMorphemes(List<DecompositionTree> decompositionTrees) {
+	List<Decomposition> combineMorphemes(List<DecompositionTree> decompositionTrees) throws MorphologicalAnalyzerException {
 		Logger logger = Logger.getLogger("MorphologicalAnalyzer_L2RAlain.combineMorphemes");
 		HashMap<String,String[]> combinedMorphemesInDecompositions = new HashMap<String,String[]>();
 		List<Decomposition> allDecomps = new ArrayList<Decomposition>();
@@ -136,7 +137,12 @@ public class MorphologicalAnalyzer_L2R extends MorphologicalAnalyzer {
 				logger.debug("------- decomp= "+decomp.toStr());
 				if (decomp.validateForFinalComponent()) {
 					allDecomps.add(decomp);
-					String[] morphemeIds = decomp.getMorphemes();
+					String[] morphemeIds = new String[0];
+					try {
+						morphemeIds = decomp.getMorphemes();
+					} catch (DecompositionException e) {
+						throw new MorphologicalAnalyzerException(e);
+					}
 					for (int imid=0; imid<morphemeIds.length; imid++) {
 						String morphemeId = morphemeIds[imid];
 						//logger.debug("morphemeId: "+morphemeId);

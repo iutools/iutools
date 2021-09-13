@@ -122,7 +122,7 @@ public class MultilingualDictEntry {
 				try {
 					morphDecomp.add(
 					new MorphemeHumanReadableDescr(
-					morphInfo.id, morphInfo.englishMeaning));
+						morphInfo.id, morphInfo.englishMeaning));
 				} catch (MorphemeException e) {
 					throw new MultilingualDictException(e);
 				}

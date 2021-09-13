@@ -102,6 +102,16 @@ public class MultilingualDictTest {
 					"ᐃᒡᓗᓕᕆᓂᕐᓕ ... ᐃᒡᓗᓕᕆᓂᕐᒧᑐᐃᓐᓈᕋᔭᖅᑐᖅ")
 				.setMinExamples(10)
 				.setRelatedWords(),
+
+//			new MultilingualDictCase("iu-nuvarjuarnaq (=covid)", "nuvarjuarnaq")
+//				.setL1("en")
+//				.setDecomp(null)
+//				.setOrigWordTranslations(
+//					"ᐃᒡᓗᖏᓐᓄᑦ", "ᐃᒡᓗᓕᕆᓂᕐᒥ", "ᐃᓪᓗᓕᕆᓂᕐᒧᑦ",
+//					"ᐃᒡᓗᒋᔭᐅᕙᒃᑐᓂᒃ",
+//					"ᐃᒡᓗᓕᕆᓂᕐᓕ ... ᐃᒡᓗᓕᕆᓂᕐᒧᑐᐃᓐᓈᕋᔭᖅᑐᖅ")
+//				.setMinExamples(10)
+//				.setRelatedWords(),
 		};
 	}
 
@@ -238,7 +248,7 @@ public class MultilingualDictTest {
 		};
 
 		new RunOnCases(cases_entry4word, runner)
-//			.onlyCaseNums(1)
+//			.onlyCaseNums(8)
 			.run();
 	}
 

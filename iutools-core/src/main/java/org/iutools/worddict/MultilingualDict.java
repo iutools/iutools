@@ -11,6 +11,10 @@ import org.iutools.concordancer.tm.TranslationMemoryException;
 import org.iutools.concordancer.tm.WordSpotter;
 import org.iutools.concordancer.tm.WordSpotterException;
 import org.iutools.corpus.*;
+import org.iutools.morph.Decomposition;
+import org.iutools.morph.DecompositionException;
+import org.iutools.morph.MorphologicalAnalyzerException;
+import org.iutools.morph.r2l.MorphologicalAnalyzer_R2L;
 import org.iutools.morphrelatives.MorphRelativesFinder;
 import org.iutools.morphrelatives.MorphRelativesFinderException;
 import org.iutools.morphrelatives.MorphologicalRelative;
@@ -19,6 +23,7 @@ import org.iutools.script.TransCoderException;
 import org.iutools.worddict.MultilingualDictEntry.*;
 
 import java.util.*;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Dictionary of Inuktitut words.
@@ -68,7 +73,7 @@ public class MultilingualDict {
 		return entry4word(word, (String)null, sortRelatedWords, (Field[])null);
 	}
 
-	public MultilingualDictEntry entry4word( String word, String lang)
+	public MultilingualDictEntry entry4word(String word, String lang)
 		throws MultilingualDictException {
 		return entry4word(word, lang, (Boolean)null, (Field[])null);
 	}
@@ -118,6 +123,11 @@ public class MultilingualDict {
 			WordInfo winfo = corpus.info4word(entry.wordRoman);
 			if (winfo != null) {
 				entry.setDecomp(winfo.topDecomposition());
+			} else {
+				// Word could not be found in the corpus.
+				// At least see if we can fill the entry's decomposition field
+				String[] decomp = decomposeWord(word);
+				entry.setDecomp(decomp);
 			}
 			if (ArrayUtils.contains(fieldsToPopulate, Field.BILINGUAL_EXAMPLES) ||
 				ArrayUtils.contains(fieldsToPopulate, Field.TRANSLATIONS)) {
@@ -499,5 +509,18 @@ public class MultilingualDict {
 		return Pair.of(wordsIter, totalWords);
 	}
 
-
+	public String[] decomposeWord(String word) throws MultilingualDictException {
+		String decomp[] = new String[0];
+		try {
+			Decomposition[] decomps = new MorphologicalAnalyzer_R2L().decomposeWord(word);
+			if (decomps != null && decomps.length > 0) {
+				decomp = decomps[0].getMorphemes();
+			}
+		} catch (TimeoutException e) {
+			// Leave the decomp to empty
+		} catch (MorphologicalAnalyzerException | DecompositionException e) {
+			throw new MultilingualDictException(e);
+		}
+		return decomp;
+	}
 }

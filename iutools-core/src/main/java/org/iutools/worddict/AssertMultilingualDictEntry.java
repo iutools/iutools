@@ -40,16 +40,16 @@ public class AssertMultilingualDictEntry extends Asserter<MultilingualDictEntry>
 
 	public AssertMultilingualDictEntry decompositionIs(String... expMorphemes)
 		throws Exception {
-		List<String> gotMorphemes = null;
+		List<String> gotDecomp = new ArrayList<String>();
 		if (null != entry().morphDecomp) {
-			gotMorphemes = new ArrayList<String>();
+			gotDecomp = new ArrayList<String>();
 			for (MorphemeHumanReadableDescr morphDescr : entry().morphDecomp) {
-				gotMorphemes.add(morphDescr.id);
+				gotDecomp.add(morphDescr.id);
 			}
 		}
 		AssertObject.assertDeepEquals(
 			baseMessage+"\nDecomposition not as expected",
-			expMorphemes, gotMorphemes);
+			expMorphemes, gotDecomp);
 		return this;
 	}
 
