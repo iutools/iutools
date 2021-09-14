@@ -35,7 +35,7 @@ class WordEntryController extends IUToolsController {
 		this.showSpinningWheel("divWordEntry_message","Looking up word");
 
 		var data = this.getWordDictRequestData(word, lang);
-		this.logOnServer("GIST_WORD", data);
+		this.logOnServer("WORD_LOOKUP", data);
 		this.invokeWordDictService(
             data,
             this.successWordDictCallback,
@@ -126,9 +126,10 @@ class WordEntryController extends IUToolsController {
             html += this.htmlTranslations(wordEntry, otherLang);
             html += this.htmlRelatedWords(wordEntry, lang);
             html = this.htmlMorphologicalAnalyses(wordEntry, lang, html);
-            html = this.htmlAlignments(wordEntry, html);
+            html +=  this.htmlAlignmentsByTranslation(wordEntry);
             this.elementForProp("divWordEntry_contents").html(html);
             this.attachWordLookupListeners();
+            this.enableAccordions();
         }
     }
 
@@ -138,6 +139,8 @@ class WordEntryController extends IUToolsController {
         var heading = this.langName(otherLang)+" Translations"
 
         var info = this.translationsInfo(wordEntry);
+        var translations = info.translations;
+
         var disclaimer = null;
         if (info.areRelatedTranslations) {
             heading = heading+" (Related words only)"
@@ -145,7 +148,6 @@ class WordEntryController extends IUToolsController {
         var html = "<h3>"+heading+"</h3>\n";
 
         var examples = info.examples;
-        var translations = Object.keys(examples);
 
         var totalDisplayed = 0;
         for (var ii=0; ii < translations.length; ii++) {
@@ -154,9 +156,9 @@ class WordEntryController extends IUToolsController {
                 continue;
             }
             if (totalDisplayed > 0) {
-                html += "<br/>\n";
+                html += "; ";
             }
-            html += word;
+            html += this.htmlTranslationWord(word);
             totalDisplayed++;
         }
         if (totalDisplayed == 0) {
@@ -164,6 +166,11 @@ class WordEntryController extends IUToolsController {
         }
         html += "<br/>\n";
 
+        return html;
+    }
+
+    htmlTranslationWord(word) {
+        var html = "<a href=\"#examples4_"+word+"\">"+word+"</a>";
         return html;
     }
 
@@ -249,36 +256,60 @@ class WordEntryController extends IUToolsController {
 	
 		return html;
 	}
-	
-	htmlAlignments(wordEntry, html) {
-        var trInfo = this.translationsInfo(wordEntry);
-		var translations = trInfo.translations;
-        var alignments = trInfo.examples;
 
-        var heading = "Examples";
+    htmlAlignmentsByTranslation(wordEntry) {
+        var tracer = Debug.getTraceLogger('WordEntryController.htmlAlignmentsByTranslation');
+        tracer.trace("wordEntry="+JSON.stringify(wordEntry));
+        var html = "";
+        var trInfo = this.translationsInfo(wordEntry);
+        tracer.trace("trInfo="+JSON.stringify(trInfo));
+		var translations = trInfo.translations;
+        var translation2alignments = trInfo.examples;
+
+        var heading = "Examples of use";
         if (trInfo.areRelatedTranslations) {
             heading += " (for related words)";
         }
 		html += "<h3>"+heading+"</h3>\n";
-		if (translations != null && translations.length > 0) {
-			html += '<table id="tbl-alignments" class="alignments"><th>Inuktitut</th><th>English</th></tr>';
-            for (var ii=0; ii < translations.length; ii++) {
-                var aTranslation = translations[ii];
-                var aTransAlignments = alignments[aTranslation];
-                if (aTransAlignments != null && aTransAlignments.length > 0) {
-                    for (var jj=0; jj < aTransAlignments.length; jj++) {
-                        var anAlignment = aTransAlignments[jj];
-                        html += '<tr><td>'+anAlignment[0]+'</td><td>'+anAlignment[1]+'</td></tr>';
-                    }
-                }
-			}
-			html += '</table>';
+
+        if (translations != null && translations.length > 0) {
+            html += "<div class=\"accordion\" id=\"accordion\">\n";
+		    for (var ii=0; ii < translations.length; ii++) {
+		        var aTranslation = translations[ii];
+		        var translAlignments = translation2alignments[aTranslation];
+		        html += this.htmlAlignments4Translation(aTranslation, translAlignments);
+            }
+            html += "</div>\n";
 		} else {
 			html += "<h4>Could not find examples of use for this word.</h4>"
 		}
-		
+
 		return html;
 	}
+
+    htmlAlignments4Translation(aTranslation, aTransAlignments) {
+        var html = ""
+        // html += "<a name='examples4_"+aTranslation+"'/>\n";
+        html += "<h4><a name=\"examples4_"+aTranslation+"\">as <i>\""+aTranslation+"\"</i>...</a></h4>\n";
+        html +=
+            "<div>\n"+
+            "<p>\n"
+            ;
+        html += '<table id="tbl-alignments" class="alignments"><th>Inuktitut</th><th>English</th></tr>';
+        if (aTransAlignments != null && aTransAlignments.length > 0) {
+            for (var jj=0; jj < aTransAlignments.length; jj++) {
+                var anAlignment = aTransAlignments[jj];
+                html += '<tr><td>'+anAlignment[0]+'</td><td>'+anAlignment[1]+'</td></tr>';
+            }
+        }
+        html +=
+            '' +
+            "</table>\n"+
+            "</p>\n"+
+            "</div>\n";
+
+        return html;
+    }
 
     attachWordLookupListeners() {
         var anchorsWords = $(document).find('.clickable-word-lookup');
@@ -321,5 +352,9 @@ class WordEntryController extends IUToolsController {
     minimize() {
         this.elementForProp("divWordEntry_iconized").show();
         this.elementForProp("divWordEntry_iconizer").hide();
+    }
+
+    enableAccordions() {
+        $(".accordion" ).accordion();
     }
 }

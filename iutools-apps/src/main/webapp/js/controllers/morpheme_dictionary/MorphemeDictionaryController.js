@@ -26,7 +26,7 @@ class MorphemeDictionaryController extends IUToolsController {
 			this.setGetBusy(true);
 			var requestData = this.getSearchRequestData();
 			if (!this.isDuplicateEvent("onFindExamples", requestData)) {
-				this.logOnServer("MORPHEME_EXAMPLES", requestData)
+				this.logOnServer("MORPHEME_SEARCH", requestData)
 				this.invokeFindExampleService(requestData,
 					this.findExamplesSuccessCallback, this.findExamplesFailureCallback);
 			}

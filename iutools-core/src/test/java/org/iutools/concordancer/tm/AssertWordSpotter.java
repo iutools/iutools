@@ -45,7 +45,7 @@ public class AssertWordSpotter extends Asserter<WordSpotter> {
 			Set<String> gotHighlightsSet = new HashSet<String>();
 			Matcher matcher = pattHighlight.matcher(text);
 			while (matcher.find()) {
-				gotHighlightsSet.add(matcher.group(1));
+				gotHighlightsSet.add(matcher.group(1).toLowerCase());
 			}
 			Set<String> expHighlightsSet = new HashSet<String>();
 			expHighlightsSet.add(expHighlights);

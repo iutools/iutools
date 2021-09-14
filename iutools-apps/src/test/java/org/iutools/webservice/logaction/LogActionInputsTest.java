@@ -47,14 +47,14 @@ public class LogActionInputsTest extends ServiceInputsTest {
 
 		inputs =
 			new LogActionInputs(
-				LogActionInputs.Action.MORPHEME_EXAMPLES,
+				LogActionInputs.Action.MORPHEME_SEARCH,
 				new JSONObject()
 					.put("wordPattern", "siuq")
 					.put("corpusName", JSONObject.NULL)
 					.put("nbExamples", "50")
 			);
 		new AssertServiceInputs(inputs)
-			.logSummaryIs("{\"_action\":\"MORPHEME_EXAMPLES\",\"corpusName\":null,\"nbExamples\":\"50\",\"wordPattern\":\"siuq\"}");
+			.logSummaryIs("{\"_action\":\"MORPHEME_SEARCH\",\"corpusName\":null,\"nbExamples\":\"50\",\"wordPattern\":\"siuq\"}");
 			;
 	}
 

@@ -147,14 +147,15 @@ class WidgetController {
 		if (!maxMsecs) {
 			maxMsecs = 1000;
 		}
+        var nowMsecs = new Date().getTime();
 		var eventDescr = this.evenDescription(method, data);
-		tracer.trace("eventDescr="+eventDescr+", this.recentEvents="+JSON.stringify(this.recentEvents));
-		var nowMsecs = new Date().getMilliseconds();
+		tracer.trace("nowMsecs="+nowMsecs+", eventDescr="+eventDescr+", this.recentEvents="+JSON.stringify(this.recentEvents));
 		var ind = this.recentEvents.indexOf(eventDescr);
 		var elapsed = -1;
 		if (ind >= 0) {
 			var lastIssued = this.recentEventTimes[eventDescr];
 			elapsed = nowMsecs - lastIssued;
+            tracer.trace("lastIssued="+lastIssued+", elapsed="+elapsed);
 			if (elapsed <= maxMsecs) {
 				isDup = true;
 			}

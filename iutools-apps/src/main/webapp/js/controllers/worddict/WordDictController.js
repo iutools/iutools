@@ -23,10 +23,10 @@ class WordDictController extends IUToolsController {
         var tracer = Debug.getTraceLogger("WordDictController.onSearch")
         var inputs = this.acquireInputs();
         tracer.trace("Searching inputs="+JSON.stringify(inputs));
-        this.clearHits();
-        this.setBusy(true);
         if (!this.isDuplicateEvent("onSearch", inputs)) {
-            this.logOnServer("DICTIONARY_LOOKUP", inputs);
+            this.clearHits();
+            this.setBusy(true);
+            this.logOnServer("DICTIONARY_SEARCH", inputs);
             this.invokeDictionaryService(inputs,
                 this.searchSuccessCallback, this.searchFailureCallback)
         }

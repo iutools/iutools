@@ -10,11 +10,15 @@ class IUToolsController extends WidgetController {
     }
 
     error(err) {
-        this.elementForProp('divError').html(err);
-        this.elementForProp('divError').show();
+        var divError = this.elementForProp('divError');
+        divError.html(err);
+        divError.show();
+        this.scrollIntoView(divError)
     }
 
     logOnServer(action, taskData) {
+        var tracer = Debug.getTraceLogger("UIToolsController.logOnServer");
+        tracer.trace("action="+action+", taskData="+JSON.stringify(taskData));
         var dataObj = null;
         var dataStr = null;
         if (typeof taskData === 'string' || taskData instanceof String) {

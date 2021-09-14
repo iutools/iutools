@@ -114,7 +114,7 @@ public class EndpointDispatcherTest {
 	public void test__doPost__log_action__DICTIONARY_LOOKUP() throws Exception {
 
 		JSONObject json = new JSONObject()
-			.put("action", LogActionInputs.Action.DICTIONARY_LOOKUP)
+			.put("action", LogActionInputs.Action.DICTIONARY_SEARCH)
 			.put("taskID", JSONObject.NULL)
 			.put("taskData", new JSONObject()
 				.put("word", "inuk")
@@ -150,7 +150,7 @@ public class EndpointDispatcherTest {
 	public void test__doPost__log_action__MORPHEME_EXAMPLES() throws Exception {
 
 		JSONObject json = new JSONObject()
-			.put("action", LogActionInputs.Action.MORPHEME_EXAMPLES)
+			.put("action", LogActionInputs.Action.MORPHEME_SEARCH)
 			.put("taskID", JSONObject.NULL)
 			.put("taskData", new JSONObject()
 				.put("wordPattern", "gaq")
