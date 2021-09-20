@@ -186,11 +186,11 @@ public class AssertGistPrepareContentResult extends AssertEndpointResult {
 		return this;
 	}
 
-	protected AssertGistPrepareContentResult raisesError(String expError) {
+	public AssertGistPrepareContentResult raisesError(String expError) {
 		return raisesError("", expError);
 	}
 
-	protected AssertGistPrepareContentResult raisesError(String mess, String expError) {
+	public AssertGistPrepareContentResult raisesError(String mess, String expError) {
 		AssertString.assertStringEquals(
 			baseMessage+"\n"+mess,
 			expError, result().errorMessage);

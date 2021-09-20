@@ -10,6 +10,7 @@ class IUToolsController extends WidgetController {
     }
 
     error(err) {
+        var tracer = Debug.getTraceLogger("IUController.error");
         var divError = this.elementForProp('divError');
         divError.html(err);
         divError.show();

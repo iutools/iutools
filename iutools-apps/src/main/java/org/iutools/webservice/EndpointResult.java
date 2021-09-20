@@ -14,4 +14,8 @@ public abstract class EndpointResult {
 
 	public abstract JSONObject resultLogEntry();
 
+	public EndpointResult setError(String _error) {
+		this.errorMessage = _error;
+		return this;
+	}
 }

@@ -35,6 +35,14 @@ public abstract class AssertEndpointResult extends Asserter<EndpointResult> {
 		return this;
 	}
 
+	public AssertEndpointResult raisesError(String expErr) {
+		AssertString.assertStringEquals(
+			baseMessage+"\nResponse did not raise the expected error",
+			expErr, result().errorMessage);
+		return this;
+	}
+
+
 	public AssertEndpointResult foundWords(String... expWords)
 		throws Exception {
 		String message = baseMessage + "\nFound words not as expected";

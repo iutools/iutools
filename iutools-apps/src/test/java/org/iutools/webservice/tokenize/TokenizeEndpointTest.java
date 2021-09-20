@@ -42,4 +42,21 @@ public class TokenizeEndpointTest extends EndpointTest {
 
 		asserter.raisesNoError();
 	}
+
+	@Test
+	public void test__TokenizeEndpoint__TextTooLarge__ThrowsError() throws Exception {
+
+		int maxWords = 5;
+		String text =
+			"ᓯᕗᓕᖅᑎ ᔫ ᓴᕕᑲᑖᖅ ᓂᕈᐊᖅᑕᐅᓚᐅᖕᒪᑦ ᒪᓕᒐᓕᐅᖅᑎᐅᖃᑎᖏᓐᓄᑦ ᑕᓪᓕᒪᒋᓕᖅᑕᖓᓐᓂᑦ "+
+			"ᒪᓕᕆᓕᐅᕐᕕᖕᒥᑦ ᓄᓇᕗᒻᒥᑦ ᓯᕗᓕᖅᑎᐅᓂᐊᓕᖅᖢᓂ ᓄᓇᕗᒻᒧᑦ ᔫᓐ 14, 2018−ᖑᑎᓪᓗᒍ.";
+
+		TokenizeInputs inputs = new TokenizeInputs(text, maxWords);
+		EndpointResult epResult = endPoint.execute(inputs);
+
+		new AssertTokenizeResult(epResult)
+			.raisesError(
+				"Text is too long (14 words).\n" +
+				"Split it into chunks of at most 5 words.");
+	}
 }

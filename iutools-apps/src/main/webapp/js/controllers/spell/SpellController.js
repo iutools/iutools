@@ -17,6 +17,8 @@ class SpellController extends IUToolsController {
 		// Set to false if we want to abort the current spell checking
 		// task.
 		this.abortCheck = false;
+
+		this.MAX_WORDS = null;
 	}
 
 	/**
@@ -347,7 +349,7 @@ class SpellController extends IUToolsController {
 				"Server generated a "+resp.status+" error:\n\n" +
 				resp.responseText;
 		}
-		this.error(resp);
+		this.error(resp.errorMessage);
 		this.setBusy(false);
 	}
 
@@ -479,6 +481,7 @@ class SpellController extends IUToolsController {
 	tokenizeRequestData() {
 		var request = {
 			text: this.elementForProp("txtToCheck").val(),
+            maxWords: this.MAX_WORDS,
 		};
 
 		return JSON.stringify(request);

@@ -268,6 +268,12 @@ Check with and without _Include partial corrections_
     not have partial corrections. So if you click on a word and don't see one, 
     try other words.   
     
+    
+Spell check text that is too large
+- Try to spell check a text with > 500 words
+- Check that the system prints an error message that says you have to split the
+  text into smaller chunks. 
+    
 ## Morpheme Dictionary
 
 Happy path
