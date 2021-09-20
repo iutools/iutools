@@ -18,6 +18,8 @@ import org.iutools.morph.r2l.MorphologicalAnalyzer_R2L;
 import org.iutools.morphrelatives.MorphRelativesFinder;
 import org.iutools.morphrelatives.MorphRelativesFinderException;
 import org.iutools.morphrelatives.MorphologicalRelative;
+import org.iutools.nlp.StopWords;
+import org.iutools.nlp.StopWordsException;
 import org.iutools.script.TransCoder;
 import org.iutools.script.TransCoderException;
 import org.iutools.worddict.MultilingualDictEntry.*;
@@ -366,18 +368,45 @@ public class MultilingualDict {
 			alreadySeenPair.add(bothText);
 			String l2Translation = WordSpotter.spotHighlight(
 				TAG, bilingualAlignment.langText.get(l2));
+			l2Translation = canonizeTranslation(l2, l2Translation);
 			tLogger.trace("l2Translation="+l2Translation);
-			if (l2Translation == null) {
-				entry.addBilingualExample("MISC", highlightedPair, forRelatedWord);
-			} else {
-				tLogger.trace("Adding example for translation of word='"+entry.wordRoman+"''" +
-				", l2Translation='"+l2Translation+"'");
-				entry.addBilingualExample(l2Translation, highlightedPair, forRelatedWord);
+			if (l2Translation != null && !l2Translation.isEmpty()) {
+				if (l2Translation == null) {
+					entry.addBilingualExample("MISC", highlightedPair, forRelatedWord);
+				} else {
+					tLogger.trace("Adding example for translation of word='" + entry.wordRoman + "''" +
+						", l2Translation='" + l2Translation + "'");
+						entry.addBilingualExample(l2Translation, highlightedPair, forRelatedWord);
+				}
+				entry.addBilingualExample("ALL", highlightedPair, forRelatedWord);
+				totalPairs++;
 			}
-			entry.addBilingualExample("ALL", highlightedPair, forRelatedWord);
-			totalPairs++;
 		}
  		return totalPairs;
+	}
+
+	public static String canonizeTranslation(String l2, String l2Translation) throws MultilingualDictException {
+		try {
+			if (l2Translation != null) {
+				l2Translation = StopWords.remove(l2, l2Translation);
+				l2Translation = l2Translation.replaceAll("\\s+", " ");
+				l2Translation = l2Translation.replaceAll("(^\\.+|\\.+$)", "");
+				l2Translation = l2Translation.replaceAll("\\*\\s*\\*", "*");
+				l2Translation = l2Translation.replaceAll("\\*+", "...");
+				while (true) {
+					String previous = l2Translation;
+					l2Translation = l2Translation.replaceAll("\\.\\.\\. \\.\\.\\.", "...");
+					if (l2Translation.equals(previous)) {
+						break;
+					}
+				}
+				l2Translation = l2Translation.replaceAll("^\\s*\\.\\.\\.\\s*|\\s*\\.\\.\\.\\s*$", "");
+				l2Translation = l2Translation.replaceAll("(^ | $)", "");
+			}
+		} catch (StopWordsException e) {
+			throw new MultilingualDictException(e);
+		}
+		return l2Translation;
 	}
 
 	public Pair<Iterator<String>,Long> searchIter(String partialWord) throws MultilingualDictException {

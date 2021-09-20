@@ -86,7 +86,8 @@ public class WordDictEndpointTest extends EndpointTest {
 			.highlightsAreSubsetOf("en",
 				"innuksuk", "inukshuk", "inuksuk",
 				// Why are these considered a translations of "inuksuk"?
-				"from", "at", "held at"
+				"from", "at", "held at", "held", "innuksuk ... lives",
+				"iqaluit’s"
 			)
 			.highlightsAreSubsetOf("iu", "inuksuk")
 		;
@@ -113,8 +114,8 @@ public class WordDictEndpointTest extends EndpointTest {
 			.highlightsAreSubsetOf("en",
 				"innuksuk", "inukshuk", "inuksuk",
 				// Why are these considered a translations of "inuksuk"?
-				"from", "at ... at", "held at", "(interpretation",
-				"name"
+				"held", "(interpretation",
+				"name", "individuals", "person"
 			)
 			.highlightsAreSubsetOf("iu", "inuksuk", "inuk", "inuk ... inuk")
 		;
@@ -146,18 +147,24 @@ public class WordDictEndpointTest extends EndpointTest {
 	public void test__WordDictEndpoint__VariousCases() throws Exception {
 
 		Case[] cases = new Case[]{
-			new Case("en-housing",
+			new Case("iu-igluga",
 				// Query language
-				"en",
+				"iu",
 				// Query word
-				"housing",
+				"igluga",
 				// Expected min matching words
 				10,
 				// Expected Decomposition for query word.
-				// In this case it's empty because English words are never
+				// Set to empty array for an English query word because English words are never
 				// decomposed.
-				new String[0],
+				new String[] {"iglu/1n", "ga/tn-nom-s-1s"},
 				// Expected translations
+				new String[]{"house", "home", "rent"}
+			),
+
+			new Case("en-housing",
+				"en", "housing", 10,
+				new String[0],
 				new String[]{"ᐃᒡᓗᒋᔭᐅᕙᒃᑐᓂᒃ", "ᐃᒡᓗᓕᕆᓂᕐᒥ",
 					"ᐃᒡᓗᓕᕆᓂᕐᓕ ... ᐃᒡᓗᓕᕆᓂᕐᒧᑐᐃᓐᓈᕋᔭᖅᑐᖅ", "ᐃᒡᓗᖏᓐᓄᑦ", "ᐃᓪᓗᓕᕆᓂᕐᒧᑦ"}
 			),
@@ -165,10 +172,11 @@ public class WordDictEndpointTest extends EndpointTest {
 			// This IU word is not found in the hansard, but it DOES decompose.
 			// So, we ARE able to show any meaningful information about it
 			new Case("iu-iqqanaijaqtulirijikkut",
-				"iu", "iqqanaijaqtulirijikkut", 20,
+				"iu", "iqqanaijaqtulirijikkut", 15,
 				new String[] {"iqqanaijaq/1v", "juq/1vn", "liri/1nv", "ji/1vn",
 					"kkut/1nn"},
-				new String[]{"branch summary", "of", "of ... does", "resources"}
+				new String[]{"hiring", "human resources",
+					"human resources ... personnel", "branch summary", "resources"}
 			),
 
 			// This IU word is not found in the hansard, AND it DOES NOT decompose.
@@ -216,7 +224,7 @@ public class WordDictEndpointTest extends EndpointTest {
 			};
 
 		new RunOnCases(cases, runner)
-//			.onlyCaseNums(2)
+//			.onlyCaseNums(3)
 			.run();
 	}
 }

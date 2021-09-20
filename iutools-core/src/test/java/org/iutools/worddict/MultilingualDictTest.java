@@ -2,6 +2,7 @@ package org.iutools.worddict;
 
 import ca.nrc.testing.AssertNumber;
 import ca.nrc.testing.AssertSequence;
+import ca.nrc.testing.AssertString;
 import ca.nrc.testing.RunOnCases;
 import ca.nrc.testing.RunOnCases.Case;
 import org.apache.commons.lang3.tuple.Pair;
@@ -80,18 +81,15 @@ public class MultilingualDictTest {
 				.setRelatedWords(
 					"kiujjutit", "kiujjutik", "kiuvan", "kiujjutinga", "kiulugu")
 				.setOrigWordTranslations(new String[]{
-					"response", "for that answer", "for your answer",
-					"for that response", "for ... response"}),
+					"response", "answer", "answered", "direct answer",
+					"minister ... answer"}),
 
 			new MultilingualDictCase("iu-najugaq", "najugaq")
 				.setRelatedWords(
 					"najugangani", "najugaujunut", "najuganga", "najugaujumi",
 					"najugauvattunut")
 				.setRelWordTranslationsStartWith(new String[] {
-					"site",
-					// Why is this considered a translation?
-					"they",
-					"area", "homes", "centre"}),
+					"home", "centres", "site", "area"}),
 
 			new MultilingualDictCase("en-housing", "housing")
 				.setL1("en")
@@ -248,7 +246,8 @@ public class MultilingualDictTest {
 		};
 
 		new RunOnCases(cases_entry4word, runner)
-//			.onlyCaseNums(8)
+//			.onlyCaseNums(7)
+//			.onlyCasesWithDescr("iu-kiugavinnga")
 			.run();
 	}
 
@@ -293,7 +292,6 @@ public class MultilingualDictTest {
 		new RunOnCases(cases_search, runner)
 			.run();
 	}
-
 
 
 	//////////////////////////////////
@@ -368,6 +366,40 @@ public class MultilingualDictTest {
 			this.expRelatedTranslations = _expRelatedTranslations;
 			return this;
 		}
+	}
+
+	@Test
+	public void test__canonizeTranslation__VariousCases() throws Exception {
+		Case[] cases = new Case[] {
+			new Case("en:happy path", "en", "Joy to the world", "Joy ... world"),
+			new Case("en:some sws are uppercased", "en", "Joy To The World", "Joy ... World"),
+			new Case("en:elipsis followed or preceded by sw", "en",
+				"Joy ... To The ... World", "Joy ... World"),
+			new Case("en:leading elipsis", "en", "... World", "World"),
+			new Case("en:tailing elipsis", "en", "World ...", "World"),
+			new Case("en:null text", "en", null, null),
+			new Case("en:null text", "en", null, null),
+			new Case("iu:ᐃᒡᓗᓕᕆᓂᕐᓕ ... ᐃᒡᓗᓕᕆᓂᕐᒧᑐᐃᓐᓈᕋᔭᖅᑐᖅ", "iu",
+				"ᐃᒡᓗᓕᕆᓂᕐᓕ ... ᐃᒡᓗᓕᕆᓂᕐᒧᑐᐃᓐᓈᕋᔭᖅᑐᖅ", "ᐃᒡᓗᓕᕆᓂᕐᓕ ... ᐃᒡᓗᓕᕆᓂᕐᒧᑐᐃᓐᓈᕋᔭᖅᑐᖅ")
+		};
+		Consumer<Case> runner = (aCase) -> {
+			String lang = (String) aCase.data[0];
+			String origText =(String)aCase.data[1];
+			String expText =(String)aCase.data[2];
+			try {
+				String gotText =
+					MultilingualDict.getInstance().canonizeTranslation(lang, origText);
+				AssertString.assertStringEquals(
+					aCase.descr, expText, gotText
+				);
+			} catch (MultilingualDictException e) {
+				throw new RuntimeException(e);
+			}
+		};
+		new RunOnCases(cases, runner)
+//			.onlyCaseNums(8)
+//			.onlyCasesWithDescr("en:leading elipsis")
+			.run();
 	}
 
 	////////////////////////////////////////

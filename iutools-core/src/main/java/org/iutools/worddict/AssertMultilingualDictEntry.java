@@ -126,6 +126,7 @@ public class AssertMultilingualDictEntry extends Asserter<MultilingualDictEntry>
 					text = aBilEx[1];
 				}
 				String highlighted = WordSpotter.spotHighlight("strong", text, ignoreRepetitions);
+				highlighted = MultilingualDict.canonizeTranslation(lang, highlighted);
 				if (highlighted != null) {
 					gotHighlights.add(highlighted);
 				}

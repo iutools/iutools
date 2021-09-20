@@ -235,13 +235,16 @@ public class MultilingualDictEntry {
 	}
 
 	public void sortTranslations() throws MultilingualDictException {
+		Logger tLogger = Logger.getLogger("org.iutools.worddict.MultilingualDictEntry.sortTranslations");
 		try {
 			if (_translationsNeedSorting) {
+				tLogger.trace("sorting orig word translations");
 				TranslationComparator comparator =
-				new TranslationComparator(otherLang(), this.examplesForOrigWordTranslation);
+					new TranslationComparator(otherLang(), this.examplesForOrigWordTranslation);
 				Collections.sort(this.origWordTranslations, comparator);
+				tLogger.trace("sorting related words translations");
 				comparator =
-				new TranslationComparator(otherLang(), this.examplesForRelWordsTranslation);
+					new TranslationComparator(otherLang(), this.examplesForRelWordsTranslation);
 				Collections.sort(this.relatedWordTranslations, comparator);
 			}
 		} catch (RuntimeException e) {
@@ -289,7 +292,7 @@ public class MultilingualDictEntry {
 			if (t2Examples != null) {
 				t2NumEx = t2Examples.size();
 			}
-			int comp = Integer.compare(t1NumEx, t2NumEx);
+			int comp = Integer.compare(t2NumEx, t1NumEx);
 			tLogger.trace("t1NumEx="+t1NumEx+", t2NumEx="+t2NumEx+": comp="+comp);
 			if (comp == 0) {
 				// If there are the same number of examples for both
