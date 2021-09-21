@@ -41,9 +41,26 @@ class MorphemeDictionaryController extends IUToolsController {
         this.wordDictController.dictionaryLookup(exampleWord);
 	}
 
-	invokeFindExampleService(jsonRequestData, _successCbk, _failureCbk) {
-		this.invokeService(jsonRequestData, _successCbk, _failureCbk,
-				'srv2/morpheme_dictionary');
+	invokeFindExampleService(actionData, cbkActionSuccess, cbkActionFailure) {
+        var jsonActionData = JSON.stringify(actionData);
+	    var logData = {
+	        action: "MORPHEME_SEARCH",
+            phase: "START",
+            taskData: actionData
+        }
+	    var jsonLogData = JSON.stringify(logData);
+
+	    var controller = this;
+	    var cbkLogStartSuccess = function(resp) {
+	        controller.invokeService(jsonActionData,
+                cbkActionSuccess, cbkActionFailure, 'srv2/morpheme_dictionary')
+        }
+        var cbkLogStartFailure = function(resp) {
+	        cbkActionFailure.call(controller, actionData);
+        }
+
+		this.invokeService(jsonLogData, cbkLogStartSuccess, cbkLogStartFailure,
+            'srv2/log_action');
 	}
 	
 	
@@ -130,9 +147,8 @@ class MorphemeDictionaryController extends IUToolsController {
 				nbExamples: nbExamples
 		};
 		
-		var jsonInputs = JSON.stringify(request);
 
-		return jsonInputs;
+		return request;
 	}
 	
 	enableSearchButton() {
