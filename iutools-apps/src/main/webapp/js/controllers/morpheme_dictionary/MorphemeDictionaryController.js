@@ -17,20 +17,20 @@ class MorphemeDictionaryController extends IUToolsController {
 	
 	onFindExamples() {
 		Debug.getTraceLogger("MorphemeDictionaryController.onFindExamples").trace("invoked");
-		this.elementForProp("divWordEntry_contents").html('').parent().hide();
-		this.elementForProp('inpExampleWord').val('');
-		this.elementForProp("divWordEntry").hide();
-		var isValid = this.validateQueryInput();
-		if (isValid) {
-			this.clearResults();
-			this.setGetBusy(true);
-			var requestData = this.getSearchRequestData();
-			if (!this.isDuplicateEvent("onFindExamples", requestData)) {
-				this.logOnServer("MORPHEME_SEARCH", requestData)
-				this.invokeFindExampleService(requestData,
-					this.findExamplesSuccessCallback, this.findExamplesFailureCallback);
+        this.elementForProp("divWordEntry_contents").html('').parent().hide();
+        this.elementForProp('inpExampleWord').val('');
+        this.elementForProp("divWordEntry").hide();
+        var isValid = this.validateQueryInput();
+        if (isValid) {
+            this.clearResults();
+            this.setGetBusy(true);
+            var requestData = this.getSearchRequestData();
+            if (!this.isDuplicateEvent("onFindExamples", requestData)) {
+                this.logOnServer("MORPHEME_SEARCH", requestData)
+                this.invokeFindExampleService(requestData,
+                    this.findExamplesSuccessCallback, this.findExamplesFailureCallback);
             }
-		}
+        }
 	}
 	
 	onExampleSelect(ev) {
@@ -42,25 +42,8 @@ class MorphemeDictionaryController extends IUToolsController {
 	}
 
 	invokeFindExampleService(actionData, cbkActionSuccess, cbkActionFailure) {
-        var jsonActionData = JSON.stringify(actionData);
-	    var logData = {
-	        action: "MORPHEME_SEARCH",
-            phase: "START",
-            taskData: actionData
-        }
-	    var jsonLogData = JSON.stringify(logData);
-
-	    var controller = this;
-	    var cbkLogStartSuccess = function(resp) {
-	        controller.invokeService(jsonActionData,
-                cbkActionSuccess, cbkActionFailure, 'srv2/morpheme_dictionary')
-        }
-        var cbkLogStartFailure = function(resp) {
-	        cbkActionFailure.call(controller, actionData);
-        }
-
-		this.invokeService(jsonLogData, cbkLogStartSuccess, cbkLogStartFailure,
-            'srv2/log_action');
+        this.logThenInvokeService('MORPHEME_SEARCH', 'srv2/morpheme_dictionary',
+            actionData, cbkActionSuccess, cbkActionFailure)
 	}
 	
 	

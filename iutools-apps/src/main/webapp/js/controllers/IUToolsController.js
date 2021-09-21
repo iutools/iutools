@@ -17,6 +17,29 @@ class IUToolsController extends WidgetController {
         this.scrollIntoView(divError)
     }
 
+	logThenInvokeService(actionName, actionURL, actionData,
+        cbkActionSuccess, cbkActionFailure) {
+        var jsonActionData = JSON.stringify(actionData);
+	    var logData = {
+	        action: actionName,
+            phase: "START",
+            taskData: actionData
+        }
+	    var jsonLogData = JSON.stringify(logData);
+
+	    var controller = this;
+	    var cbkLogStartSuccess = function(resp) {
+	        controller.invokeService(jsonActionData,
+                cbkActionSuccess, cbkActionFailure, actionURL)
+        }
+        var cbkLogStartFailure = function(resp) {
+	        cbkActionFailure.call(controller, actionData);
+        }
+
+		this.invokeService(jsonLogData, cbkLogStartSuccess, cbkLogStartFailure,
+            'srv2/log_action');
+    }
+
     logOnServer(action, taskData) {
         var tracer = Debug.getTraceLogger("UIToolsController.logOnServer");
         tracer.trace("action="+action+", taskData="+JSON.stringify(taskData));
