@@ -21,7 +21,10 @@ public class LogActionInputs extends ServiceInputs {
 		SEARCH_WEB;
 	}
 
+	public static enum Phase {START, END};
+
 	public Action action = null;
+	public Phase phase = Phase.START;
 	public Map<String,Object> taskData = null;
 	public Long startedAt = null;
 

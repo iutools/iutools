@@ -80,19 +80,26 @@ public class EndpointDispatcher extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 		throws IOException {
 
+		Logger tLogger = Logger.getLogger("org.iutools.webservice.EndpointDispatcher.doPost");
+
 		EndPointHelper.setContenTypeAndEncoding(response);
 
 		String jsonResponse = null;
 		String epName = null;
+		Endpoint endPoint = null;
 		try {
 			epName = endpointName(request.getRequestURI());
-			Endpoint endPoint = endpointWithName(epName);
+			endPoint = endpointWithName(epName);
 			endPoint.doPost(request, response);
 		} catch (Exception exc) {
+			tLogger.trace("Caught exc="+exc);
 			jsonResponse =
 				EndPointHelper.emitServiceExceptionResponse(
 					"Service raised exception\n", exc);
 			response.getWriter().write(jsonResponse);
+			if (endPoint != null) {
+				endPoint.logError(exc);
+			}
 		}
 
 		return;

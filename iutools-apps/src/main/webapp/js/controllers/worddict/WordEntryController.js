@@ -43,7 +43,8 @@ class WordEntryController extends IUToolsController {
 	}
 
 	displayWordBeingLookedUp(word, wordInOtherScript) {
-        var trace = Debug.getTraceLogger('WordEntryController.displayWordBeingLookedUp');
+        var tracer = Debug.getTraceLogger('WordEntryController.displayWordBeingLookedUp');
+        tracer.trace("word="+word)
         if (word != null) {
             var divWord = this.elementForProp("divWordEntry_word");
             var wordText = word;

@@ -22,7 +22,7 @@ public class LogActionInputsTest extends ServiceInputsTest {
 					.put("textOrUrl", "inuksuk")
 			);
 		new AssertServiceInputs(inputs)
-			.logSummaryIs("{\"_action\":\"GIST_TEXT\",\"taskID\":null,\"totalWords\":1,\"type\":\"text\"}");
+			.logSummaryIs("{\"_action\":\"GIST_TEXT\",\"taskID\":null,\"taskStartTime\":null,\"totalWords\":1,\"type\":\"text\"}");
 			;
 
 		inputs =
@@ -32,7 +32,7 @@ public class LogActionInputsTest extends ServiceInputsTest {
 					.put("textOrUrl", "http://www.somewhere.com/hello.html")
 			);
 		new AssertServiceInputs(inputs)
-			.logSummaryIs("{\"_action\":\"GIST_TEXT\",\"address\":\"http://www.somewhere.com/hello.html\",\"host\":\"www.somewhere.com\",\"taskID\":null,\"type\":\"url\"}");
+			.logSummaryIs("{\"_action\":\"GIST_TEXT\",\"address\":\"http://www.somewhere.com/hello.html\",\"host\":\"www.somewhere.com\",\"taskID\":null,\"taskStartTime\":null,\"type\":\"url\"}");
 			;
 
 		inputs =

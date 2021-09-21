@@ -29,7 +29,7 @@ class MorphemeDictionaryController extends IUToolsController {
 				this.logOnServer("MORPHEME_SEARCH", requestData)
 				this.invokeFindExampleService(requestData,
 					this.findExamplesSuccessCallback, this.findExamplesFailureCallback);
-			}
+            }
 		}
 	}
 	
@@ -42,7 +42,7 @@ class MorphemeDictionaryController extends IUToolsController {
 	}
 
 	invokeFindExampleService(jsonRequestData, _successCbk, _failureCbk) {
-		this.invokeService(jsonRequestData, _successCbk, _failureCbk, 
+		this.invokeService(jsonRequestData, _successCbk, _failureCbk,
 				'srv2/morpheme_dictionary');
 	}
 	
@@ -131,7 +131,7 @@ class MorphemeDictionaryController extends IUToolsController {
 		};
 		
 		var jsonInputs = JSON.stringify(request);
-		
+
 		return jsonInputs;
 	}
 	

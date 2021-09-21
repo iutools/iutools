@@ -6,6 +6,7 @@ import org.json.JSONObject;
 public abstract class EndpointResult {
 
 	public String taskID = null;
+	public Long taskStartTime = null;
 	public String status = null;
 	public String errorMessage = null;
 	public String stackTrace = null;
@@ -13,14 +14,14 @@ public abstract class EndpointResult {
 
 	public EndpointResult() {}
 
-//	public JSONObject resultLogEntry(long startMSecs) {
-//		JSONObject entry = resultLogEntry();
-//		if (entry != null) {
-//			long elapsedMSecs = StopWatch.elapsedMsecsSince(startMSecs);
-//			entry.put("elapsedMSecs", elapsedMSecs);
-//		}
-//		return entry;
-//	}
+	public JSONObject resultLogEntry(long startMSecs) {
+		JSONObject entry = resultLogEntry();
+		if (entry != null) {
+			long elapsedMSecs = StopWatch.elapsedMsecsSince(startMSecs);
+			entry.put("elapsedMSecs", elapsedMSecs);
+		}
+		return entry;
+	}
 
 	public abstract JSONObject resultLogEntry();
 

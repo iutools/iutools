@@ -8,6 +8,7 @@ import java.util.Map;
 
 public class ServiceInputs {
 	public String taskID = null;
+	public Long taskStartTime = null;
 
 	@JsonIgnore
 	private ObjectMapper mapper = new ObjectMapper();

@@ -20,6 +20,6 @@ public class TokenizeResultTest {
 		result.tokens = tokens;
 
 		new AssertTokenizeResult(result)
-			.jsonEquals("{\"errorMessage\":null,\"failingInputs\":null,\"stackTrace\":null,\"status\":null,\"taskID\":null,\"tokens\":[{\"inuksuk\":true},{\", \":false}]}");
+			.jsonEquals("{\"errorMessage\":null,\"failingInputs\":null,\"stackTrace\":null,\"status\":null,\"taskID\":null,\"taskStartTime\":null,\"tokens\":[{\"inuksuk\":true},{\", \":false}]}");
 	}
 }

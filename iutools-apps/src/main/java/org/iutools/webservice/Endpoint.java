@@ -6,10 +6,9 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Category;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.iutools.utilities.StopWatch;
+import org.iutools.webservice.logaction.LogActionInputs;
 import org.json.JSONObject;
 
 import javax.servlet.http.HttpServletRequest;
@@ -50,48 +49,77 @@ public abstract class Endpoint
 			EndPointHelper.log4jReload();
 
 			inputs = requestInputs(request);
-			ensureTaskIDIsDefined(inputs);
-
+			ensureInputTaskIDAndStartTimeAreDefined(inputs);
 			logRequest(request, inputs);
 			EndpointResult epResponse = execute(inputs);
+			ensureOutputsTaskIDAndStartTimeAreDefined(inputs, epResponse);
+
 			epResponse.taskID = inputs.taskID;
+			if (tLogger.isTraceEnabled()) {
+				tLogger.trace("response="+mapper.writeValueAsString(epResponse));
+			}
 			logResult(request, epResponse, inputs);
 			writeJsonResponse(epResponse, response);
 		} catch (IOException e) {
-			logError(e, inputs);
+			tLogger.trace("Caught exception: "+e);
+			logError(e, inputs, request);
 			throw new ServiceException(e);
 		}
 		tLogger.trace("POST completed");
+	}
+
+	private void ensureOutputsTaskIDAndStartTimeAreDefined(
+		I inputs, EndpointResult epResponse) {
+		epResponse.taskID = inputs.taskID;
+		epResponse.taskStartTime = inputs.taskStartTime;
 	}
 
 	private void logResult(HttpServletRequest request, EndpointResult epResponse,
 		I inputs) throws ServiceException {
 		JSONObject json = epResponse.resultLogEntry();
 		if (json != null) {
+			long elapsed = System.currentTimeMillis() - inputs.taskStartTime;
+			json.put("_endpointPhase", "END");
+			json.put("_taskElapsedMsecs", elapsed);
 			json.put("_uri", request.getRequestURI());
-			resultLogger().info(json.toString());
+			endpointLogger().info(json.toString());
 		}
 	}
 
-	private Category resultLogger() {
-		Logger logger = Logger.getLogger("org.iutools.webservice.endpoint_results");
-		logger.setLevel(Level.INFO);
-		return logger;
+	public void logError(Exception e)  {
+		Logger tLogger = Logger.getLogger("org.iutools.webservice.Endpoint.logError");
+		tLogger.trace("e="+e);
+
+		logError(e, (I)null, (HttpServletRequest)null);
 	}
 
-	private void logError(Exception e, I inputs) throws ServiceException {
+	private void logError(Exception e, I inputs)  {
+		logError(e, inputs, (HttpServletRequest)null);
+	}
+
+
+	private void logError(Exception e, I inputs, HttpServletRequest request)  {
 		String epClass = this.getClass().getName();
+		String inputsJson = null;
 		try {
-			String inputsJson = mapper.writeValueAsString(inputs);
-		} catch (JsonProcessingException e2) {
-			throw new ServiceException(e2);
+			if (inputs != null) {
+				inputsJson = mapper.writeValueAsString(inputs);
+			}
+			if (inputsJson == null && request != null) {
+				inputsJson = IOUtils.toString(request.getReader());
+			}
+		} catch (Exception e2) {
+			throw new RuntimeException(e2);
 		}
-		errorLogger().error("", e);
+		errorLogger().error("Error processing inputs: "+inputsJson, e);
 	}
 
-	private void ensureTaskIDIsDefined(I inputs) {
+	private void ensureInputTaskIDAndStartTimeAreDefined(I inputs) {
 		if (inputs.taskID == null) {
 			inputs.taskID = generateTaskID();
+		}
+		if (inputs.taskStartTime == null) {
+			inputs.taskStartTime = System.currentTimeMillis();
 		}
 	}
 
@@ -109,9 +137,16 @@ public abstract class Endpoint
 			JSONObject logEntry = new JSONObject()
 				.put("_uri", request.getRequestURI())
 				.put("_taskID", inputs.taskID)
+				.put("_endpointPhase", "START")
 				.put("taskData", inputSummary);
 			String json = jsonifyLogEntry(logEntry);
-			actionLogger().info(json);
+			Logger logger = null;endpointLogger();
+			if (inputs instanceof LogActionInputs) {
+				logger = userActionLogger();
+			} else {
+				logger = endpointLogger();
+			}
+			logger.info(json);
 		}
 		return;
 	}
@@ -172,8 +207,14 @@ public abstract class Endpoint
 		return inputs;
 	}
 
-	public static Logger actionLogger() {
+	public static Logger userActionLogger() {
 		Logger logger = Logger.getLogger("org.iutools.webservice.user_action");
+		logger.setLevel(Level.INFO);
+		return logger;
+	}
+
+	public static Logger endpointLogger() {
+		Logger logger = Logger.getLogger("org.iutools.webservice.endpoint");
 		logger.setLevel(Level.INFO);
 		return logger;
 	}

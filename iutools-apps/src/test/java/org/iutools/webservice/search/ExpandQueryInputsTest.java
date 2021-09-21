@@ -17,7 +17,7 @@ public class ExpandQueryInputsTest extends ServiceInputsTest {
 		ServiceInputs inputs =
 			new ExpandQueryInputs("inuksuk");
 		new AssertServiceInputs(inputs)
-			.logSummaryIs("{\"origQuery\":\"inuksuk\",\"taskID\":null}");
+			.logSummaryIs("{\"origQuery\":\"inuksuk\",\"taskID\":null,\"taskStartTime\":null}");
 			;
 	}
 }

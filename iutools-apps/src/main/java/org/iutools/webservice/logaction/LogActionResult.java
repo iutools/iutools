@@ -11,12 +11,7 @@ public class LogActionResult extends EndpointResult {
 
 	public LogActionResult(Long startedOn) {
 		super();
-//		if (startedOn != null) {
-//			this.elapsedMsecs = StopWatch.elapsedMsecsSince(startedOn);
-//		}
 	}
-
-
 
 	@Override
 	public JSONObject resultLogEntry() {

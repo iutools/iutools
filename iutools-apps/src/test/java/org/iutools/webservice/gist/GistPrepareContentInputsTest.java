@@ -17,12 +17,12 @@ public class GistPrepareContentInputsTest extends ServiceInputsTest {
 		ServiceInputs inputs =
 			new GistPrepareContentInputs("inuksuk, nunavut");
 		new AssertServiceInputs(inputs)
-			.logSummaryIs("{\"taskID\":null,\"totalWords\":2,\"type\":\"text\"}");
+			.logSummaryIs("{\"taskID\":null,\"taskStartTime\":null,\"totalWords\":2,\"type\":\"text\"}");
 			;
 
 		inputs =
 			new GistPrepareContentInputs("http://www.somewhere.com/hello.html");
 		new AssertServiceInputs(inputs)
-			.logSummaryIs("{\"address\":\"http://www.somewhere.com/hello.html\",\"host\":\"www.somewhere.com\",\"taskID\":null,\"type\":\"url\"}");
+			.logSummaryIs("{\"address\":\"http://www.somewhere.com/hello.html\",\"host\":\"www.somewhere.com\",\"taskID\":null,\"taskStartTime\":null,\"type\":\"url\"}");
 	}
 }

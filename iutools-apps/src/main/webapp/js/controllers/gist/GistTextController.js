@@ -5,7 +5,7 @@
 class GistTextController extends IUToolsController {
 
 	constructor(config) {
-        var tracer = Debug.getTraceLogger('GistTextController.dictionaryLookup');
+        var tracer = Debug.getTraceLogger('GistTextController.constructor');
 		super(config);
 		this.busy = false;
 		this.wordEntryController = new WordEntryController(config);

@@ -17,7 +17,7 @@ public class MorphemeExamplesInputsTest extends ServiceInputsTest {
 		ServiceInputs inputs =
 			new MorphemeExamplesInputs("siuq", (String)null, "50");
 		new AssertServiceInputs(inputs)
-			.logSummaryIs("{\"corpusName\":null,\"nbExamples\":\"50\",\"taskID\":null,\"wordPattern\":\"siuq\"}");
+			.logSummaryIs("{\"corpusName\":null,\"nbExamples\":\"50\",\"taskID\":null,\"taskStartTime\":null,\"wordPattern\":\"siuq\"}");
 			;
 	}
 }
