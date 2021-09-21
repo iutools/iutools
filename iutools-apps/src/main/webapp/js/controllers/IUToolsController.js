@@ -19,17 +19,28 @@ class IUToolsController extends WidgetController {
 
 	logThenInvokeService(actionName, actionURL, actionData,
         cbkActionSuccess, cbkActionFailure) {
-        var jsonActionData = JSON.stringify(actionData);
+        var tracer = Debug.getTraceLogger("UIToolsController.logThenInvokeService");
+        tracer.trace("actionName="+actionName+", actionURL="+actionURL+", actionData="+JSON.stringify(actionData));
+        var actionDataObj = null;
+        var actionDatatStr = null;
+        if (typeof actionData === 'string' || actionData instanceof String) {
+            actionDataObj = JSON.parse(actionData);
+            actionDatatStr = actionData;
+        } else {
+            actionDataObj = actionData;
+            actionDatatStr = JSON.stringify(actionData);
+        }
+
 	    var logData = {
 	        action: actionName,
             phase: "START",
-            taskData: actionData
+            taskData: actionDataObj
         }
 	    var jsonLogData = JSON.stringify(logData);
 
 	    var controller = this;
 	    var cbkLogStartSuccess = function(resp) {
-	        controller.invokeService(jsonActionData,
+	        controller.invokeService(actionDatatStr,
                 cbkActionSuccess, cbkActionFailure, actionURL)
         }
         var cbkLogStartFailure = function(resp) {
