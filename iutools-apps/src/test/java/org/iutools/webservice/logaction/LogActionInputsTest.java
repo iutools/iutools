@@ -57,5 +57,4 @@ public class LogActionInputsTest extends ServiceInputsTest {
 			.logSummaryIs("{\"_action\":\"MORPHEME_SEARCH\",\"corpusName\":null,\"nbExamples\":\"50\",\"wordPattern\":\"siuq\"}");
 			;
 	}
-
 }

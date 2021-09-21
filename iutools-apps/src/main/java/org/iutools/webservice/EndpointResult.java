@@ -1,5 +1,6 @@
 package org.iutools.webservice;
 
+import org.iutools.utilities.StopWatch;
 import org.json.JSONObject;
 
 public abstract class EndpointResult {
@@ -11,6 +12,15 @@ public abstract class EndpointResult {
 	public ServiceInputs failingInputs = null;
 
 	public EndpointResult() {}
+
+//	public JSONObject resultLogEntry(long startMSecs) {
+//		JSONObject entry = resultLogEntry();
+//		if (entry != null) {
+//			long elapsedMSecs = StopWatch.elapsedMsecsSince(startMSecs);
+//			entry.put("elapsedMSecs", elapsedMSecs);
+//		}
+//		return entry;
+//	}
 
 	public abstract JSONObject resultLogEntry();
 

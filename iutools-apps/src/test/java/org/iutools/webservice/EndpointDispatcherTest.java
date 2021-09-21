@@ -8,6 +8,7 @@ import org.iutools.concordancer.SentencePair;
 import org.iutools.webservice.gist.GistPrepareContentResult;
 import org.iutools.webservice.gist.GistWordResult;
 import org.iutools.webservice.logaction.LogActionInputs;
+import org.iutools.webservice.logaction.LogActionResult;
 import org.iutools.webservice.morphexamples.MorphemeExamplesResult;
 import org.iutools.webservice.search.ExpandQueryResult;
 import org.iutools.webservice.spell.SpellResult;
@@ -122,7 +123,7 @@ public class EndpointDispatcherTest {
 		String uri = "iutools/srv2/log_action";
 		MockHttpServletResponse response  = doPost(uri, json);
 
-		new AssertServletResponse(response, ExpandQueryResult.class)
+		new AssertServletResponse(response, LogActionResult.class)
 			.reportsNoException()
 			;
 		return;
@@ -140,7 +141,7 @@ public class EndpointDispatcherTest {
 		String uri = "iutools/srv2/log_action";
 		MockHttpServletResponse response  = doPost(uri, json);
 
-		new AssertServletResponse(response, ExpandQueryResult.class)
+		new AssertServletResponse(response, LogActionResult.class)
 			.reportsNoException()
 			;
 		return;
@@ -158,7 +159,7 @@ public class EndpointDispatcherTest {
 		String uri = "iutools/srv2/log_action";
 		MockHttpServletResponse response  = doPost(uri, json);
 
-		new AssertServletResponse(response, ExpandQueryResult.class)
+		new AssertServletResponse(response, LogActionResult.class)
 			.reportsNoException()
 			;
 		return;

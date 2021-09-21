@@ -317,7 +317,8 @@ class SpellController extends IUToolsController {
 		if (this.tokensRemaining == null ||
 			this.tokensRemaining.length == 0) {
 			this.setBusy(false);
-			return;
+
+            return;
 		}
 
 		this.tokenBeingChecked = this.tokensRemaining.shift();

@@ -18,7 +18,7 @@ public class LogActionEndpoint extends Endpoint {
 		Logger tLogger = Logger.getLogger("org.iutools.webservice.LogActionEndpoint.execute");
 
 		LogActionInputs logInputs = (LogActionInputs)inputs;
-		LogActionResult result = new LogActionResult();
+		LogActionResult result = new LogActionResult(logInputs.startedAt);
 
 		return result;
 	}

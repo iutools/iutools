@@ -9,6 +9,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Category;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.iutools.utilities.StopWatch;
 import org.json.JSONObject;
 
 import javax.servlet.http.HttpServletRequest;
@@ -63,7 +64,8 @@ public abstract class Endpoint
 		tLogger.trace("POST completed");
 	}
 
-	private void logResult(HttpServletRequest request, EndpointResult epResponse, I inputs) throws ServiceException {
+	private void logResult(HttpServletRequest request, EndpointResult epResponse,
+		I inputs) throws ServiceException {
 		JSONObject json = epResponse.resultLogEntry();
 		if (json != null) {
 			json.put("_uri", request.getRequestURI());
