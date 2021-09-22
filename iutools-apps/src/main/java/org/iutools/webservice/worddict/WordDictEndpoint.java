@@ -23,8 +23,8 @@ import java.util.concurrent.TimeoutException;
 
 public class WordDictEndpoint extends Endpoint<WordDictInputs,WordDictResult> {
 	@Override
-	protected WordDictInputs requestInputs(HttpServletRequest request) throws ServiceException {
-		return jsonInputs(request, WordDictInputs.class);
+	protected WordDictInputs requestInputs(String jsonRequestBody) throws ServiceException {
+		return jsonInputs(jsonRequestBody, WordDictInputs.class);
 	}
 
 	@Override

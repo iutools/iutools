@@ -27,9 +27,9 @@ public class GistPrepareContentEndpoint
 	IUTokenizer tokenizer = new IUTokenizer();
 
 	@Override
-	protected GistPrepareContentInputs requestInputs(HttpServletRequest request)
+	protected GistPrepareContentInputs requestInputs(String jsonRequestBody)
 		throws ServiceException {
-		return jsonInputs(request, GistPrepareContentInputs.class);
+		return jsonInputs(jsonRequestBody, GistPrepareContentInputs.class);
 	}
 
 	@Override

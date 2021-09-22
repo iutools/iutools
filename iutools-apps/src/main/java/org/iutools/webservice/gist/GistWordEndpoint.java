@@ -24,8 +24,8 @@ public class GistWordEndpoint extends Endpoint<GistWordInputs, GistWordResult> {
 
 
 	@Override
-	protected GistWordInputs requestInputs(HttpServletRequest request) throws ServiceException {
-		return jsonInputs(request, GistWordInputs.class);
+	protected GistWordInputs requestInputs(String jsonRequestBody) throws ServiceException {
+		return jsonInputs(jsonRequestBody, GistWordInputs.class);
 	}
 
 	@Override

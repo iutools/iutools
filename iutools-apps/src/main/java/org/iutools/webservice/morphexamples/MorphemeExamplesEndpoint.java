@@ -21,9 +21,9 @@ public class MorphemeExamplesEndpoint
 	extends Endpoint<MorphemeExamplesInputs, MorphemeExamplesResult> {
 
 	@Override
-	protected MorphemeExamplesInputs requestInputs(HttpServletRequest request)
+	protected MorphemeExamplesInputs requestInputs(String jsonRequestBody)
 		throws ServiceException {
-		return jsonInputs(request, MorphemeExamplesInputs.class);
+		return jsonInputs(jsonRequestBody, MorphemeExamplesInputs.class);
 	}
 
 	@Override

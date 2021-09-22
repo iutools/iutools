@@ -8,9 +8,9 @@ import javax.servlet.http.HttpServletRequest;
 public class LogActionEndpoint extends Endpoint {
 
 	@Override
-	protected ServiceInputs requestInputs(HttpServletRequest request)
+	protected ServiceInputs requestInputs(String jsonRequestBody)
 		throws ServiceException {
-			return jsonInputs(request, LogActionInputs.class);
+			return jsonInputs(jsonRequestBody, LogActionInputs.class);
 	}
 
 	@Override

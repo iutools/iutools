@@ -12,8 +12,8 @@ import java.util.List;
 
 public class TokenizeEndpoint extends Endpoint<TokenizeInputs, TokenizeResult> {
 	@Override
-	protected TokenizeInputs requestInputs(HttpServletRequest request) throws ServiceException {
-		return jsonInputs(request, TokenizeInputs.class);
+	protected TokenizeInputs requestInputs(String jsonRequestBody) throws ServiceException {
+		return jsonInputs(jsonRequestBody, TokenizeInputs.class);
 	}
 
 	@Override

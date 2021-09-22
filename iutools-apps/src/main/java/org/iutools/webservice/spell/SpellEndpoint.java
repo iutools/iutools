@@ -45,8 +45,8 @@ public class SpellEndpoint extends Endpoint<SpellInputs, SpellResult> {
 	}
 
 	@Override
-	protected SpellInputs requestInputs(HttpServletRequest request) throws ServiceException {
-		return jsonInputs(request, SpellInputs.class);
+	protected SpellInputs requestInputs(String jsonRequestBody) throws ServiceException {
+		return jsonInputs(jsonRequestBody, SpellInputs.class);
 	}
 
 	@Override

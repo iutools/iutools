@@ -21,7 +21,7 @@ import java.util.Map;
 public abstract class Endpoint
 	<I extends ServiceInputs, R extends EndpointResult>  {
 
-	protected abstract I requestInputs(HttpServletRequest request)
+	protected abstract I requestInputs(String jsonRequestBody)
 		throws ServiceException;
 
 	ObjectMapper mapper = new ObjectMapper();
@@ -36,19 +36,14 @@ public abstract class Endpoint
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 		throws ServiceException {
 		Logger tLogger = Logger.getLogger("org.iutools.webservice.Endpoint.doPost");
-		if (tLogger.isTraceEnabled()) {
-			try {
-				tLogger.trace("request json="+PrettyPrinter.print(IOUtils.toString(request.getReader())));
-			} catch (IOException e) {
-				// If we can't trace the request, just keep going
-			}
-		}
 		I inputs = null;
 		try {
-
 			EndPointHelper.log4jReload();
 
-			inputs = requestInputs(request);
+			String jsonRequestBody = IOUtils.toString(request.getReader());
+			tLogger.trace("jsonRequestBody="+jsonRequestBody);
+
+			inputs = requestInputs(jsonRequestBody);
 			ensureInputTaskIDAndStartTimeAreDefined(inputs);
 			logRequest(request, inputs);
 			EndpointResult epResponse = execute(inputs);
@@ -179,16 +174,10 @@ public abstract class Endpoint
 	}
 
 	public I jsonInputs(
-		HttpServletRequest request, Class<I> inputClass) throws ServiceException {
+		String jsonRequestBody, Class<I> inputClass) throws ServiceException {
 		Logger tLogger = Logger.getLogger("org.iutools.webservice.EndpointDispatcher.jsonInputs");
 
 		I inputs = null;
-		String jsonRequestBody = null;
-		try {
-			jsonRequestBody = IOUtils.toString(request.getReader());
-		} catch (IOException e) {
-			throw new ServiceException("Could not read inputs from request object", e);
-		}
 
 		tLogger.trace("jsonRequestBody=" + jsonRequestBody);
 

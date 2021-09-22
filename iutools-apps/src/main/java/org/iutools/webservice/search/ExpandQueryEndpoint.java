@@ -12,8 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 public class ExpandQueryEndpoint
 	extends Endpoint<ExpandQueryInputs, ExpandQueryResult> {
 	@Override
-	protected ExpandQueryInputs requestInputs(HttpServletRequest request) throws ServiceException {
-		return jsonInputs(request, ExpandQueryInputs.class);
+	protected ExpandQueryInputs requestInputs(String jsonRequestBody) throws ServiceException {
+		return jsonInputs(jsonRequestBody, ExpandQueryInputs.class);
 	}
 
 	@Override
