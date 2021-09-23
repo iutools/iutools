@@ -26,8 +26,8 @@ class WordDictController extends IUToolsController {
         if (!this.isDuplicateEvent("onSearch", inputs)) {
             this.clearHits();
             this.setBusy(true);
-            this.logOnServer("DICTIONARY_SEARCH", inputs);
-            this.invokeDictionaryService(inputs,
+            // this.logOnServer("DICTIONARY_SEARCH", inputs);
+            this.invokeDictionarySearchService(inputs,
                 this.searchSuccessCallback, this.searchFailureCallback)
         }
     }
@@ -45,32 +45,12 @@ class WordDictController extends IUToolsController {
         return inputsJson;
     }
 
-    invokeDictionaryService(jsonRequestData, _successCbk, _failureCbk) {
+    invokeDictionarySearchService(jsonRequestData, _successCbk, _failureCbk) {
         var tracer = Debug.getTraceLogger("WordDictController.invokeDictionaryService");
-        tracer.trace("invoked with jsonRequestData="+JSON.stringify(jsonRequestData));
-
-        var controller = this;
-        var fctSuccess =
-            function(resp) {
-                _successCbk.call(controller, resp);
-            };
-        var fctFailure =
-            function(resp) {
-                _failureCbk.call(controller, resp);
-            };
-
-        // this line is for development only, allowing to present results without calling Bing.
-        //var jsonResp = this.mockSrvSearch();fctSuccess(jsonResp);
-
-        $.ajax({
-            method: 'POST',
-            url: 'srv2/worddict',
-            data: jsonRequestData,
-            dataType: 'json',
-            async: true,
-            success: fctSuccess,
-            error: fctFailure
-        });
+        jsonRequestData = this.asJsonString(jsonRequestData);
+        tracer.trace("invoked with jsonRequestData="+jsonRequestData);
+        this.userActionStart("DICTIONARY_SEARCH", 'srv2/worddict',
+            jsonRequestData, _successCbk, _failureCbk);
     }
 
     searchSuccessCallback(resp) {

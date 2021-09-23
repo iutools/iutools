@@ -18,6 +18,9 @@ class IUToolsController extends WidgetController {
     }
 
     augmentActionData(actionData, serverResp) {
+        var tracer = Debug.getTraceLogger("IUtoolsController.augmentActionData");
+        actionData = this.asJsonObject(actionData);
+        tracer.trace("actionData="+actionData+", serverResp="+serverResp);
         actionData.taskID = serverResp.taskID;
         actionData.startedAt = serverResp.startedAt;
         return actionData
@@ -29,7 +32,7 @@ class IUToolsController extends WidgetController {
         var tracer = Debug.getTraceLogger('UIToolsController.userActionStart');
         tracer.trace(
             "actionName="+actionName+", actionURL="+actionURL+
-            ", cbkActionSuccess="+cbkActionSuccess+", cbkActionFailure="+cbkActionFailure+
+            // ", cbkActionSuccess="+cbkActionSuccess+", cbkActionFailure="+cbkActionFailure+
             ", actionData="+JSON.stringify(actionData));
 
         var controller = this;
@@ -38,7 +41,10 @@ class IUToolsController extends WidgetController {
         var cbkLogSuccess = function(resp) {
             var tracer = Debug.getTraceLogger("IUToolsController.userActionStart.cbkLogSuccess");
             tracer.trace("invoked");
-            tracer.trace("cbkActionSuccess="+cbkActionSuccess+", cbkActionFailure="+cbkActionFailure);
+            tracer.trace(
+                "resp="+JSON.stringify(resp)
+                // + ", cbkActionSuccess="+cbkActionSuccess+", cbkActionFailure="+cbkActionFailure
+                );
             actionData = this.augmentActionData(actionData, resp);
             this.invokeWebService(actionURL, actionData,
                 cbkActionSuccess, cbkActionFailure);
@@ -57,7 +63,7 @@ class IUToolsController extends WidgetController {
         var tracer = Debug.getTraceLogger("UIToolsController.logOnServer");
         tracer.trace(
             "actionName="+actionName+", phase="+phase+
-            ", cbkLogSuccess="+cbkLogSuccess+", cbkLogFailure="+cbkLogFailure+
+            // ", cbkLogSuccess="+cbkLogSuccess+", cbkLogFailure="+cbkLogFailure+
             ", taskData="+JSON.stringify(taskData));
         var dataObj = this.asJsonObject(taskData);
         var data = {
@@ -99,19 +105,19 @@ class IUToolsController extends WidgetController {
 
     invokeLogService(data, cbkSuccess, cbkFailure) {
         var tracer = Debug.getTraceLogger("IUToolsController.invokeLogService");
-        tracer.trace("cbkSuccess="+cbkSuccess);
+        // tracer.trace("cbkSuccess="+cbkSuccess);
         var dataJson = JSON.stringify(data);
+        tracer.trace("dataJson="+dataJson);
+
         var controller = this;
         var fctSuccess =function(resp) {
             var tracer = Debug.getTraceLogger("IUToolsController.invokeLogService.fctSuccess");
-            tracer.trace("invoking cbkSuccess="+cbkSuccess+"\non controller="+controller);
             cbkSuccess.call(controller, resp);
         };
         var fctFailure =
                 function(resp) {
                     cbkFailure.call(controller, resp);
                 };
-        tracer.trace("Invoking log_action with dataJson="+dataJson);
         $.ajax({
             method: 'POST',
             url: 'srv2/log_action',
