@@ -118,6 +118,9 @@ class WidgetController {
         jsonRequestData = this.asJsonString(jsonRequestData);
 	    var tracer = Debug.getTraceLogger("WidgetController.invokeWebService");
 	    tracer.trace("url="+url+", jsonRequestData="+jsonRequestData);
+        tracer.trace(
+            "\n_successCbk="+_successCbk+
+            "\n_failureCbk="+_failureCbk);
 		var controller = this;
 		var fctSuccess = 
 				function(resp) {

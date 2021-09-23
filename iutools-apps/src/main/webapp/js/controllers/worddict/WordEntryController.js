@@ -35,11 +35,12 @@ class WordEntryController extends IUToolsController {
 		this.showSpinningWheel("divWordEntry_message","Looking up word");
 
 		var data = this.getWordDictRequestData(word, lang);
-		this.logOnServer("WORD_LOOKUP", data);
+		tracer.trace(
+            "Invoking word lookup service with:"+
+            "\nthis.successWordDictCallback="+this.successWordDictCallback+
+            "\nthis.failureWordDictCallback="+this.failureWordDictCallback);
 		this.invokeWordDictService(
-            data,
-            this.successWordDictCallback,
-            this.failureWordDictCallback);
+            data,  this.successWordDictCallback, this.failureWordDictCallback);
 	}
 
 	displayWordBeingLookedUp(word, wordInOtherScript) {
@@ -56,8 +57,13 @@ class WordEntryController extends IUToolsController {
 	}
 	
 	invokeWordDictService(jsonRequestData, _successCbk, _failureCbk) {
-		this.invokeWebService('srv2/worddict', jsonRequestData,
-				_successCbk, _failureCbk);
+        var tracer = Debug.getTraceLogger("WordEntryController.invokeWordDictService");
+        tracer.trace("jsonRequestData="+this.asJsonString(jsonRequestData));
+        tracer.trace(
+            "\n_successCbk="+_successCbk+"\n_failureCbk="+_failureCbk
+        );
+        this.userActionStart("WORD_LOOKUP", 'srv2/worddict', jsonRequestData,
+            _successCbk, _failureCbk)
 	}
 
 	successWordDictCallback(resp) {

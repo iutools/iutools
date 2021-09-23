@@ -26,7 +26,6 @@ class WordDictController extends IUToolsController {
         if (!this.isDuplicateEvent("onSearch", inputs)) {
             this.clearHits();
             this.setBusy(true);
-            // this.logOnServer("DICTIONARY_SEARCH", inputs);
             this.invokeDictionarySearchService(inputs,
                 this.searchSuccessCallback, this.searchFailureCallback)
         }

@@ -32,8 +32,10 @@ class IUToolsController extends WidgetController {
         var tracer = Debug.getTraceLogger('UIToolsController.userActionStart');
         tracer.trace(
             "actionName="+actionName+", actionURL="+actionURL+
-            // ", cbkActionSuccess="+cbkActionSuccess+", cbkActionFailure="+cbkActionFailure+
             ", actionData="+JSON.stringify(actionData));
+        tracer.trace(
+            "\ncbkActionSuccess="+cbkActionSuccess+
+            "\ncbkActionFailure="+cbkActionFailure);
 
         var controller = this;
 
