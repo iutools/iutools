@@ -17,60 +17,62 @@ class IUToolsController extends WidgetController {
         this.scrollIntoView(divError)
     }
 
-	logThenInvokeService(actionName, actionURL, actionData,
-        cbkActionSuccess, cbkActionFailure) {
-        var tracer = Debug.getTraceLogger("UIToolsController.logThenInvokeService");
-        tracer.trace("actionName="+actionName+", actionURL="+actionURL+", actionData="+JSON.stringify(actionData));
-        var actionDataObj = null;
-        var actionDatatStr = null;
-        if (typeof actionData === 'string' || actionData instanceof String) {
-            actionDataObj = JSON.parse(actionData);
-            actionDatatStr = actionData;
-        } else {
-            actionDataObj = actionData;
-            actionDatatStr = JSON.stringify(actionData);
-        }
-
-	    var logData = {
-	        action: actionName,
-            phase: "START",
-            taskData: actionDataObj
-        }
-	    var jsonLogData = JSON.stringify(logData);
-
-	    var controller = this;
-	    var cbkLogStartSuccess = function(resp) {
-	        controller.invokeService(actionDatatStr,
-                cbkActionSuccess, cbkActionFailure, actionURL)
-        }
-        var cbkLogStartFailure = function(resp) {
-	        cbkActionFailure.call(controller, actionData);
-        }
-
-		this.invokeService(jsonLogData, cbkLogStartSuccess, cbkLogStartFailure,
-            'srv2/log_action');
+    augmentActionData(actionData, serverResp) {
+        actionData.taskID = serverResp.taskID;
+        actionData.startedAt = serverResp.startedAt;
+        return actionData
     }
 
-    logOnServer(action, taskData) {
+    userActionStart(actionName, actionURL, actionData,
+        cbkActionSuccess, cbkActionFailure) {
+
+        var tracer = Debug.getTraceLogger('UIToolsController.userActionStart');
+        tracer.trace(
+            "actionName="+actionName+", actionURL="+actionURL+
+            ", cbkActionSuccess="+cbkActionSuccess+", cbkActionFailure="+cbkActionFailure+
+            ", actionData="+JSON.stringify(actionData));
+
+        var controller = this;
+
+        // If the log service succeeded, proceed with the actual action
+        var cbkLogSuccess = function(resp) {
+            var tracer = Debug.getTraceLogger("IUToolsController.userActionStart.cbkLogSuccess");
+            tracer.trace("invoked");
+            tracer.trace("cbkActionSuccess="+cbkActionSuccess+", cbkActionFailure="+cbkActionFailure);
+            actionData = this.augmentActionData(actionData, resp);
+            this.invokeWebService(actionURL, actionData,
+                cbkActionSuccess, cbkActionFailure);
+        };
+
+        // If the log service fails, abort the actual action
+        var cbkLogFailure = function(resp) {
+            cbkActionFailure.call(controller, resp);
+        };
+
+        this.logOnServer(actionName, actionData, "START",
+            cbkLogSuccess, cbkLogFailure);
+    }
+
+    logOnServer(actionName, taskData, phase, cbkLogSuccess, cbkLogFailure) {
         var tracer = Debug.getTraceLogger("UIToolsController.logOnServer");
-        tracer.trace("action="+action+", taskData="+JSON.stringify(taskData));
-        var dataObj = null;
-        var dataStr = null;
-        if (typeof taskData === 'string' || taskData instanceof String) {
-            dataObj = JSON.parse(taskData);
-            dataStr = taskData;
-        } else {
-            dataObj = taskData;
-            dataStr = JSON.stringify(taskData);
-        }
+        tracer.trace(
+            "actionName="+actionName+", phase="+phase+
+            ", cbkLogSuccess="+cbkLogSuccess+", cbkLogFailure="+cbkLogFailure+
+            ", taskData="+JSON.stringify(taskData));
+        var dataObj = this.asJsonObject(taskData);
         var data = {
-            action: action,
+            action: actionName,
+            phase: phase,
             taskData: dataObj,
             taskID: dataObj.taskID
         }
-        
-        this.invokeLogService(data,
-            this.logSuccessCallback, this.logFailureCallback)
+        if (cbkLogSuccess == null) {
+            cbkLogSuccess = this.logSuccessCallback;
+        }
+        if (cbkLogFailure == null) {
+            cbkLogFailure = this.logFailureCallback;
+        }
+        this.invokeLogService(data, cbkLogSuccess, cbkLogFailure)
     }
 
     logSuccessCallback(resp) {
@@ -95,15 +97,16 @@ class IUToolsController extends WidgetController {
 		this.error(resp.errorMessage);
 	}
 
-
     invokeLogService(data, cbkSuccess, cbkFailure) {
         var tracer = Debug.getTraceLogger("IUToolsController.invokeLogService");
+        tracer.trace("cbkSuccess="+cbkSuccess);
         var dataJson = JSON.stringify(data);
         var controller = this;
-        var fctSuccess =
-                function(resp) {
-                    cbkSuccess.call(controller, resp);
-                };
+        var fctSuccess =function(resp) {
+            var tracer = Debug.getTraceLogger("IUToolsController.invokeLogService.fctSuccess");
+            tracer.trace("invoking cbkSuccess="+cbkSuccess+"\non controller="+controller);
+            cbkSuccess.call(controller, resp);
+        };
         var fctFailure =
                 function(resp) {
                     cbkFailure.call(controller, resp);
@@ -114,7 +117,7 @@ class IUToolsController extends WidgetController {
             url: 'srv2/log_action',
             data: dataJson,
             dataType: 'json',
-            async: false,
+            async: true,
             success: fctSuccess,
             error: fctFailure
         });

@@ -6,7 +6,7 @@ class WidgetController {
 		this.isReady = false;
 		this.recentEvents = [];
 		this.recentEventTimes = {};
-		
+
 		this.attachHtmlElements();
 		{
 			var controller = this;
@@ -93,8 +93,31 @@ class WidgetController {
 		divMessage.empty();
 		divMessage.hide();
 	}
-	
+
+    asJsonObject(jsonStringOrObj) {
+        var jsonObj = null;
+        if (typeof jsonStringOrObj === 'string' || jsonStringOrObj instanceof String) {
+            jsonObj = JSON.parse(jsonStringOrObj);
+        } else {
+            jsonObj = jsonStringOrObj;
+        }
+        return jsonObj;
+    }
+
+    asJsonString(jsonStringOrObj) {
+        var jsonStr = null;
+        if (typeof jsonStringOrObj === 'string' || jsonStringOrObj instanceof String) {
+            jsonStr = jsonStringOrObj;
+        } else {
+            jsonStr = JSON.stringify(jsonStringOrObj);
+        }
+        return jsonStr;
+    }
+
 	invokeWebService(url, jsonRequestData, _successCbk, _failureCbk) {
+        jsonRequestData = this.asJsonString(jsonRequestData);
+	    var tracer = Debug.getTraceLogger("WidgetController.invokeWebService");
+	    tracer.trace("url="+url+", jsonRequestData="+jsonRequestData);
 		var controller = this;
 		var fctSuccess = 
 				function(resp) {
@@ -104,7 +127,7 @@ class WidgetController {
 				function(resp) {
 					_failureCbk.call(controller, resp);
 				};
-	
+
 		$.ajax({
 			type: 'POST',
 			url: url,

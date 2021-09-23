@@ -7,6 +7,7 @@ public abstract class EndpointResult {
 
 	public String taskID = null;
 	public Long taskStartTime = null;
+	public Long taskElapsedMsecs = null;
 	public String status = null;
 	public String errorMessage = null;
 	public String stackTrace = null;

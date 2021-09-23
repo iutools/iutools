@@ -2,7 +2,6 @@ package org.iutools.webservice.logaction;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.iutools.utilities.StopWatch;
 import org.iutools.webservice.ServiceException;
 import org.iutools.webservice.ServiceInputs;
 import org.iutools.webservice.gist.GistPrepareContentInputs;
@@ -26,7 +25,6 @@ public class LogActionInputs extends ServiceInputs {
 	public Action action = null;
 	public Phase phase = Phase.START;
 	public Map<String,Object> taskData = null;
-	public Long startedAt = null;
 
 	public LogActionInputs() throws ServiceException {
 		init_LogInputs((Action)null, (Long)null, (JSONObject)null);
@@ -37,7 +35,7 @@ public class LogActionInputs extends ServiceInputs {
 	}
 
 	public LogActionInputs(Action _action, Map<String,Object> _taskData) throws ServiceException {
-		init_LogInputs(_action, (Long)null, _taskData);
+		init_LogInputs(_action, _taskData);
 	}
 
 	private void init_LogInputs(Action _action, Long _startedAt, JSONObject _taskInputs)
@@ -48,7 +46,7 @@ public class LogActionInputs extends ServiceInputs {
 			try {
 				Map<String,Object> taskDataMap =
 					new ObjectMapper().readValue(json, Map.class);
-				init_LogInputs(_action, (Long)null, taskDataMap);
+				init_LogInputs(_action, taskDataMap);
 			} catch (JsonProcessingException e) {
 				throw new ServiceException(e);
 			}
@@ -57,12 +55,11 @@ public class LogActionInputs extends ServiceInputs {
 		return;
 	}
 
-	private void init_LogInputs(Action _action, Long _startedAt, Map<String,Object> _taskData)
+	private void init_LogInputs(Action _action, Map<String,Object> _taskData)
 		throws ServiceException {
 
 		this.action = _action;
 		this.taskData = _taskData;
-		this.startedAt = _startedAt;
 
 		return;
 	}
@@ -89,10 +86,6 @@ public class LogActionInputs extends ServiceInputs {
 		// Note: We prefix action with an underscore so it will come first
 		// in the list of fields when we JSONifiy the map
 		data.put("_action", action.name());
-
-		if (startedAt != null) {
-			data.put("elapsedMSecs", StopWatch.elapsedMsecsSince(startedAt));
-		}
 
 		return data;
 	}

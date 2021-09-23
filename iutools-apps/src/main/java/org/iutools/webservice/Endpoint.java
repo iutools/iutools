@@ -47,9 +47,7 @@ public abstract class Endpoint
 			ensureInputTaskIDAndStartTimeAreDefined(inputs);
 			logRequest(request, inputs);
 			EndpointResult epResponse = execute(inputs);
-			ensureOutputsTaskIDAndStartTimeAreDefined(inputs, epResponse);
-
-			epResponse.taskID = inputs.taskID;
+			ensureOutputsTaskIDAndTimesAreDefined(inputs, epResponse);
 			if (tLogger.isTraceEnabled()) {
 				tLogger.trace("response="+mapper.writeValueAsString(epResponse));
 			}
@@ -63,10 +61,16 @@ public abstract class Endpoint
 		tLogger.trace("POST completed");
 	}
 
-	private void ensureOutputsTaskIDAndStartTimeAreDefined(
+	private void ensureOutputsTaskIDAndTimesAreDefined(
 		I inputs, EndpointResult epResponse) {
-		epResponse.taskID = inputs.taskID;
-		epResponse.taskStartTime = inputs.taskStartTime;
+		if (epResponse.taskID == null) {
+			epResponse.taskID = inputs.taskID;
+		}
+		if (epResponse.taskStartTime == null) {
+			epResponse.taskStartTime = inputs.taskStartTime;
+		}
+		epResponse.taskElapsedMsecs =
+			System.currentTimeMillis() - epResponse.taskStartTime;
 	}
 
 	private void logResult(HttpServletRequest request, EndpointResult epResponse,

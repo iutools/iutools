@@ -1,6 +1,5 @@
 package org.iutools.webservice;
 
-
 import ca.nrc.testing.AssertString;
 import ca.nrc.testing.Asserter;
 import ca.nrc.ui.web.testing.MockHttpServletResponse;
@@ -44,7 +43,7 @@ public class AssertServletResponse extends Asserter<HttpServletResponse> {
 			// stopped execution before we were done setting fields of the
 			// EnpointResult. So don't do a sanity check on the result in that case.
 			Assertions.assertNotNull(result.taskID,
-			baseMessage + "\nTask ID of response was not set");
+				baseMessage + "\nTask ID of response was not set");
 		}
 	}
 

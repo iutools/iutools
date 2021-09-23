@@ -16,7 +16,8 @@ class MorphemeDictionaryController extends IUToolsController {
 	}
 	
 	onFindExamples() {
-		Debug.getTraceLogger("MorphemeDictionaryController.onFindExamples").trace("invoked");
+		var tracer = Debug.getTraceLogger('MorphemeDictionaryController.onFindExamples');
+		tracer.trace("invoked");
         this.elementForProp("divWordEntry_contents").html('').parent().hide();
         this.elementForProp('inpExampleWord').val('');
         this.elementForProp("divWordEntry").hide();
@@ -26,7 +27,9 @@ class MorphemeDictionaryController extends IUToolsController {
             this.setGetBusy(true);
             var requestData = this.getSearchRequestData();
             if (!this.isDuplicateEvent("onFindExamples", requestData)) {
-                this.logOnServer("MORPHEME_SEARCH", requestData)
+                tracer.trace("Invoking service with"+
+                    ": this.findExamplesSuccessCallback="+this.findExamplesSuccessCallback+
+                    ", this.findExamplesFailureCallback="+this.findExamplesFailureCallback)
                 this.invokeFindExampleService(requestData,
                     this.findExamplesSuccessCallback, this.findExamplesFailureCallback);
             }
@@ -42,42 +45,14 @@ class MorphemeDictionaryController extends IUToolsController {
 	}
 
 	invokeFindExampleService(actionData, cbkActionSuccess, cbkActionFailure) {
-        this.logThenInvokeService('MORPHEME_SEARCH', 'srv2/morpheme_dictionary',
+        this.userActionStart(
+            'MORPHEME_SEARCH', 'srv2/morpheme_dictionary',
             actionData, cbkActionSuccess, cbkActionFailure)
 	}
-	
-	
-	invokeService(jsonRequestData, _successCbk, _failureCbk, _url) {
-			var tracer = Debug.getTraceLogger('OccurenceController.invokeService');
-			this.busy = true;
-			var controller = this;
-			var fctSuccess = 
-					function(resp) {
-						_successCbk.call(controller, resp);
-					};
-			var fctFailure = 
-					function(resp) {
-						_failureCbk.call(controller, resp);
-					};
-					
-			// this line is for development only, allowing to present results without calling Bing.
-			//var jsonResp = this.mockSrvSearch();fctSuccess(jsonResp);
-		
-			$.ajax({
-				method: 'POST',
-				url: _url,
-				data: jsonRequestData,
-				dataType: 'json',
-				async: true,
-		        success: fctSuccess,
-		        error: fctFailure
-			});
-			
-	}
-	
-	
+
 	findExamplesSuccessCallback(resp) {
-        Debug.getTraceLogger("MorphemeDictionaryController.findExamplesSuccessCallback").trace("resp="+JSON.stringify(resp));
+        var tracer = Debug.getTraceLogger('MorphemeDictionaryController.findExamplesSuccessCallback');
+        tracer.trace("resp="+JSON.stringify(resp));
 
         if (resp.errorMessage != null) {
 			this.findExamplesFailureCallback(resp);
