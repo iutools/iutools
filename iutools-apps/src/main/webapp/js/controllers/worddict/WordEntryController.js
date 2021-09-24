@@ -75,6 +75,7 @@ class WordEntryController extends IUToolsController {
 			this.displayWordEntry(resp);
 		}
 		this.setWordDictBusy(false);
+		this.userActionEnd("WORD_LOOKUP", resp);
 	}
 	
 	failureWordDictCallback(resp) {

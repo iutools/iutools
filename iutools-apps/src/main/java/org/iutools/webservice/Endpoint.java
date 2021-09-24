@@ -44,6 +44,7 @@ public abstract class Endpoint
 			tLogger.trace("jsonRequestBody="+jsonRequestBody);
 
 			inputs = requestInputs(jsonRequestBody);
+			inputs.validate();
 			ensureInputTaskIDAndStartTimeAreDefined(inputs);
 			logRequest(request, inputs);
 			EndpointResult epResponse = execute(inputs);
@@ -53,7 +54,7 @@ public abstract class Endpoint
 			}
 			logResult(request, epResponse, inputs);
 			writeJsonResponse(epResponse, response);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			tLogger.trace("Caught exception: "+e);
 			logError(e, inputs, request);
 			throw new ServiceException(e);
@@ -64,10 +65,10 @@ public abstract class Endpoint
 	private void ensureOutputsTaskIDAndTimesAreDefined(
 		I inputs, EndpointResult epResponse) {
 		if (epResponse.taskID == null) {
-			epResponse.taskID = inputs.taskID;
+			epResponse.taskID = inputs._taskID;
 		}
 		if (epResponse.taskStartTime == null) {
-			epResponse.taskStartTime = inputs.taskStartTime;
+			epResponse.taskStartTime = inputs._taskStartTime;
 		}
 		epResponse.taskElapsedMsecs =
 			System.currentTimeMillis() - epResponse.taskStartTime;
@@ -77,7 +78,7 @@ public abstract class Endpoint
 		I inputs) throws ServiceException {
 		JSONObject json = epResponse.resultLogEntry();
 		if (json != null) {
-			long elapsed = System.currentTimeMillis() - inputs.taskStartTime;
+			long elapsed = System.currentTimeMillis() - inputs._taskStartTime;
 			json.put("_endpointPhase", "END");
 			json.put("_taskElapsedMsecs", elapsed);
 			json.put("_uri", request.getRequestURI());
@@ -114,11 +115,11 @@ public abstract class Endpoint
 	}
 
 	private void ensureInputTaskIDAndStartTimeAreDefined(I inputs) {
-		if (inputs.taskID == null) {
-			inputs.taskID = generateTaskID();
+		if (inputs._taskID == null) {
+			inputs._taskID = generateTaskID();
 		}
-		if (inputs.taskStartTime == null) {
-			inputs.taskStartTime = System.currentTimeMillis();
+		if (inputs._taskStartTime == null) {
+			inputs._taskStartTime = System.currentTimeMillis();
 		}
 	}
 
@@ -135,8 +136,8 @@ public abstract class Endpoint
 
 			JSONObject logEntry = new JSONObject()
 				.put("_uri", request.getRequestURI())
-				.put("_taskID", inputs.taskID)
-				.put("_endpointPhase", "START")
+				.put("_taskID", inputs._taskID)
+				.put("_endpointPhase", inputs)
 				.put("taskData", inputSummary);
 			String json = jsonifyLogEntry(logEntry);
 			Logger logger = null;endpointLogger();

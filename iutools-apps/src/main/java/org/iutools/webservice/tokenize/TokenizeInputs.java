@@ -13,24 +13,28 @@ public class TokenizeInputs extends ServiceInputs {
 
 	public TokenizeInputs() {}
 
-	public TokenizeInputs(String _text) {
+	public TokenizeInputs(String _text) throws ServiceException {
 		init__TokenizeInputs(_text, (Integer)null);
 	}
 
-	public TokenizeInputs(String _text, Integer _maxWords) {
+	public TokenizeInputs(String _text, Integer _maxWords) throws ServiceException {
 		init__TokenizeInputs(_text, _maxWords);
 	}
 
-	private void init__TokenizeInputs(String _text, Integer _maxWords) {
+	private void init__TokenizeInputs(String _text, Integer _maxWords) throws ServiceException {
 		this.text = _text;
 		this.maxWords = _maxWords;
+		validate();
 	}
 
 	@Override
 	public Map<String, Object> summarizeForLogging() throws ServiceException {
-		Map<String,Object> summary = super.summarizeForLogging();
+		Map<String,Object> summary = asMap();
 		summary.remove("text");
-		int numWords = new IUTokenizer().tokenize(text).size();
+		int numWords = 0;
+		if (text != null) {
+			numWords = new IUTokenizer().tokenize(text).size();
+		}
 		summary.put("totalWords", numWords);
 		return summary;
 	}

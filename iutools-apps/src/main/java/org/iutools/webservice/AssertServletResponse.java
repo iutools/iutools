@@ -77,7 +77,7 @@ public class AssertServletResponse extends Asserter<HttpServletResponse> {
 
 		EndpointResult result = endpointResult();
 		AssertString.assertStringContains(
-		baseMessage + "\nException was not as expected",
+			baseMessage + "\nException was not as expected",
 			result.errorMessage, expMess);
 		return this;
 	}

@@ -3,12 +3,23 @@ package org.iutools.webservice;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang.ArrayUtils;
 
 import java.util.Map;
 
 public class ServiceInputs {
-	public String taskID = null;
-	public Long taskStartTime = null;
+	public static final String[] validUserActions = new String[] {
+		"DICTIONARY_SEARCH", "SPELL", "GIST_TEXT", "WORD_LOOKUP", "MORPHEME_SEARCH",
+		"SEARCH_WEB"
+	};
+
+	// These are NOT private eventhough we preface them with underscores.
+	// We do this so that those attributes will appear first when we
+	// pretty print the inputs for logging.
+	//
+	public String _action = null;
+	public String _taskID = null;
+	public Long _taskStartTime = null;
 
 	@JsonIgnore
 	private ObjectMapper mapper = new ObjectMapper();
@@ -24,14 +35,18 @@ public class ServiceInputs {
 	 * @return
 	 */
 	public Map<String, Object> summarizeForLogging() throws ServiceException {
-		Map<String,Object> summary = null;
+		return asMap();
+	}
+
+	public Map<String,Object> asMap() throws ServiceException {
+		Map<String,Object> inputsMap = null;
 		try {
 			String json = mapper.writeValueAsString(this);
-			summary = mapper.readValue(json, Map.class);
+			inputsMap = mapper.readValue(json, Map.class);
 		} catch (JsonProcessingException e) {
 			throw new ServiceException(e);
 		}
-		return summary;
+		return inputsMap;
 	}
 
 	public static <I extends ServiceInputs> I
@@ -46,5 +61,22 @@ public class ServiceInputs {
 			throw new ServiceException(e);
 		}
 		return inputs;
+	}
+
+	public void validate() throws ServiceException {
+		String errMess = null;
+		errMess = validateAction();
+
+		if (errMess != null) {
+			throw new ServiceException(errMess);
+		}
+	}
+
+	public String validateAction() {
+		String errMess = null;
+		if (_action != null && !ArrayUtils.contains(validUserActions, _action)) {
+			errMess = "Invalid action "+_action;
+		}
+		return errMess;
 	}
 }

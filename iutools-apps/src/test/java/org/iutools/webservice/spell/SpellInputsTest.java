@@ -9,7 +9,12 @@ public class SpellInputsTest extends ServiceInputsTest {
 
 	@Override
 	protected ServiceInputs makeInputs() throws Exception {
-		return new ServiceInputs();
+		return new SpellInputs();
+	}
+
+	@Override
+	protected boolean shouldGenerateNullSummary() {
+		return true;
 	}
 
 	@Test

@@ -61,6 +61,21 @@ class IUToolsController extends WidgetController {
             cbkLogSuccess, cbkLogFailure);
     }
 
+    userActionEnd(actionName, finalServerResp) {
+        var tracer = Debug.getTraceLogger("IUToolsController.userActionEnd");
+        tracer.trace("actionName="+actionName);
+        finalServerResp = this.asJsonObject(finalServerResp)
+        var logData = {
+            taskID: finalServerResp.taskID,
+            taskElapsedMsecs: finalServerResp.taskElapsedMsecs
+        };
+        var cbkDoNothing = function() {}
+        // Just log the end of the user action on the server and do nothing with
+        // the server's response to that log request.
+        this.logOnServer(actionName, logData, "END",
+            cbkDoNothing, cbkDoNothing());
+    }
+
     logOnServer(actionName, taskData, phase, cbkLogSuccess, cbkLogFailure) {
         var tracer = Debug.getTraceLogger("UIToolsController.logOnServer");
         tracer.trace(

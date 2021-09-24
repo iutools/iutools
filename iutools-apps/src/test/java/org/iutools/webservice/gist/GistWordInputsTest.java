@@ -17,13 +17,13 @@ public class GistWordInputsTest extends ServiceInputsTest {
 		ServiceInputs inputs =
 			new GistWordInputs("inuksuk");
 		new AssertServiceInputs(inputs)
-			.logSummaryIs("{\"taskID\":null,\"taskStartTime\":null,\"word\":\"inuksuk\",\"wordRomanized\":\"inuksuk\"}");
+			.logSummaryIs("{\"_action\":null,\"_taskID\":null,\"_taskStartTime\":null,\"word\":\"inuksuk\",\"wordRomanized\":\"inuksuk\"}");
 			;
 
 		inputs =
 			new GistWordInputs("ᐃᓄᒃᓱᒃ");
 		new AssertServiceInputs(inputs)
-			.logSummaryIs("{\"taskID\":null,\"taskStartTime\":null,\"word\":\"ᐃᓄᒃᓱᒃ\",\"wordRomanized\":\"inuksuk\"}");
+			.logSummaryIs("{\"_action\":null,\"_taskID\":null,\"_taskStartTime\":null,\"word\":\"ᐃᓄᒃᓱᒃ\",\"wordRomanized\":\"inuksuk\"}");
 			;
 	}
 }

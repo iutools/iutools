@@ -9,10 +9,17 @@ public class SpellInputs extends ServiceInputs {
 	public String text = null;
 	public boolean includePartiallyCorrect = false;
 
-	public SpellInputs() {}
+	public SpellInputs() throws ServiceException {
+		init__SpellInputs((String)null);
+	}
 
-	public SpellInputs(String _text) {
+	public SpellInputs(String _text) throws ServiceException {
+		init__SpellInputs(_text);
+	}
+
+	protected void init__SpellInputs(String _text) throws ServiceException {
 		this.text = _text;
+		validate();
 	}
 
 	// We don't log individual word spell check

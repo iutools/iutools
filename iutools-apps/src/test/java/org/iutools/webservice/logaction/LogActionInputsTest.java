@@ -17,44 +17,44 @@ public class LogActionInputsTest extends ServiceInputsTest {
 	public void test__summarizeForLogging() throws Exception {
 		ServiceInputs inputs =
 			new LogActionInputs(
-				LogActionInputs.Action.GIST_TEXT,
+				"GIST_TEXT",
 				new JSONObject()
 					.put("textOrUrl", "inuksuk")
 			);
 		new AssertServiceInputs(inputs)
-			.logSummaryIs("{\"_action\":\"GIST_TEXT\",\"taskID\":null,\"taskStartTime\":null,\"totalWords\":1,\"type\":\"text\"}");
+			.logSummaryIs("{\"_action\":\"GIST_TEXT\",\"_phase\":\"START\",\"_taskID\":null,\"_taskStartTime\":null,\"totalWords\":1,\"type\":\"text\"}");
 			;
 
 		inputs =
 			new LogActionInputs(
-				LogActionInputs.Action.GIST_TEXT,
+				"GIST_TEXT",
 				new JSONObject()
 					.put("textOrUrl", "http://www.somewhere.com/hello.html")
 			);
 		new AssertServiceInputs(inputs)
-			.logSummaryIs("{\"_action\":\"GIST_TEXT\",\"address\":\"http://www.somewhere.com/hello.html\",\"host\":\"www.somewhere.com\",\"taskID\":null,\"taskStartTime\":null,\"type\":\"url\"}");
+			.logSummaryIs("{\"_action\":\"GIST_TEXT\",\"_phase\":\"START\",\"_taskID\":null,\"_taskStartTime\":null,\"address\":\"http://www.somewhere.com/hello.html\",\"host\":\"www.somewhere.com\",\"type\":\"url\"}");
 			;
 
 		inputs =
 			new LogActionInputs(
-				LogActionInputs.Action.SEARCH_WEB,
+				"SEARCH_WEB",
 				new JSONObject()
 					.put("origQuery", "inuksuk")
 			);
 		new AssertServiceInputs(inputs)
-			.logSummaryIs("{\"_action\":\"SEARCH_WEB\",\"origQuery\":\"inuksuk\"}");
+			.logSummaryIs("{\"_action\":\"SEARCH_WEB\",\"_phase\":\"START\",\"_taskID\":null,\"_taskStartTime\":null,\"origQuery\":\"inuksuk\"}");
 			;
 
 		inputs =
 			new LogActionInputs(
-				LogActionInputs.Action.MORPHEME_SEARCH,
+				"MORPHEME_SEARCH",
 				new JSONObject()
 					.put("wordPattern", "siuq")
 					.put("corpusName", JSONObject.NULL)
 					.put("nbExamples", "50")
 			);
 		new AssertServiceInputs(inputs)
-			.logSummaryIs("{\"_action\":\"MORPHEME_SEARCH\",\"corpusName\":null,\"nbExamples\":\"50\",\"wordPattern\":\"siuq\"}");
+			.logSummaryIs("{\"_action\":\"MORPHEME_SEARCH\",\"_phase\":\"START\",\"_taskID\":null,\"_taskStartTime\":null,\"corpusName\":null,\"nbExamples\":\"50\",\"wordPattern\":\"siuq\"}");
 			;
 	}
 }

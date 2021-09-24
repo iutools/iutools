@@ -1,9 +1,8 @@
 package org.iutools.webservice.logaction;
 
+import ca.nrc.json.PrettyPrinter;
 import org.apache.log4j.Logger;
 import org.iutools.webservice.*;
-
-import javax.servlet.http.HttpServletRequest;
 
 public class LogActionEndpoint extends Endpoint {
 
@@ -16,7 +15,9 @@ public class LogActionEndpoint extends Endpoint {
 	@Override
 	public EndpointResult execute(ServiceInputs inputs) throws ServiceException {
 		Logger tLogger = Logger.getLogger("org.iutools.webservice.LogActionEndpoint.execute");
-
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("inputs="+ PrettyPrinter.print(inputs));
+		}
 		LogActionInputs logInputs = (LogActionInputs)inputs;
 		LogActionResult result =
 			new LogActionResult();

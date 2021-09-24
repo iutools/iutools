@@ -8,6 +8,7 @@ import org.iutools.webservice.gist.GistPrepareContentInputs;
 import org.iutools.webservice.tokenize.TokenizeInputs;
 import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -22,59 +23,67 @@ public class LogActionInputs extends ServiceInputs {
 
 	public static enum Phase {START, END};
 
-	public Action action = null;
-	public Phase phase = Phase.START;
-	public Map<String,Object> taskData = null;
+	public String phase = "START";
+	public Map<String,Object> taskData = new HashMap<String,Object>();
 
 	public LogActionInputs() throws ServiceException {
-		init_LogInputs((Action)null, (Long)null, (JSONObject)null);
+		init_LogInputs((String)null, (Long)null, (JSONObject)null);
 	}
 
-	public LogActionInputs(Action _action, JSONObject _taskData) throws ServiceException {
-		init_LogInputs(_action, (Long)null, _taskData);
+	public LogActionInputs(String __action, JSONObject __taskData) throws ServiceException {
+		init_LogInputs(__action, (Long)null, __taskData);
 	}
 
-	public LogActionInputs(Action _action, Map<String,Object> _taskData) throws ServiceException {
-		init_LogInputs(_action, _taskData);
+	public LogActionInputs(String __action, Map<String,Object> __taskData) throws ServiceException {
+		init_LogInputs(__action, __taskData);
 	}
 
-	private void init_LogInputs(Action _action, Long _startedAt, JSONObject _taskInputs)
+	private void init_LogInputs(String __action, Long __startedAt, JSONObject __taskInputs)
 		throws ServiceException {
 
-		if (_taskInputs != null) {
-			String json = _taskInputs.toString();
+		if (__taskInputs != null) {
+			String json = __taskInputs.toString();
 			try {
 				Map<String,Object> taskDataMap =
 					new ObjectMapper().readValue(json, Map.class);
-				init_LogInputs(_action, taskDataMap);
+				init_LogInputs(__action, taskDataMap);
 			} catch (JsonProcessingException e) {
 				throw new ServiceException(e);
 			}
 		}
 
+		validate();
+
 		return;
 	}
 
-	private void init_LogInputs(Action _action, Map<String,Object> _taskData)
+	private void init_LogInputs(String __action, Map<String,Object> __taskData)
 		throws ServiceException {
 
-		this.action = _action;
-		this.taskData = _taskData;
+		this._action = __action;
+		this.taskData = __taskData;
 
 		return;
 	}
 
 	@Override
+	public void validate() throws ServiceException {
+		super.validate();
+		if (!phase.matches("(START|END)")) {
+			throw new ServiceException("Invalid phase: '"+phase+"'");
+		}
+	}
+
+	@Override
 	public Map<String, Object> summarizeForLogging() throws ServiceException {
 		Map<String,Object> data = taskData;
-
 		ServiceInputs inputsToSummarize = null;
-		if (action == Action.GIST_TEXT) {
+		if (_action == "GIST_TEXT") {
 			inputsToSummarize =
 				GistPrepareContentInputs.instantiateFromMap(
 					taskData,
 					GistPrepareContentInputs.class);
-		} else if (action == Action.SPELL) {
+		} else if (_action == "SPELL") {
 			inputsToSummarize =
 				TokenizeInputs.instantiateFromMap(
 					taskData,
@@ -82,10 +91,13 @@ public class LogActionInputs extends ServiceInputs {
 		}
 		if (inputsToSummarize != null) {
 			data = inputsToSummarize.summarizeForLogging();
+			// Note: We prefix action and phase with an underscore so they will come
+			// first in the list of fields when we JSONifiy the map
 		}
-		// Note: We prefix action with an underscore so it will come first
-		// in the list of fields when we JSONifiy the map
-		data.put("_action", action.name());
+		data.put("_action", _action);
+		data.put("_phase", this.phase);
+		data.put("_taskStartTime", this._taskStartTime);
+		data.put("_taskID", this._taskID);
 
 		return data;
 	}

@@ -15,10 +15,17 @@ public class GistPrepareContentInputs extends ServiceInputs {
 
 	private IUTokenizer tokenizer = new IUTokenizer();
 
-	public GistPrepareContentInputs() {}
+	public GistPrepareContentInputs() throws ServiceException {
+		init__GistPrepareContentInputs((String)null);
+	}
 
-	public GistPrepareContentInputs(String _text) {
-		this.textOrUrl = _text;
+	public GistPrepareContentInputs(String _textOrURL) throws ServiceException {
+		init__GistPrepareContentInputs(_textOrURL);
+	}
+
+	protected void init__GistPrepareContentInputs(String _textOrURL) throws ServiceException {
+		this.textOrUrl = _textOrURL;
+		validate();
 	}
 
 	@JsonIgnore
@@ -36,7 +43,7 @@ public class GistPrepareContentInputs extends ServiceInputs {
 
 	public Map<String, Object> summarizeForLogging() throws ServiceException {
 
-		Map<String,Object> summary = super.summarizeForLogging();
+		Map<String,Object> summary = asMap();
 		summary.remove("textOrUrl");
 		String type = "text";
 		if (isURL()) {
@@ -60,7 +67,11 @@ public class GistPrepareContentInputs extends ServiceInputs {
 	}
 
 	private int totalWordsInText() {
-		List<String> tokens = tokenizer.tokenize(textOrUrl);
-		return tokens.size();
+		int totalWords = 0;
+		if (textOrUrl != null) {
+			List<String> tokens = tokenizer.tokenize(textOrUrl);
+			totalWords = tokens.size();
+		}
+		return totalWords;
 	}
 }

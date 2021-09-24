@@ -41,7 +41,7 @@ public class EndpointDispatcherTest {
 		String id = "someid";
 		JSONObject json = new JSONObject()
 			.put("wordPattern", "siuq")
-			.put("taskID", id);
+			.put("_taskID", id);
 		String uri = "iutools/srv2/morpheme_dictionary";
 		MockHttpServletResponse response  = doPost(uri, json);
 
@@ -76,12 +76,13 @@ public class EndpointDispatcherTest {
 
 		new AssertServletResponse(response, MorphemeExamplesResult.class)
 			.reportsException(
-				"Service raised exception\n\n" +
-				"JSON inputs did not have the structure of class 'org.iutools.webservice.morphexamples.MorphemeExamplesInputs'.\n" +
-				"JSON was: '{\"wordPattern\":\"siuq\",\"unknownField\":\"blah\"}'\n" +
-				"org.iutools.webservice.ServiceException: JSON inputs did not have the structure of class 'org.iutools.webservice.morphexamples.MorphemeExamplesInputs'.\n" +
-				"JSON was: '{\"wordPattern\":\"siuq\",\"unknownField\":\"blah\"}")
-			;
+//				"Service raised exception\n\n" +
+//				"JSON inputs did not have the structure of class 'org.iutools.webservice.morphexamples.MorphemeExamplesInputs'.\n" +
+//				"JSON was: '{\"wordPattern\":\"siuq\",\"unknownField\":\"blah\"}'")
+				"Service raised exception\n\n"
+				+ "org.iutools.webservice.ServiceException: JSON inputs did not have the structure of class 'org.iutools.webservice.morphexamples.MorphemeExamplesInputs'.\n"
+				+ "JSON was: '{\"wordPattern\":\"siuq\",\"unknownField\":\"blah\"}'"
+			);
 		return;
 	}
 
@@ -112,11 +113,33 @@ public class EndpointDispatcherTest {
 	}
 
 	@Test
-	public void test__doPost__log_action__DICTIONARY_LOOKUP() throws Exception {
+	public void test__doPost__log_action__DICTIONARY_LOOKUP__START() throws Exception {
 
 		JSONObject json = new JSONObject()
-			.put("action", LogActionInputs.Action.DICTIONARY_SEARCH)
-			.put("taskID", JSONObject.NULL)
+			.put("_action", "DICTIONARY_SEARCH")
+			.put("_taskID", JSONObject.NULL)
+			.put("taskData", new JSONObject()
+				.put("word", "inuk")
+			);
+		String uri = "iutools/srv2/log_action";
+		MockHttpServletResponse response  = doPost(uri, json);
+
+		new AssertServletResponse(response, LogActionResult.class)
+			.reportsNoException()
+			;
+		return;
+	}
+
+	@Test
+	public void test__doPost__log_action__DICTIONARY_LOOKUP__END() throws Exception {
+		JSONObject json = new JSONObject()
+//		public String _action = null;
+//		public String _taskID = null;
+//		public Long _taskStartTime = null;
+
+			.put("_action", "DICTIONARY_SEARCH")
+			.put("phase", "END")
+			.put("_taskID", JSONObject.NULL)
 			.put("taskData", new JSONObject()
 				.put("word", "inuk")
 			);
@@ -133,8 +156,8 @@ public class EndpointDispatcherTest {
 	public void test__doPost__log_action__SEARCH_WEB() throws Exception {
 
 		JSONObject json = new JSONObject()
-			.put("action", LogActionInputs.Action.SEARCH_WEB)
-			.put("taskID", JSONObject.NULL)
+			.put("_action", "SEARCH_WEB")
+			.put("_taskID", JSONObject.NULL)
 			.put("taskData", new JSONObject()
 				.put("origQuery", "inuksuk")
 			);
@@ -151,8 +174,8 @@ public class EndpointDispatcherTest {
 	public void test__doPost__log_action__MORPHEME_EXAMPLES() throws Exception {
 
 		JSONObject json = new JSONObject()
-			.put("action", LogActionInputs.Action.MORPHEME_SEARCH)
-			.put("taskID", JSONObject.NULL)
+			.put("_action", "MORPHEME_SEARCH")
+			.put("_taskID", JSONObject.NULL)
 			.put("taskData", new JSONObject()
 				.put("wordPattern", "gaq")
 			);
