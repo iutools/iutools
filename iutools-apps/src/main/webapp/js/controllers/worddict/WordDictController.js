@@ -58,7 +58,7 @@ class WordDictController extends IUToolsController {
         if (resp.errorMessage != null) {
             this.searchFailureCallback(resp);
         } else {
-            this.displayLookupResult(resp);
+            this.displaySearchResult(resp);
         }
         this.setBusy(false);
     }
@@ -95,7 +95,7 @@ class WordDictController extends IUToolsController {
         this.elementForProp('btnSearch').attr("disabled", false);
     }
 
-    displayLookupResult(resp) {
+    displaySearchResult(resp) {
         var tracer = Debug.getTraceLogger("WordDictController.displayLookupResult");
         tracer.trace('resp= '+JSON.stringify(resp));
         var html = this.htmlHits(resp);
@@ -116,6 +116,7 @@ class WordDictController extends IUToolsController {
         divHits.append(html);
 
         this.attachListenersToIUWords();
+        this.userActionEnd("DICTIONARY_SEARCH", resp)
     }
 
     htmlHits(resp) {

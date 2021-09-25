@@ -60,6 +60,7 @@ class MorphemeDictionaryController extends IUToolsController {
 			this.setResults(resp);
 		}
 		this.setGetBusy(false);
+        this.userActionEnd('MORPHEME_SEARCH', resp);
 	}
 	
 	findExamplesFailureCallback(resp) {

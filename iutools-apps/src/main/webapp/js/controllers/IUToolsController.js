@@ -21,8 +21,7 @@ class IUToolsController extends WidgetController {
         var tracer = Debug.getTraceLogger("IUtoolsController.augmentActionData");
         actionData = this.asJsonObject(actionData);
         tracer.trace("actionData="+actionData+", serverResp="+serverResp);
-        actionData.taskID = serverResp.taskID;
-        actionData.startedAt = serverResp.startedAt;
+        actionData._taskID = serverResp._taskID;
         return actionData
     }
 
@@ -84,10 +83,10 @@ class IUToolsController extends WidgetController {
             ", taskData="+JSON.stringify(taskData));
         var dataObj = this.asJsonObject(taskData);
         var data = {
-            action: actionName,
+            _action: actionName,
             phase: phase,
             taskData: dataObj,
-            taskID: dataObj.taskID
+            _taskID: dataObj._taskID
         }
         if (cbkLogSuccess == null) {
             cbkLogSuccess = this.logSuccessCallback;
