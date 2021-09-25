@@ -27,13 +27,12 @@ class GistTextController extends IUToolsController {
 			textOrUrl: textOrUrl
 		};
 		var json_inputs = JSON.stringify(inputs);
-		this.logOnServer("GIST_TEXT", inputs);
-		
-		this.clearResults();
-		this.setBusy(true);
-		this.invokeWebService('srv2/gist/preparecontent/', json_inputs,
-			this.prepareContentSuccessCallback,
-			this.prepareContentFailureCallback);
+		// this.logOnServer("GIST_TEXT", inputs);
+        this.clearResults();
+        this.setBusy(true);
+        this.userActionStart(
+            "GIST_TEXT", 'srv2/gist/preparecontent/', json_inputs,
+            this.prepareContentSuccessCallback, this.prepareContentFailureCallback);
 	}
 	
 	prepareContentSuccessCallback(resp) {
@@ -47,6 +46,7 @@ class GistTextController extends IUToolsController {
 			this.setBusy(false);
 			this.displayTextGist(resp);
 		}
+		this.userActionEnd("GIST_TEXT", resp);
 	}
 
 	prepareContentFailureCallback(resp) {
