@@ -59,6 +59,7 @@ class MorphemeDictionaryController extends IUToolsController {
 		} else {
 			this.setResults(resp);
 		}
+        this.scrollIntoView(this.elementForProp("divResults"));
 		this.setGetBusy(false);
         this.userActionEnd('MORPHEME_SEARCH', resp);
 	}
