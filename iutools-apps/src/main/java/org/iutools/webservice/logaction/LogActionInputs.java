@@ -21,8 +21,6 @@ public class LogActionInputs extends ServiceInputs {
 		SEARCH_WEB;
 	}
 
-	public static enum Phase {START, END};
-
 	public String phase = "START";
 	public Map<String,Object> taskData = new HashMap<String,Object>();
 
@@ -69,7 +67,7 @@ public class LogActionInputs extends ServiceInputs {
 	@Override
 	public void validate() throws ServiceException {
 		super.validate();
-		if (!phase.matches("(START|END)")) {
+		if (!phase.matches("^(START|END)$")) {
 			throw new ServiceException("Invalid phase: '"+phase+"'");
 		}
 	}

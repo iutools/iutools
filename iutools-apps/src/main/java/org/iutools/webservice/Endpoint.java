@@ -79,7 +79,6 @@ public abstract class Endpoint
 		JSONObject json = epResponse.resultLogEntry();
 		if (json != null) {
 			long elapsed = System.currentTimeMillis() - inputs._taskStartTime;
-			json.put("_endpointPhase", "END");
 			json.put("_taskElapsedMsecs", elapsed);
 			json.put("_uri", request.getRequestURI());
 			endpointLogger().info(json.toString());
@@ -114,13 +113,11 @@ public abstract class Endpoint
 		errorLogger().error("Error processing inputs: "+inputsJson, e);
 	}
 
-	private void ensureInputTaskIDAndStartTimeAreDefined(I inputs) {
+	private void ensureInputTaskIDAndStartTimeAreDefined(I inputs) throws ServiceException {
 		if (inputs._taskID == null) {
 			inputs._taskID = generateTaskID();
 		}
-		if (inputs._taskStartTime == null) {
-			inputs._taskStartTime = System.currentTimeMillis();
-		}
+		inputs._taskStartTime = new UserTaskRegistry().taskStartTime(inputs._taskID);
 	}
 
 	private String generateTaskID() {
@@ -137,7 +134,6 @@ public abstract class Endpoint
 			JSONObject logEntry = new JSONObject()
 				.put("_uri", request.getRequestURI())
 				.put("_taskID", inputs._taskID)
-				.put("_endpointPhase", inputs)
 				.put("taskData", inputSummary);
 			String json = jsonifyLogEntry(logEntry);
 			Logger logger = null;endpointLogger();
