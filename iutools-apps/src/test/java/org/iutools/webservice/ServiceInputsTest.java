@@ -2,7 +2,6 @@ package org.iutools.webservice;
 
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.testing.AssertString;
-import org.iutools.webservice.logaction.LogActionInputs;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,6 +38,11 @@ public abstract class ServiceInputsTest {
 				"Action not properly set in the summary.\nSummary was:\n" +
 				gotSummaryPP,
 				"WORD_LOOKUP", gotAction);
+			typeSpecificSummarySanityCheck(gotSummary);
 		}
+	}
+
+	protected void typeSpecificSummarySanityCheck(Map<String, Object> gotSummary)  {
+		// By default, we don't do any further sanit checkts
 	}
 }

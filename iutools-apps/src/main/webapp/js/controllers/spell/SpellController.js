@@ -110,11 +110,8 @@ class SpellController extends IUToolsController {
 	 */
 	tokenizeAndSpellCheck() {
 		var data = this.tokenizeRequestData();
-		this.logOnServer("SPELL", data);
-		this.invokeTokenizeService(
-			data,
-			this.cbkTokenizeSuccess, this.cbkTokenizeFailure
-		);
+        this.userActionStart("SPELL", 'srv2/tokenize', data,
+            this.cbkTokenizeSuccess, this.cbkTokenizeFailure);
 	}
 
 	/**
@@ -317,6 +314,7 @@ class SpellController extends IUToolsController {
 		if (this.tokensRemaining == null ||
 			this.tokensRemaining.length == 0) {
 			this.setBusy(false);
+			this.userActionEnd("SPELL", {})
 
             return;
 		}

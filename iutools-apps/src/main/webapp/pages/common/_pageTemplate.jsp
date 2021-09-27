@@ -31,7 +31,6 @@
         <li><a href="morpheme_dictionary.jsp">Morpheme Dictionary</a></li>
         <li><a href="gisttext.jsp">Gister</a></li>
         <li><a href="spell.jsp">Spell Checker</a></li>
-        <li><a href="concordancer.jsp">Inuktut Multilingual Concordancer</a></li>
         <li><a href="search.jsp">Web Search Engine</a></li>
         <li><a href="http://inuktitutcomputing.ca/Transcoder/index.php">Inuktitut Computing Transcoder</a></li>
       </ul>

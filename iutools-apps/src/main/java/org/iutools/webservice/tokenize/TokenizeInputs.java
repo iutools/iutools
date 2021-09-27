@@ -31,6 +31,7 @@ public class TokenizeInputs extends ServiceInputs {
 	public Map<String, Object> summarizeForLogging() throws ServiceException {
 		Map<String,Object> summary = asMap();
 		summary.remove("text");
+		summary.remove("maxWords");
 		int numWords = 0;
 		if (text != null) {
 			numWords = new IUTokenizer().tokenize(text).size();

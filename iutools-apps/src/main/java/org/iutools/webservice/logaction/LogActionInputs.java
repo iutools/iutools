@@ -2,6 +2,7 @@ package org.iutools.webservice.logaction;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.log4j.Logger;
 import org.iutools.webservice.ServiceException;
 import org.iutools.webservice.ServiceInputs;
 import org.iutools.webservice.gist.GistPrepareContentInputs;
@@ -74,20 +75,28 @@ public class LogActionInputs extends ServiceInputs {
 
 	@Override
 	public Map<String, Object> summarizeForLogging() throws ServiceException {
+		Logger tLogger = Logger.getLogger("org.iutools.webservice.logaction.LogActionInputs.summarizeForLogging");
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("_action="+_action+", taskData="+taskData);
+		}
 		Map<String,Object> data = taskData;
 		ServiceInputs inputsToSummarize = null;
-		if (_action == "GIST_TEXT") {
+		if (_action.equals("GIST_TEXT")) {
+			tLogger.trace("GIST_TEXT");
 			inputsToSummarize =
 				GistPrepareContentInputs.instantiateFromMap(
 					taskData,
 					GistPrepareContentInputs.class);
-		} else if (_action == "SPELL") {
+		} else if (this._action.equals("SPELL")) {
+			tLogger.trace("SPELL");
 			inputsToSummarize =
 				TokenizeInputs.instantiateFromMap(
 					taskData,
 				TokenizeInputs.class);
 		}
+		tLogger.trace("inputsToSummarize="+inputsToSummarize);
 		if (inputsToSummarize != null) {
+			tLogger.trace("inputsToSummarize.getClass()="+inputsToSummarize.getClass());
 			data = inputsToSummarize.summarizeForLogging();
 			// Note: We prefix action and phase with an underscore so they will come
 			// first in the list of fields when we JSONifiy the map
