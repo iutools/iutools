@@ -27,7 +27,6 @@ class SearchController extends IUToolsController {
             this.clearResults();
             var data = this.getSearchRequestData();
             if (!this.isDuplicateEvent("expandQueryThenSearch", data)) {
-                this.logOnServer("SEARCH_WEB", data);
                 this.invokeExpandQueryService(data,
                     this.expandQuerySuccessCallback, this.expandQueryFailureCallback)
             }
@@ -55,16 +54,8 @@ class SearchController extends IUToolsController {
 
         // this line is for development only, allowing to present results without calling Bing.
         //var jsonResp = this.mockSrvSearch();fctSuccess(jsonResp);
-
-        $.ajax({
-            method: 'POST',
-            url: 'srv2/search/expandquery',
-            data: jsonRequestData,
-            dataType: 'json',
-            async: true,
-            success: fctSuccess,
-            error: fctFailure
-        });
+        this.userActionStart("SEARCH_WEB", 'srv2/search/expandquery',
+            jsonRequestData, fctSuccess, fctFailure)
     }
 
     validateQueryInput() {
@@ -88,6 +79,7 @@ class SearchController extends IUToolsController {
             this.launchGoogleSearch(resp.expandedQuerySyll);
         }
         this.setBusy(false);
+        this.userActionEnd("SEARCH_WEB", resp);
     }
 
     expandQueryFailureCallback(resp) {
