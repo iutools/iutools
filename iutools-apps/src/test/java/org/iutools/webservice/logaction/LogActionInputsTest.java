@@ -121,7 +121,7 @@ public class LogActionInputsTest extends ServiceInputsTest {
 					new JSONObject()
 						.put("text", "inuksuk iglu nunavut")
 				),
-				"{\"_action\":\"SPELL\",\"_phase\":\"START\",\"_taskID\":null,\"_taskStartTime\":null,\"maxWords\":500,\"totalWords\":3}"
+				"{\"_action\":\"SPELL\",\"_phase\":\"START\",\"_taskID\":null,\"_taskStartTime\":null,\"totalWords\":3}"
 			),
 			new Case(
 				"WORD_LOOKUP",
