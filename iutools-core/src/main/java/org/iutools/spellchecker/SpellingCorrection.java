@@ -87,10 +87,15 @@ public class SpellingCorrection {
 		this.setOrig(_orig);
 		this.partialFixRoman = _orig;
 		if (_wasMispelled != null) this.wasMispelled = _wasMispelled;
-		if (_corrections != null && _scores != null) {
+//		if (_corrections != null && _scores != null) {
+		if (_corrections != null) {
 			for (int ii=0; ii < _corrections.size(); ii++) {
 				String spelling = _corrections.get(ii);
-				Double score = _scores.get(ii);
+				Double score = 1.0;
+				if (_scores != null) {
+					score = _scores.get(ii);
+				}
+//				Double score = _scores.get(ii);
 				scoredCandidates.add(new ScoredSpelling(spelling, score));
 			}
 		}

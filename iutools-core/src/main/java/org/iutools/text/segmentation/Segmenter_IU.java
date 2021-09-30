@@ -15,10 +15,10 @@ public class Segmenter_IU extends Segmenter {
 	protected String[] tokenize(String text) {
 		IUTokenizer tokenizer = new IUTokenizer();
 		tokenizer.tokenize(text);
-		List<Pair<String, Boolean>> allTokens = tokenizer.getAllTokens();
+		List<Token> allTokens = tokenizer.getAllTokens();
 		String[] tokens = new String[allTokens.size()];
 		for (int ii=0; ii < allTokens.size(); ii++) {
-			tokens[ii] = allTokens.get(ii).getLeft();
+			tokens[ii] = allTokens.get(ii).text;
 		}
 
 		return tokens;

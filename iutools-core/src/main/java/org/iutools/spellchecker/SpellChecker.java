@@ -14,6 +14,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.morph.*;
 import org.iutools.morph.r2l.MorphologicalAnalyzer_R2L;
+import org.iutools.text.segmentation.Token;
 import org.iutools.utilities.StopWatch;
 import ca.nrc.debug.Debug;
 import org.iutools.corpus.*;
@@ -1238,13 +1239,13 @@ public class SpellChecker {
 		
 		IUTokenizer iutokenizer = new IUTokenizer();
 		iutokenizer.tokenize(text);
-		List<Pair<String,Boolean>> tokens = iutokenizer.getAllTokens();
+		List<Token> tokens = iutokenizer.getAllTokens();
 		
 		if (tLogger.isTraceEnabled()) tLogger.trace("tokens= "+PrettyPrinter.print(tokens));
 		
-		for (Pair<String,Boolean> aToken: tokens) {
-			String tokString = aToken.getLeft();
-			Boolean isDelimiter = !aToken.getRight(); // IUTokenizer returns TRUE for words and FALSE for non-words.
+		for (Token aToken: tokens) {
+			String tokString = aToken.text;
+			Boolean isDelimiter = !aToken.isWord; // IUTokenizer returns TRUE for words and FALSE for non-words.
 			SpellingCorrection correction = null;
 			if (isDelimiter) {
 				correction = new SpellingCorrection(tokString);

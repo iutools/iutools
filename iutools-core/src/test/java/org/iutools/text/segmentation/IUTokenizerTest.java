@@ -38,10 +38,10 @@ public class IUTokenizerTest {
 		// You can also get a list of tokens, with an indicator that 
 		// says if it was a word or not
 		//
-		List<Pair<String,Boolean>> tokens = tokenizer.getAllTokens();
-		for (Pair<String,Boolean> aToken: tokens) {
-			String tokString = aToken.getLeft();
-			if (aToken.getRight()) {
+		List<Token> tokens = tokenizer.getAllTokens();
+		for (Token aToken: tokens) {
+			String tokString = aToken.text;
+			if (aToken.isWord) {
 				// Token is an actual word
 			} else {
 				// Token is NOT a word
@@ -69,7 +69,7 @@ public class IUTokenizerTest {
 		Assert.assertTrue("",tokenizer.tokens.size()==1);
 		Assert.assertEquals("", "\"", tokenizer.tokens.get(0));
 		Assert.assertTrue("",tokenizer.allTokensPunctuation.size()==1);
-		Assert.assertEquals("", "\"", tokenizer.allTokensPunctuation.get(0).getLeft());
+		Assert.assertEquals("", "\"", tokenizer.allTokensPunctuation.get(0).text);
 	}
 
 	@Test
@@ -113,7 +113,7 @@ public class IUTokenizerTest {
 		IUTokenizer tokenizer = new IUTokenizer();
 		String text;
 		List<String> words, expectedWords;
-		List<Pair<String,Boolean>> expectedTokens;
+		List<Token> expectedTokens;
 		text = "009 - 4(3): ᐃᖏᕐᕋᖃᑦᑕᕐᓂᕐᒧᑦ ᐳᓚᕋᖅᑐᓕᕆᓂᕐᒧᓪᓗ ᒪᓕᒐᐅᑉ ᓄᑖᖑᕆᐊᖅᑕᐅᓂᖓ (ᐃᐊᓪ-ᑲᓇᔪᖅ) 159";
 		words = tokenizer.tokenize(text);
 		expectedWords = new ArrayList<String>();
@@ -129,31 +129,31 @@ public class IUTokenizerTest {
 		expectedWords.add("159");
 		AssertObject.assertDeepEquals("", expectedWords, words);
 		
-		expectedTokens = new ArrayList<Pair<String,Boolean>>();
-		expectedTokens.add(Pair.of("009",true));
-		expectedTokens.add(Pair.of(" ",false));
-		expectedTokens.add(Pair.of("-",false));
-		expectedTokens.add(Pair.of(" ",false));
-		expectedTokens.add(Pair.of("4",true));
-		expectedTokens.add(Pair.of("(",false));
-		expectedTokens.add(Pair.of("3",true));
-		expectedTokens.add(Pair.of("):",false));
-		expectedTokens.add(Pair.of(" ",false));
-		expectedTokens.add(Pair.of("ᐃᖏᕐᕋᖃᑦᑕᕐᓂᕐᒧᑦ",true));
-		expectedTokens.add(Pair.of(" ",false));
-		expectedTokens.add(Pair.of("ᐳᓚᕋᖅᑐᓕᕆᓂᕐᒧᓪᓗ",true));
-		expectedTokens.add(Pair.of(" ",false));
-		expectedTokens.add(Pair.of("ᒪᓕᒐᐅᑉ",true));
-		expectedTokens.add(Pair.of(" ",false));
-		expectedTokens.add(Pair.of("ᓄᑖᖑᕆᐊᖅᑕᐅᓂᖓ",true));
-		expectedTokens.add(Pair.of(" ",false));
-		expectedTokens.add(Pair.of("(",false));
-		expectedTokens.add(Pair.of("ᐃᐊᓪ",true));
-		expectedTokens.add(Pair.of("-",false));
-		expectedTokens.add(Pair.of("ᑲᓇᔪᖅ",true));
-		expectedTokens.add(Pair.of(")",false));
-		expectedTokens.add(Pair.of(" ",false));
-		expectedTokens.add(Pair.of("159",true));
+		expectedTokens = new ArrayList<Token>();
+		expectedTokens.add(new Token("009",true));
+		expectedTokens.add(new Token(" ",false));
+		expectedTokens.add(new Token("-",false));
+		expectedTokens.add(new Token(" ",false));
+		expectedTokens.add(new Token("4",true));
+		expectedTokens.add(new Token("(",false));
+		expectedTokens.add(new Token("3",true));
+		expectedTokens.add(new Token("):",false));
+		expectedTokens.add(new Token(" ",false));
+		expectedTokens.add(new Token("ᐃᖏᕐᕋᖃᑦᑕᕐᓂᕐᒧᑦ",true));
+		expectedTokens.add(new Token(" ",false));
+		expectedTokens.add(new Token("ᐳᓚᕋᖅᑐᓕᕆᓂᕐᒧᓪᓗ",true));
+		expectedTokens.add(new Token(" ",false));
+		expectedTokens.add(new Token("ᒪᓕᒐᐅᑉ",true));
+		expectedTokens.add(new Token(" ",false));
+		expectedTokens.add(new Token("ᓄᑖᖑᕆᐊᖅᑕᐅᓂᖓ",true));
+		expectedTokens.add(new Token(" ",false));
+		expectedTokens.add(new Token("(",false));
+		expectedTokens.add(new Token("ᐃᐊᓪ",true));
+		expectedTokens.add(new Token("-",false));
+		expectedTokens.add(new Token("ᑲᓇᔪᖅ",true));
+		expectedTokens.add(new Token(")",false));
+		expectedTokens.add(new Token(" ",false));
+		expectedTokens.add(new Token("159",true));
 		AssertObject.assertDeepEquals("", expectedTokens, tokenizer.getTokens());
 	}
 
@@ -219,7 +219,7 @@ public class IUTokenizerTest {
 		String text;
 		text = "sinik&uni";
 		tokenizer.tokenize(text);
-		List<Pair<String,Boolean>> allTokens = tokenizer.getAllTokens();
+		List<Token> allTokens = tokenizer.getAllTokens();
 		Assert.assertEquals("",1,allTokens.size());
 	}
 	@Test
@@ -239,9 +239,10 @@ public class IUTokenizerTest {
 		String text;
 		text = "2015−mit.";
 		tokenizer.tokenize(text);
-		List<Pair<String,Boolean>>expectedTokens = new ArrayList<Pair<String,Boolean>>();
-		expectedTokens.add(Pair.of("2015−mit",true));
-		expectedTokens.add(Pair.of(".",false));
+		Token[] expectedTokens = new Token[]{
+			new Token("2015−mit", true),
+			new Token(".", false)
+		};
 		AssertObject.assertDeepEquals("", expectedTokens, tokenizer.getTokens());
 	}
 	
@@ -251,12 +252,13 @@ public class IUTokenizerTest {
 		String text;
 		text = "a 0.08%−mit c";
 		tokenizer.tokenize(text);
-		List<Pair<String,Boolean>>expectedTokens = new ArrayList<Pair<String,Boolean>>();
-		expectedTokens.add(Pair.of("a",true));
-		expectedTokens.add(Pair.of(" ",false));
-		expectedTokens.add(Pair.of("0.08%−mit",true));
-		expectedTokens.add(Pair.of(" ",false));
-		expectedTokens.add(Pair.of("c",true));
+		Token[] expectedTokens = new Token[]{
+			new Token("a", true),
+			new Token(" ", false),
+			new Token("0.08%−mit", true),
+			new Token(" ", false),
+			new Token("c", true),
+		};
 		AssertObject.assertDeepEquals("", expectedTokens, tokenizer.getTokens());
 	}
 	
@@ -266,16 +268,17 @@ public class IUTokenizerTest {
 		String text;
 		text = "he said \"bla bla\".";
 		tokenizer.tokenize(text);
-		List<Pair<String,Boolean>>expectedTokens = new ArrayList<Pair<String,Boolean>>();
-		expectedTokens.add(Pair.of("he",true));
-		expectedTokens.add(Pair.of(" ",false));
-		expectedTokens.add(Pair.of("said",true));
-		expectedTokens.add(Pair.of(" ",false));
-		expectedTokens.add(Pair.of("\"",false));
-		expectedTokens.add(Pair.of("bla",true));
-		expectedTokens.add(Pair.of(" ",false));
-		expectedTokens.add(Pair.of("bla",true));
-		expectedTokens.add(Pair.of("\".",false));
+		Token[] expectedTokens = new Token[]{
+		new Token("he", true),
+		new Token(" ", false),
+		new Token("said", true),
+		new Token(" ", false),
+		new Token("\"", false),
+		new Token("bla", true),
+		new Token(" ", false),
+		new Token("bla", true),
+		new Token("\".", false),
+		};
 		AssertObject.assertDeepEquals("", expectedTokens, tokenizer.getTokens());
 	}
 	
@@ -285,28 +288,29 @@ public class IUTokenizerTest {
 		String text;
 		text = "he said 1. ok 2. fine ... 10. no.";
 		tokenizer.tokenize(text);
-		List<Pair<String,Boolean>>expectedTokens = new ArrayList<Pair<String,Boolean>>();
-		expectedTokens.add(Pair.of("he",true));
-		expectedTokens.add(Pair.of(" ",false));
-		expectedTokens.add(Pair.of("said",true));
-		expectedTokens.add(Pair.of(" ",false));
-		expectedTokens.add(Pair.of("1",true));
-		expectedTokens.add(Pair.of(".",false));
-		expectedTokens.add(Pair.of(" ",false));
-		expectedTokens.add(Pair.of("ok",true));
-		expectedTokens.add(Pair.of(" ",false));
-		expectedTokens.add(Pair.of("2",true));
-		expectedTokens.add(Pair.of(".",false));
-		expectedTokens.add(Pair.of(" ",false));
-		expectedTokens.add(Pair.of("fine",true));
-		expectedTokens.add(Pair.of(" ",false));
-		expectedTokens.add(Pair.of("...",false));
-		expectedTokens.add(Pair.of(" ",false));
-		expectedTokens.add(Pair.of("10",true));
-		expectedTokens.add(Pair.of(".",false));
-		expectedTokens.add(Pair.of(" ",false));
-		expectedTokens.add(Pair.of("no",true));
-		expectedTokens.add(Pair.of(".",false));
+		Token[] expectedTokens = new Token[] {
+			new Token("he",true),
+			new Token(" ",false),
+			new Token("said",true),
+			new Token(" ",false),
+			new Token("1",true),
+			new Token(".",false),
+			new Token(" ",false),
+			new Token("ok",true),
+			new Token(" ",false),
+			new Token("2",true),
+			new Token(".",false),
+			new Token(" ",false),
+			new Token("fine",true),
+			new Token(" ",false),
+			new Token("...",false),
+			new Token(" ",false),
+			new Token("10",true),
+			new Token(".",false),
+			new Token(" ",false),
+			new Token("no",true),
+			new Token(".",false)
+		};
 		AssertObject.assertDeepEquals("", expectedTokens, tokenizer.getTokens());
 	}
 	
@@ -315,16 +319,16 @@ public class IUTokenizerTest {
 		IUTokenizer tokenizer = new IUTokenizer();
 		String text = "http://www.somewhere.com/path-with-lots-of-hyphens/";
 		tokenizer.tokenize(text);
-		List<Pair<String, Boolean>> gotTokens = tokenizer.getAllTokens();
-		Pair<String,Boolean>[] expTokens = new Pair[] {
-			Pair.of("http", true), Pair.of("://", false), Pair.of("www", true), 
-			Pair.of(".", false), Pair.of("somewhere", true), Pair.of(".", false),
-			Pair.of("com", true), Pair.of("/", false),  
-			Pair.of("path", true), Pair.of("-", false),
-			Pair.of("with", true), Pair.of("-", false),
-			Pair.of("lots", true), Pair.of("-", false),
-			Pair.of("of", true), Pair.of("-", false),
-			Pair.of("hyphens", true), Pair.of("/", false),
+		List<Token> gotTokens = tokenizer.getAllTokens();
+		Token[] expTokens = new Token[] {
+			new Token("http", true), new Token("://", false), new Token("www", true),
+			new Token(".", false), new Token("somewhere", true), new Token(".", false),
+			new Token("com", true), new Token("/", false),
+			new Token("path", true), new Token("-", false),
+			new Token("with", true), new Token("-", false),
+			new Token("lots", true), new Token("-", false),
+			new Token("of", true), new Token("-", false),
+			new Token("hyphens", true), new Token("/", false),
 			
 		};
 		AssertObject.assertDeepEquals("", expTokens, gotTokens);

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 
@@ -22,7 +23,8 @@ public class IUTokenizer {
 	static Pattern pAcronym = Pattern.compile("^([^\\.]\\.)+$");
 
 	public List<String> tokens = new ArrayList<String>();
-	public List<Pair<String, Boolean>> allTokensPunctuation = new ArrayList<Pair<String, Boolean>>();
+	public List<Token> allTokensPunctuation =
+		new ArrayList<Token>();
 	private String text;
 
 	public IUTokenizer() {
@@ -31,7 +33,7 @@ public class IUTokenizer {
 	public List<String> tokenize(String text) {
 		this.text = text;
 		tokens = new ArrayList<String>();
-		allTokensPunctuation = new ArrayList<Pair<String, Boolean>>();
+		allTokensPunctuation = new ArrayList<Token>();
 		Pattern pSpace = Pattern.compile("(\\s+)");
 		Matcher mSpace = pSpace.matcher(text);
 
@@ -40,7 +42,7 @@ public class IUTokenizer {
 			String token = text.substring(pos, mSpace.start(1));
 			if (token.length() != 0)
 				__processToken(token);
-			allTokensPunctuation.add(Pair.of(mSpace.group(1), false));
+			allTokensPunctuation.add(new Token(mSpace.group(1), false));
 			pos = mSpace.end(1);
 		}
 		if (text.substring(pos).length() != 0)
@@ -49,10 +51,10 @@ public class IUTokenizer {
 		return onlyWords();
 	}
 
-	public List<Pair<String, Boolean>> getAllTokens() {
+	public List<Token> getAllTokens() {
 		return allTokensPunctuation;
 	}
-	public List<Pair<String, Boolean>> getTokens() {
+	public List<Token> getTokens() {
 		return allTokensPunctuation;
 	}
 
@@ -82,7 +84,7 @@ public class IUTokenizer {
 	private boolean __processNumericExpression(String token) {
 		boolean res = false;
 		if (wordIsNumberWithSuffix(token)!= null) {
-			allTokensPunctuation.add(Pair.of(token,true));
+			allTokensPunctuation.add(new Token(token,true));
 			res = true;
 		}
 		
@@ -91,7 +93,7 @@ public class IUTokenizer {
 
 	protected void __processFinalPunctuation(String finalPunctuation) {
 		if ( !finalPunctuation.equals("") ) {
-			allTokensPunctuation.add(Pair.of(finalPunctuation, false));
+			allTokensPunctuation.add(new Token(finalPunctuation, false));
 		}
 	}
 
@@ -105,12 +107,12 @@ public class IUTokenizer {
 			if (punctuationMark.matches("&+") && mpunct.start(1) != 0)
 				continue;
 			if (pos != mpunct.start(1))
-				allTokensPunctuation.add(Pair.of(token.substring(pos, mpunct.start(1)), true));
-			allTokensPunctuation.add(Pair.of(punctuationMark, false));
+				allTokensPunctuation.add(new Token(token.substring(pos, mpunct.start(1)), true));
+			allTokensPunctuation.add(new Token(punctuationMark, false));
 			pos = mpunct.end(1);
 		}
 		if (pos != token.length())
-			allTokensPunctuation.add(Pair.of(token.substring(pos), true));
+			allTokensPunctuation.add(new Token(token.substring(pos), true));
 	}
 
 	protected String[] __processBeforePossibleFinalPunctuation(String token) {
@@ -136,7 +138,7 @@ public class IUTokenizer {
 		Matcher macr = pAcronym.matcher(token);
 		if (macr.matches()) {
 			tokens.add(token);
-			allTokensPunctuation.add(Pair.of(token, true));
+			allTokensPunctuation.add(new Token(token, true));
 			return "";
 		} else
 			return token;
@@ -149,7 +151,7 @@ public class IUTokenizer {
 		Matcher mp = p.matcher(token);
 		if (mp.matches()) {
 			tokens.add(mp.group(1));
-			allTokensPunctuation.add(Pair.of(mp.group(1), false));
+			allTokensPunctuation.add(new Token(mp.group(1), false));
 			return mp.group(2);
 		} else
 			return token;
@@ -163,9 +165,9 @@ public class IUTokenizer {
 	public List<String> onlyWords() {
 		List<String> onlyWords = new ArrayList<String>();
 		for (int iToken = 0; iToken < allTokensPunctuation.size(); iToken++) {
-			Pair<String, Boolean> token = allTokensPunctuation.get(iToken);
-			if (token.getRight())
-				onlyWords.add(token.getLeft());
+			Token token = allTokensPunctuation.get(iToken);
+			if (token.isWord)
+				onlyWords.add(token.text);
 		}
 
 		return onlyWords;
@@ -174,8 +176,8 @@ public class IUTokenizer {
 	public List<String> wordsAndAll() {
 		List<String> wordsAndAll = new ArrayList<String>();
 		for (int iToken = 0; iToken < allTokensPunctuation.size(); iToken++) {
-			Pair<String, Boolean> token = allTokensPunctuation.get(iToken);
-			wordsAndAll.add(token.getLeft());
+			Token token = allTokensPunctuation.get(iToken);
+			wordsAndAll.add(token.text);
 		}
 
 		return wordsAndAll;
@@ -185,8 +187,8 @@ public class IUTokenizer {
 	public String reconstruct() {
 		String str = "";
 		for (int iTok = 0; iTok < allTokensPunctuation.size(); iTok++) {
-			Pair<String, Boolean> tok = allTokensPunctuation.get(iTok);
-			str += tok.getLeft();
+			Token tok = allTokensPunctuation.get(iTok);
+			str += tok.text;
 		}
 
 		return str;

@@ -4,18 +4,17 @@
 ## Word Dict
 
 Basic scenario
-- Search for 'nunavut'
+- Search for 'ammuumajuq'
 - Check that the entry for 'nunavut' is displayed autoamtically
 - Check that other words are listed in the hits list 
   - Typically 25 of them
-- Inspect the entry for 'inuk'
+- Inspect the entry for 'ammuumajuq'
   - Word displayed in latin first, syll second
   - Everything else displayed in roman
     - Translations, Related words, Examples
   - There is a decomp displayed
-  - There are some translations displyayed, including 'Nunavut'
+  - There are some translations displyayed, including 'divers' and 'clams'
   - There are some related words
-     _BUG: There does not seem to be related words for now_
   - There are some Examples
     - The Inuktitut is on the left, English on the right
     - Highlighting is ok on both sides
@@ -41,6 +40,16 @@ English query
   word 'housing'
 - Check the entry
   - Do the same checks as for the basic scenario
+
+Search for a string that returns no results
+- Search for ninuksuk
+- Make sure no Console error
+- Make sure system says no hits were found
+
+Very long word
+- Search for aanniaqarnanngittulirijimmarik
+- Make sure that the word and its Syllabics transcoding are properly displayed 
+and do not overlap with the test that is supposed to be below it
 
 Search with Enter vs Button
 - Submit search by either
@@ -161,7 +170,7 @@ Search for word in LATIN - Happy Path
 
   and that a Google search page is opened with that query
 - Click the back button and check that the query has been replaced by this in 
-  IUTools search engine window:
+  IUTools search engine window (i.e. expansion in Latin, not syllabics):
   
      (ukpirniq OR uppirusuppunga OR uppirusuttunga OR uppirusukkama OR uppirijara OR ukpirusukpugut)
   
@@ -177,6 +186,8 @@ Search using an already expanded query
 - Click on Search again and make sure that
   - The expanded query remained exactly the same
   - This is the query that is opened in the Google page.  
+  
+Search in Latin
   
 Search by pressing Enter key vs clicking Search
 - Enter a search word in the text box, then press Enter key.
@@ -215,8 +226,8 @@ Spell check LATIN -- Happy Path
 
 Concurency testing and Interruption
 - When you hit _Spell Check_
-  - Check that the Progress Wheel is displayed until the very last word has been 
-    displayed.
+  - Check that the Progress Wheel is displayed and that the _Spell Check__ 
+    is deactivated until the very last word has been displayed.
   - While the checker is still working on some of the words, try click on a 
     misspelled word and doing each of the followgin:
     - Click on a mis-spelled word and CHOOSE an alternate spelling

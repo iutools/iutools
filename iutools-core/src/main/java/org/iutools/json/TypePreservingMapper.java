@@ -11,7 +11,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Map object to/from json while prerving information about the type
+ * Map object to/from json while preserving information about the type
  * of elements in collections.
  */
 public class TypePreservingMapper  {
