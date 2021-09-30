@@ -7,8 +7,4 @@ public class LogActionResult extends EndpointResult {
 
 	public LogActionResult() {super();}
 
-	@Override
-	public JSONObject resultLogEntry() {
-		return null;
-	}
 }

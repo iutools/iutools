@@ -1,4 +1,4 @@
-    Enter your request:
+    Enter your query:
     <input id="txt-query-words" name="query-words" type="text" value="" />
     <button id="btn-search" type="button" name="btn-search" value="Search">Search</button>
     <p></p>

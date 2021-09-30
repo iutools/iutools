@@ -23,6 +23,7 @@ class GistTextController extends IUToolsController {
     }
 	
 	prepareContent(textOrUrl) {
+	    var tracer = Debug.getTraceLogger("GistTextController.prepareContent")
 		var inputs = {
 			textOrUrl: textOrUrl
 		};
@@ -30,6 +31,7 @@ class GistTextController extends IUToolsController {
 		// this.logOnServer("GIST_TEXT", inputs);
         this.clearResults();
         this.setBusy(true);
+        tracer.trace("invoking preparecontent with json_inputs="+this.asJsonString(json_inputs));
         this.userActionStart(
             "GIST_TEXT", 'srv2/gist/preparecontent/', json_inputs,
             this.prepareContentSuccessCallback, this.prepareContentFailureCallback);

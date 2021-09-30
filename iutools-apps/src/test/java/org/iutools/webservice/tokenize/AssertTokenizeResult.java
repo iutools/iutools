@@ -2,6 +2,7 @@ package org.iutools.webservice.tokenize;
 
 import ca.nrc.testing.AssertObject;
 import org.apache.commons.lang3.tuple.Pair;
+import org.iutools.text.segmentation.Token;
 import org.iutools.webservice.AssertEndpointResult;
 import org.iutools.webservice.EndpointResult;
 import org.junit.jupiter.api.Assertions;
@@ -25,15 +26,8 @@ public class AssertTokenizeResult extends AssertEndpointResult {
 		return (TokenizeResult) gotObject;
 	}
 
-//	public AssertTokenizeResult raisesNoError() {
-//		Assertions.assertEquals(
-//			null, result().errorMessage,
-//			baseMessage+"\nResponse raised error");
-//		return this;
-//	}
-
 	public AssertTokenizeResult producesTokens(
-		Pair<String, Boolean>[] expTokens) throws Exception {
+		Token[] expTokens) throws Exception {
 
 		AssertObject.assertDeepEquals(
 				baseMessage+"\nTokens were not as expected",

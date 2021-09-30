@@ -1,13 +1,12 @@
 package org.iutools.webservice.tokenize;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 import org.iutools.text.segmentation.IUTokenizer;
+import org.iutools.text.segmentation.Token;
 import org.iutools.webservice.Endpoint;
 import org.iutools.webservice.EndpointResult;
 import org.iutools.webservice.ServiceException;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public class TokenizeEndpoint extends Endpoint<TokenizeInputs, TokenizeResult> {
@@ -22,7 +21,7 @@ public class TokenizeEndpoint extends Endpoint<TokenizeInputs, TokenizeResult> {
 		IUTokenizer tokenizer = new IUTokenizer();
 
 		tokenizer.tokenize(inputs.text);
-		List<Pair<String, Boolean>> tokens = tokenizer.getAllTokens();
+		List<Token> tokens = tokenizer.getAllTokens();
 		int totaWords = totalWords(tokens);
 		Integer maxWords = inputs.maxWords;
 		if (maxWords == null || maxWords > 500) {
@@ -49,10 +48,10 @@ public class TokenizeEndpoint extends Endpoint<TokenizeInputs, TokenizeResult> {
 
 	}
 
-	private int totalWords(List<Pair<String, Boolean>> tokens) {
+	private int totalWords(List<Token> tokens) {
 		int total = 0;
-		for (Pair<String,Boolean> aToken: tokens) {
-			if (aToken.getRight()) {
+		for (Token aToken: tokens) {
+			if (aToken.isWord) {
 				total++;
 			}
 		}

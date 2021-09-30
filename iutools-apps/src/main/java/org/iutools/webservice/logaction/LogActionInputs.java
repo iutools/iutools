@@ -92,7 +92,7 @@ public class LogActionInputs extends ServiceInputs {
 			inputsToSummarize =
 				TokenizeInputs.instantiateFromMap(
 					taskData,
-				TokenizeInputs.class);
+					TokenizeInputs.class);
 		}
 		tLogger.trace("inputsToSummarize="+inputsToSummarize);
 		if (inputsToSummarize != null) {

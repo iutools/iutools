@@ -292,7 +292,7 @@ main ul ::marker {
 }
 
 #div-wordentry-word {
-	position: relative;
+  position: relative;
   height: 80px;
   padding: 5px 10px;
   background: #a6d5ed;

@@ -24,9 +24,4 @@ public class MorphemeExamplesResult extends EndpointResult {
 		matchingDescrs.addAll(matchingMorphemes);
 		return matchingDescrs;
 	}
-
-	@Override
-	public JSONObject resultLogEntry() {
-		return null;
-	}
 }

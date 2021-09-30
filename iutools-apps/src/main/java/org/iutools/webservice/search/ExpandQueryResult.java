@@ -19,11 +19,6 @@ public class ExpandQueryResult extends EndpointResult {
 
 	public ExpandQueryResult() {}
 
-	@Override
-	public JSONObject resultLogEntry() {
-		return null;
-	}
-
 	public ExpandQueryResult(String _origQuery) throws ServiceException {
 		init_ExpandQueryResponse(_origQuery, (MorphologicalRelative[])null);
 	}

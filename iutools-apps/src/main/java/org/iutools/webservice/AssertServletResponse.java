@@ -3,7 +3,7 @@ package org.iutools.webservice;
 import ca.nrc.testing.AssertString;
 import ca.nrc.testing.Asserter;
 import ca.nrc.ui.web.testing.MockHttpServletResponse;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.iutools.json.Mapper;
 import org.junit.jupiter.api.Assertions;
 
 import javax.servlet.http.HttpServletResponse;
@@ -12,7 +12,7 @@ public class AssertServletResponse extends Asserter<HttpServletResponse> {
 
 	Class<? extends EndpointResult> responseClass = null;
 
-	private ObjectMapper mapper = new ObjectMapper();
+	private Mapper mapper = new Mapper();
 
 	public AssertServletResponse(HttpServletResponse _gotObject) throws Exception {
 		super(_gotObject);
@@ -64,12 +64,22 @@ public class AssertServletResponse extends Asserter<HttpServletResponse> {
 		return this;
 	}
 
-	public void taskIDequals(String expID) throws Exception {
+	public AssertServletResponse taskIDequals(String expID) throws Exception {
+		return taskIDequals(expID, (String)null);
+	}
+
+	public AssertServletResponse taskIDequals(String expID, String mess) throws Exception {
+		if (mess == null) {
+			mess = "";
+		} else {
+			mess += "\n";
+		}
 		String gotID = endpointResult().taskID;
 		AssertString.assertStringEquals(
-			baseMessage+"\nTask ID was not as expected",
+			baseMessage+mess+"\nTask ID was not as expected",
 			expID, gotID
 		);
+		return this;
 	}
 
 	public AssertServletResponse reportsException(String expMess)

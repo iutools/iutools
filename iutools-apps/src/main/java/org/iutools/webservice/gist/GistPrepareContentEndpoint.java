@@ -9,11 +9,11 @@ import org.iutools.concordancer.*;
 import org.iutools.script.TransCoder;
 import org.iutools.text.segmentation.IUTokenizer;
 import org.iutools.text.segmentation.Segmenter;
+import org.iutools.text.segmentation.Token;
 import org.iutools.webservice.Endpoint;
 import org.iutools.webservice.EndpointResult;
 import org.iutools.webservice.ServiceException;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -92,10 +92,10 @@ public class GistPrepareContentEndpoint
 		{
 			String iuText = anAlignment.getText("iu");
 			tokenizer.tokenize(iuText);
-			List<Pair<String,Boolean>> iuTokensLst = tokenizer.getAllTokens();
+			List<Token> iuTokensLst = tokenizer.getAllTokens();
 			String[] iuTokens = new String[iuTokensLst.size()];
 			for (int ii=0; ii < iuTokens.length; ii++) {
-				String origToken = iuTokensLst.get(ii).getLeft();
+				String origToken = iuTokensLst.get(ii).text;
 				iuTokens[ii] = TransCoder.ensureRoman(origToken);
 			}
 			result.iuSentences.add(iuTokens);
@@ -104,10 +104,10 @@ public class GistPrepareContentEndpoint
 		{
 			String enText = anAlignment.getText("en");
 			tokenizer.tokenize(enText);
-			List<Pair<String,Boolean>> enTokensLst = tokenizer.getAllTokens();
+			List<Token> enTokensLst = tokenizer.getAllTokens();
 			String[] enTokens = new String[enTokensLst.size()];
 			for (int ii=0; ii < enTokens.length; ii++) {
-				enTokens[ii] = enTokensLst.get(ii).getLeft();
+				enTokens[ii] = enTokensLst.get(ii).text;
 			}
 			result.enSentences.add(enTokens);
 		}

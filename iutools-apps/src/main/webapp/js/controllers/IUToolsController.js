@@ -21,7 +21,7 @@ class IUToolsController extends WidgetController {
         var tracer = Debug.getTraceLogger("IUtoolsController.augmentActionData");
         actionData = this.asJsonObject(actionData);
         tracer.trace("actionData="+actionData+", serverResp="+serverResp);
-        actionData._taskID = serverResp._taskID;
+        actionData._taskID = serverResp.taskID;
         return actionData
     }
 
@@ -31,7 +31,7 @@ class IUToolsController extends WidgetController {
         var tracer = Debug.getTraceLogger('UIToolsController.userActionStart');
         tracer.trace(
             "actionName="+actionName+", actionURL="+actionURL+
-            ", actionData="+JSON.stringify(actionData));
+            ", actionData="+this.asJsonString(actionData));
         tracer.trace(
             "\ncbkActionSuccess="+cbkActionSuccess+
             "\ncbkActionFailure="+cbkActionFailure);
@@ -62,12 +62,12 @@ class IUToolsController extends WidgetController {
 
     userActionEnd(actionName, finalServerResp) {
         var tracer = Debug.getTraceLogger("IUToolsController.userActionEnd");
-        tracer.trace("actionName="+actionName);
+        tracer.trace("Upon entry, actionName="+actionName+", finalServerResp="+this.asJsonString(finalServerResp));
         finalServerResp = this.asJsonObject(finalServerResp)
         var logData = {
-            taskID: finalServerResp.taskID,
             taskElapsedMsecs: finalServerResp.taskElapsedMsecs
         };
+        var logData = this.augmentActionData(logData, finalServerResp)
         var cbkDoNothing = function() {}
         // Just log the end of the user action on the server and do nothing with
         // the server's response to that log request.

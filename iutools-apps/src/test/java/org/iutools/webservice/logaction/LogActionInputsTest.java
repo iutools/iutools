@@ -18,51 +18,6 @@ public class LogActionInputsTest extends ServiceInputsTest {
 	}
 
 	@Test
-	public void test__summarizeForLogging__OLD() throws Exception {
-		ServiceInputs inputs =
-			new LogActionInputs(
-				"GIST_TEXT",
-				new JSONObject()
-					.put("textOrUrl", "inuksuk")
-			);
-		new AssertServiceInputs(inputs)
-			.logSummaryIs("{\"_action\":\"GIST_TEXT\",\"_phase\":\"START\",\"_taskID\":null,\"_taskStartTime\":null,\"totalWords\":1,\"type\":\"text\"}");
-			;
-
-		inputs =
-			new LogActionInputs(
-				"GIST_TEXT",
-				new JSONObject()
-					.put("textOrUrl", "http://www.somewhere.com/hello.html")
-			);
-		new AssertServiceInputs(inputs)
-			.logSummaryIs("{\"_action\":\"GIST_TEXT\",\"_phase\":\"START\",\"_taskID\":null,\"_taskStartTime\":null,\"address\":\"http://www.somewhere.com/hello.html\",\"host\":\"www.somewhere.com\",\"type\":\"url\"}");
-			;
-
-		inputs =
-			new LogActionInputs(
-				"SEARCH_WEB",
-				new JSONObject()
-					.put("origQuery", "inuksuk")
-			);
-		new AssertServiceInputs(inputs)
-			.logSummaryIs("{\"_action\":\"SEARCH_WEB\",\"_phase\":\"START\",\"_taskID\":null,\"_taskStartTime\":null,\"origQuery\":\"inuksuk\"}");
-			;
-
-		inputs =
-			new LogActionInputs(
-				"MORPHEME_SEARCH",
-				new JSONObject()
-					.put("wordPattern", "siuq")
-					.put("corpusName", JSONObject.NULL)
-					.put("nbExamples", "50")
-			);
-		new AssertServiceInputs(inputs)
-			.logSummaryIs("{\"_action\":\"MORPHEME_SEARCH\",\"_phase\":\"START\",\"_taskID\":null,\"_taskStartTime\":null,\"corpusName\":null,\"nbExamples\":\"50\",\"wordPattern\":\"siuq\"}");
-			;
-	}
-
-	@Test
 	public void test__summarizeForLogging__SeveralCases() throws Exception {
 		Case[] cases = new Case[] {
 			new Case(
@@ -75,7 +30,6 @@ public class LogActionInputsTest extends ServiceInputsTest {
 				),
 				"{\"_action\":\"DICTIONARY_SEARCH\",\"_phase\":\"START\",\"_taskID\":null,\"_taskStartTime\":null,\"lang\":\"iu\",\"word\":\"inu\"}"
 			),
-
 			new Case(
 				"GIST_TEXT_texttype",
 				new LogActionInputs(
@@ -83,7 +37,7 @@ public class LogActionInputsTest extends ServiceInputsTest {
 					new JSONObject()
 						.put("textOrUrl", "inuksuk")
 				),
-				"{\"_action\":\"GIST_TEXT\",\"_phase\":\"START\",\"_taskID\":null,\"_taskStartTime\":null,\"totalWords\":1,\"type\":\"text\"}"
+				"{\"_action\":\"GIST_TEXT\",\"_phase\":\"START\",\"_taskID\":null,\"_taskStartTime\":null,\"taskElapsedMsecs\":null,\"totalWords\":1,\"type\":\"text\"}"
 			),
 			new Case(
 				"GIST_TEXT_urltype",
@@ -92,7 +46,7 @@ public class LogActionInputsTest extends ServiceInputsTest {
 					new JSONObject()
 						.put("textOrUrl", "http://www.somewhere.com/hello.html")
 				),
-				"{\"_action\":\"GIST_TEXT\",\"_phase\":\"START\",\"_taskID\":null,\"_taskStartTime\":null,\"address\":\"http://www.somewhere.com/hello.html\",\"host\":\"www.somewhere.com\",\"type\":\"url\"}"
+				"{\"_action\":\"GIST_TEXT\",\"_phase\":\"START\",\"_taskID\":null,\"_taskStartTime\":null,\"address\":\"http://www.somewhere.com/hello.html\",\"host\":\"www.somewhere.com\",\"taskElapsedMsecs\":null,\"type\":\"url\"}"
 			),
 			new Case(
 				"MORPHEME_SEARCH",
@@ -121,7 +75,7 @@ public class LogActionInputsTest extends ServiceInputsTest {
 					new JSONObject()
 						.put("text", "inuksuk iglu nunavut")
 				),
-				"{\"_action\":\"SPELL\",\"_phase\":\"START\",\"_taskID\":null,\"_taskStartTime\":null,\"totalWords\":3}"
+				"{\"_action\":\"SPELL\",\"_phase\":\"START\",\"_taskID\":null,\"_taskStartTime\":null,\"taskElapsedMsecs\":null,\"totalWords\":3}"
 			),
 			new Case(
 				"WORD_LOOKUP",

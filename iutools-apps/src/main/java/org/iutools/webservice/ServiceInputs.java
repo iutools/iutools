@@ -1,9 +1,12 @@
 package org.iutools.webservice;
 
+import ca.nrc.json.PrettyPrinter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.log4j.Logger;
+import org.json.JSONObject;
 
 import java.util.Map;
 
@@ -20,6 +23,7 @@ public class ServiceInputs {
 	public String _action = null;
 	public String _taskID = null;
 	public Long _taskStartTime = null;
+	public Long taskElapsedMsecs = null;
 
 	@JsonIgnore
 	private ObjectMapper mapper = new ObjectMapper();
@@ -52,6 +56,10 @@ public class ServiceInputs {
 	public static <I extends ServiceInputs> I
 		instantiateFromMap(Map<String,Object> data, Class<I> clazz)
 		throws ServiceException {
+		Logger tLogger = Logger.getLogger("org.iutools.webservice.ServiceInputs.instantiateFromMap");
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("clazz="+clazz+", data="+ PrettyPrinter.print(data));
+		}
 		ObjectMapper mapper = new ObjectMapper();
 		I inputs = null;
 		try {
@@ -78,5 +86,16 @@ public class ServiceInputs {
 			errMess = "Invalid action "+_action;
 		}
 		return errMess;
+	}
+
+	public JSONObject toJsonObject() throws ServiceException {
+		JSONObject jObj = null;
+		try {
+			String jsonStr = new ObjectMapper().writeValueAsString(asMap());
+			jObj = new JSONObject(asMap());
+		} catch (JsonProcessingException e) {
+			throw new ServiceException(e);
+		}
+		return jObj;
 	}
 }

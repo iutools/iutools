@@ -21,11 +21,6 @@ public class GistPrepareContentResult extends EndpointResult {
 
 	public GistPrepareContentResult() {}
 
-	@Override
-	public JSONObject resultLogEntry() {
-		return null;
-	}
-
 	public boolean getAlignmentsAvailable() {
 		boolean available =
 			(iuSentences != null && !iuSentences.isEmpty() &&

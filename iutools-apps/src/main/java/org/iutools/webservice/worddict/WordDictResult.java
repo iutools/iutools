@@ -55,11 +55,6 @@ public class WordDictResult extends EndpointResult {
 		tLogger.trace("exited");
 	}
 
-	@Override
-	public JSONObject resultLogEntry() {
-		return null;
-	}
-
 	public WordDictResult setLang(String _lang) {
 		this.lang = _lang;
 		return this;

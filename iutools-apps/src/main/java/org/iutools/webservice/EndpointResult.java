@@ -15,7 +15,7 @@ public abstract class EndpointResult {
 
 	public EndpointResult() {}
 
-	public JSONObject resultLogEntry(long startMSecs) {
+	public JSONObject resultLogEntry(long startMSecs) throws ServiceException {
 		JSONObject entry = resultLogEntry();
 		if (entry != null) {
 			long elapsedMSecs = StopWatch.elapsedMsecsSince(startMSecs);
@@ -24,7 +24,16 @@ public abstract class EndpointResult {
 		return entry;
 	}
 
-	public abstract JSONObject resultLogEntry();
+	public JSONObject resultLogEntry() throws ServiceException {
+		// By default, we don't log any specifics of the result.
+		// The Endpoint class will however augment that log entry with
+		// "universal" attributes that apply to all results (ex: elapsed time)
+		//
+		// Note: if you don't a log entry to be printed (not even one with those
+		// "universal" attributes), then override the method so it returns null
+		//
+		return new JSONObject();
+	}
 
 	public EndpointResult setError(String _error) {
 		this.errorMessage = _error;

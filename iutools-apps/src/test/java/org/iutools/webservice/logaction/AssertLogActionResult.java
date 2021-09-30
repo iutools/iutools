@@ -2,7 +2,6 @@ package org.iutools.webservice.logaction;
 
 import org.iutools.webservice.AssertEndpointResult;
 import org.iutools.webservice.EndpointResult;
-import org.iutools.webservice.tokenize.TokenizeResult;
 import org.junit.jupiter.api.Assertions;
 
 public class AssertLogActionResult extends AssertEndpointResult {

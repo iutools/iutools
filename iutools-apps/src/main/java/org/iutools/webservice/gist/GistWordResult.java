@@ -16,11 +16,6 @@ public class GistWordResult extends EndpointResult {
 		init_GistWord2Result(null);
 	}
 
-	@Override
-	public JSONObject resultLogEntry() {
-		return null;
-	}
-
 	public GistWordResult(String _word) {
 		init_GistWord2Result(_word);
 	}

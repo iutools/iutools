@@ -289,13 +289,13 @@ class SpellController extends IUToolsController {
 			this.tokensRemaining = [];
 			for (var ii=0; ii < respTokens.length; ii++) {
 				var respToken = respTokens[ii];
-				for (const [text, isWord] of Object.entries(respToken)) {
-					this.tokensRemaining.push({text: text, isWord: isWord})
-				}
+				var text = respToken.text;
+				var isWord = respToken.isWord;
+                this.tokensRemaining.push({text: text, isWord: isWord})
 			}
 
 			// Spell check the tokens
-			this.spellCheckRemainingTokens();
+			this.spellCheckRemainingTokens(resp.taskID);
 		}
 	}
 
@@ -304,9 +304,9 @@ class SpellController extends IUToolsController {
 	 * Each token is spell checked one at a time to avoid overloading the
 	 * web server.
 	 */
-	spellCheckRemainingTokens() {
+	spellCheckRemainingTokens(taskID) {
 		var tracer = Debug.getTraceLogger("SpellController.spellCheckRemainingTokens")
-		tracer.trace("this.tokensRemaining="+JSON.stringify(this.tokensRemaining));
+		tracer.trace("taskID="+taskID+", this.tokensRemaining="+JSON.stringify(this.tokensRemaining));
 		if (this.abortCheck) {
 			this.clearRemainingWords();
 		}
@@ -314,14 +314,18 @@ class SpellController extends IUToolsController {
 		if (this.tokensRemaining == null ||
 			this.tokensRemaining.length == 0) {
 			this.setBusy(false);
-			this.userActionEnd("SPELL", {})
+			var data = {
+                'taskID': taskID,
+                '_taskID': taskID,
+            }
+			this.userActionEnd("SPELL",data)
 
             return;
 		}
 
 		this.tokenBeingChecked = this.tokensRemaining.shift();
 		tracer.trace("this.tokenBeingChecked="+JSON.stringify(this.tokenBeingChecked));
-		this.spellCheckToken(this.tokenBeingChecked);
+		this.spellCheckToken(this.tokenBeingChecked, taskID);
 		var spellController = this;
 
 		// Don't spell check next token until we are done with the current one
@@ -336,7 +340,9 @@ class SpellController extends IUToolsController {
 		}
 
 		var doRemaining = function() {
-			spellController.spellCheckRemainingTokens();
+            var dTracer = Debug.getTraceLogger("SpellController.spellCheckRemainingTokens.doRemaining")
+            dTracer.trace("taskID="+taskID);
+            spellController.spellCheckRemainingTokens(taskID);
 		}
 		new RunWhen().conditionMet(readyForNextToken, doRemaining, null, 100);
 	}
@@ -461,12 +467,13 @@ class SpellController extends IUToolsController {
 	 * @param word: Word to be spell checked
 	 * @returns the request data
 	 */
-	spellWordRequestData(word) {
+	spellWordRequestData(word, taskID) {
 		var includePartials =
 			this.elementForProp("chkIncludePartials").is(':checked')
 
 		var request = {
 			text: word,
+            '_taskID': taskID,
 			includePartiallyCorrect: includePartials
 		};
 
@@ -553,7 +560,7 @@ class SpellController extends IUToolsController {
 	 * Run the spell checking web service on a single token.
 	 * @param token
 	 */
-	spellCheckToken(token) {
+	spellCheckToken(token, taskID) {
 		var tracer = Debug.getTraceLogger("SpellController.spellCheckToken")
 		tracer.trace("token="+JSON.stringify(token));
 		if (!token.isWord) {
@@ -571,7 +578,7 @@ class SpellController extends IUToolsController {
 				spellController.tokenBeingChecked = null;
 			}
 			this.invokeSpellCheckWordService(
-				this.spellWordRequestData(word),
+				this.spellWordRequestData(word, taskID),
 				cbkSuccess, cbkFailure);
 		}
 	}

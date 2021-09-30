@@ -3,11 +3,11 @@ package org.iutools.webservice;
 import ca.nrc.json.PrettyPrinter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.iutools.json.Mapper;
 import org.iutools.webservice.logaction.LogActionInputs;
 import org.json.JSONObject;
 
@@ -24,7 +24,7 @@ public abstract class Endpoint
 	protected abstract I requestInputs(String jsonRequestBody)
 		throws ServiceException;
 
-	ObjectMapper mapper = new ObjectMapper();
+	Mapper mapper = new Mapper();
 	{
 		mapper.enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY);
 		mapper.enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
@@ -79,6 +79,8 @@ public abstract class Endpoint
 		JSONObject json = epResponse.resultLogEntry();
 		if (json != null) {
 			long elapsed = System.currentTimeMillis() - inputs._taskStartTime;
+			json.put("_phase", "END");
+			json.put("_taskID", epResponse.taskID);
 			json.put("_taskElapsedMsecs", elapsed);
 			json.put("_uri", request.getRequestURI());
 			endpointLogger().info(json.toString());
@@ -114,10 +116,18 @@ public abstract class Endpoint
 	}
 
 	private void ensureInputTaskIDAndStartTimeAreDefined(I inputs) throws ServiceException {
+		Logger tLogger = Logger.getLogger("org.iutools.webservice.Endpoint.ensureInputTaskIDAndStartTimeAreDefined");
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("upon ENTRY, inputs="+inputs);
+		}
 		if (inputs._taskID == null) {
 			inputs._taskID = generateTaskID();
 		}
 		inputs._taskStartTime = new UserTaskRegistry().taskStartTime(inputs._taskID);
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("upon EXIT, inputs="+inputs);
+		}
+
 	}
 
 	private String generateTaskID() {
@@ -127,11 +137,16 @@ public abstract class Endpoint
 
 
 	private void logRequest(HttpServletRequest request, I inputs) throws ServiceException {
+		Logger tLogger = Logger.getLogger("org.iutools.webservice.Endpoint.logRequest");
 
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("inputs="+PrettyPrinter.print(inputs));
+		}
 		Map<String,Object> inputSummary = inputs.summarizeForLogging();
 		if (inputSummary != null) {
 
 			JSONObject logEntry = new JSONObject()
+				.put("_phase", "START")
 				.put("_uri", request.getRequestURI())
 				.put("_taskID", inputs._taskID)
 				.put("taskData", inputSummary);

@@ -100,7 +100,11 @@ class WordDictController extends IUToolsController {
         tracer.trace('resp= '+JSON.stringify(resp));
         var html = this.htmlHits(resp);
 
-        var queryWordEntry = resp.queryWordEntry.word;
+        var queryWordEntry = null;
+        if (resp.queryWordEntry != null &&
+            resp.queryWordEntry.hasOwnProperty('word')) {
+            queryWordEntry = resp.queryWordEntry.word;
+        }
         if (queryWordEntry != null) {
             if (queryWordEntry === this.queryWord()) {
                 // There is a word that matched the query exactly.

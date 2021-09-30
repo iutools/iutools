@@ -1,13 +1,12 @@
 package org.iutools.webservice.tokenize;
 
 import ca.nrc.config.ConfigException;
-import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.spellchecker.SpellCheckerException;
+import org.iutools.text.segmentation.Token;
 import org.iutools.webservice.Endpoint;
 import org.iutools.webservice.EndpointResult;
 import org.iutools.webservice.EndpointTest;
 import org.iutools.webservice.ServiceException;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.FileNotFoundException;
@@ -29,11 +28,11 @@ public class TokenizeEndpointTest extends EndpointTest {
 		TokenizeInputs inputs = new TokenizeInputs("nunavut, inuktut");
 		EndpointResult epResult = endPoint.execute(inputs);
 
-		Pair<String,Boolean>[] expTokens = new Pair[] {
-			Pair.of("nunavut", true),
-			Pair.of(",", false),
-			Pair.of(" ", false),
-			Pair.of("inuktut", true)
+		Token[] expTokens = new Token[] {
+			new Token("nunavut", true),
+			new Token(",", false),
+			new Token(" ", false),
+			new Token("inuktut", true)
 		};
 
 		AssertTokenizeResult asserter =
