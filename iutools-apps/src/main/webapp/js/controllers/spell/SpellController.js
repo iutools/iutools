@@ -425,6 +425,7 @@ class SpellController extends IUToolsController {
 	picklistFor(corrResult) {
 		var origWord = corrResult.orig;
 		var alternatives = corrResult.allSuggestions;
+		alternatives.unshift(origWord);
 		var picklistHtml = "<div class='corrections' word='"+corrResult.orig+"'>\n";
 		picklistHtml += "<span class=\"suggestion original selected\">"+origWord+"</span>\n";
 		var inputLength = origWord.length;
