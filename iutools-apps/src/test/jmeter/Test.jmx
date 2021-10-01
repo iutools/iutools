@@ -183,7 +183,7 @@
           </JSONPathAssertion>
           <hashTree/>
           <DurationAssertion guiclass="DurationAssertionGui" testclass="DurationAssertion" testname="Check Speed: Morpheme Search" enabled="true">
-            <stringProp name="DurationAssertion.duration">1200</stringProp>
+            <stringProp name="DurationAssertion.duration">2000</stringProp>
           </DurationAssertion>
           <hashTree/>
         </hashTree>
