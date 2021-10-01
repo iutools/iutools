@@ -324,3 +324,7 @@ Submit form with Enter key
    - Web Search
      - Search for a word (_action=SEARCH_WEB, data=origQuery)
      
+     
+## Feedback link
+
+- Click Feedback, type a message and make sure it gets sent     
