@@ -17,7 +17,13 @@
 
 <body>
 
-<a href="index.html"><img src="imgs/iutools-banner.svg" class="img_responsive"></a>
+<div id="header" class="header">
+  <div id="header_inner">
+		<a id="header_title" href="index.html">
+			<span>IUTOOLS:</span> <span>APPS</span> <span>FOR</span> <span>THE</span> <span>INUKTITUT</span> <span>LANGUAGE</span>
+		</a> 
+	</div>
+</div>
 
 <nav id="main_nav">
   <button class="menu-toggle"><span></span><span></span><span></span></button>
@@ -31,6 +37,7 @@
         <li><a href="morpheme_dictionary.jsp">Morpheme Dictionary</a></li>
         <li><a href="gisttext.jsp">Gister</a></li>
         <li><a href="spell.jsp">Spell Checker</a></li>
+        <li><a href="concordancer.jsp">Inuktut Multilingual Concordancer</a></li>
         <li><a href="search.jsp">Web Search Engine</a></li>
         <li><a href="http://inuktitutcomputing.ca/Transcoder/index.php">Inuktitut Computing Transcoder</a></li>
       </ul>

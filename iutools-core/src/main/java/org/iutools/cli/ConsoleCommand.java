@@ -24,12 +24,15 @@ import static org.iutools.concordancer.WebConcordancer.AlignOptions;
 
 public abstract class ConsoleCommand extends SubCommand {
 
+
+
 	public static enum Mode {SINGLE_INPUT, INTERACTIVE, PIPELINE}
 
 	public static final String OPT_FORCE = "force";
 
 	public static final String OPT_DATA_FILE = "data-file";
 	public static final String OPT_INPUT_FILE = "input-file";
+	public static final String OPT_LOG_FILE = "log-file";
 	public static final String OPT_FILE_REGEXP = "file-regexp";
 	public static final String OPT_OUTPUT_FILE = "output-file";
 	public static final String OPT_INPUT_DIR = "input-dir";
@@ -67,6 +70,8 @@ public abstract class ConsoleCommand extends SubCommand {
 	public static final String OPT_PIPELINE = "pipeline";
 	public static final String OPT_TIMEOUT_SECS = "timeout-secs";
 
+	public static final String OPT_LOG_REPORT_TYPE = "log-report-type";
+
 	public ConsoleCommand(String name) throws CommandLineException {
 		super(name);
 	}
@@ -97,7 +102,36 @@ public abstract class ConsoleCommand extends SubCommand {
 		}
 		return dataFile;
 	}
-	
+
+	protected File getLogFile() {
+		return getLogFile(true);
+	}
+
+	protected File getLogFile(boolean failIfAbsent) {
+		File dataFile = null;
+		String fileStr =
+			getOptionValue(ConsoleCommand.OPT_LOG_FILE, failIfAbsent);
+		if (fileStr != null) {
+			dataFile = new File(fileStr);
+		}
+		return dataFile;
+	}
+
+
+	protected String getLogReportType() {
+		return getLogReportType(false);
+	}
+
+	protected String getLogReportType(boolean failIfAbsent) {
+		String reportTypeStr = null;
+		reportTypeStr =
+			getOptionValue(ConsoleCommand.OPT_LOG_REPORT_TYPE, failIfAbsent);
+		if (reportTypeStr == null) {
+			reportTypeStr = "OVERVIEW";
+		}
+		return reportTypeStr;
+	}
+
 	protected String getDictFile() {
 		return getDictFile(true);
 	}

@@ -21,46 +21,79 @@ b, strong {
 
 #header {
   width: 100%;
-  background: #049dd4;
   position: relative;
+	padding: 14px;
   margin-bottom: 0;
+	background: url(../imgs/header-back.jpg) no-repeat center 55%;
+	background-size: 800px;
 }
 
 main {
 	flex: 1;
 }
 
-#main_nav_menu, #page_title, main {
+#header_inner, #main_nav_menu, #page_title, main {
   width: 100%;
   max-width: 1000px;
   padding: 0 14px;
   margin: 0 auto;
 }
 
-#header_inner {
-    width: 100%;
-    max-width: 1000px;
-    padding: 0 14px;
-    margin: 0 auto;
-}
-
-.img_responsive {
-    max-width: 100%;
-    height: auto;
-}
-
-#header_inner {
+#header_inner { 
   position: relative;
   padding: 20px;
+	max-width: 800px;
 }
 
-#header #header_inner > a {
-  font-size: 1.625em;
+#header_title {
+  font-size: 2em;
+	line-height: .7;
   font-weight: 600;
   color: #fff;
   text-decoration: none;
   display: block;
   text-align: center;
+}
+
+#header_title span {
+	display: inline-block;
+	height: .7em;
+	color: transparent;
+	margin: .25em 0;
+	overflow: hidden;
+	background-image: url(../imgs/title-text.png);
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
+#header_title span:first-child {
+	width: 4.15em;
+	background-position: .1em top;
+}
+
+#header_title span:nth-child(2) {
+	width: 2.3em;
+	background-position: -4.2em top;
+}
+
+#header_title span:nth-child(3) {
+	width: 2.05em;
+	background-position: -6.7em top;
+}
+
+#header_title span:nth-child(4) {
+	width: 1.8em;
+	background-position: -8.85em top;
+}
+
+#header_title span:nth-child(5) {
+	width: 4.95em;
+	background-position: -10.85em top;
+}
+
+#header_title span:nth-child(6) {
+	width: 5.1em;
+	background-position: -16.05em top;
 }
 
 #main_nav {
@@ -92,11 +125,11 @@ main {
 }
 
 #main_nav_menu > li:hover {
-  background: #015580;
+  background: #0c4c85;;
 }
 
 .drop-menu-toggle.active, .drop-menu-toggle.active:hover {
-  background: #015580;
+  background: #0c4c85;;
   box-shadow: 0 0px 6px rgba(0, 0, 0, 0.5);
 }
 
@@ -194,7 +227,7 @@ main {
 }
 
 #main_nav a:hover, button:hover, input[type="button"]:hover, .drop-menu-toggle:hover {
-  background: #015580;
+  background: #0c4c85;;
 }
 
 .drop-menu {
@@ -207,7 +240,7 @@ main {
   padding: 0;
   margin: 0;
   list-style: none;
-  background: #015580;
+  background: #0c4c85;;
   box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.75);
 }
 
@@ -224,7 +257,7 @@ main {
 }
 
 #main_nav .drop-menu li:hover {
-  background: #023e5e;
+  background: #04335c;
 }
 
 button {
@@ -272,7 +305,7 @@ main ul a {
 }
 
 main ul a:hover {
-  color: #015580;
+  color: #0c4c85;;
 }
 
 main ul ::marker {
@@ -304,21 +337,15 @@ main ul ::marker {
 }
 
 #div-wordentry-word {
-    position: relative;
-    /*
-    resize: both;
-    overflow:auto;
-     */
-    height: 80px;
-    padding: 5px 10px;
-    background: #a6d5ed;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.65);
-    z-index: 10;
+	position: relative;
+  padding: 27px 10px 17px 10px;
+  background: #a6d5ed;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.65);
+  z-index: 10;
 }
 
 #div-wordentry-word h2 {
   margin: 0;
-  line-height: 80px;
 }
 
 #div-wordentry #div-wordentry-contents {
@@ -455,11 +482,7 @@ div#div-wordentry-iconized {
 
 @media screen and (min-width: 540px) {
 
-  #header_inner { 
-    padding: 40px;
-  }
-
-  #header #header_inner > a {
+  #header_title {
     font-size: 2.5em;
     font-weight: 500;
   } 
@@ -496,7 +519,7 @@ div#div-wordentry-iconized {
   
   .drop-menu-toggle.active, .drop-menu-toggle.active:hover {
     box-shadow: none;
-    background: #015580;
+    background: #0c4c85;;
   }
   
   .drop-menu {
@@ -522,10 +545,28 @@ div#div-wordentry-iconized {
 
 }
 
+@media screen and (min-width: 800px) { 
+
+  #header {
+		padding: 30px 20px 70px 20px;
+    background-size: 1000px;
+		background-position: center 58%;
+  }
+  
+}
+
 @media screen and (min-width: 860px) { 
 
   #div-wordentry {
     right: calc(50% - 400px);
+  }
+  
+}
+
+@media screen and (min-width: 1000px) { 
+
+  #header {
+    background-size: cover;
   }
   
 }
@@ -535,5 +576,22 @@ div#div-wordentry-iconized {
   #div-wordentry {
     right: calc(50% - 600px);
   }
+  
+}
+
+@media screen and (min-width: 1200px) { 
+
+  #header {
+		background-color: #16214e;
+    background-size: 1200px;
+  }
+	
+	#header_inner {
+		max-width: 1000px;
+	}
+	
+	#header_title {
+		font-size: 3em;
+	}
   
 }

@@ -104,7 +104,6 @@ Word that does not decompose
 - Click on the romanized word: 'savikataaq'
 - Make sure that the Gist does not crash and that it says:
   - Word could not be decomposed
-  - No sentences found for this word
   
 Text that contains spaces and newlines
 - Gist text that contains some newlines and extra spaces
@@ -156,9 +155,11 @@ Undownloadable pages
 Search for word in SYLLABIC -- Happy Path
 - Enter ᐅᒃᐱᕐᓂᖅ (= religion) in the query text box, then click [Search] 
   button.
-- Check that the search term is replaced by this:
+- Check that the search term is replaced by a list of alternatives, surrounded 
+  parens and spearated by ORs. As of Oct 2021, the list of alternatives was:
 
-     (ᐅᑉᐱᕐᓂᕐᒥᒃ OR ᐅᑉᐱᕐᓂᖅ OR ᐅᑉᐱᕐᓂᖏᑦ OR ᐅᑉᐱᕐᓂᐅᕗᖅ OR ᐅᑉᐱᓂᕐᒧᓪᓗ OR ᐅᒃᐱᕐᓂᖅ)
+     (ᐅᒃᐱᕐᓂᖅ OR ᐅᑉᐱᕈᓱᑉᐳᖓ OR ᐅᑉᐱᕈᓱᑦᑐᖓ OR ᐅᑉᐱᕈᓱᒃᑲᒪ OR ᐅᑉᐱᕆᔭᕋ OR ᐅᒃᐱᕈᓱᒃᐳᒍᑦ)
+
 
   and that a Google search page is opened with that query
 
@@ -235,7 +236,7 @@ Concurency testing and Interruption
     - Click on a mis-spelled word and TYPE an alternate spelling
         - Make sure that the typed spelling is now displayed
   - While the checker is still working on some of the words:
-    - Hit the cancel button
+    - Hit the Stop button
       - Make sure progress wheel has disappeared and that the app has stopped 
         checking words
     - Copy paste some new text to be spelled and hit _Spell Check_
@@ -265,12 +266,7 @@ Progress Wheel
   - Click on copy to clipboard and paste into a text editor
   - Copy text to text editor, and make sure that the changed spellings are the 
     ones that appear in the editor
- 
-Spell check text that contains spaces and newlines
-- Spell Check text that contains some newlines and extra spaces
-- Make sure that:
-  - Extra spaces and newlines are preserved in the spell checke output
-  - They are also preserved when you do Copy to clipboard     
+  
     
 Check with and without _Include partial corrections_
 - Try it both ways

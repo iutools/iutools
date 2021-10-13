@@ -1,5 +1,6 @@
 package org.iutools.cli;
 
+import ca.nrc.datastructure.Cloner;
 import ca.nrc.string.StringUtils;
 import org.iutools.concordancer.WebConcordancer;
 import org.apache.commons.cli.Option;
@@ -48,6 +49,21 @@ public class CLI {
 				.hasArg()
 				.argName("DATA_FILE")
 				.build();
+
+		Option optLogFile = Option.builder(null)
+			.longOpt(ConsoleCommand.OPT_LOG_FILE)
+			.desc("Path of the log file to be analyzed.")
+			.hasArg()
+			.argName("LOG_FILE")
+			.build();
+
+		Option optLogReport = Option.builder(null)
+			.longOpt(ConsoleCommand.OPT_LOG_REPORT_TYPE)
+			.desc("Type of report to be produced.")
+			.hasArg()
+			.argName("LOG_REPORT")
+			.build();
+
 
 		Option optFileRegexp = Option.builder(null)
 				.longOpt(ConsoleCommand.OPT_FILE_REGEXP)
@@ -439,6 +455,11 @@ public class CLI {
 			;
 		mainCmd.addSubCommand(tmjon2portage);
 
+		SubCommand analyzeLog =
+			new CmdAnalyzeLog("analyze_log")
+			.addOption(optLogFile)
+			;
+		mainCmd.addSubCommand(analyzeLog);
 
 		return mainCmd;
 	}
