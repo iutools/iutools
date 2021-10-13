@@ -134,7 +134,7 @@ class WordEntryController extends IUToolsController {
             html += this.htmlTranslations(wordEntry, otherLang);
             html += this.htmlRelatedWords(wordEntry, lang);
             html = this.htmlMorphologicalAnalyses(wordEntry, lang, html);
-            html +=  this.htmlAlignmentsByTranslation(wordEntry);
+            html +=  this.htmlAlignmentsByTranslation(wordEntry, lang, otherLang);
             this.elementForProp("divWordEntry_contents").html(html);
             this.attachWordLookupListeners();
             this.enableAccordions();
@@ -265,7 +265,7 @@ class WordEntryController extends IUToolsController {
 		return html;
 	}
 
-    htmlAlignmentsByTranslation(wordEntry) {
+    htmlAlignmentsByTranslation(wordEntry, lang, otherLang) {
         var tracer = Debug.getTraceLogger('WordEntryController.htmlAlignmentsByTranslation');
         tracer.trace("wordEntry="+JSON.stringify(wordEntry));
         var html = "";
@@ -285,7 +285,9 @@ class WordEntryController extends IUToolsController {
 		    for (var ii=0; ii < translations.length; ii++) {
 		        var aTranslation = translations[ii];
 		        var translAlignments = translation2alignments[aTranslation];
-		        html += this.htmlAlignments4Translation(aTranslation, translAlignments);
+		        html +=
+                    this.htmlAlignments4Translation(
+		                aTranslation, translAlignments, lang, otherLang);
             }
             html += "</div>\n";
 		} else {
@@ -295,7 +297,7 @@ class WordEntryController extends IUToolsController {
 		return html;
 	}
 
-    htmlAlignments4Translation(aTranslation, aTransAlignments) {
+    htmlAlignments4Translation(aTranslation, aTransAlignments, lang, otherLang) {
         var html = ""
         // html += "<a name='examples4_"+aTranslation+"'/>\n";
         html += "<h4><a name=\"examples4_"+aTranslation+"\">as <i>\""+aTranslation+"\"</i>...</a></h4>\n";
@@ -303,7 +305,7 @@ class WordEntryController extends IUToolsController {
             "<div>\n"+
             "<p>\n"
             ;
-        html += '<table id="tbl-alignments" class="alignments"><th>Inuktitut</th><th>English</th></tr>';
+        html += '<table id="tbl-alignments" class="alignments"><th>'+this.langName(lang)+'</th><th>'+this.langName(otherLang)+'</th></tr>';
         if (aTransAlignments != null && aTransAlignments.length > 0) {
             for (var jj=0; jj < aTransAlignments.length; jj++) {
                 var anAlignment = aTransAlignments[jj];
@@ -363,6 +365,10 @@ class WordEntryController extends IUToolsController {
     }
 
     enableAccordions() {
-        $(".accordion" ).accordion();
+        // Note: The heightStyle ensures that there will not be empty space
+        // at the bottom of entries when expanded.
+        // $(".accordion" ).accordion();
+        // $(".accordion" ).accordion({heightStyle: "fill"});
+        $(".accordion" ).accordion({heightStyle: "content"});
     }
 }

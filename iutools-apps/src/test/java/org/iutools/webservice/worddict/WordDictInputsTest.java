@@ -16,7 +16,7 @@ public class WordDictInputsTest extends ServiceInputsTest {
 		WordDictInputs inputs =
 			new WordDictInputs("inuksuk");
 		new AssertServiceInputs(inputs)
-			.logSummaryIs("{\"_action\":null,\"_taskID\":null,\"_taskStartTime\":null,\"lang\":null,\"taskElapsedMsecs\":null,\"taskElapsedMsecs\":null,\"word\":\"inuksuk\"}");
+			.logSummaryIs("{\"_action\":null,\"_taskID\":null,\"_taskStartTime\":null,\"lang\":null,\"taskElapsedMsecs\":null,\"word\":\"inuksuk\"}");
 			;
 	}
 }
