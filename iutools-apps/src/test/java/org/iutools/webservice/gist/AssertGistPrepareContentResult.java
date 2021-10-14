@@ -1,15 +1,16 @@
 package org.iutools.webservice.gist;
 
+import ca.nrc.string.StringUtils;
+import ca.nrc.testing.AssertCollection;
 import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.AssertString;
 import org.iutools.concordancer.SentencePair;
 import org.iutools.webservice.AssertEndpointResult;
 import org.iutools.webservice.EndpointResult;
-import org.iutools.webservice.worddict.WordDictResult;
 import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class AssertGistPrepareContentResult extends AssertEndpointResult {
 
@@ -41,8 +42,41 @@ public class AssertGistPrepareContentResult extends AssertEndpointResult {
 				expEnSentences, result().enSentences);
 		return this;
 	}
-	
-	
+
+	public AssertGistPrepareContentResult hasNoIUSentences() {
+		Assertions.assertTrue(result().iuSentences.isEmpty(),
+			baseMessage+"\nInuktitut sentences should have been empty but was: "+
+			StringUtils.join(result().iuSentences.iterator(), "\n"));
+		return this;
+	}
+
+
+	public AssertGistPrepareContentResult enSentencesContain(String[] expEnSents) {
+		return sentsInLangContain("en", expEnSents);
+	}
+
+	public AssertGistPrepareContentResult iuSentencesContains(String[] expEnSents) {
+		return sentsInLangContain("iu", expEnSents);
+	}
+
+	public AssertGistPrepareContentResult sentsInLangContain(
+		String lang, String[] expLangSents) {
+		Set<String> expSents = new HashSet<String>();
+		Collections.addAll(expSents, expLangSents);
+		Set<String> gotSents = new HashSet<String>();
+		List<String[]> gotLangSents = result().enSentences;
+		if (lang.equals("iu")) {
+			gotLangSents = result().iuSentences;
+		}
+		for (String[] aSent: gotLangSents) {
+			gotSents.add(String.join("", aSent));
+		}
+		AssertCollection.assertContainsAll(
+			baseMessage+"English sentences did not contain the expected items",
+			expSents, gotSents);
+		return this;
+	}
+
 	public AssertGistPrepareContentResult inputWasActualContent(boolean expStatus) {
 		Assert.assertEquals(expStatus, result().wasActualText);
 		return this;
@@ -135,7 +169,7 @@ public class AssertGistPrepareContentResult extends AssertEndpointResult {
 		}
 
 		Assert.assertTrue(
-			"There should have been any content for language "+lang,
+			"There SHOULD have been content for language "+lang,
 			gotContent.size() > 0);
 
 		return this;
@@ -183,6 +217,24 @@ public class AssertGistPrepareContentResult extends AssertEndpointResult {
 		
 		Assert.assertTrue(mess, found);
 		
+		return this;
+	}
+
+	public AssertGistPrepareContentResult containsENSentenceStartingWith(String expSentence) {
+		boolean found = false;
+		String mess = baseMessage+"SentencePair did not contain IEN sentence that starts with: "+
+				expSentence+"\nEN sentence were:\n";
+		for (String[] aSentTokens: result().enSentences) {
+			String gotSent = String.join("", aSentTokens);
+			if (gotSent.startsWith(expSentence)) {
+				found = true;
+				break;
+			}
+			mess += "  "+gotSent+"\n";
+		}
+
+		Assert.assertTrue(mess, found);
+
 		return this;
 	}
 

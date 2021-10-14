@@ -64,12 +64,16 @@ class GistTextController extends IUToolsController {
 	
 	displayTextGist(response) {
 		var iuSentences = response.iuSentences;
-		var enSentences = response.enSentences;
-		if (response.alignmentsAvailable) {
-			this.displayBilingualGist(iuSentences, enSentences);
-		} else {
-			this.displayUnilingualGist(iuSentences);
-		}
+		if (iuSentences == null || iuSentences.length == 0) {
+		    this.error("Unable to download Inuktitut content for the page");
+        } else {
+            var enSentences = response.enSentences;
+            if (response.alignmentsAvailable) {
+                this.displayBilingualGist(iuSentences, enSentences);
+            } else {
+                this.displayUnilingualGist(iuSentences);
+            }
+        }
 	}
 	
 	displayUnilingualGist(iuSentences) {

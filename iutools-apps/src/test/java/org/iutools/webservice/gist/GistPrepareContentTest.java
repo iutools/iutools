@@ -52,12 +52,35 @@ public class GistPrepareContentTest extends EndpointTest {
 		new AssertGistPrepareContentResult(epResult,
 			"Content not prepared as expected")
 			.inputWasActualContent(false)
+			.containsENSentenceStartingWith("Premier of Nunavut")
+			.containsIUSentenceStartingWith("sivuliqti nunavummi")
 			.containsAlignment(
 				new SentencePair(
 					"iu", "nunavut gavamanga",
 					"en", "Government of Nunavut"))
 		;
 	}
+
+	@Test
+	public void test__GistPrepareContentEndpoint__InputIsURLOnNonGovIUSite() throws Exception {
+
+		String url = "https://travelnunavut.ca/";
+
+		GistPrepareContentInputs inputs =
+			new GistPrepareContentInputs(url);
+
+		EndpointResult epResult = endPoint.execute(inputs);
+
+		new AssertGistPrepareContentResult(epResult,
+			"Content not prepared as expected")
+			.inputWasActualContent(false)
+			.containsENSentenceStartingWith("WELCOME TO NUNAVUT")
+			// Note: Eventhough the travelnunavut.ca web site has an INUKTITUT
+			// language link, that link returns the same content as the English version.
+			.hasNoIUSentences()
+		;
+	}
+
 
 	@Test
 	public void test__GistPrepareContentEndpoint__InputIsIuURL() throws Exception {
@@ -81,13 +104,13 @@ public class GistPrepareContentTest extends EndpointTest {
 
 	@Test
 	public void test__GistPrepareContentEndpoint__InputIsURL_WhoseTranslationCannotBeDeduced() throws Exception {
-		// The English URL for this IU url is:
+		// We use the Google home URL
 		//
-		//   https://www.gov.nu.ca/community-and-government-services
+		//   https://www.google.com/
 		//
-		// which currently cannot be deduced by the concordancer.
+		// which does not have a version in Inuktitut
 		//
-		String url = "https://www.gov.nu.ca/iu/cgs-iu";
+		String url = "https://www.google.com/";
 
 		GistPrepareContentInputs inputs =
 			new GistPrepareContentInputs(url);
@@ -98,9 +121,9 @@ public class GistPrepareContentTest extends EndpointTest {
 			"Content not prepared as expected")
 			.inputWasActualContent(false)
 			.hasContentForLang("en")
-			.hasContentForLang("iu")
-			.hasSomeAlignments()
-			.containsIUSentenceStartingWith("nunalingni gavamakkunnillu pijittiraqtikkut")
+			.containsENSentenceStartingWith("Search Images Maps Play YouTube News Gmail Drive More »")
+			.hasNoContentForLang("iu")
+			.hasNoAlignments()
 		;
 	}
 

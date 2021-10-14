@@ -1,6 +1,8 @@
 package org.iutools.webservice.gist;
 
+import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.SimpleTokenizer;
+import org.apache.log4j.Logger;
 import org.iutools.concordancer.DocAlignment;
 import org.iutools.concordancer.SentencePair;
 import org.iutools.script.TransCoder;
@@ -8,7 +10,6 @@ import org.iutools.script.TransCoderException;
 import org.iutools.text.segmentation.IUTokenizer;
 import org.iutools.webservice.EndpointResult;
 import org.iutools.webservice.ServiceException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,8 +39,11 @@ public class GistPrepareContentResult extends EndpointResult {
 	public void fillFromDocAlignment(DocAlignment docAlignment)
 		throws ServiceException {
 
+		Logger tLogger = Logger.getLogger("org.iutools.webservice.gist.GistPrepareContentResult.fillFromDocAlignment");
+
 		if (docAlignment.encounteredProblem(DocAlignment.Problem.FETCHING_INPUT_URL)) {
 			// We weren't even able to download the input page from its URL
+			tLogger.trace("Filling from unsucessful Input Page");
 			fillFromUnsuccessfulInputPage(docAlignment);
 		} else {
 			// We were able to download the input page. But were we able to fetch
@@ -47,8 +51,10 @@ public class GistPrepareContentResult extends EndpointResult {
 			//
 			if (docAlignment.encounteredProblem(DocAlignment.Problem.ALIGNING_SENTENCES) ||
 			docAlignment.encounteredProblem(DocAlignment.Problem.FETCHING_CONTENT_OF_OTHER_LANG_PAGE)) {
+				tLogger.trace("Filling from unsuccessful alignments");
 				fillFromUnsuccessfulAlignment(docAlignment);
 			} else {
+				tLogger.trace("Filling from successful alignments");
 				fillFromSuccessfulAlignment(docAlignment);
 			}
 		}
@@ -66,9 +72,16 @@ public class GistPrepareContentResult extends EndpointResult {
 	 * to be aligned).
 	 */
 	private void fillFromUnsuccessfulAlignment(DocAlignment docAlignment) throws ServiceException {
+		Logger tLogger = Logger.getLogger("org.iutools.webservice.gist.GistPrepareContentResult.fillFromUnsuccessfulAlignment");
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("docAlignment="+ PrettyPrinter.print(docAlignment));
+		}
 		if (docAlignment != null) {
 			iuSentences = new ArrayList<String[]>();
 			List<String> alignmentSents = docAlignment.getPageSentences("iu");
+			if (tLogger.isTraceEnabled()) {
+				tLogger.trace("for iu, alignmentSents="+ PrettyPrinter.print(alignmentSents));
+			}
 			if (alignmentSents != null) {
 				IUTokenizer iuTokenizer = new IUTokenizer();
 				for (String sent: alignmentSents) {
@@ -86,6 +99,9 @@ public class GistPrepareContentResult extends EndpointResult {
 
 			enSentences = new ArrayList<String[]>();
 			alignmentSents = docAlignment.getPageSentences("en");
+			if (tLogger.isTraceEnabled()) {
+				tLogger.trace("for en, alignmentSents="+ PrettyPrinter.print(alignmentSents));
+			}
 			if (alignmentSents != null){
 				SimpleTokenizer enTokenizer = new SimpleTokenizer();
 				for (String sent: alignmentSents) {
@@ -99,6 +115,11 @@ public class GistPrepareContentResult extends EndpointResult {
 				}
 			}
 		}
+
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("upon exit, this="+ PrettyPrinter.print(this));
+		}
+
 
 		return;
 	}

@@ -15,12 +15,6 @@ public class GistPrepareContentInputsTest extends ServiceInputsTest {
 	}
 
 	@Test
-	public void test__DELETEME() throws Exception {
-		String jsonStr = "{\"_taskID\":\"2021-09-30T12:48:51.863Z\"}";
-		new ObjectMapper().readValue(jsonStr, GistPrepareContentInputs.class);
-	}
-
-	@Test
 	public void test__summarizeForLogging() throws Exception {
 		ServiceInputs inputs =
 			new GistPrepareContentInputs("inuksuk, nunavut");
