@@ -210,6 +210,7 @@ class MorphemeDictionaryController extends IUToolsController {
 	}
 	
 	clearResults() {
+	    this.wordDictController.hide();
 		this.elementForProp('divError').empty();
 		this.elementForProp('divResults').empty();
 	}

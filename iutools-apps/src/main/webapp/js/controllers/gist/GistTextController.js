@@ -19,6 +19,7 @@ class GistTextController extends IUToolsController {
 	
 	onGistText() {
 		var textOrUrl = this.elementForProp('txtUrlOrText').val();
+		this.wordEntryController.hide();
 		this.prepareContent(textOrUrl);
     }
 	

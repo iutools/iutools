@@ -350,6 +350,11 @@ class WordEntryController extends IUToolsController {
         return html;
     }
 
+    hide() {
+        this.elementForProp("divWordEntry").hide();
+        this.hideIconisationControls();
+    }
+
     hideIconisationControls() {
         this.elementForProp("divWordEntry_iconizer").hide();
         this.elementForProp("divWordEntry_iconized").hide();

@@ -176,6 +176,7 @@ class WordDictController extends IUToolsController {
     }
 
     clearHits() {
+        this.wordEntryController.hide();
         this.elementForProp("divSearchResults").empty();
     }
 }

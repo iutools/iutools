@@ -1,6 +1,5 @@
 # Manual test plan for Inuktut apps
 
-
 ## Word Dict
 
 Basic scenario
@@ -91,6 +90,19 @@ Min-max-Drag word entry window
   - Click on on a word and make sure it maximises itself and the correct word is 
     displayed 
      
+     
+Word Entry window hiding/showing
+- Reload the Word Dictionary page
+   - Make sure the Word Entry window is NOT showing
+- Search for word 'inuksuk'
+   - Make sure the Word Entry window is NOW showing and displays the entry for 
+     'inuksuk'.
+- Search for a word that does not return any results like 'blahblahblah' 
+   - Make sure the Word Entry window is NOT showing
+- Search again for 'inuksuk' to make sure the WordEntry window is shown
+- Search for a query that returns some hits but is not itself a word, ex: 'iglum'
+  - Make sure that some hits are displayed, but that the Word Entry window is NOT SHOWN   
+      
 ## Gister
 
 Syllabic text
@@ -198,6 +210,22 @@ Pages whose Inuktitut content cannot be downloaded
     When this happens, try the search again until you get the first error 
     message above.
 
+Word Entry window hiding/showing
+- Reload the Gister text
+   - Make sure the Word Entry window is NOT showing
+- Gist some text
+   - Make sure the Word Entry window is NOT showing
+- Click on a word
+   - Make sure the Word Entry IS now showing
+- Gist the text again
+   - Make sure the Word Entry window is NOT showing
+- Click on a word
+   - Make sure the Word Entry IS now showing and it display the newly clicked
+     word as opposed to the previous one
+- Reload the Gister page     
+   - Make sure the Word Entry window is NOT showing
+
+
 
 ## Search Engine
 
@@ -256,6 +284,8 @@ Search by pressing Enter key vs clicking Search
 - Enter a search word in the text box, then press Enter key.
   - Make sure the search is launched as expected
 - Do the same but this time launch the search by pressing the _Search_ button  
+  
+
   
 ## Spell Checker
 
@@ -357,6 +387,23 @@ Happy path
 Submit form with Enter key
 - Enter morpheme 'tut', then PRESS ENTER
   - Form should be submitted 
+  
+Word Entry window hiding/showing
+- Reload the Morpheme Dictionary page
+   - Make sure the Word Entry window is NOT showing
+- Search for morpheme 'tut'
+   - Make sure the Word Entry window is NOT showing
+- Click on an example word
+   - Make sure the Word Entry IS now showing
+- Search for the morpheme 'gaq'
+   - Make sure the Word Entry window is NOT showing
+- Click on an example word
+   - Make sure the Word Entry IS now showing and that it shows the newly 
+     clicked word as opposed to the previous one
+- Reload the Morpheme Dictionary page     
+   - Make sure the Word Entry window is NOT showing
+
+  
  
 ## Feedback link
 
