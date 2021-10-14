@@ -4,19 +4,32 @@
 ## Word Dict
 
 Basic scenario
-- Search for 'ammuumajuq'
-- Check that the entry for 'nunavut' is displayed autoamtically
-- Check that other words are listed in the hits list 
-  - Typically 25 of them
-- Inspect the entry for 'ammuumajuq'
-  - Word displayed in latin first, syll second
-  - Everything else displayed in roman
-    - Translations, Related words, Examples
-  - There is a decomp displayed
-  - There are some translations displyayed, including 'divers' and 'clams'
+- Here is a list of steps that will be applied in different scenarios.
+- Search for a QUERY_WORD in a specific QUERY_LANGUAGE
+- Check that the entry for that QUERY_WORD is displayed automatically
+- In some scenarios we expect the QUERY_WORD to be the only hit in the list if so,
+  make sure that the hit list only contains the QUERY_WORD
+- But in most scenarios, we expect the list of hits to contain other words besides 
+  the QUERY_WORD. In those cases, check that:
+  - the number of hits is approximately what the specific scenario expects
+  - every additional hit is a superstring of the QUERY_WORD   
+- Inspect the entry for the QUERY_WORD
+  - Title bar of the Word Entry window shows the QUERY_WORD in both latin and syllabics.
+    - The first script should be the script used to enter the QUERY_WORD.
+      In other words, if we entered the QUERY_WORD in latin, then the word should
+      appear as latin/syllabics. Otherwise, it should appear as syllabics/latin.
+  - Everything else (Translations, Related words, Examples) displayed in the 
+    script used to enter the QUERY_WORD, except of course for text that is in English.
+  - There is a decomp displayed (unless the specific scenario expects the word 
+    to be undecomposable)
+  - There are some translations displyayed, including some that are relevant for 
+    that specific scenario.
+    - The translations are in other language than the QUERY_LANGUAGE
   - There are some related words
-  - There are some Examples
-    - The Inuktitut is on the left, English on the right
+  - There are some bilingual Examples of use
+    - The QUERY_LANGUAGE appears on the left and the other langauge on the right
+    - The names of the languages shown in the table header correspond are set 
+      accordingly.
     - Highlighting is ok on both sides
 - Click on one of the other words in the hit list
   - Check its word entry
@@ -27,24 +40,34 @@ Basic scenario
   - Make sure word displayed is like before
 - Move the word entry window around
 
+Latin query:
+- Do the steps described in the 'basic scenario' with following specifics
+    - QUERY_WORD: 'ammuumajuq'
+    - QUERY_LANGUAGE: Leave it at Inuktitut 
+    - Check that there are about 17 hits
+    - Translations include 'clams' and 'divers'
+
 Syllabic query
-- Search for ᐊᒻᒨᒪᔪᖅᓯᐅᖅᑐᑎᒃ
-- Make sure that the entry for that word is automatically opened
-- Check the entry
-  - Do the same checks as for the basic scenario
+- Do the steps described in the 'basic scenario' with the following 'specifics':
+  - QUERY_WORD: 'ᐊᒻᒨᒪᔪᖅ'
+  - QUERY_LANGUAGE: Leave it at Inuktitut 
+  - Check that there are about 17 hits
+  - Translations include 'clams' and 'divers'
 
 English query
-- search for housing, with 'English' for the language picklist
-- Make sure that the entry for that word is automatically opened
-- Note: At the moment, it's 'normal' that the list of hits only shows the
-  word 'housing'
-- Check the entry
-  - Do the same checks as for the basic scenario
+- Do the steps described in the 'basic scenario' with English word 'housing', 
+  with the following 'specifics':
+  - QUERY_WORD: 'housing'
+  - QUERY_LANGUAGE: Change it to English
+  - At the moment, it's 'normal' that the list of hits only shows the
+    word 'housing'
 
-Search for a string that returns no results
+Query that returns no results
 - Search for ninuksuk
 - Make sure no Console error
 - Make sure system says no hits were found
+- Make sure the Word Info window is not visible at all (not even minimized)
+- Nothing else to check for that 
 
 Very long word
 - Search for aanniaqarnanngittulirijimmarik
@@ -92,17 +115,18 @@ Romanized text
   - Text _stayed_ Romanized
   - Hover the mouse over a word:
     - It shows that it's clickable
-    - Clicking on that IU word produces a Gist with:
-      - Morphological analysis
-      - Parallel sentences
+    - Clicking on that IU word opens a Dictionary Entry for that word
   - Hover the mouse over a NON-word (ex: period, comma, space):
     - It does NOT show that it's clickable
-    - Clicking on that NON-word does NOT produce a Gist
+    - Clicking on that NON-word does NOT open a Word Entry
+      - NOTE: In this particular scenario, if the the original text contained 
+        an English word whose characters are all valid IU Latin chars (ex: 'main')
+        then this word may be clickable eventhough it is not IU.
 
 Word that does not decompose
 - Enter text: 'ᓴᕕᑲᑖᖅ' (This is a proper noun)
 - Click on the romanized word: 'savikataaq'
-- Make sure that the Gist does not crash and that it says:
+- Make sure that the Gist does not crash and that the Dictionary Entry for the word says:
   - Word could not be decomposed
   
 Text that contains spaces and newlines
@@ -111,6 +135,14 @@ Text that contains spaces and newlines
   - AND that the browser is still able to do automatic line wrapping
     i.e. you don't have very long lines that correspond to each paragraph.
      
+Syllabic text that contains some English word with only IU latin chars
+- Enter some syllabics text and add the word 'main' in it (note: all characters 
+in that word are valid Latin IU chars)
+- Gist that text
+- Check that the text has been romanized
+- Check that all Inuktitut romanized words are clickable...
+  - But the English word 'main' is NOT clickable     
+     
 IU url (Happy Path)
 - Enter url https://www.gov.nu.ca/iu
 - Check that
@@ -118,9 +150,7 @@ IU url (Happy Path)
   - IU Text has been Romanized
   - Hover the mouse over a word:
     - It shows that it's clickable
-    - Clicking on that IU word produces a Gist with:
-      - Morphological analysis
-      - Parallel sentenecs
+    - Clicking on that IU word opens a Dictionary Entry for that word
   - Hover the mouse over a NON-word (ex: period, comma, space):
     - It does NOT show that it's clickable
     - Clicking on that NON-word does NOT produce a Gist
@@ -132,22 +162,41 @@ En url (Happy Path)
   - IU Text has been Romanized
   - Hover the mouse over a word:
     - It shows that it's clickable
-    - Clicking on that IU word produces a Gist with:
-      - Morphological analysis
-      - Parallel sentenecs
+    - Clicking on that IU word opens a Dictionary Entry for that word
   - Hover the mouse over a NON-word (ex: period, comma, space):
     - It does NOT show that it's clickable
-    - Clicking on that NON-word does NOT produce a Gist
+    - Clicking on that NON-word does NOT open a Dictionary Entry for that word
 
+     
 Undownloadable pages
 - For each of the following situations, make sure the system does not crash and 
   displays a message saying the page could not be downloaded
-  - IU page whose En page cannot be determined
-  - EN page whose IU page cannot be determined
-  - URL on a server that does not exist
+  - URL on a server that exists but where the page itself does not exist
     - https://www.gov.nu.ca/blahblah
+  - URL on a server that does not exist
+    - https://www.asdfadsf.com/
   - URL on existing server that returns page not found
     - https://www.pipsnacks.com/404
+
+Pages whose Inuktitut content cannot be downloaded
+- Gist the following url: http://travelnunavut.ca/
+  - This is a page in English that has an Inuktitut link, but that link 
+    leads to an English page. Hence, the system is unable to acquire the 
+    Inuktitut content for the page
+- Check that the page displays the following error message:
+
+      Unable to download Inuktitut content for the page
+
+  - IMPORTANT: If the error message says 
+
+      Unable to download the input page
+      
+    Then it means that the English page itself timed out. This is differrent 
+    from the error condition we are trying to test in this case, and it is one 
+    that can happen intermitently.
+    
+    When this happens, try the search again until you get the first error 
+    message above.
 
 
 ## Search Engine
@@ -155,40 +204,53 @@ Undownloadable pages
 Search for word in SYLLABIC -- Happy Path
 - Enter ᐅᒃᐱᕐᓂᖅ (= religion) in the query text box, then click [Search] 
   button.
-- Check that the search term is replaced by a list of alternatives, surrounded 
+- Check that this displays the results of a Google search for a list of alternatives, surrounded 
   parens and spearated by ORs. As of Oct 2021, the list of alternatives was:
 
      (ᐅᒃᐱᕐᓂᖅ OR ᐅᑉᐱᕈᓱᑉᐳᖓ OR ᐅᑉᐱᕈᓱᑦᑐᖓ OR ᐅᑉᐱᕈᓱᒃᑲᒪ OR ᐅᑉᐱᕆᔭᕋ OR ᐅᒃᐱᕈᓱᒃᐳᒍᑦ)
-
-
-  and that a Google search page is opened with that query
+     
+  The specific alternatives used may change over time, but you should at least 
+  make sure that they start with the same 3-4 chars as the input word. 
+- Copy the query that was sent to Google and paste it somewhere for future 
+  reference          
+- Click on the Back button to go back to the IUTools Web Search page and check
+  that the original query has been replaced by the expended query that was 
+  sent to Google (which you pasted above). 
 
 Search for word in LATIN - Happy Path
 - Enter ukpirniq (= religion) in the search box, then click [Search] button
-- Check that the search term is replaced by this in the Google window:
+- Check that this displays the results of a Google search for a list of alternatives, surrounded 
+  parens and spearated by ORs. As of Oct 2021, the list of alternatives was:
 
-     (ᐅᑉᐱᕐᓂᕐᒥᒃ OR ᐅᑉᐱᕐᓂᖅ OR ᐅᑉᐱᕐᓂᖏᑦ OR ᐅᑉᐱᕐᓂᐅᕗᖅ OR ᐅᑉᐱᓂᕐᒧᓪᓗ OR ᐅᒃᐱᕐᓂᖅ)
+     (ᐅᒃᐱᕐᓂᖅ OR ᐅᑉᐱᕈᓱᑉᐳᖓ OR ᐅᑉᐱᕈᓱᑦᑐᖓ OR ᐅᑉᐱᕈᓱᒃᑲᒪ OR ᐅᑉᐱᕆᔭᕋ OR ᐅᒃᐱᕈᓱᒃᐳᒍᑦ)
+     
+  The specific alternatives used may change over time, but you should at least 
+  make sure that they start with the same 3-4 chars as the input word.
+- Copy the query that was sent to Google and tranlisterate it to Latin. 
+- Click on the Back button to go back to the IUTools Web Search page and check
+  that the original query has been replaced by transliterated Google query that 
+  that you generated above. 
 
-  and that a Google search page is opened with that query
-- Click the back button and check that the query has been replaced by this in 
-  IUTools search engine window (i.e. expansion in Latin, not syllabics):
-  
-     (ukpirniq OR uppirusuppunga OR uppirusuttunga OR uppirusukkama OR uppirijara OR ukpirusukpugut)
   
 Search using an already expanded query
  Enter ᐅᒃᐱᕐᓂᖅ (= religion) in the query text box, then click [Search] 
   button.
-- Check that the search term is replaced by this:
+- Check that this displays the results of a Google search for a list of alternatives, surrounded 
+  parens and spearated by ORs. As of Oct 2021, the list of alternatives was:
 
-     (ᐅᑉᐱᕐᓂᕐᒥᒃ OR ᐅᑉᐱᕐᓂᖅ OR ᐅᑉᐱᕐᓂᖏᑦ OR ᐅᑉᐱᕐᓂᐅᕗᖅ OR ᐅᑉᐱᓂᕐᒧᓪᓗ OR ᐅᒃᐱᕐᓂᖅ)
-
-  and that a Google search page is opened with that query
-- Click on the browser's back button to return to the iutools search page
-- Click on Search again and make sure that
-  - The expanded query remained exactly the same
-  - This is the query that is opened in the Google page.  
+     (ᐅᒃᐱᕐᓂᖅ OR ᐅᑉᐱᕈᓱᑉᐳᖓ OR ᐅᑉᐱᕈᓱᑦᑐᖓ OR ᐅᑉᐱᕈᓱᒃᑲᒪ OR ᐅᑉᐱᕆᔭᕋ OR ᐅᒃᐱᕈᓱᒃᐳᒍᑦ)
   
-Search in Latin
+  The specific alternatives used may change over time, but that does not matter
+  for this test case.
+- Copy the query that was sent to Google and paste it somewhere for future 
+  reference        
+- Click on the Back button to go back to the IUTools Web Search page and check
+  that the original query has been replaced by that pasted Google query. 
+- Click on Search again and make sure that
+  - The Google page uses the same expanded query as before (i.e. it is the same 
+    as the original Google query that you pasted above). 
+  - Click on the back button and check again that the query in the IU Web Search 
+    app is the same as the original Google Query that you pasted above.  
   
 Search by pressing Enter key vs clicking Search
 - Enter a search word in the text box, then press Enter key.
@@ -202,10 +264,11 @@ Spell check SYLLABIC -- Happy Path
 - Hit _Spell Check_ button
 - Words from input text should be displayed one at a time, with misspelled 
   words underlined. 
-- Make sure that  the corrected text, as well as all the suggested spellings
+- Make sure that the corrected text, as well as all the suggested spellings
     are  displayed in SYLLABIC
-- Make sure that all the words that are mis-spelled are labeled as such and that
-    the first suggested spelling is the right one     
+- Make sure that all the words that are mis-spelled are labeled as such and that:
+  - The FIRST suggestion is the original misspelled word
+  - The list shows the correct spelling in the list, ideally in SECOND place     
 - Click on a mis-spelled word and CHOOSE an alternate spelling
   - Make sure that the chosen spelling is now displayed
 - Click on a mis-spelled word and TYPE an alternate spelling
@@ -218,8 +281,9 @@ Spell check LATIN -- Happy Path
   words underlined. 
 - Make sure that the corrected text, as well as all the suggested spellings
     are  displayed in LATIN
-- Make sure that all the words that are mis-spelled are labeled as such and that
-    the first suggested spelling is the right one 
+- Make sure that all the words that are mis-spelled are labeled as such and that:
+  - The FIRST suggestion is the original misspelled word
+  - The list shows the correct spelling in the list, ideally in SECOND place     
 - Click on a mis-spelled word and CHOOSE an alternate spelling
   - Make sure that the chosen spelling is now displayed
 - Click on a mis-spelled word and TYPE an alternate spelling
@@ -266,7 +330,6 @@ Progress Wheel
   - Click on copy to clipboard and paste into a text editor
   - Copy text to text editor, and make sure that the changed spellings are the 
     ones that appear in the editor
-  
     
 Check with and without _Include partial corrections_
 - Try it both ways
@@ -274,7 +337,6 @@ Check with and without _Include partial corrections_
   - Note: Even when _Include partial corrections_ is checked, SOME words may 
     not have partial corrections. So if you click on a word and don't see one, 
     try other words.   
-    
     
 Spell check text that is too large
 - Try to spell check a text with > 500 words
@@ -295,6 +357,10 @@ Happy path
 Submit form with Enter key
 - Enter morpheme 'tut', then PRESS ENTER
   - Form should be submitted 
+ 
+## Feedback link
+
+- Click Feedback, type a message and make sure it gets sent      
  
  ## Action logging
  
@@ -320,7 +386,4 @@ Submit form with Enter key
    - Web Search
      - Search for a word (_action=SEARCH_WEB, data=origQuery)
      
-     
-## Feedback link
-
-- Click Feedback, type a message and make sure it gets sent     
+ 

@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.*;
 
 import ca.nrc.data.harvesting.*;
+import ca.nrc.json.PrettyPrinter;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 
@@ -39,7 +40,9 @@ public abstract class WebConcordancer {
 	static {
 		setLangNames("en", "english");
 		setLangNames("fr", "français");
-		setLangNames("iu", "ᐃᓄᒃᑎᑐᑦ", "ᐃᓄᒃᑐᑦ");
+		// Note: Some sites display the language link for Inuktitut using the english
+		// name for the language, i.e. 'inuktitut'
+		setLangNames("iu", "ᐃᓄᒃᑎᑐᑦ", "ᐃᓄᒃᑐᑦ", "inuktitut");
 	}
 
 	@Transient
@@ -95,7 +98,7 @@ public abstract class WebConcordancer {
 		
 		if (!alignment.encounteredSomeProblems()) {
 			harvestOtherLangPage(alignment);
-			trace(tLogger, "After fetching input URL", alignment, 
+			trace(tLogger, "After fetching other language URL", alignment,
 					AlignmentPart.PROBLEMS, AlignmentPart.SENTENCES);
 		}
 
@@ -115,7 +118,11 @@ public abstract class WebConcordancer {
 		}
 		
 		alignment.success = !alignment.encounteredSomeProblems();
-		
+
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("Upon exit, alignment=\n"+ PrettyPrinter.print(alignment));
+		}
+
 		return alignment;
 	}
 
@@ -347,7 +354,6 @@ public abstract class WebConcordancer {
 					throw new WebConcordancerException(e);
 				}
 			} else {
-			
 				List<String> sentences = null;
 				if (status == StepOutcome.SUCCESS) {
 					sentences = 
@@ -395,17 +401,27 @@ public abstract class WebConcordancer {
 			DocAlignment alignment, String lang, String otherLang)
 			throws WebConcordancerException {
 		StepOutcome outcome = StepOutcome.FAILURE;
-		try {
-			String[] linkAnchors = names4lang(otherLang);
-			// For now just follow the link for the first anchor
-			if (linkAnchors.length > 0) {
-				String anchor = linkAnchors[0];
+		String[] linkAnchors = names4lang(otherLang);
+		for (String anchor: linkAnchors) {
+			try {
 				harvester.harvestSingleLink(anchor);
 				URL otherLangURL = harvester.getCurrentURL();
+				if (harvester.getText() == null || harvester.getText().isEmpty()) {
+					continue;
+				}
 
 				if  (includeAllText) {
 					String otherLangText = harvester.getText();
 					alignment.setPageText(otherLang, otherLangText);
+					String actualLang = guessLang(otherLangText);
+					if (!actualLang.equals(otherLang)) {
+						// Although were able to get a page by following this version
+						// of the other language link, the content of that page was
+						// actually NOT in the other language.
+						//
+						// So try with a different version of the language link.
+						continue;
+					}
 				}
 
 				if (includeMainText) {
@@ -421,10 +437,16 @@ public abstract class WebConcordancer {
 				alignment.setPageURL(otherLang, otherLangURL);
 
 				outcome = StepOutcome.SUCCESS;
+
+				// We successfully fetched the other language page through that
+				// version of the other language link. Stop here.
+				break;
+
+			} catch (PageHarvesterException | DocAlignmentException | LanguageGuesserException e) {
+				// We weren't able to fetch the other language page through
+				// that  version of the language link. Try with with the next
+				// version of the link.
 			}
-		} catch (PageHarvesterException | DocAlignmentException e) {
-			// If we weren't able to fetch the other language page, just
-			// leave the outcome at FAILURE and return that
 		}
 
 		return outcome;
@@ -465,6 +487,9 @@ public abstract class WebConcordancer {
 				urlLang = guessLang(urlWholeText);
 				try {
 					alignment.setPageText(urlLang, urlWholeText);
+					List<String> sentences = segmentText(urlLang, urlWholeText);
+					alignment.setPageSentences(urlLang, sentences);
+
 				} catch (DocAlignmentException e) {
 					raiseProblem(DocAlignment.Problem.FETCHING_INPUT_URL, alignment,
 					"Could not set COMPLETE text for url: "+url);

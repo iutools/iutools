@@ -12,6 +12,9 @@ public class WebConcordancer_HtmlCleaner extends WebConcordancer {
     protected PageHarvester getHarvester() {
         if (harvester == null) {
             harvester = new PageHarvester_HtmlCleaner();
+            // Many of the servers in Nunavut are slow to respond
+            harvester.setConnectionTimeoutSecs(15);
+            harvester.setMaxTries(1);
         }
         return harvester;
     }
