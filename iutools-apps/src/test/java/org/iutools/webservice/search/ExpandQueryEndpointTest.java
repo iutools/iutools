@@ -59,6 +59,31 @@ public class ExpandQueryEndpointTest extends EndpointTest {
 			.expandedQueryIs(expQuery);
 	}
 
+	@Test
+	public void test__ExpandQueryEndpoint__RomanWithSpacesBeforeAndAfterQueryWord() throws Exception {
+		EndpointResult epResult = execute("  inuksuk  ");
+		String expQuery = "(inuksuk OR inussummik OR inuksunnguat OR inuksui OR inuksuup OR inuksummi)";
+		new AssertExpandQueryResult(epResult)
+			.expandedQueryIs(expQuery);
+
+		epResult = execute("   (inuksuk OR inussummik OR inuksunnguat OR inuksui OR inuksuup OR inuksummi)   ");
+		new AssertExpandQueryResult(epResult)
+			.expandedQueryIs(expQuery);
+	}
+
+	@Test
+	public void test__ExpandQueryEndpoint__SyllabicWithLeadingTrailingSpaces() throws Exception {
+		EndpointResult epResult = execute("   ᐃᓄᒃᓱᒃ   ");
+		String expQuery = "(ᐃᓄᒃᓱᒃ OR ᐃᓄᔅᓱᒻᒥᒃ OR ᐃᓄᒃᓱᙳᐊᑦ OR ᐃᓄᒃᓱᐃ OR ᐃᓄᒃᓲᑉ)";
+		new AssertExpandQueryResult(epResult)
+			.expandedQueryIs(expQuery);
+
+		epResult = execute("   (ᐃᓄᒃᓱᒃ OR ᐃᓄᔅᓱᒻᒥᒃ OR ᐃᓄᒃᓱᙳᐊᑦ OR ᐃᓄᒃᓱᐃ OR ᐃᓄᒃᓲᑉ)  ");
+		new AssertExpandQueryResult(epResult)
+			.expandedQueryIs(expQuery);
+	}
+
+
 	///////////////////////////////////
 	// TEST HELPERS
 	///////////////////////////////////

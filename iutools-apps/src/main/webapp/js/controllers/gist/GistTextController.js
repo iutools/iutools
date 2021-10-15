@@ -66,7 +66,7 @@ class GistTextController extends IUToolsController {
 	displayTextGist(response) {
 		var iuSentences = response.iuSentences;
 		if (iuSentences == null || iuSentences.length == 0) {
-		    this.error("Unable to download Inuktitut content for the page");
+		    this.error("The requested page is not in Inuktitut and it does not provide a link to its Inuktitut translation");
         } else {
             var enSentences = response.enSentences;
             if (response.alignmentsAvailable) {

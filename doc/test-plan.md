@@ -17,8 +17,10 @@ Basic scenario
     - The first script should be the script used to enter the QUERY_WORD.
       In other words, if we entered the QUERY_WORD in latin, then the word should
       appear as latin/syllabics. Otherwise, it should appear as syllabics/latin.
-  - Everything else (Translations, Related words, Examples) displayed in the 
-    script used to enter the QUERY_WORD, except of course for text that is in English.
+  - Everything else is displayed in the  script used to enter the QUERY_WORD, 
+    except for:
+    - text that is in English.
+    - Inuktitut text for the bilingual examples (which at the moment are always in latin)
   - There is a decomp displayed (unless the specific scenario expects the word 
     to be undecomposable)
   - There are some translations displyayed, including some that are relevant for 
@@ -56,10 +58,10 @@ Syllabic query
 English query
 - Do the steps described in the 'basic scenario' with English word 'housing', 
   with the following 'specifics':
-  - QUERY_WORD: 'housing'
+  - QUERY_WORD: 'development'
   - QUERY_LANGUAGE: Change it to English
   - At the moment, it's 'normal' that the list of hits only shows the
-    word 'housing'
+    word 'development'
 
 Query that returns no results
 - Search for ninuksuk
@@ -102,190 +104,7 @@ Word Entry window hiding/showing
 - Search again for 'inuksuk' to make sure the WordEntry window is shown
 - Search for a query that returns some hits but is not itself a word, ex: 'iglum'
   - Make sure that some hits are displayed, but that the Word Entry window is NOT SHOWN   
-      
-## Gister
-
-Syllabic text
-- Copy and paste some Syllabic text from https://www.gov.nu.ca/iu
-- Hit [Gist Text]
-- Check that 
-  - Text has been Romanized
-  - Hover the mouse over a word:
-    - It shows that it's clickable
-    - Clicking on that IU word produces a Gist with:
-      - Morphological analysis
-      - Parallel sentences
-  - Hover the mouse over a NON-word (ex: period, comma, space):
-    - It does NOT show that it's clickable
-    - Clicking on that NON-word does NOT produce a Gist
-
-Romanized text
-- Copy and paste some syllabics text from https://www.gov.nu.ca/iu
-- Translitarate it to roman and paste it into the Gister form
-- Hit [Gist Text]
-- Check that 
-  - Text _stayed_ Romanized
-  - Hover the mouse over a word:
-    - It shows that it's clickable
-    - Clicking on that IU word opens a Dictionary Entry for that word
-  - Hover the mouse over a NON-word (ex: period, comma, space):
-    - It does NOT show that it's clickable
-    - Clicking on that NON-word does NOT open a Word Entry
-      - NOTE: In this particular scenario, if the the original text contained 
-        an English word whose characters are all valid IU Latin chars (ex: 'main')
-        then this word may be clickable eventhough it is not IU.
-
-Word that does not decompose
-- Enter text: 'ᓴᕕᑲᑖᖅ' (This is a proper noun)
-- Click on the romanized word: 'savikataaq'
-- Make sure that the Gist does not crash and that the Dictionary Entry for the word says:
-  - Word could not be decomposed
   
-Text that contains spaces and newlines
-- Gist text that contains some newlines and extra spaces
-- Make sure that the extra spaces and newlines are preserved in the gist checke output  
-  - AND that the browser is still able to do automatic line wrapping
-    i.e. you don't have very long lines that correspond to each paragraph.
-     
-Syllabic text that contains some English word with only IU latin chars
-- Enter some syllabics text and add the word 'main' in it (note: all characters 
-in that word are valid Latin IU chars)
-- Gist that text
-- Check that the text has been romanized
-- Check that all Inuktitut romanized words are clickable...
-  - But the English word 'main' is NOT clickable     
-     
-IU url (Happy Path)
-- Enter url https://www.gov.nu.ca/iu
-- Check that
-  - IU sentences on the left, En on the right
-  - IU Text has been Romanized
-  - Hover the mouse over a word:
-    - It shows that it's clickable
-    - Clicking on that IU word opens a Dictionary Entry for that word
-  - Hover the mouse over a NON-word (ex: period, comma, space):
-    - It does NOT show that it's clickable
-    - Clicking on that NON-word does NOT produce a Gist
-
-En url (Happy Path)
-- Enter https://www.gov.nu.ca/honourable-joe-savikataaq-4
-- Check that
-  - IU sentences on the left, En on the right
-  - IU Text has been Romanized
-  - Hover the mouse over a word:
-    - It shows that it's clickable
-    - Clicking on that IU word opens a Dictionary Entry for that word
-  - Hover the mouse over a NON-word (ex: period, comma, space):
-    - It does NOT show that it's clickable
-    - Clicking on that NON-word does NOT open a Dictionary Entry for that word
-
-     
-Undownloadable pages
-- For each of the following situations, make sure the system does not crash and 
-  displays a message saying the page could not be downloaded
-  - URL on a server that exists but where the page itself does not exist
-    - https://www.gov.nu.ca/blahblah
-  - URL on a server that does not exist
-    - https://www.asdfadsf.com/
-  - URL on existing server that returns page not found
-    - https://www.pipsnacks.com/404
-
-Pages whose Inuktitut content cannot be downloaded
-- Gist the following url: http://travelnunavut.ca/
-  - This is a page in English that has an Inuktitut link, but that link 
-    leads to an English page. Hence, the system is unable to acquire the 
-    Inuktitut content for the page
-- Check that the page displays the following error message:
-
-      Unable to download Inuktitut content for the page
-
-  - IMPORTANT: If the error message says 
-
-      Unable to download the input page
-      
-    Then it means that the English page itself timed out. This is differrent 
-    from the error condition we are trying to test in this case, and it is one 
-    that can happen intermitently.
-    
-    When this happens, try the search again until you get the first error 
-    message above.
-
-Word Entry window hiding/showing
-- Reload the Gister text
-   - Make sure the Word Entry window is NOT showing
-- Gist some text
-   - Make sure the Word Entry window is NOT showing
-- Click on a word
-   - Make sure the Word Entry IS now showing
-- Gist the text again
-   - Make sure the Word Entry window is NOT showing
-- Click on a word
-   - Make sure the Word Entry IS now showing and it display the newly clicked
-     word as opposed to the previous one
-- Reload the Gister page     
-   - Make sure the Word Entry window is NOT showing
-
-
-
-## Search Engine
-
-Search for word in SYLLABIC -- Happy Path
-- Enter ᐅᒃᐱᕐᓂᖅ (= religion) in the query text box, then click [Search] 
-  button.
-- Check that this displays the results of a Google search for a list of alternatives, surrounded 
-  parens and spearated by ORs. As of Oct 2021, the list of alternatives was:
-
-     (ᐅᒃᐱᕐᓂᖅ OR ᐅᑉᐱᕈᓱᑉᐳᖓ OR ᐅᑉᐱᕈᓱᑦᑐᖓ OR ᐅᑉᐱᕈᓱᒃᑲᒪ OR ᐅᑉᐱᕆᔭᕋ OR ᐅᒃᐱᕈᓱᒃᐳᒍᑦ)
-     
-  The specific alternatives used may change over time, but you should at least 
-  make sure that they start with the same 3-4 chars as the input word. 
-- Copy the query that was sent to Google and paste it somewhere for future 
-  reference          
-- Click on the Back button to go back to the IUTools Web Search page and check
-  that the original query has been replaced by the expended query that was 
-  sent to Google (which you pasted above). 
-
-Search for word in LATIN - Happy Path
-- Enter ukpirniq (= religion) in the search box, then click [Search] button
-- Check that this displays the results of a Google search for a list of alternatives, surrounded 
-  parens and spearated by ORs. As of Oct 2021, the list of alternatives was:
-
-     (ᐅᒃᐱᕐᓂᖅ OR ᐅᑉᐱᕈᓱᑉᐳᖓ OR ᐅᑉᐱᕈᓱᑦᑐᖓ OR ᐅᑉᐱᕈᓱᒃᑲᒪ OR ᐅᑉᐱᕆᔭᕋ OR ᐅᒃᐱᕈᓱᒃᐳᒍᑦ)
-     
-  The specific alternatives used may change over time, but you should at least 
-  make sure that they start with the same 3-4 chars as the input word.
-- Copy the query that was sent to Google and tranlisterate it to Latin. 
-- Click on the Back button to go back to the IUTools Web Search page and check
-  that the original query has been replaced by transliterated Google query that 
-  that you generated above. 
-
-  
-Search using an already expanded query
- Enter ᐅᒃᐱᕐᓂᖅ (= religion) in the query text box, then click [Search] 
-  button.
-- Check that this displays the results of a Google search for a list of alternatives, surrounded 
-  parens and spearated by ORs. As of Oct 2021, the list of alternatives was:
-
-     (ᐅᒃᐱᕐᓂᖅ OR ᐅᑉᐱᕈᓱᑉᐳᖓ OR ᐅᑉᐱᕈᓱᑦᑐᖓ OR ᐅᑉᐱᕈᓱᒃᑲᒪ OR ᐅᑉᐱᕆᔭᕋ OR ᐅᒃᐱᕈᓱᒃᐳᒍᑦ)
-  
-  The specific alternatives used may change over time, but that does not matter
-  for this test case.
-- Copy the query that was sent to Google and paste it somewhere for future 
-  reference        
-- Click on the Back button to go back to the IUTools Web Search page and check
-  that the original query has been replaced by that pasted Google query. 
-- Click on Search again and make sure that
-  - The Google page uses the same expanded query as before (i.e. it is the same 
-    as the original Google query that you pasted above). 
-  - Click on the back button and check again that the query in the IU Web Search 
-    app is the same as the original Google Query that you pasted above.  
-  
-Search by pressing Enter key vs clicking Search
-- Enter a search word in the text box, then press Enter key.
-  - Make sure the search is launched as expected
-- Do the same but this time launch the search by pressing the _Search_ button  
-  
-
   
 ## Spell Checker
 
@@ -373,15 +192,81 @@ Spell check text that is too large
 - Check that the system prints an error message that says you have to split the
   text into smaller chunks. 
     
+## Search Engine
+
+Search for word in SYLLABIC -- Happy Path
+- Enter ᐅᒃᐱᕐᓂᖅ (= religion) in the query text box, then click [Search] 
+  button.
+- Check that this displays the results of a Google search for a list of alternatives, surrounded 
+  parens and spearated by ORs. As of Oct 2021, the list of alternatives was:
+
+     (ᐅᒃᐱᕐᓂᖅ OR ᐅᑉᐱᕈᓱᑉᐳᖓ OR ᐅᑉᐱᕈᓱᑦᑐᖓ OR ᐅᑉᐱᕈᓱᒃᑲᒪ OR ᐅᑉᐱᕆᔭᕋ OR ᐅᒃᐱᕈᓱᒃᐳᒍᑦ)
+     
+  The specific alternatives used may change over time, but you should at least 
+  make sure that they start with the same 3-4 chars as the input word. 
+- Copy the query that was sent to Google and paste it somewhere for future 
+  reference          
+- Click on the Back button to go back to the IUTools Web Search page and check
+  that the original query has been replaced by the expended query that was 
+  sent to Google (which you pasted above). 
+
+Search for word in LATIN - Happy Path
+- Enter ukpirniq (= religion) in the search box, then click [Search] button
+- Check that this displays the results of a Google search for a list of alternatives, surrounded 
+  parens and spearated by ORs. As of Oct 2021, the list of alternatives was:
+
+     (ᐅᒃᐱᕐᓂᖅ OR ᐅᑉᐱᕈᓱᑉᐳᖓ OR ᐅᑉᐱᕈᓱᑦᑐᖓ OR ᐅᑉᐱᕈᓱᒃᑲᒪ OR ᐅᑉᐱᕆᔭᕋ OR ᐅᒃᐱᕈᓱᒃᐳᒍᑦ)
+     
+  The specific alternatives used may change over time, but you should at least 
+  make sure that they start with the same 3-4 chars as the input word.
+- Copy the query that was sent to Google and tranlisterate it to Latin. 
+- Click on the Back button to go back to the IUTools Web Search page and check
+  that the original query has been replaced by transliterated Google query that 
+  that you generated above. 
+
+  
+Search using an already expanded query
+ Enter ᐅᒃᐱᕐᓂᖅ (= religion) in the query text box, then click [Search] 
+  button.
+- Check that this displays the results of a Google search for a list of alternatives, surrounded 
+  parens and spearated by ORs. As of Oct 2021, the list of alternatives was:
+
+     (ᐅᒃᐱᕐᓂᖅ OR ᐅᑉᐱᕈᓱᑉᐳᖓ OR ᐅᑉᐱᕈᓱᑦᑐᖓ OR ᐅᑉᐱᕈᓱᒃᑲᒪ OR ᐅᑉᐱᕆᔭᕋ OR ᐅᒃᐱᕈᓱᒃᐳᒍᑦ)
+  
+  The specific alternatives used may change over time, but that does not matter
+  for this test case.
+- Copy the query that was sent to Google and paste it somewhere for future 
+  reference        
+- Click on the Back button to go back to the IUTools Web Search page and check
+  that the original query has been replaced by that pasted Google query. 
+- Click on Search again and make sure that
+  - The Google page uses the same expanded query as before (i.e. it is the same 
+    as the original Google query that you pasted above). 
+  - Click on the back button and check again that the query in the IU Web Search 
+    app is the same as the original Google Query that you pasted above.  
+  
+Search word with spaces at start or end
+- Search for a word that has spaces at the start, end or both
+- Make sure the query is being expanded  
+  
+Search by pressing Enter key vs clicking Search
+- Enter a search word in the text box, then press Enter key.
+  - Make sure the search is launched as expected
+- Do the same but this time launch the search by pressing the _Search_ button  
+    
 ## Morpheme Dictionary
 
 Happy path
 - Enter morpheme 'tut', then click on Search
-  - Should see 4  morphemes that match 'tut'
+  - Should see 5  morphemes that match 'tut'
+  - Morphemes should be order by:
+    - Those with most word examples first
+    - Those whose morpheme ID is shorter in case of tie
   - For each morpheme, check that we display
     - human-readable description (ex: verb to verb suffix)
     - Definition (ex: "To hit or land on something")
     - List of example words sorted in DECREASING order of frequency
+      - Note: in some cases, it may say 'No examples found for this morpheme'
       - Click on an example word and make sure its dictionary entry is displayed
   
 Submit form with Enter key
@@ -410,7 +295,129 @@ Change max number of examples
 - Redo the search with max number of examples set to twice as much
   - Check that the number of examples is now that number
 - Do the same thing this time setting the max number to 5 
+          
+    
+## Gister
+
+Syllabic text
+- Copy and paste some Syllabic text from https://www.gov.nu.ca/iu
+- Hit [Gist Text]
+- Check that 
+  - Text has been Romanized
+  - Hover the mouse over a word:
+    - It shows that it's clickable
+    - Clicking on that IU word opens the dictionary entry for that IU word, and 
+      that everything in the entry is in LATIN 
+  - Hover the mouse over a NON-word (ex: period, comma, space):
+    - It does NOT show that it's clickable
+    - Clicking on that NON-word does NOT produce a Gist
+
+Romanized text
+- Copy and paste some syllabics text from https://www.gov.nu.ca/iu
+- Translitarate it to roman and paste it into the Gister form
+- Hit [Gist Text]
+- Check that 
+  - Text _stayed_ Romanized
+  - Hover the mouse over a word:
+    - It shows that it's clickable
+    - Clicking on that IU word opens the dictionary entry for that IU word, and 
+      that everything in the entry is in LATIN 
+  - Hover the mouse over a NON-word (ex: period, comma, space):
+    - It does NOT show that it's clickable
+    - Clicking on that NON-word does NOT open a Word Entry
+      - NOTE: In this particular scenario, if the the original text contained 
+        an English word whose characters are all valid IU Latin chars (ex: 'main')
+        then this word may be clickable eventhough it is not IU.
+
+Word that does not decompose
+- Enter text: 'ᓴᕕᑲᑖᖅ' (This is a proper noun)
+- Click on the romanized word: 'savikataaq'
+- Make sure that the Gist does not crash and that the Dictionary Entry for the word says:
+  - Word could not be decomposed
   
+Text that contains spaces and newlines
+- Gist text that contains some newlines and extra spaces
+- Make sure that the extra spaces and newlines are preserved in the gist checke output  
+  - AND that the browser is still able to do automatic line wrapping
+    i.e. you don't have very long lines that correspond to each paragraph.
+     
+Syllabic text that contains some English word with only IU latin chars
+- Enter some syllabics text and add the word 'main' in it (note: all characters 
+in that word are valid Latin IU chars)
+- Gist that text
+- Check that the text has been romanized
+- Check that all Inuktitut romanized words are clickable...
+  - But the English word 'main' is NOT clickable     
+     
+IU url (Happy Path)
+- Enter url https://www.gov.nu.ca/iu
+- Check that
+  - IU sentences on the left, En on the right
+  - IU Text has been Romanized
+  - Hover the mouse over a word:
+    - It shows that it's clickable
+    - Clicking on that IU word opens a Dictionary Entry for that word
+  - Hover the mouse over a NON-word (ex: period, comma, space):
+    - It does NOT show that it's clickable
+    - Clicking on that NON-word does NOT produce a Gist
+
+En url (Happy Path)
+- Enter https://www.gov.nu.ca/honourable-joe-savikataaq-4
+- Check that
+  - IU sentences on the left, En on the right
+  - IU Text has been Romanized
+  - Hover the mouse over a word:
+    - It shows that it's clickable
+    - Clicking on that IU word opens a Dictionary Entry for that word
+  - Hover the mouse over a NON-word (ex: period, comma, space):
+    - It does NOT show that it's clickable
+    - Clicking on that NON-word does NOT open a Dictionary Entry for that word
+
+     
+Undownloadable pages
+- For each of the following situations, make sure the system does not crash and 
+  displays a message saying the page could not be downloaded
+  - URL on a server that exists but where the page itself does not exist
+    - https://www.gov.nu.ca/blahblah
+  - URL on a server that does not exist
+    - https://www.asdfadsf.com/
+  - URL on existing server that returns page not found
+    - https://www.pipsnacks.com/404
+
+Pages whose Inuktitut content cannot be downloaded
+- Gist the following url: http://travelnunavut.ca/
+  - This is a page in English that has an Inuktitut link, but that link 
+    leads to an English page. Hence, the system is unable to acquire the 
+    Inuktitut content for the page
+- Check that the page displays the following error message:
+
+      The requested page is not in Inuktitut and it does not seem to provide an Inuktitut translation
+
+  - IMPORTANT: If the error message says 
+
+      Unable to download the input page
+      
+    Then it means that the English page itself timed out. This is differrent 
+    from the error condition we are trying to test in this case, and it is one 
+    that can happen intermitently.
+    
+    When this happens, try the search again until you get the first error 
+    message above.
+
+Word Entry window hiding/showing
+- Reload the Gister text
+   - Make sure the Word Entry window is NOT showing
+- Gist some text
+   - Make sure the Word Entry window is NOT showing
+- Click on a word
+   - Make sure the Word Entry IS now showing
+- Gist the text again
+   - Make sure the Word Entry window is NOT showing
+- Click on a word
+   - Make sure the Word Entry IS now showing and it display the newly clicked
+     word as opposed to the previous one
+- Reload the Gister page     
+   - Make sure the Word Entry window is NOT showing
  
 ## Feedback link
 
@@ -440,4 +447,14 @@ Change max number of examples
    - Web Search
      - Search for a word (_action=SEARCH_WEB, data=origQuery)
      
+ ## Test on 'small screen'
+ 
+ Open a browser window, then
+ - Make sure it is NOT maximised
+ - Is made as small (width and height wise) as possible.
+ - Test that
+   - All the menus etc display correctly
+   - Click on each of the menu and make sure that the page looks "good"
+ - Try a basic, "happy path" scenario for each app and make sure there are no
+   issues with displaying results on that small of a screen
  

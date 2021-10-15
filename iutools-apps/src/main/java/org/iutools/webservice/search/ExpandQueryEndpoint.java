@@ -27,6 +27,8 @@ public class ExpandQueryEndpoint
 		}
 
 		MorphologicalRelative[] relatedWords = null;
+		// Remove spaces at start and end of query
+		inputs.origQuery = inputs.origQuery.replaceAll("(^\\s*|\\s*$)", "");
 		if (!queryAlreadyExpanded(inputs.origQuery)) {
 			try {
 				relatedWords = relsFinder.findRelatives(inputs.origQuery);
