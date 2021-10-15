@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IUTools: Apps and Tools for Inuktitut</title>
+  <title>IUTools: Web Apps for the Inuktitut Language</title>
 
 
   <link rel="stylesheet" href="css/styles.css?v2">
@@ -12,27 +12,45 @@
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&display=swap" rel="stylesheet">
   <script src="js/vendors/jquery/jquery-3.3.1.min.js"></script>
+  <script src="js/vendors/jquery/jquery-ui.min.js" type="text/javascript"></script>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 </head>
 
 <body>
 
 <div id="header" class="header">
   <div id="header_inner">
-    <a href="index.html">IUTools: Apps and Tools for Inuktitut</a>
-  </div>
+		<a id="header_title" href="index.html">
+			<span>IUTOOLS:</span> <span>APPS</span> <span>FOR</span> <span>THE</span> <span>INUKTITUT</span> <span>LANGUAGE</span>
+		</a>
+	</div>
 </div>
 
 <main>
     <div id="apps_descr">
     <p/>
-	This site provides a series of web services and applications for 
-	processing Inuktut text.
+	This site provides a series of web applications for processing Inuktut text.
 
     <p/>
     <dt><b><a href="worddict.jsp">Inuktitut-English Dictionary</a></b></dt>
     <dd>This app allows you to get information about an Inuktitut word, including:
         morphological decomposition, English translations and bilingual
-        examples of use.</dd>
+        examples of use. The dictionary can also be used in the en-iu direction
+        in order to find possible Inuktitut translations of an English word.
+    </dd>
+
+    <p/>
+    <dt><b><a href="spell.jsp">Spell Checker</a></b></dt>
+    <dd>This app allows you to spot and correct spelling mistakes in Inuktitut
+        text.<br/>
+    </dd>
+
+    <p/>
+    <dt><b><a href="search.jsp">Web Search engine</a></b></dt>
+    <dd>A specialised web search engine for Inuktut which searches not only for
+        the word you provide, but also closely related words. This is something
+        that mainstreamsearch engines like Google and Bing are not able to do
+        for Inuktut.</dd>
 
 	<p/>
 	<dt><b><a href="morpheme_dictionary.jsp">Morpheme Dictionary</a></b></dt>
@@ -43,20 +61,10 @@
 	<dt><b><a href="gisttext.jsp">Gister</a></b></dt>
 	<dd>This app helps learners read and comprehend Inuktitut text. Each word
         in the text becomes clickable to provide its bilingual dictionary entry.
-        If the text is also available in English, the <em>Gister<em> will display
+        If the text is also available in English, the <em>Gister</em> will display
         the Inuktitut and English text side by side.
-	
-	<p/>
-	<dt><b><a href="spell.jsp">Spell Checker</a></b></dt>
-	<dd>This app allows you to spot and correct spelling mistakes in Inuktitut text.<br/>
-	</dd>
+    </dd>
 
-    <p/>
-	<dt><b><a href="search.jsp">Web Search engine</a></b></dt>
-	<dd>This app is a special search engine for Inuktut which searches not only for the word you
-	typed, but also closely related words. This is something that mainstream 
-	search engines like Google and Bing are not able to do for Inuktut.</dd>
-	
 	<h3>Third party tools</h3>
 	
 	<dt><b><a href="http://inuktitutcomputing.ca/Transcoder/index.php">Inuktitut Computing Transcoder</a></b></dt>
