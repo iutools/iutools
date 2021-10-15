@@ -12,10 +12,6 @@
     		// Morpheme for which we are searching examples
     		inpMorpheme: "morpheme",
 
-    		// Widgets for specifying the corpus in which to search examples
-    		inpCorpusName: "corpus-name",
-    		selCorpusName: "corpus",
-
     		// Button for starting the search
     		btnGet: "btn-occ",
 

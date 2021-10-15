@@ -1,4 +1,4 @@
-package org.iutools.morphemesearcher;
+package org.iutools.morphemedict;
 
 public class ScoredExample implements Comparable {
 	public String word;

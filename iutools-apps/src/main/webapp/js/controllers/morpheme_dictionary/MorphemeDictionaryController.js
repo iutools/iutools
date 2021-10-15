@@ -91,12 +91,7 @@ class MorphemeDictionaryController extends IUToolsController {
 		var wordPattern = this.elementForProp("inpMorpheme").val().trim();
 		if (wordPattern=='')
 			wordPattern = null;
-		var corpusName = this.elementForProp("inpCorpusName").val().trim();
-		if (corpusName=='')
-			corpusName = null;
-		var selectCorpus = this.elementForProp("selCorpusName");
-		var selectedCorpusName = selectCorpus.val();
-		corpusName = selectedCorpusName;
+        var corpusName = null;
 		var nbExamples = this.elementForProp("inpNbExamples").val().trim();
 		if (nbExamples=='')
 			nbExamples = "20";
@@ -140,7 +135,7 @@ class MorphemeDictionaryController extends IUToolsController {
 		var html = matchingMorphs.length+' morpheme'+
 			(matchingMorphs.length==1?'':'s')+' found.<br/>';
 
-		// Display table of matching morphekmes
+		// Display table of matching morphemes
 		html += '<div id="list-of-morphemes">\n';
 		html += '<table id="tbl-matching-morphs" class="gist">\n';
 		for (var imorph=0; imorph < matchingMorphs.length; imorph++) {
@@ -170,9 +165,13 @@ class MorphemeDictionaryController extends IUToolsController {
             '<tr>\n' +
             '  <td>'+morpheme.canonicalForm+'</td>\n'+
             '  <td><i>'+morpheme.grammar+'</i><br/>\n'+
-            '      '+morpheme.meaning+'<br/>\n'+
-            '      <b>Examples:</b> '
-            ;
+            '      '+morpheme.meaning+'<br/>\n      ';
+
+        if (morphWords.length == 0) {
+            html += "<b>No examples found for this morpheme</b>";
+        } else {
+            html += "<b>Examples:</b> ";
+        }
 
         for (var ii=0; ii < morphWords.length; ii++) {
             var aWord = morphWords[ii];

@@ -9,9 +9,9 @@ import org.iutools.corpus.CompiledCorpus;
 import org.iutools.corpus.CompiledCorpusRegistry;
 
 import org.iutools.linguisticdata.Morpheme;
-import org.iutools.morphemesearcher.MorphSearchResults;
-import org.iutools.morphemesearcher.MorphemeSearcher;
-import org.iutools.morphemesearcher.ScoredExample;
+import org.iutools.morphemedict.MorphDictionaryEntry;
+import org.iutools.morphemedict.MorphemeDictionary;
+import org.iutools.morphemedict.ScoredExample;
 
 public class CmdLookForMorpheme extends ConsoleCommand {
 
@@ -32,17 +32,17 @@ public class CmdLookForMorpheme extends ConsoleCommand {
 		CompiledCorpus compiledCorpus =
 			new CompiledCorpusRegistry().getCorpus(corpusName);
 
-		MorphemeSearcher morphExtr = new MorphemeSearcher();
+		MorphemeDictionary morphExtr = new MorphemeDictionary();
 		morphExtr.useCorpus(compiledCorpus);
 		
 		//morphExtr.useDictionary(dictionaryFile);
 		
 		boolean interactive = false;
-		List<MorphSearchResults> words = null;
+		List<MorphDictionaryEntry> words = null;
 		if (morpheme == null) {
 			interactive = true;
 		} else {
-			words = morphExtr.wordsContainingMorpheme(morpheme);
+			words = morphExtr.search(morpheme);
 		}
 
 		while (true) {
@@ -51,18 +51,18 @@ public class CmdLookForMorpheme extends ConsoleCommand {
 				if (morpheme == null) break;
 				words = null;
 				try {
-					words = morphExtr.wordsContainingMorpheme(morpheme);
+					words = morphExtr.search(morpheme);
 				} catch (Exception e) {
 					throw e;
 				}
 			}
 			
 			if (words != null && words.size() > 0) {
-				MorphemeSearcher.WordFreqComparator comparator = morphExtr.new WordFreqComparator();
-				Iterator<MorphSearchResults> itWords = words.iterator();
+				MorphemeDictionary.WordFreqComparator comparator = morphExtr.new WordFreqComparator();
+				Iterator<MorphDictionaryEntry> itWords = words.iterator();
 				int nIt = 1;
 				while (itWords.hasNext()) {
-					MorphSearchResults wordsForMorpheme = itWords.next();
+					MorphDictionaryEntry wordsForMorpheme = itWords.next();
 					String morphemeWithId = wordsForMorpheme.morphemeWithId;
 					ScoredExample[] wordsAndFreqs = wordsForMorpheme.words.toArray(new ScoredExample[] {});
 					Arrays.sort(wordsAndFreqs, comparator);

@@ -1,8 +1,9 @@
-package org.iutools.morphemesearcher;
+package org.iutools.morphemedict;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import ca.nrc.testing.AssertSequence;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 
@@ -10,20 +11,20 @@ import ca.nrc.json.PrettyPrinter;
 import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.Asserter;
 
-public class AssertMorphSearchResults extends Asserter<List<MorphSearchResults>> {
+public class AssertMorphSearchResults extends Asserter<List<MorphDictionaryEntry>> {
 
-	public AssertMorphSearchResults(List<MorphSearchResults> _gotResults, String mess) {
+	public AssertMorphSearchResults(List<MorphDictionaryEntry> _gotResults, String mess) {
 		super(_gotResults, mess);
 	}
 
-	protected List<MorphSearchResults> results() {
+	protected List<MorphDictionaryEntry> results() {
 		return gotObject;
 	}
 
-	public AssertMorphSearchResults examplesForMorphemeAre(
+	public AssertMorphSearchResults examplesForMorphemeStartWith(
 		String morpheme, Pair<String,Long>... expWordExamples) throws Exception {
 		List<Pair<String,Long>> gotWordExamples = null;
-		for (MorphSearchResults aMorphResult: results()) {
+		for (MorphDictionaryEntry aMorphResult: results()) {
 			String aMorpheme = aMorphResult.morphemeWithId;
 			if (aMorpheme.equals(morpheme)) {
 				gotWordExamples = new ArrayList<Pair<String,Long>>();
@@ -41,9 +42,17 @@ public class AssertMorphSearchResults extends Asserter<List<MorphSearchResults>>
 				"\nNo examples found for morpheme "+morpheme+
 				"\nMorphemes found were: "+PrettyPrinter.print(gotMorphemes()));
 		} else {
-			AssertObject.assertDeepEquals(
-				baseMessage+"\nExamples of words for morpheme "+morpheme+" were wrong",
-				expWordExamples, gotWordExamples);
+			Pair<String,Long>[] gotWordExamplesArr = new Pair[gotWordExamples.size()];
+			for (int ii=0; ii < gotWordExamples.size(); ii++) {
+				gotWordExamplesArr[ii] = gotWordExamples.get(ii);
+			}
+			new AssertSequence(gotWordExamplesArr,
+				baseMessage+"\nExamples of words for morpheme "+morpheme+" were wrong")
+				.startsWith(expWordExamples);
+				;
+//			AssertObject.assertDeepEquals(
+//				baseMessage+"\nExamples of words for morpheme "+morpheme+" were wrong",
+//				expWordExamples, gotWordExamples);
 		}
 		
 		return this;
@@ -59,7 +68,7 @@ public class AssertMorphSearchResults extends Asserter<List<MorphSearchResults>>
 	
 	protected List<String> gotMorphemes() {
 		List<String> morphemes = new ArrayList<String>();
-		for (MorphSearchResults aMorphResult: results()) {
+		for (MorphDictionaryEntry aMorphResult: results()) {
 			morphemes.add(aMorphResult.morphemeWithId);
 		}
 		return morphemes;

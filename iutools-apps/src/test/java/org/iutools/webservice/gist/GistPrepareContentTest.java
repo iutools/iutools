@@ -72,7 +72,7 @@ public class GistPrepareContentTest extends EndpointTest {
 		EndpointResult epResult = endPoint.execute(inputs);
 
 		new AssertGistPrepareContentResult(epResult,
-			"Content not prepared as expected")
+			"Content not prepared as expected\n(NOTE: THIS TEST MAY FAIL INTERMITENTLY BECAUSE travelnunavut.ca IS A BIT FLAKY)")
 			.inputWasActualContent(false)
 			.containsENSentenceStartingWith("WELCOME TO NUNAVUT")
 			// Note: Eventhough the travelnunavut.ca web site has an INUKTITUT

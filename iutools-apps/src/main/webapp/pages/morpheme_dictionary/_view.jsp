@@ -1,15 +1,8 @@
-	<b>In corpus: </b>
-    <select id="corpus">
-   		<option value="Hansard-1999-2002" selected>Nunavut Hansard 1999-2002</option>
-   		<option value="Hansard-1999-2018">Nunavut Hansard 1999-2018</option>
-   		<option value="CBC">CBC transcripts</option>
-   	</select>
-
     <!-- Form for searching for examples -->
     <form id="form-query" method="post" action="">
     <div>
     Max examples:
-    <input id="nb-examples" name="nb-examples" value="20" style="width:5em;">
+    <input id="nb-examples" name="nb-examples" value="10" style="width:5em;">
     </div><br>
     <div>
     Morpheme (or start of it):

@@ -7,12 +7,11 @@ import org.iutools.corpus.CompiledCorpusRegistry;
 import org.iutools.linguisticdata.LinguisticData;
 import org.iutools.linguisticdata.Morpheme;
 import org.iutools.linguisticdata.MorphemeHumanReadableDescr;
-import org.iutools.morphemesearcher.MorphSearchResults;
-import org.iutools.morphemesearcher.MorphemeSearcher;
-import org.iutools.morphemesearcher.ScoredExample;
+import org.iutools.morphemedict.MorphDictionaryEntry;
+import org.iutools.morphemedict.MorphemeDictionary;
+import org.iutools.morphemedict.ScoredExample;
 import org.iutools.webservice.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -58,11 +57,11 @@ public class MorphemeExamplesEndpoint
 
 		tLogger.trace("invoked with inputs.wordPattern="+inputs.wordPattern+", inputs.nbExamples="+inputs.nbExamples);
 
-		tLogger.trace("Creating the MorphemeSearcher instance");
+		tLogger.trace("Creating the MorphemeDictionary instance");
 		MorphemeExamplesResult results = new MorphemeExamplesResult();
 		try {
 
-			MorphemeSearcher morphExtractor = new MorphemeSearcher();
+			MorphemeDictionary morphExtractor = new MorphemeDictionary();
 
 			tLogger.trace("Loading the corpus");
 			CompiledCorpus compiledCorpus =
@@ -77,14 +76,14 @@ public class MorphemeExamplesEndpoint
 			morphExtractor.setNbDisplayedWords(nbExamples);
 
 			tLogger.trace("Finding words that contain the morpheme");
-			List<MorphSearchResults> wordsForMorphemes =
-				morphExtractor.wordsContainingMorpheme(inputs.wordPattern);
+			List<MorphDictionaryEntry> wordsForMorphemes =
+				morphExtractor.search(inputs.wordPattern);
 
 			LinguisticData linguisticData = LinguisticData.getInstance();
 			tLogger.trace("wordsForMorphemes: "+wordsForMorphemes.size());
-			Iterator<MorphSearchResults> itWFM = wordsForMorphemes.iterator();
+			Iterator<MorphDictionaryEntry> itWFM = wordsForMorphemes.iterator();
 			while (itWFM.hasNext()) {
-				MorphSearchResults w = itWFM.next();
+				MorphDictionaryEntry w = itWFM.next();
 				String morphID = w.morphemeWithId;
 				if (linguisticData.getMorpheme(morphID).isComposite()) {
 					// We only list the non-composite morphemes

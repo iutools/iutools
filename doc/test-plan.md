@@ -403,6 +403,13 @@ Word Entry window hiding/showing
 - Reload the Morpheme Dictionary page     
    - Make sure the Word Entry window is NOT showing
 
+Change max number of examples
+- Search for tut
+- Make sure that the number of examples provided for the first morpheme is equal 
+  to the default max number of example (i.e. 10 as of Oct 202)
+- Redo the search with max number of examples set to twice as much
+  - Check that the number of examples is now that number
+- Do the same thing this time setting the max number to 5 
   
  
 ## Feedback link
