@@ -57,7 +57,7 @@
 </main>
 
 <div id="footer" class="footer">
-  Copyright, National Research Council of Canada, 2017
+  In collaboration with:
 </div>
 <div id="sponsors">
   <a href="https://nrc.canada.ca/en" target="_blank"><img src="imgs/NRC-ID_138x138.jpg" alt="logo of National Research Council Canada - Conseil national de recherches Canada"></a>

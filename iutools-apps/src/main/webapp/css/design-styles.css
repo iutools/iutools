@@ -46,8 +46,8 @@ main {
 }
 
 #header_title {
-  font-size: 2em;
-	line-height: .7;
+  font-size: 32px;
+	line-height: 22px;
   font-weight: 600;
   color: #fff;
   text-decoration: none;
@@ -57,43 +57,43 @@ main {
 
 #header_title span {
 	display: inline-block;
-	height: .7em;
+	height: 22px;
 	color: transparent;
 	margin: .25em 0;
 	overflow: hidden;
 	background-image: url(../imgs/title-text.png);
 	background-repeat: no-repeat;
-	background-size: cover;
+	background-size: auto 22px;
 }
 
 #header_title span:first-child {
-	width: 4.15em;
-	background-position: .1em top;
+	width: 133px;
+	background-position: 5px top;
 }
 
 #header_title span:nth-child(2) {
-	width: 2.3em;
-	background-position: -4.2em top;
+	width: 74px;
+	background-position: -132px top;
 }
 
 #header_title span:nth-child(3) {
-	width: 2.05em;
-	background-position: -6.7em top;
+	width: 66px;
+	background-position: -210px top;
 }
 
 #header_title span:nth-child(4) {
-	width: 1.8em;
-	background-position: -8.85em top;
+	width: 58px;
+	background-position: -278px top;
 }
 
 #header_title span:nth-child(5) {
-	width: 4.95em;
-	background-position: -10.85em top;
+	width: 158px;
+	background-position: -340px top;
 }
 
 #header_title span:nth-child(6) {
-	width: 5.1em;
-	background-position: -16.05em top;
+	width: 163.2px;
+	background-position: -504px top;
 }
 
 #main_nav {
@@ -445,6 +445,16 @@ div#div-wordentry-iconized {
 	border: none;
 }
 
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default, .ui-button, html .ui-button.ui-state-disabled:hover, html .ui-button.ui-state-disabled:active {
+	background: #e4f6ff !important;
+	border: 1px solid #e4f6ff !important;
+}
+
+.ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active, a.ui-button:active, .ui-button:active, .ui-button.ui-state-active:hover {
+	background: #0274ad !important;
+	border: 1px solid #0274ad !important;
+}
+
 #txt-query-words {
   display: block;
 }
@@ -483,9 +493,45 @@ div#div-wordentry-iconized {
 @media screen and (min-width: 540px) {
 
   #header_title {
-    font-size: 2.5em;
+    font-size: 40px;
+		line-height: 28px;
     font-weight: 500;
-  } 
+  }
+
+	#header_title span {
+		height: 28px;
+		background-size: auto 28px;
+	}
+
+	#header_title span:first-child {
+		width: 168px;
+		background-position: 6px top;
+	}
+
+	#header_title span:nth-child(2) {
+		width: 93px;
+		background-position: -168px top;
+	}
+
+	#header_title span:nth-child(3) {
+		width: 82px;
+		background-position: -268px top;
+	}
+
+	#header_title span:nth-child(4) {
+		width: 73px;
+		background-position: -354px top;
+	}
+
+	#header_title span:nth-child(5) {
+		width: 198px;
+		background-position: -435px top;
+	}
+
+	#header_title span:nth-child(6) {
+		width: 206px;
+		background-position: -640px top;
+	}
   
   .menu-toggle {
     display: none;
@@ -591,7 +637,43 @@ div#div-wordentry-iconized {
 	}
 	
 	#header_title {
-		font-size: 3em;
+    font-size: 48px;
+		line-height: 34px;
+  }
+
+	#header_title span {
+		height: 34px;
+		background-size: auto 34px;
+	}
+
+	#header_title span:first-child {
+		width: 204px;
+		background-position: 6px top;
+	}
+
+	#header_title span:nth-child(2) {
+		width: 114px;
+		background-position: -204px top;
+	}
+
+	#header_title span:nth-child(3) {
+		width: 100px;
+		background-position: -326px top;
+	}
+
+	#header_title span:nth-child(4) {
+		width: 88px;
+		background-position: -430px top;
+	}
+
+	#header_title span:nth-child(5) {
+		width: 244px;
+		background-position: -526px top;
+	}
+
+	#header_title span:nth-child(6) {
+		width: 250px;
+		background-position: -780px top;
 	}
   
 }
