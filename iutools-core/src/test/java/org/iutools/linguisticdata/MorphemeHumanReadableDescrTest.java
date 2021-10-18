@@ -122,6 +122,9 @@ public class MorphemeHumanReadableDescrTest {
 		Map<String,List<String>> allDescriptions = new HashMap<String, List<String>>();
 		String exceptions = "";
 		for (String morphID: LinguisticData.getInstance().allMorphemeIDs()) {
+			if (!morphID.startsWith("taqqapku/")) {
+				continue;
+			}
 			try {
 				String descr = MorphemeHumanReadableDescr.descriptiveText(morphID);
 				String[] parts = descr.split("\\(");
@@ -236,7 +239,6 @@ public class MorphemeHumanReadableDescrTest {
 			},
 			// Position 2
 			new String[] {
-				"?",
 				"abl",
 				"acc",
 				"caus",
@@ -251,6 +253,7 @@ public class MorphemeHumanReadableDescrTest {
 				"int",
 				"loc",
 				"ml",
+				"mlsc",
 				"nom",
 				"part",
 				"sc",

@@ -1,12 +1,12 @@
 morpheme,type,objectType,root,number,engMean,freMean,END
-qangna,pd,?,qaksu,s,the one inside,celui dedans,.
-taqqangna,pd,?,taqqaksu,s,the one inside,celui dedans,.
-qapkua,pd,?,qapku,p,the ones inside,ceux dedans,.
-taqqapkua,pd,?,taqqapku,p,the ones inside,ceux dedans,.
-kingna,pd,?,kiksu,s,the one outside,celui dehors,.
-takkingna,pd,?,takkiksu,s,the one outside,celui dehors,.
-kikkua,pd,?,kikku,p,the ones outside,ceux dehors,.
-takkikkua,pd,?,takkikku,p,the ones outside,ceux dehors,.
+qangna,pd,mlsc,qaksu,s,the one inside,celui dedans,.
+taqqangna,pd,mlsc,taqqaksu,s,the one inside,celui dedans,.
+qapkua,pd,mlsc,qapku,p,the ones inside,ceux dedans,.
+taqqapkua,pd,mlsc,taqqapku,p,the ones inside,ceux dedans,.
+kingna,pd,mlsc,kiksu,s,the one outside,celui dehors,.
+takkingna,pd,mlsc,takkiksu,s,the one outside,celui dehors,.
+kikkua,pd,mlsc,kikku,p,the ones outside,ceux dehors,.
+takkikkua,pd,mlsc,takkikku,p,the ones outside,ceux dehors,.
 tagga,ad,sc,tagg,,right here beside me,juste ici à côté de moi,.
 taava,ad,ml,taav,,over there not beside me,là pas à côté de moi,.
 tauga,ad,ml,taun,,down there below the viewer,là en-dessous,.

@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.iutools.corpus.*;
+import org.iutools.linguisticdata.LinguisticData;
 import org.iutools.utilities.StopWatch;
 import org.iutools.datastructure.trie.MockStringSegmenter_IUMorpheme;
 import ca.nrc.dtrc.elasticsearch.StreamlinedClient;
@@ -207,6 +208,30 @@ public class MorphemeDictionaryTest {
 			.examplesForMorphemeStartWith("tut/1v", Pair.of("tutuu", new Long(501)))
 			// No word examples found for this particular morpheme
 			.examplesForMorphemeStartWith("tutiriaq/1n")
+			;
+	}
+
+	@Test
+	public void test__wordsContainingMorpheme__taq() throws Exception {
+		CompiledCorpus compiledCorpus = new CompiledCorpusRegistry().getCorpus();
+
+		MorphemeDictionary morphemeSearcher = new MorphemeDictionary();
+		morphemeSearcher.useCorpus(compiledCorpus);
+
+		// This one used to cause a null pointer exception
+		String morpheme = "taq";
+		List<MorphDictionaryEntry> wordsForMorphemes =
+			morphemeSearcher.search(morpheme);
+
+		new AssertMorphSearchResults(wordsForMorphemes, "")
+			.foundMorphemes(
+				"taq/1vv", "taq/2nv", "taqaq/1nv", "taqa/1v", "taqak/1n",
+				"taqqiq/1n", "taquaq/1v", "taqqa/rad-sc", "taquaq/1n",
+				"taqqut/1n", "taqqa/ad-sc", "taqqirsuq/1v", "taqqangna/pd-mlsc-s",
+				"taqqapku/rpd-mlsc-p", "taqqapkua/pd-mlsc-p", "taqqaksu/rpd-mlsc-s")
+			.examplesForMorphemeStartWith("taq/1vv", Pair.of("minaqaqtiqattarniaqtakka", new Long(1)))
+			// No word examples found for this particular morpheme
+			.examplesForMorphemeStartWith("taquaq/1n")
 			;
 	}
 
