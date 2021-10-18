@@ -129,8 +129,9 @@ public class MorphemeDictionary {
 				new HashMap<String, List<ScoredExample>>();
 		for (int ib=0; ib<rootBins.length; ib++) {
 			tLogger.trace("Looking at bin #"+ib);
+			HashMap<String, List<WordWithMorpheme>> aBin = rootBins[ib].morphid2wordsFreqs;
 			HashMap<String, List<ScoredExample>> morphid2scoredWords = 
-					computeWordsWithScore(rootBins[ib].morphid2wordsFreqs);
+					computeWordsWithScore(aBin);
 			tLogger.trace("Finished scoring words in bin");
 
 			for (Map.Entry<String,List<ScoredExample>> mapElement : morphid2scoredWords.entrySet()) { 
@@ -294,6 +295,9 @@ public class MorphemeDictionary {
 	
 	private ScoredExample generateScoredExample(WordWithMorpheme morphemeExample) throws MorphemeDictionaryException {
 		Logger logger = Logger.getLogger("org.iutools.morphemesearcher.MorphemeDictionary.generateScoredExample");
+		if (logger.isTraceEnabled()) {
+			logger.trace("invoked with morphemeExample="+PrettyPrinter.print(morphemeExample));
+		}
 		ScoredExample scoredEx = null;
 		try {
 			boolean allowAnalysisWithAdditionalFinalConsonant = false;
@@ -328,6 +332,10 @@ public class MorphemeDictionary {
 	public Double morphFreqInAnalyses(
 		WordWithMorpheme morphemeExample,
 		boolean allowAnalysisWithAdditionalFinalConsonant) throws LinguisticDataException, TimeoutException, MorphologicalAnalyzerException, MorphemeDictionaryException {
+		Logger tLogger = Logger.getLogger("org.iutools.morphemedict.MorphemeDictioanry.morphFreqInAnalyses");
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("morphemeExample="+PrettyPrinter.print(morphemeExample));
+		}
 		MorphologicalAnalyzer_R2L analyzer = new MorphologicalAnalyzer_R2L();
 		String morpheme = morphemeExample.morphemeId;
 		String[][] decompositions = morphemeExample.decompsSample;
@@ -342,8 +350,12 @@ public class MorphemeDictionary {
 			}
 		}
 		int numDecsWithMorpheme = 0;
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("decompositions="+PrettyPrinter.print(decompositions));
+		}
 		for (String[] decomp: decompositions) {
 			String decompStr = StringUtils.join(decomp, " ");
+			tLogger.trace("decompStr="+decompStr+", morpheme="+morpheme);
 			if (decompStr.contains(morpheme)) {
 				numDecsWithMorpheme++;
 			} else {

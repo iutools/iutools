@@ -73,6 +73,7 @@ public class MorphemeHumanReadableDescr implements Comparable<MorphemeHumanReada
 		// demonstrative properties
 		caseMoodAbbrevs.put("sc", "static/short referent");
 		caseMoodAbbrevs.put("ml", "moving/long referent");
+		caseMoodAbbrevs.put("mlsc", "referent of either moving/long OR static/short nature");
 	}
 
 	private static Pattern pattSeparateCanonicalFromRoles =
