@@ -1,5 +1,12 @@
 # Manual test plan for Inuktut apps
 
+## IMPORTANT: Run all apps with ?debug=1
+
+That way if a server exception is raised, you will see the stack trace.
+Otherwise, you will only see a "generic" message along the lines of:
+
+   The server encountered an error
+
 ## Word Dict
 
 Basic scenario
