@@ -159,7 +159,7 @@ class GistTextController extends IUToolsController {
 	}
 	
 	displayTextWithClickableWords(html) {
-		html = "<h2>Click on words to see their gist</h2>\n"+html;
+		html = "<h2>Click on words to see their dictionary entry</h2>\n"+html;
 		var div_results = this.elementForProp("divGistTextResults");
 		div_results.html(html);
 		this.attachListenersToIUWords(this)

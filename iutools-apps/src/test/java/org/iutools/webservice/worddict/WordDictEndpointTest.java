@@ -147,6 +147,22 @@ public class WordDictEndpointTest extends EndpointTest {
 	public void test__WordDictEndpoint__VariousCases() throws Exception {
 
 		Case[] cases = new Case[]{
+
+			new Case("iu-ᐊᒻᒨᒪᔪᖅ",
+				// Query language
+				"iu",
+				// Query word
+				"ᐊᒻᒨᒪᔪᖅ",
+				// Expected min matching words
+				10,
+				// Expected Decomposition for query word.
+				// Set to empty array for an English query word because English words are never
+				// decomposed.
+				new String[] {"iglu/1n", "ga/tn-nom-s-1s"},
+				// Expected translations
+				new String[]{"house", "home", "rent"}
+			),
+
 			new Case("iu-igluga",
 				// Query language
 				"iu",

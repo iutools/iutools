@@ -12,6 +12,13 @@ class IUToolsController extends WidgetController {
     error(err) {
         var tracer = Debug.getTraceLogger("IUController.error");
         var divError = this.elementForProp('divError');
+        if (err.includes("xception")) {
+            var errDetails = err;
+            var err = "The server encountered a possibly intermittent error. You MIGHT be able to resolve it by trying again.";
+            if (Debug.debugModeIsOn()) {
+                err += "<br/>\n"+errDetails;
+            }
+        }
         divError.html(err);
         divError.show();
         this.scrollIntoView(divError)
