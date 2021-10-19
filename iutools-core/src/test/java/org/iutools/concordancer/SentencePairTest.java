@@ -111,6 +111,7 @@ public class SentencePairTest {
 		String[][] escCases = new String[][] {
 			new String[] {"hello", "hello"},
 			new String[] {"hello+world", "hello\\+world"},
+			new String[] {"{hi}", "\\{hi\\}"},
 		};
 
 		int caseNum = -1;

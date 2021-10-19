@@ -347,7 +347,7 @@ public class SentencePair {
 	}
 
 	public static String escapeRegexpSpecialChars(String text) {
-		text = text.replaceAll("([\\$\\(\\)\\[\\]\\.\\*\\?\\<\\\\>=\\+])", "\\\\$1");
+		text = text.replaceAll("([\\$\\(\\)\\[\\]\\{\\}\\.\\*\\?\\<\\\\>=\\+])", "\\\\$1");
 		return text;
 	}
 }

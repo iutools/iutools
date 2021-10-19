@@ -1243,7 +1243,7 @@ public class MorphAnalGoldStandard_Hansard extends MorphAnalGoldStandardAbstract
                 .isMisspelled()
                 .comment("Should be 'taanna'"));
         addCase(new AnalyzerCase("taqqaani", "{taqqa:taqqa/rad-sc}{ani:ani/tad-loc}"));
-        addCase(new AnalyzerCase("taqqakkununga", "{taqqakku:taqqapku/rpd-?-p}{nunga:nunga/tpd-dat-p}"));
+        addCase(new AnalyzerCase("taqqakkununga", "{taqqakku:taqqapku/rpd-mlsc-p}{nunga:nunga/tpd-dat-p}"));
         addCase(new AnalyzerCase("taqqiit", "{taqqi:taqqiq/1n}{it:it/tn-nom-p}"));
         addCase(new AnalyzerCase("tausan", "{tausan:tausat/1n}"));
         addCase(new AnalyzerCase("tavani", "{tav:tagv/rad-sc}{ani:ani/tad-loc}")

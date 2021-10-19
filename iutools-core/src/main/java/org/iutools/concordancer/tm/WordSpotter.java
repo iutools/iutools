@@ -50,6 +50,9 @@ public class WordSpotter {
 
 	static List<String> splitText(String text, String[] tokens) throws WordSpotterException {
 		Logger tLogger = Logger.getLogger("org.iutools.concordancer.tm.WordSpotter.splitText");
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("tokens="+(tokens==null?"null":String.join(",", tokens)));
+		}
 
 		List<String> splitElts = new ArrayList<String>();
 		String remainingText = text;
@@ -78,10 +81,13 @@ public class WordSpotter {
 		token = SentencePair.escapeRegexpSpecialChars(token);
 		String tokenRegex =
 			token.replaceAll("^@@", "[^\\p{Punct}\\s]*?");
+		tLogger.trace("After replacing LEADING @@, tokenRegex="+tokenRegex);
 		tokenRegex = tokenRegex.replaceAll("@@$", "");
+		tLogger.trace("After replacing TAILING @@, tokenRegex="+tokenRegex);
 		Pattern patt =
 			Pattern.compile(tokenRegex, Pattern.CASE_INSENSITIVE);
 
+		tLogger.trace("Returning patt="+patt);
 		return patt;
 	}
 

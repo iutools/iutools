@@ -28,7 +28,7 @@ public class MultilingualDictTest {
 		cases_search = new Case[] {
 			new Case("iu-inuk-roman", "iu", "inuk", 200,
 				new String[] {"inuk", "inuksuk", "inukku", "inuktut"}),
-		new Case("iu-inuk-syll", "iu", "ᐃᓄᒃ", 200,
+			new Case("iu-inuk-syll", "iu", "ᐃᓄᒃ", 200,
 				new String[] {"ᐃᓄᒃ", "ᐃᓄᒃᓱᒃ", "ᐃᓄᒃᑯ"}),
 		};
 
@@ -194,8 +194,7 @@ public class MultilingualDictTest {
 	}
 
 	@Test
-	public void test__entry4word__VariousCases()
-		throws Exception {
+	public void test__entry4word__VariousCases() throws Exception {
 
 		Consumer<Case> runner = (uncastCase) -> {
 			try {

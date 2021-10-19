@@ -226,9 +226,9 @@ public class MorphemeDictionaryTest {
 		new AssertMorphSearchResults(wordsForMorphemes, "")
 			.foundMorphemes(
 				"taq/1vv", "taq/2nv", "taqaq/1nv", "taqa/1v", "taqak/1n",
-				"taqqiq/1n", "taquaq/1v", "taqqa/rad-sc", "taquaq/1n",
-				"taqqut/1n", "taqqa/ad-sc", "taqqirsuq/1v", "taqqangna/pd-mlsc-s",
-				"taqqapku/rpd-mlsc-p", "taqqapkua/pd-mlsc-p", "taqqaksu/rpd-mlsc-s")
+				"taqqiq/1n", "taquaq/1v", "taqqa/rad-sc", "taquaq/1n", "taqqut/1n",
+				"taqqa/ad-sc", "taqqirsuq/1v", "taqqangna/pd-mlsc-s", "taqqaksu/rpd-mlsc-s",
+				"taqqapku/rpd-mlsc-p", "taqqapkua/pd-mlsc-p")
 			.examplesForMorphemeStartWith("taq/1vv", Pair.of("minaqaqtiqattarniaqtakka", new Long(1)))
 			// No word examples found for this particular morpheme
 			.examplesForMorphemeStartWith("taquaq/1n")
