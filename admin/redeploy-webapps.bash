@@ -11,7 +11,7 @@ echo
 echo
 
 # Makes the bash script to print out every command before it is executed except echo
-# trap '[[ $BASH_COMMAND != echo* ]] && echo $BASH_COMMAND' DEBUG
+#trap '[[ $BASH_COMMAND != echo* ]] && echo $BASH_COMMAND' DEBUG
 
 m2_war=$IUTOOLS_M2/repository/org/iutools/iutools-apps/${IUTOOLS_VERSION}/iutools-apps-${IUTOOLS_VERSION}.war
 
