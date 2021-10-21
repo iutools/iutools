@@ -1,12 +1,12 @@
     <!-- Form for submitting text or url to gist -->
     <div>
-	<b>Text to gist:</b>
+	<b>Text you wish to read (actual text or URL of a page):</b>
 	<p/>
 
 
     <textarea id="txt-url-or-text" name="txt-to-check" rows=20 cols=80></textarea>
     <p></p>
-    <button id="btn-gisttext">Gist text</button>
+    <button id="btn-gisttext">Assist Reading</button>
 
     <!-- Areas where to put the results, as well as status and error messages -->
     <div id="div-message" class="div-message"></div>

@@ -1,7 +1,7 @@
 <%
-    String pageTitle = "Inuktitut Text Gister";
+    String pageTitle = "Inuktitut Reading Assistant";
     String pageName = "gisttext";
-    String pageUsage = "Use this app to get the \"gist\" of words in some text or web page";
+    String pageUsage = "This app helps language learners to read and comprehend Inuktitut text.";
 %>
 
 <%@ include file="pages/common/_pageTemplate.jsp" %>
