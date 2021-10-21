@@ -147,22 +147,6 @@ public class WordDictEndpointTest extends EndpointTest {
 	public void test__WordDictEndpoint__VariousCases() throws Exception {
 
 		Case[] cases = new Case[]{
-
-			new Case("iu-ᐊᒻᒨᒪᔪᖅ",
-				// Query language
-				"iu",
-				// Query word
-				"ᐊᒻᒨᒪᔪᖅ",
-				// Expected min matching words
-				10,
-				// Expected Decomposition for query word.
-				// Set to empty array for an English query word because English words are never
-				// decomposed.
-				new String[] {"iglu/1n", "ga/tn-nom-s-1s"},
-				// Expected translations
-				new String[]{"house", "home", "rent"}
-			),
-
 			new Case("iu-igluga",
 				// Query language
 				"iu",
@@ -175,14 +159,17 @@ public class WordDictEndpointTest extends EndpointTest {
 				// decomposed.
 				new String[] {"iglu/1n", "ga/tn-nom-s-1s"},
 				// Expected translations
-				new String[]{"house", "home", "rent"}
+				new String[]{"house", "home", "rent"},
+				// Expected min total bilingual examples (for both orig and related words)
+				1000
 			),
 
 			new Case("en-housing",
 				"en", "housing", 10,
 				new String[0],
 				new String[]{"ᐃᒡᓗᒋᔭᐅᕙᒃᑐᓂᒃ", "ᐃᒡᓗᓕᕆᓂᕐᒥ",
-					"ᐃᒡᓗᓕᕆᓂᕐᓕ ... ᐃᒡᓗᓕᕆᓂᕐᒧᑐᐃᓐᓈᕋᔭᖅᑐᖅ", "ᐃᒡᓗᖏᓐᓄᑦ", "ᐃᓪᓗᓕᕆᓂᕐᒧᑦ"}
+					"ᐃᒡᓗᓕᕆᓂᕐᓕ ... ᐃᒡᓗᓕᕆᓂᕐᒧᑐᐃᓐᓈᕋᔭᖅᑐᖅ", "ᐃᒡᓗᖏᓐᓄᑦ", "ᐃᓪᓗᓕᕆᓂᕐᒧᑦ"},
+				1000
 			),
 
 			// This IU word is not found in the hansard, but it DOES decompose.
@@ -192,7 +179,8 @@ public class WordDictEndpointTest extends EndpointTest {
 				new String[] {"iqqanaijaq/1v", "juq/1vn", "liri/1nv", "ji/1vn",
 					"kkut/1nn"},
 				new String[]{"hiring", "human resources",
-					"human resources ... personnel", "branch summary", "resources"}
+					"human resources ... personnel", "branch summary", "resources"},
+				1000
 			),
 
 			// This IU word is not found in the hansard, AND it DOES NOT decompose.
@@ -211,9 +199,11 @@ public class WordDictEndpointTest extends EndpointTest {
 
 					String[] expDecomp = null;
 					String[] expTranslations = null;
+					Integer expMinExamples = null;
 					if (aCase.data.length > 3) {
 						expDecomp = (String[]) aCase.data[3];
 						expTranslations = (String[]) aCase.data[4];
+						expMinExamples = (Integer) aCase.data[5];
 					}
 					WordDictInputs inputs = new WordDictInputs(query, lang);
 					WordDictResult epResult =
