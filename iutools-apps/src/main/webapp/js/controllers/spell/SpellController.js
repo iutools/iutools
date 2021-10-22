@@ -92,7 +92,6 @@ class SpellController extends IUToolsController {
 	 * Spell check the text entered by the user.
 	 */
 	spellCheck() {
-	    console.log("** spellCheck");
 		var tracer = Debug.getTraceLogger("SpellController.spellCheck")
 		var isValid = this.validateInputs();
 		if (isValid) {
@@ -588,7 +587,7 @@ class SpellController extends IUToolsController {
 				spellController.cbkWordCorrectnessFailure(resp);
 				spellController.tokenBeingChecked = null;
 			}
-			var suggestCorrections = true;
+			var suggestCorrections = false;
 			this.invokeSpellCheckWordService(
 				this.spellWordRequestData(word, taskID),
 				cbkSuccess, cbkFailure, suggestCorrections);
@@ -623,8 +622,8 @@ class SpellController extends IUToolsController {
     }
 
     openSuggestionsDialog(word, tokenID) {
-        alert("SpellController.openSuggestionsDialog: word="+word+", tokenID="+tokenID);
-	    // this.correctWordController.display(word, tokenID);
+        // alert("SpellController.openSuggestionsDialog: word="+word+", tokenID="+tokenID);
+	    this.correctWordController.display(word, tokenID);
     }
 }
 

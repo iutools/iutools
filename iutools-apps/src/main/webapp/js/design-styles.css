@@ -410,6 +410,18 @@ div#div-wordentry-iconized {
   font-weight: 500;
 }
 
+/* Div where we display the dialog for choosing a spelling correction */
+#div-choose-correction-dlg {
+    right: 5vw;
+    max-width: 90vw;
+    max-height: calc(100vh - 60px);
+    padding: 0;
+    background: #fff;
+    box-shadow: -4px 4px 12px rgba(0, 0, 0, 0.6);
+    border: none;
+    overflow: hidden;
+}
+
 #footer {
 	width: 100%;
 	background: #e4f6ff;
