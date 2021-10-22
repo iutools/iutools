@@ -77,7 +77,11 @@ reloading -->
 <script src="js/debug/DebugConfig.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 <script src="js/controllers/RunWhen.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 <script src="js/controllers/WidgetController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
+
+<!-- This one must be before any other controller -->
 <script src="js/controllers/IUToolsController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
+
+<script src="js/controllers/spell/ChooseCorrectionController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 <script src="js/controllers/worddict/WordEntryController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 
 <!-- Include the code that creates and configures the controller for this page -->

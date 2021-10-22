@@ -11,7 +11,6 @@ import org.iutools.webservice.Endpoint;
 import org.iutools.webservice.EndpointResult;
 import org.iutools.webservice.ServiceException;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.FileNotFoundException;
 import java.util.List;
 
@@ -57,6 +56,7 @@ public class SpellEndpoint extends Endpoint<SpellInputs, SpellResult> {
 		tLogger.trace("Spell checker has base ES index name = \n"+checker.corpusIndexName());
 
 		SpellResult result = new SpellResult();
+		result.providesSuggestions = inputs.suggestCorrections;
 
 		if (inputs.text == null || inputs.text.isEmpty()) {
 			throw new ServiceException("Query was empty or null");
@@ -64,8 +64,12 @@ public class SpellEndpoint extends Endpoint<SpellInputs, SpellResult> {
 
 		checker.setPartialCorrectionEnabled(inputs.includePartiallyCorrect);
 		List<SpellingCorrection> corrections = null;
+		Integer maxCorrections = 0;
+		if (inputs.suggestCorrections) {
+			maxCorrections = null;
+		}
 		try {
-			corrections = checker.correctText(inputs.text);
+			corrections = checker.correctText(inputs.text, maxCorrections);
 		} catch (SpellCheckerException e) {
 			throw new ServiceException(e);
 		}

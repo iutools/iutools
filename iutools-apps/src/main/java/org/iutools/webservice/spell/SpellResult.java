@@ -15,6 +15,7 @@ import java.util.Map;
 public class SpellResult extends EndpointResult {
 
 	public List<SpellingCorrection> correction = new ArrayList<SpellingCorrection>();
+	public Boolean providesSuggestions = true;
 
 	public SpellResult() {
 		super();

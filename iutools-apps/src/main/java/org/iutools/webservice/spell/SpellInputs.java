@@ -8,6 +8,7 @@ import java.util.Map;
 public class SpellInputs extends ServiceInputs {
 	public String text = null;
 	public boolean includePartiallyCorrect = false;
+	public boolean suggestCorrections = true;
 
 	public SpellInputs() throws ServiceException {
 		init__SpellInputs((String)null);

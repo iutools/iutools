@@ -19,7 +19,9 @@ class SpellController extends IUToolsController {
 		this.abortCheck = false;
 
 		this.MAX_WORDS = null;
-	}
+
+        this.correctWordController = new ChooseCorrectionController(config);
+    }
 
 	/**
 	 * Setup handler methods for different HTML elements specified in the config.
@@ -90,12 +92,13 @@ class SpellController extends IUToolsController {
 	 * Spell check the text entered by the user.
 	 */
 	spellCheck() {
+	    console.log("** spellCheck");
 		var tracer = Debug.getTraceLogger("SpellController.spellCheck")
 		var isValid = this.validateInputs();
 		if (isValid) {
 			this.clearResults();
 			this.setBusy(true);
-			this.tokenizeAndSpellCheck();
+			this.tokenizeThenSpellCheck();
 		}
 	}
 
@@ -108,7 +111,7 @@ class SpellController extends IUToolsController {
 	 * each token in turn, displaying result for each token as
 	 * soon as it becomes available.
 	 */
-	tokenizeAndSpellCheck() {
+	tokenizeThenSpellCheck() {
 		var data = this.tokenizeRequestData();
         this.userActionStart("SPELL", 'srv2/tokenize', data,
             this.cbkTokenizeSuccess, this.cbkTokenizeFailure);
@@ -325,7 +328,7 @@ class SpellController extends IUToolsController {
 
 		this.tokenBeingChecked = this.tokensRemaining.shift();
 		tracer.trace("this.tokenBeingChecked="+JSON.stringify(this.tokenBeingChecked));
-		this.spellCheckToken(this.tokenBeingChecked, taskID);
+		this.checkTokenCorrectness(this.tokenBeingChecked, taskID);
 		var spellController = this;
 
 		// Don't spell check next token until we are done with the current one
@@ -374,19 +377,21 @@ class SpellController extends IUToolsController {
 	 * Display the result of the spell checking web service for a token to be
 	 * spell checked.
 	 */
-	cbkSpellWordSuccess(resp) {
+	cbkCheckWordCorrectnessSucces(resp) {
 		if (resp.errorMessage != null) {
-			this.cbkSpellWordFailure(resp);
+			this.cbkWordCorrectnessFailure(resp);
 		} else {
 			var corrections = resp.correction;
 			for (var ii=0; ii < corrections.length; ii++) {
 				var aCorr = corrections[ii];
-				var divSpellCheckedWords = this.divSpellCheckResults();
-				if (!aCorr.wasMispelled) {
-					var appended = divSpellCheckedWords.append(aCorr.orig);
-				} else {
-					this.appendSuggestionsPicklist(aCorr)
-				}
+				var htmlWord = this.htmlCheckedWord(aCorr);
+                var divSpellCheckedWords = this.divSpellCheckResults();
+                divSpellCheckedWords.append(htmlWord);
+				// if (!aCorr.wasMispelled) {
+				// 	var appended = divSpellCheckedWords.append(aCorr.orig);
+				// } else {
+				// 	this.appendSuggestionsPicklist(aCorr)
+				// }
 			}
 		}
 	}
@@ -401,7 +406,7 @@ class SpellController extends IUToolsController {
 		return;
 	}
 
-	cbkSpellWordFailure(resp) {
+	cbkWordCorrectnessFailure(resp) {
 		var tracer = Debug.getTraceLogger("SpellController.cbkSpellWordFailure")
 		tracer.trace("resp="+JSON.stringify(resp));
 		if (! resp.hasOwnProperty("errorMessage")) {
@@ -468,14 +473,19 @@ class SpellController extends IUToolsController {
 	 * @param word: Word to be spell checked
 	 * @returns the request data
 	 */
-	spellWordRequestData(word, taskID) {
+	spellWordRequestData(word, taskID, suggestCorrections) {
+        if (typeof suggestCorrections === 'undefined') {
+            suggestCorrections = false;
+        }
+
 		var includePartials =
 			this.elementForProp("chkIncludePartials").is(':checked')
 
 		var request = {
 			text: word,
             '_taskID': taskID,
-			includePartiallyCorrect: includePartials
+			includePartiallyCorrect: includePartials,
+            suggestCorrections: suggestCorrections
 		};
 
 		return JSON.stringify(request);
@@ -561,7 +571,7 @@ class SpellController extends IUToolsController {
 	 * Run the spell checking web service on a single token.
 	 * @param token
 	 */
-	spellCheckToken(token, taskID) {
+	checkTokenCorrectness(token, taskID) {
 		var tracer = Debug.getTraceLogger("SpellController.spellCheckToken")
 		tracer.trace("token="+JSON.stringify(token));
 		if (!token.isWord) {
@@ -571,16 +581,17 @@ class SpellController extends IUToolsController {
 			var word = token.text;
 			var spellController = this;
 			var cbkSuccess = function (resp) {
-				spellController.cbkSpellWordSuccess(resp);
+				spellController.cbkCheckWordCorrectnessSucces(resp);
 				spellController.tokenBeingChecked = null;
 			}
 			var cbkFailure = function (resp) {
-				spellController.cbkSpellWordFailure(resp);
+				spellController.cbkWordCorrectnessFailure(resp);
 				spellController.tokenBeingChecked = null;
 			}
+			var suggestCorrections = true;
 			this.invokeSpellCheckWordService(
 				this.spellWordRequestData(word, taskID),
-				cbkSuccess, cbkFailure);
+				cbkSuccess, cbkFailure, suggestCorrections);
 		}
 	}
 
@@ -589,5 +600,31 @@ class SpellController extends IUToolsController {
 		this.tokenBeingChecked;
 		this.abortCheck = false;
 	}
+
+    htmlCheckedWord(checkedWord) {
+	    var tracer = Debug.getTraceLogger("SpellController.htmlCheckedWord");
+	    tracer.trace("checkedWord="+JSON.stringify(checkedWord))
+        var origWord = checkedWord.orig;
+	    var html = origWord;
+	    var origWordEscaped = origWord.replace("'", "\'");
+
+        if (checkedWord.wasMispelled) {
+            var tokenID = this.tokensRemaining.length;
+        	html =
+                // '<a name="corrected-word" class="corrected-word" onclick="alert(\'hi\')">' +
+                '<a class="corrected-word" name="corrected-word-'+tokenID+'"'+
+                ' onclick="spellController.openSuggestionsDialog(\''+origWordEscaped+'\', '+tokenID+')">'+
+                html +
+                '</a>';
+        }
+
+        tracer.trace("returnin html="+html);
+        return html;
+    }
+
+    openSuggestionsDialog(word, tokenID) {
+        alert("SpellController.openSuggestionsDialog: word="+word+", tokenID="+tokenID);
+	    // this.correctWordController.display(word, tokenID);
+    }
 }
 

@@ -18,3 +18,13 @@
     </div>
 
     <div style="min-height:6em;"></div>
+
+    <!-- Floating div where we display the dialog for choosing a correction -->
+    <div id="div-choose-correction-dlg" class="div-choose-correction-dlg">
+        <!--
+    	<div id="div-wordentry-message"></div>
+    	<div id="div-wordentry-word"></div>
+    	<div id="div-wordentry-iconizer" title="Minimize"><img src="imgs/minimize.png" ></div>
+    	<div id="div-wordentry-contents"></div>
+    	-->
+    </div>

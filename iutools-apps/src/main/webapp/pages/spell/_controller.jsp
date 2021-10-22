@@ -13,7 +13,8 @@
     		divError: "div-error",
     		divMessage: "div-message",
     		btnCopy: "btn-copy",
-    		divResults: "div-results"
+    		divResults: "div-results",
+    		divChooseCorrectionDlg: "div-choose-correction-dlg"
         };
     var spellController = new SpellController(config);
 </script>

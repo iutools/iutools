@@ -12,16 +12,29 @@ class IUToolsController extends WidgetController {
     error(err) {
         var tracer = Debug.getTraceLogger("IUController.error");
         var divError = this.elementForProp('divError');
-        if (err.includes("xception")) {
-            var errDetails = err;
-            var err = "The server encountered a possibly intermittent error. You MIGHT be able to resolve it by trying again.";
+
+        var errMess;
+        if (typeof err === 'string') {
+            tracer.trace("err is a string")
+            errMess = err;
+        } else {
+            tracer.trace("err is a response object")
+            errMess = err.errorMessage;
+        }
+        tracer.trace("errMess="+errMess);
+
+        if (typeof errMess !== 'undefined') {
+            if (errMess.includes("xception")) {
+                var errDetails = errMess;
+                var errMess = "The server encountered a possibly intermittent error. You MIGHT be able to resolve it by trying again.";
             if (Debug.debugModeIsOn()) {
-                err += "<br/>\n"+errDetails;
+                errMess += "<br/>\n"+errDetails;
             }
         }
-        divError.html(err);
-        divError.show();
-        this.scrollIntoView(divError)
+            divError.html(errMess);
+            divError.show();
+            this.scrollIntoView(divError)
+        }
     }
 
     augmentActionData(actionData, serverResp) {

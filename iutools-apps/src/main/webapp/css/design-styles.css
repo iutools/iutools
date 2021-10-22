@@ -312,6 +312,10 @@ main ul ::marker {
   color: #a6d5ed;
 }
 
+.corrected-word {
+    text-decoration: underline;
+}
+
 .morpheme-details {
   width: 800px;
   max-width: 100%;
@@ -675,5 +679,4 @@ div#div-wordentry-iconized {
 		width: 250px;
 		background-position: -780px top;
 	}
-  
 }
