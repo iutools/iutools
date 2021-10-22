@@ -104,7 +104,7 @@ public class WordDictEndpointTest extends EndpointTest {
 
 		new AssertWordDictResult(epResult)
 			.raisesNoError()
-			.foundWords("inuk", "inuksuk", "inukku", "inuktut");
+			.foundWords("inuk", "inuksuk", "inuktut", "inukku");
 
 		new AssertMultilingualDictEntry(epResult.queryWordEntry)
 			.isForWord("inuk")
