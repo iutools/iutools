@@ -259,11 +259,13 @@ public class SpellChecker {
 		return correctWord(word,-1);
 	}
 
-	public SpellingCorrection correctWord(String word, int maxCorrections) throws SpellCheckerException {
+	public SpellingCorrection correctWord(String word, Integer maxCorrections) throws SpellCheckerException {
 		Logger tLogger = Logger.getLogger("org.iutools.spellchecker.SpellChecker.correctWord");
 		Logger excLogger = Logger.getLogger("org.iutools.spellchecker.SpellChecker.correctWord.exc");
 
 		try {
+			if (maxCorrections == null) maxCorrections = DEFAULT_CORRECTIONS;
+
 			long start = StopWatch.nowMSecs();
 
 			SpellDebug.trace("SpellChecker.correctWord",
@@ -1234,7 +1236,6 @@ public class SpellChecker {
 
 	public List<SpellingCorrection> correctText(String text, Integer nCorrections) throws SpellCheckerException {
 		Logger tLogger = Logger.getLogger("SpellChecker.correctText");
-		if (nCorrections == null) nCorrections = DEFAULT_CORRECTIONS;
 		List<SpellingCorrection> corrections = new ArrayList<SpellingCorrection>();
 		
 		IUTokenizer iutokenizer = new IUTokenizer();

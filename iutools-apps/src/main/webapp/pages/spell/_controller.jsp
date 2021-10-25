@@ -1,5 +1,7 @@
 <% String IUTOOLS_JS_VERSION=(new java.util.Date()).toLocaleString(); %>
 
+<script src="js/controllers/spell/SpellService.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
+<script src="js/controllers/spell/ChooseCorrectionController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 <script src="js/controllers/spell/SpellController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 
 <script>

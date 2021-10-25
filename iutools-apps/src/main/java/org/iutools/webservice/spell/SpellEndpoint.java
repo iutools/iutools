@@ -69,14 +69,12 @@ public class SpellEndpoint extends Endpoint<SpellInputs, SpellResult> {
 			maxCorrections = null;
 		}
 		try {
-			corrections = checker.correctText(inputs.text, maxCorrections);
+			result.correction = checker.correctWord(inputs.text, maxCorrections);
 		} catch (SpellCheckerException e) {
 			throw new ServiceException(e);
 		}
 
-		tLogger.trace("corrections= "+ PrettyPrinter.print(corrections));
-
-		result.correction = corrections;
+		tLogger.trace("result.correction= "+ PrettyPrinter.print(result.correction));
 
 		tLogger.trace("Returning");
 

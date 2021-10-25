@@ -435,6 +435,8 @@ public class MultilingualDict {
 			}
 		}
 
+		hits = sortHits(hits);
+
 		if (hits.contains(partialWord)) {
 			// If we found an exact match, make sure it comes first.
 			hits.remove(partialWord);
@@ -449,6 +451,17 @@ public class MultilingualDict {
 		}
 
 		return Pair.of(hits, totalHits);
+	}
+
+	private List<String> sortHits(List<String> hits) {
+		Collections.sort(hits, (h1, h2) -> {
+			int comp = Integer.compare(h1.length(), h2.length());
+			if (comp == 0) {
+				comp = h1.compareTo(h2);
+			}
+			return comp;
+		});
+		return hits;
 	}
 
 	public Pair<Iterator<String>,Long> searchIter(

@@ -154,31 +154,6 @@ class SpellController extends IUToolsController {
 		return;
 	}
 
-	/**
-	 * Invoke the spell check web service on a single word.
-	 */
-	invokeSpellCheckWordService(jsonRequestData, _successCbk, _failureCbk) {
-		var controller = this;
-		var fctSuccess =
-			function (resp) {
-				_successCbk.call(controller, resp);
-			};
-		var fctFailure =
-			function (resp) {
-				_failureCbk.call(controller, resp);
-			};
-
-		$.ajax({
-			type: 'POST',
-			url: 'srv2/spell',
-			data: jsonRequestData,
-			dataType: 'json',
-			async: true,
-			success: fctSuccess,
-			error: fctFailure
-		});
-	}
-
 	validateInputs() {
 		var isValid = true;
 		var toSpell = this.elementForProp("txtToCheck").val();
@@ -377,21 +352,14 @@ class SpellController extends IUToolsController {
 	 * spell checked.
 	 */
 	cbkCheckWordCorrectnessSucces(resp) {
+	    var tracer = Debug.getTraceLogger("SpellController.cbkCheckWordCorrectnessSucces");
+        tracer.trace("resp="+JSON.stringify(resp));
 		if (resp.errorMessage != null) {
 			this.cbkWordCorrectnessFailure(resp);
 		} else {
-			var corrections = resp.correction;
-			for (var ii=0; ii < corrections.length; ii++) {
-				var aCorr = corrections[ii];
-				var htmlWord = this.htmlCheckedWord(aCorr);
-                var divSpellCheckedWords = this.divSpellCheckResults();
-                divSpellCheckedWords.append(htmlWord);
-				// if (!aCorr.wasMispelled) {
-				// 	var appended = divSpellCheckedWords.append(aCorr.orig);
-				// } else {
-				// 	this.appendSuggestionsPicklist(aCorr)
-				// }
-			}
+            var htmlWord = this.htmlCheckedWord(resp.correction);
+            var divSpellCheckedWords = this.divSpellCheckResults();
+            divSpellCheckedWords.append(htmlWord);
 		}
 	}
 
@@ -588,7 +556,7 @@ class SpellController extends IUToolsController {
 				spellController.tokenBeingChecked = null;
 			}
 			var suggestCorrections = false;
-			this.invokeSpellCheckWordService(
+			new SpellService().invokeSpellCheckWordService(
 				this.spellWordRequestData(word, taskID),
 				cbkSuccess, cbkFailure, suggestCorrections);
 		}

@@ -1,6 +1,8 @@
 package org.iutools.webservice.spell;
 
 import ca.nrc.testing.AssertRuntime;
+import ca.nrc.testing.RunOnCases;
+import ca.nrc.testing.RunOnCases.*;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.utilities.StopWatch;
@@ -11,6 +13,8 @@ import org.iutools.webservice.ServiceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
+
+import java.util.function.Consumer;
 
 public class SpellEndpointTest extends EndpointTest {
 
@@ -55,44 +59,88 @@ public class SpellEndpointTest extends EndpointTest {
 	 ***********************/
 
 	@Test
-	public void test__SpellEndpoint__Syllabic__HappyPath() throws Exception {
+	public void test__SpellEndpoint__VariousCases() throws Exception {
 
-		SpellInputs inputs = new SpellInputs("ᐃᓄᑦᒧᑦ ᑕᑯᔪᖅ");
-		EndpointResult epResult = endPoint.execute(inputs);
+		Case[] cases = new Case[] {
+			new Case("ᐃᓄᑦᒧᑦ: Syllabics misspeled",
+				"ᐃᓄᑦᒧᑦ", true,
+				"ᐃᓄᒻᒧᑦ", "ᐃᓄᑐᐊᒧᑦ", "ᐃᓄᒃᑐᑦ", "ᐃᓄᑐᐊᑦ", "ᐃᓄᕗᑦ"),
 
-		new AssertSpellResult(epResult)
-			.nthCorrectionIs(0, true,
-				new String[]{
-					"ᐃᓄᒻᒧᑦ",
-					"ᐃᓄᑐᐊᒧᑦ",
-					"ᐃᓄᒃᑐᑦ",
-					"ᐃᓄᑐᐊᑦ",
-					"ᐃᓄᕗᑦ"
-				}
-			)
-			.nthCorrectionIs(1, false)
+			new Case("ᑕᑯᔪᖅ: Syllabics correctly spelled",
+				"ᑕᑯᔪᖅ", false),
+
+			new Case("ᒐᕙᒪᒃᑯᑎᒍᑦ: Contains syll chars that transcode to 2 latin chars",
+				"ᒐᕙᒪᒃᑯᑎᒍᑦ", true,
+				"ᒐᕙᒪᒃᑎᒍᑦ", "ᒐᕙᒪᒃᑯᑎᑐᑦ", "ᒐᕙᒪᑎᒍᑦ", "ᒐᕙᒪᒃᑯᖏᑎᒍᑦ", "ᒐᕙᒪᒃᑯᑎᓐᓄᑦ"),
+		};
+
+		Consumer<Case> runner = (aCase) -> {
+			String word = (String)aCase.data[0];
+			Boolean expMisspelled = (Boolean) aCase.data[1];
+			String[] expSuggestions = new String[aCase.data.length - 2];
+			for (int ii=0; ii < expSuggestions.length; ii++) {
+				expSuggestions[ii] = (String)aCase.data[ii+2];
+			}
+
+			try {
+				SpellInputs inputs = new SpellInputs(word);
+				EndpointResult epResult = endPoint.execute(inputs);
+
+				new AssertSpellResult(epResult)
+					.correctionIs(expMisspelled, expSuggestions);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+
+		};
+
+		new RunOnCases(cases, runner)
+//			.onlyCaseNums(3)
+			.run()
 			;
 
 		return;
 	}
 
-	@Test
-	public void test__SpellEndpoint__WordWithSyllCharsThatAreExpressedAsTwoRomanChars()
-			throws Exception {
 
-		SpellInputs inputs = new SpellInputs("ᒐᕙᒪᒃᑯᑎᒍᑦ");
-		EndpointResult epResult = endPoint.execute(inputs);
+//	@Test
+//	public void test__SpellEndpoint__Syllabic__HappyPath() throws Exception {
+//
+//		SpellInputs inputs = new SpellInputs("ᐃᓄᑦᒧᑦ ᑕᑯᔪᖅ");
+//		EndpointResult epResult = endPoint.execute(inputs);
+//
+//		new AssertSpellResult(epResult)
+//			.correctionIs(true,
+//				new String[]{
+//					"ᐃᓄᒻᒧᑦ",
+//					"ᐃᓄᑐᐊᒧᑦ",
+//					"ᐃᓄᒃᑐᑦ",
+//					"ᐃᓄᑐᐊᑦ",
+//					"ᐃᓄᕗᑦ"
+//				}
+//			);
+//
+//
+//		return;
+//	}
 
-		new AssertSpellResult(epResult)
-			.nthCorrectionIs(0, true,
-				new String[]{
-					"ᒐᕙᒪᒃᑎᒍᑦ",
-					"ᒐᕙᒪᒃᑯᑎᑐᑦ",
-					"ᒐᕙᒪᑎᒍᑦ",
-					"ᒐᕙᒪᒃᑯᖏᑎᒍᑦ",
-					"ᒐᕙᒪᒃᑯᑎᓐᓄᑦ"
-				});
-	}
+//	@Test
+//	public void test__SpellEndpoint__WordWithSyllCharsThatAreExpressedAsTwoRomanChars()
+//			throws Exception {
+//
+//		SpellInputs inputs = new SpellInputs("ᒐᕙᒪᒃᑯᑎᒍᑦ");
+//		EndpointResult epResult = endPoint.execute(inputs);
+//
+//		new AssertSpellResult(epResult)
+//			.correctionIs(true,
+//				new String[]{
+//					"ᒐᕙᒪᒃᑎᒍᑦ",
+//					"ᒐᕙᒪᒃᑯᑎᑐᑦ",
+//					"ᒐᕙᒪᑎᒍᑦ",
+//					"ᒐᕙᒪᒃᑯᖏᑎᒍᑦ",
+//					"ᒐᕙᒪᒃᑯᑎᓐᓄᑦ"
+//				});
+//	}
 
 	@Test
 	public void test__SpellEndpoint__SpeedTest__AllOKWords() throws Exception {
@@ -116,12 +164,11 @@ public class SpellEndpointTest extends EndpointTest {
 		Double percTolerance) throws Exception {
 		int numWords = words.length;
 		String text = String.join(" ", words);
-
-		SpellInputs inputs = new SpellInputs(text);
-
 		long startMSecs = StopWatch.nowMSecs();
-		EndpointResult epResult = endPoint.execute(inputs);
-
+		for (String aWord: words) {
+			SpellInputs inputs = new SpellInputs(aWord);
+			EndpointResult epResult = endPoint.execute(inputs);
+		}
 
 		double elapsedSecs = StopWatch.elapsedMsecsSince(startMSecs) / 1000.0;
 		double gotAvgSecs = elapsedSecs / numWords;

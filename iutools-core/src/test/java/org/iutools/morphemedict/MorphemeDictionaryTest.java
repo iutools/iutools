@@ -201,9 +201,9 @@ public class MorphemeDictionaryTest {
 
 		new AssertMorphSearchResults(wordsForMorphemes, "")
 			.foundMorphemes(
-				"tut/tn-sim-s", "tut/1v", "tutik/1v", "tuti/1v", "tutaq/1n",
+				"tut/tn-sim-s", "tut/1v", "tutik/1v", "tutaq/1n", "tuti/1v",
 				"tutarut/1n", "tutiriaq/1n", "tutiriarmiutaq/1n")
-			.examplesForMorphemeStartWith("tutik/1v", Pair.of("tutinniujumi", new Long(1)))
+			.examplesForMorphemeStartWith("tutik/1v", Pair.of("tutinnikkut", new Long(1)))
 			.examplesForMorphemeStartWith("tut/tn-sim-s", Pair.of("ajjigiinngittut", new Long(138)))
 			.examplesForMorphemeStartWith("tut/1v", Pair.of("tutuu", new Long(501)))
 			// No word examples found for this particular morpheme

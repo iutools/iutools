@@ -27,9 +27,9 @@ public class MultilingualDictTest {
 		// Cases for search() function
 		cases_search = new Case[] {
 			new Case("iu-inuk-roman", "iu", "inuk", 200,
-				new String[] {"inuk", "inuksuk", "inukku", "inuktut"}),
+				new String[] {"inuk", "inukku", "inuksui", "inuksuk"}),
 			new Case("iu-inuk-syll", "iu", "ᐃᓄᒃ", 200,
-				new String[] {"ᐃᓄᒃ", "ᐃᓄᒃᓱᒃ", "ᐃᓄᒃᑯ"}),
+				new String[] {"ᐃᓄᒃ", "ᐃᓄᒃᑯ", "ᐃᓄᑯᓗᒃ"}),
 		};
 
 		// Cases for entry4word function
