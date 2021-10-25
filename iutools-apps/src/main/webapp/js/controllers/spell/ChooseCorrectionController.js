@@ -10,16 +10,41 @@ class ChooseCorrectionController extends IUToolsController {
         super(corrConfig);
         this.wordBeingCorrected = null;
         this.tokenBeingCorrected = null;
+        this.busy = false;
 
         this.elementForProp("divChooseCorrectionDlg").draggable();
         tracer.trace("upon exit, this=" + JSON.stringify(this));
     }
+
+    showDialog(word) {
+        this.diplayClickedWord(word)
+        this.setBusy(true);
+        this.divDialog().show();
+    }
+
+    diplayClickedWord(word) {
+        this.divDialog().html("<h2>Suggested corrections for: <em>"+word+"</em></h2>");
+    }
+
+    setBusy(flag) {
+        this.busy = flag;
+        if (flag) {
+            this.showSpinningWheel('divMessage', "Looking for suggestions");
+            this.error("");
+        } else {
+            this.hideSpinningWheel('divMessage');
+        }
+
+        return;
+    }
+
 
     display(word, tokenID) {
         var tracer = Debug.getTraceLogger("ChooseCorrectionController.display");
         tracer.trace("word="+word+", tokenID="+tokenID);
         this.wordBeingCorrected = word;
         this.tokenBeingCorrected = tokenID;
+        this.showDialog(word);
 
         var controller = this;
         var cbkSuccess = function(resp) {
@@ -57,8 +82,8 @@ class ChooseCorrectionController extends IUToolsController {
                 // Therefore we should ignore that response because the user
                 // is clearly not interested in the first word anymore
                 //
-                this.divDialog().html(html);
-                this.show();
+                this.divDialog().append(html);
+                this.setBusy(false);
             }
         }
     }
@@ -95,18 +120,21 @@ class ChooseCorrectionController extends IUToolsController {
             // is clearly not interested in the first word anymore
             //
             if (word != null && word === this.wordBeingCorrected) {
-                html =
-                    "<h2>Correct word: <em>"+word+"</em></h2>\n\n"+
-                    "<h3>Suggested spellings</h3>";
+                html = "";
                 if (suggestions.length == 0) {
                     html += "No suggestions for this word";
                 } else {
                     for (var ii = 0; ii < suggestions.length; ii++) {
-                        html += suggestions[ii]+"<br/>\n";
+                        html += this.htmlSuggestion(suggestions[ii]);
                     }
                 }
             }
         }
+        return html;
+    }
+
+    htmlSuggestion(suggestion) {
+        var html = suggestion+"<br/>\n";
         return html;
     }
 
