@@ -18,5 +18,7 @@
     		divResults: "div-results",
     		divChooseCorrectionDlg: "div-choose-correction-dlg"
         };
+
     var spellController = new SpellController(config);
+    var chooseCorrectionController = spellController.correctWordController;
 </script>

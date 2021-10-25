@@ -67,7 +67,7 @@ class ChooseCorrectionController extends IUToolsController {
 
     suggestCorrectionsSuccess(resp) {
         var tracer = Debug.getTraceLogger("ChooseCorrectionController.suggestCorrectionsSuccess");
-        tracer.trace("resp="+JSON.stringify(resp));
+        tracer.trace("this.wordBeingCorrected="+this.wordBeingCorrected+", resp="+JSON.stringify(resp));
         if (resp.errorMessage != null) {
             this.suggestCorrectionsFailure(resp);
         } else {
@@ -125,7 +125,7 @@ class ChooseCorrectionController extends IUToolsController {
                     html += "No suggestions for this word";
                 } else {
                     for (var ii = 0; ii < suggestions.length; ii++) {
-                        html += this.htmlSuggestion(suggestions[ii]);
+                        html += this.htmlSuggestion(suggestions[ii], ii);
                     }
                 }
             }
@@ -133,9 +133,35 @@ class ChooseCorrectionController extends IUToolsController {
         return html;
     }
 
-    htmlSuggestion(suggestion) {
-        var html = suggestion+"<br/>\n";
+    htmlSuggestion(suggestion, suggIndex) {
+        var eltName = "suggestion-"+suggIndex;
+        var html =
+            '</u><a class="spell-suggestion" id="suggestion-'+suggIndex+'" onclick="chooseCorrectionController.onClickSuggestion(\''+eltName+'\')">'+suggestion+'</a><br/>\n';
         return html;
+    }
+
+    onClickSuggestion(suggEltID) {
+        var tracer = Debug.getTraceLogger("ChooseCorrectionController.onClickSuggestion");
+        var suggestion = $("#"+suggEltID).text();
+        var wordBeingCorrected = this.wordBeingCorrected;
+        tracer.trace("this="+(typeof this)+": "+JSON.stringify(this));
+        tracer.trace("** this.wordBeingCorrected="+this.wordBeingCorrected+", this['wordBeingCorrected']="+this['wordBeingCorrected']);
+        tracer.trace("suggEltID="+suggEltID+", suggestion="+suggestion+", this.wordBeingCorrected="+this.wordBeingCorrected);
+        $('.corrected-word').each(
+            function(index, wordElt) {
+                var word = $(this).text();
+                tracer.trace("Looking at index="+index+", $(this)="+$(this)+", word='"+word+"', wordBeingCorrected='"+wordBeingCorrected+"'");
+                if (word === wordBeingCorrected) {
+                // if (word == this.wordBeingCorrected) {
+                // if ("blah" === "blah") {
+                    tracer.trace("Changing text of the word");
+                    $(this).text(suggestion);
+                } else {
+
+                }
+            }
+        );
+        this.wordBeingCorrected = suggestion;
     }
 
     divDialog() {
