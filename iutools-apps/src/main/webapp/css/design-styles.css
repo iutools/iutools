@@ -329,7 +329,7 @@ main ul ::marker {
   margin: 10px 0 30px 0 !important;
 }
 
-#div-wordentry {
+.div-floating-dlg {
   right: 5vw;
   max-width: 90vw;
   max-height: calc(100vh - 60px);
@@ -340,7 +340,7 @@ main ul ::marker {
   overflow: hidden;
 }
 
-#div-wordentry-word {
+.div-floating-dlg-titlebar {
 	position: relative;
   padding: 27px 10px 17px 10px;
   background: #a6d5ed;
@@ -348,18 +348,18 @@ main ul ::marker {
   z-index: 10;
 }
 
-#div-wordentry-word h2 {
+.div-floating-dlg-titlebar h2 {
   margin: 0;
 }
 
-#div-wordentry #div-wordentry-contents {
+.div-floating-dlg .div-floating-dlg-contents {
   height: 510px;
   max-height: calc(100vh - 140px);
   margin-top: 0;
   padding: 5px;
 }
 
-#div-wordentry:after {
+.div-floating-dlg:after {
 	width: 100%;
 	height: 9px;
 	position: absolute;
@@ -373,36 +373,8 @@ main ul ::marker {
 	border: none;
 }
 
-#div-wordentry #div-wordentry-contents > * {
+.div-floating-dlg .div-floating-dlg-contents > * {
 	padding-left: 5px;
-}
-
-#div-wordentry #div-wordentry-contents > table {
-	padding-left: 0;
-	margin-bottom: 20px;
-}
-
-#div-wordentry #div-wordentry-contents > h3 > table {
-	margin-left: -5px;
-}
-
-#div-wordentry #div-wordentry-contents h3 {
-	font-weight: 600;
-}
-
-#div-wordentry #div-wordentry-contents h4 {
-	font-weight: 400;
-}
-
-#div-choose-correction-dlg {
-    right: 5vw;
-    max-width: 90vw;
-    max-height: calc(100vh - 60px);
-    padding: 0;
-    background: #fff;
-    box-shadow: -4px 4px 12px rgba(0, 0, 0, 0.6);
-    border: none;
-    overflow: hidden;
 }
 
 table.gist th, table.gist td, table.alignments th, table.alignments td {
@@ -618,8 +590,9 @@ div#div-wordentry-iconized {
 
 @media screen and (min-width: 860px) { 
 
-  #div-wordentry {
-    right: calc(50% - 400px);
+  /*#div-wordentry {*/
+  .div-floating-dlg {
+        right: calc(50% - 400px);
   }
   
 }
@@ -634,7 +607,8 @@ div#div-wordentry-iconized {
 
 @media screen and (min-width: 1260px) {
 
-  #div-wordentry {
+  /*#div-wordentry {*/
+  .div-floating-dlg {
     right: calc(50% - 600px);
   }
   

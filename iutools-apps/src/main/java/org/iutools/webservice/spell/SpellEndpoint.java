@@ -52,8 +52,9 @@ public class SpellEndpoint extends Endpoint<SpellInputs, SpellResult> {
 	public EndpointResult execute(SpellInputs inputs) throws ServiceException {
 		Logger tLogger = Logger.getLogger("org.iutools.webservice.spell.SpellEndpoint.execute");
 
-		tLogger.trace("inputs.text= "+inputs.text);
-		tLogger.trace("Spell checker has base ES index name = \n"+checker.corpusIndexName());
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("inputs="+PrettyPrinter.print(inputs));
+		}
 
 		SpellResult result = new SpellResult();
 		result.providesSuggestions = inputs.suggestCorrections;

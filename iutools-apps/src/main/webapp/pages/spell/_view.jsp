@@ -20,14 +20,16 @@
     <div style="min-height:6em;"></div>
 
     <!-- Floating div where we display the dialog for choosing a correction -->
-    <div id="div-choose-correction-dlg" class="div-choose-correction-dlg">
-        <div id="div-choose-correction-title"></div>
-        <div id="div-choose-correction-message"></div>
-        <div id="div-choose-correction-main">
-            <input id="txt-finalized-correction" type="text" value="" />
-            <button id="btn-choose-correction-apply">Apply</button>
-            <button id="btn-choose-correction-cancel">Cancel</button>
-            <div id="div-choose-correction-suggestions"></div>
-            <div id="div-choose-correction-error"></div>
+    <div class="div-floating-dlg" id="div-choose-correction-dlg">
+        <div class="div-floating-dlg-titlebar" id="div-choose-correction-title"></div>
+        <div class="div-floating-dlg-contents">
+            <div id="div-choose-correction-message"></div>
+            <div id="div-choose-correction-main">
+                <input id="txt-finalized-correction" type="text" value="" />
+                <button id="btn-choose-correction-apply">Apply</button>
+                <button id="btn-choose-correction-cancel">Cancel</button>
+                <div id="div-choose-correction-suggestions"></div>
+                <div id="div-choose-correction-error"></div>
+            </div>
         </div>
     </div>

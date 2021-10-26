@@ -39,7 +39,7 @@ class ChooseCorrectionController extends IUToolsController {
     }
 
     diplayClickedWord(word) {
-        this.divTitle().html("<h2>Choose correction forr: <em>"+word+"</em></h2>");
+        this.divTitle().html("<h2>"+word+"</h2>");
         this.hideEditCorrectionForm();
     }
 

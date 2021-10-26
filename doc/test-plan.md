@@ -111,39 +111,93 @@ Word Entry window hiding/showing
 - Search again for 'inuksuk' to make sure the WordEntry window is shown
 - Search for a query that returns some hits but is not itself a word, ex: 'iglum'
   - Make sure that some hits are displayed, but that the Word Entry window is NOT SHOWN   
-  
-  
+    
 ## Spell Checker
-
-Spell check SYLLABIC -- Happy Path
-- Enter some text in SYLLABIC, some of which are badly spelled, others not.
-- Hit _Spell Check_ button
-- Words from input text should be displayed one at a time, with misspelled 
-  words underlined. 
-- Make sure that the corrected text, as well as all the suggested spellings
-    are  displayed in SYLLABIC
-- Make sure that all the words that are mis-spelled are labeled as such and that:
-  - The FIRST suggestion is the original misspelled word
-  - The list shows the correct spelling in the list, ideally in SECOND place     
-- Click on a mis-spelled word and CHOOSE an alternate spelling
-  - Make sure that the chosen spelling is now displayed
-- Click on a mis-spelled word and TYPE an alternate spelling
-  - Make sure that the typed spelling is now displayed
 
 Spell check LATIN -- Happy Path
 - Enter some text in LATIN, some of which are badly spelled, others not. 
 - Hit _Spell Check_ button
 - Words from input text should be displayed one at a time, with misspelled 
   words underlined. 
-- Make sure that the corrected text, as well as all the suggested spellings
-    are  displayed in LATIN
-- Make sure that all the words that are mis-spelled are labeled as such and that:
-  - The FIRST suggestion is the original misspelled word
-  - The list shows the correct spelling in the list, ideally in SECOND place     
-- Click on a mis-spelled word and CHOOSE an alternate spelling
-  - Make sure that the chosen spelling is now displayed
-- Click on a mis-spelled word and TYPE an alternate spelling
-  - Make sure that the typed spelling is now displayed
+- Click on an underlined word and make sure that:
+    - The corrected text, as well as all the suggested spellings are  displayed 
+    in LATIN
+    - The FIRST suggestion is the original misspelled word
+    - The list shows the correct spelling in the list, ideally in SECOND place
+- Test different ways of APPLYING a suggestion     
+    - Click on a mis-spelled word, CHOOSE an alternate spelling and hit Apply
+      - Make sure that the chosen spelling is now displayed, and that the dialog
+        box disappeared.
+    - Click on a mis-spelled word, CHOOSE an alternate spelling, MODIFY IT and 
+      hit Apply
+      - Make sure that the modified spelling is now displayed, and that the dialog
+        box disappeared.
+    - Click on a mis-spelled word, TYPE an alternate spelling from scratch and hit Apply
+      - Make sure that the typed spelling is now displayed, and that the dialog
+        box disappeared.
+- Test different ways of CANCELING a suggestion     
+    - Click on a mis-spelled word, CHOOSE an alternate spelling and hit Cancel
+      - Make sure that the displayed spelling has not changed, and that the dialog
+        box disappeared.
+    - Click on a mis-spelled word, CHOOSE an alternate spelling, MODIFY IT and 
+      hit Cancel
+      - Make sure that the displayed spelling has not changed, and that the dialog
+        box disappeared.
+    - Click on a mis-spelled word, TYPE an alternate spelling from scratch and hit Cancel
+      - Make sure that the displayed spelling has not changed, and that the dialog
+        box disappeared.
+
+
+Spell check SYLLABIC -- Happy Path
+- Enter some text in LATIN, some of which are badly spelled, others not. 
+- Hit _Spell Check_ button
+- Words from input text should be displayed one at a time, with misspelled 
+  words underlined. 
+- Click on an underlined word and make sure that:
+    - The corrected text, as well as all the suggested spellings are  displayed 
+    in LATIN
+    - The FIRST suggestion is the original misspelled word
+    - The list shows the correct spelling in the list, ideally in SECOND place
+- Test different ways of APPLYING a suggestion     
+    - Click on a mis-spelled word, CHOOSE an alternate spelling and hit Apply
+      - Make sure that the chosen spelling is now displayed, and that the dialog
+        box disappeared.
+    - Click on a mis-spelled word, CHOOSE an alternate spelling, MODIFY IT and 
+      hit Apply
+      - Make sure that the modified spelling is now displayed, and that the dialog
+        box disappeared.
+    - Click on a mis-spelled word, TYPE an alternate spelling from scratch and hit Apply
+      - Make sure that the typed spelling is now displayed, and that the dialog
+        box disappeared.
+- Test different ways of CANCELING a suggestion     
+    - Click on a mis-spelled word, CHOOSE an alternate spelling and hit Cancel
+      - Make sure that the displayed spelling has not changed, and that the dialog
+        box disappeared.
+    - Click on a mis-spelled word, CHOOSE an alternate spelling, MODIFY IT and 
+      hit Cancel
+      - Make sure that the displayed spelling has not changed, and that the dialog
+        box disappeared.
+    - Click on a mis-spelled word, TYPE an alternate spelling from scratch and hit Cancel
+      - Make sure that the displayed spelling has not changed, and that the dialog
+        box disappeared.
+
+- Choose correction for different words
+    - Spell check text: 'nunavvvut iglu inuksssuk'
+    - Click on 'nunavvvut' and Apply the correct spelling
+    - Click on 'inuksssuk' and make sure that:
+        - The suggestions displayed are for that words AND ONLY THAT WORD (in 
+          particular, no suggestions for 'nunavvvut')
+        - Apply the correct spelling
+        - Make sure that
+            - The correct spelling for 'inuksuk' is now displayed instead of 
+              'inuksssuk'
+            - The spelling for nunavut stayed the same. 
+
+- Multiple occurences of same mistake
+    - Spell check the following text: 'nunavvvut nunavvvut'
+    - Click on first word and apply the correct spelling
+    - Check that the spelling of the first word was changed, but not for the 
+      second one.
 
 Concurency testing and Interruption
 - When you hit _Spell Check_
@@ -153,6 +207,8 @@ Concurency testing and Interruption
     misspelled word and doing each of the followgin:
     - Click on a mis-spelled word and CHOOSE an alternate spelling
         - Make sure that the chosen spelling is now displayed
+    - Click on a mis-spelled word, CHOOSE a spelling and MODIFY it
+        - Make sure that the modified spelling is now displayed
     - Click on a mis-spelled word and TYPE an alternate spelling
         - Make sure that the typed spelling is now displayed
   - While the checker is still working on some of the words:
@@ -198,6 +254,7 @@ Spell check text that is too large
 - Try to spell check a text with > 500 words
 - Check that the system prints an error message that says you have to split the
   text into smaller chunks. 
+        
     
 ## Search Engine
 

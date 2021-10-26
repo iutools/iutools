@@ -151,18 +151,7 @@ span#plural {
 	color:red;
 	text-decoration:underline;
 }
-#div-wordentry {
-	position:fixed;
-	top:40px;
-	width:600px;
-	height:600px;
-	right:100px;
-	display:none;
-	border:1px solid black;
-	border-radius:3px;
-	background-color:#ccccff;
-	padding:5px;
-}
+
 #div-wordentry #div-wordentry-iconizer {
 	background-color:white;
 	position:absolute;
@@ -171,19 +160,11 @@ span#plural {
 	cursor:pointer;
 	vertical-align:middle;
 }
+
 #div-wordentry #div-wordentry-iconizer img {
 	vertical-align:middle;
 }
-#div-wordentry #div-wordentry-contents {
-	overflow-y: scroll;
-	height:577px;
-	margin-top:5px;
-}
-#div-wordentry #div-wordentry-word {
-}
-#div-wordentry #div-wordentry-message {
-	display:none;
-}
+
 div#div-wordentry-iconized {
 	position:fixed;
 	text-align:center;
@@ -192,7 +173,6 @@ div#div-wordentry-iconized {
 	width:30px;
 	height:30px;
 	line-height:30px;
-	background-color:#ccccff;
 	border:1px solid black;
 	display:none;
 	cursor:pointer;
@@ -294,7 +274,6 @@ div#gist-alignments span.highlighted { font-weight:bold; color:red; }
 	display:none;
 	border:1px solid black;
 	border-radius:3px;
-	background-color:#ccccff;
 	padding:5px;
 }
 #div-wordentry-holder { font-weight:bold; color:white; background-color:green; padding-left:6px; }
