@@ -8,8 +8,7 @@ class ChooseCorrectionController extends IUToolsController {
         var tracer = Debug.getTraceLogger('ChooseCorrectionController.constructor');
         tracer.trace("corrConfig=" + JSON.stringify(corrConfig));
         super(corrConfig);
-        this.wordBeingCorrected = null;
-        this.tokenBeingCorrected = null;
+        this.idOfWordBeingCorrected = null;
         this.busy = false;
         this.hideDialog();
 
@@ -71,11 +70,13 @@ class ChooseCorrectionController extends IUToolsController {
     }
 
 
-    display(word, tokenID) {
+    display(checkedWordID) {
         var tracer = Debug.getTraceLogger("ChooseCorrectionController.display");
-        tracer.trace("word="+word+", tokenID="+tokenID);
-        this.wordBeingCorrected = word;
-        this.tokenBeingCorrected = tokenID;
+        tracer.trace("checkedWordID="+checkedWordID);
+        this.idOfWordBeingCorrected = checkedWordID
+        var word = this.wordBeingCorrected();
+        tracer.trace("word="+word);
+
         this.showDialog(word);
 
         var controller = this;
@@ -99,7 +100,7 @@ class ChooseCorrectionController extends IUToolsController {
 
     suggestCorrectionsSuccess(resp) {
         var tracer = Debug.getTraceLogger("ChooseCorrectionController.suggestCorrectionsSuccess");
-        tracer.trace("this.wordBeingCorrected="+this.wordBeingCorrected+", resp="+JSON.stringify(resp));
+        tracer.trace("this.idOfWordBeingCorrected="+this.idOfWordBeingCorrected+", resp="+JSON.stringify(resp));
         if (resp.errorMessage != null) {
             this.suggestCorrectionsFailure(resp);
         } else {
@@ -141,7 +142,7 @@ class ChooseCorrectionController extends IUToolsController {
         var suggestions = correction.allSuggestions;
         if (correction != null && suggestions != null) {
             var word = correction.orig;
-            // Note: If word !== this.wordBeingCorrected, it means that
+            // Note: If word !== this.wordBeingCorrected(), it means that
             //
             // - the user clicked on a word while the server was still
             //   computing the suggestions for a previously clicked word
@@ -152,7 +153,8 @@ class ChooseCorrectionController extends IUToolsController {
             // Therefore we should ignore that response because the user
             // is clearly not interested in the first word anymore
             //
-            if (word != null && word === this.wordBeingCorrected) {
+            var wordBeingCorrected = this.wordBeingCorrected();
+            if (word != null && word === wordBeingCorrected) {
                 html = "";
                 if (suggestions.length == 0) {
                     html += "No suggestions for this word";
@@ -177,16 +179,15 @@ class ChooseCorrectionController extends IUToolsController {
         var tracer = Debug.getTraceLogger("ChooseCorrectionController.onClickSuggestion");
         var suggestion = $("#"+suggEltID).text();
         tracer.trace("this="+(typeof this)+": "+JSON.stringify(this));
-        tracer.trace("** this.wordBeingCorrected="+this.wordBeingCorrected+", this['wordBeingCorrected']="+this['wordBeingCorrected']);
-        tracer.trace("suggEltID="+suggEltID+", suggestion="+suggestion+", this.wordBeingCorrected="+this.wordBeingCorrected);
+        tracer.trace("suggEltID="+suggEltID+", suggestion="+suggestion+", this.idOfWordBeingCorrected="+this.idOfWordBeingCorrected);
         this.txtCorrection().val(suggestion);
     }
 
     applyCorrection() {
         var tracer = Debug.getTraceLogger("ChooseCorrectionController.applyCorrection");
-        tracer.trace("this="+JSON.stringify(this));
+        tracer.trace("this="+JSON.stringify(this)+", $(this)="+JSON.stringify($(this)));
         var correction = this.txtCorrection().val();
-        var wordBeingCorrected = this.wordBeingCorrected;
+        var wordBeingCorrected = this.wordBeingCorrected();
         tracer.trace("correction="+correction+", wordBeingCorrected="+wordBeingCorrected);
         $('.corrected-word').each(
             function(index, wordElt) {
@@ -195,19 +196,18 @@ class ChooseCorrectionController extends IUToolsController {
                 if (word === wordBeingCorrected) {
                     tracer.trace("Changing text of the word");
                     $(this).text(correction);
-                    $(this).id("");
                 } else {
 
                 }
             }
         );
-        this.wordBeingCorrected = null;
+        this.idOfWordBeingCorrected = null;
         this.clearDialog();
         this.hideDialog();
     }
 
     cancelCorrection() {
-        this.wordBeingCorrected = null;
+        this.idOfWordBeingCorrected = null;
         this.clearDialog();
         this.hideDialog();
     }
@@ -238,5 +238,28 @@ class ChooseCorrectionController extends IUToolsController {
 
     show() {
         this.divDialog().show();
+    }
+
+    wordBeingCorrected() {
+        var word = null;
+        var parts = this.parseIDOfWordBeingCorrected();
+        if (parts != null) {
+            word = parts[0];
+        }
+        var parts = this.idOfWordBeingCorrected.split("_");
+        return word;
+    }
+
+    parseIDOfWordBeingCorrected() {
+        var parts = null;
+        if (this.idOfWordBeingCorrected != null) {
+            parts = this.idOfWordBeingCorrected.split("_");
+            if (parts.length > 2) {
+                var word = parts.slice(0, -1).join("");
+                var tokenID = parts.slice(-1);
+                parts = [word, tokenID];
+            }
+        }
+        return parts;
     }
 }

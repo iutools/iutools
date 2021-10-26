@@ -579,14 +579,13 @@ class SpellController extends IUToolsController {
 	    tracer.trace("checkedWord="+JSON.stringify(checkedWord))
         var origWord = checkedWord.orig;
 	    var html = origWord;
-	    var origWordEscaped = origWord.replace("'", "\'");
 
         if (checkedWord.wasMispelled) {
             var tokenID = this.tokensRemaining.length;
+            var eltID = this.checkedWordID(origWord, tokenID)
         	html =
-                // '<a name="corrected-word" class="corrected-word" onclick="alert(\'hi\')">' +
-                '<a class="corrected-word" name="corrected-word-'+tokenID+'"'+
-                ' onclick="spellController.openSuggestionsDialog(\''+origWordEscaped+'\', '+tokenID+')">'+
+                '<a class="corrected-word" id="'+eltID+'"'+
+                ' onclick="spellController.openSuggestionsDialog(\''+eltID+'\')">'+
                 html +
                 '</a>';
         }
@@ -595,9 +594,14 @@ class SpellController extends IUToolsController {
         return html;
     }
 
-    openSuggestionsDialog(word, tokenID) {
-        // alert("SpellController.openSuggestionsDialog: word="+word+", tokenID="+tokenID);
-	    this.correctWordController.display(word, tokenID);
+    openSuggestionsDialog(checkedWordID) {
+	    this.correctWordController.display(checkedWordID);
+    }
+
+    checkedWordID(origWord, tokenID) {
+        var origWordEscaped = origWord.replace("'", "\'");
+        var id = origWordEscaped+"_"+tokenID;
+        return id;
     }
 }
 
