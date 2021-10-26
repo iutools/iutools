@@ -533,7 +533,13 @@ class SpellController extends IUToolsController {
 			// spelled.
 			html = word;
 			html = html.replace(/\n/g, "<br/>\n");
-			html = html.replace(/ /g, "&nbsp;");
+			// If more than one consecutive spaces, replace all but the first
+            // one with &nbsp;. That way:
+            // - Multiple spaces will be apparent in the rendered HTML
+            // - Long lines of text will still wrap.
+            //
+			html = html.replace(/(?<= ) /g, "&nbsp;");
+
 		} else {
 			html = this.picklistFor(correction);
 		}
