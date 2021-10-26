@@ -5,7 +5,11 @@
 class SpellController extends IUToolsController {
 
 	constructor(config) {
+	    var tracer = Debug.getTraceLogger("SpellController.constructor");
+        tracer.trace("config="+JSON.stringify(config));
+
 		super(config);
+
 		// List of tokens that remain to be spell checked.
 		// If null, it means we aren't in the process of checking tokens.
 		this.tokensRemaining = null;
@@ -20,7 +24,9 @@ class SpellController extends IUToolsController {
 
 		this.MAX_WORDS = null;
 
-        this.correctWordController = new ChooseCorrectionController(config);
+        var correctWordConfig = {...config};
+        correctWordConfig['divError'] = config.divChooseCorrectionError;
+        this.correctWordController = new ChooseCorrectionController(correctWordConfig);
     }
 
 	/**

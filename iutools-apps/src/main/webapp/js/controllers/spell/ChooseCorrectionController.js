@@ -5,34 +5,66 @@
 class ChooseCorrectionController extends IUToolsController {
 
     constructor(corrConfig) {
-        var tracer = Debug.getTraceLogger('CorrectWordController.constructor');
+        var tracer = Debug.getTraceLogger('ChooseCorrectionController.constructor');
         tracer.trace("corrConfig=" + JSON.stringify(corrConfig));
         super(corrConfig);
         this.wordBeingCorrected = null;
         this.tokenBeingCorrected = null;
         this.busy = false;
+        this.hideDialog();
 
         this.elementForProp("divChooseCorrectionDlg").draggable();
         tracer.trace("upon exit, this=" + JSON.stringify(this));
     }
 
+    attachHtmlElements() {
+        this.setEventHandler("btnChooseCorrection_ApplyCorrection", "click", this.applyCorrection);
+        this.setEventHandler("btnChooseCorrection_CancelCorrection", "click", this.cancelCorrection);
+    }
+
     showDialog(word) {
+        this.clearDialog();
         this.diplayClickedWord(word)
         this.setBusy(true);
         this.divDialog().show();
     }
 
+    hideDialog() {
+        this.divDialog().hide();
+    }
+
+    clearDialog() {
+        this.divTitle().html("");
+        this.txtCorrection().val("");
+        this.divSuggestions().html("");
+    }
+
     diplayClickedWord(word) {
-        this.divDialog().html("<h2>Suggested corrections for: <em>"+word+"</em></h2>");
+        this.divTitle().html("<h2>Choose correction forr: <em>"+word+"</em></h2>");
+        this.hideEditCorrectionForm();
+    }
+
+    hideEditCorrectionForm() {
+        this.txtCorrection().hide();
+        this.btnApplyCorrection().hide();
+        this.btnCancelCorrection().hide();
+    }
+
+    showEditCorrectionForm() {
+        this.txtCorrection().show();
+        this.btnApplyCorrection().show();
+        this.btnCancelCorrection().show();
     }
 
     setBusy(flag) {
+        var tracer = Debug.getTraceLogger("ChooseCorrectionController.setBusy");
+        tracer.trace("this.config.divMessage="+this.config.divMessage);
         this.busy = flag;
         if (flag) {
-            this.showSpinningWheel('divMessage', "Looking for suggestions");
+            this.showSpinningWheel('divChooseCorrectionMessage', "Looking for suggestions");
             this.error("");
         } else {
-            this.hideSpinningWheel('divMessage');
+            this.hideSpinningWheel('divChooseCorrectionMessage');
         }
 
         return;
@@ -71,6 +103,7 @@ class ChooseCorrectionController extends IUToolsController {
         if (resp.errorMessage != null) {
             this.suggestCorrectionsFailure(resp);
         } else {
+            this.showEditCorrectionForm();
             var html = this.htmlChooseCorrection(resp);
             if (html != null) {
                 // html == null means that:
@@ -82,7 +115,7 @@ class ChooseCorrectionController extends IUToolsController {
                 // Therefore we should ignore that response because the user
                 // is clearly not interested in the first word anymore
                 //
-                this.divDialog().append(html);
+                this.divSuggestions().html(html);
                 this.setBusy(false);
             }
         }
@@ -143,29 +176,64 @@ class ChooseCorrectionController extends IUToolsController {
     onClickSuggestion(suggEltID) {
         var tracer = Debug.getTraceLogger("ChooseCorrectionController.onClickSuggestion");
         var suggestion = $("#"+suggEltID).text();
-        var wordBeingCorrected = this.wordBeingCorrected;
         tracer.trace("this="+(typeof this)+": "+JSON.stringify(this));
         tracer.trace("** this.wordBeingCorrected="+this.wordBeingCorrected+", this['wordBeingCorrected']="+this['wordBeingCorrected']);
         tracer.trace("suggEltID="+suggEltID+", suggestion="+suggestion+", this.wordBeingCorrected="+this.wordBeingCorrected);
+        this.txtCorrection().val(suggestion);
+    }
+
+    applyCorrection() {
+        var tracer = Debug.getTraceLogger("ChooseCorrectionController.applyCorrection");
+        tracer.trace("this="+JSON.stringify(this));
+        var correction = this.txtCorrection().val();
+        var wordBeingCorrected = this.wordBeingCorrected;
+        tracer.trace("correction="+correction+", wordBeingCorrected="+wordBeingCorrected);
         $('.corrected-word').each(
             function(index, wordElt) {
                 var word = $(this).text();
                 tracer.trace("Looking at index="+index+", $(this)="+$(this)+", word='"+word+"', wordBeingCorrected='"+wordBeingCorrected+"'");
                 if (word === wordBeingCorrected) {
-                // if (word == this.wordBeingCorrected) {
-                // if ("blah" === "blah") {
                     tracer.trace("Changing text of the word");
-                    $(this).text(suggestion);
+                    $(this).text(correction);
+                    $(this).id("");
                 } else {
 
                 }
             }
         );
-        this.wordBeingCorrected = suggestion;
+        this.wordBeingCorrected = null;
+        this.clearDialog();
+        this.hideDialog();
+    }
+
+    cancelCorrection() {
+        this.wordBeingCorrected = null;
+        this.clearDialog();
+        this.hideDialog();
     }
 
     divDialog() {
         return this.elementForProp("divChooseCorrectionDlg");
+    }
+
+    divTitle() {
+        return this.elementForProp("divChooseCorrectionTitle");
+    }
+
+    divSuggestions() {
+        return this.elementForProp("divChooseCorrectionSuggestions");
+    }
+
+    txtCorrection() {
+        return this.elementForProp("txtChooseCorrection_FinalCorrection");
+    }
+
+    btnApplyCorrection() {
+        return this.elementForProp("btnChooseCorrection_ApplyCorrection");
+    }
+
+    btnCancelCorrection() {
+        return this.elementForProp("btnChooseCorrection_CancelCorrection");
     }
 
     show() {

@@ -21,10 +21,13 @@
 
     <!-- Floating div where we display the dialog for choosing a correction -->
     <div id="div-choose-correction-dlg" class="div-choose-correction-dlg">
-        <!--
-    	<div id="div-wordentry-message"></div>
-    	<div id="div-wordentry-word"></div>
-    	<div id="div-wordentry-iconizer" title="Minimize"><img src="imgs/minimize.png" ></div>
-    	<div id="div-wordentry-contents"></div>
-    	-->
+        <div id="div-choose-correction-title"></div>
+        <div id="div-choose-correction-message"></div>
+        <div id="div-choose-correction-main">
+            <input id="txt-finalized-correction" type="text" value="" />
+            <button id="btn-choose-correction-apply">Apply</button>
+            <button id="btn-choose-correction-cancel">Cancel</button>
+            <div id="div-choose-correction-suggestions"></div>
+            <div id="div-choose-correction-error"></div>
+        </div>
     </div>

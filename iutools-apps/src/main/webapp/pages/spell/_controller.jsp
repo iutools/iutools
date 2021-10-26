@@ -16,7 +16,16 @@
     		divMessage: "div-message",
     		btnCopy: "btn-copy",
     		divResults: "div-results",
-    		divChooseCorrectionDlg: "div-choose-correction-dlg"
+
+    		divChooseCorrectionDlg: "div-choose-correction-dlg",
+    		divChooseCorrectionTitle: "div-choose-correction-title",
+            txtChooseCorrection_FinalCorrection: "txt-finalized-correction",
+            btnChooseCorrection_ApplyCorrection: "btn-choose-correction-apply",
+            btnChooseCorrection_CancelCorrection: "btn-choose-correction-cancel",
+
+    		divChooseCorrectionMessage: "div-choose-correction-message",
+            divChooseCorrectionSuggestions: "div-choose-correction-suggestions",
+            divChooseCorrectionError: "div-choose-correction-error",
         };
 
     var spellController = new SpellController(config);
