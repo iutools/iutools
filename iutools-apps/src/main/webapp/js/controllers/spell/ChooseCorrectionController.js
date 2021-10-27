@@ -91,7 +91,8 @@ class ChooseCorrectionController extends IUToolsController {
 
         var request = {
             text: word,
-            suggestCorrections: true
+            suggestCorrections: true,
+            includePartiallyCorrect: this.includePartialCorrections(),
         };
 
         new SpellService().invokeSpellCheckWordService(
@@ -234,6 +235,12 @@ class ChooseCorrectionController extends IUToolsController {
 
     btnCancelCorrection() {
         return this.elementForProp("btnChooseCorrection_CancelCorrection");
+    }
+
+    includePartialCorrections() {
+        var included =
+            this.elementForProp("chkIncludePartials").is(":checked");
+        return included;
     }
 
     show() {
