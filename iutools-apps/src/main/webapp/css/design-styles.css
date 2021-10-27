@@ -1,3 +1,5 @@
+/* Generic HTML elements  */
+
 * {
   box-sizing: border-box;
 }
@@ -18,6 +20,89 @@ h1, h2, h3, h4, h5 {
 b, strong {
   font-weight: 600;
 }
+
+#page_title h1 {
+    font-size: 1.625em;
+    text-align: left;
+}
+
+main select, main input {
+    padding: 4px;
+    margin: 4px 0;
+}
+
+main ul {
+    margin-bottom: 2em;
+    padding-left: 20px;
+}
+
+main ul a {
+    font-weight: 600;
+    color: #0274ad;
+    transition: color .5s;
+}
+
+main ul a:hover {
+    color: #0c4c85;;
+}
+
+main ul ::marker {
+    color: #a6d5ed;
+}
+
+
+table.gist th, table.gist td, table.alignments th, table.alignments td {
+    border: 1px solid #fff;
+    padding: 4px 8px;
+}
+
+table.gist strong, table.alignments strong {
+    font-weight: 600;
+}
+
+table.gist th, table.alignments th {
+    background: #a6d5ed;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+table.gist td, table.alignments td {
+    background: #f4f4f4;
+    font-weight: 400;
+}
+
+table.gist tr:nth-child(odd) td, table.alignments tr:nth-child(odd) td, #div-wordentry-text-results table.alignments tr:nth-child(4n+4) td {
+    background: #e4f6ff;
+}
+
+table.alignments tr:empty {
+    border: 4px solid red;
+}
+
+table.gist tr td:first-child {
+    font-weight: 500;
+}
+
+main textarea {
+    max-width: 100%;
+}
+
+button {
+    font-size: 1.125em;
+    margin: 14px 0 0 0;
+    border: none;
+    font-family: Poppins, Verdana, sans-serif;
+}
+
+button:disabled, input[type="button"]:disabled {
+    opacity: 0.75;
+}
+
+button:disabled:hover, input[type="button"]:disabled:hover {
+    background: #0274ad;
+}
+
+/* Page header */
 
 #header {
   width: 100%;
@@ -95,6 +180,37 @@ main {
 	width: 163.2px;
 	background-position: -504px top;
 }
+
+/* Page footer */
+
+#footer {
+    width: 100%;
+    background: #e4f6ff;
+    text-align: center;
+    padding: 40px 20px;
+    margin-top: 80px;
+}
+
+#sponsors {
+    text-align: center;
+    padding: 20px;
+}
+
+#sponsors a {
+    display: inline-block;
+    vertical-align: middle;
+    width: 140px;
+    height: 120px;
+    margin: 0 20px;
+}
+
+#sponsors a img {
+    width: 140px;
+    height: 120px;
+    object-fit: contain;
+}
+
+/* Navigation menu */
 
 #main_nav {
   position: relative;
@@ -260,61 +376,79 @@ main {
   background: #04335c;
 }
 
-button {
-  font-size: 1.125em;
-  margin: 14px 0 0 0;
-  border: none;
-  font-family: Poppins, Verdana, sans-serif;
-}
-
-button:disabled, input[type="button"]:disabled {
-  opacity: 0.75;
-}
-
-button:disabled:hover, input[type="button"]:disabled:hover {
-  background: #0274ad;
-}
-
-#page_title h1 {
-  font-size: 1.625em;
-  text-align: left;
-}
-
-main select, main input {
-  padding: 4px;
-  margin: 4px 0;
-}
-
-main textarea {
-  max-width: 100%;
-}
+/* Misc elements shared by all apps */
 
 #div-results, #div-error, #div-message {
   margin-top: 32px;
 }
 
-main ul {
-  margin-bottom: 2em;
-  padding-left: 20px;
+#div-results {
+  margin-bottom: 32px;
 }
 
-main ul a {
-  font-weight: 600;
-  color: #0274ad;
-  transition: color .5s;
+/* Floating dialog class used by different apps */
+
+.div-floating-dlg {
+    right: 5vw;
+    max-width: 90vw;
+    max-height: calc(100vh - 60px);
+    padding: 0;
+    background: #fff;
+    box-shadow: -4px 4px 12px rgba(0, 0, 0, 0.6);
+    border: none;
+    overflow: hidden;
 }
 
-main ul a:hover {
-  color: #0c4c85;;
+.div-floating-dlg-titlebar {
+    position: relative;
+    padding: 27px 10px 17px 10px;
+    background: #a6d5ed;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.65);
+    z-index: 10;
 }
 
-main ul ::marker {
-  color: #a6d5ed;
+.div-floating-dlg-titlebar h2 {
+    margin: 0;
 }
+
+.div-floating-dlg .div-floating-dlg-contents {
+    height: 510px;
+    max-height: calc(100vh - 140px);
+    margin-top: 0;
+    padding: 5px;
+}
+
+.div-floating-dlg:after {
+    width: 100%;
+    height: 9px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    content: " ";
+    display: block;
+    background: #a6d5ed;
+    box-shadow: 0 -1px 8px rgba(0, 0, 0, 0.65);
+    border-top: 1px solid #9e9e9e;
+    border: none;
+}
+
+.div-floating-dlg .div-floating-dlg-contents > * {
+    padding-left: 5px;
+}
+
+/* Spell Checker app */
 
 .corrected-word {
     text-decoration: underline;
 }
+
+/* This does not seem to be used anymore
+.corrections .selected {
+    font-weight: 500;
+}
+*/
+
+/* Morpheme Dictionary app */
 
 .morpheme-details {
   width: 800px;
@@ -329,84 +463,11 @@ main ul ::marker {
   margin: 10px 0 30px 0 !important;
 }
 
-.div-floating-dlg {
-  right: 5vw;
-  max-width: 90vw;
-  max-height: calc(100vh - 60px);
-  padding: 0;
-  background: #fff;
-  box-shadow: -4px 4px 12px rgba(0, 0, 0, 0.6);
-  border: none;
-  overflow: hidden;
-}
 
-.div-floating-dlg-titlebar {
-	position: relative;
-  padding: 27px 10px 17px 10px;
-  background: #a6d5ed;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.65);
-  z-index: 10;
-}
+/* Word Dictionary App */
 
-.div-floating-dlg-titlebar h2 {
-  margin: 0;
-}
-
-.div-floating-dlg .div-floating-dlg-contents {
-  height: 510px;
-  max-height: calc(100vh - 140px);
-  margin-top: 0;
-  padding: 5px;
-}
-
-.div-floating-dlg:after {
-	width: 100%;
-	height: 9px;
-	position: absolute;
-	left: 0;
-	bottom: 0;
-	content: " ";
-	display: block;
-	background: #a6d5ed;
-	box-shadow: 0 -1px 8px rgba(0, 0, 0, 0.65);
-	border-top: 1px solid #9e9e9e;
-	border: none;
-}
-
-.div-floating-dlg .div-floating-dlg-contents > * {
-	padding-left: 5px;
-}
-
-table.gist th, table.gist td, table.alignments th, table.alignments td {
-  border: 1px solid #fff;
-  padding: 4px 8px;
-}
-
-table.gist strong, table.alignments strong {
-	font-weight: 600;
-}
-
-table.gist th, table.alignments th {
-  background: #a6d5ed;
-  font-weight: 600;
-  letter-spacing: 1px;
-}
-
-table.gist td, table.alignments td {
-  background: #f4f4f4;
-  font-weight: 400;
-}
-
-table.gist tr:nth-child(odd) td, table.alignments tr:nth-child(odd) td, #div-wordentry-text-results table.alignments tr:nth-child(4n+4) td {
-  background: #e4f6ff;
-}
-
-table.alignments tr:empty {
-  border: 4px solid red;
-}
-
-table.gist tr td:first-child {
-	font-weight: 500;
+#txt-query-words {
+    display: block;
 }
 
 #div-wordentry #div-wordentry-iconizer, div#div-wordentry-iconized {
@@ -432,6 +493,8 @@ div#div-wordentry-iconized {
 	border: none;
 }
 
+/* jQuery UI configurations */
+
 .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default, .ui-button, html .ui-button.ui-state-disabled:hover, html .ui-button.ui-state-disabled:active {
 	background: #e4f6ff !important;
 	border: 1px solid #e4f6ff !important;
@@ -442,40 +505,7 @@ div#div-wordentry-iconized {
 	border: 1px solid #0274ad !important;
 }
 
-#txt-query-words {
-  display: block;
-}
-
-.corrections .selected {
-  font-weight: 500;
-}
-
-#footer {
-	width: 100%;
-	background: #e4f6ff;
-	text-align: center;
-	padding: 40px 20px;
-	margin-top: 80px;
-}
-
-#sponsors {
-  text-align: center;
-  padding: 20px;
-}
-
-#sponsors a {
-  display: inline-block;
-  vertical-align: middle;
-  width: 140px;
-  height: 120px;
-  margin: 0 20px;
-}
-
-#sponsors a img {
-  width: 140px;
-  height: 120px;
-  object-fit: contain;
-}
+/* Responsive design */
 
 @media screen and (min-width: 540px) {
 
@@ -590,7 +620,6 @@ div#div-wordentry-iconized {
 
 @media screen and (min-width: 860px) { 
 
-  /*#div-wordentry {*/
   .div-floating-dlg {
         right: calc(50% - 400px);
   }
@@ -607,7 +636,6 @@ div#div-wordentry-iconized {
 
 @media screen and (min-width: 1260px) {
 
-  /*#div-wordentry {*/
   .div-floating-dlg {
     right: calc(50% - 600px);
   }
