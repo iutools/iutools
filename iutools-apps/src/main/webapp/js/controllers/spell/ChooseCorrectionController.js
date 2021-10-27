@@ -188,13 +188,13 @@ class ChooseCorrectionController extends IUToolsController {
         var tracer = Debug.getTraceLogger("ChooseCorrectionController.applyCorrection");
         tracer.trace("this="+JSON.stringify(this)+", $(this)="+JSON.stringify($(this)));
         var correction = this.txtCorrection().val();
-        var wordBeingCorrected = this.wordBeingCorrected();
-        tracer.trace("correction="+correction+", wordBeingCorrected="+wordBeingCorrected);
+        var idOfWordBeingCorrected = this.idOfWordBeingCorrected;
+        tracer.trace("correction="+correction+", idOfWordBeingCorrected="+idOfWordBeingCorrected);
         $('.corrected-word').each(
             function(index, wordElt) {
-                var word = $(this).text();
-                tracer.trace("Looking at index="+index+", $(this)="+$(this)+", word='"+word+"', wordBeingCorrected='"+wordBeingCorrected+"'");
-                if (word === wordBeingCorrected) {
+                var wordID = $(this).attr('id');
+                tracer.trace("Looking at index="+index+", $(this)="+$(this)+", wordID='"+wordID+"'");
+                if (wordID === idOfWordBeingCorrected) {
                     tracer.trace("Changing text of the word");
                     $(this).text(correction);
                 } else {
