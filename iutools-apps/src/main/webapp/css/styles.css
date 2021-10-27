@@ -128,7 +128,7 @@ span#plural {
 	text-decoration:underline;
 }
 
-/* Word Dictionary */
+/* Word Dictionary UI */
 
 .clickable-word-lookup {
     cursor:pointer;
@@ -141,7 +141,7 @@ span#plural {
 }
 
 
-/* OCCURRENCES */
+/* Reading Assistant (aka Gister) UI  */
 .word-example {
 	cursor:pointer;
 	font-family:serif;
