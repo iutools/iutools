@@ -152,34 +152,6 @@ span#plural {
 	text-decoration:underline;
 }
 
-#div-wordentry #div-wordentry-iconizer {
-	background-color:white;
-	position:absolute;
-	top:0;
-	right:0;
-	cursor:pointer;
-	vertical-align:middle;
-}
-
-#div-wordentry #div-wordentry-iconizer img {
-	vertical-align:middle;
-}
-
-div#div-wordentry-iconized {
-	position:fixed;
-	text-align:center;
-	right:0;
-	bottom:0;
-	width:30px;
-	height:30px;
-	line-height:30px;
-	border:1px solid black;
-	display:none;
-	cursor:pointer;
-}
-div#div-wordentry-iconized img {
-	vertical-align:middle;
-}
 table.gist, table.alignments {
 	margin-top:5px;
 }

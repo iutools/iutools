@@ -436,19 +436,44 @@ main {
     padding-left: 5px;
 }
 
-/* Spell Checker app */
+/* Word Entry dialog */
+
+#div-wordentry #div-wordentry-iconizer, div#div-wordentry-iconized {
+    width: 20px;
+    height: 20px;
+    top: 8px;
+    right: 8px;
+    border-radius: 20px;
+    z-index: 20;
+}
+
+#div-wordentry #div-wordentry-iconizer img, div#div-wordentry-iconized img {
+    margin-left: -2px;
+    margin-top: -2px;
+    opacity: .7;
+}
+
+div#div-wordentry-iconized {
+    top: auto;
+    right: 10px;
+    bottom: 10px;
+    background: #a6d5ed;
+    border: none;
+}
+
+/* Word Dictionary UI */
+
+#txt-query-words {
+    display: block;
+}
+
+/* Spell Checker UI */
 
 .corrected-word {
     text-decoration: underline;
 }
 
-/* This does not seem to be used anymore
-.corrections .selected {
-    font-weight: 500;
-}
-*/
-
-/* Morpheme Dictionary app */
+/* Morpheme Dictionary UI */
 
 .morpheme-details {
   width: 800px;
@@ -464,34 +489,6 @@ main {
 }
 
 
-/* Word Dictionary App */
-
-#txt-query-words {
-    display: block;
-}
-
-#div-wordentry #div-wordentry-iconizer, div#div-wordentry-iconized {
-  width: 20px;
-  height: 20px;
-	top: 8px;
-	right: 8px;
-	border-radius: 20px;
-	z-index: 20;
-}
-
-#div-wordentry #div-wordentry-iconizer img, div#div-wordentry-iconized img {
-  margin-left: -2px;
-  margin-top: -2px;
-  opacity: .7;
-}
-
-div#div-wordentry-iconized {
-  top: auto;
-	right: 10px;
-	bottom: 10px;
-	background: #a6d5ed;
-	border: none;
-}
 
 /* jQuery UI configurations */
 
