@@ -29,6 +29,13 @@ public abstract class LogLine {
 		if (_json != null) {
 			json = _json;
 		}
+
+		if (taskData().has("_phase")) {
+			phase = taskData().getString("_phase");
+		} else if (json.has("_phase")) {
+			phase = json.getString("_phase");
+		}
+
 		if (taskData().has("taskElapsedMsecs")) {
 			elapsedMSecs = taskData().getInt("taskElapsedMsecs");
 		} else if (json.has("_taskElapsedMsecs")) {

@@ -13,9 +13,6 @@ public class EndpointLine extends LogLine {
 	}
 
 	private void init__EndpointLine() {
-		if (json.has("_phase")) {
-			phase = json.getString("_phase");
-		}
 	}
 
 	public LogLine setPhase(String _phase) {

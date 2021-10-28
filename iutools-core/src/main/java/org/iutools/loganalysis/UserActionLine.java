@@ -13,9 +13,6 @@ public class UserActionLine extends LogLine {
 	}
 
 	private void init__UserActionLine() {
-		if (taskData().has("_phase")) {
-			phase = taskData().getString("_phase");
-		}
 	}
 
 	public LogLine setPhase(String _phase) {
