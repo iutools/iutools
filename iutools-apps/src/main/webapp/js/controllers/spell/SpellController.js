@@ -171,91 +171,6 @@ class SpellController extends IUToolsController {
 	}
 
 	/**
-	 * Invoked when user clicks on the picklist providing the list of suggested
-	 * corrections for a mis-spelled word.
-	 */
-	onClickOnCorrections(ev) {
-			var target = $(ev.target);
-			var divParent = target.closest('div');
-			$('span',divParent).css('display','block');
-	}
-
-	/**
-	 * Sets handlers on the picklists that provide suggested corrections for
-	 * a single misspelled words.
-	 */
-	attachSingleWordCorrectionHandlers(divSingleWordCorrection) {
-		var spellController = this;
-		divSingleWordCorrection.on('mouseleave',function(ev){
-			var target = $(ev.target);
-			var divParent = target.closest('div');
-			$('span',divParent).css('display','none');
-			$('.selected',divParent).css('display','block');
-			$('.additional input',divParent).val('');
-		});
-		divSingleWordCorrection.find('span.suggestion.selected')
-			.on('click',this.onClickOnCorrections);
-		divSingleWordCorrection.find('span.suggestion:not(.selected)')
-			.on('mouseover',function(ev){
-				$(ev.target).css({'color':'red'});
-			})
-			.on('mouseleave',function(ev){
-				$(ev.target).css('color','black')
-			})
-			.on('click',function(ev){
-				var target = $(ev.target);
-				var divParent = target.closest('div');
-				$('span',divParent).css('display','none');
-				$('span.selected',divParent).removeClass('selected');
-				target.addClass('selected');
-				$('.additional input',divParent).val('');
-				$('.selected',divParent).css('display','block');
-				spellController.attachSingleWordCorrectionHandlers(divParent);
-				return;
-			});
-		divSingleWordCorrection.find('span.additional input')
-			.on('mouseleave',function(ev){
-				var target = $(ev.target);
-				var divParent = target.closest('div');
-				//$('span',divParent).css('display','none');
-				$('.selected',divParent).css('display','block');
-				$('.additional input',divParent).val('');
-			})
-			.on('keyup',function(ev){
-				if(ev.keyCode == 13) {
-					var target = $(ev.target);
-					var divParent = target.closest('div');
-					var newSuggestionValue = target.val().trim();
-					if (newSuggestionValue != '') {
-						$('span',divParent).css('display','none');
-						$('span.selected',divParent).removeClass('selected');
-						var newSuggestionElement = $('<span class="suggestion selected">'+newSuggestionValue+'</span>');
-						newSuggestionElement.insertBefore($('.original',divParent));
-						spellController.attachSingleWordCorrectionHandlers(divParent);
-						$('.additional input',divParent).val('');
-						$('.selected',divParent).css('display','block');
-					}
-					else {
-
-					}
-				} else {
-				}
-			});
-	}
-
-	/**
-	 * Make the div where spell checking results are displayed visible
-	 */
-	makeResultsSectionVisible() {
-		var divChecked = this.elementForProp('divChecked');
-		var divCheckedResults = divChecked.find('div#div-results');
-		var divCheckedTitle = divChecked.find('div#title-and-copy');
-		divCheckedTitle.css('display','block');
-		divCheckedResults.css('display','block');
-		divChecked.show();
-	}
-
-	/**
 	 * Spell check all the tokens produced by the tokenize web service.
 	 * Each token is spell checked one at a time to avoid overloading the
 	 * web server.
@@ -367,16 +282,6 @@ class SpellController extends IUToolsController {
             var divSpellCheckedWords = this.divSpellCheckResults();
             divSpellCheckedWords.append(htmlWord);
 		}
-	}
-
-	appendSuggestionsPicklist(correction) {
-		var divSpellCheckedWords = this.divSpellCheckResults();
-		var html = this.picklistFor(correction);
-		var appended = divSpellCheckedWords.append(html);
-		appended.css("display", "block")
-
-		this.attachSingleWordCorrectionHandlers(appended)
-		return;
 	}
 
 	cbkWordCorrectnessFailure(resp) {
@@ -607,7 +512,7 @@ class SpellController extends IUToolsController {
     checkedWordID(origWord, tokenID) {
         var origWordEscaped = origWord.replace("'", "\'");
         var id = origWordEscaped+"_"+tokenID;
-        return id;
+        return i;
     }
 }
 

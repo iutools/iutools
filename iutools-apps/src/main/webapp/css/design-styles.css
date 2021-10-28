@@ -392,11 +392,12 @@ main {
     position: fixed;
     top: 40px;
     right: 5vw;
+    flex-direction: column;
     width: 600px;
-    height: 600px;
     max-width: 90vw;
     max-height: calc(100vh - 60px);
     padding: 0;
+    padding-bottom: 10px;
     background: #fff;
     box-shadow: -4px 4px 12px rgba(0, 0, 0, 0.6);
     border: none;
@@ -416,10 +417,9 @@ main {
 }
 
 .div-floating-dlg .div-floating-dlg-contents {
-    height: 510px;
     max-height: calc(100vh - 140px);
     margin-top: 0;
-    padding: 5px;
+    padding: 5px 5px 20px 5px;
     overflow-y: scroll;
 }
 
@@ -443,8 +443,16 @@ main {
     padding-right: 5px;
 }
 
+.div-floating-dlg #div-choose-correction-main {
+		padding-top: 20px;
+}
+
 
 /* Word Entry dialog */
+
+#div-wordentry {
+	height: 600px;
+}
 
 #div-wordentry #div-wordentry-iconizer, div#div-wordentry-iconized {
     position: absolute;

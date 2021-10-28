@@ -7,10 +7,12 @@ class WordEntryController extends IUToolsController {
         var tracer = Debug.getTraceLogger('WordEntryController.constructor');
         tracer.trace("wdConfig="+JSON.stringify(wdConfig));
         super(wdConfig);
+        this.hide();
         this.hideIconisationControls();
 
         // this.elementForProp("divWordEntry").draggable();
-        $("#div-wordentry").draggable()
+        $("#div-wordentry")
+            .draggable({ handle: ".div-floating-dlg-titlebar"})
         tracer.trace("upon exit, this="+JSON.stringify(this));
     }
 
@@ -29,7 +31,7 @@ class WordEntryController extends IUToolsController {
     dictionaryLookup(word, lang) {
         var tracer = Debug.getTraceLogger('WordEntryController.dictionaryLookup');
         tracer.trace("word="+word)
-		this.elementForProp("divWordEntry").show();
+        this.show();
 		this.initWordEntry(word);
 		this.displayWordBeingLookedUp(word, null);
 		this.showSpinningWheel("divWordEntry_message","Looking up word");
@@ -353,6 +355,12 @@ class WordEntryController extends IUToolsController {
     hide() {
         this.elementForProp("divWordEntry").hide();
         this.hideIconisationControls();
+    }
+
+    show() {
+        var divWordEntry = this.elementForProp("divWordEntry");
+        divWordEntry.css('display', 'flex');
+        divWordEntry.show();
     }
 
     hideIconisationControls() {

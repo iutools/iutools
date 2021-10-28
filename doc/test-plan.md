@@ -95,10 +95,14 @@ Progress wheel etc.
   
 Min-max-Drag word entry window
 - Make sure you can minimimize, maximize and drag the word entry window
+  (Note: To drag the window, you must drag its title bar)
 - Minimize the word entry, then:
   - Click on on a word and make sure it maximises itself and the correct word is 
     displayed 
      
+Copy and paste content from the Word Entry dialog
+- Copy and paste one of the Related words
+- Copy and paste one of the Translations     
      
 Word Entry window hiding/showing
 - Reload the Word Dictionary page

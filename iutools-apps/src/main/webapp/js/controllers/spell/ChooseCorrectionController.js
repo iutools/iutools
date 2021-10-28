@@ -12,7 +12,8 @@ class ChooseCorrectionController extends IUToolsController {
         this.busy = false;
         this.hideDialog();
 
-        this.elementForProp("divChooseCorrectionDlg").draggable();
+        this.elementForProp("divChooseCorrectionDlg")
+                .draggable({handle: ".div-floating-dlg-titlebar"});
         tracer.trace("upon exit, this=" + JSON.stringify(this));
     }
 
