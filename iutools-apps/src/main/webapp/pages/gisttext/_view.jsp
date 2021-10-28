@@ -16,7 +16,7 @@
     <div id="div-wordentry-text-results" class="div-wordentry-text-results"></div>
 
     <!-- Floating div where we put the dictionary entry for a clicked word -->
-    <div class="div-floating-dlg" id="div-wordentry" class="div-wordentry">
+    <div class="div-floating-dlg" id="div-wordentry">
     	<div id="div-wordentry-message"></div>
     	<div class="div-floating-dlg-titlebar"  id="div-wordentry-word"></div>
     	<div id="div-wordentry-iconizer" title="Minimize"><img src="imgs/minimize.png" ></div>
