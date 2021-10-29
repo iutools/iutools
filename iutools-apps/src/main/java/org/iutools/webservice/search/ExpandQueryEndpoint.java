@@ -1,5 +1,6 @@
 package org.iutools.webservice.search;
 
+import org.iutools.corpus.BadESRecordException;
 import org.iutools.morphrelatives.MorphRelativesFinder;
 import org.iutools.morphrelatives.MorphRelativesFinderException;
 import org.iutools.morphrelatives.MorphologicalRelative;
@@ -33,10 +34,15 @@ public class ExpandQueryEndpoint
 			try {
 				relatedWords = relsFinder.findRelatives(inputs.origQuery);
 			} catch (MorphRelativesFinderException e) {
-				// TODO-AD-BadESRecord: If stack of e contains a BadESRecordException,
-				//    then ignore the exception and return an empty list of related words
-				throw new ServiceException(
-					"Exception raised while searching for related words", e);
+				// For some reason, some ElasticSearch records can become corrupted
+				// and raise exceptions. If that happens, just ignore the exception
+				// return an empty list of expansions
+				if (BadESRecordException.includedInStackOf(e)) {
+					relatedWords = new MorphologicalRelative[0];
+				} else {
+					throw new ServiceException(
+						"Exception raised while searching for related words", e);
+				}
 			}
 		}
 
