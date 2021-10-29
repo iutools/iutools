@@ -263,14 +263,15 @@ public class SpellChecker {
 		Logger tLogger = Logger.getLogger("org.iutools.spellchecker.SpellChecker.correctWord");
 		Logger excLogger = Logger.getLogger("org.iutools.spellchecker.SpellChecker.correctWord.exc");
 
+		SpellingCorrection corr = new SpellingCorrection(word);
 		try {
 			if (maxCorrections == null) maxCorrections = DEFAULT_CORRECTIONS;
 
 			long start = StopWatch.nowMSecs();
 
 			SpellDebug.trace("SpellChecker.correctWord",
-			"Invoked on word=" + word,
-			word, null);
+				"Invoked on word=" + word,
+				word, null);
 
 			boolean wordIsSyllabic = Syllabics.allInuktitut(word);
 
@@ -279,9 +280,8 @@ public class SpellChecker {
 				wordInLatin = TransCoder.unicodeToRoman(word);
 			}
 
-			SpellingCorrection corr = new SpellingCorrection(word);
-				corr.wasMispelled = isMispelled(wordInLatin);
-				tLogger.trace("wasMispelled= " + corr.wasMispelled);
+			corr.wasMispelled = isMispelled(wordInLatin);
+			tLogger.trace("wasMispelled= " + corr.wasMispelled);
 
 			SpellDebug.trace("SpellChecker.correctWord",
 				"corr.wasMispelled=" + corr.wasMispelled,
@@ -391,15 +391,23 @@ public class SpellChecker {
 			long elapsed = StopWatch.elapsedMsecsSince(start);
 			tLogger.trace("word=" + word + " took " + elapsed + "msecs");
 
-			return corr;
 		} catch (Exception e) {
 			excLogger.trace("word="+word+" raised exception e="+e+"\nCall stack was:\n"+ Debug.printCallStack(e));
-			if (e instanceof SpellCheckerException) {
-				throw e;
+			if (BadESRecordException.includedInStackOf(e)) {
+				// For some reason ElasticSearch sometimes become corrupted and cause
+				// exceptions to be raised. When that happens in the course of correcting
+				// a word, just pretend it didn't happen and return a "default" correction.
+				corr = new SpellingCorrection(word);
 			} else {
-				throw new SpellCheckerException(e);
+				if (e instanceof SpellCheckerException) {
+					throw e;
+				} else {
+					throw new SpellCheckerException(e);
+				}
 			}
 		}
+
+		return corr;
 	}
 
 	private boolean applyAbsoluteMistakeCorrections(

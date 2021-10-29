@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 
 import org.iutools.linguisticdata.LinguisticData;
 import org.iutools.linguisticdata.LinguisticDataException;
+import org.iutools.linguisticdata.MorphemeException;
 import org.iutools.morph.*;
 import org.iutools.morph.r2l.DecompositionState.DecompositionExpression;
 import org.iutools.morph.MorphologicalAnalyzerException;
@@ -50,7 +51,7 @@ public class MorphemeDictionary {
 		this.nbWordsToBeDisplayed = n;
 	}
 	
-	public List<MorphDictionaryEntry> search(String partialMorpheme) throws Exception {
+	public List<MorphDictionaryEntry> search(String partialMorpheme) throws MorphemeDictionaryException {
 		Logger tLogger = Logger.getLogger("org.iutools.morphemesearcher.MorphemeDictionary.wordsContainingMorpheme");
 		tLogger.trace("partialMorpheme= "+partialMorpheme);
 
@@ -59,7 +60,12 @@ public class MorphemeDictionary {
 		Set<String> morphemeIDs = canonicalMorphemesContaining(partialMorpheme);
 
 		for (String morpheme: morphemeIDs) {
-			MorphDictionaryEntry morphEntry = new MorphDictionaryEntry(morpheme);
+			MorphDictionaryEntry morphEntry = null;
+			try {
+				morphEntry = new MorphDictionaryEntry(morpheme);
+			} catch (MorphemeException e) {
+				throw new MorphemeDictionaryException(e);
+			}
 			tLogger.trace("Looking at morpheme="+morpheme);
 			HashMap<String, List<WordWithMorpheme>> morphid2wordsFreqs =
 				mostFrequentWordsWithMorpheme(morpheme);

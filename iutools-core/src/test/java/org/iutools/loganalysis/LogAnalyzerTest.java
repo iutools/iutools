@@ -3,7 +3,6 @@ package org.iutools.loganalysis;
 import ca.nrc.testing.RunOnCases;
 import ca.nrc.testing.RunOnCases.*;
 import ca.nrc.testing.TestDirs;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -24,7 +23,8 @@ public class LogAnalyzerTest {
 		"-- webservice.endpoint@08:23:10,067(thr=http-nio-80-exec-2): {\"_phase\":\"START\",\"_taskID\":\"2021-10-27T12:23:10.053Z\",\"_uri\":\"/iutools/srv2/morpheme_dictionary\",\"taskData\":{\"_taskID\":\"2021-10-27T12:23:10.053Z\",\"_taskStartTime\":1635337390053,\"nbExamples\":\"10\",\"wordPattern\":\"tut\"}}";
 	private static String sampleLine__morpheme_dictionary__END =
 		"-- webservice.endpoint@08:23:10,574(thr=http-nio-80-exec-2): {\"_taskID\":\"2021-10-27T12:23:10.053Z\",\"_uri\":\"/iutools/srv2/morpheme_dictionary\",\"_taskElapsedMsecs\":521,\"_phase\":\"END\"}";
-
+	private static String sampleLine__spell__Exception =
+		"-- webservice.endpoint@11:33:25,293(thr=http-nio-8080-exec-2): {\"exception\":\"Some exception\",\"_taskID\":\"2021-10-29T15:33:25.202Z\",\"_uri\":\"/iutools/srv2/spell\",\"suggestCorrections\":false,\"_taskStartTime\":1635521605227,\"_action\":null,\"text\":\"nunavvvut\",\"includePartiallyCorrect\":false,\"taskElapsedMsecs\":null}";
 
 	@BeforeEach
 	public void setUp(TestInfo testInfo) throws Exception {
@@ -176,6 +176,14 @@ public class LogAnalyzerTest {
 					.setPhase("END")
 					.setElapsedMSecs(521)
 				),
+
+			new Case("spell Exception raised", sampleLine__spell__Exception,
+				new EndpointLine()
+					.setUri("spell")
+					.setExceptionRaised("Some exception")
+				),
+
+
 		};
 
 		Consumer<Case> runner = (aCase) -> {
@@ -191,7 +199,7 @@ public class LogAnalyzerTest {
 		};
 
 		new RunOnCases(cases, runner)
-//			.onlyCaseNums(4)
+//			.onlyCaseNums(5)
 			.run();
 	}
 }

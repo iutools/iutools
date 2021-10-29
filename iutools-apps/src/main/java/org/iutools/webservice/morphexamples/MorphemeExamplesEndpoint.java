@@ -3,15 +3,16 @@ package org.iutools.webservice.morphexamples;
 import ca.nrc.json.PrettyPrinter;
 import org.apache.log4j.Logger;
 import org.iutools.corpus.CompiledCorpus;
+import org.iutools.corpus.CompiledCorpusException;
 import org.iutools.corpus.CompiledCorpusRegistry;
-import org.iutools.linguisticdata.LinguisticData;
-import org.iutools.linguisticdata.Morpheme;
-import org.iutools.linguisticdata.MorphemeHumanReadableDescr;
+import org.iutools.linguisticdata.*;
 import org.iutools.morphemedict.MorphDictionaryEntry;
 import org.iutools.morphemedict.MorphemeDictionary;
+import org.iutools.morphemedict.MorphemeDictionaryException;
 import org.iutools.morphemedict.ScoredExample;
 import org.iutools.webservice.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -105,7 +106,9 @@ public class MorphemeExamplesEndpoint
 				results.examplesForMorpheme.put(
 					w.morphemeWithId, words.toArray(new String[0]));
 			}
-		} catch (Exception e) {
+		} catch (MorphemeDictionaryException | CompiledCorpusException | IOException | MorphemeException | LinguisticDataException e) {
+			// TODO-AD-BadESRecord: If stack of e contains a BadESRecordException,
+			//    then ignore the exception and return an empty result
 			throw new MorphemeExamplesException(e);
 		}
 		tLogger.trace("end of method");

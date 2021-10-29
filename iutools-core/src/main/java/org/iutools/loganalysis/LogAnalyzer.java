@@ -7,8 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -46,6 +45,14 @@ public class LogAnalyzer {
 
 	private void init_LogAnalyzer(BufferedReader _reader) throws LogAnalyzerException {
 		this.reader = _reader;
+	}
+
+	public List<String> categories() {
+		List<String> cats = new ArrayList<String>();
+		cats.addAll(epaStats.keySet());
+		Collections.sort(cats, (c1, c2) -> c1.compareTo(c2));
+
+		return cats;
 	}
 
 	public void analyze() throws LogAnalyzerException {

@@ -18,6 +18,7 @@ public abstract class LogLine {
 	JSONObject json = new JSONObject();
 	String phase = null;
 	Integer elapsedMSecs = null;
+	String exceptionRaised = null;
 
 	public LogLine() {
 		init__LogLine((JSONObject)null);
@@ -42,6 +43,10 @@ public abstract class LogLine {
 			elapsedMSecs = taskData().getInt("taskElapsedMsecs");
 		} else if (json.has("_taskElapsedMsecs")) {
 			elapsedMSecs = json.getInt("_taskElapsedMsecs");
+		}
+
+		if (json.has("exception")) {
+			exceptionRaised = json.getString("exception");
 		}
 	}
 
@@ -69,10 +74,17 @@ public abstract class LogLine {
 		return this;
 	}
 
+	public LogLine setExceptionRaised(String excMess) {
+		exceptionRaised = excMess;
+		json.put("exception", excMess);
+		return this;
+	}
+
 	public JSONObject taskData() {
 		if (!json.has("taskData")) {
 			json.put("taskData", new JSONObject());
 		}
 		return json.getJSONObject("taskData");
 	}
+
 }

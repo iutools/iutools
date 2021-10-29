@@ -8,4 +8,5 @@ public class CompiledCorpusException extends Exception {
 
 	public CompiledCorpusException(String mess, Exception e) { super(mess, e); }
 
+
 }

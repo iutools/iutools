@@ -193,7 +193,7 @@ public class CompiledCorpus {
 		String[] segments;
 		try {
 			segments = getSegmenter().segment(word);
-		} catch (TimeoutException | StringSegmenterException | LinguisticDataException | CompiledCorpusException e) {
+		} catch (TimeoutException | StringSegmenterException | LinguisticDataException e) {
 			throw new CompiledCorpusException(e);
 		}
 		return segments;
@@ -283,7 +283,7 @@ public class CompiledCorpus {
 //				_esClient.synchedHttpCalls = false;
 				_esClient.synchedHttpCalls = true;
 			} catch (ElasticSearchException e) {
-				throw new CompiledCorpusException(e);
+				throw wrapESException(e);
 			}
 
 			if (debugMode()) {
@@ -357,7 +357,7 @@ public class CompiledCorpus {
 						jsonFile.toString(), WORD_INFO_TYPE, 100,
 						verbose, overwrite);
 			} catch (ElasticSearchException e) {
-				throw new CompiledCorpusException(e);
+				throw wrapESException(e);
 			}
 		}
 
@@ -377,7 +377,7 @@ public class CompiledCorpus {
 		try {
 			esClient().putDocument(LastLoadedDate.esTypeName, lastLoadedRecord);
 		} catch (ElasticSearchException e) {
-			throw new CompiledCorpusException(e);
+			throw wrapESException(e);
 		}
 
 		if (tLogger.isTraceEnabled()) {
@@ -411,7 +411,7 @@ public class CompiledCorpus {
 				}
 			}
 		} catch (ElasticSearchException e) {
-			throw new CompiledCorpusException(e);
+			throw wrapESException(e);
 		}
 
 		return okToLoad;
@@ -424,11 +424,25 @@ public class CompiledCorpus {
 					esClient().listAll(WORD_INFO_TYPE, winfoPrototype);
 			total = results.getTotalHits();
 		} catch (ElasticSearchException e) {
-			throw new CompiledCorpusException(e);
+//			throw new CompiledCorpusException(e);
+			throw wrapESException(e);
 		}
 
 		return total;
 	}
+
+	private CompiledCorpusException wrapESException(ElasticSearchException e) {
+		return wrapESException(null, e);
+	}
+
+	private CompiledCorpusException wrapESException(String mess, ElasticSearchException e) {
+		CompiledCorpusException wrapped = new CompiledCorpusException(mess, e);
+		if (e.getMessage().contains("JSON inputs did not have the structure of class")) {
+			wrapped = new BadESRecordException(mess, e);
+		}
+		return wrapped;
+	}
+
 
 	public long totalOccurencesOf(String word) throws CompiledCorpusException {
 		long frequency = 0;
@@ -441,7 +455,7 @@ public class CompiledCorpus {
 				frequency = winfo.frequency;;
 			}
 		} catch (ElasticSearchException e) {
-			throw new CompiledCorpusException(e);
+			throw wrapESException(e);
 		}
 		return frequency;
 	}
@@ -621,10 +635,13 @@ public class CompiledCorpus {
 				(WordInfo) esClient().getDocumentWithID(
 					word, WordInfo.class, WORD_INFO_TYPE);
 		} catch (RuntimeException | ElasticSearchException e) {
-			tLogger.trace(traceLabel+"raised exception e="+e);
-			tLogger.trace(traceLabel+"call stack was:"+Debug.printCallStack(e));
-
-			throw new CompiledCorpusException(e);
+			tLogger.trace(traceLabel + "raised exception e=" + e);
+			tLogger.trace(traceLabel + "call stack was:" + Debug.printCallStack(e));
+			if (e instanceof ElasticSearchException) {
+				throw wrapESException((ElasticSearchException)e);
+			} else {
+				throw new CompiledCorpusException(e);
+			}
 		}
 
 		boolean answer = (winfo != null);
@@ -794,7 +811,7 @@ public class CompiledCorpus {
 			// If this is a "no such index" exception, then don't worry.
 			// It just means that the index is currently empty.
 			if (!e.isNoSuchIndex()) {
-				throw new CompiledCorpusException("Could not retrieve ElasticSearch info for word " + word, e);
+				throw wrapESException("Could not retrieve ElasticSearch info for word " + word, e);
 			}
 		}
 
@@ -810,7 +827,7 @@ public class CompiledCorpus {
 			esClient().putDocument(WORD_INFO_TYPE, winfo);
 			tLogger.trace("DONE putting the updated winfo");
 		} catch (ElasticSearchException e) {
-			throw new CompiledCorpusException("Error putting ES info for word "+word, e);
+			throw wrapESException("Error putting ES info for word "+word, e);
 		}
 
 		tLogger.trace("Exiting for word="+word);
@@ -823,7 +840,7 @@ public class CompiledCorpus {
 		try {
 			esClient().deleteDocumentWithID(word, WORD_INFO_TYPE);
 		} catch (ElasticSearchException e) {
-			throw new CompiledCorpusException(e);
+			throw wrapESException(e);
 		}
 	}
 
@@ -889,7 +906,7 @@ public class CompiledCorpus {
 							additionalReqBodies);
 
 		} catch (ElasticSearchException e) {
-			throw new CompiledCorpusException(e);
+			throw wrapESException(e);
 		}
 
 		return results;
@@ -923,7 +940,7 @@ public class CompiledCorpus {
 					esClient().search(
 							query, WORD_INFO_TYPE, new WordInfo(), additionalReqBodies);
 		} catch (ElasticSearchException e) {
-			throw new CompiledCorpusException(e);
+			throw wrapESException(e);
 		}
 
 		return results;
@@ -1001,7 +1018,7 @@ public class CompiledCorpus {
 				(WordInfo) esClient()
 					.getDocumentWithID(word, WordInfo.class, WORD_INFO_TYPE);
 		} catch (ElasticSearchException e) {
-			throw new CompiledCorpusException(e);
+			throw wrapESException(e);
 		}
 
 		return winfo;
@@ -1015,7 +1032,7 @@ public class CompiledCorpus {
 			allWinfos =
 					esClient().listAll(WORD_INFO_TYPE, winfoPrototype, sort);
 		} catch (ElasticSearchException e) {
-			throw new CompiledCorpusException(e);
+			throw wrapESException(e);
 		}
 
 		return allWinfos;
@@ -1024,8 +1041,10 @@ public class CompiledCorpus {
 	private void esClearIndex() throws CompiledCorpusException {
 		try {
 			esClient().clearIndex();
-		} catch (ElasticSearchException | IOException | InterruptedException e) {
+		} catch (IOException | InterruptedException e) {
 			throw new CompiledCorpusException(e);
+		} catch (ElasticSearchException e) {
+			throw wrapESException(e);
 		}
 	}
 
@@ -1114,7 +1133,7 @@ public class CompiledCorpus {
 		} catch (ElasticSearchException e) {
 			tLogger.trace(
 				"Caught exception e="+e+"\nCall stack: "+Debug.printCallStack(e));
-			throw new CompiledCorpusException(e);
+			throw wrapESException(e);
 		}
 		tLogger.trace(
 				"indexName="+indexName+"; last loaded date = "+

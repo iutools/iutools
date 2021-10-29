@@ -7,6 +7,7 @@ import org.junit.Test;
 
 public class NumericExpressionTest {
 
+
 	@Test
 	public void test__tokenIsNumberWithSuffix() {
 		String token;

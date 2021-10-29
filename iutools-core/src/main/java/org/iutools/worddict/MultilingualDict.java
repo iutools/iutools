@@ -139,6 +139,8 @@ public class MultilingualDict {
 				computeRelatedWords(entry, fullRelatedWordEntries);
 			}
 		} catch (CompiledCorpusException e) {
+			// TODO-AD-BadESRecord: If stack of e contains a BadESRecordException,
+			//    then ignore the exception and return a null entry
 			throw new MultilingualDictException(e);
 		}
 
@@ -492,10 +494,12 @@ public class MultilingualDict {
 			totalWords = corpus.totalWordsWithCharNgram(partialWord, options);
 			wordsIter = corpus.wordsContainingNgram(partialWord, options);
 		} catch (CompiledCorpusException | TransCoderException e) {
+			// TODO-AD-BadESRecord: If stack of e contains a BadESRecordException,
+			//    then ignore the exception and return an empty iterator with totalWords = 0
 			throw new MultilingualDictException(e);
 		}
 
-		return Pair.of(wordsIter,totalWords);
+		return Pair.of(wordsIter, totalWords);
 	}
 
 	private boolean wordExists(String partialWord, String lang) throws MultilingualDictException, TranslationMemoryException {
@@ -520,6 +524,8 @@ public class MultilingualDict {
 		try {
 			winfo = corpus.info4word(word);
 		} catch (CompiledCorpusException e) {
+			// TODO-AD-BadESRecord: If stack of e contains a BadESRecordException,
+			//    then ignore the exception and return false
 			throw new MultilingualDictException(e);
 		}
 		return winfo != null;

@@ -33,6 +33,8 @@ public class ExpandQueryEndpoint
 			try {
 				relatedWords = relsFinder.findRelatives(inputs.origQuery);
 			} catch (MorphRelativesFinderException e) {
+				// TODO-AD-BadESRecord: If stack of e contains a BadESRecordException,
+				//    then ignore the exception and return an empty list of related words
 				throw new ServiceException(
 					"Exception raised while searching for related words", e);
 			}
