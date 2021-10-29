@@ -237,50 +237,7 @@ div#gist-alignments span.highlighted { font-weight:bold; color:red; }
 
 /* GISTTEXT */
 
-#div-wordentry {
-	position:fixed;
-	top:40px;
-	width:600px;
-	height:600px;
-	right:100px;
-	display:none;
-	border:1px solid black;
-	border-radius:3px;
-	padding:5px;
-}
 #div-wordentry-holder { font-weight:bold; color:white; background-color:green; padding-left:6px; }
-#div-wordentry #div-wordentry-iconizer {
-	background-color:white;
-	position:absolute;
-	top:0;
-	right:0;
-	cursor:pointer;
-	vertical-align:middle;
-}
-#div-wordentry #div-wordentry-iconizer img {
-	vertical-align:middle;
-}
-#div-wordentry #div-wordentry-contents {
-	overflow-y: scroll;
-	height:577px;
-	margin-top:5px;
-}
-#div-wordentry-iconized {
-	position:fixed;
-	text-align:center;
-	right:0;
-	bottom:0;
-	width:30px;
-	height:30px;
-	line-height:30px;
-	background-color:#ccccff;
-	border:1px solid black;
-	display:none;
-	cursor:pointer;
-}
-#div-wordentry-iconized img {
-	vertical-align:middle;
-}
 
 strong{
     font-weight:bold;

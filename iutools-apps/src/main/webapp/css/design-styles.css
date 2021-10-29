@@ -392,16 +392,13 @@ main {
     position: fixed;
     top: 40px;
     right: 5vw;
-    flex-direction: column;
     width: 600px;
     max-width: 90vw;
-    max-height: calc(100vh - 60px);
     padding: 0;
-    padding-bottom: 10px;
+		padding-bottom: 10px;
     background: #fff;
     box-shadow: -4px 4px 12px rgba(0, 0, 0, 0.6);
     border: none;
-    overflow: hidden;
 }
 
 .div-floating-dlg-titlebar {
@@ -417,10 +414,8 @@ main {
 }
 
 .div-floating-dlg .div-floating-dlg-contents {
-    max-height: calc(100vh - 140px);
     margin-top: 0;
     padding: 5px 5px 20px 5px;
-    overflow-y: scroll;
 }
 
 .div-floating-dlg:after {
@@ -451,7 +446,17 @@ main {
 /* Word Entry dialog */
 
 #div-wordentry {
+	flex-direction: column;
 	height: 600px;
+	max-height: calc(100vh - 60px);
+}
+
+#div-wordentry[style*="display: block;"] {
+	display: flex !important;
+}
+
+#div-wordentry #div-wordentry-contents {
+	overflow-y: scroll;
 }
 
 #div-wordentry #div-wordentry-iconizer, div#div-wordentry-iconized {
@@ -461,6 +466,7 @@ main {
     top: 8px;
     right: 8px;
     border-radius: 20px;
+		vertical-align: middle;
     z-index: 20;
     background-color: white;
     cursor: pointer;
@@ -470,12 +476,16 @@ main {
     margin-left: -2px;
     margin-top: -2px;
     opacity: .7;
+		vertical-align: middle;
 }
 
 div#div-wordentry-iconized {
+		position: fixed;
+		display: none;
     top: auto;
     right: 10px;
     bottom: 10px;
+		text-align: center;
     background: #a6d5ed;
     border: none;
 }
@@ -519,6 +529,10 @@ div#div-wordentry-iconized {
 .ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active, a.ui-button:active, .ui-button:active, .ui-button.ui-state-active:hover {
 	background: #0274ad !important;
 	border: 1px solid #0274ad !important;
+}
+
+.ui-accordion .ui-accordion-header {
+	margin: 5px 0 0 0 !important;
 }
 
 .ui-accordion .ui-accordion-content {
