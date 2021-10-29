@@ -512,7 +512,7 @@ class SpellController extends IUToolsController {
     checkedWordID(origWord, tokenID) {
         var origWordEscaped = origWord.replace("'", "\'");
         var id = origWordEscaped+"_"+tokenID;
-        return i;
+        return id;
     }
 }
 
