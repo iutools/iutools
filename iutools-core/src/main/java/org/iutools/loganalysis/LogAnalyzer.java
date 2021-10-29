@@ -100,10 +100,10 @@ public class LogAnalyzer {
 	}
 
 	public EPA_Stats stats4epa(String epaName) throws LogAnalyzerException {
-		if (!epaStats.containsKey(epaName)) {
-			throw new LogAnalyzerException("Unknown Action or Endpoint name: "+epaName);
+		EPA_Stats stats = new EPA_Stats();
+		if (epaStats.containsKey(epaName)) {
+			stats = epaStats.get(epaName);
 		}
-		EPA_Stats stats = epaStats.get(epaName);
 		return stats;
 	}
 }

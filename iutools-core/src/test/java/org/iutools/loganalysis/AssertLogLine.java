@@ -26,6 +26,7 @@ public class AssertLogLine extends Asserter<LogLine> {
 
 		Set<String> ignoreFields = new HashSet<String>();
 		ignoreFields.add("json");
+		ignoreFields.add("text");
 		AssertObject.assertDeepEquals(
 			"Object generated from log line was not as expected.",
 			expLine, line(), ignoreFields, 0);

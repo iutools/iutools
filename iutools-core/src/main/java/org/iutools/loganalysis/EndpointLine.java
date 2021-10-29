@@ -38,6 +38,7 @@ public class EndpointLine extends LogLine {
 
 	private static String trimUri(String _uri) {
 		String trimmed = _uri.replaceAll("/iutools/srv.?/", "");
+		trimmed = trimmed.replaceAll("/$", "");
 		return trimmed;
 	}
 }

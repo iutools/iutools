@@ -8,6 +8,8 @@ import java.util.regex.Pattern;
 
 public abstract class LogLine {
 
+	public String text = null;
+
 	public abstract LogLine setPhase(String _phase);
 
 	static Pattern pattLine = Pattern.compile(
@@ -55,6 +57,7 @@ public abstract class LogLine {
 			} else {
 				lineObj = new UserActionLine(jsonObj);
 			}
+			lineObj.text = line;
 		}
 		return lineObj;
 	}

@@ -101,9 +101,12 @@ public class LogAnalyzerTest {
 				.avgMSecsIs(1204.8)
 				;
 
-			new AssertEPA_Stats(analyzer.stats4epa("morpheme_dictionary"))
-				.frequencyIs(2)
-				.avgMSecsIs(698.5)
+			new AssertEPA_Stats(analyzer.stats4epa("spell"))
+				// Note: The stats for "spell" endpoint are a bit counter-intuitive
+				//  because we do not log the START of any of those endpoints,
+				//  and we only log the END in cases where the word is misspelled.
+				.frequencyIs(0)
+				.avgMSecsIs(0.0)
 				;
 
 			new AssertEPA_Stats(analyzer.stats4epa("search/expandquery"))
@@ -111,25 +114,20 @@ public class LogAnalyzerTest {
 				.avgMSecsIs(77.0)
 				;
 
+			new AssertEPA_Stats(analyzer.stats4epa("morpheme_dictionary"))
+				.frequencyIs(2)
+				.avgMSecsIs(698.5)
+				;
+
 			new AssertEPA_Stats(analyzer.stats4epa("tokenize"))
 				.frequencyIs(1)
 				.avgMSecsIs(13.0)
 				;
 
-//			new AssertEPA_Stats(analyzer.stats4epa("gist/preparecontent"))
-//				.frequencyIs(-1)
-//				.avgMSecsIs(-13.0)
-//				;
-
-//			try {
-//				endpoints.put("spell", new SpellEndpoint());
-//			} catch (ServiceException e) {
-//				// Just ignore the exception and setup the remaining endpoints
-//			}
-//			endpoints.put("gist/preparecontent", new GistPrepareContentEndpoint());
-//			endpoints.put("gist/gistword", new GistWordEndpoint());
-//			endpoints.put("worddict", new WordDictEndpoint());
-
+			new AssertEPA_Stats(analyzer.stats4epa("gist/preparecontent"))
+				.frequencyIs(3)
+				.avgMSecsIs(1500.3)
+				;
 		}
 	}
 
@@ -150,16 +148,6 @@ public class LogAnalyzerTest {
 			.avgMSecsIs(516.6)
 			;
 
-	}
-
-	@Test
-	public void test__stats4epa__UnknownEPAName__RaisesException() throws Exception {
-		Path logFile = testDirs.inputsFile("samplelogs/samplelog_morphdict.txt");
-		LogAnalyzer analyzer = new LogAnalyzer(logFile);
-		analyzer.analyze();
-		Assertions.assertThrows(LogAnalyzerException.class, () -> {
-			EPA_Stats stats = analyzer.stats4epa("UNKNOWN");
-		});
 	}
 
 	@Test
