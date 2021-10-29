@@ -112,7 +112,18 @@ public abstract class Endpoint
 		} catch (Exception e2) {
 			throw new RuntimeException(e2);
 		}
-		errorLogger().error("Error processing inputs: "+inputsJson, e);
+		if (inputsJson == null) {
+			inputsJson = "{}";
+		}
+		JSONObject inputsJsonObj =
+			new JSONObject(inputsJson)
+			.put("exception", e.getMessage());
+		String uri = null;
+		if (request != null) {
+			uri = request.getRequestURI();
+		}
+		inputsJsonObj.put("_uri", uri);
+		errorLogger().error(inputsJsonObj.toString(), e);
 	}
 
 	private void ensureInputTaskIDAndStartTimeAreDefined(I inputs) throws ServiceException {
