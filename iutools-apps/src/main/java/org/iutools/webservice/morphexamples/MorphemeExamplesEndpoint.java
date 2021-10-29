@@ -2,6 +2,7 @@ package org.iutools.webservice.morphexamples;
 
 import ca.nrc.json.PrettyPrinter;
 import org.apache.log4j.Logger;
+import org.iutools.corpus.BadESRecordException;
 import org.iutools.corpus.CompiledCorpus;
 import org.iutools.corpus.CompiledCorpusException;
 import org.iutools.corpus.CompiledCorpusRegistry;
@@ -107,9 +108,14 @@ public class MorphemeExamplesEndpoint
 					w.morphemeWithId, words.toArray(new String[0]));
 			}
 		} catch (MorphemeDictionaryException | CompiledCorpusException | IOException | MorphemeException | LinguisticDataException e) {
-			// TODO-AD-BadESRecord: If stack of e contains a BadESRecordException,
-			//    then ignore the exception and return an empty result
-			throw new MorphemeExamplesException(e);
+			if (BadESRecordException.includedInStackOf(e)) {
+				// For some reason ElasticSearch sometimes become corrupted and cause
+				// exceptions to be raised. When that happens in the course of correcting
+				// a word, just pretend it didn't happen and return a "default" correction.
+				results = new MorphemeExamplesResult();
+			} else {
+				throw new MorphemeExamplesException(e);
+			}
 		}
 		tLogger.trace("end of method");
 		return results;

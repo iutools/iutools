@@ -74,12 +74,7 @@ public class MorphemeDictionary {
 			Bin[] rootBins = separateWordsByRoot(morphid2wordsFreqs);
 			tLogger.trace("After separateWordsByRoot()");
 
-			HashMap<String, List<ScoredExample>> morphids2scoredExamples = null;
-			try {
-				morphids2scoredExamples = computeWordsWithScoreFromBins(rootBins);
-			} catch (Exception e) {
-				throw new MorphemeDictionaryException(e);
-			}
+			HashMap<String, List<ScoredExample>> morphids2scoredExamples = computeWordsWithScoreFromBins(rootBins);
 			tLogger.trace("morphids2scoredExamples: " + morphids2scoredExamples.size());
 			Set<String> keys = morphids2scoredExamples.keySet();
 			Iterator<String> iter = keys.iterator();
