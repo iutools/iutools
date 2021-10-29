@@ -1,11 +1,14 @@
 package org.iutools.loganalysis;
 
+import org.apache.log4j.Logger;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.regex.Matcher;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -15,6 +18,8 @@ public class LogAnalyzer {
 
 	public Path logFile = null;
 	BufferedReader reader = null;
+
+	Map<String,EPA_Stats> epaStats = new HashMap<String,EPA_Stats>();
 
 	static Pattern pattActionStart = Pattern.compile("\"_action\":\"([^\"]+)\",\"_phase\":\"START\"");
 
@@ -43,38 +48,62 @@ public class LogAnalyzer {
 		this.reader = _reader;
 	}
 
-	public void analyze() {
-	}
-
-	public EPA_Stats actionStats(String action) throws LogAnalyzerException {
-		EPA_Stats stats = new EPA_Stats();
+	public void analyze() throws LogAnalyzerException {
+		Logger tLogger = Logger.getLogger("org.iutools.loganalysis.LogAnalyzer.analyze");
 		while (true) {
 			try {
 				String line = reader.readLine();
+				tLogger.trace("Looking at line="+line);
 				if (line == null) {
 					break;
 				}
-				String lineAction = actionForLine(line);
-				if (lineAction != null && lineAction.equals(action)) {
-					stats.frequency++;
+				LogLine lineObj = LogLine.parseLine(line);
+				if (lineObj != null) {
+					updateGenericStats(lineObj);
+					if (lineObj instanceof UserActionLine) {
+						onUserActionLine((UserActionLine) lineObj);
+					} else if (lineObj instanceof EndpointLine) {
+						onEndpointLine((EndpointLine) lineObj);
+					}
 				}
 			} catch (IOException e) {
 				throw new LogAnalyzerException(e);
 			}
 		}
-		return stats;
+		return;
 	}
 
-	protected static String actionForLine(String line) {
-		Matcher matcher = pattActionStart.matcher(line);
-		String action = null;
-		if (matcher.find()) {
-			action = matcher.group(1);
+	private void updateGenericStats(LogLine line) {
+		String key = null;
+		if (line instanceof UserActionLine) {
+			key = ((UserActionLine) line).action;
+		} else if (line instanceof EndpointLine) {
+			key = ((EndpointLine)line).uri;
 		}
-		return action;
+		if (!epaStats.containsKey(key)) {
+			epaStats.put(key, new EPA_Stats());
+		}
+		EPA_Stats stats = this.epaStats.get(key);
+		if (line.phase.equals("START")) {
+			stats.frequency++;
+		} else if (line.phase.equals("END")) {
+			if (line.elapsedMSecs != null) {
+				stats.totalElapsedMSecs += line.elapsedMSecs;
+			}
+		}
 	}
 
-	public EPA_Stats endpointStats(String spell) {
-		return null;
+	private void onUserActionLine(UserActionLine line) {
+	}
+
+	private void onEndpointLine(EndpointLine lineObj) {
+	}
+
+	public EPA_Stats stats4epa(String epaName) throws LogAnalyzerException {
+		if (!epaStats.containsKey(epaName)) {
+			throw new LogAnalyzerException("Unknown Action or Endpoint name: "+epaName);
+		}
+		EPA_Stats stats = epaStats.get(epaName);
+		return stats;
 	}
 }

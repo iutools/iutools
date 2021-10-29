@@ -49,10 +49,10 @@ public class LogAnalyzerTest {
 
 		// Get some stats about the various actions and endpoints
 		// This gets stats about the 'MORPHEME_SEARCH' *ACTION*
-		EPA_Stats spellActionStats = analyzer.actionStats("MORPHEME_SEARCH");
+		EPA_Stats spellActionStats = analyzer.stats4epa("MORPHEME_SEARCH");
 
 		// This gets stats about the 'morpheme_dictioanary' *END POINT*
-		EPA_Stats spellEndpointStats = analyzer.endpointStats("morpheme_dictioanary");
+		EPA_Stats spellEndpointStats = analyzer.stats4epa("morpheme_dictionary");
 	}
 
 
@@ -61,37 +61,105 @@ public class LogAnalyzerTest {
 	///////////////////////////////////
 
 	@Test
+	public void test__LogAnalyzer__AllTypes() throws Exception {
+		Path logFile = testDirs.inputsFile("samplelogs/samplelog_ALL.txt");
+		LogAnalyzer analyzer = new LogAnalyzer(logFile);
+		analyzer.analyze();
+
+		// Action stats
+		{
+			new AssertEPA_Stats(analyzer.stats4epa("DICTIONARY_SEARCH"))
+				.frequencyIs(1)
+				.avgMSecsIs(1282.0)
+				;
+
+			new AssertEPA_Stats(analyzer.stats4epa("WORD_LOOKUP"))
+				.frequencyIs(7)
+				.avgMSecsIs(1193.8)
+				;
+
+			new AssertEPA_Stats(analyzer.stats4epa("SEARCH_WEB"))
+				.frequencyIs(1)
+				.avgMSecsIs(77.0)
+				;
+
+			new AssertEPA_Stats(analyzer.stats4epa("MORPHEME_SEARCH"))
+				.frequencyIs(2)
+				.avgMSecsIs(698.5)
+				;
+
+			new AssertEPA_Stats(analyzer.stats4epa("GIST_TEXT"))
+				.frequencyIs(3)
+				.avgMSecsIs(1500.3)
+				;
+		}
+
+		// Endpoint stats
+		{
+			new AssertEPA_Stats(analyzer.stats4epa("worddict"))
+				.frequencyIs(8)
+				.avgMSecsIs(1204.8)
+				;
+
+			new AssertEPA_Stats(analyzer.stats4epa("morpheme_dictionary"))
+				.frequencyIs(2)
+				.avgMSecsIs(698.5)
+				;
+
+			new AssertEPA_Stats(analyzer.stats4epa("search/expandquery"))
+				.frequencyIs(1)
+				.avgMSecsIs(77.0)
+				;
+
+			new AssertEPA_Stats(analyzer.stats4epa("tokenize"))
+				.frequencyIs(1)
+				.avgMSecsIs(13.0)
+				;
+
+//			new AssertEPA_Stats(analyzer.stats4epa("gist/preparecontent"))
+//				.frequencyIs(-1)
+//				.avgMSecsIs(-13.0)
+//				;
+
+//			try {
+//				endpoints.put("spell", new SpellEndpoint());
+//			} catch (ServiceException e) {
+//				// Just ignore the exception and setup the remaining endpoints
+//			}
+//			endpoints.put("gist/preparecontent", new GistPrepareContentEndpoint());
+//			endpoints.put("gist/gistword", new GistWordEndpoint());
+//			endpoints.put("worddict", new WordDictEndpoint());
+
+		}
+	}
+
+
+	@Test
 	public void test__LogAnalyzer__morphdict() throws Exception {
 		Path logFile = testDirs.inputsFile("samplelogs/samplelog_morphdict.txt");
 		LogAnalyzer analyzer = new LogAnalyzer(logFile);
 		analyzer.analyze();
-		EPA_Stats spellActionStats = analyzer.actionStats("MORPHEME_SEARCH");
-		new AssertEPA_Sats(spellActionStats)
+
+		new AssertEPA_Stats(analyzer.stats4epa("MORPHEME_SEARCH"))
 			.frequencyIs(3)
-//			.avgMSecsIs(999.0)
+			.avgMSecsIs(516.6)
 			;
 
-		// This gets stats about the 'morpheme_dictioanary' *END POINT*
-		EPA_Stats spellEndpointStats = analyzer.endpointStats("morpheme_dictioanary");
+		new AssertEPA_Stats(analyzer.stats4epa("MORPHEME_SEARCH"))
+			.frequencyIs(3)
+			.avgMSecsIs(516.6)
+			;
+
 	}
 
 	@Test
-	public void test__actionForLine__SeveralCases() throws Exception {
-		Case[] cases = new Case[] {
-			new Case("webservice.user_action", sampleLine__MORPHEME_SEARCH__START,
-				"MORPHEME_SEARCH"),
-		};
-
-		Consumer<Case> runner = (aCase) -> {
-			String line = (String) aCase.data[0];
-			String expAction = (String) aCase.data[1];
-			String gotAction = LogAnalyzer.actionForLine(line);
-			Assertions.assertEquals(expAction, gotAction,
-				"Action not as expected for log line: '"+line+"'");
-		};
-
-		new RunOnCases(cases, runner)
-			.run();
+	public void test__stats4epa__UnknownEPAName__RaisesException() throws Exception {
+		Path logFile = testDirs.inputsFile("samplelogs/samplelog_morphdict.txt");
+		LogAnalyzer analyzer = new LogAnalyzer(logFile);
+		analyzer.analyze();
+		Assertions.assertThrows(LogAnalyzerException.class, () -> {
+			EPA_Stats stats = analyzer.stats4epa("UNKNOWN");
+		});
 	}
 
 	@Test
@@ -99,20 +167,24 @@ public class LogAnalyzerTest {
 		Case[] cases = new Case[] {
 			new Case("MORPHEME_SEARCH START", sampleLine__MORPHEME_SEARCH__START,
 				new UserActionLine()
+					.setAction("MORPHEME_SEARCH")
 					.setPhase("START")),
 
 			new Case("MORPHEME_SEARCH END", sampleLine__MORPHEME_SEARCH__END,
 				new UserActionLine()
+					.setAction("MORPHEME_SEARCH")
 					.setPhase("END")
 					.setElapsedMSecs(521)
 				),
 
 			new Case("morpheme_dictionary START", sampleLine__morpheme_dictionary__START,
 				new EndpointLine()
+					.setUri("morpheme_dictionary")
 					.setPhase("START")),
 
 			new Case("morpheme_dictionary END", sampleLine__morpheme_dictionary__END,
 				new EndpointLine()
+					.setUri("morpheme_dictionary")
 					.setPhase("END")
 					.setElapsedMSecs(521)
 				),

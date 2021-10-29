@@ -4,6 +4,8 @@ import org.json.JSONObject;
 
 public class UserActionLine extends LogLine {
 
+	public String action = null;
+
 	public UserActionLine() {
 		super();
 	}
@@ -13,6 +15,9 @@ public class UserActionLine extends LogLine {
 	}
 
 	private void init__UserActionLine() {
+		if (taskData().has("_action")) {
+			action = taskData().getString("_action");
+		}
 	}
 
 	public LogLine setPhase(String _phase) {
@@ -21,4 +26,9 @@ public class UserActionLine extends LogLine {
 		return this;
 	}
 
+	public LogLine setAction(String _action) {
+		this.taskData().put("_action", _action);
+		this.action = _action;
+		return this;
+	}
 }
