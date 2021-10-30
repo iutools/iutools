@@ -1018,7 +1018,15 @@ public class CompiledCorpus {
 				(WordInfo) esClient()
 					.getDocumentWithID(word, WordInfo.class, WORD_INFO_TYPE);
 		} catch (ElasticSearchException e) {
-			throw wrapESException(e);
+			CompiledCorpusException wrapped = wrapESException(e);
+			// For some uknown reason, ElasticSearch records can sometimes become
+			// corrupted and raise exceptions. If that happens, just ignore the
+			// exception and return null
+			if (BadESRecordException.includedInStackOf(wrapped)) {
+				winfo = null;
+			} else {
+				throw wrapped;
+			}
 		}
 
 		return winfo;

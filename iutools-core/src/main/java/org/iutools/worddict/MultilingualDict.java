@@ -139,9 +139,14 @@ public class MultilingualDict {
 				computeRelatedWords(entry, fullRelatedWordEntries);
 			}
 		} catch (CompiledCorpusException e) {
-			// TODO-AD-BadESRecord: If stack of e contains a BadESRecordException,
-			//    then ignore the exception and return a null entry
-			throw new MultilingualDictException(e);
+			// For some uknown reason, ElasticSearch records can sometimes become
+			// corrupted and raise exceptions. If that happens, just ignore the
+			// exception and return an empty entry.
+			if (BadESRecordException.includedInStackOf(e)) {
+				entry = new MultilingualDictEntry(word);
+			} else {
+				throw new MultilingualDictException(e);
+			}
 		}
 
 		entry.sortTranslations();
@@ -494,9 +499,15 @@ public class MultilingualDict {
 			totalWords = corpus.totalWordsWithCharNgram(partialWord, options);
 			wordsIter = corpus.wordsContainingNgram(partialWord, options);
 		} catch (CompiledCorpusException | TransCoderException e) {
-			// TODO-AD-BadESRecord: If stack of e contains a BadESRecordException,
-			//    then ignore the exception and return an empty iterator with totalWords = 0
-			throw new MultilingualDictException(e);
+			// For some uknown reason, ElasticSearch records can sometimes become
+			// corrupted and raise exceptions. If that happens, just ignore the
+			// exception and return an empty iterator and a total words of 0.
+			if (BadESRecordException.includedInStackOf(e)) {
+				wordsIter = new ArrayList<String>().iterator();
+				totalWords = new Long(0);
+			} else {
+				throw new MultilingualDictException(e);
+			}
 		}
 
 		return Pair.of(wordsIter, totalWords);
@@ -524,8 +535,6 @@ public class MultilingualDict {
 		try {
 			winfo = corpus.info4word(word);
 		} catch (CompiledCorpusException e) {
-			// TODO-AD-BadESRecord: If stack of e contains a BadESRecordException,
-			//    then ignore the exception and return false
 			throw new MultilingualDictException(e);
 		}
 		return winfo != null;
