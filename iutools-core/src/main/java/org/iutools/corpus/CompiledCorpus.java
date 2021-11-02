@@ -279,7 +279,7 @@ public class CompiledCorpus {
 				_esClient =
 					new StreamlinedClient(indexName, CREATE_IF_NOT_EXISTS, UPDATES_WAIT_FOR_REFRESH)
 						.setSleepSecs(0.0)
-						.setResponseMapperPolicy(BadRecordHandling.STRICT);
+						.setResponseMapperPolicy(BadRecordHandling.LENIENT);
 					;
 				// 2021-01-10: Setting this to false should speed things up, but it may corrupt
 				// the ES index.
