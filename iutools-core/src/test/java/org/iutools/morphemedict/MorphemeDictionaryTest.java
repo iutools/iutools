@@ -201,7 +201,7 @@ public class MorphemeDictionaryTest {
 
 		new AssertMorphSearchResults(wordsForMorphemes, "")
 			.foundMorphemes(
-				"tut/tn-sim-s", "tut/1v", "tutik/1v", "tutaq/1n", "tuti/1v",
+				"tut/tn-sim-s", "tut/1v", "tutik/1v", "tuti/1v", "tutaq/1n",
 				"tutarut/1n", "tutiriaq/1n", "tutiriarmiutaq/1n")
 			.examplesForMorphemeStartWith("tutik/1v", Pair.of("tutinnikkut", new Long(1)))
 			.examplesForMorphemeStartWith("tut/tn-sim-s", Pair.of("ajjigiinngittut", new Long(138)))

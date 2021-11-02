@@ -14,6 +14,7 @@ import org.iutools.corpus.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -356,5 +357,44 @@ public class ESIndexRepair {
 
 			esClient().deleteDocumentWithID(id, esType);
 		}
+	}
+
+	public void repairCorpusFromJsonFile() throws ElasticSearchException {
+		Map<String,Boolean> idStates = stateOfAllDocs();
+		Path jsonFile = CompiledCorpusRegistry.jsonFile4corpus(indexName);
+		repairCorpusFromJsonFile(jsonFile, idStates);
+	}
+
+	private void repairCorpusFromJsonFile(Path jsonFile,
+		Map<String,Boolean> idStates) throws ElasticSearchException {
+		ObjectStreamReader reader = null;
+		try {
+			reader = new ObjectStreamReader(jsonFile.toFile());
+		} catch (FileNotFoundException e) {
+			throw new ElasticSearchException("Could not open JSON file for index "+indexName+". File: "+jsonFile);
+		}
+
+		StreamlinedClient esClient = new StreamlinedClient(indexName);
+		try {
+			while (true) {
+				WordInfo winfo = (WordInfo) reader.readObject();
+				if (winfo == null) {
+					break;
+				}
+				String word = winfo.word;
+				if (!idStates.containsKey(word) || !idStates.get(word)) {
+					// The word is either missing from the corpus index or it
+					// is corrupted. Re-add it.
+					esClient().putDocument(winfo);
+				}
+			}
+		} catch (ArithmeticException | IOException | ClassNotFoundException | ObjectStreamReaderException e) {
+			throw new ElasticSearchException(e);
+		}
+	}
+
+	private Map<String,Boolean> stateOfAllDocs() {
+		Map<String,Boolean> states = new HashMap<String,Boolean>();
+		return states;
 	}
 }

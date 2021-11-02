@@ -30,6 +30,7 @@ import org.json.JSONObject;
 
 import static ca.nrc.dtrc.elasticsearch.StreamlinedClient.ESOptions.CREATE_IF_NOT_EXISTS;
 import static ca.nrc.dtrc.elasticsearch.StreamlinedClient.ESOptions.UPDATES_WAIT_FOR_REFRESH;
+import static ca.nrc.dtrc.elasticsearch.ResponseMapper.*;
 
 /**
  * This class stores stats about Inuktut words seen in a corpus, such as:
@@ -277,7 +278,9 @@ public class CompiledCorpus {
 			try {
 				_esClient =
 					new StreamlinedClient(indexName, CREATE_IF_NOT_EXISTS, UPDATES_WAIT_FOR_REFRESH)
-						.setSleepSecs(0.0);
+						.setSleepSecs(0.0)
+						.setResponseMapperPolicy(BadRecordHandling.STRICT);
+					;
 				// 2021-01-10: Setting this to false should speed things up, but it may corrupt
 				// the ES index.
 //				_esClient.synchedHttpCalls = false;
@@ -473,8 +476,7 @@ public class CompiledCorpus {
 		Iterator<Hit<WordInfo>> iter = results.iterator();
 		tLogger.trace("# words found "+results.getTotalHits());
 
-		Pattern morphPatt = Pattern.compile("(^|\\s)([^\\s]*"+morpheme+"[^\\s]*)(\\s|$)");
-		while (iter.hasNext()) {
+		Pattern morphPatt = Pattern.compile("(^|\\s)([^\\s]*"+morpheme+"[^\\s]*)(\\s|$)");while (iter.hasNext()) {
 			WordInfo winfo = iter.next().getDocument();
 			tLogger.trace("Looking at word "+winfo.word);
 
@@ -683,7 +685,12 @@ public class CompiledCorpus {
 				.aggregate("totalOccurences", "sum", "frequency");
 		SearchResults<WordInfo> results =
 				esWinfoSearch(queryBody, aggsElt);
-		Double totalDbl = (Double) results.aggrResult("totalOccurences");
+		Double totalDbl = null;
+		try {
+			totalDbl = (Double) results.aggrResult("totalOccurences", Double.class);
+		} catch (ElasticSearchException e) {
+			throw new CompiledCorpusException(e);
+		}
 		long total = Math.round(totalDbl);
 
 		return total;
@@ -733,7 +740,12 @@ public class CompiledCorpus {
 
 		SearchResults<WordInfo> results = esWinfoSearch(query, aggs);
 		Double totalDbl =
-				(Double) results.aggrResult("totalOccurences");
+		null;
+		try {
+			totalDbl = (Double) results.aggrResult("totalOccurences", Double.class);
+		} catch (ElasticSearchException e) {
+			throw new CompiledCorpusException(e);
+		}
 		long total = Math.round(totalDbl);
 
 		return total;
@@ -757,7 +769,12 @@ public class CompiledCorpus {
 
 		SearchResults<WordInfo> results = esWinfoSearch(query, aggs);
 		Double totalDbl =
-				(Double) results.aggrResult("totalOccurences");
+		null;
+		try {
+			totalDbl = (Double) results.aggrResult("totalOccurences", Double.class);
+		} catch (ElasticSearchException e) {
+			throw new CompiledCorpusException(e);
+		}
 		long total = Math.round(totalDbl);
 
 		return total;
