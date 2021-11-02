@@ -98,6 +98,9 @@ public class LogAnalyzer {
 				stats.totalElapsedMSecs += line.elapsedMSecs;
 			}
 		}
+		if (line.exceptionRaised != null && !line.exceptionRaised.isEmpty()) {
+			stats.totalExceptions++;
+		}
 	}
 
 	private void onUserActionLine(UserActionLine line) {
