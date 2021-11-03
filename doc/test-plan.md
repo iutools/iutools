@@ -248,11 +248,10 @@ Progress Wheel
     ones that appear in the editor
     
 Check with and without _Include partial corrections_
-- Try it both ways
-  - Make sure that the partial correction is included or not 
-  - Note: Even when _Include partial corrections_ is checked, SOME words may 
-    not have partial corrections. So if you click on a word and don't see one, 
-    try other words.   
+- Spell check nunavvvvut
+  - With and without partial correction
+    - WITH: the following entry should be included nunav[vv]ut
+    - WITHOUT: It should NOT appear
     
 Spell check text that is too large
 - Try to spell check a text with > 500 words
@@ -261,6 +260,20 @@ Spell check text that is too large
         
     
 ## Search Engine
+Search for word in LATIN - Happy Path
+- Enter ammuumajuq (= scuba diving or something) in the search box, then click [Search] button
+- Check that this displays the results of a Google search for a list of alternatives, surrounded 
+  parens and spearated by ORs. As of Oct 2021, the list of alternatives was:
+
+    (ᐊᒻᒨᒪᔪᖅ OR ᐊᒻᒨᒪᔪᕐᓂᐊᕐᑏᑦ OR ᐊᒻᒨᒪᔪᖅᓯᐅᖅᑐᑎᒃ OR ᐊᒻᒨᒪᔪᖅᑕᕐᓂᕐᒧᑦ OR ᐊᒻᒨᒪᔪᖅᑕᖅᑏᑦ OR ᐊᒻᒨᒪᔪᕐᓂᐊᕐᓂᕐᒧᑦ)
+     
+  The specific alternatives used may change over time, but you should at least 
+  make sure that they start with the same 3-4 chars as the input word.
+- Copy the query that was sent to Google and tranlisterate it to Latin. 
+- Click on the Back button to go back to the IUTools Web Search page and check
+  that the original query has been replaced by transliterated Google query that 
+  that you generated above. 
+
 
 Search for word in SYLLABIC -- Happy Path
 - Enter ᐅᒃᐱᕐᓂᖅ (= religion) in the query text box, then click [Search] 
@@ -278,19 +291,6 @@ Search for word in SYLLABIC -- Happy Path
   that the original query has been replaced by the expended query that was 
   sent to Google (which you pasted above). 
 
-Search for word in LATIN - Happy Path
-- Enter ukpirniq (= religion) in the search box, then click [Search] button
-- Check that this displays the results of a Google search for a list of alternatives, surrounded 
-  parens and spearated by ORs. As of Oct 2021, the list of alternatives was:
-
-     (ᐅᒃᐱᕐᓂᖅ OR ᐅᑉᐱᕈᓱᑉᐳᖓ OR ᐅᑉᐱᕈᓱᑦᑐᖓ OR ᐅᑉᐱᕈᓱᒃᑲᒪ OR ᐅᑉᐱᕆᔭᕋ OR ᐅᒃᐱᕈᓱᒃᐳᒍᑦ)
-     
-  The specific alternatives used may change over time, but you should at least 
-  make sure that they start with the same 3-4 chars as the input word.
-- Copy the query that was sent to Google and tranlisterate it to Latin. 
-- Click on the Back button to go back to the IUTools Web Search page and check
-  that the original query has been replaced by transliterated Google query that 
-  that you generated above. 
 
   
 Search using an already expanded query
@@ -365,7 +365,7 @@ Change max number of examples
 - Do the same thing this time setting the max number to 5 
           
     
-## Gister
+## Reading Assistant
 
 Syllabic text
 - Copy and paste some Syllabic text from https://www.gov.nu.ca/iu
