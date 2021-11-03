@@ -18,7 +18,7 @@ public class AssertEPA_Stats extends Asserter<EPA_Stats> {
 	}
 
 	public AssertEPA_Stats frequencyIs(long expFreq) {
-		Assertions.assertEquals(expFreq, stats().frequency,
+		Assertions.assertEquals(expFreq, stats().getFrequency(),
 			baseMessage+"\nFrequency was not as expected");
 		return this;
 	}
@@ -28,6 +28,20 @@ public class AssertEPA_Stats extends Asserter<EPA_Stats> {
 			baseMessage+"\nFrequency was not as expected",
 			expAvgMsecs, stats().avgMsecs(), 0.1);
 
+		return this;
+	}
+
+	public AssertEPA_Stats exceptionsRateIs(double expRate) {
+		AssertNumber.assertEquals(
+			baseMessage+"\nRaised exceptions rate not as expected",
+			expRate, stats().exceptionsRate(), 0.1);
+		return this;
+	}
+
+	public AssertEPA_Stats totalExceptionsIs(int expTotal) {
+		AssertNumber.assertEquals(
+			baseMessage+"\nTotal exceptions raised not as expected",
+			expTotal, stats().totalExceptions, 0.0);
 		return this;
 	}
 }

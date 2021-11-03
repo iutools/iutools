@@ -68,65 +68,88 @@ public class LogAnalyzerTest {
 
 		// Action stats
 		{
-			new AssertEPA_Stats(analyzer.stats4epa("DICTIONARY_SEARCH"))
+			new AssertEPA_Stats(analyzer.stats4epa("DICTIONARY_SEARCH"), "DICTIONARY_SEARCH")
 				.frequencyIs(1)
 				.avgMSecsIs(1282.0)
+				.totalExceptionsIs(0)
+				.exceptionsRateIs(0.0)
 				;
 
-			new AssertEPA_Stats(analyzer.stats4epa("WORD_LOOKUP"))
+			new AssertEPA_Stats(analyzer.stats4epa("WORD_LOOKUP"), "WORD_LOOKUP")
 				.frequencyIs(7)
 				.avgMSecsIs(1193.8)
+				.totalExceptionsIs(0)
+				.exceptionsRateIs(0.0)
 				;
 
-			new AssertEPA_Stats(analyzer.stats4epa("SEARCH_WEB"))
+			new AssertEPA_Stats(analyzer.stats4epa("SEARCH_WEB"), "SEARCH_WEB")
 				.frequencyIs(1)
 				.avgMSecsIs(77.0)
-				;
+				.totalExceptionsIs(0)
+				.exceptionsRateIs(0.0)
+			;
 
-			new AssertEPA_Stats(analyzer.stats4epa("MORPHEME_SEARCH"))
+			new AssertEPA_Stats(analyzer.stats4epa("MORPHEME_SEARCH"), "MORPHEME_SEARCH")
 				.frequencyIs(2)
 				.avgMSecsIs(698.5)
-				;
+				.totalExceptionsIs(0)
+				.exceptionsRateIs(0.0)
+			;
 
-			new AssertEPA_Stats(analyzer.stats4epa("GIST_TEXT"))
+			new AssertEPA_Stats(analyzer.stats4epa("GIST_TEXT"), "GIST_TEXT")
 				.frequencyIs(3)
 				.avgMSecsIs(1500.3)
-				;
+				.totalExceptionsIs(0)
+				.exceptionsRateIs(0.0)
+			;
 		}
 
 		// Endpoint stats
 		{
-			new AssertEPA_Stats(analyzer.stats4epa("worddict"))
+			new AssertEPA_Stats(analyzer.stats4epa("worddict"), "worddict")
 				.frequencyIs(8)
 				.avgMSecsIs(1204.8)
+				.totalExceptionsIs(0)
+				.exceptionsRateIs(0.0)
 				;
 
-			new AssertEPA_Stats(analyzer.stats4epa("spell"))
+			new AssertEPA_Stats(analyzer.stats4epa("spell"), "spell")
 				// Note: The stats for "spell" endpoint are a bit counter-intuitive
 				//  because we do not log the START of any of those endpoints,
 				//  and we only log the END in cases where the word is misspelled.
 				.frequencyIs(0)
 				.avgMSecsIs(0.0)
+				.totalExceptionsIs(1)
+				// Note: Exceptions rate is 0 because freq=0 (see above note)
+				.exceptionsRateIs(0.0)
 				;
 
-			new AssertEPA_Stats(analyzer.stats4epa("search/expandquery"))
+			new AssertEPA_Stats(analyzer.stats4epa("search/expandquery"), "expandquery")
 				.frequencyIs(1)
 				.avgMSecsIs(77.0)
-				;
+				.totalExceptionsIs(0)
+				.exceptionsRateIs(0.0)
+			;
 
-			new AssertEPA_Stats(analyzer.stats4epa("morpheme_dictionary"))
+			new AssertEPA_Stats(analyzer.stats4epa("morpheme_dictionary"), "morpheme_dictionary")
 				.frequencyIs(2)
 				.avgMSecsIs(698.5)
+				.totalExceptionsIs(0)
+				.exceptionsRateIs(0.0)
 				;
 
-			new AssertEPA_Stats(analyzer.stats4epa("tokenize"))
-				.frequencyIs(1)
-				.avgMSecsIs(13.0)
+			new AssertEPA_Stats(analyzer.stats4epa("tokenize"), "tokenize")
+				.frequencyIs(2)
+				.avgMSecsIs(14.5)
+				.totalExceptionsIs(0)
+				.exceptionsRateIs(0.0)
 				;
 
-			new AssertEPA_Stats(analyzer.stats4epa("gist/preparecontent"))
+			new AssertEPA_Stats(analyzer.stats4epa("gist/preparecontent"), "preparecontent")
 				.frequencyIs(3)
 				.avgMSecsIs(1500.3)
+				.totalExceptionsIs(0)
+				.exceptionsRateIs(0.0)
 				;
 		}
 	}
@@ -182,8 +205,6 @@ public class LogAnalyzerTest {
 					.setUri("spell")
 					.setExceptionRaised("Some exception")
 				),
-
-
 		};
 
 		Consumer<Case> runner = (aCase) -> {

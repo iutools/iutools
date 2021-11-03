@@ -23,6 +23,10 @@ public class EndpointLine extends LogLine {
 		return;
 	}
 
+	public String category() {
+		return trimUri(uri);
+	}
+
 	public EndpointLine setUri(String _uri) {
 		_uri = trimUri(_uri);
 		json.put("_uri", "iutools/srv2/_uri");
@@ -37,7 +41,7 @@ public class EndpointLine extends LogLine {
 	}
 
 	private static String trimUri(String _uri) {
-		String trimmed = _uri.replaceAll("/iutools/srv.?/", "");
+		String trimmed = _uri.replaceAll("/?iutools/srv.?/", "");
 		trimmed = trimmed.replaceAll("/$", "");
 		return trimmed;
 	}

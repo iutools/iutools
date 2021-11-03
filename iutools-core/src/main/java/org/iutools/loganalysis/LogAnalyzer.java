@@ -1,5 +1,6 @@
 package org.iutools.loganalysis;
 
+import ca.nrc.json.PrettyPrinter;
 import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
@@ -81,26 +82,31 @@ public class LogAnalyzer {
 	}
 
 	private void updateGenericStats(LogLine line) {
-		String key = null;
-		if (line instanceof UserActionLine) {
-			key = ((UserActionLine) line).action;
-		} else if (line instanceof EndpointLine) {
-			key = ((EndpointLine)line).uri;
-		}
+		LogLineTracer tracer = new LogLineTracer("updateGenericStats", line, "tokenize");
+		String key = line.category();
+
 		if (!epaStats.containsKey(key)) {
-			epaStats.put(key, new EPA_Stats());
+			epaStats.put(key, new EPA_Stats(key));
 		}
 		EPA_Stats stats = this.epaStats.get(key);
-		if (line.phase.equals("START")) {
-			stats.frequency++;
-		} else if (line.phase.equals("END")) {
-			if (line.elapsedMSecs != null) {
-				stats.totalElapsedMSecs += line.elapsedMSecs;
+		if (tracer.isEnabled()) {
+			tracer.trace("On entry, stats="+PrettyPrinter.print(stats));
+		}
+		if (line.phase != null) {
+			if (line.phase.equals("START")) {
+				stats.onStart();
+			} else if (line.phase.equals("END")) {
+				stats.onEnd(line.elapsedMSecs);
 			}
 		}
 		if (line.exceptionRaised != null && !line.exceptionRaised.isEmpty()) {
 			stats.totalExceptions++;
 		}
+
+		if (tracer.isEnabled()) {
+			tracer.trace("On exit, stats.avgMsecs="+stats.avgMsecs()+", stats="+PrettyPrinter.print(stats));
+		}
+		return;
 	}
 
 	private void onUserActionLine(UserActionLine line) {
@@ -110,7 +116,7 @@ public class LogAnalyzer {
 	}
 
 	public EPA_Stats stats4epa(String epaName) throws LogAnalyzerException {
-		EPA_Stats stats = new EPA_Stats();
+		EPA_Stats stats = new EPA_Stats(epaName);
 		if (epaStats.containsKey(epaName)) {
 			stats = epaStats.get(epaName);
 		}

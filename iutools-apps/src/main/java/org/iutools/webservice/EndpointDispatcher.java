@@ -98,7 +98,7 @@ public class EndpointDispatcher extends HttpServlet {
 					"Service raised exception\n", exc);
 			response.getWriter().write(jsonResponse);
 			if (endPoint != null) {
-				endPoint.logError(exc);
+				endPoint.logError(exc, request);
 			}
 		}
 

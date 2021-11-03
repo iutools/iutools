@@ -20,6 +20,10 @@ public class UserActionLine extends LogLine {
 		}
 	}
 
+	public String category() {
+		return action;
+	}
+
 	public LogLine setPhase(String _phase) {
 		this.taskData().put("_phase", _phase);
 		this.phase = _phase;

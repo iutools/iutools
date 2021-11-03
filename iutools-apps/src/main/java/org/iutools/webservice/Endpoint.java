@@ -87,19 +87,22 @@ public abstract class Endpoint
 		}
 	}
 
-	public void logError(Exception e)  {
+	protected void logError(Exception e)  {
 		Logger tLogger = Logger.getLogger("org.iutools.webservice.Endpoint.logError");
 		tLogger.trace("e="+e);
 
 		logError(e, (I)null, (HttpServletRequest)null);
 	}
 
-	private void logError(Exception e, I inputs)  {
+	protected void logError(Exception e, I inputs)  {
 		logError(e, inputs, (HttpServletRequest)null);
 	}
 
+	protected void logError(Exception e, HttpServletRequest request)  {
+		logError(e, (I)null, request);
+	}
 
-	private void logError(Exception e, I inputs, HttpServletRequest request)  {
+	protected void logError(Exception e, I inputs, HttpServletRequest request)  {
 		String epClass = this.getClass().getName();
 		String inputsJson = null;
 		try {
@@ -117,7 +120,13 @@ public abstract class Endpoint
 		}
 		JSONObject inputsJsonObj =
 			new JSONObject(inputsJson)
-			.put("exception", e.getMessage());
+				.put("_phase", "END")
+				.put("exception", e.getMessage())
+			;
+		if (inputs != null) {
+			inputsJsonObj.put("_taskID", inputs._taskID);
+		}
+
 		String uri = null;
 		if (request != null) {
 			uri = request.getRequestURI();

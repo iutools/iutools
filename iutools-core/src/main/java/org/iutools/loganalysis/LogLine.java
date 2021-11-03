@@ -8,6 +8,8 @@ import java.util.regex.Pattern;
 
 public abstract class LogLine {
 
+	public abstract String category();
+
 	public String text = null;
 
 	public abstract LogLine setPhase(String _phase);
@@ -86,5 +88,4 @@ public abstract class LogLine {
 		}
 		return json.getJSONObject("taskData");
 	}
-
 }
