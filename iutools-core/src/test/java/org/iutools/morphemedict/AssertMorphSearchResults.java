@@ -1,7 +1,6 @@
 package org.iutools.morphemedict;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import ca.nrc.testing.AssertSequence;
 import org.apache.commons.lang3.tuple.Pair;
@@ -50,24 +49,23 @@ public class AssertMorphSearchResults extends Asserter<List<MorphDictionaryEntry
 				baseMessage+"\nExamples of words for morpheme "+morpheme+" were wrong")
 				.startsWith(expWordExamples);
 				;
-//			AssertObject.assertDeepEquals(
-//				baseMessage+"\nExamples of words for morpheme "+morpheme+" were wrong",
-//				expWordExamples, gotWordExamples);
 		}
 		
 		return this;
 	}
 
-	public AssertMorphSearchResults foundMorphemes(String... expMorphemes) 
+	public AssertMorphSearchResults foundMorphemes(String... expMorphemesArr)
 		throws Exception {
+		Set<String> expMorphemes = new HashSet<String>();
+		Collections.addAll(expMorphemes, expMorphemesArr);
 		AssertObject.assertDeepEquals(
-			baseMessage+"\nList of morphemes found was not as expected.", 
+			baseMessage+"\nSet of morphemes found was not as expected.",
 			expMorphemes, gotMorphemes());
 		return this;
 	}
 	
-	protected List<String> gotMorphemes() {
-		List<String> morphemes = new ArrayList<String>();
+	protected Set<String> gotMorphemes() {
+		Set<String> morphemes = new HashSet<String>();
 		for (MorphDictionaryEntry aMorphResult: results()) {
 			morphemes.add(aMorphResult.morphemeWithId);
 		}

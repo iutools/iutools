@@ -1,9 +1,6 @@
 package org.iutools.worddict;
 
-import ca.nrc.testing.AssertNumber;
-import ca.nrc.testing.AssertSequence;
-import ca.nrc.testing.AssertString;
-import ca.nrc.testing.RunOnCases;
+import ca.nrc.testing.*;
 import ca.nrc.testing.RunOnCases.Case;
 import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.linguisticdata.MorphemeHumanReadableDescr;
@@ -12,9 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class MultilingualDictTest {
@@ -253,8 +248,9 @@ public class MultilingualDictTest {
 	@Test
 	public void test__search__HappyPath() throws Exception {
 		String partialWord = "inuksu";
-		Pair<Iterator<String>, Long> results = MultilingualDict.getInstance().searchIter(partialWord);
-		assertSearchResultsStartWith(
+		Pair<Iterator<String>, Long> results =
+			MultilingualDict.getInstance().searchIter(partialWord);
+		assertSearchResultsInclude(
 			results.getLeft(), "inuksuk", "inuksuup", "inuksui");
 	}
 
@@ -263,7 +259,7 @@ public class MultilingualDictTest {
 		String partialWord = "housing";
 		Pair<Iterator<String>, Long> results =
 			MultilingualDict.getInstance().searchIter(partialWord, "en");
-		assertSearchResultsStartWith(
+		assertSearchResultsInclude(
 			results.getLeft(), "housing");
 	}
 	@Test
@@ -405,27 +401,26 @@ public class MultilingualDictTest {
 	// TEST HELPERS
 	////////////////////////////////////////
 
-	private void assertSearchResultsStartWith(
+	private void assertSearchResultsInclude(
 		Iterator<String> wordsIter, String... expTopWords) throws Exception {
-		assertSearchResultsStartWith((String)null, wordsIter, expTopWords);
+		assertSearchResultsInclude((String)null, wordsIter, expTopWords);
 	}
 
-	private void assertSearchResultsStartWith(
-		String mess, Iterator<String> wordsIter, String... expTopWords) throws Exception {
+	private void assertSearchResultsInclude(
+		String mess, Iterator<String> wordsIter, String... expWords) throws Exception {
 		final int MAX_WORDS = 100;
 		if (mess == null) {
 			mess = "";
 		}
-		List<String> gotWordsLst = new ArrayList<String>();
-		while (wordsIter.hasNext()) {
-			gotWordsLst.add(wordsIter.next());
-		}
-		String[] gotWords = new String[gotWordsLst.size()];
-		for (int ii=0; ii < gotWords.length; ii++) {
-			gotWords[ii] = gotWordsLst.get(ii);
+		Set<String> expWordsSet = new HashSet<String>();
+		for (int ii=0; ii < expWords.length; ii++) {
+			expWordsSet.add(expWords[ii]);
 		}
 
-		new AssertSequence<String>(gotWords, mess)
-			.startsWith(expTopWords);
+		Set<String> gotWordsSet = new HashSet<String>();
+		while (wordsIter.hasNext()) {
+			gotWordsSet.add(wordsIter.next());
+		}
+		AssertSet.assertContainsAll(mess, expWordsSet, gotWordsSet);
 	}
 }

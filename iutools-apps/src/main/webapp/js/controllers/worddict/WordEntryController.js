@@ -12,7 +12,12 @@ class WordEntryController extends IUToolsController {
 
         // this.elementForProp("divWordEntry").draggable();
         $("#div-wordentry")
-            .draggable({ handle: ".div-floating-dlg-titlebar"})
+            .draggable(
+                {
+                    handle: ".div-floating-dlg-titlebar",
+                    containment: "window"
+                }
+            )
         tracer.trace("upon exit, this="+JSON.stringify(this));
     }
 

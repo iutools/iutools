@@ -139,14 +139,7 @@ public class MultilingualDict {
 				computeRelatedWords(entry, fullRelatedWordEntries);
 			}
 		} catch (CompiledCorpusException e) {
-			// For some uknown reason, ElasticSearch records can sometimes become
-			// corrupted and raise exceptions. If that happens, just ignore the
-			// exception and return an empty entry.
-			if (BadESRecordException.includedInStackOf(e)) {
-				entry = new MultilingualDictEntry(word);
-			} else {
-				throw new MultilingualDictException(e);
-			}
+			throw new MultilingualDictException(e);
 		}
 
 		entry.sortTranslations();
@@ -487,7 +480,7 @@ public class MultilingualDict {
 	}
 
 	private Pair<Iterator<String>, Long> search_IU(String partialWord) throws MultilingualDictException {
-				Iterator<String> wordsIter = null;
+		Iterator<String> wordsIter = null;
 		Long totalWords = null;
 		try {
 			partialWord = TransCoder.ensureScript(TransCoder.Script.ROMAN, partialWord);
@@ -499,15 +492,7 @@ public class MultilingualDict {
 			totalWords = corpus.totalWordsWithCharNgram(partialWord, options);
 			wordsIter = corpus.wordsContainingNgram(partialWord, options);
 		} catch (CompiledCorpusException | TransCoderException e) {
-			// For some uknown reason, ElasticSearch records can sometimes become
-			// corrupted and raise exceptions. If that happens, just ignore the
-			// exception and return an empty iterator and a total words of 0.
-			if (BadESRecordException.includedInStackOf(e)) {
-				wordsIter = new ArrayList<String>().iterator();
-				totalWords = new Long(0);
-			} else {
-				throw new MultilingualDictException(e);
-			}
+			throw new MultilingualDictException(e);
 		}
 
 		return Pair.of(wordsIter, totalWords);

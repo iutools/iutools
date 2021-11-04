@@ -7,6 +7,8 @@ import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ca.nrc.json.PrettyPrinter;
+import org.apache.log4j.Level;
 import org.iutools.linguisticdata.Morpheme;
 import org.iutools.morph.r2l.DecompositionState;
 import ca.nrc.debug.Debug;
@@ -273,24 +275,24 @@ public class CompiledCorpus {
 	}
 
 	public StreamlinedClient esClient() throws CompiledCorpusException {
-		Logger tLogger = Logger.getLogger("org.iutools.corpus.esClient");
+		Logger logger = Logger.getLogger("org.iutools.corpus.esClient");
 		if (_esClient == null) {
 			try {
 				_esClient =
 					new StreamlinedClient(indexName, CREATE_IF_NOT_EXISTS, UPDATES_WAIT_FOR_REFRESH)
 						.setSleepSecs(0.0)
-						.setResponseMapperPolicy(BadRecordHandling.LENIENT);
+						.setErrorPolicy(ErrorHandlingPolicy.LENIENT);
 					;
 				// 2021-01-10: Setting this to false should speed things up, but it may corrupt
 				// the ES index.
-//				_esClient.synchedHttpCalls = false;
-				_esClient.synchedHttpCalls = true;
+				_esClient.synchedHttpCalls = false;
+//				_esClient.synchedHttpCalls = true;
 			} catch (ElasticSearchException e) {
 				throw new CompiledCorpusException(e);
 			}
 
 			if (debugMode()) {
-				tLogger.trace("Attaching observer to the ES index");
+				logger.trace("Attaching observer to the ES index");
 				_esClient.attachObserver(new ObsEnsureAllRecordsAreWordInfo());
 			}
 		}
@@ -304,6 +306,7 @@ public class CompiledCorpus {
 		if (debugMode()) {
 			_esClient.attachObserver(new ObsEnsureAllRecordsAreWordInfo());
 		}
+
 		return _esClient;
 	}
 
@@ -450,42 +453,59 @@ public class CompiledCorpus {
 	}
 
 	public List<WordWithMorpheme> wordsContainingMorpheme(String morpheme) throws CompiledCorpusException {
-		Logger tLogger = Logger.getLogger("org.iutools.corpus.CompiledCorpus.wordsContainingMorpheme");
+		Logger logger = Logger.getLogger("org.iutools.corpus.CompiledCorpus.wordsContainingMorpheme");
 
-		tLogger.trace("Invoked with morpheme="+morpheme);
+		logger.trace("Invoked with morpheme="+morpheme);
 
 		List<WordWithMorpheme> words = new ArrayList<WordWithMorpheme>();
+		if (logger.isEnabledFor(Level.ERROR) && morpheme == null) {
+				logger.error("morpheme is null");
+		}
+		if (morpheme != null) {
 
-		String query = morphNgramQuery(morpheme);
+			String query = morphNgramQuery(morpheme);
 
-		SearchResults<WordInfo> results = esWinfoSearch(query);
-		Iterator<Hit<WordInfo>> iter = results.iterator();
-		tLogger.trace("# words found "+results.getTotalHits());
-
-		Pattern morphPatt = Pattern.compile("(^|\\s)([^\\s]*"+morpheme+"[^\\s]*)(\\s|$)");while (iter.hasNext()) {
-			WordInfo winfo = iter.next().getDocument();
-			tLogger.trace("Looking at word "+winfo.word);
-
-			String morphId = null;
-			Matcher morphMatcher = morphPatt.matcher("\\{"+winfo.morphemesSpaceConcatenated+"\\/");
-
-			if (morphMatcher.find()) {
-				morphId = morphMatcher.group(2);
+			SearchResults<WordInfo> results = esWinfoSearch(query);
+			Iterator<Hit<WordInfo>> iter = results.iterator();
+			if (logger.isEnabledFor(Level.ERROR) && iter == null) {
+				logger.error("*** morpheme="+morpheme+", iter is null");
 			}
 
-			String topDecomp =
-					DecompositionState.formatDecompStr(
-							winfo.topDecompositionStr,
-							Morpheme.MorphFormat.WITH_BRACES);
+			logger.trace("# words found " + results.getTotalHits());
 
-			WordWithMorpheme aWord =
+			Pattern morphPatt = Pattern.compile("(^|\\s)([^\\s]*" + morpheme + "[^\\s]*)(\\s|$)");
+			while (iter.hasNext()) {
+				WordInfo winfo = iter.next().getDocument();
+				if (logger.isEnabledFor(Level.ERROR)) {
+					if (winfo == null) {
+						logger.error("** winfo = null");
+					} else if (winfo.word == null){
+						logger.error("** winfo.word = null; winfo="+ PrettyPrinter.print(winfo));
+					}
+				}
+				logger.trace("Looking at word " + winfo.word);
+
+				String morphId = null;
+				Matcher morphMatcher = morphPatt.matcher("\\{" + winfo.morphemesSpaceConcatenated + "\\/");
+
+				if (morphMatcher.find()) {
+					morphId = morphMatcher.group(2);
+				}
+
+				String topDecomp =
+				DecompositionState.formatDecompStr(
+					winfo.topDecompositionStr,
+					Morpheme.MorphFormat.WITH_BRACES);
+
+				WordWithMorpheme aWord =
 					new WordWithMorpheme(
-							winfo.word, morphId, topDecomp,
-							winfo.frequency, winfo.decompositionsSample);
-			words.add(aWord);
+					winfo.word, morphId, topDecomp,
+					winfo.frequency, winfo.decompositionsSample);
+				words.add(aWord);
+			}
 		}
 
-		tLogger.trace("Returning");
+		logger.trace("Returning");
 
 		return words;
 	}
@@ -890,9 +910,9 @@ public class CompiledCorpus {
 	}
 
 	private SearchResults<WordInfo> esWinfoSearch(
-			String query, SearchOption[] options, Boolean statsOnly,
-			RequestBodyElement... additionalReqBodies)
-			throws CompiledCorpusException {
+		String query, SearchOption[] options, Boolean statsOnly,
+		RequestBodyElement... additionalReqBodies)
+		throws CompiledCorpusException {
 		SearchResults<WordInfo> results = null;
 
 		Pair<String,RequestBodyElement[]> augmentedRequest =
@@ -1112,6 +1132,7 @@ public class CompiledCorpus {
 		long date = 0;
 		LastLoadedDate lastLoadedRecord = null;
 		try {
+			StreamlinedClient client = esClient();
 			SearchResults<LastLoadedDate> results =
 					esClient()
 							.listAll(LastLoadedDate.esTypeName, new LastLoadedDate());

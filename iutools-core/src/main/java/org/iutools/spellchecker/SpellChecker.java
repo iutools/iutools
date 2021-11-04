@@ -393,17 +393,10 @@ public class SpellChecker {
 
 		} catch (Exception e) {
 			excLogger.trace("word="+word+" raised exception e="+e+"\nCall stack was:\n"+ Debug.printCallStack(e));
-			if (BadESRecordException.includedInStackOf(e)) {
-				// For some reason ElasticSearch sometimes become corrupted and cause
-				// exceptions to be raised. When that happens in the course of correcting
-				// a word, just pretend it didn't happen and return a "default" correction.
-				corr = new SpellingCorrection(word);
+			if (e instanceof SpellCheckerException) {
+				throw e;
 			} else {
-				if (e instanceof SpellCheckerException) {
-					throw e;
-				} else {
-					throw new SpellCheckerException(e);
-				}
+				throw new SpellCheckerException(e);
 			}
 		}
 
