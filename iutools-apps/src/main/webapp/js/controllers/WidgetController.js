@@ -8,7 +8,7 @@ class WidgetController {
 		this.recentEvents = [];
 		this.recentEventTimes = {};
 
-		this.attachHtmlElements();
+		// this.attachHtmlElements();
 		{
 			var controller = this;
 			var attachFct = function() {

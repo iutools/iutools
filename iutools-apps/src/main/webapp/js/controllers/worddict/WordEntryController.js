@@ -23,8 +23,32 @@ class WordEntryController extends IUToolsController {
 
     // Setup handler methods for different HTML elements specified in the config.
     attachHtmlElements() {
-        this.setEventHandler("divWordEntry_iconizer", "click", this.iconizeDivExampleWord);
-        this.setEventHandler("divWordEntry_iconized", "click", this.deiconizeDivExampleWord);
+        // this.setEventHandler("divWordEntry_iconizer", "click", this.iconizeDivExampleWord);
+        // this.setEventHandler("divWordEntry_iconized", "click", this.deiconizeDivExampleWord);
+
+        var minButton = $('#div-wordentry-iconizer');
+        var maxButton = $('#div-wordentry-iconized');
+
+        minButton.click(function() {
+            var dlgBox = $("#div-wordentry");
+            var dlgOffset = dlgBox.offset();
+            var winHeight = $(window).height();
+            var winWidth = $(window).width();
+            var margTop = winHeight - dlgOffset.top;
+            var margLeft = winWidth - dlgOffset.left;
+            console.log("Animating with winHeight="+winHeight+", winWidth="+winWidth+
+                "margTop="+margTop+", margLeft="+margLeft);
+
+            dlgBox.css({"left": dlgOffset.left, "top": dlgOffset.top}).animate({height: 0, width: 0, marginTop: margTop, marginLeft: margLeft, opacity: 0}, 250);
+            maxButton.show(250);
+        });
+
+        maxButton.click(function() {
+            $(".div-floating-dlg").animate({height: "600px", width: "600px", marginTop: 0, marginLeft: 0, opacity: 1}, 250);
+            $(this).hide(250);
+        });
+
+
     }
 
     onDictionaryLookupEvent(ev) {
