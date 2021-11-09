@@ -1,5 +1,7 @@
 <% String IUTOOLS_JS_VERSION=(new java.util.Date()).toLocaleString(); %>
 
+<!DOCTYPE html>
+
 <html lang="en">
 
 <head>
@@ -77,6 +79,8 @@ reloading -->
 <script src="js/debug/DebugConfig.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 <script src="js/controllers/RunWhen.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 <script src="js/controllers/WidgetController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
+<script src="js/controllers/FloatingDialogController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
+
 
 <!-- This one must be before any other controller -->
 <script src="js/controllers/IUToolsController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
@@ -85,6 +89,29 @@ reloading -->
 
 <!-- Include the code that creates and configures the controller for this page -->
 <% pageContext.include("pages/" + pageName + "/_controller.jsp"); %>
+
+<!--
+<script>
+
+var winWidth = $(window).width();
+var winHeight = $(window).height();
+var dlgWidth = $(".div-floating-dlg-titlebar").width();
+
+var x1 = 100 - dlgWidth;
+
+var x2 = winWidth - 100;
+var y1 = 0;
+var y2 = winHeight - 100;
+
+    $(".div-floating-dlg").draggable({
+        handle: ".div-floating-dlg-titlebar",
+        containment: [ x1, y1, x2, y2 ],
+        scroll: false
+    });
+
+
+</script>
+-->
 
 </body>
 

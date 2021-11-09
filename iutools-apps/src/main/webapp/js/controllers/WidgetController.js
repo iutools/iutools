@@ -2,6 +2,7 @@ class WidgetController {
 
 	constructor(_config) {
 		this.config = _config;
+        this.validateConfig();
 		this.busy = false;
 		this.isReady = false;
 		this.recentEvents = [];
@@ -16,13 +17,56 @@ class WidgetController {
 			new RunWhen().domReady(attachFct, 10 * 1000, 1000);
 		}
 	}
-			
+
+    validateConfig() {
+        // This method should be overridden by subclasses if
+        // you want to validate the config received by the controller
+    }
+
 	attachHtmlElements() {
 		// This method should be overridden by subclasses if 
 		// you want to actually attach elements to the controller.
 	}
-	
+
+    validateProps(propDefs) {
+	    var tracer = Debug.getTraceLogger("WidgetController.validateProps");
+	    tracer.trace("propDefs=\n"+JSON.stringify(propDefs,undefined,2));
+        tracer.trace("this.config=\n"+JSON.stringify(this.config,undefined,2));
+
+        for (var ii=0; ii > propDefs.length; ii++) {
+            var aPropDef = propDefs[ii];
+            tracer.trace("ii=" + ii + ", aPropDef=" + JSON.stringify(aPropDef));
+            if (!Array.isArray(aPropDef)) {
+                aPropDef = [aPropDef];
+            }
+            var propName = aPropDef[0];
+            var expEltName = null;
+            if (aPropDef.length > 1) {
+                expEltName = aPropDef[1];
+            }
+            if (!this.config.hasOwnProperty(propName)) {
+                throw new Error("Undefined config property '"+propName+"'");
+            }
+            if (expEltName) {
+                try {
+                    var elt = this.elementForProp(propName);
+                } catch (error) {
+                    throw new Error("No DOM element defined for property '"+propName+"'");
+                }
+                var gotEltName = elt.attr('name');
+                if (gotEltName !== expEltName) {
+                    throw new Error(
+                        "Wrong DOM element type for property '"+propName+".\n"+
+                        "Should have been '"+expEltName+"' but was '"+gotEltName
+                    );
+                }
+            }
+        }
+    }
+
 	elementForProp(property) {
+	    var tracer = Debug.getTraceLogger("WidgetController.elementForProp");
+	    tracer.trace("property="+property);
 		if (property == null) {
 			throw new Error("Config property name cannot be null");
 		}
@@ -38,6 +82,7 @@ class WidgetController {
 		if (elt == null) {
 			throw new Error("Element with ID "+eltID+" was not defined. Maybe you need to execute this method after the DOM was loaded?");
 		}
+        tracer.trace("for property="+property+", returning elt="+elt);
 		return elt;
 	}
 	
