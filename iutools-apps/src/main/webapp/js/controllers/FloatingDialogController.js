@@ -80,8 +80,8 @@ class FloatingDialogController extends WidgetController {
         var tracer = Debug.getTraceLogger("FloatingDialogController.maximize");
         tracer.trace("invoked");
         this.divDialog().show();
-        this.elementForProp("divMinimize").show();
-        this.elementForProp("divMaximize").hide();
+        this.divMinimize().show();
+        this.divMaximize().hide();
         this.makeDraggable();
     }
 
@@ -97,8 +97,8 @@ class FloatingDialogController extends WidgetController {
         // var margLeft = winWidth - dlgOffset.left;
         // this.divDialog().css({"left": dlgOffset.left, "top": dlgOffset.top}).animate({height: 0, width: 0, marginTop: margTop, marginLeft: margLeft, opacity: 0}, 250);
 
-        this.elementForProp("divMinimize").hide();
-        this.elementForProp("divMaximize").show();
+        this.divMinimize().hide();
+        this.divMaximize().show();
     }
 
     makeDraggable() {
