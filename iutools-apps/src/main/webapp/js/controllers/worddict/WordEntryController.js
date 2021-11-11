@@ -37,8 +37,6 @@ class WordEntryController extends IUToolsController {
         var tracer = Debug.getTraceLogger('WordEntryController.dictionaryLookup');
         tracer.trace("word="+word)
         this.show();
-        this.maximize();
-		this.initWordEntry(word);
 		this.displayWordBeingLookedUp(word, null);
 		this.showSpinningWheel("divWordEntry_message","Looking up word");
 
@@ -55,12 +53,10 @@ class WordEntryController extends IUToolsController {
         var tracer = Debug.getTraceLogger('WordEntryController.displayWordBeingLookedUp');
         tracer.trace("word="+word)
         if (word != null) {
-            var divWord = this.elementForProp("divWordEntry_word");
             var wordText = word;
             if (wordInOtherScript) {
                 wordText += "/" + wordInOtherScript
             }
-            divWord.html("<h2>" + wordText + "</h2>\n");
 
             this.windowController.setTitle(wordText);
         }
@@ -116,16 +112,11 @@ class WordEntryController extends IUToolsController {
 		var jsonInputs = jsonStringifySafe(request);;
 		return jsonInputs;
 	}
-	
-	initWordEntry() {
-        this.maximize()
-	}
-	
+
 	displayWordEntry(results) {
 		var tracer = Debug.getTraceLogger('WordEntryController.displayWordEntry');
 		var lang = results.lang;
 		var otherLang = results.otherLang;
-		var divWordEntry = this.elementForProp("divWordEntry");
 		this.hideSpinningWheel("divWordEntry_message");
 
 		// Change the word being looked up in order to add its
