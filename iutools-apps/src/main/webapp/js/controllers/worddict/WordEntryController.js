@@ -7,6 +7,12 @@ class WordEntryController extends IUToolsController {
         var tracer = Debug.getTraceLogger('WordEntryController.constructor');
         tracer.trace("wdConfig="+JSON.stringify(wdConfig));
         super(wdConfig);
+
+        this.winbox = new WinBox("Default Dialog", {
+            title: "Default Dialog",
+            html: "<h1>HTML Content</h1>"
+        });
+
         this.hide();
         this.hideIconisationControls();
 
@@ -18,7 +24,11 @@ class WordEntryController extends IUToolsController {
                     containment: "window"
                 }
             )
-        tracer.trace("upon exit, this="+JSON.stringify(this));
+        tracer.trace("upon exit, this="+
+                JSON.stringify(this,
+                    function(key,value) {
+                        if (key === "winbox") return undefined;
+                    }));
     }
 
     // Setup handler methods for different HTML elements specified in the config.
@@ -30,16 +40,26 @@ class WordEntryController extends IUToolsController {
         var maxButton = $('#div-wordentry-iconized');
 
         minButton.click(function() {
+            var tracer = Debug.getTraceLogger("WordEntryController.minimizeHandler");
             var dlgBox = $("#div-wordentry");
             var dlgOffset = dlgBox.offset();
             var winHeight = $(window).height();
             var winWidth = $(window).width();
             var margTop = winHeight - dlgOffset.top;
             var margLeft = winWidth - dlgOffset.left;
-            console.log("Animating with winHeight="+winHeight+", winWidth="+winWidth+
-                "margTop="+margTop+", margLeft="+margLeft);
+            tracer.trace("Animation parameters:\n"+
+                "  dlgOffset="+JSON.stringify(dlgOffset)+"\n"+
+                "  winwinWidth="+winWidth+", winHeight="+winHeight+"\n"+
+                "  margTop="+margTop+", margLeft="+margLeft);
 
-            dlgBox.css({"left": dlgOffset.left, "top": dlgOffset.top}).animate({height: 0, width: 0, marginTop: margTop, marginLeft: margLeft, opacity: 0}, 250);
+            tracer.trace("Styles for dialog box:\n"+
+                JSON.stringify(
+                    new CSSUtils().stylesForID("div-wordentry"),
+                    undefined, 2
+                ));
+
+            dlgBox.css({"left": dlgOffset.left, "top": dlgOffset.top})
+                .animate({height: 0, width: 0, marginTop: margTop, marginLeft: margLeft, opacity: 0}, 250);
             maxButton.show(250);
         });
 
@@ -84,6 +104,8 @@ class WordEntryController extends IUToolsController {
                 wordText += "/" + wordInOtherScript
             }
             divWord.html("<h2>" + wordText + "</h2>\n");
+
+            this.winbox.setTitle(wordText);
         }
 	}
 	
@@ -382,11 +404,13 @@ class WordEntryController extends IUToolsController {
     }
 
     hide() {
+        this.winbox.hide();
         this.elementForProp("divWordEntry").hide();
         this.hideIconisationControls();
     }
 
     show() {
+        this.winbox.show();
         var divWordEntry = this.elementForProp("divWordEntry");
         divWordEntry.css('display', 'flex');
         divWordEntry.show();
