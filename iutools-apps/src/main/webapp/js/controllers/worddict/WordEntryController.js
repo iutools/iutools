@@ -25,42 +25,6 @@ class WordEntryController extends IUToolsController {
 
     // Setup handler methods for different HTML elements specified in the config.
     attachHtmlElements() {
-        // this.setEventHandler("divWordEntry_iconizer", "click", this.iconizeDivExampleWord);
-        // this.setEventHandler("divWordEntry_iconized", "click", this.deiconizeDivExampleWord);
-
-        var minButton = $('#div-wordentry-iconizer');
-        var maxButton = $('#div-wordentry-iconized');
-
-        minButton.click(function() {
-            var tracer = Debug.getTraceLogger("WordEntryController.minimizeHandler");
-            var dlgBox = $("#div-wordentry");
-            var dlgOffset = dlgBox.offset();
-            var winHeight = $(window).height();
-            var winWidth = $(window).width();
-            var margTop = winHeight - dlgOffset.top;
-            var margLeft = winWidth - dlgOffset.left;
-            tracer.trace("Animation parameters:\n"+
-                "  dlgOffset="+jsonStringifySafe(dlgOffset)+"\n"+
-                "  winwinWidth="+winWidth+", winHeight="+winHeight+"\n"+
-                "  margTop="+margTop+", margLeft="+margLeft);
-
-            tracer.trace("Styles for dialog box:\n"+
-                jsonStringifySafe(
-                    new CSSUtils().stylesForID("div-wordentry"),
-                    undefined, 2
-                ));
-
-            dlgBox.css({"left": dlgOffset.left, "top": dlgOffset.top})
-                .animate({height: 0, width: 0, marginTop: margTop, marginLeft: margLeft, opacity: 0}, 250);
-            maxButton.show(250);
-        });
-
-        maxButton.click(function() {
-            $(".div-floating-dlg").animate({height: "600px", width: "600px", marginTop: 0, marginLeft: 0, opacity: 1}, 250);
-            $(this).hide(250);
-        });
-
-
     }
 
     onDictionaryLookupEvent(ev) {
@@ -73,6 +37,7 @@ class WordEntryController extends IUToolsController {
         var tracer = Debug.getTraceLogger('WordEntryController.dictionaryLookup');
         tracer.trace("word="+word)
         this.show();
+        this.maximize();
 		this.initWordEntry(word);
 		this.displayWordBeingLookedUp(word, null);
 		this.showSpinningWheel("divWordEntry_message","Looking up word");
@@ -154,8 +119,6 @@ class WordEntryController extends IUToolsController {
 	
 	initWordEntry() {
         this.maximize()
-        this.elementForProp("divWordEntry_word").html();
-		this.elementForProp("divWordEntry_contents").html("");
 	}
 	
 	displayWordEntry(results) {
@@ -180,7 +143,6 @@ class WordEntryController extends IUToolsController {
             html += this.htmlRelatedWords(wordEntry, lang);
             html = this.htmlMorphologicalAnalyses(wordEntry, lang, html);
             html +=  this.htmlAlignmentsByTranslation(wordEntry, lang, otherLang);
-            this.elementForProp("divWordEntry_contents").html(html);
             this.windowController.setBody(html);
             this.attachWordLookupListeners();
             this.enableAccordions();
@@ -415,6 +377,7 @@ class WordEntryController extends IUToolsController {
     }
 
     maximize() {
+        this.windowController.maximize();
         this.elementForProp("divWordEntry_iconized").hide();
         this.elementForProp("divWordEntry_iconizer").show();
     }

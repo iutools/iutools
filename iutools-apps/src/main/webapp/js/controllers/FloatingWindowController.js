@@ -36,6 +36,14 @@ class FloatingWindowController extends WidgetController {
         return this;
     }
 
+    minimize() {
+        this.winbox().minimize();
+    }
+
+    maximize() {
+        this.winbox().maximize();
+    }
+
     setTitle(title) {
         this.winbox().setTitle(title);
         return this;
