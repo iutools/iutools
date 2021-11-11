@@ -28,13 +28,21 @@ class FloatingWindowController extends WidgetController {
 
     hide() {
         this.winbox().hide();
+        return this;
     }
 
     show() {
         this.winbox().show();
+        return this;
     }
 
     setTitle(title) {
         this.winbox().setTitle(title);
+        return this;
+    }
+
+    setBody(html) {
+        this.winbox().body.innerHTML = html;
+        return this;
     }
 }

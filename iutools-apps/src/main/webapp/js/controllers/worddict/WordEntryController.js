@@ -181,6 +181,7 @@ class WordEntryController extends IUToolsController {
             html = this.htmlMorphologicalAnalyses(wordEntry, lang, html);
             html +=  this.htmlAlignmentsByTranslation(wordEntry, lang, otherLang);
             this.elementForProp("divWordEntry_contents").html(html);
+            this.windowController.setBody(html);
             this.attachWordLookupListeners();
             this.enableAccordions();
         }
