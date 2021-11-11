@@ -22,10 +22,7 @@ windows
 
     <!-- winbox stuff -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/railscasts.min.css">
-    <link rel="stylesheet" href="css/vendors/winbox/winbox.min.css">
-    <link rel="stylesheet" href="css/vendors/winbox/modern.min.css">
-    <link rel="stylesheet" href="css/vendors/winbox/white.min.css">
-    <script src="js/vendors/winbox/winbox.min.js"></script>
+    <script src="js/vendors/winbox/winbox.bundle.js"></script>
 
 </head>
 
