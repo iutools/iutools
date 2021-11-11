@@ -16,3 +16,4 @@
 /.idea/
 /target/
 /foo*.txt
+/src/test/resources/org/iutools/loganalysis/samplelogs/jmeter.log

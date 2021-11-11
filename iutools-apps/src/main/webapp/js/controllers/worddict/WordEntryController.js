@@ -5,13 +5,9 @@
 class WordEntryController extends IUToolsController {
     constructor(wdConfig) {
         var tracer = Debug.getTraceLogger('WordEntryController.constructor');
-        tracer.trace("wdConfig="+JSON.stringify(wdConfig));
+        tracer.trace("wdConfig="+jsonStringifySafe(wdConfig));
         super(wdConfig);
-
-        this.winbox = new WinBox("Default Dialog", {
-            title: "Default Dialog",
-            html: "<h1>HTML Content</h1>"
-        });
+        this.windowController = new FloatingWindowController(config);
 
         this.hide();
         this.hideIconisationControls();
@@ -24,11 +20,7 @@ class WordEntryController extends IUToolsController {
                     containment: "window"
                 }
             )
-        tracer.trace("upon exit, this="+
-                JSON.stringify(this,
-                    function(key,value) {
-                        if (key === "winbox") return undefined;
-                    }));
+        tracer.trace("upon exit, this="+jsonStringifySafe(this));
     }
 
     // Setup handler methods for different HTML elements specified in the config.
@@ -48,12 +40,12 @@ class WordEntryController extends IUToolsController {
             var margTop = winHeight - dlgOffset.top;
             var margLeft = winWidth - dlgOffset.left;
             tracer.trace("Animation parameters:\n"+
-                "  dlgOffset="+JSON.stringify(dlgOffset)+"\n"+
+                "  dlgOffset="+jsonStringifySafe(dlgOffset)+"\n"+
                 "  winwinWidth="+winWidth+", winHeight="+winHeight+"\n"+
                 "  margTop="+margTop+", margLeft="+margLeft);
 
             tracer.trace("Styles for dialog box:\n"+
-                JSON.stringify(
+                jsonStringifySafe(
                     new CSSUtils().stylesForID("div-wordentry"),
                     undefined, 2
                 ));
@@ -105,7 +97,7 @@ class WordEntryController extends IUToolsController {
             }
             divWord.html("<h2>" + wordText + "</h2>\n");
 
-            this.winbox.setTitle(wordText);
+            this.windowController.setTitle(wordText);
         }
 	}
 	
@@ -121,7 +113,7 @@ class WordEntryController extends IUToolsController {
 
 	successWordDictCallback(resp) {
 		var tracer = Debug.getTraceLogger('WordEntryController.successWordDictCallback');
-		tracer.trace("resp="+JSON.stringify(resp));
+		tracer.trace("resp="+jsonStringifySafe(resp));
 		if (resp.errorMessage != null) {
 			this.failureWordDictCallback(resp);
 		} else {
@@ -156,7 +148,7 @@ class WordEntryController extends IUToolsController {
 			word: _word,
             lang: _lang
         };
-		var jsonInputs = JSON.stringify(request);;
+		var jsonInputs = jsonStringifySafe(request);;
 		return jsonInputs;
 	}
 	
@@ -196,7 +188,7 @@ class WordEntryController extends IUToolsController {
 
     htmlTranslations(wordEntry, otherLang) {
         var tracer = Debug.getTraceLogger('WordEntryController.htmlTranslations');
-        tracer.trace("wordEntry="+JSON.stringify(wordEntry));
+        tracer.trace("wordEntry="+jsonStringifySafe(wordEntry));
         var heading = this.langName(otherLang)+" Translations"
 
         var info = this.translationsInfo(wordEntry);
@@ -237,7 +229,7 @@ class WordEntryController extends IUToolsController {
 
     translationsInfo(wordEntry) {
         var tracer = Debug.getTraceLogger('WordEntryController.translationsInfo');
-        tracer.trace("wordEntry="+JSON.stringify(wordEntry));
+        tracer.trace("wordEntry="+jsonStringifySafe(wordEntry));
         var translations = wordEntry.origWordTranslations;
         var examples = wordEntry.examplesForOrigWordTranslation;
         var areRelatedTranslations = false;
@@ -268,7 +260,7 @@ class WordEntryController extends IUToolsController {
 
     htmlRelatedWords(wordEntry, lang) {
         var tracer = Debug.getTraceLogger('WordEntryController.htmlRelatedWords');
-        tracer.trace("wordEntry="+JSON.stringify(wordEntry));
+        tracer.trace("wordEntry="+jsonStringifySafe(wordEntry));
         var html = "";
         if (lang === "iu") {
             // We don't display related words for an English word
@@ -294,7 +286,7 @@ class WordEntryController extends IUToolsController {
 
 	htmlMorphologicalAnalyses(wordEntry, lang, html) {
         var tracer = Debug.getTraceLogger('WordEntryController.htmlMorphologicalAnalyses');
-        tracer.trace("wordEntry="+JSON.stringify(wordEntry));
+        tracer.trace("wordEntry="+jsonStringifySafe(wordEntry));
         if (lang === "iu") {
             // We only display decompositions for an inuktitut word
             html += "<h3>Morphological decomposition</h3>\n";
@@ -320,10 +312,10 @@ class WordEntryController extends IUToolsController {
 
     htmlAlignmentsByTranslation(wordEntry, lang, otherLang) {
         var tracer = Debug.getTraceLogger('WordEntryController.htmlAlignmentsByTranslation');
-        tracer.trace("wordEntry="+JSON.stringify(wordEntry));
+        tracer.trace("wordEntry="+jsonStringifySafe(wordEntry));
         var html = "";
         var trInfo = this.translationsInfo(wordEntry);
-        tracer.trace("trInfo="+JSON.stringify(trInfo));
+        tracer.trace("trInfo="+jsonStringifySafe(trInfo));
 		var translations = trInfo.translations;
         var translation2alignments = trInfo.examples;
 
@@ -404,13 +396,13 @@ class WordEntryController extends IUToolsController {
     }
 
     hide() {
-        this.winbox.hide();
+        this.windowController.hide();
         this.elementForProp("divWordEntry").hide();
         this.hideIconisationControls();
     }
 
     show() {
-        this.winbox.show();
+        this.windowController.show();
         var divWordEntry = this.elementForProp("divWordEntry");
         divWordEntry.css('display', 'flex');
         divWordEntry.show();

@@ -30,12 +30,12 @@ class WidgetController {
 
     validateProps(propDefs) {
 	    var tracer = Debug.getTraceLogger("WidgetController.validateProps");
-	    tracer.trace("propDefs=\n"+JSON.stringify(propDefs,undefined,2));
-        tracer.trace("this.config=\n"+JSON.stringify(this.config,undefined,2));
+	    tracer.trace("propDefs=\n"+jsonStringifySafe(propDefs,undefined,2));
+        tracer.trace("this.config=\n"+jsonStringifySafe(this.config,undefined,2));
 
         for (var ii=0; ii > propDefs.length; ii++) {
             var aPropDef = propDefs[ii];
-            tracer.trace("ii=" + ii + ", aPropDef=" + JSON.stringify(aPropDef));
+            tracer.trace("ii=" + ii + ", aPropDef=" + jsonStringifySafe(aPropDef));
             if (!Array.isArray(aPropDef)) {
                 aPropDef = [aPropDef];
             }
@@ -154,7 +154,7 @@ class WidgetController {
         if (typeof jsonStringOrObj === 'string' || jsonStringOrObj instanceof String) {
             jsonStr = jsonStringOrObj;
         } else {
-            jsonStr = JSON.stringify(jsonStringOrObj);
+            jsonStr = jsonStringifySafe(jsonStringOrObj);
         }
         return jsonStr;
     }
@@ -192,7 +192,7 @@ class WidgetController {
 		if (typeof err === 'string' || err instanceof String) {
 			errMess = err;
 		} else {
-			errMess = JSON.stringify(err, null, 2);
+			errMess = jsonStringifySafe(err, null, 2);
 		}
 		this.displayError(errMess);
 	}
@@ -220,7 +220,7 @@ class WidgetController {
 		}
         var nowMsecs = new Date().getTime();
 		var eventDescr = this.evenDescription(method, data);
-		tracer.trace("nowMsecs="+nowMsecs+", eventDescr="+eventDescr+", this.recentEvents="+JSON.stringify(this.recentEvents));
+		tracer.trace("nowMsecs="+nowMsecs+", eventDescr="+eventDescr+", this.recentEvents="+jsonStringifySafe(this.recentEvents));
 		var ind = this.recentEvents.indexOf(eventDescr);
 		var elapsed = -1;
 		if (ind >= 0) {
@@ -243,7 +243,7 @@ class WidgetController {
 
 	evenDescription(method, data) {
 		if (typeof data !== 'string' && ! (data instanceof String)) {
-			data = JSON.stringify(data);
+			data = jsonStringifySafe(data);
 		}
 		var descr = method+"("+data+")";
 		return descr;

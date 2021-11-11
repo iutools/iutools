@@ -84,12 +84,13 @@ reloading -->
 -->
 <script src="js/navscript.js"></script>
 <script src="js/vendors/log4javascript.js"></script>
+<script src="js/utils/jsonStringifySafe.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 <script src="js/debug/Debug.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 <script src="js/debug/DebugConfig.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 <script src="js/utils/CSSUtils.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 <script src="js/controllers/RunWhen.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 <script src="js/controllers/WidgetController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
-<script src="js/controllers/FloatingDialogController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
+<script src="js/controllers/FloatingWindowController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 
 
 <!-- This one must be before any other controller -->
