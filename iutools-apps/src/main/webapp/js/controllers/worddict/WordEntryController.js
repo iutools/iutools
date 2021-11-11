@@ -10,16 +10,6 @@ class WordEntryController extends IUToolsController {
         this.windowController = new FloatingWindowController(config);
 
         this.hide();
-        this.hideIconisationControls();
-
-        // this.elementForProp("divWordEntry").draggable();
-        $("#div-wordentry")
-            .draggable(
-                {
-                    handle: ".div-floating-dlg-titlebar",
-                    containment: "window"
-                }
-            )
         tracer.trace("upon exit, this="+jsonStringifySafe(this));
     }
 
@@ -329,21 +319,6 @@ class WordEntryController extends IUToolsController {
         }
     }
 
-
-	iconizeDivExampleWord() {
-		var divWordEntry = this.elementForProp("divWordEntry");
-		divWordEntry.hide();
-		var divIconizedWordExample = this.elementForProp("divWordEntry_iconized");
-		divIconizedWordExample.show();
-	}
-	
-	deiconizeDivExampleWord() {
-		var divWordEntry = this.elementForProp("divWordEntry");
-		divWordEntry.show();
-		var divIconizedWordExample = this.elementForProp("divWordEntry_iconized");
-		divIconizedWordExample.hide();
-	}
-
     htmlClickableWordLookup(word) {
         var html = '<a class="clickable-word-lookup">'+word+'</a>';
         return html;
@@ -351,30 +326,17 @@ class WordEntryController extends IUToolsController {
 
     hide() {
         this.windowController.hide();
-        this.elementForProp("divWordEntry").hide();
-        this.hideIconisationControls();
     }
 
     show() {
         this.windowController.show();
-        var divWordEntry = this.elementForProp("divWordEntry");
-        divWordEntry.css('display', 'flex');
-        divWordEntry.show();
-    }
-
-    hideIconisationControls() {
-        this.elementForProp("divWordEntry_iconizer").hide();
-        this.elementForProp("divWordEntry_iconized").hide();
     }
 
     maximize() {
         this.windowController.maximize();
-        this.elementForProp("divWordEntry_iconized").hide();
-        this.elementForProp("divWordEntry_iconizer").show();
     }
     minimize() {
-        this.elementForProp("divWordEntry_iconized").show();
-        this.elementForProp("divWordEntry_iconizer").hide();
+        this.windowController.minimize();
     }
 
     enableAccordions() {
