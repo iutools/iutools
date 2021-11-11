@@ -22,17 +22,6 @@
 
     		inpExampleWord: "example-word",
     		inpNbExamples: "nb-examples",
-
-
-    		// Floating div where we display the "gist" of an example word
-    		// (after the user clicks on the example word)
-    		//
-            divWordEntry_contents: "div-wordentry-contents",
-            divWordEntry: "div-wordentry",
-       		divWordEntry_iconizer: "div-wordentry-iconizer",
-       		divWordEntry_iconized: "div-wordentry-iconized",
-       		divWordEntry_message: "div-wordentry-message",
-       		divWordEntry_word: "div-wordentry-word",
         };
     var occurrenceController = new MorphemeDictionaryController(config);
 </script>

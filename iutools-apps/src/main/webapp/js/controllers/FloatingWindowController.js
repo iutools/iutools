@@ -8,7 +8,6 @@ class FloatingWindowController extends WidgetController {
 
         this._winbox = null;
 
-
         this.hide();
     }
 
@@ -17,7 +16,7 @@ class FloatingWindowController extends WidgetController {
             this._winbox =
                 new WinBox("Looking up word...", {
                     title: "Looking up word...",
-                    html: "",
+                    html: "<div id='divProgressMessage'></div>",
                 });
         }
         return this._winbox;
@@ -53,4 +52,15 @@ class FloatingWindowController extends WidgetController {
         this.winbox().body.innerHTML = html;
         return this;
     }
+
+    showSpinningWheel(message) {
+        if (message == null) message = "Processing request";
+        var windowBody = this.winbox().body;
+        windowBody.innerHTML = "<img src=\"ajax-loader.gif\">"+message+" ...";
+    }
+
+    hideSpinningWheel() {
+
+    }
+
 }

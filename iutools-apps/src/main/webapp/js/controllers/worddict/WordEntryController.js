@@ -28,7 +28,7 @@ class WordEntryController extends IUToolsController {
         tracer.trace("word="+word)
         this.show();
 		this.displayWordBeingLookedUp(word, null);
-		this.showSpinningWheel("divWordEntry_message","Looking up word");
+		this.showSpinningWheel("Looking up word");
 
 		var data = this.getWordDictRequestData(word, lang);
 		tracer.trace(
@@ -82,15 +82,15 @@ class WordEntryController extends IUToolsController {
 				resp.responseText;
 		}				
 		this.error(resp.errorMessage);
-		this.hideSpinningWheel("divWordEntry_message");
+		this.hideSpinningWheel();
 	}
 	
 	setWordDictBusy(flag) {
 		this.busy = flag;		
 		if (flag) {
-			this.showSpinningWheel('divWordEntry_message','Searching');
+            this.showSpinningWheel('Searching');
 		} else {
-			this.hideSpinningWheel('divWordEntry_message');
+			this.hideSpinningWheel();
 		}
 	}	
 	
@@ -107,7 +107,7 @@ class WordEntryController extends IUToolsController {
 		var tracer = Debug.getTraceLogger('WordEntryController.displayWordEntry');
 		var lang = results.lang;
 		var otherLang = results.otherLang;
-		this.hideSpinningWheel("divWordEntry_message");
+		this.hideSpinningWheel();
 
 		// Change the word being looked up in order to add its
         // transcoding in the other script
@@ -345,5 +345,13 @@ class WordEntryController extends IUToolsController {
         // $(".accordion" ).accordion();
         // $(".accordion" ).accordion({heightStyle: "fill"});
         $(".accordion" ).accordion({heightStyle: "content"});
+    }
+
+    showSpinningWheel(message) {
+        this.windowController.showSpinningWheel(message);
+    }
+
+    hideSpinningWheel(message) {
+        this.windowController.hideSpinningWheel();
     }
 }
