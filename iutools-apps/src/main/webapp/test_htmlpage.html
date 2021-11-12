@@ -1,4 +1,6 @@
-<% String IUTOOLS_JS_VERSION=(new java.util.Date()).toLocaleString(); %>
+
+
+
 
 <!--
 For some reason, including a DOCTYPE html tag messes up the floating winbox
@@ -11,7 +13,9 @@ windows
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <% out.println("<title>iutools: "+pageTitle+"</title>\n"); %>
+    <title>iutools: Test JSP page</title>
+
+
     <link rel="stylesheet" href="./css/styles.css?v2">
     <link rel="stylesheet" href="./css/design-styles.css">
     <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -56,15 +60,26 @@ windows
 </nav>
 
 <div id="page_title">
-<h1><%= pageTitle %></h1>
-<p><em><%= pageUsage %></em></p>
+<h1>Test JSP page</h1>
+<p><em>Use this page to test some HTML and JS code in the context of a IUTools container</em></p>
 </div>
 <!--
    Setup the "main" part for this type of page
 -->
 <main>
 
-<% pageContext.include("pages/" + pageName + "/_view.jsp"); %>
+Click on the button below to try the code.
+<p/>
+<button onclick="tryCode()">Try Code</button>
+
+<script>
+    function tryCode() {
+        new WinBox("Default Dialog", {
+            title: "Testing Winbox",
+            html: "",
+        });
+    }
+</script>
 </main>
 
 <div id="footer" class="footer">
@@ -84,23 +99,32 @@ reloading -->
 -->
 <script src="./js/navscript.js"></script>
 <script src="./js/vendors/log4javascript.js"></script>
-<script src="./js/utils/jsonStringifySafe.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
-<script src="./js/debug/Debug.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
-<script src="./js/debug/DebugConfig.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
-<script src="./js/utils/CSSUtils.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
-<script src="./js/controllers/RunWhen.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
-<script src="./js/controllers/WidgetController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
-<script src="./js/controllers/FloatingWindowController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
+<script src="./js/utils/jsonStringifySafe.js?version=12-Nov-2021 6:27:32 AM"></script>
+<script src="./js/debug/Debug.js?version=12-Nov-2021 6:27:32 AM"></script>
+<script src="./js/debug/DebugConfig.js?version=12-Nov-2021 6:27:32 AM"></script>
+<script src="./js/utils/CSSUtils.js?version=12-Nov-2021 6:27:32 AM"></script>
+<script src="./js/controllers/RunWhen.js?version=12-Nov-2021 6:27:32 AM"></script>
+<script src="./js/controllers/WidgetController.js?version=12-Nov-2021 6:27:32 AM"></script>
+<script src="./js/controllers/FloatingWindowController.js?version=12-Nov-2021 6:27:32 AM"></script>
 
 
 <!-- This one must be before any other controller -->
-<script src="./js/controllers/IUToolsController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
+<script src="./js/controllers/IUToolsController.js?version=12-Nov-2021 6:27:32 AM"></script>
 
-<script src="./js/controllers/worddict/WordEntryController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
-<script src="./js/controllers/worddict/WordEntryController2.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
+<script src="./js/controllers/worddict/WordEntryController.js?version=12-Nov-2021 6:27:32 AM"></script>
+<script src="./js/controllers/worddict/WordEntryController2.js?version=12-Nov-2021 6:27:32 AM"></script>
 
 <!-- Include the code that creates and configures the controller for this page -->
-<% pageContext.include("pages/" + pageName + "/_controller.jsp"); %>
+
+
+<script charset="UTF-8">
+	// This function will be invoked when you press the [Try Code] button
+    function tryCode() {
+        alert("hi");
+    }
+
+</script>
+
 
 </body>
 
