@@ -14,7 +14,6 @@ class FloatingWindowController extends WidgetController {
         if (this._winbox == null) {
             var controller = this;
             var onCloseHandler = function(force) {
-                alert("Closing window: setting _winbox to null!!");
                 controller._winbox = null;
                 return false;
             }

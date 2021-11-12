@@ -4,7 +4,7 @@
 For some reason, including a DOCTYPE html tag messes up the floating winbox
 windows
 -->
-<!-- <!DOCTYPE html> -->
+<%--<!DOCTYPE html>--%>
 
 <html lang="en">
 
