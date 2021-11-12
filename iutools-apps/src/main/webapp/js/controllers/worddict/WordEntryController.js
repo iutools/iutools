@@ -3,11 +3,11 @@
  */
 
 class WordEntryController extends IUToolsController {
-    constructor(wdConfig) {
+    constructor(weConfig) {
         var tracer = Debug.getTraceLogger('WordEntryController.constructor');
-        tracer.trace("wdConfig="+jsonStringifySafe(wdConfig));
-        super(wdConfig);
-        this.windowController = new FloatingWindowController(config);
+        tracer.trace("wdConfig="+jsonStringifySafe(weConfig));
+        super(weConfig);
+        this.windowController = new FloatingWindowController(weConfig);
 
         this.hide();
         tracer.trace("upon exit, this="+jsonStringifySafe(this));
