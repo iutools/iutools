@@ -13,7 +13,7 @@ windows
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iutools: Test JSP page</title>
+    <title>iutools: Test HTML page</title>
 
 
     <link rel="stylesheet" href="./css/styles.css?v2">
@@ -27,6 +27,20 @@ windows
     <!-- winbox stuff -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/railscasts.min.css">
     <script src="./js/vendors/winbox/winbox.bundle.js"></script>
+
+    <!--
+   Load scripts that are common to all page types
+    -->
+    <script src="./js/navscript.js"></script>
+    <script src="./js/vendors/log4javascript.js"></script>
+    <script src="./js/utils/jsonStringifySafe.js?version=12-Nov-2021 6:27:32 AM"></script>
+    <script src="./js/debug/Debug.js?version=12-Nov-2021 6:27:32 AM"></script>
+    <script src="./js/debug/DebugConfig.js?version=12-Nov-2021 6:27:32 AM"></script>
+    <script src="./js/utils/CSSUtils.js?version=12-Nov-2021 6:27:32 AM"></script>
+    <script src="./js/controllers/RunWhen.js?version=12-Nov-2021 6:27:32 AM"></script>
+    <script src="./js/controllers/WidgetController.js?version=12-Nov-2021 6:27:32 AM"></script>
+    <script src="./js/controllers/FloatingWindowController.js?version=12-Nov-2021 6:27:32 AM"></script>
+
 
 </head>
 
@@ -60,7 +74,7 @@ windows
 </nav>
 
 <div id="page_title">
-<h1>Test JSP page</h1>
+<h1>Test HTML page</h1>
 <p><em>Use this page to test some HTML and JS code in the context of a IUTools container</em></p>
 </div>
 <!--
@@ -68,18 +82,99 @@ windows
 -->
 <main>
 
-Click on the button below to try the code.
-<p/>
-<button onclick="tryCode()">Try Code</button>
+<script charset="UTF-8">
+    var tracer = Debug.getTraceLogger("test_htmlpage.main");
 
-<script>
+    // This function will be invoked when you press the [Try Code] button
     function tryCode() {
-        new WinBox("Default Dialog", {
-            title: "Testing Winbox",
-            html: "",
-        });
+        alert("hello again");
     }
 </script>
+
+
+    Click on the button below to try the code.
+    <p/>
+    <button onclick="tryCode()">Try Code</button>
+    <p/>
+    <hr/>
+    Below are 3 buttons:
+    <p/>
+    <button onclick="staticlyAssignedHandler()">Hard-coded onclick</button><br/>
+    The onclick event for that button
+    is set 'staticly', i.e. it is encoded directly in the button's HTML tag
+    <p/>
+    <button id="btnWithListeners_jQuery">Dynamically set onclick (directly through jQuery)</button><br/>
+    The onclick event for that button
+    is set 'dynamicly', i.e the button's HTML tag does NOT define an 'onclick'. Instead, the handler for the 'onclick' event is
+    defined dynamically through JS. In this case, the dynamic assignment is done
+    directly throughjQuery.
+    <p/>
+    <button id="btnWithListeners_setOnclick">Dynamically set onclick (through page's setOnClick())</button><br/>
+    The onclick event for that button
+    is set 'dynamicly', i.e the button's HTML tag does NOT define an 'onclick'.
+    Instead, the handler for the 'onclick' event is
+    defined dynamically through JS.
+    In this case, the dynamic assignment is done through the setOnClick() method
+    defined in the HTML page.
+    <p/>
+    <button id="btnWithListeners_controller">Dynamically set onclick (through controller)</button><br/>
+    The onclick event for that button
+    is set 'dynamicly', i.e the button's HTML tag does NOT define an 'onclick'. Instead, the handler for the 'onclick' event is
+    defined dynamically through JS. In this case, the dynamic assignment is done
+    throw a WidgetController.
+    <p/>
+    All three buttons work as expected in Chrome. But the third one does NOT work in Firefox.
+    <p/>
+    <b>Why is that?</b>
+
+<script>
+    function staticlyAssignedHandler() {
+        alert("staticlyAssignedHandler: invoked");
+    }
+
+    var dynamiclyAssignedHandler_jQuery =
+        function(evt) {
+            alert("dynamiclyAssignedHandler_jQuery: invoked");
+        };
+
+    var dynamiclyAssignedHandler_setOnClick =
+        function(evt) {
+            alert("dynamiclyAssignedHandler_setOnClick: invoked");
+        };
+
+    var dynamiclyAssignedHandler_controller =
+        function(evt) {
+            alert("dynamiclyAssignedHandler_controller: invoked");
+        };
+
+    var button = $("#btnWithListeners_jQuery");
+    button.off('click').on("click", dynamiclyAssignedHandler_jQuery);
+
+    setOnClick('click', dynamiclyAssignedHandler_setOnClick);
+
+    var controller = new WidgetController({'btn': "btnWithListeners_controller"});
+    controller.setEventHandler("btn", "click", dynamiclyAssignedHandler_controller);
+
+    function setOnClick(evtName, handler) {
+        var tracer = Debug.getTraceLogger("WidgetController.setEventHandler")
+        var elt = $("#btnWithListeners_setOnclick");;
+        tracer.trace("elt="+elt+"; type="+elt.constructor.name);
+        var fct_handler =
+            function(evt) {
+                alert("fct_handler: called");
+                handler.call(controller, evt);
+            };
+
+        if (evtName === "click") {
+            elt.off('click').on("click", fct_handler);
+        }
+    }
+
+
+</script>
+
+
+
 </main>
 
 <div id="footer" class="footer">
@@ -94,20 +189,6 @@ Click on the button below to try the code.
 reloading -->
 <script>debugger;</script>
 
-<!--
-   Load scripts that are common to all page types
--->
-<script src="./js/navscript.js"></script>
-<script src="./js/vendors/log4javascript.js"></script>
-<script src="./js/utils/jsonStringifySafe.js?version=12-Nov-2021 6:27:32 AM"></script>
-<script src="./js/debug/Debug.js?version=12-Nov-2021 6:27:32 AM"></script>
-<script src="./js/debug/DebugConfig.js?version=12-Nov-2021 6:27:32 AM"></script>
-<script src="./js/utils/CSSUtils.js?version=12-Nov-2021 6:27:32 AM"></script>
-<script src="./js/controllers/RunWhen.js?version=12-Nov-2021 6:27:32 AM"></script>
-<script src="./js/controllers/WidgetController.js?version=12-Nov-2021 6:27:32 AM"></script>
-<script src="./js/controllers/FloatingWindowController.js?version=12-Nov-2021 6:27:32 AM"></script>
-
-
 <!-- This one must be before any other controller -->
 <script src="./js/controllers/IUToolsController.js?version=12-Nov-2021 6:27:32 AM"></script>
 
@@ -115,15 +196,6 @@ reloading -->
 <script src="./js/controllers/worddict/WordEntryController2.js?version=12-Nov-2021 6:27:32 AM"></script>
 
 <!-- Include the code that creates and configures the controller for this page -->
-
-
-<script charset="UTF-8">
-	// This function will be invoked when you press the [Try Code] button
-    function tryCode() {
-        alert("hi");
-    }
-
-</script>
 
 
 </body>

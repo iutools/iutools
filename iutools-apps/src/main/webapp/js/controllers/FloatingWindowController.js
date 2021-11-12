@@ -10,12 +10,18 @@ class FloatingWindowController extends WidgetController {
 
         this.hide();
     }
-
     winbox() {
         if (this._winbox == null) {
+            var controller = this;
+            var onCloseHandler = function(force) {
+                alert("Closing window: setting _winbox to null!!");
+                controller._winbox = null;
+                return false;
+            }
             this._winbox =
                 new WinBox("Looking up word...", {
                     title: "Looking up word...",
+                    onclose: onCloseHandler,
                 });
             var id = this._winbox.id;
             this._winbox.body.innerHTML = "";
@@ -32,6 +38,7 @@ class FloatingWindowController extends WidgetController {
     }
 
     show() {
+        var tracer = Debug.getTraceLogger("FloatingWindowController.show");
         this.winbox().show();
         return this;
     }
@@ -45,6 +52,7 @@ class FloatingWindowController extends WidgetController {
     }
 
     setTitle(title) {
+        var tracer = Debug.getTraceLogger("FloatingWindowController.setTitle");
         this.winbox().setTitle(title);
         return this;
     }

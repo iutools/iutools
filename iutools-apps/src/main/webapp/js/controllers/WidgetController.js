@@ -93,11 +93,14 @@ class WidgetController {
 	}
 	
 	setEventHandler(propNameOrElt, evtName, handler) {
+	    var tracer = Debug.getTraceLogger("WidgetController.setEventHandler")
+        tracer.trace("propNameOrElt="+propNameOrElt+", evtName="+evtName+", handler="+handler);
 		var elt = propNameOrElt;
 		if (typeof(propNameOrElt) == "string") {
 			elt = this.elementForProp(propNameOrElt);
 		}
-		
+
+        tracer.trace("elt="+elt+"; type="+elt.constructor.name);
 		var controller = this;
 		var fct_handler =
 				function(evt) {
