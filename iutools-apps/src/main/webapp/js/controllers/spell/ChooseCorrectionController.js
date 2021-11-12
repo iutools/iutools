@@ -8,6 +8,11 @@ class ChooseCorrectionController extends IUToolsController {
         var tracer = Debug.getTraceLogger('ChooseCorrectionController.constructor');
         tracer.trace("corrConfig=" + JSON.stringify(corrConfig));
         super(corrConfig);
+
+        this.windowController = new FloatingWindowController(
+            {mount: this.elementForProp("divChooseCorrectionDlg")}
+        )
+
         this.idOfWordBeingCorrected = null;
         this.busy = false;
         this.hideDialog();

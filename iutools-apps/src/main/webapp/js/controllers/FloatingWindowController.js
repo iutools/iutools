@@ -28,23 +28,21 @@ class FloatingWindowController extends WidgetController {
                 controller._winbox = null;
                 return false;
             }
-            if (this.x == null) {
-                this._winbox =
-                    new WinBox("Looking up word...", {
-                        title: "Looking up word...",
-                        onclose: onCloseHandler,
-                    });
-            } else {
-                this._winbox =
-                    new WinBox("Looking up word...", {
-                        title: "Looking up word...",
-                        x: this.x,
-                        y: this.y,
-                        width: this.width,
-                        height: this.height,
-                        onclose: onCloseHandler,
-                    });
+            var mount = null;
+            if (this.config.hasOwnProperty("mount")) {
+                mount = this.config.mount;
             }
+            this._winbox =
+                new WinBox("Looking up word...", {
+                    title: "Looking up word...",
+                    mount: mount,
+                    x: this.x,
+                    y: this.y,
+                    width: this.width,
+                    height: this.height,
+                    onclose: onCloseHandler,
+                });
+
             this._winbox.body.innerHTML = "";
         }
         return this._winbox;
