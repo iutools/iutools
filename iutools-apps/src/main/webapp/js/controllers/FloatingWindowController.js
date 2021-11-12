@@ -7,29 +7,58 @@ class FloatingWindowController extends WidgetController {
         super(config);
 
         this._winbox = null;
+        this.width = null;
+        this.height = null;
+        this.top = null;
+        this.right = null;
+        this.bottom = null;
+        this.left = null;
 
         this.hide();
     }
+
+    attachHtmlElements() {
+    }
+
     winbox() {
         if (this._winbox == null) {
             var controller = this;
-            var onCloseHandler = function(force) {
+            var onCloseHandler = function (force) {
+                controller.rememberSizeAndPosition()
                 controller._winbox = null;
                 return false;
             }
-            this._winbox =
-                new WinBox("Looking up word...", {
-                    title: "Looking up word...",
-                    onclose: onCloseHandler,
-                });
-            var id = this._winbox.id;
+            if (this.x == null) {
+                this._winbox =
+                    new WinBox("Looking up word...", {
+                        title: "Looking up word...",
+                        onclose: onCloseHandler,
+                    });
+            } else {
+                this._winbox =
+                    new WinBox("Looking up word...", {
+                        title: "Looking up word...",
+                        x: this.x,
+                        y: this.y,
+                        width: this.width,
+                        height: this.height,
+                        onclose: onCloseHandler,
+                    });
+            }
             this._winbox.body.innerHTML = "";
         }
         return this._winbox;
     }
 
-    attachHtmlElements() {
+    rememberSizeAndPosition() {
+        if (this._winbox != null) {
+            this.x = this._winbox.x;
+            this.y = this._winbox.y;
+            this.width = this._winbox.width;
+            this.height = this._winbox.height;
+        }
     }
+
 
     hide() {
         this.winbox().hide();
