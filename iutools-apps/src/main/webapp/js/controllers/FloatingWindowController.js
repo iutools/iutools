@@ -16,8 +16,9 @@ class FloatingWindowController extends WidgetController {
             this._winbox =
                 new WinBox("Looking up word...", {
                     title: "Looking up word...",
-                    html: "<div id='divProgressMessage'></div>",
                 });
+            var id = this._winbox.id;
+            this._winbox.body.innerHTML = "";
         }
         return this._winbox;
     }
@@ -53,14 +54,47 @@ class FloatingWindowController extends WidgetController {
         return this;
     }
 
+    divMessage() {
+        var div = $("#div-"+this.winboxID()+"-message");
+        return div;
+    }
+
     showSpinningWheel(message) {
         if (message == null) message = "Processing request";
-        var windowBody = this.winbox().body;
-        windowBody.innerHTML = "<img src=\"ajax-loader.gif\">"+message+" ...";
+        var tracer = Debug.getTraceLogger("FloatingWindowController.showSpinningWheel");
+
+        var body = this.body();
+        var html = body.innerHTML;
+        message =
+            "<div class='div-message' id='"+this.divMessageID()+"'>"+
+            "<img src='ajax-loader.gif'>"+
+            message+"...</div>";
+        tracer.trace("message="+message+", orig html="+html);
+        if (html.includes("ajax-loader.gif")) {
+            html.replace(/<div class='div-message'.*?<\/div>/, message);
+        } else {
+            html = message + "\n" + html;
+        }
+        body.innerHTML = html;
     }
 
     hideSpinningWheel() {
+        this.divMessage().hide();
 
+        return;
     }
 
+    winboxID() {
+        var _id = this.winbox().id;
+        return _id;
+    }
+
+    divMessageID() {
+        var id = "div-"+this.winboxID()+"-message";
+        return id;
+    }
+
+    body() {
+        return this.winbox().body;
+    }
 }
