@@ -104,7 +104,7 @@ Copy and paste content from the Word Entry dialog
 - Copy and paste one of the Related words
 - Copy and paste one of the Translations     
      
-Word Entry window hiding/showing
+Word Entry window hiding/showing/closing
 - Reload the Word Dictionary page
    - Make sure the Word Entry window is NOT showing
 - Search for word 'inuksuk'
@@ -114,7 +114,10 @@ Word Entry window hiding/showing
    - Make sure the Word Entry window is NOT showing
 - Search again for 'inuksuk' to make sure the WordEntry window is shown
 - Search for a query that returns some hits but is not itself a word, ex: 'iglum'
-  - Make sure that some hits are displayed, but that the Word Entry window is NOT SHOWN   
+  - Make sure that some hits are displayed, but that the Word Entry window is NOT SHOWN
+- Close the word info windows
+  - Search for word inuksuk and make sure that the info for the word is correctly 
+    displayed   
     
 ## Spell Checker
 

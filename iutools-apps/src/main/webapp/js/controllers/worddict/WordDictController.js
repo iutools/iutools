@@ -5,12 +5,12 @@
 class WordDictController extends IUToolsController {
     constructor(wdConfig) {
         var tracer = Debug.getTraceLogger('WordDicController.constructor');
-        tracer.trace("wdConfig=" + JSON.stringify(wdConfig));
+        tracer.trace("wdConfig=" + jsonStringifySafe(wdConfig));
         super(wdConfig);
 
         this.wordEntryController = new WordEntryController(wdConfig);
         this.wordEntryController.hideIconisationControls();
-        tracer.trace("upon exit, this=" + JSON.stringify(this));
+        tracer.trace("upon exit, this=" + jsonStringifySafe(this));
     }
 
     // Setup handler methods for different HTML elements specified in the config.
@@ -22,7 +22,7 @@ class WordDictController extends IUToolsController {
     onSearch() {
         var tracer = Debug.getTraceLogger("WordDictController.onSearch")
         var inputs = this.acquireInputs();
-        tracer.trace("Searching inputs="+JSON.stringify(inputs));
+        tracer.trace("Searching inputs="+jsonStringifySafe(inputs));
         if (!this.isDuplicateEvent("onSearch", inputs)) {
             this.clearHits();
             this.setBusy(true);
@@ -40,7 +40,7 @@ class WordDictController extends IUToolsController {
                 "lang": lang,
             };
 
-        var inputsJson = JSON.stringify(inputs);
+        var inputsJson = jsonStringifySafe(inputs);
         return inputsJson;
     }
 
@@ -54,7 +54,7 @@ class WordDictController extends IUToolsController {
 
     searchSuccessCallback(resp) {
         var tracer = Debug.getTraceLogger("WordDictController.searchSuccessCallback");
-        tracer.trace('resp= '+JSON.stringify(resp));
+        tracer.trace('resp= '+jsonStringifySafe(resp));
         if (resp.errorMessage != null) {
             this.searchFailureCallback(resp);
         } else {
@@ -97,7 +97,7 @@ class WordDictController extends IUToolsController {
 
     displaySearchResult(resp) {
         var tracer = Debug.getTraceLogger("WordDictController.displayLookupResult");
-        tracer.trace('resp= '+JSON.stringify(resp));
+        tracer.trace('resp= '+jsonStringifySafe(resp));
         var html = this.htmlHits(resp);
 
         var queryWordEntry = null;
@@ -148,17 +148,17 @@ class WordDictController extends IUToolsController {
         var tracer = Debug.getTraceLogger('WordDicController.attachListenersToIUWords');
         var anchorWords = $(document).find('.iu-word');
         for (var ipn = 0; ipn < anchorWords.length; ipn++) {
-            tracer.trace("Attaching lister to word: "+JSON.stringify(anchorWords[ipn]));
+            tracer.trace("Attaching listenerr to word: "+jsonStringifySafe(anchorWords[ipn]));
             this.setEventHandler(anchorWords.eq(ipn), "click", this.onClickWord);
         }
     }
 
     onClickWord(evt) {
         var tracer = Debug.getTraceLogger('WordDicController.onClickWord');
-        tracer.trace("invoked, evt="+JSON.stringify(evt));
-        tracer.trace("this="+JSON.stringify(this));
-        tracer.trace("this.wordDictController="+JSON.stringify(this.wordDictController));
-        tracer.trace("this.wordEntryController="+JSON.stringify(this.wordEntryController));
+        tracer.trace("invoked, evt="+jsonStringifySafe(evt));
+        tracer.trace("this="+jsonStringifySafe(this));
+        tracer.trace("this.wordDictController="+jsonStringifySafe(this.wordDictController));
+        tracer.trace("this.wordEntryController="+jsonStringifySafe(this.wordEntryController));
 
         var element = evt.target;
         var iuWord = $(element).text();
