@@ -73,7 +73,12 @@ class RunWhen {
 	}
 	
 	domReady(toRun, maxMSecs, interval, timeSoFar) {
-
+	    if (maxMSecs == null) {
+	        maxMSecs = 10 * 1000;
+        }
+	    if (interval == null) {
+	        interval = 1000;
+        }
 		var isReady = function() {
 			var tracer = Debug.getTraceLogger("RunWhen.domReady");
 			var ready = false;

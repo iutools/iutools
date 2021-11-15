@@ -261,6 +261,11 @@ Spell check text that is too large
 - Check that the system prints an error message that says you have to split the
   text into smaller chunks. 
         
+Choose corrrection after closing suggestions box
+- Click on a bad word
+- Click on the X to close the suggestions window
+- Click on the bad word again and make sure you can select and apply a suggestion
+        
     
 ## Search Engine
 Search for word in LATIN - Happy Path

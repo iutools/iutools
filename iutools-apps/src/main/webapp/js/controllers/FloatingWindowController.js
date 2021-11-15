@@ -53,7 +53,9 @@ class FloatingWindowController extends WidgetController {
                     onclose: onCloseHandler,
                 });
 
-            // this._winbox.body.innerHTML = "";
+            if (this.config.hasOwnProperty('onNewWindow')) {
+                this.config.onNewWindow();
+            }
         }
         return this._winbox;
     }

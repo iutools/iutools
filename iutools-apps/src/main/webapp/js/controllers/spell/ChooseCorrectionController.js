@@ -12,6 +12,11 @@ class ChooseCorrectionController extends IUToolsController {
         chooseCorrConfig.divError =
         super(corrConfig);
 
+        var chooseController = this;
+        var onNewWindow = function() {
+            chooseController.setEventHandler("btnChooseCorrection_ApplyCorrection", "click", chooseController.applyCorrection);
+            chooseController.setEventHandler("btnChooseCorrection_CancelCorrection", "click", chooseController.cancelCorrection);
+        }
 
         this.windowController = new FloatingWindowController(
             {
@@ -29,6 +34,7 @@ class ChooseCorrectionController extends IUToolsController {
                     "<div id=\"div-choose-correction-error\"></div>\n",
                 divMessage: 'div-choose-correction-message',
                 divError: "div-choose-correction-message",
+                onNewWindow: onNewWindow,
             }
         )
 
@@ -39,8 +45,6 @@ class ChooseCorrectionController extends IUToolsController {
     }
 
     attachHtmlElements() {
-        this.setEventHandler("btnChooseCorrection_ApplyCorrection", "click", this.applyCorrection);
-        this.setEventHandler("btnChooseCorrection_CancelCorrection", "click", this.cancelCorrection);
     }
 
     hide() {
