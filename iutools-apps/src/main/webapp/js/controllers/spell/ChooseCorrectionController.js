@@ -6,25 +6,33 @@ class ChooseCorrectionController extends IUToolsController {
 
     constructor(corrConfig) {
         var tracer = Debug.getTraceLogger('ChooseCorrectionController.constructor');
-        tracer.trace("corrConfig=" + JSON.stringify(corrConfig));
+        tracer.trace("corrConfig=" + jsonStringifySafe(corrConfig));
         super(corrConfig);
 
+
         this.windowController = new FloatingWindowController(
-            {mount: this.elementForProp("divChooseCorrectionDlg")}
+            {
+                html:
+                    "<div class=\"div-floating-dlg\" id=\"div-choose-correction-dlg\" style=\"visibility:visible\">\n" +
+                    "  <div class=\"div-floating-dlg-contents\">\n" +
+                    "    <div id=\"div-choose-correction-message\" style=\"display: none;\"></div>\n" +
+                    "    <div id='div-choose-correction-form'>\n"+
+                    "      <input id=\"txt-finalized-correction\" type=\"text\" value=\"\" style=\"\">\n" +
+                    "      <button id=\"btn-choose-correction-apply\" style=\"\">Apply</button>\n" +
+                    "      <button id=\"btn-choose-correction-cancel\" style=\"\">Cancel</button>\n" +
+                    "    </div>\n" +
+                    "    <div id=\"div-choose-correction-suggestions\"></div>\n" +
+                    "  </div>\n" +
+                    "  <div id=\"div-choose-correction-error\"></div>\n" +
+                    "</div>\n",
+                divMessage: 'div-choose-correction-message',
+            }
         )
 
         this.idOfWordBeingCorrected = null;
         this.busy = false;
-        this.hideDialog();
 
-        this.elementForProp("divChooseCorrectionDlg")
-                .draggable(
-                    {
-                        handle: ".div-floating-dlg-titlebar",
-                        containment: "window"
-                    }
-                );
-        tracer.trace("upon exit, this=" + JSON.stringify(this));
+        tracer.trace("upon exit, this=" + jsonStringifySafe(this));
     }
 
     attachHtmlElements() {
@@ -32,38 +40,42 @@ class ChooseCorrectionController extends IUToolsController {
         this.setEventHandler("btnChooseCorrection_CancelCorrection", "click", this.cancelCorrection);
     }
 
-    showDialog(word) {
-        this.clearDialog();
+    hide() {
+        this.windowController.hide();
+    }
+
+    show(word) {
+        var tracer = Debug.getTraceLogger("ChooseCorrectionController.show");
+        tracer.trace("invoked");
+        this.clear();
         this.diplayClickedWord(word)
         this.setBusy(true);
-        this.divDialog().show();
+        this.windowController.show();
     }
 
-    hideDialog() {
-        this.divDialog().hide();
-    }
-
-    clearDialog() {
-        this.divTitle().html("");
+    clear() {
+        this.windowController.setTitle("Looking up suggestions...");
         this.txtCorrection().val("");
         this.divSuggestions().html("");
+        this.divChooseCorrectionForm().hide();
     }
 
-    diplayClickedWord(word) {
-        this.divTitle().html("<h2>"+word+"</h2>");
+    displayClickedWord(word) {
+        var tracer = Debug.getTraceLogger("ChooseCorrectionController.diplayClickedWord");
+        tracer.trace("invoked");
+        this.windowController.show();
+        this.windowController.setTitle(word)
+        this.windowController.showSpinningWheel(
+            "Looking up suggestions for: "+word);
         this.hideEditCorrectionForm();
     }
 
     hideEditCorrectionForm() {
-        this.txtCorrection().hide();
-        this.btnApplyCorrection().hide();
-        this.btnCancelCorrection().hide();
+        this.divChooseCorrectionForm().hide();
     }
 
     showEditCorrectionForm() {
-        this.txtCorrection().show();
-        this.btnApplyCorrection().show();
-        this.btnCancelCorrection().show();
+        this.divChooseCorrectionForm().show();
     }
 
     setBusy(flag) {
@@ -71,10 +83,10 @@ class ChooseCorrectionController extends IUToolsController {
         tracer.trace("this.config.divMessage="+this.config.divMessage);
         this.busy = flag;
         if (flag) {
-            this.showSpinningWheel('divChooseCorrectionMessage', "Looking for suggestions");
-            this.error("");
+            this.windowController.showSpinningWheel("Looking for suggestions");
+            this.windowController.this.error("");
         } else {
-            this.hideSpinningWheel('divChooseCorrectionMessage');
+            this.windowController.hideSpinningWheel();
         }
 
         return;
@@ -88,7 +100,7 @@ class ChooseCorrectionController extends IUToolsController {
         var word = this.wordBeingCorrected();
         tracer.trace("word="+word);
 
-        this.showDialog(word);
+        this.displayClickedWord(word);
 
         var controller = this;
         var cbkSuccess = function(resp) {
@@ -112,11 +124,10 @@ class ChooseCorrectionController extends IUToolsController {
 
     suggestCorrectionsSuccess(resp) {
         var tracer = Debug.getTraceLogger("ChooseCorrectionController.suggestCorrectionsSuccess");
-        tracer.trace("this.idOfWordBeingCorrected="+this.idOfWordBeingCorrected+", resp="+JSON.stringify(resp));
+        tracer.trace("this.idOfWordBeingCorrected="+this.idOfWordBeingCorrected+", resp="+jsonStringifySafe(resp));
         if (resp.errorMessage != null) {
             this.suggestCorrectionsFailure(resp);
         } else {
-            this.showEditCorrectionForm();
             var html = this.htmlChooseCorrection(resp);
             if (html != null) {
                 // html == null means that:
@@ -130,13 +141,15 @@ class ChooseCorrectionController extends IUToolsController {
                 //
                 this.divSuggestions().html(html);
                 this.setBusy(false);
+                this.divChooseCorrectionForm().show();
             }
+            tracer.trace("DONE");
         }
     }
 
     suggestCorrectionsFailure(resp) {
         var tracer = Debug.getTraceLogger("ChooseCorrectionController.suggestCorrectionsFailure");
-        tracer.trace("resp="+JSON.stringify(resp));
+        tracer.trace("resp="+jsonStringifySafe(resp));
         if (! resp.hasOwnProperty("errorMessage")) {
             // Error condition comes from tomcat itself, not from our servlet
             resp.errorMessage =
@@ -148,7 +161,7 @@ class ChooseCorrectionController extends IUToolsController {
 
     htmlChooseCorrection(resp) {
         var tracer = Debug.getTraceLogger("ChooseCorrectionController.htmlChooseCorrection");
-        tracer.trace("resp="+JSON.stringify(resp));
+        tracer.trace("resp="+jsonStringifySafe(resp));
         var html = null;
         var correction = resp.correction;
         var suggestions = correction.allSuggestions;
@@ -190,14 +203,14 @@ class ChooseCorrectionController extends IUToolsController {
     onClickSuggestion(suggEltID) {
         var tracer = Debug.getTraceLogger("ChooseCorrectionController.onClickSuggestion");
         var suggestion = $("#"+suggEltID).text();
-        tracer.trace("this="+(typeof this)+": "+JSON.stringify(this));
+        tracer.trace("this="+(typeof this)+": "+jsonStringifySafe(this));
         tracer.trace("suggEltID="+suggEltID+", suggestion="+suggestion+", this.idOfWordBeingCorrected="+this.idOfWordBeingCorrected);
         this.txtCorrection().val(suggestion);
     }
 
     applyCorrection() {
         var tracer = Debug.getTraceLogger("ChooseCorrectionController.applyCorrection");
-        tracer.trace("this="+JSON.stringify(this)+", $(this)="+JSON.stringify($(this)));
+        tracer.trace("this="+jsonStringifySafe(this)+", $(this)="+jsonStringifySafe($(this)));
         var correction = this.txtCorrection().val();
         var idOfWordBeingCorrected = this.idOfWordBeingCorrected;
         tracer.trace("correction="+correction+", idOfWordBeingCorrected="+idOfWordBeingCorrected);
@@ -214,14 +227,14 @@ class ChooseCorrectionController extends IUToolsController {
             }
         );
         this.idOfWordBeingCorrected = null;
-        this.clearDialog();
-        this.hideDialog();
+        this.clear();
+        this.hide();
     }
 
     cancelCorrection() {
         this.idOfWordBeingCorrected = null;
-        this.clearDialog();
-        this.hideDialog();
+        this.clear();
+        this.hide();
     }
 
     divDialog() {
@@ -232,8 +245,15 @@ class ChooseCorrectionController extends IUToolsController {
         return this.elementForProp("divChooseCorrectionTitle");
     }
 
+    divChooseCorrectionForm() {
+        return $("#div-choose-correction-form");
+    }
+
     divSuggestions() {
-        return this.elementForProp("divChooseCorrectionSuggestions");
+        var tracer = Debug.getTraceLogger("ChooseCorrectionController.divSuggestions");
+        var div = this.elementForProp("divChooseCorrectionSuggestions");
+        tracer.trace("Returning div="+div);
+        return div;
     }
 
     txtCorrection() {
@@ -252,10 +272,6 @@ class ChooseCorrectionController extends IUToolsController {
         var included =
             this.elementForProp("chkIncludePartials").is(":checked");
         return included;
-    }
-
-    show() {
-        this.divDialog().show();
     }
 
     wordBeingCorrected() {

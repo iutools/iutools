@@ -22,7 +22,7 @@ windows
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&display=swap" rel="stylesheet">
     <script src="./js/vendors/jquery/jquery-3.3.1.min.js"></script>
     <script src="./js/vendors/jquery/jquery-ui.min.js" type="text/javascript"></script>
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
     <!-- winbox stuff -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/railscasts.min.css">
@@ -40,8 +40,6 @@ windows
     <script src="./js/controllers/RunWhen.js?version=12-Nov-2021 6:27:32 AM"></script>
     <script src="./js/controllers/WidgetController.js?version=12-Nov-2021 6:27:32 AM"></script>
     <script src="./js/controllers/FloatingWindowController.js?version=12-Nov-2021 6:27:32 AM"></script>
-
-
 </head>
 
 <body>
@@ -87,7 +85,13 @@ windows
 
     // This function will be invoked when you press the [Try Code] button
     function tryCode() {
-        alert("hello again");
+        var divToMount = document.getElementById("to-mount")
+            // .cloneNode(true)
+        ;
+        divToMount.style.display = 'block';
+        new WinBox("Mount DOM", {
+            mount: divToMount,
+        });
     }
 </script>
 
@@ -96,86 +100,43 @@ windows
     <p/>
     <button onclick="tryCode()">Try Code</button>
     <p/>
+
     <hr/>
-    Below are 3 buttons:
+    <button onclick="displayWinbox()">Display Winbox</button>
     <p/>
-    <button onclick="staticlyAssignedHandler()">Hard-coded onclick</button><br/>
-    The onclick event for that button
-    is set 'staticly', i.e. it is encoded directly in the button's HTML tag
-    <p/>
-    <button id="btnWithListeners_jQuery">Dynamically set onclick (directly through jQuery)</button><br/>
-    The onclick event for that button
-    is set 'dynamicly', i.e the button's HTML tag does NOT define an 'onclick'. Instead, the handler for the 'onclick' event is
-    defined dynamically through JS. In this case, the dynamic assignment is done
-    directly throughjQuery.
-    <p/>
-    <button id="btnWithListeners_setOnclick">Dynamically set onclick (through page's setOnClick())</button><br/>
-    The onclick event for that button
-    is set 'dynamicly', i.e the button's HTML tag does NOT define an 'onclick'.
-    Instead, the handler for the 'onclick' event is
-    defined dynamically through JS.
-    In this case, the dynamic assignment is done through the setOnClick() method
-    defined in the HTML page.
-    <p/>
-    <button id="btnWithListeners_controller">Dynamically set onclick (through controller)</button><br/>
-    The onclick event for that button
-    is set 'dynamicly', i.e the button's HTML tag does NOT define an 'onclick'. Instead, the handler for the 'onclick' event is
-    defined dynamically through JS. In this case, the dynamic assignment is done
-    throw a WidgetController.
-    <p/>
-    All three buttons work as expected in Chrome. But the third one does NOT work in Firefox.
-    <p/>
-    <b>Why is that?</b>
-
-<script>
-    function staticlyAssignedHandler() {
-        alert("staticlyAssignedHandler: invoked");
-    }
-
-    var dynamiclyAssignedHandler_jQuery =
-        function(evt) {
-            alert("dynamiclyAssignedHandler_jQuery: invoked");
-        };
-
-    var dynamiclyAssignedHandler_setOnClick =
-        function(evt) {
-            alert("dynamiclyAssignedHandler_setOnClick: invoked");
-        };
-
-    var dynamiclyAssignedHandler_controller =
-        function(evt) {
-            alert("dynamiclyAssignedHandler_controller: invoked");
-        };
-
-    var button = $("#btnWithListeners_jQuery");
-    button.off('click').on("click", dynamiclyAssignedHandler_jQuery);
-
-    setOnClick('click', dynamiclyAssignedHandler_setOnClick);
-
-    var controller = new WidgetController({'btn': "btnWithListeners_controller"});
-    controller.setEventHandler("btn", "click", dynamiclyAssignedHandler_controller);
-
-    function setOnClick(evtName, handler) {
-        var tracer = Debug.getTraceLogger("WidgetController.setEventHandler")
-        var elt = $("#btnWithListeners_setOnclick");;
-        tracer.trace("elt="+elt+"; type="+elt.constructor.name);
-        var fct_handler =
-            function(evt) {
-                alert("fct_handler: called");
-                handler.call(controller, evt);
-            };
-
-        if (evtName === "click") {
-            elt.off('click').on("click", fct_handler);
-        }
-    }
-
-
-</script>
-
 
 
 </main>
+
+<script>
+
+    function displayWinbox() {
+        new WinBox(
+            {
+                title: "Choose correction",
+                html:
+                    "<div class=\"div-floating-dlg\" id=\"div-choose-correction-dlg\" style=\"\">\n" +
+                    "  <div class=\"div-floating-dlg-titlebar\" id=\"div-choose-correction-title\"><h2>nunavvvut</h2></div>\n" +
+                    "  <div class=\"div-floating-dlg-contents\">\n" +
+                    "    <div id=\"div-choose-correction-message\" style=\"display: none;\"></div>\n" +
+                    "    <input id=\"txt-finalized-correction\" type=\"text\" value=\"\" style=\"\">\n" +
+                    "    <button id=\"btn-choose-correction-apply\" style=\"\">Apply</button>\n" +
+                    "    <button id=\"btn-choose-correction-cancel\" style=\"\">Cancel</button>\n" +
+                    "    <div id=\"div-choose-correction-suggestions\">" +
+                    "      <a class=\"spell-suggestion\" id=\"suggestion-0\" onclick=\"chooseCorrectionController.onClickSuggestion('suggestion-0')\">nunavut</a><br>\n" +
+                    "      <a class=\"spell-suggestion\" id=\"suggestion-1\" onclick=\"chooseCorrectionController.onClickSuggestion('suggestion-1')\">nunavuut</a><br>\n" +
+                    "      <a class=\"spell-suggestion\" id=\"suggestion-2\" onclick=\"chooseCorrectionController.onClickSuggestion('suggestion-2')\">nunavu</a><br>\n" +
+                    "      <a class=\"spell-suggestion\" id=\"suggestion-3\" onclick=\"chooseCorrectionController.onClickSuggestion('suggestion-3')\">nunavuk</a><br>\n" +
+                    "      <a class=\"spell-suggestion\" id=\"suggestion-4\" onclick=\"chooseCorrectionController.onClickSuggestion('suggestion-4')\">nunalivut</a><br>\n" +
+                    "    </div>\n" +
+                    "  </div>\n" +
+                    "  <div id=\"div-choose-correction-error\"></div>\n" +
+                    "</div>\n"
+            }
+        )
+    }
+
+</script>
 
 <div id="footer" class="footer">
   In collaboration with:
@@ -193,7 +154,7 @@ reloading -->
 <script src="./js/controllers/IUToolsController.js?version=12-Nov-2021 6:27:32 AM"></script>
 
 <script src="./js/controllers/worddict/WordEntryController.js?version=12-Nov-2021 6:27:32 AM"></script>
-<script src="./js/controllers/worddict/WordEntryController2.js?version=12-Nov-2021 6:27:32 AM"></script>
+<script src="./js/controllers/spell/ChooseCorrectionController.js?version=12-Nov-2021 6:27:32 AM"></script>
 
 <!-- Include the code that creates and configures the controller for this page -->
 

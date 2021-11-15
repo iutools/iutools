@@ -3,7 +3,7 @@
 class FloatingWindowController extends WidgetController {
     constructor(config) {
         var tracer = Debug.getTraceLogger("FloatingWindowController.constructor");
-        tracer.trace("config="+jsonStringifySafe(config,undefined,2));
+        tracer.trace("config=" + jsonStringifySafe(config, undefined, 2));
         super(config);
 
         this._winbox = null;
@@ -13,6 +13,7 @@ class FloatingWindowController extends WidgetController {
         this.right = null;
         this.bottom = null;
         this.left = null;
+        this.mounted = null;
 
         this.hide();
     }
@@ -21,6 +22,7 @@ class FloatingWindowController extends WidgetController {
     }
 
     winbox() {
+        var tracer = Debug.getTraceLogger("FloatingWindowController.winbox")
         if (this._winbox == null) {
             var controller = this;
             var onCloseHandler = function (force) {
@@ -28,14 +30,22 @@ class FloatingWindowController extends WidgetController {
                 controller._winbox = null;
                 return false;
             }
-            var mount = null;
             if (this.config.hasOwnProperty("mount")) {
-                mount = this.config.mount;
+                this.mounted =
+                    document.getElementById(this.config.mount)
+                    .cloneNode(true);
+                tracer.trace("mounted.id=" + this.mounted.id);
             }
+            var html = null;
+            if (this.config.hasOwnProperty('html')) {
+                html = this.config.html;
+            }
+            tracer.trace("mounted=" + this.mounted+", html="+html);
             this._winbox =
                 new WinBox("Looking up word...", {
                     title: "Looking up word...",
-                    mount: mount,
+                    mount: this.mounted,
+                    html: html,
                     x: this.x,
                     y: this.y,
                     width: this.width,
@@ -43,7 +53,7 @@ class FloatingWindowController extends WidgetController {
                     onclose: onCloseHandler,
                 });
 
-            this._winbox.body.innerHTML = "";
+            // this._winbox.body.innerHTML = "";
         }
         return this._winbox;
     }
@@ -65,8 +75,16 @@ class FloatingWindowController extends WidgetController {
 
     show() {
         var tracer = Debug.getTraceLogger("FloatingWindowController.show");
+        this.makeMountedElementVisible();
         this.winbox().show();
         return this;
+    }
+
+    makeMountedElementVisible() {
+        console.log("-- makeMountedElementVisible: invoked");
+        if (this.mounted != null) {
+            this.mounted.style.display = "block";
+        }
     }
 
     minimize() {
@@ -90,32 +108,18 @@ class FloatingWindowController extends WidgetController {
 
     divMessage() {
         var div = $("#div-"+this.winboxID()+"-message");
+        this.showSpinningWheel()
         return div;
     }
 
     showSpinningWheel(message) {
-        if (message == null) message = "Processing request";
-        var tracer = Debug.getTraceLogger("FloatingWindowController.showSpinningWheel");
-
-        var body = this.body();
-        var html = body.innerHTML;
-        message =
-            "<div class='div-message' id='"+this.divMessageID()+"'>"+
-            "<img src='ajax-loader.gif'>"+
-            message+"...</div>";
-        tracer.trace("message="+message+", orig html="+html);
-        if (html.includes("ajax-loader.gif")) {
-            html.replace(/<div class='div-message'.*?<\/div>/, message);
-        } else {
-            html = message + "\n" + html;
-        }
-        body.innerHTML = html;
+        var divID = "#div-choose-correction-message";
+        super.showSpinningWheel(divID, message);
     }
 
     hideSpinningWheel() {
-        this.divMessage().hide();
-
-        return;
+        var divID = "#div-choose-correction-message";
+        super.hideSpinningWheel(divID);
     }
 
     winboxID() {

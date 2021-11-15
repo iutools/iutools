@@ -129,15 +129,25 @@ class WidgetController {
 		return;
 	}	
 	
-	showSpinningWheel(divMessProp, message) {
+	showSpinningWheel(divMessLocator, message) {
 		if (message == null) message = "Processing request";
-		var divMessage = this.elementForProp(divMessProp);
+		var divMessage = null;
+		if (divMessLocator.search(/^(#|\.)/) >= 0) {
+		    divMessage = $(divMessLocator);
+        } else {
+            divMessage = this.elementForProp(divMessLocator);
+        }
 		divMessage.html("<img src=\"ajax-loader.gif\">"+message+" ...");
 		divMessage.show();
 	}
 
-	hideSpinningWheel(divMessProp) {
-		var divMessage = this.elementForProp(divMessProp);
+	hideSpinningWheel(divMessLocator) {
+        var divMessage = null;
+        if (divMessLocator.search(/^(#|\.)/) >= 0) {
+            divMessage = $(divMessLocator);
+        } else {
+            divMessage = this.elementForProp(divMessLocator);
+        }
 		divMessage.empty();
 		divMessage.hide();
 	}
