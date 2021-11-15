@@ -7,6 +7,9 @@ class ChooseCorrectionController extends IUToolsController {
     constructor(corrConfig) {
         var tracer = Debug.getTraceLogger('ChooseCorrectionController.constructor');
         tracer.trace("corrConfig=" + jsonStringifySafe(corrConfig));
+
+        var chooseCorrConfig = Object.assign({}, corrConfig);
+        chooseCorrConfig.divError =
         super(corrConfig);
 
 
@@ -14,8 +17,9 @@ class ChooseCorrectionController extends IUToolsController {
             {
                 html:
                     "<div class=\"div-floating-dlg\" id=\"div-choose-correction-dlg\" style=\"visibility:visible\">\n" +
+                    "  <div class='div-error' id='div-choose-correction-message'></div>\n"+
                     "  <div class=\"div-floating-dlg-contents\">\n" +
-                    "    <div id=\"div-choose-correction-message\" style=\"display: none;\"></div>\n" +
+                    "    <div id=\"div-choose-correction-message\" class='div-message' style=\"display: none;\"></div>\n" +
                     "    <div id='div-choose-correction-form'>\n"+
                     "      <input id=\"txt-finalized-correction\" type=\"text\" value=\"\" style=\"\">\n" +
                     "      <button id=\"btn-choose-correction-apply\" style=\"\">Apply</button>\n" +
@@ -26,6 +30,7 @@ class ChooseCorrectionController extends IUToolsController {
                     "  <div id=\"div-choose-correction-error\"></div>\n" +
                     "</div>\n",
                 divMessage: 'div-choose-correction-message',
+                divError: "div-choose-correction-message",
             }
         )
 
