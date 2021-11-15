@@ -16,19 +16,17 @@ class ChooseCorrectionController extends IUToolsController {
         this.windowController = new FloatingWindowController(
             {
                 html:
-                    "<div class=\"div-floating-dlg\" id=\"div-choose-correction-dlg\" style=\"visibility:visible\">\n" +
-                    "  <div class='div-error' id='div-choose-correction-message'></div>\n"+
-                    "  <div class=\"div-floating-dlg-contents\">\n" +
-                    "    <div id=\"div-choose-correction-message\" class='div-message' style=\"display: none;\"></div>\n" +
-                    "    <div id='div-choose-correction-form'>\n"+
-                    "      <input id=\"txt-finalized-correction\" type=\"text\" value=\"\" style=\"\">\n" +
-                    "      <button id=\"btn-choose-correction-apply\" style=\"\">Apply</button>\n" +
-                    "      <button id=\"btn-choose-correction-cancel\" style=\"\">Cancel</button>\n" +
-                    "    </div>\n" +
-                    "    <div id=\"div-choose-correction-suggestions\"></div>\n" +
+                    "<div class='div-error' id='div-choose-correction-message'></div>\n"+
+                    "<div class=\"div-floating-dlg-contents\">\n" +
+                    "  <div id=\"div-choose-correction-message\" class='div-message' style=\"display: none;\"></div>\n" +
+                    "  <div id='div-choose-correction-form'>\n"+
+                    "    <input id=\"txt-finalized-correction\" type=\"text\" value=\"\" style=\"\">\n" +
+                    "    <button id=\"btn-choose-correction-apply\" style=\"\">Apply</button>\n" +
+                    "    <button id=\"btn-choose-correction-cancel\" style=\"\">Cancel</button>\n" +
                     "  </div>\n" +
-                    "  <div id=\"div-choose-correction-error\"></div>\n" +
-                    "</div>\n",
+                    "  <div id=\"div-choose-correction-suggestions\"></div>\n" +
+                    "</div>\n" +
+                    "<div id=\"div-choose-correction-error\"></div>\n",
                 divMessage: 'div-choose-correction-message',
                 divError: "div-choose-correction-message",
             }
