@@ -62,13 +62,21 @@ Syllabic query
   - Check that there are about 17 hits
   - Translations include 'clams' and 'divers'
 
-English query
+English query - Single word
 - Do the steps described in the 'basic scenario' with English word 'housing', 
   with the following 'specifics':
   - QUERY_WORD: 'development'
   - QUERY_LANGUAGE: Change it to English
   - At the moment, it's 'normal' that the list of hits only shows the
     word 'development'
+    
+English query - Multi word
+- Do the steps described in the 'basic scenario' with English word 'housing', 
+  with the following 'specifics':
+  - QUERY_WORD: 'healthcare coverage'
+  - QUERY_LANGUAGE: Change it to English
+  - At the moment, it's 'normal' that the list of hits only shows the
+    expression 'healthcare coverage'
 
 Query that returns no results
 - Search for ninuksuk
@@ -89,9 +97,11 @@ Search with Enter vs Button
 
 Progress wheel etc.
 - Submit a search and check that
-  - progress wheel is displayed
+  - progress wheel is displayed in the Search form
   - search button is disabled
   - when search is done, wheel disappears and butto is re-enabled
+- Click on a word
+  - Make sure the progress wheel is displayed in the Word Entry window
   
 Min-max-Drag word entry window
 - Make sure you can minimimize, maximize and drag the word entry window

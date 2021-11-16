@@ -114,16 +114,6 @@ class FloatingWindowController extends WidgetController {
         return div;
     }
 
-    showSpinningWheel(message) {
-        var divID = "#div-choose-correction-message";
-        super.showSpinningWheel(divID, message);
-    }
-
-    hideSpinningWheel() {
-        var divID = "#div-choose-correction-message";
-        super.hideSpinningWheel(divID);
-    }
-
     winboxID() {
         var _id = this.winbox().id;
         return _id;

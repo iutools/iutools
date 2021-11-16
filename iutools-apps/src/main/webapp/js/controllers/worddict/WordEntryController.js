@@ -7,7 +7,8 @@ class WordEntryController extends IUToolsController {
         var tracer = Debug.getTraceLogger('WordEntryController.constructor');
         tracer.trace("wdConfig="+jsonStringifySafe(weConfig));
         super(weConfig);
-        this.windowController = new FloatingWindowController(weConfig);
+        this.windowController =
+            new FloatingWindowController(weConfig);
 
         this.hide();
         tracer.trace("upon exit, this="+jsonStringifySafe(this));
@@ -82,15 +83,12 @@ class WordEntryController extends IUToolsController {
 				resp.responseText;
 		}				
 		this.error(resp.errorMessage);
-		this.hideSpinningWheel();
 	}
 	
 	setWordDictBusy(flag) {
 		this.busy = flag;		
 		if (flag) {
             this.showSpinningWheel('Searching');
-		} else {
-			this.hideSpinningWheel();
 		}
 	}	
 	
@@ -107,7 +105,6 @@ class WordEntryController extends IUToolsController {
 		var tracer = Debug.getTraceLogger('WordEntryController.displayWordEntry');
 		var lang = results.lang;
 		var otherLang = results.otherLang;
-		this.hideSpinningWheel();
 
 		// Change the word being looked up in order to add its
         // transcoding in the other script
@@ -119,7 +116,7 @@ class WordEntryController extends IUToolsController {
         }
 		this.displayWordBeingLookedUp(word, wordInOtherScript);
 		if (wordEntry != null) {
-            var html = "";
+                var html = "";
             html += this.htmlTranslations(wordEntry, otherLang);
             html += this.htmlRelatedWords(wordEntry, lang);
             html = this.htmlMorphologicalAnalyses(wordEntry, lang, html);
@@ -348,10 +345,6 @@ class WordEntryController extends IUToolsController {
     }
 
     showSpinningWheel(message) {
-        this.windowController.showSpinningWheel(message);
-    }
-
-    hideSpinningWheel(message) {
-        this.windowController.hideSpinningWheel();
+        this.windowController.showSpinningWheel(".wb-body", message);
     }
 }

@@ -9,7 +9,6 @@ class WordDictController extends IUToolsController {
         super(wdConfig);
 
         this.wordEntryController = new WordEntryController(wdConfig);
-        this.wordEntryController.hideIconisationControls();
         tracer.trace("upon exit, this=" + jsonStringifySafe(this));
     }
 
@@ -156,9 +155,6 @@ class WordDictController extends IUToolsController {
     onClickWord(evt) {
         var tracer = Debug.getTraceLogger('WordDicController.onClickWord');
         tracer.trace("invoked, evt="+jsonStringifySafe(evt));
-        tracer.trace("this="+jsonStringifySafe(this));
-        tracer.trace("this.wordDictController="+jsonStringifySafe(this.wordDictController));
-        tracer.trace("this.wordEntryController="+jsonStringifySafe(this.wordEntryController));
 
         var element = evt.target;
         var iuWord = $(element).text();
