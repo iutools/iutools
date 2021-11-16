@@ -72,8 +72,7 @@ class ChooseCorrectionController extends IUToolsController {
         tracer.trace("invoked");
         this.windowController.show();
         this.windowController.setTitle(word)
-        this.windowController.showSpinningWheel(
-            "Looking up suggestions for: "+word);
+        this.showSpinningWheel("Looking up suggestions for: "+word);
         this.hideEditCorrectionForm();
     }
 
@@ -85,15 +84,25 @@ class ChooseCorrectionController extends IUToolsController {
         this.divChooseCorrectionForm().show();
     }
 
+    showSpinningWheel(message) {
+        this.windowController.showSpinningWheel(
+            "#div-choose-correction-message", message);
+    }
+
+    hideSpinningWheel() {
+        this.windowController.hideSpinningWheel(
+            "#div-choose-correction-message");
+    }
+
     setBusy(flag) {
         var tracer = Debug.getTraceLogger("ChooseCorrectionController.setBusy");
         tracer.trace("this.config.divMessage="+this.config.divMessage);
         this.busy = flag;
         if (flag) {
-            this.windowController.showSpinningWheel("Looking for suggestions");
+            this.showSpinningWheel("Looking for suggestions");
             this.windowController.this.error("");
         } else {
-            this.windowController.hideSpinningWheel();
+            this.hideSpinningWheel();
         }
 
         return;
