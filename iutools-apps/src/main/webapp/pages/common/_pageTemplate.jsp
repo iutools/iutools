@@ -11,7 +11,7 @@ windows
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <% out.println("<title>iutools: "+pageTitle+"</title>\n"); %>
+    <% out.println("<title>InuktiTools: "+pageTitle+"</title>\n"); %>
     <link rel="stylesheet" href="./css/styles.css?v2">
     <link rel="stylesheet" href="./css/design-styles.css">
     <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -24,14 +24,26 @@ windows
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/railscasts.min.css">
     <script src="./js/vendors/winbox/winbox.bundle.js"></script>
 
+    <!-- cookieconsent stuff -->
+    <link rel="stylesheet" type="text/css"
+          href="./js/vendors/cookieconsent/cookieconsent.min.css"/>
+    <script src="./js/vendors/cookieconsent/cookieconsent.min.js"
+            data-cfasync="false"></script>
 </head>
 
 <body>
 
+
+<!-- Cookie consent stuff -->
+<script src="./js/CookieManager.js"></script>
+<script>
+    new CookieManager().displayCookieConsent();
+</script>
+
 <div id="header" class="header">
   <div id="header_inner">
 		<a id="header_title" href="index.html">
-			<span>IUTOOLS:</span> <span>APPS</span> <span>FOR</span> <span>THE</span> <span>INUKTITUT</span> <span>LANGUAGE</span>
+			<span>INUKTITOOLS:</span> <span>APPS</span> <span>FOR</span> <span>THE</span> <span>INUKTITUT</span> <span>LANGUAGE</span>
 		</a> 
 	</div>
 </div>
