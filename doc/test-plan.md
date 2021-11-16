@@ -138,17 +138,16 @@ Spell check LATIN -- Happy Path
   words underlined. 
 - Click on an underlined word and make sure that:
     - The corrected text, as well as all the suggested spellings are  displayed 
-    in LATIN
-    - The FIRST suggestion is the original misspelled word
-    - The list shows the correct spelling in the list, ideally in SECOND place
+      in LATIN
+    - The list shows the correct spelling in the list, ideally in FIRST place
 - Test different ways of APPLYING a suggestion     
     - Click on a mis-spelled word, CHOOSE an alternate spelling and hit Apply
       - Make sure that the chosen spelling is now displayed, and that the dialog
         box disappeared.
     - Click on a mis-spelled word, CHOOSE an alternate spelling, MODIFY IT and 
       hit Apply
-      - Make sure that the modified spelling is now displayed, and that the dialog
-        box disappeared.
+      - Make sure that the modified spelling is now displayed, and that the 
+        dialogbox disappeared.
     - Click on a mis-spelled word, TYPE an alternate spelling from scratch and hit Apply
       - Make sure that the typed spelling is now displayed, and that the dialog
         box disappeared.
