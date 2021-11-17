@@ -1,6 +1,9 @@
 class WidgetController {   
 
 	constructor(_config) {
+        if (_config == null) {
+            _config = {}
+        }
 		this.config = _config;
         this.validateConfig();
 		this.busy = false;

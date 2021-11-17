@@ -54,7 +54,7 @@ windows
     <li id="home_link"><a href="index.html">Home</a></li>
     <li id="feedback_link"><a href="mailto:alain.desilets@nrc-cnrc.gc.ca;contact@inuktitutcomputing.ca?subject=Inuktitut Tools Feedback">Send Feedback</a></li>
     <li id="other_tools">
-      <button class="drop-menu-toggle">Other Inuktut Tools</button>
+      <button id="mnu-other-tools" class="drop-menu-toggle">Other Inuktut Tools</button>
       <ul class="drop-menu">
         <li><a href="worddict.jsp">Inuktitut-English Dictionary</a></li>
         <li><a href="spell.jsp">Spell Checker</a></li>
@@ -64,6 +64,17 @@ windows
         <li><a href="http://inuktitutcomputing.ca/Transcoder/index.php">Inuktitut Computing Transcoder</a></li>
       </ul>
     </li>
+    <!-- Alphabet menu disabled for now
+         For some reason, when you click on either of the 'Other tools' or 'Alphabet'
+         BOTH menus open up
+    <li id="alphabet">
+        <button id="mnu-alphabet" class="drop-menu-toggle">Syllabics</button>
+        <ul class="drop-menu">
+            <li><a href="index?alphabet=latin">Latin</a></li>
+            <li><a href="index?alphabet=syllabics">Syllabics</a></li>
+        </ul>
+    </li>
+    -->
   </ul>
 </nav>
 
@@ -108,6 +119,7 @@ reloading -->
 <!-- This one must be before any other controller -->
 <script src="./js/controllers/IUToolsController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 
+<script src="./js/controllers/settings/SettingsController.js"></script>
 <script src="./js/controllers/worddict/WordEntryController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 <script src="./js/controllers/worddict/WordEntryController2.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 
