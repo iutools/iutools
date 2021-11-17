@@ -67,26 +67,35 @@ class WidgetController {
         }
     }
 
-	elementForProp(property) {
-	    var tracer = Debug.getTraceLogger("WidgetController.elementForProp");
-	    tracer.trace("property="+property);
-		if (property == null) {
-			throw new Error("Config property name cannot be null");
-		}
-		var eltID = this.config[property];
-		if (eltID == null) {
-			throw new Error("Controller for widget '"+this.constructor.name+"' has no config property called '"+property+"'");
-		}
-		
-		var elt = $('#'+eltID);
-		if (elt == null || elt.length == 0 || elt.val() == null) {
-			elt = null;
-		}
-		if (elt == null) {
-			throw new Error("Element with ID "+eltID+" was not defined. Maybe you need to execute this method after the DOM was loaded?");
-		}
-        tracer.trace("for property="+property+", returning elt="+elt);
-		return elt;
+	elementForProp(propOrSelector) {
+        var tracer = Debug.getTraceLogger("WidgetController.elementForProp");
+        // tracer.trace("propOrSelector="+propOrSelector);
+        if (propOrSelector == null) {
+            throw new Error("Config property name cannot be null");
+        }
+        var selector = propOrSelector;
+        if (this.config.hasOwnProperty(propOrSelector)) {
+            selector = this.config[propOrSelector];
+            if (selector == null) {
+                throw new Error("Controller for widget '"+this.constructor.name+"' has a null config property '"+propOrSelector+"'");
+            }
+        }
+
+        if (selector.search(/^(#|\.)/) < 0) {
+            // Unless specified otherwise, we use the ID selector
+            selector = "#"+selector;
+        }
+        // tracer.trace("for propOrSelector="+propOrSelector+", selector="+selector);
+
+        var elt = $(selector);
+        if (elt == null || elt.length == 0 || elt.val() == null) {
+            elt = null;
+        }
+        if (elt == null) {
+            throw new Error("Element with selector "+selector+" was not defined. Maybe you need to execute this method after the DOM was loaded?");
+        }
+        // tracer.trace("for propOrSelector="+propOrSelector+", returning elt="+elt);
+        return elt;
 	}
 	
 	

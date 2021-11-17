@@ -157,6 +157,10 @@ class WordEntryController extends IUToolsController {
         }
         if (totalDisplayed == 0) {
             html += "none";
+        } else {
+            // html +=
+            //     "<br/><div class='small_note'><a href='help.jsp?topic=about_dictionary' target='#'>Why are some translations bad?</a></div>";
+            //     ;
         }
         html += "<br/>\n";
 

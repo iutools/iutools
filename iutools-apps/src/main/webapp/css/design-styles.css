@@ -725,4 +725,8 @@ div#div-wordentry-iconized {
 		width: 250px;
 		background-position: -780px top;
 	}
+
+    .small_note {
+        font-size: small;
+    }
 }

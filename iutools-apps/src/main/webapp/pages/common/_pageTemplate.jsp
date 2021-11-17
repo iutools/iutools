@@ -64,17 +64,13 @@ windows
         <li><a href="http://inuktitutcomputing.ca/Transcoder/index.php">Inuktitut Computing Transcoder</a></li>
       </ul>
     </li>
-    <!-- Alphabet menu disabled for now
-         For some reason, when you click on either of the 'Other tools' or 'Alphabet'
-         BOTH menus open up
     <li id="alphabet">
-        <button id="mnu-alphabet" class="drop-menu-toggle">Syllabics</button>
+        <button id="mnu-alphabet" class="drop-menu-toggle">syllabics</button>
         <ul class="drop-menu">
-            <li><a href="index?alphabet=latin">Latin</a></li>
-            <li><a href="index?alphabet=syllabics">Syllabics</a></li>
+            <li><a onclick="mainNavController.selectAlphabet('latin')">Latin</a></li>
+            <li><a onclick="mainNavController.selectAlphabet('syllabics')">Syllabics</a></li>
         </ul>
     </li>
-    -->
   </ul>
 </nav>
 
@@ -120,8 +116,13 @@ reloading -->
 <script src="./js/controllers/IUToolsController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 
 <script src="./js/controllers/settings/SettingsController.js"></script>
+<script src="./js/controllers/navigation/MainNavController.js"></script>
 <script src="./js/controllers/worddict/WordEntryController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 <script src="./js/controllers/worddict/WordEntryController2.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
+
+<script>
+    var mainNavController = new MainNavController();
+</script>
 
 <!-- Include the code that creates and configures the controller for this page -->
 <% pageContext.include("pages/" + pageName + "/_controller.jsp"); %>
