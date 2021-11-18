@@ -93,9 +93,11 @@ class WordEntryController extends IUToolsController {
 	}	
 	
 	getWordDictRequestData(_word, _lang) {
+        var iuAlphabet = new SettingsController().iuAlphabet();
 		var request = { 
 			word: _word,
-            lang: _lang
+            lang: _lang,
+            iuAlphabet: iuAlphabet,
         };
 		var jsonInputs = jsonStringifySafe(request);;
 		return jsonInputs;

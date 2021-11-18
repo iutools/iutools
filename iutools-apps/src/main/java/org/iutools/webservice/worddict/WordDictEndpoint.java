@@ -15,7 +15,6 @@ import org.iutools.worddict.MultilingualDict;
 import org.iutools.worddict.MultilingualDictEntry;
 import org.iutools.worddict.MultilingualDictException;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;

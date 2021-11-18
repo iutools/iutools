@@ -47,7 +47,7 @@ public abstract class Endpoint
 			inputs.validate();
 			ensureInputTaskIDAndStartTimeAreDefined(inputs);
 			logRequest(request, inputs);
-			EndpointResult epResponse = execute(inputs);
+			EndpointResult epResponse = executeThenConvert(inputs);
 			ensureOutputsTaskIDAndTimesAreDefined(inputs, epResponse);
 			if (tLogger.isTraceEnabled()) {
 				tLogger.trace("response="+mapper.writeValueAsString(epResponse));
@@ -60,6 +60,14 @@ public abstract class Endpoint
 			throw new ServiceException(e);
 		}
 		tLogger.trace("POST completed");
+	}
+
+	public EndpointResult executeThenConvert(I inputs) throws ServiceException {
+		EndpointResult epResponse = execute(inputs);
+		if (inputs.iuAlphabet != null) {
+			epResponse.convertIUToRequestedAlphabet(inputs);
+		}
+		return epResponse;
 	}
 
 	private void ensureOutputsTaskIDAndTimesAreDefined(

@@ -21,6 +21,7 @@ import org.iutools.morphrelatives.MorphologicalRelative;
 import org.iutools.nlp.StopWords;
 import org.iutools.nlp.StopWordsException;
 import org.iutools.script.TransCoder;
+import org.iutools.script.TransCoder.*;
 import org.iutools.script.TransCoderException;
 import org.iutools.worddict.MultilingualDictEntry.*;
 
@@ -120,7 +121,7 @@ public class MultilingualDict {
 	private MultilingualDictEntry entry4word_IU(
 		String word, Boolean fullRelatedWordEntries, Field... fieldsToPopulate) throws MultilingualDictException {
 		MultilingualDictEntry entry = new MultilingualDictEntry(word);
-		TransCoder.Script script = TransCoder.textScript(word);
+		Script script = TransCoder.textScript(word);
 		try {
 			WordInfo winfo = corpus.info4word(entry.wordRoman);
 			if (winfo != null) {
@@ -271,11 +272,11 @@ public class MultilingualDict {
 
 	private void computeOrigWordTranslationsAndExamples(
 		MultilingualDictEntry entry) throws MultilingualDictException {
-		computeOrigWordTranslationsAndExamples(entry, (TransCoder.Script)null);
+		computeOrigWordTranslationsAndExamples(entry, (Script)null);
 	}
 
 	private void computeOrigWordTranslationsAndExamples(
-		MultilingualDictEntry entry, TransCoder.Script script) throws MultilingualDictException {
+		MultilingualDictEntry entry, Script script) throws MultilingualDictException {
 		Logger tLogger = Logger.getLogger("org.iutools.worddict.MultilingualDict.computeTranslationsAndExamples");
 		List<String> justOneWord = new ArrayList<String>();
 		justOneWord.add(entry.word);
@@ -283,7 +284,7 @@ public class MultilingualDict {
 	}
 
 	private void retrieveTranslationsAndExamples(
-		MultilingualDictEntry entry, List<String> iuWordGroup, TransCoder.Script script) throws MultilingualDictException {
+		MultilingualDictEntry entry, List<String> iuWordGroup, Script script) throws MultilingualDictException {
 		Logger tLogger = Logger.getLogger("org.iutools.worddict.MultilingualDict.retrieveTranslationsAndExamples");
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("word="+entry.word+"/"+entry.wordInOtherScript+", iuWordGroup="+ StringUtils.join(iuWordGroup.iterator(), ", "));
@@ -354,7 +355,7 @@ public class MultilingualDict {
 
 	private int onNewSentencePair(MultilingualDictEntry entry,
 		SentencePair bilingualAlignment, Set<String> alreadySeenPair,
-		int totalPairs, TransCoder.Script script, boolean forRelatedWord) throws MultilingualDictException {
+		int totalPairs, Script script, boolean forRelatedWord) throws MultilingualDictException {
 
 		Logger tLogger = Logger.getLogger("org.iutools.worddict.MultilingualDict.onNewSentencePair");
 		String l1 = entry.lang;

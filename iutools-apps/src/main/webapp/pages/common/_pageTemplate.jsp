@@ -1,3 +1,4 @@
+<%@ page contentType="text/html;charset=UTF-8" %>
 <% String IUTOOLS_JS_VERSION=(new java.util.Date()).toLocaleString(); %>
 
 <!--

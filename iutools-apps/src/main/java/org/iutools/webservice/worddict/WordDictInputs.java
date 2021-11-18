@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class WordDictInputs extends ServiceInputs {
 	public String word = null;
-	public String lang = null;
+	public String lang = "iu";
 
 	public WordDictInputs() throws ServiceException {
 		init_WordDictInputs((String)null, (String)null);
@@ -23,7 +23,9 @@ public class WordDictInputs extends ServiceInputs {
 
 	private void init_WordDictInputs(String _word, String _lang) throws ServiceException {
 		this.word = _word;
-		this.lang = _lang;
+		if (_lang != null) {
+			this.lang = _lang;
+		}
 		validate();
 	}
 

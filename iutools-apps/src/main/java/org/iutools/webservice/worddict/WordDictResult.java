@@ -4,9 +4,12 @@ package org.iutools.webservice.worddict;
 import ca.nrc.json.PrettyPrinter;
 import org.apache.log4j.Logger;
 import org.iutools.script.TransCoder;
+import org.iutools.script.TransCoderException;
 import org.iutools.webservice.EndpointResult;
+import org.iutools.webservice.ServiceException;
+import org.iutools.webservice.ServiceInputs;
 import org.iutools.worddict.MultilingualDictEntry;
-import org.json.JSONObject;
+import org.iutools.worddict.MultilingualDictException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +24,7 @@ public class WordDictResult extends EndpointResult {
 	public Long totalWords = new Long(0);
 	public String lang = null;
 	public String otherLang = null;
+	public String convertedQuery = null;
 
 	public WordDictResult() {
 		init_WordDictResult(
@@ -51,6 +55,9 @@ public class WordDictResult extends EndpointResult {
 		}
 		this.matchingWords = _foundWords;
 		this.queryWordEntry = _qWordEntry;
+		if (_qWordEntry != null) {
+			convertedQuery = queryWordEntry.word;
+		}
 		this.totalWords = _totalWords;
 		tLogger.trace("exited");
 	}
@@ -63,6 +70,52 @@ public class WordDictResult extends EndpointResult {
 	public WordDictResult setOtherLang(String _lang) {
 		this.otherLang = _lang;
 		return this;
+	}
+
+	@Override
+	public void convertIUToRequestedAlphabet(ServiceInputs inputs) throws ServiceException {
+
+		TransCoder.Script requestedAlphabet = inputs.iuAlphabet;
+		convertQuery(inputs);
+		convertFoundWords(inputs.iuAlphabet);
+		convertQueryWordEntry(inputs.iuAlphabet);
+	}
+
+	private void convertQuery(ServiceInputs inputs) throws ServiceException {
+		WordDictInputs dictInputs = (WordDictInputs)inputs;
+		String queryLang = dictInputs.lang;
+		convertedQuery = dictInputs.word;
+		if (queryLang.equals("iu")) {
+			try {
+				convertedQuery = TransCoder.ensureScript(dictInputs.iuAlphabet, dictInputs.word);
+			} catch (TransCoderException e) {
+				throw new ServiceException(e);
+			}
+		}
+	}
+
+	private void convertQueryWordEntry(TransCoder.Script iuAlphabet) throws ServiceException {
+		if (queryWordEntry != null) {
+			try {
+				queryWordEntry.ensureScript(iuAlphabet);
+			} catch (MultilingualDictException e) {
+				throw new ServiceException(e);
+			}
+		}
+	}
+
+	private void convertFoundWords(TransCoder.Script iuAlphabet) throws ServiceException {
+		// Convert list of matching words
+		for (int ii=0; ii < matchingWords.size(); ii++) {
+			String origWord = matchingWords.get(ii);
+			String convertedWord = null;
+			try {
+				convertedWord = TransCoder.ensureScript(iuAlphabet, origWord);
+			} catch (TransCoderException e) {
+				throw new ServiceException(e);
+			}
+			matchingWords.set(ii, convertedWord);
+		}
 	}
 
 }

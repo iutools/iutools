@@ -336,4 +336,65 @@ public class MultilingualDictEntry {
 			return comp;
 		}
 	}
+
+	public void ensureScript(TransCoder.Script script)
+		throws MultilingualDictException{
+		ensureScript_word(script);
+		ensureScript_BilingualExamples(script);
+	}
+
+	private void ensureScript_word(TransCoder.Script script) throws MultilingualDictException {
+		try {
+			if (word != null) {
+				word = TransCoder.ensureScript(script, word);
+				wordInOtherScript = TransCoder.inOtherScript(word);
+			}
+		} catch (TransCoderException e) {
+			throw new MultilingualDictException(e);
+		}
+	}
+
+	private void ensureScript_BilingualExamples(TransCoder.Script script) throws MultilingualDictException {
+
+		Map<String, List<String[]>>[] alignmentMaps =
+			new Map[] {
+				examplesForOrigWordTranslation,
+				examplesForRelWordsTranslation
+			};
+		for (Map<String, List<String[]>> anAlignmentsMap: alignmentMaps) {
+			ensureScript_alignmentMap(script, anAlignmentsMap);
+		}
+	}
+
+	private void ensureScript_alignmentMap(
+		TransCoder.Script script, Map<String, List<String[]>> anAlignmentsMap) throws MultilingualDictException {
+		for (String translation: anAlignmentsMap.keySet()) {
+			List<String[]> alignments = anAlignmentsMap.get(translation);
+			for (int ii=0; ii < alignments.size(); ii++) {
+				String[] convertedAlignment = ensureScript_alignment(script, alignments.get(ii));
+				alignments.set(ii, convertedAlignment);
+			}
+		}
+		return;
+	}
+
+	private String[] ensureScript_alignment(
+		TransCoder.Script script, String[] alignment) throws MultilingualDictException {
+		int iuSide = 0;
+		if (!lang.equals("iu")) {
+			iuSide = 1;
+		}
+		String iuSentence = alignment[iuSide];
+		try {
+			String iuConverted = TransCoder.ensureScript(script, iuSentence);
+			iuConverted = iuConverted.replaceAll("<ᔅᑦᕐoᖕ>", "<strong>");
+			iuConverted = iuConverted.replaceAll("</ᔅᑦᕐoᖕ>", "</strong>");
+			alignment[iuSide] = iuConverted;
+		} catch (TransCoderException e) {
+			throw new MultilingualDictException(e);
+		}
+
+		return alignment;
+	}
+
 }

@@ -37,7 +37,7 @@ public class LogActionInputsTest extends ServiceInputsTest {
 					new JSONObject()
 						.put("textOrUrl", "inuksuk")
 				),
-				"{\"_action\":\"GIST_TEXT\",\"_phase\":\"START\",\"_taskID\":null,\"_taskStartTime\":null,\"taskElapsedMsecs\":null,\"totalWords\":1,\"type\":\"text\"}"
+				"{\"_action\":\"GIST_TEXT\",\"_phase\":\"START\",\"_taskID\":null,\"_taskStartTime\":null,\"iuAlphabet\":null,\"taskElapsedMsecs\":null,\"totalWords\":1,\"type\":\"text\"}"
 			),
 			new Case(
 				"GIST_TEXT_urltype",
@@ -46,7 +46,7 @@ public class LogActionInputsTest extends ServiceInputsTest {
 					new JSONObject()
 						.put("textOrUrl", "http://www.somewhere.com/hello.html")
 				),
-				"{\"_action\":\"GIST_TEXT\",\"_phase\":\"START\",\"_taskID\":null,\"_taskStartTime\":null,\"address\":\"http://www.somewhere.com/hello.html\",\"host\":\"www.somewhere.com\",\"taskElapsedMsecs\":null,\"type\":\"url\"}"
+				"{\"_action\":\"GIST_TEXT\",\"_phase\":\"START\",\"_taskID\":null,\"_taskStartTime\":null,\"address\":\"http://www.somewhere.com/hello.html\",\"host\":\"www.somewhere.com\",\"iuAlphabet\":null,\"taskElapsedMsecs\":null,\"type\":\"url\"}"
 			),
 			new Case(
 				"MORPHEME_SEARCH",
@@ -75,7 +75,7 @@ public class LogActionInputsTest extends ServiceInputsTest {
 					new JSONObject()
 						.put("text", "inuksuk iglu nunavut")
 				),
-				"{\"_action\":\"SPELL\",\"_phase\":\"START\",\"_taskID\":null,\"_taskStartTime\":null,\"taskElapsedMsecs\":null,\"totalWords\":3}"
+				"{\"_action\":\"SPELL\",\"_phase\":\"START\",\"_taskID\":null,\"_taskStartTime\":null,\"iuAlphabet\":null,\"taskElapsedMsecs\":null,\"totalWords\":3}"
 			),
 			new Case(
 				"WORD_LOOKUP",

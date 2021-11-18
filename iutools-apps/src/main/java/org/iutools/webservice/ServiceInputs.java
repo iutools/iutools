@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
+import org.iutools.script.TransCoder.*;
 import org.json.JSONObject;
 
 import java.util.Map;
@@ -24,6 +25,7 @@ public class ServiceInputs {
 	public String _taskID = null;
 	public Long _taskStartTime = null;
 	public Long taskElapsedMsecs = null;
+	public Script iuAlphabet = null;
 
 	@JsonIgnore
 	private ObjectMapper mapper = new ObjectMapper();

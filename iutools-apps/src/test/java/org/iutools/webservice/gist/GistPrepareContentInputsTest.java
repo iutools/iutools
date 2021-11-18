@@ -19,12 +19,12 @@ public class GistPrepareContentInputsTest extends ServiceInputsTest {
 		ServiceInputs inputs =
 			new GistPrepareContentInputs("inuksuk, nunavut");
 		new AssertServiceInputs(inputs)
-			.logSummaryIs("{\"_action\":null,\"_taskID\":null,\"_taskStartTime\":null,\"taskElapsedMsecs\":null,\"totalWords\":2,\"type\":\"text\"}");
+			.logSummaryIs("{\"_action\":null,\"_taskID\":null,\"_taskStartTime\":null,\"iuAlphabet\":null,\"taskElapsedMsecs\":null,\"totalWords\":2,\"type\":\"text\"}");
 			;
 
 		inputs =
 			new GistPrepareContentInputs("http://www.somewhere.com/hello.html");
 		new AssertServiceInputs(inputs)
-			.logSummaryIs("{\"_action\":null,\"_taskID\":null,\"_taskStartTime\":null,\"address\":\"http://www.somewhere.com/hello.html\",\"host\":\"www.somewhere.com\",\"taskElapsedMsecs\":null,\"type\":\"url\"}");
+			.logSummaryIs("{\"_action\":null,\"_taskID\":null,\"_taskStartTime\":null,\"address\":\"http://www.somewhere.com/hello.html\",\"host\":\"www.somewhere.com\",\"iuAlphabet\":null,\"taskElapsedMsecs\":null,\"type\":\"url\"}");
 	}
 }

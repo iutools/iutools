@@ -9,7 +9,7 @@ public class WordDictResultTest {
 		WordDictResult result = new WordDictResult();
 
 		new AssertWordDictResult(result)
-			.jsonEquals("{\"errorMessage\":null,\"failingInputs\":null,\"lang\":null,\"matchingWords\":null,\"otherLang\":null,\"queryWordEntry\":null,\"stackTrace\":null,\"status\":null,\"taskElapsedMsecs\":null,\"taskID\":null,\"taskStartTime\":null,\"totalWords\":null}");
+			.jsonEquals("{\"convertedQuery\":null,\"errorMessage\":null,\"failingInputs\":null,\"lang\":null,\"matchingWords\":null,\"otherLang\":null,\"queryWordEntry\":null,\"stackTrace\":null,\"status\":null,\"taskElapsedMsecs\":null,\"taskID\":null,\"taskStartTime\":null,\"totalWords\":null}");
 	}
 
 }

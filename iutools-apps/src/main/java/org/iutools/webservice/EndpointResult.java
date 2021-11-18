@@ -1,5 +1,6 @@
 package org.iutools.webservice;
 
+import org.iutools.script.TransCoder.*;
 import org.iutools.utilities.StopWatch;
 import org.json.JSONObject;
 
@@ -38,5 +39,11 @@ public abstract class EndpointResult {
 	public EndpointResult setError(String _error) {
 		this.errorMessage = _error;
 		return this;
+	}
+
+	public void convertIUToRequestedAlphabet(ServiceInputs inputs) throws ServiceException {
+		// By default, do nothing.
+		// Subclasses may override this method to conver certain fields to
+		// the requested alphabet
 	}
 }
