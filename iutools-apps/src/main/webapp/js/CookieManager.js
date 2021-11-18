@@ -30,6 +30,7 @@ class CookieManager {
                 "type": "informational",
                 "content": {
                     "dismiss": "Got it",
+                    "href": "help.jsp?topic=about_cookies"
                 },
             })
         });
