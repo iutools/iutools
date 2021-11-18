@@ -66,10 +66,10 @@ windows
       </ul>
     </li>
     <li id="alphabet">
-        <button id="mnu-alphabet" class="drop-menu-toggle">syllabics</button>
+        <button id="mnu-alphabet" class="drop-menu-toggle">SYLLABIC</button>
         <ul class="drop-menu">
-            <li><a onclick="mainNavController.selectAlphabet('latin')">Latin</a></li>
-            <li><a onclick="mainNavController.selectAlphabet('syllabics')">Syllabics</a></li>
+            <li><a onclick="mainNavController.selectAlphabet('ROMAN')">Roman</a></li>
+            <li><a onclick="mainNavController.selectAlphabet('SYLLABIC')">Syllabic</a></li>
         </ul>
     </li>
   </ul>

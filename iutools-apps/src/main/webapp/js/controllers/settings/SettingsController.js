@@ -7,7 +7,7 @@ class SettingsController extends IUToolsController {
         super(sConfig);
         var tracer = Debug.getTraceLogger('SettingsController.constructor');
         this.settingsDefault = {
-            iuAlphabet: "syllabics",
+            iuAlphabet: "SYLLABICS",
         }
         tracer.trace("upon exit, this=" + jsonStringifySafe(this));
     }
