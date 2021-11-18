@@ -68,15 +68,16 @@ public class AssertMultilingualDictEntry extends Asserter<MultilingualDictEntry>
 		return this;
 	}
 
-	public AssertMultilingualDictEntry relatedWordsAre(String... expRelatedWords)
+	public AssertMultilingualDictEntry relatedWordsIsSubsetOf(
+		String... expRelatedWordsArr)
 		throws Exception {
 		Set<String> gotRelatedWordsSet = new HashSet<String>();
 		Collections.addAll(gotRelatedWordsSet, entry().relatedWords);
-		Set<String> expRelatedWordsSet = new HashSet<String>();
-		Collections.addAll(expRelatedWordsSet, expRelatedWords);
-		AssertSet.assertEquals(
-			baseMessage+"\nRelated words not as expected.",
-			expRelatedWordsSet, gotRelatedWordsSet);
+		Set<String> expRelatedWordsSuperset = new HashSet<String>();
+		Collections.addAll(expRelatedWordsSuperset, expRelatedWordsArr);
+		new AssertSet(gotRelatedWordsSet, "\nRelated words not as expected.")
+			.isSubsetOf(expRelatedWordsArr);
+
 		return this;
 	}
 

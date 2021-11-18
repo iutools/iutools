@@ -193,6 +193,9 @@ public class WordDictEndpointTest extends EndpointTest {
 				// Set to empty array for an English query word because English words are never
 				// decomposed.
 				new String[] {"iglu/1n", "ga/tn-nom-s-1s"},
+				// Expected related words
+				new String[] {
+					"illuit", "illulirinirmut", "illumut", "illunik", "illunut"},
 				// Expected translations
 				new String[]{"house", "home", "rent"},
 				// Expected min total bilingual examples (for both orig and related words)
@@ -202,6 +205,7 @@ public class WordDictEndpointTest extends EndpointTest {
 			new Case("en-housing",
 				"en", "housing", null, 10,
 				new String[] {"housing"},
+				new String[0],
 				new String[0],
 				new String[]{"ᐃᒡᓗᒋᔭᐅᕙᒃᑐᓂᒃ", "ᐃᒡᓗᓕᕆᓂᕐᒥ",
 					"ᐃᒡᓗᓕᕆᓂᕐᓕ ... ᐃᒡᓗᓕᕆᓂᕐᒧᑐᐃᓐᓈᕋᔭᖅᑐᖅ", "ᐃᒡᓗᖏᓐᓄᑦ", "ᐃᓪᓗᓕᕆᓂᕐᒧᑦ"},
@@ -215,6 +219,9 @@ public class WordDictEndpointTest extends EndpointTest {
 				new String[] {"iqqanaijaqtulirijikkut"},
 				new String[] {"iqqanaijaq/1v", "juq/1vn", "liri/1nv", "ji/1vn",
 					"kkut/1nn"},
+				new String[] {
+					"iqanaijaqtuliriji", "iqanaijaqtulirijikkunni", "iqanaijartulirijiit",
+					"iqanaijartulirijikkunnut", "iqanaijartulirijikkut"},
 				new String[]{"hiring", "human resources",
 					"human resources ... personnel", "branch summary", "resources"},
 				1000
@@ -230,6 +237,8 @@ public class WordDictEndpointTest extends EndpointTest {
 				"iu", "igluga", TransCoder.Script.SYLLABIC, 10,
 				new String[] {"ᐃᒡᓗᒐ", "ᐃᒡᓗᒐᓚᐃᑦ"},
 				new String[] {"iglu/1n", "ga/tn-nom-s-1s"},
+				new String[] {
+					"ᐃᓪᓗᐃᑦ", "ᐃᓪᓗᒧᑦ", "ᐃᓪᓗᓂᒃ", "ᐃᓪᓗᓄᑦ", "ᐃᓪᓗᓕᕆᓂᕐᒧᑦ"},
 				new String[]{"house", "home", "rent"},
 				1000
 			),
@@ -240,11 +249,11 @@ public class WordDictEndpointTest extends EndpointTest {
 				"iu", "ᐃᒡᓗᒐ", TransCoder.Script.ROMAN, 10,
 				new String[] {"igluga", "igluga"},
 				new String[] {"iglu/1n", "ga/tn-nom-s-1s"},
+				new String[] {
+					"illuit", "illulirinirmut", "illumut", "illunik", "illunut"},
 				new String[]{"house", "home", "rent"},
 				1000
 			),
-
-
 		};
 
 		Consumer<Case> runner =
@@ -258,13 +267,14 @@ public class WordDictEndpointTest extends EndpointTest {
 					Integer expMinHits = (Integer) aCase.data[3];
 					String[] expWords = null;
 					String[] expDecomp = null;
+					String[] expRelatedWords = null;
 					String[] expTranslations = null;
 					Integer expMinExamples = null;
 					if (aCase.data.length > 4) {
 						expWords = (String[]) aCase.data[4];
 						expDecomp = (String[]) aCase.data[5];
-						expTranslations = (String[]) aCase.data[6];
-						expMinExamples = (Integer) aCase.data[7];
+						expRelatedWords = (String[]) aCase.data[6];
+						expTranslations = (String[]) aCase.data[7];
 					}
 					WordDictInputs inputs = new WordDictInputs(query, lang);
 					inputs.iuAlphabet = iuAlphabet;
@@ -285,6 +295,7 @@ public class WordDictEndpointTest extends EndpointTest {
 							.isForWord(epResult.convertedQuery)
 							.definitionEquals(null)
 							.decompositionIs(expDecomp)
+							.relatedWordsIsSubsetOf(expRelatedWords)
 							.atLeastNExamples(expMinHits)
 							.highlightsAreSubsetOf(lang, true, epResult.convertedQuery)
 							.highlightsAreSubsetOf(otherLang, true, expTranslations)

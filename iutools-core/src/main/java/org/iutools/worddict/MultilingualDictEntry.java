@@ -340,6 +340,7 @@ public class MultilingualDictEntry {
 	public void ensureScript(TransCoder.Script script)
 		throws MultilingualDictException{
 		ensureScript_word(script);
+		ensureScript_relatedwords(script);
 		ensureScript_BilingualExamples(script);
 	}
 
@@ -352,6 +353,18 @@ public class MultilingualDictEntry {
 		} catch (TransCoderException e) {
 			throw new MultilingualDictException(e);
 		}
+	}
+
+	private void ensureScript_relatedwords(TransCoder.Script script) throws MultilingualDictException {
+
+		try {
+			for (int ii = 0; ii < relatedWords.length; ii++) {
+				relatedWords[ii] = TransCoder.ensureScript(script, relatedWords[ii]);
+			}
+		} catch (TransCoderException e) {
+			throw new MultilingualDictException(e);
+		}
+		return;
 	}
 
 	private void ensureScript_BilingualExamples(TransCoder.Script script) throws MultilingualDictException {

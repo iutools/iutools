@@ -213,7 +213,7 @@ public class MultilingualDictTest {
 					.isForWord(aCase.word)
 					.langIs(aCase.l1)
 					.definitionEquals(aCase.expDefinition)
-					.relatedWordsAre(aCase.expRelatedWords)
+					.relatedWordsIsSubsetOf(aCase.expRelatedWords)
 					.possibleTranslationsStartWith(expTranslations)
 					.atLeastNExamples(aCase.expMinExamples)
 					.highlightsAreSubsetOf(aCase.l1, true, expL1Highlights)

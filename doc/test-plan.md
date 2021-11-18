@@ -11,7 +11,8 @@ Otherwise, you will only see a "generic" message along the lines of:
 
 Basic scenario
 - Here is a list of steps that will be applied in different scenarios.
-- Search for a QUERY_WORD in a specific QUERY_LANGUAGE
+- Search for a QUERY_WORD in a specific QUERY_LANGUAGE, with a speicific 
+  PREFERRED_SCRIPT (top right menu)
 - Check that the entry for that QUERY_WORD is displayed automatically
 - In some scenarios we expect the QUERY_WORD to be the only hit in the list if so,
   make sure that the hit list only contains the QUERY_WORD
@@ -52,6 +53,7 @@ Latin query:
 - Do the steps described in the 'basic scenario' with following specifics
     - QUERY_WORD: 'ammuumajuq'
     - QUERY_LANGUAGE: Leave it at Inuktitut 
+    - PREFERRED_SCRIPT: Roman
     - Check that there are about 17 hits
     - Translations include 'clams' and 'divers'
 
@@ -59,6 +61,7 @@ Syllabic query
 - Do the steps described in the 'basic scenario' with the following 'specifics':
   - QUERY_WORD: 'ᐊᒻᒨᒪᔪᖅ'
   - QUERY_LANGUAGE: Leave it at Inuktitut 
+  - PREFERRED_SCRIPT: SYLLABICS
   - Check that there are about 17 hits
   - Translations include 'clams' and 'divers'
 
@@ -67,6 +70,7 @@ English query - Single word
   with the following 'specifics':
   - QUERY_WORD: 'development'
   - QUERY_LANGUAGE: Change it to English
+  - PREFERRED_SCRIPT: Roman
   - At the moment, it's 'normal' that the list of hits only shows the
     word 'development'
     
@@ -75,6 +79,7 @@ English query - Multi word
   with the following 'specifics':
   - QUERY_WORD: 'healthcare coverage'
   - QUERY_LANGUAGE: Change it to English
+  - PREFERRED_SCRIPT: Roman
   - At the moment, it's 'normal' that the list of hits only shows the
     expression 'healthcare coverage'
 
@@ -89,6 +94,29 @@ Very long word
 - Search for aanniaqarnanngittulirijimmarik
 - Make sure that the word and its Syllabics transcoding are properly displayed 
 and do not overlap with the test that is supposed to be below it
+
+Change preferred script
+- ROMAN-to-ROMAN
+  - Set preferred script to ROMAN
+  - Search for ammuumajuq, then check that:
+  - Title shows word as ROMAN/SYLL
+  - Related words, Translations and Alignments shown in ROMAN
+- ROMAN-to-SYLL
+  - Set preferred script to SYLL
+  - Search for ammuumajuq, then check that:
+  - Title shows word as SYLL/ROMAN
+  - Related words, Translations and Alignments shown in SYLL
+- SYLL-to-SYLL
+  - Set preferred script to SYLL
+  - Search for ᐊᒻᒨᒪᔪᖅ, then check that:
+  - Title shows word as SYLL/ROMAN
+  - Related words, Translations and Alignments shown in SYLL
+- SYLL-to-ROMAN
+  - Set preferred script to ROMAN
+  - Search for ᐊᒻᒨᒪᔪᖅ, then check that:
+  - Title shows word as SYLL/ROMAN
+  - Related words, Translations and Alignments shown in ROMAN
+  
 
 Search with Enter vs Button
 - Submit search by either
@@ -543,3 +571,15 @@ Word Entry window hiding/showing
  - Try a basic, "happy path" scenario for each app and make sure there are no
    issues with displaying results on that small of a screen
  
+ 
+ ## Cookie consent
+ 
+ - Delete all cookies on localhost
+ - Load any page (except possibly the home page)
+ - Check that a banner appears at bottom notifying you that the site uses cookies.
+ - Click on the 'Read more' link and check that it brings you to an IUTools 
+   help page describing our use of cookies
+ - DON'T click the 'Got it' link just yet
+   - Reload the page and make sure the cookies banner is displayed there
+   - Click on 'Got it' link and make sure the banner is NOT there anymore
+   - Load all other IUTools pages and make sure the banner is not displayed.
