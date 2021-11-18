@@ -73,12 +73,12 @@ public class WordDictResult extends EndpointResult {
 	}
 
 	@Override
-	public void convertIUToRequestedAlphabet(ServiceInputs inputs) throws ServiceException {
-
-		TransCoder.Script requestedAlphabet = inputs.iuAlphabet;
-		convertQuery(inputs);
-		convertFoundWords(inputs.iuAlphabet);
-		convertQueryWordEntry(inputs.iuAlphabet);
+	public void convertIUToRequestedAlphabet(ServiceInputs uncastInputs) throws ServiceException {
+		WordDictInputs inputs = (WordDictInputs)uncastInputs;
+		TransCoder.Script requestedAlphabet = uncastInputs.iuAlphabet;
+		convertQuery(uncastInputs);
+		convertFoundWords(inputs);
+		convertQueryWordEntry(uncastInputs.iuAlphabet);
 	}
 
 	private void convertQuery(ServiceInputs inputs) throws ServiceException {
@@ -104,17 +104,19 @@ public class WordDictResult extends EndpointResult {
 		}
 	}
 
-	private void convertFoundWords(TransCoder.Script iuAlphabet) throws ServiceException {
-		// Convert list of matching words
-		for (int ii=0; ii < matchingWords.size(); ii++) {
-			String origWord = matchingWords.get(ii);
-			String convertedWord = null;
-			try {
-				convertedWord = TransCoder.ensureScript(iuAlphabet, origWord);
-			} catch (TransCoderException e) {
-				throw new ServiceException(e);
+	private void convertFoundWords(WordDictInputs inputs) throws ServiceException {
+		if (lang.equals("iu")) {
+			// Convert list of matching words
+			for (int ii = 0; ii < matchingWords.size(); ii++) {
+				String origWord = matchingWords.get(ii);
+				String convertedWord = null;
+				try {
+					convertedWord = TransCoder.ensureScript(inputs.iuAlphabet, origWord);
+				} catch (TransCoderException e) {
+					throw new ServiceException(e);
+				}
+				matchingWords.set(ii, convertedWord);
 			}
-			matchingWords.set(ii, convertedWord);
 		}
 	}
 

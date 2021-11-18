@@ -10,6 +10,7 @@ import org.iutools.script.TransCoderException;
 import org.iutools.text.segmentation.IUTokenizer;
 import org.iutools.webservice.EndpointResult;
 import org.iutools.webservice.ServiceException;
+import org.iutools.webservice.ServiceInputs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -147,6 +148,26 @@ public class GistPrepareContentResult extends EndpointResult {
 			String[] enWords = enTokenizer.tokenize(enSent, true);
 			enSentences.add(enWords);
 		}
-
 	}
+
+	@Override
+	public void convertIUToRequestedAlphabet(ServiceInputs uncastInputs)
+		throws ServiceException {
+		GistPrepareContentInputs inputs = (GistPrepareContentInputs)uncastInputs;
+		for (int ii=0; ii < iuSentences.size(); ii++) {
+			String[] sent = iuSentences.get(ii);
+			for (int jj=0; jj < sent.length; jj++) {
+				try {
+					String converted =
+						TransCoder.ensureScript(
+							uncastInputs.iuAlphabet, sent[jj]);
+					sent[jj] = converted;
+				} catch (TransCoderException e) {
+					throw new ServiceException(e);
+				}
+			}
+		}
+		return;
+	}
+
 }

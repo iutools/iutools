@@ -340,18 +340,36 @@ public class MultilingualDictEntry {
 	public void ensureScript(TransCoder.Script script)
 		throws MultilingualDictException{
 		ensureScript_word(script);
+		ensureScript_translations(script);
 		ensureScript_relatedwords(script);
 		ensureScript_BilingualExamples(script);
 	}
 
 	private void ensureScript_word(TransCoder.Script script) throws MultilingualDictException {
 		try {
-			if (word != null) {
+			if (lang.equals("iu") && word != null) {
 				word = TransCoder.ensureScript(script, word);
 				wordInOtherScript = TransCoder.inOtherScript(word);
 			}
 		} catch (TransCoderException e) {
 			throw new MultilingualDictException(e);
+		}
+	}
+
+	private void ensureScript_translations(TransCoder.Script script) throws MultilingualDictException {
+		if (otherLang().equals("iu")) {
+			for (List<String> translations:
+				new List[] {origWordTranslations, relatedWordTranslations}) {
+				for (int ii=0; ii < translations.size(); ii++) {
+					try {
+						translations.set(ii,
+							TransCoder.ensureScript(script, translations.get(ii))
+							);
+					} catch (TransCoderException e) {
+						throw new MultilingualDictException(e);
+					}
+				}
+			}
 		}
 	}
 
@@ -381,12 +399,27 @@ public class MultilingualDictEntry {
 
 	private void ensureScript_alignmentMap(
 		TransCoder.Script script, Map<String, List<String[]>> anAlignmentsMap) throws MultilingualDictException {
+		Map<String, List<String[]>> convertedMap = new HashMap<String, List<String[]>>();
 		for (String translation: anAlignmentsMap.keySet()) {
+			String convertedTranslation = translation;
+			if (otherLang().equals("iu")) {
+				try {
+					convertedTranslation = TransCoder.ensureScript(script, translation);
+				} catch (TransCoderException e) {
+					throw new MultilingualDictException(e);
+				}
+			}
 			List<String[]> alignments = anAlignmentsMap.get(translation);
 			for (int ii=0; ii < alignments.size(); ii++) {
 				String[] convertedAlignment = ensureScript_alignment(script, alignments.get(ii));
 				alignments.set(ii, convertedAlignment);
 			}
+			convertedMap.put(convertedTranslation, alignments);
+		}
+
+		anAlignmentsMap.clear();
+		for (String translation: convertedMap.keySet()) {
+			anAlignmentsMap.put(translation, convertedMap.get(translation));
 		}
 		return;
 	}

@@ -51,8 +51,30 @@ public class AssertGistPrepareContentResult extends AssertEndpointResult {
 	}
 
 
+	public AssertGistPrepareContentResult enSentencesContain(String[][] expSentsToks) {
+		String[] expSents = new String[0];
+		if (expSentsToks != null) {
+			expSents = new String[expSentsToks.length];
+			for (int ii = 0; ii < expSentsToks.length; ii++) {
+				expSents[ii] = String.join("", expSentsToks[ii]);
+			}
+		}
+		return sentsInLangContain("en", expSents);
+	}
+
 	public AssertGistPrepareContentResult enSentencesContain(String[] expEnSents) {
 		return sentsInLangContain("en", expEnSents);
+	}
+
+	public AssertGistPrepareContentResult iuSentencesContains(String[][] expSentsToks) {
+		String[] expSents = new String[0];
+		if (expSentsToks != null) {
+			expSents = new String[expSentsToks.length];
+			for (int ii = 0; ii < expSentsToks.length; ii++) {
+				expSents[ii] = String.join("", expSentsToks[ii]);
+			}
+		}
+		return sentsInLangContain("iu", expSents);
 	}
 
 	public AssertGistPrepareContentResult iuSentencesContains(String[] expEnSents) {
@@ -62,14 +84,18 @@ public class AssertGistPrepareContentResult extends AssertEndpointResult {
 	public AssertGistPrepareContentResult sentsInLangContain(
 		String lang, String[] expLangSents) {
 		Set<String> expSents = new HashSet<String>();
-		Collections.addAll(expSents, expLangSents);
+		if (expLangSents != null) {
+			Collections.addAll(expSents, expLangSents);
+		}
 		Set<String> gotSents = new HashSet<String>();
 		List<String[]> gotLangSents = result().enSentences;
 		if (lang.equals("iu")) {
 			gotLangSents = result().iuSentences;
 		}
-		for (String[] aSent: gotLangSents) {
-			gotSents.add(String.join("", aSent));
+		if (gotLangSents != null) {
+			for (String[] aSent : gotLangSents) {
+				gotSents.add(String.join("", aSent));
+			}
 		}
 		AssertCollection.assertContainsAll(
 			baseMessage+"English sentences did not contain the expected items",

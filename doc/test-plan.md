@@ -95,27 +95,41 @@ Very long word
 - Make sure that the word and its Syllabics transcoding are properly displayed 
 and do not overlap with the test that is supposed to be below it
 
-Change preferred script
+Change preferred script (INUTKTITUT query)
 - ROMAN-to-ROMAN
   - Set preferred script to ROMAN
   - Search for ammuumajuq, then check that:
-  - Title shows word as ROMAN/SYLL
-  - Related words, Translations and Alignments shown in ROMAN
+      - Title shows word as ROMAN/SYLL
+      - Related words, Alignments shown in ROMAN
 - ROMAN-to-SYLL
   - Set preferred script to SYLL
   - Search for ammuumajuq, then check that:
-  - Title shows word as SYLL/ROMAN
-  - Related words, Translations and Alignments shown in SYLL
+      - Title shows word as SYLL/ROMAN
+      - Related words, Alignments shown in SYLL
 - SYLL-to-SYLL
   - Set preferred script to SYLL
   - Search for ᐊᒻᒨᒪᔪᖅ, then check that:
-  - Title shows word as SYLL/ROMAN
-  - Related words, Translations and Alignments shown in SYLL
+      - Title shows word as SYLL/ROMAN
+      - Related words, Alignments shown in SYLL
 - SYLL-to-ROMAN
   - Set preferred script to ROMAN
   - Search for ᐊᒻᒨᒪᔪᖅ, then check that:
-  - Title shows word as SYLL/ROMAN
-  - Related words, Translations and Alignments shown in ROMAN
+      - Title shows word as SYLL/ROMAN
+      - Related words, Alignments shown in ROMAN
+
+
+Change preferred script (ENGLISH query)
+- Set langauge to English
+- ENGLISH-ROMAN
+  - Set preferred script to ROMAN
+  - Search for 'housing', then check that:
+      - Title stayed ROMAN (cause it's English)
+      - Translations and Alignments shown in ROMAN
+- ENGLISH-SYLL
+  - Set preferred script to SYLL
+  - Search for 'housing', then check that:
+    - Title stayed ROMAN (cause it's English)
+    - Translations and Alignments shown in SYLL
   
 
 Search with Enter vs Button
@@ -531,6 +545,35 @@ Word Entry window hiding/showing
      word as opposed to the previous one
 - Reload the Gister page     
    - Make sure the Word Entry window is NOT showing
+   
+- Gist in ROMAN vs SYLL
+  - Copy and paste some ROMAN inuktitut
+      - Set preferred script to ROMAN
+      - Gist and chekc that:
+        - Content is in ROMAN
+        - When you click on a word, word entry is in ROMAN
+      - Set preferred script to SYLL
+      - Gist and chekc that:
+        - Content is in SYLL
+        - When you click on a word, word entry is in SYLL
+  - Copy and paste some SYLLABICS inuktitut
+      - Set preferred script to ROMAN
+      - Gist and chekc that:
+        - Content is in ROMAN
+        - When you click on a word, word entry is in ROMAN
+      - Set preferred script to SYLL
+      - Gist and chekc that:
+        - Content is in SYLL
+        - When you click on a word, word entry is in SYLL
+  - Gist URL: http://www.gov.nu.ca/
+      - Set preferred script to ROMAN
+      - Gist and chekc that:
+        - Content is in ROMAN
+        - When you click on a word, word entry is in ROMAN
+      - Set preferred script to SYLL
+      - Gist and chekc that:
+        - Content is in SYLL
+        - When you click on a word, word entry is in SYLL
  
 ## Feedback link
 

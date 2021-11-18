@@ -26,7 +26,8 @@ class GistTextController extends IUToolsController {
 	prepareContent(textOrUrl) {
 	    var tracer = Debug.getTraceLogger("GistTextController.prepareContent")
 		var inputs = {
-			textOrUrl: textOrUrl
+			textOrUrl: textOrUrl,
+            iuAlphabet: new SettingsController().iuAlphabet(),
 		};
 		var json_inputs = JSON.stringify(inputs);
 		// this.logOnServer("GIST_TEXT", inputs);

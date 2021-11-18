@@ -254,6 +254,28 @@ public class WordDictEndpointTest extends EndpointTest {
 				new String[]{"house", "home", "rent"},
 				1000
 			),
+
+			new Case("en-housing-roman",
+				"en", "housing", TransCoder.Script.ROMAN, 10,
+				new String[] {"housing"},
+				new String[0],
+				new String[0],
+				new String[]{"iglugijauvaktunik",
+					"iglulirinirli ... iglulirinirmutuinnaarajaqtuq",
+					"iglulirinirmi", "iglunginnut", "illulirinirmut"},
+				1000
+			),
+
+			new Case("en-housing-syll",
+				"en", "housing", TransCoder.Script.SYLLABIC, 10,
+				new String[] {"housing"},
+				new String[0],
+				new String[0],
+				new String[]{"ᐃᒡᓗᒋᔭᐅᕙᒃᑐᓂᒃ", "ᐃᒡᓗᓕᕆᓂᕐᒥ",
+					"ᐃᒡᓗᓕᕆᓂᕐᓕ ... ᐃᒡᓗᓕᕆᓂᕐᒧᑐᐃᓐᓈᕋᔭᖅᑐᖅ", "ᐃᒡᓗᖏᓐᓄᑦ", "ᐃᓪᓗᓕᕆᓂᕐᒧᑦ"},
+				1000
+			),
+
 		};
 
 		Consumer<Case> runner =
@@ -282,8 +304,8 @@ public class WordDictEndpointTest extends EndpointTest {
 						(WordDictResult) endPoint.executeThenConvert(inputs);
 					AssertEndpointResult hitsAsserter =
 						new AssertWordDictResult(epResult, aCase.descr)
-						.raisesNoError()
-						.foundAtLeastNWords(expMinHits)
+							.raisesNoError()
+							.foundAtLeastNWords(expMinHits)
 						;
 
 					if (expWords != null) {
@@ -297,6 +319,7 @@ public class WordDictEndpointTest extends EndpointTest {
 							.decompositionIs(expDecomp)
 							.relatedWordsIsSubsetOf(expRelatedWords)
 							.atLeastNExamples(expMinHits)
+							.translationsContain(expTranslations)
 							.highlightsAreSubsetOf(lang, true, epResult.convertedQuery)
 							.highlightsAreSubsetOf(otherLang, true, expTranslations)
 							;

@@ -197,4 +197,24 @@ public class AssertMultilingualDictEntry extends Asserter<MultilingualDictEntry>
 
 		return this;
 	}
+
+	public  AssertMultilingualDictEntry translationsContain(
+		String[] expTranslations) {
+		Set<String> gotTranslations = new HashSet<String>();
+		gotTranslations.addAll(entry().origWordTranslations);
+		gotTranslations.addAll(entry().relatedWordTranslations);
+		new AssertSet(gotTranslations,
+			baseMessage+"\nList of translations did not contain the expected translations")
+			.isSupersetOf(expTranslations);
+
+		gotTranslations = new HashSet<String>();
+		gotTranslations.addAll(entry().examplesForOrigWordTranslation.keySet());
+		gotTranslations.addAll(entry().examplesForRelWordsTranslation.keySet());
+		gotTranslations.remove("ALL");
+		new AssertSet(gotTranslations,
+			baseMessage+"\nList of keys for translation did not contain the expected translations")
+			.isSupersetOf(expTranslations);
+
+		return this;
+	}
 }
