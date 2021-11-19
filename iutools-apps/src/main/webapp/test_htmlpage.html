@@ -102,38 +102,57 @@ windows
     <p/>
 
     <hr/>
-    <button onclick="displayWinbox()">Display Winbox</button>
+    <button onclick="displayWinboxWithMaximizeHandler()">Display Winbox with maximize handler</button>
     <p/>
+    <button onclick="listAllWinboxMaximizeButtons()">List All Winbox Maximize Buttons</button>
+
 
 
 </main>
 
 <script>
+    function alertOnMaximize() {
+        alert("Winbox Maximize button clicked");
+        console.log("Winbox Maximize button clicked");
+    }
 
-    function displayWinbox() {
-        new WinBox(
+    function displayWinboxWithMaximizeHandler() {
+        var winbox = new WinBox(
             {
                 title: "Choose correction",
-                html:
-                    "<div class=\"div-floating-dlg\" id=\"div-choose-correction-dlg\" style=\"\">\n" +
-                    "  <div class=\"div-floating-dlg-titlebar\" id=\"div-choose-correction-title\"><h2>nunavvvut</h2></div>\n" +
-                    "  <div class=\"div-floating-dlg-contents\">\n" +
-                    "    <div id=\"div-choose-correction-message\" style=\"display: none;\"></div>\n" +
-                    "    <input id=\"txt-finalized-correction\" type=\"text\" value=\"\" style=\"\">\n" +
-                    "    <button id=\"btn-choose-correction-apply\" style=\"\">Apply</button>\n" +
-                    "    <button id=\"btn-choose-correction-cancel\" style=\"\">Cancel</button>\n" +
-                    "    <div id=\"div-choose-correction-suggestions\">" +
-                    "      <a class=\"spell-suggestion\" id=\"suggestion-0\" onclick=\"chooseCorrectionController.onClickSuggestion('suggestion-0')\">nunavut</a><br>\n" +
-                    "      <a class=\"spell-suggestion\" id=\"suggestion-1\" onclick=\"chooseCorrectionController.onClickSuggestion('suggestion-1')\">nunavuut</a><br>\n" +
-                    "      <a class=\"spell-suggestion\" id=\"suggestion-2\" onclick=\"chooseCorrectionController.onClickSuggestion('suggestion-2')\">nunavu</a><br>\n" +
-                    "      <a class=\"spell-suggestion\" id=\"suggestion-3\" onclick=\"chooseCorrectionController.onClickSuggestion('suggestion-3')\">nunavuk</a><br>\n" +
-                    "      <a class=\"spell-suggestion\" id=\"suggestion-4\" onclick=\"chooseCorrectionController.onClickSuggestion('suggestion-4')\">nunalivut</a><br>\n" +
-                    "    </div>\n" +
-                    "  </div>\n" +
-                    "  <div id=\"div-choose-correction-error\"></div>\n" +
-                    "</div>\n"
+                html: "Click on the Maximize button",
             }
-        )
+        );
+        var winboxID = winbox.id;
+        var maximizeHandler = function() {
+            alert("Maximizing winbox="+winbox);
+            winbox.maximize();
+        }
+        new RunWhen().domReady(function() {
+            var divWinbox = $("winbox-1");
+            console.log("divWinbox=" + divWinbox);
+            console.log("divWinbox.html()=" + divWinbox.html());
+            console.log("divWinbox.innerHTML=" + divWinbox.innerHTML);
+            var btnMaximize = $(".wb-max");
+            console.log("btnMaximize=" + btnMaximize);
+            console.log("btnMaximize.html()=" + btnMaximize.html());
+            console.log("btnMaximize.innerHTML=" + btnMaximize.innerHTML);
+            console.log("btnMaximize.constructor.name=" + btnMaximize.constructor.name);
+            // btnMaximize.unbind('click');
+            // btnMaximize.click(maximizeHandler);
+            btnMaximize.attr("onclick", 'alertOnMaximize()');
+        });
+    }
+
+    function listAllWinboxMaximizeButtons() {
+        var buttons = $(".wb-max");
+        console.log("There are "+buttons.length+" maximize buttons");
+        console.log("HTML of buttons:")
+        for (var ii=0; ii < buttons.length; ii++) {
+            var button_ii = buttons.get(ii);
+            console.log("  #"+ii+" = "+button_ii.constructor.name+": '"+button_ii.outerHTML+"'");
+        }
+        buttons.length
     }
 
 </script>
