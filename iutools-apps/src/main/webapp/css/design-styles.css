@@ -404,6 +404,13 @@ main {
 		opacity: 1;
 }
 
+.winbox.max {
+		height: 100vh !important;
+		width: 100vw !important;
+		max-height: 100vh;
+		max-width: 100vw;
+}
+
 .wb-header {
     position: relative;
 		height: auto;
