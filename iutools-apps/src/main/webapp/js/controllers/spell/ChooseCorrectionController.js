@@ -18,6 +18,7 @@ class ChooseCorrectionController extends IUToolsController {
             chooseController.setEventHandler("btnChooseCorrection_CancelCorrection", "click", chooseController.cancelCorrection);
         }
 
+        tracer.trace("creating the FloatingWindowController");
         this.windowController = new FloatingWindowController(
             {
                 html:

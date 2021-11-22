@@ -48,7 +48,6 @@ class WordEntryController extends IUToolsController {
             if (wordInOtherScript) {
                 wordText += "/" + wordInOtherScript
             }
-
             this.windowController.setTitle(wordText);
         }
 	}
@@ -118,7 +117,11 @@ class WordEntryController extends IUToolsController {
         }
 		this.displayWordBeingLookedUp(word, wordInOtherScript);
 		if (wordEntry != null) {
-                var html = "";
+                var html =
+                    "<div id='div-info' align='right'>\n"+
+                    "  <a href='help.jsp?topic=about_dictionary' target='#iutools_help'>info</a>\n"+
+                    "</div>";
+
             html += this.htmlTranslations(wordEntry, otherLang);
             html += this.htmlRelatedWords(wordEntry, lang);
             html = this.htmlMorphologicalAnalyses(wordEntry, lang, html);
@@ -133,6 +136,7 @@ class WordEntryController extends IUToolsController {
         var tracer = Debug.getTraceLogger('WordEntryController.htmlTranslations');
         tracer.trace("wordEntry="+jsonStringifySafe(wordEntry));
         var heading = this.langName(otherLang)+" Translations"
+
 
         var info = this.translationsInfo(wordEntry);
         var translations = info.translations;

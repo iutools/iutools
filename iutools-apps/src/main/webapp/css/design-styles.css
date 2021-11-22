@@ -392,10 +392,10 @@ main {
     position: fixed;
 		display: flex;
 		flex-direction: column;
-		height: 600px !important;
-		max-height: calc(100vh - 80px);
-    width: 600px !important;
-    max-width: 90vw;
+		/*height: 600px !important;*/
+		/*max-height: calc(100vh - 80px);*/
+    /*width: 600px !important;*/
+    /*max-width: 90vw;*/
     padding: 0;
 		padding-bottom: 10px;
     background: #fff;
@@ -404,12 +404,12 @@ main {
 		opacity: 1;
 }
 
-.winbox.max {
-		height: 100vh !important;
-		width: 100vw !important;
-		max-height: 100vh;
-		max-width: 100vw;
-}
+/*.winbox.max {*/
+/*		height: 100vh !important;*/
+/*		width: 100vw !important;*/
+/*		max-height: 100vh;*/
+/*		max-width: 100vw;*/
+/*}*/
 
 .wb-header {
     position: relative;
@@ -460,9 +460,9 @@ main {
     border: none;
 }
 
- .wb-body > * {
-    min-width: 100%;
-}
+/* .wb-body > * {*/
+/*    min-width: 100%;*/
+/*}*/
 
 /* Floating dialog class used by different apps */
 

@@ -107,6 +107,7 @@ reloading -->
 <script src="./js/utils/jsonStringifySafe.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 <script src="./js/debug/Debug.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 <script src="./js/debug/DebugConfig.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
+<script src="./js/utils/PlatformDetector.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 <script src="./js/utils/CSSUtils.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 <script src="./js/controllers/RunWhen.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 <script src="./js/controllers/WidgetController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
@@ -116,13 +117,14 @@ reloading -->
 <!-- This one must be before any other controller -->
 <script src="./js/controllers/IUToolsController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 
+<script src="./js/controllers/MobileWarningController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 <script src="./js/controllers/settings/SettingsController.js"></script>
 <script src="./js/controllers/navigation/MainNavController.js"></script>
 <script src="./js/controllers/worddict/WordEntryController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 <script src="./js/controllers/worddict/WordEntryController2.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 
 <script>
-    var mainNavController = new MainNavController();
+    // new MobileWarningController().possiblyWarnAgainstMobile();
 </script>
 
 <!-- Include the code that creates and configures the controller for this page -->
