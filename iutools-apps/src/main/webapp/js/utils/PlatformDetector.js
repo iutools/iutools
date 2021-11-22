@@ -5,7 +5,7 @@ class PlatformDetector {
         var tracer = Debug.getTraceLogger("PlatformDetector.isMobile");
         tracer.trace("navigator.userAgent="+navigator.userAgent);
         var mobile = false;
-        var regexp = /(Mac Os|Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone)/i;
+        var regexp = /(Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone)/i;
         if (navigator.userAgent.search(regexp) >= 0) {
             mobile = true;
         }

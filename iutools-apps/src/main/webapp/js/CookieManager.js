@@ -1,50 +1,64 @@
 class CookieManager {
-    getCookie(cname) {
-        var b = document.cookie.match('(^|[^;]+)\\s*' + cname + '\\s*=\\s*([^;]+)');
-        return b ? b.pop() : '';
+
+    constructor() {
+        this.second = 1000;
+        this.minute = 60*this.second;
+        this.hour = 60*this.minute;
+        this.day = 24*this.hour;
+        this.week = 7*this.day;
+        this.month = 30*this.day;
+        this.year = 365*this.day;
     }
 
-    setCookie(cname, cvalue, expireTime) {
+    getCookie(cname) {
+        var tracer = Debug.getTraceLogger('CookieManager.getCookie');
+        var cvalue = $.cookie(cname);
+        tracer.trace("For cname="+cname+", returning cvalue="+cvalue)
+        return cvalue;
+    }
+
+    setCookie(cname, cvalue, expiresIn) {
         var tracer = Debug.getTraceLogger("CookieManager.setCookie");
-        tracer.trace("cname="+cname+", cvalue="+cvalue+", expireTime="+expireTime);
+        tracer.trace("cname="+cname+", cvalue="+cvalue+", expiresIn="+expiresIn);
         var cookie = cname + "=" + cvalue + ";path=/";
-        if (expireTime != null) {
-            cookie += "; "+this.expiryTime(expireTime);
-        }
-        tracer.trace("setting cookie='"+cookie+"'");
-        document.cookie = cookie;
+        var exp = this.expiryTime(expiresIn);
+        tracer.trace("Setting cookie with exp='"+exp+"'");
+        $.cookie(cname, cvalue, { expires: exp });
     }
 
     expiryTime(expStr) {
         var tracer = Debug.getTraceLogger("CookieManager.expiryTime");
         tracer.trace("expStr="+expStr);
 
-        var nowDate = new Date();
-        var nowTime = nowDate.getTime();
-        var numAndUnit = expStr.match(/(\d+)([smhdm])/);
+        var numAndUnit = expStr.match(/(\d+)([smhdwMy])/);
         tracer.trace("numAndUnit="+JSON.stringify(numAndUnit));
         var num = parseInt(numAndUnit[1], 10);
         var unit = numAndUnit[2];
         var additional = 0;
+        var unitNum = this.second;
         if (unit === 's') {
-            additional = num;
-        } else if (unit === 'h') {
-            additional = 60*num;
-        } else if (unit === 'h') {
-            additional = 60*60*num;
-        } else if (unit === 'd') {
-            additional = 24*60*60*num;
-        } else if (unit === 'w') {
-            additional = 7*24*60*60*num;
+            unitNum = this.second;
         } else if (unit === 'm') {
-            additional = 30*24*60*60*num;
+            unitNum = this.minute;
+        } else if (unit === 'h') {
+            unitNum = this.hour;
+        } else if (unit === 'd') {
+            unitNum = this.day;
+        } else if (unit === 'w') {
+            unitNum = this.week;
+        } else if (unit === 'M') {
+            unitNum = this.month;
         } else if (unit === 'y') {
-            additional = 365*24*60*60*num;
+            unitNum = this.year;
         }
-        var expTime = nowTime + additional;
-        var exp = nowDate.setTime(expTime).toUTCString();
-        tracer.trace("num="+num+", unit="+unit+", additional="+additional+", nowTime="+nowTime+", expTime="+expTime+", returning exp="+exp);
-        return exp;
+        additional = num * unitNum;
+        tracer.trace("num="+num+", unit="+unit+", additional="+additional);
+
+        var date = new Date();
+        date.setTime(date.getTime() + (additional));
+
+        return date;
+
     }
 
     displayCookieConsent() {
