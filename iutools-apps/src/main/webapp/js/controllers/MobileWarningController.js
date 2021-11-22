@@ -18,7 +18,7 @@ class MobileWarningController extends IUToolsController {
             if (alreadyIssued == null || alreadyIssued === "") {
                 alert(
                     "Warning: You seem to be accessing InuktiTools through a mobile device.\n\n"+
-                    "The apps currently do not run well on such devices. "+
+                    "Currently, this web site does not run well on such devices. "+
                     "If you experience problems we recommend that you access the site through a laptop or desktop computer.\n\n"+
                     "We apologize for the inconvenience and hope to fix these problems soon.");
                 cookieManager.setCookie(cookieName, true, '1w')
