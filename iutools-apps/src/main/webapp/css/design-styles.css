@@ -126,7 +126,7 @@ main {
 
 #header_inner { 
   position: relative;
-  padding: 20px;
+  padding: 20px 0;
 	max-width: 800px;
 }
 
@@ -146,39 +146,39 @@ main {
 	color: transparent;
 	margin: .25em 0;
 	overflow: hidden;
-	background-image: url(../imgs/title-text.png);
+	background-image: url(../imgs/site-title-text.png);
 	background-repeat: no-repeat;
 	background-size: auto 22px;
 }
 
 #header_title span:first-child {
-	width: 133px;
+	width: 196px;
 	background-position: 5px top;
 }
 
 #header_title span:nth-child(2) {
 	width: 74px;
-	background-position: -132px top;
+	background-position: -195px top;
 }
 
 #header_title span:nth-child(3) {
 	width: 66px;
-	background-position: -210px top;
+	background-position: -273px top;
 }
 
 #header_title span:nth-child(4) {
 	width: 58px;
-	background-position: -278px top;
+	background-position: -341px top;
 }
 
 #header_title span:nth-child(5) {
 	width: 158px;
-	background-position: -340px top;
+	background-position: -403px top;
 }
 
 #header_title span:nth-child(6) {
 	width: 163.2px;
-	background-position: -504px top;
+	background-position: -567px top;
 }
 
 /* Page footer */
@@ -348,7 +348,6 @@ main {
 
 .drop-menu {
   display: none;
-  position: absolute;
   top: 100%;
   right: 0;
   width: 100%;
@@ -392,10 +391,10 @@ main {
     position: fixed;
 		display: flex;
 		flex-direction: column;
-		/*height: 600px !important;*/
-		/*max-height: calc(100vh - 80px);*/
-    /*width: 600px !important;*/
-    /*max-width: 90vw;*/
+		height: 600px !important;
+		max-height: calc(100vh - 80px);
+    width: 600px !important;
+    max-width: 90vw;
     padding: 0;
 		padding-bottom: 10px;
     background: #fff;
@@ -404,12 +403,12 @@ main {
 		opacity: 1;
 }
 
-/*.winbox.max {*/
-/*		height: 100vh !important;*/
-/*		width: 100vw !important;*/
-/*		max-height: 100vh;*/
-/*		max-width: 100vw;*/
-/*}*/
+.winbox.max {
+		height: 100vh !important;
+		width: 100vw !important;
+		max-height: 100vh;
+		max-width: 100vw;
+}
 
 .wb-header {
     position: relative;
@@ -460,9 +459,8 @@ main {
     border: none;
 }
 
-/* .wb-body > * {*/
-/*    min-width: 100%;*/
-/*}*/
+
+
 
 /* Floating dialog class used by different apps */
 
@@ -632,33 +630,33 @@ div#div-wordentry-iconized {
 	}
 
 	#header_title span:first-child {
-		width: 168px;
+		width: 250px;
 		background-position: 6px top;
 	}
 
 	#header_title span:nth-child(2) {
 		width: 93px;
-		background-position: -168px top;
+		background-position: -250px top;
 	}
 
 	#header_title span:nth-child(3) {
 		width: 82px;
-		background-position: -268px top;
+		background-position: -350px top;
 	}
 
 	#header_title span:nth-child(4) {
 		width: 73px;
-		background-position: -354px top;
+		background-position: -436px top;
 	}
 
 	#header_title span:nth-child(5) {
 		width: 198px;
-		background-position: -435px top;
+		background-position: -517px top;
 	}
 
 	#header_title span:nth-child(6) {
 		width: 206px;
-		background-position: -640px top;
+		background-position: -722px top;
 	}
   
   .menu-toggle {
@@ -674,12 +672,16 @@ div#div-wordentry-iconized {
   #main_nav_menu > li {
     width: auto;
   }
+	
+	#main_nav_menu > li > a {
+    padding: 10px 4px;
+  }
   
   #main_nav_menu > li:hover {
     background: none;
   }
   
-  #main_nav a, .drop-menu-toggle {
+  #main_nav li ul li a {
     padding: 10px 14px;
   }
   
@@ -688,8 +690,12 @@ div#div-wordentry-iconized {
   }
   
   .drop-menu-toggle {
-    padding-right: 30px;
+		padding: 10px 24px 10px 4px;
   }
+	
+	.drop-menu-toggle:after {
+		right: 8px;
+	}
   
   .drop-menu-toggle.active, .drop-menu-toggle.active:hover {
     box-shadow: none;
@@ -697,6 +703,7 @@ div#div-wordentry-iconized {
   }
   
   .drop-menu {
+		position: absolute;
     width: 260px;
     box-shadow: none;
   }
@@ -711,12 +718,50 @@ div#div-wordentry-iconized {
 
 }
 
+@media screen and (min-width: 560px) {
+	
+	#main_nav_menu > li > a {
+    padding: 10px 8px;
+  }
+  
+  .drop-menu-toggle {
+		padding: 10px 24px 10px 8px;
+  }
+	
+}
+
+@media screen and (min-width: 600px) {
+	
+	#main_nav_menu > li > a {
+    padding: 10px 14px;
+  }
+  
+  .drop-menu-toggle {
+		padding: 10px 28px 10px 14px;
+  }
+	
+	.drop-menu-toggle:after {
+		right: 8px;
+	}
+}
+
 @media screen and (min-width: 640px) {
 
   #main_nav_menu { 
     justify-content: flex-end;
   }
+	
+	#main_nav_menu > li > a {
+		padding: 10px 14px;
+	}
+	
+	.drop-menu-toggle {
+		padding: 10px 30px 10px 14px;
+	}
 
+	.drop-menu-toggle:after {
+		right: 10px;
+	}
 }
 
 @media screen and (min-width: 800px) { 
@@ -775,32 +820,32 @@ div#div-wordentry-iconized {
 	}
 
 	#header_title span:first-child {
-		width: 204px;
+		width: 302px;
 		background-position: 6px top;
 	}
 
 	#header_title span:nth-child(2) {
 		width: 114px;
-		background-position: -204px top;
+		background-position: -302px top;
 	}
 
 	#header_title span:nth-child(3) {
-		width: 100px;
-		background-position: -326px top;
+		width: 102px;
+		background-position: -422px top;
 	}
 
 	#header_title span:nth-child(4) {
-		width: 88px;
-		background-position: -430px top;
+		width: 90px;
+		background-position: -526px top;
 	}
 
 	#header_title span:nth-child(5) {
 		width: 244px;
-		background-position: -526px top;
+		background-position: -622px top;
 	}
 
 	#header_title span:nth-child(6) {
-		width: 250px;
-		background-position: -780px top;
+		width: 252px;
+		background-position: -874px top;
 	}
 }
