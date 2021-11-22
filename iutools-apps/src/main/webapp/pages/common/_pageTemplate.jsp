@@ -19,6 +19,7 @@ windows
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&display=swap" rel="stylesheet">
     <script src="./js/vendors/jquery/jquery-3.3.1.min.js"></script>
     <script src="./js/vendors/jquery/jquery-ui.min.js" type="text/javascript"></script>
+    <script src="./js/vendors/jquery/jquery.cookie.js" type="text/javascript"></script>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
     <!-- winbox stuff -->
@@ -121,7 +122,6 @@ reloading -->
 <script src="./js/controllers/settings/SettingsController.js"></script>
 <script src="./js/controllers/navigation/MainNavController.js"></script>
 <script src="./js/controllers/worddict/WordEntryController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
-<script src="./js/controllers/worddict/WordEntryController2.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 
 <script>
     // new MobileWarningController().possiblyWarnAgainstMobile();
