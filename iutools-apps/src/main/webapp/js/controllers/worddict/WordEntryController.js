@@ -92,6 +92,7 @@ class WordEntryController extends IUToolsController {
 	}	
 	
 	getWordDictRequestData(_word, _lang) {
+        var tracer = Debug.getTraceLogger("WordEntryController.getWordDictRequestData");
         var iuAlphabet = new SettingsController().iuAlphabet();
 		var request = { 
 			word: _word,
@@ -99,6 +100,7 @@ class WordEntryController extends IUToolsController {
             iuAlphabet: iuAlphabet,
         };
 		var jsonInputs = jsonStringifySafe(request);;
+		tracer.trace("Returning jsonInputs="+jsonInputs);
 		return jsonInputs;
 	}
 
