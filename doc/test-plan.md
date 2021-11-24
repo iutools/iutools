@@ -592,27 +592,48 @@ Word Entry window hiding/showing
  
  ## Action logging
  
- - For each of the actions mentioned below, make sure that the action is logged 
-   properly in the tomcat log, i.e.
-   - The action is logged once and only once
-   - The action data provided by the log line is accurate
-     
- - Actions to test:
-   - Word Dictionary
-     - Search for a word (_action=WORD_SEARCH, data=lang,word_)
-     - Click on a word (_action=WORD_ENTRY, data=lang,word_)
-   - Morpheme Examples
-     - Do a search for a morpheme (_action=MORPHEME_DICT, data=corpusName,nbExamples,wordPattern_)
-       - By typing ENTER and by clicking button
-     - Click on an example word (_action=WORD_ENTRY, data=lang,word__)
-   - Gister
-     - Gist some text (_action=GIST_TEXT, data:type=text,totalWords)
-     - Gist a URL (_action=GIST_TEXT, data:type=url)
-     - Click on a word to display its word entry (_action=WORD_ENTRY, data=lang,word_)
-   - Spell Checker
-     - Spellcheck some text (_action=SPELL, data=totalWords)
-   - Web Search
-     - Search for a word (_action=SEARCH_WEB, data=origQuery)
+ Take a sheet of paper and write down the following categories:
+
+    // Searching a word with the Inuktitut-English Dictioary
+    DICTIONARY_SEARC
+    
+    // Looking up a word, whether it be from the Inuktitut-English Dictioary or
+    // any other InuktiTools app
+    WORD_LOOKUP
+
+    // Spell check some Inuktitut text
+    SPELL
+
+    // Do a web search using the InuktiTools web search app
+    SEARCH_WEB
+
+    // Lookup a morpheme in the InuktiTools Morpheme Dictionary app
+    MORPHEME_SEARCH
+
+    // Launching the InuktiTools Reading Assistant app on either some text
+    // or URL
+    GIST_TEXT
+   
+ - Next, clear the tomcat applications log and start using the various 
+   InuktiTools apps
+   - Whenever you perform an action that corresponds to one of the above 
+     categories, put a tick mark beside it so you keep track of how many 
+    times you did that action. 
+   - Make sure you do each of the actions more than once.
+- Once you have done all the actions more than once, run the cli command
+
+     iutools_cli analyze_log --log-file "path-to-your-tomcat-apps-logfile"
+
+- This will output a summary of all the actions and endpoints that were sent to 
+  the InuktiTools server. 
+  - Items whose names are uppercased (ex: "DICTIONARY_SEARCH") 
+    correspond to end-user actions, and those that are lowercased (ex: "gist/preparecontent")
+    correspond to endpoints that were fired as a result of user actions.
+  - For the purpose of this test, you only need to worry about the ACTIONS
+  - Just make sure that the frequency that is mentioned in the summary report 
+    for a given action corresponds to the number of tick marks you made for 
+    that action.
+        
      
  ## Test on 'small screen'
  
