@@ -317,6 +317,17 @@ Choose corrrection after closing suggestions box
 - Click on the X to close the suggestions window
 - Click on the bad word again and make sure you can select and apply a suggestion
         
+Correcting a second word while first word may still be looking for suggestions
+- Spell check text 'nunavvvut inuksssuk'
+- Do the following very rapidly
+  - Click on mis-spelled 'nunavvvut'
+  - Close the window by clicking on the X, while the window is still looking for 
+    suggestions
+  - Click on mis-spelled 'inuksssuk'
+    - Wait for the suggestions to appear and make sure that they are for 
+      'inuksssuk', NOT for 'nunavvvut'
+  - Fix the spelling of inuksssuk and Apply
+  - Make sure that the word that was corrected is inuksssuk and not nunavvvut
     
 ## Search Engine
 Search for word in LATIN - Happy Path
