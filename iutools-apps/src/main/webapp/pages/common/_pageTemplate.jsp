@@ -54,7 +54,7 @@ windows
   <button class="menu-toggle"><span></span><span></span><span></span></button>
   <ul id="main_nav_menu">
     <li id="home_link"><a href="index.html">Home</a></li>
-    <li id="feedback_link"><a href="mailto:alain.desilets@nrc-cnrc.gc.ca;contact@inuktitutcomputing.ca?subject=Inuktitut Tools Feedback">Send Feedback</a></li>
+    <li id="feedback_link"><a target="#iutools_feeback" href="mailto:alain.desilets@nrc-cnrc.gc.ca;contact@inuktitutcomputing.ca?subject=Inuktitut Tools Feedback">Send Feedback</a></li>
     <li id="other_tools">
       <button id="mnu-other-tools" class="drop-menu-toggle">Other Inuktut Tools</button>
       <ul class="drop-menu">
@@ -124,7 +124,8 @@ reloading -->
 <script src="./js/controllers/worddict/WordEntryController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 
 <script>
-    // new MobileWarningController().possiblyWarnAgainstMobile();
+    var mainNavController = new MainNavController();
+    new MobileWarningController().possiblyWarnAgainstMobile();
 </script>
 
 <!-- Include the code that creates and configures the controller for this page -->
