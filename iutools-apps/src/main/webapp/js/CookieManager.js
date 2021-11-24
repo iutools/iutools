@@ -23,39 +23,45 @@ class CookieManager {
         var cookie = cname + "=" + cvalue + ";path=/";
         var exp = this.expiryTime(expiresIn);
         tracer.trace("Setting cookie with exp='"+exp+"'");
-        $.cookie(cname, cvalue, { expires: exp });
+        if (exp != null) {
+            $.cookie(cname, cvalue, {expires: exp});
+        } else {
+            $.cookie(cname, cvalue);
+        }
     }
 
     expiryTime(expStr) {
         var tracer = Debug.getTraceLogger("CookieManager.expiryTime");
         tracer.trace("expStr="+expStr);
+        var date = null;
+        if (expStr != null) {
+            var numAndUnit = expStr.match(/(\d+)([smhdwMy])/);
+            tracer.trace("numAndUnit=" + JSON.stringify(numAndUnit));
+            var num = parseInt(numAndUnit[1], 10);
+            var unit = numAndUnit[2];
+            var additional = 0;
+            var unitNum = this.second;
+            if (unit === 's') {
+                unitNum = this.second;
+            } else if (unit === 'm') {
+                unitNum = this.minute;
+            } else if (unit === 'h') {
+                unitNum = this.hour;
+            } else if (unit === 'd') {
+                unitNum = this.day;
+            } else if (unit === 'w') {
+                unitNum = this.week;
+            } else if (unit === 'M') {
+                unitNum = this.month;
+            } else if (unit === 'y') {
+                unitNum = this.year;
+            }
+            additional = num * unitNum;
+            tracer.trace("num=" + num + ", unit=" + unit + ", additional=" + additional);
 
-        var numAndUnit = expStr.match(/(\d+)([smhdwMy])/);
-        tracer.trace("numAndUnit="+JSON.stringify(numAndUnit));
-        var num = parseInt(numAndUnit[1], 10);
-        var unit = numAndUnit[2];
-        var additional = 0;
-        var unitNum = this.second;
-        if (unit === 's') {
-            unitNum = this.second;
-        } else if (unit === 'm') {
-            unitNum = this.minute;
-        } else if (unit === 'h') {
-            unitNum = this.hour;
-        } else if (unit === 'd') {
-            unitNum = this.day;
-        } else if (unit === 'w') {
-            unitNum = this.week;
-        } else if (unit === 'M') {
-            unitNum = this.month;
-        } else if (unit === 'y') {
-            unitNum = this.year;
+            var date = new Date();
+            date.setTime(date.getTime() + (additional));
         }
-        additional = num * unitNum;
-        tracer.trace("num="+num+", unit="+unit+", additional="+additional);
-
-        var date = new Date();
-        date.setTime(date.getTime() + (additional));
 
         return date;
 
