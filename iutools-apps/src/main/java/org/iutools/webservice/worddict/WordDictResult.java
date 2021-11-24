@@ -22,8 +22,8 @@ public class WordDictResult extends EndpointResult {
 	// dictionary entry for that single word
 	public MultilingualDictEntry queryWordEntry;
 	public Long totalWords = new Long(0);
-	public String lang = null;
-	public String otherLang = null;
+	public String lang = "iu";
+	public String otherLang = "en";
 	public String convertedQuery = null;
 
 	public WordDictResult() {
