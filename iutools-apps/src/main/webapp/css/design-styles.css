@@ -24,6 +24,7 @@ b, strong {
 #page_title h1 {
     font-size: 1.625em;
     text-align: left;
+		margin-top: 30px;
 }
 
 main select, main input {
@@ -100,6 +101,10 @@ button:disabled, input[type="button"]:disabled {
 
 button:disabled:hover, input[type="button"]:disabled:hover {
     background: #0274ad;
+}
+
+main button {
+	margin: 20px 0;
 }
 
 /* Page header */
@@ -753,6 +758,14 @@ div#div-wordentry-iconized {
     background-size: 1000px;
 		background-position: center 58%;
   }
+	
+	#page_title h1 {
+		margin-top: 40px;
+	}
+	
+	main button {
+		margin: 30px 0;
+	}
   
 }
 

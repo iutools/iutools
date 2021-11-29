@@ -1,6 +1,5 @@
 package org.iutools.cli;
 
-import ca.nrc.json.PrettyPrinter;
 import ca.nrc.ui.commandline.CommandLineException;
 import ca.nrc.ui.commandline.UserIO;
 import org.iutools.loganalysis.EPA_Stats;
@@ -40,8 +39,29 @@ public class CmdAnalyzeLog extends ConsoleCommand {
 
 	private void printOverviewReport() throws Exception {
 		userIO.echo("\nOVERVIEW report\n");
-		for (String cat : logAnalyzer.categories()) {
-			printCategoryOverview(cat);
+		printAggregateCategoriesReport();
+
+		echo("STATS FOR EACH ACTION OR ENDPOINT/n");
+		echo(1);
+		try {
+			for (String cat : logAnalyzer.categories()) {
+				if (!cat.startsWith("_")) {
+					printCategoryOverview(cat);
+				}
+			}
+		} finally {
+			echo(-1);
+		}
+	}
+
+	private void printAggregateCategoriesReport() throws Exception {
+		echo("SUMMARY OF ALL ACTIONS AND ENDPOINTS/n");
+		echo(1);
+		try {
+			printCategoryOverview("_ALL_ACTIONS");
+			printCategoryOverview("_all_endpoints");
+		} finally {
+			echo(-1);
 		}
 	}
 
@@ -50,9 +70,18 @@ public class CmdAnalyzeLog extends ConsoleCommand {
 		userIO.echo(1);
 		try {
 			EPA_Stats stats = logAnalyzer.stats4epa(category);
-			userIO.echo(PrettyPrinter.print(stats));
+			echo("Frequency                : "+stats.frequency);
+			echo("Elapsed secs (avg/total) : "+
+				decim2(stats.avgSecs())+" ("+decim2(stats.totalElapsedSecs())+")");
+			echo("Exceptions (avg/total)   : "+
+				decim2(stats.exceptionsRate())+" ("+stats.totalExceptions+")");
+			echo();
 		} finally {
-			userIO.echo(-1);
+			echo(-1);
 		}
+	}
+
+	private String decim2(double num) {
+		return String.format("%.2f", num);
 	}
 }

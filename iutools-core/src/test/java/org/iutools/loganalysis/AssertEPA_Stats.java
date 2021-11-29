@@ -25,7 +25,7 @@ public class AssertEPA_Stats extends Asserter<EPA_Stats> {
 
 	public AssertEPA_Stats avgMSecsIs(double expAvgMsecs) {
 		AssertNumber.assertEquals(
-			baseMessage+"\nFrequency was not as expected",
+			baseMessage+"\nAvg MSecs was not as expected",
 			expAvgMsecs, stats().avgMsecs(), 0.1);
 
 		return this;

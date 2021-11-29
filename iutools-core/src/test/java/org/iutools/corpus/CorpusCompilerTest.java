@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
@@ -70,7 +71,60 @@ public class CorpusCompilerTest {
 	/////////////////////////////////
 	// DOCUMENTATION TESTS
 	/////////////////////////////////
-	
+
+	@Test
+	public void test__DELETEME() throws Exception {
+		String json =
+			"{\n" +
+			"  \"_detect_language\":\n" +
+			"    true,\n" +
+			"  \"additionalFields\":\n" +
+			"    {\n" +
+			"    },\n" +
+			"  \"content\":\n" +
+			"    null,\n" +
+			"  \"creationDate\":\n" +
+			"    null,\n" +
+			"    \"decompositionsSample\":\n" +
+			"    [\n" +
+			"      [\n" +
+			"        \"{nunavut/1n}\",\n" +
+			"        \"\\\\\"\n" +
+			"       ],\n" +
+			"       [\n" +
+			"         \"{nuna/1n}\", \n" +
+			"         \"{vut/tn-nom-s-1p}\",\n" +
+			"         \"\\\\\"\n" +
+			"        ],\n" +
+			"        [\n" +
+			"          \"{nuna/1n}\",\n" +
+			"          \"{vut/tn-nom-p-1p}\",\n" +
+			"          \"\\\\\"\n" +
+			"        ]\n" +
+			"    ] ,\n" +
+			"  \"frequency\":\n" +
+			"    1,\n" +
+			"  \"id\":\n" +
+			"    \"nunavut\",\n" +
+			"  \"lang\":\n" +
+			"    \"en\",\n" +
+			"  \"morphemesSpaceConcatenated\":\n" +
+			"    \"BEGIN {nunavut/1n} \\\\ END\",\n" +
+			"  \"shortDescription\":\n" +
+			"    null,\n" +
+			"  \"topDecompositionStr\":\n" +
+			"    \"{nunavut/1n} \\\\\",\n" +
+			"  \"totalDecompositions\":\n" +
+			"    3,\n" +
+			"  \"word\":\n" +
+			"    \"nunavut\",\n" +
+			"  \"wordCharsSpaceConcatenated\":\n" +
+			"    \"BEGIN n u n a v u t END\"\n" +
+			"}"
+			;
+		new ObjectMapper().readValue(json, WordInfo.class);
+	}
+
 	@Test
 	public void test__CorpusCompiler__Synopsis() throws Exception {
 		// For a synopsis of this class, see the Synopsis of test case

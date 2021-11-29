@@ -172,7 +172,7 @@ class MorphemeDictionaryController extends IUToolsController {
             var aWord = morphWords[ii];
             html +=
                 '<a class="word-example" id="word-example-'+aWord+'"'
-                + '>'+aWord+'</a>&nbsp;&nbsp;&nbsp;'
+                + '>'+aWord+'</a>, '
             ;
         }
 

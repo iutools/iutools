@@ -82,31 +82,59 @@ public class LogAnalyzer {
 	}
 
 	private void updateGenericStats(LogLine line) {
-		LogLineTracer tracer = new LogLineTracer("updateGenericStats", line, "tokenize");
-		String key = line.category();
+		LogLineTracer tracer = new LogLineTracer("updateGenericStats", line, "webservice.user_action");
 
-		if (!epaStats.containsKey(key)) {
-			epaStats.put(key, new EPA_Stats(key));
-		}
-		EPA_Stats stats = this.epaStats.get(key);
+		EPA_Stats categStats = this.singleCategStats4line(line);
+		EPA_Stats allCatStats = this.allCategStats4line(line);
+
 		if (tracer.isEnabled()) {
-			tracer.trace("On entry, stats="+PrettyPrinter.print(stats));
+			tracer.trace(
+				"** On entry\n"+
+				"categStats="+PrettyPrinter.print(categStats)+"\n"+
+				"allCatStats="+PrettyPrinter.print(allCatStats));
 		}
 		if (line.phase != null) {
 			if (line.phase.equals("START")) {
-				stats.onStart();
+				categStats.onStart();
+				allCatStats.onStart();
 			} else if (line.phase.equals("END")) {
-				stats.onEnd(line.elapsedMSecs);
+				categStats.onEnd(line.elapsedMSecs);
+				allCatStats.onEnd(line.elapsedMSecs);
 			}
 		}
 		if (line.exceptionRaised != null && !line.exceptionRaised.isEmpty()) {
-			stats.totalExceptions++;
+			categStats.totalExceptions++;
+			allCatStats.totalExceptions++;
 		}
 
 		if (tracer.isEnabled()) {
-			tracer.trace("On exit, stats.avgMsecs="+stats.avgMsecs()+", stats="+PrettyPrinter.print(stats));
+			tracer.trace(
+			"** On exit\n"+
+			"categStats="+PrettyPrinter.print(categStats)+"\n"+
+			"allCatStats="+PrettyPrinter.print(allCatStats));
 		}
 		return;
+	}
+
+	private EPA_Stats singleCategStats4line(LogLine line) {
+		String key = line.category();
+		if (!epaStats.containsKey(key)) {
+			epaStats.put(key, new EPA_Stats(key));
+		}
+		EPA_Stats categStats = this.epaStats.get(key);
+		return categStats;
+	}
+
+	private EPA_Stats allCategStats4line(LogLine line) {
+		String key = "_ALL_ACTIONS";
+		if (line instanceof EndpointLine) {
+			key = "_all_endpoints";
+		}
+		if (!epaStats.containsKey(key)) {
+			epaStats.put(key, new EPA_Stats(key));
+		}
+		EPA_Stats categStats = this.epaStats.get(key);
+		return categStats;
 	}
 
 	private void onUserActionLine(UserActionLine line) {

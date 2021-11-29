@@ -28,6 +28,7 @@ public class WordDictEndpointTest extends EndpointTest {
 
 	@Test
 	public void test__WordDictEndpoint__Synopsis() throws Exception {
+
 		// Use this endpoint to retrieve information about a word
 
 		// Feed a word pattern to the endpoint inputs.
@@ -276,6 +277,17 @@ public class WordDictEndpointTest extends EndpointTest {
 				1000
 			),
 
+			new Case("iu-Igluga-capitalized",
+				"iu", "Igluga", TransCoder.Script.ROMAN, 10,
+				new String[] {"igluga", "iglugalait"},
+				new String[] {"iglu/1n", "ga/tn-nom-s-1s"},
+				new String[] {
+					"illuit", "illulirinirmut", "illumut", "illunik", "illunut"},
+				new String[]{"house", "home", "rent"},
+				1000
+			),
+
+
 		};
 
 		Consumer<Case> runner =
@@ -330,7 +342,7 @@ public class WordDictEndpointTest extends EndpointTest {
 			};
 
 		new RunOnCases(cases, runner)
-//			.onlyCaseNums(5)
+//			.onlyCaseNums(9)
 //			.onlyCasesWithDescr("iu-igluga-syll2roman")
 			.run();
 	}

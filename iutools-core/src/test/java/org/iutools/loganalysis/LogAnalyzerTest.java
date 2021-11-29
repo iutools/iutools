@@ -68,6 +68,14 @@ public class LogAnalyzerTest {
 
 		// Action stats
 		{
+			new AssertEPA_Stats(analyzer.stats4epa("_ALL_ACTIONS"), "_ALL_ACTIONS")
+				// Not sure why this is 16 instead of 14
+				.frequencyIs(16)
+				.avgMSecsIs(975.8)
+				.totalExceptionsIs(0)
+				.exceptionsRateIs(0.0)
+			;
+
 			new AssertEPA_Stats(analyzer.stats4epa("DICTIONARY_SEARCH"), "DICTIONARY_SEARCH")
 				.frequencyIs(1)
 				.avgMSecsIs(1282.0)
@@ -106,6 +114,13 @@ public class LogAnalyzerTest {
 
 		// Endpoint stats
 		{
+			new AssertEPA_Stats(analyzer.stats4epa("_all_endpoints"), "_all_endpoints")
+				.frequencyIs(16)
+				.avgMSecsIs(3056.3)
+				.totalExceptionsIs(1)
+				.exceptionsRateIs(0.06)
+				;
+
 			new AssertEPA_Stats(analyzer.stats4epa("worddict"), "worddict")
 				.frequencyIs(8)
 				.avgMSecsIs(1204.8)

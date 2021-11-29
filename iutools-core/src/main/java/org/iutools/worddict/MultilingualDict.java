@@ -470,6 +470,9 @@ public class MultilingualDict {
 		if (lang == null) {
 			lang = "iu";
 		}
+		if (partialWord != null) {
+			partialWord = partialWord.toLowerCase();
+		}
 		assertIsSupportedLanguage(lang);
 		Pair<Iterator<String>,Long> results = null;
 		if (lang.equals("iu")) {
