@@ -21,6 +21,7 @@ class IUUtils {
 	}
 	
 	static isRoman(text) {
+	    text = text.toLocaleLowerCase();
 		var res = true;
 		for (var ich=0; ich<text.length; ich++)
 			if ( !IUUtils.romanChars.includes(text.charAt(ich)) ) {
