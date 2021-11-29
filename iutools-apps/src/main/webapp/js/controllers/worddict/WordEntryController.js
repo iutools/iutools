@@ -188,27 +188,6 @@ class WordEntryController extends IUToolsController {
         return html;
     }
 
-    translationsInfo(wordEntry) {
-        var tracer = Debug.getTraceLogger('WordEntryController.translationsInfo');
-        tracer.trace("wordEntry="+jsonStringifySafe(wordEntry));
-        var translations = wordEntry.origWordTranslations;
-        var examples = wordEntry.examplesForOrigWordTranslation;
-        var areRelatedTranslations = false;
-        if (examples == null || Object.keys(examples).length == 0) {
-            translations = wordEntry.relatedWordTranslations;
-            examples = wordEntry.examplesForRelWordsTranslation;
-            areRelatedTranslations = true;
-        }
-
-        var info =
-            {
-                'translations': translations,
-                'examples': examples,
-                'areRelatedTranslations': areRelatedTranslations
-            };
-        return info;
-    }
-
     translationsInfo_NEW(wordEntry) {
         var tracer = Debug.getTraceLogger('WordEntryController.translationsInfo_NEW');
         tracer.trace("wordEntry="+jsonStringifySafe(wordEntry));
@@ -321,15 +300,12 @@ class WordEntryController extends IUToolsController {
         var tracer = Debug.getTraceLogger('WordEntryController.htmlAlignmentsByTranslation');
         tracer.trace("wordEntry="+jsonStringifySafe(wordEntry));
         var html = "";
-        var trInfo = this.translationsInfo(wordEntry);
         var trInfoNew = this.translationsInfo_NEW(wordEntry);
 
-        tracer.trace("trInfo="+jsonStringifySafe(trInfo));
         tracer.trace("trInfoNew="+jsonStringifySafe(trInfoNew));
-		// var translations = trInfo.translations;
         var allTranslations = trInfoNew.allTranslations;
         tracer.trace("allTranslations="+jsonStringifySafe(allTranslations));
-        var translation2alignments = trInfo.examples;
+        var translation2alignments = trInfoNew.examples;
 
         var heading = "Examples of use";
         if (trInfoNew.areRelatedTranslations) {
