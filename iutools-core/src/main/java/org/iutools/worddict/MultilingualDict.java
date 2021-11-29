@@ -1,5 +1,6 @@
 package org.iutools.worddict;
 
+import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -287,7 +288,7 @@ public class MultilingualDict {
 		MultilingualDictEntry entry, List<String> iuWordGroup, Script script) throws MultilingualDictException {
 		Logger tLogger = Logger.getLogger("org.iutools.worddict.MultilingualDict.retrieveTranslationsAndExamples");
 		if (tLogger.isTraceEnabled()) {
-			tLogger.trace("word="+entry.word+"/"+entry.wordInOtherScript+", iuWordGroup="+ StringUtils.join(iuWordGroup.iterator(), ", "));
+			tLogger.trace("word="+entry.word+"/"+entry.wordInOtherScript+", iuWordGroup.size()="+iuWordGroup.size()+", iuWordGroup="+ StringUtils.join(iuWordGroup.iterator(), ", "));
 		}
 		boolean isForRelatedWords = true;
 		if (iuWordGroup.size() == 1) {
@@ -358,6 +359,10 @@ public class MultilingualDict {
 		int totalPairs, Script script, boolean forRelatedWord) throws MultilingualDictException {
 
 		Logger tLogger = Logger.getLogger("org.iutools.worddict.MultilingualDict.onNewSentencePair");
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("forRelatedWord="+forRelatedWord+", bilingualAlignment="+ PrettyPrinter.print(bilingualAlignment));
+		}
+
 		String l1 = entry.lang;
 		String l2 = otherLang(l1);
 		String[] highlightedPair = new String[] {

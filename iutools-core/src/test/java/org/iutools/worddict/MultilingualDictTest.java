@@ -44,7 +44,15 @@ public class MultilingualDictTest {
 				.setRelatedWords(
 					"ammuumajurniartiit", "ammuumajuqtarnirmut",
 					"ammuumajuqtaqtiit", "ammuumajuqtaqtutik",
-					"ammuumajurniarnirmut"),
+					"ammuumajurniarnirmut")
+				.setExpRelatedTranslationsMap(
+					new String[] {"ammuumajuqtaqtiit", "clam divers",
+						"divers ... valid ... diving"},
+					new String[] {"ammuumajuqtaqtutik", "clam divers",
+						"classifications ... divers ... clam divers"},
+					new String[] {"ammuumajuqtarnirmut", "clam", "clam diggers",
+						"clam digging", "clam diggers ... commercial clam digging"},
+					new String[] {"ammuumajurniartiit", "divers"}),
 
 			new MultilingualDictCase("iu-ᐊᒻᒨᒪᔪᖅᓯᐅᖅᑐᑎᒃ", "ᐊᒻᒨᒪᔪᖅᓯᐅᖅᑐᑎᒃ")
 				.setDecomp(
@@ -232,8 +240,12 @@ public class MultilingualDictTest {
 				(expTranslations == null || expTranslations.length == 0) &&
 				aCase.expRelatedTranslations != null) {
 					asserter.relatedTranslationsStartWith(aCase.expRelatedTranslations);
-
 				}
+
+				if (aCase.expRelatedTranslationsMap != null) {
+					asserter.relatedTranslationsMapsEquals(aCase.expRelatedTranslationsMap);
+				}
+
 
 				if (aCase.expDecomp != null) {
 					asserter.decompositionIs(aCase.expDecomp);
@@ -244,7 +256,7 @@ public class MultilingualDictTest {
 		};
 
 		new RunOnCases(cases_entry4word, runner)
-//			.onlyCaseNums(7)
+//			.onlyCaseNums(1)
 //			.onlyCasesWithDescr("iu-kiugavinnga")
 			.run();
 	}
@@ -318,12 +330,11 @@ public class MultilingualDictTest {
 		public Integer expMinExamples = 0;
 		public boolean outOfVocab = false;
 		public String[] expRelatedTranslations = null;
-		private String[] expOrigHighlights;
+		Map<String,List<String>> expRelatedTranslationsMap = null;
 
 		public MultilingualDictCase(String _descr, String _word) {
 			super(_descr, null);
 			this.word = _word;
-			this.expOrigHighlights = new String[] {_word};
 		}
 
 		public MultilingualDictCase setL1(String _lang) throws RuntimeException {
@@ -373,6 +384,22 @@ public class MultilingualDictTest {
 		public MultilingualDictCase setRelWordTranslationsStartWith(
 			String[] _expRelatedTranslations) {
 			this.expRelatedTranslations = _expRelatedTranslations;
+			return this;
+		}
+
+		public MultilingualDictCase setExpRelatedTranslationsMap(
+			String[]... expMapEntries) {
+			Map<String,List<String>> expMap = new HashMap<String,List<String>>();
+			for (String[] anExpEntry: expMapEntries) {
+				if (anExpEntry.length > 0) {
+					String relWord = anExpEntry[0];
+					String[] translArr = Arrays.copyOfRange(anExpEntry, 1, anExpEntry.length);
+					List<String> transList = new ArrayList<String>();
+					Collections.addAll(transList, translArr);
+					expMap.put(relWord, transList);
+				}
+			}
+			this.expRelatedTranslationsMap = expMap;
 			return this;
 		}
 	}

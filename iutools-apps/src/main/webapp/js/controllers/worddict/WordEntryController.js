@@ -106,6 +106,7 @@ class WordEntryController extends IUToolsController {
 
 	displayWordEntry(results) {
 		var tracer = Debug.getTraceLogger('WordEntryController.displayWordEntry');
+		tracer.trace("results="+jsonStringifySafe(results));
 		var lang = results.lang;
 		var otherLang = results.otherLang;
 
@@ -141,34 +142,45 @@ class WordEntryController extends IUToolsController {
 
 
         var info = this.translationsInfo(wordEntry);
+        var infoNew = this.translationsInfo_NEW(wordEntry);
         var translations = info.translations;
 
         var disclaimer = null;
-        if (info.areRelatedTranslations) {
+        if (infoNew.areRelatedTranslations) {
             heading = heading+" (Related words only)"
         }
         var html = "<h3>"+heading+"</h3>\n";
 
-        var examples = info.examples;
+        var examples = infoNew.examples;
 
-        var totalDisplayed = 0;
-        for (var ii=0; ii < translations.length; ii++) {
-            var word = translations[ii];
-            if (word === "ALL" || word === "MISC") {
+        var totalTranslationsDisplayed = 0;
+        var totalL1WordsDisplayed = 0;
+        for (var ii=0; ii < infoNew.l1Words.length; ii++) {
+            var l1Word = infoNew.l1Words[ii];
+            var wordTranslations = infoNew.translations[l1Word];
+            if (wordTranslations == null || typeof wordTranslations == 'undefined') {
                 continue;
             }
-            if (totalDisplayed > 0) {
-                html += "; ";
+
+            if (infoNew.areRelatedTranslations) {
+                if (ii > 0) {
+                    html += "<br/>\n";
+                }
+                html += this.highlightCommonLead(l1Word, wordEntry.word)+": ";
             }
-            html += this.htmlTranslationWord(word);
-            totalDisplayed++;
+            totalL1WordsDisplayed++;
+            tracer.trace("ii="+ii+", l1Word="+l1Word+", wordTranslations="+wordTranslations);
+
+            for (var jj=0; jj < wordTranslations.length; jj++) {
+                if (jj > 0) {
+                    html += "; ";
+                }
+                html += this.htmlTranslationWord(wordTranslations[jj]);
+                totalTranslationsDisplayed++;
+            }
         }
-        if (totalDisplayed == 0) {
+        if (totalTranslationsDisplayed == 0) {
             html += "none";
-        } else {
-            // html +=
-            //     "<br/><div class='small_note'><a href='help.jsp?topic=about_dictionary' target='#'>Why are some translations bad?</a></div>";
-            //     ;
         }
         html += "<br/>\n";
 
@@ -200,6 +212,42 @@ class WordEntryController extends IUToolsController {
             };
         return info;
     }
+
+    translationsInfo_NEW(wordEntry) {
+        var tracer = Debug.getTraceLogger('WordEntryController.translationsInfo_NEW');
+        tracer.trace("wordEntry="+jsonStringifySafe(wordEntry));
+        var examples = wordEntry.examplesForOrigWordTranslation;
+        var info = {
+            areRelatedTranslations: false,
+            'translations': {
+            }
+        };
+
+
+        info.translations[wordEntry.word] = examples;
+        if (wordEntry.examplesForOrigWordTranslation != null
+            && Object.keys(wordEntry.examplesForOrigWordTranslation).length > 0) {
+            // We have some translations for the actual word
+            info.l1Words = [wordEntry.word];
+            info.translations[wordEntry.word] = wordEntry.origWordTranslations;
+            info.examples = wordEntry.examplesForOrigWordTranslation;
+        } else {
+            // We only have translations for related words
+            info.areRelatedTranslations = true;
+            info.l1Words = wordEntry.relatedWords;
+            info.examples = wordEntry.examplesForRelWordsTranslation;
+            var relWords = Object.keys(wordEntry.relatedWordTranslationsMap);
+            for (var ii=0; ii < relWords.length; ii++) {
+                var aRelWord = relWords[ii];
+                var aRelWordTransl = wordEntry.relatedWordTranslationsMap[aRelWord];
+                info['translations'][aRelWord] = aRelWordTransl;
+            }
+        }
+
+        tracer.trace("Returning info="+jsonStringifySafe(info));
+        return info;
+    }
+
 
     langName(langCode) {
         var name = langCode;
@@ -268,6 +316,8 @@ class WordEntryController extends IUToolsController {
         tracer.trace("wordEntry="+jsonStringifySafe(wordEntry));
         var html = "";
         var trInfo = this.translationsInfo(wordEntry);
+        this.translationsInfo_NEW(wordEntry);
+
         tracer.trace("trInfo="+jsonStringifySafe(trInfo));
 		var translations = trInfo.translations;
         var translation2alignments = trInfo.examples;
@@ -358,5 +408,26 @@ class WordEntryController extends IUToolsController {
 
     showSpinningWheel(message) {
         this.windowController.showSpinningWheel(".wb-body", message);
+    }
+
+    highlightCommonLead(l1Word, word) {
+        var highlighted = "";
+        // var highlighted = "<strong>";
+        var foundDifferences = false;
+        for (var ii=0; ii < l1Word.length; ii++) {
+            if (ii >= word.length || l1Word.charAt(ii) !== word.charAt(ii)) {
+                if (!foundDifferences) {
+                    // highlighted += "</strong>";
+                    highglighted += "<strong>"
+                    foundDifferences = true;
+                }
+            }
+            highlighted += l1Word.charAt(ii);
+        }
+        if (foundDifferences) {
+            highlighted += "</strong>";
+        }
+
+        return highlighted;
     }
 }

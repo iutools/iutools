@@ -180,6 +180,17 @@ public class AssertMultilingualDictEntry extends Asserter<MultilingualDictEntry>
 		return this;
 	}
 
+	public AssertMultilingualDictEntry relatedTranslationsMapsEquals(
+		Map<String, List<String>> expRelatedTranslationsMap) throws Exception {
+		Map<String, List<String>> gotTranslMap = this.entry().relatedWordTranslationsMap;
+		AssertObject.assertDeepEquals(
+			baseMessage+"\nRelated word translations map not as expected",
+			expRelatedTranslationsMap, gotTranslMap
+		);
+		return this;
+	}
+
+
 	public AssertMultilingualDictEntry langIs(String expLang) {
 		AssertString.assertStringEquals(
 			baseMessage+"\nLanguage of entry not as expected",

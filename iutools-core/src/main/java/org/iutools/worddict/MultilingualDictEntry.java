@@ -33,6 +33,7 @@ public class MultilingualDictEntry {
 
 	public List<String> origWordTranslations = new ArrayList<String>();
 	public List<String> relatedWordTranslations = new ArrayList<String>();
+	public Map<String,List<String>> relatedWordTranslationsMap = new HashMap<String,List<String>>();
 
 	private boolean _translationsNeedSorting = true;
 
@@ -131,7 +132,15 @@ public class MultilingualDictEntry {
 	}
 
 	public MultilingualDictEntry addBilingualExample(
-		String translation, String[] example, boolean forRelatedWord) throws MultilingualDictException {
+		String translation, String[] example, boolean forRelatedWord)
+		throws MultilingualDictException {
+		return addBilingualExample(translation, example, forRelatedWord, (String)null);
+	}
+
+
+	public MultilingualDictEntry addBilingualExample(
+		String translation, String[] example, boolean forRelatedWord,
+		String relWord) throws MultilingualDictException {
 		Logger tLogger = Logger.getLogger("org.iutools.worddict.MultilingualDictEntry.addBilingualExample");
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("translation=" + translation + ", forRelatedWord=" + forRelatedWord + ", example=" + String.join(", ", example));
@@ -155,6 +164,9 @@ public class MultilingualDictEntry {
 		}
 		currentExamples.add(example);
 		examplesForTranslation.put(translation, currentExamples);
+		if (relWord != null) {
+			updateRelWordTranslationsMap(relWord, translation);
+		}
 
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("upon exit, possible translations="+
@@ -166,11 +178,28 @@ public class MultilingualDictEntry {
 		return this;
 	}
 
+	private void updateRelWordTranslationsMap(String relWord, String translation) {
+		if (!relatedWordTranslationsMap.containsKey(relWord)) {
+			relatedWordTranslationsMap.put(relWord, new ArrayList<String>());
+		}
+		List<String> relTranslations = relatedWordTranslationsMap.get(relWord);
+		if (!relTranslations.contains(translation)) {
+			relTranslations.add(translation);
+		}
+	}
+
 	private void addBilingualExamples(
 		String translation, List<String[]> examples, Boolean forRelatedWord)
 		throws MultilingualDictException {
+		addBilingualExamples(translation, examples, forRelatedWord, (String)null);
+	}
+
+	private void addBilingualExamples(
+		String translation, List<String[]> examples, Boolean forRelatedWord,
+		String relWord)
+		throws MultilingualDictException {
 		for (String[] anExample: examples) {
-			addBilingualExample(translation, anExample, forRelatedWord);
+			addBilingualExample(translation, anExample, forRelatedWord, relWord);
 		}
 	}
 
@@ -255,9 +284,10 @@ public class MultilingualDictEntry {
 
 	public void addRelatedWordTranslations(MultilingualDictEntry entry) throws MultilingualDictException {
 		List<String> relatedWordTranslations = entry.possibleTranslationsIn("en");
+		String relWord = entry.word;
 		for (String translation: relatedWordTranslations) {
 			List<String[]> examplesOfUse = entry.bilingualExamplesOfUse(translation);
-			this.addBilingualExamples(translation, examplesOfUse, true);
+			this.addBilingualExamples(translation, examplesOfUse, true, relWord);
 		}
 	}
 
