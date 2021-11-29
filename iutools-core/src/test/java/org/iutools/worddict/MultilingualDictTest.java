@@ -25,6 +25,10 @@ public class MultilingualDictTest {
 				new String[] {"inuk", "inukku", "inuksui", "inuksuk"}),
 			new Case("iu-inuk-syll", "iu", "ᐃᓄᒃ", 200,
 				new String[] {"ᐃᓄᒃ", "ᐃᓄᒃᑯ", "ᐃᓄᑯᓗᒃ"}),
+			new Case("iu-single-hit", "iu", "nunavuttaarniq", 1,
+				new String[] {"nunavuttaarniq"}, 1),
+			new Case("iu-out-of-yet-valid-dict-word", "iu", "umiaqtulaaqtunga", 1,
+				new String[] {"umiaqtulaaqtunga"}, 1),
 		};
 
 		// Cases for entry4word function
@@ -269,13 +273,22 @@ public class MultilingualDictTest {
 			try {
 				String lang = (String) aCase.data[0];
 				String query = (String) aCase.data[1];
-				Integer expTotalWords = (Integer) aCase.data[2];
+				Integer expMinWords = (Integer) aCase.data[2];
 				String[] expTopMatches = (String[]) aCase.data[3];
+				Integer expMaxWords = null;
+				if (aCase.data.length > 4) {
+					expMaxWords = (Integer) aCase.data[4];
+				}
 				Pair<List<String>, Long> results2 =
-				MultilingualDict.getInstance().search(query, lang, (Integer) null);
+					MultilingualDict.getInstance().search(query, lang, (Integer) null);
 				AssertNumber.isGreaterOrEqualTo(
 					aCase.descr,
-					results2.getRight(), expTotalWords);
+					results2.getRight(), expMinWords);
+				if (expMaxWords != null) {
+					AssertNumber.isLessOrEqualTo(
+						aCase.descr,
+						results2.getRight(), expMaxWords);
+				}
 				new AssertSequence<String>(
 					results2.getLeft().toArray(new String[0]),
 					aCase.descr)
@@ -285,6 +298,7 @@ public class MultilingualDictTest {
 			}
 		};
 		new RunOnCases(cases_search, runner)
+//			.onlyCaseNums(4)
 			.run();
 	}
 

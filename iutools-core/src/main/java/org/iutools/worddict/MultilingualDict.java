@@ -437,21 +437,37 @@ public class MultilingualDict {
 		}
 
 		hits = sortHits(hits);
+		adjustPartialWordInHits(hits, partialWord, lang);
+
+		totalHits = Math.max(totalHits, hits.size());
+
+		return Pair.of(hits, totalHits);
+	}
+
+	/** Ensure that:
+	 * - partialWord is in the list of hits, IF it is a valid IU word
+	 * - comes first IF it is in the list*/
+	private void adjustPartialWordInHits(List<String> hits, String partialWord, String lang) throws MultilingualDictException, TranslationMemoryException {
+		if (!hits.contains(partialWord)) {
+			// The top list of hits did not contain an exact match.
+			// Check to see if the exact match COULD have been found if
+			// we had gone further, OR if the word analyzes as an IU word
+			try {
+				if (wordExists(partialWord, lang) ||
+					(lang.equals("iu") &&  new MorphologicalAnalyzer_R2L().isDecomposable(partialWord))) {
+					hits.add(0, partialWord);
+				}
+			} catch (MorphologicalAnalyzerException e) {
+				throw new MultilingualDictException(e);
+			}
+		}
 
 		if (hits.contains(partialWord)) {
 			// If we found an exact match, make sure it comes first.
 			hits.remove(partialWord);
 			hits.add(0, partialWord);
-		} else {
-			// The top list of hits did not contain an exact match.
-			// Check to see if the exact match COULD have been found if
-			// we had gone further
-			if (wordExists(partialWord, lang)) {
-				hits.add(0, partialWord);
-			}
 		}
 
-		return Pair.of(hits, totalHits);
 	}
 
 	private List<String> sortHits(List<String> hits) {

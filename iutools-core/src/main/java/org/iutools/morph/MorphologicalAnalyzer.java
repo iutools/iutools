@@ -120,13 +120,27 @@ public abstract class MorphologicalAnalyzer implements AutoCloseable {
 		}
 	}
 
-	  public Decomposition[] decomposeWord(String word)
-	  throws TimeoutException, MorphologicalAnalyzerException {
-    	 return decomposeWord(word, (Boolean)null);
-     }
+	public boolean isDecomposable(String word) throws MorphologicalAnalyzerException{
+    	boolean answer = false;
+    	try {
+    		Decomposition[] decomps = decomposeWord(word);
+    		if (decomps != null && decomps.length > 0) {
+    			answer = true;
+			}
+		} catch (TimeoutException e) {
+			// If analysis times out, consider that the word is NOT decomposable
+		}
+
+		return answer;
+	}
+
+	public Decomposition[] decomposeWord(String word)
+	   throws TimeoutException, MorphologicalAnalyzerException {
+	   return decomposeWord(word, (Boolean)null);
+	}
 
 	public Decomposition[] decomposeWord(String word, Boolean lenient)
-	throws TimeoutException, MorphologicalAnalyzerException {
+      throws TimeoutException, MorphologicalAnalyzerException {
 		Decomposition[] decompsSimple = null;
 		if (lenient == null) {
 			lenient = true;

@@ -27,7 +27,7 @@ public class WPDictBuilder {
 	}
 
 	public void run(String[] args) throws WPException {
-		String enWord = parseEnWord(
+		String enWord = parseWikiDataResponse(
 			"<api success=\"1\">\n" +
 			"<entities>\n" +
 			"<entity type=\"item\" id=\"Q74560\">\n" +
@@ -46,20 +46,20 @@ public class WPDictBuilder {
 //		System.out.println("xml of en wikidata: "+enWord);
 	}
 
-	private String parseEnWord(String xml) throws WPException {
-
-		try {
-			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			DocumentBuilder docBuilder = dbf.newDocumentBuilder();
-			Document doc = docBuilder.parse(new InputSource(new StringReader(xml)));
-			Element apiNode = doc.getDocumentElement();
-
-			return "BLAH";
-		} catch (SAXException | IOException | ParserConfigurationException e) {
-			throw new WPException(e);
-		}
-
-	}
+//	private String parseEnWord(String xml) throws WPException {
+//
+//		try {
+//			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+//			DocumentBuilder docBuilder = dbf.newDocumentBuilder();
+//			Document doc = docBuilder.parse(new InputSource(new StringReader(xml)));
+//			Element apiNode = doc.getDocumentElement();
+//
+//			return "BLAH";
+//		} catch (SAXException | IOException | ParserConfigurationException e) {
+//			throw new WPException(e);
+//		}
+//
+//	}
 
 	private String findEnWord(String iuWord) throws WPException {
 		try {
@@ -91,4 +91,17 @@ public class WPDictBuilder {
 		}
 	}
 
+	public String parseWikiDataResponse(String xml) throws WPException {
+		try {
+			String translation = "";
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			DocumentBuilder docBuilder = dbf.newDocumentBuilder();
+			Document doc = docBuilder.parse(new InputSource(new StringReader(xml)));
+			Element apiNode = doc.getDocumentElement();
+
+			return translation;
+		} catch (SAXException | IOException | ParserConfigurationException e) {
+			throw new WPException(e);
+		}
+	}
 }
