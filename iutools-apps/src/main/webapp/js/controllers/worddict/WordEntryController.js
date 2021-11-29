@@ -141,7 +141,7 @@ class WordEntryController extends IUToolsController {
         var heading = this.langName(otherLang)+" Translations"
 
 
-        var infoNew = this.translationsInfo_NEW(wordEntry);
+        var infoNew = this.translationsInfo(wordEntry);
         if (infoNew.areRelatedTranslations) {
             heading = heading+" (Related words only)"
         }
@@ -188,7 +188,7 @@ class WordEntryController extends IUToolsController {
         return html;
     }
 
-    translationsInfo_NEW(wordEntry) {
+    translationsInfo(wordEntry) {
         var tracer = Debug.getTraceLogger('WordEntryController.translationsInfo_NEW');
         tracer.trace("wordEntry="+jsonStringifySafe(wordEntry));
         var examples = wordEntry.examplesForOrigWordTranslation;
@@ -300,7 +300,7 @@ class WordEntryController extends IUToolsController {
         var tracer = Debug.getTraceLogger('WordEntryController.htmlAlignmentsByTranslation');
         tracer.trace("wordEntry="+jsonStringifySafe(wordEntry));
         var html = "";
-        var trInfoNew = this.translationsInfo_NEW(wordEntry);
+        var trInfoNew = this.translationsInfo(wordEntry);
 
         tracer.trace("trInfoNew="+jsonStringifySafe(trInfoNew));
         var allTranslations = trInfoNew.allTranslations;
