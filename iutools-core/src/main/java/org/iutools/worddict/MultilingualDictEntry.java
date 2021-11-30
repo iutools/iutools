@@ -374,15 +374,17 @@ public class MultilingualDictEntry {
 			// Input word is en and its translations are iu
 			for (List<String> translations:
 				new List[] {origWordTranslations, relatedWordTranslations}) {
-				for (int ii=0; ii < translations.size(); ii++) {
-					try {
-						translations.set(ii,
-							TransCoder.ensureScript(script, translations.get(ii))
-							);
-					} catch (TransCoderException e) {
-						throw new MultilingualDictException(e);
-					}
-				}
+				CollectionTranscoder.transcodeList(script, translations);
+//				for (int ii=0; ii < translations.size(); ii++) {
+//					try {
+//
+//						translations.set(ii,
+//							TransCoder.ensureScript(script, translations.get(ii))
+//							);
+//					} catch (TransCoderException e) {
+//						throw new MultilingualDictException(e);
+//					}
+//				}
 			}
 		} else {
 			// Input word is iu and its translations are en
@@ -398,13 +400,15 @@ public class MultilingualDictEntry {
 
 	private void ensureScript_relatedwords(TransCoder.Script script) throws MultilingualDictException {
 
-		try {
-			for (int ii = 0; ii < relatedWords.length; ii++) {
-				relatedWords[ii] = TransCoder.ensureScript(script, relatedWords[ii]);
-			}
-		} catch (TransCoderException e) {
-			throw new MultilingualDictException(e);
-		}
+//		try {
+//			for (int ii = 0; ii < relatedWords.length; ii++) {
+//				relatedWords[ii] = TransCoder.ensureScript(script, relatedWords[ii]);
+//			}
+//		} catch (TransCoderException e) {
+//			throw new MultilingualDictException(e);
+//		}
+
+		CollectionTranscoder.transcodeArray(script, relatedWords);
 		return;
 	}
 

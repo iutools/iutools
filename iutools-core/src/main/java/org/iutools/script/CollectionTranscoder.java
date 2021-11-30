@@ -1,8 +1,10 @@
 package org.iutools.script;
 
 import ca.nrc.datastructure.Cloner;
+import org.iutools.worddict.MultilingualDictException;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -57,6 +59,32 @@ public class CollectionTranscoder {
 				transcValue.add(TransCoder.ensureScript(script, elt));
 			}
 			mapToTranscode.put(key, (V)transcValue);
+		}
+	}
+
+	public static void transcodeList(
+		TransCoder.Script script, List<String> coll) throws MultilingualDictException {
+		for (int ii=0; ii < coll.size(); ii++) {
+			String transcoded = null;
+			try {
+				transcoded = TransCoder.ensureScript(script, coll.get(ii));
+			} catch (TransCoderException e) {
+				throw new MultilingualDictException(e);
+			}
+			coll.set(ii, transcoded);
+		}
+	}
+
+	public static void transcodeArray(
+		TransCoder.Script script, String[] arr) throws MultilingualDictException {
+		for (int ii=0; ii < arr.length; ii++) {
+			String transcoded = null;
+			try {
+				transcoded = TransCoder.ensureScript(script, arr[ii]);
+			} catch (TransCoderException e) {
+				throw new MultilingualDictException(e);
+			}
+			arr[ii] = transcoded;
 		}
 	}
 }
