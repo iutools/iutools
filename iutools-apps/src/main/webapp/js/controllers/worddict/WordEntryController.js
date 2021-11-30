@@ -141,24 +141,25 @@ class WordEntryController extends IUToolsController {
         var heading = this.langName(otherLang)+" Translations"
 
 
-        var infoNew = this.translationsInfo(wordEntry);
-        if (infoNew.areRelatedTranslations) {
+        var info = this.translationsInfo(wordEntry);
+        tracer.trace("info.areRelatedTranslations="+info.areRelatedTranslations);
+        if (info.areRelatedTranslations) {
             heading = heading+" (Related words only)"
         }
         var html = "<h3>"+heading+"</h3>\n";
 
-        var examples = infoNew.examples;
+        var examples = info.examples;
 
         var totalTranslationsDisplayed = 0;
         var totalL1WordsDisplayed = 0;
-        for (var ii=0; ii < infoNew.l1Words.length; ii++) {
-            var l1Word = infoNew.l1Words[ii];
-            var wordTranslations = infoNew.translation4word[l1Word];
+        for (var ii=0; ii < info.l1Words.length; ii++) {
+            var l1Word = info.l1Words[ii];
+            var wordTranslations = info.translation4word[l1Word];
             if (wordTranslations == null || typeof wordTranslations == 'undefined') {
                 continue;
             }
 
-            if (infoNew.areRelatedTranslations) {
+            if (info.areRelatedTranslations) {
                 if (ii > 0) {
                     html += "<br/>\n";
                 }
@@ -189,7 +190,7 @@ class WordEntryController extends IUToolsController {
     }
 
     translationsInfo(wordEntry) {
-        var tracer = Debug.getTraceLogger('WordEntryController.translationsInfo_NEW');
+        var tracer = Debug.getTraceLogger('WordEntryController.translationsInfo');
         tracer.trace("wordEntry="+jsonStringifySafe(wordEntry));
         var examples = wordEntry.examplesForOrigWordTranslation;
         var info = {

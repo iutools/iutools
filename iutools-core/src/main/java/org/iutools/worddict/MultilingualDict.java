@@ -122,7 +122,7 @@ public class MultilingualDict {
 	private MultilingualDictEntry entry4word_IU(
 		String word, Boolean fullRelatedWordEntries, Field... fieldsToPopulate) throws MultilingualDictException {
 		MultilingualDictEntry entry = new MultilingualDictEntry(word);
-		Script script = TransCoder.textScript(word);
+		Script inputScript = TransCoder.textScript(word);
 		try {
 			WordInfo winfo = corpus.info4word(entry.wordRoman);
 			if (winfo != null) {
@@ -135,7 +135,7 @@ public class MultilingualDict {
 			}
 			if (ArrayUtils.contains(fieldsToPopulate, Field.BILINGUAL_EXAMPLES) ||
 				ArrayUtils.contains(fieldsToPopulate, Field.TRANSLATIONS)) {
-				computeOrigWordTranslationsAndExamples(entry, script);
+				computeOrigWordTranslationsAndExamples(entry, inputScript);
 			}
 			if (ArrayUtils.contains(fieldsToPopulate, Field.RELATED_WORDS)) {
 				computeRelatedWords(entry, fullRelatedWordEntries);
@@ -146,7 +146,7 @@ public class MultilingualDict {
 
 		entry.sortTranslations();
 
-		entry.ensureIUScript(TransCoder.textScript(word));
+		entry.ensureScript(inputScript);
 
 		return entry;
 	}

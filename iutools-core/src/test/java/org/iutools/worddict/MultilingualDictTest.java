@@ -63,7 +63,15 @@ public class MultilingualDictTest {
 				.setMinExamples(3)
 				.setRelatedWords(
 					"ᐊᒻᒨᒪᔪᕐᓂᐊᕐᑏᑦ", "ᐊᒻᒨᒪᔪᖅᑕᕐᓂᕐᒧᑦ", "ᐊᒻᒨᒪᔪᖅᑕᖅᑏᑦ", "ᐊᒻᒨᒪᔪᖅᑕᖅᑐᑎᒃ",
-					"ᐊᒻᒨᒪᔪᕐᓂᐊᕐᓂᕐᒧᑦ"),
+					"ᐊᒻᒨᒪᔪᕐᓂᐊᕐᓂᕐᒧᑦ")
+				.setExpRelatedTranslationsMap(
+					new String[] {"ᐊᒻᒨᒪᔪᕐᓂᐊᕐᑏᑦ", "divers"},
+					new String[] {"ᐊᒻᒨᒪᔪᖅᑕᕐᓂᕐᒧᑦ", "clam", "clam diggers",
+						"clam digging", "clam diggers ... commercial clam digging"},
+					new String[] {"ᐊᒻᒨᒪᔪᖅᑕᖅᑏᑦ", "clam divers",
+						"divers ... valid ... diving"},
+					new String[] {"ᐊᒻᒨᒪᔪᖅᑕᖅᑐᑎᒃ", "clam divers",
+						"classifications ... divers ... clam divers"}),
 
 			// This is an out of vocabulary word
 			new MultilingualDictCase("iu-inuksssuk", "inuksssuk")
@@ -206,6 +214,7 @@ public class MultilingualDictTest {
 		Consumer<Case> runner = (uncastCase) -> {
 			try {
 				MultilingualDictCase aCase = (MultilingualDictCase)uncastCase;
+				System.out.println("--** test__entry4word__VariousCases: aCase.word="+aCase.word);
 				MultilingualDictEntry entry =
 				MultilingualDict.getInstance()
 					.entry4word(aCase.word, aCase.l1);
@@ -256,7 +265,7 @@ public class MultilingualDictTest {
 		};
 
 		new RunOnCases(cases_entry4word, runner)
-//			.onlyCaseNums(1)
+//			.onlyCaseNums(2)
 //			.onlyCasesWithDescr("iu-kiugavinnga")
 			.run();
 	}

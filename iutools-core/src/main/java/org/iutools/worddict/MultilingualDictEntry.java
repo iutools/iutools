@@ -1,5 +1,6 @@
 package org.iutools.worddict;
 
+import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
@@ -7,6 +8,7 @@ import org.iutools.linguisticdata.LinguisticData;
 import org.iutools.linguisticdata.Morpheme;
 import org.iutools.linguisticdata.MorphemeException;
 import org.iutools.linguisticdata.MorphemeHumanReadableDescr;
+import org.iutools.script.CollectionTranscoder;
 import org.iutools.script.TransCoder;
 import org.iutools.script.TransCoderException;
 
@@ -221,30 +223,6 @@ public class MultilingualDictEntry {
 		return examples;
 	}
 
-	public void ensureIUScript(TransCoder.Script script) throws MultilingualDictException {
-		try {
-			for (int ii = 0; ii < relatedWords.length; ii++) {
-				relatedWords[ii] = TransCoder.ensureScript(script, relatedWords[ii]);
-			}
-
-			for (String translation : this.examplesForOrigWordTranslation.keySet()) {
-				List<String[]> examples = this.examplesForOrigWordTranslation.get(translation);
-				for (int ii = 0; ii < examples.size(); ii++) {
-					String[] example_ii = examples.get(ii);
-					example_ii[0] = TransCoder.ensureScript(script, example_ii[0]);
-					if (script == TransCoder.Script.SYLLABIC) {
-						// Restore the <strong> tags to Roman
-						example_ii[0] = example_ii[0].replaceAll("ᔅᑦᕐoᖕ>", "strong>");
-					}
-					examples.set(ii, example_ii);
-				}
-			}
-		} catch (TransCoderException e) {
-			throw new MultilingualDictException(e);
-		}
-		return;
-	}
-
 	public List<String> possibleTranslationsIn(String lang) throws MultilingualDictException {
 		return  possibleTranslationsIn(lang, (Boolean)null);
 	}
@@ -369,10 +347,15 @@ public class MultilingualDictEntry {
 
 	public void ensureScript(TransCoder.Script script)
 		throws MultilingualDictException{
-		ensureScript_word(script);
+		Logger logger = Logger.getLogger("org.iutools.worddict.MultilingualDictEntry.ensureScript");
+		logger.trace("word="+word+", script="+script);
 		ensureScript_translations(script);
 		ensureScript_relatedwords(script);
 		ensureScript_BilingualExamples(script);
+		ensureScript_word(script);
+		if (logger.isTraceEnabled()) {
+			logger.trace("upon exit, this="+ PrettyPrinter.print(this));
+		}
 	}
 
 	private void ensureScript_word(TransCoder.Script script) throws MultilingualDictException {
@@ -388,6 +371,7 @@ public class MultilingualDictEntry {
 
 	private void ensureScript_translations(TransCoder.Script script) throws MultilingualDictException {
 		if (otherLang().equals("iu")) {
+			// Input word is en and its translations are iu
 			for (List<String> translations:
 				new List[] {origWordTranslations, relatedWordTranslations}) {
 				for (int ii=0; ii < translations.size(); ii++) {
@@ -399,6 +383,15 @@ public class MultilingualDictEntry {
 						throw new MultilingualDictException(e);
 					}
 				}
+			}
+		} else {
+			// Input word is iu and its translations are en
+			try {
+				// Transcode keys of the map that provides en translations for each
+				// iu related word.
+				CollectionTranscoder.transcodeKeys(script, this.relatedWordTranslationsMap);
+			} catch (TransCoderException e) {
+				throw new MultilingualDictException(e);
 			}
 		}
 	}
