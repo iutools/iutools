@@ -1,5 +1,8 @@
 package org.iutools.worddict.wikipedia;
 
+import ca.nrc.json.PrettyPrinter;
+import org.iutools.script.TransCoder;
+import org.iutools.worddict.GlossaryEntry;
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -9,18 +12,20 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class WPDictBuilder {
+
+	FileWriter dictFileWriter = null;
+
+	Set<String> iuAlreadySeen = new HashSet<String>();
 
 	public static void main(String[] args) throws Exception {
 		new WPDictBuilder().run(args);
@@ -30,72 +35,118 @@ public class WPDictBuilder {
 
 	}
 
-	public void run(String[] args) throws WPException {
-		Map<String,String> translations = parseWikiDataResponse(
-			"<api success=\"1\">\n" +
-			"<entities>\n" +
-			"<entity type=\"item\" id=\"Q74560\">\n" +
-			"<labels>\n" +
-			"<label language=\"en\" value=\"spermatozoon\"/>\n" +
-			"</labels>\n" +
-			"</entity>\n" +
-			"</entities>\n" +
-			"</api>");
+	public void run(String[] args) throws WPException, IOException {
+		if (args.length != 2) {
+			usage("Wrong number of arguments");
+		}
+		Path wpDumpFile = Paths.get(args[0]);
+		Path wpDictFile = Paths.get(args[1]);
+		dictFileWriter = new FileWriter(wpDictFile.toFile());
+		printHeaders();
+		
+		List<String> iuWords = parseIUWikipediaDump(wpDumpFile);
+		int totalWords = 0;
+		for (String iuWord: iuWords) {
+			if (TransCoder.textScript(iuWord) != TransCoder.Script.SYLLABIC) {
+				continue;
+			}
+			if (iuWord.matches("^\\d*$")) {
+				continue;
+			}
+			if (iuAlreadySeen.contains(iuWord)) {
+				continue;
+			}
+			String enWord = findEnWord(iuWord);
+			if (enWord == null) {
+				continue;
+			}
+			printEntry(iuWord, enWord);
+			totalWords++;
+		}
 
+		echo("Total words = "+totalWords);
 
+		dictFileWriter.close();
 
-//		String iuWord = args[0];
-//		String enWord = findEnWord(iuWord);
-//		System.out.println("iuWord: "+iuWord);
-//		System.out.println("xml of en wikidata: "+enWord);
+		return;
 	}
 
-//	private String parseEnWord(String xml) throws WPException {
-//
-//		try {
-//			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-//			DocumentBuilder docBuilder = dbf.newDocumentBuilder();
-//			Document doc = docBuilder.parse(new InputSource(new StringReader(xml)));
-//			Element apiNode = doc.getDocumentElement();
-//
-//			return "BLAH";
-//		} catch (SAXException | IOException | ParserConfigurationException e) {
-//			throw new WPException(e);
-//		}
-//
-//	}
-
-	private String findEnWord(String iuWord) throws WPException {
+	private void printHeaders() throws WPException {
 		try {
-			iuWord = URLEncoder.encode(iuWord, String.valueOf(StandardCharsets.UTF_8));
-			URL url = new URL(
-				"https://www.wikidata.org/w/api.php?action=wbgetentities&sites=iuwiki&titles="+
-				iuWord+"&languages=en&props=labels&format=xml");
-			return retrieveURL(url);
-		} catch (MalformedURLException | UnsupportedEncodingException e) {
+			dictFileWriter.write(
+				"bodyEndMarker=BLANK_LINE\n"+
+				"class=org.iutools.worddict.GlossaryEntry\n\n"
+			);
+		} catch (IOException e) {
 			throw new WPException(e);
 		}
 	}
 
-	public String retrieveURL(URL url) throws WPException {
+	private void printEntry(String iuWord, String enWord) throws WPException, IOException {
+		String[] iuTokens = iuWord.split(":");
+		String[] enTokens = enWord.split(":");
+		if (iuTokens.length != enTokens.length) {
+			throw new WPException(
+				"The IU and EN terms did not contain the same number of tokens\n"+
+				"iu="+iuTokens.length+", en="+enTokens.length
+				);
+		}
+		for (int ii=0; ii < iuTokens.length; ii++) {
+			echo(iuTokens[ii]+":"+enTokens[ii]);
+			GlossaryEntry entry = new GlossaryEntry()
+				.setTermInLang("en", enTokens[ii])
+				.setTermInLang("iu_syll", TransCoder.ensureSyllabic(iuTokens[ii]))
+				.setTermInLang("iu_roman", TransCoder.ensureRoman(iuTokens[ii]))
+				;
+
+			String jsonEntry = PrettyPrinter.print(entry);
+			dictFileWriter.write(jsonEntry+"\n\n");
+			dictFileWriter.flush();
+		}
+		return;
+	}
+
+	private void echo(String mess) {
+		System.out.println(mess);
+	}
+
+	private void usage(String mess) {
+		if (mess != null) {
+			System.out.println("** ERROR: "+mess+"\n");
+		}
+		System.out.println(
+			"Usage WPDictBuilder wp-dump-file dict-json-file"
+		);
+		System.exit(1);
+
+	}
+
+	private String findEnWord(String iuWord) throws WPException {
 		try {
-			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			DocumentBuilder docBuilder = dbf.newDocumentBuilder();
+			String iuWordEncoded = URLEncoder.encode(iuWord, String.valueOf(StandardCharsets.UTF_8));
+			URL url = new URL(
+				"https://www.wikidata.org/w/api.php?action=wbgetentities&sites=iuwiki&titles="+
+				iuWordEncoded+"&languages=en&props=labels&format=xml");
+
 
 			InputStream stream = url.openStream();
-			Document doc = docBuilder.parse(stream);
-			Element apiElement = doc.getDocumentElement();
-			NodeList labelsNodes = doc.getElementsByTagName("labels");
+			BufferedReader reader = new BufferedReader(
+				new InputStreamReader(stream, StandardCharsets.UTF_8));
+			Map<String,String> translations = parseWikiDataResponse(reader);
 
-			Element label = (Element)doc.getElementsByTagName("labels").item(0);
-			String enWord = label.getAttribute("value");
-			return enWord;
-		} catch (ParserConfigurationException | IOException | SAXException e) {
+			return translations.get("en");
+		} catch (IOException e) {
 			throw new WPException(e);
 		}
 	}
 
 	public Map<String,String> parseWikiDataResponse(String xml) throws WPException {
+		Reader reader = new StringReader(xml);
+		return parseWikiDataResponse(reader);
+	}
+
+
+	public Map<String,String> parseWikiDataResponse(Reader xmlReader) throws WPException {
 		try {
 			Map<String,String> translations = new HashMap<String,String>();
 
@@ -108,7 +159,7 @@ public class WPDictBuilder {
 
 			// parse XML string
 			DocumentBuilder db = dbf.newDocumentBuilder();
-			Document doc = db.parse(new InputSource(new StringReader(xml)));
+			Document doc = db.parse(new InputSource(xmlReader));
 
 			// optional, but recommended
 			// http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
@@ -125,7 +176,6 @@ public class WPDictBuilder {
 
 					String lang = element.getAttribute("language");
 					String value = element.getAttribute("value");
-					System.out.println("lang=" + lang + ", value=" + value);
 					translations.put(lang, value);
 				}
 			}
@@ -139,6 +189,18 @@ public class WPDictBuilder {
 	public List<String> parseIUWikipediaDump(String xmlDump) throws WPException {
 		BufferedReader reader = new BufferedReader(new StringReader(xmlDump));
 		return parseIUWikipediaDump(reader);
+	}
+
+	public List<String> parseIUWikipediaDump(Path xmlDumpFile) throws WPException {
+
+		BufferedReader reader = null;
+		try {
+			FileReader freader = new FileReader(xmlDumpFile.toFile());
+			reader = new BufferedReader(freader);
+			return parseIUWikipediaDump(reader);
+		} catch (FileNotFoundException e) {
+			throw new WPException(e);
+		}
 	}
 
 	private List<String> parseIUWikipediaDump(BufferedReader reader) throws WPException {
