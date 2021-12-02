@@ -58,17 +58,21 @@ public class TMEvaluator {
 			List<Alignment_ES> algs_bothSides_strict = alignments[0];
 			List<Alignment_ES> algs_bothSides_lenient = alignments[1];
 			List<Alignment_ES> algs_iuside_only = alignments[2];
-			if (!algs_bothSides_strict.isEmpty()) {
-				results.totalENPresent_Orig_Strict++;
-			}
-			if (!algs_bothSides_strict.isEmpty() ||
-				 !algs_bothSides_lenient.isEmpty()) {
-				results.totalENPresent_Orig_Lenient++;
-			}
 			if (!algs_bothSides_strict.isEmpty() ||
 				!algs_bothSides_lenient.isEmpty() ||
 				!algs_iuside_only.isEmpty()) {
-				results.totalIUPresentOrig++;
+				userIO.echo("IU term was present");
+				results.totalIUPresent_Orig++;
+			}
+
+			if (!algs_bothSides_strict.isEmpty()) {
+				results.totalENPresent_Orig_Strict++;
+				userIO.echo("EN term was present in the STRICT sense");
+			}
+			if (!algs_bothSides_strict.isEmpty() ||
+				 !algs_bothSides_lenient.isEmpty()) {
+				userIO.echo("EN term was present in the LENIENT sense");
+				results.totalENPresent_Orig_Lenient++;
 			}
 		} finally {
 			userIO.echo(-1);
@@ -266,10 +270,10 @@ public class TMEvaluator {
 			userIO.echo("IU term");
 			{
 				userIO.echo(1);
-				userIO.echo("found="+ results.totalIUPresentOrig+"; absent="+results.totalIUAbsentOrig());
+				userIO.echo("found="+ results.totalIUPresent_Orig +"; absent="+results.totalIUAbsentOrig());
 				userIO.echo(-1);
 			}
-			userIO.echo("EN translation (only for the "+results.totalIUPresentOrig+" IU terms that appear in TM) ");
+			userIO.echo("EN translation (only for the "+results.totalIUPresent_Orig +" IU terms that appear in TM) ");
 			{
 				userIO.echo(1);
 				userIO.echo(

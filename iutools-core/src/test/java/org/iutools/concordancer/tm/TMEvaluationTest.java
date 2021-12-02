@@ -17,9 +17,9 @@ public class TMEvaluationTest {
 				.evaluate(Paths.get(glossaryPath), firstN);
 		new AssertEvaluationResults(results)
 			.totalGlossaryEntries(firstN)
-			.totalENPresent_Orig_Strict(5)
-			.totalENPresent_Orig_Lenient(7)
-			.totalOnlyIUPresent_Orig(297)
+			.totaIUPresent_Orig(7)
+			.totalENPresent_Orig_Strict(2)
+			.totalENPresent_Orig_Lenient(5)
 			;
 	}
 
@@ -28,15 +28,13 @@ public class TMEvaluationTest {
 		String glossaryPath = IUConfig.getIUDataPath("data/glossaries/wpGlossary.json");
 		Integer firstN = null;
 		EvaluationResults results =
-		new TMEvaluator()
-		.evaluate(Paths.get(glossaryPath), firstN);
+			new TMEvaluator()
+				.evaluate(Paths.get(glossaryPath), firstN);
 		new AssertEvaluationResults(results)
-		.totalGlossaryEntries(firstN)
-		.totalENPresent_Orig_Strict(5)
-		.totalENPresent_Orig_Lenient(7)
-		.totalOnlyIUPresent_Orig(297)
-//
-//			.
+			.totalGlossaryEntries(556)
+			.totaIUPresent_Orig(190)
+			.totalENPresent_Orig_Strict(56)
+			.totalENPresent_Orig_Lenient(105)
 		;
 	}
 

@@ -21,6 +21,14 @@ public class AssertEvaluationResults extends Asserter<EvaluationResults> {
 		return this;
 	}
 
+	public AssertEvaluationResults totaIUPresent_Orig(int expTotal) {
+		Assertions.assertEquals(
+			expTotal, results().totalIUPresent_Orig,
+			baseMessage+"\nWrong number of IU terms that were found in the hansard");
+		return this;
+	}
+
+
 	public AssertEvaluationResults totalENPresent_Orig_Strict(int expTotal) {
 		Assertions.assertEquals(
 			expTotal, results().totalENPresent_Orig_Strict,
