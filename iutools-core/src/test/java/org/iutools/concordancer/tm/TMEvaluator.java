@@ -58,16 +58,16 @@ public class TMEvaluator {
 				analyzeAlignments(iuTerm_syll, enTerm);
 
 			if (algnSummary.iuTermPresent) {
-				userIO.echo("IU term was present");
+				userIO.echo("IU term was present in the STRICT sense");
 				results.totalIUPresent_Orig++;
 			}
 			if (algnSummary.enTranslPresent_strict) {
-				results.totalENPresent_Orig_Strict++;
+				results.totalENPresent_Strict++;
 				userIO.echo("EN translation was PRESENT in the STRICT sense");
 			}
 			if (algnSummary.enTranslPresent_lenient) {
 				userIO.echo("EN translation was PRESENT in the LENIENT sense");
-				results.totalENPresent_Orig_Lenient++;
+				results.totalENPresent_Lenient++;
 			}
 
 			if (algnSummary.enTranslSpotted_strict) {
@@ -90,9 +90,6 @@ public class TMEvaluator {
 			iuTerm_syll = iuTerm_syll.toLowerCase();
 			enTerm = enTerm.toLowerCase();
 			Iterator<Alignment_ES> algsIter = tm.searchIter("iu", iuTerm_syll, "en");
-			List<Alignment_ES> iuOnly = new ArrayList<Alignment_ES>();
-			List<Alignment_ES> iuAndEn_strict = new ArrayList<Alignment_ES>();
-			List<Alignment_ES> iuAndEn_lenient = new ArrayList<Alignment_ES>();
 			int totalAlignments = 0;
 			while (algsIter.hasNext() && totalAlignments < MAX_ALIGNMENTS) {
 				boolean attemptSpotting = false;
@@ -103,13 +100,9 @@ public class TMEvaluator {
 					if (alignmentContains(algn, "en", enTerm)) {
 						analysis.enTranslPresent_strict = true;
 						attemptSpotting = true;
-						iuAndEn_strict.add(algn);
 					} else if (alignmentContains(algn, "en", enTerm, true)){
 						attemptSpotting = true;
 						analysis.enTranslPresent_lenient = true;
-						iuAndEn_lenient.add(algn);
-					} else {
-						iuOnly.add(algn);
 					}
 					if (attemptSpotting) {
 						Pair<Boolean,Boolean> spottingStatus =
@@ -141,9 +134,6 @@ public class TMEvaluator {
 				}
 			}
 
-			List<Alignment_ES>[] results = new List[] {
-				iuAndEn_strict, iuAndEn_lenient, iuOnly
-			};
 			return analysis;
 		} catch (TranslationMemoryException e) {
 			throw new TranslationMemoryException(e);
@@ -240,10 +230,9 @@ public class TMEvaluator {
 		if (lenient == null) {
 			lenient = false;
 		}
-		if (!findWhat.matches("^[a-zA-Z\\-\\s'’]*$")) {
-			throw new TranslationMemoryException(
-				"Text to find can only contain following types of character: a-z, A-Z, hyphen, single-quote or space\n"+
-				"Text was: '"+findWhat+"'");
+		if (lenient) {
+			findWhat = removeRegexpChars(findWhat);
+			text = removeRegexpChars(text);
 		}
 		String found = null;
 		if (lenient) {
@@ -253,6 +242,11 @@ public class TMEvaluator {
 		}
 
 		return found;
+	}
+
+	private String removeRegexpChars(String text) {
+		text = text.replaceAll("[^a-zA-Z\\-\\s\\d]+", "");
+		return text;
 	}
 
 	private String findText_Lenient(String what, String inText) {
@@ -342,13 +336,20 @@ public class TMEvaluator {
 			{
 				userIO.echo(1);
 				userIO.echo(
-					"FOUND: strict="+results.totalENPresent_Orig_Strict+"; "+
-					"lenient="+results.totalENPresent_Orig_Lenient);
+					"FOUND: strict="+results.totalENPresent_Strict +"; "+
+					"lenient="+results.totalENPresent_Lenient);
 				userIO.echo(
 					"ABSENT: strict="+results.totalENAbsent_Orig_Strict()+"; "+
 					"lenient="+results.totalENAbsent_Orig_Lenient());
 				userIO.echo(-1);
 			}
+			userIO.echo(-1);
+		}
+		userIO.echo("Correct spottings of the EN translation");
+		{
+			userIO.echo(1);
+			userIO.echo("Absolute #: strict="+results.totalENSpotted_Strict+"; lenient="+results.totalENSpotted_Lenient);
+			userIO.echo("rates: strict="+results.rateENSpotted_Strict()+"; lenient="+results.rateENSpotted_Lenient());
 			userIO.echo(-1);
 		}
 	}

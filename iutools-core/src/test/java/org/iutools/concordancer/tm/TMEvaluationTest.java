@@ -18,9 +18,13 @@ public class TMEvaluationTest {
 		new AssertEvaluationResults(results)
 			.totalGlossaryEntries(firstN)
 			.totaIUPresent_Orig(7)
-			.totalENPresent_Orig_Strict(2)
-			.totalENPresent_Orig_Lenient(5)
-			;
+			.totalENPresent_Strict(2)
+			.totalENPresent_Lenient(5)
+			.totalENSpotted_Strict(2)
+			.totalENSpotted_Lenient(2)
+			.rateENSpotted_Strict(1.0)
+			.rateENSpotted_Lenient(0.4)
+		;
 	}
 
 	@Test
@@ -33,8 +37,12 @@ public class TMEvaluationTest {
 		new AssertEvaluationResults(results)
 			.totalGlossaryEntries(556)
 			.totaIUPresent_Orig(190)
-			.totalENPresent_Orig_Strict(56)
-			.totalENPresent_Orig_Lenient(105)
+			.totalENPresent_Strict(55)
+			.totalENPresent_Lenient(104)
+			.totalENSpotted_Strict(48)
+			.totalENSpotted_Lenient(69)
+			.rateENSpotted_Strict(0.872)
+			.rateENSpotted_Lenient(0.663)
 		;
 	}
 

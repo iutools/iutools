@@ -21,6 +21,9 @@ public class TMEvaluatorTest {
 			new Case("singleword-lenient-notfound", "greetings", true, "hello world", null),
 			new Case("multiword-lenient-found", "hello worldss", true, "i say hello world", "hello world"),
 			new Case("multiword-lenient-notfound", "greetings world", true, "hello world", null),
+			new Case("lenient-contains-special-chars", "Hello [world]!", true, "hello world", "hello world"),
+
+
 		};
 		Consumer<Case> runner = (aCase) -> {
 			String toFind = (String)aCase.data[0];
