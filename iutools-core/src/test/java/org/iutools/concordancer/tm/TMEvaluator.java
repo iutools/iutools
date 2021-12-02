@@ -3,6 +3,7 @@ import ca.nrc.data.file.ObjectStreamReader;
 import ca.nrc.ui.commandline.UserIO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.concordancer.Alignment_ES;
 import org.iutools.worddict.EvaluationResults;
 import org.iutools.worddict.GlossaryEntry;
@@ -53,34 +54,39 @@ public class TMEvaluator {
 			String enTerm = glossEntry.getTermInLang("en").toLowerCase();
 			String iuTerm_roman = glossEntry.getTermInLang("iu_roman").toLowerCase();
 			String iuTerm_syll = glossEntry.getTermInLang("iu_syll").toLowerCase();
-			List<Alignment_ES>[] alignments =
-				fetchAlignments(iuTerm_syll, enTerm);
-			List<Alignment_ES> algs_bothSides_strict = alignments[0];
-			List<Alignment_ES> algs_bothSides_lenient = alignments[1];
-			List<Alignment_ES> algs_iuside_only = alignments[2];
-			if (!algs_bothSides_strict.isEmpty() ||
-				!algs_bothSides_lenient.isEmpty() ||
-				!algs_iuside_only.isEmpty()) {
+			AlignmentsSummary algnSummary =
+				analyzeAlignments(iuTerm_syll, enTerm);
+
+			if (algnSummary.iuTermPresent) {
 				userIO.echo("IU term was present");
 				results.totalIUPresent_Orig++;
 			}
-
-			if (!algs_bothSides_strict.isEmpty()) {
+			if (algnSummary.enTranslPresent_strict) {
 				results.totalENPresent_Orig_Strict++;
-				userIO.echo("EN term was present in the STRICT sense");
+				userIO.echo("EN translation was PRESENT in the STRICT sense");
 			}
-			if (!algs_bothSides_strict.isEmpty() ||
-				 !algs_bothSides_lenient.isEmpty()) {
-				userIO.echo("EN term was present in the LENIENT sense");
+			if (algnSummary.enTranslPresent_lenient) {
+				userIO.echo("EN translation was PRESENT in the LENIENT sense");
 				results.totalENPresent_Orig_Lenient++;
+			}
+
+			if (algnSummary.enTranslSpotted_strict) {
+				userIO.echo("EN translation was SPOTTED in the STRICT sense");
+				results.totalENSpotted_Strict++;
+			}
+
+			if (algnSummary.enTranslSpotted_lenient) {
+				userIO.echo("EN translation was SPOTTED in the LENIENT sense");
+				results.totalENSpotted_Lenient++;
 			}
 		} finally {
 			userIO.echo(-1);
 		}
 	}
 
-	private List<Alignment_ES>[] fetchAlignments(String iuTerm_syll, String enTerm) throws TranslationMemoryException {
+	private AlignmentsSummary analyzeAlignments(String iuTerm_syll, String enTerm) throws TranslationMemoryException {
 		try {
+			AlignmentsSummary analysis = new AlignmentsSummary();
 			iuTerm_syll = iuTerm_syll.toLowerCase();
 			enTerm = enTerm.toLowerCase();
 			Iterator<Alignment_ES> algsIter = tm.searchIter("iu", iuTerm_syll, "en");
@@ -89,15 +95,48 @@ public class TMEvaluator {
 			List<Alignment_ES> iuAndEn_lenient = new ArrayList<Alignment_ES>();
 			int totalAlignments = 0;
 			while (algsIter.hasNext() && totalAlignments < MAX_ALIGNMENTS) {
+				boolean attemptSpotting = false;
 				Alignment_ES algn = algsIter.next();
 				if (alignmentContains(algn, "iu", iuTerm_syll)) {
+					analysis.iuTermPresent = true;
 					totalAlignments++;
 					if (alignmentContains(algn, "en", enTerm)) {
+						analysis.enTranslPresent_strict = true;
+						attemptSpotting = true;
 						iuAndEn_strict.add(algn);
 					} else if (alignmentContains(algn, "en", enTerm, true)){
+						attemptSpotting = true;
+						analysis.enTranslPresent_lenient = true;
 						iuAndEn_lenient.add(algn);
 					} else {
 						iuOnly.add(algn);
+					}
+					if (attemptSpotting) {
+						Pair<Boolean,Boolean> spottingStatus =
+							checkEnTermSpotting(algn, iuTerm_syll, enTerm);
+						if (spottingStatus.getLeft()) {
+							analysis.enTranslSpotted_strict = true;
+						}
+						if (spottingStatus.getRight()) {
+							analysis.enTranslSpotted_lenient = true;
+						}
+					}
+
+					if (analysis.enTranslPresent_strict) {
+						// Strict presence implies lenient as well
+						analysis.enTranslPresent_lenient = true;
+					}
+
+					if (analysis.enTranslSpotted_strict) {
+						// Strict spotting implies lenient as well
+						analysis.enTranslSpotted_lenient = true;
+					}
+
+					if (analysis.enTranslSpotted_strict) {
+						// We found at least one alignment where IU term is present
+						// and EN translation was spotted in the STRICT sense.
+						// No need to go further.
+						break;
 					}
 				}
 			}
@@ -105,10 +144,36 @@ public class TMEvaluator {
 			List<Alignment_ES>[] results = new List[] {
 				iuAndEn_strict, iuAndEn_lenient, iuOnly
 			};
-			return results;
+			return analysis;
 		} catch (TranslationMemoryException e) {
 			throw new TranslationMemoryException(e);
 		}
+	}
+
+	private Pair<Boolean, Boolean> checkEnTermSpotting(
+		Alignment_ES algn, String iuTerm_syll, String enTerm) throws TranslationMemoryException {
+		boolean spottedStrict = false;
+		boolean spottedLenient = false;
+		try {
+			Map<String, String> spotting =
+				new WordSpotter(algn.sentencePair("iu", "en"))
+					.spot("iu", iuTerm_syll);
+			String spottedEn = spotting.get("en");
+			if (spottedEn != null) {
+				spottedEn = spottedEn.replaceAll("\\s+\\.\\.\\.\\s+", " ");
+				if (spottedEn.equals(enTerm)) {
+					spottedStrict = true;
+				}
+				if (null != findText(spottedEn, enTerm, true) ||
+					null !=  findText(enTerm, spottedEn, true)) {
+					spottedLenient = true;
+				}
+			}
+		} catch (WordSpotterException e) {
+			throw new TranslationMemoryException(e);
+		}
+
+		return Pair.of(spottedStrict, spottedLenient);
 	}
 
 	private boolean alignmentContains(
@@ -175,7 +240,7 @@ public class TMEvaluator {
 		if (lenient == null) {
 			lenient = false;
 		}
-		if (!findWhat.matches("^[a-zA-Z\\-\\s']*$")) {
+		if (!findWhat.matches("^[a-zA-Z\\-\\s'’]*$")) {
 			throw new TranslationMemoryException(
 				"Text to find can only contain following types of character: a-z, A-Z, hyphen, single-quote or space\n"+
 				"Text was: '"+findWhat+"'");
@@ -286,6 +351,14 @@ public class TMEvaluator {
 			}
 			userIO.echo(-1);
 		}
+	}
+
+	public static class AlignmentsSummary {
+		boolean  iuTermPresent= false;
+		boolean enTranslPresent_strict = false;
+		boolean enTranslPresent_lenient = false;
+		boolean enTranslSpotted_strict = false;
+		boolean enTranslSpotted_lenient = false;
 	}
 
 }
