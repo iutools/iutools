@@ -9,6 +9,8 @@ import org.iutools.worddict.GlossaryEntry;
 
 import java.nio.file.Path;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TMEvaluator {
 	UserIO userIO = new UserIO();
@@ -56,15 +58,17 @@ public class TMEvaluator {
 			List<Alignment_ES> algs_bothSides_strict = alignments[0];
 			List<Alignment_ES> algs_bothSides_lenient = alignments[1];
 			List<Alignment_ES> algs_iuside_only = alignments[2];
-			results.totalIUPresentOrig +=
-				algs_bothSides_strict.size() + algs_bothSides_lenient.size() +
-				algs_iuside_only.size();
 			if (!algs_bothSides_strict.isEmpty()) {
 				results.totalENPresent_Orig_Strict++;
+			}
+			if (!algs_bothSides_strict.isEmpty() ||
+				 !algs_bothSides_lenient.isEmpty()) {
 				results.totalENPresent_Orig_Lenient++;
 			}
-			if (!algs_bothSides_lenient.isEmpty()) {
-				results.totalENPresent_Orig_Lenient++;
+			if (!algs_bothSides_strict.isEmpty() ||
+				!algs_bothSides_lenient.isEmpty() ||
+				!algs_iuside_only.isEmpty()) {
+				results.totalIUPresentOrig++;
 			}
 		} finally {
 			userIO.echo(-1);
@@ -104,32 +108,103 @@ public class TMEvaluator {
 	}
 
 	private boolean alignmentContains(
-		Alignment_ES algn, String lang, String expText) {
+		Alignment_ES algn, String lang, String expText) throws TranslationMemoryException {
 		return alignmentContains(algn, lang, expText, (Boolean)null);
 	}
 
 	private boolean alignmentContains(
-		Alignment_ES algn, String lang, String expText, Boolean lenient) {
+		Alignment_ES algn, String lang, String expText, Boolean lenient) throws TranslationMemoryException {
 		if (lenient == null) {
 			lenient = false;
 		}
-		expText = expText.toLowerCase();
-		if (lenient) {
-			expText = lemmatize(expText);
-		}
+
 		String sentence = algn.sentence4lang(lang);
 		boolean answer = false;
-		if (sentence != null && sentence.toLowerCase().contains(expText)) {
-			answer = true;
+		if (lang.equals("iu")) {
+			if (sentence.contains(expText)) {
+				answer = true;
+			}
+		} else {
+			if (sentence != null &&
+			null != findText(expText, algn.sentence4lang(lang), lenient)) {
+				answer = true;
+			}
 		}
 		return answer;
 	}
 
-	private String lemmatize(String term) {
+	protected String lemmatizeWord(String word) {
+		return lemmatizeWord(word, (Boolean)null);
+	}
 
-		term = StringUtils.abbreviate(term, 8);
-		term = term.replaceAll("\\.\\.\\.$", "");
-		return term;
+	protected String lemmatizeWord(String word, Boolean last) {
+		if (last == null) {
+			last = false;
+		}
+		final int MAX_LEN = 5;
+		if (word.length() > MAX_LEN) {
+			word = word.substring(0, MAX_LEN);
+		}
+
+		String regexp = word;
+		if (!last) {
+			word += "[a-zA-Z\\-]*";
+		}
+		return regexp;
+	}
+
+	protected String lemmatizePhrase(String phrase) {
+		String[] tokens = phrase.split("[^a-zA-Z\\-]+");
+		for (int ii=0; ii < tokens.length; ii++) {
+			boolean last = false;
+			if (ii == tokens.length - 1) {
+				last = true;
+			}
+			tokens[ii] = lemmatizeWord(tokens[ii], last);
+		}
+
+		String regexp = StringUtils.join(tokens, "[^a-zA-Z\\-]+");
+		return regexp;
+	}
+
+	public String findText(String findWhat, String text, Boolean lenient) throws TranslationMemoryException {
+		if (lenient == null) {
+			lenient = false;
+		}
+		if (!findWhat.matches("^[a-zA-Z\\-\\s']*$")) {
+			throw new TranslationMemoryException(
+				"Text to find can only contain following types of character: a-z, A-Z, hyphen, single-quote or space\n"+
+				"Text was: '"+findWhat+"'");
+		}
+		String found = null;
+		if (lenient) {
+			found = findText_Lenient(findWhat, text);
+		} else {
+			found = findText_Strict(findWhat, text);
+		}
+
+		return found;
+	}
+
+	private String findText_Lenient(String what, String inText) {
+		String found = null;
+		String regexp = lemmatizePhrase(what);
+		Matcher matcher =
+			Pattern.compile(regexp, Pattern.CASE_INSENSITIVE).matcher(inText);
+
+		if (matcher.find()) {
+			found = matcher.group();
+		}
+		return found;
+	}
+
+	private String findText_Strict(String what, String inText) {
+		String found = null;
+		int pos = inText.indexOf(what);
+		if (pos >= 0) {
+			found = what;
+		}
+		return found;
 	}
 
 
@@ -188,34 +263,25 @@ public class TMEvaluator {
 		userIO.echo("Presence of IU term and EN translation in Hansard sentence pairs");
 		{
 			userIO.echo(1);
-			userIO.echo("*BOTH* IU and EN terms");
+			userIO.echo("IU term");
+			{
+				userIO.echo(1);
+				userIO.echo("found="+ results.totalIUPresentOrig+"; absent="+results.totalIUAbsentOrig());
+				userIO.echo(-1);
+			}
+			userIO.echo("EN translation (only for the "+results.totalIUPresentOrig+" IU terms that appear in TM) ");
 			{
 				userIO.echo(1);
 				userIO.echo(
-					"strict="+results.totalENPresent_Orig_Strict+"; "+
+					"FOUND: strict="+results.totalENPresent_Orig_Strict+"; "+
 					"lenient="+results.totalENPresent_Orig_Lenient);
-				userIO.echo(-1);
-			}
-			userIO.echo("*ONLY* IU term");
-			{
-				userIO.echo(1);
-				userIO.echo("strict="+results.totalOnlyIUPresentOrig());
+				userIO.echo(
+					"ABSENT: strict="+results.totalENAbsent_Orig_Strict()+"; "+
+					"lenient="+results.totalENAbsent_Orig_Lenient());
 				userIO.echo(-1);
 			}
 			userIO.echo(-1);
 		}
-//		userIO.echo("# CORRECTLY spotted           : "+results.totalCorrectSpotOrig);
-//		userIO.echo("# PARTIALLY correctly spotted : "+results.totalPartiallyCorrectSpotOrig);
-
-//		double gotCompleteAccuracy = 0.0;
-//		double gotPartialAccuracy = 0.0;
-//		if (results.totalEntriesPresent > 0) {
-//			gotCompleteAccuracy = 1.0 * results.totalCorrectSpotOrig / results.totalEntriesPresent;
-//			gotPartialAccuracy = 1.0 * results.totalPartiallyCorrectSpotOrig / results.totalEntriesPresent;
-//		}
-//		userIO.echo("Spotting accuracy");
-//		userIO.echo("  COMPLETE spotting : "+gotCompleteAccuracy);
-//		userIO.echo("  PARTIAL  spotting : "+gotPartialAccuracy);
 	}
 
 }

@@ -9,7 +9,7 @@ import java.nio.file.Paths;
 public class TMEvaluationTest {
 
 	@Test
-	public void test_evaluateOnWikipediaGlossary() throws Exception {
+	public void test_evaluateOnWikipediaGlossary_first20() throws Exception {
 		String glossaryPath = IUConfig.getIUDataPath("data/glossaries/wpGlossary.json");
 		int firstN = 20;
 		EvaluationResults results =
@@ -20,8 +20,24 @@ public class TMEvaluationTest {
 			.totalENPresent_Orig_Strict(5)
 			.totalENPresent_Orig_Lenient(7)
 			.totalOnlyIUPresent_Orig(297)
-//
-//			.
 			;
 	}
+
+	@Test
+	public void test_evaluateOnWikipediaGlossary_ALL() throws Exception {
+		String glossaryPath = IUConfig.getIUDataPath("data/glossaries/wpGlossary.json");
+		Integer firstN = null;
+		EvaluationResults results =
+		new TMEvaluator()
+		.evaluate(Paths.get(glossaryPath), firstN);
+		new AssertEvaluationResults(results)
+		.totalGlossaryEntries(firstN)
+		.totalENPresent_Orig_Strict(5)
+		.totalENPresent_Orig_Lenient(7)
+		.totalOnlyIUPresent_Orig(297)
+//
+//			.
+		;
+	}
+
 }
