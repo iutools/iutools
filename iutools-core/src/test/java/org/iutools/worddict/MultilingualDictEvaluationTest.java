@@ -19,7 +19,7 @@ public class MultilingualDictEvaluationTest {
 			.totalExactSpotOrig(1)
 			.totalExactSpotRelated(1)
 			.totalPartialSpotOrig(3)
-			.totalPartialSpotRelated(2)
+			.totalPartialSpotRelated(3)
 			.totalEntriesWithIU(7)
 			.totalEntriesWithRelatedIU(6)
 			;

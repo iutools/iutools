@@ -84,33 +84,60 @@ public class MultilingualDictEvaluator {
 			userIO.echo("RELATED word translations: "+
 				mapper.writeValueAsString(dictEntry.relatedWordTranslations));
 
-			if (!dictEntry.origWordTranslations.isEmpty()) {
-				results.totalIUPresent++;
-				Map<String,String> found =
-					lookForCorrectTranslation(enTerm, dictEntry.origWordTranslations);
-				if (null != found.get("exact")) {
-					results.totalExactSpotOrig++;
-					userIO.echo("Found EXACT match for ORIG word: "+found.get("exact"));
-				} else if (null != found.get("partial")) {
-					userIO.echo("Found PARTIAL match for ORIG word: "+found.get("partial"));
-					results.totalPartialSpotOrig++;
-//				} else {
-//					userIO.echo("NO match (neither partial or exact) for ORIG word");
-				}
-			}
-			if (!dictEntry.relatedWordTranslations.isEmpty()) {
+			boolean someOrigTranslationsFound = !dictEntry.origWordTranslations.isEmpty();
+			boolean someRelatedTranslationsFound = !dictEntry.origWordTranslations.isEmpty();
+
+			if (someOrigTranslationsFound) {
+				results.totalIUPresent_Orig++;
+			} else if (someRelatedTranslationsFound) {
 				results.totalRelatedIUPresent++;
+			}
+
+			String origExactMatch = null;
+			String origPartialMatch = null;
+			if (someOrigTranslationsFound) {
 				Map<String,String> found =
 					lookForCorrectTranslation(enTerm, dictEntry.origWordTranslations);
-				if (null != found.get("exact")) {
-					userIO.echo("Found EXACT match for RELATED word: "+found.get("exact"));
-					results.totalExactSpotRelated++;
-				} else if (null != found.get("partial")) {
-					userIO.echo("Found PARTIAL match for RELATED word: "+found.get("partial"));
-					results.totalPartialSpotRelated++;
-//				} else {
-//					userIO.echo("NO match (neither partial or exact) for RELATED words");
-				}
+				origExactMatch = found.get("exact");
+				origPartialMatch = found.get("partial");
+			}
+
+			String relatedExactMatch = null;
+			String relatedPartialMatch = null;
+			if (someRelatedTranslationsFound) {
+				Map<String,String> found =
+					lookForCorrectTranslation(enTerm, dictEntry.origWordTranslations);
+				relatedExactMatch = found.get("exact");
+				relatedPartialMatch = found.get("partial");
+			}
+
+			String anyExactMatch = null;
+			String anyPartialMactch = null;
+			if (someOrigTranslationsFound || someRelatedTranslationsFound) {
+				Map<String,String> found =
+					lookForCorrectTranslation(enTerm, dictEntry.allTranslations());
+				anyExactMatch = found.get("exact");
+				anyPartialMactch = found.get("partial");
+			}
+
+			if (origExactMatch != null) {
+				results.totalENSpotted_Strict++;
+				userIO.echo("Found EXACT translation for ORIG term: "+origExactMatch);
+			} else if (origPartialMatch != null) {
+				results.totalENSpotted_Lenient++;
+				userIO.echo("Found PARTIAL translation for ORIG term: "+origPartialMatch);
+			}
+			if (relatedExactMatch != null) {
+				results.totalExactSpotRelated++;
+				userIO.echo("Found EXACT translation for RELATED term: "+relatedExactMatch);
+			} else if (relatedPartialMatch != null) {
+				results.totalPartialSpotRelated++;
+				userIO.echo("Found PARTIAL translation for RELATED term: "+relatedPartialMatch);
+			}
+			if (anyExactMatch != null) {
+				results.totalExactSpotAny++;
+			} else if (anyPartialMactch != null) {
+				results.totalExactSpotAny++;
 			}
 		} finally {
 			userIO.echo(-1);

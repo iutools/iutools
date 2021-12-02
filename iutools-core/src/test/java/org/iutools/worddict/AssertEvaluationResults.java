@@ -22,7 +22,7 @@ public class AssertEvaluationResults extends Asserter<EvaluationResults> {
 
 	public AssertEvaluationResults totalEntriesWithIU(int expTotal) {
 		Assertions.assertEquals(
-			expTotal, results().totalIUPresent,
+			expTotal, results().totalIUPresent_Orig,
 			baseMessage + "\nWrong number of glossary entries that contain the IU term"
 		);
 
@@ -40,7 +40,7 @@ public class AssertEvaluationResults extends Asserter<EvaluationResults> {
 
 	public AssertEvaluationResults totalExactSpotOrig(int expTotal) {
 		Assertions.assertEquals(
-			expTotal, results().totalExactSpotOrig,
+			expTotal, results().totalENSpotted_Strict,
 			baseMessage + "\nWrong number of glossary entries for which we found a PERFECT match for the translation of the ORIGINAL IU term "
 		);
 
@@ -49,7 +49,7 @@ public class AssertEvaluationResults extends Asserter<EvaluationResults> {
 
 	public AssertEvaluationResults totalPartialSpotOrig(int expTotal) {
 		Assertions.assertEquals(
-			expTotal, results().totalPartialSpotOrig,
+			expTotal, results().totalENSpotted_Lenient,
 			baseMessage + "\nWrong number of glossary entries for which we found a PARTIAL match for the translation of the ORIGINAL IU term "
 		);
 

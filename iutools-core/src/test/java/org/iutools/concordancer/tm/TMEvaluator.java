@@ -67,7 +67,9 @@ public class TMEvaluator {
 			}
 			if (algnSummary.enTranslPresent_lenient) {
 				userIO.echo("EN translation was PRESENT in the LENIENT sense");
-				userIO.echo("   ** occurences="+mapper.writeValueAsString(algnSummary.enTranslPresent_lenient_matches));
+				if (!algnSummary.enTranslPresent_lenient_matches.isEmpty()) {
+					userIO.echo("   ** LENIENT occurences="+mapper.writeValueAsString(algnSummary.enTranslPresent_lenient_matches));
+				}
 				results.totalENPresent_Lenient++;
 			}
 
@@ -78,6 +80,9 @@ public class TMEvaluator {
 
 			if (algnSummary.enTranslSpotted_lenient) {
 				userIO.echo("EN translation was SPOTTED in the LENIENT sense");
+				if (!algnSummary.enTranslSpotted_lenient_matches.isEmpty()) {
+					userIO.echo("   ** LENIENT occurences="+mapper.writeValueAsString(algnSummary.enTranslSpotted_lenient_matches));
+				}
 				results.totalENSpotted_Lenient++;
 			}
 		} finally {
@@ -110,13 +115,14 @@ public class TMEvaluator {
 						}
 					}
 					if (attemptSpotting) {
-						Triple<Boolean,Boolean,Boolean> spottingStatus =
+						Triple<Boolean,String,Boolean> spottingStatus =
 							checkEnTermSpotting(algn, iuTerm_syll, enTerm);
 						if (spottingStatus.getLeft()) {
 							analysis.enTranslSpotted_strict = true;
 						}
-						if (spottingStatus.getMiddle()) {
+						if (null != spottingStatus.getMiddle()) {
 							analysis.enTranslSpotted_lenient = true;
+							analysis.enTranslSpotted_lenient_matches.add(spottingStatus.getMiddle());
 						}
 						if (spottingStatus.getRight()) {
 							analysis.enTranslSpotted_lenientoverlap = true;
@@ -148,10 +154,10 @@ public class TMEvaluator {
 		}
 	}
 
-	private Triple<Boolean, Boolean, Boolean> checkEnTermSpotting(
+	private Triple<Boolean, String, Boolean> checkEnTermSpotting(
 		Alignment_ES algn, String iuTerm_syll, String enTerm) throws TranslationMemoryException {
 		boolean spottedStrict = false;
-		boolean spottedLenient = false;
+		String spottedLenient = null;
 		boolean spottedLenientOverlap = false;
 		try {
 			Map<String, String> spotting =
@@ -163,9 +169,9 @@ public class TMEvaluator {
 				if (spottedEn.equals(enTerm)) {
 					spottedStrict = true;
 				}
-				if (null != findText(spottedEn, enTerm, true) ||
-						null !=  findText(enTerm, spottedEn, true)) {
-					spottedLenient = true;
+				spottedLenient = findText(spottedEn, enTerm, true);
+				if (spottedLenient == null) {
+					spottedLenient = findText(enTerm, spottedEn, true);
 				}
 				if (partiallyOverlap(enTerm, spottedEn, true)) {
 					spottedLenientOverlap = true;

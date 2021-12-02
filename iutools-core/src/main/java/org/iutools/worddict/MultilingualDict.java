@@ -43,6 +43,7 @@ public class MultilingualDict {
 
 	public static int MAX_TRANSLATIONS = 5;
 	public static int MAX_SENT_PAIRS = 20;
+	public static Integer MIN_SENT_PAIRS = null;
 
 
 	public CompiledCorpus corpus = null;
@@ -326,7 +327,7 @@ public class MultilingualDict {
 				totalPairs =
 					onNewSentencePair(entry, bilingualAlignment, alreadySeenPair,
 						totalPairs, script, isForRelatedWords);
-				if (enoughBilingualExamples(entry)) {
+				if (enoughBilingualExamples(entry, totalPairs)) {
 					break;
 				}
 			}
@@ -345,12 +346,16 @@ public class MultilingualDict {
 		MultilingualDictEntry.assertIsSupportedLanguage(lang);
 	}
 
-	private boolean enoughBilingualExamples(MultilingualDictEntry entry) throws MultilingualDictException {
+	private boolean enoughBilingualExamples(MultilingualDictEntry entry, int totalPairs) throws MultilingualDictException {
 		boolean enough =
 			(
 				entry.possibleTranslationsIn(otherLang(entry.lang)).size() >= MAX_TRANSLATIONS ||
 				entry.totalBilingualExamples() >= MAX_SENT_PAIRS
 			);
+		if (MIN_SENT_PAIRS != null) {
+			enough = enough && (totalPairs >= MIN_SENT_PAIRS);
+		}
+
 		return enough;
 	}
 

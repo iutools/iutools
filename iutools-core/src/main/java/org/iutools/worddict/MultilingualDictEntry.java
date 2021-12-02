@@ -205,6 +205,16 @@ public class MultilingualDictEntry {
 		}
 	}
 
+	public List<String> allTranslations() {
+		List<String> all = new ArrayList<String>();
+		all.addAll(origWordTranslations);
+		for (String aTransl: relatedWordTranslations) {
+			if (!all.contains(aTransl)) {
+				all.add(aTransl);
+			}
+		}
+		return all;
+	}
 
 	public List<String[]> bilingualExamplesOfUse() {
 		List<String[]> allExamples = new ArrayList<String[]>();
