@@ -3,7 +3,6 @@ import ca.nrc.data.file.ObjectStreamReader;
 import ca.nrc.ui.commandline.UserIO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.iutools.concordancer.Alignment_ES;
 import org.iutools.worddict.EvaluationResults;
@@ -68,6 +67,7 @@ public class TMEvaluator {
 			}
 			if (algnSummary.enTranslPresent_lenient) {
 				userIO.echo("EN translation was PRESENT in the LENIENT sense");
+				userIO.echo("   ** occurences="+mapper.writeValueAsString(algnSummary.enTranslPresent_lenient_matches));
 				results.totalENPresent_Lenient++;
 			}
 
@@ -101,9 +101,13 @@ public class TMEvaluator {
 					if (alignmentContains(algn, "en", enTerm)) {
 						analysis.enTranslPresent_strict = true;
 						attemptSpotting = true;
-					} else if (alignmentContains(algn, "en", enTerm, true)){
-						attemptSpotting = true;
-						analysis.enTranslPresent_lenient = true;
+					} else {
+						String found = findTextInAlignment(algn, "en", enTerm, true);
+						if (found != null) {
+							attemptSpotting = true;
+							analysis.enTranslPresent_lenient = true;
+							analysis.enTranslPresent_lenient_matches.add(found);
+						}
 					}
 					if (attemptSpotting) {
 						Triple<Boolean,Boolean,Boolean> spottingStatus =
@@ -182,23 +186,27 @@ public class TMEvaluator {
 
 	private boolean alignmentContains(
 		Alignment_ES algn, String lang, String expText, Boolean lenient) throws TranslationMemoryException {
+		String found = findTextInAlignment(algn, lang, expText, lenient);
+		boolean answer = (found != null);
+		return answer;
+	}
+
+
+	private String findTextInAlignment(
+		Alignment_ES algn, String lang, String expText, Boolean lenient) throws TranslationMemoryException {
 		if (lenient == null) {
+			lenient = false;
+		}
+		if (lang.equals("iu")) {
 			lenient = false;
 		}
 
 		String sentence = algn.sentence4lang(lang);
-		boolean answer = false;
-		if (lang.equals("iu")) {
-			if (sentence.contains(expText)) {
-				answer = true;
-			}
-		} else {
-			if (sentence != null &&
-			null != findText(expText, algn.sentence4lang(lang), lenient)) {
-				answer = true;
-			}
+		String found = null;
+		if (sentence != null) {
+			found = findText(expText, sentence, lenient);
 		}
-		return answer;
+		return found;
 	}
 
 	private String truncateWord(String word) {
@@ -355,10 +363,13 @@ public class TMEvaluator {
 		boolean  iuTermPresent= false;
 		boolean enTranslPresent_strict = false;
 		boolean enTranslPresent_lenient = false;
+		Set<String> enTranslPresent_lenient_matches = new HashSet<String>();
 		boolean enTranslSpotted_strict = false;
 		boolean enTranslSpotted_lenient = false;
+		Set<String> enTranslSpotted_lenient_matches = new HashSet<String>();
 		boolean enTranslSpotted_lenientoverlap = false;
 	}
+
 
 }
 
