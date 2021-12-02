@@ -22,8 +22,10 @@ public class TMEvaluationTest {
 			.totalENPresent_Lenient(5)
 			.totalENSpotted_Strict(2)
 			.totalENSpotted_Lenient(2)
+			.totalENSpotted_LenientOverlap(2)
 			.rateENSpotted_Strict(1.0)
 			.rateENSpotted_Lenient(0.4)
+			.rateENSpotted_LenientOverlap(2)
 		;
 	}
 
@@ -41,8 +43,10 @@ public class TMEvaluationTest {
 			.totalENPresent_Lenient(104)
 			.totalENSpotted_Strict(48)
 			.totalENSpotted_Lenient(69)
+			.totalENSpotted_LenientOverlap(2)
 			.rateENSpotted_Strict(0.872)
 			.rateENSpotted_Lenient(0.663)
+			.rateENSpotted_LenientOverlap(2)
 		;
 	}
 

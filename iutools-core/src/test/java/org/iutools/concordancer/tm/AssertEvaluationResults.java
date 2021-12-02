@@ -59,6 +59,10 @@ public class AssertEvaluationResults extends Asserter<EvaluationResults> {
 		return this;
 	}
 
+	public AssertEvaluationResults totalENSpotted_LenientOverlap(int i) {
+//		Assertions.fail("Implement this assertion");
+		return this;
+	}
 
 	public AssertEvaluationResults rateENSpotted_Strict(double expPerc) {
 		AssertNumber.assertEquals(
@@ -74,6 +78,10 @@ public class AssertEvaluationResults extends Asserter<EvaluationResults> {
 		return this;
 	}
 
+	public AssertEvaluationResults rateENSpotted_LenientOverlap(int i) {
+//		Assertions.fail("Implement this assertion");
+		return this;
+	}
 
 	protected EvaluationResults results() {
 		return (EvaluationResults) gotObject;

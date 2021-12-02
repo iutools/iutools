@@ -4,6 +4,7 @@ import ca.nrc.ui.commandline.UserIO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.iutools.concordancer.Alignment_ES;
 import org.iutools.worddict.EvaluationResults;
 import org.iutools.worddict.GlossaryEntry;
@@ -105,13 +106,16 @@ public class TMEvaluator {
 						analysis.enTranslPresent_lenient = true;
 					}
 					if (attemptSpotting) {
-						Pair<Boolean,Boolean> spottingStatus =
+						Triple<Boolean,Boolean,Boolean> spottingStatus =
 							checkEnTermSpotting(algn, iuTerm_syll, enTerm);
 						if (spottingStatus.getLeft()) {
 							analysis.enTranslSpotted_strict = true;
 						}
-						if (spottingStatus.getRight()) {
+						if (spottingStatus.getMiddle()) {
 							analysis.enTranslSpotted_lenient = true;
+						}
+						if (spottingStatus.getRight()) {
+							analysis.enTranslSpotted_lenientoverlap = true;
 						}
 					}
 
@@ -140,10 +144,11 @@ public class TMEvaluator {
 		}
 	}
 
-	private Pair<Boolean, Boolean> checkEnTermSpotting(
+	private Triple<Boolean, Boolean, Boolean> checkEnTermSpotting(
 		Alignment_ES algn, String iuTerm_syll, String enTerm) throws TranslationMemoryException {
 		boolean spottedStrict = false;
 		boolean spottedLenient = false;
+		boolean spottedLenientOverlap = false;
 		try {
 			Map<String, String> spotting =
 				new WordSpotter(algn.sentencePair("iu", "en"))
@@ -155,16 +160,20 @@ public class TMEvaluator {
 					spottedStrict = true;
 				}
 				if (null != findText(spottedEn, enTerm, true) ||
-					null !=  findText(enTerm, spottedEn, true)) {
+						null !=  findText(enTerm, spottedEn, true)) {
 					spottedLenient = true;
+				}
+				if (partiallyOverlap(enTerm, spottedEn, true)) {
+					spottedLenientOverlap = true;
 				}
 			}
 		} catch (WordSpotterException e) {
 			throw new TranslationMemoryException(e);
 		}
 
-		return Pair.of(spottedStrict, spottedLenient);
+		return Triple.of(spottedStrict, spottedLenient, spottedLenientOverlap);
 	}
+
 
 	private boolean alignmentContains(
 		Alignment_ES algn, String lang, String expText) throws TranslationMemoryException {
@@ -192,6 +201,15 @@ public class TMEvaluator {
 		return answer;
 	}
 
+	private String truncateWord(String word) {
+		final int MAX_LEN = 5;
+		if (word.length() > MAX_LEN) {
+			word = word.substring(0, MAX_LEN);
+		}
+		return word;
+	}
+
+
 	protected String lemmatizeWord(String word) {
 		return lemmatizeWord(word, (Boolean)null);
 	}
@@ -200,10 +218,7 @@ public class TMEvaluator {
 		if (last == null) {
 			last = false;
 		}
-		final int MAX_LEN = 5;
-		if (word.length() > MAX_LEN) {
-			word = word.substring(0, MAX_LEN);
-		}
+		word = truncateWord(word);
 
 		String regexp = word;
 		if (!last) {
@@ -270,26 +285,10 @@ public class TMEvaluator {
 		return found;
 	}
 
-
-	private Map<String, String> lookForCorrectTranslation(
-		String enTerm, List<String> translations) {
-		Map<String,String> found = new HashMap<String,String>();
-		found.put("exact", null);
-		found.put("partial", null);
-		for (String aTranslation: translations) {
-			if (aTranslation.equals(enTerm)) {
-				found.put("exact", aTranslation);
-				found.put("partial", aTranslation);
-				break;
-			} else if (partiallyOverlap(aTranslation, enTerm)) {
-				found.put("partial", aTranslation);
-			}
+	public boolean partiallyOverlap(String str1, String str2, Boolean lenient) {
+		if (lenient == null) {
+			lenient = false;
 		}
-
-		return found;
-	}
-
-	private boolean partiallyOverlap(String str1, String str2) {
 		String[] tokens1 = str1.split("\\s+");
 		String[] tokens2 = str2.split("\\s+");
 
@@ -298,25 +297,23 @@ public class TMEvaluator {
 		for (String tok1: tokens1) {
 			if (overlap) {break;}
 			if (tok1.length() <= 3) {continue;}
+			if (lenient) {
+				tok1 = truncateWord(tok1);
+			}
 			for (String tok2: tokens2) {
 				if (overlap) {break;}
 				if (tok2.length() <= 3) {continue;}
+				if (lenient) {
+					tok2 = truncateWord(tok2);
+				}
 
-				if (sameRoot(tok1, tok2)) {
+				if (tok1.equals(tok2)) {
 					overlap = true;
 				}
 			}
 		}
 
-
 		return overlap;
-	}
-
-	private boolean sameRoot(String tok1, String tok2) {
-		tok1 = StringUtils.abbreviate(tok1, 5);
-		tok2 = StringUtils.abbreviate(tok2, 5);
-		boolean answer = (tok1.equals(tok2));
-		return answer;
 	}
 
 	private void printReport(EvaluationResults results) {
@@ -360,6 +357,7 @@ public class TMEvaluator {
 		boolean enTranslPresent_lenient = false;
 		boolean enTranslSpotted_strict = false;
 		boolean enTranslSpotted_lenient = false;
+		boolean enTranslSpotted_lenientoverlap = false;
 	}
 
 }
