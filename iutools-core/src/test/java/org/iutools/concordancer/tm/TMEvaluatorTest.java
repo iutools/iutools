@@ -47,35 +47,35 @@ public class TMEvaluatorTest {
 	}
 
 	@Test
-	public void test__partiallyOverlap__VariousCases() throws Exception {
+	public void test__partialOverlap__VariousCases() throws Exception {
 		Case[] cases = new Case[] {
-			new Case("singlewords-strict-overlap",
-				true, "truncating", "truncation", true),
-			new Case("singlewords-strict-nooverlap",
-				false, "truncating", "truncation", false),
-			new Case("singlewords-lenient-overlap",
-				true, "truncating", "truncation", true),
-			new Case("singlewords-lenient-nooverlap",
-				true, "truncating", "cutting", false),
+			new Case("Two SINGLE-word strings, that OVERLAP; STRICT --> NO overlap",
+				false, "truncating", "truncation", null),
+			new Case("Two SINGLE-word strings, that do NOT OVERLAP; STRICT --> NO overlap",
+				false, "hello", "world", null),
+			new Case("Two SINGLE-word strings, that OVERLAP; LENIENT --> OVERLAP",
+				true, "truncating", "truncation", "trunc"),
+			new Case("Two SINGLE-word strings, that do NOT overlap; LENIENT --> NO overlap",
+				true, "hello", "world", null),
 
-			new Case("multiwords-strict-overlap",
-				true, "hello world", "hello universe", true),
-			new Case("multiwords-strict-nooverlap",
-				false, "hello world", "greetings universe", false),
-			new Case("multiwords-lenient-overlap",
-				true, "hello world", "greetings worldlings", true),
-			new Case("multiwords-lenient-nooverlap",
-				true, "hello world", "greetings universe", false),
+			new Case("Two MULTI-word strings, with ONE word that OVERLAP; STRICT --> NO overlap",
+				false, "truncating words", "truncation of strings", null),
+			new Case("Two MULTI-word strings, with NO word that OVERLAP; STRICT --> NO overlap",
+				false, "hello world", "greetings universe", null),
+			new Case("Two MULTI-word strings, with ONE word that OVERLAP; LENIENT --> OVERLAP",
+				true, "truncating words", "truncation of strings", "trunc"),
+			new Case("Two MULTI-word strings, with NO word that OVERLAP; LENIENT --> NO overlap",
+				true, "hello world", "greetings universe", null),
 		};
 		Consumer<Case> runner = (aCase) -> {
 			Boolean lenient = (Boolean)aCase.data[0];
 			String str1 = (String)aCase.data[1];
 			String str2 = (String)aCase.data[2];
-			Boolean expOverlap = (Boolean)aCase.data[3];
+			String expOverlap = (String)aCase.data[3];
 
 			try {
-				Boolean gotOverlaps = new TMEvaluator()
-					.partiallyOverlap(str1, str2, lenient);
+				String gotOverlaps = new TMEvaluator()
+					.partialOverlap(str1, str2, lenient);
 				Assertions.assertEquals(
 					expOverlap, gotOverlaps,
 					"Output of partiallyOverlap() not as expected.");
@@ -84,7 +84,7 @@ public class TMEvaluatorTest {
 			}
 		};
 		new RunOnCases(cases, runner)
-//			.onlyCaseNums(7)
+//			.onlyCaseNums(5)
 			.run();
 	}
 }
