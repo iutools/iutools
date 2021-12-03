@@ -123,7 +123,7 @@ public class TMEvaluator {
 							analysis.enTranslSpotted_lenient = true;
 							analysis.enTranslSpotted_lenient_matches.add(spottingStatus.spottedLenient);
 						}
-						if (spottingStatus.spottedLenientOverlap) {
+						if (null != spottingStatus.spottedLenientOverlap) {
 							analysis.enTranslSpotted_lenientoverlap = true;
 						}
 					}
@@ -173,9 +173,10 @@ public class TMEvaluator {
 				if (check.spottedLenient == null) {
 					check.spottedLenient = findText(enTerm, spottedEn, true);
 				}
-				if (null != partialOverlap(enTerm, spottedEn, true)) {
-					check.spottedLenientOverlap = true;
-				}
+				check.spottedLenientOverlap = partialOverlap(enTerm, spottedEn, true);
+//				if (null != partialOverlap(enTerm, spottedEn, true)) {
+//					check.spottedLenientOverlap = true;
+//				}
 			}
 		} catch (WordSpotterException e) {
 			throw new TranslationMemoryException(e);
@@ -395,7 +396,7 @@ public class TMEvaluator {
 	public static class SpottingCheck {
 		Boolean spottedStrict = false;
 		String spottedLenient = null;
-		Boolean spottedLenientOverlap = false;
+		String spottedLenientOverlap = null;
 	}
 }
 
