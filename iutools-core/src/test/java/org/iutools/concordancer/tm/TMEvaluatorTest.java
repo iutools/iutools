@@ -67,6 +67,52 @@ public class TMEvaluatorTest {
 			.run();
 	}
 
+
+	@Test @Disabled
+	public void test__sameTerm__VariousCases() {
+		Assertions.fail("IMPLEMENT");
+	}
+
+	@Test @Disabled
+	public void test__isMoreLenient__VariousCases() throws Exception {
+		Case[] cases = new Case[] {
+			new Case("STRICT == STRICT",
+				false, MatchType.STRICT, MatchType.STRICT),
+			new Case("STRICT > LENIENT",
+				false, MatchType.STRICT, MatchType.LENIENT),
+			new Case("STRICT > LENIENT_OVERLAP",
+				false, MatchType.STRICT, MatchType.LENIENT_OVERLAP),
+
+			new Case("LENIENT < STRICT",
+				true, MatchType.LENIENT, MatchType.STRICT),
+			new Case("LENIENT == LENIENT",
+				false, MatchType.LENIENT, MatchType.LENIENT),
+			new Case("LENIENT > LENIENT_OVERLAP",
+				false, MatchType.LENIENT, MatchType.LENIENT_OVERLAP),
+
+			new Case("LENIENT_OVERLAP < STRICT",
+				true, MatchType.LENIENT_OVERLAP, MatchType.STRICT),
+			new Case("LENIENT_OVERLAP < LENIENT",
+				true, MatchType.LENIENT_OVERLAP, MatchType.LENIENT),
+			new Case("LENIENT_OVERLAP == LENIENT_OVERLAP",
+				false, MatchType.LENIENT_OVERLAP, MatchType.LENIENT_OVERLAP),
+		};
+
+		Consumer<Case> runner = (aCase) -> {
+			Boolean expResult = (Boolean) aCase.data[0];
+			MatchType type1 = (MatchType) aCase.data[1];
+			MatchType type2 = (MatchType) aCase.data[2];
+			Boolean gotResult = TMEvaluator.isMoreLenient(type1, type2);
+			Assertions.assertEquals(
+				expResult, gotResult,
+				"Wrong answer for isMoreLenient() for type1="+type1+", type2="+type2
+			);
+		};
+
+		new RunOnCases(cases, runner)
+			.run();
+	}
+
 	@Test
 	public void test__findText__VariousCases() throws Exception {
 		Case[] cases = new Case[] {

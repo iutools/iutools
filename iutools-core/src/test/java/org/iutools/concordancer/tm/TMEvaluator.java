@@ -266,6 +266,31 @@ public class TMEvaluator {
 
 	public Pair<MatchType, String> findTerm(String term, String inText) {
 		String[] termTokens = tokenize(term);
+		String[] textTokens = tokenize(inText);
+		String occFound = null;
+		MatchType typeFound = null;
+		for (int ii=0; ii < textTokens.length; ii++) {
+			if (typeFound == MatchType.STRICT) {
+				break;
+			}
+			int maxPos = Math.min(ii+5,textTokens.length-1);
+			for (int jj=maxPos; jj >= ii; jj--) {
+				String[] textTermTokens = Arrays.copyOfRange(textTokens, ii, jj);
+				Pair<MatchType,String> match = sameTerm(termTokens, textTokens);
+				if (typeFound == null || isMoreLenient(typeFound, match.getLeft())) {
+					typeFound = match.getLeft();
+					occFound = match.getRight();
+				}
+				if (typeFound == MatchType.STRICT) {
+					break;
+				}
+			}
+		}
+
+		return Pair.of(typeFound, occFound);
+	}
+
+	private Pair<MatchType, String> sameTerm(String[] termTokens, String[] textTokens) {
 		return null;
 	}
 
