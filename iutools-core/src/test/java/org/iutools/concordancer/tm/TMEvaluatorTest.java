@@ -3,12 +3,69 @@ package org.iutools.concordancer.tm;
 import ca.nrc.testing.AssertString;
 import ca.nrc.testing.RunOnCases;
 import ca.nrc.testing.RunOnCases.*;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
+import org.iutools.concordancer.tm.TMEvaluator.MatchType;
 
 import java.util.function.Consumer;
 
 public class TMEvaluatorTest {
+
+	@Test @Disabled
+	public void test__findTerm__VariousCases() throws Exception {
+		Case[] cases = new Case[] {
+			new Case("singleword STRICT match",
+				"hello", "hello world",
+				MatchType.STRICT, "hell"),
+			new Case("singleword LENIENT match",
+				"greetings", "greet the world",
+				MatchType.LENIENT, "hell"),
+			new Case("singleword NO match",
+				"greetings", "hello world",
+				null, null),
+
+			new Case("multiword STRICT match",
+				"hello world", "I say hello world",
+				MatchType.STRICT, "hello world"),
+			new Case("multiword LENIENT match",
+				"greetings world", "greet world",
+				MatchType.LENIENT, "greet"),
+			new Case("multiword LENIENT_OVERLAP match",
+				"greetings universe", "greet world",
+				MatchType.LENIENT_OVERLAP, "greet"),
+			new Case("multiword NO match",
+				"greetings universe", "greet world",
+				null, null),
+		};
+		Consumer<Case> runner = (aCase) -> {
+			String term = (String)aCase.data[0];
+			String inText = (String)aCase.data[1];
+			MatchType expType = (MatchType)aCase.data[2];
+			String expFound = (String)aCase.data[3];
+
+			try {
+				Pair<MatchType,String> occurence = new TMEvaluator()
+					.findTerm(term, inText);
+				MatchType gotType = occurence.getLeft();
+				String gotFound = occurence.getRight();
+				Assertions.assertEquals(
+					expType, gotType,
+					"Wrong match type"
+				);
+				AssertString.assertStringEquals(
+					"Wrong occurence found.",
+					expFound, gotFound);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		};
+		new RunOnCases(cases, runner)
+//			.onlyCaseNums(7)
+			.run();
+	}
 
 	@Test
 	public void test__findText__VariousCases() throws Exception {

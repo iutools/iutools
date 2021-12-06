@@ -3,8 +3,8 @@ import ca.nrc.data.file.ObjectStreamReader;
 import ca.nrc.ui.commandline.UserIO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.concordancer.Alignment_ES;
-import org.iutools.worddict.EvaluationResults;
 import org.iutools.worddict.GlossaryEntry;
 
 import java.nio.file.Path;
@@ -264,6 +264,16 @@ public class TMEvaluator {
 		return regexp;
 	}
 
+	public Pair<MatchType, String> findTerm(String term, String inText) {
+		String[] termTokens = tokenize(term);
+		return null;
+	}
+
+	public String[] tokenize(String text) {
+		return text.split("\\s+");
+	}
+
+
 	public String findText(String findWhat, String text, Boolean lenient) throws TranslationMemoryException {
 		if (lenient == null) {
 			lenient = false;
@@ -397,6 +407,13 @@ public class TMEvaluator {
 		Boolean spottedStrict = false;
 		String spottedLenient = null;
 		String spottedLenientOverlap = null;
+	}
+
+	public static enum MatchType {LENIENT_OVERLAP, LENIENT, STRICT};
+
+	public static boolean isMoreLenient(MatchType sense1, MatchType sense2) {
+		boolean answer = (sense1.ordinal() < sense2.ordinal());
+		return answer;
 	}
 }
 

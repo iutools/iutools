@@ -2,8 +2,8 @@ package org.iutools.concordancer.tm;
 
 import ca.nrc.testing.AssertNumber;
 import ca.nrc.testing.Asserter;
-import org.iutools.worddict.EvaluationResults;
 import org.junit.jupiter.api.Assertions;
+import org.iutools.concordancer.tm.TMEvaluator.MatchType;
 
 public class AssertEvaluationResults extends Asserter<EvaluationResults> {
 
@@ -22,7 +22,7 @@ public class AssertEvaluationResults extends Asserter<EvaluationResults> {
 		return this;
 	}
 
-	public AssertEvaluationResults totaIUPresent_Orig(int expTotal) {
+	public AssertEvaluationResults totaIUPresent(int expTotal) {
 		Assertions.assertEquals(
 			expTotal, results().totalIUPresent_Orig,
 			baseMessage+"\nWrong number of IU terms that were found in the hansard");
@@ -83,7 +83,47 @@ public class AssertEvaluationResults extends Asserter<EvaluationResults> {
 		return this;
 	}
 
+	public AssertEvaluationResults totalENPresent_inSense(MatchType matchType, int expTotal) {
+		Assertions.assertEquals(
+			expTotal, results().totalEnPresent_inSense(matchType),
+			baseMessage+"\nWrong total for glossary entries for which the EN term was PRESENT in sense "+matchType
+		);
+		return this;
+	}
+
+	public AssertEvaluationResults totalENPresent_atLeastInSense(MatchType matchType, int expTotal) {
+		Assertions.assertEquals(
+			expTotal, results().totalEnPresent_atLeastInSense(matchType),
+			baseMessage+"\nWrong total for glossary entries for which the EN term was PRESENT in AT LEAST sense "+matchType
+		);
+		return this;
+	}
+	public AssertEvaluationResults totalENSpotted_inSense(MatchType matchType, int expTotal) {
+		Assertions.assertEquals(
+			expTotal, results().totalEnSpotted_inSense(matchType),
+			baseMessage+"\nWrong total for glossary entries for which the EN translation was SPOTTED in sense "+matchType
+		);
+		return this;
+	}
+
+	public AssertEvaluationResults totalENSpotted_atLeastInSense(MatchType sense, int expTotal) {
+		Assertions.assertEquals(
+			expTotal, results().totalEnSpotted_atLeastInSense(sense),
+			baseMessage+"\nWrong total for glossary entries for which the EN term was SPOTTED in AT LEAST sense "+sense
+		);
+		return this;
+	}
+
+	public AssertEvaluationResults rateENSpotted_inSense(MatchType sense, double expRate) {
+		AssertNumber.assertEquals(
+			baseMessage+"\nWrong perecentage of IU terms for which the EN translation was SPOTTED in the STRICT sense",
+			expRate, results().rateENSpotted_inSense(sense), 0.001);
+		return this;
+	}
+
+
 	protected EvaluationResults results() {
 		return (EvaluationResults) gotObject;
 	}
+
 }
