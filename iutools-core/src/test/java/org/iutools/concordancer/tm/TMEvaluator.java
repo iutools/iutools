@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.concordancer.Alignment_ES;
 import org.iutools.worddict.GlossaryEntry;
+import org.junit.platform.engine.support.discovery.SelectorResolver;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -216,11 +217,14 @@ public class TMEvaluator {
 		return found;
 	}
 
-	private String truncateWord(String word) {
+	private static String truncateWord(String word) {
 		final int MAX_LEN = 5;
 		if (word.length() > MAX_LEN) {
 			word = word.substring(0, MAX_LEN);
 		}
+		if (! word.matches("^[^a-zA-Z\\-\\d]+$")) {
+			word += "*";
+		};
 		return word;
 	}
 
@@ -231,6 +235,14 @@ public class TMEvaluator {
 		return words;
 	}
 
+
+	protected static String[] lemmatizeWords(String[] words) {
+		String[] lemmatized = new String[words.length];
+		for (int ii=0; ii <  lemmatized.length; ii++) {
+			lemmatized[ii] = truncateWord(words[ii]);
+		}
+		return lemmatized;
+	}
 
 
 	protected String lemmatizeWord(String word) {
@@ -290,11 +302,52 @@ public class TMEvaluator {
 		return Pair.of(typeFound, occFound);
 	}
 
-	private Pair<MatchType, String> sameTerm(String[] termTokens, String[] textTokens) {
-		return null;
+	public static Pair<MatchType, String> sameTerm(String[] term1Toks, String[] term2Toks) {
+		MatchType matchType = null;
+		String overlap = null;
+		String term1 = String.join(" ", term1Toks);
+		if (term1.equals(String.join(" ", term2Toks))) {
+			matchType = MatchType.STRICT;
+			overlap = term1;
+		} else {
+			String[] term1LemToks = lemmatizeWords(term1Toks);
+			String[] term2LemToks = lemmatizeWords(term2Toks);
+			// Check if all the lemmatized tokens are the same
+			if (term1LemToks.length == term2LemToks.length) {
+				boolean same = true;
+				for (int ii=0; ii < term1LemToks.length; ii++) {
+					if (!term1LemToks[ii].equals(term2LemToks[ii])) {
+						same = false;
+						break;
+					}
+				}
+				if (same) {
+					matchType = MatchType.LENIENT;
+					overlap = String.join(" ", term1LemToks);
+				} else {
+					// Check if the two terms share at least one lemmatized token
+					String commonToken = null;
+					for (int ii=0; ii < term1LemToks.length; ii++) {
+						if (commonToken != null) break;
+						for (int jj=0; jj < term2LemToks.length; jj++) {
+							if (term1LemToks[ii].equals(term2LemToks[jj])) {
+								commonToken = term1LemToks[ii];
+								break;
+							}
+						}
+					}
+					if (commonToken != null) {
+						matchType = MatchType.LENIENT_OVERLAP;
+						overlap = commonToken;
+					}
+				}
+			}
+		}
+
+		return Pair.of(matchType, overlap);
 	}
 
-	public String[] tokenize(String text) {
+	public static String[] tokenize(String text) {
 		return text.split("\\s+");
 	}
 

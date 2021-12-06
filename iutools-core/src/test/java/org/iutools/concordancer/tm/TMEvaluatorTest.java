@@ -68,9 +68,51 @@ public class TMEvaluatorTest {
 	}
 
 
-	@Test @Disabled
-	public void test__sameTerm__VariousCases() {
-		Assertions.fail("IMPLEMENT");
+	@Test
+	public void test__sameTerm__VariousCases() throws Exception {
+		Case[] cases = new Case[] {
+			new Case("single word STRICT match",
+				"hello", "hello", MatchType.STRICT, "hello"),
+			new Case("single word LENIENT match",
+				"greetings", "greet", MatchType.LENIENT, "greet*"),
+			new Case("single word NO match",
+				"hello", "greetings", null, null),
+
+			new Case("multi word STRICT match",
+				"hello ... world", "hello ... world", MatchType.STRICT, "hello ... world"),
+			new Case("multi word LENIENT match",
+				"greetings ... universe", "greet ... universal",
+				MatchType.LENIENT, "greet* ... unive*"),
+			new Case("multi word LENIENT_OVERLAP match",
+				"greetings ... universe", "greet the world",
+				MatchType.LENIENT_OVERLAP, "greet*"),
+			new Case("multi word NO match",
+				"hello world", "greetings universe",
+				null, null),
+		};
+
+		Consumer<Case> runner = (aCase) -> {
+			String term1 = (String) aCase.data[0];
+			String term2 = (String) aCase.data[1];
+			MatchType expType = (MatchType) aCase.data[2];
+			String expOcc = (String) aCase.data[3];
+
+			String[] term1Toks = TMEvaluator.tokenize(term1);
+			String[] term2Toks = TMEvaluator.tokenize(term2);
+			Pair<MatchType,String> match = TMEvaluator.sameTerm(term1Toks, term2Toks);
+			MatchType gotType = match.getLeft();
+			String gotOcc = match.getRight();
+			Assertions.assertEquals(
+				gotType, expType,
+				"Wrong MatchType for terms: "+term1+","+term2);
+			Assertions.assertEquals(
+				expOcc, gotOcc,
+				"Wrong occurence for terms: "+term1+","+term2);
+		};
+
+		new RunOnCases(cases, runner)
+//			.onlyCaseNums(4)
+			.run();
 	}
 
 	@Test @Disabled
@@ -149,45 +191,4 @@ public class TMEvaluatorTest {
 			.run();
 	}
 
-	@Test
-	public void test__partialOverlap__VariousCases() throws Exception {
-		Case[] cases = new Case[] {
-			new Case("Two SINGLE-word strings, that OVERLAP; STRICT --> NO overlap",
-				false, "truncating", "truncation", null),
-			new Case("Two SINGLE-word strings, that do NOT OVERLAP; STRICT --> NO overlap",
-				false, "hello", "world", null),
-			new Case("Two SINGLE-word strings, that OVERLAP; LENIENT --> OVERLAP",
-				true, "truncating", "truncation", "trunc"),
-			new Case("Two SINGLE-word strings, that do NOT overlap; LENIENT --> NO overlap",
-				true, "hello", "world", null),
-
-			new Case("Two MULTI-word strings, with ONE word that OVERLAP; STRICT --> NO overlap",
-				false, "truncating words", "truncation of strings", null),
-			new Case("Two MULTI-word strings, with NO word that OVERLAP; STRICT --> NO overlap",
-				false, "hello world", "greetings universe", null),
-			new Case("Two MULTI-word strings, with ONE word that OVERLAP; LENIENT --> OVERLAP",
-				true, "truncating words", "truncation of strings", "trunc"),
-			new Case("Two MULTI-word strings, with NO word that OVERLAP; LENIENT --> NO overlap",
-				true, "hello world", "greetings universe", null),
-		};
-		Consumer<Case> runner = (aCase) -> {
-			Boolean lenient = (Boolean)aCase.data[0];
-			String str1 = (String)aCase.data[1];
-			String str2 = (String)aCase.data[2];
-			String expOverlap = (String)aCase.data[3];
-
-			try {
-				String gotOverlaps = new TMEvaluator()
-					.partialOverlap(str1, str2, lenient);
-				Assertions.assertEquals(
-					expOverlap, gotOverlaps,
-					"Output of partiallyOverlap() not as expected.");
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			}
-		};
-		new RunOnCases(cases, runner)
-//			.onlyCaseNums(5)
-			.run();
-	}
 }
