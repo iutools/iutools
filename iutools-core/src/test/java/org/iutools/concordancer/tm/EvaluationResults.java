@@ -73,7 +73,7 @@ public class EvaluationResults {
 		double rate = 0.0;
 		long total = totalEnPresent_atLeastInSense(sense);
 		if (total > 0) {
-			rate = 1.0 * totalEnSpotted_inSense(sense) / total;
+			rate = 1.0 * totalEnSpotted_atLeastInSense(sense) / total;
 		}
 		return rate;
 	}

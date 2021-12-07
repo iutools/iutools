@@ -42,10 +42,9 @@ public class TMEvaluationTest {
 			.totalENSpotted_atLeastInSense(MatchType.LENIENT, 4)
 			.totalENSpotted_atLeastInSense(MatchType.LENIENT_OVERLAP, 5)
 
-//			.rateENSpotted_inSense(MatchType.STRICT, 1.0)
-//			.rateENSpotted_inSense(MatchType.LENIENT, 5.0/4.0)
+			.rateENSpotted_inSense(MatchType.STRICT, 0.8)
+			.rateENSpotted_inSense(MatchType.LENIENT, 0.8)
 //			.rateENSpotted_inSense(MatchType.LENIENT_OVERLAP, 1.0)
-
 		;
 
 
