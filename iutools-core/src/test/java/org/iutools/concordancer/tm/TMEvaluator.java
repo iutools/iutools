@@ -87,7 +87,7 @@ public class TMEvaluator {
 			while (algsIter.hasNext() && totalAlignments < MAX_ALIGNMENTS) {
 				boolean attemptSpotting = false;
 				Alignment_ES algn = algsIter.next();
-				if (alignmentContains(algn, "iu", iuTerm_syll)) {
+				if (alignmentContainsIU(algn, iuTerm_syll)) {
 					analysis.iuTermPresent = true;
 					totalAlignments++;
 					Pair<MatchType,String> match = findENTermInAlignment(algn, enTerm);
@@ -135,15 +135,17 @@ public class TMEvaluator {
 	}
 
 
-	private boolean alignmentContains(
-		Alignment_ES algn, String lang, String expText) throws TranslationMemoryException {
-		return alignmentContains(algn, lang, expText, (Boolean)null);
-	}
+	private boolean alignmentContainsIU(
+		Alignment_ES algn, String expIUTerm_syll) throws TranslationMemoryException {
+		boolean answer = false;
+		String sentence = algn.sentence4lang("iu");
+		if (sentence != null) {
+			sentence = sentence.toLowerCase();
+			if (sentence.indexOf(expIUTerm_syll.toLowerCase()) >= 0) {
+				answer = true;
+			}
+		}
 
-	private boolean alignmentContains(
-		Alignment_ES algn, String lang, String expText, Boolean lenient) throws TranslationMemoryException {
-		String found = findTextInAlignment(algn, lang, expText, lenient);
-		boolean answer = (found != null);
 		return answer;
 	}
 
@@ -198,11 +200,6 @@ public class TMEvaluator {
 			lemmatized[ii] = truncateWord(words[ii]);
 		}
 		return lemmatized;
-	}
-
-
-	protected String lemmatizeWord(String word) {
-		return lemmatizeWord(word, (Boolean)null);
 	}
 
 	protected String lemmatizeWord(String word, Boolean last) {
