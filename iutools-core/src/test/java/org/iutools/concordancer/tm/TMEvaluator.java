@@ -2,8 +2,10 @@ package org.iutools.concordancer.tm;
 
 import ca.nrc.data.file.ObjectStreamReader;
 import ca.nrc.ui.commandline.UserIO;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.apache.log4j.Logger;
 import org.iutools.concordancer.Alignment_ES;
 import org.iutools.concordancer.SentencePair;
@@ -12,14 +14,17 @@ import org.iutools.worddict.GlossaryEntry;
 
 import java.nio.file.Path;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class TMEvaluator {
 	UserIO userIO = new UserIO();
 	TranslationMemory tm = new TranslationMemory();
 	ObjectMapper mapper = new ObjectMapper();
 	int MAX_ALIGNMENTS = 100;
+
+	public TMEvaluator setVerbosity(UserIO.Verbosity level) {
+		userIO.setVerbosity(level);
+		return this;
+	}
 
 	public EvaluationResults evaluate(Path glossaryFile, Integer firstN) throws TranslationMemoryException {
 		EvaluationResults results = new EvaluationResults();
@@ -51,7 +56,8 @@ public class TMEvaluator {
 	}
 
 
-	protected void evaluateGlossaryTerm(GlossaryEntry glossEntry, EvaluationResults results) throws Exception {
+	protected void evaluateGlossaryTerm(
+		GlossaryEntry glossEntry, EvaluationResults results) throws Exception {
 		userIO.echo(1);
 		try {
 			String enTerm = glossEntry.getTermInLang("en").toLowerCase();
@@ -66,12 +72,17 @@ public class TMEvaluator {
 			if (algnSummary.enTermPresent_Sense != null) {
 				userIO.echo("EN term was PRESENT in the sense "+algnSummary.enTermPresent_Sense+
 					": "+algnSummary.enTermPresent_occur);
-				results.enPresent_Histogram.updateFreq(algnSummary.enTermPresent_Sense);
+				results.onEnPresent(algnSummary.enTermPresent_Sense);
+			}
+
+			if (algnSummary.spottingAttempted) {
+				userIO.echo("All translations found: "+mapper.writeValueAsString(algnSummary.allTranslations));
+
 			}
 			if (algnSummary.enTermSpotted_Sense != null) {
 				userIO.echo("EN term was SPOTTED in the sense "+algnSummary.enTermSpotted_Sense+
-				": "+algnSummary.enTermSpotted_occur);
-				results.enPresent_Histogram.updateFreq(algnSummary.enTermPresent_Sense);
+					": "+algnSummary.enTermSpotted_occur);
+				results.onEnSpotted(algnSummary.enTermSpotted_Sense);
 			}
 		} finally {
 			userIO.echo(-1);
@@ -92,20 +103,24 @@ public class TMEvaluator {
 					analysis.iuTermPresent = true;
 					totalAlignments++;
 					Pair<MatchType,String> match = findENTermInAlignment(algn, enTerm);
+					if (null != match.getLeft()) {
+						attemptSpotting = true;
+					}
 					if (analysis.enTermPresent_Sense == null ||
 						isMoreLenient(analysis.enTermPresent_Sense, match.getLeft())) {
 						analysis.enTermPresent_Sense = match.getLeft();
 						analysis.enTermPresent_occur = match.getRight();
-						attemptSpotting = true;
 					}
 
 					if (attemptSpotting) {
-						match = checkEnTermSpotting(algn, iuTerm_syll, enTerm);
-
+						analysis.spottingAttempted = true;
+						Triple<String,MatchType,String> spottingInfo
+							= checkEnTermSpotting(algn, iuTerm_syll, enTerm);
+						analysis.allTranslations.add(spottingInfo.getLeft());
 						if (analysis.enTermSpotted_Sense == null ||
 							isMoreLenient(analysis.enTermSpotted_Sense, match.getLeft())) {
-							analysis.enTermSpotted_Sense = match.getLeft();
-							analysis.enTermSpotted_occur = match.getRight();
+							analysis.enTermSpotted_Sense = spottingInfo.getMiddle();
+							analysis.enTermSpotted_occur = spottingInfo.getRight();
 						}
 					}
 				}
@@ -117,10 +132,12 @@ public class TMEvaluator {
 		}
 	}
 
-	private Pair<MatchType,String> checkEnTermSpotting(
+	private Triple<String,MatchType,String> checkEnTermSpotting(
 		Alignment_ES algn, String iuTerm_syll, String enTerm) throws TranslationMemoryException {
 		Logger logger = Logger.getLogger("org.iutools.concordancer.tm.TMEvaluator.checkEnTermSpotting");
-		Pair<MatchType,String> match = Pair.of(null, null);
+		MatchType matchType = null;
+		String spottedEN = null;
+		String common = null;
 		try {
 			logger.trace("Spotting translation for iuTerm_syll="+iuTerm_syll);
 			SentencePair pair = algn.sentencePair("iu", "en");
@@ -128,15 +145,17 @@ public class TMEvaluator {
 				new WordSpotter(pair)
 					.spot("iu", iuTerm_syll);
 			logger.trace("** DONE Spotting translation for iuTerm_syll="+iuTerm_syll);
-			String spottedEn = spotting.get("en");
-			if (spottedEn != null) {
-				match = findTerm(enTerm, spottedEn);
+			spottedEN = spotting.get("en");
+			if (spottedEN != null) {
+				Pair<MatchType,String> match = sameTerm(enTerm, spottedEN);
+				matchType = match.getLeft();
+				common = match.getRight();
 			}
 		} catch (WordSpotterException e) {
 			throw new TranslationMemoryException(e);
 		}
 
-		return match;
+		return Triple.of(spottedEN, matchType, common);
 	}
 
 
@@ -159,7 +178,7 @@ public class TMEvaluator {
 	}
 
 
-	private Pair<MatchType, String> findENTermInAlignment(Alignment_ES algn, String enTerm) {
+	private Pair<MatchType, String> findENTermInAlignment(Alignment_ES algn, String enTerm) throws TranslationMemoryException {
 		String enSentence = algn.sentence4lang("en");
 		Pair<MatchType, String> match = findTerm(enTerm, enSentence);
 		return match;
@@ -205,37 +224,58 @@ public class TMEvaluator {
 		return regexp;
 	}
 
-	public Pair<MatchType, String> findTerm(String term, String inText) {
-		String[] termTokens = tokenize(term);
-		String[] textTokens = tokenize(inText);
-		String occFound = null;
-		MatchType typeFound = null;
-		for (int ii=0; ii < textTokens.length; ii++) {
-			if (typeFound == MatchType.STRICT) {
-				break;
+	public Pair<MatchType, String> findTerm(String term, String inText) throws TranslationMemoryException {
+		Logger logger = Logger.getLogger("org.iutools.concordancer.tm.TMEvaluator.findTerm");
+		try {
+			String[] termTokens = tokenize(term);
+			String[] textTokens = tokenize(inText);
+			if (logger.isTraceEnabled()) {
+				logger.trace("termTokens=" + mapper.writeValueAsString(termTokens));
 			}
-			int maxPos = Math.min(ii+5,textTokens.length);
-			for (int jj=maxPos; jj >= ii; jj--) {
-				String[] textTermTokens = Arrays.copyOfRange(textTokens, ii, jj);
-				Pair<MatchType,String> match = sameTerm(termTokens, textTermTokens);
-				if (typeFound == null || isMoreLenient(typeFound, match.getLeft())) {
-					typeFound = match.getLeft();
-					occFound = match.getRight();
-				}
+			String occFound = null;
+			MatchType typeFound = null;
+			for (int ii = 0; ii < textTokens.length; ii++) {
 				if (typeFound == MatchType.STRICT) {
 					break;
 				}
+				int maxPos = Math.min(ii + 5, textTokens.length);
+				for (int jj = maxPos; jj >= ii; jj--) {
+					String[] textTermTokens = Arrays.copyOfRange(textTokens, ii, jj);
+					if (logger.isTraceEnabled()) {
+						logger.trace("textTermTokens=" + mapper.writeValueAsString(textTermTokens));
+					}
+					Pair<MatchType, String> match = sameTerm(termTokens, textTermTokens);
+					if (typeFound == null || isMoreLenient(typeFound, match.getLeft())) {
+						typeFound = match.getLeft();
+						occFound = match.getRight();
+						logger.trace("Now, typeFound="+typeFound+", occFound="+occFound);
+					}
+					if (typeFound == MatchType.STRICT) {
+						break;
+					}
+				}
 			}
+			return Pair.of(typeFound, occFound);
+		} catch (JsonProcessingException e) {
+			throw new TranslationMemoryException(e);
 		}
 
-		return Pair.of(typeFound, occFound);
+	}
+
+	public static Pair<MatchType, String> sameTerm(String term1, String term2) {
+		String[] term1Tokens = tokenize(term1);
+		String[] term2Tokens = tokenize(term2);
+		return sameTerm(term1Tokens, term2Tokens);
 	}
 
 	public static Pair<MatchType, String> sameTerm(String[] term1Toks, String[] term2Toks) {
+		Logger logger = Logger.getLogger("org.iutools.concordancer.tm.TMEvaluator.sameTerm");
 		MatchType matchType = null;
 		String overlap = null;
-		String term1 = String.join(" ", term1Toks);
-		if (term1.equals(String.join(" ", term2Toks))) {
+		String term1 = String.join(" ", term1Toks).toLowerCase();
+		String term2 = String.join(" ", term2Toks).toLowerCase();
+		logger.trace("term1="+term1+", term2="+term2);
+		if (term1.equals(term2)) {
 			matchType = MatchType.STRICT;
 			overlap = term1;
 		} else {
@@ -321,15 +361,8 @@ public class TMEvaluator {
 		String enTermPresent_occur = null;
 		MatchType enTermSpotted_Sense = null;
 		String enTermSpotted_occur = null;
+		boolean spottingAttempted = false;
 		Set<String> allTranslations = new HashSet<String>();
-
-		//		boolean enTranslPresent_strict = false;
-//		boolean enTranslPresent_lenient = false;
-//		Set<String> enTranslPresent_lenient_matches = new HashSet<String>();
-//		boolean enTranslSpotted_strict = false;
-//		boolean enTranslSpotted_lenient = false;
-//		Set<String> enTranslSpotted_lenient_matches = new HashSet<String>();
-//		boolean enTranslSpotted_lenientoverlap = false;
 	}
 
 	public static enum MatchType {LENIENT_OVERLAP, LENIENT, STRICT};

@@ -5,11 +5,11 @@ import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.AssertString;
 import ca.nrc.testing.RunOnCases;
 import ca.nrc.testing.RunOnCases.*;
+import ca.nrc.ui.commandline.UserIO;
 import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.script.TransCoder;
 import org.iutools.worddict.GlossaryEntry;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.iutools.concordancer.tm.TMEvaluator.MatchType;
@@ -28,11 +28,28 @@ public class TMEvaluatorTest {
 
 			// These next cases are those among the first 20 entries of WP where
 			// we found the IU term in the TM
-			new Case("IU absent",
-				"amiq", "???",
+			new Case("amiq",
+				"amiq", "Wikimedia main page",
 				true, null, null),
-
-		};
+			new Case("nunavut",
+				"nunavut", "nunavut",
+				true, MatchType.STRICT, MatchType.STRICT),
+			new Case("inuit qaujimanituqangit",
+				"inuit qaujimanituqangit", "Inuit Qaujimajatuqangit",
+				true, MatchType.STRICT, MatchType.STRICT),
+			new Case("annuraanik",
+				"annuraanik", "Inuit clothingᒃ",
+				true, MatchType.LENIENT_OVERLAP, MatchType.LENIENT_OVERLAP),
+			new Case("qarasaujaq",
+				"qarasaujaq", "computer",
+				true, MatchType.STRICT, MatchType.STRICT),
+			new Case("ilinniaqtuliriniq",
+				"ilinniaqtuliriniq", "education",
+				true, MatchType.STRICT, MatchType.STRICT),
+			new Case("titiraujaq",
+				"titiraujaq", "engineering",
+				true, null, null),
+ 		};
 
 		Consumer<Case> runner = (aCase) -> {
 			String iuTerm_roman = (String) aCase.data[0];
@@ -47,7 +64,8 @@ public class TMEvaluatorTest {
 					.setTermInLang("iu_roman", iuTerm_syll)
 					.setTermInLang("en", enTerm);
 				EvaluationResults results = new EvaluationResults();
-				new TMEvaluator().evaluateGlossaryTerm(glossEntry, results);
+				new TMEvaluator().setVerbosity(UserIO.Verbosity.Level2)
+					.evaluateGlossaryTerm(glossEntry, results);
 
 				int expTotalIUPresent = 0;
 				if (expIUPresent) {
@@ -83,7 +101,8 @@ public class TMEvaluatorTest {
 		};
 
 		new RunOnCases(cases, runner)
-//			.onlyCaseNums(2)
+//			.onlyCaseNums(5)
+//			.onlyCasesWithDescr("nunavut")
 			.run();
 	}
 
