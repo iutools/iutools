@@ -285,10 +285,10 @@ public class TMEvaluator {
 			if (typeFound == MatchType.STRICT) {
 				break;
 			}
-			int maxPos = Math.min(ii+5,textTokens.length-1);
+			int maxPos = Math.min(ii+5,textTokens.length);
 			for (int jj=maxPos; jj >= ii; jj--) {
 				String[] textTermTokens = Arrays.copyOfRange(textTokens, ii, jj);
-				Pair<MatchType,String> match = sameTerm(termTokens, textTokens);
+				Pair<MatchType,String> match = sameTerm(termTokens, textTermTokens);
 				if (typeFound == null || isMoreLenient(typeFound, match.getLeft())) {
 					typeFound = match.getLeft();
 					occFound = match.getRight();
@@ -490,7 +490,10 @@ public class TMEvaluator {
 	public static enum MatchType {LENIENT_OVERLAP, LENIENT, STRICT};
 
 	public static boolean isMoreLenient(MatchType sense1, MatchType sense2) {
-		boolean answer = (sense1.ordinal() < sense2.ordinal());
+		boolean answer = false;
+		if (sense1 != null && sense2 != null) {
+			answer = (sense1.ordinal() < sense2.ordinal());
+		}
 		return answer;
 	}
 }

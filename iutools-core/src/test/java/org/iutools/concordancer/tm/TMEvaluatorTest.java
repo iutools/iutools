@@ -14,15 +14,15 @@ import java.util.function.Consumer;
 
 public class TMEvaluatorTest {
 
-	@Test @Disabled
+	@Test
 	public void test__findTerm__VariousCases() throws Exception {
 		Case[] cases = new Case[] {
 			new Case("singleword STRICT match",
-				"hello", "hello world",
-				MatchType.STRICT, "hell"),
+				"hello world", "hello world",
+				MatchType.STRICT, "hello world"),
 			new Case("singleword LENIENT match",
 				"greetings", "greet the world",
-				MatchType.LENIENT, "hell"),
+				MatchType.LENIENT, "greet*"),
 			new Case("singleword NO match",
 				"greetings", "hello world",
 				null, null),
@@ -32,12 +32,12 @@ public class TMEvaluatorTest {
 				MatchType.STRICT, "hello world"),
 			new Case("multiword LENIENT match",
 				"greetings world", "greet world",
-				MatchType.LENIENT, "greet"),
+				MatchType.LENIENT, "greet* world*"),
 			new Case("multiword LENIENT_OVERLAP match",
 				"greetings universe", "greet world",
-				MatchType.LENIENT_OVERLAP, "greet"),
+				MatchType.LENIENT_OVERLAP, "greet*"),
 			new Case("multiword NO match",
-				"greetings universe", "greet world",
+				"greetings universe", "hello world",
 				null, null),
 		};
 		Consumer<Case> runner = (aCase) -> {
@@ -63,7 +63,7 @@ public class TMEvaluatorTest {
 			}
 		};
 		new RunOnCases(cases, runner)
-//			.onlyCaseNums(7)
+//			.onlyCaseNums(2)
 			.run();
 	}
 
