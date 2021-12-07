@@ -47,7 +47,7 @@ public class WordSpotter {
 
 	private List<String> splitText(String lang) throws WordSpotterException {
 		String text = pair.langText.get(lang);
-		String[] tokens = pair.tokens4langLowercased.get(lang);
+		String[] tokens = pair.getTokensLowercased(lang);
 		List<String> splitElts = splitText(text, tokens);
 		return splitElts;
 	}
@@ -313,7 +313,7 @@ public class WordSpotter {
 			if (tLogger.isTraceEnabled()) {
 				tLogger.trace("lang=" + lang + ", tokensToHighlight=" + mapper.writeValueAsString(tokensToHighlight));
 			}
-			String[] allTokens = pair.tokens4lang.get(lang);
+			String[] allTokens = pair.getTokens(lang);
 			Pattern pattToHighlight = pattTokensToHighlight(tokensToHighlight, allTokens);
 			tLogger.trace("pattToHighlight="+pattToHighlight);
 			String startTag = "<" + tagName + ">";

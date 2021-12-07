@@ -39,7 +39,7 @@ public class MultilingualDictTest {
 					"ammut/1a", "u/1nv", "ma/1vv", "juq/1vn", "siuq/1nv",
 					"jusik/tv-ger-2d")
 				.setOrigWordTranslations(
-					"clam diving", "clam ... clams", "diving ... clams")
+					"clam", "clam diving", "clam ... clams", "diving ... clams")
 				.setMinExamples(3)
 				.setRelatedWords(
 					"ammuumajurniartiit", "ammuumajuqtarnirmut",
@@ -59,7 +59,7 @@ public class MultilingualDictTest {
 					"ammut/1a", "u/1nv", "ma/1vv", "juq/1vn", "siuq/1nv",
 					"jusik/tv-ger-2d")
 				.setOrigWordTranslations(
-					"clam diving", "clam ... clams", "diving ... clams")
+					"clam", "clam diving", "clam ... clams", "diving ... clams")
 				.setMinExamples(3)
 				.setRelatedWords(
 					"ᐊᒻᒨᒪᔪᕐᓂᐊᕐᑏᑦ", "ᐊᒻᒨᒪᔪᖅᑕᕐᓂᕐᒧᑦ", "ᐊᒻᒨᒪᔪᖅᑕᖅᑏᑦ", "ᐊᒻᒨᒪᔪᖅᑕᖅᑐᑎᒃ",
@@ -89,7 +89,7 @@ public class MultilingualDictTest {
 				.setMinExamples(5)
 				.setOrigWordTranslations(new String[]{
 					"sea", "ship", "shipping",
-					"sealift arrives", "resupply ... dry ... cargo",
+					"sealift arrives", "resupply ... dry cargo",
 				}),
 
 			new MultilingualDictCase("iu-kiugavinnga", "kiugavinnga")

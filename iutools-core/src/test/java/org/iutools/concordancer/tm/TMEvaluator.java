@@ -1,10 +1,12 @@
 package org.iutools.concordancer.tm;
+
 import ca.nrc.data.file.ObjectStreamReader;
 import ca.nrc.ui.commandline.UserIO;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.Logger;
 import org.iutools.concordancer.Alignment_ES;
+import org.iutools.concordancer.SentencePair;
 import org.iutools.script.TransCoder;
 import org.iutools.worddict.GlossaryEntry;
 
@@ -117,11 +119,15 @@ public class TMEvaluator {
 
 	private Pair<MatchType,String> checkEnTermSpotting(
 		Alignment_ES algn, String iuTerm_syll, String enTerm) throws TranslationMemoryException {
+		Logger logger = Logger.getLogger("org.iutools.concordancer.tm.TMEvaluator.checkEnTermSpotting");
 		Pair<MatchType,String> match = Pair.of(null, null);
 		try {
+			logger.trace("Spotting translation for iuTerm_syll="+iuTerm_syll);
+			SentencePair pair = algn.sentencePair("iu", "en");
 			Map<String, String> spotting =
-				new WordSpotter(algn.sentencePair("iu", "en"))
+				new WordSpotter(pair)
 					.spot("iu", iuTerm_syll);
+			logger.trace("** DONE Spotting translation for iuTerm_syll="+iuTerm_syll);
 			String spottedEn = spotting.get("en");
 			if (spottedEn != null) {
 				match = findTerm(enTerm, spottedEn);
@@ -136,8 +142,11 @@ public class TMEvaluator {
 
 	private boolean alignmentContainsIU(
 		Alignment_ES algn, String expIUTerm_syll) throws TranslationMemoryException {
+		Logger logger = Logger.getLogger("org.iutools.concordancer.tm.TMEvaluator.alignmentContainsIU");
 		boolean answer = false;
 		String sentence = algn.sentence4lang("iu");
+		logger.trace("expIUTerm_syll="+expIUTerm_syll+", sentence="+sentence);
+
 		if (sentence != null) {
 			sentence = sentence.toLowerCase();
 			if (sentence.indexOf(expIUTerm_syll.toLowerCase()) >= 0) {
@@ -145,6 +154,7 @@ public class TMEvaluator {
 			}
 		}
 
+		logger.trace("returning answer="+answer);
 		return answer;
 	}
 
@@ -154,8 +164,6 @@ public class TMEvaluator {
 		Pair<MatchType, String> match = findTerm(enTerm, enSentence);
 		return match;
 	}
-
-
 
 	private static String truncateWord(String word) {
 		final int MAX_LEN = 5;
