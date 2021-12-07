@@ -197,20 +197,6 @@ public class TMEvaluator {
 		return regexp;
 	}
 
-	protected String lemmatizePhrase(String phrase) {
-		String[] tokens = phrase.split("[^a-zA-Z\\-]+");
-		for (int ii=0; ii < tokens.length; ii++) {
-			boolean last = false;
-			if (ii == tokens.length - 1) {
-				last = true;
-			}
-			tokens[ii] = lemmatizeWord(tokens[ii], last);
-		}
-
-		String regexp = StringUtils.join(tokens, "[^a-zA-Z\\-]+");
-		return regexp;
-	}
-
 	public Pair<MatchType, String> findTerm(String term, String inText) {
 		String[] termTokens = tokenize(term);
 		String[] textTokens = tokenize(inText);
