@@ -53,7 +53,6 @@ public class TMEvaluator {
 		userIO.echo(1);
 		try {
 			String enTerm = glossEntry.getTermInLang("en").toLowerCase();
-			String iuTerm_roman = glossEntry.getTermInLang("iu_roman").toLowerCase();
 			String iuTerm_syll = glossEntry.getTermInLang("iu_syll").toLowerCase();
 			AlignmentsSummary algnSummary =
 				analyzeAlignments(iuTerm_syll, enTerm);
@@ -157,23 +156,6 @@ public class TMEvaluator {
 	}
 
 
-
-	private String findTextInAlignment(
-		Alignment_ES algn, String lang, String expText, Boolean lenient) throws TranslationMemoryException {
-		if (lenient == null) {
-			lenient = false;
-		}
-		if (lang.equals("iu")) {
-			lenient = false;
-		}
-
-		String sentence = algn.sentence4lang(lang);
-		String found = null;
-		if (sentence != null) {
-			found = findText(expText, sentence, lenient);
-		}
-		return found;
-	}
 
 	private static String truncateWord(String word) {
 		final int MAX_LEN = 5;
@@ -302,89 +284,6 @@ public class TMEvaluator {
 
 	public static String[] tokenize(String text) {
 		return text.split("\\s+");
-	}
-
-
-	public String findText(String findWhat, String text, Boolean lenient) throws TranslationMemoryException {
-		if (lenient == null) {
-			lenient = false;
-		}
-		if (lenient) {
-			findWhat = removeRegexpChars(findWhat);
-			text = removeRegexpChars(text);
-		}
-		String found = null;
-		if (lenient) {
-			found = findText_Lenient(findWhat, text);
-		} else {
-			found = findText_Strict(findWhat, text);
-		}
-
-		return found;
-	}
-
-	private String removeRegexpChars(String text) {
-		text = text.replaceAll("[^a-zA-Z\\-\\s\\d]+", "");
-		return text;
-	}
-
-	private String findText_Lenient(String what, String inText) {
-		String found = null;
-		String regexp = lemmatizePhrase(what);
-		Matcher matcher =
-			Pattern.compile(regexp, Pattern.CASE_INSENSITIVE).matcher(inText);
-
-		if (matcher.find()) {
-			found = matcher.group();
-		}
-		return found;
-	}
-
-	private String findText_Strict(String what, String inText) {
-		String found = null;
-		int pos = inText.indexOf(what);
-		if (pos >= 0) {
-			found = what;
-		}
-		return found;
-	}
-
-	public String partialOverlap(String str1, String str2, Boolean lenient) {
-		if (lenient == null) {
-			lenient = false;
-		}
-		String[] tokens1 = str1.split("\\s+");
-		String[] tokens2 = str2.split("\\s+");
-
-		if (lenient) {
-			tokens1 = truncateWords(tokens1, lenient);
-			tokens2 = truncateWords(tokens2, lenient);
-		}
-
-		String overlap = null;
-
-		for (int ii=0; ii < tokens1.length; ii ++) {
-			if (overlap != null) {break;}
-			String tok1 = tokens1[ii];
-			if (tok1.length() <= 3) {continue;}
-			if (lenient) {
-				tok1 = truncateWord(tok1);
-			}
-			for (int jj=0; jj < tokens2.length; jj ++) {
-				if (overlap != null) {break;}
-				String tok2 = tokens2[jj];
-				if (tok2.length() <= 3) {continue;}
-				if (lenient) {
-					tok2 = truncateWord(tok2);
-				}
-
-				if (tok1.equals(tok2)) {
-					overlap = tok1;
-				}
-			}
-		}
-
-		return overlap;
 	}
 
 	private void printReport(EvaluationResults results) {
