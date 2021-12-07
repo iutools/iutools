@@ -44,18 +44,11 @@ public class TMEvaluationTest {
 
 			.rateENSpotted_inSense(MatchType.STRICT, 0.8)
 			.rateENSpotted_inSense(MatchType.LENIENT, 0.8)
-//			.rateENSpotted_inSense(MatchType.LENIENT_OVERLAP, 1.0)
-		;
-
-
-
-//			.rateENSpotted_Strict(1.0)
-//			.rateENSpotted_Lenient(0.4)
-//			.rateENSpotted_LenientOverlap(-2)
+			.rateENSpotted_inSense(MatchType.LENIENT_OVERLAP, 1.0)
 		;
 	}
 
-	@Test @Disabled
+	@Test
 	public void test_evaluateOnWikipediaGlossary_ALL() throws Exception {
 		String glossaryPath = IUConfig.getIUDataPath("data/glossaries/wpGlossary.json");
 		Integer firstN = null;
@@ -64,16 +57,30 @@ public class TMEvaluationTest {
 				.evaluate(Paths.get(glossaryPath), firstN);
 		new AssertEvaluationResults(results)
 			.totalGlossaryEntries(556)
+
 			.totaIUPresent(190)
-			.totalENPresent_Strict(55)
-			.totalENPresent_Lenient(104)
-			.totalENSpotted_Strict(48)
-			.totalENSpotted_Lenient(69)
-			.totalENSpotted_LenientOverlap(-2)
-			.rateENSpotted_Strict(0.872)
-			.rateENSpotted_Lenient(0.663)
-			.rateENSpotted_LenientOverlap(-2)
+
+			.totalENPresent_inSense(MatchType.STRICT, 99)
+			.totalENPresent_inSense(MatchType.LENIENT, 3)
+			.totalENPresent_inSense(MatchType.LENIENT_OVERLAP, 3)
+
+			.totalENSpotted_inSense(MatchType.STRICT, 69)
+			.totalENSpotted_inSense(MatchType.LENIENT, 4)
+			.totalENSpotted_inSense(MatchType.LENIENT_OVERLAP, 2)
+
+			.totalENPresent_atLeastInSense(MatchType.STRICT,99)
+			.totalENPresent_atLeastInSense(MatchType.LENIENT, 102)
+			.totalENPresent_atLeastInSense(MatchType.LENIENT_OVERLAP, 105)
+
+			.totalENSpotted_atLeastInSense(MatchType.STRICT, 69)
+			.totalENSpotted_atLeastInSense(MatchType.LENIENT, 73)
+			.totalENSpotted_atLeastInSense(MatchType.LENIENT_OVERLAP, 75)
+
+			.rateENSpotted_inSense(MatchType.STRICT, 0.697)
+			.rateENSpotted_inSense(MatchType.LENIENT, 0.715)
+			.rateENSpotted_inSense(MatchType.LENIENT_OVERLAP, 0.714)
 		;
+
 	}
 
 }

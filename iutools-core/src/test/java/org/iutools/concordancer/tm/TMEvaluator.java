@@ -4,13 +4,16 @@ import ca.nrc.data.file.ObjectStreamReader;
 import ca.nrc.ui.commandline.UserIO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.log4j.Logger;
 import org.iutools.concordancer.Alignment_ES;
 import org.iutools.concordancer.SentencePair;
+import org.iutools.corpus.CompiledCorpusRegistry;
 import org.iutools.script.TransCoder;
 import org.iutools.worddict.GlossaryEntry;
+import org.junit.platform.engine.support.discovery.SelectorResolver;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -321,38 +324,42 @@ public class TMEvaluator {
 	}
 
 	private void printReport(EvaluationResults results) {
+		MatchType[] types = MatchType.values();
+		ArrayUtils.reverse(types);
 		userIO.echo("\n\n");
-		userIO.echo("# entries in glossary         : "+results.totalEntries);
-		userIO.echo();
-		userIO.echo("Presence of IU term and EN translation in Hansard sentence pairs");
+		userIO.echo("# entries in glossary: "+results.totalEntries);
 		{
 			userIO.echo(1);
-			userIO.echo("IU term");
+			userIO.echo("IU term PRESENT: "+results.totalIUPresent_Orig);
+			userIO.echo("EN term PRESENT:");
 			{
 				userIO.echo(1);
-				userIO.echo("found="+ results.totalIUPresent_Orig +"; absent="+results.totalIUAbsentOrig());
+				for (MatchType type: types) {
+					userIO.echo(type+": "+results.totalEnPresent_inSense(type)+
+					" (cum: "+results.totalEnPresent_atLeastInSense(type)+")");
+				}
 				userIO.echo(-1);
 			}
-			userIO.echo("EN translation (only for the "+results.totalIUPresent_Orig +" IU terms that appear in TM) ");
+			userIO.echo("EN translation SPOTTED:");
 			{
 				userIO.echo(1);
-				userIO.echo(
-					"FOUND: strict="+results.totalENPresent_Strict +"; "+
-					"lenient="+results.totalENPresent_Lenient);
-				userIO.echo(
-					"ABSENT: strict="+results.totalENAbsent_Orig_Strict()+"; "+
-					"lenient="+results.totalENAbsent_Orig_Lenient());
+				for (MatchType type: types) {
+					userIO.echo(type+": "+results.totalEnSpotted_inSense(type)+
+					" (cum: "+results.totalEnSpotted_atLeastInSense(type)+")");
+				}
 				userIO.echo(-1);
+			}
+		}
+		userIO.echo("");
+		userIO.echo("Translation Spotting rates");
+		{
+			userIO.echo(1);
+			for (MatchType type: types) {
+				userIO.echo(type+": "+results.rateENSpotted_inSense(type));
 			}
 			userIO.echo(-1);
 		}
-		userIO.echo("Correct spottings of the EN translation");
-		{
-			userIO.echo(1);
-			userIO.echo("Absolute #: strict="+results.totalENSpotted_Strict+"; lenient="+results.totalENSpotted_Lenient);
-			userIO.echo("rates: strict="+results.rateENSpotted_Strict()+"; lenient="+results.rateENSpotted_Lenient());
-			userIO.echo(-1);
-		}
+
 	}
 
 	public static class AlignmentsSummary {
