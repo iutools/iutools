@@ -26,24 +26,22 @@ public class TMEvaluationTest {
 
 			.totaIUPresent(7)
 
-			.totalENPresent_inSense(MatchType.STRICT, 4)
+			.totalENPresent_inSense(MatchType.STRICT, 5)
 			.totalENPresent_inSense(MatchType.LENIENT, 0)
-			.totalENPresent_inSense(MatchType.LENIENT_OVERLAP, 1)
+			.totalENPresent_inSense(MatchType.LENIENT_OVERLAP, 0)
 
 			.totalENSpotted_inSense(MatchType.STRICT, 4)
-			.totalENSpotted_inSense(MatchType.LENIENT, 1)
-			.totalENSpotted_inSense(MatchType.LENIENT_OVERLAP, 0)
+			.totalENSpotted_inSense(MatchType.LENIENT, 0)
+			.totalENSpotted_inSense(MatchType.LENIENT_OVERLAP, 1)
 
-			.totalENPresent_atLeastInSense(MatchType.STRICT, 4)
-			.totalENPresent_atLeastInSense(MatchType.LENIENT, 4)
+			.totalENPresent_atLeastInSense(MatchType.STRICT, 5)
+			.totalENPresent_atLeastInSense(MatchType.LENIENT, 5)
 			.totalENPresent_atLeastInSense(MatchType.LENIENT_OVERLAP, 5)
 
 			.totalENSpotted_atLeastInSense(MatchType.STRICT, 4)
-			.totalENSpotted_atLeastInSense(MatchType.LENIENT, 5)
-			.fail("Why is the total of lenient SPOTTING is greater that lenient PRESENT???")
+			.totalENSpotted_atLeastInSense(MatchType.LENIENT, 4)
+			.totalENSpotted_atLeastInSense(MatchType.LENIENT_OVERLAP, 5)
 
-//			.totalENSpotted_atLeastInSense(MatchType.LENIENT_OVERLAP, 5)
-//
 //			.rateENSpotted_inSense(MatchType.STRICT, 1.0)
 //			.rateENSpotted_inSense(MatchType.LENIENT, 5.0/4.0)
 //			.rateENSpotted_inSense(MatchType.LENIENT_OVERLAP, 1.0)
