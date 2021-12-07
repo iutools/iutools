@@ -12,7 +12,7 @@ import org.iutools.concordancer.tm.TMEvaluator.MatchType;
 
 public class TMEvaluationTest {
 
-	@Test @Disabled
+	@Test
 	public void test_evaluateOnWikipediaGlossary_first20() throws Exception {
 		String glossaryPath = IUConfig.getIUDataPath("data/glossaries/wpGlossary.json");
 		int firstN = 20;

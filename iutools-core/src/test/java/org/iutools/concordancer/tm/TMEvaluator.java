@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.concordancer.Alignment_ES;
+import org.iutools.script.TransCoder;
 import org.iutools.worddict.GlossaryEntry;
-import org.junit.platform.engine.support.discovery.SelectorResolver;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -41,14 +41,15 @@ public class TMEvaluator {
 	}
 
 	private void onNewGlossaryEntry(GlossaryEntry entry, EvaluationResults results) throws Exception {
-		String term = entry.getTermInLang("iu_roman");
+		String term_roman = entry.getTermInLang("iu_roman");
+		String term_syll = TransCoder.ensureSyllabic(term_roman);
 		results.totalEntries++;
-		userIO.echo(results.totalEntries+". iu:"+term+", en:"+entry.getTermInLang("en")+" ...");
+		userIO.echo(results.totalEntries+". iu:"+term_roman+" ("+term_syll+"), en:"+entry.getTermInLang("en")+" ...");
 		evaluateGlossaryTerm(entry, results);
 	}
 
 
-	private void evaluateGlossaryTerm(GlossaryEntry glossEntry, EvaluationResults results) throws Exception {
+	protected void evaluateGlossaryTerm(GlossaryEntry glossEntry, EvaluationResults results) throws Exception {
 		userIO.echo(1);
 		try {
 			String enTerm = glossEntry.getTermInLang("en").toLowerCase();
@@ -58,32 +59,18 @@ public class TMEvaluator {
 				analyzeAlignments(iuTerm_syll, enTerm);
 
 			if (algnSummary.iuTermPresent) {
-				userIO.echo("IU term was present in the STRICT sense");
+				userIO.echo("IU term was present");
 				results.totalIUPresent_Orig++;
 			}
-			if (algnSummary.enTranslPresent_strict) {
-				results.totalENPresent_Strict++;
-				userIO.echo("EN translation was PRESENT in the STRICT sense");
+			if (algnSummary.enTermPresent_Sense != null) {
+				userIO.echo("EN term was PRESENT in the sense "+algnSummary.enTermPresent_Sense+
+					": "+algnSummary.enTermPresent_occur);
+				results.enPresent_Histogram.updateFreq(algnSummary.enTermPresent_Sense);
 			}
-			if (algnSummary.enTranslPresent_lenient) {
-				userIO.echo("EN translation was PRESENT in the LENIENT sense");
-				if (!algnSummary.enTranslPresent_lenient_matches.isEmpty()) {
-					userIO.echo("   ** LENIENT occurences="+mapper.writeValueAsString(algnSummary.enTranslPresent_lenient_matches));
-				}
-				results.totalENPresent_Lenient++;
-			}
-
-			if (algnSummary.enTranslSpotted_strict) {
-				userIO.echo("EN translation was SPOTTED in the STRICT sense");
-				results.totalENSpotted_Strict++;
-			}
-
-			if (algnSummary.enTranslSpotted_lenient) {
-				userIO.echo("EN translation was SPOTTED in the LENIENT sense");
-				if (!algnSummary.enTranslSpotted_lenient_matches.isEmpty()) {
-					userIO.echo("   ** LENIENT occurences="+mapper.writeValueAsString(algnSummary.enTranslSpotted_lenient_matches));
-				}
-				results.totalENSpotted_Lenient++;
+			if (algnSummary.enTermSpotted_Sense != null) {
+				userIO.echo("EN term was SPOTTED in the sense "+algnSummary.enTermSpotted_Sense+
+				": "+algnSummary.enTermSpotted_occur);
+				results.enPresent_Histogram.updateFreq(algnSummary.enTermPresent_Sense);
 			}
 		} finally {
 			userIO.echo(-1);
@@ -103,47 +90,22 @@ public class TMEvaluator {
 				if (alignmentContains(algn, "iu", iuTerm_syll)) {
 					analysis.iuTermPresent = true;
 					totalAlignments++;
-					if (alignmentContains(algn, "en", enTerm)) {
-						analysis.enTranslPresent_strict = true;
+					Pair<MatchType,String> match = findENTermInAlignment(algn, enTerm);
+					if (analysis.enTermPresent_Sense == null ||
+						isMoreLenient(analysis.enTermPresent_Sense, match.getLeft())) {
+						analysis.enTermPresent_Sense = match.getLeft();
+						analysis.enTermPresent_occur = match.getRight();
 						attemptSpotting = true;
-					} else {
-						String found = findTextInAlignment(algn, "en", enTerm, true);
-						if (found != null) {
-							attemptSpotting = true;
-							analysis.enTranslPresent_lenient = true;
-							analysis.enTranslPresent_lenient_matches.add(found);
-						}
 					}
+
 					if (attemptSpotting) {
-						SpottingCheck spottingStatus =
-							checkEnTermSpotting(algn, iuTerm_syll, enTerm);
-						if (spottingStatus.spottedStrict) {
-							analysis.enTranslSpotted_strict = true;
-						}
-						if (null != spottingStatus.spottedLenient) {
-							analysis.enTranslSpotted_lenient = true;
-							analysis.enTranslSpotted_lenient_matches.add(spottingStatus.spottedLenient);
-						}
-						if (null != spottingStatus.spottedLenientOverlap) {
-							analysis.enTranslSpotted_lenientoverlap = true;
-						}
-					}
+						match = checkEnTermSpotting(algn, iuTerm_syll, enTerm);
 
-					if (analysis.enTranslPresent_strict) {
-						// Strict presence implies lenient as well
-						analysis.enTranslPresent_lenient = true;
-					}
-
-					if (analysis.enTranslSpotted_strict) {
-						// Strict spotting implies lenient as well
-						analysis.enTranslSpotted_lenient = true;
-					}
-
-					if (analysis.enTranslSpotted_strict) {
-						// We found at least one alignment where IU term is present
-						// and EN translation was spotted in the STRICT sense.
-						// No need to go further.
-						break;
+						if (analysis.enTermSpotted_Sense == null ||
+							isMoreLenient(analysis.enTermSpotted_Sense, match.getLeft())) {
+							analysis.enTermSpotted_Sense = match.getLeft();
+							analysis.enTermSpotted_occur = match.getRight();
+						}
 					}
 				}
 			}
@@ -154,36 +116,22 @@ public class TMEvaluator {
 		}
 	}
 
-	private SpottingCheck checkEnTermSpotting(
+	private Pair<MatchType,String> checkEnTermSpotting(
 		Alignment_ES algn, String iuTerm_syll, String enTerm) throws TranslationMemoryException {
-		SpottingCheck check = new SpottingCheck();
-//		boolean spottedStrict = false;
-//		String spottedLenient = null;
-//		String spottedLenientOverlap = null;
+		Pair<MatchType,String> match = Pair.of(null, null);
 		try {
 			Map<String, String> spotting =
 				new WordSpotter(algn.sentencePair("iu", "en"))
 					.spot("iu", iuTerm_syll);
 			String spottedEn = spotting.get("en");
 			if (spottedEn != null) {
-				spottedEn = spottedEn.replaceAll("\\s+\\.\\.\\.\\s+", " ");
-				if (spottedEn.equals(enTerm)) {
-					check.spottedStrict = true;
-				}
-				check.spottedLenient = findText(spottedEn, enTerm, true);
-				if (check.spottedLenient == null) {
-					check.spottedLenient = findText(enTerm, spottedEn, true);
-				}
-				check.spottedLenientOverlap = partialOverlap(enTerm, spottedEn, true);
-//				if (null != partialOverlap(enTerm, spottedEn, true)) {
-//					check.spottedLenientOverlap = true;
-//				}
+				match = findTerm(enTerm, spottedEn);
 			}
 		} catch (WordSpotterException e) {
 			throw new TranslationMemoryException(e);
 		}
 
-		return check;
+		return match;
 	}
 
 
@@ -198,6 +146,14 @@ public class TMEvaluator {
 		boolean answer = (found != null);
 		return answer;
 	}
+
+
+	private Pair<MatchType, String> findENTermInAlignment(Alignment_ES algn, String enTerm) {
+		String enSentence = algn.sentence4lang("en");
+		Pair<MatchType, String> match = findTerm(enTerm, enSentence);
+		return match;
+	}
+
 
 
 	private String findTextInAlignment(
@@ -471,20 +427,19 @@ public class TMEvaluator {
 
 	public static class AlignmentsSummary {
 		boolean  iuTermPresent= false;
-		boolean enTranslPresent_strict = false;
-		boolean enTranslPresent_lenient = false;
+		MatchType enTermPresent_Sense = null;
+		String enTermPresent_occur = null;
+		MatchType enTermSpotted_Sense = null;
+		String enTermSpotted_occur = null;
 		Set<String> allTranslations = new HashSet<String>();
-		Set<String> enTranslPresent_lenient_matches = new HashSet<String>();
-		boolean enTranslSpotted_strict = false;
-		boolean enTranslSpotted_lenient = false;
-		Set<String> enTranslSpotted_lenient_matches = new HashSet<String>();
-		boolean enTranslSpotted_lenientoverlap = false;
-	}
 
-	public static class SpottingCheck {
-		Boolean spottedStrict = false;
-		String spottedLenient = null;
-		String spottedLenientOverlap = null;
+		//		boolean enTranslPresent_strict = false;
+//		boolean enTranslPresent_lenient = false;
+//		Set<String> enTranslPresent_lenient_matches = new HashSet<String>();
+//		boolean enTranslSpotted_strict = false;
+//		boolean enTranslSpotted_lenient = false;
+//		Set<String> enTranslSpotted_lenient_matches = new HashSet<String>();
+//		boolean enTranslSpotted_lenientoverlap = false;
 	}
 
 	public static enum MatchType {LENIENT_OVERLAP, LENIENT, STRICT};

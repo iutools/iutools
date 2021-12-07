@@ -1,9 +1,13 @@
 package org.iutools.concordancer.tm;
 
+import ca.nrc.dtrc.stats.FrequencyHistogram;
+import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.AssertString;
 import ca.nrc.testing.RunOnCases;
 import ca.nrc.testing.RunOnCases.*;
 import org.apache.commons.lang3.tuple.Pair;
+import org.iutools.script.TransCoder;
+import org.iutools.worddict.GlossaryEntry;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -13,6 +17,75 @@ import org.iutools.concordancer.tm.TMEvaluator.MatchType;
 import java.util.function.Consumer;
 
 public class TMEvaluatorTest {
+
+	@Test
+	public void test__evaluateGlossaryTerm__VariousCases() throws Exception {
+		Case[] cases = new Case[] {
+			// A case where the IU term is absent from the TM
+			new Case("ullugiak",
+				"ullugiak", "astronomical object",
+				false, null, null),
+
+			// These next cases are those among the first 20 entries of WP where
+			// we found the IU term in the TM
+			new Case("IU absent",
+				"amiq", "???",
+				true, null, null),
+
+		};
+
+		Consumer<Case> runner = (aCase) -> {
+			String iuTerm_roman = (String) aCase.data[0];
+			String enTerm = (String) aCase.data[1];
+			Boolean expIUPresent = (Boolean) aCase.data[2];
+			MatchType expENPresent_Sense = (MatchType) aCase.data[3];
+			MatchType expENSpotted_Sense = (MatchType) aCase.data[4];
+
+			try {
+				String iuTerm_syll = TransCoder.ensureSyllabic(iuTerm_roman);
+				GlossaryEntry glossEntry = new GlossaryEntry()
+					.setTermInLang("iu_roman", iuTerm_syll)
+					.setTermInLang("en", enTerm);
+				EvaluationResults results = new EvaluationResults();
+				new TMEvaluator().evaluateGlossaryTerm(glossEntry, results);
+
+				int expTotalIUPresent = 0;
+				if (expIUPresent) {
+					expTotalIUPresent = 1;
+				}
+				Assertions.assertEquals(
+					expTotalIUPresent, results.totalIUPresent_Orig,
+					"Wrong value for totalIUPresent_Orig"
+				);
+
+				FrequencyHistogram<MatchType> expENPresent_hist =
+					new FrequencyHistogram<MatchType>();
+				if (expENPresent_Sense != null) {
+						expENPresent_hist.updateFreq(expENPresent_Sense);
+				}
+				AssertObject.assertDeepEquals(
+					"Wrong frequency histogram for enPresent_Histogram",
+					expENPresent_hist, results.enPresent_Histogram
+				);
+
+				FrequencyHistogram<MatchType> expENSpotted_hist =
+					new FrequencyHistogram<MatchType>();
+				if (expENSpotted_Sense != null) {
+						expENSpotted_hist.updateFreq(expENSpotted_Sense);
+				}
+				AssertObject.assertDeepEquals(
+					"Wrong frequency histogram for enSpotted_Histogram",
+					expENSpotted_hist, results.enSpotted_Histogram
+				);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		};
+
+		new RunOnCases(cases, runner)
+//			.onlyCaseNums(2)
+			.run();
+	}
 
 	@Test
 	public void test__findTerm__VariousCases() throws Exception {
@@ -166,6 +239,7 @@ public class TMEvaluatorTest {
 	public void test__findText__VariousCases() throws Exception {
 		Case[] cases = new Case[] {
 			new Case("singleword-strict-found", "hello", false, "hello world", "hello"),
+			new Case("singleword-strict-notfound", "greetings", false, "hello world", null),
 			new Case("singleword-strict-notfound", "greetings", false, "hello world", null),
 			new Case("multiword-strict-found", "hello world", false, "i say hello world", "hello world"),
 			new Case("multiword-strict-notfound", "greetings world", false, "hello world", null),
