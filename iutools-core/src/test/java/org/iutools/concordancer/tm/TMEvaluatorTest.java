@@ -115,7 +115,7 @@ public class TMEvaluatorTest {
 			.run();
 	}
 
-	@Test @Disabled
+	@Test
 	public void test__isMoreLenient__VariousCases() throws Exception {
 		Case[] cases = new Case[] {
 			new Case("STRICT == STRICT",
@@ -138,6 +138,13 @@ public class TMEvaluatorTest {
 				true, MatchType.LENIENT_OVERLAP, MatchType.LENIENT),
 			new Case("LENIENT_OVERLAP == LENIENT_OVERLAP",
 				false, MatchType.LENIENT_OVERLAP, MatchType.LENIENT_OVERLAP),
+
+			new Case("null vs non-null --> false",
+				false, null, MatchType.LENIENT_OVERLAP),
+			new Case("non-null vs null --> false",
+				false, MatchType.LENIENT_OVERLAP, null),
+			new Case("null vs null --> false",
+				false, null, null),
 		};
 
 		Consumer<Case> runner = (aCase) -> {
