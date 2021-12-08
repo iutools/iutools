@@ -1,5 +1,7 @@
 package org.iutools.worddict;
 
+import ca.nrc.dtrc.stats.FrequencyHistogram;
+import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.Asserter;
 import org.junit.jupiter.api.Assertions;
 
@@ -32,5 +34,16 @@ public class AssertDictEvaluationResults extends Asserter<DictEvaluationResults>
 
 	public DictEvaluationResults results() {
 		return (DictEvaluationResults)gotObject;
+	}
+
+	public AssertDictEvaluationResults iuPresentHistogramEquals(
+		FrequencyHistogram<MultilingualDict.WhatTerm> expIUPresent_hist)
+	throws Exception {
+
+		AssertObject.assertDeepEquals(
+			baseMessage+"\nWrong histogram for IU term presence",
+			expIUPresent_hist, results().iuPresent_hist
+		);
+		return this;
 	}
 }

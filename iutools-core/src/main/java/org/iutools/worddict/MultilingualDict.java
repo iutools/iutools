@@ -38,6 +38,8 @@ import java.util.concurrent.TimeoutException;
  */
 public class MultilingualDict {
 
+	public static enum WhatTerm {ORIGINAL, RELATED}
+
 	private static final long MAX_WORDS = 20;
 	private static MultilingualDict _singleton = null;
 
