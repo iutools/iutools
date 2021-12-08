@@ -37,7 +37,7 @@ public class AssertDictEvaluationResults extends Asserter<DictEvaluationResults>
 
 	public AssertDictEvaluationResults totalENSpotted(
 		MatchType inSense, int expTotal) {
-		long gotTotal = results().totalIUSpotted(inSense);
+		long gotTotal = results().totalENSpotted(inSense);
 		Assertions.assertEquals(
 			expTotal, gotTotal,
 			baseMessage+"Wrong number of glossary entries that where EN translation was spotted in sense:  "+ inSense
@@ -47,7 +47,7 @@ public class AssertDictEvaluationResults extends Asserter<DictEvaluationResults>
 
 	public AssertDictEvaluationResults totalENSpotted_atLeastInSense(
 		MatchType inSense, int expTotal) {
-		long gotTotal = results().totalIUSpotted_atLeastInSense(inSense);
+		long gotTotal = results().totalENSpotted_atLeastInSense(inSense);
 		Assertions.assertEquals(
 			expTotal, gotTotal,
 			baseMessage+"Wrong number of glossary entries that where EN translation was spotted in at least sense:  "+ inSense

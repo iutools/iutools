@@ -119,7 +119,35 @@ public class DictEvaluator {
 
 
 	private void printReport(DictEvaluationResults results) {
-		userIO.echo("# Glossary entries: "+results.totalGlossaryEntries);
-
+		userIO.echo("\n# Glossary entries: "+results.totalGlossaryEntries);
+		userIO.echo();
+		userIO.echo("Entries with IU present");
+		{
+			userIO.echo(1);
+			for (WhatTerm whatTerm: new WhatTerm[] {WhatTerm.ORIGINAL, WhatTerm.RELATED}) {
+				userIO.echo(whatTerm + ": " + results.totalIUPresent(whatTerm));
+			}
+			userIO.echo(-1);
+		}
+		userIO.echo();
+		userIO.echo("Entries with EN term SPOTTED");
+		{
+			userIO.echo(1);
+			for (MatchType aSense: TMEvaluator.matchTypes()) {
+				userIO.echo(
+					"in sense "+aSense+": "+results.totalENSpotted(aSense)+
+					" (cum: "+results.totalENSpotted_atLeastInSense(aSense)+")");
+			}
+			userIO.echo(-1);
+		}
+		userIO.echo();
+		userIO.echo("EN spotting rates");
+		{
+			userIO.echo(1);
+			for (MatchType aSense: TMEvaluator.matchTypes()) {
+				userIO.echo("in sense "+aSense+": "+results.rateENSpotted(aSense));
+			}
+			userIO.echo(-1);
+		}
 	}
 }

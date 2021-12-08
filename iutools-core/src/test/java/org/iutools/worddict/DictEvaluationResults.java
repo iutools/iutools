@@ -4,7 +4,6 @@ import ca.nrc.dtrc.stats.FrequencyHistogram;
 import org.iutools.concordancer.tm.TMEvaluator;
 import org.iutools.concordancer.tm.TMEvaluator.*;
 import org.iutools.worddict.MultilingualDict.WhatTerm;
-import org.junit.platform.engine.support.discovery.SelectorResolver;
 
 public class DictEvaluationResults  {
 	int totalGlossaryEntries = 0;
@@ -25,15 +24,15 @@ public class DictEvaluationResults  {
 		return total;
 	}
 
-	public long totalIUSpotted(MatchType inSense) {
+	public long totalENSpotted(MatchType inSense) {
 		return iuSpotted_hist.frequency(inSense);
 	}
 
-	public long totalIUSpotted_atLeastInSense(MatchType inSense) {
+	public long totalENSpotted_atLeastInSense(MatchType inSense) {
 		long total = 0;
 		if (inSense != null) {
 			for (MatchType aSense : TMEvaluator.matchTypes()) {
-				total += totalIUSpotted(aSense);
+				total += totalENSpotted(aSense);
 				if (aSense == inSense) {
 					break;
 				}
@@ -56,7 +55,7 @@ public class DictEvaluationResults  {
 		long outOfTotal = totalIUPresent();
 		if (outOfTotal > 0) {
 			rate =
-				1.0 * totalIUSpotted_atLeastInSense(inSense) /
+				1.0 * totalENSpotted_atLeastInSense(inSense) /
 				outOfTotal;
 		}
 

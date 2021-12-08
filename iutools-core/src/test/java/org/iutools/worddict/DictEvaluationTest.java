@@ -36,15 +36,34 @@ public class DictEvaluationTest {
 			.rateENSpotted(MatchType.LENIENT, 3.0/9)
 			.rateENSpotted(MatchType.LENIENT_OVERLAP, 3.0/9)
 			;
-
 	}
 
-	@Test @Disabled
+	@Test
 	public void test_evaluateWordDict_OnWikipediaGlossary_AllEntries() throws Exception {
 		String glossaryPath = IUConfig.getIUDataPath("data/glossaries/wpGlossary.json");
 		DictEvaluationResults results =
 		new DictEvaluator()
 			.evaluate(Paths.get(glossaryPath));
+
+		new AssertDictEvaluationResults(results)
+			.totalGlossaryEntries(556)
+
+			.totalIUPresent(WhatTerm.ORIGINAL, 192)
+			.totalIUPresent(WhatTerm.RELATED, 77)
+
+			.totalENSpotted(MatchType.STRICT, 78)
+			.totalENSpotted(MatchType.LENIENT, 4)
+			.totalENSpotted(MatchType.LENIENT_OVERLAP, 3)
+
+			.totalENSpotted_atLeastInSense(MatchType.STRICT, 78)
+			.totalENSpotted_atLeastInSense(MatchType.LENIENT, 82)
+			.totalENSpotted_atLeastInSense(MatchType.LENIENT_OVERLAP, 85)
+
+			.rateENSpotted(MatchType.STRICT, 0.290)
+			.rateENSpotted(MatchType.LENIENT, 0.304)
+			.rateENSpotted(MatchType.LENIENT_OVERLAP, 0.316)
+			;
+
 	}
 
 }
