@@ -446,8 +446,20 @@ main {
     border: none;
 }
 
+/* Info icon */
 
-
+.div-info a {
+	display: block;
+	width: 30px;
+	height: 30px;
+	color: transparent;
+	font-size: 0;
+	margin-top: 6px;
+	background: #027dbb url(../imgs/info.png) no-repeat center;
+	background-size: 24px;
+	border-radius: 30px;
+	overflow: hidden;
+}
 
 /* Floating dialog class used by different apps */
 

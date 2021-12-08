@@ -5,6 +5,7 @@ import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.Asserter;
 import org.iutools.concordancer.tm.TMEvaluator;
 import org.iutools.worddict.MultilingualDict.*;
+import org.iutools.concordancer.tm.TMEvaluator.MatchType;
 import org.junit.jupiter.api.Assertions;
 
 public class AssertDictEvaluationResults extends Asserter<DictEvaluationResults> {
@@ -34,6 +35,27 @@ public class AssertDictEvaluationResults extends Asserter<DictEvaluationResults>
 		return this;
 	}
 
+	public AssertDictEvaluationResults totalENSpotted(
+		MatchType inSense, int expTotal) {
+		long gotTotal = results().totalIUSpotted(inSense);
+		Assertions.assertEquals(
+			expTotal, gotTotal,
+			baseMessage+"Wrong number of glossary entries that where EN translation was spotted in sense:  "+ inSense
+		);
+		return this;
+	}
+
+	public AssertDictEvaluationResults totalENSpotted_atLeastInSense(
+		MatchType inSense, int expTotal) {
+		long gotTotal = results().totalIUSpotted_atLeastInSense(inSense);
+		Assertions.assertEquals(
+			expTotal, gotTotal,
+			baseMessage+"Wrong number of glossary entries that where EN translation was spotted in at least sense:  "+ inSense
+		);
+		return this;
+	}
+
+
 	public DictEvaluationResults results() {
 		return (DictEvaluationResults)gotObject;
 	}
@@ -60,4 +82,11 @@ public class AssertDictEvaluationResults extends Asserter<DictEvaluationResults>
 		return this;
 	}
 
+	public AssertDictEvaluationResults rateENSpotted(MatchType inSense, double expRate) {
+		double gotRate = results().rateENSpotted(inSense);
+		Assertions.assertEquals(
+			expRate, gotRate, 0.001,
+			baseMessage+"\nWrong "+inSense+" spotting rate");
+		return this;
+	}
 }

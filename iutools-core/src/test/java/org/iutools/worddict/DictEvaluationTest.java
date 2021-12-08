@@ -1,7 +1,10 @@
 package org.iutools.worddict;
 
+import org.iutools.concordancer.tm.TMEvaluator;
 import org.iutools.config.IUConfig;
 import org.iutools.worddict.MultilingualDict.*;
+import org.iutools.concordancer.tm.TMEvaluator.MatchType;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Paths;
@@ -17,38 +20,28 @@ public class DictEvaluationTest {
 				.evaluate(Paths.get(glossaryPath), firstN);
 		new AssertDictEvaluationResults(results)
 			.totalGlossaryEntries(firstN)
+
 			.totalIUPresent(WhatTerm.ORIGINAL, 7)
 			.totalIUPresent(WhatTerm.RELATED, 2)
+
+			.totalENSpotted(MatchType.STRICT, 3)
+			.totalENSpotted(MatchType.LENIENT, 0)
+			.totalENSpotted(MatchType.LENIENT_OVERLAP, 0)
+
+			.totalENSpotted_atLeastInSense(MatchType.STRICT, 3)
+			.totalENSpotted_atLeastInSense(MatchType.LENIENT, 3)
+			.totalENSpotted_atLeastInSense(MatchType.LENIENT_OVERLAP,3)
+
+			.rateENSpotted(MatchType.STRICT, 3.0/9)
+			.rateENSpotted(MatchType.LENIENT, 3.0/9)
+			.rateENSpotted(MatchType.LENIENT_OVERLAP, 3.0/9)
 			;
-//		.totaIUPresent(7)
-//
-//		.totalENPresent_inSense(TMEvaluator.MatchType.STRICT, 5)
-//		.totalENPresent_inSense(TMEvaluator.MatchType.LENIENT, 0)
-//		.totalENPresent_inSense(TMEvaluator.MatchType.LENIENT_OVERLAP, 0)
-//
-//		.totalENSpotted_inSense(TMEvaluator.MatchType.STRICT, 4)
-//		.totalENSpotted_inSense(TMEvaluator.MatchType.LENIENT, 0)
-//		.totalENSpotted_inSense(TMEvaluator.MatchType.LENIENT_OVERLAP, 1)
-//
-//		.totalENPresent_atLeastInSense(TMEvaluator.MatchType.STRICT, 5)
-//		.totalENPresent_atLeastInSense(TMEvaluator.MatchType.LENIENT, 5)
-//		.totalENPresent_atLeastInSense(TMEvaluator.MatchType.LENIENT_OVERLAP, 5)
-//
-//		.totalENSpotted_atLeastInSense(TMEvaluator.MatchType.STRICT, 4)
-//		.totalENSpotted_atLeastInSense(TMEvaluator.MatchType.LENIENT, 4)
-//		.totalENSpotted_atLeastInSense(TMEvaluator.MatchType.LENIENT_OVERLAP, 5)
-//
-//		.rateENSpotted_inSense(TMEvaluator.MatchType.STRICT, 0.8)
-//		.rateENSpotted_inSense(TMEvaluator.MatchType.LENIENT, 0.8)
-//		.rateENSpotted_inSense(TMEvaluator.MatchType.LENIENT_OVERLAP, 1.0)
-//		;
 
 	}
 
-	@Test
+	@Test @Disabled
 	public void test_evaluateWordDict_OnWikipediaGlossary_AllEntries() throws Exception {
 		String glossaryPath = IUConfig.getIUDataPath("data/glossaries/wpGlossary.json");
-		int firstN = 20;
 		DictEvaluationResults results =
 		new DictEvaluator()
 			.evaluate(Paths.get(glossaryPath));

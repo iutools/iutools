@@ -323,9 +323,10 @@ public class TMEvaluator {
 		return text.split("\\s+");
 	}
 
+
 	private void printReport(EvaluationResults results) {
-		MatchType[] types = MatchType.values();
-		ArrayUtils.reverse(types);
+		MatchType[] types = matchTypes();
+//		ArrayUtils.reverse(types);
 		userIO.echo("\n\n");
 		userIO.echo("# entries in glossary: "+results.totalEntries);
 		{
@@ -373,6 +374,22 @@ public class TMEvaluator {
 	}
 
 	public static enum MatchType {LENIENT_OVERLAP, LENIENT, STRICT};
+
+	public static MatchType[] matchTypes() {
+		return matchTypes(null);
+	}
+
+	public static MatchType[] matchTypes(Boolean strictFirst) {
+		if (strictFirst == null) {
+			strictFirst = true;
+		}
+		MatchType[] types = MatchType.values();
+		if (strictFirst) {
+			ArrayUtils.reverse(types);
+		}
+		return types;
+	}
+
 
 	public static boolean isMoreLenient(MatchType sense1, MatchType sense2) {
 		boolean answer = false;

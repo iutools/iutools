@@ -121,8 +121,9 @@ class WordEntryController extends IUToolsController {
 		this.displayWordBeingLookedUp(word, wordInOtherScript);
 		if (wordEntry != null) {
                 var html =
-                    "<div id='div-info' align='right'>\n"+
-                    "  <a href='help.jsp?topic=about_dictionary' target='#iutools_help'>info</a>\n"+
+                    "<div id='div-info' class='div-info' align='right'>\n"+
+                    "  <a href='help.jsp?topic=about_dictionary' target='#iutools_help'>"+
+                    "beforeicon <img src='imgs/info.png'> aftericon</a>\n"+
                     "</div>";
 
             html += this.htmlTranslations(wordEntry, otherLang);
