@@ -4,10 +4,16 @@ import ca.nrc.data.file.ObjectStreamReader;
 import ca.nrc.ui.commandline.UserIO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.tuple.Pair;
+import org.iutools.concordancer.tm.TMEvaluator;
+import org.iutools.concordancer.tm.TMEvaluator.*;
 import org.iutools.script.TransCoder;
 import org.iutools.worddict.MultilingualDict.WhatTerm;
 
 import java.nio.file.Path;
+import java.util.List;
+
+import static org.iutools.concordancer.tm.TMEvaluator.matchTypes;
 
 public class DictEvaluator {
 
@@ -55,14 +61,13 @@ public class DictEvaluator {
 			WhatTerm whatIUFound = checkIUPresence(wordEntry, results);
 
 			if (whatIUFound != null) {
-
+				checkENSpotting(wordEntry, whatIUFound, enTerm, results);
 			}
 		} finally {
 			userIO.echo(-1);
 		}
 
 	}
-
 
 	private WhatTerm checkIUPresence(
 		MultilingualDictEntry wordEntry, DictEvaluationResults results) throws MultilingualDictException {
@@ -84,6 +89,34 @@ public class DictEvaluator {
 
 		return whatTerm;
 	}
+
+	private void checkENSpotting(MultilingualDictEntry wordEntry,
+		WhatTerm where, String enTerm, DictEvaluationResults results) {
+		List<String> spottedTranslations = wordEntry.origWordTranslations;
+		if (where == WhatTerm.RELATED) {
+			spottedTranslations = wordEntry.relatedWordTranslations;
+		}
+		MatchType spottedSense = null;
+		String spottedAs = null;
+		for (String spotted: spottedTranslations) {
+			Pair<MatchType, String> match = TMEvaluator.sameTerm(spotted, enTerm);
+			if (spottedSense == null ||
+			TMEvaluator.isMoreLenient(spottedSense, match.getLeft())) {
+				spottedSense = match.getLeft();
+				spottedAs = match.getRight();
+			}
+			if (spottedSense == MatchType.STRICT) {
+				break;
+			}
+		}
+		if (spottedSense != null) {
+			userIO.echo(
+				"EN translation was SPOTTED in "+where+
+				" term, in sense="+spottedSense+" (as '"+spottedAs+"')");
+			results.onENSpotting(spottedSense);
+		}
+	}
+
 
 	private void printReport(DictEvaluationResults results) {
 		userIO.echo("# Glossary entries: "+results.totalGlossaryEntries);

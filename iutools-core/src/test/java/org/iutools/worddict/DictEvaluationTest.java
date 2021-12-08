@@ -1,6 +1,7 @@
 package org.iutools.worddict;
 
 import org.iutools.config.IUConfig;
+import org.iutools.worddict.MultilingualDict.*;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Paths;
@@ -16,8 +17,8 @@ public class DictEvaluationTest {
 				.evaluate(Paths.get(glossaryPath), firstN);
 		new AssertDictEvaluationResults(results)
 			.totalGlossaryEntries(firstN)
-			.totalIUPresent(false, -999)
-			.totalIUPresent(true, -999)
+			.totalIUPresent(WhatTerm.ORIGINAL, 7)
+			.totalIUPresent(WhatTerm.RELATED, 2)
 			;
 //		.totaIUPresent(7)
 //

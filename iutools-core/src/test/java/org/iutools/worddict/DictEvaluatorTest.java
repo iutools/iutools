@@ -53,16 +53,23 @@ public class DictEvaluatorTest {
 			DictEvaluationResults results = new DictEvaluationResults();
 			try {
 				new DictEvaluator().onNewGlossaryEntry(entry, results);
+
 				FrequencyHistogram<WhatTerm> expIUPresent_hist =
 					new FrequencyHistogram<WhatTerm>();
 				if (expWhatTerm != null) {
 					expIUPresent_hist.updateFreq(expWhatTerm);
 				}
 
+				FrequencyHistogram<MatchType> expIUSpotted_hist =
+					new FrequencyHistogram<MatchType>();
+				if (expEnSpotted != null) {
+					expIUSpotted_hist.updateFreq(expEnSpotted);
+				}
 
 				new AssertDictEvaluationResults(results)
 					.totalGlossaryEntries(1)
 					.iuPresentHistogramEquals(expIUPresent_hist)
+					.iuSpottedHistogramEquals(expIUSpotted_hist)
 					;
 			} catch (Exception e) {
 				throw new RuntimeException(e);
