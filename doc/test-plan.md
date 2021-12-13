@@ -91,13 +91,23 @@ English query - Multi word
   - At the moment, it's 'normal' that the list of hits only shows the
     expression 'healthcare coverage'
 
-Query that returns no results
-- Search for ninuksuk
-- Make sure no Console error
-- Make sure system says no hits were found
-- Make sure the Word Info window is not visible at all (not even minimized)
-- Nothing else to check for that 
+Out-of-hansard valid IU word
+- Search for a word that is a valid IU word but is not in the Hansard
+- ex:??? 
+- Make sure that the dictionary displays a word entry for it
 
+Invalid IU word that does NOT appear in the Hansard
+- Search for a word that is NOT a valid IU word
+- ex: ninuksuk
+- The dictionary should still display an entry that says:
+  -- No decomp (possibly misspelled?)
+  
+Invalid IU word that DOES appear in the Hansard
+- ex: ???
+- The dictioanry should still display an entry that says:
+-- No decomp (possibly misspelled?)
+-- Lists the examples found in the Hansard
+  
 Very long word
 - Search for aanniaqarnanngittulirijimmarik
 - Make sure that the word and its Syllabics transcoding are properly displayed 
