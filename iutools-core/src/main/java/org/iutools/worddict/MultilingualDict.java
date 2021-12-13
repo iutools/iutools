@@ -50,10 +50,7 @@ public class MultilingualDict {
 
 	private static final String TAG = "strong";
 
-	// Private constructor.
-	// There should only be one instance of MultilingualDict and you should get it
-	// by invoking MultilingualDict.getInstance();
-	private MultilingualDict() throws MultilingualDictException {
+	public MultilingualDict() throws MultilingualDictException {
 		try {
 			corpus = new CompiledCorpusRegistry().getCorpus();
 		} catch (Exception e) {
@@ -61,12 +58,12 @@ public class MultilingualDict {
 		}
 	}
 
-	public static MultilingualDict getInstance() throws MultilingualDictException {
-		if (_singleton == null) {
-			_singleton = new MultilingualDict();
-		}
-		return _singleton;
-	}
+//	public static MultilingualDict getInstance() throws MultilingualDictException {
+//		if (_singleton == null) {
+//			_singleton = new MultilingualDict();
+//		}
+//		return _singleton;
+//	}
 
 	public MultilingualDict setMinMaxPairs(Integer min, Integer max) throws MultilingualDictException {
 		if (min != null && max != null && max < min) {

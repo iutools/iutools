@@ -18,7 +18,7 @@ import static org.iutools.concordancer.tm.TMEvaluator.matchTypes;
 public class DictEvaluator {
 
 	UserIO userIO = new UserIO();
-	MultilingualDict dict = MultilingualDict.getInstance();
+	MultilingualDict dict = new MultilingualDict();
 	ObjectMapper mapper = new ObjectMapper();
 
 	public DictEvaluator() throws MultilingualDictException {

@@ -143,7 +143,7 @@ public class MultilingualDictTest {
 	@Test
 	public void test__MultilingualDict__Synopsis() throws Exception {
 		// The dictionary is a singleton
-		MultilingualDict dict = MultilingualDict.getInstance();
+		MultilingualDict dict = new MultilingualDict();
 
 		// Given an inuktitut word, you can get its dictionary entry
 		MultilingualDictEntry entry = dict.entry4word("inuksuk");
@@ -208,7 +208,7 @@ public class MultilingualDictTest {
 			}) {
 
 			MultilingualDictEntry entry =
-				MultilingualDict.getInstance().entry4word(aCase.getLeft());
+				new MultilingualDict().entry4word(aCase.getLeft());
 			new AssertMultilingualDictEntry(entry)
 				.iuIsInScript(aCase.getRight())
 			;
@@ -223,7 +223,7 @@ public class MultilingualDictTest {
 			"titiraujaq"
 		};
 
-		MultilingualDict dict = MultilingualDict.getInstance()
+		MultilingualDict dict = new MultilingualDict()
 			.setMinMaxPairs(100, 100);
 		long start = StopWatch.nowMSecs();
 		for (String aWord: words) {
@@ -245,7 +245,7 @@ public class MultilingualDictTest {
 			try {
 				MultilingualDictCase aCase = (MultilingualDictCase)uncastCase;
 				MultilingualDictEntry entry =
-				MultilingualDict.getInstance()
+				new MultilingualDict()
 					.entry4word(aCase.word, aCase.l1);
 
 				String[] expL1Highlights = new String[0];
@@ -303,7 +303,7 @@ public class MultilingualDictTest {
 	public void test__search__HappyPath() throws Exception {
 		String partialWord = "inuksu";
 		Pair<Iterator<String>, Long> results =
-			MultilingualDict.getInstance().searchIter(partialWord);
+			new MultilingualDict().searchIter(partialWord);
 		assertSearchResultsInclude(
 			results.getLeft(), "inuksuk", "inuksuup", "inuksui");
 	}
@@ -312,7 +312,7 @@ public class MultilingualDictTest {
 	public void test__search__ENword() throws Exception {
 		String partialWord = "housing";
 		Pair<Iterator<String>, Long> results =
-			MultilingualDict.getInstance().searchIter(partialWord, "en");
+			new MultilingualDict().searchIter(partialWord, "en");
 		assertSearchResultsInclude(
 			results.getLeft(), "housing");
 	}
@@ -330,7 +330,7 @@ public class MultilingualDictTest {
 					expMaxWords = (Integer) aCase.data[4];
 				}
 				Pair<List<String>, Long> results2 =
-					MultilingualDict.getInstance().search(query, lang, (Integer) null);
+					new MultilingualDict().search(query, lang, (Integer) null);
 				AssertNumber.isGreaterOrEqualTo(
 					aCase.descr,
 					results2.getRight(), expMinWords);
@@ -462,7 +462,7 @@ public class MultilingualDictTest {
 			String expText =(String)aCase.data[2];
 			try {
 				String gotText =
-					MultilingualDict.getInstance().canonizeTranslation(lang, origText);
+					new MultilingualDict().canonizeTranslation(lang, origText);
 				AssertString.assertStringEquals(
 					aCase.descr, expText, gotText
 				);

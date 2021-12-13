@@ -36,7 +36,7 @@ public class WordDictEndpoint extends Endpoint<WordDictInputs,WordDictResult> {
 		List<String> topWords = null;
 		MultilingualDictEntry firstWordEntry = null;
 		try {
-			MultilingualDict dict = MultilingualDict.getInstance();
+			MultilingualDict dict = new MultilingualDict();
 			Pair<Iterator<String>, Long> searchResults =
 				dict.searchIter(inputs.word, inputs.lang);
 			totalWords = searchResults.getRight();
