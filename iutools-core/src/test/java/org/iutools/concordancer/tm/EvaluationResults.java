@@ -20,6 +20,10 @@ public class EvaluationResults {
 	/** Number of glossary entries evaluated */
 	public int totalEntries = 0;
 
+	/** Number of glossary entries that were a single IU word */
+	public int totalSingleIUWordEntries = 0;
+
+
 	/** Number of glossary entries for which the ORIGINAL IU term was FOUND in
 	   the translation memory */
 	public int totalIUPresent_Orig = 0;

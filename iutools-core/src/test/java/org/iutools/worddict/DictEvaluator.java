@@ -24,13 +24,25 @@ public class DictEvaluator {
 	public DictEvaluator() throws MultilingualDictException {
 	}
 
+	public DictEvaluator setMinMaxPairs(Integer min, Integer max) throws MultilingualDictException {
+		dict.setMinMaxPairs(min, max);
+		return this;
+	}
+
+	public DictEvaluator setMaxTranslations(Integer max) throws MultilingualDictException {
+		dict.setMaxTranslations(max);
+		return this;
+	}
+
 	public DictEvaluationResults evaluate(Path glossaryPath) throws MultilingualDictException {
 		return evaluate(glossaryPath, (Integer)null);
 	}
 
+
 	public DictEvaluationResults evaluate(Path glossaryPath, Integer firstN) throws MultilingualDictException {
 		DictEvaluationResults results = new DictEvaluationResults();
 		try {
+			results.onEvaluationStart();
 			ObjectStreamReader reader =
 				new ObjectStreamReader(glossaryPath.toFile());
 			GlossaryEntry entry = (GlossaryEntry) reader.readObject();
@@ -41,6 +53,7 @@ public class DictEvaluator {
 				onNewGlossaryEntry(entry, results);
 				entry = (GlossaryEntry) reader.readObject();
 			}
+			results.onEvaluationEnd();
 			printReport(results);
 		} catch (Exception e) {
 			throw new MultilingualDictException(e);
@@ -54,19 +67,23 @@ public class DictEvaluator {
 		String iuTerm_roman = glossEntry.getTermInLang("iu_roman");
 		String iuTerm_syll = TransCoder.ensureSyllabic(iuTerm_roman);
 		String enTerm = glossEntry.getTermInLang("en");
-		userIO.echo(results.totalGlossaryEntries+". iu:"+iuTerm_roman+" ("+iuTerm_syll+"), en:"+enTerm);
-		MultilingualDictEntry wordEntry = dict.entry4word(iuTerm_roman);
+		userIO.echo(results.totalGlossaryEntries + ". iu:" + iuTerm_roman + " (" + iuTerm_syll + "), en:" + enTerm);
 		userIO.echo(1);
 		try {
-			WhatTerm whatIUFound = checkIUPresence(wordEntry, results);
+			if (TMEvaluator.tokenize(iuTerm_roman).length > 1) {
+				userIO.echo("SKIPPED (IU term contained more than one word)");
+			} else {
+				results.totalSingleWordIUEntries++;
+				MultilingualDictEntry wordEntry = dict.entry4word(iuTerm_roman);
+				WhatTerm whatIUFound = checkIUPresence(wordEntry, results);
 
-			if (whatIUFound != null) {
-				checkENSpotting(wordEntry, whatIUFound, enTerm, results);
+				if (whatIUFound != null) {
+					checkENSpotting(wordEntry, whatIUFound, enTerm, results);
+				}
 			}
 		} finally {
 			userIO.echo(-1);
 		}
-
 	}
 
 	private WhatTerm checkIUPresence(
@@ -91,10 +108,16 @@ public class DictEvaluator {
 	}
 
 	private void checkENSpotting(MultilingualDictEntry wordEntry,
-		WhatTerm where, String enTerm, DictEvaluationResults results) {
+		WhatTerm where, String enTerm, DictEvaluationResults results) throws MultilingualDictException {
 		List<String> spottedTranslations = wordEntry.origWordTranslations;
 		if (where == WhatTerm.RELATED) {
 			spottedTranslations = wordEntry.relatedWordTranslations;
+		}
+		try {
+			userIO.echo("All "+where+" translations: "+mapper.writeValueAsString(spottedTranslations));
+			userIO.echo(spottedTranslations.size()+" translations spotted from "+wordEntry.totalBilingualExamples(where)+" sentence pairs");
+		} catch (JsonProcessingException e) {
+			throw new MultilingualDictException(e);
 		}
 		MatchType spottedSense = null;
 		String spottedAs = null;
@@ -117,9 +140,30 @@ public class DictEvaluator {
 		}
 	}
 
+	private void printReport(DictEvaluationResults results) throws MultilingualDictException {
+		printDictConfig();
+		printStats(results);
+		printTermEquivExplanation();
+	}
 
-	private void printReport(DictEvaluationResults results) {
-		userIO.echo("\n# Glossary entries: "+results.totalGlossaryEntries);
+	private void printDictConfig() throws MultilingualDictException {
+		try {
+			userIO.echo("\nEvaluated dict:\n"+ mapper.writeValueAsString(dict)+"\n");
+		} catch (JsonProcessingException e) {
+			throw new MultilingualDictException(e);
+		}
+	}
+
+	private void printStats(DictEvaluationResults results) {
+		userIO.echo("\n\n");
+		userIO.echo("# entries in glossary");
+		userIO.echo(1);
+		try {
+			userIO.echo("All: "+results.totalGlossaryEntries);
+			userIO.echo("Single word IU terms: "+results.totalSingleWordIUEntries);
+		} finally {
+			userIO.echo(-1);
+		}
 		userIO.echo();
 		userIO.echo("Entries with IU present");
 		{
@@ -129,6 +173,9 @@ public class DictEvaluator {
 			}
 			userIO.echo(-1);
 		}
+		userIO.echo();
+		userIO.echo("Avg secs per present IU entry: "+results.avgSecsPerEntryPresent);
+
 		userIO.echo();
 		userIO.echo("Entries with EN term SPOTTED");
 		{
@@ -149,5 +196,9 @@ public class DictEvaluator {
 			}
 			userIO.echo(-1);
 		}
+	}
+
+	private void printTermEquivExplanation() {
+		userIO.echo("\n"+TMEvaluator.explainEquivSenses()+"\n");
 	}
 }

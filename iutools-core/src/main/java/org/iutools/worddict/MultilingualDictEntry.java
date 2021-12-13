@@ -285,6 +285,21 @@ public class MultilingualDictEntry {
 		return total;
 	}
 
+	public int totalBilingualExamples(MultilingualDict.WhatTerm where) throws MultilingualDictException {
+		int total = 0;
+		Map<String, List<String[]>> examplesMap = examplesForOrigWordTranslation;
+		if (where == MultilingualDict.WhatTerm.RELATED) {
+			examplesMap = examplesForRelWordsTranslation;
+		}
+		for (String aTranslation: examplesMap.keySet()) {
+			if (aTranslation.equals("ALL")) {
+				continue;
+			}
+			total += examplesMap.get(aTranslation).size();
+		}
+		return total;
+	}
+
 	public static class TranslationComparator implements java.util.Comparator<String> {
 
 		private final Map<String, List<String[]>> _examplesForTranslation;

@@ -2,11 +2,14 @@ package org.iutools.worddict;
 
 import ca.nrc.testing.*;
 import ca.nrc.testing.RunOnCases.Case;
+import javafx.scene.paint.Stop;
 import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.linguisticdata.MorphemeHumanReadableDescr;
 import org.iutools.script.TransCoder;
+import org.iutools.utilities.StopWatch;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 
 
 import java.util.*;
@@ -21,6 +24,11 @@ public class MultilingualDictTest {
 	public void setUp() throws Exception {
 		// Cases for search() function
 		cases_search = new Case[] {
+
+		new Case("DELETEME - Does this hangup?",
+			"iu", "angijuqqaaqarvinga", -999,
+			new String[] {}),
+
 			new Case("iu-inuk-roman", "iu", "inuk", 200,
 				new String[] {"inuk", "inukku", "inuksui", "inuksuk"}),
 			new Case("iu-inuk-syll", "iu", "ᐃᓄᒃ", 200,
@@ -88,8 +96,8 @@ public class MultilingualDictTest {
 					"umiarjualirijikkut")
 				.setMinExamples(5)
 				.setOrigWordTranslations(new String[]{
-					"sea", "ship", "shipping",
-					"sealift arrives", "resupply ... dry cargo",
+					"sea", "ship", "shipping", "sealift arrives",
+					"resupply ... dry cargo"
 				}),
 
 			new MultilingualDictCase("iu-kiugavinnga", "kiugavinnga")
@@ -209,12 +217,33 @@ public class MultilingualDictTest {
 	}
 
 	@Test
-	public void test__entry4word__VariousCases() throws Exception {
+	public void test__entry4word__SpeedTest(TestInfo testInfo) throws Exception {
+		String[] words = new String[] {
+			"amiq", "nunavut", "annuraanik", "qarasaujaq", "ilinniaqtuliriniq",
+			"titiraujaq"
+		};
 
+		MultilingualDict dict = MultilingualDict.getInstance()
+			.setMinMaxPairs(100, 100);
+		long start = StopWatch.nowMSecs();
+		for (String aWord: words) {
+			dict.entry4word(aWord);
+		}
+		long elapsed = StopWatch.elapsedMsecsSince(start);
+		double gotAvgSecs = elapsed / (1000.0 * words.length);
+		AssertRuntime.runtimeHasNotChanged(
+			gotAvgSecs, 0.20,
+			"avg secs for retrieving a dict entry", testInfo);
+	}
+
+	@Test
+	public void test__entry4word__VariousCases() throws Exception {
+		// For some reason, this test fails intermittently if we don't sleep
+		// before doing it.
+		Thread.sleep(2*1000);
 		Consumer<Case> runner = (uncastCase) -> {
 			try {
 				MultilingualDictCase aCase = (MultilingualDictCase)uncastCase;
-				System.out.println("--** test__entry4word__VariousCases: aCase.word="+aCase.word);
 				MultilingualDictEntry entry =
 				MultilingualDict.getInstance()
 					.entry4word(aCase.word, aCase.l1);
@@ -265,7 +294,7 @@ public class MultilingualDictTest {
 		};
 
 		new RunOnCases(cases_entry4word, runner)
-//			.onlyCaseNums(2)
+//			.onlyCaseNums(4)
 //			.onlyCasesWithDescr("iu-kiugavinnga")
 			.run();
 	}

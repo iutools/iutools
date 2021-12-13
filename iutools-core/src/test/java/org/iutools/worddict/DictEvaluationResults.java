@@ -3,10 +3,15 @@ package org.iutools.worddict;
 import ca.nrc.dtrc.stats.FrequencyHistogram;
 import org.iutools.concordancer.tm.TMEvaluator;
 import org.iutools.concordancer.tm.TMEvaluator.*;
+import org.iutools.utilities.StopWatch;
 import org.iutools.worddict.MultilingualDict.WhatTerm;
 
 public class DictEvaluationResults  {
 	int totalGlossaryEntries = 0;
+	int totalSingleWordIUEntries = 0;
+	double avgSecsPerEntryPresent = 0.0;
+
+	private Long startMsecs = null;
 
 	FrequencyHistogram<WhatTerm> iuPresent_hist =
 		new FrequencyHistogram<WhatTerm>();
@@ -60,5 +65,16 @@ public class DictEvaluationResults  {
 		}
 
 		return rate;
+	}
+
+	public void onEvaluationStart() {
+		startMsecs = StopWatch.nowMSecs();
+	}
+
+	public void onEvaluationEnd() {
+		if (totalIUPresent() > 0) {
+			long elapsed = StopWatch.elapsedMsecsSince(startMsecs);
+			avgSecsPerEntryPresent = elapsed / (1000.0 * totalIUPresent());
+		}
 	}
 }

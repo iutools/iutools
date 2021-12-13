@@ -15,6 +15,13 @@ public class AssertEvaluationResults extends Asserter<EvaluationResults> {
 		super(_gotObject, mess);
 	}
 
+	public AssertEvaluationResults totalSingleIUTermEntries(int expTotal) {
+		Assertions.assertEquals(
+			expTotal, results().totalSingleIUWordEntries,
+			baseMessage+"\nWrong number of single IU word glossary entries");
+		return this;
+	}
+
 	public AssertEvaluationResults totalGlossaryEntries(int expTotal) {
 		Assertions.assertEquals(
 			expTotal, results().totalEntries,

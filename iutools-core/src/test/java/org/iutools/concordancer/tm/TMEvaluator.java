@@ -24,6 +24,9 @@ public class TMEvaluator {
 	ObjectMapper mapper = new ObjectMapper();
 	int MAX_ALIGNMENTS = 100;
 
+	/** Will only evaluate on this IU word */
+	private String onlyWord = null;
+
 	public TMEvaluator setVerbosity(UserIO.Verbosity level) {
 		userIO.setVerbosity(level);
 		return this;
@@ -53,39 +56,49 @@ public class TMEvaluator {
 	private void onNewGlossaryEntry(GlossaryEntry entry, EvaluationResults results) throws Exception {
 		String term_roman = entry.getTermInLang("iu_roman");
 		String term_syll = TransCoder.ensureSyllabic(term_roman);
-		results.totalEntries++;
-		userIO.echo(results.totalEntries+". iu:"+term_roman+" ("+term_syll+"), en:"+entry.getTermInLang("en")+" ...");
-		evaluateGlossaryTerm(entry, results);
+		if (onlyWord == null || onlyWord.equals(term_roman)) {
+			results.totalEntries++;
+			userIO.echo(results.totalEntries + ". iu:" + term_roman + " (" + term_syll + "), en:" + entry.getTermInLang("en"));
+			evaluateGlossaryTerm(entry, results);
+		}
 	}
 
 
 	protected void evaluateGlossaryTerm(
 		GlossaryEntry glossEntry, EvaluationResults results) throws Exception {
+		String iuTerm_roman = glossEntry.getTermInLang("iu_roman").toLowerCase();
+		// We only process single-word IU terms
 		userIO.echo(1);
 		try {
-			String enTerm = glossEntry.getTermInLang("en").toLowerCase();
-			String iuTerm_syll = glossEntry.getTermInLang("iu_syll").toLowerCase();
-			AlignmentsSummary algnSummary =
+			if (tokenize(iuTerm_roman).length > 1) {
+				userIO.echo("SKIPPED (IU term has more than 1 word)");
+			} else {
+				results.totalSingleIUWordEntries++;
+				String enTerm = glossEntry.getTermInLang("en").toLowerCase();
+				String iuTerm_syll = glossEntry.getTermInLang("iu_syll").toLowerCase();
+				AlignmentsSummary algnSummary =
 				analyzeAlignments(iuTerm_syll, enTerm);
 
-			if (algnSummary.iuTermPresent) {
-				userIO.echo("IU term was present");
-				results.totalIUPresent_Orig++;
-			}
-			if (algnSummary.enTermPresent_Sense != null) {
-				userIO.echo("EN term was PRESENT in the sense "+algnSummary.enTermPresent_Sense+
-					": "+algnSummary.enTermPresent_occur);
-				results.onEnPresent(algnSummary.enTermPresent_Sense);
-			}
+				if (algnSummary.iuTermPresent) {
+					userIO.echo("IU term was present");
+					results.totalIUPresent_Orig++;
+				}
+				if (algnSummary.enTermPresent_Sense != null) {
+					userIO.echo("EN term was PRESENT in the sense " + algnSummary.enTermPresent_Sense +
+					": " + algnSummary.enTermPresent_occur);
+					results.onEnPresent(algnSummary.enTermPresent_Sense);
+				}
 
-			if (algnSummary.spottingAttempted) {
-				userIO.echo("All translations found: "+mapper.writeValueAsString(algnSummary.allTranslations));
-
-			}
-			if (algnSummary.enTermSpotted_Sense != null) {
-				userIO.echo("EN term was SPOTTED in the sense "+algnSummary.enTermSpotted_Sense+
-					": "+algnSummary.enTermSpotted_occur);
-				results.onEnSpotted(algnSummary.enTermSpotted_Sense);
+				if (algnSummary.spottingAttempted) {
+					userIO.echo("All translations found (total: " +
+					algnSummary.allTranslations.size() + "): " +
+					mapper.writeValueAsString(algnSummary.allTranslations));
+				}
+				if (algnSummary.enTermSpotted_Sense != null) {
+					userIO.echo("EN term was SPOTTED in the sense " + algnSummary.enTermSpotted_Sense +
+					": " + algnSummary.enTermSpotted_occur);
+					results.onEnSpotted(algnSummary.enTermSpotted_Sense);
+				}
 			}
 		} finally {
 			userIO.echo(-1);
@@ -326,9 +339,15 @@ public class TMEvaluator {
 
 	private void printReport(EvaluationResults results) {
 		MatchType[] types = matchTypes();
-//		ArrayUtils.reverse(types);
 		userIO.echo("\n\n");
-		userIO.echo("# entries in glossary: "+results.totalEntries);
+		userIO.echo("# entries in glossary");
+		userIO.echo(1);
+		try {
+			userIO.echo("All: "+results.totalEntries);
+			userIO.echo("Single word IU terms: "+results.totalSingleIUWordEntries);
+		} finally {
+			userIO.echo(-1);
+		}
 		{
 			userIO.echo(1);
 			userIO.echo("IU term PRESENT: "+results.totalIUPresent_Orig);
@@ -361,6 +380,16 @@ public class TMEvaluator {
 			userIO.echo(-1);
 		}
 
+		userIO.echo(
+			"\n*********************************************************************\n"+
+			"NOTE\n"+TMEvaluator.explainEquivSenses()+
+			"\n*********************************************************************"
+		);
+	}
+
+	public TMEvaluator focusOnWord(String word) {
+		this.onlyWord = word;
+		return this;
 	}
 
 	public static class AlignmentsSummary {
@@ -398,5 +427,17 @@ public class TMEvaluator {
 		}
 		return answer;
 	}
+
+	public static String explainEquivSenses() {
+		return
+			"When deciding whether the EN translation of an IU term was present in the TM,\n" +
+			"we need a way to assess whether two EN terms are equivalent. We can establish\n"+
+			"that equivalence in one of three senses:\n\n"+
+			"   STRICT: The two terms are identical except for spaces and casee.\n\n"+
+			"   LENIENT: The two terms have the same sequence of lowercased lemmas.\n\n"+
+			"   LENIENT_OVERLAP: The two terms share at least one lowercased lemma."
+			;
+	}
+
 }
 

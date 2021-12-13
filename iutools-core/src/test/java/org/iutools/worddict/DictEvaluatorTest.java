@@ -5,6 +5,7 @@ import ca.nrc.dtrc.stats.FrequencyHistogram;
 import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.RunOnCases;
 import ca.nrc.testing.RunOnCases.*;
+import org.iutools.concordancer.tm.AssertEvaluationResults;
 import org.iutools.concordancer.tm.TMEvaluator.*;
 import org.iutools.worddict.MultilingualDict.WhatTerm;
 import org.junit.jupiter.api.Test;
@@ -20,7 +21,9 @@ public class DictEvaluatorTest {
 				// IU term in ROMAN
 				"nunavut",
 				// EN translation
-				"nunavut",
+				"Nunavut",
+				// Whether the entry was skipped or not
+				false,
 				// Whether we found the ORIGINAL IU term, or had to look
 				// for the RELATED terms
 				WhatTerm.ORIGINAL,
@@ -29,22 +32,24 @@ public class DictEvaluatorTest {
 				MatchType.STRICT
 			),
 			new Case("uikipitia - ORIG and RELATED terms absent",
-				// IU term in ROMAN
 				"uikipitia", "astronomical object",
-				null, null
+				false, null, null
 			),
 			new Case("tukiliuqpaa - RELATED term found, but no SPOTTING",
-				// IU term in ROMAN
 				"uikipitia", "astronomical object",
-				null, null
+				false, null, null
 			),
+			new Case("IU term contains 2 words --> SKIP",
+				"inuit qaujimanituqangit", "Inuit Qaujimajatuqangit",
+				true, null, null),
 		};
 
 		Consumer<Case> runner = (aCase) -> {
 			String iuTerm_roman = (String) aCase.data[0];
 			String enTerm = (String) aCase.data[1];
-			WhatTerm expWhatTerm = (WhatTerm) aCase.data[2];
-			MatchType expEnSpotted = (MatchType) aCase.data[3];
+			Boolean expSkipped = (Boolean) aCase.data[2];
+			WhatTerm expWhatTerm = (WhatTerm) aCase.data[3];
+			MatchType expEnSpotted = (MatchType) aCase.data[4];
 
 			GlossaryEntry entry = new GlossaryEntry()
 				.setTermInLang("iu_roman", iuTerm_roman)
@@ -53,6 +58,11 @@ public class DictEvaluatorTest {
 			DictEvaluationResults results = new DictEvaluationResults();
 			try {
 				new DictEvaluator().onNewGlossaryEntry(entry, results);
+
+				int expTotalSingleWordIUEntries = 1;
+				if (expSkipped) {
+					expTotalSingleWordIUEntries = 0;
+				}
 
 				FrequencyHistogram<WhatTerm> expIUPresent_hist =
 					new FrequencyHistogram<WhatTerm>();
@@ -68,6 +78,7 @@ public class DictEvaluatorTest {
 
 				new AssertDictEvaluationResults(results)
 					.totalGlossaryEntries(1)
+					.totalSingleWordIUEntries(expTotalSingleWordIUEntries)
 					.iuPresentHistogramEquals(expIUPresent_hist)
 					.iuSpottedHistogramEquals(expIUSpotted_hist)
 					;

@@ -123,7 +123,7 @@ public class GistPrepareContentTest extends EndpointTest {
 		EndpointResult epResult = endPoint.execute(inputs);
 
 		new AssertGistPrepareContentResult(epResult,
-			"Content not prepared as expected")
+			"Content not prepared as expected for url="+url)
 			.inputWasActualContent(false)
 			.hasContentForLang("en")
 			.containsENSentenceStartingWith("Search Images Maps Play YouTube News Gmail Drive More »")

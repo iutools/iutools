@@ -25,6 +25,14 @@ public class AssertDictEvaluationResults extends Asserter<DictEvaluationResults>
 		return this;
 	}
 
+	public AssertDictEvaluationResults totalSingleWordIUEntries(int expTotal) {
+		Assertions.assertEquals(
+			expTotal, results().totalSingleWordIUEntries,
+			"Wrong number of single-word glossary entries"
+		);
+		return this;
+	}
+
 	public AssertDictEvaluationResults totalIUPresent(
 		WhatTerm where, int expTotal) {
 		long gotTotal = results().totalIUPresent(where);

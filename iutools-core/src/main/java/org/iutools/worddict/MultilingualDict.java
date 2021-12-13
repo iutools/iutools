@@ -40,13 +40,11 @@ public class MultilingualDict {
 
 	public static enum WhatTerm {ORIGINAL, RELATED}
 
-	private static final long MAX_WORDS = 20;
 	private static MultilingualDict _singleton = null;
 
-	public static int MAX_TRANSLATIONS = 5;
-	public static int MAX_SENT_PAIRS = 20;
-	public static Integer MIN_SENT_PAIRS = null;
-
+	public  Integer MAX_TRANSLATIONS = 5;
+	public  Integer MAX_SENT_PAIRS = 20;
+	public  Integer MIN_SENT_PAIRS = null;
 
 	public CompiledCorpus corpus = null;
 
@@ -69,6 +67,23 @@ public class MultilingualDict {
 		}
 		return _singleton;
 	}
+
+	public MultilingualDict setMinMaxPairs(Integer min, Integer max) throws MultilingualDictException {
+		if (min != null && max != null && max < min) {
+			throw new MultilingualDictException(
+				"Min number of pairs must be smaller or equal to the max."
+			);
+		}
+		this.MIN_SENT_PAIRS = min;
+		this.MAX_SENT_PAIRS = max;
+		return this;
+	}
+
+	public MultilingualDict setMaxTranslations(Integer max) {
+		MAX_TRANSLATIONS = max;
+		return this;
+	}
+
 
 	public MultilingualDictEntry entry4word(String word) throws MultilingualDictException {
 		return entry4word(word, (String)null, (Boolean)null, (Field[])null);
@@ -329,7 +344,7 @@ public class MultilingualDict {
 				totalPairs =
 					onNewSentencePair(entry, bilingualAlignment, alreadySeenPair,
 						totalPairs, script, isForRelatedWords);
-				if (enoughBilingualExamples(entry, totalPairs)) {
+				if (enoughBilingualExamples(entry, totalPairs, iuWordGroup.size())) {
 					break;
 				}
 			}
@@ -348,15 +363,22 @@ public class MultilingualDict {
 		MultilingualDictEntry.assertIsSupportedLanguage(lang);
 	}
 
-	private boolean enoughBilingualExamples(MultilingualDictEntry entry, int totalPairs) throws MultilingualDictException {
-		boolean enough =
-			(
-				entry.possibleTranslationsIn(otherLang(entry.lang)).size() >= MAX_TRANSLATIONS ||
-				entry.totalBilingualExamples() >= MAX_SENT_PAIRS
-			);
+	private boolean enoughBilingualExamples(
+		MultilingualDictEntry entry, int totalPairs, int numInputWords) throws MultilingualDictException {
+		int minPairs = 0;
 		if (MIN_SENT_PAIRS != null) {
-			enough = enough && (totalPairs >= MIN_SENT_PAIRS);
+			minPairs = (MIN_SENT_PAIRS / numInputWords) + 1;
 		}
+		int maxPairs = 0;
+		if (MAX_SENT_PAIRS != null) {
+			maxPairs = (MAX_SENT_PAIRS / numInputWords) + 1;
+		}
+		int pairsSoFar = entry.totalBilingualExamples();
+		int translationsSoFar =
+			entry.possibleTranslationsIn(otherLang(entry.lang)).size();
+		boolean enough =
+			(translationsSoFar >= MAX_TRANSLATIONS || pairsSoFar >= maxPairs) &&
+			(totalPairs >= minPairs);
 
 		return enough;
 	}

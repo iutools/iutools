@@ -21,42 +21,48 @@ public class TMEvaluatorTest {
 	@Test
 	public void test__evaluateGlossaryTerm__VariousCases() throws Exception {
 		Case[] cases = new Case[] {
+
 			// A case where the IU term is absent from the TM
 			new Case("ullugiak",
 				"ullugiak", "astronomical object",
-				false, null, null),
+				false, false, null, null),
 
-			// These next cases are those among the first 20 entries of WP where
-			// we found the IU term in the TM
-			new Case("amiq",
-				"amiq", "Wikimedia main page",
-				true, null, null),
-			new Case("nunavut",
-				"nunavut", "nunavut",
-				true, MatchType.STRICT, MatchType.STRICT),
+			// A case of multi-word IU entry (which are skipped)
 			new Case("inuit qaujimanituqangit",
 				"inuit qaujimanituqangit", "Inuit Qaujimajatuqangit",
-				true, MatchType.STRICT, MatchType.STRICT),
+				true, false, null, null),
+
+			// These next cases are those among the first 20 entries of WP where:
+			// - The IU term was single-word
+			// - We found the IU term in the TM
+			//
+			new Case("amiq",
+				"amiq", "Wikimedia main page",
+				false, true, null, null),
+			new Case("nunavut",
+				"nunavut", "nunavut",
+				false, true, MatchType.STRICT, MatchType.STRICT),
 			new Case("annuraanik",
 				"annuraanik", "Inuit clothingᒃ",
-				true, MatchType.LENIENT_OVERLAP, MatchType.LENIENT_OVERLAP),
+				false, true, MatchType.LENIENT_OVERLAP, MatchType.LENIENT_OVERLAP),
 			new Case("qarasaujaq",
 				"qarasaujaq", "computer",
-				true, MatchType.STRICT, MatchType.STRICT),
+				false, true, MatchType.STRICT, MatchType.STRICT),
 			new Case("ilinniaqtuliriniq",
 				"ilinniaqtuliriniq", "education",
-				true, MatchType.STRICT, MatchType.STRICT),
+				false, true, MatchType.STRICT, MatchType.STRICT),
 			new Case("titiraujaq",
 				"titiraujaq", "engineering",
-				true, null, null),
+				false, true, null, null),
  		};
 
 		Consumer<Case> runner = (aCase) -> {
 			String iuTerm_roman = (String) aCase.data[0];
 			String enTerm = (String) aCase.data[1];
-			Boolean expIUPresent = (Boolean) aCase.data[2];
-			MatchType expENPresent_Sense = (MatchType) aCase.data[3];
-			MatchType expENSpotted_Sense = (MatchType) aCase.data[4];
+			Boolean expSkipped = (Boolean) aCase.data[2];
+			Boolean expIUPresent = (Boolean) aCase.data[3];
+			MatchType expENPresent_Sense = (MatchType) aCase.data[4];
+			MatchType expENSpotted_Sense = (MatchType) aCase.data[5];
 
 			try {
 				String iuTerm_syll = TransCoder.ensureSyllabic(iuTerm_roman);
@@ -66,6 +72,13 @@ public class TMEvaluatorTest {
 				EvaluationResults results = new EvaluationResults();
 				new TMEvaluator().setVerbosity(UserIO.Verbosity.Level2)
 					.evaluateGlossaryTerm(glossEntry, results);
+
+				int expTotalSingleWordEntries = 1;
+				if (expSkipped) {
+					expTotalSingleWordEntries = 0;
+				}
+				new AssertEvaluationResults(results)
+					.totalSingleIUTermEntries(expTotalSingleWordEntries);
 
 				int expTotalIUPresent = 0;
 				if (expIUPresent) {
@@ -101,7 +114,7 @@ public class TMEvaluatorTest {
 		};
 
 		new RunOnCases(cases, runner)
-//			.onlyCaseNums(5)
+//			.onlyCaseNums(1)
 //			.onlyCasesWithDescr("nunavut")
 			.run();
 	}
