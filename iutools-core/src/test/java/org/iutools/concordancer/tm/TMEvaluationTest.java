@@ -1,14 +1,14 @@
 package org.iutools.concordancer.tm;
 
-import ca.nrc.ui.commandline.UserIO;
+import ca.nrc.testing.TestDirs;
 import org.iutools.config.IUConfig;
-import org.junit.Ignore;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.iutools.concordancer.tm.TMEvaluator.MatchType;
+import org.junit.jupiter.api.TestInfo;
 
 public class TMEvaluationTest {
 
@@ -48,12 +48,23 @@ public class TMEvaluationTest {
 		;
 	}
 
+	/**
+	 * Besides evaluating the TM on the WP glossary terms, this test also
+	 * produces a json file that contains all the sentence pairs whose word
+	 * alignement might impact  the evaulation of the TranslationSpotter on the WP glossary.
+	 *
+	 * We can use these sentence pairs to evaluate different word alignment
+	 * algorithms outside of the IUTools framework.
+	 *
+	 * The path of the JSON file is printed at the end of the test.
+	 */
 	@Test
-	public void test_evaluateOnWikipediaGlossary_ALL() throws Exception {
+	public void test_evaluateOnWikipediaGlossary_ALL(TestInfo testInfo) throws Exception {
+		Path sentPairsFile = new TestDirs(testInfo).outputsFile("sentencePairs.json");
 		String glossaryPath = IUConfig.getIUDataPath("data/glossaries/wpGlossary.json");
 		Integer firstN = null;
 		EvaluationResults results =
-			new TMEvaluator()
+			new TMEvaluator(sentPairsFile)
 //				.focusOnWord("inuit (nunaqaqqaaqsimajut)")
 				.evaluate(Paths.get(glossaryPath), firstN);
 		new AssertEvaluationResults(results)

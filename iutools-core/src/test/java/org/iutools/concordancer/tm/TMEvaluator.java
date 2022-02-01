@@ -10,11 +10,12 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.apache.log4j.Logger;
 import org.iutools.concordancer.Alignment_ES;
 import org.iutools.concordancer.SentencePair;
-import org.iutools.corpus.CompiledCorpusRegistry;
 import org.iutools.script.TransCoder;
 import org.iutools.worddict.GlossaryEntry;
-import org.junit.platform.engine.support.discovery.SelectorResolver;
+import org.json.JSONObject;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
 
@@ -24,15 +25,36 @@ public class TMEvaluator {
 	ObjectMapper mapper = new ObjectMapper();
 	int MAX_ALIGNMENTS = 100;
 
+	/** If you want to save all the sentence pairs involved in the evaluation,
+	 * these to non null.
+	 */
+	private Path sentPairsFile = null;
+	FileWriter sentsWriter = null;
+
 	/** Will only evaluate on this IU word */
 	private String onlyWord = null;
+
+	public TMEvaluator() throws IOException {
+		init__TMEvaluator((Path)null);
+	}
+
+	public TMEvaluator(Path _sentPairsFile) throws IOException {
+		init__TMEvaluator(_sentPairsFile);
+	}
+
+	private void init__TMEvaluator(Path _sentPairsFile) throws IOException {
+		if (_sentPairsFile != null) {
+			sentsWriter = new FileWriter(_sentPairsFile.toFile());
+			sentPairsFile = _sentPairsFile;
+		}
+	}
 
 	public TMEvaluator setVerbosity(UserIO.Verbosity level) {
 		userIO.setVerbosity(level);
 		return this;
 	}
 
-	public EvaluationResults evaluate(Path glossaryFile, Integer firstN) throws TranslationMemoryException {
+	public EvaluationResults evaluate(Path glossaryFile, Integer firstN) throws TranslationMemoryException, IOException {
 		EvaluationResults results = new EvaluationResults();
 		try {
 			ObjectStreamReader reader =
@@ -49,6 +71,8 @@ public class TMEvaluator {
 		} catch (Exception e) {
 			throw new TranslationMemoryException(e);
 		}
+
+		closeSentsFile();
 
 		return results;
 	}
@@ -77,7 +101,7 @@ public class TMEvaluator {
 				String enTerm = glossEntry.getTermInLang("en").toLowerCase();
 				String iuTerm_syll = glossEntry.getTermInLang("iu_syll").toLowerCase();
 				AlignmentsSummary algnSummary =
-				analyzeAlignments(iuTerm_syll, enTerm);
+					analyzeAlignments(iuTerm_syll, enTerm);
 
 				if (algnSummary.iuTermPresent) {
 					userIO.echo("IU term was present");
@@ -115,6 +139,7 @@ public class TMEvaluator {
 			while (algsIter.hasNext() && totalAlignments < MAX_ALIGNMENTS) {
 				boolean attemptSpotting = false;
 				Alignment_ES algn = algsIter.next();
+				writeAlignment(algn, iuTerm_syll, enTerm);
 				if (alignmentContainsIU(algn, iuTerm_syll)) {
 					analysis.iuTermPresent = true;
 					totalAlignments++;
@@ -143,10 +168,31 @@ public class TMEvaluator {
 			}
 
 			return analysis;
-		} catch (TranslationMemoryException e) {
+		} catch (TranslationMemoryException | IOException e) {
 			throw new TranslationMemoryException(e);
 		}
 	}
+
+	private void writeAlignment(Alignment_ES algn, String iuTerm_syll, String enTerm) throws IOException {
+		if (sentsWriter != null) {
+			JSONObject json = new JSONObject()
+			.put("iuTerm_syll", iuTerm_syll)
+			.put("enTerm", enTerm)
+			.put("enSent", algn.sentence4lang("en"))
+			.put("iuSent", algn.sentence4lang("iu"));
+			sentsWriter.write(json.toString() + "\n");
+		}
+	}
+
+	private void closeSentsFile() throws IOException {
+		if (sentsWriter != null) {
+			userIO.echo(
+				"All sentence pairs involved in this evalaution have been written to file:\n   "+
+				sentPairsFile);
+			sentsWriter.close();
+		}
+	}
+
 
 	private Triple<String,MatchType,String> checkEnTermSpotting(
 		Alignment_ES algn, String iuTerm_syll, String enTerm) throws TranslationMemoryException {
