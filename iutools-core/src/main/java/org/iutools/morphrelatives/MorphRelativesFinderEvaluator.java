@@ -352,6 +352,7 @@ public class MorphRelativesFinderEvaluator {
 		Map<String, WordOutcome> actualOutcomes,
 		Map<String, String[]> goldStandard) throws MorphRelativesFinderException {
 
+		Logger logger = Logger.getLogger("org.iutools.morphrelatives.MorphRelativesFinderEvaluator");
 		String recallDiff = "";
 		Double expRecall = computeRecall(expOutcomes, goldStandard, actualOutcomes.keySet());
 		Double actualRecall = computeRecall(actualOutcomes, goldStandard);
@@ -376,6 +377,7 @@ public class MorphRelativesFinderEvaluator {
 				WordOutcome gotOutcome = actualOutcomes.get(word);
 				expRecall = expOutcome.recall(wordGS);
 				actualRecall = gotOutcome.recall(wordGS);
+				logger.trace("For word: "+word+"expRecall-actualRecall="+(expRecall-actualRecall));
 				if (expRecall != actualRecall) {
 					diffNum++;
 					recallDiff += "Diff #"+diffNum+": word="+word+"\n";

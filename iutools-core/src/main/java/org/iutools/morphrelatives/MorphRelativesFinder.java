@@ -107,7 +107,7 @@ public class MorphRelativesFinder {
 			}
 
 			MRelsTracer.traceRelatives(logger, candidateNeighbors,
-		"After collecting candidateNeighbors");
+				"After collecting candidateNeighbors");
 
 			try {
 				bestNeighbors = bestRelatives(candidateNeighbors);
@@ -200,6 +200,7 @@ public class MorphRelativesFinder {
 		Boolean keepGoing = null;
 		try {
 			currentMorphemes = ArrayUtils.insert(0, currentMorphemes, "^");
+
 			Iterator<String> iterDescendants = compiledCorpus.wordsContainingMorphNgram(currentMorphemes);
 			while (iterDescendants.hasNext()) {
 				String descendant = iterDescendants.next();
@@ -207,7 +208,7 @@ public class MorphRelativesFinder {
 					MorphologicalRelative neighbor =
 						neighbor =
 							word2neigbhor(origWord, origWordMorphemes,
-											descendant);
+								descendant);
 					collectedSoFar.add(neighbor);
 				}
 			}
