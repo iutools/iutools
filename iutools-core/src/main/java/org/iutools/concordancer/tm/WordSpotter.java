@@ -3,6 +3,8 @@ package org.iutools.concordancer.tm;
 import ca.nrc.dtrc.stats.FrequencyHistogram;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.StringUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Logger;
 import org.iutools.concordancer.SentencePair;
 import org.iutools.script.TransCoder;
@@ -34,6 +36,8 @@ public class WordSpotter {
 	//
 	protected final static boolean neverRaiseException = true;
 
+	ObjectMapper mapper = new ObjectMapper();
+
 	public WordSpotter(SentencePair _pair) throws WordSpotterException {
 		pair = _pair;
 		for (String lang: pair.langs()) {
@@ -43,7 +47,7 @@ public class WordSpotter {
 
 	private List<String> splitText(String lang) throws WordSpotterException {
 		String text = pair.langText.get(lang);
-		String[] tokens = pair.tokens4langLowercased.get(lang);
+		String[] tokens = pair.getTokensLowercased(lang);
 		List<String> splitElts = splitText(text, tokens);
 		return splitElts;
 	}
@@ -205,51 +209,62 @@ public class WordSpotter {
 		String tagName, Boolean higlightInPlace) throws WordSpotterException {
 		Logger tLogger = Logger.getLogger("org.iutools.concordancer.tm.WordSpotter.highlight");
 		if (tLogger.isTraceEnabled()) {
-			tLogger.trace("l1=" + l1 + ", l1Expr=" + l1Expr + "pair=, =" + PrettyPrinter.print(pair));
+			tLogger.trace("l1=" + l1 + ", l1Expr=" + l1Expr + ", pair=, =" + PrettyPrinter.print(pair));
 		}
-		Map<String,String> highglighted = new HashMap<String,String>();
-		if (higlightInPlace == null) {
-			higlightInPlace = false;
-		}
-		String l2 = pair.otherLangThan(l1);
 
-		// Init the highlights map with text that is highlighted on the l1 side,
-		// and text that is NOT higlighted on the other language side. That way
-		// if an exception is raised during token alignment and
-		// neverRaiseException=true, we will be
-		// returning a map that contains the original text without highlights.
-		{
-			highglighted.put(l1,
+		try {
+			Map<String, String> highglighted = new HashMap<String, String>();
+			if (higlightInPlace == null) {
+				higlightInPlace = false;
+			}
+			String l2 = pair.otherLangThan(l1);
+
+			// Init the highlights map with text that is highlighted on the l1 side,
+			// and text that is NOT higlighted on the other language side. That way
+			// if an exception is raised during token alignment and
+			// neverRaiseException=true, we will be
+			// returning a map that contains the original text without highlights.
+			{
+				highglighted.put(l1,
 				highlightExpressionDirectly(l1, l1Expr, pair.getText(l1), tagName));
-			highglighted.put(l2, pair.getText(l2));
-		}
-		if (pair.hasWordLevel()) {
-			int[] l1Tokens = tokensMatchingText(l1, l1Expr);
+				highglighted.put(l2, pair.getText(l2));
+			}
+			if (pair.hasWordLevel()) {
+				int[] l1Tokens = tokensMatchingText(l1, l1Expr);
+				if (tLogger.isTraceEnabled()) {
+					tLogger.trace("l1Tokens=" + mapper.writeValueAsString(l1Tokens));
+				}
 
-			try {
-				int[] l2Tokens = pair.otherLangTokens(l1, l1Tokens);
-				String l2Highlight = highlightTokens(l2, l2Tokens, tagName);
-				l2Highlight = ensureTagsAreNotInMiddleOfWord(l2Highlight, tagName);
-				highglighted.put(l2, l2Highlight);
-			} catch (Exception e) {
-				if (!neverRaiseException) {
-					throw wrapException(e);
+				try {
+					int[] l2Tokens = pair.otherLangTokens(l1, l1Tokens);
+					if (tLogger.isTraceEnabled()) {
+						tLogger.trace("l2Tokens=" + mapper.writeValueAsString(l2Tokens));
+					}
+					String l2Highlight = highlightTokens(l2, l2Tokens, tagName);
+					tLogger.trace("l2Highlight="+l2Highlight);
+					l2Highlight = ensureTagsAreNotInMiddleOfWord(l2Highlight, tagName);
+					highglighted.put(l2, l2Highlight);
+				} catch (Exception e) {
+					if (!neverRaiseException) {
+						throw wrapException(e);
+					}
 				}
 			}
+
+			tLogger.trace("Highlighted text" +
+			"\n   " + l1 + ": " + highglighted.get(l1) +
+			"\n   " + l2 + ": " + highglighted.get(l2));
+
+			if (higlightInPlace) {
+				String l1HighlightedText = highglighted.get(l1);
+				pair.langText.put(l1, l1HighlightedText);
+				String l2HighlightedText = highglighted.get(l2);
+				pair.langText.put(l2, l2HighlightedText);
+			}
+			return highglighted;
+		} catch (JsonProcessingException e) {
+			throw new WordSpotterException(e);
 		}
-
-		tLogger.trace("Highlighted text"+
-			"\n   "+l1+": "+highglighted.get(l1)+
-			"\n   "+l2+": "+highglighted.get(l2));
-
-		if (higlightInPlace) {
-			String l1HighlightedText = highglighted.get(l1);
-			pair.langText.put(l1, l1HighlightedText);
-			String l2HighlightedText = highglighted.get(l2);
-			pair.langText.put(l2, l2HighlightedText);
-		}
-
-		return highglighted;
 	}
 
 	protected static String ensureTagsAreNotInMiddleOfWord(String text, String tagName) {
@@ -293,27 +308,33 @@ public class WordSpotter {
 	 	int[] tokensToHighlight, String tagName) throws WordSpotterException {
 
 		Logger tLogger = Logger.getLogger("org.iutools.concordancer.tm.WordSpotter.highlightTokens");
-		if (tLogger.isTraceEnabled()) {
-			tLogger.trace("lang="+lang+", tokensToHighlight="+ PrettyPrinter.print(tokensToHighlight));
-		}
-		String[] allTokens = pair.tokens4lang.get(lang);
-		Pattern pattToHighlight = pattTokensToHighlight(tokensToHighlight, allTokens);
-		String startTag = "<"+tagName+">";
-		String endTag = "</"+tagName+">";
-		List<String> textTokens = this.tokpunct4lang.get(lang);
-		String highlightedText = "";
-		for (String token: textTokens) {
-			String highlightedTok = token;
-			if (pattToHighlight.matcher(token).matches()) {
-				highlightedTok = startTag+highlightedTok+endTag;
+
+		try {
+			if (tLogger.isTraceEnabled()) {
+				tLogger.trace("lang=" + lang + ", tokensToHighlight=" + mapper.writeValueAsString(tokensToHighlight));
 			}
-			highlightedText += highlightedTok;
+			String[] allTokens = pair.getTokens(lang);
+			Pattern pattToHighlight = pattTokensToHighlight(tokensToHighlight, allTokens);
+			tLogger.trace("pattToHighlight="+pattToHighlight);
+			String startTag = "<" + tagName + ">";
+			String endTag = "</" + tagName + ">";
+			List<String> textTokens = this.tokpunct4lang.get(lang);
+			String highlightedText = "";
+			for (String token : textTokens) {
+				String highlightedTok = token;
+				if (pattToHighlight.matcher(token).matches()) {
+					highlightedTok = startTag + highlightedTok + endTag;
+				}
+				highlightedText += highlightedTok;
+			}
+
+			highlightedText = expandHighlights(highlightedText, tagName);
+
+			tLogger.trace("Returning highlightedText=" + highlightedText);
+			return highlightedText;
+		} catch (RuntimeException | JsonProcessingException e) {
+			throw new WordSpotterException(e);
 		}
-
-		highlightedText = expandHighlights(highlightedText, tagName);
-
-		tLogger.trace("Returning highlightedText="+highlightedText);
-		return highlightedText;
 	}
 
 	private String expandHighlights(String highlightedText, String tagName) {
@@ -335,7 +356,7 @@ public class WordSpotter {
 			regex += tokenPattern(allTokens[tokenNum]);
 		}
 		regex = "("+regex+")";
-		return Pattern.compile(regex);
+		return Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
 	}
 
 	public int[] tokensMatchingText(String sourceLang, String text) {

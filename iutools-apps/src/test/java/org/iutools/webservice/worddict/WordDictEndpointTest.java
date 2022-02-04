@@ -28,6 +28,7 @@ public class WordDictEndpointTest extends EndpointTest {
 
 	@Test
 	public void test__WordDictEndpoint__Synopsis() throws Exception {
+
 		// Use this endpoint to retrieve information about a word
 
 		// Feed a word pattern to the endpoint inputs.
@@ -88,7 +89,7 @@ public class WordDictEndpointTest extends EndpointTest {
 				"innuksuk", "inukshuk", "inuksuk",
 				// Why are these considered a translations of "inuksuk"?
 				"from", "at", "held at", "held", "innuksuk ... lives",
-				"iqaluit’s"
+				"iqaluit’s", "held ... inuksuk", "inuit"
 			)
 			.highlightsAreSubsetOf("iu", "inuksuk")
 		;
@@ -116,7 +117,9 @@ public class WordDictEndpointTest extends EndpointTest {
 				"innuksuk", "inukshuk", "inuksuk",
 				// Why are these considered a translations of "inuksuk"?
 				"held", "(interpretation",
-				"name", "individuals", "person"
+				"name", "individuals", "person", "enook", "enuk ... pauloosie",
+				"mr. enook", "mr. enook (interpretation", "name ... enook"
+
 			)
 			.highlightsAreSubsetOf("iu", "inuksuk", "inuk", "inuk ... inuk")
 		;
@@ -145,8 +148,9 @@ public class WordDictEndpointTest extends EndpointTest {
 			.highlightsAreSubsetOf("en",
 				"innuksuk", "inukshuk", "inuksuk",
 			// Why are these considered a translations of "inuksuk"?
-				"held", "(interpretation",
-				"name", "individuals", "person"
+				"held", "(interpretation", "name", "individuals", "person",
+				"enook", "enuk ... pauloosie", "mr. enook",
+				"mr. enook (interpretation", "name ... enook"
 			)
 			.highlightsAreSubsetOf("iu", "ᐃᓄᒃ")
 			;
@@ -215,15 +219,16 @@ public class WordDictEndpointTest extends EndpointTest {
 			// This IU word is not found in the hansard, but it DOES decompose.
 			// So, we ARE able to show any meaningful information about it
 			new Case("iu-iqqanaijaqtulirijikkut",
-				"iu", "iqqanaijaqtulirijikkut", null, 15,
+				"iu", "iqqanaijaqtulirijikkut", null, 12,
 				new String[] {"iqqanaijaqtulirijikkut"},
 				new String[] {"iqqanaijaq/1v", "juq/1vn", "liri/1nv", "ji/1vn",
 					"kkut/1nn"},
 				new String[] {
 					"iqanaijaqtuliriji", "iqanaijaqtulirijikkunni", "iqanaijartulirijiit",
 					"iqanaijartulirijikkunnut", "iqanaijartulirijikkut"},
-				new String[]{"hiring", "human resources",
-					"human resources ... personnel", "branch summary", "resources"},
+				new String[] {
+					"human resource", "human resources", "human resources. branch summary",
+					"human resources. department summary", "public works"},
 				1000
 			),
 
@@ -275,6 +280,17 @@ public class WordDictEndpointTest extends EndpointTest {
 					"ᐃᒡᓗᓕᕆᓂᕐᓕ ... ᐃᒡᓗᓕᕆᓂᕐᒧᑐᐃᓐᓈᕋᔭᖅᑐᖅ", "ᐃᒡᓗᖏᓐᓄᑦ", "ᐃᓪᓗᓕᕆᓂᕐᒧᑦ"},
 				1000
 			),
+
+			new Case("iu-Igluga-capitalized",
+				"iu", "Igluga", TransCoder.Script.ROMAN, 10,
+				new String[] {"igluga", "iglugalait"},
+				new String[] {"iglu/1n", "ga/tn-nom-s-1s"},
+				new String[] {
+					"illuit", "illulirinirmut", "illumut", "illunik", "illunut"},
+				new String[]{"house", "home", "rent"},
+				1000
+			),
+
 
 		};
 
@@ -330,7 +346,7 @@ public class WordDictEndpointTest extends EndpointTest {
 			};
 
 		new RunOnCases(cases, runner)
-//			.onlyCaseNums(5)
+//			.onlyCaseNums(3)
 //			.onlyCasesWithDescr("iu-igluga-syll2roman")
 			.run();
 	}

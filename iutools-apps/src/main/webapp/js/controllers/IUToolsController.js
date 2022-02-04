@@ -28,7 +28,7 @@ class IUToolsController extends WidgetController {
                 var errDetails = errMess;
                 errDetails = errDetails.replaceAll("\\n", "<br/>\n");
                 errDetails = errDetails.replaceAll("\\t", "&nbsp;&nbsp;&nbsp;")
-                var errMess = "The server encountered a possibly intermittent error. You MIGHT be able to resolve it by trying again.";
+                var errMess = "The server encountered a possibly intermittent error. You MIGHT be able to resolve it by reloading the page and trying again.";
             if (Debug.debugModeIsOn()) {
                 errMess += "<br/>\n"+errDetails;
             }

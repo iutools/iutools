@@ -138,7 +138,15 @@ public class TransCoderTest {
 		Assert.assertEquals("Wrong script for text "+text, 
 				TransCoder.Script.ROMAN, gotScript);
 	}
-	
+
+	@Test
+	public void test__textScript__RomanWithSomeCapitalizedWords() {
+		String text = "Inuktut, 2020";
+		TransCoder.Script gotScript = TransCoder.textScript(text);
+		Assert.assertEquals("Wrong script for text "+text,
+		TransCoder.Script.ROMAN, gotScript);
+	}
+
 	@Test
 	public void test__textScript__Syllabic() {
 		String text = "ᐃᓄᒃᑐᑦ";

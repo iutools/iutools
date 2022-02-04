@@ -106,6 +106,7 @@ class WordEntryController extends IUToolsController {
 
 	displayWordEntry(results) {
 		var tracer = Debug.getTraceLogger('WordEntryController.displayWordEntry');
+		tracer.trace("results="+jsonStringifySafe(results));
 		var lang = results.lang;
 		var otherLang = results.otherLang;
 
@@ -120,8 +121,8 @@ class WordEntryController extends IUToolsController {
 		this.displayWordBeingLookedUp(word, wordInOtherScript);
 		if (wordEntry != null) {
                 var html =
-                    "<div id='div-info' align='right'>\n"+
-                    "  <a href='help.jsp?topic=about_dictionary' target='#iutools_help'>info</a>\n"+
+                    "<div id='div-info' class='div-info' align='right'>\n"+
+                    "  <a href='help.jsp?topic=about_dictionary' target='#iutools_help'>\n"+
                     "</div>";
 
             html += this.htmlTranslations(wordEntry, otherLang);
@@ -141,9 +142,7 @@ class WordEntryController extends IUToolsController {
 
 
         var info = this.translationsInfo(wordEntry);
-        var translations = info.translations;
-
-        var disclaimer = null;
+        tracer.trace("info.areRelatedTranslations="+info.areRelatedTranslations);
         if (info.areRelatedTranslations) {
             heading = heading+" (Related words only)"
         }
@@ -151,24 +150,34 @@ class WordEntryController extends IUToolsController {
 
         var examples = info.examples;
 
-        var totalDisplayed = 0;
-        for (var ii=0; ii < translations.length; ii++) {
-            var word = translations[ii];
-            if (word === "ALL" || word === "MISC") {
+        var totalTranslationsDisplayed = 0;
+        var totalL1WordsDisplayed = 0;
+        for (var ii=0; ii < info.l1Words.length; ii++) {
+            var l1Word = info.l1Words[ii];
+            var wordTranslations = info.translation4word[l1Word];
+            if (wordTranslations == null || typeof wordTranslations == 'undefined') {
                 continue;
             }
-            if (totalDisplayed > 0) {
-                html += "; ";
+
+            if (info.areRelatedTranslations) {
+                if (ii > 0) {
+                    html += "<br/>\n";
+                }
+                html += this.highlightCommonLead(l1Word, wordEntry.word)+": ";
             }
-            html += this.htmlTranslationWord(word);
-            totalDisplayed++;
+            totalL1WordsDisplayed++;
+            tracer.trace("ii="+ii+", l1Word="+l1Word+", wordTranslations="+wordTranslations);
+
+            for (var jj=0; jj < wordTranslations.length; jj++) {
+                if (jj > 0) {
+                    html += "; ";
+                }
+                html += this.htmlTranslationWord(wordTranslations[jj]);
+                totalTranslationsDisplayed++;
+            }
         }
-        if (totalDisplayed == 0) {
+        if (totalTranslationsDisplayed == 0) {
             html += "none";
-        } else {
-            // html +=
-            //     "<br/><div class='small_note'><a href='help.jsp?topic=about_dictionary' target='#'>Why are some translations bad?</a></div>";
-            //     ;
         }
         html += "<br/>\n";
 
@@ -183,23 +192,48 @@ class WordEntryController extends IUToolsController {
     translationsInfo(wordEntry) {
         var tracer = Debug.getTraceLogger('WordEntryController.translationsInfo');
         tracer.trace("wordEntry="+jsonStringifySafe(wordEntry));
-        var translations = wordEntry.origWordTranslations;
         var examples = wordEntry.examplesForOrigWordTranslation;
-        var areRelatedTranslations = false;
-        if (examples == null || Object.keys(examples).length == 0) {
-            translations = wordEntry.relatedWordTranslations;
-            examples = wordEntry.examplesForRelWordsTranslation;
-            areRelatedTranslations = true;
+        var info = {
+            areRelatedTranslations: false,
+            'translation4word': {
+            }
+        };
+
+
+        if (wordEntry.examplesForOrigWordTranslation != null
+            && Object.keys(wordEntry.examplesForOrigWordTranslation).length > 0) {
+            // We have some translations for the actual word
+            tracer.trace("We HAVE translations for the query word");
+            info.l1Words = [wordEntry.word];
+            info.translation4word[wordEntry.word] = wordEntry.origWordTranslations;
+            info.allTranslations = wordEntry.origWordTranslations;
+            info.examples = wordEntry.examplesForOrigWordTranslation;
+        } else {
+            // We only have translations for related words
+            tracer.trace("We have NO translations for the query word");
+            info.areRelatedTranslations = true;
+            info.l1Words = wordEntry.relatedWords;
+            info.allTranslations = [];
+            info.examples = wordEntry.examplesForRelWordsTranslation;
+            var relWords = Object.keys(wordEntry.relatedWordTranslationsMap);
+            for (var ii=0; ii < relWords.length; ii++) {
+                var aRelWord = relWords[ii];
+                var aRelWordTranslations = wordEntry.relatedWordTranslationsMap[aRelWord];
+                tracer.trace("For aRelWord="+aRelWord+", aRelWordTransl="+jsonStringifySafe(aRelWordTranslations))
+                info['translation4word'][aRelWord] = aRelWordTranslations;
+                for (var jj=0; jj < aRelWordTranslations.length; jj++) {
+                    var aTransl = aRelWordTranslations[jj];
+                    if (!info.allTranslations.includes(aTransl)) {
+                        info.allTranslations.push(aTransl);
+                    }
+                }
+            }
         }
 
-        var info =
-            {
-                'translations': translations,
-                'examples': examples,
-                'areRelatedTranslations': areRelatedTranslations
-            };
+        tracer.trace("Returning info="+jsonStringifySafe(info));
         return info;
     }
+
 
     langName(langCode) {
         var name = langCode;
@@ -267,21 +301,23 @@ class WordEntryController extends IUToolsController {
         var tracer = Debug.getTraceLogger('WordEntryController.htmlAlignmentsByTranslation');
         tracer.trace("wordEntry="+jsonStringifySafe(wordEntry));
         var html = "";
-        var trInfo = this.translationsInfo(wordEntry);
-        tracer.trace("trInfo="+jsonStringifySafe(trInfo));
-		var translations = trInfo.translations;
-        var translation2alignments = trInfo.examples;
+        var trInfoNew = this.translationsInfo(wordEntry);
+
+        tracer.trace("trInfoNew="+jsonStringifySafe(trInfoNew));
+        var allTranslations = trInfoNew.allTranslations;
+        tracer.trace("allTranslations="+jsonStringifySafe(allTranslations));
+        var translation2alignments = trInfoNew.examples;
 
         var heading = "Examples of use";
-        if (trInfo.areRelatedTranslations) {
+        if (trInfoNew.areRelatedTranslations) {
             heading += " (for related words)";
         }
 		html += "<h3>"+heading+"</h3>\n";
 
-        if (translations != null && translations.length > 0) {
+        if (allTranslations != null && allTranslations.length > 0) {
             html += "<div class=\"accordion\" id=\"accordion\">\n";
-		    for (var ii=0; ii < translations.length; ii++) {
-		        var aTranslation = translations[ii];
+		    for (var ii=0; ii < allTranslations.length; ii++) {
+		        var aTranslation = allTranslations[ii];
 		        var translAlignments = translation2alignments[aTranslation];
 		        html +=
                     this.htmlAlignments4Translation(
@@ -358,5 +394,26 @@ class WordEntryController extends IUToolsController {
 
     showSpinningWheel(message) {
         this.windowController.showSpinningWheel(".wb-body", message);
+    }
+
+    highlightCommonLead(l1Word, word) {
+        var highlighted = "";
+        // var highlighted = "<strong>";
+        var foundDifferences = false;
+        for (var ii=0; ii < l1Word.length; ii++) {
+            if (ii >= word.length || l1Word.charAt(ii) !== word.charAt(ii)) {
+                if (!foundDifferences) {
+                    // highlighted += "</strong>";
+                    highlighted += "<strong>"
+                    foundDifferences = true;
+                }
+            }
+            highlighted += l1Word.charAt(ii);
+        }
+        if (foundDifferences) {
+            highlighted += "</strong>";
+        }
+
+        return highlighted;
     }
 }

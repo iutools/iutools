@@ -57,6 +57,14 @@ Latin query:
     - Check that there are about 17 hits
     - Translations include 'clams' and 'divers'
 
+Latin query - Capitalized words:
+- Do the steps described in the 'basic scenario' with following specifics
+    - QUERY_WORD: 'Nunavut'
+    - QUERY_LANGUAGE: Leave it at Inuktitut 
+    - PREFERRED_SCRIPT: Roman
+    - Check that there are about 26 hits
+    - Make sure the word entry is OK
+
 Syllabic query
 - Do the steps described in the 'basic scenario' with the following 'specifics':
   - QUERY_WORD: 'ᐊᒻᒨᒪᔪᖅ'
@@ -83,13 +91,23 @@ English query - Multi word
   - At the moment, it's 'normal' that the list of hits only shows the
     expression 'healthcare coverage'
 
-Query that returns no results
-- Search for ninuksuk
-- Make sure no Console error
-- Make sure system says no hits were found
-- Make sure the Word Info window is not visible at all (not even minimized)
-- Nothing else to check for that 
+Out-of-hansard valid IU word
+- Search for a word that is a valid IU word but is not in the Hansard
+- ex:??? 
+- Make sure that the dictionary displays a word entry for it
 
+Invalid IU word that does NOT appear in the Hansard
+- Search for a word that is NOT a valid IU word
+- ex: ninuksuk
+- The dictionary should still display an entry that says:
+  -- No decomp (possibly misspelled?)
+  
+Invalid IU word that DOES appear in the Hansard
+- ex: ???
+- The dictioanry should still display an entry that says:
+-- No decomp (possibly misspelled?)
+-- Lists the examples found in the Hansard
+  
 Very long word
 - Search for aanniaqarnanngittulirijimmarik
 - Make sure that the word and its Syllabics transcoding are properly displayed 
@@ -171,6 +189,11 @@ Word Entry window hiding/showing/closing
   - Search for word inuksuk and make sure that the info for the word is correctly 
     displayed   
     
+Word Dict Help
+- Search for a word and open its word entry
+- Click on the _info_ link at the top right of that window
+- Test all the links on that help page to make sure they lead to the right place    
+    
 ## Spell Checker
 
 Spell check LATIN -- Happy Path
@@ -207,7 +230,7 @@ Spell check LATIN -- Happy Path
 
 
 Spell check SYLLABIC -- Happy Path
-- Enter some text in LATIN, some of which are badly spelled, others not. 
+- Enter some text in SYLLABIC, some of which are badly spelled, others not. 
 - Hit _Spell Check_ button
 - Words from input text should be displayed one at a time, with misspelled 
   words underlined. 
@@ -311,24 +334,24 @@ Spell check text that is too large
 - Try to spell check a text with > 500 words
 - Check that the system prints an error message that says you have to split the
   text into smaller chunks. 
-        
+  
 Choose corrrection after closing suggestions box
 - Click on a bad word
 - Click on the X to close the suggestions window
 - Click on the bad word again and make sure you can select and apply a suggestion
-        
-Correcting a second word while first word may still be looking for suggestions
-- Spell check text 'nunavvvut inuksssuk'
-- Do the following very rapidly
-  - Click on mis-spelled 'nunavvvut'
-  - Close the window by clicking on the X, while the window is still looking for 
-    suggestions
-  - Click on mis-spelled 'inuksssuk'
-    - Wait for the suggestions to appear and make sure that they are for 
-      'inuksssuk', NOT for 'nunavvvut'
-  - Fix the spelling of inuksssuk and Apply
-  - Make sure that the word that was corrected is inuksssuk and not nunavvvut
-    
+          
+Click on two misspelled words in close succession
+- Spell check 'nunavvvut inuksssuk'
+- Click on nunavvvut, then move and resize the choose correction box so it 
+  does not hide the two clickable words
+- Click on nunavvvut again, AND IMMEDIATLY AFTER click on inuksssuk (i.e. before 
+  the system has time to finish displaying the resuts for nunavvvut)
+- Click on one  of the suggestions and make sure that
+  - inuksssuk was changed as expected
+  - nunavvvut stayed the same
+  was 
+  corrected   
+            
 ## Search Engine
 Search for word in LATIN - Happy Path
 - Enter ammuumajuq (= scuba diving or something) in the search box, then click [Search] button

@@ -8,6 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ca.nrc.json.PrettyPrinter;
+import ca.nrc.string.StringUtils;
 import org.apache.log4j.Level;
 import org.iutools.linguisticdata.Morpheme;
 import org.iutools.morph.r2l.DecompositionState;
@@ -671,10 +672,16 @@ public class CompiledCorpus {
 	}
 	
 	public Iterator<String> wordsContainingMorphNgram(String[] morphemes) throws CompiledCorpusException {
+		Logger logger = Logger.getLogger("org.iutools.corpus.CompiledCorpus.wordsContainingMorphNgram");
 		Set<String> words = new HashSet<String>();
 		String query = morphNgramQuery(morphemes);
 		SearchResults<WordInfo> hits = esWinfoSearch(query);
 
+		if (logger.isTraceEnabled()) {
+			logger.trace(
+				"For morphemes="+ StringUtils.join(morphemes, ",")+
+				", returning total of "+hits.getTotalHits()+" hits.");
+		}
 		return hits.docIDIterator();
 	}
 

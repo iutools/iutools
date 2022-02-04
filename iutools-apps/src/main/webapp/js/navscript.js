@@ -11,7 +11,7 @@ $(document).ready(function() {
 
   $(".drop-menu-toggle").click(function(e) {
     e.stopPropagation();
-		$(".drop-menu-toggle").removeClass("active").next(".drop-menu").slideUp();
+        $(".drop-menu-toggle").not($(this)).removeClass("active").next(".drop-menu").slideUp();
 		$(this).toggleClass("active").next(".drop-menu").slideToggle();
 	});
 

@@ -178,6 +178,7 @@ public abstract class Roman {
     }
     
     public static boolean allInuktitut(String word) {
+		  word = word.toLowerCase();
         for (int i=0; i<word.length(); i++) {
         	if ( inuktitutCharacters.indexOf(word.charAt(i)) == -1 )
         		return false;

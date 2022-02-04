@@ -1,5 +1,6 @@
 package org.iutools.worddict;
 
+import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
@@ -7,6 +8,7 @@ import org.iutools.linguisticdata.LinguisticData;
 import org.iutools.linguisticdata.Morpheme;
 import org.iutools.linguisticdata.MorphemeException;
 import org.iutools.linguisticdata.MorphemeHumanReadableDescr;
+import org.iutools.script.CollectionTranscoder;
 import org.iutools.script.TransCoder;
 import org.iutools.script.TransCoderException;
 
@@ -33,6 +35,7 @@ public class MultilingualDictEntry {
 
 	public List<String> origWordTranslations = new ArrayList<String>();
 	public List<String> relatedWordTranslations = new ArrayList<String>();
+	public Map<String,List<String>> relatedWordTranslationsMap = new HashMap<String,List<String>>();
 
 	private boolean _translationsNeedSorting = true;
 
@@ -131,7 +134,15 @@ public class MultilingualDictEntry {
 	}
 
 	public MultilingualDictEntry addBilingualExample(
-		String translation, String[] example, boolean forRelatedWord) throws MultilingualDictException {
+		String translation, String[] example, boolean forRelatedWord)
+		throws MultilingualDictException {
+		return addBilingualExample(translation, example, forRelatedWord, (String)null);
+	}
+
+
+	public MultilingualDictEntry addBilingualExample(
+		String translation, String[] example, boolean forRelatedWord,
+		String relWord) throws MultilingualDictException {
 		Logger tLogger = Logger.getLogger("org.iutools.worddict.MultilingualDictEntry.addBilingualExample");
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("translation=" + translation + ", forRelatedWord=" + forRelatedWord + ", example=" + String.join(", ", example));
@@ -155,6 +166,9 @@ public class MultilingualDictEntry {
 		}
 		currentExamples.add(example);
 		examplesForTranslation.put(translation, currentExamples);
+		if (relWord != null) {
+			updateRelWordTranslationsMap(relWord, translation);
+		}
 
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("upon exit, possible translations="+
@@ -166,14 +180,41 @@ public class MultilingualDictEntry {
 		return this;
 	}
 
-	private void addBilingualExamples(
-		String translation, List<String[]> examples, Boolean forRelatedWord)
-		throws MultilingualDictException {
-		for (String[] anExample: examples) {
-			addBilingualExample(translation, anExample, forRelatedWord);
+	private void updateRelWordTranslationsMap(String relWord, String translation) {
+		if (!relatedWordTranslationsMap.containsKey(relWord)) {
+			relatedWordTranslationsMap.put(relWord, new ArrayList<String>());
+		}
+		List<String> relTranslations = relatedWordTranslationsMap.get(relWord);
+		if (!relTranslations.contains(translation)) {
+			relTranslations.add(translation);
 		}
 	}
 
+	private void addBilingualExamples(
+		String translation, List<String[]> examples, Boolean forRelatedWord)
+		throws MultilingualDictException {
+		addBilingualExamples(translation, examples, forRelatedWord, (String)null);
+	}
+
+	private void addBilingualExamples(
+		String translation, List<String[]> examples, Boolean forRelatedWord,
+		String relWord)
+		throws MultilingualDictException {
+		for (String[] anExample: examples) {
+			addBilingualExample(translation, anExample, forRelatedWord, relWord);
+		}
+	}
+
+	public List<String> allTranslations() {
+		List<String> all = new ArrayList<String>();
+		all.addAll(origWordTranslations);
+		for (String aTransl: relatedWordTranslations) {
+			if (!all.contains(aTransl)) {
+				all.add(aTransl);
+			}
+		}
+		return all;
+	}
 
 	public List<String[]> bilingualExamplesOfUse() {
 		List<String[]> allExamples = new ArrayList<String[]>();
@@ -190,30 +231,6 @@ public class MultilingualDictEntry {
 		}
 
 		return examples;
-	}
-
-	public void ensureIUScript(TransCoder.Script script) throws MultilingualDictException {
-		try {
-			for (int ii = 0; ii < relatedWords.length; ii++) {
-				relatedWords[ii] = TransCoder.ensureScript(script, relatedWords[ii]);
-			}
-
-			for (String translation : this.examplesForOrigWordTranslation.keySet()) {
-				List<String[]> examples = this.examplesForOrigWordTranslation.get(translation);
-				for (int ii = 0; ii < examples.size(); ii++) {
-					String[] example_ii = examples.get(ii);
-					example_ii[0] = TransCoder.ensureScript(script, example_ii[0]);
-					if (script == TransCoder.Script.SYLLABIC) {
-						// Restore the <strong> tags to Roman
-						example_ii[0] = example_ii[0].replaceAll("ᔅᑦᕐoᖕ>", "strong>");
-					}
-					examples.set(ii, example_ii);
-				}
-			}
-		} catch (TransCoderException e) {
-			throw new MultilingualDictException(e);
-		}
-		return;
 	}
 
 	public List<String> possibleTranslationsIn(String lang) throws MultilingualDictException {
@@ -255,15 +272,31 @@ public class MultilingualDictEntry {
 
 	public void addRelatedWordTranslations(MultilingualDictEntry entry) throws MultilingualDictException {
 		List<String> relatedWordTranslations = entry.possibleTranslationsIn("en");
+		String relWord = entry.word;
 		for (String translation: relatedWordTranslations) {
 			List<String[]> examplesOfUse = entry.bilingualExamplesOfUse(translation);
-			this.addBilingualExamples(translation, examplesOfUse, true);
+			this.addBilingualExamples(translation, examplesOfUse, true, relWord);
 		}
 	}
 
 
 	public int totalBilingualExamples() throws MultilingualDictException {
 		int total = bilingualExamplesOfUse("ALL").size();
+		return total;
+	}
+
+	public int totalBilingualExamples(MultilingualDict.WhatTerm where) throws MultilingualDictException {
+		int total = 0;
+		Map<String, List<String[]>> examplesMap = examplesForOrigWordTranslation;
+		if (where == MultilingualDict.WhatTerm.RELATED) {
+			examplesMap = examplesForRelWordsTranslation;
+		}
+		for (String aTranslation: examplesMap.keySet()) {
+			if (aTranslation.equals("ALL")) {
+				continue;
+			}
+			total += examplesMap.get(aTranslation).size();
+		}
 		return total;
 	}
 
@@ -339,10 +372,15 @@ public class MultilingualDictEntry {
 
 	public void ensureScript(TransCoder.Script script)
 		throws MultilingualDictException{
-		ensureScript_word(script);
+		Logger logger = Logger.getLogger("org.iutools.worddict.MultilingualDictEntry.ensureScript");
+		logger.trace("word="+word+", script="+script);
 		ensureScript_translations(script);
 		ensureScript_relatedwords(script);
 		ensureScript_BilingualExamples(script);
+		ensureScript_word(script);
+		if (logger.isTraceEnabled()) {
+			logger.trace("upon exit, this="+ PrettyPrinter.print(this));
+		}
 	}
 
 	private void ensureScript_word(TransCoder.Script script) throws MultilingualDictException {
@@ -358,30 +396,44 @@ public class MultilingualDictEntry {
 
 	private void ensureScript_translations(TransCoder.Script script) throws MultilingualDictException {
 		if (otherLang().equals("iu")) {
+			// Input word is en and its translations are iu
 			for (List<String> translations:
 				new List[] {origWordTranslations, relatedWordTranslations}) {
-				for (int ii=0; ii < translations.size(); ii++) {
-					try {
-						translations.set(ii,
-							TransCoder.ensureScript(script, translations.get(ii))
-							);
-					} catch (TransCoderException e) {
-						throw new MultilingualDictException(e);
-					}
-				}
+				CollectionTranscoder.transcodeList(script, translations);
+//				for (int ii=0; ii < translations.size(); ii++) {
+//					try {
+//
+//						translations.set(ii,
+//							TransCoder.ensureScript(script, translations.get(ii))
+//							);
+//					} catch (TransCoderException e) {
+//						throw new MultilingualDictException(e);
+//					}
+//				}
+			}
+		} else {
+			// Input word is iu and its translations are en
+			try {
+				// Transcode keys of the map that provides en translations for each
+				// iu related word.
+				CollectionTranscoder.transcodeKeys(script, this.relatedWordTranslationsMap);
+			} catch (TransCoderException e) {
+				throw new MultilingualDictException(e);
 			}
 		}
 	}
 
 	private void ensureScript_relatedwords(TransCoder.Script script) throws MultilingualDictException {
 
-		try {
-			for (int ii = 0; ii < relatedWords.length; ii++) {
-				relatedWords[ii] = TransCoder.ensureScript(script, relatedWords[ii]);
-			}
-		} catch (TransCoderException e) {
-			throw new MultilingualDictException(e);
-		}
+//		try {
+//			for (int ii = 0; ii < relatedWords.length; ii++) {
+//				relatedWords[ii] = TransCoder.ensureScript(script, relatedWords[ii]);
+//			}
+//		} catch (TransCoderException e) {
+//			throw new MultilingualDictException(e);
+//		}
+
+		CollectionTranscoder.transcodeArray(script, relatedWords);
 		return;
 	}
 

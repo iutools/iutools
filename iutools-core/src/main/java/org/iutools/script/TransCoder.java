@@ -598,7 +598,7 @@ public class TransCoder {
 			} else if (Roman.allInuktitut(textNoPunctNorDigits)) {
 				script = Script.ROMAN;
 			} else if (mixedMeansSyll){
-				// Text contains a mix of syllabic and roman characters, but
+				// Text contains a mix of syllabic and roman characters and
 				// mixedMeansSyll=true, so go with syllatics
 				script = Script.SYLLABIC;
 			}

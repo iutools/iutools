@@ -2,11 +2,14 @@ package org.iutools.worddict;
 
 import ca.nrc.testing.*;
 import ca.nrc.testing.RunOnCases.Case;
+import javafx.scene.paint.Stop;
 import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.linguisticdata.MorphemeHumanReadableDescr;
 import org.iutools.script.TransCoder;
+import org.iutools.utilities.StopWatch;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 
 
 import java.util.*;
@@ -21,10 +24,19 @@ public class MultilingualDictTest {
 	public void setUp() throws Exception {
 		// Cases for search() function
 		cases_search = new Case[] {
+
+		new Case("DELETEME - Does this hangup?",
+			"iu", "angijuqqaaqarvinga", -999,
+			new String[] {}),
+
 			new Case("iu-inuk-roman", "iu", "inuk", 200,
 				new String[] {"inuk", "inukku", "inuksui", "inuksuk"}),
 			new Case("iu-inuk-syll", "iu", "ᐃᓄᒃ", 200,
 				new String[] {"ᐃᓄᒃ", "ᐃᓄᒃᑯ", "ᐃᓄᑯᓗᒃ"}),
+			new Case("iu-single-hit", "iu", "nunavuttaarniq", 1,
+				new String[] {"nunavuttaarniq"}, 1),
+			new Case("iu-out-of-yet-valid-dict-word", "iu", "umiaqtulaaqtunga", 1,
+				new String[] {"umiaqtulaaqtunga"}, 1),
 		};
 
 		// Cases for entry4word function
@@ -35,23 +47,39 @@ public class MultilingualDictTest {
 					"ammut/1a", "u/1nv", "ma/1vv", "juq/1vn", "siuq/1nv",
 					"jusik/tv-ger-2d")
 				.setOrigWordTranslations(
-					"clam diving", "clam ... clams", "diving ... clams")
+					"clam", "clam diving", "clam ... clams", "diving ... clams")
 				.setMinExamples(3)
 				.setRelatedWords(
 					"ammuumajurniartiit", "ammuumajuqtarnirmut",
 					"ammuumajuqtaqtiit", "ammuumajuqtaqtutik",
-					"ammuumajurniarnirmut"),
+					"ammuumajurniarnirmut")
+				.setExpRelatedTranslationsMap(
+					new String[] {"ammuumajuqtaqtiit", "clam divers",
+						"divers ... valid ... diving"},
+					new String[] {"ammuumajuqtaqtutik", "clam divers",
+						"classifications ... divers ... clam divers"},
+					new String[] {"ammuumajuqtarnirmut", "clam", "clam diggers",
+						"clam digging", "clam diggers ... commercial clam digging"},
+					new String[] {"ammuumajurniartiit", "divers"}),
 
 			new MultilingualDictCase("iu-ᐊᒻᒨᒪᔪᖅᓯᐅᖅᑐᑎᒃ", "ᐊᒻᒨᒪᔪᖅᓯᐅᖅᑐᑎᒃ")
 				.setDecomp(
 					"ammut/1a", "u/1nv", "ma/1vv", "juq/1vn", "siuq/1nv",
 					"jusik/tv-ger-2d")
 				.setOrigWordTranslations(
-					"clam diving", "clam ... clams", "diving ... clams")
+					"clam", "clam diving", "clam ... clams", "diving ... clams")
 				.setMinExamples(3)
 				.setRelatedWords(
 					"ᐊᒻᒨᒪᔪᕐᓂᐊᕐᑏᑦ", "ᐊᒻᒨᒪᔪᖅᑕᕐᓂᕐᒧᑦ", "ᐊᒻᒨᒪᔪᖅᑕᖅᑏᑦ", "ᐊᒻᒨᒪᔪᖅᑕᖅᑐᑎᒃ",
-					"ᐊᒻᒨᒪᔪᕐᓂᐊᕐᓂᕐᒧᑦ"),
+					"ᐊᒻᒨᒪᔪᕐᓂᐊᕐᓂᕐᒧᑦ")
+				.setExpRelatedTranslationsMap(
+					new String[] {"ᐊᒻᒨᒪᔪᕐᓂᐊᕐᑏᑦ", "divers"},
+					new String[] {"ᐊᒻᒨᒪᔪᖅᑕᕐᓂᕐᒧᑦ", "clam", "clam diggers",
+						"clam digging", "clam diggers ... commercial clam digging"},
+					new String[] {"ᐊᒻᒨᒪᔪᖅᑕᖅᑏᑦ", "clam divers",
+						"divers ... valid ... diving"},
+					new String[] {"ᐊᒻᒨᒪᔪᖅᑕᖅᑐᑎᒃ", "clam divers",
+						"classifications ... divers ... clam divers"}),
 
 			// This is an out of vocabulary word
 			new MultilingualDictCase("iu-inuksssuk", "inuksssuk")
@@ -68,8 +96,8 @@ public class MultilingualDictTest {
 					"umiarjualirijikkut")
 				.setMinExamples(5)
 				.setOrigWordTranslations(new String[]{
-					"sea", "ship", "shipping",
-					"sealift arrives", "resupply ... dry ... cargo",
+					"sea", "ship", "shipping", "sealift arrives",
+					"resupply ... dry cargo"
 				}),
 
 			new MultilingualDictCase("iu-kiugavinnga", "kiugavinnga")
@@ -115,7 +143,7 @@ public class MultilingualDictTest {
 	@Test
 	public void test__MultilingualDict__Synopsis() throws Exception {
 		// The dictionary is a singleton
-		MultilingualDict dict = MultilingualDict.getInstance();
+		MultilingualDict dict = new MultilingualDict();
 
 		// Given an inuktitut word, you can get its dictionary entry
 		MultilingualDictEntry entry = dict.entry4word("inuksuk");
@@ -180,7 +208,7 @@ public class MultilingualDictTest {
 			}) {
 
 			MultilingualDictEntry entry =
-				MultilingualDict.getInstance().entry4word(aCase.getLeft());
+				new MultilingualDict().entry4word(aCase.getLeft());
 			new AssertMultilingualDictEntry(entry)
 				.iuIsInScript(aCase.getRight())
 			;
@@ -189,13 +217,35 @@ public class MultilingualDictTest {
 	}
 
 	@Test
-	public void test__entry4word__VariousCases() throws Exception {
+	public void test__entry4word__SpeedTest(TestInfo testInfo) throws Exception {
+		String[] words = new String[] {
+			"amiq", "nunavut", "annuraanik", "qarasaujaq", "ilinniaqtuliriniq",
+			"titiraujaq"
+		};
 
+		MultilingualDict dict = new MultilingualDict()
+			.setMinMaxPairs(100, 100);
+		long start = StopWatch.nowMSecs();
+		for (String aWord: words) {
+			dict.entry4word(aWord);
+		}
+		long elapsed = StopWatch.elapsedMsecsSince(start);
+		double gotAvgSecs = elapsed / (1000.0 * words.length);
+		AssertRuntime.runtimeHasNotChanged(
+			gotAvgSecs, 0.20,
+			"avg secs for retrieving a dict entry", testInfo);
+	}
+
+	@Test
+	public void test__entry4word__VariousCases() throws Exception {
+		// For some reason, this test fails intermittently if we don't sleep
+		// before doing it.
+		Thread.sleep(2*1000);
 		Consumer<Case> runner = (uncastCase) -> {
 			try {
 				MultilingualDictCase aCase = (MultilingualDictCase)uncastCase;
 				MultilingualDictEntry entry =
-				MultilingualDict.getInstance()
+				new MultilingualDict()
 					.entry4word(aCase.word, aCase.l1);
 
 				String[] expL1Highlights = new String[0];
@@ -228,8 +278,12 @@ public class MultilingualDictTest {
 				(expTranslations == null || expTranslations.length == 0) &&
 				aCase.expRelatedTranslations != null) {
 					asserter.relatedTranslationsStartWith(aCase.expRelatedTranslations);
-
 				}
+
+				if (aCase.expRelatedTranslationsMap != null) {
+					asserter.relatedTranslationsMapsEquals(aCase.expRelatedTranslationsMap);
+				}
+
 
 				if (aCase.expDecomp != null) {
 					asserter.decompositionIs(aCase.expDecomp);
@@ -240,7 +294,7 @@ public class MultilingualDictTest {
 		};
 
 		new RunOnCases(cases_entry4word, runner)
-//			.onlyCaseNums(7)
+//			.onlyCaseNums(4)
 //			.onlyCasesWithDescr("iu-kiugavinnga")
 			.run();
 	}
@@ -249,7 +303,7 @@ public class MultilingualDictTest {
 	public void test__search__HappyPath() throws Exception {
 		String partialWord = "inuksu";
 		Pair<Iterator<String>, Long> results =
-			MultilingualDict.getInstance().searchIter(partialWord);
+			new MultilingualDict().searchIter(partialWord);
 		assertSearchResultsInclude(
 			results.getLeft(), "inuksuk", "inuksuup", "inuksui");
 	}
@@ -258,7 +312,7 @@ public class MultilingualDictTest {
 	public void test__search__ENword() throws Exception {
 		String partialWord = "housing";
 		Pair<Iterator<String>, Long> results =
-			MultilingualDict.getInstance().searchIter(partialWord, "en");
+			new MultilingualDict().searchIter(partialWord, "en");
 		assertSearchResultsInclude(
 			results.getLeft(), "housing");
 	}
@@ -269,13 +323,22 @@ public class MultilingualDictTest {
 			try {
 				String lang = (String) aCase.data[0];
 				String query = (String) aCase.data[1];
-				Integer expTotalWords = (Integer) aCase.data[2];
+				Integer expMinWords = (Integer) aCase.data[2];
 				String[] expTopMatches = (String[]) aCase.data[3];
+				Integer expMaxWords = null;
+				if (aCase.data.length > 4) {
+					expMaxWords = (Integer) aCase.data[4];
+				}
 				Pair<List<String>, Long> results2 =
-				MultilingualDict.getInstance().search(query, lang, (Integer) null);
+					new MultilingualDict().search(query, lang, (Integer) null);
 				AssertNumber.isGreaterOrEqualTo(
 					aCase.descr,
-					results2.getRight(), expTotalWords);
+					results2.getRight(), expMinWords);
+				if (expMaxWords != null) {
+					AssertNumber.isLessOrEqualTo(
+						aCase.descr,
+						results2.getRight(), expMaxWords);
+				}
 				new AssertSequence<String>(
 					results2.getLeft().toArray(new String[0]),
 					aCase.descr)
@@ -285,6 +348,7 @@ public class MultilingualDictTest {
 			}
 		};
 		new RunOnCases(cases_search, runner)
+//			.onlyCaseNums(4)
 			.run();
 	}
 
@@ -304,12 +368,11 @@ public class MultilingualDictTest {
 		public Integer expMinExamples = 0;
 		public boolean outOfVocab = false;
 		public String[] expRelatedTranslations = null;
-		private String[] expOrigHighlights;
+		Map<String,List<String>> expRelatedTranslationsMap = null;
 
 		public MultilingualDictCase(String _descr, String _word) {
 			super(_descr, null);
 			this.word = _word;
-			this.expOrigHighlights = new String[] {_word};
 		}
 
 		public MultilingualDictCase setL1(String _lang) throws RuntimeException {
@@ -361,6 +424,22 @@ public class MultilingualDictTest {
 			this.expRelatedTranslations = _expRelatedTranslations;
 			return this;
 		}
+
+		public MultilingualDictCase setExpRelatedTranslationsMap(
+			String[]... expMapEntries) {
+			Map<String,List<String>> expMap = new HashMap<String,List<String>>();
+			for (String[] anExpEntry: expMapEntries) {
+				if (anExpEntry.length > 0) {
+					String relWord = anExpEntry[0];
+					String[] translArr = Arrays.copyOfRange(anExpEntry, 1, anExpEntry.length);
+					List<String> transList = new ArrayList<String>();
+					Collections.addAll(transList, translArr);
+					expMap.put(relWord, transList);
+				}
+			}
+			this.expRelatedTranslationsMap = expMap;
+			return this;
+		}
 	}
 
 	@Test
@@ -383,7 +462,7 @@ public class MultilingualDictTest {
 			String expText =(String)aCase.data[2];
 			try {
 				String gotText =
-					MultilingualDict.getInstance().canonizeTranslation(lang, origText);
+					new MultilingualDict().canonizeTranslation(lang, origText);
 				AssertString.assertStringEquals(
 					aCase.descr, expText, gotText
 				);

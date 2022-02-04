@@ -81,17 +81,25 @@ windows
 <main>
 
 <script charset="UTF-8">
-    var tracer = Debug.getTraceLogger("test_htmlpage.main");
 
     // This function will be invoked when you press the [Try Code] button
     function tryCode() {
-        var divToMount = document.getElementById("to-mount")
-            // .cloneNode(true)
-        ;
-        divToMount.style.display = 'block';
-        new WinBox("Mount DOM", {
-            mount: divToMount,
-        });
+        console.log("--** tryCode");
+        var controller = new WordEntryController();
+        controller.displayWordBeingLookedUp("ammuumajuq");
+
+        var jsonEntry = {
+            "convertedQuery":"iglu","errorMessage":null,"failingInputs":null,
+            "lang":"iu",
+            "matchingWords":["iglu","igluqarlutiglu","igluga","igluma","iglumi","igluni","iglualuk","igluillu","iglunga","iglutta","iglulik"],
+            "otherLang":"en",
+            "queryWordEntry":{
+                    "definition":null,
+                    "examplesForOrigWordTranslation":{
+                        "ALL":[["taanna <strong>iglu</strong> ilinniarvik angilligiaqtaunngimmat.","We’re <strong>not</strong> making the <strong>building</strong> any bigger than it was."],["ilanga taijaujuq <strong>iglu</strong>. sivunissatinni","In the future, from what I can gather from our collaboration with Taiguusiliuqtiit, they also have in the works publishing books about other traditional <strong>topics</strong>."],["nangminirijavut tammaaqtirvik <strong>iglu</strong>.","We own the Tamartirvik <strong>building</strong>."],["tainna <strong>iglu</strong> matullualautuugaluaq.","I would think that’s the <strong>kind of</strong> thing the <strong>building</strong> should have been shut down and it wasn’t."],["isumaliuqtuqarniaqtillugu, <strong>iglu</strong> najuraksaugaluarianganik.","So what is put into effect to decide whether the house is still <strong>inhabitable</strong>?"],["tainna <strong>iglu</strong> isirvigilaarumajavut 2009nguliqpat.","We hope to <strong>occupy that</strong> building by 2009."]],"building":[["taanna <strong>iglu</strong> ilinniarvik angilligiaqtaunngimmat.","We’re <strong>not</strong> making the <strong>building</strong> any bigger than it was."],["nangminirijavut tammaaqtirvik <strong>iglu</strong>.","We own the Tamartirvik <strong>building</strong>."]],"inhabitable":[["isumaliuqtuqarniaqtillugu, <strong>iglu</strong> najuraksaugaluarianganik.","So what is put into effect to decide whether the house is still <strong>inhabitable</strong>?"]],"kind ... building":[["tainna <strong>iglu</strong> matullualautuugaluaq.","I would think that’s the <strong>kind of</strong> thing the <strong>building</strong> should have been shut down and it wasn’t."]],"occupy":[["tainna <strong>iglu</strong> isirvigilaarumajavut 2009nguliqpat.","We hope to <strong>occupy that</strong> building by 2009."]],"topics":[["ilanga taijaujuq <strong>iglu</strong>. sivunissatinni","In the future, from what I can gather from our collaboration with Taiguusiliuqtiit, they also have in the works publishing books about other traditional <strong>topics</strong>."]]},"examplesForRelWordsTranslation":{},"lang":"iu","morphDecomp":[],"origWordTranslations":["building","topics","occupy","inhabitable","kind ... building"],"relatedWordTranslations":[],"relatedWordTranslationsMap":{},"relatedWords":[],"word":"iglu","wordInOtherScript":"ᐃᒡᓗ","wordRoman":"iglu","wordSyllabic":"ᐃᒡᓗ"},"stackTrace":null,"status":null,"taskElapsedMsecs":204,"taskID":"2021-12-07T19:23:39.895Z","taskStartTime":1638905019895,"totalWords":1135
+        }
+        controller.displayWordEntry(jsonEntry)
+        controller.show();
     }
 </script>
 
@@ -100,62 +108,10 @@ windows
     <p/>
     <button onclick="tryCode()">Try Code</button>
     <p/>
-
-    <hr/>
-    <button onclick="displayWinboxWithMaximizeHandler()">Display Winbox with maximize handler</button>
-    <p/>
-    <button onclick="listAllWinboxMaximizeButtons()">List All Winbox Maximize Buttons</button>
-
-
+    <img src="imgs/info.png">
 
 </main>
 
-<script>
-    function alertOnMaximize() {
-        alert("Winbox Maximize button clicked");
-        console.log("Winbox Maximize button clicked");
-    }
-
-    function displayWinboxWithMaximizeHandler() {
-        var winbox = new WinBox(
-            {
-                title: "Choose correction",
-                html: "Click on the Maximize button",
-            }
-        );
-        var winboxID = winbox.id;
-        var maximizeHandler = function() {
-            alert("Maximizing winbox="+winbox);
-            winbox.maximize();
-        }
-        new RunWhen().domReady(function() {
-            var divWinbox = $("winbox-1");
-            console.log("divWinbox=" + divWinbox);
-            console.log("divWinbox.html()=" + divWinbox.html());
-            console.log("divWinbox.innerHTML=" + divWinbox.innerHTML);
-            var btnMaximize = $(".wb-max");
-            console.log("btnMaximize=" + btnMaximize);
-            console.log("btnMaximize.html()=" + btnMaximize.html());
-            console.log("btnMaximize.innerHTML=" + btnMaximize.innerHTML);
-            console.log("btnMaximize.constructor.name=" + btnMaximize.constructor.name);
-            // btnMaximize.unbind('click');
-            // btnMaximize.click(maximizeHandler);
-            btnMaximize.attr("onclick", 'alertOnMaximize()');
-        });
-    }
-
-    function listAllWinboxMaximizeButtons() {
-        var buttons = $(".wb-max");
-        console.log("There are "+buttons.length+" maximize buttons");
-        console.log("HTML of buttons:")
-        for (var ii=0; ii < buttons.length; ii++) {
-            var button_ii = buttons.get(ii);
-            console.log("  #"+ii+" = "+button_ii.constructor.name+": '"+button_ii.outerHTML+"'");
-        }
-        buttons.length
-    }
-
-</script>
 
 <div id="footer" class="footer">
   In collaboration with:

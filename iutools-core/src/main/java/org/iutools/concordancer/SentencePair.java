@@ -12,8 +12,8 @@ public class SentencePair {
 
 	public boolean misaligned = false;
 	public Map<String,String> langText = new HashMap<String,String>();
-	public Map<String,String[]> tokens4lang = new HashMap<String,String[]>();
-	public Map<String,String[]> tokens4langLowercased = new HashMap<String,String[]>();
+	private Map<String,String[]> tokens4lang = new HashMap<String,String[]>();
+	private Map<String,String[]> tokens4langLowercased = new HashMap<String,String[]>();
 	public Integer[][] tokenAlignments = null;
 	public Integer[][] _invertedTokenAlignments = null;
 	private Pair<String, String> tokenAlignmentsDir = null;
@@ -172,9 +172,23 @@ public class SentencePair {
 	@JsonIgnore
 	public String[] getTokens(String lang) {
 		String[] tokens = tokens4lang.get(lang);
+		if (tokens == null) {
+			tokens = new String[0];
+		}
 
 		return tokens;
 	}
+
+	@JsonIgnore
+	public String[] getTokensLowercased(String lang) {
+		String[] tokens = tokens4langLowercased.get(lang);
+		if (tokens == null) {
+			tokens = new String[0];
+		}
+
+		return tokens;
+	}
+
 
 	@JsonIgnore
 	public String getText(String lang) {

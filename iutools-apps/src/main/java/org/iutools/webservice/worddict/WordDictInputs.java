@@ -22,7 +22,9 @@ public class WordDictInputs extends ServiceInputs {
 	}
 
 	private void init_WordDictInputs(String _word, String _lang) throws ServiceException {
-		this.word = _word;
+		if (_word != null) {
+			this.word = _word.toLowerCase();
+		}
 		if (_lang != null) {
 			this.lang = _lang;
 		}

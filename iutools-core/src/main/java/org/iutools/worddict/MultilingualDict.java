@@ -1,5 +1,6 @@
 package org.iutools.worddict;
 
+import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -37,21 +38,19 @@ import java.util.concurrent.TimeoutException;
  */
 public class MultilingualDict {
 
-	private static final long MAX_WORDS = 20;
+	public static enum WhatTerm {ORIGINAL, RELATED}
+
 	private static MultilingualDict _singleton = null;
 
-	public static int MAX_TRANSLATIONS = 5;
-	public static int MAX_SENT_PAIRS = 20;
-
+	public  Integer MAX_TRANSLATIONS = 5;
+	public  Integer MAX_SENT_PAIRS = 20;
+	public  Integer MIN_SENT_PAIRS = null;
 
 	public CompiledCorpus corpus = null;
 
 	private static final String TAG = "strong";
 
-	// Private constructor.
-	// There should only be one instance of MultilingualDict and you should get it
-	// by invoking MultilingualDict.getInstance();
-	private MultilingualDict() throws MultilingualDictException {
+	public MultilingualDict() throws MultilingualDictException {
 		try {
 			corpus = new CompiledCorpusRegistry().getCorpus();
 		} catch (Exception e) {
@@ -59,12 +58,29 @@ public class MultilingualDict {
 		}
 	}
 
-	public static MultilingualDict getInstance() throws MultilingualDictException {
-		if (_singleton == null) {
-			_singleton = new MultilingualDict();
+//	public static MultilingualDict getInstance() throws MultilingualDictException {
+//		if (_singleton == null) {
+//			_singleton = new MultilingualDict();
+//		}
+//		return _singleton;
+//	}
+
+	public MultilingualDict setMinMaxPairs(Integer min, Integer max) throws MultilingualDictException {
+		if (min != null && max != null && max < min) {
+			throw new MultilingualDictException(
+				"Min number of pairs must be smaller or equal to the max."
+			);
 		}
-		return _singleton;
+		this.MIN_SENT_PAIRS = min;
+		this.MAX_SENT_PAIRS = max;
+		return this;
 	}
+
+	public MultilingualDict setMaxTranslations(Integer max) {
+		MAX_TRANSLATIONS = max;
+		return this;
+	}
+
 
 	public MultilingualDictEntry entry4word(String word) throws MultilingualDictException {
 		return entry4word(word, (String)null, (Boolean)null, (Field[])null);
@@ -121,7 +137,7 @@ public class MultilingualDict {
 	private MultilingualDictEntry entry4word_IU(
 		String word, Boolean fullRelatedWordEntries, Field... fieldsToPopulate) throws MultilingualDictException {
 		MultilingualDictEntry entry = new MultilingualDictEntry(word);
-		Script script = TransCoder.textScript(word);
+		Script inputScript = TransCoder.textScript(word);
 		try {
 			WordInfo winfo = corpus.info4word(entry.wordRoman);
 			if (winfo != null) {
@@ -134,7 +150,7 @@ public class MultilingualDict {
 			}
 			if (ArrayUtils.contains(fieldsToPopulate, Field.BILINGUAL_EXAMPLES) ||
 				ArrayUtils.contains(fieldsToPopulate, Field.TRANSLATIONS)) {
-				computeOrigWordTranslationsAndExamples(entry, script);
+				computeOrigWordTranslationsAndExamples(entry, inputScript);
 			}
 			if (ArrayUtils.contains(fieldsToPopulate, Field.RELATED_WORDS)) {
 				computeRelatedWords(entry, fullRelatedWordEntries);
@@ -145,7 +161,7 @@ public class MultilingualDict {
 
 		entry.sortTranslations();
 
-		entry.ensureIUScript(TransCoder.textScript(word));
+		entry.ensureScript(inputScript);
 
 		return entry;
 	}
@@ -287,7 +303,7 @@ public class MultilingualDict {
 		MultilingualDictEntry entry, List<String> iuWordGroup, Script script) throws MultilingualDictException {
 		Logger tLogger = Logger.getLogger("org.iutools.worddict.MultilingualDict.retrieveTranslationsAndExamples");
 		if (tLogger.isTraceEnabled()) {
-			tLogger.trace("word="+entry.word+"/"+entry.wordInOtherScript+", iuWordGroup="+ StringUtils.join(iuWordGroup.iterator(), ", "));
+			tLogger.trace("word="+entry.word+"/"+entry.wordInOtherScript+", iuWordGroup.size()="+iuWordGroup.size()+", iuWordGroup="+ StringUtils.join(iuWordGroup.iterator(), ", "));
 		}
 		boolean isForRelatedWords = true;
 		if (iuWordGroup.size() == 1) {
@@ -325,7 +341,7 @@ public class MultilingualDict {
 				totalPairs =
 					onNewSentencePair(entry, bilingualAlignment, alreadySeenPair,
 						totalPairs, script, isForRelatedWords);
-				if (enoughBilingualExamples(entry)) {
+				if (enoughBilingualExamples(entry, totalPairs, iuWordGroup.size())) {
 					break;
 				}
 			}
@@ -344,12 +360,23 @@ public class MultilingualDict {
 		MultilingualDictEntry.assertIsSupportedLanguage(lang);
 	}
 
-	private boolean enoughBilingualExamples(MultilingualDictEntry entry) throws MultilingualDictException {
+	private boolean enoughBilingualExamples(
+		MultilingualDictEntry entry, int totalPairs, int numInputWords) throws MultilingualDictException {
+		int minPairs = 0;
+		if (MIN_SENT_PAIRS != null) {
+			minPairs = (MIN_SENT_PAIRS / numInputWords) + 1;
+		}
+		int maxPairs = 0;
+		if (MAX_SENT_PAIRS != null) {
+			maxPairs = (MAX_SENT_PAIRS / numInputWords) + 1;
+		}
+		int pairsSoFar = entry.totalBilingualExamples();
+		int translationsSoFar =
+			entry.possibleTranslationsIn(otherLang(entry.lang)).size();
 		boolean enough =
-			(
-				entry.possibleTranslationsIn(otherLang(entry.lang)).size() >= MAX_TRANSLATIONS ||
-				entry.totalBilingualExamples() >= MAX_SENT_PAIRS
-			);
+			(translationsSoFar >= MAX_TRANSLATIONS || pairsSoFar >= maxPairs) &&
+			(totalPairs >= minPairs);
+
 		return enough;
 	}
 
@@ -358,6 +385,10 @@ public class MultilingualDict {
 		int totalPairs, Script script, boolean forRelatedWord) throws MultilingualDictException {
 
 		Logger tLogger = Logger.getLogger("org.iutools.worddict.MultilingualDict.onNewSentencePair");
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("forRelatedWord="+forRelatedWord+", bilingualAlignment="+ PrettyPrinter.print(bilingualAlignment));
+		}
+
 		String l1 = entry.lang;
 		String l2 = otherLang(l1);
 		String[] highlightedPair = new String[] {
@@ -437,21 +468,37 @@ public class MultilingualDict {
 		}
 
 		hits = sortHits(hits);
+		adjustPartialWordInHits(hits, partialWord, lang);
+
+		totalHits = Math.max(totalHits, hits.size());
+
+		return Pair.of(hits, totalHits);
+	}
+
+	/** Ensure that:
+	 * - partialWord is in the list of hits, IF it is a valid IU word
+	 * - comes first IF it is in the list*/
+	private void adjustPartialWordInHits(List<String> hits, String partialWord, String lang) throws MultilingualDictException, TranslationMemoryException {
+		if (!hits.contains(partialWord)) {
+			// The top list of hits did not contain an exact match.
+			// Check to see if the exact match COULD have been found if
+			// we had gone further, OR if the word analyzes as an IU word
+			try {
+				if (wordExists(partialWord, lang) ||
+					(lang.equals("iu") &&  new MorphologicalAnalyzer_R2L().isDecomposable(partialWord))) {
+					hits.add(0, partialWord);
+				}
+			} catch (MorphologicalAnalyzerException e) {
+				throw new MultilingualDictException(e);
+			}
+		}
 
 		if (hits.contains(partialWord)) {
 			// If we found an exact match, make sure it comes first.
 			hits.remove(partialWord);
 			hits.add(0, partialWord);
-		} else {
-			// The top list of hits did not contain an exact match.
-			// Check to see if the exact match COULD have been found if
-			// we had gone further
-			if (wordExists(partialWord, lang)) {
-				hits.add(0, partialWord);
-			}
 		}
 
-		return Pair.of(hits, totalHits);
 	}
 
 	private List<String> sortHits(List<String> hits) {
@@ -469,6 +516,9 @@ public class MultilingualDict {
 		String partialWord, String lang) throws MultilingualDictException {
 		if (lang == null) {
 			lang = "iu";
+		}
+		if (partialWord != null) {
+			partialWord = partialWord.toLowerCase();
 		}
 		assertIsSupportedLanguage(lang);
 		Pair<Iterator<String>,Long> results = null;
