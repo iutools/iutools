@@ -23,19 +23,22 @@ public class ESIndexRepairTest {
 
 	private static final String testIndexName = "test-index";
 	private static final String winfoType = "winfo";
-	StreamlinedClient esClient = null;
+	ESFactory esFactory = null;
 	Path jsonFile = null;
 	ESIndexRepair repair = new ESIndexRepair(testIndexName);
 	WordInfo goodDocPrototype = new WordInfo();
 
 
-	class NotWordInfo extends Document {
-		class NotWordNestedField {
+	public static class NotWordInfo extends Document {
+		public static class NotWordNestedField {
 			public int level2field = 1;
+			public NotWordNestedField() {}
 		}
 
 		public String scroll_id = null;
 		public NotWordNestedField nestedField = new NotWordNestedField();
+
+		public NotWordInfo(){}
 
 		public NotWordInfo(String _id) {
 			this.setId(_id);
@@ -45,7 +48,7 @@ public class ESIndexRepairTest {
 
 	@BeforeEach
 	public void setUp(TestInfo testInfo) throws Exception {
-		ESFactory esFactory = ES.makeFactory(testIndexName);
+		esFactory = ES.makeFactory(testIndexName);
 
 		esFactory.indexAPI().delete();
 		Path testDir = new TestDirs(testInfo).inputsDir();
@@ -181,7 +184,8 @@ public class ESIndexRepairTest {
 
 	private void corruptSomeDocuments(String... docIDs) throws Exception {
 		for (String id: docIDs) {
-			esClient.putDocument(winfoType, new NotWordInfo(id));
+			esFactory.crudAPI()
+				.putDocument(winfoType, new NotWordInfo(id));
 		}
 		Thread.sleep(2000);
 	}
