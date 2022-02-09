@@ -1,15 +1,16 @@
 package org.iutools.corpus;
 
 import ca.nrc.dtrc.elasticsearch.ElasticSearchException;
-import ca.nrc.dtrc.elasticsearch.StreamlinedClient;
-
-import java.io.IOException;
+import org.iutools.elasticsearch.ES;
 
 public class CorpusTestHelpers {
     public static final String ES_TEST_INDEX = "iutools-test-index";
 
     public static void clearESTestIndex() throws Exception {
-        StreamlinedClient esClient = new StreamlinedClient(ES_TEST_INDEX);
-        esClient.clearIndex(false);
+		 ES.makeFactory(ES_TEST_INDEX).indexAPI().clear(false);
     }
+
+	public static void deleteCorpusIndex(String indexName) throws ElasticSearchException {
+		ES.makeFactory(indexName).indexAPI().delete();
+	}
 }

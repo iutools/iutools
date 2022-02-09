@@ -1,5 +1,6 @@
 package org.iutools.corpus;
 
+import ca.nrc.dtrc.elasticsearch.ElasticSearchException;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.ui.commandline.ProgressMonitor_Terminal;
 import ca.nrc.ui.commandline.UserIO;
@@ -119,7 +120,11 @@ public class CorpusDumper {
 					"shortDescription", "_wordInOtherScript", "_wordRoman",
 					"_wordSyllabic"
 				};
-			  	infoStr = wInfo.toJson(fieldsToIgnore);
+			  	try {
+					infoStr = wInfo.toJson(fieldsToIgnore);
+				} catch (Exception e) {
+			  		throw new CompiledCorpusException(e);
+				}
         }
         try {
             outputFileWriter.write(infoStr+"\n");

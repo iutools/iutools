@@ -15,7 +15,10 @@ public class IUConfig extends Config {
 
 	private static Set<String> nodesToTrace = null;
 	
-	
+	public static int esVersion() throws ConfigException {
+		return getConfigProperty("org.iutools.elasticsearch.version", 5);
+	}
+
 	public static String getIUDataPath() throws ConfigException {
 		return getIUDataPath(null);
 	}

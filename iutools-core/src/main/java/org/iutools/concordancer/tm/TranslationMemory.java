@@ -1,13 +1,14 @@
 package org.iutools.concordancer.tm;
 
+import ca.nrc.dtrc.elasticsearch.ESFactory;
 import ca.nrc.dtrc.elasticsearch.ElasticSearchException;
 import ca.nrc.dtrc.elasticsearch.SearchResults;
-import ca.nrc.dtrc.elasticsearch.StreamlinedClient;
 import ca.nrc.dtrc.elasticsearch.request.Query;
 import ca.nrc.ui.commandline.UserIO;
 import org.apache.commons.collections4.iterators.IteratorChain;
 import org.apache.log4j.Logger;
 import org.iutools.concordancer.Alignment_ES;
+import org.iutools.elasticsearch.ES;
 import org.iutools.script.TransCoder;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -27,7 +28,7 @@ public class TranslationMemory {
 	public static final String DEFAULT_TM_NAME = "iutools_tm";
 
 	private String indexName = null;
-	private StreamlinedClient _esClient = null;
+	private ESFactory _esFactory = null;
 	private UserIO userIO = new UserIO().setVerbosity(UserIO.Verbosity.Level0);
 
 	public TranslationMemory() {
@@ -44,7 +45,8 @@ public class TranslationMemory {
 
 	public void loadFile(Path tmFile) throws TranslationMemoryException {
 		try {
-			esClient().bulkIndex(tmFile.toString(), ES_ALIGNMENT_TYPE);
+			esFactory().indexAPI()
+				.bulkIndex(tmFile.toString(), ES_ALIGNMENT_TYPE);
 		} catch (ElasticSearchException e) {
 			throw new TranslationMemoryException(
 				"Problem loading file into translation memory '"+indexName+
@@ -52,36 +54,36 @@ public class TranslationMemory {
 		}
 	}
 
-	protected StreamlinedClient esClient() throws TranslationMemoryException {
-		Logger tLogger = Logger.getLogger("org.iutools.corpus.esClient");
-		if (_esClient == null) {
+	protected ESFactory esFactory() throws TranslationMemoryException {
+		Logger tLogger = Logger.getLogger("org.iutools.corpus.esFactory");
+		if (_esFactory == null) {
 			try {
-				_esClient =
-					new StreamlinedClient(indexName)
-						.setSleepSecs(0.0);
-				_esClient.setUserIO(this.userIO);
-				// 2021-01-10: Setting this to false should speed things up, but it may corrupt
-				// the ES index.
-//				_esClient.synchedHttpCalls = false;
-				_esClient.synchedHttpCalls = true;
+				_esFactory =
+					ES.makeFactory(indexName)
+					.setSleepSecs(0.0);
 			} catch (ElasticSearchException e) {
 				throw new TranslationMemoryException(e);
 			}
+			_esFactory.setUserIO(this.userIO);
+			// 2021-01-10: Setting this to false should speed things up, but it may corrupt
+			// the ES index.
+//			_esFactory.synchedHttpCalls = false;
+			_esFactory.synchedHttpCalls = true;
 		}
 
-		return _esClient;
+		return _esFactory;
 	}
 
 	public TranslationMemory setUserIO(UserIO _userIO) {
 		this.userIO = _userIO;
-		this._esClient = null;
+		this._esFactory = null;
 		return this;
 	}
 
 	public void addAlignment(Alignment_ES alignment)
 		throws TranslationMemoryException {
 		try {
-			esClient().putDocument(ES_ALIGNMENT_TYPE, alignment);
+			esFactory().crudAPI().putDocument(ES_ALIGNMENT_TYPE, alignment);
 		} catch (ElasticSearchException e) {
 			throw new TranslationMemoryException(e);
 		}
@@ -134,7 +136,7 @@ public class TranslationMemory {
 					Query query = esQuery(sourceLang, expr, withAlignment);
 					SearchResults<Alignment_ES> searchResult = null;
 					try {
-						searchResult = esClient()
+						searchResult = esFactory().searchAPI()
 							.search(query, ES_ALIGNMENT_TYPE, new Alignment_ES());
 						iterators.add(searchResult.docIterator());
 					} catch (ElasticSearchException e) {
@@ -186,7 +188,7 @@ public class TranslationMemory {
 
 	public void deleteIndex() throws TranslationMemoryException {
 		try {
-			esClient().deleteIndex();
+			esFactory().indexAPI().delete();
 		} catch (Exception e) {
 			throw new TranslationMemoryException(e);
 		}

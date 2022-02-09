@@ -41,8 +41,9 @@ public class SpellCheckerAccuracyTest {
 
     protected SpellChecker makeEmptyDictChecker() throws Exception {
         String indexName = CompiledCorpusTest.testIndex;
-        new StreamlinedClient(indexName).deleteIndex();
-        CompiledCorpus corpus = new CompiledCorpus(indexName);
+		 CorpusTestHelpers.deleteCorpusIndex(indexName);
+
+		 CompiledCorpus corpus = new CompiledCorpus(indexName);
         SpellChecker checker = new SpellChecker(indexName);
 
         return checker;

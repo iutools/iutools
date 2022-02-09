@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.StringUtils;
 import org.apache.log4j.Level;
+import org.iutools.elasticsearch.ES;
 import org.iutools.linguisticdata.Morpheme;
 import org.iutools.morph.r2l.DecompositionState;
 import ca.nrc.debug.Debug;
@@ -31,9 +32,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
-import static ca.nrc.dtrc.elasticsearch.StreamlinedClient.ESOptions.CREATE_IF_NOT_EXISTS;
-import static ca.nrc.dtrc.elasticsearch.StreamlinedClient.ESOptions.UPDATES_WAIT_FOR_REFRESH;
-import static ca.nrc.dtrc.elasticsearch.ResponseMapper.*;
+import static ca.nrc.dtrc.elasticsearch.ESFactory.*;
+import ca.nrc.dtrc.elasticsearch.index.IndexAPI;
 
 /**
  * This class stores stats about Inuktut words seen in a corpus, such as:
@@ -52,7 +52,7 @@ public class CompiledCorpus {
 
 	private String indexName = null;
 	public String getIndexName() {return indexName;}
-	StreamlinedClient _esClient = null;
+	ESFactory _esFactory = null;
 	public final static String WORD_INFO_TYPE = "WordInfo_ES";
 	public final static WordInfo winfoPrototype = new WordInfo("");
 
@@ -83,7 +83,7 @@ public class CompiledCorpus {
 	}
 
 	public void init_CompiledCorpus(String _indexName) throws CompiledCorpusException {
-		this.indexName = StreamlinedClient.canonicalIndexName(_indexName);
+		this.indexName = IndexAPI.canonicalIndexName(_indexName);
 		if (debugMode()) {
 			this.address = System.identityHashCode(this);
 		}
@@ -264,7 +264,7 @@ public class CompiledCorpus {
 
 	public CompiledCorpus setIndexName(String _name) {
 		this.indexName = _name;
-		_esClient = null;
+		_esFactory = null;
 		return this;
 	}
 
@@ -275,40 +275,51 @@ public class CompiledCorpus {
 		return this;
 	}
 
-	public StreamlinedClient esClient() throws CompiledCorpusException {
-		Logger logger = Logger.getLogger("org.iutools.corpus.esClient");
-		if (_esClient == null) {
+	public ESFactory esFactory() throws CompiledCorpusException {
+		Logger logger = Logger.getLogger("org.iutools.corpus.esFactory");
+		if (_esFactory == null) {
 			try {
-				_esClient =
-					new StreamlinedClient(indexName, CREATE_IF_NOT_EXISTS, UPDATES_WAIT_FOR_REFRESH)
+				_esFactory =
+					ES.makeFactory(indexName, ESOptions.CREATE_IF_NOT_EXISTS, ESOptions.UPDATES_WAIT_FOR_REFRESH)
 						.setSleepSecs(0.0)
 						.setErrorPolicy(ErrorHandlingPolicy.LENIENT);
-					;
-				// 2021-01-10: Setting this to false should speed things up, but it may corrupt
-				// the ES index.
-				_esClient.synchedHttpCalls = false;
-//				_esClient.synchedHttpCalls = true;
 			} catch (ElasticSearchException e) {
 				throw new CompiledCorpusException(e);
 			}
+			;
+			// 2021-01-10: Setting this to false should speed things up, but it may corrupt
+			// the ES index.
+			_esFactory.synchedHttpCalls = false;
+//			_esFactory.synchedHttpCalls = true;
 
 			if (debugMode()) {
 				logger.trace("Attaching observer to the ES index");
-				_esClient.attachObserver(new ObsEnsureAllRecordsAreWordInfo());
+				try {
+					_esFactory.attachObserver(
+						new ObsEnsureAllRecordsAreWordInfo(esFactory()));
+				} catch (ElasticSearchException e) {
+					throw new CompiledCorpusException(e);
+				}
 			}
 		}
 
 		if (!esClientVerbose) {
-			_esClient.setUserIO(null);
+			_esFactory.setUserIO(null);
 		} else  {
-			_esClient.setUserIO(new UserIO(UserIO.Verbosity.Level1));
+			_esFactory.setUserIO(
+				new UserIO(UserIO.Verbosity.Level1));
 		}
 
 		if (debugMode()) {
-			_esClient.attachObserver(new ObsEnsureAllRecordsAreWordInfo());
+			try {
+				_esFactory.attachObserver(
+					new ObsEnsureAllRecordsAreWordInfo(esFactory()));
+			} catch (ElasticSearchException e) {
+				throw new CompiledCorpusException(e);
+			}
 		}
 
-		return _esClient;
+		return _esFactory;
 	}
 
 	private boolean debugMode() throws CompiledCorpusException {
@@ -357,12 +368,20 @@ public class CompiledCorpus {
 		setIndexName(indexName);
 		setESClientVerbose(verbose);
 
+		List<ESOptions> options = new ArrayList<ESOptions>();
+		if (verbose) {
+			options.add(ESOptions.VERBOSE);
+		}
+		if (!overwrite) {
+			options.add(ESOptions.APPEND);
+		}
+
 		boolean okToLoad = possiblyClearESIndex(overwrite, verbose);
 		if (okToLoad) {
 			try {
-				esClient().bulkIndex(
+				esFactory().indexAPI().bulkIndex(
 						jsonFile.toString(), WORD_INFO_TYPE, 100,
-						verbose, overwrite);
+						options.toArray(new ESOptions[0]));
 			} catch (ElasticSearchException e) {
 				throw new CompiledCorpusException(e);
 			}
@@ -382,7 +401,7 @@ public class CompiledCorpus {
 		LastLoadedDate lastLoadedRecord = new LastLoadedDate();
 		lastLoadedRecord.timestamp = System.currentTimeMillis();
 		try {
-			esClient().putDocument(LastLoadedDate.esTypeName, lastLoadedRecord);
+			esFactory().crudAPI().putDocument(LastLoadedDate.esTypeName, lastLoadedRecord);
 		} catch (ElasticSearchException e) {
 			throw new CompiledCorpusException(e);
 		}
@@ -400,12 +419,12 @@ public class CompiledCorpus {
 		boolean okToLoad = true;
 		UserIO userIO = new UserIO().setVerbosity(UserIO.Verbosity.Level0);
 		try {
-			Index index = esClient().getIndex();
-			if (index.exists() && !index.isEmpty()) {
+			IndexAPI indexAPI = esFactory().indexAPI();
+			if (indexAPI.exists() && !indexAPI.isEmpty()) {
 				if (clear == null) {
 					clear =
 						userIO.prompt_yes_or_no(
-								"Corpus " + esClient().getIndexName() + " already exists." +
+								"Corpus " + esFactory().indexName + " already exists." +
 								"\nWould you like to overwrite it?\n");
 				}
 				if (clear) {
@@ -428,7 +447,7 @@ public class CompiledCorpus {
 		long total = 0;
 		try {
 			SearchResults<WordInfo> results =
-					esClient().listAll(WORD_INFO_TYPE, winfoPrototype);
+			esFactory().indexAPI().listAll(WORD_INFO_TYPE, winfoPrototype);
 			total = results.getTotalHits();
 		} catch (ElasticSearchException e) {
 			throw new CompiledCorpusException(e);
@@ -442,7 +461,7 @@ public class CompiledCorpus {
 		WordInfo winfo =null;
 		try {
 			winfo =
-				(WordInfo) esClient()
+				(WordInfo) esFactory().crudAPI()
 					.getDocumentWithID(word, WordInfo.class, WORD_INFO_TYPE);
 			if (winfo != null) {
 				frequency = winfo.frequency;;
@@ -641,7 +660,7 @@ public class CompiledCorpus {
 		WordInfo winfo = null;
 		try {
 			winfo =
-				(WordInfo) esClient().getDocumentWithID(
+				(WordInfo) esFactory().crudAPI().getDocumentWithID(
 					word, WordInfo.class, WORD_INFO_TYPE);
 		} catch (RuntimeException | ElasticSearchException e) {
 			tLogger.trace(traceLabel + "raised exception e=" + e);
@@ -831,7 +850,7 @@ public class CompiledCorpus {
 
 		WordInfo winfo = null;
 		try {
-			winfo = (WordInfo) esClient().getDocumentWithID(
+			winfo = (WordInfo) esFactory().crudAPI().getDocumentWithID(
 					word, WordInfo.class, WORD_INFO_TYPE);
 		} catch (ElasticSearchException e) {
 			// If this is a "no such index" exception, then don't worry.
@@ -851,7 +870,7 @@ public class CompiledCorpus {
 		winfo.setDecompositions(sampleDecomps, totalDecomps);
 		try {
 			tLogger.trace("putting the updated winfo");
-			esClient().putDocument(WORD_INFO_TYPE, winfo);
+			esFactory().crudAPI().putDocument(WORD_INFO_TYPE, winfo);
 			tLogger.trace("DONE putting the updated winfo");
 		} catch (ElasticSearchException e) {
 			throw new CompiledCorpusException(
@@ -866,7 +885,7 @@ public class CompiledCorpus {
 	
 	public void deleteWord(String word) throws CompiledCorpusException {
 		try {
-			esClient().deleteDocumentWithID(word, WORD_INFO_TYPE);
+			esFactory().crudAPI().deleteDocumentWithID(word, WORD_INFO_TYPE);
 		} catch (ElasticSearchException e) {
 			throw new CompiledCorpusException(e);
 		}
@@ -929,7 +948,7 @@ public class CompiledCorpus {
 
 		try {
 			results =
-					esClient().search(
+			esFactory().searchAPI().search(
 							query, WORD_INFO_TYPE, new WordInfo(),
 							additionalReqBodies);
 
@@ -965,7 +984,7 @@ public class CompiledCorpus {
 					query, additionalReqBodies, options, statsOnly);
 		try {
 			results =
-					esClient().search(
+			esFactory().searchAPI().search(
 							query, WORD_INFO_TYPE, new WordInfo(), additionalReqBodies);
 		} catch (ElasticSearchException e) {
 			throw new CompiledCorpusException(e);
@@ -1043,7 +1062,7 @@ public class CompiledCorpus {
 		WordInfo winfo = null;
 		try {
 			winfo =
-				(WordInfo) esClient()
+				(WordInfo) esFactory().crudAPI()
 					.getDocumentWithID(word, WordInfo.class, WORD_INFO_TYPE);
 		} catch (ElasticSearchException e) {
 			throw new CompiledCorpusException(e);
@@ -1057,8 +1076,8 @@ public class CompiledCorpus {
 		Sort sort = new Sort();
 		sort.sortBy("_uid", Sort.Order.asc);
 		try {
-			allWinfos =
-					esClient().listAll(WORD_INFO_TYPE, winfoPrototype, sort);
+			allWinfos = esFactory().indexAPI()
+				.listAll(WORD_INFO_TYPE, winfoPrototype, sort);
 		} catch (ElasticSearchException e) {
 			throw new CompiledCorpusException(e);
 		}
@@ -1068,8 +1087,8 @@ public class CompiledCorpus {
 
 	private void esClearIndex() throws CompiledCorpusException {
 		try {
-			esClient().clearIndex();
-		} catch (ElasticSearchException | IOException | InterruptedException e) {
+			esFactory().indexAPI().clear();
+		} catch (ElasticSearchException e) {
 			throw new CompiledCorpusException(e);
 		}
 	}
@@ -1139,10 +1158,9 @@ public class CompiledCorpus {
 		long date = 0;
 		LastLoadedDate lastLoadedRecord = null;
 		try {
-			StreamlinedClient client = esClient();
 			SearchResults<LastLoadedDate> results =
-					esClient()
-							.listAll(LastLoadedDate.esTypeName, new LastLoadedDate());
+				esFactory().indexAPI()
+					.listAll(LastLoadedDate.esTypeName, new LastLoadedDate());
 			tLogger.trace(
 					"indexName="+indexName+"; number of records in load history = "+
 							results.getTotalHits());
@@ -1177,7 +1195,7 @@ public class CompiledCorpus {
 		public LastLoadedDate() {
 			// There should ever be only one record of type LastLoadedDate
 			// and its ID should be the following:
-			this.id = "lastload";
+			this.setId("lastload");
 		}
 	}
 

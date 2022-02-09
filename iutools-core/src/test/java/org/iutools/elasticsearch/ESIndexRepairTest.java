@@ -1,6 +1,7 @@
 package org.iutools.elasticsearch;
 
 import ca.nrc.dtrc.elasticsearch.Document;
+import ca.nrc.dtrc.elasticsearch.ESFactory;
 import ca.nrc.dtrc.elasticsearch.StreamlinedClient;
 import ca.nrc.file.ResourceGetter;
 import ca.nrc.testing.AssertString;
@@ -37,19 +38,20 @@ public class ESIndexRepairTest {
 		public NotWordNestedField nestedField = new NotWordNestedField();
 
 		public NotWordInfo(String _id) {
-			this.id = _id;
+			this.setId(_id);
 			this.scroll_id = "somevalue";
 		}
 	}
 
 	@BeforeEach
 	public void setUp(TestInfo testInfo) throws Exception {
-		esClient = new StreamlinedClient(testIndexName);
-		esClient.deleteIndex();
+		ESFactory esFactory = ES.makeFactory(testIndexName);
+
+		esFactory.indexAPI().delete();
 		Path testDir = new TestDirs(testInfo).inputsDir();
 		ResourceGetter.copyResourceFilesToDir("org/iutools/corpus/testdata", testDir);
 		jsonFile = Paths.get(testDir.toString(), "smallCorpus.json");
-		esClient.bulkIndex(jsonFile.toString(), winfoType);
+		esFactory.indexAPI().bulkIndex(jsonFile.toString(), winfoType);
 	}
 
 	//////////////////////////////////////

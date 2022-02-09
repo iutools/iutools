@@ -479,7 +479,8 @@ public class MultilingualDict {
 	 * - partialWord is in the list of hits, IF it is a valid IU word
 	 * - comes first IF it is in the list*/
 	private void adjustPartialWordInHits(List<String> hits, String partialWord, String lang) throws MultilingualDictException, TranslationMemoryException {
-		if (!hits.contains(partialWord)) {
+		String partialWordID = new WordInfo(partialWord).getId();
+		if (!hits.contains(partialWordID)) {
 			// The top list of hits did not contain an exact match.
 			// Check to see if the exact match COULD have been found if
 			// we had gone further, OR if the word analyzes as an IU word
@@ -493,12 +494,11 @@ public class MultilingualDict {
 			}
 		}
 
-		if (hits.contains(partialWord)) {
+		if (hits.contains(partialWordID)) {
 			// If we found an exact match, make sure it comes first.
-			hits.remove(partialWord);
-			hits.add(0, partialWord);
+			hits.remove(partialWordID);
+			hits.add(0, partialWordID);
 		}
-
 	}
 
 	private List<String> sortHits(List<String> hits) {

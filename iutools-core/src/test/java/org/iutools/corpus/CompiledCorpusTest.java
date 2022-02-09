@@ -35,12 +35,12 @@ public class CompiledCorpusTest {
 
 	@Before
 	public void setUp() throws Exception {
-		new StreamlinedClient(testIndex).deleteIndex();
+		CorpusTestHelpers.deleteCorpusIndex(testIndex);
 	}
 
 	@After
 	public void tearDown() throws Exception {
-		new StreamlinedClient(testIndex).deleteIndex();
+		CorpusTestHelpers.deleteCorpusIndex(testIndex);
 
 		if (corpusDirectory != null) {
 			File[] listOfFiles = corpusDirectory.listFiles();

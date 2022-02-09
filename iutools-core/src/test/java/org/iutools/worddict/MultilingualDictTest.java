@@ -2,7 +2,6 @@ package org.iutools.worddict;
 
 import ca.nrc.testing.*;
 import ca.nrc.testing.RunOnCases.Case;
-import javafx.scene.paint.Stop;
 import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.linguisticdata.MorphemeHumanReadableDescr;
 import org.iutools.script.TransCoder;
@@ -30,7 +29,8 @@ public class MultilingualDictTest {
 			new String[] {}),
 
 			new Case("iu-inuk-roman", "iu", "inuk", 200,
-				new String[] {"inuk", "inukku", "inuksui", "inuksuk"}),
+				new String[] {"inuk", "inukku",
+					"inuksui", "inuksuk"}),
 			new Case("iu-inuk-syll", "iu", "ᐃᓄᒃ", 200,
 				new String[] {"ᐃᓄᒃ", "ᐃᓄᒃᑯ", "ᐃᓄᑯᓗᒃ"}),
 			new Case("iu-single-hit", "iu", "nunavuttaarniq", 1,
@@ -331,18 +331,17 @@ public class MultilingualDictTest {
 				}
 				Pair<List<String>, Long> results2 =
 					new MultilingualDict().search(query, lang, (Integer) null);
+
+				AssertDictSearchResults asserter =
+					new AssertDictSearchResults(results2, aCase.descr)
+						.containsAtLeast(expMinWords);
 				AssertNumber.isGreaterOrEqualTo(
 					aCase.descr,
 					results2.getRight(), expMinWords);
 				if (expMaxWords != null) {
-					AssertNumber.isLessOrEqualTo(
-						aCase.descr,
-						results2.getRight(), expMaxWords);
+					asserter.containsAtMost(expMaxWords);
 				}
-				new AssertSequence<String>(
-					results2.getLeft().toArray(new String[0]),
-					aCase.descr)
-				.startsWith(expTopMatches);
+				asserter.hitsStartWith(expTopMatches);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}

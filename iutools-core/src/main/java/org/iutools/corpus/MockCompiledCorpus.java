@@ -16,7 +16,7 @@ public class MockCompiledCorpus extends CompiledCorpus {
 	public MockCompiledCorpus() throws CompiledCorpusException {
 		super("mock_corpus");
 		try {
-			esClient().deleteIndex();
+			esFactory().indexAPI().delete();
 		} catch (ElasticSearchException e) {
 			throw new CompiledCorpusException(e);
 		}

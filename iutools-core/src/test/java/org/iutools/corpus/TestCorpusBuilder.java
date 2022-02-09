@@ -17,8 +17,9 @@ public class TestCorpusBuilder {
 
     public static CompiledCorpus makeEmptyCorpus()
         throws Exception {
-        new StreamlinedClient(emptyCorpusName).deleteIndex();
-        CompiledCorpus corpus =
+		CorpusTestHelpers.deleteCorpusIndex(emptyCorpusName);
+
+		 CompiledCorpus corpus =
             new CompiledCorpus(emptyCorpusName)
             .setSegmenterClassName(StringSegmenter_IUMorpheme.class);
         ;

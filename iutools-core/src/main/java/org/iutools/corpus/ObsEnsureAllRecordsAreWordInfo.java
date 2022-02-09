@@ -1,8 +1,9 @@
 package org.iutools.corpus;
 
+import ca.nrc.dtrc.elasticsearch.ESFactory;
 import ca.nrc.dtrc.elasticsearch.ElasticSearchException;
 import ca.nrc.dtrc.elasticsearch.SearchResults;
-import ca.nrc.dtrc.elasticsearch.StreamlinedClientObserver;
+import ca.nrc.dtrc.elasticsearch.ESObserver;
 import ca.nrc.dtrc.elasticsearch.request.Query;
 import ca.nrc.json.PrettyPrinter;
 import org.apache.log4j.Logger;
@@ -20,7 +21,7 @@ import java.net.URL;
  * and make sure that no record has been added that does not correspond to an
  * actual WordInfo
  */
-public class ObsEnsureAllRecordsAreWordInfo extends StreamlinedClientObserver {
+public class ObsEnsureAllRecordsAreWordInfo extends ESObserver {
 	private static final WordInfo winfoProto = new WordInfo();
 	private static final String typeWinfo = "WordInfo_ES";
 	private static Query queryNonWinfoRecords = null;
@@ -34,6 +35,14 @@ public class ObsEnsureAllRecordsAreWordInfo extends StreamlinedClientObserver {
 		);
 	}
 
+	public ObsEnsureAllRecordsAreWordInfo(ESFactory _esFactory) throws ElasticSearchException {
+		super(_esFactory);
+	}
+
+	public ObsEnsureAllRecordsAreWordInfo(ESFactory _esFactory, String... types) throws ElasticSearchException {
+		super(_esFactory, types);
+	}
+
 	protected void checkForBadRecords(Logger tLogger, URL url)
 		throws ElasticSearchException {
 		checkForBadRecords(tLogger, url, (String)null);
@@ -41,17 +50,17 @@ public class ObsEnsureAllRecordsAreWordInfo extends StreamlinedClientObserver {
 
 	protected void checkForBadRecords(Logger tLogger, URL url, String json)
 		throws ElasticSearchException {
-		String indexName = esClient().getIndexName();
+		String indexName = esFactory.indexName;
 		String[] loggerName = tLogger.getName().split("\\.");
 		String when = loggerName[loggerName.length-1];
 		String callInfo =
 			"[index="+indexName+"; when="+when+"; url="+url+"]: ";
 
-		if (esClient().indexExists()) {
+		if (esFactory.indexAPI().exists()) {
 			tLogger.trace(callInfo+"Checking for bad records.");
 			SearchResults<WordInfo> badRecords =
-				esClient().search(
-				"", typeWinfo, winfoProto, queryNonWinfoRecords);
+				esFactory.searchAPI().search(
+					"", typeWinfo, winfoProto, queryNonWinfoRecords);
 			long numBad = badRecords.getTotalHits();
 			if (badRecords.getTotalHits() > 0) {
 				if (tLogger.isTraceEnabled()) {

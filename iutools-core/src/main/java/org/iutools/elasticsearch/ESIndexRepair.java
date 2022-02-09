@@ -37,7 +37,7 @@ public class ESIndexRepair {
 	private _Source idFieldOnly = new _Source("id");
 	private static Query queryNonWinfoRecords = null;
 
-	private StreamlinedClient _esClient = null;
+	private ESFactory _esFactory = null;
 
 	private Logger logger = null;
 
@@ -101,11 +101,11 @@ public class ESIndexRepair {
 		return;
 	}
 
-	private StreamlinedClient  esClient() throws ElasticSearchException {
-		if (_esClient == null) {
-			_esClient = new StreamlinedClient(indexName);
+	private ESFactory  esFactory() throws ElasticSearchException {
+		if (_esFactory == null) {
+			_esFactory = ES.makeFactory(indexName);
 		}
-		return _esClient;
+		return _esFactory;
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -141,15 +141,14 @@ public class ESIndexRepair {
 				callInfo = "";
 			}
 			try {
-				StreamlinedClient esClient = corpus.esClient();
 				String indexName = corpus.getIndexName();
-				if (corpus.esClient().indexExists()) {
+				if (esFactory().indexAPI().exists()) {
 					SearchResults<WordInfo> badRecords =
-						esClient.search(
+						esFactory().searchAPI().search(
 							"", typeWinfo, winfoProto, queryNonWinfoRecords, idFieldOnly);
 					long numBad = badRecords.getTotalHits();
 					if (badRecords.getTotalHits() > 0) {
-						logNewBadRecord(badRecords, callInfo, corpus.esClient(),
+						logNewBadRecord(badRecords, callInfo, esFactory(),
 							typeWinfo, url, json);
 					} else {
 //						logger.trace(callInfo + "Index is fine");
@@ -157,7 +156,7 @@ public class ESIndexRepair {
 					try {
 						corpus.lastLoadedDate();
 					} catch (Exception e) {
-						logCorruptedLastLoadeDate(e, esClient);
+						logCorruptedLastLoadeDate(e, esFactory());
 					}
 				} else {
 					logger.trace(callInfo + "Index does not yet exist. Nothing to check.");
@@ -168,8 +167,8 @@ public class ESIndexRepair {
 	}
 
 	private void logCorruptedLastLoadeDate(Exception exc,
-		StreamlinedClient esClient) {
-		String indexName = esClient.getIndexName();
+		ESFactory esFactory) {
+		String indexName = esFactory.indexName;
 		if (!indicesWithCorruptedLastLoadeDate.contains(indexName)) {
 			indicesWithCorruptedLastLoadeDate.add(indexName);
 			if (logger.isTraceEnabled()) {
@@ -182,14 +181,14 @@ public class ESIndexRepair {
 
 	private void logNewBadRecord(
 		SearchResults<WordInfo> badRecords,
-		String callInfo, StreamlinedClient esClient, String typeWinfo, URL url, String json) {
+		String callInfo, ESFactory esFactory, String typeWinfo, URL url, String json) {
 		if (logger.isTraceEnabled()) {
-			String indexName = esClient.getIndexName();
+			String indexName = esFactory.indexName;
 			DocIterator iter = badRecords.docIterator();
 			Set<String> alreadyLoggedIDs = alreadyLogged.get(indexName);
 			while (iter.hasNext()) {
 				WordInfo badDoc = (WordInfo) iter.next();
-				String badDocID = badDoc.id;
+				String badDocID = badDoc.getId();
 				if (!alreadyLoggedIDs.contains(badDocID)) {
 					alreadyLoggedIDs.add(badDocID);
 					String mess =
@@ -229,7 +228,7 @@ public class ESIndexRepair {
 			Query query = new Query(queryJsonObject);
 			_Source source = new _Source("id");
 			SearchResults<Document> results =
-				esClient().search(query, esType, goodDocPrototype, source);
+				esFactory().searchAPI().search(query, esType, goodDocPrototype, source);
 			iter = results.docIDIterator();
 		}
 
@@ -294,7 +293,7 @@ public class ESIndexRepair {
 						if (corruptedIDs.contains(doc.getId())) {
 							logger.info("Reloading corrupted document " + doc.getId() +
 							" in type " + esTypeName + " of index " + indexName);
-							esClient().putDocument(esTypeName, doc);
+							esFactory().crudAPI().putDocument(esTypeName, doc);
 							corruptedIDs.remove(doc.getId());
 						}
 					}
@@ -311,7 +310,7 @@ public class ESIndexRepair {
 					logger.info("Corrupted document " + id +
 					" in type " + esTypeName + " of index " + indexName +
 					" did not appear in json file.\nDeleting it.");
-					esClient().deleteDocumentWithID(id, esTypeName);
+					esFactory().crudAPI().deleteDocumentWithID(id, esTypeName);
 				}
 				corruptedIDs = new HashSet<String>();
 
@@ -324,13 +323,14 @@ public class ESIndexRepair {
 		}
 	}
 
-	public Set<String> badFieldNames(String esTypeName, Document goodDocPrototype) throws ElasticSearchException {
+	public Set<String> badFieldNames(String esTypeName, Document goodDocPrototype)
+		throws ElasticSearchException {
 		Set<String> existingFields =
-			new Index(indexName).getFieldTypes(esTypeName).keySet();
+			esFactory().indexAPI().fieldTypes(esTypeName).keySet();
 
 		Set<String> validFields = null;
 		try {
-			validFields = Introspection.publicFields(goodDocPrototype).keySet();
+			validFields = Introspection.fieldNames(goodDocPrototype.getClass());
 		} catch (IntrospectionException e) {
 			throw new ElasticSearchException(e);
 		}
@@ -355,7 +355,7 @@ public class ESIndexRepair {
 			logger.info("Deleting corrupted document " + id +
 				" in type "+esType+" of index "+indexName + ".");
 
-			esClient().deleteDocumentWithID(id, esType);
+			esFactory().crudAPI().deleteDocumentWithID(id, esType);
 		}
 	}
 
@@ -374,7 +374,6 @@ public class ESIndexRepair {
 			throw new ElasticSearchException("Could not open JSON file for index "+indexName+". File: "+jsonFile);
 		}
 
-		StreamlinedClient esClient = new StreamlinedClient(indexName);
 		try {
 			while (true) {
 				WordInfo winfo = (WordInfo) reader.readObject();
@@ -385,7 +384,7 @@ public class ESIndexRepair {
 				if (!idStates.containsKey(word) || !idStates.get(word)) {
 					// The word is either missing from the corpus index or it
 					// is corrupted. Re-add it.
-					esClient().putDocument(winfo);
+					esFactory().crudAPI().putDocument(winfo);
 				}
 			}
 		} catch (ArithmeticException | IOException | ClassNotFoundException | ObjectStreamReaderException e) {

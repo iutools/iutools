@@ -56,8 +56,7 @@ public class CorpusCompilationProcedureTest {
 
         wordDecompsFile = ResourceGetter.copyResourceToTempLocation("org/iutools/corpus/wordDecomps.json");
 
-        new StreamlinedClient(testCorpusName).deleteIndex();
-
+        CorpusTestHelpers.deleteCorpusIndex(testCorpusName);
         return;
     }
 

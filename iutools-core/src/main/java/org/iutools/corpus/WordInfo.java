@@ -86,6 +86,7 @@ public class WordInfo extends Document {
 
 	private void init_WordInfo(String _word) {
 		setId(_word);
+		type = "WordInfo_ES";
 	}
 
 	@Override
@@ -93,10 +94,6 @@ public class WordInfo extends Document {
 		super.setId(_id);
 		word = _id;
 		return this;
-	}
-
-	public String getId() {
-		return this.word;
 	}
 
 	public void setWordInOtherScript(String _word) throws CompiledCorpusException {
@@ -237,7 +234,7 @@ public class WordInfo extends Document {
 
 	@Override
 	public int hashCode() {
-		int code = this.id.hashCode();
+		int code = this.getId().hashCode();
 		return code;
 	}
 }
