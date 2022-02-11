@@ -49,10 +49,10 @@ public class MultilingualDictTest {
 				.setOrigWordTranslations(
 					"clam", "clam diving", "clam ... clams", "diving ... clams")
 				.setMinExamples(3)
-				.setRelatedWords(
+				.relatedWordsShouldBeAmong(
 					"ammuumajurniartiit", "ammuumajuqtarnirmut",
 					"ammuumajuqtaqtiit", "ammuumajuqtaqtutik",
-					"ammuumajurniarnirmut")
+					"ammuumajurniarnirmut", "ammuumajuqsiuqtutik")
 				.setExpRelatedTranslationsMap(
 					new String[] {"ammuumajuqtaqtiit", "clam divers",
 						"divers ... valid ... diving"},
@@ -69,7 +69,7 @@ public class MultilingualDictTest {
 				.setOrigWordTranslations(
 					"clam", "clam diving", "clam ... clams", "diving ... clams")
 				.setMinExamples(3)
-				.setRelatedWords(
+				.relatedWordsShouldBeAmong(
 					"ᐊᒻᒨᒪᔪᕐᓂᐊᕐᑏᑦ", "ᐊᒻᒨᒪᔪᖅᑕᕐᓂᕐᒧᑦ", "ᐊᒻᒨᒪᔪᖅᑕᖅᑏᑦ", "ᐊᒻᒨᒪᔪᖅᑕᖅᑐᑎᒃ",
 					"ᐊᒻᒨᒪᔪᕐᓂᐊᕐᓂᕐᒧᑦ")
 				.setExpRelatedTranslationsMap(
@@ -86,12 +86,12 @@ public class MultilingualDictTest {
 				.setOutOfVocab(true)
 				.setOrigWordTranslations(new String[]{})
 				.setMinExamples(0)
-				.setRelatedWords(new String[]{}),
+				.relatedWordsShouldBeAmong(new String[]{}),
 
 			// This word has a sentence pair whose word alignments are
 			// faulty. Make sure it does not crash.
 			new MultilingualDictCase("iu-umiarjuakkut", "umiarjuakkut")
-				.setRelatedWords(
+				.relatedWordsShouldBeAmong(
 					"umiarjuanut", "umiarjuat", "umiarjuaq", "umiarjuarmut",
 					"umiarjualirijikkut")
 				.setMinExamples(5)
@@ -101,14 +101,14 @@ public class MultilingualDictTest {
 				}),
 
 			new MultilingualDictCase("iu-kiugavinnga", "kiugavinnga")
-				.setRelatedWords(
+				.relatedWordsShouldBeAmong(
 					"kiujjutit", "kiujjutik", "kiuvan", "kiujjutinga", "kiulugu")
 				.setOrigWordTranslations(new String[]{
 					"response", "answer", "answered", "direct answer",
 					"minister ... answer"}),
 
 			new MultilingualDictCase("iu-najugaq", "najugaq")
-				.setRelatedWords(
+				.relatedWordsShouldBeAmong(
 					"najugangani", "najugaujunut", "najuganga", "najugaujumi",
 					"najugauvattunut")
 				.setRelWordTranslationsStartWith(new String[] {
@@ -122,7 +122,7 @@ public class MultilingualDictTest {
 					"ᐃᒡᓗᒋᔭᐅᕙᒃᑐᓂᒃ",
 					"ᐃᒡᓗᓕᕆᓂᕐᓕ ... ᐃᒡᓗᓕᕆᓂᕐᒧᑐᐃᓐᓈᕋᔭᖅᑐᖅ")
 				.setMinExamples(10)
-				.setRelatedWords(),
+				.relatedWordsShouldBeAmong(),
 
 //			new MultilingualDictCase("iu-nuvarjuarnaq (=covid)", "nuvarjuarnaq")
 //				.setL1("en")
@@ -263,7 +263,7 @@ public class MultilingualDictTest {
 					.isForWord(aCase.word)
 					.langIs(aCase.l1)
 					.definitionEquals(aCase.expDefinition)
-					.relatedWordsIsSubsetOf(aCase.expRelatedWords)
+					.relatedWordsIsSubsetOf(aCase.expRelatedWordsSuperset)
 					.possibleTranslationsStartWith(expTranslations)
 					.atLeastNExamples(aCase.expMinExamples)
 					.highlightsAreSubsetOf(aCase.l1, true, expL1Highlights)
@@ -304,8 +304,10 @@ public class MultilingualDictTest {
 		String partialWord = "inuksu";
 		Pair<Iterator<String>, Long> results =
 			new MultilingualDict().searchIter(partialWord);
-		assertSearchResultsInclude(
-			results.getLeft(), "inuksuk", "inuksuup", "inuksui");
+
+		new AssertDictSearchResults(results.getLeft(), results.getRight())
+			.containsWords("inuksuk", "inuksuup", "inuksui")
+			;
 	}
 
 	@Test
@@ -313,8 +315,8 @@ public class MultilingualDictTest {
 		String partialWord = "housing";
 		Pair<Iterator<String>, Long> results =
 			new MultilingualDict().searchIter(partialWord, "en");
-		assertSearchResultsInclude(
-			results.getLeft(), "housing");
+		new AssertDictSearchResults(results.getLeft(), results.getRight())
+			.containsWords("housing");
 	}
 	@Test
 	public void test__search__VariousCases() throws Exception {
@@ -329,15 +331,11 @@ public class MultilingualDictTest {
 				if (aCase.data.length > 4) {
 					expMaxWords = (Integer) aCase.data[4];
 				}
-				Pair<List<String>, Long> results2 =
+				Pair<List<String>, Long> results =
 					new MultilingualDict().search(query, lang, (Integer) null);
-
 				AssertDictSearchResults asserter =
-					new AssertDictSearchResults(results2, aCase.descr)
+					new AssertDictSearchResults(results, aCase.descr)
 						.containsAtLeast(expMinWords);
-				AssertNumber.isGreaterOrEqualTo(
-					aCase.descr,
-					results2.getRight(), expMinWords);
 				if (expMaxWords != null) {
 					asserter.containsAtMost(expMaxWords);
 				}
@@ -362,7 +360,7 @@ public class MultilingualDictTest {
 		public String l2 = "en";
 		public String expDefinition = null;
 		public String[] expDecomp = null;
-		public String[] expRelatedWords = null;
+		public String[] expRelatedWordsSuperset = null;
 		public String[] expTranslations = null;
 		public Integer expMinExamples = 0;
 		public boolean outOfVocab = false;
@@ -394,8 +392,8 @@ public class MultilingualDictTest {
 			return this;
 		}
 
-		public MultilingualDictCase setRelatedWords(String... _expRelatedWords) {
-			expRelatedWords = _expRelatedWords;
+		public MultilingualDictCase relatedWordsShouldBeAmong(String... _expRelatedWords) {
+			expRelatedWordsSuperset = _expRelatedWords;
 			return this;
 		}
 
@@ -479,26 +477,5 @@ public class MultilingualDictTest {
 	// TEST HELPERS
 	////////////////////////////////////////
 
-	private void assertSearchResultsInclude(
-		Iterator<String> wordsIter, String... expTopWords) throws Exception {
-		assertSearchResultsInclude((String)null, wordsIter, expTopWords);
-	}
 
-	private void assertSearchResultsInclude(
-		String mess, Iterator<String> wordsIter, String... expWords) throws Exception {
-		final int MAX_WORDS = 100;
-		if (mess == null) {
-			mess = "";
-		}
-		Set<String> expWordsSet = new HashSet<String>();
-		for (int ii=0; ii < expWords.length; ii++) {
-			expWordsSet.add(expWords[ii]);
-		}
-
-		Set<String> gotWordsSet = new HashSet<String>();
-		while (wordsIter.hasNext()) {
-			gotWordsSet.add(wordsIter.next());
-		}
-		AssertSet.assertContainsAll(mess, expWordsSet, gotWordsSet);
-	}
 }

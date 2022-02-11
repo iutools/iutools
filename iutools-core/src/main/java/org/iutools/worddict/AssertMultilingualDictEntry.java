@@ -1,5 +1,6 @@
 package org.iutools.worddict;
 
+import ca.nrc.dtrc.elasticsearch.Document;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.StringUtils;
 import ca.nrc.testing.*;
@@ -23,6 +24,14 @@ public class AssertMultilingualDictEntry extends Asserter<MultilingualDictEntry>
 
 	MultilingualDictEntry entry() {
 		return (MultilingualDictEntry)gotObject;
+	}
+
+	private Set<String> entryRelatedWords() {
+		Set<String> words = new HashSet<String>();
+		for (String aWord: entry().relatedWords) {
+			words.add(Document.removeType(aWord));
+		}
+		return words;
 	}
 
 	public AssertMultilingualDictEntry isForWord(String expWord) throws Exception {
@@ -71,15 +80,17 @@ public class AssertMultilingualDictEntry extends Asserter<MultilingualDictEntry>
 	public AssertMultilingualDictEntry relatedWordsIsSubsetOf(
 		String... expRelatedWordsArr)
 		throws Exception {
-		Set<String> gotRelatedWordsSet = new HashSet<String>();
-		Collections.addAll(gotRelatedWordsSet, entry().relatedWords);
+
+		Set<String> gotRelatedWordsSet = entryRelatedWords();
 		Set<String> expRelatedWordsSuperset = new HashSet<String>();
 		Collections.addAll(expRelatedWordsSuperset, expRelatedWordsArr);
+
 		new AssertSet(gotRelatedWordsSet, "\nRelated words not as expected.")
 			.isSubsetOf(expRelatedWordsArr);
 
 		return this;
 	}
+
 
 	public void iuIsInScript(TransCoder.Script expScript) {
 		MultilingualDictEntry entry = this.entry();
