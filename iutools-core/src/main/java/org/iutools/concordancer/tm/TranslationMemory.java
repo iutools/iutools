@@ -1,6 +1,7 @@
 package org.iutools.concordancer.tm;
 
 import ca.nrc.dtrc.elasticsearch.ESFactory;
+import static ca.nrc.dtrc.elasticsearch.ESFactory.*;
 import ca.nrc.dtrc.elasticsearch.ElasticSearchException;
 import ca.nrc.dtrc.elasticsearch.SearchResults;
 import ca.nrc.dtrc.elasticsearch.request.Query;
@@ -44,9 +45,13 @@ public class TranslationMemory {
 	}
 
 	public void loadFile(Path tmFile) throws TranslationMemoryException {
+		loadFile(tmFile, new ESOptions[0]);
+	}
+
+	public void loadFile(Path tmFile, ESOptions... options) throws TranslationMemoryException {
 		try {
 			esFactory().indexAPI()
-				.bulkIndex(tmFile.toString(), ES_ALIGNMENT_TYPE);
+				.bulkIndex(tmFile.toString(), ES_ALIGNMENT_TYPE, options);
 		} catch (ElasticSearchException e) {
 			throw new TranslationMemoryException(
 				"Problem loading file into translation memory '"+indexName+

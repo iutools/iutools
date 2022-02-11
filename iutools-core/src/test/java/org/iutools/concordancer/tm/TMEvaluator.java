@@ -1,6 +1,8 @@
 package org.iutools.concordancer.tm;
 
 import ca.nrc.data.file.ObjectStreamReader;
+import static ca.nrc.dtrc.elasticsearch.ESFactory.*;
+
 import ca.nrc.ui.commandline.UserIO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,25 +30,48 @@ public class TMEvaluator {
 	/** If you want to save all the sentence pairs involved in the evaluation,
 	 * these to non null.
 	 */
-	private Path sentPairsFile = null;
+	private Path sentPairsOutputFile = null;
 	FileWriter sentsWriter = null;
 
 	/** Will only evaluate on this IU word */
 	private String onlyWord = null;
 
-	public TMEvaluator() throws IOException {
-		init__TMEvaluator((Path)null);
+	private final String testTMName = "test_tm";
+	private Path tmFile;
+	private Path glossaryFile;
+
+	public TMEvaluator() throws IOException, TranslationMemoryException {
+		init__TMEvaluator((Path)null, (Path)null);
 	}
 
-	public TMEvaluator(Path _sentPairsFile) throws IOException {
-		init__TMEvaluator(_sentPairsFile);
+	public TMEvaluator(Path _sentPairsOutputFile) throws IOException, TranslationMemoryException {
+		init__TMEvaluator(_sentPairsOutputFile, (Path)null);
 	}
 
-	private void init__TMEvaluator(Path _sentPairsFile) throws IOException {
-		if (_sentPairsFile != null) {
-			sentsWriter = new FileWriter(_sentPairsFile.toFile());
-			sentPairsFile = _sentPairsFile;
+	public TMEvaluator(Path _sentPairsOutputFilePath, Path _tmFile) throws TranslationMemoryException {
+		init__TMEvaluator(_sentPairsOutputFilePath, _tmFile);
+	}
+
+	private void init__TMEvaluator(Path _sentPairsOutputFile, Path _tmFile) throws TranslationMemoryException {
+		if (_sentPairsOutputFile != null) {
+			try {
+				sentsWriter = new FileWriter(_sentPairsOutputFile.toFile());
+			} catch (IOException e) {
+				throw new TranslationMemoryException(e);
+			}
+			sentPairsOutputFile = _sentPairsOutputFile;
 		}
+		this.tmFile = _tmFile;
+		if (_tmFile != null) {
+			createTestTM(_tmFile);
+		}
+		return;
+	}
+
+	private void createTestTM(Path tmFile) throws TranslationMemoryException {
+		tm = new TranslationMemory(testTMName);
+		tm.loadFile(tmFile, ESOptions.CREATE_IF_NOT_EXISTS);
+		return;
 	}
 
 	public TMEvaluator setVerbosity(UserIO.Verbosity level) {
@@ -54,11 +79,13 @@ public class TMEvaluator {
 		return this;
 	}
 
-	public EvaluationResults evaluate(Path glossaryFile, Integer firstN) throws TranslationMemoryException, IOException {
+	public EvaluationResults evaluate(Path _glossaryFile, Integer firstN) throws TranslationMemoryException, IOException {
+		this.glossaryFile = _glossaryFile;
+
 		EvaluationResults results = new EvaluationResults();
 		try {
 			ObjectStreamReader reader =
-				new ObjectStreamReader(glossaryFile.toFile());
+				new ObjectStreamReader(_glossaryFile.toFile());
 			GlossaryEntry entry = (GlossaryEntry) reader.readObject();
 			while (entry != null) {
 				if (firstN != null && results.totalEntries >= firstN) {
@@ -188,7 +215,7 @@ public class TMEvaluator {
 		if (sentsWriter != null) {
 			userIO.echo(
 				"All sentence pairs involved in this evalaution have been written to file:\n   "+
-				sentPairsFile);
+				sentPairsOutputFile);
 			sentsWriter.close();
 		}
 	}
@@ -385,7 +412,9 @@ public class TMEvaluator {
 
 	private void printReport(EvaluationResults results) {
 		MatchType[] types = matchTypes();
-		userIO.echo("\n\n");
+		userIO.echo("\n");
+		printFilesLocation(glossaryFile, tmFile);
+
 		userIO.echo("# entries in glossary");
 		userIO.echo(1);
 		try {
@@ -431,6 +460,17 @@ public class TMEvaluator {
 			"NOTE\n"+TMEvaluator.explainEquivSenses()+
 			"\n*********************************************************************"
 		);
+	}
+
+	private void printFilesLocation(Path glossaryFile, Path tmFile) {
+		userIO.echo("Evaluations carried out with following files:");
+		userIO.echo(1);
+		{
+			userIO.echo("Terms glossary  : "+glossaryFile);
+			userIO.echo("Word alignments : "+ tmFile);
+		}
+		userIO.echo(-1);
+		userIO.echo("\n\n");
 	}
 
 	public TMEvaluator focusOnWord(String word) {

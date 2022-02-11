@@ -27,6 +27,7 @@ public class AssertAlignment_ESList extends Asserter<List<Alignment_ES>> {
 
 	public AssertAlignment_ESList allHitsMatchQuery(
 		String sourceLang, String sourceExpr) {
+		sourceExpr = sourceExpr.toLowerCase();
 		String mess =
 			"Expected:\n"+
 			"  source lang : "+sourceLang+"\n"+
@@ -41,7 +42,7 @@ public class AssertAlignment_ESList extends Asserter<List<Alignment_ES>> {
 				failureReason = "did not have a sentence for the source language";
 			}
 			if (failureReason == null &&
-				!anAlignment.sentences.get(sourceLang).contains(sourceExpr)) {
+				!anAlignment.sentences.get(sourceLang).toLowerCase().contains(sourceExpr)) {
 				failureReason = "did not contain the source expression";
 			}
 			if (failureReason != null) {

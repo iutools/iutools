@@ -41,16 +41,23 @@ public class Alignment_ES extends Document {
 	}
 
 	public Alignment_ES() {
+		init__Alignment_ES((String)null, (Long)null);
 	}
 
-	public Alignment_ES(String fromDoc, long _pairNum) {
-		this.from_doc = fromDoc;
+	public Alignment_ES(String _fromDoc, long _pairNum) {
+		init__Alignment_ES(_fromDoc, _pairNum);
+	}
+
+	private void init__Alignment_ES(String _fromDoc, Long _pairNum) {
+		this.from_doc = _fromDoc;
 		this.pair_num = _pairNum;
+		this.type = "Alignment";
+		return;
 	}
 
 	@Override
-	public String getId() {
-		return from_doc+": p"+pair_num;
+	public String getIdWithoutType() {
+		return from_doc+"-p"+pair_num;
 	}
 
 	public Set<String> languages() {
@@ -80,7 +87,8 @@ public class Alignment_ES extends Document {
 			langPair = l2+"-"+l1;
 			if (walign4langpair.containsKey(langPair)) {
 				try {
-					walign = walign4langpair.get(langPair).reverseDirection();
+					walign = walign4langpair.get(langPair);
+					walign = walign.reverseDirection();
 				} catch (WordAlignmentException e) {
 					// If there is something wrong with the word alignments, just
 					// don't set it.
