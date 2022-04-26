@@ -1,8 +1,12 @@
 package org.iutools.concordancer.tm;
 
+import ca.nrc.data.file.FileGlob;
 import ca.nrc.data.file.ObjectStreamReader;
 import static ca.nrc.dtrc.elasticsearch.ESFactory.*;
 
+import ca.nrc.debug.Debug;
+import ca.nrc.json.PrettyPrinter;
+import ca.nrc.string.StringUtils;
 import ca.nrc.ui.commandline.UserIO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,16 +16,20 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.apache.log4j.Logger;
 import org.iutools.concordancer.Alignment_ES;
 import org.iutools.concordancer.SentencePair;
+import org.iutools.config.IUConfig;
 import org.iutools.script.TransCoder;
 import org.iutools.worddict.GlossaryEntry;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class TMEvaluator {
+
 	UserIO userIO = new UserIO();
 	TranslationMemory tm = new TranslationMemory();
 	ObjectMapper mapper = new ObjectMapper();
@@ -121,7 +129,7 @@ public class TMEvaluator {
 		// We only process single-word IU terms
 		userIO.echo(1);
 		try {
-			if (tokenize(iuTerm_roman).length > 1) {
+			if (tokenize(iuTerm_roman, "iu").length > 1) {
 				userIO.echo("SKIPPED (IU term has more than 1 word)");
 			} else {
 				results.totalSingleIUWordEntries++;
@@ -136,19 +144,21 @@ public class TMEvaluator {
 				}
 				if (algnSummary.enTermPresent_Sense != null) {
 					userIO.echo("EN term was PRESENT in the sense " + algnSummary.enTermPresent_Sense +
-					": " + algnSummary.enTermPresent_occur);
+						": " + algnSummary.enTermPresent_occur);
 					results.onEnPresent(algnSummary.enTermPresent_Sense);
 				}
 
 				if (algnSummary.spottingAttempted) {
 					userIO.echo("All translations found (total: " +
-					algnSummary.allTranslations.size() + "): " +
-					mapper.writeValueAsString(algnSummary.allTranslations));
+						algnSummary.allTranslations.size() + "): " +
+						mapper.writeValueAsString(algnSummary.allTranslations));
 				}
 				if (algnSummary.enTermSpotted_Sense != null) {
 					userIO.echo("EN term was SPOTTED in the sense " + algnSummary.enTermSpotted_Sense +
-					": " + algnSummary.enTermSpotted_occur);
+						": " + algnSummary.enTermSpotted_occur);
 					results.onEnSpotted(algnSummary.enTermSpotted_Sense);
+				} else if (algnSummary.spottingAttempted){
+					userIO.echo("EN term was NOT SPOTTED in ANY sense.");
 				}
 			}
 		} finally {
@@ -167,6 +177,11 @@ public class TMEvaluator {
 				boolean attemptSpotting = false;
 				Alignment_ES algn = algsIter.next();
 				writeAlignment(algn, iuTerm_syll, enTerm);
+
+				// First check if the EN term was present in the sentence alignment.
+				// In other words, does the word spotter even stand a chance to spot
+				// the EN term?
+				//
 				if (alignmentContainsIU(algn, iuTerm_syll)) {
 					analysis.iuTermPresent = true;
 					totalAlignments++;
@@ -181,6 +196,10 @@ public class TMEvaluator {
 					}
 
 					if (attemptSpotting) {
+						// OK, so we MIGHT be able to spot the EN term in this sentence
+						// alignment.
+						// Try it
+						//
 						analysis.spottingAttempted = true;
 						Triple<String,MatchType,String> spottingInfo
 							= checkEnTermSpotting(algn, iuTerm_syll, enTerm);
@@ -224,6 +243,7 @@ public class TMEvaluator {
 	private Triple<String,MatchType,String> checkEnTermSpotting(
 		Alignment_ES algn, String iuTerm_syll, String enTerm) throws TranslationMemoryException {
 		Logger logger = Logger.getLogger("org.iutools.concordancer.tm.TMEvaluator.checkEnTermSpotting");
+		PrettyPrinter pprinter = new PrettyPrinter();
 		MatchType matchType = null;
 		String spottedEN = null;
 		String common = null;
@@ -233,9 +253,12 @@ public class TMEvaluator {
 			Map<String, String> spotting =
 				new WordSpotter(pair)
 					.spot("iu", iuTerm_syll);
-			logger.trace("** DONE Spotting translation for iuTerm_syll="+iuTerm_syll);
+			if (logger.isTraceEnabled()) {
+				logger.trace("DONE Spotting translation for iuTerm_syll="+iuTerm_syll+", spotting="+pprinter.pprint(spotting));
+			}
 			spottedEN = spotting.get("en");
 			if (spottedEN != null) {
+				logger.trace("Checking the spotting");
 				Pair<MatchType,String> match = sameTerm(enTerm, spottedEN);
 				matchType = match.getLeft();
 				common = match.getRight();
@@ -244,7 +267,10 @@ public class TMEvaluator {
 			throw new TranslationMemoryException(e);
 		}
 
-		return Triple.of(spottedEN, matchType, common);
+		Triple<String,MatchType,String> checkResult = Triple.of(spottedEN, matchType, common);
+
+
+		return checkResult;
 	}
 
 
@@ -314,8 +340,15 @@ public class TMEvaluator {
 	}
 
 	public Pair<MatchType, String> findTerm(String term, String inText) throws TranslationMemoryException {
+		return findTerm(term, inText, null);
+	}
+
+	public Pair<MatchType, String> findTerm(String term, String inText, String lang) throws TranslationMemoryException {
 		Logger logger = Logger.getLogger("org.iutools.concordancer.tm.TMEvaluator.findTerm");
 		try {
+			if (lang == null) {
+				lang = "en";
+			}
 			String[] termTokens = tokenize(term);
 			String[] textTokens = tokenize(inText);
 			if (logger.isTraceEnabled()) {
@@ -359,54 +392,89 @@ public class TMEvaluator {
 
 	public static Pair<MatchType, String> sameTerm(String[] term1Toks, String[] term2Toks) {
 		Logger logger = Logger.getLogger("org.iutools.concordancer.tm.TMEvaluator.sameTerm");
+		PrettyPrinter pprinter = new PrettyPrinter();
+		if (logger.isTraceEnabled()) {
+			logger.trace("term1Toks="+pprinter.pprint(term1Toks)+"\nterm2Toks="+pprinter.pprint(term2Toks));
+		}
+
 		MatchType matchType = null;
 		String overlap = null;
-		String term1 = String.join(" ", term1Toks).toLowerCase();
-		String term2 = String.join(" ", term2Toks).toLowerCase();
+		String term1 = String.join("", term1Toks).toLowerCase();
+		String term2 = String.join("", term2Toks).toLowerCase();
 		logger.trace("term1="+term1+", term2="+term2);
 		if (term1.equals(term2)) {
+			logger.trace("STRICT match");
 			matchType = MatchType.STRICT;
 			overlap = term1;
-		} else {
-			String[] term1LemToks = lemmatizeWords(term1Toks);
-			String[] term2LemToks = lemmatizeWords(term2Toks);
+		}
+		String[] term1LemToks = lemmatizeWords(term1Toks);
+		String[] term2LemToks = lemmatizeWords(term2Toks);
+		if (matchType == null) {
+			logger.trace("NOT STRICT match; checking for LENIENT");
 			// Check if all the lemmatized tokens are the same
 			if (term1LemToks.length == term2LemToks.length) {
 				boolean same = true;
-				for (int ii=0; ii < term1LemToks.length; ii++) {
+				for (int ii = 0; ii < term1LemToks.length; ii++) {
 					if (!term1LemToks[ii].equals(term2LemToks[ii])) {
 						same = false;
 						break;
 					}
 				}
 				if (same) {
+					logger.trace("LENIENT match");
 					matchType = MatchType.LENIENT;
-					overlap = String.join(" ", term1LemToks);
-				} else {
-					// Check if the two terms share at least one lemmatized token
-					String commonToken = null;
-					for (int ii=0; ii < term1LemToks.length; ii++) {
-						if (commonToken != null) break;
-						for (int jj=0; jj < term2LemToks.length; jj++) {
-							if (term1LemToks[ii].equals(term2LemToks[jj])) {
-								commonToken = term1LemToks[ii];
-								break;
-							}
-						}
-					}
-					if (commonToken != null) {
-						matchType = MatchType.LENIENT_OVERLAP;
-						overlap = commonToken;
-					}
+					overlap = String.join("", term1LemToks);
 				}
 			}
 		}
 
-		return Pair.of(matchType, overlap);
+		if (matchType == null) {
+			logger.trace("NOT LENIENT match; checking for LENIENT_OVERLAP");
+			// Check if the two terms share at least one lemmatized token
+			String commonToken = null;
+			for (int ii=0; ii < term1LemToks.length; ii++) {
+				if (commonToken != null) break;
+				for (int jj=0; jj < term2LemToks.length; jj++) {
+					if (term1LemToks[ii].equals(term2LemToks[jj]) &&
+						!term1LemToks[ii].matches("[^a-zA-Z0-9]+")) {
+						commonToken = term1LemToks[ii];
+						break;
+					}
+				}
+			}
+			if (commonToken != null) {
+				logger.trace("LENIENT_OVERLAP match");
+				matchType = MatchType.LENIENT_OVERLAP;
+				overlap = commonToken;
+			}
+		}
+
+		Pair<MatchType, String> match = Pair.of(matchType, overlap);
+		logger.trace("Returning matchType="+matchType+", overlap="+overlap);
+
+		return match;
 	}
 
 	public static String[] tokenize(String text) {
-		return text.split("\\s+");
+		return tokenize(text, (String)null);
+	}
+
+	public static String[] tokenize(String text, String lang) {
+		if (lang == null) {
+			lang = "en";
+		}
+		String regexSep = "[^\\-a-zA-Z0-9]+";
+		if (lang.equals("iu")) {
+			regexSep = "[^\\-a-zA-Z0-9&]+";
+		}
+		List<ca.nrc.datastructure.Pair<String, Boolean>> tokensLst =
+			StringUtils.splitWithDelimiters(regexSep, text);
+		String[] tokens = new String[tokensLst.size()];
+		for (int ii=0; ii<tokensLst.size(); ii++) {
+			tokens[ii] = tokensLst.get(ii).getFirst();
+		}
+
+		return tokens;
 	}
 
 
@@ -525,5 +593,32 @@ public class TMEvaluator {
 			;
 	}
 
+	public static void main(String[] args) throws Exception {
+		if (args.length < 1) {
+			usage();
+		}
+		File[] alignmentFiles = FileGlob.listFiles(args[0]);
+
+		String glossaryPath = IUConfig.getIUDataPath("data/glossaries/wpGlossary.json");
+		Path sentPairsFile = null;
+		Integer firstN = null;
+		for (File anAlignmentsFile: alignmentFiles) {
+			System.out.println("\n\n===============================================\n");
+			System.out.println("Evaluating alignments file: "+anAlignmentsFile.toString()+"\n");
+			System.out.println("===============================================\n");
+			try {
+				EvaluationResults results =
+					new TMEvaluator(sentPairsFile, anAlignmentsFile.toPath())
+						.evaluate(Paths.get(glossaryPath), firstN);
+			} catch (Exception exc) {
+				Debug.printCallStack(exc);
+			}
+		}
+	}
+
+	private static void usage() {
+		System.out.println("Usage: TMEvaluator wordAlignmentsFile\n");
+		System.exit(1);
+	}
 }
 

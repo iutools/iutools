@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 
 import org.iutools.concordancer.tm.TMEvaluator.MatchType;
 
+import java.io.IOException;
 import java.util.function.Consumer;
 
 public class TMEvaluatorTest {
@@ -67,7 +68,7 @@ public class TMEvaluatorTest {
 			try {
 				String iuTerm_syll = TransCoder.ensureSyllabic(iuTerm_roman);
 				GlossaryEntry glossEntry = new GlossaryEntry()
-					.setTermInLang("iu_roman", iuTerm_syll)
+					.setTermInLang("iu_roman", iuTerm_roman)
 					.setTermInLang("en", enTerm);
 				EvaluationResults results = new EvaluationResults();
 				new TMEvaluator().setVerbosity(UserIO.Verbosity.Level2)
@@ -208,7 +209,7 @@ public class TMEvaluatorTest {
 			MatchType gotType = match.getLeft();
 			String gotOcc = match.getRight();
 			Assertions.assertEquals(
-				gotType, expType,
+				expType, gotType,
 				"Wrong MatchType for terms: "+term1+","+term2);
 			Assertions.assertEquals(
 				expOcc, gotOcc,
@@ -216,7 +217,7 @@ public class TMEvaluatorTest {
 		};
 
 		new RunOnCases(cases, runner)
-//			.onlyCaseNums(4)
+//			.onlyCaseNums(7)
 			.run();
 	}
 
@@ -265,5 +266,41 @@ public class TMEvaluatorTest {
 
 		new RunOnCases(cases, runner)
 			.run();
+	}
+
+	@Test
+	public void test__tokenize__SeveralCases() throws Exception {
+		Case[] cases = new Case[] {
+			new Case("No punctuation",
+				"hello world", new String[] {"hello", " ", "world"}),
+			new Case("Punctuation",
+				"hello, world", new String[] {"hello", ", ", "world"}),
+			new Case("Hyphen (should not cause a token split)",
+				"first-class", new String[] {"first-class"}),
+			new Case("Inuktitut text with & character",
+				"ikiaq&iq", new String[] {"ikiaq&iq"}, "iu"),
+		};
+
+		Consumer<Case> runner = (aCase) -> {
+			String text = (String) aCase.data[0];
+			String[] expTokens = (String[]) aCase.data[1];
+			String lang = null;
+			if (aCase.data.length > 2) {
+				lang = (String) aCase.data[2];
+			}
+			String[] gotTokens = TMEvaluator.tokenize(text, lang);
+			try {
+				AssertObject.assertDeepEquals(
+					"Wrong tokens for text '"+text+"'",
+					expTokens, gotTokens
+				);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		};
+
+		new RunOnCases(cases, runner)
+			.run();
+
 	}
 }

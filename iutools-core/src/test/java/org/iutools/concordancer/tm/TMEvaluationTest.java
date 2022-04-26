@@ -77,33 +77,33 @@ public class TMEvaluationTest {
 		Integer firstN = null;
 		EvaluationResults results =
 			new TMEvaluator(sentPairsFile, wordAlignsPath)
-//				.focusOnWord("inuit (nunaqaqqaaqsimajut)")
+//				.focusOnWord("immuk")
 				.evaluate(Paths.get(glossaryPath), firstN);
 		new AssertEvaluationResults(results)
 			.totalGlossaryEntries(556)
-			.totalSingleIUTermEntries(464)
+			.totalSingleIUTermEntries(466)
 
-			.totaIUPresent(182)
+			.totaIUPresent(184)
 
-			.totalENPresent_inSense(MatchType.STRICT, 94)
-			.totalENPresent_inSense(MatchType.LENIENT, 4)
+			.totalENPresent_inSense(MatchType.STRICT, 106)
+			.totalENPresent_inSense(MatchType.LENIENT, 1)
 			.totalENPresent_inSense(MatchType.LENIENT_OVERLAP, 3)
 
 			.totalENSpotted_inSense(MatchType.STRICT, 73)
-			.totalENSpotted_inSense(MatchType.LENIENT, 3)
-			.totalENSpotted_inSense(MatchType.LENIENT_OVERLAP, 2)
+			.totalENSpotted_inSense(MatchType.LENIENT, 1)
+			.totalENSpotted_inSense(MatchType.LENIENT_OVERLAP, 17)
 
-			.totalENPresent_atLeastInSense(MatchType.STRICT, 94)
-			.totalENPresent_atLeastInSense(MatchType.LENIENT, 98)
-			.totalENPresent_atLeastInSense(MatchType.LENIENT_OVERLAP, 101)
+			.totalENPresent_atLeastInSense(MatchType.STRICT, 106)
+			.totalENPresent_atLeastInSense(MatchType.LENIENT, 107)
+			.totalENPresent_atLeastInSense(MatchType.LENIENT_OVERLAP, 110)
 
 			.totalENSpotted_atLeastInSense(MatchType.STRICT, 73)
-			.totalENSpotted_atLeastInSense(MatchType.LENIENT, 76)
-			.totalENSpotted_atLeastInSense(MatchType.LENIENT_OVERLAP, 78)
+			.totalENSpotted_atLeastInSense(MatchType.LENIENT, 74)
+			.totalENSpotted_atLeastInSense(MatchType.LENIENT_OVERLAP, 91)
 
-			.rateENSpotted_inSense(MatchType.STRICT, 0.776)
-			.rateENSpotted_inSense(MatchType.LENIENT, 0.775)
-			.rateENSpotted_inSense(MatchType.LENIENT_OVERLAP, 0.772)
+			.rateENSpotted_inSense(MatchType.STRICT, 0.688)
+			.rateENSpotted_inSense(MatchType.LENIENT, 0.691)
+			.rateENSpotted_inSense(MatchType.LENIENT_OVERLAP, 0.827)
 		;
 
 	}
