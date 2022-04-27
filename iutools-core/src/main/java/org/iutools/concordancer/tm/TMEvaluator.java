@@ -61,6 +61,7 @@ public class TMEvaluator {
 	}
 
 	private void init__TMEvaluator(Path _sentPairsOutputFile, Path _tmFile) throws TranslationMemoryException {
+		userIO = new UserIO();
 		if (_sentPairsOutputFile != null) {
 			try {
 				sentsWriter = new FileWriter(_sentPairsOutputFile.toFile());
@@ -594,17 +595,23 @@ public class TMEvaluator {
 	}
 
 	public static void main(String[] args) throws Exception {
+		for (int ii=0; ii < args.length; ii++) {
+			System.out.println("args["+ii+"]='"+args[ii]+"'");
+		}
 		if (args.length < 1) {
 			usage();
 		}
 		File[] alignmentFiles = FileGlob.listFiles(args[0]);
+		Integer firstN = null;
+		if (args.length >= 2) {
+			firstN = Integer.parseInt(args[1]);
+		}
 
 		String glossaryPath = IUConfig.getIUDataPath("data/glossaries/wpGlossary.json");
 		Path sentPairsFile = null;
-		Integer firstN = null;
 		for (File anAlignmentsFile: alignmentFiles) {
-			System.out.println("\n\n===============================================\n");
-			System.out.println("Evaluating alignments file: "+anAlignmentsFile.toString()+"\n");
+			System.out.println("\n\n===============================================");
+			System.out.println("Evaluating alignments file: "+anAlignmentsFile.toString());
 			System.out.println("===============================================\n");
 			try {
 				EvaluationResults results =
@@ -617,7 +624,10 @@ public class TMEvaluator {
 	}
 
 	private static void usage() {
-		System.out.println("Usage: TMEvaluator wordAlignmentsFile\n");
+		System.out.println("Usage: TMEvaluator wordAlignmentsFile firstN\n");
+		System.out.println("  ARGUMENTS");
+		System.out.println("    wordAlignmentsFile: Glob pattern that matches the alignments files to be evaluated");
+		System.out.println("    firstN: If provided, will only evaluate the firstN entries in the WP glossary");
 		System.exit(1);
 	}
 }
