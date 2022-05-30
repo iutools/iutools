@@ -19,6 +19,15 @@ public class IUConfig extends Config {
 		return getConfigProperty("org.iutools.elasticsearch.version", 5);
 	}
 
+	public static boolean esMultiIndex() throws ConfigException {
+		boolean multiIndex = false;
+		String multiIndex_str = getConfigProperty("org.iutools.elasticsearch.multiindex", false);
+		if (multiIndex_str != null) {
+			multiIndex = Boolean.parseBoolean(multiIndex_str);
+		}
+		return multiIndex;
+	}
+
 	public static String getIUDataPath() throws ConfigException {
 		return getIUDataPath(null);
 	}

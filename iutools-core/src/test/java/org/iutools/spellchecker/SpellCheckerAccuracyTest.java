@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -397,6 +398,19 @@ public class SpellCheckerAccuracyTest {
         evaluateCheckerOnExamples(checker,  parameters);
     }
 
+
+	@Test
+	public void test__DELETEME(TestInfo testInfo)
+		throws Exception {
+    	Iterator<WordInfo> results = new SpellChecker().winfosContainingNgram("utap$");
+    	List<WordInfo> hits = new ArrayList<WordInfo>();
+    	while(results.hasNext()) {
+			hits.add(results.next());
+		}
+    	return;
+	 }
+
+
     @Test
     public void test__Evaluate__MostFrequentMisspelledWords__AssumingWordIsInDict(TestInfo testInfo)
             throws Exception {
@@ -407,7 +421,7 @@ public class SpellCheckerAccuracyTest {
             // data set.
 //            .setFocusOnExample("pigiaqtitat")
 
-            .setVerbosity(0)
+            .setVerbosity(5)
             .setExamples(examples_MostFrequenMisspelledWords)
             .setLoadCorrectWordInDict(true)
 

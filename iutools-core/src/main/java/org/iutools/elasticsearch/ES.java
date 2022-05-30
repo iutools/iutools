@@ -6,6 +6,7 @@ import ca.nrc.dtrc.elasticsearch.ESFactory;
 import ca.nrc.dtrc.elasticsearch.ElasticSearchException;
 import ca.nrc.dtrc.elasticsearch.es5.ES5Factory;
 import ca.nrc.dtrc.elasticsearch.es7.ES7Factory;
+import ca.nrc.dtrc.elasticsearch.es7mi.ES7miFactory;
 import org.iutools.config.IUConfig;
 
 import static ca.nrc.dtrc.elasticsearch.ESFactory.ESOptions;
@@ -18,7 +19,12 @@ public class ES {
 			if (version == 5) {
 				factory = new ES5Factory(indexName);
 			} else {
-				factory = new ES7Factory(indexName);
+				boolean multiIndex = IUConfig.esMultiIndex();
+				if (multiIndex) {
+					factory = new ES7miFactory(indexName);
+				} else {
+					factory = new ES7Factory(indexName);
+				}
 			}
 			for (ESOptions anOption: options) {
 				if (anOption == ESOptions.CREATE_IF_NOT_EXISTS) {

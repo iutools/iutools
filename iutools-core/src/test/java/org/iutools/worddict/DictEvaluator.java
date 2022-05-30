@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.concordancer.tm.TMEvaluator;
 import org.iutools.concordancer.tm.TMEvaluator.*;
+import org.iutools.concordancer.tm.TranslationMemoryException;
 import org.iutools.script.TransCoder;
 import org.iutools.worddict.MultilingualDict.WhatTerm;
 
@@ -21,7 +22,11 @@ public class DictEvaluator {
 	MultilingualDict dict = new MultilingualDict();
 	ObjectMapper mapper = new ObjectMapper();
 
-	public DictEvaluator() throws MultilingualDictException {
+	public DictEvaluator() throws MultilingualDictException, TranslationMemoryException {
+		init__DictEvaluator();
+	}
+
+	private void init__DictEvaluator() {
 	}
 
 	public DictEvaluator setMinMaxPairs(Integer min, Integer max) throws MultilingualDictException {

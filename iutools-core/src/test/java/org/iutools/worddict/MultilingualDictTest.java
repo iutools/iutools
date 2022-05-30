@@ -23,11 +23,6 @@ public class MultilingualDictTest {
 	public void setUp() throws Exception {
 		// Cases for search() function
 		cases_search = new Case[] {
-
-		new Case("DELETEME - Does this hangup?",
-			"iu", "angijuqqaaqarvinga", -999,
-			new String[] {}),
-
 			new Case("iu-inuk-roman", "iu", "inuk", 200,
 				new String[] {"inuk", "inukku",
 					"inuksui", "inuksuk"}),
@@ -58,8 +53,9 @@ public class MultilingualDictTest {
 						"divers ... valid ... diving"},
 					new String[] {"ammuumajuqtaqtutik", "clam divers",
 						"classifications ... divers ... clam divers"},
-					new String[] {"ammuumajuqtarnirmut", "clam", "clam diggers",
-						"clam digging", "clam diggers ... commercial clam digging"},
+					new String[] {"ammuumajuqtarnirmut",
+						"clam", "clam digging", "clam diggers",
+						"clam diggers ... commercial clam digging"},
 					new String[] {"ammuumajurniartiit", "divers"}),
 
 			new MultilingualDictCase("iu-ᐊᒻᒨᒪᔪᖅᓯᐅᖅᑐᑎᒃ", "ᐊᒻᒨᒪᔪᖅᓯᐅᖅᑐᑎᒃ")
@@ -74,8 +70,9 @@ public class MultilingualDictTest {
 					"ᐊᒻᒨᒪᔪᕐᓂᐊᕐᓂᕐᒧᑦ")
 				.setExpRelatedTranslationsMap(
 					new String[] {"ᐊᒻᒨᒪᔪᕐᓂᐊᕐᑏᑦ", "divers"},
-					new String[] {"ᐊᒻᒨᒪᔪᖅᑕᕐᓂᕐᒧᑦ", "clam", "clam diggers",
-						"clam digging", "clam diggers ... commercial clam digging"},
+					new String[] {"ᐊᒻᒨᒪᔪᖅᑕᕐᓂᕐᒧᑦ",
+						"clam", "clam digging",
+						"clam diggers", "clam diggers ... commercial clam digging"},
 					new String[] {"ᐊᒻᒨᒪᔪᖅᑕᖅᑏᑦ", "clam divers",
 						"divers ... valid ... diving"},
 					new String[] {"ᐊᒻᒨᒪᔪᖅᑕᖅᑐᑎᒃ", "clam divers",
@@ -96,16 +93,15 @@ public class MultilingualDictTest {
 					"umiarjualirijikkut")
 				.setMinExamples(5)
 				.setOrigWordTranslations(new String[]{
-					"sea", "ship", "shipping", "sealift arrives",
-					"resupply ... dry cargo"
-				}),
+					"sealift", "shipping season", "ship", "shipped",
+					"supply ... sea-lift resupply"}),
 
 			new MultilingualDictCase("iu-kiugavinnga", "kiugavinnga")
 				.relatedWordsShouldBeAmong(
 					"kiujjutit", "kiujjutik", "kiuvan", "kiujjutinga", "kiulugu")
 				.setOrigWordTranslations(new String[]{
 					"response", "answer", "answered", "direct answer",
-					"minister ... answer"}),
+					"answering ... question"}),
 
 			new MultilingualDictCase("iu-najugaq", "najugaq")
 				.relatedWordsShouldBeAmong(
@@ -118,9 +114,7 @@ public class MultilingualDictTest {
 				.setL1("en")
 				.setDecomp(null)
 				.setOrigWordTranslations(
-					"ᐃᒡᓗᖏᓐᓄᑦ", "ᐃᒡᓗᓕᕆᓂᕐᒥ", "ᐃᓪᓗᓕᕆᓂᕐᒧᑦ",
-					"ᐃᒡᓗᒋᔭᐅᕙᒃᑐᓂᒃ",
-					"ᐃᒡᓗᓕᕆᓂᕐᓕ ... ᐃᒡᓗᓕᕆᓂᕐᒧᑐᐃᓐᓈᕋᔭᖅᑐᖅ")
+					"ᐃᓪᓗᐃᑦ", "ᐃᓪᓗᓂᒃ","ᐃᓪᓗᓕᕆᔨᒃᑯᑦ", "ᐃᓪᓗᓕᕆᔨᒃᑯᓐᓄᑦ", "ᐃᓐᓇᑐᖃᓕᕆᓂᕐᒧᑦ")
 				.setMinExamples(10)
 				.relatedWordsShouldBeAmong(),
 
@@ -345,7 +339,7 @@ public class MultilingualDictTest {
 			}
 		};
 		new RunOnCases(cases_search, runner)
-//			.onlyCaseNums(4)
+//			.onlyCaseNums(3)
 			.run();
 	}
 

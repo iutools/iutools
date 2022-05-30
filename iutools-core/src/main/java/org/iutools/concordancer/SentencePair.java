@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ca.nrc.json.PrettyPrinter;
 import org.apache.commons.lang3.tuple.Pair;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.log4j.Logger;
@@ -18,6 +19,8 @@ public class SentencePair {
 	public Integer[][] _invertedTokenAlignments = null;
 	private Pair<String, String> tokenAlignmentsDir = null;
 	public WordAlignment walign = null;
+
+	private static Logger classLogger = Logger.getLogger("org.iutools.concordancer.SentencePair");
 
 	public SentencePair() {
 		init_SentencePair(null, null, null, null,
@@ -87,23 +90,52 @@ public class SentencePair {
 
 	@JsonIgnore
 	public SentencePair setTokenAlignments(WordAlignment walign) {
+		Logger logger = Logger.getLogger("org.iutools.concordancer.SentencePair.setTokenAlignments");
+		if (logger.isTraceEnabled()) {
+			logger.trace("invoked with waling="+new PrettyPrinter().pprint(walign));
+		}
 		Pair<String,String> langs = walign.langs();
 		String l1 = langs.getLeft();
 		String l2 = langs.getRight();
 		String[] tokPairingStrs = walign.tokensPairing;
-		Integer[][] tokPairings = new Integer[tokPairingStrs.length][];
+		List<Integer[]> tokPairings = new ArrayList<Integer[]>();
 		for (int ii=0; ii < tokPairingStrs.length; ii++) {
-			String[] toksStr = tokPairingStrs[ii].split("-");
-			Integer[] toks = new Integer[2];
-			for (int jj=0; jj < 2; jj++) {
-				toks[jj] = Integer.parseInt(toksStr[jj]);
+			Integer[] toks = parseTokensPairing(tokPairingStrs[ii]);
+			if (toks != null) {
+				tokPairings.add(toks);
 			}
-			tokPairings[ii] = toks;
 		}
+		Integer[][] tokPairingsArr = tokPairings.toArray(new Integer[0][]);
 		return setTokenAlignments(
 			l1, walign.tokens4lang.get(l1),
 			l2, walign.tokens4lang.get(l2),
-			tokPairings);
+			tokPairingsArr);
+	}
+
+	private Integer[] parseTokensPairing(String tokPairingStr) {
+		Integer[] toks = null;
+		String[] toksStr = tokPairingStr.split("-");
+		if (toksStr.length != 2) {
+			warnBadTokensPairing(tokPairingStr);
+		} else {
+			toks = new Integer[2];
+			for (int jj = 0; jj < 2; jj++) {
+				try {
+					toks[jj] = Integer.parseInt(toksStr[jj]);
+				} catch (NumberFormatException e) {
+					warnBadTokensPairing(tokPairingStr);
+				}
+			}
+		}
+		return toks;
+	}
+
+	private void warnBadTokensPairing(String tokPairingStr) {
+		String mess =
+			"WARNING: Bad tokens pairing \""+tokPairingStr+"\".\n"+
+			"Should have format \"kk-nn\" where kk and nn are integers.\n"+
+			"Seen in sentence pair: "+new PrettyPrinter().pprint(this);
+		classLogger.warn(mess);
 	}
 
 	@JsonIgnore

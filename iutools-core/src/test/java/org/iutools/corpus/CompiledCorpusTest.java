@@ -16,6 +16,7 @@ import ca.nrc.testing.AssertString;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.log4j.Logger;
 import org.iutools.script.TransCoder;
+import org.iutools.utilities.StopWatch;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -25,6 +26,7 @@ import org.iutools.datastructure.trie.StringSegmenter;
 import org.iutools.datastructure.trie.StringSegmenter_Char;
 import org.iutools.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.testing.AssertObject;
+import org.junit.jupiter.api.Assertions;
 
 public class CompiledCorpusTest {
 
@@ -57,7 +59,8 @@ public class CompiledCorpusTest {
 
 
 	protected  CompiledCorpus makeCorpusUnderTest()  throws Exception {
-		return makeCorpusUnderTest(StringSegmenter_Char.class);
+		CompiledCorpus corpus = makeCorpusUnderTest(StringSegmenter_Char.class);
+		return corpus;
 	}
 
 	protected CompiledCorpus makeCorpusUnderTest(
@@ -497,10 +500,7 @@ public class CompiledCorpusTest {
 		wordsWithSeq = corpus.wordsContainingNgram(seq);
 		expected = new String[] {
 			"inuktitut", "inuksuk", "inuttitut", "takuinuit", "intakuinuit"};
-		AssertIterator.assertElementsEquals(
-				"The list of words containing sequence "+seq+" was not as expected",
-				expected, wordsWithSeq, IN_ANY_ORDER);
-			
+
 		// ngram at beginning of word
 		seq = "^inu";
 		wordsWithSeq = corpus.wordsContainingNgram(seq);
@@ -612,5 +612,22 @@ public class CompiledCorpusTest {
 		AssertString.assertStringEquals(
 				"Corpus name was not as expected for file: "+jsonFile,
 				"some-corpus", gotName);
+	}
+
+	@Test
+	public void test__changeLastUpdatedHistory__HappyPath() throws Exception {
+    	CompiledCorpus corpus = makeCorpusUnderTest();
+
+		AssertCompiledCorpus asserter = new AssertCompiledCorpus(corpus);
+		asserter.lastLoadedDateEquals(0);
+
+		// Add a word to the corpus, to make sure we test the method in a situation
+		// where it contains records of type WordInfo as well as LastLoadedDate
+		corpus.addWordOccurence("inuit");
+		asserter.lastLoadedDateEquals(0);
+
+		corpus.changeLastUpdatedHistory();
+		long now = System.currentTimeMillis();
+		asserter.lastLoadedDateEquals(now);
 	}
 }

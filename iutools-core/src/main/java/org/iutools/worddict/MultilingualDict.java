@@ -446,7 +446,7 @@ public class MultilingualDict {
 	}
 
 	public Pair<List<String>,Long> search(String partialWord, String lang, Integer maxHits)
-	throws MultilingualDictException, TranslationMemoryException {
+		throws MultilingualDictException, TranslationMemoryException {
 		List<String> hits = new ArrayList<String>();
 
 		Pair<Iterator<String>,Long> results = searchIter(partialWord, lang);
@@ -479,7 +479,7 @@ public class MultilingualDict {
 	 * - partialWord is in the list of hits, IF it is a valid IU word
 	 * - comes first IF it is in the list*/
 	private void adjustPartialWordInHits(List<String> hits, String partialWord, String lang) throws MultilingualDictException, TranslationMemoryException {
-		String partialWordID = new WordInfo(partialWord).getId();
+		String partialWordID = new WordInfo(partialWord).getIdWithoutType();
 		if (!hits.contains(partialWordID)) {
 			// The top list of hits did not contain an exact match.
 			// Check to see if the exact match COULD have been found if

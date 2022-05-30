@@ -87,6 +87,4 @@ public class DictEvaluationTest {
 			.rateENSpotted(MatchType.LENIENT_OVERLAP, 0.369)
 			;
 	}
-
-
 }

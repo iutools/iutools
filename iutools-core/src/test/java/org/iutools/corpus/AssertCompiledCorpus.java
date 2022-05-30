@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import ca.nrc.testing.AssertNumber;
 import org.iutools.morph.r2l.DecompositionState;
 import static org.iutools.linguisticdata.Morpheme.MorphFormat;
 import org.apache.commons.lang3.tuple.Triple;
@@ -13,15 +14,25 @@ import org.junit.Assert;
 
 import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.Asserter;
+import org.junit.jupiter.api.Assertions;
 
 public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
-	
+
+	public AssertCompiledCorpus(CompiledCorpus _gotObject) {
+		super(_gotObject, "");
+		init__AssertCompiledCorpus();
+	}
+
 	public AssertCompiledCorpus(
 			CompiledCorpus _gotObject, String mess) {
 		super(_gotObject, mess);
+		init__AssertCompiledCorpus();
+	}
+
+	private void init__AssertCompiledCorpus() {
 		ignoreFields.add("segmenter");
 	}
-	
+
 	protected CompiledCorpus corpus() {
 		return gotObject;
 	}
@@ -137,7 +148,7 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 		
 		return this;
 	}
-	
+
 	public AssertCompiledCorpus wordsContainingMorphemeAre(
 		String morpheme, Triple<String,String,String>... expWordsArr) throws Exception {
 		Set<Triple<String,String,String>> expWords = new HashSet<Triple<String,String,String>>();
@@ -259,4 +270,13 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 			expTotal, gotTotal);
 		return this;
     }
+
+	public void lastLoadedDateEquals(long expDate) throws CompiledCorpusException {
+		long gotDate = corpus().lastLoadedDate();
+		// We tolerate a 5 seconds differenc
+		int tolerance = 5*1000;
+		AssertNumber.assertEquals(
+			"Last loaded date not as expected",
+			expDate, gotDate, tolerance);
+	}
 }

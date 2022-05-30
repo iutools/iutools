@@ -8,6 +8,7 @@ import ca.nrc.testing.AssertString;
 import ca.nrc.testing.TestDirs;
 import org.iutools.corpus.WordInfo;
 import org.json.JSONObject;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -60,6 +61,11 @@ public class ESIndexRepairTest {
 	//////////////////////////////////////
 	// DOCUMENTATION TESTS
 	//////////////////////////////////////
+
+	@Test
+	public void test__TODO__ESRepairShouldInspectAllTypeIndices() {
+		Assertions.fail("When using ES7mi, ESRepair should inspect all the type indices");
+	}
 
 	@Test
 	public void test__ESIndexRepair__Synopsis() throws Exception {

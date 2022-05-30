@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 /**
  * Do a sanity check on an actual compiled corpus.
@@ -32,9 +33,11 @@ public abstract class CorpusSanityCheckTest {
 			.totalOccurencesIs(1475839)
 			.totalWordsWithDecompIs(221225)
 			.totalOccurencesWithDecompIs(1098344)
-			.totalWordsWithoutDecompsIs(186122)
+			.totalWordsWithoutDecompsIs(186121)
 			.totalOccurencesWithNoDecompIs(377495)
 			;
+
+		Assertions.fail("TODO: With ES7, total hits maxes out at 10000. So totalWords and totalOccurences come back as 10000. Should change the java-utils search() method so it includes track_total_hits=true in the post's JSON");
 	}
 	
 	// Check that the information about word 'nunavut' is correct

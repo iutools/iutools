@@ -6,7 +6,7 @@
  	<artifactId>iutools-parent</artifactId>
 	<packaging>pom</packaging>
  
-	<version>0.0.3</version>
+	<version>1.0.0</version>
 	
 	<properties>
 		<!-- We deploy modules, but not the parent -->

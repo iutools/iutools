@@ -48,11 +48,11 @@ public class TMEvaluator {
 	private Path tmFile;
 	private Path glossaryFile;
 
-	public TMEvaluator() throws IOException, TranslationMemoryException {
+	public TMEvaluator() throws TranslationMemoryException {
 		init__TMEvaluator((Path)null, (Path)null);
 	}
 
-	public TMEvaluator(Path _sentPairsOutputFile) throws IOException, TranslationMemoryException {
+	public TMEvaluator(Path _sentPairsOutputFile) throws TranslationMemoryException {
 		init__TMEvaluator(_sentPairsOutputFile, (Path)null);
 	}
 

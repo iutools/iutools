@@ -1172,8 +1172,8 @@ public class SpellChecker {
 
 	protected Iterator<WordInfo> winfosContainingNgram(String seq,
 		CompiledCorpus.SearchOption... options) throws SpellCheckerException {
-		Logger logger = Logger.getLogger("org.iutools.spellchecker.SpellChecker.wordsContainingSequ");
-
+		Logger logger = Logger.getLogger("org.iutools.spellchecker.SpellChecker.winfosContainingNgram");
+		logger.trace("invoked with seq="+seq);
 		long start = StopWatch.nowMSecs();
 
 		Iterator<WordInfo> winfosIter = null;

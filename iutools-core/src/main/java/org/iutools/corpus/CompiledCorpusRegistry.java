@@ -11,6 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ca.nrc.debug.Debug;
+import ca.nrc.dtrc.elasticsearch.ElasticSearchException;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -24,18 +25,15 @@ public class CompiledCorpusRegistry {
 	public static final String defaultCorpusName = "hansard-1999-2002";
 	public static final String emptyCorpusName = "emptycorpus";
 
-	public static enum Option {ALLOW_UNREGISTERED};
+//	public static enum Option {ALLOW_UNREGISTERED};
 
 	public CompiledCorpusRegistry() throws CompiledCorpusException {
 		Logger tLogger = Logger.getLogger("org.iutools.corpus.CompiledCorpusRegistry.constructor");
-		tLogger.trace("** invoked");
 		init_CompiledCorpusRegistry();
-		tLogger.trace("** after init_CompiledCorpusRegistry");
 	}
 
 	private void init_CompiledCorpusRegistry() throws CompiledCorpusException {
 		Logger tLogger = Logger.getLogger("org.iutools.corpus.CompiledCorpusRegistry.init_CompiledCorpusRegistry");
-		tLogger.trace("** initializing the static registry map");
 		// Initialize the static registry map
 		if (registry == null) {
 			try {
@@ -44,14 +42,12 @@ public class CompiledCorpusRegistry {
 					defaultCorpusName,
 					new File(
 						IUConfig.getIUDataPath(
-						"data/compiled-corpora/HANSARD-1999-2002.json")));
-				tLogger.trace("** DONE initializing the static registry map");
+							"data/compiled-corpora/HANSARD-1999-2002.json")));
 			} catch (ConfigException | CompiledCorpusRegistryException e) {
 				// Reset registry to null if we weren't able to initialize it.
 				// That way, the error will not be "swept under the carpet" for
 				// future calls to the class (ex: in the context of a Tomcat app)
 				//
-				tLogger.trace("** EXCEPTION RAISED while initializing the static registry map.\ne="+ Debug.printCallStack(e));
 				registry = null;
 				throw new CompiledCorpusException("Could not initialize the static registry map", e);
 			}
@@ -73,11 +69,14 @@ public class CompiledCorpusRegistry {
 		try {
 			CompiledCorpus corpus = new CompiledCorpus(corpusName);
 			if (!corpus.isUpToDateWithFile(jsonFile)) {
-				corpus.loadFromFile(jsonFile, true);
+				corpus.loadFromFile(jsonFile, (Boolean)null, true);
+				corpus.esFactory().indexAPI().cacheIndexExists(true);
 			}
-		} catch (CompiledCorpusException e) {
+			boolean exists = corpus.esFactory().indexAPI().exists();
+		} catch (CompiledCorpusException | ElasticSearchException e) {
 			throw new CompiledCorpusRegistryException(e);
 		}
+		return;
 	}
 
 	public static Set<String> availableCorpora() throws CompiledCorpusException {

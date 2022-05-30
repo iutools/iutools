@@ -1,12 +1,13 @@
 package org.iutools.corpus;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ca.nrc.dtrc.elasticsearch.es7.IndexAPI_v7;
+import ca.nrc.dtrc.elasticsearch.index.IndexDef;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.StringUtils;
 import org.apache.log4j.Level;
@@ -79,13 +80,29 @@ public class CompiledCorpus {
 	private static Boolean debug = null;
 
 	public CompiledCorpus(String _indexName) throws CompiledCorpusException {
-		init_CompiledCorpus(_indexName);
+		init_CompiledCorpus(_indexName, (Boolean)null);
 	}
 
-	public void init_CompiledCorpus(String _indexName) throws CompiledCorpusException {
+	public CompiledCorpus(String _indexName, Boolean createIfNotExists) throws CompiledCorpusException {
+		init_CompiledCorpus(_indexName, createIfNotExists);
+	}
+
+	public void init_CompiledCorpus(String _indexName, Boolean createIfNotExists) throws CompiledCorpusException {
 		this.indexName = IndexAPI.canonicalIndexName(_indexName);
 		if (debugMode()) {
 			this.address = System.identityHashCode(this);
+		}
+		ensureESIndexIsDefined();
+		return;
+	}
+
+	private void ensureESIndexIsDefined() throws CompiledCorpusException {
+		try {
+			if (!esFactory().indexAPI().exists()) {
+				esFactory().indexAPI().define(new IndexDef(), true);
+			}
+		} catch (Exception e) {
+			throw new CompiledCorpusException(e);
 		}
 	}
 
@@ -208,7 +225,12 @@ public class CompiledCorpus {
 	}
 	
 	public boolean containsCharNgram(String ngram) throws CompiledCorpusException {
-		boolean answer = wordsContainingNgram(ngram).hasNext();
+		boolean answer = false;
+		try {
+			answer = wordsContainingNgram(ngram).hasNext();
+		} catch (NoSuchCorpusException e) {
+			// If the corpus does not exist, just leave answer to false
+		}
 		return answer;
 	}
 	
@@ -355,6 +377,7 @@ public class CompiledCorpus {
 
 	public  void loadFromFile(File jsonFile, Boolean verbose,
 		Boolean overwrite, String indexName) throws CompiledCorpusException {
+		Logger logger = Logger.getLogger("org.iutools.corpus.CompiledCorpus.loadFromFile");
 		if (verbose == null) {
 			verbose = true;
 		}
@@ -376,12 +399,15 @@ public class CompiledCorpus {
 			options.add(ESOptions.APPEND);
 		}
 
+		ESFactory esFactory = esFactory();
+		logger.trace("Using esFactory="+esFactory);
 		boolean okToLoad = possiblyClearESIndex(overwrite, verbose);
 		if (okToLoad) {
 			try {
-				esFactory().indexAPI().bulkIndex(
-						jsonFile.toString(), WORD_INFO_TYPE, 100,
-						options.toArray(new ESOptions[0]));
+				possiblyDefineIndex();
+				esFactory.indexAPI().bulkIndex(
+					jsonFile.toString(), WORD_INFO_TYPE, 100,
+					options.toArray(new ESOptions[0]));
 			} catch (ElasticSearchException e) {
 				throw new CompiledCorpusException(e);
 			}
@@ -392,7 +418,19 @@ public class CompiledCorpus {
 		return;
 	}
 
-	private void changeLastUpdatedHistory() throws CompiledCorpusException {
+	private void possiblyDefineIndex() throws CompiledCorpusException {
+		try {
+			if (!esFactory().indexAPI().exists()) {
+				IndexDef iDef = new IndexDef();
+				esFactory().indexAPI().define(iDef, true);
+			}
+		} catch (Exception e) {
+			throw new CompiledCorpusException(e);
+		}
+		return;
+	}
+
+	protected void changeLastUpdatedHistory() throws CompiledCorpusException {
 		Logger tLogger = Logger.getLogger("org.iutools.corpus.CompiledCorpus.changeLastUpdatedHistory");
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("indexName="+indexName+";Unpon entry, last loaded date = "+lastLoadedDate());
@@ -517,9 +555,11 @@ public class CompiledCorpus {
 					winfo.topDecompositionStr,
 					Morpheme.MorphFormat.WITH_BRACES);
 
+				String word = winfo.getIdWithoutType();
+
 				WordWithMorpheme aWord =
 					new WordWithMorpheme(
-					winfo.word, morphId, topDecomp,
+					word, morphId, topDecomp,
 					winfo.frequency, winfo.decompositionsSample);
 				words.add(aWord);
 			}
@@ -596,7 +636,7 @@ public class CompiledCorpus {
 
 
 	public Iterator<String> wordsContainingNgram(String ngram, SearchOption... options) throws CompiledCorpusException {
-		return searchWordsContainingNgram(ngram, options).docIDIterator();
+		return searchWordsContainingNgram(ngram, options).docIDIterator(true);
 	}
 
 	public SearchResults<WordInfo> searchWordsContainingNgram(String ngram, SearchOption... options) throws CompiledCorpusException {
@@ -661,7 +701,7 @@ public class CompiledCorpus {
 		try {
 			winfo =
 				(WordInfo) esFactory().crudAPI().getDocumentWithID(
-					word, WordInfo.class, WORD_INFO_TYPE);
+					word, WordInfo.class, WORD_INFO_TYPE, false);
 		} catch (RuntimeException | ElasticSearchException e) {
 			tLogger.trace(traceLabel + "raised exception e=" + e);
 			tLogger.trace(traceLabel + "call stack was:" + Debug.printCallStack(e));
@@ -701,16 +741,29 @@ public class CompiledCorpus {
 				"For morphemes="+ StringUtils.join(morphemes, ",")+
 				", returning total of "+hits.getTotalHits()+" hits.");
 		}
-		return hits.docIDIterator();
+		return hits.docIDIterator(true);
 	}
 
 	
 	public long totalOccurences() throws CompiledCorpusException {
+//		Query queryBody = new Query(
+//			new JSONObject().put("match_all", new HashMap<String,String>())
+//		);
+
 		Query queryBody = new Query(
-			new JSONObject().put("match_all", new HashMap<String,String>())
+			new JSONObject()
+				.put("bool", new JSONObject()
+					.put("must", new JSONObject()
+						.put("match", new JSONObject()
+							.put("type", WORD_INFO_TYPE)
+						)
+					)
+				)
 		);
+
 		Aggs aggsElt = new Aggs()
 				.aggregate("totalOccurences", "sum", "frequency");
+
 		SearchResults<WordInfo> results =
 				esWinfoSearch(queryBody, aggsElt);
 		Double totalDbl = null;
@@ -814,7 +867,7 @@ public class CompiledCorpus {
 		String query = "totalDecompositions:0";
 		SearchResults<WordInfo> hits = esWinfoSearch(query);
 
-		Iterator<String> wordsIter = hits.docIDIterator();
+		Iterator<String> wordsIter = hits.docIDIterator(true);
 		return wordsIter;
 	}
 
@@ -938,7 +991,7 @@ public class CompiledCorpus {
 	private SearchResults<WordInfo> esWinfoSearch(
 		String query, SearchOption[] options, Boolean statsOnly,
 		RequestBodyElement... additionalReqBodies)
-		throws CompiledCorpusException {
+		throws CompiledCorpusException, NoSuchCorpusException {
 		SearchResults<WordInfo> results = null;
 
 		Pair<String,RequestBodyElement[]> augmentedRequest =
@@ -949,9 +1002,10 @@ public class CompiledCorpus {
 		try {
 			results =
 			esFactory().searchAPI().search(
-							query, WORD_INFO_TYPE, new WordInfo(),
-							additionalReqBodies);
-
+				query, WORD_INFO_TYPE, new WordInfo(),
+				additionalReqBodies);
+		} catch (NoSuchIndexException exc) {
+			throw new NoSuchCorpusException(exc);
 		} catch (ElasticSearchException e) {
 			throw new CompiledCorpusException(e);
 		}
@@ -1136,6 +1190,7 @@ public class CompiledCorpus {
 			throws CompiledCorpusException {
 		Logger tLogger = Logger.getLogger("org.iutools.corpus.CompiledCorpus.isUpToDateWithFile");
 		boolean uptodate = false;
+
 		try {
 			long lastLoaded = lastLoadedDate();
 			long fileLastChanged = corpusFile.lastModified();
@@ -1155,33 +1210,54 @@ public class CompiledCorpus {
 	public long lastLoadedDate() throws CompiledCorpusException {
 		Logger tLogger = Logger.getLogger("org.iutools.corpus.CompiledCorpus.lastLoadedDate");
 
-		long date = 0;
-		LastLoadedDate lastLoadedRecord = null;
+		tLogger.trace("invoked");
+		Long date = null;
+		IndexAPI indexAPI = null;
 		try {
-			SearchResults<LastLoadedDate> results =
-				esFactory().indexAPI()
-					.listAll(LastLoadedDate.esTypeName, new LastLoadedDate());
-			tLogger.trace(
-					"indexName="+indexName+"; number of records in load history = "+
-							results.getTotalHits());
-			Iterator<Hit<LastLoadedDate>> iter = results.iterator();
-			while (iter.hasNext()) {
-				Hit<LastLoadedDate> aHit = iter.next();
-				long hitDate = aHit.getDocument().timestamp;
-				if (hitDate > date) {
-					date = hitDate;
+			indexAPI = esFactory().indexAPI();
+			if (!indexAPI.exists()) {
+				date = new Long(0);
+			}
+//			if (date == null && (indexAPI instanceof IndexAPI_v7)) {
+//				// Index exists, but we are using ES7
+//				// Since April 2022, LastLoadedDate() always returns 0 for the
+//				// default corpus, when using the IndexAPI_v7. Can't figure out why
+//				// because it does work for a smaller corpus created from small_cropus.json
+//				// test file.
+//				//
+//				// For now, assume the index is up to date, IF it exists. This means
+//				// we have to MANUALLY and EXPLICITLY re-load the index everytime
+//				// we change its json file.
+//				date = System.currentTimeMillis();
+//			}
+			if (date == null) {
+				// Index exists. Check if its last loaded date
+				// is greater than the last modified date for the json file.
+				SearchResults<LastLoadedDate> results =
+					esFactory().indexAPI()
+						.listAll(LastLoadedDate.esTypeName, new LastLoadedDate());
+				tLogger.trace(
+					"indexName=" + indexName + "; number of records in load history = " +
+					results.getTotalHits());
+				Iterator<Hit<LastLoadedDate>> iter = results.iterator();
+				while (iter.hasNext()) {
+					Hit<LastLoadedDate> aHit = iter.next();
+					long hitDate = aHit.getDocument().timestamp;
+					if (date == null || hitDate > date) {
+						date = hitDate;
+					}
 				}
 			}
+		} catch (NoSuchIndexException e) {
+			// If index does not exist, leave date at 0
 		} catch (ElasticSearchException e) {
 			tLogger.trace(
-				"Caught exception e="+e+"\nCall stack: "+Debug.printCallStack(e));
+				"Caught exception e=" + e + "\nCall stack: " + Debug.printCallStack(e));
 			throw new CompiledCorpusException(e);
 		}
-		tLogger.trace(
-				"indexName="+indexName+"; last loaded date = "+
-						((lastLoadedRecord == null) ? null: lastLoadedRecord.timestamp));
-		if (lastLoadedRecord != null) {
-			date = lastLoadedRecord.timestamp;
+
+		if (date == null) {
+			date = new Long(0);
 		}
 
 		return date;
@@ -1196,6 +1272,8 @@ public class CompiledCorpus {
 			// There should ever be only one record of type LastLoadedDate
 			// and its ID should be the following:
 			this.setId("lastload");
+			this.type = esTypeName;
+
 		}
 	}
 
