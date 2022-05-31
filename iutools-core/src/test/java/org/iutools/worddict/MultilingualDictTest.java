@@ -239,8 +239,8 @@ public class MultilingualDictTest {
 			try {
 				MultilingualDictCase aCase = (MultilingualDictCase)uncastCase;
 				MultilingualDictEntry entry =
-				new MultilingualDict()
-					.entry4word(aCase.word, aCase.l1);
+					new MultilingualDict()
+						.entry4word(aCase.word, aCase.l1);
 
 				String[] expL1Highlights = new String[0];
 				String[] expTranslations = new String[0];

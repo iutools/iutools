@@ -34,10 +34,8 @@ public abstract class CorpusSanityCheckTest {
 			.totalWordsWithDecompIs(221225)
 			.totalOccurencesWithDecompIs(1098344)
 			.totalWordsWithoutDecompsIs(186121)
-			.totalOccurencesWithNoDecompIs(377495)
+			.totalOccurencesWithNoDecompIs(377494)
 			;
-
-		Assertions.fail("TODO: With ES7, total hits maxes out at 10000. So totalWords and totalOccurences come back as 10000. Should change the java-utils search() method so it includes track_total_hits=true in the post's JSON");
 	}
 	
 	// Check that the information about word 'nunavut' is correct

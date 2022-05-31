@@ -30,6 +30,7 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.iutools.utilities1.Util;
 import org.iutools.linguisticdata.constraints.Conditions;
 import org.iutools.linguisticdata.constraints.Imacond;
@@ -68,7 +69,7 @@ public class Base extends Morpheme {
     
 	static public Hashtable<String,Morpheme> hash = new Hashtable<String,Morpheme>();
 	//
-	
+
 	public Base(HashMap<String,String> v) throws LinguisticDataException {
 		makeRoot(v);
 	}
@@ -143,6 +144,7 @@ public class Base extends Morpheme {
 	}
 	
 	//-------------------------------------------------------------------------------------------------------	
+	@JsonIgnore
 	boolean isGiVerb() {
 		if ( type.equals("v") && 
     				transinfix != null && transinfix.startsWith("gi") )
@@ -150,46 +152,53 @@ public class Base extends Morpheme {
 		else
 			return false;
 	}
-	
+
+	@JsonIgnore
 	boolean isSingular() {
 		if ( number != null && number.equals("s") )
 			return true;
 		else
 			return false;
 	}
-	
+
+	@JsonIgnore
 	boolean isDual() {
 		if ( number != null && number.equals("d") )
 			return true;
 		else
 			return false;
 	}
-	
+
+	@JsonIgnore
 	boolean isPlural() {
 		if ( number != null && number.equals("p") )
 			return true;
 		else
 			return false;
 	}
-	
+
+	@JsonIgnore
 	boolean isTransitiveVerb() {
 		if ( type.equals("v") && transitivity != null && transitivity.equals("t") )
 			return true;
 		else
 			return false;
 	}
-	
+
+	@JsonIgnore
 	boolean isIntransitiveVerb() {
 		if ( type.equals("v") && transitivity != null && transitivity.equals("i") )
 			return true;
 		else
 			return false;
 	}
-	
+
+	@JsonIgnore
 	String getAntipassive() {
 		return antipassive;
 	}
-	
+
+	@JsonIgnore
 	String getVariant() {
 		return variant;
 	}
@@ -332,8 +341,9 @@ public class Base extends Morpheme {
 //    Vector getIdsOfCompositesWithThisRoot() {
 //        return idsOfCompositesWithThisRoot;
 //    }
-    
-    boolean isKnown() {
+
+	@JsonIgnore
+	boolean isKnown() {
     	return known.booleanValue();
     }
     

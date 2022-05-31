@@ -901,6 +901,8 @@ public class CompiledCorpus {
 		Logger tLogger = Logger.getLogger("org.iutools.corpus.CompiledCorpus.addWordOccurences");
 		tLogger.trace("invoked, word="+word);
 
+		ensureCorpusIndexIsDefined();
+
 		WordInfo winfo = null;
 		try {
 			winfo = (WordInfo) esFactory().crudAPI().getDocumentWithID(
@@ -935,7 +937,17 @@ public class CompiledCorpus {
 		return;
 	}
 
-	
+	private void ensureCorpusIndexIsDefined() throws CompiledCorpusException {
+		try {
+			if (!esFactory().indexAPI().exists()) {
+				esFactory().indexAPI().define(true);
+			}
+		} catch (Exception e) {
+			throw new CompiledCorpusException(e);
+		}
+	}
+
+
 	public void deleteWord(String word) throws CompiledCorpusException {
 		try {
 			esFactory().crudAPI().deleteDocumentWithID(word, WORD_INFO_TYPE);

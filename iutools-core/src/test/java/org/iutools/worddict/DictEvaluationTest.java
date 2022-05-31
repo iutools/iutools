@@ -60,7 +60,8 @@ public class DictEvaluationTest {
 		TestInfo testInfo) throws Exception {
 		String glossaryPath = IUConfig.getIUDataPath("data/glossaries/wpGlossary.json");
 		DictEvaluator evaluator = new DictEvaluator()
-			.setMinMaxPairs(null, 100).setMaxTranslations(10);
+			.setMinMaxPairs(null, 100)
+			.setMaxTranslations(10);
 
 		DictEvaluationResults results = evaluator.evaluate(Paths.get(glossaryPath));
 		AssertRuntime.runtimeHasNotChanged(

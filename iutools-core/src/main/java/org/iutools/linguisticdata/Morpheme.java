@@ -32,6 +32,7 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 
@@ -74,14 +75,18 @@ public abstract class Morpheme implements Cloneable {
     abstract void setAttrs();
 
     //------------------------------------------------------------------------------------------------------------
+	@JsonIgnore
 	public abstract String getSignature(); //
+	@JsonIgnore
 	public abstract String getOriginalMorpheme(); //
 	
-    //------------------------------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------------------------
+	@JsonIgnore
 	public String getTableName() {
 	    return tableName;
 	}
 
+	@JsonIgnore
 	public String[] getCombiningParts() {
 	    return combinedMorphemes;
 	}
@@ -90,10 +95,12 @@ public abstract class Morpheme implements Cloneable {
         return (Morpheme)this.clone();
     }
 
+    @JsonIgnore
     public Conditions getPrecCond() {
         return preCondition;
     }
-    
+
+ 	 @JsonIgnore
     public Conditions getNextCond() {
         return nextCondition;
     }
@@ -162,7 +169,8 @@ public abstract class Morpheme implements Cloneable {
     return res;
 	}
 
-    public Morpheme getLastCombiningMorpheme() throws LinguisticDataException {
+	@JsonIgnore
+	public Morpheme getLastCombiningMorpheme() throws LinguisticDataException {
         String [] parts = getCombiningParts();
         String lastPart = null;
         Morpheme lastMorpheme = null;
@@ -174,7 +182,8 @@ public abstract class Morpheme implements Cloneable {
         }
         return lastMorpheme;
     }
-    
+
+	@JsonIgnore
     public static Morpheme getMorpheme(String morphemeId) throws LinguisticDataException {
     	    // Look for the morpheme in the affixes
     	    Morpheme morph = (Morpheme)LinguisticData.getInstance().getAffixWithId(morphemeId);
@@ -229,7 +238,8 @@ public abstract class Morpheme implements Cloneable {
     }
     
     //------------------------------------------------------------------------------------------------------------
-    String getNb() {
+   @JsonIgnore
+	String getNb() {
     	return nb;
     }
     
@@ -242,11 +252,13 @@ public abstract class Morpheme implements Cloneable {
         logger.debug(id+" -- "+canonicalForm+"; "+signature+" -> "+id);
 		attributes.put("id",id);
     }
-    
-    String getAttr(String attr) {
+
+	@JsonIgnore
+	String getAttr(String attr) {
         return (String)this.attributes.get(attr);
     }
-    
+
+	@JsonIgnore
 	void setAttributes(HashMap<String,Object> attrs) {
 		attributes = new HashMap<String,Object>();
 		attributes.putAll(attrs);
@@ -444,6 +456,7 @@ public abstract class Morpheme implements Cloneable {
 	 * morphemes).
 	 * @return
 	 */
+	@JsonIgnore
 	public boolean isComposite() {
 		boolean answer = (this.tableName.matches("(CommonCompositeWords|UndecomposableCompositeWords|WordsRelatedToRoots)"));
 		return answer;

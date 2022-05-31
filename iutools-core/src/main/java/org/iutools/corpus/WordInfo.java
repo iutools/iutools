@@ -77,10 +77,12 @@ public class WordInfo extends Document {
 
 
 	public WordInfo() {
+		super();
 		init_WordInfo(null);
 	}	
 	
 	public WordInfo(String _word) {
+		super(_word, "WordInfo_ES");
 		init_WordInfo(_word);
 	}
 
@@ -92,7 +94,7 @@ public class WordInfo extends Document {
 	@Override
 	public WordInfo setId(String _id) {
 		super.setId(_id);
-		word = _id;
+		word = getIdWithoutType();
 		return this;
 	}
 
