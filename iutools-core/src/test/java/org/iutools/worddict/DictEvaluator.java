@@ -40,23 +40,36 @@ public class DictEvaluator {
 	}
 
 	public DictEvaluationResults evaluate(Path glossaryPath) throws MultilingualDictException {
-		return evaluate(glossaryPath, (Integer)null);
+		return evaluate(glossaryPath, (Integer)null, (Integer)null);
 	}
 
 
-	public DictEvaluationResults evaluate(Path glossaryPath, Integer firstN) throws MultilingualDictException {
+	public DictEvaluationResults evaluate(
+		Path glossaryPath, Integer stopAfterN, Integer startingAt) throws MultilingualDictException {
 		DictEvaluationResults results = new DictEvaluationResults();
+		Pair<Integer,Integer> firstLast = minMaxEntryNums(stopAfterN, startingAt);
+		Integer first = firstLast.getLeft();
+		Integer last = firstLast.getRight();
 		try {
 			results.onEvaluationStart();
 			ObjectStreamReader reader =
 				new ObjectStreamReader(glossaryPath.toFile());
-			GlossaryEntry entry = (GlossaryEntry) reader.readObject();
-			while (entry != null) {
-				if (firstN != null && results.totalGlossaryEntries >= firstN) {
+			int entryNum = 0;
+			while (true) {
+				GlossaryEntry entry = (GlossaryEntry) reader.readObject();
+				if (entry == null) {
 					break;
 				}
+				entryNum++;
+				if (last != null && entryNum >= last) {
+					// We reached the last entry to be evaluated
+					break;
+				}
+				if (entryNum < first) {
+					// We haven't yet reached the first entry to be evaluated
+					continue;
+				}
 				onNewGlossaryEntry(entry, results);
-				entry = (GlossaryEntry) reader.readObject();
 			}
 			results.onEvaluationEnd();
 			printReport(results);
@@ -65,6 +78,18 @@ public class DictEvaluator {
 		}
 
 		return results;
+	}
+
+	private Pair<Integer, Integer> minMaxEntryNums(Integer firstN, Integer startingAt) {
+		Integer first = 1;
+		if (startingAt != null) {
+			first = startingAt;
+		}
+		Integer last = null;
+		if (firstN != null) {
+			last = first + firstN;
+		}
+		return Pair.of(first, last);
 	}
 
 	protected void onNewGlossaryEntry(GlossaryEntry glossEntry, DictEvaluationResults results) throws MultilingualDictException {

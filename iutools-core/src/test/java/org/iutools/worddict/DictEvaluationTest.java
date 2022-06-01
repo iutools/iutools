@@ -16,7 +16,7 @@ public class DictEvaluationTest {
 	public void test_evaluateWordDict_OnWikipediaGlossary_first20(
 		TestInfo testInfo) throws Exception {
 		String glossaryPath = IUConfig.getIUDataPath("data/glossaries/wpGlossary.json");
-		int firstN = 20;
+		int stopAfterN = 20;
 		DictEvaluator evaluator = new DictEvaluator()
 //				.setMinMaxPairs(null, 20).setMaxTranslations(5)
 //				.setMinMaxPairs(100, 100).setMaxTranslations(5)
@@ -27,7 +27,7 @@ public class DictEvaluationTest {
 
 		long start = StopWatch.nowMSecs();
 		DictEvaluationResults results =
-			evaluator.evaluate(Paths.get(glossaryPath), firstN);
+			evaluator.evaluate(Paths.get(glossaryPath), stopAfterN, (Integer)null);
 //		long elapsed = StopWatch.elapsedMsecsSince(start);
 //		double gotAvgSecs = elapsed / (1000.0 * results.totalIUPresent());
 		AssertRuntime.runtimeHasNotChanged(
@@ -35,7 +35,7 @@ public class DictEvaluationTest {
 			"avg secs for retrieving a dict entry", testInfo);
 
 		new AssertDictEvaluationResults(results)
-			.totalGlossaryEntries(firstN)
+			.totalGlossaryEntries(stopAfterN)
 			.totalSingleWordIUEntries(13)
 
 			.totalIUPresent(WhatTerm.ORIGINAL, 7)
@@ -63,7 +63,10 @@ public class DictEvaluationTest {
 			.setMinMaxPairs(null, 100)
 			.setMaxTranslations(10);
 
-		DictEvaluationResults results = evaluator.evaluate(Paths.get(glossaryPath));
+		Integer stopAfterN = null;
+		Integer startingAtN = null;
+		DictEvaluationResults results =
+			evaluator.evaluate(Paths.get(glossaryPath), stopAfterN, startingAtN);
 		AssertRuntime.runtimeHasNotChanged(
 			results.avgSecsPerEntryPresent, 0.20,
 			"avg secs for retrieving a dict entry", testInfo);

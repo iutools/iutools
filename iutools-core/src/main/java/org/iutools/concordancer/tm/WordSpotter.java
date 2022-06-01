@@ -61,6 +61,7 @@ public class WordSpotter {
 		List<String> splitElts = new ArrayList<String>();
 		String remainingText = text;
 		for (String token: tokens) {
+			tLogger.trace("token="+token);
 			Pattern patt = tokenPattern(token);
 			Matcher matcher = patt.matcher(remainingText);
 			if (!matcher.find()) {
@@ -84,9 +85,9 @@ public class WordSpotter {
 		tLogger.trace("token='"+token+"'");
 		token = SentencePair.escapeRegexpSpecialChars(token);
 		String tokenRegex =
-			token.replaceAll("^@@", "[^\\p{Punct}\\s]*?");
+			token.replaceAll("^@@+", "[^\\p{Punct}\\s]*?");
 		tLogger.trace("After replacing LEADING @@, tokenRegex="+tokenRegex);
-		tokenRegex = tokenRegex.replaceAll("@@$", "");
+		tokenRegex = tokenRegex.replaceAll("@@+$", "");
 		tLogger.trace("After replacing TAILING @@, tokenRegex="+tokenRegex);
 		Pattern patt =
 			Pattern.compile(tokenRegex, Pattern.CASE_INSENSITIVE);

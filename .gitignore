@@ -40,3 +40,4 @@ iutools-data/data/tries
 /jmeter.log
 /iutools-apps/src/test/jmeter/reports/*
 /iutools-apps/src/test/jmeter/reports/
+/iutools-parent.iml
