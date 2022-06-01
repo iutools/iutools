@@ -38,20 +38,20 @@ public class DictEvaluationTest {
 			.totalGlossaryEntries(stopAfterN)
 			.totalSingleWordIUEntries(13)
 
-			.totalIUPresent(WhatTerm.ORIGINAL, 7)
+			.totalIUPresent(WhatTerm.ORIGINAL, 6)
 			.totalIUPresent(WhatTerm.RELATED, 2)
 
-			.totalENSpotted(MatchType.STRICT, 4)
+			.totalENSpotted(MatchType.STRICT, 3)
 			.totalENSpotted(MatchType.LENIENT, 0)
 			.totalENSpotted(MatchType.LENIENT_OVERLAP, 1)
 
-			.totalENSpotted_atLeastInSense(MatchType.STRICT, 4)
-			.totalENSpotted_atLeastInSense(MatchType.LENIENT, 4)
-			.totalENSpotted_atLeastInSense(MatchType.LENIENT_OVERLAP,5)
+			.totalENSpotted_atLeastInSense(MatchType.STRICT, 3)
+			.totalENSpotted_atLeastInSense(MatchType.LENIENT, 3)
+			.totalENSpotted_atLeastInSense(MatchType.LENIENT_OVERLAP,4)
 
-			.rateENSpotted(MatchType.STRICT, 4.0/9)
-			.rateENSpotted(MatchType.LENIENT, 4.0/9)
-			.rateENSpotted(MatchType.LENIENT_OVERLAP, 5.0/9)
+			.rateENSpotted(MatchType.STRICT, 3.0/8)
+			.rateENSpotted(MatchType.LENIENT, 3.0/8)
+			.rateENSpotted(MatchType.LENIENT_OVERLAP, 4.0/8)
 			;
 	}
 
@@ -73,7 +73,7 @@ public class DictEvaluationTest {
 
 		new AssertDictEvaluationResults(results)
 			.totalGlossaryEntries(556)
-			.totalSingleWordIUEntries(464)
+			.totalSingleWordIUEntries(465)
 
 			.totalIUPresent(WhatTerm.ORIGINAL, 183)
 			.totalIUPresent(WhatTerm.RELATED, 77)

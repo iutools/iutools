@@ -91,7 +91,7 @@ public class TMEvaluationTest {
 
 			.totalENSpotted_inSense(MatchType.STRICT, 73)
 			.totalENSpotted_inSense(MatchType.LENIENT, 1)
-			.totalENSpotted_inSense(MatchType.LENIENT_OVERLAP, 17)
+			.totalENSpotted_inSense(MatchType.LENIENT_OVERLAP, 15)
 
 			.totalENPresent_atLeastInSense(MatchType.STRICT, 106)
 			.totalENPresent_atLeastInSense(MatchType.LENIENT, 107)
@@ -99,11 +99,11 @@ public class TMEvaluationTest {
 
 			.totalENSpotted_atLeastInSense(MatchType.STRICT, 73)
 			.totalENSpotted_atLeastInSense(MatchType.LENIENT, 74)
-			.totalENSpotted_atLeastInSense(MatchType.LENIENT_OVERLAP, 91)
+			.totalENSpotted_atLeastInSense(MatchType.LENIENT_OVERLAP, 89)
 
 			.rateENSpotted_inSense(MatchType.STRICT, 0.688)
 			.rateENSpotted_inSense(MatchType.LENIENT, 0.691)
-			.rateENSpotted_inSense(MatchType.LENIENT_OVERLAP, 0.827)
+			.rateENSpotted_inSense(MatchType.LENIENT_OVERLAP, 0.809)
 		;
 
 	}

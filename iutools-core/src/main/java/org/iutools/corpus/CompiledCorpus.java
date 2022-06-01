@@ -381,6 +381,9 @@ public class CompiledCorpus {
 		if (verbose == null) {
 			verbose = true;
 		}
+		if (overwrite == null) {
+			overwrite = false;
+		}
 		if (indexName == null) {
 			if (this.indexName != null) {
 				indexName = this.indexName;
