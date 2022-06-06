@@ -75,7 +75,7 @@ public class DictEvaluationTest {
 			.totalGlossaryEntries(556)
 			.totalSingleWordIUEntries(465)
 
-			.totalIUPresent(WhatTerm.ORIGINAL, 183)
+			.totalIUPresent(WhatTerm.ORIGINAL, 185)
 			.totalIUPresent(WhatTerm.RELATED, 77)
 
 			.totalENSpotted(MatchType.STRICT, 87)

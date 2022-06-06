@@ -531,6 +531,9 @@ public class MultilingualDict {
 	}
 
 	private Pair<Iterator<String>, Long> search_IU(String partialWord) throws MultilingualDictException {
+		if (!partialWord.startsWith("^")) {
+			partialWord = "^"+partialWord;
+		}
 		Iterator<String> wordsIter = null;
 		Long totalWords = null;
 		try {

@@ -83,7 +83,7 @@ English query - Single word
     word 'development'
     
 English query - Multi word
-- Do the steps described in the 'basic scenario' with English word 'housing', 
+- Do the steps described in the 'basic scenario' with English word 'healthcare coverage', 
   with the following 'specifics':
   - QUERY_WORD: 'healthcare coverage'
   - QUERY_LANGUAGE: Change it to English

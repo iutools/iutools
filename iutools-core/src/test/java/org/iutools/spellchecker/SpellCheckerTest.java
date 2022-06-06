@@ -324,7 +324,6 @@ public class SpellCheckerTest {
 		String word = "ujaranniarvimmi";
 
 		String[] expSuggestions = new String[]{
-			"ujara[nni]arvimmi",
 			"ujararniarvimmi",
 			"ujararniarvimmik",
 			"ujararniarvimmit",

@@ -63,8 +63,8 @@ public class SpellDebug {
 	static {
 		badWordsToTrace = new HashMap<String,String[]>();
 		badWordsToTrace
-			.put("pigiaqtitat",
-				new String[] {"pigiaqtitait"});
+			.put("inutmut",
+				new String[] {"inummut"});
 	}
 
 	// List of candidate spellings to be traced.

@@ -143,7 +143,6 @@ public class AssertMultilingualDictEntry extends Asserter<MultilingualDictEntry>
 					gotHighlights.add(highlighted);
 				}
 			}
-			String temp = PrettyPrinter.print(gotHighlights);
 			AssertSet.isSubsetOf(
 				baseMessage + "\nList of highlights was not a subset of the expected highlights",
 				lowerCaseStrings(expHighlights), lowerCaseStrings(gotHighlights),
@@ -220,22 +219,32 @@ public class AssertMultilingualDictEntry extends Asserter<MultilingualDictEntry>
 		return this;
 	}
 
-	public  AssertMultilingualDictEntry translationsContain(
-		String[] expTranslations) {
+	public AssertMultilingualDictEntry translationsAreNonEmptySubsetOf(
+		String[] expTranslationsSuperset) {
 		Set<String> gotTranslations = new HashSet<String>();
 		gotTranslations.addAll(entry().origWordTranslations);
-		gotTranslations.addAll(entry().relatedWordTranslations);
+		if (gotTranslations.isEmpty()) {
+			// We only include related word translations if there were no
+			// translations for the original word
+			gotTranslations.addAll(entry().relatedWordTranslations);
+		}
+		Assertions.assertTrue(gotTranslations.size() > 0,
+			"List of translations should NOT have been empty");
 		new AssertSet(gotTranslations,
 			baseMessage+"\nList of translations did not contain the expected translations")
-			.isSupersetOf(expTranslations);
+			.isSubsetOf(expTranslationsSuperset);
 
 		gotTranslations = new HashSet<String>();
 		gotTranslations.addAll(entry().examplesForOrigWordTranslation.keySet());
-		gotTranslations.addAll(entry().examplesForRelWordsTranslation.keySet());
+		if (gotTranslations.isEmpty()) {
+			// We only include examples for related word translations if there were no
+			// translations for the original word
+			gotTranslations.addAll(entry().examplesForRelWordsTranslation.keySet());
+		}
 		gotTranslations.remove("ALL");
 		new AssertSet(gotTranslations,
 			baseMessage+"\nList of keys for translation did not contain the expected translations")
-			.isSupersetOf(expTranslations);
+			.isSubsetOf(expTranslationsSuperset);
 
 		return this;
 	}

@@ -93,10 +93,18 @@ public class AssertServletResponse extends Asserter<HttpServletResponse> {
 	}
 
 	public AssertServletResponse jsonContains(String expSubstring) throws Exception {
+		return jsonContains(expSubstring, (Boolean)null);
+	}
+
+	public AssertServletResponse jsonContains(String expSubstring, Boolean isRegexp) throws Exception {
+		if (isRegexp == null) {
+			isRegexp = false;
+		}
+
 		String gotJson = servletResponse().getOutput();
 		AssertString.assertStringContains(
 			baseMessage+"\nResponse output did not contain the expected substring",
-			gotJson, expSubstring
+			gotJson, expSubstring, true, isRegexp
 		);
 		return this;
 	}

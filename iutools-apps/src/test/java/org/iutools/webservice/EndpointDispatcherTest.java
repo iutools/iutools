@@ -208,8 +208,10 @@ public class EndpointDispatcherTest {
 		String uri = "iutools/srv2/search/expandquery";
 		MockHttpServletResponse response  = doPost(uri, json);
 
+		String expRegex = "\\((inuk?s[^\\s]*( OR )?)+\\)";
+
 		new AssertServletResponse(response, ExpandQueryResult.class)
-			.jsonContains("(ᐃᓄᒃᓱᒃ OR ᐃᓄᔅᓱᒻᒥᒃ OR ᐃᓄᒃᓱᙳᐊᑦ OR ᐃᓄᒃᓱᐃ OR ᐃᓄᒃᓲᑉ OR ᐃᓄᒃᓱᒻᒥ)")
+			.jsonContains(expRegex, true)
 		;
 		return;
 	}

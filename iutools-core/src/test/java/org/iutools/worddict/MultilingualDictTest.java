@@ -23,10 +23,11 @@ public class MultilingualDictTest {
 	public void setUp() throws Exception {
 		// Cases for search() function
 		cases_search = new Case[] {
-			new Case("iu-inuk-roman", "iu", "inuk", 200,
+
+			new Case("iu-inuk-roman", "iu", "inuk", 180,
 				new String[] {"inuk", "inukku",
 					"inuksui", "inuksuk"}),
-			new Case("iu-inuk-syll", "iu", "ᐃᓄᒃ", 200,
+			new Case("iu-inuk-syll", "iu", "ᐃᓄᒃ", 180,
 				new String[] {"ᐃᓄᒃ", "ᐃᓄᒃᑯ", "ᐃᓄᑯᓗᒃ"}),
 			new Case("iu-single-hit", "iu", "nunavuttaarniq", 1,
 				new String[] {"nunavuttaarniq"}, 1),
@@ -114,7 +115,10 @@ public class MultilingualDictTest {
 				.setL1("en")
 				.setDecomp(null)
 				.setOrigWordTranslations(
-					"ᐃᓪᓗᐃᑦ", "ᐃᓪᓗᓂᒃ","ᐃᓪᓗᓕᕆᔨᒃᑯᑦ", "ᐃᓪᓗᓕᕆᔨᒃᑯᓐᓄᑦ", "ᐃᓐᓇᑐᖃᓕᕆᓂᕐᒧᑦ")
+					"ᐃᓪᓗᐃᑦ", "ᐃᓪᓗᓂᒃ","ᐃᓪᓗᓕᕆᔨᒃᑯᑦ", "ᐃᓪᓗᓕᕆᔨᒃᑯᓐᓄᑦ",
+					// This one is wrong but comes up for some reason
+					"ᐃᓐᓇᑐᖃᓕᕆᓂᕐᒧᑦ"
+				)
 				.setMinExamples(10)
 				.relatedWordsShouldBeAmong(),
 
@@ -289,7 +293,7 @@ public class MultilingualDictTest {
 
 		new RunOnCases(cases_entry4word, runner)
 //			.onlyCaseNums(4)
-//			.onlyCasesWithDescr("iu-kiugavinnga")
+//			.onlyCasesWithDescr("en-housing")
 			.run();
 	}
 

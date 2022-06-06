@@ -99,7 +99,10 @@ public class CompiledCorpus {
 	private void ensureESIndexIsDefined() throws CompiledCorpusException {
 		try {
 			if (!esFactory().indexAPI().exists()) {
-				esFactory().indexAPI().define(new IndexDef(), true);
+				IndexDef idef = new IndexDef();
+				idef.getTypeDef("*").getFieldDef("frequency").type = FieldDef.Types.integer;
+				idef.getTypeDef("*").getFieldDef("totalDecompositions").type = FieldDef.Types.integer;
+				esFactory().indexAPI().define(idef, true);
 			}
 		} catch (Exception e) {
 			throw new CompiledCorpusException(e);
@@ -663,24 +666,31 @@ public class CompiledCorpus {
 				WordInfo.insertSpaces(ngramArr) +
 				"\"";
 
+		List<RequestBodyElement> additionalRequestEltsList = new ArrayList<RequestBodyElement>();
+		additionalRequestEltsList.add(
+			new Sort().sortBy("frequency", Sort.Order.desc));
 		RequestBodyElement[] additionalRequestElts = new RequestBodyElement[0];
 		if (winfoFields == null) {
 			// If no fields are provided, just include the doc id
-			additionalRequestElts =
-				new RequestBodyElement[]{
-				new _Source("id")
-				};
+			additionalRequestEltsList.add(new _Source("id"));
 		} else {
 			// Only return the requested fields
-			additionalRequestElts =
-				new RequestBodyElement[] {
-					new _Source(winfoFields.toArray(new String[0]))
-				};
+			additionalRequestEltsList.add(
+				new _Source(winfoFields.toArray(new String[0])));
 		}
 		SearchResults<WordInfo> results =
-				esWinfoSearch(query, options, false, additionalRequestElts);
+				esWinfoSearch(query, options, false,
+					additionalRequestEltsList.toArray(new RequestBodyElement[0]));
 
 		return results;
+	}
+
+	private String replaceCaretAndDollar(String ngram) {
+		String[] ngramArr = ngram.split("");
+		ngramArr = replaceCaretAndDollar(ngramArr);
+		String modifiedNgram = String.join(" ", ngramArr);
+		modifiedNgram  = modifiedNgram.replaceAll(" +", " ");
+		return modifiedNgram;
 	}
 
 	private String[] replaceCaretAndDollar(String[] ngramArr) {
@@ -975,9 +985,11 @@ public class CompiledCorpus {
 		} catch (TransCoderException e) {
 			throw new CompiledCorpusException(e);
 		}
+		ngram = WordInfo.insertSpaces(ngram);
+		ngram = replaceCaretAndDollar(ngram);
 		String query =
 				"+wordCharsSpaceConcatenated:\""+
-						WordInfo.insertSpaces(ngram)+
+						ngram+
 						"\"";
 
 		boolean statsOnly = true;

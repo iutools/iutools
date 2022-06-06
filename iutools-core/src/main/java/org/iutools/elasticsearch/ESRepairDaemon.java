@@ -94,31 +94,31 @@ public class ESRepairDaemon implements ServletContextListener, Runnable {
 	}
 
 	public void run() {
-		String daemonName = "iutools ElasticSearch index repair daemon";
-		daemonLogger().info(daemonName + " STARTED");
-
-		try {
-			Set<String> corpora = CompiledCorpusRegistry.availableCorpora();
-			int counter = 0;
-			while (true) {
-				counter++;
-				daemonLogger().trace(daemonName + " checking indices for the "+counter+"th time");
-
-				try {
-					for (String corpusName : corpora) {
-						checkIndices4Corpus(corpusName);
-					}
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					daemonLogger().info(daemonName + " STOPPED NORMALLY");
-					break;
-				}
-			}
-		} catch (Exception e) {
-			daemonLogger().error(
-				daemonName + " CRASHED!!!\n"+
-				"Exception details:\n"+ Debug.printCallStack(e));
-		}
+//		String daemonName = "iutools ElasticSearch index repair daemon";
+//		daemonLogger().info(daemonName + " STARTED");
+//
+//		try {
+//			Set<String> corpora = CompiledCorpusRegistry.availableCorpora();
+//			int counter = 0;
+//			while (true) {
+//				counter++;
+//				daemonLogger().trace(daemonName + " checking indices for the "+counter+"th time");
+//
+//				try {
+//					for (String corpusName : corpora) {
+//						checkIndices4Corpus(corpusName);
+//					}
+//					Thread.sleep(1000);
+//				} catch (InterruptedException e) {
+//					daemonLogger().info(daemonName + " STOPPED NORMALLY");
+//					break;
+//				}
+//			}
+//		} catch (Exception e) {
+//			daemonLogger().error(
+//				daemonName + " CRASHED!!!\n"+
+//				"Exception details:\n"+ Debug.printCallStack(e));
+//		}
 	}
 
 	private Logger daemonLogger() {
