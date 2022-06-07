@@ -35,8 +35,8 @@ public class DocAlignment {
 	};
 	
 	public boolean success = false;
-	public Map<Problem,Exception> problemsEncountered = 
-		new HashMap<Problem,Exception>();
+	public Map<Problem,Throwable> problemsEncountered =
+		new HashMap<Problem,Throwable>();
 	
 	Map<String,List<String>> _pageSentences =
 		new HashMap<String,List<String>>();
@@ -256,7 +256,7 @@ public class DocAlignment {
 		raiseProblem(problem, new Exception(mess));
 	}
 	
-	public DocAlignment raiseProblem(Problem descr, Exception e) {
+	public DocAlignment raiseProblem(Problem descr, Throwable e) {
 		problemsEncountered.put(descr, e);
 		return this;
 	}
@@ -311,7 +311,7 @@ public class DocAlignment {
 
 	public String problems2str(String delimiter) {
 		String allprobs = "";
-		for (Map.Entry<Problem, Exception> aProblem:
+		for (Map.Entry<Problem, Throwable> aProblem:
 			problemsEncountered.entrySet()) {
 			allprobs += "\n   "+aProblem.getKey()+": "+
 				aProblem.getValue().getMessage();

@@ -99,8 +99,7 @@ Out-of-hansard valid IU word
 Invalid IU word that does NOT appear in the Hansard
 - Search for a word that is NOT a valid IU word
 - ex: ninuksuk
-- The dictionary should still display an entry that says:
-  -- No decomp (possibly misspelled?)
+- The dictionary should say 0 hits found
   
 Invalid IU word that DOES appear in the Hansard
 - ex: ???
@@ -109,7 +108,7 @@ Invalid IU word that DOES appear in the Hansard
 -- Lists the examples found in the Hansard
   
 Very long word
-- Search for aanniaqarnanngittulirijimmarik
+- Search for aanniaqarnanngittulirijikkunnik
 - Make sure that the word and its Syllabics transcoding are properly displayed 
 and do not overlap with the test that is supposed to be below it
 

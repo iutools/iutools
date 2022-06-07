@@ -55,7 +55,7 @@ public abstract class WebConcordancerTest {
 		// You can then check if the alignment was successful or not
 		if (!pageAligment.success) {
 			// These will provide details about what went wrong
-			Map<DocAlignment.Problem, Exception> problems = 
+			Map<DocAlignment.Problem, Throwable> problems =
 				pageAligment.problemsEncountered;
 		} else {
 			// SentencePair was successful.

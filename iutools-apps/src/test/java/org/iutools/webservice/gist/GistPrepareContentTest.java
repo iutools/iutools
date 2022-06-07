@@ -239,7 +239,7 @@ public class GistPrepareContentTest extends EndpointTest {
 			}
 		};
 		new RunOnCases(cases, runner)
-//			.onlyCaseNums(6)
+			.onlyCaseNums(5)
 			.run();
 	}
 }

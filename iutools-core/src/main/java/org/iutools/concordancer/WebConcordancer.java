@@ -267,21 +267,13 @@ public abstract class WebConcordancer {
 			List<Pair<String, String>> alignedPairs = null;
 			try {
 				alignedPairs = aligner.align(langSents.get(0), langSents.get(1));
-			} catch (AlignerException e) {
+			} catch (Throwable e) {
 				raiseProblem(DocAlignment.Problem.ALIGNING_SENTENCES, docAlignment, e);
 			}
 
 			List<SentencePair> alignments = docAlignment.getAligments(pageSection);
-
-			alignments = new ArrayList<SentencePair>();
-			for (Pair<String,String> aPair: alignedPairs) {
-				SentencePair anAlignment =
-					new SentencePair(
-						langs.get(0), aPair.getFirst(),
-						langs.get(1), aPair.getSecond());
-				docAlignment.addAlignment(pageSection, anAlignment);
-			}
 		}
+		return;
 	}
 
 	private List<String> segmentText(String lang, String text) {
@@ -536,7 +528,7 @@ public abstract class WebConcordancer {
 	}
 
 	private void raiseProblem(DocAlignment.Problem descr, DocAlignment alignment, 
-		Exception e) {
+		Throwable e) {
 		alignment.raiseProblem(descr, e);
 	}
 
