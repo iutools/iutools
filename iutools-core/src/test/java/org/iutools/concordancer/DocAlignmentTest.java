@@ -97,19 +97,19 @@ public class DocAlignmentTest {
 		// sentences
 		docAl
 			.setPageSentences("en",
-			"LexiconsRus", "Hello world.", "Good morning.")
+				"LexiconsRus", "Hello world.", "Good morning.")
 			.setPageMainSentences("en",
-			"Hello world.", "Good morning.")
+				"Hello world.", "Good morning.")
 
 			.setPageSentences("fr",
-			"LexiconsRus", "Bonjour le monde.", "Bonjour.")
+				"LexiconsRus", "Bonjour le monde.", "Bonjour.")
 			.setPageMainSentences("fr",
-			"Bonjour le monde.", "Bonjour.")
+				"Bonjour le monde.", "Bonjour.")
 
 			.setPageSentences("fr",
-			"LexiconsRus", "ai nunavut, ulaakut.")
+				"LexiconsRus", "ai nunavut, ulaakut.")
 			.setPageMainSentences("fr",
-			"ai nunavut, ulaakut.")
+				"ai nunavut, ulaakut.")
 			;
 
 		// At this point, you can obtain the sentences in the various languages

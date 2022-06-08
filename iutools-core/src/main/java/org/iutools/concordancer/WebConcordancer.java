@@ -6,7 +6,6 @@ import java.net.URL;
 import java.util.*;
 
 import ca.nrc.data.harvesting.*;
-import ca.nrc.json.PrettyPrinter;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 
@@ -119,9 +118,8 @@ public abstract class WebConcordancer {
 		
 		alignment.success = !alignment.encounteredSomeProblems();
 
-		if (tLogger.isTraceEnabled()) {
-			tLogger.trace("Upon exit, alignment=\n"+ PrettyPrinter.print(alignment));
-		}
+		tLogger.trace("Upon exit, # aligned sentences="+alignment.getAligments().size());
+
 
 		return alignment;
 	}
@@ -238,8 +236,11 @@ public abstract class WebConcordancer {
 		alignOneText(DocAlignment.PageSection.MAIN, docAlignment);
 	}
 
-	private void alignOneText(DocAlignment.PageSection pageSection, DocAlignment docAlignment) throws WebConcordancerException {
+	private void alignOneText(
+		DocAlignment.PageSection pageSection, DocAlignment docAlignment) throws WebConcordancerException {
 		Logger tLogger = Logger.getLogger("org.iutools.concordancer.alignOneText");
+
+		tLogger.trace("Invoked with pageSection="+pageSection);
 
 		if (docAlignment.hasTextForBothLanguages(pageSection)) {
 			Map<String,String> text4lang = null;
@@ -265,15 +266,83 @@ public abstract class WebConcordancer {
 			}
 
 			List<Pair<String, String>> alignedPairs = null;
+			boolean malignaFailed = false;
 			try {
 				alignedPairs = aligner.align(langSents.get(0), langSents.get(1));
 			} catch (Throwable e) {
-				raiseProblem(DocAlignment.Problem.ALIGNING_SENTENCES, docAlignment, e);
+				tLogger.trace("Maligna raised an exception");
+				malignaFailed = true;
+			}
+			if (!malignaFailed && alignedPairs.isEmpty()) {
+				// Maligna sometimes returns empty alignments even though it
+				// shouldn't have
+				tLogger.trace("Maligna returned empty alignments");
+				if (!langSents.get(0).isEmpty() && !langSents.get(1).isEmpty()) {
+					tLogger.trace("Maligna returned empty alignments EVENTHOUGH neither of the two languages had an empty list of sentences");
+					malignaFailed = true;
+				}
+			}
+			if (malignaFailed) {
+				// Maligna didn't work. Just do a "naive" alignment, i.e.
+				// 1-1, 2-2, 3-3, etc...
+				tLogger.trace("Maligna did not work. Generating 'naive' alignments");
+				alignedPairs = naiveAlignments(langSents.get(0), langSents.get(1));
+			} else {
+				tLogger.trace("Maligna SUCCEDED");
 			}
 
-			List<SentencePair> alignments = docAlignment.getAligments(pageSection);
+			List<SentencePair> alignments = new ArrayList<SentencePair>();
+			for (Pair<String, String> pair: alignedPairs) {
+				SentencePair sentPair =
+					new SentencePair(
+						langs.get(0), pair.getFirst(),
+						langs.get(1), pair.getSecond());
+				alignments.add(sentPair);
+			}
+
+			for (SentencePair anAlignment: alignments) {
+				docAlignment.addAlignment(pageSection, anAlignment);
+			}
 		}
+
+		tLogger.trace("Upon exit, total # sentence alignments="+docAlignment.getAligments(pageSection).size());
+
 		return;
+	}
+
+	private List<Pair<String, String>> naiveAlignments(List<String> l1Sents, List<String> l2Sents) {
+		List<Pair<String,String>> alignments = new ArrayList<Pair<String,String>>();
+		int minNumSents = Math.min(l1Sents.size(), l2Sents.size());
+		int maxNumSents = Math.max(l1Sents.size(), l2Sents.size());
+		for (int ii=0; ii < minNumSents; ii++) {
+			String l1Sent = "";
+			if (ii < l1Sents.size()) {
+				l1Sent = l1Sents.get(ii);
+			}
+			String l2Sent = "";
+			if (ii < l2Sents.size()) {
+				l2Sent = l2Sents.get(ii);
+			}
+			alignments.add(Pair.of(l1Sent, l2Sent));
+		}
+
+		// If the two lists of sentences don't have the same length, pair the
+		// last sentence of the shortlist to the remaining sentences in the longer
+		// list.
+		String lastL1Sent = "";
+		if (l1Sents.size() > minNumSents) {
+			for (int ii = minNumSents; ii < l1Sents.size(); ii++) {
+				lastL1Sent += "\n" + l1Sents.get(ii);
+			}
+		}
+		String lastL2Sent = "";
+		if (l2Sents.size() > minNumSents) {
+			for (int ii = minNumSents; ii < l2Sents.size(); ii++) {
+				lastL2Sent += "\n" + l2Sents.get(ii);
+			}
+		}
+		alignments.add(Pair.of(lastL1Sent, lastL2Sent));
+		return alignments;
 	}
 
 	private List<String> segmentText(String lang, String text) {
@@ -321,6 +390,7 @@ public abstract class WebConcordancer {
 
 	protected void harvestOtherLangPage(DocAlignment alignment)
 		throws WebConcordancerException {
+		Logger logger = Logger.getLogger("org.iutools.concordancer.WebConcordancer.harvestOtherLangPage");
 		if (alignment.encounteredSomeProblems()) {
 			return;
 		}
@@ -335,6 +405,8 @@ public abstract class WebConcordancer {
 			status =
 				harvestOtherLangPage_ByFollowingLanguageLink(alignment,
 						lang, otherLang);
+
+			logger.trace("After fetching other language page: status="+status);
 
 			if (status == null || status == StepOutcome.FAILURE || 
 					status == StepOutcome.KEEP_TRYING) {
@@ -352,6 +424,7 @@ public abstract class WebConcordancer {
 						segmentText(otherLang, alignment.getPageText(otherLang));
 				}
 				alignment.setPageSentences(otherLang, sentences);
+				logger.trace("#sentences="+sentences.size());
 			}
 		}
 		
@@ -480,6 +553,7 @@ public abstract class WebConcordancer {
 				try {
 					alignment.setPageText(urlLang, urlWholeText);
 					List<String> sentences = segmentText(urlLang, urlWholeText);
+					tLogger.trace("#sentences="+sentences.size());
 					alignment.setPageSentences(urlLang, sentences);
 
 				} catch (DocAlignmentException e) {

@@ -59,7 +59,7 @@ public class AssertGistWordResult extends AssertEndpointResult  {
 	}
 
 	public AssertGistWordResult mostAlignmentsContains(String lang, double tolerance,
-																		String... expressions) {
+		String... expressions) {
 		SentencePair[] alignments = result().alignments;
 		int totalAlignments = alignments.length;
 		List<SentencePair> faultyAlignments = new ArrayList<SentencePair>();

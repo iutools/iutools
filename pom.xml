@@ -6,7 +6,7 @@
  	<artifactId>iutools-parent</artifactId>
 	<packaging>pom</packaging>
  
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	
 	<properties>
 		<!-- We deploy modules, but not the parent -->
@@ -181,19 +181,19 @@
 		<dependency>
 			<groupId>ca.nrc.java-utils</groupId>
 		    <artifactId>java-utils-core</artifactId>
-		    <version>1.1.0</version>
+		    <version>1.1.1</version>
 		</dependency>
 	 
 		<dependency>
 			<groupId>ca.nrc.java-utils</groupId>
 		    <artifactId>java-utils-data</artifactId>
-		    <version>1.1.0</version>
+		    <version>1.1.1</version>
 		</dependency>
 	 
 		<dependency>
 			<groupId>ca.nrc.java-utils</groupId>
 		    <artifactId>java-utils-ui</artifactId>
-		    <version>1.1.0</version>
+		    <version>1.1.1</version>
 		</dependency>
 
 		<dependency>

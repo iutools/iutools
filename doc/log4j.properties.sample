@@ -1,0 +1,51 @@
+## To log on both stdout and FILE
+log4j.rootLogger=warn, FILE, stdout
+
+# To log only on FILE
+#log4j.rootLogger=warn, FILE
+
+############################################
+# Activate traces here
+############################################
+
+# For example:
+log4j.logger.org.iutools.worddict.MultilingualDict.onNewSentencePair
+
+
+##############################################
+#         Console Log
+##############################################
+
+log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+
+# Use this format by default
+log4j.appender.stdout.layout.ConversionPattern =-- %c{2}: %m%n
+
+# Use this format if you want to see the time at which the trace was printed
+#log4j.appender.stdout.layout.ConversionPattern =-- %c{2}@%d{HH:mm:ss,SSS}: %m%n
+
+# Use this format if you want to see the time at which the trace was printed
+#  as well as the name of the thread
+#log4j.appender.stdout.layout.ConversionPattern =-- %c{2}@%d{HH:mm:ss,SSS}(thr=%t): %m%n
+
+##############################################
+#         File Log
+##############################################
+
+log4j.appender.FILE=org.apache.log4j.FileAppender
+log4j.appender.FILE.File=/path/to/your/log/file.log
+log4j.appender.FILE.append=true
+log4j.appender.FILE.layout=org.apache.log4j.PatternLayout
+
+
+# Use this format by default
+#log4j.appender.FILE.layout.ConversionPattern =-- %c{2}: %m%n
+
+# Use this format if you want to see the time at which the trace was printed
+#log4j.appender.FILE.layout.ConversionPattern =-- %c{2}@%d{HH:mm:ss,SSS}: %m%n
+
+# Use this format if you want to see the time at which the trace was printed
+#  as well as the name of the thread
+log4j.appender.FILE.layout.ConversionPattern =-- %c{2}@%d{HH:mm:ss,SSS}(thr=%t): %m%n
+

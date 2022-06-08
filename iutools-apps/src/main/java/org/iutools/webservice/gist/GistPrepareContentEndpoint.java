@@ -65,7 +65,9 @@ public class GistPrepareContentEndpoint
 	}
 
 	private void doPrepareURL(GistPrepareContentInputs inputs,
-									  GistPrepareContentResult response) throws ServiceException {
+		GistPrepareContentResult response) throws ServiceException {
+
+		Logger logger = Logger.getLogger("org.iutools.webservice.gist.GistPrepareEndpoint.doPrepareURL");
 
 		response.wasActualText = false;
 		WebConcordancer concordancer =
@@ -81,6 +83,11 @@ public class GistPrepareContentEndpoint
 		} catch (MalformedURLException | WebConcordancerException e) {
 			throw new ServiceException(e);
 		}
+
+		if (logger.isTraceEnabled()) {
+			logger.trace("Upon exit, response="+new PrettyPrinter().print(response));
+		}
+		return;
 	}
 
 	private void addAlignment(SentencePair anAlignment,

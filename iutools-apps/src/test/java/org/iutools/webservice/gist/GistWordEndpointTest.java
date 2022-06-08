@@ -22,8 +22,10 @@ public class GistWordEndpointTest extends EndpointTest {
 
 		new AssertGistWordResult(epResult)
 			.gistMorphemesEqual(new String[] {"inuksuk"})
-			.mostAlignmentsContains("iu", 0.02, "inuksuk")
-			.mostAlignmentsContains("en", 0.02, "innusuk", "Innuksuk")
+			.mostAlignmentsContains("iu", 0.02, "inuksuk", "ᐃᓄᒃᓱᒃ")
+			.mostAlignmentsContains("en", 0.02, "innusuk", "Innuksuk",
+				"inuksuk", "innuksuk", "Innuksuk", "inukshuk", "innukshuk",
+				"inuksuit")
 			;
 
 		return;
@@ -36,8 +38,10 @@ public class GistWordEndpointTest extends EndpointTest {
 
 		new AssertGistWordResult(epResult)
 			.gistMorphemesEqual(new String[] {"inuksuk"})
-			.mostAlignmentsContains("iu", 0.02, "inuksuk")
-			.mostAlignmentsContains("en", 0.02, "innuksuk", "Innuksuk")
+			.mostAlignmentsContains("iu", 0.02, "inuksuk", "ᐃᓄᒃᓱᒃ")
+			.mostAlignmentsContains("en", 0.02,
+				"inuksuk", "innuksuk", "Innuksuk", "inukshuk", "innukshuk",
+				"inuksuit")
 			;
 
 		return;

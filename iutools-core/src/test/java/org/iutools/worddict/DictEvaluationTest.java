@@ -76,19 +76,19 @@ public class DictEvaluationTest {
 			.totalSingleWordIUEntries(465)
 
 			.totalIUPresent(WhatTerm.ORIGINAL, 185)
-			.totalIUPresent(WhatTerm.RELATED, 77)
+			.totalIUPresent(WhatTerm.RELATED, 76)
 
 			.totalENSpotted(MatchType.STRICT, 87)
-			.totalENSpotted(MatchType.LENIENT, 4)
-			.totalENSpotted(MatchType.LENIENT_OVERLAP, 5)
+			.totalENSpotted(MatchType.LENIENT, 7)
+			.totalENSpotted(MatchType.LENIENT_OVERLAP, 10)
 
 			.totalENSpotted_atLeastInSense(MatchType.STRICT, 87)
-			.totalENSpotted_atLeastInSense(MatchType.LENIENT, 91)
-			.totalENSpotted_atLeastInSense(MatchType.LENIENT_OVERLAP, 96)
+			.totalENSpotted_atLeastInSense(MatchType.LENIENT, 94)
+			.totalENSpotted_atLeastInSense(MatchType.LENIENT_OVERLAP, 104)
 
 			.rateENSpotted(MatchType.STRICT, 0.334)
-			.rateENSpotted(MatchType.LENIENT, 0.350)
-			.rateENSpotted(MatchType.LENIENT_OVERLAP, 0.369)
+			.rateENSpotted(MatchType.LENIENT, 0.360)
+			.rateENSpotted(MatchType.LENIENT_OVERLAP, 0.400)
 			;
 	}
 }

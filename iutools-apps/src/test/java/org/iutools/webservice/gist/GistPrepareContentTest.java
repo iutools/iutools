@@ -61,8 +61,8 @@ public class GistPrepareContentTest extends EndpointTest {
 			.containsIUSentenceStartingWith("sivuliqti nunavummi")
 			.containsAlignment(
 				new SentencePair(
-					"iu", "nunavut gavamanga",
-					"en", "Government of Nunavut"))
+					"iu", "nunavut gavamanga\n",
+					"en", "Government of Nunavut\n"))
 		;
 	}
 
@@ -102,8 +102,8 @@ public class GistPrepareContentTest extends EndpointTest {
 			.inputWasActualContent(false)
 			.containsAlignment(
 				new SentencePair(
-					"iu", "nunavut gavamanga",
-				"en", "Government of Nunavut"))
+					"iu", "nunavut gavamanga\n",
+				"en", "Government of Nunavut\n"))
 		;
 	}
 
@@ -208,6 +208,7 @@ public class GistPrepareContentTest extends EndpointTest {
 
 		Consumer<Case> runner = (aCase) -> {
 			String textOrUrl = (String)aCase.data[0];
+
 			Script requestedScript = (Script)aCase.data[1];
 			String[]expIUSentences = (String[])aCase.data[2];
 			String inputType = (String)aCase.data[3];
@@ -239,7 +240,7 @@ public class GistPrepareContentTest extends EndpointTest {
 			}
 		};
 		new RunOnCases(cases, runner)
-			.onlyCaseNums(5)
+//			.onlyCaseNums(6)
 			.run();
 	}
 }

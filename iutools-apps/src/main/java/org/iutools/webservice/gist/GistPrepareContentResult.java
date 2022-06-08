@@ -134,6 +134,8 @@ public class GistPrepareContentResult extends EndpointResult {
 	 */
 
 	private void fillFromSuccessfulAlignment(DocAlignment docAlignment) {
+		Logger logger = Logger.getLogger("org.iutools.webservice.gist.GistPrepareContentResult.fillFromSuccessfulAlignment");
+		logger.trace("# aligned sentences="+docAlignment.getAligments().size());
 		iuSentences = new ArrayList<String[]>();
 		enSentences = new ArrayList<String[]>();
 		IUTokenizer iuTokenizer = new IUTokenizer();

@@ -65,7 +65,10 @@ class GistTextController extends IUToolsController {
 	}
 	
 	displayTextGist(response) {
-		var iuSentences = response.iuSentences;
+        var tracer = Debug.getTraceLogger('GistTextController.displayTextGist');
+        tracer.trace("response="+JSON.stringify(response));
+
+        var iuSentences = response.iuSentences;
 		if (iuSentences == null || iuSentences.length == 0) {
 		    this.error("The requested page is not in Inuktitut and it does not provide a link to its Inuktitut translation");
         } else {

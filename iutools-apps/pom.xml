@@ -4,7 +4,7 @@
   <parent>
 	  	<groupId>org.iutools</groupId>
         <artifactId>iutools-parent</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </parent>
 
   <artifactId>iutools-apps</artifactId>
@@ -115,7 +115,7 @@
 		<dependency>
 			<groupId>org.iutools</groupId>
 			<artifactId>iutools-core</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1</version>
 		</dependency>
 
 		<dependency>

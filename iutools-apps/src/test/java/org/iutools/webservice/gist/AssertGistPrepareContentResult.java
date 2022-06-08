@@ -1,5 +1,6 @@
 package org.iutools.webservice.gist;
 
+import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.StringUtils;
 import ca.nrc.testing.AssertCollection;
 import ca.nrc.testing.AssertObject;
@@ -94,11 +95,14 @@ public class AssertGistPrepareContentResult extends AssertEndpointResult {
 		}
 		if (gotLangSents != null) {
 			for (String[] aSent : gotLangSents) {
-				gotSents.add(String.join("", aSent));
+				String aSentStr = String.join("", aSent);
+				aSentStr = aSentStr.replaceAll("\n$", "");
+				gotSents.add(aSentStr);
 			}
 		}
+
 		AssertCollection.assertContainsAll(
-			baseMessage+"English sentences did not contain the expected items",
+			baseMessage+"\n"+lang+" sentences did not contain the expected items",
 			expSents, gotSents);
 		return this;
 	}

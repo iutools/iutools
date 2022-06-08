@@ -214,7 +214,8 @@ public abstract class WebConcordancerTest {
 
 		DocAlignmentAsserter.assertThat(pageAligment, "SentencePair results for "+url+" were not as expected.")
 			.didNotEncounterProblems()
-			.providesValuesFor(WebConcordancer.AlignOptions.MAIN_TEXT, WebConcordancer.AlignOptions.ALIGNED_SENTENCES)
+			.providesValuesFor(WebConcordancer.AlignOptions.MAIN_TEXT,
+				WebConcordancer.AlignOptions.ALIGNED_SENTENCES)
 			.doesNotProvideValuesFor(
 				WebConcordancer.AlignOptions.HTML, WebConcordancer.AlignOptions.ALL_TEXT)
 			.pageTextIsNotHtml()

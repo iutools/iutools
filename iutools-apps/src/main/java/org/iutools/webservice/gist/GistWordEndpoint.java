@@ -75,7 +75,6 @@ public class GistWordEndpoint extends Endpoint<GistWordInputs, GistWordResult> {
 				Alignment_ES algES = alignmentResults.get(ii);
 				aligns[ii] = esResult2alignment(algES);
 			}
-
 		} catch (TranslationMemoryException | TransCoderException e) {
 			throw new ServiceException(e);
 		}

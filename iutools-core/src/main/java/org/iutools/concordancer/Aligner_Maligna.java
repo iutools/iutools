@@ -21,6 +21,8 @@ import net.loomchild.maligna.ui.console.command.AlignCommand;
 import net.loomchild.maligna.ui.console.command.FormatCommand;
 import net.loomchild.maligna.ui.console.command.ModifyCommand;
 import net.loomchild.maligna.ui.console.command.ParseCommand;
+import org.apache.log4j.Logger;
+
 
 public class Aligner_Maligna {
 
@@ -29,15 +31,20 @@ public class Aligner_Maligna {
 	int currOrigLine = 0;
 
 	public List<Pair<String,String>> align(List<String> l1Sents, 
-				List<String> l2Sents) throws AlignerException {
+		List<String> l2Sents) throws AlignerException {
 
 		String[] l1SentsArr = l1Sents.toArray(new String[l1Sents.size()]);
 		String[] l2SentsArr = l2Sents.toArray(new String[l2Sents.size()]);
-		return align(l1SentsArr, l2SentsArr);
+		List<Pair<String, String>> alignments = align(l1SentsArr, l2SentsArr);
+
+		return alignments;
 	}
 
 	
 	public List<Pair<String,String>> align(String[] l1Sents, String[] l2Sents) throws AlignerException {
+
+		Logger logger = Logger.getLogger("org.iutools.concordancer.Aligner_Maligna.align");
+		logger.trace("#l1 sents="+l1Sents.length+", #l2 sents="+l2Sents.length);
 		List<Pair<String,String>> alignments 
 				= new ArrayList<Pair<String,String>>();
 		
@@ -47,14 +54,15 @@ public class Aligner_Maligna {
 		writeSentences(l2Sents, l2SentencesFile(tempDir));
 		
 		run(l1SentencesFile(tempDir), l2SentencesFile(tempDir));
-		
+
 		List<String> l1AlignedSents = readAlignments(l1SentencesFile(tempDir));
 		List<String> l2AlignedSents = readAlignments(l2SentencesFile(tempDir));
-		
-		for (int ii=0; ii < l1AlignedSents.size(); ii++) {
+
+		for (int ii = 0; ii < l1AlignedSents.size(); ii++) {
 			alignments.add(Pair.of(l1AlignedSents.get(ii), l2AlignedSents.get(ii)));
 		}
-		
+
+		logger.trace("Upon exit, #alignments="+alignments.size());
 		return alignments;
 	}
 	
@@ -134,8 +142,7 @@ public class Aligner_Maligna {
 		String[] args = new String[] {"-c", "txt", l1SentsFile, l2SentsFile};
 		echoCommand(args);
 		command.run(args);
-		
-		
+
 		InputStream input = pipeToInputStream(bOStream);
 		bOStream = new ByteArrayOutputStream();
 		output = new PrintStream(bOStream);
