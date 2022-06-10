@@ -2,12 +2,15 @@ package org.iutools.worddict;
 
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.StringUtils;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 import org.iutools.linguisticdata.LinguisticData;
 import org.iutools.linguisticdata.Morpheme;
 import org.iutools.linguisticdata.MorphemeException;
 import org.iutools.linguisticdata.MorphemeHumanReadableDescr;
+import org.iutools.morph.Decomposition;
+import org.iutools.morph.DecompositionException;
 import org.iutools.script.CollectionTranscoder;
 import org.iutools.script.TransCoder;
 import org.iutools.script.TransCoderException;
@@ -114,23 +117,37 @@ public class MultilingualDictEntry {
 		TransCoder.ensureRoman(_word);
 	}
 
-	public void setDecomp(String[] morphemes) throws MultilingualDictException {
-		if (morphemes != null) {
-			morphDecomp = new ArrayList<MorphemeHumanReadableDescr>();
-			for (String morpheme : morphemes) {
-				Morpheme morphInfo = LinguisticData.getInstance().getMorpheme(morpheme);
-				if (morphInfo == null) {
-					continue;
-				}
-				try {
-					morphDecomp.add(
-					new MorphemeHumanReadableDescr(
+	public MultilingualDictEntry setDecomp(String[] morphemes) throws MultilingualDictException {
+		try {
+			if (morphemes != null) {
+				morphDecomp = new ArrayList<MorphemeHumanReadableDescr>();
+				for (String morpheme : morphemes) {
+					String morphID = Decomposition.parseComponent(morpheme, true).getRight();
+					Morpheme morphInfo = LinguisticData.getInstance().getMorpheme(morphID);
+					if (morphInfo == null) {
+						continue;
+					}
+					try {
+						morphDecomp.add(
+						new MorphemeHumanReadableDescr(
 						morphInfo.id, morphInfo.englishMeaning));
-				} catch (MorphemeException e) {
-					throw new MultilingualDictException(e);
+					} catch (MorphemeException e) {
+						throw new MultilingualDictException(e);
+					}
 				}
 			}
+		} catch (DecompositionException e) {
+			throw new MultilingualDictException(e);
 		}
+		return this;
+	}
+
+	public List<String> decomposition() {
+		List<String> decomp = new ArrayList<String>();
+		for (MorphemeHumanReadableDescr morph: morphDecomp) {
+			decomp.add(morph.id);
+		}
+		return decomp;
 	}
 
 	public MultilingualDictEntry addBilingualExample(
@@ -493,6 +510,31 @@ public class MultilingualDictEntry {
 		}
 
 		return alignment;
+	}
+
+	@JsonIgnore
+	public boolean isMisspelled() {
+		boolean misspelled = true;
+		if (morphDecomp != null && !morphDecomp.isEmpty()) {
+			misspelled = false;
+		}
+		return misspelled;
+	}
+
+	boolean isEmpty() {
+		boolean empty = true;
+		if (
+			(!isMisspelled())  |
+			(examplesForOrigWordTranslation != null && !examplesForOrigWordTranslation.isEmpty()) |
+			(examplesForRelWordsTranslation!= null && !examplesForRelWordsTranslation.isEmpty()) |
+			(origWordTranslations != null && !origWordTranslations.isEmpty()) |
+			(relatedWordTranslations != null && !relatedWordTranslations.isEmpty()) |
+			(relatedWords != null && relatedWords.length > 0) |
+			definition != null) {
+			empty = false;
+		}
+
+		return empty;
 	}
 
 }

@@ -10,7 +10,7 @@ public class ServiceException extends Exception {
 		super(mess, e);
 	}
 
-	public ServiceException(Exception e) {
+	public ServiceException(Throwable e) {
 		super(e);
 	}
 

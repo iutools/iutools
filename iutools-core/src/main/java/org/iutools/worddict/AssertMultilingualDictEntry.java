@@ -42,6 +42,12 @@ public class AssertMultilingualDictEntry extends Asserter<MultilingualDictEntry>
 		return this;
 	}
 
+
+	public AssertMultilingualDictEntry gaveEmptyWordEntry() {
+		Assertions.assertTrue(entry().isEmpty());
+		return this;
+	}
+
 	public AssertMultilingualDictEntry definitionEquals(String expDef) {
 		AssertString.assertStringEquals(expDef, entry().definition);
 		return this;

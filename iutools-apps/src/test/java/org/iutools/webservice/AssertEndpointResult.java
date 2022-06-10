@@ -63,16 +63,29 @@ public abstract class AssertEndpointResult extends Asserter<EndpointResult> {
 	}
 
 	public AssertEndpointResult foundAtLeastNWords(Integer expMinHits) {
-		Integer gotTotalHits = wordDictResult().matchingWords.size();
-		if (expMinHits == 0) {
-			AssertNumber.assertEquals(
-				baseMessage+"\nSearch should NOT have produced any hits",
+		if (expMinHits != null) {
+			Integer gotTotalHits = wordDictResult().matchingWords.size();
+			if (expMinHits == 0) {
+				AssertNumber.assertEquals(
+				baseMessage + "\nSearch should NOT have produced any hits",
 				0, gotTotalHits, 0.0);
-		} else {
-			AssertNumber.isGreaterOrEqualTo(
-			baseMessage + "Total number of words found was too small",
-			expMinHits, gotTotalHits
-			);
+			} else {
+				AssertNumber.isGreaterOrEqualTo(
+				baseMessage + "Total number of words found was too small",
+				expMinHits, gotTotalHits
+				);
+			}
+		}
+
+		return this;
+	}
+
+	public AssertEndpointResult foundAtMostNWords(Integer expMaxHits) {
+		if (expMaxHits != null) {
+			Integer gotTotalHits = wordDictResult().matchingWords.size();
+			AssertNumber.isLessOrEqualTo(
+				baseMessage + "Total number of words found was too large",
+				gotTotalHits, expMaxHits);
 		}
 
 		return this;

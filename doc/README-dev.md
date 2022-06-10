@@ -36,11 +36,6 @@ Note that in general, the iutools traces are named after the class and method
 that print them. This makes it easy to exert control over traces on a method by 
 method level.    
 
-
-
-    
-
-
 ### Debugging the JavaScript code
 
 The javascript code in IUTools includes many useful traces that can be activated. 

@@ -75,6 +75,8 @@ class WordEntryController extends IUToolsController {
 	}
 	
 	failureWordDictCallback(resp) {
+		var tracer = Debug.getTraceLogger('WordEntryController.failureWordDictCallback');
+		tracer.trace("resp="+jsonStringifySafe(resp));
 		if (! resp.hasOwnProperty("errorMessage")) {
 			// Error condition comes from tomcat itself, not from our servlet
 			resp.errorMessage = 
@@ -119,20 +121,23 @@ class WordEntryController extends IUToolsController {
             word = wordEntry.word; wordInOtherScript = wordEntry.wordInOtherScript;
         }
 		this.displayWordBeingLookedUp(word, wordInOtherScript);
-		if (wordEntry != null) {
-                var html =
-                    "<div id='div-info' class='div-info' align='right'>\n"+
-                    "  <a href='help.jsp?topic=about_dictionary' target='#iutools_help'>\n"+
-                    "</div>";
+        var html = null;
+        if (wordEntry == null) {
+            html = "No entry found for this word";
+        } else {
+            html =
+                "<div id='div-info' class='div-info' align='right'>\n" +
+                "  <a href='help.jsp?topic=about_dictionary' target='#iutools_help'>\n" +
+                "</div>";
 
             html += this.htmlTranslations(wordEntry, otherLang);
             html += this.htmlRelatedWords(wordEntry, lang);
             html = this.htmlMorphologicalAnalyses(wordEntry, lang, html);
-            html +=  this.htmlAlignmentsByTranslation(wordEntry, lang, otherLang);
-            this.windowController.setBody(html);
-            this.attachWordLookupListeners();
-            this.enableAccordions();
+            html += this.htmlAlignmentsByTranslation(wordEntry, lang, otherLang);
         }
+        this.windowController.setBody(html);
+        this.attachWordLookupListeners();
+        this.enableAccordions();
     }
 
     htmlTranslations(wordEntry, otherLang) {

@@ -72,7 +72,7 @@ public class WordDictEndpointTest extends EndpointTest {
 		// There is only one word in the dictionary that matches this
 		// pattern
 		String query = "inuksuk";
-		WordDictInputs inputs = new WordDictInputs(query);
+		WordDictInputs inputs = new WordDictInputs(query).setExactWordLookup(false);
 
 		WordDictResult epResult = (WordDictResult) endPoint.executeThenConvert(inputs);
 
@@ -103,7 +103,9 @@ public class WordDictEndpointTest extends EndpointTest {
 		// There are several words that match this
 		// pattern
 		String query = "inuk";
-		WordDictInputs inputs = new WordDictInputs(query);
+		WordDictInputs inputs =
+			new WordDictInputs(query)
+			.setExactWordLookup(false);
 		WordDictResult epResult = (WordDictResult) endPoint.executeThenConvert(inputs);
 
 		new AssertWordDictResult(epResult)
@@ -113,7 +115,7 @@ public class WordDictEndpointTest extends EndpointTest {
 		new AssertMultilingualDictEntry(epResult.queryWordEntry)
 			.isForWord("inuk")
 			.definitionEquals(null)
-			.decompositionIs()
+			.decompositionIs("inuk/1n")
 			.atLeastNExamples(10)
 			.highlightsAreSubsetOf("en",
 					// These are English translations of the proper name "Inuk"
@@ -143,7 +145,7 @@ public class WordDictEndpointTest extends EndpointTest {
 		// There are several words that match this
 		// pattern
 		String query = "inuk";
-		WordDictInputs inputs = new WordDictInputs(query);
+		WordDictInputs inputs = new WordDictInputs(query).setExactWordLookup(false);
 		inputs.iuAlphabet = TransCoder.Script.SYLLABIC;
 		WordDictResult epResult = (WordDictResult) endPoint.executeThenConvert(inputs);
 
@@ -154,7 +156,7 @@ public class WordDictEndpointTest extends EndpointTest {
 		new AssertMultilingualDictEntry(epResult.queryWordEntry)
 			.isForWord("ᐃᓄᒃ")
 			.definitionEquals(null)
-			.decompositionIs()
+			.decompositionIs("inuk/1n")
 			.atLeastNExamples(10)
 			.highlightsAreSubsetOf("en",
 				"innuksuk", "inukshuk", "inuksuk",
@@ -173,7 +175,7 @@ public class WordDictEndpointTest extends EndpointTest {
 	@Test
 	public void test__WordDictEndpoint__EnglishInputWord() throws Exception {
 		String query = "housing";
-		WordDictInputs inputs = new WordDictInputs(query, "en");
+		WordDictInputs inputs = new WordDictInputs(query, "en").setExactWordLookup(false);
 		WordDictResult epResult = (WordDictResult) endPoint.executeThenConvert(inputs);
 
 		new AssertWordDictResult(epResult)
@@ -196,182 +198,205 @@ public class WordDictEndpointTest extends EndpointTest {
 	@Test
 	public void test__WordDictEndpoint__VariousCases() throws Exception {
 
-		Case[] cases = new Case[]{
-			new Case("iu-igluga",
-				// Query language
-				"iu",
-				// Query word
-				"igluga",
-				// Output alphabet (null means leave as is)
-				null,
-				// Expected min matching words
-				10,
-				// Expected words found
-				new String[] {"igluga", "iglugalait"},
-				// Expected Decomposition for query word.
-				// Set to empty array for an English query word because English words are never
-				// decomposed.
-				new String[] {"iglu/1n", "ga/tn-nom-s-1s"},
-				// Expected related words
-				new String[] {
-					"illuit", "illulirinirmut", "illumut", "illunik", "illunut",
-					"igluqaqtittinirmut", "illulirinirmi", "illuliriniup",
-					"illunginnu", "illungit"},
-				// Expected translations
-				new String[]{"house", "home", "rent"},
-				// Expected min total bilingual examples (for both orig and related words)
-				1000
-			),
+		WordDictEndpointCase[] cases = new WordDictEndpointCase[]{
 
-			new Case("en-housing",
-				"en", "housing", null, 10,
-				new String[] {"housing"},
-				new String[0],
-				new String[0],
-				new String[]{
+		// This word is out-of-corpus and is not valid.
+		// When searching for that exact word, we expect an entry that does not
+		// have any information in it.
+			new WordDictEndpointCase("iu-EXACT_WORD-out_of_corpus_invalid_word-")
+				.query("ninuksuk")
+				.exactWordLookup()
+				.queryLang("iu")
+				.givesEmptyWordEntry(),
+
+			new WordDictEndpointCase("iu-EXACT_WORD-igluga")
+				.queryLang("iu")
+				.query("igluga")
+				.exactWordLookup()
+				.decomp(new String[] {"iglu/1n", "ga/tn-nom-s-1s"})
+				.relatedWordsIncludedIn(
+					new String[] {
+						"illuit", "illulirinirmut", "illumut", "illunik", "illunut",
+						"igluqaqtittinirmut", "illulirinirmi", "illuliriniup",
+						"illunginnu", "illungit"})
+				.translationsIncludedIn(
+					new String[]{"house", "home", "rent"})
+				.minExamples(1000),
+
+			new WordDictEndpointCase("iu-SEARCH-igluga")
+				.queryLang("iu")
+				.query("igluga")
+				.minHits(10)
+				.hitListStartsWithWords(new String[] {"igluga", "iglugalait"})
+				.decomp(new String[] {"iglu/1n", "ga/tn-nom-s-1s"})
+				.relatedWordsIncludedIn(
+					new String[] {
+						"illuit", "illulirinirmut", "illumut", "illunik", "illunut",
+						"igluqaqtittinirmut", "illulirinirmi", "illuliriniup",
+						"illunginnu", "illungit"})
+				.translationsIncludedIn(new String[]{"house", "home", "rent"})
+				.minExamples(1000),
+
+			new WordDictEndpointCase("en-SEARCH-housing")
+				.queryLang("en")
+				.query("housing")
+				.iuAlphabet(TransCoder.Script.SYLLABIC)
+				.minHits(10)
+				.translationsIncludedIn(new String[]{
 					"ᐃᒡᓗᒋᔭᐅᕙᒃᑐᓂᒃ", "ᐃᒡᓗᓕᕆᓂᕐᒥ",
 					"ᐃᒡᓗᓕᕆᓂᕐᓕ ... ᐃᒡᓗᓕᕆᓂᕐᒧᑐᐃᓐᓈᕋᔭᖅᑐᖅ", "ᐃᒡᓗᖏᓐᓄᑦ", "ᐃᓪᓗᓕᕆᓂᕐᒧᑦ",
-					// This last translation is actually wrong, but for some reason
-					// the dictionary procuces it
+					// These last translationd str actually wrong, but for some reason
+					// the dictionary may produce them
 					"ᐃᒡᓗᒋᔭᐅᕙᒃᑐᓂᒃ", "ᐃᓐᓇᑐᖃᓕᕆᓂᕐᒧᑦ",
-				"ᐃᓪᓗᐃᑦ",
-				"ᐃᓪᓗᓂᒃ",
-				"ᐃᓪᓗᓕᕆᔨᒃᑯᑦ",
-				"ᐃᓪᓗᓕᕆᔨᒃᑯᓐᓄᑦ"},
-				1000
-			),
+					"ᐃᓪᓗᐃᑦ",
+					"ᐃᓪᓗᓂᒃ",
+					"ᐃᓪᓗᓕᕆᔨᒃᑯᑦ",
+					"ᐃᓪᓗᓕᕆᔨᒃᑯᓐᓄᑦ"})
+				.minExamples(1000),
 
-			// This IU word is not found in the hansard, but it DOES decompose.
-			// So, we ARE able to show any meaningful information about it
-			new Case("iu-iqqanaijaqtulirijikkut",
-				"iu", "iqqanaijaqtulirijikkut", null, 12,
-				new String[] {"iqqanaijaqtulirijikkut"},
-				new String[] {"iqqanaijaq/1v", "juq/1vn", "liri/1nv", "ji/1vn",
-					"kkut/1nn"},
-				new String[] {
+			// This IU word is not found in the corpus, but it DOES decompose.
+			// So, we ARE able to show some meaningful information about it
+			new WordDictEndpointCase("iu-SEARCH-iqqanaijaqtulirijikkut")
+				.queryLang("iu")
+				.query("iqqanaijaqtulirijikkut")
+				.minHits(12)
+				.hitListStartsWithWords(new String[] {"iqqanaijaqtulirijikkut", "BLAH"})
+				.decomp(
+					new String[] {"iqqanaijaq/1v", "juq/1vn", "liri/1nv", "ji/1vn",
+						"kkut/1nn"})
+				.relatedWordsIncludedIn(new String[] {
 					"iqanaijaqtuliriji", "iqanaijaqtulirijikkunni", "iqanaijartulirijiit",
-					"iqanaijartulirijikkunnut", "iqanaijartulirijikkut"},
-				new String[] {
+					"iqanaijartulirijikkunnut", "iqanaijartulirijikkut"})
+				.translationsIncludedIn(new String[] {
 					"department ... human resources", "hr", "human resource",
 					"human resources", "human resources. branch summary",
 					"human resources department", "human resources. department summary",
 					// The following are actually bad, but they may come up
-					"public works", "staffed"
-				},
-				1000
-			),
+					"public works", "staffed"})
+				.minExamples(1000),
 
 			// This IU word is not found in the hansard, AND it DOES NOT decompose.
 			// So no hits should be found.
-			new Case("iu-iqqanakkk", "iu", "iqqanakkk", null, 0),
+			new WordDictEndpointCase("iu-SEARCH-iqqanakkk")
+				.queryLang("iu")
+				.query("iqqanakkk")
+				.noHits(),
 
 			// In this case, the input is roman, but we request the results in
 			// syllabics
-			new Case("iu-igluga-roman2syll",
-				"iu", "igluga", TransCoder.Script.SYLLABIC, 10,
-				new String[] {"ᐃᒡᓗᒐ", "ᐃᒡᓗᒐᓚᐃᑦ"},
-				new String[] {"iglu/1n", "ga/tn-nom-s-1s"},
-				new String[] {
-					"ᐃᓪᓗᐃᑦ", "ᐃᓪᓗᒧᑦ", "ᐃᓪᓗᓂᒃ", "ᐃᓪᓗᓄᑦ", "ᐃᓪᓗᓕᕆᓂᕐᒧᑦ"},
-				new String[]{"house", "home", "rent"},
-				1000
-			),
+			new WordDictEndpointCase("iu-SEARCH-igluga-roman2syll")
+				.queryLang("iu")
+				.query("igluga")
+				.iuAlphabet(TransCoder.Script.SYLLABIC)
+				.minHits(10)
+				.hitListStartsWithWords(new String[] {"ᐃᒡᓗᒐ", "ᐃᒡᓗᒐᓚᐃᑦ"})
+				.decomp(new String[] {"iglu/1n", "ga/tn-nom-s-1s"})
+				.relatedWordsIncludedIn(new String[] {
+					"ᐃᓪᓗᐃᑦ", "ᐃᓪᓗᒧᑦ", "ᐃᓪᓗᓂᒃ", "ᐃᓪᓗᓄᑦ", "ᐃᓪᓗᓕᕆᓂᕐᒧᑦ"})
+				.translationsIncludedIn(new String[]{"house", "home", "rent"})
+				.minExamples(1000),
 
 			// In this case, the input is syllabics, but we request the results in
 			// roman
-			new Case("iu-igluga-syll2roman",
-				"iu", "ᐃᒡᓗᒐ", TransCoder.Script.ROMAN, 10,
-				new String[] {"igluga", "igluga"},
-				new String[] {"iglu/1n", "ga/tn-nom-s-1s"},
-				new String[] {
+			new WordDictEndpointCase("iu-SEARCH-igluga-syll2roman")
+				.queryLang("iu")
+				.query("ᐃᒡᓗᒐ")
+				.iuAlphabet(TransCoder.Script.ROMAN)
+				.minHits(10)
+				.hitListStartsWithWords(new String[] {"igluga", "igluga"})
+				.decomp(new String[] {"iglu/1n", "ga/tn-nom-s-1s"})
+				.relatedWordsIncludedIn(new String[] {
 					"illuit", "illulirinirmut", "illumut", "illunik", "illunut",
-					"igluqaqtittinirmut", "illulirinirmi", "illuliriniup", "illungit"},
-				new String[]{"house", "home", "rent"},
-				1000
-			),
+					"igluqaqtittinirmut", "illulirinirmi", "illuliriniup", "illungit"})
+				.translationsIncludedIn(new String[]{"house", "home", "rent"})
+				.minExamples(1000),
 
-			new Case("en-housing-roman",
-				"en", "housing", TransCoder.Script.ROMAN, 10,
-				new String[] {"housing"},
-				new String[0],
-				new String[0],
-				new String[]{"iglugijauvaktunik",
+			new WordDictEndpointCase("en-SEARCH-housing-roman")
+				.queryLang("en")
+				.query("housing")
+				.iuAlphabet(TransCoder.Script.ROMAN)
+				.translationsIncludedIn(new String[]{"iglugijauvaktunik",
 					"iglulirinirli ... iglulirinirmutuinnaarajaqtuq",
 					"iglulirinirmi", "iglunginnut", "illuit", "illulirinirmut",
 					"illulirijikkunnut", "illulirijikkut", "illunik",
-					"innatuqalirinirmut"},
-				1000
-			),
+					"innatuqalirinirmut"})
+				.minExamples(1000),
 
-			new Case("en-housing-syll",
-				"en", "housing", TransCoder.Script.SYLLABIC, 10,
-				new String[] {"housing"},
-				new String[0],
-				new String[0],
-				new String[]{
+			new WordDictEndpointCase("en-SEARCH-housing-syll")
+				.queryLang("en")
+				.query("housing")
+				.iuAlphabet(TransCoder.Script.SYLLABIC)
+				.translationsIncludedIn(new String[]{
 					"ᐃᒡᓗᒋᔭᐅᕙᒃᑐᓂᒃ", "ᐃᒡᓗᓕᕆᓂᕐᒥ",
 					"ᐃᒡᓗᓕᕆᓂᕐᓕ ... ᐃᒡᓗᓕᕆᓂᕐᒧᑐᐃᓐᓈᕋᔭᖅᑐᖅ", "ᐃᒡᓗᖏᓐᓄᑦ", "ᐃᓪᓗᓕᕆᓂᕐᒧᑦ",
-					"ᐃᓐᓇᑐᖃᓕᕆᓂᕐᒧᑦ", "ᐃᓪᓗᐃᑦ", "ᐃᓪᓗᓂᒃ", "ᐃᓪᓗᓕᕆᔨᒃᑯᑦ", "ᐃᓪᓗᓕᕆᔨᒃᑯᓐᓄᑦ"},
-				1000
-			),
+					"ᐃᓐᓇᑐᖃᓕᕆᓂᕐᒧᑦ", "ᐃᓪᓗᐃᑦ", "ᐃᓪᓗᓂᒃ", "ᐃᓪᓗᓕᕆᔨᒃᑯᑦ", "ᐃᓪᓗᓕᕆᔨᒃᑯᓐᓄᑦ"})
+				.minExamples(1000),
 
-			new Case("iu-Igluga-capitalized",
-				"iu", "Igluga", TransCoder.Script.ROMAN, 10,
-				new String[] {"igluga", "iglugalait"},
-				new String[] {"iglu/1n", "ga/tn-nom-s-1s"},
-				new String[] {
-					"illuit", "illulirinirmut", "illumut", "illunik", "illunut"},
-				new String[]{"house", "home", "rent"},
-				1000
-			),
-
-
+			new WordDictEndpointCase("iu-SEARCH-Igluga-capitalized")
+				.queryLang("iu")
+				.query("Igluga")
+				.iuAlphabet(TransCoder.Script.ROMAN)
+				.minHits(10)
+				.decomp(new String[] {"iglu/1n", "ga/tn-nom-s-1s"})
+				.relatedWordsIncludedIn(new String[] {
+					"illuit", "illulirinirmut", "illumut", "illunik", "illunut"})
+				.translationsIncludedIn(new String[]{"house", "home", "rent"})
+				.minExamples(1000),
 		};
 
 		Consumer<Case> runner =
-			(aCase) ->
+			(uncastCase) ->
 			{
 				try {
-					String lang = (String) aCase.data[0];
-					String otherLang = MultilingualDictEntry.otherLang(lang);
-					String query = (String) aCase.data[1];
-					TransCoder.Script iuAlphabet = (TransCoder.Script) aCase.data[2];
-					Integer expMinHits = (Integer) aCase.data[3];
-					String[] expWords = null;
-					String[] expDecomp = null;
-					String[] expRelatedWords = null;
-					String[] expTranslations = null;
-					Integer expMinExamples = null;
-					if (aCase.data.length > 4) {
-						expWords = (String[]) aCase.data[4];
-						expDecomp = (String[]) aCase.data[5];
-						expRelatedWords = (String[]) aCase.data[6];
-						expTranslations = (String[]) aCase.data[7];
+					WordDictEndpointCase aCase = (WordDictEndpointCase)uncastCase;
+					String otherLang = MultilingualDictEntry.otherLang(aCase.lang);
+					if (aCase.lang.equals("en")) {
+						aCase
+							.noDecomp()
+							.noRelatedWords()
+							.minHits(1)
+							.maxHits(1)
+							.hitListStartsWithWords(aCase.query);
 					}
-					WordDictInputs inputs = new WordDictInputs(query, lang);
-					inputs.iuAlphabet = iuAlphabet;
+					if (aCase.exactWordLookup) {
+						aCase
+							.minHits(0)
+							.maxHits(0)
+							.hitListStartsWithWords(aCase.query);
+					}
+
+					WordDictInputs inputs =
+						new WordDictInputs(aCase.query, aCase.lang);
+					if (aCase.exactWordLookup) {
+						inputs.exactWordLookup = true;
+					}
+					inputs.iuAlphabet = aCase.iuAlphabet;
 					WordDictResult epResult =
 						(WordDictResult) endPoint.executeThenConvert(inputs);
 					AssertEndpointResult hitsAsserter =
 						new AssertWordDictResult(epResult, aCase.descr)
 							.raisesNoError()
-							.foundAtLeastNWords(expMinHits)
-						;
+							.foundAtLeastNWords(aCase.expMinHits)
+							.foundAtMostNWords(aCase.expMaxHits)
+							.foundWords(aCase.expHitWords)
+							;
 
-					if (expWords != null) {
-						hitsAsserter.foundWords(expWords);
-					}
-
-					if (expMinHits > 0) {
-						new AssertMultilingualDictEntry(epResult.queryWordEntry, aCase.descr)
+					AssertMultilingualDictEntry entryAsserter =
+						new AssertMultilingualDictEntry(epResult.queryWordEntry, aCase.descr);
+					if (aCase.expectEmptyWordEntry) {
+						entryAsserter
+							.isForWord(epResult.convertedQuery)
+							.gaveEmptyWordEntry();
+					} else if (aCase.expMinHits != null && aCase.expMinHits > 0) {
+						entryAsserter
 							.isForWord(epResult.convertedQuery)
 							.definitionEquals(null)
-							.decompositionIs(expDecomp)
-							.relatedWordsIsSubsetOf(expRelatedWords)
-							.atLeastNExamples(expMinHits)
-							.translationsAreNonEmptySubsetOf(expTranslations)
-							.highlightsAreSubsetOf(lang, true, epResult.convertedQuery)
-							.highlightsAreSubsetOf(otherLang, true, expTranslations)
+							.decompositionIs(aCase.expDecomp)
+							.relatedWordsIsSubsetOf(aCase.expRelatedWords)
+							.atLeastNExamples(aCase.expMinHits)
+							.translationsAreNonEmptySubsetOf(aCase.expTranslations)
+							.highlightsAreSubsetOf(aCase.lang, true, epResult.convertedQuery)
+							.highlightsAreSubsetOf(otherLang, true, aCase.expTranslations)
 							;
 					}
 				} catch (Exception e) {
@@ -380,8 +405,156 @@ public class WordDictEndpointTest extends EndpointTest {
 			};
 
 		new RunOnCases(cases, runner)
-//			.onlyCaseNums(2)
-//			.onlyCasesWithDescr("iu-igluga-syll2roman")
+//			.onlyCaseNums(4)
+//			.onlyCasesWithDescr("en-SEARCH-housing")
 			.run();
+	}
+
+	public static class WordDictEndpointCase extends Case {
+
+		public boolean exactWordLookup = false;
+		public String lang = "iu";
+		public String query = null;
+		public TransCoder.Script iuAlphabet = TransCoder.Script.ROMAN;
+		public String[] hitWords = null;
+		public Integer expMinHits = null;
+		public Integer expMaxHits = null;
+		public String[] expHitWords = new String[0];
+		public String[] expDecomp = null;
+		public String 	expDefinition = null;
+		public String[] expRelatedWords = null;
+		public Integer maxRelatedWords = null;
+		public Integer minRelatedWords = null;
+		public String[] expTranslations = null;
+		public Integer maxTranslations = null;
+		public Integer minTranslations = null;
+		public Integer expMinExamples = null;
+		public Integer expMaxExamples = null;
+		public boolean expectEmptyWordEntry = false;
+
+		public WordDictEndpointCase(String _descr, Object... _data) {
+			super(_descr, _data);
+		}
+
+		public WordDictEndpointCase(String _descr) {
+			super(_descr, new Object[0]);
+		}
+
+		public WordDictEndpointCase queryLang(String _lang) {
+			this.lang = _lang;
+			return this;
+		}
+
+		public WordDictEndpointCase iuAlphabet(TransCoder.Script _alphabet) {
+			this.iuAlphabet = _alphabet;
+			return this;
+		}
+
+		public WordDictEndpointCase query(String _query) {
+			this.query = _query;
+			return this;
+		}
+
+		public WordDictEndpointCase exactWordLookup() {
+			this.exactWordLookup = true;
+			return this;
+		}
+
+		public WordDictEndpointCase hitListStartsWithWords(String... _hitWords) {
+			this.hitWords = _hitWords;
+			return this;
+		}
+
+		public WordDictEndpointCase noHits() {
+			maxHits(0);
+			expHitWords = new String[0];
+			return this;
+		}
+
+
+		public WordDictEndpointCase minHits(int _expMinHits) {
+			this.expMinHits = _expMinHits;
+			return this;
+		}
+
+		public WordDictEndpointCase maxHits(int _expMaxHits) {
+			this.expMaxHits = _expMaxHits;
+			return this;
+		}
+
+		public WordDictEndpointCase setExpHitWords(String[] _expHitWords) {
+			this.expHitWords = _expHitWords;
+			return this;
+		}
+
+		public WordDictEndpointCase decomp(String[] _expDecomp) {
+			this.expDecomp = _expDecomp;
+			return this;
+		}
+
+		public WordDictEndpointCase noDecomp() {
+			this.expDecomp = new String[0];
+			return this;
+		}
+
+		public WordDictEndpointCase definition(String _def) {
+			this.expDefinition = _def;
+			return this;
+		}
+
+		public WordDictEndpointCase noDefinition() {
+			this.expDefinition = null;
+			return this;
+		}
+
+		public WordDictEndpointCase relatedWordsIncludedIn(String[] _expRelatedWords) {
+			this.expRelatedWords = _expRelatedWords;
+			return this;
+		}
+
+		public WordDictEndpointCase noRelatedWords() {
+			this.maxRelatedWords = 0;
+			this.expRelatedWords = new String[0];
+			return this;
+		}
+
+
+		public WordDictEndpointCase translationsIncludedIn(String[] _expTranslations) {
+			this.expTranslations = _expTranslations;
+			return this;
+		}
+
+		public WordDictEndpointCase noTranslations() {
+			this.maxTranslations = 0;
+			this.translationsIncludedIn(null);
+			this.minExamples(0);
+			this.maxExamples(0);
+			return this;
+		}
+
+		public WordDictEndpointCase minTranslations(int _minTranslations) {
+			this.minTranslations = _minTranslations;
+			return this;
+		}
+
+		public WordDictEndpointCase maxTranslations(int _maxTranslations) {
+			this.maxTranslations = _maxTranslations;
+			return this;
+		}
+
+		public WordDictEndpointCase minExamples(int _expMinExamples) {
+			this.expMinExamples = _expMinExamples;
+			return this;
+		}
+
+		public WordDictEndpointCase maxExamples(int _expMaxExamples) {
+			this.expMaxExamples = _expMaxExamples;
+			return this;
+		}
+
+		public WordDictEndpointCase givesEmptyWordEntry() {
+			this.expectEmptyWordEntry = true;
+			return this;
+		}
 	}
 }

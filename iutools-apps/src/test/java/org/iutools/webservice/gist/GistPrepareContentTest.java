@@ -61,8 +61,8 @@ public class GistPrepareContentTest extends EndpointTest {
 			.containsIUSentenceStartingWith("sivuliqti nunavummi")
 			.containsAlignment(
 				new SentencePair(
-					"iu", "nunavut gavamanga\n",
-					"en", "Government of Nunavut\n"))
+					"iu", "nunavut gavamanga",
+					"en", "Government of Nunavut"))
 		;
 	}
 
@@ -102,8 +102,8 @@ public class GistPrepareContentTest extends EndpointTest {
 			.inputWasActualContent(false)
 			.containsAlignment(
 				new SentencePair(
-					"iu", "nunavut gavamanga\n",
-				"en", "Government of Nunavut\n"))
+					"iu", "nunavut gavamanga",
+				"en", "Government of Nunavut"))
 		;
 	}
 

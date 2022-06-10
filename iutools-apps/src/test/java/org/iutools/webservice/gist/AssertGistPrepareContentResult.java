@@ -150,8 +150,10 @@ public class AssertGistPrepareContentResult extends AssertEndpointResult {
 		for (int ii=0; ii < result().iuSentences.size(); ii++) {
 			String[] gotIuSentence = result().iuSentences.get(ii);
 			String gotIuText = String.join("", gotIuSentence);
+			gotIuText = gotIuText.replaceAll("\n+$", "");
 			String[] gotEnSentence = result().enSentences.get(ii);
 			String gotEnText = String.join("", gotEnSentence);
+			gotEnText = gotEnText.replaceAll("\n+$", "");
 			SentencePair gotAlignment =
 				new SentencePair("iu", gotIuText, "en", gotEnText);
 

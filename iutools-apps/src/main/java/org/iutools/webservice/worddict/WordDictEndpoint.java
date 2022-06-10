@@ -3,10 +3,6 @@ package org.iutools.webservice.worddict;
 import ca.nrc.json.PrettyPrinter;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
-import org.iutools.corpus.CompiledCorpusException;
-import org.iutools.morph.Decomposition;
-import org.iutools.morph.MorphologicalAnalyzerException;
-import org.iutools.morph.r2l.MorphologicalAnalyzer_R2L;
 import org.iutools.script.TransCoder;
 import org.iutools.script.TransCoderException;
 import org.iutools.webservice.Endpoint;
@@ -15,6 +11,7 @@ import org.iutools.worddict.MultilingualDict;
 import org.iutools.worddict.MultilingualDictEntry;
 import org.iutools.worddict.MultilingualDictException;
 
+import javax.xml.ws.WebServiceException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -32,11 +29,45 @@ public class WordDictEndpoint extends Endpoint<WordDictInputs,WordDictResult> {
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("invoked with inputs="+ PrettyPrinter.print(inputs));
 		}
-		Long totalWords = null;
-		List<String> topWords = null;
-		MultilingualDictEntry firstWordEntry = null;
+
+		WordDictResult result = null;
+		if (inputs.exactWordLookup) {
+			result = lookupExactWord(inputs);
+		} else {
+			result = searchWord(inputs);
+		}
+
+		setResultLangsAndScript(result, inputs);
+
+		tLogger.trace("Completed");
+		return result;
+	}
+
+	private void setResultLangsAndScript(
+		WordDictResult result, WordDictInputs inputs) throws ServiceException {
+
+		fixScriptOfWordEntries(inputs, result);
+
 		try {
+			if (result.queryWordEntry != null) {
+				result
+					.setLang(result.queryWordEntry.lang)
+					.setOtherLang(result.queryWordEntry.otherLang());
+			}
+		} catch (MultilingualDictException e) {
+			throw new ServiceException(e);
+		}
+	}
+
+	private WordDictResult searchWord(WordDictInputs inputs) throws ServiceException {
+
+		WordDictResult result = null;
+		try {
+			Long totalWords = null;
+			List<String> topWords = null;
+			MultilingualDictEntry firstWordEntry = null;
 			MultilingualDict dict = new MultilingualDict();
+
 			Pair<Iterator<String>, Long> searchResults =
 				dict.searchIter(inputs.word, inputs.lang);
 			totalWords = searchResults.getRight();
@@ -47,68 +78,55 @@ public class WordDictEndpoint extends Endpoint<WordDictInputs,WordDictResult> {
 			}
 
 			if (!topWords.contains(inputs.word)) {
-				boolean addQueryWord = false;
-				// The query word was not included in the top words.
-				// See if the word is in the dictionary.
-				String wordRoman = TransCoder.ensureRoman(inputs.word);
-				if (null != dict.corpus.info4word(wordRoman)) {
-					addQueryWord = true;
-				} else {
-					// Word is not in the corpus. See if it at least it
-					// decomposes
-					try {
-						Decomposition[] decompositions = new MorphologicalAnalyzer_R2L().decomposeWord(wordRoman);
-						if (decompositions != null && decompositions.length > 0) {
-							addQueryWord = true;
-						}
-					} catch (TimeoutException e) {
-						// Nothing to do if the word could not be decomposed in time
-					}
-				}
-				if (addQueryWord) {
+				// The query word was not one of the most frequents hits in the corpus.
+				// Check if it's correctly spelled and if so, add it to the list
+				// of matching words.
+				MultilingualDictEntry exactWordEntry =
+					dict.entry4word(inputs.word, inputs.lang);
+				if (!exactWordEntry.isMisspelled()) {
 					topWords.add(0, inputs.word);
+					firstWordEntry = exactWordEntry;
 				}
 			}
-
-			topWords = fixScriptOfWordEntries(inputs, topWords);
-
-			if (!topWords.isEmpty()) {
+			if (firstWordEntry == null && !topWords.isEmpty()) {
 				firstWordEntry = dict.entry4word(topWords.get(0), inputs.lang);
 			}
-		} catch (MultilingualDictException | CompiledCorpusException
-			| MorphologicalAnalyzerException  e) {
+			result = new WordDictResult(firstWordEntry, topWords, totalWords);
+
+		} catch (Throwable e) {
 			throw new ServiceException(e);
 		}
 
-		WordDictResult result = null;
-		try {
-			result =
-				new WordDictResult(firstWordEntry, topWords, totalWords);
-			if (firstWordEntry != null) {
-				result
-				.setLang(firstWordEntry.lang)
-				.setOtherLang(firstWordEntry.otherLang());
-			}
-		} catch (MultilingualDictException e) {
-			throw new ServiceException(e);
-		}
-
-		tLogger.trace("Completed");
 		return result;
 	}
 
+	private WordDictResult lookupExactWord(WordDictInputs inputs) {
+		WordDictResult exactWordResult = null;
+		try {
+			MultilingualDict dict = new MultilingualDict();
+			MultilingualDictEntry exactWordEntry = dict.entry4word(inputs.word, inputs.lang);
+			List<String> foundWords = new ArrayList<String>();
+			exactWordResult = new WordDictResult(exactWordEntry, foundWords, new Long(0));
+		} catch (Exception e) {
+			throw new WebServiceException(e);
+		}
+
+		return exactWordResult;
+	}
+
+
 	/** Ensure that the matching words use the same script as the input query.
 	 */
-	private List<String> fixScriptOfWordEntries(
-		WordDictInputs inputs, List<String> words) throws ServiceException {
+	private void fixScriptOfWordEntries(
+	WordDictInputs inputs, WordDictResult result) throws ServiceException {
 		List<String> fixedWords = new ArrayList<String>();
-		for (String aWord: words) {
+		for (String aWord: result.matchingWords) {
 			try {
 				fixedWords.add(TransCoder.ensureSameScriptAsSecond(aWord, inputs.word));
 			} catch (TransCoderException e) {
 				throw new ServiceException(e);
 			}
 		}
-		return fixedWords;
+		result.matchingWords = fixedWords;
 	}
 }

@@ -93,7 +93,7 @@ English query - Multi word
 
 Out-of-hansard valid IU word
 - Search for a word that is a valid IU word but is not in the Hansard
-- ex:??? 
+- ex: surusilaalirijikkut
 - Make sure that the dictionary displays a word entry for it
 
 Invalid IU word that does NOT appear in the Hansard
@@ -508,6 +508,16 @@ in that word are valid Latin IU chars)
 - Check that the text has been romanized
 - Check that all Inuktitut romanized words are clickable...
   - But the English word 'main' is NOT clickable     
+     
+Text that contains an INVALID out-of-corpus word
+- Enter 'ninuksuk' and Assist Reading
+- Click on the word ninuksuk in the gist
+- Make sure that the word entry concludes and says 'No entry found for this word' 
+
+Text that contains a VALID out-of-corpus word
+- Enter '???' and Assist Reading
+- Click on the word ??? in the gist
+- Make sure that the word entry concludes and says 'No entry found for this word' 
      
 IU url (Happy Path)
 - Enter url https://www.gov.nu.ca/iu

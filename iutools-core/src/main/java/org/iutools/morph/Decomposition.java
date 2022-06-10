@@ -67,13 +67,37 @@ public class Decomposition {
 		return surfaceForms;
 	}
 
-
 	public static Pair<String,String> parseComponent(String comp) throws DecompositionException {
+		return parseComponent(comp, (Boolean)null);
+	}
+
+
+	public static Pair<String,String> parseComponent(
+		String comp, Boolean mayMissFirstComponent) throws DecompositionException {
+		if (mayMissFirstComponent == null) {
+			mayMissFirstComponent = false;
+		}
+		comp = comp.replaceAll("[{}]", "");
 		String[] parsed = comp.split(":");
-		if (parsed.length != 2) {
+		boolean correctlyParsed = true;
+		if (parsed.length == 0 || parsed.length > 2 ||
+			(parsed.length == 1 &&  !mayMissFirstComponent)) {
+			 correctlyParsed = false;
+		}
+		if (!correctlyParsed) {
 			throw new DecompositionException("Could not parse component '"+comp+"'");
 		}
-		return Pair.of(parsed[0], parsed[1]);
+
+		String matchedString = null;
+		String morphID = null;
+		if (parsed.length == 2) {
+			matchedString = parsed[0];
+			morphID = parsed[1];
+		} else {
+			morphID = parsed[0];
+		}
+
+		return Pair.of(matchedString, morphID);
 	}
 
 	public String[] components() {

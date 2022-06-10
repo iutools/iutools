@@ -58,13 +58,6 @@ public class MultilingualDict {
 		}
 	}
 
-//	public static MultilingualDict getInstance() throws MultilingualDictException {
-//		if (_singleton == null) {
-//			_singleton = new MultilingualDict();
-//		}
-//		return _singleton;
-//	}
-
 	public MultilingualDict setMinMaxPairs(Integer min, Integer max) throws MultilingualDictException {
 		if (min != null && max != null && max < min) {
 			throw new MultilingualDictException(
@@ -97,7 +90,6 @@ public class MultilingualDict {
 		return entry4word(word, lang, (Boolean)null, (Field[])null);
 	}
 
-
 	public MultilingualDictEntry entry4word(
 		String word, Field... fieldsToPpulate)
 		throws MultilingualDictException {
@@ -108,7 +100,6 @@ public class MultilingualDict {
 		String word, Boolean fullRelatedWordEntries, Field... fieldsToPopulate) throws MultilingualDictException {
 		return entry4word(word, (String)null, fullRelatedWordEntries, fieldsToPopulate);
 	}
-
 
 	public MultilingualDictEntry entry4word(
 		String word, String lang, Boolean fullRelatedWordEntries,

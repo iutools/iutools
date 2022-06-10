@@ -86,9 +86,9 @@ public class DictEvaluationTest {
 			.totalENSpotted_atLeastInSense(MatchType.LENIENT, 94)
 			.totalENSpotted_atLeastInSense(MatchType.LENIENT_OVERLAP, 104)
 
-			.rateENSpotted(MatchType.STRICT, 0.334)
+			.rateENSpotted(MatchType.STRICT, 0.333)
 			.rateENSpotted(MatchType.LENIENT, 0.360)
-			.rateENSpotted(MatchType.LENIENT_OVERLAP, 0.400)
+			.rateENSpotted(MatchType.LENIENT_OVERLAP, 0.398)
 			;
 	}
 }

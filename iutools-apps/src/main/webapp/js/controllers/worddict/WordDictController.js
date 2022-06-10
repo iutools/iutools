@@ -37,6 +37,7 @@ class WordDictController extends IUToolsController {
             {
                 "word": query,
                 "lang": lang,
+                "exactWordLookup": false,
             };
 
         var inputsJson = jsonStringifySafe(inputs);

@@ -1,6 +1,7 @@
 package org.iutools.corpus;
 
 import ca.nrc.dtrc.elasticsearch.Document;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.StringUtils;import org.iutools.script.TransCoder;
 import org.iutools.script.TransCoderException;
 
@@ -156,6 +157,16 @@ public class WordInfo extends Document {
 			topDecompositionStr = StringUtils.join(topDecomp, " ");
 		}
 		return this;
+	}
+
+	@JsonIgnore
+	public boolean isMisspelled() {
+		Boolean canBeDecomposed = decomposesSuccessfully();
+		boolean answer = true;
+		if (canBeDecomposed != null && canBeDecomposed) {
+			answer = false;
+		}
+		return answer;
 	}
 
 	public Boolean decomposesSuccessfully() {
