@@ -127,7 +127,7 @@ class WordEntryController extends IUToolsController {
         } else {
             html =
                 "<div id='div-info' class='div-info' align='right'>\n" +
-                "  <a href='help.jsp?topic=about_dictionary' target='#iutools_help'>\n" +
+                "  <a href='help.jsp?topic=about_dictionary' target='#iutools_help'></a>\n" +
                 "</div>";
 
             html += this.htmlTranslations(wordEntry, otherLang);
