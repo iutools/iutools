@@ -2,6 +2,7 @@ package org.iutools.worddict;
 
 import ca.nrc.testing.*;
 import ca.nrc.testing.RunOnCases.Case;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.linguisticdata.MorphemeHumanReadableDescr;
 import org.iutools.script.TransCoder;
@@ -43,47 +44,29 @@ public class MultilingualDictTest {
 				.setDecomp(
 					"ammut/1a", "u/1nv", "ma/1vv", "juq/1vn", "siuq/1nv",
 					"jusik/tv-ger-2d")
-				.setOrigWordTranslations(
-					"clam", "clam diving", "clam ... clams", "diving ... clams")
-				.setMinExamples(3)
 				.relatedWordsShouldBeAmong(
 					"ammuumajurniartiit", "ammuumajuqtarnirmut",
 					"ammuumajuqtaqtiit", "ammuumajuqtaqtutik",
 					"ammuumajurniarnirmut", "ammuumajuqsiuqtutik")
-				.setExpRelatedTranslationsMap(
-					new String[] {"ammuumajuqtaqtiit", "clam divers",
-						"divers ... valid ... diving"},
-					new String[] {"ammuumajuqtaqtutik", "clam divers",
-						"classifications ... divers ... clam divers"},
-					new String[] {"ammuumajuqtarnirmut",
-						"clam", "clam digging", "clam diggers",
-						"clam diggers ... commercial clam digging"},
-					new String[] {"ammuumajurniartiit", "divers"}),
+				.bestTranslationsAre("clam", "clams", "clam diving", "clam ... clams")
+				.setMinExamples(5),
+//				.additionalL2Highlights("clam ... clams", "clam diving"),
 
 			new MultilingualDictCase("iu-ᐊᒻᒨᒪᔪᖅᓯᐅᖅᑐᑎᒃ", "ᐊᒻᒨᒪᔪᖅᓯᐅᖅᑐᑎᒃ")
 				.setDecomp(
 					"ammut/1a", "u/1nv", "ma/1vv", "juq/1vn", "siuq/1nv",
 					"jusik/tv-ger-2d")
-				.setOrigWordTranslations(
-					"clam", "clam diving", "clam ... clams", "diving ... clams")
-				.setMinExamples(3)
 				.relatedWordsShouldBeAmong(
 					"ᐊᒻᒨᒪᔪᕐᓂᐊᕐᑏᑦ", "ᐊᒻᒨᒪᔪᖅᑕᕐᓂᕐᒧᑦ", "ᐊᒻᒨᒪᔪᖅᑕᖅᑏᑦ", "ᐊᒻᒨᒪᔪᖅᑕᖅᑐᑎᒃ",
 					"ᐊᒻᒨᒪᔪᕐᓂᐊᕐᓂᕐᒧᑦ")
-				.setExpRelatedTranslationsMap(
-					new String[] {"ᐊᒻᒨᒪᔪᕐᓂᐊᕐᑏᑦ", "divers"},
-					new String[] {"ᐊᒻᒨᒪᔪᖅᑕᕐᓂᕐᒧᑦ",
-						"clam", "clam digging",
-						"clam diggers", "clam diggers ... commercial clam digging"},
-					new String[] {"ᐊᒻᒨᒪᔪᖅᑕᖅᑏᑦ", "clam divers",
-						"divers ... valid ... diving"},
-					new String[] {"ᐊᒻᒨᒪᔪᖅᑕᖅᑐᑎᒃ", "clam divers",
-						"classifications ... divers ... clam divers"}),
+				.bestTranslationsAre("clam", "clams", "clam diving", "clam ... clams")
+				.setMinExamples(2),
+//				.additionalL2Highlights("clam ... clams", "clam diving"),
 
 			// This is an out of vocabulary word
 			new MultilingualDictCase("iu-inuksssuk", "inuksssuk")
 				.setOutOfVocab(true)
-				.setOrigWordTranslations(new String[]{})
+				.bestTranslationsAre(new String[0])
 				.setMinExamples(0)
 				.relatedWordsShouldBeAmong(new String[]{}),
 
@@ -94,33 +77,33 @@ public class MultilingualDictTest {
 					"umiarjuanut", "umiarjuat", "umiarjuaq", "umiarjuarmut",
 					"umiarjualirijikkut")
 				.setMinExamples(5)
-				.setOrigWordTranslations(new String[]{
-					"sealift", "shipping season", "ship", "shipped",
-					"supply ... sea-lift resupply"}),
+				.bestTranslationsAre(new String[]{
+					"ship", "sealift", "shipped", "shipping", "shipping season"}),
+//				.additionalL2Highlights(
+//					"shipping", "shipping season"
+//					),
 
 			new MultilingualDictCase("iu-kiugavinnga", "kiugavinnga")
 				.relatedWordsShouldBeAmong(
 					"kiujjutit", "kiujjutik", "kiuvan", "kiujjutinga", "kiulugu")
-				.setOrigWordTranslations(new String[]{
-					"response", "answer", "answered", "direct answer",
-					"answering ... question"}),
+				.bestTranslationsAre(
+					"response", "answer", "answered", "direct answer", "minister ... answer"),
+//				.additionalL2Highlights(),
 
 			new MultilingualDictCase("iu-najugaq", "najugaq")
 				.relatedWordsShouldBeAmong(
 					"najugangani", "najugaujunut", "najuganga", "najugaujumi",
 					"najugauvattunut")
-				.setRelWordTranslationsStartWith(new String[] {
-					"home", "centres", "site", "area"}),
+				.bestTranslationsAre(
+					"facility", "home", "units", "centres", "homes", "centres"),
 
 			new MultilingualDictCase("en-housing", "housing")
 				.setL1("en")
 				.setDecomp(null)
-				.setOrigWordTranslations(
-					"ᐃᓪᓗᐃᑦ", "ᐃᓪᓗᓂᒃ","ᐃᓪᓗᓕᕆᔨᒃᑯᑦ", "ᐃᓪᓗᓕᕆᔨᒃᑯᓐᓄᑦ",
-					// This one is wrong but comes up for some reason
-					"ᐃᓐᓇᑐᖃᓕᕆᓂᕐᒧᑦ"
+				.bestTranslationsAre(
+					"ᐃᓪᓗᐃᑦ", "ᐃᓪᓗᓂᒃ", "ᐃᓪᓗᓕᕆᔨᒃᑯᓐᓄᑦ", "ᐃᓪᓗᓕᕆᔨᓂ", "ᐃᓪᓗᓕᕆᔨᓂᒃ"
 				)
-				.setMinExamples(10)
+				.setMinExamples(6)
 				.relatedWordsShouldBeAmong(),
 
 //			new MultilingualDictCase("iu-nuvarjuarnaq (=covid)", "nuvarjuarnaq")
@@ -258,15 +241,18 @@ public class MultilingualDictTest {
 				AssertMultilingualDictEntry asserter =
 					new AssertMultilingualDictEntry(entry, aCase.descr);
 
+				String[] expL2Highlights =
+					ArrayUtils.addAll(aCase.expTranslations, aCase.expAdditionalL2Highlights);
+
 				asserter
 					.isForWord(aCase.word)
 					.langIs(aCase.l1)
 					.definitionEquals(aCase.expDefinition)
 					.relatedWordsIsSubsetOf(aCase.expRelatedWordsSuperset)
-					.possibleTranslationsStartWith(expTranslations)
+					.bestTranslationsAre(expTranslations)
 					.atLeastNExamples(aCase.expMinExamples)
 					.highlightsAreSubsetOf(aCase.l1, true, expL1Highlights)
-					.highlightsAreSubsetOf(aCase.l2, expTranslations)
+					.highlightsAreSubsetOf(aCase.l2, expL2Highlights)
 					;
 
 				if (aCase.l1.equals("iu")) {
@@ -279,11 +265,6 @@ public class MultilingualDictTest {
 					asserter.relatedTranslationsStartWith(aCase.expRelatedTranslations);
 				}
 
-				if (aCase.expRelatedTranslationsMap != null) {
-					asserter.relatedTranslationsMapsEquals(aCase.expRelatedTranslationsMap);
-				}
-
-
 				if (aCase.expDecomp != null) {
 					asserter.decompositionIs(aCase.expDecomp);
 				}
@@ -293,7 +274,7 @@ public class MultilingualDictTest {
 		};
 
 		new RunOnCases(cases_entry4word, runner)
-//			.onlyCaseNums(1)
+//			.onlyCaseNums(6)
 //			.onlyCasesWithDescr("en-housing")
 			.run();
 	}
@@ -364,7 +345,8 @@ public class MultilingualDictTest {
 		public Integer expMinExamples = 0;
 		public boolean outOfVocab = false;
 		public String[] expRelatedTranslations = null;
-		Map<String,List<String>> expRelatedTranslationsMap = null;
+		private String[] expAdditionalL2Highlights = new String[0];
+//		Map<String,List<String>> expRelatedTranslationsMap = null;
 
 		public MultilingualDictCase(String _descr, String _word) {
 			super(_descr, null);
@@ -396,7 +378,7 @@ public class MultilingualDictTest {
 			return this;
 		}
 
-		public MultilingualDictCase setOrigWordTranslations(String... _expTranslations) {
+		public MultilingualDictCase bestTranslationsAre(String... _expTranslations) {
 			expTranslations = _expTranslations;
 			return this;
 		}
@@ -406,6 +388,15 @@ public class MultilingualDictTest {
 			return this;
 		}
 
+//		/**
+//		 * Provide additional highlights for the l2 bits. These will be added to
+//		 * the expected list of best translations.
+//		 */
+//		public MultilingualDictCase additionalL2Highlights(String... l2Highlights) {
+//			this.expAdditionalL2Highlights = l2Highlights;
+//			return this;
+//		}
+
 		public MultilingualDictCase setOutOfVocab(boolean _outOfVocab) {
 			this.outOfVocab = true;
 			return this;
@@ -413,28 +404,6 @@ public class MultilingualDictTest {
 
 		public Object id() {
 			return this.word;
-		}
-
-		public MultilingualDictCase setRelWordTranslationsStartWith(
-			String[] _expRelatedTranslations) {
-			this.expRelatedTranslations = _expRelatedTranslations;
-			return this;
-		}
-
-		public MultilingualDictCase setExpRelatedTranslationsMap(
-			String[]... expMapEntries) {
-			Map<String,List<String>> expMap = new HashMap<String,List<String>>();
-			for (String[] anExpEntry: expMapEntries) {
-				if (anExpEntry.length > 0) {
-					String relWord = anExpEntry[0];
-					String[] translArr = Arrays.copyOfRange(anExpEntry, 1, anExpEntry.length);
-					List<String> transList = new ArrayList<String>();
-					Collections.addAll(transList, translArr);
-					expMap.put(relWord, transList);
-				}
-			}
-			this.expRelatedTranslationsMap = expMap;
-			return this;
 		}
 	}
 

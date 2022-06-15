@@ -42,9 +42,23 @@ public class MultilingualDict {
 
 	private static MultilingualDict _singleton = null;
 
-	public  Integer MAX_TRANSLATIONS = 5;
-	public  Integer MAX_SENT_PAIRS = 20;
-	public  Integer MIN_SENT_PAIRS = null;
+	/** Maximum number of 'final' translations to be produced*/
+	public Integer MAX_TRANSLATIONS = 5;
+	/** Maximum number of 'provisional' translations (i.e. before pruning) to be
+	 * produced.
+	 */
+	public Integer MAX_PROVISIONAL_TRANSLATIONS = 10;
+
+	/** Maximum number of sentence pairs to look at when looking for translations */
+	public Integer MAX_SENT_PAIRS = 50;
+
+	/** Minimum number of sentence pairs to look at when looking for translations */
+	public Integer MIN_SENT_PAIRS = null;
+
+	/** A 'provisional' translation will not be kept unless we have at least that
+	 * many sentence pairs that support it.
+	 */
+	public Integer MIN_REQUIRED_PAIRS_FOR_TRANSLATION = 1;
 
 	public CompiledCorpus corpus = null;
 
@@ -150,7 +164,8 @@ public class MultilingualDict {
 			throw new MultilingualDictException(e);
 		}
 
-		entry.sortTranslations();
+		entry.sortAndPruneTranslations(
+			MAX_TRANSLATIONS, MIN_REQUIRED_PAIRS_FOR_TRANSLATION);
 
 		entry.ensureScript(inputScript);
 
@@ -161,7 +176,7 @@ public class MultilingualDict {
 		throws MultilingualDictException {
 		MultilingualDictEntry entry = new MultilingualDictEntry(word, "en");
 		computeOrigWordTranslationsAndExamples(entry);
-		entry.sortTranslations();
+		entry.sortAndPruneTranslations(MAX_TRANSLATIONS, MIN_REQUIRED_PAIRS_FOR_TRANSLATION);
 		return entry;
 	}
 
@@ -251,8 +266,14 @@ public class MultilingualDict {
 				}
 
 				if (answer == 0) {
-					int w1examples = w1.bilingualExamplesOfUse().size();
-					int w2examples = w2.bilingualExamplesOfUse().size();
+					int w1examples = 0;
+					int w2examples = 0;
+					try {
+						w1examples = w1.bilingualExamplesOfUse().size();
+						w2examples = w2.bilingualExamplesOfUse().size();
+					} catch (MultilingualDictException e) {
+						throw new RuntimeException(e);
+					}
 					answer = -Integer.compare(w1examples, w2examples);
 				}
 
@@ -288,6 +309,7 @@ public class MultilingualDict {
 		List<String> justOneWord = new ArrayList<String>();
 		justOneWord.add(entry.word);
 		retrieveTranslationsAndExamples(entry, justOneWord, script);
+		return;
 	}
 
 	private void retrieveTranslationsAndExamples(
@@ -365,7 +387,7 @@ public class MultilingualDict {
 		int translationsSoFar =
 			entry.possibleTranslationsIn(otherLang(entry.lang)).size();
 		boolean enough =
-			(translationsSoFar >= MAX_TRANSLATIONS || pairsSoFar >= maxPairs) &&
+			(translationsSoFar >= MAX_PROVISIONAL_TRANSLATIONS || pairsSoFar >= maxPairs) &&
 			(totalPairs >= minPairs);
 
 		return enough;

@@ -222,6 +222,18 @@ public class MultilingualDictEntry {
 		}
 	}
 
+	/**
+	 * Returns translations of the original word if available, and translations
+	 * of related words otherwise.
+	 */
+	public List<String> bestTranslations() {
+		List<String> best = origWordTranslations;
+		if (best.isEmpty()) {
+			best = relatedWordTranslations;
+		}
+		return best;
+	}
+
 	public List<String> allTranslations() {
 		List<String> all = new ArrayList<String>();
 		all.addAll(origWordTranslations);
@@ -233,18 +245,27 @@ public class MultilingualDictEntry {
 		return all;
 	}
 
-	public List<String[]> bilingualExamplesOfUse() {
+	public List<String[]> bilingualExamplesOfUse() throws MultilingualDictException {
 		List<String[]> allExamples = new ArrayList<String[]>();
-		for (String translation: examplesForOrigWordTranslation.keySet()) {
-			allExamples.addAll(examplesForOrigWordTranslation.get(translation));
+
+		for (String translation: bestTranslations()) {
+			List<String[]> examples = bilingualExamplesOfUse(translation);
+			allExamples.addAll(examples);
 		}
 		return allExamples;
 	}
 
+	/**
+	 * Returns examples of use for a translation. If there are examples of this
+	 * as a translation of the original word, return those, otherwise return
+	 * examples of this as a translation of a related word.
+	 */
 	public List<String[]> bilingualExamplesOfUse(String translation) throws MultilingualDictException {
 		List<String[]> examples = new ArrayList<String[]>();
 		if (examplesForOrigWordTranslation.containsKey(translation)) {
 			examples = examplesForOrigWordTranslation.get(translation);
+		} else if (examplesForRelWordsTranslation.containsKey(translation)){
+			examples = examplesForRelWordsTranslation.get(translation);
 		}
 
 		return examples;
@@ -268,23 +289,68 @@ public class MultilingualDictEntry {
 		return translations;
 	}
 
-	public void sortTranslations() throws MultilingualDictException {
+	public void sortAndPruneTranslations(
+		int maxTranslations, Integer minRequiredPairs) throws MultilingualDictException {
 		Logger tLogger = Logger.getLogger("org.iutools.worddict.MultilingualDictEntry.sortTranslations");
 		try {
 			if (_translationsNeedSorting) {
 				tLogger.trace("sorting orig word translations");
 				TranslationComparator comparator =
 					new TranslationComparator(otherLang(), this.examplesForOrigWordTranslation);
-				Collections.sort(this.origWordTranslations, comparator);
-				tLogger.trace("sorting related words translations");
+				Collections.sort(origWordTranslations, comparator);
+				origWordTranslations =
+					pruneTranslations(
+						origWordTranslations, maxTranslations, examplesForOrigWordTranslation, minRequiredPairs);
+
+			tLogger.trace("sorting related words translations");
 				comparator =
 					new TranslationComparator(otherLang(), this.examplesForRelWordsTranslation);
 				Collections.sort(this.relatedWordTranslations, comparator);
+				relatedWordTranslations =
+					pruneTranslations(relatedWordTranslations, maxTranslations,
+						examplesForRelWordsTranslation, minRequiredPairs);
+
 			}
 		} catch (RuntimeException e) {
 			throw new MultilingualDictException(e);
 		}
 		return;
+	}
+
+	private List<String> pruneTranslations(
+	List<String> translations, int maxTranslations, Map<String, List<String[]>> examples, Integer minRequiredPairs) {
+		List<String> pruned = new ArrayList<String>();
+		if (!translations.isEmpty()) {
+			int translationNum = 0;
+			String topTranslation = translations.get(0);
+			List<String[]> topTranslationExamples = examples.get(topTranslation);
+			for (String aTranslation: translations) {
+				translationNum++;
+				List<String[]> aTranslationExamples = examples.get(aTranslation);
+				boolean removeTranslation = translationNum > maxTranslations;
+				if (!removeTranslation &&
+				   topTranslationExamples.size() >= minRequiredPairs &&
+				   aTranslationExamples.size() < minRequiredPairs) {
+					//
+					// Some of the translations had more than the minimum number of
+					// examples, but we have now reached a point where remaining
+					// translations have less than that. So stop here because there is not enough evidence to
+					// support those remaining translations.
+					//
+					// Note: If none of the translations we got have enough examples,
+					// we choose to keep all of them.
+					removeTranslation = true;
+				}
+				if (!removeTranslation) {
+					pruned.add(aTranslation);
+				} else {
+					examples.remove(aTranslation);
+					continue;
+				}
+			}
+		}
+
+		return pruned;
 	}
 
 	public void addRelatedWordTranslations(MultilingualDictEntry entry) throws MultilingualDictException {
@@ -344,6 +410,7 @@ public class MultilingualDictEntry {
 			}
 			int comp = Integer.compare(t2NumEx, t1NumEx);
 			tLogger.trace("t1NumEx="+t1NumEx+", t2NumEx="+t2NumEx+": comp="+comp);
+
 			if (comp == 0) {
 				// If there are the same number of examples for both
 				// translations, prefer translations that do not have a "gap"
@@ -358,6 +425,23 @@ public class MultilingualDictEntry {
 				// If translations are equivalent in terms of gaps, prefer shorter ones
 				tLogger.trace("Equivalent in terms of gaps; Looking at length");
 				comp = Integer.compare(t1.length(), t2.length());
+			}
+
+			if (comp == 0) {
+				// We favor translations that do not include a gap in them
+				if (t1.contains("...") && !t2.contains("...")) {
+					comp = 1;
+				} else if (!t1.contains("...") && t2.contains("...")) {
+					comp = -1;
+				}
+			}
+
+			if (comp == 0) {
+				// We favour multi-word translations (as long as they don't contains
+				// a gap) because they are more precise
+				int t1Words = t1.split("\\s+").length;
+				int t2Words = t2.split("\\s+").length;
+				comp = Integer.compare(t2Words, t1Words);
 			}
 
 			if (comp == 0) {

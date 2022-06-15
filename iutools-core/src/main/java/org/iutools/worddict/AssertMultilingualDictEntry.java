@@ -68,17 +68,26 @@ public class AssertMultilingualDictEntry extends Asserter<MultilingualDictEntry>
 		return this;
 	}
 
-	public AssertMultilingualDictEntry possibleTranslationsStartWith(
+
+	public AssertMultilingualDictEntry bestTranslationsAre(
 		String... expTranslationsArr) throws Exception {
+
 		if (expTranslationsArr != null) {
 			String otherLang = entry().otherLang();
-			String[] gotTranslationsArr =
-				entry().possibleTranslationsIn(otherLang).toArray(new String[0]);
+			List<String> gotTranslations = entry().bestTranslations();
+			String[] gotTranslationsArr = gotTranslations.toArray(new String[0]);
 			gotTranslationsArr = lowerCaseStrings(gotTranslationsArr);
 			expTranslationsArr = lowerCaseStrings(expTranslationsArr);
-			new AssertSequence(gotTranslationsArr,
-				baseMessage+ "\nList of translations was not a subset of the expected translations")
-				.startsWith(expTranslationsArr);
+
+			// For some reason, the order of the best translations can be
+			// unpredictable. So compare the two arrays as sets
+			Set<String> gotTranslationsSet = new HashSet<String>();
+			Collections.addAll(gotTranslationsSet, gotTranslationsArr);
+			Set<String> expTranslationsSet = new HashSet<String>();
+			Collections.addAll(expTranslationsSet, expTranslationsArr);
+			new AssertSet(gotTranslationsSet,
+				baseMessage+ "\nList of translations did not contain the expected translations")
+				.assertEqual(expTranslationsSet);
 		}
 		return this;
 	}
@@ -157,7 +166,8 @@ public class AssertMultilingualDictEntry extends Asserter<MultilingualDictEntry>
 		return this;
 	}
 
-	public AssertMultilingualDictEntry atLeastNExamples(Integer expMinExamples) {
+	public AssertMultilingualDictEntry atLeastNExamples(Integer expMinExamples)
+		throws Exception {
 		int gotHits = entry().bilingualExamplesOfUse().size();
 		Assertions.assertTrue(
 			gotHits >= expMinExamples,

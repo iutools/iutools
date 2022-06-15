@@ -91,7 +91,7 @@ public class WordDictEndpointTest extends EndpointTest {
 				"from", "at", "held at", "held", "innuksuk ... lives",
 				"iqaluit’s", "held ... inuksuk", "inuit", "inuit people",
 				"mona ... lea ... innukshuk",
-				"social"
+				"social", "inukshuk high", "inuksuk high", "nakasuk ... inuksuk"
 			)
 			.highlightsAreSubsetOf("iu", "inuksuk")
 		;
@@ -118,13 +118,12 @@ public class WordDictEndpointTest extends EndpointTest {
 			.decompositionIs("inuk/1n")
 			.atLeastNExamples(10)
 			.highlightsAreSubsetOf("en",
+					// These are English translations of the noun "inuk"
+					"inuit", "individual", "individuals", "inuk",  "person",
 					// These are English translations of the proper name "Inuk"
 					"enook", "enuk ... pauloosie",
 					"mr. enook", "mr. enook (interpretation", "name ... enook",
 					"mr. enoki ... glenn",
-					// These are English translations of the noun "inuk"
-					"individual", "individuals", "inuk",  "person",
-
 					// Why are these considered a translations of "inuk"?
 					"held", "(interpretation", "kenny ... jennifer",
 					"name",
@@ -159,7 +158,7 @@ public class WordDictEndpointTest extends EndpointTest {
 			.decompositionIs("inuk/1n")
 			.atLeastNExamples(10)
 			.highlightsAreSubsetOf("en",
-				"innuksuk", "inukshuk", "inuksuk",
+				"inuit", "innuksuk", "inukshuk", "inuksuk",
 			// Why are these considered a translations of "inuksuk"?
 				"held", "(interpretation", "name", "individuals", "person",
 				"enook", "enuk ... pauloosie", "mr. enook",
@@ -186,12 +185,12 @@ public class WordDictEndpointTest extends EndpointTest {
 			.isForWord("housing")
 			.definitionEquals(null)
 			.decompositionIs()
-			.atLeastNExamples(10)
+			.atLeastNExamples(8)
 			.highlightsAreSubsetOf("en", true, "housing")
 			.highlightsAreSubsetOf("iu", true,
 				"ᐃᒡᓗᒋᔭᐅᕙᒃᑐᓂᒃ", "ᐃᒡᓗᓕᕆᓂᕐᒥ", "ᐃᒡᓗᓕᕆᓂᕐᓕ ... ᐃᒡᓗᓕᕆᓂᕐᒧᑐᐃᓐᓈᕋᔭᖅᑐᖅ",
 				"ᐃᒡᓗᖏᓐᓄᑦ", "ᐃᓪᓗᓕᕆᓂᕐᒧᑦ", "ᐃᓐᓇᑐᖃᓕᕆᓂᕐᒧᑦ", "ᐃᓪᓗᐃᑦ", "ᐃᓪᓗᓂᒃ",
-				"ᐃᓪᓗᓕᕆᔨᒃᑯᑦ", "ᐃᓪᓗᓕᕆᔨᒃᑯᓐᓄᑦ")
+				"ᐃᓪᓗᓕᕆᔨᒃᑯᑦ", "ᐃᓪᓗᓕᕆᔨᒃᑯᓐᓄᑦ", "ᐃᓪᓗᓕᕆᔨᓂ","ᐃᓪᓗᓕᕆᔨᓂᒃ")
 		;
 	}
 
@@ -221,7 +220,7 @@ public class WordDictEndpointTest extends EndpointTest {
 						"illunginnu", "illungit"})
 				.translationsIncludedIn(
 					new String[]{"house", "home", "rent"})
-				.minExamples(1000),
+				.minExamples(5),
 
 			new WordDictEndpointCase("iu-SEARCH-igluga")
 				.queryLang("iu")
@@ -235,7 +234,7 @@ public class WordDictEndpointTest extends EndpointTest {
 						"igluqaqtittinirmut", "illulirinirmi", "illuliriniup",
 						"illunginnu", "illungit"})
 				.translationsIncludedIn(new String[]{"house", "home", "rent"})
-				.minExamples(1000),
+				.minExamples(5),
 
 			new WordDictEndpointCase("en-SEARCH-housing")
 				.queryLang("en")
@@ -243,16 +242,11 @@ public class WordDictEndpointTest extends EndpointTest {
 				.iuAlphabet(TransCoder.Script.SYLLABIC)
 				.minHits(10)
 				.translationsIncludedIn(new String[]{
+					"ᐃᓪᓗᓕᕆᔨᓂ", "ᐃᓪᓗᓕᕆᔨᓂᒃ",
 					"ᐃᒡᓗᒋᔭᐅᕙᒃᑐᓂᒃ", "ᐃᒡᓗᓕᕆᓂᕐᒥ",
-					"ᐃᒡᓗᓕᕆᓂᕐᓕ ... ᐃᒡᓗᓕᕆᓂᕐᒧᑐᐃᓐᓈᕋᔭᖅᑐᖅ", "ᐃᒡᓗᖏᓐᓄᑦ", "ᐃᓪᓗᓕᕆᓂᕐᒧᑦ",
-					// These last translationd str actually wrong, but for some reason
-					// the dictionary may produce them
-					"ᐃᒡᓗᒋᔭᐅᕙᒃᑐᓂᒃ", "ᐃᓐᓇᑐᖃᓕᕆᓂᕐᒧᑦ",
-					"ᐃᓪᓗᐃᑦ",
-					"ᐃᓪᓗᓂᒃ",
-					"ᐃᓪᓗᓕᕆᔨᒃᑯᑦ",
-					"ᐃᓪᓗᓕᕆᔨᒃᑯᓐᓄᑦ"})
-				.minExamples(1000),
+					"ᐃᓪᓗᐃᑦ", "ᐃᓪᓗᓂᒃ", "ᐃᓪᓗᓕᕆᔨᒃᑯᓐᓄᑦ"
+					})
+				.minExamples(5),
 
 			// This IU word is not found in the corpus, but it DOES decompose.
 			// So, we ARE able to show some meaningful information about it
@@ -273,7 +267,7 @@ public class WordDictEndpointTest extends EndpointTest {
 					"human resources department", "human resources. department summary",
 					// The following are actually bad, but they may come up
 					"public works", "staffed"})
-				.minExamples(1000),
+				.minExamples(5),
 
 			// This IU word is not found in the hansard, AND it DOES NOT decompose.
 			// So no hits should be found.
@@ -294,7 +288,7 @@ public class WordDictEndpointTest extends EndpointTest {
 				.relatedWordsIncludedIn(new String[] {
 					"ᐃᓪᓗᐃᑦ", "ᐃᓪᓗᒧᑦ", "ᐃᓪᓗᓂᒃ", "ᐃᓪᓗᓄᑦ", "ᐃᓪᓗᓕᕆᓂᕐᒧᑦ"})
 				.translationsIncludedIn(new String[]{"house", "home", "rent"})
-				.minExamples(1000),
+				.minExamples(5),
 
 			// In this case, the input is syllabics, but we request the results in
 			// roman
@@ -309,28 +303,27 @@ public class WordDictEndpointTest extends EndpointTest {
 					"illuit", "illulirinirmut", "illumut", "illunik", "illunut",
 					"igluqaqtittinirmut", "illulirinirmi", "illuliriniup", "illungit"})
 				.translationsIncludedIn(new String[]{"house", "home", "rent"})
-				.minExamples(1000),
+				.minExamples(5),
 
 			new WordDictEndpointCase("en-SEARCH-housing-roman")
 				.queryLang("en")
 				.query("housing")
 				.iuAlphabet(TransCoder.Script.ROMAN)
-				.translationsIncludedIn(new String[]{"iglugijauvaktunik",
-					"iglulirinirli ... iglulirinirmutuinnaarajaqtuq",
-					"iglulirinirmi", "iglunginnut", "illuit", "illulirinirmut",
-					"illulirijikkunnut", "illulirijikkut", "illunik",
-					"innatuqalirinirmut"})
-				.minExamples(1000),
+				.translationsIncludedIn(new String[]{
+					"illulirijini", "illulirijinik",
+					"iglugijauvaktunik", "iglulirinirmi",
+					"illuit", "illunik", "illulirijikkunnut"})
+				.minExamples(5),
 
 			new WordDictEndpointCase("en-SEARCH-housing-syll")
 				.queryLang("en")
 				.query("housing")
 				.iuAlphabet(TransCoder.Script.SYLLABIC)
 				.translationsIncludedIn(new String[]{
+					"ᐃᓪᓗᓕᕆᔨᓂ", "ᐃᓪᓗᓕᕆᔨᓂᒃ",
 					"ᐃᒡᓗᒋᔭᐅᕙᒃᑐᓂᒃ", "ᐃᒡᓗᓕᕆᓂᕐᒥ",
-					"ᐃᒡᓗᓕᕆᓂᕐᓕ ... ᐃᒡᓗᓕᕆᓂᕐᒧᑐᐃᓐᓈᕋᔭᖅᑐᖅ", "ᐃᒡᓗᖏᓐᓄᑦ", "ᐃᓪᓗᓕᕆᓂᕐᒧᑦ",
-					"ᐃᓐᓇᑐᖃᓕᕆᓂᕐᒧᑦ", "ᐃᓪᓗᐃᑦ", "ᐃᓪᓗᓂᒃ", "ᐃᓪᓗᓕᕆᔨᒃᑯᑦ", "ᐃᓪᓗᓕᕆᔨᒃᑯᓐᓄᑦ"})
-				.minExamples(1000),
+					"ᐃᓪᓗᐃᑦ", "ᐃᓪᓗᓂᒃ", "ᐃᓪᓗᓕᕆᔨᒃᑯᓐᓄᑦ"})
+				.minExamples(5),
 
 			new WordDictEndpointCase("iu-SEARCH-Igluga-capitalized")
 				.queryLang("iu")
@@ -341,7 +334,7 @@ public class WordDictEndpointTest extends EndpointTest {
 				.relatedWordsIncludedIn(new String[] {
 					"illuit", "illulirinirmut", "illumut", "illunik", "illunut"})
 				.translationsIncludedIn(new String[]{"house", "home", "rent"})
-				.minExamples(1000),
+				.minExamples(5),
 		};
 
 		Consumer<Case> runner =
@@ -393,7 +386,7 @@ public class WordDictEndpointTest extends EndpointTest {
 							.definitionEquals(null)
 							.decompositionIs(aCase.expDecomp)
 							.relatedWordsIsSubsetOf(aCase.expRelatedWords)
-							.atLeastNExamples(aCase.expMinHits)
+							.atLeastNExamples(aCase.expMinExamples)
 							.translationsAreNonEmptySubsetOf(aCase.expTranslations)
 							.highlightsAreSubsetOf(aCase.lang, true, epResult.convertedQuery)
 							.highlightsAreSubsetOf(otherLang, true, aCase.expTranslations)

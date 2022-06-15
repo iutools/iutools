@@ -28,10 +28,8 @@ public class DictEvaluationTest {
 		long start = StopWatch.nowMSecs();
 		DictEvaluationResults results =
 			evaluator.evaluate(Paths.get(glossaryPath), stopAfterN, (Integer)null);
-//		long elapsed = StopWatch.elapsedMsecsSince(start);
-//		double gotAvgSecs = elapsed / (1000.0 * results.totalIUPresent());
 		AssertRuntime.runtimeHasNotChanged(
-			results.avgSecsPerEntryPresent, 0.20,
+			results.avgSecsPerEntryPresent, 1.545,
 			"avg secs for retrieving a dict entry", testInfo);
 
 		new AssertDictEvaluationResults(results)
@@ -41,17 +39,17 @@ public class DictEvaluationTest {
 			.totalIUPresent(WhatTerm.ORIGINAL, 6)
 			.totalIUPresent(WhatTerm.RELATED, 2)
 
-			.totalENSpotted(MatchType.STRICT, 3)
+			.totalENSpotted(MatchType.STRICT, 2)
 			.totalENSpotted(MatchType.LENIENT, 0)
 			.totalENSpotted(MatchType.LENIENT_OVERLAP, 1)
 
-			.totalENSpotted_atLeastInSense(MatchType.STRICT, 3)
-			.totalENSpotted_atLeastInSense(MatchType.LENIENT, 3)
-			.totalENSpotted_atLeastInSense(MatchType.LENIENT_OVERLAP,4)
+			.totalENSpotted_atLeastInSense(MatchType.STRICT, 2)
+			.totalENSpotted_atLeastInSense(MatchType.LENIENT, 2)
+			.totalENSpotted_atLeastInSense(MatchType.LENIENT_OVERLAP,3)
 
-			.rateENSpotted(MatchType.STRICT, 3.0/8)
-			.rateENSpotted(MatchType.LENIENT, 3.0/8)
-			.rateENSpotted(MatchType.LENIENT_OVERLAP, 4.0/8)
+			.rateENSpotted(MatchType.STRICT, 2.0/8)
+			.rateENSpotted(MatchType.LENIENT, 2.0/8)
+			.rateENSpotted(MatchType.LENIENT_OVERLAP, 3.0/8)
 			;
 	}
 
@@ -75,20 +73,20 @@ public class DictEvaluationTest {
 			.totalGlossaryEntries(556)
 			.totalSingleWordIUEntries(465)
 
-			.totalIUPresent(WhatTerm.ORIGINAL, 185)
-			.totalIUPresent(WhatTerm.RELATED, 76)
+			.totalIUPresent(WhatTerm.ORIGINAL, 183)
+			.totalIUPresent(WhatTerm.RELATED, 77)
 
-			.totalENSpotted(MatchType.STRICT, 87)
-			.totalENSpotted(MatchType.LENIENT, 7)
-			.totalENSpotted(MatchType.LENIENT_OVERLAP, 10)
+			.totalENSpotted(MatchType.STRICT, 92)
+			.totalENSpotted(MatchType.LENIENT, 5)
+			.totalENSpotted(MatchType.LENIENT_OVERLAP, 11)
 
-			.totalENSpotted_atLeastInSense(MatchType.STRICT, 87)
-			.totalENSpotted_atLeastInSense(MatchType.LENIENT, 94)
-			.totalENSpotted_atLeastInSense(MatchType.LENIENT_OVERLAP, 104)
+			.totalENSpotted_atLeastInSense(MatchType.STRICT, 92)
+			.totalENSpotted_atLeastInSense(MatchType.LENIENT, 97)
+			.totalENSpotted_atLeastInSense(MatchType.LENIENT_OVERLAP, 108)
 
-			.rateENSpotted(MatchType.STRICT, 0.333)
-			.rateENSpotted(MatchType.LENIENT, 0.360)
-			.rateENSpotted(MatchType.LENIENT_OVERLAP, 0.398)
+			.rateENSpotted(MatchType.STRICT, 0.354)
+			.rateENSpotted(MatchType.LENIENT, 0.373)
+			.rateENSpotted(MatchType.LENIENT_OVERLAP, 0.415)
 			;
 	}
 }
