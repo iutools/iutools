@@ -8,10 +8,12 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.concordancer.tm.TMEvaluator;
 import org.iutools.concordancer.tm.TMEvaluator.*;
 import org.iutools.concordancer.tm.TranslationMemoryException;
+import org.iutools.config.IUConfig;
 import org.iutools.script.TransCoder;
 import org.iutools.worddict.MultilingualDict.WhatTerm;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import static org.iutools.concordancer.tm.TMEvaluator.matchTypes;
@@ -38,11 +40,6 @@ public class DictEvaluator {
 		dict.setMaxTranslations(max);
 		return this;
 	}
-
-	public DictEvaluationResults evaluate(Path glossaryPath) throws MultilingualDictException {
-		return evaluate(glossaryPath, (Integer)null, (Integer)null);
-	}
-
 
 	public DictEvaluationResults evaluate(
 		Path glossaryPath, Integer stopAfterN, Integer startingAt) throws MultilingualDictException {
@@ -230,5 +227,17 @@ public class DictEvaluator {
 
 	private void printTermEquivExplanation() {
 		userIO.echo("\n"+TMEvaluator.explainEquivSenses()+"\n");
+	}
+
+	public void main(String[] args) throws Exception {
+		String glossaryPath = IUConfig.getIUDataPath("data/glossaries/wpGlossary.json");
+		DictEvaluator evaluator = new DictEvaluator()
+			.setMinMaxPairs(null, 100)
+			.setMaxTranslations(10);
+
+		Integer stopAfterN = null;
+		Integer startingAtN = null;
+		DictEvaluationResults results =
+			evaluator.evaluate(Paths.get(glossaryPath), stopAfterN, startingAtN);
 	}
 }

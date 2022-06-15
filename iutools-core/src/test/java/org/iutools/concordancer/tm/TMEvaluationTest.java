@@ -17,7 +17,7 @@ public class TMEvaluationTest {
 
 	static {
 		try {
-			wordAlignsPath = Paths.get(IUConfig.getIUDataPath("data/translation-memories/testdata/formattest-origtok-origalign.json"));
+			wordAlignsPath = Paths.get(IUConfig.getIUDataPath("data/translation-memories/testdata/fastalign.NunavutHansard-unique.bpe-j-15000.lc.json"));
 		} catch (ConfigException e) {
 			throw new RuntimeException(e);
 		}
@@ -89,21 +89,21 @@ public class TMEvaluationTest {
 			.totalENPresent_inSense(MatchType.LENIENT, 1)
 			.totalENPresent_inSense(MatchType.LENIENT_OVERLAP, 3)
 
-			.totalENSpotted_inSense(MatchType.STRICT, 73)
+			.totalENSpotted_inSense(MatchType.STRICT, 88)
 			.totalENSpotted_inSense(MatchType.LENIENT, 1)
-			.totalENSpotted_inSense(MatchType.LENIENT_OVERLAP, 15)
+			.totalENSpotted_inSense(MatchType.LENIENT_OVERLAP, 8)
 
 			.totalENPresent_atLeastInSense(MatchType.STRICT, 106)
 			.totalENPresent_atLeastInSense(MatchType.LENIENT, 107)
 			.totalENPresent_atLeastInSense(MatchType.LENIENT_OVERLAP, 110)
 
-			.totalENSpotted_atLeastInSense(MatchType.STRICT, 73)
-			.totalENSpotted_atLeastInSense(MatchType.LENIENT, 74)
-			.totalENSpotted_atLeastInSense(MatchType.LENIENT_OVERLAP, 89)
+			.totalENSpotted_atLeastInSense(MatchType.STRICT, 88)
+			.totalENSpotted_atLeastInSense(MatchType.LENIENT, 89)
+			.totalENSpotted_atLeastInSense(MatchType.LENIENT_OVERLAP, 97)
 
-			.rateENSpotted_inSense(MatchType.STRICT, 0.688)
-			.rateENSpotted_inSense(MatchType.LENIENT, 0.691)
-			.rateENSpotted_inSense(MatchType.LENIENT_OVERLAP, 0.809)
+			.rateENSpotted_inSense(MatchType.STRICT, 0.830)
+			.rateENSpotted_inSense(MatchType.LENIENT, 0.832)
+			.rateENSpotted_inSense(MatchType.LENIENT_OVERLAP, 0.882)
 		;
 
 	}
