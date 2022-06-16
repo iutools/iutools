@@ -10,7 +10,7 @@ trap '[[ $BASH_COMMAND != echo* ]] && echo $BASH_COMMAND' DEBUG
 
 OLD_WEBAPPS=$TOMCAT_WEBAPPS/iutools
 date+"%y-%m-%d"
-NOW=`date +%Y-%m-%d-%H:%M`
+NOW=`date +%Y-%m-%d-%Hh%M`
 BAK_WEBAPPS=$TOMCAT_WEBAPPS/iutools.bak$NOW
 
 echo

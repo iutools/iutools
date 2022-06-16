@@ -6,7 +6,7 @@
  	<artifactId>iutools-parent</artifactId>
 	<packaging>pom</packaging>
  
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 	
 	<properties>
 		<!-- We deploy modules, but not the parent -->
@@ -18,7 +18,7 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.source>1.8</maven.compiler.source>
 
-		<log4j.version>2.11.2</log4j.version>
+		<log4j.version>2.17.2</log4j.version>
 
 		<junit.version>4.13.1</junit.version>
 	</properties>
@@ -198,7 +198,8 @@
 
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-api</artifactId>
+<!--			<artifactId>log4j-api</artifactId>-->
+			<artifactId>log4j-1.2-api</artifactId>
 			<version>${log4j.version}</version>
 			<exclusions>
 				<exclusion>
