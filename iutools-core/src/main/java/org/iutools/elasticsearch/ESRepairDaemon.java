@@ -1,21 +1,16 @@
 package org.iutools.elasticsearch;
 
-import ca.nrc.debug.Debug;
 import ca.nrc.dtrc.elasticsearch.ElasticSearchException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.iutools.corpus.CompiledCorpus;
 import org.iutools.corpus.CompiledCorpusRegistry;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 
 /**
  * Use this class to run a process that monitor and repair
@@ -162,26 +157,12 @@ public class ESRepairDaemon implements ServletContextListener, Runnable {
 	}
 
 	@Override
-	public void contextInitialized(ServletContextEvent sce) {
-		daemonLogger().info("contextInitialized invoked");
-		int counter = 0;
+	public void contextInitialized(ServletContextEvent servletContextEvent) {
 
-		// Based on this page:
-		//   https://stackoverflow.com/questions/4907502/running-a-background-java-program-in-tomcat
-		ServletContext context = sce.getServletContext();
-		int nr_executors = 1;
-		ThreadFactory daemonFactory = new DaemonThreadFactory();
-
-		ExecutorService executor;
-		executor = Executors.newSingleThreadExecutor(daemonFactory);
-		executor.submit(new ESRepairDaemon());
-		context.setAttribute("MY_EXECUTOR", executor);
 	}
 
-
 	@Override
-	public void contextDestroyed(ServletContextEvent sce) {
-		ServletContext context = sce.getServletContext();
-		executor.shutdownNow(); // or process/wait until all pending jobs are done
+	public void contextDestroyed(ServletContextEvent servletContextEvent) {
+
 	}
 }

@@ -101,26 +101,6 @@ public class MockServiceResponse
 	}
 
 	@Override
-	public int getStatus() {
-		return 0;
-	}
-
-	@Override
-	public String getHeader(String name) {
-		return null;
-	}
-
-	@Override
-	public Collection<String> getHeaders(String name) {
-		return null;
-	}
-
-	@Override
-	public Collection<String> getHeaderNames() {
-		return null;
-	}
-
-	@Override
 	public String getCharacterEncoding() {
 		return null;
 	}
@@ -147,11 +127,6 @@ public class MockServiceResponse
 
 	@Override
 	public void setContentLength(int len) {
-
-	}
-
-	@Override
-	public void setContentLengthLong(long len) {
 
 	}
 
