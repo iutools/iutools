@@ -95,7 +95,10 @@ public class AssertGistPrepareContentResult extends AssertEndpointResult {
 		}
 		if (gotLangSents != null) {
 			for (String[] aSent : gotLangSents) {
-				String aSentStr = String.join("", aSent);
+				String aSentStr = "";
+				if (aSent != null) {
+					aSentStr = String.join("", aSent);
+				}
 				aSentStr = aSentStr.replaceAll("\n$", "");
 				gotSents.add(aSentStr);
 			}

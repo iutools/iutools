@@ -10,7 +10,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import ca.nrc.debug.Debug;
 import ca.nrc.dtrc.elasticsearch.ElasticSearchException;
 import org.apache.log4j.Logger;
 

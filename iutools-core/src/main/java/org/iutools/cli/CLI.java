@@ -1,7 +1,7 @@
 package org.iutools.cli;
 
-import ca.nrc.datastructure.Cloner;
 import ca.nrc.string.StringUtils;
+import org.apache.log4j.Logger;
 import org.iutools.concordancer.WebConcordancer;
 import org.apache.commons.cli.Option;
 
@@ -465,6 +465,10 @@ public class CLI {
 	}
 
 	public static void main(String[] args) throws Exception {
+		Logger logger = Logger.getLogger("org.iutools.CLI.main");
+		if (logger.isTraceEnabled()) {
+			logger.trace("CLI invoked with args="+String.join(", ", args));
+		}
 		MainCommand mainCmd = defineMainCommand();
 		mainCmd.run(args);
 	}

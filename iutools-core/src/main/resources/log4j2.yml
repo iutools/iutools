@@ -1,0 +1,42 @@
+Configuration:
+  status: debug
+
+  Loggers:
+    logger:
+        - name: org.examples.method1
+          level: debug
+        - name: org.examples.method2
+          level: debug
+
+    Root:
+      level: warn
+      AppenderRef:
+        - ref: LogToConsole
+        - ref: LogTofile
+
+  appenders:
+    Console:
+      name: LogToConsole
+      PatternLayout:
+        # Use this format by default
+        Pattern: "-- %c{2}: %m%n"
+        # Use this format if you want to see the time at which the trace was printed
+#        Pattern: "-- %c{2}@%d{HH:mm:ss,SSS}: %m%n"
+        # Use this format if you want to see the time at which the trace was printed
+        #  as well as the name of the thread
+#        Pattern: "-- %c{2}@%d{HH:mm:ss,SSS}(thr=%t): %m%n"
+
+    File:
+      name: LogTofile
+      fileName: /Users/desilets/Documents/logs/log4j2-spike.log
+      PatternLayout:
+        # Use this format by default
+        Pattern: "-- %c{2}: %m%n"
+        # Use this format if you want to see the time at which the trace was printed
+#        Pattern: "-- %c{2}@%d{HH:mm:ss,SSS}: %m%n"
+        # Use this format if you want to see the time at which the trace was printed
+        #  as well as the name of the thread
+#        Pattern: "-- %c{2}@%d{HH:mm:ss,SSS}(thr=%t): %m%n"
+
+
+
