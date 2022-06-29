@@ -57,7 +57,7 @@ public class GistPrepareContentTest extends EndpointTest {
 		new AssertGistPrepareContentResult(epResult,
 			"Content not prepared as expected")
 			.inputWasActualContent(false)
-			.containsENSentenceStartingWith("Premier of Nunavut")
+			.containsENSentenceStartingWith("Explore Nunavut")
 			.containsIUSentenceStartingWith("sivuliqti nunavummi")
 			.containsAlignment(
 				new SentencePair(
