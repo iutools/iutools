@@ -353,7 +353,7 @@ Click on two misspelled words in close succession
             
 ## Search Engine
 Search for word in LATIN - Happy Path
-- Enter ammuumajuq (= scuba diving or something) in the search box, then click [Search] button
+- Enter ammuumajuq (= clam) in the search box, then click [Search] button
 - Check that this displays the results of a Google search for a list of alternatives, surrounded 
   parens and spearated by ORs. As of Oct 2021, the list of alternatives was:
 
@@ -368,7 +368,7 @@ Search for word in LATIN - Happy Path
 
 
 Search for word in SYLLABIC -- Happy Path
-- Enter ᐅᒃᐱᕐᓂᖅ (= religion) in the query text box, then click [Search] 
+- Enter ᐊᒻᒨᒪᔪᖅ (= clam) in the query text box, then click [Search] 
   button.
 - Check that this displays the results of a Google search for a list of alternatives, surrounded 
   parens and spearated by ORs. As of Oct 2021, the list of alternatives was:
@@ -682,6 +682,8 @@ Word Entry window hiding/showing
  ## Cookie consent
  
  - Delete all cookies on localhost
+   - With Chrome, click in the 'i' icon to the left of the URL, then Cookies and 
+     Remove 
  - Load any page (except possibly the home page)
  - Check that a banner appears at bottom notifying you that the site uses cookies.
  - Click on the 'Read more' link and check that it brings you to an IUTools 

@@ -228,7 +228,7 @@ public class ESIndexRepair {
 			Query query = new Query(queryJsonObject);
 			_Source source = new _Source("id");
 			SearchResults<Document> results =
-				esFactory().searchAPI().search(query, esType, goodDocPrototype, source);
+				esFactory().searchAPI().search(query, esType, goodDocPrototype, (Integer)null, source);
 			iter = results.docIDIterator();
 		}
 

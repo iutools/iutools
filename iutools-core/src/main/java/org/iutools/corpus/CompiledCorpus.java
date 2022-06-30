@@ -678,8 +678,9 @@ public class CompiledCorpus {
 			additionalRequestEltsList.add(
 				new _Source(winfoFields.toArray(new String[0])));
 		}
+		Integer batchSize = new Integer(1000);
 		SearchResults<WordInfo> results =
-				esWinfoSearch(query, options, false,
+				esWinfoSearch(query, options, false, batchSize,
 					additionalRequestEltsList.toArray(new RequestBodyElement[0]));
 
 		return results;
@@ -1019,6 +1020,14 @@ public class CompiledCorpus {
 		String query, SearchOption[] options, Boolean statsOnly,
 		RequestBodyElement... additionalReqBodies)
 		throws CompiledCorpusException, NoSuchCorpusException {
+		return esWinfoSearch(query, options, statsOnly, (Integer)null,
+			additionalReqBodies);
+	}
+
+	private SearchResults<WordInfo> esWinfoSearch(
+		String query, SearchOption[] options, Boolean statsOnly,
+		Integer batchSize, RequestBodyElement... additionalReqBodies)
+		throws CompiledCorpusException, NoSuchCorpusException {
 		SearchResults<WordInfo> results = null;
 
 		Pair<String,RequestBodyElement[]> augmentedRequest =
@@ -1029,7 +1038,7 @@ public class CompiledCorpus {
 		try {
 			results =
 			esFactory().searchAPI().search(
-				query, WORD_INFO_TYPE, new WordInfo(),
+				query, WORD_INFO_TYPE, new WordInfo(), batchSize,
 				additionalReqBodies);
 		} catch (NoSuchIndexException exc) {
 			throw new NoSuchCorpusException(exc);
@@ -1046,11 +1055,18 @@ public class CompiledCorpus {
 		return esWinfoSearch(query, new SearchOption[0], (Boolean)null, additionalReqBodies);
 	}
 
+	private SearchResults<WordInfo> esWinfoSearch(
+		Query query, SearchOption[] options,
+		Boolean statsOnly,
+		RequestBodyElement... additionalReqBodies) throws CompiledCorpusException {
+		return esWinfoSearch(query, options, statsOnly, (Integer)null, additionalReqBodies);
+	}
+
 
 	private SearchResults<WordInfo> esWinfoSearch(
-			Query query, SearchOption[] options,
-			Boolean statsOnly,
-			RequestBodyElement... additionalReqBodies) throws CompiledCorpusException {
+		Query query, SearchOption[] options,
+		Boolean statsOnly, Integer batchSize,
+		RequestBodyElement... additionalReqBodies) throws CompiledCorpusException {
 
 		Set<SearchOption> optionsSet = new HashSet<SearchOption>();
 		Collections.addAll(optionsSet, options);
@@ -1066,7 +1082,7 @@ public class CompiledCorpus {
 		try {
 			results =
 			esFactory().searchAPI().search(
-							query, WORD_INFO_TYPE, new WordInfo(), additionalReqBodies);
+				query, WORD_INFO_TYPE, new WordInfo(), batchSize, additionalReqBodies);
 		} catch (ElasticSearchException e) {
 			throw new CompiledCorpusException(e);
 		}
