@@ -209,34 +209,63 @@ class WordEntryController extends IUToolsController {
             && Object.keys(wordEntry.examplesForOrigWordTranslation).length > 0) {
             // We have some translations for the actual word
             tracer.trace("We HAVE translations for the query word");
-            info.l1Words = [wordEntry.word];
-            info.translation4word[wordEntry.word] = wordEntry.origWordTranslations;
-            info.allTranslations = wordEntry.origWordTranslations;
-            info.examples = wordEntry.examplesForOrigWordTranslation;
+            // info.l1Words = [wordEntry.word];
+            // info.translation4word[wordEntry.word] = wordEntry.origWordTranslations;
+            // info.allTranslations = wordEntry.origWordTranslations;
+            // info.examples = wordEntry.examplesForOrigWordTranslation;
+            this.setTranslationInfo_origWord(info, wordEntry);
         } else {
             // We only have translations for related words
             tracer.trace("We have NO translations for the query word");
-            info.areRelatedTranslations = true;
-            info.l1Words = wordEntry.relatedWords;
-            info.allTranslations = [];
-            info.examples = wordEntry.examplesForRelWordsTranslation;
-            var relWords = Object.keys(wordEntry.relatedWordTranslationsMap);
-            for (var ii=0; ii < relWords.length; ii++) {
-                var aRelWord = relWords[ii];
-                var aRelWordTranslations = wordEntry.relatedWordTranslationsMap[aRelWord];
-                tracer.trace("For aRelWord="+aRelWord+", aRelWordTransl="+jsonStringifySafe(aRelWordTranslations))
-                info['translation4word'][aRelWord] = aRelWordTranslations;
-                for (var jj=0; jj < aRelWordTranslations.length; jj++) {
-                    var aTransl = aRelWordTranslations[jj];
-                    if (!info.allTranslations.includes(aTransl)) {
-                        info.allTranslations.push(aTransl);
-                    }
-                }
-            }
+            this.setTranslationInfo_relatedWords(info, wordEntry);
+            // info.areRelatedTranslations = true;
+            // info.l1Words = wordEntry.relatedWords;
+            // info.allTranslations = [];
+            // info.examples = wordEntry.examplesForRelWordsTranslation;
+            // var relWords = Object.keys(wordEntry.relatedWordTranslationsMap);
+            // for (var ii=0; ii < relWords.length; ii++) {
+            //     var aRelWord = relWords[ii];
+            //     var aRelWordTranslations = wordEntry.relatedWordTranslationsMap[aRelWord];
+            //     tracer.trace("For aRelWord="+aRelWord+", aRelWordTransl="+jsonStringifySafe(aRelWordTranslations))
+            //     info['translation4word'][aRelWord] = aRelWordTranslations;
+            //     for (var jj=0; jj < aRelWordTranslations.length; jj++) {
+            //         var aTransl = aRelWordTranslations[jj];
+            //         if (!info.allTranslations.includes(aTransl)) {
+            //             info.allTranslations.push(aTransl);
+            //         }
+            //     }
+            // }
         }
 
         tracer.trace("Returning info="+jsonStringifySafe(info));
         return info;
+    }
+
+    setTranslationInfo_origWord(info, wordEntry) {
+        info.l1Words = [wordEntry.word];
+        info.translation4word[wordEntry.word] = wordEntry.origWordTranslations;
+        info.allTranslations = wordEntry.origWordTranslations;
+        info.examples = wordEntry.examplesForOrigWordTranslation;
+    }
+
+    setTranslationInfo_relatedWords(info, wordEntry) {
+        info.areRelatedTranslations = true;
+        info.l1Words = wordEntry.relatedWords;
+        info.allTranslations = [];
+        info.examples = wordEntry.examplesForRelWordsTranslation;
+        var relWords = Object.keys(wordEntry.relatedWordTranslationsMap);
+        for (var ii=0; ii < relWords.length; ii++) {
+            var aRelWord = relWords[ii];
+            var aRelWordTranslations = wordEntry.relatedWordTranslationsMap[aRelWord];
+            tracer.trace("For aRelWord="+aRelWord+", aRelWordTransl="+jsonStringifySafe(aRelWordTranslations))
+            info['translation4word'][aRelWord] = aRelWordTranslations;
+            for (var jj=0; jj < aRelWordTranslations.length; jj++) {
+                var aTransl = aRelWordTranslations[jj];
+                if (!info.allTranslations.includes(aTransl)) {
+                    info.allTranslations.push(aTransl);
+                }
+            }
+        }
     }
 
 

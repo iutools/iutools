@@ -210,6 +210,11 @@ class=org.iutools.morphrelatives.WordOutcome
 {
   "relsProduced":
     [
+      "ilaliutisimatuinnaqpuq",
+      "ilaliutisimajut",
+      "ilaliutisimavuq",
+      "ilaliutisimava",
+      "ilaliutisimammangaata"
     ],
   "word":
     "ilaliutisimatuinnalirtuni"

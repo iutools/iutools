@@ -136,7 +136,7 @@ public class ESIndexRepairTest {
 	public void test__corruptedDocIDs__HappyPath() throws Exception {
 		AssertESIndexRepair asserter = new AssertESIndexRepair(repair);
 		asserter.assertCorruptedDocsAre(
-		"Initially, the index should NOT have contained any corrupted documents",
+			"Initially, the index should NOT have contained any corrupted documents",
 			new String[0], winfoType, goodDocPrototype
 		);
 
@@ -170,7 +170,7 @@ public class ESIndexRepairTest {
 		String expQueryStr =
 			"{"+
 			"  \"bool\": {"+
-			"    \"should\":  ["+
+			"    \"must\":  ["+
 			"      {\"exists\": {\"field\": \"badFld1\"}},"+
 			"      {\"exists\": {\"field\": \"badFld2\"}}"+
 			"    ]"+

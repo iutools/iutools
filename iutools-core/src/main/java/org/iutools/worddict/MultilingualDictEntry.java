@@ -294,6 +294,7 @@ public class MultilingualDictEntry {
 		Logger tLogger = Logger.getLogger("org.iutools.worddict.MultilingualDictEntry.sortTranslations");
 		try {
 			if (_translationsNeedSorting) {
+				tLogger.trace("sorting translations for word: "+this.wordRoman);
 				tLogger.trace("sorting orig word translations");
 				TranslationComparator comparator =
 					new TranslationComparator(otherLang(), this.examplesForOrigWordTranslation);

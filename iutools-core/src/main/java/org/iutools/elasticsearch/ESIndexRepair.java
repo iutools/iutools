@@ -254,9 +254,9 @@ public class ESIndexRepair {
 
 		if (existFieldsArray.length() > 0) {
 			query = new JSONObject()
-			.put("bool", new JSONObject()
-			.put("should", existFieldsArray)
-			);
+				.put("bool", new JSONObject()
+					.put("must", existFieldsArray)
+				);
 		}
 
 		return query;

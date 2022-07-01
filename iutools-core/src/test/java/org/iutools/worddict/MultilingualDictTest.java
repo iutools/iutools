@@ -39,7 +39,6 @@ public class MultilingualDictTest {
 		// Cases for entry4word function
 		cases_entry4word = new MultilingualDictCase[] {
 
-
 			new MultilingualDictCase("iu-ammuumajuqsiuqtutik", "ammuumajuqsiuqtutik")
 				.setDecomp(
 					"ammut/1a", "u/1nv", "ma/1vv", "juq/1vn", "siuq/1nv",
@@ -274,7 +273,7 @@ public class MultilingualDictTest {
 		};
 
 		new RunOnCases(cases_entry4word, runner)
-//			.onlyCaseNums(6)
+//			.onlyCaseNums(1)
 //			.onlyCasesWithDescr("en-housing")
 			.run();
 	}
