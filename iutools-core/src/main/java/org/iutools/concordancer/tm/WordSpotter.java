@@ -5,7 +5,8 @@ import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.StringUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.iutools.concordancer.SentencePair;
 import org.iutools.script.TransCoder;
 import org.iutools.script.TransCoderException;
@@ -53,7 +54,7 @@ public class WordSpotter {
 	}
 
 	static List<String> splitText(String text, String[] tokens) throws WordSpotterException {
-		Logger tLogger = Logger.getLogger("org.iutools.concordancer.tm.WordSpotter.splitText");
+		Logger tLogger = LogManager.getLogger("org.iutools.concordancer.tm.WordSpotter.splitText");
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("tokens="+(tokens==null?"null":String.join(",", tokens)));
 		}
@@ -81,7 +82,7 @@ public class WordSpotter {
 	}
 
 	private static Pattern tokenPattern(String token) {
-		Logger tLogger = Logger.getLogger("org.iutools.concordancer.SentencePair.tokenPattern");
+		Logger tLogger = LogManager.getLogger("org.iutools.concordancer.SentencePair.tokenPattern");
 		tLogger.trace("token='"+token+"'");
 		token = SentencePair.escapeRegexpSpecialChars(token);
 		String tokenRegex =
@@ -117,7 +118,7 @@ public class WordSpotter {
 		if (ignoreRepetitions == null) {
 			ignoreRepetitions = true;
 		}
-		Logger tLogger = Logger.getLogger("org.iutools.concordancer.tm.WordSpotter.spotHighlight");
+		Logger tLogger = LogManager.getLogger("org.iutools.concordancer.tm.WordSpotter.spotHighlight");
 		tLogger.trace("text="+text);
 		Matcher matcher =
 			Pattern.compile("<"+tagName+">([^<]*)"+"</"+tagName+">")
@@ -208,7 +209,7 @@ public class WordSpotter {
 
 	public Map<String, String> highlight(String l1, String l1Expr,
 		String tagName, Boolean higlightInPlace) throws WordSpotterException {
-		Logger tLogger = Logger.getLogger("org.iutools.concordancer.tm.WordSpotter.highlight");
+		Logger tLogger = LogManager.getLogger("org.iutools.concordancer.tm.WordSpotter.highlight");
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("l1=" + l1 + ", l1Expr=" + l1Expr + ", pair=, =" + PrettyPrinter.print(pair));
 		}
@@ -269,7 +270,7 @@ public class WordSpotter {
 	}
 
 	protected static String ensureTagsAreNotInMiddleOfWord(String text, String tagName) {
-		Logger tLogger = Logger.getLogger("org.iutools.concordancer.tm.WordSpotter.ensureTagsAreNotInMiddleOfWord");
+		Logger tLogger = LogManager.getLogger("org.iutools.concordancer.tm.WordSpotter.ensureTagsAreNotInMiddleOfWord");
 		tLogger.trace("text="+text);
 		String openTag = "<"+tagName+">";
 		String closeTag = "</"+tagName+">";
@@ -308,7 +309,7 @@ public class WordSpotter {
 	private String highlightTokens(String lang,
 	 	int[] tokensToHighlight, String tagName) throws WordSpotterException {
 
-		Logger tLogger = Logger.getLogger("org.iutools.concordancer.tm.WordSpotter.highlightTokens");
+		Logger tLogger = LogManager.getLogger("org.iutools.concordancer.tm.WordSpotter.highlightTokens");
 
 		try {
 			if (tLogger.isTraceEnabled()) {
@@ -361,7 +362,7 @@ public class WordSpotter {
 	}
 
 	public int[] tokensMatchingText(String sourceLang, String text) {
-		Logger tLogger = Logger.getLogger("org.iutools.concordancer.tm.WordSpotter.tokensMatchingText");
+		Logger tLogger = LogManager.getLogger("org.iutools.concordancer.tm.WordSpotter.tokensMatchingText");
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("sourceLang="+sourceLang+", text="+text);
 			tLogger.trace("this.pair="+PrettyPrinter.print(this.pair));

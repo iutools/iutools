@@ -2,7 +2,8 @@ package org.iutools.webservice.spell;
 
 import ca.nrc.config.ConfigException;
 import ca.nrc.json.PrettyPrinter;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.iutools.corpus.CompiledCorpusRegistry;
 import org.iutools.spellchecker.SpellChecker;
 import org.iutools.spellchecker.SpellCheckerException;
@@ -50,7 +51,7 @@ public class SpellEndpoint extends Endpoint<SpellInputs, SpellResult> {
 
 	@Override
 	public EndpointResult execute(SpellInputs inputs) throws ServiceException {
-		Logger tLogger = Logger.getLogger("org.iutools.webservice.spell.SpellEndpoint.execute");
+		Logger tLogger = LogManager.getLogger("org.iutools.webservice.spell.SpellEndpoint.execute");
 
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("inputs="+PrettyPrinter.print(inputs));

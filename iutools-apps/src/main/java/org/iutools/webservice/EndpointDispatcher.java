@@ -1,6 +1,7 @@
 package org.iutools.webservice;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.iutools.morph.r2l.MorphologicalAnalyzer_R2L;
 import org.iutools.morph.MorphologicalAnalyzerException;
 import org.iutools.webservice.gist.GistPrepareContentEndpoint;
@@ -47,7 +48,7 @@ public class EndpointDispatcher extends HttpServlet {
 
 	public EndpointDispatcher() {
 		super();
-		Logger tLogger = Logger.getLogger("org.iutools.webservice.EndpointDispatcher.constructor");
+		Logger tLogger = LogManager.getLogger("org.iutools.webservice.EndpointDispatcher.constructor");
 		tLogger.trace("invoked");
 
 		// This ensures that the overhead of loading the linguistic data will be
@@ -80,7 +81,7 @@ public class EndpointDispatcher extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 		throws IOException {
 
-		Logger tLogger = Logger.getLogger("org.iutools.webservice.EndpointDispatcher.doPost");
+		Logger tLogger = LogManager.getLogger("org.iutools.webservice.EndpointDispatcher.doPost");
 
 		EndPointHelper.setContenTypeAndEncoding(response);
 

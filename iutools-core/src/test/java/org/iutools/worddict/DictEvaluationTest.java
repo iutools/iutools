@@ -74,7 +74,7 @@ public class DictEvaluationTest {
 			.totalSingleWordIUEntries(465)
 
 			.totalIUPresent(WhatTerm.ORIGINAL, 183)
-			.totalIUPresent(WhatTerm.RELATED, 77)
+			.totalIUPresent(WhatTerm.RELATED, 75)
 
 			.totalENSpotted(MatchType.STRICT, 92)
 			.totalENSpotted(MatchType.LENIENT, 5)
@@ -84,9 +84,9 @@ public class DictEvaluationTest {
 			.totalENSpotted_atLeastInSense(MatchType.LENIENT, 97)
 			.totalENSpotted_atLeastInSense(MatchType.LENIENT_OVERLAP, 108)
 
-			.rateENSpotted(MatchType.STRICT, 0.354)
-			.rateENSpotted(MatchType.LENIENT, 0.373)
-			.rateENSpotted(MatchType.LENIENT_OVERLAP, 0.415)
+			.rateENSpotted(MatchType.STRICT, 0.357)
+			.rateENSpotted(MatchType.LENIENT, 0.376)
+			.rateENSpotted(MatchType.LENIENT_OVERLAP, 0.419)
 			;
 	}
 }

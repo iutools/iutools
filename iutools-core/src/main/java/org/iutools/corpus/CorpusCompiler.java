@@ -13,7 +13,8 @@ import ca.nrc.ui.commandline.UserIO;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.iutools.linguisticdata.LinguisticDataException;
 import org.iutools.morph.r2l.DecompositionState;
@@ -585,7 +586,7 @@ public class CorpusCompiler {
 	}
 
 	private void compileFreqsDirectory(File dir) throws CorpusCompilerException {
-		Logger logger = Logger.getLogger("CompiledCorpus.processDirectory");
+		Logger logger = LogManager.getLogger("CompiledCorpus.processDirectory");
 		CorpusReader_Directory corpusReader = new CorpusReader_Directory();
 		Iterator<CorpusDocument_File> files =
 			(Iterator<CorpusDocument_File>) corpusReader.getFiles(dir.toString());
@@ -643,7 +644,7 @@ public class CorpusCompiler {
 	}
 
 	public void compileFreqsDocumentContents() throws CorpusCompilerException {
-		Logger logger = Logger.getLogger("CorpusCompiler.processDocumentContents");
+		Logger logger = LogManager.getLogger("CorpusCompiler.processDocumentContents");
 		progress.currentFileWordCounter = 0;
 		String contents;
 		BufferedReader reader = null;
@@ -665,7 +666,7 @@ public class CorpusCompiler {
 		CompileWhat what)
 		throws CompiledCorpusException, StringSegmenterException, LinguisticDataException, CorpusCompilerException {
 
-		Logger logger = Logger.getLogger("CompiledCorpus.processDocumentContents");
+		Logger logger = LogManager.getLogger("CompiledCorpus.processDocumentContents");
 		String line;
 		progress.currentFileWordCounter = 0;
 		try {
@@ -702,7 +703,7 @@ public class CorpusCompiler {
 
 	private void compileFreqsWords(String[] words)
 		throws CorpusCompilerException {
-    	Logger logger = Logger.getLogger("CompiledCorpus.toknizeWords");
+    	Logger logger = LogManager.getLogger("CompiledCorpus.toknizeWords");
 		logger.debug("words: "+words.length);
 		for (int n = 0; n < words.length; n++) {
 			String word = words[n];
@@ -795,7 +796,7 @@ public class CorpusCompiler {
 	}
 
 	private static String[] extractWordsFromLine(String line) {
-		Logger logger = Logger.getLogger("org.iutools.corpus.CorpusCompiler.extractWordsFromLine");
+		Logger logger = LogManager.getLogger("org.iutools.corpus.CorpusCompiler.extractWordsFromLine");
 		line = line.replace('.', ' ');
 		line = line.replace(',', ' ');
 		logger.debug("line= '"+line+"'");

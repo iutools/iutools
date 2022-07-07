@@ -66,7 +66,8 @@ import org.pdfbox.util.TextPositionComparator;
 import org.pdfbox.exceptions.CryptographyException;
 import org.pdfbox.exceptions.InvalidPasswordException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 /**
@@ -78,7 +79,7 @@ import org.apache.log4j.Logger;
  */
 public class NRC_PDFFonttedTextStripper extends PDFStreamEngine
 {
-    private static Logger log = Logger.getLogger(NRC_PDFFonttedTextStripper.class);
+    private static Logger log = LogManager.getLogger(NRC_PDFFonttedTextStripper.class);
     
     private int currentPageNo = 0;
     private int startPage = 1;

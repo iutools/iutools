@@ -50,7 +50,8 @@ import org.pdfbox.util.PDFTextStripper;
 import org.pdfbox.util.TextPosition;
 import org.pdfbox.util.TextPositionComparator;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.iutools.documents.NRC_Document;
 import org.iutools.documents.NRC_PDFDocument;
@@ -70,7 +71,7 @@ import org.iutools.script.TransCoder;
  */
 public class NRC_PDFText2XML extends NRC_PDFTextStripper 
 {
-    private static Logger log = Logger.getLogger(NRC_PDFText2XML.class);
+    private static Logger log = LogManager.getLogger(NRC_PDFText2XML.class);
     private static final int INITIAL_PDF_TO_HTML_BYTES = 8192;
 
     private TextPosition beginTitle;

@@ -4,7 +4,8 @@ import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.iutools.concordancer.Alignment_ES;
 import org.iutools.concordancer.SentencePair;
 import org.iutools.concordancer.tm.TranslationMemory;
@@ -215,7 +216,7 @@ public class MultilingualDict {
 	private void collectRelatedWordTranslations(
 		MultilingualDictEntry origWordEntry, List<MultilingualDictEntry> relWordEntries) throws MultilingualDictException {
 
-		Logger tLogger = Logger.getLogger("org.iutools.worddict.MultilingualDict.collectRelatedWordTranslations");
+		Logger tLogger = LogManager.getLogger("org.iutools.worddict.MultilingualDict.collectRelatedWordTranslations");
 
 
 		if (relWordEntries == null) {
@@ -305,7 +306,7 @@ public class MultilingualDict {
 
 	private void computeOrigWordTranslationsAndExamples(
 		MultilingualDictEntry entry, Script script) throws MultilingualDictException {
-		Logger tLogger = Logger.getLogger("org.iutools.worddict.MultilingualDict.computeTranslationsAndExamples");
+		Logger tLogger = LogManager.getLogger("org.iutools.worddict.MultilingualDict.computeTranslationsAndExamples");
 		List<String> justOneWord = new ArrayList<String>();
 		justOneWord.add(entry.word);
 		retrieveTranslationsAndExamples(entry, justOneWord, script);
@@ -314,7 +315,7 @@ public class MultilingualDict {
 
 	private void retrieveTranslationsAndExamples(
 		MultilingualDictEntry entry, List<String> iuWordGroup, Script script) throws MultilingualDictException {
-		Logger tLogger = Logger.getLogger("org.iutools.worddict.MultilingualDict.retrieveTranslationsAndExamples");
+		Logger tLogger = LogManager.getLogger("org.iutools.worddict.MultilingualDict.retrieveTranslationsAndExamples");
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("word="+entry.word+"/"+entry.wordInOtherScript+", iuWordGroup.size()="+iuWordGroup.size()+", iuWordGroup="+ StringUtils.join(iuWordGroup.iterator(), ", "));
 		}
@@ -397,7 +398,7 @@ public class MultilingualDict {
 		SentencePair bilingualAlignment, Set<String> alreadySeenPair,
 		int totalPairs, Script script, boolean forRelatedWord) throws MultilingualDictException {
 
-		Logger tLogger = Logger.getLogger("org.iutools.worddict.MultilingualDict.onNewSentencePair");
+		Logger tLogger = LogManager.getLogger("org.iutools.worddict.MultilingualDict.onNewSentencePair");
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("forRelatedWord="+forRelatedWord+", bilingualAlignment="+ PrettyPrinter.print(bilingualAlignment));
 		}

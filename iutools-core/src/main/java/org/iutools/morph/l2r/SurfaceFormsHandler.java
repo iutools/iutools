@@ -5,7 +5,8 @@ import ca.nrc.file.ResourceGetter;
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.stream.JsonReader;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.iutools.corpus.CompiledCorpusException;
 import org.iutools.datastructure.trie.TrieException;
 import org.iutools.datastructure.trie.Trie_InMemory;
@@ -28,7 +29,7 @@ public class SurfaceFormsHandler {
      * @throws FormGeneratorException
      */
     public static Trie_InMemory compileSurfaceFormsTrieForMorphemeType(String type) throws FormGeneratorException {
-        Logger logger = Logger.getLogger("SurfaceFormsHandler.compileSurfaceFormsTrieForMorphemeType");
+        Logger logger = LogManager.getLogger("SurfaceFormsHandler.compileSurfaceFormsTrieForMorphemeType");
         logger.debug("type= "+type);
         if (verbose) System.out.println("Preparation of "+type+" trie...");
         FormGenerator formGenerator = new FormGenerator();

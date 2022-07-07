@@ -7,7 +7,8 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.iutools.linguisticdata.LinguisticData;
 import org.iutools.linguisticdata.LinguisticDataException;
@@ -67,7 +68,7 @@ public final class LinguisticDataCSV { //extends LinguisticDataAbstract {
 
 	protected void _readLinguisticDataCSV(String [] data,LinguisticData linguisticDataRegister)
 		throws LinguisticDataException {
-		Logger logger = Logger.getLogger("LinguisticDataCSV.readLinguisticDataCSV");
+		Logger logger = LogManager.getLogger("LinguisticDataCSV.readLinguisticDataCSV");
 		String classOfObject = data[0];
 		String dbName = data[1];
 		String tableName = data[2];

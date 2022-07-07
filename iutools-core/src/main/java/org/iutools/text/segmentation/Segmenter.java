@@ -5,7 +5,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public abstract class Segmenter {
 	
@@ -38,7 +39,7 @@ public abstract class Segmenter {
 	}
 	
 	public List<String[]> segmentTokenized(String text) {
-		Logger tLogger = Logger.getLogger("org.iutools.text.segmentTokenized");
+		Logger tLogger = LogManager.getLogger("org.iutools.text.segmentTokenized");
 		tLogger.trace("invoked with text='"+text+"'");
 		String[] tokens = tokenize(text);
 		List<String[]> sentences = new ArrayList<String[]>();
@@ -60,7 +61,7 @@ public abstract class Segmenter {
 	
 	
 	public List<String> segment(String text) {
-		Logger tLogger = Logger.getLogger("org.iutools.text.segmentation.segment");
+		Logger tLogger = LogManager.getLogger("org.iutools.text.segmentation.segment");
 		tLogger.trace("invoked with text='"+text+"'");
 		List<String[]> tokenizedSentences = segmentTokenized(text);
 		List<String> sentences = new ArrayList<String>();

@@ -2,7 +2,8 @@ package org.iutools.webservice.gist;
 
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.SimpleTokenizer;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.iutools.concordancer.DocAlignment;
 import org.iutools.concordancer.SentencePair;
 import org.iutools.script.TransCoder;
@@ -40,7 +41,7 @@ public class GistPrepareContentResult extends EndpointResult {
 	public void fillFromDocAlignment(DocAlignment docAlignment)
 		throws ServiceException {
 
-		Logger tLogger = Logger.getLogger("org.iutools.webservice.gist.GistPrepareContentResult.fillFromDocAlignment");
+		Logger tLogger = LogManager.getLogger("org.iutools.webservice.gist.GistPrepareContentResult.fillFromDocAlignment");
 
 		if (docAlignment.encounteredProblem(DocAlignment.Problem.FETCHING_INPUT_URL)) {
 			// We weren't even able to download the input page from its URL
@@ -73,7 +74,7 @@ public class GistPrepareContentResult extends EndpointResult {
 	 * to be aligned).
 	 */
 	private void fillFromUnsuccessfulAlignment(DocAlignment docAlignment) throws ServiceException {
-		Logger tLogger = Logger.getLogger("org.iutools.webservice.gist.GistPrepareContentResult.fillFromUnsuccessfulAlignment");
+		Logger tLogger = LogManager.getLogger("org.iutools.webservice.gist.GistPrepareContentResult.fillFromUnsuccessfulAlignment");
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("docAlignment="+ PrettyPrinter.print(docAlignment));
 		}
@@ -134,7 +135,7 @@ public class GistPrepareContentResult extends EndpointResult {
 	 */
 
 	private void fillFromSuccessfulAlignment(DocAlignment docAlignment) {
-		Logger logger = Logger.getLogger("org.iutools.webservice.gist.GistPrepareContentResult.fillFromSuccessfulAlignment");
+		Logger logger = LogManager.getLogger("org.iutools.webservice.gist.GistPrepareContentResult.fillFromSuccessfulAlignment");
 		logger.trace("# aligned sentences="+docAlignment.getAligments().size());
 		iuSentences = new ArrayList<String[]>();
 		enSentences = new ArrayList<String[]>();

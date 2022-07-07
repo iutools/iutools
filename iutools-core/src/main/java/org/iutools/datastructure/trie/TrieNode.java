@@ -9,7 +9,8 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class TrieNode {
 	
@@ -338,7 +339,7 @@ public class TrieNode {
 	
 	@JsonIgnore
 	public  <T> T getField(String fldName, T newEntry) {
-		Logger tLogger = Logger.getLogger("ca.nrc.datastructure.trie.TrieNode.getField");
+		Logger tLogger = LogManager.getLogger("ca.nrc.datastructure.trie.TrieNode.getField");
 		tLogger.trace("For fldName="+fldName+", default entry is of class "+((newEntry == null) ? null: newEntry.getClass()));
 		T value = (T)data.get(fldName);
 		if (value == null) {

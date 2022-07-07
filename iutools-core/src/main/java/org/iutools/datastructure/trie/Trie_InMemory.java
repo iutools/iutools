@@ -9,7 +9,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.google.gson.Gson;
 
@@ -110,7 +111,7 @@ public class Trie_InMemory extends Trie {
 	}
 
 	private HashMap<String, Long> _computeFreqs(String cumulativeKeys, String[] terminalNodeKeys, HashMap<String, Long> freqs, String rootSegment) throws TrieException {
-		Logger logger = Logger.getLogger("CompiledCorpus._computeFreqs");
+		Logger logger = LogManager.getLogger("CompiledCorpus._computeFreqs");
 		if (terminalNodeKeys.length==0)
 			return freqs;
 		logger.debug("cumulativeKeys: '"+cumulativeKeys+"'");

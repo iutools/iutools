@@ -15,7 +15,8 @@
  */
 package org.iutools.script.exec;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.iutools.html.HtmlEntities;
 import org.iutools.script.Syllabics;
@@ -24,7 +25,7 @@ import org.iutools.utilities1.Util;
 
 public class TranscodingWebApp {
 
-    private static Logger LOG = Logger.getLogger(TranscodingWebApp.class);
+    private static Logger LOG = LogManager.getLogger(TranscodingWebApp.class);
 
     public static String transcode(String args[]) {
         String text = "";

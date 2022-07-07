@@ -16,7 +16,8 @@ import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.gson.Gson;
@@ -122,7 +123,7 @@ public class AnalyzeNumberExpressions {
 	}
 
 	protected void assessEndingWithIMA(String ending) throws LinguisticDataException {
-		Logger logger = Logger.getLogger("AnalyseNumberExpressions.assessEndignWithIMA");
+		Logger logger = LogManager.getLogger("AnalyseNumberExpressions.assessEndignWithIMA");
 		logger.debug("ending: "+ending);
 		MorphologicalAnalyzer_R2L morphAnalyzer = new MorphologicalAnalyzer_R2L();
 		boolean accepted = false;

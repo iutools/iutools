@@ -3,7 +3,8 @@ package org.iutools.morphrelatives;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 /**
@@ -124,7 +125,7 @@ public class MorphologicalRelative {
 	}
 
 	public double percentMorphsInCommon() throws MorphRelativesFinderException {
-		Logger tLogger = Logger.getLogger("org.iutools.morphrelatives.MorphologicalRelative");
+		Logger tLogger = LogManager.getLogger("org.iutools.morphrelatives.MorphologicalRelative");
 		double numInCommon = 1.0 * morphemesInCommon().size();
 		double denominator = Math.max(origMorphemes.length, morphemes.length);
 		double percentInCommon = numInCommon / denominator;

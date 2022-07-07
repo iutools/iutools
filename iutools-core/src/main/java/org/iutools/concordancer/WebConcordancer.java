@@ -7,7 +7,8 @@ import java.util.*;
 
 import ca.nrc.data.harvesting.*;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import ca.nrc.datastructure.Pair;
 import ca.nrc.string.StringUtils;
@@ -81,7 +82,7 @@ public abstract class WebConcordancer {
 	public DocAlignment alignPage(URL url, String[] languages)
 		throws WebConcordancerException {
 
-		Logger tLogger = Logger.getLogger("org.iutools.concordancer.alignPage");
+		Logger tLogger = LogManager.getLogger("org.iutools.concordancer.alignPage");
 
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("invoked with url="+url+
@@ -126,7 +127,7 @@ public abstract class WebConcordancer {
 
 	protected DocAlignment fetchParallelPages(DocAlignment alignment)
 		throws WebConcordancerException {
-		Logger tLogger = Logger.getLogger("org.iutools.concordancer.fetchParallelPages");
+		Logger tLogger = LogManager.getLogger("org.iutools.concordancer.fetchParallelPages");
 
 		Pair<String,String> langs = langAndOtherLang(alignment);
 
@@ -230,7 +231,7 @@ public abstract class WebConcordancer {
 	
 
 	private void alignTexts(DocAlignment docAlignment) throws WebConcordancerException {
-		Logger tLogger = Logger.getLogger("org.iutools.concordancer.alignTexts");
+		Logger tLogger = LogManager.getLogger("org.iutools.concordancer.alignTexts");
 
 		alignOneText(DocAlignment.PageSection.ALL, docAlignment);
 		alignOneText(DocAlignment.PageSection.MAIN, docAlignment);
@@ -238,7 +239,7 @@ public abstract class WebConcordancer {
 
 	private void alignOneText(
 		DocAlignment.PageSection pageSection, DocAlignment docAlignment) throws WebConcordancerException {
-		Logger tLogger = Logger.getLogger("org.iutools.concordancer.alignOneText");
+		Logger tLogger = LogManager.getLogger("org.iutools.concordancer.alignOneText");
 
 		tLogger.trace("Invoked with pageSection="+pageSection);
 
@@ -390,7 +391,7 @@ public abstract class WebConcordancer {
 
 	protected void harvestOtherLangPage(DocAlignment alignment)
 		throws WebConcordancerException {
-		Logger logger = Logger.getLogger("org.iutools.concordancer.WebConcordancer.harvestOtherLangPage");
+		Logger logger = LogManager.getLogger("org.iutools.concordancer.WebConcordancer.harvestOtherLangPage");
 		if (alignment.encounteredSomeProblems()) {
 			return;
 		}
@@ -532,7 +533,7 @@ public abstract class WebConcordancer {
 
 	private void harvestInputPage(URL url, DocAlignment alignment, 
 			String[] languages) throws WebConcordancerException {
-		Logger tLogger = Logger.getLogger("org.iutools.concordancer.harvestInputPage");
+		Logger tLogger = LogManager.getLogger("org.iutools.concordancer.harvestInputPage");
 		tLogger.trace("invoked with url="+url);
 		String urlLang = null;
 		try {

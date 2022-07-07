@@ -179,7 +179,8 @@ Word Entry window hiding/showing/closing
 - Search for word 'inuksuk'
    - Make sure the Word Entry window is NOW showing and displays the entry for 
      'inuksuk'.
-- Search for a word that does not return any results like 'blahblahblah' 
+- Leaving the word entry opened, search for a word that does not return any 
+  results like 'blahblahblah' 
    - Make sure the Word Entry window is NOT showing
 - Search again for 'inuksuk' to make sure the WordEntry window is shown
 - Search for a query that returns some hits but is not itself a word, ex: 'iglum'
@@ -235,7 +236,7 @@ Spell check SYLLABIC -- Happy Path
   words underlined. 
 - Click on an underlined word and make sure that:
     - The corrected text, as well as all the suggested spellings are  displayed 
-    in LATIN
+    in SYLLABIC
     - The FIRST suggestion is the original misspelled word
     - The list shows the correct spelling in the list, ideally in SECOND place
 - Test different ways of APPLYING a suggestion     
@@ -260,6 +261,14 @@ Spell check SYLLABIC -- Happy Path
     - Click on a mis-spelled word, TYPE an alternate spelling from scratch and hit Cancel
       - Make sure that the displayed spelling has not changed, and that the dialog
         box disappeared.
+
+- Prefered script
+  - When spellchecking text, we ALWAYS want the spellchecked result to be in the 
+    same script as the input, no matter what the preferred script is
+    - LATIN text + LATIN preferred --> LATIN result
+    - SYLL text + LATIN preferred --> SYLL result
+    - LATIN text + SYLL preferred --> LATIN result
+    - SYLL text + SYLL preferred --> SYLL result
 
 - Choose correction for different words
     - Spell check text: 'nunavvvut iglu inuksssuk'

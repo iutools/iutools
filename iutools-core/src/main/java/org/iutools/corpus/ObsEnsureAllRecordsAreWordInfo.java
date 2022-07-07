@@ -6,7 +6,8 @@ import ca.nrc.dtrc.elasticsearch.SearchResults;
 import ca.nrc.dtrc.elasticsearch.ESObserver;
 import ca.nrc.dtrc.elasticsearch.request.Query;
 import ca.nrc.json.PrettyPrinter;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
 import java.net.URL;
@@ -80,13 +81,13 @@ public class ObsEnsureAllRecordsAreWordInfo extends ESObserver {
 
 	@Override
 	protected void beforePUT(URL url, String json) throws ElasticSearchException {
-		Logger tLogger = Logger.getLogger("org.iutools.corpus.ObsEnsureAllRecordsAreWordInfo.beforePUT");
+		Logger tLogger = LogManager.getLogger("org.iutools.corpus.ObsEnsureAllRecordsAreWordInfo.beforePUT");
 		checkForBadRecords(tLogger, url, json);
 	}
 
 	@Override
 	protected void afterPUT(URL url, String json) throws ElasticSearchException {
-		Logger tLogger = Logger.getLogger("org.iutools.corpus.ObsEnsureAllRecordsAreWordInfo.afterPUT");
+		Logger tLogger = LogManager.getLogger("org.iutools.corpus.ObsEnsureAllRecordsAreWordInfo.afterPUT");
 		checkForBadRecords(tLogger, url, json);
 	}
 
@@ -101,13 +102,13 @@ public class ObsEnsureAllRecordsAreWordInfo extends ESObserver {
 
 	@Override
 	protected void beforeGET(URL url) throws ElasticSearchException {
-		Logger tLogger = Logger.getLogger("org.iutools.corpus.ObsEnsureAllRecordsAreWordInfo.beforeGET");
+		Logger tLogger = LogManager.getLogger("org.iutools.corpus.ObsEnsureAllRecordsAreWordInfo.beforeGET");
 		checkForBadRecords(tLogger, url);
 	}
 
 	@Override
 	protected void afterGET(URL url) throws ElasticSearchException {
-		Logger tLogger = Logger.getLogger("org.iutools.corpus.ObsEnsureAllRecordsAreWordInfo.afterGET");
+		Logger tLogger = LogManager.getLogger("org.iutools.corpus.ObsEnsureAllRecordsAreWordInfo.afterGET");
 		checkForBadRecords(tLogger, url);
 	}
 

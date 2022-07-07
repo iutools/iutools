@@ -2,7 +2,8 @@ package org.iutools.search;
 
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import ca.nrc.data.harvesting.SearchEngine.Query;
 import ca.nrc.data.harvesting.SearchEngine.SearchEngineException;
@@ -25,7 +26,7 @@ public class IUSearchEngine extends SearchEngineMultiQuery {
 	
 	@Override
 	public SearchResults search(Query query) throws SearchEngineException, IOException {
-		Logger tLogger = Logger.getLogger("org.iutools.search.IUSearchEngine.search");
+		Logger tLogger = LogManager.getLogger("org.iutools.search.IUSearchEngine.search");
 		
 		if (query.lang != null && !query.lang.equals("iu")) {
 			throw new SearchEngineException(

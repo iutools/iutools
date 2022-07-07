@@ -13,7 +13,8 @@ import org.iutools.utilities.StopWatch;
 import ca.nrc.config.ConfigException;
 import ca.nrc.datastructure.Pair;
 import org.iutools.datastructure.trie.StringSegmenterException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class SpellCheckerEvaluator {
 	
@@ -361,7 +362,7 @@ public class SpellCheckerEvaluator {
 	}
 
 	public double percWithCorrectTopSuggestion() {
-		Logger tLogger = Logger.getLogger("org.iutools.spellchecker.SpellCheckerEvaluator.percWithCorrectTopSuggestion");
+		Logger tLogger = LogManager.getLogger("org.iutools.spellchecker.SpellCheckerEvaluator.percWithCorrectTopSuggestion");
 		tLogger.trace("totalWithCorrectTopSuggestion="+totalWithCorrectTopSuggestion+", totalExamplesWithKnownCorrections="+totalExamplesWithKnownCorrections);
 		double perc =
 			1.0 * totalWithCorrectTopSuggestion /

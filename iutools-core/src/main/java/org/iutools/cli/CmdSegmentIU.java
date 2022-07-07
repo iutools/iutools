@@ -4,7 +4,8 @@ import java.util.Scanner;
 import java.util.concurrent.TimeoutException;
 
 import ca.nrc.ui.commandline.CommandLineException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,7 +32,7 @@ public class CmdSegmentIU extends ConsoleCommand {
 
 	@Override
 	public void execute() throws Exception {
-		Logger mLogger = Logger.getLogger("ca.inuktitutcomputing.core.console.SegmentIU.execute");
+		Logger mLogger = LogManager.getLogger("ca.inuktitutcomputing.core.console.SegmentIU.execute");
 		mode = getMode(ConsoleCommand.OPT_WORD);
 		lenient = getExtendedAnalysis();
 		Long timeoutMSecs = getTimeoutMSecs();

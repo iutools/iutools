@@ -34,7 +34,8 @@ import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.iutools.morph.r2l.AffixPartOfComposition;
 import org.iutools.linguisticdata.constraints.Conditions;
@@ -138,7 +139,7 @@ public abstract class Morpheme implements Cloneable {
     }
   
     public boolean meetsConditions (Conditions conds, Vector<AffixPartOfComposition> followingMorphemes) throws LinguisticDataException {
-    	Logger logger = Logger.getLogger("Morpheme.meetsConditions");
+    	Logger logger = LogManager.getLogger("Morpheme.meetsConditions");
 //    	String[] idsOfFollowingMorphemes = new String[followingMorphemes.size()];
 //    	for (int iv=0; iv<followingMorphemes.size(); iv++)
 //    		idsOfFollowingMorphemes[iv] = followingMorphemes.get(iv).getAffix().id;
@@ -194,7 +195,7 @@ public abstract class Morpheme implements Cloneable {
         }
     
     public boolean attrEqualsValue (String attr, String val, boolean eq) {
-    	Logger logger = Logger.getLogger("Morpheme.attrEqualsValue");
+    	Logger logger = LogManager.getLogger("Morpheme.attrEqualsValue");
     	logger.debug("morpheme's id: "+this.id);
     	logger.debug("attr= "+attr+"; val= "+val);
         boolean res = false;
@@ -244,7 +245,7 @@ public abstract class Morpheme implements Cloneable {
     }
     
     void setId() {
-	    Logger logger = Logger.getLogger("Morpheme.setId");
+	    Logger logger = LogManager.getLogger("Morpheme.setId");
 	    String canonicalForm = getOriginalMorpheme();
 	    String signature = getSignature();
         idObj = new Morpheme.Id(canonicalForm,signature);

@@ -1,6 +1,7 @@
 package org.iutools.webservice.tokenize;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.iutools.text.segmentation.IUTokenizer;
 import org.iutools.text.segmentation.Token;
 import org.iutools.webservice.Endpoint;
@@ -17,7 +18,7 @@ public class TokenizeEndpoint extends Endpoint<TokenizeInputs, TokenizeResult> {
 
 	@Override
 	public EndpointResult execute(TokenizeInputs inputs) throws ServiceException {
-		Logger tLogger = Logger.getLogger("org.iutools.webservice.tokenize.TokenizeEndpoint.execute");
+		Logger tLogger = LogManager.getLogger("org.iutools.webservice.tokenize.TokenizeEndpoint.execute");
 		IUTokenizer tokenizer = new IUTokenizer();
 
 		tokenizer.tokenize(inputs.text);

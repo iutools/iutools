@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.iutools.utilities.MonURLDecoder;
 import org.iutools.utilities1.Util;
@@ -14,7 +15,7 @@ import org.iutools.lib.html;
 
 public class Roots {
 
-	private static Logger LOG = Logger.getLogger(Roots.class);
+	private static Logger LOG = LogManager.getLogger(Roots.class);
 	//static OutputStreamWriter out;
 	static boolean syllabic = true;
 	static String inuktitutDisplayFont = null;

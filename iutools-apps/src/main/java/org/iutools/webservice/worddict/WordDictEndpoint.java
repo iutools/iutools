@@ -2,7 +2,8 @@ package org.iutools.webservice.worddict;
 
 import ca.nrc.json.PrettyPrinter;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.iutools.script.TransCoder;
 import org.iutools.script.TransCoderException;
 import org.iutools.webservice.Endpoint;
@@ -25,7 +26,7 @@ public class WordDictEndpoint extends Endpoint<WordDictInputs,WordDictResult> {
 
 	@Override
 	public WordDictResult execute(WordDictInputs inputs) throws ServiceException {
-		Logger tLogger = Logger.getLogger("org.iutools.webservice.worddict.WordDictEndpoint.execute");
+		Logger tLogger = LogManager.getLogger("org.iutools.webservice.worddict.WordDictEndpoint.execute");
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("invoked with inputs="+ PrettyPrinter.print(inputs));
 		}

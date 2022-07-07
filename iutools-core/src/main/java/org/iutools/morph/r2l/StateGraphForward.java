@@ -8,7 +8,8 @@
 
 package org.iutools.morph.r2l;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.iutools.linguisticdata.LinguisticDataException;
 import org.iutools.linguisticdata.Morpheme;
 import org.iutools.linguisticdata.constraints.Conditions;
@@ -234,7 +235,7 @@ public class StateGraphForward {
 		 * @return a State
 		 */
 		public State nextState(Morpheme morpheme) {
-			Logger logger = Logger.getLogger("StateGraph.State.nextState");
+			Logger logger = LogManager.getLogger("StateGraph.State.nextState");
 			logger.debug("morpheme: "+morpheme.id);
 			State nextState = null;
 			for (int iarc=0; iarc<arcs.length; iarc++) {

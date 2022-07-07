@@ -5,7 +5,8 @@ import java.io.FileWriter;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import ca.nrc.debug.Debug;
 
@@ -62,7 +63,7 @@ public class StopWatch {
 	}
 	
 	public void check(String message) throws TimeoutException {
-		Logger mLogger = Logger.getLogger("ca.inuktitutcomputing.utilities.StopWatch.check");
+		Logger mLogger = LogManager.getLogger("ca.inuktitutcomputing.utilities.StopWatch.check");
 		
 		if (deactivated) {
 			return;
@@ -86,7 +87,7 @@ public class StopWatch {
 	}
 	
 	private void checkElapsedTime(boolean traceThisCall) throws TimeoutException {
-		Logger mLogger = Logger.getLogger("ca.inuktitutcomputing.utilities.StopWatch.checkElapsedTime");		
+		Logger mLogger = LogManager.getLogger("ca.inuktitutcomputing.utilities.StopWatch.checkElapsedTime");
 		Long elapsed = nowMSecs() - startTime;
 		if (traceThisCall) {
 			mLogger.trace("Task "+taskName+" elapsed = "+elapsed/1000+" secs (max: "+timeoutMSecs/1000+" secs)");
@@ -99,7 +100,7 @@ public class StopWatch {
 	}
 
 	private void checkForInterruption() throws TimeoutException {
-		Logger mLogger = Logger.getLogger("ca.inuktitutcomputing.utilities.StopWatch.checkForInterruption");
+		Logger mLogger = LogManager.getLogger("ca.inuktitutcomputing.utilities.StopWatch.checkForInterruption");
 		
 		if (Thread.interrupted()) {
 			mLogger.trace("Task "+taskName+" was interrupted.\nRaising TimeoutException");
@@ -134,7 +135,7 @@ public class StopWatch {
 	 * to do the trick.
 	 */	
 	private void forceClockUpdate() throws MorphTimeoutException {
-		Logger mLogger = Logger.getLogger("ca.inuktitutcomputing.utilities.StopWatch.forceClockUpdate");
+		Logger mLogger = LogManager.getLogger("ca.inuktitutcomputing.utilities.StopWatch.forceClockUpdate");
 		
 		ClockUpdateStrategy updateStrat =
 				ClockUpdateStrategy.CHECK_FILE;

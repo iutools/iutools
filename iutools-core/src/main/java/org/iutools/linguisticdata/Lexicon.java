@@ -26,7 +26,8 @@ package org.iutools.linguisticdata;
 
 import java.util.*;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.iutools.script.Syllabics;
 
 public class Lexicon {
@@ -55,7 +56,7 @@ public class Lexicon {
      * @throws LinguisticDataException 
      */
     static public Vector<Morpheme> lookForBase(String term, boolean syllabic) throws LinguisticDataException {
-        Logger logger = Logger.getLogger("Lexicon.lookForBase");
+        Logger logger = LogManager.getLogger("Lexicon.lookForBase");
         logger.debug("term: "+term);
     	if (syllabic)
     		term = Syllabics.transcodeToRoman(term);

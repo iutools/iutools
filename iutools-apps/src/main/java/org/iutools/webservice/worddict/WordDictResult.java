@@ -2,7 +2,8 @@ package org.iutools.webservice.worddict;
 
 
 import ca.nrc.json.PrettyPrinter;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.iutools.script.TransCoder;
 import org.iutools.script.TransCoderException;
 import org.iutools.webservice.EndpointResult;
@@ -47,7 +48,7 @@ public class WordDictResult extends EndpointResult {
 
 	private void init_WordDictResult(
 		MultilingualDictEntry _qWordEntry, List<String> _foundWords, Long _totalWords) {
-		Logger tLogger = Logger.getLogger("org.iutools.webservice.worddict.WordDictResult.init_WordDictResult");
+		Logger tLogger = LogManager.getLogger("org.iutools.webservice.worddict.WordDictResult.init_WordDictResult");
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("_qWordEntry="+ PrettyPrinter.print(_qWordEntry));
 			tLogger.trace("_foundWords="+ PrettyPrinter.print(_foundWords));

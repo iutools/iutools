@@ -9,7 +9,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -25,7 +26,7 @@ public class EndPointHelper {
 
 	public static <T  extends ServiceInputs> T jsonInputs(
 			HttpServletRequest request, Class<T> class1) throws IOException {
-		Logger tLogger = Logger.getLogger("org.iutools.webservice.EndPointHelper.jsonInputs");
+		Logger tLogger = LogManager.getLogger("org.iutools.webservice.EndPointHelper.jsonInputs");
 		
 		String jsonRequestBody = IOUtils.toString(request.getReader());		
 		tLogger.trace("jsonRequestBody="+jsonRequestBody);
@@ -83,7 +84,7 @@ public class EndPointHelper {
 
 	public static void writeJsonResponse(
 	HttpServletResponse response, String json) throws IOException {
-		Logger tLogger = Logger.getLogger("org.iutools.webservice.IUTServiceTestHelpers.writeJsonResponse");
+		Logger tLogger = LogManager.getLogger("org.iutools.webservice.IUTServiceTestHelpers.writeJsonResponse");
 		PrintWriter writer = response.getWriter();
 		writer.write(json);
 		writer.close();

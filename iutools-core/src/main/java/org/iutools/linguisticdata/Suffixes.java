@@ -28,7 +28,8 @@ import java.io.PrintStream;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.iutools.utilities1.Util;
 import org.iutools.linguisticdata.constraints.Conditions;
@@ -37,7 +38,7 @@ import org.iutools.script.TransCoder;
 
 public class Suffixes {
 
-    private static Logger LOG = Logger.getLogger(Suffixes.class);
+    private static Logger LOG = LogManager.getLogger(Suffixes.class);
 
 	//static OutputStreamWriter out;
 	static boolean syllabic = true;

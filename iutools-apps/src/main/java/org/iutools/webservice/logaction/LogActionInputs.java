@@ -2,7 +2,8 @@ package org.iutools.webservice.logaction;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.iutools.webservice.ServiceException;
 import org.iutools.webservice.ServiceInputs;
 import org.iutools.webservice.gist.GistPrepareContentInputs;
@@ -75,7 +76,7 @@ public class LogActionInputs extends ServiceInputs {
 
 	@Override
 	public Map<String, Object> summarizeForLogging() throws ServiceException {
-		Logger tLogger = Logger.getLogger("org.iutools.webservice.logaction.LogActionInputs.summarizeForLogging");
+		Logger tLogger = LogManager.getLogger("org.iutools.webservice.logaction.LogActionInputs.summarizeForLogging");
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("_action="+_action+", taskData="+taskData);
 		}

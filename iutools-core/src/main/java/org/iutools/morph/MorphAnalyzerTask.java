@@ -3,7 +3,8 @@ package org.iutools.morph;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.iutools.utilities.StopWatch;
 
@@ -32,7 +33,7 @@ public class MorphAnalyzerTask implements Callable<Decomposition[]> {
 	
 	@Override
 	public Decomposition[] call() throws Exception {
-		Logger mLogger = Logger.getLogger("ca.inuktitutcomputing.morph.MorphAnalyzerTask.call");
+		Logger mLogger = LogManager.getLogger("ca.inuktitutcomputing.morph.MorphAnalyzerTask.call");
 		mLogger.trace("Calling on word="+word);
 		long start = System.currentTimeMillis();
 		Decomposition[] decomps = new Decomposition[0];

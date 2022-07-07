@@ -10,7 +10,8 @@ import ca.nrc.debug.Debug;
 import ca.nrc.json.PrettyPrinter;
 import org.iutools.corpus.*;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.iutools.linguisticdata.LinguisticData;
 import org.iutools.linguisticdata.LinguisticDataException;
@@ -28,7 +29,7 @@ public class MorphemeDictionary {
 	static LinguisticData _linguisticData = null;
 	
 	public MorphemeDictionary() throws MorphemeDictionaryException {
-		Logger tLogger = Logger.getLogger("org.iutools.morphemesearcher.MorphemeDictionary.constructor");
+		Logger tLogger = LogManager.getLogger("org.iutools.morphemesearcher.MorphemeDictionary.constructor");
 		try {
 			useCorpus(new CompiledCorpusRegistry().getCorpus());
 		} catch (IOException | CompiledCorpusRegistryException | CompiledCorpusException e) {
@@ -52,7 +53,7 @@ public class MorphemeDictionary {
 	}
 	
 	public List<MorphDictionaryEntry> search(String partialMorpheme) throws MorphemeDictionaryException {
-		Logger tLogger = Logger.getLogger("org.iutools.morphemesearcher.MorphemeDictionary.wordsContainingMorpheme");
+		Logger tLogger = LogManager.getLogger("org.iutools.morphemesearcher.MorphemeDictionary.wordsContainingMorpheme");
 		tLogger.trace("partialMorpheme= "+partialMorpheme);
 
 		List<MorphDictionaryEntry> morphEntries = new ArrayList<MorphDictionaryEntry>();
@@ -124,7 +125,7 @@ public class MorphemeDictionary {
 
 	protected HashMap<String, List<ScoredExample>> computeWordsWithScoreFromBins(
 			Bin[] rootBins) throws MorphemeDictionaryException {
-		Logger tLogger = Logger.getLogger("org.iutools.morphemesearcher.MorphemeDictionary.computeWordsWithScoreFromBins");
+		Logger tLogger = LogManager.getLogger("org.iutools.morphemesearcher.MorphemeDictionary.computeWordsWithScoreFromBins");
 		
 		HashMap<String, List<ScoredExample>> morphids2limitedScoredExamples = 
 				new HashMap<String, List<ScoredExample>>();
@@ -193,7 +194,7 @@ public class MorphemeDictionary {
 
 	private HashMap<String, List<ScoredExample>> computeWordsWithScore(HashMap<String,
 		List<WordWithMorpheme>> mostFrequentWordsWithMorpheme) throws MorphemeDictionaryException {
-		Logger logger = Logger.getLogger("org.iutools.morphemesearcher.MorphemeDictionary.computeWordsWithScore");
+		Logger logger = LogManager.getLogger("org.iutools.morphemesearcher.MorphemeDictionary.computeWordsWithScore");
 		if (logger.isTraceEnabled()) {
 			logger.trace("invoked with mostFrequentWordsWithMorpheme.size()="+mostFrequentWordsWithMorpheme.size());
 		}
@@ -240,7 +241,7 @@ public class MorphemeDictionary {
 	private HashMap<String,List<WordWithMorpheme>>
 		mostFrequentWordsWithMorpheme(String morpheme)
 		throws MorphemeDictionaryException {
-		Logger tLogger = Logger.getLogger("org.iutools.morphemesearcher.MorphemeDictionary.mostFrequentWordsWithMorpheme");
+		Logger tLogger = LogManager.getLogger("org.iutools.morphemesearcher.MorphemeDictionary.mostFrequentWordsWithMorpheme");
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("Using corpus="+ PrettyPrinter.print(corpus));
 		}
@@ -295,7 +296,7 @@ public class MorphemeDictionary {
 
 	
 	private ScoredExample generateScoredExample(WordWithMorpheme morphemeExample) throws MorphemeDictionaryException {
-		Logger logger = Logger.getLogger("org.iutools.morphemesearcher.MorphemeDictionary.generateScoredExample");
+		Logger logger = LogManager.getLogger("org.iutools.morphemesearcher.MorphemeDictionary.generateScoredExample");
 		if (logger.isTraceEnabled()) {
 			logger.trace("invoked with morphemeExample="+PrettyPrinter.print(morphemeExample));
 		}
@@ -317,7 +318,7 @@ public class MorphemeDictionary {
 	}
 
 	private Long wordFreqInCorpus(String word, boolean allowAnalysisWithAdditionalFinalConsonant) throws MorphemeDictionaryException {
-		Logger tLogger = Logger.getLogger("org.iutools.morphemesearcher.MorphemeDictionary.wordFreqInCorpus");
+		Logger tLogger = LogManager.getLogger("org.iutools.morphemesearcher.MorphemeDictionary.wordFreqInCorpus");
 		long nbOccurrencesOfWord;
 		try {
 			nbOccurrencesOfWord = this.corpus.totalOccurencesOf(word);
@@ -333,7 +334,7 @@ public class MorphemeDictionary {
 	public Double morphFreqInAnalyses(
 		WordWithMorpheme morphemeExample,
 		boolean allowAnalysisWithAdditionalFinalConsonant) throws LinguisticDataException, TimeoutException, MorphologicalAnalyzerException, MorphemeDictionaryException {
-		Logger tLogger = Logger.getLogger("org.iutools.morphemedict.MorphemeDictioanry.morphFreqInAnalyses");
+		Logger tLogger = LogManager.getLogger("org.iutools.morphemedict.MorphemeDictioanry.morphFreqInAnalyses");
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("morphemeExample="+PrettyPrinter.print(morphemeExample));
 		}

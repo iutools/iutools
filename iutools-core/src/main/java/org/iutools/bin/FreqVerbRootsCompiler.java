@@ -11,7 +11,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.iutools.corpus.*;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import ca.nrc.datastructure.Pair;
 import org.iutools.datastructure.trie.TrieException;
@@ -26,7 +27,7 @@ public class FreqVerbRootsCompiler {
 	}
 	
 	public HashMap<String,Long> compileFreqs(CompiledCorpus corpus) throws TrieException, CompiledCorpusException {
-		Logger logger = Logger.getLogger("FreqVerbRootsCompiler.compileFreqs");
+		Logger logger = LogManager.getLogger("FreqVerbRootsCompiler.compileFreqs");
 		HashMap<String,Long> freqsOfVerbRoots = new HashMap<String,Long>();
 		Iterator<String> wordsIter = corpus.allWords();
 		Pattern pattVerb = Pattern.compile("\\{(.+/\\d+v)\\}");

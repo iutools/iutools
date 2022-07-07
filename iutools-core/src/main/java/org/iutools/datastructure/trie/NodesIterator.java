@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.iutools.datastructure.trie.NodesIterationState.Step;
 
@@ -38,7 +39,7 @@ public class NodesIterator implements Iterator<TrieNode> {
 
     @Override
     public TrieNode next() {
-        Logger tLogger = Logger.getLogger("ca.nrc.datastructure.trie.NodesIterator.next");
+        Logger tLogger = LogManager.getLogger("ca.nrc.datastructure.trie.NodesIterator.next");
         TrieNode node = null;
         try {
             node = trie.node4keys(state.nextNodeKeys);
@@ -65,7 +66,7 @@ public class NodesIterator implements Iterator<TrieNode> {
     
     private void doStep(NodesIterationState state)
             throws TrieException {
-        Logger tLogger = Logger.getLogger("ca.nrc.datastructure.trie.NodesIterator.doStep");
+        Logger tLogger = LogManager.getLogger("ca.nrc.datastructure.trie.NodesIterator.doStep");
 
         Step step = state.nextStep;
 
@@ -143,7 +144,7 @@ public class NodesIterator implements Iterator<TrieNode> {
      */
     private void doExtendChoiceTree(NodesIterationState state)
             throws TrieException {
-        Logger tLogger = Logger.getLogger("ca.nrc.datastructure.trie.NodesIterator.doExtendChoiceTree");
+        Logger tLogger = LogManager.getLogger("ca.nrc.datastructure.trie.NodesIterator.doExtendChoiceTree");
 
         if (tLogger.isTraceEnabled()) {
             tLogger.trace("Upon entry, state=\n"+state.toString());

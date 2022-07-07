@@ -5,7 +5,8 @@ import ca.nrc.config.ConfigException;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.StringUtils;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.iutools.corpus.*;
 
 import java.util.ArrayList;

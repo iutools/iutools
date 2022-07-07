@@ -10,7 +10,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -41,7 +42,7 @@ public class Trie_InFileSystem extends Trie {
 
 	@Override
 	public TrieNode retrieveNode_NoStatsRefresh(String[] keys, NodeOption... options) throws TrieException {
-		Logger tLogger = Logger.getLogger("ca.nrc.datastructure.trie.Trie_InFileSystem.node4keys");
+		Logger tLogger = LogManager.getLogger("ca.nrc.datastructure.trie.Trie_InFileSystem.node4keys");
 
 		// TODO-June2020: Implement all node4keys() entry points at level of parent
 		//  Trie class. These methods will check that segments is not null, then 
@@ -95,7 +96,7 @@ public class Trie_InFileSystem extends Trie {
 	}
 
 	protected void writeNodeFile(TrieNode node, File nodeFile) throws TrieException {
-		Logger tLogger = Logger.getLogger("ca.nrc.datastructure.trie.Trie_InFileSystem.writeNodeFile");
+		Logger tLogger = LogManager.getLogger("ca.nrc.datastructure.trie.Trie_InFileSystem.writeNodeFile");
 		long start = 0;
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("Writing node to file.\n   Node[" + String.join(",", node.keys) + "] --> " + nodeFile);

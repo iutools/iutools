@@ -5,8 +5,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.iutools.json.Mapper;
 import org.iutools.webservice.logaction.LogActionInputs;
 import org.json.JSONObject;
@@ -35,7 +37,7 @@ public abstract class Endpoint
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 		throws ServiceException {
-		Logger tLogger = Logger.getLogger("org.iutools.webservice.Endpoint.doPost");
+		Logger tLogger = LogManager.getLogger("org.iutools.webservice.Endpoint.doPost");
 		I inputs = null;
 		try {
 			EndPointHelper.log4jReload();
@@ -96,7 +98,7 @@ public abstract class Endpoint
 	}
 
 	protected void logError(Exception e)  {
-		Logger tLogger = Logger.getLogger("org.iutools.webservice.Endpoint.logError");
+		Logger tLogger = LogManager.getLogger("org.iutools.webservice.Endpoint.logError");
 		tLogger.trace("e="+e);
 
 		logError(e, (I)null, (HttpServletRequest)null);
@@ -144,7 +146,7 @@ public abstract class Endpoint
 	}
 
 	private void ensureInputTaskIDAndStartTimeAreDefined(I inputs) throws ServiceException {
-		Logger tLogger = Logger.getLogger("org.iutools.webservice.Endpoint.ensureInputTaskIDAndStartTimeAreDefined");
+		Logger tLogger = LogManager.getLogger("org.iutools.webservice.Endpoint.ensureInputTaskIDAndStartTimeAreDefined");
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("upon ENTRY, inputs="+inputs);
 		}
@@ -165,7 +167,7 @@ public abstract class Endpoint
 
 
 	private void logRequest(HttpServletRequest request, I inputs) throws ServiceException {
-		Logger tLogger = Logger.getLogger("org.iutools.webservice.Endpoint.logRequest");
+		Logger tLogger = LogManager.getLogger("org.iutools.webservice.Endpoint.logRequest");
 
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("inputs="+PrettyPrinter.print(inputs));
@@ -208,7 +210,7 @@ public abstract class Endpoint
 	private void writeJsonResponse(
 		EndpointResult epResponse, HttpServletResponse httpResponse) throws IOException {
 
-		Logger tLogger = Logger.getLogger("org.iutools.webservice.EndpointDispatcher.writeJsonResponse");
+		Logger tLogger = LogManager.getLogger("org.iutools.webservice.EndpointDispatcher.writeJsonResponse");
 
 		String json = mapper.writeValueAsString(epResponse);
 		PrintWriter writer = httpResponse.getWriter();
@@ -219,7 +221,7 @@ public abstract class Endpoint
 
 	public I jsonInputs(
 		String jsonRequestBody, Class<I> inputClass) throws ServiceException {
-		Logger tLogger = Logger.getLogger("org.iutools.webservice.EndpointDispatcher.jsonInputs");
+		Logger tLogger = LogManager.getLogger("org.iutools.webservice.EndpointDispatcher.jsonInputs");
 
 		I inputs = null;
 
@@ -241,20 +243,20 @@ public abstract class Endpoint
 	}
 
 	public static Logger userActionLogger() {
-		Logger logger = Logger.getLogger("org.iutools.webservice.user_action");
-		logger.setLevel(Level.INFO);
+		Logger logger = LogManager.getLogger("org.iutools.webservice.user_action");
+		Configurator.setLevel(logger, Level.INFO);
 		return logger;
 	}
 
 	public static Logger endpointLogger() {
-		Logger logger = Logger.getLogger("org.iutools.webservice.endpoint");
-		logger.setLevel(Level.INFO);
+		Logger logger = LogManager.getLogger("org.iutools.webservice.endpoint");
+		Configurator.setLevel(logger, Level.INFO);
 		return logger;
 	}
 
 	public static Logger errorLogger() {
-		Logger logger = Logger.getLogger("org.iutools.webservice.endpoint");
-		logger.setLevel(Level.ERROR);
+		Logger logger = LogManager.getLogger("org.iutools.webservice.endpoint");
+		Configurator.setLevel(logger, Level.ERROR);
 		return logger;
 	}
 }

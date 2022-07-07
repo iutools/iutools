@@ -2,7 +2,8 @@ package org.iutools.concordancer;
 
 import ca.nrc.dtrc.elasticsearch.Document;
 import ca.nrc.json.PrettyPrinter;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 
@@ -75,7 +76,7 @@ public class Alignment_ES extends Document {
 	}
 
 	public SentencePair sentencePair(String l1, String l2) {
-		Logger logger = Logger.getLogger("org.iutools.concordancer.Alignment_ES.sentencePair");
+		Logger logger = LogManager.getLogger("org.iutools.concordancer.Alignment_ES.sentencePair");
 		SentencePair pair =
 			new SentencePair(
 				l1, sentence4lang(l1),

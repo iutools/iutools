@@ -83,7 +83,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.iutools.script.TransCoder;
 import org.iutools.utilities.Counter;
@@ -347,7 +348,7 @@ public class FontTunngavik {
      * aipaitaiMode: String -  "aipaitai" : convertir a+i au caract�re unicode AI
      */
     static public String transcodeToUnicode(String s, String aipaitaiMode) {
-    	Logger logger = Logger.getLogger("FontTunngavik.transcodeToUnicode");
+    	Logger logger = LogManager.getLogger("FontTunngavik.transcodeToUnicode");
     	logger.debug("s: "+s);
         int aipaitai = aipaitaiMode==null? 0 : aipaitaiMode.equals("aipaitai")? 1 : 0;
         boolean dot = false;

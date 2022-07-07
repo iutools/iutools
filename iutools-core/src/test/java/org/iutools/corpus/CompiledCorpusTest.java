@@ -14,7 +14,8 @@ import ca.nrc.dtrc.elasticsearch.StreamlinedClient;
 import ca.nrc.testing.AssertIterator;
 import ca.nrc.testing.AssertString;
 import org.apache.commons.lang3.tuple.Triple;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.iutools.script.TransCoder;
 import org.iutools.utilities.StopWatch;
 import org.junit.After;
@@ -350,7 +351,7 @@ public class CompiledCorpusTest {
 
 	
     private String createTemporaryCorpusDirectory(String[] stringOfWords) throws IOException {
-       	Logger logger = Logger.getLogger("CompiledCorpusTest.createTemporaryCorpusDirectory");
+       	Logger logger = LogManager.getLogger("CompiledCorpusTest.createTemporaryCorpusDirectory");
         corpusDirectory = Files.createTempDirectory("").toFile();
         corpusDirectory.deleteOnExit();
         String corpusDirPath = corpusDirectory.getAbsolutePath();

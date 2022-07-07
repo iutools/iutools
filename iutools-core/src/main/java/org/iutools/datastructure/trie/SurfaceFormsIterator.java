@@ -1,6 +1,7 @@
 package org.iutools.datastructure.trie;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 
@@ -38,7 +39,7 @@ public class SurfaceFormsIterator implements Iterator<String> {
 
     @Override
     public String next() {
-        Logger tLogger = Logger.getLogger("ca.nrc.datastructure.trie.SurfaceFormsIterator.next");
+        Logger tLogger = LogManager.getLogger("ca.nrc.datastructure.trie.SurfaceFormsIterator.next");
         String nextForm = null;
         if (currNodeFormsIterator == null || !currNodeFormsIterator.hasNext()) {
             currNodeFormsIterator = null;

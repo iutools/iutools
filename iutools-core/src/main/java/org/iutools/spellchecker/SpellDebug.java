@@ -8,7 +8,8 @@ import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.diff.DiffResult;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class SpellDebug {
 
@@ -19,7 +20,7 @@ public class SpellDebug {
 	static {
 		try {
 			debugActive =
-				Logger.getLogger("org.iutools.spellchecker.SpellDebug")
+				LogManager.getLogger("org.iutools.spellchecker.SpellDebug")
 				.isTraceEnabled();
 		} catch (Exception e) {
 			throw new RuntimeException(e);

@@ -9,7 +9,8 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.pdfbox.pdmodel.PDDocument;
 import org.pdfbox.pdmodel.PDPage;
 import org.pdfbox.util.PDFTextStripper;
@@ -27,7 +28,7 @@ import org.pdfbox.util.PDFTextStripper;
  */
 public class NRC_PDFHighlighter extends NRC_PDFTextStripper 
 {
-    private static Logger log = Logger.getLogger(NRC_PDFHighlighter.class);
+    private static Logger log = LogManager.getLogger(NRC_PDFHighlighter.class);
 
     private Writer highlighterOutput = null;
     //private Color highlightColor = Color.YELLOW;

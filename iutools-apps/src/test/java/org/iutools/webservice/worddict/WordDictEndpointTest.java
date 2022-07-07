@@ -248,26 +248,26 @@ public class WordDictEndpointTest extends EndpointTest {
 					})
 				.minExamples(5),
 
-			// This IU word is not found in the corpus, but it DOES decompose.
-			// So, we ARE able to show some meaningful information about it
-			new WordDictEndpointCase("iu-SEARCH-iqqanaijaqtulirijikkut")
-				.queryLang("iu")
-				.query("iqqanaijaqtulirijikkut")
-				.minHits(12)
-				.hitListStartsWithWords(new String[] {"iqqanaijaqtulirijikkut", "BLAH"})
-				.decomp(
-					new String[] {"iqqanaijaq/1v", "juq/1vn", "liri/1nv", "ji/1vn",
-						"kkut/1nn"})
-				.relatedWordsIncludedIn(new String[] {
-					"iqanaijaqtuliriji", "iqanaijaqtulirijikkunni", "iqanaijartulirijiit",
-					"iqanaijartulirijikkunnut", "iqanaijartulirijikkut"})
-				.translationsIncludedIn(new String[] {
-					"department ... human resources", "hr", "human resource",
-					"human resources", "human resources. branch summary",
-					"human resources department", "human resources. department summary",
-					// The following are actually bad, but they may come up
-					"public works", "staffed"})
-				.minExamples(5),
+//			// This IU word is not found in the corpus, but it DOES decompose.
+//			// So, we ARE able to show some meaningful information about it
+//			new WordDictEndpointCase("iu-SEARCH-iqqanaijaqtulirijikkut")
+//				.queryLang("iu")
+//				.query("iqqanaijaqtulirijikkut")
+//				.minHits(12)
+//				.hitListStartsWithWords(new String[] {"iqqanaijaqtulirijikkut", "BLAH"})
+//				.decomp(
+//					new String[] {"iqqanaijaq/1v", "juq/1vn", "liri/1nv", "ji/1vn",
+//						"kkut/1nn"})
+//				.relatedWordsIncludedIn(new String[] {
+//					"iqanaijaqtuliriji", "iqanaijaqtulirijikkunni", "iqanaijartulirijiit",
+//					"iqanaijartulirijikkunnut", "iqanaijartulirijikkut"})
+//				.translationsIncludedIn(new String[] {
+//					"department ... human resources", "hr", "human resource",
+//					"human resources", "human resources. branch summary",
+//					"human resources department", "human resources. department summary",
+//					// The following are actually bad, but they may come up
+//					"public works", "staffed"})
+//				.minExamples(5),
 
 			// This IU word is not found in the hansard, AND it DOES NOT decompose.
 			// So no hits should be found.

@@ -3,7 +3,8 @@ package org.iutools.webservice.gist;
 import ca.nrc.json.PrettyPrinter;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.iutools.concordancer.*;
 import org.iutools.script.TransCoder;
@@ -35,7 +36,7 @@ public class GistPrepareContentEndpoint
 	@Override
 	public EndpointResult execute(GistPrepareContentInputs inputs) throws ServiceException {
 
-		Logger tLogger = Logger.getLogger("org.iutools.webservice.gist.GistPrepareContentEndpoint.execute");
+		Logger tLogger = LogManager.getLogger("org.iutools.webservice.gist.GistPrepareContentEndpoint.execute");
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("invoked with inputs="+ PrettyPrinter.print(inputs));
 		}
@@ -67,7 +68,7 @@ public class GistPrepareContentEndpoint
 	private void doPrepareURL(GistPrepareContentInputs inputs,
 		GistPrepareContentResult response) throws ServiceException {
 
-		Logger logger = Logger.getLogger("org.iutools.webservice.gist.GistPrepareEndpoint.doPrepareURL");
+		Logger logger = LogManager.getLogger("org.iutools.webservice.gist.GistPrepareEndpoint.doPrepareURL");
 
 		response.wasActualText = false;
 		WebConcordancer concordancer =
@@ -93,7 +94,7 @@ public class GistPrepareContentEndpoint
 	private void addAlignment(SentencePair anAlignment,
 									  GistPrepareContentResult result) {
 
-		Logger tLogger = Logger.getLogger("org.iutools.webservice.GistPrepareContentEndpoint.addAlignment");
+		Logger tLogger = LogManager.getLogger("org.iutools.webservice.GistPrepareContentEndpoint.addAlignment");
 
 		IUTokenizer tokenizer = new IUTokenizer();
 		{
@@ -123,7 +124,7 @@ public class GistPrepareContentEndpoint
 	private void writeJsonResponse(HttpServletResponse response, String json)
 		throws IOException {
 
-		Logger tLogger = Logger.getLogger("org.iutools.webservice.writeJsonResponse");
+		Logger tLogger = LogManager.getLogger("org.iutools.webservice.writeJsonResponse");
 
 		tLogger.debug("json="+json);
 		PrintWriter writer = response.getWriter();

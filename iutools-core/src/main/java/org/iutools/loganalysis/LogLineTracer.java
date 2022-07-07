@@ -1,9 +1,10 @@
 package org.iutools.loganalysis;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class LogLineTracer {
-	private static Logger logger = Logger.getLogger("org.iutools.loganalysis.LogLineTracer");
+	private static Logger logger = LogManager.getLogger("org.iutools.loganalysis.LogLineTracer");
 
 	private LogLine line;
 	private String linePattern;

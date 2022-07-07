@@ -19,7 +19,8 @@ import org.iutools.utilities.StopWatch;
 import ca.nrc.debug.Debug;
 import org.iutools.corpus.*;
 import org.apache.commons.collections4.iterators.IteratorChain;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.google.gson.Gson;
 
@@ -260,8 +261,8 @@ public class SpellChecker {
 	}
 
 	public SpellingCorrection correctWord(String word, Integer maxCorrections) throws SpellCheckerException {
-		Logger tLogger = Logger.getLogger("org.iutools.spellchecker.SpellChecker.correctWord");
-		Logger excLogger = Logger.getLogger("org.iutools.spellchecker.SpellChecker.correctWord.exc");
+		Logger tLogger = LogManager.getLogger("org.iutools.spellchecker.SpellChecker.correctWord");
+		Logger excLogger = LogManager.getLogger("org.iutools.spellchecker.SpellChecker.correctWord.exc");
 
 		SpellingCorrection corr = new SpellingCorrection(word);
 		try {
@@ -652,7 +653,7 @@ public class SpellChecker {
 	 *   - it cannot be decomposed by the IMA (if never encountered in the Hansard corpus)
 	 */
 	public Boolean isMispelled(String word) throws SpellCheckerException {
-		Logger logger = Logger.getLogger("org.iutools.spellchecker.SpellChecker.isMispelled");
+		Logger logger = LogManager.getLogger("org.iutools.spellchecker.SpellChecker.isMispelled");
 		logger.trace("[word="+word+"]: invoked");
 
 		Boolean wordIsMispelled = null;
@@ -745,7 +746,7 @@ public class SpellChecker {
 	}
 
 	public boolean isExplicitlyCorrect(String word) throws SpellCheckerException {
-		Logger tLogger = Logger.getLogger("org.iutools.spellchecker.SpellChecker.isExplicitlyCorrect");
+		Logger tLogger = LogManager.getLogger("org.iutools.spellchecker.SpellChecker.isExplicitlyCorrect");
 		tLogger.trace("[word="+word+"] entered");
 		boolean answer = false;
 		try {
@@ -792,7 +793,7 @@ public class SpellChecker {
 	}
 
 	protected boolean wordContainsMoreThanTwoConsecutiveConsonants(String word) {
-		Logger logger = Logger.getLogger("SpellChecker.wordContainsMoreThanTwoConsecutiveConsonants");
+		Logger logger = LogManager.getLogger("SpellChecker.wordContainsMoreThanTwoConsecutiveConsonants");
 		boolean result = false;
 		String wordInSimplifiedOrthography = Orthography.simplifiedOrthography(word, false);
 		logger.trace("wordInSimplifiedOrthography= "+wordInSimplifiedOrthography+" ("+word+")");
@@ -863,7 +864,7 @@ public class SpellChecker {
 	public List<ScoredSpelling> candidatesWithSimilarNgrams(String badWord,
 	   boolean wordIsNumericTerm) throws SpellCheckerException {
 
-		Logger tLogger = Logger.getLogger("org.iutools.spellchecker.SpellChecker.candidatesWithSimilarNgrams");
+		Logger tLogger = LogManager.getLogger("org.iutools.spellchecker.SpellChecker.candidatesWithSimilarNgrams");
 		tLogger.trace("Starting");
 
 		long start = StopWatch.nowMSecs();
@@ -934,7 +935,7 @@ public class SpellChecker {
 	}
 
 	private Pair<String,Double>[] computeNgramFrequencies(String[] ngrams) throws SpellCheckerException {
-		Logger tLogger = Logger.getLogger("org.iutools.spellchecker.SpellChecker.computeNgramIDFs");
+		Logger tLogger = LogManager.getLogger("org.iutools.spellchecker.SpellChecker.computeNgramIDFs");
 
 		long start = StopWatch.nowMSecs();
 
@@ -956,7 +957,7 @@ public class SpellChecker {
 	}
 
 	public long ngramFrequency(String ngram) throws SpellCheckerException {
-		Logger tLogger = Logger.getLogger("org.iutools.spellchecker.SpellChecker.ngramFrequency");
+		Logger tLogger = LogManager.getLogger("org.iutools.spellchecker.SpellChecker.ngramFrequency");
 		long freq = 0;
 		try {
 			freq = corpus.totalWordsWithCharNgram(
@@ -973,7 +974,7 @@ public class SpellChecker {
 		Pair<String, Double>[] idf)
 		throws SpellCheckerException {
 
-		Logger tLogger = Logger.getLogger("org.iutools.spellchecker.SpellChecker.candidatesWithBestNGramsMatch");
+		Logger tLogger = LogManager.getLogger("org.iutools.spellchecker.SpellChecker.candidatesWithBestNGramsMatch");
 
 		long start = StopWatch.nowMSecs();
 		tLogger.trace("Started");
@@ -1041,7 +1042,7 @@ public class SpellChecker {
 			initialWords.add(aSpelling.spelling);
 			wordFreqs.put(aSpelling.spelling, aSpelling.frequency);
 		}
-		Logger tLogger = Logger.getLogger("org.iutools.spellchecker.SpellChecker.sortCandidatesByNgramSimilarity");
+		Logger tLogger = LogManager.getLogger("org.iutools.spellchecker.SpellChecker.sortCandidatesByNgramSimilarity");
 		tLogger.trace("invoked");
 
 		List<ScoredSpelling> candidates = new ArrayList<ScoredSpelling>();
@@ -1172,7 +1173,7 @@ public class SpellChecker {
 
 	protected Iterator<WordInfo> winfosContainingNgram(String seq,
 		CompiledCorpus.SearchOption... options) throws SpellCheckerException {
-		Logger logger = Logger.getLogger("org.iutools.spellchecker.SpellChecker.winfosContainingNgram");
+		Logger logger = LogManager.getLogger("org.iutools.spellchecker.SpellChecker.winfosContainingNgram");
 		logger.trace("invoked with seq="+seq);
 		long start = StopWatch.nowMSecs();
 
@@ -1203,7 +1204,7 @@ public class SpellChecker {
 
 	protected Iterator<String> wordsContainingNgram(String seq,
 		CompiledCorpus.SearchOption... options) throws SpellCheckerException {
-		Logger logger = Logger.getLogger("org.iutools.spellchecker.SpellChecker.wordsContainingSequ");
+		Logger logger = LogManager.getLogger("org.iutools.spellchecker.SpellChecker.wordsContainingSequ");
 
 		long start = StopWatch.nowMSecs();
 
@@ -1236,7 +1237,7 @@ public class SpellChecker {
 	}
 
 	public List<SpellingCorrection> correctText(String text, Integer nCorrections) throws SpellCheckerException {
-		Logger tLogger = Logger.getLogger("SpellChecker.correctText");
+		Logger tLogger = LogManager.getLogger("SpellChecker.correctText");
 		List<SpellingCorrection> corrections = new ArrayList<SpellingCorrection>();
 		
 		IUTokenizer iutokenizer = new IUTokenizer();
@@ -1262,7 +1263,7 @@ public class SpellChecker {
 	}
 	
 	protected boolean assessEndingWithIMA(String ending) {
-		Logger logger = Logger.getLogger("SpellChecker.assessEndingWithIMA");
+		Logger logger = LogManager.getLogger("SpellChecker.assessEndingWithIMA");
 		boolean accepted = false;
 		MorphologicalAnalyzer_R2L morphAnalyzer = segmenter.getAnalyzer();
 		for (int i=0; i<makeUpWords.length; i++) {

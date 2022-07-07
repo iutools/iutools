@@ -7,7 +7,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.iutools.script.Orthography;
 import org.iutools.script.Syllabics;
@@ -47,7 +48,7 @@ public class TextExtractor {
 	}
 	
 	private void extractIUWordsFromDirectory(String directoryPathname) throws Exception {
-		Logger logger = Logger.getLogger("TextExtractor.extractIUWordsFromDirectory");
+		Logger logger = LogManager.getLogger("TextExtractor.extractIUWordsFromDirectory");
     	CorpusReader_Directory corpusReader = new CorpusReader_Directory();
     	Iterator<CorpusDocument_File> files = (Iterator<CorpusDocument_File>) corpusReader.getFiles(directoryPathname);
     	while (files.hasNext()) {

@@ -7,7 +7,8 @@
  */
 package org.iutools.linguisticdata;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.iutools.linguisticdata.constraints.Conditions;
 
@@ -82,7 +83,7 @@ public class SurfaceFormInContext extends Object {
     private Boolean surfaceFinalIsDifferentThanCanonical = null;
 
     public SurfaceFormInContext(String _surfaceForm, String _endOfStem, Character _context, String _morphemeId) {
-    	Logger logger = Logger.getLogger("SurfaceFormInContext.constructor");
+    	Logger logger = LogManager.getLogger("SurfaceFormInContext.constructor");
 //    	if (_morphemeId.equals("tikiq/1n") || _morphemeId.equals("patiq/1v") || _morphemeId.equals("jarniq/1vv"))
 //    		logger.debug(_morphemeId+"; "+_surfaceForm+"; "+_endOfStem+"; "+String.valueOf(_context));
         this.surfaceForm = _surfaceForm;
@@ -110,7 +111,7 @@ public class SurfaceFormInContext extends Object {
 	 	due to the action of a following affix.
 	 */
 	public boolean finalIsDifferentThanCanonical() {
-		Logger logger = Logger.getLogger("SurfaceFormInContext.finalIsDifferentThanCanonical");
+		Logger logger = LogManager.getLogger("SurfaceFormInContext.finalIsDifferentThanCanonical");
 		logger.debug("this.surfaceFinalIsDifferentThanCanonical = "+this.surfaceFinalIsDifferentThanCanonical);
     	if (this.surfaceFinalIsDifferentThanCanonical == null) {
 			char finalOfSurfaceForm = surfaceForm.charAt(surfaceForm.length() - 1);
@@ -150,7 +151,7 @@ public class SurfaceFormInContext extends Object {
     
     @Override
     public boolean equals(Object o) {
-    	Logger logger = Logger.getLogger("SurfaceFormInContext.equals");
+    	Logger logger = LogManager.getLogger("SurfaceFormInContext.equals");
     	logger.debug("XXX");
     	if (o instanceof SurfaceFormInContext) {
     		SurfaceFormInContext oo = (SurfaceFormInContext)o;
@@ -192,13 +193,13 @@ public class SurfaceFormInContext extends Object {
 	 */
 	public boolean validateAssociativityWithPrecedingMorpheme(SurfaceFormInContext precedingMorpheme) {
 		boolean res = false;
-		Logger logger = Logger.getLogger("SurfaceFormInContext.validateAssociativityWithPrecedingMorpheme");
+		Logger logger = LogManager.getLogger("SurfaceFormInContext.validateAssociativityWithPrecedingMorpheme");
 		return res;
 	}
 
 //	public boolean validateAssociativityWithPrecedingMorpheme(SurfaceFormInContext precedingMorpheme) {
 //		boolean res;
-//		Logger logger = Logger.getLogger("SurfaceFormInContext.validateAssociativityWithPrecedingMorpheme");
+//		Logger logger = LogManager.getLogger("SurfaceFormInContext.validateAssociativityWithPrecedingMorpheme");
 //		String morphemeIdPrecedingMorpheme = precedingMorpheme.morphemeId;
 //		String[] morphemeIdPrecedingMorphemeParts = morphemeIdPrecedingMorpheme.split("/");
 //		String idPrecedingMorpheme = morphemeIdPrecedingMorphemeParts[1];
@@ -243,7 +244,7 @@ public class SurfaceFormInContext extends Object {
 
 
 	public boolean validateWithStem(SurfaceFormInContext precedingMorpheme) {
-    	Logger logger = Logger.getLogger("SurfaceFormInContext.validateWithStem");
+    	Logger logger = LogManager.getLogger("SurfaceFormInContext.validateWithStem");
 		char finalOfPrecedingMorpheme =
 			precedingMorpheme.canonicalForm().substring(precedingMorpheme.canonicalForm().length()-1).charAt(0);
 		if (this.context=='V') {
@@ -287,7 +288,7 @@ public class SurfaceFormInContext extends Object {
 	 * @throws LinguisticDataException
 	 */
 	public boolean validateConstraints(SurfaceFormInContext precedingMorpheme) throws LinguisticDataException {
-		Logger logger = Logger.getLogger("SurfaceFormInContext.validateConstraints");
+		Logger logger = LogManager.getLogger("SurfaceFormInContext.validateConstraints");
 		logger.debug("precedingMorpheme.morphemeId: "+precedingMorpheme.morphemeId);
 		Morpheme prec = LinguisticData.getInstance().getMorpheme(precedingMorpheme.morphemeId);
 		Morpheme cur = LinguisticData.getInstance().getMorpheme(this.morphemeId);
@@ -307,7 +308,7 @@ public class SurfaceFormInContext extends Object {
 
 	public boolean validateFinal() {
 		boolean res;
-		Logger logger = Logger.getLogger("SurfaceFormInContext.validateFinal");
+		Logger logger = LogManager.getLogger("SurfaceFormInContext.validateFinal");
 		String morphemeIdThis = morphemeId;
 		logger.debug("morphemeId: "+morphemeId);
 		String[] morphemeIdThisParts = morphemeIdThis.split("/");

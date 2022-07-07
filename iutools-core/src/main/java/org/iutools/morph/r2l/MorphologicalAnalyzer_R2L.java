@@ -10,7 +10,8 @@ package org.iutools.morph.r2l;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -59,7 +60,7 @@ public class MorphologicalAnalyzer_R2L extends MorphologicalAnalyzer {
 	@Override
 	protected Decomposition[] doDecompose(String word, Boolean extendedAnalysis)
 			throws MorphologicalAnalyzerException, TimeoutException {
-		Logger logger = Logger.getLogger("MorphoplogicalAnalyzer.doDecompose");
+		Logger logger = LogManager.getLogger("MorphoplogicalAnalyzer.doDecompose");
 		if (extendedAnalysis == null) {
 			extendedAnalysis = true;
 		}
@@ -274,7 +275,7 @@ public class MorphologicalAnalyzer_R2L extends MorphologicalAnalyzer {
 			String transitivity)
 	 		throws TimeoutException, MorphologicalAnalyzerException {
 
-    	Logger logger = Logger.getLogger("MorphologicalAnalyzer_R2L.__decompose_simplified_term__");
+    	Logger logger = LogManager.getLogger("MorphologicalAnalyzer_R2L.__decompose_simplified_term__");
     	stpw.check("__decompose_simplified_term__ -- Upon entry");
 
 		List<DecompositionState> completeAnalysis = new ArrayList<DecompositionState>();
@@ -329,7 +330,7 @@ public class MorphologicalAnalyzer_R2L extends MorphologicalAnalyzer {
 			Conditions preCond, String transitivity) throws TimeoutException, MorphologicalAnalyzerException {
 
     	stpw.check("analyzeAsSequenceOfMorphemes -- Upon entry");
-    	Logger logger = Logger.getLogger("MorphologicalAnalyzer_R2L.analyzeAsSequenceOfMorphemes");
+    	Logger logger = LogManager.getLogger("MorphologicalAnalyzer_R2L.analyzeAsSequenceOfMorphemes");
     	logger.debug("++++++simplifiedTerm= "+simplifiedTerm);
         List<DecompositionState> completeAnalysis = new ArrayList<DecompositionState>();
 
@@ -445,7 +446,7 @@ public class MorphologicalAnalyzer_R2L extends MorphologicalAnalyzer {
 		boolean notResultingFromDialectalPhonologicalTransformation)
 	throws TimeoutException, MorphologicalAnalyzerException {
 
-		Logger logger = Logger.getLogger("MorphologicalAnalyzer_R2L.analyzeWithCandidateAffixes");
+		Logger logger = LogManager.getLogger("MorphologicalAnalyzer_R2L.analyzeWithCandidateAffixes");
 		List<DecompositionState> completeAnalysis = new ArrayList<DecompositionState>();
 
 		String keyStateIDs = computeStateIDs(states);
@@ -554,7 +555,7 @@ public class MorphologicalAnalyzer_R2L extends MorphologicalAnalyzer {
 																	 Conditions preConds,
 																	 String transitivity) throws TimeoutException, MorphologicalAnalyzerException {
 
-    	Logger logger = Logger.getLogger("MorphologicalAnalyzer_R2L.analyzeAsRoot");
+    	Logger logger = LogManager.getLogger("MorphologicalAnalyzer_R2L.analyzeAsRoot");
         Vector<DecompositionState> allAnalyses = new Vector<DecompositionState>();
 
         String termICI = Orthography.orthographyICI(term, USE_SYLLABICS); // de-simplify the term (re: NN>nng; N>ng); needed to search the database

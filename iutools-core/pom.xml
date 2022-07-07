@@ -19,45 +19,105 @@
     <plugins>
       <!-- IS THIS REALLY NECESSARY? CAN WE MOVE IT TO THE PARENT PROJECT? -->
       <plugin>
-	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-source-plugin</artifactId>
-	<version>3.0.0</version>
-	<configuration>
-	  <excludes>
-	    <exclude>**/log4j.properties</exclude>
-	  </excludes>
-	</configuration>				
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-source-plugin</artifactId>
+			<version>3.0.0</version>
+			<configuration>
+			  <excludes>
+				 <exclude>**/log4j.properties</exclude>
+			  </excludes>
+			</configuration>
       </plugin>
 
       <!-- IS THIS REALLY NECESSARY? CAN WE MOVE IT TO THE PARENT PROJECT? -->	
       <plugin>
-	<artifactId>maven-compiler-plugin</artifactId>
-	<version>3.1</version>
-	<configuration>
-	  <source>1.8</source>
-	  <target>1.8</target>
-	</configuration>
+			<artifactId>maven-compiler-plugin</artifactId>
+			<version>3.1</version>
+			<configuration>
+			  <source>1.8</source>
+			  <target>1.8</target>
+			</configuration>
       </plugin>
 			
       <!-- IS THIS REALLY NECESSARY? CAN WE MOVE IT TO THE PARENT PROJECT? -->
+<!--      <plugin>-->
+<!--			<groupId>org.apache.maven.plugins</groupId>-->
+<!--			<artifactId>maven-assembly-plugin</artifactId>-->
+<!--			<version>2.4</version>-->
+<!--			<configuration>-->
+<!--			  <descriptorRefs>-->
+<!--				 <descriptorRef>jar-with-dependencies</descriptorRef>-->
+<!--			  </descriptorRefs>-->
+<!--			</configuration>-->
+<!--			<executions>-->
+<!--			  <execution>-->
+<!--				 <phase>package</phase>-->
+<!--				 <goals>-->
+<!--					<goal>single</goal>-->
+<!--				 </goals>-->
+<!--			  </execution>-->
+<!--			</executions>-->
+<!--      </plugin>-->
+
+      <!-- Used to generate an 'uber-jar' with all dependencies.
+           Similar to assembly plugin, but seems to offer more control -->
+
       <plugin>
-	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-assembly-plugin</artifactId>
-	<version>2.4</version> 			  
-	<configuration>
-	  <descriptorRefs>
-  	    <descriptorRef>jar-with-dependencies</descriptorRef>
-	  </descriptorRefs>
-	</configuration>
-	<executions>
-	  <execution>
-	    <phase>package</phase>
-	    <goals>
-	      <goal>single</goal>
-	    </goals>
-	  </execution>
-	</executions>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.1.0</version>
+        <configuration>
+				<shadedArtifactAttached>true</shadedArtifactAttached>
+				<shadedClassifierName>jar-with-dependencies</shadedClassifierName>
+            <filters>
+                <filter>
+                    <artifact>*:*</artifact>
+                    <excludes>
+							   <!-- This file may contain some log4j configuration that
+							        is not in sync with the actual version of log4j we
+							        use. So we exclude all versions of that file that
+							        might be inherited from a dependency-->
+                        <exclude>**/Log4j2Plugins.dat</exclude>
+
+							  	<!-- Exclude signatures of jars, to avoid error:
+							  	     "no manifiest section for signature file entry"  -->
+								<exclude>META-INF/*.SF</exclude>
+								<exclude>META-INF/*.DSA</exclude>
+								<exclude>META-INF/*.RSA</exclude>
+                    </excludes>
+                </filter>
+            </filters>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
+
+<!--		<plugin>-->
+<!--        <groupId>org.apache.maven.plugins</groupId>-->
+<!--        <artifactId>maven-shade-plugin</artifactId>-->
+<!--        <version>3.1.0</version>-->
+<!--        <configuration>-->
+<!--            <createDependencyReducedPom>false</createDependencyReducedPom>-->
+<!--            <filters>-->
+<!--                <filter>-->
+<!--                    <artifact>*:*</artifact>-->
+<!--                    <excludes>-->
+<!--							   &lt;!&ndash; This file may contain some log4j configuration that-->
+<!--							        is not in sync with the actual version of log4j we-->
+<!--							        use. So we exclude all versions of that file that-->
+<!--							        might be inherited from a dependency&ndash;&gt;-->
+<!--                        <exclude>**/Log4j2Plugins.dat</exclude>-->
+<!--                    </excludes>-->
+<!--                </filter>-->
+<!--            </filters>-->
+<!--        </configuration>-->
+<!--    	</plugin>-->
 			
     </plugins>
   </build>		

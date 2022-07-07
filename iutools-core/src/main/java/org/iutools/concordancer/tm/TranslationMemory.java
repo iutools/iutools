@@ -7,7 +7,8 @@ import ca.nrc.dtrc.elasticsearch.SearchResults;
 import ca.nrc.dtrc.elasticsearch.request.Query;
 import ca.nrc.ui.commandline.UserIO;
 import org.apache.commons.collections4.iterators.IteratorChain;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.iutools.concordancer.Alignment_ES;
 import org.iutools.elasticsearch.ES;
 import org.iutools.script.TransCoder;
@@ -60,7 +61,7 @@ public class TranslationMemory {
 	}
 
 	protected ESFactory esFactory() throws TranslationMemoryException {
-		Logger tLogger = Logger.getLogger("org.iutools.corpus.esFactory");
+		Logger tLogger = LogManager.getLogger("org.iutools.corpus.esFactory");
 		if (_esFactory == null) {
 			try {
 				_esFactory =
@@ -96,7 +97,7 @@ public class TranslationMemory {
 
 	public List<Alignment_ES> search(String sourceLang, String sourceExpr,
 		String... targetLangs) throws TranslationMemoryException {
-		Logger tLogger = Logger.getLogger("org.iutools.concordancer.tm.TranslationMemory.search");
+		Logger tLogger = LogManager.getLogger("org.iutools.concordancer.tm.TranslationMemory.search");
 		List<Alignment_ES> alignments = new ArrayList<Alignment_ES>();
 		try {
 			Iterator<Alignment_ES> iter = searchIter(sourceLang,sourceExpr, targetLangs);

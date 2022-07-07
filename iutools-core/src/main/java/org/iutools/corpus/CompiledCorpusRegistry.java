@@ -11,7 +11,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ca.nrc.dtrc.elasticsearch.ElasticSearchException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -27,12 +28,12 @@ public class CompiledCorpusRegistry {
 //	public static enum Option {ALLOW_UNREGISTERED};
 
 	public CompiledCorpusRegistry() throws CompiledCorpusException {
-		Logger tLogger = Logger.getLogger("org.iutools.corpus.CompiledCorpusRegistry.constructor");
+		Logger tLogger = LogManager.getLogger("org.iutools.corpus.CompiledCorpusRegistry.constructor");
 		init_CompiledCorpusRegistry();
 	}
 
 	private void init_CompiledCorpusRegistry() throws CompiledCorpusException {
-		Logger tLogger = Logger.getLogger("org.iutools.corpus.CompiledCorpusRegistry.init_CompiledCorpusRegistry");
+		Logger tLogger = LogManager.getLogger("org.iutools.corpus.CompiledCorpusRegistry.init_CompiledCorpusRegistry");
 		// Initialize the static registry map
 		if (registry == null) {
 			try {
@@ -131,7 +132,7 @@ public class CompiledCorpusRegistry {
 	public CompiledCorpus getCorpus(String corpusName, Boolean reloadFromJson,
 		Boolean allowNonRegistered)
 		throws CompiledCorpusRegistryException, CompiledCorpusException {
-		Logger logger = Logger.getLogger("CompiledCorpusRegistry.getCorpusWithName");
+		Logger logger = LogManager.getLogger("CompiledCorpusRegistry.getCorpusWithName");
 		logger.debug("corpusName= '"+corpusName+"'");
 		if (corpusName == null) {
 			corpusName = defaultCorpusName;
@@ -168,7 +169,7 @@ public class CompiledCorpusRegistry {
 	
 	private static String scanDataDirForCorpusFile(String corpusName) 
 		throws CompiledCorpusRegistryException {
-		Logger logger = Logger.getLogger("CompiledCorpusRegistry.scanDataDirForCorpusFile");
+		Logger logger = LogManager.getLogger("CompiledCorpusRegistry.scanDataDirForCorpusFile");
 		logger.debug("corpusName= '"+corpusName+"'");
 		
 		String corpusesPath;

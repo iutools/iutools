@@ -16,7 +16,8 @@ import ca.nrc.testing.AssertNumber;
 import ca.nrc.testing.AssertRuntime;
 import ca.nrc.testing.TestDirs;
 import ca.nrc.ui.commandline.UserIO;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.iutools.morph.r2l.DecompositionState;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -132,7 +133,7 @@ public class MorphRelativesFinderEvaluator {
 		Map<String, WordOutcome> actualOutcomes,
 		Map<String, String[]> goldStandard, TestInfo testInfo) throws IOException {
 
-		Logger tLogger = Logger.getLogger("org.iutools.morphrelatives.MorphRelativesFinderEvaluator.writeListOfAffectedWords");
+		Logger tLogger = LogManager.getLogger("org.iutools.morphrelatives.MorphRelativesFinderEvaluator.writeListOfAffectedWords");
 		Set<String> affectedWords = new HashSet<String>();
 		for (Map<?, ?> outcomes:
 			new Map<?,?>[] {expOutcomes, actualOutcomes}) {
@@ -352,7 +353,7 @@ public class MorphRelativesFinderEvaluator {
 		Map<String, WordOutcome> actualOutcomes,
 		Map<String, String[]> goldStandard) throws MorphRelativesFinderException {
 
-		Logger logger = Logger.getLogger("org.iutools.morphrelatives.MorphRelativesFinderEvaluator");
+		Logger logger = LogManager.getLogger("org.iutools.morphrelatives.MorphRelativesFinderEvaluator");
 		String recallDiff = "";
 		Double expRecall = computeRecall(expOutcomes, goldStandard, actualOutcomes.keySet());
 		Double actualRecall = computeRecall(actualOutcomes, goldStandard);

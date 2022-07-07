@@ -4,7 +4,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.iutools.linguisticdata.Affix;
 import org.iutools.linguisticdata.LinguisticData;
@@ -17,7 +18,7 @@ public class FormGenerator {
 	private String baseForm, morphId;
 	
 	public List<SurfaceFormInContext> run(String morphemeId) throws FormGeneratorException, LinguisticDataException {
-		Logger logger = Logger.getLogger("FormGenerator.run");
+		Logger logger = LogManager.getLogger("FormGenerator.run");
 		HashSet<SurfaceFormInContext> surfaceForms = new HashSet<SurfaceFormInContext>();
 		String[] morphemeParts = morphemeId.split("/");
 		baseForm = morphemeParts[0];
@@ -108,7 +109,7 @@ public class FormGenerator {
 	
 
 	public Set<SurfaceFormInContext> formsWithBeginnings(String morphemeId) {
-		Logger logger = Logger.getLogger("FormGenerator.formsWithBeginnings");
+		Logger logger = LogManager.getLogger("FormGenerator.formsWithBeginnings");
 		logger.debug("morphemeId: "+morphemeId);
 		Set<SurfaceFormInContext> allSurfaceFormsInContext = new HashSet<SurfaceFormInContext>();
 		Affix affix = LinguisticData.getInstance().getAffixWithId(morphemeId);
@@ -194,7 +195,7 @@ public class FormGenerator {
 	}
 	
 	protected HashSet<SurfaceFormInContext> objectFormsWithEnds(String morphemeCanonicalForm, String morphemeID, String endOfStem, String context) throws FormGeneratorException {
-		Logger logger = Logger.getLogger("FormGenerator.objectFormsWithEnds");
+		Logger logger = LogManager.getLogger("FormGenerator.objectFormsWithEnds");
 		logger.debug("morphemeID= "+morphemeID);
 		Character contextC = context==null? null : context.charAt(0);
 		HashSet<SurfaceFormInContext> surfaceForms = new HashSet<SurfaceFormInContext>();

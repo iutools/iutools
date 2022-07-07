@@ -12,7 +12,8 @@ import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.iutools.fonts.Font;
 
@@ -300,7 +301,7 @@ public class Orthography {
     static String UnicodeInuktitutChars = "[\\u1400-\\u167f]";
 
     public static boolean isUnicodeInuktitutWord(String word) {
-    	Logger logger = Logger.getLogger("Orthography.isUnicodeInuktitutWord");
+    	Logger logger = LogManager.getLogger("Orthography.isUnicodeInuktitutWord");
     	char[] chars = word.toCharArray();
         Pattern pwordChars = Pattern.compile(UnicodeInuktitutChars);
     	boolean result = true;

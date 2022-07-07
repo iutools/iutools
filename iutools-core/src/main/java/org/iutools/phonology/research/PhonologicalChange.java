@@ -28,7 +28,8 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 
@@ -356,7 +357,7 @@ public class PhonologicalChange {
     
     
     private static List<String> applySetOfChanges(String morpheme, DialectalChangesSet setOfChanges) {
-    	Logger logger = Logger.getLogger("PhonologicalChange.applySetOfChanges");
+    	Logger logger = LogManager.getLogger("PhonologicalChange.applySetOfChanges");
     	logger.debug("setOfChanges: "+setOfChanges.dialect);
     	DialectalChange firstSubsetOfChanges[] = setOfChanges.firstSubsetOfChanges;
     	DialectalChange secondSubsetOfChanges[] = setOfChanges.secondSubsetOfChanges;
@@ -381,7 +382,7 @@ public class PhonologicalChange {
      */
 
 	private static List<String> applyChanges(String morpheme, List<DialectalChange> listOfChanges) {
-    	Logger logger = Logger.getLogger("PhonologicalChange.applyChanges");
+    	Logger logger = LogManager.getLogger("PhonologicalChange.applyChanges");
 		List<String> formsToProcessWithNextChange = new ArrayList<String>();
 		formsToProcessWithNextChange.add(morpheme);
 		for (int ichange = 0; ichange < listOfChanges.size(); ichange++) {

@@ -1,7 +1,8 @@
 package org.iutools.morph;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.iutools.morph.r2l.StateGraphForward;
 
 import java.util.*;
@@ -108,7 +109,7 @@ public class Decomposition {
 	}
 	
 	public boolean validateForFinalComponent() {
-		Logger logger = Logger.getLogger("Decomposition.validateForFinalComponent");
+		Logger logger = LogManager.getLogger("Decomposition.validateForFinalComponent");
 		boolean res;
 		String lastComponent = components()[components().length-1];
 		lastComponent = lastComponent.substring(1,lastComponent.length()-1);

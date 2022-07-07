@@ -35,7 +35,8 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.iutools.linguisticdata.Base;
 import org.iutools.linguisticdata.LinguisticDataException;
@@ -254,7 +255,7 @@ public class DecompositionState extends Object implements Comparable<Decompositi
 	// a decomposition with -juksaq but will also find a decomposition with
 	// juq+ksaq ; this is to remove the latter.
 	static public DecompositionState[] removeCombinedSuffixes(DecompositionState decs[]) throws LinguisticDataException {
-		Logger logger = Logger.getLogger("Decomposition.removeCombinedSuffixes");
+		Logger logger = LogManager.getLogger("Decomposition.removeCombinedSuffixes");
         Object[][] decsAndKeepstatus = new Object[decs.length][2];
         for (int i = 0; i < decs.length; i++) {
         	logger.debug("decs["+i+"] = "+decs[i].toStr2());

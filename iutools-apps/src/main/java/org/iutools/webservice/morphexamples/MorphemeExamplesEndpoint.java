@@ -1,7 +1,8 @@
 package org.iutools.webservice.morphexamples;
 
 import ca.nrc.json.PrettyPrinter;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.iutools.corpus.CompiledCorpus;
 import org.iutools.corpus.CompiledCorpusException;
 import org.iutools.corpus.CompiledCorpusRegistry;
@@ -29,7 +30,7 @@ public class MorphemeExamplesEndpoint
 	@Override
 	public EndpointResult execute(MorphemeExamplesInputs inputs) throws ServiceException {
 
-		Logger logger = Logger.getLogger("org.iutools.webservice.morphexamples.MorphemeExamplesEndpoint.execute");
+		Logger logger = LogManager.getLogger("org.iutools.webservice.morphexamples.MorphemeExamplesEndpoint.execute");
 		logger.trace("inputs= " + PrettyPrinter.print(inputs));
 		MorphemeExamplesResult response = new MorphemeExamplesResult();
 
@@ -54,7 +55,7 @@ public class MorphemeExamplesEndpoint
 	private MorphemeExamplesResult findExamples(
 		MorphemeExamplesInputs inputs, String corpusName)
 			throws MorphemeExamplesException {
-		Logger tLogger = Logger.getLogger("org.iutools.webservice.OccurenceSearchEndpoint.getOccurrences");
+		Logger tLogger = LogManager.getLogger("org.iutools.webservice.OccurenceSearchEndpoint.getOccurrences");
 
 		tLogger.trace("invoked with inputs.wordPattern="+inputs.wordPattern+", inputs.nbExamples="+inputs.nbExamples);
 

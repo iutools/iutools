@@ -16,7 +16,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.unix4j.Unix4j;
 import org.unix4j.io.StringOutput;
 
@@ -31,7 +32,7 @@ public class ProcessQuery {
 	File alignedSentencesFile = null;
 	
 	public ProcessQuery() throws ConfigException {
-		Logger tLogger = Logger.getLogger("ca.inuktitutcomputing.nunhansearch.ProcessQuery.constructor");
+		Logger tLogger = LogManager.getLogger("ca.inuktitutcomputing.nunhansearch.ProcessQuery.constructor");
 		inuktutWordIndexFile = new File(IUConfig.getIUDataPath()+"/"+inuktutWordIndexFilePath);
 		alignedSentencesFile = new File(IUConfig.getIUDataPath()+"/"+alignedSentencesFilePath);
 		tLogger.trace("inuktutWordIndexFile="+inuktutWordIndexFile);;
@@ -45,7 +46,7 @@ public class ProcessQuery {
 	}
 	
 	public String[] run(String query) throws ConfigException, IOException {
-		Logger tLogger = Logger.getLogger("ca.inuktitutcomputing.nunhansearch.ProcessQuery.run");
+		Logger tLogger = LogManager.getLogger("ca.inuktitutcomputing.nunhansearch.ProcessQuery.run");
 		query = "^"+query+":";
 		tLogger.trace("query='"+query+"'");
 		TermDistribution distribution = getDistribution(query);
@@ -67,7 +68,7 @@ public class ProcessQuery {
 	 */
 	
 	public String[] getAlignments(HashMap<String, Long[]> variantsDistributions) throws IOException {
-		Logger logger = Logger.getLogger("ca.inuktitutcomputing.nunhansearch.ProcessQuery.getAlignments");
+		Logger logger = LogManager.getLogger("ca.inuktitutcomputing.nunhansearch.ProcessQuery.getAlignments");
 		logger.trace("getAlignments invoked");
 		logger.trace("alignedSentencesFile= "+alignedSentencesFile.getAbsolutePath());
 		BufferedReader br = null;
@@ -116,7 +117,7 @@ public class ProcessQuery {
 
 	public TermDistribution getDistribution(String query) 
 			throws ConfigException, FileNotFoundException {
-		Logger tLogger = Logger.getLogger("ca.inuktitutcomputing.nunhansearch.ProcessQuery.getDistribution");
+		Logger tLogger = LogManager.getLogger("ca.inuktitutcomputing.nunhansearch.ProcessQuery.getDistribution");
 		tLogger.trace("inuktutWordIndexFile="+inuktutWordIndexFile);
 		
 		String grepResult = grep(query,inuktutWordIndexFile);
@@ -150,7 +151,7 @@ public class ProcessQuery {
 	}
 	
 	public String grep(String query, File file) throws FileNotFoundException {
-		Logger tLogger = Logger.getLogger("ca.inuktitutcomputing.nunhansearch.ProcessQuery.grep");
+		Logger tLogger = LogManager.getLogger("ca.inuktitutcomputing.nunhansearch.ProcessQuery.grep");
 		if (!file.exists()) {
 			throw new FileNotFoundException("Could not find file "+file+".\nIt might be that you need to install the NunHanSearch data directory.");
 		}

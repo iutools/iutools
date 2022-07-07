@@ -1,7 +1,8 @@
 package org.iutools.morph.l2rAlain;
 
 import ca.nrc.json.PrettyPrinter;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.iutools.morph.Decomposition;
 
 import java.util.ArrayList;
@@ -56,7 +57,7 @@ public class DecompositionState {
 	}
 
 	public void onNewCompleteDecomposition() {
-		Logger tLogger = Logger.getLogger("org.iutools.morph.l2rAlain.DecompositionState.onNewCompleteDecomposition");
+		Logger tLogger = LogManager.getLogger("org.iutools.morph.l2rAlain.DecompositionState.onNewCompleteDecomposition");
 		List<WrittenMorpheme> decomp = currentDecomposition();
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("Got new decomp:\n"+ PrettyPrinter.print(decomp));

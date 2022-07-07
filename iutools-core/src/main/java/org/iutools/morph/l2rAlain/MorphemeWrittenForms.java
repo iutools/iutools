@@ -9,7 +9,8 @@ import java.util.*;
 
 import ca.nrc.config.ConfigException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.iutools.config.IUConfig;
 import org.iutools.datastructure.trie.TrieException;
@@ -148,7 +149,7 @@ public class MorphemeWrittenForms {
 	private synchronized static void generateSingleton() 
 			throws MorphologicalAnalyzerException {
 		Logger tLogger = 
-			Logger.getLogger("ca.inukitutcomputing.morph.expAlain.MorphemeWrittenForms.generateSingleton");
+			LogManager.getLogger("ca.inukitutcomputing.morph.expAlain.MorphemeWrittenForms.generateSingleton");
 		
 		// Make sure that singleton has not already been created by another 
 		// thread while we were waiting for the method 'sync'
@@ -160,7 +161,7 @@ public class MorphemeWrittenForms {
 
 	private void addForm(WrittenMorpheme aForm) 
 			throws MorphologicalAnalyzerException {
-		Logger tLogger = Logger.getLogger("org.iutools.morph.l2rAlain.MorphemeWritternForm.addForm");
+		Logger tLogger = LogManager.getLogger("org.iutools.morph.l2rAlain.MorphemeWritternForm.addForm");
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("Adding form: " + aForm.toString());
 		}

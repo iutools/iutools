@@ -56,7 +56,8 @@ import org.pdfbox.util.PDFOperator;
 import org.pdfbox.util.PDFStreamEngine;
 import org.pdfbox.util.operator.OperatorProcessor;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * This class will run through a PDF content stream and execute certain operations
@@ -68,7 +69,7 @@ import org.apache.log4j.Logger;
  */
 public class NRC_PDFStreamEngine extends PDFStreamEngine
 {
-    private static Logger log = Logger.getLogger(NRC_PDFStreamEngine.class);
+    private static Logger log = LogManager.getLogger(NRC_PDFStreamEngine.class);
 
     private static final byte[] SPACE_BYTES = { (byte)32 };
 

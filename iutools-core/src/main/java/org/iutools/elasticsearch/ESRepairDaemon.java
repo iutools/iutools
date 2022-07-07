@@ -1,8 +1,11 @@
 package org.iutools.elasticsearch;
 
 import ca.nrc.dtrc.elasticsearch.ElasticSearchException;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
+
 import org.iutools.corpus.CompiledCorpus;
 import org.iutools.corpus.CompiledCorpusRegistry;
 
@@ -117,9 +120,9 @@ public class ESRepairDaemon implements ServletContextListener, Runnable {
 	}
 
 	private Logger daemonLogger() {
-		_daemonLogger = Logger.getLogger("org.iutools.elasticsearch.ESRepairDaemon");
+		_daemonLogger = LogManager.getLogger("org.iutools.elasticsearch.ESRepairDaemon");
 		if (_daemonLogger.getLevel() == null) {
-			_daemonLogger.setLevel(Level.INFO);
+			Configurator.setLevel(_daemonLogger, Level.INFO);
 		}
 		return _daemonLogger;
 	}

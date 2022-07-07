@@ -7,7 +7,8 @@ import java.util.regex.Pattern;
 import ca.nrc.json.PrettyPrinter;
 import org.apache.commons.lang3.tuple.Pair;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class SentencePair {
 
@@ -20,7 +21,7 @@ public class SentencePair {
 	private Pair<String, String> tokenAlignmentsDir = null;
 	public WordAlignment walign = null;
 
-	private static Logger classLogger = Logger.getLogger("org.iutools.concordancer.SentencePair");
+	private static Logger classLogger = LogManager.getLogger("org.iutools.concordancer.SentencePair");
 
 	public SentencePair() {
 		init_SentencePair(null, null, null, null,
@@ -90,7 +91,7 @@ public class SentencePair {
 
 	@JsonIgnore
 	public SentencePair setTokenAlignments(WordAlignment walign) {
-		Logger logger = Logger.getLogger("org.iutools.concordancer.SentencePair.setTokenAlignments");
+		Logger logger = LogManager.getLogger("org.iutools.concordancer.SentencePair.setTokenAlignments");
 		if (logger.isTraceEnabled()) {
 			logger.trace("invoked with waling="+new PrettyPrinter().pprint(walign));
 		}
@@ -373,7 +374,7 @@ public class SentencePair {
 
 	public static Pattern stemmedTokensPattern(
 		String token, Boolean matchWholeText) {
-		Logger tLogger = Logger.getLogger("org.iutools.concordancer.SentencePair.stemmedTokensPattern");
+		Logger tLogger = LogManager.getLogger("org.iutools.concordancer.SentencePair.stemmedTokensPattern");
 		tLogger.trace("token='"+token+"', matchWholeText="+matchWholeText);
 		if (matchWholeText == null) {
 			matchWholeText = false;

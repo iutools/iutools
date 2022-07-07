@@ -11,7 +11,8 @@ import java.util.Map;
 import ca.nrc.json.PrettyPrinter;
 import org.iutools.corpus.CompiledCorpus;
 import org.iutools.corpus.TestCorpusBuilder;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -47,7 +48,7 @@ public class FreqVerbRootsTest {
 	// -----------------------------------------------------------------
 
     private String createTemporaryCorpusDirectory(String[] stringOfWords) throws IOException {
-    	Logger logger = Logger.getLogger("CompiledCorpusTest.createTemporaryCorpusDirectory");
+    	Logger logger = LogManager.getLogger("CompiledCorpusTest.createTemporaryCorpusDirectory");
         File corpusDirectory = Files.createTempDirectory("").toFile();
         corpusDirectory.deleteOnExit();
         String corpusDirPath = corpusDirectory.getAbsolutePath();

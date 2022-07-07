@@ -4,7 +4,8 @@ import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.iutools.linguisticdata.LinguisticData;
 import org.iutools.linguisticdata.Morpheme;
 import org.iutools.linguisticdata.MorphemeException;
@@ -160,7 +161,7 @@ public class MultilingualDictEntry {
 	public MultilingualDictEntry addBilingualExample(
 		String translation, String[] example, boolean forRelatedWord,
 		String relWord) throws MultilingualDictException {
-		Logger tLogger = Logger.getLogger("org.iutools.worddict.MultilingualDictEntry.addBilingualExample");
+		Logger tLogger = LogManager.getLogger("org.iutools.worddict.MultilingualDictEntry.addBilingualExample");
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("translation=" + translation + ", forRelatedWord=" + forRelatedWord + ", example=" + String.join(", ", example));
 		}
@@ -291,7 +292,7 @@ public class MultilingualDictEntry {
 
 	public void sortAndPruneTranslations(
 		int maxTranslations, Integer minRequiredPairs) throws MultilingualDictException {
-		Logger tLogger = Logger.getLogger("org.iutools.worddict.MultilingualDictEntry.sortTranslations");
+		Logger tLogger = LogManager.getLogger("org.iutools.worddict.MultilingualDictEntry.sortTranslations");
 		try {
 			if (_translationsNeedSorting) {
 				tLogger.trace("sorting translations for word: "+this.wordRoman);
@@ -397,7 +398,7 @@ public class MultilingualDictEntry {
 
 		@Override
 		public int compare(String t1, String t2) {
-			Logger tLogger = Logger.getLogger("org.iutools.worddict.MultilingualDictEntry.TranslationComparator.compare");
+			Logger tLogger = LogManager.getLogger("org.iutools.worddict.MultilingualDictEntry.TranslationComparator.compare");
 			tLogger.trace("t1="+t1+", t2="+t2);
 			List<String[]> t1Examples = _examplesForTranslation.get(t1);
 			int t1NumEx = 0;
@@ -474,7 +475,7 @@ public class MultilingualDictEntry {
 
 	public void ensureScript(TransCoder.Script script)
 		throws MultilingualDictException{
-		Logger logger = Logger.getLogger("org.iutools.worddict.MultilingualDictEntry.ensureScript");
+		Logger logger = LogManager.getLogger("org.iutools.worddict.MultilingualDictEntry.ensureScript");
 		logger.trace("word="+word+", script="+script);
 		ensureScript_translations(script);
 		ensureScript_relatedwords(script);

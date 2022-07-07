@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.iutools.script.TransCoder;
 import org.iutools.script.TransCoderException;
@@ -102,7 +103,7 @@ public class SpellingCorrection {
 	}
 	
 	public List<String> getAllSuggestions() {
-		Logger tLogger = Logger.getLogger("org.iutools.spellchecker.SpellingCorrection.getAllSuggestions");
+		Logger tLogger = LogManager.getLogger("org.iutools.spellchecker.SpellingCorrection.getAllSuggestions");
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("invoked for orig="+orig);
 		}
@@ -150,7 +151,7 @@ public class SpellingCorrection {
 	
 	/** Highlight middle portion of the word that seem incorrect. */
 	protected String highlightIncorrectMiddle() {
-		Logger tLogger = Logger.getLogger("org.iutools.spellchecker.SpellingCorrection.highlightIncorrectMiddle");
+		Logger tLogger = LogManager.getLogger("org.iutools.spellchecker.SpellingCorrection.highlightIncorrectMiddle");
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("invoked for orig="+orig+
 				", correctLead="+correctLead+", correctTail="+correctTail);

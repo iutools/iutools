@@ -8,8 +8,10 @@ import ca.nrc.dtrc.elasticsearch.request._Source;
 import ca.nrc.introspection.Introspection;
 import ca.nrc.introspection.IntrospectionException;
 import ca.nrc.json.PrettyPrinter;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.iutools.corpus.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -77,11 +79,11 @@ public class ESIndexRepair {
 		if (_logger != null) {
 			logger = _logger;
 		} else {
-			logger = Logger.getLogger(this.getClass());
+			logger = LogManager.getLogger(this.getClass());
 		}
 		Level level = logger.getLevel();
 		if (level == null) {
-			logger.setLevel(Level.INFO);
+			Configurator.setLevel(logger, Level.INFO);
 		}
 		return;
 	}
@@ -265,7 +267,7 @@ public class ESIndexRepair {
 	public void repairCorruptedDocs(
 		Iterator<String> corruptedIDsIter, String esTypeName, Document goodDocProto,
 		Path jsonFile) throws ElasticSearchException {
-		Logger tLogger = Logger.getLogger("org.iutools.elasticsearch.ESIndexRepair.repairCorruptedDocs");
+		Logger tLogger = LogManager.getLogger("org.iutools.elasticsearch.ESIndexRepair.repairCorruptedDocs");
 		Set<String> corruptedIDs = new HashSet<String>();
 
 		// Collect the non-null corrupted IDs

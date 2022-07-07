@@ -7,7 +7,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 import ca.nrc.debug.Debug;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.iutools.linguisticdata.dataCSV.LinguisticDataCSV;
 import org.iutools.phonology.Dialect;
@@ -67,7 +68,7 @@ public class LinguisticData {
     }
 
     public static synchronized LinguisticData getInstance() {
-        Logger logger = Logger.getLogger("LinguisticData.getInstance");
+        Logger logger = LogManager.getLogger("LinguisticData.getInstance");
         logger.debug("singleton == null ? " + (singleton==null));
     	if (singleton == null) {
     		singleton = new LinguisticData();
@@ -681,7 +682,7 @@ public class LinguisticData {
     //----- MAKE OBJECTS FOR THE MORPHEMES ------------------------------
 
     public void makeAndRegisterLinguisticObject(HashMap<String,String> linguisticDataMap) throws LinguisticDataException {
-        Logger logger = Logger.getLogger("LinguisticDataCSV.makeLinguisticObject");
+        Logger logger = LogManager.getLogger("LinguisticDataCSV.makeLinguisticObject");
         String morphemeTypeInLinguisticData = linguisticDataMap.get("type");
         logger.debug("morphemeTypeInLinguisticData: "+morphemeTypeInLinguisticData);
         String classOfMorpheme = LinguisticData.type2class.get(morphemeTypeInLinguisticData);

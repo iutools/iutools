@@ -7,7 +7,8 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.usermodel.CharacterRun;
 import org.apache.poi.hwpf.usermodel.Paragraph;
@@ -38,7 +39,7 @@ public class TranslitDOCFileParagraphs {
 	}
 
 	private static void replaceText(HWPFDocument doc) {
-		Logger logger = Logger.getLogger("TranslitDOCFileParagraphs.replaceText");
+		Logger logger = LogManager.getLogger("TranslitDOCFileParagraphs.replaceText");
 		Range r1 = doc.getRange();
 		
 		Pattern toc = Pattern.compile("^(.*)TOC (?:\\\\. )*\".+?\"(.*)$");

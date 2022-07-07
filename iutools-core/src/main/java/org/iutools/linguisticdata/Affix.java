@@ -29,7 +29,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.iutools.linguisticdata.constraints.Condition;
 import org.iutools.linguisticdata.constraints.Conditions;
@@ -206,7 +207,7 @@ public abstract class Affix extends Morpheme {
 		String action1,
 		String action2) {
 	    
-		Logger logger = Logger.getLogger("Affix.makeFormsAndActions");
+		Logger logger = LogManager.getLogger("Affix.makeFormsAndActions");
 		logger.debug("morpheme= "+morpheme+"; context= "+context+"; forms= "+forms+"");
         String[] arrayOfForms;
         Action[] arrayOfActions1;
@@ -371,7 +372,7 @@ public abstract class Affix extends Morpheme {
 	 * then for 3 distinct ContextBehaviour objects; 1 general one will suffice.
 	 */
 	public void makeContextualBehaviours() {
-		Logger logger = Logger.getLogger("Affix.makeContextualBehaviours");
+		Logger logger = LogManager.getLogger("Affix.makeContextualBehaviours");
 		logger.debug(morpheme+": "+vform.length+"; "+tform.length+"; "+kform.length+"; "+qform.length);
 		_makeContextualBehavioursForVowelContext();
 		_makeContextualBehavioursForConsonantalContext();

@@ -8,7 +8,8 @@ package org.iutools.bin;
 
 import java.util.Calendar;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.iutools.linguisticdata.LinguisticData;
 import org.iutools.linguisticdata.LinguisticDataException;
 import org.iutools.morph.Decomposition;
@@ -143,7 +144,7 @@ public class Decompose {
     public static String[] decomposeToArrayOfStrings(String word, boolean extendedAnalysis, boolean decomposeComposite) {
         // Décodage URL du mot, au cas où il a été codé avant d'être transmis
         // par l'application.
-		Logger logger = Logger.getLogger("Decompose.decomposeToArrayOfStrings");
+		Logger logger = LogManager.getLogger("Decompose.decomposeToArrayOfStrings");
         word = MonURLDecoder.decode(word).trim();
 
         // Si le mot est en UNICODE inuktitut, le translittérer en caractères latins.

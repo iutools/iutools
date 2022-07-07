@@ -14,7 +14,8 @@ import org.iutools.corpus.CompiledCorpusRegistry;
 import org.iutools.corpus.CompiledCorpusRegistryException;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Given an input word, this class finds a list of "good" Morphological 
@@ -62,7 +63,7 @@ public class MorphRelativesFinder {
 	 * @throws Exception
 	 */
 	public MorphologicalRelative[] findRelatives(String word) throws MorphRelativesFinderException  {
-    	Logger logger = Logger.getLogger("org.iutools.morphrelatives.MorphRelativesFinder.findRelatives");
+    	Logger logger = LogManager.getLogger("org.iutools.morphrelatives.MorphRelativesFinder.findRelatives");
 		logger.trace("word: "+word);
 
 		String[] segments = decomposeWord(word);
@@ -126,7 +127,7 @@ public class MorphRelativesFinder {
 	}
 
 	private String[] decomposeWord(String word) {
-		Logger logger = Logger.getLogger("org.iutools.morphrelatives.MorphRelativesFinder.decomposeWord");
+		Logger logger = LogManager.getLogger("org.iutools.morphrelatives.MorphRelativesFinder.decomposeWord");
 
 		String[] segments = null;
 
@@ -158,7 +159,7 @@ public class MorphRelativesFinder {
 		String[] currentMorphemes, Set<MorphologicalRelative> collectedSoFar) 
 		throws MorphRelativesFinderException {
 				
-		Logger tLogger = Logger.getLogger("org.iutools.MorphRelativesFinder.collectMorphologicalNeighbors");
+		Logger tLogger = LogManager.getLogger("org.iutools.MorphRelativesFinder.collectMorphologicalNeighbors");
 		
 		if (tLogger.isTraceEnabled()) {
 			MRelsTracer.traceRelatives(tLogger, collectedSoFar,
@@ -192,7 +193,7 @@ public class MorphRelativesFinder {
 		 String[] origWordMorphemes, String[] currentMorphemes,
 		 Set<MorphologicalRelative> collectedSoFar) throws MorphRelativesFinderException {
 
-		Logger tLogger = Logger.getLogger("org.iutools.morphrelatives.MorphRelativesFinder.collectDescendants");
+		Logger tLogger = LogManager.getLogger("org.iutools.morphrelatives.MorphRelativesFinder.collectDescendants");
 		if (tLogger.isTraceEnabled()) {
 			MRelsTracer.traceRelatives(tLogger, collectedSoFar, "Invoked with origWord=" + origWord + ", currentMorphemes=" + String.join(", ", currentMorphemes));
 		}
@@ -265,7 +266,7 @@ public class MorphRelativesFinder {
 	
 	private List<MorphologicalRelative> sortRelatives(
 		Set<MorphologicalRelative> relatives) throws MorphRelativesFinderException {
-		Logger tLogger = Logger.getLogger("org.iutools.MorphRelativesFinder.sortRelatives");
+		Logger tLogger = LogManager.getLogger("org.iutools.MorphRelativesFinder.sortRelatives");
 		MRelsTracer.traceRelatives(tLogger, relatives, "Upon entry, relatives=");
 
 		List<MorphologicalRelative> relativesLst = new ArrayList<MorphologicalRelative>();

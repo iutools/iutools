@@ -11,7 +11,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.iutools.utilities.StopWatch;
 import ca.nrc.debug.Debug;
@@ -56,7 +57,7 @@ public abstract class MorphologicalAnalyzer implements AutoCloseable {
     
     // TODO: Make that synchronized?
     public static void shutdownExecutorPool() {
-    	Logger mLogger = Logger.getLogger("ca.inuktitutcomputing.morph.MorphologicalAnalyzer.shutdownExecutorPool");
+    	Logger mLogger = LogManager.getLogger("ca.inuktitutcomputing.morph.MorphologicalAnalyzer.shutdownExecutorPool");
     	
     	traceTasks(mLogger, "Before shutting down executor pool");
     	
@@ -151,7 +152,7 @@ public abstract class MorphologicalAnalyzer implements AutoCloseable {
 			this.stpw = new StopWatch(millisTimeout, "Decomposing word="+word);
 		}
 
-		Logger tLogger = Logger.getLogger("ca.inuktitutcomputing.morph.decomposeWord");
+		Logger tLogger = LogManager.getLogger("ca.inuktitutcomputing.morph.decomposeWord");
 		tLogger.trace("word="+word+", lenient="+lenient);
 
 		Decomposition[] decompositions = null;
@@ -182,7 +183,7 @@ public abstract class MorphologicalAnalyzer implements AutoCloseable {
 	}
 
     private Decomposition[] invokeThroughExecutor(MorphAnalyzerTask task) throws InterruptedException, TimeoutException, MorphologicalAnalyzerException {
-    	Logger tLogger = Logger.getLogger("ca.inuktitutcomputing.morph.invokeThroughExecutor");
+    	Logger tLogger = LogManager.getLogger("ca.inuktitutcomputing.morph.invokeThroughExecutor");
     	
     	String word = task.word;
     	traceTasks(tLogger, "processing word="+word);
@@ -244,7 +245,7 @@ public abstract class MorphologicalAnalyzer implements AutoCloseable {
 
 	private Decomposition[] invokeDirectly(String word, boolean lenient)
 			throws TimeoutException, MorphologicalAnalyzerException {
-    	Logger tLogger = Logger.getLogger("ca.inuktitutcomputing.morph.invokeDirectly");
+    	Logger tLogger = LogManager.getLogger("ca.inuktitutcomputing.morph.invokeDirectly");
     	
     	long start = System.currentTimeMillis();
     	Decomposition[] decomps = null;
@@ -272,7 +273,7 @@ public abstract class MorphologicalAnalyzer implements AutoCloseable {
 	}
 
 	private void checkElapsedTime(String word, long start) {
-    	Logger tLogger = Logger.getLogger("ca.inuktitutcomputing.morph.MorphologicalAnalyzer.checkElapsedTime");
+    	Logger tLogger = LogManager.getLogger("ca.inuktitutcomputing.morph.MorphologicalAnalyzer.checkElapsedTime");
     	
     	if (timeoutActive) {
 	    	long elapsedMSecs = System.currentTimeMillis() - start;

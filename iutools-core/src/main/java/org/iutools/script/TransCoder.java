@@ -19,7 +19,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-//import org.apache.log4j.Logger;
+//import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.iutools.html.HtmlEntities;
 import org.iutools.fonts.Font;
@@ -28,7 +29,7 @@ public class TransCoder {
 	/**
 	#	 * Log4j logger
 	#	 */
-//    private static Logger LOG = Logger.getLogger("TransCoder");
+//    private static Logger LOG = LogManager.getLogger("TransCoder");
 
     // Make a hash table the keys of which are the sequences of
     // legacy codes and the values, the unicodes, or inversely, depending
@@ -447,7 +448,7 @@ public class TransCoder {
     }
 
     public static String legacyToUnicode(String s, String fontName, boolean aipaitai) {
-//    	Logger logger = Logger.getLogger("TransCoder.legacyToUnicode");
+//    	Logger logger = LogManager.getLogger("TransCoder.legacyToUnicode");
 //        if (LOG.isDebugEnabled())
 //        	LOG.debug("avant appel à windows1252Toiso88591 --- s = '"+s+"'");
     	String sNormalized = windows1252Toiso88591(s);

@@ -8,7 +8,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -150,7 +151,7 @@ public class CorpusCompilerTest {
 		
 	private File createTemporaryCorpusDirectory(
 			String[] stringOfWords, File inDir) throws IOException {
-       	Logger logger = Logger.getLogger("CompiledCorpusTest.createTemporaryCorpusDirectory");
+       	Logger logger = LogManager.getLogger("CompiledCorpusTest.createTemporaryCorpusDirectory");
         inDir.deleteOnExit();
         String corpusDirPath = inDir.getAbsolutePath();
         for (int i=0; i<stringOfWords.length; i++) {

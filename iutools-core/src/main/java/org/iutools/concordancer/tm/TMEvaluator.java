@@ -13,7 +13,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.iutools.concordancer.Alignment_ES;
 import org.iutools.concordancer.SentencePair;
 import org.iutools.config.IUConfig;
@@ -243,7 +244,7 @@ public class TMEvaluator {
 
 	private Triple<String,MatchType,String> checkEnTermSpotting(
 		Alignment_ES algn, String iuTerm_syll, String enTerm) throws TranslationMemoryException {
-		Logger logger = Logger.getLogger("org.iutools.concordancer.tm.TMEvaluator.checkEnTermSpotting");
+		Logger logger = LogManager.getLogger("org.iutools.concordancer.tm.TMEvaluator.checkEnTermSpotting");
 		PrettyPrinter pprinter = new PrettyPrinter();
 		MatchType matchType = null;
 		String spottedEN = null;
@@ -277,7 +278,7 @@ public class TMEvaluator {
 
 	private boolean alignmentContainsIU(
 		Alignment_ES algn, String expIUTerm_syll) throws TranslationMemoryException {
-		Logger logger = Logger.getLogger("org.iutools.concordancer.tm.TMEvaluator.alignmentContainsIU");
+		Logger logger = LogManager.getLogger("org.iutools.concordancer.tm.TMEvaluator.alignmentContainsIU");
 		boolean answer = false;
 		String sentence = algn.sentence4lang("iu");
 		logger.trace("expIUTerm_syll="+expIUTerm_syll+", sentence="+sentence);
@@ -345,7 +346,7 @@ public class TMEvaluator {
 	}
 
 	public Pair<MatchType, String> findTerm(String term, String inText, String lang) throws TranslationMemoryException {
-		Logger logger = Logger.getLogger("org.iutools.concordancer.tm.TMEvaluator.findTerm");
+		Logger logger = LogManager.getLogger("org.iutools.concordancer.tm.TMEvaluator.findTerm");
 		try {
 			if (lang == null) {
 				lang = "en";
@@ -392,7 +393,7 @@ public class TMEvaluator {
 	}
 
 	public static Pair<MatchType, String> sameTerm(String[] term1Toks, String[] term2Toks) {
-		Logger logger = Logger.getLogger("org.iutools.concordancer.tm.TMEvaluator.sameTerm");
+		Logger logger = LogManager.getLogger("org.iutools.concordancer.tm.TMEvaluator.sameTerm");
 		PrettyPrinter pprinter = new PrettyPrinter();
 		if (logger.isTraceEnabled()) {
 			logger.trace("term1Toks="+pprinter.pprint(term1Toks)+"\nterm2Toks="+pprinter.pprint(term2Toks));

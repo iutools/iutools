@@ -5,7 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.iutools.script.TransCoder.*;
 import org.json.JSONObject;
 
@@ -58,7 +59,7 @@ public class ServiceInputs {
 	public static <I extends ServiceInputs> I
 		instantiateFromMap(Map<String,Object> data, Class<I> clazz)
 		throws ServiceException {
-		Logger tLogger = Logger.getLogger("org.iutools.webservice.ServiceInputs.instantiateFromMap");
+		Logger tLogger = LogManager.getLogger("org.iutools.webservice.ServiceInputs.instantiateFromMap");
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("clazz="+clazz+", data="+ PrettyPrinter.print(data));
 		}

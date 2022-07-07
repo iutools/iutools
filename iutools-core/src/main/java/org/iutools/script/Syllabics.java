@@ -12,7 +12,8 @@ import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.Character;
 import java.util.Enumeration;
@@ -849,7 +850,7 @@ public class Syllabics {
 
 
 	public static double syllabicCharsRatio(String text) {
-		Logger tLogger = Logger.getLogger("ca.inuktitutcomputing.script.syllabicCharsRatio");
+		Logger tLogger = LogManager.getLogger("ca.inuktitutcomputing.script.syllabicCharsRatio");
 		tLogger.trace("invoked with text="+text);
 		int totalChars = 0;
 		int iuChars = 0;

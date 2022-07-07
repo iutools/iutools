@@ -21,7 +21,8 @@ import net.loomchild.maligna.ui.console.command.AlignCommand;
 import net.loomchild.maligna.ui.console.command.FormatCommand;
 import net.loomchild.maligna.ui.console.command.ModifyCommand;
 import net.loomchild.maligna.ui.console.command.ParseCommand;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 public class Aligner_Maligna {
@@ -43,7 +44,7 @@ public class Aligner_Maligna {
 	
 	public List<Pair<String,String>> align(String[] l1Sents, String[] l2Sents) throws AlignerException {
 
-		Logger logger = Logger.getLogger("org.iutools.concordancer.Aligner_Maligna.align");
+		Logger logger = LogManager.getLogger("org.iutools.concordancer.Aligner_Maligna.align");
 		logger.trace("#l1 sents="+l1Sents.length+", #l2 sents="+l2Sents.length);
 		List<Pair<String,String>> alignments 
 				= new ArrayList<Pair<String,String>>();

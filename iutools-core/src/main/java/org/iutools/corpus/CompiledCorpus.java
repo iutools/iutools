@@ -30,7 +30,8 @@ import org.iutools.script.TransCoderException;
 import org.iutools.text.ngrams.NgramCompiler;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
 import static ca.nrc.dtrc.elasticsearch.ESFactory.*;
@@ -301,7 +302,7 @@ public class CompiledCorpus {
 	}
 
 	public ESFactory esFactory() throws CompiledCorpusException {
-		Logger logger = Logger.getLogger("org.iutools.corpus.esFactory");
+		Logger logger = LogManager.getLogger("org.iutools.corpus.esFactory");
 		if (_esFactory == null) {
 			try {
 				_esFactory =
@@ -348,7 +349,7 @@ public class CompiledCorpus {
 	}
 
 	private boolean debugMode() throws CompiledCorpusException {
-		Logger tLogger = Logger.getLogger("org.iutools.corpus.CompiledCorpus.debugMode");
+		Logger tLogger = LogManager.getLogger("org.iutools.corpus.CompiledCorpus.debugMode");
 		if (debug == null) {
 			List<String> loggerNames = new ArrayList<String>();
 			for (String reqType : new String[]{"POST", "PUT", "DELETE", "GET"}) {
@@ -357,7 +358,7 @@ public class CompiledCorpus {
 				}
 			}
 			for (String aName: loggerNames) {
-				if (Logger.getLogger(aName).isTraceEnabled()) {
+				if (LogManager.getLogger(aName).isTraceEnabled()) {
 					debug = true;
 					break;
 				}
@@ -380,7 +381,7 @@ public class CompiledCorpus {
 
 	public  void loadFromFile(File jsonFile, Boolean verbose,
 		Boolean overwrite, String indexName) throws CompiledCorpusException {
-		Logger logger = Logger.getLogger("org.iutools.corpus.CompiledCorpus.loadFromFile");
+		Logger logger = LogManager.getLogger("org.iutools.corpus.CompiledCorpus.loadFromFile");
 		if (verbose == null) {
 			verbose = true;
 		}
@@ -437,7 +438,7 @@ public class CompiledCorpus {
 	}
 
 	protected void changeLastUpdatedHistory() throws CompiledCorpusException {
-		Logger tLogger = Logger.getLogger("org.iutools.corpus.CompiledCorpus.changeLastUpdatedHistory");
+		Logger tLogger = LogManager.getLogger("org.iutools.corpus.CompiledCorpus.changeLastUpdatedHistory");
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("indexName="+indexName+";Unpon entry, last loaded date = "+lastLoadedDate());
 		}
@@ -517,12 +518,12 @@ public class CompiledCorpus {
 	}
 
 	public List<WordWithMorpheme> wordsContainingMorpheme(String morpheme) throws CompiledCorpusException {
-		Logger logger = Logger.getLogger("org.iutools.corpus.CompiledCorpus.wordsContainingMorpheme");
+		Logger logger = LogManager.getLogger("org.iutools.corpus.CompiledCorpus.wordsContainingMorpheme");
 
 		logger.trace("Invoked with morpheme="+morpheme);
 
 		List<WordWithMorpheme> words = new ArrayList<WordWithMorpheme>();
-		if (logger.isEnabledFor(Level.ERROR) && morpheme == null) {
+		if (logger.isErrorEnabled() && morpheme == null) {
 				logger.error("morpheme is null");
 		}
 		if (morpheme != null) {
@@ -531,7 +532,7 @@ public class CompiledCorpus {
 
 			SearchResults<WordInfo> results = esWinfoSearch(query);
 			Iterator<Hit<WordInfo>> iter = results.iterator();
-			if (logger.isEnabledFor(Level.ERROR) && iter == null) {
+			if (logger.isErrorEnabled() && iter == null) {
 				logger.error("*** morpheme="+morpheme+", iter is null");
 			}
 
@@ -540,7 +541,7 @@ public class CompiledCorpus {
 			Pattern morphPatt = Pattern.compile("(^|\\s)([^\\s]*" + morpheme + "[^\\s]*)(\\s|$)");
 			while (iter.hasNext()) {
 				WordInfo winfo = iter.next().getDocument();
-				if (logger.isEnabledFor(Level.ERROR)) {
+				if (logger.isErrorEnabled()) {
 					if (winfo == null) {
 						logger.error("** winfo = null");
 					} else if (winfo.word == null){
@@ -708,7 +709,7 @@ public class CompiledCorpus {
 
 	
 	public boolean containsWord(String word) throws CompiledCorpusException {
-		Logger tLogger = Logger.getLogger("org.iutools.corpus.CompiledCorpus.containsWord");
+		Logger tLogger = LogManager.getLogger("org.iutools.corpus.CompiledCorpus.containsWord");
 		String traceLabel = this.traceLabel("word="+word);
 		tLogger.trace(traceLabel+"invoked");
 		WordInfo winfo = null;
@@ -745,7 +746,7 @@ public class CompiledCorpus {
 	}
 	
 	public Iterator<String> wordsContainingMorphNgram(String[] morphemes) throws CompiledCorpusException {
-		Logger logger = Logger.getLogger("org.iutools.corpus.CompiledCorpus.wordsContainingMorphNgram");
+		Logger logger = LogManager.getLogger("org.iutools.corpus.CompiledCorpus.wordsContainingMorphNgram");
 		Set<String> words = new HashSet<String>();
 		String query = morphNgramQuery(morphemes);
 		SearchResults<WordInfo> hits = esWinfoSearch(query);
@@ -912,7 +913,7 @@ public class CompiledCorpus {
 			String word, String[][] sampleDecomps, Integer totalDecomps,
 			long freqIncr) throws CompiledCorpusException {
 
-		Logger tLogger = Logger.getLogger("org.iutools.corpus.CompiledCorpus.addWordOccurences");
+		Logger tLogger = LogManager.getLogger("org.iutools.corpus.CompiledCorpus.addWordOccurences");
 		tLogger.trace("invoked, word="+word);
 
 		ensureCorpusIndexIsDefined();
@@ -979,7 +980,7 @@ public class CompiledCorpus {
 	
 	public long totalWordsWithCharNgram(String ngram, SearchOption... options)
 			throws CompiledCorpusException {
-		Logger tLogger = Logger.getLogger("org.iutools.corpus.CompiledCorpus.totalWordsWithCharNgram");
+		Logger tLogger = LogManager.getLogger("org.iutools.corpus.CompiledCorpus.totalWordsWithCharNgram");
 		tLogger.trace("invoked with ngram="+ngram);
 		try {
 			ngram = TransCoder.ensureScript(TransCoder.Script.ROMAN, ngram);
@@ -1231,7 +1232,7 @@ public class CompiledCorpus {
 
 	public boolean isUpToDateWithFile(File corpusFile)
 			throws CompiledCorpusException {
-		Logger tLogger = Logger.getLogger("org.iutools.corpus.CompiledCorpus.isUpToDateWithFile");
+		Logger tLogger = LogManager.getLogger("org.iutools.corpus.CompiledCorpus.isUpToDateWithFile");
 		boolean uptodate = false;
 
 		try {
@@ -1251,7 +1252,7 @@ public class CompiledCorpus {
 	}
 
 	public long lastLoadedDate() throws CompiledCorpusException {
-		Logger tLogger = Logger.getLogger("org.iutools.corpus.CompiledCorpus.lastLoadedDate");
+		Logger tLogger = LogManager.getLogger("org.iutools.corpus.CompiledCorpus.lastLoadedDate");
 
 		tLogger.trace("invoked");
 		Long date = null;

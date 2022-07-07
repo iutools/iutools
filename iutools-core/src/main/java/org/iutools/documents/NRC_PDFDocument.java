@@ -31,7 +31,8 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.iutools.documents.pdfboxAddition.NRC_PDFFonttedTextStripper;
 import org.iutools.documents.pdfboxAddition.NRC_PDFHighlighter;
 import org.pdfbox.cos.COSDocument;
@@ -53,7 +54,7 @@ import org.iutools.utilities1.Util;
 
 
 public class NRC_PDFDocument implements NRC_Document {
-    private static Logger LOG = Logger.getLogger(NRC_PDFDocument.class);
+    private static Logger LOG = LogManager.getLogger(NRC_PDFDocument.class);
 
     public COSDocument document = null;
 
@@ -211,7 +212,7 @@ public class NRC_PDFDocument implements NRC_Document {
      * PDFFonttedTextStripper() et getText()), la chaîne vide est retournée.
      */
     public String getPageContent() {
-    	Logger logger = Logger.getLogger("NRC_PDFDocument.gePageContent");
+    	Logger logger = LogManager.getLogger("NRC_PDFDocument.gePageContent");
         if (pageContent != null) {
             return pageContent;
         }

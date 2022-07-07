@@ -1,7 +1,8 @@
 package org.iutools.webservice.gist;
 
 import ca.nrc.json.PrettyPrinter;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.iutools.concordancer.SentencePair;
 import org.iutools.concordancer.Alignment_ES;
 import org.iutools.concordancer.tm.TranslationMemory;
@@ -30,7 +31,7 @@ public class GistWordEndpoint extends Endpoint<GistWordInputs, GistWordResult> {
 
 	@Override
 	public EndpointResult execute(GistWordInputs inputs) throws ServiceException {
-		Logger tLogger = Logger.getLogger("org.iutools.webservice.GistWordEndpoint.execute");
+		Logger tLogger = LogManager.getLogger("org.iutools.webservice.GistWordEndpoint.execute");
 
 		GistWordResult response = new GistWordResult(inputs.word);
 
@@ -61,7 +62,7 @@ public class GistWordEndpoint extends Endpoint<GistWordInputs, GistWordResult> {
 	 */
 	private SentencePair[] alignments4Word(String word)
 		throws ServiceException {
-		Logger tLogger = Logger.getLogger("org.iutools.webservice.gist.GistWordEndpoint.alignments4Word__TM");
+		Logger tLogger = LogManager.getLogger("org.iutools.webservice.gist.GistWordEndpoint.alignments4Word__TM");
 		SentencePair[] aligns = new SentencePair[0];
 		try {
 			word = TransCoder.ensureScript(TransCoder.Script.SYLLABIC, word);

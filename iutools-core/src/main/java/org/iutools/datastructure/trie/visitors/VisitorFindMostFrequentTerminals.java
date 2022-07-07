@@ -5,7 +5,8 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.iutools.datastructure.trie.TrieException;
 import org.iutools.datastructure.trie.TrieNode;
@@ -64,7 +65,7 @@ public  class VisitorFindMostFrequentTerminals extends TrieNodeVisitor {
 	}
 
 	private void pruneMostFrequentLst() {
-		Logger tLogger = Logger.getLogger("ca.nrc.datastructure.trie.visitors.VisitorFindMostFrequentTerminals.pruneMostFrequentLst");
+		Logger tLogger = LogManager.getLogger("ca.nrc.datastructure.trie.visitors.VisitorFindMostFrequentTerminals.pruneMostFrequentLst");
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("n="+n+", lowestFreqAmongTop="+lowestFreqAmongTop+
 				", mostFrequentLst="+

@@ -5,7 +5,8 @@ import ca.nrc.json.PrettyPrinter;
 import ca.nrc.ui.commandline.ProgressMonitor_Terminal;
 import ca.nrc.ui.commandline.UserIO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import static ca.nrc.ui.commandline.UserIO.Verbosity;
 
@@ -50,7 +51,7 @@ public class CorpusDumper {
 
     public void dump(File outputFile, Boolean wordsOnly)
         throws CompiledCorpusException {
-        Logger tLogger = Logger.getLogger("org.iutools.corpus.CorpusDumper.dump");
+        Logger tLogger = LogManager.getLogger("org.iutools.corpus.CorpusDumper.dump");
 
         if (wordsOnly == null) {
             wordsOnly = false;

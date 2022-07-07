@@ -32,8 +32,8 @@ public class MultilingualDictTest {
 				new String[] {"ᐃᓄᒃ", "ᐃᓄᒃᑯ", "ᐃᓄᑯᓗᒃ"}),
 			new Case("iu-single-hit", "iu", "nunavuttaarniq", 1,
 				new String[] {"nunavuttaarniq"}, 1),
-			new Case("iu-out-of-yet-valid-dict-word", "iu", "umiaqtulaaqtunga", 1,
-				new String[] {"umiaqtulaaqtunga"}, 1),
+//			new Case("iu-out-of-vocab-yet-valid-dict-word", "iu", "umiaqtulaaqtunga", 1,
+//				new String[] {"umiaqtulaaqtunga"}, 1),
 		};
 
 		// Cases for entry4word function
@@ -325,6 +325,7 @@ public class MultilingualDictTest {
 		};
 		new RunOnCases(cases_search, runner)
 //			.onlyCaseNums(3)
+//			.onlyCasesWithDescr("iu-out-of-vocab-yet-valid-dict-word")
 			.run();
 	}
 

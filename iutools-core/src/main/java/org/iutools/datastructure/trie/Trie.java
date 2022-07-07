@@ -12,7 +12,8 @@ import org.iutools.utilities.StopWatch;
 import org.iutools.utilities.StopWatchException;
 import ca.nrc.ui.commandline.ProgressMonitor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.iutools.datastructure.trie.visitors.TrieNodeVisitor;
 import org.iutools.datastructure.trie.visitors.VisitorFindMostFrequentTerminals;
@@ -138,7 +139,7 @@ public static enum NodeOption {NO_CREATE, TERMINAL};
 	
 	public TrieNode add(String[] segments, String expression, long freqIncr) 
 			throws TrieException {
-		Logger tLogger = Logger.getLogger("ca.nrc.datastructure.trie.Trie.add");
+		Logger tLogger = LogManager.getLogger("ca.nrc.datastructure.trie.Trie.add");
 
 		long start = 0;
 		TimeUnit unit = TimeUnit.MILLISECONDS;
@@ -246,7 +247,7 @@ public static enum NodeOption {NO_CREATE, TERMINAL};
 	
 	protected void collectAllTerminals(TrieNode node, 
 			List<TrieNode> collected) throws TrieException {
-		Logger tLogger = Logger.getLogger("ca.nrc.datastructure.trie.Trie.collectAllTerminals");
+		Logger tLogger = LogManager.getLogger("ca.nrc.datastructure.trie.Trie.collectAllTerminals");
 		
 		NodeTracer.trace(tLogger, node, "Upon entry, collected="+
 			NodeTracer.printKeys(collected));
@@ -272,7 +273,7 @@ public static enum NodeOption {NO_CREATE, TERMINAL};
 	}
 	
     private List<TrieNode> childrenNodes(TrieNode node) throws TrieException {
-    	Logger tLogger = Logger.getLogger("ca.nrc.datastructure.trie.Trie.childrenNodes");
+    	Logger tLogger = LogManager.getLogger("ca.nrc.datastructure.trie.Trie.childrenNodes");
     	if (tLogger.isTraceEnabled()) {
     		tLogger.trace("node="+node+"\nnode.children.keySet="+node.children.keySet());
     	}
@@ -323,7 +324,7 @@ public static enum NodeOption {NO_CREATE, TERMINAL};
 
 	@JsonIgnore
 	public TrieNode[] getMostFrequentTerminals(int n, String[] segments) throws TrieException {
-		Logger tLogger = Logger.getLogger("ca.nrc.datastructure.trie.Trie.getMostFrequentTerminals");
+		Logger tLogger = LogManager.getLogger("ca.nrc.datastructure.trie.Trie.getMostFrequentTerminals");
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("segments="+String.join(",", segments));
 		}
@@ -391,7 +392,7 @@ public static enum NodeOption {NO_CREATE, TERMINAL};
 	}
 
 	private HashMap<String, Long> _computeFreqs(String cumulativeKeys, String[] terminalNodeKeys, HashMap<String, Long> freqs, String rootSegment) throws TrieException {
-		Logger logger = Logger.getLogger("CompiledCorpus._computeFreqs");
+		Logger logger = LogManager.getLogger("CompiledCorpus._computeFreqs");
 		if (terminalNodeKeys.length==0)
 			return freqs;
 		logger.debug("cumulativeKeys: '"+cumulativeKeys+"'");
@@ -433,7 +434,7 @@ public static enum NodeOption {NO_CREATE, TERMINAL};
 	}
 	
 	protected void addToJoinedTerminals(String[] segments) {
-		Logger tLogger = Logger.getLogger("ca.nrc.datastructure.trie.Trie.addToJoinedTerminals");
+		Logger tLogger = LogManager.getLogger("ca.nrc.datastructure.trie.Trie.addToJoinedTerminals");
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("segments="+String.join(",", segments));
 		}
@@ -482,7 +483,7 @@ public static enum NodeOption {NO_CREATE, TERMINAL};
 	public void traverseNodes(TrieNode node, TrieNodeVisitor visitor, 
 		Boolean onlyTerminals) 
 		throws TrieException {
-		Logger tLogger = Logger.getLogger("ca.nrc.datastructure.trie.Trie.traverseNodes");
+		Logger tLogger = LogManager.getLogger("ca.nrc.datastructure.trie.Trie.traverseNodes");
 		if (node != null) {
 			if (onlyTerminals == null) {
 				onlyTerminals = true;
@@ -567,7 +568,7 @@ public static enum NodeOption {NO_CREATE, TERMINAL};
 	}
 
 	private void recomputeAggregateStats(TrieNode node, ProgressMonitor progMonitor) throws TrieException {
-		Logger tLogger = Logger.getLogger("ca.nrc.datastructure.trie.Trie.recomputeAggregateStats");
+		Logger tLogger = LogManager.getLogger("ca.nrc.datastructure.trie.Trie.recomputeAggregateStats");
 		NodeTracer.trace(tLogger, node, "Invoked");
 
 		if (node.isTerminal()) {

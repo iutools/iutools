@@ -7,7 +7,8 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.iutools.NumericExpression;
 
@@ -63,7 +64,7 @@ public class IUTokenizer {
 	 * Each token is a sequence of non space characters.
 	 */
 	public void __processToken(String token) {
-		Logger logger = Logger.getLogger("IUTokenizer.__processToken");
+		Logger logger = LogManager.getLogger("IUTokenizer.__processToken");
 		logger.debug("token= " + token);
 //		token = token.replaceAll("\\s","");
 		String tokenAfterInitialPunctuation = __processInitialPunctuation(token);
@@ -98,7 +99,7 @@ public class IUTokenizer {
 	}
 
 	protected void __processMainToken(String token) {
-		Logger logger = Logger.getLogger("IUTokenizer.__processMainToken");
+		Logger logger = LogManager.getLogger("IUTokenizer.__processMainToken");
 		Matcher mpunct = pPunct.matcher(token);
 		int pos = 0;
 		while (mpunct.find()) {
