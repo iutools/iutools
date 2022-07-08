@@ -16,8 +16,8 @@
   </properties>
 
   <build>
+    <finalName>${project.artifactId}</finalName>
     <plugins>
-      <!-- IS THIS REALLY NECESSARY? CAN WE MOVE IT TO THE PARENT PROJECT? -->
       <plugin>
 			<groupId>org.apache.maven.plugins</groupId>
 			<artifactId>maven-source-plugin</artifactId>
@@ -29,7 +29,6 @@
 			</configuration>
       </plugin>
 
-      <!-- IS THIS REALLY NECESSARY? CAN WE MOVE IT TO THE PARENT PROJECT? -->	
       <plugin>
 			<artifactId>maven-compiler-plugin</artifactId>
 			<version>3.1</version>
@@ -38,87 +37,48 @@
 			  <target>1.8</target>
 			</configuration>
       </plugin>
-			
-      <!-- IS THIS REALLY NECESSARY? CAN WE MOVE IT TO THE PARENT PROJECT? -->
-<!--      <plugin>-->
-<!--			<groupId>org.apache.maven.plugins</groupId>-->
-<!--			<artifactId>maven-assembly-plugin</artifactId>-->
-<!--			<version>2.4</version>-->
-<!--			<configuration>-->
-<!--			  <descriptorRefs>-->
-<!--				 <descriptorRef>jar-with-dependencies</descriptorRef>-->
-<!--			  </descriptorRefs>-->
-<!--			</configuration>-->
-<!--			<executions>-->
-<!--			  <execution>-->
-<!--				 <phase>package</phase>-->
-<!--				 <goals>-->
-<!--					<goal>single</goal>-->
-<!--				 </goals>-->
-<!--			  </execution>-->
-<!--			</executions>-->
-<!--      </plugin>-->
 
-      <!-- Used to generate an 'uber-jar' with all dependencies.
-           Similar to assembly plugin, but seems to offer more control -->
+      <!-- Copy all dependancy jars to target/lib -->
+		<plugin>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+              <execution>
+					  <!-- Should this be 'package'? -->
+                <phase>install</phase>
+                <goals>
+                  <goal>copy-dependencies</goal>
+                </goals>
+                <configuration>
+                  <outputDirectory>${project.build.directory}/lib</outputDirectory>
+						<excludeArtifactIds>log4j-1.2-api</excludeArtifactIds>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>3.1.0</version>
-        <configuration>
-				<shadedArtifactAttached>true</shadedArtifactAttached>
-				<shadedClassifierName>jar-with-dependencies</shadedClassifierName>
-            <filters>
-                <filter>
-                    <artifact>*:*</artifact>
-                    <excludes>
-							   <!-- This file may contain some log4j configuration that
-							        is not in sync with the actual version of log4j we
-							        use. So we exclude all versions of that file that
-							        might be inherited from a dependency-->
-                        <exclude>**/Log4j2Plugins.dat</exclude>
+		 	<!-- Create a ZIP file with everything we need for deployment to
+		 	     another machine -->
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.5.2</version>
+				<configuration>
+					<appendAssemblyId>false</appendAssemblyId>
+					<finalName>iutools-core-${project.version}</finalName>
+					<descriptors>
+						<descriptor>${basedir}/assembly.xml</descriptor>
+					</descriptors>
+				</configuration>
+				<executions>
+					<execution>
+						<id>create-archive</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 
-							  	<!-- Exclude signatures of jars, to avoid error:
-							  	     "no manifiest section for signature file entry"  -->
-								<exclude>META-INF/*.SF</exclude>
-								<exclude>META-INF/*.DSA</exclude>
-								<exclude>META-INF/*.RSA</exclude>
-                    </excludes>
-                </filter>
-            </filters>
-        </configuration>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-<!--		<plugin>-->
-<!--        <groupId>org.apache.maven.plugins</groupId>-->
-<!--        <artifactId>maven-shade-plugin</artifactId>-->
-<!--        <version>3.1.0</version>-->
-<!--        <configuration>-->
-<!--            <createDependencyReducedPom>false</createDependencyReducedPom>-->
-<!--            <filters>-->
-<!--                <filter>-->
-<!--                    <artifact>*:*</artifact>-->
-<!--                    <excludes>-->
-<!--							   &lt;!&ndash; This file may contain some log4j configuration that-->
-<!--							        is not in sync with the actual version of log4j we-->
-<!--							        use. So we exclude all versions of that file that-->
-<!--							        might be inherited from a dependency&ndash;&gt;-->
-<!--                        <exclude>**/Log4j2Plugins.dat</exclude>-->
-<!--                    </excludes>-->
-<!--                </filter>-->
-<!--            </filters>-->
-<!--        </configuration>-->
-<!--    	</plugin>-->
-			
     </plugins>
   </build>		
 
@@ -137,12 +97,32 @@
 			<groupId>ca.nrc.java-utils</groupId>
 			<artifactId>java-utils-core</artifactId>
 			<version>1.1.1</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-1.2-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 	  <dependency>
 		  <groupId>ca.nrc.java-utils</groupId>
 		  <artifactId>java-utils-elasticsearch</artifactId>
 		  <version>1.1.1</version>
+		  <exclusions>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-1.2-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-api</artifactId>
+				</exclusion>
+		  </exclusions>
 	  </dependency>
 
 	  <dependency>

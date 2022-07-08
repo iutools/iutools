@@ -10,7 +10,7 @@ import ca.nrc.dtrc.elasticsearch.es7.IndexAPI_v7;
 import ca.nrc.dtrc.elasticsearch.index.IndexDef;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.StringUtils;
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.Level;
 import org.iutools.elasticsearch.ES;
 import org.iutools.linguisticdata.Morpheme;
 import org.iutools.morph.r2l.DecompositionState;

@@ -40,8 +40,6 @@ public abstract class Endpoint
 		Logger tLogger = LogManager.getLogger("org.iutools.webservice.Endpoint.doPost");
 		I inputs = null;
 		try {
-			EndPointHelper.log4jReload();
-
 			String jsonRequestBody = IOUtils.toString(request.getReader());
 			tLogger.trace("jsonRequestBody="+jsonRequestBody);
 

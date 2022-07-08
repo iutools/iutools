@@ -11,7 +11,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -75,13 +74,6 @@ public class EndPointHelper {
 		return output;
 	}
 	
-	public static void log4jReload() {
-		String log4jprops = System.getProperty("log4j.config");
-		if (log4jprops != null) {
-			PropertyConfigurator.configure(log4jprops);
-		}
-	}
-
 	public static void writeJsonResponse(
 	HttpServletResponse response, String json) throws IOException {
 		Logger tLogger = LogManager.getLogger("org.iutools.webservice.IUTServiceTestHelpers.writeJsonResponse");
