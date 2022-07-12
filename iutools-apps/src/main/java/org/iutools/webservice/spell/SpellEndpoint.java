@@ -70,8 +70,17 @@ public class SpellEndpoint extends Endpoint<SpellInputs, SpellResult> {
 		if (inputs.suggestCorrections) {
 			maxCorrections = null;
 		}
+
+		if (tLogger.isTraceEnabled()) {
+
+		}
 		try {
-			result.correction = checker.correctWord(inputs.text, maxCorrections);
+			if (inputs.suggestCorrections) {
+				result.correction = checker.correctWord(inputs.text, maxCorrections);
+			} else {
+				boolean wasMisspelled = checker.isMispelled(inputs.text);
+				result.correction = new SpellingCorrection(inputs.text, new String[0], wasMisspelled);
+			}
 		} catch (SpellCheckerException e) {
 			throw new ServiceException(e);
 		}

@@ -249,6 +249,7 @@ class WordEntryController extends IUToolsController {
     }
 
     setTranslationInfo_relatedWords(info, wordEntry) {
+        var tracer = Debug.getTraceLogger('WordEntryController.setTranslationInfo_relatedWords');
         info.areRelatedTranslations = true;
         info.l1Words = wordEntry.relatedWords;
         info.allTranslations = [];
