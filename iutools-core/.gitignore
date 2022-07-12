@@ -17,3 +17,4 @@
 /target/
 /foo*.txt
 /src/test/resources/org/iutools/loganalysis/samplelogs/jmeter.log
+/dependency-reduced-pom.xml

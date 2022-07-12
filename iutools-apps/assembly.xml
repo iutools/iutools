@@ -10,24 +10,24 @@
 	<formats>
 		<format>zip</format>
 	</formats>
-<!--	<fileSets>-->
-<!--		<fileSet>-->
-<!--			<directory>${project.basedir}/admin</directory>-->
+	<fileSets>
+		<fileSet>
+			<directory>${project.basedir}/admin</directory>
 <!--			<directory>${project.basedir}/target/lib</directory>-->
-<!--		</fileSet>-->
-<!--	</fileSets>-->
+		</fileSet>
+	</fileSets>
 	<files>
 		<file>
-			<source> ${project.build.directory}/${project.artifactId}.jar</source>
+			<source> ${project.build.directory}/${project.artifactId}.war</source>
 			<outputDirectory>/</outputDirectory>
 		</file>
 	</files>
-	<dependencySets>
-		<dependencySet>
-			<outputDirectory>lib</outputDirectory>
-			<excludes>
-				<exclude>${project.groupId}:${project.artifactId}:jar:*</exclude>
-			</excludes>
-		</dependencySet>
-	</dependencySets>
+<!--	<dependencySets>-->
+<!--		<dependencySet>-->
+<!--			<outputDirectory>lib</outputDirectory>-->
+<!--			<excludes>-->
+<!--				<exclude>${project.groupId}:${project.artifactId}:jar:*</exclude>-->
+<!--			</excludes>-->
+<!--		</dependencySet>-->
+<!--	</dependencySets>-->
 </assembly>
