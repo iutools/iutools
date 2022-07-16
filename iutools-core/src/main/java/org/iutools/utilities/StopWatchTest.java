@@ -8,6 +8,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import ca.nrc.testing.AssertNumber;
 import org.junit.Test;
 
 public class StopWatchTest {
@@ -18,8 +19,31 @@ public class StopWatchTest {
 
 	@Test
 	public void test__StopWatch__Synopsis() throws Exception {
+		// You can use a StopWatch to compute the elasped time since its creation
+		StopWatch sw = new StopWatch().start();
+
+		// Total time since we started the watch
+		Long totalTime = sw.totalTime();
+		// Total time since we last checked for lap time
+		Long lapTime = sw.lapTime();
+
+		// Then do some stuff (for 1 second)
+		Thread.sleep(1000);
+
+		// Both of those should be about 1000 msecs
+		totalTime = sw.totalTime();
+		lapTime = sw.lapTime();
+
+		// Do more stuff (for 1 second)
+		Thread.sleep(1000);
+
+		// At this point, total time should be about 2000 msecs, but lap time
+		// should be about 1000 msecs
+		totalTime = sw.totalTime();
+		lapTime = sw.lapTime();
+
 		//
-		// Use StopWatch to monitor execution of a long task, and raise 
+		// You can also use StopWatch to monitor execution of a long task, and raise
 		// a TimeoutException if it reaches a given maximum.
 		//
 		// The class can be used in one of two modes:
@@ -54,7 +78,7 @@ public class StopWatchTest {
 		//
 		// First, create a StopWatch
 		long timeoutAfter = 2*1000;
-		StopWatch sw = new StopWatch(timeoutAfter);
+		sw = new StopWatch(timeoutAfter);
 		
 		// Then create a task that will use that StopWatch to check for  
 		// interruptions. Note that the task must be implemented as an instance 
@@ -100,7 +124,53 @@ public class StopWatchTest {
 	////////////////////////////
 	// VERIFICATION TESTS
 	///////////////////////////
-	
+
+	@Test
+	public void test__GetTotalAndLapTimes() throws Exception {
+		Long oneSecond = new Long(1000);
+		StopWatch sw = new StopWatch().start();
+
+		Thread.sleep(oneSecond);
+		AssertNumber.assertEquals(
+			"Lap 1: Total time not as expected",
+			oneSecond, sw.totalTime(), 100.0);
+		AssertNumber.assertEquals(
+			"Lap 1: Lap time not as expected",
+			oneSecond, sw.lapTime(), 100.0);
+
+		Thread.sleep(oneSecond);
+		AssertNumber.assertEquals(
+			"Lap 2: Total time not as expected",
+			2*oneSecond, sw.totalTime(), 100.0);
+		AssertNumber.assertEquals(
+			"Lap 2: Lap time not as expected",
+			oneSecond, sw.lapTime(), 100.0);
+	}
+
+	@Test
+	public void test__totalAndLapTimesInDifferentUnits() throws Exception {
+		StopWatch sw = new StopWatch().start();
+
+		Thread.sleep(1000);
+		sw.lapTime();
+		Thread.sleep(1000);
+
+		AssertNumber.assertEquals(
+			"Total time in default unit was not as expected",
+			2*1000, sw.totalTime(), 100.0);
+		AssertNumber.assertEquals(
+			"Total time in SECONDS was not as expected",
+			2, sw.totalTime(TimeUnit.SECONDS), 1.0);
+
+		AssertNumber.assertEquals(
+			"Lap time in default unit was not as expected",
+			1000, sw.lapTime(), 100.0);
+		AssertNumber.assertEquals(
+			"Lap time in SECONDS was not as expected",
+			1, sw.lapTime(TimeUnit.SECONDS), 1.0);
+
+	}
+
 	@Test(expected=TimeoutException.class)
 	public void test__CallThroughExecutor_Timesout() throws Exception {
 		// First create a EXECUTOR mode StopWatch 

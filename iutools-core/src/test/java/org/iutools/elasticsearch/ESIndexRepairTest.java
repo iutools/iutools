@@ -63,11 +63,6 @@ public class ESIndexRepairTest {
 	//////////////////////////////////////
 
 	@Test
-	public void test__TODO__ESRepairShouldInspectAllTypeIndices() {
-		Assertions.fail("When using ES7mi, ESRepair should inspect all the type indices");
-	}
-
-	@Test
 	public void test__ESIndexRepair__Synopsis() throws Exception {
 		//
 		// Use ESIndexRepair to identify and possibly repair faulty documents

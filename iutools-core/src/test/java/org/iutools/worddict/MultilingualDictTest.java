@@ -225,9 +225,13 @@ public class MultilingualDictTest {
 		Consumer<Case> runner = (uncastCase) -> {
 			try {
 				MultilingualDictCase aCase = (MultilingualDictCase)uncastCase;
+				Long start = System.currentTimeMillis();
 				MultilingualDictEntry entry =
 					new MultilingualDict()
 						.entry4word(aCase.word, aCase.l1);
+				double elapsed = 1.0 * (System.currentTimeMillis() - start) / 1000;
+				System.out.println("   ran in "+elapsed+" seconds");
+				aCase.registerRunningTime(elapsed);
 
 				String[] expL1Highlights = new String[0];
 				String[] expTranslations = new String[0];
@@ -274,7 +278,7 @@ public class MultilingualDictTest {
 
 		new RunOnCases(cases_entry4word, runner)
 //			.onlyCaseNums(1)
-//			.onlyCasesWithDescr("en-housing")
+//			.onlyCasesWithDescr("iu-kiugavinnga")
 			.run();
 	}
 
@@ -346,7 +350,8 @@ public class MultilingualDictTest {
 		public boolean outOfVocab = false;
 		public String[] expRelatedTranslations = null;
 		private String[] expAdditionalL2Highlights = new String[0];
-//		Map<String,List<String>> expRelatedTranslationsMap = null;
+
+		public static Map<Object,Double> casesRunningTime = new HashMap<Object,Double>();
 
 		public MultilingualDictCase(String _descr, String _word) {
 			super(_descr, null);
@@ -388,15 +393,6 @@ public class MultilingualDictTest {
 			return this;
 		}
 
-//		/**
-//		 * Provide additional highlights for the l2 bits. These will be added to
-//		 * the expected list of best translations.
-//		 */
-//		public MultilingualDictCase additionalL2Highlights(String... l2Highlights) {
-//			this.expAdditionalL2Highlights = l2Highlights;
-//			return this;
-//		}
-
 		public MultilingualDictCase setOutOfVocab(boolean _outOfVocab) {
 			this.outOfVocab = true;
 			return this;
@@ -404,6 +400,10 @@ public class MultilingualDictTest {
 
 		public Object id() {
 			return this.word;
+		}
+
+		public void registerRunningTime(Double time) {
+			casesRunningTime.put(id(), time);
 		}
 	}
 

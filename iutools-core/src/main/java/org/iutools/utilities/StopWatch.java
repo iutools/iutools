@@ -41,10 +41,15 @@ public class StopWatch {
 	private boolean deactivated = false;
 	private final int updateClockEveryNTimes = 100;
 	
-	private long startTime = -1;
+	private long startTimeMSecs = -1;
+	private long lapStartTimeMSecs = -1;
 	private int clockNotForcedSince = 0;
 	private long checksSoFar = 0;
-	
+
+	public StopWatch() {
+		initStopWatch(Long.MAX_VALUE, "");
+	}
+
 	public StopWatch(long _timeoutMSecs, String taskName) {
 		initStopWatch(_timeoutMSecs, taskName);
 	}
@@ -57,9 +62,15 @@ public class StopWatch {
 		this.timeoutMSecs = _timeoutMSecs;
 		this.taskName = _taskName;
 	}
-	
+
+	public StopWatch start() {
+		reset();
+		return this;
+	}
+
 	public void reset() {
-		this.startTime = nowMSecs();
+		this.startTimeMSecs = nowMSecs();
+		this.lapStartTimeMSecs = this.startTimeMSecs;
 	}
 	
 	public void check(String message) throws TimeoutException {
@@ -68,8 +79,8 @@ public class StopWatch {
 		if (deactivated) {
 			return;
 		}
-		if (startTime == -1) {	
-			this.startTime = nowMSecs();
+		if (startTimeMSecs == -1) {
+			this.startTimeMSecs = nowMSecs();
 		}
 
 		checksSoFar++;
@@ -85,10 +96,30 @@ public class StopWatch {
 		forceClockUpdate();
 		checkElapsedTime(traceThisCall);
 	}
-	
+
+	private Long startTime(TimeUnit unit) {
+		long startInUnit = unit.convert(startTimeMSecs, TimeUnit.MILLISECONDS);
+		return startInUnit;
+	}
+
+
+	public Long totalTime() throws StopWatchException {
+		return totalTime(TimeUnit.MILLISECONDS);
+	}
+
+	public Long totalTime(TimeUnit unit) throws StopWatchException {
+		Long start = startTime(unit);
+		Long now = now(unit);
+		Long elapsed = now - start;
+
+//		System.out.println("--** totalTime: unit="+unit+", start="+start+", now="+now+", elapsed="+elapsed);
+
+		return elapsed;
+	}
+
 	private void checkElapsedTime(boolean traceThisCall) throws TimeoutException {
 		Logger mLogger = LogManager.getLogger("ca.inuktitutcomputing.utilities.StopWatch.checkElapsedTime");
-		Long elapsed = nowMSecs() - startTime;
+		Long elapsed = nowMSecs() - startTimeMSecs;
 		if (traceThisCall) {
 			mLogger.trace("Task "+taskName+" elapsed = "+elapsed/1000+" secs (max: "+timeoutMSecs/1000+" secs)");
 		}
@@ -116,7 +147,22 @@ public class StopWatch {
 		long time = System.nanoTime() / 1000000;
 		return time;
 	}
-	
+
+	public Long lapTime() throws StopWatchException {
+		return lapTime(TimeUnit.MILLISECONDS);
+	}
+
+	public Long lapTime(TimeUnit targetUnit) throws StopWatchException {
+		Long nowMSecs = now(TimeUnit.MILLISECONDS);
+		Long timeMSecs = nowMSecs - lapStartTimeMSecs;
+		Long timeInTargetUnit = targetUnit.convert(timeMSecs, TimeUnit.MILLISECONDS);
+		lapStartTimeMSecs = nowMSecs;
+
+//		System.out.println("--** lapTime: lapStartTimeMSecs="+lapStartTimeMSecs+", nowMSecs"+", timeMSecs="+timeMSecs+", "+timeInTargetUnit);
+
+		return timeInTargetUnit;
+	}
+
 	static enum ClockUpdateStrategy {
 		NONE, CALL_STACK, WRITE_FILE, CHECK_FILE};
 	
@@ -175,19 +221,9 @@ public class StopWatch {
 	}
 
 	public static long now(TimeUnit unit) throws StopWatchException {
-		long time = System.nanoTime();
-		long nanosPerUnit = 1;
-		if (unit == TimeUnit.MILLISECONDS) {
-			nanosPerUnit = 1000000;
-		} else if (unit == TimeUnit.SECONDS) {
-			nanosPerUnit = 1000000000;
-		} else {
-			throw new StopWatchException("Unsupported time unit "+unit);
-		}
-		
-		time = time / nanosPerUnit;
-		
-		return time;
+		long timeNanoSecs = System.nanoTime();
+		long timeInUnit = unit.convert(timeNanoSecs, TimeUnit.NANOSECONDS);
+		return timeInUnit;
 	}
 	
 	public static long elapsedSince(long start, TimeUnit unit) throws StopWatchException {

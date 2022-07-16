@@ -25,6 +25,8 @@ import org.iutools.nlp.StopWordsException;
 import org.iutools.script.TransCoder;
 import org.iutools.script.TransCoder.*;
 import org.iutools.script.TransCoderException;
+import org.iutools.utilities.StopWatch;
+import org.iutools.utilities.StopWatchException;
 import org.iutools.worddict.MultilingualDictEntry.*;
 
 import java.util.*;
@@ -142,10 +144,13 @@ public class MultilingualDict {
 
 	private MultilingualDictEntry entry4word_IU(
 		String word, Boolean fullRelatedWordEntries, Field... fieldsToPopulate) throws MultilingualDictException {
+		Logger logger = LogManager.getLogger("org.iutools.worddict.MultilingualDict.entry4word_IU");
+		StopWatch watch = new StopWatch().start();
 		MultilingualDictEntry entry = new MultilingualDictEntry(word);
 		Script inputScript = TransCoder.textScript(word);
 		try {
 			WordInfo winfo = corpus.info4word(entry.wordRoman);
+			traceRunningTime(logger, entry, "retrieving word info", watch);
 			if (winfo != null) {
 				entry.setDecomp(winfo.topDecomposition());
 			} else {
@@ -158,19 +163,32 @@ public class MultilingualDict {
 				ArrayUtils.contains(fieldsToPopulate, Field.TRANSLATIONS)) {
 				computeOrigWordTranslationsAndExamples(entry, inputScript);
 			}
+			traceRunningTime(logger, entry, "acomputing ORIGINAL word translations", watch);
 			if (ArrayUtils.contains(fieldsToPopulate, Field.RELATED_WORDS)) {
 				computeRelatedWords(entry, fullRelatedWordEntries);
 			}
-		} catch (CompiledCorpusException e) {
+			traceRunningTime(logger, entry, "computing RELATED words", watch);
+			entry.sortAndPruneTranslations(
+				MAX_TRANSLATIONS, MIN_REQUIRED_PAIRS_FOR_TRANSLATION);
+			traceRunningTime(logger, entry, "sorting and pruning translations", watch);
+		} catch (CompiledCorpusException | StopWatchException e) {
 			throw new MultilingualDictException(e);
 		}
 
-		entry.sortAndPruneTranslations(
-			MAX_TRANSLATIONS, MIN_REQUIRED_PAIRS_FOR_TRANSLATION);
-
 		entry.ensureScript(inputScript);
 
+
 		return entry;
+	}
+
+	private void traceRunningTime(Logger logger, MultilingualDictEntry entry, String phase,
+		StopWatch watch) throws StopWatchException {
+		if (logger.isTraceEnabled()) {
+			double totalSecs = 1.0 * watch.totalTime() / 1000;
+			double lapSecs = 1.0 * watch.lapTime() / 1000;
+			logger.trace("["+entry.wordRoman+"] After "+phase+": total secs="+totalSecs+" (lap secs: "+lapSecs+")");
+		}
+		return;
 	}
 
 	private MultilingualDictEntry entry4word_EN(String word)
@@ -183,26 +201,39 @@ public class MultilingualDict {
 
 	private void computeRelatedWords(MultilingualDictEntry entry,
 		Boolean fullRelatedWordEntries) throws MultilingualDictException {
+		Logger logger = LogManager.getLogger("org.iutools.worddict.MultilingualDict.computeRelatedWords");
+		StopWatch sw = new StopWatch().start();
 		if (fullRelatedWordEntries == null) {
 			fullRelatedWordEntries = true;
 		}
 		try {
 			MorphologicalRelative[] rels =
 				new MorphRelativesFinder(corpus).findRelatives(entry.wordRoman);
+			traceRunningTime(logger, entry, "finding relatives", sw);
 			List<String> relatedWords = new ArrayList<String>();
 			for (MorphologicalRelative aRel: rels) {
 				relatedWords.add(aRel.getWord());
 			}
 
 			if (fullRelatedWordEntries) {
-				List<MultilingualDictEntry> relWordEntries = retrieveRelatedWordEntries(relatedWords);
+				// We only compute the related words' TRANSLATION field if we don't have
+				// translations for the original word.
+				Boolean populateRelWordTranslations = (entry.origWordTranslations.isEmpty());
+				List<MultilingualDictEntry> relWordEntries =
+					retrieveRelatedWordEntries(relatedWords, populateRelWordTranslations);
+				traceRunningTime(logger, entry, "retrieving related word entries", sw);
+				traceRunningTime(logger, entry, "retrieving related word entries", sw);
 				relatedWords = sortWordsByEntryComprehensiveness(relWordEntries);
-				collectRelatedWordTranslations(entry, relWordEntries);
+				traceRunningTime(logger, entry, "After sorting related word entries", sw);
+				if (populateRelWordTranslations) {
+					collectRelatedWordTranslations(entry, relWordEntries);
+				}
 			}
+			traceRunningTime(logger, entry, "After possibly collecting related words translations", sw);
 
 			entry.relatedWords = relatedWords.toArray(new String[0]);
 
-		} catch (MorphRelativesFinderException e) {
+		} catch (MorphRelativesFinderException | StopWatchException e) {
 			throw new MultilingualDictException(e);
 		}
 
@@ -229,17 +260,23 @@ public class MultilingualDict {
 		return;
 	}
 
-	private List<MultilingualDictEntry> retrieveRelatedWordEntries(List<String> relatedWords)
+	private List<MultilingualDictEntry> retrieveRelatedWordEntries(
+		List<String> relatedWords, Boolean populateTranslationsField)
 		throws MultilingualDictException {
 
 		List<MultilingualDictEntry> wordEntries = new ArrayList<MultilingualDictEntry>();
+
+		// By default, we only populate the DEFINITION field of related words.
+		// However, if populateTranslationsField=true, then we also populate the
+		// TRANSLATIONS field
+		//
+		Field[] fieldsToPopulate = new Field[] {Field.DEFINITION};
+		if (populateTranslationsField) {
+			fieldsToPopulate = new Field[] {Field.DEFINITION, Field.TRANSLATIONS};
+		}
 		for (String aWord: relatedWords) {
 			wordEntries.add(
-				this.entry4word(aWord, false,
-					// For the purpose of sorting, we don't need the
-				   // RELATED_WORDS (which take time because they
-				   // require that we decompose a bunch of words
-					Field.DEFINITION, Field.TRANSLATIONS));
+				this.entry4word(aWord, false, fieldsToPopulate));
 		}
 
 		return wordEntries;
