@@ -77,10 +77,7 @@ public class MultilingualDictTest {
 					"umiarjualirijikkut")
 				.setMinExamples(5)
 				.bestTranslationsAre(new String[]{
-					"ship", "sealift", "shipped", "shipping", "shipping season"}),
-//				.additionalL2Highlights(
-//					"shipping", "shipping season"
-//					),
+					"sealift", "ship", "shipped", "shipping", "shipping season"}),
 
 			new MultilingualDictCase("iu-kiugavinnga", "kiugavinnga")
 				.relatedWordsShouldBeAmong(
@@ -94,7 +91,7 @@ public class MultilingualDictTest {
 					"najugangani", "najugaujunut", "najuganga", "najugaujumi",
 					"najugauvattunut")
 				.bestTranslationsAre(
-					"facility", "home", "units", "centres", "homes", "centres"),
+					"centres", "facility", "home", "homes", "units"),
 
 			new MultilingualDictCase("en-housing", "housing")
 				.setL1("en")
@@ -200,18 +197,23 @@ public class MultilingualDictTest {
 	@Test
 	public void test__entry4word__SpeedTest(TestInfo testInfo) throws Exception {
 		String[] words = new String[] {
+			// All of these words have direct translations
 			"amiq", "nunavut", "annuraanik", "qarasaujaq", "ilinniaqtuliriniq",
-			"titiraujaq"
+			"titiraujaq", "ammuumajuqsiuqtutik", "umiarjuakkut", "kiugavinnga", "najugaq"
 		};
 
 		MultilingualDict dict = new MultilingualDict()
 			.setMinMaxPairs(100, 100);
-		long start = StopWatch.nowMSecs();
+
+		StopWatch sw = new StopWatch().start();
+		System.out.println("Time for different words");
 		for (String aWord: words) {
 			dict.entry4word(aWord);
+			System.out.println("  "+aWord+": "+sw.lapTime()+" msecs");
 		}
-		long elapsed = StopWatch.elapsedMsecsSince(start);
+		long elapsed = sw.totalTime();
 		double gotAvgSecs = elapsed / (1000.0 * words.length);
+		System.out.println("Avg secs per word: "+gotAvgSecs);
 		AssertRuntime.runtimeHasNotChanged(
 			gotAvgSecs, 0.20,
 			"avg secs for retrieving a dict entry", testInfo);
@@ -278,7 +280,7 @@ public class MultilingualDictTest {
 
 		new RunOnCases(cases_entry4word, runner)
 //			.onlyCaseNums(1)
-//			.onlyCasesWithDescr("iu-kiugavinnga")
+//			.onlyCasesWithDescr("en-housing")
 			.run();
 	}
 

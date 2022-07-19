@@ -208,7 +208,7 @@ public class MorphologicalAnalyzer_R2L extends MorphologicalAnalyzer {
 		String simplifiedTerm = null;
 		Conditions preCond = null;
 
-		stpw = new StopWatch(millisTimeout, "Decomposing word="+word);
+		stpw = new StopWatch(millisTimeout, "Decomposing word="+word).start();
 		Dialect.setStopWatch(stpw);
 		MorphAnalyzerValidation.setStopWatch(stpw);
         if (!timeoutActive) stpw.disactivate(); // for debugging

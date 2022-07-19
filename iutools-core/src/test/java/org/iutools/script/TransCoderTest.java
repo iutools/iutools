@@ -1,9 +1,14 @@
 package org.iutools.script;
 
+import ca.nrc.testing.AssertCollection;
+import ca.nrc.testing.AssertObject;
 import org.junit.Assert;
 import org.junit.Test;
 
 import ca.nrc.testing.AssertString;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class TransCoderTest {
 
@@ -40,6 +45,12 @@ public class TransCoderTest {
 		//
 		@SuppressWarnings("unused")
 		TransCoder.Script script = TransCoder.textScript(romanText);
+
+		// Some of the methods can be aplied to collections of String.
+		// For example
+		List<String> words = new ArrayList<String>();
+		words.add("inuksuk"); words.add("ammuumajuq");
+		List<String> syllWords = (List<String>) TransCoder.ensureSyllabic(words);
 	}
 
 	//////////////////////////
@@ -161,5 +172,17 @@ public class TransCoderTest {
 		TransCoder.Script gotScript = TransCoder.textScript(text);
 		Assert.assertEquals("Wrong script for text "+text, 
 				TransCoder.Script.MIXED, gotScript);
+	}
+
+	@Test
+	public void test__ensureSyllabic__ListInput() throws Exception {
+		List<String> origWords = new ArrayList<String>();
+		origWords.add("inuksuk"); origWords.add("ammuumajuq");
+		List<String> gotSyllWords = (List<String>) TransCoder.ensureSyllabic(origWords);
+		String[] expSyllWords = new String[] {"ᐃᓄᒃᓱᒃ", "ᐊᒻᒨᒪᔪᖅ"};
+		AssertObject.assertDeepEquals(
+			"Words not correctly transcoded to syllabics",
+			expSyllWords, gotSyllWords
+		);
 	}
 }

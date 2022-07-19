@@ -149,7 +149,7 @@ public abstract class MorphologicalAnalyzer implements AutoCloseable {
 
 		long start = System.currentTimeMillis();
 		if (timeoutStrategy != TimeoutStrategy.EXECUTOR && timeoutActive) {
-			this.stpw = new StopWatch(millisTimeout, "Decomposing word="+word);
+			this.stpw = new StopWatch(millisTimeout, "Decomposing word="+word).start();
 		}
 
 		Logger tLogger = LogManager.getLogger("ca.inuktitutcomputing.morph.decomposeWord");

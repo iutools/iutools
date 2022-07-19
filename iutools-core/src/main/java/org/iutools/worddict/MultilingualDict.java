@@ -161,11 +161,17 @@ public class MultilingualDict {
 			}
 			if (ArrayUtils.contains(fieldsToPopulate, Field.BILINGUAL_EXAMPLES) ||
 				ArrayUtils.contains(fieldsToPopulate, Field.TRANSLATIONS)) {
-				computeOrigWordTranslationsAndExamples(entry, inputScript);
+				computeOrigWordTranslationsAndExamples(entry);
 			}
 			traceRunningTime(logger, entry, "acomputing ORIGINAL word translations", watch);
 			if (ArrayUtils.contains(fieldsToPopulate, Field.RELATED_WORDS)) {
 				computeRelatedWords(entry, fullRelatedWordEntries);
+			}
+			if (ArrayUtils.contains(fieldsToPopulate, Field.TRANSLATIONS) &&
+				entry.origWordTranslations.isEmpty()) {
+				// We haven't found a translation for the original word.
+				// So, look for translations of related words
+				computeRelatedWordsTranslationsAndExamples(entry);
 			}
 			traceRunningTime(logger, entry, "computing RELATED words", watch);
 			entry.sortAndPruneTranslations(
@@ -179,6 +185,17 @@ public class MultilingualDict {
 
 
 		return entry;
+	}
+
+	private void computeRelatedWordsTranslationsAndExamples(MultilingualDictEntry entry) throws MultilingualDictException {
+		Logger logger = LogManager.getLogger("org.iutools.worddict.MultilingualDict.computeRelatedWordsTranslationsAndExamples");
+		logger.trace("invoked");
+		if (entry.relatedWords.length > 0) {
+			List<String> relatedWords = new ArrayList<String>();
+			Collections.addAll(relatedWords, entry.relatedWords);
+			retrieveTranslationsAndExamples(entry, relatedWords);
+		}
+		return;
 	}
 
 	private void traceRunningTime(Logger logger, MultilingualDictEntry entry, String phase,
@@ -216,18 +233,12 @@ public class MultilingualDict {
 			}
 
 			if (fullRelatedWordEntries) {
-				// We only compute the related words' TRANSLATION field if we don't have
-				// translations for the original word.
-				Boolean populateRelWordTranslations = (entry.origWordTranslations.isEmpty());
 				List<MultilingualDictEntry> relWordEntries =
-					retrieveRelatedWordEntries(relatedWords, populateRelWordTranslations);
+					retrieveRelatedWordEntries(relatedWords);
 				traceRunningTime(logger, entry, "retrieving related word entries", sw);
 				traceRunningTime(logger, entry, "retrieving related word entries", sw);
 				relatedWords = sortWordsByEntryComprehensiveness(relWordEntries);
 				traceRunningTime(logger, entry, "After sorting related word entries", sw);
-				if (populateRelWordTranslations) {
-					collectRelatedWordTranslations(entry, relWordEntries);
-				}
 			}
 			traceRunningTime(logger, entry, "After possibly collecting related words translations", sw);
 
@@ -239,29 +250,8 @@ public class MultilingualDict {
 
 	}
 
-	private void collectRelatedWordTranslations(
-		MultilingualDictEntry origWordEntry) throws MultilingualDictException {
-		collectRelatedWordTranslations(origWordEntry, (List<MultilingualDictEntry>) null);;
-	}
-
-	private void collectRelatedWordTranslations(
-		MultilingualDictEntry origWordEntry, List<MultilingualDictEntry> relWordEntries) throws MultilingualDictException {
-
-		Logger tLogger = LogManager.getLogger("org.iutools.worddict.MultilingualDict.collectRelatedWordTranslations");
-
-
-		if (relWordEntries == null) {
-			relWordEntries = new ArrayList<MultilingualDictEntry>();
-		}
-		tLogger.trace("\n\n\ninvoked");
-		for (MultilingualDictEntry entry: relWordEntries) {
-			origWordEntry.addRelatedWordTranslations(entry);
-		}
-		return;
-	}
-
 	private List<MultilingualDictEntry> retrieveRelatedWordEntries(
-		List<String> relatedWords, Boolean populateTranslationsField)
+		List<String> relatedWords)
 		throws MultilingualDictException {
 
 		List<MultilingualDictEntry> wordEntries = new ArrayList<MultilingualDictEntry>();
@@ -271,9 +261,6 @@ public class MultilingualDict {
 		// TRANSLATIONS field
 		//
 		Field[] fieldsToPopulate = new Field[] {Field.DEFINITION};
-		if (populateTranslationsField) {
-			fieldsToPopulate = new Field[] {Field.DEFINITION, Field.TRANSLATIONS};
-		}
 		for (String aWord: relatedWords) {
 			wordEntries.add(
 				this.entry4word(aWord, false, fieldsToPopulate));
@@ -338,69 +325,118 @@ public class MultilingualDict {
 
 	private void computeOrigWordTranslationsAndExamples(
 		MultilingualDictEntry entry) throws MultilingualDictException {
-		computeOrigWordTranslationsAndExamples(entry, (Script)null);
-	}
-
-	private void computeOrigWordTranslationsAndExamples(
-		MultilingualDictEntry entry, Script script) throws MultilingualDictException {
 		Logger tLogger = LogManager.getLogger("org.iutools.worddict.MultilingualDict.computeTranslationsAndExamples");
 		List<String> justOneWord = new ArrayList<String>();
 		justOneWord.add(entry.word);
-		retrieveTranslationsAndExamples(entry, justOneWord, script);
+		retrieveTranslationsAndExamples(entry, justOneWord);
 		return;
 	}
 
 	private void retrieveTranslationsAndExamples(
-		MultilingualDictEntry entry, List<String> iuWordGroup, Script script) throws MultilingualDictException {
+		MultilingualDictEntry entry, List<String> l1Words) throws MultilingualDictException {
 		Logger tLogger = LogManager.getLogger("org.iutools.worddict.MultilingualDict.retrieveTranslationsAndExamples");
 		if (tLogger.isTraceEnabled()) {
-			tLogger.trace("word="+entry.word+"/"+entry.wordInOtherScript+", iuWordGroup.size()="+iuWordGroup.size()+", iuWordGroup="+ StringUtils.join(iuWordGroup.iterator(), ", "));
+			tLogger.trace("word="+entry.word+"/"+entry.wordInOtherScript+", iuWordGroup.size()="+l1Words.size()+", iuWordGroup="+ StringUtils.join(l1Words.iterator(), ", "));
 		}
-		boolean isForRelatedWords = true;
-		if (iuWordGroup.size() == 1) {
-			String singleWord = iuWordGroup.get(0);
+		Boolean isForRelatedWords = null;
+		if (l1Words.size() > 1) {
+			// We are looking for translations for a list of words that are related
+			// to the original word
+			isForRelatedWords = true;
+		} else {
+			// We are searching for translation of just one word. Is that the
+			// original word (if not, it means we are searching for translations of
+			// a single related word).
+			String singleWord = l1Words.get(0);
 			if (singleWord.equals(entry.word) ||
 				singleWord.equals(entry.wordInOtherScript)) {
 				isForRelatedWords = false;
+			} else {
+				isForRelatedWords = true;
 			}
 		}
+		tLogger.trace("isForRelatedWords="+isForRelatedWords);
 
 		try {
 			String l1 = entry.lang;
 			String l2 = otherLang(l1);
-			String l1Word = entry.word;
+
 			if (l1.equals("iu")) {
-				l1Word = entry.wordSyllabic;
+				// We can only search for translations of words in syllabics
+				l1Words = (List<String>) TransCoder.ensureSyllabic(l1Words);
+			}
+
+			Map<String, Iterator<Alignment_ES>> iterators =
+				translationsIteratorsForWords(l1Words, l1, l2);
+			Map<String,Boolean> wordHasRemainingAlignments = new HashMap<String,Boolean>();
+			for (String aWord: iterators.keySet()) {
+				wordHasRemainingAlignments.put(aWord, true);
 			}
 			Set<String> alreadySeenPair = new HashSet<String>();
-			Iterator<Alignment_ES> alignmentIter =
-				new TranslationMemory()
-					.searchIter(l1, l1Word, l2);
 			int totalPairs = 1;
-			while (alignmentIter.hasNext()) {
-				Alignment_ES alignment = alignmentIter.next();
-				SentencePair bilingualAlignment = null;
-				bilingualAlignment = alignment.sentencePair(l1, l2);
-				if (bilingualAlignment.hasWordLevel()) {
-					new WordSpotter(bilingualAlignment)
-						.highlight(l1, l1Word, TAG, true);
+			boolean keepGoing = true;
+			while (keepGoing) {
+				int totalWordWithRemainingAligments = 0;
+				for (String l1Word: iterators.keySet()) {
+					if (!wordHasRemainingAlignments.get(l1Word)) {
+						continue;
+					}
+
+					// Pull one alignment from each word in turn, until we have enough
+					// translations, or we run out of alignments
+					Iterator<Alignment_ES> alignmentIter = iterators.get(l1Word);
+					if (alignmentIter == null || !alignmentIter.hasNext()) {
+						// For some reason, we may get a null iterator for certain words
+						wordHasRemainingAlignments.put(l1Word, false);
+						continue;
+					}
+					totalWordWithRemainingAligments++;
+					Alignment_ES alignment = alignmentIter.next();
+					SentencePair bilingualAlignment = null;
+					bilingualAlignment = alignment.sentencePair(l1, l2);
+					if (bilingualAlignment.hasWordLevel()) {
+						new WordSpotter(bilingualAlignment)
+							.highlight(l1, l1Word, TAG, true);
+					}
+					tLogger.trace(
+						"Processing l1Word=" + l1Word + ", pair #" + totalPairs +
+						"=\n" + l1 + ": " + bilingualAlignment.getText(l1) +
+						"\n" + l2 + ": " + bilingualAlignment.getText(l2));
+					totalPairs =
+						onNewSentencePair(entry, bilingualAlignment, alreadySeenPair,
+							totalPairs, isForRelatedWords);
+					if (enoughBilingualExamples(entry, totalPairs, l1Words.size())) {
+						keepGoing = false;
+						break;
+					}
 				}
-				tLogger.trace(
-					"Processing l1Word="+l1Word+", pair #"+totalPairs+
-					"=\n"+l1+": "+bilingualAlignment.getText(l1)+
-					"\n"+l2+": "+bilingualAlignment.getText(l2));
-				totalPairs =
-					onNewSentencePair(entry, bilingualAlignment, alreadySeenPair,
-						totalPairs, script, isForRelatedWords);
-				if (enoughBilingualExamples(entry, totalPairs, iuWordGroup.size())) {
-					break;
+				if (totalWordWithRemainingAligments == 0) {
+					keepGoing = false;
 				}
 			}
-		} catch (TranslationMemoryException | WordSpotterException | MultilingualDictException e) {
+		} catch (WordSpotterException | MultilingualDictException |
+			TransCoderException e) {
 			throw new MultilingualDictException(e);
 		}
 
 		return;
+	}
+
+	private Map<String, Iterator<Alignment_ES>> translationsIteratorsForWords(
+		List<String> l1Words, String l1, String l2) throws MultilingualDictException {
+
+		Map<String, Iterator<Alignment_ES>> iterators =
+			new HashMap<String, Iterator<Alignment_ES>>();
+		try {
+			for (String l1Word : l1Words) {
+				Iterator<Alignment_ES> iter = new TranslationMemory().searchIter(l1, l1Word, l2);
+				iterators.put(l1Word, iter);
+			}
+		} catch (TranslationMemoryException e) {
+			throw new MultilingualDictException(e);
+		}
+
+		return iterators;
 	}
 
 	private String otherLang(String lang) throws MultilingualDictException {
@@ -413,6 +449,8 @@ public class MultilingualDict {
 
 	private boolean enoughBilingualExamples(
 		MultilingualDictEntry entry, int totalPairs, int numInputWords) throws MultilingualDictException {
+		Logger logger = LogManager.getLogger("org.iutools.worddict.MultilingualDidct.enoughBilingualExamples");
+		logger.trace("totalPairs="+totalPairs+", numInputWords="+numInputWords);
 		int minPairs = 0;
 		if (MIN_SENT_PAIRS != null) {
 			minPairs = (MIN_SENT_PAIRS / numInputWords) + 1;
@@ -424,16 +462,19 @@ public class MultilingualDict {
 		int pairsSoFar = entry.totalBilingualExamples();
 		int translationsSoFar =
 			entry.possibleTranslationsIn(otherLang(entry.lang)).size();
+		logger.trace("MAX_PROVISIONAL_TRANSLATIONS="+MAX_PROVISIONAL_TRANSLATIONS+",minPairs="+minPairs+", maxPairs="+maxPairs);
+		logger.trace("translationsSoFar="+translationsSoFar+", pairsSoFar="+pairsSoFar);
 		boolean enough =
 			(translationsSoFar >= MAX_PROVISIONAL_TRANSLATIONS || pairsSoFar >= maxPairs) &&
 			(totalPairs >= minPairs);
 
+		logger.trace("Returning enough="+enough);
 		return enough;
 	}
 
 	private int onNewSentencePair(MultilingualDictEntry entry,
 		SentencePair bilingualAlignment, Set<String> alreadySeenPair,
-		int totalPairs, Script script, boolean forRelatedWord) throws MultilingualDictException {
+		int totalPairs, boolean forRelatedWord) throws MultilingualDictException {
 
 		Logger tLogger = LogManager.getLogger("org.iutools.worddict.MultilingualDict.onNewSentencePair");
 		if (tLogger.isTraceEnabled()) {

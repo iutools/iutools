@@ -14,13 +14,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.Collection;
 import java.util.Hashtable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 //import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import org.iutools.html.HtmlEntities;
 import org.iutools.fonts.Font;
@@ -542,6 +542,20 @@ public class TransCoder {
     	
     	return romanText;
     }
+
+    public static Collection<String> ensureSyllabic(Collection<String> texts) throws TransCoderException {
+		 try {
+			 Collection<String> syllTexts = texts.getClass().getConstructor().newInstance();
+			 for (String aText: texts) {
+				 String aTextSyll = ensureSyllabic(aText);
+				 syllTexts.add(aTextSyll);
+			 }
+			 return syllTexts;
+		 } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+			 throw new TransCoderException(e);
+		 }
+	 }
+
 
     public static String ensureSyllabic(String text) {
     	String syllabicText = null;

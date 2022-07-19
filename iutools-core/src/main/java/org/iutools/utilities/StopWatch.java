@@ -75,7 +75,7 @@ public class StopWatch {
 	
 	public void check(String message) throws TimeoutException {
 		Logger mLogger = LogManager.getLogger("ca.inuktitutcomputing.utilities.StopWatch.check");
-		
+
 		if (deactivated) {
 			return;
 		}
@@ -122,6 +122,7 @@ public class StopWatch {
 		Long elapsed = nowMSecs() - startTimeMSecs;
 		if (traceThisCall) {
 			mLogger.trace("Task "+taskName+" elapsed = "+elapsed/1000+" secs (max: "+timeoutMSecs/1000+" secs)");
+			mLogger.trace("Stack call is:\n"+Debug.printCallStack());
 		}
 		
 		if (elapsed > timeoutMSecs) {
