@@ -9,8 +9,16 @@ import org.junit.Test;
 
 import org.iutools.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.testing.AssertObject;
+import org.junit.jupiter.api.BeforeEach;
 
 public class MorphRelativesFinderTest {
+
+	@BeforeEach
+	public void setUp() throws Exception {
+		// For some reason, these tests fail if we don't sleep a bit between
+		// each.
+		Thread.sleep(2*1000);
+	}
 
 	protected MorphRelativesFinder makeFinder() throws Exception {
 		CorpusTestHelpers.clearESTestIndex();
