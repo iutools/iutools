@@ -54,14 +54,10 @@ public class CorpusSqlWriterTest {
 		String corpusName = "Small test corpus";
 		String smallCorpusJsonFilePathname =  smallCorpusJsonFilePath.toString();
 		String smallCorpusSqlFilePathname =  smallCorpusSqlFilePath.toString();
-		System.out.println("smallCorpusJsonFileName= "+smallCorpusJsonFilePathname);
 		writer.writeCorpusDataSqlFiles(smallCorpusJsonFilePathname,smallCorpusSqlFilePathname,corpusName);
 		File smallCorpusSQLFile = smallCorpusSqlFilePath.toFile();
 		Assertions.assertTrue(smallCorpusSQLFile.exists(), "The file "+smallCorpusSQLFile.getAbsoluteFile()+" should have been created.");
 		String expectedFieldInCreateStatement = "  `corpus_name` text NOT NULL,";
-//		String expectedInsertStatement = "INSERT INTO `CorpusData` (`noid`, `word`, `corpus_name`, `frequency`, `lang`, `decompositions_sample`) VALUES";
-//		String expectedInsertedData1 = "(6, 'Haakimik', 'Small test corpus', 1, 'en', '[]'),";
-//		String expectedInsertedData2 = "(9, 'Haakiqataurataalaurmata', 'Small test corpus', 1, 'en', '[[\"Haakiq/1v\",\"qatau/1vv\",\"rataaq/1vv\",\"lauq/1vv\",\"mata/tv-caus-4p\"]]'),";
 		String expectedInsertStatement = "INSERT INTO `CorpusData` (`word`, `corpus_name`, `frequency`, `lang`, `decompositions_sample`) VALUES";
 		String expectedInsertedData1 = "('Haakimik', 'Small test corpus', 1, 'en', '[]'),";
 		String expectedInsertedData2 = "('Haakiqataurataalaurmata', 'Small test corpus', 1, 'en', '[[\"Haakiq/1v\",\"qatau/1vv\",\"rataaq/1vv\",\"lauq/1vv\",\"mata/tv-caus-4p\"]]'),";
@@ -75,16 +71,12 @@ public class CorpusSqlWriterTest {
 			System.out.println(line);
 			if (line.equals(expectedFieldInCreateStatement)) {
 				fileContainsCorrectFieldStatement = true;
-//				System.out.println("Found expected field statement for corpus_name.");
 			} else if (line.equals(expectedInsertStatement)) {
 				fileContainsCorrectInsertStatement = true;
-//				System.out.println("Found expected INSERT statement.");
 			} else if (line.equals(expectedInsertedData1)) {
 				fileContainsCorrectInsertedData1 = true;
-//				System.out.println("Found expected inserted data 1.");
 			} else if (line.equals(expectedInsertedData2)) {
 				fileContainsCorrectInsertedData2 = true;
-//				System.out.println("Found expected inserted data 2.");
 			}
 		}
 		br.close();

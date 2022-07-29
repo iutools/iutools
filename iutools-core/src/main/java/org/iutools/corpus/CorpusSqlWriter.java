@@ -206,24 +206,12 @@ public class CorpusSqlWriter {
         if (corpusDataSqlFile.exists()) {
             corpusDataSqlFile.delete();
         }
-        System.out.println("output file: "+corpusDataSqlFile.getAbsolutePath());
         PrintWriter corpusDataSqlWriter
                 = new PrintWriter(new BufferedWriter(new FileWriter(corpusDataSqlFile)));
 
-        File corpusDataDecompositionSqlFile = new File(corpusSqlFilePathname);
-        if (corpusDataSqlFile.exists()) {
-            corpusDataSqlFile.delete();
-        }
-        System.out.println("output file: "+corpusDataSqlFile.getAbsolutePath());
-        PrintWriter corpusDataSqlWriter
-                = new PrintWriter(new BufferedWriter(new FileWriter(corpusDataSqlFile)));
 
         corpusDataSqlWriter.println(generateSqlIntroForCorpusData());
         corpusDataSqlWriter.println(generateSqlInsertStatementOpenForCorpusData());
-
-//        corpusDataDecompositionSqlWriter.println(generateSqlIntroForCorpusDataDecomposition());
-//        corpusDataDecompositionSqlWriter.println(generateSqlParametersForCorpusDataDecomposition());
-//        corpusDataDecompositionSqlWriter.println(generateSqlInsertStatementOpenForCorpusDataDecomposition());
 
         int idRecordInCorpusDataTable = 1;
         int idRecordInCorpusDataDecompositionTable = 0;
@@ -236,24 +224,11 @@ public class CorpusSqlWriter {
             }
             String insertLine = generateSqlInsertStatementValuesForCorpusDataRecord(wordInfo,corpusName,idRecordInCorpusDataTable);
             corpusDataSqlWriter.print(insertLine);
-//            String insertDecompositionLine = generateSqlInsertStatementValuesForCorpusDataDecompositionRecord(wordInfo,idRecordInCorpusDataTable);
-//            if (insertDecompositionLine != null) {
-//                if (idRecordInCorpusDataDecompositionTable != 0) {
-//                    corpusDataDecompositionSqlWriter.println(",");
-//                }
-//                corpusDataDecompositionSqlWriter.print(insertDecompositionLine);
-//                idRecordInCorpusDataDecompositionTable = 1;
-//            }
             idRecordInCorpusDataTable++;
         }
 
         corpusDataSqlWriter.println(generateSqlInsertClose());
-//        corpusDataSqlWriter.println(generateSqlParametersForCorpusData(idRecordInCorpusDataTable));
-
-//        corpusDataDecompositionSqlWriter.println(generateSqlInsertClose());
-
         corpusDataSqlWriter.close();
-//        corpusDataDecompositionSqlWriter.close();
     }
 
     public static void main(String[] args) throws ClassNotFoundException, IOException, ObjectStreamReaderException {
