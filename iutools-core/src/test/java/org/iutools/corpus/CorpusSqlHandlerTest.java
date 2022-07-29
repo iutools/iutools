@@ -268,6 +268,19 @@ public class CorpusSqlHandlerTest {
 		Assert.assertEquals("","Haajsan",wordInfo.word);
 	}
 
+	@Test
+	public void test__getNbWordsWithSequenceOfMorphemes() throws ConfigException, SQLException, ClassNotFoundException {
+		corpusSqlHandler.openConnection();
+		String sequenceOfMorphemes = "{Haakiq/1v} {liq/1vv}"; // "Haakiq/1v","liq/1vv"
+		int nbWordsWithMorphemes = corpusSqlHandler.getNbWordsWithSequenceOfMorphemes(sequenceOfMorphemes);
+		int expected = 2;
+		Assert.assertEquals("1. The number of words with the sequence of morphemes '"+sequenceOfMorphemes+"' is not as expected.",expected,nbWordsWithMorphemes);
+		sequenceOfMorphemes = "{Haakiq/1v} {blah/1vv}"; // "Haakiq/1v","liq/1vv"
+		nbWordsWithMorphemes = corpusSqlHandler.getNbWordsWithNgram(sequenceOfMorphemes);
+		expected = 0;
+		Assert.assertEquals("2. The number of words with the sequence of morphemes '"+sequenceOfMorphemes+"' is not as expected.",expected,nbWordsWithMorphemes);
+	}
+
 
 
 	////////////////////////////

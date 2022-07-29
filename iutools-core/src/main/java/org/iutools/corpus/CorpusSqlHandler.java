@@ -241,6 +241,26 @@ public String[][] getDecompositionsForWord(String word) {
         return nb;
     }
 
+    /*
+     * Assume that the sequence of morphemes has the form like {gaq/1vn} {aq/2nv}
+     */
+    public int getNbWordsWithSequenceOfMorphemes(String sequenceOfMorphemes) {
+        String adjustedSequenceOfMorphemes = sequenceOfMorphemes.replaceAll(" ",",");
+        adjustedSequenceOfMorphemes = adjustedSequenceOfMorphemes.replaceAll("\\{","\"");
+        adjustedSequenceOfMorphemes = adjustedSequenceOfMorphemes.replaceAll("\\}","\"");
+        int nb = 0;
+        String queryStr = "SELECT count(word) FROM CorpusData WHERE decompositions_sample LIKE '%"+adjustedSequenceOfMorphemes+"%'";
+        queryStr += ";";
+        ResultSet rs = query(queryStr);
+        if (rs != null) {
+            try {
+                nb = Integer.parseInt(rs.getString("count(word)"));
+            } catch (SQLException throwables) {
+            }
+        }
+        return nb;
+    }
+
     public String[] getWordsWithNgram(String ngram) throws SQLException {
         return getWordsWithNgram(ngram,false);
     }
