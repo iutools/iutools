@@ -219,6 +219,11 @@
 			 <scope>provided</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>org.drizzle.jdbc</groupId>
+			<artifactId>drizzle-jdbc</artifactId>
+			<version>1.4</version>
+		</dependency>
 
 	</dependencies>
   
