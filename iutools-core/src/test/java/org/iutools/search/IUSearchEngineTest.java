@@ -16,10 +16,6 @@ public class IUSearchEngineTest {
 
 	private String bingTestKey;
 
-//	@Before
-//	public void setup() throws Exception {
-//		this.bingTestKey = assumeTestBingKeyIsDefined();
-//	}
 
 	@Test
 	public void test__IUSearchEngine__HappyPath() throws Exception {
@@ -30,8 +26,6 @@ public class IUSearchEngineTest {
 		IUSearchEngine searcher = new IUSearchEngine(bingTestKey);
 		SearchResults results = searcher.search(query);
 		IUTTestHelpers.assertSufficientHitsFound(results, 20);		
-//		IUTTestHelpers.assertMostHitsMatchWords(expandedTerm, hits, 0.80);
-//		IUTTestHelpers.assertMostHitsAreInuktut(hits, 0.95, 0.8);
 	}
 	
 	@Test(expected=SearchEngineException.class)
