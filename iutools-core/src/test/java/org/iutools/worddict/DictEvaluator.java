@@ -116,7 +116,7 @@ public class DictEvaluator {
 	private WhatTerm checkIUPresence(
 		MultilingualDictEntry wordEntry, DictEvaluationResults results) throws MultilingualDictException {
 		WhatTerm whatTerm = null;
-		if (!wordEntry.sortedTranslations.isEmpty()) {
+		if (!wordEntry.bestTranslations.isEmpty()) {
 			if (wordEntry.hasTranslationsForOriginalWord()) {
 				whatTerm = WhatTerm.ORIGINAL;
 			} else {
@@ -138,7 +138,7 @@ public class DictEvaluator {
 
 	private void checkENSpotting(MultilingualDictEntry wordEntry,
 		WhatTerm where, String enTerm, DictEvaluationResults results) throws MultilingualDictException {
-		List<String> spottedTranslations = wordEntry.sortedTranslations;
+		List<String> spottedTranslations = wordEntry.bestTranslations;
 		try {
 			userIO.echo("All "+where+" translations: "+mapper.writeValueAsString(spottedTranslations));
 			userIO.echo(spottedTranslations.size()+" translations spotted from "+wordEntry.totalBilingualExamples()+" sentence pairs");

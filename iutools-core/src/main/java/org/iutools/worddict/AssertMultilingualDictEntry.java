@@ -1,7 +1,6 @@
 package org.iutools.worddict;
 
 import ca.nrc.dtrc.elasticsearch.Document;
-import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.StringUtils;
 import ca.nrc.testing.*;
 import org.iutools.concordancer.tm.WordSpotter;
@@ -92,7 +91,7 @@ public class AssertMultilingualDictEntry extends Asserter<MultilingualDictEntry>
 		if (expTranslationsArr != null) {
 			translationsSanityCheck();
 			String otherLang = entry().otherLang();
-			List<String> gotTranslations = entry().bestTranslations();
+			List<String> gotTranslations = entry().bestTranslations;
 			String[] gotTranslationsArr = gotTranslations.toArray(new String[0]);
 			gotTranslationsArr = lowerCaseStrings(gotTranslationsArr);
 			expTranslationsArr = lowerCaseStrings(expTranslationsArr);
@@ -235,7 +234,7 @@ public class AssertMultilingualDictEntry extends Asserter<MultilingualDictEntry>
 	public AssertMultilingualDictEntry translationsAreNonEmptySubsetOf(
 		String[] expTranslationsSuperset) {
 		Set<String> gotTranslations = new HashSet<String>();
-		gotTranslations.addAll(entry().sortedTranslations);
+		gotTranslations.addAll(entry().bestTranslations);
 		Assertions.assertTrue(gotTranslations.size() > 0,
 			"List of translations should NOT have been empty");
 		new AssertSet(gotTranslations,
@@ -247,7 +246,7 @@ public class AssertMultilingualDictEntry extends Asserter<MultilingualDictEntry>
 
 	public AssertMultilingualDictEntry translationsSanityCheck() throws Exception {
 		String[] words = new String[] {entry().word};
-		List<String> translations = entry().sortedTranslations;
+		List<String> translations = entry().bestTranslations;
 		Map<String, List<String[]>> examples = entry().examples4Translation;
 
 		for (String aTranslation: translations) {

@@ -218,23 +218,6 @@ class WordEntryController extends IUToolsController {
             // We only have translations for related words
             tracer.trace("We have NO translations for the query word");
             this.setTranslationInfo_relatedWords(info, wordEntry);
-            // info.areRelatedTranslations = true;
-            // info.l1Words = wordEntry.relatedWords;
-            // info.allTranslations = [];
-            // info.examples = wordEntry.examplesForRelWordsTranslation;
-            // var relWords = Object.keys(wordEntry.relatedWordTranslationsMap);
-            // for (var ii=0; ii < relWords.length; ii++) {
-            //     var aRelWord = relWords[ii];
-            //     var aRelWordTranslations = wordEntry.relatedWordTranslationsMap[aRelWord];
-            //     tracer.trace("For aRelWord="+aRelWord+", aRelWordTransl="+jsonStringifySafe(aRelWordTranslations))
-            //     info['translation4word'][aRelWord] = aRelWordTranslations;
-            //     for (var jj=0; jj < aRelWordTranslations.length; jj++) {
-            //         var aTransl = aRelWordTranslations[jj];
-            //         if (!info.allTranslations.includes(aTransl)) {
-            //             info.allTranslations.push(aTransl);
-            //         }
-            //     }
-            // }
         }
 
         tracer.trace("Returning info="+jsonStringifySafe(info));
@@ -250,18 +233,21 @@ class WordEntryController extends IUToolsController {
 
     setTranslationInfo_relatedWords(info, wordEntry) {
         var tracer = Debug.getTraceLogger('WordEntryController.setTranslationInfo_relatedWords');
+        tracer.trace("wordEntry="+jsonStringifySafe(wordEntry));
         info.areRelatedTranslations = true;
         info.l1Words = wordEntry.relatedWords;
         info.allTranslations = [];
         info.examples = wordEntry.examplesForRelWordsTranslation;
-        var relWords = Object.keys(wordEntry.relatedWordTranslationsMap);
+        var relWords = wordEntry.relatedWords;
         for (var ii=0; ii < relWords.length; ii++) {
             var aRelWord = relWords[ii];
             var aRelWordTranslations = wordEntry.relatedWordTranslationsMap[aRelWord];
             tracer.trace("For aRelWord="+aRelWord+", aRelWordTransl="+jsonStringifySafe(aRelWordTranslations))
+            if (aRelWordTranslations == null) {continue;}
             info['translation4word'][aRelWord] = aRelWordTranslations;
-            for (var jj=0; jj < aRelWordTranslations.length; jj++) {
+            for (var jj = 0; jj < aRelWordTranslations.length; jj++) {
                 var aTransl = aRelWordTranslations[jj];
+                if (aTransl == "ALL") {continue;}
                 if (!info.allTranslations.includes(aTransl)) {
                     info.allTranslations.push(aTransl);
                 }
@@ -367,6 +353,8 @@ class WordEntryController extends IUToolsController {
 	}
 
     htmlAlignments4Translation(aTranslation, aTransAlignments, lang, otherLang) {
+        var tracer = Debug.getTraceLogger('WordEntryController.htmlAlignments4Translation');
+        tracer.trace("aTranslation="+aTranslation+", aTransAlignments="+jsonStringifySafe(aTransAlignments));
         var html = ""
         // html += "<a name='examples4_"+aTranslation+"'/>\n";
         html += "<h4><a name=\"examples4_"+aTranslation+"\">as <i>\""+aTranslation+"\"</i>...</a></h4>\n";

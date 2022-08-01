@@ -168,7 +168,7 @@ public class MultilingualDict {
 				computeRelatedWords(entry, fullRelatedWordEntries);
 			}
 			if (ArrayUtils.contains(fieldsToPopulate, Field.TRANSLATIONS) &&
-				entry.sortedTranslations.isEmpty()) {
+				entry.bestTranslations.isEmpty()) {
 				// We haven't found a translation for the original word.
 				// So, look for translations of related words
 				computeRelatedWordsTranslationsAndExamples(entry);
@@ -460,7 +460,7 @@ public class MultilingualDict {
 		}
 		int pairsSoFar = entry.totalBilingualExamples();
 		int translationsSoFar =
-			entry.sortedTranslations.size();
+			entry.bestTranslations.size();
 		logger.trace("MAX_PROVISIONAL_TRANSLATIONS="+MAX_PROVISIONAL_TRANSLATIONS+",minPairs="+minPairs+", maxPairs="+maxPairs);
 		logger.trace("translationsSoFar="+translationsSoFar+", pairsSoFar="+pairsSoFar);
 		boolean enough =

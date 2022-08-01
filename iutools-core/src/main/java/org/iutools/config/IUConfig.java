@@ -7,9 +7,6 @@ import ca.nrc.config.ConfigException;
 
 public class IUConfig extends Config {
 
-	public static final String propName_BingSearchKey =
-		"org.iutools.search.bingKey";
-
 	public static final String propName_wordSpotting =
 		"org.iutools.concordancer.wordSpotting";
 
@@ -43,11 +40,6 @@ public class IUConfig extends Config {
 		return iuDataPath;
 	}
 
-	public static String getBingSearchKey() throws ConfigException {
-		String bingKey = getConfigProperty(propName_BingSearchKey, false);
-		return bingKey;
-	}
-
 	public String nodesToTraceRegex() throws ConfigException {
 		String regex =
 			getConfigProperty(
@@ -56,4 +48,29 @@ public class IUConfig extends Config {
 
 		return regex;
 	}
+
+	public String sqlDbName() throws ConfigException {
+		String name =
+			getConfigProperty(
+				"org.iutools.sql.dbname",
+				true);
+		return name;
+	}
+
+	public String sqlUserName() throws ConfigException {
+		String name =
+			getConfigProperty(
+				"org.iutools.sql.username",
+				true);
+		return name;
+	}
+
+	public String sqlPasswd() throws ConfigException {
+		String name =
+			getConfigProperty(
+				"org.iutools.sql.passwd",
+				true);
+		return name;
+	}
+
 }

@@ -16,10 +16,10 @@ public class IUSearchEngineTest {
 
 	private String bingTestKey;
 
-	@Before
-	public void setup() throws Exception {
-		this.bingTestKey = assumeTestBingKeyIsDefined();
-	}
+//	@Before
+//	public void setup() throws Exception {
+//		this.bingTestKey = assumeTestBingKeyIsDefined();
+//	}
 
 	@Test
 	public void test__IUSearchEngine__HappyPath() throws Exception {
@@ -45,14 +45,14 @@ public class IUSearchEngineTest {
 	// TEST HELPERS
 	////////////////////////////////
 
-	protected static String assumeTestBingKeyIsDefined() throws Exception {
-		String key = IUConfig.getBingSearchKey();
-		Assume.assumeTrue(
-		"No bing key defined. Skipping all tests in SearchEngine_BingTest." +
-			"To run those tests, obtain a Bing key from Microsoft Azure and setup a config property "+
-			IUConfig.propName_BingSearchKey+" with that value.",
-		key != null);
-
-		return key;
-	}
+//	protected static String assumeTestBingKeyIsDefined() throws Exception {
+//		String key = IUConfig.getBingSearchKey();
+//		Assume.assumeTrue(
+//		"No bing key defined. Skipping all tests in SearchEngine_BingTest." +
+//			"To run those tests, obtain a Bing key from Microsoft Azure and setup a config property "+
+//			IUConfig.propName_BingSearchKey+" with that value.",
+//		key != null);
+//
+//		return key;
+//	}
 }

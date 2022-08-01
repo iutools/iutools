@@ -40,7 +40,7 @@ public class MultilingualDictEntry {
 	/** Translations sorted from best to worst.
 	 * These may be translations for the original word or for related words.
 	 */
-	public List<String> sortedTranslations = new ArrayList<String>();
+	public List<String> bestTranslations = new ArrayList<String>();
 
 	/** Provides translations for diffferent l1 words. These may be the original
 	   word or related words */
@@ -172,8 +172,8 @@ public class MultilingualDictEntry {
 
 		// Add this new translation
 		{
-			if (!translation.equals("ALL") && !sortedTranslations.contains(translation)) {
-				sortedTranslations.add(translation);
+			if (!translation.equals("ALL") && !bestTranslations.contains(translation)) {
+				bestTranslations.add(translation);
 				_translationsNeedSorting = true;
 			}
 			if (!translations4word.containsKey(l1Word)) {
@@ -200,7 +200,7 @@ public class MultilingualDictEntry {
 
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("upon exit, possible translations="+
-				StringUtils.join(sortedTranslations.iterator(), ","));
+				StringUtils.join(bestTranslations.iterator(), ","));
 		}
 
 		return this;
@@ -221,18 +221,10 @@ public class MultilingualDictEntry {
 		}
 	}
 
-	/**
-	 * Returns translations of the original word if available, and translations
-	 * of related words otherwise.
-	 */
-	public List<String> bestTranslations() {
-		return sortedTranslations;
-	}
-
 	public List<String[]> bilingualExamplesOfUse() throws MultilingualDictException {
 		List<String[]> allExamples = new ArrayList<String[]>();
 
-		for (String translation: bestTranslations()) {
+		for (String translation: bestTranslations) {
 			List<String[]> examples = bilingualExamplesOfUse(translation);
 			allExamples.addAll(examples);
 		}
@@ -262,10 +254,10 @@ public class MultilingualDictEntry {
 
 				TranslationComparator comparator =
 					new TranslationComparator(otherLang(), this.examples4Translation);
-				Collections.sort(sortedTranslations, comparator);
-				sortedTranslations =
+				Collections.sort(bestTranslations, comparator);
+				bestTranslations =
 					pruneTranslations(
-					sortedTranslations, maxTranslations, examples4Translation, minRequiredPairs);
+					bestTranslations, maxTranslations, examples4Translation, minRequiredPairs);
 
 			}
 		} catch (RuntimeException e) {
@@ -311,7 +303,7 @@ public class MultilingualDictEntry {
 	}
 
 	public void addRelatedWordTranslations(MultilingualDictEntry entry) throws MultilingualDictException {
-		List<String> relatedWordTranslations = entry.sortedTranslations;
+		List<String> relatedWordTranslations = entry.bestTranslations;
 		String relWord = entry.word;
 		for (String translation: relatedWordTranslations) {
 			List<String[]> examplesOfUse = entry.bilingualExamplesOfUse(translation);
@@ -446,7 +438,7 @@ public class MultilingualDictEntry {
 		if (otherLang().equals("iu")) {
 			// Input word is en and its translations are iu
 			for (List<String> translations:
-				new List[] {sortedTranslations}) {
+				new List[] {bestTranslations}) {
 				CollectionTranscoder.transcodeList(script, translations);
 			}
 		} else {
@@ -546,7 +538,7 @@ public class MultilingualDictEntry {
 		if (
 			(!isMisspelled())  |
 			(examples4Translation != null && !examples4Translation.isEmpty()) |
-			(sortedTranslations != null && !sortedTranslations.isEmpty()) |
+			(bestTranslations != null && !bestTranslations.isEmpty()) |
 			(relatedWords != null && relatedWords.length > 0) |
 			definition != null) {
 			empty = false;
