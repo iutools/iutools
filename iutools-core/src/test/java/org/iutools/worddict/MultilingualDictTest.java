@@ -32,12 +32,22 @@ public class MultilingualDictTest {
 				new String[] {"ᐃᓄᒃ", "ᐃᓄᒃᑯ", "ᐃᓄᑯᓗᒃ"}),
 			new Case("iu-single-hit", "iu", "nunavuttaarniq", 1,
 				new String[] {"nunavuttaarniq"}, 1),
-//			new Case("iu-out-of-vocab-yet-valid-dict-word", "iu", "umiaqtulaaqtunga", 1,
-//				new String[] {"umiaqtulaaqtunga"}, 1),
 		};
 
 		// Cases for entry4word function
 		cases_entry4word = new MultilingualDictCase[] {
+
+			new MultilingualDictCase("iu-ammuumajuq", "ammuumajuq")
+				.setDecomp(
+					"ammut/1a", "u/1nv", "ma/1vv", "juq/1vn")
+				.relatedWordsShouldBeAmong(
+					"ammuumajurniartiit", "ammuumajuqtarnirmut",
+					"ammuumajuqtaqtiit", "ammuumajuqtaqtutik",
+					"ammuumajurniarnirmut", "ammuumajuqsiuqtutik")
+				.hasTranslationsForOrigWord(false)
+				.bestTranslationsAre(
+					"clam","clam divers", "clam diving", "clams", "divers")
+				.setMinExamples(5),
 
 			new MultilingualDictCase("iu-ammuumajuqsiuqtutik", "ammuumajuqsiuqtutik")
 				.setDecomp(
@@ -60,11 +70,11 @@ public class MultilingualDictTest {
 					"ᐊᒻᒨᒪᔪᕐᓂᐊᕐᓂᕐᒧᑦ")
 				.bestTranslationsAre("clam", "clams", "clam diving", "clam ... clams")
 				.setMinExamples(2),
-//				.additionalL2Highlights("clam ... clams", "clam diving"),
 
 			// This is an out of vocabulary word
 			new MultilingualDictCase("iu-inuksssuk", "inuksssuk")
 				.setOutOfVocab(true)
+				.hasTranslationsForOrigWord(false)
 				.bestTranslationsAre(new String[0])
 				.setMinExamples(0)
 				.relatedWordsShouldBeAmong(new String[]{}),
@@ -239,7 +249,10 @@ public class MultilingualDictTest {
 				String[] expTranslations = new String[0];
 
 				if (!aCase.outOfVocab) {
-					expL1Highlights = new String[]{aCase.word};
+					List<String> expL1HighlightsLst = new ArrayList<String>();
+					expL1HighlightsLst.add(aCase.word);
+					Collections.addAll(expL1HighlightsLst, aCase.expRelatedWordsSuperset);
+					expL1Highlights = expL1HighlightsLst.toArray(new String[0]);
 					expTranslations = aCase.expTranslations;
 				}
 
@@ -254,6 +267,7 @@ public class MultilingualDictTest {
 					.langIs(aCase.l1)
 					.definitionEquals(aCase.expDefinition)
 					.relatedWordsIsSubsetOf(aCase.expRelatedWordsSuperset)
+					.hasTranslationsForOrigWord(aCase.expHasTranslationsForOrigWord)
 					.bestTranslationsAre(expTranslations)
 					.atLeastNExamples(aCase.expMinExamples)
 					.highlightsAreSubsetOf(aCase.l1, true, expL1Highlights)
@@ -262,12 +276,6 @@ public class MultilingualDictTest {
 
 				if (aCase.l1.equals("iu")) {
 					asserter.checkWordInOtherScript(aCase.word);
-				}
-
-				if (
-				(expTranslations == null || expTranslations.length == 0) &&
-				aCase.expRelatedTranslations != null) {
-					asserter.relatedTranslationsStartWith(aCase.expRelatedTranslations);
 				}
 
 				if (aCase.expDecomp != null) {
@@ -279,7 +287,7 @@ public class MultilingualDictTest {
 		};
 
 		new RunOnCases(cases_entry4word, runner)
-//			.onlyCaseNums(1)
+//			.onlyCaseNums(8)
 //			.onlyCasesWithDescr("en-housing")
 			.run();
 	}
@@ -348,9 +356,9 @@ public class MultilingualDictTest {
 		public String[] expDecomp = null;
 		public String[] expRelatedWordsSuperset = null;
 		public String[] expTranslations = null;
+		private boolean expHasTranslationsForOrigWord = true;
 		public Integer expMinExamples = 0;
 		public boolean outOfVocab = false;
-		public String[] expRelatedTranslations = null;
 		private String[] expAdditionalL2Highlights = new String[0];
 
 		public static Map<Object,Double> casesRunningTime = new HashMap<Object,Double>();
@@ -382,6 +390,11 @@ public class MultilingualDictTest {
 
 		public MultilingualDictCase relatedWordsShouldBeAmong(String... _expRelatedWords) {
 			expRelatedWordsSuperset = _expRelatedWords;
+			return this;
+		}
+
+		public MultilingualDictCase hasTranslationsForOrigWord(boolean exp) {
+			this.expHasTranslationsForOrigWord = exp;
 			return this;
 		}
 

@@ -116,15 +116,17 @@ public class DictEvaluator {
 	private WhatTerm checkIUPresence(
 		MultilingualDictEntry wordEntry, DictEvaluationResults results) throws MultilingualDictException {
 		WhatTerm whatTerm = null;
-		if (!wordEntry.origWordTranslations.isEmpty()) {
-			whatTerm = WhatTerm.ORIGINAL;
-		} else if (!wordEntry.relatedWordTranslations.isEmpty()) {
-			try {
-				userIO.echo("RELATED terms: "+mapper.writeValueAsString(wordEntry.relatedWords));
-			} catch (JsonProcessingException e) {
-				throw new MultilingualDictException(e);
+		if (!wordEntry.sortedTranslations.isEmpty()) {
+			if (wordEntry.hasTranslationsForOriginalWord()) {
+				whatTerm = WhatTerm.ORIGINAL;
+			} else {
+				whatTerm = WhatTerm.RELATED;
+				try {
+					userIO.echo("RELATED terms: " + mapper.writeValueAsString(wordEntry.relatedWords));
+				} catch (JsonProcessingException e) {
+					throw new MultilingualDictException(e);
+				}
 			}
-			whatTerm = WhatTerm.RELATED;
 		}
 		if (whatTerm != null) {
 			userIO.echo(whatTerm+" IU term was FOUND");
@@ -136,13 +138,10 @@ public class DictEvaluator {
 
 	private void checkENSpotting(MultilingualDictEntry wordEntry,
 		WhatTerm where, String enTerm, DictEvaluationResults results) throws MultilingualDictException {
-		List<String> spottedTranslations = wordEntry.origWordTranslations;
-		if (where == WhatTerm.RELATED) {
-			spottedTranslations = wordEntry.relatedWordTranslations;
-		}
+		List<String> spottedTranslations = wordEntry.sortedTranslations;
 		try {
 			userIO.echo("All "+where+" translations: "+mapper.writeValueAsString(spottedTranslations));
-			userIO.echo(spottedTranslations.size()+" translations spotted from "+wordEntry.totalBilingualExamples(where)+" sentence pairs");
+			userIO.echo(spottedTranslations.size()+" translations spotted from "+wordEntry.totalBilingualExamples()+" sentence pairs");
 		} catch (JsonProcessingException e) {
 			throw new MultilingualDictException(e);
 		}

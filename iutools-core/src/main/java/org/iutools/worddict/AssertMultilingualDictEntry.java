@@ -23,12 +23,12 @@ public class AssertMultilingualDictEntry extends Asserter<MultilingualDictEntry>
 	}
 
 	MultilingualDictEntry entry() {
-		return (MultilingualDictEntry)gotObject;
+		return (MultilingualDictEntry) gotObject;
 	}
 
 	private Set<String> entryRelatedWords() {
 		Set<String> words = new HashSet<String>();
-		for (String aWord: entry().relatedWords) {
+		for (String aWord : entry().relatedWords) {
 			words.add(Document.removeType(aWord));
 		}
 		return words;
@@ -36,8 +36,8 @@ public class AssertMultilingualDictEntry extends Asserter<MultilingualDictEntry>
 
 	public AssertMultilingualDictEntry isForWord(String expWord) throws Exception {
 		AssertString.assertStringEquals(
-			baseMessage+"\nWord was not as expected",
-			expWord, entry().word);
+		baseMessage + "\nWord was not as expected",
+		expWord, entry().word);
 
 		return this;
 	}
@@ -54,7 +54,7 @@ public class AssertMultilingualDictEntry extends Asserter<MultilingualDictEntry>
 	}
 
 	public AssertMultilingualDictEntry decompositionIs(String... expMorphemes)
-		throws Exception {
+	throws Exception {
 		List<String> gotDecomp = new ArrayList<String>();
 		if (null != entry().morphDecomp) {
 			gotDecomp = new ArrayList<String>();
@@ -63,8 +63,25 @@ public class AssertMultilingualDictEntry extends Asserter<MultilingualDictEntry>
 			}
 		}
 		AssertObject.assertDeepEquals(
-			baseMessage+"\nDecomposition not as expected",
-			expMorphemes, gotDecomp);
+		baseMessage + "\nDecomposition not as expected",
+		expMorphemes, gotDecomp);
+		return this;
+	}
+
+
+	public AssertMultilingualDictEntry hasTranslationsForOrigWord(boolean expHasTranslationsForOrigWord) {
+		boolean hasOrigTransl = entry().hasTranslationsForOriginalWord();
+		if (expHasTranslationsForOrigWord) {
+			Assertions.assertTrue(
+				hasOrigTransl,
+				baseMessage+"\nEntry SHOULD have had translations for original word");
+		} else {
+			Assertions.assertFalse(
+				hasOrigTransl,
+				baseMessage+"\nEntry should NOT have had translations for original word");
+
+		}
+
 		return this;
 	}
 
@@ -73,6 +90,7 @@ public class AssertMultilingualDictEntry extends Asserter<MultilingualDictEntry>
 		String... expTranslationsArr) throws Exception {
 
 		if (expTranslationsArr != null) {
+			translationsSanityCheck();
 			String otherLang = entry().otherLang();
 			List<String> gotTranslations = entry().bestTranslations();
 			String[] gotTranslationsArr = gotTranslations.toArray(new String[0]);
@@ -120,8 +138,8 @@ public class AssertMultilingualDictEntry extends Asserter<MultilingualDictEntry>
 			);
 
 		String examples = "";
-		if (entry.examplesForOrigWordTranslation != null) {
-			List<String[]> iuExamples = entry.examplesForOrigWordTranslation.get(l1);
+		if (entry.examples4Translation != null) {
+			List<String[]> iuExamples = entry.examples4Translation.get(l1);
 			if (iuExamples != null) {
 				String txtIUExamples = StringUtils.join(iuExamples.iterator(), "\n");
 				gotScript = TransCoder.textScript(txtIUExamples);
@@ -196,29 +214,6 @@ public class AssertMultilingualDictEntry extends Asserter<MultilingualDictEntry>
 		return lowercased;
 	}
 
-
-	public AssertMultilingualDictEntry relatedTranslationsStartWith(
-		String[] expRelatedTranslationsArr) throws Exception {
-
-		new AssertSequence<String>(
-			this.entry().relatedWordTranslations.toArray(new String[0]),
-			baseMessage+"\nRelated words translations were not as expected")
-		.startsWith(expRelatedTranslationsArr);
-
-		return this;
-	}
-
-	public AssertMultilingualDictEntry relatedTranslationsMapsEquals(
-		Map<String, List<String>> expRelatedTranslationsMap) throws Exception {
-		Map<String, List<String>> gotTranslMap = this.entry().relatedWordTranslationsMap;
-		AssertObject.assertDeepEquals(
-			baseMessage+"\nRelated word translations map not as expected",
-			expRelatedTranslationsMap, gotTranslMap
-		);
-		return this;
-	}
-
-
 	public AssertMultilingualDictEntry langIs(String expLang) {
 		AssertString.assertStringEquals(
 			baseMessage+"\nLanguage of entry not as expected",
@@ -240,29 +235,31 @@ public class AssertMultilingualDictEntry extends Asserter<MultilingualDictEntry>
 	public AssertMultilingualDictEntry translationsAreNonEmptySubsetOf(
 		String[] expTranslationsSuperset) {
 		Set<String> gotTranslations = new HashSet<String>();
-		gotTranslations.addAll(entry().origWordTranslations);
-		if (gotTranslations.isEmpty()) {
-			// We only include related word translations if there were no
-			// translations for the original word
-			gotTranslations.addAll(entry().relatedWordTranslations);
-		}
+		gotTranslations.addAll(entry().sortedTranslations);
 		Assertions.assertTrue(gotTranslations.size() > 0,
 			"List of translations should NOT have been empty");
 		new AssertSet(gotTranslations,
 			baseMessage+"\nList of translations did not contain the expected translations")
 			.isSubsetOf(expTranslationsSuperset);
 
-		gotTranslations = new HashSet<String>();
-		gotTranslations.addAll(entry().examplesForOrigWordTranslation.keySet());
-		if (gotTranslations.isEmpty()) {
-			// We only include examples for related word translations if there were no
-			// translations for the original word
-			gotTranslations.addAll(entry().examplesForRelWordsTranslation.keySet());
+		return this;
+	}
+
+	public AssertMultilingualDictEntry translationsSanityCheck() throws Exception {
+		String[] words = new String[] {entry().word};
+		List<String> translations = entry().sortedTranslations;
+		Map<String, List<String[]>> examples = entry().examples4Translation;
+
+		for (String aTranslation: translations) {
+			List<String[]> aTranslExamples = examples.get(aTranslation);
+			String mess = "(aTranslation="+aTranslation+")";
+			Assertions.assertTrue(aTranslExamples != null,
+				"Examples for translation should not have been null "+mess
+				);
+			Assertions.assertTrue(!aTranslExamples.isEmpty(),
+				"Examples for translation should not have been empty "+mess
+			);
 		}
-		gotTranslations.remove("ALL");
-		new AssertSet(gotTranslations,
-			baseMessage+"\nList of keys for translation did not contain the expected translations")
-			.isSubsetOf(expTranslationsSuperset);
 
 		return this;
 	}

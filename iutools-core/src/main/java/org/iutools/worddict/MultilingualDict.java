@@ -168,7 +168,7 @@ public class MultilingualDict {
 				computeRelatedWords(entry, fullRelatedWordEntries);
 			}
 			if (ArrayUtils.contains(fieldsToPopulate, Field.TRANSLATIONS) &&
-				entry.origWordTranslations.isEmpty()) {
+				entry.sortedTranslations.isEmpty()) {
 				// We haven't found a translation for the original word.
 				// So, look for translations of related words
 				computeRelatedWordsTranslationsAndExamples(entry);
@@ -182,7 +182,6 @@ public class MultilingualDict {
 		}
 
 		entry.ensureScript(inputScript);
-
 
 		return entry;
 	}
@@ -281,8 +280,8 @@ public class MultilingualDict {
 				int answer = 0;
 
 				if (answer == 0) {
-					boolean w1HasTranslations = w1.origWordTranslations.size() > 0;
-					boolean w2HasTranslations = w2.origWordTranslations.size() > 0;
+					boolean w1HasTranslations = w1.hasTranslationsForOriginalWord();
+					boolean w2HasTranslations = w2.hasTranslationsForOriginalWord();
 					if (w1HasTranslations && ! w2HasTranslations) {
 						answer = -1;
 					} else if (!w1HasTranslations && w2HasTranslations) {
@@ -404,7 +403,7 @@ public class MultilingualDict {
 						"\n" + l2 + ": " + bilingualAlignment.getText(l2));
 					totalPairs =
 						onNewSentencePair(entry, bilingualAlignment, alreadySeenPair,
-							totalPairs, isForRelatedWords);
+							totalPairs, l1Word);
 					if (enoughBilingualExamples(entry, totalPairs, l1Words.size())) {
 						keepGoing = false;
 						break;
@@ -461,7 +460,7 @@ public class MultilingualDict {
 		}
 		int pairsSoFar = entry.totalBilingualExamples();
 		int translationsSoFar =
-			entry.possibleTranslationsIn(otherLang(entry.lang)).size();
+			entry.sortedTranslations.size();
 		logger.trace("MAX_PROVISIONAL_TRANSLATIONS="+MAX_PROVISIONAL_TRANSLATIONS+",minPairs="+minPairs+", maxPairs="+maxPairs);
 		logger.trace("translationsSoFar="+translationsSoFar+", pairsSoFar="+pairsSoFar);
 		boolean enough =
@@ -474,11 +473,11 @@ public class MultilingualDict {
 
 	private int onNewSentencePair(MultilingualDictEntry entry,
 		SentencePair bilingualAlignment, Set<String> alreadySeenPair,
-		int totalPairs, boolean forRelatedWord) throws MultilingualDictException {
+		int totalPairs, String isForRelatedWord) throws MultilingualDictException {
 
 		Logger tLogger = LogManager.getLogger("org.iutools.worddict.MultilingualDict.onNewSentencePair");
 		if (tLogger.isTraceEnabled()) {
-			tLogger.trace("forRelatedWord="+forRelatedWord+", bilingualAlignment="+ PrettyPrinter.print(bilingualAlignment));
+			tLogger.trace("isForRelatedWord="+isForRelatedWord+", bilingualAlignment="+ PrettyPrinter.print(bilingualAlignment));
 		}
 
 		String l1 = entry.lang;
@@ -496,13 +495,13 @@ public class MultilingualDict {
 			tLogger.trace("l2Translation="+l2Translation);
 			if (l2Translation != null && !l2Translation.isEmpty()) {
 				if (l2Translation == null) {
-					entry.addBilingualExample("MISC", highlightedPair, forRelatedWord);
+					entry.addBilingualExample("MISC", highlightedPair, isForRelatedWord);
 				} else {
 					tLogger.trace("Adding example for translation of word='" + entry.wordRoman + "''" +
 						", l2Translation='" + l2Translation + "'");
-						entry.addBilingualExample(l2Translation, highlightedPair, forRelatedWord);
+						entry.addBilingualExample(l2Translation, highlightedPair, isForRelatedWord);
 				}
-				entry.addBilingualExample("ALL", highlightedPair, forRelatedWord);
+				entry.addBilingualExample("ALL", highlightedPair, isForRelatedWord);
 				totalPairs++;
 			}
 		}

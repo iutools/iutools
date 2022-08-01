@@ -37,24 +37,31 @@ public class MultilingualDictEntry {
 	public String definition;
 	public List<MorphemeHumanReadableDescr> morphDecomp = new ArrayList<MorphemeHumanReadableDescr>();
 
-	public List<String> origWordTranslations = new ArrayList<String>();
-	public List<String> relatedWordTranslations = new ArrayList<String>();
-	public Map<String,List<String>> relatedWordTranslationsMap = new HashMap<String,List<String>>();
+	/** Translations sorted from best to worst.
+	 * These may be translations for the original word or for related words.
+	 */
+	public List<String> sortedTranslations = new ArrayList<String>();
+
+	/** Provides translations for diffferent l1 words. These may be the original
+	   word or related words */
+	public Map<String,List<String>> translations4word = new HashMap<String,List<String>>();
+
+	/** Provides bilingual examples for an L1 word and its L2 translation. The L1
+	   word may be the original word, or one of the related words.
+
+	   Note: We store sentence pairs as String[] instead of Pair<String,String>
+	     because the latter is jsonified as a dictionary where
+
+	       - key is the first sentence
+	       - value is the second sentence
+
+	     and this turns out to be awkward to use on the client-side JavaScript
+	     code.
+	 */
+	public Map<String,List<String[]>> examples4Translation
+		= new HashMap<String,List<String[]>>();
 
 	private boolean _translationsNeedSorting = true;
-
-	// Note: We store sentence pairs as String[] instead of Pair<String,String>
-	//   because the latter is jsonified as a dictionary where
-	//
-	//     - key is the first sentence
-	//     - value is the second sentence
-	//
-	//   and this turns out to be awkward to use on the client-side JavaScript
-	//   code.
-	public Map<String,List<String[]>> examplesForOrigWordTranslation
-		= new HashMap<String,List<String[]>>();
-	public Map<String,List<String[]>> examplesForRelWordsTranslation
-		= new HashMap<String,List<String[]>>();
 
 	public String[] relatedWords = new String[0];
 
@@ -151,61 +158,52 @@ public class MultilingualDictEntry {
 		return decomp;
 	}
 
-	public MultilingualDictEntry addBilingualExample(
-		String translation, String[] example, boolean forRelatedWord)
-		throws MultilingualDictException {
-		return addBilingualExample(translation, example, forRelatedWord, (String)null);
+	public boolean hasTranslationsForOriginalWord() {
+		boolean answer = translations4word.containsKey(word);
+		return answer;
 	}
 
-
 	public MultilingualDictEntry addBilingualExample(
-		String translation, String[] example, boolean forRelatedWord,
-		String relWord) throws MultilingualDictException {
+		String translation, String[] example, String l1Word) throws MultilingualDictException {
 		Logger tLogger = LogManager.getLogger("org.iutools.worddict.MultilingualDictEntry.addBilingualExample");
 		if (tLogger.isTraceEnabled()) {
-			tLogger.trace("translation=" + translation + ", forRelatedWord=" + forRelatedWord + ", example=" + String.join(", ", example));
+			tLogger.trace("translation=" + translation + ", l1Word=" + l1Word + ", example=" + String.join(", ", example));
 		}
 
-		List<String> translations = this.origWordTranslations;
-		Map<String, List<String[]>> examplesForTranslation =
-			this.examplesForOrigWordTranslation;
-		if (forRelatedWord) {
-			translations = this.relatedWordTranslations;
-			examplesForTranslation = this.examplesForRelWordsTranslation;
+		// Add this new translation
+		{
+			if (!translation.equals("ALL") && !sortedTranslations.contains(translation)) {
+				sortedTranslations.add(translation);
+				_translationsNeedSorting = true;
+			}
+			if (!translations4word.containsKey(l1Word)) {
+				translations4word.put(l1Word, new ArrayList<String>());
+			}
+			List<String> translations = translations4word.get(l1Word);
+			if (!translations.contains(translation)) {
+				translations.add(translation);
+				_translationsNeedSorting = true;
+			}
 		}
 
-		if (!translation.matches("^(ALL|MISC)$") &&
-			!translations.contains(translation)) {
-			translations.add(translation);
-		}
-		List<String[]> currentExamples = examplesForTranslation.get(translation);
-		if (currentExamples == null) {
-			currentExamples = new ArrayList<String[]>();
-		}
-		currentExamples.add(example);
-		examplesForTranslation.put(translation, currentExamples);
-		if (relWord != null) {
-			updateRelWordTranslationsMap(relWord, translation);
+		// Add bilingual examples for that translation
+		{
+			if (!examples4Translation.containsKey(translation)) {
+				examples4Translation.put(translation, new ArrayList<String[]>());
+			}
+			List<String[]> currentExamples2 = examples4Translation.get(translation);
+			if (currentExamples2 == null) {
+				currentExamples2 = new ArrayList<String[]>();
+			}
+			currentExamples2.add(example);
 		}
 
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("upon exit, possible translations="+
-				StringUtils.join(possibleTranslationsIn("en").iterator(), ","));
+				StringUtils.join(sortedTranslations.iterator(), ","));
 		}
-
-		_translationsNeedSorting = true;
 
 		return this;
-	}
-
-	private void updateRelWordTranslationsMap(String relWord, String translation) {
-		if (!relatedWordTranslationsMap.containsKey(relWord)) {
-			relatedWordTranslationsMap.put(relWord, new ArrayList<String>());
-		}
-		List<String> relTranslations = relatedWordTranslationsMap.get(relWord);
-		if (!relTranslations.contains(translation)) {
-			relTranslations.add(translation);
-		}
 	}
 
 	private void addBilingualExamples(
@@ -219,7 +217,7 @@ public class MultilingualDictEntry {
 		String relWord)
 		throws MultilingualDictException {
 		for (String[] anExample: examples) {
-			addBilingualExample(translation, anExample, forRelatedWord, relWord);
+			addBilingualExample(translation, anExample, relWord);
 		}
 	}
 
@@ -228,22 +226,7 @@ public class MultilingualDictEntry {
 	 * of related words otherwise.
 	 */
 	public List<String> bestTranslations() {
-		List<String> best = origWordTranslations;
-		if (best.isEmpty()) {
-			best = relatedWordTranslations;
-		}
-		return best;
-	}
-
-	public List<String> allTranslations() {
-		List<String> all = new ArrayList<String>();
-		all.addAll(origWordTranslations);
-		for (String aTransl: relatedWordTranslations) {
-			if (!all.contains(aTransl)) {
-				all.add(aTransl);
-			}
-		}
-		return all;
+		return sortedTranslations;
 	}
 
 	public List<String[]> bilingualExamplesOfUse() throws MultilingualDictException {
@@ -263,31 +246,11 @@ public class MultilingualDictEntry {
 	 */
 	public List<String[]> bilingualExamplesOfUse(String translation) throws MultilingualDictException {
 		List<String[]> examples = new ArrayList<String[]>();
-		if (examplesForOrigWordTranslation.containsKey(translation)) {
-			examples = examplesForOrigWordTranslation.get(translation);
-		} else if (examplesForRelWordsTranslation.containsKey(translation)){
-			examples = examplesForRelWordsTranslation.get(translation);
+		if (examples4Translation.containsKey(translation)) {
+			examples = examples4Translation.get(translation);
 		}
 
 		return examples;
-	}
-
-	public List<String> possibleTranslationsIn(String lang) throws MultilingualDictException {
-		return  possibleTranslationsIn(lang, (Boolean)null);
-	}
-
-	public List<String> possibleTranslationsIn(String lang, Boolean forRelatedWords) throws MultilingualDictException {
-		assertIsSupportedLanguage(lang);
-		if (forRelatedWords == null) {
-			forRelatedWords = false;
-		}
-
-		List<String> translations = origWordTranslations;
-		if (forRelatedWords) {
-			translations = relatedWordTranslations;
-		}
-
-		return translations;
 	}
 
 	public void sortAndPruneTranslations(
@@ -296,21 +259,13 @@ public class MultilingualDictEntry {
 		try {
 			if (_translationsNeedSorting) {
 				tLogger.trace("sorting translations for word: "+this.wordRoman);
-				tLogger.trace("sorting orig word translations");
-				TranslationComparator comparator =
-					new TranslationComparator(otherLang(), this.examplesForOrigWordTranslation);
-				Collections.sort(origWordTranslations, comparator);
-				origWordTranslations =
-					pruneTranslations(
-						origWordTranslations, maxTranslations, examplesForOrigWordTranslation, minRequiredPairs);
 
-			tLogger.trace("sorting related words translations");
-				comparator =
-					new TranslationComparator(otherLang(), this.examplesForRelWordsTranslation);
-				Collections.sort(this.relatedWordTranslations, comparator);
-				relatedWordTranslations =
-					pruneTranslations(relatedWordTranslations, maxTranslations,
-						examplesForRelWordsTranslation, minRequiredPairs);
+				TranslationComparator comparator =
+					new TranslationComparator(otherLang(), this.examples4Translation);
+				Collections.sort(sortedTranslations, comparator);
+				sortedTranslations =
+					pruneTranslations(
+					sortedTranslations, maxTranslations, examples4Translation, minRequiredPairs);
 
 			}
 		} catch (RuntimeException e) {
@@ -356,7 +311,7 @@ public class MultilingualDictEntry {
 	}
 
 	public void addRelatedWordTranslations(MultilingualDictEntry entry) throws MultilingualDictException {
-		List<String> relatedWordTranslations = entry.possibleTranslationsIn("en");
+		List<String> relatedWordTranslations = entry.sortedTranslations;
 		String relWord = entry.word;
 		for (String translation: relatedWordTranslations) {
 			List<String[]> examplesOfUse = entry.bilingualExamplesOfUse(translation);
@@ -364,23 +319,13 @@ public class MultilingualDictEntry {
 		}
 	}
 
-
 	public int totalBilingualExamples() throws MultilingualDictException {
-		int total = bilingualExamplesOfUse("ALL").size();
-		return total;
-	}
-
-	public int totalBilingualExamples(MultilingualDict.WhatTerm where) throws MultilingualDictException {
 		int total = 0;
-		Map<String, List<String[]>> examplesMap = examplesForOrigWordTranslation;
-		if (where == MultilingualDict.WhatTerm.RELATED) {
-			examplesMap = examplesForRelWordsTranslation;
-		}
-		for (String aTranslation: examplesMap.keySet()) {
+		for (String aTranslation: examples4Translation.keySet()) {
 			if (aTranslation.equals("ALL")) {
 				continue;
 			}
-			total += examplesMap.get(aTranslation).size();
+			total += examples4Translation.get(aTranslation).size();
 		}
 		return total;
 	}
@@ -501,25 +446,15 @@ public class MultilingualDictEntry {
 		if (otherLang().equals("iu")) {
 			// Input word is en and its translations are iu
 			for (List<String> translations:
-				new List[] {origWordTranslations, relatedWordTranslations}) {
+				new List[] {sortedTranslations}) {
 				CollectionTranscoder.transcodeList(script, translations);
-//				for (int ii=0; ii < translations.size(); ii++) {
-//					try {
-//
-//						translations.set(ii,
-//							TransCoder.ensureScript(script, translations.get(ii))
-//							);
-//					} catch (TransCoderException e) {
-//						throw new MultilingualDictException(e);
-//					}
-//				}
 			}
 		} else {
 			// Input word is iu and its translations are en
 			try {
 				// Transcode keys of the map that provides en translations for each
 				// iu related word.
-				CollectionTranscoder.transcodeKeys(script, this.relatedWordTranslationsMap);
+				CollectionTranscoder.transcodeKeys(script, this.translations4word);
 			} catch (TransCoderException e) {
 				throw new MultilingualDictException(e);
 			}
@@ -544,8 +479,7 @@ public class MultilingualDictEntry {
 
 		Map<String, List<String[]>>[] alignmentMaps =
 			new Map[] {
-				examplesForOrigWordTranslation,
-				examplesForRelWordsTranslation
+				examples4Translation
 			};
 		for (Map<String, List<String[]>> anAlignmentsMap: alignmentMaps) {
 			ensureScript_alignmentMap(script, anAlignmentsMap);
@@ -611,10 +545,8 @@ public class MultilingualDictEntry {
 		boolean empty = true;
 		if (
 			(!isMisspelled())  |
-			(examplesForOrigWordTranslation != null && !examplesForOrigWordTranslation.isEmpty()) |
-			(examplesForRelWordsTranslation!= null && !examplesForRelWordsTranslation.isEmpty()) |
-			(origWordTranslations != null && !origWordTranslations.isEmpty()) |
-			(relatedWordTranslations != null && !relatedWordTranslations.isEmpty()) |
+			(examples4Translation != null && !examples4Translation.isEmpty()) |
+			(sortedTranslations != null && !sortedTranslations.isEmpty()) |
 			(relatedWords != null && relatedWords.length > 0) |
 			definition != null) {
 			empty = false;

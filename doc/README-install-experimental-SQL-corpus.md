@@ -13,6 +13,18 @@ experimental corpus.
 ## Installing MySQL
 
 MacOS
-
+    # This does not seem to work...
     brew install mysql
+    
+- Download the dmg file
+     https://dev.mysql.com/downloads/mysql/
+- Double click on the dmg file to mount it
+- Double click on the pkg file to run the installer
+- To start the MySQL server 
+    cd /Library/LaunchDaemons
+    sudo launchctl load -F com.oracle.oss.mysql.mysqld.plist
+- To configure MySQL to automatically start at bootup, you can:
+    sudo launchctl load -w com.oracle.oss.mysql.mysqld.plist
+
+
     
