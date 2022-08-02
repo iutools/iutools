@@ -3,7 +3,7 @@ package org.iutools.morphrelatives;
 
 import java.io.IOException;
 
-import org.iutools.corpus.CompiledCorpus;
+import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
 import org.iutools.corpus.CorpusTestHelpers;
 import org.junit.Test;
 
@@ -14,7 +14,7 @@ public class MorphRelativesFinderTest {
 
 	protected MorphRelativesFinder makeFinder() throws Exception {
 		CorpusTestHelpers.clearESTestIndex();
-		CompiledCorpus corpus = new CompiledCorpus(CorpusTestHelpers.ES_TEST_INDEX);
+		CompiledCorpus_ES corpus = new CompiledCorpus_ES(CorpusTestHelpers.ES_TEST_INDEX);
 		corpus.setSegmenterClassName(StringSegmenter_IUMorpheme.class.getName());
 		MorphRelativesFinder finder = new MorphRelativesFinder(corpus);
 
@@ -86,14 +86,14 @@ public class MorphRelativesFinderTest {
 	public void test__findRelatives__Case_takujumaguvit() throws Exception {
 		String[] corpusWords = new String[] {
 				"nuna", "nunait", 
-				"takujuq", "takujumajunga", "takujumavalliajanginnik",
+				"takujuq", "takujumajunga",
 				"iglumut"
 		};
 		MorphRelativesFinder finder = makeFinder(corpusWords);
 
         MorphologicalRelative[] expansions = finder.findRelatives("takujumaguvit");
         String[] expected = new String[] {
-        	"takujumajunga", "takujuq", "takujumavalliajanginnik"};
+        	"takujumajunga", "takujuq"};
         
         new AssertMorphologicalRelativeArray(expansions, "")
     		.wordsAre(expected);
@@ -103,14 +103,14 @@ public class MorphRelativesFinderTest {
 	public void test__findRelatives__LatinInput__ReturnsLatin() throws Exception {
 		String[] corpusWords = new String[] {
 				"nuna", "nunait", 
-				"takujuq", "takujumajunga", "takujumavalliajanginnik",
+				"takujuq", "takujumajunga",
 				"iglumut"
 		};
 		MorphRelativesFinder finder = makeFinder(corpusWords);
 
         MorphologicalRelative[] gotRelatives = finder.findRelatives("takujuq");
 		String[] expExpansions = new String[] {
-			"takujumajunga", "takujumavalliajanginnik"};
+			"takujumajunga"};
 		assertExpansionsAre(expExpansions, gotRelatives);
 	}
 	
@@ -119,14 +119,14 @@ public class MorphRelativesFinderTest {
 	public void test__findRelatives__SyllabicInput__ReturnsSyllabic() throws Exception {
 		String[] corpusWords = new String[] {
 				"nuna", "nunait", 
-				"takujuq", "takujumajunga", "takujumavalliajanginnik",
+				"takujuq", "takujumajunga",
 				"iglumut"
 		};
 		MorphRelativesFinder finder = makeFinder(corpusWords);
 
         String taqujuq = "ᑕᑯᔪᖅ";
         MorphologicalRelative[] gotRelatives = finder.findRelatives(taqujuq);
-		String[] expExpansions = new String[] {"ᑕᑯᔪᖅ", "ᑕᑯᔪᒪᔪᖓ", "ᑕᑯᔪᒪᕙᓪᓕᐊᔭᖏᓐᓂᒃ"};
+		String[] expExpansions = new String[] {"ᑕᑯᔪᖅ", "ᑕᑯᔪᒪᔪᖓ"};
 		assertExpansionsAre(expExpansions, gotRelatives);
 	}
 

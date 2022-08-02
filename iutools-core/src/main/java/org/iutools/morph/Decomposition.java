@@ -3,6 +3,7 @@ package org.iutools.morph;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.iutools.linguisticdata.Morpheme;
 import org.iutools.morph.r2l.StateGraphForward;
 
 import java.util.*;
@@ -26,6 +27,26 @@ public class Decomposition {
 			ii++;
 		}
 		return morphemes;
+	}
+
+	public static String morphIDs2DecompString(String[] morphIDs) {
+		return morphIDs2DecompString(morphIDs, (Boolean)null);
+	}
+
+	public static String morphIDs2DecompString(String[] morphIDs, Boolean withBraces) {
+		if (withBraces == null) {
+			withBraces = true;
+		}
+		String decompString = "";
+		if (morphIDs != null) {
+			if (withBraces) {
+				morphIDs = Morpheme.withBraces(morphIDs);
+			} else {
+				morphIDs = Morpheme.removeIDBraces(morphIDs);
+			}
+			decompString = String.join(" ", morphIDs);
+		}
+		return decompString;
 	}
 
 	static public Decomposition[] removeMultiples(Decomposition[] decs)  {

@@ -4,12 +4,12 @@ import java.util.Iterator;
 import java.util.List;
 
 import ca.nrc.ui.commandline.CommandLineException;
+import org.iutools.corpus.CompiledCorpus;
 import org.iutools.morph.failureanalysis.MorphFailureAnalyzer;
 import org.iutools.morph.failureanalysis.MorphFailureAnalyzerException;
 import org.iutools.morph.failureanalysis.ProblematicNGram;
 import org.iutools.morph.failureanalysis.ProblematicNGram.SortBy;
 import ca.nrc.ui.commandline.UserIO.Verbosity;
-import org.iutools.corpus.CompiledCorpus;
 import org.iutools.corpus.CompiledCorpusException;
 import org.iutools.corpus.CompiledCorpusRegistry;
 import org.iutools.corpus.WordInfo;
@@ -70,8 +70,8 @@ public class CmdMorphFailureAnalysis extends ConsoleCommand {
 		return analyzer;
 	}
 
-	private void loadCorpusWords(CompiledCorpus corpus, 
-			MorphFailureAnalyzer analyzer) throws CompiledCorpusException {
+	private void loadCorpusWords(CompiledCorpus corpus,
+		MorphFailureAnalyzer analyzer) throws CompiledCorpusException {
 
 		Long countdown = getMaxWords();
 		Iterator<String> iter = corpus.allWords();

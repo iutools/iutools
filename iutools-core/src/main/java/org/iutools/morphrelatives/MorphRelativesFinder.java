@@ -4,14 +4,11 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 import ca.nrc.json.PrettyPrinter;
+import org.iutools.corpus.*;
 import org.iutools.linguisticdata.Morpheme;
 import org.iutools.script.TransCoder;
 import org.iutools.datastructure.trie.StringSegmenter_IUMorpheme;
-import org.iutools.corpus.WordInfo;
-import org.iutools.corpus.CompiledCorpus;
-import org.iutools.corpus.CompiledCorpusException;
-import org.iutools.corpus.CompiledCorpusRegistry;
-import org.iutools.corpus.CompiledCorpusRegistryException;
+import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;

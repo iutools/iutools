@@ -3,7 +3,7 @@ package org.iutools.webservice.morphexamples;
 import ca.nrc.json.PrettyPrinter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.iutools.corpus.CompiledCorpus;
+import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
 import org.iutools.corpus.CompiledCorpusException;
 import org.iutools.corpus.CompiledCorpusRegistry;
 import org.iutools.linguisticdata.*;
@@ -66,8 +66,8 @@ public class MorphemeExamplesEndpoint
 			MorphemeDictionary morphExtractor = new MorphemeDictionary();
 
 			tLogger.trace("Loading the corpus");
-			CompiledCorpus compiledCorpus =
-				new CompiledCorpus(CompiledCorpusRegistry.defaultCorpusName);
+			CompiledCorpus_ES compiledCorpus =
+				new CompiledCorpus_ES(CompiledCorpusRegistry.defaultCorpusName);
 			morphExtractor.useCorpus(compiledCorpus);
 			tLogger.trace("Using corpus of type="+compiledCorpus.getClass());
 

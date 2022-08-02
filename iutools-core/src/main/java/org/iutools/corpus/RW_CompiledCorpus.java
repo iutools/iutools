@@ -1,12 +1,13 @@
 package org.iutools.corpus;
 
 import ca.nrc.ui.commandline.UserIO;
+import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
 
 import java.io.*;
 import java.util.regex.Pattern;
 
 /*************************************
- * Class reading/writing CompiledCorpus objects from/to file.
+ * Class reading/writing CompiledCorpus_ES objects from/to file.
  * 
  * @author desilets
  *
@@ -44,16 +45,16 @@ public class RW_CompiledCorpus {
 		this._corpusName = _corpusName;
 	}
 
-	public static void write(CompiledCorpus corpus, File _savePath) 
+	public static void write(CompiledCorpus_ES corpus, File _savePath)
 		throws CompiledCorpusException {
 		RW_CompiledCorpus rw = new RW_CompiledCorpus();
 		rw.writeCorpus(corpus, _savePath);
 	}
 
-	public static CompiledCorpus read(File savePath)
+	public static CompiledCorpus_ES read(File savePath)
 		throws CompiledCorpusException {
 		RW_CompiledCorpus rw = new RW_CompiledCorpus();
-		CompiledCorpus corpus = rw.readCorpus(savePath);
+		CompiledCorpus_ES corpus = rw.readCorpus(savePath);
 		
 		return corpus;
 	}
@@ -64,14 +65,14 @@ public class RW_CompiledCorpus {
 		}
 	}
 
-	public void writeCorpus(CompiledCorpus corpus, File savePath)
+	public void writeCorpus(CompiledCorpus_ES corpus, File savePath)
 			throws CompiledCorpusException {
 	}
 
-	public CompiledCorpus readCorpus(File jsonFile) throws CompiledCorpusException {
+	public CompiledCorpus_ES readCorpus(File jsonFile) throws CompiledCorpusException {
 		String corpusName = corpusName(jsonFile);
-		CompiledCorpus corpus =
-				new CompiledCorpus(corpusName);
+		CompiledCorpus_ES corpus =
+				new CompiledCorpus_ES(corpusName);
 		echo("Loading file "+jsonFile+
 				" into ElasticSearch corpus "+corpusName);
 		boolean verbose =
@@ -83,14 +84,14 @@ public class RW_CompiledCorpus {
 		return corpus;
 	}
 
-	protected CompiledCorpus newCorpus(File savePath) throws CompiledCorpusException {
-		String corpusName = CompiledCorpus.corpusName4File(savePath);
-		return new CompiledCorpus(corpusName);
+	protected CompiledCorpus_ES newCorpus(File savePath) throws CompiledCorpusException {
+		String corpusName = CompiledCorpus_ES.corpusName4File(savePath);
+		return new CompiledCorpus_ES(corpusName);
 	}
 
 	protected String corpusName(File jsonFile) {
 		if (_corpusName == null) {
-			_corpusName = CompiledCorpus.corpusName4File(jsonFile);
+			_corpusName = CompiledCorpus_ES.corpusName4File(jsonFile);
 		}
 		return _corpusName;
 	}

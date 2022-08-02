@@ -1,23 +1,12 @@
 package org.iutools.corpus;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 
-import ca.nrc.dtrc.elasticsearch.StreamlinedClient;
 import ca.nrc.testing.AssertIterator;
 import ca.nrc.testing.AssertString;
 import org.apache.commons.lang3.tuple.Triple;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.iutools.script.TransCoder;
-import org.iutools.utilities.StopWatch;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,39 +16,25 @@ import org.iutools.datastructure.trie.StringSegmenter;
 import org.iutools.datastructure.trie.StringSegmenter_Char;
 import org.iutools.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.testing.AssertObject;
-import org.junit.jupiter.api.Assertions;
 
-public class CompiledCorpusTest {
+public abstract class CompiledCorpusTest {
 
-	private Set<String> generatedIdices = new HashSet<String>();
+	protected abstract CompiledCorpus makeCorpusWithDefaultSegmenter() throws Exception;
+
 	public final static String testIndex = "iutools_corpus_test";
-	protected File corpusDirectory = null;
-
 
 	@Before
 	public void setUp() throws Exception {
 		CorpusTestHelpers.deleteCorpusIndex(testIndex);
+		return;
 	}
 
 	@After
 	public void tearDown() throws Exception {
 		CorpusTestHelpers.deleteCorpusIndex(testIndex);
-
-		if (corpusDirectory != null) {
-			File[] listOfFiles = corpusDirectory.listFiles();
-			for (File file : listOfFiles)
-				file.delete();
-		}
-		corpusDirectory = null;
 	}
 
-	protected CompiledCorpus makeCorpusWithDefaultSegmenter() throws Exception {
-		CompiledCorpus corpus = new CompiledCorpus(testIndex);
-		return corpus;
-	}
-
-
-	protected  CompiledCorpus makeCorpusUnderTest()  throws Exception {
+	protected CompiledCorpus makeCorpusUnderTest()  throws Exception {
 		CompiledCorpus corpus = makeCorpusUnderTest(StringSegmenter_Char.class);
 		return corpus;
 	}
@@ -77,8 +52,7 @@ public class CompiledCorpusTest {
 
 	@Test
 	public void test__CompiledCorpus__Synopsis() throws Exception {
-		// Use a CompiledCorpus to trie-compile a corpus and compute statistics.
-		//
+		// Use a CompiledCorpus to keep stats about words contained in a corpus.
 		//
 		CompiledCorpus compiledCorpus = makeCorpusUnderTest();
 		
@@ -116,7 +90,7 @@ public class CompiledCorpusTest {
 //		compiledCorpus.addWordOccurence(word, 0); // Freq will remain unchanged
 		
 		
-		// Once you have added all this information to the CompiledCorpus, you 
+		// Once you have added all this information to the CompiledCorpus, you
 		// can do all sort of useful stuff with that info.
 		//
 		// For example:
@@ -233,19 +207,23 @@ public class CompiledCorpusTest {
 		
 		new AssertCompiledCorpus(corpus, "Initially...")
 			.doesNotContainWords(nunavut, nunavik)
+			.doesNotContainCharNgrams(ngram_nuna, "navik$")
 			.doesNotContainCharNgrams(ngram_nuna, ngram_navik);
 		
 		corpus.addWordOccurence(nunavut);
+		Thread.sleep(1*1000);
 		new AssertCompiledCorpus(corpus, "After adding 1st word "+nunavut)
 			.containsWords(nunavut)
 			.containsCharNgrams(ngram_nuna)
 			.doesNotContainCharNgrams(ngram_navik);
 		
 		corpus.addWordOccurence(nunavik);
+		Thread.sleep(1*1000);
 		new AssertCompiledCorpus(corpus, "After adding 2nd word "+nunavik)
 			.containsWords(nunavik)
 			.containsCharNgrams(ngram_nuna)
 			.containsCharNgrams(ngram_navik);
+		return;
 	}
 	
 	@Test
@@ -302,8 +280,8 @@ public class CompiledCorpusTest {
 	@Test
     public void test__bestDecomposition__HappyPath() throws Exception {
 		String[] words = new String[] {"nunavut", "takujuq", "plugak"};
-		CompiledCorpus compiledCorpus = 
-				makeCorpusUnderTest(StringSegmenter_IUMorpheme.class);		
+		CompiledCorpus compiledCorpus =
+				makeCorpusUnderTest(StringSegmenter_IUMorpheme.class);
 		compiledCorpus.addWordOccurences(words);
 		
 		new AssertCompiledCorpus(compiledCorpus,"")
@@ -320,8 +298,8 @@ public class CompiledCorpusTest {
     {
 		String[] words = new String[] {
 			"nunavut", "takujuq", "iijuq"};
-		CompiledCorpus compiledCorpus = 
-				makeCorpusUnderTest(StringSegmenter_IUMorpheme.class);		
+		CompiledCorpus compiledCorpus =
+				makeCorpusUnderTest(StringSegmenter_IUMorpheme.class);
 		compiledCorpus.addWordOccurences(words);
 	   
 		new AssertCompiledCorpus(compiledCorpus, "")
@@ -349,45 +327,6 @@ public class CompiledCorpusTest {
 	 * 
 	 */
 
-	
-    private String createTemporaryCorpusDirectory(String[] stringOfWords) throws IOException {
-       	Logger logger = LogManager.getLogger("CompiledCorpusTest.createTemporaryCorpusDirectory");
-        corpusDirectory = Files.createTempDirectory("").toFile();
-        corpusDirectory.deleteOnExit();
-        String corpusDirPath = corpusDirectory.getAbsolutePath();
-        for (int i=0; i<stringOfWords.length; i++) {
-        	File wordFile = new File(corpusDirPath+"/contents"+(i+1)+".txt");
-        	BufferedWriter bw = new BufferedWriter(new FileWriter(wordFile));
-        	bw.write(stringOfWords[i]);
-        	bw.close();
-        	logger.debug("wordFile= "+wordFile.getAbsolutePath());
-        	logger.debug("contents= "+wordFile.length());
-        }
-        return corpusDirPath;
-	}
-    
-    private String createTemporaryCorpusDirectoryWithSubdirectories(String[][][] subdirs) throws IOException {
-        Path corpusDirectory = Files.createTempDirectory("corpus_");
-        corpusDirectory.toFile().deleteOnExit();
-        for (int isubdir=0; isubdir<subdirs.length; isubdir++) {
-        	Path subDirectory = Files.createTempDirectory(corpusDirectory,"sub_");
-        	subDirectory.toFile().deleteOnExit();
-        	String [][] subdirFiles = subdirs[isubdir];
-        	for (int ifile=0; ifile<subdirFiles.length; ifile++) {
-        		String[] words = subdirFiles[ifile];
-        		Path filepath = Files.createTempFile(subDirectory, "file_", ".txt");
-        		filepath.toFile().deleteOnExit();
-        		File file = filepath.toFile();
-            	BufferedWriter bw = new BufferedWriter(new FileWriter(file));
-            	String lineOfWords = String.join(" ", words);
-            	bw.write(lineOfWords);
-            	bw.close();
-        	}
-        }
-        return corpusDirectory.toFile().getAbsolutePath();
-    }
-
-
 	@Test
 	public void test__totalWordsWithNoDecomp__HappyPath() throws Exception {
 		String[] stringsOfWords = new String[] {
@@ -395,10 +334,11 @@ public class CompiledCorpusTest {
 				};
 		CompiledCorpus compiledCorpus = makeCorpusUnderTest(StringSegmenter_IUMorpheme.class);
         compiledCorpus.addWordOccurences(stringsOfWords);
-       Assert.assertEquals("The number of words that failed segmentation is wrong.",1,
-        		compiledCorpus.totalWordsWithNoDecomp());
-       Assert.assertEquals("The number of occurrences that failed segmentation is wrong.",1,
-        		compiledCorpus.totalOccurencesWithNoDecomp());
+       Assert.assertEquals(
+       	"The number of words that failed segmentation is wrong.",
+		 		1, compiledCorpus.totalWordsWithNoDecomp());
+       Assert.assertEquals("The number of occurrences that failed segmentation is wrong.",
+		 		1, compiledCorpus.totalOccurencesWithNoDecomp());
 	}
 
 	@Test
@@ -422,7 +362,7 @@ public class CompiledCorpusTest {
 		String[] stringsOfWords = new String[] {
 				"nunavut", "inuit", "takujuq", "sinilauqtuq", "uvlimik", "takulauqtunga"
 		};
-		CompiledCorpus compiledCorpus = makeCorpusUnderTest(StringSegmenter_IUMorpheme.class);
+		CompiledCorpus compiledCorpus = makeCorpusUnderTest();
 		compiledCorpus.addWordOccurences(stringsOfWords);
 
 		new AssertCompiledCorpus(compiledCorpus, "")
@@ -434,7 +374,7 @@ public class CompiledCorpusTest {
 		String[] stringsOfWords = new String[] {
 				"nunavut", "inuit", "takujuq", "sinilauqtuq", "uvlimik", "takulauqtunga"
 		};
-		CompiledCorpus compiledCorpus = makeCorpusUnderTest(StringSegmenter_IUMorpheme.class);
+		CompiledCorpus compiledCorpus = makeCorpusUnderTest();
 
 		String ngram = TransCoder.inOtherScript("lauq");
 		compiledCorpus.addWordOccurences(stringsOfWords);
@@ -478,7 +418,17 @@ public class CompiledCorpusTest {
 			// Morpheme with freq = 1
 			.morphemeNgramFreqEquals(1, "{nuna/1n}")
 			// Morpheme that is not the root
-			.morphemeNgramFreqEquals(1, "{lu/1q}")				
+			.morphemeNgramFreqEquals(1, "{lu/1q}")
+			// Morpheme at end of word
+			.morphemeNgramFreqEquals(1, "{it/tn-nom-p}$")
+			// Sequence of two morphemes
+			.morphemeNgramFreqEquals(1, "{inuk/1n} {it/tn-nom-p}")
+			// Sequence of two morphemes at end of word
+			.morphemeNgramFreqEquals(1, "{inuk/1n} {it/tn-nom-p}$")
+			// Sequence of two morphemes at start of word
+			.morphemeNgramFreqEquals(1, "^{inuk/1n} {it/tn-nom-p}")
+			// Sequence of two morphemes that make up whole word
+			.morphemeNgramFreqEquals(1, "^{inuk/1n} {it/tn-nom-p}$")
 			;
 	}
 	
@@ -487,7 +437,6 @@ public class CompiledCorpusTest {
     	boolean IN_ANY_ORDER = true;
 
 		CompiledCorpus corpus = makeCorpusUnderTest();
-		corpus.setSegmenterClassName(StringSegmenter_IUMorpheme.class.getCanonicalName());
 		corpus.addWordOccurences(
 			new String[] {"inuktitut", "inuksuk", "inuttitut", "inakkut", 
 					"takuinuit", "taku", "intakuinuit"});
@@ -533,7 +482,7 @@ public class CompiledCorpusTest {
 	public void test__info4word__WordIsInCorpus() throws Exception {
 		// Note: "hello" appears twice
 		String[] words = new String[] {"hello", "world", "hello", "again"};
-		CompiledCorpus corpus = 
+		CompiledCorpus corpus =
 				makeCorpusUnderTest(StringSegmenter_Char.class);		
 		corpus.addWordOccurences(words);
 		
@@ -557,7 +506,7 @@ public class CompiledCorpusTest {
 	@Test
 	public void test__info4word__WordNotInCorpus() throws Exception {
 		String[] words = new String[] {"hello", "world"};
-		CompiledCorpus corpus = 
+		CompiledCorpus corpus =
 				makeCorpusUnderTest(StringSegmenter_Char.class);		
 		corpus.addWordOccurences(words);
 		

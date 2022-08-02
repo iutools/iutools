@@ -1,8 +1,10 @@
 package org.iutools.corpus;
 
 import ca.nrc.testing.AssertString;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import ca.nrc.testing.RunOnCases;
 import org.junit.jupiter.api.Test;
+
+import java.util.function.Consumer;
 
 public class WordInfoTest {
 
@@ -66,4 +68,10 @@ public class WordInfoTest {
 			"Word in SYLLABIC script not as expected",
 			"ᐃᓄᒃ", winfo.getWordSyllabic());
 	}
+
+	//////////////////////////////////////
+	// TEST HELPERS
+	//////////////////////////////////////
+
+
 }

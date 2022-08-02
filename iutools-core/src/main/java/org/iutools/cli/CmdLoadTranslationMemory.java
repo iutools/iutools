@@ -3,6 +3,7 @@ package org.iutools.cli;
 import ca.nrc.data.file.FileGlob;
 import ca.nrc.ui.commandline.CommandLineException;
 import ca.nrc.ui.commandline.UserIO;
+import org.iutools.concordancer.tm.TMFactory;
 import org.iutools.concordancer.tm.TranslationMemory;
 import org.iutools.config.IUConfig;
 
@@ -31,13 +32,12 @@ public class CmdLoadTranslationMemory extends ConsoleCommand {
 		if (!userIO.verbosityLevelIsMet(UserIO.Verbosity.Level1)) {
 			userIO.setVerbosity(UserIO.Verbosity.Level1);
 		}
-		TranslationMemory tm =
-			new TranslationMemory()
-				.setUserIO(userIO);
+		TranslationMemory tm = new TMFactory().makeTM()
+			.setUserIO(userIO);
 		
 		List<File> files = tmFilesToLoad();
 		if (files.size() > 0) {
-			tm.deleteIndex();
+			tm.delete();
 		}
 		for (File tmFile: files) {
 			tm.loadFile(tmFile.toPath());

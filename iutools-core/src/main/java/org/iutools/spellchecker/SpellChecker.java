@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
 import org.iutools.morph.*;
 import org.iutools.morph.r2l.MorphologicalAnalyzer_R2L;
 import org.iutools.text.segmentation.Token;
@@ -61,10 +62,10 @@ public class SpellChecker {
 
 	protected String esIndexNameRoot = null;
 
-	protected CompiledCorpus explicitlyCorrectWords = null;
+	protected CompiledCorpus_ES explicitlyCorrectWords = null;
 
 	// TODO-June2020: Can we get rid of this and use the explicitlyCorrectWords
-	//   CompiledCorpus instance instead?
+	//   CompiledCorpus_ES instance instead?
 	/** 
 	 * Words that are NOT numeric expressions and were EXPLICLITLY as being 
 	 * correct
@@ -72,7 +73,7 @@ public class SpellChecker {
 	protected Set<String> explicitlyCorrect_NonNumeric = new HashSet<String>();
 
 	// TODO-June2020: Can we get rid of this and use the explicitlyCorrectWords
-	//   CompiledCorpus instance instead?	
+	//   CompiledCorpus_ES instance instead?
 	/** 
 	 * Words that ARE numeric expressions and were EXPLICLITLY as being 
 	 * correct
@@ -145,7 +146,7 @@ public class SpellChecker {
 		esIndexNameRoot = _corpusName;
 		if (!mustBeRegistered) {
 			try {
-				corpus = new CompiledCorpus(_corpusName);
+				corpus = new CompiledCorpus_ES(_corpusName);
 			} catch (CompiledCorpusException e) {
 				throw new SpellCheckerException(e);
 			}
@@ -159,7 +160,7 @@ public class SpellChecker {
 		}
 		try {
 			explicitlyCorrectWords =
-					new CompiledCorpus(
+					new CompiledCorpus_ES(
 							explicitlyCorrectWordsIndexName());
 		} catch (CompiledCorpusException e) {
 			throw new SpellCheckerException(e);
@@ -193,7 +194,7 @@ public class SpellChecker {
 
 	public void setDictionaryFromCorpus(File compiledCorpusFile) throws SpellCheckerException {
 		try {
-			CompiledCorpus corpus = RW_CompiledCorpus.read(compiledCorpusFile);
+			CompiledCorpus_ES corpus = RW_CompiledCorpus.read(compiledCorpusFile);
 			setDictionaryFromCorpus(corpus);
 		} catch (Exception e) {
 			throw new SpellCheckerException(
@@ -961,7 +962,7 @@ public class SpellChecker {
 		long freq = 0;
 		try {
 			freq = corpus.totalWordsWithCharNgram(
-					ngram, CompiledCorpus.SearchOption.EXCL_MISSPELLED);
+					ngram, CompiledCorpus_ES.SearchOption.EXCL_MISSPELLED);
 		} catch (CompiledCorpusException e) {
 			throw new SpellCheckerException(e);
 		}
@@ -992,7 +993,7 @@ public class SpellChecker {
 
 			Iterator<WordInfo> iterWinfoCandaWithNgram =
 				winfosContainingNgram(
-					ngram, CompiledCorpus.SearchOption.EXCL_MISSPELLED);
+					ngram, CompiledCorpus_ES.SearchOption.EXCL_MISSPELLED);
 			while (iterWinfoCandaWithNgram.hasNext()) {
 				WordInfo winfo = iterWinfoCandaWithNgram.next();
 				ScoredSpelling candidate = new ScoredSpelling(winfo.word);
@@ -1168,11 +1169,11 @@ public class SpellChecker {
 
 	protected Iterator<String> wordsContainingNgram(
 		String seq) throws SpellCheckerException {
-		return wordsContainingNgram(seq, new CompiledCorpus.SearchOption[0]);
+		return wordsContainingNgram(seq, new CompiledCorpus_ES.SearchOption[0]);
 	}
 
 	protected Iterator<WordInfo> winfosContainingNgram(String seq,
-		CompiledCorpus.SearchOption... options) throws SpellCheckerException {
+		CompiledCorpus_ES.SearchOption... options) throws SpellCheckerException {
 		Logger logger = LogManager.getLogger("org.iutools.spellchecker.SpellChecker.winfosContainingNgram");
 		logger.trace("invoked with seq="+seq);
 		long start = StopWatch.nowMSecs();
@@ -1187,7 +1188,7 @@ public class SpellChecker {
 			// analyzer
 			//
 			options = ArrayUtils.removeElement(
-				options, CompiledCorpus.SearchOption.EXCL_MISSPELLED);
+				options, CompiledCorpus_ES.SearchOption.EXCL_MISSPELLED);
 
 			Iterator<WordInfo> winfosIter2 =
 				explicitlyCorrectWords.winfosContainingNgram(seq, options);
@@ -1203,7 +1204,7 @@ public class SpellChecker {
 	}
 
 	protected Iterator<String> wordsContainingNgram(String seq,
-		CompiledCorpus.SearchOption... options) throws SpellCheckerException {
+		CompiledCorpus_ES.SearchOption... options) throws SpellCheckerException {
 		Logger logger = LogManager.getLogger("org.iutools.spellchecker.SpellChecker.wordsContainingSequ");
 
 		long start = StopWatch.nowMSecs();
@@ -1216,7 +1217,7 @@ public class SpellChecker {
 
 			Iterator<String> wordsIter2 =
 				explicitlyCorrectWords.wordsContainingNgram(
-					seq, CompiledCorpus.SearchOption.EXCL_MISSPELLED);
+					seq, CompiledCorpus_ES.SearchOption.EXCL_MISSPELLED);
 
 			wordsIter = new IteratorChain<String>(wordsIter1, wordsIter2);
 		} catch (CompiledCorpusException e) {

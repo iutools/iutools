@@ -2,8 +2,19 @@ package org.iutools.corpus;
 
 import ca.nrc.dtrc.elasticsearch.Document;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.apache.commons.lang3.StringUtils;import org.iutools.script.TransCoder;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.iutools.corpus.sql.WordInfoSchema;
+import org.iutools.script.TransCoder;
 import org.iutools.script.TransCoderException;
+import org.iutools.sql.Row;
+import org.iutools.text.ngrams.NgramCompiler;
+import org.json.JSONObject;
+
+import java.util.*;
 
 public class WordInfo extends Document {
 	
@@ -76,7 +87,6 @@ public class WordInfo extends Document {
 	 */
 	public String morphemesSpaceConcatenated = null;
 
-
 	public WordInfo() {
 		super();
 		init_WordInfo(null);
@@ -138,11 +148,11 @@ public class WordInfo extends Document {
 		return _wordSyllabic;
 	}
 
-	public WordInfo setDecompositions(String[][] sampleDecomps, int totalDecomps) {
+	public WordInfo setDecompositions(String[][] sampleDecomps, int totalDecomps) throws CompiledCorpusException {
 		return setDecompositions(sampleDecomps, new Integer(totalDecomps));
 	}
 
-	public WordInfo setDecompositions(String[][] sampleDecomps, Integer totalDecomps) {
+	public WordInfo setDecompositions(String[][] sampleDecomps, Integer totalDecomps) throws CompiledCorpusException {
 
 		if (sampleDecomps == null) {
 			totalDecompositions = null;

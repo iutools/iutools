@@ -2,7 +2,6 @@ package org.iutools.concordancer.tm;
 
 import ca.nrc.file.ResourceGetter;
 import org.iutools.concordancer.*;
-import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -10,7 +9,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-public class TranslationMemoryTest {
+public abstract class TranslationMemoryTest {
+
+	public abstract TranslationMemory makeTM(String memoryName);
 
 	protected static final String esIndexName = "test_tm";
 
@@ -18,7 +19,7 @@ public class TranslationMemoryTest {
 
 	@BeforeEach
 	public void setUp() throws Exception {
-		tm = new TranslationMemory(esIndexName);
+		tm = makeTM(esIndexName);
 		Path tmFile = Paths.get(
 			ResourceGetter.getResourcePath(
 				"org/iutools/concordancer/small_tm.tm.json"));
@@ -35,7 +36,7 @@ public class TranslationMemoryTest {
 		// an elasticsearch index
 		//
 		String esIndexName = "test_tm";
-		TranslationMemory tm = new TranslationMemory(esIndexName);
+		TranslationMemory tm = makeTM(esIndexName);
 
 		// The es index is initially empty, but you can load data into
 		// form JSON files
@@ -64,6 +65,7 @@ public class TranslationMemoryTest {
 
 	@Test
 	public void test__search__HappyPath() throws Exception {
+
 		String sourceLang = "en";
 		String sourceExpr = "legislative";
 		String[] targetLangs = {"iu", "fr"};

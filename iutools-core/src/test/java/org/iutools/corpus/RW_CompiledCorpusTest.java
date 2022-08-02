@@ -1,5 +1,7 @@
 package org.iutools.corpus;
 
+import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
+
 public class RW_CompiledCorpusTest {
 
 	///////////////////////////////////
@@ -9,7 +11,7 @@ public class RW_CompiledCorpusTest {
 //	@Test
 //	public void test__RW_CompiledCorpus__Synopsis() throws Exception {
 //
-//		// Say you have a CompiledCorpus object
+//		// Say you have a CompiledCorpus_ES object
 //		File tmpDir = Files.createTempDir(); tmpDir.deleteOnExit();
 //		CompiledCorpus_ES corpus =
 //			new CompiledCorpus_ES(CorpusTestHelpers.ES_TEST_INDEX);
@@ -20,7 +22,7 @@ public class RW_CompiledCorpusTest {
 //		RW_CompiledCorpus.write(corpus, savePath);
 //
 //		// You can also use a RW object to read the file
-//		// back into a CompiledCorpus instance
+//		// back into a CompiledCorpus_ES instance
 //		//
 //		RW_CompiledCorpus.read(savePath, corpus.getClass());
 //	}
@@ -32,13 +34,13 @@ public class RW_CompiledCorpusTest {
 //	@Test
 //	public void test__read_write__ES_Corpus() throws Exception {
 //
-//		CompiledCorpus origCorpus = new CompiledCorpus_ES();
+//		CompiledCorpus_ES origCorpus = new CompiledCorpus_ES();
 //		origCorpus.addWordOccurences(new String[] {"hello", "world"});
 //
 //		File savePath = File.createTempFile("corpus", ".json");
 //		RW_CompiledCorpus.write(origCorpus, savePath);
 //
-//		CompiledCorpus readCorpus =
+//		CompiledCorpus_ES readCorpus =
 //			RW_CompiledCorpus
 //				.read(savePath, CompiledCorpus_InMemory.class);
 //
@@ -51,11 +53,11 @@ public class RW_CompiledCorpusTest {
 	///////////////////////////////////
 		
 	private void checkOrigAgainsRead(
-			CompiledCorpus origCorpus, CompiledCorpus readCorpus) 
+	CompiledCorpus_ES origCorpus, CompiledCorpus_ES readCorpus)
 			throws Exception {
 			String corpName = "orig";
-			for (CompiledCorpus corpus: 
-				new CompiledCorpus[] {origCorpus, readCorpus}) {
+			for (CompiledCorpus_ES corpus:
+				new CompiledCorpus_ES[] {origCorpus, readCorpus}) {
 				
 				new AssertCompiledCorpus(corpus, 
 						"The "+corpName+" corpus was not as expectee")

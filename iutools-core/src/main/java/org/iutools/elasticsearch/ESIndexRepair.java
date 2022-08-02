@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 /**
  * As of 2020-10 or so, we noticed that concurrent invocations of the iutools
  * web services sometimes end up corrupting some of the documents in the ES
- * indices (most notably, the indices related to the CompiledCorpus).
+ * indices (most notably, the indices related to the CompiledCorpus_ES).
  *
  * The ESIndexRepair class is designed to inspect an index for such faulty
  * documents and possibly repair them.
@@ -54,7 +54,7 @@ public class ESIndexRepair {
 
 
 	private Map<String, CompiledCorpus> corpora =
-		new HashMap<String,CompiledCorpus>();
+		new HashMap<String, CompiledCorpus>();
 
 	private Map<String, Set<String>> alreadyLogged =
 		new HashMap<String,Set<String>>();
@@ -138,7 +138,7 @@ public class ESIndexRepair {
 		}
 
 		private void check(CompiledCorpus corpus, String callInfo,
- 			URL url, String json) throws CompiledCorpusException {
+								 URL url, String json) throws CompiledCorpusException {
 			if (callInfo == null) {
 				callInfo = "";
 			}

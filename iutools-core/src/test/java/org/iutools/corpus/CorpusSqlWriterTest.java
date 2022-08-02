@@ -16,6 +16,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+@Disabled
 public class CorpusSqlWriterTest {
 
 	CorpusSqlWriter corpusSqlWriter;

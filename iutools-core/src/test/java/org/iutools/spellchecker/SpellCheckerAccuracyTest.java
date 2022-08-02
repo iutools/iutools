@@ -11,10 +11,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import ca.nrc.dtrc.elasticsearch.StreamlinedClient;
 import ca.nrc.testing.AssertRuntime;
 import org.iutools.corpus.*;
-import org.iutools.corpus.CompiledCorpus;
+import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
 import org.iutools.corpus.CompiledCorpusException;
 import org.iutools.corpus.CompiledCorpusTest;
 import org.iutools.corpus.WordInfo;
@@ -44,7 +43,7 @@ public class SpellCheckerAccuracyTest {
         String indexName = CompiledCorpusTest.testIndex;
 		 CorpusTestHelpers.deleteCorpusIndex(indexName);
 
-		 CompiledCorpus corpus = new CompiledCorpus(indexName);
+		 CompiledCorpus_ES corpus = new CompiledCorpus_ES(indexName);
         SpellChecker checker = new SpellChecker(indexName);
 
         return checker;
@@ -355,7 +354,7 @@ public class SpellCheckerAccuracyTest {
 
     @BeforeEach
     public void setUp(TestInfo testInfo) {
-        this.testInfo = testInfo;
+    	this.testInfo = testInfo;
     }
 
     @AfterEach
@@ -706,8 +705,8 @@ public class SpellCheckerAccuracyTest {
     }
 
     private String exampleWithBadRankDetails(
-        CompiledCorpus corpus, SpellCheckerExample example,
-        List<String> topCandidates, Integer gotRank) throws SpellCheckerException {
+	 CompiledCorpus corpus, SpellCheckerExample example,
+	 List<String> topCandidates, Integer gotRank) throws SpellCheckerException {
         String errMess =
             "  "+wordDetails(example.wordToCheck, corpus)+
             ": rank="+gotRank+

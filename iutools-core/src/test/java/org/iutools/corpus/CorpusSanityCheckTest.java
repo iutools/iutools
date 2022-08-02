@@ -4,7 +4,6 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
 
 /**
  * Do a sanity check on an actual compiled corpus.

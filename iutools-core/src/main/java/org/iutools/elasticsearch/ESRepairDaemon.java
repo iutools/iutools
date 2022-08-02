@@ -6,7 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 
-import org.iutools.corpus.CompiledCorpus;
+import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
 import org.iutools.corpus.CompiledCorpusRegistry;
 
 import javax.servlet.ServletContextEvent;
@@ -138,9 +138,9 @@ public class ESRepairDaemon implements ServletContextListener, Runnable {
 
 		Iterator<String> corruptedIDs =
 			repairMan.corruptedDocIDs(
-				CompiledCorpus.WORD_INFO_TYPE, CompiledCorpus.winfoPrototype);
+				CompiledCorpus_ES.WORD_INFO_TYPE, CompiledCorpus_ES.winfoPrototype);
 		repairMan.repairCorruptedDocs(corruptedIDs,
-			CompiledCorpus.WORD_INFO_TYPE, CompiledCorpus.winfoPrototype,
+			CompiledCorpus_ES.WORD_INFO_TYPE, CompiledCorpus_ES.winfoPrototype,
 			jsonFile);
 	}
 
@@ -152,11 +152,11 @@ public class ESRepairDaemon implements ServletContextListener, Runnable {
 		Iterator<String> corruptedIDs = null;
 		try {
 			corruptedIDs = repairMan.corruptedDocIDs(
-				CompiledCorpus.WORD_INFO_TYPE, CompiledCorpus.winfoPrototype);
+				CompiledCorpus_ES.WORD_INFO_TYPE, CompiledCorpus_ES.winfoPrototype);
 		} catch (ElasticSearchException e) {
 		}
 
-		repairMan.deleteCorruptedDocs(corruptedIDs, CompiledCorpus.WORD_INFO_TYPE);
+		repairMan.deleteCorruptedDocs(corruptedIDs, CompiledCorpus_ES.WORD_INFO_TYPE);
 	}
 
 	@Override

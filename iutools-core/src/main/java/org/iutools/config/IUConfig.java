@@ -53,8 +53,11 @@ public class IUConfig extends Config {
 		String name =
 			getConfigProperty(
 				"org.iutools.sql.dbname",
-				true);
-		return name;
+				false);
+		if (name == null) {
+			name = "iutools_db";
+		}
+ 		return name;
 	}
 
 	public String sqlUserName() throws ConfigException {
@@ -73,4 +76,41 @@ public class IUConfig extends Config {
 		return name;
 	}
 
+	public String sqlPortNumber() throws ConfigException {
+		String portNum =
+			getConfigProperty(
+				"org.iutools.sql.portnum",
+				"3306");
+		return portNum;
+	}
+
+	public String corpusDataStore() throws ConfigException {
+		String dataStore =
+			getConfigProperty(
+				"org.iutools.corpus.datastore",
+				"elasticsearch");
+		dataStore.toLowerCase();
+		if (!dataStore.matches("^(sql|elasticsearch)$")) {
+			throw new ConfigException(
+				"Bad value for org.iutools.corpus.datastore: "+dataStore+
+				"\nShould be either sql or elasticsearch");
+		}
+		return dataStore;
+	}
+
+	public String tmDataStore() throws ConfigException {
+		String dataStore =
+			getConfigProperty(
+				"org.iutools.concordancer.tm.datastore",
+					"elasticsearch");
+		dataStore.toLowerCase();
+		if (!dataStore.matches("^(sql|elasticsearch)$")) {
+			throw new ConfigException(
+				"Bad value for org.iutools.concordancer.tm.datastore: "+dataStore+
+				"\nShould be either sql or elasticsearch");
+		}
+		return dataStore;
+
+
+	}
 }

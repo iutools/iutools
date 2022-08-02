@@ -15,6 +15,7 @@ public class CmdEsLoadCorpus extends ConsoleCommand {
         this.user_io.setVerbosity(getVerbosity());
         boolean force = getForce();
         new CompiledCorpusRegistry().getCorpus(corpusName, force);
+        return;
     }
 
     @Override

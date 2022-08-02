@@ -111,7 +111,7 @@ public class Trie_InMemory extends Trie {
 	}
 
 	private HashMap<String, Long> _computeFreqs(String cumulativeKeys, String[] terminalNodeKeys, HashMap<String, Long> freqs, String rootSegment) throws TrieException {
-		Logger logger = LogManager.getLogger("CompiledCorpus._computeFreqs");
+		Logger logger = LogManager.getLogger("CompiledCorpus_ES._computeFreqs");
 		if (terminalNodeKeys.length==0)
 			return freqs;
 		logger.debug("cumulativeKeys: '"+cumulativeKeys+"'");

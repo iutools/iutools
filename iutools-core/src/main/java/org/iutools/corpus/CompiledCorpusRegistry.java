@@ -18,6 +18,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import org.iutools.config.IUConfig;
 import ca.nrc.config.ConfigException;
+import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
+import org.iutools.corpus.sql.CompiledCorpus_SQL;
 
 public class CompiledCorpusRegistry {
 	
@@ -25,11 +27,10 @@ public class CompiledCorpusRegistry {
 	public static final String defaultCorpusName = "hansard-1999-2002";
 	public static final String emptyCorpusName = "emptycorpus";
 
-//	public static enum Option {ALLOW_UNREGISTERED};
-
 	public CompiledCorpusRegistry() throws CompiledCorpusException {
 		Logger tLogger = LogManager.getLogger("org.iutools.corpus.CompiledCorpusRegistry.constructor");
 		init_CompiledCorpusRegistry();
+		return;
 	}
 
 	private void init_CompiledCorpusRegistry() throws CompiledCorpusException {
@@ -38,7 +39,7 @@ public class CompiledCorpusRegistry {
 		if (registry == null) {
 			try {
 				registry = new HashMap<String,File>();
-				registerCorpus_ES(
+				registerCorpus(
 					defaultCorpusName,
 					new File(
 						IUConfig.getIUDataPath(
@@ -54,7 +55,7 @@ public class CompiledCorpusRegistry {
 		}
 	}
 
-	public static void registerCorpus_ES(
+	public static void registerCorpus(
 		String corpusName, File jsonFile)
 		throws CompiledCorpusRegistryException {
 		if (registry.containsKey(corpusName)
@@ -66,16 +67,6 @@ public class CompiledCorpusRegistry {
 			registry.put(corpusName, jsonFile);
 		}
 
-		try {
-			CompiledCorpus corpus = new CompiledCorpus(corpusName);
-			if (!corpus.isUpToDateWithFile(jsonFile)) {
-				corpus.loadFromFile(jsonFile, (Boolean)null, true);
-				corpus.esFactory().indexAPI().cacheIndexExists(true);
-			}
-			boolean exists = corpus.esFactory().indexAPI().exists();
-		} catch (CompiledCorpusException | ElasticSearchException e) {
-			throw new CompiledCorpusRegistryException(e);
-		}
 		return;
 	}
 
@@ -150,12 +141,13 @@ public class CompiledCorpusRegistry {
 				"There is no corpus by the name of "+corpusName);
 		}
 		File corpusFile = registry.get(corpusName);
-		CompiledCorpus corpus = null;
-		corpus = new CompiledCorpus(corpusName);
+
+
+		CompiledCorpus corpus = makeCorpus(corpusName);
 
 		try {
 			if (corpusFile != null &&
-			(reloadFromJson || !corpus.isUpToDateWithFile(corpusFile))) {
+				(reloadFromJson || !corpus.isUpToDateWithFile(corpusFile))) {
 				// Should load the corpus
 				File jsonFile = registry.get(corpusName);
 				corpus.loadFromFile(jsonFile, true, reloadFromJson);
@@ -166,7 +158,25 @@ public class CompiledCorpusRegistry {
 
 		return corpus;
 	}
-	
+
+	public static CompiledCorpus makeCorpus(String corpusName) throws CompiledCorpusRegistryException {
+		CompiledCorpus corpus = null;
+		try {
+			String dataStore = new IUConfig().corpusDataStore();
+			if (dataStore.equals("elasticsearch")) {
+				corpus =new CompiledCorpus_ES(corpusName);
+			} else if (dataStore.equals("sql")) {
+				corpus =new CompiledCorpus_SQL(corpusName);
+			} else {
+				throw new CompiledCorpusRegistryException("Unknown data store type: "+dataStore);
+			}
+		} catch (ConfigException | CompiledCorpusException e) {
+			throw new CompiledCorpusRegistryException(e);
+		}
+
+		return corpus;
+	}
+
 	private static String scanDataDirForCorpusFile(String corpusName) 
 		throws CompiledCorpusRegistryException {
 		Logger logger = LogManager.getLogger("CompiledCorpusRegistry.scanDataDirForCorpusFile");

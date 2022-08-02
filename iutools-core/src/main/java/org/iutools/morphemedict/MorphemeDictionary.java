@@ -13,6 +13,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
 import org.iutools.linguisticdata.LinguisticData;
 import org.iutools.linguisticdata.LinguisticDataException;
 import org.iutools.linguisticdata.MorphemeException;
@@ -237,18 +238,28 @@ public class MorphemeDictionary {
 			else
 				return 0;
 	   }};	
-	   
+
 	private HashMap<String,List<WordWithMorpheme>>
 		mostFrequentWordsWithMorpheme(String morpheme)
 		throws MorphemeDictionaryException {
+		return mostFrequentWordsWithMorpheme(morpheme, (Integer)null);
+	}
+
+	private HashMap<String,List<WordWithMorpheme>>
+		mostFrequentWordsWithMorpheme(String morpheme, Integer maxWords)
+		throws MorphemeDictionaryException {
 		Logger tLogger = LogManager.getLogger("org.iutools.morphemesearcher.MorphemeDictionary.mostFrequentWordsWithMorpheme");
+		if (maxWords == null) {
+			maxWords = 100;
+		}
 		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("invoked with morpheme="+morpheme+", maxWords="+maxWords);
 			tLogger.trace("Using corpus="+ PrettyPrinter.print(corpus));
 		}
 
 		List<WordWithMorpheme> wordsWithMorpheme;
 		try {
-			wordsWithMorpheme = this.corpus.wordsContainingMorpheme(morpheme);
+			wordsWithMorpheme = this.corpus.wordsContainingMorpheme(morpheme, maxWords, "frequency:desc");
 		} catch (CompiledCorpusException e) {
 			throw new MorphemeDictionaryException(e);
 		}

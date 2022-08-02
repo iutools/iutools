@@ -15,6 +15,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import ca.nrc.datastructure.Pair;
+import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
 import org.iutools.datastructure.trie.TrieException;
 
 public class FreqVerbRootsCompiler {

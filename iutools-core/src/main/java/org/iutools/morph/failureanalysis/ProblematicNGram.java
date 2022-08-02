@@ -157,8 +157,7 @@ public class ProblematicNGram {
 				Collections.addAll(fields, new String[] {"word", "frequency"});
 
 				DocIterator<WordInfo> iter =
-					corpus.searchWordsContainingNgram(this.ngram, fields)
-					.docIterator();
+					corpus.wordInfosContainingNgram(this.ngram, fields);
 				final int MAX_TO_LOOK_AT = 1000;
 				int wordCounter = 0;
 				while (iter.hasNext() && wordCounter < MAX_TO_LOOK_AT) {

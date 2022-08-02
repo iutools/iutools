@@ -1,13 +1,19 @@
 package org.iutools.morphrelatives;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import ca.nrc.file.ResourceGetter;
 import org.iutools.corpus.CompiledCorpus;
 import org.iutools.corpus.CompiledCorpusRegistry;
+import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
+import org.iutools.corpus.sql.CompiledCorpus_SQL;
+import org.iutools.sql.SQLTestHelpers;
+import org.iutools.utilities.StopWatch;
 import org.junit.jupiter.api.*;
 
-import static org.junit.Assert.assertFalse;
 
 import org.junit.jupiter.api.TestInfo;
 
@@ -34,7 +40,7 @@ public class MorphRelativesFinderAccuracyTest {
 
 	@Test
 	public void test__findRelatives__PerformanceTest(TestInfo testInfo)
-	throws Exception {
+		throws Exception {
 
 		RelatedWordsExperiment experiment = new RelatedWordsExperiment()
 			.setCorpusName("HANSARD-1999-2002")
@@ -50,29 +56,66 @@ public class MorphRelativesFinderAccuracyTest {
 		evaluatePerformance(experiment, testInfo);
 	}
 
+	@Test
+	public void test__SpedComparison__SQLvsES(TestInfo testInfo) throws Exception {
+		CompiledCorpus_ES esCorpus = new CompiledCorpus_ES(CompiledCorpusRegistry.defaultCorpusName);
+		CompiledCorpus_SQL sqlCorpus = new CompiledCorpus_SQL(CompiledCorpusRegistry.defaultCorpusName);
+		Map<String,Long> times = new HashMap<String,Long>();
+		times.put("es", time__find(esCorpus, testInfo));
+		times.put("sql", time__find(sqlCorpus, testInfo));
+		// TODO: sql should be faster!!
+		SQLTestHelpers.assertIsFaster(
+			"find relatives", "es", times);
+	}
+
+
+	/////////////////////////////////////////////////
+	// TEST HELPERS
+	/////////////////////////////////////////////////
+
+	private Long time__find(CompiledCorpus corpus, TestInfo testInfo) throws Exception {
+		RelatedWordsExperiment experiment = new RelatedWordsExperiment()
+			.setVerbosity(false)
+			;
+		StopWatch sw = new StopWatch().start();
+		evaluatePerformance(experiment, 20, testInfo, corpus, true);
+		return sw.lapTime(TimeUnit.MILLISECONDS);
+	}
+
+
 	private void evaluatePerformance(RelatedWordsExperiment exp,
 		TestInfo testInfo) throws Exception {
-		evaluatePerformance(exp, (Integer)null, testInfo);
+		evaluatePerformance(exp, (Integer)null, testInfo, (CompiledCorpus)null,
+			(Boolean)null);
 	}
 
 	private void evaluatePerformance(RelatedWordsExperiment exp,
 		Integer stopAfterNWords, TestInfo testInfo) throws Exception {
+		evaluatePerformance(exp, stopAfterNWords, testInfo, (CompiledCorpus)null,
+			(Boolean)null);
+	}
+
+	private void evaluatePerformance(RelatedWordsExperiment exp,
+		Integer stopAfterNWords, TestInfo testInfo, CompiledCorpus corpus,
+		Boolean onlyMeasureSpeed) throws Exception {
+
+		if (onlyMeasureSpeed == null) {
+			onlyMeasureSpeed = false;
+		}
+		if (corpus == null) {
+			corpus =
+				new CompiledCorpusRegistry()
+					.getCorpus(exp.corpusName);
+		}
 
 		File goldStandardCSVFilePath =
 			ResourceGetter.copyResourceToTempLocation("org/iutools/IU100Words-expansions-added-to-alternatives.csv");
-
-		// This is the NEW version of the corpus, which has some
-		// non-empty decomp samples
-		//
-		CompiledCorpus corpus =
-			new CompiledCorpusRegistry()
-				.getCorpus(exp.corpusName);
 
 		MorphRelativesFinder finder = new MorphRelativesFinder(corpus);
 
 		MorphRelativesFinderEvaluator evaluator =
 			new MorphRelativesFinderEvaluator(
-				finder, goldStandardCSVFilePath);
+				finder, goldStandardCSVFilePath, onlyMeasureSpeed);
 
 		// If focusOnWord != null, we run the evaluator verbosely
 		// Otherwise, use the verbosity level provided in the expectations

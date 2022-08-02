@@ -6,18 +6,14 @@ import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import ca.nrc.dtrc.elasticsearch.es7.IndexAPI_v7;
-import ca.nrc.dtrc.elasticsearch.index.IndexDef;
-import ca.nrc.json.PrettyPrinter;
-import ca.nrc.string.StringUtils;
-import org.apache.logging.log4j.Level;
-import org.iutools.elasticsearch.ES;
-import org.iutools.linguisticdata.Morpheme;
-import org.iutools.morph.r2l.DecompositionState;
+import ca.nrc.dtrc.elasticsearch.request.Sort;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.tuple.Pair;
+import org.iutools.corpus.sql.LastLoadedDateSchema;
 import ca.nrc.debug.Debug;
 import ca.nrc.dtrc.elasticsearch.*;
-import ca.nrc.dtrc.elasticsearch.request.*;
-import ca.nrc.ui.commandline.UserIO;
+import static ca.nrc.dtrc.elasticsearch.request.Sort.Order;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import org.iutools.linguisticdata.LinguisticDataException;
@@ -25,52 +21,71 @@ import org.iutools.datastructure.trie.StringSegmenter;
 import org.iutools.datastructure.trie.StringSegmenterException;
 import org.iutools.datastructure.trie.StringSegmenter_Char;
 import org.iutools.datastructure.trie.Trie;
-import org.iutools.script.TransCoder;
-import org.iutools.script.TransCoderException;
+import org.iutools.sql.Row;
 import org.iutools.text.ngrams.NgramCompiler;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
-import static ca.nrc.dtrc.elasticsearch.ESFactory.*;
 import ca.nrc.dtrc.elasticsearch.index.IndexAPI;
 
-/**
- * This class stores stats about Inuktut words seen in a corpus, such as:
- * 
- * - frequency of words and ngrams
- * - word morphological decompositions
- *
- * For details on how to use this class, look at the synopsis test: @see org.iutools.corpus.CompiledCorpusTest#test__CompiledCorpus__Synopsis()
- * 
- * @author desilets
- *
- */
-public class CompiledCorpus {
+/** This implementation of CompiledCorpus uses ElasticSearch as its data store. */
+public abstract class CompiledCorpus {
+
+	public abstract boolean exists() throws CompiledCorpusException;
+	public abstract void loadJsonFile(File jsonFile, Boolean verbose,
+		Boolean overwrite, String indexName) throws CompiledCorpusException;
+	protected abstract void changeLastUpdatedHistory() throws CompiledCorpusException;
+	public abstract long totalWords() throws CompiledCorpusException;
+	public abstract long totalWordsWithDecomps() throws CompiledCorpusException;
+	public abstract long totalWordsWithNoDecomp() throws CompiledCorpusException;
+	public abstract long totalOccurencesWithNoDecomp() throws CompiledCorpusException;
+	public abstract Long totalOccurencesWithDecomps() throws CompiledCorpusException;
+	public abstract long totalWordsWithCharNgram(String ngram, SearchOption... options)
+			throws CompiledCorpusException;
+	public abstract long totalWordsWithNgram(String ngram) throws CompiledCorpusException;
+	public abstract long totalOccurences() throws CompiledCorpusException;
+	public abstract long totalOccurencesOf(String word) throws CompiledCorpusException;
+	public abstract boolean containsWord(String word) throws CompiledCorpusException;
+	public abstract void addWordOccurence(
+		String word, String[][] sampleDecomps, Integer totalDecomps,
+		long freqIncr) throws CompiledCorpusException;
+	public abstract void deleteAll(Boolean force) throws CompiledCorpusException;
+	public abstract void deleteWord(String word) throws CompiledCorpusException;
+	public abstract Iterator<String> allWords() throws CompiledCorpusException;
+	public abstract Iterator<String> wordsWithNoDecomposition() throws CompiledCorpusException;
+	public abstract WordInfo info4word(String word) throws CompiledCorpusException;
+	public abstract Iterator<WordInfo> winfosContainingNgram(String ngram, SearchOption... options) throws CompiledCorpusException;
+	public abstract Iterator<String> wordsContainingNgram(String ngram, SearchOption... options) throws CompiledCorpusException;
+	public abstract DocIterator<WordInfo> wordInfosContainingNgram(String ngram, Set<String> fields) throws CompiledCorpusException;
+	public abstract List<WordWithMorpheme> wordsContainingMorpheme(String morpheme, Integer maxWords, String... sortCriteria) throws CompiledCorpusException;
+	public abstract Iterator<String> wordsContainingMorphNgram(String[] morphemes) throws CompiledCorpusException;
+	public abstract long morphemeNgramFrequency(String[] morphemes) throws CompiledCorpusException;
+	public abstract long lastLoadedDate() throws CompiledCorpusException;
+
 
 	public static enum SearchOption {EXCL_MISSPELLED, WORD_ONLY};
 
-	private String indexName = null;
+	protected String indexName = null;
 	public String getIndexName() {return indexName;}
-	ESFactory _esFactory = null;
+
+	protected ESFactory _esFactory = null;
 	public final static String WORD_INFO_TYPE = "WordInfo_ES";
 	public final static WordInfo winfoPrototype = new WordInfo("");
 
 	public int searchBatchSize = 100;
 
-	static Pattern pattSavePath = Pattern.compile(".*?(^|[^/\\\\.]*)\\.ES\\.json$");
-	private boolean esClientVerbose = true;
+	protected static Pattern pattSavePath = Pattern.compile(".*?(^|[^/\\\\.]*)\\.ES\\.json$");
+	protected  boolean esClientVerbose = true;
 
 	protected String segmenterClassName = StringSegmenter_Char.class.getName();
 	protected transient StringSegmenter segmenter = null;
 
-	private int decompsSampleSize = 10;
+	protected int decompsSampleSize = 10;
 
 	// If boolean is set to true, then this will contain the 'address' of the
 	// SpellChecker.
-	private Integer address = null;
+	protected Integer address = null;
 
 	@JsonIgnore
 	public transient String name;
@@ -78,7 +93,7 @@ public class CompiledCorpus {
 	protected transient NgramCompiler charsNgramCompiler = null;
 	protected transient NgramCompiler morphsNgramCompiler = null;
 
-	private static Boolean debug = null;
+	protected static Boolean debug = null;
 
 	public CompiledCorpus(String _indexName) throws CompiledCorpusException {
 		init_CompiledCorpus(_indexName, (Boolean)null);
@@ -90,24 +105,7 @@ public class CompiledCorpus {
 
 	public void init_CompiledCorpus(String _indexName, Boolean createIfNotExists) throws CompiledCorpusException {
 		this.indexName = IndexAPI.canonicalIndexName(_indexName);
-		if (debugMode()) {
-			this.address = System.identityHashCode(this);
-		}
-		ensureESIndexIsDefined();
 		return;
-	}
-
-	private void ensureESIndexIsDefined() throws CompiledCorpusException {
-		try {
-			if (!esFactory().indexAPI().exists()) {
-				IndexDef idef = new IndexDef();
-				idef.getTypeDef("*").getFieldDef("frequency").type = FieldDef.Types.integer;
-				idef.getTypeDef("*").getFieldDef("totalDecompositions").type = FieldDef.Types.integer;
-				esFactory().indexAPI().define(idef, true);
-			}
-		} catch (Exception e) {
-			throw new CompiledCorpusException(e);
-		}
 	}
 
 	public CompiledCorpus setName(String _name) {
@@ -263,7 +261,13 @@ public class CompiledCorpus {
 		}
 		return mostFrequent;
 	}
-	
+
+	public List<WordWithMorpheme> wordsContainingMorpheme(String morpheme) throws CompiledCorpusException {
+		return wordsContainingMorpheme(
+			morpheme, (Integer)null,
+			new String[] {"frequency:desc"});
+	}
+
 	protected void updateWordDecompositions(String word,
 			String[][] wordDecomps) throws CompiledCorpusException {
 		String[][] sampleDecomps = decompsSample(wordDecomps);
@@ -288,67 +292,7 @@ public class CompiledCorpus {
 		return answer;
 	}
 
-	public CompiledCorpus setIndexName(String _name) {
-		this.indexName = _name;
-		_esFactory = null;
-		return this;
-	}
-
-	public CompiledCorpus setESClientVerbose(boolean verbose) {
-		if (verbose) {
-			esClientVerbose = verbose;
-		}
-		return this;
-	}
-
-	public ESFactory esFactory() throws CompiledCorpusException {
-		Logger logger = LogManager.getLogger("org.iutools.corpus.esFactory");
-		if (_esFactory == null) {
-			try {
-				_esFactory =
-					ES.makeFactory(indexName, ESOptions.CREATE_IF_NOT_EXISTS, ESOptions.UPDATES_WAIT_FOR_REFRESH)
-						.setSleepSecs(0.0)
-						.setErrorPolicy(ErrorHandlingPolicy.LENIENT);
-			} catch (ElasticSearchException e) {
-				throw new CompiledCorpusException(e);
-			}
-			;
-			// 2021-01-10: Setting this to false should speed things up, but it may corrupt
-			// the ES index.
-			_esFactory.synchedHttpCalls = false;
-//			_esFactory.synchedHttpCalls = true;
-
-			if (debugMode()) {
-				logger.trace("Attaching observer to the ES index");
-				try {
-					_esFactory.attachObserver(
-						new ObsEnsureAllRecordsAreWordInfo(esFactory()));
-				} catch (ElasticSearchException e) {
-					throw new CompiledCorpusException(e);
-				}
-			}
-		}
-
-		if (!esClientVerbose) {
-			_esFactory.setUserIO(null);
-		} else  {
-			_esFactory.setUserIO(
-				new UserIO(UserIO.Verbosity.Level1));
-		}
-
-		if (debugMode()) {
-			try {
-				_esFactory.attachObserver(
-					new ObsEnsureAllRecordsAreWordInfo(esFactory()));
-			} catch (ElasticSearchException e) {
-				throw new CompiledCorpusException(e);
-			}
-		}
-
-		return _esFactory;
-	}
-
-	private boolean debugMode() throws CompiledCorpusException {
+	protected boolean debugMode() throws CompiledCorpusException {
 		Logger tLogger = LogManager.getLogger("org.iutools.corpus.CompiledCorpus.debugMode");
 		if (debug == null) {
 			List<String> loggerNames = new ArrayList<String>();
@@ -379,251 +323,13 @@ public class CompiledCorpus {
 		loadFromFile(jsonFile, verbose, overwrite, (String)null);
 	}
 
-	public  void loadFromFile(File jsonFile, Boolean verbose,
-		Boolean overwrite, String indexName) throws CompiledCorpusException {
-		Logger logger = LogManager.getLogger("org.iutools.corpus.CompiledCorpus.loadFromFile");
-		if (verbose == null) {
-			verbose = true;
-		}
-		if (overwrite == null) {
-			overwrite = false;
-		}
-		if (indexName == null) {
-			if (this.indexName != null) {
-				indexName = this.indexName;
-			} else {
-				indexName = corpusName4File(jsonFile);
-			}
-		}
-		setIndexName(indexName);
-		setESClientVerbose(verbose);
-
-		List<ESOptions> options = new ArrayList<ESOptions>();
-		if (verbose) {
-			options.add(ESOptions.VERBOSE);
-		}
-		if (!overwrite) {
-			options.add(ESOptions.APPEND);
-		}
-
-		ESFactory esFactory = esFactory();
-		logger.trace("Using esFactory="+esFactory);
-		boolean okToLoad = possiblyClearESIndex(overwrite, verbose);
-		if (okToLoad) {
-			try {
-				possiblyDefineIndex();
-				esFactory.indexAPI().bulkIndex(
-					jsonFile.toString(), WORD_INFO_TYPE, 100,
-					options.toArray(new ESOptions[0]));
-			} catch (ElasticSearchException e) {
-				throw new CompiledCorpusException(e);
-			}
-		}
-
+	public  void loadFromFile(File jsonFile, Boolean verbose, Boolean overwrite,
+		String corpusName) throws CompiledCorpusException {
+		loadJsonFile(jsonFile, verbose,overwrite, corpusName);
 		changeLastUpdatedHistory();
-
 		return;
 	}
 
-	private void possiblyDefineIndex() throws CompiledCorpusException {
-		try {
-			if (!esFactory().indexAPI().exists()) {
-				IndexDef iDef = new IndexDef();
-				esFactory().indexAPI().define(iDef, true);
-			}
-		} catch (Exception e) {
-			throw new CompiledCorpusException(e);
-		}
-		return;
-	}
-
-	protected void changeLastUpdatedHistory() throws CompiledCorpusException {
-		Logger tLogger = LogManager.getLogger("org.iutools.corpus.CompiledCorpus.changeLastUpdatedHistory");
-		if (tLogger.isTraceEnabled()) {
-			tLogger.trace("indexName="+indexName+";Unpon entry, last loaded date = "+lastLoadedDate());
-		}
-
-		LastLoadedDate lastLoadedRecord = new LastLoadedDate();
-		lastLoadedRecord.timestamp = System.currentTimeMillis();
-		try {
-			esFactory().crudAPI().putDocument(LastLoadedDate.esTypeName, lastLoadedRecord);
-		} catch (ElasticSearchException e) {
-			throw new CompiledCorpusException(e);
-		}
-
-		if (tLogger.isTraceEnabled()) {
-			tLogger.trace("indexName="+indexName+";Upon exit, last loaded date = "+lastLoadedDate());
-		}
-
-		return;
-
-	}
-
-	protected boolean possiblyClearESIndex(Boolean clear, boolean verbose)
-			throws CompiledCorpusException {
-		boolean okToLoad = true;
-		UserIO userIO = new UserIO().setVerbosity(UserIO.Verbosity.Level0);
-		try {
-			IndexAPI indexAPI = esFactory().indexAPI();
-			if (indexAPI.exists() && !indexAPI.isEmpty()) {
-				if (clear == null) {
-					clear =
-						userIO.prompt_yes_or_no(
-								"Corpus " + esFactory().indexName + " already exists." +
-								"\nWould you like to overwrite it?\n");
-				}
-				if (clear) {
-					if (verbose) {
-						System.out.println("Clearing index "+indexName);
-					}
-					esClearIndex();
-				} else {
-					okToLoad = false;
-				}
-			}
-		} catch (ElasticSearchException e) {
-			throw new CompiledCorpusException(e);
-		}
-
-		return okToLoad;
-	}
-
-	public long totalWords() throws CompiledCorpusException {
-		long total = 0;
-		try {
-			SearchResults<WordInfo> results =
-			esFactory().indexAPI().listAll(WORD_INFO_TYPE, winfoPrototype);
-			total = results.getTotalHits();
-		} catch (ElasticSearchException e) {
-			throw new CompiledCorpusException(e);
-		}
-
-		return total;
-	}
-
-	public long totalOccurencesOf(String word) throws CompiledCorpusException {
-		long frequency = 0;
-		WordInfo winfo =null;
-		try {
-			winfo =
-				(WordInfo) esFactory().crudAPI()
-					.getDocumentWithID(word, WordInfo.class, WORD_INFO_TYPE);
-			if (winfo != null) {
-				frequency = winfo.frequency;;
-			}
-		} catch (ElasticSearchException e) {
-			throw new CompiledCorpusException(e);
-		}
-		return frequency;
-	}
-
-	public List<WordWithMorpheme> wordsContainingMorpheme(String morpheme) throws CompiledCorpusException {
-		Logger logger = LogManager.getLogger("org.iutools.corpus.CompiledCorpus.wordsContainingMorpheme");
-
-		logger.trace("Invoked with morpheme="+morpheme);
-
-		List<WordWithMorpheme> words = new ArrayList<WordWithMorpheme>();
-		if (logger.isErrorEnabled() && morpheme == null) {
-				logger.error("morpheme is null");
-		}
-		if (morpheme != null) {
-
-			String query = morphNgramQuery(morpheme);
-
-			SearchResults<WordInfo> results = esWinfoSearch(query);
-			Iterator<Hit<WordInfo>> iter = results.iterator();
-			if (logger.isErrorEnabled() && iter == null) {
-				logger.error("*** morpheme="+morpheme+", iter is null");
-			}
-
-			logger.trace("# words found " + results.getTotalHits());
-
-			Pattern morphPatt = Pattern.compile("(^|\\s)([^\\s]*" + morpheme + "[^\\s]*)(\\s|$)");
-			while (iter.hasNext()) {
-				WordInfo winfo = iter.next().getDocument();
-				if (logger.isErrorEnabled()) {
-					if (winfo == null) {
-						logger.error("** winfo = null");
-					} else if (winfo.word == null){
-						logger.error("** winfo.word = null; winfo="+ PrettyPrinter.print(winfo));
-					}
-				}
-				logger.trace("Looking at word " + winfo.word);
-
-				String morphId = null;
-				Matcher morphMatcher = morphPatt.matcher("\\{" + winfo.morphemesSpaceConcatenated + "\\/");
-
-				if (morphMatcher.find()) {
-					morphId = morphMatcher.group(2);
-				}
-
-				String topDecomp =
-				DecompositionState.formatDecompStr(
-					winfo.topDecompositionStr,
-					Morpheme.MorphFormat.WITH_BRACES);
-
-				String word = winfo.getIdWithoutType();
-
-				WordWithMorpheme aWord =
-					new WordWithMorpheme(
-					word, morphId, topDecomp,
-					winfo.frequency, winfo.decompositionsSample);
-				words.add(aWord);
-			}
-		}
-
-		logger.trace("Returning");
-
-		return words;
-	}
-
-	private String morphNgramQuery(String[] morphemes) {
-		morphemes = replaceCaretAndDollar(morphemes);
-		String query =
-				"morphemesSpaceConcatenated:\""+
-					WordInfo.insertSpaces(morphemes)+
-					"\"";
-		return query;
-	}
-
-	private String morphNgramQuery(String morpheme) {
-		String[] morphemes = new String[] {morpheme};
-		return morphNgramQuery(morphemes);
-	}
-
-	
-	public long morphemeNgramFrequency(String[] ngram) throws CompiledCorpusException {
-		String query =
-			"morphemesSpaceConcatenated:\""+
-				WordInfo.insertSpaces(ngram)+
-				"\"";
-
-		SearchResults<WordInfo> results = esWinfoSearch(query);
-		Iterator<Hit<WordInfo>> iter = results.iterator();
-		long freq = 0;
-		while (iter.hasNext()) {
-			freq += iter.next().getDocument().frequency;
-		}
-
-		return freq;
-	}
-
-	
-	public Iterator<String> allWords() throws CompiledCorpusException {
-		SearchResults<WordInfo> allWinfo = esListall();
-		Iterator<String> wordsIter = allWinfo.docIDIterator();
-
-		return wordsIter;
-	}
-
-	
-	public WordInfo info4word(String word) throws CompiledCorpusException {
-		WordInfo winfo = esGetDocumentWithID(word);
-
-		return winfo;
-	}
-
-	
 	public void updateDecompositionsIndex(WordInfo winfo) throws CompiledCorpusException {
 
 	}
@@ -633,104 +339,7 @@ public class CompiledCorpus {
 
 	}
 
-	public Iterator<WordInfo> winfosContainingNgram(String ngram, SearchOption... options) throws CompiledCorpusException {
-		Set<String> winfoFields = new HashSet<String>();
-		winfoFields.add("frequency");
-		winfoFields.add("word");
-		winfoFields.add("id");
-		return searchWordsContainingNgram(ngram, winfoFields, options).docIterator();
-	}
-
-
-	public Iterator<String> wordsContainingNgram(String ngram, SearchOption... options) throws CompiledCorpusException {
-		return searchWordsContainingNgram(ngram, options).docIDIterator(true);
-	}
-
-	public SearchResults<WordInfo> searchWordsContainingNgram(String ngram, SearchOption... options) throws CompiledCorpusException {
-		return searchWordsContainingNgram(ngram, (Set<String>)null, options);
-	}
-
-	public SearchResults<WordInfo> searchWordsContainingNgram(String ngram,
-		Set<String> winfoFields, SearchOption... options) throws CompiledCorpusException {
-
-		TransCoder.Script queryScript = TransCoder.textScript(ngram);
-		try {
-			ngram = TransCoder.ensureScript(TransCoder.Script.ROMAN, ngram);
-		} catch (TransCoderException e) {
-			throw new CompiledCorpusException(e);
-		}
-
-		String[] ngramArr = ngram.split("");
-		ngramArr = replaceCaretAndDollar(ngramArr);
-		String query =
-			"+wordCharsSpaceConcatenated:\"" +
-				WordInfo.insertSpaces(ngramArr) +
-				"\"";
-
-		List<RequestBodyElement> additionalRequestEltsList = new ArrayList<RequestBodyElement>();
-		additionalRequestEltsList.add(
-			new Sort().sortBy("frequency", Sort.Order.desc));
-		RequestBodyElement[] additionalRequestElts = new RequestBodyElement[0];
-		if (winfoFields == null) {
-			// If no fields are provided, just include the doc id
-			additionalRequestEltsList.add(new _Source("id"));
-		} else {
-			// Only return the requested fields
-			additionalRequestEltsList.add(
-				new _Source(winfoFields.toArray(new String[0])));
-		}
-		Integer batchSize = new Integer(1000);
-		SearchResults<WordInfo> results =
-				esWinfoSearch(query, options, false, batchSize,
-					additionalRequestEltsList.toArray(new RequestBodyElement[0]));
-
-		return results;
-	}
-
-	private String replaceCaretAndDollar(String ngram) {
-		String[] ngramArr = ngram.split("");
-		ngramArr = replaceCaretAndDollar(ngramArr);
-		String modifiedNgram = String.join(" ", ngramArr);
-		modifiedNgram  = modifiedNgram.replaceAll(" +", " ");
-		return modifiedNgram;
-	}
-
-	private String[] replaceCaretAndDollar(String[] ngramArr) {
-		String[] ngramArrRepl = Arrays.copyOfRange(ngramArr, 0, ngramArr.length);
-		if (ngramArrRepl[0].equals("^")) {
-			ngramArrRepl[0] = "BEGIN";
-		}
-		int last = ngramArrRepl.length-1;
-		if (ngramArrRepl[last].equals("$")) {
-			ngramArrRepl[last] = "END";
-		}
-		return ngramArrRepl;
-	}
-
-	
-	public boolean containsWord(String word) throws CompiledCorpusException {
-		Logger tLogger = LogManager.getLogger("org.iutools.corpus.CompiledCorpus.containsWord");
-		String traceLabel = this.traceLabel("word="+word);
-		tLogger.trace(traceLabel+"invoked");
-		WordInfo winfo = null;
-		try {
-			winfo =
-				(WordInfo) esFactory().crudAPI().getDocumentWithID(
-					word, WordInfo.class, WORD_INFO_TYPE, false);
-		} catch (RuntimeException | ElasticSearchException e) {
-			tLogger.trace(traceLabel + "raised exception e=" + e);
-			tLogger.trace(traceLabel + "call stack was:" + Debug.printCallStack(e));
-			throw new CompiledCorpusException(e);
-		}
-
-		boolean answer = (winfo != null);
-
-		tLogger.trace(traceLabel+"exited");
-
-		return answer;
-	}
-
-	private String traceLabel(String label) throws CompiledCorpusException {
+	protected String traceLabel(String label) throws CompiledCorpusException {
 		StringBuilder sBuilder = new StringBuilder();
 		sBuilder
 			.append("[")
@@ -744,149 +353,7 @@ public class CompiledCorpus {
 
 		return sBuilder.toString();
 	}
-	
-	public Iterator<String> wordsContainingMorphNgram(String[] morphemes) throws CompiledCorpusException {
-		Logger logger = LogManager.getLogger("org.iutools.corpus.CompiledCorpus.wordsContainingMorphNgram");
-		Set<String> words = new HashSet<String>();
-		String query = morphNgramQuery(morphemes);
-		SearchResults<WordInfo> hits = esWinfoSearch(query);
 
-		if (logger.isTraceEnabled()) {
-			logger.trace(
-				"For morphemes="+ StringUtils.join(morphemes, ",")+
-				", returning total of "+hits.getTotalHits()+" hits.");
-		}
-		return hits.docIDIterator(true);
-	}
-
-	
-	public long totalOccurences() throws CompiledCorpusException {
-//		Query queryBody = new Query(
-//			new JSONObject().put("match_all", new HashMap<String,String>())
-//		);
-
-		Query queryBody = new Query(
-			new JSONObject()
-				.put("bool", new JSONObject()
-					.put("must", new JSONObject()
-						.put("match", new JSONObject()
-							.put("type", WORD_INFO_TYPE)
-						)
-					)
-				)
-		);
-
-		Aggs aggsElt = new Aggs()
-				.aggregate("totalOccurences", "sum", "frequency");
-
-		SearchResults<WordInfo> results =
-				esWinfoSearch(queryBody, aggsElt);
-		Double totalDbl = null;
-		try {
-			totalDbl = (Double) results.aggrResult("totalOccurences", Double.class);
-		} catch (ElasticSearchException e) {
-			throw new CompiledCorpusException(e);
-		}
-		long total = Math.round(totalDbl);
-
-		return total;
-	}
-
-	
-	public long totalWordsWithNoDecomp() throws CompiledCorpusException {
-		String query = "totalDecompositions:0";
-		SearchResults<WordInfo> results = esWinfoSearch(query);
-
-		return results.getTotalHits();
-	}
-
-	
-	public long totalWordsWithDecomps() throws CompiledCorpusException {
-		Query query = new Query(
-			new JSONObject()
-			.put("bool", new JSONObject()
-				.put("must", new JSONObject()
-					.put("exists", new JSONObject()
-						.put("field", "topDecompositionStr")
-					)
-				)
-			)
-		);
-
-		SearchResults<WordInfo> results = esWinfoSearch(query);
-
-		return results.getTotalHits();
-	}
-
-	
-	public long totalOccurencesWithNoDecomp() throws CompiledCorpusException {
-		Query query = new Query(
-			new JSONObject()
-			.put("bool", new JSONObject()
-				.put("must_not", new JSONObject()
-					.put("exists", new JSONObject()
-						.put("field", "topDecompositionStr")
-					)
-				)
-			)
-		);
-
-		Aggs aggs = new Aggs();
-		aggs.aggregate("totalOccurences", "sum", "frequency");
-
-		SearchResults<WordInfo> results = esWinfoSearch(query, aggs);
-		Double totalDbl =
-		null;
-		try {
-			totalDbl = (Double) results.aggrResult("totalOccurences", Double.class);
-		} catch (ElasticSearchException e) {
-			throw new CompiledCorpusException(e);
-		}
-		long total = Math.round(totalDbl);
-
-		return total;
-	}
-
-	
-	public Long totalOccurencesWithDecomps() throws CompiledCorpusException {
-		Query query = new Query(
-			new JSONObject()
-			.put("bool", new JSONObject()
-				.put("must", new JSONObject()
-					.put("exists", new JSONObject()
-						.put( "field", "topDecompositionStr")
-					)
-				)
-			)
-		);
-
-		Aggs aggs =
-			new Aggs().aggregate("totalOccurences", "sum", "frequency");
-
-		SearchResults<WordInfo> results = esWinfoSearch(query, aggs);
-		Double totalDbl =
-		null;
-		try {
-			totalDbl = (Double) results.aggrResult("totalOccurences", Double.class);
-		} catch (ElasticSearchException e) {
-			throw new CompiledCorpusException(e);
-		}
-		long total = Math.round(totalDbl);
-
-		return total;
-	}
-
-	
-	public Iterator<String> wordsWithNoDecomposition() throws CompiledCorpusException {
-		List<String> words = new ArrayList<String>();
-		String query = "totalDecompositions:0";
-		SearchResults<WordInfo> hits = esWinfoSearch(query);
-
-		Iterator<String> wordsIter = hits.docIDIterator(true);
-		return wordsIter;
-	}
-
-	
 	public String[] topDecomposition(String word) throws CompiledCorpusException {
 		String[] decomp = null;
 		WordInfo winfo = info4word(word);
@@ -909,311 +376,17 @@ public class CompiledCorpus {
 		return new WordInfo[0];
 	}
 
-	public void addWordOccurence(
-			String word, String[][] sampleDecomps, Integer totalDecomps,
-			long freqIncr) throws CompiledCorpusException {
-
-		Logger tLogger = LogManager.getLogger("org.iutools.corpus.CompiledCorpus.addWordOccurences");
-		tLogger.trace("invoked, word="+word);
-
-		ensureCorpusIndexIsDefined();
-
-		WordInfo winfo = null;
-		try {
-			winfo = (WordInfo) esFactory().crudAPI().getDocumentWithID(
-					word, WordInfo.class, WORD_INFO_TYPE);
-		} catch (ElasticSearchException e) {
-			// If this is a "no such index" exception, then don't worry.
-			// It just means that the index is currently empty.
-			if (!e.isNoSuchIndex()) {
-				throw new CompiledCorpusException(
-					"Could not retrieve ElasticSearch info for word " + word, e);
-			}
-		}
-
-		if (winfo == null) {
-			// This word has yet to be added to the ES index
-			winfo = new WordInfo(word);
-		}
-
-		winfo.frequency += freqIncr;
-		winfo.setDecompositions(sampleDecomps, totalDecomps);
-		try {
-			tLogger.trace("putting the updated winfo");
-			esFactory().crudAPI().putDocument(WORD_INFO_TYPE, winfo);
-			tLogger.trace("DONE putting the updated winfo");
-		} catch (ElasticSearchException e) {
-			throw new CompiledCorpusException(
-				"Error putting ES info for word "+word, e);
-		}
-
-		tLogger.trace("Exiting for word="+word);
-
-		return;
-	}
-
-	private void ensureCorpusIndexIsDefined() throws CompiledCorpusException {
-		try {
-			if (!esFactory().indexAPI().exists()) {
-				esFactory().indexAPI().define(true);
-			}
-		} catch (Exception e) {
-			throw new CompiledCorpusException(e);
-		}
-	}
-
-
-	public void deleteWord(String word) throws CompiledCorpusException {
-		try {
-			esFactory().crudAPI().deleteDocumentWithID(word, WORD_INFO_TYPE);
-		} catch (ElasticSearchException e) {
-			throw new CompiledCorpusException(e);
-		}
-	}
-
-
-	
 	public Trie getMorphNgramsTrie() throws CompiledCorpusException {
 		return null;
 	}
 
-	
-	public long totalWordsWithCharNgram(String ngram, SearchOption... options)
-			throws CompiledCorpusException {
-		Logger tLogger = LogManager.getLogger("org.iutools.corpus.CompiledCorpus.totalWordsWithCharNgram");
-		tLogger.trace("invoked with ngram="+ngram);
-		try {
-			ngram = TransCoder.ensureScript(TransCoder.Script.ROMAN, ngram);
-		} catch (TransCoderException e) {
-			throw new CompiledCorpusException(e);
-		}
-		ngram = WordInfo.insertSpaces(ngram);
-		ngram = replaceCaretAndDollar(ngram);
-		String query =
-				"+wordCharsSpaceConcatenated:\""+
-						ngram+
-						"\"";
-
-		boolean statsOnly = true;
-		SearchResults<WordInfo> results =
-				esWinfoSearch(query, options, statsOnly, (RequestBodyElement[]) null);
-
-		long freq = results.getTotalHits();
-		tLogger.trace("Returning freq="+freq);
-
-		return freq;
-	}
-
-	private static String insertSpaces(String orig) {
+	protected static String insertSpaces(String orig) {
 		String withSpaces = orig.replaceAll("(.)", "$1 ");
 		return withSpaces;
 	}
 
-	private SearchResults<WordInfo> esWinfoSearch(String query, SearchOption[] options) throws CompiledCorpusException {
-		return esWinfoSearch(query, options, (Boolean) null, new RequestBodyElement[0]);
-	}
-
-	private SearchResults<WordInfo> esWinfoSearch(String query) throws CompiledCorpusException {
-		return esWinfoSearch(query, new SearchOption[0], (Boolean) null, new RequestBodyElement[0]);
-	}
-
-	private SearchResults<WordInfo> esWinfoSearch(
-		String query, SearchOption[] options, Boolean statsOnly,
-		RequestBodyElement... additionalReqBodies)
-		throws CompiledCorpusException, NoSuchCorpusException {
-		return esWinfoSearch(query, options, statsOnly, (Integer)null,
-			additionalReqBodies);
-	}
-
-	private SearchResults<WordInfo> esWinfoSearch(
-		String query, SearchOption[] options, Boolean statsOnly,
-		Integer batchSize, RequestBodyElement... additionalReqBodies)
-		throws CompiledCorpusException, NoSuchCorpusException {
-		SearchResults<WordInfo> results = null;
-
-		Pair<String,RequestBodyElement[]> augmentedRequest =
-			augmentRequestWithOptions(query, additionalReqBodies, options, statsOnly);
-		query = augmentedRequest.getLeft();
-		additionalReqBodies = augmentedRequest.getRight();
-
-		try {
-			results =
-			esFactory().searchAPI().search(
-				query, WORD_INFO_TYPE, new WordInfo(), batchSize,
-				additionalReqBodies);
-		} catch (NoSuchIndexException exc) {
-			throw new NoSuchCorpusException(exc);
-		} catch (ElasticSearchException e) {
-			throw new CompiledCorpusException(e);
-		}
-
-		return results;
-	}
-
-	private SearchResults<WordInfo> esWinfoSearch(
-			Query query, RequestBodyElement... additionalReqBodies) throws CompiledCorpusException {
-
-		return esWinfoSearch(query, new SearchOption[0], (Boolean)null, additionalReqBodies);
-	}
-
-	private SearchResults<WordInfo> esWinfoSearch(
-		Query query, SearchOption[] options,
-		Boolean statsOnly,
-		RequestBodyElement... additionalReqBodies) throws CompiledCorpusException {
-		return esWinfoSearch(query, options, statsOnly, (Integer)null, additionalReqBodies);
-	}
-
-
-	private SearchResults<WordInfo> esWinfoSearch(
-		Query query, SearchOption[] options,
-		Boolean statsOnly, Integer batchSize,
-		RequestBodyElement... additionalReqBodies) throws CompiledCorpusException {
-
-		Set<SearchOption> optionsSet = new HashSet<SearchOption>();
-		Collections.addAll(optionsSet, options);
-		SearchResults<WordInfo> results = null;
-
-		if (statsOnly == null) {
-			statsOnly = false;
-		}
-
-		query =
-				augmentRequestWithOptions(
-					query, additionalReqBodies, options, statsOnly);
-		try {
-			results =
-			esFactory().searchAPI().search(
-				query, WORD_INFO_TYPE, new WordInfo(), batchSize, additionalReqBodies);
-		} catch (ElasticSearchException e) {
-			throw new CompiledCorpusException(e);
-		}
-
-		return results;
-	}
-
-	private Query augmentRequestWithOptions(
-			Query query, RequestBodyElement[] additionalReqBodies,
-			SearchOption[] options, Boolean statsOnly)
-			throws CompiledCorpusException {
-
-		if (statsOnly == null) {
-			statsOnly = false;
-		}
-
-		if (ArrayUtils.contains(options, SearchOption.EXCL_MISSPELLED)) {
-			throw new CompiledCorpusException(
-					"Option "+SearchOption.EXCL_MISSPELLED+
-							" is currently not supported by this method");
-		}
-
-		Size size = new Size(searchBatchSize);
-		if (statsOnly) {
-			size = new Size(1);
-		}
-		additionalReqBodies =
-				(RequestBodyElement[])
-						ArrayUtils.add(additionalReqBodies, (RequestBodyElement)size);
-
-		return query;
-	}
-
-	private Pair<String,RequestBodyElement[]> augmentRequestWithOptions(String query,
-		RequestBodyElement[] additionalReqBodies, SearchOption[] options,
-  		Boolean statsOnly) {
-
-		if (additionalReqBodies == null) {
-			additionalReqBodies = new RequestBodyElement[0];
-		}
-
-		if (statsOnly == null) {
-			statsOnly = false;
-		}
-
-		if (ArrayUtils.contains(options, SearchOption.EXCL_MISSPELLED)) {
-			query = augmentQueryToExcludeMisspelled(query);
-		}
-
-		if (ArrayUtils.contains(options, SearchOption.WORD_ONLY)) {
-			additionalReqBodies =
-				(RequestBodyElement[]) ArrayUtils.add(additionalReqBodies,
-				(RequestBodyElement)new _Source("id"));
-		}
-
-		Size size = new Size(searchBatchSize);
-		if (statsOnly) {
-			size = new Size(1);
-		}
-		additionalReqBodies =
-			(RequestBodyElement[])
-				ArrayUtils.add((RequestBodyElement[])additionalReqBodies, (RequestBodyElement)size);
-
-		return Pair.of(query,additionalReqBodies);
-	}
-
-	private String augmentQueryToExcludeMisspelled(String query) {
-		query += " +totalDecompositions:>0";
-		return query;
-	}
-
-
-	private WordInfo esGetDocumentWithID(String word) throws CompiledCorpusException {
-		WordInfo winfo = null;
-		try {
-			winfo =
-				(WordInfo) esFactory().crudAPI()
-					.getDocumentWithID(word, WordInfo.class, WORD_INFO_TYPE);
-		} catch (ElasticSearchException e) {
-			throw new CompiledCorpusException(e);
-		}
-
-		return winfo;
-	}
-
-	private SearchResults<WordInfo> esListall() throws CompiledCorpusException {
-		SearchResults<WordInfo> allWinfos = null;
-		Sort sort = new Sort();
-		sort.sortBy("_uid", Sort.Order.asc);
-		try {
-			allWinfos = esFactory().indexAPI()
-				.listAll(WORD_INFO_TYPE, winfoPrototype, sort);
-		} catch (ElasticSearchException e) {
-			throw new CompiledCorpusException(e);
-		}
-
-		return allWinfos;
-	}
-
-	private void esClearIndex() throws CompiledCorpusException {
-		try {
-			esFactory().indexAPI().clear();
-		} catch (ElasticSearchException e) {
-			throw new CompiledCorpusException(e);
-		}
-	}
-
 	public void deleteAll() throws CompiledCorpusException {
 		deleteAll(null);
-	}
-
-	public void deleteAll(Boolean force) throws CompiledCorpusException {
-		if (force == null) {
-			force = false;
-		}
-
-		boolean delete = true;
-		if (!force) {
-			delete =
-					new UserIO().prompt_yes_or_no(
-							"Delete all content of the ElasticSearch corpus " +
-									indexName);
-		}
-		if (delete) {
-			try {
-				esClearIndex();
-			} catch (CompiledCorpusException e) {
-				throw new CompiledCorpusException(e);
-			}
-		}
 	}
 
 	public static String corpusName4File(File savePath) {
@@ -1223,11 +396,6 @@ public class CompiledCorpus {
 			corpusName = matcher.group(1);
 		}
 		return corpusName;
-	}
-
-	
-	public long totalWordsWithNgram(String ngram) throws CompiledCorpusException {
-		return searchWordsContainingNgram(ngram).getTotalHits();
 	}
 
 	public boolean isUpToDateWithFile(File corpusFile)
@@ -1251,72 +419,43 @@ public class CompiledCorpus {
 		return uptodate;
 	}
 
-	public long lastLoadedDate() throws CompiledCorpusException {
-		Logger tLogger = LogManager.getLogger("org.iutools.corpus.CompiledCorpus.lastLoadedDate");
-
-		tLogger.trace("invoked");
-		Long date = null;
-		IndexAPI indexAPI = null;
-		try {
-			indexAPI = esFactory().indexAPI();
-			if (!indexAPI.exists()) {
-				date = new Long(0);
-			}
-//			if (date == null && (indexAPI instanceof IndexAPI_v7)) {
-//				// Index exists, but we are using ES7
-//				// Since April 2022, LastLoadedDate() always returns 0 for the
-//				// default corpus, when using the IndexAPI_v7. Can't figure out why
-//				// because it does work for a smaller corpus created from small_cropus.json
-//				// test file.
-//				//
-//				// For now, assume the index is up to date, IF it exists. This means
-//				// we have to MANUALLY and EXPLICITLY re-load the index everytime
-//				// we change its json file.
-//				date = System.currentTimeMillis();
-//			}
-			if (date == null) {
-				// Index exists. Check if its last loaded date
-				// is greater than the last modified date for the json file.
-				SearchResults<LastLoadedDate> results =
-					esFactory().indexAPI()
-						.listAll(LastLoadedDate.esTypeName, new LastLoadedDate());
-				tLogger.trace(
-					"indexName=" + indexName + "; number of records in load history = " +
-					results.getTotalHits());
-				Iterator<Hit<LastLoadedDate>> iter = results.iterator();
-				while (iter.hasNext()) {
-					Hit<LastLoadedDate> aHit = iter.next();
-					long hitDate = aHit.getDocument().timestamp;
-					if (date == null || hitDate > date) {
-						date = hitDate;
-					}
-				}
-			}
-		} catch (NoSuchIndexException e) {
-			// If index does not exist, leave date at 0
-		} catch (ElasticSearchException e) {
-			tLogger.trace(
-				"Caught exception e=" + e + "\nCall stack: " + Debug.printCallStack(e));
-			throw new CompiledCorpusException(e);
-		}
-
-		if (date == null) {
-			date = new Long(0);
-		}
-
-		return date;
-	}
-
 	public static class LastLoadedDate extends Document {
 		public static final String esTypeName = "LastLoadedDate";
 
 		public Long timestamp = null;
+		public String corpusName = "";
 
 		public LastLoadedDate() {
 			// There should ever be only one record of type LastLoadedDate
 			// and its ID should be the following:
 			this.setId("lastload");
 			this.type = esTypeName;
+
+		}
+
+		public Row toSQLRow() throws CompiledCorpusException {
+			Row row = null;
+			try {
+				ObjectMapper mapper = new ObjectMapper();
+				String jsonStr =  mapper.writeValueAsString(this);
+				JSONObject jsonObj = new JSONObject(jsonStr);
+				jsonObj.remove("_detect_language");
+				jsonObj.remove("content");
+				jsonObj.remove("creationDate");
+				jsonObj.remove("additionalFields");
+				jsonObj.remove("id");
+				jsonObj.remove("idWithoutType");
+				jsonObj.remove("lang");
+				jsonObj.remove("longDescription");
+				jsonObj.remove("morphemesSpaceConcatenated");
+				jsonObj.remove("shortDescription");
+				LastLoadedDateSchema schema = new LastLoadedDateSchema();
+				row = new Row(jsonObj, schema.tableName, schema.idColumnName);
+			} catch (JsonProcessingException e) {
+				throw new CompiledCorpusException(e);
+			}
+
+			return row;
 
 		}
 	}
@@ -1331,5 +470,45 @@ public class CompiledCorpus {
 
 	public String canonicalName() {
 		return canonizeCorpusName(indexName);
+	}
+
+	public static Pair<String, Order> parseSortOrderDescr(String critStr) throws CompiledCorpusException {
+		String field = critStr;
+		Sort.Order order = Order.asc;
+		String[] parts = critStr.split("\\:");
+		String errMess = "Invalid sorting criterion string: " + critStr;
+		if (parts.length > 2) {
+			throw new CompiledCorpusException(
+				errMess+
+				"\n  Should not have contained more than one occurence of ':'");
+		} else if (parts.length == 2) {
+			field = parts[0];
+			try {
+				order = Order.valueOf(parts[1]);
+			} catch (Exception e) {
+				throw new CompiledCorpusException(
+					errMess+
+					"\n  invalid sort order '"+parts[1]+"'");
+			}
+		}
+		return Pair.of(field, order);
+	}
+
+	protected String[] replaceCaretAndDollar(String[] ngramArr) {
+		String[] ngramArrRepl = Arrays.copyOfRange(ngramArr, 0, ngramArr.length);
+		if (ngramArrRepl[0].equals("^")) {
+			ngramArrRepl[0] = "BEGIN";
+		}
+		int last = ngramArrRepl.length-1;
+		if (ngramArrRepl[last].equals("$")) {
+			ngramArrRepl[last] = "END";
+		}
+		return ngramArrRepl;
+	}
+
+	protected String replaceCaretAndDollar(String ngram) {
+		ngram = ngram.replaceAll("^\\^","BEGIN ");
+		ngram = ngram.replaceAll("\\$$"," END");
+		return ngram;
 	}
 }

@@ -147,4 +147,10 @@ public class NgramCompiler {
 		}
 		return extNgram;
 	}
+
+	public String replaceCaretAndDollar(String ngram) {
+		ngram = ngram.replaceAll("^\\^", "BEG");
+		ngram = ngram.replaceAll("\\$$", "END");
+		return ngram;
+	}
 }

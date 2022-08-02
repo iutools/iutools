@@ -1,5 +1,6 @@
 package org.iutools.corpus;
 
+import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
 import org.iutools.datastructure.trie.TrieException;
 import org.iutools.datastructure.trie.TrieNode;
 import org.iutools.datastructure.trie.visitors.TrieNodeVisitor;
@@ -12,10 +13,10 @@ import org.iutools.datastructure.trie.visitors.TrieNodeVisitor;
 
 public class Visitor_UpdateMorphNgram extends TrieNodeVisitor {
 
-	private CompiledCorpus corpus = null;
+	private CompiledCorpus_ES corpus = null;
 	private long wordCount = 0;
 
-	public Visitor_UpdateMorphNgram(CompiledCorpus _corpus) {
+	public Visitor_UpdateMorphNgram(CompiledCorpus_ES _corpus) {
 		this.corpus = _corpus;
 	}
 

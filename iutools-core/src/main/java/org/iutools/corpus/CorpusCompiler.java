@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
 import org.iutools.utilities.StopWatch;
 import ca.nrc.ui.commandline.ProgressMonitor;
 import ca.nrc.ui.commandline.ProgressMonitor_Terminal;
@@ -35,7 +36,7 @@ public class CorpusCompiler {
 	/** Directory where outputs and progress status are stored */
 	private File _outputDir;
 
-	/** Name of the CompiledCorpus where compiled info is to be stored */
+	/** Name of the CompiledCorpus_ES where compiled info is to be stored */
 	public String corpusName;
 
 	/** Current progress status of the corpus compilation */
@@ -49,7 +50,7 @@ public class CorpusCompiler {
 	protected long retrievedFileWordCounter = -1;
 
 
-	private CompiledCorpus _corpus = null;
+	private CompiledCorpus_ES _corpus = null;
 	private Map<String,Long> wordFreqs = new HashMap<String,Long>();
 
 	private long lastSaveMSecs = 0;
@@ -375,6 +376,8 @@ public class CorpusCompiler {
 					progress.currentPhase.toString(), 30);
 			phaseGenerateCorpFileWithDecomps(decompsFileReader, corpusFileWriter, monitor);
 
+		} catch (CompiledCorpusException e) {
+			e.printStackTrace();
 		} finally {
 			try {
 				if (decompsFileReader != null) {
@@ -398,7 +401,7 @@ public class CorpusCompiler {
 	private void phaseGenerateCorpFileWithDecomps(
 		BufferedReader decompsFileReader, FileWriter corpusFileWriter,
 		ProgressMonitor progMonitor)
-		throws CorpusCompilerException {
+	throws CorpusCompilerException, CompiledCorpusException {
 		try {
 			corpusFileWriter.write(
 				"bodyEndMarker=NEW_LINE\n" +
@@ -465,7 +468,7 @@ public class CorpusCompiler {
 			"   Loading FINALIZED corpus "+progress.corpusName+" from file (no decomps): "+
 			"\n      "+corpusFile+"\n\n");
 		try {
-			CompiledCorpus corpus = new RW_CompiledCorpus(corpusName, user_io).readCorpus(corpusFile);
+			CompiledCorpus_ES corpus = new RW_CompiledCorpus(corpusName, user_io).readCorpus(corpusFile);
 		} catch (CompiledCorpusException e) {
 			throw new CorpusCompilerException(
 				"Problem loading corpus "+corpusName+" from file "+corpusFile, e);
@@ -586,7 +589,7 @@ public class CorpusCompiler {
 	}
 
 	private void compileFreqsDirectory(File dir) throws CorpusCompilerException {
-		Logger logger = LogManager.getLogger("CompiledCorpus.processDirectory");
+		Logger logger = LogManager.getLogger("CompiledCorpus_ES.processDirectory");
 		CorpusReader_Directory corpusReader = new CorpusReader_Directory();
 		Iterator<CorpusDocument_File> files =
 			(Iterator<CorpusDocument_File>) corpusReader.getFiles(dir.toString());
@@ -607,10 +610,10 @@ public class CorpusCompiler {
 		return this;
 	}
 
-	public CompiledCorpus corpus() throws CorpusCompilerException {
+	public CompiledCorpus_ES corpus() throws CorpusCompilerException {
 		if (_corpus == null) {
 			try {
-				_corpus = new CompiledCorpus(corpusName);
+				_corpus = new CompiledCorpus_ES(corpusName);
 			} catch (CompiledCorpusException e) {
 				throw new CorpusCompilerException(e);
 			}
@@ -666,7 +669,7 @@ public class CorpusCompiler {
 		CompileWhat what)
 		throws CompiledCorpusException, StringSegmenterException, LinguisticDataException, CorpusCompilerException {
 
-		Logger logger = LogManager.getLogger("CompiledCorpus.processDocumentContents");
+		Logger logger = LogManager.getLogger("CompiledCorpus_ES.processDocumentContents");
 		String line;
 		progress.currentFileWordCounter = 0;
 		try {
@@ -703,7 +706,7 @@ public class CorpusCompiler {
 
 	private void compileFreqsWords(String[] words)
 		throws CorpusCompilerException {
-    	Logger logger = LogManager.getLogger("CompiledCorpus.toknizeWords");
+    	Logger logger = LogManager.getLogger("CompiledCorpus_ES.toknizeWords");
 		logger.debug("words: "+words.length);
 		for (int n = 0; n < words.length; n++) {
 			String word = words[n];

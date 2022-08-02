@@ -14,7 +14,6 @@ import org.junit.Assert;
 
 import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.Asserter;
-import org.junit.jupiter.api.Assertions;
 
 public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 
@@ -24,7 +23,7 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 	}
 
 	public AssertCompiledCorpus(
-			CompiledCorpus _gotObject, String mess) {
+		CompiledCorpus _gotObject, String mess) {
 		super(_gotObject, mess);
 		init__AssertCompiledCorpus();
 	}

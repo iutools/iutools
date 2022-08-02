@@ -9,9 +9,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.iutools.config.IUConfig;
+import org.iutools.corpus.CompiledCorpus;
 import org.iutools.utilities.StopWatch;
 import ca.nrc.testing.*;
-import org.iutools.corpus.CompiledCorpus;
 import org.iutools.corpus.CompiledCorpusRegistry;
 
 import org.iutools.corpus.RW_CompiledCorpus;
@@ -90,7 +90,7 @@ public class SpellCheckerTest {
 	protected SpellChecker makeCheckerEmptyDict() throws Exception {
 		SpellChecker checker =
 			new SpellChecker(
-				emptyESCorpus().getIndexName(), false);
+				emptyCorpus().getIndexName(), false);
 		checker.setVerbose(false);
 		return checker;
 	}
@@ -106,8 +106,8 @@ public class SpellCheckerTest {
 		return corpusFile;
 	}
 
-	protected CompiledCorpus emptyESCorpus() throws Exception {
-		CompiledCorpus corpus = new CompiledCorpus("empty-corpus");
+	protected CompiledCorpus emptyCorpus() throws Exception {
+		CompiledCorpus corpus = CompiledCorpusRegistry.makeCorpus("empty-corpus");
 		corpus.deleteAll(true);
 		return corpus;
 	}

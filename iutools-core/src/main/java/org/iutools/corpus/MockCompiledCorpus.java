@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
+import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
 import org.iutools.linguisticdata.LinguisticDataException;
 import org.iutools.datastructure.trie.StringSegmenter;
 import org.iutools.datastructure.trie.StringSegmenterException;
@@ -11,7 +12,7 @@ import org.iutools.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.dtrc.elasticsearch.ElasticSearchException;
 
 
-public class MockCompiledCorpus extends CompiledCorpus {
+public class MockCompiledCorpus extends CompiledCorpus_ES {
 	
 	public MockCompiledCorpus() throws CompiledCorpusException {
 		super("mock_corpus");

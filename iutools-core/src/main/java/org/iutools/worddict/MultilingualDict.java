@@ -8,11 +8,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.iutools.concordancer.Alignment_ES;
 import org.iutools.concordancer.SentencePair;
-import org.iutools.concordancer.tm.TranslationMemory;
-import org.iutools.concordancer.tm.TranslationMemoryException;
-import org.iutools.concordancer.tm.WordSpotter;
-import org.iutools.concordancer.tm.WordSpotterException;
+import org.iutools.concordancer.tm.*;
 import org.iutools.corpus.*;
+import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
 import org.iutools.morph.Decomposition;
 import org.iutools.morph.DecompositionException;
 import org.iutools.morph.MorphologicalAnalyzerException;
@@ -428,7 +426,8 @@ public class MultilingualDict {
 			new HashMap<String, Iterator<Alignment_ES>>();
 		try {
 			for (String l1Word : l1Words) {
-				Iterator<Alignment_ES> iter = new TranslationMemory().searchIter(l1, l1Word, l2);
+				Iterator<Alignment_ES> iter =
+					new TMFactory().makeTM().searchIter(l1, l1Word, l2);
 				iterators.put(l1Word, iter);
 			}
 		} catch (TranslationMemoryException e) {
@@ -629,10 +628,10 @@ public class MultilingualDict {
 		Long totalWords = null;
 		try {
 			partialWord = TransCoder.ensureScript(TransCoder.Script.ROMAN, partialWord);
-			CompiledCorpus.SearchOption[] options =
-				new CompiledCorpus.SearchOption[] {
-					CompiledCorpus.SearchOption.EXCL_MISSPELLED,
-					CompiledCorpus.SearchOption.WORD_ONLY
+			CompiledCorpus_ES.SearchOption[] options =
+				new CompiledCorpus_ES.SearchOption[] {
+					CompiledCorpus_ES.SearchOption.EXCL_MISSPELLED,
+					CompiledCorpus_ES.SearchOption.WORD_ONLY
 				};
 			totalWords = corpus.totalWordsWithCharNgram(partialWord, options);
 			wordsIter = corpus.wordsContainingNgram(partialWord, options);
@@ -655,7 +654,8 @@ public class MultilingualDict {
 	}
 
 	private Boolean wordExists_EN(String word) throws TranslationMemoryException {
-		Iterator<Alignment_ES> tmIter = new TranslationMemory().searchIter("en", word);
+		Iterator<Alignment_ES> tmIter =
+			new TMFactory().makeTM().searchIter("en", word);
 		return tmIter.hasNext();
 	}
 
@@ -677,14 +677,15 @@ public class MultilingualDict {
 		//   - JUST the input word, if the input word CAN be found in the TM
 		//
 		// Note that this will not return any of the words that CONTAIN the input
-		// word. So, eventually, we should compile an English CompiledCorpus from
+		// word. So, eventually, we should compile an English CompiledCorpus_ES from
 		// the TM content, and search for words in that corpus
 		//
 		Iterator<String> wordsIter = null;
 		Long totalWords = null;
 		try {
 			List<String> words = new ArrayList<String>();
-			Iterator<Alignment_ES> tmIter = new TranslationMemory().searchIter("en", partialWord);
+			Iterator<Alignment_ES> tmIter =
+			new TMFactory().makeTM().searchIter("en", partialWord);
 			if (tmIter.hasNext()) {
 				words.add(partialWord);
 			}

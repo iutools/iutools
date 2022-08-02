@@ -5,21 +5,27 @@ import ca.nrc.config.ConfigException;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.StringUtils;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.iutools.corpus.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class MRelsTracer {
 
-    protected static String[] _relsToTrack =  null;
-    static CompiledCorpus _corpus = null;
+	protected static String[] _relsToTrack =  null;
+	static CompiledCorpus _corpus = null;
+	static Set<String> fieldsToIgnore = new HashSet<String>();
+	static {
+		Collections.addAll(fieldsToIgnore, new String[] {
+			"_detect_language", "additionalFields", "content", "creationDate",
+			"decompositionsSample", "id", "idWithoutType", "lang", "longDescription",
+			"morphemesSpaceConcatenated", "shortDescription", "totalDecompositions",
+			"type", "wordCharsSpaceConcatenated", "wordRoman", "wordSyllabic"
+		});
+	}
 
-    protected static String[] relsToTrack() throws MorphRelativesFinderException {
+
+	protected static String[] relsToTrack() throws MorphRelativesFinderException {
         if (_relsToTrack == null) {
             String propName = "org.iutools.morphrelatives.relsToTrack";
             String[] defVal = new String[0];
@@ -187,7 +193,7 @@ public class MRelsTracer {
             for (String aWord: words) {
                 try {
                     WordInfo winfo = corpus().info4word(aWord);
-                    String winfoStr = "\n"+winfo.word+":\n"+PrettyPrinter.print(winfo);
+                    String winfoStr = "\n"+aWord+":\n"+PrettyPrinter.print(winfo, fieldsToIgnore);
                     winfoStr =
                         winfoStr.replaceAll("\n", "\n--        ");
                     mess += winfoStr;

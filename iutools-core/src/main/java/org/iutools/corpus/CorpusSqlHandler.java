@@ -1,6 +1,5 @@
 package org.iutools.corpus;
 
-import java.io.*;
 import java.lang.reflect.Type;
 import java.sql.*;
 import java.util.ArrayList;
@@ -8,13 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
-import ca.nrc.config.ConfigException;
-import ca.nrc.data.file.ObjectStreamReader;
-import ca.nrc.data.file.ObjectStreamReaderException;
-import ca.nrc.file.ResourceGetter;
 import com.google.gson.Gson;
-import org.iutools.config.IUConfig;
-import org.drizzle.jdbc.DrizzleDriver;
 
 
 public class CorpusSqlHandler {
@@ -24,7 +17,7 @@ public class CorpusSqlHandler {
 
     String userName;
     String password;
-    String dbms = "drizzle"; //"mysql";
+    String dbms = "drizzle";
     String serverName = "localhost";
     String portNumber = "3306";
     String dbName;
@@ -39,42 +32,53 @@ public class CorpusSqlHandler {
         this.dbName = _dbName;
     }
 
-    public Connection openConnection() throws SQLException, ClassNotFoundException, ConfigException {
-//        Class.forName("com.mysql.jdbc.Driver");
-        Class.forName("org.drizzle.jdbc.DrizzleDriver");
+    public Connection openConnection() throws CorpusSqlHandlerException {
+		  try {
+			  Class.forName("org.drizzle.jdbc.DrizzleDriver");
+		  } catch (ClassNotFoundException e) {
+		  		throw new CorpusSqlHandlerException(
+		  			"Could not load DrizzleDriver", e);
+		  }
 
-        Connection conn = null;
-        Properties connectionProps = new Properties();
-        connectionProps.put("user", this.userName);
-        connectionProps.put("password", this.password);
+		  Connection conn = null;
+		  try {
+			  Properties connectionProps = new Properties();
+			  connectionProps.put("user", this.userName);
+			  connectionProps.put("password", this.password);
 
-        if (this.dbms.equals("mysql")) {
-            conn = DriverManager.getConnection(
-                    "jdbc:" + this.dbms + "://" +
-                            this.serverName +
-                            ":" + this.portNumber +
-                            "/" +
-                            this.dbName
-                    ,
-                    this.userName, this.password
-            );
-        } else if (this.dbms.equals("derby")) {
-            conn = DriverManager.getConnection(
-                    "jdbc:" + this.dbms + ":" +
-                            this.dbName +
-                            ";create=true",
-                    connectionProps);
-        } else if (this.dbms.equals("drizzle")) {
-            conn = DriverManager.getConnection(
-                    "jdbc:" + this.dbms + "://" +
-                            this.userName + "@" + this.serverName +
-                            ":" + this.portNumber +
-                            "/" +
-                            this.dbName,
-                    connectionProps);
-        }
-        this.connection = conn;
-        return conn;
+			  if (this.dbms.equals("mysql")) {
+				  conn = DriverManager.getConnection(
+				  "jdbc:" + this.dbms + "://" +
+				  this.serverName +
+				  ":" + this.portNumber +
+				  "/" +
+				  this.dbName
+				  ,
+				  this.userName, this.password
+				  );
+			  } else if (this.dbms.equals("derby")) {
+				  conn = DriverManager.getConnection(
+				  "jdbc:" + this.dbms + ":" +
+				  this.dbName +
+				  ";create=true",
+				  connectionProps);
+			  } else if (this.dbms.equals("drizzle")) {
+				  conn = DriverManager.getConnection(
+				  "jdbc:" + this.dbms + "://" +
+				  this.userName + "@" + this.serverName +
+				  ":" + this.portNumber +
+				  "/" +
+				  this.dbName,
+				  connectionProps);
+			  }
+		  } catch (SQLException e) {
+		  		String mess =
+					"Could not connect to database.\n  dbMane="+dbName+
+					"\n  userName="+userName+"\n  portNumber="+portNumber;
+		  		throw new CorpusSqlHandlerException(mess, e);
+		  }
+			  this.connection = conn;
+			  return conn;
     }
 
     public void closeConnection() throws SQLException {
@@ -168,7 +172,7 @@ public String[][] getDecompositionsForWord(String word) {
                 wordInfo.setFrequency(Long.parseLong(rs.getString("frequency")));
 
             }
-        } catch (SQLException throwables) {
+        } catch (SQLException | CompiledCorpusException throwables) {
         }
         return wordInfo;
     }

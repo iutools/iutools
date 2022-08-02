@@ -2,7 +2,7 @@ package org.iutools.search;
 
 
 
-import org.iutools.config.IUConfig;
+import ca.nrc.config.Config;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,6 +16,15 @@ public class IUSearchEngineTest {
 
 	private String bingTestKey;
 
+	@Before
+	public void setUp() throws Exception {
+		String bingTestKeyPropName = "ca.nrc.data.harvesting.bingTestAPIKey";
+		String key = Config.getConfigProperty(bingTestKeyPropName, false);
+		Assume.assumeTrue(
+			"No bing key defined. Skipping all tests in IUSearchEngineTest." +
+			"To run those tests, obtain a Bing key from Microsoft Azure and setup a config property "+bingTestKeyPropName+" with that value.",
+			key != null);
+	}
 
 	@Test
 	public void test__IUSearchEngine__HappyPath() throws Exception {

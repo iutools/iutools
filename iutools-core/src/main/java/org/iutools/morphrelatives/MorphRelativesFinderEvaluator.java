@@ -37,6 +37,7 @@ public class MorphRelativesFinderEvaluator {
 	public Integer stopAfterNWords = null;
 	public CSVParser csvParser = null;
 	MorphRelativesFinder relsFinder = null;
+	protected Boolean onlyMeasureSpeed = false;
 
 	/*
 	 * 0. Mot original (fréquence Google du mot en syllabique),
@@ -50,22 +51,30 @@ public class MorphRelativesFinderEvaluator {
 	 */
 	
 	public MorphRelativesFinderEvaluator() throws MorphRelativesFinderException {
-		init__MorphRelativesFinderEvaluator(null, null);
+		init__MorphRelativesFinderEvaluator(null, null, null);
 	}
 	
 	public MorphRelativesFinderEvaluator(String csvGoldStandardFilePath)
 		throws MorphRelativesFinderException {
 		File goldStandardFile = new File(csvGoldStandardFilePath);
-		init__MorphRelativesFinderEvaluator(null, goldStandardFile);
+		init__MorphRelativesFinderEvaluator(null, goldStandardFile, (Boolean)null);
 	}
 
 	public MorphRelativesFinderEvaluator(MorphRelativesFinder finder,
 		File csvGoldStandardFile) throws MorphRelativesFinderException {
-		init__MorphRelativesFinderEvaluator(finder, csvGoldStandardFile);
+		init__MorphRelativesFinderEvaluator(finder, csvGoldStandardFile, (Boolean)null);
+	}
+
+	public MorphRelativesFinderEvaluator(MorphRelativesFinder finder,
+		File csvGoldStandardFile, Boolean onlyMeasureSpeed) throws MorphRelativesFinderException {
+		init__MorphRelativesFinderEvaluator(finder, csvGoldStandardFile, onlyMeasureSpeed);
 	}
 
 	public void init__MorphRelativesFinderEvaluator(MorphRelativesFinder finder,
-		File csvGoldStandardFile) throws MorphRelativesFinderException {
+		File csvGoldStandardFile, Boolean _speedTestOnly) throws MorphRelativesFinderException {
+		if (_speedTestOnly != null) {
+			this.onlyMeasureSpeed = _speedTestOnly;
+		}
 		if (finder == null) {
 			finder = new MorphRelativesFinder();
 		}
@@ -110,7 +119,10 @@ public class MorphRelativesFinderEvaluator {
 		TestDirs testDirs = new TestDirs(testInfo);
 		Map<String,String[]> goldStandard = readGoldStandard();
 
-		Map<String,WordOutcome> expOutcomes = readExpectedOutcomes(testInfo);
+		Map<String,WordOutcome> expOutcomes = null;
+		if (!onlyMeasureSpeed) {
+			expOutcomes = readExpectedOutcomes(testInfo);
+		}
 
 		long startMSecs = StopWatch.nowMSecs();
 		Map<String,WordOutcome> actualOutcomes =
@@ -134,36 +146,38 @@ public class MorphRelativesFinderEvaluator {
 		Map<String, String[]> goldStandard, TestInfo testInfo) throws IOException {
 
 		Logger tLogger = LogManager.getLogger("org.iutools.morphrelatives.MorphRelativesFinderEvaluator.writeListOfAffectedWords");
-		Set<String> affectedWords = new HashSet<String>();
-		for (Map<?, ?> outcomes:
-			new Map<?,?>[] {expOutcomes, actualOutcomes}) {
-			for (Object key: outcomes.keySet()) {
-				String word = (String)key;
-				WordOutcome wordOutcome = (WordOutcome)outcomes.get(key);
+		if (!onlyMeasureSpeed) {
+			Set<String> affectedWords = new HashSet<String>();
+			for (Map<?, ?> outcomes :
+			new Map<?, ?>[]{expOutcomes, actualOutcomes}) {
+				for (Object key : outcomes.keySet()) {
+					String word = (String) key;
+					WordOutcome wordOutcome = (WordOutcome) outcomes.get(key);
+					affectedWords.add(word);
+					Collections.addAll(affectedWords, wordOutcome.relsProduced);
+				}
+			}
+
+			for (String word : goldStandard.keySet()) {
 				affectedWords.add(word);
-				Collections.addAll(affectedWords, wordOutcome.relsProduced);
+				Collections.addAll(affectedWords, goldStandard.get(word));
 			}
-		}
 
-		for (String word: goldStandard.keySet()) {
-			affectedWords.add(word);
-			Collections.addAll(affectedWords, goldStandard.get(word));
-		}
-
-		Path wordsFile = affectWordsFile(testInfo);
-		tLogger.trace("Writing list of affected words to file: "+wordsFile);
-		FileWriter writer = null;
-		try {
-			writer = new FileWriter(wordsFile.toFile());
-			List<String> sortedWords = new ArrayList<String>();
-			sortedWords.addAll(affectedWords);
-			Collections.sort(sortedWords);
-			for (String word: sortedWords) {
-				writer.write(word+"\n");
-			}
-		} finally {
-			if (writer != null) {
-				writer.close();
+			Path wordsFile = affectWordsFile(testInfo);
+			tLogger.trace("Writing list of affected words to file: " + wordsFile);
+			FileWriter writer = null;
+			try {
+				writer = new FileWriter(wordsFile.toFile());
+				List<String> sortedWords = new ArrayList<String>();
+				sortedWords.addAll(affectedWords);
+				Collections.sort(sortedWords);
+				for (String word : sortedWords) {
+					writer.write(word + "\n");
+				}
+			} finally {
+				if (writer != null) {
+					writer.close();
+				}
 			}
 		}
 
@@ -185,15 +199,17 @@ public class MorphRelativesFinderEvaluator {
 		TestInfo testInfo)
 		throws MorphRelativesFinderException, IOException {
 
-		String diffText = "";
+		if (!onlyMeasureSpeed) {
+			String diffText = "";
 
-		diffText += comparePrecision(expOutcomes, actualOutcomes, goldStandard);
-		diffText += compareRecall(expOutcomes, actualOutcomes, goldStandard);
-		diffText += compareSecsPerWord(gotSecsPerWord, testInfo);
+			diffText += comparePrecision(expOutcomes, actualOutcomes, goldStandard);
+			diffText += compareRecall(expOutcomes, actualOutcomes, goldStandard);
+			diffText += compareSecsPerWord(gotSecsPerWord, testInfo);
 
-		if (!diffText.isEmpty()) {
-			diffText = howToAddressDifferences(testInfo) + diffText;
-			Assertions.fail(diffText);
+			if (!diffText.isEmpty()) {
+				diffText = howToAddressDifferences(testInfo) + diffText;
+				Assertions.fail(diffText);
+			}
 		}
 	}
 
@@ -494,17 +510,21 @@ public class MorphRelativesFinderEvaluator {
 	private Map<String, WordOutcome> readExpectedOutcomes(TestInfo testInfo)
 		throws IOException {
 		Map<String,WordOutcome> expOutcomes = new HashMap<String, WordOutcome>();
+		if (!onlyMeasureSpeed) {
 
-		Path expOutcomesFile = expOutcomesFile(testInfo);
-		ObjectStreamReader oReader =
+			Path expOutcomesFile = expOutcomesFile(testInfo);
+			ObjectStreamReader oReader =
 			new ObjectStreamReader(expOutcomesFile.toFile());
-		while (true) {
-			try {
-				WordOutcome anOutcome = (WordOutcome)oReader.readObject();
-				if (anOutcome == null) { break; }
-				expOutcomes.put(anOutcome.word, anOutcome);
-			} catch (ClassNotFoundException | ObjectStreamReaderException e) {
-				throw new IOException(e);
+			while (true) {
+				try {
+					WordOutcome anOutcome = (WordOutcome) oReader.readObject();
+					if (anOutcome == null) {
+						break;
+					}
+					expOutcomes.put(anOutcome.word, anOutcome);
+				} catch (ClassNotFoundException | ObjectStreamReaderException e) {
+					throw new IOException(e);
+				}
 			}
 		}
 
@@ -515,8 +535,11 @@ public class MorphRelativesFinderEvaluator {
 	private Path expOutcomesFile(TestInfo testInfo) throws IOException {
 
 		String testMethod = testInfo.getTestMethod().get().getName();
-		Path filePath = Paths.get(ResourceGetter.getResourcePath(
-		"org/iutools/relatedwords/" + testMethod+"/expOutcomes.json"));
+		Path filePath = null;
+		if (!onlyMeasureSpeed) {
+			filePath = Paths.get(ResourceGetter.getResourcePath(
+				"org/iutools/relatedwords/" + testMethod+"/expOutcomes.json"));
+		}
 
 		return filePath;
 	}

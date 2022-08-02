@@ -17,6 +17,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.iutools.concordancer.Alignment_ES;
 import org.iutools.concordancer.SentencePair;
+import org.iutools.concordancer.tm.elasticsearch.TranslationMemory_ES;
 import org.iutools.config.IUConfig;
 import org.iutools.script.TransCoder;
 import org.iutools.worddict.GlossaryEntry;
@@ -32,7 +33,7 @@ import java.util.*;
 public class TMEvaluator {
 
 	UserIO userIO = new UserIO();
-	TranslationMemory tm = new TranslationMemory();
+	TranslationMemory tm = new TranslationMemory_ES();
 	ObjectMapper mapper = new ObjectMapper();
 	int MAX_ALIGNMENTS = 100;
 
@@ -79,7 +80,7 @@ public class TMEvaluator {
 	}
 
 	private void createTestTM(Path tmFile) throws TranslationMemoryException {
-		tm = new TranslationMemory(testTMName);
+		tm = new TranslationMemory_ES(testTMName);
 		tm.loadFile(tmFile, ESOptions.CREATE_IF_NOT_EXISTS);
 		return;
 	}

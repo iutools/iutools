@@ -1,7 +1,5 @@
 package org.iutools.corpus;
 
-import ca.nrc.dtrc.elasticsearch.ElasticSearchException;
-import ca.nrc.json.PrettyPrinter;
 import ca.nrc.ui.commandline.ProgressMonitor_Terminal;
 import ca.nrc.ui.commandline.UserIO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -26,8 +24,7 @@ public class CorpusDumper {
         init_CorpusDumper(corpus, (UserIO)null);
     }
 
-    private void init_CorpusDumper(CompiledCorpus _corpus,
-        UserIO _userIO) {
+    private void init_CorpusDumper(CompiledCorpus _corpus, UserIO _userIO) {
         this.corpus = _corpus;
         if (_userIO != null) {
             userIO = _userIO;

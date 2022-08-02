@@ -3,18 +3,16 @@ package org.iutools.corpus;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Set;
 
 import ca.nrc.file.ResourceGetter;
 import ca.nrc.testing.AssertCollection;
-import ca.nrc.testing.AssertObject;
-import org.iutools.config.IUConfig;
 import org.iutools.elasticsearch.ES;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import javax.annotation.Resource;
 
 public class CompiledCorpusRegistryTest {
 	
@@ -87,13 +85,23 @@ public class CompiledCorpusRegistryTest {
 		// Register a corpus by that name, and associate it with a small
 		// json file
 		File corpusFile = ResourceGetter.copyResourceToTempLocation("org/iutools/corpus/testdata/smallCorpus.json");
+		touchFile(corpusFile);
 		CompiledCorpusRegistry registry = new CompiledCorpusRegistry();
-		registry.registerCorpus_ES(corpusName, corpusFile);
+		registry.registerCorpus(corpusName, corpusFile);
 		CompiledCorpus corpus = new CompiledCorpusRegistry().getCorpus(corpusName);
 
 		long now = System.currentTimeMillis();
 		new AssertCompiledCorpus(corpus)
 			.lastLoadedDateEquals(now);
+	}
+
+	private void touchFile(File file) throws IOException {
+		long timestamp = System.currentTimeMillis();
+		if (!file.exists()) {
+			new FileOutputStream(file).close();
+		}
+
+		file.setLastModified(timestamp);
 	}
 
 	@Test

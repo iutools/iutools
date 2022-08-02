@@ -403,6 +403,18 @@ public abstract class Morpheme implements Cloneable {
 		return morphId;
 	}
 
+	public static String[] removeIDBraces(String[] morphIds) {
+		String[] withoutBraces = new String[morphIds.length];
+		for (int ii=0; ii < morphIds.length; ii++) {
+			String morphId = morphIds[ii];
+			morphId.replaceAll("\\s+", "");
+			morphId = morphId.replaceAll("\\{", "");
+			morphId = morphId.replaceAll("\\}", "");
+			withoutBraces[ii] = morphId;
+		}
+		return withoutBraces;
+	}
+
 	public static String[] withBraces(String[] morphemes) {
 		String[] morphsWithBraces = new String[morphemes.length];
 		for (int ii=0; ii < morphemes.length; ii++) {
@@ -413,6 +425,7 @@ public abstract class Morpheme implements Cloneable {
 	}
 
 	public static String withBraces(String morph) {
+		morph = morph.replaceAll("\\s+", "");
 		if (!morph.startsWith("{")) {
 			morph = "{" + morph;
 		}

@@ -1,7 +1,7 @@
 package org.iutools.corpus;
 
+import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
 import org.iutools.datastructure.trie.StringSegmenter_IUMorpheme;
-import ca.nrc.dtrc.elasticsearch.StreamlinedClient;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,13 +20,13 @@ public class TestCorpusBuilder {
 		CorpusTestHelpers.deleteCorpusIndex(emptyCorpusName);
 
 		 CompiledCorpus corpus =
-            new CompiledCorpus(emptyCorpusName)
+            new CompiledCorpus_ES(emptyCorpusName)
             .setSegmenterClassName(StringSegmenter_IUMorpheme.class);
         ;
         return corpus;
     }
 
-    public static void addWords(CompiledCorpus corpus, String[] words) throws CompiledCorpusException {
+    public static void addWords(CompiledCorpus_ES corpus, String[] words) throws CompiledCorpusException {
         String corpusName = corpus.getIndexName();
         if (!addedWords4Corpus.containsKey(corpusName)) {
             addedWords4Corpus.put(corpusName, new HashSet<String>());
@@ -44,7 +44,7 @@ public class TestCorpusBuilder {
         }
     }
 
-    public static void clear(CompiledCorpus corpus) throws CompiledCorpusException {
+    public static void clear(CompiledCorpus_ES corpus) throws CompiledCorpusException {
         String corpusName = corpus.getIndexName();
         addedWords4Corpus.put(corpusName, new HashSet<String>());
         try {

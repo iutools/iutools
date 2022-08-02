@@ -42,7 +42,7 @@ public class CorpusSqlWriter {
 //                        "  `noid` int(11) NOT NULL,\n" +
                         "  `noid` int(11) NOT NULL AUTO_INCREMENT,\n" +
                         "  `word` text NOT NULL,\n" +
-                        "  `corpus_name` text NOT NULL,\n" +
+                        "  `corpus_name` text  NOT NULL,\n" +
                         "  `_detect_language` tinyint(1) NOT NULL DEFAULT '1',\n" +
                         "  `content` text DEFAULT NULL,\n" +
                         "  `creationDate` date DEFAULT NULL,\n" +

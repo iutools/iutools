@@ -10,10 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.iutools.corpus.*;
-import org.iutools.linguisticdata.LinguisticData;
+import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
 import org.iutools.utilities.StopWatch;
 import org.iutools.datastructure.trie.MockStringSegmenter_IUMorpheme;
-import ca.nrc.dtrc.elasticsearch.StreamlinedClient;
 import ca.nrc.testing.AssertNumber;
 import org.junit.Test;
 
@@ -23,7 +22,7 @@ import org.junit.*;
 public class MorphemeDictionaryTest {
 
 	private MorphemeDictionary morphemeSearcher = null;
-	private CompiledCorpus smallCorpus;
+	private CompiledCorpus_ES smallCorpus;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -35,10 +34,10 @@ public class MorphemeDictionaryTest {
 		return;
 	}
 
-	protected CompiledCorpus makeCorpus() throws Exception {
+	protected CompiledCorpus_ES makeCorpus() throws Exception {
 		String indexName = CompiledCorpusTest.testIndex;
 		CorpusTestHelpers.deleteCorpusIndex(indexName);
-		CompiledCorpus corpus = new CompiledCorpus(indexName);
+		CompiledCorpus_ES corpus = new CompiledCorpus_ES(indexName);
 		corpus.setSegmenterClassName(MockStringSegmenter_IUMorpheme.class.getName());
 		return corpus;
 	}
@@ -51,7 +50,7 @@ public class MorphemeDictionaryTest {
 
 		// Here is how you build an instance of MorphemeDictionary
 		//
-		CompiledCorpus corpus = smallCorpus;
+		CompiledCorpus_ES corpus = smallCorpus;
 		morphemeSearcher.useCorpus(corpus);
 		
 		//
@@ -107,8 +106,9 @@ public class MorphemeDictionaryTest {
 		}
 		double elapsedSecs = StopWatch.elapsedMsecsSince(start) / 1000.0;
 		double avgSecs = elapsedSecs / morphemes.length;
+		System.out.println("Got avgSecs="+avgSecs);
 		AssertNumber.performanceHasNotChanged(
-	"Average secs per morpheme", avgSecs, 1.0, 1.0, false);
+			"Average secs per morpheme", avgSecs, 1.0, 1.0, false);
 	}
 
 	@Test
@@ -172,7 +172,7 @@ public class MorphemeDictionaryTest {
 		String[] corpWords = new String[] {
 				"makpigarni", "mappigarni", "inuglu"
 				};
-		CompiledCorpus compiledCorpus = makeCorpus();
+		CompiledCorpus_ES compiledCorpus = makeCorpus();
         compiledCorpus.addWordOccurences(corpWords);
 		
         MorphemeDictionary morphemeSearcher = new MorphemeDictionary();
@@ -281,7 +281,7 @@ public class MorphemeDictionaryTest {
 				"makpigarni", "mappigarni", "inuglu"
 				};
 		String corpusDirPathname = createTemporaryCorpusDirectory(corpusWords);
-		CompiledCorpus compiledCorpus = makeCorpus();
+		CompiledCorpus_ES compiledCorpus = makeCorpus();
         compiledCorpus.addWordOccurences(corpusWords);
         MorphemeDictionary morphemeSearcher = new MorphemeDictionary();
         morphemeSearcher.useCorpus(compiledCorpus);

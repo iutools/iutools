@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 import ca.nrc.ui.commandline.CommandLineException;
 import ca.nrc.ui.commandline.SubCommand;
 import org.iutools.corpus.CompiledCorpus;
+import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
 import org.iutools.corpus.CompiledCorpusException;
 import org.iutools.corpus.CompiledCorpusRegistry;
 import org.iutools.corpus.CompiledCorpusRegistryException;
