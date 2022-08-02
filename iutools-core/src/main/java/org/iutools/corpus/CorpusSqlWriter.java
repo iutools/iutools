@@ -2,14 +2,9 @@ package org.iutools.corpus;
 
 import ca.nrc.data.file.ObjectStreamReader;
 import ca.nrc.data.file.ObjectStreamReaderException;
-import ca.nrc.file.ResourceGetter;
 import com.google.gson.Gson;
 
 import java.io.*;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class CorpusSqlWriter {
@@ -17,13 +12,9 @@ public class CorpusSqlWriter {
     public CorpusSqlWriter() throws IOException {
     }
 
-    // -----------------------------------------------------------------------------------------
-    // ------------------- Generation of SQL for dumping JSON corpus into DB -------------------
-    // -----------------------------------------------------------------------------------------
-
     // Table CorpusData
 
-    public String generateSqlIntroForCorpusData() {
+    public String generateSqlIntroStmtForCorpusData() {
         String intro =
                 "SET SQL_MODE = \"NO_AUTO_VALUE_ON_ZERO\";\n" +
                         "SET time_zone = \"+00:00\";\n" +
@@ -33,8 +24,12 @@ public class CorpusSqlWriter {
                         "--\n" +
                         "\n" +
                         "-- --------------------------------------------------------\n" +
-                        "\n" +
-                        "--\n" +
+                        "\n";
+        return intro;
+    }
+    public String generateTableCreationSqlStmtForCorpusData() throws IOException {
+        String tableCreationSqlStmt =
+                "--\n" +
                         "-- Table structure for table `"+CorpusSqlHandler.corpusDataTableName+"`\n" +
                         "--\n" +
                         "\n" +
@@ -54,16 +49,17 @@ public class CorpusSqlWriter {
                         "   PRIMARY KEY (noid)\n" +
                         ") ENGINE=InnoDB DEFAULT CHARSET=latin1;\n" +
                         "\n" +
-                        "\n" +
-                        "--\n" +
-                        "-- Dumping data for table `"+CorpusSqlHandler.corpusDataTableName+"`\n" +
-                        "--\n" +
                         "\n";
-        return intro;
+        return tableCreationSqlStmt;
     }
 
     public String generateSqlInsertStatementOpenForCorpusData() {
-        String statement = "INSERT INTO `CorpusData` (" +
+        String statement =
+                "--\n" +
+                "-- Dumping data for table `"+CorpusSqlHandler.corpusDataTableName+"`\n" +
+                "--\n" +
+                "\n" +
+        "INSERT INTO `CorpusData` (" +
 //                "`noid`, `word`, `corpus_name`, `frequency`, `lang`, `decompositions_sample`" +
                 "`word`, `corpus_name`, `frequency`, `lang`, `decompositions_sample`" +
                 ") VALUES";
@@ -72,145 +68,34 @@ public class CorpusSqlWriter {
     public String generateSqlInsertStatementValuesForCorpusDataRecord(WordInfo wordInfo, String corpusName, int idWordInTable) {
         Gson gson = new Gson();
         String decompositions = gson.toJson(wordInfo.decompositionsSample);
-//        String statement = "("+idWordInTable+", '"+wordInfo.word+"', '"+corpusName+"', "+wordInfo.frequency+", '"+wordInfo.lang+"', '"+decompositions+"')";
         String statement = "('"+wordInfo.word+"', '"+corpusName+"', "+wordInfo.frequency+", '"+wordInfo.lang+"', '"+decompositions+"')";
         return statement;
     }
 
-    public String generateSqlParametersForCorpusData(int idRecordInCorpusDataTable) {
-        String parametersStmts = "\n" +
-                "--\n" +
-                "-- Indexes for dumped tables\n" +
-                "--\n" +
-                "\n" +
-                "--\n" +
-                "-- Indexes for table `"+CorpusSqlHandler.corpusDataTableName+"`\n" +
-                "--\n" +
-                "ALTER TABLE `"+CorpusSqlHandler.corpusDataTableName+"`\n" +
-                "  ADD PRIMARY KEY (`noid`);\n" +
-                "\n" +
-                "--\n" +
-                "-- AUTO_INCREMENT for dumped tables\n" +
-                "--\n" +
-                "\n" +
-                "--\n" +
-                "-- AUTO_INCREMENT for table `"+CorpusSqlHandler.corpusDataTableName+"`\n" +
-                "--\n" +
-                "ALTER TABLE `"+CorpusSqlHandler.corpusDataTableName+"`\n" +
-                "  MODIFY `noid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT="+
-                idRecordInCorpusDataTable+
-                ";\n";
-        return parametersStmts;
-    }
-
-    // Table CorpusDataDecomposition
-
-    public String generateSqlIntroForCorpusDataDecomposition() {
-        String intro =
-                "SET SQL_MODE = \"NO_AUTO_VALUE_ON_ZERO\";\n" +
-                        "SET time_zone = \"+00:00\";\n" +
-                        "\n" +
-                        "--\n" +
-                        "-- Database: `???`\n" +
-                        "--\n" +
-                        "\n" +
-                        "-- --------------------------------------------------------\n" +
-                        "\n" +
-                        "--\n" +
-                        "-- Table structure for table `"+CorpusSqlHandler.corpusDataDecompositionTableName+"`\n" +
-                        "--\n" +
-                        "\n" +
-                        "CREATE TABLE IF NOT EXISTS `"+CorpusSqlHandler.corpusDataDecompositionTableName+"` (\n" +
-//                        "  `id` int(11) NOT NULL,\n" +
-                        "  `id` int(11) NOT NULL AUTO_INCREMENT,\n" +
-                        "  `CorpusData_noid` int(11) NOT NULL,\n" +
-//                        "  `decompositionStr` text DEFAULT NULL\n" +
-                        "  `decompositionStr` text DEFAULT NULL,\n" +
-                        "   PRIMARY KEY (id)\n" +
-                        ") ENGINE=InnoDB DEFAULT CHARSET=latin1;\n" +
-                        "\n" +
-                        "\n";
-        return intro;
-    }
-
-    public String generateSqlInsertStatementOpenForCorpusDataDecomposition() {
-        String comment =
-                "--\n" +
-                        "-- Dumping data for table `"+CorpusSqlHandler.corpusDataDecompositionTableName+"`\n" +
-                        "--\n";
-        String statement = "INSERT INTO `"+CorpusSqlHandler.corpusDataDecompositionTableName+"` (" +
-                "`CorpusData_noid`, `decompositionStr`" +
-                ") VALUES";
-        return comment+statement;
-    }
-    public String generateSqlInsertStatementValuesForCorpusDataDecompositionRecord(WordInfo wordInfo, int idWordInTable) {
-        String decompsStatement = null;
-        String[][] wordDecompositions = wordInfo.decompositionsSample;
-        if (wordDecompositions.length != 0) {
-            List<String> decompsAL = new ArrayList<String>();
-            for (String[] wordDecomposition : wordDecompositions) {
-                String statement = "(" + idWordInTable + ", '" + String.join(",",wordDecomposition) + "')";
-                decompsAL.add(statement);
-            }
-            String[] decompsStatements = decompsAL.toArray(new String[0]);
-            decompsStatement = String.join(",\n", decompsStatements);
-        }
-        return decompsStatement;
-    }
-
-    public String generateSqlParametersForCorpusDataDecomposition() {
-        String parametersStmts = "\n" +
-                "--\n" +
-                "-- Indexes for dumped tables\n" +
-                "--\n" +
-                "\n" +
-                "--\n" +
-                "-- Indexes for table `"+CorpusSqlHandler.corpusDataDecompositionTableName+"`\n" +
-                "--\n" +
-                "ALTER TABLE `"+CorpusSqlHandler.corpusDataDecompositionTableName+"`\n" +
-                "  ADD PRIMARY KEY (`id`);\n" +
-                "\n" +
-                "--\n" +
-                "-- AUTO_INCREMENT for dumped tables\n" +
-                "--\n" +
-                "\n" +
-                "--\n" +
-                "-- AUTO_INCREMENT for table `"+CorpusSqlHandler.corpusDataDecompositionTableName+"`\n" +
-                "--\n" +
-                "ALTER TABLE `"+CorpusSqlHandler.corpusDataDecompositionTableName+"`\n" +
-                "  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;\n";
-        return parametersStmts;
-    }
-
-    // Common to both tables
 
     public String generateSqlInsertClose() {
         return ";";
     }
 
-//    public int getNextAutoIncrementIndexInCorpusData() throws SQLException, ClassNotFoundException {
-//        int nextIndexInTable = 0;
-//        String userName = "benoitfa_icca";
-//        String password = "1ijiqaqtunga!";
-//        String dbName = "benoitfa_iudata";
-//        CorpusSqlHandler corpusSqlHandler = new CorpusSqlHandler(userName,password,dbName);
-//        Connection con = corpusSqlHandler.openConnection();
-//        return nextIndexInTable;
-//    }
-
 
     // Writing the SQL files
-
-    public void writeCorpusDataSqlFiles(String corpusJsonFilePathname,String corpusSqlFilePathname,String corpusName) throws IOException, ObjectStreamReaderException, ClassNotFoundException {
+public void writeTableCreationSqlFileForCorpusData(String corpusSqlFilePathname) throws IOException {
+    File corpusDataSqlFile = new File(corpusSqlFilePathname);
+    PrintWriter sqlWriter
+            = new PrintWriter(new BufferedWriter(new FileWriter(corpusDataSqlFile)));
+    String introComments = generateSqlIntroStmtForCorpusData();
+    String tableCreationStmt = generateTableCreationSqlStmtForCorpusData();
+    sqlWriter.println(introComments);
+    sqlWriter.println(tableCreationStmt);
+    sqlWriter.close();
+}
+    public void writeDataDumpSqlFileForCorpusData(String corpusJsonFilePathname,String corpusSqlFilePathname,String corpusName) throws IOException, ObjectStreamReaderException, ClassNotFoundException {
         File corpusDataSqlFile = new File(corpusSqlFilePathname);
-        if (corpusDataSqlFile.exists()) {
-            corpusDataSqlFile.delete();
-        }
         PrintWriter corpusDataSqlWriter
                 = new PrintWriter(new BufferedWriter(new FileWriter(corpusDataSqlFile)));
 
 
-        corpusDataSqlWriter.println(generateSqlIntroForCorpusData());
+        corpusDataSqlWriter.println(generateSqlIntroStmtForCorpusData());
         corpusDataSqlWriter.println(generateSqlInsertStatementOpenForCorpusData());
 
         int idRecordInCorpusDataTable = 1;
@@ -232,12 +117,65 @@ public class CorpusSqlWriter {
     }
 
     public static void main(String[] args) throws ClassNotFoundException, IOException, ObjectStreamReaderException {
-        String corpusJsonFilePathname = args[0];
-        String corpusSqlFilePathname = args[1];
-        String corpusName = args[2];
         CorpusSqlWriter writer = new CorpusSqlWriter();
-        writer.writeCorpusDataSqlFiles(corpusJsonFilePathname,corpusSqlFilePathname,corpusName);
-        System.out.println("Done.");
+        if (args.length==0) {
+            usage("No input arguments.");
+            System.exit(1);
+        } else if (args[0].equals("--create-table")) {
+            if (args.length<2) {
+                usage("Missing argument: filepath for sql output file."+
+                        "\narguments given: "+displayArguments(args));
+                System.exit(1);
+            } else if (args.length>2) {
+                usage("Too many arguments."+
+                        "\narguments given: "+String.join(" ",args));
+                System.exit(1);
+            } else {
+                String sqlFilePathname = args[1];
+                writer.writeTableCreationSqlFileForCorpusData(sqlFilePathname);
+            }
+        } else if (args[0].equals("--dump-data")) {
+            if (args.length<4) {
+                usage("Missing arguments."+
+                        "\narguments given: "+displayArguments(args));
+                System.exit(1);
+            } else if (args.length>4) {
+                usage("Too many arguments."+
+                        "\narguments given: "+displayArguments(args));
+                System.exit(1);
+            } else {
+                String corpusJsonFilePathname = args[1];
+                String corpusSqlFilePathname = args[2];
+                String corpusName = args[3];
+                writer.writeDataDumpSqlFileForCorpusData(corpusJsonFilePathname,corpusSqlFilePathname,corpusName);
+            }
+        } else {
+            usage("Wrong argument(s)."+
+                    "\narguments given:\n"+displayArguments(args));
+            System.exit(1);
+        }
+
+//        CorpusSqlWriter writer = new CorpusSqlWriter();
+//        writer.writeCorpusDataSqlFiles(corpusJsonFilePathname,corpusSqlFilePathname,corpusName);
+//        System.out.println("Done.");
+    }
+
+    public static void usage(String mess) {
+        System.out.println("!!!"+mess+"\n");
+        usage();
+    }
+    public static void usage() {
+        String us = "usage:\n  --create-table <sql filepath for table creation>\n"+
+                "  --dump-data <corpus json filepath> <sql filepath for data insertions> <corpus name>\n";
+        System.out.println(us);
+    }
+
+    public static String displayArguments(String [] args) {
+        String argsStr = "";
+        for (int i=0; i<args.length; i++) {
+            argsStr +=  (i+1)+". "+args[i]+"\n";
+        }
+        return argsStr;
     }
 
 }
