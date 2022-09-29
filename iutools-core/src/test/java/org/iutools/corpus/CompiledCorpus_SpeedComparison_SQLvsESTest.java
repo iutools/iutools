@@ -244,7 +244,8 @@ public class CompiledCorpus_SpeedComparison_SQLvsESTest {
 		Map<String,Long> times = new HashMap<String,Long>();
 		times.put("es", time_wordsContainingMorphNgram(esCorpus, middleMorphNgramsToTest));
 		times.put("sql", time_wordsContainingMorphNgram(sqlCorpus, middleMorphNgramsToTest));
-		SQLTestHelpers.assertIsFaster("wordsContainingMorphNgram__middleOfWord", "sql", times);
+		SQLTestHelpers.assertIsFaster(
+			"wordsContainingMorphNgram__middleOfWord", "es", times);
 	}
 
 	@Test
