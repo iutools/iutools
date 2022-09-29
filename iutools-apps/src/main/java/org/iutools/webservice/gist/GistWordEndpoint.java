@@ -5,6 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.iutools.concordancer.SentencePair;
 import org.iutools.concordancer.Alignment_ES;
+import org.iutools.concordancer.tm.TMFactory;
 import org.iutools.concordancer.tm.TranslationMemory;
 import org.iutools.concordancer.tm.TranslationMemoryException;
 import org.iutools.script.TransCoder;
@@ -15,7 +16,6 @@ import org.iutools.webservice.Endpoint;
 import org.iutools.webservice.EndpointResult;
 import org.iutools.webservice.ServiceException;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public class GistWordEndpoint extends Endpoint<GistWordInputs, GistWordResult> {
@@ -67,7 +67,7 @@ public class GistWordEndpoint extends Endpoint<GistWordInputs, GistWordResult> {
 		try {
 			word = TransCoder.ensureScript(TransCoder.Script.SYLLABIC, word);
 
-			TranslationMemory tm = new TranslationMemory();
+			TranslationMemory tm = new TMFactory().makeTM();
 			List<Alignment_ES> alignmentResults = tm.search("iu", word);
 
 			int numToKeep = Math.min(maxAlignments, alignmentResults.size());
