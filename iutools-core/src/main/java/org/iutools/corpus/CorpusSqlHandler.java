@@ -98,30 +98,6 @@ public class CorpusSqlHandler {
         return rs;
     }
 
-//    public String[][] getDecompositionsForWord(String word) {
-//        String[][] decompositions = new String[0][];
-//        String query = "SELECT "+"CorpusDataDecomposition"+".* " +
-//                "FROM "+"CorpusDataDecomposition"+","+"CorpusData"+" " +
-//                "WHERE "+
-//                corpusDataTableName+".word='"+word+
-//                "' AND "+
-//                "CorpusDataDecomposition"+".CorpusData_noid="+
-//                corpusDataTableName+".noid;";
-//        try {
-//            Statement stmt = this.connection.createStatement();
-//            ResultSet rs = stmt.executeQuery(query);
-//            List<String[]> decompositionsAL = new ArrayList<String[]>();
-//            while (rs.next()) {
-//                String decompositionStr = rs.getString("decompositionStr");
-//                String[] decomposition = decompositionStr.split(",");
-//                decompositionsAL.add(decomposition);
-//            }
-//            decompositions = decompositionsAL.toArray(new String[0][]);
-//        } catch (SQLException throwables) {
-//        }
-//        return decompositions;
-//    }
-//
 public String[][] getDecompositionsForWord(String word) {
     String[][] decompositions = new String[0][];
     String query = "SELECT decompositions_sample " +
