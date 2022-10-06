@@ -32,10 +32,14 @@ public class Sql2WordIinfo implements Sql2Pojo<WordInfo> {
 
 	public String[][] deserializeDecompositionsSample(String json) throws SQLException {
 		String[][] decompsSample = new String[0][];
-		try {
-			decompsSample = mapper.readValue(json, decompsSample.getClass());
-		} catch (JsonProcessingException e) {
-			throw new SQLException("Error deserializing the 'decompositionSample' column of an SQL row", e);
+		if (json == null) {
+			decompsSample = null;
+		} else {
+			try {
+				decompsSample = mapper.readValue(json, decompsSample.getClass());
+			} catch (JsonProcessingException e) {
+				throw new SQLException("Error deserializing the 'decompositionSample' column of an SQL row", e);
+			}
 		}
 		return decompsSample;
 	}

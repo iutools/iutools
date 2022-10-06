@@ -160,7 +160,7 @@ public class Cmd_portage2tmjson extends ConsoleCommand {
 					info = Pair.of(docID, sentNum);
 				} else {
 					throw new ConsoleException(
-					"Sentence ID line did not have 2 fields:\n" + idLine);
+					"SentenceInLang ID line did not have 2 fields:\n" + idLine);
 				}
 			}
 		} catch (IOException e) {

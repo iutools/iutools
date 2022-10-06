@@ -5,6 +5,7 @@ import ca.nrc.data.file.ObjectStreamReaderException;
 import ca.nrc.ui.commandline.ProgressMonitor_Terminal;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.iutools.concordancer.Alignment;
 import org.iutools.concordancer.Alignment_ES;
 import org.iutools.concordancer.tm.TranslationMemoryException;
 import org.iutools.sql.QueryProcessor;
@@ -52,7 +53,7 @@ public class TMLoader {
 
 	private void ensureAlignmentTableIsDefined() throws TranslationMemoryException {
 		try {
-			new QueryProcessor().ensureTableIsDefined(new AlignmentSchema());
+			new QueryProcessor().ensureTableIsDefined(new SentenceInLangSchema());
 		} catch (SQLException e) {
 			throw new TranslationMemoryException(e);
 		}
@@ -69,9 +70,9 @@ public class TMLoader {
 			progress.refreshEveryNSecs = 1;
 			int alignNum = 0;
 			ObjectStreamReader reader = new ObjectStreamReader(tmFile.toFile());
-			List<Alignment_ES> alignsBatch = new ArrayList<Alignment_ES>();
-			Alignment_ES algnmt;
-			while ((algnmt = (Alignment_ES)reader.readObject()) != null) {
+			List<Alignment> alignsBatch = new ArrayList<Alignment>();
+			Alignment algnmt;
+			while ((algnmt = (Alignment)reader.readObject()) != null) {
 				alignNum++;
 				if (verbose) {
 					System.out.println("Looking at alignment #"+alignNum+": "+algnmt.getIdWithoutType());
@@ -93,26 +94,23 @@ public class TMLoader {
 		return;
 	}
 
-	private List<Alignment_ES> addBatch(List<Alignment_ES> alignsBatch) {
-//		// We don't need to replace the rows because we assume all alignments will have
-//		// been deleted before loading the corpus.
-//		// This will speed up the loading
-//		boolean replace = false;
-//		tm.putAligments(alignsBatch, replace);
-//		try {
-//			// For some reason, if we don's sleep after each batch, we eventually
-//			// end up with error:
-//			//
-//			//   java.lang.OutOfMemoryError: GC overhead limit exceeded
-//			//
-//			Thread.sleep(2*1000);
-//		} catch (InterruptedException e) {
-//			throw new RuntimeException(e);
-//		}
-//		wordsBatch = new ArrayList<WordInfo>();
-//		return wordsBatch;
-//
-		return null;
+	private List<Alignment>  addBatch(List<Alignment> alignsBatch) throws TranslationMemoryException {
+		// We don't need to replace the rows because we assume all alignments will have
+		// been deleted before loading the corpus.
+		// This will speed up the loading
+		boolean replace = false;
+		tm.putAligments(alignsBatch, replace);
+		try {
+			// For some reason, if we don's sleep after each batch, we eventually
+			// end up with error:
+			//
+			//   java.lang.OutOfMemoryError: GC overhead limit exceeded
+			//
+			Thread.sleep(2*1000);
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
+		return alignsBatch;
 	}
 
 

@@ -140,7 +140,7 @@ This should output something like this:
       "tagline" : "You Know, for Search"
     }   
     
-### Load the corpus data into ElasticSearch
+### Load the corpus and Translation Memory data into ElasticSearch
 
 First you must download the corpus data from its repository on DAGsHub:
 
@@ -151,17 +151,47 @@ First you must download the corpus data from its repository on DAGsHub:
 
      org.iutools.datapath=/path/to/root/of/your/iutools-data
  
- Then issue a _load_corpus_ command to load the default corpus from the 
- _iutools-data_ files:
+ Then issue a _load_corpus_ and _load_translation_memory_ commands to load the 
+ default corpus and translation memory from the _iutools-data_ files:
  
      iutools_cli load_corpus -force
+     iutool_cli load_translation_memory --force
 
-Note that it may take a few minutes for the corpus to loaded, but this 
+Note that it may take a few hours for each of those commands to complete, but this 
 overhead will only be encurred once. Likewise, if you ever issue a command that 
-uses a different corpus than the default one, a loading overhead will be encurred 
-the first time you use that specific corpus.
+uses a different corpus or translation memory than the default one, a loading 
+overhead will be encurred the first time you use that specific corpus or TM.
 
-At this point, you should be able to use the full range of Command Line 
+While loading the corpus or TM, if you see the following ElasticSearch error:
+
+    TOO_MANY_REQUESTS/12/disk usage exceeded flood-stage watermark, index has read-only-allow-delete block    
+     
+you can fix the problem by change the ElasticSearch node settings. 
+Simply issue the two _curl_ commands below, and 
+then reissuing the above _load_corpus_ command.  
+
+    curl -X PUT "localhost:9200/_cluster/settings?pretty" -H 'Content-Type: application/json' -d'
+    {
+      "persistent": {
+        "cluster.routing.allocation.disk.watermark.low": "90%",
+        "cluster.routing.allocation.disk.watermark.low.max_headroom": "100GB",
+        "cluster.routing.allocation.disk.watermark.high": "95%",
+        "cluster.routing.allocation.disk.watermark.high.max_headroom": "20GB",
+        "cluster.routing.allocation.disk.watermark.flood_stage": "97%",
+        "cluster.routing.allocation.disk.watermark.flood_stage.max_headroom": "5GB",
+        "cluster.routing.allocation.disk.watermark.flood_stage.frozen": "97%",
+        "cluster.routing.allocation.disk.watermark.flood_stage.frozen.max_headroom": "5GB"
+      }
+    }
+    '
+    curl -X PUT "localhost:9200/*/_settings?expand_wildcards=all&pretty" -H 'Content-Type: application/json' -d'
+    {
+      "index.blocks.read_only_allow_delete": null
+    }
+    '
+     
+Once you have successfully completing the _load_corpus_ and _load_translation_memory_ 
+commands, you should be able to use the full range of Command Line 
 Interface commands. 
 
 ### Install and Configure the web apps

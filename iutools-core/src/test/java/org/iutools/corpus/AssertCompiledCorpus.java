@@ -60,9 +60,9 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 			long expFreq, String... ngram) throws Exception {
 		long gotFreq = corpus().morphemeNgramFrequency(ngram);
 		Assert.assertEquals(
-		baseMessage+"\nFrequency of morpheme ngram "+
-		String.join(",", ngram)+" was not as expected",  
-		expFreq, gotFreq);
+			baseMessage+"\nFrequency of morpheme ngram "+
+			String.join(",", ngram)+" was not as expected",
+			expFreq, gotFreq);
 		
 		return this;
 	}

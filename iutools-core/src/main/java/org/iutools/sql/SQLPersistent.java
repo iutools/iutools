@@ -54,11 +54,11 @@ public class SQLPersistent extends Document {
 			jsonObj.remove("shortDescription");
 			jsonObj.remove("type");
 
-			String decompsSampleStr = mapper.writeValueAsString(jsonObj.get("decompositionsSample"));
-			jsonObj.remove("decompositionsSample");
-			jsonObj.put("decompositionsSample", decompsSampleStr);
+//			String decompsSampleStr = mapper.writeValueAsString(jsonObj.get("decompositionsSample"));
+//			jsonObj.remove("decompositionsSample");
+//			jsonObj.put("decompositionsSample", decompsSampleStr);
 
-			row = new Row(jsonObj, new WordInfoSchema().tableName, new WordInfoSchema().idColumnName);
+			row = new Row(jsonObj, schema.tableName, schema.idColumnName);
 		} catch (JsonProcessingException e) {
 			throw new SQLException(e);
 		}

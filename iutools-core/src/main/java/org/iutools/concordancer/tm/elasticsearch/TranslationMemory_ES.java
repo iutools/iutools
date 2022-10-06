@@ -132,7 +132,7 @@ public class TranslationMemory_ES extends TranslationMemory {
 				new IteratorChain<Alignment_ES>(iterators.get(0), iterators.get(1));
 		}
 
-		return iterator;
+		return (Iterator<Alignment_ES>)iterator;
 	}
 
 	private Query esQuery(

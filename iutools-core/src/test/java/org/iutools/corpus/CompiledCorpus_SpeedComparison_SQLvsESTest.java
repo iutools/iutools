@@ -10,6 +10,7 @@ import org.iutools.linguisticdata.LinguisticData;
 import org.iutools.sql.SQLTestHelpers;
 import org.iutools.utilities.StopWatch;
 import org.iutools.worddict.GlossaryEntry;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -32,17 +33,17 @@ public class CompiledCorpus_SpeedComparison_SQLvsESTest {
 
 	protected static List<String> wordsToTest = null;
 
-	protected static List<String> startNgramsToTest = null;
-	protected static List<String> endNgramsToTest = null;
-	protected static List<String> middleNgramsToTest = null;
+	protected static Set<String> startNgramsToTest = null;
+	protected static Set<String> endNgramsToTest = null;
+	protected static Set<String> middleNgramsToTest = null;
 
-	protected static List<String> startMorphemesToTest = null;
-	protected static List<String> middleMorphemesToTest = null;
-	protected static List<String> endMorphemesToTest = null;
+	protected static Set<String> startMorphemesToTest = null;
+	protected static Set<String> middleMorphemesToTest = null;
+	protected static Set<String> endMorphemesToTest = null;
 	
-	protected static List<String[]> startMorphNgramsToTest = null;
-	protected static List<String[]> middleMorphNgramsToTest = null;
-	protected static List<String[]> endMorphNgramsToTest = null;
+	protected static Set<String[]> startMorphNgramsToTest = null;
+	protected static Set<String[]> middleMorphNgramsToTest = null;
+	protected static Set<String[]> endMorphNgramsToTest = null;
 
 	protected static Path glossaryPath = null;
 	static {
@@ -54,6 +55,12 @@ public class CompiledCorpus_SpeedComparison_SQLvsESTest {
 	}
 	static CompiledCorpus_SQL sqlCorpus = null;
 	static CompiledCorpus_ES esCorpus = null;
+
+	@BeforeAll
+	public static void beforeAll() throws Exception {
+		new SQLTestHelpers().encurConnectionPoolOverhead();
+		return;
+	}
 
 	@BeforeEach
 	public void setUp() throws Exception {
@@ -72,27 +79,72 @@ public class CompiledCorpus_SpeedComparison_SQLvsESTest {
 		generateMorphNgramsToTest();
 	}
 
-	private void generateMorphemesToTest() {
+	private void generateMorphemesToTest() throws Exception {
 		if (startMorphemesToTest == null) {
-			startMorphemesToTest = new ArrayList<String>();
-			middleMorphemesToTest = new ArrayList<String>();
-			endMorphemesToTest = new ArrayList<String>();
+			startMorphemesToTest = new HashSet<String>();
+			middleMorphemesToTest = new HashSet<String>();
+			endMorphemesToTest = new HashSet<String>();
+		}
+		CompiledCorpus corpus = new CompiledCorpus_ES(CompiledCorpusRegistry.defaultCorpusName);
+		Iterator<String> wordsIter = corpus.allWords();
+		// Test using morphemes from the first few words in the corpus
+		// (in alphabetical order) until we have MAX_MORPHS morphemes in each
+		// type of position
+		final int MAX_MORPHS = 20;
+		while (true) {
+			if (! wordsIter.hasNext()) {
+				break;
+			}
+			String word = wordsIter.next();
+			WordInfo winfo = corpus.info4word(word);
+			String[] decomp = winfo.topDecomposition();
+			if (decomp != null && decomp.length > 0) {
+				if (decomp[decomp.length-1].equals("\\")) {
+					// Remove tailing \ pseudo-morpheme
+					decomp = Arrays.copyOf(decomp, decomp.length-1);
+				}
+				for (int jj=0; jj < decomp.length; jj++) {
+					decomp[jj] = decomp[jj].replaceAll("[\\{\\}]", "");
+				}
+				if (startMorphemesToTest.size() < MAX_MORPHS) startMorphemesToTest.add(decomp[0]);
+				if (endMorphemesToTest.size() < MAX_MORPHS) endMorphemesToTest.add(decomp[decomp.length-1]);
+				for (int jj=0; jj < decomp.length-1; jj++) {
+					if (middleMorphemesToTest.size() < MAX_MORPHS) {
+						middleMorphemesToTest.add(decomp[jj]);
+					}
+				}
+				if (startMorphemesToTest.size() >= MAX_MORPHS &&
+					middleMorphemesToTest.size() >= MAX_MORPHS &&
+					endMorphemesToTest.size() >= MAX_MORPHS) {
+					break;
+				}
+			}
+		}
+		return;
+	}
+
+
+	private void generateMorphemesToTest__OLD() {
+		if (startMorphemesToTest == null) {
+			startMorphemesToTest = new HashSet<String>();
+			middleMorphemesToTest = new HashSet<String>();
+			endMorphemesToTest = new HashSet<String>();
 		}
 		LinguisticData data = LinguisticData.getInstance();
 		String[] allMorphemeIDs = data.allMorphemeIDs();
-//		for (String morphID: allMorphemeIDs) {
-//			startMorphemesToTest.add("^"+morphID);
-//			middleMorphemesToTest.add(morphID);
-//			endMorphemesToTest.add(morphID+"$");
-//		}
-		middleMorphemesToTest.add("mut/tn-dat-s");
+		for (String morphID: allMorphemeIDs) {
+			startMorphemesToTest.add(morphID);
+			middleMorphemesToTest.add(morphID);
+			endMorphemesToTest.add(morphID);
+		}
+		return;
 	}
 
 	private void generateMorphNgramsToTest() throws Exception {
 		if (startMorphNgramsToTest == null) {
-			startMorphNgramsToTest = new ArrayList<String[]>();
-			middleMorphNgramsToTest = new ArrayList<String[]>();
-			endMorphNgramsToTest = new ArrayList<String[]>();
+			startMorphNgramsToTest = new HashSet<String[]>();
+			middleMorphNgramsToTest = new HashSet<String[]>();
+			endMorphNgramsToTest = new HashSet<String[]>();
 			CompiledCorpus corpus = new CompiledCorpusRegistry().getCorpus();
 			ObjectStreamReader reader =
 				new ObjectStreamReader(glossaryPath.toFile());
@@ -137,14 +189,13 @@ public class CompiledCorpus_SpeedComparison_SQLvsESTest {
 
 	@Test
 	public void test__info4word() throws Exception {
-		Map<String,Long> times = new HashMap<String,Long>();
+		Map<String,Double> times = new HashMap<String,Double>();
 		times.put("es", time_info4word(esCorpus));
 		times.put("sql", time_info4word(sqlCorpus));
-		// TODO: sql should be faster!
-		SQLTestHelpers.assertIsFaster("info4word", "es", times);
+		SQLTestHelpers.assertIsFaster("info4word", "sql", times);
 	}
 
-	private long time_info4word(CompiledCorpus corpus)
+	private double time_info4word(CompiledCorpus corpus)
 		throws Exception {
 		StopWatch sw = new StopWatch().start();
 		for (String word: wordsToTest) {
@@ -156,30 +207,33 @@ public class CompiledCorpus_SpeedComparison_SQLvsESTest {
 
 	@Test
 	public void test__wordsContainingNgram__startOfWord() throws Exception {
-		Map<String,Long> times = new HashMap<String,Long>();
+		Map<String,Double> times = new HashMap<String,Double>();
 		times.put("es", time_wordsContainingNgram(esCorpus, startNgramsToTest));
 		times.put("sql", time_wordsContainingNgram(sqlCorpus, startNgramsToTest));
-		SQLTestHelpers.assertIsFaster("wordsContainingNgram__startOfWord", "sql", times);
+		SQLTestHelpers.assertIsFaster(
+			"wordsContainingNgram__startOfWord", "sql", times);
 	}
 
 	@Test
 	public void test__wordsContainingNgram__endOfWord() throws Exception {
-		Map<String,Long> times = new HashMap<String,Long>();
+		Map<String,Double> times = new HashMap<String,Double>();
 		times.put("es", time_wordsContainingNgram(esCorpus, endNgramsToTest));
 		times.put("sql", time_wordsContainingNgram(sqlCorpus, endNgramsToTest));
-		SQLTestHelpers.assertIsFaster("wordsContainingNgram__endOfWord", "sql", times);
+		SQLTestHelpers.assertIsFaster(
+			"wordsContainingNgram__endOfWord", "sql", times);
 	}
 
 	@Test
 	public void test__wordsContainingNgram__middleOfWord() throws Exception {
-		Map<String,Long> times = new HashMap<String,Long>();
+		Map<String,Double> times = new HashMap<String,Double>();
 		times.put("es", time_wordsContainingNgram(esCorpus, middleNgramsToTest));
 		times.put("sql", time_wordsContainingNgram(sqlCorpus, middleNgramsToTest));
-		SQLTestHelpers.assertIsFaster("wordsContainingNgram__middleOfWord", "sql", times);
+		SQLTestHelpers.assertIsFaster(
+			"wordsContainingNgram__middleOfWord", "sql", times);
 	}
 
-	private Long time_wordsContainingNgram(CompiledCorpus corpus,
-		List<String> ngramsToTest) throws Exception {
+	private Double time_wordsContainingNgram(CompiledCorpus corpus,
+		Collection<String> ngramsToTest) throws Exception {
 		System.out.println("   Timing wordsContainingNgram with corpus="+corpus.getClass());
 		StopWatch sw = new StopWatch().start();
 		for (String ngram: ngramsToTest) {
@@ -191,75 +245,82 @@ public class CompiledCorpus_SpeedComparison_SQLvsESTest {
 				int x = 1;
 			}
 		}
-		int y = 1;
-		return sw.lapTime(TimeUnit.MILLISECONDS);
+		double secsPerNgram =
+			1.0 * sw.lapTime(TimeUnit.MILLISECONDS) / ngramsToTest.size();
+		return secsPerNgram;
 	}
 
 	
 	@Test
 	public void test__wordsContainingMorpheme__startOfWord() throws Exception {
-		Map<String,Long> times = new HashMap<String,Long>();
+		Map<String,Double> times = new HashMap<String,Double>();
 		times.put("es", time_wordsContainingMorpheme(esCorpus, startMorphemesToTest));
 		times.put("sql", time_wordsContainingMorpheme(sqlCorpus, startMorphemesToTest));
-		SQLTestHelpers.assertIsFaster("wordsContainingMorpheme__startOfWord", "sql", times);
+		SQLTestHelpers.assertIsFaster(
+			"wordsContainingMorpheme__startOfWord", "sql", times);
 	}
 
 	@Test
 	public void test__wordsContainingMorpheme__middleOfWord() throws Exception {
-		Map<String,Long> times = new HashMap<String,Long>();
+		Map<String,Double> times = new HashMap<String,Double>();
 		times.put("es", time_wordsContainingMorpheme(esCorpus, middleMorphemesToTest));
 		times.put("sql", time_wordsContainingMorpheme(sqlCorpus, middleMorphemesToTest));
-		SQLTestHelpers.assertIsFaster("wordsContainingMorpheme__middleOfWord", "sql", times);
+//		SQLTestHelpers.assertAboutSameSpeed(
+//			"wordsContainingMorpheme__middleOfWord", times, 0.05);
+		SQLTestHelpers.assertIsFaster(
+			"wordsContainingMorpheme_middleOfWord", "sql", times);
 	}
 
 	@Test
 	public void test__wordsContainingMorpheme__endOfWord() throws Exception {
-		Map<String,Long> times = new HashMap<String,Long>();
+		Map<String,Double> times = new HashMap<String,Double>();
 		times.put("es", time_wordsContainingMorpheme(esCorpus, endMorphemesToTest));
 		times.put("sql", time_wordsContainingMorpheme(sqlCorpus, endMorphemesToTest));
-		SQLTestHelpers.assertIsFaster("wordsContainingMorpheme__endOfWord", "sql", times);
+		SQLTestHelpers.assertIsFaster(
+			"wordsContainingMorpheme__endOfWord", "sql", times);
 	}
 	
-	private Long time_wordsContainingMorpheme(CompiledCorpus corpus,
-		List<String> morphemesToTest) throws Exception {
+	private Double time_wordsContainingMorpheme(CompiledCorpus corpus,
+		Collection<String> morphemesToTest) throws Exception {
 		StopWatch sw = new StopWatch().start();
+		int counter = 0;
 		for (String morpheme: morphemesToTest) {
+			counter++;
 			List<WordWithMorpheme> words = corpus.wordsContainingMorpheme(morpheme);
 		}
-		return sw.lapTime(TimeUnit.MILLISECONDS);
+		return 1.0 * sw.lapTime(TimeUnit.MILLISECONDS);
 	}
 
 	@Test
 	public void test__wordsContainingMorphNgram__startOfWord() throws Exception {
-		Map<String,Long> times = new HashMap<String,Long>();
+		Map<String,Double> times = new HashMap<String,Double>();
 		times.put("es", time_wordsContainingMorphNgram(esCorpus, startMorphNgramsToTest));
 		times.put("sql", time_wordsContainingMorphNgram(sqlCorpus, startMorphNgramsToTest));
-		// TODO: sql should be faster!
 		SQLTestHelpers.assertIsFaster(
-			"wordsContainingMorphNgram__startOfWord", "es", times);
+			"wordsContainingMorphNgram__startOfWord", "sql", times);
 	}
 
 	@Test
 	public void test__wordsContainingMorphNgram__middleOfWord() throws Exception {
-		Map<String,Long> times = new HashMap<String,Long>();
+		Map<String,Double> times = new HashMap<String,Double>();
 		times.put("es", time_wordsContainingMorphNgram(esCorpus, middleMorphNgramsToTest));
 		times.put("sql", time_wordsContainingMorphNgram(sqlCorpus, middleMorphNgramsToTest));
 		SQLTestHelpers.assertIsFaster(
-			"wordsContainingMorphNgram__middleOfWord", "es", times);
+			"wordsContainingMorphNgram__middleOfWord", "sql", times);
 	}
 
 	@Test
 	public void test__wordsContainingMorphNgram__endOfWord() throws Exception {
-		Map<String,Long> times = new HashMap<String,Long>();
+		Map<String,Double> times = new HashMap<String,Double>();
 		times.put("es", time_wordsContainingMorphNgram(esCorpus, endMorphNgramsToTest));
 		times.put("sql", time_wordsContainingMorphNgram(sqlCorpus, endMorphNgramsToTest));
 		// TODO: sql should be faster!
 		SQLTestHelpers.assertIsFaster(
-			"wordsContainingMorphNgram__endOfWord", "es", times);
+			"wordsContainingMorphNgram__endOfWord", "sql", times);
 	}
 
-	private Long time_wordsContainingMorphNgram(CompiledCorpus corpus,
-		List<String[]> morphNgramsToTest) throws Exception {
+	private Double time_wordsContainingMorphNgram(CompiledCorpus corpus,
+		Collection<String[]> morphNgramsToTest) throws Exception {
 		StopWatch sw = new StopWatch().start();
 		for (String[] morphNgram: morphNgramsToTest) {
 			Iterator<String> iter = corpus.wordsContainingMorphNgram(morphNgram);
@@ -272,7 +333,10 @@ public class CompiledCorpus_SpeedComparison_SQLvsESTest {
 				String word = iter.next();
 			}
 		}
-		return sw.lapTime(TimeUnit.MILLISECONDS);
+
+		double secsPerMorpheme =
+			1.0 * sw.lapTime(TimeUnit.MILLISECONDS) / morphNgramsToTest.size();
+		return secsPerMorpheme;
 	}
 
 
@@ -300,7 +364,7 @@ public class CompiledCorpus_SpeedComparison_SQLvsESTest {
 
 	private void generateStartNgramsToTest() throws Exception {
 		if (startNgramsToTest == null) {
-			startNgramsToTest = new ArrayList<String>();
+			startNgramsToTest = new HashSet<String>();
 			ObjectStreamReader reader =
 			new ObjectStreamReader(glossaryPath.toFile());
 			StopWatch sw = new StopWatch().start();
@@ -321,7 +385,7 @@ public class CompiledCorpus_SpeedComparison_SQLvsESTest {
 
 	private void generateEndNgramsToTest() throws Exception {
 		if (endNgramsToTest == null) {
-			endNgramsToTest = new ArrayList<String>();
+			endNgramsToTest = new HashSet<String>();
 			ObjectStreamReader reader =
 			new ObjectStreamReader(glossaryPath.toFile());
 			StopWatch sw = new StopWatch().start();
@@ -342,7 +406,7 @@ public class CompiledCorpus_SpeedComparison_SQLvsESTest {
 
 	private void generateMiddleNgramsToTest() throws Exception {
 		if (middleNgramsToTest == null) {
-			middleNgramsToTest = new ArrayList<String>();
+			middleNgramsToTest = new HashSet<String>();
 			ObjectStreamReader reader =
 			new ObjectStreamReader(glossaryPath.toFile());
 			StopWatch sw = new StopWatch().start();

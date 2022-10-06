@@ -20,12 +20,9 @@ public class StringSegmenter_IUMorpheme extends StringSegmenter {
 	public StringSegmenter_IUMorpheme() {
 		morphAnalyzer = new MorphologicalAnalyzer_R2L();
 	}
-	
-	public String[] segment(String string) throws TimeoutException, StringSegmenterException, LinguisticDataException {
-		return segment(string,false);
-	}
 
-	public String[] segment(String string, boolean fullAnalysis) throws TimeoutException, StringSegmenterException, LinguisticDataException {
+	public String[] segment(String string, Boolean fullAnalysis)
+		throws TimeoutException, StringSegmenterException {
 		String[] bestSegmentation = null;
 		String[][] allSegmentations = possibleSegmentations(string, fullAnalysis);
 		if (allSegmentations != null && allSegmentations.length > 0) {
@@ -45,8 +42,11 @@ public class StringSegmenter_IUMorpheme extends StringSegmenter {
 	}
 
 	@Override
-	public String[][] possibleSegmentations(String string, boolean fullAnalysis)
+	public String[][] possibleSegmentations(String string, Boolean fullAnalysis)
 			throws TimeoutException, StringSegmenterException {
+		if (fullAnalysis == null) {
+			fullAnalysis = false;
+		}
 		List<String[]> allSegmentations = new ArrayList<String[]>();
 		String word = string;
 		if (Syllabics.allInuktitut(string)) {

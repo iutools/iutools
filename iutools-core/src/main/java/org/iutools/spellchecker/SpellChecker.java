@@ -37,7 +37,6 @@ import org.iutools.edit_distance.EditDistanceCalculatorFactoryException;
 import org.iutools.text.ngrams.NgramCompiler;
 import org.iutools.text.segmentation.IUTokenizer;
 import org.iutools.config.IUConfig;
-import org.iutools.linguisticdata.LinguisticDataException;
 import org.iutools.script.Orthography;
 import org.iutools.script.Syllabics;
 import org.iutools.script.TransCoder;
@@ -62,7 +61,7 @@ public class SpellChecker {
 
 	protected String esIndexNameRoot = null;
 
-	protected CompiledCorpus_ES explicitlyCorrectWords = null;
+	protected CompiledCorpus explicitlyCorrectWords = null;
 
 	// TODO-June2020: Can we get rid of this and use the explicitlyCorrectWords
 	//   CompiledCorpus_ES instance instead?
@@ -112,16 +111,16 @@ public class SpellChecker {
 	}
 
 	public SpellChecker() throws StringSegmenterException, SpellCheckerException {
-		init_SpellChecker_ES((String)null, (Boolean)null);
+		init_SpellChecker((String)null, (Boolean)null);
 	}
 
 	public SpellChecker(String corpusName, boolean mustBeRegistered)
 		throws StringSegmenterException, SpellCheckerException {
-		init_SpellChecker_ES(corpusName, mustBeRegistered);
+		init_SpellChecker(corpusName, mustBeRegistered);
 	}
 
 	public SpellChecker(String corpusName) throws StringSegmenterException, SpellCheckerException {
-		init_SpellChecker_ES(corpusName, (Boolean)null);
+		init_SpellChecker(corpusName, (Boolean)null);
 	}
 
 	public void setDictionaryFromCorpus() throws SpellCheckerException, ConfigException, FileNotFoundException {
@@ -133,7 +132,7 @@ public class SpellChecker {
 		}
 	}
 
-	private void init_SpellChecker_ES(
+	private void init_SpellChecker(
 		String _corpusName, Boolean mustBeRegistered) throws SpellCheckerException {
 
 		if (mustBeRegistered == null) {
@@ -146,8 +145,10 @@ public class SpellChecker {
 		esIndexNameRoot = _corpusName;
 		if (!mustBeRegistered) {
 			try {
-				corpus = new CompiledCorpus_ES(_corpusName);
-			} catch (CompiledCorpusException e) {
+//				corpus = new CompiledCorpus_ES(_corpusName);
+//				corpus = new CompiledCorpusRegistry().getCorpus(_corpusName);
+				corpus = new CompiledCorpusRegistry().makeCorpus(_corpusName);
+			} catch (CompiledCorpusException | CompiledCorpusRegistryException e) {
 				throw new SpellCheckerException(e);
 			}
 		} else {
@@ -160,9 +161,10 @@ public class SpellChecker {
 		}
 		try {
 			explicitlyCorrectWords =
-					new CompiledCorpus_ES(
-							explicitlyCorrectWordsIndexName());
-		} catch (CompiledCorpusException e) {
+//					new CompiledCorpus_ES(
+//							explicitlyCorrectWordsIndexName());
+				new CompiledCorpusRegistry().makeCorpus(explicitlyCorrectWordsIndexName());
+		} catch (CompiledCorpusException | CompiledCorpusRegistryException e) {
 			throw new SpellCheckerException(e);
 		}
 
@@ -320,13 +322,9 @@ public class SpellChecker {
 						"Number of 1st pass candidates=" + (candidates.size()),
 						word, null);
 
-					SpellDebug.containsDuplicates("SpellChecker.correctWord",
-						"1st pass candidates", word, candidates);
-
-					SpellDebug.containsCorrection(
+					SpellDebug.containsDuplicates(
 						"SpellChecker.correctWord",
-						"First pass candidates",
-						word, "nunavut", candidates);
+						"1st pass candidates", word, candidates);
 
 					SpellDebug.trace("SpellChecker.correctWord",
 						"Computing candidates similariy using " + editDistanceCalculator.getClass(),
@@ -726,7 +724,7 @@ public class SpellChecker {
 				}
 			} catch (TimeoutException e) {
 				wordIsMispelled = true;
-			} catch (StringSegmenterException | LinguisticDataException e) {
+			} catch (StringSegmenterException e) {
 				throw new SpellCheckerException(e);
 			}
 			logger.trace("word submitted to IMA - mispelled: " + wordIsMispelled);

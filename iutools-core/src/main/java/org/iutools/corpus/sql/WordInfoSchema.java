@@ -21,13 +21,18 @@ public class WordInfoSchema extends TableSchema {
 				"  `wordInOtherScript` text NOT NULL,\n" +
 				"  `wordNgrams` text NOT NULL,\n" +
 				"  `morphemeNgrams` text NOT NULL,\n" +
+				"  `morphemeNgramsWrittenForms` text NOT NULL,\n" +
 				"  `wordRoman` text NOT NULL,\n" +
 				"  `wordSyllabic` text NOT NULL,\n" +
 				"   PRIMARY KEY (word, corpusName)\n"+
-				") ENGINE=InnoDB DEFAULT CHARSET=utf8;",
+//				"   FULLTEXT(wordNgrams),\n"+
+//				"   FULLTEXT(morphemeNgrams),\n"+
+//				"   FULLTEXT(morphemeNgramsWrittenForms)\n"+
+				") ENGINE=MyISAM DEFAULT CHARSET=utf8;",
 
 				"ALTER TABLE `WordInfo` ADD FULLTEXT(wordNgrams);",
-				"ALTER TABLE `WordInfo` ADD FULLTEXT(morphemeNgrams);"
+				"ALTER TABLE `WordInfo` ADD FULLTEXT(morphemeNgrams);",
+				"ALTER TABLE `WordInfo` ADD FULLTEXT(morphemeNgramsWrittenForms);",
 			};
 		return statements;
 	}

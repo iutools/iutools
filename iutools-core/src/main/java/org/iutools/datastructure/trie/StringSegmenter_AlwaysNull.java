@@ -15,13 +15,13 @@ import org.iutools.linguisticdata.LinguisticDataException;
 public class StringSegmenter_AlwaysNull extends StringSegmenter {
 
 	@Override
-	public String[] segment(String string, boolean fullAnalysis)
-			throws TimeoutException, StringSegmenterException, LinguisticDataException {
+	public String[] segment(String string, Boolean fullAnalysis)
+			throws TimeoutException, StringSegmenterException {
 		return null;
 	}
 
 	@Override
-	public String[][] possibleSegmentations(String string, boolean fullAnalysis)
+	public String[][] possibleSegmentations(String string, Boolean fullAnalysis)
 			throws TimeoutException, StringSegmenterException {
 		return null;
 	}

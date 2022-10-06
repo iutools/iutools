@@ -46,22 +46,15 @@ class MockStringSegmenter_IUMorpheme extends StringSegmenter {
 		dictionary.put("inuglu", "{inuk/1n} {lu/1q}");
 	}
 
-	public String[] segment(String word) throws TimeoutException, StringSegmenterException{
-		return segment(word,true);
-	}
 
 	@Override
-	public String[] segment(String word, boolean fullAnalysis) throws TimeoutException, StringSegmenterException {
+	public String[] segment(String word, Boolean fullAnalysis) throws TimeoutException, StringSegmenterException {
 		String[] segments = null;
 		String segmentsStr = dictionary.get(word);
 		if (segmentsStr != null) {
 			segments = segmentsStr.split(" ");
 		} else {
-			try {
-				segments = new StringSegmenter_IUMorpheme().segment(word);
-			} catch (LinguisticDataException e) {
-				throw new StringSegmenterException(e);
-			}
+			segments = new StringSegmenter_IUMorpheme().segment(word);
 		}
 		return segments;
 	}
@@ -75,7 +68,7 @@ class MockStringSegmenter_IUMorpheme extends StringSegmenter {
 	}
 
 	@Override
-	public String[][] possibleSegmentations(String string, boolean fullAnalysis)
+	public String[][] possibleSegmentations(String string, Boolean fullAnalysis)
 			throws TimeoutException, StringSegmenterException {
 		String[][] possSegs = null;
 		String[] bestSegmentation = segment(string, fullAnalysis);

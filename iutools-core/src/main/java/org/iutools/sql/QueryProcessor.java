@@ -341,6 +341,7 @@ public class QueryProcessor {
 			}
 			queryBatch(query, rowValues);
 		}
+		logger.trace("Exiting");
 		return;
 	}
 
@@ -504,6 +505,7 @@ public class QueryProcessor {
 		try {
 			String[] schemaStatements = schema.schemaStatements();
 			execStatements(schemaStatements);
+			cacheTableIsDefined(schema.tableName, true);
 		} catch (RuntimeException e) {
 			throw new SQLException(
 				"Problem defining table "+schema.tableName,

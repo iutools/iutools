@@ -24,6 +24,7 @@ public abstract class TranslationMemoryTest {
 			ResourceGetter.getResourcePath(
 				"org/iutools/concordancer/small_tm.tm.json"));
 		tm.loadFile(tmFile);
+		return;
 	}
 
 	////////////////////////////////////////

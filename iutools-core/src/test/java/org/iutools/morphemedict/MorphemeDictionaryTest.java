@@ -22,11 +22,12 @@ import org.junit.*;
 public class MorphemeDictionaryTest {
 
 	private MorphemeDictionary morphemeSearcher = null;
-	private CompiledCorpus_ES smallCorpus;
+	private CompiledCorpus smallCorpus;
 	
 	@Before
 	public void setUp() throws Exception {
 		smallCorpus = makeCorpus();
+		smallCorpus.deleteAll(true);
 		smallCorpus.addWordOccurences(
         	new String[] {"inuit", "nunami", "iglumik", "inuglu"});
 		morphemeSearcher = new MorphemeDictionary();
@@ -34,10 +35,11 @@ public class MorphemeDictionaryTest {
 		return;
 	}
 
-	protected CompiledCorpus_ES makeCorpus() throws Exception {
+	protected CompiledCorpus makeCorpus() throws Exception {
 		String indexName = CompiledCorpusTest.testIndex;
 		CorpusTestHelpers.deleteCorpusIndex(indexName);
-		CompiledCorpus_ES corpus = new CompiledCorpus_ES(indexName);
+//		CompiledCorpus_ES corpus = new CompiledCorpus_ES(indexName);
+		CompiledCorpus corpus = CompiledCorpusRegistry.makeCorpus(indexName);
 		corpus.setSegmenterClassName(MockStringSegmenter_IUMorpheme.class.getName());
 		return corpus;
 	}
@@ -50,7 +52,7 @@ public class MorphemeDictionaryTest {
 
 		// Here is how you build an instance of MorphemeDictionary
 		//
-		CompiledCorpus_ES corpus = smallCorpus;
+		CompiledCorpus corpus = smallCorpus;
 		morphemeSearcher.useCorpus(corpus);
 		
 		//
@@ -172,7 +174,7 @@ public class MorphemeDictionaryTest {
 		String[] corpWords = new String[] {
 				"makpigarni", "mappigarni", "inuglu"
 				};
-		CompiledCorpus_ES compiledCorpus = makeCorpus();
+		CompiledCorpus compiledCorpus = makeCorpus();
         compiledCorpus.addWordOccurences(corpWords);
 		
         MorphemeDictionary morphemeSearcher = new MorphemeDictionary();
@@ -229,7 +231,7 @@ public class MorphemeDictionaryTest {
 				"taqqiq/1n", "taquaq/1v", "taqqa/rad-sc", "taquaq/1n", "taqqut/1n",
 				"taqqa/ad-sc", "taqqirsuq/1v", "taqqangna/pd-mlsc-s", "taqqaksu/rpd-mlsc-s",
 				"taqqapku/rpd-mlsc-p", "taqqapkua/pd-mlsc-p")
-			.examplesForMorphemeStartWith("taq/1vv", Pair.of("minaqaqtiqattarniaqtakka", new Long(1)))
+			.examplesForMorphemeStartWith("taq/1vv", Pair.of("ilinniaqattaqtut", new Long(10)))
 			// No word examples found for this particular morpheme
 			.examplesForMorphemeStartWith("taquaq/1n")
 			;
@@ -281,7 +283,7 @@ public class MorphemeDictionaryTest {
 				"makpigarni", "mappigarni", "inuglu"
 				};
 		String corpusDirPathname = createTemporaryCorpusDirectory(corpusWords);
-		CompiledCorpus_ES compiledCorpus = makeCorpus();
+		CompiledCorpus compiledCorpus = makeCorpus();
         compiledCorpus.addWordOccurences(corpusWords);
         MorphemeDictionary morphemeSearcher = new MorphemeDictionary();
         morphemeSearcher.useCorpus(compiledCorpus);

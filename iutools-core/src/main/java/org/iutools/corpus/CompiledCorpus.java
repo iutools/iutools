@@ -33,41 +33,71 @@ import ca.nrc.dtrc.elasticsearch.index.IndexAPI;
 public abstract class CompiledCorpus {
 
 	public abstract boolean exists() throws CompiledCorpusException;
+
 	public abstract void loadJsonFile(File jsonFile, Boolean verbose,
 		Boolean overwrite, String indexName) throws CompiledCorpusException;
-	protected abstract void changeLastUpdatedHistory() throws CompiledCorpusException;
+
+	protected abstract void changeLastUpdatedHistory(Long timestamp) throws CompiledCorpusException;
+
 	public abstract long totalWords() throws CompiledCorpusException;
+
 	public abstract long totalWordsWithDecomps() throws CompiledCorpusException;
+
 	public abstract long totalWordsWithNoDecomp() throws CompiledCorpusException;
+
 	public abstract long totalOccurencesWithNoDecomp() throws CompiledCorpusException;
+
 	public abstract Long totalOccurencesWithDecomps() throws CompiledCorpusException;
+
 	public abstract long totalWordsWithCharNgram(String ngram, SearchOption... options)
-			throws CompiledCorpusException;
+	throws CompiledCorpusException;
+
 	public abstract long totalWordsWithNgram(String ngram) throws CompiledCorpusException;
+
 	public abstract long totalOccurences() throws CompiledCorpusException;
+
 	public abstract long totalOccurencesOf(String word) throws CompiledCorpusException;
+
 	public abstract boolean containsWord(String word) throws CompiledCorpusException;
+
 	public abstract void addWordOccurence(
-		String word, String[][] sampleDecomps, Integer totalDecomps,
-		long freqIncr) throws CompiledCorpusException;
+	String word, String[][] sampleDecomps, Integer totalDecomps,
+	long freqIncr) throws CompiledCorpusException;
+
 	public abstract void deleteAll(Boolean force) throws CompiledCorpusException;
+
 	public abstract void deleteWord(String word) throws CompiledCorpusException;
+
 	public abstract Iterator<String> allWords() throws CompiledCorpusException;
+
 	public abstract Iterator<String> wordsWithNoDecomposition() throws CompiledCorpusException;
+
 	public abstract WordInfo info4word(String word) throws CompiledCorpusException;
+
 	public abstract Iterator<WordInfo> winfosContainingNgram(String ngram, SearchOption... options) throws CompiledCorpusException;
+
 	public abstract Iterator<String> wordsContainingNgram(String ngram, SearchOption... options) throws CompiledCorpusException;
+
 	public abstract DocIterator<WordInfo> wordInfosContainingNgram(String ngram, Set<String> fields) throws CompiledCorpusException;
+
 	public abstract List<WordWithMorpheme> wordsContainingMorpheme(String morpheme, Integer maxWords, String... sortCriteria) throws CompiledCorpusException;
+
 	public abstract Iterator<String> wordsContainingMorphNgram(String[] morphemes) throws CompiledCorpusException;
+
 	public abstract long morphemeNgramFrequency(String[] morphemes) throws CompiledCorpusException;
+
 	public abstract long lastLoadedDate() throws CompiledCorpusException;
 
 
-	public static enum SearchOption {EXCL_MISSPELLED, WORD_ONLY};
+	public static enum SearchOption {EXCL_MISSPELLED, WORD_ONLY}
+
+	;
 
 	protected String indexName = null;
-	public String getIndexName() {return indexName;}
+
+	public String getIndexName() {
+		return indexName;
+	}
 
 	protected ESFactory _esFactory = null;
 	public final static String WORD_INFO_TYPE = "WordInfo_ES";
@@ -76,7 +106,7 @@ public abstract class CompiledCorpus {
 	public int searchBatchSize = 100;
 
 	protected static Pattern pattSavePath = Pattern.compile(".*?(^|[^/\\\\.]*)\\.ES\\.json$");
-	protected  boolean esClientVerbose = true;
+	protected boolean esClientVerbose = true;
 
 	protected String segmenterClassName = StringSegmenter_Char.class.getName();
 	protected transient StringSegmenter segmenter = null;
@@ -96,7 +126,7 @@ public abstract class CompiledCorpus {
 	protected static Boolean debug = null;
 
 	public CompiledCorpus(String _indexName) throws CompiledCorpusException {
-		init_CompiledCorpus(_indexName, (Boolean)null);
+		init_CompiledCorpus(_indexName, (Boolean) null);
 	}
 
 	public CompiledCorpus(String _indexName, Boolean createIfNotExists) throws CompiledCorpusException {
@@ -119,7 +149,7 @@ public abstract class CompiledCorpus {
 	}
 
 	public CompiledCorpus setSegmenterClassName(
-			Class<? extends StringSegmenter> segClass) {
+	Class<? extends StringSegmenter> segClass) {
 		segmenterClassName = segClass.getName();
 		return this;
 	}
@@ -129,14 +159,14 @@ public abstract class CompiledCorpus {
 	}
 
 	public void addWordOccurences(String[] words)
-			throws CompiledCorpusException {
+	throws CompiledCorpusException {
 		for (String aWord : words) {
 			addWordOccurence(aWord);
 		}
 	}
 
 	public void addWordOccurences(Collection<String> words)
-			throws CompiledCorpusException {
+	throws CompiledCorpusException {
 		String[] wordsArr = new String[words.size()];
 		int pos = 0;
 		for (String aWord : words) {
@@ -180,17 +210,17 @@ public abstract class CompiledCorpus {
 	}
 
 	public void addWordOccurence(String word, String[][] sampleDecomps,
-	  	Integer totalDecomps) throws CompiledCorpusException {
+		Integer totalDecomps) throws CompiledCorpusException {
 		addWordOccurence(word, sampleDecomps, totalDecomps, 1);
 	}
 
 	public Iterator<String> wordsContainingNgram(String ngram)
-			throws CompiledCorpusException {
+	throws CompiledCorpusException {
 		return wordsContainingNgram(ngram, new SearchOption[0]);
 	}
 
 	public long totalWordsWithCharNgram(String ngram)
-		throws CompiledCorpusException {
+	throws CompiledCorpusException {
 		return totalWordsWithCharNgram(ngram, new SearchOption[0]);
 	}
 
@@ -211,21 +241,21 @@ public abstract class CompiledCorpus {
 		}
 		return segmenter;
 	}
-			
+
 	public String[] decomposeWord(String word) throws CompiledCorpusException {
 		String[] segments;
 		try {
 			segments = getSegmenter().segment(word);
-		} catch (TimeoutException | StringSegmenterException | LinguisticDataException e) {
+		} catch (TimeoutException | StringSegmenterException e) {
 			throw new CompiledCorpusException(e);
 		}
 		return segments;
 	}
-	
+
 	public void disactivateSegmenterTimeout() throws CompiledCorpusException {
-        getSegmenter().disactivateTimeout();
+		getSegmenter().disactivateTimeout();
 	}
-	
+
 	public boolean containsCharNgram(String ngram) throws CompiledCorpusException {
 		boolean answer = false;
 		try {
@@ -235,25 +265,25 @@ public abstract class CompiledCorpus {
 		}
 		return answer;
 	}
-	
+
 	@JsonIgnore
 	protected NgramCompiler getCharsNgramCompiler() {
 		if (charsNgramCompiler == null) {
-			charsNgramCompiler = new NgramCompiler(3, 6,true);
+			charsNgramCompiler = new NgramCompiler(3, 6, true);
 		}
 		return charsNgramCompiler;
-	}	
-	
+	}
+
 	@JsonIgnore
 	protected NgramCompiler getMorphsNgramCompiler() {
 		if (morphsNgramCompiler == null) {
-			morphsNgramCompiler = new NgramCompiler(0, 3,true);
+			morphsNgramCompiler = new NgramCompiler(0, 3, true);
 		}
 		return morphsNgramCompiler;
-	}	
+	}
 
-	public WordInfo mostFrequentWordExtending(String[] morphemes) 
-			throws CompiledCorpusException {
+	public WordInfo mostFrequentWordExtending(String[] morphemes)
+	throws CompiledCorpusException {
 		WordInfo mostFrequent = null;
 		WordInfo[] mostFrequentWords = mostFrequentWordsExtending(morphemes, 1);
 		if (mostFrequentWords != null && mostFrequentWords.length > 0) {
@@ -264,12 +294,12 @@ public abstract class CompiledCorpus {
 
 	public List<WordWithMorpheme> wordsContainingMorpheme(String morpheme) throws CompiledCorpusException {
 		return wordsContainingMorpheme(
-			morpheme, (Integer)null,
-			new String[] {"frequency:desc"});
+		morpheme, (Integer) null,
+		new String[]{"frequency:desc"});
 	}
 
 	protected void updateWordDecompositions(String word,
-			String[][] wordDecomps) throws CompiledCorpusException {
+														 String[][] wordDecomps) throws CompiledCorpusException {
 		String[][] sampleDecomps = decompsSample(wordDecomps);
 		Integer totalDecomps = null;
 		if (wordDecomps != null) {
@@ -277,7 +307,7 @@ public abstract class CompiledCorpus {
 		}
 		addWordOccurence(word, sampleDecomps, totalDecomps, 0);
 	}
-	
+
 	protected String[][] decompsSample(String[][] allDecomps) {
 		String[][] sample = null;
 		if (allDecomps != null) {
@@ -301,7 +331,7 @@ public abstract class CompiledCorpus {
 					loggerNames.add(when + reqType);
 				}
 			}
-			for (String aName: loggerNames) {
+			for (String aName : loggerNames) {
 				if (LogManager.getLogger(aName).isTraceEnabled()) {
 					debug = true;
 					break;
@@ -311,7 +341,7 @@ public abstract class CompiledCorpus {
 				debug = false;
 			}
 		}
-		tLogger.trace("returning debug="+debug);
+		tLogger.trace("returning debug=" + debug);
 		return debug;
 	}
 
@@ -319,13 +349,13 @@ public abstract class CompiledCorpus {
 		loadFromFile(jsonFile, verbose, null, null);
 	}
 
-	public  void loadFromFile(File jsonFile, Boolean verbose, Boolean overwrite) throws CompiledCorpusException {
-		loadFromFile(jsonFile, verbose, overwrite, (String)null);
+	public void loadFromFile(File jsonFile, Boolean verbose, Boolean overwrite) throws CompiledCorpusException {
+		loadFromFile(jsonFile, verbose, overwrite, (String) null);
 	}
 
-	public  void loadFromFile(File jsonFile, Boolean verbose, Boolean overwrite,
-		String corpusName) throws CompiledCorpusException {
-		loadJsonFile(jsonFile, verbose,overwrite, corpusName);
+	public void loadFromFile(File jsonFile, Boolean verbose, Boolean overwrite,
+									 String corpusName) throws CompiledCorpusException {
+		loadJsonFile(jsonFile, verbose, overwrite, corpusName);
 		changeLastUpdatedHistory();
 		return;
 	}
@@ -334,7 +364,7 @@ public abstract class CompiledCorpus {
 
 	}
 
-	
+
 	public void regenerateMorphNgramsIndex() throws CompiledCorpusException {
 
 	}
@@ -342,12 +372,12 @@ public abstract class CompiledCorpus {
 	protected String traceLabel(String label) throws CompiledCorpusException {
 		StringBuilder sBuilder = new StringBuilder();
 		sBuilder
-			.append("[")
-			.append(label);
+		.append("[")
+		.append(label);
 		if (debugMode()) {
 			sBuilder
-				.append(", address=")
-				.append(this.address);
+			.append(", address=")
+			.append(this.address);
 		}
 		sBuilder.append("]: ");
 
@@ -362,7 +392,7 @@ public abstract class CompiledCorpus {
 		} else {
 			try {
 				decomp = getSegmenter().segment(word);
-			} catch (StringSegmenterException | LinguisticDataException e) {
+			} catch (StringSegmenterException e) {
 				throw new CompiledCorpusException(e);
 			} catch (TimeoutException e) {
 				// If we timeout, just leave the decomp at null
@@ -371,7 +401,7 @@ public abstract class CompiledCorpus {
 		return decomp;
 	}
 
-	
+
 	public WordInfo[] mostFrequentWordsExtending(String[] morphemes, Integer N) throws CompiledCorpusException {
 		return new WordInfo[0];
 	}
@@ -399,7 +429,7 @@ public abstract class CompiledCorpus {
 	}
 
 	public boolean isUpToDateWithFile(File corpusFile)
-			throws CompiledCorpusException {
+	throws CompiledCorpusException {
 		Logger tLogger = LogManager.getLogger("org.iutools.corpus.CompiledCorpus.isUpToDateWithFile");
 		boolean uptodate = false;
 
@@ -411,11 +441,11 @@ public abstract class CompiledCorpus {
 				uptodate = true;
 			}
 		} catch (Exception e) {
-			tLogger.trace("** Raised an exception: "+e.getMessage()+"\nCall stack was:"+Debug.printCallStack(e));
+			tLogger.trace("** Raised an exception: " + e.getMessage() + "\nCall stack was:" + Debug.printCallStack(e));
 			throw e;
 		}
 
-		tLogger.trace("returning uptodate="+uptodate);
+		tLogger.trace("returning uptodate=" + uptodate);
 		return uptodate;
 	}
 
@@ -437,7 +467,7 @@ public abstract class CompiledCorpus {
 			Row row = null;
 			try {
 				ObjectMapper mapper = new ObjectMapper();
-				String jsonStr =  mapper.writeValueAsString(this);
+				String jsonStr = mapper.writeValueAsString(this);
 				JSONObject jsonObj = new JSONObject(jsonStr);
 				jsonObj.remove("_detect_language");
 				jsonObj.remove("content");
@@ -479,16 +509,16 @@ public abstract class CompiledCorpus {
 		String errMess = "Invalid sorting criterion string: " + critStr;
 		if (parts.length > 2) {
 			throw new CompiledCorpusException(
-				errMess+
-				"\n  Should not have contained more than one occurence of ':'");
+			errMess +
+			"\n  Should not have contained more than one occurence of ':'");
 		} else if (parts.length == 2) {
 			field = parts[0];
 			try {
-				order = Order.valueOf(parts[1]);
+				order = Order.valueOf(parts[1].toLowerCase());
 			} catch (Exception e) {
 				throw new CompiledCorpusException(
-					errMess+
-					"\n  invalid sort order '"+parts[1]+"'");
+				errMess +
+				"\n  invalid sort order '" + parts[1] + "'");
 			}
 		}
 		return Pair.of(field, order);
@@ -499,7 +529,7 @@ public abstract class CompiledCorpus {
 		if (ngramArrRepl[0].equals("^")) {
 			ngramArrRepl[0] = "BEGIN";
 		}
-		int last = ngramArrRepl.length-1;
+		int last = ngramArrRepl.length - 1;
 		if (ngramArrRepl[last].equals("$")) {
 			ngramArrRepl[last] = "END";
 		}
@@ -507,8 +537,18 @@ public abstract class CompiledCorpus {
 	}
 
 	protected String replaceCaretAndDollar(String ngram) {
-		ngram = ngram.replaceAll("^\\^","BEGIN ");
-		ngram = ngram.replaceAll("\\$$"," END");
+		ngram = ngram.replaceAll("^\\^", "BEGIN ");
+		ngram = ngram.replaceAll("\\$$", " END");
 		return ngram;
+	}
+
+	public void changeLastUpdatedHistory() throws CompiledCorpusException {
+		Logger tLogger = LogManager.getLogger("org.iutools.corpus.CompiledCorpus.changeLastUpdatedHistory");
+		if (tLogger.isTraceEnabled()) {
+			tLogger.trace("indexName=" + indexName + ";Unpon entry, last loaded date = " + lastLoadedDate());
+		}
+		Long now = System.currentTimeMillis();
+		changeLastUpdatedHistory(now);
+		return;
 	}
 }

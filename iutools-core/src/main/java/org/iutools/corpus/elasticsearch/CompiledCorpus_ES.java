@@ -201,14 +201,14 @@ public class CompiledCorpus_ES extends CompiledCorpus {
 	}
 
 	@Override
-	public void changeLastUpdatedHistory() throws CompiledCorpusException {
+	public void changeLastUpdatedHistory(Long timestamp) throws CompiledCorpusException {
 		Logger tLogger = LogManager.getLogger("org.iutools.corpus.CompiledCorpus.changeLastUpdatedHistory");
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("indexName="+indexName+";Unpon entry, last loaded date = "+lastLoadedDate());
 		}
 
 		LastLoadedDate lastLoadedRecord = new LastLoadedDate();
-		lastLoadedRecord.timestamp = System.currentTimeMillis();
+		lastLoadedRecord.timestamp = timestamp;
 		try {
 			esFactory().crudAPI().putDocument(LastLoadedDate.esTypeName, lastLoadedRecord);
 		} catch (ElasticSearchException e) {
@@ -673,7 +673,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
 	@Override
 	public List<WordWithMorpheme> wordsContainingMorpheme(String morpheme,
 		Integer maxWords, String... sortCriteria) throws CompiledCorpusException {
-		Logger logger = LogManager.getLogger("org.iutools.corpus.CompiledCorpus.wordsContainingMorpheme");
+		Logger logger = LogManager.getLogger("org.iutools.corpus.CompiledCorpus_ES.wordsContainingMorpheme");
 
 		logger.trace("Invoked with morpheme="+morpheme);
 
@@ -704,7 +704,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
 						logger.error("** winfo.word = null; winfo="+ PrettyPrinter.print(winfo));
 					}
 				}
-				logger.trace("Looking at word " + winfo.word);
+//				logger.trace("Looking at word " + winfo.word);
 
 				String morphId = null;
 				Matcher morphMatcher = morphPatt.matcher("\\{" + winfo.morphemesSpaceConcatenated + "\\/");

@@ -16,7 +16,7 @@ public class LastLoadedDateSchema extends TableSchema {
 			"  `timestamp` LONG NOT NULL,\n" +
 			"  `lastload` LONG DEFAULT NULL,\n" +
 			"   PRIMARY KEY (corpusName)\n" +
-			") ENGINE=InnoDB DEFAULT CHARSET=utf8;\n" +
+			") ENGINE=MyISAM DEFAULT CHARSET=utf8;\n" +
 			"\n"
 		};
 		return statements;

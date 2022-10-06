@@ -17,7 +17,7 @@ public class TestCorpusBuilder {
 
     public static CompiledCorpus makeEmptyCorpus()
         throws Exception {
-		CorpusTestHelpers.deleteCorpusIndex(emptyCorpusName);
+		CorpusTestHelpers.clearCorpus(emptyCorpusName);
 
 		 CompiledCorpus corpus =
             new CompiledCorpus_ES(emptyCorpusName)

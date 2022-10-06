@@ -110,7 +110,5 @@ public class IUConfig extends Config {
 				"\nShould be either sql or elasticsearch");
 		}
 		return dataStore;
-
-
 	}
 }

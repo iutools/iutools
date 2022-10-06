@@ -53,7 +53,7 @@ public class CompiledCorpus_SQLLoader {
 
 	private void loadWordInfoTable() throws CompiledCorpusException {
 		try {
-			queryProcessor.execStatements(new WordInfoSchema().schemaStatements());
+			queryProcessor.ensureTableIsDefined(new WordInfoSchema());
 			loadWordInfoRows();
 		} catch (SQLException e) {
 			throw new CompiledCorpusException(e);

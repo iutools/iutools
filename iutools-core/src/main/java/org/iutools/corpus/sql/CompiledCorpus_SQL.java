@@ -19,6 +19,7 @@ import org.iutools.corpus.CompiledCorpusException;
 import org.iutools.corpus.WordInfo;
 import org.iutools.corpus.WordWithMorpheme;
 import org.iutools.linguisticdata.Morpheme;
+import org.iutools.linguisticdata.MorphemeException;
 import org.iutools.morph.Decomposition;
 import org.iutools.morph.r2l.DecompositionState;
 import org.iutools.script.TransCoder;
@@ -207,7 +208,7 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 		return ngram;
 	}
 
-	protected static String formatMorphNgram4SqlSearching(String[] morphemes) throws CompiledCorpusException {
+	protected static String formatMorphNgram4SqlSearching_OLD(String... morphemes) throws CompiledCorpusException {
 		String ngram = "";
 		if (morphemes != null && morphemes.length > 0) {
 			boolean atStart = false;
@@ -252,6 +253,13 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 		return ngram;
 	}
 
+//	protected static String formatMorphNgram4SqlSearching(String... morphemes)
+//		throws CompiledCorpusException {
+//		String ngram =
+//			WordInfo_SQL.formatNgramAsSearchableString(Arrays.asList(morphemes.clone()));
+//		return ngram;
+//	}
+
 	public Iterator<String> wordsContainingNgram(String ngram,
 		SearchOption... options) throws CompiledCorpusException {
 		Logger logger = LogManager.getLogger("org.iutools.corpus.sql.CompiledCorpus_SQL.wordsContainingNgram");
@@ -285,6 +293,7 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 				for (WordInfo winfo : winfos) {
 					words.add(winfo.word);
 				}
+				logger.trace("Returning total of "+words.size()+" words");
 				return words.iterator();
 			}
 		} catch (SQLException e) {
@@ -366,13 +375,14 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 			logger.error("morpheme is null");
 		}
 		if (morpheme != null) {
-			String morphQuery = "%" + morpheme + "%";
+//			String morphQuery = formatMorphNgram4SqlSearching(morpheme);
+			String morphQuery = WordInfo_SQL.formatNgramAsSearchableString(morpheme);
 
 			String queryStr =
-			"SELECT * FROM " + WORDS_TABLE + "\n" +
-			"  WHERE\n" +
-			"    corpusName = ? AND \n" +
-			"    topDecompositionStr LIKE ?\n";
+				"SELECT word, topDecompositionStr FROM " + WORDS_TABLE + "\n" +
+				"WHERE\n" +
+				"  corpusName = ? AND \n" +
+				"  MATCH(morphemeNgramsWrittenForms) AGAINST(?)";
 			queryStr += sqlOrderBy(sortCriteria);
 			if (maxWords != null) {
 				queryStr += "\nLIMIT 0, " + maxWords;
@@ -402,9 +412,9 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 					}
 
 					String topDecomp =
-					DecompositionState.formatDecompStr(
-					winfo.topDecompositionStr,
-					Morpheme.MorphFormat.WITH_BRACES);
+						DecompositionState.formatDecompStr(
+							winfo.topDecompositionStr,
+							Morpheme.MorphFormat.WITH_BRACES);
 
 					WordWithMorpheme aWord =
 					new WordWithMorpheme(
@@ -419,6 +429,7 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 			logger.trace("Returning");
 		}
 
+		logger.trace("Returnin total of "+words.size()+" words");
 		return words;
 	}
 
@@ -428,12 +439,16 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 
 		List<String> words = new ArrayList<String>();
 		if (morphemes != null) {
-			String decompQuery = formatMorphNgram4SqlSearching(morphemes);
+			String decompQuery = WordInfo_SQL.formatNgramAsSearchableString(morphemes);
 			String queryStr =
 				"SELECT word FROM " + WORDS_TABLE + "\n" +
-				"  WHERE\n" +
-				"    corpusName = ? AND \n" +
-				"    topDecompositionStr LIKE ?";
+				"WHERE\n" +
+				"  corpusName = ? AND \n" +
+				"  MATCH(morphemeNgrams) AGAINST(?)\n"
+//				"ORDER BY frequency DESC"
+				;
+			queryStr += sqlOrderBy("frequency:desc");
+
 			Pair<ResultSet, Connection> rsWithConn = this.query2(queryStr, corpusName, decompQuery);
 			try (Connection conn = rsWithConn.getRight()) {
 				ResultSet rs = rsWithConn.getLeft();
@@ -448,7 +463,7 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 		return words.iterator();
 	}
 
-	private String sqlOrderBy(String[] sortCriteria) throws CompiledCorpusException {
+	private String sqlOrderBy(String... sortCriteria) throws CompiledCorpusException {
 		String sql = "";
 		int critCounter = 0;
 		for (String criterion: sortCriteria) {
@@ -644,12 +659,12 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 
 		Double freq = 0.0;
 		if (morphemes != null) {
-			String decompQuery = formatMorphNgram4SqlSearching(morphemes);
+			String decompQuery = WordInfo_SQL.formatNgramAsSearchableString(morphemes);
 			String queryStr =
 				"FROM " + WORDS_TABLE + "\n" +
-				"  WHERE\n" +
-				"    corpusName = ? AND \n" +
-				"    topDecompositionStr LIKE ?";
+				"WHERE\n" +
+				"  corpusName = ? AND \n" +
+				"  MATCH(morphemeNgrams) AGAINST(?);";
 			freq =
 				aggregateNumerical("sum", "frequency", queryStr, corpusName, decompQuery);
 		}
@@ -715,16 +730,9 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 		}
 	}
 
-	public void changeLastUpdatedHistory() throws CompiledCorpusException {
-		changeLastUpdatedHistory((Long)null);
-	}
-
 	protected void changeLastUpdatedHistory(Long timestamp) throws CompiledCorpusException {
 		Logger tLogger = LogManager.getLogger("org.iutools.corpus.sql.CompiledCorpus_SQL.changeLastUpdatedHistory");
 
-		if (timestamp == null) {
-			timestamp = System.currentTimeMillis();
-		}
 		LastLoadedDate lastLoadedRecord = new LastLoadedDate();
 		lastLoadedRecord.timestamp = timestamp;
 

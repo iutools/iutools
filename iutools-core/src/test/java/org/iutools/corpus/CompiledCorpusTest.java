@@ -25,7 +25,7 @@ public abstract class CompiledCorpusTest {
 
 	@Before
 	public void setUp() throws Exception {
-		CorpusTestHelpers.deleteCorpusIndex(testIndex);
+		CorpusTestHelpers.clearCorpus(testIndex);
 		return;
 	}
 
@@ -422,13 +422,13 @@ public abstract class CompiledCorpusTest {
 			// Morpheme at end of word
 			.morphemeNgramFreqEquals(1, "{it/tn-nom-p}$")
 			// Sequence of two morphemes
-			.morphemeNgramFreqEquals(1, "{inuk/1n} {it/tn-nom-p}")
+			.morphemeNgramFreqEquals(1, "{inuk/1n}", "{it/tn-nom-p}")
 			// Sequence of two morphemes at end of word
-			.morphemeNgramFreqEquals(1, "{inuk/1n} {it/tn-nom-p}$")
+			.morphemeNgramFreqEquals(1, "{inuk/1n}", "{it/tn-nom-p}$")
 			// Sequence of two morphemes at start of word
-			.morphemeNgramFreqEquals(1, "^{inuk/1n} {it/tn-nom-p}")
+			.morphemeNgramFreqEquals(1, "^{inuk/1n}", "{it/tn-nom-p}")
 			// Sequence of two morphemes that make up whole word
-			.morphemeNgramFreqEquals(1, "^{inuk/1n} {it/tn-nom-p}$")
+			.morphemeNgramFreqEquals(1, "^{inuk/1n}", "{it/tn-nom-p}$")
 			;
 	}
 	
@@ -480,6 +480,8 @@ public abstract class CompiledCorpusTest {
 	
 	@Test
 	public void test__info4word__WordIsInCorpus() throws Exception {
+		StringSegmenter segmenter = new StringSegmenter_Char();
+
 		// Note: "hello" appears twice
 		String[] words = new String[] {"hello", "world", "hello", "again"};
 		CompiledCorpus corpus =
@@ -491,7 +493,7 @@ public abstract class CompiledCorpusTest {
 		asserter.isNotNull();
 		asserter
 			.frequencyIs(2)
-			.topDecompIs("hello".split(""))
+			.topDecompIs(segmenter.segment("hello"))
 			;
 		
 		gotInfo = corpus.info4word("world");
@@ -499,7 +501,7 @@ public abstract class CompiledCorpusTest {
 		asserter.isNotNull();
 		asserter
 			.frequencyIs(1)
-			.topDecompIs("world".split(""))
+			.topDecompIs(segmenter.segment("world"))
 			;
 	}
 

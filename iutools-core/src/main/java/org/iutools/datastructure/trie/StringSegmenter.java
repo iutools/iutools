@@ -6,18 +6,17 @@ import org.iutools.linguisticdata.LinguisticDataException;
 
 public abstract class StringSegmenter {
 	
-	public abstract String[] segment(String string, boolean fullAnalysis) throws TimeoutException, StringSegmenterException, LinguisticDataException;
+	public abstract String[] segment(String string, Boolean fullAnalysis) throws TimeoutException, StringSegmenterException;
 	
 	public abstract String[][] possibleSegmentations(
-			String string, boolean fullAnalysis) 
+			String string, Boolean fullAnalysis)
 			throws TimeoutException, StringSegmenterException;
 	
 	public abstract void disactivateTimeout();
 
 	public String[] segment(String string) 
-			throws TimeoutException, StringSegmenterException, 
-			LinguisticDataException {
-		return segment(string, false);
+			throws TimeoutException, StringSegmenterException {
+		return segment(string, (Boolean)null);
 	}
 	
 	public String[][] possibleSegmentations(
