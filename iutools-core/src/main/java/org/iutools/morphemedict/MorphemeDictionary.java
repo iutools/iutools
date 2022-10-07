@@ -68,11 +68,17 @@ public class MorphemeDictionary {
 				throw new MorphemeDictionaryException(e);
 			}
 			tLogger.trace("Looking at morpheme="+morpheme);
-			HashMap<String, List<WordWithMorpheme>> morphid2wordsFreqs =
+			HashMap<String, List<WordWithMorpheme>> wordsByMorphID =
 				mostFrequentWordsWithMorpheme(morpheme);
+
+//			Map<String,List<MorphWordExample>> balancedExamples =
+//				generatedBalancedExampleLists(morphid2wordsFreqs);
+
+
+
 			tLogger.trace("After mostFrequentWordsWithMorpheme()");
 
-			Bin[] rootBins = separateWordsByRoot(morphid2wordsFreqs);
+			Bin[] rootBins = separateWordsByRoot(wordsByMorphID);
 			tLogger.trace("After separateWordsByRoot()");
 			Map<String, List<MorphWordExample>> morphids2scoredExamples =
 				computeWordsWithScoreFromBins(rootBins);
@@ -304,7 +310,7 @@ public class MorphemeDictionary {
 		return morphid2WordsFreqs;
 	}
 
-	
+
 	private MorphWordExample generateScoredExample(WordWithMorpheme morphemeExample) throws MorphemeDictionaryException {
 		Logger logger = LogManager.getLogger("org.iutools.morphemesearcher.MorphemeDictionary.generateScoredExample");
 		if (logger.isTraceEnabled()) {
