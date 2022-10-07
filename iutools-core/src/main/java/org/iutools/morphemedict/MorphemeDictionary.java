@@ -13,7 +13,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
 import org.iutools.linguisticdata.LinguisticData;
 import org.iutools.linguisticdata.LinguisticDataException;
 import org.iutools.linguisticdata.MorphemeException;
@@ -75,15 +74,15 @@ public class MorphemeDictionary {
 
 			Bin[] rootBins = separateWordsByRoot(morphid2wordsFreqs);
 			tLogger.trace("After separateWordsByRoot()");
-
-			HashMap<String, List<ScoredExample>> morphids2scoredExamples = computeWordsWithScoreFromBins(rootBins);
+			Map<String, List<MorphWordExample>> morphids2scoredExamples =
+				computeWordsWithScoreFromBins(rootBins);
 			tLogger.trace("morphids2scoredExamples: " + morphids2scoredExamples.size());
 			Set<String> keys = morphids2scoredExamples.keySet();
 			Iterator<String> iter = keys.iterator();
 			while (iter.hasNext()) {
 				String morphId = iter.next();
 				tLogger.trace("iteration for generation of Words - morphId: " + morphId);
-				List<ScoredExample> scoredExamples = morphids2scoredExamples.get(morphId);
+				List<MorphWordExample> scoredExamples = morphids2scoredExamples.get(morphId);
 				morphEntry.words = scoredExamples;
 			}
 			morphEntries.add(morphEntry);
@@ -124,23 +123,22 @@ public class MorphemeDictionary {
 	}
 
 
-	protected HashMap<String, List<ScoredExample>> computeWordsWithScoreFromBins(
-			Bin[] rootBins) throws MorphemeDictionaryException {
+	protected HashMap<String, List<MorphWordExample>> computeWordsWithScoreFromBins(
+		Bin[] rootBins) throws MorphemeDictionaryException {
 		Logger tLogger = LogManager.getLogger("org.iutools.morphemesearcher.MorphemeDictionary.computeWordsWithScoreFromBins");
 		
-		HashMap<String, List<ScoredExample>> morphids2limitedScoredExamples = 
-				new HashMap<String, List<ScoredExample>>();
+		HashMap<String, List<MorphWordExample>> morphids2limitedScoredExamples =
+				new HashMap<String, List<MorphWordExample>>();
 		for (int ib=0; ib<rootBins.length; ib++) {
-			tLogger.trace("Looking at bin #"+ib);
 			HashMap<String, List<WordWithMorpheme>> aBin = rootBins[ib].morphid2wordsFreqs;
-			HashMap<String, List<ScoredExample>> morphid2scoredWords = 
+			HashMap<String, List<MorphWordExample>> morphid2scoredWords =
 					computeWordsWithScore(aBin);
 			tLogger.trace("Finished scoring words in bin");
 
-			for (Map.Entry<String,List<ScoredExample>> mapElement : morphid2scoredWords.entrySet()) { 
+			for (Map.Entry<String,List<MorphWordExample>> mapElement : morphid2scoredWords.entrySet()) {
 	            String morphid = mapElement.getKey(); 
 				tLogger.trace("Looking at bin #"+ib+"; morphid="+morphid);
-	            List<ScoredExample> listOfScoredExamples = mapElement.getValue();
+	            List<MorphWordExample> listOfScoredExamples = mapElement.getValue();
 				if (tLogger.isTraceEnabled()) {
 					tLogger.trace("Finished scoring words in bin. "+
 						"listOfScoredExamples.size()="+listOfScoredExamples.size());
@@ -148,10 +146,10 @@ public class MorphemeDictionary {
 
 				if (!listOfScoredExamples.isEmpty()) {
 					tLogger.trace("Bin has some examples");
-		            ScoredExample firstScoredExampleInBinForMorphid = 
+		            MorphWordExample firstScoredExampleInBinForMorphid =
 		            		listOfScoredExamples.get(0);
 		            if ( !morphids2limitedScoredExamples.containsKey(morphid) ) {
-		            	morphids2limitedScoredExamples.put(morphid, new ArrayList<ScoredExample>());
+		            	morphids2limitedScoredExamples.put(morphid, new ArrayList<MorphWordExample>());
 		            }
 		            if (morphids2limitedScoredExamples.get(morphid).size() < nbWordsToBeDisplayed)
 		            	morphids2limitedScoredExamples.get(morphid).add(firstScoredExampleInBinForMorphid);
@@ -193,17 +191,18 @@ public class MorphemeDictionary {
 		return bins.values().toArray(new Bin[] {});
 	}
 
-	private HashMap<String, List<ScoredExample>> computeWordsWithScore(HashMap<String,
+	private HashMap<String, List<MorphWordExample>> computeWordsWithScore(HashMap<String,
 		List<WordWithMorpheme>> mostFrequentWordsWithMorpheme) throws MorphemeDictionaryException {
 		Logger logger = LogManager.getLogger("org.iutools.morphemesearcher.MorphemeDictionary.computeWordsWithScore");
 		if (logger.isTraceEnabled()) {
 			logger.trace("invoked with mostFrequentWordsWithMorpheme.size()="+mostFrequentWordsWithMorpheme.size());
 		}
-		HashMap<String, List<ScoredExample>> morphids2scoredExamples = new HashMap<String, List<ScoredExample>>();
+		HashMap<String, List<MorphWordExample>> morphids2scoredExamples =
+			new HashMap<String, List<MorphWordExample>>();
 		Set<String> morphIds = mostFrequentWordsWithMorpheme.keySet();
 		Iterator<String> iter = morphIds.iterator();
 		while ( iter.hasNext() ) {
-			List<ScoredExample> scoredExamples = new ArrayList<ScoredExample>();
+			List<MorphWordExample> scoredExamples = new ArrayList<MorphWordExample>();
 			String morphId = iter.next();
 			List<WordWithMorpheme> wordsWithMorpheme = mostFrequentWordsWithMorpheme.get(morphId);
 			logger.trace("wordsFreqs.size()="+wordsWithMorpheme.size());
@@ -211,7 +210,7 @@ public class MorphemeDictionary {
 				logger.trace("iwf: "+iwf);
 				WordWithMorpheme morphemeExample = wordsWithMorpheme.get(iwf);
 				try {
-					ScoredExample scoredEx =
+					MorphWordExample scoredEx =
 						generateScoredExample(morphemeExample);
 					scoredExamples.add(scoredEx);
 				} catch (MorphemeDictionaryException e) {
@@ -228,9 +227,9 @@ public class MorphemeDictionary {
 		return morphids2scoredExamples;
 	}
 
-	public static Comparator<ScoredExample> ScoredExamplesComparator = new Comparator<ScoredExample>() {
+	public static Comparator<MorphWordExample> ScoredExamplesComparator = new Comparator<MorphWordExample>() {
 
-		public int compare(ScoredExample s1, ScoredExample s2) {
+		public int compare(MorphWordExample s1, MorphWordExample s2) {
 			if (s1.score < s2.score)
 				return 1;
 			else if (s1.score > s2.score)
@@ -306,12 +305,12 @@ public class MorphemeDictionary {
 	}
 
 	
-	private ScoredExample generateScoredExample(WordWithMorpheme morphemeExample) throws MorphemeDictionaryException {
+	private MorphWordExample generateScoredExample(WordWithMorpheme morphemeExample) throws MorphemeDictionaryException {
 		Logger logger = LogManager.getLogger("org.iutools.morphemesearcher.MorphemeDictionary.generateScoredExample");
 		if (logger.isTraceEnabled()) {
 			logger.trace("invoked with morphemeExample="+PrettyPrinter.print(morphemeExample));
 		}
-		ScoredExample scoredEx = null;
+		MorphWordExample scoredEx = null;
 		try {
 			boolean allowAnalysisWithAdditionalFinalConsonant = false;
 			logger.trace("    generateScoredExample --- step 1: morphFreqInAnalyses");
@@ -320,7 +319,7 @@ public class MorphemeDictionary {
 			Long wordFreq = wordFreqInCorpus(morphemeExample.word,
 				allowAnalysisWithAdditionalFinalConsonant);
 			Double score = 10000*morphemeFreq + wordFreq;
-			scoredEx = new ScoredExample(morphemeExample.word, score, wordFreq);
+			scoredEx = new MorphWordExample(morphemeExample.word, score, wordFreq);
 			logger.trace("    generateScoredExample --- finished");
 		} catch (LinguisticDataException | TimeoutException | MorphologicalAnalyzerException e) {
 			throw new MorphemeDictionaryException(e);
@@ -393,9 +392,9 @@ public class MorphemeDictionary {
 		}
 	}
 
-	public class WordFreqComparator implements Comparator<ScoredExample> {
+	public class WordFreqComparator implements Comparator<MorphWordExample> {
 	    @Override
-	    public int compare(ScoredExample a, ScoredExample b) {
+	    public int compare(MorphWordExample a, MorphWordExample b) {
 	    	if (a.score.longValue() > b.score.longValue())
 	    		return -1;
 	    	else if (a.score.longValue() < b.score.longValue())
@@ -414,6 +413,64 @@ public class MorphemeDictionary {
 			this.morphid2wordsFreqs = _morphid2wordsFreqs;
 		}
 	}
+
+	/** Change the order of a list of word examples, so that the examples
+	 * with the same root are balanced across the list.
+	 * This avoids a situation where most of the examples at the top of the
+	 * list have the same root.
+	 */
+	protected List<WordWithMorpheme> balanceRoots(List<WordWithMorpheme> wordExamples) {
+		List<WordWithMorpheme> balancedList = new ArrayList<WordWithMorpheme>();
+		Deque<WordWithMorpheme> remaining = new ArrayDeque<WordWithMorpheme>();
+		remaining.addAll(wordExamples);
+		Map<String,Integer> rootCounts = new HashMap<String,Integer>();
+		int highestRootCount = 0;
+		int lowestRootCount = 0;
+		boolean keepGoing = true;
+
+		while (keepGoing) {
+			Deque<WordWithMorpheme> skippedExamples = new ArrayDeque<WordWithMorpheme>();
+			Set<String> skippedRoots = new HashSet<String>();
+			// Inspect each of the remaining examples, and either add it to
+			// the balanced list, or to a list of examples that are skipped for now
+			while (!remaining.isEmpty()) {
+				WordWithMorpheme currExample = remaining.pop();
+				String currRoot = currExample.root;
+				if (!rootCounts.containsKey(currRoot)) {
+					rootCounts.put(currRoot, 0);
+				}
+				Integer currRootCount = rootCounts.get(currRoot);
+				if (currRootCount == highestRootCount && lowestRootCount < highestRootCount) {
+					// The list is not balanced at the moment and adding this example
+					// would decrease balance even further. So skip it.
+					skippedExamples.add(currExample);
+					skippedRoots.add(currRoot);
+				} else {
+					// This example does not decrease balance. So add it to the
+					// balanced list.
+					balancedList.add(currExample);
+					currRootCount++;
+					rootCounts.put(currRoot, currRootCount);
+					if (currRootCount > highestRootCount) {
+						highestRootCount = currRootCount;
+					}
+				}
+			}
+			lowestRootCount = Collections.min(rootCounts.values());
+			remaining = skippedExamples;
+			if (remaining.isEmpty()) {
+				keepGoing = false;
+			} else if (skippedRoots.size() <= 1) {
+				// All the skipped examples have the same root. So
+				// add them to the balanced list
+				balancedList.addAll(skippedExamples);
+				keepGoing = false;
+			}
+		}
+
+		return balancedList;
+	}
+
 }
 
 

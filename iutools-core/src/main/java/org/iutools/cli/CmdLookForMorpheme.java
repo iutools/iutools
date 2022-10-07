@@ -6,13 +6,12 @@ import java.util.List;
 
 import ca.nrc.ui.commandline.CommandLineException;
 import org.iutools.corpus.CompiledCorpus;
-import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
 import org.iutools.corpus.CompiledCorpusRegistry;
 
 import org.iutools.linguisticdata.Morpheme;
 import org.iutools.morphemedict.MorphDictionaryEntry;
 import org.iutools.morphemedict.MorphemeDictionary;
-import org.iutools.morphemedict.ScoredExample;
+import org.iutools.morphemedict.MorphWordExample;
 
 public class CmdLookForMorpheme extends ConsoleCommand {
 
@@ -65,7 +64,7 @@ public class CmdLookForMorpheme extends ConsoleCommand {
 				while (itWords.hasNext()) {
 					MorphDictionaryEntry wordsForMorpheme = itWords.next();
 					String morphemeWithId = wordsForMorpheme.morphemeWithId;
-					ScoredExample[] wordsAndFreqs = wordsForMorpheme.words.toArray(new ScoredExample[] {});
+					MorphWordExample[] wordsAndFreqs = wordsForMorpheme.words.toArray(new MorphWordExample[] {});
 					Arrays.sort(wordsAndFreqs, comparator);
 
 					String[] wordList = new String[wordsAndFreqs.length];

@@ -27,8 +27,8 @@ public class AssertMorphSearchResults extends Asserter<List<MorphDictionaryEntry
 			String aMorpheme = aMorphResult.morphemeWithId;
 			if (aMorpheme.equals(morpheme)) {
 				gotWordExamples = new ArrayList<Pair<String,Long>>();
-				List<ScoredExample> scoredExamples = aMorphResult.words;
-				for (ScoredExample anExample: scoredExamples) {
+				List<MorphWordExample> scoredExamples = aMorphResult.words;
+				for (MorphWordExample anExample: scoredExamples) {
 					gotWordExamples.add(Pair.of(anExample.word, anExample.frequency));
 				}
 				break;

@@ -20,10 +20,11 @@ public class SentenceInLangSchema extends TableSchema {
 				"  `text` varchar(100) NOT NULL,\n" +
 				"  `from_doc` varchar(100) NOT NULL,\n" +
 				"  `pair_num` int(11) DEFAULT 0,\n" +
+				"  `sentence_id` varchar(100) NOT NULL,\n" +
 				"   PRIMARY KEY (lang, from_doc, pair_num)\n"+
 				") ENGINE=MyISAM DEFAULT CHARSET=utf8;",
 
-				"ALTER TABLE `WordInfo` ADD FULLTEXT(text);",
+				"ALTER TABLE `"+tableName+"` ADD FULLTEXT(text);",
 			};
 		return statements;
 	}

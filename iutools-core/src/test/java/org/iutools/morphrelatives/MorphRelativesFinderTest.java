@@ -3,6 +3,8 @@ package org.iutools.morphrelatives;
 
 import java.io.IOException;
 
+import org.iutools.corpus.CompiledCorpus;
+import org.iutools.corpus.CompiledCorpusRegistry;
 import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
 import org.iutools.corpus.CorpusTestHelpers;
 import org.junit.Test;
@@ -13,8 +15,9 @@ import ca.nrc.testing.AssertObject;
 public class MorphRelativesFinderTest {
 
 	protected MorphRelativesFinder makeFinder() throws Exception {
+
 		CorpusTestHelpers.clearESTestIndex();
-		CompiledCorpus_ES corpus = new CompiledCorpus_ES(CorpusTestHelpers.ES_TEST_INDEX);
+		CompiledCorpus corpus = new CompiledCorpusRegistry().makeCorpus(CorpusTestHelpers.ES_TEST_INDEX);
 		corpus.setSegmenterClassName(StringSegmenter_IUMorpheme.class.getName());
 		MorphRelativesFinder finder = new MorphRelativesFinder(corpus);
 

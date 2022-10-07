@@ -20,7 +20,7 @@ public class TestCorpusBuilder {
 		CorpusTestHelpers.clearCorpus(emptyCorpusName);
 
 		 CompiledCorpus corpus =
-            new CompiledCorpus_ES(emptyCorpusName)
+            new CompiledCorpusRegistry().makeCorpus(emptyCorpusName)
             .setSegmenterClassName(StringSegmenter_IUMorpheme.class);
         ;
         return corpus;

@@ -354,13 +354,12 @@ public class QueryProcessor {
 		return colValue;
 	}
 
-
 	/** Convert a ResultSet to a SINGLE Plain Old Java Object (POJO).
 	 * Raises an exception if the size of the ResultSet != 1.
 	 */
 	public static <T> T rs2pojo(ResultSet resultSet, Class<T> clazz) throws SQLException {
 		T pojo = null;
-		List<T> pojoList = rs2pojoLst(resultSet, clazz);
+		List<T> pojoList = rs2pojoLst(resultSet, clazz, 1);
 		int size = pojoList.size();
 		if (size > 1) {
 			throw new SQLException(
@@ -376,7 +375,7 @@ public class QueryProcessor {
 	 */
 	public static <T> T rs2pojo(ResultSet resultSet, Sql2Pojo<T> converter) throws SQLException {
 		T pojo = null;
-		List<T> pojoList = rs2pojoLst(resultSet, converter);
+		List<T> pojoList = rs2pojoLst(resultSet, converter, new Integer(1));
 		int size = pojoList.size();
 		if (size > 1) {
 			throw new SQLException(
@@ -387,14 +386,20 @@ public class QueryProcessor {
 		return pojo;
 	}
 
+	public static <T> List<T> rs2pojoLst(ResultSet resultSet, Class<T> clazz)
+		throws SQLException {
+		return rs2pojoLst(resultSet, clazz, (Integer)null);
+	}
+
 	/**
 	 * Converts an SQL ResultSet to a list of Plain Old Java Objects (POJOs).
 	 */
-	public static <T> List<T> rs2pojoLst(ResultSet resultSet, Class<T> clazz) throws SQLException {
+	public static <T> List<T> rs2pojoLst(ResultSet resultSet, Class<T> clazz,
+		Integer maxRows) throws SQLException {
 		List<T> pojos = new ArrayList<T>();
 		try {
 			// First, convert the ResultsSet into a list of JSONObjects
-			List<JSONObject> jsonObjects = rs2JSONObjects(resultSet);
+			List<JSONObject> jsonObjects = rs2JSONObjects(resultSet, maxRows);
 
 			// Next, convert the JSONObjects into POJOs
 			ObjectMapper mapper = new ObjectMapper();
@@ -410,9 +415,10 @@ public class QueryProcessor {
 		return pojos;
 	}
 
-	public static <T> T rs2Iterator(ResultSet resultSet, Sql2Pojo<T> converter) throws SQLException {
+	public static <T> T rs2Iterator(ResultSet resultSet, Sql2Pojo<T> converter,
+		Integer maxRows) throws SQLException {
 		T pojo = null;
-		List<T> pojoList = rs2pojoLst(resultSet, converter);
+		List<T> pojoList = rs2pojoLst(resultSet, converter, maxRows);
 		int size = pojoList.size();
 		if (size > 1) {
 			throw new SQLException(
@@ -423,16 +429,21 @@ public class QueryProcessor {
 		return pojo;
 	}
 
+	public static <T> List<T> rs2pojoLst(ResultSet resultSet, Sql2Pojo<T> converter)
+		throws SQLException {
+		return rs2pojoLst(resultSet, converter, (Integer)null);
+	}
 
 	/**
 	 * Converts an SQL ResultSet to a list of Plain Old Java Objects (POJOs).
 	 */
-	public static <T> List<T> rs2pojoLst(ResultSet resultSet, Sql2Pojo<T> converter) throws SQLException {
+	public static <T> List<T> rs2pojoLst(ResultSet resultSet, Sql2Pojo<T> converter,
+		Integer maxRows) throws SQLException {
 		Logger logger = LogManager.getLogger("org.iutools.sql.QueryProcessor.rs2pojoLst");
 		List<T> pojos = new ArrayList<T>();
 		try {
 			// First, convert the ResultsSet into a list of JSONObjects
-			List<JSONObject> jsonObjects = rs2JSONObjects(resultSet);
+			List<JSONObject> jsonObjects = rs2JSONObjects(resultSet, maxRows);
 			logger.trace("Size of jsonObject="+jsonObjects.size());
 
 			// Next, convert the JSONObjects into POJOs
@@ -447,8 +458,11 @@ public class QueryProcessor {
 		return pojos;
 	}
 
-
 	public static List<JSONObject> rs2JSONObjects(ResultSet resultSet) throws SQLException {
+		return rs2JSONObjects(resultSet, (Integer)null);
+	}
+
+	public static List<JSONObject> rs2JSONObjects(ResultSet resultSet, Integer maxRows) throws SQLException {
 		Logger logger = LogManager.getLogger("org.iutools.sql.QueryProcessor.rs2JSONObjects");
 		List<JSONObject> jsonObjects = new ArrayList<JSONObject>();
 		ObjectMapper mapper = new ObjectMapper();
@@ -474,7 +488,9 @@ public class QueryProcessor {
 			// Next, generate a list of JSONObjects, each object corresponding to
 			// one row of the ResultsSet.
 			//
-			while (resultSet.next()) {
+			int rowCount = 0;
+			while (resultSet.next() && (maxRows == null || rowCount < maxRows)) {
+				rowCount++;
 				logger.trace("looking at next result");
 				JSONObject row = new JSONObject();
 				colNames.forEach(cn -> {

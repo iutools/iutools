@@ -9,16 +9,15 @@ public class TranslationMemory_SQLTest extends TranslationMemoryTest {
 		return new TranslationMemory_SQL(memoryName);
 	}
 
-	// To disable this test
-	@Override
-	public void test__search__HappyPath() throws Exception {
-		return;
-	}
-
-	// To disable this test
-	@Override
-	public void test__TranslationMemory__Synopsis() throws Exception {
-		return;
-	}
-
+//	// To disable this test
+//	@Override
+//	public void test__search__HappyPath() throws Exception {
+//		return;
+//	}
+//
+//	// To disable this test
+//	@Override
+//	public void test__TranslationMemory__Synopsis() throws Exception {
+//		return;
+//	}
 }

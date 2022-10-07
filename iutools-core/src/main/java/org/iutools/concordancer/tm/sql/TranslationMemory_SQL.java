@@ -67,13 +67,18 @@ public class TranslationMemory_SQL extends TranslationMemory {
 
 	@Override
 	public List<Alignment_ES> search(String sourceLang, String sourceExpr, String... targetLangs) throws TranslationMemoryException {
+		List<Alignment_ES> hits = new ArrayList<Alignment_ES>();
 		try (Connection conn = new ConnectionPool().getConnection()) {
 			Iterator<SentenceInLang> sourceSentsIter = searchSourceLang(sourceLang, sourceExpr, conn);
 			AlignmentsIterator alignIter = new AlignmentsIterator(conn, sourceSentsIter, targetLangs);
+			while (alignIter.hasNext()) {
+				Alignment_ES nextAlign = alignIter.next();
+				hits.add(nextAlign);
+			}
 		} catch (SQLException e) {
 			throw new TranslationMemoryException(e);
 		}
-		return null;
+		return hits;
 	}
 
 	private Iterator<SentenceInLang> searchSourceLang(String sourceLang, String sourceExpr, Connection conn) throws TranslationMemoryException {
@@ -85,10 +90,9 @@ public class TranslationMemory_SQL extends TranslationMemory {
 			"  MATCH(text) AGAINST(?);";
 		Iterator<SentenceInLang> iter = null;
 		try {
-			ResultSet rs = null;
 			Pair<ResultSet, Connection> results =
 				new QueryProcessor().query2(conn, sql, sourceLang, sourceExpr);
-			iter = new ResultsSetIterator(rs, conn, new Sql2SentenceInLang());
+			iter = new ResultsSetIterator(results.getLeft(), conn, new Sql2SentenceInLang());
 		} catch (SQLException e) {
 			throw new TranslationMemoryException(e);
 		}

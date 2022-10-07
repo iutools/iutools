@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.iutools.corpus.CompiledCorpus;
+import org.iutools.corpus.CompiledCorpusRegistry;
 import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
 import org.iutools.corpus.TestCorpusBuilder;
 import org.apache.logging.log4j.LogManager;
@@ -27,7 +28,7 @@ public class FreqVerbRootsTest {
 				};
 
         CompiledCorpus compiledCorpus = TestCorpusBuilder.makeEmptyCorpus();
-			new CompiledCorpus_ES("test-corpus")
+			new CompiledCorpusRegistry().makeCorpus("test-corpus")
 				.setSegmenterClassName(StringSegmenter_IUMorpheme.class);
         compiledCorpus.addWordOccurences(corpusWords);
         

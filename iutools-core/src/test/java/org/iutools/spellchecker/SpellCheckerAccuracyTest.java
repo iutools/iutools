@@ -43,7 +43,7 @@ public class SpellCheckerAccuracyTest {
         String indexName = CompiledCorpusTest.testIndex;
 		 CorpusTestHelpers.deleteCorpusIndex(indexName);
 
-		 CompiledCorpus_ES corpus = new CompiledCorpus_ES(indexName);
+		 CompiledCorpus corpus = new CompiledCorpusRegistry().makeCorpus(indexName);
         SpellChecker checker = new SpellChecker(indexName);
 
         return checker;

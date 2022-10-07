@@ -51,10 +51,10 @@ public class RW_CompiledCorpus {
 		rw.writeCorpus(corpus, _savePath);
 	}
 
-	public static CompiledCorpus_ES read(File savePath)
+	public static CompiledCorpus read(File savePath)
 		throws CompiledCorpusException {
 		RW_CompiledCorpus rw = new RW_CompiledCorpus();
-		CompiledCorpus_ES corpus = rw.readCorpus(savePath);
+		CompiledCorpus corpus = rw.readCorpus(savePath);
 		
 		return corpus;
 	}
@@ -69,10 +69,15 @@ public class RW_CompiledCorpus {
 			throws CompiledCorpusException {
 	}
 
-	public CompiledCorpus_ES readCorpus(File jsonFile) throws CompiledCorpusException {
+	public CompiledCorpus readCorpus(File jsonFile) throws CompiledCorpusException {
 		String corpusName = corpusName(jsonFile);
-		CompiledCorpus_ES corpus =
-				new CompiledCorpus_ES(corpusName);
+		CompiledCorpus corpus =
+		null;
+		try {
+			corpus = new CompiledCorpusRegistry().makeCorpus(corpusName);
+		} catch (CompiledCorpusRegistryException e) {
+			throw new CompiledCorpusException(e);
+		}
 		echo("Loading file "+jsonFile+
 				" into ElasticSearch corpus "+corpusName);
 		boolean verbose =
@@ -84,9 +89,13 @@ public class RW_CompiledCorpus {
 		return corpus;
 	}
 
-	protected CompiledCorpus_ES newCorpus(File savePath) throws CompiledCorpusException {
+	protected CompiledCorpus newCorpus(File savePath) throws CompiledCorpusException {
 		String corpusName = CompiledCorpus_ES.corpusName4File(savePath);
-		return new CompiledCorpus_ES(corpusName);
+		try {
+			return new CompiledCorpusRegistry().makeCorpus(corpusName);
+		} catch (CompiledCorpusRegistryException e) {
+			throw new CompiledCorpusException(e);
+		}
 	}
 
 	protected String corpusName(File jsonFile) {

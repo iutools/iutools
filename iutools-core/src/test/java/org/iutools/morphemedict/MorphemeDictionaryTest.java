@@ -5,12 +5,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
+import ca.nrc.testing.AssertObject;
 import org.iutools.corpus.*;
-import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
 import org.iutools.utilities.StopWatch;
 import org.iutools.datastructure.trie.MockStringSegmenter_IUMorpheme;
 import ca.nrc.testing.AssertNumber;
@@ -75,8 +73,8 @@ public class MorphemeDictionaryTest {
 			
 			// This is sample of words that are "good" examples of 
 			// use of the morpheme.
-			List<ScoredExample> scoredExamples = aMorpheme.words;
-			for (ScoredExample anExample: scoredExamples) {
+			List<MorphWordExample> scoredExamples = aMorpheme.words;
+			for (MorphWordExample anExample: scoredExamples) {
 				// This is the word
 				String word = anExample.word;
 				
@@ -231,7 +229,7 @@ public class MorphemeDictionaryTest {
 				"taqqiq/1n", "taquaq/1v", "taqqa/rad-sc", "taquaq/1n", "taqqut/1n",
 				"taqqa/ad-sc", "taqqirsuq/1v", "taqqangna/pd-mlsc-s", "taqqaksu/rpd-mlsc-s",
 				"taqqapku/rpd-mlsc-p", "taqqapkua/pd-mlsc-p")
-			.examplesForMorphemeStartWith("taq/1vv", Pair.of("ilinniaqattaqtut", new Long(10)))
+			.examplesForMorphemeStartWith("taq/1vv", Pair.of("minaqaqtiqattarniaqtakka", new Long(1)))
 			// No word examples found for this particular morpheme
 			.examplesForMorphemeStartWith("taquaq/1n")
 			;
@@ -303,6 +301,54 @@ public class MorphemeDictionaryTest {
         Assert.assertTrue("", rootBins[1].morphid2wordsFreqs.containsKey("juq/1vn"));
 	}
 
+	@Test
+	public void test__balanceExamples() throws Exception {
+		String morpheme = "taq/1_vv";
+		// List of words containing the morpheme, sorted by decreasing order of
+		// frequency.
+		List<WordWithMorpheme> wordExamples = new ArrayList<WordWithMorpheme>();
+		Collections.addAll(wordExamples, new WordWithMorpheme[] {
+			new WordWithMorpheme(
+				"uqalimaaqtauningit", morpheme,
+				"{uqalimaaq/1v} {taq/1vv} {uq/3vv} {niq/2vn} {ngit/tn-nom-p-4s}",
+				new Long(639)),
+			// Note that this second word has same root as the first one.
+			new WordWithMorpheme(
+				"uqalimaaqtauninginnut", morpheme,
+				"{uqalimaaq/1v} {taq/1vv} {uq/3vv} {niq/2vn} {nginnut/tn-dat-p-4s}",
+				new Long(151)),
+			// And so does this one
+			new WordWithMorpheme(
+				"uqalimaaqtauninga", morpheme,
+				"{uqalimaaq/1v} {taq/1vv} {uq/3vv} {niq/2vn} {nga/tn-nom-s-4s}",
+				new Long(128)),
+			// This one has a different root from the first 3
+			new WordWithMorpheme(
+				"ammaluttau", morpheme,
+				"{angmaluq/1v} {taq/1vv} {ut/1vn}",
+				new Long(79)),
+			// And this one presents a 3rd new root
+			new WordWithMorpheme(
+				"katittarvingmut", morpheme,
+				"{katit/1v} {taq/1vv} {vik/3vn} {mut/tn-dat-s}",
+				new Long(49)),
+			// This one has a root that has already been seen
+			new WordWithMorpheme(
+				"katittarvingmi", morpheme,
+				"{katit/1v} {taq/1vv} {vik/3vn} {mi/tn-loc-s}",
+				new Long(49)),
+		});
+
+		wordExamples = morphemeSearcher.balanceRoots(wordExamples);
+		assertExamplesAre(wordExamples,
+			Pair.of("uqalimaaqtauningit", new Long(639)),
+			Pair.of("ammaluttau", new Long(79)),
+			Pair.of("katittarvingmut", new Long(49)),
+			Pair.of("uqalimaaqtauninginnut", new Long(151)),
+			Pair.of("katittarvingmi", new Long(49)),
+			Pair.of("uqalimaaqtauninga", new Long(128)));
+	}
+
 	/**********************************
 	 * TEST HELPERS
 	 **********************************/
@@ -319,4 +365,16 @@ public class MorphemeDictionaryTest {
         }
         return corpusDirPath;
 	}
+
+	private void assertExamplesAre(List<WordWithMorpheme> gotExamples,
+		Pair<String,Long>... expWordsWithFreq) throws Exception {
+    	Pair<String,Long>[] gotWordWithFreq = new Pair[gotExamples.size()];
+    	for (int ii=0; ii < gotExamples.size(); ii++) {
+    		WordWithMorpheme currExample = gotExamples.get(ii);
+    		gotWordWithFreq[ii] = Pair.of(currExample.word, currExample.frequency);
+		}
+		AssertObject.assertDeepEquals("Word examples not as expected",
+			expWordsWithFreq, gotWordWithFreq);
+	}
+
 }

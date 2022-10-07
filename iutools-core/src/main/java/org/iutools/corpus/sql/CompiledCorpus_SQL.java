@@ -370,6 +370,12 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 
 		logger.trace("Invoked with morpheme=" + morpheme);
 
+		String matchAgainstField = "morphemeNgramsWrittenForms";
+		if (morpheme.contains("_") || morpheme.contains("/")) {
+			// This is the morpheme ID, not just its written form
+			matchAgainstField = "morphemeNgrams";
+		}
+
 		List<WordWithMorpheme> words = new ArrayList<WordWithMorpheme>();
 		if (logger.isErrorEnabled() && morpheme == null) {
 			logger.error("morpheme is null");
@@ -379,10 +385,10 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 			String morphQuery = WordInfo_SQL.formatNgramAsSearchableString(morpheme);
 
 			String queryStr =
-				"SELECT word, topDecompositionStr FROM " + WORDS_TABLE + "\n" +
+				"SELECT word, frequency, topDecompositionStr, decompositionsSampleJSON FROM " + WORDS_TABLE + "\n" +
 				"WHERE\n" +
 				"  corpusName = ? AND \n" +
-				"  MATCH(morphemeNgramsWrittenForms) AGAINST(?)";
+				"  MATCH("+matchAgainstField+") AGAINST(?)";
 			queryStr += sqlOrderBy(sortCriteria);
 			if (maxWords != null) {
 				queryStr += "\nLIMIT 0, " + maxWords;

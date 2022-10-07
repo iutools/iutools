@@ -196,7 +196,7 @@ public class SpellChecker {
 
 	public void setDictionaryFromCorpus(File compiledCorpusFile) throws SpellCheckerException {
 		try {
-			CompiledCorpus_ES corpus = RW_CompiledCorpus.read(compiledCorpusFile);
+			CompiledCorpus corpus = RW_CompiledCorpus.read(compiledCorpusFile);
 			setDictionaryFromCorpus(corpus);
 		} catch (Exception e) {
 			throw new SpellCheckerException(

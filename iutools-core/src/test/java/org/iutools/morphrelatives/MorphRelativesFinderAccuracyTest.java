@@ -108,6 +108,7 @@ public class MorphRelativesFinderAccuracyTest {
 					.getCorpus(exp.corpusName);
 		}
 
+		System.out.println("** Relative Finder uses a corpus of class: "+corpus.getClass().getSimpleName()+"\n");
 		File goldStandardCSVFilePath =
 			ResourceGetter.copyResourceToTempLocation("org/iutools/IU100Words-expansions-added-to-alternatives.csv");
 

@@ -1,6 +1,8 @@
 package org.iutools.concordancer.tm.sql;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.iutools.concordancer.Alignment;
 import org.iutools.concordancer.Alignment_ES;
 import org.iutools.concordancer.tm.TranslationMemoryException;
@@ -49,7 +51,9 @@ public class AlignmentsIterator implements Iterator<Alignment_ES>, Closeable {
 
 	@Override
 	public Alignment_ES next() {
+		Logger logger = LogManager.getLogger("org.iutools.concordancer.tm.sql.AlignmentsIterator.next");
 		SentenceInLang nextSourceSent = sourceSentsIter.next();
+		logger.trace("next source sent ID: "+nextSourceSent.sentence_id);
 		Alignment_SQL nextAlign =
 			new Alignment_SQL(nextSourceSent.from_doc, (String)null,
 				(List)null, nextSourceSent.pair_num);
@@ -66,6 +70,8 @@ public class AlignmentsIterator implements Iterator<Alignment_ES>, Closeable {
 
 	private void fillTargetLangSentences(Alignment align,
 		SentenceInLang sourceSent) throws TranslationMemoryException {
+		Logger logger = LogManager.getLogger("org.iutools.concordancer.tm.sql.AlignmentsIterator.fillTargetLangSentences");
+		logger.trace("Filling target lang sentences for sentence_id="+align.getIdWithoutType());
 		String sql =
 			"SELECT * FROM "+sentsSchema.tableName+"\n"+
 			"WHERE\n"+
@@ -100,5 +106,6 @@ public class AlignmentsIterator implements Iterator<Alignment_ES>, Closeable {
 		} catch (SQLException e) {
 			throw new TranslationMemoryException(e);
 		}
+		return;
 	}
 }

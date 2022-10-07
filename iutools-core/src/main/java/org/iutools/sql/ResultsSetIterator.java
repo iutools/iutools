@@ -22,6 +22,7 @@ public class ResultsSetIterator<T> implements Iterator<T>, Closeable {
 		this.rs = rs;
 		this.conn = conn;
 		this.converter = converter;
+		return;
 	}
 
 	@Override
@@ -52,7 +53,9 @@ public class ResultsSetIterator<T> implements Iterator<T>, Closeable {
 		if (!hasNext()) {
 			throw new RuntimeException("Tried to get item passed the last item.");
 		}
-		return nextItem;
+		T nextValue = nextItem;
+		nextItemReady = false;
+		return nextValue;
 	}
 
 	@Override

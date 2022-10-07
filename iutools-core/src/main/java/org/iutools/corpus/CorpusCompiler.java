@@ -50,7 +50,7 @@ public class CorpusCompiler {
 	protected long retrievedFileWordCounter = -1;
 
 
-	private CompiledCorpus_ES _corpus = null;
+	private CompiledCorpus _corpus = null;
 	private Map<String,Long> wordFreqs = new HashMap<String,Long>();
 
 	private long lastSaveMSecs = 0;
@@ -468,7 +468,7 @@ public class CorpusCompiler {
 			"   Loading FINALIZED corpus "+progress.corpusName+" from file (no decomps): "+
 			"\n      "+corpusFile+"\n\n");
 		try {
-			CompiledCorpus_ES corpus = new RW_CompiledCorpus(corpusName, user_io).readCorpus(corpusFile);
+			CompiledCorpus corpus = new RW_CompiledCorpus(corpusName, user_io).readCorpus(corpusFile);
 		} catch (CompiledCorpusException e) {
 			throw new CorpusCompilerException(
 				"Problem loading corpus "+corpusName+" from file "+corpusFile, e);
@@ -610,11 +610,11 @@ public class CorpusCompiler {
 		return this;
 	}
 
-	public CompiledCorpus_ES corpus() throws CorpusCompilerException {
+	public CompiledCorpus corpus() throws CorpusCompilerException {
 		if (_corpus == null) {
 			try {
-				_corpus = new CompiledCorpus_ES(corpusName);
-			} catch (CompiledCorpusException e) {
+				_corpus = new CompiledCorpusRegistry().makeCorpus(corpusName);
+			} catch (CompiledCorpusException | CompiledCorpusRegistryException e) {
 				throw new CorpusCompilerException(e);
 			}
 		}
