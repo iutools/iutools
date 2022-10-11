@@ -3,8 +3,6 @@ package org.iutools.corpus.sql;
 import java.io.File;
 import java.sql.*;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import ca.nrc.dtrc.elasticsearch.DocIterator;
 import ca.nrc.json.PrettyPrinter;
@@ -17,11 +15,7 @@ import org.iutools.corpus.CompiledCorpus;
 import static ca.nrc.dtrc.elasticsearch.request.Sort.Order;
 import org.iutools.corpus.CompiledCorpusException;
 import org.iutools.corpus.WordInfo;
-import org.iutools.corpus.WordWithMorpheme;
-import org.iutools.linguisticdata.Morpheme;
-import org.iutools.linguisticdata.MorphemeException;
 import org.iutools.morph.Decomposition;
-import org.iutools.morph.r2l.DecompositionState;
 import org.iutools.script.TransCoder;
 import org.iutools.script.TransCoderException;
 import org.iutools.sql.ColValueIterator;
@@ -364,11 +358,13 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 		return winfo.frequency;
 	}
 
-	public List<WordWithMorpheme> wordsContainingMorpheme(String morpheme,
+	public List<WordInfo> wordsContainingMorpheme(String morpheme,
 		Integer maxWords, String... sortCriteria) throws CompiledCorpusException {
 		Logger logger = LogManager.getLogger("org.iutools.corpus.sql.CompiledCorpus_SQL.wordsContainingMorpheme");
 
 		logger.trace("Invoked with morpheme=" + morpheme);
+
+		List<WordInfo> wordInfos = new ArrayList<WordInfo>();
 
 		String matchAgainstField = "morphemeNgramsWrittenForms";
 		if (morpheme.contains("_") || morpheme.contains("/")) {
@@ -376,12 +372,10 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 			matchAgainstField = "morphemeNgrams";
 		}
 
-		List<WordWithMorpheme> words = new ArrayList<WordWithMorpheme>();
 		if (logger.isErrorEnabled() && morpheme == null) {
 			logger.error("morpheme is null");
 		}
 		if (morpheme != null) {
-//			String morphQuery = formatMorphNgram4SqlSearching(morpheme);
 			String morphQuery = WordInfo_SQL.formatNgramAsSearchableString(morpheme);
 
 			String queryStr =
@@ -400,33 +394,10 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 			//
 			try (Connection conn = rsWithConn.getRight()) {
 				ResultSet rs = rsWithConn.getLeft();
-				List<WordInfo> wordInfos = null;
 				try {
 					wordInfos = QueryProcessor.rs2pojoLst(rs, new Sql2WordIinfo());
 				} catch (SQLException e) {
 					throw new CompiledCorpusException(e);
-				}
-
-				Pattern morphPatt = Pattern.compile("(^|\\s)([^\\s]*" + morpheme + "[^\\s]*)(\\s|$)");
-				for (WordInfo winfo : wordInfos) {
-					logger.trace("Looking at word " + winfo.word);
-
-					String morphId = null;
-					Matcher morphMatcher = morphPatt.matcher("\\{" + winfo.topDecompositionStr + "\\/");
-					if (morphMatcher.find()) {
-						morphId = morphMatcher.group(2);
-					}
-
-					String topDecomp =
-						DecompositionState.formatDecompStr(
-							winfo.topDecompositionStr,
-							Morpheme.MorphFormat.WITH_BRACES);
-
-					WordWithMorpheme aWord =
-					new WordWithMorpheme(
-					winfo.word, morphId, topDecomp,
-					winfo.frequency, winfo.decompositionsSample);
-					words.add(aWord);
 				}
 			} catch (SQLException e) {
 				throw new CompiledCorpusException(e);
@@ -435,8 +406,8 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 			logger.trace("Returning");
 		}
 
-		logger.trace("Returnin total of "+words.size()+" words");
-		return words;
+		logger.trace("Returnin total of "+wordInfos.size()+" words");
+		return wordInfos;
 	}
 
 	@Override

@@ -80,7 +80,7 @@ public abstract class CompiledCorpus {
 
 	public abstract DocIterator<WordInfo> wordInfosContainingNgram(String ngram, Set<String> fields) throws CompiledCorpusException;
 
-	public abstract List<WordWithMorpheme> wordsContainingMorpheme(String morpheme, Integer maxWords, String... sortCriteria) throws CompiledCorpusException;
+	public abstract List<WordInfo> wordsContainingMorpheme(String morpheme, Integer maxWords, String... sortCriteria) throws CompiledCorpusException;
 
 	public abstract Iterator<String> wordsContainingMorphNgram(String[] morphemes) throws CompiledCorpusException;
 
@@ -292,14 +292,13 @@ public abstract class CompiledCorpus {
 		return mostFrequent;
 	}
 
-	public List<WordWithMorpheme> wordsContainingMorpheme(String morpheme) throws CompiledCorpusException {
-		return wordsContainingMorpheme(
-		morpheme, (Integer) null,
-		new String[]{"frequency:desc"});
+	public List<WordInfo> wordsContainingMorpheme(String morpheme) throws CompiledCorpusException {
+		return wordsContainingMorpheme(morpheme, (Integer) null,
+			new String[]{"frequency:desc"});
 	}
 
 	protected void updateWordDecompositions(String word,
-														 String[][] wordDecomps) throws CompiledCorpusException {
+		String[][] wordDecomps) throws CompiledCorpusException {
 		String[][] sampleDecomps = decompsSample(wordDecomps);
 		Integer totalDecomps = null;
 		if (wordDecomps != null) {

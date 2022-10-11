@@ -101,6 +101,7 @@ public class MorphemeDictionaryTest {
 		String[] morphemes = new String[] {"inuk", "tut", "siuq"};
 		long start = StopWatch.nowMSecs();
 		for (String morpheme: morphemes) {
+			System.out.println("Searching examples for "+morpheme);
 			List<MorphDictionaryEntry> wordsForMorphemes =
 					morphemeSearcher.search(morpheme);
 		}
@@ -204,7 +205,7 @@ public class MorphemeDictionaryTest {
 				"tut/tn-sim-s", "tut/1v", "tutik/1v", "tuti/1v", "tutaq/1n",
 				"tutarut/1n", "tutiriaq/1n", "tutiriarmiutaq/1n")
 			.examplesForMorphemeStartWith("tutik/1v", Pair.of("tutinnikkut", new Long(1)))
-			.examplesForMorphemeStartWith("tut/tn-sim-s", Pair.of("ajjigiinngittut", new Long(138)))
+			.examplesForMorphemeStartWith("tut/tn-sim-s", Pair.of("inuinnaqtun", new Long(197)))
 			.examplesForMorphemeStartWith("tut/1v", Pair.of("tutuu", new Long(501)))
 			// No word examples found for this particular morpheme
 			.examplesForMorphemeStartWith("tutiriaq/1n")
@@ -229,35 +230,11 @@ public class MorphemeDictionaryTest {
 				"taqqiq/1n", "taquaq/1v", "taqqa/rad-sc", "taquaq/1n", "taqqut/1n",
 				"taqqa/ad-sc", "taqqirsuq/1v", "taqqangna/pd-mlsc-s", "taqqaksu/rpd-mlsc-s",
 				"taqqapku/rpd-mlsc-p", "taqqapkua/pd-mlsc-p")
-			.examplesForMorphemeStartWith("taq/1vv", Pair.of("minaqaqtiqattarniaqtakka", new Long(1)))
+			.examplesForMorphemeStartWith("taq/1vv", Pair.of("uqalimaaqtauningit", new Long(639)))
 			// No word examples found for this particular morpheme
 			.examplesForMorphemeStartWith("taquaq/1n")
 			;
 	}
-
-    @Test
-    public void test__morphFreqInAnalyses__HappyPath() throws Exception {
-        String morpheme = "gaq/2vv";
-        String word = "makpigarni";
-        String bestDecomp = "{makpi:makpiq/1v}{gar:gaq/1vn}{ni:ni/tn-loc-p}";
-        String[][] sampleDecomps = new String[][] {
-			new String[]{"makpiq/1v", "gaq/1vn", "tn-loc-p"},
-			new String[]{"makpiq/1v", "gaq/1vn", "tn-loc-s-2s"}
-		};
-        Long freq = new Long(10);
-		WordWithMorpheme morphExample =
-			new WordWithMorpheme(word, morpheme, bestDecomp, freq, sampleDecomps);
-        Double freq2vv = morphemeSearcher.morphFreqInAnalyses(morphExample, true);
-
-        morpheme = "gaq/1vn";
-		morphExample =
-			new WordWithMorpheme(word, morpheme, bestDecomp, freq, sampleDecomps);
-        Double freq1vn = morphemeSearcher.morphFreqInAnalyses(morphExample, true);
-        
-        Assert.assertTrue(
-			"Frequency of gaq/1vn should have been much higher than frequency of gaq/2vv.",
-			freq1vn > 1.5 * freq2vv);
-    }
 
 	@Test
 	public void test__wordsContainingMorpheme__QueryIsPartialMorpheme__FindsAllMorphemesThatStartWithQuery() throws Exception {
@@ -276,77 +253,59 @@ public class MorphemeDictionaryTest {
 	}
 
 	@Test
-	public void test__separateWordsByRoot() throws Exception {
-		String[] corpusWords = new String[] {
-				"makpigarni", "mappigarni", "inuglu"
-				};
-		String corpusDirPathname = createTemporaryCorpusDirectory(corpusWords);
-		CompiledCorpus compiledCorpus = makeCorpus();
-        compiledCorpus.addWordOccurences(corpusWords);
-        MorphemeDictionary morphemeSearcher = new MorphemeDictionary();
-        morphemeSearcher.useCorpus(compiledCorpus);
-        
-		HashMap<String,List<WordWithMorpheme>> morphid2wordsFreqs = new HashMap<String,List<WordWithMorpheme>>();
-		List<WordWithMorpheme> wordsFreqs = new ArrayList<WordWithMorpheme>();
-		wordsFreqs.add(new WordWithMorpheme("takujuq","juq/1vn","{taku:taku/1v}{juq:juq/1vn}",(long)15));
-		wordsFreqs.add(new WordWithMorpheme("siniktuq","juq/1vn","{sinik:sinik/1v}{tuq:juq/1vn}",(long)10));
-		morphid2wordsFreqs.put("juq/1vn", wordsFreqs);
-		
-        MorphemeDictionary.Bin[] rootBins = morphemeSearcher.separateWordsByRoot(morphid2wordsFreqs);
-        Assert.assertEquals("The number of bins is incorrect.", 2, rootBins.length);
-        Assert.assertTrue("No bins returned with the right morpheme ids.", rootBins[0].rootId.equals("taku/1v") || rootBins[0].rootId.equals("sinik/1v"));
-        Assert.assertEquals("", 1, rootBins[0].morphid2wordsFreqs.keySet().size());
-        Assert.assertTrue("", rootBins[0].morphid2wordsFreqs.containsKey("juq/1vn"));
-        Assert.assertEquals("", 1, rootBins[1].morphid2wordsFreqs.keySet().size());
-        Assert.assertTrue("", rootBins[1].morphid2wordsFreqs.containsKey("juq/1vn"));
-	}
-
-	@Test
-	public void test__balanceExamples() throws Exception {
+	public void test__balanceExamplesByRoots() throws Exception {
 		String morpheme = "taq/1_vv";
 		// List of words containing the morpheme, sorted by decreasing order of
 		// frequency.
-		List<WordWithMorpheme> wordExamples = new ArrayList<WordWithMorpheme>();
-		Collections.addAll(wordExamples, new WordWithMorpheme[] {
-			new WordWithMorpheme(
-				"uqalimaaqtauningit", morpheme,
-				"{uqalimaaq/1v} {taq/1vv} {uq/3vv} {niq/2vn} {ngit/tn-nom-p-4s}",
-				new Long(639)),
+		List<MorphWordExample> wordExamples = new ArrayList<MorphWordExample>();
+		Collections.addAll(wordExamples, new MorphWordExample[] {
+			new MorphWordExample(
+				"uqalimaaqtauningit", morpheme, new Long(639),
+				"{uqalimaaq/1v} {taq/1vv} {uq/3vv} {niq/2vn} {ngit/tn-nom-p-4s}"),
 			// Note that this second word has same root as the first one.
-			new WordWithMorpheme(
-				"uqalimaaqtauninginnut", morpheme,
-				"{uqalimaaq/1v} {taq/1vv} {uq/3vv} {niq/2vn} {nginnut/tn-dat-p-4s}",
-				new Long(151)),
+			new MorphWordExample(
+				"uqalimaaqtauninginnut", morpheme, new Long(151),
+				"{uqalimaaq/1v} {taq/1vv} {uq/3vv} {niq/2vn} {nginnut/tn-dat-p-4s}"),
 			// And so does this one
-			new WordWithMorpheme(
-				"uqalimaaqtauninga", morpheme,
-				"{uqalimaaq/1v} {taq/1vv} {uq/3vv} {niq/2vn} {nga/tn-nom-s-4s}",
-				new Long(128)),
+			new MorphWordExample(
+				"uqalimaaqtauninga", morpheme, new Long(128),
+				"{uqalimaaq/1v} {taq/1vv} {uq/3vv} {niq/2vn} {nga/tn-nom-s-4s}"),
 			// This one has a different root from the first 3
-			new WordWithMorpheme(
-				"ammaluttau", morpheme,
-				"{angmaluq/1v} {taq/1vv} {ut/1vn}",
-				new Long(79)),
+			new MorphWordExample(
+				"ammaluttau", morpheme, new Long(79),
+				"{angmaluq/1v} {taq/1vv} {ut/1vn}"),
 			// And this one presents a 3rd new root
-			new WordWithMorpheme(
-				"katittarvingmut", morpheme,
-				"{katit/1v} {taq/1vv} {vik/3vn} {mut/tn-dat-s}",
-				new Long(49)),
+			new MorphWordExample(
+				"katittarvingmut", morpheme, new Long(49),
+				"{katit/1v} {taq/1vv} {vik/3vn} {mut/tn-dat-s}"),
 			// This one has a root that has already been seen
-			new WordWithMorpheme(
-				"katittarvingmi", morpheme,
-				"{katit/1v} {taq/1vv} {vik/3vn} {mi/tn-loc-s}",
-				new Long(49)),
+			new MorphWordExample(
+				"katittarvingmi", morpheme, new Long(30),
+				"{katit/1v} {taq/1vv} {vik/3vn} {mi/tn-loc-s}"),
 		});
 
-		wordExamples = morphemeSearcher.balanceRoots(wordExamples);
+		wordExamples = morphemeSearcher.balanceExamplesByRoots(wordExamples, 20);
 		assertExamplesAre(wordExamples,
 			Pair.of("uqalimaaqtauningit", new Long(639)),
 			Pair.of("ammaluttau", new Long(79)),
 			Pair.of("katittarvingmut", new Long(49)),
 			Pair.of("uqalimaaqtauninginnut", new Long(151)),
-			Pair.of("katittarvingmi", new Long(49)),
+			Pair.of("katittarvingmi", new Long(30)),
 			Pair.of("uqalimaaqtauninga", new Long(128)));
+	}
+
+	@Test
+	public void test__bestExamplesForMorphID() throws Exception {
+		String morphID = "tut/tn-sim-s";
+		morphemeSearcher.useCorpus(new CompiledCorpusRegistry().getCorpus());
+		List<MorphWordExample> gotExample = morphemeSearcher.bestExamplesForMorphID(morphID, 5);
+		assertExamplesAre(gotExample,
+			Pair.of("inuinnaqtun", new Long(197)),
+			Pair.of("ajjigiinngittut", new Long(138)),
+			Pair.of("pingasuujuqtut", new Long(61)),
+			Pair.of("niqtunaqtut", new Long(53)),
+			Pair.of("pattatuqtut", new Long(31))
+		);
 	}
 
 	/**********************************
@@ -366,11 +325,11 @@ public class MorphemeDictionaryTest {
         return corpusDirPath;
 	}
 
-	private void assertExamplesAre(List<WordWithMorpheme> gotExamples,
+	private void assertExamplesAre(List<MorphWordExample> gotExamples,
 		Pair<String,Long>... expWordsWithFreq) throws Exception {
     	Pair<String,Long>[] gotWordWithFreq = new Pair[gotExamples.size()];
     	for (int ii=0; ii < gotExamples.size(); ii++) {
-    		WordWithMorpheme currExample = gotExamples.get(ii);
+			MorphWordExample currExample = gotExamples.get(ii);
     		gotWordWithFreq[ii] = Pair.of(currExample.word, currExample.frequency);
 		}
 		AssertObject.assertDeepEquals("Word examples not as expected",

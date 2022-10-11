@@ -69,7 +69,7 @@ public class CmdLookForMorpheme extends ConsoleCommand {
 
 					String[] wordList = new String[wordsAndFreqs.length];
 					for (int iWF=0; iWF<wordsAndFreqs.length; iWF++) {
-						wordList[iWF] = wordsAndFreqs[iWF].word + "(" + wordsAndFreqs[iWF].score + ")";
+						wordList[iWF] = wordsAndFreqs[iWF].word + "(" + wordsAndFreqs[iWF].getScore() + ")";
 					}
 					
 					echo("\nMORPHEME ID: "+morphemeWithId+

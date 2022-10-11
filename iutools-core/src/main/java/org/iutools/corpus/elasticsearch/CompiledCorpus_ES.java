@@ -18,15 +18,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.iutools.corpus.*;
 import org.iutools.elasticsearch.ES;
-import org.iutools.linguisticdata.Morpheme;
-import org.iutools.morph.r2l.DecompositionState;
 import org.iutools.script.TransCoder;
 import org.iutools.script.TransCoderException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.util.*;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /** This implementation of CompiledCorpus uses ElasticSearch as its data store. */
@@ -671,13 +668,13 @@ public class CompiledCorpus_ES extends CompiledCorpus {
 	}
 
 	@Override
-	public List<WordWithMorpheme> wordsContainingMorpheme(String morpheme,
+	public List<WordInfo> wordsContainingMorpheme(String morpheme,
 		Integer maxWords, String... sortCriteria) throws CompiledCorpusException {
 		Logger logger = LogManager.getLogger("org.iutools.corpus.CompiledCorpus_ES.wordsContainingMorpheme");
 
 		logger.trace("Invoked with morpheme="+morpheme);
+		List<WordInfo> winfos = new ArrayList<WordInfo>();
 
-		List<WordWithMorpheme> words = new ArrayList<WordWithMorpheme>();
 		if (logger.isErrorEnabled() && morpheme == null) {
 				logger.error("morpheme is null");
 		}
@@ -704,33 +701,14 @@ public class CompiledCorpus_ES extends CompiledCorpus {
 						logger.error("** winfo.word = null; winfo="+ PrettyPrinter.print(winfo));
 					}
 				}
-//				logger.trace("Looking at word " + winfo.word);
-
-				String morphId = null;
-				Matcher morphMatcher = morphPatt.matcher("\\{" + winfo.morphemesSpaceConcatenated + "\\/");
-
-				if (morphMatcher.find()) {
-					morphId = morphMatcher.group(2);
-				}
-
-				String topDecomp =
-				DecompositionState.formatDecompStr(
-					winfo.topDecompositionStr,
-					Morpheme.MorphFormat.WITH_BRACES);
-
-				String word = winfo.getIdWithoutType();
-
-				WordWithMorpheme aWord =
-					new WordWithMorpheme(
-					word, morphId, topDecomp,
-					winfo.frequency, winfo.decompositionsSample);
-				words.add(aWord);
+				winfos.add(winfo);
+				logger.trace("Looking at word " + winfo.word);
 			}
 		}
 
 		logger.trace("Returning");
 
-		return words;
+		return winfos;
 	}
 
 	private RequestBodyElement[] esSortCriteria(String[] sortCriteria) throws CompiledCorpusException {

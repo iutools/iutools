@@ -149,23 +149,16 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 	}
 
 	public AssertCompiledCorpus wordsContainingMorphemeAre(
-		String morpheme, Triple<String,String,String>... expWordsArr) throws Exception {
-		Set<Triple<String,String,String>> expWords = new HashSet<Triple<String,String,String>>();
-		Collections.addAll(expWords, expWordsArr);
-		List<WordWithMorpheme> gotWordWithMorph =
+		String morpheme, String... expWordsArr) throws Exception {
+		List<WordInfo> gotWordInfos =
 			corpus().wordsContainingMorpheme(morpheme);
-		Set<Triple<String,String,String>> gotWords = new HashSet<Triple<String,String,String>>();
-		for (WordWithMorpheme wrdWithMorph: gotWordWithMorph) {
-			gotWords.add(
-				Triple.of(
-					wrdWithMorph.word, wrdWithMorph.morphemeId,
-						DecompositionState.formatDecompStr(
-							wrdWithMorph.decomposition,
-							MorphFormat.WITH_BRACES)));
+		Set<String> gotWords = new HashSet<String>();
+		for (WordInfo winfo: gotWordInfos) {
+			gotWords.add(winfo.word);
 		}
 		AssertObject.assertDeepEquals(
-			baseMessage+"\nList of words containing morpheme '"+morpheme+"' was wrong", 
-			expWords, gotWords);
+			baseMessage+"\nList of words containing morpheme '"+morpheme+"' was wrong",
+		expWordsArr, gotWords);
 		return this;
 	}
 

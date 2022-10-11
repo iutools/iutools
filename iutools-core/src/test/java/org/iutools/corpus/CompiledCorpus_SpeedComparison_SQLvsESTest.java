@@ -286,7 +286,7 @@ public class CompiledCorpus_SpeedComparison_SQLvsESTest {
 		int counter = 0;
 		for (String morpheme: morphemesToTest) {
 			counter++;
-			List<WordWithMorpheme> words = corpus.wordsContainingMorpheme(morpheme);
+			List<WordInfo> words = corpus.wordsContainingMorpheme(morpheme);
 		}
 		return 1.0 * sw.lapTime(TimeUnit.MILLISECONDS);
 	}
