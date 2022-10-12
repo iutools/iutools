@@ -397,19 +397,6 @@ public class SpellCheckerAccuracyTest {
         evaluateCheckerOnExamples(checker,  parameters);
     }
 
-
-	@Test
-	public void test__DELETEME(TestInfo testInfo)
-		throws Exception {
-    	Iterator<WordInfo> results = new SpellChecker().winfosContainingNgram("utap$");
-    	List<WordInfo> hits = new ArrayList<WordInfo>();
-    	while(results.hasNext()) {
-			hits.add(results.next());
-		}
-    	return;
-	 }
-
-
     @Test
     public void test__Evaluate__MostFrequentMisspelledWords__AssumingWordIsInDict(TestInfo testInfo)
             throws Exception {
@@ -442,7 +429,7 @@ public class SpellCheckerAccuracyTest {
         EvaluationParameters parameters =
             new EvaluationParameters(testInfo)
             // Use setFocusOnExample to run just one word from the data set
-//            .setFocusOnExample("nunavungmi")
+//            .setFocusOnExample("tavani")
 
             .setVerbosity(1)
             .setExamples(examples_MostFrequenMisspelledWords)

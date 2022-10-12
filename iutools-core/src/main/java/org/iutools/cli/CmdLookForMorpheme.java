@@ -58,7 +58,7 @@ public class CmdLookForMorpheme extends ConsoleCommand {
 			}
 			
 			if (words != null && words.size() > 0) {
-				MorphemeDictionary.WordFreqComparator comparator = morphExtr.new WordFreqComparator();
+				MorphemeDictionary.MorphExampleComparator comparator = morphExtr.new MorphExampleComparator();
 				Iterator<MorphDictionaryEntry> itWords = words.iterator();
 				int nIt = 1;
 				while (itWords.hasNext()) {

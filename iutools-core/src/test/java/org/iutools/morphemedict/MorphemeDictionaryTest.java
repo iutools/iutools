@@ -97,9 +97,11 @@ public class MorphemeDictionaryTest {
 
 	@Test
 	public void test__wordsContainingMorpheme__SpeedTest() throws Exception {
+
 		MorphemeDictionary morphemeSearcher = new MorphemeDictionary();
 		String[] morphemes = new String[] {"inuk", "tut", "siuq"};
 		long start = StopWatch.nowMSecs();
+
 		for (String morpheme: morphemes) {
 			System.out.println("Searching examples for "+morpheme);
 			List<MorphDictionaryEntry> wordsForMorphemes =

@@ -112,7 +112,7 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 			}
 			List<WordInfo> words = new ArrayList<WordInfo>();
 			String queryStr =
-				"SELECT word FROM " + WORDS_TABLE + "\n"+
+				"SELECT * FROM " + WORDS_TABLE + "\n"+
 				"  WHERE\n"+
 				"    MATCH(wordNgrams) AGAINST(?) AND\n"+
 			   "    corpusName = ? ";
@@ -127,7 +127,7 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 			try (Connection conn=rsWithConn.getRight()) {
 				ResultSet rs = rsWithConn.getLeft();
 				logger.trace("Done querying");
-				List<WordInfo> winfos = QueryProcessor.rs2pojoLst(rs, WordInfo.class);
+				List<WordInfo> winfos = QueryProcessor.rs2pojoLst(rs, new Sql2WordIinfo());
 				for (WordInfo winfo : winfos) {
 					words.add(winfo);
 				}

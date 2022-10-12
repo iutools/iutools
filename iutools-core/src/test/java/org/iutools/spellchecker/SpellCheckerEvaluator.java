@@ -70,7 +70,7 @@ public class SpellCheckerEvaluator {
 		}
 		
 		Set<String> correctForms = example.acceptableCorrections;
-		SpellingCorrection gotCorrection = checker.correctWord(example.wordToCheck);
+		SpellingCorrection gotCorrection = checker.correctWord(example.wordToCheck, 5);
 		
 		boolean shouldHaveBeenCorrect = !example.misspelled;
 		

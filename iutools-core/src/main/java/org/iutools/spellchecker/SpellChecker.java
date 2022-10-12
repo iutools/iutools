@@ -316,7 +316,7 @@ public class SpellChecker {
 						word, null);
 
 					List<ScoredSpelling> candidates =
-					candidatesWithSimilarNgrams(wordInLatin, wordIsNumericTerm);
+						candidatesWithSimilarNgrams(wordInLatin, wordIsNumericTerm);
 
 					SpellDebug.trace("SpellChecker.correctWord",
 						"Number of 1st pass candidates=" + (candidates.size()),
@@ -331,7 +331,7 @@ public class SpellChecker {
 						word, null);
 
 					List<ScoredSpelling> scoredSpellings =
-					computeCandidateDistances(wordInLatin, candidates);
+						computeCandidateDistances(wordInLatin, candidates);
 
 					SpellDebug.containsDuplicates(
 						"SpellChecker.correctWord",
@@ -343,7 +343,7 @@ public class SpellChecker {
 						word, scoredSpellings);
 
 					List<ScoredSpelling> sortedSpellings =
-					sortCandidatesByOverallScore(scoredSpellings);
+						sortCandidatesByOverallScore(scoredSpellings);
 
 					SpellDebug.containsDuplicates(
 						"SpellChecker.correctWord",
