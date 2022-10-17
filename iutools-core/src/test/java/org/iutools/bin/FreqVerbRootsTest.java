@@ -10,7 +10,6 @@ import java.util.Map;
 
 import org.iutools.corpus.CompiledCorpus;
 import org.iutools.corpus.CompiledCorpusRegistry;
-import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
 import org.iutools.corpus.TestCorpusBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,10 +26,10 @@ public class FreqVerbRootsTest {
 				"nunami", "takujuq", "iglumik", "siniktuq", "takujaujuq", "angijuq"
 				};
 
-        CompiledCorpus compiledCorpus = TestCorpusBuilder.makeEmptyCorpus();
-			new CompiledCorpusRegistry().makeCorpus("test-corpus")
-				.setSegmenterClassName(StringSegmenter_IUMorpheme.class);
-        compiledCorpus.addWordOccurences(corpusWords);
+	  CompiledCorpus compiledCorpus = TestCorpusBuilder.makeEmptyCorpus();
+		new CompiledCorpusRegistry().makeCorpus("test-corpus")
+			.setSegmenterClassName(StringSegmenter_IUMorpheme.class);
+	  compiledCorpus.addWordOccurences(corpusWords);
         
 		FreqVerbRootsCompiler freqVerbRootsCompiler = new FreqVerbRootsCompiler();
 		HashMap<String,Long> freqsVerbRoots = freqVerbRootsCompiler.compileFreqs(compiledCorpus);

@@ -119,6 +119,7 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 			if (onlyWordsWithDecompositions) {
 				queryStr += "AND\n    `topDecompositionStr` IS NOT NULL";
 			}
+			queryStr += "\n"+sqlOrderBy("frequency:desc");
 			queryStr += ";";
 			logger.trace("Querying with queryStr="+queryStr);
 			Pair<ResultSet,Connection> rsWithConn = query2(queryStr, ngram, corpusName);
@@ -262,19 +263,22 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 			ngram = formatCharNgram4SqlSearching_wordNgramsField(ngram);
 			logger.trace("formatted ngram="+ngram);
 			boolean onlyWordsWithDecompositions = ArrayUtils.contains(options, SearchOption.EXCL_MISSPELLED);
-			String selectWhat = " ";
+			String selectWhat = " * ";
 			if (ArrayUtils.contains(options, SearchOption.WORD_ONLY)) {
+				// We only care about the value of the 'word' field
 				selectWhat = " word ";
 			}
 			List<String> words = new ArrayList<String>();
 			String queryStr =
-				"SELECT word FROM " + WORDS_TABLE + "\n"+
+				"SELECT "+selectWhat+" FROM " + WORDS_TABLE + "\n"+
 				"  WHERE\n"+
 				"    MATCH(wordNgrams) AGAINST(?) AND\n"+
 			   "    corpusName = ? ";
 			if (onlyWordsWithDecompositions) {
+				// We only want words that have a decomposition
 				queryStr += "AND\n    `topDecompositionStr` IS NOT NULL";
 			}
+			queryStr += "\n"+sqlOrderBy("frequency:desc");
 			queryStr += ";";
 			logger.trace("Querying with queryStr="+queryStr);
 			Pair<ResultSet,Connection> rsWithConn = query2(queryStr, ngram, corpusName);
@@ -283,7 +287,7 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 			try (Connection conn=rsWithConn.getRight();
 				  ResultSet rs = rsWithConn.getLeft()) {
 				logger.trace("Done querying");
-				List<WordInfo> winfos = QueryProcessor.rs2pojoLst(rs, WordInfo.class);
+				List<WordInfo> winfos = QueryProcessor.rs2pojoLst(rs, new Sql2WordIinfo());
 				for (WordInfo winfo : winfos) {
 					words.add(winfo.word);
 				}
@@ -523,17 +527,20 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 
 	@Override
 	public Iterator<String> allWords() throws CompiledCorpusException {
+		Logger logger = LogManager.getLogger("org.iutools.corpus.sql.CompiledCorpus_SQL.allWords");
 		String queryStr =
 			"SELECT word from "+WORDS_TABLE+"\n"+
 			"WHERE\n"+
 			"  corpusName = ?;";
 		Pair<ResultSet, Connection> rsWithConn = query2(queryStr, corpusName);
 		Iterator<String> iter = Collections.emptyIterator();
-		try (Connection conn = rsWithConn.getRight()) {
+		Connection conn = rsWithConn.getRight();
+		try {
 			iter = new ColValueIterator<String>(rsWithConn.getLeft(), "word");
 		} catch (SQLException e) {
 			throw new CompiledCorpusException(e);
 		}
+		logger.trace("Returning iter="+iter);
 		return iter;
 	}
 

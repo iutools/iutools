@@ -32,15 +32,15 @@ public class SQLTestHelpers {
 	}
 
 	public static void assertAboutSameSpeed(
-		String operation, Map<String, Long> times, double tolerance) throws Exception {
+		String operation, Map<String, Double> times, double tolerance) throws Exception {
 		System.out.println("Running times for operation "+operation);
 		System.out.println(new PrettyPrinter().pprint(times));
 
 		// First, find the fastest implementaiton.
-		long fastestTime = Long.MAX_VALUE;
+		double fastestTime = Long.MAX_VALUE;
 		String fastestImpl = null;
 		for (String implName: times.keySet()) {
-			long implTime = times.get(implName);
+			double implTime = times.get(implName);
 			if (implTime < fastestTime) {
 				fastestImpl = implName;
 				fastestTime = implTime;
@@ -51,7 +51,7 @@ public class SQLTestHelpers {
 		// Then make sure that all implementations are within tolerance of
 		// the fastest implementation
 		for (String implName: times.keySet()) {
-			long implTime = times.get(implName);
+			double implTime = times.get(implName);
 			System.out.println("  Checking speed of implementation "+implName);
 //			AssertNumber.performanceHasNotChanged(operation, implTime, fastestImpl, tolerance);
 			AssertNumber.performanceHasNotChanged(

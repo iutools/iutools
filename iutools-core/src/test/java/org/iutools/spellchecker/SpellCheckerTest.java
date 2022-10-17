@@ -4,18 +4,13 @@ package org.iutools.spellchecker;
 import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import org.iutools.config.IUConfig;
-import org.iutools.corpus.CompiledCorpus;
+import org.iutools.corpus.*;
 import org.iutools.utilities.StopWatch;
 import ca.nrc.testing.*;
-import org.iutools.corpus.CompiledCorpusRegistry;
 
-import org.iutools.corpus.RW_CompiledCorpus;
-import org.iutools.corpus.WordInfo;
 import org.iutools.text.segmentation.IUTokenizer;
 import org.junit.jupiter.api.*;
 
@@ -219,13 +214,13 @@ public class SpellCheckerTest {
 	}
 	
 	@Test 
-	public void test__wordsContainingSequ() throws Exception {
-		String seq = "nuk";
+	public void test__wordsContainingNgram() throws Exception {
+		String seq = "nukt";
 		
 		SpellChecker checker = largeDictCheckerWithTestWords();
 		
 		Iterator<String> wordsWithSeq = checker.wordsContainingNgram(seq);
-		String[] expected = new String[] {"inukshuk","inuk","inuktut"};
+		String[] expected = new String[] {"inuktut", "inuktitut"};
 		assertContainsAll(
 			"The list of words containing sequence "+seq+" was not as expected",
 			expected, wordsWithSeq);
@@ -836,13 +831,22 @@ public class SpellCheckerTest {
 	public void test__winfosContainingNgram__HappyPath() throws Exception {
 		SpellChecker checker = largeDictCheckerWithTestWords();
 		String ngram = "^nuna";
-		WordInfo[] expWinfos = new WordInfo[] {
-			new WordInfo("nunavut")
+		String[] expWords = new String[] {
+			"nunavu", "nunalinni", "nunavummi"
 		};
 		Iterator<WordInfo> iter = checker.winfosContainingNgram(ngram);
-		AssertIterator.assertContainsAll(
-			"List of words containing ngram "+ngram+" did not contain expected words",
-			expWinfos, iter);
+		assertContainsWords(expWords, iter, 10);
+	}
+
+	private void assertContainsWords(String[] expWords, Iterator<WordInfo> iter, int inTopN) {
+		Set<String> gotWords = new HashSet<String>();
+		while (iter.hasNext() && gotWords.size() <= inTopN) {
+			WordInfo nextWord = iter.next();
+			gotWords.add(nextWord.word);
+		}
+		AssertCollection.assertContainsAll(
+			"WordInfo iterator did not include the expected words",
+			expWords, gotWords);
 	}
 
 	/**********************************

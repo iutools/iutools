@@ -3,14 +3,15 @@ package org.iutools.webservice.morphexamples;
 import ca.nrc.json.PrettyPrinter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
+import org.iutools.corpus.CompiledCorpus;
+import org.iutools.corpus.CompiledCorpusRegistryException;
 import org.iutools.corpus.CompiledCorpusException;
 import org.iutools.corpus.CompiledCorpusRegistry;
 import org.iutools.linguisticdata.*;
 import org.iutools.morphemedict.MorphDictionaryEntry;
 import org.iutools.morphemedict.MorphemeDictionary;
 import org.iutools.morphemedict.MorphemeDictionaryException;
-import org.iutools.morphemedict.ScoredExample;
+import org.iutools.morphemedict.MorphWordExample;
 import org.iutools.webservice.*;
 
 import java.io.IOException;
@@ -66,8 +67,8 @@ public class MorphemeExamplesEndpoint
 			MorphemeDictionary morphExtractor = new MorphemeDictionary();
 
 			tLogger.trace("Loading the corpus");
-			CompiledCorpus_ES compiledCorpus =
-				new CompiledCorpus_ES(CompiledCorpusRegistry.defaultCorpusName);
+			CompiledCorpus compiledCorpus =
+				new CompiledCorpusRegistry().getCorpus();
 			morphExtractor.useCorpus(compiledCorpus);
 			tLogger.trace("Using corpus of type="+compiledCorpus.getClass());
 
@@ -97,17 +98,17 @@ public class MorphemeExamplesEndpoint
 					new MorphemeHumanReadableDescr(morphID, morphMeaning);
 				results.matchingMorphemes.add(morphDescr);
 
-				List<ScoredExample> wordsAndFreqs = w.words;
+				List<MorphWordExample> wordsAndFreqs = w.words;
 				tLogger.trace("wordsAndFreqs: "+wordsAndFreqs.size());
 				List<String> words = new ArrayList<String>();
-				for (ScoredExample example : wordsAndFreqs) {
+				for (MorphWordExample example : wordsAndFreqs) {
 					tLogger.trace("example.word: "+example.word);
 					words.add(example.word);
 				}
 				results.examplesForMorpheme.put(
 					w.morphemeWithId, words.toArray(new String[0]));
 			}
-		} catch (MorphemeDictionaryException | CompiledCorpusException | IOException | MorphemeException | LinguisticDataException e) {
+		} catch (MorphemeDictionaryException | CompiledCorpusException | IOException | MorphemeException | LinguisticDataException | CompiledCorpusRegistryException e) {
 			throw new MorphemeExamplesException(e);
 		}
 		tLogger.trace("end of method");

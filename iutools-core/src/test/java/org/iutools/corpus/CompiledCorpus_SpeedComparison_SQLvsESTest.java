@@ -192,7 +192,8 @@ public class CompiledCorpus_SpeedComparison_SQLvsESTest {
 		Map<String,Double> times = new HashMap<String,Double>();
 		times.put("es", time_info4word(esCorpus));
 		times.put("sql", time_info4word(sqlCorpus));
-		SQLTestHelpers.assertIsFaster("info4word", "sql", times);
+//		SQLTestHelpers.assertIsFaster("info4word", "sql", times);
+		SQLTestHelpers.assertAboutSameSpeed("info4word", times, 0.05);
 	}
 
 	private double time_info4word(CompiledCorpus corpus)
@@ -210,8 +211,9 @@ public class CompiledCorpus_SpeedComparison_SQLvsESTest {
 		Map<String,Double> times = new HashMap<String,Double>();
 		times.put("es", time_wordsContainingNgram(esCorpus, startNgramsToTest));
 		times.put("sql", time_wordsContainingNgram(sqlCorpus, startNgramsToTest));
-		SQLTestHelpers.assertIsFaster(
-			"wordsContainingNgram__startOfWord", "sql", times);
+//		SQLTestHelpers.assertIsFaster(
+//			"wordsContainingNgram__startOfWord", "sql", times);
+		SQLTestHelpers.assertAboutSameSpeed("wordsContainingNgram__startOfWord", times, 0.05);
 	}
 
 	@Test

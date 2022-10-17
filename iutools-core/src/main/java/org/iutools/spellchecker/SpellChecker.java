@@ -1210,8 +1210,7 @@ public class SpellChecker {
 		Iterator<String> wordsIter = null;
 		try {
 			Iterator<String> wordsIter1 =
-				corpus.wordsContainingNgram(
-					seq, options);
+				corpus.wordsContainingNgram(seq, options);
 
 			Iterator<String> wordsIter2 =
 				explicitlyCorrectWords.wordsContainingNgram(

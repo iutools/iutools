@@ -19,6 +19,7 @@ public class QueryProcessor {
 	private static Map<String,Boolean> tableIsDefinedCache = new HashMap<String,Boolean>();
 
 	private ObjectMapper mapper = new ObjectMapper();
+	private PrettyPrinter prettyPrinter = new PrettyPrinter();
 
 	protected Connection getConnection() throws SQLException {
 		Connection conn = null;
@@ -201,13 +202,17 @@ public class QueryProcessor {
 			PreparedStatement stmt = conn.prepareStatement(query);
 			setPrepStatementArgs(stmt, queryArgs);
 			rs = stmt.executeQuery();
+			if (logger.isTraceEnabled()) {
+				logger.trace("Returning ResultSet with columns: "+
+					prettyPrinter.pprint(new ResultSetUtils(rs).columnNames()));
+			}
 		} catch (SQLException e) {
 			// Make sure the connection is closed if we encountered a problem.
 			if (conn != null) {
 				conn.close();
 			}
 			String argsJson = null;
-			argsJson = new PrettyPrinter().pprint(queryArgs);
+			argsJson = prettyPrinter.pprint(queryArgs);
 			throw new SQLException(
 				"Could not execute query:\n"+
 				"query was:\n"+
@@ -350,7 +355,21 @@ public class QueryProcessor {
 	 * in the current row of the ResultSet
 	 */
 	public static Object rs2CurrColValue(ResultSet rs, String colName) throws SQLException {
-		Object colValue = rs.getObject(colName);
+		Logger logger = LogManager.getLogger("org.iutools.sql.QueryProcessor.rs2CurrColValue");
+		Object colValue = null;
+		if (logger.isTraceEnabled()) {
+			logger.trace("Fetching colName="+colName+" from ResultSet with columns: "+
+				new PrettyPrinter().print(new ResultSetUtils(rs).columnNames()));
+		}
+		try {
+			colValue = rs.getObject(colName);
+		} catch (Exception e) {
+			Set<String> colNames = new ResultSetUtils(rs).columnNames();
+			throw new SQLException(
+				"Could not get next value of column "+colName + "\n" +
+				"Existing columns in ResultSet were: "+new PrettyPrinter().print(colNames),
+				e);
+		}
 		return colValue;
 	}
 
