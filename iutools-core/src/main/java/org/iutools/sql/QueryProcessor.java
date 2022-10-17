@@ -65,10 +65,9 @@ public class QueryProcessor {
 		if (isDefined == null) {
 			String query = "SHOW TABLES LIKE \""+tableName+"\";";
 			Pair<ResultSet, Connection> rsWithConn = query2(query);
-			try(Connection conn = rsWithConn.getRight()) {
-				isDefined = !(QueryProcessor.rsIsEmpty(rsWithConn.getLeft()));
-				cacheTableIsDefined(tableName, isDefined);
-			}
+			Connection conn = rsWithConn.getRight();
+			isDefined = !(QueryProcessor.rsIsEmpty(rsWithConn.getLeft()));
+			cacheTableIsDefined(tableName, isDefined);
 		}
 		return isDefined;
 	}
@@ -229,15 +228,10 @@ public class QueryProcessor {
 		long rowCount = 0;
 		queryStr = "SELECT COUNT(*) AS rowCount "+queryStr+";";
 		Pair<ResultSet, Connection> rsWithConn = query2(queryStr, queryArgs);
-		try (Connection conn = rsWithConn.getRight()) {
-			ResultSet rs = rsWithConn.getLeft();
-			rs.next();
-			rowCount = rs.getLong("rowCount");
-		} catch (Exception e) {
-			// If getInt didn't work, it probably means there were not hits?
-			// So leave rowCount at 0
-			int x = 0;
-		}
+		Connection conn = rsWithConn.getRight();
+		ResultSet rs = rsWithConn.getLeft();
+		rs.next();
+		rowCount = rs.getLong("rowCount");
 		return rowCount;
 	}
 
@@ -247,17 +241,15 @@ public class QueryProcessor {
 			"SELECT "+aggrFctName+"("+fldName+") AS aggrValue "+queryStr;
 		Pair<ResultSet, Connection> rsWithConn = query2(queryStr, queryArgs);
 		Double aggrValue = null;
-		try (Connection conn = rsWithConn.getRight()) {
-			ResultSet rs = rsWithConn.getLeft();
-			rs.next();
-			try {
-				aggrValue = rs.getDouble("aggrValue");
-			} catch (Exception e) {
-				// If an exception is raised, it probably means that there were no
-				// hits at all. So leave aggrValue to 0.0.
-				int x = 1;
-			}
-
+		Connection conn = rsWithConn.getRight();
+		ResultSet rs = rsWithConn.getLeft();
+		rs.next();
+		try {
+			aggrValue = rs.getDouble("aggrValue");
+		} catch (Exception e) {
+			// If an exception is raised, it probably means that there were no
+			// hits at all. So leave aggrValue to 0.0.
+			int x = 1;
 		}
 		return aggrValue;
 	}

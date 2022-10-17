@@ -96,12 +96,11 @@ public class AlignmentsIterator implements Iterator<Alignment_ES>, Closeable {
 
 		try {
 			Pair<ResultSet, Connection> result = queryProcessor.query2(sql, args);
-			try (Connection conn = result.getRight()) {
-				List<SentenceInLang> targetSents =
-					QueryProcessor.rs2pojoLst(result.getLeft(), new Sql2SentenceInLang());
-				for (SentenceInLang aTargSent: targetSents) {
-					align.setSentence(aTargSent.lang, aTargSent.text);
-				}
+			Connection conn = result.getRight();
+			List<SentenceInLang> targetSents =
+				QueryProcessor.rs2pojoLst(result.getLeft(), new Sql2SentenceInLang());
+			for (SentenceInLang aTargSent: targetSents) {
+				align.setSentence(aTargSent.lang, aTargSent.text);
 			}
 		} catch (SQLException e) {
 			throw new TranslationMemoryException(e);

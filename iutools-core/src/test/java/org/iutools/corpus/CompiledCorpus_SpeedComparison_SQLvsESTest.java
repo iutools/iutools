@@ -193,7 +193,7 @@ public class CompiledCorpus_SpeedComparison_SQLvsESTest {
 		times.put("es", time_info4word(esCorpus));
 		times.put("sql", time_info4word(sqlCorpus));
 //		SQLTestHelpers.assertIsFaster("info4word", "sql", times);
-		SQLTestHelpers.assertAboutSameSpeed("info4word", times, 0.05);
+		SQLTestHelpers.assertNoSlowerThan("info4word", "sql", times, 0.05);
 	}
 
 	private double time_info4word(CompiledCorpus corpus)

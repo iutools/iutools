@@ -60,6 +60,33 @@ public class SQLTestHelpers {
 	}
 
 
+	public static void assertNoSlowerThan(
+		String operation, String implOfConcern, Map<String, Double> times, double tolerance) throws Exception {
+		System.out.println("Running times for operation "+operation);
+		System.out.println(new PrettyPrinter().pprint(times));
+
+		// First, find the fastest implementaiton.
+		double fastestTime = Long.MAX_VALUE;
+		String fastestImpl = null;
+		for (String implName: times.keySet()) {
+			double implTime = times.get(implName);
+			if (implTime < fastestTime) {
+				fastestImpl = implName;
+				fastestTime = implTime;
+			}
+		}
+		System.out.println("Fastest implentation was: "+fastestImpl+"="+fastestTime);
+
+		// Then make sure that the implementation of concern is not "too" slow
+		// compared to the fastest one.
+		double implOfConcernTime = times.get(implOfConcern);
+		double delta = (implOfConcernTime - fastestTime) / fastestTime;
+		System.out.println("Delta of "+implOfConcern+" w.r.t "+fastestImpl+": "+delta);
+		if (delta > 0 && Math.abs(delta) > tolerance) {
+			Assertions.fail("Implementation "+implOfConcern+" was slower than "+fastestImpl+" a factor of "+delta+" (max allowed: "+tolerance+").");
+		}
+	}
+
 	/**
 	 * Get and close hundreds of connections from the pool to avoid encurring
 	 * pool initialisation overhead during tests.
