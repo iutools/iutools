@@ -36,6 +36,16 @@ public class ColValueIterator<T> implements Iterator<T>, Closeable {
 	}
 
 	@Override
+	protected void finalize() throws Throwable {
+		try {
+			rs.close();
+		} catch (Exception e) {
+			// Nothing to do if we weren't able to close the rs.
+			// Probably it was already closed.
+		}
+	}
+
+	@Override
 	public boolean hasNext() {
 		if (!nextItemReady) {
 			fetchNextItem();

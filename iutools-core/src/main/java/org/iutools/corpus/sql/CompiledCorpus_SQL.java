@@ -1,6 +1,7 @@
 package org.iutools.corpus.sql;
 
 import java.io.File;
+import java.io.Reader;
 import java.sql.*;
 import java.util.*;
 
@@ -81,15 +82,13 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 			"WHERE\n"+
 			"  `word` = ? AND \n" +
 			"  `corpusName` = ?;";
-      Pair<ResultSet,Connection> rsWithConn = query2(queryStr, word, corpusName);
-      // Note: We do a try-with conn, so that the ResultSet's connection will
-		// be closed when we are done with the result
-		//
-		Connection conn = rsWithConn.getRight();
-		ResultSet rs = rsWithConn.getLeft();
-		wordInfo = rs2winfo(rs);
-		if (logger.isTraceEnabled()) {
-			logger.trace("returning wordInfo=\n"+new PrettyPrinter().print(wordInfo));
+      try (ResultSet rs = query2(queryStr, word, corpusName)) {
+			wordInfo = rs2winfo(rs);
+			if (logger.isTraceEnabled()) {
+				logger.trace("returning wordInfo=\n" + new PrettyPrinter().print(wordInfo));
+			}
+		} catch (SQLException e) {
+			throw new CompiledCorpusException(e);
 		}
 
 		return wordInfo;
@@ -119,15 +118,14 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 			queryStr += "\n"+sqlOrderBy("frequency:desc");
 			queryStr += ";";
 			logger.trace("Querying with queryStr="+queryStr);
-			Pair<ResultSet,Connection> rsWithConn = query2(queryStr, ngram, corpusName);
-			// Note: We do a try-with conn, so that the ResultSet's conneciton will
+			// Note: We do a try-with conn, so that the ResultSet will
 			// be closed when we are done.
-			Connection conn=rsWithConn.getRight();
-			ResultSet rs = rsWithConn.getLeft();
-			logger.trace("Done querying");
-			List<WordInfo> winfos = QueryProcessor.rs2pojoLst(rs, new Sql2WordIinfo());
-			for (WordInfo winfo : winfos) {
-				words.add(winfo);
+			try (ResultSet rs = query2(queryStr, ngram, corpusName)) {
+				logger.trace("Done querying");
+				List<WordInfo> winfos = QueryProcessor.rs2pojoLst(rs, new Sql2WordIinfo());
+				for (WordInfo winfo : winfos) {
+					words.add(winfo);
+				}
 			}
 			return words.iterator();
 		} catch (SQLException e) {
@@ -277,13 +275,13 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 			queryStr += "\n"+sqlOrderBy("frequency:desc");
 			queryStr += ";";
 			logger.trace("Querying with queryStr="+queryStr);
-			Pair<ResultSet,Connection> rsWithConn = query2(queryStr, ngram, corpusName);
-			logger.trace("Done querying");
-			Connection conn=rsWithConn.getRight();
-			ResultSet rs = rsWithConn.getLeft();
-			List<WordInfo> winfos = QueryProcessor.rs2pojoLst(rs, new Sql2WordIinfo());
-			for (WordInfo winfo : winfos) {
-				words.add(winfo.word);
+			// Try-with so the ResultSet will always be closed when done.
+			try (ResultSet rs = query2(queryStr, ngram, corpusName)) {
+				logger.trace("Done querying");
+				List<WordInfo> winfos = QueryProcessor.rs2pojoLst(rs, new Sql2WordIinfo());
+				for (WordInfo winfo : winfos) {
+					words.add(winfo.word);
+				}
 			}
 			logger.trace("Returning total of "+words.size()+" words");
 			return words.iterator();
@@ -385,13 +383,10 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 				queryStr += "\nLIMIT 0, " + maxWords;
 			}
 			queryStr += ";";
-			Pair<ResultSet, Connection> rsWithConn = query2(queryStr, corpusName, morphQuery);
-			// Note: We do a try-with conn, so that the ResultSet's connection will
-			// be closed when we are done.
+			// Note: We do a try-with conn, so that the ResultSet will be closed
+			// when we are done.
 			//
-			Connection conn = rsWithConn.getRight();
-			ResultSet rs = rsWithConn.getLeft();
-			try {
+			try (ResultSet rs = query2(queryStr, corpusName, morphQuery)) {
 				wordInfos = QueryProcessor.rs2pojoLst(rs, new Sql2WordIinfo());
 			} catch (SQLException e) {
 				throw new CompiledCorpusException(e);
@@ -420,9 +415,9 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 				;
 			queryStr += sqlOrderBy("frequency:desc");
 
-			Pair<ResultSet, Connection> rsWithConn = this.query2(queryStr, corpusName, decompQuery);
-			try (Connection conn = rsWithConn.getRight()) {
-				ResultSet rs = rsWithConn.getLeft();
+			// We use Try-with to ensure that the ResultSet will be closed when
+			// we are done (or if an exception is raised).
+			try (ResultSet rs = this.query2(queryStr, corpusName, decompQuery)) {
 				List<WordInfo> winfos = QueryProcessor.rs2pojoLst(rs, WordInfo.class);
 				for (WordInfo winfo: winfos) {
 					words.add(winfo.word);
@@ -491,13 +486,14 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 				"DELETE FROM "+WORDS_TABLE+"\n"+
 				"WHERE\n"+
 				"  `corpusName` = ?;";
-			Pair<ResultSet, Connection> rsWithConn = query2(queryStr, corpusName);
-			try {
-				rsWithConn.getRight().close();
+			// We use try-with to ensure that the ResultSet will be closed even if
+			// an exception is raised.
+			try (ResultSet rs = query2(queryStr, corpusName)){
 			} catch (SQLException e) {
 				throw new CompiledCorpusException(e);
 			}
 		}
+		return;
 	}
 
 	@Override
@@ -507,9 +503,10 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 			"WHERE\n"+
 			"  `corpusName` = ? AND\n"+
 			"  `word` = ?;";
-		Pair<ResultSet, Connection> rsWithConn = query2(queryStr, corpusName, word);
-		try {
-			rsWithConn.getRight().close();
+
+		// We use try-with to ensure that the ResultSet will be closed even if
+		// an exception is raised.
+		try (ResultSet rs = query2(queryStr, corpusName, word)){
 		} catch (SQLException e) {
 			throw new CompiledCorpusException(e);
 		}
@@ -522,11 +519,14 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 			"SELECT word from "+WORDS_TABLE+"\n"+
 			"WHERE\n"+
 			"  corpusName = ?;";
-		Pair<ResultSet, Connection> rsWithConn = query2(queryStr, corpusName);
+
 		Iterator<String> iter = Collections.emptyIterator();
-		Connection conn = rsWithConn.getRight();
+		// Note: In this case, we DO NOT use try-with because the returned iterator
+		//   requires that the ResultSet be still opened.
+		//   When the iterator is finalized, it will close its result set.
+		ResultSet rs = query2(queryStr, corpusName);
 		try {
-			iter = new ColValueIterator<String>(rsWithConn.getLeft(), "word");
+			iter = new ColValueIterator<String>(rs, "word");
 		} catch (SQLException e) {
 			throw new CompiledCorpusException(e);
 		}
@@ -551,8 +551,10 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 				String query =
 					"DELETE FROM " + WORDS_TABLE + "\n" +
 					"WHERE `corpusName` = ?;";
-				Pair<ResultSet, Connection> rsWithConn = queryProcessor().query2(query, corpusName);
-				rsWithConn.getRight().close();
+				// We use try-with to ensure that the ResultSet will be closed even if
+				// an exception is raised.
+				try (ResultSet rs = queryProcessor().query2(query, corpusName)) {
+				}
 			}
 		} catch (SQLException e) {
 			throw new CompiledCorpusException(e);
@@ -602,7 +604,7 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 	}
 
 
-	private Pair<ResultSet,Connection> query2(String queryStr, Object... queryArgs) throws CompiledCorpusException {
+	private ResultSet query2(String queryStr, Object... queryArgs) throws CompiledCorpusException {
 		try {
 			return new QueryProcessor().query2(queryStr, queryArgs);
 		} catch (SQLException e) {
@@ -652,12 +654,11 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 			"    corpusName = ? AND \n" +
 			"    topDecompositionStr IS NULL"
 			;
-		Pair<ResultSet, Connection> rsWithConn = query2(queryStr, corpusName);
-		Connection conn = rsWithConn.getRight();
-		ResultSet rs = rsWithConn.getLeft();
 
 		List<String> words = new ArrayList<String>();
-		try {
+		// We use try-with to ensure that the ResultSet will be closed even
+		// if an exception is raised.
+		try (ResultSet rs = query2(queryStr, corpusName)){
 			List<WordInfo> winfos = QueryProcessor.rs2pojoLst(rs, WordInfo.class);
 			for (WordInfo winfo : winfos) {
 				words.add(winfo.word);
@@ -677,14 +678,12 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 			  "SELECT * FROM "+LAST_LOADED_DATE_TABLE+"\n"+
 			  "WHERE\n"+
 			  "  `corpusName` = ?;";
-		Pair<ResultSet, Connection> rsWithConn = query2(queryStr, corpusName);
-		Connection conn = rsWithConn.getRight();
-		ResultSet rs = rsWithConn.getLeft();
-		try {
+		// We use try-with to ensure that the ResultSet will be closed even
+		// if an exception is raised.
+		try (ResultSet rs = query2(queryStr, corpusName)) {
 			Map lastLoadedMap = QueryProcessor.rs2pojo(rs, Map.class);
 			if (lastLoadedMap != null) {
 				date = Long.parseLong((String) lastLoadedMap.get("timestamp"));
-				int x = 1;
 			}
 		} catch (SQLException e) {
 			throw new CompiledCorpusException(e);

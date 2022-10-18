@@ -10,7 +10,6 @@ import java.sql.SQLException;
 import java.util.Iterator;
 
 public class ResultsSetIterator<T> implements Iterator<T>, Closeable {
-	private Connection conn = null;
 	private ResultSet rs = null;
 	private Sql2Pojo<T> converter = null;
 
@@ -18,12 +17,22 @@ public class ResultsSetIterator<T> implements Iterator<T>, Closeable {
 	protected T nextItem = null;
 	protected boolean nextItemReady = false;
 
-	public ResultsSetIterator(ResultSet rs, Connection conn, Sql2Pojo<T> converter) {
+	public ResultsSetIterator(ResultSet rs, Sql2Pojo<T> converter) {
 		this.rs = rs;
-		this.conn = conn;
 		this.converter = converter;
 		return;
 	}
+
+	@Override
+	protected void finalize() throws Throwable {
+		try {
+			rs.close();
+		} catch (Exception e) {
+			// Nothing to do if we weren't able to close the rs.
+			// Probably it was already closed.
+		}
+	}
+
 
 	@Override
 	public boolean hasNext() {

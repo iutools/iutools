@@ -10,6 +10,7 @@ import org.iutools.corpus.WordInfo;
 import org.iutools.sql.QueryProcessor;
 
 import java.io.*;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,8 +45,9 @@ public class CompiledCorpus_SQLLoader {
 //			"SET time_zone = \"+00:00\";\n" +
 			"\n"
 			;
-		try {
-			queryProcessor.query(sql);
+		// We use try-with to ensure that the ResultSet will be closed even if an
+		// exception is raised
+		try (ResultSet rs = queryProcessor.query2(sql)){
 		} catch (SQLException e) {
 			throw new CompiledCorpusException(e);
 		}

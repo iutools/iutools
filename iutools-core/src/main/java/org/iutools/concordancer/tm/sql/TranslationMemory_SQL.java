@@ -89,10 +89,9 @@ public class TranslationMemory_SQL extends TranslationMemory {
 			"  lang = ? AND\n"+
 			"  MATCH(text) AGAINST(?);";
 		Iterator<SentenceInLang> iter = null;
-		try {
-			Pair<ResultSet, Connection> results =
-				new QueryProcessor().query2(conn, sql, sourceLang, sourceExpr);
-			iter = new ResultsSetIterator(results.getLeft(), conn, new Sql2SentenceInLang());
+		try (ResultSet rs  =
+				new QueryProcessor().query2(conn, sql, sourceLang, sourceExpr)) {
+			iter = new ResultsSetIterator(rs, new Sql2SentenceInLang());
 		} catch (SQLException e) {
 			throw new TranslationMemoryException(e);
 		}

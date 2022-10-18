@@ -64,63 +64,16 @@ public class QueryProcessor {
 		Boolean isDefined = uncacheTableIsDefined(tableName);
 		if (isDefined == null) {
 			String query = "SHOW TABLES LIKE \""+tableName+"\";";
-			Pair<ResultSet, Connection> rsWithConn = query2(query);
-			Connection conn = rsWithConn.getRight();
-			isDefined = !(QueryProcessor.rsIsEmpty(rsWithConn.getLeft()));
-			cacheTableIsDefined(tableName, isDefined);
+			// We use try-with to ensure that the ResultSet will be closed even
+			// if an exception is raised.
+			try (ResultSet rs = query2(query)) {
+				isDefined = !(QueryProcessor.rsIsEmpty(rs));
+				cacheTableIsDefined(tableName, isDefined);
+			}
 		}
 		return isDefined;
 	}
 
-	public ResultSet query(String query, Object... queryArgs) throws SQLException {
-		Logger logger = LogManager.getLogger("org.iutools.sql.QueryProcessor.query");
-		if (logger.isTraceEnabled()) {
-			logger.trace("query=\n"+query);
-			String argsMess = "with args:";
-			for (Object arg: queryArgs) {
-				String argStr = "null";
-				if (arg != null) {
-					argStr = arg.toString();
-				}
-				argsMess += "\n  "+arg.toString();
-			}
-			logger.trace(argsMess);
-		}
-		ResultSet rs = null;
-		// We use try-with so that the connection will be returned to the pool
-		// when we are done.
-		try (Connection conn = getConnection()){
-			logger.trace("conn to db: "+conn.getCatalog());
-			PreparedStatement stmt = conn.prepareStatement(query);
-			for (int ii = 0; ii < queryArgs.length; ii++) {
-				int argPos = ii + 1;
-				Object arg = queryArgs[ii];
-				if (arg instanceof String) {
-					stmt.setString(argPos, (String) arg);
-				} else if (arg instanceof Integer) {
-					stmt.setInt(argPos, (Integer) arg);
-				} else if (arg instanceof Long) {
-					stmt.setLong(argPos, (Long) arg);
-				} else if (arg instanceof Boolean) {
-					stmt.setBoolean(argPos, (Boolean) arg);
-				} else {
-					throw new SQLException("Unsupported query argument type " + arg.getClass() + " (value: " + arg.toString() + ")");
-				}
-			}
-			rs = stmt.executeQuery();
-		} catch (SQLException e) {
-			String argsJson = null;
-			argsJson = new PrettyPrinter().pprint(queryArgs);
-			throw new SQLException(
-				"Could not execute query:\n"+
-				"query was:\n"+
-				query+"\n"+
-				"Arguments were:\n"+
-				argsJson,
-				e);
-		}
-		return rs;
-	}
 
 	/**
 	 * Repeatadly runs a query on a series of arguments.
@@ -166,16 +119,16 @@ public class QueryProcessor {
 		stmt.addBatch();
 	}
 
-	public Pair<ResultSet,Connection> query2(String query, Object... queryArgs) throws SQLException {
+	public ResultSet query2(String query, Object... queryArgs) throws SQLException {
 		return query2((Connection) null, false, query, queryArgs);
 	}
 
-	public Pair<ResultSet,Connection> query2(Connection conn, String query, Object... queryArgs) throws SQLException {
+	public ResultSet query2(Connection conn, String query, Object... queryArgs) throws SQLException {
 		return query2(conn, (Boolean)null, query, queryArgs);
 	}
 
 
-	public Pair<ResultSet,Connection> query2(Connection conn, Boolean scrollable, String query, Object... queryArgs) throws SQLException {
+	public ResultSet query2(Connection conn, Boolean scrollable, String query, Object... queryArgs) throws SQLException {
 		Logger logger = LogManager.getLogger("org.iutools.sql.QueryProcessor.query");
 		if (logger.isTraceEnabled()) {
 			logger.trace("query=\n"+query);
@@ -193,12 +146,13 @@ public class QueryProcessor {
 			scrollable = false;
 		}
 		ResultSet rs = null;
+		PreparedStatement stmt = null;
 		try  {
 			if (conn == null) {
 				conn = getConnection();
 			}
 			logger.trace("conn to db: "+conn.getCatalog());
-			PreparedStatement stmt = conn.prepareStatement(query);
+			stmt = conn.prepareStatement(query);
 			setPrepStatementArgs(stmt, queryArgs);
 			rs = stmt.executeQuery();
 			if (logger.isTraceEnabled()) {
@@ -206,10 +160,6 @@ public class QueryProcessor {
 					prettyPrinter.pprint(new ResultSetUtils(rs).columnNames()));
 			}
 		} catch (SQLException e) {
-			// Make sure the connection is closed if we encountered a problem.
-			if (conn != null) {
-				conn.close();
-			}
 			String argsJson = null;
 			argsJson = prettyPrinter.pprint(queryArgs);
 			throw new SQLException(
@@ -220,31 +170,34 @@ public class QueryProcessor {
 				argsJson,
 				e);
 		}
-		return Pair.of(rs, conn);
+		return rs;
 	}
 
 
 	public long count(String queryStr, Object... queryArgs) throws SQLException {
 		long rowCount = 0;
 		queryStr = "SELECT COUNT(*) AS rowCount "+queryStr+";";
-		Pair<ResultSet, Connection> rsWithConn = query2(queryStr, queryArgs);
-		Connection conn = rsWithConn.getRight();
-		ResultSet rs = rsWithConn.getLeft();
-		rs.next();
-		rowCount = rs.getLong("rowCount");
+		// We use try-with to ensure that the ResultSet will be closed even
+		// if an exception is raised.
+		try (ResultSet rs = query2(queryStr, queryArgs)) {
+			rs.next();
+			rowCount = rs.getLong("rowCount");
+		}
 		return rowCount;
 	}
 
 	public Double aggregateNumerical(String aggrFctName, String fldName,
 		String queryStr, Object[] queryArgs) throws SQLException {
+
+		Double aggrValue = null;
+
 		queryStr =
 			"SELECT "+aggrFctName+"("+fldName+") AS aggrValue "+queryStr;
-		Pair<ResultSet, Connection> rsWithConn = query2(queryStr, queryArgs);
-		Double aggrValue = null;
-		Connection conn = rsWithConn.getRight();
-		ResultSet rs = rsWithConn.getLeft();
-		rs.next();
-		try {
+
+		// We use try-with to ensure that the ResultSet will be closed even
+		// if an exception is raised.
+		try (ResultSet rs = query2(queryStr, queryArgs)) {
+			rs.next();
 			aggrValue = rs.getDouble("aggrValue");
 		} catch (Exception e) {
 			// If an exception is raised, it probably means that there were no
@@ -257,7 +210,11 @@ public class QueryProcessor {
 
 	public void dropTable(String tableName) throws SQLException {
 		String query = "DROP TABLE IF EXISTS "+tableName;
-		query(query);
+		// We use try-with to ensure that the ResultSet will be closed even if an
+		// exception is raised
+		try (ResultSet rs = query2(query)) {
+
+		}
 		return;
 	}
 
@@ -546,7 +503,10 @@ public class QueryProcessor {
 		try (Connection conn = getConnection()) {
 			for (String statement: statements) {
 				logger.trace("Running statement:\n"+statement);
-				query2(conn, false, statement);
+				// We use try-with to ensure that the ResultSet will be closed even
+				// if an exception is raised.
+				try (ResultSet rs = query2(conn, false, statement)) {
+				}
 			}
 		}
 	}
