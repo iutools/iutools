@@ -242,13 +242,6 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 		return ngram;
 	}
 
-//	protected static String formatMorphNgram4SqlSearching(String... morphemes)
-//		throws CompiledCorpusException {
-//		String ngram =
-//			WordInfo_SQL.formatNgramAsSearchableString(Arrays.asList(morphemes.clone()));
-//		return ngram;
-//	}
-
 	public Iterator<String> wordsContainingNgram(String ngram,
 		SearchOption... options) throws CompiledCorpusException {
 		Logger logger = LogManager.getLogger("org.iutools.corpus.sql.CompiledCorpus_SQL.wordsContainingNgram");
