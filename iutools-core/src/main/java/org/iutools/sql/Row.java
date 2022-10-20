@@ -17,13 +17,6 @@ public class Row {
 	private ObjectMapper mapper = new ObjectMapper();
 	private List<String> colNamesSorted = null;
 
-	public Row(SQLPersistent object) throws SQLException {
-		JSONObject json = object.toJsonObject();
-		String tableName = object.tableName();
-		String idColName = object.idFieldName();
-		init__Row(json, tableName, idColName);
-	}
-
 	public Row(String _tableName, String _idFieldName) {
 		init__Row((JSONObject)null, _tableName, _idFieldName);
 	}
@@ -90,6 +83,9 @@ public class Row {
 		for (int ii=0; ii < colOrder.size(); ii++) {
 			String colName = colOrder.get(ii);
 			Object colValue = getColumn(colName);
+			if (colValue == JSONObject.NULL) {
+				colValue = null;
+			}
 			values[ii] = colValue;
 		}
 		return values;

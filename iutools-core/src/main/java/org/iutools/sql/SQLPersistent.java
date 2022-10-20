@@ -48,7 +48,7 @@ public class SQLPersistent extends Document {
 			jsonObj.remove("additionalFields");
 			jsonObj.remove("id");
 			jsonObj.remove("idWithoutType");
-//			jsonObj.remove("lang");
+			jsonObj.remove("lang");
 			jsonObj.remove("longDescription");
 			jsonObj.remove("morphemesSpaceConcatenated");
 			jsonObj.remove("shortDescription");

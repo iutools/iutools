@@ -1,5 +1,8 @@
 package org.iutools.sql;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -75,9 +78,16 @@ public class QueryProcessorTest {
 		public String gender = null;
 		public int age = -1;
 
+		// Empty constructor for Jackson serialization
+		public Person() {
+			super(new PersonSchema());
+			return;
+		}
+
 		public Person(String _name) {
 			super(new PersonSchema());
 			this.name = _name;
+			return;
 		}
 	}
 
@@ -96,6 +106,24 @@ public class QueryProcessorTest {
 				"  `age` int(11) DEFAULT -1" +
 				");"
 			};
+		}
+	}
+
+	public static class Sql2Person implements Sql2Pojo<Person> {
+
+		protected ObjectMapper mapper = new ObjectMapper();
+
+		@Override
+		public Person toPOJO(JSONObject jObj) throws SQLException {
+			Person person = null;
+			String jsonStr = jObj.toString();
+			try {
+				person = mapper.readValue(jsonStr, Person.class);
+			} catch (JsonProcessingException e) {
+				throw new SQLException("Error converting SQL row to Person instance", e);
+			}
+
+			return person;
 		}
 	}
 }

@@ -3,7 +3,6 @@ package org.iutools.sql;
 import ca.nrc.json.PrettyPrinter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
@@ -157,7 +156,7 @@ public class QueryProcessor {
 			rs = stmt.executeQuery();
 			if (logger.isTraceEnabled()) {
 				logger.trace("Returning ResultSet with columns: "+
-					prettyPrinter.pprint(new ResultSetUtils(rs).columnNames()));
+					prettyPrinter.pprint(ResultSetWrapper.colNames(rs)));
 			}
 		} catch (SQLException e) {
 			String argsJson = null;
@@ -173,6 +172,61 @@ public class QueryProcessor {
 		return rs;
 	}
 
+	public ResultSetWrapper query3(String query, Object... queryArgs) throws SQLException {
+		return query3((Connection) null, false, query, queryArgs);
+	}
+
+
+	public ResultSetWrapper query3(Connection conn, String query, Object... queryArgs) throws SQLException {
+		return query3(conn, (Boolean)null, query, queryArgs);
+	}
+
+
+	public ResultSetWrapper query3(Connection conn, Boolean scrollable, String query, Object... queryArgs) throws SQLException {
+		Logger logger = LogManager.getLogger("org.iutools.sql.QueryProcessor.query");
+		if (logger.isTraceEnabled()) {
+			logger.trace("query=\n"+query);
+			String argsMess = "with args:";
+			for (Object arg: queryArgs) {
+				String argStr = "null";
+				if (arg != null) {
+					argStr = arg.toString();
+				}
+				argsMess += "\n  "+arg.toString();
+			}
+			logger.trace(argsMess);
+		}
+		if (scrollable == null) {
+			scrollable = false;
+		}
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
+		try  {
+			if (conn == null) {
+				conn = getConnection();
+			}
+			logger.trace("conn to db: "+conn.getCatalog());
+			stmt = conn.prepareStatement(query);
+			setPrepStatementArgs(stmt, queryArgs);
+			rs = stmt.executeQuery();
+			if (logger.isTraceEnabled()) {
+				logger.trace("Returning ResultSet with columns: "+
+					prettyPrinter.pprint(ResultSetWrapper.colNames(rs)));
+			}
+		} catch (SQLException e) {
+			String argsJson = null;
+			argsJson = prettyPrinter.pprint(queryArgs);
+			throw new SQLException(
+				"Could not execute query:\n"+
+				"query was:\n"+
+				query+"\n"+
+				"Arguments were:\n"+
+				argsJson,
+				e);
+		}
+		ResultSetWrapper wrapper = new ResultSetWrapper(rs, stmt);
+		return wrapper;
+	}
 
 	public long count(String queryStr, Object... queryArgs) throws SQLException {
 		long rowCount = 0;
@@ -229,7 +283,7 @@ public class QueryProcessor {
 		if (replace == null) {
 			replace = true;
 		}
-		Row row = new Row(object);
+		Row row = object.toRow();
 		insertRow(row, replace);
 		return;
 	}
@@ -308,12 +362,12 @@ public class QueryProcessor {
 		Object colValue = null;
 		if (logger.isTraceEnabled()) {
 			logger.trace("Fetching colName="+colName+" from ResultSet with columns: "+
-				new PrettyPrinter().print(new ResultSetUtils(rs).columnNames()));
+				new PrettyPrinter().print(ResultSetWrapper.colNames(rs)));
 		}
 		try {
 			colValue = rs.getObject(colName);
 		} catch (Exception e) {
-			Set<String> colNames = new ResultSetUtils(rs).columnNames();
+			List<String> colNames = ResultSetWrapper.colNames(rs);
 			throw new SQLException(
 				"Could not get next value of column "+colName + "\n" +
 				"Existing columns in ResultSet were: "+new PrettyPrinter().print(colNames),
