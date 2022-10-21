@@ -24,6 +24,7 @@ public class ColValueIterator<T> implements Iterator<T>, Closeable {
 	public ColValueIterator(ResultSet _rs, String _colName) throws SQLException {
 		Logger logger = LogManager.getLogger("org.iutools.sql.ColValueIterator.constructor");
 		rs = _rs;
+		ResourcesTracker.updateResourceStatus(rs);
 		colName = _colName;
 		if (logger.isTraceEnabled()) {
 			logger.trace("Constructed iterator for ResultSet with columns: "+
@@ -35,12 +36,7 @@ public class ColValueIterator<T> implements Iterator<T>, Closeable {
 
 	@Override
 	protected void finalize() throws Throwable {
-		try {
-			rs.close();
-		} catch (Exception e) {
-			// Nothing to do if we weren't able to close the rs.
-			// Probably it was already closed.
-		}
+		close();
 	}
 
 	@Override
@@ -87,6 +83,7 @@ public class ColValueIterator<T> implements Iterator<T>, Closeable {
 			} catch (SQLException e) {
 				throw new RuntimeException(e);
 			}
+			ResourcesTracker.updateResourceStatus(rs);
 		}
 	}
 }

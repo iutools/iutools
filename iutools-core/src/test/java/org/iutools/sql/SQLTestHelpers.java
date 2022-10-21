@@ -2,9 +2,13 @@ package org.iutools.sql;
 
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.testing.AssertNumber;
+import ca.nrc.testing.AssertObject;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Assertions;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -87,6 +91,20 @@ public class SQLTestHelpers {
 		}
 	}
 
+	public static void assertOpenedResourcesAre(String mess,
+		int expStatements, int expResultSets) throws Exception {
+		Map<String,Integer> expResources = new HashMap<String,Integer>();
+		expResources.put("Statement", expStatements);
+		expResources.put("ResultSet", expResultSets);
+
+		Map<String,Integer> gotResources = new HashMap<String,Integer>();
+		gotResources.put("Statement", ResourcesTracker.totalStatements());
+		gotResources.put("ResultSet", ResourcesTracker.totalResultSets());
+
+		AssertObject.assertDeepEquals(mess,
+			expResources, gotResources);
+	}
+
 	/**
 	 * Get and close hundreds of connections from the pool to avoid encurring
 	 * pool initialisation overhead during tests.
@@ -103,4 +121,16 @@ public class SQLTestHelpers {
 		}
 		return;
 	}
+
+	/**
+	 * Build a Statement and ResultSet for testing purposes.
+	 * NOTE: We build them using QueryProcessor.query() so that the resources
+	 *   are "managed" (i.e. tracked by ResourcesTracker).
+	 */
+	public static Pair<Statement, ResultSet> openManagedResources() throws Exception {
+		String sql = "SHOW TABLES;";
+		ResultSetWrapper rsw = new QueryProcessor().query3(sql);
+		return Pair.of(rsw.statement, rsw.rs);
+	}
+
 }

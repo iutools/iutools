@@ -60,6 +60,8 @@ public class ResultSetColIterator<C> implements CloseableIterator<C> {
 				// Means the Statement was already closed.
 			}
 		}
+		ResourcesTracker.updateResourceStatus(rs);
+		ResourcesTracker.updateResourceStatus(statement);
 		traceState("<- Upon exit", logger);
 	}
 

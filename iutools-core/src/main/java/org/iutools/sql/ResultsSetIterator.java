@@ -20,17 +20,13 @@ public class ResultsSetIterator<T> implements Iterator<T>, Closeable {
 	public ResultsSetIterator(ResultSet rs, Sql2Pojo<T> converter) {
 		this.rs = rs;
 		this.converter = converter;
+		ResourcesTracker.updateResourceStatus(rs);
 		return;
 	}
 
 	@Override
 	protected void finalize() throws Throwable {
-		try {
-			rs.close();
-		} catch (Exception e) {
-			// Nothing to do if we weren't able to close the rs.
-			// Probably it was already closed.
-		}
+		close();
 	}
 
 
@@ -74,5 +70,6 @@ public class ResultsSetIterator<T> implements Iterator<T>, Closeable {
 		} catch (SQLException e) {
 			throw new IOException(e);
 		}
+		ResourcesTracker.updateResourceStatus(rs);
 	}
 }

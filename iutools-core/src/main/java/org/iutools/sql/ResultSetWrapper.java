@@ -15,12 +15,12 @@ import java.util.*;
  */
 public class ResultSetWrapper implements AutoCloseable {
 
-	private ResultSet rs = null;
+	protected ResultSet rs = null;
 
 	/** Statement used to generate the ResultSet. It MAY need to be closed when
 	 * we close or finalize the wrapper.
 	 */
-	private Statement statement = null;
+	protected Statement statement = null;
 
 	/** If true, then it means we used the wrapper to create an iterator. in that
 	 * case, the iterator will be responsible for closing the Statement and ResultSet.
@@ -32,6 +32,8 @@ public class ResultSetWrapper implements AutoCloseable {
 	public ResultSetWrapper(ResultSet _rs, Statement _statement)  {
 		this.rs = _rs;
 		this.statement = _statement;
+		ResourcesTracker.updateResourceStatus(rs);
+		ResourcesTracker.updateResourceStatus(statement);
 	}
 
 	public List<String> colNames()  {
@@ -78,6 +80,7 @@ public class ResultSetWrapper implements AutoCloseable {
 					// Means the ResultSet was already closed.
 				}
 			}
+			ResourcesTracker.updateResourceStatus(rs);
 			if (statement != null) {
 				try {
 					statement.close();
@@ -85,6 +88,7 @@ public class ResultSetWrapper implements AutoCloseable {
 					// Means the Statement was already closed.
 				}
 			}
+			ResourcesTracker.updateResourceStatus(statement);
 		}
 	}
 

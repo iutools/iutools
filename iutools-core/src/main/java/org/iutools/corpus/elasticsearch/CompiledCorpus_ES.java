@@ -554,9 +554,10 @@ public class CompiledCorpus_ES extends CompiledCorpus {
 	}
 
 	@Override
-	public Iterator<String> allWords() throws CompiledCorpusException {
+	public CloseableIterator<String> allWords() throws CompiledCorpusException {
 		SearchResults<WordInfo> allWinfo = esListall();
-		Iterator<String> wordsIter = allWinfo.docIDIterator();
+		CloseableIterator<String> wordsIter =
+			new CloseableIteratorWrapper<String>(allWinfo.docIDIterator());
 
 		return wordsIter;
 	}

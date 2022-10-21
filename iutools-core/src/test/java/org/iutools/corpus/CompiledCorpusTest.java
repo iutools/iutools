@@ -97,36 +97,39 @@ public abstract class CompiledCorpusTest {
 		//
 		
 		// Loop through all words in the corpus
-		Iterator<String> iter = compiledCorpus.allWords();
-		while (iter.hasNext()) {
-			String aWord = iter.next();
-			
-			// Get that word's information
-			{
-				WordInfo wInfo = compiledCorpus.info4word(aWord);
-				if (wInfo == null) {
-					// Means the corpus does not know about this word
-					//
-					// Note: Should not happen in this case, because we obtained 
-					// 'word' through the allWords() iterator (so it know that this
-					// word was seen in the corpus).
-					//
-				} else {
-					// Frequency of the word
-					long freq = wInfo.frequency;
-					
-					// Total number of morphological decompositions for this word, 
-					// as well as a short list of the first few decompositions 
-					// found.
-					// 
-					// If those two values are 'null', it means that the decomps 
-					// have not been provided.
-					// It does NOT mean that no decomps can be computed for this 
-					// word.
-					//
-					Integer numDecomps = wInfo.totalDecompositions;
-					String[][] sampleDecomps = wInfo.decompositionsSample;
-				}			
+		// Note how we wrap the iterator in a try-with so that the iterator will
+		//   close all data store resouces
+		try (CloseableIterator<String> iter = compiledCorpus.allWords()) {
+			while (iter.hasNext()) {
+				String aWord = iter.next();
+
+				// Get that word's information
+				{
+					WordInfo wInfo = compiledCorpus.info4word(aWord);
+					if (wInfo == null) {
+						// Means the corpus does not know about this word
+						//
+						// Note: Should not happen in this case, because we obtained
+						// 'word' through the allWords() iterator (so it know that this
+						// word was seen in the corpus).
+						//
+					} else {
+						// Frequency of the word
+						long freq = wInfo.frequency;
+
+						// Total number of morphological decompositions for this word,
+						// as well as a short list of the first few decompositions
+						// found.
+						//
+						// If those two values are 'null', it means that the decomps
+						// have not been provided.
+						// It does NOT mean that no decomps can be computed for this
+						// word.
+						//
+						Integer numDecomps = wInfo.totalDecompositions;
+						String[][] sampleDecomps = wInfo.decompositionsSample;
+					}
+				}
 			}
 		}
 
@@ -452,7 +455,6 @@ public abstract class CompiledCorpusTest {
 		try (CloseableIterator<String> wordsWithSeq = corpus.wordsContainingNgram(seq)) {
 			expected = new String[]{
 			"takuinuit", "intakuinuit"};
-			System.out.println("--** Checking gotElements");
 			AssertIterator.assertElementsEquals("The list of words containing sequence " + seq + " was not as expected",
 			expected, wordsWithSeq, IN_ANY_ORDER);
 		}
@@ -490,6 +492,8 @@ public abstract class CompiledCorpusTest {
 			"The list of words containing sequence " + seq + " was not as expected",
 			expected, wordsWithSeq);
 		}
+
+		return;
 	}	
 	
 	@Test

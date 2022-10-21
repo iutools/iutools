@@ -69,7 +69,7 @@ public abstract class CompiledCorpus {
 
 	public abstract void deleteWord(String word) throws CompiledCorpusException;
 
-	public abstract Iterator<String> allWords() throws CompiledCorpusException;
+	public abstract CloseableIterator<String> allWords() throws CompiledCorpusException;
 
 	public abstract Iterator<String> wordsWithNoDecomposition() throws CompiledCorpusException;
 
@@ -259,9 +259,9 @@ public abstract class CompiledCorpus {
 
 	public boolean containsCharNgram(String ngram) throws CompiledCorpusException {
 		boolean answer = false;
-		try {
-			answer = wordsContainingNgram(ngram).hasNext();
-		} catch (NoSuchCorpusException e) {
+		try (CloseableIterator<String> iter = wordsContainingNgram(ngram)) {
+			answer = iter.hasNext();
+		} catch (Exception e) {
 			// If the corpus does not exist, just leave answer to false
 		}
 		return answer;

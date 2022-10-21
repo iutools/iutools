@@ -1,23 +1,27 @@
 package org.iutools.corpus.sql;
 
-import ca.nrc.testing.AssertString;
-import ca.nrc.testing.RunOnCases;
 import org.iutools.corpus.CompiledCorpusTest;
 import org.iutools.corpus.CorpusTestHelpers;
+import org.iutools.sql.ResourcesTracker;
+import org.iutools.sql.SQLTestHelpers;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
-
-import java.util.function.Consumer;
 
 public class CompiledCorpus_SQLTest extends CompiledCorpusTest {
 
 	public final static String testCorpusName = "test-corpus";
 
+	private Integer initialOpenedStatements = null;
+	private Integer initialOpenedResultSets = null;
+
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();
+		// Remember how many opened SQL resources there were when
+		// we started this test
+		initialOpenedResultSets = ResourcesTracker.totalResultSets(true);
+		initialOpenedStatements = ResourcesTracker.totalStatements(true);
+
 		CorpusTestHelpers.clearCorpus(testCorpusName);
 		return;
 	}
@@ -25,6 +29,11 @@ public class CompiledCorpus_SQLTest extends CompiledCorpusTest {
 	@After
 	public void tearDown() throws Exception {
 		new CompiledCorpus_SQL(testCorpusName).clearWords(false);
+		// Make sure the previous test did not increase the number of opened
+		// SQL resources
+		SQLTestHelpers.assertOpenedResourcesAre(
+			"Tests have changed the number of opened SQL resources",
+			initialOpenedStatements, initialOpenedResultSets);
 	}
 
 	public CompiledCorpus_SQL makeCorpusWithDefaultSegmenter() throws Exception {

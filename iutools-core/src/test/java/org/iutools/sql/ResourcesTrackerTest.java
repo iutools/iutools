@@ -1,13 +1,10 @@
 package org.iutools.sql;
 
-import ca.nrc.file.ResourceGetter;
 import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.corpus.sql.WordInfoSchema;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
@@ -46,6 +43,12 @@ public class ResourcesTrackerTest {
 		// At any point, you can get the number of active resources as follows
 		int openedStatements = ResourcesTracker.totalStatements();
 		int openedResultSets = ResourcesTracker.totalResultSets();
+
+		// Note that the above only provide an "estimate" of the active resources.
+		// To get a perfectly accurate count, you must pass a true argument.
+		// Note however that this will be slower than if you just get an estimate.
+		openedStatements = ResourcesTracker.totalStatements(true);
+		openedResultSets = ResourcesTracker.totalResultSets(true);
 	}
 
 	///////////////////////////////
@@ -99,25 +102,7 @@ public class ResourcesTrackerTest {
 	///////////////////////////////
 
 	private Pair<Statement,ResultSet> makeResources() throws Exception {
-		Connection conn = new ConnectionPool().getConnection();
-		String sql = "SHOW TABLES;";
-		PreparedStatement stmt = conn.prepareStatement(sql);
-		ResultSet rs = stmt.executeQuery();
-		return Pair.of(stmt, rs);
+		Pair<Statement, ResultSet> resources = SQLTestHelpers.openManagedResources();
+		return resources;
 	}
-
-//	private PreparedStatement makeStatement() throws Exception {
-//		Connection conn = new ConnectionPool().getConnection();
-//		String sql = "SHOW TABLES;";
-//		PreparedStatement stmt = conn.prepareStatement(sql);
-//		return stmt;
-//	}
-//
-//	private ResultSet makeResultSet() throws Exception {
-//		PreparedStatement stmt = makeStatement();
-//		ResultSet rs = stmt.executeQuery();
-//		stmt.close();
-//		return rs;
-//	}
-
 }

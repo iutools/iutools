@@ -16,6 +16,7 @@ import org.iutools.corpus.CompiledCorpus;
 import static ca.nrc.dtrc.elasticsearch.request.Sort.Order;
 import org.iutools.corpus.CompiledCorpusException;
 import org.iutools.corpus.WordInfo;
+import org.iutools.datastructure.CloseableIteratorWrapper;
 import org.iutools.morph.Decomposition;
 import org.iutools.script.TransCoder;
 import org.iutools.script.TransCoderException;
@@ -500,20 +501,20 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 	}
 
 	@Override
-	public Iterator<String> allWords() throws CompiledCorpusException {
+	public CloseableIterator<String> allWords() throws CompiledCorpusException {
 		Logger logger = LogManager.getLogger("org.iutools.corpus.sql.CompiledCorpus_SQL.allWords");
 		String queryStr =
 			"SELECT word from "+WORDS_TABLE+"\n"+
 			"WHERE\n"+
 			"  corpusName = ?;";
 
-		Iterator<String> iter = Collections.emptyIterator();
+		CloseableIterator<String> iter = new CloseableIteratorWrapper<String>(Collections.emptyIterator());
 		// Note: In this case, we DO NOT use try-with because the returned iterator
 		//   requires that the ResultSet be still opened.
 		//   When the iterator is finalized, it will close its result set.
-		ResultSet rs = query2(queryStr, corpusName);
 		try {
-			iter = new ColValueIterator<String>(rs, "word");
+			ResultSetWrapper rsw = new QueryProcessor().query3(queryStr, corpusName);
+			iter = rsw.colIterator("word", String.class);
 		} catch (SQLException e) {
 			throw new CompiledCorpusException(e);
 		}
