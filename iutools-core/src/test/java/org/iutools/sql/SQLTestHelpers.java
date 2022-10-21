@@ -123,7 +123,7 @@ public class SQLTestHelpers {
 	}
 
 	/**
-	 * Build a Statement and ResultSet for testing purposes.
+	 * Open a Statement and ResultSet for testing purposes.
 	 * NOTE: We build them using QueryProcessor.query() so that the resources
 	 *   are "managed" (i.e. tracked by ResourcesTracker).
 	 */
@@ -133,4 +133,12 @@ public class SQLTestHelpers {
 		return Pair.of(rsw.statement, rsw.rs);
 	}
 
+	/**
+	 * Open a ResultSetWrapper for testing purposes.
+	 */
+	public static ResultSetWrapper openResultSetWrapper() throws Exception {
+		String sql = "SHOW TABLES;";
+		ResultSetWrapper rsw = new QueryProcessor().query3(sql);
+		return rsw;
+	}
 }

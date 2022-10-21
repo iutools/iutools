@@ -1,8 +1,17 @@
 package org.iutools.sql;
 
 /**
- * Check if we leaked some SQL resources between a start point and the current
+ * Check if we leaked some "managed" SQL resources between a start point and the current
  * time.
+ *
+ * By "managed", we mean resources that are created by classes in our SQL framework,
+ * more precisely:
+ *
+ * - QueryProcessor
+ * - ResultSetWrapper
+ * - ResultSetIterator
+ * - ResultSetColIterator
+ *
  */
 public class SQLLeakMonitor {
 
@@ -50,10 +59,11 @@ public class SQLLeakMonitor {
 
 	public void check() {
 		boolean ok = true;
-		stmtNow = ResourcesTracker.totalStatements();
+		stmtNow = ResourcesTracker.totalStatements(true);
 		stmtLeaked = Math.max(0, stmtNow - stmtAtStart);
 
-		rsNow = ResourcesTracker.totalResultSets();
+		rsNow = ResourcesTracker.totalResultSets(true);
 		rsLeaked = Math.max(0, rsNow - rsAtStart);
+		return;
 	}
 }

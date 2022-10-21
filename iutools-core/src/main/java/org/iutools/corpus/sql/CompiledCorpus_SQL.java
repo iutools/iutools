@@ -1,11 +1,9 @@
 package org.iutools.corpus.sql;
 
 import java.io.File;
-import java.io.Reader;
 import java.sql.*;
 import java.util.*;
 
-import ca.nrc.dtrc.elasticsearch.DocIterator;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.ui.commandline.UserIO;
 import org.apache.commons.lang3.ArrayUtils;
@@ -94,7 +92,7 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 	}
 
 	@Override
-	public Iterator<WordInfo> winfosContainingNgram(String ngram, SearchOption... options) throws CompiledCorpusException {
+	public CloseableIterator<WordInfo> winfosContainingNgram(String ngram, SearchOption... options) throws CompiledCorpusException {
 		Logger logger = LogManager.getLogger("org.iutools.corpus.sql.CompiledCorpus_SQL.winfosContainingNgram");
 		logger.trace("invoked with ngram="+ngram+", corpusName="+corpusName);
 		try {
@@ -117,16 +115,13 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 			queryStr += "\n"+sqlOrderBy("frequency:desc");
 			queryStr += ";";
 			logger.trace("Querying with queryStr="+queryStr);
-			// Note: We do a try-with conn, so that the ResultSet will
-			// be closed when we are done.
-			try (ResultSet rs = query2(queryStr, ngram, corpusName)) {
-				logger.trace("Done querying");
-				List<WordInfo> winfos = QueryProcessor.rs2pojoLst(rs, new Sql2WordIinfo());
-				for (WordInfo winfo : winfos) {
-					words.add(winfo);
-				}
-			}
-			return words.iterator();
+			// Note: We DON'T use try-with here because the returned iterator
+			//   will manage the SQL resources and close them when it is not needed
+			//   anymore
+			//
+			ResultSetWrapper rsw = new QueryProcessor().query3(queryStr, ngram, corpusName);
+			logger.trace("Done querying");
+			return rsw.iterator(new Sql2WordIinfo());
 		} catch (SQLException e) {
 			throw new CompiledCorpusException(e);
 		}
@@ -279,7 +274,7 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 	}
 
 	@Override
-	public DocIterator<WordInfo> wordInfosContainingNgram(String ngram, Set<String> fields) throws CompiledCorpusException {
+	public CloseableIterator<WordInfo> wordInfosContainingNgram(String ngram, Set<String> fields) throws CompiledCorpusException {
 		int x = 1/0;
 		return null;
 	}

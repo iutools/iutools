@@ -4,11 +4,11 @@ import java.util.*;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import ca.nrc.dtrc.elasticsearch.DocIterator;
 import ca.nrc.string.StringUtils;
 import org.iutools.corpus.CompiledCorpus;
 import org.iutools.corpus.CompiledCorpusException;
 import org.iutools.corpus.WordInfo;
+import org.iutools.sql.CloseableIterator;
 
 public class ProblematicNGram {
 	
@@ -156,7 +156,7 @@ public class ProblematicNGram {
 				Set<String> fields = new HashSet<String>();
 				Collections.addAll(fields, new String[] {"word", "frequency"});
 
-				DocIterator<WordInfo> iter =
+				CloseableIterator<WordInfo> iter =
 					corpus.wordInfosContainingNgram(this.ngram, fields);
 				final int MAX_TO_LOOK_AT = 1000;
 				int wordCounter = 0;

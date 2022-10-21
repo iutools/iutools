@@ -75,11 +75,11 @@ public abstract class CompiledCorpus {
 
 	public abstract WordInfo info4word(String word) throws CompiledCorpusException;
 
-	public abstract Iterator<WordInfo> winfosContainingNgram(String ngram, SearchOption... options) throws CompiledCorpusException;
+	public abstract CloseableIterator<WordInfo> winfosContainingNgram(String ngram, SearchOption... options) throws CompiledCorpusException;
 
 	public abstract CloseableIterator<String> wordsContainingNgram(String ngram, SearchOption... options) throws CompiledCorpusException;
 
-	public abstract DocIterator<WordInfo> wordInfosContainingNgram(String ngram, Set<String> fields) throws CompiledCorpusException;
+	public abstract CloseableIterator<WordInfo> wordInfosContainingNgram(String ngram, Set<String> fields) throws CompiledCorpusException;
 
 	public abstract List<WordInfo> wordsContainingMorpheme(String morpheme, Integer maxWords, String... sortCriteria) throws CompiledCorpusException;
 

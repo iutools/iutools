@@ -570,12 +570,13 @@ public class CompiledCorpus_ES extends CompiledCorpus {
 	}
 
 	@Override
-	public Iterator<WordInfo> winfosContainingNgram(String ngram, SearchOption... options) throws CompiledCorpusException {
+	public CloseableIterator<WordInfo> winfosContainingNgram(String ngram, SearchOption... options) throws CompiledCorpusException {
 		Set<String> winfoFields = new HashSet<String>();
 		winfoFields.add("frequency");
 		winfoFields.add("word");
 		winfoFields.add("id");
-		return searchWordsContainingNgram(ngram, winfoFields, options).docIterator();
+		DocIterator<WordInfo> iter = searchWordsContainingNgram(ngram, winfoFields, options).docIterator();
+		return new CloseableIteratorWrapper<WordInfo>(iter);
 	}
 
 	@Override
@@ -586,10 +587,10 @@ public class CompiledCorpus_ES extends CompiledCorpus {
 	}
 
 	@Override
-	public DocIterator<WordInfo> wordInfosContainingNgram(String ngram, Set<String> fields) throws CompiledCorpusException {
+	public CloseableIterator<WordInfo> wordInfosContainingNgram(String ngram, Set<String> fields) throws CompiledCorpusException {
 		SearchResults<WordInfo> results = searchWordsContainingNgram(ngram, fields);
 		DocIterator<WordInfo> iter = results.docIterator();
-		return iter;
+		return new CloseableIteratorWrapper<WordInfo>(iter);
 	}
 
 	public SearchResults<WordInfo> searchWordsContainingNgram(String ngram, SearchOption... options) throws CompiledCorpusException {

@@ -14,6 +14,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
 import org.iutools.datastructure.CloseableIteratorChain;
+import org.iutools.datastructure.CloseableIteratorWrapper;
 import org.iutools.morph.*;
 import org.iutools.morph.r2l.MorphologicalAnalyzer_R2L;
 import org.iutools.sql.CloseableIterator;
@@ -1172,7 +1173,7 @@ public class SpellChecker {
 		return wordsContainingNgram(seq, new CompiledCorpus_ES.SearchOption[0]);
 	}
 
-	protected Iterator<WordInfo> winfosContainingNgram(String seq,
+	protected CloseableIterator<WordInfo> winfosContainingNgram(String seq,
 		CompiledCorpus_ES.SearchOption... options) throws SpellCheckerException {
 		Logger logger = LogManager.getLogger("org.iutools.spellchecker.SpellChecker.winfosContainingNgram");
 		logger.trace("invoked with seq="+seq);
@@ -1200,7 +1201,7 @@ public class SpellChecker {
 
 		long elapsed = StopWatch.elapsedMsecsSince(start);
 		logger.trace("seq="+seq+" took "+elapsed+"msecs");
-		return winfosIter;
+		return new CloseableIteratorWrapper<WordInfo>(winfosIter);
 	}
 
 	protected CloseableIterator<String> wordsContainingNgram(String seq,

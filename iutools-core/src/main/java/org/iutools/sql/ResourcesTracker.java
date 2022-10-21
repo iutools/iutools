@@ -26,7 +26,7 @@ public class ResourcesTracker {
 	private static Set<Statement> openedStatements = new HashSet<Statement>();
 	private static Set<ResultSet> openedResultSets = new HashSet<ResultSet>();
 
-	private static StopWatch sleepTimeTracker = new StopWatch();
+	private static StopWatch sleepTimeTracker = new StopWatch().start();
 
 	public static synchronized void updateResourceStatus(Statement stmt) {
 		if (stmt != null) {
@@ -100,6 +100,7 @@ public class ResourcesTracker {
 		for (Statement stmt: closedStmts) {
 			openedStatements.remove(stmt);
 		}
+		return;
 	}
 
 	private static void doubleCheckResultSets() {
@@ -118,13 +119,14 @@ public class ResourcesTracker {
 		for (ResultSet rs: closedRS) {
 			openedResultSets.remove(rs);
 		}
+		return;
 	}
 
 	private synchronized static void possiblySleep() {
 		// Sleep a bit to give resources time to close.
 		// Only do this if we haven't sleeped in a while
 		try {
-			if (sleepTimeTracker.totalTime(TimeUnit.SECONDS) < 1) {
+			if (sleepTimeTracker.totalTime(TimeUnit.SECONDS) > 1) {
 				sleepTimeTracker.start();
 				Thread.sleep(1000);
 			}

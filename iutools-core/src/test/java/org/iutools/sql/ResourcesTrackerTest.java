@@ -56,9 +56,21 @@ public class ResourcesTrackerTest {
 	///////////////////////////////
 
 	@Test
+	public void test__NoLeakedResourcesSoFar() throws Exception {
+		AssertResourcesTracker.totalStatementsEquals(
+			"Total open Statements should have been be 0.\n" +
+			"If they weren't, it means some other tests leaked SQL resources", 0);
+		AssertResourcesTracker.totalResultSetsEquals(
+			"Total open Statements should have been be 0.\n" +
+			"If they weren't, it means some other tests leaked SQL resources", 0);
+	}
+
+
+	@Test
 	public void test__ResourcesTracker__HappyPath() throws Exception {
-		AssertResourcesTracker.totalStatementsEquals("Initially...", 0);
-		AssertResourcesTracker.totalResultSetsEquals("Initially...", 0);
+		int initialRS = ResourcesTracker.totalResultSets();
+		int initialStmts = ResourcesTracker.totalStatements();
+		System.out.println("Initially, totalResultSets="+initialRS+", totalStatements="+initialStmts);
 
 		// Open some resources and notify the tracker of them
 		Pair<Statement, ResultSet> resources = makeResources();
@@ -67,8 +79,8 @@ public class ResourcesTrackerTest {
 		ResourcesTracker.updateResourceStatus(stmt1);
 		ResourcesTracker.updateResourceStatus(rs1);
 
-		AssertResourcesTracker.totalStatementsEquals("After opening 1st Statement...", 1);
-		AssertResourcesTracker.totalResultSetsEquals("After opening 1st ResultSet...", 1);
+		AssertResourcesTracker.totalStatementsEquals("After opening 1st Statement...", initialStmts+1);
+		AssertResourcesTracker.totalResultSetsEquals("After opening 1st ResultSet...", initialRS+1);
 
 		// Open more resources and notify tracker
 		resources = makeResources();
@@ -77,24 +89,24 @@ public class ResourcesTrackerTest {
 		ResourcesTracker.updateResourceStatus(stmt2);
 		ResourcesTracker.updateResourceStatus(rs2);
 
-		AssertResourcesTracker.totalStatementsEquals("After opening 2nd Statement...", 2);
-		AssertResourcesTracker.totalResultSetsEquals("After opening 2nd ResultSet...", 2);
+		AssertResourcesTracker.totalStatementsEquals("After opening 2nd Statement...", initialStmts+2);
+		AssertResourcesTracker.totalResultSetsEquals("After opening 2nd ResultSet...", initialRS+2);
 
 		// Feeding some resource that are already known and still open does not
 		// change the counts
 		ResourcesTracker.updateResourceStatus(stmt2);
 		ResourcesTracker.updateResourceStatus(rs2);
 
-		AssertResourcesTracker.totalStatementsEquals("After re-feeding opened Statement...", 2);
-		AssertResourcesTracker.totalResultSetsEquals("After re-feeding opened ResultSet...", 2);
+		AssertResourcesTracker.totalStatementsEquals("After re-feeding opened Statement...", initialStmts+2);
+		AssertResourcesTracker.totalResultSetsEquals("After re-feeding opened ResultSet...", initialRS+2);
 
 		// Close the 1st pair of resources and update the tracker
 		stmt1.close();
 		rs1.close();
 		ResourcesTracker.updateResourceStatus(stmt1);
 		ResourcesTracker.updateResourceStatus(rs1);
-		AssertResourcesTracker.totalStatementsEquals("After closing 1st Statement...", 1);
-		AssertResourcesTracker.totalResultSetsEquals("After closing 1st ResultSet...", 1);
+		AssertResourcesTracker.totalStatementsEquals("After closing 1st Statement...", initialStmts+1);
+		AssertResourcesTracker.totalResultSetsEquals("After closing 1st ResultSet...", initialRS+1);
 	}
 
 	///////////////////////////////
