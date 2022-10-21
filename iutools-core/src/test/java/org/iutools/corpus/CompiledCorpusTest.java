@@ -5,8 +5,8 @@ import java.util.Iterator;
 
 import ca.nrc.testing.AssertIterator;
 import ca.nrc.testing.AssertString;
-import org.apache.commons.lang3.tuple.Triple;
 import org.iutools.script.TransCoder;
+import org.iutools.sql.CloseableIterator;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -129,36 +129,41 @@ public abstract class CompiledCorpusTest {
 				}			
 			}
 		}
-		
 
-		// You can ask for information about the various character-ngrams 
+		// You can ask for information about the various character-ngrams
 		// that were seen in the corpus.
-		//
 		{
-			// This iterator contains all the words that START with "nuna"
-			//
-			Iterator<String> wordsWithNgram =
-					compiledCorpus.wordsContainingNgram("^nuna");
+			// With wordsContainingNgram(), you can get an iterator that provides words that contain a particular
+			// ngram.
+			// Note: Make sure to wrap the iterator in a try-with so that the iterator
+			//   will close all data store resources when we are done with it.
+			{
+				// Words that START with "nuna"
+				try (CloseableIterator<String> wordsWithNgram =
+					  compiledCorpus.wordsContainingNgram("^nuna")) {
+				}
 
-			// Words that END with "vut"
-			//
-			wordsWithNgram = 
-					compiledCorpus.wordsContainingNgram("vut$");
-	
-			// Words that have "nav" ANYWHERE
-			//
-			wordsWithNgram = 
-					compiledCorpus.wordsContainingNgram("nav");
+				// Words that END with "vut"
+				try (CloseableIterator<String> wordsWithNgram =
+					  compiledCorpus.wordsContainingNgram("vut$")) {
+				}
 
-			// You can limit the ngram search to words that are correctly
-			// spelled
-			wordsWithNgram =
-					compiledCorpus.wordsContainingNgram("nav", CompiledCorpus.SearchOption.EXCL_MISSPELLED);
+				// Words that have "nav" ANYWHERE
+				try (CloseableIterator<String> wordsWithNgram =
+					  compiledCorpus.wordsContainingNgram("nav")) {
+				}
 
-			// If you just want to know the NUMBER of words that contain
-			// a particular ngram, you can do this:
-			//
-			long numWords = compiledCorpus.totalWordsWithCharNgram("nuna");
+				// You can limit the ngram search to words that are correctly
+				// spelled
+				try (CloseableIterator<String> wordsWithNgram =
+					  compiledCorpus.wordsContainingNgram("nav", CompiledCorpus.SearchOption.EXCL_MISSPELLED)) {
+				}
+
+				// If you just want to know the NUMBER of words that contain
+				// a particular ngram, you can do this:
+				//
+				long numWords = compiledCorpus.totalWordsWithCharNgram("nuna");
+			}
 		}
 		
 		// Similarly, you can also ask for information about words that contain 
@@ -344,14 +349,13 @@ public abstract class CompiledCorpusTest {
 	@Test
 	public void test__wordsContainingMorpheme__HappyPath() throws Exception {
 		String[] stringsOfWords = new String[] {
-				"nunavut", "inuit", "takujuq", "sinilauqtuq", "uvlimik", "takulauqtunga"
-				};
+				"nunavut", "inuit", "takujuq", "sinilauqtuq", "uvlimik"};
 		CompiledCorpus compiledCorpus = makeCorpusUnderTest(StringSegmenter_IUMorpheme.class);
         compiledCorpus.addWordOccurences(stringsOfWords);
 
         new AssertCompiledCorpus(compiledCorpus, "")
         		.wordsContainingMorphemeAre(
-        			"lauq", "sinilauqtuq",  "takulauqtunga");
+        			"lauq", "sinilauqtuq");
 	}
 
 	@Test
@@ -440,39 +444,52 @@ public abstract class CompiledCorpusTest {
 		
 		String seq;
 		String[] expected;
-		Iterator<String> wordsWithSeq;
+
 
 		// ngram in the middle of a word
-		seq = "inu";
-		wordsWithSeq = corpus.wordsContainingNgram(seq);
-		expected = new String[] {
-			"inuktitut", "inuksuk", "inuttitut", "takuinuit", "intakuinuit"};
+		seq = "inui";
+		System.out.println("Processing seq="+seq);
+		try (CloseableIterator<String> wordsWithSeq = corpus.wordsContainingNgram(seq)) {
+			expected = new String[]{
+			"takuinuit", "intakuinuit"};
+			System.out.println("--** Checking gotElements");
+			AssertIterator.assertElementsEquals("The list of words containing sequence " + seq + " was not as expected",
+			expected, wordsWithSeq, IN_ANY_ORDER);
+		}
 
 		// ngram at beginning of word
 		seq = "^inu";
-		wordsWithSeq = corpus.wordsContainingNgram(seq);
-		expected = new String[] {"inuktitut","inuksuk","inuttitut"};
-		AssertIterator.assertElementsEquals("The list of words containing sequence "+seq+" was not as expected",
-				expected, wordsWithSeq, IN_ANY_ORDER);
+		System.out.println("Processing seq="+seq);
+		try (CloseableIterator<String> wordsWithSeq = corpus.wordsContainingNgram(seq)) {
+			expected = new String[]{"inuktitut", "inuksuk", "inuttitut"};
+			AssertIterator.assertElementsEquals("The list of words containing sequence " + seq + " was not as expected",
+			expected, wordsWithSeq, IN_ANY_ORDER);
+		}
 
 		seq = "itut$";
-		wordsWithSeq = corpus.wordsContainingNgram(seq);
-		expected = new String[] {"inuktitut","inuttitut"};
-		AssertIterator.assertElementsEquals("The list of words containing sequence "+seq+" was not as expected",
-				expected, wordsWithSeq, IN_ANY_ORDER);
+		System.out.println("Processing seq="+seq);
+		try (CloseableIterator<String> wordsWithSeq = corpus.wordsContainingNgram(seq)) {
+			expected = new String[]{"inuktitut", "inuttitut"};
+			AssertIterator.assertElementsEquals("The list of words containing sequence " + seq + " was not as expected",
+			expected, wordsWithSeq, IN_ANY_ORDER);
+		}
 
 		seq = "^taku$";
-		wordsWithSeq = corpus.wordsContainingNgram(seq);
-		expected = new String[] {"taku"};
-		AssertIterator.assertContainsAll("The list of words containing sequence "+seq+" was not as expected",
+		System.out.println("Processing seq="+seq);
+		try (CloseableIterator<String> wordsWithSeq = corpus.wordsContainingNgram(seq)) {
+			expected = new String[]{"taku"};
+			AssertIterator.assertContainsAll("The list of words containing sequence " + seq + " was not as expected",
 			expected, wordsWithSeq);
+		}
 
 		seq = TransCoder.inOtherScript("inuk");
-		wordsWithSeq = corpus.wordsContainingNgram(seq);
-		expected = new String[] {"inuksuk", "inuktitut"};
-		AssertIterator.assertContainsAll(
-			"The list of words containing sequence "+seq+" was not as expected",
+		System.out.println("Processing seq="+seq);
+		try (CloseableIterator<String> wordsWithSeq = corpus.wordsContainingNgram(seq)) {
+			expected = new String[]{"inuksuk", "inuktitut"};
+			AssertIterator.assertContainsAll(
+			"The list of words containing sequence " + seq + " was not as expected",
 			expected, wordsWithSeq);
+		}
 	}	
 	
 	@Test

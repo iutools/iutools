@@ -17,9 +17,11 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.iutools.corpus.*;
+import org.iutools.datastructure.CloseableIteratorWrapper;
 import org.iutools.elasticsearch.ES;
 import org.iutools.script.TransCoder;
 import org.iutools.script.TransCoderException;
+import org.iutools.sql.CloseableIterator;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -576,8 +578,10 @@ public class CompiledCorpus_ES extends CompiledCorpus {
 	}
 
 	@Override
-	public Iterator<String> wordsContainingNgram(String ngram, SearchOption... options) throws CompiledCorpusException {
-		return searchWordsContainingNgram(ngram, options).docIDIterator(true);
+	public CloseableIterator<String> wordsContainingNgram(String ngram, SearchOption... options) throws CompiledCorpusException {
+		Iterator<String> iter = searchWordsContainingNgram(ngram, options).docIDIterator(true);
+		CloseableIterator<String> wrappedIter = new CloseableIteratorWrapper<String>(iter);
+		return wrappedIter;
 	}
 
 	@Override

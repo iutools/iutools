@@ -21,6 +21,7 @@ import org.iutools.datastructure.trie.StringSegmenter;
 import org.iutools.datastructure.trie.StringSegmenterException;
 import org.iutools.datastructure.trie.StringSegmenter_Char;
 import org.iutools.datastructure.trie.Trie;
+import org.iutools.sql.CloseableIterator;
 import org.iutools.sql.Row;
 import org.iutools.text.ngrams.NgramCompiler;
 import org.apache.logging.log4j.LogManager;
@@ -76,7 +77,7 @@ public abstract class CompiledCorpus {
 
 	public abstract Iterator<WordInfo> winfosContainingNgram(String ngram, SearchOption... options) throws CompiledCorpusException;
 
-	public abstract Iterator<String> wordsContainingNgram(String ngram, SearchOption... options) throws CompiledCorpusException;
+	public abstract CloseableIterator<String> wordsContainingNgram(String ngram, SearchOption... options) throws CompiledCorpusException;
 
 	public abstract DocIterator<WordInfo> wordInfosContainingNgram(String ngram, Set<String> fields) throws CompiledCorpusException;
 
@@ -214,7 +215,7 @@ public abstract class CompiledCorpus {
 		addWordOccurence(word, sampleDecomps, totalDecomps, 1);
 	}
 
-	public Iterator<String> wordsContainingNgram(String ngram)
+	public CloseableIterator<String> wordsContainingNgram(String ngram)
 	throws CompiledCorpusException {
 		return wordsContainingNgram(ngram, new SearchOption[0]);
 	}

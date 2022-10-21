@@ -13,8 +13,10 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
+import org.iutools.datastructure.CloseableIteratorChain;
 import org.iutools.morph.*;
 import org.iutools.morph.r2l.MorphologicalAnalyzer_R2L;
+import org.iutools.sql.CloseableIterator;
 import org.iutools.text.segmentation.Token;
 import org.iutools.utilities.StopWatch;
 import ca.nrc.debug.Debug;
@@ -1165,7 +1167,7 @@ public class SpellChecker {
 	    }
 	}
 
-	protected Iterator<String> wordsContainingNgram(
+	protected CloseableIterator<String> wordsContainingNgram(
 		String seq) throws SpellCheckerException {
 		return wordsContainingNgram(seq, new CompiledCorpus_ES.SearchOption[0]);
 	}
@@ -1201,29 +1203,31 @@ public class SpellChecker {
 		return winfosIter;
 	}
 
-	protected Iterator<String> wordsContainingNgram(String seq,
+	protected CloseableIterator<String> wordsContainingNgram(String seq,
 		CompiledCorpus_ES.SearchOption... options) throws SpellCheckerException {
 		Logger logger = LogManager.getLogger("org.iutools.spellchecker.SpellChecker.wordsContainingSequ");
 
 		long start = StopWatch.nowMSecs();
 
 		Iterator<String> wordsIter = null;
+		CloseableIterator<String> wordsIter1 = null;
+		CloseableIterator<String> wordsIter2 = null;
 		try {
-			Iterator<String> wordsIter1 =
+			wordsIter1 =
 				corpus.wordsContainingNgram(seq, options);
 
-			Iterator<String> wordsIter2 =
+			wordsIter2 =
 				explicitlyCorrectWords.wordsContainingNgram(
 					seq, CompiledCorpus_ES.SearchOption.EXCL_MISSPELLED);
 
-			wordsIter = new IteratorChain<String>(wordsIter1, wordsIter2);
+			wordsIter = new CloseableIteratorChain<String>(wordsIter1, wordsIter2);
 		} catch (CompiledCorpusException e) {
 			throw new SpellCheckerException(e);
 		}
 
 		long elapsed = StopWatch.elapsedMsecsSince(start);
 		logger.trace("seq="+seq+" took "+elapsed+"msecs");
-		return wordsIter;
+		return (CloseableIterator<String>) wordsIter;
 	}
 
 	// For some reason, jMeter load testing for the SpellChecker

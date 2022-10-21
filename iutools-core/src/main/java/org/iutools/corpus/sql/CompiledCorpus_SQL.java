@@ -19,9 +19,7 @@ import org.iutools.corpus.WordInfo;
 import org.iutools.morph.Decomposition;
 import org.iutools.script.TransCoder;
 import org.iutools.script.TransCoderException;
-import org.iutools.sql.ColValueIterator;
-import org.iutools.sql.Row;
-import org.iutools.sql.QueryProcessor;
+import org.iutools.sql.*;
 import org.iutools.text.ngrams.NgramCompiler;
 
 public class CompiledCorpus_SQL extends CompiledCorpus {
@@ -242,45 +240,41 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 		return ngram;
 	}
 
-	public Iterator<String> wordsContainingNgram(String ngram,
+	public CloseableIterator<String> wordsContainingNgram(String ngram,
 		SearchOption... options) throws CompiledCorpusException {
 		Logger logger = LogManager.getLogger("org.iutools.corpus.sql.CompiledCorpus_SQL.wordsContainingNgram");
 		logger.trace("invoked with ngram="+ngram+", corpusName="+corpusName);
+		ResultSetColIterator<String> iter = null;
+		ngram = formatCharNgram4SqlSearching_wordNgramsField(ngram);
+		logger.trace("formatted ngram="+ngram);
+		boolean onlyWordsWithDecompositions = ArrayUtils.contains(options, SearchOption.EXCL_MISSPELLED);
+		String selectWhat = " * ";
+		if (ArrayUtils.contains(options, SearchOption.WORD_ONLY)) {
+			// We only care about the value of the 'word' field
+			selectWhat = " word ";
+		}
+		List<String> words = new ArrayList<String>();
+		String queryStr =
+			"SELECT "+selectWhat+" FROM " + WORDS_TABLE + "\n"+
+			"  WHERE\n"+
+			"    MATCH(wordNgrams) AGAINST(?) AND\n"+
+			"    corpusName = ? ";
+		if (onlyWordsWithDecompositions) {
+			// We only want words that have a decomposition
+			queryStr += "AND\n    `topDecompositionStr` IS NOT NULL";
+		}
+		queryStr += "\n"+sqlOrderBy("frequency:desc");
+		queryStr += ";";
+		logger.trace("Querying with queryStr="+queryStr);
 		try {
-			ngram = formatCharNgram4SqlSearching_wordNgramsField(ngram);
-			logger.trace("formatted ngram="+ngram);
-			boolean onlyWordsWithDecompositions = ArrayUtils.contains(options, SearchOption.EXCL_MISSPELLED);
-			String selectWhat = " * ";
-			if (ArrayUtils.contains(options, SearchOption.WORD_ONLY)) {
-				// We only care about the value of the 'word' field
-				selectWhat = " word ";
-			}
-			List<String> words = new ArrayList<String>();
-			String queryStr =
-				"SELECT "+selectWhat+" FROM " + WORDS_TABLE + "\n"+
-				"  WHERE\n"+
-				"    MATCH(wordNgrams) AGAINST(?) AND\n"+
-			   "    corpusName = ? ";
-			if (onlyWordsWithDecompositions) {
-				// We only want words that have a decomposition
-				queryStr += "AND\n    `topDecompositionStr` IS NOT NULL";
-			}
-			queryStr += "\n"+sqlOrderBy("frequency:desc");
-			queryStr += ";";
-			logger.trace("Querying with queryStr="+queryStr);
-			// Try-with so the ResultSet will always be closed when done.
-			try (ResultSet rs = query2(queryStr, ngram, corpusName)) {
-				logger.trace("Done querying");
-				List<WordInfo> winfos = QueryProcessor.rs2pojoLst(rs, new Sql2WordIinfo());
-				for (WordInfo winfo : winfos) {
-					words.add(winfo.word);
-				}
-			}
-			logger.trace("Returning total of "+words.size()+" words");
-			return words.iterator();
-		} catch (SQLException e) {
+			ResultSetWrapper rsw = new QueryProcessor().query3(queryStr, ngram, corpusName);
+			logger.trace("Done querying");
+			iter = rsw.colIterator("word", String.class);
+		} catch (Exception e) {
 			throw new CompiledCorpusException(e);
 		}
+
+		return iter;
 	}
 
 	@Override

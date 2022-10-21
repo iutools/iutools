@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.iutools.script.TransCoder;
 import org.iutools.script.TransCoderException;
+import org.iutools.sql.CloseableIterator;
 import org.iutools.webservice.Endpoint;
 import org.iutools.webservice.ServiceException;
 import org.iutools.worddict.MultilingualDict;
@@ -69,13 +70,14 @@ public class WordDictEndpoint extends Endpoint<WordDictInputs,WordDictResult> {
 			MultilingualDictEntry firstWordEntry = null;
 			MultilingualDict dict = new MultilingualDict();
 
-			Pair<Iterator<String>, Long> searchResults =
+			Pair<CloseableIterator<String>, Long> searchResults =
 				dict.searchIter(inputs.word, inputs.lang);
 			totalWords = searchResults.getRight();
-			Iterator<String> wordsIter = searchResults.getLeft();
-			topWords = new ArrayList<String>();
-			while (wordsIter.hasNext() && topWords.size() < 10) {
-				topWords.add(wordsIter.next());
+			try (CloseableIterator<String> wordsIter = searchResults.getLeft()) {
+				topWords = new ArrayList<String>();
+				while (wordsIter.hasNext() && topWords.size() < 10) {
+					topWords.add(wordsIter.next());
+				}
 			}
 
 			if (!topWords.contains(inputs.word)) {

@@ -11,6 +11,7 @@ import org.iutools.concordancer.SentencePair;
 import org.iutools.concordancer.tm.*;
 import org.iutools.corpus.*;
 import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
+import org.iutools.datastructure.CloseableIteratorWrapper;
 import org.iutools.morph.Decomposition;
 import org.iutools.morph.DecompositionException;
 import org.iutools.morph.MorphologicalAnalyzerException;
@@ -23,6 +24,7 @@ import org.iutools.nlp.StopWordsException;
 import org.iutools.script.TransCoder;
 import org.iutools.script.TransCoder.*;
 import org.iutools.script.TransCoderException;
+import org.iutools.sql.CloseableIterator;
 import org.iutools.utilities.StopWatch;
 import org.iutools.utilities.StopWatchException;
 import org.iutools.worddict.MultilingualDictEntry.*;
@@ -531,7 +533,7 @@ public class MultilingualDict {
 		return l2Translation;
 	}
 
-	public Pair<Iterator<String>,Long> searchIter(String partialWord) throws MultilingualDictException {
+	public Pair<CloseableIterator<String>,Long> searchIter(String partialWord) throws MultilingualDictException {
 		return searchIter(partialWord, (String)null);
 	}
 
@@ -539,7 +541,7 @@ public class MultilingualDict {
 		throws MultilingualDictException, TranslationMemoryException {
 		List<String> hits = new ArrayList<String>();
 
-		Pair<Iterator<String>,Long> results = searchIter(partialWord, lang);
+		Pair<CloseableIterator<String>,Long> results = searchIter(partialWord, lang);
 		Long totalHits = results.getRight();
 		Iterator<String> hitsIter = results.getLeft();
 		int count = 0;
@@ -602,7 +604,7 @@ public class MultilingualDict {
 		return hits;
 	}
 
-	public Pair<Iterator<String>,Long> searchIter(
+	public Pair<CloseableIterator<String>,Long> searchIter(
 		String partialWord, String lang) throws MultilingualDictException {
 		if (lang == null) {
 			lang = "iu";
@@ -611,7 +613,7 @@ public class MultilingualDict {
 			partialWord = partialWord.toLowerCase();
 		}
 		assertIsSupportedLanguage(lang);
-		Pair<Iterator<String>,Long> results = null;
+		Pair<CloseableIterator<String>,Long> results = null;
 		if (lang.equals("iu")) {
 			results = search_IU(partialWord);
 		} else if (lang.equals("en")) {
@@ -620,11 +622,11 @@ public class MultilingualDict {
 		return results;
 	}
 
-	private Pair<Iterator<String>, Long> search_IU(String partialWord) throws MultilingualDictException {
+	private Pair<CloseableIterator<String>, Long> search_IU(String partialWord) throws MultilingualDictException {
 		if (!partialWord.startsWith("^")) {
 			partialWord = "^"+partialWord;
 		}
-		Iterator<String> wordsIter = null;
+		CloseableIterator<String> wordsIter = null;
 		Long totalWords = null;
 		try {
 			partialWord = TransCoder.ensureScript(TransCoder.Script.ROMAN, partialWord);
@@ -638,7 +640,6 @@ public class MultilingualDict {
 		} catch (CompiledCorpusException | TransCoderException e) {
 			throw new MultilingualDictException(e);
 		}
-
 		return Pair.of(wordsIter, totalWords);
 	}
 
@@ -670,7 +671,7 @@ public class MultilingualDict {
 		return winfo != null;
 	}
 
-	private Pair<Iterator<String>, Long> search_EN(String partialWord) throws MultilingualDictException {
+	private Pair<CloseableIterator<String>, Long> search_EN(String partialWord) throws MultilingualDictException {
 		// TODO-Alain: For now, we returns results that iterate through either:
 		//
 		//   - NO words at all, if the input word CANNOT be found in the TM
@@ -680,7 +681,7 @@ public class MultilingualDict {
 		// word. So, eventually, we should compile an English CompiledCorpus_ES from
 		// the TM content, and search for words in that corpus
 		//
-		Iterator<String> wordsIter = null;
+		CloseableIterator<String> wordsIter = null;
 		Long totalWords = null;
 		try {
 			List<String> words = new ArrayList<String>();
@@ -689,7 +690,7 @@ public class MultilingualDict {
 			if (tmIter.hasNext()) {
 				words.add(partialWord);
 			}
-			wordsIter = words.iterator();
+			wordsIter = new CloseableIteratorWrapper<String>(words.iterator());
 			totalWords = new Long(words.size());
 		} catch (TranslationMemoryException e) {
 			throw new MultilingualDictException(e);

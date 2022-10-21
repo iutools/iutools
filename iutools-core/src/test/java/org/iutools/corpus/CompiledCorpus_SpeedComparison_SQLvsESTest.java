@@ -7,6 +7,7 @@ import org.iutools.config.IUConfig;
 import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
 import org.iutools.corpus.sql.CompiledCorpus_SQL;
 import org.iutools.linguisticdata.LinguisticData;
+import org.iutools.sql.CloseableIterator;
 import org.iutools.sql.SQLTestHelpers;
 import org.iutools.utilities.StopWatch;
 import org.iutools.worddict.GlossaryEntry;
@@ -211,9 +212,9 @@ public class CompiledCorpus_SpeedComparison_SQLvsESTest {
 		Map<String,Double> times = new HashMap<String,Double>();
 		times.put("es", time_wordsContainingNgram(esCorpus, startNgramsToTest));
 		times.put("sql", time_wordsContainingNgram(sqlCorpus, startNgramsToTest));
-//		SQLTestHelpers.assertIsFaster(
-//			"wordsContainingNgram__startOfWord", "sql", times);
-		SQLTestHelpers.assertAboutSameSpeed("wordsContainingNgram__startOfWord", times, 0.05);
+		SQLTestHelpers.assertIsFaster(
+			"wordsContainingNgram__startOfWord", "sql", times);
+//		SQLTestHelpers.assertAboutSameSpeed("wordsContainingNgram__startOfWord", times, 0.05);
 	}
 
 	@Test
@@ -239,17 +240,18 @@ public class CompiledCorpus_SpeedComparison_SQLvsESTest {
 		System.out.println("   Timing wordsContainingNgram with corpus="+corpus.getClass());
 		StopWatch sw = new StopWatch().start();
 		for (String ngram: ngramsToTest) {
-			Iterator<String> iter = corpus.wordsContainingNgram(ngram);
-			int countDown = 100;
-			while (countDown > 0 && iter.hasNext()) {
-				countDown--;
-				String word = iter.next();
-				int x = 1;
+			try (CloseableIterator<String> iter = corpus.wordsContainingNgram(ngram)) {
+				int countDown = 100;
+				while (countDown > 0 && iter.hasNext()) {
+					countDown--;
+					String word = iter.next();
+					int x = 1;
+				}
 			}
 		}
-		double secsPerNgram =
+		double msecsPerNgram =
 			1.0 * sw.lapTime(TimeUnit.MILLISECONDS) / ngramsToTest.size();
-		return secsPerNgram;
+		return msecsPerNgram;
 	}
 
 	

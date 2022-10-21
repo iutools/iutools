@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
-public class ResultSetIterator<T> extends CloseableIterator<T> {
+public class ResultSetIterator<T> implements CloseableIterator<T> {
 
 	private ResultSet rs = null;
 

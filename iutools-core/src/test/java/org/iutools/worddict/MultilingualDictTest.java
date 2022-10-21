@@ -6,6 +6,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.linguisticdata.MorphemeHumanReadableDescr;
 import org.iutools.script.TransCoder;
+import org.iutools.sql.CloseableIterator;
 import org.iutools.utilities.StopWatch;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -163,22 +164,25 @@ public class MultilingualDictTest {
 
 		// You can search for a word
 		String partialWord = "inuksh";
-		Pair<Iterator<String>, Long> result = dict.searchIter(partialWord);
+		Pair<CloseableIterator<String>, Long> result = dict.searchIter(partialWord);
 		// Total number of matching words
 		Long totalWords = result.getRight();
-		Iterator<String> wordsIter = result.getLeft();
-		// Iterate through the matching words...
-		while (wordsIter.hasNext()) {
-			String matchingWord = wordsIter.next();
+		try (CloseableIterator<String> wordsIter = result.getLeft()) {
+			// Iterate through the matching words...
+			while (wordsIter.hasNext()) {
+				String matchingWord = wordsIter.next();
+			}
 		}
 
 		// By default the dictionary assumes that the input word is in
 		// Inuktitut. But you can also search for English words
 		partialWord = "housing";
 		result = dict.searchIter(partialWord, "en");
-		while (wordsIter.hasNext()) {
-			String matchingWord = wordsIter.next();
-			dict.entry4word(matchingWord, "en");
+		try (CloseableIterator<String> wordsIter = result.getLeft()) {
+			while (wordsIter.hasNext()) {
+				String matchingWord = wordsIter.next();
+				dict.entry4word(matchingWord, "en");
+			}
 		}
 	}
 
@@ -295,7 +299,7 @@ public class MultilingualDictTest {
 	@Test
 	public void test__search__HappyPath() throws Exception {
 		String partialWord = "inuksu";
-		Pair<Iterator<String>, Long> results =
+		Pair<CloseableIterator<String>, Long> results =
 			new MultilingualDict().searchIter(partialWord);
 
 		new AssertDictSearchResults(results.getLeft(), results.getRight())
@@ -306,10 +310,12 @@ public class MultilingualDictTest {
 	@Test
 	public void test__search__ENword() throws Exception {
 		String partialWord = "housing";
-		Pair<Iterator<String>, Long> results =
+		Pair<CloseableIterator<String>, Long> results =
 			new MultilingualDict().searchIter(partialWord, "en");
-		new AssertDictSearchResults(results.getLeft(), results.getRight())
+		try (CloseableIterator<String> wordsIter = results.getLeft()) {
+			new AssertDictSearchResults(wordsIter, results.getRight())
 			.containsWords("housing");
+		}
 	}
 	@Test
 	public void test__search__VariousCases() throws Exception {
