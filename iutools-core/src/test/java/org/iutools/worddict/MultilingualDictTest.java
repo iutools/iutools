@@ -7,7 +7,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.linguisticdata.MorphemeHumanReadableDescr;
 import org.iutools.script.TransCoder;
 import org.iutools.sql.CloseableIterator;
+import org.iutools.sql.SQLLeakMonitor;
 import org.iutools.utilities.StopWatch;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -21,8 +23,12 @@ public class MultilingualDictTest {
 	MultilingualDictCase[] cases_entry4word = null;
 	Case[] cases_search = null;
 
+	SQLLeakMonitor sqlLeakMonitor = null;
+
 	@BeforeEach
 	public void setUp() throws Exception {
+		sqlLeakMonitor = new SQLLeakMonitor();
+
 		// Cases for search() function
 		cases_search = new Case[] {
 
@@ -123,6 +129,11 @@ public class MultilingualDictTest {
 //				.setMinExamples(10)
 //				.setRelatedWords(),
 		};
+	}
+
+	@AfterEach
+	public void tearDown() {
+		sqlLeakMonitor.assertNoLeaks();
 	}
 
 	//////////////////////////////////
@@ -302,9 +313,11 @@ public class MultilingualDictTest {
 		Pair<CloseableIterator<String>, Long> results =
 			new MultilingualDict().searchIter(partialWord);
 
-		new AssertDictSearchResults(results.getLeft(), results.getRight())
-			.containsWords("inuksuk", "inuksuup", "inuksui")
+		try (CloseableIterator<String> wordsIter = results.getLeft()) {
+			new AssertDictSearchResults(results.getLeft(), results.getRight())
+				.containsWords("inuksuk", "inuksuup", "inuksui")
 			;
+		}
 	}
 
 	@Test

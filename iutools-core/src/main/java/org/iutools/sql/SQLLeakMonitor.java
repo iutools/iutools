@@ -1,5 +1,8 @@
 package org.iutools.sql;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.junit.jupiter.api.Assertions;
+
 /**
  * Check if we leaked some "managed" SQL resources between a start point and the current
  * time.
@@ -29,6 +32,8 @@ public class SQLLeakMonitor {
 	int rsLeaked = 0;
 	int stmtLeaked = 0;
 
+	public boolean silent = false;
+
 	public SQLLeakMonitor() {
 		init__SQLLeakMonitor("");
 	}
@@ -39,6 +44,19 @@ public class SQLLeakMonitor {
 
 	private void init__SQLLeakMonitor(String _mess) {
 		this.mess = _mess;
+		Pair<Integer, Integer> openedResources = currentOpenResources();
+		stmtAtStart = openedResources.getLeft();
+		rsAtStart = openedResources.getRight();
+		int totalAtStart = stmtAtStart+rsAtStart;
+		if (!silent && (stmtAtStart+rsAtStart) > 0) {
+			System.out.println("SQLLeakMonitor["+mess+"]: There were already some leaked resource when we started this monitor: Statements="+stmtAtStart+", ResultSets="+rsAtStart);
+		}
+	}
+
+	private Pair<Integer, Integer> currentOpenResources() {
+		int totalStatements = ResourcesTracker.totalStatements(true);
+		int totalRS = ResourcesTracker.totalResultSets(true);
+		return Pair.of(totalStatements, totalRS);
 	}
 
 	public int leakedResources() {
@@ -64,6 +82,26 @@ public class SQLLeakMonitor {
 
 		rsNow = ResourcesTracker.totalResultSets(true);
 		rsLeaked = Math.max(0, rsNow - rsAtStart);
+		if (!silent && (stmtLeaked+rsLeaked) > 0) {
+			System.out.println("SQLLeakMonitor["+mess+"]: Some resources were leaked since we started this monitor: Statements="+stmtLeaked+", ResultSets="+rsLeaked);
+		}
 		return;
+	}
+
+	public void assertNoLeaks() {
+		int leakedSets = leakedResultSets();
+		int leakedStatements = leakedStatements();
+		int totalLeaked = leakedSets + leakedStatements;
+		if (totalLeaked > 0) {
+			String mess =
+				"Some SQL resources were leaked!\n";
+			if (leakedSets > 0) {
+				mess += "  ResultSets : " + leakedSets + "\n";
+			}
+			if (leakedStatements > 0) {
+				mess += "  Statements : " +leakedStatements+ "\n";
+			}
+			Assertions.fail(mess);
+		}
 	}
 }

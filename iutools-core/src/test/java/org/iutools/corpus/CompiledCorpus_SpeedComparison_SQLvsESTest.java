@@ -8,12 +8,11 @@ import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
 import org.iutools.corpus.sql.CompiledCorpus_SQL;
 import org.iutools.linguisticdata.LinguisticData;
 import org.iutools.sql.CloseableIterator;
+import org.iutools.sql.SQLLeakMonitor;
 import org.iutools.sql.SQLTestHelpers;
 import org.iutools.utilities.StopWatch;
 import org.iutools.worddict.GlossaryEntry;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -57,6 +56,8 @@ public class CompiledCorpus_SpeedComparison_SQLvsESTest {
 	static CompiledCorpus_SQL sqlCorpus = null;
 	static CompiledCorpus_ES esCorpus = null;
 
+	SQLLeakMonitor sqlLeakMonitor = null;
+
 	@BeforeAll
 	public static void beforeAll() throws Exception {
 		new SQLTestHelpers().encurConnectionPoolOverhead();
@@ -65,6 +66,7 @@ public class CompiledCorpus_SpeedComparison_SQLvsESTest {
 
 	@BeforeEach
 	public void setUp() throws Exception {
+		sqlLeakMonitor = new SQLLeakMonitor();
 
 		if (sqlCorpus == null) {
 			sqlCorpus = new CompiledCorpus_SQL(corpusName);
@@ -78,6 +80,12 @@ public class CompiledCorpus_SpeedComparison_SQLvsESTest {
 		generateMiddleNgramsToTest();
 		generateMorphemesToTest();
 		generateMorphNgramsToTest();
+	}
+
+	@AfterEach
+	public void tearDown() throws Exception  {
+		sqlLeakMonitor.assertNoLeaks();
+		return;
 	}
 
 	private void generateMorphemesToTest() throws Exception {
@@ -202,7 +210,9 @@ public class CompiledCorpus_SpeedComparison_SQLvsESTest {
 		StopWatch sw = new StopWatch().start();
 		for (String word: wordsToTest) {
 			WordInfo winfo = corpus.info4word(word);
-			int x = 1;
+			if (winfo == null) {
+				System.out.println("Corpus implementation "+corpus.getClass().getSimpleName()+" returned null info for word "+word);
+			}
 		}
 		return sw.lapTime(TimeUnit.MILLISECONDS);
 	}

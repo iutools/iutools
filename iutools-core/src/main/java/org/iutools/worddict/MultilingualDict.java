@@ -543,20 +543,23 @@ public class MultilingualDict {
 
 		Pair<CloseableIterator<String>,Long> results = searchIter(partialWord, lang);
 		Long totalHits = results.getRight();
-		Iterator<String> hitsIter = results.getLeft();
-		int count = 0;
-		while (hitsIter.hasNext()) {
-			count++;
-			String hit = hitsIter.next();
-			try {
-				hit = TransCoder.ensureSameScriptAsSecond(hit, partialWord);
-			} catch (TransCoderException e) {
-				throw new MultilingualDictException(e);
+		try (CloseableIterator<String> hitsIter = results.getLeft()) {
+			int count = 0;
+			while (hitsIter.hasNext()) {
+				count++;
+				String hit = hitsIter.next();
+				try {
+					hit = TransCoder.ensureSameScriptAsSecond(hit, partialWord);
+				} catch (TransCoderException e) {
+					throw new MultilingualDictException(e);
+				}
+				hits.add(hit);
+				if (maxHits != null && hits.size() == maxHits) {
+					break;
+				}
 			}
-			hits.add(hit);
-			if (maxHits != null && hits.size() == maxHits) {
-				break;
-			}
+		} catch (Exception e) {
+			throw new MultilingualDictException(e);
 		}
 
 		hits = sortHits(hits);

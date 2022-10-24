@@ -9,6 +9,7 @@ import java.util.*;
 import org.iutools.config.IUConfig;
 import org.iutools.corpus.*;
 import org.iutools.sql.CloseableIterator;
+import org.iutools.sql.SQLLeakMonitor;
 import org.iutools.utilities.StopWatch;
 import ca.nrc.testing.*;
 
@@ -46,14 +47,22 @@ public class SpellCheckerTest {
 			"nakuqmi", "nunavungmi", "nunavuumik", "nunavuumit",
 			"ugaalautaa"};
 
+	public static SQLLeakMonitor sqlLeakMonitor = null;
 
-	 @BeforeEach
+	@BeforeEach
 	public void setUp(TestInfo _testInfo) throws Exception {
 		this.testInfo = _testInfo;
+
+		sqlLeakMonitor = new SQLLeakMonitor();
 		
 		// Make sure the ES indices are empty for the empty corpus name
 		clearESIndices(new SpellChecker(emptyCorpusName, false));
 		return;
+	}
+
+	@AfterEach
+	public void tearDown() {
+		sqlLeakMonitor.assertNoLeaks();
 	}
 
 	protected SpellChecker largeDictChecker() throws Exception {
@@ -840,8 +849,9 @@ public class SpellCheckerTest {
 		String[] expWords = new String[] {
 			"nunavu", "nunalinni", "nunavummi"
 		};
-		Iterator<WordInfo> iter = checker.winfosContainingNgram(ngram);
-		assertContainsWords(expWords, iter, 10);
+		try (CloseableIterator<WordInfo> iter = checker.winfosContainingNgram(ngram)) {
+			assertContainsWords(expWords, iter, 10);
+		}
 	}
 
 	private void assertContainsWords(String[] expWords, Iterator<WordInfo> iter, int inTopN) {

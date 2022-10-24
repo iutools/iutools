@@ -10,6 +10,7 @@ import org.iutools.corpus.CompiledCorpus;
 import org.iutools.corpus.CompiledCorpusRegistry;
 import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
 import org.iutools.corpus.sql.CompiledCorpus_SQL;
+import org.iutools.sql.SQLLeakMonitor;
 import org.iutools.sql.SQLTestHelpers;
 import org.iutools.utilities.StopWatch;
 import org.junit.jupiter.api.*;
@@ -18,6 +19,18 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.TestInfo;
 
 public class MorphRelativesFinderAccuracyTest {
+
+	SQLLeakMonitor sqlLeakMonitor = null;
+
+	@BeforeEach
+	public void setUp() {
+		sqlLeakMonitor = new SQLLeakMonitor();
+	}
+
+	@AfterEach
+	public void tearDown() {
+		sqlLeakMonitor.assertNoLeaks();
+	}
 
 	@Test
 	public void test__findRelatives__QuickPerformanceTest(TestInfo testInfo)

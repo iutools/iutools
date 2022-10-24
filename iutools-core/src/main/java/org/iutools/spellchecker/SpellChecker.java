@@ -470,28 +470,31 @@ public class SpellChecker {
 			//   morpheme in W.
 			//
 			String lead = corr.partialFixRoman.substring(0, endPos-1);
-			Iterator<String> iterWords =
-				wordsContainingNgram("^"+lead);
-			boolean wordWasFoundForLead = false;
-			
-			int wordCount = 0;
-			while (iterWords.hasNext()) {
-				String aWord = iterWords.next();
-				wordCount++;
-				if (wordCount > 5) {
+			try (CloseableIterator<String> iterWords =
+				wordsContainingNgram("^"+lead)) {
+				boolean wordWasFoundForLead = false;
+
+				int wordCount = 0;
+				while (iterWords.hasNext()) {
+					String aWord = iterWords.next();
+					wordCount++;
+					if (wordCount > 5) {
+						break;
+					}
+					if (leadRespectsMorphemeBoundaries(lead, aWord)) {
+						// Found a word with the right characteristics
+						wordWasFoundForLead = true;
+						longestCorrectLead = lead;
+						break;
+					}
+				}
+
+				if (wordWasFoundForLead) {
 					break;
 				}
-				if (leadRespectsMorphemeBoundaries(lead, aWord)) {
-					// Found a word with the right characteristics
-					wordWasFoundForLead = true;					
-					longestCorrectLead = lead;
-					break;
-				}
+			} catch (Exception e) {
+				throw new SpellCheckerException(e);
 			}
-			
-			if (wordWasFoundForLead) {
-				break;
-			}			
 		}
 		corr.setCorrectLead(longestCorrectLead);
 	}
@@ -558,26 +561,29 @@ public class SpellChecker {
 			//   morpheme in W.
 			//
 			String tail = corr.partialFixRoman.substring(startPos);
-			Iterator<String> iterWords = wordsContainingNgram(tail+"$");
-			boolean wordWasFoundForTail = false;
-			int wordCount = 0;
-			while (iterWords.hasNext()) {
-				String aWord = iterWords.next();
-				wordCount++;
-				if (wordCount > 5) {
+			try (CloseableIterator<String> iterWords = wordsContainingNgram(tail+"$")) {
+				boolean wordWasFoundForTail = false;
+				int wordCount = 0;
+				while (iterWords.hasNext()) {
+					String aWord = iterWords.next();
+					wordCount++;
+					if (wordCount > 5) {
+						break;
+					}
+					if (tailRespectsMorphemeBoundaries(tail, aWord)) {
+						// Found a word with the right characteristics
+						wordWasFoundForTail = true;
+						longestCorrectTail = tail;
+						break;
+					}
+				}
+
+				if (wordWasFoundForTail) {
 					break;
 				}
-				if (tailRespectsMorphemeBoundaries(tail, aWord)) {
-					// Found a word with the right characteristics
-					wordWasFoundForTail = true;					
-					longestCorrectTail = tail;
-					break;
-				}
+			} catch (Exception e) {
+				throw new SpellCheckerException(e);
 			}
-			
-			if (wordWasFoundForTail) {
-				break;
-			}			
 		}
 		corr.setCorrectTail(longestCorrectTail);
 	}
@@ -992,16 +998,18 @@ public class SpellChecker {
 
 			tLogger.trace("adding candidates that contain ngram=" + ngram + " (ngramIDF=" + ngramIDF + ")");
 
-			Iterator<WordInfo> iterWinfoCandaWithNgram =
+			try (CloseableIterator<WordInfo> iterWinfoCandaWithNgram =
 				winfosContainingNgram(
-					ngram, CompiledCorpus_ES.SearchOption.EXCL_MISSPELLED);
-			while (iterWinfoCandaWithNgram.hasNext()) {
-				WordInfo winfo = iterWinfoCandaWithNgram.next();
-				ScoredSpelling candidate = new ScoredSpelling(winfo.word);
-				candidate.frequency = winfo.frequency;
-				candidateSpellingsWithNgram.add(candidate);
+					ngram, CompiledCorpus_ES.SearchOption.EXCL_MISSPELLED)) {
+				while (iterWinfoCandaWithNgram.hasNext()) {
+					WordInfo winfo = iterWinfoCandaWithNgram.next();
+					ScoredSpelling candidate = new ScoredSpelling(winfo.word);
+					candidate.frequency = winfo.frequency;
+					candidateSpellingsWithNgram.add(candidate);
+				}
+			} catch (Exception e) {
+				throw new SpellCheckerException(e);
 			}
-
 			candidateSpellingsSet.addAll(candidateSpellingsWithNgram);
 
 			SpellDebug.containsCorrection(
@@ -1179,9 +1187,9 @@ public class SpellChecker {
 		logger.trace("invoked with seq="+seq);
 		long start = StopWatch.nowMSecs();
 
-		Iterator<WordInfo> winfosIter = null;
+		CloseableIteratorChain<WordInfo> winfosIter = null;
 		try {
-			Iterator<WordInfo> winfosIter1 =
+			CloseableIterator<WordInfo> winfosIter1 =
 				corpus.winfosContainingNgram(seq, options);
 
 			// When looking in the corpus of explicitly correct words, don't worry
@@ -1191,17 +1199,17 @@ public class SpellChecker {
 			options = ArrayUtils.removeElement(
 				options, CompiledCorpus_ES.SearchOption.EXCL_MISSPELLED);
 
-			Iterator<WordInfo> winfosIter2 =
+			CloseableIterator<WordInfo> winfosIter2 =
 				explicitlyCorrectWords.winfosContainingNgram(seq, options);
 
-			winfosIter = new IteratorChain<WordInfo>(winfosIter1, winfosIter2);
+			winfosIter = new CloseableIteratorChain<WordInfo>(winfosIter1, winfosIter2);
 		} catch (CompiledCorpusException e) {
 			throw new SpellCheckerException(e);
 		}
 
 		long elapsed = StopWatch.elapsedMsecsSince(start);
 		logger.trace("seq="+seq+" took "+elapsed+"msecs");
-		return new CloseableIteratorWrapper<WordInfo>(winfosIter);
+		return winfosIter;
 	}
 
 	protected CloseableIterator<String> wordsContainingNgram(String seq,
@@ -1210,7 +1218,7 @@ public class SpellChecker {
 
 		long start = StopWatch.nowMSecs();
 
-		Iterator<String> wordsIter = null;
+		CloseableIterator<String> wordsIter = null;
 		CloseableIterator<String> wordsIter1 = null;
 		CloseableIterator<String> wordsIter2 = null;
 		try {

@@ -8,14 +8,10 @@ import org.iutools.concordancer.Alignment;
 import org.iutools.concordancer.Alignment_ES;
 import org.iutools.concordancer.tm.TranslationMemory;
 import org.iutools.concordancer.tm.TranslationMemoryException;
-import org.iutools.sql.ConnectionPool;
-import org.iutools.sql.QueryProcessor;
-import org.iutools.sql.ResultsSetIterator;
-import org.iutools.sql.Row;
+import org.iutools.sql.*;
 
 import java.nio.file.Path;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -89,10 +85,10 @@ public class TranslationMemory_SQL extends TranslationMemory {
 			"  lang = ? AND\n"+
 			"  MATCH(text) AGAINST(?);";
 		Iterator<SentenceInLang> iter = null;
-		try (ResultSet rs  =
-				new QueryProcessor().query2(conn, sql, sourceLang, sourceExpr)) {
-			iter = new ResultsSetIterator(rs, new Sql2SentenceInLang());
-		} catch (SQLException e) {
+		try (ResultSetWrapper rsw  =
+				new QueryProcessor().query3(sql, sourceLang, sourceExpr)) {
+			iter = rsw.iterator(new Sql2SentenceInLang());
+		} catch (Exception e) {
 			throw new TranslationMemoryException(e);
 		}
 		return iter;

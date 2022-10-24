@@ -7,12 +7,27 @@ import org.iutools.corpus.CompiledCorpus;
 import org.iutools.corpus.CompiledCorpusRegistry;
 import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
 import org.iutools.corpus.CorpusTestHelpers;
+import org.iutools.sql.SQLLeakMonitor;
 import org.junit.Test;
 
 import org.iutools.datastructure.trie.StringSegmenter_IUMorpheme;
 import ca.nrc.testing.AssertObject;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 public class MorphRelativesFinderTest {
+
+	SQLLeakMonitor sqlLeakMonitor = null;
+
+	@BeforeEach
+	public void setUp() {
+		sqlLeakMonitor = new SQLLeakMonitor();
+	}
+
+	@AfterEach
+	public void tearDown() {
+		sqlLeakMonitor.assertNoLeaks();
+	}
 
 	protected MorphRelativesFinder makeFinder() throws Exception {
 

@@ -2,15 +2,30 @@ package org.iutools.worddict;
 
 import ca.nrc.testing.AssertRuntime;
 import org.iutools.config.IUConfig;
+import org.iutools.sql.SQLLeakMonitor;
 import org.iutools.utilities.StopWatch;
 import org.iutools.worddict.MultilingualDict.*;
 import org.iutools.concordancer.tm.TMEvaluator.MatchType;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 
 import java.nio.file.Paths;
 
 public class DictEvaluationTest {
+
+	SQLLeakMonitor sqlLeakMonitor = null;
+
+	@BeforeEach
+	public void setUp() {
+		sqlLeakMonitor = new SQLLeakMonitor();
+	}
+
+	@AfterEach
+	public void tearDown() {
+		sqlLeakMonitor.assertNoLeaks();
+	}
 
 	@Test
 	public void test_evaluateWordDict_OnWikipediaGlossary_first20(

@@ -2,17 +2,30 @@ package org.iutools.worddict;
 
 
 import ca.nrc.dtrc.stats.FrequencyHistogram;
-import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.RunOnCases;
 import ca.nrc.testing.RunOnCases.*;
-import org.iutools.concordancer.tm.AssertEvaluationResults;
 import org.iutools.concordancer.tm.TMEvaluator.*;
+import org.iutools.sql.SQLLeakMonitor;
 import org.iutools.worddict.MultilingualDict.WhatTerm;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.function.Consumer;
 
 public class DictEvaluatorTest {
+
+	SQLLeakMonitor sqlLeakMonitor = null;
+
+	@BeforeEach
+	public void setUp() throws Exception {
+		sqlLeakMonitor = new SQLLeakMonitor();
+	}
+
+	@AfterEach
+	public void tearDown() {
+		sqlLeakMonitor.assertNoLeaks();
+	}
 
 	@Test
 	public void test__onNewGlossaryEntry__VariousCases() throws Exception {

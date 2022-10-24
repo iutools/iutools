@@ -17,6 +17,7 @@ import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
 import org.iutools.corpus.CompiledCorpusException;
 import org.iutools.corpus.CompiledCorpusTest;
 import org.iutools.corpus.WordInfo;
+import org.iutools.sql.SQLLeakMonitor;
 import org.junit.jupiter.api.*;
 
 import ca.nrc.datastructure.Pair;
@@ -33,6 +34,7 @@ public class SpellCheckerAccuracyTest {
         Pattern.compile("(^[^\\s\\(]+)");
     private TestInfo testInfo;
 
+	SQLLeakMonitor sqlLeakMonitor = null;
 
     protected SpellChecker makeLargeDictChecker() throws Exception {
         SpellChecker checker = new SpellChecker();
@@ -355,12 +357,13 @@ public class SpellCheckerAccuracyTest {
     @BeforeEach
     public void setUp(TestInfo testInfo) {
     	this.testInfo = testInfo;
-    }
+		sqlLeakMonitor = new SQLLeakMonitor();
+	 }
 
     @AfterEach
     public void tearDown() {
-
-        prevTestInfo = this.testInfo;
+    	prevTestInfo = this.testInfo;
+		sqlLeakMonitor = new SQLLeakMonitor();
     }
 
     @Test

@@ -76,17 +76,20 @@ public class AlignmentsIterator implements Iterator<Alignment_ES>, Closeable {
 			"SELECT * FROM "+sentsSchema.tableName+"\n"+
 			"WHERE\n"+
 			"  from_doc=? AND\n"+
-			"  pair_num=? AND\n"+
-			"  ("
+			"  pair_num=?"
 			;
-		for (int ii=0; ii < targetLangs.length; ii++) {
-			sql += "    lang=?";
-			if (ii != targetLangs.length-1) {
-				sql += " OR";
+		if (targetLangs != null && targetLangs.length > 0) {
+			sql += " AND\n  (";
+			for (int ii = 0; ii < targetLangs.length; ii++) {
+				sql += "    lang=?";
+				if (ii != targetLangs.length - 1) {
+					sql += " OR";
+				}
+				sql += "\n";
 			}
-			sql += "\n";
+			sql += " )";
 		}
-		sql += " );";
+		sql += ";";
 		Object[] args = new Object[targetLangs.length+2];
 		args[0] = sourceSent.from_doc;
 		args[1] = sourceSent.pair_num;
