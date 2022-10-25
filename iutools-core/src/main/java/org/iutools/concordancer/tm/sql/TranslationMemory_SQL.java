@@ -43,14 +43,17 @@ public class TranslationMemory_SQL extends TranslationMemory {
 	}
 
 	@Override
-	public Iterator<Alignment_ES> searchIter(String sourceLang, String sourceExpr, String... targetLangs) throws TranslationMemoryException {
+	public CloseableIterator<Alignment_ES> searchIter(String sourceLang, String sourceExpr, String... targetLangs) throws TranslationMemoryException {
 
 		AlignmentsIterator iter = null;
-		try(Connection conn = new ConnectionPool().getConnection()) {
-			Iterator<SentenceInLang> sourceSentsIter = null;
-			sourceSentsIter = searchSourceLang(sourceLang, sourceExpr, conn);
-		} catch (SQLException e) {
-			throw new TranslationMemoryException(e);
+		Connection conn = null;
+		try {
+			conn = new ConnectionPool().getConnection();
+			CloseableIterator<SentenceInLang> sourceSentsIter =
+				searchSourceLang(sourceLang, sourceExpr, conn);
+			iter = new AlignmentsIterator(sourceSentsIter, targetLangs);
+		} catch (SQLException throwables) {
+			throwables.printStackTrace();
 		}
 
 		return iter;
@@ -65,8 +68,10 @@ public class TranslationMemory_SQL extends TranslationMemory {
 	public List<Alignment_ES> search(String sourceLang, String sourceExpr, String... targetLangs) throws TranslationMemoryException {
 		List<Alignment_ES> hits = new ArrayList<Alignment_ES>();
 		try (Connection conn = new ConnectionPool().getConnection()) {
-			Iterator<SentenceInLang> sourceSentsIter = searchSourceLang(sourceLang, sourceExpr, conn);
-			AlignmentsIterator alignIter = new AlignmentsIterator(conn, sourceSentsIter, targetLangs);
+			CloseableIterator<SentenceInLang> sourceSentsIter =
+				searchSourceLang(sourceLang, sourceExpr, conn);
+			AlignmentsIterator alignIter =
+				new AlignmentsIterator(sourceSentsIter, targetLangs);
 			while (alignIter.hasNext()) {
 				Alignment_ES nextAlign = alignIter.next();
 				hits.add(nextAlign);
@@ -77,18 +82,20 @@ public class TranslationMemory_SQL extends TranslationMemory {
 		return hits;
 	}
 
-	private Iterator<SentenceInLang> searchSourceLang(String sourceLang, String sourceExpr, Connection conn) throws TranslationMemoryException {
+	private CloseableIterator<SentenceInLang> searchSourceLang(String sourceLang, String sourceExpr, Connection conn) throws TranslationMemoryException {
 		SentenceInLangSchema schema = new SentenceInLangSchema();
 		String sql =
 			"SELECT * FROM "+schema.tableName+"\n"+
 			"WHERE\n"+
 			"  lang = ? AND\n"+
 			"  MATCH(text) AGAINST(?);";
-		Iterator<SentenceInLang> iter = null;
-		try (ResultSetWrapper rsw  =
-				new QueryProcessor().query3(sql, sourceLang, sourceExpr)) {
+		CloseableIterator<SentenceInLang> iter = null;
+		ResultSetWrapper rsw  =
+		null;
+		try {
+			rsw = new QueryProcessor().query3(sql, sourceLang, sourceExpr);
 			iter = rsw.iterator(new Sql2SentenceInLang());
-		} catch (Exception e) {
+		} catch (SQLException e) {
 			throw new TranslationMemoryException(e);
 		}
 		return iter;

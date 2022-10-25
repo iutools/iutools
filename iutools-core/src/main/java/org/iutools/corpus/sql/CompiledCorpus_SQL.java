@@ -75,7 +75,7 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 		logger.trace("word="+word);
       WordInfo wordInfo = null;
       String queryStr =
-			"SELECT * FROM "+WORDS_TABLE+"\n"+
+			"SELECT word, frequency, totalDecompositions, topDecompositionStr, decompositionsSampleJSON FROM "+WORDS_TABLE+"\n"+
 			"WHERE\n"+
 			"  `word` = ? AND \n" +
 			"  `corpusName` = ?;";

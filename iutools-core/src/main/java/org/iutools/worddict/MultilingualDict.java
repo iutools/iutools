@@ -356,6 +356,7 @@ public class MultilingualDict {
 		}
 		tLogger.trace("isForRelatedWords="+isForRelatedWords);
 
+		Map<String, CloseableIterator<Alignment_ES>> iterators = null;
 		try {
 			String l1 = entry.lang;
 			String l2 = otherLang(l1);
@@ -365,7 +366,7 @@ public class MultilingualDict {
 				l1Words = (List<String>) TransCoder.ensureSyllabic(l1Words);
 			}
 
-			Map<String, Iterator<Alignment_ES>> iterators =
+			iterators =
 				translationsIteratorsForWords(l1Words, l1, l2);
 			Map<String,Boolean> wordHasRemainingAlignments = new HashMap<String,Boolean>();
 			for (String aWord: iterators.keySet()) {
@@ -383,7 +384,7 @@ public class MultilingualDict {
 
 					// Pull one alignment from each word in turn, until we have enough
 					// translations, or we run out of alignments
-					Iterator<Alignment_ES> alignmentIter = iterators.get(l1Word);
+					CloseableIterator<Alignment_ES> alignmentIter = iterators.get(l1Word);
 					if (alignmentIter == null || !alignmentIter.hasNext()) {
 						// For some reason, we may get a null iterator for certain words
 						wordHasRemainingAlignments.put(l1Word, false);
@@ -416,19 +417,28 @@ public class MultilingualDict {
 		} catch (WordSpotterException | MultilingualDictException |
 			TransCoderException e) {
 			throw new MultilingualDictException(e);
+		} finally {
+			if (iterators != null) {
+				for (CloseableIterator<Alignment_ES> iter: iterators.values()) {
+					try {
+						iter.close();
+					} catch (Exception e) {
+					}
+				}
+			}
 		}
 
 		return;
 	}
 
-	private Map<String, Iterator<Alignment_ES>> translationsIteratorsForWords(
+	private Map<String, CloseableIterator<Alignment_ES>> translationsIteratorsForWords(
 		List<String> l1Words, String l1, String l2) throws MultilingualDictException {
 
-		Map<String, Iterator<Alignment_ES>> iterators =
-			new HashMap<String, Iterator<Alignment_ES>>();
+		Map<String, CloseableIterator<Alignment_ES>> iterators =
+			new HashMap<String, CloseableIterator<Alignment_ES>>();
 		try {
 			for (String l1Word : l1Words) {
-				Iterator<Alignment_ES> iter =
+				CloseableIterator<Alignment_ES> iter =
 					new TMFactory().makeTM().searchIter(l1, l1Word, l2);
 				iterators.put(l1Word, iter);
 			}
@@ -689,7 +699,7 @@ public class MultilingualDict {
 		try {
 			List<String> words = new ArrayList<String>();
 			Iterator<Alignment_ES> tmIter =
-			new TMFactory().makeTM().searchIter("en", partialWord);
+				new TMFactory().makeTM().searchIter("en", partialWord);
 			if (tmIter.hasNext()) {
 				words.add(partialWord);
 			}

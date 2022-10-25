@@ -14,6 +14,8 @@ import org.iutools.concordancer.Alignment;
 import org.iutools.concordancer.Alignment_ES;
 import org.iutools.concordancer.tm.TranslationMemory;
 import org.iutools.concordancer.tm.TranslationMemoryException;
+import org.iutools.datastructure.CloseableIteratorChain;
+import org.iutools.datastructure.CloseableIteratorWrapper;
 import org.iutools.elasticsearch.ES;
 import org.iutools.script.TransCoder;
 
@@ -22,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.collections4.iterators.IteratorChain;
+import org.iutools.sql.CloseableIterator;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -90,10 +92,10 @@ public class TranslationMemory_ES extends TranslationMemory {
 		}
 	}
 
-	public Iterator<Alignment_ES> searchIter(
+	public CloseableIterator<Alignment_ES> searchIter(
 		String sourceLang, String sourceExpr, String... targetLangs) throws TranslationMemoryException {
-		List<Iterator<Alignment_ES>> iterators =
-			new ArrayList<Iterator<Alignment_ES>>();
+		List<CloseableIterator<Alignment_ES>> iterators =
+			new ArrayList<CloseableIterator<Alignment_ES>>();
 		try {
 			String[] sourceExprVariants = new String[]{sourceExpr};
 			if (sourceLang.equals("iu")) {
@@ -114,7 +116,7 @@ public class TranslationMemory_ES extends TranslationMemory {
 					try {
 						searchResult = esFactory().searchAPI()
 							.search(query, ES_ALIGNMENT_TYPE, new Alignment_ES());
-						iterators.add(searchResult.docIterator());
+						iterators.add(new CloseableIteratorWrapper<Alignment_ES>(searchResult.docIterator()));
 					} catch (ElasticSearchException e) {
 						throw new TranslationMemoryException(e);
 					}
@@ -124,15 +126,15 @@ public class TranslationMemory_ES extends TranslationMemory {
 			throw new TranslationMemoryException(e);
 		}
 
-		Iterator<Alignment_ES> iterator = null;
+		CloseableIterator<Alignment_ES> iterator = null;
 		if (iterators.size() == 1) {
 			iterator = iterators.get(0);
 		} else {
 			iterator =
-				new IteratorChain<Alignment_ES>(iterators.get(0), iterators.get(1));
+				new CloseableIteratorChain<Alignment_ES>(iterators.get(0), iterators.get(1));
 		}
 
-		return (Iterator<Alignment_ES>)iterator;
+		return iterator;
 	}
 
 	private Query esQuery(

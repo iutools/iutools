@@ -31,7 +31,6 @@ public class MultilingualDictTest {
 
 		// Cases for search() function
 		cases_search = new Case[] {
-
 			new Case("iu-inuk-roman", "iu", "inuk", 180,
 				new String[] {"inuk", "inukku",
 					"inuksui", "inuksuk"}),

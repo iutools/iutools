@@ -6,31 +6,27 @@ import org.apache.logging.log4j.Logger;
 import org.iutools.concordancer.Alignment;
 import org.iutools.concordancer.Alignment_ES;
 import org.iutools.concordancer.tm.TranslationMemoryException;
+import org.iutools.sql.CloseableIterator;
 import org.iutools.sql.QueryProcessor;
 
-import java.io.Closeable;
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Iterator;
 import java.util.List;
 
-public class AlignmentsIterator implements Iterator<Alignment_ES>, Closeable {
-	private Connection conn = null;
-	private Iterator<SentenceInLang> sourceSentsIter = null;
+public class AlignmentsIterator implements CloseableIterator<Alignment_ES> {
+	private CloseableIterator<SentenceInLang> sourceSentsIter = null;
 	private String[] targetLangs = null;
 	private SentenceInLangSchema sentsSchema = new SentenceInLangSchema();;
 	private QueryProcessor queryProcessor = new QueryProcessor();
 
-	public AlignmentsIterator(Connection conn,
-		Iterator<SentenceInLang> sourceSentsIter, String... targetLangs) {
-		init__AlignmentsIterator(conn, sourceSentsIter, targetLangs);
+	public AlignmentsIterator(
+		CloseableIterator<SentenceInLang> sourceSentsIter, String... targetLangs) {
+		init__AlignmentsIterator(sourceSentsIter, targetLangs);
 	}
 
-	private void init__AlignmentsIterator(Connection conn,
-		Iterator<SentenceInLang> sourceSentsIter, String[] targetLangs) {
-		this.conn = conn;
+	private void init__AlignmentsIterator(
+		CloseableIterator<SentenceInLang> sourceSentsIter, String[] targetLangs) {
 		this.sourceSentsIter = sourceSentsIter;
 		this.targetLangs = targetLangs;
 	}
@@ -38,8 +34,8 @@ public class AlignmentsIterator implements Iterator<Alignment_ES>, Closeable {
 	@Override
 	public void close() throws IOException {
 		try {
-			conn.close();
-		} catch (SQLException e) {
+			sourceSentsIter.close();
+		} catch (Exception e) {
 			throw new IOException(e);
 		}
 	}

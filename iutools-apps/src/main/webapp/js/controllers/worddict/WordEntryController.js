@@ -237,11 +237,12 @@ class WordEntryController extends IUToolsController {
         info.areRelatedTranslations = true;
         info.l1Words = wordEntry.relatedWords;
         info.allTranslations = [];
-        info.examples = wordEntry.examplesForRelWordsTranslation;
+        // info.examples = wordEntry.examplesForRelWordsTranslation;
+        info.examples = wordEntry.translations4word;
         var relWords = wordEntry.relatedWords;
         for (var ii=0; ii < relWords.length; ii++) {
             var aRelWord = relWords[ii];
-            var aRelWordTranslations = wordEntry.relatedWordTranslationsMap[aRelWord];
+            var aRelWordTranslations = wordEntry.translations4word[aRelWord];
             tracer.trace("For aRelWord="+aRelWord+", aRelWordTransl="+jsonStringifySafe(aRelWordTranslations))
             if (aRelWordTranslations == null) {continue;}
             info['translation4word'][aRelWord] = aRelWordTranslations;
