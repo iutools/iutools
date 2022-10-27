@@ -91,7 +91,7 @@ public class AlignmentsIterator implements CloseableIterator<Alignment_ES> {
 			args[ii+2] = targetLangs[ii];
 		}
 
-		try (ResultSetWrapper rsw = queryProcessor.query3(sql, args)) {
+		try (ResultSetWrapper rsw = queryProcessor.query(sql, args)) {
 			List<SentenceInLang> targetSents =
 				rsw.toPojoLst(new Sql2SentenceInLang());
 			for (SentenceInLang aTargSent: targetSents) {

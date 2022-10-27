@@ -11,7 +11,6 @@ import org.iutools.sql.QueryProcessor;
 import org.iutools.sql.ResultSetWrapper;
 
 import java.io.*;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +47,7 @@ public class CompiledCorpus_SQLLoader {
 			;
 		// We use try-with to ensure that the ResultSet will be closed even if an
 		// exception is raised
-		try (ResultSetWrapper rsw = queryProcessor.query3(sql)){
+		try (ResultSetWrapper rsw = queryProcessor.query(sql)){
 		} catch (Exception e) {
 			throw new CompiledCorpusException(e);
 		}

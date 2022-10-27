@@ -129,7 +129,7 @@ public class SQLTestHelpers {
 	 */
 	public static Pair<Statement, ResultSet> openManagedResources() throws Exception {
 		String sql = "SHOW TABLES;";
-		ResultSetWrapper rsw = new QueryProcessor().query3(sql);
+		ResultSetWrapper rsw = new QueryProcessor().query(sql);
 		return Pair.of(rsw.statement, rsw.rs);
 	}
 
@@ -138,7 +138,7 @@ public class SQLTestHelpers {
 	 */
 	public static ResultSetWrapper openResultSetWrapper() throws Exception {
 		String sql = "SHOW TABLES;";
-		ResultSetWrapper rsw = new QueryProcessor().query3(sql);
+		ResultSetWrapper rsw = new QueryProcessor().query(sql);
 		return rsw;
 	}
 }

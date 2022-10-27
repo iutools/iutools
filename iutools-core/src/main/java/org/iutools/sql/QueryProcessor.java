@@ -1,16 +1,12 @@
 package org.iutools.sql;
 
 import ca.nrc.json.PrettyPrinter;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONObject;
 
 import java.sql.*;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /** Class for processing an SQL query */
 public class QueryProcessor {
@@ -52,7 +48,7 @@ public class QueryProcessor {
 			String query = "SHOW TABLES LIKE \""+tableName+"\";";
 			// We use try-with to ensure that the ResultSet will be closed even
 			// if an exception is raised.
-			try (ResultSetWrapper rsw = query3(query)) {
+			try (ResultSetWrapper rsw = query(query)) {
 				isDefined = !rsw.isEmpty();
 				cacheTableIsDefined(tableName, isDefined);
 			} catch (Exception e) {
@@ -107,15 +103,15 @@ public class QueryProcessor {
 		stmt.addBatch();
 	}
 
-	public ResultSetWrapper query3(String query, Object... queryArgs) throws SQLException {
-		return query3((Connection) null, false, query, queryArgs);
+	public ResultSetWrapper query(String query, Object... queryArgs) throws SQLException {
+		return query((Connection) null, false, query, queryArgs);
 	}
 
-	public ResultSetWrapper query3(Connection conn, String query, Object... queryArgs) throws SQLException {
-		return query3(conn, (Boolean)null, query, queryArgs);
+	public ResultSetWrapper query(Connection conn, String query, Object... queryArgs) throws SQLException {
+		return query(conn, (Boolean)null, query, queryArgs);
 	}
 
-	public ResultSetWrapper query3(Connection conn, Boolean scrollable, String query, Object... queryArgs) throws SQLException {
+	public ResultSetWrapper query(Connection conn, Boolean scrollable, String query, Object... queryArgs) throws SQLException {
 		Logger logger = LogManager.getLogger("org.iutools.sql.QueryProcessor.query");
 		if (logger.isTraceEnabled()) {
 			logger.trace("query=\n"+query);
@@ -167,7 +163,7 @@ public class QueryProcessor {
 		// We use try-with to ensure that the ResultSet will be closed even
 		// if an exception is raised.
 		try {
-			try (ResultSetWrapper rsw = query3(queryStr, queryArgs)) {
+			try (ResultSetWrapper rsw = query(queryStr, queryArgs)) {
 				rsw.rs.next();
 				rowCount = rsw.rs.getLong("rowCount");
 			}
@@ -187,7 +183,7 @@ public class QueryProcessor {
 
 		// We use try-with to ensure that the ResultSet will be closed even
 		// if an exception is raised.
-		try (ResultSetWrapper rsw = query3(queryStr, queryArgs)) {
+		try (ResultSetWrapper rsw = query(queryStr, queryArgs)) {
 			rsw.rs.next();
 			aggrValue = rsw.rs.getDouble("aggrValue");
 		} catch (Exception e) {
@@ -203,7 +199,7 @@ public class QueryProcessor {
 		String query = "DROP TABLE IF EXISTS "+tableName;
 		// We use try-with to ensure that the ResultSet will be closed even if an
 		// exception is raised
-		try (ResultSetWrapper rsw = query3(query)) {
+		try (ResultSetWrapper rsw = query(query)) {
 		} catch (Exception e) {
 			throw new SQLException(e);
 		}
@@ -322,7 +318,7 @@ public class QueryProcessor {
 				logger.trace("Running statement:\n"+statement);
 				// We use try-with to ensure that the ResultSet will be closed even
 				// if an exception is raised.
-				try (ResultSetWrapper rsw = query3(conn, false, statement)) {
+				try (ResultSetWrapper rsw = query(conn, false, statement)) {
 				} catch (Exception e) {
 					throw new SQLException(e);
 				}

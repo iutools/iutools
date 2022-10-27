@@ -1,7 +1,6 @@
 package org.iutools.concordancer.tm.sql;
 
 import ca.nrc.dtrc.elasticsearch.ESFactory;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.iutools.concordancer.Alignment;
@@ -14,7 +13,6 @@ import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -93,7 +91,7 @@ public class TranslationMemory_SQL extends TranslationMemory {
 		ResultSetWrapper rsw  =
 		null;
 		try {
-			rsw = new QueryProcessor().query3(sql, sourceLang, sourceExpr);
+			rsw = new QueryProcessor().query(sql, sourceLang, sourceExpr);
 			iter = rsw.iterator(new Sql2SentenceInLang());
 		} catch (SQLException e) {
 			throw new TranslationMemoryException(e);
