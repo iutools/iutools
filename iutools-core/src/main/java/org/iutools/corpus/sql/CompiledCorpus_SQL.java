@@ -26,6 +26,7 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 	private static final String WORDS_TABLE = new WordInfoSchema().tableName;
 	private static final String LAST_LOADED_DATE_TABLE = new LastLoadedDateSchema().tableName;
 	public String corpusName = null;
+	private QueryProcessor queryProcessor = new QueryProcessor();
 
 	public CompiledCorpus_SQL(String corpusName) throws CompiledCorpusException {
 		super(corpusName);
@@ -79,12 +80,12 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 			"WHERE\n"+
 			"  `word` = ? AND \n" +
 			"  `corpusName` = ?;";
-      try (ResultSet rs = query2(queryStr, word, corpusName)) {
-			wordInfo = rs2winfo(rs);
+      try (ResultSetWrapper rsw = query3(queryStr, word, corpusName)) {
+			wordInfo = rs2winfo(rsw);
 			if (logger.isTraceEnabled()) {
 				logger.trace("returning wordInfo=\n" + new PrettyPrinter().print(wordInfo));
 			}
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			throw new CompiledCorpusException(e);
 		}
 
@@ -119,7 +120,7 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 			//   will manage the SQL resources and close them when it is not needed
 			//   anymore
 			//
-			ResultSetWrapper rsw = new QueryProcessor().query3(queryStr, ngram, corpusName);
+			ResultSetWrapper rsw = query3(queryStr, ngram, corpusName);
 			logger.trace("Done querying");
 			return rsw.iterator(new Sql2WordIinfo());
 		} catch (SQLException e) {
@@ -162,10 +163,10 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 
 	}
 
-	private WordInfo rs2winfo(ResultSet rs) throws CompiledCorpusException {
+	private WordInfo rs2winfo(ResultSetWrapper rsw) throws CompiledCorpusException {
 		WordInfo wordInfo = null;
 		try {
-			wordInfo = QueryProcessor.rs2pojo(rs, new Sql2WordIinfo());
+			wordInfo = rsw.toPojo(new Sql2WordIinfo());
 		} catch (SQLException e) {
 			throw new CompiledCorpusException(e);
 		}
@@ -263,7 +264,7 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 		queryStr += ";";
 		logger.trace("Querying with queryStr="+queryStr);
 		try {
-			ResultSetWrapper rsw = new QueryProcessor().query3(queryStr, ngram, corpusName);
+			ResultSetWrapper rsw = query3(queryStr, ngram, corpusName);
 			logger.trace("Done querying");
 			iter = rsw.colIterator("word", String.class);
 		} catch (Exception e) {
@@ -369,9 +370,9 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 			// Note: We do a try-with conn, so that the ResultSet will be closed
 			// when we are done.
 			//
-			try (ResultSet rs = query2(queryStr, corpusName, morphQuery)) {
-				wordInfos = QueryProcessor.rs2pojoLst(rs, new Sql2WordIinfo());
-			} catch (SQLException e) {
+			try (ResultSetWrapper rsw = query3(queryStr, corpusName, morphQuery)) {
+				wordInfos = rsw.toPojoLst(new Sql2WordIinfo());
+			} catch (Exception e) {
 				throw new CompiledCorpusException(e);
 			}
 
@@ -383,10 +384,10 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 	}
 
 	@Override
-	public Iterator<String> wordsContainingMorphNgram(String[] morphemes) throws CompiledCorpusException {
+	public CloseableIterator<String> wordsContainingMorphNgram(String[] morphemes) throws CompiledCorpusException {
 		Logger logger = LogManager.getLogger("org.iutools.corpus.sql.CompiledCorpus_SQL.wordsContainingMorphNgram");
 
-		List<String> words = new ArrayList<String>();
+		CloseableIterator<String> wordsIter = null;
 		if (morphemes != null) {
 			String decompQuery = WordInfo_SQL.formatNgramAsSearchableString(morphemes);
 			String queryStr =
@@ -398,18 +399,17 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 				;
 			queryStr += sqlOrderBy("frequency:desc");
 
-			// We use Try-with to ensure that the ResultSet will be closed when
-			// we are done (or if an exception is raised).
-			try (ResultSet rs = this.query2(queryStr, corpusName, decompQuery)) {
-				List<WordInfo> winfos = QueryProcessor.rs2pojoLst(rs, WordInfo.class);
-				for (WordInfo winfo: winfos) {
-					words.add(winfo.word);
-				}
+			// We DON'T use try-with becaause the returned iterator will need to
+			// have the SQL resources opened. The iterator will take care of closing
+			// them.
+			try {
+				ResultSetWrapper rsw = query3(queryStr, corpusName, decompQuery);
+				wordsIter = rsw.colIterator("word", String.class);
 			} catch (SQLException e) {
 				throw new CompiledCorpusException(e);
 			}
 		}
-		return words.iterator();
+		return wordsIter;
 	}
 
 	private String sqlOrderBy(String... sortCriteria) throws CompiledCorpusException {
@@ -471,8 +471,8 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 				"  `corpusName` = ?;";
 			// We use try-with to ensure that the ResultSet will be closed even if
 			// an exception is raised.
-			try (ResultSet rs = query2(queryStr, corpusName)){
-			} catch (SQLException e) {
+			try (ResultSetWrapper rsw = query3(queryStr, corpusName)){
+			} catch (Exception e) {
 				throw new CompiledCorpusException(e);
 			}
 		}
@@ -489,8 +489,8 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 
 		// We use try-with to ensure that the ResultSet will be closed even if
 		// an exception is raised.
-		try (ResultSet rs = query2(queryStr, corpusName, word)){
-		} catch (SQLException e) {
+		try (ResultSetWrapper rsw = query3(queryStr, corpusName, word)){
+		} catch (Exception e) {
 			throw new CompiledCorpusException(e);
 		}
 	}
@@ -508,7 +508,7 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 		//   requires that the ResultSet be still opened.
 		//   When the iterator is finalized, it will close its result set.
 		try {
-			ResultSetWrapper rsw = new QueryProcessor().query3(queryStr, corpusName);
+			ResultSetWrapper rsw = query3(queryStr, corpusName);
 			iter = rsw.colIterator("word", String.class);
 		} catch (SQLException e) {
 			throw new CompiledCorpusException(e);
@@ -529,18 +529,16 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 				"Corpus " + corpusName + " already exists." +
 				"\nWould you like to overwrite it?\n");
 		}
-		try {
-			if (shouldClear) {
-				String query =
-					"DELETE FROM " + WORDS_TABLE + "\n" +
-					"WHERE `corpusName` = ?;";
-				// We use try-with to ensure that the ResultSet will be closed even if
-				// an exception is raised.
-				try (ResultSet rs = queryProcessor().query2(query, corpusName)) {
-				}
+		if (shouldClear) {
+			String query =
+				"DELETE FROM " + WORDS_TABLE + "\n" +
+				"WHERE `corpusName` = ?;";
+			// We use try-with to ensure that the ResultSet will be closed even if
+			// an exception is raised.
+			try (ResultSetWrapper rsw = queryProcessor().query3(query, corpusName)) {
+			} catch (Exception e) {
+				throw new CompiledCorpusException(e);
 			}
-		} catch (SQLException e) {
-			throw new CompiledCorpusException(e);
 		}
 	}
 
@@ -586,15 +584,14 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 		return new QueryProcessor();
 	}
 
-
-	private ResultSet query2(String queryStr, Object... queryArgs) throws CompiledCorpusException {
+	private ResultSetWrapper query3(String queryStr, Object... queryArgs) throws CompiledCorpusException {
 		try {
-			return new QueryProcessor().query2(queryStr, queryArgs);
+			return queryProcessor.query3(queryStr, queryArgs);
 		} catch (SQLException e) {
 			throw new CompiledCorpusException(e);
 		}
 	}
-
+	
 	private long count(String query, Object... queryArgs) throws CompiledCorpusException {
 		try {
 			return new QueryProcessor().count(query, queryArgs);
@@ -630,7 +627,8 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 		return freq.longValue();
 	}
 
-	public Iterator<String> wordsWithNoDecomposition() throws CompiledCorpusException {
+	public CloseableIterator<String> wordsWithNoDecomposition() throws CompiledCorpusException {
+		CloseableIterator<String> wordsIter = null;
 		String queryStr =
 			"SELECT word FROM " + WORDS_TABLE + "\n"+
 			"  WHERE\n" +
@@ -638,18 +636,17 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 			"    topDecompositionStr IS NULL"
 			;
 
-		List<String> words = new ArrayList<String>();
-		// We use try-with to ensure that the ResultSet will be closed even
-		// if an exception is raised.
-		try (ResultSet rs = query2(queryStr, corpusName)){
-			List<WordInfo> winfos = QueryProcessor.rs2pojoLst(rs, WordInfo.class);
-			for (WordInfo winfo : winfos) {
-				words.add(winfo.word);
-			}
+		// We DON'T use try-with because the returned iterator will need to have
+		// the SQL resources still opened. Someone else will have to make sure to
+		// close the iterator.
+		ResultSetWrapper rsw = null;
+		try {
+			rsw = query3(queryStr, corpusName);
+			wordsIter = rsw.colIterator("word", String.class);
 		} catch (SQLException e) {
 			throw new CompiledCorpusException(e);
 		}
-		return words.iterator();
+		return wordsIter;
 	}
 
 	public long lastLoadedDate() throws CompiledCorpusException {
@@ -663,12 +660,12 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 			  "  `corpusName` = ?;";
 		// We use try-with to ensure that the ResultSet will be closed even
 		// if an exception is raised.
-		try (ResultSet rs = query2(queryStr, corpusName)) {
-			Map lastLoadedMap = QueryProcessor.rs2pojo(rs, Map.class);
+		try (ResultSetWrapper rsw = query3(queryStr, corpusName)) {
+			Map lastLoadedMap = rsw.toPojo(new Sql2Map());
 			if (lastLoadedMap != null) {
 				date = Long.parseLong((String) lastLoadedMap.get("timestamp"));
 			}
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			throw new CompiledCorpusException(e);
 		}
 		return date;

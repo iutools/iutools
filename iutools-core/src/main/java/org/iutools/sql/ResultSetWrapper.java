@@ -1,5 +1,6 @@
 package org.iutools.sql;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
@@ -9,6 +10,8 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Class for easy manipulation of a ResultSet.
@@ -29,7 +32,17 @@ public class ResultSetWrapper implements AutoCloseable {
 
 	private List<String> _colNamesSorted = null;
 
+	private ObjectMapper mapper = new ObjectMapper();
+
+	public ResultSetWrapper(ResultSet _rs)  {
+		init__ResultSetWrapper(_rs, (Statement)null);
+	}
+
 	public ResultSetWrapper(ResultSet _rs, Statement _statement)  {
+		init__ResultSetWrapper(_rs, statement);
+	}
+
+	public void init__ResultSetWrapper(ResultSet _rs, Statement _statement)  {
 		this.rs = _rs;
 		this.statement = _statement;
 		ResourcesTracker.updateResourceStatus(rs);
@@ -161,4 +174,96 @@ public class ResultSetWrapper implements AutoCloseable {
 		return iter;
 	}
 
+	public <T> List<T> toPojoLst(Sql2Pojo<T> converter) throws Exception {
+		return toPojoLst(converter, (Integer)null);
+	}
+
+	public <T> List<T> toPojoLst(Sql2Pojo<T> converter, Integer maxRows)
+		throws SQLException {
+		Logger logger = LogManager.getLogger("org.iutools.sql.ResultSetWrapper.toPojoLst");
+		List<T> pojos = new ArrayList<T>();
+		// First, convert the ResultsSet into a list of JSONObjects
+		List<JSONObject> jsonObjects = toJSONObjects(maxRows);
+		logger.trace("Size of jsonObject="+jsonObjects.size());
+
+		// Next, convert the JSONObjects into POJOs
+		for (JSONObject aJsonObj : jsonObjects) {
+			T aPojo = converter.toPOJO(aJsonObj);
+			pojos.add(aPojo);
+		}
+
+		return pojos;
+	}
+
+	private List<JSONObject> toJSONObjects(Integer maxRows) throws SQLException {
+		Logger logger = LogManager.getLogger("org.iutools.sql.ResultSetWrapper.toJSONObjects");
+		List<JSONObject> jsonObjects = new ArrayList<JSONObject>();
+		if (rs == null) {
+			logger.trace("resultSet is null!");
+		} else {
+			// First, get the ResultSet's column names
+			//
+			ResultSetMetaData md = rs.getMetaData();
+			int numCols = md.getColumnCount();
+			logger.trace("numCols="+numCols);
+			List<String> colNames = IntStream.range(0, numCols)
+			.mapToObj(i -> {
+				try {
+					return md.getColumnName(i + 1);
+				} catch (SQLException e) {
+					e.printStackTrace();
+					return "?";
+				}
+			})
+			.collect(Collectors.toList());
+
+			// Next, generate a list of JSONObjects, each object corresponding to
+			// one row of the ResultsSet.
+			//
+			int rowCount = 0;
+			while (rs.next() && (maxRows == null || rowCount < maxRows)) {
+				rowCount++;
+				logger.trace("looking at next result");
+				JSONObject row = new JSONObject();
+				colNames.forEach(cn -> {
+					try {
+						row.put(cn, rs.getObject(cn));
+					} catch (SQLException e) {
+						throw new RuntimeException(e);
+					}
+				});
+				jsonObjects.add(row);
+			}
+		}
+		return jsonObjects;
+	}
+
+	/** Convert a ResultSet to a SINGLE Plain Old Java Object (POJO).
+	 * Raises an exception if the size of the ResultSet != 1.
+	 */
+	public <T> T toPojo(Sql2Pojo<T> converter) throws SQLException {
+		T pojo = null;
+		List<T> pojoList = toPojoLst(converter, new Integer(1));
+		int size = pojoList.size();
+		if (size > 1) {
+			throw new SQLException(
+				"ResultSet contained more than a single row; #rows="+size);
+		} else if (size == 1) {
+			pojo = pojoList.get(0);
+		}
+		return pojo;
+	}
+
+	public boolean isEmpty() throws SQLException {
+		boolean isEmpty = true;
+		try {
+			if (rs.next()) {
+				isEmpty = false;
+				rs.beforeFirst();
+			}
+		} catch (SQLException e) {
+			throw new SQLException(e);
+		}
+		return isEmpty;
+	}
 }

@@ -17,10 +17,13 @@ public class ResultsSetIterator<T> implements Iterator<T>, Closeable {
 	protected T nextItem = null;
 	protected boolean nextItemReady = false;
 
+	private ResultSetWrapper rsw = null;
+
 	public ResultsSetIterator(ResultSet rs, Sql2Pojo<T> converter) {
 		this.rs = rs;
 		this.converter = converter;
 		ResourcesTracker.updateResourceStatus(rs);
+		this.rsw = new ResultSetWrapper(rs);
 		return;
 	}
 
@@ -43,7 +46,7 @@ public class ResultsSetIterator<T> implements Iterator<T>, Closeable {
 		try {
 			hasNextItem = false;
 			rs.next();
-			nextItem = QueryProcessor.rs2pojo(rs, converter);
+			nextItem = rsw.toPojo(converter);
 			hasNextItem = true;
 			nextItemReady = true;
 		} catch (SQLException e) {

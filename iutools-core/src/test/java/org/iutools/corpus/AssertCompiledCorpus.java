@@ -7,9 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import ca.nrc.testing.AssertNumber;
-import org.iutools.morph.r2l.DecompositionState;
-import static org.iutools.linguisticdata.Morpheme.MorphFormat;
-import org.apache.commons.lang3.tuple.Triple;
+import org.iutools.sql.CloseableIterator;
 import org.junit.Assert;
 
 import ca.nrc.testing.AssertObject;
@@ -221,10 +219,11 @@ public class AssertCompiledCorpus extends Asserter<CompiledCorpus> {
 
 	public AssertCompiledCorpus wordsWithNoDecompositionAre(
 		String[] expWordsArr) throws Exception {
-		Iterator<String> iterator = corpus().wordsWithNoDecomposition();
 		Set<String> gotWords = new HashSet<String>();
-		while (iterator.hasNext()) {
-			gotWords.add(iterator.next());
+		try (CloseableIterator<String> iterator = corpus().wordsWithNoDecomposition()) {
+			while (iterator.hasNext()) {
+				gotWords.add(iterator.next());
+			}
 		}
 		Set<String> expWords = new HashSet<String>();
 		for (String aWord: expWordsArr) {

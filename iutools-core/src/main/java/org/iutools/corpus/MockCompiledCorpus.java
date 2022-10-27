@@ -30,7 +30,6 @@ public class MockCompiledCorpus extends CompiledCorpus_ES {
 	}
 }
 
-
 class MockStringSegmenter_IUMorpheme extends StringSegmenter {
 
 	private Map<String,String> dictionary = new HashMap<String,String>();

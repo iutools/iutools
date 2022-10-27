@@ -23,7 +23,7 @@ public class MorphRelativesFinderAccuracyTest {
 	SQLLeakMonitor sqlLeakMonitor = null;
 
 	@BeforeEach
-	public void setUp() {
+	public void setUp() throws Exception {
 		sqlLeakMonitor = new SQLLeakMonitor();
 	}
 

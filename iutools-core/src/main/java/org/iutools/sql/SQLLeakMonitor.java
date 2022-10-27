@@ -1,7 +1,11 @@
 package org.iutools.sql;
 
+import ca.nrc.config.ConfigException;
 import org.apache.commons.lang3.tuple.Pair;
+import org.iutools.config.IUConfig;
 import org.junit.jupiter.api.Assertions;
+
+import java.sql.SQLException;
 
 /**
  * Check if we leaked some "managed" SQL resources between a start point and the current
@@ -34,22 +38,47 @@ public class SQLLeakMonitor {
 
 	public boolean silent = false;
 
-	public SQLLeakMonitor() {
+	public SQLLeakMonitor() throws SQLException {
 		init__SQLLeakMonitor("");
 	}
 
-	public SQLLeakMonitor(String _mess) {
+	public SQLLeakMonitor(String _mess) throws SQLException {
 		init__SQLLeakMonitor(mess);
 	}
 
-	private void init__SQLLeakMonitor(String _mess) {
+	private void init__SQLLeakMonitor(String _mess) throws SQLException {
 		this.mess = _mess;
 		Pair<Integer, Integer> openedResources = currentOpenResources();
 		stmtAtStart = openedResources.getLeft();
 		rsAtStart = openedResources.getRight();
 		int totalAtStart = stmtAtStart+rsAtStart;
 		if (!silent && (stmtAtStart+rsAtStart) > 0) {
-			System.out.println("SQLLeakMonitor["+mess+"]: There were already some leaked resource when we started this monitor: Statements="+stmtAtStart+", ResultSets="+rsAtStart);
+			printLeakedResourcesProvenance();
+		}
+	}
+
+	private void printLeakedResourcesMessage() {
+		printLeakedResourcesMessage((String)null);
+	}
+
+	private void printLeakedResourcesMessage(String mess) {
+		System.out.println("SQLLeakMonitor["+mess+"]: There were already some leaked resource when we started this monitor: Statements="+stmtAtStart+", ResultSets="+rsAtStart);
+		printLeakedResourcesProvenance();
+	}
+
+
+	private void printLeakedResourcesProvenance() {
+		try {
+			if (new IUConfig().monitorSQLResourceProvenance()) {
+				System.out.println("  Provenance of leaked resources");
+				for (Object leakedRes: ResourcesTracker.leakedResources()) {
+					System.out.println("    "+leakedRes.getClass().getSimpleName()+" created from call stack:\n");
+					String callStack = ResourcesTracker.provenance4leakedResource(leakedRes);
+					callStack = callStack.replaceAll("^", "      ");
+					System.out.println(callStack);
+				}
+			}
+		} catch (ConfigException e) {
 		}
 	}
 
@@ -75,7 +104,7 @@ public class SQLLeakMonitor {
 		return rsLeaked;
 	}
 
-	public void check() {
+	public void check()  {
 		boolean ok = true;
 		stmtNow = ResourcesTracker.totalStatements(true);
 		stmtLeaked = Math.max(0, stmtNow - stmtAtStart);
@@ -83,7 +112,7 @@ public class SQLLeakMonitor {
 		rsNow = ResourcesTracker.totalResultSets(true);
 		rsLeaked = Math.max(0, rsNow - rsAtStart);
 		if (!silent && (stmtLeaked+rsLeaked) > 0) {
-			System.out.println("SQLLeakMonitor["+mess+"]: Some resources were leaked since we started this monitor: Statements="+stmtLeaked+", ResultSets="+rsLeaked);
+			printLeakedResourcesMessage();
 		}
 		return;
 	}

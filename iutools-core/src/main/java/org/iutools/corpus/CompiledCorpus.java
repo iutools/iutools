@@ -16,7 +16,6 @@ import ca.nrc.dtrc.elasticsearch.*;
 import static ca.nrc.dtrc.elasticsearch.request.Sort.Order;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import org.iutools.linguisticdata.LinguisticDataException;
 import org.iutools.datastructure.trie.StringSegmenter;
 import org.iutools.datastructure.trie.StringSegmenterException;
 import org.iutools.datastructure.trie.StringSegmenter_Char;
@@ -71,7 +70,7 @@ public abstract class CompiledCorpus {
 
 	public abstract CloseableIterator<String> allWords() throws CompiledCorpusException;
 
-	public abstract Iterator<String> wordsWithNoDecomposition() throws CompiledCorpusException;
+	public abstract CloseableIterator<String> wordsWithNoDecomposition() throws CompiledCorpusException;
 
 	public abstract WordInfo info4word(String word) throws CompiledCorpusException;
 
@@ -83,7 +82,7 @@ public abstract class CompiledCorpus {
 
 	public abstract List<WordInfo> wordsContainingMorpheme(String morpheme, Integer maxWords, String... sortCriteria) throws CompiledCorpusException;
 
-	public abstract Iterator<String> wordsContainingMorphNgram(String[] morphemes) throws CompiledCorpusException;
+	public abstract CloseableIterator<String> wordsContainingMorphNgram(String[] morphemes) throws CompiledCorpusException;
 
 	public abstract long morphemeNgramFrequency(String[] morphemes) throws CompiledCorpusException;
 

@@ -113,18 +113,7 @@ public class TMLoader {
 		return alignsBatch;
 	}
 
-
-//	int totalBatches = countBatches();
-//		ProgressMonitor_Terminal progress = new ProgressMonitor_Terminal(totalBatches,
-//			"Loading alignments from TM file: "+tmFile);
-//		try (ObjectStreamReader reader = new ObjectStreamReader(tmFile.toFile())) {
-//			while ()
-//		} catch (IOException e) {
-//			throw new TranslationMemoryException(e);
-//		}
-//	}
-
-	private int countBatches() throws TranslationMemoryException {
+	public int countBatches() throws TranslationMemoryException {
 		int totalWords = 0;
 		try {
 			System.out.println("Counting batches in TM file: "+tmFile);

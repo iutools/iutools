@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 import org.iutools.corpus.CompiledCorpusException;
 import org.iutools.corpus.WordInfo;
 import org.iutools.sql.QueryProcessor;
+import org.iutools.sql.ResultSetWrapper;
 
 import java.io.*;
 import java.sql.ResultSet;
@@ -47,8 +48,8 @@ public class CompiledCorpus_SQLLoader {
 			;
 		// We use try-with to ensure that the ResultSet will be closed even if an
 		// exception is raised
-		try (ResultSet rs = queryProcessor.query2(sql)){
-		} catch (SQLException e) {
+		try (ResultSetWrapper rsw = queryProcessor.query3(sql)){
+		} catch (Exception e) {
 			throw new CompiledCorpusException(e);
 		}
 	}

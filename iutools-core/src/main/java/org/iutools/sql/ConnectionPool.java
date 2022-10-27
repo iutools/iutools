@@ -9,10 +9,7 @@ import org.iutools.config.IUConfig;
 import java.sql.Connection;
 import org.apache.commons.dbcp2.BasicDataSource;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Pool of SQL connections for IUTools
@@ -31,9 +28,12 @@ public class ConnectionPool {
 	private static Map<Long,Connection> thread2connIndex = new HashMap<Long,Connection>();
 
 	protected void finalize() throws Throwable {
+		Logger logger = LogManager.getLogger("org.iutools.sql.ConnectionPool.finalize");
+		logger.trace("invoked");
 		// Take this opportunity to cleanup connections that are associated to
 		// dead threads.
 		cleanupThreadConnIndex();
+		logger.trace("exited");
 	}
 
 	private synchronized BasicDataSource dataSource4DB(String dbName) throws SQLException {
@@ -79,6 +79,9 @@ public class ConnectionPool {
 
 	@JsonIgnore
 	public synchronized Connection getConnection() throws SQLException {
+		Logger logger = LogManager.getLogger("org.iutools.sql.ConnectionPool.getConnection");
+		logger.trace("invoked");
+
 		Connection connection = null;
 		// we cleanup the connections index every time we ask for a new connection
 		cleanupThreadConnIndex();
@@ -98,10 +101,11 @@ public class ConnectionPool {
 			}
 		}
 
+		logger.trace("exiting");
 		return thread2connIndex.get(currThread);
 	}
 
-	private boolean hasLiveConnection4Thread(Long thrID) throws SQLException {
+	private synchronized boolean hasLiveConnection4Thread(Long thrID) throws SQLException {
 		boolean answer = false;
 		if (thread2connIndex.containsKey(thrID)) {
 			if (!thread2connIndex.get(thrID).isClosed()) {
@@ -111,20 +115,43 @@ public class ConnectionPool {
 		return answer;
 	}
 
-	private void cleanupThreadConnIndex() {
+	private synchronized void cleanupThreadConnIndex() {
+		Logger logger = LogManager.getLogger("org.iutools.sql.ConnectionPool.cleanupThreadConnIndex");
+		logger.trace("invoked");
 		Set<Long> activeThreads = activeThreadIDs();
-		for (Long thrId: thread2connIndex.keySet()) {
-			if (!activeThreads.contains(thrId)) {
+
+		// Loop through all the threads in the thread2connIndex.
+		// If the thread has terminated, then:
+		// - close it's associated SQL connection
+		// - delete if from the index
+		//
+		// Create a set of all the threads for which we have an entry in thread2connIndex
+		// This is to avoid Conccurent Access exception when we delete entries of
+		// thread2connIndex while looping on its keys
+		//
+		Set<Long> threadsWithConns = new HashSet<Long>();
+		for (Long thr: thread2connIndex.keySet()) {
+			threadsWithConns.add(thr);
+		}
+		logger.trace("--** threadsWithConns="+threadsWithConns);
+
+		// Now loop through the set of threads for which we have a connection.
+		Set<Long> threads2beDeleted = new HashSet<Long>();
+		for (Long thrWithOpenConn: threadsWithConns) {
+			logger.trace("Looking at thread: "+thrWithOpenConn);
+			if (!activeThreads.contains(thrWithOpenConn)) {
 				// We have a connection for a thread that has terminated
 				try {
-					thread2connIndex.get(thrId).close();
+					thread2connIndex.get(thrWithOpenConn).close();
 				} catch (SQLException e) {
 					// Probably means that the connection was already closed.
 					// Just ignore the exception.
 				}
-				thread2connIndex.remove(thrId);
+				thread2connIndex.remove(thrWithOpenConn);
 			}
 		}
+
+		logger.trace("exited");
 	}
 
 	private synchronized boolean isTesting() {
@@ -138,7 +165,7 @@ public class ConnectionPool {
 		return _isTesting;
 	}
 
-	protected Set<Long> activeThreadIDs() {
+	protected synchronized Set<Long> activeThreadIDs() {
 		Set<Long> threadIDs = new HashSet<Long>();
 		for (Thread thr: Thread.getAllStackTraces().keySet()) {
 			threadIDs.add(thr.getId());

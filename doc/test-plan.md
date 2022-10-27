@@ -22,10 +22,9 @@ Basic scenario
   - every additional hit is a superstring of the QUERY_WORD   
 - Inspect the entry for the QUERY_WORD
   - Title bar of the Word Entry window shows the QUERY_WORD in both latin and syllabics.
-    - The first script should be the script used to enter the QUERY_WORD.
-      In other words, if we entered the QUERY_WORD in latin, then the word should
-      appear as latin/syllabics. Otherwise, it should appear as syllabics/latin.
-  - Everything else is displayed in the  script used to enter the QUERY_WORD, 
+    - The first script should be the PREFERRED script and the second one should 
+      be the other script.
+  - Everything else is displayed in the PREFERRED script, 
     except for:
     - text that is in English.
     - Inuktitut text for the bilingual examples (which at the moment are always in latin)

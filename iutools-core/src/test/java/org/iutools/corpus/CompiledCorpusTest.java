@@ -178,23 +178,23 @@ public abstract class CompiledCorpusTest {
 			//
 			String[] morphemes = new String[] {
 				"^", "inuk/1n", "titut/tn-sim-p"};
-			Iterator<String> wordsWithMorphemes =
-				compiledCorpus.wordsContainingMorphNgram(morphemes);
+			try (CloseableIterator<String> wordsWithMorphemes =
+				compiledCorpus.wordsContainingMorphNgram(morphemes)) {}
 
 			// This will find all the words that END with titut/tn-sim-p
 			//
 			morphemes = new String[] {
 				"titut/tn-sim-p", "$"};
-			wordsWithMorphemes = 
-				compiledCorpus.wordsContainingMorphNgram(morphemes);
+			try (CloseableIterator<String> wordsWithMorphemes =
+				compiledCorpus.wordsContainingMorphNgram(morphemes)) {}
 		
 			// This will find all the words that contain morphemes 
 			// nasuk/1vv and niq/2vn ANYWHERE
 			//
 			morphemes = new String[] {
 				"nasuk/1vv", "niq/2vn"};
-			wordsWithMorphemes = 
-				compiledCorpus.wordsContainingMorphNgram(morphemes);
+			try (CloseableIterator<String> wordsWithMorphemes =
+				compiledCorpus.wordsContainingMorphNgram(morphemes)) {}
 		}
 	}
 	
@@ -539,22 +539,25 @@ public abstract class CompiledCorpusTest {
 		CompiledCorpus corpus = makeCorpusUnderTest(MockStringSegmenter_IUMorpheme.class);
 		String[] words = new String[] {"inuit", "inuglu", "nunami"};
 		corpus.addWordOccurences(words);
-		
+
 		String[] morphNgram = new String[] {
 				"inuk/1n"};
-		Iterator<String> gotWords =
-			corpus.wordsContainingMorphNgram(morphNgram);
-		String[] expWords = new String[] {"inuglu", "inuit"};
-		AssertObject.assertDeepEquals(
-			"Wrong list of words for morpheme ngram "+String.join(",", morphNgram), 
+		try (CloseableIterator<String> gotWords =
+			corpus.wordsContainingMorphNgram(morphNgram)) {
+			String[] expWords = new String[]{"inuglu", "inuit"};
+
+			AssertObject.assertDeepEquals(
+			"Wrong list of words for morpheme ngram " + String.join(",", morphNgram),
 			expWords, gotWords);
+		}
 
 		morphNgram = new String[] {"^", "inuk/1n"};
-		gotWords = corpus.wordsContainingMorphNgram(morphNgram);
-		expWords = new String[] {"inuglu", "inuit"};
-		AssertObject.assertDeepEquals(
-			"Wrong list of words for morpheme ngram "+String.join(",", morphNgram), 
+		try (CloseableIterator<String> gotWords = corpus.wordsContainingMorphNgram(morphNgram)){
+			String[] expWords = new String[]{"inuglu", "inuit"};
+			AssertObject.assertDeepEquals(
+			"Wrong list of words for morpheme ngram " + String.join(",", morphNgram),
 			expWords, gotWords);
+		}
 	}
 	
 	@Test

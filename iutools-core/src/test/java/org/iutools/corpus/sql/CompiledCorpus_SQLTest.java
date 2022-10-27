@@ -2,8 +2,7 @@ package org.iutools.corpus.sql;
 
 import org.iutools.corpus.CompiledCorpusTest;
 import org.iutools.corpus.CorpusTestHelpers;
-import org.iutools.sql.ResourcesTracker;
-import org.iutools.sql.SQLTestHelpers;
+import org.iutools.sql.SQLLeakMonitor;
 import org.junit.After;
 import org.junit.Before;
 
@@ -11,16 +10,12 @@ public class CompiledCorpus_SQLTest extends CompiledCorpusTest {
 
 	public final static String testCorpusName = "test-corpus";
 
-	private Integer initialOpenedStatements = null;
-	private Integer initialOpenedResultSets = null;
+	public static SQLLeakMonitor sqlLeakMonitor = null;
 
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();
-		// Remember how many opened SQL resources there were when
-		// we started this test
-		initialOpenedResultSets = ResourcesTracker.totalResultSets(true);
-		initialOpenedStatements = ResourcesTracker.totalStatements(true);
+		sqlLeakMonitor = new SQLLeakMonitor();
 
 		CorpusTestHelpers.clearCorpus(testCorpusName);
 		return;
@@ -31,9 +26,7 @@ public class CompiledCorpus_SQLTest extends CompiledCorpusTest {
 		new CompiledCorpus_SQL(testCorpusName).clearWords(false);
 		// Make sure the previous test did not increase the number of opened
 		// SQL resources
-		SQLTestHelpers.assertOpenedResourcesAre(
-			"Tests have changed the number of opened SQL resources",
-			initialOpenedStatements, initialOpenedResultSets);
+		sqlLeakMonitor.assertNoLeaks();
 	}
 
 	public CompiledCorpus_SQL makeCorpusWithDefaultSegmenter() throws Exception {

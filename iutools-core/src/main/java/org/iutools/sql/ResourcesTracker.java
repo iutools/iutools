@@ -1,14 +1,16 @@
 package org.iutools.sql;
 
+import ca.nrc.config.ConfigException;
+import ca.nrc.debug.Debug;
 import org.apache.logging.log4j.Logger;
+import org.iutools.config.IUConfig;
 import org.iutools.utilities.StopWatch;
 import org.iutools.utilities.StopWatchException;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -27,14 +29,17 @@ public class ResourcesTracker {
 	private static Set<ResultSet> openedResultSets = new HashSet<ResultSet>();
 
 	private static StopWatch sleepTimeTracker = new StopWatch().start();
+	private static Map<Object,String> resourceProvenance = new HashMap<Object,String>();
 
 	public static synchronized void updateResourceStatus(Statement stmt) {
 		if (stmt != null) {
 			try {
 				if (stmt.isClosed()) {
 					openedStatements.remove(stmt);
+					resourceProvenance.remove(stmt);
 				} else {
 					openedStatements.add(stmt);
+					rememberProvenance(stmt);
 				}
 			} catch (SQLException throwables) {
 				// Nothing to do
@@ -47,13 +52,22 @@ public class ResourcesTracker {
 			try {
 				if (rs.isClosed()) {
 					openedResultSets.remove(rs);
+					resourceProvenance.remove(rs);
 				} else {
 					openedResultSets.add(rs);
+					if (new IUConfig().monitorSQLResourceProvenance()) {
+						rememberProvenance(rs);
+					}
 				}
-			} catch (SQLException throwables) {
+			} catch (SQLException | ConfigException throwables) {
 				// Nothing to do
 			}
 		}
+	}
+
+	private static void rememberProvenance(Object resource) {
+		String callStack = Debug.printCallStack();
+		resourceProvenance.put(resource, callStack);
 	}
 
 	public static synchronized int totalResultSets() {
@@ -143,4 +157,18 @@ public class ResourcesTracker {
 		}
 	}
 
+	public static synchronized List<Object> leakedResources() {
+		List<Object> leaked = new ArrayList<Object>();
+		leaked.addAll(openedStatements);
+		leaked.addAll(openedResultSets);
+		return leaked;
+	}
+
+	public static synchronized String provenance4leakedResource(Object resource) {
+		String provenance = null;
+		if (resourceProvenance.containsKey(resource)) {
+			provenance = resourceProvenance.get(resource);
+		}
+		return provenance;
+	}
 }

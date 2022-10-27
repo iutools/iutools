@@ -111,4 +111,17 @@ public class IUConfig extends Config {
 		}
 		return dataStore;
 	}
+
+	/**
+	 * If true, then the SQL LeakTracker will remember what methods (i.e. what
+	 * call stack) generated each resource.
+	 * @return
+	 */
+	public boolean monitorSQLResourceProvenance() throws ConfigException {
+		Boolean monitor =
+			getConfigProperty(
+				"org.iutools.sql.monitorResourceProvenance",
+					new Boolean(false));
+		return monitor;
+	}
 }

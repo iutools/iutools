@@ -969,7 +969,7 @@ public class SpellChecker {
 		long freq = 0;
 		try {
 			freq = corpus.totalWordsWithCharNgram(
-					ngram, CompiledCorpus_ES.SearchOption.EXCL_MISSPELLED);
+				ngram, CompiledCorpus_ES.SearchOption.EXCL_MISSPELLED);
 		} catch (CompiledCorpusException e) {
 			throw new SpellCheckerException(e);
 		}

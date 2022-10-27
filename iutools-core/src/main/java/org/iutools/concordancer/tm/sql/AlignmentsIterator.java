@@ -1,6 +1,5 @@
 package org.iutools.concordancer.tm.sql;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.iutools.concordancer.Alignment;
@@ -8,10 +7,9 @@ import org.iutools.concordancer.Alignment_ES;
 import org.iutools.concordancer.tm.TranslationMemoryException;
 import org.iutools.sql.CloseableIterator;
 import org.iutools.sql.QueryProcessor;
+import org.iutools.sql.ResultSetWrapper;
 
 import java.io.IOException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 public class AlignmentsIterator implements CloseableIterator<Alignment_ES> {
@@ -93,13 +91,13 @@ public class AlignmentsIterator implements CloseableIterator<Alignment_ES> {
 			args[ii+2] = targetLangs[ii];
 		}
 
-		try (ResultSet rs = queryProcessor.query2(sql, args)) {
+		try (ResultSetWrapper rsw = queryProcessor.query3(sql, args)) {
 			List<SentenceInLang> targetSents =
-				QueryProcessor.rs2pojoLst(rs, new Sql2SentenceInLang());
+				rsw.toPojoLst(new Sql2SentenceInLang());
 			for (SentenceInLang aTargSent: targetSents) {
 				align.setSentence(aTargSent.lang, aTargSent.text);
 			}
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			throw new TranslationMemoryException(e);
 		}
 		return;

@@ -355,13 +355,13 @@ public class SpellCheckerAccuracyTest {
     static TestInfo prevTestInfo;
 
     @BeforeEach
-    public void setUp(TestInfo testInfo) {
+    public void setUp(TestInfo testInfo) throws Exception {
     	this.testInfo = testInfo;
 		sqlLeakMonitor = new SQLLeakMonitor();
 	 }
 
     @AfterEach
-    public void tearDown() {
+    public void tearDown() throws Exception {
     	prevTestInfo = this.testInfo;
 		sqlLeakMonitor = new SQLLeakMonitor();
     }
@@ -398,6 +398,7 @@ public class SpellCheckerAccuracyTest {
 
         SpellChecker checker = makeLargeDictChecker();
         evaluateCheckerOnExamples(checker,  parameters);
+        return;
     }
 
     @Test

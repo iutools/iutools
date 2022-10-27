@@ -197,31 +197,47 @@ class WordEntryController extends IUToolsController {
     translationsInfo(wordEntry) {
         var tracer = Debug.getTraceLogger('WordEntryController.translationsInfo');
         tracer.trace("wordEntry="+jsonStringifySafe(wordEntry));
-        var examples = wordEntry.examplesForOrigWordTranslation;
+
         var info = {
-            areRelatedTranslations: false,
-            'translation4word': {
-            }
+            allTranslations: wordEntry.bestTranslations,
+            areRelatedTranslations: this.translationAreForRelatedWords(wordEntry),
+            translation4word: wordEntry.translations4word,
+            examples: wordEntry.examples4Translation
         };
-
-
-        if (wordEntry.examplesForOrigWordTranslation != null
-            && Object.keys(wordEntry.examplesForOrigWordTranslation).length > 0) {
-            // We have some translations for the actual word
-            tracer.trace("We HAVE translations for the query word");
-            // info.l1Words = [wordEntry.word];
-            // info.translation4word[wordEntry.word] = wordEntry.origWordTranslations;
-            // info.allTranslations = wordEntry.origWordTranslations;
-            // info.examples = wordEntry.examplesForOrigWordTranslation;
-            this.setTranslationInfo_origWord(info, wordEntry);
+        if (info.areRelatedTranslations) {
+            info.l1Words = wordEntry.relatedWords;
         } else {
-            // We only have translations for related words
-            tracer.trace("We have NO translations for the query word");
-            this.setTranslationInfo_relatedWords(info, wordEntry);
+            info.l1Words = [wordEntry.word];
         }
+
+        // if (wordEntry.examplesForOrigWordTranslation != null
+        //     && Object.keys(wordEntry.examplesForOrigWordTranslation).length > 0) {
+        //     // We have some translations for the actual word
+        //     tracer.trace("We HAVE translations for the query word");
+        //     // info.l1Words = [wordEntry.word];
+        //     // info.translation4word[wordEntry.word] = wordEntry.origWordTranslations;
+        //     // info.allTranslations = wordEntry.origWordTranslations;
+        //     // info.examples = wordEntry.examplesForOrigWordTranslation;
+        //     this.setTranslationInfo_origWord(info, wordEntry);
+        // } else {
+        //     // We only have translations for related words
+        //     tracer.trace("We have NO translations for the query word");
+        //     this.setTranslationInfo_relatedWords(info, wordEntry);
+        // }
 
         tracer.trace("Returning info="+jsonStringifySafe(info));
         return info;
+    }
+
+    translationAreForRelatedWords(wordEntry) {
+        var isForRelatedWords = true;
+        for (var word in wordEntry.translations4word) {
+            if (word === wordEntry.word || word === wordEntry.wordInOtherScript) {
+                isForRelatedWords = false;
+                break;
+            }
+        }
+        return isForRelatedWords
     }
 
     setTranslationInfo_origWord(info, wordEntry) {

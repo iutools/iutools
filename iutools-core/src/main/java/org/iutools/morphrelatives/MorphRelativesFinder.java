@@ -13,6 +13,7 @@ import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.iutools.sql.CloseableIterator;
 
 /**
  * Given an input word, this class finds a list of "good" Morphological 
@@ -196,10 +197,9 @@ public class MorphRelativesFinder {
 		}
 
 		Boolean keepGoing = null;
-		try {
-			currentMorphemes = ArrayUtils.insert(0, currentMorphemes, "^");
-
-			Iterator<String> iterDescendants = compiledCorpus.wordsContainingMorphNgram(currentMorphemes);
+		currentMorphemes = ArrayUtils.insert(0, currentMorphemes, "^");
+		try (CloseableIterator<String> iterDescendants =
+			compiledCorpus.wordsContainingMorphNgram(currentMorphemes)) {
 			while (iterDescendants.hasNext()) {
 				String descendant = iterDescendants.next();
 				if (!descendant.equals(origWord)) {
@@ -215,7 +215,7 @@ public class MorphRelativesFinder {
 				// No more searching to be done
 				keepGoing = false;
 			}
-		} catch (CompiledCorpusException e) {
+		} catch (Exception e) {
 			throw new MorphRelativesFinderException(e);
 		}
 

@@ -109,6 +109,7 @@ public class CompiledCorpus_SpeedComparison_SQLvsESTest {
 		generateMiddleNgramsToTest();
 		generateMorphemesToTest();
 		generateMorphNgramsToTest();
+		return;
 	}
 
 	@AfterEach
@@ -375,14 +376,16 @@ public class CompiledCorpus_SpeedComparison_SQLvsESTest {
 		Collection<String[]> morphNgramsToTest) throws Exception {
 		StopWatch sw = new StopWatch().start();
 		for (String[] morphNgram: morphNgramsToTest) {
-			Iterator<String> iter = corpus.wordsContainingMorphNgram(morphNgram);
-			int countDown = 100;
-			while (iter.hasNext()) {
-				countDown--;
-				if (countDown <= 0) {
-					break;
+			try (CloseableIterator<String> iter =
+				  corpus.wordsContainingMorphNgram(morphNgram)) {
+				int countDown = 100;
+				while (iter.hasNext()) {
+					countDown--;
+					if (countDown <= 0) {
+						break;
+					}
+					String word = iter.next();
 				}
-				String word = iter.next();
 			}
 		}
 

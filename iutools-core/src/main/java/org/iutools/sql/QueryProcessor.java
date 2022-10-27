@@ -30,19 +30,6 @@ public class QueryProcessor {
 		return conn;
 	}
 
-	public static boolean rsIsEmpty(ResultSet results) throws SQLException {
-		boolean isEmpty = true;
-		try {
-			if (results.next()) {
-				isEmpty = false;
-				results.beforeFirst();
-			}
-		} catch (SQLException e) {
-			throw new SQLException(e);
-		}
-		return isEmpty;
-	}
-
 	private synchronized Boolean uncacheTableIsDefined(String tableName) throws SQLException {
 		Boolean isDefined = null;
 		if (tableIsDefinedCache.containsKey(tableName)) {
@@ -65,9 +52,11 @@ public class QueryProcessor {
 			String query = "SHOW TABLES LIKE \""+tableName+"\";";
 			// We use try-with to ensure that the ResultSet will be closed even
 			// if an exception is raised.
-			try (ResultSet rs = query2(query)) {
-				isDefined = !(QueryProcessor.rsIsEmpty(rs));
+			try (ResultSetWrapper rsw = query3(query)) {
+				isDefined = !rsw.isEmpty();
 				cacheTableIsDefined(tableName, isDefined);
+			} catch (Exception e) {
+				throw new SQLException(e);
 			}
 		}
 		return isDefined;
@@ -118,69 +107,13 @@ public class QueryProcessor {
 		stmt.addBatch();
 	}
 
-	public ResultSet query2(String query, Object... queryArgs) throws SQLException {
-		return query2((Connection) null, false, query, queryArgs);
-	}
-
-	public ResultSet query2(Connection conn, String query, Object... queryArgs) throws SQLException {
-		return query2(conn, (Boolean)null, query, queryArgs);
-	}
-
-
-	public ResultSet query2(Connection conn, Boolean scrollable, String query, Object... queryArgs) throws SQLException {
-		Logger logger = LogManager.getLogger("org.iutools.sql.QueryProcessor.query");
-		if (logger.isTraceEnabled()) {
-			logger.trace("query=\n"+query);
-			String argsMess = "with args:";
-			for (Object arg: queryArgs) {
-				String argStr = "null";
-				if (arg != null) {
-					argStr = arg.toString();
-				}
-				argsMess += "\n  "+arg.toString();
-			}
-			logger.trace(argsMess);
-		}
-		if (scrollable == null) {
-			scrollable = false;
-		}
-		ResultSet rs = null;
-		PreparedStatement stmt = null;
-		try  {
-			if (conn == null) {
-				conn = getConnection();
-			}
-			logger.trace("conn to db: "+conn.getCatalog());
-			stmt = conn.prepareStatement(query);
-			setPrepStatementArgs(stmt, queryArgs);
-			rs = stmt.executeQuery();
-			if (logger.isTraceEnabled()) {
-				logger.trace("Returning ResultSet with columns: "+
-					prettyPrinter.pprint(ResultSetWrapper.colNames(rs)));
-			}
-		} catch (SQLException e) {
-			String argsJson = null;
-			argsJson = prettyPrinter.pprint(queryArgs);
-			throw new SQLException(
-				"Could not execute query:\n"+
-				"query was:\n"+
-				query+"\n"+
-				"Arguments were:\n"+
-				argsJson,
-				e);
-		}
-		return rs;
-	}
-
 	public ResultSetWrapper query3(String query, Object... queryArgs) throws SQLException {
 		return query3((Connection) null, false, query, queryArgs);
 	}
 
-
 	public ResultSetWrapper query3(Connection conn, String query, Object... queryArgs) throws SQLException {
 		return query3(conn, (Boolean)null, query, queryArgs);
 	}
-
 
 	public ResultSetWrapper query3(Connection conn, Boolean scrollable, String query, Object... queryArgs) throws SQLException {
 		Logger logger = LogManager.getLogger("org.iutools.sql.QueryProcessor.query");
@@ -233,9 +166,13 @@ public class QueryProcessor {
 		queryStr = "SELECT COUNT(*) AS rowCount "+queryStr+";";
 		// We use try-with to ensure that the ResultSet will be closed even
 		// if an exception is raised.
-		try (ResultSet rs = query2(queryStr, queryArgs)) {
-			rs.next();
-			rowCount = rs.getLong("rowCount");
+		try {
+			try (ResultSetWrapper rsw = query3(queryStr, queryArgs)) {
+				rsw.rs.next();
+				rowCount = rsw.rs.getLong("rowCount");
+			}
+		} catch (Exception e) {
+			throw new SQLException(e);
 		}
 		return rowCount;
 	}
@@ -250,9 +187,9 @@ public class QueryProcessor {
 
 		// We use try-with to ensure that the ResultSet will be closed even
 		// if an exception is raised.
-		try (ResultSet rs = query2(queryStr, queryArgs)) {
-			rs.next();
-			aggrValue = rs.getDouble("aggrValue");
+		try (ResultSetWrapper rsw = query3(queryStr, queryArgs)) {
+			rsw.rs.next();
+			aggrValue = rsw.rs.getDouble("aggrValue");
 		} catch (Exception e) {
 			// If an exception is raised, it probably means that there were no
 			// hits at all. So leave aggrValue to 0.0.
@@ -266,8 +203,9 @@ public class QueryProcessor {
 		String query = "DROP TABLE IF EXISTS "+tableName;
 		// We use try-with to ensure that the ResultSet will be closed even if an
 		// exception is raised
-		try (ResultSet rs = query2(query)) {
-
+		try (ResultSetWrapper rsw = query3(query)) {
+		} catch (Exception e) {
+			throw new SQLException(e);
 		}
 		return;
 	}
@@ -353,181 +291,6 @@ public class QueryProcessor {
 		return;
 	}
 
-	/**
-	 * Given a ResultSet and a column name, return the value of that column
-	 * in the current row of the ResultSet
-	 */
-	public static Object rs2CurrColValue(ResultSet rs, String colName) throws SQLException {
-		Logger logger = LogManager.getLogger("org.iutools.sql.QueryProcessor.rs2CurrColValue");
-		Object colValue = null;
-		if (logger.isTraceEnabled()) {
-			logger.trace("Fetching colName="+colName+" from ResultSet with columns: "+
-				new PrettyPrinter().print(ResultSetWrapper.colNames(rs)));
-		}
-		try {
-			colValue = rs.getObject(colName);
-		} catch (Exception e) {
-			List<String> colNames = ResultSetWrapper.colNames(rs);
-			throw new SQLException(
-				"Could not get next value of column "+colName + "\n" +
-				"Existing columns in ResultSet were: "+new PrettyPrinter().print(colNames),
-				e);
-		}
-		return colValue;
-	}
-
-	/** Convert a ResultSet to a SINGLE Plain Old Java Object (POJO).
-	 * Raises an exception if the size of the ResultSet != 1.
-	 */
-	public static <T> T rs2pojo(ResultSet resultSet, Class<T> clazz) throws SQLException {
-		T pojo = null;
-		List<T> pojoList = rs2pojoLst(resultSet, clazz, 1);
-		int size = pojoList.size();
-		if (size > 1) {
-			throw new SQLException(
-				"ResultSet contained more than a single row; #rows="+size);
-		} else if (size == 1) {
-			pojo = pojoList.get(0);
-		}
-		return pojo;
-	}
-
-	/** Convert a ResultSet to a SINGLE Plain Old Java Object (POJO).
-	 * Raises an exception if the size of the ResultSet != 1.
-	 */
-	public static <T> T rs2pojo(ResultSet resultSet, Sql2Pojo<T> converter) throws SQLException {
-		T pojo = null;
-		List<T> pojoList = rs2pojoLst(resultSet, converter, new Integer(1));
-		int size = pojoList.size();
-		if (size > 1) {
-			throw new SQLException(
-				"ResultSet contained more than a single row; #rows="+size);
-		} else if (size == 1) {
-			pojo = pojoList.get(0);
-		}
-		return pojo;
-	}
-
-	public static <T> List<T> rs2pojoLst(ResultSet resultSet, Class<T> clazz)
-		throws SQLException {
-		return rs2pojoLst(resultSet, clazz, (Integer)null);
-	}
-
-	/**
-	 * Converts an SQL ResultSet to a list of Plain Old Java Objects (POJOs).
-	 */
-	public static <T> List<T> rs2pojoLst(ResultSet resultSet, Class<T> clazz,
-		Integer maxRows) throws SQLException {
-		List<T> pojos = new ArrayList<T>();
-		try {
-			// First, convert the ResultsSet into a list of JSONObjects
-			List<JSONObject> jsonObjects = rs2JSONObjects(resultSet, maxRows);
-
-			// Next, convert the JSONObjects into POJOs
-			ObjectMapper mapper = new ObjectMapper();
-			for (JSONObject aJsonObj : jsonObjects) {
-				String jsonStr = aJsonObj.toString();
-				T aPojo = mapper.readValue(jsonStr, clazz);
-				pojos.add(aPojo);
-			}
-		} catch (RuntimeException | JsonProcessingException e) {
-			throw new SQLException(e);
-		}
-
-		return pojos;
-	}
-
-	public static <T> T rs2Iterator(ResultSet resultSet, Sql2Pojo<T> converter,
-		Integer maxRows) throws SQLException {
-		T pojo = null;
-		List<T> pojoList = rs2pojoLst(resultSet, converter, maxRows);
-		int size = pojoList.size();
-		if (size > 1) {
-			throw new SQLException(
-				"ResultSet contained more than a single row; #rows="+size);
-		} else if (size == 1) {
-			pojo = pojoList.get(0);
-		}
-		return pojo;
-	}
-
-	public static <T> List<T> rs2pojoLst(ResultSet resultSet, Sql2Pojo<T> converter)
-		throws SQLException {
-		return rs2pojoLst(resultSet, converter, (Integer)null);
-	}
-
-	/**
-	 * Converts an SQL ResultSet to a list of Plain Old Java Objects (POJOs).
-	 */
-	public static <T> List<T> rs2pojoLst(ResultSet resultSet, Sql2Pojo<T> converter,
-		Integer maxRows) throws SQLException {
-		Logger logger = LogManager.getLogger("org.iutools.sql.QueryProcessor.rs2pojoLst");
-		List<T> pojos = new ArrayList<T>();
-		try {
-			// First, convert the ResultsSet into a list of JSONObjects
-			List<JSONObject> jsonObjects = rs2JSONObjects(resultSet, maxRows);
-			logger.trace("Size of jsonObject="+jsonObjects.size());
-
-			// Next, convert the JSONObjects into POJOs
-			for (JSONObject aJsonObj : jsonObjects) {
-				T aPojo = converter.toPOJO(aJsonObj);
-				pojos.add(aPojo);
-			}
-		} catch (RuntimeException e) {
-			throw new SQLException(e);
-		}
-
-		return pojos;
-	}
-
-	public static List<JSONObject> rs2JSONObjects(ResultSet resultSet) throws SQLException {
-		return rs2JSONObjects(resultSet, (Integer)null);
-	}
-
-	public static List<JSONObject> rs2JSONObjects(ResultSet resultSet, Integer maxRows) throws SQLException {
-		Logger logger = LogManager.getLogger("org.iutools.sql.QueryProcessor.rs2JSONObjects");
-		List<JSONObject> jsonObjects = new ArrayList<JSONObject>();
-		ObjectMapper mapper = new ObjectMapper();
-		if (resultSet == null) {
-			logger.trace("resultSet is null!");
-		} else {
-			// First, get the ResultSet's column names
-			//
-			ResultSetMetaData md = resultSet.getMetaData();
-			int numCols = md.getColumnCount();
-			logger.trace("numCols="+numCols);
-			List<String> colNames = IntStream.range(0, numCols)
-			.mapToObj(i -> {
-				try {
-					return md.getColumnName(i + 1);
-				} catch (SQLException e) {
-					e.printStackTrace();
-					return "?";
-				}
-			})
-			.collect(Collectors.toList());
-
-			// Next, generate a list of JSONObjects, each object corresponding to
-			// one row of the ResultsSet.
-			//
-			int rowCount = 0;
-			while (resultSet.next() && (maxRows == null || rowCount < maxRows)) {
-				rowCount++;
-				logger.trace("looking at next result");
-				JSONObject row = new JSONObject();
-				colNames.forEach(cn -> {
-					try {
-						row.put(cn, resultSet.getObject(cn));
-					} catch (SQLException e) {
-						throw new RuntimeException(e);
-					}
-				});
-				jsonObjects.add(row);
-			}
-		}
-		return jsonObjects;
-	}
-
 	public void ensureTableIsDefined(TableSchema schema) throws SQLException{
 		try {
 			if (!tableIsDefined(schema.tableName)) {
@@ -559,7 +322,9 @@ public class QueryProcessor {
 				logger.trace("Running statement:\n"+statement);
 				// We use try-with to ensure that the ResultSet will be closed even
 				// if an exception is raised.
-				try (ResultSet rs = query2(conn, false, statement)) {
+				try (ResultSetWrapper rsw = query3(conn, false, statement)) {
+				} catch (Exception e) {
+					throw new SQLException(e);
 				}
 			}
 		}

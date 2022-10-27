@@ -729,7 +729,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
 	}
 
 	@Override
-	public Iterator<String> wordsContainingMorphNgram(String[] morphemes) throws CompiledCorpusException {
+	public CloseableIterator<String> wordsContainingMorphNgram(String[] morphemes) throws CompiledCorpusException {
 		Logger logger = LogManager.getLogger("org.iutools.corpus.CompiledCorpus.wordsContainingMorphNgram");
 		Set<String> words = new HashSet<String>();
 		String query = morphNgramQuery(morphemes);
@@ -740,7 +740,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
 				"For morphemes="+ StringUtils.join(morphemes, ",")+
 				", returning total of "+hits.getTotalHits()+" hits.");
 		}
-		return hits.docIDIterator(true);
+		return new CloseableIteratorWrapper<String>(hits.docIDIterator(true));
 	}
 
 	@Override
@@ -957,12 +957,12 @@ public class CompiledCorpus_ES extends CompiledCorpus {
 	}
 
 	@Override
-	public Iterator<String> wordsWithNoDecomposition() throws CompiledCorpusException {
+	public CloseableIterator<String> wordsWithNoDecomposition() throws CompiledCorpusException {
 		List<String> words = new ArrayList<String>();
 		String query = "totalDecompositions:0";
 		SearchResults<WordInfo> hits = esWinfoSearch(query);
 
 		Iterator<String> wordsIter = hits.docIDIterator(true);
-		return wordsIter;
+		return new CloseableIteratorWrapper<String>(wordsIter);
 	}
 }

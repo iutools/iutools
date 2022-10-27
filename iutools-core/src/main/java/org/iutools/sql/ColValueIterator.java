@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
+import java.util.List;
 
 public class ColValueIterator<T> implements Iterator<T>, Closeable {
 
@@ -57,13 +58,34 @@ public class ColValueIterator<T> implements Iterator<T>, Closeable {
 		try {
 			hasNextItem = false;
 			rs.next();
-			nextItem = (T) QueryProcessor.rs2CurrColValue(rs, colName);
+			nextItem = (T) currColValue();
 			hasNextItem = true;
 			nextItemReady = true;
 		} catch (SQLException e) {
 			// If an exception is raised, it means that there are no more items
 			// Leave hasNextItem at false.
 		}
+	}
+
+	private Object currColValue() throws SQLException {
+		Logger logger = LogManager.getLogger("org.iutools.sql.ColValueIterator.currColValue");
+		Object colValue = null;
+		if (logger.isTraceEnabled()) {
+			logger.trace("Fetching colName="+colName+" from ResultSet with columns: "+
+				new PrettyPrinter().print(ResultSetWrapper.colNames(rs)));
+		}
+		try {
+			colValue = rs.getObject(colName);
+		} catch (Exception e) {
+			List<String> colNames = ResultSetWrapper.colNames(rs);
+			throw new SQLException(
+				"Could not get next value of column "+colName + "\n" +
+				"Existing columns in ResultSet were: "+new PrettyPrinter().print(colNames),
+				e);
+		}
+		return colValue;
+
+
 	}
 
 	@Override
