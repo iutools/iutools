@@ -15,4 +15,8 @@ public abstract class TableSchema {
 		this.tableName = _tableName;
 		this.idColumnName = _idColumnName;
 	}
+
+	public boolean rowIsCompatible(Row row) {
+		return true;
+	}
 }

@@ -29,7 +29,7 @@ public class ResultSetIterator<T> implements CloseableIterator<T> {
 	private List<String> _colNames = null;
 
 	public ResultSetIterator(ResultSet _rs, Statement _statement,
-									 Sql2Pojo<T> _converter) throws SQLException {
+		Sql2Pojo<T> _converter) throws SQLException {
 		this.rs = _rs;
 		this.statement = _statement;
 		this.converter = _converter;
@@ -42,7 +42,7 @@ public class ResultSetIterator<T> implements CloseableIterator<T> {
 		nextPojo = null;
 		if (rs != null) {
 			JSONObject nextRowJson = ResultSetWrapper.pullNextRowData(rs);
-			if (nextRowJson != null) {
+			if (nextRowJson != null && !nextRowJson.keySet().isEmpty()) {
 				nextPojo = converter.toPOJO(nextRowJson);
 			}
 		}

@@ -332,13 +332,13 @@ public class MultilingualDict {
 	}
 
 	private void retrieveTranslationsAndExamples(
-		MultilingualDictEntry entry, List<String> l1Words) throws MultilingualDictException {
+		MultilingualDictEntry entry, List<String> l1WordsCluster) throws MultilingualDictException {
 		Logger tLogger = LogManager.getLogger("org.iutools.worddict.MultilingualDict.retrieveTranslationsAndExamples");
 		if (tLogger.isTraceEnabled()) {
-			tLogger.trace("word="+entry.word+"/"+entry.wordInOtherScript+", iuWordGroup.size()="+l1Words.size()+", iuWordGroup="+ StringUtils.join(l1Words.iterator(), ", "));
+			tLogger.trace("word="+entry.word+"/"+entry.wordInOtherScript+", iuWordGroup.size()="+ l1WordsCluster.size()+", iuWordGroup="+ StringUtils.join(l1WordsCluster.iterator(), ", "));
 		}
 		Boolean isForRelatedWords = null;
-		if (l1Words.size() > 1) {
+		if (l1WordsCluster.size() > 1) {
 			// We are looking for translations for a list of words that are related
 			// to the original word
 			isForRelatedWords = true;
@@ -346,7 +346,7 @@ public class MultilingualDict {
 			// We are searching for translation of just one word. Is that the
 			// original word (if not, it means we are searching for translations of
 			// a single related word).
-			String singleWord = l1Words.get(0);
+			String singleWord = l1WordsCluster.get(0);
 			if (singleWord.equals(entry.word) ||
 				singleWord.equals(entry.wordInOtherScript)) {
 				isForRelatedWords = false;
@@ -363,11 +363,13 @@ public class MultilingualDict {
 
 			if (l1.equals("iu")) {
 				// We can only search for translations of words in syllabics
-				l1Words = (List<String>) TransCoder.ensureSyllabic(l1Words);
+				l1WordsCluster = (List<String>) TransCoder.ensureSyllabic(l1WordsCluster);
 			}
 
+			// For each word in the words cluster, create an iterator for iterating
+			// through that word's translations.
 			iterators =
-				translationsIteratorsForWords(l1Words, l1, l2);
+				translationsIteratorsForWords(l1WordsCluster, l1, l2);
 			Map<String,Boolean> wordHasRemainingAlignments = new HashMap<String,Boolean>();
 			for (String aWord: iterators.keySet()) {
 				wordHasRemainingAlignments.put(aWord, true);
@@ -375,6 +377,10 @@ public class MultilingualDict {
 			Set<String> alreadySeenPair = new HashSet<String>();
 			int totalPairs = 1;
 			boolean keepGoing = true;
+
+			// Pull translations for each word in the cluster in a round-robbin fashion.
+			// This is to avoid a situation where the first few translations all are for
+			// the same word in the cluster.
 			while (keepGoing) {
 				int totalWordWithRemainingAligments = 0;
 				for (String l1Word: iterators.keySet()) {
@@ -405,7 +411,7 @@ public class MultilingualDict {
 					totalPairs =
 						onNewSentencePair(entry, bilingualAlignment, alreadySeenPair,
 							totalPairs, l1Word);
-					if (enoughBilingualExamples(entry, totalPairs, l1Words.size())) {
+					if (enoughBilingualExamples(entry, totalPairs, l1WordsCluster.size())) {
 						keepGoing = false;
 						break;
 					}

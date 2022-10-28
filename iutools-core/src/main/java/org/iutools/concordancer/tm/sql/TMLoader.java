@@ -18,6 +18,7 @@ import java.util.List;
 
 public class TMLoader {
 	protected static int BATCH_SIZE = 500;
+//	protected static int BATCH_SIZE = 1;
 	Path tmFile = null;
 	String tmName = null;
 	boolean verbose = true;
@@ -81,12 +82,13 @@ public class TMLoader {
 				if (alignsBatch.size() == BATCH_SIZE) {
 					System.out.println("** ADDING BATCH OF ALIGNMENTS TO DB");
 					progress.stepCompleted();
-					alignsBatch = addBatch(alignsBatch);
+					alignsBatch = new ArrayList<Alignment>();
 				}
 			}
 			if (!alignsBatch.isEmpty()) {
 				System.out.println("** ADDING LAST BATCH OF WORDS TO DB");
-				alignsBatch = addBatch(alignsBatch);
+				addBatch(alignsBatch);
+				alignsBatch.clear();
 			}
 		} catch (IOException | ClassNotFoundException | ObjectStreamReaderException e) {
 			throw new TranslationMemoryException(e);
@@ -114,20 +116,26 @@ public class TMLoader {
 	}
 
 	public int countBatches() throws TranslationMemoryException {
-		int totalWords = 0;
+		int totalAlignments = countAlignments();
+		int totalBatches = totalAlignments / BATCH_SIZE;
+		System.out.println("Total batches: "+totalBatches);
+		return totalBatches;
+	}
+
+	public int countAlignments() throws TranslationMemoryException {
+		int totalAlignments = 0;
 		try {
-			System.out.println("Counting batches in TM file: "+tmFile);
+			System.out.println("Counting alignments in TM file: "+tmFile);
 			ObjectStreamReader reader = new ObjectStreamReader(tmFile.toFile());
 			Alignment_ES algn = null;
 			while ((algn = (Alignment_ES)reader.readObject()) != null) {
-				totalWords++;
+				totalAlignments++;
 			}
+			System.out.println("  Total # alignemts: "+totalAlignments);
 		} catch (IOException | ClassNotFoundException | ObjectStreamReaderException e) {
 			throw new TranslationMemoryException(e);
 		}
-		int totalBatches = totalWords / BATCH_SIZE;
-		System.out.println("Total batches: "+totalBatches);
-		return totalBatches;
+		return totalAlignments;
 	}
 
 }

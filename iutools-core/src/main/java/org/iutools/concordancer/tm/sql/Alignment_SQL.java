@@ -4,6 +4,7 @@ import org.apache.commons.collections.map.HashedMap;
 import org.iutools.concordancer.Alignment;
 import org.iutools.concordancer.Alignment_ES;
 import org.iutools.concordancer.WordAlignment;
+import org.iutools.sql.SQLPersistent;
 
 import java.util.ArrayList;
 import java.util.HashMap;

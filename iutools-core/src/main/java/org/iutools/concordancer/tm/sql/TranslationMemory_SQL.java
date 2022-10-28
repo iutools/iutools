@@ -20,6 +20,8 @@ import java.util.List;
  */
 public class TranslationMemory_SQL extends TranslationMemory {
 
+	SentenceInLangSchema sentenceSchema = new SentenceInLangSchema();
+
 	public TranslationMemory_SQL() {
 		super();
 	}
@@ -42,16 +44,21 @@ public class TranslationMemory_SQL extends TranslationMemory {
 
 	@Override
 	public CloseableIterator<Alignment_ES> searchIter(String sourceLang, String sourceExpr, String... targetLangs) throws TranslationMemoryException {
-
+		Logger logger = LogManager.getLogger("org.iutools.concordancer.tm.sql.TranslationMemory_SQL.searchIter");
 		AlignmentsIterator iter = null;
-		Connection conn = null;
+		// Note: We DON'T use try-with because the returned iterator will need
+		// to have the SQL resources still opened.
+		CloseableIterator<SentenceInLang> sourceSentsIter = null;
 		try {
-			conn = new ConnectionPool().getConnection();
-			CloseableIterator<SentenceInLang> sourceSentsIter =
-				searchSourceLang(sourceLang, sourceExpr, conn);
+			sourceSentsIter =
+				searchSourceLang(sourceLang, sourceExpr);
 			iter = new AlignmentsIterator(sourceSentsIter, targetLangs);
-		} catch (SQLException throwables) {
-			throwables.printStackTrace();
+		} catch (Exception e) {
+			throw new TranslationMemoryException(e);
+		}
+
+		if (logger.isTraceEnabled()) {
+			logger.trace("For sourceExpr='"+sourceExpr+"', returning iter with hasNext()="+iter.hasNext());
 		}
 
 		return iter;
@@ -65,31 +72,35 @@ public class TranslationMemory_SQL extends TranslationMemory {
 	@Override
 	public List<Alignment_ES> search(String sourceLang, String sourceExpr, String... targetLangs) throws TranslationMemoryException {
 		List<Alignment_ES> hits = new ArrayList<Alignment_ES>();
-		try (Connection conn = new ConnectionPool().getConnection()) {
-			CloseableIterator<SentenceInLang> sourceSentsIter =
-				searchSourceLang(sourceLang, sourceExpr, conn);
+		try (CloseableIterator<SentenceInLang> sourceSentsIter =
+			  searchSourceLang(sourceLang, sourceExpr)) {
 			AlignmentsIterator alignIter =
 				new AlignmentsIterator(sourceSentsIter, targetLangs);
 			while (alignIter.hasNext()) {
 				Alignment_ES nextAlign = alignIter.next();
 				hits.add(nextAlign);
 			}
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			throw new TranslationMemoryException(e);
 		}
 		return hits;
 	}
 
-	private CloseableIterator<SentenceInLang> searchSourceLang(String sourceLang, String sourceExpr, Connection conn) throws TranslationMemoryException {
+	private CloseableIterator<SentenceInLang> searchSourceLang(
+		String sourceLang, String sourceExpr) throws TranslationMemoryException {
+		Logger logger = LogManager.getLogger("org.iutools.concordancer.tm.sql.TranslationMemory_SQL.searchSourceLang");
 		SentenceInLangSchema schema = new SentenceInLangSchema();
 		String sql =
 			"SELECT * FROM "+schema.tableName+"\n"+
 			"WHERE\n"+
 			"  lang = ? AND\n"+
 			"  MATCH(text) AGAINST(?);";
+
+		logger.trace(
+			"Executing sql="+sql+"\n"+
+			"  With arguments: sourceLang="+sourceLang+", sourceExpr="+sourceExpr);
 		CloseableIterator<SentenceInLang> iter = null;
-		ResultSetWrapper rsw  =
-		null;
+		ResultSetWrapper rsw  = null;
 		try {
 			rsw = new QueryProcessor().query(sql, sourceLang, sourceExpr);
 			iter = rsw.iterator(new Sql2SentenceInLang());
@@ -107,6 +118,7 @@ public class TranslationMemory_SQL extends TranslationMemory {
 		if (alignents != null && alignents.size() > 0) {
 			List<Row> rows = new ArrayList<Row>();
 			for (Alignment anAlignment: alignents) {
+				sentenceLenghtsDoNotExceedSchemaMaximum(anAlignment);
 				for (String lang: anAlignment.languages()) {
 					addRow4Lang(lang, anAlignment, rows);
 				}
@@ -120,15 +132,29 @@ public class TranslationMemory_SQL extends TranslationMemory {
 		return;
 	}
 
+	private boolean sentenceLenghtsDoNotExceedSchemaMaximum(Alignment anAlignment) {
+		boolean answer = true;
+		for (String lang: anAlignment.languages()) {
+			if (anAlignment.sentence4lang(lang).length() > SentenceInLangSchema.MAX_SENTENCE_LEN) {
+				answer = false;
+				break;
+			}
+		}
+		return answer;
+	}
+
 	private void addRow4Lang(String lang, Alignment anAlignment, List<Row> rows) throws TranslationMemoryException {
 		SentenceInLang sent =
 			new SentenceInLang(lang, anAlignment.sentence4lang(lang),
 				anAlignment.from_doc, anAlignment.pair_num);
 		try {
 			Row row = sent.toRow();
-			rows.add(row);
+			if (sentenceSchema.rowIsCompatible(row)) {
+				rows.add(row);
+			}
 		} catch (SQLException e) {
 			throw new TranslationMemoryException(e);
 		}
+		return;
 	}
 }

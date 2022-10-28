@@ -63,8 +63,8 @@ public class QueryProcessor {
 	 * Repeatadly runs a query on a series of arguments.
 	 */
 	public void queryBatch(String query, List<Object[]> argsBatch) throws SQLException {
-		try (Connection conn = getConnection()) {
-			PreparedStatement stmt = conn.prepareStatement(query);
+		Connection conn = getConnection();
+		try (PreparedStatement stmt = conn.prepareStatement(query)) {
 			int rowIndex = -1;
 			Object[] firstRow = null;
 			for (Object[] queryArgs : argsBatch) {
