@@ -1,8 +1,10 @@
 package org.iutools.concordancer.tm.sql;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.iutools.sql.Row;
 import org.iutools.sql.TableSchema;
+import org.json.JSONObject;
+
+import java.sql.SQLException;
 
 public class SentenceInLangSchema extends TableSchema {
 
@@ -16,6 +18,13 @@ public class SentenceInLangSchema extends TableSchema {
 
 	public SentenceInLangSchema(String _tableName, String _idColumnName) {
 		super(_tableName, _idColumnName);
+	}
+
+	@Override
+	public String[] unsortedColumnNames() {
+		return new String[] {
+			"lang", "text", "from_doc", "pair_num", "sentence_id"
+		};
 	}
 
 	@Override
@@ -36,29 +45,37 @@ public class SentenceInLangSchema extends TableSchema {
 	}
 
 	@Override
-	public boolean rowIsCompatible(Row row) {
-		String reasonForImcompatibility = null;
-		//			Pair.of("text", MAX_SENTENCE_LEN)
-
-		Pair<String,Integer>[] toCheck = new Pair[] {
+	public boolean rowIsCompatible(JSONObject row) throws SQLException {
+		Boolean isCompatible = super.rowIsCompatible(row);
+		if (isCompatible == null) {
+			String reasonForImcompatibility = null;
+			Pair<String, Integer>[] toCheck = new Pair[]{
 			Pair.of("text", MAX_SENTENCE_LEN),
 			Pair.of("from_doc", MAX_FROM_DOC_LEN),
 			Pair.of("sentence_id", MAX_SENT_ID_LEN),
-		};
-		for (Pair<String,Integer> colsToCheck: toCheck) {
-			String colName = colsToCheck.getLeft();
-			Integer maxLen = colsToCheck.getRight();
-			String gotVal = (String)row.getColumn(colName);
-			Integer gotLen = gotVal.length();
-			if (gotLen > maxLen) {
-				reasonForImcompatibility =
-					"String for "+colName+" was too long (="+gotLen+", max="+maxLen+")\n"+
-					"Value was:\n"+gotVal;
-				break;
+			};
+			for (Pair<String, Integer> colsToCheck : toCheck) {
+				String colName = colsToCheck.getLeft();
+				Integer maxLen = colsToCheck.getRight();
+				String gotVal = row.getString(colName);
+				Integer gotLen = gotVal.length();
+				if (gotLen > maxLen) {
+					reasonForImcompatibility =
+					"SQL ERROR:\n" +
+					"String for " + colName + " was too long (=" + gotLen + ", max=" + maxLen + ") for schema" + getClass().getSimpleName();
+					break;
+				}
+			}
+
+			if (reasonForImcompatibility != null) {
+				System.err.println(reasonForImcompatibility);
 			}
 		}
 
-		boolean answer = reasonForImcompatibility == null;
-		return answer;
+		if (isCompatible == null) {
+			isCompatible = true;
+		}
+
+		return isCompatible;
 	}
 }

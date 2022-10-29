@@ -36,4 +36,15 @@ public class WordInfoSchema extends TableSchema {
 			};
 		return statements;
 	}
+
+	@Override
+	public String[] unsortedColumnNames() {
+		return
+			new String[] {
+				"word", "corpusName", "frequency", "decompositionsSampleJSON",
+				"topDecompositionStr", "totalDecompositions",
+				"wordInOtherScript", "wordNgrams", "morphemeNgrams",
+				"morphemeNgramsWrittenForms", "wordRoman", "wordSyllabic",
+			};
+	}
 }

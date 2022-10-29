@@ -227,7 +227,8 @@ public class ResultSetWrapper implements AutoCloseable {
 				JSONObject row = new JSONObject();
 				colNames.forEach(cn -> {
 					try {
-						row.put(cn, rs.getObject(cn));
+						Object colValue = rs.getObject(cn);
+						row.put(cn, colValue);
 					} catch (SQLException e) {
 						throw new RuntimeException(e);
 					}

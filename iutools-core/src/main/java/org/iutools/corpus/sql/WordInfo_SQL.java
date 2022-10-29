@@ -19,12 +19,6 @@ import java.util.*;
  * Subclass of WordInfo that can be stored in SQL database
  */
 public class WordInfo_SQL extends WordInfo {
-//	/**
-//	 * This representation of the word allows SQL to efficiently search for
-//	 * ngrams in the word.
-//	 */
-//	private String wordSQLSearchable = null;
-
 	/**
 	 * ngrams contained in the word
 	 */

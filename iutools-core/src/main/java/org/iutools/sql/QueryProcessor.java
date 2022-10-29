@@ -4,6 +4,7 @@ import ca.nrc.json.PrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
 
 import java.sql.*;
 import java.util.*;
@@ -209,53 +210,53 @@ public class QueryProcessor {
 	public void getRowWithID(String id, String tableName) {
 	}
 
-	public void insertObject(SQLPersistent object) throws SQLException {
-		insertObject(object, (Boolean)null);
+	public <T> void insertObject(T object, Sql2Pojo<T> converter) throws SQLException {
+		insertObject(object, converter, (Boolean)null);
 	}
 
-	public void insertObject(SQLPersistent object, Boolean replace) throws SQLException {
+	public <T> void insertObject(T object, Sql2Pojo<T> converter, Boolean replace) throws SQLException {
 		if (replace == null) {
 			replace = true;
 		}
-		Row row = object.toRow();
-		insertRow(row, replace);
+		JSONObject rowJson = converter.toRowJson(object);
+		insertRow(rowJson, converter, replace);
 		return;
 	}
 
-	private void insertRow(Row row, Boolean replace) throws SQLException {
-		List<Row> justOneRow = new ArrayList<Row>();
+	private void insertRow(JSONObject row, Sql2Pojo converter, Boolean replace) throws SQLException {
+		List<JSONObject> justOneRow = new ArrayList<JSONObject>();
 		justOneRow.add(row);
-		insertRows(justOneRow, replace);
+		insertRows(justOneRow, converter, replace);
 	}
 
-	public void replaceRow(Row row) throws SQLException {
-		List<Row> justOneRow = new ArrayList<Row>();
+	public void replaceRow(JSONObject row, Sql2Pojo converter) throws SQLException {
+		List<JSONObject> justOneRow = new ArrayList<JSONObject>();
 		justOneRow.add(row);
-		replaceRows(justOneRow);
+		replaceRows(justOneRow, converter);
 		return;
 	}
 
-	public void replaceRows(List<Row> rows) throws SQLException {
-		insertRows(rows, true);
+	public void replaceRows(List<JSONObject> rows, Sql2Pojo converter) throws SQLException {
+		insertRows(rows, converter, true);
 		return;
 	}
 
-	public void insertRows(List<Row> rows, Boolean replace) throws SQLException {
+	public void insertRows(List<JSONObject> rows, Sql2Pojo converter, Boolean replace) throws SQLException {
 		Logger logger = LogManager.getLogger("org.iutools.sql.QueryProcessor.insertRows");
 		if (replace == null) {
 			replace = true;
 		}
 		if (rows != null && !rows.isEmpty()) {
 			List<Object[]> rowValues = new ArrayList<Object[]>();
-			Row firstRow = rows.get(0);
-			String tableName = firstRow.tableName;
-			List<String> firstRowColNames = firstRow.colNames();
+			JSONObject firstRow = rows.get(0);
+			List<String> colNames = converter.schemaColNames();
+			String sqlColNames = String.join(", ", colNames);
 			String query =
-				"INSERT INTO " + tableName + "\n" +
-				"  ("+firstRow.sqlColNames()+")\n" +
+				"INSERT INTO " + converter.tableName() + "\n" +
+				"  ("+sqlColNames+")\n" +
 				"VALUES\n"+
 				"  (";
-			for (int ii=0; ii < firstRowColNames.size(); ii++) {
+			for (int ii=0; ii < colNames.size(); ii++) {
 				if (ii > 0) {
 					query += ", ";
 				}
@@ -263,22 +264,16 @@ public class QueryProcessor {
 			}
 			query += ")";
 			if (replace) {
-				query += "\n" + firstRow.sqlOnDuplicateUpdate();
+				query += "\n" + sqlOnDuplicateUpdate(converter.schema);
 			}
 			query += ";";
 
 			int rowCount = 0;
-			for (Row row: rows) {
+			for (JSONObject row: rows) {
 				rowCount++;
-				row.ensureHasSameColumnNamesAs(firstRow);
-				Object[] valuesThisRow = row.colValues();
-				if (valuesThisRow.length != firstRowColNames.size()) {
-					throw new SQLException("Row number "+rowCount+" did not have the ");
-				}
+				converter.ensureRowIsCompatibleWithSchema(firstRow);
+				Object[] valuesThisRow = converter.colValues(row);
 				rowValues.add(valuesThisRow);
-				if (!row.tableName.equals(tableName)) {
-					throw new SQLException("Tried to replace rows in multiple tables at once: "+tableName+", "+row.tableName);
-				}
 				logger.trace("after row #"+rowCount+", query size="+query.length());
 			}
 			queryBatch(query, rowValues);
@@ -286,6 +281,25 @@ public class QueryProcessor {
 		logger.trace("Exiting");
 		return;
 	}
+
+	public String sqlOnDuplicateUpdate(TableSchema schema) {
+		String sql = "";
+		List<String> colNames = schema.columnNames();
+		int colCounter = 0;
+		for (String colName: colNames) {
+			colCounter++;
+			if (colCounter == 1) {
+				sql = "ON DUPLICATE KEY UPDATE\n";
+			}
+			sql += "  " + colName + " = VALUES("+colName+")";
+			if (colCounter != colNames.size()) {
+				sql += ",";
+			}
+			sql += "\n";
+		}
+		return sql;
+	}
+
 
 	public void ensureTableIsDefined(TableSchema schema) throws SQLException{
 		try {

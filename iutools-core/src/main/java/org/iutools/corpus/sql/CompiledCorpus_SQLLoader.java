@@ -91,7 +91,7 @@ public class CompiledCorpus_SQLLoader {
 				System.out.println("** ADDING LAST BATCH OF WORDS TO DB");
 				wordsBatch = addBatch(wordsBatch);
 			}
-		} catch (IOException | ClassNotFoundException | ObjectStreamReaderException e) {
+		} catch (IOException | ClassNotFoundException | ObjectStreamReaderException | SQLException e) {
 			throw new CompiledCorpusException(e);
 		}
 		return;
@@ -117,7 +117,7 @@ public class CompiledCorpus_SQLLoader {
 		return totalBatches;
 	}
 
-	private List<WordInfo> addBatch(List<WordInfo> wordsBatch) throws CompiledCorpusException {
+	private List<WordInfo> addBatch(List<WordInfo> wordsBatch) throws CompiledCorpusException, SQLException {
 		// We don't need to replace the rows because we assume all words will have
 		// been deleted before loading the corpus.
 		// This will speed up the loading

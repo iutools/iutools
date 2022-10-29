@@ -48,8 +48,8 @@ public class QueryProcessorTest {
 		// Note that this will insert the object into the SQL table provided
 		// by that object's SQL schema.
 		//
-		SQLPersistent homer = new Person("homer simpson");
-		processor.insertObject(homer);
+		Person homer = new Person("homer simpson");
+		processor.insertObject(homer, new Sql2Person());
 
 		// If the table already contains the object, then by default, insertObject
 		// will replace the existing row by a row that corresponds to the provided
@@ -58,7 +58,7 @@ public class QueryProcessorTest {
 		// However, if you feed replace=false, then the method will raise an exception.
 		boolean replace = false;
 		try {
-			processor.insertObject(homer, replace);
+			processor.insertObject(homer, new Sql2Person(), replace);
 		} catch (SQLException e) {
 		}
 
@@ -73,19 +73,17 @@ public class QueryProcessorTest {
 	///////////////////////////////////////////////
 
 	// A class that can be stored in am SQL table
-	public static class Person extends SQLPersistent {
+	public static class Person  {
 		public String name = null;
 		public String gender = null;
 		public int age = -1;
 
 		// Empty constructor for Jackson serialization
 		public Person() {
-			super(new PersonSchema());
 			return;
 		}
 
 		public Person(String _name) {
-			super(new PersonSchema());
 			this.name = _name;
 			return;
 		}
@@ -95,6 +93,11 @@ public class QueryProcessorTest {
 	public static class PersonSchema extends TableSchema {
 		public PersonSchema() {
 			super("Person", "name");
+		}
+
+		@Override
+		public String[] unsortedColumnNames() {
+			return new String[] {"name", "gender", "age"};
 		}
 
 		@Override
@@ -109,9 +112,13 @@ public class QueryProcessorTest {
 		}
 	}
 
-	public static class Sql2Person implements Sql2Pojo<Person> {
+	public static class Sql2Person extends Sql2Pojo<Person> {
 
 		protected ObjectMapper mapper = new ObjectMapper();
+
+		public Sql2Person() {
+			super(new PersonSchema());
+		}
 
 		@Override
 		public Person toPOJO(JSONObject jObj) throws SQLException {

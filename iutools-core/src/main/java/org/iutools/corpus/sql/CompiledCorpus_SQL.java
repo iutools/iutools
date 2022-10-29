@@ -20,6 +20,7 @@ import org.iutools.script.TransCoder;
 import org.iutools.script.TransCoderException;
 import org.iutools.sql.*;
 import org.iutools.text.ngrams.NgramCompiler;
+import org.json.JSONObject;
 
 public class CompiledCorpus_SQL extends CompiledCorpus {
 
@@ -27,6 +28,9 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 	private static final String LAST_LOADED_DATE_TABLE = new LastLoadedDateSchema().tableName;
 	public String corpusName = null;
 	private QueryProcessor queryProcessor = new QueryProcessor();
+
+	private Sql2LastLoadedDate sql2LastLoadedDate = new Sql2LastLoadedDate();
+	private Sql2WordInfo sql2winfo = new Sql2WordInfo();
 
 	public CompiledCorpus_SQL(String corpusName) throws CompiledCorpusException {
 		super(corpusName);
@@ -122,39 +126,38 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 			//
 			ResultSetWrapper rsw = query(queryStr, ngram, corpusName);
 			logger.trace("Done querying");
-			return rsw.iterator(new Sql2WordIinfo());
+			return rsw.iterator(new Sql2WordInfo());
 		} catch (SQLException e) {
 			throw new CompiledCorpusException(e);
 		}
 	}
 
-	public void putInfo4word(WordInfo winfo) throws CompiledCorpusException {
+	public void putInfo4word(WordInfo winfo) throws CompiledCorpusException, SQLException {
 		putInfo4word(winfo, (Boolean)null);
 	}
 
-	public void putInfo4word(WordInfo winfo, Boolean replace) throws CompiledCorpusException {
+	public void putInfo4word(WordInfo winfo, Boolean replace) throws CompiledCorpusException, SQLException {
 		List<WordInfo> justOneWord = new ArrayList<WordInfo>();
 		justOneWord.add(winfo);
 		putInfo4words(justOneWord);
 		return;
 	}
 
-	public void putInfo4words(List<WordInfo> winfos) throws CompiledCorpusException {
+	public void putInfo4words(List<WordInfo> winfos) throws CompiledCorpusException, SQLException {
 		putInfo4words(winfos, (Boolean)null);
 	}
 
-	public void putInfo4words(List<WordInfo> winfos, Boolean replace) throws CompiledCorpusException {
+	public void putInfo4words(List<WordInfo> winfos, Boolean replace) throws CompiledCorpusException, SQLException {
 		Logger logger = LogManager.getLogger("org.iutools.corpus.sql.CompiledCorpus_SQL.putInfo4words");
 		if (winfos != null && winfos.size() > 0) {
-			List<Row> rows = new ArrayList<Row>();
+			List<JSONObject> rows = new ArrayList<JSONObject>();
 			for (WordInfo winfo: winfos) {
-				WordInfo_SQL winfoSQL = new WordInfo_SQL(winfo);
-				Row row = winfoSQL.toSQLRow();
-				row.setColumn("corpusName", corpusName);
+				JSONObject row = sql2winfo.toRowJson(winfo);
+				row.put("corpusName", corpusName);
 				rows.add(row);
 			}
 			try {
-				new QueryProcessor().insertRows(rows, true);
+				new QueryProcessor().insertRows(rows, new Sql2WordInfo(), true);
 			} catch (SQLException e) {
 				throw new CompiledCorpusException(e);
 			}
@@ -166,7 +169,7 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 	private WordInfo rs2winfo(ResultSetWrapper rsw) throws CompiledCorpusException {
 		WordInfo wordInfo = null;
 		try {
-			wordInfo = rsw.toPojo(new Sql2WordIinfo());
+			wordInfo = rsw.toPojo(new Sql2WordInfo());
 		} catch (SQLException e) {
 			throw new CompiledCorpusException(e);
 		}
@@ -371,7 +374,7 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 			// when we are done.
 			//
 			try (ResultSetWrapper rsw = query(queryStr, corpusName, morphQuery)) {
-				wordInfos = rsw.toPojoLst(new Sql2WordIinfo());
+				wordInfos = rsw.toPojoLst(new Sql2WordInfo());
 			} catch (Exception e) {
 				throw new CompiledCorpusException(e);
 			}
@@ -445,7 +448,11 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 
 		winfo.frequency += freqIncr;
 		winfo.setDecompositions(sampleDecomps, totalDecomps);
-		putInfo4word(winfo);
+		try {
+			putInfo4word(winfo);
+		} catch (SQLException e) {
+			throw new CompiledCorpusException(e);
+		}
 		tLogger.trace("Exiting for word="+word);
 
 		return;
@@ -678,9 +685,9 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 		lastLoadedRecord.timestamp = timestamp;
 
 		try {
-			Row row = lastLoadedRecord.toSQLRow();
-			row.setColumn("corpusName", corpusName);
-			new QueryProcessor().replaceRow(row);
+			JSONObject row = sql2LastLoadedDate.toRowJson(lastLoadedRecord);
+			row.put("corpusName", corpusName);
+			new QueryProcessor().replaceRow(row, new Sql2LastLoadedDate());
 			tLogger.trace("DONE putting the updated winfo");
 		} catch (SQLException e) {
 			throw new CompiledCorpusException(

@@ -9,12 +9,16 @@ public class LastLoadedDateSchema extends TableSchema {
 	}
 
 	@Override
+	public String[] unsortedColumnNames() {
+		return new String[] {"corpusName", "timestamp"};
+	}
+
+	@Override
 	public String[] schemaStatements() {
 		String[] statements = new String[]{
 			"CREATE TABLE IF NOT EXISTS `" + tableName + "` (\n" +
 			"  `corpusName` VARCHAR(100) NOT NULL,\n" +
 			"  `timestamp` LONG NOT NULL,\n" +
-			"  `lastload` LONG DEFAULT NULL,\n" +
 			"   PRIMARY KEY (corpusName)\n" +
 			") ENGINE=MyISAM DEFAULT CHARSET=utf8;\n" +
 			"\n"
