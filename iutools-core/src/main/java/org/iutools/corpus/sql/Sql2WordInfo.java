@@ -78,7 +78,7 @@ public class Sql2WordInfo extends Sql2Pojo<WordInfo> {
 	 * Returns a string that lists all the character ngrams for the word. This
 	 * makes it possible for SQL to rapidly find words that contain a particular ngram.
 	 */
-	public String wordNgrams(String word) {
+	public static String wordNgrams(String word) {
 		Logger logger = LogManager.getLogger("org.iutools.corpus.sql.Sql2WordInfo.wordNgrams");
 		String ngramsStr = "";
 		if (word != null) {
@@ -97,10 +97,9 @@ public class Sql2WordInfo extends Sql2Pojo<WordInfo> {
 		return ngramsStr;
 	}
 
-	public NgramCompiler ngramsCompiler() {
+	public static NgramCompiler ngramsCompiler() {
 		return new NgramCompiler(3, true);
 	}
-
 
 	/**
 	 * Returns a string that lists all the morpheme ngrams for the word. It makes

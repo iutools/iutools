@@ -358,7 +358,7 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 			logger.error("morpheme is null");
 		}
 		if (morpheme != null) {
-			String morphQuery = WordInfo_SQL.formatNgramAsSearchableString(morpheme);
+			String morphQuery = Sql2WordInfo.formatNgramAsSearchableString(morpheme);
 
 			String queryStr =
 				"SELECT word, frequency, topDecompositionStr, decompositionsSampleJSON FROM " + WORDS_TABLE + "\n" +
@@ -392,13 +392,12 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 
 		CloseableIterator<String> wordsIter = null;
 		if (morphemes != null) {
-			String decompQuery = WordInfo_SQL.formatNgramAsSearchableString(morphemes);
+			String decompQuery = Sql2WordInfo.formatNgramAsSearchableString(morphemes);
 			String queryStr =
 				"SELECT word FROM " + WORDS_TABLE + "\n" +
 				"WHERE\n" +
 				"  corpusName = ? AND \n" +
 				"  MATCH(morphemeNgrams) AGAINST(?)\n"
-//				"ORDER BY frequency DESC"
 				;
 			queryStr += sqlOrderBy("frequency:desc");
 
@@ -622,7 +621,7 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 
 		Double freq = 0.0;
 		if (morphemes != null) {
-			String decompQuery = WordInfo_SQL.formatNgramAsSearchableString(morphemes);
+			String decompQuery = Sql2WordInfo.formatNgramAsSearchableString(morphemes);
 			String queryStr =
 				"FROM " + WORDS_TABLE + "\n" +
 				"WHERE\n" +

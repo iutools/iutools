@@ -72,9 +72,8 @@ public class Sql2WordInfoTest {
 	//////////////////////////////////////
 
 	@Test
-	public void test__getWordNgrams__HappyPath() {
-		WordInfo_SQL winfo = new WordInfo_SQL("nunavut");
-		String gotNgramsStr = winfo.getWordNgrams();
+	public void test__wordNgrams__HappyPath() {
+		String gotNgramsStr = Sql2WordInfo.wordNgrams("nunavut");
 		String[] expNgrams = new String[] {
 			"BEGnuna", "unavu", "BEGnunavut", "BEGnunavutEND", "vutEND"
 		};
@@ -185,7 +184,7 @@ public class Sql2WordInfoTest {
 			String[] decomp = (String[]) aCase.data[2];
 			try {
 				String gotNgrams =
-					WordInfo_SQL.computeMorphNgrams(
+					Sql2WordInfo.computeMorphNgrams(
 						writtenForms, decomp);
 				String mess = aCase.descr;
 				if (writtenForms) {
@@ -290,7 +289,7 @@ public class Sql2WordInfoTest {
 				Collections.addAll(decomp, decompArr);
 			}
 			try {
-				String gotFormated = WordInfo_SQL.formatNgramAsSearchableString((Boolean)null, decomp);
+				String gotFormated = Sql2WordInfo.formatNgramAsSearchableString((Boolean)null, decomp);
 				AssertString.assertStringEquals(
 					aCase.descr+"\nFormatted Morpheme Ngram not as expected.",
 					expFormatted, gotFormated);

@@ -339,5 +339,4 @@ public class QueryProcessor {
 			}
 		}
 	}
-
 }
