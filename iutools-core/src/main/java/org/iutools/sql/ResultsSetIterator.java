@@ -1,17 +1,14 @@
 package org.iutools.sql;
 
-import org.iutools.concordancer.tm.sql.SentenceInLang;
-
 import java.io.Closeable;
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
 
 public class ResultsSetIterator<T> implements Iterator<T>, Closeable {
 	private ResultSet rs = null;
-	private Sql2Pojo<T> converter = null;
+	private Row2Pojo<T> converter = null;
 
 	protected Boolean hasNextItem = null;
 	protected T nextItem = null;
@@ -19,7 +16,7 @@ public class ResultsSetIterator<T> implements Iterator<T>, Closeable {
 
 	private ResultSetWrapper rsw = null;
 
-	public ResultsSetIterator(ResultSet rs, Sql2Pojo<T> converter) {
+	public ResultsSetIterator(ResultSet rs, Row2Pojo<T> converter) {
 		this.rs = rs;
 		this.converter = converter;
 		ResourcesTracker.updateResourceStatus(rs);

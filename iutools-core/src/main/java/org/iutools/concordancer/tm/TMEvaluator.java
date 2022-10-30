@@ -15,7 +15,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.iutools.concordancer.Alignment_ES;
+import org.iutools.concordancer.Alignment;
 import org.iutools.concordancer.SentencePair;
 import org.iutools.concordancer.tm.elasticsearch.TranslationMemory_ES;
 import org.iutools.config.IUConfig;
@@ -174,11 +174,11 @@ public class TMEvaluator {
 			AlignmentsSummary analysis = new AlignmentsSummary();
 			iuTerm_syll = iuTerm_syll.toLowerCase();
 			enTerm = enTerm.toLowerCase();
-			Iterator<Alignment_ES> algsIter = tm.searchIter("iu", iuTerm_syll, "en");
+			Iterator<Alignment> algsIter = tm.searchIter("iu", iuTerm_syll, "en");
 			int totalAlignments = 0;
 			while (algsIter.hasNext() && totalAlignments < MAX_ALIGNMENTS) {
 				boolean attemptSpotting = false;
-				Alignment_ES algn = algsIter.next();
+				Alignment algn = algsIter.next();
 				writeAlignment(algn, iuTerm_syll, enTerm);
 
 				// First check if the EN term was present in the sentence alignment.
@@ -222,7 +222,7 @@ public class TMEvaluator {
 		}
 	}
 
-	private void writeAlignment(Alignment_ES algn, String iuTerm_syll, String enTerm) throws IOException {
+	private void writeAlignment(Alignment algn, String iuTerm_syll, String enTerm) throws IOException {
 		if (sentsWriter != null) {
 			JSONObject json = new JSONObject()
 			.put("iuTerm_syll", iuTerm_syll)
@@ -244,7 +244,7 @@ public class TMEvaluator {
 
 
 	private Triple<String,MatchType,String> checkEnTermSpotting(
-		Alignment_ES algn, String iuTerm_syll, String enTerm) throws TranslationMemoryException {
+		Alignment algn, String iuTerm_syll, String enTerm) throws TranslationMemoryException {
 		Logger logger = LogManager.getLogger("org.iutools.concordancer.tm.TMEvaluator.checkEnTermSpotting");
 		PrettyPrinter pprinter = new PrettyPrinter();
 		MatchType matchType = null;
@@ -278,7 +278,7 @@ public class TMEvaluator {
 
 
 	private boolean alignmentContainsIU(
-		Alignment_ES algn, String expIUTerm_syll) throws TranslationMemoryException {
+		Alignment algn, String expIUTerm_syll) throws TranslationMemoryException {
 		Logger logger = LogManager.getLogger("org.iutools.concordancer.tm.TMEvaluator.alignmentContainsIU");
 		boolean answer = false;
 		String sentence = algn.sentence4lang("iu");
@@ -296,7 +296,7 @@ public class TMEvaluator {
 	}
 
 
-	private Pair<MatchType, String> findENTermInAlignment(Alignment_ES algn, String enTerm) throws TranslationMemoryException {
+	private Pair<MatchType, String> findENTermInAlignment(Alignment algn, String enTerm) throws TranslationMemoryException {
 		String enSentence = algn.sentence4lang("en");
 		Pair<MatchType, String> match = findTerm(enTerm, enSentence);
 		return match;

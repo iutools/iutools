@@ -1,12 +1,12 @@
 package org.iutools.webservice.worddict;
 
+import ca.nrc.datastructure.CloseableIterator;
 import ca.nrc.json.PrettyPrinter;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.iutools.script.TransCoder;
 import org.iutools.script.TransCoderException;
-import org.iutools.sql.CloseableIterator;
 import org.iutools.webservice.Endpoint;
 import org.iutools.webservice.ServiceException;
 import org.iutools.worddict.MultilingualDict;
@@ -15,9 +15,7 @@ import org.iutools.worddict.MultilingualDictException;
 
 import javax.xml.ws.WebServiceException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 
 public class WordDictEndpoint extends Endpoint<WordDictInputs,WordDictResult> {
 	@Override

@@ -17,11 +17,10 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.iutools.corpus.*;
-import org.iutools.datastructure.CloseableIteratorWrapper;
 import org.iutools.elasticsearch.ES;
 import org.iutools.script.TransCoder;
 import org.iutools.script.TransCoderException;
-import org.iutools.sql.CloseableIterator;
+import ca.nrc.datastructure.CloseableIterator;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -557,7 +556,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
 	public CloseableIterator<String> allWords() throws CompiledCorpusException {
 		SearchResults<WordInfo> allWinfo = esListall();
 		CloseableIterator<String> wordsIter =
-			new CloseableIteratorWrapper<String>(allWinfo.docIDIterator());
+			allWinfo.docIDIterator();
 
 		return wordsIter;
 	}
@@ -576,21 +575,20 @@ public class CompiledCorpus_ES extends CompiledCorpus {
 		winfoFields.add("word");
 		winfoFields.add("id");
 		DocIterator<WordInfo> iter = searchWordsContainingNgram(ngram, winfoFields, options).docIterator();
-		return new CloseableIteratorWrapper<WordInfo>(iter);
+		return iter;
 	}
 
 	@Override
 	public CloseableIterator<String> wordsContainingNgram(String ngram, SearchOption... options) throws CompiledCorpusException {
-		Iterator<String> iter = searchWordsContainingNgram(ngram, options).docIDIterator(true);
-		CloseableIterator<String> wrappedIter = new CloseableIteratorWrapper<String>(iter);
-		return wrappedIter;
+		CloseableIterator<String> iter = searchWordsContainingNgram(ngram, options).docIDIterator(true);
+		return iter;
 	}
 
 	@Override
 	public CloseableIterator<WordInfo> wordInfosContainingNgram(String ngram, Set<String> fields) throws CompiledCorpusException {
 		SearchResults<WordInfo> results = searchWordsContainingNgram(ngram, fields);
 		DocIterator<WordInfo> iter = results.docIterator();
-		return new CloseableIteratorWrapper<WordInfo>(iter);
+		return iter;
 	}
 
 	public SearchResults<WordInfo> searchWordsContainingNgram(String ngram, SearchOption... options) throws CompiledCorpusException {
@@ -740,7 +738,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
 				"For morphemes="+ StringUtils.join(morphemes, ",")+
 				", returning total of "+hits.getTotalHits()+" hits.");
 		}
-		return new CloseableIteratorWrapper<String>(hits.docIDIterator(true));
+		return hits.docIDIterator(true);
 	}
 
 	@Override
@@ -962,7 +960,7 @@ public class CompiledCorpus_ES extends CompiledCorpus {
 		String query = "totalDecompositions:0";
 		SearchResults<WordInfo> hits = esWinfoSearch(query);
 
-		Iterator<String> wordsIter = hits.docIDIterator(true);
-		return new CloseableIteratorWrapper<String>(wordsIter);
+		CloseableIterator<String> wordsIter = hits.docIDIterator(true);
+		return wordsIter;
 	}
 }

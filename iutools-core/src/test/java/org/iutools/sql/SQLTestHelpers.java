@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Assertions;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,21 +19,26 @@ public class SQLTestHelpers {
 
 	private static boolean connPoolOverheadEncured = false;
 
-	public static void assertIsFaster(String operation, String fasterImpl,
-		Map<String, Double> times) {
+
+	public static void assertSqlNotSignificantlySlowerThanES(String operation,
+																				Map<String, Double> times) {
+		assertSqlNotSignificantlySlowerThanES(operation, times, (Double)null);
+	}
+
+	public static void assertSqlNotSignificantlySlowerThanES(String operation,
+																				Map<String, Double> times, Double tolerance) {
+		if (tolerance == null) {
+			tolerance = 0.0;
+		}
 		System.out.println("Running times for operation "+operation);
 		System.out.println(new PrettyPrinter().pprint(times));
-		String slowerImpl = "sql";
-		if (fasterImpl.equals("sql")) {
-			slowerImpl = "es";
-		}
-		double fasterTime = times.get(fasterImpl);
-		double slowerTime = times.get(slowerImpl);
+		double esTime = times.get("es");
 		Assertions.assertTrue(
-			fasterTime <= slowerTime,
-			fasterImpl+" should have been faster than "+slowerImpl+"\n"+
+			times.get("sql") <= times.get("es") + tolerance*esTime,
+			"SQL implementation was slower than ES by more than "+
+			new DecimalFormat("#%").format(tolerance)+"%\n"+
 			"NOTE: This test can fail intermittently if the machine was busier at the time\n"+
-			"  when the "+fasterImpl+" implementation was run.");
+			"  when the SQL implementation was run.");
 	}
 
 	public static void assertAboutSameSpeed(

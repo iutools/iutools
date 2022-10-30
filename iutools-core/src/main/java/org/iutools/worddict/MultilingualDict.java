@@ -1,12 +1,14 @@
 package org.iutools.worddict;
 
+import ca.nrc.datastructure.CloseableIterator;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.StringUtils;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.iutools.concordancer.Alignment_ES;
+import org.iutools.concordancer.Alignment;
 import org.iutools.concordancer.SentencePair;
 import org.iutools.concordancer.tm.*;
 import org.iutools.corpus.*;
@@ -24,7 +26,6 @@ import org.iutools.nlp.StopWordsException;
 import org.iutools.script.TransCoder;
 import org.iutools.script.TransCoder.*;
 import org.iutools.script.TransCoderException;
-import org.iutools.sql.CloseableIterator;
 import org.iutools.utilities.StopWatch;
 import org.iutools.utilities.StopWatchException;
 import org.iutools.worddict.MultilingualDictEntry.*;
@@ -356,7 +357,7 @@ public class MultilingualDict {
 		}
 		tLogger.trace("isForRelatedWords="+isForRelatedWords);
 
-		Map<String, CloseableIterator<Alignment_ES>> iterators = null;
+		Map<String, CloseableIterator<Alignment>> iterators = null;
 		try {
 			String l1 = entry.lang;
 			String l2 = otherLang(l1);
@@ -390,14 +391,14 @@ public class MultilingualDict {
 
 					// Pull one alignment from each word in turn, until we have enough
 					// translations, or we run out of alignments
-					CloseableIterator<Alignment_ES> alignmentIter = iterators.get(l1Word);
+					CloseableIterator<Alignment> alignmentIter = iterators.get(l1Word);
 					if (alignmentIter == null || !alignmentIter.hasNext()) {
 						// For some reason, we may get a null iterator for certain words
 						wordHasRemainingAlignments.put(l1Word, false);
 						continue;
 					}
 					totalWordWithRemainingAligments++;
-					Alignment_ES alignment = alignmentIter.next();
+					Alignment alignment = alignmentIter.next();
 					SentencePair bilingualAlignment = null;
 					bilingualAlignment = alignment.sentencePair(l1, l2);
 					if (bilingualAlignment.hasWordLevel()) {
@@ -425,7 +426,7 @@ public class MultilingualDict {
 			throw new MultilingualDictException(e);
 		} finally {
 			if (iterators != null) {
-				for (CloseableIterator<Alignment_ES> iter: iterators.values()) {
+				for (CloseableIterator<Alignment> iter: iterators.values()) {
 					try {
 						iter.close();
 					} catch (Exception e) {
@@ -437,14 +438,14 @@ public class MultilingualDict {
 		return;
 	}
 
-	private Map<String, CloseableIterator<Alignment_ES>> translationsIteratorsForWords(
+	private Map<String, CloseableIterator<Alignment>> translationsIteratorsForWords(
 		List<String> l1Words, String l1, String l2) throws MultilingualDictException {
 
-		Map<String, CloseableIterator<Alignment_ES>> iterators =
-			new HashMap<String, CloseableIterator<Alignment_ES>>();
+		Map<String, CloseableIterator<Alignment>> iterators =
+			new HashMap<String, CloseableIterator<Alignment>>();
 		try {
 			for (String l1Word : l1Words) {
-				CloseableIterator<Alignment_ES> iter =
+				CloseableIterator<Alignment> iter =
 					new TMFactory().makeTM().searchIter(l1, l1Word, l2);
 				iterators.put(l1Word, iter);
 			}
@@ -674,7 +675,7 @@ public class MultilingualDict {
 	}
 
 	private Boolean wordExists_EN(String word) throws TranslationMemoryException {
-		Iterator<Alignment_ES> tmIter =
+		Iterator<Alignment> tmIter =
 			new TMFactory().makeTM().searchIter("en", word);
 		return tmIter.hasNext();
 	}
@@ -704,7 +705,7 @@ public class MultilingualDict {
 		Long totalWords = null;
 		try {
 			List<String> words = new ArrayList<String>();
-			Iterator<Alignment_ES> tmIter =
+			Iterator<Alignment> tmIter =
 				new TMFactory().makeTM().searchIter("en", partialWord);
 			if (tmIter.hasNext()) {
 				words.add(partialWord);

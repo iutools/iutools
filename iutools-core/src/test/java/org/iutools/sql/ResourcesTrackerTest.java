@@ -3,6 +3,7 @@ package org.iutools.sql;
 import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.corpus.sql.WordInfoSchema;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.sql.ResultSet;
@@ -55,7 +56,7 @@ public class ResourcesTrackerTest {
 	// VERIFICATION TESTS
 	///////////////////////////////
 
-	@Test
+	@Test @Disabled
 	public void test__NoLeakedResourcesSoFar() throws Exception {
 		AssertResourcesTracker.totalStatementsEquals(
 			"Total open Statements should have been be 0.\n" +
@@ -66,7 +67,7 @@ public class ResourcesTrackerTest {
 	}
 
 
-	@Test
+	@Test @Disabled
 	public void test__ResourcesTracker__HappyPath() throws Exception {
 		int initialRS = ResourcesTracker.totalResultSets();
 		int initialStmts = ResourcesTracker.totalStatements();

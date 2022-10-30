@@ -1,5 +1,6 @@
 package org.iutools.sql;
 
+import ca.nrc.datastructure.CloseableIterator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -151,7 +152,7 @@ public class ResultSetWrapper implements AutoCloseable {
 	}
 
 
-	public <T> CloseableIterator<T> iterator(Sql2Pojo<T> converter) throws SQLException {
+	public <T> CloseableIterator<T> iterator(Row2Pojo<T> converter) throws SQLException {
 		CloseableIterator<T> iter = new ResultSetIterator<T>(rs, statement, converter);
 		// Remember that we created an iterator.
 		// As a result, the wrapper will let the iterator close SQL resources.
@@ -174,11 +175,11 @@ public class ResultSetWrapper implements AutoCloseable {
 		return iter;
 	}
 
-	public <T> List<T> toPojoLst(Sql2Pojo<T> converter) throws Exception {
+	public <T> List<T> toPojoLst(Row2Pojo<T> converter) throws Exception {
 		return toPojoLst(converter, (Integer)null);
 	}
 
-	public <T> List<T> toPojoLst(Sql2Pojo<T> converter, Integer maxRows)
+	public <T> List<T> toPojoLst(Row2Pojo<T> converter, Integer maxRows)
 		throws SQLException {
 		Logger logger = LogManager.getLogger("org.iutools.sql.ResultSetWrapper.toPojoLst");
 		List<T> pojos = new ArrayList<T>();
@@ -242,7 +243,7 @@ public class ResultSetWrapper implements AutoCloseable {
 	/** Convert a ResultSet to a SINGLE Plain Old Java Object (POJO).
 	 * Raises an exception if the size of the ResultSet != 1.
 	 */
-	public <T> T toPojo(Sql2Pojo<T> converter) throws SQLException {
+	public <T> T toPojo(Row2Pojo<T> converter) throws SQLException {
 		T pojo = null;
 		List<T> pojoList = toPojoLst(converter, new Integer(1));
 		int size = pojoList.size();

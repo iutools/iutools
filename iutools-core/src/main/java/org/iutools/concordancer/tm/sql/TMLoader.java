@@ -6,7 +6,6 @@ import ca.nrc.ui.commandline.ProgressMonitor_Terminal;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.iutools.concordancer.Alignment;
-import org.iutools.concordancer.Alignment_ES;
 import org.iutools.concordancer.tm.TranslationMemoryException;
 import org.iutools.sql.QueryProcessor;
 
@@ -54,7 +53,7 @@ public class TMLoader {
 
 	private void ensureAlignmentTableIsDefined() throws TranslationMemoryException {
 		try {
-			new QueryProcessor().ensureTableIsDefined(new SentenceInLangSchema());
+			new QueryProcessor().ensureTableIsDefined(new AlignmentSchema());
 		} catch (SQLException e) {
 			throw new TranslationMemoryException(e);
 		}
@@ -127,8 +126,8 @@ public class TMLoader {
 		try {
 			System.out.println("Counting alignments in TM file: "+tmFile);
 			ObjectStreamReader reader = new ObjectStreamReader(tmFile.toFile());
-			Alignment_ES algn = null;
-			while ((algn = (Alignment_ES)reader.readObject()) != null) {
+			Alignment algn = null;
+			while ((algn = (Alignment)reader.readObject()) != null) {
 				totalAlignments++;
 			}
 			System.out.println("  Total # alignemts: "+totalAlignments);

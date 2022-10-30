@@ -25,7 +25,7 @@ public class QueryProcessorTest {
 	// DOCUMENTATION TESTS
 	////////////////////////////////////////////
 
-	@Test @Disabled
+	@Test
 	public void test__QueryProcessorSynopsis() throws Exception {
 		// Use a QueryProcessor to process SQL queries.
 		QueryProcessor processor = new QueryProcessor();
@@ -49,7 +49,7 @@ public class QueryProcessorTest {
 		// by that object's SQL schema.
 		//
 		Person homer = new Person("homer simpson");
-		processor.insertObject(homer, new Sql2Person());
+		processor.insertObject(homer, new Row2Person());
 
 		// If the table already contains the object, then by default, insertObject
 		// will replace the existing row by a row that corresponds to the provided
@@ -58,7 +58,7 @@ public class QueryProcessorTest {
 		// However, if you feed replace=false, then the method will raise an exception.
 		boolean replace = false;
 		try {
-			processor.insertObject(homer, new Sql2Person(), replace);
+			processor.insertObject(homer, new Row2Person(), replace);
 		} catch (SQLException e) {
 		}
 
@@ -112,18 +112,23 @@ public class QueryProcessorTest {
 		}
 	}
 
-	public static class Sql2Person extends Sql2Pojo<Person> {
+	public static class Row2Person extends Row2Pojo<Person> {
 
 		protected ObjectMapper mapper = new ObjectMapper();
 
-		public Sql2Person() {
-			super(new PersonSchema());
+		public Row2Person() {
+			super(new PersonSchema(), new Person());
 		}
 
 		@Override
-		public Person toPOJO(JSONObject jObj) throws SQLException {
+		public void convertPojoAttributes(Person pojo, JSONObject rawRow) throws SQLException {
+			// Nothing to convert
+		}
+
+		@Override
+		public Person toPOJO(JSONObject row) throws SQLException {
+			String jsonStr = row.toString();
 			Person person = null;
-			String jsonStr = jObj.toString();
 			try {
 				person = mapper.readValue(jsonStr, Person.class);
 			} catch (JsonProcessingException e) {
@@ -131,6 +136,7 @@ public class QueryProcessorTest {
 			}
 
 			return person;
+
 		}
 	}
 }

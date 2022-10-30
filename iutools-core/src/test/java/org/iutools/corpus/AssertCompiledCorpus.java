@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import ca.nrc.testing.AssertNumber;
-import org.iutools.sql.CloseableIterator;
+import ca.nrc.datastructure.CloseableIterator;
 import org.junit.Assert;
 
 import ca.nrc.testing.AssertObject;

@@ -8,7 +8,7 @@ import ca.nrc.string.StringUtils;
 import org.iutools.corpus.CompiledCorpus;
 import org.iutools.corpus.CompiledCorpusException;
 import org.iutools.corpus.WordInfo;
-import org.iutools.sql.CloseableIterator;
+import ca.nrc.datastructure.CloseableIterator;
 
 public class ProblematicNGram {
 	

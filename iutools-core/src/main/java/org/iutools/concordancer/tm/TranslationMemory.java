@@ -1,10 +1,10 @@
 package org.iutools.concordancer.tm;
 
 import static ca.nrc.dtrc.elasticsearch.ESFactory.*;
+
+import ca.nrc.datastructure.CloseableIterator;
 import ca.nrc.ui.commandline.UserIO;
 import org.iutools.concordancer.Alignment;
-import org.iutools.concordancer.Alignment_ES;
-import org.iutools.sql.CloseableIterator;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -18,10 +18,10 @@ public abstract class TranslationMemory {
 	public abstract void loadFile(Path tmFile, ESOptions... options)
 		throws TranslationMemoryException;
 	public abstract void addAlignment(Alignment alignment) throws TranslationMemoryException;
-	public abstract CloseableIterator<Alignment_ES> searchIter(
+	public abstract CloseableIterator<Alignment> searchIter(
 		String sourceLang, String sourceExpr, String... targetLangs) throws TranslationMemoryException;
 	public abstract void delete() throws TranslationMemoryException;
-	public abstract List<Alignment_ES> search(String sourceLang, String sourceExpr,
+	public abstract List<Alignment> search(String sourceLang, String sourceExpr,
 		String... targetLangs) throws TranslationMemoryException;
 
 

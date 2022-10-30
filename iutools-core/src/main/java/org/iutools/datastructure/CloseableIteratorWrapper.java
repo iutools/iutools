@@ -1,6 +1,6 @@
 package org.iutools.datastructure;
 
-import org.iutools.sql.CloseableIterator;
+import ca.nrc.datastructure.CloseableIterator;
 
 import java.util.Iterator;
 

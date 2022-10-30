@@ -210,11 +210,11 @@ public class QueryProcessor {
 	public void getRowWithID(String id, String tableName) {
 	}
 
-	public <T> void insertObject(T object, Sql2Pojo<T> converter) throws SQLException {
+	public <T> void insertObject(T object, Row2Pojo<T> converter) throws SQLException {
 		insertObject(object, converter, (Boolean)null);
 	}
 
-	public <T> void insertObject(T object, Sql2Pojo<T> converter, Boolean replace) throws SQLException {
+	public <T> void insertObject(T object, Row2Pojo<T> converter, Boolean replace) throws SQLException {
 		if (replace == null) {
 			replace = true;
 		}
@@ -223,25 +223,39 @@ public class QueryProcessor {
 		return;
 	}
 
-	private void insertRow(JSONObject row, Sql2Pojo converter, Boolean replace) throws SQLException {
+	public <T> void insertObjects(List<T> objects, Row2Pojo<T> converter,
+		Boolean replace) throws SQLException {
+		if (replace == null) {
+			replace = true;
+		}
+		List<JSONObject> rows = new ArrayList<JSONObject>();
+		for (T anObject: objects) {
+			JSONObject rowJson = converter.toRowJson(anObject);
+			rows.add(rowJson);
+		}
+		insertRows(rows, converter, replace);
+	}
+
+
+	private void insertRow(JSONObject row, Row2Pojo converter, Boolean replace) throws SQLException {
 		List<JSONObject> justOneRow = new ArrayList<JSONObject>();
 		justOneRow.add(row);
 		insertRows(justOneRow, converter, replace);
 	}
 
-	public void replaceRow(JSONObject row, Sql2Pojo converter) throws SQLException {
+	public void replaceRow(JSONObject row, Row2Pojo converter) throws SQLException {
 		List<JSONObject> justOneRow = new ArrayList<JSONObject>();
 		justOneRow.add(row);
 		replaceRows(justOneRow, converter);
 		return;
 	}
 
-	public void replaceRows(List<JSONObject> rows, Sql2Pojo converter) throws SQLException {
+	public void replaceRows(List<JSONObject> rows, Row2Pojo converter) throws SQLException {
 		insertRows(rows, converter, true);
 		return;
 	}
 
-	public void insertRows(List<JSONObject> rows, Sql2Pojo converter, Boolean replace) throws SQLException {
+	public void insertRows(List<JSONObject> rows, Row2Pojo converter, Boolean replace) throws SQLException {
 		Logger logger = LogManager.getLogger("org.iutools.sql.QueryProcessor.insertRows");
 		if (replace == null) {
 			replace = true;

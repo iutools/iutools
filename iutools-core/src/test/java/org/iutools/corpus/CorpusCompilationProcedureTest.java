@@ -219,5 +219,4 @@ public class CorpusCompilationProcedureTest {
         }
         return corpusDirectory.toFile();
     }
-
 }

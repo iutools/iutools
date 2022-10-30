@@ -1,5 +1,6 @@
 package org.iutools.sql;
 
+import ca.nrc.datastructure.CloseableIterator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,7 +21,7 @@ public class ResultSetIterator<T> implements CloseableIterator<T> {
 	 */
 	private Statement statement = null;
 
-	private Sql2Pojo<T> converter = null;
+	private Row2Pojo<T> converter = null;
 
 	private T nextPojo = null;
 
@@ -29,7 +30,7 @@ public class ResultSetIterator<T> implements CloseableIterator<T> {
 	private List<String> _colNames = null;
 
 	public ResultSetIterator(ResultSet _rs, Statement _statement,
-		Sql2Pojo<T> _converter) throws SQLException {
+		Row2Pojo<T> _converter) throws SQLException {
 		this.rs = _rs;
 		this.statement = _statement;
 		this.converter = _converter;

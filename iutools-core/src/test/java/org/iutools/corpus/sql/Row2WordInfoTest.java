@@ -2,7 +2,10 @@ package org.iutools.corpus.sql;
 
 import ca.nrc.testing.AssertString;
 import ca.nrc.testing.RunOnCases;
+import org.iutools.corpus.CompiledCorpusException;
 import org.iutools.corpus.WordInfo;
+import org.iutools.sql.Row2Pojo;
+import org.iutools.sql.Row2PojoTest;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
@@ -11,17 +14,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class Sql2WordInfoTest {
+public class Row2WordInfoTest extends Row2PojoTest<WordInfo> {
 
 	/////////////////////////////
 	// DOCUMENTATION TESTS
 	/////////////////////////////
 
 	@Test
-	public void test__Sql2WordInfo__Synopsis() throws Exception {
-		// Use Sql2WordInfo to convert a WordInfo object to an SQL row
+	public void test__Row2WordInfo__Synopsis() throws Exception {
+		// Use Row2WordInfo to convert a WordInfo object to an SQL row
 		//
-		Sql2WordInfo converter = new Sql2WordInfo();
+		Row2WordInfo converter = new Row2WordInfo();
 
 		// Say you have a WordInfo object...
 		WordInfo winfo =
@@ -59,12 +62,12 @@ public class Sql2WordInfoTest {
 		String morphemeNgrams = rowData.getString("morphemeNgrams");
 		String morphemeNgramsWrittenForms = rowData.getString("morphemeNgramsWrittenForms");
 
-		// Sql2WordInfo also has some static methods that you can use compose part
+		// Row2WordInfo also has some static methods that you can use compose part
 		// of an SQL query that match agains wordNgrams, morphemeNgrams or
 		// morphemeNgramsWrittenForms
 		//
 		String ngram = "^inuk";
-		String ngramQuery = Sql2WordInfo.formatNgramAsSearchableString(ngram);
+		String ngramQuery = Row2WordInfo.formatNgramAsSearchableString(ngram);
 	}
 
 	//////////////////////////////////////
@@ -73,7 +76,7 @@ public class Sql2WordInfoTest {
 
 	@Test
 	public void test__wordNgrams__HappyPath() {
-		String gotNgramsStr = Sql2WordInfo.wordNgrams("nunavut");
+		String gotNgramsStr = Row2WordInfo.wordNgrams("nunavut");
 		String[] expNgrams = new String[] {
 			"BEGnuna", "unavu", "BEGnunavut", "BEGnunavutEND", "vutEND"
 		};
@@ -184,7 +187,7 @@ public class Sql2WordInfoTest {
 			String[] decomp = (String[]) aCase.data[2];
 			try {
 				String gotNgrams =
-					Sql2WordInfo.computeMorphNgrams(
+					Row2WordInfo.computeMorphNgrams(
 						writtenForms, decomp);
 				String mess = aCase.descr;
 				if (writtenForms) {
@@ -289,7 +292,7 @@ public class Sql2WordInfoTest {
 				Collections.addAll(decomp, decompArr);
 			}
 			try {
-				String gotFormated = Sql2WordInfo.formatNgramAsSearchableString((Boolean)null, decomp);
+				String gotFormated = Row2WordInfo.formatNgramAsSearchableString((Boolean)null, decomp);
 				AssertString.assertStringEquals(
 					aCase.descr+"\nFormatted Morpheme Ngram not as expected.",
 					expFormatted, gotFormated);
@@ -314,5 +317,25 @@ public class Sql2WordInfoTest {
 				mess, gotNgramsStr, expNgram
 			);
 		}
+	}
+
+	@Override
+	protected Row2Pojo<WordInfo> makeRow2Pojo() {
+		return new Row2WordInfo();
+	}
+
+	@Override
+	protected WordInfo makeTestPojo() throws CompiledCorpusException {
+		WordInfo winfo =
+			new WordInfo("inuktitut");
+		winfo
+			.setFrequency(237)
+			.setDecompositions(
+				new String[][] {
+					new String[] {"inuk/1n", "titut/tn-sim-p"},
+					new String[] {"inuk/1n", "ktut/tn-sim-p-2s"},
+					new String[] {"inuk/1n", "iq/1nn", "tut/tn-sim-s"}
+				}, 13);
+		return winfo;
 	}
 }

@@ -1,11 +1,8 @@
 package org.iutools.sql;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-
-import java.sql.ResultSet;
-import java.sql.Statement;
 
 public class SQLLeakMonitorTest {
 
@@ -13,7 +10,7 @@ public class SQLLeakMonitorTest {
 	// DOCUMENTATION TESTS
 	//////////////////////////
 
-	@Test
+	@Test @Disabled
 	public void test__SQLLeakMonitor__Synopsis() throws Exception {
 		/*
 		 * Use SQLLeakMonitor to monitor if some "managed" SQL resources (Statement, ResultSet)

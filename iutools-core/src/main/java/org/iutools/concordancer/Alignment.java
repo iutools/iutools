@@ -12,6 +12,9 @@ public class Alignment extends Document {
 	public String from_doc = null;
 	public Long pair_num = null;
 	public String web_domain = null;
+	public List<String> topics = new ArrayList<String>();
+	public Map<String,String> sentences = new HashMap<String,String>();
+	public Map<String,WordAlignment> walign4langpair = new HashMap<String,WordAlignment>();
 
 
 	public Alignment() {
@@ -37,23 +40,19 @@ public class Alignment extends Document {
 		return this;
 	}
 
-	public List<String> topics = new ArrayList<String>();
-		public Alignment setTopics(List<String> _topics) {
-			this.topics = _topics;
-			return this;
-		}
+	public Alignment setTopics(List<String> _topics) {
+		this.topics = _topics;
+		return this;
+	}
 
-	public Map<String,String> sentences = new HashMap<String,String>();
-		public Alignment setSentence(String lang, String sent) {
-			this.sentences.put(lang, sent);
-			return this;
-		}
+	public Alignment setSentence(String lang, String sent) {
+		this.sentences.put(lang, sent);
+		return this;
+	}
 
 	public Set<String> languages() {
 		return sentences.keySet();
 	}
-
-	public Map<String,WordAlignment> walign4langpair = new HashMap<String,WordAlignment>();
 
 	public Alignment setWordAlignment(String l1, String l1Tokens, String l2,
 		String l2Tokens, String l1_l2_wordpairs) {
@@ -62,7 +61,11 @@ public class Alignment extends Document {
 		String[] matchedTokens = l1_l2_wordpairs.split("\\s");
 		WordAlignment walign =
 			new WordAlignment(l1, l1TokensArr, l2, l2TokensArr, matchedTokens);
-					walign4langpair.put(walign.langPair, walign);
+		return setWordAlignment(walign);
+	}
+
+	public Alignment setWordAlignment(WordAlignment walign) {
+		walign4langpair.put(walign.langPair, walign);
 		return this;
 	}
 

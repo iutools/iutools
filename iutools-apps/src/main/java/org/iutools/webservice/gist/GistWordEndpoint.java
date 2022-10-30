@@ -3,8 +3,8 @@ package org.iutools.webservice.gist;
 import ca.nrc.json.PrettyPrinter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.iutools.concordancer.Alignment;
 import org.iutools.concordancer.SentencePair;
-import org.iutools.concordancer.Alignment_ES;
 import org.iutools.concordancer.tm.TMFactory;
 import org.iutools.concordancer.tm.TranslationMemory;
 import org.iutools.concordancer.tm.TranslationMemoryException;
@@ -68,13 +68,13 @@ public class GistWordEndpoint extends Endpoint<GistWordInputs, GistWordResult> {
 			word = TransCoder.ensureScript(TransCoder.Script.SYLLABIC, word);
 
 			TranslationMemory tm = new TMFactory().makeTM();
-			List<Alignment_ES> alignmentResults = tm.search("iu", word);
+			List<Alignment> alignmentResults = tm.search("iu", word);
 
 			int numToKeep = Math.min(maxAlignments, alignmentResults.size());
 			aligns = new SentencePair[numToKeep];
 			for (int ii=0; ii < numToKeep; ii++) {
-				Alignment_ES algES = alignmentResults.get(ii);
-				aligns[ii] = esResult2alignment(algES);
+				Alignment algn = alignmentResults.get(ii);
+				aligns[ii] = dataStoreResult2Alignment(algn);
 			}
 		} catch (TranslationMemoryException | TransCoderException e) {
 			throw new ServiceException(e);
@@ -84,7 +84,7 @@ public class GistWordEndpoint extends Endpoint<GistWordInputs, GistWordResult> {
 		return aligns;
 	}
 
-	private SentencePair esResult2alignment(Alignment_ES esAlignment) {
+	private SentencePair dataStoreResult2Alignment(Alignment esAlignment) {
 
 		SentencePair alignment = new SentencePair(
 			"en",

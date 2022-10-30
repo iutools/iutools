@@ -6,7 +6,7 @@ import java.util.Iterator;
 import ca.nrc.testing.AssertIterator;
 import ca.nrc.testing.AssertString;
 import org.iutools.script.TransCoder;
-import org.iutools.sql.CloseableIterator;
+import ca.nrc.datastructure.CloseableIterator;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;

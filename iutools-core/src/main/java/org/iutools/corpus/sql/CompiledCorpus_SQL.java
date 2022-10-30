@@ -4,7 +4,7 @@ import java.io.File;
 import java.sql.*;
 import java.util.*;
 
-import ca.nrc.json.PrettyPrinter;
+import ca.nrc.datastructure.CloseableIterator;
 import ca.nrc.ui.commandline.UserIO;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -29,8 +29,8 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 	public String corpusName = null;
 	private QueryProcessor queryProcessor = new QueryProcessor();
 
-	private Sql2LastLoadedDate sql2LastLoadedDate = new Sql2LastLoadedDate();
-	private Sql2WordInfo sql2winfo = new Sql2WordInfo();
+	private Row2LastLoadedDate sql2LastLoadedDate = new Row2LastLoadedDate();
+	private Row2WordInfo sql2winfo = new Row2WordInfo();
 
 	public CompiledCorpus_SQL(String corpusName) throws CompiledCorpusException {
 		super(corpusName);
@@ -86,9 +86,6 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 			"  `corpusName` = ?;";
       try (ResultSetWrapper rsw = query(queryStr, word, corpusName)) {
 			wordInfo = rs2winfo(rsw);
-			if (logger.isTraceEnabled()) {
-				logger.trace("returning wordInfo=\n" + new PrettyPrinter().print(wordInfo));
-			}
 		} catch (Exception e) {
 			throw new CompiledCorpusException(e);
 		}
@@ -126,7 +123,7 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 			//
 			ResultSetWrapper rsw = query(queryStr, ngram, corpusName);
 			logger.trace("Done querying");
-			return rsw.iterator(new Sql2WordInfo());
+			return rsw.iterator(new Row2WordInfo());
 		} catch (SQLException e) {
 			throw new CompiledCorpusException(e);
 		}
@@ -157,7 +154,7 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 				rows.add(row);
 			}
 			try {
-				new QueryProcessor().insertRows(rows, new Sql2WordInfo(), true);
+				new QueryProcessor().insertRows(rows, new Row2WordInfo(), true);
 			} catch (SQLException e) {
 				throw new CompiledCorpusException(e);
 			}
@@ -169,7 +166,7 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 	private WordInfo rs2winfo(ResultSetWrapper rsw) throws CompiledCorpusException {
 		WordInfo wordInfo = null;
 		try {
-			wordInfo = rsw.toPojo(new Sql2WordInfo());
+			wordInfo = rsw.toPojo(new Row2WordInfo());
 		} catch (SQLException e) {
 			throw new CompiledCorpusException(e);
 		}
@@ -358,7 +355,7 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 			logger.error("morpheme is null");
 		}
 		if (morpheme != null) {
-			String morphQuery = Sql2WordInfo.formatNgramAsSearchableString(morpheme);
+			String morphQuery = Row2WordInfo.formatNgramAsSearchableString(morpheme);
 
 			String queryStr =
 				"SELECT word, frequency, topDecompositionStr, decompositionsSampleJSON FROM " + WORDS_TABLE + "\n" +
@@ -374,7 +371,7 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 			// when we are done.
 			//
 			try (ResultSetWrapper rsw = query(queryStr, corpusName, morphQuery)) {
-				wordInfos = rsw.toPojoLst(new Sql2WordInfo());
+				wordInfos = rsw.toPojoLst(new Row2WordInfo());
 			} catch (Exception e) {
 				throw new CompiledCorpusException(e);
 			}
@@ -392,7 +389,7 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 
 		CloseableIterator<String> wordsIter = null;
 		if (morphemes != null) {
-			String decompQuery = Sql2WordInfo.formatNgramAsSearchableString(morphemes);
+			String decompQuery = Row2WordInfo.formatNgramAsSearchableString(morphemes);
 			String queryStr =
 				"SELECT word FROM " + WORDS_TABLE + "\n" +
 				"WHERE\n" +
@@ -621,7 +618,7 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 
 		Double freq = 0.0;
 		if (morphemes != null) {
-			String decompQuery = Sql2WordInfo.formatNgramAsSearchableString(morphemes);
+			String decompQuery = Row2WordInfo.formatNgramAsSearchableString(morphemes);
 			String queryStr =
 				"FROM " + WORDS_TABLE + "\n" +
 				"WHERE\n" +
@@ -667,7 +664,7 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 		// We use try-with to ensure that the ResultSet will be closed even
 		// if an exception is raised.
 		try (ResultSetWrapper rsw = query(queryStr, corpusName)) {
-			Map lastLoadedMap = rsw.toPojo(new Sql2Map());
+			Map lastLoadedMap = rsw.toPojo(new Row2Map());
 			if (lastLoadedMap != null) {
 				date = Long.parseLong((String) lastLoadedMap.get("timestamp"));
 			}
@@ -686,7 +683,7 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 		try {
 			JSONObject row = sql2LastLoadedDate.toRowJson(lastLoadedRecord);
 			row.put("corpusName", corpusName);
-			new QueryProcessor().replaceRow(row, new Sql2LastLoadedDate());
+			new QueryProcessor().replaceRow(row, new Row2LastLoadedDate());
 			tLogger.trace("DONE putting the updated winfo");
 		} catch (SQLException e) {
 			throw new CompiledCorpusException(

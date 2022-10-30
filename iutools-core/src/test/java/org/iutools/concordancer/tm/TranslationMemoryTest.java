@@ -51,7 +51,7 @@ public abstract class TranslationMemoryTest {
 		String sourceLang = "en";
 		String sourceExpr = "legislative";
 		String[] targetLangs = {"iu", "fr"};
-		List<Alignment_ES> alignments =
+		List<Alignment> alignments =
 			tm.search(sourceLang, sourceExpr, targetLangs);
 
 		// Note that the list of target langauges is optional
@@ -70,9 +70,9 @@ public abstract class TranslationMemoryTest {
 		String sourceLang = "en";
 		String sourceExpr = "legislative";
 		String[] targetLangs = {"iu", "fr"};
-		List<Alignment_ES> alignments =
+		List<Alignment> alignments =
 			tm.search(sourceLang, sourceExpr, targetLangs);
-		new AssertAlignment_ESList(alignments)
+		new AssertAlignment_List(alignments)
 			.atLeastNHits(1)
 			.allHitsMatchQuery(sourceLang, sourceExpr)
 //			.includesTranslation("en", sourceExpr, "iu", "BLAH")

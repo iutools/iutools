@@ -15,7 +15,6 @@ import org.iutools.concordancer.Alignment_ES;
 import org.iutools.concordancer.tm.TranslationMemory;
 import org.iutools.concordancer.tm.TranslationMemoryException;
 import org.iutools.datastructure.CloseableIteratorChain;
-import org.iutools.datastructure.CloseableIteratorWrapper;
 import org.iutools.elasticsearch.ES;
 import org.iutools.script.TransCoder;
 
@@ -24,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.iutools.sql.CloseableIterator;
+import ca.nrc.datastructure.CloseableIterator;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -92,10 +91,10 @@ public class TranslationMemory_ES extends TranslationMemory {
 		}
 	}
 
-	public CloseableIterator<Alignment_ES> searchIter(
+	public CloseableIterator<Alignment> searchIter(
 		String sourceLang, String sourceExpr, String... targetLangs) throws TranslationMemoryException {
-		List<CloseableIterator<Alignment_ES>> iterators =
-			new ArrayList<CloseableIterator<Alignment_ES>>();
+		List<CloseableIterator<Alignment>> iterators =
+			new ArrayList<CloseableIterator<Alignment>>();
 		try {
 			String[] sourceExprVariants = new String[]{sourceExpr};
 			if (sourceLang.equals("iu")) {
@@ -112,11 +111,13 @@ public class TranslationMemory_ES extends TranslationMemory {
 				for (String expr: sourceExprVariants) {
 					// Then possibly search for syllabics and roman variants
 					Query query = esQuery(sourceLang, expr, withAlignment);
-					SearchResults<Alignment_ES> searchResult = null;
+					SearchResults<Alignment> searchResult = null;
 					try {
 						searchResult = esFactory().searchAPI()
 							.search(query, ES_ALIGNMENT_TYPE, new Alignment_ES());
-						iterators.add(new CloseableIteratorWrapper<Alignment_ES>(searchResult.docIterator()));
+
+						CloseableIterator<Alignment> blah = (CloseableIterator<Alignment>) searchResult.docIterator();
+						iterators.add(searchResult.docIterator());
 					} catch (ElasticSearchException e) {
 						throw new TranslationMemoryException(e);
 					}
@@ -126,12 +127,12 @@ public class TranslationMemory_ES extends TranslationMemory {
 			throw new TranslationMemoryException(e);
 		}
 
-		CloseableIterator<Alignment_ES> iterator = null;
+		CloseableIterator<Alignment> iterator = null;
 		if (iterators.size() == 1) {
 			iterator = iterators.get(0);
 		} else {
 			iterator =
-				new CloseableIteratorChain<Alignment_ES>(iterators.get(0), iterators.get(1));
+				new CloseableIteratorChain<Alignment>(iterators.get(0), iterators.get(1));
 		}
 
 		return iterator;
@@ -172,14 +173,14 @@ public class TranslationMemory_ES extends TranslationMemory {
 		}
 	}
 
-	public List<Alignment_ES> search(String sourceLang, String sourceExpr,
+	public List<Alignment> search(String sourceLang, String sourceExpr,
 		String... targetLangs) throws TranslationMemoryException {
 		Logger tLogger = LogManager.getLogger("org.iutools.concordancer.tm.TranslationMemory.search");
-		List<Alignment_ES> alignments = new ArrayList<Alignment_ES>();
+		List<Alignment> alignments = new ArrayList<Alignment>();
 		try {
-			Iterator<Alignment_ES> iter = searchIter(sourceLang,sourceExpr, targetLangs);
+			Iterator<Alignment> iter = searchIter(sourceLang,sourceExpr, targetLangs);
 			while (iter.hasNext()) {
-				Alignment_ES alignment = iter.next();
+				Alignment alignment = iter.next();
 				if (tLogger.isTraceEnabled()) {
 					String hasOrNot = "HAS";
 					if (alignment.walign4langpair == null ||

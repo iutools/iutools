@@ -14,15 +14,13 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
 import org.iutools.datastructure.CloseableIteratorChain;
-import org.iutools.datastructure.CloseableIteratorWrapper;
 import org.iutools.morph.*;
 import org.iutools.morph.r2l.MorphologicalAnalyzer_R2L;
-import org.iutools.sql.CloseableIterator;
+import ca.nrc.datastructure.CloseableIterator;
 import org.iutools.text.segmentation.Token;
 import org.iutools.utilities.StopWatch;
 import ca.nrc.debug.Debug;
 import org.iutools.corpus.*;
-import org.apache.commons.collections4.iterators.IteratorChain;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

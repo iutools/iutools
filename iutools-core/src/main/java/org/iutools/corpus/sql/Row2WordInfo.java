@@ -8,7 +8,7 @@ import org.iutools.corpus.CompiledCorpusException;
 import org.iutools.corpus.WordInfo;
 import org.iutools.linguisticdata.Morpheme;
 import org.iutools.linguisticdata.MorphemeException;
-import org.iutools.sql.Sql2Pojo;
+import org.iutools.sql.Row2Pojo;
 import org.iutools.text.ngrams.NgramCompiler;
 import org.json.JSONObject;
 
@@ -16,44 +16,17 @@ import java.sql.SQLException;
 import java.util.*;
 
 /** Convert JSONObject to a WordInfo object */
-public class Sql2WordInfo extends Sql2Pojo<WordInfo> {
+public class Row2WordInfo extends Row2Pojo<WordInfo> {
 	private ObjectMapper mapper = new ObjectMapper();
 
-	public Sql2WordInfo() {
-		super(new WordInfoSchema());
+	public Row2WordInfo() {
+		super(new WordInfoSchema(), new WordInfo());
 	}
 
 	@Override
-	public WordInfo toPOJO(JSONObject jObj) throws SQLException {
-		WordInfo winfo = null;
+	public void convertPojoAttributes(WordInfo winfo, JSONObject row) throws SQLException {
+		Logger logger = LogManager.getLogger("org.iutools.sql.Row2WordInfo.convertPojoAttributes");
 
-		try {
-			// Remove SQL columns that are not attributes of WordInfo
-			removeColumn(jObj, "noid");
-			removeColumn(jObj, "corpusName");
-			removeColumn(jObj, "wordNgrams");
-			removeColumn(jObj, "morphemeNgrams");
-			removeColumn(jObj, "morphemeNgramsWrittenForms");
-			String decompositionsSampleJSON =
-				(String) removeColumn(jObj, "decompositionsSampleJSON");
-
-			// Create the WordInfo from the remaining fields
-			String jsonStr = jObj.toString();
-			winfo = mapper.readValue(jsonStr, WordInfo.class);
-
-			// Set some fields whose values are derived from the removed SQL columns
-			String[][] decompsSample = deserializeDecompositionsSample(decompositionsSampleJSON);
-			winfo.setDecompositions(decompsSample, winfo.totalDecompositions);
-		} catch (JsonProcessingException| CompiledCorpusException e) {
-			throw new SQLException("Error converting SQL row to WordInfo instance", e);
-		}
-
-		return winfo;
-	}
-
-	@Override
-	public JSONObject toRowJson(WordInfo winfo) throws SQLException {
-		JSONObject row = super.toRowJson(winfo);
 		removeColumn(row, "wordCharsSpaceConcatenated");
 		removeColumn(row, "morphemesSpaceConcatenated");
 
@@ -70,16 +43,45 @@ public class Sql2WordInfo extends Sql2Pojo<WordInfo> {
 		row.put("morphemeNgrams", morphemeNgrams(winfo.topDecomposition()));
 		row.put("morphemeNgramsWrittenForms",
 			morphemeNgramsWrittenForms(winfo.topDecomposition()));
-		return row;
+
+		return;
 	}
 
+	@Override
+	public WordInfo toPOJO(JSONObject row) throws SQLException {
+		Logger logger = LogManager.getLogger("org.iutools.sql.Row2WordInfo.convertRow2Pojo");
+		WordInfo winfo = null;
+
+		try {
+			// Remove SQL columns that are not attributes of WordInfo
+			removeColumn(row, "noid");
+			removeColumn(row, "corpusName");
+			removeColumn(row, "wordNgrams");
+			removeColumn(row, "morphemeNgrams");
+			removeColumn(row, "morphemeNgramsWrittenForms");
+			String decompositionsSampleJSON =
+				(String) removeColumn(row, "decompositionsSampleJSON");
+
+			// Create the WordInfo from the remaining fields
+			String jsonStr = row.toString();
+			winfo = mapper.readValue(jsonStr, WordInfo.class);
+
+			// Set some fields whose values are derived from the removed SQL columns
+			String[][] decompsSample = deserializeDecompositionsSample(decompositionsSampleJSON);
+			winfo.setDecompositions(decompsSample, winfo.totalDecompositions);
+		} catch (JsonProcessingException| CompiledCorpusException e) {
+			throw new SQLException("Error converting SQL row to WordInfo instance", e);
+		}
+
+		return winfo;
+	}
 
 	/**
 	 * Returns a string that lists all the character ngrams for the word. This
 	 * makes it possible for SQL to rapidly find words that contain a particular ngram.
 	 */
 	public static String wordNgrams(String word) {
-		Logger logger = LogManager.getLogger("org.iutools.corpus.sql.Sql2WordInfo.wordNgrams");
+		Logger logger = LogManager.getLogger("org.iutools.corpus.sql.Row2WordInfo.wordNgrams");
 		String ngramsStr = "";
 		if (word != null) {
 			NgramCompiler compiler = ngramsCompiler();
@@ -106,7 +108,7 @@ public class Sql2WordInfo extends Sql2Pojo<WordInfo> {
 	 * it possible for SQL to rapidly find words that contain a particular ngram.
 	 */
 	private String morphemeNgrams(String[] decomp) throws SQLException {
-		Logger logger = LogManager.getLogger("org.iutools.corpus.sql.Sql2WordInfo.morphemeNgrams");
+		Logger logger = LogManager.getLogger("org.iutools.corpus.sql.Row2WordInfo.morphemeNgrams");
 		String ngrams = computeMorphNgrams(decomp);
 		return ngrams;
 	}
@@ -232,7 +234,7 @@ public class Sql2WordInfo extends Sql2Pojo<WordInfo> {
 	}
 
 	public String morphemeNgramsWrittenForms(String[] decomp) throws SQLException {
-		Logger logger = LogManager.getLogger("org.iutools.corpus.sql.Sql2WordInfo.morphemeNgramsWrittenForms");
+		Logger logger = LogManager.getLogger("org.iutools.corpus.sql.Row2WordInfo.morphemeNgramsWrittenForms");
 		String morphemeNgramsWrittenForms = "";
 		if (decomp != null) {
 			morphemeNgramsWrittenForms = computeMorphNgrams(true, decomp);

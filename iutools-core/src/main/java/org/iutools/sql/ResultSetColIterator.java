@@ -1,5 +1,6 @@
 package org.iutools.sql;
 
+import ca.nrc.datastructure.CloseableIterator;
 import org.apache.commons.dbcp2.DelegatingResultSet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

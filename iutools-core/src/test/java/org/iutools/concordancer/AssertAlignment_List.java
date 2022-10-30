@@ -12,20 +12,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class AssertAlignment_ESList extends Asserter<List<Alignment_ES>> {
-	public AssertAlignment_ESList(List<Alignment_ES> _gotObject) {
+public class AssertAlignment_List extends Asserter<List<Alignment>> {
+	public AssertAlignment_List(List<Alignment> _gotObject) {
 		super(_gotObject);
 	}
 
-	public AssertAlignment_ESList(List<Alignment_ES> _gotObject, String mess) {
+	public AssertAlignment_List(List<Alignment> _gotObject, String mess) {
 		super(_gotObject, mess);
 	}
 
-	protected List<Alignment_ES> alignments() {
+	protected List<Alignment> alignments() {
 		return this.gotObject;
 	}
 
-	public AssertAlignment_ESList allHitsMatchQuery(
+	public AssertAlignment_List allHitsMatchQuery(
 		String sourceLang, String sourceExpr) {
 		sourceExpr = sourceExpr.toLowerCase();
 		String mess =
@@ -36,7 +36,7 @@ public class AssertAlignment_ESList extends Asserter<List<Alignment_ES>> {
 			PrettyPrinter.print(alignments())+"\n"+
 			"\n";
 
-		for (Alignment_ES anAlignment: alignments()) {
+		for (Alignment anAlignment: alignments()) {
 			String failureReason = null;
 			if (!anAlignment.sentences.containsKey(sourceLang)) {
 				failureReason = "did not have a sentence for the source language";
@@ -56,7 +56,7 @@ public class AssertAlignment_ESList extends Asserter<List<Alignment_ES>> {
 		return this;
 	}
 
-	public AssertAlignment_ESList atLeastNHits(int expMin) {
+	public AssertAlignment_List atLeastNHits(int expMin) {
 		AssertNumber.isGreaterOrEqualTo(alignments().size(), expMin);
 		return this;
 	}
@@ -66,7 +66,7 @@ public class AssertAlignment_ESList extends Asserter<List<Alignment_ES>> {
 		throws Exception {
 		List<String> gotTranslations = new ArrayList<String>();
 		boolean found = false;
-		for (Alignment_ES alignment: alignments()) {
+		for (Alignment alignment: alignments()) {
 			SentencePair pair = alignment.sentencePair(l1, l2);
 			WordSpotter spotter = new WordSpotter(pair);
 			Map<String, String> spottings = spotter.spot(l1, l1Word);

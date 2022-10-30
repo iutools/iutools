@@ -13,7 +13,7 @@ import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.iutools.sql.CloseableIterator;
+import ca.nrc.datastructure.CloseableIterator;
 
 /**
  * Given an input word, this class finds a list of "good" Morphological 

@@ -8,7 +8,7 @@ import java.util.*;
 
 import org.iutools.config.IUConfig;
 import org.iutools.corpus.*;
-import org.iutools.sql.CloseableIterator;
+import ca.nrc.datastructure.CloseableIterator;
 import org.iutools.sql.SQLLeakMonitor;
 import org.iutools.utilities.StopWatch;
 import ca.nrc.testing.*;

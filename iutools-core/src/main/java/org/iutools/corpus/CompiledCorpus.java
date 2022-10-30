@@ -20,7 +20,7 @@ import org.iutools.datastructure.trie.StringSegmenter;
 import org.iutools.datastructure.trie.StringSegmenterException;
 import org.iutools.datastructure.trie.StringSegmenter_Char;
 import org.iutools.datastructure.trie.Trie;
-import org.iutools.sql.CloseableIterator;
+import ca.nrc.datastructure.CloseableIterator;
 import org.iutools.sql.Row;
 import org.iutools.text.ngrams.NgramCompiler;
 import org.apache.logging.log4j.LogManager;
