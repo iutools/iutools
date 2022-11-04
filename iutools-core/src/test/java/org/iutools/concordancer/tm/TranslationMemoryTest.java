@@ -1,6 +1,9 @@
 package org.iutools.concordancer.tm;
 
 import ca.nrc.file.ResourceGetter;
+import static ca.nrc.testing.RunOnCases.*;
+
+import ca.nrc.testing.RunOnCases;
 import org.iutools.concordancer.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.function.Consumer;
 
 public abstract class TranslationMemoryTest {
 
@@ -65,17 +69,58 @@ public abstract class TranslationMemoryTest {
 
 
 	@Test
-	public void test__search__HappyPath() throws Exception {
+	public void test__search__VariousCases() throws Exception {
+		Case[] cases = new Case[] {
+			new CaseSearch("en-official", "en", "official").setMinHits(1),
+			new CaseSearch("iu-inuk", "iu", "inuk").setMinHits(1),
+		};
 
-		String sourceLang = "en";
-		String sourceExpr = "legislative";
-		String[] targetLangs = {"iu", "fr"};
-		List<Alignment> alignments =
-			tm.search(sourceLang, sourceExpr, targetLangs);
-		new AssertAlignment_List(alignments)
-			.atLeastNHits(1)
-			.allHitsMatchQuery(sourceLang, sourceExpr)
-//			.includesTranslation("en", sourceExpr, "iu", "BLAH")
-			;
+		Consumer<Case> runner =
+			(uncastCase) ->
+			{
+				try {
+					CaseSearch aCase = (CaseSearch)uncastCase;
+					String sourceLang = aCase.sourceLang;
+					String sourceExpr = aCase.sourceExpr;
+
+					String[] targetLangs = new String[] {"iu"};
+					if (sourceLang.equals("iu")) {
+						targetLangs = new String[] {"en"};
+					}
+					List<Alignment> alignments =
+						tm.search(sourceLang, sourceExpr, targetLangs);
+					new AssertAlignment_List(alignments)
+						.atLeastNHits(aCase.minHits)
+						.hitsMatchQuery(sourceLang, sourceExpr)
+						;
+
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			};
+
+		new RunOnCases(cases, runner)
+//			.onlyCaseNums(2)
+//			.onlyCasesWithDescr("en-SEARCH-housing")
+			.run();
+
+		return;
+	}
+
+	public static class CaseSearch extends Case {
+		public String sourceLang = null;
+		public Integer minHits = null;
+		public String sourceExpr = null;
+
+		public CaseSearch(String _descr, String _sourceLang, String _sourceExpr) {
+			super(_descr, null);
+			this.sourceLang = _sourceLang;
+			this.sourceExpr = _sourceExpr;
+		}
+
+		public CaseSearch setMinHits(Integer _minHits) {
+			this.minHits = _minHits;
+			return this;
+		}
 	}
 }

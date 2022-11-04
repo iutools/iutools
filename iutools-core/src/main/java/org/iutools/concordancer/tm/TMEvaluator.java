@@ -33,7 +33,7 @@ import java.util.*;
 public class TMEvaluator {
 
 	UserIO userIO = new UserIO();
-	TranslationMemory tm = new TranslationMemory_ES();
+	TranslationMemory tm = TMFactory.makeTM();
 	ObjectMapper mapper = new ObjectMapper();
 	int MAX_ALIGNMENTS = 100;
 
@@ -80,7 +80,7 @@ public class TMEvaluator {
 	}
 
 	private void createTestTM(Path tmFile) throws TranslationMemoryException {
-		tm = new TranslationMemory_ES(testTMName);
+		tm = TMFactory.makeTM(testTMName);
 		tm.loadFile(tmFile, ESOptions.CREATE_IF_NOT_EXISTS);
 		return;
 	}

@@ -40,6 +40,7 @@ public class ResultSetIterator<T> implements CloseableIterator<T> {
 
 	private void pullNextPojo() throws SQLException {
 		Logger logger = LogManager.getLogger("org.iutools.sql.ResultsIterator.pullNextPojo");
+		traceState("-> Upon entry", logger);
 		nextPojo = null;
 		if (rs != null) {
 			JSONObject nextRowJson = ResultSetWrapper.pullNextRowData(rs);
@@ -47,6 +48,7 @@ public class ResultSetIterator<T> implements CloseableIterator<T> {
 				nextPojo = converter.toPOJO(nextRowJson);
 			}
 		}
+		traceState("<- Upon exit>", logger);
 		return;
 	}
 
@@ -59,6 +61,8 @@ public class ResultSetIterator<T> implements CloseableIterator<T> {
 
 	@Override
 	public void close() throws Exception {
+		Logger logger = LogManager.getLogger("org.iutools.sql.ResultsIterator.close");
+		traceState("-> Upon entry", logger);
 		if (rs != null) {
 			try {
 				rs.close();
@@ -73,6 +77,7 @@ public class ResultSetIterator<T> implements CloseableIterator<T> {
 				// Means the Statement was already closed.
 			}
 		}
+		traceState("<- Upon exit>", logger);
 	}
 
 	@Override
@@ -91,4 +96,25 @@ public class ResultSetIterator<T> implements CloseableIterator<T> {
 
 		return nextCopy;
 	}
+
+	protected void traceState(String mess, Logger logger)  {
+		if (logger.isTraceEnabled()) {
+			if (mess != null) {
+				mess += "\n";
+			} else {
+				mess = "";
+			}
+			try {
+				mess +=
+					"  Iterator status:\n";
+				mess += "    "+(rs == null?"NO rs\n":"rs.isClosed()=" + rs.isClosed()) + "\n";
+				mess += "    "+(statement == null ? "NO statement" : "statement.isClosed()=" + statement.isClosed()) + "\n";
+				mess += "    nextPojo is " + (nextPojo == null ? "null" : "NOT null");
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			logger.trace(mess);
+		}
+	}
+
 }

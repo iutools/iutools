@@ -71,22 +71,28 @@ public class TMLoader {
 			int alignNum = 0;
 			ObjectStreamReader reader = new ObjectStreamReader(tmFile.toFile());
 			List<Alignment> alignsBatch = new ArrayList<Alignment>();
-			Alignment algnmt;
+			String batchFirst = null;
+			String batchLast = null;
+			Alignment algnmt = null;
+			String currAlignDescr = null;
 			while ((algnmt = (Alignment)reader.readObject()) != null) {
 				alignNum++;
-				if (verbose) {
-					System.out.println("Looking at alignment #"+alignNum+": "+algnmt.getIdWithoutType());
+				currAlignDescr = "#"+alignNum+": "+algnmt.getIdWithoutType();
+				if (batchFirst == null) {
+					batchFirst = currAlignDescr;
 				}
 				alignsBatch.add(algnmt);
 				if (alignsBatch.size() == BATCH_SIZE) {
-					System.out.println("** ADDING BATCH OF ALIGNMENTS TO DB");
+//					System.out.println("** ADDING BATCH OF ALIGNMENTS TO DB");
+					addBatch(alignsBatch, batchFirst, currAlignDescr);
+					batchFirst = null;
 					progress.stepCompleted();
 					alignsBatch = new ArrayList<Alignment>();
 				}
 			}
 			if (!alignsBatch.isEmpty()) {
-				System.out.println("** ADDING LAST BATCH OF WORDS TO DB");
-				addBatch(alignsBatch);
+//				System.out.println("** ADDING LAST BATCH OF WORDS TO DB");
+				addBatch(alignsBatch, batchFirst, currAlignDescr);
 				alignsBatch.clear();
 			}
 		} catch (IOException | ClassNotFoundException | ObjectStreamReaderException e) {
@@ -95,11 +101,15 @@ public class TMLoader {
 		return;
 	}
 
-	private List<Alignment>  addBatch(List<Alignment> alignsBatch) throws TranslationMemoryException {
+	private List<Alignment>  addBatch(List<Alignment> alignsBatch,
+		String batchFirst, String batchLast) throws TranslationMemoryException {
 		// We don't need to replace the rows because we assume all alignments will have
 		// been deleted before loading the corpus.
 		// This will speed up the loading
 		boolean replace = false;
+		if (verbose) {
+			System.out.println("Loading alignments batch.\n  First: "+batchFirst+"\n  Last: "+batchLast);
+		}
 		tm.putAligments(alignsBatch, replace);
 		try {
 			// For some reason, if we don's sleep after each batch, we eventually

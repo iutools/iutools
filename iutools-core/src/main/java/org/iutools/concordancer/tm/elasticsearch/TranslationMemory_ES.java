@@ -101,8 +101,8 @@ public class TranslationMemory_ES extends TranslationMemory {
 				// For iu, try the search with both scripts.
 				// Some of the TMs use roman while others use syllabic
 				sourceExprVariants = new String[]{
-				TransCoder.ensureScript(TransCoder.Script.SYLLABIC, sourceExpr),
-				TransCoder.ensureScript(TransCoder.Script.ROMAN, sourceExpr),
+					TransCoder.ensureScript(TransCoder.Script.SYLLABIC, sourceExpr),
+					TransCoder.ensureScript(TransCoder.Script.ROMAN, sourceExpr),
 				};
 			}
 
@@ -114,7 +114,7 @@ public class TranslationMemory_ES extends TranslationMemory {
 					SearchResults<Alignment> searchResult = null;
 					try {
 						searchResult = esFactory().searchAPI()
-							.search(query, ES_ALIGNMENT_TYPE, new Alignment_ES());
+							.search(query, ES_ALIGNMENT_TYPE, new Alignment());
 
 						CloseableIterator<Alignment> blah = (CloseableIterator<Alignment>) searchResult.docIterator();
 						iterators.add(searchResult.docIterator());
@@ -197,5 +197,4 @@ public class TranslationMemory_ES extends TranslationMemory {
 
 		return alignments;
 	}
-
 }

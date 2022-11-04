@@ -1,6 +1,7 @@
 package org.iutools.corpus.sql;
 
 import org.iutools.sql.TableSchema;
+import org.json.JSONObject;
 
 public class WordInfoSchema extends TableSchema {
 
@@ -35,6 +36,12 @@ public class WordInfoSchema extends TableSchema {
 				"ALTER TABLE `WordInfo` ADD FULLTEXT(morphemeNgramsWrittenForms);",
 			};
 		return statements;
+	}
+
+	@Override
+	protected boolean rowColValuesAreCompatible(JSONObject row) {
+		// Nothing to validate
+		return true;
 	}
 
 	@Override

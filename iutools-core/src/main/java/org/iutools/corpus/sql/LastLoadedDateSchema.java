@@ -1,6 +1,7 @@
 package org.iutools.corpus.sql;
 
 import org.iutools.sql.TableSchema;
+import org.json.JSONObject;
 
 public class LastLoadedDateSchema extends TableSchema {
 
@@ -24,5 +25,11 @@ public class LastLoadedDateSchema extends TableSchema {
 			"\n"
 		};
 		return statements;
+	}
+
+	@Override
+	protected boolean rowColValuesAreCompatible(JSONObject row) {
+		// Nothing to validate
+		return true;
 	}
 }

@@ -110,6 +110,12 @@ public class QueryProcessorTest {
 				");"
 			};
 		}
+
+		@Override
+		protected boolean rowColValuesAreCompatible(JSONObject row) {
+			// Nothing to validate
+			return true;
+		}
 	}
 
 	public static class Row2Person extends Row2Pojo<Person> {

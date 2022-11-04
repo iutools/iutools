@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 public class CmdLoadTranslationMemory extends ConsoleCommand {
 	private Pattern fileRegex;
 	private File tmFilesDir;
+	private File tmDataFile;
 
 	public CmdLoadTranslationMemory(String name) throws CommandLineException {
 		super(name);
@@ -23,6 +24,7 @@ public class CmdLoadTranslationMemory extends ConsoleCommand {
 	@Override
 	public void execute() throws Exception {
 		tmFilesDir = getInputDir();
+		tmDataFile = getDataFile(false);
 		fileRegex = getFileRegexp();
 		if (tmFilesDir == null) {
 			tmFilesDir = new File(IUConfig.getIUDataPath("data/translation-memories/"));
@@ -51,21 +53,25 @@ public class CmdLoadTranslationMemory extends ConsoleCommand {
 		echo("TM files to load:");
 		boolean atLeastOne = false;
 		echo(1);
-		try {
-			File[] files = FileGlob.listFiles(tmFilesDir.toString()+"/*.tm.json");
-			for (File aFile: files) {
-				if (this.fileRegex == null ||
+		if (tmDataFile != null) {
+			toLoad.add(tmDataFile);
+		} else {
+			try {
+				File[] files = FileGlob.listFiles(tmFilesDir.toString() + "/*.tm.json");
+				for (File aFile : files) {
+					if (this.fileRegex == null ||
 					this.fileRegex.matcher(aFile.toString()).find()) {
-					toLoad.add(aFile);
-					atLeastOne = true;
-					echo(aFile.toString());
+						toLoad.add(aFile);
+						atLeastOne = true;
+						echo(aFile.toString());
+					}
 				}
+			} finally {
+				if (!atLeastOne) {
+					echo("None");
+				}
+				echo(-1);
 			}
-		} finally {
-			if (! atLeastOne) {
-				echo("None");
-			}
-			echo(-1);
 		}
 		return toLoad;
 	}

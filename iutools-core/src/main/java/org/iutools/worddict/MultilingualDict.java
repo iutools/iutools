@@ -703,16 +703,15 @@ public class MultilingualDict {
 		//
 		CloseableIterator<String> wordsIter = null;
 		Long totalWords = null;
-		try {
-			List<String> words = new ArrayList<String>();
-			Iterator<Alignment> tmIter =
-				new TMFactory().makeTM().searchIter("en", partialWord);
+		List<String> words = new ArrayList<String>();
+		try (CloseableIterator<Alignment> tmIter =
+				new TMFactory().makeTM().searchIter("en", partialWord)) {
 			if (tmIter.hasNext()) {
 				words.add(partialWord);
 			}
 			wordsIter = new CloseableIteratorWrapper<String>(words.iterator());
 			totalWords = new Long(words.size());
-		} catch (TranslationMemoryException e) {
+		} catch (Exception e) {
 			throw new MultilingualDictException(e);
 		}
 		return Pair.of(wordsIter, totalWords);

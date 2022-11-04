@@ -8,11 +8,11 @@ import org.iutools.config.IUConfig;
 /** Class for creating TranslationMemories */
 public class TMFactory {
 
-	public TranslationMemory makeTM() throws TranslationMemoryException {
+	public static TranslationMemory makeTM() throws TranslationMemoryException {
 		return makeTM((String)null);
 	}
 
-	public TranslationMemory makeTM(String tmName) throws TranslationMemoryException {
+	public static TranslationMemory makeTM(String tmName) throws TranslationMemoryException {
 		TranslationMemory tm = null;
 		try {
 			String dataStore = new IUConfig().tmDataStore();

@@ -67,6 +67,12 @@ public class AssertMultilingualDictEntry extends Asserter<MultilingualDictEntry>
 		return this;
 	}
 
+	public AssertMultilingualDictEntry hasAtLeastNTranslations(int expMinTranslations) {
+		AssertNumber.isGreaterOrEqualTo(
+			"Entry did not have the expected minimum number of translations",
+			entry().bestTranslations.size(), expMinTranslations);
+		return this;
+	}
 
 	public AssertMultilingualDictEntry hasTranslationsForOrigWord(boolean expHasTranslationsForOrigWord) {
 		boolean hasOrigTransl = entry().hasTranslationsForOriginalWord();
@@ -85,26 +91,24 @@ public class AssertMultilingualDictEntry extends Asserter<MultilingualDictEntry>
 	}
 
 
-	public AssertMultilingualDictEntry bestTranslationsAre(
-		String... expTranslationsArr) throws Exception {
+	public AssertMultilingualDictEntry bestTranslationsAreAmong(
+		String... possibleTranslations) throws Exception {
 
-		if (expTranslationsArr != null) {
+		if (possibleTranslations != null) {
 			translationsSanityCheck();
 			String otherLang = entry().otherLang();
 			List<String> gotTranslations = entry().bestTranslations;
 			String[] gotTranslationsArr = gotTranslations.toArray(new String[0]);
 			gotTranslationsArr = lowerCaseStrings(gotTranslationsArr);
-			expTranslationsArr = lowerCaseStrings(expTranslationsArr);
+			possibleTranslations = lowerCaseStrings(possibleTranslations);
 
 			// For some reason, the order of the best translations can be
 			// unpredictable. So compare the two arrays as sets
 			Set<String> gotTranslationsSet = new HashSet<String>();
 			Collections.addAll(gotTranslationsSet, gotTranslationsArr);
-			Set<String> expTranslationsSet = new HashSet<String>();
-			Collections.addAll(expTranslationsSet, expTranslationsArr);
 			new AssertSet(gotTranslationsSet,
-				baseMessage+ "\nList of translations did not contain the expected translations")
-				.assertEqual(expTranslationsSet);
+				baseMessage+ "\nTranslations were not among the list of possible translations")
+				.isSubsetOf(possibleTranslations);
 		}
 		return this;
 	}

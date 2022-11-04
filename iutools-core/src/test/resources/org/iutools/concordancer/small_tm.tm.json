@@ -3,7 +3,7 @@ class=org.iutools.concordancer.Alignment_ES
 
 {
   "from_doc": "nrc-nunavut-hansard",
-  "web_domain": "gov.nu.ca",
+  "web_domain": "testing.iutools.orga",
   "topics": ["government", "hansard"],
   "pair_num": 0,
   "sentences": {
@@ -15,7 +15,7 @@ class=org.iutools.concordancer.Alignment_ES
 
 {
   "from_doc": "nrc-nunavut-hansard",
-  "web_domain": "gov.nu.ca",
+  "web_domain": "testing.iutools.orga",
   "topics": ["government", "hansard"],
   "pair_num": 1,
   "sentences": {
@@ -26,7 +26,7 @@ class=org.iutools.concordancer.Alignment_ES
 }
 {
   "from_doc": "nrc-nunavut-hansard",
-  "web_domain": "gov.nu.ca",
+  "web_domain": "testing.iutools.orga",
   "topics": ["government", "hansard"],
   "pair_num": 2,
   "sentences": {
@@ -38,7 +38,7 @@ class=org.iutools.concordancer.Alignment_ES
 
 {
   "from_doc": "nrc-nunavut-hansard",
-  "web_domain": "gov.nu.ca",
+  "web_domain": "testing.iutools.orga",
   "topics": ["government", "hansard"],
   "pair_num": 3,
   "sentences": {
@@ -50,7 +50,7 @@ class=org.iutools.concordancer.Alignment_ES
 
 {
   "from_doc": "nrc-nunavut-hansard",
-  "web_domain": "gov.nu.ca",
+  "web_domain": "testing.iutools.orga",
   "topics": ["government", "hansard"],
   "pair_num": 4,
   "sentences": {
@@ -62,7 +62,7 @@ class=org.iutools.concordancer.Alignment_ES
 
 {
   "from_doc": "nrc-nunavut-hansard",
-  "web_domain": "gov.nu.ca",
+  "web_domain": "testing.iutools.orga",
   "topics": ["government", "hansard"],
   "pair_num": 5,
   "sentences": {
@@ -74,7 +74,7 @@ class=org.iutools.concordancer.Alignment_ES
 
 {
   "from_doc": "nrc-nunavut-hansard",
-  "web_domain": "gov.nu.ca",
+  "web_domain": "testing.iutools.orga",
   "topics": ["government", "hansard"],
   "pair_num": 6,
   "sentences": {
@@ -87,7 +87,7 @@ class=org.iutools.concordancer.Alignment_ES
 
 {
   "from_doc": "nrc-nunavut-hansard",
-  "web_domain": "gov.nu.ca",
+  "web_domain": "testing.iutools.orga",
   "topics": ["government", "hansard"],
   "pair_num": 7,
   "sentences": {
@@ -99,7 +99,7 @@ class=org.iutools.concordancer.Alignment_ES
 
 {
   "from_doc": "nrc-nunavut-hansard",
-  "web_domain": "gov.nu.ca",
+  "web_domain": "testing.iutools.orga",
   "topics": ["government", "hansard"],
   "pair_num": 8,
   "sentences": {
@@ -111,7 +111,7 @@ class=org.iutools.concordancer.Alignment_ES
 
 {
   "from_doc": "nrc-nunavut-hansard",
-  "web_domain": "gov.nu.ca",
+  "web_domain": "testing.iutools.org",
   "topics": ["government", "hansard"],
   "pair_num": 9,
   "sentences": {
@@ -123,7 +123,7 @@ class=org.iutools.concordancer.Alignment_ES
 
 {
   "from_doc": "nrc-nunavut-hansard",
-  "web_domain": "gov.nu.ca",
+  "web_domain": "testing.iutools.orga",
   "topics": ["government", "hansard"],
   "pair_num": 10,
   "sentences": {
@@ -136,7 +136,7 @@ class=org.iutools.concordancer.Alignment_ES
 
 {
   "from_doc": "nrc-nunavut-hansard",
-  "web_domain": "gov.nu.ca",
+  "web_domain": "testing.iutools.orga",
   "topics": ["government", "hansard"],
   "pair_num": 11,
   "sentences": {
@@ -148,7 +148,7 @@ class=org.iutools.concordancer.Alignment_ES
 
 {
   "from_doc": "nrc-nunavut-hansard",
-  "web_domain": "gov.nu.ca",
+  "web_domain": "testing.iutools.orga",
   "topics": ["government", "hansard"],
   "pair_num": 19,
   "sentences": {
@@ -160,7 +160,7 @@ class=org.iutools.concordancer.Alignment_ES
 
 {
   "from_doc": "nrc-nunavut-hansard",
-  "web_domain": "gov.nu.ca",
+  "web_domain": "testing.iutools.orga",
   "topics": ["government", "hansard"],
   "pair_num": 12,
   "sentences": {

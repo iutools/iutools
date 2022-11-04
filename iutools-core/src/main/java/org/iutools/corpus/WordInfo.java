@@ -2,19 +2,9 @@ package org.iutools.corpus;
 
 import ca.nrc.dtrc.elasticsearch.Document;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.iutools.corpus.sql.WordInfoSchema;
 import org.iutools.script.TransCoder;
 import org.iutools.script.TransCoderException;
-import org.iutools.sql.Row;
-import org.iutools.text.ngrams.NgramCompiler;
-import org.json.JSONObject;
-
-import java.util.*;
 
 public class WordInfo extends Document {
 	

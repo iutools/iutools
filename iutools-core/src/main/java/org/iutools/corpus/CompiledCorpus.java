@@ -7,10 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ca.nrc.dtrc.elasticsearch.request.Sort;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.tuple.Pair;
-import org.iutools.corpus.sql.LastLoadedDateSchema;
 import ca.nrc.debug.Debug;
 import ca.nrc.dtrc.elasticsearch.*;
 import static ca.nrc.dtrc.elasticsearch.request.Sort.Order;
@@ -21,11 +18,9 @@ import org.iutools.datastructure.trie.StringSegmenterException;
 import org.iutools.datastructure.trie.StringSegmenter_Char;
 import org.iutools.datastructure.trie.Trie;
 import ca.nrc.datastructure.CloseableIterator;
-import org.iutools.sql.Row;
 import org.iutools.text.ngrams.NgramCompiler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONObject;
 
 import ca.nrc.dtrc.elasticsearch.index.IndexAPI;
 
@@ -177,11 +172,14 @@ public abstract class CompiledCorpus {
 	}
 
 	public void addWordOccurence(String word) throws CompiledCorpusException {
-		addWordOccurence(word, false);
+		addWordOccurence(word, false, (Long)null);
 	}
 
-	public void addWordOccurence(String word, boolean frequenciesOnly) throws CompiledCorpusException {
+	public void addWordOccurence(String word, boolean frequenciesOnly, Long freqIncr) throws CompiledCorpusException {
 
+		if (freqIncr == null) {
+			freqIncr = new Long(1);
+		}
 		String[][] sampleDecomps = null;
 		Integer totalDecomps = null;
 		if (!frequenciesOnly) {
@@ -459,32 +457,6 @@ public abstract class CompiledCorpus {
 			// and its ID should be the following:
 			this.setId("lastload");
 			this.type = esTypeName;
-
-		}
-
-		public Row toSQLRow() throws CompiledCorpusException {
-			Row row = null;
-			try {
-				ObjectMapper mapper = new ObjectMapper();
-				String jsonStr = mapper.writeValueAsString(this);
-				JSONObject jsonObj = new JSONObject(jsonStr);
-				jsonObj.remove("_detect_language");
-				jsonObj.remove("content");
-				jsonObj.remove("creationDate");
-				jsonObj.remove("additionalFields");
-				jsonObj.remove("id");
-				jsonObj.remove("idWithoutType");
-				jsonObj.remove("lang");
-				jsonObj.remove("longDescription");
-				jsonObj.remove("morphemesSpaceConcatenated");
-				jsonObj.remove("shortDescription");
-				LastLoadedDateSchema schema = new LastLoadedDateSchema();
-				row = new Row(jsonObj, schema.tableName, schema.idColumnName);
-			} catch (JsonProcessingException e) {
-				throw new CompiledCorpusException(e);
-			}
-
-			return row;
 
 		}
 	}

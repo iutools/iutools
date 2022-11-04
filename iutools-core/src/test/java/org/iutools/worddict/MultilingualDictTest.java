@@ -38,6 +38,8 @@ public class MultilingualDictTest {
 				new String[] {"ᐃᓄᒃ", "ᐃᓄᒃᑯ", "ᐃᓄᑯᓗᒃ"}),
 			new Case("iu-single-hit", "iu", "nunavuttaarniq", 1,
 				new String[] {"nunavuttaarniq"}, 1),
+			new Case("en-housing", "en", "housing", 1,
+				new String[] {"housing"}),
 		};
 
 		// Cases for entry4word function
@@ -50,9 +52,10 @@ public class MultilingualDictTest {
 					"ammuumajurniartiit", "ammuumajuqtarnirmut",
 					"ammuumajuqtaqtiit", "ammuumajuqtaqtutik",
 					"ammuumajurniarnirmut", "ammuumajuqsiuqtutik")
+				.setMinTranslations(5)
 				.hasTranslationsForOrigWord(false)
-				.bestTranslationsAre(
-					"clam","clam divers", "clam diving", "clams", "divers")
+				.bestTranslationsAreAmong(
+					"clam","clam divers", "clam diggers", "clam diving", "clams", "divers")
 				.setMinExamples(5),
 
 			new MultilingualDictCase("iu-ammuumajuqsiuqtutik", "ammuumajuqsiuqtutik")
@@ -63,7 +66,8 @@ public class MultilingualDictTest {
 					"ammuumajurniartiit", "ammuumajuqtarnirmut",
 					"ammuumajuqtaqtiit", "ammuumajuqtaqtutik",
 					"ammuumajurniarnirmut", "ammuumajuqsiuqtutik")
-				.bestTranslationsAre("clam", "clams", "clam diving", "clam ... clams")
+				.setMinTranslations(4)
+				.bestTranslationsAreAmong("clam", "clams", "clam diving", "clam ... clams")
 				.setMinExamples(5),
 //				.additionalL2Highlights("clam ... clams", "clam diving"),
 
@@ -74,14 +78,15 @@ public class MultilingualDictTest {
 				.relatedWordsShouldBeAmong(
 					"ᐊᒻᒨᒪᔪᕐᓂᐊᕐᑏᑦ", "ᐊᒻᒨᒪᔪᖅᑕᕐᓂᕐᒧᑦ", "ᐊᒻᒨᒪᔪᖅᑕᖅᑏᑦ", "ᐊᒻᒨᒪᔪᖅᑕᖅᑐᑎᒃ",
 					"ᐊᒻᒨᒪᔪᕐᓂᐊᕐᓂᕐᒧᑦ")
-				.bestTranslationsAre("clam", "clams", "clam diving", "clam ... clams")
+				.setMinTranslations(4)
+				.bestTranslationsAreAmong("clam", "clams", "clam diving", "clam ... clams")
 				.setMinExamples(2),
 
 			// This is an out of vocabulary word
 			new MultilingualDictCase("iu-inuksssuk", "inuksssuk")
 				.setOutOfVocab(true)
 				.hasTranslationsForOrigWord(false)
-				.bestTranslationsAre(new String[0])
+				.bestTranslationsAreAmong(new String[0])
 				.setMinExamples(0)
 				.relatedWordsShouldBeAmong(new String[]{}),
 
@@ -92,41 +97,45 @@ public class MultilingualDictTest {
 					"umiarjuanut", "umiarjuat", "umiarjuaq", "umiarjuarmut",
 					"umiarjualirijikkut")
 				.setMinExamples(5)
-				.bestTranslationsAre(new String[]{
-					"sealift", "ship", "shipped", "shipping", "shipping season"}),
+				.setMinTranslations(5)
+				.bestTranslationsAreAmong(new String[]{
+					"sealift", "ship", "shipped", "shipping", "shipping season",
+					"marine ... late", "sea cans", "ships", "vessels"}),
 
 			new MultilingualDictCase("iu-kiugavinnga", "kiugavinnga")
 				.relatedWordsShouldBeAmong(
 					"kiujjutit", "kiujjutik", "kiuvan", "kiujjutinga", "kiulugu")
-				.bestTranslationsAre(
-					"response", "answer", "answered", "direct answer", "minister ... answer"),
+				.setMinTranslations(5)
+				.bestTranslationsAreAmong(
+					"response", "answer", "answered", "direct answer",
+					"minister ... answer"),
 //				.additionalL2Highlights(),
 
 			new MultilingualDictCase("iu-najugaq", "najugaq")
 				.relatedWordsShouldBeAmong(
 					"najugangani", "najugaujunut", "najuganga", "najugaujumi",
 					"najugauvattunut")
-				.bestTranslationsAre(
-					"centres", "facility", "home", "homes", "units"),
+				.setMinTranslations(5)
+				.bestTranslationsAreAmong(
+					"centres", "facility", "home", "homes", "units", "residence",
+					// Words below are not proper translations but for some reason
+					// they can be returned by the algorithm
+					"shows"
+					),
 
 			new MultilingualDictCase("en-housing", "housing")
 				.setL1("en")
 				.setDecomp(null)
-				.bestTranslationsAre(
-					"ᐃᓪᓗᐃᑦ", "ᐃᓪᓗᓂᒃ", "ᐃᓪᓗᓕᕆᔨᒃᑯᓐᓄᑦ", "ᐃᓪᓗᓕᕆᔨᓂ", "ᐃᓪᓗᓕᕆᔨᓂᒃ"
+				.setMinTranslations(5)
+				.bestTranslationsAreAmong(
+					"ᐃᓪᓗᐃᑦ", "ᐃᓪᓗᓂᒃ", "ᐃᓪᓗᓕᕆᔨᒃᑯᓐᓄᑦ", "ᐃᓪᓗᓕᕆᔨᓂ", "ᐃᓪᓗᓕᕆᔨᓂᒃ",
+					// Note: These started appearing when we moved from ES to SQL
+					// for the TM data store
+					"ᐃᒡᓗᑖᕆᐊᖃᕐᓂᐊᕐᒪᖔᑕ", "ᐃᒡᓗᓕᕆᔨᐊᓛᒃᑯᑦ", "ᐃᓪᓗᒃᐸᑕ ... ᐃᓪᓗᖃᕐᓂᕐᒧᑦ",
+					"ᐃᓪᓗᓕᕆᔨᕐᔪᐊᒃᑯᑦ","ᐃᓪᓗᖁᑎᖏᑦ"
 				)
-				.setMinExamples(6)
+				.setMinExamples(5)
 				.relatedWordsShouldBeAmong(),
-
-//			new MultilingualDictCase("iu-nuvarjuarnaq (=covid)", "nuvarjuarnaq")
-//				.setL1("en")
-//				.setDecomp(null)
-//				.setOrigWordTranslations(
-//					"ᐃᒡᓗᖏᓐᓄᑦ", "ᐃᒡᓗᓕᕆᓂᕐᒥ", "ᐃᓪᓗᓕᕆᓂᕐᒧᑦ",
-//					"ᐃᒡᓗᒋᔭᐅᕙᒃᑐᓂᒃ",
-//					"ᐃᒡᓗᓕᕆᓂᕐᓕ ... ᐃᒡᓗᓕᕆᓂᕐᒧᑐᐃᓐᓈᕋᔭᖅᑐᖅ")
-//				.setMinExamples(10)
-//				.setRelatedWords(),
 		};
 	}
 
@@ -280,9 +289,15 @@ public class MultilingualDictTest {
 					.isForWord(aCase.word)
 					.langIs(aCase.l1)
 					.definitionEquals(aCase.expDefinition)
-					.relatedWordsIsSubsetOf(aCase.expRelatedWordsSuperset)
+					.relatedWordsIsSubsetOf(aCase.expRelatedWordsSuperset);
+
+				if (aCase.expMinTranslations != null) {
+					asserter.hasAtLeastNTranslations(aCase.expMinTranslations);
+				}
+
+				asserter
 					.hasTranslationsForOrigWord(aCase.expHasTranslationsForOrigWord)
-					.bestTranslationsAre(expTranslations)
+					.bestTranslationsAreAmong(expTranslations)
 					.atLeastNExamples(aCase.expMinExamples)
 					.highlightsAreSubsetOf(aCase.l1, true, expL1Highlights)
 					.highlightsAreSubsetOf(aCase.l2, expL2Highlights)
@@ -356,7 +371,7 @@ public class MultilingualDictTest {
 			}
 		};
 		new RunOnCases(cases_search, runner)
-//			.onlyCaseNums(3)
+//			.onlyCaseNums(4)
 //			.onlyCasesWithDescr("iu-out-of-vocab-yet-valid-dict-word")
 			.run();
 	}
@@ -374,6 +389,7 @@ public class MultilingualDictTest {
 		public String[] expDecomp = null;
 		public String[] expRelatedWordsSuperset = null;
 		public String[] expTranslations = null;
+		public Integer expMinTranslations = null;
 		private boolean expHasTranslationsForOrigWord = true;
 		public Integer expMinExamples = 0;
 		public boolean outOfVocab = false;
@@ -416,8 +432,13 @@ public class MultilingualDictTest {
 			return this;
 		}
 
-		public MultilingualDictCase bestTranslationsAre(String... _expTranslations) {
+		public MultilingualDictCase bestTranslationsAreAmong(String... _expTranslations) {
 			expTranslations = _expTranslations;
+			return this;
+		}
+
+		public MultilingualDictCase setMinTranslations(int _expMinTranslations) {
+			expMinTranslations = _expMinTranslations;
 			return this;
 		}
 

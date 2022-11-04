@@ -19,6 +19,7 @@ public class ConnectionPool {
 	private final String SERVER_NAME = "localhost";
 
 	public static Boolean _isTesting = null;
+	private static final boolean singleConnPerThread = true;
 	
 //	Follow recipe here...
 //	https://www.baeldung.com/java-connection-pooling
@@ -79,6 +80,22 @@ public class ConnectionPool {
 
 	@JsonIgnore
 	public synchronized Connection getConnection() throws SQLException {
+		Connection conn = null;
+		if (singleConnPerThread) {
+			conn = getConnection__SingleConnPerThread();
+		} else {
+			conn = getConnection__MultipleConnsPerThread();
+		}
+		return conn;
+	}
+
+	/**
+	 * This implementation of getConnection() uses a single connection per thread.
+	 * @return
+	 * @throws SQLException
+	 */
+	@JsonIgnore
+	public synchronized Connection getConnection__SingleConnPerThread() throws SQLException {
 		Logger logger = LogManager.getLogger("org.iutools.sql.ConnectionPool.getConnection");
 		logger.trace("invoked");
 
@@ -95,7 +112,13 @@ public class ConnectionPool {
 					dbName += "_test";
 				}
 				BasicDataSource ds = dataSource4DB(dbName);
-				thread2connIndex.put(currThread, ds.getConnection());
+
+				// This is so we can have more than one opened ResultSet for the same
+				// connection.
+				Connection conn = ds.getConnection();
+				conn.setAutoCommit(false);
+
+				thread2connIndex.put(currThread, conn);
 			} catch(ConfigException e){
 				throw new SQLException(e);
 			}
@@ -103,6 +126,34 @@ public class ConnectionPool {
 
 		logger.trace("exiting");
 		return thread2connIndex.get(currThread);
+	}
+
+	/**
+	 * This version of getConnection() allows having more than one connection per
+	 * thread.
+	 *
+	 * @return
+	 * @throws SQLException
+	 */
+	@JsonIgnore
+	public synchronized Connection getConnection__MultipleConnsPerThread() throws SQLException {
+		Logger logger = LogManager.getLogger("org.iutools.sql.ConnectionPool.getConnection");
+		logger.trace("invoked");
+
+		Connection connection = null;
+		try {
+			String dbName = new IUConfig().sqlDbName();
+			if (isTesting()) {
+				dbName += "_test";
+			}
+			BasicDataSource ds = dataSource4DB(dbName);
+			connection = ds.getConnection();
+		} catch(ConfigException e){
+			throw new SQLException(e);
+		}
+
+		logger.trace("exiting");
+		return connection;
 	}
 
 	private synchronized boolean hasLiveConnection4Thread(Long thrID) throws SQLException {

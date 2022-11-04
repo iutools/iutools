@@ -107,12 +107,12 @@ public class ResultSetColIterator<C> implements CloseableIterator<C> {
 			}
 			try {
 				mess +=
-					"  Iterator status:\n" +
-					"    rs.isClosed()=" + rs.isClosed() + "\n" +
-					"    statement.isClosed()=" + statement.isClosed() + "\n" +
-					"    nextRowData=" + (nextRowData == null ? "null" : nextRowData.toString());
+					"  Iterator status:\n";
+				mess += "    "+(rs == null?"NO rs\n":"rs.isClosed()=" + rs.isClosed()) + "\n";
+				mess += "    "+(statement == null ? "NO statement" : "statement.isClosed()=" + statement.isClosed()) + "\n";
+				mess += "    nextRowData=" + (nextRowData == null ? "null" : nextRowData.toString());
 			} catch (SQLException e) {
-				mess += "\nException raised while tracing the iterator: "+e;
+				e.printStackTrace();
 			}
 			logger.trace(mess);
 		}

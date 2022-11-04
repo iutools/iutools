@@ -32,8 +32,15 @@ public class Alignment extends Document {
 	private void init__Alignment(String _fromDoc, Long _pairNum) {
 		this.from_doc = _fromDoc;
 		this.pair_num = _pairNum;
+		this.type = "Alignment";
 		return;
 	}
+
+	@Override
+	public String getIdWithoutType() {
+		return from_doc+"-p"+pair_num;
+	}
+
 
 	public Alignment setWebDomain(String _domain) {
 		this.web_domain = _domain;
@@ -78,7 +85,7 @@ public class Alignment extends Document {
 	}
 
 	public SentencePair sentencePair(String l1, String l2) {
-		Logger logger = LogManager.getLogger("org.iutools.concordancer.Alignment_ES.sentencePair");
+		Logger logger = LogManager.getLogger("org.iutools.concordancer.Alignment.sentencePair");
 		SentencePair pair =
 			new SentencePair(
 				l1, sentence4lang(l1),

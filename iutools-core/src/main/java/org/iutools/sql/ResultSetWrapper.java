@@ -86,6 +86,8 @@ public class ResultSetWrapper implements AutoCloseable {
 
 	@Override
 	public void close() throws Exception {
+		Logger logger = LogManager.getLogger("org.iutools.sql.ResultSetWrapper.close");
+		logger.trace("invoked");
 		if (! iteratorCreated) {
 			if (rs != null) {
 				try {

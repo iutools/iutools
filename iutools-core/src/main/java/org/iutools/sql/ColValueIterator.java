@@ -99,6 +99,8 @@ public class ColValueIterator<T> implements Iterator<T>, Closeable {
 
 	@Override
 	public void close() throws IOException {
+		Logger logger = LogManager.getLogger("org.iutools.sql.ColValueIterator.constructor");
+		logger.trace("invoked");
 		if (rs != null) {
 			try {
 				rs.close();

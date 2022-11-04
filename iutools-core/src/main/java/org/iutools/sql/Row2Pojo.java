@@ -45,8 +45,9 @@ public abstract class Row2Pojo<T> {
 		return schema.columnNames();
 	}
 
-	public void ensureRowIsCompatibleWithSchema(JSONObject row) throws SQLException {
-		schema.rowIsCompatible(row);
+	public boolean rowIsCompatibleWithSchema(JSONObject row) throws SQLException {
+		boolean compatible = schema.rowIsCompatible(row);
+		return compatible;
 	}
 
 	public JSONObject toRowJson(T object) throws SQLException {

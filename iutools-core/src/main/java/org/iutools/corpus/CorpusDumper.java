@@ -1,5 +1,7 @@
 package org.iutools.corpus;
 
+import ca.nrc.datastructure.CloseableIterator;
+import ca.nrc.dtrc.elasticsearch.ElasticSearchException;
 import ca.nrc.ui.commandline.ProgressMonitor_Terminal;
 import ca.nrc.ui.commandline.UserIO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -11,7 +13,8 @@ import static ca.nrc.ui.commandline.UserIO.Verbosity;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CorpusDumper {
 
@@ -78,24 +81,37 @@ public class CorpusDumper {
 
             printHeaders();
 
-            int wordCount = 0;
-            Iterator<String> iterator = corpus.allWords();
-            while (iterator.hasNext()) {
-                wordCount++;
-                String word = iterator.next();
-                userIO.echo(
-                    "Dumping word #"+wordCount+": "+word ,
-                    Verbosity.Level0);
-                printWord(word, wordsOnly);
-                progMonitor.stepCompleted();
-            }
+            List<String> allWords = readAllWords();
+
+			  int wordCount = 0;
+			  for (String word: allWords) {
+					wordCount++;
+					userIO.echo(
+					  "Dumping word #"+wordCount+": "+word ,
+					Verbosity.Level0);
+				 	printWord(word, wordsOnly);
+					progMonitor.stepCompleted();
+				}
         } catch (IOException e) {
             throw new CompiledCorpusException(
                 "Unable to open file for output\n  "+outputFile);
         }
+        return;
     }
 
-    private void printHeaders()
+	private List<String> readAllWords() throws CompiledCorpusException {
+    	List<String> words = new ArrayList<String>();
+		try (CloseableIterator<String> iterator = corpus.allWords()) {
+			while (iterator.hasNext()) {
+				words.add(iterator.next());
+			}
+		} catch (Exception e) {
+			throw new CompiledCorpusException(e);
+		}
+		return words;
+	}
+
+	private void printHeaders()
         throws CompiledCorpusException {
         try {
             outputFileWriter.write(
@@ -131,4 +147,28 @@ public class CorpusDumper {
                 outputFile);
         }
     }
+
+	private void printWordInfo(WordInfo winfo, Boolean wordsOnly) throws CompiledCorpusException {
+        String infoStr = winfo.word;
+        if (!wordsOnly) {
+			  	String[] fieldsToIgnore = new String[] {
+					"additionalFields", "creationDate", "lang", "_detect_language",
+					"shortDescription", "_wordInOtherScript", "_wordRoman",
+					"_wordSyllabic"
+				};
+			  try {
+				  infoStr = winfo.toJson(fieldsToIgnore);
+			  } catch (ElasticSearchException e) {
+				  throw new CompiledCorpusException(e);
+			  }
+		  }
+        try {
+            outputFileWriter.write(infoStr+"\n");
+        } catch (IOException e) {
+            throw new CompiledCorpusException("Could not write to file:\n  "+
+                outputFile);
+        }
+	}
+
+
 }

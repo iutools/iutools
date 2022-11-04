@@ -285,7 +285,13 @@ public class QueryProcessor {
 			int rowCount = 0;
 			for (JSONObject row: rows) {
 				rowCount++;
-				converter.ensureRowIsCompatibleWithSchema(firstRow);
+				boolean rowIsCompatible = converter.rowIsCompatibleWithSchema(row);
+				if (!rowIsCompatible) {
+					// Skip rows that are incompatible with the schema.
+					// The converter will have printed an error message so we know
+					// that there was a problem with that row.
+					continue;
+				}
 				Object[] valuesThisRow = converter.colValues(row);
 				rowValues.add(valuesThisRow);
 				logger.trace("after row #"+rowCount+", query size="+query.length());
