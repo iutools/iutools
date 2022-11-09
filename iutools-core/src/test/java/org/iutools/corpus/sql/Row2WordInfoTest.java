@@ -143,29 +143,28 @@ public class Row2WordInfoTest extends Row2PojoTest<WordInfo> {
 			//
 			new MorphNgramCase(
 				"Multiple morphemes - NO braces",
-				"BEG__inuk BEG__inuk__titut BEG__inuk__titut__END inuk inuk__titut inuk__titut__END titut titut__END",
+				"BEG__inuk BEG__inuk__titut BEG__inuk__titut__END inukZZZZZ inuk__titut inuk__titut__END titut titut__END",
 				true, "inuk/1n", "titut/tn-sim-p"
 			),
 			new MorphNgramCase(
 				"Multiple morphemes - WITH braces",
-				"BEG__inuk BEG__inuk__titut BEG__inuk__titut__END inuk inuk__titut inuk__titut__END titut titut__END",
+				"BEG__inuk BEG__inuk__titut BEG__inuk__titut__END inukZZZZZ inuk__titut inuk__titut__END titut titut__END",
 				true, "{inuk/1n}", "{titut/tn-sim-p}"
 			),
 			new MorphNgramCase(
 				"Single morpheme - NO braces",
-				"BEG__inuk BEG__inuk__END inuk inuk__END",
+				"BEG__inuk BEG__inuk__END inukZZZZZ inuk__END",
 				true, "inuk/1n"
 			),
 			new MorphNgramCase(
 				"Single morpheme - WITH braces",
-				"BEG__inuk BEG__inuk__END inuk inuk__END",
+				"BEG__inuk BEG__inuk__END inukZZZZZ inuk__END",
 				true, "{inuk/1n}"
 			),
 
 			new MorphNgramCase(
 				"Ngram with tailing \\",
-				"BEG__inuk BEG__inuk__END inuk inuk__END",
-//				"BEG__inuk BEG__inuk__titut BEG__inuk__titut__END inuk inuk__titut inuk__titut__END titut titut__END",
+				"BEG__inuk BEG__inuk__END inukZZZZZ inuk__END",
 				true, "inuk/1n", "\\"
 			),
 
@@ -276,10 +275,10 @@ public class Row2WordInfoTest extends Row2PojoTest<WordInfo> {
 			new FormatNgramCase("Empty decomp",
 				""),
 			new FormatNgramCase("Just ^",
-				"BEG",
+				"BEGZZZZZ",
 				"^"),
 			new FormatNgramCase("Just $",
-				"END",
+				"ENDZZZZZ",
 				"$"),
 		};
 

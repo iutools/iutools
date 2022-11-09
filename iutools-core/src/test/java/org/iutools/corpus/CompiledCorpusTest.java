@@ -206,31 +206,37 @@ public abstract class CompiledCorpusTest {
 	@Test
 	public void test__addWordOccurences__HappyPath() throws Exception {
 		CompiledCorpus corpus = makeCorpusUnderTest();
-		final String[] noWords = new String[] {};
-		String nunavut = "nunavut";
-		String nunavik = "nunavik";
 
-		String ngram_nuna = "^nuna";
-		String ngram_navik = "navik$";
+		// Note: We put at least 5 words in the corpus because MyISAM FULLTEXT search ignores words
+		//   that appear in more than half of the rows. So if we want to be able
+		//   to retrieve "nunavut" AND "nunavik" based on a common morpheme like
+		//   "nuna", we need at least 3 other words where that ngram does not
+		//   appear
+		//
+		final String[] corpusWords = new String[] {"nunavut", "nunavik", "inuksuk", "iglu", "ammuumajuq"};
+		final String[] ngramsToTest = new String[] {
+			"^nuna", "nuksu", "navik$",
+			// This one has less than 5 chars.
+			// As a result, it would be ignored by the MyISAM FULLTEXT indexing
+			// algorithm, if it wasn't for the hack we implemented (in CompiledCorpus_SQL)
+			// to artificially lengthen short ngrams.
+			//
+			"nav"
+		};
 		
 		new AssertCompiledCorpus(corpus, "Initially...")
-			.doesNotContainWords(nunavut, nunavik)
-			.doesNotContainCharNgrams(ngram_nuna, "navik$")
-			.doesNotContainCharNgrams(ngram_nuna, ngram_navik);
+			.doesNotContainWords(corpusWords)
+			.doesNotContainCharNgrams(ngramsToTest)
+			;
 		
-		corpus.addWordOccurence(nunavut);
+		for (String word: corpusWords) {
+			corpus.addWordOccurence(word);
+		}
 		Thread.sleep(1*1000);
-		new AssertCompiledCorpus(corpus, "After adding 1st word "+nunavut)
-			.containsWords(nunavut)
-			.containsCharNgrams(ngram_nuna)
-			.doesNotContainCharNgrams(ngram_navik);
-		
-		corpus.addWordOccurence(nunavik);
-		Thread.sleep(1*1000);
-		new AssertCompiledCorpus(corpus, "After adding 2nd word "+nunavik)
-			.containsWords(nunavik)
-			.containsCharNgrams(ngram_nuna)
-			.containsCharNgrams(ngram_navik);
+		new AssertCompiledCorpus(corpus, "After adding words")
+			.containsWords(corpusWords)
+			.containsCharNgrams(ngramsToTest)
+			;
 		return;
 	}
 	
@@ -304,8 +310,16 @@ public abstract class CompiledCorpusTest {
     @Test
     public void test__charNGramFrequency__HappyPath() throws Exception
     {
+
+    	// Note: We need at least 5 words if we want to test cases where
+    	// an ngram is shared by 2 words. The reason for this is that
+		// the SQL MyISAM FULLTEXT algorithms ignores words that appear in
+		// more than half of the rows.
+		//
+
 		String[] words = new String[] {
-			"nunavut", "takujuq", "iijuq"};
+			"nunavut", "takujuq", "iijuq", "iglu", "inuksuk"
+		};
 		CompiledCorpus compiledCorpus =
 				makeCorpusUnderTest(StringSegmenter_IUMorpheme.class);
 		compiledCorpus.addWordOccurences(words);
@@ -412,7 +426,14 @@ public abstract class CompiledCorpusTest {
 	
 	@Test
 	public void test__morphemeNgramFrequency__HappyPath() throws Exception {
-		String[] words = new String[] {"inuit", "inuglu", "nunami"};
+		// Note: We put at least 5 words in the corpus because MyISAM FULLTEXT search ignores words
+		//   that appear in more than half of the rows. So if we want to be able
+		//   to retrieve "nunavut" AND "nunavik" based on a common morpheme like
+		//   "nuna", we need at least 3 other words where that ngram does not
+		//   appear
+		//
+		String[] words = new String[] {
+			"inuit", "inuglu", "nunami", "iglu", "takujuq"};
 		CompiledCorpus corpus = makeCorpusUnderTest();
 		corpus.setSegmenterClassName(MockStringSegmenter_IUMorpheme.class.getName());
 		corpus.addWordOccurences(words);
@@ -537,7 +558,13 @@ public abstract class CompiledCorpusTest {
 	@Test
 	public void test__wordsContainingMorphNgram__HappyPath() throws Exception {
 		CompiledCorpus corpus = makeCorpusUnderTest(MockStringSegmenter_IUMorpheme.class);
-		String[] words = new String[] {"inuit", "inuglu", "nunami"};
+		// Note: We put at least 5 words in the corpus because MyISAM FULLTEXT search ignores words
+		//   that appear in more than half of the rows. So if we want to be able
+		//   to retrieve "nunavut" AND "nunavik" based on a common morpheme like
+		//   "nuna", we need at least 3 other words where that ngram does not
+		//   appear
+		//
+		String[] words = new String[] {"inuit", "inuglu", "nunami", "inuksuk", "takujuq"};
 		corpus.addWordOccurences(words);
 
 		String[] morphNgram = new String[] {

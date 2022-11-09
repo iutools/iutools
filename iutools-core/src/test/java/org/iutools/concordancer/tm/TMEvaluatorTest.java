@@ -33,14 +33,14 @@ public class TMEvaluatorTest {
 				"inuit qaujimanituqangit", "Inuit Qaujimajatuqangit",
 				true, false, null, null),
 
-			new Case("amiq",
-				"amiq", "Wikimedia main page",
-				false, false, null, null),
 
 			// These next cases are those among the first 20 entries of WP where:
 			// - The IU term was single-word
 			// - We found the IU term in the TM
 			//
+			new Case("amiq",
+				"amiq", "Wikimedia main page",
+				false, true, null, null),
 
 			new Case("nunavut",
 				"nunavut", "nunavut",

@@ -189,6 +189,7 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 		}
 		ngram = ngram.replaceAll("\\s+", "");
 		ngram = new NgramCompiler().replaceCaretAndDollar(ngram);
+		ngram = IUWordLengthener.lengthen(ngram);
 		return ngram;
 	}
 

@@ -532,10 +532,17 @@ public class TransCoder {
     }
 
     public static String ensureRoman(String text) {
+    	return ensureRoman(text, (Boolean)null);
+	 }
+
+    public static String ensureRoman(String text, Boolean force) {
+    	if (force == null) {
+    		force = false;
+		}
     	String romanText = null;
     	if (text != null) {
 	    	romanText = text;
-	    	if (Syllabics.syllabicCharsRatio(text) > 0.7) {
+	    	if (force || Syllabics.syllabicCharsRatio(text) > 0.7) {
 	    		romanText = unicodeToRoman(text);
 	    	}
     	}

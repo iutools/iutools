@@ -26,10 +26,10 @@ public class WordInfoSchema extends TableSchema {
 				"  `wordRoman` text NOT NULL,\n" +
 				"  `wordSyllabic` text NOT NULL,\n" +
 				"   PRIMARY KEY (word, corpusName)\n"+
-//				"   FULLTEXT(wordNgrams),\n"+
-//				"   FULLTEXT(morphemeNgrams),\n"+
-//				"   FULLTEXT(morphemeNgramsWrittenForms)\n"+
-				") ENGINE=MyISAM DEFAULT CHARSET=utf8;",
+				") \n" +
+				// Use MyISAM beacause it is faster than InnoDB and we don't need
+				// transactional integrity.
+				"  ENGINE=MyISAM DEFAULT CHARSET=utf8;",
 
 				"ALTER TABLE `WordInfo` ADD FULLTEXT(wordNgrams);",
 				"ALTER TABLE `WordInfo` ADD FULLTEXT(morphemeNgrams);",

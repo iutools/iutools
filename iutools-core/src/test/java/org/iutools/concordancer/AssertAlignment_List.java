@@ -6,6 +6,7 @@ import ca.nrc.testing.AssertNumber;
 import ca.nrc.testing.AssertString;
 import ca.nrc.testing.Asserter;
 import org.iutools.concordancer.tm.WordSpotter;
+import org.iutools.script.TransCoder;
 import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 
@@ -46,7 +47,7 @@ public class AssertAlignment_List extends Asserter<List<Alignment>> {
 		if (firstN ==null) {
 			firstN = 100;
 		}
-		sourceExpr = sourceExpr.toLowerCase();
+		String sourceExprNormalized = normalizeText(sourceExpr, sourceLang);
 		List<Alignment> firstNAlignments =
 			alignments().subList(0, Math.min(firstN, alignments().size()));
 
@@ -58,9 +59,17 @@ public class AssertAlignment_List extends Asserter<List<Alignment>> {
 			if (!anAlignment.sentences.containsKey(sourceLang)) {
 				failureReason = "did not have a sentence for the source language";
 			}
+			String sourceTextNormalized =
+				normalizeText(anAlignment.sentences.get(sourceLang), sourceLang);
+
 			if (failureReason == null &&
-				!anAlignment.sentences.get(sourceLang).toLowerCase().contains(sourceExpr)) {
-				failureReason = "did not contain the source expression";
+				!sourceTextNormalized.contains(sourceExprNormalized)) {
+				failureReason =
+					"did not contain the source ("+sourceLang+") expression '"+sourceExpr+"'\n"+
+					"Source lang : "+sourceLang+"\n" +
+					"Normalized Source expr : "+sourceExprNormalized+"\n" +
+					"Normalized Source text : "+sourceTextNormalized
+					;
 			}
 			if (failureReason != null) {
 				String mess =
@@ -71,6 +80,16 @@ public class AssertAlignment_List extends Asserter<List<Alignment>> {
 		}
 
 		return this;
+	}
+
+	private String normalizeText(String text, String lang) {
+		String normalized = null;
+		if (lang.equals("en")) {
+			normalized = text.toLowerCase();
+		} else {
+			normalized = TransCoder.ensureRoman(text, true);
+		}
+		return normalized;
 	}
 
 	public AssertAlignment_List atLeastNHits(int expMin) {

@@ -21,7 +21,7 @@ public class SQLTestHelpers {
 
 
 	public static void assertSqlNotSignificantlySlowerThanES(String operation,
-																				Map<String, Double> times) {
+		Map<String, Double> times) {
 		assertSqlNotSignificantlySlowerThanES(operation, times, (Double)null);
 	}
 

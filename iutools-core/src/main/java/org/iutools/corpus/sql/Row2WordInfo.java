@@ -92,11 +92,20 @@ public class Row2WordInfo extends Row2Pojo<WordInfo> {
 			for (String ngram: ngramsLst) {
 				logger.trace("ngram="+ngram);
 				ngram = compiler.replaceCaretAndDollar(ngram);
+				// Possibly lengthen the ngram so it has at least 5 chars (otherwise
+				// the SQL FULLTEXT indexer will ignore it
+				//
+				ngram = lengthenNgram(ngram);
 				logger.trace("After replacing caret and dollar, ngram="+ngram);
 				ngramsStr += ngram+" ";
 			}
 		}
 		return ngramsStr;
+	}
+
+	private static String lengthenNgram(String ngram) {
+		ngram = IUWordLengthener.lengthen(ngram);
+		return ngram;
 	}
 
 	public static NgramCompiler ngramsCompiler() {
@@ -145,7 +154,7 @@ public class Row2WordInfo extends Row2Pojo<WordInfo> {
 				for (int end = start; end < morphemes.size(); end++) {
 					List<String> ngramMorphemes = morphemes.subList(start, end+1);
 					String ngramAsStr = formatNgramAsSearchableString(writtenFormsOnly, ngramMorphemes);
-					if (ngramAsStr.matches("^(BEG|END|BEG__END)$")) {
+					if (ngramAsStr.matches("^(BEGZZZZZ|ENDZZZZZ|BEG__END)$")) {
 						continue;
 					}
 					if (!isFirst) {
@@ -230,6 +239,12 @@ public class Row2WordInfo extends Row2Pojo<WordInfo> {
 				ngramStr += morphStr;
 			}
 		}
+
+		// Possibly lengthen the ngram so it has at least 5 chars (otherwise
+		// the SQL FULLTEXT indexer will ignore it
+		//
+		ngramStr = IUWordLengthener.lengthen(ngramStr, true);
+
 		return ngramStr;
 	}
 

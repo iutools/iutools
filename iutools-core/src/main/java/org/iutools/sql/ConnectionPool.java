@@ -108,9 +108,9 @@ public class ConnectionPool {
 			// Initialize one and put it in the connections index.
 			try {
 				String dbName = new IUConfig().sqlDbName();
-				if (isTesting()) {
-					dbName += "_test";
-				}
+//				if (isTesting()) {
+//					dbName += "_test";
+//				}
 				BasicDataSource ds = dataSource4DB(dbName);
 
 				// This is so we can have more than one opened ResultSet for the same
