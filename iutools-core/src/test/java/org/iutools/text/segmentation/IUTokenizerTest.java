@@ -2,8 +2,12 @@ package org.iutools.text.segmentation;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
+import ca.nrc.testing.RunOnCases;
+import static ca.nrc.testing.RunOnCases.Case;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Before;
@@ -53,7 +57,78 @@ public class IUTokenizerTest {
 	// VERIFICATION TESTS
 	/////////////////////////////
 	
-	
+	@Test
+	public void test__tokenize__VariousCases() throws Exception {
+		TokenizationCase[] cases = new TokenizationCase[] {
+			new TokenizationCase("Roman - just spaces", "iglu inuksuk nunavut",
+				"iglu", "inuksuk", "nunavut")
+				.setAllTokens(
+					Pair.of("iglu", true), Pair.of(" ", false),
+					Pair.of("inuksuk", true), Pair.of(" ", false),
+					Pair.of("nunavut", true)),
+
+			new TokenizationCase("Roman - with punctuation", "iglu: inuksuk, nunavut",
+				"iglu", "inuksuk", "nunavut")
+				.setAllTokens(
+					Pair.of("iglu", true), Pair.of(":", false), Pair.of(" ", false),
+					Pair.of("inuksuk", true), Pair.of(",", false), Pair.of(" ", false),
+					Pair.of("nunavut", true)),
+
+			// Some words (in particular "sounds" like "ouch") contain apostrophes.
+			// For example, "chicken" is written as "a'a'aak"
+			new TokenizationCase("Roman - Word with apostrophes (=chicken)", "a'a'aak inuksuk",
+				"a'a'aak", "inuksuk"),
+
+			new TokenizationCase("Numbered list", "iglu 1. inuksuk 2. nunavut ... 10. inuktitut.",
+			"iglu", "1", "inuksuk", "2", "nunavut", "10", "inuktitut"),
+
+			new TokenizationCase("Syll - just spaces", "ᐃᒡᓗ ᐃᓄᒃᓱᒃ ᓄᓇᕗᑦ",
+				"ᐃᒡᓗ", "ᐃᓄᒃᓱᒃ", "ᓄᓇᕗᑦ"),
+
+			new TokenizationCase("Syll - with punctuation", "ᐃᒡᓗ: ᐃᓄᒃᓱᒃ, ᓄᓇᕗᑦ",
+				"ᐃᒡᓗ", "ᐃᓄᒃᓱᒃ", "ᓄᓇᕗᑦ"),
+
+			// Some words (in particular "sounds" like "ouch") contain apostrophes.
+			// For example, "chicken" is written as "a'a'aak"
+			new TokenizationCase("Syll - Word with apostrophes (=chicken)", "ᐊ'ᐊ'ᐋᒃ ᐃᓄᒃᓱᒃ",
+				"ᐊ'ᐊ'ᐋᒃ", "ᐃᓄᒃᓱᒃ"),
+		};
+
+		Consumer<Case> runner =
+			(uncastCase) ->
+			{
+				try {
+					TokenizationCase aCase = (TokenizationCase)uncastCase;
+					String text = aCase.text;
+					List<String> expWords = aCase.expWords;
+					List<Token> expTokens = aCase.expTokens;
+					IUTokenizer tokenizer = new IUTokenizer();
+					List<String> gotWords = tokenizer.tokenize(text);
+					AssertObject.assertDeepEquals(
+						"Words not as expected for text '"+text+"'",
+						expWords, gotWords
+					);
+					if (expTokens != null) {
+						List<Token> gotTokens = tokenizer.getAllTokens();
+						AssertObject.assertDeepEquals(
+							"Tokens not as expected for text '"+text+"'",
+							expTokens, gotTokens
+						);
+
+					}
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			};
+
+		new RunOnCases(cases, runner)
+//			.onlyCaseNums(4)
+//			.onlyCasesWithDescr("en-SEARCH-housing")
+			.run();
+
+		return;
+
+	}
 	
 	@Test
 	public void test____processInitialPunctuation() {
@@ -281,39 +356,7 @@ public class IUTokenizerTest {
 		};
 		AssertObject.assertDeepEquals("", expectedTokens, tokenizer.getTokens());
 	}
-	
-	@Test
-	public void test_run__Case_numbered_list() throws IOException {
-		IUTokenizer tokenizer = new IUTokenizer();
-		String text;
-		text = "he said 1. ok 2. fine ... 10. no.";
-		tokenizer.tokenize(text);
-		Token[] expectedTokens = new Token[] {
-			new Token("he",true),
-			new Token(" ",false),
-			new Token("said",true),
-			new Token(" ",false),
-			new Token("1",true),
-			new Token(".",false),
-			new Token(" ",false),
-			new Token("ok",true),
-			new Token(" ",false),
-			new Token("2",true),
-			new Token(".",false),
-			new Token(" ",false),
-			new Token("fine",true),
-			new Token(" ",false),
-			new Token("...",false),
-			new Token(" ",false),
-			new Token("10",true),
-			new Token(".",false),
-			new Token(" ",false),
-			new Token("no",true),
-			new Token(".",false)
-		};
-		AssertObject.assertDeepEquals("", expectedTokens, tokenizer.getTokens());
-	}
-	
+
 	@Test
 	public void test__tokenize__URL() throws IOException {
 		IUTokenizer tokenizer = new IUTokenizer();
@@ -332,5 +375,31 @@ public class IUTokenizerTest {
 			
 		};
 		AssertObject.assertDeepEquals("", expTokens, gotTokens);
-	}	
+	}
+
+	//////////////////////////////////////
+	// Test Helpers
+	//////////////////////////////////////
+
+	public static class TokenizationCase extends Case {
+
+		public String text = null;
+		public List<Token> expTokens = null;
+		public List<String> expWords = null;
+
+		public TokenizationCase(String _descr, String _text, String... _expWords) {
+			super(_descr, null);
+			text = _text;
+			expWords = new ArrayList<String>();
+			Collections.addAll(expWords, _expWords);
+		}
+
+		public TokenizationCase setAllTokens(Pair<String,Boolean>... tokens) {
+			expTokens = new ArrayList<Token>();
+			for (Pair<String,Boolean> token: tokens) {
+				expTokens.add(new Token(token.getLeft(), token.getRight()));
+			}
+			return this;
+		}
+	}
 }

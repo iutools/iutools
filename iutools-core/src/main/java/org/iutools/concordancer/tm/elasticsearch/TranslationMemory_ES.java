@@ -11,9 +11,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import org.iutools.concordancer.Alignment;
-import org.iutools.concordancer.Alignment_ES;
 import org.iutools.concordancer.tm.TranslationMemory;
 import org.iutools.concordancer.tm.TranslationMemoryException;
+import org.iutools.corpus.CompiledCorpusException;
 import org.iutools.datastructure.CloseableIteratorChain;
 import org.iutools.elasticsearch.ES;
 import org.iutools.script.TransCoder;
@@ -91,21 +91,16 @@ public class TranslationMemory_ES extends TranslationMemory {
 		}
 	}
 
-	public CloseableIterator<Alignment> searchIter(
-		String sourceLang, String sourceExpr, String... targetLangs) throws TranslationMemoryException {
+	@Override
+	public void removeAligmentsFromDoc(String docID) throws CompiledCorpusException {
+		// TODO: IMPLEMENT THIS
+	}
+
+	public CloseableIterator<Alignment> search(
+		String sourceLang, String[] sourceExprVariants, String targetLang) throws TranslationMemoryException {
 		List<CloseableIterator<Alignment>> iterators =
 			new ArrayList<CloseableIterator<Alignment>>();
 		try {
-			String[] sourceExprVariants = new String[]{sourceExpr};
-			if (sourceLang.equals("iu")) {
-				// For iu, try the search with both scripts.
-				// Some of the TMs use roman while others use syllabic
-				sourceExprVariants = new String[]{
-					TransCoder.ensureScript(TransCoder.Script.SYLLABIC, sourceExpr),
-					TransCoder.ensureScript(TransCoder.Script.ROMAN, sourceExpr),
-				};
-			}
-
 			for (boolean withAlignment: new boolean[] {true, false}) {
 				// First look for alignments that have word-level alignments
 				for (String expr: sourceExprVariants) {
@@ -171,30 +166,5 @@ public class TranslationMemory_ES extends TranslationMemory {
 		} catch (Exception e) {
 			throw new TranslationMemoryException(e);
 		}
-	}
-
-	public List<Alignment> search(String sourceLang, String sourceExpr,
-		String... targetLangs) throws TranslationMemoryException {
-		Logger tLogger = LogManager.getLogger("org.iutools.concordancer.tm.TranslationMemory.search");
-		List<Alignment> alignments = new ArrayList<Alignment>();
-		try {
-			Iterator<Alignment> iter = searchIter(sourceLang,sourceExpr, targetLangs);
-			while (iter.hasNext()) {
-				Alignment alignment = iter.next();
-				if (tLogger.isTraceEnabled()) {
-					String hasOrNot = "HAS";
-					if (alignment.walign4langpair == null ||
-						alignment.walign4langpair.isEmpty()) {
-						hasOrNot = "HAS NO";
-					}
-					tLogger.trace("Alignment "+hasOrNot+" word level alignments");
-				}
-				alignments.add(alignment);
-			}
-		} catch (Exception e) {
-			throw new TranslationMemoryException(e);
-		}
-
-		return alignments;
 	}
 }

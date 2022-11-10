@@ -33,7 +33,7 @@ public abstract class CorpusSanityCheckTest {
 			.totalWordsWithDecompIs(221225)
 			.totalOccurencesWithDecompIs(1098344)
 			.totalWordsWithoutDecompsIs(186119)
-			.totalOccurencesWithNoDecompIs(377493)
+			.totalOccurencesWithNoDecompIs(377499)
 			;
 	}
 	

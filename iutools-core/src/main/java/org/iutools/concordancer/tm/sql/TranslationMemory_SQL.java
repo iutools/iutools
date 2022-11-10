@@ -2,18 +2,21 @@ package org.iutools.concordancer.tm.sql;
 
 import ca.nrc.datastructure.CloseableIterator;
 import ca.nrc.dtrc.elasticsearch.ESFactory;
+import ca.nrc.json.PrettyPrinter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.iutools.concordancer.Alignment;
 import org.iutools.concordancer.tm.TranslationMemory;
 import org.iutools.concordancer.tm.TranslationMemoryException;
+import org.iutools.corpus.CompiledCorpusException;
+import org.iutools.corpus.sql.IUWordLengthener;
+import org.iutools.corpus.sql.QueryComposer;
 import org.iutools.script.TransCoder;
 import org.iutools.script.TransCoderException;
 import org.iutools.sql.*;
 
 import java.nio.file.Path;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,6 +27,7 @@ public class TranslationMemory_SQL extends TranslationMemory {
 	AlignmentSchema alignmentSchema = new AlignmentSchema();
 	Row2Alignment row2Alignment = new Row2Alignment();
 	QueryProcessor queryProcessor = new QueryProcessor();
+	PrettyPrinter prettyPrinter = new PrettyPrinter();
 
 	public TranslationMemory_SQL() {
 		super();
@@ -46,21 +50,213 @@ public class TranslationMemory_SQL extends TranslationMemory {
 	}
 
 	@Override
-	public CloseableIterator<Alignment> searchIter(String sourceLang, String sourceExpr, String... targetLangs) throws TranslationMemoryException {
+	public void removeAligmentsFromDoc(String docID) throws CompiledCorpusException {
+		String sql =
+			"DELETE FROM "+alignmentSchema.tableName+"\n"+
+			"WHERE\n"+
+			"  `from_doc` = ?;"
+			;
+		try (ResultSetWrapper rsw = new QueryProcessor().query(sql, docID)) {
+
+		} catch (Exception e) {
+			throw new CompiledCorpusException(e);
+		}
+	}
+
+	@Override
+	public CloseableIterator<Alignment> search(
+		String sourceLang, String[] sourceExprVariants, String targetLang) throws TranslationMemoryException {
+
+
+		// 10x slower than ES
+//		return search__VariantsSingleQuery__WalignSeparateQueries(
+//			sourceLang, sourceExprVariants, targetLang);
+
+		// 10x slower than ES
+//		return search__VariantsSingleQuery__WalignRequireThem(
+//			sourceLang, sourceExprVariants, targetLang);
+
+		// 10x slower than ES
+//		return search__VariantsSingleQuery__WalignDontWorryAboutThem__SortingNone(
+//			sourceLang, sourceExprVariants, targetLang);
+
+		// 10x slower than ES
+		return search__VariantsSeparateQueries__WalignSeparateQueries__SortByLength(
+			sourceLang, sourceExprVariants, targetLang);
+	}
+
+
+	public CloseableIterator<Alignment> search__VariantsSingleQuery__WalignDontWorryAboutThem__SortingNone(
+		String sourceLang, String[] sourceExprVariants, String targetLang) throws TranslationMemoryException {
 		Logger logger = LogManager.getLogger("org.iutools.concordancer.tm.sql.TranslationMemory_SQL.searchIter");
 		CloseableIterator<Alignment> iter = null;
+
 		String sql =
 			"SELECT * FROM "+alignmentSchema.tableName+"\n"+
-			"WHERE\n";
+			"WHERE\n"
+			;
 		String sourceTextCol = sourceLang+"_text";
-		sql += "  MATCH(`"+sourceTextCol+"`) AGAINST(?)";
+		String[] sourceExprsNormalized = new String[sourceExprVariants.length];
+		sql += "  (";
+		for (int ii=0; ii < sourceExprVariants.length; ii++) {
+			if (ii > 0) {
+				sql += "OR";
+			}
+			sql += "\n";
+			sql += "    MATCH(`"+sourceTextCol+"`) AGAINST(?)";
+			sourceExprsNormalized[ii] =
+				normalizeSearchExpression(sourceExprVariants[ii], sourceLang);
+		}
+		sql += "\n  )";
+
+		if (logger.isTraceEnabled()) {
+			logger.trace("sourceLang="+sourceLang+
+				", sourceExprVariants="+prettyPrinter.pprint(sourceExprVariants)+
+				", sourceExprsNormalized="+prettyPrinter.pprint(sourceExprsNormalized));
+			logger.trace("sql="+sql);
+		}
 		ResultSetWrapper rsw = null;
 		try {
-			rsw = new QueryProcessor().query(sql, sourceExpr);
+			rsw = new QueryProcessor().query(sql, sourceExprsNormalized);
+			if (logger.isTraceEnabled()) {
+				logger.trace("returned rsw "+(rsw.isEmpty()?"IS":"is NOT")+" empty");
+				logger.trace("sourceExprVariant="+prettyPrinter.pprint(sourceExprVariants));
+			}
+
 			return rsw.iterator(new Row2Alignment());
 		} catch (SQLException e) {
 			throw new TranslationMemoryException(e);
 		}
+	}
+
+
+	public CloseableIterator<Alignment> search__VariantsSingleQuery__WalignRequireThem(
+		String sourceLang, String[] sourceExprVariants, String targetLang) throws TranslationMemoryException {
+		Logger logger = LogManager.getLogger("org.iutools.concordancer.tm.sql.TranslationMemory_SQL.searchIter");
+		CloseableIterator<Alignment> iter = null;
+
+		iter = search(sourceLang, sourceExprVariants, targetLang, true);
+
+		return iter;
+	}
+
+
+//	@Override
+	public CloseableIterator<Alignment> search__VariantsSingleQuery__WalignSeparateQueries(
+		String sourceLang, String[] sourceExprVariants, String targetLang) throws TranslationMemoryException {
+		Logger logger = LogManager.getLogger("org.iutools.concordancer.tm.sql.TranslationMemory_SQL.searchIter");
+		CloseableIterator<Alignment> iter = null;
+
+		// First look for sentences that have word-level alignments
+		iter = search(sourceLang, sourceExprVariants, targetLang, true);
+		if (!iter.hasNext()) {
+			// If no sentence have word-level alignments, try searching
+			// sentences that don't hav eit.
+			try {
+				iter.close();
+			} catch (Exception e) {
+				throw new TranslationMemoryException(e);
+			}
+			iter = search(sourceLang, sourceExprVariants, targetLang, false);
+		}
+
+		return iter;
+	}
+
+	public CloseableIterator<Alignment> search__VariantsSeparateQueries__WalignSeparateQueries__SortByLength(
+		String sourceLang, String[] sourceExprVariants, String targetLang) throws TranslationMemoryException {
+		Logger logger = LogManager.getLogger("org.iutools.concordancer.tm.sql.TranslationMemory_SQL.searchIter");
+		CloseableIterator<Alignment> iter = null;
+
+		for (String aVariant: sourceExprVariants) {
+			// First look for sentences that have word-level alignments
+			iter = search(sourceLang, new String[]{aVariant}, targetLang, true);
+			if (!iter.hasNext()) {
+				// If no sentence have word-level alignments, try searching
+				// sentences that don't hav eit.
+				try {
+					iter.close();
+				} catch (Exception e) {
+					throw new TranslationMemoryException(e);
+				}
+				iter = search(sourceLang, sourceExprVariants, targetLang, false);
+			}
+		}
+
+		return iter;
+	}
+
+
+	public CloseableIterator<Alignment> search(
+		String sourceLang, String[] sourceExprVariants, String targetLang,
+		boolean withWordLevelAlignment) throws TranslationMemoryException {
+		Logger logger = LogManager.getLogger("org.iutools.concordancer.tm.sql.TranslationMemory_SQL.searchIter");
+
+		String sql =
+			"SELECT * FROM "+alignmentSchema.tableName+"\n"+
+			"WHERE\n"
+			;
+		if (withWordLevelAlignment) {
+			sql += "  has_word_alignments = true AND\n";
+		}
+		String sourceTextCol = sourceLang+"_text";
+		String[] sourceExprsNormalized = new String[sourceExprVariants.length];
+		sql += "  (";
+		for (int ii=0; ii < sourceExprVariants.length; ii++) {
+			if (ii > 0) {
+				sql += "OR";
+			}
+			sql += "\n";
+			sql += "    MATCH(`"+sourceTextCol+"`) AGAINST(?)";
+			sourceExprsNormalized[ii] =
+				normalizeSearchExpression(sourceExprVariants[ii], sourceLang);
+		}
+		sql += "\n  )";
+
+		String[] sortCriteria = new String[]{
+			// We favor short sentences because the word alignment is more likely to be correct (presumably).
+			//
+			sourceLang + "_length:asc",
+			// We also sort alignments alphabetically to provide a predictable result.
+//			sourceTextCol
+		};
+		try {
+			sql += "\n"+QueryComposer.sqlOrderBy(sortCriteria);
+		} catch (SQLException e) {
+			throw new TranslationMemoryException(e);
+		}
+		if (logger.isTraceEnabled()) {
+			logger.trace("sourceLang="+sourceLang+
+				", sourceExprVariants="+prettyPrinter.pprint(sourceExprVariants)+
+				", sourceExprsNormalized="+prettyPrinter.pprint(sourceExprsNormalized));
+			logger.trace("sql="+sql);
+		}
+
+		sql += "\nLIMIT 1000";
+
+		ResultSetWrapper rsw = null;
+		try {
+			rsw = new QueryProcessor().query(sql, sourceExprsNormalized);
+			if (logger.isTraceEnabled()) {
+				logger.trace("returned rsw "+(rsw.isEmpty()?"IS":"is NOT")+" empty");
+				logger.trace("sourceExprVariant="+prettyPrinter.pprint(sourceExprVariants));
+			}
+
+			return rsw.iterator(new Row2Alignment());
+		} catch (SQLException e) {
+			throw new TranslationMemoryException(e);
+		}
+	}
+
+	private String normalizeSearchExpression(String searchExpression, String inLang) {
+		String normalized = searchExpression;
+		if (inLang.equals("iu")) {
+			// We need to artificially lengthen short words so they won't be ignored
+			// by the SQL MyISAM FULLTEXT search engine.
+			//
+			normalized = IUWordLengthener.lengthen(searchExpression);
+		}
+		return normalized;
 	}
 
 	@Override
@@ -68,49 +264,32 @@ public class TranslationMemory_SQL extends TranslationMemory {
 		return;
 	}
 
-	@Override
-	public List<Alignment> search(String sourceLang, String sourceExpr, String... targetLangs) throws TranslationMemoryException {
-		List<Alignment> hits = new ArrayList<Alignment>();
-		ensureLangIsSupported(sourceLang);
-		String[] sourceExpressions = new String[] {sourceExpr};
-		String textColName = sourceLang+"_text";
-		if (sourceLang.equals("iu")) {
+	/**
+	 * Given a source expression to be searched in a language, "normalize" it
+	 * and possibly expand it.
+	 */
+	private String[] normalizeAndExpandSearchExpression(String expression, String lang) throws TranslationMemoryException {
+		String[] modifiedExpressions = null;
+		if (lang.equals("iu")) {
 			try {
-				sourceExpressions = new String[] {
-					sourceExpr, TransCoder.inOtherScript(sourceExpr)
-				};
+				// For an iu query, we need to expand it to include the word in the
+				// both scripts.
+				//
+				// Also, we need to lengthen short words so they won't be ignored
+				// by the MyISAM FULLTEXT search
+				modifiedExpressions = new String[2];
+				String expOtherScript = TransCoder.inOtherScript(expression);
+				modifiedExpressions[0] = IUWordLengthener.lengthen(expression);
+				modifiedExpressions[1] = IUWordLengthener.lengthen(expOtherScript);
 			} catch (TransCoderException e) {
-				// If there is a problem converting to the other script, don't worrry
-				// about it.
+				throw new TranslationMemoryException(e);
 			}
+		} else {
+			// Nothing special to do for expressions that are in languages other than
+			// iu
+			modifiedExpressions = new String[] {expression};
 		}
-		String sql =
-			"SELECT * FROM "+alignmentSchema.tableName+"\n"+
-			"WHERE\n"+
-			"  (";
-		boolean isFirst = true;
-		for (String aSourceExpr: sourceExpressions) {
-			if (!isFirst) {
-				sql += " OR\n";
-			}
-			sql += "    MATCH(`"+textColName+"`) AGAINST(?)";
-			isFirst = false;
-		}
-		sql += "\n  )\n";
-		ResultSetWrapper rsw = null;
-		try {
-			rsw = queryProcessor.query(sql, sourceExpressions);
-		} catch (SQLException e) {
-			throw new TranslationMemoryException(e);
-		}
-		try (CloseableIterator<Alignment> iter = rsw.iterator(row2Alignment)) {
-			while (iter.hasNext()) {
-				hits.add(iter.next());
-			}
-		} catch (Exception e) {
-			throw new TranslationMemoryException(e);
-		}
-		return hits;
+		return modifiedExpressions;
 	}
 
 	private void ensureLangIsSupported(String lang) throws TranslationMemoryException {

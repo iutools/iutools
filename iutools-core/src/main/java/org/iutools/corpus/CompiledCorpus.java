@@ -473,28 +473,6 @@ public abstract class CompiledCorpus {
 		return canonizeCorpusName(indexName);
 	}
 
-	public static Pair<String, Order> parseSortOrderDescr(String critStr) throws CompiledCorpusException {
-		String field = critStr;
-		Sort.Order order = Order.asc;
-		String[] parts = critStr.split("\\:");
-		String errMess = "Invalid sorting criterion string: " + critStr;
-		if (parts.length > 2) {
-			throw new CompiledCorpusException(
-			errMess +
-			"\n  Should not have contained more than one occurence of ':'");
-		} else if (parts.length == 2) {
-			field = parts[0];
-			try {
-				order = Order.valueOf(parts[1].toLowerCase());
-			} catch (Exception e) {
-				throw new CompiledCorpusException(
-				errMess +
-				"\n  invalid sort order '" + parts[1] + "'");
-			}
-		}
-		return Pair.of(field, order);
-	}
-
 	protected String[] replaceCaretAndDollar(String[] ngramArr) {
 		String[] ngramArrRepl = Arrays.copyOfRange(ngramArr, 0, ngramArr.length);
 		if (ngramArrRepl[0].equals("^")) {

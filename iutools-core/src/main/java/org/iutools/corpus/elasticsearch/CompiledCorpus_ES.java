@@ -17,6 +17,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.iutools.corpus.*;
+import org.iutools.corpus.sql.QueryComposer;
+import org.iutools.datastructure.SortOrder;
+import org.iutools.datastructure.SortOrderException;
 import org.iutools.elasticsearch.ES;
 import org.iutools.script.TransCoder;
 import org.iutools.script.TransCoderException;
@@ -718,7 +721,12 @@ public class CompiledCorpus_ES extends CompiledCorpus {
 	private RequestBodyElement[] esSortCriteria(String[] sortCriteria) throws CompiledCorpusException {
 		List<RequestBodyElement> esCriteria = new ArrayList<RequestBodyElement>();
 		for (String critStr: sortCriteria) {
-			Pair<String,Order> fieldAndOrder = parseSortOrderDescr(critStr);
+			Pair<String,Order> fieldAndOrder = null;
+			try {
+				fieldAndOrder = SortOrder.parseSortOrderDescr(critStr);
+			} catch (SortOrderException e) {
+				throw new CompiledCorpusException(e);
+			}
 			Sort esCrit =
 				new Sort().sortBy(fieldAndOrder.getLeft(), fieldAndOrder.getRight());
 			esCriteria.add(esCrit);

@@ -19,8 +19,10 @@ public class IUTokenizer {
 			"«", "\u2018", "\u201B", "\u201C", "\u201F", // opening quote signs
 			"»", "\u2019", "\u201D", };
 	static Pattern pParan = Pattern.compile("(\\((.*?)\\))");
-	// TODO: add other signs that might be used in the stead of "dash"
-	static Pattern pPunct = Pattern.compile("((\\p{Punct}|\u2212|\u2013)+)");
+	// Note: Some IU words may contain apostrophes (ex: a'a'aak = chicken)
+	// hence we exclude them from punctuation marks
+	//
+	static Pattern pPunct = Pattern.compile("(([^0-9'a-zA-Zᐁ-ᙶ]|\u2212|\u2013)+)");
 	static Pattern pAcronym = Pattern.compile("^([^\\.]\\.)+$");
 
 	public List<String> tokens = new ArrayList<String>();
@@ -107,8 +109,9 @@ public class IUTokenizer {
 			logger.debug("found punctuation pattern in " + token + " at position " + mpunct.start(1));
 			if (punctuationMark.matches("&+") && mpunct.start(1) != 0)
 				continue;
-			if (pos != mpunct.start(1))
+			if (pos != mpunct.start(1)) {
 				allTokensPunctuation.add(new Token(token.substring(pos, mpunct.start(1)), true));
+			}
 			allTokensPunctuation.add(new Token(punctuationMark, false));
 			pos = mpunct.end(1);
 		}

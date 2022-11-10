@@ -9,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.iutools.concordancer.Alignment;
 import org.iutools.concordancer.WordAlignment;
+import org.iutools.corpus.sql.IUWordLengthener;
 import org.iutools.sql.Row2Pojo;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -19,6 +20,11 @@ import java.util.List;
 import java.util.Map;
 
 public class Row2Alignment extends Row2Pojo<Alignment> {
+
+	// If an SQL row has this value in the word_aligns_json column, it meanst that
+	// this particular alignment does not have word-level alignments
+	//
+	public static final String JSON_NO_WORD_ALIGNMENTS = "[\"java.util.HashMap\",{}]";
 
 	PolymorphicTypeValidator ptv = BasicPolymorphicTypeValidator
 		.builder()
@@ -64,6 +70,7 @@ public class Row2Alignment extends Row2Pojo<Alignment> {
 		JSONArray topics = (JSONArray) removeColumn(row, "topics");
 		removeColumn(row, "languages");
 		removeColumn(row, "sentences");
+		JSONObject sentenceLengths = (JSONObject) removeColumn(row, "sentenceLengths");
 
 		// Create columns that are derived from some Alignment fields
 		row.put("topics_json", (topics == null?"[]":topics.toString()));
@@ -75,16 +82,26 @@ public class Row2Alignment extends Row2Pojo<Alignment> {
 			throw new SQLException("Could not serialize word alignments", e);
 		}
 
+		boolean has_word_alignments =
+			(alignment.walign4langpair != null &&
+			 !alignment.walign4langpair.isEmpty());
+		row.put("has_word_alignments", has_word_alignments);
 		JSONArray languages = new JSONArray();
 		String enText = alignment.sentence4lang("en");
 		if (enText != null) {
 			row.put("en_text", enText);
+			row.put("en_length", enText.length());
 			languages.put("en");
 		}
 
 		String iuText = alignment.sentence4lang("iu");
+		// We need to artificially lengthen short words so they won't be ignored
+		// by the SQL MyISAM FULLTEXT search algorithm.
+		//
+		iuText = IUWordLengthener.lengthen(iuText);
 		if (iuText != null) {
-			row.put("iu_text", alignment.sentence4lang("iu"));
+			row.put("iu_text", iuText);
+			row.put("iu_length", iuText.length());
 			languages.put("iu");
 		}
 
@@ -106,8 +123,19 @@ public class Row2Alignment extends Row2Pojo<Alignment> {
 			// - have different types in the row vs Alignment (ex: JSONArray vs Array)
 			removeColumn(row, "langs_json");
 			String enText = (String) removeColumn(row, "en_text");
+			removeColumn(row, "en_length");
 			String iuText = (String) removeColumn(row, "iu_text");
+			removeColumn(row, "iu_length");
+
+
+			// Note: Short words in the text stored in SQL were artificially
+			// lengthened so they would not be ignored by MyISAM FULLTEXT indexing
+			// Therefore we need to restore them to their original length.
+			//
+			iuText = IUWordLengthener.restoreLengths(iuText);
 			String jsonWordAligns = (String) removeColumn(row, "word_aligns_json");
+			removeColumn(row, "langpairs_with_walign");
+			removeColumn(row, "has_word_alignments");
 			String topicsJson = (String) removeColumn(row, "topics_json");
 
 			// Create the Alignment from the remaining fields

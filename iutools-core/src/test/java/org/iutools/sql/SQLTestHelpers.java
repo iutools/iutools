@@ -10,14 +10,18 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.text.DecimalFormat;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public class SQLTestHelpers {
 
 	public static final String defaultTestDB = "iutools_test_db";
 
 	private static boolean connPoolOverheadEncured = false;
+
+	private static DecimalFormat fmtPercent = new DecimalFormat("#%");
 
 
 	public static void assertSqlNotSignificantlySlowerThanES(String operation,
@@ -26,90 +30,71 @@ public class SQLTestHelpers {
 	}
 
 	public static void assertSqlNotSignificantlySlowerThanES(String operation,
-																				Map<String, Double> times, Double tolerance) {
+		Map<String, Double> times, Double tolerance) {
 		if (tolerance == null) {
 			tolerance = 0.0;
 		}
 		System.out.println("Running times for operation "+operation);
 		System.out.println(new PrettyPrinter().pprint(times));
+		double sqlTime = times.get("sql");
 		double esTime = times.get("es");
+		double gotDelta = sqlTime - esTime;
+		double gotDetalPerc = gotDelta / esTime;
+		double maxDelta = tolerance * esTime;
+		DecimalFormat fmtPercent = new DecimalFormat("#%");
+
+		String deltaStats =
+			"  SQL time  : "+sqlTime+"\n"+
+			"  ES time   : "+esTime+"\n"+
+			"  Got delta : "+gotDelta+" ("+fmtPercent.format(gotDetalPerc)+")\n";
+		System.out.println(deltaStats);
+
 		Assertions.assertTrue(
-			times.get("sql") <= times.get("es") + tolerance*esTime,
+			gotDelta < maxDelta,
 			"SQL implementation was slower than ES by more than "+
-			new DecimalFormat("#%").format(tolerance)+"%\n"+
-			"NOTE: This test can fail intermittently if the machine was busier at the time\n"+
+			deltaStats+
+			"NOTE: This assertion can fail intermittently if the machine was busier at the time\n"+
 			"  when the SQL implementation was run.");
 	}
 
-	public static void assertAboutSameSpeed(
-		String operation, Map<String, Double> times, double tolerance) throws Exception {
-		System.out.println("Running times for operation "+operation);
-		System.out.println(new PrettyPrinter().pprint(times));
+	public static void assertSqlNotSignificantlySlowerThanES_NEW(
+		String operation, Map<String, TimingResults> times) {
+		assertSqlNotSignificantlySlowerThanES_NEW(operation, times, (Double)null);
+	}
 
-		// First, find the fastest implementaiton.
-		double fastestTime = Long.MAX_VALUE;
-		String fastestImpl = null;
-		for (String implName: times.keySet()) {
-			double implTime = times.get(implName);
-			if (implTime < fastestTime) {
-				fastestImpl = implName;
-				fastestTime = implTime;
-			}
+	public static void assertSqlNotSignificantlySlowerThanES_NEW(
+		String operation, Map<String, TimingResults> times, Double tolerance) {
+		if (tolerance == null) {
+			tolerance = 0.0;
 		}
-		System.out.println("Fastest implentation was: "+fastestImpl+"="+fastestTime);
+		TimingResults timesSql = times.get("sql");
+		double sqlTime = timesSql.msecsPerCase();
+		TimingResults timesES = times.get("es");
+		double esTime = timesES.msecsPerCase();
+		double gotDelta = sqlTime - esTime;
+		double gotDetalPerc = gotDelta / esTime;
+		double maxDelta = tolerance * esTime;
+		DecimalFormat fmtPercent = new DecimalFormat("#%");
 
-		// Then make sure that all implementations are within tolerance of
-		// the fastest implementation
-		for (String implName: times.keySet()) {
-			double implTime = times.get(implName);
-			System.out.println("  Checking speed of implementation "+implName);
-//			AssertNumber.performanceHasNotChanged(operation, implTime, fastestImpl, tolerance);
-			AssertNumber.performanceHasNotChanged(
-				operation, 1.0*implTime, 1.0*fastestTime, tolerance);
+		String deltaStats =
+			"  SQL time  : "+sqlTime+"\n"+
+			"  ES time   : "+esTime+"\n"+
+			"  Got delta : "+gotDelta+" ("+fmtPercent.format(gotDetalPerc)+")\n";
+		System.out.println(deltaStats);
+
+		if (gotDelta > maxDelta) {
+			timesSql.reportSlowerCases(timesES);
 		}
+
+		Assertions.assertTrue(
+			gotDelta <= maxDelta,
+			"SQL implementation was slower than ES by more than "+
+			deltaStats+
+			"NOTE: This assertion can fail intermittently if the machine was busier at the time\n"+
+			"  when the SQL implementation was run.");
 	}
 
 
-	public static void assertNoSlowerThan(
-		String operation, String implOfConcern, Map<String, Double> times, double tolerance) throws Exception {
-		System.out.println("Running times for operation "+operation);
-		System.out.println(new PrettyPrinter().pprint(times));
-
-		// First, find the fastest implementaiton.
-		double fastestTime = Long.MAX_VALUE;
-		String fastestImpl = null;
-		for (String implName: times.keySet()) {
-			double implTime = times.get(implName);
-			if (implTime < fastestTime) {
-				fastestImpl = implName;
-				fastestTime = implTime;
-			}
-		}
-		System.out.println("Fastest implentation was: "+fastestImpl+"="+fastestTime);
-
-		// Then make sure that the implementation of concern is not "too" slow
-		// compared to the fastest one.
-		double implOfConcernTime = times.get(implOfConcern);
-		double delta = (implOfConcernTime - fastestTime) / fastestTime;
-		System.out.println("Delta of "+implOfConcern+" w.r.t "+fastestImpl+": "+delta);
-		if (delta > 0 && Math.abs(delta) > tolerance) {
-			Assertions.fail("Implementation "+implOfConcern+" was slower than "+fastestImpl+" a factor of "+delta+" (max allowed: "+tolerance+").");
-		}
-	}
-
-	public static void assertOpenedResourcesAre(String mess,
-		int expStatements, int expResultSets) throws Exception {
-		Map<String,Integer> expResources = new HashMap<String,Integer>();
-		expResources.put("Statement", expStatements);
-		expResources.put("ResultSet", expResultSets);
-
-		Map<String,Integer> gotResources = new HashMap<String,Integer>();
-		gotResources.put("Statement", ResourcesTracker.totalStatements());
-		gotResources.put("ResultSet", ResourcesTracker.totalResultSets());
-
-		AssertObject.assertDeepEquals(mess,
-			expResources, gotResources);
-	}
 
 	/**
 	 * Get and close hundreds of connections from the pool to avoid encurring
@@ -146,5 +131,63 @@ public class SQLTestHelpers {
 		String sql = "SHOW TABLES;";
 		ResultSetWrapper rsw = new QueryProcessor().query(sql);
 		return rsw;
+	}
+
+	public static class TimingResults {
+		public Map<String,Long> casesMsecs = new HashMap<String,Long>();
+		public long totalMsecs = 0;
+
+		// Note: The total number of instances may be greater than the total
+		//  number of unique cases (because some cases may be evaluated more
+		//  than once).
+		public long totalInstances = 0;
+
+		public void onNewCase(String caseName, long caseMsecs) {
+			if (!casesMsecs.containsKey(caseName)) {
+				casesMsecs.put(caseName, new Long(0));
+			}
+			casesMsecs.put(caseName, casesMsecs.get(caseName) + caseMsecs);
+			totalMsecs += caseMsecs;
+			totalInstances++;
+		}
+
+		public double msecsPerCase() {
+			return 1.0 * totalMsecs / totalInstances;
+		}
+
+		public void reportSlowerCases(TimingResults otherResults) {
+			reportSlowerCases(otherResults, (Double)null);
+
+		}
+
+		public void reportSlowerCases(TimingResults otherResults, Double tolerance) {
+			if (tolerance == null) {
+				tolerance = 0.0;
+			}
+			Map<String,Double> slowCases = new HashMap<String,Double>();
+			for (String aCase: casesMsecs.keySet()) {
+				Long thisTime = this.casesMsecs.get(aCase);
+				Long otherTime = otherResults.casesMsecs.get(aCase);
+				Long delta = (thisTime - otherTime);
+				double deltaRelative = 1.0* delta / otherTime;
+				if (delta > tolerance) {
+					slowCases.put(aCase, deltaRelative);
+				}
+			}
+			Stream<Map.Entry<String,Double>> sortedSlowCases =
+				slowCases.entrySet().stream()
+					.sorted(Collections.reverseOrder(Map.Entry.comparingByValue()));
+			System.out.println("Significantly slower cases below (in decreasing order of speed):");
+			for (Map.Entry<String,Long> aCase: sortedSlowCases.toArray(Map.Entry[]::new)) {
+					System.out.println(
+						"  "+aCase.getKey()+": was longer by "+
+						fmtPercent.format(aCase.getValue())+
+						" > " + fmtPercent.format(tolerance));
+			}
+
+		}
+
+
+
 	}
 }

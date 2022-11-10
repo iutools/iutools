@@ -47,6 +47,19 @@ public class DictEvaluationTest {
 			results.avgSecsPerEntryPresent, 1.545,
 			"avg secs for retrieving a dict entry", testInfo);
 
+		int totalENSpotted_Strict = 2;
+		int totalENSpotted_Lenient = 0;
+		int totalENSpotted_LenientOverlap = 1;
+		if (new IUConfig().tmDataStore().equals("sql")) {
+			totalENSpotted_Lenient = 1;
+		}
+		int totalEnSpotted_AtLeastStrict = totalENSpotted_Strict;
+		int totalEnSpotted_AtLeastLenient =
+			totalENSpotted_Strict + totalENSpotted_Lenient;
+		int totalEnSpotted_AtLeastLenientOverlap =
+			totalENSpotted_Strict + totalENSpotted_Lenient +
+			totalENSpotted_LenientOverlap;
+
 		new AssertDictEvaluationResults(results)
 			.totalGlossaryEntries(stopAfterN)
 			.totalSingleWordIUEntries(13)
@@ -54,17 +67,17 @@ public class DictEvaluationTest {
 			.totalIUPresent(WhatTerm.ORIGINAL, 6)
 			.totalIUPresent(WhatTerm.RELATED, 2)
 
-			.totalENSpotted(MatchType.STRICT, 2)
-			.totalENSpotted(MatchType.LENIENT, 0)
-			.totalENSpotted(MatchType.LENIENT_OVERLAP, 1)
+			.totalENSpotted(MatchType.STRICT, totalENSpotted_Strict)
+			.totalENSpotted(MatchType.LENIENT, totalENSpotted_Lenient)
+			.totalENSpotted(MatchType.LENIENT_OVERLAP, totalENSpotted_LenientOverlap)
 
-			.totalENSpotted_atLeastInSense(MatchType.STRICT, 2)
-			.totalENSpotted_atLeastInSense(MatchType.LENIENT, 2)
-			.totalENSpotted_atLeastInSense(MatchType.LENIENT_OVERLAP,3)
+			.totalENSpotted_atLeastInSense(MatchType.STRICT, totalEnSpotted_AtLeastStrict)
+			.totalENSpotted_atLeastInSense(MatchType.LENIENT, totalEnSpotted_AtLeastLenient)
+			.totalENSpotted_atLeastInSense(MatchType.LENIENT_OVERLAP,totalEnSpotted_AtLeastLenientOverlap)
 
-			.rateENSpotted(MatchType.STRICT, 2.0/8)
-			.rateENSpotted(MatchType.LENIENT, 2.0/8)
-			.rateENSpotted(MatchType.LENIENT_OVERLAP, 3.0/8)
+			.rateENSpotted(MatchType.STRICT, 1.0*totalEnSpotted_AtLeastStrict/8)
+			.rateENSpotted(MatchType.LENIENT, 1.0*totalEnSpotted_AtLeastLenient/8)
+			.rateENSpotted(MatchType.LENIENT_OVERLAP, 1.0*totalEnSpotted_AtLeastLenientOverlap/8)
 			;
 	}
 
@@ -76,30 +89,51 @@ public class DictEvaluationTest {
 			.setMinMaxPairs(null, 100)
 			.setMaxTranslations(10);
 
+		// Change those if you want to debug specific glossary entries
 		Integer stopAfterN = null;
 		Integer startingAtN = null;
+
 		DictEvaluationResults results =
 			evaluator.evaluate(Paths.get(glossaryPath), stopAfterN, startingAtN);
 		AssertRuntime.runtimeHasNotChanged(
 			results.avgSecsPerEntryPresent, 0.20,
 			"avg secs for retrieving a dict entry", testInfo);
 
+		int expTotalIUPresent = 183;
+		int expTotalEnSpotted_Strict = 93;
+		int expTotalEnSpotted_Lenient = 4;
+		int expTotalEnSpotted_LenientOverlap = 11;
+		if (new IUConfig().tmDataStore().equals("sql")) {
+			// Some of the expectations are different for SQL
+			expTotalIUPresent = 185;
+			expTotalEnSpotted_Strict = 93;
+			expTotalEnSpotted_Lenient = 3;
+			expTotalEnSpotted_LenientOverlap = 13;
+		}
+		int expTotalEnSpotted_atLeastStrict = expTotalEnSpotted_Strict;
+		int expTotalEnSpotted_atLeastLenient =
+			expTotalEnSpotted_Strict + expTotalEnSpotted_Lenient;
+		int expTotalEnSpotted_atLeastLenientOverlap =
+			expTotalEnSpotted_Strict + expTotalEnSpotted_Lenient +
+			expTotalEnSpotted_LenientOverlap;
+
 		new AssertDictEvaluationResults(results)
 			.totalGlossaryEntries(556)
 			.totalSingleWordIUEntries(465)
 
-			.totalIUPresent(WhatTerm.ORIGINAL, 183)
+			// For ES TM
+			.totalIUPresent(WhatTerm.ORIGINAL, expTotalIUPresent)
 			.totalIUPresent(WhatTerm.RELATED, 75)
 
-			.totalENSpotted(MatchType.STRICT, 92)
-			.totalENSpotted(MatchType.LENIENT, 5)
-			.totalENSpotted(MatchType.LENIENT_OVERLAP, 11)
+			.totalENSpotted(MatchType.STRICT, expTotalEnSpotted_Strict)
+			.totalENSpotted(MatchType.LENIENT, expTotalEnSpotted_Lenient)
+			.totalENSpotted(MatchType.LENIENT_OVERLAP, expTotalEnSpotted_LenientOverlap)
 
-			.totalENSpotted_atLeastInSense(MatchType.STRICT, 92)
-			.totalENSpotted_atLeastInSense(MatchType.LENIENT, 97)
-			.totalENSpotted_atLeastInSense(MatchType.LENIENT_OVERLAP, 108)
+			.totalENSpotted_atLeastInSense(MatchType.STRICT, expTotalEnSpotted_atLeastStrict)
+			.totalENSpotted_atLeastInSense(MatchType.LENIENT, expTotalEnSpotted_atLeastLenient)
+			.totalENSpotted_atLeastInSense(MatchType.LENIENT_OVERLAP, expTotalEnSpotted_atLeastLenientOverlap)
 
-			.rateENSpotted(MatchType.STRICT, 0.357)
+			.rateENSpotted(MatchType.STRICT, 0.360)
 			.rateENSpotted(MatchType.LENIENT, 0.376)
 			.rateENSpotted(MatchType.LENIENT_OVERLAP, 0.419)
 			;

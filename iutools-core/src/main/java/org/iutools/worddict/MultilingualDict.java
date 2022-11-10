@@ -328,7 +328,7 @@ public class MultilingualDict {
 		Logger tLogger = LogManager.getLogger("org.iutools.worddict.MultilingualDict.computeTranslationsAndExamples");
 		List<String> justOneWord = new ArrayList<String>();
 		justOneWord.add(entry.word);
-		retrieveTranslationsAndExamples(entry, justOneWord);
+ 		retrieveTranslationsAndExamples(entry, justOneWord);
 		return;
 	}
 
@@ -446,7 +446,7 @@ public class MultilingualDict {
 		try {
 			for (String l1Word : l1Words) {
 				CloseableIterator<Alignment> iter =
-					new TMFactory().makeTM().searchIter(l1, l1Word, l2);
+					new TMFactory().makeTM().search(l1, l1Word, l2);
 				iterators.put(l1Word, iter);
 			}
 		} catch (TranslationMemoryException e) {
@@ -676,7 +676,7 @@ public class MultilingualDict {
 
 	private Boolean wordExists_EN(String word) throws TranslationMemoryException {
 		Iterator<Alignment> tmIter =
-			new TMFactory().makeTM().searchIter("en", word);
+			new TMFactory().makeTM().search("en", word, "iu");
 		return tmIter.hasNext();
 	}
 
@@ -705,7 +705,7 @@ public class MultilingualDict {
 		Long totalWords = null;
 		List<String> words = new ArrayList<String>();
 		try (CloseableIterator<Alignment> tmIter =
-				new TMFactory().makeTM().searchIter("en", partialWord)) {
+				new TMFactory().makeTM().search("en", partialWord, "iu")) {
 			if (tmIter.hasNext()) {
 				words.add(partialWord);
 			}

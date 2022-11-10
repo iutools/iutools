@@ -20,7 +20,8 @@ public class AlignmentSchema extends TableSchema {
 	public String[] unsortedColumnNames() {
 		return new String[] {
 			"from_doc", "pair_num", "web_domain", "topics_json", "langs_json",
-			"en_text", "iu_text", "word_aligns_json"
+			"en_text", "en_length", "iu_text", "iu_length", "word_aligns_json",
+			"has_word_alignments",
 		};
 	}
 
@@ -32,10 +33,13 @@ public class AlignmentSchema extends TableSchema {
 				"  `web_domain` varchar(200) DEFAULT '[]',\n" +
 				"  `topics_json` varchar(200) DEFAULT '[]',\n" +
 				"  `en_text` varchar("+MAX_SENTENCE_LEN+") DEFAULT '',\n" +
+				"  `en_length` int(11) NOT NULL,\n" +
 				"  `iu_text` varchar("+MAX_SENTENCE_LEN+") DEFAULT '',\n" +
+				"  `iu_length` int(11) NOT NULL,\n" +
 				"  `from_doc` varchar("+MAX_FROM_DOC_LEN+") NOT NULL,\n" +
 				"  `pair_num` int(11) NOT NULL,\n" +
 				"  `word_aligns_json` varchar("+MAX_WORD_ALIGN_LEN+") DEFAULT NULL,\n" +
+				"  `has_word_alignments` boolean,\n" +
 				"   PRIMARY KEY (from_doc, pair_num)\n"+
 				") ENGINE=MyISAM DEFAULT CHARSET=utf8;",
 

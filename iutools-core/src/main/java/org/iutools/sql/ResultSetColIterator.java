@@ -20,6 +20,8 @@ public class ResultSetColIterator<C> implements CloseableIterator<C> {
 	private String colName = null;
 	private JSONObject nextRowData = null;
 
+	Logger closedResourcesLogger = LogManager.getLogger("org.iutools.sql.closedResources");
+
 	public <C> ResultSetColIterator(ResultSet _rs, Statement _statement,
 		String _colName, Class<C> _clazz) {
 		super();
@@ -69,6 +71,13 @@ public class ResultSetColIterator<C> implements CloseableIterator<C> {
 	@Override
 	public boolean hasNext() {
 		Logger logger = LogManager.getLogger("org.iutools.sql.ResultSetColIterator.hasNext");
+		try {
+			if (closedResourcesLogger.isTraceEnabled() && rs.isClosed()) {
+				closedResourcesLogger.trace("** Someone closed the ResultSet on us!!");
+			}
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
 		traceState("-> Upon entry", logger);
 		boolean answer = (nextRowData != null && !nextRowData.keySet().isEmpty());
 		traceState("<- Upon exit", logger);

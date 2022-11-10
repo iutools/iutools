@@ -44,6 +44,23 @@ public class MultilingualDictTest {
 
 		// Cases for entry4word function
 		cases_entry4word = new MultilingualDictCase[] {
+			new MultilingualDictCase("iu-nunaqaqqaaqsimajut (=aboriginal people)", "nunaqaqqaaqsimajut")
+				.setDecomp(
+					"nunaqaq/1v", "qqaaq/1vv", "sima/1vv", "jut/tv-ger-3p")
+				.relatedWordsShouldBeAmong(
+					"nunaqaqqaasimajut", "nunaqaqtunik", "nunaqaqtunut", "nunaqaqtut",
+  					"nunaqaratta")
+				.setMinTranslations(5)
+				.hasTranslationsForOrigWord(true)
+				.bestTranslationsAreAmong(
+					// Reasonable complete or partial translations
+					"aboriginal people", "aboriginal", "indigenous peoples", "aboriginal ... affairs",
+					"nations",
+					// These are not translation by they may appear in the list for
+					// some reason
+					"affirmative", "aptn", "tvnc ... apt", "circumpolar"
+				)
+				.setMinExamples(5),
 
 			new MultilingualDictCase("iu-ammuumajuq", "ammuumajuq")
 				.setDecomp(
@@ -99,8 +116,8 @@ public class MultilingualDictTest {
 				.setMinExamples(5)
 				.setMinTranslations(5)
 				.bestTranslationsAreAmong(new String[]{
-					"sealift", "ship", "shipped", "shipping", "shipping season",
-					"marine ... late", "sea cans", "ships", "vessels"}),
+					"barge", "sealift", "ship", "shipped", "shipping", "shipping season",
+					"supply", "marine ... late", "sea cans", "ships", "vessels"}),
 
 			new MultilingualDictCase("iu-kiugavinnga", "kiugavinnga")
 				.relatedWordsShouldBeAmong(
@@ -117,7 +134,8 @@ public class MultilingualDictTest {
 					"najugauvattunut")
 				.setMinTranslations(5)
 				.bestTranslationsAreAmong(
-					"centres", "facility", "home", "homes", "units", "residence",
+					"centres", "facility", "group home", "home", "homes", "units",
+					"residence",
 					// Words below are not proper translations but for some reason
 					// they can be returned by the algorithm
 					"shows"
@@ -132,7 +150,11 @@ public class MultilingualDictTest {
 					// Note: These started appearing when we moved from ES to SQL
 					// for the TM data store
 					"ᐃᒡᓗᑖᕆᐊᖃᕐᓂᐊᕐᒪᖔᑕ", "ᐃᒡᓗᓕᕆᔨᐊᓛᒃᑯᑦ", "ᐃᓪᓗᒃᐸᑕ ... ᐃᓪᓗᖃᕐᓂᕐᒧᑦ",
-					"ᐃᓪᓗᓕᕆᔨᕐᔪᐊᒃᑯᑦ","ᐃᓪᓗᖁᑎᖏᑦ"
+					"ᐃᓪᓗᓕᕆᔨᕐᔪᐊᒃᑯᑦ","ᐃᓪᓗᖁᑎᖏᑦ", "ᐃᒡᓗᓕᕆᓂᕐᒥ", "ᐃᓪᓗᒃᓴᖏᑦ", "ᐃᓪᓗᓕᕆᓂᖅ",
+					"ᐃᓪᓗᖏᑦ",
+					// Hum... this one doesn't start with the same characters as
+					// the rest of the translations
+					"ᓄᓇᕗᒻᒥ"
 				)
 				.setMinExamples(5)
 				.relatedWordsShouldBeAmong(),

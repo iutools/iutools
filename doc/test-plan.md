@@ -109,7 +109,7 @@ Invalid IU word that DOES appear in the Hansard
 Very long word
 - Search for aanniaqarnanngittulirijikkunnik
 - Make sure that the word and its Syllabics transcoding are properly displayed 
-and do not overlap with the test that is supposed to be below it
+and do not overlap with the text that is supposed to be below it
 
 Change preferred script (INUTKTITUT query)
 - ROMAN-to-ROMAN
@@ -469,9 +469,9 @@ Change max number of examples
 
 Syllabic text
 - Copy and paste some Syllabic text from https://www.gov.nu.ca/iu
-- Hit [Gist Text]
+- Hit [Assist Reading]
 - Check that 
-  - Text has been Romanized
+  - Text is displayed in the PREFERRED SCRIPT
   - Hover the mouse over a word:
     - It shows that it's clickable
     - Clicking on that IU word opens the dictionary entry for that IU word, and 
@@ -479,13 +479,15 @@ Syllabic text
   - Hover the mouse over a NON-word (ex: period, comma, space):
     - It does NOT show that it's clickable
     - Clicking on that NON-word does NOT produce a Gist
+- Change the Preffered script and click [Assist Reading] again
+  - Check that the text is now diplayed in the new PREFERRED script
 
 Romanized text
-- Copy and paste some syllabics text from https://www.gov.nu.ca/iu
+- Copy some syllabics text from https://www.gov.nu.ca/iu
 - Translitarate it to roman and paste it into the Gister form
-- Hit [Gist Text]
+- Hit [Assist Reading]
 - Check that 
-  - Text _stayed_ Romanized
+  - Text is displayed in the current PREFERRED script
   - Hover the mouse over a word:
     - It shows that it's clickable
     - Clicking on that IU word opens the dictionary entry for that IU word, and 
@@ -496,6 +498,8 @@ Romanized text
       - NOTE: In this particular scenario, if the the original text contained 
         an English word whose characters are all valid IU Latin chars (ex: 'main')
         then this word may be clickable eventhough it is not IU.
+- Change the Preffered script and click [Assist Reading] again
+  - Check that the text is now diplayed in the new PREFERRED script
 
 Word that does not decompose
 - Enter text: 'ᓴᕕᑲᑖᖅ' (This is a proper noun)
@@ -513,14 +517,14 @@ Syllabic text that contains some English word with only IU latin chars
 - Enter some syllabics text and add the word 'main' in it (note: all characters 
 in that word are valid Latin IU chars)
 - Gist that text
-- Check that the text has been romanized
+- Check that the text is displayed in the PREFERRED script
 - Check that all Inuktitut romanized words are clickable...
   - But the English word 'main' is NOT clickable     
      
 Text that contains an INVALID out-of-corpus word
 - Enter 'ninuksuk' and Assist Reading
 - Click on the word ninuksuk in the gist
-- Make sure that the word entry concludes and says 'No entry found for this word' 
+- Make sure that the word entry shows empty info in all sections 
 
 Text that contains a VALID out-of-corpus word
 - Enter '???' and Assist Reading
@@ -531,25 +535,29 @@ IU url (Happy Path)
 - Enter url https://www.gov.nu.ca/iu
 - Check that
   - IU sentences on the left, En on the right
-  - IU Text has been Romanized
+  - IU Text displayed in the current PREFERRED script
   - Hover the mouse over a word:
     - It shows that it's clickable
     - Clicking on that IU word opens a Dictionary Entry for that word
   - Hover the mouse over a NON-word (ex: period, comma, space):
     - It does NOT show that it's clickable
     - Clicking on that NON-word does NOT produce a Gist
+- Change the PREFERRED script and hit [Assist Reading] again
+  - Check that the IU text is now displayed in the new preferred script
 
 En url (Happy Path)
 - Enter https://www.gov.nu.ca/honourable-joe-savikataaq-4
 - Check that
   - IU sentences on the left, En on the right
-  - IU Text has been Romanized
+  - IU Text displayed in the current PREFERRED script
   - Hover the mouse over a word:
     - It shows that it's clickable
     - Clicking on that IU word opens a Dictionary Entry for that word
   - Hover the mouse over a NON-word (ex: period, comma, space):
     - It does NOT show that it's clickable
     - Clicking on that NON-word does NOT open a Dictionary Entry for that word
+- Change the PREFERRED script and hit [Assist Reading] again
+  - Check that the IU text is now displayed in the new preferred script
 
      
 Undownloadable pages
@@ -635,7 +643,7 @@ Word Entry window hiding/showing
  Take a sheet of paper and write down the following categories:
 
     // Searching a word with the Inuktitut-English Dictioary
-    DICTIONARY_SEARC
+    DICTIONARY_SEARCH
     
     // Looking up a word, whether it be from the Inuktitut-English Dictioary or
     // any other InuktiTools app
@@ -658,7 +666,10 @@ Word Entry window hiding/showing
    InuktiTools apps
    - Whenever you perform an action that corresponds to one of the above 
      categories, put a tick mark beside it so you keep track of how many 
-    times you did that action. 
+     times you did that action. 
+     - NOTE: When you do a word dict SEARCH and it produces some results,
+       it also counts as  WORD_LOOKUP (because it automatically displayce 
+       the dict entry for the first hit)
    - Make sure you do each of the actions more than once.
 - Once you have done all the actions more than once, run the cli command
 

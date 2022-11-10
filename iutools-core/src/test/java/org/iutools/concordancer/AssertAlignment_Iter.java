@@ -12,48 +12,45 @@ import org.junit.jupiter.api.Assertions;
 
 import java.util.*;
 
-public class AssertAlignment_List extends Asserter<List<Alignment>> {
+
+public class AssertAlignment_Iter extends Asserter<Iterator<Alignment>>{
+
+	private Integer maxHits = null;
 
 	FrequencyHistogram<String> alignIDsFrequency = new FrequencyHistogram<String>();
+	List<Alignment> firstNAlignments = new ArrayList<Alignment>();
 
-	public AssertAlignment_List(List<Alignment> _gotObject) {
+	public AssertAlignment_Iter(Iterator<Alignment> _gotObject) {
 		super(_gotObject);
-		init__AssertAlignment_List();
+		init__AssertAlignment_Iter((Integer)null);
 	}
 
-	public AssertAlignment_List(List<Alignment> _gotObject, String mess) {
+	public AssertAlignment_Iter(Iterator<Alignment> _gotObject, String mess) {
 		super(_gotObject, mess);
-		init__AssertAlignment_List();
+		init__AssertAlignment_Iter((Integer)null);
 	}
 
-	private void init__AssertAlignment_List() {
-		for (Alignment align: alignments()) {
+	private void init__AssertAlignment_Iter(Integer _maxHits) {
+		if (_maxHits == null) {
+			maxHits = 100;
+		}
+		Iterator<Alignment> iter = (Iterator<Alignment>) gotObject;
+		while (iter.hasNext() && firstNAlignments.size() < maxHits) {
+			Alignment align = iter.next();
 			alignIDsFrequency.updateFreq(align.getId());
+			firstNAlignments.add(align);
 		}
 		return;
 	}
 
-	protected List<Alignment> alignments() {
-		return this.gotObject;
-	}
 
-	public AssertAlignment_List hitsMatchQuery(
+	public AssertAlignment_Iter hitsMatchQuery(
 		String sourceLang, String sourceExpr) {
-		return hitsMatchQuery(sourceLang, sourceExpr, (Integer)null);
-	}
-
-	public AssertAlignment_List hitsMatchQuery(
-		String sourceLang, String sourceExpr, Integer firstN) {
-		if (firstN ==null) {
-			firstN = 100;
-		}
 		String sourceExprNormalized = normalizeText(sourceExpr, sourceLang);
-		List<Alignment> firstNAlignments =
-			alignments().subList(0, Math.min(firstN, alignments().size()));
 
 		PrettyPrinter pprinter = new PrettyPrinter();
 		int algnCount = 0;
-		for (Alignment anAlignment: alignments()) {
+		for (Alignment anAlignment: firstNAlignments) {
 			algnCount++;
 			String failureReason = null;
 			if (!anAlignment.sentences.containsKey(sourceLang)) {
@@ -73,7 +70,7 @@ public class AssertAlignment_List extends Asserter<List<Alignment>> {
 			}
 			if (failureReason != null) {
 				String mess =
-					"At least one alignment in the first "+firstN+" "+failureReason+"\n"+
+					"At least one alignment in the first "+maxHits+" "+failureReason+"\n"+
 					"Alignment:\n"+new PrettyPrinter().pprint(anAlignment);
 				Assert.fail(mess);
 			}
@@ -93,13 +90,18 @@ public class AssertAlignment_List extends Asserter<List<Alignment>> {
 		return normalized;
 	}
 
-	public AssertAlignment_List atLeastNHits(int expMin) {
-		AssertNumber.isGreaterOrEqualTo(alignments().size(), expMin);
+	public AssertAlignment_Iter atLeastNHits(int expMin) {
+		AssertNumber.isGreaterOrEqualTo(
+			"Total number of alignments was too low.",
+			firstNAlignments.size(), expMin);
 		return this;
 	}
 
-	public AssertAlignment_List atMostNHits(int expMax) {
-		AssertNumber.isLessOrEqualTo(alignments().size(), expMax);
+
+	public AssertAlignment_Iter atMostNHits(int expMax) {
+		AssertNumber.isLessOrEqualTo(
+			"Total number of alignments was too high.",
+			firstNAlignments.size(), expMax);
 		return this;
 	}
 
@@ -108,7 +110,7 @@ public class AssertAlignment_List extends Asserter<List<Alignment>> {
 		throws Exception {
 		List<String> gotTranslations = new ArrayList<String>();
 		boolean found = false;
-		for (Alignment alignment: alignments()) {
+		for (Alignment alignment: firstNAlignments) {
 			SentencePair pair = alignment.sentencePair(l1, l2);
 			WordSpotter spotter = new WordSpotter(pair);
 			Map<String, String> spottings = spotter.spot(l1, l1Word);
@@ -121,7 +123,7 @@ public class AssertAlignment_List extends Asserter<List<Alignment>> {
 		Assertions.fail("FINISH IMPLEMENTING THIS ASSERTION");
 	}
 
-	public AssertAlignment_List containsNoDuplicates() {
+	public AssertAlignment_Iter containsNoDuplicates() {
 		String errMess = "";
 		for (String algnId: alignIDsFrequency.allValues()) {
 			if (alignIDsFrequency.frequency(algnId) > 1) {

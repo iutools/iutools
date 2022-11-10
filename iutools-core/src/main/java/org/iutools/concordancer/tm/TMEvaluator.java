@@ -1,9 +1,11 @@
 package org.iutools.concordancer.tm;
 
+import ca.nrc.config.ConfigException;
 import ca.nrc.data.file.FileGlob;
 import ca.nrc.data.file.ObjectStreamReader;
 import static ca.nrc.dtrc.elasticsearch.ESFactory.*;
 
+import ca.nrc.data.file.ObjectStreamReaderException;
 import ca.nrc.debug.Debug;
 import ca.nrc.json.PrettyPrinter;
 import ca.nrc.string.StringUtils;
@@ -17,10 +19,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.iutools.concordancer.Alignment;
 import org.iutools.concordancer.SentencePair;
-import org.iutools.concordancer.tm.elasticsearch.TranslationMemory_ES;
 import org.iutools.config.IUConfig;
 import org.iutools.script.TransCoder;
 import org.iutools.worddict.GlossaryEntry;
+import org.iutools.worddict.MultilingualDictException;
+import org.iutools.worddict.SynsDict;
+import org.iutools.worddict.Synset;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -29,6 +33,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class TMEvaluator {
 
@@ -50,19 +55,29 @@ public class TMEvaluator {
 	private Path tmFile;
 	private Path glossaryFile;
 
-	public TMEvaluator() throws TranslationMemoryException {
+	static SynsDict synsDict = new SynsDict();
+	static {
+		try {
+			readSynsDict();
+		} catch (MultilingualDictException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+
+	public TMEvaluator() throws TranslationMemoryException, MultilingualDictException {
 		init__TMEvaluator((Path)null, (Path)null);
 	}
 
-	public TMEvaluator(Path _sentPairsOutputFile) throws TranslationMemoryException {
+	public TMEvaluator(Path _sentPairsOutputFile) throws TranslationMemoryException, MultilingualDictException {
 		init__TMEvaluator(_sentPairsOutputFile, (Path)null);
 	}
 
-	public TMEvaluator(Path _sentPairsOutputFilePath, Path _tmFile) throws TranslationMemoryException {
+	public TMEvaluator(Path _sentPairsOutputFilePath, Path _tmFile) throws TranslationMemoryException, MultilingualDictException {
 		init__TMEvaluator(_sentPairsOutputFilePath, _tmFile);
 	}
 
-	private void init__TMEvaluator(Path _sentPairsOutputFile, Path _tmFile) throws TranslationMemoryException {
+	private void init__TMEvaluator(Path _sentPairsOutputFile, Path _tmFile) throws TranslationMemoryException, MultilingualDictException {
 		userIO = new UserIO();
 		if (_sentPairsOutputFile != null) {
 			try {
@@ -78,6 +93,25 @@ public class TMEvaluator {
 		}
 		return;
 	}
+
+		private static void readSynsDict() throws MultilingualDictException {
+		String enSynsPath = null;
+		try {
+			enSynsPath = IUConfig.getIUDataPath("data/glossaries/en-synonyms.json");
+			ObjectStreamReader reader = new ObjectStreamReader(new File(enSynsPath));
+			while (true) {
+				Synset synset = (Synset) reader.readObject();
+				if (synset == null) {
+					break;
+				}
+				synsDict.addSynset(synset.synonyms);
+			}
+		} catch (ConfigException | IOException | ClassNotFoundException | ObjectStreamReaderException e) {
+			throw new MultilingualDictException(
+				"Problem reading synonyms file "+enSynsPath, e);
+		}
+	}
+
 
 	private void createTestTM(Path tmFile) throws TranslationMemoryException {
 		tm = TMFactory.makeTM(testTMName);
@@ -174,7 +208,7 @@ public class TMEvaluator {
 			AlignmentsSummary analysis = new AlignmentsSummary();
 			iuTerm_syll = iuTerm_syll.toLowerCase();
 			enTerm = enTerm.toLowerCase();
-			Iterator<Alignment> algsIter = tm.searchIter("iu", iuTerm_syll, "en");
+			Iterator<Alignment> algsIter = tm.search("iu", iuTerm_syll, "en");
 			int totalAlignments = 0;
 			while (algsIter.hasNext() && totalAlignments < MAX_ALIGNMENTS) {
 				boolean attemptSpotting = false;
@@ -405,7 +439,7 @@ public class TMEvaluator {
 		String term1 = String.join("", term1Toks).toLowerCase();
 		String term2 = String.join("", term2Toks).toLowerCase();
 		logger.trace("term1="+term1+", term2="+term2);
-		if (term1.equals(term2)) {
+		if (areSynonyms(term1, term2)) {
 			logger.trace("STRICT match");
 			matchType = MatchType.STRICT;
 			overlap = term1;
@@ -632,5 +666,50 @@ public class TMEvaluator {
 		System.out.println("    firstN: If provided, will only evaluate the firstN entries in the WP glossary");
 		System.exit(1);
 	}
+
+	public static boolean areSynonyms(String expression, String otherExpression) {
+		expression = expression.toLowerCase();
+		otherExpression = otherExpression.toLowerCase();
+		boolean answer = synsDict.synonymsFor(expression).contains(otherExpression);
+		if (!answer) {
+			// Expressions are not direct synonyms of each other.
+			// If these are multi-word expressions, check if we can substitute
+			// some of the words for synonyms
+			String[] words = expression.split("[\\s]+");
+			String[] otherWords = expression.split("[\\s]+");
+			if (words.length > 1 | otherWords.length > 0) {
+				answer = areSynonyms_MultiWord(words, otherExpression);
+			}
+		}
+		return answer;
+	}
+
+	private static boolean areSynonyms_MultiWord(String[] words, String expression) {
+		// Compose a regexp that will match all the synonyms for each word
+		String exprRegex = "";
+		for (String aWord: words) {
+			String regexOneWord = Pattern.quote(aWord);
+			Set<String> aWordSyns = synsDict.synonymsFor(aWord);
+			for (String aSyn: aWordSyns) {
+//				aSyn = aSyn.replaceAll("-", "\\-");
+				aSyn = Pattern.quote(aSyn);
+				if (!regexOneWord.isEmpty()) {
+					regexOneWord += "|";
+				}
+				regexOneWord += aSyn;
+			}
+			regexOneWord = "("+regexOneWord+")";
+			if (!exprRegex.isEmpty()) {
+				exprRegex += "[\\-\\s]+";
+			}
+			exprRegex += regexOneWord;
+		}
+
+		exprRegex = "^"+exprRegex+"$";
+
+		boolean areSynonyms = Pattern.compile(exprRegex).matcher(expression).matches();
+		return areSynonyms;
+	}
+
 }
 

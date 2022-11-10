@@ -305,4 +305,55 @@ public class TMEvaluatorTest {
 			.run();
 
 	}
+
+	@Test
+	public void test__areSynonyms__VariousCases() throws Exception {
+		CaseSynonyms[] cases = new CaseSynonyms[] {
+			new CaseSynonyms("mutli-word synonymous",
+				"indigenous people", "aboriginal people", true),
+			new CaseSynonyms("word always synonym with itself",
+				"hello", "hello", true),
+			new CaseSynonyms("mutli-word NON synonymous",
+				"indigenous people", "canadian people", false),
+			new CaseSynonyms("synonymit is case insensitive",
+				"indigenous people", "Aboriginal People", true),
+
+		};
+
+		Consumer<Case> runner = (caseUncasted) -> {
+			CaseSynonyms aCase = (CaseSynonyms) caseUncasted;
+			String expr1 = aCase.expression1;
+			String expr2 = aCase.expression2;
+			Boolean expSynonimity = aCase.expSynonymity;
+			Boolean gotSynonymity = TMEvaluator.areSynonyms(expr1, expr2);
+			Assertions.assertEquals(
+				expSynonimity, gotSynonymity,
+				"Synonymity of expressions "+expr1+" and "+expr2+" was not as expected");
+		};
+
+		new RunOnCases(cases, runner)
+//			.onlyCaseNums(2)
+			.run();
+	}
+
+
+	////////////////////////////////////////////
+	// TEST HELPERS
+	////////////////////////////////////////////
+
+	public static class CaseSynonyms extends Case {
+
+		String expression1 = null;
+		String expression2 = null;
+		Boolean expSynonymity = null;
+
+		public CaseSynonyms(String _descr, String _expr1, String _expr2,
+			boolean _expSynonymity) {
+			super(_descr, null);
+			this.expression1 = _expr1;
+			this.expression2 = _expr2;
+			this.expSynonymity = _expSynonymity;
+		}
+	}
+
 }

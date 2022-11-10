@@ -62,7 +62,7 @@ public class SQLLeakMonitor {
 	}
 
 	private void printLeakedResourcesMessage(String mess) {
-		System.out.println("SQLLeakMonitor["+mess+"]: There were already some leaked resource when we started this monitor: Statements="+stmtAtStart+", ResultSets="+rsAtStart);
+		System.out.println("SQLLeakMonitor["+mess+"]: Some SQL resources were leaked: Statements="+stmtAtStart+", ResultSets="+rsAtStart);
 		printLeakedResourcesProvenance();
 	}
 
@@ -118,11 +118,15 @@ public class SQLLeakMonitor {
 	}
 
 	public void assertNoLeaks() {
+		assertNoLeaks("");
+	}
+
+	public void assertNoLeaks(String mess) {
 		int leakedSets = leakedResultSets();
 		int leakedStatements = leakedStatements();
 		int totalLeaked = leakedSets + leakedStatements;
 		if (totalLeaked > 0) {
-			String mess =
+			mess +=
 				"Some SQL resources were leaked!\n";
 			if (leakedSets > 0) {
 				mess += "  ResultSets : " + leakedSets + "\n";

@@ -16,8 +16,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-import static org.iutools.concordancer.tm.TMEvaluator.matchTypes;
-
 public class DictEvaluator {
 
 	UserIO userIO = new UserIO();
@@ -28,7 +26,7 @@ public class DictEvaluator {
 		init__DictEvaluator();
 	}
 
-	private void init__DictEvaluator() {
+	private void init__DictEvaluator() throws MultilingualDictException {
 	}
 
 	public DictEvaluator setMinMaxPairs(Integer min, Integer max) throws MultilingualDictException {

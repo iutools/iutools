@@ -15,7 +15,7 @@ public class Alignment extends Document {
 	public List<String> topics = new ArrayList<String>();
 	public Map<String,String> sentences = new HashMap<String,String>();
 	public Map<String,WordAlignment> walign4langpair = new HashMap<String,WordAlignment>();
-
+	private Map<String,Integer> _sentenceLengths = null;
 
 	public Alignment() {
 		super();
@@ -74,6 +74,23 @@ public class Alignment extends Document {
 	public Alignment setWordAlignment(WordAlignment walign) {
 		walign4langpair.put(walign.langPair, walign);
 		return this;
+	}
+
+	/**
+	 * This attribute allows sorting alignments by the length of sentences
+	 * in a given language
+	 */
+	public Map<String,Integer> getSentenceLengths() {
+		if (_sentenceLengths == null) {
+			_sentenceLengths = new HashMap<String,Integer>();
+			for (String lang: languages()) {
+				String sent = sentence4lang(lang);
+				if (sent != null) {
+					_sentenceLengths.put(lang, sent.length());
+				}
+			}
+		}
+		return _sentenceLengths;
 	}
 
 	public String sentence4lang(String lang) {

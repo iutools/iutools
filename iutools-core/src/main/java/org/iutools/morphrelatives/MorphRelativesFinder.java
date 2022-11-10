@@ -130,7 +130,7 @@ public class MorphRelativesFinder {
 		String[] segments = null;
 
 		try {
-			// First, try to get the analysi from the word info in the
+			// First, try to get the analysis from the word info in the
 			// corpus
 			WordInfo winfo = this.compiledCorpus.info4word(word);
 			if (winfo != null) {

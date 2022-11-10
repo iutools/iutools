@@ -12,10 +12,16 @@
 	For some reason that we don't yet understand, those indices can end up with
 	some corrupted WordInfo records when too many concurrent web requests are
 	made to iutools services.
+
 	-->
+	<!--
+	NOTE: We don't need this (I think) when using SQL as the data store for the
+	  compiled corpora.
+
 	<listener>
 		<listener-class>org.iutools.elasticsearch.ESRepairDaemon</listener-class>
 	</listener>
+	-->
 
 	<!-- Entry point for all service endppoints -->
 	<servlet>

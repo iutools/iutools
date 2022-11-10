@@ -77,7 +77,9 @@ public class ResultSetWrapper implements AutoCloseable {
 
 	@Override
 	public void finalize() {
+		Logger logger = LogManager.getLogger("org.iutools.sql.ResultSetWrapper.finalize");
 		try {
+			logger.trace("closing the wrapper");
 			close();
 		} catch (Exception e) {
 			throw new RuntimeException("Unable to close the SQL resources upon finalisation", e);
@@ -87,8 +89,8 @@ public class ResultSetWrapper implements AutoCloseable {
 	@Override
 	public void close() throws Exception {
 		Logger logger = LogManager.getLogger("org.iutools.sql.ResultSetWrapper.close");
-		logger.trace("invoked");
 		if (! iteratorCreated) {
+			logger.trace("closing SQL resources");
 			if (rs != null) {
 				try {
 					rs.close();
@@ -171,6 +173,10 @@ public class ResultSetWrapper implements AutoCloseable {
 	 */
 	public <C> ResultSetColIterator<C> colIterator(String colName, Class<C> colClass)
 		throws SQLException {
+
+		// Remember that we created an iterator.
+		// As a result, the wrapper will let the iterator close SQL resources.
+		iteratorCreated = true;
 
 		ResultSetColIterator<C> iter =
 			new ResultSetColIterator<C>(rs, statement, colName, colClass);

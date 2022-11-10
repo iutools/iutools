@@ -50,6 +50,7 @@ public class DELETEME_CompileWordsFromTM {
 		StopWatch sw = new StopWatch().start();
 		while ((algnmt = (Alignment)reader.readObject()) != null) {
 			alignNum++;
+			progress.stepCompleted();
 			String iuText = algnmt.sentence4lang("iu");
 			iuText = TransCoder.ensureRoman(iuText);
 			List<String> words = tokenizer.tokenize(iuText);

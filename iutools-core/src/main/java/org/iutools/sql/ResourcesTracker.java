@@ -68,6 +68,7 @@ public class ResourcesTracker {
 	private static void rememberProvenance(Object resource) {
 		String callStack = Debug.printCallStack();
 		resourceProvenance.put(resource, callStack);
+		return;
 	}
 
 	public static synchronized int totalResultSets() {

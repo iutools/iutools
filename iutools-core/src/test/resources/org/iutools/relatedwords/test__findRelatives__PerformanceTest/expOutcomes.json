@@ -71,9 +71,9 @@ class=org.iutools.morphrelatives.WordOutcome
     [
       "attanaqtumi",
       "aktarnaqtumipput",
-      "attanaqtumiippat",
-      "attarnaqtumiittailinirmut",
-      "attarnaqtumiittailinirmit"
+      "attanaqtumiiqunata",
+      "attarnaqtumiiqunagit",
+      "attanaqtuninga"
     ],
   "word":
     "attarnaqtumi"
@@ -99,7 +99,7 @@ class=org.iutools.morphrelatives.WordOutcome
       "atuinnaujunit",
       "atuinnaujuni",
       "atuinnaujunu",
-      "atuinnaujumi"
+      "atuinnaujut"
     ],
   "word":
     "atuinnaujuq"
@@ -121,11 +121,11 @@ class=org.iutools.morphrelatives.WordOutcome
 {
   "relsProduced":
     [
-      "atuqtussait",
-      "atuqtutsanik",
-      "atuqtutsanu",
-      "atuqtuarnirmut",
-      "aturumaarniaqtut"
+      "atuqtauniaqput",
+      "atuqtauniaqtut",
+      "atuqtauniarmangaata",
+      "atuqtauniarmata",
+      "atuqtauniaqtunik"
     ],
   "word":
     "atuqtauniarput"
@@ -288,11 +288,11 @@ class=org.iutools.morphrelatives.WordOutcome
 {
   "relsProduced":
     [
+      "inuulisaijinik",
+      "inuulisaijinut",
       "inuulisaiji",
-      "inuulilauqpuq",
-      "inuulilaurtuq",
-      "inuuliniutiit",
-      "inuulilauqpuuk"
+      "inuulisaijut",
+      "inuulisainiq"
     ],
   "word":
     "inuulisaijiit"
@@ -540,10 +540,10 @@ class=org.iutools.morphrelatives.WordOutcome
   "relsProduced":
     [
       "parnaummilluunniit",
-      "parnaumillu",
       "parnaut",
       "parnautit",
-      "parnautinik"
+      "parnautinik",
+      "parnautimik"
     ],
   "word":
     "parnaummit"
@@ -564,7 +564,7 @@ class=org.iutools.morphrelatives.WordOutcome
       "pijitsiraqtut",
       "pijittirauti",
       "pijittiraut",
-      "pijittirautiit"
+      "pijitsirautinut"
     ],
   "word":
     "pijitsiraqtuq"
@@ -573,11 +573,11 @@ class=org.iutools.morphrelatives.WordOutcome
 {
   "relsProduced":
     [
+      "pijitsirautinut",
       "pijittirautiit",
-      "pijittirautinginnik",
-      "pijittirauti",
-      "pijittiraut",
-      "pijittiraqtut"
+      "pijitsirautiit",
+      "pijitsirautinik",
+      "pijitsirautinginnu"
     ],
   "word":
     "pijitsirautikkut"
@@ -586,11 +586,11 @@ class=org.iutools.morphrelatives.WordOutcome
 {
   "relsProduced":
     [
+      "pijitsirautinut",
       "pijittirautiit",
-      "pijitsirautikkut",
-      "pijittirauti",
-      "pijittiraut",
-      "pijittiraqtut"
+      "pijitsirautiit",
+      "pijitsirautinik",
+      "pijitsirautinginnu"
     ],
   "word":
     "pijittirautinginnik"

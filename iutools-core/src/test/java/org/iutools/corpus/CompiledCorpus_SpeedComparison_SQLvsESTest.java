@@ -10,6 +10,7 @@ import org.iutools.linguisticdata.LinguisticData;
 import ca.nrc.datastructure.CloseableIterator;
 import org.iutools.sql.SQLLeakMonitor;
 import org.iutools.sql.SQLTestHelpers;
+import static org.iutools.sql.SQLTestHelpers.TimingResults;
 import org.iutools.utilities.StopWatch;
 import org.iutools.worddict.GlossaryEntry;
 import org.junit.jupiter.api.*;
@@ -236,7 +237,8 @@ public class CompiledCorpus_SpeedComparison_SQLvsESTest {
 			// We only worry about speed of sql implementation if it takes more than
 			// 5 msecs per word.
 			double tolerance = 1.2;
-			SQLTestHelpers.assertSqlNotSignificantlySlowerThanES("info4word", times, tolerance);
+			SQLTestHelpers.assertSqlNotSignificantlySlowerThanES(
+				"info4word", times, tolerance);
 		}
 	}
 
@@ -261,48 +263,117 @@ public class CompiledCorpus_SpeedComparison_SQLvsESTest {
 
 	@Test
 	public void test__wordsContainingNgram__startOfWord() throws Exception {
-		Map<String,Double> times = new HashMap<String,Double>();
-		times.put("es", time_wordsContainingNgram(esCorpus, startNgramsToTest));
-		times.put("sql", time_wordsContainingNgram(sqlCorpus, startNgramsToTest));
-		SQLTestHelpers.assertSqlNotSignificantlySlowerThanES(
+		String focusOnNgram = null;
+		Map<String,TimingResults> times = new HashMap<String,TimingResults>();
+		times.put("es", time_wordsContainingNgram__NEW(esCorpus, startNgramsToTest, focusOnNgram));
+		times.put("sql", time_wordsContainingNgram__NEW(sqlCorpus, startNgramsToTest, focusOnNgram));
+		SQLTestHelpers.assertSqlNotSignificantlySlowerThanES_NEW(
 			"wordsContainingNgram__startOfWord", times);
 	}
 
 	@Test
 	public void test__wordsContainingNgram__endOfWord() throws Exception {
-		Map<String,Double> times = new HashMap<String,Double>();
-		times.put("es", time_wordsContainingNgram(esCorpus, endNgramsToTest));
-		times.put("sql", time_wordsContainingNgram(sqlCorpus, endNgramsToTest));
-		SQLTestHelpers.assertSqlNotSignificantlySlowerThanES(
+		String focusOnNgram = null;
+
+		Map<String, TimingResults> times = new HashMap<String,TimingResults>();
+		times.put("es", time_wordsContainingNgram__NEW(esCorpus, endNgramsToTest, focusOnNgram));
+		times.put("sql", time_wordsContainingNgram__NEW(sqlCorpus, endNgramsToTest, focusOnNgram));
+		SQLTestHelpers.assertSqlNotSignificantlySlowerThanES_NEW(
 			"wordsContainingNgram__endOfWord", times);
 	}
 
+
 	@Test
 	public void test__wordsContainingNgram__middleOfWord() throws Exception {
-		Map<String,Double> times = new HashMap<String,Double>();
-		times.put("es", time_wordsContainingNgram(esCorpus, middleNgramsToTest));
-		times.put("sql", time_wordsContainingNgram(sqlCorpus, middleNgramsToTest));
-		SQLTestHelpers.assertSqlNotSignificantlySlowerThanES(
+		Map<String, TimingResults> times = new HashMap<String, TimingResults>();
+
+		String focusOnNgram = null;
+//		focusOnNgram = "aqt";
+		times.put("es", time_wordsContainingNgram__NEW(
+			esCorpus, middleNgramsToTest, focusOnNgram));
+		times.put("sql", time_wordsContainingNgram__NEW(
+			sqlCorpus, middleNgramsToTest, focusOnNgram));
+
+		SQLTestHelpers.assertSqlNotSignificantlySlowerThanES_NEW(
 			"wordsContainingNgram__middleOfWord", times);
 	}
 
 	private Double time_wordsContainingNgram(CompiledCorpus corpus,
 		Collection<String> ngramsToTest) throws Exception {
-		System.out.println("   Timing wordsContainingNgram with corpus="+corpus.getClass());
+		System.out.println("Timing wordsContainingNgram with corpus="+corpus.getClass().getSimpleName());
 		StopWatch sw = new StopWatch().start();
+		long searchMsecs = 0;
+		long iterateMSecs = 0;
 		for (String ngram: ngramsToTest) {
 			try (CloseableIterator<String> iter = corpus.wordsContainingNgram(ngram)) {
+				searchMsecs += sw.lapTime(TimeUnit.MILLISECONDS);
 				int countDown = 100;
 				while (countDown > 0 && iter.hasNext()) {
 					countDown--;
 					String word = iter.next();
 					int x = 1;
 				}
+				iterateMSecs += sw.lapTime(TimeUnit.MILLISECONDS);
 			}
 		}
+
 		double msecsPerNgram =
-			1.0 * sw.lapTime(TimeUnit.MILLISECONDS) / ngramsToTest.size();
+			1.0 * sw.totalTime(TimeUnit.MILLISECONDS) / ngramsToTest.size();
+		double msecsSearchPerNgram =
+			1.0 * searchMsecs / ngramsToTest.size();
+		double msecsIteratePerNgram =
+			1.0 * iterateMSecs / ngramsToTest.size();
+
+		System.out.println("  Times per ngram (msecs)");
+		System.out.println("     search+iterate : "+msecsPerNgram);
+		System.out.println("     search only    : "+msecsSearchPerNgram);
+		System.out.println("     iterate only   : "+msecsIteratePerNgram);
+
 		return msecsPerNgram;
+	}
+
+
+	private SQLTestHelpers.TimingResults time_wordsContainingNgram__NEW(CompiledCorpus corpus,
+		Collection<String> ngramsToTest, String focusOnNgram) throws Exception {
+		System.out.println("\n== Timing wordsContainingNgram with corpus="+corpus.getClass().getSimpleName());
+		SQLTestHelpers.TimingResults results = new SQLTestHelpers.TimingResults();
+		StopWatch sw = new StopWatch().start();
+		StopWatch swSingleCase = new StopWatch().start();
+		long searchMsecs = 0;
+		long iterateMSecs = 0;
+		for (String ngram: ngramsToTest) {
+			if (focusOnNgram != null && !ngram.equals(focusOnNgram)) {
+				continue;
+			}
+			swSingleCase.reset();
+			try (CloseableIterator<String> iter = corpus.wordsContainingNgram(ngram)) {
+				searchMsecs += swSingleCase.lapTime(TimeUnit.MILLISECONDS);
+				int totalHits = 0;
+				while (totalHits < 100 && iter.hasNext()) {
+					totalHits++;
+					String word = iter.next();
+				}
+				if (focusOnNgram != null) {
+					System.out.println("  ngram="+ngram+" returned "+totalHits+" hits");
+				}
+				iterateMSecs += swSingleCase.lapTime(TimeUnit.MILLISECONDS);
+				results.onNewCase(ngram, sw.lapTime(TimeUnit.MILLISECONDS));
+			}
+		}
+
+		double msecsPerNgram =
+			1.0 * sw.totalTime(TimeUnit.MILLISECONDS) / ngramsToTest.size();
+		double msecsSearchPerNgram =
+			1.0 * searchMsecs / ngramsToTest.size();
+		double msecsIteratePerNgram =
+			1.0 * iterateMSecs / ngramsToTest.size();
+
+		System.out.println("  Times per ngram (msecs)");
+		System.out.println("    search+iterate : "+msecsPerNgram);
+		System.out.println("    search only    : "+msecsSearchPerNgram);
+		System.out.println("    iterate only   : "+msecsIteratePerNgram);
+
+		return results;
 	}
 
 	
@@ -367,7 +438,6 @@ public class CompiledCorpus_SpeedComparison_SQLvsESTest {
 		Map<String,Double> times = new HashMap<String,Double>();
 		times.put("es", time_wordsContainingMorphNgram(esCorpus, endMorphNgramsToTest));
 		times.put("sql", time_wordsContainingMorphNgram(sqlCorpus, endMorphNgramsToTest));
-		// TODO: sql should be faster!
 		SQLTestHelpers.assertSqlNotSignificantlySlowerThanES(
 			"wordsContainingMorphNgram__endOfWord", times);
 	}
@@ -412,6 +482,10 @@ public class CompiledCorpus_SpeedComparison_SQLvsESTest {
 					break;
 				}
 				String word = entry.getTermInLang("iu_roman");
+				if (word.contains(" ")) {
+					// We ingore multi-word glossary entries
+					continue;
+				}
 				wordsToTest.add(word);
 			}
 		}
@@ -429,6 +503,10 @@ public class CompiledCorpus_SpeedComparison_SQLvsESTest {
 					break;
 				}
 				String word = entry.getTermInLang("iu_roman");
+				if (word.contains(" ")) {
+					// We ingore multi-word glossary entries
+					continue;
+				}
 				if (word.length() > 3) {
 					word = word.substring(0, 3);
 				}
@@ -450,6 +528,10 @@ public class CompiledCorpus_SpeedComparison_SQLvsESTest {
 					break;
 				}
 				String word = entry.getTermInLang("iu_roman");
+				if (word.contains(" ")) {
+					// We ingore multi-word glossary entries
+					continue;
+				}
 				if (word.length() > 3) {
 					word = word.substring(word.length()-3, word.length());
 				}
@@ -471,6 +553,10 @@ public class CompiledCorpus_SpeedComparison_SQLvsESTest {
 					break;
 				}
 				String word = entry.getTermInLang("iu_roman");
+				if (word.contains(" ")) {
+					// We ingore multi-word glossary entries
+					continue;
+				}
 				if (word.length() > 5) {
 					int toTrim = (word.length()-3)/2;
 					int startPos = toTrim;

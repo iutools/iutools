@@ -134,7 +134,7 @@ public class TMLoader {
 	public int countAlignments() throws TranslationMemoryException {
 		int totalAlignments = 0;
 		try {
-			System.out.println("Counting alignments in TM file: "+tmFile);
+			System.out.println("\nCounting alignments in TM file: "+tmFile);
 			ObjectStreamReader reader = new ObjectStreamReader(tmFile.toFile());
 			Alignment algn = null;
 			while ((algn = (Alignment)reader.readObject()) != null) {

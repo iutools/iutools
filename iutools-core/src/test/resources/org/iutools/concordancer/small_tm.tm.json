@@ -1,173 +1,198 @@
-bodyEndMarker=BLANK_LINE
 class=org.iutools.concordancer.Alignment_ES
+bodyEndMarker=BLANK_LINE
 
 {
-  "from_doc": "nrc-nunavut-hansard",
-  "web_domain": "testing.iutools.orga",
-  "topics": ["government", "hansard"],
-  "pair_num": 0,
   "sentences": {
-    "en": "legislative assembly of nunavut",
-    "iu": "ᓄᓇᕗᑦ ᒪᓕᒐᓕᐅᕐᕕ@@ ᐊ",
-    "fr": "assemblée législative du nunavut"
-  }
+    "en": "LEGISLATIVE ASSEMBLY OF NUNAVUT",
+    "iu": "ᓄᓇᕗᑦ ᒪᓕᒐᓕᐅᕐᕕᐊ"
+  },
+  "topics": ["hansard"],
+  "walign4langpair": {"en-iu": {"langPair": "en-iu", "tokensPairing": ["0-0", "0-1", "1-1", "1-2", "2-0", "3-0"], "tokens4lang": {"en": ["legislative", "assembly", "of", "nunavut"], "iu": ["ᓄᓇᕗᑦ", "ᒪᓕᒐᓕᐅᕐᕕ@@", "ᐊ"]}}},
+  "from_doc": "test-doc",
+  "pair_num": 1
 }
 
 {
-  "from_doc": "nrc-nunavut-hansard",
-  "web_domain": "testing.iutools.orga",
-  "topics": ["government", "hansard"],
-  "pair_num": 1,
   "sentences": {
-    "en": "",
-    "iu": "",
-    "fr": ""
-  }
-}
-{
-  "from_doc": "nrc-nunavut-hansard",
-  "web_domain": "testing.iutools.orga",
-  "topics": ["government", "hansard"],
-  "pair_num": 2,
-  "sentences": {
-    "en": "1st session",
-    "iu": "ᓯᕗᓕ@@ ᖅᐹᑦ ᑲᑎᒪᓂᖅ",
-    "fr": "1ère session"
-  }
+    "en": "1st Session",
+    "iu": "ᓯᕗᓕᖅᐹᑦ ᑲᑎᒪᓂᖅ"
+  },
+  "topics": ["hansard"],
+"walign4langpair": {"en-iu": {"langPair": "en-iu", "tokensPairing": ["0-0", "0-1", "1-2"], "tokens4lang": {"en": ["1st", "session"],   "iu": ["ᓯᕗᓕ@@", "ᖅᐹᑦ", "ᑲᑎᒪᓂᖅ"]
+  }}},
+  "from_doc": "test-doc",
+  "pair_num": 4
 }
 
 {
-  "from_doc": "nrc-nunavut-hansard",
-  "web_domain": "testing.iutools.orga",
-  "topics": ["government", "hansard"],
-  "pair_num": 3,
   "sentences": {
-    "en": "",
-    "iu": "",
-    "fr": ""
-  }
+    "en": "1st Assembly",
+    "iu": "ᓯᕗᓕᖅᐹᑦ ᒪᓕᒐᓕᐅᕐᕕᒃ"
+  },
+  "topics": ["hansard"],
+"walign4langpair": {"en-iu": {"langPair": "en-iu", "tokensPairing": ["0-0", "0-1", "1-2"], "tokens4lang": {"en": ["1st", "assembly"],   "iu": ["ᓯᕗᓕ@@", "ᖅᐹᑦ", "ᒪᓕᒐᓕᐅᕐᕕᒃ"]
+  }}},
+  "from_doc": "test-doc",
+  "pair_num": 7
 }
 
 {
-  "from_doc": "nrc-nunavut-hansard",
-  "web_domain": "testing.iutools.orga",
-  "topics": ["government", "hansard"],
-  "pair_num": 4,
   "sentences": {
-    "en": "1st assembly",
-    "iu": "ᓯᕗᓕ@@ ᖅᐹᑦ ᒪᓕᒐᓕᐅᕐᕕᒃ",
-    "fr": "1ère assemblée"
-  }
+    "en": "HANSARD",
+    "iu": "ᒪᓕᒐᓕᐅᖅᑏᑦ ᑲᑎᒪᐅᑎᒋᓯᒪᔭᖏᑦᑕ"
+  },
+  "topics": ["hansard"],
+"walign4langpair": {"en-iu": {"langPair": "en-iu", "tokensPairing": ["0-0", "0-1", "0-2", "0-3", "0-4"], "tokens4lang": {"en": ["hansard"],   "iu": ["ᒪᓕᒐᓕᐅᖅᑏᑦ", "ᑲᑎᒪ@@", "ᐅᑎᒋ@@", "ᓯᒪᔭ@@", "ᖏᑦᑕ"]
+  }}},
+  "from_doc": "test-doc",
+  "pair_num": 10
 }
 
 {
-  "from_doc": "nrc-nunavut-hansard",
-  "web_domain": "testing.iutools.orga",
-  "topics": ["government", "hansard"],
-  "pair_num": 5,
   "sentences": {
-    "en": "",
-    "iu": "",
-    "fr": ""
-  }
+    "en": "Official Report",
+    "iu": "ᑎᑎᕋᖅᓯᒪᓂᖏᑦ"
+  },
+  "topics": ["hansard"],
+"walign4langpair": {"en-iu": {"langPair": "en-iu", "tokensPairing": ["0-0", "1-0"], "tokens4lang": {"en": ["official", "report"],   "iu": ["ᑎᑎᕋᖅᓯᒪᓂᖏᑦ"]
+  }}},
+  "from_doc": "test-doc",
+  "pair_num": 13
 }
 
 {
-  "from_doc": "nrc-nunavut-hansard",
-  "web_domain": "testing.iutools.orga",
-  "topics": ["government", "hansard"],
-  "pair_num": 6,
   "sentences": {
-    "en": "hansard",
-    "iu": "ᒪᓕᒐᓕᐅᖅᑏᑦ ᑲᑎᒪ@@ ᐅᑎᒋ@@ ᓯᒪᔭ@@ ᖏᑦᑕ",
-    "fr": "hansard"
-  }
-}
-
-
-{
-  "from_doc": "nrc-nunavut-hansard",
-  "web_domain": "testing.iutools.orga",
-  "topics": ["government", "hansard"],
-  "pair_num": 7,
-  "sentences": {
-    "en": "",
-    "iu": "",
-    "fr": ""
-  }
+    "en": "THURSDAY, APRIL 1, 1999",
+    "iu": "ᓯᑕᒥᖅ, ᐃᐳᕈ 1, 1999"
+  },
+  "topics": ["hansard"],
+"walign4langpair": {"en-iu": {"langPair": "en-iu", "tokensPairing": ["0-0", "0-1", "0-3", "1-4", "2-5", "3-6", "4-7", "5-8"], "tokens4lang": {  "en": ["thursday", ",", "april", "1", ",", "1999"],   "iu": ["ᓯ@@", "ᑕ@@", "ᒥ@@", "ᖅ", ",", "ᐃᐳᕈ", "1", ",", "1999"]
+  }}},
+  "from_doc": "test-doc",
+  "pair_num": 16
 }
 
 {
-  "from_doc": "nrc-nunavut-hansard",
-  "web_domain": "testing.iutools.orga",
-  "topics": ["government", "hansard"],
-  "pair_num": 8,
   "sentences": {
-    "en": "official report",
-    "iu": "ᑎᑎᕋᖅᓯᒪᓂᖏᑦ",
-    "fr": "rapport officiel"
-  }
+    "en": "Legislative Assembly of Nunavut",
+    "iu": "ᓄᓇᕗᑦ ᒪᓕᒐᓕᐅᕐᕕᐊ"
+  },
+  "topics": ["hansard"],
+"walign4langpair": {"en-iu": {"langPair": "en-iu", "tokensPairing": ["0-0", "0-1", "1-1", "1-2", "2-0", "3-0"], "tokens4lang": {"en": ["legislative", "assembly", "of", "nunavut"],   "iu": ["ᓄᓇᕗᑦ", "ᒪᓕᒐᓕᐅᕐᕕ@@", "ᐊ"]
+  }}},
+  "from_doc": "test-doc",
+  "pair_num": 19
 }
 
 {
-  "from_doc": "nrc-nunavut-hansard",
-  "web_domain": "testing.iutools.org",
-  "topics": ["government", "hansard"],
-  "pair_num": 9,
   "sentences": {
-    "en": "thursday , april 1 , 1999",
-    "iu": "ᓯ@@ ᑕ@@ ᒥ@@ ᖅ , ᐃ@@ ᐳᕈ 1 , 1999",
-    "fr": "jeudi , 1er avril 1999"
-  }
+    "en": "Members of the Legislative Assembly",
+    "iu": "ᒪᓕᒐᓕᐅᕐᑏᑦ"
+  },
+  "topics": ["hansard"],
+  "walign4langpair": {"en-iu": {"langPair": "en-iu", "tokensPairing": ["0-0", "3-0", "4-0"], "tokens4lang": {"en": ["members", "of", "the", "legislative", "assembly"],   "iu": ["ᒪᓕᒐᓕᐅᕐᑏᑦ"]
+  }}},
+  "from_doc": "test-doc",
+  "pair_num": 22
 }
 
 {
-  "from_doc": "nrc-nunavut-hansard",
-  "web_domain": "testing.iutools.orga",
-  "topics": ["government", "hansard"],
-  "pair_num": 10,
   "sentences": {
-    "en": "",
-    "iu": "",
-    "fr": ""
-  }
-}
-
-
-{
-  "from_doc": "nrc-nunavut-hansard",
-  "web_domain": "testing.iutools.orga",
-  "topics": ["government", "hansard"],
-  "pair_num": 11,
-  "sentences": {
-    "en": "legislative assembly of nunavut",
-    "iu": "ᓄᓇᕗᑦ ᒪᓕᒐᓕᐅᕐᕕ@@ ᐊ",
-    "fr": "assemblée législative du nunavut"
-  }
+    "en": "Mr. Ovide Alakannuark",
+    "iu": "ᐆᕕᖅ ᐊᓚᒃᑲᓐᓄᐊᖅ"
+  },
+  "topics": ["hansard"],
+"walign4langpair": {"en-iu": {"langPair": "en-iu", "tokensPairing": ["0-3", "1-0", "1-1", "1-3", "2-2", "2-3"], "tokens4lang": {"en": ["mr.", "ovide", "alakannuark"],   "iu": ["ᐆ@@", "ᕕ@@", "ᖅ", "ᐊᓚᒃᑲᓐᓄᐊᖅ"]
+  }}},
+  "from_doc": "test-doc",
+  "pair_num": 25
 }
 
 {
-  "from_doc": "nrc-nunavut-hansard",
-  "web_domain": "testing.iutools.orga",
-  "topics": ["government", "hansard"],
-  "pair_num": 19,
   "sentences": {
-    "en": "",
-    "iu": "",
-    "fr": ""
-  }
+    "en": "(Akulliq)",
+    "iu": "(ᐊᑯᓪᓕᖅ)"
+  },
+  "topics": ["hansard"],
+"walign4langpair": {"en-iu": {"langPair": "en-iu", "tokensPairing": ["0-0", "1-1", "2-2"], "tokens4lang": {"en": ["(", "akulliq", ")"],   "iu": ["(", "ᐊᑯᓪᓕᖅ", ")"]
+  }}},
+  "from_doc": "test-doc",
+  "pair_num": 28
 }
 
 {
-  "from_doc": "nrc-nunavut-hansard",
-  "web_domain": "testing.iutools.orga",
-  "topics": ["government", "hansard"],
-  "pair_num": 12,
   "sentences": {
-    "en": "members of the legislative assembly",
-    "iu": "ᒪᓕᒐᓕᐅᕐ@@ ᑏᑦ",
-    "fr": "membres de l'assemblée législative"
-  }
+    "en": "Mr. Enoki Irqittuq",
+    "iu": "ᐃᓅᑭ ᐃᖅᑭᑦᑐᖅ"
+  },
+  "topics": ["hansard"],
+"walign4langpair": {"en-iu": {"langPair": "en-iu", "tokensPairing": ["0-2", "1-0", "1-1", "2-2"], "tokens4lang": {"en": ["mr.", "enoki", "irqittuq"],   "iu": ["ᐃᓅ@@", "ᑭ", "ᐃᖅᑭᑦᑐᖅ"]
+  }}},
+  "from_doc": "test-doc",
+  "pair_num": 31
 }
 
+{
+  "sentences": {
+    "en": "(Amittuq)",
+    "iu": "(ᐊᒥᑦᑐᖅ)"
+  },
+  "topics": ["hansard"],
+  "walign4langpair": {"en-iu": {"langPair": "en-iu", "tokensPairing": ["0-0", "1-1", "2-2"], "tokens4lang": {"en": ["(", "amittuq", ")"], "iu": ["(", "ᐊᒥᑦᑐᖅ", ")"]}}},
+  "from_doc": "test-doc",
+  "pair_num": 34
+}
 
+{
+  "sentences": {
+    "en": "Mr. Kevin O'Brien",
+    "iu": "ᑭᕕᓐ ᐅ’ᕗᕋᐃᔭᓐ"
+  },
+  "topics": ["hansard"],
+  "walign4langpair": {"en-iu": {"langPair": "en-iu", "tokensPairing": ["0-2", "1-0", "1-1", "1-2", "2-3"], "tokens4lang": {"en": ["mr.", "kevin", "o'brien"], "iu": ["ᑭ@@", "ᕕᓐ", "ᐅ’@@", "ᕗᕋᐃᔭᓐ"]}}},
+  "from_doc": "test-doc",
+  "pair_num": 37
+}
+
+{
+  "sentences": {
+     "en": "(Arviat)",
+    "iu": "(ᐊᕐᕕᐊᑦ)"
+  },
+  "topics": ["hansard"],
+  "walign4langpair": {"en-iu": {"langPair": "en-iu", "tokensPairing": ["0-0", "1-1", "2-2"], "tokens4lang": {"en": ["(", "arviat", ")"], "iu": ["(", "ᐊᕐᕕᐊᑦ", ")"]}}},
+  "from_doc": "test-doc",
+  "pair_num": 40
+}
+
+{
+  "sentences": {
+    "en": "Mr. Glenn McLean",
+    "iu": "ᒋᓕᓐ ᒪᒃᓚᐃᓐ"},
+  "topics": ["hansard"],
+  "walign4langpair": {"en-iu": {"langPair": "en-iu", "tokensPairing": ["0-0", "1-0", "2-1"], "tokens4lang": {"en": ["mr.", "glenn", "mclean"], "iu": ["ᒋᓕᓐ", "ᒪᒃᓚᐃᓐ"]}}},
+  "from_doc": "test-doc",
+  "pair_num": 43
+}
+
+{
+  "sentences": {
+    "en": "(Baker Lake)",
+    "iu": "(ᖃᒪᓂᖅᑐᐊᖅ)"
+  },
+  "topics": ["hansard"],
+  "walign4langpair": {"en-iu": {"langPair": "en-iu", "tokensPairing": ["0-0", "1-1", "2-1", "3-2"], "tokens4lang": {"en": ["(", "baker", "lake", ")"], "iu": ["(", "ᖃᒪᓂᖅᑐᐊᖅ", ")"]}}},
+  "from_doc": "test-doc",
+  "pair_num": 46
+}
+
+{
+  "sentences": {
+    "en": "Mr. Kelvin Ng",
+    "iu": "ᑭᐅᓪᕕᓐ ᐃᖕ"
+  },
+  "topics": ["hansard"],
+  "walign4langpair": {"en-iu": {"langPair": "en-iu", "tokensPairing": ["0-1", "1-0", "2-1"], "tokens4lang": {"en": ["mr.", "kelvin", "ng"], "iu": ["ᑭᐅᓪᕕᓐ", "ᐃᖕ"]}}},
+  "from_doc": "test-doc",
+  "pair_num": 49
+}

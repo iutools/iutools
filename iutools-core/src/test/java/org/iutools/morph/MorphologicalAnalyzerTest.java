@@ -127,7 +127,8 @@ public abstract class MorphologicalAnalyzerTest {
 		// pass this test
 		Decomposition[] decSimple = analyzer.decomposeWord(word);
 		new AssertDecompositionList(decSimple)
-			.allDecompsContain("ju:juq/1vn ksaq:ksaq/1nn");
+			.allDecompsContain(
+				"(ju:ut/1vn ksaq:ksaq/1nn|juksaq:juksaq/1vn|ju:juq/1vn ksaq:ksaq/1nn|ju:jjut/1vn ksaq:ksaq/1nn)");
 	}
 
 

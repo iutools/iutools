@@ -84,13 +84,12 @@ public class AssertDecompositionList extends Asserter<Decomposition[]> {
 		return top;
 	}
 
-	public AssertDecompositionList allDecompsContain(String expMorphSeqStr) {
+	public AssertDecompositionList allDecompsContain(String expMorphNgramRegex) {
 		for (int ii=0; ii < decompositions().length; ii++) {
 			String iithDecompStr = decompositions()[ii].toStr();
 			AssertString.assertStringContains(
-				baseMessage+ii+"th decompoisition did not contain '"+expMorphSeqStr+"'",
-				iithDecompStr, expMorphSeqStr
-			);
+				baseMessage+ii+"th decompoisition did not contain regexp '"+expMorphNgramRegex+"'",
+				iithDecompStr, expMorphNgramRegex, true, true);
 		}
 		return this;
 	}

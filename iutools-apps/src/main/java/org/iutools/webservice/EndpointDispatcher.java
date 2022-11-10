@@ -5,7 +5,6 @@ import org.apache.logging.log4j.Logger;
 import org.iutools.morph.r2l.MorphologicalAnalyzer_R2L;
 import org.iutools.morph.MorphologicalAnalyzerException;
 import org.iutools.webservice.gist.GistPrepareContentEndpoint;
-import org.iutools.webservice.gist.GistWordEndpoint;
 import org.iutools.webservice.logaction.LogActionEndpoint;
 import org.iutools.webservice.morphexamples.MorphemeExamplesEndpoint;
 import org.iutools.webservice.search.ExpandQueryEndpoint;
@@ -42,7 +41,6 @@ public class EndpointDispatcher extends HttpServlet {
 		}
 		endpoints.put("tokenize", new TokenizeEndpoint());
 		endpoints.put("gist/preparecontent", new GistPrepareContentEndpoint());
-		endpoints.put("gist/gistword", new GistWordEndpoint());
 		endpoints.put("worddict", new WordDictEndpoint());
 	}
 

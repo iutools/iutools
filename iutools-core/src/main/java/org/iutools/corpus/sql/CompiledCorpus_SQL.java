@@ -262,6 +262,9 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 			queryStr += "AND\n    `topDecompositionStr` IS NOT NULL";
 		}
 		queryStr += "\n"+sqlOrderBy("frequency:desc");
+
+		// To speed up, we limit the number of hits to 1000
+		queryStr += "\nLIMIT 1000";
 		queryStr += ";";
 		logger.trace("Querying with queryStr="+queryStr);
 		try {
@@ -413,17 +416,11 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 	}
 
 	private String sqlOrderBy(String... sortCriteria) throws CompiledCorpusException {
-		String sql = "";
-		int critCounter = 0;
-		for (String criterion: sortCriteria) {
-			critCounter++;
-			Pair<String,Order> colNameAndOrder = parseSortOrderDescr(criterion);
-			if (critCounter == 1) {
-				sql += "ORDER BY ";
-			} else {
-				sql += ", ";
-			}
-			sql += "`"+colNameAndOrder.getLeft()+"` "+colNameAndOrder.getRight().toString().toUpperCase();
+		String sql = null;
+		try {
+			sql = QueryComposer.sqlOrderBy(sortCriteria);
+		} catch (SQLException e) {
+			throw new CompiledCorpusException(e);
 		}
 		return sql;
 	}
