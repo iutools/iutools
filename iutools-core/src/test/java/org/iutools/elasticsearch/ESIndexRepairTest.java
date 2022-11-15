@@ -8,10 +8,7 @@ import ca.nrc.testing.AssertString;
 import ca.nrc.testing.TestDirs;
 import org.iutools.corpus.WordInfo;
 import org.json.JSONObject;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.*;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;

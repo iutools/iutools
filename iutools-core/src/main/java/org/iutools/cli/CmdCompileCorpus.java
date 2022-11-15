@@ -23,11 +23,11 @@ public class CmdCompileCorpus extends ConsoleCommand {
 		String corpusName = getCorpusName(false);
 
 		boolean verbose = (getVerbosity() != UserIO.Verbosity.Level0);
-		File corpusDir = getInputDir();
+		File tmFilesDir = getInputDir(true);
 		File outputDir = getOutputDir();
 		CorpusCompiler compiler = new CorpusCompiler(outputDir);
 			compiler
-				.setCorpusDir(corpusDir)
+				.setTMFilesDir(tmFilesDir)
 				.setCorpusName(corpusName);
 
 		if (compiler.progress.corpusTextsRoot == null &&
@@ -36,10 +36,10 @@ public class CmdCompileCorpus extends ConsoleCommand {
 				OPT_INPUT_DIR,
 				"You must provide an input directory when starting a brand new compilation");
 		}
-		compiler.setCorpusDir(corpusDir);
+		compiler.setTMFilesDir(tmFilesDir);
 		compiler.setOutputDir(outputDir);
 
-		compiler.compile(corpusName, corpusDir);
+		compiler.compile(corpusName, tmFilesDir);
 	}
 
 	private void compileWordFrequencies(File corpusDir, String corpusSavePath, boolean verbose) throws CorpusCompilerException, ConsoleException {

@@ -44,7 +44,7 @@ public class MorphemeDictionary {
 	}
 
 	public List<MorphDictionaryEntry> search(String partialMorpheme) throws MorphemeDictionaryException {
-		return search(partialMorpheme, 100);
+		return search(partialMorpheme, 20);
 	}
 
 	public List<MorphDictionaryEntry> search(String partialMorpheme, Integer maxExamples) throws MorphemeDictionaryException {

@@ -3,10 +3,14 @@ package org.iutools.corpus;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
+import ca.nrc.dtrc.stats.FrequencyHistogram;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.WildcardFileFilter;
+import org.iutools.concordancer.Alignment;
 import org.iutools.utilities.StopWatch;
 import ca.nrc.ui.commandline.ProgressMonitor;
 import ca.nrc.ui.commandline.ProgressMonitor_Terminal;
@@ -25,6 +29,7 @@ import ca.nrc.data.file.ObjectStreamReaderException;
 import org.iutools.datastructure.trie.StringSegmenterException;
 import ca.nrc.json.PrettyPrinter;
 import org.iutools.text.segmentation.IUTokenizer;
+import org.iutools.utilities.StopWatchException;
 
 public class CorpusCompiler {
 
@@ -51,9 +56,14 @@ public class CorpusCompiler {
 
 
 	private CompiledCorpus _corpus = null;
-	private Map<String,Long> wordFreqs = new HashMap<String,Long>();
+	private FrequencyHistogram<String> wordFreqs = new FrequencyHistogram<String>();
 
 	private long lastSaveMSecs = 0;
+
+	ProgressMonitor_Terminal progressMonitor = null;
+
+	IUTokenizer tokenizer = new IUTokenizer();
+
 
 	public CorpusCompiler(File _outputDir) throws CorpusCompilerException {
 		init_CorpusCompiler(_outputDir);
@@ -71,7 +81,7 @@ public class CorpusCompiler {
 		return;
 	}
 
-	public CorpusCompiler setCorpusDir(File _corpusDir) throws CorpusCompilerException {
+	public CorpusCompiler setTMFilesDir(File _corpusDir) throws CorpusCompilerException {
 
 		if (progress.corpusTextsRoot != null &&
 			!progress.corpusTextsRoot.toString()
@@ -126,7 +136,7 @@ public class CorpusCompiler {
 	public void compile(String _corpName, File txtDir) throws CorpusCompilerException {
 
 		if (txtDir != null) {
-			setCorpusDir(txtDir);
+			setTMFilesDir(txtDir);
 		}
 		if (_corpName != null) {
 			setCorpusName(_corpName);
@@ -265,7 +275,7 @@ public class CorpusCompiler {
 				"bodyEndMarker=NEW_LINE\n"+
 				"class=org.iutools.corpus.WordInfo\n\n");
 			ObjectMapper mapper = new ObjectMapper();
-			for (String word: wordFreqs.keySet()) {
+			for (String word: wordFreqs.allValues()) {
 				Long freq = freqForWord(word);
 				WordInfo winfo =
 					new WordInfo(word)
@@ -527,9 +537,12 @@ public class CorpusCompiler {
 
 	private void readWordFreqsMap() throws CorpusCompilerException {
 		try {
-			wordFreqs =
-				new ObjectMapper()
-					.readValue(wordFreqsMapFile(), wordFreqs.getClass());
+			File freqsFile = wordFreqsMapFile();
+			if (freqsFile.length() != 0) {
+				Map<String, Long> freqsMap = new ObjectMapper()
+				.readValue(wordFreqsMapFile(), Map.class);
+				wordFreqs = FrequencyHistogram.fromMap(freqsMap);
+			}
 		} catch (IOException e) {
 			throw new CorpusCompilerException(
 				"Could not read word frequencies from file: "+wordFreqsMapFile(),
@@ -548,7 +561,7 @@ public class CorpusCompiler {
 				"Could not open words file: "+wordsF, e);
 		}
 		try {
-			for (String word: wordFreqs.keySet()) {
+			for (String word: wordFreqs.allValues()) {
 				fw.write(word+"\n");
 			}
 		} catch (IOException e) {
@@ -570,7 +583,7 @@ public class CorpusCompiler {
 		File freqsFile = null;
 		try {
 			freqsFile = wordFreqsMapFile();
-			mapper.writeValue(freqsFile, wordFreqs);
+			mapper.writeValue(freqsFile, wordFreqs.toMap());
 		} catch (JsonGenerationException e) {
 			throw new CorpusCompilerException("Problem writing word freqs file: "+freqsFile, e);
 		} catch (JsonMappingException e) {
@@ -590,6 +603,18 @@ public class CorpusCompiler {
 
 	private void compileFreqsDirectory(File dir) throws CorpusCompilerException {
 		Logger logger = LogManager.getLogger("CompiledCorpus_ES.processDirectory");
+		
+		Collection<File> tmFiles = tmFilesInDir(dir);
+		long totalAlignments = countAlignments(tmFiles);
+		progressMonitor =
+				new ProgressMonitor_Terminal(totalAlignments/10000,
+					"Compiling frequency of words TM files");
+		progressMonitor.refreshEveryNSecs = 60;
+
+		for (File aFile: tmFiles) {
+			compileWordFreqsInTmFile(aFile);
+		}
+
 		CorpusReader_Directory corpusReader = new CorpusReader_Directory();
 		Iterator<CorpusDocument_File> files =
 			(Iterator<CorpusDocument_File>) corpusReader.getFiles(dir.toString());
@@ -603,6 +628,67 @@ public class CorpusCompiler {
 				compileFreqsFile(corpusDocumentFile);
 			}
 		}
+	}
+
+	private void compileWordFreqsInTmFile(File tmFile) throws CorpusCompilerException {
+		int alignNum = 0;
+		ObjectStreamReader reader = null;
+		try {
+			reader = new ObjectStreamReader(tmFile);
+			Alignment algnmt = null;
+			String currAlignDescr = null;
+			StopWatch sw = new StopWatch().start();
+			while ((algnmt = (Alignment)reader.readObject()) != null) {
+				alignNum++;
+				if (alignNum % 10000 == 0) {
+					progressMonitor.stepCompleted();
+				}
+				String iuText = algnmt.sentence4lang("iu");
+				iuText = TransCoder.ensureRoman(iuText);
+				List<String> words = tokenizer.tokenize(iuText);
+				for (String word: words) {
+					wordFreqs.updateFreq(word);
+				}
+				if (sw.totalTime(TimeUnit.SECONDS) > 30) {
+					printWordFreqs();
+					sw.reset();
+				}
+			}
+		} catch (IOException | ClassNotFoundException | ObjectStreamReaderException | StopWatchException e) {
+			throw new CorpusCompilerException(e);
+		}
+	}
+
+	private void printWordFreqs() {
+		System.out.println("== Compiled words stats");
+		System.out.println("  Total words      : "+wordFreqs.allValues().size());
+		System.out.println("  Total occurences : "+wordFreqs.totalOccurences());
+	}
+
+
+	private long countAlignments(Collection<File> tmFiles) throws CorpusCompilerException {
+		long totalAlignments = 0;
+		for (File aFile: tmFiles) {
+			try {
+				System.out.println("   Counting alignments in TM file: "+aFile+"\n    (may take a few minutes)");
+				ObjectStreamReader reader = new ObjectStreamReader(aFile);
+				while (true) {
+					Alignment align = (Alignment) reader.readObject();
+					if (align == null) {
+						break;
+					}
+					totalAlignments++;
+				}
+			} catch (IOException | ClassNotFoundException | ObjectStreamReaderException e) {
+				throw new CorpusCompilerException(e);
+			}
+		}
+		return totalAlignments;
+	}
+
+	private Collection<File> tmFilesInDir(File dir) throws CorpusCompilerException {
+		Collection<File> tmFiles = FileUtils.listFiles(dir, new WildcardFileFilter("*.tm.json"), null);
+		return tmFiles;
 	}
 
 	public CorpusCompiler setVerbose(boolean _verbose) {
@@ -760,11 +846,6 @@ public class CorpusCompiler {
 				StopWatch.elapsedMsecsSince(lastSaveMSecs);
 			long elapsedSecs = elapsedMSecs / 1000;
 			if (elapsedSecs  > saveFrequency) {
-				System.out.println("--** needsSaving: lastSaveMSecs="+
-						lastSaveMSecs+"msecs; nowMsecs="+
-						nowMSecs+"msecs; elapsedMSecs="+
-						elapsedMSecs+"msecs; elapsedSecs="+
-						elapsedSecs+"secs; saveFrequency="+saveFrequency+"secs");
 				answer = true;
 			}
 		}
@@ -783,7 +864,7 @@ public class CorpusCompiler {
 	private void saveWordFrequencies() throws CorpusCompilerException {
 		File freqsF = wordFreqsMapFile();
 		try {
-			new ObjectMapper().writeValue(freqsF, wordFreqs);
+			new ObjectMapper().writeValue(freqsF, wordFreqs.toMap());
 		} catch (IOException e) {
 			throw new CorpusCompilerException(
 				"Could not save word frequencies file: "+freqsF, e);
@@ -791,11 +872,11 @@ public class CorpusCompiler {
 	}
 
 	private void incrementWordFreq(String word) {
-		Long oldFreq = wordFreqs.get(word);
+		Long oldFreq = wordFreqs.frequency(word);
 		if (oldFreq == null) {
 			oldFreq = new Long(0);
 		}
-		wordFreqs.put(word, oldFreq+1);
+		wordFreqs.updateFreq(word);
 	}
 
 	private static String[] extractWordsFromLine(String line) {
@@ -1042,7 +1123,7 @@ public class CorpusCompiler {
 
 	private Long freqForWord(String word) {
 		Long freq = null;
-		Object freqObj = wordFreqs.get(word);
+		Object freqObj = wordFreqs.frequency(word);
 		if (freqObj.getClass() == Integer.class) {
 			freq = new Long((Integer)freqObj);
 		} else {

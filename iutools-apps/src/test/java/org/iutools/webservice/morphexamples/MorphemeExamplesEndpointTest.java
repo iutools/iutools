@@ -34,8 +34,7 @@ public class MorphemeExamplesEndpointTest extends EndpointTest {
 			)
 			.examplesForMorphemeAre("siuq/1nv",
 				new String[] {
-					"ammuumajuqsiuqtutik",
-					"ittuqsiutitaaqpattut"
+					"isumassaqsiurningit", "angiqtauniqsiuqtuq"
 				});
 		;
 	}

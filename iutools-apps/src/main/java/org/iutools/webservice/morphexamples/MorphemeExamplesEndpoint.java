@@ -79,8 +79,16 @@ public class MorphemeExamplesEndpoint
 			morphExtractor.setNbDisplayedWords(nbExamples);
 
 			tLogger.trace("Finding words that contain the morpheme");
+			Integer maxExamples = null;
+			try {
+				maxExamples = Integer.parseInt(inputs.nbExamples);
+			} catch (Exception e) {
+				// If the nbExamples input was not a string representation of an
+				// integer, then just ignore it.
+			}
+
 			List<MorphDictionaryEntry> wordsForMorphemes =
-				morphExtractor.search(inputs.wordPattern);
+				morphExtractor.search(inputs.wordPattern, maxExamples);
 
 			LinguisticData linguisticData = LinguisticData.getInstance();
 			tLogger.trace("wordsForMorphemes: "+wordsForMorphemes.size());

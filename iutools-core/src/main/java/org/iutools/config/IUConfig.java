@@ -88,7 +88,7 @@ public class IUConfig extends Config {
 		String dataStore =
 			getConfigProperty(
 				"org.iutools.corpus.datastore",
-				"elasticsearch");
+				"sql");
 		dataStore.toLowerCase();
 		if (!dataStore.matches("^(sql|elasticsearch)$")) {
 			throw new ConfigException(

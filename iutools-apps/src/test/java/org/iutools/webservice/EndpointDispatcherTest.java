@@ -28,10 +28,6 @@ public class EndpointDispatcherTest {
 			new JSONObject().put("origQuery", "inuksuk"),
 			"iutools/srv2/search/expandquery",
 			ExpandQueryResult.class),
-		new Case("gistword",
-			new JSONObject().put("word", "inuksuk"),
-			"iutools/srv2/gist/gistword",
-			GistWordResult.class),
 		new Case("morpheme_dictionary",
 			new JSONObject()
 				.put("wordPattern", "siuq"),
@@ -219,15 +215,13 @@ public class EndpointDispatcherTest {
 	@Test
 	public void test__endpointName__HappyPaht() throws Exception {
 		for (String endpoint: new String[] {
-			"gist/gistword",
 			"gist/preparecontent",
 			"log_action",
 			"morpheme_dictionary",
 			"search/expandquery",
 			"spell",
 			"tokenize",
-			"worddict"
-			}) {
+			"worddict"}) {
 			String uri = "iutools/srv2/"+endpoint;
 			String gotName = new EndpointDispatcher().endpointName(uri);
 			AssertString.assertStringEquals(
