@@ -349,6 +349,7 @@ public class CLI {
 				new CmdSegmentIU("segment_iu")
 				.addOption(optWord)
 				.addOption(optExtendedAnalysis)
+				.addOption(optTimeoutSecs)
 				;
 		mainCmd.addSubCommand(segmentIU);
 		

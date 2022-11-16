@@ -163,16 +163,21 @@ public abstract class MorphologicalAnalyzer implements AutoCloseable {
 		tLogger.trace(mess);
 
 		tLogger.trace("timeoutStrategy: "+timeoutStrategy);
-		if (timeoutStrategy == TimeoutStrategy.STOPWATCH) {
-			tLogger.trace("invoke directly");
-			decompositions = invokeDirectly(word, lenient);
-		} else {
-			tLogger.trace("invoke through task");
-			try {
-				decompositions = invokeThroughExecutor(task);
-			} catch (InterruptedException e) {
-				throw new MorphologicalAnalyzerException("Analysis interrupted", e);
+
+		try {
+			if (timeoutStrategy == TimeoutStrategy.STOPWATCH) {
+				tLogger.trace("invoke directly");
+				decompositions = invokeDirectly(word, lenient);
+			} else {
+				tLogger.trace("invoke through task");
+				try {
+					decompositions = invokeThroughExecutor(task);
+				} catch (InterruptedException e) {
+					throw new MorphologicalAnalyzerException("Analysis interrupted", e);
+				}
 			}
+		} catch (TimeoutException e) {
+			throw e;
 		}
 
 		long elapsed = System.currentTimeMillis() - start;

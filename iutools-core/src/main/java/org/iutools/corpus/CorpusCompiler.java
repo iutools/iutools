@@ -307,12 +307,16 @@ public class CorpusCompiler {
 			toConsole(true,
 		"Decompositions file does not exist:\n   "+decompsFile+"\n"+
 				"\nPlease compute the decomps file and put it under the above name.\n"+
-				"You can compute the decomps file with the following command:\n\n" +
-				"   cat \""+wordsFile()+ "\" | \\\n"+"" +
-				"     java iutools-core.jar org.iutools.cli.CLI \\\n"+
-				"       segment_iu --pipeline > \\\n"+"" +
-				"       \""+ decompsFile+"\"\n\n"+
-				"NOTE: This may take a very long time so we recommend that you split the words file into small chunks and process each chunk with the above command on a cluster of machines."
+				"You can compute the decomps file with the following commands:\n\n" +
+				"\n"+
+				"# Note: The version number may differ.\n"+
+				"set IUTOOLS_CORE_EXECS=/path/to/iutools/iutools-core/target/iutools-core-1.0.2\n"+
+				"cat \""+wordsFile()+ "\" | \\\n" +
+				"   java -Xmx18g -cp \"${IUTOOLS_CORE_EXECS}/iutools-core.jar:${IUTOOLS_CORE_EXECS}/lib/*\" \\\n" +
+				"   org.iutools.cli.CLI segment_iu --pipeline --timeout-secs 3\n" +
+				"\n" +
+				"NOTE: This may take a very long time so we recommend that you split the words file into small chunks and process each chunk with the above command on a cluster of machines. "+
+				"You may decrease running time by decreasing the value of --timeout-secs, but then more words will end up having empty decompositions."
 				);
 			stop = true;
 		} else {

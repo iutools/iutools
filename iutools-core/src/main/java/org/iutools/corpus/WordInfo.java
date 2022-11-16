@@ -1,14 +1,18 @@
 package org.iutools.corpus;
 
 import ca.nrc.dtrc.elasticsearch.Document;
+import ca.nrc.dtrc.elasticsearch.ElasticSearchException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.iutools.morph.Decomposition;
 import org.iutools.morph.DecompositionException;
 import org.iutools.script.TransCoder;
+import static org.iutools.script.TransCoder.Script;
 import org.iutools.script.TransCoderException;
+import org.json.JSONObject;
 
 public class WordInfo extends Document {
 	
@@ -80,6 +84,17 @@ public class WordInfo extends Document {
 	 * words that contain a particular ngram of morphemes.
 	 */
 	public String morphemesSpaceConcatenated = null;
+
+	ObjectMapper mapper = new ObjectMapper();
+
+	/** Don't print those fields when json serializing a WordInfo instance */
+	private static final String[] noPrintFields =
+		new String[] {
+			"_detect_language", "additionalFields", "content", "creationDate", "id",
+			"idWithoutType", "lang", "longDescription", "morphemesSpaceConcatenated",
+			"shortDescription", "topDecompositionStr", "type", "wordCharsSpaceConcatenated"
+			};
+
 
 	/** Serializes the WordInfo without all the ElasticSearch-specific attributes **/
 	public static ObjectWriter jsonWriter = makeWinfoJsonWriter();
@@ -289,4 +304,40 @@ public class WordInfo extends Document {
 		return jsonWriter;
 	}
 
+	public String toJson(Boolean pretty) throws ElasticSearchException, CompiledCorpusException {
+		if (pretty == null) {
+			pretty = false;
+		}
+		String json = null;
+		if (pretty) {
+			json = toJson(noPrintFields);
+		} else {
+			String origJson = null;
+			try {
+				origJson = mapper.writeValueAsString(this);
+			} catch (JsonProcessingException e) {
+				throw new CompiledCorpusException(e);
+			}
+			JSONObject jObj = new JSONObject(origJson);
+			for (String fldName: noPrintFields) {
+				jObj.remove(fldName);
+			}
+			json = jObj.toString();
+		}
+		return json;
+	}
+
+	/** Ensure that the word is in the desired script, and that its 'other script'
+	 * variant is in the opposite script. */
+	public void ensureScript(Script script) throws CompiledCorpusException {
+		if (TransCoder.textScript(word) != script) {
+			try {
+				word = TransCoder.inOtherScript(word);
+				_wordInOtherScript = TransCoder.inOtherScript(_wordInOtherScript);
+			} catch (TransCoderException e) {
+				throw new CompiledCorpusException(e);
+			}
+		}
+
+	}
 }

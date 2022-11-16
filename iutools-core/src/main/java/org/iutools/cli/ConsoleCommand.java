@@ -399,7 +399,7 @@ public abstract class ConsoleCommand extends SubCommand {
 		return mode;
 	}
 	
-	protected Long getTimeoutMSecs() {
+	protected Long getTimeoutSecs() {
 		String timeoutStr = getOptionValue(ConsoleCommand.OPT_TIMEOUT_SECS, false);
 		Long timeoutMSecs = null;
 		try {

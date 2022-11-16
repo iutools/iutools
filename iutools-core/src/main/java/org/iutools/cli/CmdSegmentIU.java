@@ -3,6 +3,7 @@ package org.iutools.cli;
 import java.util.Scanner;
 import java.util.concurrent.TimeoutException;
 
+import ca.nrc.dtrc.elasticsearch.ElasticSearchException;
 import ca.nrc.ui.commandline.CommandLineException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
@@ -10,14 +11,17 @@ import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import org.iutools.corpus.CompiledCorpusException;
 import org.iutools.corpus.WordInfo;
 import org.iutools.morph.Decomposition;
 import org.iutools.morph.r2l.MorphologicalAnalyzer_R2L;
 import org.iutools.morph.MorphologicalAnalyzer;
 import ca.nrc.debug.Debug;
+import org.iutools.script.TransCoder;
+import org.json.JSONObject;
 
 public class CmdSegmentIU extends ConsoleCommand {
-	
+
 	Scanner stdinScanner = new Scanner(System.in);
 	ObjectMapper mapper = new ObjectMapper();
 	Mode mode = null;
@@ -38,7 +42,7 @@ public class CmdSegmentIU extends ConsoleCommand {
 
 		mode = getMode(ConsoleCommand.OPT_WORD);
 		lenient = getExtendedAnalysis();
-		Long timeoutMSecs = getTimeoutMSecs();
+		Long timeoutMSecs = getTimeoutSecs();
 		MorphologicalAnalyzer_R2L morphAnalyzer = new MorphologicalAnalyzer_R2L();
 		morphAnalyzer.setTimeout(timeoutMSecs);
 		
@@ -62,7 +66,6 @@ public class CmdSegmentIU extends ConsoleCommand {
 				long elapsed = System.currentTimeMillis() - start;
 				printDecompositions(winfo, elapsed);
 				mLogger.trace("DONE Working on word="+winfo.word+"(@"+start+" msecs)");
-				
 			} catch (Exception e) {
 				if (mode == Mode.PIPELINE) {
 					// In pipeline mode, we print exceptions on STDOUT
@@ -138,8 +141,14 @@ public class CmdSegmentIU extends ConsoleCommand {
 	private void printWordResult(WordResult result) throws ConsoleException {
 		String output;
 		try {
-			output = WordInfo.jsonWriter.writeValueAsString(result.winfo);
-		} catch (JsonProcessingException e) {
+			// We only print certain fields of the WordInfo object
+			String jsonWinfo = result.winfo.toJson(false);
+
+			String origJson = mapper.writeValueAsString(result);
+			JSONObject origResultJson = new JSONObject(origJson);
+			origResultJson.put("winfo", new JSONObject(jsonWinfo));
+			output = origResultJson.toString();
+		} catch (ElasticSearchException | CompiledCorpusException | JsonProcessingException e) {
 			throw new ConsoleException(e);
 		}
 		echo(output);
@@ -152,19 +161,16 @@ public class CmdSegmentIU extends ConsoleCommand {
 		} else if (mode == Mode.INTERACTIVE) {
 			wordInput = prompt("Enter Inuktut word");
 		} else if (mode == Mode.PIPELINE) {
-			wordInput = null;
-			if (stdinScanner.hasNext()) {
-				wordInput = stdinScanner.nextLine();
-				System.out.println("--** nextInputWord: wordInput="+wordInput);
-			}
+			wordInput = stdinScanner.nextLine();
 		}
 
 		WordInfo winfo = null;
-		if (!wordInput.matches("^\\s*$")) {
-			if (wordInput.matches("^\\s*\\{.*\\}\\s*^")) {
+		if (wordInput != null && !wordInput.isEmpty()) {
+			if (wordInput.matches("^\\s*\\{.*\\}\\s*$")) {
 				try {
 					winfo = mapper.readValue(wordInput, WordInfo.class);
-				} catch (JsonProcessingException e) {
+					winfo.ensureScript(TransCoder.Script.ROMAN);
+				} catch (JsonProcessingException | CompiledCorpusException e) {
 					throw new CommandLineException(e);
 				}
 			} else {
