@@ -31,6 +31,11 @@ public class ServiceInputs {
 	@JsonIgnore
 	private ObjectMapper mapper = new ObjectMapper();
 
+	public ServiceInputs setIUAlphabet(Script script) {
+		this.iuAlphabet = script;
+		return this;
+	}
+
 	/**
 	 * Create a "summary" of these outputs, to make its log entry shorter.
 	 * By default, the summary contains every field of the input.

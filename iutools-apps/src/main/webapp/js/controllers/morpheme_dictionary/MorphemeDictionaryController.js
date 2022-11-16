@@ -83,20 +83,18 @@ class MorphemeDictionaryController extends IUToolsController {
 	}
 	
 	getSearchRequestData() {
-		var wordPattern = this.elementForProp("inpMorpheme").val().trim();
-		if (wordPattern=='')
-			wordPattern = null;
+        var wordPattern = this.elementForProp("inpMorpheme").val().trim();
+        if (wordPattern == '')
+            wordPattern = null;
         var corpusName = null;
-		var nbExamples = this.elementForProp("inpNbExamples").val().trim();
-		if (nbExamples=='')
-			nbExamples = "20";
-
-		var request = {
-				wordPattern: wordPattern,
-				corpusName: corpusName,
-				nbExamples: nbExamples
-		};
-		
+        var nbExamples = this.elementForProp("inpNbExamples").val().trim();
+        if (nbExamples == '')
+            nbExamples = "20"
+        var request = {
+            wordPattern: wordPattern,
+            corpusName: corpusName,
+            nbExamples: nbExamples
+        };
 
 		return request;
 	}
@@ -200,6 +198,12 @@ class MorphemeDictionaryController extends IUToolsController {
 			isValid = false;
 			this.error("You need to enter something in the morpheme field");
 		}
+        var parsed = parseInt(nbExamples, 10);
+        if (isNaN(parsed)) {
+            isValid = false;
+			this.error("Field 'Max examples' must be a number");
+        }
+
 		return isValid;
 	}
 	

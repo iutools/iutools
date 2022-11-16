@@ -72,8 +72,8 @@ public class MorphemeExamplesEndpointTest extends EndpointTest {
 			)
 			.examplesForMorphemeAre("tit/tn-nom-p-2s",
 				new String[] {
-					"ilinniagatit",
-					"qaiqujilutit"
+					"akitujuutit",
+					"iluunnatit"
 				});
 		;
 	}

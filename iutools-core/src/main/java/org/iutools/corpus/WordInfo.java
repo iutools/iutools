@@ -2,7 +2,11 @@ package org.iutools.corpus;
 
 import ca.nrc.dtrc.elasticsearch.Document;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.apache.commons.lang3.StringUtils;
+import org.iutools.morph.Decomposition;
+import org.iutools.morph.DecompositionException;
 import org.iutools.script.TransCoder;
 import org.iutools.script.TransCoderException;
 
@@ -77,6 +81,9 @@ public class WordInfo extends Document {
 	 */
 	public String morphemesSpaceConcatenated = null;
 
+	/** Serializes the WordInfo without all the ElasticSearch-specific attributes **/
+	public static ObjectWriter jsonWriter = makeWinfoJsonWriter();
+
 	public WordInfo() {
 		super();
 		init_WordInfo(null);
@@ -141,6 +148,23 @@ public class WordInfo extends Document {
 	public WordInfo setDecompositions(String[][] sampleDecomps, int totalDecomps) throws CompiledCorpusException {
 		return setDecompositions(sampleDecomps, new Integer(totalDecomps));
 	}
+
+	public void setDecompositions(Decomposition[] decs) throws CompiledCorpusException {
+		if (decs != null) {
+			String[][] decsAsMorphemes = new String[decs.length][];
+			for (int ii=0;  ii < decs.length; ii++) {
+				try {
+					String[] iith_DecAsMorphemes = decs[ii].getMorphemes();
+					decsAsMorphemes[ii] = iith_DecAsMorphemes;
+				} catch (DecompositionException e) {
+					throw new CompiledCorpusException(e);
+				}
+			}
+			setDecompositions(decsAsMorphemes, decsAsMorphemes.length);
+		}
+		return;
+	}
+
 
 	public WordInfo setDecompositions(String[][] sampleDecomps, Integer totalDecomps) throws CompiledCorpusException {
 
@@ -250,4 +274,19 @@ public class WordInfo extends Document {
 		int code = this.getId().hashCode();
 		return code;
 	}
+
+	private static ObjectWriter makeWinfoJsonWriter() {
+		Document doc = new Document();
+		jsonWriter = new ObjectMapper().writer();
+
+		for (String attrToIgnore: new String[] {
+			"_detect_language", "additionalFields", "content", "creationDate",
+			"idWithoutType", "lang", "longDescription", "shortDescription",
+			"type"
+			}) {
+			jsonWriter.withoutAttribute("attrToIgnore");
+		}
+		return jsonWriter;
+	}
+
 }

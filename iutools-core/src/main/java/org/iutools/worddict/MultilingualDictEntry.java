@@ -441,6 +441,11 @@ public class MultilingualDictEntry {
 				new List[] {bestTranslations}) {
 				CollectionTranscoder.transcodeList(script, translations);
 			}
+			for (String enWord: this.translations4word.keySet()) {
+				List<String> enWordTranslations = this.translations4word.get(enWord);
+				CollectionTranscoder.transcodeList(script, enWordTranslations);
+				this.translations4word.put(enWord, enWordTranslations);
+			}
 		} else {
 			// Input word is iu and its translations are en
 			try {

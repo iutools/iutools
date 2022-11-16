@@ -4,12 +4,13 @@ import java.util.Scanner;
 import java.util.concurrent.TimeoutException;
 
 import ca.nrc.ui.commandline.CommandLineException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.iutools.corpus.WordInfo;
 import org.iutools.morph.Decomposition;
 import org.iutools.morph.r2l.MorphologicalAnalyzer_R2L;
 import org.iutools.morph.MorphologicalAnalyzer;
@@ -18,9 +19,10 @@ import ca.nrc.debug.Debug;
 public class CmdSegmentIU extends ConsoleCommand {
 	
 	Scanner stdinScanner = new Scanner(System.in);
+	ObjectMapper mapper = new ObjectMapper();
 	Mode mode = null;
 	boolean lenient = false;
-	
+
 	public CmdSegmentIU(String name) throws CommandLineException {
 		super(name);
 	}
@@ -33,6 +35,7 @@ public class CmdSegmentIU extends ConsoleCommand {
 	@Override
 	public void execute() throws Exception {
 		Logger mLogger = LogManager.getLogger("ca.inuktitutcomputing.core.console.SegmentIU.execute");
+
 		mode = getMode(ConsoleCommand.OPT_WORD);
 		lenient = getExtendedAnalysis();
 		Long timeoutMSecs = getTimeoutMSecs();
@@ -43,21 +46,22 @@ public class CmdSegmentIU extends ConsoleCommand {
 			", timeoutMsecs="+timeoutMSecs);
 				
 		while (true) {
-			String word = null;
+			WordInfo winfo = null;
 			try {
-				word = nextInputWord();
-				if (word == null) {
+				winfo = nextInputWord();
+				if (winfo == null) {
 					mLogger.trace("No more words");
 					break;
 				}
 				long start = System.currentTimeMillis();	
-				mLogger.trace("Working on word="+word+"(@"+start+" msecs)");
+				mLogger.trace("Working on word="+winfo.word+"(@"+start+" msecs)");
 
 				Decomposition[] decs =
-					morphAnalyzer.decomposeWord(word,lenient);
+					morphAnalyzer.decomposeWord(winfo.word,lenient);
+				winfo.setDecompositions(decs);
 				long elapsed = System.currentTimeMillis() - start;
-				printDecompositions(word, decs, elapsed);
-				mLogger.trace("DONE Working on word="+word+"(@"+start+" msecs)");
+				printDecompositions(winfo, elapsed);
+				mLogger.trace("DONE Working on word="+winfo.word+"(@"+start+" msecs)");
 				
 			} catch (Exception e) {
 				if (mode == Mode.PIPELINE) {
@@ -66,9 +70,9 @@ public class CmdSegmentIU extends ConsoleCommand {
 					// output
 					//
 					// Note: This assumes that no exception is raised AFTER the
-					//   word's decompositions have been printed to STDOUT.
+					//   winfo's decompositions have been printed to STDOUT.
 					//
-					printExceptionResult(word, e);
+					printExceptionResult(winfo, e);
 				} else {
 					if (e instanceof TimeoutException) {
 						onCommandTimeout((TimeoutException)e);
@@ -88,10 +92,10 @@ public class CmdSegmentIU extends ConsoleCommand {
 		mLogger.trace("Done!");	
 	}
 
-	private void printExceptionResult(String word, Exception e) 
+	private void printExceptionResult(WordInfo winfo, Exception e)
 			throws ConsoleException {
 		
-		WordResult result = new WordResult(word);
+		WordResult result = new WordResult(winfo);
 		if (e instanceof TimeoutException) {
 			result.setTimedout(true);
 		} else {
@@ -101,32 +105,30 @@ public class CmdSegmentIU extends ConsoleCommand {
 		printWordResult(result);
 	}
 
-	private void printDecompositions(String word, Decomposition[] decs,
-			long elapsedMSecs) throws ConsoleException {
+	private void printDecompositions(WordInfo winfo, long elapsedMSecs) throws ConsoleException {
 		if (mode == Mode.PIPELINE) {
-			printDecompositionsPipeline(word, decs, elapsedMSecs);
+			printDecompositionsPipeline(winfo, elapsedMSecs);
 		} else {
-			printDecompositionsUserModes(decs, elapsedMSecs);
+			printDecompositionsUserModes(winfo, elapsedMSecs);
 		}
 	}
 
-	private void printDecompositionsUserModes(Decomposition[] decs,
-															long elapsedMSecs) throws ConsoleException {
+	private void printDecompositionsUserModes(WordInfo winfo, long elapsedMSecs) throws ConsoleException {
+		String[][] decs = winfo.decompositionsSample;
 		if (decs == null) {
 			echo("Morphological analyzer failed");
 		} else if (decs.length == 0) {
 			echo("No decompositions found");
 		} else {
-			for (Decomposition aDec: decs) {
-				echo(aDec.toString());
+			for (String[] aDec: decs) {
+				echo(String.join(", ", aDec));
 			}
 		}
 	}
 
-	private void printDecompositionsPipeline(String _word, Decomposition[] decs,
-			long elapsed) throws ConsoleException {
+	private void printDecompositionsPipeline(WordInfo winfo, long elapsed) throws ConsoleException {
 		try {
-			WordResult result = new WordResult(_word, decs, lenient, elapsed);
+			WordResult result = new WordResult(winfo, lenient, elapsed);
 			printWordResult(result);
 		} catch (Exception e) {
 			throw new ConsoleException(e);
@@ -136,54 +138,65 @@ public class CmdSegmentIU extends ConsoleCommand {
 	private void printWordResult(WordResult result) throws ConsoleException {
 		String output;
 		try {
-			output = new ObjectMapper().writeValueAsString(result);
+			output = WordInfo.jsonWriter.writeValueAsString(result.winfo);
 		} catch (JsonProcessingException e) {
 			throw new ConsoleException(e);
 		}
 		echo(output);
 	}
 
-	private String nextInputWord() {
-		String word = null;
+	private WordInfo nextInputWord() throws CommandLineException {
+		String wordInput = null;
 		if (mode == Mode.SINGLE_INPUT) {
-			word = getWord();
+			wordInput = getWord();
 		} else if (mode == Mode.INTERACTIVE) {
-			word = prompt("Enter Inuktut word");			
+			wordInput = prompt("Enter Inuktut word");
 		} else if (mode == Mode.PIPELINE) {
-			word = null;
+			wordInput = null;
 			if (stdinScanner.hasNext()) {
-				word = stdinScanner.nextLine();
+				wordInput = stdinScanner.nextLine();
+				System.out.println("--** nextInputWord: wordInput="+wordInput);
+			}
+		}
+
+		WordInfo winfo = null;
+		if (!wordInput.matches("^\\s*$")) {
+			if (wordInput.matches("^\\s*\\{.*\\}\\s*^")) {
+				try {
+					winfo = mapper.readValue(wordInput, WordInfo.class);
+				} catch (JsonProcessingException e) {
+					throw new CommandLineException(e);
+				}
+			} else {
+				winfo = new WordInfo(wordInput);
 			}
 		}
 		
-		return word;
+		return winfo;
 	}
 
 	public static class WordResult {
-		public String word = null;;
-		public String[] decompositions = new String[0];
+		public WordInfo winfo = null;;
 		public String exception = null;
 		public Long elapsedMSecs = null;
 		public boolean lenient = false;
 		public boolean timedOut = false;
 		
-		public WordResult(String _word) throws ConsoleException {
-			initializeWordResult(_word, null, null, null, null);
+		public WordResult(WordInfo _winfo) throws ConsoleException {
+			initializeWordResult(_winfo, null, null, null);
 		}
 
-		public WordResult(String _word, Exception exc) 
+		public WordResult(WordInfo _winfo, Exception exc)
 				throws ConsoleException {
-			initializeWordResult(_word, null, null, null, exc);
+			initializeWordResult(_winfo, null, null, exc);
 		}
 
-		public WordResult(String _word, Decomposition[] decomps,
-				Boolean _lenient, Long elapsed) throws ConsoleException {
-			initializeWordResult(_word, decomps, elapsed, _lenient, null);
+		public WordResult(WordInfo _winfo, Boolean _lenient, Long elapsed) throws ConsoleException {
+			initializeWordResult(_winfo, elapsed, _lenient, null);
 		}
 
-		public WordResult(String _word, Decomposition[] decomps,
-				Long elapsed, Exception exc) throws ConsoleException {
-			initializeWordResult(_word, decomps, elapsed, null, exc);
+		public WordResult(WordInfo _winfo, Long elapsed, Exception exc) throws ConsoleException {
+			initializeWordResult(_winfo, elapsed, null, exc);
 		}
 		
 		public WordResult setTimedout(boolean flag) {
@@ -198,18 +211,12 @@ public class CmdSegmentIU extends ConsoleCommand {
 			return this;
 		}
 
-		private void initializeWordResult(String _word, Decomposition[] decomps,
+		private void initializeWordResult(WordInfo _winfo,
 			Long elapsed, Boolean _lenient, Exception exc) throws ConsoleException {
-			this.word = _word;
+			this.winfo = _winfo;
 			this.elapsedMSecs = elapsed;			
 			if (_lenient != null) {
 				this.lenient = _lenient;
-			}
-			if (decomps != null) {
-				this.decompositions = new String[decomps.length];
-				for (int ii=0; ii < decomps.length; ii++) {
-					this.decompositions[ii] = decomps[ii].toString();
-				}
 			}
 			setException(exc);
 		}

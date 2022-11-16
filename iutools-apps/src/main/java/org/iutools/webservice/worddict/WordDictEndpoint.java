@@ -89,6 +89,9 @@ public class WordDictEndpoint extends Endpoint<WordDictInputs,WordDictResult> {
 					firstWordEntry = exactWordEntry;
 				}
 			}
+			if (inputs.lang.equals("iu")) {
+				topWords = (List<String>) TransCoder.ensureScript(inputs.iuAlphabet, topWords);
+			}
 			if (firstWordEntry == null && !topWords.isEmpty()) {
 				firstWordEntry = dict.entry4word(topWords.get(0), inputs.lang);
 			}

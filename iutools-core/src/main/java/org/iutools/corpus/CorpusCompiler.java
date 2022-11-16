@@ -30,6 +30,7 @@ import org.iutools.datastructure.trie.StringSegmenterException;
 import ca.nrc.json.PrettyPrinter;
 import org.iutools.text.segmentation.IUTokenizer;
 import org.iutools.utilities.StopWatchException;
+import org.json.JSONObject;
 
 public class CorpusCompiler {
 
@@ -63,7 +64,6 @@ public class CorpusCompiler {
 	ProgressMonitor_Terminal progressMonitor = null;
 
 	IUTokenizer tokenizer = new IUTokenizer();
-
 
 	public CorpusCompiler(File _outputDir) throws CorpusCompilerException {
 		init_CorpusCompiler(_outputDir);
@@ -161,8 +161,8 @@ public class CorpusCompiler {
 		CorpusCompilationProgress.Phase oldPhase = progress.currentPhase;
 		if (progress.currentPhase == CorpusCompilationProgress.Phase.COMPUTE_WORD_FREQUENCIES) {
 			/**
-			 * In this phase, we analyze a series of TXT files to compute
-			 * and generate a map this.wordFreqs that provides the word
+			 * In this phase, we analyze a series of tm.json files to compute
+			 * and generate a FrequencyHistogram that provides the word
 			 * frequencies.
 			 */
 			phaseCompileFreqsCorpusFiles();
@@ -177,12 +177,6 @@ public class CorpusCompiler {
 			 *     decompositions).
 			 */
 			phaseGenerateCorpFileNoDecomps();
-		} else if (progress.currentPhase == CorpusCompilationProgress.Phase.LOAD_CORPUS_NODECOMPS) {
-			 /**
-			  * In this phase, we load the corpus.nodecomps.json file into
-			  * an ElasticSearch index with name this.corpusName.
-			  */
-			phaseLoadCorpusNoDecomps();
 		} else if (progress.currentPhase == CorpusCompilationProgress.Phase.CHECK_DECOMPS_FILE) {
 			/**
 			 * In this phase, we check for the existence of a decompositions
@@ -255,7 +249,7 @@ public class CorpusCompiler {
 	 */
 	private void phaseGenerateCorpFileNoDecomps() throws CorpusCompilerException {
 		toConsole(
-			"   Computing the corpus JSON file (no decomps) from words frequency map: "+
+			"   Computing the corpus JSON file (no decomps) from words frequency histogram: "+
 			wordFreqsMapFile()+"\n\n");
 
 		progress.currentPhase = CorpusCompilationProgress.Phase.GENERATE_CORP_FILE_NO_DECOMPS;
@@ -276,14 +270,14 @@ public class CorpusCompiler {
 				"class=org.iutools.corpus.WordInfo\n\n");
 			ObjectMapper mapper = new ObjectMapper();
 			for (String word: wordFreqs.allValues()) {
-				Long freq = freqForWord(word);
-				WordInfo winfo =
-					new WordInfo(word)
-						.setFrequency(freq.longValue());
-				String json = mapper.writeValueAsString(winfo);
-				fw.write(json + "\n");
+				Long freq = wordFreqs.frequency(word);
+				JSONObject jObj = new JSONObject()
+					.put("word", word)
+					.put("frequency", freq);
+					;
+				fw.write(jObj.toString() + "\n");
 			}
-		} catch (IOException e) {
+		} catch (IOException  e) {
 			throw new CorpusCompilerException("Error while writing to corpus file (no decomps) for writing: " + corpFile, e);
 		} finally {
 			try {
@@ -294,27 +288,6 @@ public class CorpusCompiler {
 		}
 
 		wordFreqsMapFile().delete();
-
-		progress.currentPhase = CorpusCompilationProgress.Phase.LOAD_CORPUS_NODECOMPS;
-	}
-
-	/**
-	 * In this phase, we load the corpus.nodecomps.json file into
-	 * an ElasticSearch index with name this.corpusName.
-	 */
-	private void phaseLoadCorpusNoDecomps() throws CorpusCompilerException {
-		File corpusFile = corpusNoDecompsFile();
-		toConsole(
-			"   Loading corpus "+progress.corpusName+" from file (no decomps): "+
-			"\n      "+corpusFile+"\n\n");
-		try {
-			corpus().loadFromFile(corpusFile, true);
-		} catch (CompiledCorpusException e) {
-			throw new CorpusCompilerException(
-				"Problem loading corpus "+corpusName+" from file "+corpusFile, e);
-		}
-
-		corpusNoDecompsFile().delete();
 
 		progress.currentPhase = CorpusCompilationProgress.Phase.CHECK_DECOMPS_FILE;
 	}
@@ -537,6 +510,7 @@ public class CorpusCompiler {
 
 	private void readWordFreqsMap() throws CorpusCompilerException {
 		try {
+			System.out.println("   Reading words frequency histogram ...");
 			File freqsFile = wordFreqsMapFile();
 			if (freqsFile.length() != 0) {
 				Map<String, Long> freqsMap = new ObjectMapper()
@@ -1119,17 +1093,5 @@ public class CorpusCompiler {
 			root = progress.corpusTextsRoot;
 		}
 		return root;
-	}
-
-	private Long freqForWord(String word) {
-		Long freq = null;
-		Object freqObj = wordFreqs.frequency(word);
-		if (freqObj.getClass() == Integer.class) {
-			freq = new Long((Integer)freqObj);
-		} else {
-			freq = (Long)freqObj;
-		}
-
-		return freq;
 	}
 }

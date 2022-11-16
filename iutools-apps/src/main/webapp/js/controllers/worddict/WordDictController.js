@@ -38,6 +38,7 @@ class WordDictController extends IUToolsController {
                 "word": query,
                 "lang": lang,
                 "exactWordLookup": false,
+                "iuAlphabet": new SettingsController().iuAlphabet(),
             };
 
         var inputsJson = jsonStringifySafe(inputs);
@@ -101,12 +102,19 @@ class WordDictController extends IUToolsController {
         var html = this.htmlHits(resp);
 
         var queryWordEntry = null;
-        if (resp.queryWordEntry != null &&
-            resp.queryWordEntry.hasOwnProperty('word')) {
-            queryWordEntry = resp.queryWordEntry.word;
+        var queryWordEntryOtherScript = null;
+        if (resp.queryWordEntry != null) {
+            if (resp.queryWordEntry.hasOwnProperty('word')) {
+                queryWordEntry = resp.queryWordEntry.word;
+            }
+            if (resp.queryWordEntry.hasOwnProperty('wordInOtherScript')) {
+                queryWordEntryOtherScript = resp.queryWordEntry.wordInOtherScript;
+            }
         }
+        var queryWord = this.queryWord();
         if (queryWordEntry != null) {
-            if (queryWordEntry === this.queryWord()) {
+            if (queryWordEntry === queryWord ||
+                queryWordEntryOtherScript === queryWord) {
                 // There is a word that matched the query exactly.
                 // Display its entry.
                 tracer.trace("Displaying the exact match entry");

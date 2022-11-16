@@ -72,7 +72,10 @@ public class WordDictEndpointTest extends EndpointTest {
 		// There is only one word in the dictionary that matches this
 		// pattern
 		String query = "inuksuk";
-		WordDictInputs inputs = new WordDictInputs(query).setExactWordLookup(false);
+		WordDictInputs inputs =
+			new WordDictInputs(query)
+				.setExactWordLookup(false);
+		inputs.setIUAlphabet(TransCoder.Script.ROMAN);
 
 		WordDictResult epResult = (WordDictResult) endPoint.executeThenConvert(inputs);
 
@@ -236,18 +239,6 @@ public class WordDictEndpointTest extends EndpointTest {
 				.translationsIncludedIn(new String[]{"house", "home", "rent"})
 				.minExamples(5),
 
-			new WordDictEndpointCase("en-SEARCH-housing")
-				.queryLang("en")
-				.query("housing")
-				.iuAlphabet(TransCoder.Script.SYLLABIC)
-				.minHits(10)
-				.translationsIncludedIn(new String[]{
-					"ᐃᓪᓗᓕᕆᔨᓂ", "ᐃᓪᓗᓕᕆᔨᓂᒃ",
-					"ᐃᒡᓗᒋᔭᐅᕙᒃᑐᓂᒃ", "ᐃᒡᓗᓕᕆᓂᕐᒥ",
-					"ᐃᓪᓗᐃᑦ", "ᐃᓪᓗᓂᒃ", "ᐃᓪᓗᓕᕆᔨᒃᑯᓐᓄᑦ"
-					})
-				.minExamples(5),
-
 //			// This IU word is not found in the corpus, but it DOES decompose.
 //			// So, we ARE able to show some meaningful information about it
 //			new WordDictEndpointCase("iu-SEARCH-iqqanaijaqtulirijikkut")
@@ -398,7 +389,7 @@ public class WordDictEndpointTest extends EndpointTest {
 			};
 
 		new RunOnCases(cases, runner)
-//			.onlyCaseNums(4)
+//			.onlyCaseNums(7)
 //			.onlyCasesWithDescr("en-SEARCH-housing")
 			.run();
 	}

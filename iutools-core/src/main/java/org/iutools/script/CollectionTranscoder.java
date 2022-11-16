@@ -34,6 +34,16 @@ public class CollectionTranscoder {
 		}
 	}
 
+	public static  <K extends Object> void transcodeValues(
+		TransCoder.Script script, Map<K, String> origMap) throws TransCoderException {
+		Set<String> keys = null;
+		for (K aKey: origMap.keySet()) {
+			String oldValue = origMap.get(aKey);
+			String newValue = TransCoder.ensureScript(script, oldValue);
+			origMap.put(aKey, newValue);
+		}
+	}
+
 	public static  void transcodeStrValues(
 		TransCoder.Script script, Map<String, String> mapToTranscode) throws TransCoderException {
 		for (String key: mapToTranscode.keySet()) {

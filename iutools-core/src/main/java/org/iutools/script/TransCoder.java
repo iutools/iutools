@@ -550,6 +550,20 @@ public class TransCoder {
     	return romanText;
     }
 
+    public static Collection<String> ensureRoman(Collection<String> texts) throws TransCoderException {
+		 try {
+			 Collection<String> origTexts = texts.getClass().getConstructor().newInstance();
+			 for (String aText: texts) {
+				 String aTextSyll = ensureRoman(aText);
+				 origTexts.add(aTextSyll);
+			 }
+			 return origTexts;
+		 } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+			 throw new TransCoderException(e);
+		 }
+	 }
+
+
     public static Collection<String> ensureSyllabic(Collection<String> texts) throws TransCoderException {
 		 try {
 			 Collection<String> syllTexts = texts.getClass().getConstructor().newInstance();
@@ -575,6 +589,18 @@ public class TransCoder {
 
     	return syllabicText;
     }
+
+    public static Collection<String> ensureScript(
+    	Script script, Collection<String> texts) throws TransCoderException {
+    	Collection<String> convertedTexts = null;
+    	if (script == Script.ROMAN) {
+    		convertedTexts = ensureRoman(texts);
+		} else {
+    		convertedTexts = ensureSyllabic(texts);
+		}
+    	return convertedTexts;
+	 }
+
 
 
 		public static String ensureScript(Script script, String text) throws TransCoderException {
