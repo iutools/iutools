@@ -9,7 +9,7 @@ import org.iutools.webservice.AssertEndpointResult;
 import org.iutools.webservice.EndpointTest;
 import org.iutools.webservice.ServiceException;
 import org.iutools.worddict.AssertMultilingualDictEntry;
-import org.iutools.worddict.MultilingualDictEntry;
+import org.iutools.worddict.MDictEntry;
 import org.junit.jupiter.api.Test;
 
 import java.io.FileNotFoundException;
@@ -45,7 +45,7 @@ public class WordDictEndpointTest extends EndpointTest {
 		// dictionary entry.
 		// Note that the entry will be available even if the query pattern matched
 		// other words as well.
-		MultilingualDictEntry wordEntry = epResult.queryWordEntry;
+		MDictEntry wordEntry = epResult.queryWordEntry;
 
 		// By default, the dictionary assumes the word is in Inuktitut.
 		// But you can also specify that the word is in English.
@@ -333,7 +333,7 @@ public class WordDictEndpointTest extends EndpointTest {
 			{
 				try {
 					WordDictEndpointCase aCase = (WordDictEndpointCase)uncastCase;
-					String otherLang = MultilingualDictEntry.otherLang(aCase.lang);
+					String otherLang = MDictEntry.otherLang(aCase.lang);
 					if (aCase.lang.equals("en")) {
 						aCase
 							.noDecomp()

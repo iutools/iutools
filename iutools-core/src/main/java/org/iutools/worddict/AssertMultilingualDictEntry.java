@@ -5,24 +5,25 @@ import ca.nrc.string.StringUtils;
 import ca.nrc.testing.*;
 import org.iutools.concordancer.tm.WordSpotter;
 import org.iutools.linguisticdata.MorphemeHumanReadableDescr;
+import org.iutools.worddict.MachineGeneratedDict;
 import org.iutools.script.TransCoder;
 import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 
 import java.util.*;
 
-public class AssertMultilingualDictEntry extends Asserter<MultilingualDictEntry> {
+public class AssertMultilingualDictEntry extends Asserter<MDictEntry> {
 
-	public AssertMultilingualDictEntry(MultilingualDictEntry _gotObject) {
+	public AssertMultilingualDictEntry(MDictEntry _gotObject) {
 		super(_gotObject);
 	}
 
-	public AssertMultilingualDictEntry(MultilingualDictEntry _gotObject, String mess) {
+	public AssertMultilingualDictEntry(MDictEntry _gotObject, String mess) {
 		super(_gotObject, mess);
 	}
 
-	MultilingualDictEntry entry() {
-		return (MultilingualDictEntry) gotObject;
+	MDictEntry entry() {
+		return (MDictEntry) gotObject;
 	}
 
 	private Set<String> entryRelatedWords() {
@@ -131,7 +132,7 @@ public class AssertMultilingualDictEntry extends Asserter<MultilingualDictEntry>
 
 
 	public void iuIsInScript(TransCoder.Script expScript) {
-		MultilingualDictEntry entry = this.entry();
+		MDictEntry entry = this.entry();
 		String l1 = entry.lang;
 		String relatedWords = String.join(", ", entry.relatedWords);
 		TransCoder.Script gotScript = TransCoder.textScript(relatedWords);
@@ -176,7 +177,7 @@ public class AssertMultilingualDictEntry extends Asserter<MultilingualDictEntry>
 					text = aBilEx[1];
 				}
 				String highlighted = WordSpotter.spotHighlight("strong", text, ignoreRepetitions);
-				highlighted = MultilingualDict.canonizeTranslation(lang, highlighted);
+				highlighted = MachineGeneratedDict.canonizeTranslation(lang, highlighted);
 				if (highlighted != null) {
 					gotHighlights.add(highlighted);
 				}

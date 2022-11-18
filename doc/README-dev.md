@@ -94,7 +94,7 @@ a unit test). You do this with the following -D option:
 
 You can add your own traces to the code, by writing something like this:
 
-    Logger tLogger = Logger.getLogger("org.iutools.worddict.MultilingualDict.someMethod");
+    Logger tLogger = Logger.getLogger("org.iutools.worddict.MachineGeneratedDict.someMethod");
     tLogger.trace("Hello world");
     
     # If the trace message takes a long time to generate, you can check if the 

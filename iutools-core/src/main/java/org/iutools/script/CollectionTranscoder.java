@@ -1,7 +1,7 @@
 package org.iutools.script;
 
 import ca.nrc.datastructure.Cloner;
-import org.iutools.worddict.MultilingualDictException;
+import org.iutools.worddict.MachineGeneratedDictException;
 
 import java.util.Collection;
 import java.util.List;
@@ -73,26 +73,26 @@ public class CollectionTranscoder {
 	}
 
 	public static void transcodeList(
-		TransCoder.Script script, List<String> coll) throws MultilingualDictException {
+		TransCoder.Script script, List<String> coll) throws MachineGeneratedDictException {
 		for (int ii=0; ii < coll.size(); ii++) {
 			String transcoded = null;
 			try {
 				transcoded = TransCoder.ensureScript(script, coll.get(ii));
 			} catch (TransCoderException e) {
-				throw new MultilingualDictException(e);
+				throw new MachineGeneratedDictException(e);
 			}
 			coll.set(ii, transcoded);
 		}
 	}
 
 	public static void transcodeArray(
-		TransCoder.Script script, String[] arr) throws MultilingualDictException {
+		TransCoder.Script script, String[] arr) throws MachineGeneratedDictException {
 		for (int ii=0; ii < arr.length; ii++) {
 			String transcoded = null;
 			try {
 				transcoded = TransCoder.ensureScript(script, arr[ii]);
 			} catch (TransCoderException e) {
-				throw new MultilingualDictException(e);
+				throw new MachineGeneratedDictException(e);
 			}
 			arr[ii] = transcoded;
 		}

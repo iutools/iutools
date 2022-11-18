@@ -18,7 +18,7 @@ import org.junit.jupiter.api.TestInfo;
 import java.util.*;
 import java.util.function.Consumer;
 
-public class MultilingualDictTest {
+public class MachineGeneratedDictTest {
 
 	MultilingualDictCase[] cases_entry4word = null;
 	Case[] cases_search = null;
@@ -173,10 +173,10 @@ public class MultilingualDictTest {
 	@Test
 	public void test__MultilingualDict__Synopsis() throws Exception {
 		// The dictionary is a singleton
-		MultilingualDict dict = new MultilingualDict();
+		MachineGeneratedDict dict = new MachineGeneratedDict();
 
 		// Given an inuktitut word, you can get its dictionary entry
-		MultilingualDictEntry entry = dict.entry4word("inuksuk");
+		MDictEntry entry = dict.entry4word("inuksuk");
 
 		// The input word can be in latin or syllabic alphabet
 		entry = dict.entry4word("ᐃᓄᒃᓱᒃ");
@@ -240,8 +240,8 @@ public class MultilingualDictTest {
 				Pair.of("ᐃᓄᒃᓱᒃ", TransCoder.Script.SYLLABIC),
 			}) {
 
-			MultilingualDictEntry entry =
-				new MultilingualDict().entry4word(aCase.getLeft());
+			MDictEntry entry =
+				new MachineGeneratedDict().entry4word(aCase.getLeft());
 			new AssertMultilingualDictEntry(entry)
 				.iuIsInScript(aCase.getRight())
 			;
@@ -257,7 +257,7 @@ public class MultilingualDictTest {
 			"titiraujaq", "ammuumajuqsiuqtutik", "umiarjuakkut", "kiugavinnga", "najugaq"
 		};
 
-		MultilingualDict dict = new MultilingualDict()
+		MachineGeneratedDict dict = new MachineGeneratedDict()
 			.setMinMaxPairs(100, 100);
 
 		StopWatch sw = new StopWatch().start();
@@ -283,8 +283,8 @@ public class MultilingualDictTest {
 			try {
 				MultilingualDictCase aCase = (MultilingualDictCase)uncastCase;
 				Long start = System.currentTimeMillis();
-				MultilingualDictEntry entry =
-					new MultilingualDict()
+				MDictEntry entry =
+					new MachineGeneratedDict()
 						.entry4word(aCase.word, aCase.l1);
 				double elapsed = 1.0 * (System.currentTimeMillis() - start) / 1000;
 				System.out.println("   ran in "+elapsed+" seconds");
@@ -347,7 +347,7 @@ public class MultilingualDictTest {
 	public void test__search__HappyPath() throws Exception {
 		String partialWord = "inuksu";
 		Pair<CloseableIterator<String>, Long> results =
-			new MultilingualDict().searchIter(partialWord);
+			new MachineGeneratedDict().searchIter(partialWord);
 
 		try (CloseableIterator<String> wordsIter = results.getLeft()) {
 			new AssertDictSearchResults(results.getLeft(), results.getRight())
@@ -360,7 +360,7 @@ public class MultilingualDictTest {
 	public void test__search__ENword() throws Exception {
 		String partialWord = "housing";
 		Pair<CloseableIterator<String>, Long> results =
-			new MultilingualDict().searchIter(partialWord, "en");
+			new MachineGeneratedDict().searchIter(partialWord, "en");
 		try (CloseableIterator<String> wordsIter = results.getLeft()) {
 			new AssertDictSearchResults(wordsIter, results.getRight())
 			.containsWords("housing");
@@ -380,7 +380,7 @@ public class MultilingualDictTest {
 					expMaxWords = (Integer) aCase.data[4];
 				}
 				Pair<List<String>, Long> results =
-					new MultilingualDict().search(query, lang, (Integer) null);
+					new MachineGeneratedDict().search(query, lang, (Integer) null);
 				AssertDictSearchResults asserter =
 					new AssertDictSearchResults(results, aCase.descr)
 						.containsAtLeast(expMinWords);
@@ -427,8 +427,8 @@ public class MultilingualDictTest {
 		public MultilingualDictCase setL1(String _lang) throws RuntimeException {
 			l1 = _lang;
 			try {
-				l2 = MultilingualDictEntry.otherLang(_lang);
-			} catch (MultilingualDictException e) {
+				l2 = MDictEntry.otherLang(_lang);
+			} catch (MachineGeneratedDictException e) {
 				throw new RuntimeException(e);
 			}
 			return this;
@@ -503,11 +503,11 @@ public class MultilingualDictTest {
 			String expText =(String)aCase.data[2];
 			try {
 				String gotText =
-					new MultilingualDict().canonizeTranslation(lang, origText);
+					new MachineGeneratedDict().canonizeTranslation(lang, origText);
 				AssertString.assertStringEquals(
 					aCase.descr, expText, gotText
 				);
-			} catch (MultilingualDictException e) {
+			} catch (MachineGeneratedDictException e) {
 				throw new RuntimeException(e);
 			}
 		};

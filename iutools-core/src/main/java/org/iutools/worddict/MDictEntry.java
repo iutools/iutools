@@ -18,9 +18,9 @@ import org.iutools.script.TransCoderException;
 
 import java.util.*;
 
-public class MultilingualDictEntry {
+public class MDictEntry {
 
-	public String otherLang() throws MultilingualDictException {
+	public String otherLang() throws MachineGeneratedDictException {
 		return otherLang(lang);
 	}
 
@@ -65,13 +65,13 @@ public class MultilingualDictEntry {
 
 	public String[] relatedWords = new String[0];
 
-	public static void assertIsSupportedLanguage(String lang) throws MultilingualDictException {
+	public static void assertIsSupportedLanguage(String lang) throws MachineGeneratedDictException {
 		if (!lang.matches("^(en|iu)$")) {
-			throw new MultilingualDictException("Unsupported language '"+lang+"'");
+			throw new MachineGeneratedDictException("Unsupported language '"+lang+"'");
 		}
 	}
 
-	public static String otherLang(String lang) throws MultilingualDictException {
+	public static String otherLang(String lang) throws MachineGeneratedDictException {
 		assertIsSupportedLanguage(lang);
 		String other = null;
 		if (lang.equals("iu")) {
@@ -93,19 +93,19 @@ public class MultilingualDictEntry {
 		return _otherLangTranslations;
 	}
 
-	public MultilingualDictEntry() throws MultilingualDictException {
+	public MDictEntry() throws MachineGeneratedDictException {
 		init_IUWordDictEntry((String)null, (String)null);
 	}
 
-	public MultilingualDictEntry(String _word) throws MultilingualDictException {
+	public MDictEntry(String _word) throws MachineGeneratedDictException {
 		init_IUWordDictEntry(_word, (String)null);
 	}
 
-	public MultilingualDictEntry(String _word, String _lang) throws MultilingualDictException {
+	public MDictEntry(String _word, String _lang) throws MachineGeneratedDictException {
 		init_IUWordDictEntry(_word, _lang);
 	}
 
-	private void init_IUWordDictEntry(String _word, String _lang) throws MultilingualDictException {
+	private void init_IUWordDictEntry(String _word, String _lang) throws MachineGeneratedDictException {
 		try {
 			if (_lang == null) {
 				_lang = "iu";
@@ -119,13 +119,13 @@ public class MultilingualDictEntry {
 				TransCoder.ensureScript(TransCoder.Script.SYLLABIC, _word);
 			}
 		} catch (TransCoderException e) {
-			throw new MultilingualDictException(e);
+			throw new MachineGeneratedDictException(e);
 		}
 		this.wordRoman =
 		TransCoder.ensureRoman(_word);
 	}
 
-	public MultilingualDictEntry setDecomp(String[] morphemes) throws MultilingualDictException {
+	public MDictEntry setDecomp(String[] morphemes) throws MachineGeneratedDictException {
 		try {
 			if (morphemes != null) {
 				morphDecomp = new ArrayList<MorphemeHumanReadableDescr>();
@@ -140,12 +140,12 @@ public class MultilingualDictEntry {
 						new MorphemeHumanReadableDescr(
 						morphInfo.id, morphInfo.englishMeaning));
 					} catch (MorphemeException e) {
-						throw new MultilingualDictException(e);
+						throw new MachineGeneratedDictException(e);
 					}
 				}
 			}
 		} catch (DecompositionException e) {
-			throw new MultilingualDictException(e);
+			throw new MachineGeneratedDictException(e);
 		}
 		return this;
 	}
@@ -163,9 +163,9 @@ public class MultilingualDictEntry {
 		return answer;
 	}
 
-	public MultilingualDictEntry addBilingualExample(
-		String translation, String[] example, String l1Word) throws MultilingualDictException {
-		Logger tLogger = LogManager.getLogger("org.iutools.worddict.MultilingualDictEntry.addBilingualExample");
+	public MDictEntry addBilingualExample(
+		String translation, String[] example, String l1Word) throws MachineGeneratedDictException {
+		Logger tLogger = LogManager.getLogger("org.iutools.worddict.MDictEntry.addBilingualExample");
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("translation=" + translation + ", l1Word=" + l1Word + ", example=" + String.join(", ", example));
 		}
@@ -208,20 +208,20 @@ public class MultilingualDictEntry {
 
 	private void addBilingualExamples(
 		String translation, List<String[]> examples, Boolean forRelatedWord)
-		throws MultilingualDictException {
+		throws MachineGeneratedDictException {
 		addBilingualExamples(translation, examples, forRelatedWord, (String)null);
 	}
 
 	private void addBilingualExamples(
 		String translation, List<String[]> examples, Boolean forRelatedWord,
 		String relWord)
-		throws MultilingualDictException {
+		throws MachineGeneratedDictException {
 		for (String[] anExample: examples) {
 			addBilingualExample(translation, anExample, relWord);
 		}
 	}
 
-	public List<String[]> bilingualExamplesOfUse() throws MultilingualDictException {
+	public List<String[]> bilingualExamplesOfUse() throws MachineGeneratedDictException {
 		List<String[]> allExamples = new ArrayList<String[]>();
 
 		for (String translation: bestTranslations) {
@@ -236,7 +236,7 @@ public class MultilingualDictEntry {
 	 * as a translation of the original word, return those, otherwise return
 	 * examples of this as a translation of a related word.
 	 */
-	public List<String[]> bilingualExamplesOfUse(String translation) throws MultilingualDictException {
+	public List<String[]> bilingualExamplesOfUse(String translation) throws MachineGeneratedDictException {
 		List<String[]> examples = new ArrayList<String[]>();
 		if (examples4Translation.containsKey(translation)) {
 			examples = examples4Translation.get(translation);
@@ -246,8 +246,8 @@ public class MultilingualDictEntry {
 	}
 
 	public void sortAndPruneTranslations(
-		int maxTranslations, Integer minRequiredPairs) throws MultilingualDictException {
-		Logger tLogger = LogManager.getLogger("org.iutools.worddict.MultilingualDictEntry.sortTranslations");
+		int maxTranslations, Integer minRequiredPairs) throws MachineGeneratedDictException {
+		Logger tLogger = LogManager.getLogger("org.iutools.worddict.MDictEntry.sortTranslations");
 		try {
 			if (_translationsNeedSorting) {
 				tLogger.trace("sorting translations for word: "+this.wordRoman);
@@ -261,7 +261,7 @@ public class MultilingualDictEntry {
 
 			}
 		} catch (RuntimeException e) {
-			throw new MultilingualDictException(e);
+			throw new MachineGeneratedDictException(e);
 		}
 		return;
 	}
@@ -302,7 +302,7 @@ public class MultilingualDictEntry {
 		return pruned;
 	}
 
-	public void addRelatedWordTranslations(MultilingualDictEntry entry) throws MultilingualDictException {
+	public void addRelatedWordTranslations(MDictEntry entry) throws MachineGeneratedDictException {
 		List<String> relatedWordTranslations = entry.bestTranslations;
 		String relWord = entry.word;
 		for (String translation: relatedWordTranslations) {
@@ -311,7 +311,7 @@ public class MultilingualDictEntry {
 		}
 	}
 
-	public int totalBilingualExamples() throws MultilingualDictException {
+	public int totalBilingualExamples() throws MachineGeneratedDictException {
 		int total = 0;
 		for (String aTranslation: examples4Translation.keySet()) {
 			if (aTranslation.equals("ALL")) {
@@ -335,7 +335,7 @@ public class MultilingualDictEntry {
 
 		@Override
 		public int compare(String t1, String t2) {
-			Logger tLogger = LogManager.getLogger("org.iutools.worddict.MultilingualDictEntry.TranslationComparator.compare");
+			Logger tLogger = LogManager.getLogger("org.iutools.worddict.MDictEntry.TranslationComparator.compare");
 			tLogger.trace("t1="+t1+", t2="+t2);
 			List<String[]> t1Examples = _examplesForTranslation.get(t1);
 			int t1NumEx = 0;
@@ -411,8 +411,8 @@ public class MultilingualDictEntry {
 	}
 
 	public void ensureScript(TransCoder.Script script)
-		throws MultilingualDictException{
-		Logger logger = LogManager.getLogger("org.iutools.worddict.MultilingualDictEntry.ensureScript");
+		throws MachineGeneratedDictException {
+		Logger logger = LogManager.getLogger("org.iutools.worddict.MDictEntry.ensureScript");
 		logger.trace("word="+word+", script="+script);
 		ensureScript_translations(script);
 		ensureScript_relatedwords(script);
@@ -423,18 +423,18 @@ public class MultilingualDictEntry {
 		}
 	}
 
-	private void ensureScript_word(TransCoder.Script script) throws MultilingualDictException {
+	private void ensureScript_word(TransCoder.Script script) throws MachineGeneratedDictException {
 		try {
 			if (lang.equals("iu") && word != null) {
 				word = TransCoder.ensureScript(script, word);
 				wordInOtherScript = TransCoder.inOtherScript(word);
 			}
 		} catch (TransCoderException e) {
-			throw new MultilingualDictException(e);
+			throw new MachineGeneratedDictException(e);
 		}
 	}
 
-	private void ensureScript_translations(TransCoder.Script script) throws MultilingualDictException {
+	private void ensureScript_translations(TransCoder.Script script) throws MachineGeneratedDictException {
 		if (otherLang().equals("iu")) {
 			// Input word is en and its translations are iu
 			for (List<String> translations:
@@ -453,26 +453,26 @@ public class MultilingualDictEntry {
 				// iu related word.
 				CollectionTranscoder.transcodeKeys(script, this.translations4word);
 			} catch (TransCoderException e) {
-				throw new MultilingualDictException(e);
+				throw new MachineGeneratedDictException(e);
 			}
 		}
 	}
 
-	private void ensureScript_relatedwords(TransCoder.Script script) throws MultilingualDictException {
+	private void ensureScript_relatedwords(TransCoder.Script script) throws MachineGeneratedDictException {
 
 //		try {
 //			for (int ii = 0; ii < relatedWords.length; ii++) {
 //				relatedWords[ii] = TransCoder.ensureScript(script, relatedWords[ii]);
 //			}
 //		} catch (TransCoderException e) {
-//			throw new MultilingualDictException(e);
+//			throw new MachineGeneratedDictException(e);
 //		}
 
 		CollectionTranscoder.transcodeArray(script, relatedWords);
 		return;
 	}
 
-	private void ensureScript_BilingualExamples(TransCoder.Script script) throws MultilingualDictException {
+	private void ensureScript_BilingualExamples(TransCoder.Script script) throws MachineGeneratedDictException {
 
 		Map<String, List<String[]>>[] alignmentMaps =
 			new Map[] {
@@ -484,7 +484,7 @@ public class MultilingualDictEntry {
 	}
 
 	private void ensureScript_alignmentMap(
-		TransCoder.Script script, Map<String, List<String[]>> anAlignmentsMap) throws MultilingualDictException {
+		TransCoder.Script script, Map<String, List<String[]>> anAlignmentsMap) throws MachineGeneratedDictException {
 		Map<String, List<String[]>> convertedMap = new HashMap<String, List<String[]>>();
 		for (String translation: anAlignmentsMap.keySet()) {
 			String convertedTranslation = translation;
@@ -492,7 +492,7 @@ public class MultilingualDictEntry {
 				try {
 					convertedTranslation = TransCoder.ensureScript(script, translation);
 				} catch (TransCoderException e) {
-					throw new MultilingualDictException(e);
+					throw new MachineGeneratedDictException(e);
 				}
 			}
 			List<String[]> alignments = anAlignmentsMap.get(translation);
@@ -511,7 +511,7 @@ public class MultilingualDictEntry {
 	}
 
 	private String[] ensureScript_alignment(
-		TransCoder.Script script, String[] alignment) throws MultilingualDictException {
+		TransCoder.Script script, String[] alignment) throws MachineGeneratedDictException {
 		int iuSide = 0;
 		if (!lang.equals("iu")) {
 			iuSide = 1;
@@ -523,7 +523,7 @@ public class MultilingualDictEntry {
 			iuConverted = iuConverted.replaceAll("</ᔅᑦᕐoᖕ>", "</strong>");
 			alignment[iuSide] = iuConverted;
 		} catch (TransCoderException e) {
-			throw new MultilingualDictException(e);
+			throw new MachineGeneratedDictException(e);
 		}
 
 		return alignment;

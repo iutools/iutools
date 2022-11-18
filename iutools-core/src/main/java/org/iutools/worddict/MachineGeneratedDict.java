@@ -28,23 +28,23 @@ import org.iutools.script.TransCoder.*;
 import org.iutools.script.TransCoderException;
 import org.iutools.utilities.StopWatch;
 import org.iutools.utilities.StopWatchException;
-import org.iutools.worddict.MultilingualDictEntry.*;
+import org.iutools.worddict.MDictEntry.*;
 
 import java.util.*;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Dictionary of Inuktitut words.
+ * Machine-generated Dictionary of Inuktitut words.
  *
  * For more info about how to use this class see the DOCUMENTATION TESTS section
  * of IUWordDictTest.
  *
  */
-public class MultilingualDict {
+public class MachineGeneratedDict {
 
 	public static enum WhatTerm {ORIGINAL, RELATED}
 
-	private static MultilingualDict _singleton = null;
+	private static MachineGeneratedDict _singleton = null;
 
 	/** Maximum number of 'final' translations to be produced*/
 	public Integer MAX_TRANSLATIONS = 5;
@@ -68,17 +68,17 @@ public class MultilingualDict {
 
 	private static final String TAG = "strong";
 
-	public MultilingualDict() throws MultilingualDictException {
+	public MachineGeneratedDict() throws MachineGeneratedDictException {
 		try {
 			corpus = new CompiledCorpusRegistry().getCorpus();
 		} catch (Exception e) {
-			throw new MultilingualDictException(e);
+			throw new MachineGeneratedDictException(e);
 		}
 	}
 
-	public MultilingualDict setMinMaxPairs(Integer min, Integer max) throws MultilingualDictException {
+	public MachineGeneratedDict setMinMaxPairs(Integer min, Integer max) throws MachineGeneratedDictException {
 		if (min != null && max != null && max < min) {
-			throw new MultilingualDictException(
+			throw new MachineGeneratedDictException(
 				"Min number of pairs must be smaller or equal to the max."
 			);
 		}
@@ -87,42 +87,42 @@ public class MultilingualDict {
 		return this;
 	}
 
-	public MultilingualDict setMaxTranslations(Integer max) {
+	public MachineGeneratedDict setMaxTranslations(Integer max) {
 		MAX_TRANSLATIONS = max;
 		return this;
 	}
 
 
-	public MultilingualDictEntry entry4word(String word) throws MultilingualDictException {
+	public MDictEntry entry4word(String word) throws MachineGeneratedDictException {
 		return entry4word(word, (String)null, (Boolean)null, (Field[])null);
 	}
 
-	public MultilingualDictEntry entry4word(
+	public MDictEntry entry4word(
 		String word, Boolean sortRelatedWords)
-		throws MultilingualDictException {
+		throws MachineGeneratedDictException {
 		return entry4word(word, (String)null, sortRelatedWords, (Field[])null);
 	}
 
-	public MultilingualDictEntry entry4word(String word, String lang)
-		throws MultilingualDictException {
+	public MDictEntry entry4word(String word, String lang)
+		throws MachineGeneratedDictException {
 		return entry4word(word, lang, (Boolean)null, (Field[])null);
 	}
 
-	public MultilingualDictEntry entry4word(
+	public MDictEntry entry4word(
 		String word, Field... fieldsToPpulate)
-		throws MultilingualDictException {
+		throws MachineGeneratedDictException {
 		return entry4word(word, (String)null, (Boolean)null, fieldsToPpulate);
 	}
 
-	public MultilingualDictEntry entry4word(
-		String word, Boolean fullRelatedWordEntries, Field... fieldsToPopulate) throws MultilingualDictException {
+	public MDictEntry entry4word(
+		String word, Boolean fullRelatedWordEntries, Field... fieldsToPopulate) throws MachineGeneratedDictException {
 		return entry4word(word, (String)null, fullRelatedWordEntries, fieldsToPopulate);
 	}
 
-	public MultilingualDictEntry entry4word(
+	public MDictEntry entry4word(
 		String word, String lang, Boolean fullRelatedWordEntries,
 		Field... fieldsToPopulate)
-		throws MultilingualDictException {
+		throws MachineGeneratedDictException {
 
 		if (lang == null) {
 			lang = "iu";
@@ -132,7 +132,7 @@ public class MultilingualDict {
 		if (fieldsToPopulate == null) {
 			fieldsToPopulate = Field.values();
 		}
-		MultilingualDictEntry entry = new MultilingualDictEntry(word);
+		MDictEntry entry = new MDictEntry(word);
 
 		if (lang.equals("iu")) {
 			entry = entry4word_IU(word, fullRelatedWordEntries, fieldsToPopulate);
@@ -143,11 +143,11 @@ public class MultilingualDict {
 		return entry;
 	}
 
-	private MultilingualDictEntry entry4word_IU(
-		String word, Boolean fullRelatedWordEntries, Field... fieldsToPopulate) throws MultilingualDictException {
-		Logger logger = LogManager.getLogger("org.iutools.worddict.MultilingualDict.entry4word_IU");
+	private MDictEntry entry4word_IU(
+		String word, Boolean fullRelatedWordEntries, Field... fieldsToPopulate) throws MachineGeneratedDictException {
+		Logger logger = LogManager.getLogger("org.iutools.worddict.MachineGeneratedDict.entry4word_IU");
 		StopWatch watch = new StopWatch().start();
-		MultilingualDictEntry entry = new MultilingualDictEntry(word);
+		MDictEntry entry = new MDictEntry(word);
 		Script inputScript = TransCoder.textScript(word);
 		try {
 			WordInfo winfo = corpus.info4word(entry.wordRoman);
@@ -179,7 +179,7 @@ public class MultilingualDict {
 				MAX_TRANSLATIONS, MIN_REQUIRED_PAIRS_FOR_TRANSLATION);
 			traceRunningTime(logger, entry, "sorting and pruning translations", watch);
 		} catch (CompiledCorpusException | StopWatchException e) {
-			throw new MultilingualDictException(e);
+			throw new MachineGeneratedDictException(e);
 		}
 
 		entry.ensureScript(inputScript);
@@ -187,8 +187,8 @@ public class MultilingualDict {
 		return entry;
 	}
 
-	private void computeRelatedWordsTranslationsAndExamples(MultilingualDictEntry entry) throws MultilingualDictException {
-		Logger logger = LogManager.getLogger("org.iutools.worddict.MultilingualDict.computeRelatedWordsTranslationsAndExamples");
+	private void computeRelatedWordsTranslationsAndExamples(MDictEntry entry) throws MachineGeneratedDictException {
+		Logger logger = LogManager.getLogger("org.iutools.worddict.MachineGeneratedDict.computeRelatedWordsTranslationsAndExamples");
 		logger.trace("invoked");
 		if (entry.relatedWords.length > 0) {
 			List<String> relatedWords = new ArrayList<String>();
@@ -198,8 +198,8 @@ public class MultilingualDict {
 		return;
 	}
 
-	private void traceRunningTime(Logger logger, MultilingualDictEntry entry, String phase,
-		StopWatch watch) throws StopWatchException {
+	private void traceRunningTime(Logger logger, MDictEntry entry, String phase,
+											StopWatch watch) throws StopWatchException {
 		if (logger.isTraceEnabled()) {
 			double totalSecs = 1.0 * watch.totalTime() / 1000;
 			double lapSecs = 1.0 * watch.lapTime() / 1000;
@@ -208,17 +208,17 @@ public class MultilingualDict {
 		return;
 	}
 
-	private MultilingualDictEntry entry4word_EN(String word)
-		throws MultilingualDictException {
-		MultilingualDictEntry entry = new MultilingualDictEntry(word, "en");
+	private MDictEntry entry4word_EN(String word)
+		throws MachineGeneratedDictException {
+		MDictEntry entry = new MDictEntry(word, "en");
 		computeOrigWordTranslationsAndExamples(entry);
 		entry.sortAndPruneTranslations(MAX_TRANSLATIONS, MIN_REQUIRED_PAIRS_FOR_TRANSLATION);
 		return entry;
 	}
 
-	private void computeRelatedWords(MultilingualDictEntry entry,
-		Boolean fullRelatedWordEntries) throws MultilingualDictException {
-		Logger logger = LogManager.getLogger("org.iutools.worddict.MultilingualDict.computeRelatedWords");
+	private void computeRelatedWords(MDictEntry entry,
+												Boolean fullRelatedWordEntries) throws MachineGeneratedDictException {
+		Logger logger = LogManager.getLogger("org.iutools.worddict.MachineGeneratedDict.computeRelatedWords");
 		StopWatch sw = new StopWatch().start();
 		if (fullRelatedWordEntries == null) {
 			fullRelatedWordEntries = true;
@@ -233,7 +233,7 @@ public class MultilingualDict {
 			}
 
 			if (fullRelatedWordEntries) {
-				List<MultilingualDictEntry> relWordEntries =
+				List<MDictEntry> relWordEntries =
 					retrieveRelatedWordEntries(relatedWords);
 				traceRunningTime(logger, entry, "retrieving related word entries", sw);
 				traceRunningTime(logger, entry, "retrieving related word entries", sw);
@@ -245,16 +245,16 @@ public class MultilingualDict {
 			entry.relatedWords = relatedWords.toArray(new String[0]);
 
 		} catch (MorphRelativesFinderException | StopWatchException e) {
-			throw new MultilingualDictException(e);
+			throw new MachineGeneratedDictException(e);
 		}
 
 	}
 
-	private List<MultilingualDictEntry> retrieveRelatedWordEntries(
+	private List<MDictEntry> retrieveRelatedWordEntries(
 		List<String> relatedWords)
-		throws MultilingualDictException {
+		throws MachineGeneratedDictException {
 
-		List<MultilingualDictEntry> wordEntries = new ArrayList<MultilingualDictEntry>();
+		List<MDictEntry> wordEntries = new ArrayList<MDictEntry>();
 
 		// By default, we only populate the DEFINITION field of related words.
 		// However, if populateTranslationsField=true, then we also populate the
@@ -275,7 +275,7 @@ public class MultilingualDict {
 	 * examples of use will come first.
 	 */
 	private List<String> sortWordsByEntryComprehensiveness(
-		List<MultilingualDictEntry> wordEntries) throws MultilingualDictException {
+		List<MDictEntry> wordEntries) throws MachineGeneratedDictException {
 		Collections.sort(wordEntries,
 			(w1, w2) -> {
 				int answer = 0;
@@ -296,7 +296,7 @@ public class MultilingualDict {
 					try {
 						w1examples = w1.bilingualExamplesOfUse().size();
 						w2examples = w2.bilingualExamplesOfUse().size();
-					} catch (MultilingualDictException e) {
+					} catch (MachineGeneratedDictException e) {
 						throw new RuntimeException(e);
 					}
 					answer = -Integer.compare(w1examples, w2examples);
@@ -316,7 +316,7 @@ public class MultilingualDict {
 			});
 
 		List<String> sortedWords = new ArrayList<String>();
-		for (MultilingualDictEntry anEntry: wordEntries) {
+		for (MDictEntry anEntry: wordEntries) {
 			sortedWords.add(anEntry.word);
 		}
 
@@ -324,8 +324,8 @@ public class MultilingualDict {
 	}
 
 	private void computeOrigWordTranslationsAndExamples(
-		MultilingualDictEntry entry) throws MultilingualDictException {
-		Logger tLogger = LogManager.getLogger("org.iutools.worddict.MultilingualDict.computeTranslationsAndExamples");
+		MDictEntry entry) throws MachineGeneratedDictException {
+		Logger tLogger = LogManager.getLogger("org.iutools.worddict.MachineGeneratedDict.computeTranslationsAndExamples");
 		List<String> justOneWord = new ArrayList<String>();
 		justOneWord.add(entry.word);
  		retrieveTranslationsAndExamples(entry, justOneWord);
@@ -333,8 +333,8 @@ public class MultilingualDict {
 	}
 
 	private void retrieveTranslationsAndExamples(
-		MultilingualDictEntry entry, List<String> l1WordsCluster) throws MultilingualDictException {
-		Logger tLogger = LogManager.getLogger("org.iutools.worddict.MultilingualDict.retrieveTranslationsAndExamples");
+		MDictEntry entry, List<String> l1WordsCluster) throws MachineGeneratedDictException {
+		Logger tLogger = LogManager.getLogger("org.iutools.worddict.MachineGeneratedDict.retrieveTranslationsAndExamples");
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("word="+entry.word+"/"+entry.wordInOtherScript+", iuWordGroup.size()="+ l1WordsCluster.size()+", iuWordGroup="+ StringUtils.join(l1WordsCluster.iterator(), ", "));
 		}
@@ -421,9 +421,9 @@ public class MultilingualDict {
 					keepGoing = false;
 				}
 			}
-		} catch (WordSpotterException | MultilingualDictException |
+		} catch (WordSpotterException | MachineGeneratedDictException |
 			TransCoderException e) {
-			throw new MultilingualDictException(e);
+			throw new MachineGeneratedDictException(e);
 		} finally {
 			if (iterators != null) {
 				for (CloseableIterator<Alignment> iter: iterators.values()) {
@@ -439,7 +439,7 @@ public class MultilingualDict {
 	}
 
 	private Map<String, CloseableIterator<Alignment>> translationsIteratorsForWords(
-		List<String> l1Words, String l1, String l2) throws MultilingualDictException {
+		List<String> l1Words, String l1, String l2) throws MachineGeneratedDictException {
 
 		Map<String, CloseableIterator<Alignment>> iterators =
 			new HashMap<String, CloseableIterator<Alignment>>();
@@ -450,22 +450,22 @@ public class MultilingualDict {
 				iterators.put(l1Word, iter);
 			}
 		} catch (TranslationMemoryException e) {
-			throw new MultilingualDictException(e);
+			throw new MachineGeneratedDictException(e);
 		}
 
 		return iterators;
 	}
 
-	private String otherLang(String lang) throws MultilingualDictException {
-		return MultilingualDictEntry.otherLang(lang);
+	private String otherLang(String lang) throws MachineGeneratedDictException {
+		return MDictEntry.otherLang(lang);
 	}
 
-	private void assertIsSupportedLanguage(String lang) throws MultilingualDictException {
-		MultilingualDictEntry.assertIsSupportedLanguage(lang);
+	private void assertIsSupportedLanguage(String lang) throws MachineGeneratedDictException {
+		MDictEntry.assertIsSupportedLanguage(lang);
 	}
 
 	private boolean enoughBilingualExamples(
-		MultilingualDictEntry entry, int totalPairs, int numInputWords) throws MultilingualDictException {
+		MDictEntry entry, int totalPairs, int numInputWords) throws MachineGeneratedDictException {
 		Logger logger = LogManager.getLogger("org.iutools.worddict.MultilingualDidct.enoughBilingualExamples");
 		logger.trace("totalPairs="+totalPairs+", numInputWords="+numInputWords);
 		int minPairs = 0;
@@ -489,11 +489,11 @@ public class MultilingualDict {
 		return enough;
 	}
 
-	private int onNewSentencePair(MultilingualDictEntry entry,
+	private int onNewSentencePair(MDictEntry entry,
 		SentencePair bilingualAlignment, Set<String> alreadySeenPair,
-		int totalPairs, String isForRelatedWord) throws MultilingualDictException {
+		int totalPairs, String isForRelatedWord) throws MachineGeneratedDictException {
 
-		Logger tLogger = LogManager.getLogger("org.iutools.worddict.MultilingualDict.onNewSentencePair");
+		Logger tLogger = LogManager.getLogger("org.iutools.worddict.MachineGeneratedDict.onNewSentencePair");
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("isForRelatedWord="+isForRelatedWord+", bilingualAlignment="+ PrettyPrinter.print(bilingualAlignment));
 		}
@@ -526,7 +526,7 @@ public class MultilingualDict {
  		return totalPairs;
 	}
 
-	public static String canonizeTranslation(String l2, String l2Translation) throws MultilingualDictException {
+	public static String canonizeTranslation(String l2, String l2Translation) throws MachineGeneratedDictException {
 		try {
 			if (l2Translation != null) {
 				l2Translation = StopWords.remove(l2, l2Translation);
@@ -545,17 +545,17 @@ public class MultilingualDict {
 				l2Translation = l2Translation.replaceAll("(^ | $)", "");
 			}
 		} catch (StopWordsException e) {
-			throw new MultilingualDictException(e);
+			throw new MachineGeneratedDictException(e);
 		}
 		return l2Translation;
 	}
 
-	public Pair<CloseableIterator<String>,Long> searchIter(String partialWord) throws MultilingualDictException {
+	public Pair<CloseableIterator<String>,Long> searchIter(String partialWord) throws MachineGeneratedDictException {
 		return searchIter(partialWord, (String)null);
 	}
 
 	public Pair<List<String>,Long> search(String partialWord, String lang, Integer maxHits)
-		throws MultilingualDictException, TranslationMemoryException {
+		throws MachineGeneratedDictException, TranslationMemoryException {
 		List<String> hits = new ArrayList<String>();
 
 		Pair<CloseableIterator<String>,Long> results = searchIter(partialWord, lang);
@@ -568,7 +568,7 @@ public class MultilingualDict {
 				try {
 					hit = TransCoder.ensureSameScriptAsSecond(hit, partialWord);
 				} catch (TransCoderException e) {
-					throw new MultilingualDictException(e);
+					throw new MachineGeneratedDictException(e);
 				}
 				hits.add(hit);
 				if (maxHits != null && hits.size() == maxHits) {
@@ -576,7 +576,7 @@ public class MultilingualDict {
 				}
 			}
 		} catch (Exception e) {
-			throw new MultilingualDictException(e);
+			throw new MachineGeneratedDictException(e);
 		}
 
 		hits = sortHits(hits);
@@ -590,7 +590,7 @@ public class MultilingualDict {
 	/** Ensure that:
 	 * - partialWord is in the list of hits, IF it is a valid IU word
 	 * - comes first IF it is in the list*/
-	private void adjustPartialWordInHits(List<String> hits, String partialWord, String lang) throws MultilingualDictException, TranslationMemoryException {
+	private void adjustPartialWordInHits(List<String> hits, String partialWord, String lang) throws MachineGeneratedDictException, TranslationMemoryException {
 		String partialWordID = new WordInfo(partialWord).getIdWithoutType();
 		if (!hits.contains(partialWordID)) {
 			// The top list of hits did not contain an exact match.
@@ -602,7 +602,7 @@ public class MultilingualDict {
 					hits.add(0, partialWord);
 				}
 			} catch (MorphologicalAnalyzerException e) {
-				throw new MultilingualDictException(e);
+				throw new MachineGeneratedDictException(e);
 			}
 		}
 
@@ -625,7 +625,7 @@ public class MultilingualDict {
 	}
 
 	public Pair<CloseableIterator<String>,Long> searchIter(
-		String partialWord, String lang) throws MultilingualDictException {
+		String partialWord, String lang) throws MachineGeneratedDictException {
 		if (lang == null) {
 			lang = "iu";
 		}
@@ -642,7 +642,7 @@ public class MultilingualDict {
 		return results;
 	}
 
-	private Pair<CloseableIterator<String>, Long> search_IU(String partialWord) throws MultilingualDictException {
+	private Pair<CloseableIterator<String>, Long> search_IU(String partialWord) throws MachineGeneratedDictException {
 		if (!partialWord.startsWith("^")) {
 			partialWord = "^"+partialWord;
 		}
@@ -658,12 +658,12 @@ public class MultilingualDict {
 			totalWords = corpus.totalWordsWithCharNgram(partialWord, options);
 			wordsIter = corpus.wordsContainingNgram(partialWord, options);
 		} catch (CompiledCorpusException | TransCoderException e) {
-			throw new MultilingualDictException(e);
+			throw new MachineGeneratedDictException(e);
 		}
 		return Pair.of(wordsIter, totalWords);
 	}
 
-	private boolean wordExists(String partialWord, String lang) throws MultilingualDictException, TranslationMemoryException {
+	private boolean wordExists(String partialWord, String lang) throws MachineGeneratedDictException, TranslationMemoryException {
 		assertIsSupportedLanguage(lang);
 		Boolean exists = null;
 		if (lang.equals("iu")) {
@@ -680,18 +680,18 @@ public class MultilingualDict {
 		return tmIter.hasNext();
 	}
 
-	private Boolean wordExists_IU(String word) throws MultilingualDictException {
+	private Boolean wordExists_IU(String word) throws MachineGeneratedDictException {
 		word = TransCoder.ensureRoman(word);
 		WordInfo winfo = null;
 		try {
 			winfo = corpus.info4word(word);
 		} catch (CompiledCorpusException e) {
-			throw new MultilingualDictException(e);
+			throw new MachineGeneratedDictException(e);
 		}
 		return winfo != null;
 	}
 
-	private Pair<CloseableIterator<String>, Long> search_EN(String partialWord) throws MultilingualDictException {
+	private Pair<CloseableIterator<String>, Long> search_EN(String partialWord) throws MachineGeneratedDictException {
 		// TODO-Alain: For now, we returns results that iterate through either:
 		//
 		//   - NO words at all, if the input word CANNOT be found in the TM
@@ -712,12 +712,12 @@ public class MultilingualDict {
 			wordsIter = new CloseableIteratorWrapper<String>(words.iterator());
 			totalWords = new Long(words.size());
 		} catch (Exception e) {
-			throw new MultilingualDictException(e);
+			throw new MachineGeneratedDictException(e);
 		}
 		return Pair.of(wordsIter, totalWords);
 	}
 
-	public String[] decomposeWord(String word) throws MultilingualDictException {
+	public String[] decomposeWord(String word) throws MachineGeneratedDictException {
 		String decomp[] = new String[0];
 		try {
 			Decomposition[] decomps = new MorphologicalAnalyzer_R2L().decomposeWord(word);
@@ -727,7 +727,7 @@ public class MultilingualDict {
 		} catch (TimeoutException e) {
 			// Leave the decomp to empty
 		} catch (MorphologicalAnalyzerException | DecompositionException e) {
-			throw new MultilingualDictException(e);
+			throw new MachineGeneratedDictException(e);
 		}
 		return decomp;
 	}

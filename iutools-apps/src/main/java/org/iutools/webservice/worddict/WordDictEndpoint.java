@@ -9,9 +9,9 @@ import org.iutools.script.TransCoder;
 import org.iutools.script.TransCoderException;
 import org.iutools.webservice.Endpoint;
 import org.iutools.webservice.ServiceException;
-import org.iutools.worddict.MultilingualDict;
-import org.iutools.worddict.MultilingualDictEntry;
-import org.iutools.worddict.MultilingualDictException;
+import org.iutools.worddict.MDictEntry;
+import org.iutools.worddict.MachineGeneratedDict;
+import org.iutools.worddict.MachineGeneratedDictException;
 
 import javax.xml.ws.WebServiceException;
 import java.util.ArrayList;
@@ -54,7 +54,7 @@ public class WordDictEndpoint extends Endpoint<WordDictInputs,WordDictResult> {
 					.setLang(result.queryWordEntry.lang)
 					.setOtherLang(result.queryWordEntry.otherLang());
 			}
-		} catch (MultilingualDictException e) {
+		} catch (MachineGeneratedDictException e) {
 			throw new ServiceException(e);
 		}
 	}
@@ -65,8 +65,8 @@ public class WordDictEndpoint extends Endpoint<WordDictInputs,WordDictResult> {
 		try {
 			Long totalWords = null;
 			List<String> topWords = null;
-			MultilingualDictEntry firstWordEntry = null;
-			MultilingualDict dict = new MultilingualDict();
+			MDictEntry firstWordEntry = null;
+			MachineGeneratedDict dict = new MachineGeneratedDict();
 
 			Pair<CloseableIterator<String>, Long> searchResults =
 				dict.searchIter(inputs.word, inputs.lang);
@@ -82,7 +82,7 @@ public class WordDictEndpoint extends Endpoint<WordDictInputs,WordDictResult> {
 				// The query word was not one of the most frequents hits in the corpus.
 				// Check if it's correctly spelled and if so, add it to the list
 				// of matching words.
-				MultilingualDictEntry exactWordEntry =
+				MDictEntry exactWordEntry =
 					dict.entry4word(inputs.word, inputs.lang);
 				if (!exactWordEntry.isMisspelled()) {
 					topWords.add(0, inputs.word);
@@ -107,8 +107,8 @@ public class WordDictEndpoint extends Endpoint<WordDictInputs,WordDictResult> {
 	private WordDictResult lookupExactWord(WordDictInputs inputs) {
 		WordDictResult exactWordResult = null;
 		try {
-			MultilingualDict dict = new MultilingualDict();
-			MultilingualDictEntry exactWordEntry = dict.entry4word(inputs.word, inputs.lang);
+			MachineGeneratedDict dict = new MachineGeneratedDict();
+			MDictEntry exactWordEntry = dict.entry4word(inputs.word, inputs.lang);
 			List<String> foundWords = new ArrayList<String>();
 			exactWordResult = new WordDictResult(exactWordEntry, foundWords, new Long(0));
 		} catch (Exception e) {

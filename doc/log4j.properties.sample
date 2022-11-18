@@ -9,7 +9,7 @@ log4j.rootLogger=warn, FILE, stdout
 ############################################
 
 # For example:
-log4j.logger.org.iutools.worddict.MultilingualDict.onNewSentencePair
+log4j.logger.org.iutools.worddict.MachineGeneratedDict.onNewSentencePair
 
 
 ##############################################

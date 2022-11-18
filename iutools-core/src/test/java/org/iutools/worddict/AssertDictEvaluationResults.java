@@ -4,9 +4,10 @@ import ca.nrc.dtrc.stats.FrequencyHistogram;
 import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.Asserter;
 import org.iutools.concordancer.tm.TMEvaluator;
-import org.iutools.worddict.MultilingualDict.*;
 import org.iutools.concordancer.tm.TMEvaluator.MatchType;
 import org.junit.jupiter.api.Assertions;
+
+import static org.iutools.worddict.MachineGeneratedDict.WhatTerm;
 
 public class AssertDictEvaluationResults extends Asserter<DictEvaluationResults> {
 	public AssertDictEvaluationResults(DictEvaluationResults _gotObject) {
@@ -69,7 +70,7 @@ public class AssertDictEvaluationResults extends Asserter<DictEvaluationResults>
 	}
 
 	public AssertDictEvaluationResults iuPresentHistogramEquals(
-		FrequencyHistogram<MultilingualDict.WhatTerm> expIUPresent_hist)
+		FrequencyHistogram<MachineGeneratedDict.WhatTerm> expIUPresent_hist)
 	throws Exception {
 
 		AssertObject.assertDeepEquals(

@@ -3,6 +3,7 @@ package org.iutools.worddict.wikipedia;
 import ca.nrc.json.PrettyPrinter;
 import org.iutools.script.TransCoder;
 import org.iutools.worddict.GlossaryEntry;
+import org.iutools.worddict.GlossaryException;
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -35,7 +36,7 @@ public class WPDictBuilder {
 
 	}
 
-	public void run(String[] args) throws WPException, IOException {
+	public void run(String[] args) throws WPException, IOException, GlossaryException {
 		if (args.length != 2) {
 			usage("Wrong number of arguments");
 		}
@@ -82,7 +83,7 @@ public class WPDictBuilder {
 		}
 	}
 
-	private void printEntry(String iuWord, String enWord) throws WPException, IOException {
+	private void printEntry(String iuWord, String enWord) throws WPException, IOException, GlossaryException {
 		String[] iuTokens = iuWord.split(":");
 		String[] enTokens = enWord.split(":");
 		if (iuTokens.length != enTokens.length) {

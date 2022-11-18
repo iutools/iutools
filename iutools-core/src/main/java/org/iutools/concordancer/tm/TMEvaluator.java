@@ -20,9 +20,8 @@ import org.apache.logging.log4j.Logger;
 import org.iutools.concordancer.Alignment;
 import org.iutools.concordancer.SentencePair;
 import org.iutools.config.IUConfig;
-import org.iutools.script.TransCoder;
 import org.iutools.worddict.GlossaryEntry;
-import org.iutools.worddict.MultilingualDictException;
+import org.iutools.worddict.MachineGeneratedDictException;
 import org.iutools.worddict.SynsDict;
 import org.iutools.worddict.Synset;
 import org.json.JSONObject;
@@ -59,25 +58,25 @@ public class TMEvaluator {
 	static {
 		try {
 			readSynsDict();
-		} catch (MultilingualDictException e) {
+		} catch (MachineGeneratedDictException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 
-	public TMEvaluator() throws TranslationMemoryException, MultilingualDictException {
+	public TMEvaluator() throws TranslationMemoryException, MachineGeneratedDictException {
 		init__TMEvaluator((Path)null, (Path)null);
 	}
 
-	public TMEvaluator(Path _sentPairsOutputFile) throws TranslationMemoryException, MultilingualDictException {
+	public TMEvaluator(Path _sentPairsOutputFile) throws TranslationMemoryException, MachineGeneratedDictException {
 		init__TMEvaluator(_sentPairsOutputFile, (Path)null);
 	}
 
-	public TMEvaluator(Path _sentPairsOutputFilePath, Path _tmFile) throws TranslationMemoryException, MultilingualDictException {
+	public TMEvaluator(Path _sentPairsOutputFilePath, Path _tmFile) throws TranslationMemoryException, MachineGeneratedDictException {
 		init__TMEvaluator(_sentPairsOutputFilePath, _tmFile);
 	}
 
-	private void init__TMEvaluator(Path _sentPairsOutputFile, Path _tmFile) throws TranslationMemoryException, MultilingualDictException {
+	private void init__TMEvaluator(Path _sentPairsOutputFile, Path _tmFile) throws TranslationMemoryException, MachineGeneratedDictException {
 		userIO = new UserIO();
 		if (_sentPairsOutputFile != null) {
 			try {
@@ -94,7 +93,7 @@ public class TMEvaluator {
 		return;
 	}
 
-		private static void readSynsDict() throws MultilingualDictException {
+		private static void readSynsDict() throws MachineGeneratedDictException {
 		String enSynsPath = null;
 		try {
 			enSynsPath = IUConfig.getIUDataPath("data/glossaries/en-synonyms.json");
@@ -107,7 +106,7 @@ public class TMEvaluator {
 				synsDict.addSynset(synset.synonyms);
 			}
 		} catch (ConfigException | IOException | ClassNotFoundException | ObjectStreamReaderException e) {
-			throw new MultilingualDictException(
+			throw new MachineGeneratedDictException(
 				"Problem reading synonyms file "+enSynsPath, e);
 		}
 	}
@@ -150,11 +149,16 @@ public class TMEvaluator {
 	}
 
 	private void onNewGlossaryEntry(GlossaryEntry entry, EvaluationResults results) throws Exception {
-		String term_roman = entry.getTermInLang("iu_roman");
-		String term_syll = TransCoder.ensureSyllabic(term_roman);
+
+		//  For now, we only evaluate the first term for each language
+		//
+		String term_en = entry.firstTerm4Lang("en");
+		String term_roman = entry.firstTerm4Lang("iu_roman");
+		String term_syll = entry.firstTerm4Lang("iu_syll");
+
 		if (onlyWord == null || onlyWord.equals(term_roman)) {
 			results.totalEntries++;
-			userIO.echo(results.totalEntries + ". iu:" + term_roman + " (" + term_syll + "), en:" + entry.getTermInLang("en"));
+			userIO.echo(results.totalEntries + ". iu:" + term_roman + " (" + term_syll + "), en:" + term_en);
 			evaluateGlossaryTerm(entry, results);
 		}
 	}
@@ -162,7 +166,7 @@ public class TMEvaluator {
 
 	protected void evaluateGlossaryTerm(
 		GlossaryEntry glossEntry, EvaluationResults results) throws Exception {
-		String iuTerm_roman = glossEntry.getTermInLang("iu_roman").toLowerCase();
+		String iuTerm_roman = glossEntry.firstTerm4Lang("iu_roman").toLowerCase();
 		// We only process single-word IU terms
 		userIO.echo(1);
 		try {
@@ -170,8 +174,8 @@ public class TMEvaluator {
 				userIO.echo("SKIPPED (IU term has more than 1 word)");
 			} else {
 				results.totalSingleIUWordEntries++;
-				String enTerm = glossEntry.getTermInLang("en").toLowerCase();
-				String iuTerm_syll = glossEntry.getTermInLang("iu_syll").toLowerCase();
+				String enTerm = glossEntry.firstTerm4Lang("en").toLowerCase();
+				String iuTerm_syll = glossEntry.firstTerm4Lang("iu_syll").toLowerCase();
 				AlignmentsSummary algnSummary =
 					analyzeAlignments(iuTerm_syll, enTerm);
 
@@ -710,6 +714,5 @@ public class TMEvaluator {
 		boolean areSynonyms = Pattern.compile(exprRegex).matcher(expression).matches();
 		return areSynonyms;
 	}
-
 }
 

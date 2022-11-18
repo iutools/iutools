@@ -193,7 +193,7 @@ public class CompiledCorpus_SpeedComparison_SQLvsESTest {
 				if (entry == null) {
 					break;
 				}
-				String word = entry.getTermInLang("iu_roman");
+				String word = entry.firstTerm4Lang("iu_roman");
 				WordInfo winfo = corpus.info4word(word);
 				if (winfo != null) {
 					String[] decomp = winfo.topDecomposition();
@@ -481,7 +481,7 @@ public class CompiledCorpus_SpeedComparison_SQLvsESTest {
 				if (entry == null) {
 					break;
 				}
-				String word = entry.getTermInLang("iu_roman");
+				String word = entry.firstTerm4Lang("iu_roman");
 				if (word.contains(" ")) {
 					// We ingore multi-word glossary entries
 					continue;
@@ -502,7 +502,7 @@ public class CompiledCorpus_SpeedComparison_SQLvsESTest {
 				if (entry == null) {
 					break;
 				}
-				String word = entry.getTermInLang("iu_roman");
+				String word = entry.firstTerm4Lang("iu_roman");
 				if (word.contains(" ")) {
 					// We ingore multi-word glossary entries
 					continue;
@@ -527,7 +527,7 @@ public class CompiledCorpus_SpeedComparison_SQLvsESTest {
 				if (entry == null) {
 					break;
 				}
-				String word = entry.getTermInLang("iu_roman");
+				String word = entry.firstTerm4Lang("iu_roman");
 				if (word.contains(" ")) {
 					// We ingore multi-word glossary entries
 					continue;
@@ -552,7 +552,7 @@ public class CompiledCorpus_SpeedComparison_SQLvsESTest {
 				if (entry == null) {
 					break;
 				}
-				String word = entry.getTermInLang("iu_roman");
+				String word = entry.firstTerm4Lang("iu_roman");
 				if (word.contains(" ")) {
 					// We ingore multi-word glossary entries
 					continue;

@@ -6,7 +6,7 @@ import ca.nrc.testing.RunOnCases;
 import ca.nrc.testing.RunOnCases.*;
 import org.iutools.concordancer.tm.TMEvaluator.*;
 import org.iutools.sql.SQLLeakMonitor;
-import org.iutools.worddict.MultilingualDict.WhatTerm;
+import org.iutools.worddict.MachineGeneratedDict.WhatTerm;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -64,13 +64,18 @@ public class DictEvaluatorTest {
 			WhatTerm expWhatTerm = (WhatTerm) aCase.data[3];
 			MatchType expEnSpotted = (MatchType) aCase.data[4];
 
-			GlossaryEntry entry = new GlossaryEntry()
-				.setTermInLang("iu_roman", iuTerm_roman)
-				.setTermInLang("en", enTerm);
+			GlossaryEntry entry = null;
+			try {
+				entry = new GlossaryEntry()
+					.setTermInLang("iu_roman", iuTerm_roman)
+					.setTermInLang("en", enTerm);
+			} catch (GlossaryException e) {
+				throw new RuntimeException(e);
+			}
 
 			DictEvaluationResults results = new DictEvaluationResults();
 			try {
-				new DictEvaluator().onNewGlossaryEntry(entry, results);
+				new MDictEvaluator().onNewGlossaryEntry(entry, results);
 
 				int expTotalSingleWordIUEntries = 1;
 				if (expSkipped) {

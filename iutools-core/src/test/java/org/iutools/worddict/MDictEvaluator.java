@@ -10,37 +10,37 @@ import org.iutools.concordancer.tm.TMEvaluator.*;
 import org.iutools.concordancer.tm.TranslationMemoryException;
 import org.iutools.config.IUConfig;
 import org.iutools.script.TransCoder;
-import org.iutools.worddict.MultilingualDict.WhatTerm;
+import org.iutools.worddict.MachineGeneratedDict.WhatTerm;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-public class DictEvaluator {
+public class MDictEvaluator {
 
 	UserIO userIO = new UserIO();
-	MultilingualDict dict = new MultilingualDict();
+	MachineGeneratedDict dict = new MachineGeneratedDict();
 	ObjectMapper mapper = new ObjectMapper();
 
-	public DictEvaluator() throws MultilingualDictException, TranslationMemoryException {
+	public MDictEvaluator() throws MachineGeneratedDictException, TranslationMemoryException {
 		init__DictEvaluator();
 	}
 
-	private void init__DictEvaluator() throws MultilingualDictException {
+	private void init__DictEvaluator() throws MachineGeneratedDictException {
 	}
 
-	public DictEvaluator setMinMaxPairs(Integer min, Integer max) throws MultilingualDictException {
+	public MDictEvaluator setMinMaxPairs(Integer min, Integer max) throws MachineGeneratedDictException {
 		dict.setMinMaxPairs(min, max);
 		return this;
 	}
 
-	public DictEvaluator setMaxTranslations(Integer max) throws MultilingualDictException {
+	public MDictEvaluator setMaxTranslations(Integer max) throws MachineGeneratedDictException {
 		dict.setMaxTranslations(max);
 		return this;
 	}
 
 	public DictEvaluationResults evaluate(
-		Path glossaryPath, Integer stopAfterN, Integer startingAt) throws MultilingualDictException {
+		Path glossaryPath, Integer stopAfterN, Integer startingAt) throws MachineGeneratedDictException {
 		DictEvaluationResults results = new DictEvaluationResults();
 		Pair<Integer,Integer> firstLast = minMaxEntryNums(stopAfterN, startingAt);
 		Integer first = firstLast.getLeft();
@@ -69,7 +69,7 @@ public class DictEvaluator {
 			results.onEvaluationEnd();
 			printReport(results);
 		} catch (Exception e) {
-			throw new MultilingualDictException(e);
+			throw new MachineGeneratedDictException(e);
 		}
 
 		return results;
@@ -87,11 +87,11 @@ public class DictEvaluator {
 		return Pair.of(first, last);
 	}
 
-	protected void onNewGlossaryEntry(GlossaryEntry glossEntry, DictEvaluationResults results) throws MultilingualDictException {
+	protected void onNewGlossaryEntry(GlossaryEntry glossEntry, DictEvaluationResults results) throws MachineGeneratedDictException {
 		results.totalGlossaryEntries++;
-		String iuTerm_roman = glossEntry.getTermInLang("iu_roman");
+		String iuTerm_roman = glossEntry.firstTerm4Lang("iu_roman");
 		String iuTerm_syll = TransCoder.ensureSyllabic(iuTerm_roman);
-		String enTerm = glossEntry.getTermInLang("en");
+		String enTerm = glossEntry.firstTerm4Lang("en");
 		userIO.echo(results.totalGlossaryEntries + ". iu:" + iuTerm_roman + " (" + iuTerm_syll + "), en:" + enTerm);
 		userIO.echo(1);
 		try {
@@ -99,7 +99,7 @@ public class DictEvaluator {
 				userIO.echo("SKIPPED (IU term contained more than one word)");
 			} else {
 				results.totalSingleWordIUEntries++;
-				MultilingualDictEntry wordEntry = dict.entry4word(iuTerm_roman);
+				MDictEntry wordEntry = dict.entry4word(iuTerm_roman);
 				WhatTerm whatIUFound = checkIUPresence(wordEntry, results);
 
 				if (whatIUFound != null) {
@@ -112,7 +112,7 @@ public class DictEvaluator {
 	}
 
 	private WhatTerm checkIUPresence(
-		MultilingualDictEntry wordEntry, DictEvaluationResults results) throws MultilingualDictException {
+	MDictEntry wordEntry, DictEvaluationResults results) throws MachineGeneratedDictException {
 		WhatTerm whatTerm = null;
 		if (!wordEntry.bestTranslations.isEmpty()) {
 			if (wordEntry.hasTranslationsForOriginalWord()) {
@@ -122,7 +122,7 @@ public class DictEvaluator {
 				try {
 					userIO.echo("RELATED terms: " + mapper.writeValueAsString(wordEntry.relatedWords));
 				} catch (JsonProcessingException e) {
-					throw new MultilingualDictException(e);
+					throw new MachineGeneratedDictException(e);
 				}
 			}
 		}
@@ -134,14 +134,14 @@ public class DictEvaluator {
 		return whatTerm;
 	}
 
-	private void checkENSpotting(MultilingualDictEntry wordEntry,
-		WhatTerm where, String enTerm, DictEvaluationResults results) throws MultilingualDictException {
+	private void checkENSpotting(MDictEntry wordEntry,
+		WhatTerm where, String enTerm, DictEvaluationResults results) throws MachineGeneratedDictException {
 		List<String> spottedTranslations = wordEntry.bestTranslations;
 		try {
 			userIO.echo("All "+where+" translations: "+mapper.writeValueAsString(spottedTranslations));
 			userIO.echo(spottedTranslations.size()+" translations spotted from "+wordEntry.totalBilingualExamples()+" sentence pairs");
 		} catch (JsonProcessingException e) {
-			throw new MultilingualDictException(e);
+			throw new MachineGeneratedDictException(e);
 		}
 		MatchType spottedSense = null;
 		String spottedAs = null;
@@ -164,17 +164,17 @@ public class DictEvaluator {
 		}
 	}
 
-	private void printReport(DictEvaluationResults results) throws MultilingualDictException {
+	private void printReport(DictEvaluationResults results) throws MachineGeneratedDictException {
 		printDictConfig();
 		printStats(results);
 		printTermEquivExplanation();
 	}
 
-	private void printDictConfig() throws MultilingualDictException {
+	private void printDictConfig() throws MachineGeneratedDictException {
 		try {
 			userIO.echo("\nEvaluated dict:\n"+ mapper.writeValueAsString(dict)+"\n");
 		} catch (JsonProcessingException e) {
-			throw new MultilingualDictException(e);
+			throw new MachineGeneratedDictException(e);
 		}
 	}
 
@@ -228,7 +228,7 @@ public class DictEvaluator {
 
 	public void main(String[] args) throws Exception {
 		String glossaryPath = IUConfig.getIUDataPath("data/glossaries/wpGlossary.json");
-		DictEvaluator evaluator = new DictEvaluator()
+		MDictEvaluator evaluator = new MDictEvaluator()
 			.setMinMaxPairs(null, 100)
 			.setMaxTranslations(10);
 

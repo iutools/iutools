@@ -9,8 +9,8 @@ import org.iutools.script.TransCoderException;
 import org.iutools.webservice.EndpointResult;
 import org.iutools.webservice.ServiceException;
 import org.iutools.webservice.ServiceInputs;
-import org.iutools.worddict.MultilingualDictEntry;
-import org.iutools.worddict.MultilingualDictException;
+import org.iutools.worddict.MDictEntry;
+import org.iutools.worddict.MachineGeneratedDictException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ public class WordDictResult extends EndpointResult {
 
 	// If the word pattern matched one word exactly, then this contains the
 	// dictionary entry for that single word
-	public MultilingualDictEntry queryWordEntry;
+	public MDictEntry queryWordEntry;
 	public Long totalWords = new Long(0);
 	public String lang = "iu";
 	public String otherLang = "en";
@@ -29,25 +29,25 @@ public class WordDictResult extends EndpointResult {
 
 	public WordDictResult() {
 		init_WordDictResult(
-			(MultilingualDictEntry)null, (List<String>)null, (Long)null);
+			(MDictEntry)null, (List<String>)null, (Long)null);
 	}
 
-	public WordDictResult(MultilingualDictEntry _entry) {
+	public WordDictResult(MDictEntry _entry) {
 		init_WordDictResult(_entry, (List<String>)null, (Long)null);
 	}
 
-	public WordDictResult(MultilingualDictEntry _entry, List<String> _foundWords) {
+	public WordDictResult(MDictEntry _entry, List<String> _foundWords) {
 		init_WordDictResult(_entry, _foundWords, (Long)null);
 	}
 
 	public WordDictResult(
-		MultilingualDictEntry _entry, List<String> _foundWords, Long _totalWords) {
+	MDictEntry _entry, List<String> _foundWords, Long _totalWords) {
 		init_WordDictResult(_entry, _foundWords, _totalWords);
 	}
 
 
 	private void init_WordDictResult(
-		MultilingualDictEntry _qWordEntry, List<String> _foundWords, Long _totalWords) {
+	MDictEntry _qWordEntry, List<String> _foundWords, Long _totalWords) {
 		Logger tLogger = LogManager.getLogger("org.iutools.webservice.worddict.WordDictResult.init_WordDictResult");
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("_qWordEntry="+ PrettyPrinter.print(_qWordEntry));
@@ -99,7 +99,7 @@ public class WordDictResult extends EndpointResult {
 		if (queryWordEntry != null) {
 			try {
 				queryWordEntry.ensureScript(iuAlphabet);
-			} catch (MultilingualDictException e) {
+			} catch (MachineGeneratedDictException e) {
 				throw new ServiceException(e);
 			}
 		}

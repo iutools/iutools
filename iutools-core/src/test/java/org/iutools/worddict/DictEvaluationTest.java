@@ -4,7 +4,7 @@ import ca.nrc.testing.AssertRuntime;
 import org.iutools.config.IUConfig;
 import org.iutools.sql.SQLLeakMonitor;
 import org.iutools.utilities.StopWatch;
-import org.iutools.worddict.MultilingualDict.*;
+import org.iutools.worddict.MachineGeneratedDict.*;
 import org.iutools.concordancer.tm.TMEvaluator.MatchType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,7 +32,7 @@ public class DictEvaluationTest {
 		TestInfo testInfo) throws Exception {
 		String glossaryPath = IUConfig.getIUDataPath("data/glossaries/wpGlossary.json");
 		int stopAfterN = 20;
-		DictEvaluator evaluator = new DictEvaluator()
+		MDictEvaluator evaluator = new MDictEvaluator()
 //				.setMinMaxPairs(null, 20).setMaxTranslations(5)
 //				.setMinMaxPairs(100, 100).setMaxTranslations(5)
 //				.setMinMaxPairs(50, 50).setMaxTranslations(5)
@@ -85,7 +85,7 @@ public class DictEvaluationTest {
 	public void test_evaluateWordDict_OnWikipediaGlossary_AllEntries(
 		TestInfo testInfo) throws Exception {
 		String glossaryPath = IUConfig.getIUDataPath("data/glossaries/wpGlossary.json");
-		DictEvaluator evaluator = new DictEvaluator()
+		MDictEvaluator evaluator = new MDictEvaluator()
 			.setMinMaxPairs(null, 100)
 			.setMaxTranslations(10);
 

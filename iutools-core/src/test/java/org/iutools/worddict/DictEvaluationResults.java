@@ -4,7 +4,7 @@ import ca.nrc.dtrc.stats.FrequencyHistogram;
 import org.iutools.concordancer.tm.TMEvaluator;
 import org.iutools.concordancer.tm.TMEvaluator.*;
 import org.iutools.utilities.StopWatch;
-import org.iutools.worddict.MultilingualDict.WhatTerm;
+import org.iutools.worddict.MachineGeneratedDict.WhatTerm;
 
 public class DictEvaluationResults  {
 	int totalGlossaryEntries = 0;

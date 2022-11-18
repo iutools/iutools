@@ -36,8 +36,8 @@ public class TranslationMemory__SQL_vs_ES__SpeedTest {
 			int entryNum = 0;
 			while (true) {
 				GlossaryEntry entry = (GlossaryEntry) reader.readObject();
-				String enExpr = entry.getTermInLang("en");
-				String iuExpr = entry.getTermInLang("iu_roman");
+				String enExpr = entry.firstTerm4Lang("en");
+				String iuExpr = entry.firstTerm4Lang("iu_roman");
 				// Make sure the IU and EN expressions have only one word
 				if (enWords.size() <= 20 && !enExpr.contains(" ")) {
 					enWords.add(enExpr);
