@@ -43,42 +43,21 @@ public class DictEvaluationTest {
 		long start = StopWatch.nowMSecs();
 		DictEvaluationResults results =
 			evaluator.evaluate(Paths.get(glossaryPath), stopAfterN, (Integer)null);
+
+		EvaluationExpectations exp = new EvaluationExpectations()
+			.setTotalGlossaryEntries(stopAfterN)
+			.setTotalSingleWordIUEntries(13)
+			.setTotalIUPresent(WhatTerm.ORIGINAL, 6)
+			.setTotalIUPresent(WhatTerm.RELATED, 2)
+			.setTotalENSpotted_Strict(2)
+			.setTotalENSpotted_Lenient(0)
+			.setTotalENSpotted_LenientOverlap(1)
+			;
+		assertExpectationsMet(exp, results);
+
 		AssertRuntime.runtimeHasNotChanged(
 			results.avgSecsPerEntryPresent, 1.545,
 			"avg secs for retrieving a dict entry", testInfo);
-
-		int totalENSpotted_Strict = 2;
-		int totalENSpotted_Lenient = 0;
-		int totalENSpotted_LenientOverlap = 1;
-		if (new IUConfig().tmDataStore().equals("sql")) {
-			totalENSpotted_Lenient = 1;
-		}
-		int totalEnSpotted_AtLeastStrict = totalENSpotted_Strict;
-		int totalEnSpotted_AtLeastLenient =
-			totalENSpotted_Strict + totalENSpotted_Lenient;
-		int totalEnSpotted_AtLeastLenientOverlap =
-			totalENSpotted_Strict + totalENSpotted_Lenient +
-			totalENSpotted_LenientOverlap;
-
-		new AssertDictEvaluationResults(results)
-			.totalGlossaryEntries(stopAfterN)
-			.totalSingleWordIUEntries(13)
-
-			.totalIUPresent(WhatTerm.ORIGINAL, 6)
-			.totalIUPresent(WhatTerm.RELATED, 2)
-
-			.totalENSpotted(MatchType.STRICT, totalENSpotted_Strict)
-			.totalENSpotted(MatchType.LENIENT, totalENSpotted_Lenient)
-			.totalENSpotted(MatchType.LENIENT_OVERLAP, totalENSpotted_LenientOverlap)
-
-			.totalENSpotted_atLeastInSense(MatchType.STRICT, totalEnSpotted_AtLeastStrict)
-			.totalENSpotted_atLeastInSense(MatchType.LENIENT, totalEnSpotted_AtLeastLenient)
-			.totalENSpotted_atLeastInSense(MatchType.LENIENT_OVERLAP,totalEnSpotted_AtLeastLenientOverlap)
-
-			.rateENSpotted(MatchType.STRICT, 1.0*totalEnSpotted_AtLeastStrict/8)
-			.rateENSpotted(MatchType.LENIENT, 1.0*totalEnSpotted_AtLeastLenient/8)
-			.rateENSpotted(MatchType.LENIENT_OVERLAP, 1.0*totalEnSpotted_AtLeastLenientOverlap/8)
-			;
 	}
 
 	@Test
@@ -95,47 +74,124 @@ public class DictEvaluationTest {
 
 		DictEvaluationResults results =
 			evaluator.evaluate(Paths.get(glossaryPath), stopAfterN, startingAtN);
+
+		EvaluationExpectations exp = new EvaluationExpectations()
+			.setTotalGlossaryEntries(556)
+			.setTotalSingleWordIUEntries(465)
+			.setTotalIUPresent(WhatTerm.ORIGINAL, 183)
+			.setTotalIUPresent(WhatTerm.RELATED, 74)
+			.setTotalENSpotted_Strict(93)
+			.setTotalENSpotted_Lenient(4)
+			.setTotalENSpotted_LenientOverlap(11)
+			;
+		assertExpectationsMet(exp, results);
+
 		AssertRuntime.runtimeHasNotChanged(
 			results.avgSecsPerEntryPresent, 0.20,
 			"avg secs for retrieving a dict entry", testInfo);
 
-		int expTotalIUPresent = 183;
-		int expTotalEnSpotted_Strict = 93;
-		int expTotalEnSpotted_Lenient = 4;
-		int expTotalEnSpotted_LenientOverlap = 11;
-		if (new IUConfig().tmDataStore().equals("sql")) {
-			// Some of the expectations are different for SQL
-			expTotalIUPresent = 185;
-			expTotalEnSpotted_Strict = 93;
-			expTotalEnSpotted_Lenient = 3;
-			expTotalEnSpotted_LenientOverlap = 13;
+
+	}
+
+	////////////////////////////////////////////
+	// TEST HELPERS
+	////////////////////////////////////////////
+
+	public static class EvaluationExpectations {
+		Integer totalGlossaryEntries = null;
+		Integer totalSingleWordIUEntries = null;
+
+		Integer totalIUPresent_OriginalTerm = null;
+		Integer totalIUPresent_RelatedTerms = null;
+
+		Integer totalENSpotted_Strict = null;
+		Integer totalENSpotted_Lenient = null;
+		Integer totalENSpotted_LenientOverlap = 11;
+
+		public int totalIUPresent_OriginalOrRelated() {
+			return totalIUPresent_OriginalTerm + totalIUPresent_RelatedTerms;
 		}
-		int expTotalEnSpotted_atLeastStrict = expTotalEnSpotted_Strict;
-		int expTotalEnSpotted_atLeastLenient =
-			expTotalEnSpotted_Strict + expTotalEnSpotted_Lenient;
-		int expTotalEnSpotted_atLeastLenientOverlap =
-			expTotalEnSpotted_Strict + expTotalEnSpotted_Lenient +
-			expTotalEnSpotted_LenientOverlap;
 
+		public int totalENSpotted_atLeastStrict() {
+			return totalENSpotted_Strict;
+		}
+
+		public int totalENSpotted_atLeastLenient() {
+			return totalENSpotted_Strict + totalENSpotted_Lenient;
+		}
+
+		public int totalENSpotted_atLeastLenientOverlap() {
+			return totalENSpotted_Strict + totalENSpotted_Lenient +
+			totalENSpotted_LenientOverlap;
+		}
+
+		public double rateENSpotted_Strict() {
+			return 1.0 * totalENSpotted_atLeastStrict() / totalIUPresent_OriginalOrRelated();
+		}
+
+		public double rateENSpotted_Lenient() {
+			return 1.0 * totalENSpotted_atLeastLenient() / totalIUPresent_OriginalOrRelated();
+		}
+
+		public double rateENSpotted_LenientOverlap() {
+			return 1.0 * totalENSpotted_atLeastLenientOverlap() / totalIUPresent_OriginalOrRelated();
+		}
+
+		public EvaluationExpectations setTotalGlossaryEntries(int total) {
+			totalGlossaryEntries = total;
+			return this;
+		}
+
+		public EvaluationExpectations setTotalSingleWordIUEntries(int total) {
+			totalSingleWordIUEntries = total;
+			return this;
+		}
+
+		public EvaluationExpectations setTotalIUPresent(WhatTerm whatTerm, int total) {
+			if (whatTerm == WhatTerm.ORIGINAL) {
+				totalIUPresent_OriginalTerm = total;
+			} else {
+				totalIUPresent_RelatedTerms = total;
+			}
+			return this;
+		}
+
+		public EvaluationExpectations setTotalENSpotted_Strict(int total) {
+			totalENSpotted_Strict = total;
+			return this;
+		}
+
+		public EvaluationExpectations setTotalENSpotted_Lenient(int total) {
+			totalENSpotted_Lenient = total;
+			return this;
+		}
+
+		public EvaluationExpectations setTotalENSpotted_LenientOverlap(int total) {
+			totalENSpotted_LenientOverlap = total;
+			return this;
+		}
+	}
+
+	protected void assertExpectationsMet(
+		EvaluationExpectations exp, DictEvaluationResults results) {
 		new AssertDictEvaluationResults(results)
-			.totalGlossaryEntries(556)
-			.totalSingleWordIUEntries(465)
+			.totalGlossaryEntries(exp.totalGlossaryEntries)
+			.totalSingleWordIUEntries(exp.totalSingleWordIUEntries)
 
-			// For ES TM
-			.totalIUPresent(WhatTerm.ORIGINAL, expTotalIUPresent)
-			.totalIUPresent(WhatTerm.RELATED, 75)
+			.totalIUPresent(WhatTerm.ORIGINAL, exp.totalIUPresent_OriginalTerm)
+			.totalIUPresent(WhatTerm.RELATED, exp.totalIUPresent_RelatedTerms)
 
-			.totalENSpotted(MatchType.STRICT, expTotalEnSpotted_Strict)
-			.totalENSpotted(MatchType.LENIENT, expTotalEnSpotted_Lenient)
-			.totalENSpotted(MatchType.LENIENT_OVERLAP, expTotalEnSpotted_LenientOverlap)
+			.totalENSpotted(MatchType.STRICT, exp.totalENSpotted_Strict)
+			.totalENSpotted(MatchType.LENIENT, exp.totalENSpotted_Lenient)
+			.totalENSpotted(MatchType.LENIENT_OVERLAP, exp.totalENSpotted_LenientOverlap)
 
-			.totalENSpotted_atLeastInSense(MatchType.STRICT, expTotalEnSpotted_atLeastStrict)
-			.totalENSpotted_atLeastInSense(MatchType.LENIENT, expTotalEnSpotted_atLeastLenient)
-			.totalENSpotted_atLeastInSense(MatchType.LENIENT_OVERLAP, expTotalEnSpotted_atLeastLenientOverlap)
+			.totalENSpotted_atLeastInSense(MatchType.STRICT, exp.totalENSpotted_atLeastStrict())
+			.totalENSpotted_atLeastInSense(MatchType.LENIENT, exp.totalENSpotted_atLeastLenient())
+			.totalENSpotted_atLeastInSense(MatchType.LENIENT_OVERLAP, exp.totalENSpotted_atLeastLenientOverlap())
 
-			.rateENSpotted(MatchType.STRICT, 0.360)
-			.rateENSpotted(MatchType.LENIENT, 0.376)
-			.rateENSpotted(MatchType.LENIENT_OVERLAP, 0.419)
+			.rateENSpotted(MatchType.STRICT, exp.rateENSpotted_Strict())
+			.rateENSpotted(MatchType.LENIENT, exp.rateENSpotted_Lenient())
+			.rateENSpotted(MatchType.LENIENT_OVERLAP, exp.rateENSpotted_LenientOverlap())
 			;
 	}
 }

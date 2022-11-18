@@ -44,6 +44,21 @@ public class MachineGeneratedDictTest {
 
 		// Cases for entry4word function
 		cases_entry4word = new MultilingualDictCase[] {
+			new MultilingualDictCase("iu-word-with-glossary-entry (annuraanik=inuit clothing)", "annuraanik")
+				.hasGlossaryTranslations("Inuit clothing")
+				.setDecomp(
+					"annuraaq/1n", "nik/tn-acc-p")
+				.relatedWordsShouldBeAmong(
+					"annuraanginnit", "annuraangit", "annuraanit", "annuraanut",
+					"annuraat")
+				.setMinTranslations(5)
+				.hasTranslationsForOrigWord(true)
+				.bestTranslationsAreAmong(
+					"clothing", "dry clothing", "fashions", "garments",
+					"wash ... cloths"
+				)
+				.setMinExamples(5),
+
 			new MultilingualDictCase("iu-nunaqaqqaaqsimajut (=aboriginal people)", "nunaqaqqaaqsimajut")
 				.setDecomp(
 					"nunaqaq/1v", "qqaaq/1vv", "sima/1vv", "jut/tv-ger-3p")
@@ -293,6 +308,19 @@ public class MachineGeneratedDictTest {
 				String[] expL1Highlights = new String[0];
 				String[] expTranslations = new String[0];
 
+				List<String> words = new ArrayList<String>();
+				words.add(aCase.word);
+				Collections.addAll(words, entry.relatedWords);
+//				for (String aWord: words) {
+//					entry.glossaryTranslations4Word(aWord);
+//				}
+//				for (String sources: aCase.glossaryEntries.keySet()) {
+//					AssertObject.assertDeepEquals(
+//						"Glossary translations were not as expected",
+//						aCase.glossaryEntries, entry.glossaryEntries()
+//					);
+//				}
+
 				if (!aCase.outOfVocab) {
 					List<String> expL1HighlightsLst = new ArrayList<String>();
 					expL1HighlightsLst.add(aCase.word);
@@ -410,6 +438,8 @@ public class MachineGeneratedDictTest {
 		public String expDefinition = null;
 		public String[] expDecomp = null;
 		public String[] expRelatedWordsSuperset = null;
+		public List<String> glossaryTranslations = new ArrayList<String>();
+
 		public String[] expTranslations = null;
 		public Integer expMinTranslations = null;
 		private boolean expHasTranslationsForOrigWord = true;
@@ -480,6 +510,11 @@ public class MachineGeneratedDictTest {
 
 		public void registerRunningTime(Double time) {
 			casesRunningTime.put(id(), time);
+		}
+
+		public MultilingualDictCase hasGlossaryTranslations(String... __glossaryTranslations) {
+			Collections.addAll(glossaryTranslations, __glossaryTranslations);
+			return this;
 		}
 	}
 

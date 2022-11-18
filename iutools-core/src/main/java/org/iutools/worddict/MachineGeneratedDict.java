@@ -140,7 +140,28 @@ public class MachineGeneratedDict {
 			entry = entry4word_EN(word);
 		}
 
+		computeGlossaryEntries(entry);
+
 		return entry;
+	}
+
+	private void computeGlossaryEntries(MDictEntry entry) throws MachineGeneratedDictException {
+		List<String> words = new ArrayList<String>();
+		words.add(entry.word);
+		Collections.addAll(words, entry.relatedWords);
+		if (entry.lang.equals("iu")) {
+			try {
+				words = (List<String>)TransCoder.ensureRoman(words);
+			} catch (TransCoderException e) {
+				throw new MachineGeneratedDictException(e);
+			}
+		}
+		for (String aWord: words) {
+			List<GlossaryEntry> glossEntries = Glossary.get().entries4word(entry.lang, aWord);
+			if (!glossEntries.isEmpty()) {
+				entry.addGlossEntries4word(aWord, entry.otherLang(), glossEntries);
+			}
+		}
 	}
 
 	private MDictEntry entry4word_IU(

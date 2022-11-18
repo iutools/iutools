@@ -18,12 +18,13 @@ Windows. However:
 
 At the minimum, _iutools_ also requires the following components: 
 - Java JDK 1.8
-- Elastic Search 5.6
+- Elastic Search (7.17.3 recommended)
+- MySql 5.7.34
 
 This will be sufficient if you only plan to use the _Command Line Interface_.
 
 If you want to use the web apps, you also need:
-- Tomcat
+- Tomcat (version 8.5 recommended)
 
 ## Build the JAR and WAR files
 As of this writing, there are no precompiled Maven artifacts for _iutools_. You 
@@ -55,7 +56,7 @@ Then build _iutools_:
 ## Create an _iutools_cli_ alias
 
 If you would like to use the Command Line Interface (CLI) we recommend that you 
-you create an alias for it:
+create an alias for it:
 
     # Note: we split the alias on different lines so it will display nicely 
     #   in this file, but the alias should be on a single line
@@ -84,25 +85,89 @@ But at this point, you should be able to use the following commands:
 - _segment_iu_: Decompose an Inuktut word into its morphemes.
 - _transliterate_: Transliterate Legacy inuktitut to Unicode.
 
-## Installing the Compiled Corpora
+## Download the IUtools data files
+
+IUTools makes use of several large data files, in particular
+ 
+- _Compiled Corpus File_: This is a file that provides information about 
+  all the words contained in the Nunavut Hansard and the Govt of Nunavut web (gov.nu.ca).
+  
+- _Translation Memory Files_: These are JSON files that provide aligned IU-EN 
+  sentences for different corpus (Nunavut Hansard, and gov.nu.ca for now).
+
+To install this data, you must first download it from the following DAGsHub 
+repository:
+
+     git clone https://dagshub.com/iutools/iutools-data.git
+     
+ Then you must point _iutools_ to this directory. Simply add the following line 
+ to your _org_iutools.properties_ file: 
+
+     org.iutools.datapath=/path/to/root/of/your/iutools-data
+ 
+## Loading the Compiled Corpus into the database
 
 Most of the _iutols_ components require a _Compiled Corpus_. You can think of 
 this as a kind of dictionary that provides information about all the 
 Inuktut words contained in a series of documents.
 
 The information stored about each word includes things like:
+- Transliteration in syllabics and roman
 - Frequency in the corpus
 - Top N decompositions of the word into morphemes
 
-To install the corpora, you need to carry out two steps:
-- Ensure that ElasticSearch is running on your local machine
-- Install the _iutools-data_ project
+To install the compiled corpus, you need to carry out two steps:
+- Download and install the _iutools-data_ repo (see instructions above)
+- Ensure that SQL is running on your local machine
+- Load the corpus data into the SQL database
 
-Below are details about each of those steps.
+Below are details about each the last two steps.
+
+### Installing and configuring My SQL for use by _iutools_
+
+#### Installing MySQL
+
+Instructions may vary depending on your OS.
+
+#### Creating the IUTools DB and User
+
+Once MySQL is installed, create a DB and User for IUtools. 
+
+Grant that user all access to the IUTools DB.
+
+NOTE: It would be nice if we had a script that did that automatically.
+
+#### Adding SQL-related entries to _org_iutools.properties_
+
+Add the following lines to your _org_iutools.properties_ file
+
+    org.iutools.sql.dbname=name_of_your_iutools_db
+    org.iutools.sql.username=name_of_your_iutools_db
+    org.iutools.sql.passwd=passwd_for_your_iutools_db
+
+### Load the corpus into SQL
+
+At this point you can load the compiled corpus data into SQL by issueing
+a _load_corpus_ command:
+ 
+     iutools_cli load_corpus -force
+
+Note that it may take a few hours for this command to complete, but this 
+overhead will only be encurred once. Likewise, if you ever issue a command that 
+uses a different corpus than the default one, a loading 
+overhead will be encurred the first time you use that specific corpus or TM.
+
+### Load the Translation Memory
+
+To load the Translation Memory you must do the following steps:
+- Install and configure ElasticSearch
+- Load the TM data into ElasticSearch
+
+Below are details for each step.
 
 ### Installing ElasticSearch for use by _iutools_
 
-At the moment, _iutools_ only works with version 5.6 of _ElasticSearch_.
+We recommend you use version 7.17.3 of ES.
 
 Follow the standard installation instructions for _ElasticSearch_.
  
@@ -122,7 +187,7 @@ dedicated terminal windows
 To ensure that _ElasticSearch_ was installed and started properly, issue the 
 following command:
 
-    curl http://localhost:9200
+    curl http://localhost:9200/
    
 This should output something like this:
 
@@ -139,34 +204,22 @@ This should output something like this:
       },
       "tagline" : "You Know, for Search"
     }   
-    
-### Load the corpus and Translation Memory data into ElasticSearch
-
-First you must download the corpus data from its repository on DAGsHub:
-
-     git clone https://dagshub.com/iutools/iutools-data.git
-     
- Then you must point _iutools_ to this directory. Simply add the following line 
- to your _org_iutools.properties_ file: 
-
-     org.iutools.datapath=/path/to/root/of/your/iutools-data
  
- Then issue a _load_corpus_ and _load_translation_memory_ commands to load the 
- default corpus and translation memory from the _iutools-data_ files:
+At this point you can load the translation memory data into ElasticSearch by issueing
+a _load_translation_memory_ command:
  
-     iutools_cli load_corpus -force
      iutool_cli load_translation_memory --force
 
-Note that it may take a few hours for each of those commands to complete, but this 
+Note that it may take a few hours for this command to complete, but this 
 overhead will only be encurred once. Likewise, if you ever issue a command that 
-uses a different corpus or translation memory than the default one, a loading 
-overhead will be encurred the first time you use that specific corpus or TM.
+uses a different TM than the default one, a loading 
+overhead will be encurred the first time you use that specific TM.
 
-While loading the corpus or TM, if you see the following ElasticSearch error:
+While loading the TM, if you see the following ElasticSearch error:
 
     TOO_MANY_REQUESTS/12/disk usage exceeded flood-stage watermark, index has read-only-allow-delete block    
      
-you can fix the problem by change the ElasticSearch node settings. 
+you can fix the problem by changing the ElasticSearch node settings. 
 Simply issue the two _curl_ commands below, and 
 then reissuing the above _load_corpus_ command.  
 
@@ -190,10 +243,6 @@ then reissuing the above _load_corpus_ command.
     }
     '
      
-Once you have successfully completing the _load_corpus_ and _load_translation_memory_ 
-commands, you should be able to use the full range of Command Line 
-Interface commands. 
-
 ### Install and Configure the web apps
 
 If you don't plan to use the _iutools_ web apps, then you are done. 

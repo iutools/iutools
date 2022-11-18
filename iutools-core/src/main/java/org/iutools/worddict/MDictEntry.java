@@ -20,10 +20,6 @@ import java.util.*;
 
 public class MDictEntry {
 
-	public String otherLang() throws MachineGeneratedDictException {
-		return otherLang(lang);
-	}
-
 	public static enum Field {
 		DEFINITION, BILINGUAL_EXAMPLES, TRANSLATIONS, DECOMP, RELATED_WORDS
 	}
@@ -41,6 +37,19 @@ public class MDictEntry {
 	 * These may be translations for the original word or for related words.
 	 */
 	public List<String> bestTranslations = new ArrayList<String>();
+
+	/**
+	 * Human-generated translations for the word and related words (if any were
+	 * found).
+	 */
+	public Map<String,List<String>> humanTranslations =
+		new HashMap<String,List<String>>();
+
+	/**
+	 * Sources for human-generated translations.
+	 */
+	public Map<String,List<String>> humanTranslationSources =
+		new HashMap<String,List<String>>();
 
 	/** Provides translations for diffferent l1 words. These may be the original
 	   word or related words */
@@ -71,6 +80,10 @@ public class MDictEntry {
 		}
 	}
 
+	public String otherLang() throws MachineGeneratedDictException {
+		return otherLang(lang);
+	}
+
 	public static String otherLang(String lang) throws MachineGeneratedDictException {
 		assertIsSupportedLanguage(lang);
 		String other = null;
@@ -80,9 +93,31 @@ public class MDictEntry {
 			other = "iu";
 		}
 		return other;
-
 	}
 
+	public void addGlossEntries4word(String word, String targetLang,
+		List<GlossaryEntry> glossEntries) {
+
+		for (GlossaryEntry glossEntry: glossEntries) {
+			String source = glossEntry.source;
+			List<String> translations = glossEntry.termsInLang(targetLang);
+			addHumanTranslations(word, translations, source);
+		}
+	}
+
+	private void addHumanTranslations(
+		String word, List<String> translations, String source) {
+		if (!humanTranslations.containsKey(word)) {
+			humanTranslations.put(word, new ArrayList<String>());
+		}
+		if (!humanTranslationSources.containsKey(word)) {
+			humanTranslationSources.put(word, new ArrayList<String>());
+		}
+		for (String aTranslation: translations) {
+			humanTranslations.get(word).add(aTranslation);
+			humanTranslationSources.get(word).add(source);
+		}
+	}
 
 	private List<Pair<String, Double>> _otherLangTranslations = null;
 
@@ -551,5 +586,4 @@ public class MDictEntry {
 
 		return empty;
 	}
-
 }
