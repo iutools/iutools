@@ -1,5 +1,7 @@
 package org.iutools.worddict;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.iutools.script.TransCoder;
 import org.iutools.script.TransCoderException;
 
@@ -69,4 +71,15 @@ public class GlossaryEntry {
 		return firstTerm;
 	}
 
+	@Override
+	public String toString() {
+		String toS = null;
+		try {
+			toS = new ObjectMapper().writeValueAsString(this);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
+
+		return toS;
+	}
 }

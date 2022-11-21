@@ -121,8 +121,9 @@ public class MachineGeneratedDict {
 
 	public MDictEntry entry4word(
 		String word, String lang, Boolean fullRelatedWordEntries,
-		Field... fieldsToPopulate)
-		throws MachineGeneratedDictException {
+		Field... fieldsToPopulate) throws MachineGeneratedDictException {
+
+		Logger logger = LogManager.getLogger("org.iutools.worddict.MachineGeneratedDict.entry4word");
 
 		if (lang == null) {
 			lang = "iu";
@@ -132,80 +133,73 @@ public class MachineGeneratedDict {
 		if (fieldsToPopulate == null) {
 			fieldsToPopulate = Field.values();
 		}
-		MDictEntry entry = new MDictEntry(word);
+		MDictEntry entry = new MDictEntry(word, lang);
 
-		if (lang.equals("iu")) {
-			entry = entry4word_IU(word, fullRelatedWordEntries, fieldsToPopulate);
-		} else if (lang.equals("en")) {
-			entry = entry4word_EN(word);
-		}
-
-		computeGlossaryEntries(entry);
-
-		return entry;
-	}
-
-	private void computeGlossaryEntries(MDictEntry entry) throws MachineGeneratedDictException {
-		List<String> words = new ArrayList<String>();
-		words.add(entry.word);
-		Collections.addAll(words, entry.relatedWords);
-		if (entry.lang.equals("iu")) {
-			try {
-				words = (List<String>)TransCoder.ensureRoman(words);
-			} catch (TransCoderException e) {
-				throw new MachineGeneratedDictException(e);
-			}
-		}
-		for (String aWord: words) {
-			List<GlossaryEntry> glossEntries = Glossary.get().entries4word(entry.lang, aWord);
-			if (!glossEntries.isEmpty()) {
-				entry.addGlossEntries4word(aWord, entry.otherLang(), glossEntries);
-			}
-		}
-	}
-
-	private MDictEntry entry4word_IU(
-		String word, Boolean fullRelatedWordEntries, Field... fieldsToPopulate) throws MachineGeneratedDictException {
-		Logger logger = LogManager.getLogger("org.iutools.worddict.MachineGeneratedDict.entry4word_IU");
 		StopWatch watch = new StopWatch().start();
-		MDictEntry entry = new MDictEntry(word);
-		Script inputScript = TransCoder.textScript(word);
 		try {
-			WordInfo winfo = corpus.info4word(entry.wordRoman);
-			traceRunningTime(logger, entry, "retrieving word info", watch);
-			if (winfo != null) {
-				entry.setDecomp(winfo.topDecomposition());
-			} else {
-				// Word could not be found in the corpus.
-				// At least see if we can fill the entry's decomposition field
-				String[] decomp = decomposeWord(word);
-				entry.setDecomp(decomp);
+			if (ArrayUtils.contains(fieldsToPopulate, Field.DECOMP)) {
+				fillDecomposition(entry);
+				traceRunningTime(logger, entry, "computing decomposition", watch);
 			}
+
+			if (ArrayUtils.contains(fieldsToPopulate, Field.RELATED_WORDS)) {
+				computeRelatedWords(entry, fullRelatedWordEntries);
+				traceRunningTime(logger, entry, "computing related words", watch);
+			}
+
 			if (ArrayUtils.contains(fieldsToPopulate, Field.BILINGUAL_EXAMPLES) ||
 				ArrayUtils.contains(fieldsToPopulate, Field.TRANSLATIONS)) {
 				computeOrigWordTranslationsAndExamples(entry);
+				traceRunningTime(logger, entry, "computing ORIGINAL word translations", watch);
 			}
-			traceRunningTime(logger, entry, "acomputing ORIGINAL word translations", watch);
-			if (ArrayUtils.contains(fieldsToPopulate, Field.RELATED_WORDS)) {
-				computeRelatedWords(entry, fullRelatedWordEntries);
-			}
+
 			if (ArrayUtils.contains(fieldsToPopulate, Field.TRANSLATIONS) &&
 				entry.bestTranslations.isEmpty()) {
 				// We haven't found a translation for the original word.
 				// So, look for translations of related words
 				computeRelatedWordsTranslationsAndExamples(entry);
+				traceRunningTime(logger, entry, "computing RELATED words translations", watch);
 			}
-			traceRunningTime(logger, entry, "computing RELATED words", watch);
+
 			entry.sortAndPruneTranslations(
 				MAX_TRANSLATIONS, MIN_REQUIRED_PAIRS_FOR_TRANSLATION);
 			traceRunningTime(logger, entry, "sorting and pruning translations", watch);
-		} catch (CompiledCorpusException | StopWatchException e) {
+
+			if (lang.equals("iu")) {
+				// Make sure all parts of the entry are in the script used for
+				// the input word.
+				//
+				Script inputScript = TransCoder.textScript(word);
+				entry.ensureScript(inputScript);
+			}
+		} catch (StopWatchException e) {
 			throw new MachineGeneratedDictException(e);
 		}
 
-		entry.ensureScript(inputScript);
-
 		return entry;
+	}
+
+	private void fillDecomposition(MDictEntry entry) throws MachineGeneratedDictException {
+		Logger logger = LogManager.getLogger("org.iutools.worddict.MachineGeneratedDict.possiblyFillDecomposition");
+
+		// We only fill decomposition for IU words
+		if (entry.lang.equals("iu")) {
+			StopWatch watch = new StopWatch().start();
+			try {
+				WordInfo winfo = corpus.info4word(entry.wordRoman);
+				traceRunningTime(logger, entry, "retrieving word info", watch);
+				if (winfo != null) {
+					entry.setDecomp(winfo.topDecomposition());
+				} else {
+					// Word could not be found in the corpus.
+					// At least see if we can fill the entry's decomposition field
+					String[] decomp = decomposeWord(entry.wordRoman);
+					entry.setDecomp(decomp);
+				}
+			} catch (CompiledCorpusException | StopWatchException e) {
+				throw new MachineGeneratedDictException(e);
+			}
+		}
 	}
 
 	private void computeRelatedWordsTranslationsAndExamples(MDictEntry entry) throws MachineGeneratedDictException {
@@ -229,46 +223,40 @@ public class MachineGeneratedDict {
 		return;
 	}
 
-	private MDictEntry entry4word_EN(String word)
-		throws MachineGeneratedDictException {
-		MDictEntry entry = new MDictEntry(word, "en");
-		computeOrigWordTranslationsAndExamples(entry);
-		entry.sortAndPruneTranslations(MAX_TRANSLATIONS, MIN_REQUIRED_PAIRS_FOR_TRANSLATION);
-		return entry;
-	}
-
 	private void computeRelatedWords(MDictEntry entry,
-												Boolean fullRelatedWordEntries) throws MachineGeneratedDictException {
+		Boolean fullRelatedWordEntries) throws MachineGeneratedDictException {
 		Logger logger = LogManager.getLogger("org.iutools.worddict.MachineGeneratedDict.computeRelatedWords");
-		StopWatch sw = new StopWatch().start();
-		if (fullRelatedWordEntries == null) {
-			fullRelatedWordEntries = true;
-		}
-		try {
-			MorphologicalRelative[] rels =
+		if (entry.lang.equals("iu")) {
+			// We can only compute related words for IU words.
+			StopWatch sw = new StopWatch().start();
+			if (fullRelatedWordEntries == null) {
+				fullRelatedWordEntries = true;
+			}
+			try {
+				MorphologicalRelative[] rels =
 				new MorphRelativesFinder(corpus).findRelatives(entry.wordRoman);
-			traceRunningTime(logger, entry, "finding relatives", sw);
-			List<String> relatedWords = new ArrayList<String>();
-			for (MorphologicalRelative aRel: rels) {
-				relatedWords.add(aRel.getWord());
-			}
+				traceRunningTime(logger, entry, "finding relatives", sw);
+				List<String> relatedWords = new ArrayList<String>();
+				for (MorphologicalRelative aRel : rels) {
+					relatedWords.add(aRel.getWord());
+				}
 
-			if (fullRelatedWordEntries) {
-				List<MDictEntry> relWordEntries =
+				if (fullRelatedWordEntries) {
+					List<MDictEntry> relWordEntries =
 					retrieveRelatedWordEntries(relatedWords);
-				traceRunningTime(logger, entry, "retrieving related word entries", sw);
-				traceRunningTime(logger, entry, "retrieving related word entries", sw);
-				relatedWords = sortWordsByEntryComprehensiveness(relWordEntries);
-				traceRunningTime(logger, entry, "After sorting related word entries", sw);
+					traceRunningTime(logger, entry, "retrieving related word entries", sw);
+					traceRunningTime(logger, entry, "retrieving related word entries", sw);
+					relatedWords = sortWordsByEntryComprehensiveness(relWordEntries);
+					traceRunningTime(logger, entry, "After sorting related word entries", sw);
+				}
+				traceRunningTime(logger, entry, "After possibly collecting related words translations", sw);
+
+				entry.relatedWords = relatedWords.toArray(new String[0]);
+
+			} catch (MorphRelativesFinderException | StopWatchException e) {
+				throw new MachineGeneratedDictException(e);
 			}
-			traceRunningTime(logger, entry, "After possibly collecting related words translations", sw);
-
-			entry.relatedWords = relatedWords.toArray(new String[0]);
-
-		} catch (MorphRelativesFinderException | StopWatchException e) {
-			throw new MachineGeneratedDictException(e);
 		}
-
 	}
 
 	private List<MDictEntry> retrieveRelatedWordEntries(
@@ -359,25 +347,8 @@ public class MachineGeneratedDict {
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("word="+entry.word+"/"+entry.wordInOtherScript+", iuWordGroup.size()="+ l1WordsCluster.size()+", iuWordGroup="+ StringUtils.join(l1WordsCluster.iterator(), ", "));
 		}
-		Boolean isForRelatedWords = null;
-		if (l1WordsCluster.size() > 1) {
-			// We are looking for translations for a list of words that are related
-			// to the original word
-			isForRelatedWords = true;
-		} else {
-			// We are searching for translation of just one word. Is that the
-			// original word (if not, it means we are searching for translations of
-			// a single related word).
-			String singleWord = l1WordsCluster.get(0);
-			if (singleWord.equals(entry.word) ||
-				singleWord.equals(entry.wordInOtherScript)) {
-				isForRelatedWords = false;
-			} else {
-				isForRelatedWords = true;
-			}
-		}
-		tLogger.trace("isForRelatedWords="+isForRelatedWords);
 
+		fillGlossaryEntries(entry, l1WordsCluster);
 		Map<String, CloseableIterator<Alignment>> iterators = null;
 		try {
 			String l1 = entry.lang;
@@ -456,6 +427,17 @@ public class MachineGeneratedDict {
 			}
 		}
 
+		return;
+	}
+
+	private void fillGlossaryEntries(MDictEntry entry, List<String> l1WordsCluster) throws MachineGeneratedDictException {
+		Logger logger = LogManager.getLogger("org.iutools.worddict.MachineGeneratedDict.fillGlossaryEntries");
+		Glossary glossary = Glossary.get();
+		for (String l1Word: l1WordsCluster) {
+			logger.trace("Looking for glossary entries for word: "+l1Word);
+			List<GlossaryEntry> glossEntries = glossary.entries4word(entry.lang, l1Word);
+			entry.addGlossEntries4word(l1Word, glossEntries);
+		}
 		return;
 	}
 

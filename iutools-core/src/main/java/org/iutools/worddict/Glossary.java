@@ -3,6 +3,8 @@ package org.iutools.worddict;
 import ca.nrc.config.ConfigException;
 import ca.nrc.data.file.ObjectStreamReader;
 import ca.nrc.data.file.ObjectStreamReaderException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.iutools.config.IUConfig;
 
 import java.io.File;
@@ -48,6 +50,8 @@ public class Glossary {
 		} catch (ConfigException e) {
 			throw new GlossaryException("Problem reading glossary files "+String.join(", ", glossFiles), e);
 		}
+
+		return;
 	}
 
 	private Glossary loadFile(File file) throws GlossaryException {
@@ -68,6 +72,10 @@ public class Glossary {
 	}
 
 	private void onNewGlossaryEntry(GlossaryEntry newEntry) {
+		Logger logger = LogManager.getLogger("org.iutools.worddict.Glossary.onNewGlossaryEntry");
+		if (logger.isTraceEnabled()) {
+			logger.trace("Read glossary entry: "+newEntry);
+		}
 		for (String lang: newEntry.availableLanguages()) {
 			for (String term: newEntry.termsInLang(lang)) {
 				String key = keyFor(lang, term);

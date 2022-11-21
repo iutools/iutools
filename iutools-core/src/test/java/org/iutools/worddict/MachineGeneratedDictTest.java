@@ -54,9 +54,12 @@ public class MachineGeneratedDictTest {
 				.setMinTranslations(5)
 				.hasTranslationsForOrigWord(true)
 				.bestTranslationsAreAmong(
-					"clothing", "dry clothing", "fashions", "garments",
+					"Inuit clothing", "clothing", "dry clothing", "fashions", "garments",
 					"wash ... cloths"
 				)
+				// "Inuit clothing" is a human translation so it should be first
+				.bestTranslationsStartWith("Inuit clothing")
+				.humanTranslationsAre("Inuit clothing")
 				.setMinExamples(5),
 
 			new MultilingualDictCase("iu-nunaqaqqaaqsimajut (=aboriginal people)", "nunaqaqqaaqsimajut")
@@ -311,29 +314,20 @@ public class MachineGeneratedDictTest {
 				List<String> words = new ArrayList<String>();
 				words.add(aCase.word);
 				Collections.addAll(words, entry.relatedWords);
-//				for (String aWord: words) {
-//					entry.glossaryTranslations4Word(aWord);
-//				}
-//				for (String sources: aCase.glossaryEntries.keySet()) {
-//					AssertObject.assertDeepEquals(
-//						"Glossary translations were not as expected",
-//						aCase.glossaryEntries, entry.glossaryEntries()
-//					);
-//				}
 
 				if (!aCase.outOfVocab) {
 					List<String> expL1HighlightsLst = new ArrayList<String>();
 					expL1HighlightsLst.add(aCase.word);
 					Collections.addAll(expL1HighlightsLst, aCase.expRelatedWordsSuperset);
 					expL1Highlights = expL1HighlightsLst.toArray(new String[0]);
-					expTranslations = aCase.expTranslations;
+					expTranslations = aCase.expTranslationsAmong;
 				}
 
 				AssertMultilingualDictEntry asserter =
 					new AssertMultilingualDictEntry(entry, aCase.descr);
 
 				String[] expL2Highlights =
-					ArrayUtils.addAll(aCase.expTranslations, aCase.expAdditionalL2Highlights);
+					ArrayUtils.addAll(aCase.expTranslationsAmong, aCase.expAdditionalL2Highlights);
 
 				asserter
 					.isForWord(aCase.word)
@@ -353,6 +347,15 @@ public class MachineGeneratedDictTest {
 					.highlightsAreSubsetOf(aCase.l2, expL2Highlights)
 					;
 
+//				if (aCase.expHumanTranslations != null) {
+//					asserter
+//						.bestTranslationsStartWith(
+//							"Best translations should start with the human translations",
+//							aCase.expHumanTranslations)
+//						.humanTranslationsAre(aCase.expHumanTranslations);
+//
+//				}
+
 				if (aCase.l1.equals("iu")) {
 					asserter.checkWordInOtherScript(aCase.word);
 				}
@@ -366,7 +369,7 @@ public class MachineGeneratedDictTest {
 		};
 
 		new RunOnCases(cases_entry4word, runner)
-//			.onlyCaseNums(8)
+//			.onlyCaseNums(10)
 //			.onlyCasesWithDescr("en-housing")
 			.run();
 	}
@@ -440,7 +443,9 @@ public class MachineGeneratedDictTest {
 		public String[] expRelatedWordsSuperset = null;
 		public List<String> glossaryTranslations = new ArrayList<String>();
 
-		public String[] expTranslations = null;
+		public String[] expTranslationsAmong = null;
+		public String[] expTopTranslations = null;
+		public String[] expHumanTranslations = null;
 		public Integer expMinTranslations = null;
 		private boolean expHasTranslationsForOrigWord = true;
 		public Integer expMinExamples = 0;
@@ -485,7 +490,12 @@ public class MachineGeneratedDictTest {
 		}
 
 		public MultilingualDictCase bestTranslationsAreAmong(String... _expTranslations) {
-			expTranslations = _expTranslations;
+			expTranslationsAmong = _expTranslations;
+			return this;
+		}
+
+		public MultilingualDictCase bestTranslationsStartWith(String... _expTopTranslations) {
+			expTopTranslations = _expTopTranslations;
 			return this;
 		}
 
@@ -496,6 +506,11 @@ public class MachineGeneratedDictTest {
 
 		public MultilingualDictCase setMinExamples(Integer _expMinExamples) {
 			expMinExamples = _expMinExamples;
+			return this;
+		}
+
+		public MultilingualDictCase humanTranslationsAre(String... _expHumanTranslations) {
+			this.expHumanTranslations = _expHumanTranslations;
 			return this;
 		}
 

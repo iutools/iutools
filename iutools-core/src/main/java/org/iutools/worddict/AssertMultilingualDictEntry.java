@@ -92,6 +92,23 @@ public class AssertMultilingualDictEntry extends Asserter<MDictEntry> {
 	}
 
 
+	public AssertMultilingualDictEntry bestTranslationsStartWith(String mess, String... expTopTranslations)
+		throws Exception {
+		List<String> gotTopTranslations = entry().bestTranslations;
+		gotTopTranslations = gotTopTranslations
+			.subList(0, Math.min(expTopTranslations.length, gotTopTranslations.size()));
+		AssertObject.assertDeepEquals(
+			mess + "\nTop translations were not as expected",
+			expTopTranslations, gotTopTranslations
+		);
+		return this;
+	}
+
+	public AssertMultilingualDictEntry humanTranslationsAre(String... expHumanTranslations) {
+		Assertions.fail("Implement this assertion");
+		return this;
+	}
+
 	public AssertMultilingualDictEntry bestTranslationsAreAmong(
 		String... possibleTranslations) throws Exception {
 

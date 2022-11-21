@@ -95,12 +95,11 @@ public class MDictEntry {
 		return other;
 	}
 
-	public void addGlossEntries4word(String word, String targetLang,
-		List<GlossaryEntry> glossEntries) {
+	public void addGlossEntries4word(String word, List<GlossaryEntry> glossEntries) throws MachineGeneratedDictException {
 
 		for (GlossaryEntry glossEntry: glossEntries) {
 			String source = glossEntry.source;
-			List<String> translations = glossEntry.termsInLang(targetLang);
+			List<String> translations = glossEntry.termsInLang(otherLang());
 			addHumanTranslations(word, translations, source);
 		}
 	}
@@ -117,6 +116,13 @@ public class MDictEntry {
 			humanTranslations.get(word).add(aTranslation);
 			humanTranslationSources.get(word).add(source);
 		}
+	}
+
+	public void addGlossarySource(String translation,  String glossSource) {
+		if (!humanTranslationSources.containsKey(translation)) {
+			humanTranslationSources.put(translation, new ArrayList<String>());
+		}
+		humanTranslationSources.get(translation).add(glossSource);
 	}
 
 	private List<Pair<String, Double>> _otherLangTranslations = null;
