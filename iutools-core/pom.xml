@@ -85,10 +85,11 @@
   <!-- IS THIS REALLY NECESSARY? CAN WE MOVE IT TO THE PARENT PROJECT? -->
   <!-- Official Apache Maven repo -->
   <repositories>
-    <repository>
-      <id>snapshots</id>
-      <url>https://repository.apache.org/content/repositories/snapshots</url>
-    </repository>
+		<repository>
+			<id>snapshots</id>
+			<url>https://repository.apache.org/content/repositories/snapshots</url>
+		</repository>
+
   </repositories>  
 
   <dependencies>		
@@ -158,15 +159,25 @@
 		<dependency>
 		    <groupId>net.loomchild</groupId>
 		    <artifactId>maligna</artifactId>
-		    <version>3.0.0</version>
+		    <version>3.0.1</version>
+		    <exclusions>
+		    	 <exclusion>
+					 <!--
+					    This dependency is only available under "undesirable"
+					    license terms (CDDL or GPL2). And we don't actually need them
+					 -->
+					 <groupId>javax.xml.bind</groupId>
+					 <artifactId>jaxb-api</artifactId>
+		    	 </exclusion>
+		    </exclusions>
 		</dependency>
-	
+
 		<dependency>
-			<groupId>net.loomchild</groupId>
-			<artifactId>maligna-ui</artifactId>
-			<version>3.0.1-SNAPSHOT</version>
-		</dependency>		
-		
+		    <groupId>net.loomchild</groupId>
+		    <artifactId>maligna-ui</artifactId>
+		    <version>3.0.1</version>
+		</dependency>
+
 		<dependency>
 			<groupId>com.github.ben-manes.caffeine</groupId>
 			<artifactId>caffeine</artifactId>

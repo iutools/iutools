@@ -27,6 +27,7 @@ If you want to use the web apps, you also need:
 - Tomcat (version 8.5 recommended)
 
 ## Build the JAR and WAR files
+
 As of this writing, there are no precompiled Maven artifacts for _iutools_. You 
 therefore have to build the WAR and JAR files from sources.
 
@@ -35,11 +36,32 @@ You need to build two Maven projects:
 National Council of Canada (NRC).
 - _iutools_: The _iutools_ project itself
 
-First build _java-utils_:
+### Build java-utils
+
+To build _java-utils_:
 
      git clone https://github.com/nrc-cnrc/java-utils.git
      cd java-utils
      mvn clean install -DskipTests=true
+
+### Build iutools
+
+    git clone https://github.com/iutools/iutools.git
+    cd iutools
+    
+    # Manually install maligna-ui because it won't install automatically
+    # for reasons that are too complicated to explain here
+    #
+    mvn install:install-file -DgroupId=net.loomchild -DartifactId=maligna-ui \
+       -Dpackaging=jar -Dversion=3.0.1 \
+       -Dfile=./iutools-core/src/main/lib/maligna-ui-3.0.1.jar
+    
+    # Compile the project
+    mvn clean install -DskipTests=true
+      
+
+
+first install some java dependencies 
 
 Then build _iutools_:
 

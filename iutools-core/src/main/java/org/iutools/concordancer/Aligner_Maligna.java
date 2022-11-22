@@ -12,6 +12,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import ca.nrc.testing.outputcapture.StdoutCapture;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Files;
 
@@ -130,54 +131,62 @@ public class Aligner_Maligna {
 	}
 
 	private void run(File l1SentencesFile, File l2SentencesFile) 
-					throws AlignerException {
+		throws AlignerException {
 		run(l1SentencesFile.toString(), l2SentencesFile.toString());	
 	}
 	
 	private void run(String l1SentsFile, String l2SentsFile) 
 			throws AlignerException {
 		
-		ByteArrayOutputStream bOStream = new ByteArrayOutputStream();
-		PrintStream output = new PrintStream(bOStream);
-		AbstractCommand command = new ParseCommand(output);
-		String[] args = new String[] {"-c", "txt", l1SentsFile, l2SentsFile};
-		echoCommand(args);
-		command.run(args);
-
-		InputStream input = pipeToInputStream(bOStream);
-		bOStream = new ByteArrayOutputStream();
-		output = new PrintStream(bOStream);
-		command = new ModifyCommand(input, output);
-		args = new String[] {"-c", "split-sentence"};
-		echoCommand(args);
-		command.run(args);
-		
-		input = pipeToInputStream(bOStream);
-		bOStream = new ByteArrayOutputStream();
-		output = new PrintStream(bOStream);
-		command = new ModifyCommand(input, output);
-		args = new String[] {"-c", "trim"};
-		echoCommand(args);
-		command.run(args);
-		
-		input = pipeToInputStream(bOStream);
-		bOStream = new ByteArrayOutputStream();
-		output = new PrintStream(bOStream);
-		command = new AlignCommand(input, output);
-		args = new String[] {"-c", "viterbi", "-a", "poisson", "one-to-one", "-n", "word", "-s", "iterative-band"};
-		echoCommand(args);
-		command.run(args);
-		
-		input = pipeToInputStream(bOStream);
-		bOStream = new ByteArrayOutputStream();
-		output = new PrintStream(bOStream);
-		command = new FormatCommand(input, output);
-		args = new String[] {"-c", "txt", alignmentsFileFor(l1SentsFile), alignmentsFileFor(l2SentsFile)};
-		echoCommand(args);
-		command.run(args);
-		
-		computeSentenceNumbersFile(l1SentsFile);
-		computeSentenceNumbersFile(l2SentsFile);
+//		ByteArrayOutputStream bOStream = new ByteArrayOutputStream();
+//		PrintStream output = new PrintStream(bOStream);
+////		AbstractCommand command = new ParseCommand(output);
+//		AbstractCommand command = new ParseCommand();
+//		String[] args = new String[] {"-c", "txt", l1SentsFile, l2SentsFile};
+//		echoCommand(args);
+//
+//		StdoutCapture.startCapturing();
+//		command.run(args);
+//		String parseCmdOutput = StdoutCapture.stopCapturing();
+//
+////		InputStream input = pipeToInputStream(bOStream);
+////		bOStream = new ByteArrayOutputStream();
+////		output = new PrintStream(bOStream);
+////		command = new ModifyCommand(input, output);
+//		command = new ModifyCommand();
+//		args = new String[] {"-c", "split-sentence"};
+//		echoCommand(args);
+//		command.run(args);
+//
+//		input = pipeToInputStream(bOStream);
+//		bOStream = new ByteArrayOutputStream();
+//		output = new PrintStream(bOStream);
+////		command = new ModifyCommand(input, output);
+//		command = new ModifyCommand();
+//		args = new String[] {"-c", "trim"};
+//		echoCommand(args);
+//		command.run(args);
+//
+//		input = pipeToInputStream(bOStream);
+//		bOStream = new ByteArrayOutputStream();
+//		output = new PrintStream(bOStream);
+////		command = new AlignCommand(input, output);
+//		command = new AlignCommand();
+//		args = new String[] {"-c", "viterbi", "-a", "poisson", "one-to-one", "-n", "word", "-s", "iterative-band"};
+//		echoCommand(args);
+//		command.run(args);
+//
+//		input = pipeToInputStream(bOStream);
+//		bOStream = new ByteArrayOutputStream();
+//		output = new PrintStream(bOStream);
+////		command = new FormatCommand(input, output);
+//		command = new FormatCommand();
+//		args = new String[] {"-c", "txt", alignmentsFileFor(l1SentsFile), alignmentsFileFor(l2SentsFile)};
+//		echoCommand(args);
+//		command.run(args);
+//
+//		computeSentenceNumbersFile(l1SentsFile);
+//		computeSentenceNumbersFile(l2SentsFile);
 	}
 
 	private void computeSentenceNumbersFile(String origFile) 
