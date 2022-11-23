@@ -124,4 +124,20 @@ public class IUConfig extends Config {
 					new Boolean(false));
 		return monitor;
 	}
+
+	/**
+	 * Get the list of email addresses to which user feedback should
+	 * be sent.
+	 */
+	public String[] userFeedbackEmails() throws ConfigException {
+		String[] emails = null;
+		String emailsStr  =
+			getConfigProperty(
+				"org.iutools.apps.feedkback_emails",
+					false);
+		if (emailsStr != null) {
+			emails = emailsStr.split("\\s*[;,]\\s*");
+		}
+		return emails;
+	}
 }

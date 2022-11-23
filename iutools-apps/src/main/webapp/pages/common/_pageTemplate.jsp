@@ -129,8 +129,13 @@ reloading -->
 </script>
 
 <!-- Include the code that creates and configures the controller for this page -->
+
+<!-- DISABLE THIS BIT UNTIL THE PageTemplateControler IS FULLY IMPLEMENTED
+<script src="../../js/controllers/common/MainContainerController.js?version=<%= IUTOOLS_JS_VERSION %>></script>
+<script>
+    var pageTemplateController =
+        new PageTemplateControlLer({"linkFeedback", "feedback_link"});
+</script>
+-->
+
 <% pageContext.include("pages/" + pageName + "/_controller.jsp"); %>
-
-</body>
-
-</html>

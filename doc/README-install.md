@@ -53,8 +53,8 @@ To build _java-utils_:
     # for reasons that are too complicated to explain here
     #
     mvn install:install-file -DgroupId=net.loomchild -DartifactId=maligna-ui \
-       -Dpackaging=jar -Dversion=3.0.1 \
-       -Dfile=./iutools-core/src/main/lib/maligna-ui-3.0.1.jar
+            -Dpackaging=jar -Dversion=3.0.1 \
+            -Dfile=./iutools-core/src/main/lib/maligna-ui-3.0.1.jar
     
     # Compile the project
     mvn clean install -DskipTests=true
@@ -80,13 +80,15 @@ Then build _iutools_:
 If you would like to use the Command Line Interface (CLI) we recommend that you 
 create an alias for it:
 
+    export IUTOOLS_CORE_EXECS=/path/to/your/iutools/iutools-core/target
+    export IUTOOLS_PROPS_FILE=/path/to/your/org_iutools.properties
+
     # Note: we split the alias on different lines so it will display nicely 
     #   in this file, but the alias should be on a single line
     #
-    alias iutools_cli='java -Xmx6g 
-       -Dorg_iutools=/path/to/your/org_iutools.properties 
-       -cp /path/to/your/.m2/repository/org/iutools/iutools-core/N.N.N/iutools-core-N.N.N-jar-with-dependencies.jar
-       org.iutools.cli.CLI'
+    alias iutools_cli='java -Xmx18g -Dorg_iutools=${IUTOOLS_PROPS_FILE} \
+      -cp "${IUTOOLS_CORE_EXECS}/iutools-core.jar:${IUTOOLS_CORE_EXECS}/lib/*" \
+      org.iutools.cli.CLI'
        
 Where:
 - _N.N.N_ is the version number of your _iutools_ installation

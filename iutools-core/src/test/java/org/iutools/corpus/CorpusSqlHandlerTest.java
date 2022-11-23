@@ -1,21 +1,6 @@
 package org.iutools.corpus;
 
-import ca.nrc.data.file.ObjectStreamReader;
-import ca.nrc.data.file.ObjectStreamReaderException;
-import ca.nrc.file.ResourceGetter;
-import org.iutools.config.IUConfig;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 import org.junit.jupiter.api.Disabled;
-
-import java.io.File;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 
 @Disabled
 public class CorpusSqlHandlerTest {

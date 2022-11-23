@@ -1,7 +1,6 @@
 package org.iutools.elasticsearch;
 
 import ca.nrc.config.ConfigException;
-import ca.nrc.dtrc.elasticsearch.ESConfig;
 import ca.nrc.dtrc.elasticsearch.ESFactory;
 import ca.nrc.dtrc.elasticsearch.ElasticSearchException;
 import ca.nrc.dtrc.elasticsearch.es5.ES5Factory;

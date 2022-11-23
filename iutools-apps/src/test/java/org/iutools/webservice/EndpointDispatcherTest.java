@@ -6,8 +6,8 @@ import ca.nrc.testing.RunOnCases.*;
 import ca.nrc.ui.web.testing.MockHttpServletRequest;
 import ca.nrc.ui.web.testing.MockHttpServletResponse;
 import org.iutools.json.Mapper;
+import org.iutools.webservice.config.ConfigResult;
 import org.iutools.webservice.gist.GistPrepareContentResult;
-import org.iutools.webservice.gist.GistWordResult;
 import org.iutools.webservice.logaction.LogActionResult;
 import org.iutools.webservice.morphexamples.MorphemeExamplesResult;
 import org.iutools.webservice.search.ExpandQueryResult;
@@ -54,6 +54,11 @@ public class EndpointDispatcherTest {
 			new JSONObject().put("word", "inuksuk"),
 			"iutools/srv2/worddict",
 			WordDictResult.class),
+		new Case("config",
+			new JSONObject().put("propNanes", new String[] {"org.iutools.apps.feedkback_emails"}),
+			"iutools/srv2/config",
+			ConfigResult.class),
+
 	};
 
 	protected static Case[] logEndpointCases = new Case[] {

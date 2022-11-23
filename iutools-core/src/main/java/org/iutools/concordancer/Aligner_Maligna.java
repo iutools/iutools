@@ -8,20 +8,16 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import ca.nrc.testing.outputcapture.StdoutCapture;
+import ca.nrc.io.StdinFeeder;
+import ca.nrc.io.StdoutCapture;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Files;
 
 import ca.nrc.datastructure.Pair;
-import net.loomchild.maligna.ui.console.command.AbstractCommand;
-import net.loomchild.maligna.ui.console.command.AlignCommand;
-import net.loomchild.maligna.ui.console.command.FormatCommand;
-import net.loomchild.maligna.ui.console.command.ModifyCommand;
-import net.loomchild.maligna.ui.console.command.ParseCommand;
+import net.loomchild.maligna.ui.console.command.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -136,57 +132,64 @@ public class Aligner_Maligna {
 	}
 	
 	private void run(String l1SentsFile, String l2SentsFile) 
-			throws AlignerException {
-		
-//		ByteArrayOutputStream bOStream = new ByteArrayOutputStream();
-//		PrintStream output = new PrintStream(bOStream);
-////		AbstractCommand command = new ParseCommand(output);
-//		AbstractCommand command = new ParseCommand();
-//		String[] args = new String[] {"-c", "txt", l1SentsFile, l2SentsFile};
-//		echoCommand(args);
-//
-//		StdoutCapture.startCapturing();
-//		command.run(args);
-//		String parseCmdOutput = StdoutCapture.stopCapturing();
-//
-////		InputStream input = pipeToInputStream(bOStream);
-////		bOStream = new ByteArrayOutputStream();
-////		output = new PrintStream(bOStream);
-////		command = new ModifyCommand(input, output);
-//		command = new ModifyCommand();
-//		args = new String[] {"-c", "split-sentence"};
-//		echoCommand(args);
-//		command.run(args);
-//
-//		input = pipeToInputStream(bOStream);
-//		bOStream = new ByteArrayOutputStream();
-//		output = new PrintStream(bOStream);
-////		command = new ModifyCommand(input, output);
-//		command = new ModifyCommand();
-//		args = new String[] {"-c", "trim"};
-//		echoCommand(args);
-//		command.run(args);
-//
-//		input = pipeToInputStream(bOStream);
-//		bOStream = new ByteArrayOutputStream();
-//		output = new PrintStream(bOStream);
-////		command = new AlignCommand(input, output);
-//		command = new AlignCommand();
-//		args = new String[] {"-c", "viterbi", "-a", "poisson", "one-to-one", "-n", "word", "-s", "iterative-band"};
-//		echoCommand(args);
-//		command.run(args);
-//
-//		input = pipeToInputStream(bOStream);
-//		bOStream = new ByteArrayOutputStream();
-//		output = new PrintStream(bOStream);
-////		command = new FormatCommand(input, output);
-//		command = new FormatCommand();
-//		args = new String[] {"-c", "txt", alignmentsFileFor(l1SentsFile), alignmentsFileFor(l2SentsFile)};
-//		echoCommand(args);
-//		command.run(args);
-//
-//		computeSentenceNumbersFile(l1SentsFile);
-//		computeSentenceNumbersFile(l2SentsFile);
+		throws AlignerException {
+
+		setupCommandPipe((String)null);
+		AbstractCommand command = new ParseCommand();
+		String[] args = new String[]{"-c", "txt", l1SentsFile, l2SentsFile};
+		String prevCmdOutput = runCommand(command, args);
+
+		setupCommandPipe(prevCmdOutput);
+		command = new ModifyCommand();
+		args = new String[]{"-c", "split-sentence"};
+		prevCmdOutput = runCommand(command, args);
+
+		setupCommandPipe(prevCmdOutput);
+		command = new ModifyCommand();
+		args = new String[] {"-c", "trim"};
+		prevCmdOutput = runCommand(command, args);
+
+		setupCommandPipe(prevCmdOutput);
+		command = new AlignCommand();
+		args = new String[] {"-c", "viterbi", "-a", "poisson", "one-to-one", "-n", "word", "-s", "iterative-band"};
+		prevCmdOutput = runCommand(command, args);
+
+		setupCommandPipe(prevCmdOutput);
+		command = new FormatCommand();
+		args = new String[] {"-c", "txt", alignmentsFileFor(l1SentsFile), alignmentsFileFor(l2SentsFile)};
+		prevCmdOutput = runCommand(command, args);
+
+		computeSentenceNumbersFile(l1SentsFile);
+		computeSentenceNumbersFile(l2SentsFile);
+
+		return;
+	}
+
+	private void setupCommandPipe(String stdinInputString) {
+		StdoutCapture.startCapturing();
+		if (stdinInputString != null) {
+			StdinFeeder.feedString(stdinInputString);
+		}
+		return;
+	}
+
+	private String runCommand(AbstractCommand command, String[] args) throws AlignerException {
+		echoCommand(command, args);
+		String cmdStdout = null;
+		try {
+			command.run(args);
+			cmdStdout = StdoutCapture.stopCapturing();
+			int x = 1;
+		} finally {
+			StdoutCapture.stopCapturing();
+			int x = 1;
+			try {
+				StdinFeeder.stopFeeding();
+			} catch (IOException e) {
+				throw new AlignerException(e);
+			}
+		}
+		return cmdStdout;
 	}
 
 	private void computeSentenceNumbersFile(String origFile) 
@@ -299,7 +302,7 @@ public class Aligner_Maligna {
 		}
 	}
 
-	protected void echoCommand(String[] args) {
-		echo("Running Maligna command: "+String.join(" ", args));
+	protected void echoCommand(AbstractCommand command, String[] args) {
+		System.err.println("Running Maligna command: "+command.getName()+" "+String.join(" ", args));
 	}
 }
