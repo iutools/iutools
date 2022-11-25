@@ -11,11 +11,12 @@ import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 
 public class AssertAlignment_Iter extends Asserter<Iterator<Alignment>>{
 
-	private Integer maxHits = null;
+	private int keepFirstN = 10;
 
 	FrequencyHistogram<String> alignIDsFrequency = new FrequencyHistogram<String>();
 	List<Alignment> firstNAlignments = new ArrayList<Alignment>();
@@ -30,13 +31,13 @@ public class AssertAlignment_Iter extends Asserter<Iterator<Alignment>>{
 		init__AssertAlignment_Iter((Integer)null);
 	}
 
-	private void init__AssertAlignment_Iter(Integer _maxHits) {
-		if (_maxHits == null) {
-			maxHits = 100;
+	private void init__AssertAlignment_Iter(Integer _keepFirstN) {
+		if (_keepFirstN != null) {
+			keepFirstN = _keepFirstN;
 		}
-		Iterator<Alignment> iter = (Iterator<Alignment>) gotObject;
-		while (iter.hasNext() && firstNAlignments.size() < maxHits) {
-			Alignment align = iter.next();
+
+		while (iterator().hasNext() && firstNAlignments.size() < keepFirstN) {
+			Alignment align = iterator().next();
 			alignIDsFrequency.updateFreq(align.getId());
 			firstNAlignments.add(align);
 		}
@@ -44,14 +45,18 @@ public class AssertAlignment_Iter extends Asserter<Iterator<Alignment>>{
 	}
 
 
-	public AssertAlignment_Iter hitsMatchQuery(
-		String sourceLang, String sourceExpr) {
+	public AssertAlignment_Iter topHitsMatch(
+		String sourceLang, String sourceExpr, String targetLang, String[] possibleTranslations) {
 		String sourceExprNormalized = normalizeText(sourceExpr, sourceLang);
 
 		PrettyPrinter pprinter = new PrettyPrinter();
 		int algnCount = 0;
 		for (Alignment anAlignment: firstNAlignments) {
 			algnCount++;
+			if (algnCount > keepFirstN) {
+				// We only check the first few N alignments
+				break;
+			}
 			String failureReason = null;
 			if (!anAlignment.sentences.containsKey(sourceLang)) {
 				failureReason = "did not have a sentence for the source language";
@@ -68,10 +73,23 @@ public class AssertAlignment_Iter extends Asserter<Iterator<Alignment>>{
 					"Normalized Source text : "+sourceTextNormalized
 					;
 			}
+			if (failureReason == null && possibleTranslations != null) {
+				String targetTextNormalized =
+					normalizeText(anAlignment.sentences.get(targetLang), targetLang);
+				String regex = termsRegexp(possibleTranslations, targetLang);
+				if (!targetTextNormalized.matches(regex)) {
+					failureReason =
+						"did not contain any of the possible translations in "+targetLang+".\n'"+
+						"Target lang : "+targetLang+"\n" +
+						"Possible translations regex: "+regex+"\n"+
+						"Normalized target text : "+targetTextNormalized
+						;
+				}
+			}
 			if (failureReason != null) {
 				String mess =
-					"At least one alignment in the first "+maxHits+" "+failureReason+"\n"+
-					"Alignment:\n"+new PrettyPrinter().pprint(anAlignment);
+					"At least one alignment in the first "+ keepFirstN +" "+failureReason+"\n"+
+					"Alignment:\n"+anAlignment;
 				Assert.fail(mess);
 			}
 		}
@@ -79,30 +97,65 @@ public class AssertAlignment_Iter extends Asserter<Iterator<Alignment>>{
 		return this;
 	}
 
+	private String termsRegexp(String[] possibleTranslations, String targetLang) {
+		String regex = null;
+		for (String aTranslation: possibleTranslations) {
+			if (regex != null) {
+				regex += "|";
+			} else {
+				regex = "";
+			}
+			aTranslation = normalizeText(aTranslation, targetLang);
+			String aTranslationRegex = Pattern.quote(aTranslation);
+			aTranslationRegex.replaceAll("\\s+", "\\\\s+");
+			regex += aTranslationRegex;
+		}
+		regex = "^.*("+regex+").*$";
+		return regex;
+	}
+
 	private String normalizeText(String text, String lang) {
-		String normalized = null;
-		if (lang.equals("en")) {
-			normalized = text.toLowerCase();
-		} else {
-			normalized = TransCoder.ensureRoman(text, true);
-			normalized = normalized.toLowerCase();
+		String normalized = text;
+		if (text != null) {
+			if (lang.equals("en")) {
+				normalized = text.toLowerCase();
+			} else {
+				normalized = TransCoder.ensureRoman(text, true);
+				normalized = normalized.toLowerCase();
+			}
 		}
 		return normalized;
 	}
 
 	public AssertAlignment_Iter atLeastNHits(int expMin) {
+		if (expMin > keepFirstN) {
+			// At creation time, we only retrieved the first few elements but
+			// this is less than the expMin we need to veriy.
+			// So retrieve more.
+			while (iterator().hasNext() & firstNAlignments.size() < expMin) {
+				firstNAlignments.add(iterator().next());
+			}
+		}
 		AssertNumber.isGreaterOrEqualTo(
 			"Total number of alignments was too low.",
 			firstNAlignments.size(), expMin);
 		return this;
 	}
 
-
-	public AssertAlignment_Iter atMostNHits(int expMax) {
+	public void atMostNHits(Integer maxHits) {
+		int totalAlignments = firstNAlignments.size();
+		if (iterator().hasNext() && firstNAlignments.size() < maxHits) {
+			// So far, we nay have only retrieved a small sample of the hits a
+			// and this sample is smaller than the maxHits we are trying to verify.
+			// So, retrieve hits until we reach the end.
+			while (iterator().hasNext()) {
+				totalAlignments++;
+				iterator().next();
+			}
+		}
 		AssertNumber.isLessOrEqualTo(
-			"Total number of alignments was too high.",
-			firstNAlignments.size(), expMax);
-		return this;
+			"The iterator contained too many alignments",
+			maxHits, totalAlignments);
 	}
 
 	public void includesTranslation(String l1, String l1Word, String l2,
@@ -137,5 +190,9 @@ public class AssertAlignment_Iter extends Asserter<Iterator<Alignment>>{
 			Assertions.fail(errMess);
 		}
 		return this;
+	}
+
+	protected Iterator<Alignment> iterator() {
+		return (Iterator<Alignment>) gotObject;
 	}
 }

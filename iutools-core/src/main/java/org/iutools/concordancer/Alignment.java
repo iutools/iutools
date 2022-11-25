@@ -141,4 +141,14 @@ public class Alignment extends Document {
 			this.walign4langpair.containsKey(l1+"-"+l2) ||
 			this.walign4langpair.containsKey(l2+"-"+l1));
 	}
+
+	@Override
+	public String toString() {
+		String toS =
+			"["+
+			"en="+sentence4lang("en")+"; "+
+			"iu="+sentence4lang("iu")+"]";
+
+		return toS;
+	}
 }

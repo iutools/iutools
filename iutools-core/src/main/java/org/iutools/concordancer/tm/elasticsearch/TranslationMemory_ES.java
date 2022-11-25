@@ -16,11 +16,9 @@ import org.iutools.concordancer.tm.TranslationMemoryException;
 import org.iutools.corpus.CompiledCorpusException;
 import org.iutools.datastructure.CloseableIteratorChain;
 import org.iutools.elasticsearch.ES;
-import org.iutools.script.TransCoder;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import ca.nrc.datastructure.CloseableIterator;
@@ -97,15 +95,63 @@ public class TranslationMemory_ES extends TranslationMemory {
 	}
 
 	public CloseableIterator<Alignment> search(
-		String sourceLang, String[] sourceExprVariants, String targetLang) throws TranslationMemoryException {
+		String sourceLang, String[] sourceExprVariants, String targetLang)
+		throws TranslationMemoryException {
+		return search(sourceLang, sourceExprVariants, targetLang, (String[])null);
+	}
+
+//	public CloseableIterator<Alignment> search__OLD(
+//		String sourceLang, String[] sourceExprVariants, String targetLang,
+//		String[] withTranslationAmong) throws TranslationMemoryException {
+//		List<CloseableIterator<Alignment>> iterators =
+//			new ArrayList<CloseableIterator<Alignment>>();
+//		try {
+//			for (boolean withAlignment: new boolean[] {true, false}) {
+//				// First look for alignments that have word-level alignments
+//				for (String expr: sourceExprVariants) {
+//					// Then possibly search for syllabics and roman variants
+//					Query query = esQuery(sourceLang, expr, withAlignment, targetLang, withTranslationAmong);
+//					SearchResults<Alignment> searchResult = null;
+//					try {
+//						searchResult = esFactory().searchAPI()
+//							.search(query, ES_ALIGNMENT_TYPE, new Alignment());
+//
+//						CloseableIterator<Alignment> blah = (CloseableIterator<Alignment>) searchResult.docIterator();
+//						iterators.add(searchResult.docIterator());
+//					} catch (ElasticSearchException e) {
+//						throw new TranslationMemoryException(e);
+//					}
+//				}
+//			}
+//		} catch (Exception e) {
+//			throw new TranslationMemoryException(e);
+//		}
+//
+//		CloseableIterator<Alignment> iterator = null;
+//		if (iterators.size() == 1) {
+//			iterator = iterators.get(0);
+//		} else {
+//			iterator =
+//				new CloseableIteratorChain<Alignment>(iterators.get(0), iterators.get(1));
+//		}
+//
+//		return iterator;
+//	}
+
+	public CloseableIterator<Alignment> search(
+		String sourceLang, String[] sourceExprVariants, String targetLang,
+		String[] withTranslationAmong) throws TranslationMemoryException {
 		List<CloseableIterator<Alignment>> iterators =
 			new ArrayList<CloseableIterator<Alignment>>();
 		try {
-			for (boolean withAlignment: new boolean[] {true, false}) {
-				// First look for alignments that have word-level alignments
-				for (String expr: sourceExprVariants) {
+			for (boolean withAlignment: new boolean[] {
+				// Fist, look for alignments that have word-level alignments
+				true,
+				// Then, look for alignments that DON'T have word-level alignments
+				false}) {
+
 					// Then possibly search for syllabics and roman variants
-					Query query = esQuery(sourceLang, expr, withAlignment);
+					Query query = esQuery(sourceLang, sourceExprVariants, withAlignment, targetLang, withTranslationAmong);
 					SearchResults<Alignment> searchResult = null;
 					try {
 						searchResult = esFactory().searchAPI()
@@ -116,7 +162,6 @@ public class TranslationMemory_ES extends TranslationMemory {
 					} catch (ElasticSearchException e) {
 						throw new TranslationMemoryException(e);
 					}
-				}
 			}
 		} catch (Exception e) {
 			throw new TranslationMemoryException(e);
@@ -134,9 +179,19 @@ public class TranslationMemory_ES extends TranslationMemory {
 	}
 
 	private Query esQuery(
-		String sourceLang, String expr, boolean withAlignment) {
+		String sourceLang, String sourceExpr, boolean withAlignment) {
+		return esQuery(sourceLang, new String[] {sourceExpr}, withAlignment, (String)null, (String[])null);
+	}
 
-		String freeformQuery = "sentences." + sourceLang + ":\"" + expr + "\"";
+
+	private Query esQuery__OLD(
+		String sourceLang, String sourceExpr, boolean withAlignment, String targetLang,
+		String[] withTranslationsAmong) {
+
+		String freeformQuery = "+sentences." + sourceLang + ":\"" + sourceExpr + "\"";
+		if (targetLang != null && withTranslationsAmong != null) {
+			freeformQuery += " +sentences." + targetLang + ":\"" + withTranslationsAmong + "\"";
+		}
 		JSONArray must = new JSONArray();
 		must.put(
 			new JSONObject().put("query_string",
@@ -158,6 +213,76 @@ public class TranslationMemory_ES extends TranslationMemory {
 		Query query = new Query(jObj);
 
 		return query;
+	}
+
+	private Query esQuery(
+		String sourceLang, String[] sourceExprVariants, boolean withAlignment, String targetLang,
+		String[] withTranslationsAmong) {
+
+//		String freeformQuery = "+sentences." + sourceLang + ":\"" + sourceExprVariants + "\"";
+//		if (targetLang != null && withTranslationsAmong != null) {
+//			freeformQuery += " +sentences." + targetLang + ":\"" + withTranslationsAmong + "\"";
+//		}
+//
+//		JSONArray must = new JSONArray();
+//		must.put(
+//			new JSONObject().put("query_string",
+//				new JSONObject().put("query", freeformQuery))
+//		);
+//
+//		if (withAlignment) {
+//			must.put(new JSONObject()
+//				.put("exists", new JSONObject()
+//					.put("field", "walign4langpair"))
+//			);
+//		}
+//
+//		JSONObject jObj = new JSONObject()
+//			.put("bool", new JSONObject()
+//				.put("must", must)
+//			);
+
+		JSONArray mustClauses = new JSONArray();
+		mustClauses.put(
+			// Clause for ensuring we have at least one of the source
+			// expression variants
+			esQueryClauses_mustHaveOneOfVariants(sourceLang, sourceExprVariants)
+		);
+		if (withTranslationsAmong != null) {
+			// Clause for ensuring we have at least one of the translation
+			// variants
+			mustClauses.put(
+				esQueryClauses_mustHaveOneOfVariants(targetLang, withTranslationsAmong)
+			);
+		}
+
+		JSONObject queryJObj = new JSONObject()
+			.put("bool", new JSONObject()
+				.put("must", mustClauses)
+			)
+		;
+		Query query = new Query(queryJObj);
+
+
+		return query;
+	}
+
+	private JSONObject esQueryClauses_mustHaveOneOfVariants(String expLang, String[] exprVariants) {
+		JSONArray shouldClauses = new JSONArray();
+		for (String aVariant: exprVariants) {
+			shouldClauses.put(new JSONObject()
+				.put("query_string", new JSONObject()
+					.put("query", "+sentences." + expLang + ":\"" + aVariant + "\"")
+				)
+			);
+		}
+
+		JSONObject jobj = new JSONObject()
+			.put("bool", new JSONObject()
+				.put("should", shouldClauses)
+			);
+
+		return jobj;
 	}
 
 	public void delete() throws TranslationMemoryException {

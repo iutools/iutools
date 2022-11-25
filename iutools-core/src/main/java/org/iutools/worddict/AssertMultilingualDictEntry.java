@@ -5,11 +5,11 @@ import ca.nrc.string.StringUtils;
 import ca.nrc.testing.*;
 import org.iutools.concordancer.tm.WordSpotter;
 import org.iutools.linguisticdata.MorphemeHumanReadableDescr;
-import org.iutools.worddict.MachineGeneratedDict;
 import org.iutools.script.TransCoder;
 import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 
+import java.io.IOException;
 import java.util.*;
 
 public class AssertMultilingualDictEntry extends Asserter<MDictEntry> {
@@ -104,16 +104,32 @@ public class AssertMultilingualDictEntry extends Asserter<MDictEntry> {
 		return this;
 	}
 
-	public AssertMultilingualDictEntry humanTranslationsAre(String... expHumanTranslations) {
-		Assertions.fail("Implement this assertion");
+	public AssertMultilingualDictEntry humanTranslationsAre(String... expHumanTranslations) throws IOException {
+		Set<String> humanTranslations = new HashSet<String>();
+		for (String l1Word: entry().humanTranslations.keySet()) {
+			humanTranslations.addAll(entry().humanTranslations.get(l1Word));
+		}
+		AssertSet.assertEquals(
+			baseMessage+"\nHuman translations not as expected",
+			expHumanTranslations, humanTranslations);
+
 		return this;
 	}
 
 	public AssertMultilingualDictEntry bestTranslationsAreAmong(
 		String... possibleTranslations) throws Exception {
+		return bestTranslationsAreAmong((Set<String>)null, possibleTranslations);
+	}
 
+
+	public AssertMultilingualDictEntry bestTranslationsAreAmong(
+		Set<String> translationWithoutExamples, String... possibleTranslations) throws Exception {
+
+		if (translationWithoutExamples == null) {
+			translationWithoutExamples = new HashSet<String>();
+		}
 		if (possibleTranslations != null) {
-			translationsSanityCheck();
+			translationsSanityCheck(translationWithoutExamples);
 			String otherLang = entry().otherLang();
 			List<String> gotTranslations = entry().bestTranslations;
 			String[] gotTranslationsArr = gotTranslations.toArray(new String[0]);
@@ -159,8 +175,8 @@ public class AssertMultilingualDictEntry extends Asserter<MDictEntry> {
 			);
 
 		String examples = "";
-		if (entry.examples4Translation != null) {
-			List<String[]> iuExamples = entry.examples4Translation.get(l1);
+		if (entry.translationExamplesIndex != null) {
+			List<String[]> iuExamples = entry.translationExamplesIndex.get(l1);
 			if (iuExamples != null) {
 				String txtIUExamples = StringUtils.join(iuExamples.iterator(), "\n");
 				gotScript = TransCoder.textScript(txtIUExamples);
@@ -266,20 +282,21 @@ public class AssertMultilingualDictEntry extends Asserter<MDictEntry> {
 		return this;
 	}
 
-	public AssertMultilingualDictEntry translationsSanityCheck() throws Exception {
+	public AssertMultilingualDictEntry translationsSanityCheck(Set<String> translationWithoutExamples) throws Exception {
 		String[] words = new String[] {entry().word};
 		List<String> translations = entry().bestTranslations;
-		Map<String, List<String[]>> examples = entry().examples4Translation;
 
 		for (String aTranslation: translations) {
-			List<String[]> aTranslExamples = examples.get(aTranslation);
+			List<String[]> aTranslExamples = entry().examples4Translation(aTranslation);
 			String mess = "(aTranslation="+aTranslation+")";
 			Assertions.assertTrue(aTranslExamples != null,
 				"Examples for translation should not have been null "+mess
 				);
-			Assertions.assertTrue(!aTranslExamples.isEmpty(),
-				"Examples for translation should not have been empty "+mess
-			);
+			if (!translationWithoutExamples.contains(aTranslation)) {
+				Assertions.assertTrue(!aTranslExamples.isEmpty(),
+				"Examples for translation should not have been empty " + mess
+				);
+			}
 		}
 
 		return this;

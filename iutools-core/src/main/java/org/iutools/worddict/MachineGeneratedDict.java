@@ -64,6 +64,22 @@ public class MachineGeneratedDict {
 	 */
 	public Integer MIN_REQUIRED_PAIRS_FOR_TRANSLATION = 1;
 
+	/**
+	 * Maximum number of bilingual examples we keep for a given translation.
+	 */
+	public Integer MAX_EXAMPLES_PER_TRANSLATION = 5;
+
+	/**
+	 * If true, then we include human translations as well as machine
+	 * generated translations.
+	 *
+	 * Mostly, we leave it at the default of true, unless we want to
+	 * test or evaluate the dictionary's ability to find machine translation
+	 * without the help of the glossaries.
+	 *
+	 */
+	public boolean includeHumanTranslation = true;
+
 	public CompiledCorpus corpus = null;
 
 	private static final String TAG = "strong";
@@ -432,13 +448,51 @@ public class MachineGeneratedDict {
 
 	private void fillGlossaryEntries(MDictEntry entry, List<String> l1WordsCluster) throws MachineGeneratedDictException {
 		Logger logger = LogManager.getLogger("org.iutools.worddict.MachineGeneratedDict.fillGlossaryEntries");
-		Glossary glossary = Glossary.get();
-		for (String l1Word: l1WordsCluster) {
-			logger.trace("Looking for glossary entries for word: "+l1Word);
-			List<GlossaryEntry> glossEntries = glossary.entries4word(entry.lang, l1Word);
-			entry.addGlossEntries4word(l1Word, glossEntries);
+		if (includeHumanTranslation) {
+			Glossary glossary = Glossary.get();
+			for (String l1Word : l1WordsCluster) {
+				l1Word = l1Word.toLowerCase();
+				logger.trace("Looking for glossary entries for word: " + l1Word);
+				List<GlossaryEntry> glossEntries = glossary.entries4word(entry.lang, l1Word);
+				entry.addGlossEntries4word(l1Word, glossEntries);
+			}
+			fillExamplesForHumanTranslations(entry);
 		}
 		return;
+	}
+
+	private void fillExamplesForHumanTranslations(MDictEntry entry) throws MachineGeneratedDictException {
+		for (String l1Word: entry.humanTranslations.keySet()) {
+			for (String translation: entry.humanTranslations.get(l1Word)) {
+				fillExamplesForTermPair(entry, l1Word, translation);
+			}
+		}
+	}
+
+	private void fillExamplesForTermPair(
+		MDictEntry entry, String l1Word, String translation) throws MachineGeneratedDictException {
+		try (CloseableIterator<Alignment> iter = new TMFactory().makeTM().search(entry.lang, l1Word, entry.otherLang(), translation)) {
+			while (iter.hasNext()) {
+				Alignment alignment = iter.next();
+				SentencePair pair = alignment.sentencePair(entry.lang, entry.otherLang());
+				for (Pair<String,String> langAndExpr: new Pair[]
+					{Pair.of(entry.lang, l1Word), Pair.of(entry.otherLang(), translation)}) {
+					String lang = langAndExpr.getLeft();
+					String expression = langAndExpr.getRight();
+					String origText = pair.getText(lang);
+					String highlightedText =
+						WordSpotter.highlightExpressionDirectly(lang, expression, origText, TAG);
+					pair.setText(lang, highlightedText);
+				}
+				onNewSentencePair(entry, pair, new HashSet<String>(),
+					0, l1Word);
+				if (entry.examples4Translation(translation).size() >= MAX_EXAMPLES_PER_TRANSLATION) {
+					break;
+				}
+			}
+		} catch (Exception e) {
+			throw new MachineGeneratedDictException(e);
+		}
 	}
 
 	private Map<String, CloseableIterator<Alignment>> translationsIteratorsForWords(
@@ -520,7 +574,7 @@ public class MachineGeneratedDict {
 				} else {
 					tLogger.trace("Adding example for translation of word='" + entry.wordRoman + "''" +
 						", l2Translation='" + l2Translation + "'");
-						entry.addBilingualExample(l2Translation, highlightedPair, isForRelatedWord);
+					entry.addBilingualExample(l2Translation, highlightedPair, isForRelatedWord);
 				}
 				entry.addBilingualExample("ALL", highlightedPair, isForRelatedWord);
 				totalPairs++;

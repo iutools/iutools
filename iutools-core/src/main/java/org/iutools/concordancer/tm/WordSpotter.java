@@ -290,7 +290,7 @@ public class WordSpotter {
 		return text;
 	}
 
-	private String highlightExpressionDirectly(
+	public static String highlightExpressionDirectly(
 		String lang, String expr, String inText, String tagName) throws WordSpotterException {
 		if (lang.equals("iu")) {
 			// Make sure expression to highlight is in same script as the

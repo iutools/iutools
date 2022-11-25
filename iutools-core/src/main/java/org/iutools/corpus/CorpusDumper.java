@@ -130,7 +130,7 @@ public class CorpusDumper {
         if (!wordsOnly) {
 				WordInfo wInfo = corpus.info4word(word);
 			  	String[] fieldsToIgnore = new String[] {
-					"additionalFields", "creationDate", "lang", "_detect_language",
+					"additionalFields", "content", "creationDate", "lang", "_detect_language",
 					"shortDescription", "_wordInOtherScript", "_wordRoman",
 					"_wordSyllabic"
 				};
@@ -141,7 +141,7 @@ public class CorpusDumper {
 				}
         }
         try {
-            outputFileWriter.write(infoStr+"\n");
+            outputFileWriter.write(infoStr+"\n\n");
         } catch (IOException e) {
             throw new CompiledCorpusException("Could not write to file:\n  "+
                 outputFile);

@@ -44,14 +44,46 @@ public class MachineGeneratedDictTest {
 
 		// Cases for entry4word function
 		cases_entry4word = new MultilingualDictCase[] {
+
+			// This is a case where the iu word exists in the glossary but
+			// its translation does not appear in the hansard (and it is in fact
+			// wrong: amiq = skin, NOT "Wikipedia Main Page".
+			// Therefore the "human" translation should not have any bilingual examples
+			// which can cause some bugs.
+			//
+			new MultilingualDictCase("iu-word (amiq=skin)", "amiq")
+				.hasGlossaryTranslations("Inuit clothing")
+				.hasDecomp(
+					"amiq/1n")
+				.relatedWordsShouldBeAmong(
+					"amiit", "amingi", "amingit", "amirnik", "amirnit")
+				.noExamplesForTranslations("Wikimedia main page")
+				.hasMinTranslation(5)
+				.hasTranslationsForOrigWord(true)
+				.bestTranslationsAreAmong(
+					"fur", "skin",
+
+					// These are probably translations of "amiq" as a proper name for
+					// a person
+					"amanda","amiq",
+
+					// This one is a bad translation we get from the Wikipedia
+					// glossary
+					"wikimedia main page"
+				)
+				// "Inuit clothing" is a human translation so it should be first
+				.bestTranslationsStartWith("Wikimedia main page")
+				.humanTranslationsAre("Wikimedia main page")
+				.hasMinExamples(5),
+
 			new MultilingualDictCase("iu-word-with-glossary-entry (annuraanik=inuit clothing)", "annuraanik")
 				.hasGlossaryTranslations("Inuit clothing")
-				.setDecomp(
+				.hasDecomp(
 					"annuraaq/1n", "nik/tn-acc-p")
 				.relatedWordsShouldBeAmong(
 					"annuraanginnit", "annuraangit", "annuraanit", "annuraanut",
 					"annuraat")
-				.setMinTranslations(5)
+				.hasMinTranslation(5)
 				.hasTranslationsForOrigWord(true)
 				.bestTranslationsAreAmong(
 					"Inuit clothing", "clothing", "dry clothing", "fashions", "garments",
@@ -60,69 +92,70 @@ public class MachineGeneratedDictTest {
 				// "Inuit clothing" is a human translation so it should be first
 				.bestTranslationsStartWith("Inuit clothing")
 				.humanTranslationsAre("Inuit clothing")
-				.setMinExamples(5),
+				.hasMinExamples(5),
 
 			new MultilingualDictCase("iu-nunaqaqqaaqsimajut (=aboriginal people)", "nunaqaqqaaqsimajut")
-				.setDecomp(
+				.hasDecomp(
 					"nunaqaq/1v", "qqaaq/1vv", "sima/1vv", "jut/tv-ger-3p")
 				.relatedWordsShouldBeAmong(
 					"nunaqaqqaasimajut", "nunaqaqtunik", "nunaqaqtunut", "nunaqaqtut",
   					"nunaqaratta")
-				.setMinTranslations(5)
+				.hasMinTranslation(4)
 				.hasTranslationsForOrigWord(true)
 				.bestTranslationsAreAmong(
 					// Reasonable complete or partial translations
-					"aboriginal people", "aboriginal", "indigenous peoples", "aboriginal ... affairs",
-					"nations",
+					"aboriginal", "aboriginal people", "aboriginal ... affairs",
+				   "indigenous people", "indigenous peoples", "inuit", "nations",
+
 					// These are not translation by they may appear in the list for
 					// some reason
-					"affirmative", "aptn", "tvnc ... apt", "circumpolar"
+					"affirmative"
 				)
-				.setMinExamples(5),
+				.hasMinExamples(5),
 
 			new MultilingualDictCase("iu-ammuumajuq", "ammuumajuq")
-				.setDecomp(
+				.hasDecomp(
 					"ammut/1a", "u/1nv", "ma/1vv", "juq/1vn")
 				.relatedWordsShouldBeAmong(
 					"ammuumajurniartiit", "ammuumajuqtarnirmut",
 					"ammuumajuqtaqtiit", "ammuumajuqtaqtutik",
 					"ammuumajurniarnirmut", "ammuumajuqsiuqtutik")
-				.setMinTranslations(5)
+				.hasMinTranslation(4)
 				.hasTranslationsForOrigWord(false)
 				.bestTranslationsAreAmong(
-					"clam","clam divers", "clam diggers", "clam diving", "clams", "divers")
-				.setMinExamples(5),
+					"clam","clam divers", "clam diggers", "clam digging",
+					"clam diving", "clams", "divers")
+				.hasMinExamples(5),
 
 			new MultilingualDictCase("iu-ammuumajuqsiuqtutik", "ammuumajuqsiuqtutik")
-				.setDecomp(
+				.hasDecomp(
 					"ammut/1a", "u/1nv", "ma/1vv", "juq/1vn", "siuq/1nv",
 					"jusik/tv-ger-2d")
 				.relatedWordsShouldBeAmong(
 					"ammuumajurniartiit", "ammuumajuqtarnirmut",
 					"ammuumajuqtaqtiit", "ammuumajuqtaqtutik",
 					"ammuumajurniarnirmut", "ammuumajuqsiuqtutik")
-				.setMinTranslations(4)
+				.hasMinTranslation(4)
 				.bestTranslationsAreAmong("clam", "clams", "clam diving", "clam ... clams")
-				.setMinExamples(5),
-//				.additionalL2Highlights("clam ... clams", "clam diving"),
+				.hasMinExamples(5),
 
 			new MultilingualDictCase("iu-ᐊᒻᒨᒪᔪᖅᓯᐅᖅᑐᑎᒃ", "ᐊᒻᒨᒪᔪᖅᓯᐅᖅᑐᑎᒃ")
-				.setDecomp(
+				.hasDecomp(
 					"ammut/1a", "u/1nv", "ma/1vv", "juq/1vn", "siuq/1nv",
 					"jusik/tv-ger-2d")
 				.relatedWordsShouldBeAmong(
 					"ᐊᒻᒨᒪᔪᕐᓂᐊᕐᑏᑦ", "ᐊᒻᒨᒪᔪᖅᑕᕐᓂᕐᒧᑦ", "ᐊᒻᒨᒪᔪᖅᑕᖅᑏᑦ", "ᐊᒻᒨᒪᔪᖅᑕᖅᑐᑎᒃ",
 					"ᐊᒻᒨᒪᔪᕐᓂᐊᕐᓂᕐᒧᑦ")
-				.setMinTranslations(4)
+				.hasMinTranslation(4)
 				.bestTranslationsAreAmong("clam", "clams", "clam diving", "clam ... clams")
-				.setMinExamples(2),
+				.hasMinExamples(2),
 
 			// This is an out of vocabulary word
 			new MultilingualDictCase("iu-inuksssuk", "inuksssuk")
 				.setOutOfVocab(true)
 				.hasTranslationsForOrigWord(false)
 				.bestTranslationsAreAmong(new String[0])
-				.setMinExamples(0)
+				.hasMinExamples(0)
 				.relatedWordsShouldBeAmong(new String[]{}),
 
 			// This word has a sentence pair whose word alignments are
@@ -131,8 +164,8 @@ public class MachineGeneratedDictTest {
 				.relatedWordsShouldBeAmong(
 					"umiarjuanut", "umiarjuat", "umiarjuaq", "umiarjuarmut",
 					"umiarjualirijikkut")
-				.setMinExamples(5)
-				.setMinTranslations(5)
+				.hasMinExamples(5)
+				.hasMinTranslation(5)
 				.bestTranslationsAreAmong(new String[]{
 					"barge", "sealift", "ship", "shipped", "shipping", "shipping season",
 					"supply", "marine ... late", "sea cans", "ships", "vessels"}),
@@ -140,17 +173,16 @@ public class MachineGeneratedDictTest {
 			new MultilingualDictCase("iu-kiugavinnga", "kiugavinnga")
 				.relatedWordsShouldBeAmong(
 					"kiujjutit", "kiujjutik", "kiuvan", "kiujjutinga", "kiulugu")
-				.setMinTranslations(5)
+				.hasMinTranslation(5)
 				.bestTranslationsAreAmong(
-					"response", "answer", "answered", "direct answer",
-					"minister ... answer"),
-//				.additionalL2Highlights(),
+					"response", "answer", "answered", "answering ... question",
+					"direct answer", "minister ... answer"),
 
 			new MultilingualDictCase("iu-najugaq", "najugaq")
 				.relatedWordsShouldBeAmong(
 					"najugangani", "najugaujunut", "najuganga", "najugaujumi",
 					"najugauvattunut")
-				.setMinTranslations(5)
+				.hasMinTranslation(5)
 				.bestTranslationsAreAmong(
 					"centres", "facility", "group home", "home", "homes", "units",
 					"residence",
@@ -161,8 +193,8 @@ public class MachineGeneratedDictTest {
 
 			new MultilingualDictCase("en-housing", "housing")
 				.setL1("en")
-				.setDecomp(null)
-				.setMinTranslations(5)
+				.hasDecomp(null)
+				.hasMinTranslation(5)
 				.bestTranslationsAreAmong(
 					"ᐃᓪᓗᐃᑦ", "ᐃᓪᓗᓂᒃ", "ᐃᓪᓗᓕᕆᔨᒃᑯᓐᓄᑦ", "ᐃᓪᓗᓕᕆᔨᓂ", "ᐃᓪᓗᓕᕆᔨᓂᒃ",
 					// Note: These started appearing when we moved from ES to SQL
@@ -174,7 +206,7 @@ public class MachineGeneratedDictTest {
 					// the rest of the translations
 					"ᓄᓇᕗᒻᒥ"
 				)
-				.setMinExamples(5)
+				.hasMinExamples(5)
 				.relatedWordsShouldBeAmong(),
 		};
 	}
@@ -281,6 +313,7 @@ public class MachineGeneratedDictTest {
 		StopWatch sw = new StopWatch().start();
 		System.out.println("Time for different words");
 		for (String aWord: words) {
+			System.out.println("Processing aWord="+aWord);
 			dict.entry4word(aWord);
 			System.out.println("  "+aWord+": "+sw.lapTime()+" msecs");
 		}
@@ -341,20 +374,19 @@ public class MachineGeneratedDictTest {
 
 				asserter
 					.hasTranslationsForOrigWord(aCase.expHasTranslationsForOrigWord)
-					.bestTranslationsAreAmong(expTranslations)
+					.bestTranslationsAreAmong(aCase.translationsWithNoExamples, expTranslations)
 					.atLeastNExamples(aCase.expMinExamples)
 					.highlightsAreSubsetOf(aCase.l1, true, expL1Highlights)
 					.highlightsAreSubsetOf(aCase.l2, expL2Highlights)
 					;
 
-//				if (aCase.expHumanTranslations != null) {
-//					asserter
-//						.bestTranslationsStartWith(
-//							"Best translations should start with the human translations",
-//							aCase.expHumanTranslations)
-//						.humanTranslationsAre(aCase.expHumanTranslations);
-//
-//				}
+				if (aCase.expHumanTranslations != null) {
+					asserter
+						.bestTranslationsStartWith(
+							"Best translations should start with the human translations",
+							aCase.expHumanTranslations)
+						.humanTranslationsAre(aCase.expHumanTranslations);
+				}
 
 				if (aCase.l1.equals("iu")) {
 					asserter.checkWordInOtherScript(aCase.word);
@@ -449,6 +481,7 @@ public class MachineGeneratedDictTest {
 		public Integer expMinTranslations = null;
 		private boolean expHasTranslationsForOrigWord = true;
 		public Integer expMinExamples = 0;
+		public Set<String> translationsWithNoExamples = new HashSet<String>();
 		public boolean outOfVocab = false;
 		private String[] expAdditionalL2Highlights = new String[0];
 
@@ -474,7 +507,7 @@ public class MachineGeneratedDictTest {
 			return this;
 		}
 
-		public MultilingualDictCase setDecomp(String... _expDecomp) {
+		public MultilingualDictCase hasDecomp(String... _expDecomp) {
 			expDecomp = _expDecomp;
 			return this;
 		}
@@ -499,13 +532,18 @@ public class MachineGeneratedDictTest {
 			return this;
 		}
 
-		public MultilingualDictCase setMinTranslations(int _expMinTranslations) {
+		public MultilingualDictCase hasMinTranslation(int _expMinTranslations) {
 			expMinTranslations = _expMinTranslations;
 			return this;
 		}
 
-		public MultilingualDictCase setMinExamples(Integer _expMinExamples) {
+		public MultilingualDictCase hasMinExamples(Integer _expMinExamples) {
 			expMinExamples = _expMinExamples;
+			return this;
+		}
+
+		public MultilingualDictCase noExamplesForTranslations(String... _translationsWithNoExamples) {
+			Collections.addAll(translationsWithNoExamples, _translationsWithNoExamples);
 			return this;
 		}
 

@@ -229,6 +229,11 @@ public class SentencePair {
 	}
 
 	@JsonIgnore
+	public String setText(String lang, String text) {
+		return langText.put(lang, text);
+	}
+
+	@JsonIgnore
 	public Pair<String[], String[]> getCorrespondingTokens(
 		String lang, int start) {
 		return getCorrespondingTokens(lang, start, start);

@@ -65,7 +65,8 @@ public class TranslationMemory_SQL extends TranslationMemory {
 
 	@Override
 	public CloseableIterator<Alignment> search(
-		String sourceLang, String[] sourceExprVariants, String targetLang) throws TranslationMemoryException {
+		String sourceLang, String[] sourceExprVariants, String targetLang,
+		String[] possibleTranslation) throws TranslationMemoryException {
 		Logger logger = LogManager.getLogger("org.iutools.concordancer.tm.sql.TranslationMemory_SQL.searchIter");
 		CloseableIterator<Alignment> iter = null;
 		String sql =

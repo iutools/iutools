@@ -28,9 +28,12 @@ public abstract class TranslationMemory {
 		throws TranslationMemoryException;
 	public abstract void addAlignment(Alignment alignment) throws TranslationMemoryException;
 	public abstract void removeAligmentsFromDoc(String docID) throws CompiledCorpusException;
+//	protected abstract CloseableIterator<Alignment>
+//		search(String sourceLang, String[] sourceExprVariants, String targetLang)
+//		throws TranslationMemoryException;
 	protected abstract CloseableIterator<Alignment>
-		search(String sourceLang, String[] sourceExprVariants, String targetLang)
-		throws TranslationMemoryException;
+		search(String sourceLang, String[] sourceExprVariants,
+			String targetLang, String[] withTranslation) throws TranslationMemoryException;
 	public abstract void delete() throws TranslationMemoryException;
 
 	public static final String DEFAULT_TM_NAME = "iutools_tm";
@@ -64,24 +67,41 @@ public abstract class TranslationMemory {
 	}
 
 	public CloseableIterator<Alignment> search(
-		String sourceLang, String sourceExpr, String targetLang)
+		String sourceLang, String sourceExpr, String targetLang) throws TranslationMemoryException {
+		return search(sourceLang, sourceExpr, targetLang, (String)null);
+	}
+
+	public CloseableIterator<Alignment> search(
+		String sourceLang, String sourceExpr, String targetLang, String withTranslation)
 		throws TranslationMemoryException {
 
 		CloseableIterator<Alignment> iter = new CloseableIteratorWrapper<Alignment>(Collections.emptyIterator());
 		String[] sourceExprVariants = new String[]{sourceExpr};
+		String[] translationVariants = null;
 		try {
 			if (sourceLang.equals("iu")) {
-				// For iu, try the search with both scripts.
+				// For iu, search the source expression in either scripts.
 				// Some of the TMs use roman while others use syllabic
 				sourceExprVariants = new String[]{
-				TransCoder.ensureScript(TransCoder.Script.SYLLABIC, sourceExpr),
-				TransCoder.ensureScript(TransCoder.Script.ROMAN, sourceExpr),
+					TransCoder.ensureScript(TransCoder.Script.SYLLABIC, sourceExpr),
+					TransCoder.ensureScript(TransCoder.Script.ROMAN, sourceExpr),
 				};
+			}
+			if (withTranslation != null) {
+				translationVariants = new String[] {withTranslation};
+				if (targetLang.equals("iu")) {
+					// For iu, search the target expression in either scripts.
+					// Some of the TMs use roman while others use syllabic
+					translationVariants = new String[]{
+						TransCoder.ensureScript(TransCoder.Script.SYLLABIC, withTranslation),
+						TransCoder.ensureScript(TransCoder.Script.ROMAN, withTranslation),
+					};
+				}
 			}
 		} catch (TransCoderException e) {
 			throw new TranslationMemoryException(e);
 		}
-		iter = search(sourceLang, sourceExprVariants, targetLang);
+		iter = search(sourceLang, sourceExprVariants, targetLang, translationVariants);
 
 		return iter;
 	}

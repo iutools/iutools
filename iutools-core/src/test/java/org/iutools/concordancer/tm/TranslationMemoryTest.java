@@ -85,7 +85,6 @@ public abstract class TranslationMemoryTest {
 	@Test
 	public void test__search__VariousCases() throws Exception {
 		Case[] cases = new Case[] {
-
 			new CaseSearch("en-official", "en", "official").setMinHits(1),
 			new CaseSearch("iu-sivuliqpaat-ROMAN", "iu", "sivuliqpaat").setMinHits(1),
 			new CaseSearch("iu-sivuliqpaat-SYLL", "iu", "ᓯᕗᓕᖅᐹᑦ").setMinHits(1),
@@ -97,6 +96,15 @@ public abstract class TranslationMemoryTest {
 			new CaseSearch("iu-word-with-apostrophes (chicken)", "iu", "a'a'aak")
 				// Term "aak" is present, but not "a'a'aak"
 				.setMaxHits(0),
+			new CaseSearch("en-word-with-specific-iu-translations",
+				"en", "speak")
+				.onlyHitsWithTranslation("uqalimaniarama")
+				.setMinHits(1),
+			new CaseSearch("iu-word-with-specific-en-translations",
+				"iu", "uqalimaniarama")
+				.onlyHitsWithTranslation(
+					"speak")
+				.setMinHits(1),
 		};
 
 		Consumer<Case> runner =
@@ -106,13 +114,14 @@ public abstract class TranslationMemoryTest {
 					CaseSearch aCase = (CaseSearch)uncastCase;
 					String sourceLang = aCase.sourceLang;
 					String sourceExpr = aCase.sourceExpr;
+					String searchForHitsWithTranslation = aCase.seachForHitsWithTranslation;
 
 					String targetLang = "iu";
 					if (sourceLang.equals("iu")) {
 						targetLang = "en";
 					}
 					try (CloseableIterator<Alignment> alignsIter =
-						  tm.search(sourceLang, sourceExpr, targetLang)) {
+						tm.search(sourceLang, sourceExpr, targetLang, searchForHitsWithTranslation)) {
 
 						AssertAlignment_Iter asserter =
 							new AssertAlignment_Iter(alignsIter);
@@ -122,8 +131,11 @@ public abstract class TranslationMemoryTest {
 						if (aCase.maxHits != null) {
 							asserter.atMostNHits(aCase.maxHits);
 						}
-						asserter.hitsMatchQuery(sourceLang, sourceExpr)
-						;
+						if (searchForHitsWithTranslation != null) {
+							asserter.topHitsMatch(
+								sourceLang, sourceExpr, targetLang, new String[]{searchForHitsWithTranslation})
+							;
+						}
 					}
 
 				} catch (Exception e) {
@@ -132,7 +144,7 @@ public abstract class TranslationMemoryTest {
 			};
 
 		new RunOnCases(cases, runner)
-//			.onlyCaseNums(6)
+//			.onlyCaseNums(9)
 //			.onlyCasesWithDescr("en-SEARCH-housing")
 			.run();
 
@@ -144,11 +156,17 @@ public abstract class TranslationMemoryTest {
 		public Integer minHits = null;
 		public Integer maxHits = null;
 		public String sourceExpr = null;
+		public String seachForHitsWithTranslation = null;
 
 		public CaseSearch(String _descr, String _sourceLang, String _sourceExpr) {
 			super(_descr, null);
 			this.sourceLang = _sourceLang;
 			this.sourceExpr = _sourceExpr;
+		}
+
+		public CaseSearch onlyHitsWithTranslation(String _withTranslation) {
+			this.seachForHitsWithTranslation = _withTranslation;
+			return this;
 		}
 
 		public CaseSearch setMinHits(Integer _minHits) {

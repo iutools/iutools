@@ -24,10 +24,10 @@ public class CmdDumpCorpus extends ConsoleCommand {
     public void execute() throws Exception {
         UserIO userIO = getUserIO();
         String corpusName = getCorpusName(false);
+        File outputFile = getOutputFile().toFile();
         CompiledCorpus corpus =
             new CompiledCorpusRegistry().getCorpus(corpusName);
         boolean wordsOnly = getWordsOnlyOpt();
-        File outputFile = getDataFile(false);
         new CorpusDumper(corpus)
             .setUserIO(userIO)
             .dump(outputFile, wordsOnly);

@@ -3,6 +3,16 @@
 This document contains information that can be useful for developers working on 
 IUTools.
 
+## Managing linguistic resources (translation memory, dictionary etc...)
+
+IUtools relies on many linguistic resources, namely:
+- Parallel corpora in IU-EN (in particular, the hansard)
+- Human generated glossaries
+
+It is relatively straightforward to modify/expand these 
+resources. See details in the [iutools/doc/for-devs/administering-linguistic-resources.md](./administering-linguistic-resources.md) file.
+
+
 ## Testing
 
 ### Junit tests
@@ -29,7 +39,8 @@ on the server end of things (Java). None of the client-side UI code (JavaScript)
 is covered by JUnit tests.
 
 At the moment, the only way to test the client-side code is to manually test it. 
-The file iutools/doc/test-plan.md provides a fairly. Carryng out the test 
+The file [iutools/doc/for-devs/test-plan.md](./test-plan.md) provides a fairly
+extensive manual test plan. Carryng out the test 
 plan takes about 30 mins.
 
 ### Stress tests
@@ -69,10 +80,6 @@ From a terminal, invoke the following command
 export REPORTS_DIR=/path/to/reports
 rm -rf $REPORTS_DIR; \
 jmeter -g /path/to/testresults.jtl -o $REPORTS_DIR
-      
-
-
-
 
 ## Debugging tips
 
@@ -143,3 +150,4 @@ You can create your own  traces in the code by writing something like this:
     var tracer = Debug.getTraceLogger("WordDictController.onSearch")
     tracer.trace("Hello world");
     tracer.trace("Greetings Universe");
+

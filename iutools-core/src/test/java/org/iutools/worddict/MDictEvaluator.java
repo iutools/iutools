@@ -41,6 +41,13 @@ public class MDictEvaluator {
 
 	public DictEvaluationResults evaluate(
 		Path glossaryPath, Integer stopAfterN, Integer startingAt) throws MachineGeneratedDictException {
+
+		// Since we are using the glossary words as cases for evaluation,
+		// we don't want to allow the dictionary to use the glossaries for
+		// producing translations, as that would be a form of "cheating".
+		//
+		dict.includeHumanTranslation = false;
+
 		DictEvaluationResults results = new DictEvaluationResults();
 		Pair<Integer,Integer> firstLast = minMaxEntryNums(stopAfterN, startingAt);
 		Integer first = firstLast.getLeft();

@@ -313,7 +313,6 @@ public class CLI {
 		SubCommand dumpCorpus =
 				new CmdDumpCorpus("dump_corpus")
 						.addOption(optCorpusName)
-						.addOption(optDataFile)
 						.addOption(optWordsOnly)
 				;
 		mainCmd.addSubCommand(dumpCorpus);
