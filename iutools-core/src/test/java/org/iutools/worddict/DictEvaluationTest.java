@@ -79,7 +79,7 @@ public class DictEvaluationTest {
 			.setTotalGlossaryEntries(556)
 			.setTotalSingleWordIUEntries(465)
 			.setTotalIUPresent(WhatTerm.ORIGINAL, 183)
-			.setTotalIUPresent(WhatTerm.RELATED, 75)
+			.setTotalIUPresent(WhatTerm.RELATED, 74)
 			.setTotalENSpotted_Strict(88)
 			.setTotalENSpotted_Lenient(6)
 			.setTotalENSpotted_LenientOverlap(12)

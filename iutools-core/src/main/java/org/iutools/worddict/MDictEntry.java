@@ -51,12 +51,17 @@ public class MDictEntry {
 	/**
 	 * Sources for human-generated translations.
 	 */
-	public Map<String,List<String>> humanTranslationSources =
-		new HashMap<String,List<String>>();
+	public Map<String,Set<String>> humanTranslationSources =
+		new HashMap<String,Set<String>>();
 
 	/** Provides translations for diffferent l1 words. These may be the original
 	   word or related words */
-	public Map<String,List<String>> translations4word = new HashMap<String,List<String>>();
+	public Map<String,List<String>> translations4l1Word = new HashMap<String,List<String>>();
+
+
+	/** Provides translations for diffferent l2 words. These may be the original
+	   word or related words */
+	public Map<String,Set<String>> translations4l2Word = new HashMap<String,Set<String>>();
 
 	/** Provides bilingual examples for an L1 word and its L2 translation. The L1
 	   word may be the original word, or one of the related words.
@@ -77,12 +82,14 @@ public class MDictEntry {
 
 	public String[] relatedWords = new String[0];
 
+	TermNormalizer termNormalizer = new TermNormalizer();
+
 	/**
-	 * Normalisation of the various terms (input word, related words, translations).
-	 * If the term is IU, then its normalization is in the same script as the input term
-	 * If the term is EN then its normalization is lowercased
+	 * Index of how terms in different languages were normalized for inclusion
+	 * in the various Maps and Lists used internally by the WordEntry.
 	 */
-	public Map<String,Map<String,String>> normalizedTerms = new HashMap<String,Map<String,String>>();
+	public Map<String, Map<String, String>> normalizedTerms;
+
 
 	public static void assertIsSupportedLanguage(String lang) throws MachineGeneratedDictException {
 		if (!lang.matches("^(en|iu)$")) {
@@ -116,7 +123,7 @@ public class MDictEntry {
 	public void setWord(String _word) throws MachineGeneratedDictException {
 		this.word = _word;
 		try {
-			if (word != null) {
+			if (word != null && lang.equals("iu")) {
 				inScript = TransCoder.textScript(word);
 				wordSyllabic = TransCoder.ensureScript(Script.SYLLABIC, word);
 				wordRoman = TransCoder.ensureScript(Script.ROMAN, word);
@@ -169,32 +176,71 @@ public class MDictEntry {
 		return convertedText;
 	}
 
-	/**
-	 * Normalize a term.
-	 *   1. If it's in IU, make sure it is in the same script as the entry's input term
-	 *   2. If it's in EN, lowercase it
-	 *
-	 * Typically used when you want to use the term as a key in a Map.
-	 */
-	private String normalizeTerm(String term, String termLang) throws MachineGeneratedDictException {
-		String normalized = term;
-		if (term != null) {
-			if (normalizedTerms.get(termLang).containsKey(term)) {
-				normalized = normalizedTerms.get(termLang).get(term);
-			} else {
-				if (termLang.equals("iu") && this.lang.equals("iu")) {
-					try {
-						normalized = inSameScriptAsInputWord(term);
-					} catch (MachineGeneratedDictException e) {
-						throw new MachineGeneratedDictException(e);
-					}
-				} else {
-					normalized = term.toLowerCase();
-				}
-				normalizedTerms.get(termLang).put(term, normalized);
-			}
+	public String normalizeTerm(String term, String termLang) throws MachineGeneratedDictException {
+		try {
+			return termNormalizer.normalize(term, termLang, inScript);
+		} catch (TermNormalizerException e) {
+			throw new MachineGeneratedDictException(e);
 		}
-		return normalized;
+	}
+
+	/** Ensure that the normalizedTerms table has an entry for all
+	 * terms used in the entry */
+	public void includeNormalizationForAllTerms() throws MachineGeneratedDictException {
+		try {
+			// Normalize individual terms in the SOURCE language
+			for (String aTerm: new String[] {
+				word, wordInOtherScript, wordRoman, wordSyllabic}) {
+				termNormalizer.normalize(aTerm, lang, inScript);
+				if (lang.equals("iu")) {
+					String aTermOtherScript = TransCoder.inOtherScript(aTerm);
+					termNormalizer.normalize(aTermOtherScript, lang, inScript);
+				}
+			}
+
+			// Normalize arrays of individual terms in the SOURCE language
+			for (String[] termArray: new String[][] {
+				relatedWords}) {
+				for (String aTerm: termArray) {
+					termNormalizer.normalize(aTerm, lang, inScript);
+					if (lang.equals("iu")) {
+						String aTermOtherScript = TransCoder.inOtherScript(aTerm);
+						termNormalizer.normalize(aTermOtherScript, lang, inScript);
+					}
+				}
+			}
+
+			// Normalize lists of terms in the TARGET language
+			for (List<String> aTermsList: new List[] {
+				bestTranslations}) {
+				for (String aTerm: aTermsList) {
+					termNormalizer.normalize(aTerm, otherLang());
+					if (otherLang().equals("iu")) {
+						String aTermOtherScript = TransCoder.inOtherScript(aTerm);
+						termNormalizer.normalize(aTermOtherScript, otherLang(), inScript);
+					}
+
+				}
+			}
+
+			// Normalize maps whose keys are lists of TARGET language terms
+			for (Map<String,List<String>> aMap: new Map[] {
+				humanTranslations}) {
+				for (Map.Entry<String, List<String>> anEntry: aMap.entrySet()) {
+					List<String> l2Terms = anEntry.getValue();
+					for (String aTerm: l2Terms) {
+						termNormalizer.normalize(aTerm, otherLang(), inScript);
+						if (otherLang().equals("iu")) {
+							String aTermOtherScript = TransCoder.inOtherScript(aTerm);
+							termNormalizer.normalize(aTermOtherScript, otherLang(), inScript);
+						}
+					}
+				}
+			}
+
+		} catch (TermNormalizerException | TransCoderException e) {
+			throw new MachineGeneratedDictException(e);
+		}
 	}
 
 
@@ -210,25 +256,34 @@ public class MDictEntry {
 	}
 
 	private void addHumanTranslations(
-		String word, List<String> translations, String source) {
+		String word, List<String> translations, String source) throws MachineGeneratedDictException {
 		if (!humanTranslations.containsKey(word)) {
 			humanTranslations.put(word, new ArrayList<String>());
 		}
 		if (!humanTranslationSources.containsKey(word)) {
-			humanTranslationSources.put(word, new ArrayList<String>());
+			humanTranslationSources.put(word, new HashSet<String>());
 		}
 		for (String aTranslation: translations) {
+			if (!humanTranslations.containsKey(aTranslation)) {
+				humanTranslations.put(aTranslation, new ArrayList<String>());
+			}
+			if (!humanTranslationSources.containsKey(aTranslation)) {
+				humanTranslationSources.put(aTranslation, new HashSet<String>());
+			}
+
 			humanTranslations.get(word).add(aTranslation);
 			if (!bestTranslations.contains(aTranslation)) {
 				bestTranslations.add(aTranslation);
 			}
 			humanTranslationSources.get(word).add(source);
+			humanTranslationSources.get(aTranslation).add(source);
+			addTranslation4Word(word, aTranslation);
 		}
 	}
 
 	public void addGlossarySource(String translation,  String glossSource) {
 		if (!humanTranslationSources.containsKey(translation)) {
-			humanTranslationSources.put(translation, new ArrayList<String>());
+			humanTranslationSources.put(translation, new HashSet<String>());
 		}
 		humanTranslationSources.get(translation).add(glossSource);
 	}
@@ -261,8 +316,7 @@ public class MDictEntry {
 		assertIsSupportedLanguage(this.lang);
 		setLang(_lang);
 		setWord(_word);
-		normalizedTerms.put("iu", new HashMap<String,String>());
-		normalizedTerms.put("en", new HashMap<String,String>());
+		this.normalizedTerms = termNormalizer.normalizedTerms();
 	}
 
 	public MDictEntry setDecomp(String[] morphemes) throws MachineGeneratedDictException {
@@ -299,9 +353,9 @@ public class MDictEntry {
 	}
 
 	public boolean hasTranslationsForOriginalWord() {
-		boolean answer = translations4word.containsKey(word);
+		boolean answer = translations4l1Word.containsKey(word);
 		if (!answer && lang.equals("iu")) {
-			answer = translations4word.containsKey(wordInOtherScript);
+			answer = translations4l1Word.containsKey(wordInOtherScript);
 		}
 		return answer;
 	}
@@ -352,7 +406,7 @@ public class MDictEntry {
 	}
 
 	private boolean hasTranslationForWord(String l1Word) throws MachineGeneratedDictException {
-		boolean answer = translations4word.containsKey(l1Word);
+		boolean answer = translations4l1Word.containsKey(l1Word);
 		if (!answer && lang.equals("iu")) {
 			String l1WordOtherScript = null;
 			try {
@@ -360,24 +414,38 @@ public class MDictEntry {
 			} catch (TransCoderException e) {
 				throw new MachineGeneratedDictException(e);
 			}
-			answer = translations4word.containsKey(l1WordOtherScript);
+			answer = translations4l1Word.containsKey(l1WordOtherScript);
 		}
 		return answer;
 	}
 
-	public void addTranslations4Word(String l1Word, List<String> translations) throws MachineGeneratedDictException {
+	public void addTranslations4Word(String l1Word, List<String> newTranslations) throws MachineGeneratedDictException {
 		if (lang.equals("iu")) {
 			l1Word = normalizeTerm(l1Word, lang);
 			try {
-				TransCoder.ensureScript(inScript, translations);
+				TransCoder.ensureScript(inScript, newTranslations);
 			} catch (TransCoderException e) {
 				throw new MachineGeneratedDictException(e);
 			}
 		}
-		if (!translations4word.containsKey(l1Word)) {
-			translations4word.put(l1Word, new ArrayList<String>());
+		if (!translations4l1Word.containsKey(l1Word)) {
+			translations4l1Word.put(l1Word, new ArrayList<String>());
 		}
-		translations4word.get(l1Word).addAll(translations);
+		List<String> existingTranslations = translations4l1Word.get(l1Word);
+		for (String aTranslation: newTranslations) {
+			aTranslation = normalizeTerm(aTranslation, otherLang());
+			if (!translations4l2Word.containsKey(aTranslation)) {
+				translations4l2Word.put(aTranslation, new HashSet<String>());
+			}
+			Set<String> existingReverseTranslations = translations4l2Word.get(aTranslation);
+			if (!aTranslation.equals("ALL")) {
+				if (!existingTranslations.contains(aTranslation)) {
+					existingTranslations.add(aTranslation);
+				}
+				existingReverseTranslations.add(l1Word);
+			}
+		}
+		return;
 	}
 
 	public void addTranslation4Word(String l1Word, String translation) throws MachineGeneratedDictException {
@@ -388,7 +456,7 @@ public class MDictEntry {
 
 	public boolean translationsInclude(String l1Word, String translation) throws MachineGeneratedDictException {
 		l1Word = normalizeTerm(l1Word, lang);
-		List<String> translations = translations4word.get(l1Word);
+		List<String> translations = translations4l1Word.get(l1Word);
 		// To speed up, check if the list of translations is empty before
 		// possibly transcoding the translation
 		//
@@ -486,7 +554,6 @@ public class MDictEntry {
 				bestTranslations =
 					pruneTranslations(
 						bestTranslations, maxTranslations, minRequiredPairs);
-
 			}
 		} catch (RuntimeException e) {
 			throw new MachineGeneratedDictException(e);
@@ -688,17 +755,17 @@ public class MDictEntry {
 				new List[] {bestTranslations}) {
 				CollectionTranscoder.transcodeList(script, translations);
 			}
-			for (String enWord: this.translations4word.keySet()) {
-				List<String> enWordTranslations = this.translations4word.get(enWord);
+			for (String enWord: this.translations4l1Word.keySet()) {
+				List<String> enWordTranslations = this.translations4l1Word.get(enWord);
 				CollectionTranscoder.transcodeList(script, enWordTranslations);
-				this.translations4word.put(enWord, enWordTranslations);
+				this.translations4l1Word.put(enWord, enWordTranslations);
 			}
 		} else {
 			// Input word is iu and its translations are en
 			try {
 				// Transcode keys of the map that provides en translations for each
 				// iu related word.
-				CollectionTranscoder.transcodeKeys(script, this.translations4word);
+				CollectionTranscoder.transcodeKeys(script, this.translations4l1Word);
 			} catch (TransCoderException e) {
 				throw new MachineGeneratedDictException(e);
 			}

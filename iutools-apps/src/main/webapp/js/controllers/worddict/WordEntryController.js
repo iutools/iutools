@@ -106,23 +106,22 @@ class WordEntryController extends IUToolsController {
 		return jsonInputs;
 	}
 
-	displayWordEntry(results) {
+	displayWordEntry(result) {
 		var tracer = Debug.getTraceLogger('WordEntryController.displayWordEntry');
-		tracer.trace("results="+jsonStringifySafe(results));
-		var lang = results.lang;
-		var otherLang = results.otherLang;
+		tracer.trace("results="+jsonStringifySafe(result));
+		var lang = result.lang;
+		var otherLang = result.otherLang;
 
 		// Change the word being looked up in order to add its
         // transcoding in the other script
-        // this.displayWordBeingLookedUp()
-        var wordEntry = results.queryWordEntry;
+        var wordEntryData = (result.queryWordEntry == null ? null: new WordEntryData(result.queryWordEntry));
         var word = null; var wordInOtherScript = null;
-        if (wordEntry != null) {
-            word = wordEntry.word; wordInOtherScript = wordEntry.wordInOtherScript;
+        if (wordEntryData != null) {
+            word = wordEntryData.word; wordInOtherScript = wordEntryData.wordInOtherScript;
         }
 		this.displayWordBeingLookedUp(word, wordInOtherScript);
         var html = null;
-        if (wordEntry == null) {
+        if (wordEntryData == null) {
             html = "No entry found for this word";
         } else {
             html =
@@ -130,10 +129,10 @@ class WordEntryController extends IUToolsController {
                 "  <a href='help.jsp?topic=about_dictionary' target='#iutools_help'></a>\n" +
                 "</div>";
 
-            html += this.htmlTranslations(wordEntry, otherLang);
-            html += this.htmlRelatedWords(wordEntry, lang);
-            html = this.htmlMorphologicalAnalyses(wordEntry, lang, html);
-            html += this.htmlAlignmentsByTranslation(wordEntry, lang, otherLang);
+            html += this.htmlTranslations(wordEntryData, otherLang);
+            html += this.htmlRelatedWords(wordEntryData, lang);
+            html = this.htmlMorphologicalAnalyses(wordEntryData, lang, html);
+            html += this.htmlExamplesByTranslation(wordEntryData, lang, otherLang);
         }
         this.windowController.setBody(html);
         this.attachWordLookupListeners();
@@ -146,25 +145,25 @@ class WordEntryController extends IUToolsController {
         var heading = this.langName(otherLang)+" Translations"
 
 
-        var info = this.translationsInfo(wordEntry);
-        tracer.trace("info.areRelatedTranslations="+info.areRelatedTranslations);
-        if (info.areRelatedTranslations) {
+        if (wordEntry.translationsAreForRelatedWords()) {
             heading = heading+" (Related words only)"
         }
         var html = "<h3>"+heading+"</h3>\n";
 
-        var examples = info.examples;
+        var examples = wordEntry.examples4Translation;
 
         var totalTranslationsDisplayed = 0;
         var totalL1WordsDisplayed = 0;
-        for (var ii=0; ii < info.l1Words.length; ii++) {
-            var l1Word = info.l1Words[ii];
-            var wordTranslations = info.translation4word[l1Word];
+        if (wordEntry.translationsAreForRelatedWords()) {}
+        var l1Words = wordEntry.l1Words();
+        for (var ii=0; ii < l1Words.length; ii++) {
+            var l1Word = l1Words[ii];
+            var wordTranslations = wordEntry.getTranslations4l1Word(l1Word);
             if (wordTranslations == null || typeof wordTranslations == 'undefined') {
                 continue;
             }
 
-            if (info.areRelatedTranslations) {
+            if (wordEntry.translationsAreForRelatedWords()) {
                 if (ii > 0) {
                     html += "<br/>\n";
                 }
@@ -173,11 +172,17 @@ class WordEntryController extends IUToolsController {
             totalL1WordsDisplayed++;
             tracer.trace("ii="+ii+", l1Word="+l1Word+", wordTranslations="+wordTranslations);
 
+            var isFirst = true;
             for (var jj=0; jj < wordTranslations.length; jj++) {
-                if (jj > 0) {
+                var aTranslation = wordTranslations[jj];
+                if (!wordEntry.bestTranslations.includes(aTranslation)) {
+                    continue;
+                }
+                if (!isFirst) {
                     html += "; ";
                 }
-                html += this.htmlTranslationWord(wordTranslations[jj]);
+                html += this.htmlTranslationWord(wordTranslations[jj], wordEntry);
+                isFirst = false;
                 totalTranslationsDisplayed++;
             }
         }
@@ -189,89 +194,13 @@ class WordEntryController extends IUToolsController {
         return html;
     }
 
-    htmlTranslationWord(word) {
+    htmlTranslationWord(word, wordEntry) {
+        if (wordEntry.isHumanTranslation(word)) {
+            word = "<b>" + word + "</b>";
+        }
         var html = "<a href=\"#examples4_"+word+"\">"+word+"</a>";
         return html;
     }
-
-    translationsInfo(wordEntry) {
-        var tracer = Debug.getTraceLogger('WordEntryController.translationsInfo');
-        tracer.trace("wordEntry="+jsonStringifySafe(wordEntry));
-
-        var info = {
-            allTranslations: wordEntry.bestTranslations,
-            areRelatedTranslations: this.translationAreForRelatedWords(wordEntry),
-            translation4word: wordEntry.translations4word,
-            examples: wordEntry.examples4Translation
-        };
-        if (info.areRelatedTranslations) {
-            info.l1Words = wordEntry.relatedWords;
-        } else {
-            info.l1Words = [wordEntry.word];
-        }
-
-        // if (wordEntry.examplesForOrigWordTranslation != null
-        //     && Object.keys(wordEntry.examplesForOrigWordTranslation).length > 0) {
-        //     // We have some translations for the actual word
-        //     tracer.trace("We HAVE translations for the query word");
-        //     // info.l1Words = [wordEntry.word];
-        //     // info.translation4word[wordEntry.word] = wordEntry.origWordTranslations;
-        //     // info.allTranslations = wordEntry.origWordTranslations;
-        //     // info.examples = wordEntry.examplesForOrigWordTranslation;
-        //     this.setTranslationInfo_origWord(info, wordEntry);
-        // } else {
-        //     // We only have translations for related words
-        //     tracer.trace("We have NO translations for the query word");
-        //     this.setTranslationInfo_relatedWords(info, wordEntry);
-        // }
-
-        tracer.trace("Returning info="+jsonStringifySafe(info));
-        return info;
-    }
-
-    translationAreForRelatedWords(wordEntry) {
-        var isForRelatedWords = true;
-        for (var word in wordEntry.translations4word) {
-            if (word === wordEntry.word || word === wordEntry.wordInOtherScript) {
-                isForRelatedWords = false;
-                break;
-            }
-        }
-        return isForRelatedWords
-    }
-
-    setTranslationInfo_origWord(info, wordEntry) {
-        info.l1Words = [wordEntry.word];
-        info.translation4word[wordEntry.word] = wordEntry.origWordTranslations;
-        info.allTranslations = wordEntry.origWordTranslations;
-        info.examples = wordEntry.examplesForOrigWordTranslation;
-    }
-
-    setTranslationInfo_relatedWords(info, wordEntry) {
-        var tracer = Debug.getTraceLogger('WordEntryController.setTranslationInfo_relatedWords');
-        tracer.trace("wordEntry="+jsonStringifySafe(wordEntry));
-        info.areRelatedTranslations = true;
-        info.l1Words = wordEntry.relatedWords;
-        info.allTranslations = [];
-        // info.examples = wordEntry.examplesForRelWordsTranslation;
-        info.examples = wordEntry.translations4word;
-        var relWords = wordEntry.relatedWords;
-        for (var ii=0; ii < relWords.length; ii++) {
-            var aRelWord = relWords[ii];
-            var aRelWordTranslations = wordEntry.translations4word[aRelWord];
-            tracer.trace("For aRelWord="+aRelWord+", aRelWordTransl="+jsonStringifySafe(aRelWordTranslations))
-            if (aRelWordTranslations == null) {continue;}
-            info['translation4word'][aRelWord] = aRelWordTranslations;
-            for (var jj = 0; jj < aRelWordTranslations.length; jj++) {
-                var aTransl = aRelWordTranslations[jj];
-                if (aTransl == "ALL") {continue;}
-                if (!info.allTranslations.includes(aTransl)) {
-                    info.allTranslations.push(aTransl);
-                }
-            }
-        }
-    }
-
 
     langName(langCode) {
         var name = langCode;
@@ -335,31 +264,26 @@ class WordEntryController extends IUToolsController {
 		return html;
 	}
 
-    htmlAlignmentsByTranslation(wordEntry, lang, otherLang) {
+    htmlExamplesByTranslation(wordEntry, lang, otherLang) {
         var tracer = Debug.getTraceLogger('WordEntryController.htmlAlignmentsByTranslation');
         tracer.trace("wordEntry="+jsonStringifySafe(wordEntry));
         var html = "";
-        var trInfoNew = this.translationsInfo(wordEntry);
-
-        tracer.trace("trInfoNew="+jsonStringifySafe(trInfoNew));
-        var allTranslations = trInfoNew.allTranslations;
-        tracer.trace("allTranslations="+jsonStringifySafe(allTranslations));
-        var translation2alignments = trInfoNew.examples;
+        tracer.trace("wordEntry.bestTranslations="+jsonStringifySafe(wordEntry.bestTranslations));
 
         var heading = "Examples of use";
-        if (trInfoNew.areRelatedTranslations) {
+        if (wordEntry.translationsAreForRelatedWords()) {
             heading += " (for related words)";
         }
 		html += "<h3>"+heading+"</h3>\n";
 
-        if (allTranslations != null && allTranslations.length > 0) {
+        if (wordEntry.bestTranslations != null && wordEntry.bestTranslations.length > 0) {
             html += "<div class=\"accordion\" id=\"accordion\">\n";
-		    for (var ii=0; ii < allTranslations.length; ii++) {
-		        var aTranslation = allTranslations[ii];
-		        var translAlignments = translation2alignments[aTranslation];
+		    for (var ii=0; ii < wordEntry.bestTranslations.length; ii++) {
+		        var aTranslation = wordEntry.bestTranslations[ii];
+		        var translAlignments = wordEntry.translationExamplesIndex[aTranslation];
 		        html +=
-                    this.htmlAlignments4Translation(
-		                aTranslation, translAlignments, lang, otherLang);
+                    this.htmlExamples4Translation(
+		                aTranslation, translAlignments, lang, otherLang, wordEntry);
             }
             html += "</div>\n";
 		} else {
@@ -369,8 +293,8 @@ class WordEntryController extends IUToolsController {
 		return html;
 	}
 
-    htmlAlignments4Translation(aTranslation, aTransAlignments, lang, otherLang) {
-        var tracer = Debug.getTraceLogger('WordEntryController.htmlAlignments4Translation');
+    htmlExamples4Translation(aTranslation, aTransAlignments, lang, otherLang, wordEntry) {
+        var tracer = Debug.getTraceLogger('WordEntryController.htmlExamples4Translation');
         tracer.trace("aTranslation="+aTranslation+", aTransAlignments="+jsonStringifySafe(aTransAlignments));
         var html = ""
         // html += "<a name='examples4_"+aTranslation+"'/>\n";
@@ -379,19 +303,42 @@ class WordEntryController extends IUToolsController {
             "<div>\n"+
             "<p>\n"
             ;
-        html += '<table id="tbl-alignments" class="alignments"><th>'+this.langName(lang)+'</th><th>'+this.langName(otherLang)+'</th></tr>';
+
+        // First, show the glossary sources if any available
+        html += this.htmlGlossaryReference(aTranslation, wordEntry);
+
         if (aTransAlignments != null && aTransAlignments.length > 0) {
+            html += '<table id="tbl-alignments" class="alignments"><th>'+this.langName(lang)+'</th><th>'+this.langName(otherLang)+'</th></tr>';
             for (var jj=0; jj < aTransAlignments.length; jj++) {
                 var anAlignment = aTransAlignments[jj];
                 html += '<tr><td>'+anAlignment[0]+'</td><td>'+anAlignment[1]+'</td></tr>';
             }
+            html += "</table>\n";
+        } else {
+            html += "No examples found for this translation"
         }
         html +=
-            '' +
-            "</table>\n"+
             "</p>\n"+
             "</div>\n";
 
+        return html;
+    }
+
+    htmlGlossaryReference(aTranslation, wordEntry) {
+        var html = "";
+        if (wordEntry.isHumanTranslation(aTranslation)) {
+            html += "c.f. ";
+            var isFirst = true;
+            var glossaries = wordEntry.glossarySource4word(aTranslation, wordEntry.otherLang())
+            for (const glossaryName of glossaries) {
+                if (!isFirst) {
+                    html += ", "
+                }
+                isFirst = false;
+                html += glossaryName;
+            }
+            html += "\n<p/>\n";
+        }
         return html;
     }
 

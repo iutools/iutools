@@ -300,6 +300,20 @@ public class MachineGeneratedDictTest {
 	}
 
 	@Test
+	public void test__entry4word__InputWordIsEN() throws Exception {
+		MDictEntry entry =
+			new MachineGeneratedDict().entry4word("project", "en");
+		new AssertMDictEntry(entry)
+			.isForWord("project")
+			// For EN terms, we shouldn't be setting the various fields related
+			// to the different IU scripts
+			.wordInOtherScriptIs(null)
+			.wordRomanIs(null)
+			.wordSyllIs(null)
+		;
+	}
+
+	@Test
 	public void test__entry4word__SpeedTest(TestInfo testInfo) throws Exception {
 		String[] words = new String[] {
 			// All of these words have direct translations

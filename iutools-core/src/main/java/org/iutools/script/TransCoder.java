@@ -45,7 +45,7 @@ public class TransCoder {
 		return ensureScript(otherScript, text);
 	}
 
-	private static Script otherScriptThan(Script script) {
+	public static Script otherScriptThan(Script script) {
 		Script otherScript = Script.SYLLABIC;
 		if (script == Script.SYLLABIC) {
 			otherScript = Script.ROMAN;

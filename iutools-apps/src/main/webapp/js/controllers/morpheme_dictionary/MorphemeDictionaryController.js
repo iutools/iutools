@@ -198,6 +198,7 @@ class MorphemeDictionaryController extends IUToolsController {
 			isValid = false;
 			this.error("You need to enter something in the morpheme field");
 		}
+        var nbExamples = this.elementForProp("inpNbExamples").val().trim();
         var parsed = parseInt(nbExamples, 10);
         if (isNaN(parsed)) {
             isValid = false;

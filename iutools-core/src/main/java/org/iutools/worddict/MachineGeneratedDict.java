@@ -192,6 +192,8 @@ public class MachineGeneratedDict {
 			throw new MachineGeneratedDictException(e);
 		}
 
+		entry.includeNormalizationForAllTerms();
+
 		return entry;
 	}
 
@@ -453,7 +455,9 @@ public class MachineGeneratedDict {
 			for (String l1Word : l1WordsCluster) {
 				l1Word = l1Word.toLowerCase();
 				logger.trace("Looking for glossary entries for word: " + l1Word);
-				List<GlossaryEntry> glossEntries = glossary.entries4word(entry.getLang(), l1Word);
+				List<GlossaryEntry> glossEntries =
+					glossary.entries4word(entry.getLang(),
+						entry.normalizeTerm(l1Word, entry.getLang()));
 				entry.addGlossEntries4word(l1Word, glossEntries);
 			}
 			fillExamplesForHumanTranslations(entry);

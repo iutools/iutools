@@ -88,7 +88,7 @@ public class Glossary {
 	}
 
 	private String keyFor(String lang, String term) {
-		return lang+":"+term;
+		return lang+":"+term.toLowerCase();
 	}
 
 	public List<GlossaryEntry> entries4word(String lang, String word) {

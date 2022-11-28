@@ -3,10 +3,7 @@ package org.iutools.script;
 import ca.nrc.datastructure.Cloner;
 import org.iutools.worddict.MachineGeneratedDictException;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /** Use this class to transcode collections */
 public class CollectionTranscoder {
@@ -83,6 +80,21 @@ public class CollectionTranscoder {
 			}
 			coll.set(ii, transcoded);
 		}
+	}
+
+	public static Set<String> transcodeSet(
+		TransCoder.Script script, Set<String> origSet) throws MachineGeneratedDictException {
+		Set<String> transcodedSet = new HashSet<String>();
+		for (String elt: origSet) {
+			String transcoded = null;
+			try {
+				transcoded = TransCoder.ensureScript(script, elt);
+			} catch (TransCoderException e) {
+				throw new MachineGeneratedDictException(e);
+			}
+			transcodedSet.add(transcoded);
+		}
+		return transcodedSet;
 	}
 
 	public static void transcodeArray(

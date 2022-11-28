@@ -30,15 +30,26 @@ Basic scenario
     - Inuktitut text for the bilingual examples (which at the moment are always in latin)
   - There is a decomp displayed (unless the specific scenario expects the word 
     to be undecomposable)
-  - There are some translations displyayed, including some that are relevant for 
+  - There are some translations displayed, including some that are relevant for 
     that specific scenario.
     - The translations are in other language than the QUERY_LANGUAGE
+    - In some cases, we expect some of the translations to come from a 
+      human-generated glossary (ex: wikipedia)
+      - In that case, the human-generated translations should come FIRST and they 
+        should be in BOLD.
   - There are some related words
-  - There are some bilingual Examples of use
-    - The QUERY_LANGUAGE appears on the left and the other langauge on the right
-    - The names of the languages shown in the table header correspond are set 
-      accordingly.
-    - Highlighting is ok on both sides
+  - There are some Examples of use
+    - In cases where the translation is human-generated, there 
+      should be a line listing the sources where this translation was found 
+      - ex: cf wikipedia
+    - In this section, there will almost always be a list of bilingual examples 
+      of use. _Note:_ for human-generated translations, it could be that there that no 
+      bilingual examples of use were found.
+      - Make sure that:
+        - The QUERY_LANGUAGE appears on the left and the other langauge on the right
+        - The names of the languages shown in the table header correspond are set 
+          accordingly.
+        - Highlighting is ok on both sides
 - Click on one of the other words in the hit list
   - Check its word entry
 - Click on one of the Related words and make sure the content of 
@@ -57,6 +68,8 @@ Latin query:
     - Translations include 'clams' and 'divers'
 
 Latin query - Capitalized words:
+- __BUG:__ As of 2022-11-30, the examples section for Nunavut says "No examples found"
+  - But the section for 'nunavut' (lowercase) does show some examples.
 - Do the steps described in the 'basic scenario' with following specifics
     - QUERY_WORD: 'Nunavut'
     - QUERY_LANGUAGE: Leave it at Inuktitut 
@@ -89,6 +102,83 @@ English query - Multi word
   - PREFERRED_SCRIPT: Roman
   - At the moment, it's 'normal' that the list of hits only shows the
     expression 'healthcare coverage'
+
+IU word with Glossary Entry - Roman Input - Roman Output
+- Do the steps described in the 'basic scenario' with English word 'education', 
+  with the following 'specifics':
+  - QUERY_WORD: 'ilinniaqtuliriniq'
+  - QUERY_LANGUAGE: Inuktitut
+  - PREFERRED_SCRIPT: Roman
+  - Check that:
+    - Translations start with education and that it is BOLDED
+    - Go to the examples of use section for education and make sure that:
+      - it mentions that the translation was found in Wikipedia.
+      - it lists some bilingual examples of use in ROMAN script
+
+IU word with Glossary Entry - Roman Input - Syllabic Output
+- Do the steps described in the 'basic scenario' with English word 'education', 
+  with the following 'specifics':
+  - QUERY_WORD: 'ilinniaqtuliriniq'
+  - QUERY_LANGUAGE: Inuktitut
+  - PREFERRED_SCRIPT: Syllabic
+  - Check that:
+    - __BUG__: DOES NOT WORK AS OF 2022-11-30 (not bolded and no c.f. wikipedia)
+    - Translations start with education and that it is BOLDED
+    - Go to the examples of use section for education and make sure that:
+      - it mentions that the translation was found in Wikipedia.
+      - it lists some bilingual examples of use in SYLLABIC script
+
+
+IU word with Glossary Entry - SYLLABIC Input - Roman Output
+- Do the steps described in the 'basic scenario' with English word 'education', 
+  with the following 'specifics':
+  - QUERY_WORD: 'ᐃᓕᓐᓂᐊᖅᑐᓕᕆᓂᖅ'
+  - QUERY_LANGUAGE: Inuktitut
+  - PREFERRED_SCRIPT: Roman
+  - Check that:
+    - Translations start with education and that it is BOLDED
+    - Go to the examples of use section for education and make sure that:
+      - it mentions that the translation was found in Wikipedia.
+      - it lists some bilingual examples of use in ROMAN script
+
+IU word with Glossary Entry - SYLLABIC Input - Syllabic Output
+- Do the steps described in the 'basic scenario' with English word 'education', 
+  with the following 'specifics':
+  - QUERY_WORD: 'ᐃᓕᓐᓂᐊᖅᑐᓕᕆᓂᖅ'
+  - QUERY_LANGUAGE: Inuktitut
+  - PREFERRED_SCRIPT: Syllabic
+  - Check that:
+    - __BUG__: DOES NOT WORK AS OF 2022-11-30 (not bolded and no c.f. wikipedia)
+    - Translations start with education and that it is BOLDED
+    - Go to the examples of use section for education and make sure that:
+      - it mentions that the translation was found in Wikipedia.
+      - it lists some bilingual examples of use in SYLLABIC script
+
+
+EN word with Glossary Entry - SYLLABIC output
+- Do the steps described in the 'basic scenario' with English word 'education', 
+  with the following 'specifics':
+  - QUERY_WORD: 'education'
+  - QUERY_LANGUAGE: English
+  - PREFERRED_SCRIPT: Syllabic
+  - Check that:
+    - Translations start with ᐃᓕᓐᓂᐊᖅᑐᓕᕆᓂᖅ and that it is BOLDED
+    - Go to the examples of use section for ᐃᓕᓐᓂᐊᖅᑐᓕᕆᓂᖅ and make sure that:
+      - it mentions that the translation was found in Wikipedia.
+      - it lists some bilingual examples of use
+
+EN word with Glossary Entry - Roman output
+- Do the steps described in the 'basic scenario' with English word 'education', 
+  with the following 'specifics':
+  - QUERY_WORD: 'education'
+  - QUERY_LANGUAGE: English
+  - PREFERRED_SCRIPT: Roman
+  - Check that:
+    - Translations start with ilinniaqtuliriniq and that it is BOLDED
+    - Go to the examples of use section for ilinniaqtuliriniq and make sure that:
+      - it mentions that the translation was found in Wikipedia.
+      - it lists some bilingual examples of use
+
 
 Out-of-hansard valid IU word
 - Search for a word that is a valid IU word but is not in the Hansard
@@ -175,14 +265,14 @@ Copy and paste content from the Word Entry dialog
 Word Entry window hiding/showing/closing
 - Reload the Word Dictionary page
    - Make sure the Word Entry window is NOT showing
-- Search for word 'inuksuk'
+- Search lang=EN, word 'education'
    - Make sure the Word Entry window is NOW showing and displays the entry for 
      'inuksuk'.
 - Leaving the word entry opened, search for a word that does not return any 
   results like 'blahblahblah' 
    - Make sure the Word Entry window is NOT showing
-- Search again for 'inuksuk' to make sure the WordEntry window is shown
-- Search for a query that returns some hits but is not itself a word, ex: 'iglum'
+- Search again for 'education' to make sure the WordEntry window is shown
+- Search for a query that returns some hits but is not itself a word, ex: lang=IU, word='iglum'
   - Make sure that some hits are displayed, but that the Word Entry window is NOT SHOWN
 - Close the word info windows
   - Search for word inuksuk and make sure that the info for the word is correctly 
@@ -436,6 +526,17 @@ Happy path
     - List of example words sorted in DECREASING order of frequency
       - Note: in some cases, it may say 'No examples found for this morpheme'
       - Click on an example word and make sure its dictionary entry is displayed
+  
+Change preferred script
+- __BUG:__ As of 2022-11-30, the example words are always displayed in Roman
+  This is not that big a deal since learners usually prefer to see the words 
+  in ROMAN
+- Set preferred script = ROMAN
+  - Search for tut
+  - Make sure the example words are displayed in ROMAN   
+- Set preferred script = SYLLABIC
+  - Search for tut
+  - Make sure the example words are displayed in SYLLABIC   
   
 Submit form with Enter key
 - Enter morpheme 'tut', then PRESS ENTER
