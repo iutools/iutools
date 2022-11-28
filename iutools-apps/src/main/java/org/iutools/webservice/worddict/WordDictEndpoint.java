@@ -51,7 +51,7 @@ public class WordDictEndpoint extends Endpoint<WordDictInputs,WordDictResult> {
 		try {
 			if (result.queryWordEntry != null) {
 				result
-					.setLang(result.queryWordEntry.lang)
+					.setLang(result.queryWordEntry.getLang())
 					.setOtherLang(result.queryWordEntry.otherLang());
 			}
 		} catch (MachineGeneratedDictException e) {

@@ -199,17 +199,17 @@ public class MachineGeneratedDict {
 		Logger logger = LogManager.getLogger("org.iutools.worddict.MachineGeneratedDict.possiblyFillDecomposition");
 
 		// We only fill decomposition for IU words
-		if (entry.lang.equals("iu")) {
+		if (entry.getLang().equals("iu")) {
 			StopWatch watch = new StopWatch().start();
 			try {
-				WordInfo winfo = corpus.info4word(entry.wordRoman);
+				WordInfo winfo = corpus.info4word(entry.getWordRoman());
 				traceRunningTime(logger, entry, "retrieving word info", watch);
 				if (winfo != null) {
 					entry.setDecomp(winfo.topDecomposition());
 				} else {
 					// Word could not be found in the corpus.
 					// At least see if we can fill the entry's decomposition field
-					String[] decomp = decomposeWord(entry.wordRoman);
+					String[] decomp = decomposeWord(entry.getWordRoman());
 					entry.setDecomp(decomp);
 				}
 			} catch (CompiledCorpusException | StopWatchException e) {
@@ -234,7 +234,7 @@ public class MachineGeneratedDict {
 		if (logger.isTraceEnabled()) {
 			double totalSecs = 1.0 * watch.totalTime() / 1000;
 			double lapSecs = 1.0 * watch.lapTime() / 1000;
-			logger.trace("["+entry.wordRoman+"] After "+phase+": total secs="+totalSecs+" (lap secs: "+lapSecs+")");
+			logger.trace("["+entry.getWordRoman()+"] After "+phase+": total secs="+totalSecs+" (lap secs: "+lapSecs+")");
 		}
 		return;
 	}
@@ -242,7 +242,7 @@ public class MachineGeneratedDict {
 	private void computeRelatedWords(MDictEntry entry,
 		Boolean fullRelatedWordEntries) throws MachineGeneratedDictException {
 		Logger logger = LogManager.getLogger("org.iutools.worddict.MachineGeneratedDict.computeRelatedWords");
-		if (entry.lang.equals("iu")) {
+		if (entry.getLang().equals("iu")) {
 			// We can only compute related words for IU words.
 			StopWatch sw = new StopWatch().start();
 			if (fullRelatedWordEntries == null) {
@@ -250,7 +250,7 @@ public class MachineGeneratedDict {
 			}
 			try {
 				MorphologicalRelative[] rels =
-				new MorphRelativesFinder(corpus).findRelatives(entry.wordRoman);
+				new MorphRelativesFinder(corpus).findRelatives(entry.getWordRoman());
 				traceRunningTime(logger, entry, "finding relatives", sw);
 				List<String> relatedWords = new ArrayList<String>();
 				for (MorphologicalRelative aRel : rels) {
@@ -342,7 +342,7 @@ public class MachineGeneratedDict {
 
 		List<String> sortedWords = new ArrayList<String>();
 		for (MDictEntry anEntry: wordEntries) {
-			sortedWords.add(anEntry.word);
+			sortedWords.add(anEntry.getWord());
 		}
 
 		return sortedWords;
@@ -352,7 +352,7 @@ public class MachineGeneratedDict {
 		MDictEntry entry) throws MachineGeneratedDictException {
 		Logger tLogger = LogManager.getLogger("org.iutools.worddict.MachineGeneratedDict.computeTranslationsAndExamples");
 		List<String> justOneWord = new ArrayList<String>();
-		justOneWord.add(entry.word);
+		justOneWord.add(entry.getWord());
  		retrieveTranslationsAndExamples(entry, justOneWord);
 		return;
 	}
@@ -361,13 +361,13 @@ public class MachineGeneratedDict {
 		MDictEntry entry, List<String> l1WordsCluster) throws MachineGeneratedDictException {
 		Logger tLogger = LogManager.getLogger("org.iutools.worddict.MachineGeneratedDict.retrieveTranslationsAndExamples");
 		if (tLogger.isTraceEnabled()) {
-			tLogger.trace("word="+entry.word+"/"+entry.wordInOtherScript+", iuWordGroup.size()="+ l1WordsCluster.size()+", iuWordGroup="+ StringUtils.join(l1WordsCluster.iterator(), ", "));
+			tLogger.trace("word="+entry.getWord()+"/"+entry.getWordInOtherScript()+", iuWordGroup.size()="+ l1WordsCluster.size()+", iuWordGroup="+ StringUtils.join(l1WordsCluster.iterator(), ", "));
 		}
 
 		fillGlossaryEntries(entry, l1WordsCluster);
 		Map<String, CloseableIterator<Alignment>> iterators = null;
 		try {
-			String l1 = entry.lang;
+			String l1 = entry.getLang();
 			String l2 = otherLang(l1);
 
 			if (l1.equals("iu")) {
@@ -453,7 +453,7 @@ public class MachineGeneratedDict {
 			for (String l1Word : l1WordsCluster) {
 				l1Word = l1Word.toLowerCase();
 				logger.trace("Looking for glossary entries for word: " + l1Word);
-				List<GlossaryEntry> glossEntries = glossary.entries4word(entry.lang, l1Word);
+				List<GlossaryEntry> glossEntries = glossary.entries4word(entry.getLang(), l1Word);
 				entry.addGlossEntries4word(l1Word, glossEntries);
 			}
 			fillExamplesForHumanTranslations(entry);
@@ -471,12 +471,14 @@ public class MachineGeneratedDict {
 
 	private void fillExamplesForTermPair(
 		MDictEntry entry, String l1Word, String translation) throws MachineGeneratedDictException {
-		try (CloseableIterator<Alignment> iter = new TMFactory().makeTM().search(entry.lang, l1Word, entry.otherLang(), translation)) {
+		try (CloseableIterator<Alignment> iter =
+			  new TMFactory().makeTM()
+			  	.search(entry.getLang(), l1Word, entry.otherLang(), translation)) {
 			while (iter.hasNext()) {
 				Alignment alignment = iter.next();
-				SentencePair pair = alignment.sentencePair(entry.lang, entry.otherLang());
+				SentencePair pair = alignment.sentencePair(entry.getLang(), entry.otherLang());
 				for (Pair<String,String> langAndExpr: new Pair[]
-					{Pair.of(entry.lang, l1Word), Pair.of(entry.otherLang(), translation)}) {
+					{Pair.of(entry.getLang(), l1Word), Pair.of(entry.otherLang(), translation)}) {
 					String lang = langAndExpr.getLeft();
 					String expression = langAndExpr.getRight();
 					String origText = pair.getText(lang);
@@ -555,7 +557,7 @@ public class MachineGeneratedDict {
 			tLogger.trace("isForRelatedWord="+isForRelatedWord+", bilingualAlignment="+ PrettyPrinter.print(bilingualAlignment));
 		}
 
-		String l1 = entry.lang;
+		String l1 = entry.getLang();
 		String l2 = otherLang(l1);
 		String[] highlightedPair = new String[] {
 			bilingualAlignment.getText(l1),
@@ -572,7 +574,7 @@ public class MachineGeneratedDict {
 				if (l2Translation == null) {
 					entry.addBilingualExample("MISC", highlightedPair, isForRelatedWord);
 				} else {
-					tLogger.trace("Adding example for translation of word='" + entry.wordRoman + "''" +
+					tLogger.trace("Adding example for translation of word='" + entry.getWordRoman() + "''" +
 						", l2Translation='" + l2Translation + "'");
 					entry.addBilingualExample(l2Translation, highlightedPair, isForRelatedWord);
 				}

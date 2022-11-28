@@ -45,6 +45,7 @@ public class AssertServletResponse extends Asserter<HttpServletResponse> {
 			Assertions.assertNotNull(result.taskID,
 				baseMessage + "\nTask ID of response was not set");
 		}
+		return;
 	}
 
 	public MockHttpServletResponse servletResponse() {

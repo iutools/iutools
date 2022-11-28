@@ -292,7 +292,7 @@ public class MachineGeneratedDictTest {
 
 			MDictEntry entry =
 				new MachineGeneratedDict().entry4word(aCase.getLeft());
-			new AssertMultilingualDictEntry(entry)
+			new AssertMDictEntry(entry)
 				.iuIsInScript(aCase.getRight())
 			;
 
@@ -356,8 +356,8 @@ public class MachineGeneratedDictTest {
 					expTranslations = aCase.expTranslationsAmong;
 				}
 
-				AssertMultilingualDictEntry asserter =
-					new AssertMultilingualDictEntry(entry, aCase.descr);
+				AssertMDictEntry asserter =
+					new AssertMDictEntry(entry, aCase.descr);
 
 				String[] expL2Highlights =
 					ArrayUtils.addAll(aCase.expTranslationsAmong, aCase.expAdditionalL2Highlights);

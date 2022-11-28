@@ -57,7 +57,7 @@ public class WordDictResult extends EndpointResult {
 		this.matchingWords = _foundWords;
 		this.queryWordEntry = _qWordEntry;
 		if (_qWordEntry != null) {
-			convertedQuery = queryWordEntry.word;
+			convertedQuery = queryWordEntry.getWord();
 		}
 		this.totalWords = _totalWords;
 		tLogger.trace("exited");

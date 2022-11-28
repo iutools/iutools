@@ -159,7 +159,14 @@ Once MySQL is installed, create a DB and User for IUtools.
 
 Grant that user all access to the IUTools DB.
 
-NOTE: It would be nice if we had a script that did that automatically.
+For examples:
+
+    CREATE USER 'iutools_user'@'localhost' IDENTIFIED  BY 'your_passwrd_here';
+    CREATE DATABASE iutools_db;
+    GRANT ALL PRIVILEGES ON iutools_db.* TO 'iutools_user'@'localhost';
+    FLUSH PRIVILEGES;
+    
+Will create a DB _iutools_db_ and a user _iutools_user_ with full access to it.
 
 #### Adding SQL-related entries to _org_iutools.properties_
 
@@ -168,6 +175,11 @@ Add the following lines to your _org_iutools.properties_ file
     org.iutools.sql.dbname=name_of_your_iutools_db
     org.iutools.sql.username=name_of_your_iutools_db
     org.iutools.sql.passwd=passwd_for_your_iutools_db
+    
+Optionally, you can also add a line to specify the name of the host on which 
+the SQL server is running (defaults to 'localhost')
+
+    org.iutools.sql.hostname=name_of_your_sql_hostname
 
 ### Load the corpus into SQL
 

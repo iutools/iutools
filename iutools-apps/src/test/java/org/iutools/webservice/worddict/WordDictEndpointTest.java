@@ -8,7 +8,7 @@ import org.iutools.spellchecker.SpellCheckerException;
 import org.iutools.webservice.AssertEndpointResult;
 import org.iutools.webservice.EndpointTest;
 import org.iutools.webservice.ServiceException;
-import org.iutools.worddict.AssertMultilingualDictEntry;
+import org.iutools.worddict.AssertMDictEntry;
 import org.iutools.worddict.MDictEntry;
 import org.junit.jupiter.api.Test;
 
@@ -83,7 +83,7 @@ public class WordDictEndpointTest extends EndpointTest {
 			.raisesNoError()
 			.foundWords("inuksuk");
 
-		new AssertMultilingualDictEntry(epResult.queryWordEntry)
+		new AssertMDictEntry(epResult.queryWordEntry)
 			.isForWord("inuksuk")
 			.definitionEquals(null)
 			.decompositionIs("inuksuk/1n")
@@ -115,7 +115,7 @@ public class WordDictEndpointTest extends EndpointTest {
 			.raisesNoError()
 			.foundWords("inuk", "inuksuk", "inuktituuqtut", "inuktituusuunit");
 
-		new AssertMultilingualDictEntry(epResult.queryWordEntry)
+		new AssertMDictEntry(epResult.queryWordEntry)
 			.isForWord("inuk")
 			.definitionEquals(null)
 			.decompositionIs("inuk/1n")
@@ -126,7 +126,7 @@ public class WordDictEndpointTest extends EndpointTest {
 					// These are English translations of the proper name "Inuk"
 					"enook", "enuk ... pauloosie",
 					"mr. enook", "mr. enook (interpretation", "name ... enook",
-					"mr. enoki ... glenn",
+					"mr. enoki ... glenn", "mr",
 					// Why are these considered a translations of "inuk"?
 					"held", "(interpretation", "kenny ... jennifer",
 					"name",
@@ -134,7 +134,6 @@ public class WordDictEndpointTest extends EndpointTest {
 					// Those seem to be translations of "inuksuk" as opposed to
 					// "inuk". Not sure why they are included.
 					"innuksuk", "inukshuk", "inuksuk"
-
 			)
 			.highlightsAreSubsetOf("iu", "inuksuk", "inuk", "inuk ... inuk")
 		;
@@ -155,7 +154,7 @@ public class WordDictEndpointTest extends EndpointTest {
 			.raisesNoError()
 			.foundWords("ᐃᓄᒃ", "ᐃᓄᒃᓱᒃ", "ᐃᓄᒃᑎᑑᖅᑐᑦ", "ᐃᓄᒃᑎᑑᓲᓂᑦ");
 
-		new AssertMultilingualDictEntry(epResult.queryWordEntry)
+		new AssertMDictEntry(epResult.queryWordEntry)
 			.isForWord("ᐃᓄᒃ")
 			.definitionEquals(null)
 			.decompositionIs("inuk/1n")
@@ -167,8 +166,7 @@ public class WordDictEndpointTest extends EndpointTest {
 				"enook", "enuk ... pauloosie", "mr. enook",
 				"mr. enook (interpretation", "name ... enook", "individual",
 				"inuk",
-				"kenny ... jennifer",
-				"mr. enoki ... glenn"
+				"kenny ... jennifer", "mr. enoki ... glenn", "mr"
 			)
 			.highlightsAreSubsetOf("iu", "ᐃᓄᒃ")
 			;
@@ -184,7 +182,7 @@ public class WordDictEndpointTest extends EndpointTest {
 			.raisesNoError()
 			.foundWords("housing");
 
-		new AssertMultilingualDictEntry(epResult.queryWordEntry)
+		new AssertMDictEntry(epResult.queryWordEntry)
 			.isForWord("housing")
 			.definitionEquals(null)
 			.decompositionIs()
@@ -365,8 +363,8 @@ public class WordDictEndpointTest extends EndpointTest {
 							.foundWords(aCase.expHitWords)
 							;
 
-					AssertMultilingualDictEntry entryAsserter =
-						new AssertMultilingualDictEntry(epResult.queryWordEntry, aCase.descr);
+					AssertMDictEntry entryAsserter =
+						new AssertMDictEntry(epResult.queryWordEntry, aCase.descr);
 					if (aCase.expectEmptyWordEntry) {
 						entryAsserter
 							.isForWord(epResult.convertedQuery)

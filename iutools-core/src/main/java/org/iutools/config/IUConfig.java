@@ -49,6 +49,18 @@ public class IUConfig extends Config {
 		return regex;
 	}
 
+	public String sqlHostName() throws ConfigException {
+		String name =
+			getConfigProperty(
+				"org.iutools.sql.hostname",
+				false);
+		if (name == null) {
+			name = "localhost";
+		}
+ 		return name;
+	}
+
+
 	public String sqlDbName() throws ConfigException {
 		String name =
 			getConfigProperty(

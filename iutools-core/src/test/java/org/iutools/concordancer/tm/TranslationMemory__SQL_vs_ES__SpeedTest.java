@@ -11,6 +11,7 @@ import static org.iutools.sql.SQLTestHelpers.TimingResults;
 import org.iutools.utilities.StopWatch;
 import org.iutools.worddict.GlossaryEntry;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -20,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Compare the speed of the SQL vs ES based TM for various operations.
  */
+@Disabled
 public class TranslationMemory__SQL_vs_ES__SpeedTest {
 
 	private static List<String> enWords = null;

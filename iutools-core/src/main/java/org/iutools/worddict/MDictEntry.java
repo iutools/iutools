@@ -27,12 +27,12 @@ public class MDictEntry {
 		DEFINITION, BILINGUAL_EXAMPLES, TRANSLATIONS, DECOMP, RELATED_WORDS
 	}
 
-	public String word = null;
-	public String lang = "iu";
-	public String wordInOtherScript = null;
+	private String word = null;
+	private String lang = "iu";
+	private String wordInOtherScript = null;
 
-	public String wordSyllabic;
-	public String wordRoman;
+	private String wordSyllabic;
+	private String wordRoman;
 	public String definition;
 	public List<MorphemeHumanReadableDescr> morphDecomp = new ArrayList<MorphemeHumanReadableDescr>();
 
@@ -90,6 +90,14 @@ public class MDictEntry {
 		}
 	}
 
+	public void setLang(String _lang) {
+		this.lang = _lang;
+	}
+
+	public String getLang() {
+		return this.lang;
+	}
+
 	public String otherLang() throws MachineGeneratedDictException {
 		return otherLang(lang);
 	}
@@ -103,6 +111,52 @@ public class MDictEntry {
 			other = "iu";
 		}
 		return other;
+	}
+
+	public void setWord(String _word) throws MachineGeneratedDictException {
+		this.word = _word;
+		try {
+			if (word != null) {
+				inScript = TransCoder.textScript(word);
+				wordSyllabic = TransCoder.ensureScript(Script.SYLLABIC, word);
+				wordRoman = TransCoder.ensureScript(Script.ROMAN, word);
+				if (!wordSyllabic.equals(word)) {
+					wordInOtherScript = wordSyllabic;
+				} else {
+					wordInOtherScript = wordRoman;
+				}
+			}
+		} catch (TransCoderException e) {
+			throw new MachineGeneratedDictException(e);
+		}
+	}
+
+	public String getWord() {
+		return word;
+	}
+
+	public void setWordInOtherScript(String _word) {
+		this.wordInOtherScript = _word;
+	}
+
+	public String getWordInOtherScript() {
+		return wordInOtherScript;
+	}
+
+	public void setWordSyllabic(String _word) {
+		this.wordSyllabic = _word;
+	}
+
+	public String getWordSyllabic() {
+		return wordSyllabic;
+	}
+
+	public void setWordRoman(String _word) {
+		this.wordRoman = _word;
+	}
+
+	public String getWordRoman() {
+		return wordRoman;
 	}
 
 	public String inSameScriptAsInputWord(String text) throws MachineGeneratedDictException {
@@ -201,28 +255,12 @@ public class MDictEntry {
 	}
 
 	private void init_IUWordDictEntry(String _word, String _lang) throws MachineGeneratedDictException {
-		try {
-			if (_lang == null) {
-				_lang = "iu";
-			}
-			assertIsSupportedLanguage(lang);
-			this.lang = _lang;
-			this.word = _word;
-			if (lang.equals("iu")) {
-				this.wordInOtherScript = TransCoder.inOtherScript(_word);
-				this.wordSyllabic =
-					TransCoder.ensureScript(TransCoder.Script.SYLLABIC, _word);
-				this.inScript = Script.ROMAN;
-				if (this.word.equals(this.wordSyllabic)) {
-					this.inScript = Script.SYLLABIC;
-				}
-			}
-		} catch (TransCoderException e) {
-			throw new MachineGeneratedDictException(e);
+		if (_lang == null) {
+			_lang = "iu";
 		}
-		this.wordRoman =
-			TransCoder.ensureRoman(_word);
-
+		assertIsSupportedLanguage(this.lang);
+		setLang(_lang);
+		setWord(_word);
 		normalizedTerms.put("iu", new HashMap<String,String>());
 		normalizedTerms.put("en", new HashMap<String,String>());
 	}
@@ -622,7 +660,7 @@ public class MDictEntry {
 	public void ensureScript(TransCoder.Script script)
 		throws MachineGeneratedDictException {
 		Logger logger = LogManager.getLogger("org.iutools.worddict.MDictEntry.ensureScript");
-		logger.trace("word="+word+", script="+script);
+		logger.trace("word="+ word +", script="+script);
 		ensureScript_translations(script);
 		ensureScript_relatedwords(script);
 		ensureScript_BilingualExamples(script);

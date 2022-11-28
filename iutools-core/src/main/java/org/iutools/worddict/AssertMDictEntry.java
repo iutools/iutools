@@ -12,14 +12,48 @@ import org.junit.jupiter.api.Assertions;
 import java.io.IOException;
 import java.util.*;
 
-public class AssertMultilingualDictEntry extends Asserter<MDictEntry> {
+public class AssertMDictEntry extends Asserter<MDictEntry> {
 
-	public AssertMultilingualDictEntry(MDictEntry _gotObject) {
+	public AssertMDictEntry(MDictEntry _gotObject) {
 		super(_gotObject);
+		init__AssertMDictEntry();
 	}
 
-	public AssertMultilingualDictEntry(MDictEntry _gotObject, String mess) {
+	public AssertMDictEntry(MDictEntry _gotObject, String mess) {
 		super(_gotObject, mess);
+		init__AssertMDictEntry();
+	}
+
+	private void init__AssertMDictEntry()  {
+		assertSanityCheck();
+	}
+
+	private void assertSanityCheck()  {
+		try {
+			Assertions.assertTrue(
+				entry().getLang() != null,
+				baseMessage + "\nentry.lang should NOT have been null");
+			Assertions.assertTrue(
+				entry().otherLang() != null,
+				baseMessage + "\nentry.otherLang() should NOT have been null");
+
+			Assertions.assertTrue(
+				entry().getWord() != null,
+				baseMessage + "\nentry.word should NOT have been null");
+			if (entry().getLang().equals("iu")) {
+				Assertions.assertTrue(
+				entry().getWordInOtherScript() != null,
+				baseMessage + "\nentry.wordInOtherScript should NOT have been null");
+				Assertions.assertTrue(
+				entry().getWordRoman() != null,
+				baseMessage + "\nentry.wordRoman should NOT have been null");
+				Assertions.assertTrue(
+				entry().getWordSyllabic() != null,
+				baseMessage + "\nentry.wordSyllabic should NOT have been null");
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	MDictEntry entry() {
@@ -34,26 +68,47 @@ public class AssertMultilingualDictEntry extends Asserter<MDictEntry> {
 		return words;
 	}
 
-	public AssertMultilingualDictEntry isForWord(String expWord) throws Exception {
+	public AssertMDictEntry isForWord(String expWord) throws Exception {
 		AssertString.assertStringEquals(
-		baseMessage + "\nWord was not as expected",
-		expWord, entry().word);
+			baseMessage + "\nWord was not as expected",
+			expWord, entry().getWord());
 
 		return this;
 	}
 
+	public AssertMDictEntry wordInOtherScriptIs(String expWord) {
+		AssertString.assertStringEquals(
+			baseMessage + "\nWord in other script was not as expected",
+			expWord, entry().getWordInOtherScript());
+		return this;
+	}
 
-	public AssertMultilingualDictEntry gaveEmptyWordEntry() {
+
+	public AssertMDictEntry wordRomanIs(String expWord) {
+		AssertString.assertStringEquals(
+			baseMessage + "\nRoman word was not as expected",
+			expWord, entry().getWordRoman());
+		return this;
+	}
+	public AssertMDictEntry wordSyllIs(String expWord) {
+		AssertString.assertStringEquals(
+			baseMessage + "\nSyllabic word was not as expected",
+			expWord, entry().getWordSyllabic());
+		return this;
+	}
+
+
+	public AssertMDictEntry gaveEmptyWordEntry() {
 		Assertions.assertTrue(entry().isEmpty());
 		return this;
 	}
 
-	public AssertMultilingualDictEntry definitionEquals(String expDef) {
+	public AssertMDictEntry definitionEquals(String expDef) {
 		AssertString.assertStringEquals(expDef, entry().definition);
 		return this;
 	}
 
-	public AssertMultilingualDictEntry decompositionIs(String... expMorphemes)
+	public AssertMDictEntry decompositionIs(String... expMorphemes)
 	throws Exception {
 		List<String> gotDecomp = new ArrayList<String>();
 		if (null != entry().morphDecomp) {
@@ -68,14 +123,14 @@ public class AssertMultilingualDictEntry extends Asserter<MDictEntry> {
 		return this;
 	}
 
-	public AssertMultilingualDictEntry hasAtLeastNTranslations(int expMinTranslations) {
+	public AssertMDictEntry hasAtLeastNTranslations(int expMinTranslations) {
 		AssertNumber.isGreaterOrEqualTo(
 			"Entry did not have the expected minimum number of translations",
 			entry().bestTranslations.size(), expMinTranslations);
 		return this;
 	}
 
-	public AssertMultilingualDictEntry hasTranslationsForOrigWord(boolean expHasTranslationsForOrigWord) {
+	public AssertMDictEntry hasTranslationsForOrigWord(boolean expHasTranslationsForOrigWord) {
 		boolean hasOrigTransl = entry().hasTranslationsForOriginalWord();
 		if (expHasTranslationsForOrigWord) {
 			Assertions.assertTrue(
@@ -92,7 +147,7 @@ public class AssertMultilingualDictEntry extends Asserter<MDictEntry> {
 	}
 
 
-	public AssertMultilingualDictEntry bestTranslationsStartWith(String mess, String... expTopTranslations)
+	public AssertMDictEntry bestTranslationsStartWith(String mess, String... expTopTranslations)
 		throws Exception {
 		List<String> gotTopTranslations = entry().bestTranslations;
 		gotTopTranslations = gotTopTranslations
@@ -104,7 +159,7 @@ public class AssertMultilingualDictEntry extends Asserter<MDictEntry> {
 		return this;
 	}
 
-	public AssertMultilingualDictEntry humanTranslationsAre(String... expHumanTranslations) throws IOException {
+	public AssertMDictEntry humanTranslationsAre(String... expHumanTranslations) throws IOException {
 		Set<String> humanTranslations = new HashSet<String>();
 		for (String l1Word: entry().humanTranslations.keySet()) {
 			humanTranslations.addAll(entry().humanTranslations.get(l1Word));
@@ -116,13 +171,13 @@ public class AssertMultilingualDictEntry extends Asserter<MDictEntry> {
 		return this;
 	}
 
-	public AssertMultilingualDictEntry bestTranslationsAreAmong(
+	public AssertMDictEntry bestTranslationsAreAmong(
 		String... possibleTranslations) throws Exception {
 		return bestTranslationsAreAmong((Set<String>)null, possibleTranslations);
 	}
 
 
-	public AssertMultilingualDictEntry bestTranslationsAreAmong(
+	public AssertMDictEntry bestTranslationsAreAmong(
 		Set<String> translationWithoutExamples, String... possibleTranslations) throws Exception {
 
 		if (translationWithoutExamples == null) {
@@ -147,7 +202,7 @@ public class AssertMultilingualDictEntry extends Asserter<MDictEntry> {
 		return this;
 	}
 
-	public AssertMultilingualDictEntry relatedWordsIsSubsetOf(
+	public AssertMDictEntry relatedWordsIsSubsetOf(
 		String... expRelatedWordsArr)
 		throws Exception {
 
@@ -166,7 +221,7 @@ public class AssertMultilingualDictEntry extends Asserter<MDictEntry> {
 
 	public void iuIsInScript(TransCoder.Script expScript) {
 		MDictEntry entry = this.entry();
-		String l1 = entry.lang;
+		String l1 = entry.getLang();
 		String relatedWords = String.join(", ", entry.relatedWords);
 		TransCoder.Script gotScript = TransCoder.textScript(relatedWords);
 		Assert.assertEquals(
@@ -188,17 +243,17 @@ public class AssertMultilingualDictEntry extends Asserter<MDictEntry> {
 		}
 	}
 
-	public AssertMultilingualDictEntry highlightsAreSubsetOf(
+	public AssertMDictEntry highlightsAreSubsetOf(
 		String lang, String... expHighlightsArr) throws Exception {
 		return highlightsAreSubsetOf(lang, (Boolean)null, expHighlightsArr);
 	}
 
-	public AssertMultilingualDictEntry highlightsAreSubsetOf(
+	public AssertMDictEntry highlightsAreSubsetOf(
 		String lang, Boolean ignoreRepetitions, String... expHighlightsArr)
 		throws Exception {
 
 		if (expHighlightsArr != null) {
-			String l1 = entry().lang;
+			String l1 = entry().getLang();
 			Set<String> expHighlights = new HashSet<String>();
 			Collections.addAll(expHighlights, expHighlightsArr);
 			Set<String> gotHighlights = new HashSet<String>();
@@ -223,7 +278,7 @@ public class AssertMultilingualDictEntry extends Asserter<MDictEntry> {
 		return this;
 	}
 
-	public AssertMultilingualDictEntry atLeastNExamples(Integer expMinExamples)
+	public AssertMDictEntry atLeastNExamples(Integer expMinExamples)
 		throws Exception {
 		int gotHits = entry().bilingualExamplesOfUse().size();
 		Assertions.assertTrue(
@@ -251,25 +306,25 @@ public class AssertMultilingualDictEntry extends Asserter<MDictEntry> {
 		return lowercased;
 	}
 
-	public AssertMultilingualDictEntry langIs(String expLang) {
+	public AssertMDictEntry langIs(String expLang) {
 		AssertString.assertStringEquals(
 			baseMessage+"\nLanguage of entry not as expected",
-			expLang, entry().lang
+			expLang, entry().getLang()
 		);
 		return this;
 	}
 
-	public AssertMultilingualDictEntry checkWordInOtherScript(String origWord)
+	public AssertMDictEntry checkWordInOtherScript(String origWord)
 		throws Exception {
 		String expWordOtherScript = TransCoder.inOtherScript(origWord);
 		AssertString.assertStringEquals(
 			baseMessage+"\nWord in other script was not as expected",
-			expWordOtherScript, entry().wordInOtherScript);
+			expWordOtherScript, entry().getWordInOtherScript());
 
 		return this;
 	}
 
-	public AssertMultilingualDictEntry translationsAreNonEmptySubsetOf(
+	public AssertMDictEntry translationsAreNonEmptySubsetOf(
 		String[] expTranslationsSuperset) {
 		Set<String> gotTranslations = new HashSet<String>();
 		gotTranslations.addAll(entry().bestTranslations);
@@ -282,8 +337,8 @@ public class AssertMultilingualDictEntry extends Asserter<MDictEntry> {
 		return this;
 	}
 
-	public AssertMultilingualDictEntry translationsSanityCheck(Set<String> translationWithoutExamples) throws Exception {
-		String[] words = new String[] {entry().word};
+	public AssertMDictEntry translationsSanityCheck(Set<String> translationWithoutExamples) throws Exception {
+		String[] words = new String[] {entry().getWord()};
 		List<String> translations = entry().bestTranslations;
 
 		for (String aTranslation: translations) {

@@ -16,7 +16,7 @@ import java.util.*;
  */
 public class ConnectionPool {
 	private final String DBMS_NAME = "drizzle";
-	private final String SERVER_NAME = "localhost";
+//	private String SERVER_NAME = "localhost";
 
 	public static Boolean _isTesting = null;
 	private static final boolean singleConnPerThread = true;
@@ -37,6 +37,17 @@ public class ConnectionPool {
 		logger.trace("exited");
 	}
 
+	private String sqlHostName() throws SQLException {
+		String name = null;
+		try {
+			name = new IUConfig().sqlHostName();
+		} catch (ConfigException e) {
+			throw new SQLException(e);
+		}
+		return name;
+	}
+
+
 	private synchronized BasicDataSource dataSource4DB(String dbName) throws SQLException {
 		Logger logger = LogManager.getLogger("org.iutools.sql.ConnectionPool.dataSource4DB");
 		if (!dataSources.containsKey(dbName)) {
@@ -54,7 +65,7 @@ public class ConnectionPool {
 
 				ds.setUrl(
 					"jdbc:" + this.DBMS_NAME + "://" +
-					this.SERVER_NAME +
+					this.sqlHostName() +
 					":" + portNum +
 					"/" + dbName + "?" +
 					"rewriteBatchedStatements=true");
