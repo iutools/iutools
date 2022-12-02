@@ -170,7 +170,8 @@ public class ConnectionPool {
 	private synchronized boolean hasLiveConnection4Thread(Long thrID) throws SQLException {
 		boolean answer = false;
 		if (thread2connIndex.containsKey(thrID)) {
-			if (!thread2connIndex.get(thrID).isClosed()) {
+			Connection conn = thread2connIndex.get(thrID);
+			if (!conn.isClosed() && conn.isValid(5)) {
 				answer = true;
 			}
 		}
