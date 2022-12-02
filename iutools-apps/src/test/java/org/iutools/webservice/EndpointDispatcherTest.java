@@ -54,11 +54,10 @@ public class EndpointDispatcherTest {
 			new JSONObject().put("word", "inuksuk"),
 			"iutools/srv2/worddict",
 			WordDictResult.class),
-		new Case("config",
-			new JSONObject().put("propNanes", new String[] {"org.iutools.apps.feedkback_emails"}),
-			"iutools/srv2/config",
-			ConfigResult.class),
-
+//		new Case("config",
+//			new JSONObject().put("propNames", new String[] {"org.iutools.apps.feedkback_emails"}),
+//			"iutools/srv2/config",
+//			ConfigResult.class),
 	};
 
 	protected static Case[] logEndpointCases = new Case[] {

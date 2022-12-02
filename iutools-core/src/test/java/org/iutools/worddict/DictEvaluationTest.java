@@ -46,10 +46,10 @@ public class DictEvaluationTest {
 
 		EvaluationExpectations exp = new EvaluationExpectations()
 			.setTotalGlossaryEntries(stopAfterN)
-			.setTotalSingleWordIUEntries(13)
-			.setTotalIUPresent(WhatTerm.ORIGINAL, 6)
+			.setTotalSingleWordIUEntries(12)
+			.setTotalIUPresent(WhatTerm.ORIGINAL, 7)
 			.setTotalIUPresent(WhatTerm.RELATED, 2)
-			.setTotalENSpotted_Strict(2)
+			.setTotalENSpotted_Strict(4)
 			.setTotalENSpotted_Lenient(0)
 			.setTotalENSpotted_LenientOverlap(1)
 			;
@@ -76,13 +76,13 @@ public class DictEvaluationTest {
 			evaluator.evaluate(Paths.get(glossaryPath), stopAfterN, startingAtN);
 
 		EvaluationExpectations exp = new EvaluationExpectations()
-			.setTotalGlossaryEntries(556)
-			.setTotalSingleWordIUEntries(465)
-			.setTotalIUPresent(WhatTerm.ORIGINAL, 183)
-			.setTotalIUPresent(WhatTerm.RELATED, 74)
+			.setTotalGlossaryEntries(551)
+			.setTotalSingleWordIUEntries(459)
+			.setTotalIUPresent(WhatTerm.ORIGINAL, 182)
+			.setTotalIUPresent(WhatTerm.RELATED, 75)
 			.setTotalENSpotted_Strict(88)
-			.setTotalENSpotted_Lenient(6)
-			.setTotalENSpotted_LenientOverlap(12)
+			.setTotalENSpotted_Lenient(7)
+			.setTotalENSpotted_LenientOverlap(23)
 			;
 		assertExpectationsMet(exp, results);
 

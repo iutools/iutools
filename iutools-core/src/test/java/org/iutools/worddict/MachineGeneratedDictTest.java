@@ -44,38 +44,6 @@ public class MachineGeneratedDictTest {
 
 		// Cases for entry4word function
 		cases_entry4word = new MultilingualDictCase[] {
-
-			// This is a case where the iu word exists in the glossary but
-			// its translation does not appear in the hansard (and it is in fact
-			// wrong: amiq = skin, NOT "Wikipedia Main Page".
-			// Therefore the "human" translation should not have any bilingual examples
-			// which can cause some bugs.
-			//
-			new MultilingualDictCase("iu-word (amiq=skin)", "amiq")
-				.hasGlossaryTranslations("Inuit clothing")
-				.hasDecomp(
-					"amiq/1n")
-				.relatedWordsShouldBeAmong(
-					"amiit", "amingi", "amingit", "amirnik", "amirnit")
-				.noExamplesForTranslations("Wikimedia main page")
-				.hasMinTranslation(5)
-				.hasTranslationsForOrigWord(true)
-				.bestTranslationsAreAmong(
-					"fur", "skin",
-
-					// These are probably translations of "amiq" as a proper name for
-					// a person
-					"amanda","amiq",
-
-					// This one is a bad translation we get from the Wikipedia
-					// glossary
-					"wikimedia main page"
-				)
-				// "Inuit clothing" is a human translation so it should be first
-				.bestTranslationsStartWith("Wikimedia main page")
-				.humanTranslationsAre("Wikimedia main page")
-				.hasMinExamples(5),
-
 			new MultilingualDictCase("iu-word-with-glossary-entry (annuraanik=inuit clothing)", "annuraanik")
 				.hasGlossaryTranslations("Inuit clothing")
 				.hasDecomp(
@@ -86,12 +54,12 @@ public class MachineGeneratedDictTest {
 				.hasMinTranslation(5)
 				.hasTranslationsForOrigWord(true)
 				.bestTranslationsAreAmong(
-					"Inuit clothing", "clothing", "dry clothing", "fashions", "garments",
+					"inuit clothing", "clothing", "dry clothing", "fashions", "garments",
 					"wash ... cloths"
 				)
 				// "Inuit clothing" is a human translation so it should be first
-				.bestTranslationsStartWith("Inuit clothing")
-				.humanTranslationsAre("Inuit clothing")
+				.bestTranslationsStartWith("inuit clothing")
+				.humanTranslationsAre("inuit clothing")
 				.hasMinExamples(5),
 
 			new MultilingualDictCase("iu-nunaqaqqaaqsimajut (=aboriginal people)", "nunaqaqqaaqsimajut")

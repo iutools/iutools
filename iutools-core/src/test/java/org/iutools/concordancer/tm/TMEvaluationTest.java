@@ -31,31 +31,59 @@ public class TMEvaluationTest {
 		EvaluationResults results =
 			new TMEvaluator((Path)null, wordAlignsPath)
 				.evaluate(Paths.get(glossaryPath), firstN);
+
+		int expEntries = 20;
+		int expSingleIUWordEntries = 12;
+		int expIUPresent = 7;
+
+		int expEnPresent_Strict = 6;
+		int expEnPresent_Lenient = 0;
+		int expEnPresent_LenientOverlap = 0;
+
+		int expEnSpotted_Strict = 5;
+		int expEnSpotted_Lenient = 0;
+		int expEnSpotted_LenientOverlap = 1;
+
+		int expEnPresent_atLeastStrict = expEnPresent_Strict;
+		int expEnPresent_atLeastLenient =
+			expEnPresent_Strict + expEnPresent_Lenient;
+		int expEnPresent_atLeastLenientOverlap =
+			expEnPresent_Strict + expEnPresent_Lenient +
+			expEnPresent_LenientOverlap;
+
+		int expEnSpotted_atLeastStrict = expEnSpotted_Strict;
+		int expEnSpotted_atLeastLenient =
+			expEnSpotted_Strict + expEnSpotted_Lenient;
+		int expEnSpotted_atLeastLenientOverlap =
+			expEnSpotted_Strict + expEnSpotted_Lenient +
+			expEnSpotted_LenientOverlap;
+
+
 		AssertEvaluationResults asserter = new AssertEvaluationResults(results);
-		asserter
-			.totalGlossaryEntries(firstN)
-			.totalSingleIUTermEntries(13)
+		new AssertEvaluationResults(results)
+			.totalGlossaryEntries(expEntries)
+			.totalSingleIUTermEntries(expSingleIUWordEntries)
 
-			.totaIUPresent(6)
+			.totaIUPresent(expIUPresent)
 
-			.totalENPresent_inSense(MatchType.STRICT, 4)
-			.totalENPresent_inSense(MatchType.LENIENT, 0)
-			.totalENPresent_inSense(MatchType.LENIENT_OVERLAP, 0)
+			.totalENPresent_inSense(MatchType.STRICT, expEnPresent_Strict)
+			.totalENPresent_inSense(MatchType.LENIENT, expEnPresent_Lenient)
+			.totalENPresent_inSense(MatchType.LENIENT_OVERLAP, expEnPresent_LenientOverlap)
 
-			.totalENSpotted_inSense(MatchType.STRICT, 3)
-			.totalENSpotted_inSense(MatchType.LENIENT, 0)
-			.totalENSpotted_inSense(MatchType.LENIENT_OVERLAP, 1)
+			.totalENSpotted_inSense(MatchType.STRICT, expEnSpotted_Strict)
+			.totalENSpotted_inSense(MatchType.LENIENT, expEnSpotted_Lenient)
+			.totalENSpotted_inSense(MatchType.LENIENT_OVERLAP, expEnSpotted_LenientOverlap)
 
-			.totalENPresent_atLeastInSense(MatchType.STRICT, 4)
-			.totalENPresent_atLeastInSense(MatchType.LENIENT, 4)
-			.totalENPresent_atLeastInSense(MatchType.LENIENT_OVERLAP, 4)
+			.totalENPresent_atLeastInSense(MatchType.STRICT, expEnPresent_atLeastStrict)
+			.totalENPresent_atLeastInSense(MatchType.LENIENT, expEnPresent_atLeastLenient)
+			.totalENPresent_atLeastInSense(MatchType.LENIENT_OVERLAP, expEnPresent_atLeastLenientOverlap)
 
-			.totalENSpotted_atLeastInSense(MatchType.STRICT, 3)
-			.totalENSpotted_atLeastInSense(MatchType.LENIENT, 3)
-			.totalENSpotted_atLeastInSense(MatchType.LENIENT_OVERLAP, 4)
+			.totalENSpotted_atLeastInSense(MatchType.STRICT, expEnSpotted_atLeastStrict)
+			.totalENSpotted_atLeastInSense(MatchType.LENIENT, expEnSpotted_atLeastLenient)
+			.totalENSpotted_atLeastInSense(MatchType.LENIENT_OVERLAP, expEnSpotted_atLeastLenientOverlap)
 
-			.rateENSpotted_inSense(MatchType.STRICT, 0.75)
-			.rateENSpotted_inSense(MatchType.LENIENT, 0.75)
+			.rateENSpotted_inSense(MatchType.STRICT, 0.833)
+			.rateENSpotted_inSense(MatchType.LENIENT, 0.833)
 			.rateENSpotted_inSense(MatchType.LENIENT_OVERLAP, 1.0)
 		;
 	}
@@ -80,44 +108,53 @@ public class TMEvaluationTest {
 //				.focusOnWord("immuk")
 				.evaluate(Paths.get(glossaryPath), firstN);
 
+		int expEntries = 551;
+		int expSingleIUWordEntries = 460;
+		int expIUPresent = 183;
 
-		int totalEnPresentStrict = 106;
-		if (new IUConfig().tmDataStore().equals("sql")) {
-			totalEnPresentStrict = 104;
-		}
+		int expEnPresent_Strict = 106;
+		int expEnPresent_Lenient = 1;
+		int expEnPresent_LenientOverlap = 3;
 
-		int expTotalIUPresent = 184;
-		int expTotalEnSpotted_Strict = 89;
-		int expTotalEnSpotted_Lenient = 1;
-		int expTotalEnSpotted_LenientOverlap = 7;
-		int expTotalEnSpotted_atLeastStrict = expTotalEnSpotted_Strict;
-		int expTotalEnSpotted_atLeastLenient =
-			expTotalEnSpotted_Strict + expTotalEnSpotted_Lenient;
-		int expTotalEnSpotted_atLeastLenientOverlap =
-			expTotalEnSpotted_Strict + expTotalEnSpotted_Lenient +
-			expTotalEnSpotted_LenientOverlap;
+		int expEnSpotted_Strict = 89;
+		int expEnSpotted_Lenient = 1;
+		int expEnSpotted_LenientOverlap = 7;
+
+		int expEnPresent_atLeastStrict = expEnPresent_Strict;
+		int expEnPresent_atLeastLenient =
+			expEnPresent_Strict + expEnPresent_Lenient;
+		int expEnPresent_atLeastLenientOverlap =
+			expEnPresent_Strict + expEnPresent_Lenient +
+			expEnPresent_LenientOverlap;
+
+		int expEnSpotted_atLeastStrict = expEnSpotted_Strict;
+		int expEnSpotted_atLeastLenient =
+			expEnSpotted_Strict + expEnSpotted_Lenient;
+		int expEnSpotted_atLeastLenientOverlap =
+			expEnSpotted_Strict + expEnSpotted_Lenient +
+			expEnSpotted_LenientOverlap;
 
 		new AssertEvaluationResults(results)
-			.totalGlossaryEntries(556)
-			.totalSingleIUTermEntries(466)
+			.totalGlossaryEntries(expEntries)
+			.totalSingleIUTermEntries(expSingleIUWordEntries)
 
-			.totaIUPresent(184)
+			.totaIUPresent(expIUPresent)
 
-			.totalENPresent_inSense(MatchType.STRICT, totalEnPresentStrict)
-			.totalENPresent_inSense(MatchType.LENIENT, 1)
-			.totalENPresent_inSense(MatchType.LENIENT_OVERLAP, 3)
+			.totalENPresent_inSense(MatchType.STRICT, expEnPresent_Strict)
+			.totalENPresent_inSense(MatchType.LENIENT, expEnPresent_Lenient)
+			.totalENPresent_inSense(MatchType.LENIENT_OVERLAP, expEnPresent_LenientOverlap)
 
-			.totalENSpotted_inSense(MatchType.STRICT, expTotalEnSpotted_Strict)
-			.totalENSpotted_inSense(MatchType.LENIENT, expTotalEnSpotted_Lenient)
-			.totalENSpotted_inSense(MatchType.LENIENT_OVERLAP, expTotalEnSpotted_LenientOverlap)
+			.totalENSpotted_inSense(MatchType.STRICT, expEnSpotted_Strict)
+			.totalENSpotted_inSense(MatchType.LENIENT, expEnSpotted_Lenient)
+			.totalENSpotted_inSense(MatchType.LENIENT_OVERLAP, expEnSpotted_LenientOverlap)
 
-			.totalENPresent_atLeastInSense(MatchType.STRICT, 106)
-			.totalENPresent_atLeastInSense(MatchType.LENIENT, 107)
-			.totalENPresent_atLeastInSense(MatchType.LENIENT_OVERLAP, 110)
+			.totalENPresent_atLeastInSense(MatchType.STRICT, expEnPresent_atLeastStrict)
+			.totalENPresent_atLeastInSense(MatchType.LENIENT, expEnPresent_atLeastLenient)
+			.totalENPresent_atLeastInSense(MatchType.LENIENT_OVERLAP, expEnPresent_atLeastLenientOverlap)
 
-			.totalENSpotted_atLeastInSense(MatchType.STRICT, expTotalEnSpotted_atLeastStrict)
-			.totalENSpotted_atLeastInSense(MatchType.LENIENT, expTotalEnSpotted_atLeastLenient)
-			.totalENSpotted_atLeastInSense(MatchType.LENIENT_OVERLAP, expTotalEnSpotted_atLeastLenientOverlap)
+			.totalENSpotted_atLeastInSense(MatchType.STRICT, expEnSpotted_atLeastStrict)
+			.totalENSpotted_atLeastInSense(MatchType.LENIENT, expEnSpotted_atLeastLenient)
+			.totalENSpotted_atLeastInSense(MatchType.LENIENT_OVERLAP, expEnSpotted_atLeastLenientOverlap)
 
 			.rateENSpotted_inSense(MatchType.STRICT, 0.840)
 			.rateENSpotted_inSense(MatchType.LENIENT, 0.841)

@@ -187,6 +187,13 @@ public class CLI {
 			.argName("LANGUAGES")
 			.build();
 
+		Option optLang = Option.builder(null)
+			.longOpt(ConsoleCommand.OPT_LANG)
+			.desc("Language code (ex: 'en,fr,iu').")
+			.hasArg()
+			.argName("LANGUAGE")
+			.build();
+
 		Option optAlignSentences = Option.builder(null)
 			.longOpt(ConsoleCommand.OPT_SENTENCES_ALIGN)
 			.desc("Set to false if you want to download the parallel pages without aligning their sentences.")
@@ -406,14 +413,22 @@ public class CLI {
 				;
 		mainCmd.addSubCommand(lookForMorpheme);
 
-		// Show information about a word found in a given corpus
+		// Show glossary entries for a word
 		SubCommand wordInfo =
 				new CmdWordInfo("word_info")
 					.addOption(optCorpusName)
 				;
 		mainCmd.addSubCommand(wordInfo);
 
-				// Analyse failures of the morphological analyser
+		// Show information about a word found in a given corpus
+		SubCommand glossLookup =
+				new CmdGlossLookup("glossary_lookup")
+					.addOption(optLang)
+					.addOption(optWord)
+				;
+		mainCmd.addSubCommand(glossLookup);
+
+		// Analyse failures of the morphological analyser
 		SubCommand morphFailureAnalysis =
 				new CmdMorphFailureAnalysis("morph_failure_analysis")
 				.addOption(optMaxWords)

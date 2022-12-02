@@ -69,7 +69,9 @@ public class MorphRelativesFinderAccuracyTest {
 		evaluatePerformance(experiment, testInfo);
 	}
 
-	@Test
+	// Don't worry about SQL vs ES. We are now committed to using SQL for the
+	// CompiledCorpus
+	@Test @Disabled
 	public void test__SpeedComparison__SQLvsES(TestInfo testInfo) throws Exception {
 		CompiledCorpus_ES esCorpus = new CompiledCorpus_ES(CompiledCorpusRegistry.defaultCorpusName);
 		CompiledCorpus_SQL sqlCorpus = new CompiledCorpus_SQL(CompiledCorpusRegistry.defaultCorpusName);

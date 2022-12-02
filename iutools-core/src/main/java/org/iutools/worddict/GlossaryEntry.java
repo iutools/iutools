@@ -8,10 +8,15 @@ import org.iutools.script.TransCoderException;
 import java.util.*;
 
 public class GlossaryEntry {
-	private Map<String, List<String>> _lang2term = new HashMap<String,List<String>>();
-
 	public String source = null;
 	public String reference = null;
+
+	private Map<String, List<String>> _lang2term = new HashMap<String,List<String>>();
+	private String en_def = null;
+	private String iu_def = null;
+	private String iu_def_roman = null;
+	private String iu_def_syll = null;
+
 	Set<String> _availableLanguages = null;
 	TermNormalizer normalizer = new TermNormalizer();
 
@@ -27,11 +32,20 @@ public class GlossaryEntry {
 		for (String lang: _lang2term.keySet()) {
 			List<String> termsInLang = _lang2term.get(lang);
 			try {
-				termsInLang = normalizer.normalizeTerms(termsInLang, lang, TransCoder.Script.ROMAN);
+				if (!lang.equals("iu_syll")) {
+					termsInLang = normalizer.normalizeTerms(termsInLang, lang, TransCoder.Script.ROMAN);
+				}
+				_lang2term.put(lang, termsInLang);
+				int x = 1;
 			} catch (TermNormalizerException e) {
 				throw new GlossaryException(e);
 			}
 		}
+		return;
+	}
+
+	public Map<String, List<String>> getLang2term() {
+		return _lang2term;
 	}
 
 	public GlossaryEntry setTermsInLang(String lang, List<String> terms) throws GlossaryException {
@@ -53,6 +67,28 @@ public class GlossaryEntry {
 			_lang2term.put("iu_syll", (List<String>)termsSyll);
 		}
 		return this;
+	}
+
+	public void setEn_def(String def) {
+		en_def = def;
+	}
+
+	public String getEn_def() {
+		return en_def;
+	}
+
+	public void setIu_def(String def) {
+		iu_def = def;
+		setIUDefInTwoScript(def);
+	}
+
+	public String getIu_def() {
+		return iu_def;
+	}
+
+	private void setIUDefInTwoScript(String def) {
+		iu_def_roman = TransCoder.ensureRoman(def);
+		iu_def_syll = TransCoder.ensureSyllabic(def);
 	}
 
 	private List<String> normalizeTerms(String lang, List<String> terms) throws GlossaryException {

@@ -451,7 +451,12 @@ public class MachineGeneratedDict {
 	private void fillGlossaryEntries(MDictEntry entry, List<String> l1WordsCluster) throws MachineGeneratedDictException {
 		Logger logger = LogManager.getLogger("org.iutools.worddict.MachineGeneratedDict.fillGlossaryEntries");
 		if (includeHumanTranslation) {
-			Glossary glossary = Glossary.get();
+			Glossary glossary = null;
+			try {
+				glossary = Glossary.get();
+			} catch (GlossaryException e) {
+				throw new MachineGeneratedDictException(e);
+			}
 			for (String l1Word : l1WordsCluster) {
 				l1Word = l1Word.toLowerCase();
 				logger.trace("Looking for glossary entries for word: " + l1Word);

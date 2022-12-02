@@ -47,6 +47,7 @@ public abstract class ConsoleCommand extends SubCommand {
 	public static final String OPT_URL = "url";
 	public static final String OPT_TOPICS = "topics";
 	public static final String OPT_LANGS = "langs";
+	public static final String OPT_LANG = "lang";
 	public static final String OPT_SENTENCES_ALIGN = "align-sentences";
 	public static final String OPT_ALIGNER_OPTIONS = "aligner-opts";
 
@@ -268,6 +269,14 @@ public abstract class ConsoleCommand extends SubCommand {
 			langs = langsStr.split("\\s*,\\s*");
  		}
 		return langs;
+	}
+
+	protected String getLang() {
+		String lang = getOptionValue(ConsoleCommand.OPT_LANG);
+		if (!lang.matches("^(iu|en)$")) {
+			usageBadOption(ConsoleCommand.OPT_LANG, "This option must be either 'en' or 'iu'");
+ 		}
+		return lang;
 	}
 
 	protected AlignOptions[] getAlignOptions() {

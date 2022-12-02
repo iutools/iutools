@@ -1,5 +1,9 @@
 package org.iutools.config;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Set;
 
 import ca.nrc.config.Config;
@@ -151,5 +155,41 @@ public class IUConfig extends Config {
 			emails = emailsStr.split("\\s*[;,]\\s*");
 		}
 		return emails;
+	}
+
+	public Path glossaryFPath() throws ConfigException {
+		return glossaryFPath((String)null);
+	}
+
+	public Path glossaryFPath(String relativePath) throws ConfigException {
+		if (relativePath == null) {
+			relativePath = "";
+		}
+		relativePath = "/data/glossaries/"+relativePath;
+		Path fpath = Paths.get(getIUDataPath(relativePath));
+		return fpath;
+	}
+
+	public Path workspaceFile(String relativePath) throws ConfigException {
+		return workspaceFile(relativePath, (Boolean)null);
+	}
+
+	public Path workspaceFile(String relativePath, Boolean createIfNotExists) throws ConfigException {
+		if (createIfNotExists == null) {
+			createIfNotExists = true;
+		}
+		if (relativePath == null) {
+			relativePath = "";
+		}
+		relativePath = "/workspace/"+relativePath;
+		Path fpath = Paths.get(getIUDataPath(relativePath));
+		if (createIfNotExists && fpath != null && !fpath.toFile().exists()) {
+			try {
+				Files.createDirectories(fpath.getParent());
+			} catch (IOException e) {
+				throw new ConfigException("Could not create file: "+fpath, e);
+			}
+		}
+		return fpath;
 	}
 }

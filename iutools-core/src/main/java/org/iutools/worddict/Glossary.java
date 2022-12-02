@@ -3,16 +3,21 @@ package org.iutools.worddict;
 import ca.nrc.config.ConfigException;
 import ca.nrc.data.file.ObjectStreamReader;
 import ca.nrc.data.file.ObjectStreamReaderException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.iutools.config.IUConfig;
+import org.iutools.utilities.StopWatch;
+import org.iutools.utilities.StopWatchException;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /** Human-generated glossary of en-iu terms
  *
@@ -22,37 +27,101 @@ import java.util.Map;
 
 public class Glossary {
 
-	private Map<String, List<GlossaryEntry>> term2entries =
+	public Map<String, List<GlossaryEntry>> term2entries =
 		new HashMap<String,List<GlossaryEntry>>();
 
-	private static Glossary _singleton;
-	static {
-		try {
-			_singleton = new Glossary();
-		} catch (GlossaryException e) {
-			throw new RuntimeException("Could not create singleton instance");
-		}
+	private static Glossary _singleton = null;
+
+	private static ObjectMapper mapper = new ObjectMapper();
+
+
+	public Glossary() throws GlossaryException {
+		return;
 	}
 
-	public static Glossary get() {
+	public static synchronized Glossary get() throws GlossaryException {
+		if (_singleton == null) {
+			_singleton = loadFromCache();
+			if (_singleton == null) {
+				_singleton = loadFromGlossaryFiles();
+			}
+		}
 		return _singleton;
 	}
 
-	private Glossary() throws GlossaryException {
-		String[] glossFiles = null;
+	private static Path cacheFilePath() throws GlossaryException {
+		Path cacheFile = null;
 		try {
-			glossFiles = new String[] {
-				IUConfig.getIUDataPath("data/glossaries/wpGlossary.json")
-			};
-			for (String glossFile: glossFiles) {
-				loadFile(new File(glossFile));
-			}
+			cacheFile = new IUConfig().workspaceFile("glossaryCache.json");
 		} catch (ConfigException e) {
-			throw new GlossaryException("Problem reading glossary files "+String.join(", ", glossFiles), e);
+			throw new GlossaryException(e);
+		}
+		return cacheFile;
+	}
+
+	private static Glossary loadFromCache() throws GlossaryException {
+		Glossary gloss = null;
+		StopWatch sw = new StopWatch().start();
+		try {
+			Path cacheFile = cacheFilePath();
+			System.out.println("-- loadSingletonFromCache: cacheFile="+cacheFile);
+			if (cacheFile.toFile().exists() && cacheFile.toFile().length() != 0L) {
+				gloss = mapper.readValue(cacheFile.toFile(), Glossary.class);
+			}
+		} catch (IOException e) {
+			throw new GlossaryException(e);
+		}
+		try {
+			System.out.println("-- loadSingletonFromCache: took "+sw.totalTime(TimeUnit.MILLISECONDS));
+		} catch (StopWatchException e) {
+			e.printStackTrace();
+		}
+		return gloss;
+	}
+
+	private static Glossary loadFromGlossaryFiles() throws GlossaryException {
+		StopWatch sw = new StopWatch().start();
+		Glossary gloss = new Glossary();
+		File[] glossFiles = glossFiles = glossFilesToLoad();
+		for (File glossFile: glossFiles) {
+			gloss.loadFile(glossFile);
+		}
+		saveToCache(gloss);
+
+		try {
+			System.out.println("-- loadFromGlossaryFiles: took "+sw.totalTime(TimeUnit.MILLISECONDS));
+		} catch (StopWatchException e) {
+			e.printStackTrace();
 		}
 
+		return gloss;
+	}
+
+	private static void saveToCache(Glossary gloss) throws GlossaryException {
+		try {
+			Path cacheFile = cacheFilePath();
+			mapper.writeValue(cacheFile.toFile(), gloss);
+		} catch (GlossaryException | IOException e) {
+			throw new GlossaryException(e);
+		}
 		return;
 	}
+
+	private static File[] glossFilesToLoad() throws GlossaryException {
+		String[] fileNames = new String[] {
+//			"Dorais 1978", "EDU 2000 (rev. 2019)", "SCHNEIDER",
+			"wpGlossary"};
+		File[] files = new File[fileNames.length];
+		for (int ii=0; ii < files.length; ii++) {
+			try {
+				files[ii] = new IUConfig().glossaryFPath(fileNames[ii]+".json").toFile();
+			} catch (ConfigException e) {
+				throw new GlossaryException(e);
+			}
+		}
+		return files;
+	}
+
 
 	private Glossary loadFile(File file) throws GlossaryException {
 		try {
@@ -82,7 +151,8 @@ public class Glossary {
 				if (!term2entries.containsKey(key)) {
 					term2entries.put(key, new ArrayList<GlossaryEntry>());
 				}
-				term2entries.get(key).add(newEntry);
+				List<GlossaryEntry> existingEntries = term2entries.get(key);
+				existingEntries.add(newEntry);
 			}
 		}
 	}
