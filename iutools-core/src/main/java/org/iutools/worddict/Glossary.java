@@ -41,7 +41,7 @@ public class Glossary {
 
 	public static synchronized Glossary get() throws GlossaryException {
 		if (_singleton == null) {
-			_singleton = loadFromCache();
+//			_singleton = loadFromCache();
 			if (_singleton == null) {
 				_singleton = loadFromGlossaryFiles();
 			}
@@ -109,12 +109,17 @@ public class Glossary {
 
 	private static File[] glossFilesToLoad() throws GlossaryException {
 		String[] fileNames = new String[] {
-//			"Dorais 1978", "EDU 2000 (rev. 2019)", "SCHNEIDER",
-			"wpGlossary"};
+//			"Dorais 1978",
+//			"EDU 2000 (rev. 2019)",
+//			"NAC Kadlun-Jone & Angalik (1996)",
+//			"NAC Kublu (2005)",
+//			"SCHNEIDER",
+			"wpGlossary",
+		};
 		File[] files = new File[fileNames.length];
 		for (int ii=0; ii < files.length; ii++) {
 			try {
-				files[ii] = new IUConfig().glossaryFPath(fileNames[ii]+".json").toFile();
+				files[ii] = new IUConfig().glossaryFPath(fileNames[ii]+".gloss.json").toFile();
 			} catch (ConfigException e) {
 				throw new GlossaryException(e);
 			}

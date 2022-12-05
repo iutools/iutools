@@ -664,14 +664,21 @@ public class SpellChecker {
 
 		Boolean wordIsMispelled = null;
 
-		// First check if word is in the dictionary of explicitly correct
+		// If the word is all numbers, then it is NOT mis-spelled
+		if (wordIsMispelled == null && word.matches("^[0-9]+$")) {
+			logger.trace("word is all digits");
+			wordIsMispelled = false;
+		}
+
+		// First, check if word is in the dictionary of explicitly correct
 		// words.
+		//
 		if (wordIsMispelled == null &&isExplicitlyCorrect(word)) {
 			logger.trace("word is was explicity tagged as being correct");
 			wordIsMispelled = false;
 		}
 
-		// Then check if the word is in the pre-compiled corpus. If it is, check
+		// Next, check if the word is in the pre-compiled corpus. If it is, check
 		// its decomposition in the word's WordInfo.
 		//
 		if (wordIsMispelled == null && corpus != null) {
@@ -689,23 +696,20 @@ public class SpellChecker {
 			}
 		}
 
-		if (wordIsMispelled == null && word.matches("^[0-9]+$")) {
-			logger.trace("word is all digits");
-			wordIsMispelled = false;
-		}
-
 		if (wordIsMispelled == null && latinSingleInuktitutCharacters.contains(word)) {
 			logger.trace("single inuktitut character");
 			wordIsMispelled = false;
 		}
 
+		// Next, check if the word contains more than two consecutive consonants
 		if (wordIsMispelled == null && wordContainsMoreThanTwoConsecutiveConsonants(word)) {
 			logger.trace("more than 2 consecutive consonants in the word");
 			wordIsMispelled = true;
 		}
 
-		if (wordIsMispelled == null && containsAbsoluteMistake(word)) {
-			logger.trace("word contains an absolute mistake");
+		// Next, see if any of the simple correction rules apply
+		if (wordIsMispelled == null && fitsSomeCorrectionRules(word)) {
+			logger.trace("some correction rules apply for this word");
 			wordIsMispelled = true;
 		}
 
@@ -717,6 +721,8 @@ public class SpellChecker {
 			logger.trace("numeric expression - wordIsMispelled: " + wordIsMispelled);
 		}
 
+		// If the 'word' is made up of just punctuaation, then it is NOT
+		// mis-spelled.
 		if (wordIsMispelled == null && wordIsPunctuation(word)) {
 			logger.trace("word is punctuation");
 			wordIsMispelled = false;
@@ -746,7 +752,7 @@ public class SpellChecker {
 		return wordIsMispelled;
 	}
 
-	private boolean containsAbsoluteMistake(String word) {
+	private boolean fitsSomeCorrectionRules(String word) {
 		String fixedWord = new AbsoluteMistakes().fixWord(word);
 		return (!fixedWord.equals(word));
 	}

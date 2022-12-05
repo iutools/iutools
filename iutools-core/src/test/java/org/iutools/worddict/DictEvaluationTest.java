@@ -30,7 +30,7 @@ public class DictEvaluationTest {
 	@Test
 	public void test_evaluateWordDict_OnWikipediaGlossary_first20(
 		TestInfo testInfo) throws Exception {
-		String glossaryPath = IUConfig.getIUDataPath("data/glossaries/wpGlossary.json");
+		String glossaryPath = IUConfig.getIUDataPath("data/glossaries/wpGlossary.gloss.json");
 		int stopAfterN = 20;
 		MDictEvaluator evaluator = new MDictEvaluator()
 //				.setMinMaxPairs(null, 20).setMaxTranslations(5)
@@ -63,7 +63,7 @@ public class DictEvaluationTest {
 	@Test
 	public void test_evaluateWordDict_OnWikipediaGlossary_AllEntries(
 		TestInfo testInfo) throws Exception {
-		String glossaryPath = IUConfig.getIUDataPath("data/glossaries/wpGlossary.json");
+		String glossaryPath = IUConfig.getIUDataPath("data/glossaries/wpGlossary.gloss.json");
 		MDictEvaluator evaluator = new MDictEvaluator()
 			.setMinMaxPairs(null, 100)
 			.setMaxTranslations(10);

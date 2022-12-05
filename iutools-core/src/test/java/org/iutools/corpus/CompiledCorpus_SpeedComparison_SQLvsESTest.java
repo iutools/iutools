@@ -28,6 +28,11 @@ import java.util.concurrent.TimeUnit;
  * - CompiledCorpus_ES
  *
  */
+// Disable this test. As of 2022-12, we are pretty much committed to using SQL for the CompiledCorpus
+// Well keep this test case around for say, a year and it should be deleted
+// if we don't see a need for it by January 1, 2024.
+//
+@Disabled
 public class CompiledCorpus_SpeedComparison_SQLvsESTest {
 
 	protected final String corpusName = "hansard-1999-2002";
@@ -78,7 +83,7 @@ public class CompiledCorpus_SpeedComparison_SQLvsESTest {
 	protected static Path glossaryPath = null;
 	static {
 		try {
-			glossaryPath = Paths.get(IUConfig.getIUDataPath("data/glossaries/wpGlossary.json"));
+			glossaryPath = Paths.get(IUConfig.getIUDataPath("data/glossaries/wpGlossary.gloss.json"));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

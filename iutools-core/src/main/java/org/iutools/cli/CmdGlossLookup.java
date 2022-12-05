@@ -27,16 +27,17 @@ public class CmdGlossLookup extends ConsoleCommand {
 			"  \"lang2term\":\n" +
 			"    {\n" +
 			"      \"en\":\n" +
-			"        [\"Administrators\"],\n" +
+			"        [\"cousins (both male)\"],\n" +
 			"      \"iu_roman\":\n" +
-			"        [\"tukiliuqpaa\"],\n" +
+			"        [\"illuarjuk\"],\n" +
 			"      \"iu_syll\":\n" +
-			"        [\"ᑐᑭᓕᐅᖅᐹ\"]\n" +
+			"       [\"ᐃᓪᓗᐊᕐᔪᒃ\"]\n" +
 			"    },\n" +
-			"    \"source\": \"wikipedia\",\n" +
-			"    \"reference\": \"https://iu.wikipedia.org/wiki/ᑐᑭᓕᐅᖅᐹ\"    \n" +
+			"  \"source\": \"tusaalanga\",\n" +
+			"  \"reference\": \"https://tusaalanga.ca/glossary\"\n" +
 			"}"
 			;
+
 		ObjectMapper mapper = new ObjectMapper();
 		GlossaryEntry gloss2 = mapper.readValue(json, GlossaryEntry.class);
 

@@ -647,7 +647,7 @@ public class TMEvaluator {
 			firstN = Integer.parseInt(args[1]);
 		}
 
-		String glossaryPath = IUConfig.getIUDataPath("data/glossaries/wpGlossary.json");
+		String glossaryPath = IUConfig.getIUDataPath("data/glossaries/wpGlossary.gloss.json");
 		Path sentPairsFile = null;
 		for (File anAlignmentsFile: alignmentFiles) {
 			System.out.println("\n\n===============================================");

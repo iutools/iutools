@@ -10,6 +10,7 @@ import java.util.*;
 public class GlossaryEntry {
 	public String source = null;
 	public String reference = null;
+	public String[] dialects = null;
 
 	private Map<String, List<String>> _lang2term = new HashMap<String,List<String>>();
 	private String en_def = null;

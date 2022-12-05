@@ -234,7 +234,7 @@ public class MDictEvaluator {
 	}
 
 	public void main(String[] args) throws Exception {
-		String glossaryPath = IUConfig.getIUDataPath("data/glossaries/wpGlossary.json");
+		String glossaryPath = IUConfig.getIUDataPath("data/glossaries/wpGlossary.gloss.json");
 		MDictEvaluator evaluator = new MDictEvaluator()
 			.setMinMaxPairs(null, 100)
 			.setMaxTranslations(10);
