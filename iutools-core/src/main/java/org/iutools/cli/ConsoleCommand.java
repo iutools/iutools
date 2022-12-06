@@ -65,6 +65,8 @@ public abstract class ConsoleCommand extends SubCommand {
 	public static final String OPT_FONT = "font";
 	public static final String OPT_SOM = "stats-over-morphemes";
 	public static final String OPT_DICT_FILE = "dict-file";
+	public static final String OPT_GLOSSARY_NAME = "glossary-name";
+
 	public static final String OPT_MAX_CORR = "max-corr";
 	public static final String OPT_ED_ALGO = "edit-dist";
 	public static final String OPT_LENIENT_DECOMPS = "lenient-decomps";
@@ -484,10 +486,16 @@ public abstract class ConsoleCommand extends SubCommand {
 	protected String getStatsOverMorphemes() {
 		return getStatsOverMorphemes(false);
 	}
+
 	protected String getStatsOverMorphemes(boolean failIfAbsent) {
 		return getOptionValue(ConsoleCommand.OPT_SOM, failIfAbsent);
 	}
-	
+
+	protected String getGlossaryName() {
+		String glossName = getOptionValue(ConsoleCommand.OPT_GLOSSARY_NAME, true);
+		return glossName;
+	}
+
 	protected String getMaxCorr() {
 		return getMaxCorr(false);
 	}

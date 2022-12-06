@@ -292,6 +292,13 @@ public class CLI {
 			    .hasArg()
 			    .argName("COMMENT")
 			    .build();
+
+		Option optGlossaryName = Option.builder(null)
+				.longOpt(ConsoleCommand.OPT_GLOSSARY_NAME)
+			    .desc("Name of a glossary (ex: tusaalunga).")
+			    .hasArg()
+			    .argName("GLOSSARY_SOURCE")
+			    .build();
 		
 		// --- COMMANDS
 
@@ -427,6 +434,15 @@ public class CLI {
 					.addOption(optWord)
 				;
 		mainCmd.addSubCommand(glossLookup);
+
+		// Scrape a glossary from the web or HTML files
+		SubCommand scrapeGloss =
+				new CmdScrapeGlossary("scrape_glossary")
+					.addOption(optGlossaryName)
+					.addOption(optInputDir)
+				;
+		mainCmd.addSubCommand(scrapeGloss);
+
 
 		// Analyse failures of the morphological analyser
 		SubCommand morphFailureAnalysis =

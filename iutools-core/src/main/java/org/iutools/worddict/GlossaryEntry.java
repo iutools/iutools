@@ -151,4 +151,20 @@ public class GlossaryEntry {
 
 		return toS;
 	}
+
+	public GlossaryEntry setDialects(String... dialectNames) {
+		this.dialects = dialectNames;
+		return this;
+	}
+
+	public GlossaryEntry setSource(String _source) {
+		source = _source;
+		return this;
+	}
+
+	public GlossaryEntry setReference(String _reference) {
+		reference = _reference;
+		return this;
+	}
+
 }

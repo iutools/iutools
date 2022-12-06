@@ -60,11 +60,12 @@ public class Glossary {
 	}
 
 	private static Glossary loadFromCache() throws GlossaryException {
+		Logger logger = LogManager.getLogger("org.iutools.worddict.Glossary.loadFromCache");
 		Glossary gloss = null;
 		StopWatch sw = new StopWatch().start();
 		try {
 			Path cacheFile = cacheFilePath();
-			System.out.println("-- loadSingletonFromCache: cacheFile="+cacheFile);
+			logger.trace("cacheFile="+cacheFile);
 			if (cacheFile.toFile().exists() && cacheFile.toFile().length() != 0L) {
 				gloss = mapper.readValue(cacheFile.toFile(), Glossary.class);
 			}
@@ -72,7 +73,7 @@ public class Glossary {
 			throw new GlossaryException(e);
 		}
 		try {
-			System.out.println("-- loadSingletonFromCache: took "+sw.totalTime(TimeUnit.MILLISECONDS));
+			logger.trace("Loading took "+sw.totalTime(TimeUnit.SECONDS)+" secs");
 		} catch (StopWatchException e) {
 			e.printStackTrace();
 		}
@@ -80,6 +81,7 @@ public class Glossary {
 	}
 
 	private static Glossary loadFromGlossaryFiles() throws GlossaryException {
+		Logger logger = LogManager.getLogger("org.iutools.worddict.Glossary.loadFromGlossaryFiles");
 		StopWatch sw = new StopWatch().start();
 		Glossary gloss = new Glossary();
 		File[] glossFiles = glossFiles = glossFilesToLoad();
@@ -89,7 +91,7 @@ public class Glossary {
 		saveToCache(gloss);
 
 		try {
-			System.out.println("-- loadFromGlossaryFiles: took "+sw.totalTime(TimeUnit.MILLISECONDS));
+			logger.trace("Loading took "+sw.totalTime(TimeUnit.SECONDS)+" secs");
 		} catch (StopWatchException e) {
 			e.printStackTrace();
 		}
@@ -114,6 +116,7 @@ public class Glossary {
 //			"NAC Kadlun-Jone & Angalik (1996)",
 //			"NAC Kublu (2005)",
 //			"SCHNEIDER",
+//			"tusaalanga",
 			"wpGlossary",
 		};
 		File[] files = new File[fileNames.length];
