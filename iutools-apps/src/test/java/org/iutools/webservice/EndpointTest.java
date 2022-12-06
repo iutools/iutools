@@ -9,7 +9,7 @@ import java.io.FileNotFoundException;
 
 public abstract class EndpointTest {
 
-	public abstract Endpoint makeEndpoint() throws SpellCheckerException, FileNotFoundException, ConfigException, ServiceException;
+	public abstract Endpoint makeEndpoint() throws Exception;
 
 	private ObjectMapper mapper = new ObjectMapper();
 

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Every 30 secs, log4j2 will check this file to see if the configuration has changed -->
+<Configuration monitorInterval="30">
+
+  
+    <Appenders>
+        <Console name="LogToConsole" target="SYSTEM_OUT">
+            <!-- Use this pattern if you don't care about the thread and timing
+                 info -->
+            <PatternLayout pattern="\-\- %c{2}: %msg%n"/>
+	    
+            <!-- Use this pattern if you want the log message to include info
+                 about the thread and timing -->
+            <!-- <PatternLayout pattern="\-\- %c{2}[%t@%d{HH:mm:ss.SSS}]: %msg%n"/> -->
+        </Console>
+
+
+	<!-- File where log messages will be written -->
+        <RollingRandomAccessFile name="LogToRollingRandomAccessFile" fileName="/path/to/your/iutools.log"
+                                 filePattern="logs/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log.gz">
+                                 
+            <!-- Use this pattern if you don't care about the thread and timing
+                 info -->
+            <PatternLayout pattern="\-\- %c{2}: %msg%n"/>
+
+          <!-- Use this pattern if you want the log message to include info
+                 about the thread and timing -->
+            <!--
+            <PatternLayout pattern="\-\- %c{2}[%t@%d{HH:mm:ss.SSS}]: %msg%n"/>
+            -->
+
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="1 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingRandomAccessFile>
+    </Appenders>
+
+    <Loggers>
+
+        <Root level="off" additivity="false">
+          <AppenderRef ref="LogToRollingRandomAccessFile"/>
+          <AppenderRef ref="LogToConsole"/>
+        </Root>
+
+	<!-- Activate traces here -->
+
+	<!-- For example, to activate traces in the method correctWord() of class SpellChecker --> 
+	<Logger name="org.iutools.spellchecker.SpellChecker.correctWord" additivity="true"
+	   level="trace"/>
+
+	
+    </Loggers>
+    
+    
+</Configuration>

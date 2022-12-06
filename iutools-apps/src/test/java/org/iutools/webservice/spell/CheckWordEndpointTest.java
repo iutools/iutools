@@ -16,7 +16,7 @@ import org.junit.jupiter.api.TestInfo;
 
 import java.util.function.Consumer;
 
-public class SpellEndpointTest extends EndpointTest {
+public class CheckWordEndpointTest extends EndpointTest {
 
 	TestInfo testInfo = null;
 
@@ -45,7 +45,7 @@ public class SpellEndpointTest extends EndpointTest {
 
 	@Override
 	public Endpoint makeEndpoint() throws ServiceException {
-		return new SpellEndpoint();
+		return new CheckWordEndpoint();
 	}
 
 	@BeforeEach
@@ -59,7 +59,7 @@ public class SpellEndpointTest extends EndpointTest {
 	 ***********************/
 
 	@Test
-	public void test__SpellEndpoint__VariousCases() throws Exception {
+	public void test__CheckWordEndpoint__VariousCases() throws Exception {
 
 		Case[] cases = new Case[] {
 			new Case("ᐃᓄᑦᒧᑦ: Syllabics misspeled",
@@ -83,10 +83,10 @@ public class SpellEndpointTest extends EndpointTest {
 			}
 
 			try {
-				SpellInputs inputs = new SpellInputs(word);
+				CheckWordInputs inputs = new CheckWordInputs(word);
 				EndpointResult epResult = endPoint.execute(inputs);
 
-				new AssertSpellResult(epResult)
+				new AssertCheckWordResult(epResult)
 					.correctionIs(expMisspelled, expSuggestions);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
@@ -104,12 +104,12 @@ public class SpellEndpointTest extends EndpointTest {
 
 
 //	@Test
-//	public void test__SpellEndpoint__Syllabic__HappyPath() throws Exception {
+//	public void test__CheckWordEndpoint__Syllabic__HappyPath() throws Exception {
 //
-//		SpellInputs inputs = new SpellInputs("ᐃᓄᑦᒧᑦ ᑕᑯᔪᖅ");
+//		CheckWordInputs inputs = new CheckWordInputs("ᐃᓄᑦᒧᑦ ᑕᑯᔪᖅ");
 //		EndpointResult epResult = endPoint.execute(inputs);
 //
-//		new AssertSpellResult(epResult)
+//		new AssertCheckWordResult(epResult)
 //			.correctionIs(true,
 //				new String[]{
 //					"ᐃᓄᒻᒧᑦ",
@@ -125,13 +125,13 @@ public class SpellEndpointTest extends EndpointTest {
 //	}
 
 //	@Test
-//	public void test__SpellEndpoint__WordWithSyllCharsThatAreExpressedAsTwoRomanChars()
+//	public void test__CheckWordEndpoint__WordWithSyllCharsThatAreExpressedAsTwoRomanChars()
 //			throws Exception {
 //
-//		SpellInputs inputs = new SpellInputs("ᒐᕙᒪᒃᑯᑎᒍᑦ");
+//		CheckWordInputs inputs = new CheckWordInputs("ᒐᕙᒪᒃᑯᑎᒍᑦ");
 //		EndpointResult epResult = endPoint.execute(inputs);
 //
-//		new AssertSpellResult(epResult)
+//		new AssertCheckWordResult(epResult)
 //			.correctionIs(true,
 //				new String[]{
 //					"ᒐᕙᒪᒃᑎᒍᑦ",
@@ -143,19 +143,19 @@ public class SpellEndpointTest extends EndpointTest {
 //	}
 
 	@Test
-	public void test__SpellEndpoint__SpeedTest__AllOKWords() throws Exception {
+	public void test__CheckWordEndpoint__SpeedTest__AllOKWords() throws Exception {
 		double percTolerance = 0.5;
 		speedTest(allOKWords, testInfo, percTolerance);
 	}
 
     @Test
-    public void test__SpellEndpoint__SpeedTest__AllMisspelledWords() throws Exception {
+    public void test__CheckWordEndpoint__SpeedTest__AllMisspelledWords() throws Exception {
 		double percTolerance = 0.25;
 		 speedTest(allMisspelledWords, testInfo, percTolerance);
 	}
 
 	@Test
-	public void test__SpellEndpoint__SpeedTest__HalfOKhalfMisspelledWords() throws Exception {
+	public void test__CheckWordEndpoint__SpeedTest__HalfOKhalfMisspelledWords() throws Exception {
 		double percTolerance = 0.25;
 		speedTest(halfOKhalfMisspelledWords, testInfo, percTolerance);
 	}
@@ -166,7 +166,7 @@ public class SpellEndpointTest extends EndpointTest {
 		String text = String.join(" ", words);
 		long startMSecs = StopWatch.nowMSecs();
 		for (String aWord: words) {
-			SpellInputs inputs = new SpellInputs(aWord);
+			CheckWordInputs inputs = new CheckWordInputs(aWord);
 			EndpointResult epResult = endPoint.execute(inputs);
 		}
 

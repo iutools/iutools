@@ -3,16 +3,16 @@ package org.iutools.spellchecker;
 import ca.nrc.testing.AssertString;
 import ca.nrc.testing.Asserter;
 
-public class AssertAbsoluteMistakes extends Asserter<AbsoluteMistakes> {
-	public AssertAbsoluteMistakes(AbsoluteMistakes _gotObject) {
+public class AssertCorrectionRulesSet extends Asserter<CorrectionRulesSet> {
+	public AssertCorrectionRulesSet(CorrectionRulesSet _gotObject) {
 		super(_gotObject);
 	}
 
-	public AssertAbsoluteMistakes(AbsoluteMistakes _gotObject, String mess) {
+	public AssertCorrectionRulesSet(CorrectionRulesSet _gotObject, String mess) {
 		super(_gotObject, mess);
 	}
 
-	public AssertAbsoluteMistakes nothingToFix(String origWord) {
+	public AssertCorrectionRulesSet nothingToFix(String origWord)  throws Exception {
 		String fixedWord = mistakes().fixWord(origWord);
 		AssertString.assertStringEquals(
 			baseMessage+"\n\"Fixed\" word should have been identical to the original one.",
@@ -20,7 +20,8 @@ public class AssertAbsoluteMistakes extends Asserter<AbsoluteMistakes> {
 		return this;
 	}
 
-	public AssertAbsoluteMistakes fixesWord(String origWord, String expFixedWord) {
+	public AssertCorrectionRulesSet fixesWord(String origWord, String expFixedWord)
+		throws Exception {
 		String gotFixedWord = mistakes().fixWord(origWord);
 		AssertString.assertStringEquals(
 			baseMessage+"\nWord was not fixed as expected.",
@@ -29,7 +30,7 @@ public class AssertAbsoluteMistakes extends Asserter<AbsoluteMistakes> {
 	}
 
 
-	protected AbsoluteMistakes mistakes() {
-		return (AbsoluteMistakes)gotObject;
+	protected CorrectionRulesSet mistakes() {
+		return (CorrectionRulesSet)gotObject;
 	}
 }

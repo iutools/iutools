@@ -6,10 +6,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.iutools.linguisticdata.MorphemeHumanReadableDescr;
 import org.iutools.webservice.AssertEndpointResult;
 import org.iutools.webservice.EndpointResult;
-import org.iutools.webservice.MorphemeSearchResult;
-import org.iutools.webservice.spell.SpellResult;
 
-import java.io.IOException;
 import java.util.*;
 
 public class AssertMorphemeExamplesResult extends AssertEndpointResult {

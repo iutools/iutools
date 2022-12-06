@@ -26,7 +26,7 @@ public class SpellingCorrection {
 	 * Partial fix of the word obtained by applying simple rules for common
 	 * "absolute" mistakes.
 	 */
-	public String partialFixRoman = null;
+	public String shallowFix = null;
 	
 	private String correctLead;
 		public SpellingCorrection setCorrectLead(String _correctLead) throws SpellCheckerException {
@@ -86,9 +86,8 @@ public class SpellingCorrection {
 	private void initialize(String _orig, List<String> _corrections, 
 			List<Double> _scores, Boolean _wasMispelled) {
 		this.setOrig(_orig);
-		this.partialFixRoman = _orig;
+		this.shallowFix = _orig;
 		if (_wasMispelled != null) this.wasMispelled = _wasMispelled;
-//		if (_corrections != null && _scores != null) {
 		if (_corrections != null) {
 			for (int ii=0; ii < _corrections.size(); ii++) {
 				String spelling = _corrections.get(ii);
@@ -96,12 +95,22 @@ public class SpellingCorrection {
 				if (_scores != null) {
 					score = _scores.get(ii);
 				}
-//				Double score = _scores.get(ii);
 				scoredCandidates.add(new ScoredSpelling(spelling, score));
 			}
 		}
 	}
-	
+
+	public String topSuggestion() {
+		String top = orig;
+		if (wasMispelled) {
+			List<String> suggestions = getDeepSuggestions();
+			if (!suggestions.isEmpty()) {
+				top = suggestions.get(0);
+			}
+		}
+		return top;
+	}
+
 	public List<String> getAllSuggestions() {
 		Logger tLogger = LogManager.getLogger("org.iutools.spellchecker.SpellingCorrection.getAllSuggestions");
 		if (tLogger.isTraceEnabled()) {
@@ -109,12 +118,47 @@ public class SpellingCorrection {
 		}
 
 		List<String> suggestions = new ArrayList<String>();
-		
+
+		// We may add 3 types of suggestions
+		//
+		// Shallow correction:
+		//    This is a single suggestion that results from applying shallow rules
+		//    that only look for sequences of characters that can NEVER appear in
+		//    a valid Inuktitut word
+		//
+		// Deep corrections:
+		//    These are suggestions that also ensure no morpheme composition rules
+		//    are violated.
+		//
+		// Highlighted corrections
+		//   This is a single suggestion that highlights the longest correct
+		//   portions at start and end of the word (ex: nunav[vv]ut)
+		//
+
+		// We always start with the Highlighted correction
 		String highlightedCorrection = highlightIncorrectMiddle();
 		if (highlightedCorrection != null) {
 			suggestions.add(highlightedCorrection);			
 		}
-		suggestions.addAll(getPossibleSpellings());
+
+		// Next, add either Deep corrections (if we have some) OR the
+		// shallow correction (if there is one)
+		//
+		List<String> additionalSuggestions = getDeepSuggestions();
+		if (additionalSuggestions.isEmpty()) {
+			// No deep suggestions
+			// Were we able to make a suggestion using the shallow rules?
+			if (!shallowFix.equals(orig)) {
+				additionalSuggestions = new ArrayList<String>();
+				additionalSuggestions.add(shallowFix);
+			}
+		}
+		for (String anAdditionalSugg: additionalSuggestions) {
+			// Make sure we don't already have that suggestion
+			if (!suggestions.contains(anAdditionalSugg)) {
+				suggestions.add(anAdditionalSugg);
+			}
+		}
 
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("returning suggestions="+String.join(",", suggestions));
@@ -129,7 +173,7 @@ public class SpellingCorrection {
 	}
 
 	@Transient
-	public List<String> getPossibleSpellings() {
+	public List<String> getDeepSuggestions() {
 		List<String> possibleSpellings = new ArrayList<String>();
 		for (ScoredSpelling scoredSpelling: scoredCandidates) {
 			possibleSpellings.add(scoredSpelling.spelling);

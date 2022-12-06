@@ -6,12 +6,11 @@ import ca.nrc.testing.RunOnCases.*;
 import ca.nrc.ui.web.testing.MockHttpServletRequest;
 import ca.nrc.ui.web.testing.MockHttpServletResponse;
 import org.iutools.json.Mapper;
-import org.iutools.webservice.config.ConfigResult;
 import org.iutools.webservice.gist.GistPrepareContentResult;
 import org.iutools.webservice.logaction.LogActionResult;
 import org.iutools.webservice.morphexamples.MorphemeExamplesResult;
 import org.iutools.webservice.search.ExpandQueryResult;
-import org.iutools.webservice.spell.SpellResult;
+import org.iutools.webservice.spell.CheckWordResult;
 import org.iutools.webservice.tokenize.TokenizeResult;
 import org.iutools.webservice.worddict.WordDictResult;
 import org.json.JSONObject;
@@ -41,11 +40,11 @@ public class EndpointDispatcherTest {
 		new Case("spell - misspelled word",
 			new JSONObject().put("text", "inukkksuk"),
 			"iutools/srv2/spell",
-			SpellResult.class),
+			CheckWordResult.class),
 		new Case("spell - correctly spelled word",
 			new JSONObject().put("text", "inukkksuk"),
 			"iutools/srv2/spell",
-			SpellResult.class),
+			CheckWordResult.class),
 		new Case("tokenize",
 			new JSONObject().put("text", "hello wor"),
 			"iutools/srv2/tokenize",

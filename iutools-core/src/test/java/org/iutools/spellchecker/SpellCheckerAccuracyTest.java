@@ -390,7 +390,7 @@ public class SpellCheckerAccuracyTest {
             .setPercentFoundInTopN(1.0)
             .setTolerance(0.02)
                     
-            .setPercTopSuggestionOK(0.91)
+            .setPercTopSuggestionOK(1.0)
                     
             .setAverageRank(1.18)
             .setAvgRankTolerance(0.2)
@@ -417,7 +417,7 @@ public class SpellCheckerAccuracyTest {
 
             .setPercentFoundInTopN(1.0)
             .setTolerance(0.01)
-            .setPercTopSuggestionOK(0.97)
+            .setPercTopSuggestionOK(1.0)
             .setAverageRank(1.07)
             .setAvgRankTolerance(0.1)
         ;
@@ -442,7 +442,7 @@ public class SpellCheckerAccuracyTest {
             .setPercentFoundInTopN(1.0)
             .setTolerance(0.01)
 
-            .setPercTopSuggestionOK(0.97)
+            .setPercTopSuggestionOK(1.0)
 
             .setAverageRank(1.08)
             .setAvgRankTolerance(0.1)
@@ -870,7 +870,7 @@ public class SpellCheckerAccuracyTest {
             return this;
         }
 
-        public EvaluationParameters setFuntimePercTolerance(Double percTolerance) {
+        public EvaluationParameters setRuntimePercTolerance(Double percTolerance) {
             this.runtimePercTolerance = percTolerance;
             return this;
         }

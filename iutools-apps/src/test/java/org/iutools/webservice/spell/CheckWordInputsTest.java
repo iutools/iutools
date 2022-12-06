@@ -5,11 +5,11 @@ import org.iutools.webservice.ServiceInputs;
 import org.iutools.webservice.ServiceInputsTest;
 import org.junit.jupiter.api.Test;
 
-public class SpellInputsTest extends ServiceInputsTest {
+public class CheckWordInputsTest extends ServiceInputsTest {
 
 	@Override
 	protected ServiceInputs makeInputs() throws Exception {
-		return new SpellInputs();
+		return new CheckWordInputs();
 	}
 
 	@Override
@@ -20,7 +20,7 @@ public class SpellInputsTest extends ServiceInputsTest {
 	@Test
 	public void test__summarizeForLogging() throws Exception {
 		ServiceInputs inputs =
-			new SpellInputs("inukkksuk");
+			new CheckWordInputs("inukkksuk");
 		new AssertServiceInputs(inputs)
 			.logSummaryIs(null);
 			;

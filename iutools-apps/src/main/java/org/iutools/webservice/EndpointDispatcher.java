@@ -9,7 +9,8 @@ import org.iutools.webservice.gist.GistPrepareContentEndpoint;
 import org.iutools.webservice.logaction.LogActionEndpoint;
 import org.iutools.webservice.morphexamples.MorphemeExamplesEndpoint;
 import org.iutools.webservice.search.ExpandQueryEndpoint;
-import org.iutools.webservice.spell.SpellEndpoint;
+import org.iutools.webservice.spell.CheckWordEndpoint;
+import org.iutools.webservice.spell.ShallowCheckTextEndpoint;
 import org.iutools.webservice.tokenize.TokenizeEndpoint;
 import org.iutools.webservice.worddict.WordDictEndpoint;
 
@@ -36,8 +37,13 @@ public class EndpointDispatcher extends HttpServlet {
 
 		endpoints.put("search/expandquery", new ExpandQueryEndpoint());
 		try {
-			endpoints.put("spell", new SpellEndpoint());
+			endpoints.put("spell", new CheckWordEndpoint());
 		} catch (ServiceException e) {
+			// Just ignore the exception and setup the remaining endpoints
+		}
+		try {
+			endpoints.put("shallow_spell", new ShallowCheckTextEndpoint());
+		} catch (Exception e) {
 			// Just ignore the exception and setup the remaining endpoints
 		}
 		endpoints.put("tokenize", new TokenizeEndpoint());

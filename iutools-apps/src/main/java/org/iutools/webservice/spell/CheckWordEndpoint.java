@@ -15,11 +15,27 @@ import org.iutools.webservice.ServiceException;
 import java.io.FileNotFoundException;
 import java.util.List;
 
-public class SpellEndpoint extends Endpoint<SpellInputs, SpellResult> {
+/**
+ * End point for doing a DEEP but SLOW spell check on a SINGLE word, and optionally provide
+ * some suggested correctins (if the word was deemed mis-spelled).
+ *
+ * By DEEP check, we mean one that checks morpheme composition rules. In
+ * particular, it checks that:
+ *
+ * - word is composed of a sequence of valid morphemes that are allowed to
+ *   follow each other
+ * - the written form of each morpheme takes into account the morpheme that
+ *   precede and follow it.
+ *
+ * The advantage of a DEEP check is that it catches deeper mistakes that violate
+ * morphological composition rules.
+ * The disadvantage is that it's much slower than a SHALLOW one.
+ */
+public class CheckWordEndpoint extends Endpoint<CheckWordInputs, CheckWordResult> {
 
 	SpellChecker checker = null;
 
-	public SpellEndpoint() throws ServiceException {
+	public CheckWordEndpoint() throws ServiceException {
 		try {
 			init_SpellEndpoint();
 		} catch (SpellCheckerException  | FileNotFoundException  |
@@ -37,7 +53,7 @@ public class SpellEndpoint extends Endpoint<SpellInputs, SpellResult> {
 			try {
 				checker =
 					new SpellChecker(CompiledCorpusRegistry.defaultCorpusName)
-						.enablePartialCorrections();
+						.setCheckLevel(3);
 			} catch (Exception e) {
 				throw new SpellCheckerException(e);
 			}
@@ -45,26 +61,30 @@ public class SpellEndpoint extends Endpoint<SpellInputs, SpellResult> {
 	}
 
 	@Override
-	protected SpellInputs requestInputs(String jsonRequestBody) throws ServiceException {
-		return jsonInputs(jsonRequestBody, SpellInputs.class);
+	protected CheckWordInputs requestInputs(String jsonRequestBody) throws ServiceException {
+		return jsonInputs(jsonRequestBody, CheckWordInputs.class);
 	}
 
 	@Override
-	public EndpointResult execute(SpellInputs inputs) throws ServiceException {
-		Logger tLogger = LogManager.getLogger("org.iutools.webservice.spell.SpellEndpoint.execute");
+	public EndpointResult execute(CheckWordInputs inputs) throws ServiceException {
+		Logger tLogger = LogManager.getLogger("org.iutools.webservice.spell.CheckWordEndpoint.execute");
 
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("inputs="+PrettyPrinter.print(inputs));
 		}
 
-		SpellResult result = new SpellResult();
+		CheckWordResult result = new CheckWordResult();
 		result.providesSuggestions = inputs.suggestCorrections;
 
 		if (inputs.text == null || inputs.text.isEmpty()) {
 			throw new ServiceException("Query was empty or null");
 		}
 
-		checker.setPartialCorrectionEnabled(inputs.includePartiallyCorrect);
+		try {
+			checker.setCheckLevel(inputs.checkLevel);
+		} catch (SpellCheckerException e) {
+			throw new ServiceException(e);
+		}
 		List<SpellingCorrection> corrections = null;
 		Integer maxCorrections = 0;
 		if (inputs.suggestCorrections) {

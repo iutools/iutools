@@ -5,16 +5,16 @@ import org.iutools.webservice.ServiceInputs;
 
 import java.util.Map;
 
-public class SpellInputs extends ServiceInputs {
+public class CheckWordInputs extends ServiceInputs {
 	public String text = null;
-	public boolean includePartiallyCorrect = false;
 	public boolean suggestCorrections = true;
+	public int checkLevel = 3;
 
-	public SpellInputs() throws ServiceException {
+	public CheckWordInputs() throws ServiceException {
 		init__SpellInputs((String)null);
 	}
 
-	public SpellInputs(String _text) throws ServiceException {
+	public CheckWordInputs(String _text) throws ServiceException {
 		init__SpellInputs(_text);
 	}
 

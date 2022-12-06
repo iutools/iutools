@@ -3,16 +3,16 @@ package org.iutools.spellchecker;
 import ca.nrc.testing.AssertString;
 import ca.nrc.testing.Asserter;
 
-public class AssertAbsoluteMistake_Regex extends Asserter<AbsoluteMistake_Regex> {
-	public AssertAbsoluteMistake_Regex(AbsoluteMistake_Regex pattern) {
+public class AssertCorrectionRule extends Asserter<CorrectionRule> {
+	public AssertCorrectionRule(CorrectionRule pattern) {
 		super(pattern);
 	}
 
-	public AssertAbsoluteMistake_Regex(AbsoluteMistake_Regex _gotObject, String mess) {
+	public AssertCorrectionRule(CorrectionRule _gotObject, String mess) {
 		super(_gotObject, mess);
 	}
 
-	public AssertAbsoluteMistake_Regex nothingToFix(String origWord) {
+	public AssertCorrectionRule nothingToFix(String origWord) throws SpellCheckerException {
 		String fixedWord = pattern().fixWord(origWord);
 		AssertString.assertStringEquals(
 			baseMessage+"\n\"Fixed\" word should have been identical to the original one.",
@@ -20,7 +20,7 @@ public class AssertAbsoluteMistake_Regex extends Asserter<AbsoluteMistake_Regex>
 		return this;
 	}
 
-	public AssertAbsoluteMistake_Regex fixesWord(String origWord, String expFixedWord) {
+	public AssertCorrectionRule fixesWord(String origWord, String expFixedWord) throws SpellCheckerException {
 		String gotFixedWord = pattern().fixWord(origWord);
 		AssertString.assertStringEquals(
 			baseMessage+"\nWord was not fixed as expected.",
@@ -28,7 +28,7 @@ public class AssertAbsoluteMistake_Regex extends Asserter<AbsoluteMistake_Regex>
 		return this;
 	}
 
-	public AbsoluteMistake_Regex pattern() {
+	public CorrectionRule pattern() {
 		return this.gotObject;
 	}
 }

@@ -6,26 +6,26 @@ import org.iutools.webservice.AssertEndpointResult;
 import org.iutools.webservice.EndpointResult;
 import org.junit.jupiter.api.Assertions;
 
-public class AssertSpellResult extends AssertEndpointResult {
+public class AssertCheckWordResult extends AssertEndpointResult {
 
 	@Override
-	protected SpellResult result() {
-		return (SpellResult)gotObject;
+	protected CheckWordResult result() {
+		return (CheckWordResult)gotObject;
 	}
 
-	public AssertSpellResult(EndpointResult _gotObject) {
+	public AssertCheckWordResult(EndpointResult _gotObject) {
 		super(_gotObject);
 	}
 
-	public AssertSpellResult(EndpointResult _gotObject, String mess) {
+	public AssertCheckWordResult(EndpointResult _gotObject, String mess) {
 		super(_gotObject, mess);
 	}
 	
-	public AssertSpellResult correctionIs(Boolean expMisspelled) throws Exception {
+	public AssertCheckWordResult correctionIs(Boolean expMisspelled) throws Exception {
 		return correctionIs(expMisspelled, null);
 	}
 	
-	public AssertSpellResult correctionIs(Boolean expMisspelled,
+	public AssertCheckWordResult correctionIs(Boolean expMisspelled,
 		String[] expSuggestions) throws Exception {
 		
 		SpellingCorrection correction = result().correction;
@@ -39,7 +39,7 @@ public class AssertSpellResult extends AssertEndpointResult {
 		if (correction.wasMispelled) {
 			AssertObject.assertDeepEquals(
 				baseMessage+"\nSuggestions were wrong for"+wordDescr,
-				expSuggestions, correction.getPossibleSpellings());
+				expSuggestions, correction.getDeepSuggestions());
 		}
 		
 		return this;

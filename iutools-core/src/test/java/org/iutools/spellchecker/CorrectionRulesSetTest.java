@@ -2,15 +2,15 @@ package org.iutools.spellchecker;
 
 import org.junit.Test;
 
-public class AbsoluteMistakesTest {
+public class CorrectionRulesSetTest {
 
 	///////////////////////////////////////
 	// DOCUMENTATION TESTS
 	///////////////////////////////////////
 
 	@Test
-	public void test__CommonMistakes__Synopsis() {
-		AbsoluteMistakes mistakes = new AbsoluteMistakes();
+	public void test__CommonMistakes__Synopsis() throws Exception {
+		CorrectionRulesSet mistakes = new CorrectionRulesSet();
 
 		// Use this class to fix the most common patterns of spelling mistakes
 		for (String origWord:
@@ -47,25 +47,30 @@ public class AbsoluteMistakesTest {
 	///////////////////////////////////////
 
 	@Test
-	public void test__fixWord() {
-		AbsoluteMistakes mistakes =
-			new AbsoluteMistakes();
+	public void test__fixWord() throws Exception {
+		CorrectionRulesSet mistakes =
+			new CorrectionRulesSet();
 
-		AssertAbsoluteMistakes asserter =
-			new AssertAbsoluteMistakes(mistakes);
+		AssertCorrectionRulesSet asserter =
+			new AssertCorrectionRulesSet(mistakes);
 
 		// This word is correctly spelled
 		asserter.nothingToFix("inuqtitut");
 
-		// This word has an absolute splling mistake: qj -> rj
+		// This word has "shallow" mistake: qj -> rj
 		asserter.fixesWord("inuqjuq", "inurjuq");
 
-		// This word has an absolute splling mistake: qk -> ll
+		// This word has "shallow" mistake: qk -> ll
 		asserter.fixesWord("titiqkaq", "titiqqaq");
 
-		// This word has a spelling mistake but it is not absolute
-		asserter.nothingToFix("\"nunavuumik\"");
+		// This word has a spelling mistake but it cannot be fixed with a
+		// "shallow" rule
+		asserter.fixesWord("nunavuumik", "nunavummik");
 		;
+
+		// This is a case where single character ('ᕿ') is written as two
+		// characters that look the same as the single char ('ᕐ'+'ᑭ').
+		asserter.fixesWord("ᐃᓕᓐᓂᐊᕐᑭ", "ᐃᓕᓐᓂᐊᕿ");
 	}
 
 

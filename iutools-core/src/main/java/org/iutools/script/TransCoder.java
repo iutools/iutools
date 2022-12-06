@@ -563,7 +563,6 @@ public class TransCoder {
 		 }
 	 }
 
-
     public static Collection<String> ensureSyllabic(Collection<String> texts) throws TransCoderException {
 		 try {
 			 Collection<String> syllTexts = texts.getClass().getConstructor().newInstance();
@@ -578,11 +577,18 @@ public class TransCoder {
 	 }
 
 
-    public static String ensureSyllabic(String text) {
+	public static String ensureSyllabic(String text) {
+    	return ensureSyllabic(text, (Boolean)null);
+	}
+
+	public static String ensureSyllabic(String text, Boolean force) {
+    	if (force == null) {
+    		force = false;
+		}
     	String syllabicText = null;
     	if (text != null) {
 	    	syllabicText = text;
-	    	if (Syllabics.syllabicCharsRatio(text) < 0.7) {
+	    	if (force || Syllabics.syllabicCharsRatio(text) < 0.7) {
 	    		syllabicText = romanToUnicode(text);
 	    	}
     	}
@@ -640,7 +646,13 @@ public class TransCoder {
 		Script script = null;
 		if (text != null) {
 			String textNoPunctNorDigits = text.replaceAll("[\\s0-9\\p{Punct}]", "");
+
+			// Remove leading 'H'. While this is not tecnically a ROMAN IU character,
+			// many dialects use it.
+			textNoPunctNorDigits = textNoPunctNorDigits.replaceAll("^[hH]", "");
+
 			script = Script.MIXED;
+
 			if (Syllabics.allInuktitut(textNoPunctNorDigits)) {
 				script = Script.SYLLABIC;
 			} else if (Roman.allInuktitut(textNoPunctNorDigits)) {

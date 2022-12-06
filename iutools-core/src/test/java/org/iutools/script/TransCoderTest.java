@@ -1,14 +1,18 @@
 package org.iutools.script;
 
-import ca.nrc.testing.AssertCollection;
 import ca.nrc.testing.AssertObject;
+import ca.nrc.testing.RunOnCases;
+import static ca.nrc.testing.RunOnCases.Case;
+import static org.iutools.script.TransCoder.Script;
 import org.junit.Assert;
 import org.junit.Test;
 
 import ca.nrc.testing.AssertString;
+import org.junit.jupiter.api.Assertions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class TransCoderTest {
 
@@ -143,27 +147,34 @@ public class TransCoderTest {
 	}
 
 	@Test
-	public void test__textScript__Roman() {
-		String text = "inuktut, 2020";
-		TransCoder.Script gotScript = TransCoder.textScript(text);
-		Assert.assertEquals("Wrong script for text "+text, 
-				TransCoder.Script.ROMAN, gotScript);
-	}
-
-	@Test
-	public void test__textScript__RomanWithSomeCapitalizedWords() {
-		String text = "Inuktut, 2020";
-		TransCoder.Script gotScript = TransCoder.textScript(text);
-		Assert.assertEquals("Wrong script for text "+text,
-		TransCoder.Script.ROMAN, gotScript);
-	}
-
-	@Test
-	public void test__textScript__Syllabic() {
-		String text = "ᐃᓄᒃᑐᑦ";
-		TransCoder.Script gotScript = TransCoder.textScript(text);
-		Assert.assertEquals("Wrong script for text "+text, 
-				TransCoder.Script.SYLLABIC, gotScript);
+	public void test__textScript__VariousCase() throws Exception {
+		Case_textScript[] cases = new Case_textScript[] {
+			new Case_textScript("ROMAN word",
+				"nunavut", Script.ROMAN),
+			new Case_textScript("ROMAN capitalized word",
+				"Inuktut", Script.ROMAN),
+			new Case_textScript("ROMAN text with some punctuation",
+				"inuktut, 2020", Script.ROMAN),
+			new Case_textScript("SYLL word",
+				"ᐃᓄᒃᑐᑦ", Script.SYLLABIC),
+			new Case_textScript("ROMAN word that starts with upercased 'H' ",
+				"Hakirviksaq", Script.ROMAN),
+			new Case_textScript("ROMAN word that starts with lowercased 'h'",
+				"hakirviksaq", Script.ROMAN),
+			new Case_textScript("MIXED script text ",
+				"ᐃᓄᒃᑐᑦ inuktut", Script.MIXED),
+		};
+		Consumer<Case> runner = (caseNoCast) -> {
+			Case_textScript aCase = (Case_textScript) caseNoCast;
+			Script gotScript = TransCoder.textScript(aCase.text);
+			Assertions.assertEquals(
+				aCase.expScript, gotScript,
+				"Script not as expected for text: "+aCase.text
+			);
+		};
+		new RunOnCases(cases, runner)
+//			.onlyCaseNums(2)
+			.run();
 	}
 
 	@Test
@@ -184,5 +195,20 @@ public class TransCoderTest {
 			"Words not correctly transcoded to syllabics",
 			expSyllWords, gotSyllWords
 		);
+	}
+
+	///////////////////////////
+	// TEST HELPERS
+	///////////////////////////
+
+	public static class Case_textScript extends Case {
+
+		String text = null;
+		TransCoder.Script expScript = null;
+		public Case_textScript(String _descr, String _text, TransCoder.Script _expScript) {
+			super(_descr, null);
+			this.text = _text;
+			this.expScript = _expScript;
+		}
 	}
 }

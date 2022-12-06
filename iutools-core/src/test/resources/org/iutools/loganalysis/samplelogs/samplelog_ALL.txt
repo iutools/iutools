@@ -98,8 +98,8 @@
 -- webservice.endpoint@09:43:28,296(thr=http-nio-8080-exec-8): {"_taskID":"2021-11-03T13:43:28.280Z","_uri":"/iutools/srv2/tokenize","_taskElapsedMsecs":16,"_phase":"END"}
 -- webservice.endpoint@09:43:28,312(thr=http-nio-8080-exec-9): {"exception":"/ by zero","_taskID":"2021-11-03T13:43:28.280Z","_uri":"/iutools/srv2/spell","suggestCorrections":false,"_taskStartTime":1635947008280,"_action":null,"text":"iglu","_phase":"END","includePartiallyCorrect":false,"taskElapsedMsecs":null}
 java.lang.ArithmeticException: / by zero
-	at org.iutools.webservice.spell.SpellEndpoint.execute(SpellEndpoint.java:55)
-	at org.iutools.webservice.spell.SpellEndpoint.execute(SpellEndpoint.java:17)
+	at org.iutools.webservice.spell.CheckWordEndpoint.execute(SpellEndpoint.java:55)
+	at org.iutools.webservice.spell.CheckWordEndpoint.execute(SpellEndpoint.java:17)
 	at org.iutools.webservice.Endpoint.doPost(Endpoint.java:50)
 	at org.iutools.webservice.EndpointDispatcher.doPost(EndpointDispatcher.java:93)
 	at javax.servlet.http.HttpServlet.service(HttpServlet.java:661)

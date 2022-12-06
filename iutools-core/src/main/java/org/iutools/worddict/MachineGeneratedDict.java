@@ -37,7 +37,7 @@ import java.util.concurrent.TimeoutException;
  * Machine-generated Dictionary of Inuktitut words.
  *
  * For more info about how to use this class see the DOCUMENTATION TESTS section
- * of IUWordDictTest.
+ * of WordDictTest.
  *
  */
 public class MachineGeneratedDict {
@@ -363,7 +363,7 @@ public class MachineGeneratedDict {
 		MDictEntry entry, List<String> l1WordsCluster) throws MachineGeneratedDictException {
 		Logger tLogger = LogManager.getLogger("org.iutools.worddict.MachineGeneratedDict.retrieveTranslationsAndExamples");
 		if (tLogger.isTraceEnabled()) {
-			tLogger.trace("word="+entry.getWord()+"/"+entry.getWordInOtherScript()+", iuWordGroup.size()="+ l1WordsCluster.size()+", iuWordGroup="+ StringUtils.join(l1WordsCluster.iterator(), ", "));
+			tLogger.trace("word="+entry.getWord()+"/"+entry.getWordInOtherScript()+", WordGroup.size()="+ l1WordsCluster.size()+", WordGroup="+ StringUtils.join(l1WordsCluster.iterator(), ", "));
 		}
 
 		fillGlossaryEntries(entry, l1WordsCluster);

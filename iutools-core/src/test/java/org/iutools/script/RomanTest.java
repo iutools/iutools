@@ -146,7 +146,7 @@ public class RomanTest {
 		//    character.
 		String[] expChars = new String[] {"n","a","k","u","r","m","ii","t"};
 		
-		AssertObject.assertDeepEquals("Word "+word+" was not correctly split", 
+		AssertObject.assertDeepEquals("Word "+word+" was not correctly split",
 				expChars, gotChars);
 	}
 
@@ -157,7 +157,7 @@ public class RomanTest {
 		
 		String[] expChars = new String[] {};
 		
-		AssertObject.assertDeepEquals("Word "+emptyString+" was not correctly split", 
+		AssertObject.assertDeepEquals("Word "+emptyString+" was not correctly split",
 				expChars, gotChars);
 	}
 
@@ -168,7 +168,7 @@ public class RomanTest {
 		
 		String[] expChars = null;
 		
-		AssertObject.assertDeepEquals("Word "+nullString+" was not correctly split", 
+		AssertObject.assertDeepEquals("Word "+nullString+" was not correctly split",
 				expChars, gotChars);
 	}
 }

@@ -88,16 +88,16 @@ jmeter -g /path/to/testresults.jtl -o $REPORTS_DIR
 #### Tracing the Java code
 
 The Java code contains lots of log4j traces that can be activated. To activate 
-traces, you must create a log4j.properties file. You can use the following file 
+traces, you must create a log4j2.xml file. You can use the following file 
 as a model:
 
-    iutools/doc/log4j.properties.sample
+    iutools/doc/log4j2.xml.sample
     
 Once you have a created a log4j.properties file, you must pass it as a VM option 
 whenever you run iutools code (whether it be through a Main, a Tomcat app or 
 a unit test). You do this with the following -D option:
 
-    -Dlog4j.configuration=file:/path/to/your/log4j.properties
+    -Dlog4j.configurationFile=file:/path/to/your/log4j2.xml
 
 You can add your own traces to the code, by writing something like this:
 

@@ -70,7 +70,7 @@ public class AssertMDictEntry extends Asserter<MDictEntry> {
 
 	public AssertMDictEntry isForWord(String expWord) throws Exception {
 		AssertString.assertStringEquals(
-			baseMessage + "\nWord was not as expected",
+			baseMessage + "\nIUWord was not as expected",
 			expWord, entry().getWord());
 
 		return this;

@@ -5,6 +5,7 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.function.Consumer;
 
 import org.iutools.config.IUConfig;
 import org.iutools.corpus.*;
@@ -12,6 +13,9 @@ import ca.nrc.datastructure.CloseableIterator;
 import org.iutools.sql.SQLLeakMonitor;
 import org.iutools.utilities.StopWatch;
 import ca.nrc.testing.*;
+
+import static ca.nrc.testing.RunOnCases.Case;
+
 
 import org.iutools.text.segmentation.IUTokenizer;
 import org.junit.jupiter.api.*;
@@ -170,7 +174,7 @@ public class SpellCheckerTest {
 		int nCorrections = 5;
 		SpellingCorrection correction = checker.correctWord(wordWithError, nCorrections);
 		if (correction.wasMispelled) {
-			List<String> possibleCorrectSpellings = correction.getPossibleSpellings();
+			List<String> possibleCorrectSpellings = correction.getDeepSuggestions();
 			// This is the longest leading string of the word which might 
 			// be correctly spelled
 			String correctLead = correction.getCorrectLead();
@@ -197,6 +201,18 @@ public class SpellCheckerTest {
 		checker.addExplicitlyCorrectWord("inuksuk");
 		checker.addExplicitlyCorrectWord("nunavut");
 		checker.addExplicitlyCorrectWord("1988-mut");
+
+		// There are 3 possible levels of spellchecking. As the level increases,
+		// the spellchecker will catch more mistakes and provide better suggestions,
+		// but it also gets slower.
+		//
+		// For more details about what the different levels do, see Javadoc for
+		// SpellChecker.checkLevel atrribute.
+		//
+		// By default, the SpelleChecker uses Level 3, which is the maximum.
+		// But you can change it.
+		//
+		checker.setCheckLevel(1);
 	}
 	
 		
@@ -320,136 +336,66 @@ public class SpellCheckerTest {
 	}
 
 	@Test
-	public void test__correctWord__CorrectLeadAndTailOverlap() throws Exception {
-		SpellChecker checker = largeDictCheckerWithTestWords();
+	public void test__correctWord__VariousCases() throws Exception {
+		CaseCorrectWord[] cases = new CaseCorrectWord[] {
 
-		checker.enablePartialCorrections();
-		
-		// The correct lead ('ujaranni') and tail ('nniarvimmi') overlap by 
-		// several characters ('nni'). In this case, we can't show the badly 
-		// spelled middle part, because there isn't one. Yet, we know that 
-		// the word is mis-spelled, so something must be wrong in that middle
-		// part
-		//
-		String word = "ujaranniarvimmi";
+			new CaseCorrectWord("Number - Level 2",
+				"1987", false),
 
-		String[] expSuggestions = new String[]{
-			"ujararniarvimmi",
-			"ujararniarvimmik",
-			"ujararniarvimmit",
-			"ujararniarvimmut",
-			"ujarattarniarvimmi"
+			new CaseCorrectWord("SYLL mis-spelled (nunavungmi) - Level 2",
+				"ᓄᓇᕗᖕᒥ", true)
+				.usingCheckLevel(2)
+				.expectCorrections("ᓄᓇᕗᒻᒥ", "ᓄᓇᕘᒻᒥ", "ᓄᓇᕕᐊᓗᖕᒥ", "ᓄᓇᕗᖓ",
+					"ᓄᓇᕗᒻᒥᑦ"),
+
+			new CaseCorrectWord("ROMAN correctly spelled - Level 2",
+				"inuksuk", false)
+				.usingCheckLevel(2),
+
+			new CaseCorrectWord("numeric expression - Level 2", "1987-mut", false)
+				.usingCheckLevel(2),
+
+			new CaseCorrectWord("Level 3 - Correct leading and tailing portions DO NOT overlap", "inuktigtut", true)
+				.usingCheckLevel(3)
+				.expectCorrections(
+					"inukti[g]tut", "inuktitut", "inukkitut", "inuktut", "inuktikut",
+					"qinuktitut"),
+
+			new CaseCorrectWord("Level 3 - Correct leading and tailing portions OVERLAP", "ujaranniarvimmi", true)
+				.usingCheckLevel(3)
+				.expectCorrections(
+					"ujararniarvimmi", "ujararniarvimmik", "ujararniarvimmit",
+					"ujararniarvimmut", "ujarattarniarvimmi"),
 		};
 
-		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
-
-		AssertSpellingCorrection.assertThat(gotCorrection,
-				  "Correction for word 'inukshuk' was wrong")
-			.wasMisspelled()
-			.providesSuggestions(expSuggestions)
-			;
-	}
-
-	@Test 
-	public void test__correctWord__roman__MispelledInput() throws Exception {
-		SpellChecker checker = smallDictCheckerWithTestWords();
-		checker.enablePartialCorrections();
-		String word = "inuktigtut";
-		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
-		
-		AssertSpellingCorrection.assertThat(gotCorrection,
-				  "Correction for word 'inukshuk' was wrong")
-			.wasMisspelled()
-			.providesSuggestions(
-				new String[] {
-				  "inukti[g]tut",
-				  "inuktitut",
-				  "inuktut",
-				  "inukttut",
-				  "inukutt",
-				  "inuk"})
-			;
-	}
-
-	@Test 
-	public void test__correctWord__roman__CorrectlySpellendInput() throws Exception {
-		SpellChecker checker = largeDictCheckerWithTestWords();
-
-		String word = "inuksuk";
-		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
-		assertCorrectionOK(gotCorrection, word, true);
-	}
-
-	@Test 
-	public void test__correctWord__syllabic__MispelledInput() throws Exception {
-		String[] correctWordsLatin = new String[] {"inuktut", "nunavummi", "inuk", "inuksut", "nunavuumi", "nunavut"};
-		SpellChecker checker = smallDictCheckerWithTestWords();
-		checker.setVerbose(false);
-		for (String aWord: correctWordsLatin) checker.addExplicitlyCorrectWord(aWord);
-		String word = "ᓄᓇᕗᖕᒥ";
-		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
-		assertCorrectionOK(gotCorrection, word, false,
-			new String[] {"ᓄᓇᕗᒻᒥ", "ᓄᓇᕘᒥ", "ᓄᓇᕗᑦ" });
-	}
-	
-	@Test 
-	public void test__correctWord__number__ShouldBeDeemedCorrectlySpelled() throws Exception {
-		SpellChecker checker = largeDictCheckerWithTestWords();
-		checker.setVerbose(false);
-		String word = "2019";
-		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
-		assertCorrectionOK(gotCorrection, word, true, new String[] {});
-	}
-
-	@Test 
-	public void test__correctWord__numeric_term_mispelled() throws Exception {
-		String[] correctWordsLatin = new String[] {
-			"inuktut", "nunavummi", "inuk", "inuksut", "nunavuumi", "nunavut",
-			"1988-mut", "$100-mik", "100-nginnik", "100-ngujumik"
+		Consumer<Case> runner = (caseNoCast) -> {
+			try {
+				CaseCorrectWord aCase = (CaseCorrectWord) caseNoCast;
+				SpellChecker checker =
+					new SpellChecker()
+						.setCheckLevel(aCase.checkLevel);
+				SpellingCorrection gotCorrection =
+					checker.correctWord(aCase.origWord);
+				AssertSpellingCorrection asserter =
+					new AssertSpellingCorrection(gotCorrection,
+						"Correction not as expected for case: "+aCase.descr)
+					.misspelledStatusWas(aCase.expMisspelled);
+				if (aCase.expSuggestions != null) {
+					asserter.providesSuggestions(aCase.expSuggestions);
+				}
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
 		};
-		SpellChecker checker = smallDictCheckerWithTestWords();
-		checker.setVerbose(false);
-		for (String aWord: correctWordsLatin) checker.addExplicitlyCorrectWord(aWord);
-		String word = "1987-muti";
-		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
-		
-		// TODO-June2020: This test used to only return "1987-mut"
-		//   but with Alain's recent refactorings, it now returns 
-		//   a list of 5 possibilities. Waiting for Benoit to 
-		//   confirm whether or not those new results make sense
-		//
-//		String[] expCorrection = new String[] { "1987-mut" };
-		String[] expCorrection = new String[] {
-			"1987-mut", "1987-muarluti", "1987-muttauq", "1987-kulummut",
-			"1987-tuinnaulluti"};
-		if (checker instanceof SpellChecker) {
-			// 2020-10-01-AD:
-			// For some reason, the ES spell checker only produces
-			// the one suggestion (which happens to be the correct one).
-			// Don't have time or patience to figure out why.
-			expCorrection = new String[] { "1987-mut" };
-		}
-		assertCorrectionOK(
-			gotCorrection, word, false, expCorrection);
+		new RunOnCases(cases, runner)
+//			.onlyCaseNums(4)
+			.run();
 	}
-	
 
-	@Test 
-	public void test__correctWord__ninavut() throws Exception {
-		SpellChecker checker = smallDictCheckerWithTestWords();
-		
-		String word = "ninavut";
-		checker.setVerbose(false);
-		SpellingCorrection gotCorrection = checker.correctWord(word, 5);
-		assertCorrectionOK(gotCorrection, word, false, 
-				new String[] { "nunavut"});
-	}
-	
-	@Test  
+	@Test
 	public void test__correctText__roman() throws Exception  {
 		String text = "inuktut ninavut inuit inuktut";
 		
-//		SpellChecker checker = makeCheckerLargeDict();
 		SpellChecker checker = smallDictCheckerWithTestWords();
 		
 		List<SpellingCorrection> gotCorrections = checker.correctText(text);
@@ -469,7 +415,7 @@ public class SpellCheckerTest {
 		Assertions.assertTrue(wordCorr.wasMispelled, "Word #"+wordNum+"="+wordCorr.orig+" should have deemed MISPELLED");
 		AssertObject.assertDeepEquals("Corrections for word#"+wordNum+"="+wordCorr.orig+" were not as expected", 
 				new String[] {"nunavut"}, 
-				wordCorr.getPossibleSpellings());
+				wordCorr.getDeepSuggestions());
 
 		wordNum = 2;
 		ii = 2*wordNum;
@@ -543,6 +489,37 @@ public class SpellCheckerTest {
 	}
 
 	@Test
+	public void test__isMispelled__VariousCases() throws Exception {
+		CaseIsMispelled[] cases = new CaseIsMispelled[] {
+
+			new CaseIsMispelled("ROMAN, correctly spelled", "inuit")
+				.usingCheckLevel(2)
+				.expectMisspelled(false),
+
+			new CaseIsMispelled(
+				"SYLL text that uses two chars ᓕ+ᓐ instead of just one", "ᐃᓕᓐᓂᐊᕐᑭᑎ")
+				.usingCheckLevel(1)
+				.expectMisspelled(true),
+		};
+
+		Consumer<Case> runner = (caseNoCast) -> {
+			try {
+				CaseIsMispelled aCase = (CaseIsMispelled) caseNoCast;
+				SpellChecker checker =
+					new SpellChecker()
+						.setCheckLevel((aCase.useDeepChecking?2: 1));
+				boolean gotAnswer = checker.isMispelled(aCase.word);
+				Assertions.assertEquals(aCase.expMisspelled, gotAnswer,
+					"Mis-spelled status not as expected for word: "+aCase.word);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		};
+		new RunOnCases(cases, runner)
+			.run();
+	}
+
+	@Test
 	public void test__isMispelled__WordContainsAnAbsoluteSpellingMistake() throws Exception  {
 		// This word contains an 'absolute' spelling mistake: 'qj' can NEVER
 		// happen in a correctly spelled world.
@@ -610,8 +587,6 @@ public class SpellCheckerTest {
 		"Word "+word+" should have been deemed correctly spelled");
 		word = "t";
 		Assertions.assertFalse(checker.isMispelled(word), "Word "+word+" should have been deemed correctly spelled");
-		word = "o";
-		Assertions.assertTrue(checker.isMispelled(word), "Word "+word+" should have been deemed mis-spelled");
 	}
 	
 	@Test 
@@ -758,7 +733,7 @@ public class SpellCheckerTest {
 		boolean enablePartialCorrections =
 			Arrays.stream(options)
 				.anyMatch(TestOption.ENABLE_PARTIAL_CORRECTIONS::equals);
-			checker.setPartialCorrectionEnabled(enablePartialCorrections);
+			checker.setCheckLevel((enablePartialCorrections?3:2));
 			for (String word: words) {
 				Long start = System.currentTimeMillis();
 				SpellingCorrection gotCorrection = checker.correctWord(word);
@@ -911,7 +886,7 @@ public class SpellCheckerTest {
 			expOK, !wordCorr.wasMispelled,
 			mess+"\nThe correctness status was not as expected");
 
-		List<String> gotTopSpellings = wordCorr.getPossibleSpellings();
+		List<String> gotTopSpellings = wordCorr.getDeepSuggestions();
 		gotTopSpellings =
 			gotTopSpellings
 				.subList(
@@ -950,5 +925,55 @@ public class SpellCheckerTest {
 		IUTokenizer iutokenizer = new IUTokenizer();
 		List<String> words = iutokenizer.tokenize(text);
 		return words;
+	}
+
+	public static class CaseIsMispelled extends Case {
+
+		public String word = null;
+		public Integer checkLevel = null;
+		public boolean expMisspelled = false;
+		public boolean useDeepChecking = true;
+
+		public CaseIsMispelled(String _descr, String _word) {
+			super(_descr, null);
+			this.word = _word;
+		}
+
+		public CaseIsMispelled usingCheckLevel(int level) {
+			this.checkLevel = level;
+			return this;
+		}
+
+		public CaseIsMispelled expectMisspelled(boolean expected) {
+			this.expMisspelled = expected;
+			return this;
+		}
+	}
+
+	public static class CaseCorrectWord extends Case {
+
+		String origWord = null;
+		boolean expMisspelled = false;
+		String[] expSuggestions = null;
+		int checkLevel = 3;
+
+		public CaseCorrectWord(String _descr, String _origWord, boolean _expMisspelled) {
+			super(_descr, null);
+			origWord = _origWord;
+			expMisspelled = _expMisspelled;
+		}
+
+		public CaseCorrectWord expectCorrections(String... _expCorrections) {
+			if (!expMisspelled && _expCorrections.length > 0) {
+				throw new RuntimeException("Cannot provide expected corrections if we expect the word to be correctly spelled!");
+			}
+			expSuggestions = _expCorrections;
+			return this;
+		}
+
+		public CaseCorrectWord usingCheckLevel(int level) {
+			checkLevel = level;
+			return this;
+		}
 	}
 }

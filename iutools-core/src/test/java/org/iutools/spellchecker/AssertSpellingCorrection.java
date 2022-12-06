@@ -6,6 +6,7 @@ import org.junit.Assert;
 
 import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.AssertString;
+import org.junit.jupiter.api.Assertions;
 
 public class AssertSpellingCorrection {
 
@@ -20,7 +21,7 @@ public class AssertSpellingCorrection {
     }
 
     public AssertSpellingCorrection(SpellingCorrection _gotCorrection,
-                                    String _mess) {
+        String _mess) {
         this.baseMessage = _mess;
         this.gotCorrection = _gotCorrection;
     }
@@ -30,6 +31,14 @@ public class AssertSpellingCorrection {
                 gotCorrection.wasMispelled);
         return this;
     }
+
+
+	public AssertSpellingCorrection misspelledStatusWas(boolean expStatus) {
+		Assertions.assertEquals(
+			expStatus, gotCorrection.wasMispelled,
+			baseMessage + "\nMis-spelled status not as expected");
+		return this;
+	}
 
     public AssertSpellingCorrection wasNotMisspelled() {
         Assert.assertFalse(baseMessage+"\nWord should NOT have been mis-spelled",
@@ -45,7 +54,7 @@ public class AssertSpellingCorrection {
     public AssertSpellingCorrection suggestsSpellings(
             Boolean onlyTopExpected, String... expSuggs)
             throws Exception {
-        List<String> gotSuggs = gotCorrection.getPossibleSpellings();
+        List<String> gotSuggs = gotCorrection.getDeepSuggestions();
         if (onlyTopExpected == null) {
             onlyTopExpected = false;
         }
@@ -83,11 +92,11 @@ public class AssertSpellingCorrection {
     }
 
     public AssertSpellingCorrection providesSuggestions(String... expSugg)
-            throws Exception {
+        throws Exception {
         AssertObject.assertDeepEquals(
-                baseMessage+"\nSuggestions were not as expected for word "+
-                        gotCorrection.orig,
-                expSugg, gotCorrection.getAllSuggestions());
+        		baseMessage+"\nSuggestions were not as expected for word "+
+				gotCorrection.orig,
+		  		expSugg, gotCorrection.getAllSuggestions());
         return this;
     }
 

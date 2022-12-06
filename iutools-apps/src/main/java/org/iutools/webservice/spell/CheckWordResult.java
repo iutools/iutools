@@ -7,21 +7,19 @@ import org.iutools.webservice.EndpointResult;
 import org.iutools.webservice.ServiceException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-public class SpellResult extends EndpointResult {
+public class CheckWordResult extends EndpointResult {
 
 	public SpellingCorrection correction = null;
 	public Boolean providesSuggestions = true;
 
-	public SpellResult() {
+	public CheckWordResult() {
 		super();
 	}
 
-	public SpellResult setCorrection(String orig, String... suggestions) {
+	public CheckWordResult setCorrection(String orig, String... suggestions) {
 		boolean wasMisspelled = false;
 		if (suggestions.length > 1 ||
 			suggestions.length == 1 && !suggestions[0].equals(orig)) {
