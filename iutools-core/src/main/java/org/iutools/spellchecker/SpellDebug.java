@@ -9,12 +9,30 @@ import ca.nrc.string.diff.DiffResult;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
+/**
+ * Use this class to trace the state of the SpellChecker.
+ *
+ * To activate traces:
+ *
+ * - Set the log4j logger org.iutools.spellchecker.SpellDebug to level =TRACE.
+ * - Modify the following attributes:
+ *
+ *   - methodsToTrace: Add the name of methods you want to trace
+ *     (ClassName.methodName) to this attribute.
+ *     If you set it to null, all methods will be traced.
+ *
+ *   - badWordsToTrace: Add all the "bad words" (words that are fed
+ *     as input to the SpellChecker) you want to trace.
+ *
+ *   - candidatesToTrace: Add all the candidate suggestions you want to follow
+ *     (whether they are good or bad suggestions)
+ *
+ *   - ngramsToTrace: Add all the character ngrams that you want to follow.
+ *
+ */
 public class SpellDebug {
 
-	// To activate traces, set the log4j logger org.iutools.spellchecker.SpellDebug
-	// to level =TRACE
 	private static final boolean debugActive;
 
 	static {
@@ -33,17 +51,19 @@ public class SpellDebug {
 	//
 	private static Set<String> methodsToTrace = new HashSet<String>();
 	static {
-//		methodsToTrace = null;
+		methodsToTrace = null;
 //		methodsToTrace = new HashSet<String>();
-//		methodsToTrace.add("SpellChecker.correctWord");
-//		methodsToTrace.add("SpellChecker.firstPassCandidates_TFIDF");
-//		methodsToTrace.add("SpellChecker.candidatesWithBestNGramsMatch");
-//		methodsToTrace.add("SpellChecker.computeCandidateSimilarities");
-//		methodsToTrace.add("ScoredSpelling.compareSpellings");
-//		methodsToTrace.add("SpellChecker.sortCandidatesByOverallScore");
-//		methodsToTrace.add("IUDiffCosting.cost");
-//		methodsToTrace.add("IUDiffCosting.costFirstMorphemeChange");
-//		methodsToTrace.add("IUSpellingDistance.distance");
+//		Collections.addAll(methodsToTrace, new String[] {
+//			"SpellChecker.correctWord",
+//			"SpellChecker.firstPassCandidates_TFIDF",
+//			"SpellChecker.candidatesWithBestNGramsMatch",
+//			"SpellChecker.computeCandidateSimilarities",
+//			"ScoredSpelling.compareSpellings",
+//			"SpellChecker.sortCandidatesByOverallScore",
+//			"IUDiffCosting.cost",
+//			"IUDiffCosting.costFirstMorphemeChange",
+//			"IUSpellingDistance.distance",
+//		});
 	}
 
     // If this is not-null, then when a trace does not provide the word
@@ -52,7 +72,7 @@ public class SpellDebug {
 //    private static String assumeBadWordIs = null;
 //	private static String assumeBadWordIs = "kiinaujatigut";
 
-    // - Keys are the misspelled words to trace
+	// - Keys are the misspelled words to trace
 	// - Values are the ordered list of suggested corrections that you expect
 	//   to get for those words
 	//
@@ -64,8 +84,8 @@ public class SpellDebug {
 	static {
 		badWordsToTrace = new HashMap<String,String[]>();
 		badWordsToTrace
-			.put("inutmut",
-				new String[] {"inummut"});
+			.put("qallunaatitut",
+				new String[] {"qallunaaqtitut"});
 	}
 
 	// List of candidate spellings to be traced.
@@ -75,10 +95,8 @@ public class SpellDebug {
 	private static Set<String> candidatesToTrace = null;
 	static {
 		candidatesToTrace = new HashSet<String>();
-		candidatesToTrace.add("pigiaqtitait");
-		candidatesToTrace.add("pigiaqtita");
-		candidatesToTrace.add("pigiaqtitaut");
-		candidatesToTrace.add("pigiaqtatinirnit");
+		Collections.addAll(candidatesToTrace, new String[] {
+			"qallunaatit", "qallunaaqtitut"});
 	}
 
 	// List of ngrams to be traced.
@@ -88,7 +106,8 @@ public class SpellDebug {
 	private static Set<String> ngramsToTrace = null;
 	static {
 		ngramsToTrace = new HashSet<String>();
-		ngramsToTrace.add("laut");
+		Collections.addAll(ngramsToTrace, new String[] {
+			"^qall"});
 	}
 
 	private static Map<String,String[]> badWordsToTraceNormalized = null;
@@ -110,7 +129,7 @@ public class SpellDebug {
 	}
 
 	private static Pair<Boolean,String> traceStatus(String method, String badWord,
-																	String candidate, String ngram) {
+		String candidate, String ngram) {
 
 		if (!debugActive) {
 			return Pair.of(false, "None");

@@ -1,6 +1,7 @@
 package org.iutools.cli;
 
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import ca.nrc.dtrc.elasticsearch.ElasticSearchException;
@@ -18,6 +19,7 @@ import org.iutools.morph.r2l.MorphologicalAnalyzer_R2L;
 import org.iutools.morph.MorphologicalAnalyzer;
 import ca.nrc.debug.Debug;
 import org.iutools.script.TransCoder;
+import org.iutools.utilities.StopWatch;
 import org.json.JSONObject;
 
 public class CmdSegmentIU extends ConsoleCommand {
@@ -40,6 +42,8 @@ public class CmdSegmentIU extends ConsoleCommand {
 	public void execute() throws Exception {
 		Logger mLogger = LogManager.getLogger("ca.inuktitutcomputing.core.console.SegmentIU.execute");
 
+		StopWatch sw = new StopWatch().start();
+
 		mode = getMode(ConsoleCommand.OPT_WORD);
 		lenient = getExtendedAnalysis();
 		Long timeoutMSecs = getTimeoutSecs();
@@ -60,11 +64,12 @@ public class CmdSegmentIU extends ConsoleCommand {
 				long start = System.currentTimeMillis();	
 				mLogger.trace("Working on word="+winfo.word+"(@"+start+" msecs)");
 
+				sw.reset();
 				Decomposition[] decs =
 					morphAnalyzer.decomposeWord(winfo.word,lenient);
+				long elaspedTime = sw.totalTime(TimeUnit.MILLISECONDS);
 				winfo.setDecompositions(decs);
-				long elapsed = System.currentTimeMillis() - start;
-				printDecompositions(winfo, elapsed);
+				printDecompositions(winfo, elaspedTime);
 				mLogger.trace("DONE Working on word="+winfo.word+"(@"+start+" msecs)");
 			} catch (Exception e) {
 				if (mode == Mode.PIPELINE) {

@@ -128,8 +128,21 @@ public class SpellCheckerEvaluator {
 				}
 			}
 
+			if (verbosity > 1) {
+				if (rank != null) {
+					System.out.println("   First corect suggestion at rank: " + rank);
+				} else {
+					System.out.println("   NO corect suggestion found");
+				}
+			}
+
+			String wasOrNot = "was NOT";
 			if (rank != null && rank == 1) {
 				totalWithCorrectTopSuggestion++;
+				wasOrNot = "WAS";
+			}
+			if (verbosity > 1) {
+				System.out.println("   Top suggestion "+wasOrNot+" correct.");
 			}
 
 			String comparison = null;
@@ -209,7 +222,7 @@ public class SpellCheckerEvaluator {
 	}
 
 	private void addExampleWithBetterRank(SpellCheckerExample example,
-										 Integer rank, List<ScoredSpelling> scoredSpellings) {
+		Integer rank, List<ScoredSpelling> scoredSpellings) {
 
 		List<String> suggestions = new ArrayList<String>();
 		for (ScoredSpelling aSpelling: scoredSpellings) {

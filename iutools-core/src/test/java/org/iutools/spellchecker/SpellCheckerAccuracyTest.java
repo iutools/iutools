@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -13,7 +12,6 @@ import java.util.stream.Collectors;
 
 import ca.nrc.testing.AssertRuntime;
 import org.iutools.corpus.*;
-import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
 import org.iutools.corpus.CompiledCorpusException;
 import org.iutools.corpus.CompiledCorpusTest;
 import org.iutools.corpus.WordInfo;
@@ -80,7 +78,7 @@ public class SpellCheckerAccuracyTest {
                     .isMisspelled("nunavummik").setMaxRank(1),
 
             new SpellCheckerExample("nunavuumit")
-                    .isMisspelled("nunavummit").setMaxRank(3),
+                    .isMisspelled("nunavummit").setMaxRank(1),
 
             new SpellCheckerExample("ugaalautaa")
                     .isMisspelled("uqaalautaa").setMaxRank(1),
@@ -376,9 +374,9 @@ public class SpellCheckerAccuracyTest {
         EvaluationParameters parameters =
             new EvaluationParameters(testInfo)
 
-//            .setFocusOnExample("tavani")
+//            .setFocusOnExample("qallunaatitut")
 
-            .setVerbosity(1)
+            .setVerbosity(2)
             .setExamples(examples_MostFrequenMisspelledWords)
             .setStopAfterNcases(10)
             .setLoadCorrectWordInDict(true)
@@ -411,7 +409,7 @@ public class SpellCheckerAccuracyTest {
             // data set.
 //            .setFocusOnExample("pigiaqtitat")
 
-            .setVerbosity(5)
+            .setVerbosity(2)
             .setExamples(examples_MostFrequenMisspelledWords)
             .setLoadCorrectWordInDict(true)
 
@@ -435,7 +433,7 @@ public class SpellCheckerAccuracyTest {
             // Use setFocusOnExample to run just one word from the data set
 //            .setFocusOnExample("tavani")
 
-            .setVerbosity(1)
+            .setVerbosity(2)
             .setExamples(examples_MostFrequenMisspelledWords)
             .setLoadCorrectWordInDict(false)
 
@@ -478,6 +476,7 @@ public class SpellCheckerAccuracyTest {
     private void evaluateCheckerOnExamples(SpellChecker spellChecker,
         EvaluationParameters parameters) throws Exception {
 
+    		spellChecker.setMaxDecompSecs(parameters.maxDecompSecs);
 
         SpellCheckerEvaluator evaluator =
             new SpellCheckerEvaluator(spellChecker);
@@ -801,6 +800,7 @@ public class SpellCheckerAccuracyTest {
         public Double runtimePercTolerance = 0.25;
 
         public boolean loadCorrectWordInDict = false;
+        int maxDecompSecs = 5;
         public SpellCheckerExample[] examples = null;
         private TestInfo testInfo = null;
 
@@ -852,6 +852,12 @@ public class SpellCheckerAccuracyTest {
             this.loadCorrectWordInDict = load;
             return this;
         }
+
+        public EvaluationParameters setMaxDecompSecs(int maxSecs) {
+        		this.maxDecompSecs = maxSecs;
+
+			  return this;
+		  }
 
         public EvaluationParameters setExamples(SpellCheckerExample[] _examples) {
             this.examples = _examples;

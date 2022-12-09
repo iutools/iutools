@@ -48,6 +48,28 @@ import static org.iutools.script.TransCoder.Script;
 import org.iutools.utilbin.AnalyzeNumberExpressions;
 
 
+/**
+ * Spell Checker for Inuktitut
+ *
+ * It uses a combination of two techniques.
+ *
+ * Shallow character-level analysis
+ *   Uses simple rules to look for sequences of characters that can never appear
+ *   in a valid Inuktitut word.
+ *
+ *   Some of the rules are able to correct bad sequences, while others can only
+ *   identify bad sequences without correcting them.
+ *
+ * Deep morphological analysis
+ *   Check that the word does not violate any morpheme composition rules. More
+ *   precisely, we check that:
+ *
+ *   - The word is composed of a sequence of valid morphemes that are allowed to
+ *     follow each other
+ *   - The written form of each morpheme takes into account the morpheme that
+ *     precede and follow it.
+ *
+ */
 public class SpellChecker {
 	
 	public int MAX_SEQ_LEN = 3;
@@ -62,28 +84,29 @@ public class SpellChecker {
 	/** Maximum msecs allowed for decomposing a word during 
 	 *  spell checker
 	 */
-	private final long MAX_DECOMP_MSECS = 5*1000;
+	private long MAX_DECOMP_MSECS = 5*1000;
 
 	/**
 	 * We can perform spell checking at different level. As we increase level,
 	 * we catch more types of mistakes, but we also get slower.
 	 *
-	 *   Level 1: Only performs a SHALLOW check where we search for sequences of
-	 *   characters that can never appear in a valid Inuktitut word.
+	 *   Level 1: Only performs a SHALLOW CHARACTER-LEVEL check where we look for
+	 *   sequences of characters that can never appear in a valid Inuktitut word.
 	 *
-	 *   Level 2: On top of the checks in Level 1, we also check that the word
-	 *   does not violate any morpheme composition rules. More precisely, we
-	 *   check that:
+	 *   Level 2: On top of the checks in Level 1, we also perform a DEEP MORPHOLOGICAL
+	 *   check where we ensure that the word does not violate any morpheme
+	 *   composition rules. More precisely, we check that:
 	 *
 	 *     - word is composed of a sequence of valid morphemes that are allowed to
 	 *       follow each other
 	 *     - the written form of each morpheme takes into account the morpheme that
 	 *       precede and follow it.
 	 *
-	 *  Level 3: On top of the checks done in Level 2, we look for a "partial
-	 *  correction" which identifies the longest valid sequences at the start and
-	 *  end of the word. Validity of these longest sequences is evaluated through
-	 *  a DEEP analysis that takes into account the morpheme composition rules.
+	 *  Level 3: On top of the SHALLOW CHARACTER-LEVEL and DEEP MORPHOLOGICAL checks done
+	 *  in Level 2, we look for a "partial correction" which identifies the
+	 *  longest valid sequences at the start and end of the word. Validity of
+	 *  these longest sequences is evaluated through a DEEP-like analysis that takes
+	 *  into account the morpheme composition rules.
 	 *
 	 */
 	int checkLevel = 2;
@@ -189,6 +212,15 @@ public class SpellChecker {
 		}
 
 		return;
+	}
+
+	/**
+	 * Set the maximum number of seconds that can be spent trying
+	 * to decompose a word into morphemes.
+	 */
+	public SpellChecker setMaxDecompSecs(int maxSecs) {
+		MAX_DECOMP_MSECS = maxSecs * 1000;
+		return this;
 	}
 
 	public SpellChecker setCheckLevel(int _checkLevel) throws SpellCheckerException {
@@ -313,7 +345,7 @@ public class SpellChecker {
 			long start = StopWatch.nowMSecs();
 
 			SpellDebug.trace("SpellChecker.correctWord",
-				"Invoked on word=" + word,
+				"Invoked on word=" + word.inRoman(),
 				word.word(), null);
 
 			boolean wordIsSyllabic = Syllabics.allInuktitut(word.inSyll());
@@ -326,19 +358,11 @@ public class SpellChecker {
 				word.word(), null);
 
 			if (corr.wasMispelled) {
-				// set ngramStats and suite of words for candidates according to type of word (normal word or numeric expression)
-				String[] numericTermParts = splitNumericExpression(word.inRoman());
-				boolean wordIsNumericTerm = numericTermParts != null;
+				boolean completelyFixed = correctWord_Shallow(corr);
 
-				SpellDebug.trace("SpellChecker.correctWord",
-					"wordIsNumericTerm=" + wordIsNumericTerm,
-					word.word(), null);
+				// Only carry out a deeper morphological check if:
 
-				boolean completelyFixed = applyCorrectionRules(corr);
-
-				// Only carry out a deeper check if:
-
-				// - the shallow check did not completely fix the problem
+				// - the shallow, surface check did not completely fix the problem
 				//   AND
 				// - deep checking is enabled
 				//
@@ -352,76 +376,7 @@ public class SpellChecker {
 						computeCorrectPortions(corr);
 					}
 
-					SpellDebug.trace("SpellChecker.correctWord",
-						"Computing 1st pass candidates",
-						word.word(), null);
-
-					List<ScoredSpelling> candidates =
-						candidatesWithSimilarNgrams(word.inRoman(), wordIsNumericTerm);
-
-					SpellDebug.trace("SpellChecker.correctWord",
-						"Number of 1st pass candidates=" + (candidates.size()),
-						word.word(), null);
-
-					SpellDebug.containsDuplicates(
-						"SpellChecker.correctWord",
-						"1st pass candidates", word.word(), candidates);
-
-					SpellDebug.trace("SpellChecker.correctWord",
-						"Computing candidates similariy using " + editDistanceCalculator.getClass(),
-						word.word(), null);
-
-					List<ScoredSpelling> scoredSpellings =
-						computeCandidateDistances(word.inRoman(), candidates);
-
-					SpellDebug.containsDuplicates(
-						"SpellChecker.correctWord",
-						"candidates with similarities", word.word(), scoredSpellings);
-
-					SpellDebug.containsCorrection(
-						"SpellChecker.correctWord",
-						"UNSORTED scored spellings",
-						word.word(), scoredSpellings);
-
-					List<ScoredSpelling> sortedSpellings =
-						sortCandidatesByOverallScore(scoredSpellings);
-
-					SpellDebug.containsDuplicates(
-						"SpellChecker.correctWord",
-						"SORTED scored spellings", word.word(), sortedSpellings);
-
-					SpellDebug.containsCorrection(
-						"SpellChecker.correctWord",
-						"SORTED scored spellings",
-						word.word(), scoredSpellings);
-
-					if (wordIsNumericTerm) {
-						for (int ic = 0; ic < scoredSpellings.size(); ic++) {
-							ScoredSpelling scoredCandidate = sortedSpellings.get(ic);
-							scoredCandidate.spelling =
-							scoredCandidate.spelling.replaceAll("\\d+-*", numericTermParts[0]);
-						}
-					}
-
-					sortedSpellings = selectTopCandidates(maxCorrections, sortedSpellings);
-
-					SpellDebug.containsDuplicates(
-						"TOP PORTION of SORTED scored spellings",
-						"SORTED scored spellings", word.word(), sortedSpellings);
-
-					SpellDebug.containsCorrection(
-						"SpellChecker.correctWord",
-						"TOP PORTION of SORTED scored spellings",
-						word.word(), scoredSpellings);
-
-					if (SpellDebug.traceIsActive("SpellChecker.correctWord", word.word())) {
-						SpellDebug.trace("SpellChecker.correctWord",
-							"TOP PORTION of SORTED scored spellings is:\n" +
-							PrettyPrinter.print(scoredSpellings),
-							word.word(), null);
-					}
-
-					corr.setPossibleSpellings(sortedSpellings);
+					correctWord_Deep(word, corr, maxCorrections);
 				}
 			}
 
@@ -442,7 +397,90 @@ public class SpellChecker {
 		return corr;
 	}
 
-	private boolean applyCorrectionRules(
+	private void correctWord_Deep(IUWord word, SpellingCorrection corr, int maxCorrections) throws SpellCheckerException {
+		// set ngramStats and suite of words for candidates according to
+		// type of word (normal word or numeric expression)
+		String[] numericTermParts = splitNumericExpression(word.inRoman());
+		boolean wordIsNumericTerm = numericTermParts != null;
+
+		SpellDebug.trace("SpellChecker.correctWord",
+			"wordIsNumericTerm=" + wordIsNumericTerm,
+			word.word(), null);
+
+		SpellDebug.trace("SpellChecker.correctWord_Deep",
+			"Computing 1st pass candidates",
+			word.word(), null);
+
+		List<ScoredSpelling> candidates =
+			candidatesWithSimilarNgrams(word.inRoman(), wordIsNumericTerm);
+
+		SpellDebug.trace("SpellChecker.correctWord_Deep",
+			"Number of 1st pass candidates=" + (candidates.size()),
+			word.word(), null);
+
+		SpellDebug.containsDuplicates(
+			"SpellChecker.correctWord_Deep",
+			"1st pass candidates", word.word(), candidates);
+
+		SpellDebug.trace("SpellChecker.correctWord_Deep",
+			"Computing candidates similariy using " + editDistanceCalculator.getClass(),
+			word.word(), null);
+
+		List<ScoredSpelling> scoredSpellings =
+			computeCandidateDistances(word.inRoman(), candidates);
+
+		SpellDebug.containsDuplicates(
+			"SpellChecker.correctWord_Deep",
+			"candidates with similarities", word.word(), scoredSpellings);
+
+		SpellDebug.containsCorrection(
+			"SpellChecker.correctWord_Deep",
+			"UNSORTED scored spellings",
+			word.word(), scoredSpellings);
+
+		List<ScoredSpelling> sortedSpellings =
+			sortCandidatesByOverallScore(scoredSpellings);
+
+		SpellDebug.containsDuplicates(
+			"SpellChecker.correctWord_Deep",
+			"SORTED scored spellings", word.word(), sortedSpellings);
+
+		SpellDebug.containsCorrection(
+			"SpellChecker.correctWord_Deep",
+			"SORTED scored spellings",
+			word.word(), scoredSpellings);
+
+		if (wordIsNumericTerm) {
+			for (int ic = 0; ic < scoredSpellings.size(); ic++) {
+				ScoredSpelling scoredCandidate = sortedSpellings.get(ic);
+				scoredCandidate.spelling =
+				scoredCandidate.spelling.replaceAll("\\d+-*", numericTermParts[0]);
+			}
+		}
+
+		sortedSpellings = selectTopCandidates(maxCorrections, sortedSpellings);
+
+		SpellDebug.containsDuplicates(
+			"TOP PORTION of SORTED scored spellings",
+			"SORTED scored spellings", word.word(), sortedSpellings);
+
+		SpellDebug.containsCorrection(
+			"SpellChecker.correctWord",
+			"TOP PORTION of SORTED scored spellings",
+			word.word(), scoredSpellings);
+
+		if (SpellDebug.traceIsActive("SpellChecker.correctWord", word.word())) {
+			SpellDebug.trace("SpellChecker.correctWord",
+				"TOP PORTION of SORTED scored spellings is:\n" +
+				PrettyPrinter.print(scoredSpellings),
+				word.word(), null);
+		}
+
+		corr.setPossibleSpellings(sortedSpellings);
+
+	}
+
+	private boolean correctWord_Shallow(
 		SpellingCorrection corr) throws SpellCheckerException {
 		Boolean wasRepaired = false;
 		corr.shallowFix = new CorrectionRulesSet().fixWord(corr.orig);
@@ -712,10 +750,80 @@ public class SpellChecker {
 
 		logger.trace("invoked with: word="+word);
 
+		SpellDebug.trace("SpellChecker.isMispelled", "Checkig correctness of word", word.inRoman(), null);
+
+		// First, carry out a rapid, SHALLOW CHARACTER-level analysis.
+		//
+		Boolean wordIsMispelled =  isMispelled_ShallowAnalysis(word);
+
+		// If deep check is active, and the SHALLOW check hasn't been able
+		// to established whether or not the word is mis-spelled, then carry out a
+		// DEEP MORPHOLOGICAL analysis.
+		//
+		if (deepCheckEnabled() && wordIsMispelled == null) {
+			wordIsMispelled = isMispelled_DeepAnalysis(word);
+		}
+
+		if (wordIsMispelled == null) {
+			wordIsMispelled = false;
+		}
+
+		logger.trace("Exiting");
+
+		SpellDebug.trace("SpellChecker.isMispelled",
+			"Returning wordIsMispelled="+wordIsMispelled, word.inRoman(), null);
+
+		return wordIsMispelled;
+	}
+
+	private Boolean isMispelled_DeepAnalysis(IUWord word) throws SpellCheckerException {
+		Logger logger = LogManager.getLogger("org.iutools.spellchecker.SpellChecker.isMispelled_DeepAnalysis");
+
+		Boolean wordIsMispelled = null;
+		if (corpus != null) {
+			try {
+				WordInfo wInfo = corpus.info4word(word.inRoman());
+				if (wInfo != null && wInfo.totalDecompositions > 0) {
+					wordIsMispelled = false;
+					logger.trace("Corpus contains some decompositions for this word");
+				}
+			} catch (CompiledCorpusException e) {
+				logger.trace(
+				"[word=" + word + "]: throws exception e=" + e.getMessage() +
+				"\ncorpus index name was: " + corpus.getIndexName());
+				throw new SpellCheckerException(e);
+			}
+		}
+
+		if (wordIsMispelled == null) {
+			try {
+				String[] segments = segmenter.segment(word.inRoman());
+				logger.trace("word submitted to IMA: " + word);
+				if (segments == null || segments.length == 0) {
+					wordIsMispelled = true;
+				}
+			} catch (TimeoutException e) {
+				wordIsMispelled = true;
+			} catch (StringSegmenterException e) {
+				throw new SpellCheckerException(e);
+			}
+			logger.trace("word submitted to IMA - mispelled: " + wordIsMispelled);
+		}
+
+		return wordIsMispelled;
+	}
+
+	/**
+	 * Check if the word is mis-spelled using a SHALLOW, CHARACTER-LEVEL
+	 * analysis.
+	 */
+	private Boolean isMispelled_ShallowAnalysis(IUWord word) throws SpellCheckerException {
+		Logger logger = LogManager.getLogger("org.iutools.spellchecker.SpellChecker.isMispelled_ShallowAnalysis");
+
 		Boolean wordIsMispelled = null;
 
 		// If the word is all numbers, then it is NOT mis-spelled
-		if (wordIsMispelled == null && word.inRoman().matches("^[0-9]+$")) {
+		if (word.inRoman().matches("^[0-9]+$")) {
 			logger.trace("word is all digits");
 			wordIsMispelled = false;
 		}
@@ -766,51 +874,6 @@ public class SpellChecker {
 			logger.trace("word is punctuation");
 			wordIsMispelled = false;
 		}
-
-		// If deep check is active, check that the word abides by the morpheme
-		// composition rules
-		if (deepCheckEnabled()) {
-			// Next, check if the word is in the pre-compiled corpus. If it is, check
-			// its decomposition in the word's WordInfo.
-			//
-			if (wordIsMispelled == null) {
-				if (wordIsMispelled == null && corpus != null) {
-					try {
-						WordInfo wInfo = corpus.info4word(word.inRoman());
-						if (wInfo != null && wInfo.totalDecompositions > 0) {
-							wordIsMispelled = false;
-							logger.trace("Corpus contains some decompositions for this word");
-						}
-					} catch (CompiledCorpusException e) {
-						logger.trace(
-						"[word=" + word + "]: throws exception e=" + e.getMessage() +
-						"\ncorpus index name was: " + corpus.getIndexName());
-						throw new SpellCheckerException(e);
-					}
-				}
-			}
-
-			if (wordIsMispelled == null) {
-				try {
-					String[] segments = segmenter.segment(word.inRoman());
-					logger.trace("word submitted to IMA: " + word);
-					if (segments == null || segments.length == 0) {
-						wordIsMispelled = true;
-					}
-				} catch (TimeoutException e) {
-					wordIsMispelled = true;
-				} catch (StringSegmenterException e) {
-					throw new SpellCheckerException(e);
-				}
-				logger.trace("word submitted to IMA - mispelled: " + wordIsMispelled);
-			}
-		}
-
-		if (wordIsMispelled == null) {
-			wordIsMispelled = false;
-		}
-
-		logger.trace("Exiting");
 
 		return wordIsMispelled;
 	}
@@ -970,8 +1033,8 @@ public class SpellChecker {
 				computeNgramFrequencies(badWordNgrams);
 
 		SpellDebug.containsNgramsToTrace(
-		"SpellChecker.firstPassCandidates_TFIDF",
-		"Most significant ngrams of the misspelled word",
+			"SpellChecker.firstPassCandidates_TFIDF",
+			"Most significant ngrams of the misspelled word",
 			(String)null, (String)null, ngramFreqs);
 
 		SpellDebug.traceNgrams("SpellChecker.firstPassCandidates_TFIDF",
