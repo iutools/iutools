@@ -356,13 +356,15 @@ class SpellController extends IUToolsController {
             suggestCorrections = false;
         }
 
-		var includePartials =
-			this.elementForProp("chkIncludePartials").is(':checked')
+	    var checkLevel =
+            this.elementForProp("selCheckLevel").val();
+        checkLevel = parseInt(checkLevel);
 
 		var request = {
 			text: word,
-            '_taskID': taskID,
-			includePartiallyCorrect: includePartials,
+            _taskID: taskID,
+            checkLevel: checkLevel,
+			// includePartiallyCorrect: includePartials,
             suggestCorrections: suggestCorrections
 		};
 

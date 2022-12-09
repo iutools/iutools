@@ -10,6 +10,7 @@
     		btnSpell: "btn-spell",
             btnCancelSpell: "btn-cancel-spell",
     		txtToCheck: "txt-to-check",
+            selCheckLevel: "sel-check-level",
     		chkIncludePartials: "chk-include-partials",
     		divChecked:  "div-checked",
     		divError: "div-error",

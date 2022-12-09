@@ -132,7 +132,7 @@ class ChooseCorrectionController extends IUToolsController {
         var request = {
             text: word,
             suggestCorrections: true,
-            includePartiallyCorrect: this.includePartialCorrections(),
+            checkLevel: this.checkLevel(),
         };
 
         new SpellService().invokeSpellCheckWordService(
@@ -289,6 +289,13 @@ class ChooseCorrectionController extends IUToolsController {
         var included =
             this.elementForProp("chkIncludePartials").is(":checked");
         return included;
+    }
+
+    checkLevel() {
+	    var level =
+            this.elementForProp("selCheckLevel").val();
+        level = parseInt(level);
+        return level;
     }
 
     wordBeingCorrected() {

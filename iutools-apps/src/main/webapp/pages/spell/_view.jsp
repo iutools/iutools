@@ -1,9 +1,11 @@
     <p>Enter some Inuktut text:</p>
     <textarea id="txt-to-check" name="txt-to-check" rows=20 cols=80></textarea>
     <br/>
+    <!--
     <input type="checkbox" id="chk-include-partials" name="chk-include-partials">
     	Include partial corrections (slower)
     <br/>
+    -->
     Check level <select name="sel-check-level" id="sel-check-level">
         <option value="1" selected>1</option>
         <option value="2">2</option>
