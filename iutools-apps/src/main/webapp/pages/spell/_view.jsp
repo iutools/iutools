@@ -6,14 +6,17 @@
     	Include partial corrections (slower)
     <br/>
     -->
-    Check level <select name="sel-check-level" id="sel-check-level">
-        <option value="1" selected>1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-    </select>
-    <div id='div-info' class='div-info' align='right'>
-      <a href='help.jsp?topic=spell-check-level' target='#iutools_help'></a>
-    </div>
+    <div>
+        <label for="sel-check-level">Check level</label>
+        <select name="sel-check-level" id="sel-check-level">
+            <option value="1" selected>1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+        </select>
+        <div id="div-info" class="div-info inline">
+            <a href="help.jsp?topic=spell-check-level" target="#iutools_help"></a>
+         </div>
+     </div>
 
     <br/>
     <button id="btn-spell" type="button" name="btn-spell" value="Spell">Spell Check</button>

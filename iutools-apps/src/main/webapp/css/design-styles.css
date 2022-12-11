@@ -448,6 +448,13 @@ main {
 
 /* Info icon */
 
+.div-info.inline {
+	display: inline-block;
+	line-height: 30px;
+	vertical-align: middle;
+	margin: 0 10px 8px 10px;
+}
+
 .div-info a {
 	display: block;
 	width: 30px;
