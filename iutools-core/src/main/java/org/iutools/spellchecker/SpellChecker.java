@@ -340,7 +340,9 @@ public class SpellChecker {
 
 		SpellingCorrection corr = new SpellingCorrection(word.word());
 		try {
-			if (maxCorrections == null || maxCorrections == -1) maxCorrections = DEFAULT_CORRECTIONS;
+			if (maxCorrections == null || maxCorrections == -1) {
+				maxCorrections = DEFAULT_CORRECTIONS;
+			}
 
 			long start = StopWatch.nowMSecs();
 
@@ -477,22 +479,20 @@ public class SpellChecker {
 		}
 
 		corr.setPossibleSpellings(sortedSpellings);
-
 	}
 
 	private boolean correctWord_Shallow(
 		SpellingCorrection corr) throws SpellCheckerException {
 		Boolean wasRepaired = false;
-		corr.shallowFix = new CorrectionRulesSet().fixWord(corr.orig);
-		if (!corr.shallowFix.equals(corr.orig)) {
+		String shallowFix = new CorrectionRulesSet().fixWord(corr.orig);
+		if (!shallowFix.equals(corr.orig)) {
+			corr.shallowFix = shallowFix;
+
 			// Check if the absolute mistake corrections have fixed all problems
 			// with the word
-			if (!isMispelled(corr.shallowFix)) {
+			if (!corr.shallowFixHighlightsFaultyChars() &&
+				!isMispelled(corr.shallowFix)) {
 				wasRepaired = true;
-				List<ScoredSpelling> finalSuggestions =
-					new ArrayList<ScoredSpelling>();
-				finalSuggestions.add(new ScoredSpelling(corr.shallowFix, 1.0));
-				corr.setPossibleSpellings(finalSuggestions);
 			}
 		}
 
@@ -529,11 +529,11 @@ public class SpellChecker {
 	}
 
 	private void computeCorrectLead(SpellingCorrection corr) throws SpellCheckerException {
-		
 		final int MAX_WORDS_TO_TRY = 5;
 
 		String longestCorrectLead = null;
-		for (int endPos = corr.shallowFix.length()-1; endPos > 3; endPos--) {
+		String correctionSoFar = corr.bestSuggestionSoFar();
+		for (int endPos = correctionSoFar.length()-1; endPos > 3; endPos--) {
 			//
 			// Loop through all the leading strings L of the bad word, starting 
 			// the complete bad word and removing one tailing character at a time, 
@@ -544,7 +544,7 @@ public class SpellChecker {
 			//   the last character L corresponds to the end of a 
 			//   morpheme in W.
 			//
-			String lead = corr.shallowFix.substring(0, endPos-1);
+			String lead = correctionSoFar.substring(0, endPos-1);
 			try (CloseableIterator<String> iterWords =
 				wordsContainingNgram("^"+lead)) {
 				boolean wordWasFoundForLead = false;
@@ -624,7 +624,8 @@ public class SpellChecker {
 		final int MAX_WORDS_TO_TRY = 5;
 		
 		String longestCorrectTail = null;
-		for (int startPos = 0; startPos < corr.shallowFix.length()-2; startPos++) {
+		String correctionSoFar = corr.bestSuggestionSoFar();
+		for (int startPos = 0; startPos < correctionSoFar.length()-2; startPos++) {
 			//
 			// Loop through all the tailing strings L of the bad word, starting 
 			// the complete bad word and removing one leading character at a time, 
@@ -635,7 +636,7 @@ public class SpellChecker {
 			//   the last character L corresponds to the end of a 
 			//   morpheme in W.
 			//
-			String tail = corr.shallowFix.substring(startPos);
+			String tail = correctionSoFar.substring(startPos);
 			try (CloseableIterator<String> iterWords = wordsContainingNgram(tail+"$")) {
 				boolean wordWasFoundForTail = false;
 				int wordCount = 0;
@@ -712,8 +713,8 @@ public class SpellChecker {
 	 * Ensure that the candidates are in the same script as the input word
 	 */
 	private void ensureCandidatesAreInScript(SpellingCorrection corr, Script script) throws SpellCheckerException {
-		for (int ic=0; ic < corr.scoredCandidates.size(); ic++) {
-			ScoredSpelling candidate = corr.scoredCandidates.get(ic);
+		for (int ic = 0; ic < corr.deepFixes.size(); ic++) {
+			ScoredSpelling candidate = corr.deepFixes.get(ic);
 			try {
 				candidate.spelling = TransCoder.ensureScript(script, candidate.spelling);
 			} catch (TransCoderException e) {

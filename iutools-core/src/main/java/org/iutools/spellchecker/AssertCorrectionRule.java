@@ -2,6 +2,7 @@ package org.iutools.spellchecker;
 
 import ca.nrc.testing.AssertString;
 import ca.nrc.testing.Asserter;
+import org.iutools.text.IUWord;
 
 public class AssertCorrectionRule extends Asserter<CorrectionRule> {
 	public AssertCorrectionRule(CorrectionRule pattern) {
@@ -12,23 +13,24 @@ public class AssertCorrectionRule extends Asserter<CorrectionRule> {
 		super(_gotObject, mess);
 	}
 
-	public AssertCorrectionRule nothingToFix(String origWord) throws SpellCheckerException {
-		String fixedWord = pattern().fixWord(origWord);
+	public AssertCorrectionRule nothingToFix(String origWord) throws Exception {
+		IUWord fixedWord = rule().fixWord(new IUWord(origWord));
 		AssertString.assertStringEquals(
 			baseMessage+"\n\"Fixed\" word should have been identical to the original one.",
-			fixedWord, origWord);
+			fixedWord.word(), origWord);
 		return this;
 	}
 
-	public AssertCorrectionRule fixesWord(String origWord, String expFixedWord) throws SpellCheckerException {
-		String gotFixedWord = pattern().fixWord(origWord);
+	public AssertCorrectionRule fixesWord(String origWord, String expFixedWord)
+		throws Exception {
+		IUWord gotFixedWord = rule().fixWord(new IUWord(origWord));
 		AssertString.assertStringEquals(
 			baseMessage+"\nWord was not fixed as expected.",
-			expFixedWord, gotFixedWord);
+			expFixedWord, gotFixedWord.word());
 		return this;
 	}
 
-	public CorrectionRule pattern() {
+	public CorrectionRule rule() {
 		return this.gotObject;
 	}
 }

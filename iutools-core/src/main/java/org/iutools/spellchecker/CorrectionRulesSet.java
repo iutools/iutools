@@ -2,6 +2,8 @@ package org.iutools.spellchecker;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.iutools.text.IUWord;
+import org.iutools.text.WordException;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,7 +22,7 @@ public class CorrectionRulesSet {
 				//
 				// Each rule is specified in the following format:
 				//
-				// 	new CorrectionRule(badSequence, fix, appliesInBothScripts)
+				// 	new CorrectionRule(badSequence, fix)
 				//
 				// Where:
 				//
@@ -31,12 +33,12 @@ public class CorrectionRulesSet {
 				//      it means the rule can only identify the mistake without
 				//      fixing it.
 				//
-				//   appliesInBothScripts (Optional, default: false): If true,
-				//      the rule applies to both syllabic and roman script.
-				//      Note: When a rule is applied to a word in a different script
-				//        than was used to specify the rule, the badSequence and
-				//        fix regexps will be transcoded to the same script as
-				//        the word being checked.
+				// A rule may be in written in either SYLLABIC or ROMAN, but both
+				// regex must use the same script.
+				//
+				// When applying a rule, we need to convert the input word to the
+				// script in which the rule was written. Therefore, we try to
+				// put rules in a given script together to avoid constant transcoding.
 				//
 				// Note: When writing a rule in syllabic and that rule applies also
 				// to roman, we need to specify alternatives as "(a|b|c|...)"
@@ -118,13 +120,6 @@ public class CorrectionRulesSet {
 				new CorrectionRule("ᖅᖃ", "ᖅᑲ"),
 				new CorrectionRule("ᖅᖄ", "ᖅᑳ"),
 
-				// Q POUR BENOIT: Je soupçonne que les 2 prochaines règles ne fonctionneront
-				// pas pour le syllabique parce que les charactères syllabiques correspondant
-				// à ᖅ et ᕐ vont avoir été éliminés par les règles ci-dessus?
-				// Peut-être qu'on serait mieux d'écrire les règles en forme syllabique?
-				new CorrectionRule("q([jmnv])", "r$1", true),
-				new CorrectionRule("qk", "qq", true),
-
 				// Find final r before voiceless consonants and replace by q
 				new CorrectionRule("ᕐ(ᐱ|ᐳ|ᐸ|ᑎ|ᑐ|ᑕ|ᓯ|ᓱ|ᓴ|ᖠ|ᖢ|ᖤ|ᐲ|ᐴ|ᐹ|ᑏ|ᑑ|ᑖ|ᓰ|ᓲ|ᓵ|ᖡ|ᖣ|ᖥ)",
 					"ᖅ$1", true),
@@ -159,21 +154,23 @@ public class CorrectionRulesSet {
 				//      Add a dialect switch (ex: north baffin, kivalliq, south baffin)
 				//   Je ne comprends pas trop de quoi il s'agit.
 				//
-				new CorrectionRule("(ᖅ|ᕐ|ᑦ|ᑉ|ᔅ|ᒡ|ᔾ|ᒃ|ᓪ|ᕝ|ᓐ|ᒻ|ᖦ|ᖕ|ᖖ)(ᕿ|ᖀ|ᖁ|ᖂ|ᖃ|ᖄ)", null, false),
-				new CorrectionRule("(ᖅ|ᕐ|ᑦ|ᑉ|ᔅ|ᔾ|ᒃ|ᓪ|ᕝ|ᓐ|ᒻ|ᖦ|ᖕ|ᖖ)(ᒋ|ᒌ|ᒍ|ᒎ|ᒐ|ᒑ)", null, false),
-				new CorrectionRule("(ᕐ|ᑦ|ᑉ|ᔅ|ᒡ|ᔾ|ᓪ|ᕝ|ᓐ|ᒻ|ᖦ|ᖕ|ᖖ)(ᑭ|ᑮ|ᑯ|ᑰ|ᑲ|ᑳ)", null, false),
-				new CorrectionRule("(ᕐ|ᑦ|ᔅ|ᒡ|ᔾ|ᓪ|ᕝ|ᓐ|ᒻ|ᖦ|ᖕ|ᖖ)(ᐱ|ᐳ|ᐸ|ᐲ|ᐴ|ᐹ)", null, false),
-				new CorrectionRule("(ᕐ|ᑉ|ᔅ|ᒡ|ᔾ|ᓪ|ᕝ|ᓐ|ᒻ|ᖦ|ᖕ|ᖖ)(ᑎ|ᑐ|ᑕ|ᑏ|ᑑ|ᑖ)", null, false),
-				new CorrectionRule("(ᕐ|ᑉ|ᔅ|ᒡ|ᔾ|ᓪ|ᕝ|ᓐ|ᒻ|ᖦ|ᖕ|ᖖ)(ᓯ|ᓱ|ᓴ|ᓰ|ᓲ|ᓵ)", null, false),
-				new CorrectionRule("(ᕐ|ᑦ|ᑉ|ᔅ|ᒡ|ᔾ|ᓪ|ᕝ|ᓐ|ᒻ|ᖕ|ᖖ)(ᖠ|ᖢ|ᖤ|ᖡ|ᖣ|ᖥ)", null, false),
-				new CorrectionRule("(ᖅ|ᑦ|ᑉ|ᔅ|ᒡ|ᔾ|ᒃ|ᓪ|ᕝ|ᓐ|ᖦ|ᖖ)(ᒥ|ᒧ|ᒪ|ᒦ|ᒨ|ᒫ)", null, false),
-				new CorrectionRule("(ᖅ|ᑦ|ᑉ|ᔅ|ᒡ|ᔾ|ᒃ|ᓪ|ᕝ|ᒻ|ᖦ|ᖖ)(ᓂ|ᓄ|ᓇ|ᓃ|ᓅ|ᓈ)", null, false),
-				new CorrectionRule("(ᖅ|ᑦ|ᑉ|ᔅ|ᒡ|ᔾ|ᒃ|ᓪ|ᓐ|ᒻ|ᖦ|ᖕ|ᖖ)(ᕕ|ᕗ|ᕙ|ᕖ|ᕘ|ᕚ)", null, false),
-				new CorrectionRule("(ᖅ|ᑦ|ᑉ|ᔅ|ᔾ|ᒃ|ᕝ|ᓐ|ᒻ|ᖦ|ᖕ|ᖖ)(ᓕ|ᓗ|ᓚ|ᓖ|ᓘ|ᓛ)", null, false),
-				new CorrectionRule("(ᖅ|ᑦ|ᑉ|ᔅ|ᒃ|ᓪ|ᕝ|ᓐ|ᒻ|ᖦ|ᖕ|ᖖ)(ᔨ|ᔪ|ᔭ|ᔩ|ᔫ|ᔮ)", null, false),
-				new CorrectionRule("(ᖅ|ᑦ|ᑉ|ᔅ|ᒡ|ᔾ|ᒃ|ᓪ|ᕝ|ᓐ|ᒻ|ᖦ|ᖕ|ᖖ)(ᕆ|ᕈ|ᕋ|ᕇ|ᕉ|ᕌ)", null, false),
-				new CorrectionRule("(ᖅ|ᕐ|ᑦ|ᑉ|ᔅ|ᒡ|ᔾ|ᒃ|ᓪ|ᕝ|ᓐ|ᒻ|ᖦ|ᖕ|ᖖ)(ᖏ|ᖑ|ᖓ|ᖐ|ᖒ|ᖔ)", null, false),
-				new CorrectionRule("(ᖅ|ᕐ|ᑦ|ᑉ|ᔅ|ᒡ|ᔾ|ᒃ|ᓪ|ᕝ|ᓐ|ᒻ|ᖦ|ᖕ|ᖖ)(ᙱ|ᙲ|ᙳ|ᙴ|ᙵ|ᙶ)", null, false),
+				// DISABLED FOR NOW BECAUSE BENOIT DOES NOT UNDERSTAND THEM
+				//
+//				new CorrectionRule("(ᖅ|ᕐ|ᑦ|ᑉ|ᔅ|ᒡ|ᔾ|ᒃ|ᓪ|ᕝ|ᓐ|ᒻ|ᖦ|ᖕ|ᖖ)(ᕿ|ᖀ|ᖁ|ᖂ|ᖃ|ᖄ)", null, false),
+//				new CorrectionRule("(ᖅ|ᕐ|ᑦ|ᑉ|ᔅ|ᔾ|ᒃ|ᓪ|ᕝ|ᓐ|ᒻ|ᖦ|ᖕ|ᖖ)(ᒋ|ᒌ|ᒍ|ᒎ|ᒐ|ᒑ)", null, false),
+//				new CorrectionRule("(ᕐ|ᑦ|ᑉ|ᔅ|ᒡ|ᔾ|ᓪ|ᕝ|ᓐ|ᒻ|ᖦ|ᖕ|ᖖ)(ᑭ|ᑮ|ᑯ|ᑰ|ᑲ|ᑳ)", null, false),
+//				new CorrectionRule("(ᕐ|ᑦ|ᔅ|ᒡ|ᔾ|ᓪ|ᕝ|ᓐ|ᒻ|ᖦ|ᖕ|ᖖ)(ᐱ|ᐳ|ᐸ|ᐲ|ᐴ|ᐹ)", null, false),
+//				new CorrectionRule("(ᕐ|ᑉ|ᔅ|ᒡ|ᔾ|ᓪ|ᕝ|ᓐ|ᒻ|ᖦ|ᖕ|ᖖ)(ᑎ|ᑐ|ᑕ|ᑏ|ᑑ|ᑖ)", null, false),
+//				new CorrectionRule("(ᕐ|ᑉ|ᔅ|ᒡ|ᔾ|ᓪ|ᕝ|ᓐ|ᒻ|ᖦ|ᖕ|ᖖ)(ᓯ|ᓱ|ᓴ|ᓰ|ᓲ|ᓵ)", null, false),
+//				new CorrectionRule("(ᕐ|ᑦ|ᑉ|ᔅ|ᒡ|ᔾ|ᓪ|ᕝ|ᓐ|ᒻ|ᖕ|ᖖ)(ᖠ|ᖢ|ᖤ|ᖡ|ᖣ|ᖥ)", null, false),
+//				new CorrectionRule("(ᖅ|ᑦ|ᑉ|ᔅ|ᒡ|ᔾ|ᒃ|ᓪ|ᕝ|ᓐ|ᖦ|ᖖ)(ᒥ|ᒧ|ᒪ|ᒦ|ᒨ|ᒫ)", null, false),
+//				new CorrectionRule("(ᖅ|ᑦ|ᑉ|ᔅ|ᒡ|ᔾ|ᒃ|ᓪ|ᕝ|ᒻ|ᖦ|ᖖ)(ᓂ|ᓄ|ᓇ|ᓃ|ᓅ|ᓈ)", null, false),
+//				new CorrectionRule("(ᖅ|ᑦ|ᑉ|ᔅ|ᒡ|ᔾ|ᒃ|ᓪ|ᓐ|ᒻ|ᖦ|ᖕ|ᖖ)(ᕕ|ᕗ|ᕙ|ᕖ|ᕘ|ᕚ)", null, false),
+//				new CorrectionRule("(ᖅ|ᑦ|ᑉ|ᔅ|ᔾ|ᒃ|ᕝ|ᓐ|ᒻ|ᖦ|ᖕ|ᖖ)(ᓕ|ᓗ|ᓚ|ᓖ|ᓘ|ᓛ)", null, false),
+//				new CorrectionRule("(ᖅ|ᑦ|ᑉ|ᔅ|ᒃ|ᓪ|ᕝ|ᓐ|ᒻ|ᖦ|ᖕ|ᖖ)(ᔨ|ᔪ|ᔭ|ᔩ|ᔫ|ᔮ)", null, false),
+//				new CorrectionRule("(ᖅ|ᑦ|ᑉ|ᔅ|ᒡ|ᔾ|ᒃ|ᓪ|ᕝ|ᓐ|ᒻ|ᖦ|ᖕ|ᖖ)(ᕆ|ᕈ|ᕋ|ᕇ|ᕉ|ᕌ)", null, false),
+//				new CorrectionRule("(ᖅ|ᕐ|ᑦ|ᑉ|ᔅ|ᒡ|ᔾ|ᒃ|ᓪ|ᕝ|ᓐ|ᒻ|ᖦ|ᖕ|ᖖ)(ᖏ|ᖑ|ᖓ|ᖐ|ᖒ|ᖔ)", null, false),
+//				new CorrectionRule("(ᖅ|ᕐ|ᑦ|ᑉ|ᔅ|ᒡ|ᔾ|ᒃ|ᓪ|ᕝ|ᓐ|ᒻ|ᖦ|ᖕ|ᖖ)(ᙱ|ᙲ|ᙳ|ᙴ|ᙵ|ᙶ)", null, false),
 
 				// Certain endings can't end with a vowel ex vu should be -vuq vut.
 				// May need to expand this list.
@@ -189,6 +186,8 @@ public class CorrectionRulesSet {
 				// d'un mot (souvent emprunte: Haaki (hockey) ou Hamlaat (Hamlet). Par contre,
 				// certains utilisent H pour hi hu ha, alors que les symboles ᓯ ᓱ ᓴ peuvent ausi
 				// representer ces sons.
+				new CorrectionRule("q([jmnv])", "r$1", true),
+				new CorrectionRule("qk", "qq", true),
 			};
 		}
 		return _allRules;
@@ -234,9 +233,20 @@ public class CorrectionRulesSet {
 		return (applicableRule != null);
 	}
 
-	public String fixWord(String origWord) throws SpellCheckerException {
+	public String fixWord(String origWordStr) throws SpellCheckerException {
+		try {
+			IUWord origWord = new IUWord(origWordStr);
+			IUWord fixedWord = fixWord(origWord);
+			String fixedWordStr = fixedWord.inScript(origWord.origScript());
+			return fixedWordStr;
+		} catch (WordException e) {
+			throw new SpellCheckerException(e);
+		}
+	}
+
+	public IUWord fixWord(IUWord origWord) throws SpellCheckerException {
 		Logger logger = LogManager.getLogger("org.iutools.spellchecker.CorrectionRulesSet.fixWord");
-		String fixed = origWord;
+		IUWord fixed = origWord;
 		for (CorrectionRule rule: rules()) {
 			fixed = rule.fixWord(fixed);
 		}

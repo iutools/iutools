@@ -4,20 +4,21 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.iutools.script.TransCoder;
 import org.iutools.script.TransCoderException;
+import org.iutools.text.IUWord;
+import org.iutools.text.WordException;
 
 import java.util.regex.Pattern;
 
 import static org.iutools.script.TransCoder.Script;
 
 /**
- * This class captures a rule for correcting certain types of "shallow" spelling
+ * This class captures a "shallow" rule for correcting certain types of spelling
  * mistake.
  *
- * By "shallow rule", we mean a rule that does not require any knowledge about
- * morphology. Just knowlege about certain sequences of characters that are
- * ALWAYS wrong no matter the word.
+ * By "shallow rule", we mean a rule that looks for invalid sequences of characters
+ * that can NEVER occur in a valid Inuktitut word. In particular, these rules
  *
- * Many of those "mistakes" have to do with "old fashioned" spelling in certain
+ * Many of those rules address "mistakes" that are in fact "old fashioned" spelling in certain
  * dialects, and the rule transforms the spelling to the more modern, standardized
  * spelling.
  */
@@ -30,6 +31,9 @@ public class CorrectionRule {
 
 	/** Regex that fixes the misspelled characters (and ONLY that) */
 	public String regexFix = null;
+
+	/** Script in which the rule is written */
+	public Script ruleScript = null;
 
 	/** Rule for the other script */
 	private String _regexBad_otherScript = null;
@@ -50,6 +54,12 @@ public class CorrectionRule {
 
 	private void init__CorrectionRule(String _regexBad, String _regexFix,
 		Boolean _appliesToBothScripts) throws SpellCheckerException {
+
+		if (_regexFix == null) {
+			// If no rule has been provided to actually fix the faulty characters,
+			// use a regexp that hihglights them with a pair of brackets []
+			_regexFix = "[$0]";
+		}
 		this.regexBad = _regexBad;
 		Script script1 = TransCoder.textScript(regexBad);
 		if (script1 == Script.MIXED) {
@@ -66,6 +76,8 @@ public class CorrectionRule {
 				throw new SpellCheckerException("The two sides of the rule were written in different scripts: " + this.toString());
 			}
 		}
+		this.ruleScript = script1;
+
 		if (_appliesToBothScripts != null) {
 			appliesToBothScripts = _appliesToBothScripts;
 		}
@@ -84,28 +96,24 @@ public class CorrectionRule {
 		return _pattBad;
 	}
 
-	public String fixWord(String word) throws SpellCheckerException {
+	public IUWord fixWord(IUWord origWord) throws SpellCheckerException {
 		Logger logger = LogManager.getLogger("org.iutools.spellchecker.CorrectionRule.fixWord");
-		String fixed = word;
-		logger.trace("rule is: "+this);
-		if (regexFix != null) {
-			fixed = word.replaceAll(regexBad, regexFix);
-			if (fixed.equals(word)) {
-				// The rule had no effect.
-				// Try to apply the rule in the other script
-				String before = fixed;
-				fixed = word.replaceAll(regexBad_otherScript(), regexFix_otherScript());
-				String result = "'"+before+"' ";
-				if (before.equals(fixed)) {
-					result += "UNCHANGED";
-				} else {
-					result += "-> '"+fixed+"'";
-				}
-				logger.trace(result);
-				int x = 1;
-			}
+
+		String origStr = origWord.inScript(ruleScript);
+		String fixedStr = pattBad().matcher(origStr).replaceAll(regexFix);
+		String result = "'"+origStr+"' " +
+			(fixedStr.equals(origStr) ? "UNCHANGED": "-> '"+fixedStr+"'");
+		if (!origStr.equals(fixedStr) && logger.isTraceEnabled()) {
+			logger.trace(origWord + ": rule fired\n  Rule: " + this.toString() + "\n  Result: --> " + fixedStr);
 		}
-		return fixed;
+
+		IUWord fixedWord = null;
+		try {
+			fixedWord = new IUWord(fixedStr, ruleScript);
+		} catch (WordException e) {
+			throw new SpellCheckerException(e);
+		}
+		return fixedWord;
 	}
 
 	private String regexBad_otherScript() throws SpellCheckerException {

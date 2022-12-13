@@ -11,50 +11,34 @@ import org.apache.logging.log4j.Logger;
 import org.iutools.script.TransCoder;
 import org.iutools.script.TransCoderException;
 
+/**
+ * Result of a spell check on a word done with the SpellChecker class.
+ */
 public class SpellingCorrection {
 	public String orig;
-		public SpellingCorrection setOrig(String _orig) {
-			this.orig = _orig;
-			return this;
-		}
 		
+	/** Whether or not the word was deemed mis-spelled */
 	public Boolean wasMispelled = false;
-	public List<ScoredSpelling> scoredCandidates = 
-				new ArrayList<ScoredSpelling>();
 
 	/**
-	 * Partial fix of the word obtained by applying simple rules for common
-	 * "absolute" mistakes.
+	 * Fix done by the SHALLOW CHARACTER-level analysis.
 	 */
 	public String shallowFix = null;
 	
+	/**
+	 * Possible fixes done by the DEEP MORPHOLOGICAL analysis
+	 */
+	public List<ScoredSpelling> deepFixes = new ArrayList<ScoredSpelling>();
+
+	/**
+	 * Longest correct portion at the START of the word
+	 */
 	private String correctLead;
-		public SpellingCorrection setCorrectLead(String _correctLead) throws SpellCheckerException {
-			try {
-				this.correctLead = 
-					TransCoder.ensureSameScriptAsSecond(_correctLead, orig);
-			} catch (TransCoderException e) {
-				throw new SpellCheckerException(e);
-			}
-			return this;
-		}
-		public String getCorrectLead() {
-			return this.correctLead;
-		}
 		
+	/**
+	 * Longest correct portion at the END of the word
+	 */
 	private String correctTail;
-		public SpellingCorrection setCorrectTail(String _correctTail) throws SpellCheckerException {
-			try {
-				this.correctTail =
-						TransCoder.ensureSameScriptAsSecond(_correctTail, orig);
-			} catch (TransCoderException e) {
-				throw new SpellCheckerException(e);
-			}
-			return this;
-		}
-		public String getCorrectTail() {
-			return correctTail;
-		}
 	
 	public SpellingCorrection() {
 		initialize(null, null, null, null);		
@@ -83,10 +67,9 @@ public class SpellingCorrection {
 		initialize(word, null, null, _wasMispelled);
 	}
 
-	private void initialize(String _orig, List<String> _corrections, 
-			List<Double> _scores, Boolean _wasMispelled) {
+	private void initialize(String _orig, List<String> _corrections, List<Double> _scores, Boolean _wasMispelled) {
 		this.setOrig(_orig);
-		this.shallowFix = _orig;
+		this.shallowFix = null;
 		if (_wasMispelled != null) this.wasMispelled = _wasMispelled;
 		if (_corrections != null) {
 			for (int ii=0; ii < _corrections.size(); ii++) {
@@ -95,9 +78,56 @@ public class SpellingCorrection {
 				if (_scores != null) {
 					score = _scores.get(ii);
 				}
-				scoredCandidates.add(new ScoredSpelling(spelling, score));
+				deepFixes.add(new ScoredSpelling(spelling, score));
 			}
 		}
+	}
+
+	/**
+	 * When applying different correction strategies in sequence, this will
+	 * return the best "partial" correction we got from previous strategies.
+	 */
+	public String bestSuggestionSoFar() {
+		String best = orig;
+		if (shallowFix != null) {
+			// Shallow rules did produce a partial fix.
+			best = shallowFix;
+			// Remove the bad word markers from the shallow fix
+			best.replaceAll("(\\[|\\])", "");
+		}
+		return best;
+	}
+
+	public SpellingCorrection setOrig(String _orig) {
+		this.orig = _orig;
+		return this;
+	}
+
+	public SpellingCorrection setCorrectLead(String _correctLead) throws SpellCheckerException {
+		try {
+			this.correctLead =
+				TransCoder.ensureSameScriptAsSecond(_correctLead, orig);
+		} catch (TransCoderException e) {
+			throw new SpellCheckerException(e);
+		}
+		return this;
+	}
+
+	public String getCorrectLead() {
+		return this.correctLead;
+	}
+
+	public SpellingCorrection setCorrectTail(String _correctTail) throws SpellCheckerException {
+		try {
+			this.correctTail =
+					TransCoder.ensureSameScriptAsSecond(_correctTail, orig);
+		} catch (TransCoderException e) {
+			throw new SpellCheckerException(e);
+		}
+		return this;
+	}
+	public String getCorrectTail() {
+		return correctTail;
 	}
 
 	public String topSuggestion() {
@@ -138,26 +168,18 @@ public class SpellingCorrection {
 		// We always start with the Highlighted correction
 		String highlightedCorrection = highlightIncorrectMiddle();
 		if (highlightedCorrection != null) {
-			suggestions.add(highlightedCorrection);			
+			addNoDups(suggestions, highlightedCorrection);
 		}
 
-		// Next, add either Deep corrections (if we have some) OR the
-		// shallow correction (if there is one)
-		//
-		List<String> additionalSuggestions = getDeepSuggestions();
-		if (additionalSuggestions.isEmpty()) {
-			// No deep suggestions
-			// Were we able to make a suggestion using the shallow rules?
-			if (!shallowFix.equals(orig)) {
-				additionalSuggestions = new ArrayList<String>();
-				additionalSuggestions.add(shallowFix);
-			}
+		// Next, we add the SHALLOW correction if one was found
+		if (shallowFix != null) {
+			addNoDups(suggestions, shallowFix);
 		}
-		for (String anAdditionalSugg: additionalSuggestions) {
-			// Make sure we don't already have that suggestion
-			if (!suggestions.contains(anAdditionalSugg)) {
-				suggestions.add(anAdditionalSugg);
-			}
+
+		// Next, add either Deep corrections (if we have some)
+		//
+		for (String deepSugg: getDeepSuggestions()) {
+			addNoDups(suggestions, deepSugg);
 		}
 
 		if (tLogger.isTraceEnabled()) {
@@ -167,27 +189,34 @@ public class SpellingCorrection {
 		return suggestions;
 	}
 
+	private void addNoDups(List<String> suggestions, String newSuggestion) {
+		if (!suggestions.contains(newSuggestion)) {
+			suggestions.add(newSuggestion);
+		}
+		return;
+	}
+
 
 	public List<ScoredSpelling> getScoredPossibleSpellings() {
-		return scoredCandidates;
+		return deepFixes;
 	}
 
 	@Transient
 	public List<String> getDeepSuggestions() {
 		List<String> possibleSpellings = new ArrayList<String>();
-		for (ScoredSpelling scoredSpelling: scoredCandidates) {
+		for (ScoredSpelling scoredSpelling: deepFixes) {
 			possibleSpellings.add(scoredSpelling.spelling);
 		}
 		return possibleSpellings;
 	}
 
 	public SpellingCorrection setPossibleSpellings(List<ScoredSpelling> _scoredSpellings) {
-		scoredCandidates = _scoredSpellings;
+		deepFixes = _scoredSpellings;
 				
-		if (scoredCandidates != null 
-				&& scoredCandidates.size() > 0 
-				&& scoredCandidates.get(0).spelling.equals(orig)) {
-			this.scoredCandidates.remove(0);
+		if (deepFixes != null
+				&& deepFixes.size() > 0
+				&& deepFixes.get(0).spelling.equals(orig)) {
+			this.deepFixes.remove(0);
 		}
 				
 		return this;
@@ -266,4 +295,11 @@ public class SpellingCorrection {
 		return lead;
 	}
 
+	/**
+	 * Checks if the shallowFix highlights faulty characters
+	 * (ex: nunavu[mm]it)
+	 */
+	public boolean shallowFixHighlightsFaultyChars() {
+		return shallowFix.matches("^.*\\[.*\\].*$");
+	}
 }

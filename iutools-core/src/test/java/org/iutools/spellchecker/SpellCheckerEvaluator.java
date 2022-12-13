@@ -59,8 +59,8 @@ public class SpellCheckerEvaluator {
 		this.examplesCount = 0;
 	}
 	
-	public void onNewExample(SpellCheckerExample example, 
-			Boolean assumesCorrectionsLoadeInDic) throws SpellCheckerException {
+	public void onNewExample(SpellCheckerExample example,
+		Boolean assumesCorrectionsLoadeInDic) throws SpellCheckerException {
 		if (startTime == null) {
 			startTime = StopWatch.nowMSecs();
 		}
@@ -107,10 +107,7 @@ public class SpellCheckerEvaluator {
 		
 		if (!example.acceptableCorrections.isEmpty()) {
 			Integer rank = null;
-			List<String> suggestions = new ArrayList<String>();
-			for (ScoredSpelling cand: gotCorrection.getScoredPossibleSpellings()) {
-				suggestions.add(cand.spelling);
-			}
+			List<String> suggestions = gotCorrection.getAllSuggestions();
 			
 			if (verbosity > 1) {
 				System.out.println("   Got suggestions: "+
@@ -121,9 +118,16 @@ public class SpellCheckerEvaluator {
 				totalExamplesWithKnownCorrections++;
 			}
 
-			for (int ii=0; ii < suggestions.size(); ii++) {
-				if (example.acceptableCorrections.contains(suggestions.get(ii))) {
-					rank = ii + 1;
+			int suggIndex = 0;
+			for (String suggestion: suggestions) {
+				if (suggestion.matches("^.*\\[.*\\].*$")) {
+					// Ignore suggestions that just highlight bad characters
+					// with bracket pairs
+					continue;
+				}
+				suggIndex++;
+				if (example.acceptableCorrections.contains(suggestion)) {
+					rank = suggIndex;
 					break;
 				}
 			}
@@ -186,9 +190,9 @@ public class SpellCheckerEvaluator {
 			}
 
 			if (comparison.equals("worse")) {
-				addExampleWithWorseRank(example, rank, gotCorrection.scoredCandidates);
+				addExampleWithWorseRank(example, rank, gotCorrection.deepFixes);
 			} else if (comparison.equals("better")) {
-				addExampleWithBetterRank(example, rank, gotCorrection.scoredCandidates);
+				addExampleWithBetterRank(example, rank, gotCorrection.deepFixes);
 			}
 
 			if (verbosity > 0) {
@@ -211,7 +215,7 @@ public class SpellCheckerEvaluator {
 	}
 
 	private void addExampleWithWorseRank(SpellCheckerExample example,
-										 Integer rank, List<ScoredSpelling> scoredSpellings) {
+		Integer rank, List<ScoredSpelling> scoredSpellings) {
 		
 		List<String> suggestions = new ArrayList<String>();
 		for (ScoredSpelling aSpelling: scoredSpellings) {
@@ -234,8 +238,8 @@ public class SpellCheckerEvaluator {
 
 
 	private void onTruePositive(SpellCheckerExample example, 
-			SpellingCorrection gotCorrection, 
-			Boolean assumesCorrectionsLoadeInDic) throws SpellCheckerException {
+		SpellingCorrection gotCorrection,
+		Boolean assumesCorrectionsLoadeInDic) throws SpellCheckerException {
 		
 		if (verbosity > 1) {
 			System.out.println("   True Positive: input word was deemed mis-spelled as it should have");

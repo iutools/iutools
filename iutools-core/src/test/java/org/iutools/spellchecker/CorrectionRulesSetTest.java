@@ -1,6 +1,9 @@
 package org.iutools.spellchecker;
 
+import ca.nrc.testing.AssertObject;
 import org.junit.Test;
+
+import java.util.*;
 
 public class CorrectionRulesSetTest {
 
@@ -9,8 +12,8 @@ public class CorrectionRulesSetTest {
 	///////////////////////////////////////
 
 	@Test
-	public void test__CommonMistakes__Synopsis() throws Exception {
-		CorrectionRulesSet mistakes = new CorrectionRulesSet();
+	public void test__CorrectionRulesSet__Synopsis() throws Exception {
+		CorrectionRulesSet rules = new CorrectionRulesSet();
 
 		// Use this class to fix the most common patterns of spelling mistakes
 		for (String origWord:
@@ -29,7 +32,7 @@ public class CorrectionRulesSetTest {
 				"nunavuumik"
 			}) {
 
-			String fixedWord = mistakes.fixWord(origWord);
+			String fixedWord = rules.fixWord(origWord);
 			if (fixedWord.equals(origWord)) {
 				// Means there were no absolute mistakes in the original word
 			} else {
@@ -47,12 +50,51 @@ public class CorrectionRulesSetTest {
 	///////////////////////////////////////
 
 	@Test
+	public void test__fixWord__RunOnSpellCheckerExamples() throws Exception {
+		// Test fixWord() using all the examples used to evaluate the accuracy
+		// of the SpellChecker. For each example, make sure that fixWord() does
+		// not change any of he correct forms specified by that example
+		Set<String> validWords = new HashSet<String>();
+		for (SpellCheckerExample example: SpellCheckerAccuracyTest.examples_MostFrequenMisspelledWords) {
+			for (String validWord: example.acceptableCorrections) {
+				validWords.add(validWord);
+			}
+		}
+		for (SpellCheckerExample example: SpellCheckerAccuracyTest.examples_RandomPageSample) {
+			for (String validWord: example.acceptableCorrections) {
+				validWords.add(validWord);
+			}
+		}
+
+		CorrectionRulesSet rules = new CorrectionRulesSet();
+		Map<String,String> affectedWords = new HashMap<String,String>();
+		for (String word: validWords) {
+			String fixedWord = rules.fixWord(word);
+			if (!fixedWord.equals(word)) {
+				affectedWords.put(word, fixedWord);
+			}
+		}
+
+		AssertObject.assertDeepEquals(
+			"Some valid words were modified by the rule set",
+			new HashMap<String,String>(), affectedWords
+		);
+	}
+
+
+	@Test
 	public void test__fixWord() throws Exception {
 		CorrectionRulesSet mistakes =
 			new CorrectionRulesSet();
 
 		AssertCorrectionRulesSet asserter =
 			new AssertCorrectionRulesSet(mistakes);
+
+		// This word SHOULD be correctly spelled, as it is one of the
+		//   correct suggestions for bad word nunavuumit in our SpellChecker
+		//   gold standard
+		asserter.nothingToFix("nunavummit");
+
 
 		// This word is correctly spelled
 		asserter.nothingToFix("inuqtitut");

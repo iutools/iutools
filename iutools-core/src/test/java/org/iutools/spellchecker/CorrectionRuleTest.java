@@ -1,5 +1,6 @@
 package org.iutools.spellchecker;
 
+import org.iutools.text.IUWord;
 import org.junit.jupiter.api.Test;
 
 public class CorrectionRuleTest {
@@ -9,7 +10,7 @@ public class CorrectionRuleTest {
 	/////////////////////////////////////////////
 
 	@Test
-	public void test__AbsoluteMistake_Regex__Synopsis() throws Exception {
+	public void test__CorrectionRule__Synopsis() throws Exception {
 		// Use this class to describe an 'absolute' spelling mistake, i.e. a
 		// pattern that is ALWAYS a mistake no matter the specifics of the word.
 		//
@@ -24,7 +25,7 @@ public class CorrectionRuleTest {
 		// You can use a mistake pattern to fix a mis-spelled word
 		//
 		String origWord = "inuqka";
-		String fixedWord = pattern.fixWord(origWord);
+		IUWord fixedWord = pattern.fixWord(new IUWord(origWord));
 		if (!fixedWord.equals(origWord)) {
 			// Means the orignal word had that spelling mistake
 		} else {

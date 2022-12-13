@@ -10,9 +10,26 @@ public class IUWord extends Word {
 
 	public IUWord(String __word) throws WordException {
 		super(__word, "iu");
-		this._origScript = TransCoder.textScript(__word);
+		init__IUWord(__word, (Script)null);
+	}
+
+	public IUWord(String __word, Script __inScript) throws WordException {
+		super(__word, "iu");
+		init__IUWord(__word, __inScript);
+	}
+
+	private void init__IUWord(String __word, Script __origScript) throws WordException {
+		if (__origScript == null) {
+			__origScript = TransCoder.textScript(__word);
+		}
+		this._origScript = __origScript;
 		if (_origScript == Script.MIXED) {
 			throw new WordException("IUWord is a mix of SYLLABIC and ROMAN scripts: "+ this._word);
+		}
+		if (_origScript == Script.ROMAN) {
+			wordInRoman = __word;
+		} else {
+			wordInSyll = __word;
 		}
 	}
 
@@ -48,5 +65,23 @@ public class IUWord extends Word {
 	public String toString() {
 		String str = "[roman: '"+this.inRoman()+"'; syll: '"+inSyll()+"']";
 		return str;
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		Boolean answer = null;
+		// First, check that other is an IUWord
+		if (! (other instanceof IUWord)) {
+			answer = false;
+		}
+		// Next, check if they are written the same way in Roman
+		if (answer == null) {
+			IUWord otherWord = (IUWord) other;
+			String thisStr = this.word();
+			String otherStr = otherWord.inScript(this.origScript());
+			answer = (thisStr.equals(otherStr));
+		}
+
+		return answer;
 	}
 }
