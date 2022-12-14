@@ -29,6 +29,14 @@ public class MDictEvaluator {
 	private void init__DictEvaluator() throws MachineGeneratedDictException {
 	}
 
+	/** Maximum number of seconds that the dictionary can spend trying to decompose
+	 * the word.
+	 */
+	public MDictEvaluator setDecompMaxSecs(int maxSecs) {
+		this.dict.setDecompMaxSecs(maxSecs);
+		return this;
+	}
+
 	public MDictEvaluator setMinMaxPairs(Integer min, Integer max) throws MachineGeneratedDictException {
 		dict.setMinMaxPairs(min, max);
 		return this;

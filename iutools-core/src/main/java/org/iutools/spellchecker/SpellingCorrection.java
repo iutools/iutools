@@ -94,6 +94,7 @@ public class SpellingCorrection {
 			best = shallowFix;
 			// Remove the bad word markers from the shallow fix
 			best.replaceAll("(\\[|\\])", "");
+//			best = best.replaceAll("(\\[|\\])", "");
 		}
 		return best;
 	}

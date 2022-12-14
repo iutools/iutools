@@ -217,7 +217,7 @@ public class MorphRelativesFinderEvaluator {
 		String errMess = "";
 		try {
 			AssertRuntime.runtimeHasNotChanged(
-				gotSecsPerWord, 0.3, "Secs per word", testInfo);
+				gotSecsPerWord, 0.4, "Secs per word", testInfo);
 		} catch (AssertionError e) {
 			errMess += e.getMessage();
 		}

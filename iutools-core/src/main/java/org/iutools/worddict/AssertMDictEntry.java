@@ -202,6 +202,14 @@ public class AssertMDictEntry extends Asserter<MDictEntry> {
 		return this;
 	}
 
+	public AssertMDictEntry hasNoRelatedWords() throws Exception {
+		AssertObject.assertDeepEquals(
+			"Related words should have been empty list",
+			new String[0], entry().relatedWords
+		);
+		return this;
+	}
+
 	public AssertMDictEntry relatedWordsIsSubsetOf(
 		String... expRelatedWordsArr)
 		throws Exception {
@@ -358,13 +366,18 @@ public class AssertMDictEntry extends Asserter<MDictEntry> {
 		for (String aTranslation: translations) {
 			List<String[]> aTranslExamples = entry().examples4Translation(aTranslation);
 			String mess = "(aTranslation="+aTranslation+")";
-			Assertions.assertTrue(aTranslExamples != null,
-				"Examples for translation should not have been null "+mess
-				);
-			if (!translationWithoutExamples.contains(aTranslation)) {
-				Assertions.assertTrue(!aTranslExamples.isEmpty(),
-				"Examples for translation should not have been empty " + mess
-				);
+			// Unless the translation is human-generated, we should at least have
+			// one example for each translation
+			//
+			if (!entry().isHumanTranslation(aTranslation)) {
+				Assertions.assertTrue(aTranslExamples != null,
+					"Examples for translation should not have been null "+mess
+					);
+				if (!translationWithoutExamples.contains(aTranslation)) {
+					Assertions.assertTrue(!aTranslExamples.isEmpty(),
+					"Examples for translation should not have been empty " + mess
+					);
+				}
 			}
 		}
 

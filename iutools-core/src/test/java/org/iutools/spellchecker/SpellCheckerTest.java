@@ -358,7 +358,7 @@ public class SpellCheckerTest {
 			new CaseCorrectWord("Level 3 - Correct leading and tailing portions DO NOT overlap", "inuktigtut", true)
 				.usingCheckLevel(3)
 				.expectCorrections(
-					"inukti[g]tut", "inuktitut", "inukkitut", "inuktut", "inuktikut",
+					"inukti[g]tut", "inukti[gtu]t", "inuktitut", "inukkitut", "inuktut", "inuktikut",
 					"qinuktitut"),
 
 			new CaseCorrectWord("Level 3 - Correct leading and tailing portions OVERLAP", "ujaranniarvimmi", true)
@@ -387,8 +387,9 @@ public class SpellCheckerTest {
 				throw new RuntimeException(e);
 			}
 		};
+
 		new RunOnCases(cases, runner)
-//			.onlyCaseNums(4)
+//			.onlyCaseNums(5)
 			.run();
 	}
 

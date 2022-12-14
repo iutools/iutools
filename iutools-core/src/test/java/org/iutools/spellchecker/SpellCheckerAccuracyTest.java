@@ -807,7 +807,7 @@ public class SpellCheckerAccuracyTest {
         public double avgRankTolerance = 0;
 
         // By default, we allow the rutime to change by at most 25%
-        public Double runtimePercTolerance = 0.25;
+        public Double runtimePercTolerance = 0.40;
 
         public boolean loadCorrectWordInDict = false;
         int maxDecompSecs = 5;

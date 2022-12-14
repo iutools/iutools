@@ -39,21 +39,12 @@ public class CorrectionRule {
 	private String _regexBad_otherScript = null;
 	private String _regexFix_otherScript = null;
 
-	/** If true, the rule applies to both ROMAN and SYLLABIC scripts*/
-	protected boolean appliesToBothScripts = false;
-
 	public CorrectionRule(String _regexBad, String _regexFix) throws SpellCheckerException {
-		init__CorrectionRule(_regexBad, _regexFix, (Boolean)null);
-	}
-
-	public CorrectionRule(String _regexBad, String _regexFix,
-		Boolean _appliesToBothScripts) throws SpellCheckerException {
-		init__CorrectionRule(_regexBad, _regexFix, _appliesToBothScripts);
+		init__CorrectionRule(_regexBad, _regexFix);
 	}
 
 
-	private void init__CorrectionRule(String _regexBad, String _regexFix,
-		Boolean _appliesToBothScripts) throws SpellCheckerException {
+	private void init__CorrectionRule(String _regexBad, String _regexFix) throws SpellCheckerException {
 
 		if (_regexFix == null) {
 			// If no rule has been provided to actually fix the faulty characters,
@@ -77,10 +68,6 @@ public class CorrectionRule {
 			}
 		}
 		this.ruleScript = script1;
-
-		if (_appliesToBothScripts != null) {
-			appliesToBothScripts = _appliesToBothScripts;
-		}
 	}
 
 	@Override

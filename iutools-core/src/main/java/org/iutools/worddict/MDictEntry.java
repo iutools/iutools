@@ -293,6 +293,11 @@ public class MDictEntry {
 		humanTranslationSources.get(translation).add(glossSource);
 	}
 
+	public boolean isHumanTranslation(String translation) {
+		boolean answer = humanTranslations.containsKey(translation);
+		return answer;
+	}
+
 	private List<Pair<String, Double>> _otherLangTranslations = null;
 
 	public List<Pair<String, Double>> otherLangTranslations() {

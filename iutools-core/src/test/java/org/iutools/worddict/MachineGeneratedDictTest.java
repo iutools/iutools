@@ -42,19 +42,28 @@ public class MachineGeneratedDictTest {
 		// Cases for entry4word function
 		cases_entry4word = new MultilingualDictCase[] {
 
+
+			new MultilingualDictCase(
+				"Wikipedia glossary entry (nanitsikuujait) for which neither the word nor related words appear in the Hansard ",
+				"nanitsikuujait")
+				.relatedWordsShouldBeAmong("nanisijunnarutta", "nanijausimajut",  "nanisijunnaruma",
+					"nanisijjummu", "nanijunnanginnakku")
+				.hasMinTranslation(1)
+				.hasTranslationsForOrigWord(true)
+				.bestTranslationsAreAmong("corn flakes")
+				.noExamplesAtAll(),
+
 			new MultilingualDictCase(
 				"iu word with shallow spelling mistake (nunavuumik)", "nunavuumik")
 				.hasStandardSpelling("nunavummik", "ᓄᓇᕗᒻᒥᒃ")
 				.hasDecomp("nunavut/1n", "mik/tn-acc-s")
-				.relatedWordsShouldBeAmong(
-					"BLAH")
+				// TODO: Is it normal that this word has no related words?
 				.hasMinTranslation(4)
 				.hasTranslationsForOrigWord(true)
 				.bestTranslationsAreAmong(
 					"land",  "nunavut", "nunavut ... nunavut", "today'... nunavut"
 				)
 				.hasMinExamples(30),
-
 
 			new MultilingualDictCase("iu-word-with-glossary-entry (annuraanik=inuit clothing)", "annuraanik")
 				.hasDecomp(
@@ -312,7 +321,7 @@ public class MachineGeneratedDictTest {
 		double gotAvgSecs = elapsed / (1000.0 * words.length);
 		System.out.println("Avg secs per word: "+gotAvgSecs);
 		AssertRuntime.runtimeHasNotChanged(
-			gotAvgSecs, 0.20,
+			gotAvgSecs, 0.4,
 			"avg secs for retrieving a dict entry", testInfo);
 	}
 
@@ -342,7 +351,9 @@ public class MachineGeneratedDictTest {
 				if (!aCase.outOfVocab) {
 					List<String> expL1HighlightsLst = new ArrayList<String>();
 					expL1HighlightsLst.add(aCase.word);
-					Collections.addAll(expL1HighlightsLst, aCase.expRelatedWordsSuperset);
+					if (aCase.expRelatedWordsSuperset != null) {
+						Collections.addAll(expL1HighlightsLst, aCase.expRelatedWordsSuperset);
+					}
 					expL1Highlights = expL1HighlightsLst.toArray(new String[0]);
 					expTranslations = aCase.expTranslationsAmong;
 				}
@@ -356,8 +367,12 @@ public class MachineGeneratedDictTest {
 				asserter
 					.isForWord(aCase.word)
 					.langIs(aCase.l1)
-					.definitionEquals(aCase.expDefinition)
-					.relatedWordsIsSubsetOf(aCase.expRelatedWordsSuperset);
+					.definitionEquals(aCase.expDefinition);
+				if (aCase.expRelatedWordsSuperset == null) {
+					asserter.hasNoRelatedWords();
+				} else {
+					asserter.relatedWordsIsSubsetOf(aCase.expRelatedWordsSuperset);
+				}
 
 				if (aCase.expStdRoman != null) {
 					asserter
@@ -371,11 +386,13 @@ public class MachineGeneratedDictTest {
 
 				asserter
 					.hasTranslationsForOrigWord(aCase.expHasTranslationsForOrigWord)
-					.bestTranslationsAreAmong(aCase.translationsWithNoExamples, expTranslations)
-					.atLeastNExamples(aCase.expMinExamples)
-					.highlightsAreSubsetOf(aCase.l1, true, expL1Highlights)
-					.highlightsAreSubsetOf(aCase.l2, expL2Highlights)
-					;
+					.bestTranslationsAreAmong(aCase.translationsWithNoExamples, expTranslations);
+				if (aCase.producesSomeExamples) {
+					asserter.atLeastNExamples(aCase.expMinExamples)
+						.highlightsAreSubsetOf(aCase.l1, true, expL1Highlights)
+						.highlightsAreSubsetOf(aCase.l2, expL2Highlights)
+						;
+					}
 
 				if (aCase.expHumanTranslations != null) {
 					asserter
@@ -398,7 +415,7 @@ public class MachineGeneratedDictTest {
 		};
 
 		new RunOnCases(cases_entry4word, runner)
-//			.onlyCaseNums(11)
+//			.onlyCaseNums(1)
 //			.onlyCasesWithDescr("en-housing")
 			.run();
 	}
@@ -479,6 +496,7 @@ public class MachineGeneratedDictTest {
 		public Integer expMinTranslations = null;
 		private boolean expHasTranslationsForOrigWord = true;
 		public Integer expMinExamples = 0;
+		public boolean producesSomeExamples = true;
 		public Set<String> translationsWithNoExamples = new HashSet<String>();
 		public boolean outOfVocab = false;
 		private String[] expAdditionalL2Highlights = new String[0];
@@ -537,6 +555,11 @@ public class MachineGeneratedDictTest {
 
 		public MultilingualDictCase noExamplesForTranslations(String... _translationsWithNoExamples) {
 			Collections.addAll(translationsWithNoExamples, _translationsWithNoExamples);
+			return this;
+		}
+
+		public MultilingualDictCase noExamplesAtAll() {
+			this.producesSomeExamples = false;
 			return this;
 		}
 

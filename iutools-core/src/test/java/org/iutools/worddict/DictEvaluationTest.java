@@ -65,6 +65,7 @@ public class DictEvaluationTest {
 		TestInfo testInfo) throws Exception {
 		String glossaryPath = IUConfig.getIUDataPath("data/glossaries/wpGlossary.gloss.json");
 		MDictEvaluator evaluator = new MDictEvaluator()
+			.setDecompMaxSecs(60)
 			.setMinMaxPairs(null, 100)
 			.setMaxTranslations(10);
 
@@ -79,7 +80,7 @@ public class DictEvaluationTest {
 			.setTotalGlossaryEntries(551)
 			.setTotalSingleWordIUEntries(459)
 			.setTotalIUPresent(WhatTerm.ORIGINAL, 182)
-			.setTotalIUPresent(WhatTerm.RELATED, 75)
+			.setTotalIUPresent(WhatTerm.RELATED, 77)
 			.setTotalENSpotted_Strict(88)
 			.setTotalENSpotted_Lenient(7)
 			.setTotalENSpotted_LenientOverlap(23)
@@ -87,7 +88,7 @@ public class DictEvaluationTest {
 		assertExpectationsMet(exp, results);
 
 		AssertRuntime.runtimeHasNotChanged(
-			results.avgSecsPerEntryPresent, 0.20,
+			results.avgSecsPerEntryPresent, 0.40,
 			"avg secs for retrieving a dict entry", testInfo);
 
 

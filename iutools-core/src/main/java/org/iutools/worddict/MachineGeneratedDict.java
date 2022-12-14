@@ -17,6 +17,7 @@ import org.iutools.datastructure.CloseableIteratorWrapper;
 import org.iutools.datastructure.trie.StringSegmenterException;
 import org.iutools.morph.Decomposition;
 import org.iutools.morph.DecompositionException;
+import org.iutools.morph.MorphologicalAnalyzer;
 import org.iutools.morph.MorphologicalAnalyzerException;
 import org.iutools.morph.r2l.MorphologicalAnalyzer_R2L;
 import org.iutools.morphrelatives.MorphRelativesFinder;
@@ -90,6 +91,11 @@ public class MachineGeneratedDict {
 
 	private static final String TAG = "strong";
 
+	/** Maximum number of seconds that the dict can spend trying to decompose
+	 * a word. If null, then leave it at the analyzer's default max.
+	 */
+	private Long decompMaxSecs = null;
+
 	public MachineGeneratedDict() throws MachineGeneratedDictException {
 		try {
 			corpus = new CompiledCorpusRegistry().getCorpus();
@@ -112,6 +118,10 @@ public class MachineGeneratedDict {
 	public MachineGeneratedDict setMaxTranslations(Integer max) {
 		MAX_TRANSLATIONS = max;
 		return this;
+	}
+
+	public void setDecompMaxSecs(long maxSecs) {
+		this.decompMaxSecs = maxSecs;
 	}
 
 
@@ -708,7 +718,7 @@ public class MachineGeneratedDict {
 			// we had gone further, OR if the word analyzes as an IU word
 			try {
 				if (wordExists(partialWord, lang) ||
-					(lang.equals("iu") &&  new MorphologicalAnalyzer_R2L().isDecomposable(partialWord))) {
+					(lang.equals("iu") &&  morphAnalyzer().isDecomposable(partialWord))) {
 					hits.add(0, partialWord);
 				}
 			} catch (MorphologicalAnalyzerException e) {
@@ -830,15 +840,24 @@ public class MachineGeneratedDict {
 	public String[] decomposeWord(String word) throws MachineGeneratedDictException {
 		String decomp[] = new String[0];
 		try {
-			Decomposition[] decomps = new MorphologicalAnalyzer_R2L().decomposeWord(word);
+			Decomposition[] decomps = morphAnalyzer().decomposeWord(word);
 			if (decomps != null && decomps.length > 0) {
 				decomp = decomps[0].getMorphemes();
 			}
 		} catch (TimeoutException e) {
 			// Leave the decomp to empty
+			int x = 0;
 		} catch (MorphologicalAnalyzerException | DecompositionException e) {
 			throw new MachineGeneratedDictException(e);
 		}
 		return decomp;
+	}
+
+	private MorphologicalAnalyzer morphAnalyzer() {
+		MorphologicalAnalyzer analyzer = new MorphologicalAnalyzer_R2L();
+		if (decompMaxSecs != null) {
+			analyzer.setTimeout(1000*decompMaxSecs);
+		}
+		return analyzer;
 	}
 }
