@@ -10,3 +10,8 @@
 /jmeter.log
 /src/test/jmeter/testresults.jtl
 /logs/
+
+# Files for customizing the skin of the web apps.
+# Those files should NEVER be tracked by git.
+/src/main/webapp/pages/common/_customSkin.jsp
+/src/main/webapp/css/custom-styles.css
