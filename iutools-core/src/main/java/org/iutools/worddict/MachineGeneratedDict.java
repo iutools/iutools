@@ -14,6 +14,7 @@ import org.iutools.concordancer.tm.*;
 import org.iutools.corpus.*;
 import org.iutools.corpus.elasticsearch.CompiledCorpus_ES;
 import org.iutools.datastructure.CloseableIteratorWrapper;
+import org.iutools.datastructure.trie.StringSegmenterException;
 import org.iutools.morph.Decomposition;
 import org.iutools.morph.DecompositionException;
 import org.iutools.morph.MorphologicalAnalyzerException;
@@ -26,6 +27,11 @@ import org.iutools.nlp.StopWordsException;
 import org.iutools.script.TransCoder;
 import org.iutools.script.TransCoder.*;
 import org.iutools.script.TransCoderException;
+import org.iutools.spellchecker.SpellChecker;
+import org.iutools.spellchecker.SpellCheckerException;
+import org.iutools.spellchecker.SpellingCorrection;
+import org.iutools.text.IUWord;
+import org.iutools.text.WordException;
 import org.iutools.utilities.StopWatch;
 import org.iutools.utilities.StopWatchException;
 import org.iutools.worddict.MDictEntry.*;
@@ -153,6 +159,9 @@ public class MachineGeneratedDict {
 
 		StopWatch watch = new StopWatch().start();
 		try {
+			fillStandardizedSpellings(entry);
+			traceRunningTime(logger, entry, "computing standardized spellings", watch);
+
 			if (ArrayUtils.contains(fieldsToPopulate, Field.DECOMP)) {
 				fillDecomposition(entry);
 				traceRunningTime(logger, entry, "computing decomposition", watch);
@@ -197,6 +206,32 @@ public class MachineGeneratedDict {
 		return entry;
 	}
 
+	/*
+	 * Fix the input word spelling using a shallow Spell Check.
+	 */
+	private void fillStandardizedSpellings(MDictEntry entry) throws MachineGeneratedDictException {
+		if (entry.getLang().equals("iu")) {
+			// We only standardize spelling for IU words.
+			try {
+				IUWord iuWord = new IUWord(entry.getWord());
+				SpellChecker checker = new SpellChecker().setCheckLevel(1);
+				SpellingCorrection correction = checker.correctWord(iuWord);
+				if (correction.shallowFix != null && !correction.shallowFix.equals(iuWord.word())) {
+					IUWord fixedWord = new IUWord(correction.shallowFix);
+					entry.romanStandardized = fixedWord.inRoman();
+					entry.syllStandardized = fixedWord.inSyll();
+					entry.wordStandardizedSpelling = fixedWord.word();
+					entry.otherScriptStandardizedSpelling = fixedWord.inOtherScript();
+				}
+			} catch (WordException | StringSegmenterException | SpellCheckerException e) {
+				throw new MachineGeneratedDictException(e);
+			}
+		}
+
+		return;
+	}
+
+
 	private void fillDecomposition(MDictEntry entry) throws MachineGeneratedDictException {
 		Logger logger = LogManager.getLogger("org.iutools.worddict.MachineGeneratedDict.possiblyFillDecomposition");
 
@@ -204,14 +239,21 @@ public class MachineGeneratedDict {
 		if (entry.getLang().equals("iu")) {
 			StopWatch watch = new StopWatch().start();
 			try {
-				WordInfo winfo = corpus.info4word(entry.getWordRoman());
+				// We compute decomposition from the standardized spelling version
+				// of the ROMANIZED word (in case the original input word had a shallow
+				// spelling mistake that would cause decomposition to fail).
+				String word = entry.getWordRoman();
+				if (entry.romanStandardized != null && !entry.romanStandardized.equals(word)) {
+					word = entry.romanStandardized;
+				}
+				WordInfo winfo = corpus.info4word(word);
 				traceRunningTime(logger, entry, "retrieving word info", watch);
 				if (winfo != null) {
 					entry.setDecomp(winfo.topDecomposition());
 				} else {
 					// Word could not be found in the corpus.
 					// At least see if we can fill the entry's decomposition field
-					String[] decomp = decomposeWord(entry.getWordRoman());
+					String[] decomp = decomposeWord(word);
 					entry.setDecomp(decomp);
 				}
 			} catch (CompiledCorpusException | StopWatchException e) {

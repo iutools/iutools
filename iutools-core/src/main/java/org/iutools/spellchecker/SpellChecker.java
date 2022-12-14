@@ -334,6 +334,10 @@ public class SpellChecker {
 		}
 	}
 
+	public SpellingCorrection correctWord(IUWord word) throws SpellCheckerException {
+		return correctWord(word, (Integer)null);
+	}
+
 	public SpellingCorrection correctWord(IUWord word, Integer maxCorrections) throws SpellCheckerException {
 		Logger tLogger = LogManager.getLogger("org.iutools.spellchecker.SpellChecker.correctWord");
 		Logger excLogger = LogManager.getLogger("org.iutools.spellchecker.SpellChecker.correctWord.exc");

@@ -218,6 +218,20 @@ public class AssertMDictEntry extends Asserter<MDictEntry> {
 		return this;
 	}
 
+	public AssertMDictEntry hasStandardizedSpelling(
+		String expStdRoman, String expStdSyll) {
+
+		Assertions.assertEquals(
+			expStdRoman, entry().romanStandardized,
+			"Standardized roman spelling not as expected"
+		);
+		Assertions.assertEquals(
+			expStdSyll, entry().syllStandardized,
+			"Standardized syllabic spelling not as expected"
+		);
+
+		return this;
+	}
 
 	public void iuIsInScript(TransCoder.Script expScript) {
 		MDictEntry entry = this.entry();
@@ -283,7 +297,7 @@ public class AssertMDictEntry extends Asserter<MDictEntry> {
 		int gotHits = entry().bilingualExamplesOfUse().size();
 		Assertions.assertTrue(
 			gotHits >= expMinExamples,
-			baseMessage+"\nNumber of hits was too low ("+gotHits+" < "+expMinExamples+")");
+			baseMessage+"\nNumber of examples was too low ("+gotHits+" < "+expMinExamples+")");
 		return this;
 	}
 

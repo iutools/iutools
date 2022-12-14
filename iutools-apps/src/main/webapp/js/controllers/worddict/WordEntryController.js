@@ -129,6 +129,7 @@ class WordEntryController extends IUToolsController {
                 "  <a href='help.jsp?topic=about_dictionary' target='#iutools_help'></a>\n" +
                 "</div>";
 
+            html += this.htmlStandardizedSpelling(wordEntryData);
             html += this.htmlTranslations(wordEntryData, otherLang);
             html += this.htmlRelatedWords(wordEntryData, lang);
             html = this.htmlMorphologicalAnalyses(wordEntryData, lang, html);
@@ -138,6 +139,24 @@ class WordEntryController extends IUToolsController {
         this.attachWordLookupListeners();
         this.enableAccordions();
     }
+
+    htmlStandardizedSpelling(wordEntry) {
+        // public String wordStandardizedSpelling = null;
+        // public String otherScriptStandardizedSpelling = null;
+        var html = "";
+
+        if (wordEntry.wordStandardizedSpelling) {
+            html +=
+                "\n"+
+                "<h3>Standardized Spelling</h3>\n"+
+                wordEntry.wordStandardizedSpelling + "/" +
+                    wordEntry.otherScriptStandardizedSpelling
+                "\n";
+        }
+
+        return html;
+    }
+
 
     htmlTranslations(wordEntry, otherLang) {
         var tracer = Debug.getTraceLogger('WordEntryController.htmlTranslations');

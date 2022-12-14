@@ -36,6 +36,12 @@ public class MDictEntry {
 	public String definition;
 	public List<MorphemeHumanReadableDescr> morphDecomp = new ArrayList<MorphemeHumanReadableDescr>();
 
+	/** Standardized spelling in ROMAN and SYLLABIC */
+	public String romanStandardized = null;
+	public String syllStandardized = null;
+	public String wordStandardizedSpelling = null;
+	public String otherScriptStandardizedSpelling = null;
+
 	/** Translations sorted from best to worst.
 	 * These may be translations for the original word or for related words.
 	 */
@@ -89,7 +95,6 @@ public class MDictEntry {
 	 * in the various Maps and Lists used internally by the WordEntry.
 	 */
 	public Map<String, Map<String, String>> normalizedTerms;
-
 
 	public static void assertIsSupportedLanguage(String lang) throws MachineGeneratedDictException {
 		if (!lang.matches("^(en|iu)$")) {

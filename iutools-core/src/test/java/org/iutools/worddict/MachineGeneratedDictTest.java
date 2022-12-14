@@ -9,10 +9,7 @@ import org.iutools.script.TransCoder;
 import ca.nrc.datastructure.CloseableIterator;
 import org.iutools.sql.SQLLeakMonitor;
 import org.iutools.utilities.StopWatch;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.*;
 
 
 import java.util.*;
@@ -44,8 +41,22 @@ public class MachineGeneratedDictTest {
 
 		// Cases for entry4word function
 		cases_entry4word = new MultilingualDictCase[] {
+
+			new MultilingualDictCase(
+				"iu word with shallow spelling mistake (nunavuumik)", "nunavuumik")
+				.hasStandardSpelling("nunavummik", "ᓄᓇᕗᒻᒥᒃ")
+				.hasDecomp("nunavut/1n", "mik/tn-acc-s")
+				.relatedWordsShouldBeAmong(
+					"BLAH")
+				.hasMinTranslation(4)
+				.hasTranslationsForOrigWord(true)
+				.bestTranslationsAreAmong(
+					"land",  "nunavut", "nunavut ... nunavut", "today'... nunavut"
+				)
+				.hasMinExamples(30),
+
+
 			new MultilingualDictCase("iu-word-with-glossary-entry (annuraanik=inuit clothing)", "annuraanik")
-				.hasGlossaryTranslations("Inuit clothing")
 				.hasDecomp(
 					"annuraaq/1n", "nik/tn-acc-p")
 				.relatedWordsShouldBeAmong(
@@ -57,8 +68,6 @@ public class MachineGeneratedDictTest {
 					"inuit clothing", "clothing", "dry clothing", "fashions", "garments",
 					"wash ... cloths"
 				)
-				// "Inuit clothing" is a human translation so it should be first
-				.bestTranslationsStartWith("inuit clothing")
 				.humanTranslationsAre("inuit clothing")
 				.hasMinExamples(5),
 
@@ -350,6 +359,12 @@ public class MachineGeneratedDictTest {
 					.definitionEquals(aCase.expDefinition)
 					.relatedWordsIsSubsetOf(aCase.expRelatedWordsSuperset);
 
+				if (aCase.expStdRoman != null) {
+					asserter
+						.hasStandardizedSpelling(
+							aCase.expStdRoman, aCase.expStdSyll);
+				}
+
 				if (aCase.expMinTranslations != null) {
 					asserter.hasAtLeastNTranslations(aCase.expMinTranslations);
 				}
@@ -383,7 +398,7 @@ public class MachineGeneratedDictTest {
 		};
 
 		new RunOnCases(cases_entry4word, runner)
-//			.onlyCaseNums(10)
+//			.onlyCaseNums(11)
 //			.onlyCasesWithDescr("en-housing")
 			.run();
 	}
@@ -455,10 +470,11 @@ public class MachineGeneratedDictTest {
 		public String expDefinition = null;
 		public String[] expDecomp = null;
 		public String[] expRelatedWordsSuperset = null;
-		public List<String> glossaryTranslations = new ArrayList<String>();
+
+		public String expStdRoman = null;
+		public String expStdSyll = null;
 
 		public String[] expTranslationsAmong = null;
-		public String[] expTopTranslations = null;
 		public String[] expHumanTranslations = null;
 		public Integer expMinTranslations = null;
 		private boolean expHasTranslationsForOrigWord = true;
@@ -509,11 +525,6 @@ public class MachineGeneratedDictTest {
 			return this;
 		}
 
-		public MultilingualDictCase bestTranslationsStartWith(String... _expTopTranslations) {
-			expTopTranslations = _expTopTranslations;
-			return this;
-		}
-
 		public MultilingualDictCase hasMinTranslation(int _expMinTranslations) {
 			expMinTranslations = _expMinTranslations;
 			return this;
@@ -547,8 +558,10 @@ public class MachineGeneratedDictTest {
 			casesRunningTime.put(id(), time);
 		}
 
-		public MultilingualDictCase hasGlossaryTranslations(String... __glossaryTranslations) {
-			Collections.addAll(glossaryTranslations, __glossaryTranslations);
+		public MultilingualDictCase hasStandardSpelling(
+			String _expStdRoman, String _expStdSyll) {
+			this.expStdRoman = _expStdRoman;
+			this.expStdSyll = _expStdSyll;
 			return this;
 		}
 	}

@@ -1,7 +1,6 @@
 /*
  * Word Entry data structure received from the werver.
  */
-
 class WordEntryData {
     constructor(data) {
         var tracer = Debug.getTraceLogger('WordEntryData.constructor');

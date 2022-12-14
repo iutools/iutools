@@ -61,6 +61,18 @@ public class IUWord extends Word {
 		return word;
 	}
 
+	public Script otherScript() {
+		Script script = Script.SYLLABIC;
+		if (origScript() == Script.SYLLABIC) {
+			script = Script.ROMAN;
+		}
+		return script;
+	}
+
+	public String inOtherScript() {
+		return inScript(otherScript());
+	}
+
 	@Override
 	public String toString() {
 		String str = "[roman: '"+this.inRoman()+"'; syll: '"+inSyll()+"']";
