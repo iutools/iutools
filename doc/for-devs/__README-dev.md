@@ -151,3 +151,13 @@ You can create your own  traces in the code by writing something like this:
     tracer.trace("Hello world");
     tracer.trace("Greetings Universe");
 
+## Changing the Skin of the web apps
+
+If you want to change the look of the web apps in order to rebrand it, you can 
+change the web app "skin" creating the following two files (both under 
+iutools/iutools-apps/src/main/webapp_):
+
+- Custom skin file: _pages/common/_customSkin.jsp_ 
+  - Use _defaultSkin.jsp_ as a model
+- Custom styles file: _css/_custom-styles.jsp_  
+  - Just override styles defined in _design-styles.css_

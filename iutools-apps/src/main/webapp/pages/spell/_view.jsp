@@ -14,7 +14,7 @@
             <option value="3">3</option>
         </select>
         <div id="div-info" class="div-info inline">
-            <a href="help.jsp?topic=spell-check-level" target="#iutools_help"></a>
+            <a href="help.jsp?topic=spell-checker" target="#iutools_help"></a>
          </div>
      </div>
 

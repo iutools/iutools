@@ -28,6 +28,8 @@ Basic scenario
     except for:
     - text that is in English.
     - Inuktitut text for the bilingual examples (which at the moment are always in latin)
+  - In cases where the input word was mis-spelled, there should be a _Standardized 
+    spelling_ section at the top showing the correct spelling in PREFERRED/OTHER scripts.
   - There is a decomp displayed (unless the specific scenario expects the word 
     to be undecomposable)
   - There are some translations displayed, including some that are relevant for 
@@ -154,7 +156,6 @@ IU word with Glossary Entry - SYLLABIC Input - Syllabic Output
       - it mentions that the translation was found in Wikipedia.
       - it lists some bilingual examples of use in SYLLABIC script
 
-
 EN word with Glossary Entry - SYLLABIC output
 - Do the steps described in the 'basic scenario' with English word 'education', 
   with the following 'specifics':
@@ -178,6 +179,27 @@ EN word with Glossary Entry - Roman output
     - Go to the examples of use section for ilinniaqtuliriniq and make sure that:
       - it mentions that the translation was found in Wikipedia.
       - it lists some bilingual examples of use
+
+Mis-spelled IU word whose mis-spelled form appears in Hansard
+- Do the steps described in the 'basic scenario' with English word 'education', 
+  with the following 'specifics':
+  - QUERY_WORD: 'maligaliuqvinganit'
+  - QUERY_LANGUAGE: Inuktitut
+  - PREFERRED_SCRIPT: Roman
+- and make sure the Standardized Spelling section shows:
+   maligaliurvinganit/ᒪᓕᒐᓕᐅᕐᕕᖓᓂᑦ
+
+Mis-spelled IU word whose mis-spelled form does NOT appear in Hansard
+- Do the steps described in the 'basic scenario' with English word 'education', 
+  with the following 'specifics':
+  - QUERY_WORD: 'inukssuk'
+  - QUERY_LANGUAGE: Inuktitut
+  - PREFERRED_SCRIPT: Roman
+- and make sure that:
+  - NOTE: as of 2022-12-, this does not work. In this case, the dict says
+    it has not found the word.
+  - an entry is actually displayed
+  - But the Standardized Spelling section shows inuksuk/ᐃᓄᒃᓱᒃ
 
 
 Out-of-hansard valid IU word
@@ -284,6 +306,8 @@ Word Dict Help
 - Test all the links on that help page to make sure they lead to the right place    
     
 ## Spell Checker
+
+UNLESS OTHERWISE SPECIFIED, do each test using Level 1 check.
 
 Spell check LATIN -- Happy Path
 - Enter some text in LATIN, some of which are badly spelled, others not. 
@@ -395,6 +419,12 @@ Concurency testing and Interruption
         checking words
     - Copy paste some new text to be spelled and hit _Spell Check_
        - Make sure the new spell checking task is started correctly
+
+Help page
+- Click on the (i) aka Info icon
+- Check the HTML help page and make sure
+  - It is up to date
+  - All hyperlinks are fine
 
 Progress Wheel
 - When you hit Spell button, make sure that the progress wheel is displayed
@@ -615,12 +645,13 @@ Text that contains spaces and newlines
     i.e. you don't have very long lines that correspond to each paragraph.
      
 Syllabic text that contains some English word with only IU latin chars
-- Enter some syllabics text and add the word 'main' in it (note: all characters 
+- Enter some syllabics text and add the words 'main content' in it (note: all characters 
 in that word are valid Latin IU chars)
 - Gist that text
 - Check that the text is displayed in the PREFERRED script
 - Check that all Inuktitut romanized words are clickable...
-  - But the English word 'main' is NOT clickable     
+  - The English word 'main' is also clickable (because it is made of all ROMAN 
+    inuktitut chars) but 'content' is NOT clickable     
      
 Text that contains an INVALID out-of-corpus word
 - Enter 'ninuksuk' and Assist Reading

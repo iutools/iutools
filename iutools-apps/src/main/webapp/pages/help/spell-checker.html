@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>About the Spell Checker</title>
+</head>
+<body>
+
+<p/>
+
+The IUTools Spell Checker allows you to check the spelling of words in a pieces
+of Inuktitut text. Below are some details about features and limitations of this
+app.
+
+<a name="identical-looking-words"/>
+<h2>Why are some of the suggestions identical to the mis-spelled word?</h2>
+
+When checking syllabic text, it may somtimes <em>look</em> like the spell checker
+is suggesting a correction that is identical to the mis-spelled word. But in fact,
+the correction is not made up of the same characters. For example, althoug the
+while following words may <em>look</em> the same:
+
+<ul>
+<li>ᓂᐊᖁᓐᖒ (ends with ᓐ+ᖒ = n+nguu)</li>
+<li>ᓂᐊᖁᙴ  (ends with ᙴ = nngueu)</li>
+</ul>
+
+They end with different characters that happen to look he same.
+
+
+<a name="check-level"/>
+<h2>Spell Check Level</h2>
+
+The IUTools spell checker offers three levels of checking. As the level
+increases, it catche more types of mistakes, but it also gets slower.
+
+<h3>Level 1</h3>
+
+At Level 1, the spell checker only performs a <em>shallow</em> check that searches for sequences of
+characters which can never appear in a valid Inuktitut word. For example, it
+checks that the word does not contain more than 2 consecutive consonnants.
+
+<h3>Level 2</h3>
+
+At Level 2, the spell checker performs all of the Level 1 checks, but it also
+ensures that the word does not violate any morpheme composition rules. More
+precisely, it checks that:
+
+<ul>
+    <li>The word is composed of a sequence of valid morphemes that are allowed to
+        follow each other</li>
+    <li>Each morpheme is written in a way that takes into account the morphemes
+        that precede and follow it.
+    </li>
+</ul>
+
+<h3>Level 3</h3>
+
+At Level 3, the spell checker performs all the Level 2 checks, plus it identifies
+the correct portions of the word. More precisely, it identifies the longest
+correct portions at the start and end of the word.
+
+Identification of these correct portions uses a Level 2 analysis that takes
+into account the morpheme composition rules.
+
+<a name="limitations"/>
+<h2>Limitations</h2>
+
+The spell checker has three main limitations
+
+<ul>
+    <li><b>Speed:</b> The spell checker can be slow when used with a level
+        greater than the default of Level 1.</li>
+    <li><b>Proper and foreign names:</b> The spell checker may inaccurately
+        label proper and foreign names as being mis-spelled, eventhough they
+        are written using their accepted Inuktitut spelling.</li>
+    <li><b>Missing correct suggestions:</b> The list of suggestions may be missing
+        the correct form, if that form was never seen by the spell checker before.</li>
+</ul>
+
+</body>
+</html>

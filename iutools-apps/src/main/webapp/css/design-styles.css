@@ -575,6 +575,7 @@ div#div-wordentry-iconized {
 
 #txt-query-words {
     display: block;
+    width: 100%;
 }
 
 /* Spell Checker UI */

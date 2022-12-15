@@ -12,9 +12,14 @@ windows
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <% out.println("<title>InuktiTools: "+pageTitle+"</title>\n"); %>
+    <title>InuktiTools: ${param.pageTitle}</title>
     <link rel="stylesheet" href="./css/styles.css?v2">
     <link rel="stylesheet" href="./css/design-styles.css">
+    <%--    Possibly override default styles with custom ones--%>
+    <%if(null != application.getResource("/css/custom-styles.css")){%>
+    <link rel="stylesheet" href="./css/custom-styles.css">
+    <%}%>
+
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&display=swap" rel="stylesheet">
     <script src="./js/vendors/jquery/jquery-3.3.1.min.js"></script>
@@ -35,66 +40,28 @@ windows
 
 <body>
 
+<%--Use the custom "skin" file if it exists.--%>
+<%--Otherwise use the default skin.--%>
+<%if(null != application.getResource("/pages/common/_customSkin.jsp")){%>
+<jsp:include page="/pages/common/_customSkin.jsp" >
+    <jsp:param name="pageTitle" value="${param.pageTitle}" />
+    <jsp:param name="pageName" value="${param.pageName}" />
+    <jsp:param name="pageUsage" value="${param.pageUsage}" />
+</jsp:include>
+
+<%}else{%>
+<jsp:include page="/pages/common/_defaultSkin.jsp" >
+    <jsp:param name="pageTitle" value="${param.pageTitle}" />
+    <jsp:param name="pageName" value="${param.pageName}" />
+    <jsp:param name="pageUsage" value="${param.pageUsage}" />
+</jsp:include>
+<%}%>
 
 <!-- Cookie consent stuff -->
 <script src="./js/CookieManager.js"></script>
 <script>
     new CookieManager().displayCookieConsent();
 </script>
-
-<div id="header" class="header">
-  <div id="header_inner">
-		<a id="header_title" href="index.html">
-			<span>INUKTITOOLS:</span> <span>APPS</span> <span>FOR</span> <span>THE</span> <span>INUKTITUT</span> <span>LANGUAGE</span>
-		</a> 
-	</div>
-</div>
-
-<nav id="main_nav">
-  <button class="menu-toggle"><span></span><span></span><span></span></button>
-  <ul id="main_nav_menu">
-    <li id="home_link"><a href="index.html">Home</a></li>
-    <li id="feedback_link"><a target="#iutools_feeback" href="mailto:alaindesilets0@gmail.com;contact@inuktitutcomputing.ca?subject=Inuktitut Tools Feedback">Send Feedback</a></li>
-    <li id="other_tools">
-      <button id="mnu-other-tools" class="drop-menu-toggle">Other Inuktut Tools</button>
-      <ul class="drop-menu">
-        <li><a href="worddict.jsp">Inuktitut-English Dictionary</a></li>
-        <li><a href="spell.jsp">Spell Checker</a></li>
-        <li><a href="search.jsp">Web Search Engine</a></li>
-        <li><a href="morpheme_dictionary.jsp">Morpheme Dictionary</a></li>
-        <li><a href="gisttext.jsp">Reading Assistant</a></li>
-        <li><a href="http://inuktitutcomputing.ca/Transcoder/index.php">Inuktitut Computing Transcoder</a></li>
-      </ul>
-    </li>
-    <li id="alphabet">
-        <button id="mnu-alphabet" class="drop-menu-toggle">SYLLABIC</button>
-        <ul class="drop-menu">
-            <li><a onclick="mainNavController.selectAlphabet('ROMAN')">Roman</a></li>
-            <li><a onclick="mainNavController.selectAlphabet('SYLLABIC')">Syllabic</a></li>
-        </ul>
-    </li>
-  </ul>
-</nav>
-
-<div id="page_title">
-<h1><%= pageTitle %></h1>
-<p><em><%= pageUsage %></em></p>
-</div>
-<!--
-   Setup the "main" part for this type of page
--->
-<main>
-
-<% pageContext.include("pages/" + pageName + "/_view.jsp"); %>
-</main>
-
-<div id="footer" class="footer">
-  In collaboration with:
-</div>
-<div id="sponsors">
-  <a href="https://nrc.canada.ca/en" target="_blank"><img src="imgs/NRC-ID_138x138.jpg" alt="logo of National Research Council Canada - Conseil national de recherches Canada"></a>
-  <a href="https://www.pirurvik.ca/" target="_blank"><img src="imgs/Pirurvik_logo_2.jpg" alt="logo of pirurvik"></a>
-</div>
 
 <!-- To ensure that the browser remembers the old breakpoints after page
 reloading -->
@@ -113,7 +80,6 @@ reloading -->
 <script src="./js/controllers/RunWhen.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 <script src="./js/controllers/WidgetController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
 <script src="./js/controllers/FloatingWindowController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
-
 
 <!-- This one must be before any other controller -->
 <script src="./js/controllers/IUToolsController.js?version=<%= IUTOOLS_JS_VERSION %>"></script>
@@ -139,4 +105,8 @@ reloading -->
 </script>
 -->
 
-<% pageContext.include("pages/" + pageName + "/_controller.jsp"); %>
+<jsp:include page="/pages/${param.pageName}/_controller.jsp" />
+
+</body>
+
+</html>
