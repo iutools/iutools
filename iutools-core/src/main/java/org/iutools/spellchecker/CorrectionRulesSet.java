@@ -188,6 +188,10 @@ public class CorrectionRulesSet {
 				// d'un mot (souvent emprunte: Haaki (hockey) ou Hamlaat (Hamlet). Par contre,
 				// certains utilisent H pour hi hu ha, alors que les symboles ᓯ ᓱ ᓴ peuvent ausi
 				// representer ces sons.
+				//
+				// Cette règle n'est pas encodée pour le moment
+
+				// Deux règles proposées par Benoit Farley
 				new CorrectionRule("q([jmnv])", "r$1"),
 				new CorrectionRule("qk", "qq"),
 			};

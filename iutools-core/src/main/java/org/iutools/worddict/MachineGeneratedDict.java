@@ -512,10 +512,14 @@ public class MachineGeneratedDict {
 			for (String l1Word : l1WordsCluster) {
 				l1Word = l1Word.toLowerCase();
 				logger.trace("Looking for glossary entries for word: " + l1Word);
-				List<GlossaryEntry> glossEntries =
+				try {
+					List<GlossaryEntry> glossEntries =
 					glossary.entries4word(entry.getLang(),
-						entry.normalizeTerm(l1Word, entry.getLang()));
-				entry.addGlossEntries4word(l1Word, glossEntries);
+					entry.normalizeTerm(l1Word, entry.getLang()));
+					entry.addGlossEntries4word(l1Word, glossEntries);
+				} catch (GlossaryException e) {
+					throw new MachineGeneratedDictException(e);
+				}
 			}
 			fillExamplesForHumanTranslations(entry);
 		}

@@ -194,6 +194,17 @@ public class MachineGeneratedDictTest {
 				)
 				.hasMinExamples(5)
 				.relatedWordsShouldBeAmong(),
+
+			new MultilingualDictCase("SYLLL word with a glossary entry",
+				"ᐃᓕᓐᓂᐊᖅᑐᓕᕆᓂᖅ")
+				.setL1("iu")
+				.relatedWordsShouldBeAmong(
+					"ᐃᓕᓐᓂᐊᖅᑐᓕᕆᓂᕐᒧᑦ", "ᐃᓕᓐᓂᐊᖅᑐᓕᕆᔨᒃᑯᑦ", "ᐃᓕᓐᓂᐊᕐᑐᓕᕆᔩᑦ",
+					"ᐃᓕᓐᓂᐊᖅᑐᓕᕆᔨᒃᑯᓐᓄᑦ", "ᐃᓕᓐᓂᐊᕐᑐᓕᕆᔨᒃᑯᓐᓂᑦ")
+				.bestTranslationsAreAmong(
+					"education", "care ... education", "education system",
+					"education issues", "education ... two", "education ... vital")
+				.humanTranslationsAre("education")
 		};
 	}
 
@@ -416,7 +427,7 @@ public class MachineGeneratedDictTest {
 
 		new RunOnCases(cases_entry4word, runner)
 //			.onlyCaseNums(1)
-//			.onlyCasesWithDescr("en-housing")
+//			.onlyCasesWithDescr("word with a glossary entry")
 			.run();
 	}
 

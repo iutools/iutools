@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.iutools.config.IUConfig;
+import org.iutools.text.IUWord;
+import org.iutools.text.WordException;
 import org.iutools.utilities.StopWatch;
 import org.iutools.utilities.StopWatchException;
 
@@ -148,14 +150,19 @@ public class Glossary {
 		return this;
 	}
 
-	private void onNewGlossaryEntry(GlossaryEntry newEntry) {
+	private void onNewGlossaryEntry(GlossaryEntry newEntry) throws GlossaryException {
 		Logger logger = LogManager.getLogger("org.iutools.worddict.Glossary.onNewGlossaryEntry");
 		if (logger.isTraceEnabled()) {
 			logger.trace("Read glossary entry: "+newEntry);
 		}
 		for (String lang: newEntry.availableLanguages()) {
 			for (String term: newEntry.termsInLang(lang)) {
-				String key = keyFor(lang, term);
+				String key = null;
+				try {
+					key = keyFor(lang, term);
+				} catch (GlossaryException e) {
+					throw new GlossaryException(e);
+				}
 				if (!term2entries.containsKey(key)) {
 					term2entries.put(key, new ArrayList<GlossaryEntry>());
 				}
@@ -165,11 +172,22 @@ public class Glossary {
 		}
 	}
 
-	private String keyFor(String lang, String term) {
-		return lang+":"+term.toLowerCase();
+	private String keyFor(String lang, String term) throws GlossaryException {
+		String key = null;
+		if (!lang.equals("iu")) {
+			key = lang+":"+term.toLowerCase();
+		} else {
+			try {
+				String roman_word = new IUWord(term).inRoman();
+				key = lang+":"+roman_word;
+			} catch (WordException e) {
+				throw new GlossaryException(e);
+			}
+		}
+		return key;
 	}
 
-	public List<GlossaryEntry> entries4word(String lang, String word) {
+	public List<GlossaryEntry> entries4word(String lang, String word) throws GlossaryException {
 		List<GlossaryEntry> entries = new ArrayList<GlossaryEntry>();
 		String key = keyFor(lang,word);
 		if (term2entries.containsKey(key)) {
