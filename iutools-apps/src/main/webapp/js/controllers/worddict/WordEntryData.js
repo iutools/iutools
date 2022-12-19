@@ -82,7 +82,7 @@ class WordEntryData {
         return normalized;
     }
 
-    glossarySource4word(word, lang) {
+    glossarySources4word(word, lang, source) {
         word = this.getNormalizedTerm(word, lang);
         var sources = [];
         if (this.humanTranslationSources != null &&
@@ -90,5 +90,6 @@ class WordEntryData {
             sources = this.humanTranslationSources[word];
         }
         return sources;
+
     }
 }

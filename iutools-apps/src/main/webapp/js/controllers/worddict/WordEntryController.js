@@ -346,9 +346,13 @@ class WordEntryController extends IUToolsController {
     htmlGlossaryReference(aTranslation, wordEntry) {
         var html = "";
         if (wordEntry.isHumanTranslation(aTranslation)) {
-            html += "c.f. ";
+            html +=
+                "<table id=\"tbl-glossary-ref\" class=\"alignments\">\n"+
+                "<tbody>\n"+
+                "<tr><th>Found in glossaries</th></tr>\n";
+            html += "<tr><td>c.f. ";
             var isFirst = true;
-            var glossaries = wordEntry.glossarySource4word(aTranslation, wordEntry.otherLang())
+            var glossaries = wordEntry.glossarySources4word(aTranslation, wordEntry.otherLang())
             for (const glossaryName of glossaries) {
                 if (!isFirst) {
                     html += ", "
@@ -356,7 +360,7 @@ class WordEntryController extends IUToolsController {
                 isFirst = false;
                 html += glossaryName;
             }
-            html += "\n<p/>\n";
+            html += "</td></tr>\n<p/>\n";
         }
         return html;
     }
