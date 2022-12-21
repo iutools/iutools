@@ -539,7 +539,7 @@ public class SpellChecker {
 		final int MAX_WORDS_TO_TRY = 5;
 
 		String longestCorrectLead = null;
-		String correctionSoFar = corr.bestSuggestionSoFar();
+		String correctionSoFar = corr.bestSuggestionSoFar(false);
 		for (int endPos = correctionSoFar.length()-1; endPos > 3; endPos--) {
 			//
 			// Loop through all the leading strings L of the bad word, starting 
@@ -631,7 +631,7 @@ public class SpellChecker {
 		final int MAX_WORDS_TO_TRY = 5;
 		
 		String longestCorrectTail = null;
-		String correctionSoFar = corr.bestSuggestionSoFar();
+		String correctionSoFar = corr.bestSuggestionSoFar(false);
 		for (int startPos = 0; startPos < correctionSoFar.length()-2; startPos++) {
 			//
 			// Loop through all the tailing strings L of the bad word, starting 

@@ -83,18 +83,28 @@ public class SpellingCorrection {
 		}
 	}
 
+	public String bestSuggestionSoFar() {
+		return bestSuggestionSoFar((Boolean)null);
+	}
+
 	/**
 	 * When applying different correction strategies in sequence, this will
 	 * return the best "partial" correction we got from previous strategies.
+	 * You can ask for brackets to be removed from the suggestions or not.
 	 */
-	public String bestSuggestionSoFar() {
+	public String bestSuggestionSoFar(Boolean allowBadCharsMarker) {
+		if (allowBadCharsMarker == null) {
+			allowBadCharsMarker = true;
+		}
 		String best = orig;
 		if (shallowFix != null) {
 			// Shallow rules did produce a partial fix.
 			best = shallowFix;
-			// Remove the bad word markers from the shallow fix
-			best.replaceAll("(\\[|\\])", "");
 //			best = best.replaceAll("(\\[|\\])", "");
+		}
+		if (!allowBadCharsMarker) {
+			// Remove the bad word markers from the shallow fix
+			best = best.replaceAll("(\\[|\\])", "");
 		}
 		return best;
 	}
