@@ -25,7 +25,7 @@ public class TokenizeEndpoint extends Endpoint<TokenizeInputs, TokenizeResult> {
 		List<Token> tokens = tokenizer.getAllTokens();
 		int totaWords = totalWords(tokens);
 		Integer maxWords = inputs.maxWords;
-		if (maxWords == null || maxWords > 500) {
+		if (maxWords == null || maxWords > 5000) {
 			// Note: We don't allow a transaction to provide a maxWords that is
 			//   higher than 500. This is to prevent "attacks" where
 			//   a client would send a very large text, AND provide a very large

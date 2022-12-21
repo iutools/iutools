@@ -22,8 +22,6 @@ class SpellController extends IUToolsController {
 		// task.
 		this.abortCheck = false;
 
-		this.MAX_WORDS = null;
-
         var correctWordConfig = {...config};
         correctWordConfig['divError'] = config.divChooseCorrectionError;
         this.correctWordController = new ChooseCorrectionController(correctWordConfig);
@@ -356,14 +354,10 @@ class SpellController extends IUToolsController {
             suggestCorrections = false;
         }
 
-	    var checkLevel =
-            this.elementForProp("selCheckLevel").val();
-        checkLevel = parseInt(checkLevel);
-
 		var request = {
 			text: word,
             _taskID: taskID,
-            checkLevel: checkLevel,
+            checkLevel: this.currentCheckLevel(),
 			// includePartiallyCorrect: includePartials,
             suggestCorrections: suggestCorrections
 		};
@@ -371,18 +365,36 @@ class SpellController extends IUToolsController {
 		return JSON.stringify(request);
 	}
 
+	currentCheckLevel() {
+	    var checkLevel =
+            this.elementForProp("selCheckLevel").val();
+        checkLevel = parseInt(checkLevel);
+        return checkLevel;
+    }
+
 	/**
 	 * Generate data for a tokenize web request.
 	 * @returns the data
 	 */
 	tokenizeRequestData() {
+	    var maxWords = this.maxWordsForCurrentLevel();
 		var request = {
 			text: this.elementForProp("txtToCheck").val(),
-            maxWords: this.MAX_WORDS,
+            // maxWords: this.MAX_WORDS,
+            maxWords: maxWords,
 		};
 
 		return JSON.stringify(request);
 	}
+
+    maxWordsForCurrentLevel() {
+	    var checkLevel = this.currentCheckLevel()
+        var maxWords = 5000;
+	    if (checkLevel > 1) {
+	        maxWords = 500;
+        }
+	    return maxWords;
+    }
 	
 	disableSpellButton() {
 		this.elementForProp('btnSpell').attr("disabled", true);
