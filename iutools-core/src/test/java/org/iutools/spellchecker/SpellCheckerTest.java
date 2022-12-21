@@ -514,6 +514,11 @@ public class SpellCheckerTest {
 				"SYLL text that uses two chars ᓕ+ᓐ instead of just one", "ᐃᓕᓐᓂᐊᕐᑭᑎ")
 				.usingCheckLevel(1)
 				.expectMisspelled(true),
+
+			new CaseIsMispelled(
+				"English word", "computing")
+				.usingCheckLevel(1)
+				.expectMisspelled(false),
 		};
 
 		Consumer<Case> runner = (caseNoCast) -> {
@@ -530,6 +535,7 @@ public class SpellCheckerTest {
 			}
 		};
 		new RunOnCases(cases, runner)
+//			.onlyCaseNums(3)
 			.run();
 	}
 

@@ -28,14 +28,9 @@ public class ShallowCheckTextEndpointTest extends EndpointTest {
 			new ShallowCheckCase(
 				"Syllabic text that violates a rule for which ther are no fixes",
 				"ᑯᐊᐳᕇᓴᓐᑯᓐᓂ",
-				// The text is left untouched, because the applicable rules can only
-				// identify errors without being able to fix them.
-				"ᑯᐊᐳᕇᓴᓐᑯᓐᓂ",
-				// However, the word should be labeled as being misspelled
-				Pair.of("ᑯᐊᐳᕇᓴᓐᑯᓐᓂ", null)
+				"ᑯᐊᐳᕇᓴ[ᓐᑯ]ᓐᓂ",
+				Pair.of("ᑯᐊᐳᕇᓴᓐᑯᓐᓂ", "ᑯᐊᐳᕇᓴ[ᓐᑯ]ᓐᓂ")
 			),
-
-
 			new ShallowCheckCase(
 				"Syllabic text with 'ᕿ' incorrectly spelled as two chars ᕐ+ᑭ",
 				"ᐃᓕᓐᓂᐊᕐᑭᑎ",
@@ -69,7 +64,7 @@ public class ShallowCheckTextEndpointTest extends EndpointTest {
 		};
 
 		new RunOnCases(cases, runner)
-//			.onlyCaseNums(3)
+//			.onlyCaseNums(2)
 			.run()
 			;
 

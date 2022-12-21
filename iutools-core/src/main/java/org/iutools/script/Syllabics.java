@@ -202,11 +202,17 @@ public class Syllabics {
     }
     
     public static boolean allInuktitut(String word) {
+    	  Logger logger = LogManager.getLogger("org.iutools.script.Syllabic.allInuktitut");
+    	  logger.trace("invoked with word="+word);
+    	  boolean answer = true;
         char chars[] = word.toCharArray();
         for (int i=0; i<chars.length; i++)
-            if (!isInuktitutCharacter(chars[i]))
-                return false;
-        return true;
+            if (!isInuktitutCharacter(chars[i])) {
+					answer = false;
+					break;
+				}
+		  logger.trace("returning answer="+answer);
+        return answer;
     }
     
     public static boolean containsInuktitut(String word) {

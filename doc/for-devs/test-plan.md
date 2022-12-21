@@ -25,9 +25,7 @@ Basic scenario
     - The first script should be the PREFERRED script and the second one should 
       be the other script.
   - Everything else is displayed in the PREFERRED script, 
-    except for:
-    - text that is in English.
-    - Inuktitut text for the bilingual examples (which at the moment are always in latin)
+    except for text that is in English.
   - In cases where the input word was mis-spelled, there should be a _Standardized 
     spelling_ section at the top showing the correct spelling in PREFERRED/OTHER scripts.
   - There is a decomp displayed (unless the specific scenario expects the word 
@@ -70,8 +68,6 @@ Latin query:
     - Translations include 'clams' and 'divers'
 
 Latin query - Capitalized words:
-- __BUG:__ As of 2022-11-30, the examples section for Nunavut says "No examples found"
-  - But the section for 'nunavut' (lowercase) does show some examples.
 - Do the steps described in the 'basic scenario' with following specifics
     - QUERY_WORD: 'Nunavut'
     - QUERY_LANGUAGE: Leave it at Inuktitut 
@@ -186,8 +182,11 @@ Mis-spelled IU word whose mis-spelled form appears in Hansard
   - QUERY_WORD: 'maligaliuqvinganit'
   - QUERY_LANGUAGE: Inuktitut
   - PREFERRED_SCRIPT: Roman
-- and make sure the Standardized Spelling section shows:
-   maligaliurvinganit/ᒪᓕᒐᓕᐅᕐᕕᖓᓂᑦ
+- and make sure that:
+  - the Standardized Spelling section shows: maligaliurvinganit/ᒪᓕᒐᓕᐅᕐᕕᖓᓂᑦ
+  - BUT: As of 2023-12-20, this does not work.
+  - it shows a decomposition, but it's for the correct spelling
+  - it shows some related words, but they are for the correct spelling
 
 Mis-spelled IU word whose mis-spelled form does NOT appear in Hansard
 - Do the steps described in the 'basic scenario' with English word 'education', 
@@ -196,10 +195,12 @@ Mis-spelled IU word whose mis-spelled form does NOT appear in Hansard
   - QUERY_LANGUAGE: Inuktitut
   - PREFERRED_SCRIPT: Roman
 - and make sure that:
-  - NOTE: as of 2022-12-, this does not work. In this case, the dict says
+  - BUG: as of 2022-12-, this does not work. In this case, the dict says
     it has not found the word.
   - an entry is actually displayed
   - But the Standardized Spelling section shows inuksuk/ᐃᓄᒃᓱᒃ
+  - it shows a decomposition, but it's for the correct spelling
+  - it shows some related words, but they are for the correct spelling
 
 
 Out-of-hansard valid IU word
@@ -400,6 +401,11 @@ Spell check SYLLABIC -- Happy Path
     - Click on first word and apply the correct spelling
     - Check that the spelling of the first word was changed, but not for the 
       second one.
+
+Spell check text that contains some Inuktitut and English words
+- System should leave the English words alone, and those words should not crash 
+  the spell checker
+- The Inuktut words should be spellchecked as usual
 
 Concurency testing and Interruption
 - When you hit _Spell Check_

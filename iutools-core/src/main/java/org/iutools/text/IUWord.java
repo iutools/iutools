@@ -3,6 +3,7 @@ package org.iutools.text;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.iutools.script.TransCoder;
+
 import static org.iutools.script.TransCoder.Script;
 
 public class IUWord extends Word {
@@ -22,6 +23,8 @@ public class IUWord extends Word {
 	}
 
 	private void init__IUWord(String __word, Script __origScript) throws WordException {
+		Logger logger = LogManager.getLogger("org.iutools.text.IUWord.init__IUWord");
+		logger.trace("Invoked with __word="+_word+", __origScript="+__origScript);
 		int x = 0;
 		if (__origScript == null) {
 			__origScript = TransCoder.textScript(__word);

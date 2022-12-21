@@ -19,6 +19,8 @@ import org.iutools.morph.r2l.MorphologicalAnalyzer_R2L;
 import ca.nrc.datastructure.CloseableIterator;
 import org.iutools.script.TransCoderException;
 import org.iutools.text.IUWord;
+import org.iutools.text.NonIUWord;
+import org.iutools.text.Word;
 import org.iutools.text.WordException;
 import org.iutools.text.segmentation.Token;
 import org.iutools.utilities.StopWatch;
@@ -327,11 +329,19 @@ public class SpellChecker {
 	}
 
 	public SpellingCorrection correctWord(String word, Integer maxCorrections) throws SpellCheckerException {
+		SpellingCorrection correction = null;
 		try {
-			return correctWord(new IUWord(word), maxCorrections);
+			Word wordObject = Word.build(word);
+			if (wordObject instanceof NonIUWord) {
+				// This is not an IU word. Wrap it in a "blank" correction.
+				correction = new SpellingCorrection(word);
+			} else {
+				correction = correctWord(new IUWord(word), maxCorrections);
+			}
 		} catch (WordException e) {
 			throw new SpellCheckerException(e);
 		}
+		return correction;
 	}
 
 	public SpellingCorrection correctWord(IUWord word) throws SpellCheckerException {
@@ -732,12 +742,15 @@ public class SpellChecker {
 		return;
 	}
 
-	public Boolean isMispelled(String word) throws SpellCheckerException {
+	public Boolean isMispelled(String wordStr) throws SpellCheckerException {
+		boolean answer = false;
 		try {
-			return isMispelled(new IUWord(word));
+			Word word = Word.build(wordStr);
+			answer = isMispelled(word);
 		} catch (WordException e) {
 			throw new SpellCheckerException(e);
 		}
+		return answer;
 	}
 
 
@@ -753,33 +766,38 @@ public class SpellChecker {
 	 *   - it is recorded as UNsuccessfully decomposed by the IMA during the compilation of the Nunavut corpus, or
 	 *   - it cannot be decomposed by the IMA (if never encountered in the Hansard corpus)
 	 */
-	public Boolean isMispelled(IUWord word) throws SpellCheckerException {
+	public Boolean isMispelled(Word word) throws SpellCheckerException {
 		Logger logger = LogManager.getLogger("org.iutools.spellchecker.SpellChecker.isMispelled");
 
 		logger.trace("invoked with: word="+word);
 
-		SpellDebug.trace("SpellChecker.isMispelled", "Checkig correctness of word", word.inRoman(), null);
+		SpellDebug.trace("SpellChecker.isMispelled", "Checking correctness of word", word.word(), null);
 
-		// First, carry out a rapid, SHALLOW CHARACTER-level analysis.
-		//
-		Boolean wordIsMispelled =  isMispelled_ShallowAnalysis(word);
+		Boolean wordIsMispelled = false;
+		// We assume the word is correctly spelled, unless it's a word in Inuktitut
+		if (word instanceof IUWord) {
+			IUWord iuWord = (IUWord)word;
+			// First, carry out a rapid, SHALLOW CHARACTER-level analysis.
+			//
+			wordIsMispelled = isMispelled_ShallowAnalysis(iuWord);
 
-		// If deep check is active, and the SHALLOW check hasn't been able
-		// to established whether or not the word is mis-spelled, then carry out a
-		// DEEP MORPHOLOGICAL analysis.
-		//
-		if (deepCheckEnabled() && wordIsMispelled == null) {
-			wordIsMispelled = isMispelled_DeepAnalysis(word);
+			// If deep check is active, and the SHALLOW check hasn't been able
+			// to established whether or not the word is mis-spelled, then carry out a
+			// DEEP MORPHOLOGICAL analysis.
+			//
+			if (deepCheckEnabled() && wordIsMispelled == null) {
+				wordIsMispelled = isMispelled_DeepAnalysis(iuWord);
+			}
+
+			if (wordIsMispelled == null) {
+				wordIsMispelled = false;
+			}
+
+			logger.trace("Exiting");
+
+			SpellDebug.trace("SpellChecker.isMispelled",
+			"Returning wordIsMispelled=" + wordIsMispelled, iuWord.inRoman(), null);
 		}
-
-		if (wordIsMispelled == null) {
-			wordIsMispelled = false;
-		}
-
-		logger.trace("Exiting");
-
-		SpellDebug.trace("SpellChecker.isMispelled",
-			"Returning wordIsMispelled="+wordIsMispelled, word.inRoman(), null);
 
 		return wordIsMispelled;
 	}

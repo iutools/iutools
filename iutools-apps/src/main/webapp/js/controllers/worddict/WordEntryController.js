@@ -7,6 +7,8 @@ class WordEntryController extends IUToolsController {
         var tracer = Debug.getTraceLogger('WordEntryController.constructor');
         tracer.trace("wdConfig="+jsonStringifySafe(weConfig));
         super(weConfig);
+
+        this.latestWordDisplayed = null;
         this.windowController =
             new FloatingWindowController(weConfig);
 
@@ -49,7 +51,11 @@ class WordEntryController extends IUToolsController {
                 wordText += "/" + wordInOtherScript
             }
             this.windowController.setTitle(wordText);
+            // Remember that this is the word we are currently displaying
+            // If a callback comes back with a different word, we can then ignore it.
+            this.latestWordDisplayed = word;
         }
+        return;
 	}
 	
 	invokeWordDictService(jsonRequestData, _successCbk, _failureCbk) {
@@ -107,37 +113,44 @@ class WordEntryController extends IUToolsController {
 	}
 
 	displayWordEntry(result) {
-		var tracer = Debug.getTraceLogger('WordEntryController.displayWordEntry');
-		tracer.trace("results="+jsonStringifySafe(result));
-		var lang = result.lang;
-		var otherLang = result.otherLang;
+        var tracer = Debug.getTraceLogger('WordEntryController.displayWordEntry');
+        tracer.trace("results=" + jsonStringifySafe(result));
+        var lang = result.lang;
+        var otherLang = result.otherLang;
 
-		// Change the word being looked up in order to add its
+        // Change the word being looked up in order to add its
         // transcoding in the other script
-        var wordEntryData = (result.queryWordEntry == null ? null: new WordEntryData(result.queryWordEntry));
-        var word = null; var wordInOtherScript = null;
+        var wordEntryData = (result.queryWordEntry == null ? null : new WordEntryData(result.queryWordEntry));
+        var word = null;
+        var wordInOtherScript = null;
         if (wordEntryData != null) {
-            word = wordEntryData.word; wordInOtherScript = wordEntryData.wordInOtherScript;
+            word = wordEntryData.word;
+            wordInOtherScript = wordEntryData.wordInOtherScript;
         }
-		this.displayWordBeingLookedUp(word, wordInOtherScript);
-        var html = null;
-        if (wordEntryData == null) {
-            html = "No entry found for this word";
-        } else {
-            html =
-                "<div id='div-info' class='div-info' align='right'>\n" +
-                "  <a href='help.jsp?topic=about_dictionary' target='#iutools_help'></a>\n" +
-                "</div>";
+        if (word == this.latestWordDisplayed) {
+            // We only change the displayed word entry if the word
+            // we are displaying is the same as the word that was
+            // looked up.
+            this.displayWordBeingLookedUp(word, wordInOtherScript);
+            var html = null;
+            if (wordEntryData == null) {
+                html = "No entry found for this word";
+            } else {
+                html =
+                    "<div id='div-info' class='div-info' align='right'>\n" +
+                    "  <a href='help.jsp?topic=about_dictionary' target='#iutools_help'></a>\n" +
+                    "</div>";
 
-            html += this.htmlStandardizedSpelling(wordEntryData);
-            html += this.htmlTranslations(wordEntryData, otherLang);
-            html += this.htmlRelatedWords(wordEntryData, lang);
-            html = this.htmlMorphologicalAnalyses(wordEntryData, lang, html);
-            html += this.htmlExamplesByTranslation(wordEntryData, lang, otherLang);
+                html += this.htmlStandardizedSpelling(wordEntryData);
+                html += this.htmlTranslations(wordEntryData, otherLang);
+                html += this.htmlRelatedWords(wordEntryData, lang);
+                html = this.htmlMorphologicalAnalyses(wordEntryData, lang, html);
+                html += this.htmlExamplesByTranslation(wordEntryData, lang, otherLang);
+            }
+            this.windowController.setBody(html);
+            this.attachWordLookupListeners();
+            this.enableAccordions();
         }
-        this.windowController.setBody(html);
-        this.attachWordLookupListeners();
-        this.enableAccordions();
     }
 
     htmlStandardizedSpelling(wordEntry) {

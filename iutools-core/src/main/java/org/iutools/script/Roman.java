@@ -23,6 +23,9 @@
 
 package org.iutools.script;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -178,12 +181,18 @@ public abstract class Roman {
     }
     
     public static boolean allInuktitut(String word) {
+    	  Logger logger = LogManager.getLogger("org.iutools.script.Roman.allInuktitut");
+    	  logger.trace("invoked with word="+word);
+    	  boolean answer = true;
 		  word = word.toLowerCase();
         for (int i=0; i<word.length(); i++) {
-        	if ( inuktitutCharacters.indexOf(word.charAt(i)) == -1 )
-        		return false;
+        	  if ( inuktitutCharacters.indexOf(word.charAt(i)) == -1 ) {
+				  answer = false;
+				  break;
+			  }
         }
-        return true;
+        logger.trace("returning answer="+answer);
+        return answer;
     }
 
 

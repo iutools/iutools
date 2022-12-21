@@ -61,29 +61,43 @@ public class CheckWordEndpointTest extends EndpointTest {
 	@Test
 	public void test__CheckWordEndpoint__VariousCases() throws Exception {
 
-		Case[] cases = new Case[] {
-			new Case("ᐃᓄᑦᒧᑦ: Syllabics misspeled",
-				"ᐃᓄᑦᒧᑦ", true,
-				"ᐃᓄᒻᒧᑦ", "ᐃᓄᑐᐊᒧᑦ", "ᐃᓄᒃᑐᑦ", "ᐃᓄᑐᐊᑦ", "ᐃᓄᕗᑦ"),
+		// This one used to raise an exception.
+		Case[] cases = new CheckWordCase[] {
+			new CheckWordCase("inukssuk = ROMAN word with Level1 error, being corrected at Level2", "inukssuk")
+				.usingLevel(2)
+				.expectSuggestions("inu[ks]suk", "inuksuk", "inukshuk", "inuksui",
+					"inuksiutik", "inukku"),
 
-			new Case("ᑕᑯᔪᖅ: Syllabics correctly spelled",
-				"ᑕᑯᔪᖅ", false),
 
-			new Case("ᒐᕙᒪᒃᑯᑎᒍᑦ: Contains syll chars that transcode to 2 latin chars",
-				"ᒐᕙᒪᒃᑯᑎᒍᑦ", true,
-				"ᒐᕙᒪᒃᑎᒍᑦ", "ᒐᕙᒪᒃᑯᑎᑐᑦ", "ᒐᕙᒪᑎᒍᑦ", "ᒐᕙᒪᒃᑯᖏᑎᒍᑦ", "ᒐᕙᒪᒃᑯᑎᓐᓄᑦ"),
+			new CheckWordCase("ᐃᓄᑦᒧᑦ: Syllabics misspeled", "ᐃᓄᑦᒧᑦ")
+				.usingLevel(2)
+				.expectSuggestions("ᐃᓄ[ᑦᒧ]ᑦ", "ᐃᓄᒻᒧᑦ", "ᐃᓄᑐᐊᒧᑦ", "ᐃᓄᒃᑐᑦ", "ᐃᓄᑐᐊᑦ", "ᐃᓄᕗᑦ"),
+
+			new CheckWordCase("ᑕᑯᔪᖅ: Syllabics correctly spelled", "ᑕᑯᔪᖅ")
+				.usingLevel(2)
+				.isCorrectlySpelled(),
+
+			new CheckWordCase(
+				"ᒐᕙᒪᒃᑯᑎᒍᑦ: Contains syll chars that transcode to 2 latin chars",
+				"ᒐᕙᒪᒃᑯᑎᒍᑦ")
+				.usingLevel(2)
+				.expectSuggestions(
+					"ᒐᕙᒪᒃᑎᒍᑦ", "ᒐᕙᒪᒃᑯᑎᑐᑦ", "ᒐᕙᒪᑎᒍᑦ", "ᒐᕙᒪᒃᑯᖏᑎᒍᑦ", "ᒐᕙᒪᒃᑯᑎᓐᓄᑦ"),
+
+			new CheckWordCase("English word -- Should be left alone", "computing")
+				.usingLevel(1)
+				.isCorrectlySpelled(),
 		};
 
-		Consumer<Case> runner = (aCase) -> {
-			String word = (String)aCase.data[0];
-			Boolean expMisspelled = (Boolean) aCase.data[1];
-			String[] expSuggestions = new String[aCase.data.length - 2];
-			for (int ii=0; ii < expSuggestions.length; ii++) {
-				expSuggestions[ii] = (String)aCase.data[ii+2];
-			}
+		Consumer<Case> runner = (caseUncast) -> {
+			CheckWordCase aCase = (CheckWordCase)caseUncast;
+			String word = aCase.word;
+			Boolean expMisspelled = aCase.expectMisspelled;
+			String[] expSuggestions = aCase.expSuggestions;
 
 			try {
 				CheckWordInputs inputs = new CheckWordInputs(word);
+				inputs.checkLevel = aCase.checkLevel;
 				EndpointResult epResult = endPoint.execute(inputs);
 
 				new AssertCheckWordResult(epResult)
@@ -95,52 +109,13 @@ public class CheckWordEndpointTest extends EndpointTest {
 		};
 
 		new RunOnCases(cases, runner)
-//			.onlyCaseNums(3)
+//			.onlyCaseNums(5)
 			.run()
 			;
 
 		return;
 	}
 
-
-//	@Test
-//	public void test__CheckWordEndpoint__Syllabic__HappyPath() throws Exception {
-//
-//		CheckWordInputs inputs = new CheckWordInputs("ᐃᓄᑦᒧᑦ ᑕᑯᔪᖅ");
-//		EndpointResult epResult = endPoint.execute(inputs);
-//
-//		new AssertCheckWordResult(epResult)
-//			.correctionIs(true,
-//				new String[]{
-//					"ᐃᓄᒻᒧᑦ",
-//					"ᐃᓄᑐᐊᒧᑦ",
-//					"ᐃᓄᒃᑐᑦ",
-//					"ᐃᓄᑐᐊᑦ",
-//					"ᐃᓄᕗᑦ"
-//				}
-//			);
-//
-//
-//		return;
-//	}
-
-//	@Test
-//	public void test__CheckWordEndpoint__WordWithSyllCharsThatAreExpressedAsTwoRomanChars()
-//			throws Exception {
-//
-//		CheckWordInputs inputs = new CheckWordInputs("ᒐᕙᒪᒃᑯᑎᒍᑦ");
-//		EndpointResult epResult = endPoint.execute(inputs);
-//
-//		new AssertCheckWordResult(epResult)
-//			.correctionIs(true,
-//				new String[]{
-//					"ᒐᕙᒪᒃᑎᒍᑦ",
-//					"ᒐᕙᒪᒃᑯᑎᑐᑦ",
-//					"ᒐᕙᒪᑎᒍᑦ",
-//					"ᒐᕙᒪᒃᑯᖏᑎᒍᑦ",
-//					"ᒐᕙᒪᒃᑯᑎᓐᓄᑦ"
-//				});
-//	}
 
 	@Test
 	public void test__CheckWordEndpoint__SpeedTest__AllOKWords() throws Exception {
@@ -176,5 +151,43 @@ public class CheckWordEndpointTest extends EndpointTest {
 		// Note: We don't flag improvements. Just worsening.
 	 	AssertRuntime.runtimeHasNotChanged(gotAvgSecs, Pair.of(percTolerance, null),
 			"avg word spell check secs", testInfo);
+	}
+
+	///////////////////////////////////////
+	// TEST HELPERS
+	///////////////////////////////////////
+
+	public static class CheckWordCase extends Case {
+
+		public String word = null;
+		private int checkLevel = 1;
+		public Boolean expectMisspelled = true;
+		public String[] expSuggestions = null;
+
+		public CheckWordCase(String _descr, String _word) {
+			super(_descr, null);
+			this.word = _word;
+		}
+
+		public CheckWordCase isCorrectlySpelled() {
+			this.expectMisspelled = false;
+			return this;
+		}
+
+		public CheckWordCase isMisSpelled() {
+			this.expectMisspelled = true;
+			return this;
+		}
+
+		public CheckWordCase usingLevel(int level) {
+			this.checkLevel = level;
+			return this;
+		}
+
+		public CheckWordCase expectSuggestions(String... _expSuggestions) {
+			this.expSuggestions = _expSuggestions;
+			isMisSpelled();
+			return this;
+		}
 	}
 }

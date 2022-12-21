@@ -384,7 +384,8 @@ class SpellController extends IUToolsController {
             maxWords: maxWords,
 		};
 
-		return JSON.stringify(request);
+		var json = JSON.stringify(request);
+        return json;
 	}
 
     maxWordsForCurrentLevel() {

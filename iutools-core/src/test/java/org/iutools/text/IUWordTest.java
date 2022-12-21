@@ -43,6 +43,16 @@ public class IUWordTest {
 				.expectScript(Script.ROMAN)
 				.expectRoman("hakirviksaq")
 				.expectSyllabic("ᓴᑭᕐᕕᒃᓴᖅ"),
+
+			new CaseIUWord("ROMAN word that has 'h' but NOT at start of word",
+				"inukshuk")
+				.expectScript(Script.ROMAN)
+				.expectRoman("inukshuk")
+				// Actually, this is the transcoding for "inukssuk", not
+				// the input "inukshuk". I guess the transcoder automatically
+				// replaces 'sh' -> 'ss'.
+				//
+				.expectSyllabic("ᐃᓄᒃᔅᓱᒃ"),
 		};
 		Consumer<Case> runner = (caseNoCast) -> {
 			CaseIUWord aCase = (CaseIUWord) caseNoCast;
@@ -77,6 +87,7 @@ public class IUWordTest {
 			}
 		};
 		new RunOnCases(cases, runner)
+//			.onlyCaseNums(7)
 			.run();
 	}
 

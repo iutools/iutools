@@ -93,7 +93,8 @@ public class EndpointDispatcherTest {
 				String uri = (String)aCase.data[1];
 				Class<? extends EndpointResult> resultsClass =
 					(Class<? extends EndpointResult>)aCase.data[2];
-				MockHttpServletResponse response  = doPost(uri, json);
+				MockHttpServletResponse response  =
+					doPost(uri, json);
 
 				new AssertServletResponse(response, resultsClass)
 					.reportsNoException()
@@ -105,7 +106,7 @@ public class EndpointDispatcherTest {
 		};
 
 		new RunOnCases(nonLogEndpointCases, runner)
-//			.onlyCaseNums(7)
+//			.onlyCaseNums(4)
 			.run();
 	}
 

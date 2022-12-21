@@ -20,6 +20,19 @@ public class Word {
 		this._lang = __lang;
 	}
 
+	public static Word build(String wordStr) throws WordException {
+		Word word = null;
+		// See if this can be made into an IU word
+		try {
+			word = new IUWord(wordStr);
+		} catch (WordException e) {
+			// This is not an IU word. Create it as a NonIUWord, unless
+			// we haven't specified its language
+			word = new NonIUWord(wordStr, null);
+		}
+		return word;
+	}
+
 	public String word() {
 		return _word;
 	}

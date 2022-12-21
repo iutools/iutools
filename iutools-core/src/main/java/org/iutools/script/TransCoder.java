@@ -616,10 +616,10 @@ public class TransCoder {
 			return ensureScript(script, text, (Boolean)null);
 		}
 
-		public static String ensureScript(Script script, String text,
-			Boolean mixedMeansSyll) throws TransCoderException {
+	public static String ensureScript(Script script, String text,
+		Boolean mixedMeansSyll) throws TransCoderException {
 		String textInScript = null;
-		if (text != null) {
+		if (text != null && script != null) {
 			Script currScript = textScript(text, mixedMeansSyll);
 			if (script == currScript) {
 				textInScript = text;
@@ -643,6 +643,8 @@ public class TransCoder {
 	}
 
 	public static Script textScript(String text, Boolean mixedMeansSyll) {
+    	Logger logger = LogManager.getLogger("org.iutools.script.TransCoder.textScript");
+    	logger.trace("invoked with text="+text+", mixedMeansSyll="+mixedMeansSyll);
     	if (mixedMeansSyll == null) {
     		mixedMeansSyll = false;
 		}
@@ -650,9 +652,13 @@ public class TransCoder {
 		if (text != null) {
 			String textNoPunctNorDigits = text.replaceAll("[\\s0-9\\p{Punct}]", "");
 
-			// Remove leading 'H'. While this is not tecnically a ROMAN IU character,
+			// Remove 'h'. While this is not technically a ROMAN IU character,
 			// many dialects use it.
-			textNoPunctNorDigits = textNoPunctNorDigits.replaceAll("^[hH]", "");
+			// Most of the time you find it at the start of the word, but also
+			// very occasionally after an 's' (ex: inukshuk, which is sometimes
+			// seen eventhough the more common spelling is inuksuk).
+			//
+			textNoPunctNorDigits = textNoPunctNorDigits.replaceAll("(^|s)[hH]", "");
 
 			script = Script.MIXED;
 
@@ -666,6 +672,7 @@ public class TransCoder {
 				script = Script.SYLLABIC;
 			}
 		}
+		logger.trace("returning script="+script);
 		return script;
 	}
 

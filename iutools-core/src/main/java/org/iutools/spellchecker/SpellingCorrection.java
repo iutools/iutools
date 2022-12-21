@@ -100,7 +100,6 @@ public class SpellingCorrection {
 		if (shallowFix != null) {
 			// Shallow rules did produce a partial fix.
 			best = shallowFix;
-//			best = best.replaceAll("(\\[|\\])", "");
 		}
 		if (!allowBadCharsMarker) {
 			// Remove the bad word markers from the shallow fix
@@ -144,7 +143,7 @@ public class SpellingCorrection {
 	public String topSuggestion() {
 		String top = orig;
 		if (wasMispelled) {
-			List<String> suggestions = getDeepSuggestions();
+			List<String> suggestions = getAllSuggestions();
 			if (!suggestions.isEmpty()) {
 				top = suggestions.get(0);
 			}

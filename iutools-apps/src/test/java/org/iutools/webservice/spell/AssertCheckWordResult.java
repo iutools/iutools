@@ -39,7 +39,7 @@ public class AssertCheckWordResult extends AssertEndpointResult {
 		if (correction.wasMispelled) {
 			AssertObject.assertDeepEquals(
 				baseMessage+"\nSuggestions were wrong for"+wordDescr,
-				expSuggestions, correction.getDeepSuggestions());
+				expSuggestions, correction.getAllSuggestions());
 		}
 		
 		return this;

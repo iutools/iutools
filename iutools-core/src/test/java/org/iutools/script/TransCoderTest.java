@@ -67,6 +67,13 @@ public class TransCoderTest {
 		String gotRomanText = TransCoder.ensureScript(TransCoder.Script.ROMAN, syllText);
 		AssertString.assertStringEquals("inuktut, 2020", gotRomanText);
 	}
+
+	@Test
+	public void test__ensureScript__inuk() throws Exception{
+		String text = "inuk";
+		String gotRomanText = TransCoder.ensureScript(TransCoder.Script.ROMAN, text);
+		AssertString.assertStringEquals("inuk", gotRomanText);
+	}
 	
 	@Test
 	public void test__ensureScript__Rom2Syll__HappyPath() throws Exception{
@@ -163,6 +170,9 @@ public class TransCoderTest {
 				"hakirviksaq", Script.ROMAN),
 			new Case_textScript("MIXED script text ",
 				"ᐃᓄᒃᑐᑦ inuktut", Script.MIXED),
+			new Case_textScript("ROMAN word with 'h' in middle of it ",
+				"inukshuk", Script.ROMAN),
+
 		};
 		Consumer<Case> runner = (caseNoCast) -> {
 			Case_textScript aCase = (Case_textScript) caseNoCast;
