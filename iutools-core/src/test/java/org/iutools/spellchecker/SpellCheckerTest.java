@@ -366,6 +366,18 @@ public class SpellCheckerTest {
 				.expectCorrections(
 					"ujararniarvimmi", "ujararniarvimmik", "ujararniarvimmit",
 					"ujararniarvimmut", "ujarattarniarvimmi"),
+
+			// This case has been known to cause problems because it's correted form
+			// mi[sta]/ᒥ[ᔅᑕ] has a large proportion of non-IU chars.
+			// This can cause problems when we transcode between ROMAN and SYLL
+			// when we apply rules that are written in different scripts
+			// (the transcoder doesn't transcode the word if it doesn't look like
+			// it's an IU word.
+			//
+			new CaseCorrectWord("Level 1 - very short ROMAN word whose spelling will be flagged with [], possibly causing it to NOT look like an inuktitut word", "mista", true)
+				.usingCheckLevel(1)
+				.expectCorrections(
+					"mi[sta]"),
 		};
 
 		Consumer<Case> runner = (caseNoCast) -> {
@@ -390,6 +402,7 @@ public class SpellCheckerTest {
 
 		new RunOnCases(cases, runner)
 //			.onlyCaseNums(5)
+//			.onlyCasesWithDescr("Level 1 - ROMAN word that has a Level 1 mistake which operates on SYLL form")
 			.run();
 	}
 

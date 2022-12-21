@@ -85,9 +85,11 @@ public class CorrectionRule {
 
 	public IUWord fixWord(IUWord origWord) throws SpellCheckerException {
 		Logger logger = LogManager.getLogger("org.iutools.spellchecker.CorrectionRule.fixWord");
-
 		String origStr = origWord.inScript(ruleScript);
 		String fixedStr = pattBad().matcher(origStr).replaceAll(regexFix);
+		if (logger.isTraceEnabled()) {
+			logger.trace("For origWord="+origWord+", fixedStr="+fixedStr);
+		}
 		String result = "'"+origStr+"' " +
 			(fixedStr.equals(origStr) ? "UNCHANGED": "-> '"+fixedStr+"'");
 		if (!origStr.equals(fixedStr) && logger.isTraceEnabled()) {
@@ -97,6 +99,9 @@ public class CorrectionRule {
 		IUWord fixedWord = null;
 		try {
 			fixedWord = new IUWord(fixedStr, ruleScript);
+			if (logger.isTraceEnabled()) {
+				logger.trace("returning fixedWord="+fixedWord+", created from fixedStr="+fixedStr+", ruleScript="+ruleScript);
+			}
 		} catch (WordException e) {
 			throw new SpellCheckerException(e);
 		}

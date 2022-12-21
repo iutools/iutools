@@ -22,6 +22,8 @@ import java.util.regex.PatternSyntaxException;
 
 //import org.apache.logging.log4j.LogManager;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.iutools.html.HtmlEntities;
 import org.iutools.fonts.Font;
 
@@ -536,6 +538,7 @@ public class TransCoder {
 	 }
 
     public static String ensureRoman(String text, Boolean force) {
+    	Logger logger = LogManager.getLogger("org.iutools.script.TransCoder.ensureRoman");
     	if (force == null) {
     		force = false;
 		}

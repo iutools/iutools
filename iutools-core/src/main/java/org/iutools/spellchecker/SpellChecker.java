@@ -364,7 +364,10 @@ public class SpellChecker {
 				word.word(), null);
 
 			if (corr.wasMispelled) {
+				tLogger.trace("Before correctWord_Shallow, corr.shallowFix="+corr.shallowFix);
 				boolean completelyFixed = correctWord_Shallow(corr);
+				tLogger.trace("After correctWord_Shallow, corr.shallowFix="+corr.shallowFix);
+
 
 				// Only carry out a deeper morphological check if:
 

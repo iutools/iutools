@@ -1,5 +1,7 @@
 package org.iutools.text;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.iutools.script.TransCoder;
 import static org.iutools.script.TransCoder.Script;
 
@@ -7,6 +9,7 @@ public class IUWord extends Word {
 	private Script _origScript = null;
 	String wordInRoman = null;
 	String wordInSyll = null;
+
 
 	public IUWord(String __word) throws WordException {
 		super(__word, "iu");
@@ -19,6 +22,7 @@ public class IUWord extends Word {
 	}
 
 	private void init__IUWord(String __word, Script __origScript) throws WordException {
+		int x = 0;
 		if (__origScript == null) {
 			__origScript = TransCoder.textScript(__word);
 		}
@@ -39,14 +43,14 @@ public class IUWord extends Word {
 
 	public String inRoman() {
 		if (wordInRoman == null) {
-			wordInRoman = TransCoder.ensureRoman(_word);
+			wordInRoman = TransCoder.ensureRoman(_word, true);
 		}
 		return wordInRoman;
 	}
 
 	public String inSyll() {
 		if (wordInSyll == null) {
-			wordInSyll = TransCoder.ensureSyllabic(_word);
+			wordInSyll = TransCoder.ensureSyllabic(_word, true);
 		}
 		return wordInSyll;
 	}

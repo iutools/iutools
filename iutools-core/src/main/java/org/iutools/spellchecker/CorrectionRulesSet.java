@@ -240,10 +240,16 @@ public class CorrectionRulesSet {
 	}
 
 	public String fixWord(String origWordStr) throws SpellCheckerException {
+		Logger logger = LogManager.getLogger("org.iutools.spellchecker.CorrectionRulesSet.fixWord");
+		logger.trace("Invoked with origWordStr="+origWordStr);
 		try {
 			IUWord origWord = new IUWord(origWordStr);
 			IUWord fixedWord = fixWord(origWord);
+
 			String fixedWordStr = fixedWord.inScript(origWord.origScript());
+			if (logger.isTraceEnabled()) {
+				logger.trace("Returning fixedWordStr="+fixedWordStr);
+			}
 			return fixedWordStr;
 		} catch (WordException e) {
 			throw new SpellCheckerException(e);
@@ -252,11 +258,13 @@ public class CorrectionRulesSet {
 
 	public IUWord fixWord(IUWord origWord) throws SpellCheckerException {
 		Logger logger = LogManager.getLogger("org.iutools.spellchecker.CorrectionRulesSet.fixWord");
+
 		IUWord fixed = origWord;
 		for (CorrectionRule rule: rules()) {
 			fixed = rule.fixWord(fixed);
 		}
 		logger.trace("for origWord='"+origWord+"', returning '"+fixed+"'");
+
 		return fixed;
 	}
 }
