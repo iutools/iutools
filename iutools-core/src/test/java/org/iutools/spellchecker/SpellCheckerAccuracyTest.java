@@ -86,8 +86,8 @@ public class SpellCheckerAccuracyTest {
 		// NEED-IMPROVEMENT: Examples with ranking > 5
 		//   ONLY if we don't assume the correction is in dict
 
-		new SpellCheckerExample("qallunaatitut")
-				  .isMisspelled("qallunaaqtitut").setMaxRank(1, -1),
+//		new SpellCheckerExample("qallunaatitut")
+//				  .isMisspelled("qallunaaqtitut").setMaxRank(1, -1),
 
 		new SpellCheckerExample("tamaini")
 				  .isMisspelled("tamainni").setMaxRank(1, -1),

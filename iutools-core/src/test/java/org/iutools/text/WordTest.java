@@ -86,24 +86,44 @@ public class WordTest {
 	//////////////////////////////////////////
 
 	@Test
-	public void test__make__VariousCases() throws Exception {
-		CaseMake[] cases = new CaseMake[] {
-			new CaseMake("Roman word", "inuksuk", IUWord.class),
-			new CaseMake("Syll word", "ᐃᓄᒃᓱᒃ", IUWord.class),
-			new CaseMake("English world", "computing", NonIUWord.class),
+	public void test__build__VariousCases() throws Exception {
+		Case_build[] cases = new Case_build[] {
+			new Case_build("Roman word - autodetect", "inuksuk", IUWord.class),
+			new Case_build("Syll word - autodetect", "ᐃᓄᒃᓱᒃ", IUWord.class),
+			new Case_build("English word - autodetect", "computing", NonIUWord.class),
+			new Case_build("English word that looks like a roman IU word - force en", "main", NonIUWord.class, "en"),
+			new Case_build("Roman word - force iu", "inuksuk", IUWord.class, "iu"),
+			new Case_build("Syll word - force iu", "ᐃᓄᒃᓱᒃ", IUWord.class, "iu"),
+			new Case_build("Syllabic text forced to En --> Should raise exception", "ᐃᓄᒃᓱᒃ", null, "en")
+				.raisesException("Word \"ᐃᓄᒃᓱᒃ\" is not supposed to be in IU but it contains syllabic characters"),
 		};
 		Consumer<Case> runner = (caseUncast) -> {
-			CaseMake aCase = (CaseMake) caseUncast;
+			Case_build aCase = (Case_build) caseUncast;
 			Word word = null;
+			Exception gotExc = null;
 			try {
-				word = Word.build(aCase.word);
+				word = Word.build(aCase.word, aCase.lang);
 			} catch (WordException e) {
-				throw new RuntimeException(e);
+				gotExc = e;
+				if (aCase.expectException == null) {
+					throw new RuntimeException(e);
+				}
 			}
-			Assertions.assertTrue(aCase.expClass.isInstance(word));
+			if (aCase.expectException != null) {
+				if (gotExc == null) {
+					throw new RuntimeException("Expected exception but got none");
+				} else {
+					Assertions.assertEquals(
+						aCase.expectException, gotExc.getMessage(),
+						"Unexpected exception message");
+				}
+			} else {
+				Assertions.assertTrue(aCase.expClass.isInstance(word));
+			}
 		};
 
 		new RunOnCases(cases, runner)
+//			.onlyCaseNums(7)
 			.run();
 	}
 
@@ -112,15 +132,34 @@ public class WordTest {
 	// TEST HELPERS
 	//////////////////////////////////////////
 
-	public static class CaseMake extends Case {
+	public static class Case_build extends Case {
 
 		public String word;
+		public String lang;
 		public Class<? extends Word> expClass;
+		public String expectException = null;
 
-		public CaseMake(String _descr, String _word, Class<? extends Word> _expClass) {
+		public Case_build(String _descr, String _word, Class<? extends Word> _expClass) {
 			super(_descr, null);
+			init_Case_build(_word, _expClass, (String)null);
+		}
+
+
+		public Case_build(String _descr, String _word, Class<? extends Word> _expClass, String _lang) {
+			super(_descr, null);
+			init_Case_build(_word, _expClass, _lang);
+		}
+
+		private void init_Case_build(String _word, Class<? extends Word> _expClass,
+  			String _lang) {
 			this.word = _word;
 			this.expClass = _expClass;
+			this.lang= _lang;
+		}
+
+		public Case_build raisesException(String err) {
+			this.expectException = err;
+			return this;
 		}
 	}
 }

@@ -45,8 +45,9 @@ public class TermNormalizer {
 		}
 		String normalized = term;
 		if (term != null) {
-			if (normalizedTermsCache.get(termLang).containsKey(term)) {
-				normalized = normalizedTermsCache.get(termLang).get(term);
+			String uncached = uncacheNormalizedTerm(termLang, term);
+			if (uncached != null) {
+				normalized = uncached;
 			} else {
 				if (termLang.equals("iu")) {
 					try {
@@ -57,10 +58,26 @@ public class TermNormalizer {
 				} else {
 					normalized = term.toLowerCase();
 				}
-				normalizedTermsCache.get(termLang).put(term, normalized);
+				cacheNormalizedTerm(termLang, term, normalized);
 			}
 		}
 		return normalized;
+	}
+
+	protected String uncacheNormalizedTerm(String termLang, String term) {
+		String normalized = null;
+		if (normalizedTermsCache.containsKey(termLang) && normalizedTermsCache.get(termLang).containsKey(term)) {
+			normalized = normalizedTermsCache.get(termLang).get(term);
+		}
+		return normalized;
+	}
+
+	protected void cacheNormalizedTerm(String termLang, String term,
+		String normalizedTerm) {
+		if (!normalizedTermsCache.containsKey(termLang)) {
+			normalizedTermsCache.put(termLang, new HashMap<String,String>());
+		}
+		normalizedTermsCache.get(termLang).put(term, normalizedTerm);
 	}
 
 	public List<String> normalizeTerms(String[] terms, String termsLang) throws TermNormalizerException {

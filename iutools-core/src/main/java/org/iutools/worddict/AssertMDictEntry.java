@@ -130,6 +130,13 @@ public class AssertMDictEntry extends Asserter<MDictEntry> {
 		return this;
 	}
 
+	public AssertMDictEntry hasAtMostNTranslations(int expMaxTranslations) {
+		AssertNumber.isGreaterOrEqualTo(
+			"Entry did not have the expected maximum number of translations",
+			entry().bestTranslations.size(), expMaxTranslations);
+		return this;
+	}
+
 	public AssertMDictEntry hasTranslationsForOrigWord(boolean expHasTranslationsForOrigWord) {
 		boolean hasOrigTransl = entry().hasTranslationsForOriginalWord();
 		if (expHasTranslationsForOrigWord) {
@@ -302,10 +309,12 @@ public class AssertMDictEntry extends Asserter<MDictEntry> {
 
 	public AssertMDictEntry atLeastNExamples(Integer expMinExamples)
 		throws Exception {
-		int gotHits = entry().bilingualExamplesOfUse().size();
-		Assertions.assertTrue(
+		if (expMinExamples != null) {
+			int gotHits = entry().bilingualExamplesOfUse().size();
+			Assertions.assertTrue(
 			gotHits >= expMinExamples,
-			baseMessage+"\nNumber of examples was too low ("+gotHits+" < "+expMinExamples+")");
+			baseMessage + "\nNumber of examples was too low (" + gotHits + " < " + expMinExamples + ")");
+		}
 		return this;
 	}
 

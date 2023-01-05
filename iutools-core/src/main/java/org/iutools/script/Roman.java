@@ -41,7 +41,7 @@ public abstract class Roman {
 
     public static int UNICODE = 1;
     
-    public static String inuktitutCharacters = "gHjklmnpqrstv&aiu";
+    public static String inuktitutCharacters = "bgHjklmnpqrstv&aiu";
     public static String digits = "0123456789";
 
     public static char[] apicals = { 't', 'l', 'j', '&', 's', 'n', 'd' };
@@ -297,6 +297,8 @@ public abstract class Roman {
     }
     
     static public String transcodeToUnicode(String str, String aipaitaiMode) {
+		  Logger logger = LogManager.getLogger("org.iutools.script.Roman.transcodeToUnicode");
+		  logger.trace("invoked with str="+str);
         String s = prepareString(str);
         int aipaitai = aipaitaiMode==null? 0 : aipaitaiMode.equals("aipaitai")? 1 : 0;
         int i=0;
@@ -1279,7 +1281,9 @@ public abstract class Roman {
             i++;
             sb.append(d);
         }
-        return sb.toString();
+		  String toUnicode = sb.toString();
+		  logger.trace("returning toUnicode="+toUnicode);
+        return toUnicode;
     }
     
 	public static String[] determineRootForms(String morpheme) {

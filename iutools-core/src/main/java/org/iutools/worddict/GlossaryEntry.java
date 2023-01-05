@@ -14,6 +14,7 @@ public class GlossaryEntry {
 
 	private Map<String, List<String>> _lang2term = new HashMap<String,List<String>>();
 	private String en_def = null;
+	private String fr_def = null;
 	private String iu_def = null;
 	private String iu_def_roman = null;
 	private String iu_def_syll = null;
@@ -91,6 +92,16 @@ public class GlossaryEntry {
 		iu_def_roman = TransCoder.ensureRoman(def);
 		iu_def_syll = TransCoder.ensureSyllabic(def);
 	}
+
+	public void setFr_def(String def) {
+		fr_def = def;
+		setIUDefInTwoScript(def);
+	}
+
+	public String getFr_def() {
+		return fr_def;
+	}
+
 
 	private List<String> normalizeTerms(String lang, List<String> terms) throws GlossaryException {
 		List<String> normalized = new ArrayList<String>();

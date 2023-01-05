@@ -53,6 +53,13 @@ public class IUWordTest {
 				// replaces 'sh' -> 'ss'.
 				//
 				.expectSyllabic("ᐃᓄᒃᔅᓱᒃ"),
+
+			new CaseIUWord("ROMAN word that has 'H' but NOT at start of word",
+				"juHaanaspuug")
+				.expectScript(Script.ROMAN)
+				.expectRoman("juHaanaspuug")
+				.expectSyllabic("ᔪᕺᓇᔅᐴᒡ"),
+
 		};
 		Consumer<Case> runner = (caseNoCast) -> {
 			CaseIUWord aCase = (CaseIUWord) caseNoCast;
@@ -87,7 +94,7 @@ public class IUWordTest {
 			}
 		};
 		new RunOnCases(cases, runner)
-//			.onlyCaseNums(7)
+//			.onlyCaseNums(8)
 			.run();
 	}
 

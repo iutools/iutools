@@ -119,6 +119,8 @@ public class Glossary {
 //			"NAC Kublu (2005)",
 //			"SCHNEIDER",
 //			"tusaalanga",
+			"iutools-loanWords",
+			"iutools-locations",
 			"wpGlossary",
 		};
 		File[] files = new File[fileNames.length];

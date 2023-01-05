@@ -376,8 +376,14 @@ public class CLI {
 				.addOption(optEditDistAlgo)
 				;
 		mainCmd.addSubCommand(checkSpelling);
-		
-				
+
+		// Print most frequent misspelled words
+		SubCommand frequentSpellingMistakes =
+				new CmdFrequentSpellingMistakes("frequent_spelling_mistakes")
+				;
+		mainCmd.addSubCommand(frequentSpellingMistakes);
+
+
 		// Return the gist of inuktitut words
 		SubCommand gist = 
 				new CmdGist("gist")

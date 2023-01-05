@@ -7,7 +7,9 @@ import ca.nrc.testing.RunOnCases;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class GlossaryTest {
@@ -45,18 +47,18 @@ public class GlossaryTest {
 	@Test
 	public void test__entries4word__VariousCases() throws Exception {
 		GlossaryCase[] cases = new GlossaryCase[] {
+			new GlossaryCase("En term - SINGLE IU equivalent", "en", "transport")
+				.translationsAre("iu", "ingirrajjutit"),
 			new GlossaryCase(
-			   "En term - SINGLE IU equivalent",
-				"en", "transport",
-				"iu", "ingirrajjutit"),
+			   "IU Roman term - SINGLE EN equivalent", "iu", "ingirrajjutit")
+				.translationsAre("en", "transport"),
 			new GlossaryCase(
-			   "IU Roman term - SINGLE EN equivalent",
-				"iu", "ingirrajjutit",
-				"en", "transport"),
+			   "En term - MULTIPLE IU equivalents", "en", "tea")
+				.translationsAre("iu", "niuqqaq", "tiirlu"),
 			new GlossaryCase(
-			   "En term - MULTIPLE IU equivalents",
-				"en", "tea",
-				"iu", "niuqqaq", "tiirlu"),
+			   "IU word that only appears in an iutools glossary", "iu", "Haakiq")
+				.definitionInLang("en", "to play hockey")
+				.definitionInLang("fr", "jouer au hockey"),
 		};
 
 		Consumer<Case> runner = (uncastCase) -> {
@@ -66,20 +68,34 @@ public class GlossaryTest {
 					Glossary.get().entries4word(aCase.lang, aCase.term);
 
 				List<String> gotOtherTerms = new ArrayList<String>();
+				Map<String,String> gotDefinitions = new HashMap<String,String>();
 				for (GlossaryEntry entry : entries) {
-					gotOtherTerms.addAll(entry.termsInLang(aCase.otherLang));
+					if (aCase.otherLang != null) {
+						gotOtherTerms.addAll(entry.termsInLang(aCase.otherLang));
+					}
+					gotDefinitions.put("en", entry.getEn_def());
+					gotDefinitions.put("iu", entry.getIu_def());
+					gotDefinitions.put("fr", entry.getFr_def());
 				}
-				AssertObject.assertDeepEquals(
-					"Translations in " + aCase.otherLang + " not as expected for term " + aCase.term,
-					aCase.otherTerms, gotOtherTerms
-				);
+				if (aCase.otherTerms != null) {
+					AssertObject.assertDeepEquals(
+						"Translations in " + aCase.otherLang + " not as expected for term " + aCase.term,
+						aCase.otherTerms, gotOtherTerms);
+				}
+				for (String lang: aCase.expectedDefinitions.keySet()) {
+					String expectedDef = aCase.expectedDefinitions.get(lang);
+					String gotDef = gotDefinitions.get(lang);
+					AssertObject.assertDeepEquals(
+						"Definition in " + lang + " not as expected for term " + aCase.term,
+						expectedDef, gotDef);
+				}
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
 		};
 
 		new RunOnCases(cases, runner)
-//			.onlyCaseNums(3)
+//			.onlyCaseNums(4)
 			.run();
 	}
 
@@ -94,13 +110,23 @@ public class GlossaryTest {
 		String otherLang = null;
 		String[] otherTerms = null;
 
-		public GlossaryCase(String _descr, String _lang, String _term,
-			String _otherLang, String... _otherTerms) {
+		Map<String,String> expectedDefinitions = new HashMap<String,String>();
+
+		public GlossaryCase(String _descr, String _lang, String _term) {
 			super(_descr, null);
 			this.lang = _lang;
 			this.term = _term;
-			this.otherLang = _otherLang;
-			this.otherTerms = _otherTerms;
+		}
+
+		public GlossaryCase translationsAre(String _otherLang, String... _otherTerms) {
+			otherTerms = _otherTerms;
+			otherLang = _otherLang;
+			return this;
+		}
+
+		public GlossaryCase definitionInLang(String lang, String def) {
+			expectedDefinitions.put(lang, def);
+			return this;
 		}
 	}
 

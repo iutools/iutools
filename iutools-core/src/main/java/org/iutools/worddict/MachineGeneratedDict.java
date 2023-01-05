@@ -96,9 +96,12 @@ public class MachineGeneratedDict {
 	 */
 	private Long decompMaxSecs = null;
 
+	private SpellChecker spellChecker = null;
+
 	public MachineGeneratedDict() throws MachineGeneratedDictException {
 		try {
 			corpus = new CompiledCorpusRegistry().getCorpus();
+			spellChecker = new SpellChecker().setCheckLevel(1);
 		} catch (Exception e) {
 			throw new MachineGeneratedDictException(e);
 		}
@@ -678,13 +681,16 @@ public class MachineGeneratedDict {
 		return searchIter(partialWord, (String)null);
 	}
 
-	public Pair<List<String>,Long> search(String partialWord, String lang, Integer maxHits)
+	public WordDictSearchResult search(String partialWord, String lang, Integer maxHits)
 		throws MachineGeneratedDictException, TranslationMemoryException {
-		List<String> hits = new ArrayList<String>();
 
-		Pair<CloseableIterator<String>,Long> results = searchIter(partialWord, lang);
-		Long totalHits = results.getRight();
-		try (CloseableIterator<String> hitsIter = results.getLeft()) {
+		WordDictSearchResult results = new WordDictSearchResult(partialWord, lang);
+
+		results.spellCheckedQuery = correctPartialWord(partialWord);
+
+		Pair<CloseableIterator<String>,Long> iterResults = searchIter(results.spellCheckedQuery, lang);
+		Long totalHits = iterResults.getRight();
+		try (CloseableIterator<String> hitsIter = iterResults.getLeft()) {
 			int count = 0;
 			while (hitsIter.hasNext()) {
 				count++;
@@ -694,8 +700,8 @@ public class MachineGeneratedDict {
 				} catch (TransCoderException e) {
 					throw new MachineGeneratedDictException(e);
 				}
-				hits.add(hit);
-				if (maxHits != null && hits.size() == maxHits) {
+				results.hits.add(hit);
+				if (maxHits != null && results.hits.size() == maxHits) {
 					break;
 				}
 			}
@@ -703,12 +709,23 @@ public class MachineGeneratedDict {
 			throw new MachineGeneratedDictException(e);
 		}
 
-		hits = sortHits(hits);
-		adjustPartialWordInHits(hits, partialWord, lang);
+		results.hits = sortHits(results.hits);
+		adjustPartialWordInHits(results.hits, partialWord, lang);
+		adjustPartialWordInHitsNEW(results);
 
-		totalHits = Math.max(totalHits, hits.size());
+		return results;
+	}
 
-		return Pair.of(hits, totalHits);
+	private String correctPartialWord(String partialWord) throws MachineGeneratedDictException {
+		try {
+			SpellingCorrection correction = spellChecker.correctWord(partialWord);
+			if (correction.wasMispelled) {
+				partialWord = correction.bestSuggestionSoFar(false);
+			}
+		} catch (SpellCheckerException e) {
+			throw new MachineGeneratedDictException(e);
+		}
+		return partialWord;
 	}
 
 	/** Ensure that:
@@ -734,6 +751,34 @@ public class MachineGeneratedDict {
 			// If we found an exact match, make sure it comes first.
 			hits.remove(partialWordID);
 			hits.add(0, partialWordID);
+		}
+	}
+
+	/** Ensure that:
+	 * - partialWord is in the list of hits, IF it is a valid IU word
+	 * - comes first IF it is in the list*/
+	private void adjustPartialWordInHitsNEW(WordDictSearchResult searchResults) throws MachineGeneratedDictException, TranslationMemoryException {
+		String partialWord = searchResults.spellCheckedQuery;
+		String lang = searchResults.lang;
+		String partialWordID = new WordInfo(partialWord).getIdWithoutType();
+		if (!searchResults.hits.contains(partialWordID)) {
+			// The top list of hits did not contain an exact match.
+			// Check to see if the exact match COULD have been found if
+			// we had gone further, OR if the word analyzes as an IU word
+			try {
+				if (wordExists(partialWord, lang) ||
+					(lang.equals("iu") &&  morphAnalyzer().isDecomposable(partialWord))) {
+					searchResults.hits.add(0, partialWord);
+				}
+			} catch (MorphologicalAnalyzerException e) {
+				throw new MachineGeneratedDictException(e);
+			}
+		}
+
+		if (searchResults.hits.contains(partialWordID)) {
+			// If we found an exact match, make sure it comes first.
+			searchResults.hits.remove(partialWordID);
+			searchResults.hits.add(0, partialWordID);
 		}
 	}
 

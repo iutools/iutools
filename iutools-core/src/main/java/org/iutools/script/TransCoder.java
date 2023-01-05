@@ -658,7 +658,7 @@ public class TransCoder {
 			// very occasionally after an 's' (ex: inukshuk, which is sometimes
 			// seen eventhough the more common spelling is inuksuk).
 			//
-			textNoPunctNorDigits = textNoPunctNorDigits.replaceAll("(^|s)[hH]", "");
+			textNoPunctNorDigits = textNoPunctNorDigits.replaceAll("[hH]", "");
 
 			script = Script.MIXED;
 

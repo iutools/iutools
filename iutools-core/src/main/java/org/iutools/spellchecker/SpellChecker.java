@@ -48,6 +48,9 @@ import org.iutools.script.Syllabics;
 import org.iutools.script.TransCoder;
 import static org.iutools.script.TransCoder.Script;
 import org.iutools.utilbin.AnalyzeNumberExpressions;
+import org.iutools.worddict.Glossary;
+import org.iutools.worddict.GlossaryEntry;
+import org.iutools.worddict.GlossaryException;
 
 
 /**
@@ -320,9 +323,10 @@ public class SpellChecker {
 		return this.MAX_SEQ_LEN;
 	}
 
-	public SpellingCorrection correctWord(String word) throws SpellCheckerException {
+	public SpellingCorrection correctWord(String wordStr) throws SpellCheckerException {
 		try {
-			return correctWord(new IUWord(word),(Integer)null);
+			Word word = Word.build(wordStr);
+			return correctWord(word,(Integer)null);
 		} catch (WordException e) {
 			throw new SpellCheckerException(e);
 		}
@@ -344,72 +348,76 @@ public class SpellChecker {
 		return correction;
 	}
 
-	public SpellingCorrection correctWord(IUWord word) throws SpellCheckerException {
+	public SpellingCorrection correctWord(Word word) throws SpellCheckerException {
 		return correctWord(word, (Integer)null);
 	}
 
-	public SpellingCorrection correctWord(IUWord word, Integer maxCorrections) throws SpellCheckerException {
+	public SpellingCorrection correctWord(Word word, Integer maxCorrections) throws SpellCheckerException {
 		Logger tLogger = LogManager.getLogger("org.iutools.spellchecker.SpellChecker.correctWord");
 		Logger excLogger = LogManager.getLogger("org.iutools.spellchecker.SpellChecker.correctWord.exc");
 
 		SpellingCorrection corr = new SpellingCorrection(word.word());
-		try {
-			if (maxCorrections == null || maxCorrections == -1) {
-				maxCorrections = DEFAULT_CORRECTIONS;
-			}
+		if (word instanceof IUWord) {
+			// We only correct the word if it is an IU word
+			IUWord iuWord = (IUWord)word;
+			try {
+				if (maxCorrections == null || maxCorrections == -1) {
+					maxCorrections = DEFAULT_CORRECTIONS;
+				}
 
-			long start = StopWatch.nowMSecs();
+				long start = StopWatch.nowMSecs();
 
-			SpellDebug.trace("SpellChecker.correctWord",
-				"Invoked on word=" + word.inRoman(),
+				SpellDebug.trace("SpellChecker.correctWord",
+				"Invoked on word=" + iuWord.inRoman(),
 				word.word(), null);
 
-			boolean wordIsSyllabic = Syllabics.allInuktitut(word.inSyll());
+				boolean wordIsSyllabic = Syllabics.allInuktitut(iuWord.inSyll());
 
-			corr.wasMispelled = isMispelled(word);
-			tLogger.trace("wasMispelled= " + corr.wasMispelled);
+				corr.wasMispelled = isMispelled(word);
+				tLogger.trace("wasMispelled= " + corr.wasMispelled);
 
-			SpellDebug.trace("SpellChecker.correctWord",
+				SpellDebug.trace("SpellChecker.correctWord",
 				"corr.wasMispelled=" + corr.wasMispelled,
 				word.word(), null);
 
-			if (corr.wasMispelled) {
-				tLogger.trace("Before correctWord_Shallow, corr.shallowFix="+corr.shallowFix);
-				boolean completelyFixed = correctWord_Shallow(corr);
-				tLogger.trace("After correctWord_Shallow, corr.shallowFix="+corr.shallowFix);
+				if (corr.wasMispelled) {
+					tLogger.trace("Before correctWord_Shallow, corr.shallowFix=" + corr.shallowFix);
+					boolean completelyFixed = correctWord_Shallow(corr);
+					tLogger.trace("After correctWord_Shallow, corr.shallowFix=" + corr.shallowFix);
 
 
-				// Only carry out a deeper morphological check if:
+					// Only carry out a deeper morphological check if:
 
-				// - the shallow, surface check did not completely fix the problem
-				//   AND
-				// - deep checking is enabled
-				//
-				if (!completelyFixed && deepCheckEnabled()) {
-					// The "shallow" correction rules have not resolved all
-					// problems the word. So keep going.
-					if (partialCorrectionEnabled()) {
-						SpellDebug.trace("SpellChecker.correctWord",
+					// - the shallow, surface check did not completely fix the problem
+					//   AND
+					// - deep checking is enabled
+					//
+					if (!completelyFixed && deepCheckEnabled()) {
+						// The "shallow" correction rules have not resolved all
+						// problems the word. So keep going.
+						if (partialCorrectionEnabled()) {
+							SpellDebug.trace("SpellChecker.correctWord",
 							"Computing longest correct head and tail of the word",
 							word.word(), null);
-						computeCorrectPortions(corr);
+							computeCorrectPortions(corr);
+						}
+
+						correctWord_Deep(iuWord, corr, maxCorrections);
 					}
-
-					correctWord_Deep(word, corr, maxCorrections);
 				}
-			}
 
-			ensureCandidatesAreInScript(corr, word.origScript());
+				ensureCandidatesAreInScript(corr, iuWord.origScript());
 
-			long elapsed = StopWatch.elapsedMsecsSince(start);
-			tLogger.trace("word=" + word + " took " + elapsed + "msecs");
+				long elapsed = StopWatch.elapsedMsecsSince(start);
+				tLogger.trace("word=" + word + " took " + elapsed + "msecs");
 
-		} catch (Exception e) {
-			excLogger.trace("word="+word+" raised exception e="+e+"\nCall stack was:\n"+ Debug.printCallStack(e));
-			if (e instanceof SpellCheckerException) {
-				throw e;
-			} else {
-				throw new SpellCheckerException(e);
+			} catch (Exception e) {
+				excLogger.trace("word=" + word + " raised exception e=" + e + "\nCall stack was:\n" + Debug.printCallStack(e));
+				if (e instanceof SpellCheckerException) {
+					throw e;
+				} else {
+					throw new SpellCheckerException(e);
+				}
 			}
 		}
 
@@ -773,13 +781,30 @@ public class SpellChecker {
 
 		SpellDebug.trace("SpellChecker.isMispelled", "Checking correctness of word", word.word(), null);
 
-		Boolean wordIsMispelled = false;
-		// We assume the word is correctly spelled, unless it's a word in Inuktitut
-		if (word instanceof IUWord) {
+		Boolean wordIsMispelled = null;
+		if (!(word instanceof IUWord)) {
+			// We assume the word is correctly spelled, unless it's a word in Inuktitut
+			wordIsMispelled = false;
+		} else {
 			IUWord iuWord = (IUWord)word;
-			// First, carry out a rapid, SHALLOW CHARACTER-level analysis.
+
+			// First, check if the word appears in a glossary (and if so,
+			// assume it is correctly spelled).
 			//
-			wordIsMispelled = isMispelled_ShallowAnalysis(iuWord);
+			try {
+				List<GlossaryEntry> entries = Glossary.get().entries4word("iu", iuWord.inRoman());
+				if (entries.size() > 0) {
+					wordIsMispelled = false;
+				}
+			} catch (GlossaryException e) {
+				throw new SpellCheckerException(e);
+			}
+
+			// Next, carry out a rapid, SHALLOW CHARACTER-level analysis.
+			//
+			if (wordIsMispelled == null) {
+				wordIsMispelled = isMispelled_ShallowAnalysis(iuWord);
+			}
 
 			// If deep check is active, and the SHALLOW check hasn't been able
 			// to established whether or not the word is mis-spelled, then carry out a

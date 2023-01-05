@@ -184,24 +184,19 @@ Mis-spelled IU word whose mis-spelled form appears in Hansard
   - PREFERRED_SCRIPT: Roman
 - and make sure that:
   - the Standardized Spelling section shows: maligaliurvinganit/ᒪᓕᒐᓕᐅᕐᕕᖓᓂᑦ
-  - BUT: As of 2023-12-20, this does not work.
   - it shows a decomposition, but it's for the correct spelling
+  - NOTE: As of 2023-12-20, the next line does not work (no related wrods shown).
   - it shows some related words, but they are for the correct spelling
 
-Mis-spelled IU word whose mis-spelled form does NOT appear in Hansard
-- Do the steps described in the 'basic scenario' with English word 'education', 
-  with the following 'specifics':
-  - QUERY_WORD: 'inukssuk'
-  - QUERY_LANGUAGE: Inuktitut
-  - PREFERRED_SCRIPT: Roman
-- and make sure that:
-  - BUG: as of 2022-12-, this does not work. In this case, the dict says
-    it has not found the word.
-  - an entry is actually displayed
-  - But the Standardized Spelling section shows inuksuk/ᐃᓄᒃᓱᒃ
-  - it shows a decomposition, but it's for the correct spelling
-  - it shows some related words, but they are for the correct spelling
+Words in the wrong language
+- Enter the word 'world' with lang=iu
+  - Should display error message: The word 'world' is not in the language 'iu' 
+- Enter the word 'ᐃᓄᒃᓱᒃ' with lang=en
+  - Should display error message: The word 'ᐃᓄᒃᓱᒃ' is not in the language 'en'
 
+En word that is made up of all Roman iu chars
+- search with lang=English, word='main'
+- Make sure that no error message is displayed
 
 Out-of-hansard valid IU word
 - Search for a word that is a valid IU word but is not in the Hansard
@@ -259,8 +254,7 @@ Change preferred script (ENGLISH query)
   - Search for 'housing', then check that:
     - Title stayed ROMAN (cause it's English)
     - Translations and Alignments shown in SYLL
-  
-
+    
 Search with Enter vs Button
 - Submit search by either
   - Typing Enter
@@ -288,7 +282,7 @@ Copy and paste content from the Word Entry dialog
 Word Entry window hiding/showing/closing
 - Reload the Word Dictionary page
    - Make sure the Word Entry window is NOT showing
-- Search lang=EN, word 'education'
+- Search lang=iu, word 'inuksuk'
    - Make sure the Word Entry window is NOW showing and displays the entry for 
      'inuksuk'.
 - Leaving the word entry opened, search for a word that does not return any 

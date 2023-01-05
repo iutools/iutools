@@ -60,7 +60,47 @@ public class TransCoderTest {
 	//////////////////////////
 	// VERIFICATION TEST
 	//////////////////////////
-	
+
+	@Test
+	public void test__ensureScript__VariousCases() {
+		Case_inOtherScript[] cases = new Case_inOtherScript[] {
+			new Case_inOtherScript("Roman word with 'H' in middle",
+				"juHaanaspuug", "ᔪᕺᓇᔅᐴᒡ"),
+		};
+
+		Consumer<Case>	runner = (Case caseUncast) -> {
+			Case_inOtherScript caze = (Case_inOtherScript) caseUncast;
+			String got = null;
+			try {
+				got = TransCoder.inOtherScript(caze.origWord);
+				AssertString.assertStringEquals(caze.descr, caze.expOtherScriptWord, got);
+			} catch (TransCoderException e) {
+				throw new RuntimeException(e);
+			}
+		};
+	}
+
+	@Test
+	public void test__ensureSyllabic__VariousCases() throws Exception {
+		Case[] cases = new Case[] {
+			// Sometimes, roman words may have a 'b' in them (which should
+			// really be a 'p').
+			new Case("Roman word with a 'b' in it", "subluit", "ᓱᑉᓗᐃᑦ"),
+		};
+
+		Consumer<Case> runner = (Case caze) -> {
+			String got = null;
+			try {
+				got = TransCoder.ensureSyllabic((String)caze.data[0]);
+				AssertString.assertStringEquals(caze.descr, (String)caze.data[1], got);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		};
+		new RunOnCases(cases, runner)
+			.run();
+	}
+
 	@Test
 	public void test__ensureScript__Syll2Rom__HappyPath() throws Exception{
 		String syllText = "ᐃᓄᒃᑐᑦ, 2020";
@@ -172,7 +212,10 @@ public class TransCoderTest {
 				"ᐃᓄᒃᑐᑦ inuktut", Script.MIXED),
 			new Case_textScript("ROMAN word with 'h' in middle of it ",
 				"inukshuk", Script.ROMAN),
-
+			new Case_textScript("ROMAN word with 'H' in middle of it ",
+				"juHaanaspuug", Script.ROMAN),
+			new Case_textScript("Not sure what's wrong with this one.... ",
+				"su", Script.ROMAN),
 		};
 		Consumer<Case> runner = (caseNoCast) -> {
 			Case_textScript aCase = (Case_textScript) caseNoCast;
@@ -183,7 +226,7 @@ public class TransCoderTest {
 			);
 		};
 		new RunOnCases(cases, runner)
-//			.onlyCaseNums(2)
+//			.onlyCaseNums(10)
 			.run();
 	}
 
@@ -211,6 +254,16 @@ public class TransCoderTest {
 	// TEST HELPERS
 	///////////////////////////
 
+	public static class Case_inOtherScript extends Case {
+
+		private String expOtherScriptWord;
+		public String origWord = null;
+		public Case_inOtherScript(String _descr, String _origWord, String _expOtherScriptWord) {
+			super(_descr, null);
+			this.origWord = _origWord;
+			this.expOtherScriptWord = _expOtherScriptWord;
+		}
+	}
 	public static class Case_textScript extends Case {
 
 		String text = null;

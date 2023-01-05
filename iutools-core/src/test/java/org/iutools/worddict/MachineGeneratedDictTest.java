@@ -37,17 +37,22 @@ public class MachineGeneratedDictTest {
 				new String[] {"nunavuttaarniq"}, 1),
 			new Case("en-housing", "en", "housing", 1,
 				new String[] {"housing"}),
+			// Note: This syllabic word has a level 1 spelling error, namely,
+			// it uses two characters ᕐ+ᑭ instead of single character ᕿ
+			new Case("iu world with shallow spelling mistake --> should autocorrect",
+				"iu", "ᐃᓕᓐᓂᐊᕐᑭᑎ", 1,
+				new String[] {"ᐃᓕᓐᓂᐊᕿᑎ"}),
 		};
 
 		// Cases for entry4word function
 		cases_entry4word = new MultilingualDictCase[] {
-
 
 			new MultilingualDictCase(
 				"Wikipedia glossary entry (nanitsikuujait) for which neither the word nor related words appear in the Hansard ",
 				"nanitsikuujait")
 				.relatedWordsShouldBeAmong("nanisijunnarutta", "nanijausimajut",  "nanisijunnaruma",
 					"nanisijjummu", "nanijunnanginnakku")
+				.humanTranslationsAre("corn flakes")
 				.hasMinTranslation(1)
 				.hasTranslationsForOrigWord(true)
 				.bestTranslationsAreAmong("corn flakes")
@@ -204,7 +209,16 @@ public class MachineGeneratedDictTest {
 				.bestTranslationsAreAmong(
 					"education", "care ... education", "education system",
 					"education issues", "education ... two", "education ... vital")
-				.humanTranslationsAre("education")
+				.humanTranslationsAre("education"),
+
+
+			new MultilingualDictCase(
+				"inukssuk: Has Level1 spelling mistake that can only be highlighted",
+				"inukssuk")
+				.hasStandardSpelling("inu[ks]suk", "ᐃᓄ[ᒃᔅ]ᓱᒃ")
+				.hasTranslationsForOrigWord(false)
+				.hasMaxTranslation(0)
+				.noExamplesAtAll(),
 		};
 	}
 
@@ -359,13 +373,15 @@ public class MachineGeneratedDictTest {
 				words.add(aCase.word);
 				Collections.addAll(words, entry.relatedWords);
 
-				if (!aCase.outOfVocab) {
+				if (aCase.producesSomeExamples && !aCase.outOfVocab) {
 					List<String> expL1HighlightsLst = new ArrayList<String>();
 					expL1HighlightsLst.add(aCase.word);
 					if (aCase.expRelatedWordsSuperset != null) {
 						Collections.addAll(expL1HighlightsLst, aCase.expRelatedWordsSuperset);
 					}
 					expL1Highlights = expL1HighlightsLst.toArray(new String[0]);
+				}
+				if (aCase.producesSomeExamples || aCase.expHumanTranslations != null) {
 					expTranslations = aCase.expTranslationsAmong;
 				}
 
@@ -393,6 +409,10 @@ public class MachineGeneratedDictTest {
 
 				if (aCase.expMinTranslations != null) {
 					asserter.hasAtLeastNTranslations(aCase.expMinTranslations);
+				}
+
+				if (aCase.expMaxTranslations != null) {
+					asserter.hasAtLeastNTranslations(aCase.expMaxTranslations);
 				}
 
 				asserter
@@ -454,6 +474,7 @@ public class MachineGeneratedDictTest {
 			.containsWords("housing");
 		}
 	}
+
 	@Test
 	public void test__search__VariousCases() throws Exception {
 		Consumer<Case> runner =
@@ -467,7 +488,7 @@ public class MachineGeneratedDictTest {
 				if (aCase.data.length > 4) {
 					expMaxWords = (Integer) aCase.data[4];
 				}
-				Pair<List<String>, Long> results =
+				WordDictSearchResult results =
 					new MachineGeneratedDict().search(query, lang, (Integer) null);
 				AssertDictSearchResults asserter =
 					new AssertDictSearchResults(results, aCase.descr)
@@ -481,7 +502,7 @@ public class MachineGeneratedDictTest {
 			}
 		};
 		new RunOnCases(cases_search, runner)
-//			.onlyCaseNums(4)
+//			.onlyCaseNums(5)
 //			.onlyCasesWithDescr("iu-out-of-vocab-yet-valid-dict-word")
 			.run();
 	}
@@ -505,6 +526,7 @@ public class MachineGeneratedDictTest {
 		public String[] expTranslationsAmong = null;
 		public String[] expHumanTranslations = null;
 		public Integer expMinTranslations = null;
+		public Integer expMaxTranslations = null;
 		private boolean expHasTranslationsForOrigWord = true;
 		public Integer expMinExamples = 0;
 		public boolean producesSomeExamples = true;
@@ -556,6 +578,10 @@ public class MachineGeneratedDictTest {
 
 		public MultilingualDictCase hasMinTranslation(int _expMinTranslations) {
 			expMinTranslations = _expMinTranslations;
+			return this;
+		}
+		public MultilingualDictCase hasMaxTranslation(int _expMaxTranslations) {
+			expMaxTranslations = _expMaxTranslations;
 			return this;
 		}
 

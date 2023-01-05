@@ -1,6 +1,7 @@
 package org.iutools.cli;
 
 import java.io.File;
+import java.nio.file.Path;
 
 import ca.nrc.ui.commandline.CommandLineException;
 import org.iutools.bin.TranslitDOCFileParagraphs;
@@ -19,7 +20,7 @@ public class CmdTranslit extends ConsoleCommand {
 
 	@Override
 	public void execute() throws Exception {
-		String inputFile = getInputFile(false).toString();
+		Path inputFile = getInputFile(false);
 		String content = getContent(false);
 		String font = getFont(false);
 				
@@ -38,12 +39,12 @@ public class CmdTranslit extends ConsoleCommand {
 			String transliterated = TransCoder.legacyToUnicode(content,"tunngavik");
 			echo(transliterated);
 		} else {
-			File file = new File(inputFile);
+			File file = inputFile.toFile();
 			if ( !file.exists() ) {
 				echo("The file '"+inputFile+"' does not exist.");
 				return;
 			} else {
-				TranslitDOCFileParagraphs.translit(inputFile);
+				TranslitDOCFileParagraphs.translit(inputFile.toString());
 			}
 		} 
 		

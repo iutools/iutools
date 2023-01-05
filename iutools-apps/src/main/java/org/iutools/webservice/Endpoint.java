@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.iutools.json.Mapper;
 import org.iutools.webservice.logaction.LogActionInputs;
+import org.iutools.worddict.MachineGeneratedDictException;
 import org.json.JSONObject;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,7 +34,7 @@ public abstract class Endpoint
 	}
 
 	public abstract EndpointResult execute(I inputs)
-		throws ServiceException;
+	throws ServiceException, MachineGeneratedDictException;
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 		throws ServiceException {
@@ -62,7 +63,7 @@ public abstract class Endpoint
 		tLogger.trace("POST completed");
 	}
 
-	public EndpointResult executeThenConvert(I inputs) throws ServiceException {
+	public EndpointResult executeThenConvert(I inputs) throws ServiceException, MachineGeneratedDictException {
 		EndpointResult epResponse = execute(inputs);
 		if (inputs.iuAlphabet != null) {
 			epResponse.convertIUToRequestedAlphabet(inputs);

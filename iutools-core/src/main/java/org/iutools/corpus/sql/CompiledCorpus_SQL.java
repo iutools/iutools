@@ -634,8 +634,10 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 			"SELECT word FROM " + WORDS_TABLE + "\n"+
 			"  WHERE\n" +
 			"    corpusName = ? AND \n" +
-			"    topDecompositionStr IS NULL"
+			"    topDecompositionStr IS NULL\n"
 			;
+
+		queryStr += sqlOrderBy("frequency:desc");
 
 		// We DON'T use try-with because the returned iterator will need to have
 		// the SQL resources still opened. Someone else will have to make sure to

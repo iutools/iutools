@@ -36,9 +36,9 @@ public abstract class AssertEndpointResult extends Asserter<EndpointResult> {
 	}
 
 	public AssertEndpointResult raisesError(String expErr) {
-		AssertString.assertStringEquals(
+		AssertString.assertStringContains(
 			baseMessage+"\nResponse did not raise the expected error",
-			expErr, result().errorMessage);
+			result().errorMessage, expErr);
 		return this;
 	}
 

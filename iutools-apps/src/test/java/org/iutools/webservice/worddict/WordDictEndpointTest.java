@@ -200,9 +200,17 @@ public class WordDictEndpointTest extends EndpointTest {
 
 		WordDictEndpointCase[] cases = new WordDictEndpointCase[]{
 
-		// This word is out-of-corpus and is not valid.
-		// When searching for that exact word, we expect an entry that does not
-		// have any information in it.
+			new WordDictEndpointCase("Search for an En word that looks like a Roman Iu word")
+				.queryLang("en")
+				.query("main")
+				.exactlyNHits(1)
+				.translationsIncludedIn(
+					"kangiq&inirmilu", "nalauksaagait", "nalauksaagallattaanuangajutigut",
+					"pingasut", "turaangalluatauvuq"),
+
+			// Search for a word that is out-of-corpus and is not valid.
+			// When searching for that exact word, we expect an entry that does not
+			// have any information in it.
 			new WordDictEndpointCase("iu-EXACT_WORD-out_of_corpus_invalid_word-")
 				.query("ninuksuk")
 				.exactWordLookup()
@@ -324,81 +332,100 @@ public class WordDictEndpointTest extends EndpointTest {
 					"illuit", "illulirinirmut", "illumut", "illunik", "illunut"})
 				.translationsIncludedIn(new String[]{"house", "home", "rent"})
 				.minExamples(5),
+
+			new WordDictEndpointCase("English word when lang=iu: should raise error")
+				.queryLang("iu")
+				.query("world")
+				.raisesError("The word 'world' is not in the language 'iu'"),
+
+			new WordDictEndpointCase("Syllabic word when lang=en: should raise error")
+				.queryLang("en")
+				.query("ᐃᓄᒃᓱᒃ")
+				.raisesError("The word 'ᐃᓄᒃᓱᒃ' is not in the language 'en'"),
+
 		};
 
 		Consumer<Case> runner =
 			(uncastCase) ->
 			{
 				try {
-					WordDictEndpointCase aCase = (WordDictEndpointCase)uncastCase;
+					WordDictEndpointCase aCase = (WordDictEndpointCase) uncastCase;
 					String otherLang = MDictEntry.otherLang(aCase.lang);
 					if (aCase.lang.equals("en")) {
 						aCase
-							.noDecomp()
-							.noRelatedWords()
-							.minHits(1)
-							.maxHits(1)
-							.hitListStartsWithWords(aCase.query);
+						.noDecomp()
+						.noRelatedWords()
+						.minHits(1)
+						.maxHits(1)
+						.hitListStartsWithWords(aCase.query);
 					}
 					if (aCase.exactWordLookup) {
 						aCase
-							.minHits(0)
-							.maxHits(0)
-							.hitListStartsWithWords(aCase.query);
+						.minHits(0)
+						.maxHits(0)
+						.hitListStartsWithWords(aCase.query);
 					}
 
 					WordDictInputs inputs =
-						new WordDictInputs(aCase.query, aCase.lang);
-					if (aCase.exactWordLookup) {
-						inputs.exactWordLookup = true;
-					}
+					new WordDictInputs(aCase.query, aCase.lang);
+					inputs.exactWordLookup = aCase.exactWordLookup;
 					inputs.iuAlphabet = aCase.iuAlphabet;
 					WordDictResult epResult =
-						(WordDictResult) endPoint.executeThenConvert(inputs);
-					AssertEndpointResult hitsAsserter =
-						new AssertWordDictResult(epResult, aCase.descr)
-							.raisesNoError()
-							.foundAtLeastNWords(aCase.expMinHits)
-							.foundAtMostNWords(aCase.expMaxHits)
-							.foundWords(aCase.expHitWords)
-							;
+					(WordDictResult) endPoint.executeThenConvert(inputs);
+					AssertEndpointResult asserter =
+					new AssertWordDictResult(epResult, aCase.descr);
+					if (aCase.expectError != null) {
+						asserter.raisesError(aCase.expectError);
+						return;
+					}
 
-					AssertMDictEntry entryAsserter =
+					asserter
+					.raisesNoError()
+					.foundAtLeastNWords(aCase.expMinHits)
+					.foundAtMostNWords(aCase.expMaxHits)
+					.foundWords(aCase.expHitWords)
+					;
+
+					if (aCase.generatesWordEntry) {
+						AssertMDictEntry entryAsserter =
 						new AssertMDictEntry(epResult.queryWordEntry, aCase.descr);
 					if (aCase.expectEmptyWordEntry) {
 						entryAsserter
-							.isForWord(epResult.convertedQuery)
-							.gaveEmptyWordEntry();
+						.isForWord(epResult.convertedQuery)
+						.gaveEmptyWordEntry();
 					} else if (aCase.expMinHits != null && aCase.expMinHits > 0) {
 						entryAsserter
-							.isForWord(epResult.convertedQuery)
-							.definitionEquals(null)
-							.decompositionIs(aCase.expDecomp)
-							.relatedWordsIsSubsetOf(aCase.expRelatedWords)
-							.atLeastNExamples(aCase.expMinExamples)
-							.translationsAreNonEmptySubsetOf(aCase.expTranslations)
-							.highlightsAreSubsetOf(aCase.lang, true, epResult.convertedQuery)
-							.highlightsAreSubsetOf(otherLang, true, aCase.expTranslations)
-							;
+						.isForWord(epResult.convertedQuery)
+						.definitionEquals(null)
+						.decompositionIs(aCase.expDecomp)
+						.relatedWordsIsSubsetOf(aCase.expRelatedWords)
+						.atLeastNExamples(aCase.expMinExamples)
+						.translationsAreNonEmptySubsetOf(aCase.expTranslations)
+						.highlightsAreSubsetOf(aCase.lang, true, epResult.convertedQuery)
+						.highlightsAreSubsetOf(otherLang, true, aCase.expTranslations)
+						;
 					}
+				}
 				} catch (Exception e) {
 					throw new RuntimeException(e);
 				}
 			};
 
 		new RunOnCases(cases, runner)
-//			.onlyCaseNums(7)
+//			.onlyCaseNums(12)
 //			.onlyCasesWithDescr("en-SEARCH-housing")
 			.run();
 	}
 
-	public static class WordDictEndpointCase extends Case {
+	public static class WordDictEndpointCase extends EndpointCase {
 
 		public boolean exactWordLookup = false;
 		public String lang = "iu";
 		public String query = null;
 		public TransCoder.Script iuAlphabet = TransCoder.Script.ROMAN;
 		public String[] hitWords = null;
+
+		public boolean generatesWordEntry = true;
 		public Integer expMinHits = null;
 		public Integer expMaxHits = null;
 		public String[] expHitWords = new String[0];
@@ -420,6 +447,12 @@ public class WordDictEndpointTest extends EndpointTest {
 
 		public WordDictEndpointCase(String _descr) {
 			super(_descr, new Object[0]);
+		}
+
+		@Override
+		public WordDictEndpointCase raisesError(String _error) {
+			super.raisesError(_error);
+			return this;
 		}
 
 		public WordDictEndpointCase queryLang(String _lang) {
@@ -450,8 +483,19 @@ public class WordDictEndpointTest extends EndpointTest {
 		public WordDictEndpointCase noHits() {
 			maxHits(0);
 			expHitWords = new String[0];
+			generatesWordEntry = false;
 			return this;
 		}
+
+		public WordDictEndpointCase exactlyNHits(int expHits) {
+			expMinHits = expHits;
+			expMaxHits = expHits;
+			if (expHits == 0) {
+				generatesWordEntry = false;
+			}
+			return this;
+		}
+
 
 
 		public WordDictEndpointCase minHits(int _expMinHits) {
@@ -461,6 +505,9 @@ public class WordDictEndpointTest extends EndpointTest {
 
 		public WordDictEndpointCase maxHits(int _expMaxHits) {
 			this.expMaxHits = _expMaxHits;
+			if (_expMaxHits <= 0) {
+				generatesWordEntry = false;
+			}
 			return this;
 		}
 
@@ -501,7 +548,7 @@ public class WordDictEndpointTest extends EndpointTest {
 		}
 
 
-		public WordDictEndpointCase translationsIncludedIn(String[] _expTranslations) {
+		public WordDictEndpointCase translationsIncludedIn(String... _expTranslations) {
 			this.expTranslations = _expTranslations;
 			return this;
 		}
@@ -538,5 +585,6 @@ public class WordDictEndpointTest extends EndpointTest {
 			this.expectEmptyWordEntry = true;
 			return this;
 		}
+
 	}
 }

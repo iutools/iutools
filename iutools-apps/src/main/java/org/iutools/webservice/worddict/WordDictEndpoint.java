@@ -7,6 +7,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.iutools.script.TransCoder;
 import org.iutools.script.TransCoderException;
+import org.iutools.text.IUWord;
+import org.iutools.text.Word;
+import org.iutools.text.WordException;
 import org.iutools.webservice.Endpoint;
 import org.iutools.webservice.ServiceException;
 import org.iutools.worddict.MDictEntry;
@@ -24,39 +27,64 @@ public class WordDictEndpoint extends Endpoint<WordDictInputs,WordDictResult> {
 	}
 
 	@Override
-	public WordDictResult execute(WordDictInputs inputs) throws ServiceException {
+	public WordDictResult execute(WordDictInputs inputs) throws ServiceException, MachineGeneratedDictException {
 		Logger tLogger = LogManager.getLogger("org.iutools.webservice.worddict.WordDictEndpoint.execute");
 		if (tLogger.isTraceEnabled()) {
 			tLogger.trace("invoked with inputs="+ PrettyPrinter.print(inputs));
 		}
 
-		WordDictResult result = null;
-		if (inputs.exactWordLookup) {
-			result = lookupExactWord(inputs);
-		} else {
-			result = searchWord(inputs);
-		}
+		WordDictResult result = ensureInputWordIsInInputLanguage(inputs);
+		if (result == null) {
+			if (inputs.exactWordLookup) {
+				result = lookupExactWord(inputs);
+			} else {
+				result = searchWord(inputs);
+			}
 
-		setResultLangsAndScript(result, inputs);
+			setResultLangsAndScript(result, inputs);
+		}
 
 		tLogger.trace("Completed");
 		return result;
 	}
 
 	private void setResultLangsAndScript(
-		WordDictResult result, WordDictInputs inputs) throws ServiceException {
-
+		WordDictResult result, WordDictInputs inputs) throws ServiceException, MachineGeneratedDictException {
 		fixScriptOfWordEntries(inputs, result);
 
 		try {
 			if (result.queryWordEntry != null) {
 				result
-					.setLang(result.queryWordEntry.getLang())
-					.setOtherLang(result.queryWordEntry.otherLang());
+				.setLang(result.queryWordEntry.getLang())
+				.setOtherLang(result.queryWordEntry.otherLang());
 			}
 		} catch (MachineGeneratedDictException e) {
 			throw new ServiceException(e);
 		}
+	}
+
+	private WordDictResult ensureInputWordIsInInputLanguage(WordDictInputs inputs) throws MachineGeneratedDictException {
+		WordDictResult errorResult = null;
+		boolean ok = true;
+		String lang = inputs.lang;
+		try {
+			Word word = Word.build(inputs.word, lang);
+			if ((lang.equals("iu") && !(word instanceof IUWord)) ||
+				(lang.equals("en") && (word instanceof IUWord))) {
+				ok = false;
+			}
+		} catch (WordException e) {
+			ok = false;
+		}
+
+		if (!ok) {
+			errorResult = new WordDictResult(null, new ArrayList<String>());
+			errorResult.errorMessage =
+				"The word '"+inputs.word+"' is not in the language '"+lang+"'.\n" +
+				"Change the input word or the input language.";
+		}
+
+		return errorResult;
 	}
 
 	private WordDictResult searchWord(WordDictInputs inputs) throws ServiceException {
