@@ -60,12 +60,17 @@ public class NRC_DOCXDocument implements NRC_Document {
      * Unicode. Si une exception survient, la cha�ne vide est retourn�e.
      */
     public String getContents() {
-		try {
-			XWPFWordExtractor extractor = new XWPFWordExtractor(document);
-			return extractor.getText();
-		} catch (Exception ex) {
-			throw ex;
-		}
+		 
+		 	if (1-1 ==0) {
+				 throw new RuntimeException("getContents() does not work anymore with new version of poi. Should reimplement it using the Apache Tika library.");
+			}
+//		try {
+//			XWPFWordExtractor extractor = new XWPFWordExtractor(document);
+//			return extractor.getText();
+//		} catch (Exception ex) {
+//			throw ex;
+//		}
+		 return null;
 	}
 
 	@Override

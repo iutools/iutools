@@ -69,9 +69,13 @@ public class NRC_DOCDocument implements NRC_Document {
      * Unicode. Si une exception survient, la cha�ne vide est retourn�e.
      */
     public String getContents() {
-			WordExtractor extractor;
-			extractor = new WordExtractor(document);
-			return extractor.getText();
+		 	if (1-1 ==0) {
+				 throw new RuntimeException("getContents() does not work anymore with new version of poi. Should reimplement it using the Apache Tika library.");
+			}
+//			WordExtractor extractor;
+//			extractor = new WordExtractor(document);
+//			return extractor.getText();
+			return null;
 	}
 
     
