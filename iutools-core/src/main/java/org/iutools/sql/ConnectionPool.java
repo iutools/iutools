@@ -63,12 +63,19 @@ public class ConnectionPool {
 				portNum = config.sqlPortNumber();
 				ds.setDriverClassName("org.drizzle.jdbc.DrizzleDriver");
 
-				ds.setUrl(
+				String url =
 					"jdbc:" + this.DBMS_NAME + "://" +
 					this.sqlHostName() +
 					":" + portNum +
 					"/" + dbName + "?" +
-					"rewriteBatchedStatements=true");
+					"rewriteBatchedStatements=true";
+				ds.setUrl(
+//					"jdbc:" + this.DBMS_NAME + "://" +
+//					this.sqlHostName() +
+//					":" + portNum +
+//					"/" + dbName + "?" +
+//					"rewriteBatchedStatements=true"
+					url);
 				ds.setUsername(userName);
 				ds.setPassword(password);
 				// Maximum number of active connections in the pool

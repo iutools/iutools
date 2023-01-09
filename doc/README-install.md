@@ -157,10 +157,7 @@ Instructions may vary depending on your OS.
 
 Once MySQL is installed, create a DB and User for IUtools. 
 
-Grant that user all access to the IUTools DB.
-
-For examples:
-
+    mysql -u root -p # enter password when prompted
     CREATE USER 'iutools_user'@'localhost' IDENTIFIED  BY 'your_passwrd_here';
     CREATE DATABASE iutools_db;
     GRANT ALL PRIVILEGES ON iutools_db.* TO 'iutools_user'@'localhost';

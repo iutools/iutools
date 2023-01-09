@@ -8,7 +8,7 @@ import org.apache.commons.cli.Option;
 
 import ca.nrc.ui.commandline.CommandLineException;
 import ca.nrc.ui.commandline.MainCommand;
-import ca.nrc.ui.commandline.SubCommand;;
+import ca.nrc.ui.commandline.SubCommand;
 
 /**
  * Command Line Interface for iutools

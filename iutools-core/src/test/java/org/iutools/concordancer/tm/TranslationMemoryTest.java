@@ -144,7 +144,7 @@ public abstract class TranslationMemoryTest {
 			};
 
 		new RunOnCases(cases, runner)
-//			.onlyCaseNums(9)
+//			.onlyCaseNums(4)
 //			.onlyCasesWithDescr("en-SEARCH-housing")
 			.run();
 

@@ -93,8 +93,15 @@ public class MorphemeHumanReadableDescr implements Comparable<MorphemeHumanReada
 	}
 
 	private void init__MorphemeHumanReadableDescr(
-		String morphID, String _definition) throws MorphemeException {
-		this.meaning = _definition;
+		String morphID, String _meaning) throws MorphemeException {
+		if (_meaning == null) {
+			try {
+				_meaning = Morpheme.getMorpheme(morphID).englishMeaning;
+			} catch (LinguisticDataException e) {
+				throw new MorphemeException(e);
+			}
+		}
+		this.meaning = _meaning;
 		this.id = morphID;
 		Pair<String,String> parsed = parseMorphID(morphID);
 		this.canonicalForm = parsed.getLeft();
