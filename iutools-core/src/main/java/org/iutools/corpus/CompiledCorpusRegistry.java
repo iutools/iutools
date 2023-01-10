@@ -145,8 +145,10 @@ public class CompiledCorpusRegistry {
 		CompiledCorpus corpus = makeCorpus(corpusName);
 
 		try {
+			boolean uptoDate = corpus.isUpToDateWithFile(corpusFile);
+			logger.trace("uptoDate="+uptoDate+", corpusFile="+corpusFile);
 			if (corpusFile != null &&
-				(reloadFromJson || !corpus.isUpToDateWithFile(corpusFile))) {
+				(reloadFromJson || !uptoDate)) {
 				// Should load the corpus
 				File jsonFile = registry.get(corpusName);
 				corpus.loadFromFile(jsonFile, true, reloadFromJson);
@@ -155,6 +157,8 @@ public class CompiledCorpusRegistry {
 			throw new CompiledCorpusRegistryException(e);
 		}
 
+
+		logger.trace("Upon exit, corpus.isUpToDateWithFile="+corpus.isUpToDateWithFile(corpusFile));
 		return corpus;
 	}
 
