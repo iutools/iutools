@@ -21,7 +21,7 @@ public class CmdCompileCorpus extends ConsoleCommand {
 
 	@Override
 	public void execute() throws Exception {
-		String corpusName = getCorpusName(false);
+		String corpusName = getCorpusName(true);
 
 		boolean verbose = (getVerbosity() != UserIO.Verbosity.Level0);
 		File tmFilesDir = getInputDir(true);

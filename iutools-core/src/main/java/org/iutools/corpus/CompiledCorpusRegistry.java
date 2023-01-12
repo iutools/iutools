@@ -23,7 +23,9 @@ import org.iutools.corpus.sql.CompiledCorpus_SQL;
 public class CompiledCorpusRegistry {
 	
 	private static Map<String,File> registry = null;
-	public static final String defaultCorpusName = "hansard-1999-2002";
+	public static final String defaultCorpusName =
+//		"hansard-1999-2002";
+		"nrc-hansard+gov_nu_ca";
 	public static final String emptyCorpusName = "emptycorpus";
 
 	public CompiledCorpusRegistry() throws CompiledCorpusException {
@@ -39,10 +41,16 @@ public class CompiledCorpusRegistry {
 			try {
 				registry = new HashMap<String,File>();
 				registerCorpus(
-					defaultCorpusName,
+					"hansard-1999-2002",
 					new File(
 						IUConfig.getIUDataPath(
 							"data/compiled-corpora/HANSARD-1999-2002.json")));
+				registerCorpus(
+					"nrc-hansard+gov_nu_ca",
+					new File(
+						IUConfig.getIUDataPath(
+							"data/compiled-corpora/nrc-hansard+gov_nu_ca.json")));
+
 			} catch (ConfigException | CompiledCorpusRegistryException e) {
 				// Reset registry to null if we weren't able to initialize it.
 				// That way, the error will not be "swept under the carpet" for

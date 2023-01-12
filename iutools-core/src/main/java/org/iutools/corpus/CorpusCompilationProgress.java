@@ -15,8 +15,8 @@ public class CorpusCompilationProgress {
     public static enum Phase {COMPUTE_WORD_FREQUENCIES,
         GENERATE_CORP_FILE_NO_DECOMPS,
 		  CHECK_DECOMPS_FILE,
-        GENERATE_CORP_FILE_WITH_DECOMPS, LOAD_FINALIZED_CORPUS,
-        REFORMAT_FOR_VERSION_TRACKING, DONE};
+        GENERATE_CORP_FILE_WITH_DECOMPS,
+		  DONE};
 
     public String corpusName;
     public File corpusTextsRoot = null;

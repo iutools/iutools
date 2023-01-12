@@ -7,7 +7,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ca.nrc.dtrc.elasticsearch.ElasticSearchException;
 import ca.nrc.dtrc.stats.FrequencyHistogram;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.iutools.concordancer.Alignment;
@@ -120,15 +122,6 @@ public class CorpusCompiler {
 		return this;
 	}
 
-
-	public void compileWordFrequencies(String _corpusName) throws CorpusCompilerException {
-		progress.setCurrentPhase(CorpusCompilationProgress.Phase.COMPUTE_WORD_FREQUENCIES);
-		this.corpusName = _corpusName;
-		phaseCompileFreqsCorpusFiles();
-		saveProgress();
-		return;
-	}
-
 	public void compile() throws CorpusCompilerException {
 		compile((String)null, (File)null);
 	}
@@ -149,6 +142,7 @@ public class CorpusCompiler {
 				break;
 			}
 		}
+		uponDone();
 	}
 
 	private boolean performNextStep() throws CorpusCompilerException {
@@ -189,31 +183,12 @@ public class CorpusCompiler {
 			stop = phaseCheckDecompsFile();
 		} else if (progress.currentPhase == CorpusCompilationProgress.Phase.GENERATE_CORP_FILE_WITH_DECOMPS) {
 			/**
-			 * In this phase, we generate a file corpus.withdecomps.json which
+			 * In this phase, we generate a final <corpusName>.json file which
 			 * contains the same WordInfo as the corpus.nodecomps.json file,
 			 * but this time with the morphological decomposition fields filled
 			 * in.
 			 */
 			phaseGenerateCorpFileWithDecomps();
-		} else if (progress.currentPhase == CorpusCompilationProgress.Phase.LOAD_FINALIZED_CORPUS) {
-			/** In this phase, we load the corpus.withdecomps.json file into
-			 * the ElasticSearch index named this.corpusName, overwriting
-			 * the content that was previously loaded from file
-			 * corpus.nodecomps.json.
-			 */
-			phaseLoadFinalizedCorpusNoDecomps();
-		} else if (progress.currentPhase == CorpusCompilationProgress.Phase.REFORMAT_FOR_VERSION_TRACKING) {
-			/**
-			 * In this phase, we generate the final version of the JSON file.
-			 * This files contains the same WordInfo records as
-			 * corpus.nodecomps.json, but they are sorted and formatted in way
-			 * that will better support version tracking with a system like
-			 * Git.dump the content of ElasticSearch index named
-			 * this.corpusName, overwriting
-			 * the content that was previously loaded from file
-			 * corpus.nodecomps.json.
-			 */
-			phaseReformatForVersionTracking();
 		} else {
 			throw new CorpusCompilerException("Phase not yet supported: "+progress.currentPhase);
 		}
@@ -266,7 +241,7 @@ public class CorpusCompiler {
 
 		try {
 			fw.write(
-				"bodyEndMarker=NEW_LINE\n"+
+				"bodyEndMarker=BLANK_LINE\n"+
 				"class=org.iutools.corpus.WordInfo\n\n");
 			ObjectMapper mapper = new ObjectMapper();
 			for (String word: wordFreqs.allValues()) {
@@ -332,12 +307,12 @@ public class CorpusCompiler {
 	 * in.
 	 */
 	private void phaseGenerateCorpFileWithDecomps() throws CorpusCompilerException {
-		File decompsFile = decompositionsFile(true);
+		File decompsFile = corpusFinalFile();
 		File corpusFile = corpusWithDecompsFile();
 
 		toConsole(
 			true,
-			"Updating decompositions of corpus "+corpusName+" without in file: \n"+
+			"Creating final JSON file (with decomps) for corpus "+corpusName+". File path: \n"+
 			decompsFile);
 
 		BufferedReader decompsFileReader = null;
@@ -380,7 +355,7 @@ public class CorpusCompiler {
 
 		corpusNoDecompsFile().delete();
 
-		progress.currentPhase = CorpusCompilationProgress.Phase.LOAD_FINALIZED_CORPUS;
+		progress.currentPhase = CorpusCompilationProgress.Phase.DONE;
 
 		return;
 	}
@@ -388,16 +363,17 @@ public class CorpusCompiler {
 	private void phaseGenerateCorpFileWithDecomps(
 		BufferedReader decompsFileReader, FileWriter corpusFileWriter,
 		ProgressMonitor progMonitor)
-	throws CorpusCompilerException, CompiledCorpusException {
+		throws CorpusCompilerException, CompiledCorpusException {
+
 		try {
 			corpusFileWriter.write(
-				"bodyEndMarker=NEW_LINE\n" +
+				"bodyEndMarker=BLANK_LINE\n" +
 					"class=org.iutools.corpus.WordInfo\n\n");
 		} catch (IOException e) {
 			throw new CorpusCompilerException("Problem writing to corpus file.", e);
 		}
 
-		Map<String,Object> wordMap = null;
+		Map<String,Object> wordResult = null;
 		while (true) {
 			try {
 				String lineJson = decompsFileReader.readLine();
@@ -405,94 +381,41 @@ public class CorpusCompiler {
 					break;
 				}
 				progMonitor.stepCompleted();
-				wordMap = mapper.readValue(lineJson, Map.class);
+				wordResult = mapper.readValue(lineJson, Map.class);
 			} catch (IOException e) {
 				throw new CorpusCompilerException(
 					"Problem reading or parsing line from decomps file", e);
 			}
-			String word = (String) (wordMap.get("word"));
-			WordInfo winfo = null;
+			Map<String,Object> winfoMap = (Map) (wordResult.get("winfo"));
 			try {
-				winfo = corpus().info4word(word);
-			} catch (CompiledCorpusException e) {
-				throw new CorpusCompilerException(e);
-			}
-			List<String> decompStrings = (List<String>) wordMap.get("decompositions");
-			Integer totalDecomps = null;
-			String[][] sampleDecomps = null;
-			if (decompStrings != null) {
-				totalDecomps = decompStrings.size();
-				sampleDecomps = new String[totalDecomps][];
-				for (int ii = 0; ii < totalDecomps; ii++) {
-					sampleDecomps[ii] =
-							DecompositionState.decompstr2morphemes(decompStrings.get(ii));
-				}
-			}
-
-			int sampleSize = Math.min(totalDecomps, 10);
-			sampleDecomps =
-				Arrays.copyOfRange(sampleDecomps, 0, sampleSize);
-
-			winfo.setDecompositions(sampleDecomps, totalDecomps);
-			String winfoJson = null;
-			try {
-				winfoJson = mapper.writeValueAsString(winfo);
-				corpusFileWriter.write(winfoJson + "\n");
+				String winfoJson = winfoMap2json(winfoMap);
+				corpusFileWriter.write(winfoJson + "\n\n");
 			} catch (IOException e) {
 				throw new CorpusCompilerException("Problem writing updated word info to file", e);
 			}
 		}
 	}
 
-	/** In this phase, we load the corpus.withdecomps.json file into
-	 * the ElasticSearch index named this.corpusName, overwriting
-	 * the content that was previously loaded from file
-	 * corpus.nodecomps.json.
-	 */
-	private void phaseLoadFinalizedCorpusNoDecomps() throws CorpusCompilerException {
-		File corpusFile = corpusWithDecompsFile();
-		toConsole(
-			"   Loading FINALIZED corpus "+progress.corpusName+" from file (no decomps): "+
-			"\n      "+corpusFile+"\n\n");
+	private String winfoMap2json(Map<String, Object> winfoMap) throws CorpusCompilerException {
+		String json = null;
 		try {
-			CompiledCorpus corpus = new RW_CompiledCorpus(corpusName, user_io).readCorpus(corpusFile);
-		} catch (CompiledCorpusException e) {
-			throw new CorpusCompilerException(
-				"Problem loading corpus "+corpusName+" from file "+corpusFile, e);
-		}
-
-		corpusWithDecompsFile().delete();
-
-		progress.currentPhase = CorpusCompilationProgress.Phase.REFORMAT_FOR_VERSION_TRACKING;
-	}
-
-	/**
-	 * In this phase, we generate the final version of the JSON file.
-	 * This files contains the same WordInfo records as
-	 * corpus.nodecomps.json, but they are sorted and formatted in way
-	 * that will better support version tracking with a system like
-	 * Git.dump the content of ElasticSearch index named
-	 * this.corpusName, overwriting
-	 * the content that was previously loaded from file
-	 * corpus.nodecomps.json.
-	 */
-	private void phaseReformatForVersionTracking() throws CorpusCompilerException {
-		File corpusFile = corpusFinalFile();
-		toConsole(
-			"   Reformatting corpus "+progress.corpusName+
-			" for better version controle.\nOutput file:"+
-			"\n      "+corpusFile+"\n\n");
-
-		try {
-			new CorpusDumper(corpus())
-				.setVerbosity(UserIO.Verbosity.Level1)
-				.dump(corpusFile);
-		} catch (CompiledCorpusException e) {
+			String mapJson  = mapper.writeValueAsString(winfoMap);
+			WordInfo winfo = mapper.readValue(mapJson, WordInfo.class);
+			json = winfo.toJson();
+		} catch (JsonProcessingException | ElasticSearchException e) {
 			throw new CorpusCompilerException(e);
 		}
-		cleanupIntermediatFiles();
+		return json;
+	}
 
-		progress.currentPhase = CorpusCompilationProgress.Phase.DONE;
+	private void uponDone() throws CorpusCompilerException {
+		toConsole("   Cleaning up intermediate files.\n");
+		cleanupIntermediatFiles();
+		toConsole(
+			"\n\nCompilation of corpus "+progress.corpusName+" is done.\n\n"+
+			"The compiled corpus file is located at:\n\n"+
+			corpusFinalFile()
+		);
 	}
 
 	private void cleanupIntermediatFiles() throws CorpusCompilerException {
