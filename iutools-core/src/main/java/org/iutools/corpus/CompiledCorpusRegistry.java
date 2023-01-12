@@ -24,8 +24,8 @@ public class CompiledCorpusRegistry {
 	
 	private static Map<String,File> registry = null;
 	public static final String defaultCorpusName =
-//		"hansard-1999-2002";
-		"nrc-hansard+gov_nu_ca";
+		"hansard-1999-2002";
+//		"nrc-hansard+gov_nu_ca";
 	public static final String emptyCorpusName = "emptycorpus";
 
 	public CompiledCorpusRegistry() throws CompiledCorpusException {

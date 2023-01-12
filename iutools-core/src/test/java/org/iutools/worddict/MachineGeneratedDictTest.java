@@ -1,9 +1,11 @@
 package org.iutools.worddict;
 
+import ca.nrc.data.file.ObjectStreamReader;
 import ca.nrc.testing.*;
 import ca.nrc.testing.RunOnCases.Case;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.iutools.corpus.WordInfo;
 import org.iutools.linguisticdata.MorphemeHumanReadableDescr;
 import org.iutools.script.TransCoder;
 import ca.nrc.datastructure.CloseableIterator;
@@ -12,6 +14,7 @@ import org.iutools.utilities.StopWatch;
 import org.junit.jupiter.api.*;
 
 
+import java.io.File;
 import java.util.*;
 import java.util.function.Consumer;
 

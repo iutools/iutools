@@ -112,7 +112,7 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 				"    MATCH(wordNgrams) AGAINST(?) AND\n"+
 			   "    corpusName = ? ";
 			if (onlyWordsWithDecompositions) {
-				queryStr += "AND\n    `topDecompositionStr` IS NOT NULL";
+				queryStr += "AND\n    `decompositionsSampleJSON` <> '[]'";
 			}
 			queryStr += "\n"+sqlOrderBy("frequency:desc");
 			queryStr += ";";
@@ -259,7 +259,7 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 			"    corpusName = ? ";
 		if (onlyWordsWithDecompositions) {
 			// We only want words that have a decomposition
-			queryStr += "AND\n    `topDecompositionStr` IS NOT NULL";
+			queryStr += "AND\n    `decompositionsSampleJSON` <> '[]'";
 		}
 		queryStr += "\n"+sqlOrderBy("frequency:desc");
 
@@ -302,7 +302,7 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 			"    MATCH(wordNgrams) AGAINST(?)";
 		if (onlyWordsWithDecompositions) {
 			queryStr +=
-				" AND\n    topDecompositionStr IS NOT NULL";
+				" AND\n    `decompositionsSampleJSON` <> '[]'";
 		}
 		queryStr += ";";
 		long total  = count(queryStr, corpusName, ngram);
@@ -634,7 +634,7 @@ public class CompiledCorpus_SQL extends CompiledCorpus {
 			"SELECT word FROM " + WORDS_TABLE + "\n"+
 			"  WHERE\n" +
 			"    corpusName = ? AND \n" +
-			"    topDecompositionStr IS NULL\n"
+			"    `decompositionsSampleJSON` = '[]'\n"
 			;
 
 		queryStr += sqlOrderBy("frequency:desc");
