@@ -449,7 +449,7 @@ public class MachineGeneratedDictTest {
 		};
 
 		new RunOnCases(cases_entry4word, runner)
-//			.onlyCaseNums(1)
+//			.onlyCaseNums(14)
 //			.onlyCasesWithDescr("word with a glossary entry")
 			.run();
 	}

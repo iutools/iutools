@@ -7,17 +7,12 @@
  */
 package org.iutools.script;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Hashtable;
-import java.util.List;
+import java.util.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.lang.Character;
-import java.util.Enumeration;
-
 
 public class Syllabics {
 
@@ -25,7 +20,8 @@ public class Syllabics {
     
     public static Hashtable sylXunicode = new Hashtable();
     public static Hashtable unicodeXsyl = new Hashtable();
-    
+
+    public static Set<Character> allSylChars = new HashSet<>();
 
     public static class Short {
 
@@ -172,7 +168,6 @@ public class Syllabics {
         }
     }
 
-
     private static void makeUnicodeXsyl(Hashtable ht) {
         for (Enumeration e = ht.keys(); e.hasMoreElements();) {
             Object key = e.nextElement();
@@ -182,7 +177,7 @@ public class Syllabics {
     }
     
     public static boolean isInuktitutCharacter(char character) {
-        return unicodeXsyl.containsKey(new Character(character));
+        return allSylChars.contains(new Character(character));
     }
     
     public static boolean isInuktitutCharacter(Character character) {
@@ -203,11 +198,12 @@ public class Syllabics {
     
     public static boolean allInuktitut(String word) {
     	  Logger logger = LogManager.getLogger("org.iutools.script.Syllabic.allInuktitut");
-    	  logger.trace("invoked with word="+word);
+    	  logger.trace("invoked with word='"+word+"'");
     	  boolean answer = true;
         char chars[] = word.toCharArray();
         for (int i=0; i<chars.length; i++)
             if (!isInuktitutCharacter(chars[i])) {
+                    logger.trace("'"+chars[i]+"' (+"+(int)chars[i]+") is NOT a Syllabic character");
 					answer = false;
 					break;
 				}
@@ -233,7 +229,7 @@ public class Syllabics {
         makeUnicodeXsyl(Long.unicodeXsyl);
         makeUnicodeXsyl(Final.unicodeXsyl);
     }
-    
+
     public static String [][] syllabicsToRomanICI = {
         {"\u1403", "i"},
         {"\u1431", "pi"},
@@ -375,22 +371,55 @@ public class Syllabics {
     public static String [][] syllabicsToRomanAIPAITAI = {
         // groupe des "ai"
         {"\u1401","ai"}, // ai
+        {"\u1402","aai"}, // aai
         {"\u142f","pai"}, // pai
-        {"\u144c","tai"}, // tai
+        {"\u1430","paai"}, // paai
+        {"\u144c","tai"}, // taai
+        {"\u144d","tai"}, // taai
         {"\u146b","kai"}, // kai
+        {"\u146c","kaai"}, // kaai
         {"\u1489","gai"}, // gai
+        {"\u148a","gaai"}, // gaai
         {"\u14a3","mai"}, // mai
+        {"\u14a4","maai"}, // maai
         {"\u14c0","nai"}, // nai
+        {"\u14c1","naai"}, // naai
         {"\u14ed","sai"}, // sai
+        {"\u14ee","saai"}, // saai
         {"\u14d3","lai"}, // lai
+        {"\u14d4","laai"}, // laai
         {"\u1526","jai"}, // jai
+        {"\u1527","jaai"}, // jaai
         {"\u1553","vai"}, // vai
+        {"\u1554","vaai"}, // vaai
         {"\u1543","rai"}, // rai
+        {"\u1545","raai"}, // raai
         {"\u166f","qai"}, // qai
+        {"\u157e","qaai"}, // qaai
         {"\u1670","ngai"},  // ngai
+        {"\u158e","ngaai"},  // ngaai
     };
-    
-    
+
+
+    static {
+        makeAllSylChars();
+    }
+
+    private static void makeAllSylChars() {
+        for (Object aKey: unicodeXsyl.keySet()) {
+            if (aKey != null) {
+                Character aChar = (Character) aKey;
+                allSylChars.add(aChar);
+            }
+        }
+
+        for (String[] aPair: syllabicsToRomanAIPAITAI) {
+            String syllStr = aPair[0];
+            Character syllChar = new Character(syllStr.charAt(0));
+            allSylChars.add(syllChar);
+        }
+    }
+
     /*
      * transcoderX et getTranscoder() et simplify ne sont plus n�cessaires
      * depuis qu'on a recod� les fonctions de transcodage.

@@ -78,7 +78,7 @@ public class SpellCheckerAccuracyTest {
 				  .isMisspelled("nunavummik").setMaxRank(1),
 
 		new SpellCheckerExample("nunavuumit")
-				  .isMisspelled("nunavummit").setMaxRank(1),
+				  .isMisspelled("nunavuumiit", "nunavummit").setMaxRank(1),
 
 		new SpellCheckerExample("ugaalautaa")
 				  .isMisspelled("uqaalautaa").setMaxRank(1),

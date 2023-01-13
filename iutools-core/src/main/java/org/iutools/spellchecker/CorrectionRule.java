@@ -39,26 +39,30 @@ public class CorrectionRule {
 	private String _regexBad_otherScript = null;
 	private String _regexFix_otherScript = null;
 
+	/** Used to spot special regex expressions that might look like non-syllabic chars */
+	private static Pattern pattRegexExpressions = Pattern.compile("(\\\\[wb]|\\(\\?<[a-zA-Z\\d]*>|\\$\\{[a-zA-Z\\d]*)");
+
 	public CorrectionRule(String _regexBad, String _regexFix) throws SpellCheckerException {
 		init__CorrectionRule(_regexBad, _regexFix);
 	}
 
-
 	private void init__CorrectionRule(String _regexBad, String _regexFix) throws SpellCheckerException {
-
 		if (_regexFix == null) {
 			// If no rule has been provided to actually fix the faulty characters,
 			// use a regexp that hihglights them with a pair of brackets []
 			_regexFix = "[$0]";
 		}
-		this.regexBad = _regexBad;
-		Script script1 = TransCoder.textScript(regexBad);
+
+		assertNoInvalidRegexpChars(_regexBad, _regexFix);
+
+		Script script1 = regexScript(_regexBad);
 		if (script1 == Script.MIXED) {
 			throw new SpellCheckerException("Left-hand side of the rule was written in a 'mixed' script: "+this.toString());
 		}
+		this.regexBad = _regexBad;
 		if (_regexFix != null) {
 			this.regexFix = _regexFix;
-			Script script2 = TransCoder.textScript(regexFix);
+			Script script2 = regexScript(regexFix);
 
 			if (script2 == Script.MIXED) {
 				throw new SpellCheckerException("Right-hand side of the rule was written in a 'mixed' script: " + this.toString());
@@ -70,15 +74,46 @@ public class CorrectionRule {
 		this.ruleScript = script1;
 	}
 
+	private void assertNoInvalidRegexpChars(String _regexBad, String _regexFix) throws SpellCheckerException {
+		String ruleStr = toString(_regexBad, _regexFix);
+		if (_regexBad.matches(".*\\\\b.*")) {
+			throw new SpellCheckerException(ruleStr+": \\b is not allowed in left-hand regexp. Use ^ or $ depending on whether you are looking at the start or end of a word.");
+		}
+		if (_regexBad.matches(".*\\\\W.*")) {
+			throw new SpellCheckerException(ruleStr+": \\W is not allowed in left-hand regexp. Use ^ or $ depending on whether you are looking at the start or end of a word.");
+		}
+		if (_regexBad.matches(".*\\\\w.*")) {
+			throw new SpellCheckerException(ruleStr+": \\w is not allowed in left-hand regexp. Use . instead.");
+		}
+	}
+
+	protected Script regexScript(String regex) {
+		// Remove regex special chars because they may look like Roman chars in a Syll regex
+//		regex = regex.replaceAll("\\\\[wb]", "");
+		regex = pattRegexExpressions.matcher(regex).replaceAll("");
+
+		// Some Syllabics rules may contain H in the middle of a regexp
+		// Note: It may look like we are including the same character twice, but in fact, the
+		// second character is the syllabic ᕼ, which looks just like the roman H.
+		regex = regex.replaceAll("[Hᕼ]", "");
+
+		Script script = TransCoder.textScript(regex);
+		return script;
+	}
+
 	@Override
 	public String toString() {
-		String toS = "'"+regexBad+"' --> '"+regexFix+"'";
+		return toString(regexBad, regexFix);
+	}
+
+	public String toString(String _regexBad, String _regexFix) {
+		String toS = "'"+_regexBad+"' --> '"+_regexFix+"'";
 		return toS;
 	}
 
 	public Pattern pattBad() {
 		if (_pattBad == null) {
-			_pattBad = Pattern.compile(regexBad);
+			_pattBad = Pattern.compile(regexBad, Pattern.UNICODE_CHARACTER_CLASS);
 		}
 		return _pattBad;
 	}
@@ -92,9 +127,10 @@ public class CorrectionRule {
 		}
 		String result = "'"+origStr+"' " +
 			(fixedStr.equals(origStr) ? "UNCHANGED": "-> '"+fixedStr+"'");
-		if (!origStr.equals(fixedStr) && logger.isTraceEnabled()) {
-			logger.trace(origWord + ": rule fired\n  Rule: " + this.toString() + "\n  Result: --> " + fixedStr);
-		}
+
+		traceRulesThatFired(origWord, origStr, fixedStr);
+
+		fixedStr = removeInnerBadCharMarkers(fixedStr);
 
 		IUWord fixedWord = null;
 		try {
@@ -106,6 +142,40 @@ public class CorrectionRule {
 			throw new SpellCheckerException(e);
 		}
 		return fixedWord;
+	}
+
+	/** If we have nested bad char markers (ex: 'aa[bb[c]dd]'), remove all but the outermost
+	 *  markers (ex: 'aa[bb[c]dd]' --> 'aa[bbcdd]') */
+	private String removeInnerBadCharMarkers(String fixedStr) {
+		StringBuilder noNested = new StringBuilder();
+		int nestingLevel = 0;
+		for (char ch: fixedStr.toCharArray()) {
+			boolean skipChar = false;
+			if (ch == '[') {
+				nestingLevel++;
+				if (nestingLevel > 1) {
+					skipChar = true;
+				}
+			} else if (ch == ']') {
+				nestingLevel--;
+				if (nestingLevel > 0) {
+					skipChar = true;
+				}
+			}
+			if (!skipChar) {
+				noNested.append(ch);
+			}
+		}
+
+//		System.out.println("--** fixNestedBadCharMarkers: for fixedStr="+fixedStr+", returning noNested="+noNested);
+		return noNested.toString();
+	}
+
+	private void traceRulesThatFired(IUWord origWord, String origStr, String fixedStr) {
+		Logger logger = LogManager.getLogger("org.iutools.spellchecker.CorrectionRule.traceRulesThatFired");
+		if (!origStr.equals(fixedStr) && logger.isTraceEnabled()) {
+			logger.trace(origWord + ": rule fired\n  Rule: " + this.toString() + "\n  Result: --> " + fixedStr);
+		}
 	}
 
 	private String regexBad_otherScript() throws SpellCheckerException {

@@ -212,10 +212,32 @@ public class TransCoderTest {
 				"ᐃᓄᒃᑐᑦ inuktut", Script.MIXED),
 			new Case_textScript("ROMAN word with 'h' in middle of it ",
 				"inukshuk", Script.ROMAN),
-			new Case_textScript("ROMAN word with 'H' in middle of it ",
+			new Case_textScript("ROMAN word with ascii 'H' in middle of it ",
 				"juHaanaspuug", Script.ROMAN),
-			new Case_textScript("Not sure what's wrong with this one.... ",
-				"su", Script.ROMAN),
+
+			// Note: In the next case, the 'ᕼ' is NOT the regular ASCII 'H'.
+			// It is in fact a Syllabic character that looks just like the ASCII 'H'
+			new Case_textScript("ROMAN word with syllabic 'H' in middle of it ",
+				"juᕼaanaspuug", Script.MIXED),
+
+
+			new Case_textScript("SYLLABIC word with ascii 'H' as first char ",
+			"Hᐃᓄᒃᑐᑦ", Script.SYLLABIC),
+			new Case_textScript("SYLLABIC word with ascii 'H' in the middle ",
+				"ᐃᓄHᒃᑐᑦ", Script.SYLLABIC),
+
+			// Note: In the next three cases, the 'ᕼ' is NOT the regular ASCII 'H'.
+			// It is in fact a Syllabic character that looks just like the ASCII 'H'
+			new Case_textScript("SYLLABIC word with Syllabic 'H' as first char ",
+			"ᕼᐃᓄᒃᑐᑦ", Script.SYLLABIC),
+			new Case_textScript("SYLLABIC word with Syllabic 'H' in the middle ",
+				"ᐃᓄᕼᒃᑐᑦ", Script.SYLLABIC),
+
+			new Case_textScript("ROMAN text with some punctuation marks (some of which are not part of ASCII p{punct}",
+				"inuktitut“‘$()[]|ʼ´", Script.ROMAN),
+
+			new Case_textScript("Cree word that contains some syllabic chars",
+				"ᑐᓵᔨᑎᒢᒍᕈᓐᓃᖅᑐᖅ", Script.MIXED),
 		};
 		Consumer<Case> runner = (caseNoCast) -> {
 			Case_textScript aCase = (Case_textScript) caseNoCast;
@@ -226,7 +248,7 @@ public class TransCoderTest {
 			);
 		};
 		new RunOnCases(cases, runner)
-//			.onlyCaseNums(10)
+//			.onlyCaseNums(3)
 			.run();
 	}
 

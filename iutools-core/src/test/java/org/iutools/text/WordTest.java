@@ -96,6 +96,7 @@ public class WordTest {
 			new Case_build("Syll word - force iu", "ᐃᓄᒃᓱᒃ", IUWord.class, "iu"),
 			new Case_build("Syllabic text forced to En --> Should raise exception", "ᐃᓄᒃᓱᒃ", null, "en")
 				.raisesException("Word \"ᐃᓄᒃᓱᒃ\" is not supposed to be in IU but it contains syllabic characters"),
+			new Case_build("Cree word that contains some syllabic syllabic chars", "ᑐᓵᔨᑎᒢᒍᕈᓐᓃᖅᑐᖅ", NonIUWord.class),
 		};
 		Consumer<Case> runner = (caseUncast) -> {
 			Case_build aCase = (Case_build) caseUncast;
@@ -123,7 +124,7 @@ public class WordTest {
 		};
 
 		new RunOnCases(cases, runner)
-//			.onlyCaseNums(7)
+//			.onlyCaseNums(8)
 			.run();
 	}
 

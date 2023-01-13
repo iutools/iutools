@@ -28,10 +28,13 @@ import org.iutools.html.HtmlEntities;
 import org.iutools.fonts.Font;
 
 public class TransCoder {
-	/**
-	#	 * Log4j logger
-	#	 */
-//    private static Logger LOG = LogManager.getLogger("TransCoder");
+
+    private static Pattern pattNonWordChars_Unicode =
+        // Note: Very weird. With UNICODE_CHARACTER_CLASS, it should be possible to just
+        // write either \W, but we have to specify additional non-word chars. This is so
+        // messed up.
+        //
+        Pattern.compile("[\\W\\dʼ]", Pattern.UNICODE_CHARACTER_CLASS);
 
     // Make a hash table the keys of which are the sequences of
     // legacy codes and the values, the unicodes, or inversely, depending
@@ -644,13 +647,13 @@ public class TransCoder {
 
 	public static Script textScript(String text, Boolean mixedMeansSyll) {
     	Logger logger = LogManager.getLogger("org.iutools.script.TransCoder.textScript");
-    	logger.trace("invoked with text="+text+", mixedMeansSyll="+mixedMeansSyll);
+    	logger.trace("invoked with text='"+text+"', mixedMeansSyll="+mixedMeansSyll);
     	if (mixedMeansSyll == null) {
     		mixedMeansSyll = false;
 		}
 		Script script = null;
 		if (text != null) {
-			String textNoPunctNorDigits = text.replaceAll("[\\s0-9\\p{Punct}]", "");
+			String textNoPunctextDigitNorH = pattNonWordChars_Unicode.matcher(text).replaceAll("");
 
 			// Remove 'h'. While this is not technically a ROMAN IU character,
 			// many dialects use it.
@@ -658,13 +661,15 @@ public class TransCoder {
 			// very occasionally after an 's' (ex: inukshuk, which is sometimes
 			// seen eventhough the more common spelling is inuksuk).
 			//
-			textNoPunctNorDigits = textNoPunctNorDigits.replaceAll("[hH]", "");
+			textNoPunctextDigitNorH = textNoPunctextDigitNorH.replaceAll("[hH]", "");
+
+		    logger.trace("textNoPunctextDigitNorH="+textNoPunctextDigitNorH);
 
 			script = Script.MIXED;
 
-			if (Syllabics.allInuktitut(textNoPunctNorDigits)) {
+			if (Syllabics.allInuktitut(textNoPunctextDigitNorH)) {
 				script = Script.SYLLABIC;
-			} else if (Roman.allInuktitut(textNoPunctNorDigits)) {
+			} else if (Roman.allInuktitut(textNoPunctextDigitNorH)) {
 				script = Script.ROMAN;
 			} else if (mixedMeansSyll){
 				// Text contains a mix of syllabic and roman characters and

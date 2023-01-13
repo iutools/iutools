@@ -396,8 +396,8 @@ public class SpellCheckerTest {
 		};
 
 		new RunOnCases(cases, runner)
-//			.onlyCaseNums(7)
-//			.onlyCasesWithDescr("Level 1 - ROMAN word that has a Level 1 mistake which operates on SYLL form")
+//			.onlyCaseNums(1)
+//			.onlyCasesWithDescr("Level 3 - Correct leading")
 			.run();
 	}
 
