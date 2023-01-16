@@ -177,7 +177,7 @@ class WordDictController extends IUToolsController {
     }
 
     queryWord() {
-        return this.elementForProp("txtQuery").val();
+        return this.elementForProp("txtQuery").val().toLocaleLowerCase();
     }
 
     clearHits() {

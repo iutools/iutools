@@ -325,6 +325,8 @@ public class MDictEntry {
 		}
 		assertIsSupportedLanguage(this.lang);
 		setLang(_lang);
+
+		_word = normalizeTerm(_word, _lang);
 		setWord(_word);
 		this.normalizedTerms = termNormalizer.normalizedTerms();
 	}
@@ -465,6 +467,7 @@ public class MDictEntry {
 	}
 
 	public boolean translationsInclude(String l1Word, String translation) throws MachineGeneratedDictException {
+		Logger logger = LogManager.getLogger("org.iutools.worddict.MDictEntry.translationsInclude");
 		l1Word = normalizeTerm(l1Word, lang);
 		List<String> translations = translations4l1Word.get(l1Word);
 		// To speed up, check if the list of translations is empty before

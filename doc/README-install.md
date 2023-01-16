@@ -289,7 +289,9 @@ If you do plan to use the web apps, then there are more steps involved.
 
 ### Install and configure Tomcat
 
-Just follow the standard Tomcat installation procedure.
+Just follow the standard Tomcat installation procedure. For example:
+
+     https://wolfpaulus.com/tomcat-catalina/comment-page-1/
 
 In what follows, we will assume that the location of Tomcat is $CATALINA_HOME.
 
@@ -297,10 +299,10 @@ Next, you must edit the file:
 
     $CATALINA_HOME/bin/setenv.sh
     
-and edit (or create) the value of CATALINA_OPTS to include the _-Dca_nrc_ and 
-_-Dorg_iutools_ JRE variables
+and edit (or create) the value of CATALINA_OPTS to include the __-Dorg_iutools_ and _-Dlog4j.configurationFile_ 
+JRE variables
 
-    CATALINA_OPTS="$CATALINA_OPTS -Dorg_iutools=/path/to/your/org_iutools.properties"
+    CATALINA_OPTS="$CATALINA_OPTS -Dorg_iutools=/path/to/your/org_iutools.properties  -Dlog4j.configurationFile=file:/path/to/your/log4j2.xml"
     
 
 ### Set file permissions
