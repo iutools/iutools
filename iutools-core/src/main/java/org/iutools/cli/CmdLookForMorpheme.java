@@ -27,6 +27,8 @@ public class CmdLookForMorpheme extends ConsoleCommand {
 	@Override
 	public void execute() throws Exception {
 		String morpheme = getMorpheme(false);
+		String grammar = getGrammar();
+		String meaning = getMeaning();
 		String corpusName = getCorpusName(true);
 
 		CompiledCorpus compiledCorpus =
@@ -42,7 +44,7 @@ public class CmdLookForMorpheme extends ConsoleCommand {
 		if (morpheme == null) {
 			interactive = true;
 		} else {
-			words = morphExtr.search(morpheme);
+			words = morphExtr.search(morpheme, grammar, meaning);
 		}
 
 		while (true) {
@@ -51,7 +53,7 @@ public class CmdLookForMorpheme extends ConsoleCommand {
 				if (morpheme == null) break;
 				words = null;
 				try {
-					words = morphExtr.search(morpheme);
+					words = morphExtr.search(morpheme, (String)null, (String)null);
 				} catch (Exception e) {
 					throw e;
 				}

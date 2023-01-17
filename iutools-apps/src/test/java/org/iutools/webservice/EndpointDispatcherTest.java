@@ -8,7 +8,7 @@ import ca.nrc.ui.web.testing.MockHttpServletResponse;
 import org.iutools.json.Mapper;
 import org.iutools.webservice.gist.GistPrepareContentResult;
 import org.iutools.webservice.logaction.LogActionResult;
-import org.iutools.webservice.morphexamples.MorphemeExamplesResult;
+import org.iutools.webservice.morphdict.MorphemeDictResult;
 import org.iutools.webservice.search.ExpandQueryResult;
 import org.iutools.webservice.spell.CheckWordResult;
 import org.iutools.webservice.tokenize.TokenizeResult;
@@ -29,9 +29,9 @@ public class EndpointDispatcherTest {
 			ExpandQueryResult.class),
 		new Case("morpheme_dictionary",
 			new JSONObject()
-				.put("wordPattern", "siuq"),
+				.put("canonicalForm", "siuq"),
 			"iutools/srv2/morpheme_dictionary",
-			MorphemeExamplesResult.class),
+			MorphemeDictResult.class),
 		new Case("preparecontent",
 			new JSONObject()
 				.put("textOrUrl", "inuksuk"),
@@ -70,7 +70,7 @@ public class EndpointDispatcherTest {
 			"MORPHEME_SEARCH",
 			new JSONObject()
 				.put("taskData", new JSONObject()
-					.put("wordPattern", "gaq"))
+					.put("canonicalForm", "gaq"))
 		),
 		new Case("SEARCH_WEB",
 			"SEARCH_WEB",
@@ -155,12 +155,12 @@ public class EndpointDispatcherTest {
 	public void test__doPost__InputAlreadyHasTaskID__ResultUsesSameID() throws Exception {
 		String id = "someid";
 		JSONObject json = new JSONObject()
-			.put("wordPattern", "siuq")
+			.put("canonicalForm", "siuq")
 			.put("_taskID", id);
 		String uri = "iutools/srv2/morpheme_dictionary";
 		MockHttpServletResponse response  = doPost(uri, json);
 
-		new AssertServletResponse(response, MorphemeExamplesResult.class)
+		new AssertServletResponse(response, MorphemeDictResult.class)
 			.reportsNoException()
 			.taskIDequals(id)
 		;
@@ -171,11 +171,11 @@ public class EndpointDispatcherTest {
 	@Test
 	public void test__doPost__UnknownEndpoint__ReportsException() throws Exception {
 		JSONObject json = new JSONObject()
-			.put("wordPattern", "siuq");
+			.put("canonicalForm", "siuq");
 		String uri = "iutools/srv2/unkown_point";
 		MockHttpServletResponse response  = doPost(uri, json);
 
-		new AssertServletResponse(response, MorphemeExamplesResult.class)
+		new AssertServletResponse(response, MorphemeDictResult.class)
 			.reportsException("No known endpoint for URI iutools/srv2/unkown_point")
 			;
 		return;
@@ -184,19 +184,19 @@ public class EndpointDispatcherTest {
 	@Test
 	public void test__doPost__InputJsonHasWrongStructure__ReportsException() throws Exception {
 		JSONObject json = new JSONObject()
-			.put("wordPattern", "siuq")
+			.put("canonicalForm", "siuq")
 			.put("unknownField", "blah");
 		String uri = "iutools/srv2/morpheme_dictionary";
 		MockHttpServletResponse response  = doPost(uri, json);
 
-		new AssertServletResponse(response, MorphemeExamplesResult.class)
+		new AssertServletResponse(response, MorphemeDictResult.class)
 			.reportsException(
 //				"Service raised exception\n\n" +
 //				"JSON inputs did not have the structure of class 'org.iutools.webservice.morphexamples.MorphemeExamplesInputs'.\n" +
 //				"JSON was: '{\"wordPattern\":\"siuq\",\"unknownField\":\"blah\"}'")
 				"Service raised exception\n\n"
-				+ "org.iutools.webservice.ServiceException: JSON inputs did not have the structure of class 'org.iutools.webservice.morphexamples.MorphemeExamplesInputs'.\n"
-				+ "JSON was: '{\"wordPattern\":\"siuq\",\"unknownField\":\"blah\"}'"
+				+ "org.iutools.webservice.ServiceException: JSON inputs did not have the structure of class 'org.iutools.webservice.morphdict.MorphemeDictInputs'.\n"
+				+ "JSON was: '{\"canonicalForm\":\"siuq\",\"unknownField\":\"blah\"}'"
 			);
 		return;
 	}

@@ -88,6 +88,20 @@ public class CLI {
 			    .argName("MORPH_SEQUENCE")
 			    .build();
 
+		Option optGrammar = Option.builder(null)
+				.longOpt(ConsoleCommand.OPT_GRAMMAR)
+			    .desc("Grammatical role of a word or morpheme (ex: \"verb\", \"noun\", \"ending\").")
+			    .hasArg()
+			    .argName("GRAMMAR")
+			    .build();
+
+		Option optMeaning = Option.builder(null)
+				.longOpt(ConsoleCommand.OPT_MEANING)
+			    .desc("Meaning of a word or morpheme (ex: \"to sit\").")
+			    .hasArg()
+			    .argName("MEANING")
+			    .build();
+
 		Option optWord = Option.builder(null)
 				.longOpt(ConsoleCommand.OPT_WORD)
 			    .desc("An inuktitut word.")
@@ -423,6 +437,8 @@ public class CLI {
 				new CmdLookForMorpheme("look_for_morpheme")
 				.addOption(optCorpusName)
 				.addOption(optMorpheme)
+				.addOption(optGrammar)
+				.addOption(optMeaning)
 				;
 		mainCmd.addSubCommand(lookForMorpheme);
 

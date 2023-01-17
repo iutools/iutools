@@ -23,14 +23,10 @@ import java.util.concurrent.TimeoutException;
  * A basic Translation Memory that uses ElasticSearch
  */
 public abstract class TranslationMemory {
-
 	public abstract void loadFile(Path tmFile, ESOptions... options)
 		throws TranslationMemoryException;
 	public abstract void addAlignment(Alignment alignment) throws TranslationMemoryException;
 	public abstract void removeAligmentsFromDoc(String docID) throws CompiledCorpusException;
-//	protected abstract CloseableIterator<Alignment>
-//		search(String sourceLang, String[] sourceExprVariants, String targetLang)
-//		throws TranslationMemoryException;
 	protected abstract CloseableIterator<Alignment>
 		search(String sourceLang, String[] sourceExprVariants,
 			String targetLang, String[] withTranslation) throws TranslationMemoryException;

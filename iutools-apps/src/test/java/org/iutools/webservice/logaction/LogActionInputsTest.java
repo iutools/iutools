@@ -53,11 +53,11 @@ public class LogActionInputsTest extends ServiceInputsTest {
 				new LogActionInputs(
 					"MORPHEME_SEARCH",
 					new JSONObject()
-						.put("wordPattern", "siuq")
+						.put("canonicalForm", "siuq")
 						.put("corpusName", JSONObject.NULL)
 						.put("nbExamples", "50")
 				),
-				"{\"_action\":\"MORPHEME_SEARCH\",\"_phase\":\"START\",\"_taskID\":null,\"_taskStartTime\":null,\"corpusName\":null,\"nbExamples\":\"50\",\"wordPattern\":\"siuq\"}"
+				"{\"_action\":\"MORPHEME_SEARCH\",\"_phase\":\"START\",\"_taskID\":null,\"_taskStartTime\":null,\"canonicalForm\":\"siuq\",\"corpusName\":null,\"nbExamples\":\"50\"}"
 			),
 			new Case(
 				"SEARCH_WEB",

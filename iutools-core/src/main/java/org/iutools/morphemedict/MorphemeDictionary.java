@@ -9,8 +9,11 @@ import org.iutools.corpus.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import org.iutools.elasticsearch.GenericESException;
 import org.iutools.linguisticdata.LinguisticData;
+import org.iutools.linguisticdata.Morpheme;
 import org.iutools.linguisticdata.MorphemeException;
+import org.iutools.linguisticdata.index.MorphemeIndex;
 
 public class MorphemeDictionary {
 	
@@ -44,21 +47,39 @@ public class MorphemeDictionary {
 	}
 
 	public List<MorphDictionaryEntry> search(String partialMorpheme) throws MorphemeDictionaryException {
-		return search(partialMorpheme, 20);
+		return search(partialMorpheme, (String)null, (String)null, (Integer)null);
 	}
 
-	public List<MorphDictionaryEntry> search(String partialMorpheme, Integer maxExamples) throws MorphemeDictionaryException {
+	public List<MorphDictionaryEntry> search(String partialMorpheme, int maxExamples) throws MorphemeDictionaryException {
+		return search(partialMorpheme, (String)null, (String)null, maxExamples);
+	}
+
+	public List<MorphDictionaryEntry> search(String partialMorpheme, String grammar, String meaning) throws MorphemeDictionaryException {
+		return search(partialMorpheme, grammar, meaning, (Integer)null);
+	}
+
+	public List<MorphDictionaryEntry> search(String partialMorpheme, String grammar, String meaning, Integer maxExamples) throws MorphemeDictionaryException {
 		Logger tLogger = LogManager.getLogger("org.iutools.morphemesearcher.MorphemeDictionary.wordsContainingMorpheme");
 		tLogger.trace("partialMorpheme= "+partialMorpheme);
 
+		if (maxExamples == null) {
+			maxExamples = 20;
+		}
+
 		List<MorphDictionaryEntry> morphEntries = new ArrayList<MorphDictionaryEntry>();
 
-		// Get all morphemes whose canonical form contains the input partial
-		// morpheme
-		Set<String> morphemeIDs = canonicalMorphemesContaining(partialMorpheme);
+		// Get all morphemes that match the search criteria
+		List<Morpheme> morphemes = null;
+		try {
+			morphemes = matchingMorphemes(partialMorpheme, grammar, meaning);
+		} catch (GenericESException e) {
+			throw new MorphemeDictionaryException(e);
+		}
 
-		for (String morphemeID: morphemeIDs) {
-			List<MorphWordExample> examplesOneMorpheme = bestExamplesForMorphID(morphemeID, maxExamples);
+		Set<String> morphemeIDs = null;
+		for (Morpheme morpheme: morphemes) {
+			String morphemeID = morpheme.id;
+			List<MorphWordExample> examplesOneMorpheme = bestExamplesForMorphID(morpheme.id, maxExamples);
 
 			try {
 				MorphDictionaryEntry entry = new MorphDictionaryEntry(morphemeID, examplesOneMorpheme);
@@ -70,6 +91,13 @@ public class MorphemeDictionary {
 
 		return morphEntries;
 	}
+
+	private List<Morpheme> matchingMorphemes(String canonicalForm, String grammar, String meaning) throws GenericESException {
+		MorphemeIndex index = new MorphemeIndex();
+		List<Morpheme> hits = index.searchMorphemes(canonicalForm, grammar, meaning);
+		return hits;
+	}
+
 
 	public List<MorphWordExample> bestExamplesForMorphID(String morphemeID, Integer maxExamples) throws MorphemeDictionaryException {
 		Logger logger = LogManager.getLogger("org.iutools.morphemedict.MorphemeDictionary.bestExamplesForMorphID");
@@ -105,18 +133,6 @@ public class MorphemeDictionary {
 			throw new MorphemeDictionaryException(e);
 		}
 		return examples;
-	}
-
-	private Set<String> canonicalMorphemesContaining(String partialMorpheme) {
-		Pattern pattMorph = Pattern.compile("^("+partialMorpheme+"[^\\/]*\\/)");
-		Set<String> canonicals = new HashSet<String>();
-		for (String morphID: linguisticData().allMorphemeIDs()) {
-			Matcher matcher = pattMorph.matcher(morphID);
-			if (matcher.find()) {
-				canonicals.add(morphID);
-			}
-		}
-		return canonicals;
 	}
 
 	public class MorphExampleComparator implements Comparator<MorphWordExample> {

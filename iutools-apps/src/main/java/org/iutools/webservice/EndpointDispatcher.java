@@ -7,7 +7,7 @@ import org.iutools.morph.MorphologicalAnalyzerException;
 import org.iutools.webservice.config.ConfigEndpoint;
 import org.iutools.webservice.gist.GistPrepareContentEndpoint;
 import org.iutools.webservice.logaction.LogActionEndpoint;
-import org.iutools.webservice.morphexamples.MorphemeExamplesEndpoint;
+import org.iutools.webservice.morphdict.MorphemeDictEndpoint;
 import org.iutools.webservice.search.ExpandQueryEndpoint;
 import org.iutools.webservice.spell.CheckWordEndpoint;
 import org.iutools.webservice.spell.ShallowCheckTextEndpoint;
@@ -30,10 +30,10 @@ public class EndpointDispatcher extends HttpServlet {
 	private Map<String,Endpoint> endpoints = new HashMap<String,Endpoint>();
 	{
 		endpoints.put("log_action", new LogActionEndpoint());
-		endpoints.put("morpheme_dictionary", new MorphemeExamplesEndpoint());
+		endpoints.put("morpheme_dictionary", new MorphemeDictEndpoint());
 
 		// WHY DO WE STILL NEED THIS?
-		endpoints.put("morpheme_examples", new MorphemeExamplesEndpoint());
+		endpoints.put("morpheme_examples", new MorphemeDictEndpoint());
 
 		endpoints.put("search/expandquery", new ExpandQueryEndpoint());
 		try {

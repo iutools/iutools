@@ -1,13 +1,11 @@
-package org.iutools.webservice.morphexamples;
+package org.iutools.webservice.morphdict;
 
 import org.iutools.linguisticdata.MorphemeHumanReadableDescr;
 import org.iutools.webservice.EndpointResult;
 
 import java.util.*;
 
-import org.json.JSONObject;
-
-public class MorphemeExamplesResult extends EndpointResult {
+public class MorphemeDictResult extends EndpointResult {
 
 	public List<MorphemeHumanReadableDescr> matchingMorphemes =
 		new ArrayList<MorphemeHumanReadableDescr>();

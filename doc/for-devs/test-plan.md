@@ -544,9 +544,11 @@ Search by pressing Enter key vs clicking Search
     
 ## Morpheme Dictionary
 
-Happy path
-- Enter morpheme 'tut', then click on Search
-  - Should see 5  morphemes that match 'tut'
+Basic verifications
+- When doing some test scenarios, proceed as follows
+- Enter the canonical form, grammar and meaning as specified by the scenario
+  - Check that the listed morphemes meet the criteria mentioned above (ex: if you asked for 
+    grammar=verb, then all morphemes should mention verb in the grammar description)
   - Morphemes should be order by:
     - Those with most word examples first
     - Those whose morpheme ID is shorter in case of tie
@@ -556,6 +558,23 @@ Happy path
     - List of example words sorted in DECREASING order of frequency
       - Note: in some cases, it may say 'No examples found for this morpheme'
       - Click on an example word and make sure its dictionary entry is displayed
+
+Happy path
+- Enter canonical form='tut', then click on Search
+  - Should see 5  morphemes that match 'tut'
+    - Some are nouns, some are verbs
+
+Search with canonical+grammar
+- Enter canonical form=tut, grammar=verb
+- Morphemes are all verbs whose canonical form start with 'tut'
+
+Search with canonical+grammar+meaning
+- Enter canonical form=tut, grammar=verb, meaning=land
+- Just one morpheme and it meets all the above criteria
+
+Search with all empty fields
+- Leave all fields except Nb examples empty
+- Should output an error message saying that you should enter a value for at least one of the above.
   
 Change preferred script
 - __BUG:__ As of 2022-11-30, the example words are always displayed in Roman
@@ -569,9 +588,13 @@ Change preferred script
   - Make sure the example words are displayed in SYLLABIC   
   
 Submit form with Enter key
-- Enter morpheme 'tut', then PRESS ENTER
+- Enter morpheme canonical='tut', then PRESS ENTER
   - Form should be submitted 
-  
+- Enter grammar='verb' and press ENTER
+  - Form should be submitted
+- Enter meaning='land' and press ENTER
+  - Form should be submitted
+
 Word Entry window hiding/showing
 - Reload the Morpheme Dictionary page
    - Make sure the Word Entry window is NOT showing

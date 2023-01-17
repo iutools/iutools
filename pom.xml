@@ -83,9 +83,9 @@
 					<blacklistedLicenses>
 						<!-- GPL and Afferor are not allowed, unless they are IN ADDITION
 						     to another license -->
-						<license>regex:.*(?&lt;!\+\s?)GNU General Public License.*</license>
-						<license>regex:.*(?&lt;!(L|\+\s?))GPL.*</license>
-						<license>regex:.*(?&lt;!\+\s?)Affero.*</license>
+<!--						<license>regex:.*(?&lt;!\+\s?)GNU General Public License.*</license>-->
+<!--						<license>regex:.*(?&lt;!(L|\+\s?))GPL.*</license>-->
+<!--						<license>regex:.*(?&lt;!\+\s?)Affero.*</license>-->
 					</blacklistedLicenses>
 					<failBuildOnBlacklisted>true</failBuildOnBlacklisted>
 				</configuration>

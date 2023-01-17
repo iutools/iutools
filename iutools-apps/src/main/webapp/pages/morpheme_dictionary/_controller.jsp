@@ -9,8 +9,14 @@
 	// Setup and configure the controller for this page
     // TODO: replace corpus-name by corpus to get the value of the select, etc.
     var config = {
-    		// Morpheme for which we are searching examples
-    		inpMorpheme: "morpheme",
+    		// Canonical form of the morpheme
+    		inpMorpheme: "inp-morpheme",
+
+            // Grammatical role of the morpheme
+            inpGrammar: "inp-grammar",
+
+            // Meaning of the morpheme
+            inpMeaning: "inp-meaning",
 
     		// Button for starting the search
     		btnGet: "btn-occ",

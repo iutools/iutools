@@ -53,6 +53,10 @@ public abstract class ConsoleCommand extends SubCommand {
 
 	public static final String OPT_MORPHEMES = "morphemes";
 	public static final String OPT_MORPHEME = "morpheme";
+
+	public static final String OPT_GRAMMAR = "grammar";
+
+	public static final String OPT_MEANING = "meaning";
 	public static final String OPT_WORD = "word";
 	public static final String OPT_MAX_WORDS = "max-words";
 	public static final String OPT_WORDS_ONLY = "words-only";
@@ -431,7 +435,23 @@ public abstract class ConsoleCommand extends SubCommand {
 		String morpheme = getOptionValue(ConsoleCommand.OPT_MORPHEME, failIfAbsent);
 		return morpheme;		
 	}
-	
+
+	protected String getGrammar() {
+		return getGrammar(false);
+	}
+	protected String getGrammar(boolean failIfAbsent) {
+		String grammar = getOptionValue(ConsoleCommand.OPT_GRAMMAR, failIfAbsent);
+		return grammar;
+	}
+
+	protected String getMeaning() {
+		return getMeaning(false);
+	}
+	protected String getMeaning(boolean failIfAbsent) {
+		String meaning = getOptionValue(ConsoleCommand.OPT_MEANING, failIfAbsent);
+		return meaning;
+	}
+
 	protected String getContent() {
 		return getContent(true);
 	}

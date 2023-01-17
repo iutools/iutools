@@ -1,4 +1,4 @@
-package org.iutools.webservice.morphexamples;
+package org.iutools.webservice.morphdict;
 
 import ca.nrc.testing.AssertObject;
 import ca.nrc.testing.AssertSet;
@@ -9,18 +9,18 @@ import org.iutools.webservice.EndpointResult;
 
 import java.util.*;
 
-public class AssertMorphemeExamplesResult extends AssertEndpointResult {
+public class AssertMorphemeDictResult extends AssertEndpointResult {
 
 	@Override
-	protected MorphemeExamplesResult result() {
-		return (MorphemeExamplesResult)gotObject;
+	protected MorphemeDictResult result() {
+		return (MorphemeDictResult)gotObject;
 	}
 
-	public AssertMorphemeExamplesResult(EndpointResult _gotObject) {
+	public AssertMorphemeDictResult(EndpointResult _gotObject) {
 		super(_gotObject);
 	}
 
-	public AssertMorphemeExamplesResult(EndpointResult _gotObject, String mess) {
+	public AssertMorphemeDictResult(EndpointResult _gotObject, String mess) {
 		super(_gotObject, mess);
 	}
 
@@ -32,7 +32,22 @@ public class AssertMorphemeExamplesResult extends AssertEndpointResult {
 			expExamples, gotExamples);
 	}
 
-	public AssertMorphemeExamplesResult matchingMorphemesAre(
+	public AssertMorphemeDictResult matchingMorphIDsAre(String... expIDsArr) throws Exception {
+		Set<MorphemeHumanReadableDescr> gotMorphemes = result().matchingMorphemesDescr();
+		Set<String> gotIDs = new HashSet<>();
+		for (MorphemeHumanReadableDescr descr: gotMorphemes) {
+			gotIDs.add(descr.id);
+		}
+		Set<String> expIDs = new HashSet<>();
+		Collections.addAll(expIDs, expIDsArr);
+		AssertSet.assertEquals(
+			"Morpheme IDs were wrong.",
+			expIDs, gotIDs);
+
+		return this;
+
+	}
+	public AssertMorphemeDictResult matchingMorphemesAre(
 		Pair<String,String>... expIDsAndDefs) throws Exception {
 
 		// Then check the human-readable descriptions of the matching morphemes

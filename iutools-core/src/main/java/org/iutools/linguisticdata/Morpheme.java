@@ -42,7 +42,6 @@ import org.iutools.linguisticdata.constraints.Conditions;
 
 public abstract class Morpheme implements Cloneable {
 
-
 	public static enum MorphFormat {WITH_BRACES, NO_BRACES};
 
 	public String id = null;
@@ -476,6 +475,10 @@ public abstract class Morpheme implements Cloneable {
 		return answer;
 	}
 
+	@Override
+	public String toString() {
+		return id;
+	}
 }
 
 

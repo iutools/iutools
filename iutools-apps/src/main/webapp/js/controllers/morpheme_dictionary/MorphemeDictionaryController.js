@@ -13,6 +13,10 @@ class MorphemeDictionaryController extends IUToolsController {
 	attachHtmlElements() {
 		this.setEventHandler("btnGet", "click", this.onFindExamples);
 		this.onReturnKey("inpMorpheme", this.onFindExamples);
+		this.onReturnKey("inpGrammar", this.onFindExamples);
+		this.onReturnKey("inpMeaning", this.onFindExamples);
+		this.onReturnKey("nb-examples", this.onFindExamples);
+
 	}
 	
 	onFindExamples() {
@@ -83,15 +87,26 @@ class MorphemeDictionaryController extends IUToolsController {
 	}
 	
 	getSearchRequestData() {
-        var wordPattern = this.elementForProp("inpMorpheme").val().trim();
-        if (wordPattern == '')
-            wordPattern = null;
-        var corpusName = null;
+        var canonicalForm = this.elementForProp("inpMorpheme").val().trim();
+        if (canonicalForm == '')
+            canonicalForm = null;
+
+		var grammar = this.elementForProp("inpGrammar").val().trim();
+		if (grammar == '')
+			grammar = null;
+
+		var meaning = this.elementForProp("inpMeaning").val().trim();
+		if (meaning == '')
+			meaning = null;
+
+		var corpusName = null;
         var nbExamples = this.elementForProp("inpNbExamples").val().trim();
         if (nbExamples == '')
             nbExamples = "20"
         var request = {
-            wordPattern: wordPattern,
+            canonicalForm: canonicalForm,
+			grammar: grammar,
+			meaning: meaning,
             corpusName: corpusName,
             nbExamples: nbExamples
         };
@@ -108,9 +123,10 @@ class MorphemeDictionaryController extends IUToolsController {
 	}
 	
 	error(err) {
+		this.clearResults();
 		err = err.replace("\n", "<br/>\n");
 		this.elementForProp('divError').html(err);
-		this.elementForProp('divError').show();	 
+		this.elementForProp('divError').show();
 	}
 	
 
@@ -194,9 +210,12 @@ class MorphemeDictionaryController extends IUToolsController {
 	validateQueryInput() {
 		var isValid = true;
 		var query = this.elementForProp("inpMorpheme").val();
-		if (query == null || query === "") {
+		var grammar = this.elementForProp("inpGrammar").val();
+		var meaning = this.elementForProp("inpMeaning").val();
+		if ((query == null || query === "") && (grammar == null || grammar === "") &&
+			(meaning == null || meaning === "")) {
 			isValid = false;
-			this.error("You need to enter something in the morpheme field");
+			this.error("You need to enter a value for at least one of the following: 'canonical form', 'grammar' or 'meaning'");
 		}
         var nbExamples = this.elementForProp("inpNbExamples").val().trim();
         var parsed = parseInt(nbExamples, 10);
