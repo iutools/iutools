@@ -1,13 +1,19 @@
 package org.iutools.elasticsearch;
 
-import ca.nrc.dtrc.elasticsearch.*;
-import ca.nrc.dtrc.elasticsearch.es7.ES7Factory;
+import org.elasticsearch.client.IndicesClient;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.client.indices.PutMappingRequest;
+import org.elasticsearch.action.support.master.AcknowledgedResponse;
+
+import org.json.JSONObject;
+
+import ca.nrc.dtrc.elasticsearch.Document;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.indices.CreateIndexResponse;
 import co.elastic.clients.transport.endpoints.BooleanResponse;
-import org.json.JSONObject;
-
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -51,15 +57,15 @@ public class ElasticSearchDB {
 	 *
 	 * So sometimes we need to resort to NRC's homegrown StreamlinedClient.
 	 */
-	public StreamlinedClient nrcClient(String indexName) throws GenericESException {
-		StreamlinedClient client = null;
-		try {
-			client = new ES7Factory(indexName).client();
-		} catch (ElasticSearchException e) {
-			throw new GenericESException(e);
-		}
-		return client;
-	}
+//	public StreamlinedClient nrcClient(String indexName) throws GenericESException {
+//		StreamlinedClient client = null;
+//		try {
+//			client = new ES7Factory(indexName).client();
+//		} catch (ElasticSearchException e) {
+//			throw new GenericESException(e);
+//		}
+//		return client;
+//	}
 
 	private void ensureIndicesAreDefined() throws GenericESException {
 		for (DocType docType: schema.docTypes()) {
@@ -83,19 +89,21 @@ public class ElasticSearchDB {
 		JSONObject properties = new JSONObject();
 		for (String fldName: docType.fieldNames()) {
 			properties.put(fldName, new JSONObject()
-					.put("type", docType.typename4field(fldName))
+				.put("type", docType.typename4field(fldName))
 			);
 		}
-		JSONObject request = new JSONObject()
-			.put("mappings", new JSONObject()
-				.put("properties", properties)
-			)
+		JSONObject mapping = new JSONObject()
+			.put("properties", properties)
 		;
 
-		Transport transport = ClientPool.esFactory(indexName).transport();
+		RestHighLevelClient client = ClientPool.getRestHighLevelClient();
+        IndicesClient indices = client.indices();
+
+        PutMappingRequest request = new PutMappingRequest("chatgpt_index")
+                .source(mapping.toString(), XContentType.JSON);
 		try {
-			final String jsonResult = transport.put(url, request);
-		} catch (ElasticSearchException e) {
+			AcknowledgedResponse response =  indices.putMapping(request, RequestOptions.DEFAULT);
+		} catch (IOException e) {
 			throw new GenericESException(e);
 		}
 	}

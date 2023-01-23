@@ -1,5 +1,6 @@
 package org.iutools.elasticsearch;
 
+import org.elasticsearch.client.RestHighLevelClient;
 import ca.nrc.dtrc.elasticsearch.ESFactory;
 import ca.nrc.dtrc.elasticsearch.ElasticSearchException;
 import ca.nrc.dtrc.elasticsearch.es7.ES7Factory;
@@ -39,17 +40,29 @@ public class ClientPool {
 	}
 
 	/***
-	 * Transport object for current thread.
+	 * Transport object for current thread (for the modern, fluent API).
 	 */
-	public static Transport transport() {
+	public synchronized static Transport transport() {
 		Long currThread = Thread.currentThread().getId();
 		return singleton().thread2transport.get(currThread);
 	}
 
-	public static RestClient restClient() {
+	/***
+	 * RestClient object for current thread (for the modern, fluent API).
+	 */
+	public synchronized static RestClient restClient() {
 		Long currThread = Thread.currentThread().getId();
 		return singleton().thread2restClient.get(currThread);
 	}
+
+	/***
+	 * RestHighLevelClient object for current thread (for the older, builder-based API).
+	 */
+	public synchronized static RestHighLevelClient restHighLevelClient() {
+		Long currThread = Thread.currentThread().getId();
+		return singleton().thread2restHighLevelClient.get(currThread);
+	}
+
 
 	/**
 	 * We are trying to use the high level ElasticsearchClient provided the the ES framework.
@@ -67,12 +80,34 @@ public class ClientPool {
 	/*
     * ElasticSearch resources that were opened for various threads.
 	 */
+	/**
+	 * Clients for the modern, "fluent" ES API. Supports syntax like this:
+	 * client.index(i -> i
+	 * 	.index(indexName)
+	 * 	.id(docID)
+	 * 	.document(document));
+	 */
 	private Map<Long, ElasticsearchClient> thread2esClient =
 		new HashMap<Long, ElasticsearchClient>();
+
+	/**
+ 	 * Rest clients for the modern, "fluent" ES API.
+	 */
 	private Map<Long, RestClient> thread2restClient =
 		new HashMap<Long, RestClient>();
+
+	/**
+ 	 * Transports for for the modern,"fluent" ES API.
+	 */
 	private Map<Long, ElasticsearchTransport> thread2transport =
 		new HashMap<Long, ElasticsearchTransport>();
+
+	/**
+	 * Rest clients for the older, "builder-based" ES API.
+	 */
+	private Map<Long, RestHighLevelClient> thread2restHighLevelClient =
+		new HashMap<>();
+
 
 	// Note: The constructor is private to enforce Singleton design
 	// pattern. There will only ever be one instance of ClientPool
@@ -87,7 +122,7 @@ public class ClientPool {
 	}
 
 	public static ElasticsearchClient getClient() throws GenericESException {
-		Logger logger = LogManager.getLogger("org.iutools.elasticsearch.ClientPool.getConnection");
+		Logger logger = LogManager.getLogger("org.iutools.elasticsearch.ClientPool.getClient");
 		logger.trace("invoked");
 		singleton();
 		ElasticsearchClient client = null;
@@ -117,8 +152,32 @@ public class ClientPool {
 		return singleton().thread2esClient.get(currThread);
 	}
 
+	public static RestHighLevelClient getRestHighLevelClient() throws GenericESException {
+		Logger logger = LogManager.getLogger("org.iutools.elasticsearch.ClientPool.getRestHighLevelClient");
+		logger.trace("invoked");
+		RestHighLevelClient restHighLevelClient = null;
+		// we cleanup the clients index every time we ask for a new client
+		cleanupThreadClientIndex();
+		Long currThread = Thread.currentThread().getId();
+		if (!singleton().hasLiveClient4Thread(currThread)) {
+			// We don't have a live client for the current thread.
+			// Initialize one and put its related resources in the various
+			// thread2* maps
+			//
+        	restHighLevelClient = new RestHighLevelClient(
+                RestClient.builder(
+                        new HttpHost(host(), port(), "http")));
+
+			singleton().thread2restHighLevelClient.put(currThread, restHighLevelClient);
+		}
+
+		logger.trace("exiting");
+		return singleton().thread2restHighLevelClient.get(currThread);
+	}
+
+
 	private boolean hasLiveClient4Thread(Long thrID) {
-		boolean answer = thread2esClient.containsKey(thrID);
+		boolean answer = (thread2esClient.containsKey(thrID) || thread2restHighLevelClient.containsKey(thrID));
 		return answer;
 	}
 
@@ -126,15 +185,6 @@ public class ClientPool {
 		singleton().cleanupThreadClientIndex(true);
 		return;
 	}
-
-//	protected void finalize() throws Throwable {
-//		Logger logger = LogManager.getLogger("org.iutools.elasticsearch.ClientPool.finalize");
-//		logger.trace("invoked");
-//		// When the singleton expires, we need to close all the open reources, even
-//		// those associated with the main thread (closeAll=true)
-//		cleanupThreadClientIndex(true);
-//		logger.trace("exited");
-//	}
 
 	private synchronized static void cleanupThreadClientIndex() throws GenericESException {
 		cleanupThreadClientIndex((Boolean)null);
@@ -148,18 +198,22 @@ public class ClientPool {
 		}
 		Set<Long> activeThreads = activeThreadIDs();
 
-		// Loop through all the threads in the thread2connIndex.
+		// Loop through all the threads in the thread2esClient.
 		//
 		// If the thread has terminated, then:
 		// - close it's associated ElasticSearch resources
 		// - delete it from the index
 
 		// Note: Create a set of all the threads for which we have an entry in thread2clientIndex
+		// or thread2restHighLevelClient.
 		// This is to avoid Conccurent Access exception when we delete entries of
 		// thread2connIndex while looping on its keys
 		//
 		Set<Long> threadsWithOpenedResources = new HashSet<Long>();
 		for (Long thr: singleton().thread2esClient.keySet()) {
+			threadsWithOpenedResources.add(thr);
+		}
+		for (Long thr: singleton().thread2restHighLevelClient.keySet()) {
 			threadsWithOpenedResources.add(thr);
 		}
 		logger.trace("--** threadsWithOpenedResources="+threadsWithOpenedResources);
@@ -176,11 +230,19 @@ public class ClientPool {
 					// Closing the transport will also close the RestClient.
 					// No need to close the ElasticsearchClient.
 					//
-					singleton().thread2transport.get(thrWithOpenResources).close();
+					ElasticsearchTransport transport = singleton().thread2transport.get(thrWithOpenResources);
+					if (transport != null) {
+						transport.close();
+					}
+					RestHighLevelClient highLevelRestClient = singleton().thread2restHighLevelClient.get(thrWithOpenResources);
+					if (highLevelRestClient != null) {
+						highLevelRestClient.close();
+					}
 				} catch (IOException e) {
 					throw new GenericESException(e);
 				}
 				singleton().thread2esClient.remove(thrWithOpenResources);
+				singleton().thread2restHighLevelClient.remove(thrWithOpenResources);
 			}
 		}
 
